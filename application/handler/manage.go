@@ -17,12 +17,8 @@
 */
 package handler
 
-import (
-	"net/http"
-
-	"github.com/webx-top/echo"
-)
+import "github.com/webx-top/echo"
 
 func ManageIndex(ctx echo.Context) error {
-	return ctx.Render(http.StatusOK, `manage_index`, nil)
+	return ctx.Render(`manage_index`, nil)
 }

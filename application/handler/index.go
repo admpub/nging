@@ -17,16 +17,12 @@
 */
 package handler
 
-import (
-	"net/http"
-
-	"github.com/webx-top/echo"
-)
+import "github.com/webx-top/echo"
 
 func Index(ctx echo.Context) error {
-	return ctx.Redirect(http.StatusFound, `/manage`)
+	return ctx.Redirect(`/manage`)
 }
 
 func Login(ctx echo.Context) error {
-	return ctx.Render(http.StatusOK, `login`, nil)
+	return ctx.Render(`login`, nil)
 }

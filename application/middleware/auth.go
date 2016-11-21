@@ -19,7 +19,6 @@ package middleware
 
 import (
 	"errors"
-	"net/http"
 
 	"github.com/admpub/caddyui/application/library/config"
 	"github.com/webx-top/echo"
@@ -34,7 +33,7 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 
 		//临时认证
 		if err := Auth(c, false); err != nil {
-			return c.Redirect(http.StatusFound, `/login`)
+			return c.Redirect(`/login`)
 		}
 		return h.Handle(c)
 	}
