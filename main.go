@@ -27,6 +27,8 @@ import (
 	"github.com/webx-top/echo/middleware/render"
 	"github.com/webx-top/echo/middleware/session"
 
+	"strings"
+
 	"github.com/admpub/caddyui/application"
 	"github.com/admpub/caddyui/application/library/config"
 )
@@ -49,7 +51,18 @@ func main() {
 
 	d := render.New(`standard`, `./template`)
 	d.Init(true)
+	d.SetContentProcessor(func(b []byte) []byte {
+		s := string(b)
+		s = strings.Replace(s, `__PUBLIC__`, `/public`, -1)
+		s = strings.Replace(s, `__ASSETS__`, `/public/assets`, -1)
+		return []byte(s)
+	})
 	e.Use(render.Middleware(d))
+
+	e.Use(middleware.Static(&middleware.StaticOptions{
+		Root: "./public",
+		Path: "/public",
+	}))
 
 	application.Initialize(e)
 	e.Run(standard.New(fmt.Sprintf(`:%v`, config.DefaultCLIConfig.Port)))
