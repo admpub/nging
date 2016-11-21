@@ -31,6 +31,7 @@ import (
 )
 
 func Initialize(e *echo.Echo) {
+	e.Use(middleware.FuncMap())
 	addRouter(e)
 	config.MustOK(config.ParseConfig())
 	me := monitor.MonitorEvent{
@@ -46,7 +47,7 @@ func Initialize(e *echo.Echo) {
 
 func addRouter(e *echo.Echo) {
 	e.Get(`/`, Index)
-	e.Get(`/login`, Login)
+	e.Match([]string{echo.GET, echo.POST}, `/login`, Login)
 
 	g := e.Group(`/manage`, middleware.AuthCheck)
 	{

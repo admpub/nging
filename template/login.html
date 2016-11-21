@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="">
-	<meta name="author" content="">
+	<meta name="description" content="{{"Caddy服务器管理面板登录"|T}}">
+	<meta name="author" content="admpub">
 	<link rel="shortcut icon" href="__ASSETS__/images/favicon.png">
 
 	<title>{{"登录"|T}}</title>
@@ -13,7 +13,8 @@
 
 	<!-- Bootstrap core CSS -->
 	<link href="__ASSETS__/js/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
-
+	
+	<link rel="stylesheet" href="__ASSETS__/js/jquery.gritter/css/jquery.gritter.css" />
 	<link rel="stylesheet" href="__ASSETS__/fonts/font-awesome-4/css/font-awesome.min.css">
 
 	<!-- Custom styles for this template -->
@@ -31,14 +32,14 @@
 				<h3 class="text-center"><img class="logo-img" src="__ASSETS__/images/logo.png" alt="logo"/>{{"Caddy服务器管理"|T}}</h3>
 			</div> 
 			<div>
-				<form style="margin-bottom: 0px !important;" class="form-horizontal" action="index.html">
+				<form style="margin-bottom: 0px !important;" class="form-horizontal" action="/login" method="POST">
 					<div class="content">
 						<h4 class="title">{{"账号登录"|T}}</h4>
 							<div class="form-group">
 								<div class="col-sm-12">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-user"></i></span>
-										<input type="text" placeholder="Username" id="username" class="form-control">
+										<input type="text" placeholder="{{"用户名"|T}}" name="user" class="form-control">
 									</div>
 								</div>
 							</div>
@@ -46,31 +47,43 @@
 								<div class="col-sm-12">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-										<input type="password" placeholder="Password" id="password" class="form-control">
+										<input type="password" placeholder="{{"密码"|T}}" name="pass" class="form-control">
 									</div>
 								</div>
 							</div>
 							
 					</div>
 					<div class="foot">
-						<button class="btn btn-default" data-dismiss="modal" type="button">Register</button>
-						<button class="btn btn-primary" data-dismiss="modal" type="submit">Log me in</button>
+						<input type="hidden" name="return_to" value="{{Form "return_to"}}">
+						<button class="btn btn-default" data-dismiss="modal" type="button">{{"注册"|T}}</button>
+						<button class="btn btn-primary" data-dismiss="modal" type="submit">{{"登录"|T}}</button>
 					</div>
 				</form>
 			</div>
 		</div>
-		<div class="text-center out-links"><a href="#">&copy; 2013 Your Company</a></div>
+		<div class="text-center out-links"><a href="https://github.com/admpub/caddyui" target="_blank">&copy; {{Now.Year}} CaddyUI</a></div>
 	</div> 
 	
 </div>
 
 <script src="__ASSETS__/js/jquery.js"></script>
-	<script type="text/javascript" src="__ASSETS__/js/behaviour/general.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/behaviour/general.js"></script>
 
-<!-- Bootstrap core JavaScript
-================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-  <script src="__ASSETS__/js/behaviour/voice-commands.js"></script>
-  <script src="__ASSETS__/js/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/jquery.gritter/js/jquery.gritter.js"></script>
+
+<script>
+{{if .}}
+	 $.gritter.add({
+        title: '{{"系统消息"|T}}',
+        text: "{{.}}",
+        image: '',
+        class_name: 'clean',
+        sticky: true,
+      });
+{{end}}
+</script>
+
+<script src="__ASSETS__/js/behaviour/voice-commands.js"></script>
+<script src="__ASSETS__/js/bootstrap/dist/js/bootstrap.min.js"></script>
 </body>
 </html>

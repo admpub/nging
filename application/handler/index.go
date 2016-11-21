@@ -17,12 +17,26 @@
 */
 package handler
 
-import "github.com/webx-top/echo"
+import (
+	"github.com/admpub/caddyui/application/middleware"
+	"github.com/webx-top/echo"
+)
 
 func Index(ctx echo.Context) error {
 	return ctx.Redirect(`/manage`)
 }
 
 func Login(ctx echo.Context) error {
-	return ctx.Render(`login`, nil)
+	var err error
+	if ctx.Request().Method() == echo.POST {
+		err = middleware.Auth(ctx, true)
+		if err == nil {
+			returnTo := ctx.Form(`return_to`)
+			if len(returnTo) == 0 {
+				returnTo = `/manage`
+			}
+			return ctx.Redirect(returnTo)
+		}
+	}
+	return ctx.Render(`login`, err)
 }
