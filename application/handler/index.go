@@ -27,8 +27,15 @@ func Index(ctx echo.Context) error {
 }
 
 func Login(ctx echo.Context) error {
+	if user, _ := ctx.Get(`user`).(string); len(user) > 0 {
+		returnTo := ctx.Query(`return_to`)
+		if len(returnTo) == 0 {
+			returnTo = `/manage`
+		}
+		return ctx.Redirect(returnTo)
+	}
 	var err error
-	if ctx.Request().Method() == echo.POST {
+	if ctx.IsPost() {
 		err = middleware.Auth(ctx, true)
 		if err == nil {
 			returnTo := ctx.Form(`return_to`)
