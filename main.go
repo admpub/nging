@@ -39,6 +39,15 @@ func main() {
 
 	e := echo.New()
 
+	e.Use(middleware.Log(), middleware.Recover())
+
+	// 注册静态资源文件
+	e.Use(middleware.Static(&middleware.StaticOptions{
+		Root: "./public",
+		Path: "/public",
+	}))
+
+	// 启用session
 	sessionOptions := &echo.SessionOptions{
 		Name:   "SID",
 		Engine: "cookie",
@@ -47,8 +56,14 @@ func main() {
 			HttpOnly: false,
 		},
 	}
-	e.Use(middleware.Log(), middleware.Recover(), session.Middleware(sessionOptions))
+	e.Use(session.Middleware(sessionOptions))
 
+	// 为模板注册常用函数
+	e.Use(middleware.FuncMap(nil, func(c echo.Context) bool {
+		return c.Format() != `html`
+	}))
+
+	// 注册模板引擎
 	d := render.New(`standard`, `./template`)
 	d.Init(true)
 	d.SetContentProcessor(func(b []byte) []byte {
@@ -58,11 +73,6 @@ func main() {
 		return []byte(s)
 	})
 	e.Use(render.Middleware(d))
-
-	e.Use(middleware.Static(&middleware.StaticOptions{
-		Root: "./public",
-		Path: "/public",
-	}))
 
 	application.Initialize(e)
 	e.Run(standard.New(fmt.Sprintf(`:%v`, config.DefaultCLIConfig.Port)))

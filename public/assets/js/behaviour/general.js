@@ -1512,7 +1512,7 @@ var App = function () {
       });
       
       /*Datepicker UI*/
-      $( ".ui-datepicker" ).datepicker();
+      if($(".ui-datepicker").length>0)$(".ui-datepicker").datepicker();
       
       /*Tooltips*/
       if(config.tooltip){
@@ -1536,29 +1536,29 @@ var App = function () {
       
       /*Switch*/
       if(config.bootstrapSwitch){
-        $('.switch').bootstrapSwitch();
+        if($('.switch').length>0)$('.switch').bootstrapSwitch();
       }
       
       /*DateTime Picker*/
       if(config.dateTime){
-        $(".datetime").datetimepicker({autoclose: true});
+        if($(".datetime").length>0)$(".datetime").datetimepicker({autoclose: true});
       }
       
       /*Select2*/
       if(config.select2){
-         $(".select2").select2({
+         if($(".select2").length>0)$(".select2").select2({
           width: '100%'
          });
       }
       
        /*Tags*/
       if(config.tags){
-        $(".tags").select2({tags: 0,width: '100%'});
+        if($(".tags").length>0)$(".tags").select2({tags: 0,width: '100%'});
       }
       
        /*Slider*/
       if(config.slider){
-        $('.bslider').slider();     
+        if($('.bslider').length>0)$('.bslider').slider();     
       }
       
       /*Input & Radio Buttons*/

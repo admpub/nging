@@ -20,5 +20,5 @@ package handler
 import "github.com/webx-top/echo"
 
 func ManageIndex(ctx echo.Context) error {
-	return ctx.Render(`manage_index`, nil)
+	return ctx.Render(`manage/index`, nil)
 }

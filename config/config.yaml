@@ -1,0 +1,21 @@
+db {
+  type : ""
+  user : ""
+  password : ""
+  host : ""
+  database : ""
+  prefix : ""
+  debug : false
+}
+log {
+  debug : false
+  colorable : false
+  saveFile : ""
+  fileMaxBytes : 0
+  targets : "console"
+}
+sys {
+  accounts : {
+    admin : "admin"
+  }
+}

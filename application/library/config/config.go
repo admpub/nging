@@ -22,6 +22,9 @@ import (
 	"flag"
 	"strings"
 
+	"io/ioutil"
+	"os"
+
 	"github.com/admpub/confl"
 	"github.com/admpub/log"
 	"github.com/webx-top/db/lib/factory"
@@ -71,6 +74,13 @@ var (
 )
 
 func ParseConfig() error {
+	if false {
+		b, err := confl.Marshal(DefaultConfig)
+		err = ioutil.WriteFile(DefaultCLIConfig.Conf, b, os.ModePerm)
+		if err != nil {
+			return err
+		}
+	}
 	_, err := confl.DecodeFile(DefaultCLIConfig.Conf, DefaultConfig)
 	if err != nil {
 		return err
@@ -113,7 +123,7 @@ func ConnectDB() error {
 		cluster := factory.NewCluster().AddW(database)
 		factory.SetCluster(0, cluster).Cluster(0).SetPrefix(DefaultConfig.DB.Prefix)
 	default:
-		return ErrUnknowDatabaseType
+		//return ErrUnknowDatabaseType
 	}
 	return nil
 }
