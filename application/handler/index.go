@@ -40,3 +40,8 @@ func Login(ctx echo.Context) error {
 	}
 	return ctx.Render(`login`, err)
 }
+
+func Logout(ctx echo.Context) error {
+	ctx.Session().Delete(`user`).Save()
+	return ctx.Redirect(`/login`)
+}

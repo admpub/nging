@@ -48,6 +48,7 @@ func Initialize(e *echo.Echo) {
 func addRouter(e *echo.Echo) {
 	e.Get(`/`, Index)
 	e.Match([]string{echo.GET, echo.POST}, `/login`, Login)
+	e.Get(`/logout`, Logout)
 
 	g := e.Group(`/manage`, middleware.AuthCheck)
 	{
