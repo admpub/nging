@@ -12,7 +12,7 @@ body {
   padding: 0;
   background-color: #F6F6F6;
   font-family: 'Open Sans', sans-serif;
-  font-size: 12px;
+  font-size: 13px;
   color: #555;
   opacity: 0;
   margin-left: -20px;
@@ -374,7 +374,7 @@ pre {
 }
 .navbar-default .navbar-nav > li.button .dropdown-menu li a .date {
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   color: #999999;
   font-style: italic;
   line-height: 18px;
@@ -683,7 +683,6 @@ body.modal-open,
   display: block;
   padding: 14px 18px 13px 15px;
   color: #c9d4f6;
-  font-size: 12px;
   font-weight: 300;
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
   white-space: nowrap;
@@ -752,7 +751,7 @@ body.modal-open,
   border-radius: 2px;
   height: 33px;
   background: none repeat scroll 0 0 #13151D;
-  font-size: 11px;
+  font-size: 12px;
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.07), 0 1px 2px rgba(0, 0, 0, 0.15) inset;
   border: 1px solid rgba(0, 0, 0, 0.5);
 }
@@ -803,7 +802,7 @@ body.modal-open,
 }
 #cl-wrapper .cl-sidebar .side-user .info span {
   color: #DBDBDB;
-  font-size: 11px;
+  font-size: 12px;
 }
 #cl-wrapper.animate-collapse .cl-sidebar .collapse-button {
   -webkit-transition: width 300ms linear;
@@ -857,7 +856,7 @@ body.modal-open,
 #sub-menu-nav ul li a {
   margin-right: -1px;
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   border-bottom: 0;
   color: #333333;
   text-shadow: none;
@@ -911,7 +910,7 @@ body.modal-open,
   display: none;
 }
 .cl-vnavigation .parent ul li a {
-  font-size: 11px;
+  font-size: 12px;
   background-image: none;
   padding: 7px 18px 7px 42px;
   background-color: #1a1c20;
@@ -1152,7 +1151,7 @@ textarea.form-control {
 }
 input::-webkit-input-speech-button {
   -webkit-transform: scale(3, 2.2) translate(-2px, -1px);
-  background-color: #fff
+  background-color: #fff;
   display:block !important;
 }
 /*PAGES*/
@@ -2232,7 +2231,7 @@ div.dataTables_length label select {
   cursor: pointer;
   display: inline-block;
   font-family: 'Open Sans', Verdana, sans-serif;
-  font-size: 11px;
+  font-size: 12px;
   margin-right: 1.8%;
   margin-bottom: 15px;
   width: 14.2%;
@@ -2256,7 +2255,7 @@ div.dataTables_length label select {
 }
 .butpro .sub h2 {
   margin: 0 0 5px 0;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: normal;
   text-align: center;
   text-transform: uppercase;
@@ -2297,10 +2296,10 @@ div.dataTables_length label select {
   color: #FFF !important;
 }
 .flot-text {
-  font-size: 10px !important;
+  font-size: 12px !important;
 }
 .legend table td {
-  font-size: 11px !important;
+  font-size: 12px !important;
 }
 .blue-chart {
   border-left: 1px solid #258fec;
@@ -4083,7 +4082,7 @@ h1:first-child {
   -webkit-border-radius: 3px;
 }
 .progress .progress-bar {
-  font-size: 11px;
+  font-size: 12px;
   line-height: 17px;
 }
 .progress-bar-info {
@@ -4286,7 +4285,7 @@ a.list-group-item:hover + a.list-group-item {
 /*Specific icons size*/
 .btn-lg {
   padding: 12px 14px;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 300;
 }
 .btn-lg i {
@@ -4294,17 +4293,17 @@ a.list-group-item:hover + a.list-group-item {
 }
 .btn-sm {
   padding: 4px 7px;
-  font-size: 12px;
+  font-size: 13px;
 }
 .btn-sm i {
-  font-size: 14px;
+  font-size: 15px;
 }
 .btn-xs {
   padding: 2px 6px;
-  font-size: 11px;
+  font-size: 12px;
 }
 .btn-xs i {
-  font-size: 12px;
+  font-size: 13px;
 }
 .btn-shadow {
   box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.12);
@@ -5097,7 +5096,7 @@ ul.timeline li > .date {
   padding: 0 5px;
   text-align: center;
   border: 1px solid #E1E1E1;
-  font-size: 11px;
+  font-size: 12px;
   border-radius: 1px;
   text-shadow: 0 1px 0 #fafafa;
   color: #7B7B7B;
@@ -5147,7 +5146,7 @@ ul.timeline li > .date {
   line-height: 12px;
 }
 .list-group.tickets .list-group-item .date {
-  font-size: 11px;
+  font-size: 12px;
   color: #999;
 }
 .list-group.tickets .list-group-item .label {

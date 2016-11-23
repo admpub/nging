@@ -1631,6 +1631,14 @@ var App = function () {
     
     widgets: function(){
       widgets();
+    },
+
+    markNav:function(url){
+      if(url==null)url=window.location.pathname;
+	    var curnav=$('.cl-vnavigation a[href="'+url+'"]');
+	    if(curnav.length>0){
+        curnav.parent('li').addClass('active').parent().show().parent().addClass("open");
+	    }
     }
     
   };

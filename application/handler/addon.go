@@ -19,14 +19,6 @@ package handler
 
 import "github.com/webx-top/echo"
 
-func ManageIndex(ctx echo.Context) error {
-	return ctx.Render(`manage/index`, nil)
-}
-
-func ManageVhostAdd(ctx echo.Context) error {
-	return ctx.Render(`manage/vhost_edit`, nil)
-}
-
-func ManageVhostEdit(ctx echo.Context) error {
-	return ctx.Render(`manage/vhost_edit`, nil)
+func AddonIndex(ctx echo.Context) error {
+	return ctx.Render(`addon/index`, nil)
 }

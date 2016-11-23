@@ -28,6 +28,7 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		if user, _ := c.Session().Get(`user`).(string); len(user) > 0 {
 			c.Set(`user`, user)
+			c.SetFunc(`Username`, func() string { return user })
 			return h.Handle(c)
 		}
 

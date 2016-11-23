@@ -30,6 +30,9 @@ import (
 	"github.com/admpub/caddyui/application/middleware"
 )
 
+var DefaultRequestMethods = []string{echo.GET}
+var DefaultFormPageMethods = []string{echo.GET, echo.POST}
+
 func Initialize(e *echo.Echo) {
 	e.Use(middleware.FuncMap())
 	addRouter(e)
@@ -46,13 +49,28 @@ func Initialize(e *echo.Echo) {
 }
 
 func addRouter(e *echo.Echo) {
-	e.Get(`/`, Index)
-	e.Match([]string{echo.GET, echo.POST}, `/login`, Login)
-	e.Get(`/logout`, Logout)
+	addHandler(e, `/`, Index)
+	addHandler(e, `/logout`, Logout)
+
+	addFormHandler(e, `/login`, Login)
 
 	g := e.Group(`/manage`, middleware.AuthCheck)
 	{
-		g.Get(``, ManageIndex)
+		addHandler(g, ``, ManageIndex)
+		addFormHandler(g, `/vhost_add`, ManageVhostAdd)
+		addFormHandler(g, `/vhost_edit`, ManageVhostEdit)
 	}
 
+}
+
+type RouteRegister interface {
+	Match([]string, string, interface{}, ...interface{})
+}
+
+func addFormHandler(rr RouteRegister, urlPath string, handler interface{}, middlewares ...interface{}) {
+	rr.Match(DefaultFormPageMethods, urlPath, handler, middlewares...)
+}
+
+func addHandler(rr RouteRegister, urlPath string, handler interface{}, middlewares ...interface{}) {
+	rr.Match(DefaultRequestMethods, urlPath, handler, middlewares...)
 }
