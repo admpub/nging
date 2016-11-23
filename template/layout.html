@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+{{$name:=""}}
+{{$breadcrumb:=""}}
 <html lang="{{Lang}}">
 <head>
 	<meta charset="utf-8">
@@ -6,8 +8,7 @@
 	<meta name="description" content="{{"Caddy服务器管理面板登录"|T}}">
 	<meta name="author" content="admpub">
 	<link rel="shortcut icon" href="__ASSETS__/images/favicon.png">
-
-	<title>{{Block "title"}}no title{{/Block}} - CaddyUI</title>
+	<title>{{Block "title"}}Start{{/Block}} - CaddyUI</title>
 	<link href='__ASSETS__/css/font_OpenSans400_300_600_400italic_700_800.css' rel='stylesheet' type='text/css' />
 	<link href='__ASSETS__/css/font_Raleway_300_200_100.css' rel='stylesheet' type='text/css' />
 
@@ -32,14 +33,33 @@
 	<div id="cl-wrapper">
 		{{Include "sidebar"}}
 		<div class="container-fluid" id="pcont">
+			{{if or $name $breadcrumb}}
+			<div class="page-head">
+				<h2>{{$name}}</h2>
+				<ol class="breadcrumb">
+				  <li><a href="/manage">Home</a></li>
+				  {{if $breadcrumb}}
+				  	{{$l := Sub (len $breadcrumb) 1}}
+				  	{{range $k,$v:=$breadcrumb}}
+				  		{{if eq $k $l}}
+				  		<li class="active">{{$v}}</li>
+				  		{{else}}
+				  		<li><a href="#">{{$v}}</a></li>
+				  		{{end}}
+				  	{{end}}
+				  {{end}}
+				</ol>
+			</div>
+			{{else if hasAnyBlock "name" "breadcrumb"}}
 			<div class="page-head">
 				<h2>{{Block "name"}}{{/Block}}</h2>
 				<ol class="breadcrumb">
-				  <li><a href="#">Home</a></li>
-				  <li><a href="#">Tables</a></li>
-				  <li class="active">General</li>
+				  {{Block "breadcrumb"}}
+				  <li><a href="/manage">Home</a></li>
+				  {{/Block}}
 				</ol>
-			</div>		
+			</div>
+			{{end}}
 		    <div class="cl-mcont">{{Block "main"}}{{/Block}}</div>
 		</div>
 	</div>

@@ -36,7 +36,6 @@ var DefaultFormPageMethods = []string{echo.GET, echo.POST}
 func Initialize(e *echo.Echo) {
 	e.Use(middleware.FuncMap())
 	addRouter(e)
-	config.MustOK(config.ParseConfig())
 	me := monitor.MonitorEvent{
 		Modify: func(file string) {
 			if strings.HasSuffix(file, `.yaml`) {

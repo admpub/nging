@@ -65,6 +65,15 @@ type Config struct {
 	Sys struct {
 		Accounts map[string]string `json:"accounts"`
 	} `json:"sys"`
+
+	Cookie struct {
+		Domain   string `json:"domain"`
+		MaxAge   int    `json:"maxAge"`
+		Path     string `json:"path"`
+		HttpOnly bool   `json:"httpOnly"`
+		HashKey  string `json:"hashKey"`
+		BlockKey string `json:"blockKey"`
+	} `json:"cookie"`
 }
 
 var (
@@ -86,6 +95,7 @@ func ParseConfig() error {
 		return err
 	}
 	InitLog()
+	InitSessionOptions()
 	return ConnectDB()
 }
 

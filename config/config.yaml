@@ -19,3 +19,11 @@ sys {
     admin : "admin"
   }
 }
+cookie {
+  path     : "/"
+  domain   : ""
+  maxAge   : 0
+  httpOnly : true
+  hashKey  : "123456789012345678901234567890aa" #32位
+  blockKey : "123456789012345678901234567890cc" #32位
+}

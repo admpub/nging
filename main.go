@@ -37,6 +37,8 @@ func main() {
 	config.DefaultCLIConfig.InitFlag()
 	flag.Parse()
 
+	config.MustOK(config.ParseConfig())
+
 	e := echo.New()
 
 	e.Use(middleware.Log(), middleware.Recover())
@@ -48,15 +50,7 @@ func main() {
 	}))
 
 	// 启用session
-	sessionOptions := &echo.SessionOptions{
-		Name:   "SID",
-		Engine: "cookie",
-		CookieOptions: &echo.CookieOptions{
-			Path:     "/",
-			HttpOnly: false,
-		},
-	}
-	e.Use(session.Middleware(sessionOptions))
+	e.Use(session.Middleware(config.SessionOptions))
 
 	// 为模板注册常用函数
 	e.Use(middleware.FuncMap(nil, func(c echo.Context) bool {
