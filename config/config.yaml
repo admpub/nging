@@ -18,6 +18,9 @@ sys {
   accounts : {
     admin : "admin"
   }
+  sslHosts : []
+  sslCertFile : ""
+  sslKeyFile : ""
 }
 cookie {
   path     : "/"

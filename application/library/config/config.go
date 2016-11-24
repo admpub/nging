@@ -20,6 +20,7 @@ package config
 import (
 	"errors"
 	"flag"
+	"path/filepath"
 	"strings"
 
 	"io/ioutil"
@@ -63,7 +64,11 @@ type Config struct {
 	} `json:"log"`
 
 	Sys struct {
-		Accounts map[string]string `json:"accounts"`
+		Accounts     map[string]string `json:"accounts"`
+		SSLHosts     []string          `json:"sslHosts"`
+		SSLCacheFile string            `json:"sslCacheFile"`
+		SSLKeyFile   string            `json:"sslKeyFile"`
+		SSLCertFile  string            `json:"sslCertFile"`
 	} `json:"sys"`
 
 	Cookie struct {
@@ -93,6 +98,9 @@ func ParseConfig() error {
 	_, err := confl.DecodeFile(DefaultCLIConfig.Conf, DefaultConfig)
 	if err != nil {
 		return err
+	}
+	if len(DefaultConfig.Sys.SSLCacheFile) == 0 {
+		DefaultConfig.Sys.SSLCacheFile = filepath.Join(filepath.Dir(DefaultCLIConfig.Conf), `letsencrypt.cache`)
 	}
 	InitLog()
 	InitSessionOptions()

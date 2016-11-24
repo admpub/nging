@@ -18,19 +18,21 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
 	"fmt"
+	"strings"
 
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/engine/standard"
 	"github.com/webx-top/echo/middleware"
 	"github.com/webx-top/echo/middleware/render"
 	"github.com/webx-top/echo/middleware/session"
 
-	"strings"
-
 	"github.com/admpub/caddyui/application"
 	"github.com/admpub/caddyui/application/library/config"
+	"github.com/admpub/letsencrypt"
 )
 
 func main() {
@@ -69,5 +71,22 @@ func main() {
 	e.Use(render.Middleware(d))
 
 	application.Initialize(e)
-	e.Run(standard.New(fmt.Sprintf(`:%v`, config.DefaultCLIConfig.Port)))
+
+	c := &engine.Config{
+		Address: fmt.Sprintf(`:%v`, config.DefaultCLIConfig.Port),
+
+		TLSCertFile: config.DefaultConfig.Sys.SSLCertFile,
+		TLSKeyFile:  config.DefaultConfig.Sys.SSLKeyFile,
+	}
+	if len(config.DefaultConfig.Sys.SSLHosts) > 0 {
+		var tlsManager letsencrypt.Manager
+		tlsManager.SetHosts(config.DefaultConfig.Sys.SSLHosts)
+		if err := tlsManager.CacheFile(config.DefaultConfig.Sys.SSLCacheFile); err != nil {
+			panic(err.Error())
+		}
+		c.TLSConfig = &tls.Config{
+			GetCertificate: tlsManager.GetCertificate,
+		}
+	}
+	e.Run(standard.NewWithConfig(c))
 }
