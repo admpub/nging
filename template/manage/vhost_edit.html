@@ -14,7 +14,42 @@
               <div class="form-group">
                 <label class="col-sm-3 control-label">{{"网址/域名/IP"|T}}</label>
                 <div class="col-sm-6">
-                    <input type="text" name="domain" class="form-control" placeholder="{{"网站的网址、域名或IP，如有多个，用空格隔开"|T}}">
+                    <input type="text" name="domain" class="form-control">
+                    <div class="help-block">{{"网站的网址、域名或IP。如有多个，用空格隔开"|T}}</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">{{"物理路径"|T}}</label>
+                <div class="col-sm-6">
+                    <input type="text" name="root" class="form-control">
+                    <div class="help-block">{{"在服务器上的绝对路径"|T}}</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">{{"日志文件"|T}}</label>
+                <div class="col-sm-6">
+                    <input type="text" name="log" class="form-control" value="access_local.log">
+                    <div class="help-block">{{"日志文件保存路径"|T}}</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">{{"Header"|T}}</label>
+                <div class="col-sm-6">
+                    <table>
+								        <thead>
+								        	<tr>
+								        		<th style="width:50%;">{{"字段名"|T}}</th>
+								        		<th>{{"值"|T}}</th>
+								        		<th width="70">{{"删除"|T}}</th>
+								        	</tr>
+								        </thead>
+								        <tbody>
+								        	<tr>
+								        		<td colspan="3" class="text-center primary-emphasis" style="cursor:pointer" id="headerAddVarBtn"><i class="fa fa-plus"></i></td>
+								        	</tr>
+								        </tbody>
+							      </table>
+                    <div class="help-block">{{"如果要将已存在的header删掉，可以在使用减号(-)作为其值"|}}</div>
                 </div>
               </div>
               <div class="form-group">
@@ -24,18 +59,151 @@
                     <input type="checkbox" name="tls" class="icheck"> Option 1
                     </label> -->
                     <label class="radio-inline">
-                      <input type="radio" value="1" name="tls" checked="true" class="icheck"> {{"启用"|T}}
+                      <input type="radio" value="1" name="tls" checked="true" class="icheck" data-slide-settings="show"> {{"启用"|T}}
                     </label>
                     <label class="radio-inline">
-                      <input type="radio" value="0" name="tls" class="icheck"> {{"禁用"|T}}
+                      <input type="radio" value="0" name="tls" class="icheck" data-slide-settings="hide"> {{"禁用"|T}}
                     </label>
-                    <div class="bg-6e" id="tls-setting">
+                    <div class="fieldset bg-6e" id="tls-settings">
                         <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"TLS Cert文件"|T}}</label>
+                          <label class="col-sm-3 control-label">{{"Cert文件"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="tlsCertFile" placeholder="Username">
+                             <input type="text" class="form-control" name="tlsCertFile">
                           </div>
                         </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"Key文件"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="tlsKeyFile">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"E-mail"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="tlsEmail">
+                             <div class="help-block">{{"用于 Let's encrypt 生成证书"|T}}</div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">{{"GZIP"|T}}</label>
+                <div class="col-sm-6">
+                    <label class="radio-inline">
+                      <input type="radio" value="1" name="gzip" checked="true" class="icheck" data-slide-settings="show"> {{"启用"|T}}
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" value="0" name="gzip" class="icheck" data-slide-settings="hide"> {{"禁用"|T}}
+                    </label>
+                    <div class="fieldset bg-6e" id="gzip-settings">
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"扩展名"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="gzipExt">
+                             <div class="help-block">{{"如有多个，用空格隔开。星号(*)代表任意扩展名"|T}}</div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"排除路径"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="gzipNot">
+                             <div class="help-block">{{"如有多个，用空格隔开"|T}}</div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"压缩级别"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="number" class="form-control" value="9" name="gzipLevel" min="1" max="9">
+                             <div class="help-block">{{"1(速度最快)至9(数据最小)"|T}}</div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"压缩条件"|T}}</label>
+                          <div class="col-sm-9">
+                            <div class="input-group">
+                             <input type="number" class="form-control" name="gzipMin_bytes" min="0">
+                             <span class="input-group-addon">{{"字节(bytes)"|T}}</span>
+                             </div>
+                             <div class="help-block">{{"响应数据的大小只有大于这个尺寸的时候才会进行gzip压缩"|T}}</div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="col-sm-3 control-label">{{"FastCGI"|T}}</label>
+                <div class="col-sm-6">
+                    <label class="radio-inline">
+                      <input type="radio" value="1" name="fastcgi" checked="true" class="icheck" data-slide-settings="show"> {{"启用"|T}}
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" value="0" name="fastcgi" class="icheck" data-slide-settings="hide"> {{"禁用"|T}}
+                    </label>
+                    <div class="fieldset bg-6e" id="fastcgi-settings">
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"网址路径"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="fastcgiPath" value="/">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"FastCGI服务地址"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="fastcgiServerAddr" value="127.0.0.1:9070">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"FastCGI程序类型"|T}}</label>
+                          <div class="col-sm-9">
+                             <select class="form-control" name="fastcgiServerType">
+                               <option value="">{{"默认"|T}}</option>
+                               <option value="php">{{"PHP"|T}}</option>
+                             </select>
+                          </div>
+                        </div>
+
+                        
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"扩展名"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="fastcgiExt" value=".php">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"分割字符"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="fastcgiSplit" value=".php">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"默认首页文件"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="fastcgiIndex" value="index.php">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"环境变量"|T}}</label>
+                          <div class="col-sm-9">
+                            <table>
+								              <thead>
+								              	<tr>
+								              		<th style="width:50%;">{{"变量名"|T}}</th>
+								              		<th>{{"值"|T}}</th>
+								              		<th width="70">{{"删除"|T}}</th>
+								              	</tr>
+								              </thead>
+								              <tbody>
+								              	<tr>
+								              		<td colspan="3" class="text-center primary-emphasis" style="cursor:pointer" id="fastcgiAddEnvVarBtn"><i class="fa fa-plus"></i></td>
+								              	</tr>
+								              </tbody>
+							            </table>
+                             
+                          </div>
+                        </div>
+
                     </div>
                 </div>
               </div>
@@ -133,4 +301,43 @@
         </div><!-- /.block-flat -->
     </div>
 </div>
+{{/Block}}
+{{Block "footer"}}
+<script type="text/template" id="tmplAddVariableRow">
+<tr>
+	<td><input type="text" class="form-control" name="{name}" value=""></td>
+	<td><input type="text" class="form-control" name="{name}" value=""></td>
+	<td class="text-center">
+    <button type="button" class="btn btn-danger" onclick="$(this).parent().parent().remove()">
+      <i class="fa fa-times"></i>
+    </button>
+  </td>
+</tr>
+</script>
+<script>
+  $(function(){
+    $('#fastcgiAddEnvVarBtn').on('click',function(){
+      var tmpl=$('#tmplAddVariableRow').html();
+      tmpl=tmpl.replace(/\{name\}/g,'fastcgiEnvVar');
+      $(this).parent().before(tmpl);
+    });
+    $('#headerAddVarBtn').on('click',function(){
+      var tmpl=$('#tmplAddVariableRow').html();
+      tmpl=tmpl.replace(/\{name\}/g,'headerVar');
+      $(this).parent().before(tmpl);
+    });
+    $('[data-slide-settings]').on('click',function(){
+      var slide=$(this).data('slide-settings');
+      if(slide==""){
+        slide=$(this).val()=='1'?'show':'hide';
+      }
+      var eid='#'+$(this).attr('name')+'-settings';
+      if(slide=='show'){
+        $(eid).slideDown();
+      }else{
+        $(eid).slideUp();
+      }
+    });
+  });
+</script>
 {{/Block}}

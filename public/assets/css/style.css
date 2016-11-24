@@ -12,7 +12,7 @@ body {
   padding: 0;
   background-color: #F6F6F6;
   font-family: 'Open Sans', sans-serif;
-  font-size: 13px;
+  font-size: 15px;
   color: #555;
   opacity: 0;
   margin-left: -20px;
@@ -1024,10 +1024,22 @@ label {
 }
 .form-control {
   padding: 6px 8px;
-  font-size: 12px;
+  font-size: 15px;
   border-radius: 1px;
   -webkit-border-radius: 1px;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
+}
+.form-group .fieldset > .form-group{
+   padding-top:0;
+}
+.form-group .fieldset > .form-group:first-child{
+   padding-top:20px;
+}
+.form-group .fieldset > .form-group .input-group{
+  margin-bottom:0;
+}
+.form-group .help-block {
+  padding:5px 5px 0 5px;color:gray;
 }
 .input-group .btn {
   margin: 0 !important;
@@ -2671,6 +2683,9 @@ div.dataTables_length label select {
 }
 .bg-grey {
   background-color: grey;
+}
+.grey {
+  color: grey;
 }
 .bg-blue {
   background-color: #43A0F2;
