@@ -12,22 +12,31 @@
           <div class="content">
               <form class="form-horizontal group-border-dashed" action="#" style="border-radius: 0px;">
               <div class="form-group">
-                <label class="col-sm-3 control-label">Input Text</label>
+                <label class="col-sm-3 control-label">{{"网址/域名/IP"|T}}</label>
                 <div class="col-sm-6">
-                  <div class="input-group">
-                    <span class="input-group-addon">@</span>
-                    <input type="text" class="form-control" placeholder="Username">
-                  </div>
-                  <div class="input-group">
-                    <input type="text" class="form-control">
-                    <span class="input-group-addon">.00</span>
-                  </div>
-
-                  <div class="input-group">
-                    <span class="input-group-addon">$</span>
-                    <input type="text" class="form-control">
-                    <span class="input-group-addon">.00</span>
-                  </div>
+                    <input type="text" name="domain" class="form-control" placeholder="{{"网站的网址、域名或IP，如有多个，用空格隔开"|T}}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">{{"HTTPS"|T}}</label>
+                <div class="col-sm-6">
+                    <!--<label class="checkbox-inline">
+                    <input type="checkbox" name="tls" class="icheck"> Option 1
+                    </label> -->
+                    <label class="radio-inline">
+                      <input type="radio" value="1" name="tls" checked="true" class="icheck"> {{"启用"|T}}
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" value="0" name="tls" class="icheck"> {{"禁用"|T}}
+                    </label>
+                    <div class="bg-6e" id="tls-setting">
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"TLS Cert文件"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="tlsCertFile" placeholder="Username">
+                          </div>
+                        </div>
+                    </div>
                 </div>
               </div>
               <div class="form-group">

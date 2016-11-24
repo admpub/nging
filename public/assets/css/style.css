@@ -2663,6 +2663,15 @@ div.dataTables_length label select {
   background-color: #888e97;
   color: #fff;
 }
+.bg-lightgrey {
+  background-color: lightgrey;
+}
+.bg-6e {
+  background-color: #eee;
+}
+.bg-grey {
+  background-color: grey;
+}
 .bg-blue {
   background-color: #43A0F2;
   color: #fff;
