@@ -15,7 +15,7 @@
                 <label class="col-sm-3 control-label">{{"网址/域名/IP"|T}}</label>
                 <div class="col-sm-6">
                     <input type="text" name="domain" class="form-control">
-                    <div class="help-block">{{"网站的网址、域名或IP。如有多个，用空格隔开"|T}}</div>
+                    <div class="help-block">{{"网站的网址、域名或IP，支持通配符“*”(例如*.admpub.com)和环境变量(环境变量用花括号括起来，例如localhost:{$PORT})。如有多个，用空格隔开"|T}}</div>
                 </div>
               </div>
               <div class="form-group">
@@ -59,12 +59,12 @@
                     <input type="checkbox" name="tls" class="icheck"> Option 1
                     </label> -->
                     <label class="radio-inline">
-                      <input type="radio" value="1" name="tls" checked="true" class="icheck" data-slide-settings="show"> {{"启用"|T}}
+                      <input type="radio" value="1" name="tls" class="icheck" data-slide-settings="show"> {{"启用"|T}}
                     </label>
                     <label class="radio-inline">
-                      <input type="radio" value="0" name="tls" class="icheck" data-slide-settings="hide"> {{"禁用"|T}}
+                      <input type="radio" value="0" name="tls" checked="true" class="icheck" data-slide-settings="hide"> {{"禁用"|T}}
                     </label>
-                    <div class="fieldset bg-6e" id="tls-settings">
+                    <div class="fieldset bg-6e hide" id="tls-settings">
                         {{Include "addon/form/tls"}}
                     </div>
                 </div>
@@ -73,12 +73,12 @@
                 <label class="col-sm-3 control-label">{{"GZIP"|T}}</label>
                 <div class="col-sm-6">
                     <label class="radio-inline">
-                      <input type="radio" value="1" name="gzip" checked="true" class="icheck" data-slide-settings="show"> {{"启用"|T}}
+                      <input type="radio" value="1" name="gzip" class="icheck" data-slide-settings="show"> {{"启用"|T}}
                     </label>
                     <label class="radio-inline">
-                      <input type="radio" value="0" name="gzip" class="icheck" data-slide-settings="hide"> {{"禁用"|T}}
+                      <input type="radio" value="0" name="gzip" checked="true" class="icheck" data-slide-settings="hide"> {{"禁用"|T}}
                     </label>
-                    <div class="fieldset bg-6e" id="gzip-settings">
+                    <div class="fieldset bg-6e hide" id="gzip-settings">
                         {{Include "addon/form/gzip"}}
                     </div>
                 </div>
@@ -88,12 +88,12 @@
                 <label class="col-sm-3 control-label">{{"FastCGI"|T}}</label>
                 <div class="col-sm-6">
                     <label class="radio-inline">
-                      <input type="radio" value="1" name="fastcgi" checked="true" class="icheck" data-slide-settings="show"> {{"启用"|T}}
+                      <input type="radio" value="1" name="fastcgi" class="icheck" data-slide-settings="show"> {{"启用"|T}}
                     </label>
                     <label class="radio-inline">
-                      <input type="radio" value="0" name="fastcgi" class="icheck" data-slide-settings="hide"> {{"禁用"|T}}
+                      <input type="radio" value="0" name="fastcgi" checked="true" class="icheck" data-slide-settings="hide"> {{"禁用"|T}}
                     </label>
-                    <div class="fieldset bg-6e" id="fastcgi-settings">
+                    <div class="fieldset bg-6e hide" id="fastcgi-settings">
                         {{Include "addon/form/fastcgi"}}
                     </div>
                 </div>
@@ -103,12 +103,12 @@
                 <label class="col-sm-3 control-label">{{"Proxy"|T}}</label>
                 <div class="col-sm-6">
                     <label class="radio-inline">
-                      <input type="radio" value="1" name="proxy" checked="true" class="icheck" data-slide-settings="show"> {{"启用"|T}}
+                      <input type="radio" value="1" name="proxy" class="icheck" data-slide-settings="show"> {{"启用"|T}}
                     </label>
                     <label class="radio-inline">
-                      <input type="radio" value="0" name="proxy" class="icheck" data-slide-settings="hide"> {{"禁用"|T}}
+                      <input type="radio" value="0" name="proxy" checked="true" class="icheck" data-slide-settings="hide"> {{"禁用"|T}}
                     </label>
-                    <div class="fieldset bg-6e" id="fastcgi-settings">
+                    <div class="fieldset bg-6e hide" id="proxy-settings">
                         {{Include "addon/form/proxy"}}
                     </div>
                 </div>
@@ -174,11 +174,12 @@
       }
       var eid='#'+$(this).attr('name')+'-settings';
       if(slide=='show'){
-        $(eid).slideDown();
+        $(eid).removeClass('hide');
       }else{
-        $(eid).slideUp();
+        $(eid).addClass('hide');
       }
     });
+    $('[data-slide-settings="show"]:checked').trigger('click');
   });
 </script>
 {{/Block}}

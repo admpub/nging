@@ -5554,3 +5554,9 @@ ul.timeline li > .date {
     display: none;
   }
 }
+
+
+/* shorthands */
+.hide{
+  display: none !important;
+}

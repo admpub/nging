@@ -102,7 +102,7 @@
                           </div>
                           
                         <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"重新响应Header"|T}}</label>
+                          <label class="col-sm-3 control-label">{{"重写响应Header"|T}}</label>
                           <div class="col-sm-9">
                             <table>
 								              <thead>
@@ -152,30 +152,26 @@
                           </div>
                         </div>
                         <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"预制功能"|T}}</label>
+                          <label class="col-sm-3 control-label">{{"预置功能"|T}}</label>
                           <div class="col-sm-9">
-                              <select class="form-control" name="proxyPreset">
-                                <option value=""></option>
-                                <option value="websocket">websocket</option>
-                                <option value="transparent">transparent</option>
-                              </select>
-                             <div class="help-block">
-                               <p>支持以下预置功能：</p>
-
-<ul>
-<li><p><strong>websocket</strong><br>
-表示当前代理转发WebSocket连接。 等同于: <pre class="block">
+                              <label class="checkbox">
+                                <input type="checkbox" name="proxyPreset" value="websocket" class="icheck"> websocket
+                              </label>
+                              <p>
+表示当前代理转发WebSocket连接。 等同于: <pre>
 header_upstream Connection {&gt;Connection}
 header_upstream Upgrade {&gt;Upgrade}</pre>
-注意：HTTP/2不支持upgrade协议</p></li>
-
-<li><p><strong>transparent</strong><br>
-把来自浏览器端提交的原始主机信息传递给后端。等同于: <pre class="block">
+注意：HTTP/2不支持upgrade协议</p>
+                              <label class="checkbox">
+                                <input type="checkbox" name="proxyPreset" value="transparent" class="icheck"> transparent
+                              </label>
+                              <p>
+把来自浏览器端提交的原始主机信息传递给后端。等同于: <pre>
 header_upstream Host {host}
 header_upstream X-Real-IP {remote}
 header_upstream X-Forwarded-For {remote}
-header_upstream X-Forwarded-Proto {scheme}</pre></p></li>
-</ul>
+header_upstream X-Forwarded-Proto {scheme}</pre></p>
+                             <div class="help-block">
 上面用花括号"{}"括起来的部分是<a href="https://caddyserver.com/docs/placeholders" target="_blank">{{"占位符"|T}}</a>
                              </div>
                           </div>
