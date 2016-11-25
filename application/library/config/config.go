@@ -79,6 +79,10 @@ type Config struct {
 		HashKey  string `json:"hashKey"`
 		BlockKey string `json:"blockKey"`
 	} `json:"cookie"`
+
+	Caddy struct {
+		CaddyfileSavePath string `json:"caddyfileSavePath"`
+	} `json:"caddy"`
 }
 
 var (
@@ -101,6 +105,11 @@ func ParseConfig() error {
 	}
 	if len(DefaultConfig.Sys.SSLCacheFile) == 0 {
 		DefaultConfig.Sys.SSLCacheFile = filepath.Join(filepath.Dir(DefaultCLIConfig.Conf), `letsencrypt.cache`)
+	}
+	if len(DefaultConfig.Caddy.CaddyfileSavePath) == 0 {
+		DefaultConfig.Caddy.CaddyfileSavePath = `./Caddyfile`
+	} else if strings.HasSuffix(DefaultConfig.Caddy.CaddyfileSavePath, `/`) || strings.HasSuffix(DefaultConfig.Caddy.CaddyfileSavePath, `\`) {
+		DefaultConfig.Caddy.CaddyfileSavePath = filepath.Join(DefaultConfig.Caddy.CaddyfileSavePath, `Caddyfile`)
 	}
 	InitLog()
 	InitSessionOptions()

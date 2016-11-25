@@ -1,0 +1,62 @@
+{{Form "domain"}} {
+    root {{Form "root"}}
+
+    {{AddonAttr "log" ""}}
+
+    {{if Form "header_path"}}
+    header {{Form "header_path"}} {
+        {{IteratorKV "header" "" "        "}}
+    }
+    {{end}}
+
+    {{if eq Form "tls" "1"}}
+        {{if and (Form "tls_cert") (Form "tls_key")}}
+    tls {{Form "tls_cert"}} {{Form "tls_key"}}
+        {{else if Form "tls_email"}}
+    tls {{Form "tls_email"}}
+        {{end}}
+    {{else}}
+    tls off
+    {{end}}
+
+    {{if eq Form "gzip" "1"}}
+    gzip {
+        {{AddonAttr "gzip" "ext"}}
+        {{AddonAttr "gzip" "not"}}
+        {{AddonAttr "gzip" "level"}}
+        {{AddonAttr "gzip" "min_length"}}
+    }
+    {{end}}
+
+    {{if eq Form "fastcgi" "1"}}
+    fastcgi {{Form "fastcgi_path"}} {{Form "fastcgi_endpoint"}} {{Form "fastcgi_preset"}} {
+        {{AddonAttr "fastcgi" "ext"}}
+        {{AddonAttr "fastcgi" "split"}}
+        {{AddonAttr "fastcgi" "index"}}
+        {{IteratorKV "fastcgi" "env" "        env    "}}
+        {{AddonAttr "fastcgi" "except"}}
+        {{AddonAttr "fastcgi" "pool"}}
+    }
+    {{end}}
+    
+    {{if eq Form "proxy" "1"}}
+    proxy {{Form "proxy_from"}} {{Form "proxy_to"}} {
+        {{AddonAttr "proxy" "policy"}}
+        {{AddonAttr "proxy" "fail_timeout"}}
+        {{AddonAttr "proxy" "max_fails"}}
+        {{AddonAttr "proxy" "try_duration"}}
+        {{AddonAttr "proxy" "try_interval"}}
+        {{AddonAttr "proxy" "health_check"}}
+        {{AddonAttr "proxy" "health_check_interval"}}
+        {{AddonAttr "proxy" "health_check_timeout"}}
+        {{IteratorKV "proxy" "header_upstream" "        header_upstream    "}}
+        {{IteratorKV "proxy" "header_downstream" "        header_downstream    "}}
+        {{AddonAttr "proxy" "keepalive"}}
+        {{AddonAttr "proxy" "without"}}
+        {{AddonAttr "proxy" "except"}}
+        {{AddonAttr "proxy" "upstream"}}
+        {{AddonAttr "proxy" "insecure_skip_verify"}}
+        {{AddonAttr "proxy" "preset"}}
+    }
+    {{end}}
+}

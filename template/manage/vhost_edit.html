@@ -35,6 +35,18 @@
               <div class="form-group">
                 <label class="col-sm-3 control-label">{{"Header"|T}}</label>
                 <div class="col-sm-6">
+                  <div class="fieldset bg-6e">
+                    <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"指定路径"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="header_path" value="">
+                             <div class="help-block">{{"可以针对某个起始路径设置header"|T}}</div>
+                          </div>
+                    </div>
+
+                    <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"设置Header"|T}}</label>
+                          <div class="col-sm-9">
                     <table>
 								        <thead>
 								        	<tr>
@@ -50,6 +62,11 @@
 								        </tbody>
 							      </table>
                     <div class="help-block">{{"如果要将已存在的header删掉，请在名称前使用减号(-)并将其值留空"|}}</div>
+                  </div>
+                  
+                          </div>
+                    </div>
+
                 </div>
               </div>
               <div class="form-group">
@@ -136,8 +153,8 @@
 {{Block "footer"}}
 <script type="text/template" id="tmplAddVariableRow">
 <tr>
-	<td><input type="text" class="form-control" name="{name}" value=""></td>
-	<td><input type="text" class="form-control" name="{name}" value=""></td>
+	<td><input type="text" class="form-control" name="{k}" value=""></td>
+	<td><input type="text" class="form-control" name="{v}" value=""></td>
 	<td class="text-center">
     <button type="button" class="btn btn-danger" onclick="$(this).parent().parent().remove()">
       <i class="fa fa-times"></i>
@@ -149,22 +166,26 @@
   $(function(){
     $('#fastcgiAddEnvVarBtn').on('click',function(){
       var tmpl=$('#tmplAddVariableRow').html();
-      tmpl=tmpl.replace(/\{name\}/g,'fastcgiEnvVar');
+      tmpl=tmpl.replace(/\{k\}/g,'fastcgi_env_k');
+      tmpl=tmpl.replace(/\{v\}/g,'fastcgi_env_v');
       $(this).parent().before(tmpl);
     });
     $('#headerAddVarBtn').on('click',function(){
       var tmpl=$('#tmplAddVariableRow').html();
-      tmpl=tmpl.replace(/\{name\}/g,'headerVar');
+      tmpl=tmpl.replace(/\{k\}/g,'header_k');
+      tmpl=tmpl.replace(/\{v\}/g,'header_v');
       $(this).parent().before(tmpl);
     });
     $('#proxyHeaderDownstreamBtn').on('click',function(){
       var tmpl=$('#tmplAddVariableRow').html();
-      tmpl=tmpl.replace(/\{name\}/g,'proxyHeaderDownstream');
+      tmpl=tmpl.replace(/\{k\}/g,'proxy_header_downstream_k');
+      tmpl=tmpl.replace(/\{v\}/g,'proxy_header_downstream_v');
       $(this).parent().before(tmpl);
     });
     $('#proxyHeaderUpstreamBtn').on('click',function(){
       var tmpl=$('#tmplAddVariableRow').html();
-      tmpl=tmpl.replace(/\{name\}/g,'proxyHeaderUpstream');
+      tmpl=tmpl.replace(/\{k\}/g,'proxy_header_upstream_k');
+      tmpl=tmpl.replace(/\{v\}/g,'proxy_header_upstream_v');
       $(this).parent().before(tmpl);
     });
     $('[data-slide-settings]').on('click',function(){
