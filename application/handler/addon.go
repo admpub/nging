@@ -17,8 +17,30 @@
 */
 package handler
 
-import "github.com/webx-top/echo"
+import (
+	"net/http"
+	"regexp"
+
+	"github.com/webx-top/echo"
+)
+
+var validAddonName = regexp.MustCompile(`^[a-z0-9]+$`)
+
+func ValidAddonName(addon string) bool {
+	return validAddonName.MatchString(addon)
+}
 
 func AddonIndex(ctx echo.Context) error {
 	return ctx.Render(`addon/index`, nil)
+}
+
+func AddonForm(ctx echo.Context) error {
+	addon := ctx.Query(`addon`)
+	if len(addon) == 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, ctx.T("参数 addon 的值不能为空"))
+	}
+	if !ValidAddonName(addon) {
+		return echo.NewHTTPError(http.StatusBadRequest, ctx.T("参数 addon 的值包含非法字符"))
+	}
+	return ctx.Render(`addon/form/`+addon, nil)
 }

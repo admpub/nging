@@ -1,0 +1,62 @@
+<div class="form-group">
+                          <label class="col-sm-3 control-label">{{"网址路径"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="fastcgiPath" value="/">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"FastCGI服务地址"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="fastcgiServerAddr" value="127.0.0.1:9070">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"FastCGI程序类型"|T}}</label>
+                          <div class="col-sm-9">
+                             <select class="form-control" name="fastcgiServerType">
+                               <option value="">{{"默认"|T}}</option>
+                               <option value="php">{{"PHP"|T}}</option>
+                             </select>
+                          </div>
+                        </div>
+
+                        
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"扩展名"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="fastcgiExt" value=".php">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"分割字符"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="fastcgiSplit" value=".php">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"默认首页文件"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="fastcgiIndex" value="index.php">
+                             <div class="help-block">{{"如有多个，用空格隔开"|T}}</div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"环境变量"|T}}</label>
+                          <div class="col-sm-9">
+                            <table>
+								              <thead>
+								              	<tr>
+								              		<th style="width:50%;">{{"变量名"|T}}</th>
+								              		<th>{{"值"|T}}</th>
+								              		<th width="70">{{"删除"|T}}</th>
+								              	</tr>
+								              </thead>
+								              <tbody>
+								              	<tr>
+								              		<td colspan="3" class="text-center primary-emphasis" style="cursor:pointer" id="fastcgiAddEnvVarBtn"><i class="fa fa-plus"></i></td>
+								              	</tr>
+								              </tbody>
+							            </table>
+                             
+                          </div>
+                        </div>

@@ -49,7 +49,7 @@
 								        	</tr>
 								        </tbody>
 							      </table>
-                    <div class="help-block">{{"如果要将已存在的header删掉，可以在使用减号(-)作为其值"|}}</div>
+                    <div class="help-block">{{"如果要将已存在的header删掉，请在名称前使用减号(-)并将其值留空"|}}</div>
                 </div>
               </div>
               <div class="form-group">
@@ -65,25 +65,7 @@
                       <input type="radio" value="0" name="tls" class="icheck" data-slide-settings="hide"> {{"禁用"|T}}
                     </label>
                     <div class="fieldset bg-6e" id="tls-settings">
-                        <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"Cert文件"|T}}</label>
-                          <div class="col-sm-9">
-                             <input type="text" class="form-control" name="tlsCertFile">
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"Key文件"|T}}</label>
-                          <div class="col-sm-9">
-                             <input type="text" class="form-control" name="tlsKeyFile">
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"E-mail"|T}}</label>
-                          <div class="col-sm-9">
-                             <input type="text" class="form-control" name="tlsEmail">
-                             <div class="help-block">{{"用于 Let's encrypt 生成证书"|T}}</div>
-                          </div>
-                        </div>
+                        {{Include "addon/form/tls"}}
                     </div>
                 </div>
               </div>
@@ -97,37 +79,7 @@
                       <input type="radio" value="0" name="gzip" class="icheck" data-slide-settings="hide"> {{"禁用"|T}}
                     </label>
                     <div class="fieldset bg-6e" id="gzip-settings">
-                        <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"扩展名"|T}}</label>
-                          <div class="col-sm-9">
-                             <input type="text" class="form-control" name="gzipExt">
-                             <div class="help-block">{{"如有多个，用空格隔开。星号(*)代表任意扩展名"|T}}</div>
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"排除路径"|T}}</label>
-                          <div class="col-sm-9">
-                             <input type="text" class="form-control" name="gzipNot">
-                             <div class="help-block">{{"如有多个，用空格隔开"|T}}</div>
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"压缩级别"|T}}</label>
-                          <div class="col-sm-9">
-                             <input type="number" class="form-control" value="9" name="gzipLevel" min="1" max="9">
-                             <div class="help-block">{{"1(速度最快)至9(数据最小)"|T}}</div>
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"压缩条件"|T}}</label>
-                          <div class="col-sm-9">
-                            <div class="input-group">
-                             <input type="number" class="form-control" name="gzipMin_bytes" min="0">
-                             <span class="input-group-addon">{{"字节(bytes)"|T}}</span>
-                             </div>
-                             <div class="help-block">{{"响应数据的大小只有大于这个尺寸的时候才会进行gzip压缩"|T}}</div>
-                          </div>
-                        </div>
+                        {{Include "addon/form/gzip"}}
                     </div>
                 </div>
               </div>
@@ -142,160 +94,39 @@
                       <input type="radio" value="0" name="fastcgi" class="icheck" data-slide-settings="hide"> {{"禁用"|T}}
                     </label>
                     <div class="fieldset bg-6e" id="fastcgi-settings">
-                        <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"网址路径"|T}}</label>
-                          <div class="col-sm-9">
-                             <input type="text" class="form-control" name="fastcgiPath" value="/">
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"FastCGI服务地址"|T}}</label>
-                          <div class="col-sm-9">
-                             <input type="text" class="form-control" name="fastcgiServerAddr" value="127.0.0.1:9070">
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"FastCGI程序类型"|T}}</label>
-                          <div class="col-sm-9">
-                             <select class="form-control" name="fastcgiServerType">
-                               <option value="">{{"默认"|T}}</option>
-                               <option value="php">{{"PHP"|T}}</option>
-                             </select>
-                          </div>
-                        </div>
-
-                        
-                        <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"扩展名"|T}}</label>
-                          <div class="col-sm-9">
-                             <input type="text" class="form-control" name="fastcgiExt" value=".php">
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"分割字符"|T}}</label>
-                          <div class="col-sm-9">
-                             <input type="text" class="form-control" name="fastcgiSplit" value=".php">
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"默认首页文件"|T}}</label>
-                          <div class="col-sm-9">
-                             <input type="text" class="form-control" name="fastcgiIndex" value="index.php">
-                          </div>
-                        </div>
-                        <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"环境变量"|T}}</label>
-                          <div class="col-sm-9">
-                            <table>
-								              <thead>
-								              	<tr>
-								              		<th style="width:50%;">{{"变量名"|T}}</th>
-								              		<th>{{"值"|T}}</th>
-								              		<th width="70">{{"删除"|T}}</th>
-								              	</tr>
-								              </thead>
-								              <tbody>
-								              	<tr>
-								              		<td colspan="3" class="text-center primary-emphasis" style="cursor:pointer" id="fastcgiAddEnvVarBtn"><i class="fa fa-plus"></i></td>
-								              	</tr>
-								              </tbody>
-							            </table>
-                             
-                          </div>
-                        </div>
-
+                        {{Include "addon/form/fastcgi"}}
                     </div>
                 </div>
               </div>
+              
               <div class="form-group">
-                <label class="col-sm-3 control-label">Input Sizing</label>
+                <label class="col-sm-3 control-label">{{"Proxy"|T}}</label>
                 <div class="col-sm-6">
-                  <div class="input-group input-group-lg">
-                    <span class="input-group-addon">@</span>
-                    <input type="text" class="form-control" placeholder="Username">
-                  </div>
-
-                  <div class="input-group">
-                    <span class="input-group-addon">@</span>
-                    <input type="text" class="form-control" placeholder="Username">
-                  </div>
-
-                  <div class="input-group input-group-sm">
-                    <span class="input-group-addon">@</span>
-                    <input type="text" class="form-control" placeholder="Username">
-                  </div>
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="col-sm-3 control-label">Checkbox &amp; Radio</label>
-                <div class="col-sm-6">
-                  <div class="input-group">
-                    <span class="input-group-addon">
-                    <input type="checkbox">
-                    </span>
-                    <input type="text" class="form-control">
-                  </div>	
-                  <div class="input-group">
-                    <span class="input-group-addon">
-                    <input type="radio">
-                    </span>
-                    <input type="text" class="form-control">
-                  </div>										
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="col-sm-3 control-label">Button Addons</label>
-                <div class="col-sm-6">
-                  <div class="input-group">
-                    <input type="text" class="form-control">
-                    <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button">Go!</button>
-                    </span>
-                  </div>
-                  <div class="input-group">
-                    <input type="text" class="form-control">
-                    <div class="input-group-btn">
-                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Action <span class="caret"></span></button>
-                    <ul class="dropdown-menu pull-right">
-                      <li><a href="#">Action</a></li>
-                      <li><a href="#">Another action</a></li>
-                      <li><a href="#">Something else here</a></li>
-                      <li class="divider"></li>
-                      <li><a href="#">Separated link</a></li>
-                    </ul>
+                    <label class="radio-inline">
+                      <input type="radio" value="1" name="proxy" checked="true" class="icheck" data-slide-settings="show"> {{"启用"|T}}
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" value="0" name="proxy" class="icheck" data-slide-settings="hide"> {{"禁用"|T}}
+                    </label>
+                    <div class="fieldset bg-6e" id="fastcgi-settings">
+                        {{Include "addon/form/proxy"}}
                     </div>
-                  </div>
-                  <div class="input-group">
-                    <input type="text" class="form-control">
-                    <div class="input-group-btn">
-                      <button tabindex="-1" class="btn btn-default" type="button">Action</button>
-                      <button tabindex="-1" data-toggle="dropdown" class="btn btn-primary dropdown-toggle" type="button">
-                      <span class="caret"></span>
-                      <span class="sr-only">Toggle Dropdown</span>
-                      </button>
-                      <ul role="menu" class="dropdown-menu pull-right">
-                      <li><a href="#">Action</a></li>
-                      <li><a href="#">Another action</a></li>
-                      <li><a href="#">Something else here</a></li>
-                      <li class="divider"></li>
-                      <li><a href="#">Separated link</a></li>
-                      </ul>
-                    </div>
-                  </div>
                 </div>
               </div>
+              
               <div class="form-group">
-                <label class="col-sm-3 control-label">Readonly Input</label>
+                <label class="col-sm-3 control-label">{{"备注"|T}}</label>
                 <div class="col-sm-6">
-                  <input type="text" readonly="readonly" class="form-control" value="Readonly input text">
+                  <textarea class="form-control" value="remark"></textarea>
                 </div>
               </div>
+
               <div class="form-group">
-                <label class="col-sm-3 control-label">Textarea</label>
-                <div class="col-sm-6">
-                  <textarea class="form-control"></textarea>
-                </div>
-              </div>
+									<div class="col-sm-9 col-sm-offset-3">
+									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+									  <button class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"取消"|T}}</button>
+									</div>
+							</div>
             </form>
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
@@ -324,6 +155,16 @@
     $('#headerAddVarBtn').on('click',function(){
       var tmpl=$('#tmplAddVariableRow').html();
       tmpl=tmpl.replace(/\{name\}/g,'headerVar');
+      $(this).parent().before(tmpl);
+    });
+    $('#proxyHeaderDownstreamBtn').on('click',function(){
+      var tmpl=$('#tmplAddVariableRow').html();
+      tmpl=tmpl.replace(/\{name\}/g,'proxyHeaderDownstream');
+      $(this).parent().before(tmpl);
+    });
+    $('#proxyHeaderUpstreamBtn').on('click',function(){
+      var tmpl=$('#tmplAddVariableRow').html();
+      tmpl=tmpl.replace(/\{name\}/g,'proxyHeaderUpstream');
       $(this).parent().before(tmpl);
     });
     $('[data-slide-settings]').on('click',function(){

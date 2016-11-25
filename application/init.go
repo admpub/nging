@@ -50,6 +50,7 @@ func Initialize(e *echo.Echo) {
 func addRouter(e *echo.Echo) {
 	addHandler(e, `/`, Index)
 	addHandler(e, `/logout`, Logout)
+	addHandler(e, `/addon_form`, AddonForm)
 
 	addFormHandler(e, `/login`, Login)
 
