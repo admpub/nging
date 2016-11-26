@@ -1639,6 +1639,21 @@ var App = function () {
 	    if(curnav.length>0){
         curnav.parent('li').addClass('active').parent().show().parent().addClass("open");
 	    }
+    },
+
+    message:function(options){
+      var defaults={
+        title: '',
+        text: "",
+        image: '',
+        class_name: 'clean',
+        sticky: true,
+      };
+      if(typeof(options)!="object"){
+        options={text:options};
+      }
+      options=$.extend({},defaults,options||{});
+	    $.gritter.add(options);
     }
     
   };

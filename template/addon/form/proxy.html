@@ -1,14 +1,14 @@
 <div class="form-group">
                           <label class="col-sm-3 control-label">{{"访问路径"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxyFrom" value="/">
+                             <input type="text" class="form-control" name="proxy_from" value="/">
                              <div class="help-block">{{"基于这个路径的网址将会被代理"}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"后端代理地址"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxyTo" value="http://127.0.0.1:9070">
+                             <input type="text" class="form-control" name="proxy_to" value="http://127.0.0.1:9070">
                              <div class="help-block">{{"符合条件的访问将会被代理到这个地址。至少一个。如有多个，要用空格隔开。如果没有指定sheme(http/https),默认使用http。支持Unix sockets。"}}</div>
                           </div>
                         </div>
@@ -17,7 +17,7 @@
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"策略"|T}}</label>
                           <div class="col-sm-9">
-                             <select class="form-control" name="proxyPolicy">
+                             <select class="form-control" name="proxy_policy">
                                <option value="random">{{"随机"|T}}</option>
                                <option value="least_conn">{{"最少连接"|T}}</option>
                                <option value="round_robin">{{"列表循环"|T}}</option>
@@ -28,56 +28,56 @@
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"最大连接时长"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxyFail_timeout" value="30s">
+                             <input type="text" class="form-control" name="proxy_fail_timeout" value="30s">
                              <div class="help-block">{{"超时之后判断为失败。设置的值需要带单位(秒:s / 分钟:m)，比如，输入30s表示30秒。输入0s表示禁用"|T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"最大失败次数"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="number" class="form-control" name="proxyMax_fails" value="1" min="1">
+                             <input type="number" class="form-control" name="proxy_max_fails" value="1" min="1">
                              <div class="help-block">{{"允许的最小值为1，默认为1。如果“最大连接时间”被设置为禁用，则不使用此功能。达到最大失败次数后，将不再连接"|T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"尝试连接时长"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxyTry_duration" value="10s">
+                             <input type="text" class="form-control" name="proxy_try_duration" value="10s">
                              <div class="help-block">{{"设置的值需要带单位(秒:s / 分钟:m)，比如，输入30s表示30秒。输入0s表示禁用"|T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"尝试间隔时间"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxyTry_interval" value="250ms">
+                             <input type="text" class="form-control" name="proxy_try_interval" value="250ms">
                              <div class="help-block">{{"默认值250ms。设置的值需要带单位(毫秒:ms / 秒:s / 分钟:m)，比如，输入30s表示30秒。输入0s表示禁用"|T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"健康检查地址"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxyHealth_check" value="250ms">
+                             <input type="text" class="form-control" name="proxy_health_check" value="250ms">
                              <div class="help-block">{{"将使用设定的路径检查每一个后端的健康状态。如果后端返回的状态码为200-399则意味着后端是健康的，否则标记为不健康"|T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"健康检查间隔时间"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxyHealth_check_interval" value="30s">
+                             <input type="text" class="form-control" name="proxy_health_check_interval" value="30s">
                              <div class="help-block">{{"默认值30s。设置的值需要带单位(秒:s / 分钟:m)，比如，输入30s表示30秒"|T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"健康检查最大时长"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxyHealth_check_timeout" value="60s">
+                             <input type="text" class="form-control" name="proxy_health_check_timeout" value="60s">
                              <div class="help-block">{{"默认值60s。设置的值需要带单位(秒:s / 分钟:m)，比如，输入30s表示30秒"|T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"保持在线时长"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="number" class="form-control" name="proxyHeader_upstream" value="0" min="0">
+                             <input type="number" class="form-control" name="proxy_keepalive" value="0" min="0">
                              <div class="help-block">{{"也就是设置header中的keepalive值。时间单位为秒。值为0时表示禁用"|T}}</div>
                           </div>
                         </div>
@@ -126,28 +126,28 @@
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"删除路径前缀"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxyWithout" value="">
+                             <input type="text" class="form-control" name="proxy_without" value="">
                              <div class="help-block">{{"在提交到后端之前要删除的路径前缀。例如/api/foo删除掉前缀/api后就成了/foo"|T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"忽略代理路径"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxyExcept" value="">
+                             <input type="text" class="form-control" name="proxy_except" value="">
                              <div class="help-block">{{"用空格分隔的忽略代理路径。符合这些路径的网址将不会代理到后端"|T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"其它后端"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxyUpstream" value="">
+                             <input type="text" class="form-control" name="proxy_upstream" value="">
                              <div class="help-block">{{"可以使用端口范围，像这样“:8080-8085”"|T}}</div>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"跳过TLS验证"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="proxyInsecure_skip_verify" value="">
+                             <input type="checkbox" class="form-control" name="proxy_insecure_skip_verify" value="1">
                              <div class="help-block">{{"通过覆盖后端TLS证书的方式来禁用HTTPS功能"|T}}</div>
                           </div>
                         </div>
@@ -155,7 +155,7 @@
                           <label class="col-sm-3 control-label">{{"预置功能"|T}}</label>
                           <div class="col-sm-9">
                               <label class="checkbox">
-                                <input type="checkbox" name="proxyPreset" value="websocket" class="icheck"> websocket
+                                <input type="checkbox" name="proxy_preset" value="websocket" class="icheck"> websocket
                               </label>
                               <p>
 表示当前代理转发WebSocket连接。 等同于: <pre>
@@ -163,7 +163,7 @@ header_upstream Connection {&gt;Connection}
 header_upstream Upgrade {&gt;Upgrade}</pre>
 注意：HTTP/2不支持upgrade协议</p>
                               <label class="checkbox">
-                                <input type="checkbox" name="proxyPreset" value="transparent" class="icheck"> transparent
+                                <input type="checkbox" name="proxy_preset" value="transparent" class="icheck"> transparent
                               </label>
                               <p>
 把来自浏览器端提交的原始主机信息传递给后端。等同于: <pre>

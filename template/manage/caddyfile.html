@@ -1,7 +1,7 @@
 {{Form "domain"}} {
     root {{Form "root"}}
 
-    {{AddonAttr "log" ""}}
+    {{AddonAttr "" "log"}}
 
     {{if Form "header_path"}}
     header {{Form "header_path"}} {
@@ -9,7 +9,7 @@
     }
     {{end}}
 
-    {{if eq Form "tls" "1"}}
+    {{if eq (Form "tls") "1"}}
         {{if and (Form "tls_cert") (Form "tls_key")}}
     tls {{Form "tls_cert"}} {{Form "tls_key"}}
         {{else if Form "tls_email"}}
@@ -19,7 +19,7 @@
     tls off
     {{end}}
 
-    {{if eq Form "gzip" "1"}}
+    {{if eq (Form "gzip") "1"}}
     gzip {
         {{AddonAttr "gzip" "ext"}}
         {{AddonAttr "gzip" "not"}}
@@ -28,7 +28,7 @@
     }
     {{end}}
 
-    {{if eq Form "fastcgi" "1"}}
+    {{if eq (Form "fastcgi") "1"}}
     fastcgi {{Form "fastcgi_path"}} {{Form "fastcgi_endpoint"}} {{Form "fastcgi_preset"}} {
         {{AddonAttr "fastcgi" "ext"}}
         {{AddonAttr "fastcgi" "split"}}
@@ -39,7 +39,7 @@
     }
     {{end}}
     
-    {{if eq Form "proxy" "1"}}
+    {{if eq (Form "proxy") "1"}}
     proxy {{Form "proxy_from"}} {{Form "proxy_to"}} {
         {{AddonAttr "proxy" "policy"}}
         {{AddonAttr "proxy" "fail_timeout"}}

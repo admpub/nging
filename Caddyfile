@@ -1,0 +1,26 @@
+coscms.com {
+    root /www/coscms
+
+    log   access_local.log
+
+    
+
+    
+    tls off
+    
+
+    
+
+    
+    fastcgi / 127.0.0.1:9070  {
+        ext   .php
+        split   .php
+        index   index.php
+        
+        except   index.php
+        pool   0
+    }
+    
+    
+    
+}

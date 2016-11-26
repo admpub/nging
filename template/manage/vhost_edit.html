@@ -10,34 +10,34 @@
             <h3>{{if HasSuffix URL.Path "_add"}}{{"添加网站"|T}}{{else}}{{"修改网站"|T}}{{end}}</h3>
           </div>
           <div class="content">
-              <form class="form-horizontal group-border-dashed" action="#" style="border-radius: 0px;">
+              <form class="form-horizontal group-border-dashed" method="POST" action="" style="border-radius: 0px;">
               <div class="form-group">
-                <label class="col-sm-3 control-label">{{"网址/域名/IP"|T}}</label>
-                <div class="col-sm-6">
-                    <input type="text" name="domain" class="form-control">
+                <label class="col-sm-2 control-label">{{"网址/域名/IP"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="text" name="domain" class="form-control" required="required">
                     <div class="help-block">{{"网站的网址、域名或IP，支持通配符“*”(例如*.admpub.com)和环境变量(环境变量用花括号括起来，例如localhost:{$PORT})。如有多个，用空格隔开"|T}}</div>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-3 control-label">{{"物理路径"|T}}</label>
-                <div class="col-sm-6">
-                    <input type="text" name="root" class="form-control">
+                <label class="col-sm-2 control-label">{{"物理路径"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="text" name="root" class="form-control" required="required">
                     <div class="help-block">{{"在服务器上的绝对路径"|T}}</div>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-3 control-label">{{"日志文件"|T}}</label>
-                <div class="col-sm-6">
+                <label class="col-sm-2 control-label">{{"日志文件"|T}}</label>
+                <div class="col-sm-8">
                     <input type="text" name="log" class="form-control" value="access_local.log">
                     <div class="help-block">{{"日志文件保存路径"|T}}</div>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-3 control-label">{{"Header"|T}}</label>
-                <div class="col-sm-6">
+                <label class="col-sm-2 control-label">{{"Header"|T}}</label>
+                <div class="col-sm-8">
                   <div class="fieldset bg-6e">
                     <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"指定路径"|T}}</label>
+                          <label class="col-sm-2 control-label">{{"指定路径"|T}}</label>
                           <div class="col-sm-9">
                              <input type="text" class="form-control" name="header_path" value="">
                              <div class="help-block">{{"可以针对某个起始路径设置header"|T}}</div>
@@ -45,7 +45,7 @@
                     </div>
 
                     <div class="form-group">
-                          <label class="col-sm-3 control-label">{{"设置Header"|T}}</label>
+                          <label class="col-sm-2 control-label">{{"设置Header"|T}}</label>
                           <div class="col-sm-9">
                     <table>
 								        <thead>
@@ -70,8 +70,8 @@
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-3 control-label">{{"HTTPS"|T}}</label>
-                <div class="col-sm-6">
+                <label class="col-sm-2 control-label">{{"HTTPS"|T}}</label>
+                <div class="col-sm-8">
                     <!--<label class="checkbox-inline">
                     <input type="checkbox" name="tls" class="icheck"> Option 1
                     </label> -->
@@ -87,8 +87,8 @@
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-3 control-label">{{"GZIP"|T}}</label>
-                <div class="col-sm-6">
+                <label class="col-sm-2 control-label">{{"GZIP"|T}}</label>
+                <div class="col-sm-8">
                     <label class="radio-inline">
                       <input type="radio" value="1" name="gzip" class="icheck" data-slide-settings="show"> {{"启用"|T}}
                     </label>
@@ -102,8 +102,8 @@
               </div>
               
               <div class="form-group">
-                <label class="col-sm-3 control-label">{{"FastCGI"|T}}</label>
-                <div class="col-sm-6">
+                <label class="col-sm-2 control-label">{{"FastCGI"|T}}</label>
+                <div class="col-sm-8">
                     <label class="radio-inline">
                       <input type="radio" value="1" name="fastcgi" class="icheck" data-slide-settings="show"> {{"启用"|T}}
                     </label>
@@ -117,8 +117,8 @@
               </div>
               
               <div class="form-group">
-                <label class="col-sm-3 control-label">{{"Proxy"|T}}</label>
-                <div class="col-sm-6">
+                <label class="col-sm-2 control-label">{{"Proxy"|T}}</label>
+                <div class="col-sm-8">
                     <label class="radio-inline">
                       <input type="radio" value="1" name="proxy" class="icheck" data-slide-settings="show"> {{"启用"|T}}
                     </label>
@@ -132,14 +132,14 @@
               </div>
               
               <div class="form-group">
-                <label class="col-sm-3 control-label">{{"备注"|T}}</label>
-                <div class="col-sm-6">
+                <label class="col-sm-2 control-label">{{"备注"|T}}</label>
+                <div class="col-sm-8">
                   <textarea class="form-control" value="remark"></textarea>
                 </div>
               </div>
 
               <div class="form-group">
-									<div class="col-sm-9 col-sm-offset-3">
+									<div class="col-sm-9 col-sm-offset-2">
 									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
 									  <button class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"取消"|T}}</button>
 									</div>
@@ -163,44 +163,47 @@
 </tr>
 </script>
 <script>
-  $(function(){
-    $('#fastcgiAddEnvVarBtn').on('click',function(){
-      var tmpl=$('#tmplAddVariableRow').html();
-      tmpl=tmpl.replace(/\{k\}/g,'fastcgi_env_k');
-      tmpl=tmpl.replace(/\{v\}/g,'fastcgi_env_v');
-      $(this).parent().before(tmpl);
-    });
-    $('#headerAddVarBtn').on('click',function(){
-      var tmpl=$('#tmplAddVariableRow').html();
-      tmpl=tmpl.replace(/\{k\}/g,'header_k');
-      tmpl=tmpl.replace(/\{v\}/g,'header_v');
-      $(this).parent().before(tmpl);
-    });
-    $('#proxyHeaderDownstreamBtn').on('click',function(){
-      var tmpl=$('#tmplAddVariableRow').html();
-      tmpl=tmpl.replace(/\{k\}/g,'proxy_header_downstream_k');
-      tmpl=tmpl.replace(/\{v\}/g,'proxy_header_downstream_v');
-      $(this).parent().before(tmpl);
-    });
-    $('#proxyHeaderUpstreamBtn').on('click',function(){
-      var tmpl=$('#tmplAddVariableRow').html();
-      tmpl=tmpl.replace(/\{k\}/g,'proxy_header_upstream_k');
-      tmpl=tmpl.replace(/\{v\}/g,'proxy_header_upstream_v');
-      $(this).parent().before(tmpl);
-    });
-    $('[data-slide-settings]').on('click',function(){
-      var slide=$(this).data('slide-settings');
-      if(slide==""){
-        slide=$(this).val()=='1'?'show':'hide';
-      }
-      var eid='#'+$(this).attr('name')+'-settings';
-      if(slide=='show'){
-        $(eid).removeClass('hide');
-      }else{
-        $(eid).addClass('hide');
-      }
-    });
-    $('[data-slide-settings="show"]:checked').trigger('click');
-  });
+$(function(){
+{{if .}}
+App.message({title: '{{"系统消息"|T}}', text: "{{.}}"});
+{{end}}
+$('#fastcgiAddEnvVarBtn').on('click',function(){
+  var tmpl=$('#tmplAddVariableRow').html();
+  tmpl=tmpl.replace(/\{k\}/g,'fastcgi_env_k');
+  tmpl=tmpl.replace(/\{v\}/g,'fastcgi_env_v');
+  $(this).parent().before(tmpl);
+});
+$('#headerAddVarBtn').on('click',function(){
+  var tmpl=$('#tmplAddVariableRow').html();
+  tmpl=tmpl.replace(/\{k\}/g,'header_k');
+  tmpl=tmpl.replace(/\{v\}/g,'header_v');
+  $(this).parent().before(tmpl);
+});
+$('#proxyHeaderDownstreamBtn').on('click',function(){
+  var tmpl=$('#tmplAddVariableRow').html();
+  tmpl=tmpl.replace(/\{k\}/g,'proxy_header_downstream_k');
+  tmpl=tmpl.replace(/\{v\}/g,'proxy_header_downstream_v');
+  $(this).parent().before(tmpl);
+});
+$('#proxyHeaderUpstreamBtn').on('click',function(){
+  var tmpl=$('#tmplAddVariableRow').html();
+  tmpl=tmpl.replace(/\{k\}/g,'proxy_header_upstream_k');
+  tmpl=tmpl.replace(/\{v\}/g,'proxy_header_upstream_v');
+  $(this).parent().before(tmpl);
+});
+$('[data-slide-settings]').on('click',function(){
+  var slide=$(this).data('slide-settings');
+  if(slide==""){
+    slide=$(this).val()=='1'?'show':'hide';
+  }
+  var eid='#'+$(this).attr('name')+'-settings';
+  if(slide=='show'){
+    $(eid).removeClass('hide');
+  }else{
+    $(eid).addClass('hide');
+  }
+});
+$('[data-slide-settings="show"]:checked').trigger('click');
+});
 </script>
 {{/Block}}

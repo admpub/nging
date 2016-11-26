@@ -75,13 +75,7 @@
 
 <script>
 {{if .}}
-	 $.gritter.add({
-        title: '{{"系统消息"|T}}',
-        text: "{{.}}",
-        image: '',
-        class_name: 'clean',
-        sticky: true,
-      });
+App.message({title: '{{"系统消息"|T}}', text: "{{.}}"});
 {{end}}
 </script>
 
