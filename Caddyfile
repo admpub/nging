@@ -1,5 +1,5 @@
-coscms.com {
-    root /www/coscms
+localhost:9999 {
+    root E:\www_pre
 
     log   access_local.log
 
@@ -12,12 +12,12 @@ coscms.com {
     
 
     
-    fastcgi / 127.0.0.1:9070  {
+    fastcgi / 127.0.0.1:9070 php {
         ext   .php
         split   .php
         index   index.php
         
-        except   index.php
+        
         pool   0
     }
     

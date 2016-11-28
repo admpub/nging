@@ -20,12 +20,17 @@ package config
 import (
 	"errors"
 	"flag"
+	"fmt"
+	"net"
+	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"io/ioutil"
 	"os"
 
+	"github.com/admpub/caddyui/application/library/caddy"
 	"github.com/admpub/confl"
 	"github.com/admpub/log"
 	"github.com/webx-top/db/lib/factory"
@@ -36,11 +41,88 @@ import (
 type CLIConfig struct {
 	Port int
 	Conf string
+	Type string //启动类型: server/manager
+	cmd  *exec.Cmd
 }
 
 func (c *CLIConfig) InitFlag() {
 	flag.IntVar(&c.Port, `p`, 9999, `port`)
 	flag.StringVar(&c.Conf, `c`, `config/config.yaml`, `config`)
+	flag.StringVar(&c.Type, `t`, `manager`, `operation type`)
+}
+
+func dialAddress(address string, timeOut int, args ...func() bool) (err error) {
+	seconds := 0
+	var fn func() bool
+	if len(args) > 0 {
+		fn = args[0]
+	}
+	for {
+		select {
+		case <-time.After(1 * time.Second):
+			conn, err := net.Dial("tcp", address)
+			if err == nil {
+				conn.Close()
+				return err
+			}
+			if seconds > timeOut {
+				return errors.New("Time out")
+			}
+			seconds++
+			if fn != nil && !fn() {
+				return nil
+			}
+		case <-time.After(5 * time.Second):
+			fmt.Println("== Waiting for " + address)
+			if seconds > timeOut {
+				return errors.New("Time out")
+			}
+			seconds += 5
+			if fn != nil && !fn() {
+				return
+			}
+		case <-time.After(time.Duration(timeOut) * time.Second):
+			return errors.New("Time out")
+		}
+	}
+	return
+}
+
+func (c *CLIConfig) CaddyStart() (err error) {
+	params := []string{`-c`, c.Conf, `-t`, `server`}
+	c.cmd = exec.Command(os.Args[0], params...)
+	c.cmd.Stdout = os.Stdout
+	//cmd.Stderr = StderrCapturer{this}
+
+	var hasError bool
+	go func() {
+		err := c.cmd.Run()
+		if err != nil {
+			log.Error(`Caddy Run Error: `, err)
+			hasError = true
+		}
+	}()
+	//err = dialAddress("127.0.0.1:80", 60, func() bool {return !hasError})
+	return
+}
+
+func (c *CLIConfig) CaddyStop() error {
+	if c.cmd == nil {
+		return nil
+	}
+	if c.cmd.ProcessState != nil {
+		return nil
+	}
+	return c.cmd.Process.Kill()
+}
+
+func (c *CLIConfig) CaddyRestart() error {
+	err := c.CaddyStop()
+	if err != nil {
+		return err
+	}
+	err = c.CaddyStart()
+	return err
 }
 
 type Config struct {
@@ -64,6 +146,7 @@ type Config struct {
 	} `json:"log"`
 
 	Sys struct {
+		AllowIP      []string          `json:"allowIP"`
 		Accounts     map[string]string `json:"accounts"`
 		SSLHosts     []string          `json:"sslHosts"`
 		SSLCacheFile string            `json:"sslCacheFile"`
@@ -80,9 +163,7 @@ type Config struct {
 		BlockKey string `json:"blockKey"`
 	} `json:"cookie"`
 
-	Caddy struct {
-		CaddyfileSavePath string `json:"caddyfileSavePath"`
-	} `json:"caddy"`
+	Caddy caddy.Config `json:"caddy"`
 }
 
 var (
@@ -106,11 +187,12 @@ func ParseConfig() error {
 	if len(DefaultConfig.Sys.SSLCacheFile) == 0 {
 		DefaultConfig.Sys.SSLCacheFile = filepath.Join(filepath.Dir(DefaultCLIConfig.Conf), `letsencrypt.cache`)
 	}
-	if len(DefaultConfig.Caddy.CaddyfileSavePath) == 0 {
-		DefaultConfig.Caddy.CaddyfileSavePath = `./Caddyfile`
-	} else if strings.HasSuffix(DefaultConfig.Caddy.CaddyfileSavePath, `/`) || strings.HasSuffix(DefaultConfig.Caddy.CaddyfileSavePath, `\`) {
-		DefaultConfig.Caddy.CaddyfileSavePath = filepath.Join(DefaultConfig.Caddy.CaddyfileSavePath, `Caddyfile`)
+	if len(DefaultConfig.Caddy.Caddyfile) == 0 {
+		DefaultConfig.Caddy.Caddyfile = `./Caddyfile`
+	} else if strings.HasSuffix(DefaultConfig.Caddy.Caddyfile, `/`) || strings.HasSuffix(DefaultConfig.Caddy.Caddyfile, `\`) {
+		DefaultConfig.Caddy.Caddyfile = filepath.Join(DefaultConfig.Caddy.Caddyfile, `Caddyfile`)
 	}
+	caddy.Fixed(&DefaultConfig.Caddy)
 	InitLog()
 	InitSessionOptions()
 	return ConnectDB()

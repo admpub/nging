@@ -70,11 +70,14 @@ func ManageVhostAdd(ctx echo.Context) error {
 		if e != nil {
 			err = e
 		} else {
-			saveFile, e := filepath.Abs(config.DefaultConfig.Caddy.CaddyfileSavePath)
+			saveFile, e := filepath.Abs(config.DefaultConfig.Caddy.Caddyfile)
 			if e != nil {
 				err = e
 			} else {
 				err = ioutil.WriteFile(saveFile, b, os.ModePerm)
+				if len(ctx.Form(`restart`)) > 0 {
+					err = config.DefaultCLIConfig.CaddyRestart()
+				}
 			}
 		}
 	}
@@ -83,4 +86,11 @@ func ManageVhostAdd(ctx echo.Context) error {
 
 func ManageVhostEdit(ctx echo.Context) error {
 	return ctx.Render(`manage/vhost_edit`, nil)
+}
+
+func ManageRestart(ctx echo.Context) error {
+	if err := config.DefaultCLIConfig.CaddyRestart(); err != nil {
+		return err
+	}
+	return ctx.String(ctx.T(`已经完成重启`))
 }

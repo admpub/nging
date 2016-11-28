@@ -23,6 +23,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/admpub/caddyui/application/library/caddy"
+	"github.com/admpub/log"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/engine/standard"
@@ -40,6 +42,16 @@ func main() {
 	flag.Parse()
 
 	config.MustOK(config.ParseConfig())
+
+	if config.DefaultCLIConfig.Type == `server` {
+		caddy.TrapSignals()
+		config.DefaultConfig.Caddy.Init().Start()
+		return
+	}
+
+	if err := config.DefaultCLIConfig.CaddyStart(); err != nil {
+		log.Error(err)
+	}
 
 	e := echo.New()
 
@@ -89,4 +101,5 @@ func main() {
 		}
 	}
 	e.Run(standard.NewWithConfig(c))
+
 }
