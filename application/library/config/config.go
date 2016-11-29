@@ -30,6 +30,8 @@ import (
 	"io/ioutil"
 	"os"
 
+	"strconv"
+
 	"github.com/admpub/caddyui/application/library/caddy"
 	"github.com/admpub/confl"
 	"github.com/admpub/log"
@@ -88,7 +90,34 @@ func dialAddress(address string, timeOut int, args ...func() bool) (err error) {
 	return
 }
 
+func (c *CLIConfig) CaddyStopHistory() (err error) {
+	if DefaultConfig.Caddy.PidFile == `` {
+		return
+	}
+	b, err := ioutil.ReadFile(DefaultConfig.Caddy.PidFile)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return err
+	}
+	pid, err := strconv.Atoi(strings.TrimSpace(string(b)))
+	if err != nil {
+		log.Error(err.Error())
+		return nil
+	}
+	procs, err := os.FindProcess(pid)
+	if err == nil {
+		return procs.Kill()
+	}
+	return
+}
+
 func (c *CLIConfig) CaddyStart() (err error) {
+	err = c.CaddyStopHistory()
+	if err != nil {
+		log.Error(err.Error())
+	}
 	params := []string{`-c`, c.Conf, `-t`, `server`}
 	c.cmd = exec.Command(os.Args[0], params...)
 	c.cmd.Stdout = os.Stdout
@@ -232,7 +261,7 @@ func ConnectDB() error {
 		cluster := factory.NewCluster().AddW(database)
 		factory.SetCluster(0, cluster).Cluster(0).SetPrefix(DefaultConfig.DB.Prefix)
 	default:
-		//return ErrUnknowDatabaseType
+		return ErrUnknowDatabaseType
 	}
 	return nil
 }

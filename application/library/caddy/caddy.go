@@ -27,6 +27,7 @@ var (
 		CATimeout:  int64(acme.HTTPClient.Timeout.Seconds()),
 		ServerType: `http`,
 		CPU:        `100%`,
+		PidFile:    `./caddy.pid`,
 	}
 )
 
@@ -46,6 +47,9 @@ func Fixed(c *Config) {
 	}
 	if c.CPU == `` {
 		c.CPU = DefaultConfig.CPU
+	}
+	if c.PidFile == `` {
+		c.PidFile = DefaultConfig.PidFile
 	}
 }
 

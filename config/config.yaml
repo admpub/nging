@@ -1,9 +1,9 @@
 db {
-  type : ""
-  user : ""
-  password : ""
-  host : ""
-  database : ""
+  type : "mysql"
+  user : "root"
+  password : "root"
+  host : "127.0.0.1:3306"
+  database : "caddyui"
   prefix : ""
   debug : false
 }
