@@ -14,21 +14,21 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"网址/域名/IP"|T}}</label>
                 <div class="col-sm-8">
-                    <input type="text" name="domain" class="form-control" required="required">
+                    <input type="text" name="domain" class="form-control" required="required" value="{{Form "domain"}}">
                     <div class="help-block">{{"网站的网址、域名或IP，支持通配符“*”(例如*.admpub.com)和环境变量(环境变量用花括号括起来，例如localhost:{$PORT})。如有多个，用空格隔开"|T}}</div>
                 </div>
               </div>
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"物理路径"|T}}</label>
                 <div class="col-sm-8">
-                    <input type="text" name="root" class="form-control" required="required">
+                    <input type="text" name="root" class="form-control" required="required" value="{{Form "root"}}">
                     <div class="help-block">{{"在服务器上的绝对路径"|T}}</div>
                 </div>
               </div>
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"日志文件"|T}}</label>
                 <div class="col-sm-8">
-                    <input type="text" name="log" class="form-control" value="access_local.log">
+                    <input type="text" name="log" class="form-control" value="{{Val "log" "access_local.log"}}">
                     <div class="help-block">{{"日志文件保存路径"|T}}</div>
                 </div>
               </div>
@@ -39,7 +39,7 @@
                     <div class="form-group">
                           <label class="col-sm-2 control-label">{{"指定路径"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="header_path" value="">
+                             <input type="text" class="form-control" name="header_path" value="{{Form "header_path"}}">
                              <div class="help-block">{{"可以针对某个起始路径设置header"|T}}</div>
                           </div>
                     </div>
@@ -56,6 +56,22 @@
 								        	</tr>
 								        </thead>
 								        <tbody>
+                                {{$vals := FormValues "header_v"}}
+                                {{$vlen := len $vals}}
+                                {{range $k,$v:=FormValues "header_k"}}
+                                    {{if lt $k $vlen}}
+<tr>
+	<td><input type="text" class="form-control" name="header_k" value="{{$v}}"></td>
+	<td><input type="text" class="form-control" name="header_v" value="{{index $vals $k}}"></td>
+	<td class="text-center">
+    <button type="button" class="btn btn-danger" onclick="$(this).parent().parent().remove()">
+      <i class="fa fa-times"></i>
+    </button>
+  </td>
+</tr>
+                                        
+                                    {{end}}
+                                {{end}}
 								        	<tr>
 								        		<td colspan="3" class="text-center primary-emphasis" style="cursor:pointer" id="headerAddVarBtn"><i class="fa fa-plus"></i></td>
 								        	</tr>
@@ -72,14 +88,12 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"HTTPS"|T}}</label>
                 <div class="col-sm-8">
-                    <!--<label class="checkbox-inline">
-                    <input type="checkbox" name="tls" class="icheck"> Option 1
-                    </label> -->
+                    {{$v := Form "tls"}}
                     <label class="radio-inline">
-                      <input type="radio" value="1" name="tls" class="icheck" data-slide-settings="show"> {{"启用"|T}}
+                      <input type="radio" value="1" name="tls" class="icheck" data-slide-settings="show"{{if eq $v "1"}} checked{{end}}> {{"启用"|T}}
                     </label>
                     <label class="radio-inline">
-                      <input type="radio" value="0" name="tls" checked="true" class="icheck" data-slide-settings="hide"> {{"禁用"|T}}
+                      <input type="radio" value="0" name="tls" class="icheck" data-slide-settings="hide"{{if or (eq $v "0") (eq $v "")}} checked{{end}}> {{"禁用"|T}}
                     </label>
                     <div class="fieldset bg-6e hide" id="tls-settings">
                         {{Include "addon/form/tls"}}
@@ -89,11 +103,12 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"GZIP"|T}}</label>
                 <div class="col-sm-8">
+                  {{$v := Form "gzip"}}
                     <label class="radio-inline">
-                      <input type="radio" value="1" name="gzip" class="icheck" data-slide-settings="show"> {{"启用"|T}}
+                      <input type="radio" value="1" name="gzip" class="icheck" data-slide-settings="show"{{if eq $v "1"}} checked{{end}}> {{"启用"|T}}
                     </label>
                     <label class="radio-inline">
-                      <input type="radio" value="0" name="gzip" checked="true" class="icheck" data-slide-settings="hide"> {{"禁用"|T}}
+                      <input type="radio" value="0" name="gzip" class="icheck" data-slide-settings="hide"{{if or (eq $v "0") (eq $v "")}} checked{{end}}> {{"禁用"|T}}
                     </label>
                     <div class="fieldset bg-6e hide" id="gzip-settings">
                         {{Include "addon/form/gzip"}}
@@ -104,11 +119,12 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"FastCGI"|T}}</label>
                 <div class="col-sm-8">
+                  {{$v := Form "fastcgi"}}
                     <label class="radio-inline">
-                      <input type="radio" value="1" name="fastcgi" class="icheck" data-slide-settings="show"> {{"启用"|T}}
+                      <input type="radio" value="1" name="fastcgi" class="icheck" data-slide-settings="show"{{if eq $v "1"}} checked{{end}}> {{"启用"|T}}
                     </label>
                     <label class="radio-inline">
-                      <input type="radio" value="0" name="fastcgi" checked="true" class="icheck" data-slide-settings="hide"> {{"禁用"|T}}
+                      <input type="radio" value="0" name="fastcgi" class="icheck" data-slide-settings="hide"{{if or (eq $v "0") (eq $v "")}} checked{{end}}> {{"禁用"|T}}
                     </label>
                     <div class="fieldset bg-6e hide" id="fastcgi-settings">
                         {{Include "addon/form/fastcgi"}}
@@ -119,11 +135,12 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"Proxy"|T}}</label>
                 <div class="col-sm-8">
+                  {{$v := Form "proxy"}}
                     <label class="radio-inline">
-                      <input type="radio" value="1" name="proxy" class="icheck" data-slide-settings="show"> {{"启用"|T}}
+                      <input type="radio" value="1" name="proxy" class="icheck" data-slide-settings="show"{{if eq $v "1"}} checked{{end}}> {{"启用"|T}}
                     </label>
                     <label class="radio-inline">
-                      <input type="radio" value="0" name="proxy" checked="true" class="icheck" data-slide-settings="hide"> {{"禁用"|T}}
+                      <input type="radio" value="0" name="proxy" class="icheck" data-slide-settings="hide"{{if or (eq $v "0") (eq $v "")}} checked{{end}}> {{"禁用"|T}}
                     </label>
                     <div class="fieldset bg-6e hide" id="proxy-settings">
                         {{Include "addon/form/proxy"}}
@@ -134,11 +151,23 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"备注"|T}}</label>
                 <div class="col-sm-8">
-                  <textarea class="form-control" name="remark"></textarea>
+                  <textarea class="form-control" name="remark">{{Form "remark"}}</textarea>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"备注"|T}}</label>
+                <label class="col-sm-2 control-label">{{"网站状态"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "disabled"}}
+                  <label class="radio-inline">
+                      <input type="radio" value="N" name="disabled" class="icheck"{{if or (eq $v "N") (eq $v "")}} checked{{end}}> {{"启用"|T}}
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" value="Y" name="disabled" class="icheck"{{if eq $v "Y"}} checked{{end}}> {{"禁用"|T}}
+                    </label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"是否重启"|T}}</label>
                 <div class="col-sm-8">
                   <label class="checkbox-inline">
                   <input type="checkbox" class="icheck" name="restart" value="1" /> {{"保存并重启服务器"|T}} 
@@ -175,29 +204,23 @@ $(function(){
 {{if .}}
 App.message({title: '{{"系统消息"|T}}', text: "{{.}}"});
 {{end}}
-$('#fastcgiAddEnvVarBtn').on('click',function(){
+function addKVs(obj,k,v){
   var tmpl=$('#tmplAddVariableRow').html();
-  tmpl=tmpl.replace(/\{k\}/g,'fastcgi_env_k');
-  tmpl=tmpl.replace(/\{v\}/g,'fastcgi_env_v');
-  $(this).parent().before(tmpl);
+  tmpl=tmpl.replace(/\{k\}/g,k);
+  tmpl=tmpl.replace(/\{v\}/g,v);
+  $(obj).parent().before(tmpl);
+}
+$('#fastcgiAddEnvVarBtn').on('click',function(){
+  addKVs(this,'fastcgi_env_k','fastcgi_env_v');
 });
 $('#headerAddVarBtn').on('click',function(){
-  var tmpl=$('#tmplAddVariableRow').html();
-  tmpl=tmpl.replace(/\{k\}/g,'header_k');
-  tmpl=tmpl.replace(/\{v\}/g,'header_v');
-  $(this).parent().before(tmpl);
+  addKVs(this,'header_k','header_v');
 });
 $('#proxyHeaderDownstreamBtn').on('click',function(){
-  var tmpl=$('#tmplAddVariableRow').html();
-  tmpl=tmpl.replace(/\{k\}/g,'proxy_header_downstream_k');
-  tmpl=tmpl.replace(/\{v\}/g,'proxy_header_downstream_v');
-  $(this).parent().before(tmpl);
+  addKVs(this,'proxy_header_downstream_k','proxy_header_downstream_v');
 });
 $('#proxyHeaderUpstreamBtn').on('click',function(){
-  var tmpl=$('#tmplAddVariableRow').html();
-  tmpl=tmpl.replace(/\{k\}/g,'proxy_header_upstream_k');
-  tmpl=tmpl.replace(/\{v\}/g,'proxy_header_upstream_v');
-  $(this).parent().before(tmpl);
+  addKVs(this,'proxy_header_upstream_k','proxy_header_upstream_v');
 });
 $('[data-slide-settings]').on('click',function(){
   var slide=$(this).data('slide-settings');

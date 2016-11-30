@@ -110,7 +110,8 @@ func (c *CLIConfig) CaddyStopHistory() (err error) {
 	if err == nil {
 		return procs.Kill()
 	}
-	return
+	log.Error(err.Error())
+	return nil
 }
 
 func (c *CLIConfig) CaddyStart() (err error) {

@@ -1654,6 +1654,18 @@ var App = function () {
       }
       options=$.extend({},defaults,options||{});
 	    $.gritter.add(options);
+    },
+
+    
+    attachAjaxURL:function(){
+      $('[data-ajax-url]').on('click',function(){
+        var url=$(this).data('ajax-url');
+        var title=$(this).attr('title');
+        if(!title)title=$(this).text();
+        $.get(url,{},function(r){
+          App.message({title:title,text:r,time:5000,sticky:false});
+        },'html');
+      });
     }
     
   };

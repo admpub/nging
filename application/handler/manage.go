@@ -19,6 +19,7 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/url"
 	"os"
@@ -27,12 +28,23 @@ import (
 	"fmt"
 
 	"github.com/admpub/caddyui/application/library/config"
+	"github.com/admpub/caddyui/application/library/modal"
 	"github.com/admpub/caddyui/application/model"
 	"github.com/webx-top/echo"
 )
 
 func ManageIndex(ctx echo.Context) error {
-	return ctx.Render(`manage/index`, ctx.Flash())
+	m := model.NewVhost(ctx)
+	page, size := Paging(ctx)
+	cnt, err := m.List(nil, nil, page, size)
+	if err == nil {
+		if errMsg, ok := ctx.Flash().(string); ok {
+			err = errors.New(errMsg)
+		}
+	}
+	ctx.SetFunc(`totalRows`, cnt)
+	ctx.Set(`listData`, m.Objects())
+	return ctx.Render(`manage/index`, err)
 }
 
 func ManageVhostAdd(ctx echo.Context) error {
@@ -54,6 +66,14 @@ func ManageVhostAdd(ctx echo.Context) error {
 		case 0 == 1:
 			err = saveVhostData(ctx, m)
 		}
+
+		ctx.SetFunc(`Val`, func(name, defaultValue string) string {
+			return ctx.Form(name)
+		})
+	} else {
+		ctx.SetFunc(`Val`, func(name, defaultValue string) string {
+			return defaultValue
+		})
 	}
 	return ctx.Render(`manage/vhost_edit`, err)
 }
@@ -83,6 +103,20 @@ func saveVhostData(ctx echo.Context, m *model.Vhost) (err error) {
 		}
 	}
 	return
+}
+
+func ManageVhostDelete(ctx echo.Context) error {
+	id := ctx.Formx(`id`).Uint()
+	if id < 1 {
+		ctx.Session().AddFlash(ctx.T(`id无效`)).Save()
+		return ctx.Redirect(`/manage`)
+	}
+	m := model.NewVhost(ctx)
+	err := m.Delete(nil, `id`, id)
+	if err != nil {
+		ctx.Session().AddFlash(err.Error())
+	}
+	return ctx.Redirect(`/manage`)
 }
 
 func ManageVhostEdit(ctx echo.Context) error {
@@ -125,6 +159,10 @@ func ManageVhostEdit(ctx echo.Context) error {
 			}
 		}
 	}
+	ctx.SetFunc(`Val`, func(name, defaultValue string) string {
+		return ctx.Form(name)
+	})
+	ctx.Set(`activeURL`, `/manage`)
 	return ctx.Render(`manage/vhost_edit`, err)
 }
 
@@ -133,4 +171,11 @@ func ManageRestart(ctx echo.Context) error {
 		return err
 	}
 	return ctx.String(ctx.T(`已经完成重启`))
+}
+
+func ManageClearCache(ctx echo.Context) error {
+	if err := modal.Clear(); err != nil {
+		return err
+	}
+	return ctx.String(ctx.T(`已经清理完毕`))
 }

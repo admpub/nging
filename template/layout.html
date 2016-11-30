@@ -78,7 +78,8 @@
 <script>
 $(function(){
 	App.init();
-	App.markNav();
+	App.markNav({{if Stored.Get "activeURL"}}'{{Stored.Get "activeURL"}}'{{else}}null{{end}});
+	App.attachAjaxURL();
 });
 </script>
 {{Block "footer"}}{{/Block}}

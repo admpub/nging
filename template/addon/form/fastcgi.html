@@ -1,21 +1,22 @@
 <div class="form-group">
                           <label class="col-sm-3 control-label">{{"网址路径"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="fastcgi_path" value="/">
+                             <input type="text" class="form-control" name="fastcgi_path" value="{{Val "fastcgi_path" "/"}}">
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"FastCGI服务地址"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="fastcgi_endpoint" value="127.0.0.1:9070">
+                             <input type="text" class="form-control" name="fastcgi_endpoint" value="{{Val "fastcgi_endpoint" "127.0.0.1:9070"}}">
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"FastCGI程序类型"|T}}</label>
                           <div class="col-sm-9">
+                            {{$v := Form "fastcgi_preset"}}
                              <select class="form-control" name="fastcgi_preset">
-                               <option value="">{{"默认"|T}}</option>
-                               <option value="php">{{"PHP"|T}}</option>
+                               <option value=""{{if eq $v ""}} selected{{end}}>{{"默认"|T}}</option>
+                               <option value="php"{{if eq $v "php"}} selected{{end}}>{{"PHP"|T}}</option>
                              </select>
                           </div>
                         </div>
@@ -24,19 +25,19 @@
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"扩展名"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="fastcgi_ext" value=".php">
+                             <input type="text" class="form-control" name="fastcgi_ext" value="{{Val "fastcgi_ext" ".php"}}">
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"分割字符"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="fastcgi_split" value=".php">
+                             <input type="text" class="form-control" name="fastcgi_split" value="{{Val "fastcgi_split" ".php"}}">
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"默认首页文件"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="fastcgi_index" value="index.php">
+                             <input type="text" class="form-control" name="fastcgi_index" value="{{Val "fastcgi_index" "index.php"}}">
                              <div class="help-block">{{"如有多个，用空格隔开"|T}}</div>
                           </div>
                         </div>
@@ -52,6 +53,22 @@
 								              	</tr>
 								              </thead>
 								              <tbody>
+                                {{$vals := FormValues "fastcgi_env_v"}}
+                                {{$vlen := len $vals}}
+                                {{range $k,$v:=FormValues "fastcgi_env_k"}}
+                                    {{if lt $k $vlen}}
+<tr>
+	<td><input type="text" class="form-control" name="fastcgi_env_k" value="{{$v}}"></td>
+	<td><input type="text" class="form-control" name="fastcgi_env_v" value="{{index $vals $k}}"></td>
+	<td class="text-center">
+    <button type="button" class="btn btn-danger" onclick="$(this).parent().parent().remove()">
+      <i class="fa fa-times"></i>
+    </button>
+  </td>
+</tr>
+                                        
+                                    {{end}}
+                                {{end}}
 								              	<tr>
 								              		<td colspan="3" class="text-center primary-emphasis" style="cursor:pointer" id="fastcgiAddEnvVarBtn"><i class="fa fa-plus"></i></td>
 								              	</tr>
@@ -65,7 +82,7 @@
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"忽略路径"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="text" class="form-control" name="fastcgi_except" value="">
+                             <input type="text" class="form-control" name="fastcgi_except" value="{{Val "fastcgi_except" ""}}">
                              <div class="help-block">{{"基于此路径的网址请求将不会发送。如有多个，用空格隔开"|T}}</div>
                           </div>
                         </div>
@@ -74,7 +91,7 @@
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"Pool尺寸"|T}}</label>
                           <div class="col-sm-9">
-                             <input type="number" class="form-control" name="fastcgi_pool" value="0" min="0">
+                             <input type="number" class="form-control" name="fastcgi_pool" value="{{Val "fastcgi_pool" "0"}}" min="0">
                              <div class="help-block">{{"默认为0。可以改进Window环境下的性能。"|T}}</div>
                           </div>
                         </div>

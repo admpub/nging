@@ -83,6 +83,8 @@ func (this *Vhost) Add() (pk interface{}, err error) {
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
 			this.Id = v
+		} else if v, y := pk.(int64); y {
+			this.Id = uint(v)
 		}
 	}
 	return
@@ -103,6 +105,8 @@ func (this *Vhost) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
 			this.Id = v
+		} else if v, y := pk.(int64); y {
+			this.Id = uint(v)
 		}
 	}
 	return 

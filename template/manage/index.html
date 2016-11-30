@@ -1,1 +1,44 @@
 {{Extend "layout"}}
+{{Block "main"}}
+<div class="row">
+				<div class="col-md-12">
+					<div class="block-flat">
+						<div class="header">							
+							<h3>{{"网站列表"|T}}</h3>
+						</div>
+						<div class="content">
+							<div class="table-responsive">
+							<table class="table no-border hover">
+								<thead class="no-border">
+									<tr>
+										<th style="width:2%;"><strong>ID</strong></th>
+										<th><strong>{{"域名/网址/IP"|T}}</strong></th>
+										<th style="width:15%;"><strong>{{"创建时间"|T}}</strong></th>
+										<th style="width:15%;"><strong>{{"更新时间"|T}}</strong></th>
+										<th style="width:6%;"><strong>{{"状态"|T}}</strong></th>
+										<th style="width:15%;" class="text-center"><strong>{{"操作"|T}}</strong></th>
+									</tr>
+								</thead>
+								<tbody class="no-border-y">
+                                    {{range $k,$v := Stored.listData}}
+									<tr>
+										<td>{{$v.Id}}</td>
+										<td>{{$v.Domain}}</td>
+										<td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}</td>
+										<td>{{if gt $v.Updated 0}}{{(Date $v.Created).Format "2006-01-02 15:04:05"}}{{end}}</td>
+                                        {{if eq $v.Disabled "Y"}}
+										<td class="color-danger">{{"禁用"|T}}</td>
+                                        {{else}}
+                                        <td class="color-success">{{"启用"|T}}</td>
+                                        {{end}}
+										<td class="text-center"><a class="label label-default" href="/manage/vhost_edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a> <a class="label label-danger" href="/manage/vhost_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a></td>
+									</tr>
+                                    {{end}}
+								</tbody>
+							</table>		
+							</div>
+						</div>
+					</div>				
+				</div>
+			</div>
+{{/Block}}

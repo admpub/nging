@@ -59,7 +59,9 @@ func addRouter(e *echo.Echo) {
 		addHandler(g, ``, ManageIndex)
 		addFormHandler(g, `/vhost_add`, ManageVhostAdd)
 		addFormHandler(g, `/vhost_edit`, ManageVhostEdit)
+		addFormHandler(g, `/vhost_delete`, ManageVhostDelete)
 		addFormHandler(g, `/restart`, ManageRestart)
+		addFormHandler(g, `/clear_cache`, ManageClearCache)
 	}
 
 }
