@@ -18,18 +18,9 @@
 package model
 
 import (
-	"github.com/admpub/caddyui/application/dbschema"
 	"github.com/webx-top/echo"
 )
 
-func NewVhost(ctx echo.Context) *Vhost {
-	return &Vhost{
-		Vhost: &dbschema.Vhost{},
-		Base:  &Base{Context: ctx},
-	}
-}
-
-type Vhost struct {
-	*dbschema.Vhost
-	*Base
+type Base struct {
+	echo.Context
 }

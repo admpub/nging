@@ -94,7 +94,7 @@ type (
 
 		SetSessioner(Sessioner)
 		Session() Sessioner
-		Flash(string) interface{}
+		Flash(...string) interface{}
 
 		//with type action
 		Px(int) param.String
@@ -616,8 +616,8 @@ func (c *xContext) Session() Sessioner {
 	return c.sessioner
 }
 
-func (c *xContext) Flash(name string) (r interface{}) {
-	if v := c.sessioner.Flashes(name); len(v) > 0 {
+func (c *xContext) Flash(name ...string) (r interface{}) {
+	if v := c.sessioner.Flashes(name...); len(v) > 0 {
 		r = v[0]
 	}
 	return r

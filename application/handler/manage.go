@@ -18,74 +18,114 @@
 package handler
 
 import (
+	"encoding/json"
+	"io/ioutil"
+	"net/url"
 	"os"
 	"path/filepath"
 
-	"io/ioutil"
+	"fmt"
 
 	"github.com/admpub/caddyui/application/library/config"
+	"github.com/admpub/caddyui/application/model"
 	"github.com/webx-top/echo"
 )
 
 func ManageIndex(ctx echo.Context) error {
-	return ctx.Render(`manage/index`, nil)
+	return ctx.Render(`manage/index`, ctx.Flash())
 }
 
 func ManageVhostAdd(ctx echo.Context) error {
 	var err error
 	if ctx.IsPost() {
-		ctx.SetFunc(`AddonAttr`, func(addon string, item string) string {
-			if len(addon) > 0 {
-				addon += `_`
+		m := model.NewVhost(ctx)
+		m.Domain = ctx.Form(`domain`)
+		m.Disabled = ctx.Form(`disabled`)
+		var b []byte
+		b, err = json.Marshal(ctx.Forms())
+		switch {
+		case err == nil:
+			m.Setting = string(b)
+			_, err = m.Add()
+			if err != nil {
+				break
 			}
-			k := addon + item
-			v := ctx.Form(k)
-			if len(v) == 0 {
-				return ``
-			}
-			return item + `   ` + v
-		})
-		ctx.SetFunc(`IteratorKV`, func(addon string, item string, prefix string) string {
-			if len(addon) > 0 {
-				addon += `_`
-			}
-			k := addon + item + `_k`
-			keys := ctx.FormValues(k)
-
-			k = addon + item + `_v`
-			values := ctx.FormValues(k)
-
-			r := ``
-			l := len(values)
-			t := ``
-			for i, v := range keys {
-				if i < l {
-					r += t + prefix + v + `   ` + values[i]
-					t = "\n"
-				}
-			}
-			return r
-		})
-		b, e := ctx.Fetch(`manage/caddyfile`, nil)
-		if e != nil {
-			err = e
-		} else {
-			saveFile, e := filepath.Abs(config.DefaultConfig.Caddy.Caddyfile)
-			if e != nil {
-				err = e
-			} else {
-				err = ioutil.WriteFile(saveFile, b, os.ModePerm)
-				if len(ctx.Form(`restart`)) > 0 {
-					err = config.DefaultCLIConfig.CaddyRestart()
-				}
-			}
+			fallthrough
+		case 0 == 1:
+			err = saveVhostData(ctx, m)
 		}
 	}
 	return ctx.Render(`manage/vhost_edit`, err)
 }
 
+func saveVhostData(ctx echo.Context, m *model.Vhost) (err error) {
+	var b []byte
+	var saveFile string
+	SetCaddyfileFunc(ctx)
+	b, err = ctx.Fetch(`manage/caddyfile`, nil)
+	if err != nil {
+		return
+	}
+	saveFile, err = filepath.Abs(config.DefaultConfig.Sys.VhostsfileDir)
+	if err != nil {
+		return
+	}
+	saveFile = filepath.Join(saveFile, fmt.Sprint(m.Id))
+	if m.Disabled == `Y` {
+		err = os.Remove(saveFile)
+		if os.IsNotExist(err) {
+			err = nil
+		}
+	} else {
+		err = ioutil.WriteFile(saveFile, b, os.ModePerm)
+		if len(ctx.Form(`restart`)) > 0 {
+			err = config.DefaultCLIConfig.CaddyRestart()
+		}
+	}
+	return
+}
+
 func ManageVhostEdit(ctx echo.Context) error {
-	return ctx.Render(`manage/vhost_edit`, nil)
+	id := ctx.Formx(`id`).Uint()
+	if id < 1 {
+		ctx.Session().AddFlash(ctx.T(`id无效`)).Save()
+		return ctx.Redirect(`/manage`)
+	}
+
+	var err error
+	m := model.NewVhost(ctx)
+	err = m.Get(nil, `id`, id)
+	if err != nil {
+		ctx.Session().AddFlash(err.Error()).Save()
+		return ctx.Redirect(`/manage`)
+	}
+	if ctx.IsPost() {
+		m.Domain = ctx.Form(`domain`)
+		m.Disabled = ctx.Form(`disabled`)
+		var b []byte
+		b, err = json.Marshal(ctx.Forms())
+		switch {
+		case err == nil:
+			m.Setting = string(b)
+			err = m.Edit(nil, `id`, id)
+			if err != nil {
+				break
+			}
+			fallthrough
+		case 0 == 1:
+			err = saveVhostData(ctx, m)
+		}
+	} else {
+		var formData url.Values
+		if e := json.Unmarshal([]byte(m.Setting), &formData); e == nil {
+			for key, values := range formData {
+				for _, v := range values {
+					ctx.Request().Form().Add(key, v)
+				}
+			}
+		}
+	}
+	return ctx.Render(`manage/vhost_edit`, err)
 }
 
 func ManageRestart(ctx echo.Context) error {

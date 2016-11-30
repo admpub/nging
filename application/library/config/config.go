@@ -175,12 +175,13 @@ type Config struct {
 	} `json:"log"`
 
 	Sys struct {
-		AllowIP      []string          `json:"allowIP"`
-		Accounts     map[string]string `json:"accounts"`
-		SSLHosts     []string          `json:"sslHosts"`
-		SSLCacheFile string            `json:"sslCacheFile"`
-		SSLKeyFile   string            `json:"sslKeyFile"`
-		SSLCertFile  string            `json:"sslCertFile"`
+		VhostsfileDir string            `json:"vhostsfileDir"`
+		AllowIP       []string          `json:"allowIP"`
+		Accounts      map[string]string `json:"accounts"`
+		SSLHosts      []string          `json:"sslHosts"`
+		SSLCacheFile  string            `json:"sslCacheFile"`
+		SSLKeyFile    string            `json:"sslKeyFile"`
+		SSLCertFile   string            `json:"sslCertFile"`
 	} `json:"sys"`
 
 	Cookie struct {
@@ -213,13 +214,17 @@ func ParseConfig() error {
 	if err != nil {
 		return err
 	}
+	confDir := filepath.Dir(DefaultCLIConfig.Conf)
 	if len(DefaultConfig.Sys.SSLCacheFile) == 0 {
-		DefaultConfig.Sys.SSLCacheFile = filepath.Join(filepath.Dir(DefaultCLIConfig.Conf), `letsencrypt.cache`)
+		DefaultConfig.Sys.SSLCacheFile = filepath.Join(confDir, `letsencrypt.cache`)
 	}
 	if len(DefaultConfig.Caddy.Caddyfile) == 0 {
 		DefaultConfig.Caddy.Caddyfile = `./Caddyfile`
 	} else if strings.HasSuffix(DefaultConfig.Caddy.Caddyfile, `/`) || strings.HasSuffix(DefaultConfig.Caddy.Caddyfile, `\`) {
 		DefaultConfig.Caddy.Caddyfile = filepath.Join(DefaultConfig.Caddy.Caddyfile, `Caddyfile`)
+	}
+	if len(DefaultConfig.Sys.VhostsfileDir) == 0 {
+		DefaultConfig.Sys.VhostsfileDir = filepath.Join(confDir, `vhosts`)
 	}
 	caddy.Fixed(&DefaultConfig.Caddy)
 	InitLog()
