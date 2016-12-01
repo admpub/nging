@@ -1,0 +1,21 @@
+{% extends "layout" %}
+
+{% block title %}
+{{Super}} - powered by webx.top
+{% endblock %}
+
+{% block body %}
+ <div>
+    Hello World.
+ </div>
+  {% include "included" %}
+
+{% endblock %}
+{% block foot %}
+<br />-----------------foot---------------<br />
+{% include "included2" %}
+{% endblock %}
+
+{% block no %}
+{{empty}} www.webx.top
+{% endblock %}

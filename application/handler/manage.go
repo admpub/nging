@@ -40,7 +40,6 @@ func ManageIndex(ctx echo.Context) error {
 	var ret interface{}
 	if err == nil {
 		flash := ctx.Flash()
-		fmt.Printf("flash======> %v", flash)
 		if flash != nil {
 			if errMsg, ok := flash.(string); ok {
 				ret = errors.New(errMsg)
@@ -76,7 +75,7 @@ func ManageVhostAdd(ctx echo.Context) error {
 			err = saveVhostData(ctx, m)
 		}
 		if err == nil {
-			ctx.Session().AddFlash(Ok(ctx.T(`操作成功`))).Save()
+			ctx.Session().AddFlash(Ok(ctx.T(`操作成功`)))
 			return ctx.Redirect(`/manage`)
 		}
 
@@ -121,7 +120,7 @@ func saveVhostData(ctx echo.Context, m *model.Vhost) (err error) {
 func ManageVhostDelete(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
 	if id < 1 {
-		ctx.Session().AddFlash(ctx.T(`id无效`)).Save()
+		ctx.Session().AddFlash(ctx.T(`id无效`))
 		return ctx.Redirect(`/manage`)
 	}
 	m := model.NewVhost(ctx)
@@ -138,7 +137,7 @@ func ManageVhostDelete(ctx echo.Context) error {
 				err = nil
 			}
 			if err == nil {
-				ctx.Session().AddFlash(Ok(ctx.T(`操作成功`))).Save()
+				ctx.Session().AddFlash(Ok(ctx.T(`操作成功`)))
 			}
 		}
 	}
@@ -148,7 +147,7 @@ func ManageVhostDelete(ctx echo.Context) error {
 func ManageVhostEdit(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
 	if id < 1 {
-		ctx.Session().AddFlash(ctx.T(`id无效`)).Save()
+		ctx.Session().AddFlash(ctx.T(`id无效`))
 		return ctx.Redirect(`/manage`)
 	}
 
@@ -156,7 +155,7 @@ func ManageVhostEdit(ctx echo.Context) error {
 	m := model.NewVhost(ctx)
 	err = m.Get(nil, db.Cond{`id`: id})
 	if err != nil {
-		ctx.Session().AddFlash(err.Error()).Save()
+		ctx.Session().AddFlash(err.Error())
 		return ctx.Redirect(`/manage`)
 	}
 	if ctx.IsPost() {
@@ -176,7 +175,7 @@ func ManageVhostEdit(ctx echo.Context) error {
 			err = saveVhostData(ctx, m)
 		}
 		if err == nil {
-			ctx.Session().AddFlash(Ok(ctx.T(`操作成功`))).Save()
+			ctx.Session().AddFlash(Ok(ctx.T(`操作成功`)))
 			return ctx.Redirect(`/manage`)
 		}
 	} else {

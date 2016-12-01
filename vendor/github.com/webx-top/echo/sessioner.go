@@ -21,7 +21,14 @@ import (
 	"fmt"
 )
 
-var DefaultNopSession Sessioner = &NopSession{}
+var (
+	DefaultNopSession     Sessioner = &NopSession{}
+	DefaultSessionOptions           = &SessionOptions{
+		Engine:        `cookie`,
+		Name:          `SID`,
+		CookieOptions: &CookieOptions{},
+	}
+)
 
 // Options stores configuration for a session or session store.
 // Fields are a subset of http.Cookie fields.

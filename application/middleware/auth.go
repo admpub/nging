@@ -45,7 +45,7 @@ func Auth(c echo.Context, saveSession bool) error {
 	pass := c.Form(`pass`)
 	if pwd, ok := config.DefaultConfig.Sys.Accounts[user]; ok && pwd == pass {
 		if saveSession {
-			c.Session().Set(`user`, user).Save()
+			c.Session().Set(`user`, user)
 		}
 		return nil
 	}

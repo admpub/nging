@@ -90,6 +90,8 @@ func (s *Session) Save() error {
 		e := s.Session().Save(s.context)
 		if e == nil {
 			s.written = false
+		} else {
+			log.Printf(errorFormat, e)
 		}
 		return e
 	}

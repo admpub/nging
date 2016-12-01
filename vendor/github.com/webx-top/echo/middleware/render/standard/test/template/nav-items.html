@@ -1,0 +1,9 @@
+Name --- {{.Name}}
+Email -- {{.Email}}
+Id ----- {{.Id}}
+
+{{if .HasChild}}
+{{range .Children}}
+{{Include "nav-items" .}}
+{{end}}
+{{end}}

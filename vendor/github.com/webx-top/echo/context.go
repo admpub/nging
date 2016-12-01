@@ -56,6 +56,7 @@ type (
 		Render(string, interface{}, ...int) error
 		HTML(string, ...int) error
 		String(string, ...int) error
+		Blob([]byte, ...int) error
 		JSON(interface{}, ...int) error
 		JSONBlob([]byte, ...int) error
 		JSONP(string, interface{}, ...int) error
@@ -84,6 +85,8 @@ type (
 		Fetch(string, interface{}) ([]byte, error)
 		SetRenderer(Renderer)
 
+		SetSessionOptions(*SessionOptions)
+		SessionOptions() *SessionOptions
 		// Cookie
 		SetCookieOptions(*CookieOptions)
 		CookieOptions() *CookieOptions
@@ -151,7 +154,7 @@ type (
 		echo                *Echo
 		funcs               map[string]interface{}
 		renderer            Renderer
-		cookieOptions       *CookieOptions
+		sessionOptions      *SessionOptions
 		withFormatExtension bool
 		format              string
 		code                int
@@ -323,47 +326,42 @@ func (c *xContext) MustBind(i interface{}) error {
 // Render renders a template with data and sends a text/html response with status
 // code. Templates can be registered using `Echo.SetRenderer()`.
 func (c *xContext) Render(name string, data interface{}, codes ...int) (err error) {
-	if len(codes) > 0 {
-		c.code = codes[0]
-	}
-	if c.code == 0 {
-		c.code = http.StatusOK
-	}
 	b, err := c.Fetch(name, data)
 	if err != nil {
 		return
 	}
 	c.response.Header().Set(HeaderContentType, MIMETextHTMLCharsetUTF8)
-	c.response.WriteHeader(c.code)
-	_, err = c.response.Write(b)
+	err = c.Blob(b, codes...)
 	return
 }
 
 // HTML sends an HTTP response with status code.
 func (c *xContext) HTML(html string, codes ...int) (err error) {
-	if len(codes) > 0 {
-		c.code = codes[0]
-	}
-	if c.code == 0 {
-		c.code = http.StatusOK
-	}
 	c.response.Header().Set(HeaderContentType, MIMETextHTMLCharsetUTF8)
-	c.response.WriteHeader(c.code)
-	_, err = c.response.Write([]byte(html))
+	err = c.Blob([]byte(html), codes...)
 	return
 }
 
 // String sends a string response with status code.
 func (c *xContext) String(s string, codes ...int) (err error) {
+	c.response.Header().Set(HeaderContentType, MIMETextPlainCharsetUTF8)
+	err = c.Blob([]byte(s), codes...)
+	return
+}
+
+func (c *xContext) Blob(b []byte, codes ...int) (err error) {
 	if len(codes) > 0 {
 		c.code = codes[0]
 	}
 	if c.code == 0 {
 		c.code = http.StatusOK
 	}
-	c.response.Header().Set(HeaderContentType, MIMETextPlainCharsetUTF8)
+	err = c.preResponse()
+	if err != nil {
+		return
+	}
 	c.response.WriteHeader(c.code)
-	_, err = c.response.Write([]byte(s))
+	_, err = c.response.Write(b)
 	return
 }
 
@@ -383,41 +381,21 @@ func (c *xContext) JSON(i interface{}, codes ...int) (err error) {
 
 // JSONBlob sends a JSON blob response with status code.
 func (c *xContext) JSONBlob(b []byte, codes ...int) (err error) {
-	if len(codes) > 0 {
-		c.code = codes[0]
-	}
-	if c.code == 0 {
-		c.code = http.StatusOK
-	}
 	c.response.Header().Set(HeaderContentType, MIMEApplicationJSONCharsetUTF8)
-	c.response.WriteHeader(c.code)
-	_, err = c.response.Write(b)
+	err = c.Blob(b, codes...)
 	return
 }
 
 // JSONP sends a JSONP response with status code. It uses `callback` to construct
 // the JSONP payload.
 func (c *xContext) JSONP(callback string, i interface{}, codes ...int) (err error) {
-	if len(codes) > 0 {
-		c.code = codes[0]
-	}
-	if c.code == 0 {
-		c.code = http.StatusOK
-	}
 	b, err := json.Marshal(i)
 	if err != nil {
 		return err
 	}
 	c.response.Header().Set(HeaderContentType, MIMEApplicationJavaScriptCharsetUTF8)
-	c.response.WriteHeader(c.code)
-
-	if _, err = c.response.Write([]byte(callback + "(")); err != nil {
-		return
-	}
-	if _, err = c.response.Write(b); err != nil {
-		return
-	}
-	_, err = c.response.Write([]byte(");"))
+	b = []byte(callback + "(" + string(b) + ");")
+	err = c.Blob(b, codes...)
 	return
 }
 
@@ -437,18 +415,9 @@ func (c *xContext) XML(i interface{}, codes ...int) (err error) {
 
 // XMLBlob sends a XML blob response with status code.
 func (c *xContext) XMLBlob(b []byte, codes ...int) (err error) {
-	if len(codes) > 0 {
-		c.code = codes[0]
-	}
-	if c.code == 0 {
-		c.code = http.StatusOK
-	}
 	c.response.Header().Set(HeaderContentType, MIMEApplicationXMLCharsetUTF8)
-	c.response.WriteHeader(c.code)
-	if _, err = c.response.Write([]byte(xml.Header)); err != nil {
-		return
-	}
-	_, err = c.response.Write(b)
+	b = []byte(xml.Header + string(b))
+	err = c.Blob(b, codes...)
 	return
 }
 
@@ -499,6 +468,10 @@ func (c *xContext) Redirect(url string, codes ...int) error {
 	}
 	if code < http.StatusMultipleChoices || code > http.StatusTemporaryRedirect {
 		return ErrInvalidRedirectCode
+	}
+	err := c.preResponse()
+	if err != nil {
+		return err
 	}
 	c.response.Redirect(url, code)
 	return nil
@@ -565,7 +538,7 @@ func (c *xContext) Reset(req engine.Request, res engine.Response) {
 	c.funcs = make(map[string]interface{})
 	c.renderer = nil
 	c.handler = NotFoundHandler
-	c.cookieOptions = nil
+	c.sessionOptions = nil
 	c.withFormatExtension = false
 	c.format = ""
 	c.code = 0
@@ -624,14 +597,22 @@ func (c *xContext) Flash(name ...string) (r interface{}) {
 }
 
 func (c *xContext) SetCookieOptions(opts *CookieOptions) {
-	c.cookieOptions = opts
+	c.SessionOptions().CookieOptions = opts
 }
 
 func (c *xContext) CookieOptions() *CookieOptions {
-	if c.cookieOptions == nil {
-		c.cookieOptions = &CookieOptions{}
+	return c.SessionOptions().CookieOptions
+}
+
+func (c *xContext) SetSessionOptions(opts *SessionOptions) {
+	c.sessionOptions = opts
+}
+
+func (c *xContext) SessionOptions() *SessionOptions {
+	if c.sessionOptions == nil {
+		c.sessionOptions = DefaultSessionOptions
 	}
-	return c.cookieOptions
+	return c.sessionOptions
 }
 
 func (c *xContext) NewCookie(key string, value string) *Cookie {
@@ -885,4 +866,11 @@ func (c *xContext) NewData(args ...interface{}) *Data {
 		}
 	}
 	return &Data{}
+}
+
+func (c *xContext) preResponse() error {
+	if c.SessionOptions().Engine == `cookie` {
+		c.Session().Save()
+	}
+	return nil
 }

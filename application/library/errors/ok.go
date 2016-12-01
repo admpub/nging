@@ -10,20 +10,20 @@ func init() {
 
 func NewOk(v string) Successor {
 	return &Success{
-		value: v,
+		Value: v,
 	}
 }
 
 type Success struct {
-	value string
+	Value string
 }
 
 func (s *Success) Success() string {
-	return s.value
+	return s.Value
 }
 
 func (s *Success) String() string {
-	return s.value
+	return s.Value
 }
 
 type Successor interface {

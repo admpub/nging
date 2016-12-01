@@ -49,6 +49,6 @@ func Login(ctx echo.Context) error {
 }
 
 func Logout(ctx echo.Context) error {
-	ctx.Session().Delete(`user`).Save()
+	ctx.Session().Delete(`user`)
 	return ctx.Redirect(`/login`)
 }

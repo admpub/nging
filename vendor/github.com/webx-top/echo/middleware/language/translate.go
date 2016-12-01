@@ -15,24 +15,28 @@
    limitations under the License.
 
 */
-package session
+package language
 
-import "github.com/webx-top/echo"
-
-func Sessions(options *echo.SessionOptions, store Store) echo.MiddlewareFuncd {
-	return func(h echo.Handler) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			c.SetSessionOptions(options)
-			s := NewMySession(store, options.Name, c)
-			c.SetSessioner(s)
-			err := h.Handle(c)
-			s.Save()
-			return err
-		}
+func NewTranslate(language string, i18nObject *I18n) *Translate {
+	return &Translate{
+		language:   language,
+		i18nObject: i18nObject,
 	}
 }
 
-func Middleware(options *echo.SessionOptions) echo.MiddlewareFuncd {
-	store := StoreEngine(options)
-	return Sessions(options, store)
+type Translate struct {
+	language   string
+	i18nObject *I18n
+}
+
+func (t *Translate) T(format string, args ...interface{}) string {
+	return t.i18nObject.T(t.language, format, args...)
+}
+
+func (t *Translate) Lang() string {
+	return t.language
+}
+
+func (t *Translate) SetLang(lang string) {
+	t.language = lang
 }
