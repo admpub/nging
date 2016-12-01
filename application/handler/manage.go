@@ -129,7 +129,18 @@ func ManageVhostDelete(ctx echo.Context) error {
 	if err != nil {
 		ctx.Session().AddFlash(err)
 	} else {
-		ctx.Session().AddFlash(Ok(ctx.T(`操作成功`))).Save()
+		var saveFile string
+		saveFile, err = filepath.Abs(config.DefaultConfig.Sys.VhostsfileDir)
+		if err == nil {
+			saveFile = filepath.Join(saveFile, fmt.Sprint(m.Id))
+			err = os.Remove(saveFile)
+			if os.IsNotExist(err) {
+				err = nil
+			}
+			if err == nil {
+				ctx.Session().AddFlash(Ok(ctx.T(`操作成功`))).Save()
+			}
+		}
 	}
 	return ctx.Redirect(`/manage`)
 }

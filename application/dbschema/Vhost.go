@@ -114,6 +114,6 @@ func (this *Vhost) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk
 
 func (this *Vhost) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
 	
-	return this.Param().SetMiddleware(mw).Delete()
+	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
 }
 
