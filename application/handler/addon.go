@@ -42,5 +42,8 @@ func AddonForm(ctx echo.Context) error {
 	if !ValidAddonName(addon) {
 		return echo.NewHTTPError(http.StatusBadRequest, ctx.T("参数 addon 的值包含非法字符"))
 	}
+	ctx.SetFunc(`Val`, func(name, defaultValue string) string {
+		return defaultValue
+	})
 	return ctx.Render(`addon/form/`+addon, nil)
 }

@@ -20,16 +20,16 @@ package handler
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/url"
 	"os"
 	"path/filepath"
 
-	"fmt"
-
 	"github.com/admpub/caddyui/application/library/config"
 	"github.com/admpub/caddyui/application/library/modal"
 	"github.com/admpub/caddyui/application/model"
+	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
 
@@ -37,14 +37,23 @@ func ManageIndex(ctx echo.Context) error {
 	m := model.NewVhost(ctx)
 	page, size := Paging(ctx)
 	cnt, err := m.List(nil, nil, page, size)
+	var ret interface{}
 	if err == nil {
-		if errMsg, ok := ctx.Flash().(string); ok {
-			err = errors.New(errMsg)
+		flash := ctx.Flash()
+		fmt.Printf("flash======> %v", flash)
+		if flash != nil {
+			if errMsg, ok := flash.(string); ok {
+				ret = errors.New(errMsg)
+			} else {
+				ret = flash
+			}
 		}
+	} else {
+		ret = err
 	}
 	ctx.SetFunc(`totalRows`, cnt)
 	ctx.Set(`listData`, m.Objects())
-	return ctx.Render(`manage/index`, err)
+	return ctx.Render(`manage/index`, ret)
 }
 
 func ManageVhostAdd(ctx echo.Context) error {
@@ -65,6 +74,10 @@ func ManageVhostAdd(ctx echo.Context) error {
 			fallthrough
 		case 0 == 1:
 			err = saveVhostData(ctx, m)
+		}
+		if err == nil {
+			ctx.Session().AddFlash(Ok(ctx.T(`操作成功`))).Save()
+			return ctx.Redirect(`/manage`)
 		}
 
 		ctx.SetFunc(`Val`, func(name, defaultValue string) string {
@@ -112,9 +125,11 @@ func ManageVhostDelete(ctx echo.Context) error {
 		return ctx.Redirect(`/manage`)
 	}
 	m := model.NewVhost(ctx)
-	err := m.Delete(nil, `id`, id)
+	err := m.Delete(nil, db.Cond{`id`: id})
 	if err != nil {
-		ctx.Session().AddFlash(err.Error())
+		ctx.Session().AddFlash(err)
+	} else {
+		ctx.Session().AddFlash(Ok(ctx.T(`操作成功`))).Save()
 	}
 	return ctx.Redirect(`/manage`)
 }
@@ -128,7 +143,7 @@ func ManageVhostEdit(ctx echo.Context) error {
 
 	var err error
 	m := model.NewVhost(ctx)
-	err = m.Get(nil, `id`, id)
+	err = m.Get(nil, db.Cond{`id`: id})
 	if err != nil {
 		ctx.Session().AddFlash(err.Error()).Save()
 		return ctx.Redirect(`/manage`)
@@ -141,13 +156,17 @@ func ManageVhostEdit(ctx echo.Context) error {
 		switch {
 		case err == nil:
 			m.Setting = string(b)
-			err = m.Edit(nil, `id`, id)
+			err = m.Edit(nil, db.Cond{`id`: id})
 			if err != nil {
 				break
 			}
 			fallthrough
 		case 0 == 1:
 			err = saveVhostData(ctx, m)
+		}
+		if err == nil {
+			ctx.Session().AddFlash(Ok(ctx.T(`操作成功`))).Save()
+			return ctx.Redirect(`/manage`)
 		}
 	} else {
 		var formData url.Values

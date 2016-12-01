@@ -1,6 +1,10 @@
 package handler
 
-import "github.com/webx-top/echo"
+import (
+	"github.com/webx-top/echo"
+
+	"github.com/admpub/caddyui/application/library/errors"
+)
 
 var PageMaxSize = 1000
 
@@ -14,4 +18,8 @@ func Paging(ctx echo.Context) (page int, size int) {
 		size = 50
 	}
 	return
+}
+
+func Ok(v string) errors.Successor {
+	return errors.NewOk(v)
 }

@@ -183,6 +183,7 @@ type Config struct {
 		SSLCacheFile  string            `json:"sslCacheFile"`
 		SSLKeyFile    string            `json:"sslKeyFile"`
 		SSLCertFile   string            `json:"sslCertFile"`
+		Debug         bool              `json:"debug"`
 	} `json:"sys"`
 
 	Cookie struct {
@@ -230,6 +231,11 @@ func ParseConfig() error {
 	caddy.Fixed(&DefaultConfig.Caddy)
 	InitLog()
 	InitSessionOptions()
+	if DefaultConfig.Sys.Debug {
+		log.SetLevel(`Debug`)
+	} else {
+		log.SetLevel(`Info`)
+	}
 	return ConnectDB()
 }
 

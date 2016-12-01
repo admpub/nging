@@ -96,7 +96,7 @@
                       <input type="radio" value="0" name="tls" class="icheck" data-slide-settings="hide"{{if or (eq $v "0") (eq $v "")}} checked{{end}}> {{"禁用"|T}}
                     </label>
                     <div class="fieldset bg-6e hide" id="tls-settings">
-                        {{Include "addon/form/tls"}}
+                        {{if eq $v "1"}}{{Include "addon/form/tls"}}{{end}}
                     </div>
                 </div>
               </div>
@@ -111,7 +111,7 @@
                       <input type="radio" value="0" name="gzip" class="icheck" data-slide-settings="hide"{{if or (eq $v "0") (eq $v "")}} checked{{end}}> {{"禁用"|T}}
                     </label>
                     <div class="fieldset bg-6e hide" id="gzip-settings">
-                        {{Include "addon/form/gzip"}}
+                        {{if eq $v "1"}}{{Include "addon/form/gzip"}}{{end}}
                     </div>
                 </div>
               </div>
@@ -127,7 +127,7 @@
                       <input type="radio" value="0" name="fastcgi" class="icheck" data-slide-settings="hide"{{if or (eq $v "0") (eq $v "")}} checked{{end}}> {{"禁用"|T}}
                     </label>
                     <div class="fieldset bg-6e hide" id="fastcgi-settings">
-                        {{Include "addon/form/fastcgi"}}
+                        {{if eq $v "1"}}{{Include "addon/form/fastcgi"}}{{end}}
                     </div>
                 </div>
               </div>
@@ -143,7 +143,7 @@
                       <input type="radio" value="0" name="proxy" class="icheck" data-slide-settings="hide"{{if or (eq $v "0") (eq $v "")}} checked{{end}}> {{"禁用"|T}}
                     </label>
                     <div class="fieldset bg-6e hide" id="proxy-settings">
-                        {{Include "addon/form/proxy"}}
+                        {{if eq $v "1"}}{{Include "addon/form/proxy"}}{{end}}
                     </div>
                 </div>
               </div>
@@ -228,10 +228,21 @@ $('[data-slide-settings]').on('click',function(){
     slide=$(this).val()=='1'?'show':'hide';
   }
   var eid='#'+$(this).attr('name')+'-settings';
+  var history=$.trim($(eid).html());
   if(slide=='show'){
+    if(!history){
+      if($(eid).data('history')){
+        $(eid).html($(eid).data('history'));
+      }else{
+        $.get('/addon_form',{addon:$(this).attr('name')},function(r){
+          $(eid).html(r);
+        },'html');
+      }
+    }
     $(eid).removeClass('hide');
   }else{
-    $(eid).addClass('hide');
+    if(history)$(eid).data('history',history);
+    $(eid).empty().addClass('hide');
   }
 });
 $('[data-slide-settings="show"]:checked').trigger('click');

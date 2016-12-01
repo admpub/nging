@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/admpub/caddyui/application/library/errors"
 	"github.com/admpub/caddyui/application/library/modal"
 	"github.com/webx-top/echo"
 )
@@ -26,6 +27,11 @@ func FuncMap() echo.MiddlewareFunc {
 			c.SetFunc(`Modal`, func(data interface{}) template.HTML {
 				return modal.Render(c, data)
 			})
+			c.SetFunc(`IsMessage`, errors.IsMessage)
+			c.SetFunc(`IsError`, errors.IsError)
+			c.SetFunc(`IsOk`, errors.IsOk)
+			c.SetFunc(`Message`, errors.Message)
+			c.SetFunc(`Ok`, errors.Ok)
 			return h.Handle(c)
 		})
 	}
