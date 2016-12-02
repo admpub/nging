@@ -6,28 +6,36 @@ import (
 	"io/ioutil"
 	"os"
 
+	"strings"
+
+	"path/filepath"
+
 	"github.com/admpub/confl"
 	"github.com/webx-top/echo"
 )
 
+var DefaultModal = Modal{
+	ExtButtons: []Button{},
+}
+
 type HTMLAttr struct {
-	Attr  string
-	Value interface{}
+	Attr  string      //属性名
+	Value interface{} //属性值
 }
 
 type Button struct {
-	Attributes []HTMLAttr
-	Text       string
+	Attributes []HTMLAttr //按钮属性
+	Text       string     //按钮文本
 }
 
 type Modal struct {
-	Id         string
-	Custom     bool
-	HeadTitle  interface{}
-	Title      interface{}
-	Content    interface{}
-	Type       string
-	ExtButtons []Button
+	Id         string      //元素id
+	Custom     bool        //是否自定义整个内容区域
+	HeadTitle  interface{} //头部标题
+	Title      interface{} //内容标题
+	Content    interface{} //内容
+	Type       string      //类型：warning/primary/success/danger
+	ExtButtons []Button    //附加按钮
 }
 
 var modalConfig = map[string]Modal{}
@@ -44,14 +52,20 @@ func Render(ctx echo.Context, param interface{}) template.HTML {
 		} else {
 			_, err := confl.DecodeFile(v, &data)
 			if err != nil {
-				if os.IsNotExist(err) {
+				if os.IsNotExist(err) || strings.Contains(err.Error(), `cannot find the file`) {
 					var b []byte
+					data = DefaultModal
 					b, err = confl.Marshal(data)
 					if err == nil {
-						err = ioutil.WriteFile(v, b, os.ModePerm)
+						err = os.MkdirAll(filepath.Dir(v), os.ModePerm)
+						if err == nil {
+							err = ioutil.WriteFile(v, b, os.ModePerm)
+						}
 					}
 				}
-				return template.HTML(err.Error())
+				if err != nil {
+					return template.HTML(err.Error())
+				}
 			}
 			modalConfig[v] = data
 		}

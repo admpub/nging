@@ -1530,7 +1530,7 @@ var App = function () {
       }
       
       /*Nestable Lists*/
-      if(config.nestableLists){
+      if(config.nestableLists&&$('.dd').length>0){
         $('.dd').nestable();
       }
       

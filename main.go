@@ -78,6 +78,7 @@ func main() {
 		s := string(b)
 		s = strings.Replace(s, `__PUBLIC__`, `/public`, -1)
 		s = strings.Replace(s, `__ASSETS__`, `/public/assets`, -1)
+		s = strings.Replace(s, `__TMPL__`, `./template`, -1)
 		return []byte(s)
 	})
 	e.Use(render.Middleware(d))

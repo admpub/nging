@@ -23,9 +23,9 @@
             {{end}}
 		</div>
 		<div class="modal-footer">
-          {{range $k, $v := range .ExtButtons}}
-		  <button type="button" class="btn btn-default" data-dismiss="modal"{{range $bk, $bv := range $v.Attributes}} {{$bv.Attr}}="{{$bv.Value}}"{{end}}>{{$v.Text}}</button>
-          {{end}}
+      {{range $k, $v := .ExtButtons}}
+		  <button type="button" class="btn btn-default" data-dismiss="modal"{{range $bk, $bv := $v.Attributes}} {{$bv.Attr}}="{{$bv.Value}}"{{end}}>{{$v.Text}}</button>
+      {{end}}
 		  <button type="button" class="btn btn-default" data-dismiss="modal">{{"取消"|T}}</button>
 		  <button type="button" class="btn btn-{{if .Type}}{{.Type}}{{else}}warning{{end}}" data-dismiss="modal">{{"确定"|T}}</button>
 		</div>

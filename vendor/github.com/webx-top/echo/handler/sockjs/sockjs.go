@@ -15,7 +15,7 @@ type Options struct {
 	Prefix   string
 }
 
-func (o Options) Wrapper(e *echo.Echo) {
+func (o Options) Wrapper(e echo.RouteRegister) {
 	e.Any(strings.TrimRight(o.Prefix, "/")+"/*", Websocket(o.Prefix, o.Handle, o.Validate, o.Options))
 }
 

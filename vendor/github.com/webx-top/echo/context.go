@@ -137,6 +137,8 @@ type (
 		SetCode(int)
 		Code() int
 		NewData(...interface{}) *Data
+		AddPreResponseHook(func() error) Context
+		SetPreResponseHook(...func() error) Context
 	}
 
 	xContext struct {
@@ -158,6 +160,7 @@ type (
 		withFormatExtension bool
 		format              string
 		code                int
+		preResponseHook     []func() error
 	}
 
 	store map[string]interface{}
@@ -542,6 +545,7 @@ func (c *xContext) Reset(req engine.Request, res engine.Response) {
 	c.withFormatExtension = false
 	c.format = ""
 	c.code = 0
+	c.preResponseHook = nil
 }
 
 func (c *xContext) GetFunc(key string) interface{} {
@@ -868,9 +872,28 @@ func (c *xContext) NewData(args ...interface{}) *Data {
 	return &Data{}
 }
 
+func (c *xContext) AddPreResponseHook(hook func() error) Context {
+	if c.preResponseHook == nil {
+		c.preResponseHook = []func() error{hook}
+	} else {
+		c.preResponseHook = append(c.preResponseHook, hook)
+	}
+	return c
+}
+
+func (c *xContext) SetPreResponseHook(hook ...func() error) Context {
+	c.preResponseHook = hook
+	return c
+}
+
 func (c *xContext) preResponse() error {
-	if c.SessionOptions().Engine == `cookie` {
-		c.Session().Save()
+	if c.preResponseHook == nil {
+		return nil
+	}
+	for _, hook := range c.preResponseHook {
+		if err := hook(); err != nil {
+			return err
+		}
 	}
 	return nil
 }

@@ -1,6 +1,7 @@
 {{Extend "layout"}}
 {{Block "breadcrumb"}}
 {{Super}}
+<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加网站"|T}}{{else}}{{"修改网站"|T}}{{end}}</li>
 {{/Block}}
 {{Block "main"}}
 <div class="row">
@@ -10,7 +11,7 @@
             <h3>{{if HasSuffix URL.Path "_add"}}{{"添加网站"|T}}{{else}}{{"修改网站"|T}}{{end}}</h3>
           </div>
           <div class="content">
-              <form class="form-horizontal group-border-dashed" method="POST" action="" style="border-radius: 0px;">
+              <form class="form-horizontal group-border-dashed" method="POST" action="">
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"网址/域名/IP"|T}}</label>
                 <div class="col-sm-8">
@@ -201,9 +202,6 @@
 </script>
 <script>
 $(function(){
-{{if .}}
-App.message({title: '{{"系统消息"|T}}', text: "{{.}}"});
-{{end}}
 function addKVs(obj,k,v){
   var tmpl=$('#tmplAddVariableRow').html();
   tmpl=tmpl.replace(/\{k\}/g,k);

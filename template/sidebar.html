@@ -14,16 +14,22 @@
               <li><a href="#"><i class="fa fa-table"></i><span>{{"网站管理"|T}}</span></a>
                 <ul class="sub-menu">
                   <li><a href="/manage">{{"网站列表"|T}}</a></li>
-                  <li><a href="/manage/vhost_add"><span class="label label-primary pull-right">New</span>{{"添加网站"|T}}</a></li>
+                  <li><a href="/manage/vhost_add">
+                  <span class="label label-primary pull-right">New</span>{{"添加网站"|T}}
+                  </a></li>
                 </ul>
               </li>
-              <li><a href="#"><i class="fa fa-desktop nav-icon"></i><span>{{"服务器管理"}}</span></a>
+              <li><a href="#"><i class="fa fa-desktop nav-icon"></i><span>{{"服务器管理"|T}}</span></a>
                 <ul class="sub-menu">
-                  <li><a href="/manage/restart"></a></li>
+                  <li><a href="/manage/execmd">{{"执行系统命令"|T}}</a></li>
                 </ul>
               </li>
-              <li><a href="javascript:;" data-ajax-url="/manage/restart"><i class="fa fa-refresh"></i><span>重启Web服务</span></a></li>
-              <li><a href="javascript:;" data-ajax-url="/manage/clear_cache"><i class="fa fa-trash-o"></i><span>清理缓存</span></a></li>
+              <li><a href="javascript:;" data-ajax-url="/manage/restart">
+              <i class="fa fa-refresh"></i><span>{{"重启Web服务"|T}}</span>
+              </a></li>
+              <li><a href="javascript:;" data-ajax-url="/manage/clear_cache">
+              <i class="fa fa-trash-o"></i><span>{{"清理缓存"|T}}</span>
+              </a></li>
             </ul>
           </div>
         </div>
