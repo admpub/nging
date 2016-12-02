@@ -516,7 +516,6 @@
 		},
 		{
 			"checksumSHA1": "hcbJtcib0+V/gbYDPuPrR+fxkw4=",
-			"origin": "github.com/admpub/caddyui/vendor/github.com/webx-top/echo/handler/sockjs",
 			"path": "github.com/webx-top/echo/handler/sockjs",
 			"revision": "beb44423601db401a580f721e9353fbe9ef382e9",
 			"revisionTime": "2016-12-02T03:34:13Z"
@@ -570,10 +569,10 @@
 			"revisionTime": "2016-11-27T11:14:20Z"
 		},
 		{
-			"checksumSHA1": "O5jmz3RA5AAlScdQgcYcq++2FZI=",
+			"checksumSHA1": "t+ae/FzAe379A7Qa9oiAcDlp6Jw=",
 			"path": "github.com/webx-top/echo/middleware/session",
-			"revision": "5d4a57e6b9f42616a423b98aeb4e7115ce712059",
-			"revisionTime": "2016-11-27T11:14:20Z"
+			"revision": "0c5abaed4cc5d76f108e3d3c3fdda5666ee322df",
+			"revisionTime": "2016-12-02T06:22:44Z"
 		},
 		{
 			"checksumSHA1": "3QrvIhU7HUuMKVMAMqNkaRlpHos=",
