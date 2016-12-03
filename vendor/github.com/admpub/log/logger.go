@@ -390,12 +390,12 @@ func (l *Logger) newFatalEntry(level Level, message string) {
 		if goroutines <= 0 {
 			switch l.fatalAction {
 			case ActionPanic:
-				panic(`Fatal error.`)
+				panic(entry.FormattedMessage)
 			case ActionExit:
 				entry := &Entry{
 					Category: l.Category,
 					Level:    LevelWarn,
-					Message:  `Forced to exit.`,
+					Message:  message + `[Forced to exit]`,
 					Time:     time.Now(),
 				}
 				entry.FormattedMessage = l.Formatter(l, entry)
