@@ -49,7 +49,7 @@ function showMsg(data){
 		modalBody.find('li:first').remove();
 		rows--;
 	}
-	modalBody.append('<li>'+data+'</li>');
+	modalBody.append('<li>'+data.replace(/\n/g,'<br />').replace(/  /g,'&nbsp; ')+'</li>');
 	rows++;
 }
 function connectSockJS(){
