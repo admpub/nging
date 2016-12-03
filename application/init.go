@@ -22,9 +22,9 @@ import (
 	"strings"
 
 	"github.com/admpub/log"
-	"github.com/admpub/sockjs-go/sockjs"
 	"github.com/webx-top/echo"
 	sockjsHandler "github.com/webx-top/echo/handler/sockjs"
+	ws "github.com/webx-top/echo/handler/websocket"
 
 	. "github.com/admpub/caddyui/application/handler"
 	"github.com/admpub/caddyui/application/library/config"
@@ -67,11 +67,16 @@ func addRouter(e *echo.Echo) {
 		addFormHandler(g, `/execmd`, ManageExeCMD)
 
 		sockjsOpts := sockjsHandler.Options{
-			Handle:  SockJSManageExeCMDSend,
-			Options: sockjs.DefaultOptions,
-			Prefix:  "/execmd_send",
+			Handle: SockJSManageExeCMDSend,
+			Prefix: "/execmd_send",
 		}
 		sockjsOpts.Wrapper(g)
+		_ = sockjsOpts
+		wsOpts := ws.Options{
+			Handle: WSManageExeCMDSend,
+			Prefix: "/execmd_send_ws",
+		}
+		wsOpts.Wrapper(g)
 	}
 
 }

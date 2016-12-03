@@ -1,26 +1,22 @@
 <!-- Modal -->
+{{if not .HeadTitle}}
 <div class="modal fade" id="{{.Id}}" tabindex="-1" role="dialog">
 	<div class="modal-dialog">
 	  <div class="modal-content">
 		<div class="modal-header">
-            {{if .HeadTitle}}
-            <h3>{{.HeadTitle}}</h3>
-            <button type="button" class="close md-close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            {{else}}
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            {{end}}
 		</div>
         
 		<div class="modal-body">
-            {{if .Custom}}
-            {{.Content}}
-            {{else}}
+     {{if .Custom}}
+     		{{.Content}}
+     {{else}}
 			<div class="text-center">
 				<div class="i-circle {{if .Type}}{{.Type}}{{else}}warning{{end}}"><i class="fa fa-{{if .Type}}{{.Type}}{{else}}warning{{end}}"></i></div>
 				{{if .Title}}<h4>{{.Title}}</h4>{{end}}
 				<p>{{.Content}}</p>
 			</div>
-            {{end}}
+      {{end}}
 		</div>
 		<div class="modal-footer">
       {{range $k, $v := .ExtButtons}}
@@ -30,5 +26,37 @@
 		  <button type="button" class="btn btn-{{if .Type}}{{.Type}}{{else}}warning{{end}}" data-dismiss="modal">{{"确定"|T}}</button>
 		</div>
 	  </div><!-- /.modal-content -->
+	
 	</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+{{else}}
+
+<div class="md-modal colored-header md-effect-10" id="{{.Id}}">
+    <div class="md-content">
+      <div class="modal-header">
+        <h3>{{.HeadTitle}}</h3>
+        <button type="button" class="close md-close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      </div>
+      <div class="modal-body">
+				{{if .Custom}}
+            {{.Content}}
+        {{else}}
+        <div class="text-center">
+          <div class="i-circle {{if .Type}}{{.Type}}{{else}}warning{{end}}"><i class="fa fa-{{if .Type}}{{.Type}}{{else}}warning{{end}}"></i></div>
+         	{{if .Title}}<h4>{{.Title}}</h4>{{end}}
+          <p>{{.Content}}</p>
+        </div>
+				{{end}}
+      </div>
+      <div class="modal-footer">
+			{{range $k, $v := .ExtButtons}}
+		  <button type="button" class="btn btn-default" data-dismiss="modal"{{range $bk, $bv := $v.Attributes}} {{$bv.Attr}}="{{$bv.Value}}"{{end}}>{{$v.Text}}</button>
+      {{end}}
+        <button type="button" class="btn btn-default btn-flat md-close" data-dismiss="modal">{{"取消"|T}}</button>
+        <button type="button" class="btn btn-{{if .Type}}{{.Type}}{{else}}warning{{end}} btn-flat md-close" data-dismiss="modal">{{"确定"|T}}</button>
+      </div>
+    </div>
+</div>
+
+{{end}}

@@ -170,6 +170,10 @@
           
           showModal: function(mod){
             var overlay = $(config.overlaySelector);
+            if(overlay.length<1){
+                overlay=$('<div class="md-overlay"></div>');
+                mod.after(overlay);
+            }
             var close = $(config.closeSelector, mod);
             mod.addClass(config.classAddAfterOpen);
             
@@ -186,7 +190,7 @@
               mod.css({'perspective':'none'});
               
               //3D Blur Bug Fix
-              if(modal.height() % 2 != 0){modal.css({'height':modal.height() + 1});}
+              if(mod.height() % 2 != 0){mod.css({'height':mod.height() + 1});}
 
             }, 500 ); 
             

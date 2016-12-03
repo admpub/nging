@@ -39,6 +39,12 @@
 			"revisionTime": "2016-02-19T14:37:21Z"
 		},
 		{
+			"checksumSHA1": "i7+uzE75ZADFiHOYfKcjeoTbgFc=",
+			"path": "github.com/admpub/websocket",
+			"revision": "787d8621b3784807f561ac76faeaf1c8f72f5a0a",
+			"revisionTime": "2016-11-12T13:14:59Z"
+		},
+		{
 			"checksumSHA1": "5mK8liBYZFmBOYf8ayzw+M1N51I=",
 			"path": "github.com/araddon/gou",
 			"revision": "5e9110908156ae10fe90dd01d6c9fcbe058a6c9e",
@@ -497,10 +503,10 @@
 			"revisionTime": "2016-11-09T03:40:55Z"
 		},
 		{
-			"checksumSHA1": "MDGfR3RDTooY717x4Y6TXlp5m1M=",
+			"checksumSHA1": "8qZ/2DCvg1/ZQzO9uwlDyJ2JJyA=",
 			"path": "github.com/webx-top/echo",
-			"revision": "beb44423601db401a580f721e9353fbe9ef382e9",
-			"revisionTime": "2016-12-02T03:34:13Z"
+			"revision": "e834d8eaa63c88115b59ac13450fdb1206990b2f",
+			"revisionTime": "2016-12-03T05:16:31Z"
 		},
 		{
 			"checksumSHA1": "jWOa4fw+bpq1LHWTO7+L7ZT/3d0=",
@@ -515,10 +521,28 @@
 			"revisionTime": "2016-11-27T11:14:20Z"
 		},
 		{
-			"checksumSHA1": "hcbJtcib0+V/gbYDPuPrR+fxkw4=",
+			"checksumSHA1": "1ip1Cm2H09D0y9/ArfabKruv044=",
 			"path": "github.com/webx-top/echo/handler/sockjs",
-			"revision": "beb44423601db401a580f721e9353fbe9ef382e9",
-			"revisionTime": "2016-12-02T03:34:13Z"
+			"revision": "e834d8eaa63c88115b59ac13450fdb1206990b2f",
+			"revisionTime": "2016-12-03T05:16:31Z"
+		},
+		{
+			"checksumSHA1": "SpGWHmJY0G9lCgkXRqi3uJ0l10w=",
+			"path": "github.com/webx-top/echo/handler/sockjs/example",
+			"revision": "e834d8eaa63c88115b59ac13450fdb1206990b2f",
+			"revisionTime": "2016-12-03T05:16:31Z"
+		},
+		{
+			"checksumSHA1": "Z0tDRujKaeDRMbjTIUAkhx2mm4U=",
+			"path": "github.com/webx-top/echo/handler/websocket",
+			"revision": "0179783f44201999e2843e708dbe81b0d522e536",
+			"revisionTime": "2016-12-03T05:21:39Z"
+		},
+		{
+			"checksumSHA1": "LA0+1aVVLAb27KWnVmGfPvTYE14=",
+			"path": "github.com/webx-top/echo/handler/websocket/example",
+			"revision": "e834d8eaa63c88115b59ac13450fdb1206990b2f",
+			"revisionTime": "2016-12-03T05:16:31Z"
 		},
 		{
 			"checksumSHA1": "kL7Dpc0M5x8sK9iiPAbaeg1gP3A=",

@@ -29,7 +29,10 @@ type Options struct {
 	Prefix   string
 }
 
-func (o Options) Wrapper(e *echo.Echo) {
+func (o Options) Wrapper(e echo.RouteRegister) {
+	if o.Upgrader == nil {
+		o.Upgrader = DefaultUpgrader
+	}
 	e.Any(o.Prefix, Websocket(o.Handle, o.Validate, o.Upgrader))
 }
 

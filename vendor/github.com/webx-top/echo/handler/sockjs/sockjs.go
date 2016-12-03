@@ -10,18 +10,21 @@ import (
 
 type Options struct {
 	Handle   func(sockjs.Session) error
-	Options  sockjs.Options
+	Options  *sockjs.Options
 	Validate func(echo.Context) error
 	Prefix   string
 }
 
 func (o Options) Wrapper(e echo.RouteRegister) {
+	if o.Options == nil {
+		o.Options = &sockjs.DefaultOptions
+	}
 	e.Any(strings.TrimRight(o.Prefix, "/")+"/*", Websocket(o.Prefix, o.Handle, o.Validate, o.Options))
 }
 
 type Handler interface {
 	Handle(sockjs.Session) error
-	Options() sockjs.Options
+	Options() *sockjs.Options
 	Validate(echo.Context) error
 	Prefix() string
 }
@@ -55,10 +58,10 @@ func HanderWrapper(v interface{}) echo.Handler {
 	return nil
 }
 
-func Websocket(prefix string, executer func(sockjs.Session) error, validate func(echo.Context) error, opts ...sockjs.Options) echo.HandlerFunc {
+func Websocket(prefix string, executer func(sockjs.Session) error, validate func(echo.Context) error, opts ...*sockjs.Options) echo.HandlerFunc {
 	var opt sockjs.Options
-	if len(opts) > 0 {
-		opt = opts[0]
+	if len(opts) > 0 && opts[0] != nil {
+		opt = *opts[0]
 	} else {
 		opt = sockjs.DefaultOptions
 	}

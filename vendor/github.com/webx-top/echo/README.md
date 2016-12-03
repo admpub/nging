@@ -324,7 +324,7 @@ options := ws.Options{
 		ws.DefaultExecuter(c)
 		return nil
 	},
-	Options: sockjs.DefaultOptions,
+	Options: &sockjs.DefaultOptions,
 	Prefix:  "/websocket",
 }
 options.Wrapper(e)

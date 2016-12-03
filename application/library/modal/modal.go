@@ -29,13 +29,13 @@ type Button struct {
 }
 
 type Modal struct {
-	Id         string      //元素id
-	Custom     bool        //是否自定义整个内容区域
-	HeadTitle  interface{} //头部标题
-	Title      interface{} //内容标题
-	Content    interface{} //内容
-	Type       string      //类型：warning/primary/success/danger
-	ExtButtons []Button    //附加按钮
+	Id         string        //元素id
+	Custom     bool          //是否自定义整个内容区域
+	HeadTitle  template.HTML //头部标题
+	Title      template.HTML //内容标题
+	Content    template.HTML //内容
+	Type       string        //类型：warning/primary/success/danger
+	ExtButtons []Button      //附加按钮
 }
 
 var modalConfig = map[string]Modal{}

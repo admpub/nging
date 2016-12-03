@@ -3,35 +3,38 @@
 {{Super}}
 <li class="active">{{"执行系统命令"|T}}</li>
 {{/Block}}
+{{Block "head"}}
+<link rel="stylesheet" href="__ASSETS__/js/jquery.niftymodals/css/component.css">
+{{/Block}}
 {{Block "main"}}
 <div class="row">
-    <div class="col-md-12">
-        <div class="block-flat">
-          <div class="header">							
-            <h3>{{"执行系统命令"|T}}</h3>
-          </div>
-          <div class="content">
-              <form id="cmd-form" class="form-horizontal group-border-dashed" method="POST" action="">
-              <div class="form-group">
-                <label class="col-sm-2 control-label">{{"系统命令"|T}}</label>
-                <div class="col-sm-8">
-                    <input type="text" id="system_cmd" name="system_cmd" class="form-control" required="required" value="{{Form "system_cmd"}}">
-                    <div class="help-block"></div>
-                </div>
-              </div>
-              <div class="form-group">
+		<div class="col-md-12">
+				<div class="block-flat">
+					<div class="header">							
+						<h3>{{"执行系统命令"|T}}</h3>
+					</div>
+					<div class="content">
+							<form id="cmd-form" class="form-horizontal group-border-dashed" method="POST" action="">
+							<div class="form-group">
+								<label class="col-sm-2 control-label">{{"系统命令"|T}}</label>
+								<div class="col-sm-8">
+										<input type="text" id="system_cmd" name="system_cmd" class="form-control" required="required" value="{{Form "system_cmd"}}">
+										<div class="help-block"></div>
+								</div>
+							</div>
+							<div class="form-group">
 									<div class="col-sm-9 col-sm-offset-2">
-									  <button data-toggle="modal" data-target="#cmd-output" type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"执行"|T}}</button>
+										<button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"执行"|T}}</button>
 									</div>
 							</div>
-            </form>
-          </div><!-- /.content -->
-        </div><!-- /.block-flat -->
-    </div>
+						</form>
+					</div><!-- /.content -->
+				</div><!-- /.block-flat -->
+		</div>
 </div>
+{{Modal "__TMPL__/manage/execmd.yaml"}}
 {{/Block}}
 {{Block "footer"}}
-{{Modal "__TMPL__/manage/execmd.yaml"}}
 <script type="text/javascript" src="__ASSETS__/js/sockjs.min.js"></script>
 <script type="text/javascript" src="__ASSETS__/js/jquery.niftymodals/js/jquery.modalEffects.js"></script>   
 
@@ -39,32 +42,61 @@
 
 </script>
 <script>
-var modalBody=$('#cmd-output > .modal-dialog > .modal-content > .modal-body');
-function showMsg(msg){
-	modalBody.append(msg.data);
+var modalBody=$('#cmd-output .modal-body ul');
+var ws,rows=0,maxRows=19;
+function showMsg(data){
+	if(rows >= maxRows){
+		modalBody.find('li:first').remove();
+		rows--;
+	}
+	modalBody.append('<li>'+data+'</li>');
+	rows++;
+}
+function connectSockJS(){
+	if (ws) return false;
+	ws = new SockJS('/manage/execmd_send');
+	ws.onopen    = function(){
+		showMsg('{{"连接服务器"|T}}');
+	};
+	ws.onclose   = function(){
+		showMsg('{{"关闭连接"|T}}');
+	};
+	ws.onmessage = function(msg){
+		showMsg(msg.data);
+	};
 }
 
+function connectWS(){
+	if (ws) return false;
+	//console.dir(window.location.protocol)
+	var protocol='ws:';
+	if(window.location.protocol=='https:')protocol='wss:';
+	ws = new WebSocket(protocol+"//"+window.location.host+"/manage/execmd_send_ws");
+	ws.onopen = function(evt) {
+	    showMsg('{{"连接服务器"|T}}');
+	}
+	ws.onclose = function(evt) {
+	    showMsg('{{"关闭连接"|T}}');
+	}
+	ws.onmessage = function(evt) {
+	    showMsg(evt.data);
+	}
+}
 $(function(){
-  
-var ws = new SockJS('/manage/execmd_send');
-ws.onopen    = function(){
-	showMsg('onopen');
-};
-ws.onclose   = function(){
-	showMsg('onclose');
-};
-ws.onmessage = function(msg){
-	showMsg(msg.data);
-};
+	
+	//connectWS();
+	connectSockJS();
 
-  $('#cmd-form').on('submit',function(event){
-    event.preventDefault();
-    $('#cmd-output').modal('show');
-    var cmd=$('#system_cmd').val();
-    alert(cmd);
-    ws.send(cmd);
-  });
-
+	$('#cmd-form').on('submit',function(event){
+		event.preventDefault();
+		$('#cmd-output').niftyModal('show',{afterClose:function(modal){
+			//ws.close();
+		}});
+		var cmd=$('#system_cmd').val();
+		showMsg('{{"发送命令"|T}}: '+cmd);
+		ws.send(cmd);
+	});
+ 
 });
 </script>
 {{/Block}}
