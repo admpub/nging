@@ -56,12 +56,11 @@ func runCMD(command string, recvResult func([]byte) error) {
 }
 
 func ManageSockJSSendCMD(c sockjs.Session) error {
-	send := make(chan func() string)
+	send := make(chan string)
 	//push(writer)
 	go func() {
 		for {
-			fn := <-send
-			message := fn()
+			message := <-send
 			log.Info(`Push message: `, message)
 			if err := c.Send(message); err != nil {
 				log.Error(`Push error: `, err.Error())
@@ -79,9 +78,7 @@ func ManageSockJSSendCMD(c sockjs.Session) error {
 			}
 			if len(command) > 0 {
 				runCMD(command, func(b []byte) error {
-					send <- func() string {
-						return string(b)
-					}
+					send <- string(b)
 					return nil
 				})
 			}
@@ -99,12 +96,11 @@ func ManageSockJSSendCMD(c sockjs.Session) error {
 }
 
 func ManageWSSendCMD(c *websocket.Conn, ctx echo.Context) error {
-	send := make(chan func() string)
+	send := make(chan string)
 	//push(writer)
 	go func() {
 		for {
-			fn := <-send
-			message := fn()
+			message := <-send
 			log.Info(`Push message: `, message)
 			if err := c.WriteMessage(websocket.TextMessage, []byte(message)); err != nil {
 				log.Error(`Push error: `, err.Error())
@@ -123,9 +119,7 @@ func ManageWSSendCMD(c *websocket.Conn, ctx echo.Context) error {
 			command := string(message)
 			if len(command) > 0 {
 				runCMD(command, func(b []byte) error {
-					send <- func() string {
-						return string(b)
-					}
+					send <- string(b)
 					return nil
 				})
 			}

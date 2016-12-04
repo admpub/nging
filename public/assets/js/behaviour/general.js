@@ -1666,6 +1666,29 @@ var App = function () {
           App.message({title:title,text:r,time:5000,sticky:false});
         },'html');
       });
+    },
+    
+    websocket:function(showmsg,url,onopen){
+    	var protocol='ws:';
+    	if(window.location.protocol=='https:')protocol='wss:';
+    	var ws = new WebSocket(protocol+"//"+window.location.host+url);
+    	ws.onopen = function(evt) {
+    	    console.log('Websocket Server is connected');
+    		  if(onopen!=null&&typeof(onopen)=='function')onopen();
+    	};
+    	ws.onclose = function(evt) {
+    	    console.log('Websocket Server is disconnected');
+    	};
+    	ws.onmessage = function(evt) {
+    	    showmsg(evt.data);
+    	};
+    	ws.onerror = function(evt) {
+    	    console.dir(evt);
+    	};
+      if(onopen!=null&&typeof(onopen)=='object'){
+        ws=$.extend({},ws,onopen);
+      }
+      return ws;
     }
     
   };

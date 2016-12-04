@@ -80,6 +80,14 @@ $(function(){
 	App.markNav({{if Stored.Get "activeURL"}}'{{Stored.Get "activeURL"}}'{{else}}null{{end}});
 	App.attachAjaxURL();
 	{{if and . (or (IsError .) (IsOk .))}}App.message({title: '{{"系统消息"|T}}', text: "{{.}}"});{{end}}
+	App.websocket(function(message){
+		var c=$('#notice-message-container');
+		if(c.length<1){
+			App.message({title: '{{"系统消息"|T}}', text: '<ul id="notice-message-container" class="no-list-style"></ul>'});
+			c=$('#notice-message-container');
+		}
+		c.append('<li>'+message+'</li>');
+	},'/manage/notice');
 });
 </script>
 {{Block "footer"}}{{/Block}}

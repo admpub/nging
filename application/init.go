@@ -80,6 +80,12 @@ func addRouter(e *echo.Echo) {
 		wsOpts.Wrapper(g)
 
 		addHandler(g, `/sysinfo`, ManageSysInfo, render.AutoOutput(nil))
+
+		wsOpts = ws.Options{
+			Handle: ManageNotice,
+			Prefix: "/notice",
+		}
+		wsOpts.Wrapper(g)
 	}
 
 }

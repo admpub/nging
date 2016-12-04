@@ -21,6 +21,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"net"
 	"os/exec"
 	"path/filepath"
@@ -114,21 +115,35 @@ func (c *CLIConfig) CaddyStopHistory() (err error) {
 	return nil
 }
 
-func (c *CLIConfig) CaddyStart() (err error) {
+func (c *CLIConfig) CaddyStart(writer ...io.Writer) (err error) {
 	err = c.CaddyStopHistory()
 	if err != nil {
 		log.Error(err.Error())
 	}
 	params := []string{`-c`, c.Conf, `-t`, `server`}
 	c.cmd = exec.Command(os.Args[0], params...)
-	c.cmd.Stdout = os.Stdout
-	//cmd.Stderr = StderrCapturer{this}
+	var wOut, wErr io.Writer
+	length := len(writer)
+	if length > 0 && writer[0] != nil {
+		wOut = writer[0]
+		if length > 1 {
+			wErr = writer[1]
+		} else {
+			wErr = wOut
+		}
+	} else {
+		wOut = os.Stdout
+		wErr = os.Stdout
+	}
+	c.cmd.Stdout = wOut
+	c.cmd.Stderr = wErr
 
 	var hasError bool
 	go func() {
 		err := c.cmd.Run()
 		if err != nil {
 			log.Error(`Caddy Run Error: `, err)
+			wErr.Write([]byte(err.Error()))
 			hasError = true
 		}
 	}()
@@ -146,12 +161,12 @@ func (c *CLIConfig) CaddyStop() error {
 	return c.cmd.Process.Kill()
 }
 
-func (c *CLIConfig) CaddyRestart() error {
+func (c *CLIConfig) CaddyRestart(writer ...io.Writer) error {
 	err := c.CaddyStop()
 	if err != nil {
 		return err
 	}
-	err = c.CaddyStart()
+	err = c.CaddyStart(writer...)
 	return err
 }
 
