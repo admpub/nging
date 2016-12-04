@@ -1,4 +1,5 @@
 {{Extend "layout"}}
+{{Block "title"}}{{"执行系统命令"|T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
 <li class="active">{{"执行系统命令"|T}}</li>
@@ -52,21 +53,23 @@ function showMsg(data){
 	modalBody.append('<li>'+data.replace(/\n/g,'<br />').replace(/  /g,'&nbsp; ')+'</li>');
 	rows++;
 }
-function connectSockJS(){
+function connectSockJS(onopen){
 	if (ws) return false;
 	ws = new SockJS('/manage/execmd_send');
 	ws.onopen    = function(){
 		showMsg('{{"连接服务器"|T}}');
+		if(onopen!=null)onopen();
 	};
 	ws.onclose   = function(){
 		showMsg('{{"关闭连接"|T}}');
+		ws = null;
 	};
 	ws.onmessage = function(msg){
 		showMsg(msg.data);
 	};
 }
 
-function connectWS(){
+function connectWS(onopen){
 	if (ws) return false;
 	//console.dir(window.location.protocol)
 	var protocol='ws:';
@@ -74,27 +77,29 @@ function connectWS(){
 	ws = new WebSocket(protocol+"//"+window.location.host+"/manage/execmd_send_ws");
 	ws.onopen = function(evt) {
 	    showMsg('{{"连接服务器"|T}}');
+		  if(onopen!=null)onopen();
 	}
 	ws.onclose = function(evt) {
 	    showMsg('{{"关闭连接"|T}}');
+			ws = null;
 	}
 	ws.onmessage = function(evt) {
 	    showMsg(evt.data);
 	}
 }
 $(function(){
-	
-	//connectWS();
-	connectSockJS();
 
 	$('#cmd-form').on('submit',function(event){
 		event.preventDefault();
+		modalBody.empty();
 		$('#cmd-output').niftyModal('show',{afterClose:function(modal){
-			//ws.close();
+			ws.close();
 		}});
 		var cmd=$('#system_cmd').val();
-		showMsg('{{"发送命令"|T}}: '+cmd);
-		ws.send(cmd);
+		connectSockJS(function(){
+			showMsg('{{"发送命令"|T}}: '+cmd);
+			ws.send(cmd);
+		});
 	});
  
 });

@@ -25,6 +25,7 @@ import (
 	"github.com/webx-top/echo"
 	sockjsHandler "github.com/webx-top/echo/handler/sockjs"
 	ws "github.com/webx-top/echo/handler/websocket"
+	"github.com/webx-top/echo/middleware/render"
 
 	. "github.com/admpub/caddyui/application/handler"
 	"github.com/admpub/caddyui/application/library/config"
@@ -64,19 +65,21 @@ func addRouter(e *echo.Echo) {
 		addFormHandler(g, `/vhost_delete`, ManageVhostDelete)
 		addFormHandler(g, `/restart`, ManageRestart)
 		addFormHandler(g, `/clear_cache`, ManageClearCache)
-		addFormHandler(g, `/execmd`, ManageExeCMD)
+		addFormHandler(g, `/execmd`, ManageSysCMD)
 
 		sockjsOpts := sockjsHandler.Options{
-			Handle: SockJSManageExeCMDSend,
+			Handle: ManageSockJSSendCMD,
 			Prefix: "/execmd_send",
 		}
 		sockjsOpts.Wrapper(g)
 		_ = sockjsOpts
 		wsOpts := ws.Options{
-			Handle: WSManageExeCMDSend,
+			Handle: ManageWSSendCMD,
 			Prefix: "/execmd_send_ws",
 		}
 		wsOpts.Wrapper(g)
+
+		addHandler(g, `/sysinfo`, ManageSysInfo, render.AutoOutput(nil))
 	}
 
 }

@@ -1,0 +1,16 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"服务器信息"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"服务器信息"|T}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+	<div class="col-sm-12 col-md-12">
+{{Include "manage/sysinfo/host_info"}}
+{{Include "manage/sysinfo/mem_info"}}
+{{Include "manage/sysinfo/disk_info"}}
+{{Include "manage/sysinfo/net_info"}}
+	</div>
+</div>
+{{/Block}}

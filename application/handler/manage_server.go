@@ -2,11 +2,17 @@ package handler
 
 import (
 	"os/exec"
-	"strings"
 
 	"github.com/admpub/log"
 	"github.com/admpub/sockjs-go/sockjs"
 	"github.com/admpub/websocket"
+	"github.com/shirou/gopsutil/cpu"
+	"github.com/shirou/gopsutil/disk"
+	"github.com/shirou/gopsutil/host"
+	"github.com/shirou/gopsutil/load"
+	"github.com/shirou/gopsutil/mem"
+	"github.com/shirou/gopsutil/net"
+	"github.com/shirou/gopsutil/process"
 	"github.com/webx-top/echo"
 )
 
@@ -20,15 +26,15 @@ func (this CMDResultCapturer) Write(p []byte) (n int, err error) {
 	return
 }
 
-func ManageExeCMD(ctx echo.Context) error {
+func ManageSysCMD(ctx echo.Context) error {
 	var err error
 	return ctx.Render(`manage/execmd`, err)
 }
 
 func runCMD(command string, recvResult func([]byte) error) {
-	params := strings.Split(command, ` `)
+	params := ParseArgs(command)
 	length := len(params)
-	if len(params[0]) == 0 {
+	if length == 0 || len(params[0]) == 0 {
 		return
 	}
 	var cmd *exec.Cmd
@@ -49,7 +55,7 @@ func runCMD(command string, recvResult func([]byte) error) {
 	}()
 }
 
-func SockJSManageExeCMDSend(c sockjs.Session) error {
+func ManageSockJSSendCMD(c sockjs.Session) error {
 	send := make(chan func() string)
 	//push(writer)
 	go func() {
@@ -92,7 +98,7 @@ func SockJSManageExeCMDSend(c sockjs.Session) error {
 	return nil
 }
 
-func WSManageExeCMDSend(c *websocket.Conn, ctx echo.Context) error {
+func ManageWSSendCMD(c *websocket.Conn, ctx echo.Context) error {
 	send := make(chan func() string)
 	//push(writer)
 	go func() {
@@ -134,4 +140,108 @@ func WSManageExeCMDSend(c *websocket.Conn, ctx echo.Context) error {
 		log.Error(err)
 	}
 	return nil
+}
+
+var data *echo.Data
+
+func ManageSysInfo(ctx echo.Context) error {
+	ctx.Set(`tmpl`, `manage/sysinfo`)
+	if data != nil {
+		ctx.Set(`data`, data)
+		return nil
+	}
+	var err error
+	cpuInfo, err := cpu.Info()
+	if err != nil {
+		log.Error(err)
+	}
+	partitions, err := disk.Partitions(true)
+	if err != nil {
+		log.Error(err)
+	}
+	/*
+		ioCounter, err := disk.IOCounters()
+		if err != nil {
+			log.Error(err)
+		}
+	*/
+	hostInfo, err := host.Info()
+	if err != nil {
+		log.Error(err)
+	}
+	/*
+		avgLoad, err := load.Avg()
+		if err != nil {
+			log.Error(err)
+		}
+	*/
+	virtualMem, err := mem.VirtualMemory()
+	if err != nil {
+		log.Error(err)
+	}
+	swapMem, err := mem.SwapMemory()
+	if err != nil {
+		log.Error(err)
+	}
+	netIOCounter, err := net.IOCounters(false)
+	if err != nil {
+		log.Error(err)
+	}
+	/*
+		pids, err := process.Pids()
+		if err != nil {
+			log.Error(err)
+		}
+		procses := []*process.Process{}
+		for _, pid := range pids {
+			procs, err := process.NewProcess(pid)
+			if err != nil {
+				log.Error(err)
+			}
+			procses = append(procses, procs)
+		}
+		//*/
+	info := &SystemInformation{
+		CPU:        cpuInfo,
+		Partitions: partitions,
+		//DiskIO:         ioCounter,
+		Host: hostInfo,
+		//Load:       avgLoad,
+		Memory: &MemoryInformation{Virtual: virtualMem, Swap: swapMem},
+		NetIO:  netIOCounter,
+		/*
+			PIDs:       pids,
+			Process:    procses,
+		//*/
+	}
+	info.DiskUsages = make([]*disk.UsageStat, len(info.Partitions))
+	for k, v := range info.Partitions {
+		usageStat, err := disk.Usage(v.Mountpoint)
+		if err != nil {
+			log.Error(err)
+		}
+		info.DiskUsages[k] = usageStat
+	}
+	data := ctx.NewData().SetData(info).SetCode(1)
+
+	ctx.Set(`data`, data)
+	return nil
+}
+
+type SystemInformation struct {
+	CPU        []cpu.InfoStat
+	Partitions []disk.PartitionStat
+	DiskUsages []*disk.UsageStat
+	DiskIO     map[string]disk.IOCountersStat
+	Host       *host.InfoStat
+	Load       *load.AvgStat
+	Memory     *MemoryInformation
+	NetIO      []net.IOCountersStat
+	PIDs       []int32
+	Process    []*process.Process
+}
+
+type MemoryInformation struct {
+	Virtual *mem.VirtualMemoryStat
+	Swap    *mem.SwapMemoryStat
 }

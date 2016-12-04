@@ -1,9 +1,12 @@
 package middleware
 
 import (
+	"fmt"
 	"html/template"
 	"strings"
 	"time"
+
+	"strconv"
 
 	"github.com/admpub/caddyui/application/library/errors"
 	"github.com/admpub/caddyui/application/library/modal"
@@ -49,6 +52,13 @@ func hasString(slice []string, str string) bool {
 	return false
 }
 
-func date(timestamp uint) time.Time {
-	return time.Unix(int64(timestamp), 0)
+func date(timestamp interface{}) time.Time {
+	if v, y := timestamp.(int64); y {
+		return time.Unix(v, 0)
+	}
+	if v, y := timestamp.(uint); y {
+		return time.Unix(int64(v), 0)
+	}
+	v, _ := strconv.ParseInt(fmt.Sprint(timestamp), 10, 64)
+	return time.Unix(v, 0)
 }

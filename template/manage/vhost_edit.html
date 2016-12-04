@@ -1,4 +1,5 @@
 {{Extend "layout"}}
+{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加网站"|T}}{{else}}{{"修改网站"|T}}{{end}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
 <li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加网站"|T}}{{else}}{{"修改网站"|T}}{{end}}</li>

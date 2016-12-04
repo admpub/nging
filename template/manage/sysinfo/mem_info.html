@@ -1,0 +1,69 @@
+
+					<div class="block-flat">
+						<div class="header">
+							<h3>{{"Virtual内存"}}</h3>
+						</div>
+						<div class="content">
+							<table>
+                                <thead class="no-border">
+									<tr>
+										<th>{{"属性名"|T}}</th>
+										<th>{{"属性值"|T}}</th>
+										<th>{{"属性名"|T}}</th>
+										<th>{{"属性值"|T}}</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>{{"内存容量"|T}}</td>
+                                        <td>{{.Memory.Virtual.Total|FormatByte}}</td>
+										<td>{{"有效内存"|T}}</td>
+										<td><span class="badge">{{.Memory.Virtual.Available|FormatByte}}</span></td>
+									</tr>
+									<tr>
+										<td>{{"已使用"|T}}</td>
+                                        <td>{{.Memory.Virtual.Used|FormatByte}}</td>
+										<td>{{"使用百分比"|T}}</td>
+										<td>{{.Memory.Virtual.UsedPercent}} %</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+
+{{if gt .Memory.Swap.Total 0}}
+					<div class="block-flat">
+						<div class="header">
+							<h3>{{"Swap内存"}}</h3>
+						</div>
+						<div class="content">
+							<table>
+                                <thead class="no-border">
+									<tr>
+										<th>{{"属性名"|T}}</th>
+										<th>{{"属性值"|T}}</th>
+										<th>{{"属性名"|T}}</th>
+										<th>{{"属性值"|T}}</th>
+									</tr>
+								</thead>
+								<tbody>
+									
+									<tr>
+										<td>{{"内存容量"|T}}</td>
+                                        <td>{{.Memory.Swap.Total|FormatByte}}</td>
+										<td>{{"剩余容量"|T}}</td>
+										<td><span class="badge">{{.Memory.Swap.Free|FormatByte}}</span></td>
+									</tr>
+									<tr>
+										<td>{{"已使用"|T}}</td>
+                                        <td>{{.Memory.Swap.Used|FormatByte}}</td>
+										<td>{{"使用百分比"|T}}</td>
+										<td>{{.Memory.Swap.UsedPercent}} %</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+{{end}}
+

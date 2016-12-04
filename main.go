@@ -31,6 +31,7 @@ import (
 	"github.com/webx-top/echo/middleware"
 	"github.com/webx-top/echo/middleware/render"
 	"github.com/webx-top/echo/middleware/session"
+	"github.com/webx-top/echo/middleware/tplfunc"
 
 	"github.com/admpub/caddyui/application"
 	"github.com/admpub/caddyui/application/library/config"
@@ -67,7 +68,7 @@ func main() {
 	e.Use(session.Middleware(config.SessionOptions))
 
 	// 为模板注册常用函数
-	e.Use(middleware.FuncMap(nil, func(c echo.Context) bool {
+	e.Use(middleware.FuncMap(tplfunc.TplFuncMap, func(c echo.Context) bool {
 		return c.Format() != `html`
 	}))
 
