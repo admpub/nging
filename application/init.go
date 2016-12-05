@@ -22,6 +22,7 @@ import (
 	"strings"
 
 	"github.com/admpub/log"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	sockjsHandler "github.com/webx-top/echo/handler/sockjs"
 	ws "github.com/webx-top/echo/handler/websocket"
@@ -29,7 +30,6 @@ import (
 
 	. "github.com/admpub/caddyui/application/handler"
 	"github.com/admpub/caddyui/application/library/config"
-	"github.com/admpub/caddyui/application/library/monitor"
 	"github.com/admpub/caddyui/application/middleware"
 )
 
@@ -39,7 +39,7 @@ var DefaultFormPageMethods = []string{echo.GET, echo.POST}
 func Initialize(e *echo.Echo) {
 	e.Use(middleware.FuncMap())
 	addRouter(e)
-	me := monitor.MonitorEvent{
+	me := com.MonitorEvent{
 		Modify: func(file string) {
 			if strings.HasSuffix(file, `.yaml`) {
 				log.Info(`reload config from ` + file)
@@ -63,18 +63,22 @@ func addRouter(e *echo.Echo) {
 		addFormHandler(g, `/vhost_add`, ManageVhostAdd)
 		addFormHandler(g, `/vhost_edit`, ManageVhostEdit)
 		addFormHandler(g, `/vhost_delete`, ManageVhostDelete)
-		addFormHandler(g, `/restart`, ManageRestart)
+		addFormHandler(g, `/service`, ManageService)
+		addFormHandler(g, `/web_restart`, ManageWebRestart)
+		addFormHandler(g, `/web_stop`, ManageWebStop)
+		addFormHandler(g, `/ftp_restart`, ManageFTPRestart)
+		addFormHandler(g, `/ftp_stop`, ManageFTPStop)
 		addFormHandler(g, `/clear_cache`, ManageClearCache)
-		addFormHandler(g, `/execmd`, ManageSysCMD)
+		addFormHandler(g, `/execmd`, ManageSysCmd)
 
 		sockjsOpts := sockjsHandler.Options{
-			Handle: ManageSockJSSendCMD,
+			Handle: ManageSockJSSendCmd,
 			Prefix: "/execmd_send",
 		}
 		sockjsOpts.Wrapper(g)
 		_ = sockjsOpts
 		wsOpts := ws.Options{
-			Handle: ManageWSSendCMD,
+			Handle: ManageWSSendCmd,
 			Prefix: "/execmd_send_ws",
 		}
 		wsOpts.Wrapper(g)
@@ -88,16 +92,19 @@ func addRouter(e *echo.Echo) {
 		wsOpts.Wrapper(g)
 	}
 
+	g = e.Group(`/ftp`, middleware.AuthCheck)
+	{
+		addHandler(g, `/account`, FTPAccountIndex)
+		addFormHandler(g, `/account_add`, FTPAccountAdd)
+		addFormHandler(g, `/account_edit`, FTPAccountEdit)
+		addFormHandler(g, `/account_delete`, FTPAccountDelete)
+	}
 }
 
-type RouteRegister interface {
-	Match([]string, string, interface{}, ...interface{})
-}
-
-func addFormHandler(rr RouteRegister, urlPath string, handler interface{}, middlewares ...interface{}) {
+func addFormHandler(rr echo.RouteRegister, urlPath string, handler interface{}, middlewares ...interface{}) {
 	rr.Match(DefaultFormPageMethods, urlPath, handler, middlewares...)
 }
 
-func addHandler(rr RouteRegister, urlPath string, handler interface{}, middlewares ...interface{}) {
+func addHandler(rr echo.RouteRegister, urlPath string, handler interface{}, middlewares ...interface{}) {
 	rr.Match(DefaultRequestMethods, urlPath, handler, middlewares...)
 }

@@ -44,9 +44,13 @@ func main() {
 
 	config.MustOK(config.ParseConfig())
 
-	if config.DefaultCLIConfig.Type == `server` {
+	switch config.DefaultCLIConfig.Type {
+	case `webserver`:
 		caddy.TrapSignals()
 		config.DefaultConfig.Caddy.Init().Start()
+		return
+	case `ftpserver`:
+		config.DefaultConfig.FTP.Init().Start()
 		return
 	}
 

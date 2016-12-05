@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"os/exec"
-
 	"github.com/admpub/log"
 	"github.com/admpub/sockjs-go/sockjs"
 	"github.com/admpub/websocket"
@@ -13,49 +11,16 @@ import (
 	"github.com/shirou/gopsutil/mem"
 	"github.com/shirou/gopsutil/net"
 	"github.com/shirou/gopsutil/process"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
 
-type CMDResultCapturer struct {
-	Do func([]byte) error
-}
-
-func (this CMDResultCapturer) Write(p []byte) (n int, err error) {
-	err = this.Do(p)
-	n = len(p)
-	return
-}
-
-func ManageSysCMD(ctx echo.Context) error {
+func ManageSysCmd(ctx echo.Context) error {
 	var err error
 	return ctx.Render(`manage/execmd`, err)
 }
 
-func runCMD(command string, recvResult func([]byte) error) {
-	params := ParseArgs(command)
-	length := len(params)
-	if length == 0 || len(params[0]) == 0 {
-		return
-	}
-	var cmd *exec.Cmd
-	if length > 1 {
-		cmd = exec.Command(params[0], params[1:]...)
-	} else {
-		cmd = exec.Command(params[0])
-	}
-	out := CMDResultCapturer{Do: recvResult}
-	cmd.Stdout = out
-	cmd.Stderr = out
-
-	go func() {
-		err := cmd.Run()
-		if err != nil {
-			recvResult([]byte(err.Error()))
-		}
-	}()
-}
-
-func ManageSockJSSendCMD(c sockjs.Session) error {
+func ManageSockJSSendCmd(c sockjs.Session) error {
 	send := make(chan string)
 	//push(writer)
 	go func() {
@@ -77,7 +42,7 @@ func ManageSockJSSendCMD(c sockjs.Session) error {
 				return err
 			}
 			if len(command) > 0 {
-				runCMD(command, func(b []byte) error {
+				com.RunCmdStr(command, func(b []byte) error {
 					send <- string(b)
 					return nil
 				})
@@ -95,7 +60,7 @@ func ManageSockJSSendCMD(c sockjs.Session) error {
 	return nil
 }
 
-func ManageWSSendCMD(c *websocket.Conn, ctx echo.Context) error {
+func ManageWSSendCmd(c *websocket.Conn, ctx echo.Context) error {
 	send := make(chan string)
 	//push(writer)
 	go func() {
@@ -118,7 +83,7 @@ func ManageWSSendCMD(c *websocket.Conn, ctx echo.Context) error {
 			}
 			command := string(message)
 			if len(command) > 0 {
-				runCMD(command, func(b []byte) error {
+				com.RunCmdStr(command, func(b []byte) error {
 					send <- string(b)
 					return nil
 				})

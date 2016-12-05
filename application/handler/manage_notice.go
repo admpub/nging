@@ -3,19 +3,43 @@ package handler
 import (
 	"errors"
 
+	"fmt"
+
 	"github.com/admpub/log"
 	"github.com/admpub/websocket"
 	"github.com/webx-top/echo"
 )
 
-var chanUsers = map[string]chan string{}
+type OnlineUser struct {
+	Message chan string
+	Clients uint
+}
+
+func NewOnlineUser() *OnlineUser {
+	return &OnlineUser{
+		Message: make(chan string),
+		Clients: 1,
+	}
+}
+
+func IsOfflineUser(user string) bool {
+	chanUsers[user].Clients--
+	if chanUsers[user].Clients <= 0 {
+		delete(chanUsers, user)
+		return true
+	}
+	return false
+}
+
+var chanUsers = map[string]*OnlineUser{}
 
 func SendNotice(user string, message string) {
 	_, exists := chanUsers[user]
 	if !exists {
-		chanUsers[user] = make(chan string)
+		fmt.Println(message)
+		return
 	}
-	chanUsers[user] <- message
+	chanUsers[user].Message <- message
 }
 
 func ManageNotice(c *websocket.Conn, ctx echo.Context) error {
@@ -25,15 +49,19 @@ func ManageNotice(c *websocket.Conn, ctx echo.Context) error {
 	}
 	_, exists := chanUsers[user]
 	if !exists {
-		chanUsers[user] = make(chan string)
+		chanUsers[user] = NewOnlineUser()
+	} else {
+		chanUsers[user].Clients++
 	}
+	defer IsOfflineUser(user)
 	//push(writer)
 	go func() {
 		for {
-			message := <-chanUsers[user]
+			message := <-chanUsers[user].Message
 			log.Info(`Push message: `, message)
 			if err := c.WriteMessage(websocket.TextMessage, []byte(message)); err != nil {
 				log.Error(`Push error: `, err.Error())
+				IsOfflineUser(user)
 				return
 			}
 		}

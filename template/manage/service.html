@@ -1,0 +1,41 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"服务管理"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"服务管理"|T}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+	<div class="col-sm-12 col-md-12">
+        <div class="block-flat">
+        <dl class="clearfix">
+            <dt>{{"Web服务"}}:</dt>
+            <dd class="pull-left">
+                <button type="button" class="btn btn-primary btn-flat" data-ajax-url="/manage/web_restart">
+                <i class="fa fa-refresh"></i> {{"重启"|T}}
+                </button>
+            </dd>
+            <dd class="pull-left">
+                <button type="button" class="btn btn-warning btn-flat" data-ajax-url="/manage/web_stop">
+                <i class="fa fa-power-off"></i> {{"关闭"|T}}
+                </button>
+            </dd>
+        </dl>
+        
+        <dl class="clearfix">
+            <dt>{{"FTP服务"}}:</dt>
+            <dd class="pull-left">
+                <button type="button" class="btn btn-primary btn-flat" data-ajax-url="/manage/ftp_restart">
+                <i class="fa fa-refresh"></i> {{"重启"|T}}
+                </button>
+            </dd>
+            <dd class="pull-left">
+                <button type="button" class="btn btn-warning btn-flat" data-ajax-url="/manage/ftp_stop">
+                <i class="fa fa-power-off"></i> {{"关闭"|T}}
+                </button>
+            </dd>
+        </dl>
+        </div>
+	</div>
+</div>
+{{/Block}}

@@ -19,10 +19,16 @@ package com
 
 import (
 	"bytes"
-	"fmt"
+	"io"
+	"io/ioutil"
+	"os"
 	"os/exec"
+	"regexp"
 	"runtime"
+	"strconv"
 	"strings"
+
+	"github.com/lunny/log"
 )
 
 //内存占用
@@ -67,103 +73,169 @@ func ExecCmd(cmdName string, args ...string) (string, string, error) {
 	return ExecCmdDir("", cmdName, args...)
 }
 
-// _________        .__                 .____
-// \_   ___ \  ____ |  |   ___________  |    |    ____   ____
-// /    \  \/ /  _ \|  |  /  _ \_  __ \ |    |   /  _ \ / ___\
-// \     \___(  <_> )  |_(  <_> )  | \/ |    |__(  <_> ) /_/  >
-//  \______  /\____/|____/\____/|__|    |_______ \____/\___  /
-//         \/                                   \/    /_____/
+// WritePidFile writes the process ID to the file at PidFile.
+// It does nothing if PidFile is not set.
+func WritePidFile(pidFile string) error {
+	if pidFile == "" {
+		return nil
+	}
+	pid := []byte(strconv.Itoa(os.Getpid()) + "\n")
+	return ioutil.WriteFile(pidFile, pid, 0644)
+}
 
-// Color number constants.
-const (
-	Gray = uint8(iota + 90)
-	Red
-	Green
-	Yellow
-	Blue
-	Magenta
-	//NRed      = uint8(31) // Normal
-	EndColor = "\033[0m"
+var (
+	space  = rune(' ')
+	quote  = rune('"')
+	slash  = rune('\\')
+	envOS  = regexp.MustCompile(`\{\$[a-zA-Z0-9_]+\}`)
+	envWin = regexp.MustCompile(`\{%[a-zA-Z0-9_]+%\}`)
 )
 
-// getColorLevel returns colored level string by given level.
-func getColorLevel(level string) string {
-	level = strings.ToUpper(level)
-	switch level {
-	case "TRAC":
-		return fmt.Sprintf("\033[%dm%s\033[0m", Blue, level)
-	case "ERRO":
-		return fmt.Sprintf("\033[%dm%s\033[0m", Red, level)
-	case "WARN":
-		return fmt.Sprintf("\033[%dm%s\033[0m", Magenta, level)
-	case "SUCC":
-		return fmt.Sprintf("\033[%dm%s\033[0m", Green, level)
-	default:
-		return level
+func ParseArgs(command string) (params []string) {
+	item := []rune{}
+	hasQuote := false
+	hasSlash := false
+	maxIndex := len(command) - 1
+	//tower.exe -c tower.yaml -p "eee\"ddd" -t aaaa
+	for k, v := range command {
+		if !hasQuote {
+			if v == space {
+				params = append(params, string(item))
+				item = []rune{}
+				continue
+			}
+			if v == quote {
+				hasQuote = true
+				continue
+			}
+		} else {
+			if !hasSlash && v == quote {
+				hasQuote = false
+				continue
+			}
+			if !hasSlash && v == slash && k+1 <= maxIndex && command[k+1] == '"' {
+				hasSlash = true
+				continue
+			}
+			hasSlash = false
+		}
+		item = append(item, v)
 	}
+	if len(item) > 0 {
+		params = append(params, string(item))
+	}
+	for k, v := range params {
+		v = envWin.ReplaceAllStringFunc(v, getWinEnv)
+		params[k] = envOS.ReplaceAllStringFunc(v, getEnv)
+	}
+	//fmt.Printf("---> %#v\n", params)
+	//params = []string{}
+	return
 }
 
-// ColorLogS colors log and return colored content.
-// Log format: <level> <content [highlight][path]> [ error ].
-// Level: TRAC -> blue; ERRO -> red; WARN -> Magenta; SUCC -> green; others -> default.
-// Content: default; path: yellow; error -> red.
-// Level has to be surrounded by "[" and "]".
-// Highlights have to be surrounded by "# " and " #"(space), "#" will be deleted.
-// Paths have to be surrounded by "( " and " )"(space).
-// Errors have to be surrounded by "[ " and " ]"(space).
-// Note: it hasn't support windows yet, contribute is welcome.
-func ColorLogS(format string, a ...interface{}) string {
-	log := fmt.Sprintf(format, a...)
+func getWinEnv(s string) string {
+	s = strings.TrimPrefix(s, `{%`)
+	s = strings.TrimSuffix(s, `%}`)
+	return os.Getenv(s)
+}
 
-	var clog string
+func getEnv(s string) string {
+	s = strings.TrimPrefix(s, `{$`)
+	s = strings.TrimSuffix(s, `}`)
+	return os.Getenv(s)
+}
 
-	if runtime.GOOS != "windows" {
-		// Level.
-		i := strings.Index(log, "]")
-		if log[0] == '[' && i > -1 {
-			clog += "[" + getColorLevel(log[1:i]) + "]"
-		}
+type CmdResultCapturer struct {
+	Do func([]byte) error
+}
 
-		log = log[i+1:]
+func (this CmdResultCapturer) Write(p []byte) (n int, err error) {
+	err = this.Do(p)
+	n = len(p)
+	return
+}
 
-		// Error.
-		log = strings.Replace(log, "[ ", fmt.Sprintf("[\033[%dm", Red), -1)
-		log = strings.Replace(log, " ]", EndColor+"]", -1)
+func (this CmdResultCapturer) WriteString(p string) (n int, err error) {
+	err = this.Do([]byte(p))
+	n = len(p)
+	return
+}
 
-		// Path.
-		log = strings.Replace(log, "( ", fmt.Sprintf("(\033[%dm", Yellow), -1)
-		log = strings.Replace(log, " )", EndColor+")", -1)
+func RunCmdStr(command string, recvResult func([]byte) error) *exec.Cmd {
+	out := CmdResultCapturer{Do: recvResult}
+	return RunCmdStrWithWriter(command, out)
+}
 
-		// Highlights.
-		log = strings.Replace(log, "# ", fmt.Sprintf("\033[%dm", Gray), -1)
-		log = strings.Replace(log, " #", EndColor, -1)
+func RunCmd(params []string, recvResult func([]byte) error) *exec.Cmd {
+	out := CmdResultCapturer{Do: recvResult}
+	return RunCmdWithWriter(params, out)
+}
 
+func RunCmdStrWithWriter(command string, writer ...io.Writer) *exec.Cmd {
+	params := ParseArgs(command)
+	return RunCmdWithWriter(params, writer...)
+}
+
+func RunCmdWithWriter(params []string, writer ...io.Writer) *exec.Cmd {
+	var cmd *exec.Cmd
+	length := len(params)
+	if length == 0 || len(params[0]) == 0 {
+		return cmd
+	}
+	if length > 1 {
+		cmd = exec.Command(params[0], params[1:]...)
 	} else {
-		// Level.
-		i := strings.Index(log, "]")
-		if log[0] == '[' && i > -1 {
-			clog += "[" + log[1:i] + "]"
-		}
-
-		log = log[i+1:]
-
-		// Error.
-		log = strings.Replace(log, "[ ", "[", -1)
-		log = strings.Replace(log, " ]", "]", -1)
-
-		// Path.
-		log = strings.Replace(log, "( ", "(", -1)
-		log = strings.Replace(log, " )", ")", -1)
-
-		// Highlights.
-		log = strings.Replace(log, "# ", "", -1)
-		log = strings.Replace(log, " #", "", -1)
+		cmd = exec.Command(params[0])
 	}
-	return clog + log
+	var wOut, wErr io.Writer
+	length = len(writer)
+	if length > 0 && writer[0] != nil {
+		wOut = writer[0]
+		if length > 1 {
+			wErr = writer[1]
+		} else {
+			wErr = wOut
+		}
+	} else {
+		wOut = os.Stdout
+		wErr = os.Stdout
+	}
+	cmd.Stdout = wOut
+	cmd.Stderr = wErr
+
+	go func() {
+		err := cmd.Run()
+		if err != nil {
+			wErr.Write([]byte(err.Error()))
+		}
+	}()
+
+	return cmd
 }
 
-// ColorLog prints colored log to stdout.
-// See color rules in function 'ColorLogS'.
-func ColorLog(format string, a ...interface{}) {
-	fmt.Print(ColorLogS(format, a...))
+func CloseProcessFromPidFile(pidFile string) (err error) {
+	if pidFile == `` {
+		return
+	}
+	b, err := ioutil.ReadFile(pidFile)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return
+	}
+	pid, err := strconv.Atoi(strings.TrimSpace(string(b)))
+	if err != nil {
+		log.Error(err.Error())
+		return nil
+	}
+	return CloseProcessFromPid(pid)
+}
+
+func CloseProcessFromPid(pid int) (err error) {
+	procs, err := os.FindProcess(pid)
+	if err == nil {
+		return procs.Kill()
+	}
+	return
 }

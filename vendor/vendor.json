@@ -1171,10 +1171,10 @@
 			"revisionTime": "2016-12-02T06:11:15Z"
 		},
 		{
-			"checksumSHA1": "Vk3oGxODldiNjj201Cft6ORQ0+A=",
+			"checksumSHA1": "9ytx3mpIa2xvA2C4cR1YrNh9LqU=",
 			"path": "github.com/webx-top/com",
-			"revision": "06c36438885675a5329c46869e4fd314293837d2",
-			"revisionTime": "2016-11-27T05:20:21Z"
+			"revision": "2e2a43ee5f28da02edf89681934b8c139d162a7e",
+			"revisionTime": "2016-12-05T07:48:33Z"
 		},
 		{
 			"checksumSHA1": "jZP1dADtvJ2ajSP3ugqeZLLtHPY=",
@@ -1250,7 +1250,6 @@
 		},
 		{
 			"checksumSHA1": "Rf9/2UIPevBmkSdmHUF5OfLbSMU=",
-			"origin": "github.com/admpub/caddyui/vendor/github.com/webx-top/echo/engine/fasthttp",
 			"path": "github.com/webx-top/echo/engine/fasthttp",
 			"revision": "f432bacca7114d1cc21fc6ff5d3116f3b02b27ce",
 			"revisionTime": "2016-12-05T03:10:05Z"

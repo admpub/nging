@@ -23,11 +23,17 @@
                 <ul class="sub-menu">
                   <li><a href="/manage/sysinfo">{{"服务器信息"|T}}</a></li>
                   <li><a href="/manage/execmd">{{"执行系统命令"|T}}</a></li>
+                  <li><a href="/manage/service">{{"服务管理"|T}}</a></li>
                 </ul>
               </li>
-              <li><a href="javascript:;" data-ajax-url="/manage/restart">
-              <i class="fa fa-refresh"></i><span>{{"重启Web服务"|T}}</span>
-              </a></li>
+              <li><a href="#"><i class="fa fa-users nav-icon"></i><span>{{"FTP账号管理"|T}}</span></a>
+                <ul class="sub-menu">
+                  <li><a href="/ftp/account">{{"账号列表"|T}}</a></li>
+                  <li><a href="/ftp/account_add">
+                  <span class="label label-primary pull-right">New</span>
+                  {{"添加账号"|T}}</a></li>
+                </ul>
+              </li>
               <li><a href="javascript:;" data-ajax-url="/manage/clear_cache">
               <i class="fa fa-trash-o"></i><span>{{"清理缓存"|T}}</span>
               </a></li>

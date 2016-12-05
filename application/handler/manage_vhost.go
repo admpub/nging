@@ -195,29 +195,10 @@ func ManageVhostEdit(ctx echo.Context) error {
 	return ctx.Render(`manage/vhost_edit`, err)
 }
 
-func ManageRestart(ctx echo.Context) error {
-	user, ok := ctx.Get(`user`).(string)
-	if !ok {
-		return ctx.Redirect(`/login`)
-	}
-	wOut := &CMDResultCapturer{Do: func(b []byte) error {
-		SendNotice(user, `<span class="badge badge-success">`+ctx.T(`重启Web服务`)+`</span>`+string(b))
-		return nil
-	}}
-	wErr := &CMDResultCapturer{Do: func(b []byte) error {
-		SendNotice(user, `<span class="badge badge-danger">`+ctx.T(`重启Web服务`)+`</span>`+string(b))
-		return nil
-	}}
-	if err := config.DefaultCLIConfig.CaddyRestart(wOut, wErr); err != nil {
-		return err
-	}
-	return ctx.String(ctx.T(`已经执行重启命令`))
-}
-
 func ManageClearCache(ctx echo.Context) error {
 	if err := modal.Clear(); err != nil {
 		return err
 	}
-	chanUsers = map[string]chan string{}
+	chanUsers = map[string]*OnlineUser{}
 	return ctx.String(ctx.T(`已经清理完毕`))
 }
