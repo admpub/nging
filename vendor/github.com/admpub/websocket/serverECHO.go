@@ -53,12 +53,10 @@ type EchoUpgrader struct {
 }
 
 func (u *EchoUpgrader) returnError(ctx echo.Context, status int, reason string) error {
-	err := HandshakeError{reason}
+	err := echo.NewHTTPError(status, reason)
+	ctx.Response().Header().Set("Sec-Websocket-Version", "13")
 	if u.Error != nil {
 		u.Error(ctx, status, err)
-	} else {
-		ctx.Response().Header().Set("Sec-Websocket-Version", "13")
-		ctx.Response().Error(http.StatusText(status), status)
 	}
 	return err
 }

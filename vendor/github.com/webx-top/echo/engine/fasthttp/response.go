@@ -85,6 +85,7 @@ func (r *Response) Writer() io.Writer {
 
 func (r *Response) Hijack(fn func(net.Conn)) {
 	r.context.Hijack(fasthttp.HijackHandler(fn))
+	r.committed = true
 }
 
 func (r *Response) Body() []byte {
@@ -114,6 +115,7 @@ func (r *Response) Redirect(url string, code int) {
 
 func (r *Response) NotFound() {
 	r.context.NotFound()
+	r.committed = true
 }
 
 func (r *Response) SetCookie(cookie *http.Cookie) {
@@ -122,6 +124,7 @@ func (r *Response) SetCookie(cookie *http.Cookie) {
 
 func (r *Response) ServeFile(file string) {
 	fasthttp.ServeFile(r.context, file)
+	r.committed = true
 }
 
 func (r *Response) Error(errMsg string, args ...int) {

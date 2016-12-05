@@ -1,0 +1,6 @@
+package protobuf;
+
+message Session {
+	optional bytes Values = 1;
+	optional int64 ExpiresAt = 2;
+}
