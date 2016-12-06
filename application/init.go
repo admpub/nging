@@ -67,6 +67,8 @@ func addRouter(e *echo.Echo) {
 		addFormHandler(g, `/web_restart`, ManageWebRestart)
 		addFormHandler(g, `/web_stop`, ManageWebStop)
 		addFormHandler(g, `/ftp_restart`, ManageFTPRestart)
+		addFormHandler(g, `/web_log`, ManageWebLog)
+		addFormHandler(g, `/ftp_log`, ManageFTPLog)
 		addFormHandler(g, `/ftp_stop`, ManageFTPStop)
 		addFormHandler(g, `/clear_cache`, ManageClearCache)
 		addFormHandler(g, `/execmd`, ManageSysCmd)

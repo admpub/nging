@@ -28,6 +28,7 @@ import (
 
 	"github.com/admpub/caddyui/application/library/config"
 	"github.com/admpub/caddyui/application/library/modal"
+	"github.com/admpub/caddyui/application/library/notice"
 	"github.com/admpub/caddyui/application/model"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
@@ -199,6 +200,6 @@ func ManageClearCache(ctx echo.Context) error {
 	if err := modal.Clear(); err != nil {
 		return err
 	}
-	chanUsers = map[string]*OnlineUser{}
+	notice.Clear()
 	return ctx.String(ctx.T(`已经清理完毕`))
 }

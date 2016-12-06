@@ -18,6 +18,7 @@
 package config
 
 import (
+	"errors"
 	"flag"
 	"io"
 	"os"
@@ -68,13 +69,40 @@ func (c *CLIConfig) CaddyStop() error {
 	return cmd.Process.Kill()
 }
 
+var ErrCmdNotRunning = errors.New(`command is not running`)
+
+func (c *CLIConfig) SetLogWriter(cmdType string, writer ...io.Writer) error {
+	if c.cmds == nil {
+		return ErrCmdNotRunning
+	}
+	cmd, ok := c.cmds[cmdType]
+	if !ok || cmd == nil {
+		return ErrCmdNotRunning
+	}
+	var wOut, wErr io.Writer
+	length := len(writer)
+	if length > 0 {
+		wOut = writer[0]
+		if length > 1 {
+			wErr = writer[1]
+		} else {
+			wErr = wOut
+		}
+	} else {
+		wOut = os.Stdout
+		wErr = os.Stderr
+	}
+	cmd.Stdout = wOut
+	cmd.Stderr = wErr
+	return nil
+}
+
 func (c *CLIConfig) CaddyRestart(writer ...io.Writer) error {
 	err := c.CaddyStop()
 	if err != nil {
 		return err
 	}
-	err = c.CaddyStart(writer...)
-	return err
+	return c.CaddyStart(writer...)
 }
 
 func (c *CLIConfig) FTPStopHistory() (err error) {
@@ -110,6 +138,5 @@ func (c *CLIConfig) FTPRestart(writer ...io.Writer) error {
 	if err != nil {
 		return err
 	}
-	err = c.FTPStart(writer...)
-	return err
+	return c.FTPStart(writer...)
 }

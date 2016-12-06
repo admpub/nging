@@ -80,13 +80,28 @@ $(function(){
 	App.markNav({{if Stored.Get "activeURL"}}'{{Stored.Get "activeURL"}}'{{else}}null{{end}});
 	App.attachAjaxURL();
 	{{if and . (or (IsError .) (IsOk .))}}App.message({title: '{{"系统消息"|T}}', text: "{{.}}"});{{end}}
+	var messageCount=0,messageMax=20;
 	App.websocket(function(message){
 		var c=$('#notice-message-container');
 		if(c.length<1){
 			App.message({title: '{{"系统消息"|T}}', text: '<ul id="notice-message-container" class="no-list-style"></ul>'});
 			c=$('#notice-message-container');
 		}
+		if(messageCount>=messageMax){
+			c.find('li:first').remove();
+		}
+		var m=$.parseJSON(message);
+		if(m.title){
+			var badge='badge-danger';
+			if(m.status==1){
+				badge='badge-success';
+			}
+			message='<span class="badge '+badge+'">'+m.title+'</span>'+m.content;
+		}else{
+			message=m.content;
+		}
 		c.append('<li>'+message+'</li>');
+		messageCount++;
 	},'/manage/notice');
 });
 </script>

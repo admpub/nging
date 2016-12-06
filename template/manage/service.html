@@ -11,28 +11,48 @@
         <dl class="clearfix">
             <dt>{{"Web服务"}}:</dt>
             <dd class="pull-left">
-                <button type="button" class="btn btn-primary btn-flat" data-ajax-url="/manage/web_restart">
+                <button type="button" class="btn btn-primary btn-flat" data-ajax-url="/manage/web_restart" title="{{"重启Web服务"|T}}">
                 <i class="fa fa-refresh"></i> {{"重启"|T}}
                 </button>
             </dd>
             <dd class="pull-left">
-                <button type="button" class="btn btn-warning btn-flat" data-ajax-url="/manage/web_stop">
+                <button type="button" class="btn btn-warning btn-flat" data-ajax-url="/manage/web_stop" title="{{"关闭Web服务"|T}}">
                 <i class="fa fa-power-off"></i> {{"关闭"|T}}
                 </button>
+            </dd>
+            <dd class="pull-left">
+                <div class="btn-group">
+                <button type="button" class="btn btn-default" data-ajax-url="/manage/web_log?on=true" title="{{"查看Web服务状态"|T}}">
+                <i class="fa fa-eye"></i> {{"查看状态"|T}}
+                </button>
+                <button type="button" class="btn btn-default" data-ajax-url="/manage/web_log" title="{{"停止查看Web服务状态"|T}}">
+                <i class="fa fa-eye-slash"></i> {{"停止查看"|T}}
+                </button>
+                </div>
             </dd>
         </dl>
         
         <dl class="clearfix">
             <dt>{{"FTP服务"}}:</dt>
             <dd class="pull-left">
-                <button type="button" class="btn btn-primary btn-flat" data-ajax-url="/manage/ftp_restart">
+                <button type="button" class="btn btn-primary btn-flat" data-ajax-url="/manage/ftp_restart" title="{{"重启FTP服务"|T}}">
                 <i class="fa fa-refresh"></i> {{"重启"|T}}
                 </button>
             </dd>
             <dd class="pull-left">
-                <button type="button" class="btn btn-warning btn-flat" data-ajax-url="/manage/ftp_stop">
+                <button type="button" class="btn btn-warning btn-flat" data-ajax-url="/manage/ftp_stop" title="{{"关闭FTP服务"|T}}">
                 <i class="fa fa-power-off"></i> {{"关闭"|T}}
                 </button>
+            </dd>
+            <dd class="pull-left">
+                <div class="btn-group">
+                <button type="button" class="btn btn-default" data-ajax-url="/manage/ftp_log?on=true" title="{{"查看FTP服务状态"|T}}">
+                <i class="fa fa-eye"></i> {{"查看状态"|T}}
+                </button>
+                <button type="button" class="btn btn-default" data-ajax-url="/manage/ftp_log" title="{{"停止查看FTP服务状态"|T}}">
+                <i class="fa fa-eye-slash"></i> {{"停止查看"|T}}
+                </button>
+                </div>
             </dd>
         </dl>
         </div>

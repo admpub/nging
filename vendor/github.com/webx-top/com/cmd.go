@@ -198,7 +198,7 @@ func RunCmdWithWriter(params []string, writer ...io.Writer) *exec.Cmd {
 		}
 	} else {
 		wOut = os.Stdout
-		wErr = os.Stdout
+		wErr = os.Stderr
 	}
 	cmd.Stdout = wOut
 	cmd.Stderr = wErr
@@ -206,7 +206,7 @@ func RunCmdWithWriter(params []string, writer ...io.Writer) *exec.Cmd {
 	go func() {
 		err := cmd.Run()
 		if err != nil {
-			wErr.Write([]byte(err.Error()))
+			cmd.Stderr.Write([]byte(err.Error()))
 		}
 	}()
 
