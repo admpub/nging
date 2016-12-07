@@ -5,6 +5,36 @@ SET time_zone = '+00:00';
 SET foreign_key_checks = 0;
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
+DROP TABLE IF EXISTS `ftp_user`;
+CREATE TABLE `ftp_user` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `username` varchar(120) NOT NULL COMMENT '用户名',
+  `password` varchar(150) NOT NULL COMMENT '密码',
+  `banned` enum('Y','N') NOT NULL DEFAULT 'N' COMMENT '是否禁止连接',
+  `directory` text NOT NULL COMMENT '授权目录(一行一个) ',
+  `ip_whitelist` text NOT NULL COMMENT 'IP白名单(一行一个) ',
+  `ip_blacklist` text NOT NULL COMMENT 'IP黑名单(一行一个) ',
+  `created` int(10) unsigned NOT NULL COMMENT '创建时间 ',
+  `updated` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='FTP用户';
+
+
+DROP TABLE IF EXISTS `ftp_user_group`;
+CREATE TABLE `ftp_user_group` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL COMMENT '组名称',
+  `created` int(10) unsigned NOT NULL COMMENT '创建时间',
+  `updated` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
+  `disabled` enum('Y','N') NOT NULL DEFAULT 'N' COMMENT '是否禁用',
+  `banned` enum('Y','N') NOT NULL DEFAULT 'N' COMMENT '是否禁止组内用户连接',
+  `directory` text NOT NULL COMMENT '授权目录(一行一个)',
+  `ip_whitelist` text NOT NULL COMMENT 'IP白名单(一行一个)',
+  `ip_blacklist` text NOT NULL COMMENT 'IP黑名单(一行一个)',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='FTP用户组';
+
+
 DROP TABLE IF EXISTS `vhost`;
 CREATE TABLE `vhost` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -17,4 +47,4 @@ CREATE TABLE `vhost` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='虚拟主机';
 
 
--- 2016-11-30 03:44:38
+-- 2016-12-07 11:11:31
