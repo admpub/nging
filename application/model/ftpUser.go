@@ -19,9 +19,12 @@ package model
 
 import (
 	"github.com/admpub/caddyui/application/dbschema"
+	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
+
+var DefaultSalt = ``
 
 func NewFtpUser(ctx echo.Context) *FtpUser {
 	return &FtpUser{
@@ -37,5 +40,10 @@ type FtpUser struct {
 
 func (f *FtpUser) Exists(username string) (bool, error) {
 	n, e := f.Param().SetArgs(db.Cond{`username`: username}).Count()
+	return n > 0, e
+}
+
+func (f *FtpUser) CheckPasswd(username string, password string) (bool, error) {
+	n, e := f.Param().SetArgs(db.Cond{`username`: username, `password`: com.MakePassword(password, DefaultSalt)}).Count()
 	return n > 0, e
 }

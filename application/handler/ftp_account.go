@@ -51,7 +51,7 @@ func FTPAccountAdd(ctx echo.Context) error {
 		}
 
 		if err == nil {
-			m.Password = com.MakePassword(m.Password, ``)
+			m.Password = com.MakePassword(m.Password, model.DefaultSalt)
 			_, err = m.Add()
 			if err == nil {
 				ctx.Session().AddFlash(Ok(ctx.T(`操作成功`)))
@@ -88,7 +88,7 @@ func FTPAccountEdit(ctx echo.Context) error {
 						//忽略密码为空的情况
 						return ``, v
 					}
-					v[0] = com.MakePassword(v[0], ``)
+					v[0] = com.MakePassword(v[0], model.DefaultSalt)
 				case `created`, `username`: //禁止修改创建时间和用户名
 					return ``, v
 				}

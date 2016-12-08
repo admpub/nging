@@ -100,6 +100,8 @@ func (c *Config) SetPermByType(storeType string, owner string, group string) *Co
 	switch storeType {
 	case `leveldb`:
 		c.SetPerm(ldbperm.NewLDBPerm(c.DB(), owner, group, os.ModePerm), owner, group)
+	default:
+		c.SetPerm(NewPerm(owner, group, os.ModePerm), owner, group)
 	}
 	return c
 }
@@ -117,6 +119,8 @@ func (c *Config) SetAuthByType(storeType string) *Config {
 	switch storeType {
 	case `leveldb`:
 		c.SetAuth(&ldbauth.LDBAuth{c.DB()})
+	default:
+		c.SetAuth(NewAuth())
 	}
 	return c
 }
