@@ -16,8 +16,10 @@ CREATE TABLE `ftp_user` (
   `ip_blacklist` text NOT NULL COMMENT 'IP黑名单(一行一个) ',
   `created` int(10) unsigned NOT NULL COMMENT '创建时间 ',
   `updated` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='FTP用户';
+  `group_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户组',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='FTP用户';
 
 
 DROP TABLE IF EXISTS `ftp_user_group`;
@@ -32,7 +34,7 @@ CREATE TABLE `ftp_user_group` (
   `ip_whitelist` text NOT NULL COMMENT 'IP白名单(一行一个)',
   `ip_blacklist` text NOT NULL COMMENT 'IP黑名单(一行一个)',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='FTP用户组';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='FTP用户组';
 
 
 DROP TABLE IF EXISTS `vhost`;
@@ -44,7 +46,7 @@ CREATE TABLE `vhost` (
   `setting` text NOT NULL COMMENT '设置',
   `disabled` enum('Y','N') NOT NULL DEFAULT 'N' COMMENT '是否停用',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='虚拟主机';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='虚拟主机';
 
 
--- 2016-12-07 11:11:31
+-- 2016-12-08 10:03:05

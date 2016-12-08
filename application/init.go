@@ -100,6 +100,11 @@ func addRouter(e *echo.Echo) {
 		addFormHandler(g, `/account_add`, FTPAccountAdd)
 		addFormHandler(g, `/account_edit`, FTPAccountEdit)
 		addFormHandler(g, `/account_delete`, FTPAccountDelete)
+
+		addHandler(g, `/group`, FTPGroupIndex)
+		addFormHandler(g, `/group_add`, FTPGroupAdd)
+		addFormHandler(g, `/group_edit`, FTPGroupEdit)
+		addFormHandler(g, `/group_delete`, FTPGroupDelete)
 	}
 }
 

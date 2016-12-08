@@ -51,8 +51,8 @@ type (
 		Set(string, interface{})
 		Get(string) interface{}
 		Stored() store
-		Bind(interface{}) error
-		MustBind(interface{}) error
+		Bind(interface{}, ...FormDataFilter) error
+		MustBind(interface{}, ...FormDataFilter) error
 		Render(string, interface{}, ...int) error
 		HTML(string, ...int) error
 		String(string, ...int) error
@@ -318,12 +318,12 @@ func (c *xContext) Stored() store {
 
 // Bind binds the request body into specified type `i`. The default binder does
 // it based on Content-Type header.
-func (c *xContext) Bind(i interface{}) error {
-	return c.echo.binder.Bind(i, c)
+func (c *xContext) Bind(i interface{}, filter ...FormDataFilter) error {
+	return c.echo.binder.Bind(i, c, filter...)
 }
 
-func (c *xContext) MustBind(i interface{}) error {
-	return c.echo.binder.MustBind(i, c)
+func (c *xContext) MustBind(i interface{}, filter ...FormDataFilter) error {
+	return c.echo.binder.MustBind(i, c, filter...)
 }
 
 // Render renders a template with data and sends a text/html response with status
