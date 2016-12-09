@@ -133,10 +133,31 @@ func (c *CLIConfig) FTPStop() error {
 	return cmd.Process.Kill()
 }
 
+func (c *CLIConfig) IsRunning(ct string) bool {
+	if c.cmds == nil {
+		return false
+	}
+	cmd, ok := c.cmds[ct]
+	if !ok {
+		return false
+	}
+	return CmdIsRunning(cmd)
+}
+
 func (c *CLIConfig) FTPRestart(writer ...io.Writer) error {
 	err := c.FTPStop()
 	if err != nil {
 		return err
 	}
 	return c.FTPStart(writer...)
+}
+
+func (c *CLIConfig) Reload() error {
+	if c.IsRunning(`caddy`) {
+		c.CaddyRestart()
+	}
+	if c.IsRunning(`ftp`) {
+		c.FTPRestart()
+	}
+	return nil
 }

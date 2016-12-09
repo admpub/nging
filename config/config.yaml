@@ -31,3 +31,21 @@ cookie {
   hashKey  : "123456789012345678901234567890aa" #32位
   blockKey : "123456789012345678901234567890cc" #32位
 }
+ftp {
+  pidFile        : ""
+  ###########暂时无效################
+	#dbType         : ""
+	#ftpStoreType   : ""
+	#ftpOptions     : ""
+  ###########################
+  name           : ""
+  hostName       : ""
+  publicIP       : ""
+  passivePorts   : ""
+  port           : 233
+	tls            : false
+	certFile       : ""
+  keyFile        : ""
+	explicitFTPS   : false
+	welcomeMessage : ""
+}

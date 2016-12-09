@@ -3,6 +3,7 @@ package config
 import (
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -48,7 +49,14 @@ func ParseConfig() error {
 	} else {
 		log.SetLevel(`Info`)
 	}
-	return ConnectDB()
+
+	err = ConnectDB()
+	if err != nil {
+		return err
+	}
+
+	err = DefaultCLIConfig.Reload()
+	return err
 }
 
 func ConnectDB() error {
@@ -128,4 +136,8 @@ func MustOK(err error) {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+}
+
+func CmdIsRunning(cmd *exec.Cmd) bool {
+	return cmd != nil && cmd.ProcessState == nil
 }
