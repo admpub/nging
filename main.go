@@ -54,7 +54,10 @@ func main() {
 		return
 	}
 
-	if err := config.DefaultCLIConfig.CaddyStart(); err != nil {
+	if err := config.DefaultCLIConfig.CaddyRestart(); err != nil {
+		log.Error(err)
+	}
+	if err := config.DefaultCLIConfig.FTPRestart(); err != nil {
 		log.Error(err)
 	}
 

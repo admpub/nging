@@ -64,10 +64,12 @@ func NoticeWriter(ctx echo.Context, noticeType string) (wOut io.Writer, wErr io.
 	notice.OpenMessage(user, typ)
 
 	wOut = &com.CmdResultCapturer{Do: func(b []byte) error {
+		os.Stdout.Write(b)
 		notice.Send(user, notice.NewMessageWithValue(typ, noticeType, string(b), notice.Succeed))
 		return nil
 	}}
 	wErr = &com.CmdResultCapturer{Do: func(b []byte) error {
+		os.Stderr.Write(b)
 		notice.Send(user, notice.NewMessageWithValue(typ, noticeType, string(b), notice.Failed))
 		return nil
 	}}

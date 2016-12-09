@@ -18,11 +18,18 @@
 package model
 
 import (
+	"errors"
+
 	"github.com/admpub/caddyui/application/dbschema"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
+
+type FtpUserAndGroup struct {
+	*dbschema.FtpUser
+	Group *dbschema.FtpUserGroup
+}
 
 var DefaultSalt = ``
 
@@ -45,5 +52,48 @@ func (f *FtpUser) Exists(username string) (bool, error) {
 
 func (f *FtpUser) CheckPasswd(username string, password string) (bool, error) {
 	n, e := f.Param().SetArgs(db.Cond{`username`: username, `password`: com.MakePassword(password, DefaultSalt)}).Count()
-	return n > 0, e
+	y := n > 0
+	if y {
+		_, e = f.RootPath(username)
+		if e != nil {
+			y = false
+		}
+	}
+	return y, e
+}
+
+var (
+	ErrNoneFtpDirectory = errors.New(`No accessible directory`)
+	ErrBannedFtpUser    = errors.New(`The current account has been disabled`)
+)
+
+func (f *FtpUser) RootPath(username string) (basePath string, err error) {
+	err = f.Get(nil, db.Cond{`username`: username})
+	if err != nil {
+		return
+	}
+	if f.FtpUser.GroupId > 0 {
+		m := NewFtpUserGroup(f.Base.Context)
+		err = m.Get(nil, db.Cond{`id`: f.FtpUser.GroupId})
+		if err != nil {
+			return
+		}
+		if m.FtpUserGroup.Banned == `Y` {
+			err = ErrBannedFtpUser
+			return
+		}
+		basePath = m.FtpUserGroup.Directory
+	}
+	if f.FtpUser.Banned == `Y` {
+		err = ErrBannedFtpUser
+		return
+	}
+	if len(f.FtpUser.Directory) > 0 {
+		basePath = f.FtpUser.Directory
+		return
+	}
+	if len(basePath) < 1 {
+		err = ErrNoneFtpDirectory
+	}
+	return
 }

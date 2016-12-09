@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 
+	"github.com/admpub/caddyui/application/dbschema"
 	"github.com/admpub/caddyui/application/model"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
@@ -27,7 +28,46 @@ func FTPAccountIndex(ctx echo.Context) error {
 		ret = err
 	}
 	ctx.SetFunc(`totalRows`, cnt)
-	ctx.Set(`listData`, m.Objects())
+	users := m.Objects()
+	gIds := []uint{}
+	userAndGroup := make([]*model.FtpUserAndGroup, len(users))
+	for k, u := range users {
+		userAndGroup[k] = &model.FtpUserAndGroup{
+			FtpUser: u,
+		}
+		if u.GroupId < 1 {
+			continue
+		}
+		has := false
+		for _, gid := range gIds {
+			if gid == u.GroupId {
+				has = true
+				break
+			}
+		}
+		if !has {
+			gIds = append(gIds, u.GroupId)
+		}
+	}
+
+	mg := model.NewFtpUserGroup(ctx)
+	var groupList []*dbschema.FtpUserGroup
+	_, err = mg.List(&groupList, nil, 1, 1000, db.Cond{`id IN`: gIds})
+	if err != nil {
+		if ret == nil {
+			ret = err
+		}
+	} else {
+		for k, v := range userAndGroup {
+			for _, g := range groupList {
+				if g.Id == v.GroupId {
+					userAndGroup[k].Group = g
+					break
+				}
+			}
+		}
+	}
+	ctx.Set(`listData`, userAndGroup)
 	return ctx.Render(`ftp/account`, ret)
 }
 

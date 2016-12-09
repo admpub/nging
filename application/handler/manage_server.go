@@ -15,6 +15,12 @@ import (
 	"github.com/webx-top/echo"
 )
 
+var WebSocketLogger = log.GetLogger(`websocket`)
+
+func init() {
+	WebSocketLogger.SetLevel(`Info`)
+}
+
 func ManageSysCmd(ctx echo.Context) error {
 	var err error
 	return ctx.Render(`manage/execmd`, err)
@@ -26,9 +32,9 @@ func ManageSockJSSendCmd(c sockjs.Session) error {
 	go func() {
 		for {
 			message := <-send
-			log.Info(`Push message: `, message)
+			WebSocketLogger.Debug(`Push message: `, message)
 			if err := c.Send(message); err != nil {
-				log.Error(`Push error: `, err.Error())
+				WebSocketLogger.Error(`Push error: `, err.Error())
 				return
 			}
 		}
@@ -55,7 +61,7 @@ func ManageSockJSSendCmd(c sockjs.Session) error {
 	}
 	err := execute(c)
 	if err != nil {
-		log.Error(err)
+		WebSocketLogger.Error(err)
 	}
 	return nil
 }
@@ -66,9 +72,9 @@ func ManageWSSendCmd(c *websocket.Conn, ctx echo.Context) error {
 	go func() {
 		for {
 			message := <-send
-			log.Info(`Push message: `, message)
+			WebSocketLogger.Debug(`Push message: `, message)
 			if err := c.WriteMessage(websocket.TextMessage, []byte(message)); err != nil {
-				log.Error(`Push error: `, err.Error())
+				WebSocketLogger.Error(`Push error: `, err.Error())
 				return
 			}
 		}
@@ -96,7 +102,7 @@ func ManageWSSendCmd(c *websocket.Conn, ctx echo.Context) error {
 	}
 	err := execute(c)
 	if err != nil {
-		log.Error(err)
+		WebSocketLogger.Error(err)
 	}
 	return nil
 }

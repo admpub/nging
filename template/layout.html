@@ -84,7 +84,7 @@ $(function(){
 	App.websocket(function(message){
 		var c=$('#notice-message-container');
 		if(c.length<1){
-			App.message({title: '{{"系统消息"|T}}', text: '<ul id="notice-message-container" class="no-list-style"></ul>'});
+			App.message({title: '{{"系统消息"|T}}', text: '<ul id="notice-message-container" class="no-list-style" style="max-height:500px;overflow-y:auto;overflow-x:hidden"></ul>'});
 			c=$('#notice-message-container');
 		}
 		if(messageCount>=messageMax){
@@ -100,7 +100,7 @@ $(function(){
 		}else{
 			message=m.content;
 		}
-		c.append('<li>'+message+'</li>');
+		c.append('<li>'+App.text2html(message)+'</li>');
 		messageCount++;
 	},'/manage/notice');
 });

@@ -1689,6 +1689,10 @@ var App = function () {
         ws=$.extend({},ws,onopen);
       }
       return ws;
+    },
+
+    text2html:function(text){
+      return String(text).replace(/\n/g,'<br />').replace(/  /g,'&nbsp; ').replace(/\t/g,'&nbsp; &nbsp; ')
     }
     
   };

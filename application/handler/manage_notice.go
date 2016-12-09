@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/admpub/caddyui/application/library/notice"
-	"github.com/admpub/log"
 	"github.com/admpub/websocket"
 	"github.com/webx-top/echo"
 )
@@ -20,9 +19,9 @@ func ManageNotice(c *websocket.Conn, ctx echo.Context) error {
 	go func() {
 		for {
 			message := notice.RecvJSON(user)
-			log.Info(`Push message: `, string(message))
+			WebSocketLogger.Debug(`Push message: `, string(message))
 			if err := c.WriteMessage(websocket.TextMessage, message); err != nil {
-				log.Error(`Push error: `, err.Error())
+				WebSocketLogger.Error(`Push error: `, err.Error())
 				return
 			}
 		}
@@ -43,7 +42,7 @@ func ManageNotice(c *websocket.Conn, ctx echo.Context) error {
 	}
 	err := execute(c)
 	if err != nil {
-		log.Error(err)
+		WebSocketLogger.Error(err)
 	}
 	return nil
 }

@@ -31,7 +31,7 @@
 									<tr>
 										<td>{{$v.Id}}</td>
 										<td>{{$v.Username}}</td>
-										<td>{{$v.GroupId}}</td>
+										<td>{{if $v.Group}}{{$v.Group.Name}}{{else}}{{"无"|T}}{{end}}</td>
 										<td>{{$v.Directory}}</td>
 										<td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}</td>
 										<td>{{if gt $v.Updated 0}}{{(Date $v.Updated).Format "2006-01-02 15:04:05"}}{{end}}</td>

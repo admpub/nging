@@ -50,7 +50,7 @@ function showMsg(data){
 		modalBody.find('li:first').remove();
 		rows--;
 	}
-	modalBody.append('<li>'+data.replace(/\n/g,'<br />').replace(/  /g,'&nbsp; ')+'</li>');
+	modalBody.append('<li>'+App.text2html(data)+'</li>');
 	rows++;
 }
 function connectSockJS(onopen){

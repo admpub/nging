@@ -11,7 +11,7 @@ CREATE TABLE `ftp_user` (
   `username` varchar(120) NOT NULL COMMENT '用户名',
   `password` varchar(150) NOT NULL COMMENT '密码',
   `banned` enum('Y','N') NOT NULL DEFAULT 'N' COMMENT '是否禁止连接',
-  `directory` text NOT NULL COMMENT '授权目录(一行一个) ',
+  `directory` varchar(500) NOT NULL COMMENT '授权目录(一行一个) ',
   `ip_whitelist` text NOT NULL COMMENT 'IP白名单(一行一个) ',
   `ip_blacklist` text NOT NULL COMMENT 'IP黑名单(一行一个) ',
   `created` int(10) unsigned NOT NULL COMMENT '创建时间 ',
@@ -30,7 +30,7 @@ CREATE TABLE `ftp_user_group` (
   `updated` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
   `disabled` enum('Y','N') NOT NULL DEFAULT 'N' COMMENT '是否禁用',
   `banned` enum('Y','N') NOT NULL DEFAULT 'N' COMMENT '是否禁止组内用户连接',
-  `directory` text NOT NULL COMMENT '授权目录(一行一个)',
+  `directory` varchar(500) NOT NULL COMMENT '授权目录',
   `ip_whitelist` text NOT NULL COMMENT 'IP白名单(一行一个)',
   `ip_blacklist` text NOT NULL COMMENT 'IP黑名单(一行一个)',
   PRIMARY KEY (`id`)
@@ -49,4 +49,4 @@ CREATE TABLE `vhost` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='虚拟主机';
 
 
--- 2016-12-08 10:03:05
+-- 2016-12-09 09:15:29
