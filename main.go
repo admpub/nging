@@ -38,9 +38,13 @@ import (
 	"github.com/admpub/letsencrypt"
 )
 
+var Version = `v0.1.0 beta1`
+
 func main() {
 	config.DefaultCLIConfig.InitFlag()
 	flag.Parse()
+
+	config.SetVersion(Version)
 
 	config.MustOK(config.ParseConfig())
 

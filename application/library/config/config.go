@@ -22,6 +22,10 @@ import (
 	"github.com/admpub/caddyui/application/library/ftp"
 )
 
+func SetVersion(version string) {
+	caddy.DefaultVersion = version
+}
+
 type Config struct {
 	DB struct {
 		Type     string            `json:"type"`

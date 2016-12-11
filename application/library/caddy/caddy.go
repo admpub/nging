@@ -46,6 +46,7 @@ var (
 		CPU:        `100%`,
 		PidFile:    `./caddy.pid`,
 	}
+	DefaultVersion = `v0.1.0`
 )
 
 func TrapSignals() {
@@ -68,6 +69,8 @@ func Fixed(c *Config) {
 	if c.PidFile == `` {
 		c.PidFile = DefaultConfig.PidFile
 	}
+	c.appName = `nging`
+	c.appVersion = DefaultVersion
 }
 
 type Config struct {
@@ -88,10 +91,9 @@ type Config struct {
 	Version bool `json:"version"` //Show version
 
 	//---
-	AppName    string `json:"appName"`
-	AppVersion string `json:"appVersion"`
-
-	instance *caddy.Instance
+	appVersion string
+	appName    string
+	instance   *caddy.Instance
 }
 
 func (c *Config) Start() {
@@ -148,7 +150,7 @@ func (c *Config) Init() *Config {
 	caddy.RegisterCaddyfileLoader("flag", caddy.LoaderFunc(c.confLoader))
 	caddy.SetDefaultCaddyfileLoader("default", caddy.LoaderFunc(c.defaultLoader))
 
-	acme.UserAgent = c.AppName + "/" + c.AppVersion
+	acme.UserAgent = c.appName + "/" + c.appVersion
 
 	// Set up process log before anything bad happens
 	switch c.LogFile {
@@ -177,7 +179,7 @@ func (c *Config) Init() *Config {
 		os.Exit(0)
 	}
 	if c.Version {
-		fmt.Printf("%s %s\n", c.AppName, c.AppVersion)
+		fmt.Printf("%s %s\n", c.appName, c.appVersion)
 		os.Exit(0)
 	}
 	if c.Plugins {
