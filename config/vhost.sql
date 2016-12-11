@@ -1,4 +1,4 @@
--- Adminer 4.2.3 MySQL dump
+-- Adminer 4.2.5 MySQL dump
 
 SET NAMES utf8;
 SET time_zone = '+00:00';
@@ -41,6 +41,7 @@ DROP TABLE IF EXISTS `vhost`;
 CREATE TABLE `vhost` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `domain` text NOT NULL COMMENT '域名',
+  `root` varchar(500) NOT NULL COMMENT '网站物理路径',
   `created` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `updated` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   `setting` text NOT NULL COMMENT '设置',
@@ -49,4 +50,4 @@ CREATE TABLE `vhost` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='虚拟主机';
 
 
--- 2016-12-09 09:15:29
+-- 2016-12-11 11:16:40

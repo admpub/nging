@@ -15,6 +15,7 @@ type Vhost struct {
 	
 	Id      	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	Domain  	string  	`db:"domain" bson:"domain" comment:"域名" json:"domain" xml:"domain"`
+	Root    	string  	`db:"root" bson:"root" comment:"网站物理路径" json:"root" xml:"root"`
 	Created 	uint    	`db:"created" bson:"created" comment:"创建时间" json:"created" xml:"created"`
 	Updated 	uint    	`db:"updated" bson:"updated" comment:"更新时间" json:"updated" xml:"updated"`
 	Setting 	string  	`db:"setting" bson:"setting" comment:"设置" json:"setting" xml:"setting"`

@@ -19,7 +19,7 @@ type FtpUserGroup struct {
 	Updated     	uint    	`db:"updated" bson:"updated" comment:"修改时间" json:"updated" xml:"updated"`
 	Disabled    	string  	`db:"disabled" bson:"disabled" comment:"是否禁用" json:"disabled" xml:"disabled"`
 	Banned      	string  	`db:"banned" bson:"banned" comment:"是否禁止组内用户连接" json:"banned" xml:"banned"`
-	Directory   	string  	`db:"directory" bson:"directory" comment:"授权目录(一行一个)" json:"directory" xml:"directory"`
+	Directory   	string  	`db:"directory" bson:"directory" comment:"授权目录" json:"directory" xml:"directory"`
 	IpWhitelist 	string  	`db:"ip_whitelist" bson:"ip_whitelist" comment:"IP白名单(一行一个)" json:"ip_whitelist" xml:"ip_whitelist"`
 	IpBlacklist 	string  	`db:"ip_blacklist" bson:"ip_blacklist" comment:"IP黑名单(一行一个)" json:"ip_blacklist" xml:"ip_blacklist"`
 }

@@ -18,6 +18,7 @@
 									<tr>
 										<th style="width:2%;"><strong>ID</strong></th>
 										<th><strong>{{"域名/网址/IP"|T}}</strong></th>
+										<th><strong>{{"物理路径"|T}}</strong></th>
 										<th style="width:15%;"><strong>{{"创建时间"|T}}</strong></th>
 										<th style="width:15%;"><strong>{{"更新时间"|T}}</strong></th>
 										<th style="width:6%;"><strong>{{"状态"|T}}</strong></th>
@@ -29,6 +30,7 @@
 									<tr>
 										<td>{{$v.Id}}</td>
 										<td>{{$v.Domain}}</td>
+										<td>{{$v.Root}}</td>
 										<td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}</td>
 										<td>{{if gt $v.Updated 0}}{{(Date $v.Updated).Format "2006-01-02 15:04:05"}}{{end}}</td>
                                         {{if eq $v.Disabled "Y"}}

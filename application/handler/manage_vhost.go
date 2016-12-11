@@ -62,6 +62,7 @@ func ManageVhostAdd(ctx echo.Context) error {
 		m := model.NewVhost(ctx)
 		m.Domain = ctx.Form(`domain`)
 		m.Disabled = ctx.Form(`disabled`)
+		m.Root = ctx.Form(`root`)
 		var b []byte
 		b, err = json.Marshal(ctx.Forms())
 		switch {
@@ -162,6 +163,7 @@ func ManageVhostEdit(ctx echo.Context) error {
 	if ctx.IsPost() {
 		m.Domain = ctx.Form(`domain`)
 		m.Disabled = ctx.Form(`disabled`)
+		m.Root = ctx.Form(`root`)
 		var b []byte
 		b, err = json.Marshal(ctx.Forms())
 		switch {
