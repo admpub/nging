@@ -1,0 +1,7 @@
+Id : "multi-upload-modal"
+Custom : true
+HeadTitle : "上传文件到当前目录"
+Title : ""
+Content : "<form action='' class='dropzone' id='multi-upload-dropzone'></form>"
+Type : "primary"
+ExtButtons : []

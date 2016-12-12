@@ -1,17 +1,34 @@
 {{Extend "layout"}}
+
 {{Block "title"}}{{"网站文件管理"|T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li class="active">{{"网站文件管理"|T}}: {{Stored.Get "absFile"}}</li>
+<li class="active">{{"网站文件管理"|T}}: {{Stored.Get "absPath"}}</li>
 {{/Block}}
+
+{{Block "head"}}
+<link rel="stylesheet" type="text/css" href="__ASSETS__/js/dropzone/min/dropzone.min.css" />
+<link rel="stylesheet" href="__ASSETS__/js/jquery.niftymodals/css/component.css">
+{{/Block}}
+
 {{Block "main"}}
+
 <div class="row">
 				<div class="col-md-12">
 					<div class="block-flat">
 						<div class="header">							
-							<h3>{{"网站文件管理"|T}}</h3>
+							<div class="btn-group">
+								<button type="button" id="uploadBtn" class="btn btn-primary">
+                                    <i class="fa fa-upload"></i>
+                                    {{"上传文件到当前目录"|T}}
+                                </button>
+								<button type="button" id="uploadZipBtn" class="btn btn-warning" data-popover="popover" data-original-title="" data-content="{{"仅支持上传zip压缩包。成功解压到当前目录后，该压缩包会被自动删除"|T}}" data-placement="top" data-trigger="hover">
+                                    <i class="fa fa-upload"></i>
+                                    {{"打包上传到当前目录"|T}}
+                                </button>
+							</div>
 						</div>
-						<div class="content">
+						<div class="content" id="file-list">
 							<div class="table-responsive">
 							<table class="table no-border hover">
 								<thead class="no-border">
@@ -24,12 +41,12 @@
 									</tr>
 								</thead>
 								<tbody class="no-border-y">
-                                    {{$path := Stored.Get "file"}}
+                                    {{$path := Stored.Get "path"}}
                                     {{if $path}}
                                     <tr>
 										<td>
                                             <i class="fa fa-folder-o"></i>
-                                            <a href="/manage/vhost_file?id={{Stored.data.Id}}&file={{$path}}/..">..</a>
+                                            <a href="/manage/vhost_file?id={{Stored.data.Id}}&path={{$path}}/..">..</a>
                                         </td>
 										<td></td>
 										<td></td>
@@ -45,19 +62,19 @@
                                             {{else}}
                                             <i class="fa fa-file-o"></i>
                                             {{end}}
-                                            <a href="/manage/vhost_file?id={{Stored.data.Id}}&file={{if $path}}{{$path}}/{{end}}{{$v.Name}}">{{$v.Name}}</a>
+                                            <a href="/manage/vhost_file?id={{Stored.data.Id}}&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">{{$v.Name}}</a>
                                         </td>
 										<td>{{$v.ModTime.Format "2006-01-02 15:04:05"}}</td>
 										<td>{{if $v.IsDir}}{{"文件夹"|T}}{{else}}{{"文件"|T}}{{end}}</td>
 										<td>{{if $v.IsDir}}-{{else}}{{$v.Size|FormatByte}}{{end}}</td>
 										<td class="text-center">
                                             {{if not $v.IsDir}}
-                                            <a class="label label-default" href="/manage/vhost_file?id={{Stored.data.Id}}&do=edit&file={{if $path}}{{$path}}/{{end}}{{$v.Name}}">
+                                            <a class="label label-default" href="javascript:;" data-url="/manage/vhost_file?id={{Stored.data.Id}}&do=edit&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileEdit(this)">
                                             <i class="fa fa-pencil"></i>
                                             </a>
                                             &nbsp;
                                             {{end}}
-                                            <a class="label label-danger" href="/manage/vhost_file?id={{Stored.data.Id}}&do=delete&file={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="return confirm('{{"真的要删除吗？"|T}}');">
+                                            <a class="label label-danger" href="/manage/vhost_file?id={{Stored.data.Id}}&do=delete&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="return confirm('{{T "真的要删除“%v”吗？" $v.Name}}');">
                                             <i class="fa fa-times"></i>
                                             </a>
                                         </td>
@@ -70,4 +87,66 @@
 					</div>				
 				</div>
 			</div>
+{{/Block}}
+
+{{Block "footer"}}
+{{Modal "__TMPL__/manage/file.yaml"}}
+{{Modal "__TMPL__/manage/file_zip.yaml"}}
+{{Modal "__TMPL__/manage/file_edit.yaml"}}
+<script type="text/javascript" src="__ASSETS__/js/dropzone/min/dropzone.min.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/jquery.niftymodals/js/jquery.modalEffects.js"></script> 
+<script>
+function uploadURL(vhostId,currentPath){
+    return '/manage/vhost_file?id='+vhostId+'&do=upload&path='+encodeURIComponent(currentPath);
+}
+function refreshList() {
+    $.get(window.location.href,{pjax:1},function(r){
+        var e=$(r);
+        $('#pcont .cl-mcont #file-list').html(e.find('#file-list').html());
+        //initDropzone();
+    },'html');
+}
+var dropzone,dropzoneZIP;
+function initDropzone() {
+    $('#multi-upload-dropzone').dropzone({
+        url:uploadURL('{{Stored.data.Id}}','{{Stored.path}}'),
+        dictDefaultMessage:'{{"可以把文件拖到这里来进行上传哦"|T}}'
+    });
+    $('#multi-upload-zip-dropzone').dropzone({
+        url:uploadURL('{{Stored.data.Id}}','{{Stored.path}}')+'&pipe=unzip',
+        dictDefaultMessage:'{{"可以把文件拖到这里来进行上传哦"|T}}<p>{{"仅支持上传zip压缩包。成功解压到当前目录后，该压缩包会被自动删除"|T}}</p>',
+        acceptedFiles:'application/zip,application/x-zip-compressed'
+    });
+    
+    dropzone=$('#multi-upload-dropzone').get(0).dropzone;
+    dropzoneZIP=$('#multi-upload-zip-dropzone').get(0).dropzone;
+}
+function fileEdit(obj) {
+    var url=$(obj).data('url');
+    $.get(url,{},function(r){
+        if(r.Code==0)return App.message({title: '{{"系统消息"|T}}', text: r.Info},false);
+        $('#file-edit-modal').niftyModal('show',{afterOpen: function(modal) {
+            $('#file-edit-content').html(r.Data.replace(/</g,'&lt;').replace(/>/g,'&gt;'));
+        },afterClose:function(modal){
+            $('#file-edit-content').html('');
+        }});
+    },'json');
+}
+Dropzone.autoDiscover=false;
+$(function(){
+    initDropzone();
+	$('#uploadBtn').on('click',function(event){
+		$('#multi-upload-modal').niftyModal('show',{afterClose:function(modal){
+            dropzone.removeAllFiles();
+            refreshList();
+        }});
+	});
+    $('#uploadZipBtn').on('click',function(event){
+		$('#multi-upload-zip-modal').niftyModal('show',{afterClose:function(modal){
+            dropzoneZIP.removeAllFiles();
+            refreshList();
+        }});
+	});
+});
+</script>
 {{/Block}}

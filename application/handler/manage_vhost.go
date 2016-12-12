@@ -32,6 +32,7 @@ import (
 	"github.com/admpub/caddyui/application/library/modal"
 	"github.com/admpub/caddyui/application/library/notice"
 	"github.com/admpub/caddyui/application/model"
+	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
@@ -40,19 +41,7 @@ func ManageIndex(ctx echo.Context) error {
 	m := model.NewVhost(ctx)
 	page, size := Paging(ctx)
 	cnt, err := m.List(nil, nil, page, size)
-	var ret interface{}
-	if err == nil {
-		flash := ctx.Flash()
-		if flash != nil {
-			if errMsg, ok := flash.(string); ok {
-				ret = errors.New(errMsg)
-			} else {
-				ret = flash
-			}
-		}
-	} else {
-		ret = err
-	}
+	ret := Err(ctx, err)
 	ctx.SetFunc(`totalRows`, cnt)
 	ctx.Set(`listData`, m.Objects())
 	return ctx.Render(`manage/index`, ret)
@@ -211,56 +200,176 @@ func ManageClearCache(ctx echo.Context) error {
 func ManageVhostFile(ctx echo.Context) error {
 	var err error
 	vhostId := ctx.Formx(`id`).Uint()
-	file := ctx.Form(`file`)
+	filePath := ctx.Form(`path`)
 	do := ctx.Form(`do`)
 	m := model.NewVhost(ctx)
 	err = m.Get(nil, db.Cond{`id`: vhostId})
-	absFile := m.Root
+	absPath := m.Root
 	if err == nil && len(m.Root) > 0 {
 		var exit bool
+
+		if len(filePath) > 0 {
+			filePath = filepath.Clean(filePath)
+			absPath = filepath.Join(m.Root, filePath)
+		}
+
 		switch do {
 		case `edit`:
-		case `delete`:
-		default:
-			if len(file) > 0 {
-				file = filepath.Clean(file)
-				absFile = filepath.Join(m.Root, file)
+			data := ctx.NewData()
+			dat, err := fileEdit(ctx, absPath)
+			if err != nil {
+				data.Info = err.Error()
+			} else {
+				data.Code = 1
+				data.Data = dat
 			}
-			err, exit = fileList(ctx, absFile)
+			return ctx.JSON(data)
+		case `rename`:
+			data := ctx.NewData()
+			newName := ctx.Form(`name`)
+			if len(newName) > 0 {
+				err = os.Rename(absPath, filepath.Join(filepath.Dir(absPath), filepath.Base(newName)))
+			} else {
+				err = errors.New(ctx.T(`请输入文件名称`))
+			}
+			if err != nil {
+				data.Info = err.Error()
+			} else {
+				data.Code = 1
+			}
+			return ctx.JSON(data)
+		case `delete`:
+			err = fileRemove(absPath)
+			if err != nil {
+				ctx.Session().AddFlash(err)
+			}
+			return ctx.Redirect(ctx.Referer())
+		case `upload`:
+			err = fileUpload(ctx, absPath)
+			if err != nil {
+				user, _ := ctx.Get(`user`).(string)
+				if len(user) > 0 {
+					notice.OpenMessage(user, `upload`)
+					notice.Send(user, notice.NewMessageWithValue(`upload`, ctx.T(`文件上传出错`), err.Error()))
+				}
+				return err
+			}
+			return ctx.String(`OK`)
+		default:
+			err, exit = fileList(ctx, absPath)
 		}
 		if exit {
 			return err
 		}
 	}
 	ctx.Set(`data`, m)
-	if file == `.` {
-		file = ``
+	if filePath == `.` {
+		filePath = ``
 	}
-	ctx.Set(`file`, file)
-	ctx.Set(`absFile`, absFile)
+	ctx.Set(`path`, filePath)
+	ctx.Set(`absPath`, absPath)
 	ctx.Set(`activeURL`, `/manage`)
 	return ctx.Render(`manage/file`, err)
 }
 
-func fileList(ctx echo.Context, absFile string) (err error, exit bool) {
-	fs := http.Dir(filepath.Dir(absFile))
-	var d http.File
-	fileName := filepath.Base(absFile)
-	d, err = fs.Open(fileName)
-	if err == nil {
-		defer d.Close()
-		var fi os.FileInfo
-		fi, err = d.Stat()
-		if err == nil {
-			if !fi.IsDir() {
-				return ctx.Attachment(d, fileName), true
-			}
-			var dirs []os.FileInfo
-			dirs, err = d.Readdir(-1)
-			sort.Sort(byFileType(dirs))
-			ctx.Set(`dirs`, dirs)
-		}
+func fileEdit(ctx echo.Context, absPath string) (interface{}, error) {
+	fi, err := os.Stat(absPath)
+	if err != nil {
+		return nil, err
 	}
+	if fi.IsDir() {
+		return nil, errors.New(ctx.T(`不能编辑文件夹`))
+	}
+	if ctx.IsPost() {
+		content := ctx.Form(`content`)
+		err = ioutil.WriteFile(absPath, []byte(content), fi.Mode())
+		return nil, err
+	}
+	b, err := ioutil.ReadFile(absPath)
+	return string(b), err
+}
+
+func fileRemove(absPath string) error {
+	fi, err := os.Stat(absPath)
+	if err != nil {
+		return err
+	}
+	if fi.IsDir() {
+		return os.RemoveAll(absPath)
+	}
+	return os.Remove(absPath)
+}
+
+func enterPath(absPath string) (d http.File, fi os.FileInfo, err error) {
+	fs := http.Dir(filepath.Dir(absPath))
+	fileName := filepath.Base(absPath)
+	d, err = fs.Open(fileName)
+	if err != nil {
+		return
+	}
+	//defer d.Close()
+	fi, err = d.Stat()
+	return
+}
+
+func fileUpload(ctx echo.Context, absPath string) (err error) {
+	var (
+		d  http.File
+		fi os.FileInfo
+	)
+	d, fi, err = enterPath(absPath)
+	if d != nil {
+		defer d.Close()
+	}
+	if err != nil {
+		return
+	}
+	if !fi.IsDir() {
+		return errors.New(ctx.T(`路径不正确`))
+	}
+	pipe := ctx.Form(`pipe`)
+	switch pipe {
+	case `unzip`:
+		fileHdr, err := ctx.SaveUploadedFile(`file`, absPath)
+		if err != nil {
+			return err
+		}
+		filePath := filepath.Join(absPath, fileHdr.Filename)
+		err = com.Unzip(filePath, absPath)
+		if err == nil {
+			err = os.Remove(filePath)
+			if err != nil {
+				err = errors.New(ctx.T(`压缩包已经成功解压，但是删除压缩包失败：`) + err.Error())
+			}
+		}
+		return err
+	default:
+		_, err = ctx.SaveUploadedFile(`file`, absPath)
+	}
+	return
+}
+
+func fileList(ctx echo.Context, absPath string) (err error, exit bool) {
+	var (
+		d  http.File
+		fi os.FileInfo
+	)
+	d, fi, err = enterPath(absPath)
+	if d != nil {
+		defer d.Close()
+	}
+	if err != nil {
+		return
+	}
+	if !fi.IsDir() {
+		fileName := filepath.Base(absPath)
+		return ctx.Attachment(d, fileName), true
+	}
+
+	var dirs []os.FileInfo
+	dirs, err = d.Readdir(-1)
+	sort.Sort(byFileType(dirs))
+	ctx.Set(`dirs`, dirs)
 	return
 }
 

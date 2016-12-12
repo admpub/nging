@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+{{if Form "pjax"}}
+{{Block "main"}}{{/Block}}
+{{else}}<!DOCTYPE html>
 {{$name:=""}}
 {{$breadcrumb:=""}}
 <html lang="{{Lang}}">
@@ -108,3 +110,4 @@ $(function(){
 {{Block "footer"}}{{/Block}}
 </body>
 </html>
+{{end}}

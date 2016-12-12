@@ -122,24 +122,8 @@ func save(c echo.Context) error {
 	//------------
 	// Get avatar
 	//------------
-
-	src, fileHeader, err := c.FormFile("avatar")
-	if err != nil {
-		return err
-	}
-	defer src.Close()
-
-	// Destination
-	file, err := os.Create(fileHeader.Filename)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	// Copy
-	if _, err = io.Copy(file, src); err != nil {
-		return err
-	}
+	_, err := c.SaveUploadedFile("avatar","./")
+	return err
 }
 ```
 
@@ -408,6 +392,7 @@ Websocket   |github.com/webx-top/echo/handler/websocket | [Example](https://gith
 Sockjs      |github.com/webx-top/echo/handler/sockjs | [Example](https://github.com/webx-top/echo/blob/master/handler/sockjs/example/main.go)
 Oauth2      |github.com/webx-top/echo/handler/oauth2 | [Example](https://github.com/webx-top/echo/blob/master/handler/oauth2/example/main.go)
 Pprof      |github.com/webx-top/echo/handler/pprof | -
+MVC      |github.com/webx-top/echo/handler/mvc | [Example](https://github.com/webx-top/echo/blob/master/handler/mvc/test/main.go)
 
 ## Credits
 - [Vishal Rana](https://github.com/vishr) - Author

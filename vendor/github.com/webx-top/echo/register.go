@@ -19,3 +19,13 @@ type MiddlewareRegister interface {
 	Use(middleware ...interface{})
 	Pre(middleware ...interface{})
 }
+
+type URLBuilder interface {
+	URL(interface{}, ...interface{}) string
+}
+
+type ICore interface {
+	RouteRegister
+	MiddlewareRegister
+	URLBuilder
+}

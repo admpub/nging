@@ -13,6 +13,8 @@ import (
 	"strings"
 	"time"
 
+	"mime/multipart"
+
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/logger"
 	"github.com/webx-top/echo/param"
@@ -137,6 +139,8 @@ type (
 		SetCode(int)
 		Code() int
 		NewData(...interface{}) *Data
+		SaveUploadedFile(string, string, ...string) (*multipart.FileHeader, error)
+		SaveUploadedFileToWriter(string, io.Writer) (*multipart.FileHeader, error)
 		AddPreResponseHook(func() error) Context
 		SetPreResponseHook(...func() error) Context
 	}
@@ -870,6 +874,43 @@ func (c *xContext) NewData(args ...interface{}) *Data {
 		}
 	}
 	return &Data{}
+}
+
+func (c *xContext) SaveUploadedFile(fieldName string, saveAbsPath string, saveFileName ...string) (*multipart.FileHeader, error) {
+	fileSrc, fileHdr, err := c.Request().FormFile(fieldName)
+	if err != nil {
+		return fileHdr, err
+	}
+	defer fileSrc.Close()
+
+	// Destination
+	fileName := fileHdr.Filename
+	if len(saveFileName) > 0 {
+		fileName = saveFileName[0]
+	}
+	fileDst, err := os.Create(filepath.Join(saveAbsPath, fileName))
+	if err != nil {
+		return fileHdr, err
+	}
+	defer fileDst.Close()
+
+	// Copy
+	if _, err = io.Copy(fileDst, fileSrc); err != nil {
+		return fileHdr, err
+	}
+	return fileHdr, nil
+}
+
+func (c *xContext) SaveUploadedFileToWriter(fieldName string, writer io.Writer) (*multipart.FileHeader, error) {
+	fileSrc, fileHdr, err := c.Request().FormFile(fieldName)
+	if err != nil {
+		return fileHdr, err
+	}
+	defer fileSrc.Close()
+	if _, err = io.Copy(writer, fileSrc); err != nil {
+		return fileHdr, err
+	}
+	return fileHdr, nil
 }
 
 func (c *xContext) AddPreResponseHook(hook func() error) Context {

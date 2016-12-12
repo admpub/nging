@@ -13,7 +13,7 @@ import (
 
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine/standard"
-	"github.com/webx-top/webx/lib/ratelimit"
+	"github.com/webx-top/echo/middleware/ratelimit"
 )
 
 func main() {

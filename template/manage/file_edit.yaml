@@ -1,0 +1,7 @@
+Id : "file-edit-modal"
+Custom : true
+HeadTitle : "编辑文件"
+Title : ""
+Content : "<form action='' id='file-edit-form'><textarea name='content' class='form-control' id='file-edit-content' style='height:500px'></textarea></form>"
+Type : "warning"
+ExtButtons : []

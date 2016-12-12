@@ -1,6 +1,8 @@
 package handler
 
 import (
+	stdErr "errors"
+
 	"github.com/admpub/caddyui/application/library/errors"
 	"github.com/webx-top/echo"
 )
@@ -21,4 +23,20 @@ func Paging(ctx echo.Context) (page int, size int) {
 
 func Ok(v string) errors.Successor {
 	return errors.NewOk(v)
+}
+
+func Err(ctx echo.Context, err error) (ret interface{}) {
+	if err == nil {
+		flash := ctx.Flash()
+		if flash != nil {
+			if errMsg, ok := flash.(string); ok {
+				ret = stdErr.New(errMsg)
+			} else {
+				ret = flash
+			}
+		}
+	} else {
+		ret = err
+	}
+	return
 }

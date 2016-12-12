@@ -14,19 +14,7 @@ func FTPAccountIndex(ctx echo.Context) error {
 	m := model.NewFtpUser(ctx)
 	page, size := Paging(ctx)
 	cnt, err := m.List(nil, nil, page, size)
-	var ret interface{}
-	if err == nil {
-		flash := ctx.Flash()
-		if flash != nil {
-			if errMsg, ok := flash.(string); ok {
-				ret = errors.New(errMsg)
-			} else {
-				ret = flash
-			}
-		}
-	} else {
-		ret = err
-	}
+	ret := Err(ctx, err)
 	ctx.SetFunc(`totalRows`, cnt)
 	users := m.Objects()
 	gIds := []uint{}
@@ -180,19 +168,7 @@ func FTPGroupIndex(ctx echo.Context) error {
 	m := model.NewFtpUserGroup(ctx)
 	page, size := Paging(ctx)
 	cnt, err := m.List(nil, nil, page, size)
-	var ret interface{}
-	if err == nil {
-		flash := ctx.Flash()
-		if flash != nil {
-			if errMsg, ok := flash.(string); ok {
-				ret = errors.New(errMsg)
-			} else {
-				ret = flash
-			}
-		}
-	} else {
-		ret = err
-	}
+	ret := Err(ctx, err)
 	ctx.SetFunc(`totalRows`, cnt)
 	ctx.Set(`listData`, m.Objects())
 	return ctx.Render(`ftp/group`, ret)

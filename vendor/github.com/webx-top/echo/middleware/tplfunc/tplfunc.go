@@ -29,6 +29,14 @@ import (
 	"github.com/webx-top/com"
 )
 
+func New() (r template.FuncMap) {
+	r = template.FuncMap{}
+	for name, function := range TplFuncMap {
+		r[name] = function
+	}
+	return
+}
+
 var TplFuncMap template.FuncMap = template.FuncMap{
 	"Now":             Now,
 	"Eq":              Eq,

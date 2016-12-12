@@ -1641,7 +1641,7 @@ var App = function () {
 	    }
     },
 
-    message:function(options){
+    message:function(options,sticky){
       var defaults={
         title: '',
         text: "",
@@ -1653,6 +1653,7 @@ var App = function () {
         options={text:options};
       }
       options=$.extend({},defaults,options||{});
+      if(sticky!=null)options.sticky=sticky;
 	    $.gritter.add(options);
     },
 

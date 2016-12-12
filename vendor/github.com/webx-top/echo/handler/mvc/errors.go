@@ -15,29 +15,12 @@
    limitations under the License.
 
 */
-package render
+package mvc
 
-import (
-	"github.com/webx-top/echo/logger"
-	. "github.com/webx-top/echo/middleware/render/driver"
-	"github.com/webx-top/echo/middleware/render/standard"
+import "errors"
+
+var (
+	ErrAppHasBeenDisabled     = errors.New(`This module has been disabled`)
+	ErrAppHasNotBeenInstalled = errors.New(`This module has not been installed`)
+	ErrAppHasExpired          = errors.New(`This module has expired`)
 )
-
-var engines = make(map[string]func(string) Driver)
-
-func New(key string, tmplDir string, args ...logger.Logger) Driver {
-	if fn, ok := engines[key]; ok {
-		return fn(tmplDir)
-	}
-	return standard.New(tmplDir, args...)
-}
-
-func Reg(key string, val func(string) Driver) {
-	engines[key] = val
-}
-
-func Del(key string) {
-	if _, ok := engines[key]; ok {
-		delete(engines, key)
-	}
-}
