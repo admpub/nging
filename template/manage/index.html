@@ -38,7 +38,21 @@
                                         {{else}}
                                         <td class="color-success">{{"启用"|T}}</td>
                                         {{end}}
-										<td class="text-center"><a class="label label-default" href="/manage/vhost_edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a> <a class="label label-danger" href="/manage/vhost_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a></td>
+										<td class="text-center">
+											<a class="label label-default" href="/manage/vhost_edit?id={{$v.Id}}" title="{{"编辑"|T}}">
+											<i class="fa fa-pencil"></i>
+											</a>
+											&nbsp;
+											<a class="label label-danger" href="/manage/vhost_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" title="{{"删除"|T}}">
+											<i class="fa fa-times"></i>
+											</a>
+											{{if $v.Root}}
+											&nbsp;
+											<a class="label label-primary" href="/manage/vhost_file?id={{$v.Id}}" title="{{"文件管理"|T}}">
+											<i class="fa fa-list-alt"></i>
+											</a>
+											{{end}}
+										</td>
 									</tr>
                                     {{end}}
 								</tbody>

@@ -1,0 +1,73 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"网站文件管理"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"网站文件管理"|T}}: {{Stored.Get "absFile"}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+				<div class="col-md-12">
+					<div class="block-flat">
+						<div class="header">							
+							<h3>{{"网站文件管理"|T}}</h3>
+						</div>
+						<div class="content">
+							<div class="table-responsive">
+							<table class="table no-border hover">
+								<thead class="no-border">
+									<tr>
+										<th><strong>{{"名称"|T}}</strong></th>
+										<th style="width:15%;"><strong>{{"修改日期"|T}}</strong></th>
+										<th style="width:15%;"><strong>{{"类型"|T}}</strong></th>
+										<th style="width:15%;"><strong>{{"大小"|T}}</strong></th>
+										<th style="width:15%;" class="text-center"><strong>{{"操作"|T}}</strong></th>
+									</tr>
+								</thead>
+								<tbody class="no-border-y">
+                                    {{$path := Stored.Get "file"}}
+                                    {{if $path}}
+                                    <tr>
+										<td>
+                                            <i class="fa fa-folder-o"></i>
+                                            <a href="/manage/vhost_file?id={{Stored.data.Id}}&file={{$path}}/..">..</a>
+                                        </td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td class="text-center"></td>
+									</tr>
+                                    {{end}}
+                                    {{range $k,$v := Stored.dirs}}
+									<tr>
+										<td>
+                                            {{if $v.IsDir}}
+                                            <i class="fa fa-folder-o"></i>
+                                            {{else}}
+                                            <i class="fa fa-file-o"></i>
+                                            {{end}}
+                                            <a href="/manage/vhost_file?id={{Stored.data.Id}}&file={{if $path}}{{$path}}/{{end}}{{$v.Name}}">{{$v.Name}}</a>
+                                        </td>
+										<td>{{$v.ModTime.Format "2006-01-02 15:04:05"}}</td>
+										<td>{{if $v.IsDir}}{{"文件夹"|T}}{{else}}{{"文件"|T}}{{end}}</td>
+										<td>{{if $v.IsDir}}-{{else}}{{$v.Size|FormatByte}}{{end}}</td>
+										<td class="text-center">
+                                            {{if not $v.IsDir}}
+                                            <a class="label label-default" href="/manage/vhost_file?id={{Stored.data.Id}}&do=edit&file={{if $path}}{{$path}}/{{end}}{{$v.Name}}">
+                                            <i class="fa fa-pencil"></i>
+                                            </a>
+                                            &nbsp;
+                                            {{end}}
+                                            <a class="label label-danger" href="/manage/vhost_file?id={{Stored.data.Id}}&do=delete&file={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="return confirm('{{"真的要删除吗？"|T}}');">
+                                            <i class="fa fa-times"></i>
+                                            </a>
+                                        </td>
+									</tr>
+                                    {{end}}
+								</tbody>
+							</table>		
+							</div>
+						</div>
+					</div>				
+				</div>
+			</div>
+{{/Block}}

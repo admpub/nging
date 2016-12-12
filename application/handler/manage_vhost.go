@@ -22,9 +22,11 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
+	"sort"
 
 	"github.com/admpub/caddyui/application/library/config"
 	"github.com/admpub/caddyui/application/library/modal"
@@ -205,3 +207,76 @@ func ManageClearCache(ctx echo.Context) error {
 	notice.Clear()
 	return ctx.String(ctx.T(`已经清理完毕`))
 }
+
+func ManageVhostFile(ctx echo.Context) error {
+	var err error
+	vhostId := ctx.Formx(`id`).Uint()
+	file := ctx.Form(`file`)
+	do := ctx.Form(`do`)
+	m := model.NewVhost(ctx)
+	err = m.Get(nil, db.Cond{`id`: vhostId})
+	absFile := m.Root
+	if err == nil && len(m.Root) > 0 {
+		var exit bool
+		switch do {
+		case `edit`:
+		case `delete`:
+		default:
+			if len(file) > 0 {
+				file = filepath.Clean(file)
+				absFile = filepath.Join(m.Root, file)
+			}
+			err, exit = fileList(ctx, absFile)
+		}
+		if exit {
+			return err
+		}
+	}
+	ctx.Set(`data`, m)
+	if file == `.` {
+		file = ``
+	}
+	ctx.Set(`file`, file)
+	ctx.Set(`absFile`, absFile)
+	ctx.Set(`activeURL`, `/manage`)
+	return ctx.Render(`manage/file`, err)
+}
+
+func fileList(ctx echo.Context, absFile string) (err error, exit bool) {
+	fs := http.Dir(filepath.Dir(absFile))
+	var d http.File
+	fileName := filepath.Base(absFile)
+	d, err = fs.Open(fileName)
+	if err == nil {
+		defer d.Close()
+		var fi os.FileInfo
+		fi, err = d.Stat()
+		if err == nil {
+			if !fi.IsDir() {
+				return ctx.Attachment(d, fileName), true
+			}
+			var dirs []os.FileInfo
+			dirs, err = d.Readdir(-1)
+			sort.Sort(byFileType(dirs))
+			ctx.Set(`dirs`, dirs)
+		}
+	}
+	return
+}
+
+type byFileType []os.FileInfo
+
+func (s byFileType) Len() int { return len(s) }
+func (s byFileType) Less(i, j int) bool {
+	if s[i].IsDir() {
+		if !s[j].IsDir() {
+			return true
+		}
+	} else if s[j].IsDir() {
+		if !s[i].IsDir() {
+			return false
+		}
+	}
+	return s[i].Name() < s[j].Name()
+}
+func (s byFileType) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
