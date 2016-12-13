@@ -48,6 +48,8 @@ type Modal struct {
 	HeadTitle  template.HTML //头部标题
 	Title      template.HTML //内容标题
 	Content    template.HTML //内容
+	HelpText   template.HTML //帮助提示
+	Animate    string        //动画样式class名
 	Type       string        //类型：warning/primary/success/danger
 	ExtButtons []Button      //附加按钮
 }

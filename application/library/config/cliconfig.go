@@ -56,14 +56,21 @@ func (c *CLIConfig) CaddyStart(writer ...io.Writer) (err error) {
 }
 
 func (c *CLIConfig) CaddyStop() error {
+	return c.CmdStop("caddy")
+}
+
+func (c *CLIConfig) CmdStop(typeName string) error {
 	if c.cmds == nil {
 		return nil
 	}
-	cmd, ok := c.cmds["caddy"]
+	cmd, ok := c.cmds[typeName]
 	if !ok || cmd == nil {
 		return nil
 	}
 	if cmd.ProcessState != nil {
+		return nil
+	}
+	if cmd.Process == nil {
 		return nil
 	}
 	return cmd.Process.Kill()
@@ -120,17 +127,7 @@ func (c *CLIConfig) FTPStart(writer ...io.Writer) (err error) {
 }
 
 func (c *CLIConfig) FTPStop() error {
-	if c.cmds == nil {
-		return nil
-	}
-	cmd, ok := c.cmds["ftp"]
-	if !ok || cmd == nil {
-		return nil
-	}
-	if cmd.ProcessState != nil {
-		return nil
-	}
-	return cmd.Process.Kill()
+	return c.CmdStop("ftp")
 }
 
 func (c *CLIConfig) IsRunning(ct string) bool {

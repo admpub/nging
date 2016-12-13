@@ -1,6 +1,6 @@
 <!-- Modal -->
 {{if not .HeadTitle}}
-<div class="modal fade" id="{{.Id}}" tabindex="-1" role="dialog">
+<div class="modal{{if .Animate}} {{.Animate}}{{else}} fade{{end}}" id="{{.Id}}" tabindex="-1" role="dialog">
 	<div class="modal-dialog">
 	  <div class="modal-content">
 		<div class="modal-header">
@@ -19,6 +19,9 @@
       {{end}}
 		</div>
 		<div class="modal-footer">
+			{{if .HelpText}}
+			<div class="pull-left">{{.HelpText}}</div>
+			{{end}}
       {{range $k, $v := .ExtButtons}}
 		  <button type="button" class="btn btn-default" data-dismiss="modal"{{range $bk, $bv := $v.Attributes}} {{$bv.Attr}}="{{$bv.Value}}"{{end}}>{{$v.Text}}</button>
       {{end}}
@@ -32,7 +35,7 @@
 
 {{else}}
 
-<div class="md-modal colored-header {{.Type}} md-effect-10" id="{{.Id}}">
+<div class="md-modal colored-header {{.Type}}{{if .Animate}} {{.Animate}}{{else}} md-effect-10{{end}}" id="{{.Id}}">
     <div class="md-content">
       <div class="modal-header">
         <h3>{{.HeadTitle}}</h3>
@@ -50,6 +53,9 @@
 				{{end}}
       </div>
       <div class="modal-footer">
+			{{if .HelpText}}
+			<div class="pull-left">{{.HelpText}}</div>
+			{{end}}
 			{{range $k, $v := .ExtButtons}}
 		  <button type="button" class="btn btn-default" data-dismiss="modal"{{range $bk, $bv := $v.Attributes}} {{$bv.Attr}}="{{$bv.Value}}"{{end}}>{{$v.Text}}</button>
       {{end}}

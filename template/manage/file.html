@@ -9,6 +9,14 @@
 {{Block "head"}}
 <link rel="stylesheet" type="text/css" href="__ASSETS__/js/dropzone/min/dropzone.min.css" />
 <link rel="stylesheet" href="__ASSETS__/js/jquery.niftymodals/css/component.css">
+<!-- codemirror -->
+<link rel="stylesheet" href="__ASSETS__/js/codemirror/lib/codemirror.css">
+<link rel="stylesheet" href="__ASSETS__/js/codemirror/addon/display/fullscreen.css">
+<link rel="stylesheet" href="__ASSETS__/js/codemirror/theme/night.css">
+<script src="__ASSETS__/js/codemirror/lib/codemirror.js"></script>
+<script src="__ASSETS__/js/codemirror/addon/mode/loadmode.js"></script>
+<script src="__ASSETS__/js/codemirror/mode/meta.js"></script>
+<script src="__ASSETS__/js/codemirror/addon/display/fullscreen.js"></script>
 {{/Block}}
 
 {{Block "main"}}
@@ -46,7 +54,7 @@
                                     <tr>
 										<td>
                                             <i class="fa fa-folder-o"></i>
-                                            <a href="/manage/vhost_file?id={{Stored.data.Id}}&path={{$path}}/..">..</a>
+                                            <a title="{{"点击回到上一级"|T}}" href="/manage/vhost_file?id={{Stored.data.Id}}&path={{$path}}/.." style="font-size:18px;font-weight:bold">..</a>
                                         </td>
 										<td></td>
 										<td></td>
@@ -63,20 +71,24 @@
                                             <i class="fa fa-file-o"></i>
                                             {{end}}
                                             <a href="/manage/vhost_file?id={{Stored.data.Id}}&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">{{$v.Name}}</a>
+                                            &nbsp;
+                                            <a href="javascript:;" title="{{"重命名"|T}}" data-url="/manage/vhost_file?id={{Stored.data.Id}}&do=rename&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileRename(this,'{{$v.Name}}',{{if $v.IsDir}}true{{else}}false{{end}})">
+                                            <i class="fa fa-pencil"></i>
+                                            </a>
                                         </td>
 										<td>{{$v.ModTime.Format "2006-01-02 15:04:05"}}</td>
 										<td>{{if $v.IsDir}}{{"文件夹"|T}}{{else}}{{"文件"|T}}{{end}}</td>
 										<td>{{if $v.IsDir}}-{{else}}{{$v.Size|FormatByte}}{{end}}</td>
-										<td class="text-center">
-                                            {{if not $v.IsDir}}
-                                            <a class="label label-default" href="javascript:;" data-url="/manage/vhost_file?id={{Stored.data.Id}}&do=edit&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileEdit(this)">
-                                            <i class="fa fa-pencil"></i>
-                                            </a>
-                                            &nbsp;
-                                            {{end}}
-                                            <a class="label label-danger" href="/manage/vhost_file?id={{Stored.data.Id}}&do=delete&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="return confirm('{{T "真的要删除“%v”吗？" $v.Name}}');">
+										<td>
+                                            <a title="{{"删除"|T}}" class="label label-danger" href="/manage/vhost_file?id={{Stored.data.Id}}&do=delete&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="return confirm('{{T "真的要删除“%v”吗？" $v.Name}}');">
                                             <i class="fa fa-times"></i>
                                             </a>
+                                            {{if and (not $v.IsDir) (Editable $v.Name)}}
+                                            &nbsp;
+                                            <a title="{{"编辑"|T}}" class="label label-success" href="javascript:;" data-url="/manage/vhost_file?id={{Stored.data.Id}}&do=edit&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileEdit(this,'{{$v.Name}}')">
+                                            <i class="fa fa-pencil"></i>
+                                            </a>
+                                            {{end}}
                                         </td>
 									</tr>
                                     {{end}}
@@ -93,6 +105,7 @@
 {{Modal "__TMPL__/manage/file.yaml"}}
 {{Modal "__TMPL__/manage/file_zip.yaml"}}
 {{Modal "__TMPL__/manage/file_edit.yaml"}}
+{{Modal "__TMPL__/manage/file_rename.yaml"}}
 <script type="text/javascript" src="__ASSETS__/js/dropzone/min/dropzone.min.js"></script>
 <script type="text/javascript" src="__ASSETS__/js/jquery.niftymodals/js/jquery.modalEffects.js"></script> 
 <script>
@@ -106,7 +119,7 @@ function refreshList() {
         //initDropzone();
     },'html');
 }
-var dropzone,dropzoneZIP;
+var dropzone,dropzoneZIP,editor;
 function initDropzone() {
     $('#multi-upload-dropzone').dropzone({
         url:uploadURL('{{Stored.data.Id}}','{{Stored.path}}'),
@@ -121,18 +134,79 @@ function initDropzone() {
     dropzone=$('#multi-upload-dropzone').get(0).dropzone;
     dropzoneZIP=$('#multi-upload-zip-dropzone').get(0).dropzone;
 }
-function fileEdit(obj) {
+function initCodeMirrorEditor() {
+    if(editor)return;
+    editor = CodeMirror.fromTextArea($("#file-edit-content")[0], {
+      lineNumbers: true,
+      theme: "night",
+      extraKeys: {
+        "F11": function(cm) {
+          cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+        },
+        "Esc": function(cm) {
+          if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+        }
+      }
+    });
+    editor.setOption('lineWrapping', true);
+    editor.setSize('auto', 'auto');
+    $('#file-edit-modal .modal-footer .btn-success').click(function(){
+        var url=$(this).data('url');
+        $.post(url,{content:editor.getValue()},function(r){
+            if(r.Code!=1)return App.message({title: '{{"系统消息"|T}}', text: r.Info},false);
+            return App.message({title: '{{"系统消息"|T}}', text: '{{"保存成功"|T}}'},false);
+        },'json');
+    });
+    $('#file-edit-modal .modal-body').css('padding',0);
+}
+function fileEdit(obj,file) {
     var url=$(obj).data('url');
+    $('#file-edit-modal .modal-footer .btn-success').data('url',url);
     $.get(url,{},function(r){
-        if(r.Code==0)return App.message({title: '{{"系统消息"|T}}', text: r.Info},false);
-        $('#file-edit-modal').niftyModal('show',{afterOpen: function(modal) {
-            $('#file-edit-content').html(r.Data.replace(/</g,'&lt;').replace(/>/g,'&gt;'));
-        },afterClose:function(modal){
-            $('#file-edit-content').html('');
-        }});
+        if(r.Code!=1)return App.message({title: '{{"系统消息"|T}}', text: r.Info},false);
+        $('#file-edit-modal .modal-header h3').html('{{"编辑文件"|T}}: '+file);
+        $('#file-edit-modal').niftyModal('show',{
+            afterOpen: function(modal) {
+                editor.setValue(r.Data);
+                codeMirrorChangeMode(editor,file);
+            }
+        });
     },'json');
 }
+function fileRename(obj,file,isDir) {
+    var url=$(obj).data('url');
+    $('#file-rename-modal .modal-footer .btn-primary:last').data('url',url);
+    $('#file-rename-modal .modal-header h3').html((isDir ? '{{"修改文件夹名"|T}}' : '{{"修改文件名"|T}}')+': '+file);
+    $('#file-rename-modal').niftyModal('show',{afterOpen:function(modal){
+        $('#file-rename-input').val(file);
+    }});
+}
+function codeMirrorChangeMode(editor,val) {
+  var m, mode, spec;
+  if (m = /.+\.([^.]+)$/.exec(val)) {
+    var info = CodeMirror.findModeByExtension(m[1]);
+    if (info) {
+      mode = info.mode;
+      spec = info.mime;
+    }
+  } else if (/\//.test(val)) {
+    var info = CodeMirror.findModeByMIME(val);
+    if (info) {
+      mode = info.mode;
+      spec = val;
+    }
+  } else {
+    mode = spec = val;
+  }
+  if (mode) {
+    editor.setOption("mode", spec);
+    CodeMirror.autoLoadMode(editor, mode);
+  } else {
+    console.log("Could not find a mode corresponding to " + val);
+  }
+}
 Dropzone.autoDiscover=false;
+CodeMirror.modeURL = "__ASSETS__/js/codemirror/mode/%N/%N.js";
 $(function(){
     initDropzone();
 	$('#uploadBtn').on('click',function(event){
@@ -147,6 +221,20 @@ $(function(){
             refreshList();
         }});
 	});
+    $(window).on('resize',function(){
+        $('#file-edit-modal').css({height:$(window).height(),width:'100%','max-width':'100%',left:0,top:0,transform:'none'});
+        $('#file-edit-form').css({height:$(window).height()-150,width:'100%','max-width':'100%',overflow:'auto'});
+    });
+    $(window).trigger('resize');
+    initCodeMirrorEditor();
+    $('#file-rename-modal .modal-footer .btn-primary:last').click(function(){
+        var url=$(this).data('url');
+        $.post(url,{name:$('#file-rename-input').val()},function(r){
+            if(r.Code!=1)return App.message({title: '{{"系统消息"|T}}', text: r.Info},false);
+            App.message({title: '{{"系统消息"|T}}', text: '{{"保存成功"|T}}'},false);
+            refreshList();
+        },'json');
+    });
 });
 </script>
 {{/Block}}

@@ -18,10 +18,30 @@ sys {
   accounts : {
     admin : "admin"
   }
-  sslHosts : []
-  sslCertFile : ""
-  sslKeyFile : ""
-  debug : true
+  sslHosts               : []
+  sslCertFile            : ""
+  sslKeyFile             : ""
+  debug                  : true
+  editableFileExtensions : {  #允许在线编辑的文件扩展名(不含点号)
+    html      : "html"
+    htm       : "html"
+    js        : "javascript"
+    go        : "golang"
+    php       : "php"
+    css       : "css"
+    txt       : "txt"
+    xml       : "xml"
+    md        : "markdown"
+    markdown  : "markdown"
+    ini       : "ini"
+    bat       : "bat"
+    sh        : "sh"
+    pl        : "pl"
+    sql       : "sql"
+    yaml      : "yaml"
+    yml       : "yaml"
+  }
+  editableFileMaxSize   : "1M" #允许在线编辑的最大文件尺寸
 }
 cookie {
   path     : "/"

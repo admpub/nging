@@ -47,14 +47,17 @@ type Config struct {
 	} `json:"log"`
 
 	Sys struct {
-		VhostsfileDir string            `json:"vhostsfileDir"`
-		AllowIP       []string          `json:"allowIP"`
-		Accounts      map[string]string `json:"accounts"`
-		SSLHosts      []string          `json:"sslHosts"`
-		SSLCacheFile  string            `json:"sslCacheFile"`
-		SSLKeyFile    string            `json:"sslKeyFile"`
-		SSLCertFile   string            `json:"sslCertFile"`
-		Debug         bool              `json:"debug"`
+		VhostsfileDir          string            `json:"vhostsfileDir"`
+		AllowIP                []string          `json:"allowIP"`
+		Accounts               map[string]string `json:"accounts"`
+		SSLHosts               []string          `json:"sslHosts"`
+		SSLCacheFile           string            `json:"sslCacheFile"`
+		SSLKeyFile             string            `json:"sslKeyFile"`
+		SSLCertFile            string            `json:"sslCertFile"`
+		Debug                  bool              `json:"debug"`
+		EditableFileExtensions map[string]string `json:"editableFileExtensions"`
+		EditableFileMaxSize    string            `json:"editableFileMaxSize"`
+		EditableFileMaxBytes   int64             `json:"editableFileMaxBytes"`
 	} `json:"sys"`
 
 	Cookie struct {

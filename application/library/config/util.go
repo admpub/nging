@@ -14,6 +14,7 @@ import (
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/db/mongo"
 	"github.com/webx-top/db/mysql"
+	"github.com/webx-top/echo/middleware/bytes"
 )
 
 func ParseConfig() error {
@@ -39,6 +40,12 @@ func ParseConfig() error {
 	}
 	if len(DefaultConfig.Sys.VhostsfileDir) == 0 {
 		DefaultConfig.Sys.VhostsfileDir = filepath.Join(confDir, `vhosts`)
+	}
+	if DefaultConfig.Sys.EditableFileMaxBytes < 1 && len(DefaultConfig.Sys.EditableFileMaxSize) > 0 {
+		DefaultConfig.Sys.EditableFileMaxBytes, err = bytes.Parse(DefaultConfig.Sys.EditableFileMaxSize)
+		if err != nil {
+			log.Error(err.Error())
+		}
 	}
 	caddy.Fixed(&DefaultConfig.Caddy)
 	ftp.Fixed(&DefaultConfig.FTP)
