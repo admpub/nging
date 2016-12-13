@@ -150,15 +150,31 @@ function initCodeMirrorEditor() {
     });
     editor.setOption('lineWrapping', true);
     editor.setSize('auto', 'auto');
-    $('#file-edit-modal .modal-footer .btn-success').click(function(){
+    $('#file-edit-modal .modal-footer .btn-success').on('click',function(){
         var url=$(this).data('url');
-        $.post(url,{content:editor.getValue()},function(r){
+        var enc=$('#use-encoding-open').val();
+        if(!enc)enc='';
+        $.post(url,{content:editor.getValue(),encoding:enc},function(r){
             if(r.Code!=1)return App.message({title: '{{"系统消息"|T}}', text: r.Info},false);
             return App.message({title: '{{"系统消息"|T}}', text: '{{"保存成功"|T}}'},false);
         },'json');
     });
     $('#file-edit-modal .modal-body').css('padding',0);
+    $('#use-encoding-open').on('change',function(){
+        var enc=$(this).val();
+        fileReopen(enc);
+    });
+    
 }
+
+function fileReopen(encoding,url) {
+    if(url==null)url=$('#file-edit-modal .modal-footer .btn-success').data('url');
+    $.get(url,{encoding:encoding},function(r){
+        if(r.Code!=1)return App.message({title: '{{"系统消息"|T}}', text: r.Info},false);
+        editor.setValue(r.Data);
+    },'json');
+}
+
 function fileEdit(obj,file) {
     var url=$(obj).data('url');
     $('#file-edit-modal .modal-footer .btn-success').data('url',url);
@@ -169,10 +185,14 @@ function fileEdit(obj,file) {
             afterOpen: function(modal) {
                 editor.setValue(r.Data);
                 codeMirrorChangeMode(editor,file);
+            },
+            afterClose: function(modal) {
+                $('#use-encoding-open').find('option:selected').prop('selected',false);
             }
         });
     },'json');
 }
+
 function fileRename(obj,file,isDir) {
     var url=$(obj).data('url');
     $('#file-rename-modal .modal-footer .btn-primary:last').data('url',url);

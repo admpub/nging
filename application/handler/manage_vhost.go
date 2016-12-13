@@ -221,7 +221,8 @@ func ManageVhostFile(ctx echo.Context) error {
 				data.Info = errors.New(ctx.T(`此文件不能在线编辑`))
 			} else {
 				content := ctx.Form(`content`)
-				dat, err := mgr.Edit(absPath, content)
+				encoding := ctx.Form(`encoding`)
+				dat, err := mgr.Edit(absPath, content, encoding)
 				if err != nil {
 					data.Info = err.Error()
 				} else {
