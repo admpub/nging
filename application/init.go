@@ -107,6 +107,8 @@ func addRouter(e *echo.Echo) {
 		addFormHandler(g, `/group_edit`, FTPGroupEdit)
 		addFormHandler(g, `/group_delete`, FTPGroupDelete)
 	}
+
+	addFormHandler(e, `/db`, DbManager, middleware.AuthCheck)
 }
 
 func addFormHandler(rr echo.RouteRegister, urlPath string, handler interface{}, middlewares ...interface{}) {

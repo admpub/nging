@@ -13,17 +13,13 @@
 	<title>{{Block "title"}}Start{{/Block}} - Nging</title>
 	<link href='__ASSETS__/css/font_OpenSans400_300_600_400italic_700_800.css' rel='stylesheet' type='text/css' />
 	<link href='__ASSETS__/css/font_Raleway_300_200_100.css' rel='stylesheet' type='text/css' />
-
 	<!-- Bootstrap core CSS -->
 	<link rel="stylesheet" href="__ASSETS__/js/bootstrap/dist/css/bootstrap.css" />
-	
 	<link rel="stylesheet" href="__ASSETS__/js/jquery.gritter/css/jquery.gritter.css" />
 	<link rel="stylesheet" href="__ASSETS__/fonts/font-awesome-4/css/font-awesome.min.css" />
-    
     <link rel="stylesheet" href="__ASSETS__/js/jquery.nanoscroller/nanoscroller.css" />
     <link rel="stylesheet" href="__ASSETS__/js/bootstrap.switch/bootstrap-switch.css" />
-
-	
+    <link href="__ASSETS__/js/jquery.icheck/skins/square/blue.css" rel="stylesheet" />
     {{Block "head"}}{{/Block}}
 	<!-- Custom styles for this template -->
 	<link href="__ASSETS__/css/style.css" rel="stylesheet" />
@@ -33,6 +29,7 @@
     {{Include "header"}}
 	<div id="cl-wrapper">
 		{{Include "sidebar"}}
+		{{Block "bodyNav"}}{{/Block}}
 		<div class="container-fluid" id="pcont">
 			{{if or $name $breadcrumb}}
 			<div class="page-head">
@@ -71,6 +68,7 @@
 <script type="text/javascript" src="__ASSETS__/js/jquery.nanoscroller/jquery.nanoscroller.js"></script>
 <script type="text/javascript" src="__ASSETS__/js/bootstrap.switch/bootstrap-switch.min.js"></script>
 <!--<script type="text/javascript" src="__ASSETS__/js/jquery.nestable/jquery.nestable.js"></script>-->
+<script type="text/javascript" src="__ASSETS__/js/jquery.icheck/icheck.min.js"></script>
 
 <script type="text/javascript" src="__ASSETS__/js/behaviour/general.js"></script>
 <script type="text/javascript" src="__ASSETS__/js/jquery.gritter/js/jquery.gritter.js"></script>

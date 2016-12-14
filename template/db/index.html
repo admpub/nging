@@ -1,0 +1,158 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"数据库管理"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"数据库管理"|T}}</li>
+{{/Block}}
+{{Block "head"}}
+<link rel="stylesheet" type="text/css" href="__ASSETS__/js/jquery.nanoscroller/nanoscroller.css" />
+<link rel="stylesheet" type="text/css" href="__ASSETS__/js/bootstrap.slider/css/slider.css" />
+{{/Block}}
+{{Block "bodyNav"}}
+	<div class="page-aside app tree">
+      <div class="fixed nano nscroller">
+        <div class="content">
+          <div class="header">
+            <button class="navbar-toggle" data-target=".treeview" data-toggle="collapse" type="button">
+              <span class="fa fa-chevron-down"></span>
+            </button>          
+            <h2 class="page-title">Tree View</h2>
+            <p class="description">Service description</p>
+          </div>  
+          <ul class="nav nav-list treeview collapse">
+            <li><label class="tree-toggler nav-header"><i class="fa fa-folder-o"></i> General</label>
+                <ul class="nav nav-list tree">
+                    <li><a href="#">Link</a></li>
+                    <li><a href="#">Link</a></li>
+                    <li><label class="tree-toggler nav-header"><i class="fa fa-folder-o"></i> Structure</label>
+                        <ul class="nav nav-list tree">
+                            <li><a href="#">Link</a></li>
+                            <li><a href="#">Link</a></li>
+                            <li><label class="tree-toggler nav-header"><i class="fa fa-folder-o"></i> Plugins</label>
+                                <ul class="nav nav-list tree">
+                                    <li><a href="#">Link</a></li>
+                                    <li><a href="#">Link</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li><label class="tree-toggler nav-header"><i class="fa fa-folder-o"></i> Documentation</label>
+                <ul class="nav nav-list tree">
+                    <li><a href="#">Link</a></li>
+                    <li><a href="#">Link</a></li>
+                    <li><label class="tree-toggler nav-header"><i class="fa fa-folder-o"></i> Components</label>
+                        <ul class="nav nav-list tree">
+                            <li><a href="#">Link</a></li>
+                            <li><a href="#">Link</a></li>
+                            <li><label class="tree-toggler nav-header"><i class="fa fa-folder-o"></i> Speech API</label>
+                                <ul class="nav nav-list tree">
+                                    <li><a href="#">Link</a></li>
+                                    <li><a href="#">Link</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><label class="tree-toggler nav-header"><i class="fa fa-folder-o"></i> Charts</label>
+                        <ul class="nav nav-list tree">
+                            <li><a href="#">Link</a></li>
+                            <li><a href="#">Link</a></li>
+                            <li><label class="tree-toggler nav-header"><i class="fa fa-folder-o"></i> Reports</label>
+                                <ul class="nav nav-list tree">
+                                    <li><a href="#">Link</a></li>
+                                    <li><a href="#">Link</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+          </ul>
+        </div>
+        
+      </div>
+	</div>		
+
+{{/Block}}
+
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{"登录"|T}}</h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" method="POST" action="">
+                  
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"系统"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "driver"}}
+                   <select class="form-control" name="driver">
+                     {{range $k,$text:=Stored.Get "driverList"}}
+                     <option value="{{$k}}"{{if eq $v $k}} selected{{end}}>{{$text}}</option>
+                     {{end}}
+                   </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"服务器"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" name="host" value="{{Form "host"}}">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"用户名"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" name="username" value="{{Form "username"}}">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"密码"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="password" class="form-control" name="password" value="" autocomplete="off">
+                </div>
+              </div>
+
+              <div class="form-group">
+				<div class="col-sm-9 col-sm-offset-2">
+				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"登录"|T}}</button>
+				  <label class="radio-inline">
+                      {{$v := Form "remember"}}
+                      <input type="checkbox" value="1" name="remember" class="icheck"{{if or (eq $v "N") (eq $v "")}} checked{{end}}> {{"保持登录"|T}}
+                </label>
+				</div>
+			</div>
+            </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+
+{{Block "footer"}}
+<script src="__ASSETS__/js/bootstrap.slider/js/bootstrap-slider.js" type="text/javascript"></script>
+<script>
+$(function(){
+      $('label.tree-toggler').click(function () {
+        var icon = $(this).children(".fa");
+          if(icon.hasClass("fa-folder-o")){
+            icon.removeClass("fa-folder-o").addClass("fa-folder-open-o");
+          }else{
+            icon.removeClass("fa-folder-open-o").addClass("fa-folder-o");
+          }        
+          
+        $(this).parent().children('ul.tree').toggle(300,function(){
+          $(this).parent().toggleClass("open");
+          $(".tree .nscroller").nanoScroller({ preventPageScrolling: true });
+        });
+        
+      });
+      $('#cl-wrapper').addClass('fixed-menu sb-collapsed'); 
+});
+</script>
+{{/Block}}

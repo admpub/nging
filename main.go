@@ -28,6 +28,7 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/engine/standard"
+	"github.com/webx-top/echo/handler/mvc/events"
 	"github.com/webx-top/echo/middleware"
 	"github.com/webx-top/echo/middleware/render"
 	"github.com/webx-top/echo/middleware/session"
@@ -95,6 +96,11 @@ func main() {
 		s = strings.Replace(s, `__TMPL__`, `./template`, -1)
 		return []byte(s)
 	})
+	events.AddEvent(`clearCache`, func(next func(r bool), args ...interface{}) {
+		d.ClearCache()
+		next(true)
+	})
+
 	e.Use(render.Middleware(d))
 
 	application.Initialize(e)

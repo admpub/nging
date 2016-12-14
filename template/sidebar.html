@@ -11,7 +11,7 @@
               </div>
             </div>
             <ul class="cl-vnavigation">
-              <li><a href="#"><i class="fa fa-table"></i><span>{{"网站管理"|T}}</span></a>
+              <li><a href="#"><i class="fa fa-sitemap nav-icon"></i><span>{{"网站管理"|T}}</span></a>
                 <ul class="sub-menu">
                   <li><a href="/manage">{{"网站列表"|T}}</a></li>
                   <li><a href="/manage/vhost_add">
@@ -38,9 +38,14 @@
                   {{"添加用户组"|T}}</a></li>
                 </ul>
               </li>
-              <li><a href="javascript:;" data-ajax-url="/manage/clear_cache">
-              <i class="fa fa-trash-o"></i><span>{{"清理缓存"|T}}</span>
-              </a></li>
+              <li>
+                <a href="/db"><i class="fa fa-table"></i><span>{{"数据库管理"|T}}</span></a>
+              </li>
+              <li>
+                <a href="javascript:;" data-ajax-url="/manage/clear_cache">
+                  <i class="fa fa-trash-o"></i><span>{{"清理缓存"|T}}</span>
+                </a>
+              </li>
             </ul>
           </div>
         </div>

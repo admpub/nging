@@ -221,7 +221,7 @@ $('#proxyHeaderDownstreamBtn').on('click',function(){
 $('#proxyHeaderUpstreamBtn').on('click',function(){
   addKVs(this,'proxy_header_upstream_k','proxy_header_upstream_v');
 });
-$('[data-slide-settings]').on('click',function(){
+$('[data-slide-settings]').on('click ifChecked',function(){
   var slide=$(this).data('slide-settings');
   if(slide==""){
     slide=$(this).val()=='1'?'show':'hide';

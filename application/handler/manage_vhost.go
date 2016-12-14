@@ -35,6 +35,7 @@ import (
 	"github.com/admpub/caddyui/application/model"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/handler/mvc/events"
 )
 
 func ManageIndex(ctx echo.Context) error {
@@ -194,6 +195,7 @@ func ManageClearCache(ctx echo.Context) error {
 		return err
 	}
 	notice.Clear()
+	events.Event(`clearCache`, func(_ bool) {})
 	return ctx.String(ctx.T(`已经清理完毕`))
 }
 
