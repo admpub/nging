@@ -1,74 +1,124 @@
 package dbmanager
 
-import "github.com/webx-top/echo"
+import (
+	"database/sql"
+	"fmt"
 
-type mysql struct {
-	echo.Context
+	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/db/mysql"
+	"github.com/webx-top/echo"
+)
+
+func init() {
+	Register(`MySQL`, &mySQL{})
 }
 
-func (m *mysql) Init(ctx echo.Context) {
-	m.Context = ctx
+type mySQL struct {
+	*BaseDriver
+	db *factory.Factory
 }
-func (m *mysql) IsSupported(operation string) bool {
+
+func (m *mySQL) Init(ctx echo.Context) {
+	m.BaseDriver = NewBaseDriver()
+	m.BaseDriver.Init(ctx)
+}
+
+func (m *mySQL) IsSupported(operation string) bool {
 	return true
 }
-func (m *mysql) Login() error {
+func (m *mySQL) Login() error {
+	m.db = factory.New()
+	settings := mysql.ConnectionURL{
+		User:     m.Form(`username`),
+		Password: m.Form(`password`),
+		Host:     m.Form(`host`),
+		Database: m.Form(`db`),
+	}
+	if len(settings.User) == 0 {
+		settings.User = `root`
+	}
+	if len(settings.Host) == 0 {
+		settings.Host = `127.0.0.1:3306`
+	}
+	m.Echo().Logger().Debugf("db settings: %#v", settings)
+	db, err := mysql.Open(settings)
+	if err != nil {
+		return err
+	}
+	cluster := factory.NewCluster().AddW(db)
+	m.db.SetCluster(0, cluster)
+	rows, err := m.db.Query(factory.NewParam(m.db).SetCollection(`SHOW DATABASES`))
+	if err != nil {
+		return err
+	}
+	for rows.Next() {
+		var v sql.NullString
+		err := rows.Scan(&v)
+		if err != nil {
+			return err
+		}
+		fmt.Println(`database: `, v.String)
+	}
 	return nil
 }
-func (m *mysql) Logout() error {
+func (m *mySQL) Logout() error {
+	if m.db != nil {
+		m.db.CloseAll()
+		m.db = nil
+	}
 	return nil
 }
-func (m *mysql) ProcessList() error {
+func (m *mySQL) ProcessList() error {
 	return nil
 }
-func (m *mysql) Privileges() error {
+func (m *mySQL) Privileges() error {
 	return nil
 }
-func (m *mysql) Info() error {
+func (m *mySQL) Info() error {
 	return nil
 }
-func (m *mysql) CreateDb() error {
+func (m *mySQL) CreateDb() error {
 	return nil
 }
-func (m *mysql) ModifyDb() error {
+func (m *mySQL) ModifyDb() error {
 	return nil
 }
-func (m *mysql) ListDb() error {
+func (m *mySQL) ListDb() error {
 	return nil
 }
-func (m *mysql) CreateTable() error {
+func (m *mySQL) CreateTable() error {
 	return nil
 }
-func (m *mysql) ModifyTable() error {
+func (m *mySQL) ModifyTable() error {
 	return nil
 }
-func (m *mysql) ListTable() error {
+func (m *mySQL) ListTable() error {
 	return nil
 }
-func (m *mysql) ViewTable() error {
+func (m *mySQL) ViewTable() error {
 	return nil
 }
-func (m *mysql) ListData() error {
+func (m *mySQL) ListData() error {
 	return nil
 }
-func (m *mysql) CreateData() error {
+func (m *mySQL) CreateData() error {
 	return nil
 }
-func (m *mysql) Indexes() error {
+func (m *mySQL) Indexes() error {
 	return nil
 }
-func (m *mysql) Foreign() error {
+func (m *mySQL) Foreign() error {
 	return nil
 }
-func (m *mysql) Trigger() error {
+func (m *mySQL) Trigger() error {
 	return nil
 }
-func (m *mysql) RunCommand() error {
+func (m *mySQL) RunCommand() error {
 	return nil
 }
-func (m *mysql) Import() error {
+func (m *mySQL) Import() error {
 	return nil
 }
-func (m *mysql) Export() error {
+func (m *mySQL) Export() error {
 	return nil
 }

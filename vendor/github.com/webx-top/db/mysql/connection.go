@@ -57,11 +57,11 @@ type ConnectionURL struct {
 }
 
 func (c ConnectionURL) String() (s string) {
-
-	if c.Database == "" {
-		return ""
-	}
-
+	/*
+		if c.Database == "" {
+			return ""
+		}
+	*/
 	// Adding username.
 	if c.User != "" {
 		s = s + c.User

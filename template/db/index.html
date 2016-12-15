@@ -81,46 +81,55 @@
     <div class="col-md-12">
         <div class="block-flat">
           <div class="header">							
-            <h3>{{"登录"|T}}</h3>
+            <h3>{{"连接数据库"|T}}</h3>
           </div>
           <div class="content">
               <form class="form-horizontal group-border-dashed" method="POST" action="">
                   
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"系统"|T}}</label>
-                <div class="col-sm-8">
+                <label class="col-sm-3 control-label">{{"系统"|T}}</label>
+                <div class="col-sm-6">
                   {{$v := Form "driver"}}
                    <select class="form-control" name="driver">
-                     {{range $k,$text:=Stored.Get "driverList"}}
-                     <option value="{{$k}}"{{if eq $v $k}} selected{{end}}>{{$text}}</option>
+                     {{range $k,$driverName:=Stored.Get "driverList"}}
+                     <option value="{{$driverName}}"{{if eq $v $driverName}} selected{{end}}>{{$driverName}}</option>
                      {{end}}
                    </select>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"服务器"|T}}</label>
-                <div class="col-sm-8">
+                <label class="col-sm-3 control-label">{{"服务器"|T}}</label>
+                <div class="col-sm-6">
                     <input type="text" class="form-control" name="host" value="{{Form "host"}}">
                 </div>
               </div>
 
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"用户名"|T}}</label>
-                <div class="col-sm-8">
+                <label class="col-sm-3 control-label">{{"用户名"|T}}</label>
+                <div class="col-sm-6">
                     <input type="text" class="form-control" name="username" value="{{Form "username"}}">
                 </div>
               </div>
 
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"密码"|T}}</label>
-                <div class="col-sm-8">
+                <label class="col-sm-3 control-label">{{"密码"|T}}</label>
+                <div class="col-sm-6">
                     <input type="password" class="form-control" name="password" value="" autocomplete="off">
                 </div>
               </div>
 
+              
               <div class="form-group">
-				<div class="col-sm-9 col-sm-offset-2">
-				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"登录"|T}}</button>
+                <label class="col-sm-3 control-label">{{"数据库"|T}}</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" name="db" value="{{Form "db"}}">
+                </div>
+              </div>
+
+              <div class="form-group">
+				<div class="col-sm-6 col-sm-offset-3">
+                    <input type="hidden" name="operation" value="login">
+				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-sign-in"></i> {{"连接"|T}}</button>
 				  <label class="radio-inline">
                       {{$v := Form "remember"}}
                       <input type="checkbox" value="1" name="remember" class="icheck"{{if or (eq $v "N") (eq $v "")}} checked{{end}}> {{"保持登录"|T}}

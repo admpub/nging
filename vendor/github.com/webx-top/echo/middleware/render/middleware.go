@@ -24,13 +24,14 @@ import (
 )
 
 var (
-	DefaultDataKey    = `data`
-	DefaultTmplKey    = `tmpl`
-	DefaultTmplName   = `index`
-	DefaultErrorTmpl  = `error`
-	JSONPCallbackName = `callback`
-	DefaultErrorFunc  = OutputError
-	DefaultOutputFunc = Output
+	DefaultDataKey       = `data`
+	DefaultTmplKey       = `tmpl`
+	DefaultTmplName      = `index`
+	DefaultErrorTmpl     = `error`
+	JSONPCallbackName    = `callback`
+	DefaultErrorFunc     = OutputError
+	DefaultOutputFunc    = Output
+	DefaultErrorHTTPCode = http.StatusInternalServerError
 )
 
 // Middleware set renderer
@@ -115,7 +116,7 @@ func OutputError(err error, format string, c echo.Context) error {
 		c.Set(DefaultDataKey, echo.NewData(c.Code(), err.Error()))
 	}
 	c.Set(DefaultTmplKey, DefaultErrorTmpl)
-	c.SetCode(http.StatusOK)
+	c.SetCode(DefaultErrorHTTPCode)
 	return Output(format, c)
 }
 
@@ -132,10 +133,12 @@ func HTTPErrorHandler(templates map[int]string, formatRender ...func(string, ech
 		output = DefaultOutputFunc
 	}
 	return func(err error, c echo.Context) {
-		code := http.StatusInternalServerError
+		code := DefaultErrorHTTPCode
 		msg := http.StatusText(code)
 		if he, ok := err.(*echo.HTTPError); ok {
-			code = he.Code
+			if he.Code > 0 {
+				code = he.Code
+			}
 			msg = he.Message
 		}
 		if c.Echo().Debug() {
@@ -147,12 +150,13 @@ func HTTPErrorHandler(templates map[int]string, formatRender ...func(string, ech
 				c.NoContent(code)
 			case tmplNum > 0:
 				t, y := templates[code]
-				if !y && code != 0 && tmplNum > 1 {
+				if !y && tmplNum > 1 {
 					t, y = templates[0]
 				}
 				if y {
 					c.Set(DefaultDataKey, msg)
 					c.Set(DefaultTmplKey, t)
+					c.SetCode(code)
 					if err := output(c.Format(), c); err != nil {
 						msg += "\n" + err.Error()
 						y = false
@@ -164,11 +168,7 @@ func HTTPErrorHandler(templates map[int]string, formatRender ...func(string, ech
 				}
 				fallthrough
 			default:
-				if code > 0 {
-					c.String(msg, code)
-				} else {
-					c.String(msg)
-				}
+				c.String(msg, code)
 			}
 		}
 		c.Echo().Logger().Debug(err)

@@ -14,8 +14,10 @@ func DbManager(ctx echo.Context) error {
 		err = mgr.Run(driverName, operation)
 	}
 	ret := Err(ctx, err)
-	ctx.Set(`driverList`, echo.H{
-		"mysql": "MySQL",
-	})
+	driverList := []string{}
+	for driverName := range dbmanager.GetAll() {
+		driverList = append(driverList, driverName)
+	}
+	ctx.Set(`driverList`, driverList)
 	return ctx.Render(`db/index`, ret)
 }

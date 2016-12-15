@@ -1471,10 +1471,10 @@
 			"revisionTime": "2016-12-15T05:26:04Z"
 		},
 		{
-			"checksumSHA1": "52YKjWRfR4GDb3RRmaMxyTHFbhA=",
+			"checksumSHA1": "F/BGAKAU06yJmz8KQbAw3tYde/Y=",
 			"path": "github.com/webx-top/echo/middleware/render",
-			"revision": "f0165fd106106a8fb3f085e5c7764b0478ac6c32",
-			"revisionTime": "2016-12-15T05:26:04Z"
+			"revision": "62d3518949df95bc3ce83c0d731dadf7ce1c178a",
+			"revisionTime": "2016-12-15T09:45:26Z"
 		},
 		{
 			"checksumSHA1": "Rms5F+vtQBZ3ZhrLdYGjSHcyWhk=",

@@ -10,22 +10,15 @@ import (
 func New(ctx echo.Context) *dbManager {
 	return &dbManager{
 		Context: ctx,
-		drivers: map[string]Driver{},
 	}
 }
 
 type dbManager struct {
 	echo.Context
-	drivers map[string]Driver
-}
-
-func (d *dbManager) HasDriver(typeName string) bool {
-	_, ok := d.drivers[typeName]
-	return ok
 }
 
 func (d *dbManager) Driver(typeName string) (Driver, error) {
-	driver, ok := d.drivers[typeName]
+	driver, ok := Get(typeName)
 	if ok {
 		driver.Init(d.Context)
 		return driver, nil

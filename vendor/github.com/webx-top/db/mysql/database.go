@@ -202,12 +202,12 @@ func (d *database) FindDatabaseName() (string, error) {
 
 	iter := q.Iterator()
 	defer iter.Close()
-
 	if iter.Next() {
-		var name string
+		var name sql.NullString
 		err := iter.Scan(&name)
-		return name, err
+		return name.String, err
 	}
+
 
 	return "", iter.Err()
 }
