@@ -70,6 +70,8 @@ func main() {
 
 	e := echo.New()
 
+	e.SetHTTPErrorHandler(render.HTTPErrorHandler(config.DefaultConfig.Sys.ErrorPages))
+
 	e.Use(middleware.Log(), middleware.Recover())
 
 	// 注册静态资源文件

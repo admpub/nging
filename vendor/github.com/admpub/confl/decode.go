@@ -2,13 +2,16 @@ package confl
 
 import (
 	"fmt"
-	u "github.com/araddon/gou"
 	"io"
 	"io/ioutil"
 	"math"
 	"reflect"
 	"strings"
 	"time"
+
+	"strconv"
+
+	u "github.com/araddon/gou"
 )
 
 var _ = u.EMPTY
@@ -278,8 +281,24 @@ func (md *MetaData) unifyMap(mapping interface{}, rv reflect.Value) error {
 			return err
 		}
 		md.context = md.context[0 : len(md.context)-1]
-
-		rvkey.SetString(k)
+		keyType := rvkey.Kind()
+		if keyType >= reflect.Int && keyType <= reflect.Uint64 {
+			i, err := strconv.ParseInt(k, 10, 64)
+			if err != nil {
+				return err
+			}
+			if err := md.unifyInt(i, rvkey); err != nil {
+				return err
+			}
+		} else {
+			switch keyType {
+			case reflect.String:
+				rvkey.SetString(k)
+			default:
+				return e("This key type of map is not supported. (key type: %v, map: %v)",
+					keyType, mapping)
+			}
+		}
 		rv.SetMapIndex(rvkey, rvval)
 	}
 	return nil

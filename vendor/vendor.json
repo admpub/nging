@@ -39,10 +39,10 @@
 			"revisionTime": "2016-02-19T14:36:12Z"
 		},
 		{
-			"checksumSHA1": "ofZTEZEzRnIa2zTKg7pmElLf63o=",
+			"checksumSHA1": "IF8kW//QDSkD19h9OWGGCocvJ2M=",
 			"path": "github.com/admpub/confl",
-			"revision": "0e05311c4e65555a70b0db5d22f26c0eca1a12bd",
-			"revisionTime": "2016-09-04T09:43:10Z"
+			"revision": "bb6f364f59553f22bf320407d53586cb6c7ffda0",
+			"revisionTime": "2016-12-15T03:27:45Z"
 		},
 		{
 			"checksumSHA1": "Vl25su4MLkgwg1EVHK/DudTUUxM=",
@@ -1237,10 +1237,10 @@
 			"revisionTime": "2016-11-09T03:40:55Z"
 		},
 		{
-			"checksumSHA1": "EfRm4e8pSl+JU4dPIEqdAu20lYQ=",
+			"checksumSHA1": "r25eLREaUCecwj7UOn/pxP47bkI=",
 			"path": "github.com/webx-top/echo",
-			"revision": "3db7bec6f03b6fede8d25569da472296b618edd5",
-			"revisionTime": "2016-12-12T08:22:13Z"
+			"revision": "28f09473f438b3133c8ba0c5940f650095aabf8d",
+			"revisionTime": "2016-12-15T02:56:45Z"
 		},
 		{
 			"checksumSHA1": "jWOa4fw+bpq1LHWTO7+L7ZT/3d0=",
@@ -1309,10 +1309,10 @@
 			"revisionTime": "2016-11-27T11:14:20Z"
 		},
 		{
-			"checksumSHA1": "+/wuVOLzLXsIliiLERXx0p8jtk0=",
+			"checksumSHA1": "52YKjWRfR4GDb3RRmaMxyTHFbhA=",
 			"path": "github.com/webx-top/echo/middleware/render",
-			"revision": "5d4a57e6b9f42616a423b98aeb4e7115ce712059",
-			"revisionTime": "2016-11-27T11:14:20Z"
+			"revision": "8d145e481b045db55f0efe9537f3459dedfd0cfc",
+			"revisionTime": "2016-12-15T03:45:54Z"
 		},
 		{
 			"checksumSHA1": "Rms5F+vtQBZ3ZhrLdYGjSHcyWhk=",

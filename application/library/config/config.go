@@ -58,6 +58,7 @@ type Config struct {
 		EditableFileExtensions map[string]string `json:"editableFileExtensions"`
 		EditableFileMaxSize    string            `json:"editableFileMaxSize"`
 		EditableFileMaxBytes   int64             `json:"editableFileMaxBytes"`
+		ErrorPages             map[int]string    `json:"errorPages"`
 	} `json:"sys"`
 
 	Cookie struct {
