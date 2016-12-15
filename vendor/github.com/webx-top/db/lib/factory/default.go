@@ -1,6 +1,8 @@
 package factory
 
 import (
+	"database/sql"
+
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/sqlbuilder"
 )
@@ -81,6 +83,22 @@ func Result(param *Param) db.Result {
 
 // Read ==========================
 
+// Query query SQL. sqlRows is an *sql.Rows object, so you can use Scan() on it
+// err = sqlRows.Scan(&a, &b, ...)
+func Query(param *Param) (*sql.Rows, error) {
+	return DefaultFactory.Query(param)
+}
+
+// QueryTo query SQL. mapping fields into a struct
+func QueryTo(param *Param) (sqlbuilder.Iterator, error) {
+	return DefaultFactory.QueryTo(param)
+}
+
+// QueryRow query SQL
+func QueryRow(param *Param) (*sql.Row, error) {
+	return DefaultFactory.QueryRow(param)
+}
+
 func SelectAll(param *Param) error {
 	return DefaultFactory.SelectAll(param)
 }
@@ -118,6 +136,11 @@ func Count(param *Param) (int64, error) {
 }
 
 // Write ==========================
+
+// Exec execute SQL
+func Exec(param *Param) (sql.Result, error) {
+	return DefaultFactory.Exec(param)
+}
 
 func Insert(param *Param) (interface{}, error) {
 	return DefaultFactory.Insert(param)

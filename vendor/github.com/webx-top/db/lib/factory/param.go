@@ -2,6 +2,7 @@
 package factory
 
 import (
+	"database/sql"
 	"encoding/gob"
 	"fmt"
 	"reflect"
@@ -489,6 +490,22 @@ func (p *Param) CheckCached() bool {
 
 // Read ==========================
 
+// Query query SQL. sqlRows is an *sql.Rows object, so you can use Scan() on it
+// err = sqlRows.Scan(&a, &b, ...)
+func (p *Param) Query() (*sql.Rows, error) {
+	return p.T().Query(p)
+}
+
+// QueryTo query SQL. mapping fields into a struct
+func (p *Param) QueryTo() (sqlbuilder.Iterator, error) {
+	return p.T().QueryTo(p)
+}
+
+// QueryRow query SQL
+func (p *Param) QueryRow() (*sql.Row, error) {
+	return p.T().QueryRow(p)
+}
+
 func (p *Param) SelectAll() error {
 	return p.T().SelectAll(p)
 }
@@ -526,6 +543,11 @@ func (p *Param) Count() (int64, error) {
 }
 
 // Write ==========================
+
+// Exec execute SQL
+func (p *Param) Exec() (sql.Result, error) {
+	return p.T().Exec(p)
+}
 
 func (p *Param) Insert() (interface{}, error) {
 	return p.T().Insert(p)

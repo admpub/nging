@@ -1,6 +1,7 @@
 package factory
 
 import (
+	"database/sql"
 	"log"
 	"strings"
 
@@ -47,6 +48,36 @@ func (t *Transaction) Result(param *Param) db.Result {
 
 func (t *Transaction) C(param *Param) db.Collection {
 	return t.Database(param).Collection(param.cluster.Table(param.Collection))
+}
+
+// Exec execute SQL
+func (t *Transaction) Exec(param *Param) (sql.Result, error) {
+	param.ReadOrWrite = W
+	return t.Backend(param).Exec(param.Collection, param.Args...)
+}
+
+// Query query SQL. sqlRows is an *sql.Rows object, so you can use Scan() on it
+// err = sqlRows.Scan(&a, &b, ...)
+func (t *Transaction) Query(param *Param) (*sql.Rows, error) {
+	return t.Backend(param).Query(param.Collection, param.Args...)
+}
+
+// QueryTo query SQL. mapping fields into a struct
+func (t *Transaction) QueryTo(param *Param) (sqlbuilder.Iterator, error) {
+	rows, err := t.Query(param)
+	if err != nil {
+		return nil, err
+	}
+	iter := sqlbuilder.NewIterator(rows)
+	if param.ResultData != nil {
+		err = iter.All(param.ResultData)
+	}
+	return iter, err
+}
+
+// QueryRow query SQL
+func (t *Transaction) QueryRow(param *Param) (*sql.Row, error) {
+	return t.Backend(param).QueryRow(param.Collection, param.Args...)
 }
 
 // ================================

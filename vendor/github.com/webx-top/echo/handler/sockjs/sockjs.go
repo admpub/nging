@@ -20,8 +20,8 @@ package sockjs
 import (
 	"strings"
 
+	"github.com/admpub/log"
 	"github.com/admpub/sockjs-go/sockjs"
-	"github.com/lunny/log"
 	"github.com/webx-top/echo"
 )
 

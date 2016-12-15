@@ -28,10 +28,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/lunny/log"
+	"github.com/admpub/log"
 )
 
-//内存占用
+// ElapsedMemory 内存占用
 func ElapsedMemory() (ret string) {
 	memStat := new(runtime.MemStats)
 	runtime.ReadMemStats(memStat)
