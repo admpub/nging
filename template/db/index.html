@@ -20,11 +20,14 @@
             <p class="description">
             {{$dbList := Stored.Get "dbList"}}
             {{if $dbList}}
-            {{"数据库"}}: <select name="db" id="db">
+            <div class="input-group">
+              <span class="input-group-addon">{{"数据库"|T}}</span>
+              <select name="db" class="form-control" id="db">
                 {{range $k,$v:=$dbList}}
                 <option value="{{$v}}">{{$v}}</option>
                 {{end}}
-            </select>
+              </select>
+            </div>
             {{end}}
             </p>
           </div>  
@@ -134,7 +137,7 @@ $(function(){
         });
         
       });
-      $('#sidebar-collapse').trigger('click'); 
+      //$('#sidebar-collapse').trigger('click'); 
 });
 </script>
 {{/Block}}
