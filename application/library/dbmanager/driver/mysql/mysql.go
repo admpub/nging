@@ -69,7 +69,17 @@ func (m *mySQL) ModifyDb() error {
 	return nil
 }
 func (m *mySQL) ListDb() error {
-	return nil
+	var err error
+	if len(m.DbAuth.Db) > 0 {
+		if _, ok := m.Get(`dbList`).([]string); !ok {
+			tableList, err := m.getDatabases()
+			if err != nil {
+				return err
+			}
+			m.Set(`dbList`, tableList)
+		}
+	}
+	return m.Render(`db/mysql/listDb`, err)
 }
 func (m *mySQL) CreateTable() error {
 	return nil

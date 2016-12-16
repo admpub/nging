@@ -30,10 +30,7 @@ func (m *mySQL) getDatabases() ([]string, error) {
 }
 
 func (m *mySQL) getTables() ([]string, error) {
-	sqlStr := `SELECT TABLE_NAME, TABLE_TYPE FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() ORDER BY TABLE_NAME`
-	if m.getBVersion() < 5 {
-		sqlStr = `SHOW TABLES`
-	}
+	sqlStr := `SHOW TABLES`
 	rows, err := m.newParam().SetCollection(sqlStr).Query()
 	if err != nil {
 		return nil, err

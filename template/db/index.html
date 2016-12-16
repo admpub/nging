@@ -1,6 +1,15 @@
 {{Extend "layout"}}
 {{Block "title"}}{{"数据库管理"|T}}{{/Block}}
 {{Block "breadcrumb"}}
+{{$dbUsername := Stored.Get "dbUsername"}}
+{{if $dbUsername}}
+<div class="pull-right">
+<a href="{{dbMgrURL "logout"}}" class="btn btn-default pull-right" onclick="return confirm('{{"确定退出当前数据库账号吗？"|T}}');">
+<i class="fa fa-sign-out"></i>
+{{"注销"|T}} ({{"用户"|T}}: {{$dbUsername}})
+</a>
+</div>
+{{end}}
 {{Super}}
 <li class="active">{{"数据库管理"|T}}</li>
 {{/Block}}
@@ -15,9 +24,13 @@
           <div class="header">
             <button class="navbar-toggle" data-target=".treeview" data-toggle="collapse" type="button">
               <span class="fa fa-chevron-down"></span>
-            </button>          
-            <h2 class="page-title">{{Stored.Get "dbVersion"}}</h2>
+            </button>      
+            <h2 class="page-title" title="{{Stored.Get "dbHost"}}">{{Stored.Get "dbHost"}}</h2>
             <p class="description">
+            <span class="label label-primary" title="{{Stored.Get "driver"}} {{Stored.Get "dbVersion"}}">
+               {{Stored.Get "driver"}} {{Stored.Get "dbVersion"}}
+            </span>    
+            </p>
             {{$dbList := Stored.Get "dbList"}}
             {{if $dbList}}
             <div class="input-group">
@@ -29,7 +42,6 @@
               </select>
             </div>
             {{end}}
-            </p>
           </div>  
           <ul class="nav nav-list treeview collapse">
             <li><label class="tree-toggler nav-header"><i class="fa fa-folder-o"></i> {{"数据表"|T}}</label>
@@ -38,7 +50,7 @@
                     {{if $tableList}}
                     {{$currentTable := Form "table"}}
                     {{range $k,$v:=$tableList}}
-                    <li{{if eq $currentTable $v}} class="current"{{end}}><a href="/db?driver={{Stored.Get "driver"}}&operation=viewTable&table={{$v}}">{{$v}}</a></li>
+                    <li{{if eq $currentTable $v}} class="current"{{end}}><a href="{{dbMgrURL "viewTable"}}&table={{$v}}">{{$v}}</a></li>
                     {{end}}
                     {{end}}
                     
@@ -136,6 +148,10 @@ $(function(){
           $(".tree .nscroller").nanoScroller({ preventPageScrolling: true });
         });
         
+      });
+      $('#db').on('change',function(){
+        var db=$(this).val();
+        window.location='{{dbMgrURL "listDb"}}&db='+db;
       });
       //$('#sidebar-collapse').trigger('click'); 
 });
