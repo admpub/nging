@@ -18,8 +18,8 @@
 package config
 
 import (
-	"github.com/admpub/caddyui/application/library/caddy"
-	"github.com/admpub/caddyui/application/library/ftp"
+	"github.com/admpub/nging/application/library/caddy"
+	"github.com/admpub/nging/application/library/ftp"
 )
 
 func SetVersion(version string) {

@@ -1,7 +1,9 @@
 package handler
 
 import (
-	"github.com/admpub/caddyui/application/library/dbmanager"
+	"github.com/admpub/nging/application/library/dbmanager"
+	"github.com/admpub/nging/application/library/dbmanager/driver"
+	_ "github.com/admpub/nging/application/library/dbmanager/driver/mysql"
 	"github.com/webx-top/echo"
 )
 
@@ -15,7 +17,7 @@ func DbManager(ctx echo.Context) error {
 	}
 	ret := Err(ctx, err)
 	driverList := []string{}
-	for driverName := range dbmanager.GetAll() {
+	for driverName := range driver.GetAll() {
 		driverList = append(driverList, driverName)
 	}
 	ctx.Set(`driverList`, driverList)

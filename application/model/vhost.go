@@ -18,7 +18,7 @@
 package model
 
 import (
-	"github.com/admpub/caddyui/application/dbschema"
+	"github.com/admpub/nging/application/dbschema"
 	"github.com/webx-top/echo"
 )
 

@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/admpub/caddyui/application/model"
+	"github.com/admpub/nging/application/model"
 	ftpserver "github.com/admpub/ftpserver"
 )
 

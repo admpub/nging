@@ -3,7 +3,7 @@ package handler
 import (
 	"errors"
 
-	"github.com/admpub/caddyui/application/library/notice"
+	"github.com/admpub/nging/application/library/notice"
 	"github.com/admpub/websocket"
 	"github.com/webx-top/echo"
 )

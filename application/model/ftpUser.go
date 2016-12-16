@@ -20,7 +20,7 @@ package model
 import (
 	"errors"
 
-	"github.com/admpub/caddyui/application/dbschema"
+	"github.com/admpub/nging/application/dbschema"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"

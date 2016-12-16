@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/admpub/caddyui/application/library/caddy"
-	"github.com/admpub/caddyui/application/library/ftp"
+	"github.com/admpub/nging/application/library/caddy"
+	"github.com/admpub/nging/application/library/ftp"
 	"github.com/admpub/confl"
 	"github.com/admpub/log"
 	"github.com/webx-top/db/lib/factory"

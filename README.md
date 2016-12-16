@@ -11,5 +11,5 @@ nging不仅仅包含了caddy的在线可视化配置，还包含了ftp服务的�
 - [ ] 支持更多caddy指令的在线配置
 
 # 先睹为快
-[![](https://github.com/admpub/caddyui/blob/master/preview/preview_login.png)](https://github.com/admpub/caddyui/blob/master/preview/preview_login.png)
-[![](https://github.com/admpub/caddyui/blob/master/preview/preview_sysinfo.png)](https://github.com/admpub/caddyui/blob/master/preview/preview_sysinfo.png)
+[![](https://github.com/admpub/nging/blob/master/preview/preview_login.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_login.png)
+[![](https://github.com/admpub/nging/blob/master/preview/preview_sysinfo.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_sysinfo.png)

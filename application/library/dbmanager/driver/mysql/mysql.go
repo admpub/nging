@@ -1,64 +1,59 @@
-package dbmanager
+package mysql
 
 import (
-	"database/sql"
 	"fmt"
 
+	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/db/mysql"
 	"github.com/webx-top/echo"
 )
 
 func init() {
-	Register(`MySQL`, &mySQL{})
+	driver.Register(`MySQL`, &mySQL{})
 }
 
 type mySQL struct {
-	*BaseDriver
-	db *factory.Factory
+	*driver.BaseDriver
+	db            *factory.Factory
+	connectionURL *mysql.ConnectionURL
+	version       string
 }
 
 func (m *mySQL) Init(ctx echo.Context) {
-	m.BaseDriver = NewBaseDriver()
+	m.BaseDriver = driver.NewBaseDriver()
 	m.BaseDriver.Init(ctx)
 }
 
 func (m *mySQL) IsSupported(operation string) bool {
 	return true
 }
+
 func (m *mySQL) Login() error {
 	m.db = factory.New()
-	settings := mysql.ConnectionURL{
-		User:     m.Form(`username`),
-		Password: m.Form(`password`),
-		Host:     m.Form(`host`),
-		Database: m.Form(`db`),
+	if m.connectionURL == nil {
+		settings := mysql.ConnectionURL{
+			User:     m.Form(`username`),
+			Password: m.Form(`password`),
+			Host:     m.Form(`host`),
+			Database: m.Form(`db`),
+		}
+		if len(settings.User) == 0 {
+			settings.User = `root`
+		}
+		if len(settings.Host) == 0 {
+			settings.Host = `127.0.0.1:3306`
+		}
+		m.Echo().Logger().Debugf("db settings: %#v", settings)
+		m.connectionURL = &settings
 	}
-	if len(settings.User) == 0 {
-		settings.User = `root`
-	}
-	if len(settings.Host) == 0 {
-		settings.Host = `127.0.0.1:3306`
-	}
-	m.Echo().Logger().Debugf("db settings: %#v", settings)
-	db, err := mysql.Open(settings)
+	db, err := mysql.Open(*m.connectionURL)
 	if err != nil {
 		return err
 	}
 	cluster := factory.NewCluster().AddW(db)
 	m.db.SetCluster(0, cluster)
-	rows, err := m.db.Query(factory.NewParam(m.db).SetCollection(`SHOW DATABASES`))
-	if err != nil {
-		return err
-	}
-	for rows.Next() {
-		var v sql.NullString
-		err := rows.Scan(&v)
-		if err != nil {
-			return err
-		}
-		fmt.Println(`database: `, v.String)
-	}
+	fmt.Println(`------------------------------->database version: `, m.getBVersion())
 	return nil
 }
 func (m *mySQL) Logout() error {

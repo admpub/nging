@@ -1,6 +1,6 @@
 package ftp
 
-import "github.com/admpub/caddyui/application/model"
+import "github.com/admpub/nging/application/model"
 
 func NewAuth() *Auth {
 	return &Auth{

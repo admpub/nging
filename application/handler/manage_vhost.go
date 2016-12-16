@@ -28,11 +28,11 @@ import (
 
 	"strings"
 
-	"github.com/admpub/caddyui/application/library/config"
-	"github.com/admpub/caddyui/application/library/filemanager"
-	"github.com/admpub/caddyui/application/library/modal"
-	"github.com/admpub/caddyui/application/library/notice"
-	"github.com/admpub/caddyui/application/model"
+	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/nging/application/library/filemanager"
+	"github.com/admpub/nging/application/library/modal"
+	"github.com/admpub/nging/application/library/notice"
+	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/handler/mvc/events"

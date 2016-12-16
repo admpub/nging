@@ -28,9 +28,9 @@ import (
 	ws "github.com/webx-top/echo/handler/websocket"
 	"github.com/webx-top/echo/middleware/render"
 
-	. "github.com/admpub/caddyui/application/handler"
-	"github.com/admpub/caddyui/application/library/config"
-	"github.com/admpub/caddyui/application/middleware"
+	. "github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/nging/application/middleware"
 )
 
 var DefaultRequestMethods = []string{echo.GET}

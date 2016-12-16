@@ -24,8 +24,8 @@ import (
 
 	"strconv"
 
-	"github.com/admpub/caddyui/application/library/errors"
-	"github.com/admpub/caddyui/application/library/modal"
+	"github.com/admpub/nging/application/library/errors"
+	"github.com/admpub/nging/application/library/modal"
 	"github.com/webx-top/echo"
 )
 

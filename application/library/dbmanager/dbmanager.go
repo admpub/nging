@@ -4,6 +4,7 @@ import (
 	//"github.com/webx-top/com"
 	"errors"
 
+	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/webx-top/echo"
 )
 
@@ -17,64 +18,64 @@ type dbManager struct {
 	echo.Context
 }
 
-func (d *dbManager) Driver(typeName string) (Driver, error) {
-	driver, ok := Get(typeName)
+func (d *dbManager) Driver(typeName string) (driver.Driver, error) {
+	dv, ok := driver.Get(typeName)
 	if ok {
-		driver.Init(d.Context)
-		return driver, nil
+		dv.Init(d.Context)
+		return dv, nil
 	}
 	return nil, errors.New(d.T(`很抱歉，暂时不支持%v`, typeName))
 }
 
 func (d *dbManager) Run(typeName string, operation string) error {
-	driver, err := d.Driver(typeName)
+	drv, err := d.Driver(typeName)
 	if err != nil {
 		return err
 	}
-	if !driver.IsSupported(operation) {
+	if !drv.IsSupported(operation) {
 		return errors.New(d.T(`很抱歉，不支持此项操作`))
 	}
 	switch operation {
 	case `login`:
-		return driver.Login()
+		return drv.Login()
 	case `logout`:
-		return driver.Logout()
+		return drv.Logout()
 	case `processList`:
-		return driver.ProcessList()
+		return drv.ProcessList()
 	case `privileges`:
-		return driver.Privileges()
+		return drv.Privileges()
 	case `info`:
-		return driver.Info()
+		return drv.Info()
 	case `createDb`:
-		return driver.CreateDb()
+		return drv.CreateDb()
 	case `modifyDb`:
-		return driver.ModifyDb()
+		return drv.ModifyDb()
 	case `listDb`:
-		return driver.ListDb()
+		return drv.ListDb()
 	case `createTable`:
-		return driver.CreateTable()
+		return drv.CreateTable()
 	case `modifyTable`:
-		return driver.ModifyTable()
+		return drv.ModifyTable()
 	case `listTable`:
-		return driver.ListTable()
+		return drv.ListTable()
 	case `viewTable`:
-		return driver.ViewTable()
+		return drv.ViewTable()
 	case `listData`:
-		return driver.ListData()
+		return drv.ListData()
 	case `createData`:
-		return driver.CreateData()
+		return drv.CreateData()
 	case `indexes`:
-		return driver.Indexes()
+		return drv.Indexes()
 	case `foreign`:
-		return driver.Foreign()
+		return drv.Foreign()
 	case `trigger`:
-		return driver.Trigger()
+		return drv.Trigger()
 	case `runCommand`:
-		return driver.RunCommand()
+		return drv.RunCommand()
 	case `import`:
-		return driver.Import()
+		return drv.Import()
 	case `export`:
-		return driver.Export()
+		return drv.Export()
 	default:
 		return errors.New(d.T(`很抱歉，不支持此项操作`))
 	}

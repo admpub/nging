@@ -24,3 +24,4 @@ _testmain.go
 *.prof
 /caddy.pid
 /access_local.log
+/*.log

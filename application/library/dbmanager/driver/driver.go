@@ -1,13 +1,15 @@
-package dbmanager
+package driver
 
 import (
-	//"github.com/webx-top/com"
+	"regexp"
+
 	"github.com/webx-top/echo"
 )
 
 var (
-	drivers       = map[string]Driver{}
-	DefaultDriver = &BaseDriver{}
+	drivers         = map[string]Driver{}
+	DefaultDriver   = &BaseDriver{}
+	RegexpNotNumber = regexp.MustCompile(`[^0-9]+`)
 )
 
 type Driver interface {

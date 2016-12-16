@@ -18,7 +18,7 @@
 package handler
 
 import (
-	"github.com/admpub/caddyui/application/middleware"
+	"github.com/admpub/nging/application/middleware"
 	"github.com/webx-top/echo"
 )
 

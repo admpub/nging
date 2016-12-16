@@ -20,7 +20,7 @@ package middleware
 import (
 	"errors"
 
-	"github.com/admpub/caddyui/application/library/config"
+	"github.com/admpub/nging/application/library/config"
 	"github.com/webx-top/echo"
 )
 

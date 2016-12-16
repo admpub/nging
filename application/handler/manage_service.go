@@ -5,8 +5,8 @@ import (
 
 	"os"
 
-	"github.com/admpub/caddyui/application/library/config"
-	"github.com/admpub/caddyui/application/library/notice"
+	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/nging/application/library/notice"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )

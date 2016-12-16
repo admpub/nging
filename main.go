@@ -23,7 +23,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/admpub/caddyui/application/library/caddy"
+	"github.com/admpub/nging/application/library/caddy"
 	"github.com/admpub/log"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
@@ -34,8 +34,8 @@ import (
 	"github.com/webx-top/echo/middleware/session"
 	"github.com/webx-top/echo/middleware/tplfunc"
 
-	"github.com/admpub/caddyui/application"
-	"github.com/admpub/caddyui/application/library/config"
+	"github.com/admpub/nging/application"
+	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/letsencrypt"
 )
 
