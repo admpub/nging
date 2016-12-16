@@ -254,7 +254,7 @@ func (s *MVC) NewRenderer(conf *render.Config, a *Module, funcMap map[string]int
 	staticAbsPath := themeAbsPath + `/assets`
 	te := s.NewTemplateEngine(themeAbsPath, conf)
 	static := s.NewStatic(staticUrlPath, staticAbsPath, funcMap)
-	te.SetFuncMapFn(func() map[string]interface{} {
+	te.SetFuncMap(func() map[string]interface{} {
 		return funcMap
 	})
 	te.MonitorEvent(static.OnUpdate(themeAbsPath))
@@ -280,7 +280,7 @@ func (s *MVC) resetRenderer(conf *render.Config) *MVC {
 	s.Renderer = s.NewTemplateEngine(s.ThemeDir(conf.Theme), conf)
 	s.Core.SetRenderer(s.Renderer)
 	s.TemplateMonitor()
-	s.Renderer.SetFuncMapFn(func() map[string]interface{} {
+	s.Renderer.SetFuncMap(func() map[string]interface{} {
 		return s.FuncMap
 	})
 	s.Renderer.SetContentProcessor(conf.Parser())

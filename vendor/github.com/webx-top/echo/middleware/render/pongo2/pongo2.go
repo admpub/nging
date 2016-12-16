@@ -177,7 +177,7 @@ func (a *Pongo2) SetContentProcessor(fn func([]byte) []byte) {
 	a.contentProcessors = append(a.contentProcessors, fn)
 }
 
-func (a *Pongo2) SetFuncMapFn(fn func() map[string]interface{}) {
+func (a *Pongo2) SetFuncMap(fn func() map[string]interface{}) {
 	a.getFuncs = fn
 }
 

@@ -37,7 +37,7 @@ type Driver interface {
 	SetContentProcessor(fn func([]byte) []byte)
 
 	//设置模板函数
-	SetFuncMapFn(func() map[string]interface{})
+	SetFuncMap(func() map[string]interface{})
 
 	//渲染模板
 	Render(io.Writer, string, interface{}, echo.Context) error

@@ -141,7 +141,7 @@ func (self *Standard) SetContentProcessor(fn func([]byte) []byte) {
 	self.contentProcessors = append(self.contentProcessors, fn)
 }
 
-func (self *Standard) SetFuncMapFn(fn func() map[string]interface{}) {
+func (self *Standard) SetFuncMap(fn func() map[string]interface{}) {
 	self.FuncMapFn = fn
 }
 
