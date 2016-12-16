@@ -8,21 +8,31 @@ import (
 	"github.com/webx-top/db/lib/factory"
 )
 
-func (m *mySQL) DB() (*factory.Factory, error) {
-	var err error
-	if m.db == nil {
-		err = m.Login()
-		if err != nil {
-			m.Echo().Logger().Error(err.Error())
-		}
-	}
-	return m.db, err
-}
-
 func (m *mySQL) getDatabases() ([]string, error) {
 	sqlStr := `SELECT SCHEMA_NAME FROM information_schema.SCHEMATA`
 	if m.getBVersion() < 5 {
 		sqlStr = `SHOW DATABASES`
+	}
+	rows, err := m.newParam().SetCollection(sqlStr).Query()
+	if err != nil {
+		return nil, err
+	}
+	ret := []string{}
+	for rows.Next() {
+		var v sql.NullString
+		err := rows.Scan(&v)
+		if err != nil {
+			return nil, err
+		}
+		ret = append(ret, v.String)
+	}
+	return ret, nil
+}
+
+func (m *mySQL) getTables() ([]string, error) {
+	sqlStr := `SELECT TABLE_NAME, TABLE_TYPE FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() ORDER BY TABLE_NAME`
+	if m.getBVersion() < 5 {
+		sqlStr = `SHOW TABLES`
 	}
 	rows, err := m.newParam().SetCollection(sqlStr).Query()
 	if err != nil {
@@ -69,4 +79,22 @@ func (m *mySQL) getVersion() string {
 	}
 	m.version = v.String
 	return v.String
+}
+
+func (m *mySQL) baseInfo() error {
+	dbList, err := m.getDatabases()
+	if err != nil {
+		return err
+	}
+	m.Set(`dbList`, dbList)
+	if len(m.DbAuth.Db) > 0 {
+		tableList, err := m.getTables()
+		if err != nil {
+			return err
+		}
+		m.Set(`tableList`, tableList)
+	}
+
+	m.Set(`dbVersion`, m.getVersion())
+	return nil
 }

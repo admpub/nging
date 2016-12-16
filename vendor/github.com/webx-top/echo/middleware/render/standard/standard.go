@@ -202,13 +202,9 @@ func (self *Standard) TemplatePath(p string) string {
 	return self.TemplatePathParser(p)
 }
 
-func (self *Standard) echo(messages ...string) {
+func (self *Standard) echo(messages ...interface{}) {
 	if self.Debug {
-		var message string
-		for _, v := range messages {
-			message += v + ` `
-		}
-		fmt.Println(`[tplex]`, message)
+		fmt.Println(messages...)
 	}
 }
 
@@ -302,7 +298,7 @@ func (self *Standard) parse(tmplName string, funcMap htmlTpl.FuncMap) (tmpl *htm
 		self.InitRegexp()
 	}
 	m := self.extTagRegex.FindAllStringSubmatch(content, 1)
-	if len(m) > 0 {
+	for i := 0; i < 10 && len(m) > 0; i++ {
 		self.ParseBlock(content, &subcs, &extcs)
 		extFile := m[0][1] + self.Ext
 		passObject := m[0][2]
@@ -314,7 +310,7 @@ func (self *Standard) parse(tmplName string, funcMap htmlTpl.FuncMap) (tmpl *htm
 			return
 		}
 		content = string(b)
-		content = self.ParseExtend(content, &extcs, passObject, &subcs)
+		content, m = self.ParseExtend(content, &extcs, passObject, &subcs)
 
 		if v, ok := self.CachedRelation[extFile]; !ok {
 			self.CachedRelation[extFile] = &CcRel{
@@ -324,9 +320,10 @@ func (self *Standard) parse(tmplName string, funcMap htmlTpl.FuncMap) (tmpl *htm
 		} else if _, ok := v.Rel[cachedKey]; !ok {
 			self.CachedRelation[extFile].Rel[cachedKey] = 0
 		}
+		//self.echo(fmt.Sprint(i), `The template content:`, content)
 	}
 	content = self.ContainsSubTpl(content, &subcs)
-	self.echo(`The template content:`, content)
+	//self.echo(`The template content:`, content)
 	tmpl, err = t.Parse(content)
 	if err != nil {
 		content = fmt.Sprintf("Parse %v err: %v", tmplName, err)
@@ -345,6 +342,7 @@ func (self *Standard) parse(tmplName string, funcMap htmlTpl.FuncMap) (tmpl *htm
 			t = tmpl
 		} else {
 			t = tmpl.New(name)
+			subc = self.Tag(`define "`+name+`"`) + subc + self.Tag(`end`)
 			_, err = t.Parse(subc)
 			if err != nil {
 				t.Parse(fmt.Sprintf("Parse File %v err: %v", name, err))
@@ -368,6 +366,7 @@ func (self *Standard) parse(tmplName string, funcMap htmlTpl.FuncMap) (tmpl *htm
 			t = tmpl
 		} else {
 			t = tmpl.New(name)
+			extc = self.Tag(`define "`+name+`"`) + extc + self.Tag(`end`)
 			_, err = t.Parse(extc)
 			if err != nil {
 				t.Parse(fmt.Sprintf("Parse Block %v err: %v", name, err))
@@ -403,11 +402,13 @@ func (self *Standard) ParseBlock(content string, subcs *map[string]string, extcs
 	for _, v := range matches {
 		blockName := v[1]
 		content := v[2]
-		(*extcs)[blockName] = self.Tag(`define "`+blockName+`"`) + self.ContainsSubTpl(content, subcs) + self.Tag(`end`)
+		(*extcs)[blockName] = self.ContainsSubTpl(content, subcs)
 	}
 }
 
-func (self *Standard) ParseExtend(content string, extcs *map[string]string, passObject string, subcs *map[string]string) string {
+func (self *Standard) ParseExtend(content string, extcs *map[string]string, passObject string, subcs *map[string]string) (string, [][]string) {
+	m := self.extTagRegex.FindAllStringSubmatch(content, 1)
+	hasParent := len(m) > 0
 	if passObject == "" {
 		passObject = "."
 	}
@@ -450,12 +451,18 @@ func (self *Standard) ParseExtend(content string, extcs *map[string]string, pass
 				}
 			}
 			if suffix != `` {
-				(*extcs)[blockName+suffix] = strings.Replace(v, self.Tag(`define "`+blockName+`"`), self.Tag(`define "`+blockName+suffix+`"`), 1)
+				(*extcs)[blockName+suffix] = v
 				rec[blockName+suffix] = 0
 			}
-			content = strings.Replace(content, matched, self.Tag(`template "`+blockName+suffix+`" `+passObject), 1)
+			if hasParent {
+				content = strings.Replace(content, matched, self.DelimLeft+self.BlockTag+` "`+blockName+`"`+self.DelimRight+v+self.DelimLeft+`/`+self.BlockTag+self.DelimRight, 1)
+			} else {
+				content = strings.Replace(content, matched, self.Tag(`template "`+blockName+suffix+`" `+passObject), 1)
+			}
 		} else {
-			content = strings.Replace(content, matched, innerStr, 1)
+			if !hasParent {
+				content = strings.Replace(content, matched, innerStr, 1)
+			}
 		}
 	}
 	//只保留layout中存在的Block
@@ -464,7 +471,7 @@ func (self *Standard) ParseExtend(content string, extcs *map[string]string, pass
 			delete(*extcs, k)
 		}
 	}
-	return content
+	return content, m
 }
 
 func (self *Standard) ContainsSubTpl(content string, subcs *map[string]string) string {
@@ -486,7 +493,7 @@ func (self *Standard) ContainsSubTpl(content string, subcs *map[string]string) s
 			str := string(b)
 			(*subcs)[tmplFile] = "" //先登记，避免死循环
 			str = self.ContainsSubTpl(str, subcs)
-			(*subcs)[tmplFile] = self.Tag(`define "`+tmplFile+`"`) + str + self.Tag(`end`)
+			(*subcs)[tmplFile] = str
 			//}
 		}
 		if passObject == "" {

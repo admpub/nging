@@ -1,8 +1,6 @@
 package mysql
 
 import (
-	"fmt"
-
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/db/mysql"
@@ -15,14 +13,13 @@ func init() {
 
 type mySQL struct {
 	*driver.BaseDriver
-	db            *factory.Factory
-	connectionURL *mysql.ConnectionURL
-	version       string
+	db      *factory.Factory
+	version string
 }
 
-func (m *mySQL) Init(ctx echo.Context) {
+func (m *mySQL) Init(ctx echo.Context, auth *driver.DbAuth) {
 	m.BaseDriver = driver.NewBaseDriver()
-	m.BaseDriver.Init(ctx)
+	m.BaseDriver.Init(ctx, auth)
 }
 
 func (m *mySQL) IsSupported(operation string) bool {
@@ -31,31 +28,24 @@ func (m *mySQL) IsSupported(operation string) bool {
 
 func (m *mySQL) Login() error {
 	m.db = factory.New()
-	if m.connectionURL == nil {
-		settings := mysql.ConnectionURL{
-			User:     m.Form(`username`),
-			Password: m.Form(`password`),
-			Host:     m.Form(`host`),
-			Database: m.Form(`db`),
-		}
-		if len(settings.User) == 0 {
-			settings.User = `root`
-		}
-		if len(settings.Host) == 0 {
-			settings.Host = `127.0.0.1:3306`
-		}
-		m.Echo().Logger().Debugf("db settings: %#v", settings)
-		m.connectionURL = &settings
+	settings := mysql.ConnectionURL{
+		User:     m.DbAuth.Username,
+		Password: m.DbAuth.Password,
+		Host:     m.DbAuth.Host,
+		Database: m.DbAuth.Db,
 	}
-	db, err := mysql.Open(*m.connectionURL)
+	if len(settings.Database) == 0 {
+		settings.Database = m.Form(`db`)
+	}
+	db, err := mysql.Open(settings)
 	if err != nil {
 		return err
 	}
 	cluster := factory.NewCluster().AddW(db)
 	m.db.SetCluster(0, cluster)
-	fmt.Println(`------------------------------->database version: `, m.getBVersion())
-	return nil
+	return m.baseInfo()
 }
+
 func (m *mySQL) Logout() error {
 	if m.db != nil {
 		m.db.CloseAll()
@@ -88,7 +78,17 @@ func (m *mySQL) ModifyTable() error {
 	return nil
 }
 func (m *mySQL) ListTable() error {
-	return nil
+	var err error
+	if len(m.DbAuth.Db) > 0 {
+		if _, ok := m.Get(`tableList`).([]string); !ok {
+			tableList, err := m.getTables()
+			if err != nil {
+				return err
+			}
+			m.Set(`tableList`, tableList)
+		}
+	}
+	return m.Render(`db/mysql/listTable`, err)
 }
 func (m *mySQL) ViewTable() error {
 	return nil

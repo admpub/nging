@@ -8,20 +8,22 @@ import (
 	"github.com/webx-top/echo"
 )
 
-func New(ctx echo.Context) *dbManager {
+func New(ctx echo.Context, auth *driver.DbAuth) *dbManager {
 	return &dbManager{
 		Context: ctx,
+		DbAuth:  auth,
 	}
 }
 
 type dbManager struct {
 	echo.Context
+	*driver.DbAuth
 }
 
 func (d *dbManager) Driver(typeName string) (driver.Driver, error) {
 	dv, ok := driver.Get(typeName)
 	if ok {
-		dv.Init(d.Context)
+		dv.Init(d.Context, d.DbAuth)
 		return dv, nil
 	}
 	return nil, errors.New(d.T(`很抱歉，暂时不支持%v`, typeName))

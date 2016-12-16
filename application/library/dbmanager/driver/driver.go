@@ -13,7 +13,7 @@ var (
 )
 
 type Driver interface {
-	Init(echo.Context)
+	Init(echo.Context, *DbAuth)
 	IsSupported(string) bool
 	Login() error
 	Logout() error
@@ -43,10 +43,12 @@ func NewBaseDriver() *BaseDriver {
 
 type BaseDriver struct {
 	echo.Context
+	*DbAuth
 }
 
-func (m *BaseDriver) Init(ctx echo.Context) {
+func (m *BaseDriver) Init(ctx echo.Context, auth *DbAuth) {
 	m.Context = ctx
+	m.DbAuth = auth
 }
 func (m *BaseDriver) IsSupported(operation string) bool {
 	return true

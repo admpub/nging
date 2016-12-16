@@ -16,56 +16,29 @@
             <button class="navbar-toggle" data-target=".treeview" data-toggle="collapse" type="button">
               <span class="fa fa-chevron-down"></span>
             </button>          
-            <h2 class="page-title">Tree View</h2>
-            <p class="description">Service description</p>
+            <h2 class="page-title">{{Stored.Get "dbVersion"}}</h2>
+            <p class="description">
+            {{$dbList := Stored.Get "dbList"}}
+            {{if $dbList}}
+            {{"数据库"}}: <select name="db" id="db">
+                {{range $k,$v:=$dbList}}
+                <option value="{{$v}}">{{$v}}</option>
+                {{end}}
+            </select>
+            {{end}}
+            </p>
           </div>  
           <ul class="nav nav-list treeview collapse">
-            <li><label class="tree-toggler nav-header"><i class="fa fa-folder-o"></i> General</label>
+            <li><label class="tree-toggler nav-header"><i class="fa fa-folder-o"></i> {{"数据表"|T}}</label>
                 <ul class="nav nav-list tree">
-                    <li><a href="#">Link</a></li>
-                    <li><a href="#">Link</a></li>
-                    <li><label class="tree-toggler nav-header"><i class="fa fa-folder-o"></i> Structure</label>
-                        <ul class="nav nav-list tree">
-                            <li><a href="#">Link</a></li>
-                            <li><a href="#">Link</a></li>
-                            <li><label class="tree-toggler nav-header"><i class="fa fa-folder-o"></i> Plugins</label>
-                                <ul class="nav nav-list tree">
-                                    <li><a href="#">Link</a></li>
-                                    <li><a href="#">Link</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
-            <li><label class="tree-toggler nav-header"><i class="fa fa-folder-o"></i> Documentation</label>
-                <ul class="nav nav-list tree">
-                    <li><a href="#">Link</a></li>
-                    <li><a href="#">Link</a></li>
-                    <li><label class="tree-toggler nav-header"><i class="fa fa-folder-o"></i> Components</label>
-                        <ul class="nav nav-list tree">
-                            <li><a href="#">Link</a></li>
-                            <li><a href="#">Link</a></li>
-                            <li><label class="tree-toggler nav-header"><i class="fa fa-folder-o"></i> Speech API</label>
-                                <ul class="nav nav-list tree">
-                                    <li><a href="#">Link</a></li>
-                                    <li><a href="#">Link</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li><label class="tree-toggler nav-header"><i class="fa fa-folder-o"></i> Charts</label>
-                        <ul class="nav nav-list tree">
-                            <li><a href="#">Link</a></li>
-                            <li><a href="#">Link</a></li>
-                            <li><label class="tree-toggler nav-header"><i class="fa fa-folder-o"></i> Reports</label>
-                                <ul class="nav nav-list tree">
-                                    <li><a href="#">Link</a></li>
-                                    <li><a href="#">Link</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
+                    {{$tableList := Stored.Get "tableList"}}
+                    {{if $tableList}}
+                    {{$currentTable := Form "table"}}
+                    {{range $k,$v:=$tableList}}
+                    <li{{if eq $currentTable $v}} class="current"{{end}}><a href="/db?driver={{Stored.Get "driver"}}&operation=viewTable&table={{$v}}">{{$v}}</a></li>
+                    {{end}}
+                    {{end}}
+                    
                 </ul>
             </li>
           </ul>
@@ -161,7 +134,7 @@ $(function(){
         });
         
       });
-      $('#cl-wrapper').addClass('fixed-menu sb-collapsed'); 
+      $('#sidebar-collapse').trigger('click'); 
 });
 </script>
 {{/Block}}
