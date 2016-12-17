@@ -15,7 +15,7 @@
 							<th><strong>{{"数据库"|T}}</strong></th>
 							<th><strong>{{"字符集"|T}}</strong></th>
 							<th><strong>{{"表数量"|T}}</strong></th>
-							<th><strong>{{"大小"|T}}</strong>({{"计算"|T}})</th>
+							<th><strong>{{"大小"|T}}</strong><!-- ({{"计算"|T}}) --></th>
 						</tr>
 					</thead>
 					<tbody class="no-border-x" id="database-items">
@@ -29,7 +29,7 @@
 							<td><a href="{{dbMgrURL "listTable" $v}}">{{$v}}</a></td>
 							<td>{{if $dbColls}}{{index $dbColls $k}}{{end}}</td>
 							<td>{{if $dbTables}}{{index $dbTables $k}}{{end}}</td>
-							<td>{{if $dbSizes}}{{index $dbSizes $k}}{{end}}</td>
+							<td>{{if $dbSizes}}{{index $dbSizes $k|FormatByte}}{{end}}</td>
 						</tr>
                         {{end}}
 					</tbody>
