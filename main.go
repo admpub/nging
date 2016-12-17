@@ -23,8 +23,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/admpub/nging/application/library/caddy"
-	"github.com/admpub/log"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/engine/standard"
@@ -34,9 +32,9 @@ import (
 	"github.com/webx-top/echo/middleware/session"
 	"github.com/webx-top/echo/middleware/tplfunc"
 
+	"github.com/admpub/letsencrypt"
 	"github.com/admpub/nging/application"
 	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/letsencrypt"
 )
 
 var Version = `v0.1.0 beta1`
@@ -49,29 +47,13 @@ func main() {
 
 	config.MustOK(config.ParseConfig())
 
-	switch config.DefaultCLIConfig.Type {
-	case `webserver`:
-		caddy.TrapSignals()
-		config.ParseConfig()
-		config.DefaultConfig.Caddy.Init().Start()
-		return
-	case `ftpserver`:
-		config.ParseConfig()
-		config.DefaultConfig.FTP.Init().Start()
+	if config.DefaultCLIConfig.OnlyRunServer() {
 		return
 	}
-
-	if err := config.DefaultCLIConfig.CaddyRestart(); err != nil {
-		log.Error(err)
-	}
-	if err := config.DefaultCLIConfig.FTPRestart(); err != nil {
-		log.Error(err)
-	}
+	config.DefaultCLIConfig.RunStartup()
 
 	e := echo.New()
-
 	e.SetHTTPErrorHandler(render.HTTPErrorHandler(config.DefaultConfig.Sys.ErrorPages))
-
 	e.Use(middleware.Log(), middleware.Recover())
 
 	// 注册静态资源文件

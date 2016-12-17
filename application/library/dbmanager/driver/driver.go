@@ -1,15 +1,10 @@
 package driver
 
-import (
-	"regexp"
-
-	"github.com/webx-top/echo"
-)
+import "github.com/webx-top/echo"
 
 var (
-	drivers         = map[string]Driver{}
-	DefaultDriver   = &BaseDriver{}
-	RegexpNotNumber = regexp.MustCompile(`[^0-9]+`)
+	drivers       = map[string]Driver{}
+	DefaultDriver = &BaseDriver{}
 )
 
 type Driver interface {

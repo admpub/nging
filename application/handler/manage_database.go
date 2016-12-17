@@ -56,6 +56,7 @@ func DbManager(ctx echo.Context) error {
 					}
 					return `/db?driver=` + driverName + `&username=` + auth.Username + `&operation=` + op + p
 				}
+				defer mgr.Run(auth.Driver, `logout`)
 			}
 		}
 	}
@@ -73,6 +74,7 @@ func DbManager(ctx echo.Context) error {
 		if err == nil {
 			switch operation {
 			case `login`:
+				mgr.Run(auth.Driver, `logout`)
 				return ctx.Redirect(`/db`)
 			case `logout`:
 				ctx.Session().Delete(`dbAuth`)

@@ -19,13 +19,17 @@
 						</tr>
 					</thead>
 					<tbody class="no-border-x" id="database-items">
+                        {{$dbColls := Stored.dbColls}}
+                        {{$dbSizes := Stored.dbSizes}}
+                        {{$dbTables := Stored.dbTables}}
+                        
                         {{range $k,$v := Stored.dbList}}
 						<tr>
 							<td><input type="checkbox" class="icheck" value="{{$v}}"></td>
 							<td><a href="{{dbMgrURL "listTable" $v}}">{{$v}}</a></td>
-							<td></td>
-							<td></td>
-							<td></td>
+							<td>{{if $dbColls}}{{index $dbColls $k}}{{end}}</td>
+							<td>{{if $dbTables}}{{index $dbTables $k}}{{end}}</td>
+							<td>{{if $dbSizes}}{{index $dbSizes $k}}{{end}}</td>
 						</tr>
                         {{end}}
 					</tbody>

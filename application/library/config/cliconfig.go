@@ -24,21 +24,62 @@ import (
 	"os"
 	"os/exec"
 
+	"strings"
+
 	"github.com/admpub/log"
+	"github.com/admpub/nging/application/library/caddy"
 	"github.com/webx-top/com"
 )
 
 type CLIConfig struct {
-	Port int
-	Conf string
-	Type string //启动类型: server/manager
-	cmds map[string]*exec.Cmd
+	Port    int
+	Conf    string
+	Type    string //启动类型: webserver/ftpserver/manager
+	Startup string //manager启动时同时启动的服务，可选的有webserver/ftpserver,如有多个需用半角逗号“,”隔开
+	cmds    map[string]*exec.Cmd
 }
 
 func (c *CLIConfig) InitFlag() {
 	flag.IntVar(&c.Port, `p`, 9999, `port`)
 	flag.StringVar(&c.Conf, `c`, `config/config.yaml`, `config`)
 	flag.StringVar(&c.Type, `t`, `manager`, `operation type`)
+	flag.StringVar(&c.Startup, `s`, `webserver,ftpserver`, `startup`)
+}
+
+func (c *CLIConfig) OnlyRunServer() bool {
+	switch c.Type {
+	case `webserver`:
+		caddy.TrapSignals()
+		ParseConfig()
+		DefaultConfig.Caddy.Init().Start()
+		return true
+	case `ftpserver`:
+		ParseConfig()
+		DefaultConfig.FTP.Init().Start()
+		return true
+	}
+	return false
+}
+
+func (c *CLIConfig) RunStartup() {
+	c.Startup = strings.TrimSpace(c.Startup)
+	if len(c.Startup) < 1 {
+		return
+	}
+	for _, serverType := range strings.Split(c.Startup, `,`) {
+		serverType = strings.TrimSpace(serverType)
+		switch serverType {
+		case `webserver`:
+			if err := DefaultCLIConfig.CaddyRestart(); err != nil {
+				log.Error(err)
+			}
+
+		case `ftpserver`:
+			if err := DefaultCLIConfig.FTPRestart(); err != nil {
+				log.Error(err)
+			}
+		}
+	}
 }
 
 func (c *CLIConfig) CaddyStopHistory() (err error) {

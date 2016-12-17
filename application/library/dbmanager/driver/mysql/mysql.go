@@ -14,6 +14,7 @@ func init() {
 type mySQL struct {
 	*driver.BaseDriver
 	db      *factory.Factory
+	dbName  string
 	version string
 }
 
@@ -37,6 +38,7 @@ func (m *mySQL) Login() error {
 	if len(settings.Database) == 0 {
 		settings.Database = m.Form(`db`)
 	}
+	m.dbName = settings.Database
 	db, err := mysql.Open(settings)
 	if err != nil {
 		return err
@@ -71,15 +73,40 @@ func (m *mySQL) ModifyDb() error {
 }
 func (m *mySQL) ListDb() error {
 	var err error
-	if len(m.DbAuth.Db) > 0 {
-		if _, ok := m.Get(`dbList`).([]string); !ok {
-			tableList, err := m.getDatabases()
-			if err != nil {
-				return err
+	dbList, ok := m.Get(`dbList`).([]string)
+	if !ok {
+		dbList, err = m.getDatabases()
+		if err != nil {
+			return err
+		}
+		m.Set(`dbList`, dbList)
+	}
+	colls := make([]string, len(dbList))
+	sizes := make([]int64, len(dbList))
+	tables := make([]int, len(dbList))
+	collations, err := m.getCollations()
+	if err != nil {
+		return err
+	}
+	for index, dbName := range dbList {
+		colls[index], err = m.getCollation(dbName, collations)
+		if err == nil {
+			var tableStatus map[string]*TableStatus
+			tableStatus, err = m.getTableStatus(dbName, ``, true)
+			if err == nil {
+				tables[index] = len(tableStatus)
+				for _, tableStat := range tableStatus {
+					sizes[index] += tableStat.Size()
+				}
 			}
-			m.Set(`dbList`, tableList)
+		}
+		if err != nil {
+			return err
 		}
 	}
+	m.Set(`dbColls`, colls)
+	m.Set(`dbSizes`, sizes)
+	m.Set(`dbTables`, tables)
 	return m.Render(`db/mysql/listDb`, err)
 }
 func (m *mySQL) CreateTable() error {
@@ -90,7 +117,7 @@ func (m *mySQL) ModifyTable() error {
 }
 func (m *mySQL) ListTable() error {
 	var err error
-	if len(m.DbAuth.Db) > 0 {
+	if len(m.dbName) > 0 {
 		if _, ok := m.Get(`tableList`).([]string); !ok {
 			tableList, err := m.getTables()
 			if err != nil {
