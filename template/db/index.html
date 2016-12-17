@@ -1,17 +1,9 @@
 {{Extend "layout"}}
 {{Block "title"}}{{"数据库管理"|T}}{{/Block}}
 {{Block "breadcrumb"}}
-{{$dbUsername := Stored.Get "dbUsername"}}
-{{if $dbUsername}}
-<div class="pull-right">
-<a href="{{dbMgrURL "logout"}}" class="btn btn-default pull-right" onclick="return confirm('{{"确定退出当前数据库账号吗？"|T}}');">
-<i class="fa fa-sign-out"></i>
-{{"注销"|T}} ({{"用户"|T}}: {{$dbUsername}})
-</a>
-</div>
-{{end}}
+{{Include "db/logout_button"}}
 {{Super}}
-<li class="active">{{"数据库管理"|T}}</li>
+<li><a href="/db">{{"数据库管理"|T}}</a></li>
 {{/Block}}
 {{Block "head"}}
 <link rel="stylesheet" type="text/css" href="__ASSETS__/js/jquery.nanoscroller/nanoscroller.css" />
@@ -27,17 +19,19 @@
             </button>      
             <h2 class="page-title" title="{{Stored.Get "dbHost"}}">{{Stored.Get "dbHost"}}</h2>
             <p class="description">
-            <span class="label label-primary" title="{{Stored.Get "driver"}} {{Stored.Get "dbVersion"}}">
+            <span class="label label-default" title="{{Stored.Get "driver"}} {{Stored.Get "dbVersion"}}">
                {{Stored.Get "driver"}} {{Stored.Get "dbVersion"}}
             </span>    
             </p>
             {{$dbList := Stored.Get "dbList"}}
+            {{$dbName := Stored.Get "dbName"}}
             {{if $dbList}}
-            <div class="input-group">
+            <div class="input-group" style="margin-bottom:0">
               <span class="input-group-addon">{{"数据库"|T}}</span>
               <select name="db" class="form-control" id="db">
+                <option value="">{{"<未选择>"|}}</option>
                 {{range $k,$v:=$dbList}}
-                <option value="{{$v}}">{{$v}}</option>
+                <option value="{{$v}}"{{if eq $dbName $v}} selected{{end}}>{{$v}}</option>
                 {{end}}
               </select>
             </div>
@@ -50,7 +44,7 @@
                     {{if $tableList}}
                     {{$currentTable := Form "table"}}
                     {{range $k,$v:=$tableList}}
-                    <li{{if eq $currentTable $v}} class="current"{{end}}><a href="{{dbMgrURL "viewTable"}}&table={{$v}}">{{$v}}</a></li>
+                    <li{{if eq $currentTable $v}} class="current"{{end}}><a href="{{dbMgrURL "viewTable"}}&table={{$v}}" title="{{$v}}">{{$v}}</a></li>
                     {{end}}
                     {{end}}
                     
@@ -135,25 +129,40 @@
 <script src="__ASSETS__/js/bootstrap.slider/js/bootstrap-slider.js" type="text/javascript"></script>
 <script>
 $(function(){
+      $(window).on('resize',function(){
+          var fixedDiv=$(".page-aside div.fixed");
+          if(!fixedDiv.find(".content > .header > .navbar-toggle").is(":visible")){
+            fixedDiv.css({bottom:0,height:$(window).height()-50});
+          }else{
+            fixedDiv.css({height:'100%'});
+          }
+      });
+
       $('label.tree-toggler').click(function () {
         var icon = $(this).children(".fa");
-          if(icon.hasClass("fa-folder-o")){
-            icon.removeClass("fa-folder-o").addClass("fa-folder-open-o");
-          }else{
-            icon.removeClass("fa-folder-open-o").addClass("fa-folder-o");
-          }        
-          
+        if(icon.hasClass("fa-folder-o")){
+          icon.removeClass("fa-folder-o").addClass("fa-folder-open-o");
+        }else{
+          icon.removeClass("fa-folder-open-o").addClass("fa-folder-o");
+        }        
+
         $(this).parent().children('ul.tree').toggle(300,function(){
           $(this).parent().toggleClass("open");
           $(".tree .nscroller").nanoScroller({ preventPageScrolling: true });
+          $(window).trigger('resize');
         });
         
-      });
+      }).trigger('click');
+  
       $('#db').on('change',function(){
         var db=$(this).val();
-        window.location='{{dbMgrURL "listDb"}}&db='+db;
+        if(db){
+          window.location='{{dbMgrURL "listTable"}}&db='+db;
+        }else{
+          window.location='{{dbMgrURL "listDb"}}';
+        }
       });
-      //$('#sidebar-collapse').trigger('click'); 
+      $('#sidebar-collapse').trigger('click'); 
 });
 </script>
 {{/Block}}

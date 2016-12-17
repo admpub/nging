@@ -1,13 +1,52 @@
 {{Extend "db/index"}}
+{{Block "title"}}{{"数据库"|T}}: {{Stored.dbName}} - {{Super}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"数据库"|T}}: {{Stored.dbName}}</li>
+{{/Block}}
 {{Block "main"}}
 <div class="row">
     <div class="col-md-12">
         <div class="block-flat">
           <div class="header">							
-            <h3>{{"连接数据库"|T}}</h3>
+            <h3>{{"数据表"|T}}</h3>
           </div>
           <div class="content">
-              000000000000000
+             <div class="table-responsive">
+				<table class="table no-border hover blue">
+					<thead class="no-border">
+						<tr>
+							<th style="width:2%;"><strong></strong></th>
+							<th><strong>{{"表"|T}}</strong></th>
+							<th><strong>{{"引擎"|T}}</strong></th>
+							<th><strong>{{"字符集"|T}}</strong></th>
+							<th><strong>{{"数据长度"|T}}</strong></th>
+							<th><strong>{{"索引长度"|T}}</strong></th>
+							<th><strong>{{"数据空闲"|T}}</strong></th>
+							<th><strong>{{"自动增量"|T}}</strong></th>
+							<th><strong>{{"行数"|T}}</strong></th>
+							<th><strong>{{"注释"|T}}</strong></th>
+						</tr>
+					</thead>
+					<tbody class="no-border-x">
+                        {{$dbName := Stored.dbName}}
+                        {{range $k,$v := Stored.tableList}}
+						<tr>
+							<td><input type="checkbox" class="icheck" value="{{$v}}"></td>
+							<td><a href="{{dbMgrURL "viewTable" $dbName $v}}">{{$v}}</a></td>
+							<td></td>
+							<td></td>
+							<td></td>
+                            <td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+                        {{end}}
+					</tbody>
+				</table>		
+			    </div>
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
     </div>

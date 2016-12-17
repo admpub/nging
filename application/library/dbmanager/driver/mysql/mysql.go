@@ -43,6 +43,7 @@ func (m *mySQL) Login() error {
 	}
 	cluster := factory.NewCluster().AddW(db)
 	m.db.SetCluster(0, cluster)
+	m.Set(`dbName`, settings.Database)
 	return m.baseInfo()
 }
 

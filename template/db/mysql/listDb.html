@@ -1,0 +1,57 @@
+{{Extend "db/index"}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{"选择数据库"|T}}</h3>
+          </div>
+          <div class="content">
+              <div class="table-responsive">
+				<table class="table no-border hover blue">
+					<thead class="no-border">
+						<tr>
+							<th style="width:2%;"><strong></strong></th>
+							<th><strong>{{"数据库"|T}}</strong></th>
+							<th><strong>{{"字符集"|T}}</strong></th>
+							<th><strong>{{"表数量"|T}}</strong></th>
+							<th><strong>{{"大小"|T}}</strong>({{"计算"|T}})</th>
+						</tr>
+					</thead>
+					<tbody class="no-border-x" id="database-items">
+                        {{range $k,$v := Stored.dbList}}
+						<tr>
+							<td><input type="checkbox" class="icheck" value="{{$v}}"></td>
+							<td><a href="{{dbMgrURL "listTable" $v}}">{{$v}}</a></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+                        {{end}}
+					</tbody>
+				</table>
+			    </div>
+                <fieldset>
+                     <legend>{{"已选中"|T}} (<span id="selected-items-count">0</span>)</legend>
+                     <button type="button" class="btn btn-default">{{"删除"|T}}</button>
+                </fieldset>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+
+{{Block "footer"}}
+{{Super}}
+<script>
+$(function(){
+    App.iCheck('#database-items .icheck','click',function(){
+        var v=$(this).prop('checked')?1:-1;
+        var c=$('#selected-items-count');
+        var n=parseInt(c.text());
+        c.text(n+v);
+    });
+    $('#selected-items-count').text($('#database-items .icheck:checked').length);
+});
+</script>
+{{/Block}}

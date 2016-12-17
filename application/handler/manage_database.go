@@ -38,7 +38,7 @@ func DbManager(ctx echo.Context) error {
 			if err == nil {
 				driverName = auth.Driver
 				if operation == `` {
-					operation = `listTable`
+					operation = `listDb`
 				}
 				ctx.Set(`dbUsername`, auth.Username)
 				ctx.Set(`dbHost`, auth.Host)

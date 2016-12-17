@@ -1694,6 +1694,24 @@ var App = function () {
 
     text2html:function(text){
       return String(text).replace(/\n/g,'<br />').replace(/  /g,'&nbsp; ').replace(/\t/g,'&nbsp; &nbsp; ')
+    },
+    
+    iCheck:function(elem,on,callback){
+        var icOn='';
+        switch(on){
+            case 'click':
+            icOn='ifClicked';
+            break;
+            case 'change':
+            icOn='ifChanged';
+            break;
+            default:
+            alert('unsupported '+on);
+            return;
+        }
+        $(elem).on(icOn,function(){
+            $(this).trigger(on);
+        }).on(on,callback);
     }
     
   };

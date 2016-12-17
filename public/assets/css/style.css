@@ -4963,7 +4963,7 @@ button::-moz-focus-inner {
   padding-bottom: 5px;
   color: #555;
 }
-.treeview ul li a:hover {
+.treeview ul li a:hover,.treeview ul li.current a {
   background: #F9F9F9;
 }
 .treeview label i {
