@@ -998,6 +998,18 @@ body {
 .block-transparent .header h4 .fa {
   font-size: 14px;
 }
+.md-margin-bottom{
+  margin-bottom: 20px;
+}
+.sm-margin-bottom{
+  margin-bottom: 10px;
+}
+.xs-margin-bottom{
+  margin-bottom: 5px;
+}
+.no-margin-bottom{
+  margin-bottom: 0;
+}
 /*Forms*/
 label {
   font-weight: 600;

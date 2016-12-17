@@ -1,0 +1,103 @@
+{{Extend "db/index"}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat md-margin-bottom">
+            <a href="javascript:;" class="btn btn-default" id="create-db">{{"创建数据库"|T}}</a>
+            <a href="javascript:;" class="btn btn-default" id="privileges">{{"权限"|T}}</a>
+            <a href="javascript:;" class="btn btn-default" id="process-list">{{"进程列表"|T}}</a>
+            <a href="javascript:;" class="btn btn-default" id="info-variables">{{"变量"|T}}</a>
+            <a href="javascript:;" class="btn btn-default" id="info-status">{{"状态"|T}}</a>
+        </div>
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{"选择数据库"|T}}</h3>
+          </div>
+          <div class="content">
+              <div class="table-responsive">
+				<table class="table no-border hover blue">
+					<thead class="no-border">
+						<tr>
+							<th style="width:2%;"><strong></strong></th>
+							<th><strong>{{"数据库"|T}}</strong></th>
+							<th><strong>{{"字符集"|T}}</strong></th>
+							<th><strong>{{"表数量"|T}}</strong></th>
+							<th><strong>{{"大小"|T}}</strong><!-- ({{"计算"|T}}) --></th>
+						</tr>
+					</thead>
+					<tbody class="no-border-x" id="database-items">
+                        {{$dbColls := Stored.dbColls}}
+                        {{$dbSizes := Stored.dbSizes}}
+                        {{$dbTables := Stored.dbTables}}
+                        
+                        {{range $k,$v := Stored.dbList}}
+						<tr>
+							<td><input type="checkbox" class="icheck" value="{{$v}}"></td>
+							<td><a href="{{dbMgrURL "listTable" $v}}">{{$v}}</a></td>
+							<td>{{if $dbColls}}{{index $dbColls $k}}{{end}}</td>
+							<td>{{if $dbTables}}{{index $dbTables $k}}{{end}}</td>
+							<td>{{if $dbSizes}}{{index $dbSizes $k|FormatByte}}{{end}}</td>
+						</tr>
+                        {{end}}
+					</tbody>
+				</table>
+			    </div>
+                <fieldset>
+                     <legend>{{"已选中"|T}} (<span id="selected-items-count">0</span>)</legend>
+                     <button type="button" class="btn btn-default">{{"删除"|T}}</button>
+                </fieldset>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+
+{{Block "footer"}}
+{{Modal "__TMPL__/db/mysql/create_db.yaml"}}
+{{Super}}
+<script>
+function refreshList(){
+    $.get(window.location.href,{pjax:1},function(r){
+        var e=$(r);
+        $('#database-items').html(e.find('#database-items').html());
+    },'html');
+}
+$(function(){
+    App.iCheck('#database-items .icheck','click',function(){
+        var v=$(this).prop('checked')?1:-1;
+        var c=$('#selected-items-count');
+        var n=parseInt(c.text());
+        c.text(n+v);
+    });
+    $('#create-db,#privileges,#process-list,#info-variables,#info-status').on('click',function(event){
+        switch($(this).attr('id')){
+            case 'create-db':
+		        $('#create-db-modal').niftyModal('show',{afterOpen:function(modal){
+                    modal.find('#create-db-name').focus();
+                    if(!$('#create-db-collation').data('loaded')){
+                        $('#create-db-collation').data('loaded',1);
+                        $.get(window.location.href,{json:'collations'},function(r){
+                            if(r.Code<1){
+                                return App.message(r.Info);
+                            }
+                            var str='';
+                            for(var i in r.Data){
+                                str+='<optgroup label="'+i+'">';
+                                for(var j in r.Data[i]){
+                                    str+='<option>'+r.Data[i][j].Collation.String+'</option>';
+                                }
+                                str+='</optgroup>';
+                            }
+                            $('#create-db-collation').append(str);
+                        },'json');
+                    }
+                },afterClose:function(modal){
+                    //refreshList();
+                }});
+                break;
+        }
+	});
+    $('#selected-items-count').text($('#database-items .icheck:checked').length);
+});
+</script>
+{{/Block}}

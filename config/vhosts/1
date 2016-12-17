@@ -1,5 +1,5 @@
-localhost:9000 {
-    root E:\www_pre
+coscms.com {
+    root C:\GoWWW\UPUPW_NP7.0_64\htdocs
 
     log   access_local.log
 

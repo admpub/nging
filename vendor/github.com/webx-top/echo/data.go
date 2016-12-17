@@ -12,20 +12,46 @@ type Data struct {
 func (d *Data) Error() string {
 	return fmt.Sprintf(`%v`, d.Info)
 }
+
+func (d *Data) SetError(err error, args ...int) *Data {
+	if err != nil {
+		if len(args) > 0 {
+			d.Code = args[0]
+		} else {
+			d.Code = 0
+		}
+		d.Info = err.Error()
+	} else {
+		d.Code = 1
+	}
+	return d
+}
+
 func (d *Data) SetCode(code int) *Data {
 	d.Code = code
 	return d
 }
-func (d *Data) SetInfo(info interface{}) *Data {
+
+func (d *Data) SetInfo(info interface{}, args ...int) *Data {
 	d.Info = info
+	if len(args) > 0 {
+		d.Code = args[0]
+	}
 	return d
 }
+
 func (d *Data) SetZone(zone interface{}) *Data {
 	d.Zone = zone
 	return d
 }
-func (d *Data) SetData(data interface{}) *Data {
+
+func (d *Data) SetData(data interface{}, args ...int) *Data {
 	d.Data = data
+	if len(args) > 0 {
+		d.Code = args[0]
+	} else {
+		d.Code = 1
+	}
 	return d
 }
 

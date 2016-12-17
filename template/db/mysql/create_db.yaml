@@ -1,0 +1,21 @@
+Id : "create-db-modal"
+Custom : true
+HeadTitle : "创建数据库"
+Title : ""
+Content : ( 
+    <div class="form-group">
+        <label>数据库名称</label>
+        <input class="form-control" type="text" value="" id="create-db-name">
+    </div>
+    <div class="form-group">
+        <label>字符集</label>
+        <select class="form-control" id="create-db-collation">
+            <option value=""></option>
+        </select>
+    </div>
+)
+HelpText : ""
+Animate : "none"
+Type : ""
+ContentType : "form"
+ExtButtons : []

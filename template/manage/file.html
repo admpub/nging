@@ -8,7 +8,6 @@
 
 {{Block "head"}}
 <link rel="stylesheet" type="text/css" href="__ASSETS__/js/dropzone/min/dropzone.min.css" />
-<link rel="stylesheet" href="__ASSETS__/js/jquery.niftymodals/css/component.css">
 <!-- codemirror -->
 <link rel="stylesheet" href="__ASSETS__/js/codemirror/lib/codemirror.css">
 <link rel="stylesheet" href="__ASSETS__/js/codemirror/addon/display/fullscreen.css">
@@ -107,7 +106,6 @@
 {{Modal "__TMPL__/manage/file_edit.yaml"}}
 {{Modal "__TMPL__/manage/file_rename.yaml"}}
 <script type="text/javascript" src="__ASSETS__/js/dropzone/min/dropzone.min.js"></script>
-<script type="text/javascript" src="__ASSETS__/js/jquery.niftymodals/js/jquery.modalEffects.js"></script> 
 <script>
 function uploadURL(vhostId,currentPath){
     return '/manage/vhost_file?id='+vhostId+'&do=upload&path='+encodeURIComponent(currentPath);
@@ -116,7 +114,6 @@ function refreshList() {
     $.get(window.location.href,{pjax:1},function(r){
         var e=$(r);
         $('#pcont .cl-mcont #file-list').html(e.find('#file-list').html());
-        //initDropzone();
     },'html');
 }
 var dropzone,dropzoneZIP,editor;

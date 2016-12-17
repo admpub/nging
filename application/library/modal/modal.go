@@ -43,15 +43,16 @@ type Button struct {
 }
 
 type Modal struct {
-	Id         string        //元素id
-	Custom     bool          //是否自定义整个内容区域
-	HeadTitle  template.HTML //头部标题
-	Title      template.HTML //内容标题
-	Content    template.HTML //内容
-	HelpText   template.HTML //帮助提示
-	Animate    string        //动画样式class名
-	Type       string        //类型：warning/primary/success/danger
-	ExtButtons []Button      //附加按钮
+	Id          string   //元素id
+	Custom      bool     //是否自定义整个内容区域
+	HeadTitle   string   //头部标题
+	Title       string   //内容标题
+	Content     string   //内容
+	HelpText    string   //帮助提示
+	Animate     string   //动画样式class名
+	Type        string   //类型：warning/primary/success/danger
+	ContentType string   //内容类型：form/blackform/""
+	ExtButtons  []Button //附加按钮
 }
 
 var modalConfig = map[string]Modal{}

@@ -93,11 +93,11 @@ func (t *TableStatus) Size() int64 {
 
 type Collation struct {
 	Collation sql.NullString
-	Charset   sql.NullString
-	Id        sql.NullInt64
-	Default   sql.NullString
-	Compiled  sql.NullString
-	Sortlen   sql.NullInt64
+	Charset   sql.NullString `json:"-"`
+	Id        sql.NullInt64  `json:"-"`
+	Default   sql.NullString `json:"-"`
+	Compiled  sql.NullString `json:"-"`
+	Sortlen   sql.NullInt64  `json:"-"`
 }
 
 type Collations struct {

@@ -72,6 +72,17 @@ func (m *mySQL) ModifyDb() error {
 	return nil
 }
 func (m *mySQL) ListDb() error {
+	switch m.Form(`json`) {
+	case `collations`:
+		data := m.NewData()
+		collations, err := m.getCollations()
+		if err != nil {
+			data.SetError(err)
+		} else {
+			data.SetData(collations.Collations)
+		}
+		return m.JSON(data)
+	}
 	var err error
 	dbList, ok := m.Get(`dbList`).([]string)
 	if !ok {
@@ -107,7 +118,7 @@ func (m *mySQL) ListDb() error {
 	m.Set(`dbColls`, colls)
 	m.Set(`dbSizes`, sizes)
 	m.Set(`dbTables`, tables)
-	return m.Render(`db/mysql/listDb`, err)
+	return m.Render(`db/mysql/list_db`, err)
 }
 func (m *mySQL) CreateTable() error {
 	return nil
@@ -126,7 +137,7 @@ func (m *mySQL) ListTable() error {
 			m.Set(`tableList`, tableList)
 		}
 	}
-	return m.Render(`db/mysql/listTable`, err)
+	return m.Render(`db/mysql/list_table`, err)
 }
 func (m *mySQL) ViewTable() error {
 	return nil
