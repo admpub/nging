@@ -5576,3 +5576,15 @@ ul.timeline li > .date {
 ul.no-list-style{
   list-style: none;;padding: 0
 }
+
+.nowrap{
+  white-space:nowrap !important;
+}
+
+.wrap{
+  word-wrap:break-word !important;
+  word-break:normal !important;
+  word-break:break-all !important;
+  white-space:pre-wrap !important;
+  display:block;
+}

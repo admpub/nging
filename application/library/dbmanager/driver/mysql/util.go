@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"database/sql"
+	"time"
 
 	"regexp"
 
@@ -10,6 +11,52 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
 )
+
+type Result struct {
+	SQL          string
+	RowsAffected int64
+	timeStart    time.Time
+	timeEnd      time.Time
+	Started      string
+	Elapsed      string
+}
+
+func (r *Result) elapsed() time.Duration {
+	return r.timeEnd.Sub(r.timeStart)
+}
+
+func (r *Result) Exec(p *factory.Param) (*Result, error) {
+	r.timeStart = time.Now()
+	defer func() {
+		r.timeEnd = time.Now()
+		r.Started = r.timeStart.Format(`2006-01-02 15:04:05`)
+		r.Elapsed = r.elapsed().String()
+	}()
+	result, err := p.SetCollection(r.SQL).Exec()
+	if err != nil {
+		return r, err
+	}
+	r.RowsAffected, err = result.RowsAffected()
+	return r, err
+}
+
+func (m *mySQL) createDatabase(dbName, collate string) (*Result, error) {
+	r := &Result{}
+	r.SQL = "CREATE DATABASE `" + strings.Replace(dbName, "`", "", -1) + "`"
+	if len(collate) > 0 {
+		r.SQL += " COLLATE '" + com.AddSlashes(collate) + "'"
+	}
+	_, err := r.Exec(m.newParam())
+	return r, err
+}
+
+func (m *mySQL) setLastSQL(sqlStr string) {
+	m.Session().AddFlash(sqlStr, `lastSQL`)
+}
+
+func (m *mySQL) lastSQL() interface{} {
+	return m.Flash(`lastSQL`)
+}
 
 // 获取数据库列表
 func (m *mySQL) getDatabases() ([]string, error) {

@@ -73,6 +73,21 @@ func (m *mySQL) ModifyDb() error {
 }
 func (m *mySQL) ListDb() error {
 	switch m.Form(`json`) {
+	case `create`:
+		dbName := m.Form(`name`)
+		collate := m.Form(`collation`)
+		data := m.NewData()
+		if len(dbName) < 1 {
+			data.SetZone(`name`).SetInfo(m.T(`数据库名称不能为空`))
+		} else {
+			res, err := m.createDatabase(dbName, collate)
+			if err != nil {
+				data.SetError(err)
+			} else {
+				data.SetData(res)
+			}
+		}
+		return m.JSON(data)
 	case `collations`:
 		data := m.NewData()
 		collations, err := m.getCollations()

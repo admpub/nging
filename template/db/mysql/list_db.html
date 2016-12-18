@@ -91,13 +91,29 @@ $(function(){
                             $('#create-db-collation').append(str);
                         },'json');
                     }
-                },afterClose:function(modal){
-                    //refreshList();
                 }});
                 break;
         }
 	});
     $('#selected-items-count').text($('#database-items .icheck:checked').length);
+    $('#create-db-modal .btn-primary:last').removeClass('md-close').on('click',function(){
+        var name=$('#create-db-name').val();
+        var coll=$('#create-db-collation').find('option:checked').text();
+        $.get(window.location.href,{json:'create',name:name,collation:coll},function(r){
+            if(r.Code==1){
+                refreshList();
+                $('#create-db-modal').niftyModal('hide');
+                var s=r.Data.Started+'<code class="wrap">'+r.Data.SQL+'</code>';
+                s+='('+r.Data.Elapsed+')';
+                $('.block-flat:first').before(App.alertBlockx(s));
+            }else{
+                alert(r.Info);
+                if(r.Zone){
+                    $('#create-db-'+r.Zone).focus();
+                }
+            }
+        },'json');
+    });
 });
 </script>
 {{/Block}}

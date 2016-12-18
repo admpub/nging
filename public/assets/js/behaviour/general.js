@@ -1712,8 +1712,65 @@ var App = function () {
         $(elem).on(icOn,function(){
             $(this).trigger(on);
         }).on(on,callback);
+    },
+    alertBlock:function(content,title,type){
+      switch(type){
+        case 'info':
+        if(title==null)title='Info!';
+        return '<div class="alert alert-info">\
+								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>\
+								<i class="fa fa-info-circle sign"></i><strong>'+title+'</strong> '+content+'</div>';
+        case 'warn':
+        if(title==null)title='Alert!';
+        return '<div class="alert alert-warning">\
+								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>\
+								<i class="fa fa-warning sign"></i><strong>'+title+'</strong> '+content+'</div>';
+        case 'error':
+        if(title==null)title='Error!';
+        return '<div class="alert alert-danger">\
+								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>\
+								<i class="fa fa-times-circle sign"></i><strong>'+title+'</strong> '+content+'</div>';
+        default:
+        if(title==null)title='Success!';
+        return '<div class="alert alert-success">\
+								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>\
+								<i class="fa fa-check sign"></i><strong>'+title+'</strong> '+content+'</div>';
+      }
+    },
+    alertBlockx:function(content,title,type){
+      switch(type){
+        case 'info':
+        if(title==null)title='Info!';
+        return '<div class="alert alert-info alert-white rounded">\
+								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>\
+								<div class="icon"><i class="fa fa-info-circle"></i></div>\
+								<strong>'+title+'</strong> '+content+'</div>';
+        case 'warn':
+        if(title==null)title='Alert!';
+        return '<div class="alert alert-warning alert-white rounded">\
+								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>\
+								<div class="icon"><i class="fa fa-warning"></i></div>\
+								<strong>'+title+'</strong> '+content+'</div>';
+        case 'error':
+        if(title==null)title='Error!';
+        return '<div class="alert alert-danger alert-white rounded">\
+								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>\
+								<div class="icon"><i class="fa fa-times-circle"></i></div>\
+								<strong>'+title+'</strong> '+content+'</div>';
+        default:
+        if(title==null)title='Success!';
+        return '<div class="alert alert-success alert-white rounded">\
+								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>\
+								<div class="icon"><i class="fa fa-check"></i></div>\
+								<strong>'+title+'</strong> '+content+'</div>';
+      }
     }
-    
+
+							 
+
+							 
+
+							 
   };
  
 }();
