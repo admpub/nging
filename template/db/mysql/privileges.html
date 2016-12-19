@@ -25,7 +25,7 @@
 							<td>{{$v.k}}</td>
 							<td>{{$v.v}}</td>
 							<td>
-								<a title="{{"编辑"|T}}" class="label label-success" href="{{dbMgrURL "privileges"}}&act=edit">
+								<a title="{{"编辑"|T}}" class="label label-success" href="{{dbMgrURL "privileges"}}&act=edit&user={{$v.k}}&host={{$v.v}}">
                                     <i class="fa fa-pencil"></i>
                                 </a>
 							</td>

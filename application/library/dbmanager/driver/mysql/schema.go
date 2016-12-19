@@ -3,7 +3,6 @@ package mysql
 import (
 	"database/sql"
 	"strings"
-	"time"
 
 	"github.com/webx-top/com"
 )
@@ -18,25 +17,6 @@ type ProcessList struct {
 	State    sql.NullString
 	Info     sql.NullString
 	Progress sql.NullFloat64
-}
-
-type Result struct {
-	SQL          string
-	RowsAffected int64
-	timeStart    time.Time
-	timeEnd      time.Time
-	Started      string
-	Elapsed      string
-	Error        error
-}
-
-func (r *Result) elapsed() time.Duration {
-	return r.timeEnd.Sub(r.timeStart)
-}
-
-func (r *Result) start() *Result {
-	r.timeStart = time.Now()
-	return r
 }
 
 type TableStatus struct {

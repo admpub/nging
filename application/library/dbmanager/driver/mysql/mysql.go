@@ -79,10 +79,21 @@ func (m *mySQL) Privileges() error {
 				privs.Parse()
 			}
 			m.Set(`list`, privs.privileges)
+			user := m.Form(`user`)
+			host := m.Form(`host`)
+			var (
+				oldPass string
+				grants  map[string]map[string]bool
+			)
+			if len(host) > 0 {
+				oldPass, grants, err = m.getUserPrivilege(host, user)
+			}
+			m.Set(`grants`, grants)
+			m.Set(`oldPass`, oldPass)
 			return m.Render(`db/mysql/privilege_edit`, err)
 		}
 	}
-	isSysUser, list, err := m.userPrivileges()
+	isSysUser, list, err := m.listPrivileges()
 	m.Set(`isSysUser`, isSysUser)
 	m.Set(`list`, list)
 	return m.Render(`db/mysql/privileges`, err)

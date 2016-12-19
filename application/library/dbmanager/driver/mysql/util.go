@@ -2,44 +2,12 @@ package mysql
 
 import (
 	"database/sql"
-	"time"
 
 	"strings"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
 )
-
-func (r *Result) end() *Result {
-	r.timeEnd = time.Now()
-	r.Started = r.timeStart.Format(`2006-01-02 15:04:05`)
-	r.Elapsed = r.elapsed().String()
-	return r
-}
-
-func (r *Result) Exec(p *factory.Param) *Result {
-	r.start()
-	defer r.end()
-	result, err := p.SetCollection(r.SQL).Exec()
-	r.Error = err
-	if err != nil {
-		return r
-	}
-	r.RowsAffected, r.Error = result.RowsAffected()
-	return r
-}
-
-func (r *Result) Query(p *factory.Param, readRows func(*sql.Rows) error) *Result {
-	r.start()
-	defer r.end()
-	rows, err := p.SetCollection(r.SQL).Query()
-	r.Error = err
-	if err != nil {
-		return r
-	}
-	r.Error = readRows(rows)
-	return r
-}
 
 func (m *mySQL) kvVal(sqlStr string) ([]map[string]string, error) {
 	r := []map[string]string{}
@@ -67,7 +35,61 @@ func (m *mySQL) showVariables() ([]map[string]string, error) {
 	return m.kvVal(sqlStr)
 }
 
-func (m *mySQL) userPrivileges() (bool, []map[string]string, error) {
+func (m *mySQL) getUserPrivilege(host, user string) (string, map[string]map[string]bool, error) {
+	r := map[string]map[string]bool{}
+	var oldPass string
+	sqlStr := "SHOW GRANTS FOR '" + com.AddSlashes(user) + "'@'" + com.AddSlashes(host) + "'"
+	rows, err := m.newParam().SetCollection(sqlStr).Query()
+	if err != nil {
+		return oldPass, r, err
+	}
+	for rows.Next() {
+		var v sql.NullString
+		err = rows.Scan(&v)
+		if err != nil {
+			break
+		}
+		matchOn := reGrantOn.FindStringSubmatch(v.String)
+		if len(matchOn) > 0 {
+			matchBrackets := reGrantBrackets.FindAllStringSubmatch(matchOn[1], -1)
+			if len(matchBrackets) > 0 {
+				for _, val := range matchBrackets {
+					if val[1] != `USAGE` {
+						k := matchOn[2] + val[2]
+						if _, ok := r[k]; !ok {
+							r[k] = map[string]bool{}
+						}
+						r[k][val[1]] = true
+					}
+					if reGrantOption.MatchString(v.String) {
+						k := matchOn[2] + val[2]
+						if _, ok := r[k]; !ok {
+							r[k] = map[string]bool{}
+						}
+						r[k]["GRANT OPTION"] = true
+					}
+				}
+			}
+		}
+		matchIdent := reGrantIdent.FindStringSubmatch(v.String)
+		if len(matchIdent) > 0 {
+			oldPass = matchIdent[1]
+		}
+	}
+	sqlStr = "SELECT SUBSTRING_INDEX(CURRENT_USER, '@', -1)"
+	row, err := m.newParam().SetCollection(sqlStr).QueryRow()
+	if err == nil {
+		var v sql.NullString
+		err = row.Scan(&v)
+		if err != nil {
+			return oldPass, r, err
+		}
+		m.Request().Form().Set(`host`, v.String)
+	}
+	return oldPass, r, err
+}
+
+func (m *mySQL) listPrivileges() (bool, []map[string]string, error) {
 	sqlStr := "SELECT User, Host FROM mysql."
 	if m.dbName == `` {
 		sqlStr += `user`
