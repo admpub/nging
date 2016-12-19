@@ -1,0 +1,52 @@
+{{Extend "db/index"}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{"权限"|T}}</h3>
+          </div>
+          <div class="content">
+              <div class="table-responsive">
+				<form action=''>
+				{{$dbName := Stored.Get "dbName"}}
+				<input type='hidden' name='db' value='$dbName'>
+				<table class="table no-border hover blue">
+					<thead class="no-border">
+						<tr>
+                            <th style="width:30%;"><strong>{{"用户名"|T}}</strong></th>
+							<th><strong>{{"服务器"|T}}</strong></th>
+							<th><strong>{{"操作"|T}}</strong></th>
+						</tr>
+					</thead>
+					<tbody class="no-border-y" id="privilege-items">
+                        {{range $k,$v := Stored.list}}
+						<tr>
+							<td>{{$v.k}}</td>
+							<td>{{$v.v}}</td>
+							<td>
+								<a title="{{"编辑"|T}}" class="label label-success" href="{{dbMgrURL "privileges"}}&act=edit">
+                                    <i class="fa fa-pencil"></i>
+                                </a>
+							</td>
+						</tr>
+                        {{end}}
+						{{if or (not Stored.isSysUser) $dbName}}
+						<tr>
+							<td><input name='user' autocapitalize='off'></td>
+							<td><input name='host' value='localhost' autocapitalize='off'></td>
+							<td><input type='submit' value='{{"编辑"|T}}'></td>
+						</tr>
+						{{end}}
+					</tbody>
+				</table>
+				</form>
+			    </div>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+{{Super}}
+{{/Block}}

@@ -1,0 +1,46 @@
+{{Extend "db/index"}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{"进程列表"|T}}</h3>
+          </div>
+          <div class="content">
+              <div class="table-responsive">
+				<table class="table no-border hover blue">
+					<thead class="no-border">
+						<tr>
+							<th style="width:2%;"><strong>Id</strong></th>
+							<th><strong>User</strong></th>
+							<th><strong>Host</strong></th>
+							<th><strong>DB</strong></th>
+							<th><strong>Command</strong></th>
+							<th><strong>Time</strong></th>
+							<th><strong>State</strong></th>
+							<th><strong>Info</strong></th>
+							<th><strong>Progress</strong></th>
+						</tr>
+					</thead>
+					<tbody class="no-border-x" id="process-items">
+                        {{range $k,$v := Stored.processList}}
+						<tr>
+							<td>{{$v.Id.Int64}}</td>
+							<td>{{$v.User.String}}</td>
+							<td>{{$v.Host.String}}</td>
+							<td>{{$v.Db.String}}</td>
+							<td>{{$v.Command.String}}</td>
+							<td>{{$v.Time.Int64}}</td>
+							<td>{{$v.State.String}}</td>
+							<td>{{$v.Info.String}}</td>
+							<td>{{$v.Progress.Float64}}</td>
+						</tr>
+                        {{end}}
+					</tbody>
+				</table>
+			    </div>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}

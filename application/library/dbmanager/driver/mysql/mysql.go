@@ -57,37 +57,87 @@ func (m *mySQL) Logout() error {
 	return nil
 }
 func (m *mySQL) ProcessList() error {
-	return nil
+	r, e := m.processList()
+	m.Set(`processList`, r)
+	return m.Render(`db/mysql/proccess_list`, e)
 }
 func (m *mySQL) Privileges() error {
-	return nil
+	act := m.Form(`act`)
+	if len(act) > 0 {
+		switch act {
+		case `drop`:
+		case `edit`:
+			if m.IsPost() {
+				returnTo := m.Form(`return_to`)
+				if len(returnTo) == 0 {
+					returnTo = m.Request().URI()
+				}
+				return m.Redirect(returnTo)
+			}
+			privs, err := m.showPrivileges()
+			if err == nil {
+				privs.Parse()
+			}
+			m.Set(`list`, privs.privileges)
+			return m.Render(`db/mysql/privilege_edit`, err)
+		}
+	}
+	isSysUser, list, err := m.userPrivileges()
+	m.Set(`isSysUser`, isSysUser)
+	m.Set(`list`, list)
+	return m.Render(`db/mysql/privileges`, err)
 }
 func (m *mySQL) Info() error {
-	return nil
+	var r []map[string]string
+	var e error
+	switch m.Form(`type`) {
+	case `variables`:
+		r, e = m.showVariables()
+	default:
+		r, e = m.showStatus()
+	}
+	m.Set(`list`, r)
+	return m.Render(`db/mysql/info`, e)
 }
 func (m *mySQL) CreateDb() error {
-	return nil
+	dbName := m.Form(`name`)
+	collate := m.Form(`collation`)
+	data := m.NewData()
+	if len(dbName) < 1 {
+		data.SetZone(`name`).SetInfo(m.T(`数据库名称不能为空`))
+	} else {
+		res := m.createDatabase(dbName, collate)
+		if res.Error != nil {
+			data.SetError(res.Error)
+		} else {
+			data.SetData(res)
+		}
+	}
+	return m.JSON(data)
 }
 func (m *mySQL) ModifyDb() error {
 	return nil
 }
 func (m *mySQL) ListDb() error {
 	switch m.Form(`json`) {
-	case `create`:
-		dbName := m.Form(`name`)
-		collate := m.Form(`collation`)
+	case `drop`:
 		data := m.NewData()
-		if len(dbName) < 1 {
-			data.SetZone(`name`).SetInfo(m.T(`数据库名称不能为空`))
-		} else {
-			res, err := m.createDatabase(dbName, collate)
-			if err != nil {
-				data.SetError(err)
-			} else {
-				data.SetData(res)
+		dbs := m.FormValues(`db[]`)
+		rs := []*Result{}
+		code := 1
+		for _, db := range dbs {
+			r := m.dropDatabase(db)
+			rs = append(rs, r)
+			if r.Error != nil {
+				data.SetError(r.Error)
+				code = 0
+				break
 			}
 		}
+		data.SetData(rs, code)
 		return m.JSON(data)
+	case `create`:
+		return m.CreateDb()
 	case `collations`:
 		data := m.NewData()
 		collations, err := m.getCollations()
@@ -133,6 +183,7 @@ func (m *mySQL) ListDb() error {
 	m.Set(`dbColls`, colls)
 	m.Set(`dbSizes`, sizes)
 	m.Set(`dbTables`, tables)
+	//return m.String(`OK`)
 	return m.Render(`db/mysql/list_db`, err)
 }
 func (m *mySQL) CreateTable() error {

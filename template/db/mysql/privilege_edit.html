@@ -1,0 +1,141 @@
+{{Extend "db/index"}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{"用户名"|T}}: {{Form "user"}}@{{Form "host"}}</h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" method="POST" action="">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"服务器"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="text" name="host" class="form-control" required="required" value="{{Form "host"}}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"用户名"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="text" name="user" class="form-control" required="required" value="{{Form "user"}}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"密码"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="password" name="pass" class="form-control" required="required" value="{{Form "pass"}}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label"></label>
+                <div class="col-sm-8">
+
+
+                <div class="table-responsive">
+				<table class="table no-border hover blue">
+					<thead class="no-border">
+						<tr>
+							<th colspan="2"><strong>{{"权限"|T}}</strong></th>
+							<th><strong>*.*</strong></th>
+							<th><strong></strong></th>
+							<th><strong></strong></th>
+						</tr>
+					</thead>
+					<tbody class="no-border-x" id="database-items">
+                        {{$list := Stored.list}}
+                        {{if index $list ""}}
+                        {{range $privilege,$comment := index $list ""}}
+						<tr>
+                            <td colspan="2">{{$privilege}}</td>
+							<td><input type="checkbox" name="grants[{{$privilege}}][]"></td>
+							<td><input type="checkbox" name="grants[{{$privilege}}][]"></td>
+							<td><input type="checkbox" name="grants[{{$privilege}}][]"></td>
+						</tr>
+                        {{end}}
+                        {{end}}
+
+                        
+                        {{if index $list "Server Admin"}}
+                        {{range $privilege,$comment := index $list "Server Admin"}}
+						<tr>
+                            <td>{{"服务器"|T}}</td>
+                            <td>{{$privilege}}</td>
+							<td><input type="checkbox" name="grants[{{$privilege}}][]"></td>
+							<td><input type="checkbox" name="grants[{{$privilege}}][]"></td>
+							<td><input type="checkbox" name="grants[{{$privilege}}][]"></td>
+						</tr>
+                        {{end}}
+                        {{end}}
+
+                        {{if index $list "Databases"}}
+                        {{range $privilege,$comment := index $list "Databases"}}
+						<tr>
+                            <td>{{"数据库"|T}}</td>
+                            <td>{{$privilege}}</td>
+							<td><input type="checkbox" name="grants[{{$privilege}}][]"></td>
+							<td><input type="checkbox" name="grants[{{$privilege}}][]"></td>
+							<td><input type="checkbox" name="grants[{{$privilege}}][]"></td>
+						</tr>
+                        {{end}}
+                        {{end}}
+
+                        
+                        {{if index $list "Tables"}}
+                        {{range $privilege,$comment := index $list "Tables"}}
+						<tr>
+                            <td>{{"表"|T}}</td>
+                            <td>{{$privilege}}</td>
+							<td><input type="checkbox" name="grants[{{$privilege}}][]"></td>
+							<td><input type="checkbox" name="grants[{{$privilege}}][]"></td>
+							<td><input type="checkbox" name="grants[{{$privilege}}][]"></td>
+						</tr>
+                        {{end}}
+                        {{end}}
+
+                        {{if index $list "Columns"}}
+                        {{range $privilege,$comment := index $list "Columns"}}
+						<tr>
+                            <td>{{"列"|T}}</td>
+                            <td>{{$privilege}}</td>
+							<td><input type="checkbox" name="grants[{{$privilege}}][]"></td>
+							<td><input type="checkbox" name="grants[{{$privilege}}][]"></td>
+							<td><input type="checkbox" name="grants[{{$privilege}}][]"></td>
+						</tr>
+                        {{end}}
+                        {{end}}
+
+                        {{if index $list "Procedures"}}
+                        {{range $privilege,$comment := index $list "Procedures"}}
+						<tr>
+                            <td>{{"子程序"|T}}</td>
+                            <td>{{$privilege}}</td>
+							<td><input type="checkbox" name="grants[{{$privilege}}][]"></td>
+							<td><input type="checkbox" name="grants[{{$privilege}}][]"></td>
+							<td><input type="checkbox" name="grants[{{$privilege}}][]"></td>
+						</tr>
+                        {{end}}
+                        {{end}}
+					</tbody>
+				</table>
+			    </div>
+
+
+                </div>
+              </div>
+
+              
+              <div class="form-group">
+				<div class="col-sm-9 col-sm-offset-2">
+				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+				  <button class="btn btn-danger btn-lg"><i class="fa fa-times"></i> {{"删除"|T}}</button>
+				</div>
+			</div>
+              </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+{{Super}}
+{{/Block}}

@@ -1646,7 +1646,7 @@ var App = function () {
         title: '',
         text: "",
         image: '',
-        class_name: 'clean',
+        class_name: 'clean',//primary|info|danger|warning|success|dark
         sticky: true,
       };
       if(typeof(options)!="object"){
@@ -1764,13 +1764,19 @@ var App = function () {
 								<div class="icon"><i class="fa fa-check"></i></div>\
 								<strong>'+title+'</strong> '+content+'</div>';
       }
+    },
+    showDbLog:function(result,container){
+      if(container==null)container='.block-flat:first';
+        var s=result.Started+'<code class="wrap">'+result.SQL+'</code>';
+        var t='success';
+        if(result.Error){
+          s+='('+result.Error+')';
+          t='error'
+        }else{
+          s+='('+result.Elapsed+')';
+        }
+        $(container).before(App.alertBlockx(s,null,t));
     }
-
-							 
-
-							 
-
-							 
   };
  
 }();

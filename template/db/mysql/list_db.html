@@ -4,10 +4,10 @@
     <div class="col-md-12">
         <div class="block-flat md-margin-bottom">
             <a href="javascript:;" class="btn btn-default" id="create-db">{{"创建数据库"|T}}</a>
-            <a href="javascript:;" class="btn btn-default" id="privileges">{{"权限"|T}}</a>
-            <a href="javascript:;" class="btn btn-default" id="process-list">{{"进程列表"|T}}</a>
-            <a href="javascript:;" class="btn btn-default" id="info-variables">{{"变量"|T}}</a>
-            <a href="javascript:;" class="btn btn-default" id="info-status">{{"状态"|T}}</a>
+            <a href="{{dbMgrURL "privileges"}}" class="btn btn-default" id="privileges">{{"权限"|T}}</a>
+            <a href="{{dbMgrURL "processList"}}" class="btn btn-default" id="process-list">{{"进程列表"|T}}</a>
+            <a href="{{dbMgrURL "info"}}&type=variables" class="btn btn-default" id="info-variables">{{"变量"|T}}</a>
+            <a href="{{dbMgrURL "info"}}&type=status" class="btn btn-default" id="info-status">{{"状态"|T}}</a>
         </div>
         <div class="block-flat">
           <div class="header">							
@@ -44,17 +44,28 @@
 			    </div>
                 <fieldset>
                      <legend>{{"已选中"|T}} (<span id="selected-items-count">0</span>)</legend>
-                     <button type="button" class="btn btn-default">{{"删除"|T}}</button>
+                     <button type="button" class="btn btn-default" id="drop-selected-dbs">{{"删除"|T}}</button>
                 </fieldset>
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
     </div>
 </div>
 {{/Block}}
-
 {{Block "footer"}}
 {{Modal "__TMPL__/db/mysql/create_db.yaml"}}
 {{Super}}
+<script type="text/template" id="tpl-create-db-form">
+    <div class="form-group">
+        <label>{{"数据库名称"|T|ToJS}}</label>
+        <input class="form-control" type="text" value="" id="create-db-name">
+    </div>
+    <div class="form-group">
+        <label>{{"字符集"|T|ToJS}}</label>
+        <select class="form-control" id="create-db-collation">
+            <option value=""></option>
+        </select>
+    </div>
+</script>
 <script>
 function refreshList(){
     $.get(window.location.href,{pjax:1},function(r){
@@ -69,6 +80,7 @@ $(function(){
         var n=parseInt(c.text());
         c.text(n+v);
     });
+    $('#create-db-modal .modal-body').html($('#tpl-create-db-form').html());
     $('#create-db,#privileges,#process-list,#info-variables,#info-status').on('click',function(event){
         switch($(this).attr('id')){
             case 'create-db':
@@ -103,14 +115,45 @@ $(function(){
             if(r.Code==1){
                 refreshList();
                 $('#create-db-modal').niftyModal('hide');
-                var s=r.Data.Started+'<code class="wrap">'+r.Data.SQL+'</code>';
-                s+='('+r.Data.Elapsed+')';
-                $('.block-flat:first').before(App.alertBlockx(s));
+                App.showDbLog(r.Data);
             }else{
                 alert(r.Info);
                 if(r.Zone){
                     $('#create-db-'+r.Zone).focus();
                 }
+            }
+        },'json');
+    });
+    $('#drop-selected-dbs').click(function(){
+        var dbs=[];
+        var ckd=$('#database-items .icheck:checked');
+        if(ckd.length<1){
+            return App.message({title:'{{"出错了"|T}}',text:'{{"请选择您要删除的数据库"|T}}',class_name:'danger'},false);
+        }
+        ckd.each(function(){
+            dbs.push($(this).val());
+        });
+        if(confirm('{{"确定要删除下面这些数据库吗？"|T}}\n'+dbs.join('\n')))
+        $.post(window.location.href,{json:'drop',db:dbs},function(r){
+            var hasData=typeof(r.Data)!='undefined';
+            if(hasData && r.Data && r.Data.length>1){
+                refreshList();
+                if(hasData&&r.Data){
+                    for(var i=0;i<r.Data.length;i++){
+                        App.showDbLog(r.Data[i]);
+                    }
+                }
+                return
+            }
+            if(r.Code==1){
+                refreshList();
+                if(hasData&&r.Data){
+                    for(var i=0;i<r.Data.length;i++){
+                        App.showDbLog(r.Data[i]);
+                    }
+                }
+            }else{
+                App.message({title:'{{"出错了"|T}}',text:r.Info,class_name:'danger'},false);
             }
         },'json');
     });

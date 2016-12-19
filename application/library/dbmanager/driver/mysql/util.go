@@ -4,50 +4,181 @@ import (
 	"database/sql"
 	"time"
 
-	"regexp"
-
 	"strings"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
 )
 
-type Result struct {
-	SQL          string
-	RowsAffected int64
-	timeStart    time.Time
-	timeEnd      time.Time
-	Started      string
-	Elapsed      string
+func (r *Result) end() *Result {
+	r.timeEnd = time.Now()
+	r.Started = r.timeStart.Format(`2006-01-02 15:04:05`)
+	r.Elapsed = r.elapsed().String()
+	return r
 }
 
-func (r *Result) elapsed() time.Duration {
-	return r.timeEnd.Sub(r.timeStart)
-}
-
-func (r *Result) Exec(p *factory.Param) (*Result, error) {
-	r.timeStart = time.Now()
-	defer func() {
-		r.timeEnd = time.Now()
-		r.Started = r.timeStart.Format(`2006-01-02 15:04:05`)
-		r.Elapsed = r.elapsed().String()
-	}()
+func (r *Result) Exec(p *factory.Param) *Result {
+	r.start()
+	defer r.end()
 	result, err := p.SetCollection(r.SQL).Exec()
+	r.Error = err
+	if err != nil {
+		return r
+	}
+	r.RowsAffected, r.Error = result.RowsAffected()
+	return r
+}
+
+func (r *Result) Query(p *factory.Param, readRows func(*sql.Rows) error) *Result {
+	r.start()
+	defer r.end()
+	rows, err := p.SetCollection(r.SQL).Query()
+	r.Error = err
+	if err != nil {
+		return r
+	}
+	r.Error = readRows(rows)
+	return r
+}
+
+func (m *mySQL) kvVal(sqlStr string) ([]map[string]string, error) {
+	r := []map[string]string{}
+	rows, err := m.newParam().SetCollection(sqlStr).Query()
 	if err != nil {
 		return r, err
 	}
-	r.RowsAffected, err = result.RowsAffected()
+	for rows.Next() {
+		var k sql.NullString
+		var v sql.NullString
+		err = rows.Scan(&k, &v)
+		if err != nil {
+			break
+		}
+		r = append(r, map[string]string{
+			"k": k.String,
+			"v": v.String,
+		})
+	}
 	return r, err
 }
 
-func (m *mySQL) createDatabase(dbName, collate string) (*Result, error) {
+func (m *mySQL) showVariables() ([]map[string]string, error) {
+	sqlStr := "SHOW VARIABLES"
+	return m.kvVal(sqlStr)
+}
+
+func (m *mySQL) userPrivileges() (bool, []map[string]string, error) {
+	sqlStr := "SELECT User, Host FROM mysql."
+	if m.dbName == `` {
+		sqlStr += `user`
+	} else {
+		sqlStr += "db WHERE `" + strings.Replace(m.dbName, "`", "", -1) + "` LIKE Db"
+	}
+	sqlStr += " ORDER BY Host, User"
+	res, err := m.kvVal(sqlStr)
+	sysUser := true
+	if err != nil || res == nil || len(res) == 0 {
+		sysUser = false
+		sqlStr = `SELECT SUBSTRING_INDEX(CURRENT_USER, '@', 1) AS User, SUBSTRING_INDEX(CURRENT_USER, '@', -1) AS Host`
+		res, err = m.kvVal(sqlStr)
+	}
+	return sysUser, res, err
+}
+
+func (m *mySQL) showPrivileges() (*Privileges, error) {
+	r := NewPrivileges()
+	sqlStr := "SHOW PRIVILEGES"
+	rows, err := m.newParam().SetCollection(sqlStr).Query()
+	if err != nil {
+		return r, err
+	}
+	for rows.Next() {
+		v := &Privilege{}
+		err = rows.Scan(&v.Privilege, &v.Context, &v.Comment)
+		if err != nil {
+			break
+		}
+		r.Privileges = append(r.Privileges, v)
+	}
+	return r, err
+}
+
+func (m *mySQL) processList() ([]*ProcessList, error) {
+	r := []*ProcessList{}
+	sqlStr := "SHOW FULL PROCESSLIST"
+	rows, err := m.newParam().SetCollection(sqlStr).Query()
+	if err != nil {
+		return r, err
+	}
+	for rows.Next() {
+		v := &ProcessList{}
+		err = rows.Scan(&v.Id, &v.User, &v.Host, &v.Db, &v.Command, &v.Time, &v.State, &v.Info, &v.Progress)
+		if err != nil {
+			break
+		}
+		r = append(r, v)
+	}
+	return r, err
+}
+
+func (m *mySQL) showStatus() ([]map[string]string, error) {
+	sqlStr := "SHOW STATUS"
+	return m.kvVal(sqlStr)
+}
+
+func (m *mySQL) createDatabase(dbName, collate string) *Result {
 	r := &Result{}
 	r.SQL = "CREATE DATABASE `" + strings.Replace(dbName, "`", "", -1) + "`"
 	if len(collate) > 0 {
 		r.SQL += " COLLATE '" + com.AddSlashes(collate) + "'"
 	}
-	_, err := r.Exec(m.newParam())
-	return r, err
+	return r.Exec(m.newParam())
+}
+
+func (m *mySQL) dropDatabase(dbName string) *Result {
+	r := &Result{}
+	r.SQL = "DROP DATABASE `" + strings.Replace(dbName, "`", "", -1) + "`"
+	return r.Exec(m.newParam())
+}
+
+func (m *mySQL) renameDatabase(newName, collate string) []*Result {
+	newName = strings.Replace(newName, "`", "", -1)
+	rs := []*Result{}
+	r := m.createDatabase(newName, collate)
+	rs = append(rs, r)
+	if r.Error != nil {
+		return rs
+	}
+	rGetTables := &Result{}
+	rGetTables.start()
+	tables, err := m.getTables()
+	rGetTables.end()
+	rGetTables.SQL = `SHOW TABLES`
+	rGetTables.Error = err
+	rs = append(rs, rGetTables)
+	if err != nil {
+		return rs
+	}
+	var sql string
+	for key, table := range tables {
+		table = com.AddCSlashes(table, '`')
+		if key > 0 {
+			sql += ", "
+		}
+		sql += "`" + table + "` TO `" + newName + "`.`" + table + "`"
+	}
+	if len(sql) > 0 {
+		rRename := &Result{}
+		rRename.SQL = "RENAME TABLE " + sql
+		rRename = rRename.Exec(m.newParam())
+		err = rRename.Error
+		rs = append(rs, rRename)
+	}
+	if err == nil {
+		rDrop := m.dropDatabase(m.dbName)
+		rs = append(rs, rDrop)
+	}
+	return rs
 }
 
 func (m *mySQL) setLastSQL(sqlStr string) {
@@ -99,66 +230,6 @@ func (m *mySQL) getTables() ([]string, error) {
 	return ret, nil
 }
 
-type TableStatus struct {
-	Name            sql.NullString
-	Engine          sql.NullString
-	Version         sql.NullString
-	Row_format      sql.NullString
-	Rows            sql.NullInt64
-	Avg_row_length  sql.NullInt64
-	Data_length     sql.NullInt64
-	Max_data_length sql.NullInt64
-	Index_length    sql.NullInt64
-	Data_free       sql.NullInt64
-	Auto_increment  sql.NullInt64
-	Create_time     sql.NullString
-	Update_time     sql.NullString
-	Check_time      sql.NullString
-	Collation       sql.NullString
-	Checksum        sql.NullString
-	Create_options  sql.NullString
-	Comment         sql.NullString
-}
-
-func (t *TableStatus) IsView() bool {
-	return t.Engine.Valid == false
-}
-
-func (t *TableStatus) FKSupport(currentVersion string) bool {
-	switch t.Engine.String {
-	case `InnoDB`, `IBMDB2I`, `NDB`:
-		if com.VersionCompare(currentVersion, `5.6`) >= 0 {
-			return true
-		}
-	}
-	return false
-}
-
-func (t *TableStatus) Size() int64 {
-	return t.Data_length.Int64 + t.Index_length.Int64
-}
-
-type Collation struct {
-	Collation sql.NullString
-	Charset   sql.NullString `json:"-"`
-	Id        sql.NullInt64  `json:"-"`
-	Default   sql.NullString `json:"-"`
-	Compiled  sql.NullString `json:"-"`
-	Sortlen   sql.NullInt64  `json:"-"`
-}
-
-type Collations struct {
-	Collations map[string][]Collation
-	Defaults   map[string]int
-}
-
-func NewCollations() *Collations {
-	return &Collations{
-		Collations: make(map[string][]Collation),
-		Defaults:   make(map[string]int),
-	}
-}
-
 // 获取支持的字符集
 func (m *mySQL) getCollations() (*Collations, error) {
 	sqlStr := `SHOW COLLATION`
@@ -185,12 +256,6 @@ func (m *mySQL) getCollations() (*Collations, error) {
 	}
 	return ret, nil
 }
-
-var (
-	reCollate       = regexp.MustCompile(` COLLATE ([^ ]+)`)
-	reCharacter     = regexp.MustCompile(` CHARACTER SET ([^ ]+)`)
-	reInnoDBComment = regexp.MustCompile(`(?:(.+); )?InnoDB free: .*`)
-)
 
 func (m *mySQL) getCollation(dbName string, collations *Collations) (string, error) {
 	var err error
