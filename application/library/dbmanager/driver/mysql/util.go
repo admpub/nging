@@ -2,8 +2,11 @@ package mysql
 
 import (
 	"database/sql"
+	"errors"
 
 	"strings"
+
+	"strconv"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
@@ -33,6 +36,112 @@ func (m *mySQL) kvVal(sqlStr string) ([]map[string]string, error) {
 func (m *mySQL) showVariables() ([]map[string]string, error) {
 	sqlStr := "SHOW VARIABLES"
 	return m.kvVal(sqlStr)
+}
+
+func (m *mySQL) dropUser(user string, host string) *Result {
+	if len(host) > 0 {
+		user = `'` + com.AddSlashes(user) + `'@'` + com.AddSlashes(host) + `'`
+	} else {
+		user = `''`
+	}
+	r := &Result{}
+	r.SQL = "DROP USER " + user
+	return r.Exec(m.newParam())
+}
+
+func (m *mySQL) editUser(user string, host string, newUser string, oldPasswd string, newPasswd string, isHashed bool) *Result {
+	if len(host) > 0 {
+		user = `'` + com.AddSlashes(user) + `'@'` + com.AddSlashes(host) + `'`
+	} else {
+		user = `''`
+	}
+	if len(newUser) == 0 {
+		r := &Result{Error: errors.New(m.T(`用户名不能为空`))}
+		return r
+	}
+	r := &Result{}
+	newUser = `'` + com.AddSlashes(newUser) + `'@'` + com.AddSlashes(host) + `'`
+	if len(newPasswd) > 0 {
+		if !isHashed {
+			r.SQL = `SELECT PASSWORD('` + com.AddSlashes(newPasswd) + `')`
+			row, err := m.newParam().SetCollection(r.SQL).QueryRow()
+			if err != nil {
+				r.Error = err
+				return r
+			}
+			var v sql.NullString
+			err = row.Scan(&v)
+			if err != nil {
+				r.Error = err
+				return r
+			}
+			newPasswd = v.String
+		}
+	} else {
+		newPasswd = oldPasswd
+	}
+	var created bool
+	if user != newUser {
+		if len(newPasswd) == 0 {
+			r := &Result{Error: errors.New(m.T(`密码不能为空。请注意：创建新用户的时候，必须设置密码`))}
+			return r
+		}
+		r.SQL = `GRANT USAGE ON *.* TO`
+		if com.VersionCompare(m.version, `5`) >= 0 {
+			r.SQL = `CREATE USER`
+		}
+		r.SQL += ` ` + newUser + ` IDENTIFIED BY PASSWORD '` + com.AddSlashes(newPasswd) + `'`
+		created = true
+	} else if len(newPasswd) > 0 && oldPasswd != newPasswd {
+		r.SQL = `SET PASSWORD FOR ` + newUser + `='` + com.AddSlashes(newPasswd) + `'`
+	} else {
+		r.SQL = ``
+	}
+	if len(r.SQL) > 0 {
+		r.Exec(m.newParam())
+		if r.Error != nil {
+			return r
+		}
+	}
+
+	objects := m.FormValues(`objects[]`)
+	newGrants := map[string]map[string]string{}
+
+	mapx := NewMapx(m.Forms())
+	mapx = mapx.Get(`grants`)
+
+	for k, v := range objects {
+		if _, ok := newGrants[v]; !ok {
+			newGrants[v] = map[string]string{}
+		}
+		if mapx == nil {
+			continue
+		}
+		mp := mapx.Get(strconv.Itoa(k))
+		if mp != nil {
+			for name, m := range mp.Map {
+				newGrants[v][name] = m.Value()
+			}
+		}
+	}
+	/* TODO:
+	for k, v := range newGrants {
+
+	}
+	*/
+	com.Dump(newGrants)
+	panic(`e`)
+	return nil
+	//*/
+	if created && len(host) > 0 {
+		r.SQL = "DROP USER " + user
+		r.Exec(m.newParam())
+		if r.Error != nil {
+			return r
+		}
+	}
+	r.SQL = "DROP USER " + user
+	return r.Exec(m.newParam())
 }
 
 func (m *mySQL) getUserGrants(host, user string) (string, map[string]map[string]bool, []string, error) {

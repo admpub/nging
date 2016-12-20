@@ -23,13 +23,16 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"密码"|T}}</label>
                 <div class="col-sm-8">
+                    <input type="hidden" name="oldUser" value="{{Stored.oldUser}}">
+                    <input type="hidden" name="oldPass" value="{{Stored.oldPass}}">
                     <div class="input-group">
-                    <input type="text" name="pass" class="form-control" required="required" value="{{Form "pass"}}">
-                    <span class="input-group-addon">
-                        <input type="checkbox" name="hashed" value='1'{{if Stored.hashed}} checked{{end}}> 
+                    <input type="{{if Stored.hashed}}text{{else}}password{{end}}" name="pass" class="form-control" required="required" value="{{Form "pass"}}" id="passwd-input">
+                        <label class="input-group-addon" data-popover="popover" data-original-title="{{"如果是输入原始密码请不要勾选此项；如果您已经通过MySQL的PASSWORD函数将密码加密过了请勾选此项"|T}}" data-content="" data-placement="top" data-trigger="hover">
+                        <input type="checkbox" name="hashed" value='1'{{if Stored.hashed}} checked{{end}} onclick="$('#passwd-input').attr('type',this.checked?'text':'password');"> 
                         Hashed 
-                    </span>
+                        </label>
                     </div>
+                    <div class="help-block">{{"如果是输入原始密码请不要勾选Hashed选项。Hashed选项仅用于您已经通过MySQL的PASSWORD函数将密码加密过了的情况"|T}}</div>
                 </div>
               </div>
               <div class="form-group">
@@ -45,10 +48,10 @@
                             {{range $k,$object := $sorts}}
 							<th>
                                 {{if eq $object "*.*"}}
-                                <input type='hidden' name='objects[{{$k}}]' value='*.*' size='10'>
+                                <input type='hidden' name='objects[]' value='*.*' size='10'>
                                 <strong>*.*</strong>
                                 {{else}}
-                                <input name='objects[{{$k}}]' class="form-control" value='{{$object}}' size='10' autocapitalize='off'>
+                                <input name='objects[]' class="form-control" value='{{$object}}' size='10' autocapitalize='off'>
                                 {{end}}
                             </th>
                             {{end}}

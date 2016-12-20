@@ -65,6 +65,15 @@ func (m *mySQL) ProcessList() error {
 	m.Set(`processList`, r)
 	return m.Render(`db/mysql/proccess_list`, e)
 }
+
+func (m *mySQL) returnTo() error {
+	returnTo := m.Form(`return_to`)
+	if len(returnTo) == 0 {
+		returnTo = m.Request().URI()
+	}
+	return m.Redirect(returnTo)
+}
+
 func (m *mySQL) Privileges() error {
 	act := m.Form(`act`)
 	if len(act) > 0 {
@@ -72,11 +81,14 @@ func (m *mySQL) Privileges() error {
 		case `drop`:
 		case `edit`:
 			if m.IsPost() {
-				returnTo := m.Form(`return_to`)
-				if len(returnTo) == 0 {
-					returnTo = m.Request().URI()
-				}
-				return m.Redirect(returnTo)
+				isHashed := len(m.Form(`hashed`)) > 0
+				user := m.Form(`oldUser`)
+				host := m.Form(`host`)
+				newUser := m.Form(`user`)
+				oldPasswd := m.Form(`oldPass`)
+				newPasswd := m.Form(`pass`)
+				m.editUser(user, host, newUser, oldPasswd, newPasswd, isHashed)
+				return m.returnTo()
 			}
 			privs, err := m.showPrivileges()
 			if err == nil {
@@ -89,6 +101,7 @@ func (m *mySQL) Privileges() error {
 				oldPass string
 				grants  map[string]map[string]bool
 				sorts   []string
+				oldUser string
 			)
 			if len(host) > 0 {
 				oldPass, grants, sorts, err = m.getUserGrants(host, user)
@@ -97,10 +110,15 @@ func (m *mySQL) Privileges() error {
 				} else {
 					m.Set(`serverAdminObject`, ".*")
 				}
+				if err == nil {
+					oldUser = user
+				}
 			}
 			m.Set(`sorts`, sorts)
 			m.Set(`grants`, grants)
 			m.Set(`hashed`, true)
+			m.Set(`oldPass`, oldPass)
+			m.Set(`oldUser`, oldUser)
 			m.Request().Form().Set(`pass`, oldPass)
 			m.SetFunc(`getGrantByPrivilege`, func(grant map[string]bool, privilege string) bool {
 				return grant[strings.ToUpper(privilege)]
@@ -111,8 +129,8 @@ func (m *mySQL) Privileges() error {
 				}
 				return map[string]bool{}
 			})
-			m.SetFunc(`fieldName`, func(i interface{}, privilege string) string {
-				return fmt.Sprintf(`grants[%v][%v]`, i, strings.ToUpper(privilege))
+			m.SetFunc(`fieldName`, func(index int, privilege string) string {
+				return fmt.Sprintf(`grants[%v][%v]`, index, strings.ToUpper(privilege))
 			})
 			return m.Render(`db/mysql/privilege_edit`, err)
 		}

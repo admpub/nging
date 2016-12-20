@@ -148,3 +148,112 @@ func (p *Privileges) Parse() {
 		}
 	}
 }
+
+type Mapx struct {
+	Map map[string]*Mapx
+	Val []string
+}
+
+// ParseFormName user[name][test]
+func ParseFormName(s string) []string {
+	var res []string
+	hasLeft := false
+	hasRight := true
+	var val []rune
+	for _, r := range s {
+		if r == '[' {
+			if hasRight {
+				res = append(res, string(val))
+				val = []rune{}
+			}
+			hasLeft = true
+			hasRight = false
+			continue
+		}
+		if r == ']' {
+			if hasLeft {
+				hasRight = true
+			}
+			continue
+		}
+		val = append(val, r)
+	}
+	if len(val) > 0 {
+		res = append(res, string(val))
+	}
+	return res
+}
+
+func NewMapx(data map[string][]string) *Mapx {
+	m := &Mapx{}
+	return m.Parse(data)
+}
+
+func (m *Mapx) Parse(data map[string][]string) *Mapx {
+	m.Map = map[string]*Mapx{}
+	for name, values := range data {
+		names := ParseFormName(name)
+		end := len(names) - 1
+		v := m
+		for idx, key := range names {
+			if _, ok := v.Map[key]; !ok {
+				if idx == end {
+					v.Map[key] = &Mapx{Val: values}
+					continue
+				}
+				v.Map[key] = &Mapx{
+					Map: map[string]*Mapx{},
+				}
+				v = v.Map[key]
+				continue
+			}
+
+			if idx == end {
+				v.Map[key] = &Mapx{Val: values}
+			} else {
+				v = v.Map[key]
+			}
+		}
+	}
+	return m
+}
+
+func (m *Mapx) Value(names ...string) string {
+	v := m.Values(names...)
+	if v != nil {
+		if len(v) > 0 {
+			return v[0]
+		}
+	}
+	return ``
+}
+
+func (m *Mapx) Values(names ...string) []string {
+	if len(names) == 0 {
+		if m.Val == nil {
+			return []string{}
+		}
+		return m.Val
+	}
+	v := m.Get(names...)
+	if v != nil {
+		return v.Val
+	}
+	return []string{}
+}
+
+func (m *Mapx) Get(names ...string) *Mapx {
+	v := m
+	end := len(names) - 1
+	for idx, key := range names {
+		if _, ok := v.Map[key]; !ok {
+			return nil
+		}
+		v = v.Map[key]
+
+		if idx == end {
+			return v
+		}
+	}
+	return nil
+}
