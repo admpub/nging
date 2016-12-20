@@ -88,19 +88,28 @@ func (m *mySQL) Privileges() error {
 			var (
 				oldPass string
 				grants  map[string]map[string]bool
+				sorts   []string
 			)
 			if len(host) > 0 {
-				oldPass, grants, err = m.getUserGrants(host, user)
+				oldPass, grants, sorts, err = m.getUserGrants(host, user)
 				if _, ok := grants["*.*"]; ok {
 					m.Set(`serverAdminObject`, "*.*")
 				} else {
 					m.Set(`serverAdminObject`, ".*")
 				}
 			}
+			m.Set(`sorts`, sorts)
 			m.Set(`grants`, grants)
-			m.Set(`oldPass`, oldPass)
+			m.Set(`hashed`, true)
+			m.Request().Form().Set(`pass`, oldPass)
 			m.SetFunc(`getGrantByPrivilege`, func(grant map[string]bool, privilege string) bool {
 				return grant[strings.ToUpper(privilege)]
+			})
+			m.SetFunc(`getGrantsByKey`, func(key string) map[string]bool {
+				if vs, ok := grants[key]; ok {
+					return vs
+				}
+				return map[string]bool{}
 			})
 			m.SetFunc(`fieldName`, func(i interface{}, privilege string) string {
 				return fmt.Sprintf(`grants[%v][%v]`, i, strings.ToUpper(privilege))

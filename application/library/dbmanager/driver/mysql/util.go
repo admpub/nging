@@ -35,13 +35,14 @@ func (m *mySQL) showVariables() ([]map[string]string, error) {
 	return m.kvVal(sqlStr)
 }
 
-func (m *mySQL) getUserGrants(host, user string) (string, map[string]map[string]bool, error) {
+func (m *mySQL) getUserGrants(host, user string) (string, map[string]map[string]bool, []string, error) {
 	r := map[string]map[string]bool{}
+	var sortNumber []string
 	var oldPass string
 	sqlStr := "SHOW GRANTS FOR '" + com.AddSlashes(user) + "'@'" + com.AddSlashes(host) + "'"
 	rows, err := m.newParam().SetCollection(sqlStr).Query()
 	if err != nil {
-		return oldPass, r, err
+		return oldPass, r, sortNumber, err
 	}
 	for rows.Next() {
 		var v sql.NullString
@@ -50,14 +51,36 @@ func (m *mySQL) getUserGrants(host, user string) (string, map[string]map[string]
 			break
 		}
 		matchOn := reGrantOn.FindStringSubmatch(v.String)
+		/*
+			GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY PASSWORD '*81F5E21E35407D884A6CD4A731AEBFB6AF209E1B' WITH GRANT OPTION
+			matchOn :
+			[
+			  	"GRANT ALL PRIVILEGES ON *.* TO ",
+			  	"ALL PRIVILEGES",
+			  	"*.*"
+			]
+		*/
 		if len(matchOn) > 0 {
 			matchBrackets := reGrantBrackets.FindAllStringSubmatch(matchOn[1], -1)
+			/*
+				GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY PASSWORD '*81F5E21E35407D884A6CD4A731AEBFB6AF209E1B' WITH GRANT OPTION
+				matchBrackets :
+				[
+				  [
+				    "ALL PRIVILEGES",
+				    "ALL PRIVILEGES",
+				    "",
+				    ""
+				  ]
+				]
+			*/
 			if len(matchBrackets) > 0 {
 				for _, val := range matchBrackets {
 					if val[1] != `USAGE` {
 						k := matchOn[2] + val[2]
 						if _, ok := r[k]; !ok {
 							r[k] = map[string]bool{}
+							sortNumber = append(sortNumber, k)
 						}
 						r[k][val[1]] = true
 					}
@@ -65,6 +88,7 @@ func (m *mySQL) getUserGrants(host, user string) (string, map[string]map[string]
 						k := matchOn[2] + val[2]
 						if _, ok := r[k]; !ok {
 							r[k] = map[string]bool{}
+							sortNumber = append(sortNumber, k)
 						}
 						r[k]["GRANT OPTION"] = true
 					}
@@ -82,16 +106,24 @@ func (m *mySQL) getUserGrants(host, user string) (string, map[string]map[string]
 		var v sql.NullString
 		err = row.Scan(&v)
 		if err != nil {
-			return oldPass, r, err
+			return oldPass, r, sortNumber, err
 		}
 		m.Request().Form().Set(`host`, v.String)
 	}
-	return oldPass, r, err
+	var key string
+	if len(m.dbName) == 0 || (r != nil && len(r) > 0) {
+	} else {
+		key = com.AddCSlashes(m.dbName, '%', '_', '\\')
+	}
+	key += ".*"
+	r[key] = map[string]bool{}
+	sortNumber = append(sortNumber, key)
+	return oldPass, r, sortNumber, err
 }
 
 func (m *mySQL) listPrivileges() (bool, []map[string]string, error) {
 	sqlStr := "SELECT User, Host FROM mysql."
-	if m.dbName == `` {
+	if len(m.dbName) == 0 {
 		sqlStr += `user`
 	} else {
 		sqlStr += "db WHERE `" + strings.Replace(m.dbName, "`", "", -1) + "` LIKE Db"

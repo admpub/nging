@@ -23,39 +23,49 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"密码"|T}}</label>
                 <div class="col-sm-8">
-                    <input type="password" name="pass" class="form-control" required="required" value="{{Form "pass"}}">
+                    <div class="input-group">
+                    <input type="text" name="pass" class="form-control" required="required" value="{{Form "pass"}}">
+                    <span class="input-group-addon">
+                        <input type="checkbox" name="hashed" value='1'{{if Stored.hashed}} checked{{end}}> 
+                        Hashed 
+                    </span>
+                    </div>
                 </div>
               </div>
               <div class="form-group">
                 <label class="col-sm-2 control-label"></label>
                 <div class="col-sm-8">
-                
-
+                {{$sorts := Stored.sorts}}
 
                 <div class="table-responsive">
 				<table class="table no-border hover blue">
 					<thead class="no-border">
 						<tr>
 							<th colspan="2"><strong>{{"权限"|T}}</strong></th>
-							<th><strong>*.*</strong></th>
-							<th><strong></strong></th>
-							<th><strong></strong></th>
+                            {{range $k,$object := $sorts}}
+							<th>
+                                {{if eq $object "*.*"}}
+                                <input type='hidden' name='objects[{{$k}}]' value='*.*' size='10'>
+                                <strong>*.*</strong>
+                                {{else}}
+                                <input name='objects[{{$k}}]' class="form-control" value='{{$object}}' size='10' autocapitalize='off'>
+                                {{end}}
+                            </th>
+                            {{end}}
 						</tr>
 					</thead>
 					<tbody class="no-border-x" id="database-items">
                         {{$fGrant := Form "grant"}}
                         {{$list := Stored.list}}
-                        {{$grants := Stored.grants}}
                         {{if index $list ""}}
                         {{range $privilege,$comment := index $list ""}}
 						<tr>
                             <td colspan="2">{{$privilege}}</td>
-                            {{if $grants}}
-                            {{Set Stored "_i" 0}}
-                            {{range $object,$grant := $grants}}
+                            {{range $k,$object := $sorts}}
 							<td>
+                                {{$grant := getGrantsByKey $object}}
                                 {{$value := getGrantByPrivilege $grant $privilege}}
-                                {{$name := fieldName Stored._i $privilege}}
+                                {{$name := fieldName $k $privilege}}
                                 {{if $fGrant}}
                                 <select name="{{$name}}">
                                     <option value=""></option>
@@ -63,21 +73,9 @@
                                     <option value='0'{{if not $value}} selected{{end}}>{{"废除"|T}}</option>
                                 </select>
                                 {{else}}
-                                <input type="checkbox" name="{{$name}}" value='1'{{if $value}} checked{{end}}{{if eq $privilege "All privileges"}} id='grants-{{Stored._i}}-all'{{else if eq $privilege "Grant option"}}{{else}} onclick="if (this.checked) $('#grants-{{Stored._i}}-all').prop('checked',false);"{{end}}>
+                                <input type="checkbox" name="{{$name}}" value='1'{{if $value}} checked{{end}}{{if eq $privilege "All privileges"}} id='grants-{{$k}}-all'{{else if eq $privilege "Grant option"}}{{else}} onclick="if (this.checked) $('#grants-{{$k}}-all').prop('checked',false);"{{end}}>
                                 {{end}}
                             </td>
-                            {{Set Stored "_i" (Add Stored._i 1)}}
-                            {{end}}
-                            {{end}}
-                            {{$i := Int64 Stored._i}}
-                            {{if lt $i 1}}
-							<td><input type="checkbox" name="{{fieldName 0 $privilege}}"></td>
-                            {{end}}
-                            {{if lt $i 2}}
-							<td><input type="checkbox" name="{{fieldName 1 $privilege}}"></td>
-                            {{end}}
-                            {{if lt $i 3}}
-							<td><input type="checkbox" name="{{fieldName 2 $privilege}}"></td>
                             {{end}}
 						</tr>
                         {{end}}
@@ -90,12 +88,11 @@
                             <td>{{"服务器"|T}}</td>
                             <td>{{$privilege}}</td>
                             
-                            {{if $grants}}
-                            {{Set Stored "_i" 0}}
-                            {{range $object,$grant := $grants}}
+                            {{range $k,$object := $sorts}}
 							<td>
+                                {{$grant := getGrantsByKey $object}}
                                 {{$value := getGrantByPrivilege $grant $privilege}}
-                                {{$name := fieldName Stored._i $privilege}}
+                                {{$name := fieldName $k $privilege}}
                                 {{if ne (Str Stored.serverAdminObject) $object}}
                                 &nbsp;
                                 {{else if $fGrant}}
@@ -105,22 +102,9 @@
                                     <option value='0'{{if not $value}} selected{{end}}>{{"废除"|T}}</option>
                                 </select>
                                 {{else}}
-                                <input type="checkbox" name="{{$name}}" value='1'{{if $value}} checked{{end}}{{if eq $privilege "All privileges"}} id='grants-{{Stored._i}}-all'{{else if eq $privilege "Grant option"}}{{else}} onclick="if (this.checked) $('#grants-{{Stored._i}}-all').prop('checked',false);"{{end}}>
+                                <input type="checkbox" name="{{$name}}" value='1'{{if $value}} checked{{end}}{{if eq $privilege "All privileges"}} id='grants-{{$k}}-all'{{else if eq $privilege "Grant option"}}{{else}} onclick="if (this.checked) $('#grants-{{$k}}-all').prop('checked',false);"{{end}}>
                                 {{end}}
                             </td>
-                            {{Set Stored "_i" (Add Stored._i 1)}}
-                            {{end}}
-                            {{end}}
-
-                            {{$i := Int64 Stored._i}}
-                            {{if lt $i 1}}
-							<td><input type="checkbox" name="{{fieldName 0 $privilege}}"></td>
-                            {{end}}
-                            {{if lt $i 2}}
-							<td><input type="checkbox" name="{{fieldName 1 $privilege}}"></td>
-                            {{end}}
-                            {{if lt $i 3}}
-							<td><input type="checkbox" name="{{fieldName 2 $privilege}}"></td>
                             {{end}}
 						</tr>
                         {{end}}
@@ -132,12 +116,11 @@
                             <td>{{"数据库"|T}}</td>
                             <td>{{$privilege}}</td>
                             
-                            {{if $grants}}
-                            {{Set Stored "_i" 0}}
-                            {{range $object,$grant := $grants}}
+                            {{range $k,$object := $sorts}}
 							<td>
+                                {{$grant := getGrantsByKey $object}}
                                 {{$value := getGrantByPrivilege $grant $privilege}}
-                                {{$name := fieldName Stored._i $privilege}}
+                                {{$name := fieldName $k $privilege}}
                                 {{if $fGrant}}
                                 <select name="{{$name}}">
                                     <option value=""></option>
@@ -145,22 +128,9 @@
                                     <option value='0'{{if not $value}} selected{{end}}>{{"废除"|T}}</option>
                                 </select>
                                 {{else}}
-                                <input type="checkbox" name="{{$name}}" value='1'{{if $value}} checked{{end}}{{if eq $privilege "All privileges"}} id='grants-{{Stored._i}}-all'{{else if eq $privilege "Grant option"}}{{else}} onclick="if (this.checked) $('#grants-{{Stored._i}}-all').prop('checked',false);"{{end}}>
+                                <input type="checkbox" name="{{$name}}" value='1'{{if $value}} checked{{end}}{{if eq $privilege "All privileges"}} id='grants-{{$k}}-all'{{else if eq $privilege "Grant option"}}{{else}} onclick="if (this.checked) $('#grants-{{$k}}-all').prop('checked',false);"{{end}}>
                                 {{end}}
                             </td>
-                            {{Set Stored "_i" (Add Stored._i 1)}}
-                            {{end}}
-                            {{end}}
-
-                            {{$i := Int64 Stored._i}}
-                            {{if lt $i 1}}
-							<td><input type="checkbox" name="{{fieldName 0 $privilege}}"></td>
-                            {{end}}
-                            {{if lt $i 2}}
-							<td><input type="checkbox" name="{{fieldName 1 $privilege}}"></td>
-                            {{end}}
-                            {{if lt $i 3}}
-							<td><input type="checkbox" name="{{fieldName 2 $privilege}}"></td>
                             {{end}}
 						</tr>
                         {{end}}
@@ -173,12 +143,11 @@
                             <td>{{"表"|T}}</td>
                             <td>{{$privilege}}</td>
                             
-                            {{if $grants}}
-                            {{Set Stored "_i" 0}}
-                            {{range $object,$grant := $grants}}
+                            {{range $k,$object := $sorts}}
 							<td>
+                                {{$grant := getGrantsByKey $object}}
                                 {{$value := getGrantByPrivilege $grant $privilege}}
-                                {{$name := fieldName Stored._i $privilege}}
+                                {{$name := fieldName $k $privilege}}
                                 {{if $fGrant}}
                                 <select name="{{$name}}">
                                     <option value=""></option>
@@ -186,22 +155,9 @@
                                     <option value='0'{{if not $value}} selected{{end}}>{{"废除"|T}}</option>
                                 </select>
                                 {{else}}
-                                <input type="checkbox" name="{{$name}}" value='1'{{if $value}} checked{{end}}{{if eq $privilege "All privileges"}} id='grants-{{Stored._i}}-all'{{else if eq $privilege "Grant option"}}{{else}} onclick="if (this.checked) $('#grants-{{Stored._i}}-all').prop('checked',false);"{{end}}>
+                                <input type="checkbox" name="{{$name}}" value='1'{{if $value}} checked{{end}}{{if eq $privilege "All privileges"}} id='grants-{{$k}}-all'{{else if eq $privilege "Grant option"}}{{else}} onclick="if (this.checked) $('#grants-{{$k}}-all').prop('checked',false);"{{end}}>
                                 {{end}}
                             </td>
-                            {{Set Stored "_i" (Add Stored._i 1)}}
-                            {{end}}
-                            {{end}}
-
-                            {{$i := Int64 Stored._i}}
-                            {{if lt $i 1}}
-							<td><input type="checkbox" name="{{fieldName 0 $privilege}}"></td>
-                            {{end}}
-                            {{if lt $i 2}}
-							<td><input type="checkbox" name="{{fieldName 1 $privilege}}"></td>
-                            {{end}}
-                            {{if lt $i 3}}
-							<td><input type="checkbox" name="{{fieldName 2 $privilege}}"></td>
                             {{end}}
 						</tr>
                         {{end}}
@@ -213,12 +169,11 @@
                             <td>{{"列"|T}}</td>
                             <td>{{$privilege}}</td>
                             
-                            {{if $grants}}
-                            {{Set Stored "_i" 0}}
-                            {{range $object,$grant := $grants}}
+                            {{range $k,$object := $sorts}}
 							<td>
+                                {{$grant := getGrantsByKey $object}}
                                 {{$value := getGrantByPrivilege $grant $privilege}}
-                                {{$name := fieldName Stored._i $privilege}}
+                                {{$name := fieldName $k $privilege}}
                                 {{if $fGrant}}
                                 <select name="{{$name}}">
                                     <option value=""></option>
@@ -226,22 +181,9 @@
                                     <option value='0'{{if not $value}} selected{{end}}>{{"废除"|T}}</option>
                                 </select>
                                 {{else}}
-                                <input type="checkbox" name="{{$name}}" value='1'{{if $value}} checked{{end}}{{if eq $privilege "All privileges"}} id='grants-{{Stored._i}}-all'{{else if eq $privilege "Grant option"}}{{else}} onclick="if (this.checked) $('#grants-{{Stored._i}}-all').prop('checked',false);"{{end}}>
+                                <input type="checkbox" name="{{$name}}" value='1'{{if $value}} checked{{end}}{{if eq $privilege "All privileges"}} id='grants-{{$k}}-all'{{else if eq $privilege "Grant option"}}{{else}} onclick="if (this.checked) $('#grants-{{$k}}-all').prop('checked',false);"{{end}}>
                                 {{end}}
                             </td>
-                            {{Set Stored "_i" (Add Stored._i 1)}}
-                            {{end}}
-                            {{end}}
-
-                            {{$i := Int64 Stored._i}}
-                            {{if lt $i 1}}
-							<td><input type="checkbox" name="{{fieldName 0 $privilege}}"></td>
-                            {{end}}
-                            {{if lt $i 2}}
-							<td><input type="checkbox" name="{{fieldName 1 $privilege}}"></td>
-                            {{end}}
-                            {{if lt $i 3}}
-							<td><input type="checkbox" name="{{fieldName 2 $privilege}}"></td>
                             {{end}}
 						</tr>
                         {{end}}
@@ -253,12 +195,11 @@
                             <td>{{"子程序"|T}}</td>
                             <td>{{$privilege}}</td>
                             
-                            {{if $grants}}
-                            {{Set Stored "_i" 0}}
-                            {{range $object,$grant := $grants}}
+                            {{range $k,$object := $sorts}}
 							<td>
+                                {{$grant := getGrantsByKey $object}}
                                 {{$value := getGrantByPrivilege $grant $privilege}}
-                                {{$name := fieldName Stored._i $privilege}}
+                                {{$name := fieldName $k $privilege}}
                                 {{if $fGrant}}
                                 <select name="{{$name}}">
                                     <option value=""></option>
@@ -266,22 +207,9 @@
                                     <option value='0'{{if not $value}} selected{{end}}>{{"废除"|T}}</option>
                                 </select>
                                 {{else}}
-                                <input type="checkbox" name="{{$name}}" value='1'{{if $value}} checked{{end}}{{if eq $privilege "All privileges"}} id='grants-{{Stored._i}}-all'{{else if eq $privilege "Grant option"}}{{else}} onclick="if (this.checked) $('#grants-{{Stored._i}}-all').prop('checked',false);"{{end}}>
+                                <input type="checkbox" name="{{$name}}" value='1'{{if $value}} checked{{end}}{{if eq $privilege "All privileges"}} id='grants-{{$k}}-all'{{else if eq $privilege "Grant option"}}{{else}} onclick="if (this.checked) $('#grants-{{$k}}-all').prop('checked',false);"{{end}}>
                                 {{end}}
                             </td>
-                            {{Set Stored "_i" (Add Stored._i 1)}}
-                            {{end}}
-                            {{end}}
-
-                            {{$i := Int64 Stored._i}}
-                            {{if lt $i 1}}
-							<td><input type="checkbox" name="{{fieldName 0 $privilege}}"></td>
-                            {{end}}
-                            {{if lt $i 2}}
-							<td><input type="checkbox" name="{{fieldName 1 $privilege}}"></td>
-                            {{end}}
-                            {{if lt $i 3}}
-							<td><input type="checkbox" name="{{fieldName 2 $privilege}}"></td>
                             {{end}}
 						</tr>
                         {{end}}
