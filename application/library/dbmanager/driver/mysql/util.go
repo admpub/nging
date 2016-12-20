@@ -35,7 +35,7 @@ func (m *mySQL) showVariables() ([]map[string]string, error) {
 	return m.kvVal(sqlStr)
 }
 
-func (m *mySQL) getUserPrivilege(host, user string) (string, map[string]map[string]bool, error) {
+func (m *mySQL) getUserGrants(host, user string) (string, map[string]map[string]bool, error) {
 	r := map[string]map[string]bool{}
 	var oldPass string
 	sqlStr := "SHOW GRANTS FOR '" + com.AddSlashes(user) + "'@'" + com.AddSlashes(host) + "'"

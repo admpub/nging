@@ -1,6 +1,10 @@
 package mysql
 
 import (
+	"strings"
+
+	"fmt"
+
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/db/mysql"
@@ -86,10 +90,21 @@ func (m *mySQL) Privileges() error {
 				grants  map[string]map[string]bool
 			)
 			if len(host) > 0 {
-				oldPass, grants, err = m.getUserPrivilege(host, user)
+				oldPass, grants, err = m.getUserGrants(host, user)
+				if _, ok := grants["*.*"]; ok {
+					m.Set(`serverAdminObject`, "*.*")
+				} else {
+					m.Set(`serverAdminObject`, ".*")
+				}
 			}
 			m.Set(`grants`, grants)
 			m.Set(`oldPass`, oldPass)
+			m.SetFunc(`getGrantByPrivilege`, func(grant map[string]bool, privilege string) bool {
+				return grant[strings.ToUpper(privilege)]
+			})
+			m.SetFunc(`fieldName`, func(i interface{}, privilege string) string {
+				return fmt.Sprintf(`grants[%v][%v]`, i, strings.ToUpper(privilege))
+			})
 			return m.Render(`db/mysql/privilege_edit`, err)
 		}
 	}
