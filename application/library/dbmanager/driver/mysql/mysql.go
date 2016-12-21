@@ -1,12 +1,10 @@
 package mysql
 
 import (
+	"fmt"
 	"strings"
 
-	errs "github.com/admpub/nging/application/library/errors"
-
-	"fmt"
-
+	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/db/mysql"
@@ -77,6 +75,7 @@ func (m *mySQL) returnTo() error {
 }
 
 func (m *mySQL) Privileges() error {
+	var ret interface{}
 	var err error
 	act := m.Form(`act`)
 	if len(act) > 0 {
@@ -92,10 +91,10 @@ func (m *mySQL) Privileges() error {
 				newPasswd := m.Form(`pass`)
 				r := m.editUser(user, host, newUser, oldPasswd, newPasswd, isHashed)
 				if r.Error == nil {
-					m.Session().AddFlash(errs.NewOk(m.T(`操作成功`)))
+					m.Session().AddFlash(common.Ok(m.T(`操作成功`)))
 					return m.returnTo()
 				}
-				err = r.Error
+				m.Session().AddFlash(r.Error.Error())
 			}
 			privs, err := m.showPrivileges()
 			if err == nil {
@@ -144,13 +143,15 @@ func (m *mySQL) Privileges() error {
 			m.SetFunc(`fieldName`, func(index int, privilege string) string {
 				return fmt.Sprintf(`grants[%v][%v]`, index, strings.ToUpper(privilege))
 			})
-			return m.Render(`db/mysql/privilege_edit`, err)
+			ret = common.Err(m.Context, err)
+			return m.Render(`db/mysql/privilege_edit`, ret)
 		}
 	}
+	ret = common.Err(m.Context, err)
 	isSysUser, list, err := m.listPrivileges()
 	m.Set(`isSysUser`, isSysUser)
 	m.Set(`list`, list)
-	return m.Render(`db/mysql/privileges`, err)
+	return m.Render(`db/mysql/privileges`, ret)
 }
 func (m *mySQL) Info() error {
 	var r []map[string]string
