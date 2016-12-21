@@ -128,7 +128,14 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 	}
 
 	scopes := m.FormValues(`scopes[]`)
+	databases := m.FormValues(`databases[]`)
+	tables := m.FormValues(`tables[]`)
+	columns := m.FormValues(`columns[]`)
 	scopeMaxIndex := len(scopes) - 1
+
+	databaseMaxIndex := len(databases) - 1
+	tableMaxIndex := len(tables) - 1
+	columnMaxIndex := len(columns) - 1
 	objects := m.FormValues(`objects[]`)
 	newGrants := map[string]map[string]string{}
 
@@ -136,66 +143,17 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 	mapx = mapx.Get(`grants`)
 	//objects: objects[0|1|...]=`*.*|db.*|db.table|db.table.col1,col2`
 	for k, v := range objects {
-		if k > scopeMaxIndex {
+		if k > scopeMaxIndex || k > databaseMaxIndex || k > tableMaxIndex || k > columnMaxIndex {
 			continue
 		}
-		scope := scopes[k]
-		switch scope {
-		case `all`:
-			v = `*.*`
-		case `database`:
-			v = strings.TrimSuffix(v, `.*`)
-			v = reNotWord.ReplaceAllString(v, ``) + `.*`
-		case `table`:
-			vs := strings.SplitN(v, `.`, 2)
-			for ki, vi := range vs {
-				vi = reNotWord.ReplaceAllString(vi, ``)
-				if len(vi) == 0 {
-					if ki == 0 {
-						r.Error = errors.New(m.T(`数据库名称不正确`))
-					} else {
-						r.Error = errors.New(m.T(`数据表名称不正确`))
-					}
-					return onerror()
-				}
-				vs[ki] = vi
-			}
-			v = strings.Join(vs, `.`)
-		case `column`:
-			cols := []string{}
-			vs := strings.SplitN(v, `.`, 3)
-			for ki, vi := range vs {
-				if ki == 2 {
-					for _, cv := range strings.Split(vi, `,`) {
-						cv = reNotWord.ReplaceAllString(cv, ``)
-						if len(cv) > 0 {
-							cols = append(cols, cv)
-						}
-					}
-					if len(cols) == 0 {
-						vs[1] = `*`
-						vs = vs[0:2]
-					}
-					break
-				}
-				vi = reNotWord.ReplaceAllString(vi, ``)
-				if len(vi) == 0 {
-					switch ki {
-					case 0:
-						r.Error = errors.New(m.T(`数据库名称不正确`))
-					case 1:
-						r.Error = errors.New(m.T(`数据表名称不正确`))
-					}
-					return onerror()
-				}
-				vs[ki] = vi
-			}
-			if len(cols) == 0 {
-				v = vs[0] + `.` + vs[1]
-			} else {
-				v = vs[0] + `.` + vs[1] + `(` + strings.Join(cols, `,`) + `)`
-			}
+		gr := &Grant{
+			Scope:    scopes[k],
+			Value:    v,
+			Database: databases[k],
+			Table:    tables[k],
+			Columns:  columns[k],
 		}
+		v = gr.String()
 		if _, ok := newGrants[v]; !ok {
 			newGrants[v] = map[string]string{}
 		}
@@ -699,4 +657,38 @@ func (m *mySQL) baseInfo() error {
 
 	m.Set(`dbVersion`, m.getVersion())
 	return nil
+}
+
+func (m *mySQL) getScopeGrant(object string) *Grant {
+	g := &Grant{Value: object}
+	if object == `*.*` {
+		g.Scope = `all`
+		return g
+	}
+	strs := strings.SplitN(object, `.`, 2)
+	for i, v := range strs {
+		v = strings.Trim(v, "`")
+		switch i {
+		case 0:
+			g.Database = v
+		case 1:
+			if v == `*` {
+				g.Scope = `database`
+			} else if strings.HasSuffix(v, `)`) {
+				vs := strings.SplitN(v, `(`, 2)
+				switch len(vs) {
+				case 2:
+					g.Table = strings.TrimSpace(vs[0])
+					g.Table = strings.TrimSuffix(g.Table, "`")
+					g.Columns = strings.TrimSuffix(vs[1], `)`)
+					g.Scope = `column`
+				}
+			} else {
+				g.Table = strings.TrimSpace(v)
+				g.Table = strings.TrimSuffix(g.Table, "`")
+				g.Scope = `table`
+			}
+		}
+	}
+	return g
 }

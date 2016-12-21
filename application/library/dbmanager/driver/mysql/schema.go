@@ -265,3 +265,17 @@ type Grant struct {
 	Table    string
 	Columns  string //col1,col2
 }
+
+func (g *Grant) String() string {
+	switch g.Scope {
+	case `all`:
+		return `*.*`
+	case `database`:
+		return g.Database + `.*`
+	case `table`:
+		return g.Database + `.` + g.Table
+	case `column`:
+		return g.Database + `.` + g.Table + `(` + g.Columns + `)`
+	}
+	return ``
+}

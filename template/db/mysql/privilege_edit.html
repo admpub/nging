@@ -307,7 +307,7 @@ $('.onselect-priv-type input').change(function(){
         ipt.val($('#input-database-'+col).val()+'.'+$('#input-table-'+col).val());
         break;
         case 'column':
-        ipt.val($('#input-database-'+col).val()+'.'+$('#input-table-'+col).val()+'.'+$('#input-column-'+col).val());
+        ipt.val($('#input-database-'+col).val()+'.'+$('#input-table-'+col).val()+'('+$('#input-column-'+col).val()+')');
         break;
     }
 });
