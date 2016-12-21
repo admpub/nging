@@ -72,27 +72,31 @@ MySQL grant 权限，分别可以作用在多个层次上
                             {{range $k,$object := $sorts}}
 							<th style="max-width:300px">
                                 {{if eq $object "*.*"}}
-                                <input type='hidden' name='objects[]' value='*.*' size='10'>
-                                <input type='hidden' name='scope[]' value='all' size='10'>
+                                <input type='hidden' name='objects[]' value='*.*'>
+                                <input type='hidden' name='scopes[]' value='all'>
+                                <input type='hidden' name='databases[]' value=''>
+                                <input type='hidden' name='tables[]' value=''>
+                                <input type='hidden' name='columns[]' value=''>
                                 <strong>*.*</strong>
                                 {{else}}
+                                {{$grant := getScope $object}}
                                 <input type='hidden' id="objects-{{$k}}" name='objects[]' value='{{$object}}'>
                                 <div class="input-group no-margin-bottom">
                                 <span class="input-group-addon">{{"作用范围"|T}}</span>
-                                <select id="select-priv-type-{{$k}}" name="scope[]" data-col="{{$k}}" class="select-priv-type form-control">
-                                    <option value="all">{{"全局"|T}}</option>
-                                    <option value="database">{{"数据库"|T}}</option>
-                                    <option value="table">{{"表"|T}}</option>
-                                    <option value="column">{{"列"|T}}</option>
+                                <select id="select-priv-type-{{$k}}" name="scopes[]" data-col="{{$k}}" class="select-priv-type form-control">
+                                    <option value="all"{{if eq $grant.Scope "all"}} selected{{end}}>{{"全局"|T}}</option>
+                                    <option value="database"{{if eq $grant.Scope "database"}} selected{{end}}>{{"数据库"|T}}</option>
+                                    <option value="table"{{if eq $grant.Scope "table"}} selected{{end}}>{{"表"|T}}</option>
+                                    <option value="column"{{if eq $grant.Scope "column"}} selected{{end}}>{{"列"|T}}</option>
                                 </select>
                                 </div>
                                 <div class="input-group no-margin-bottom onselect-priv-type" id="onselect-priv-type-{{$k}}">
                                 <span class="input-group-addon database-name">{{"库名"|T}}</span>
-                                <input id='input-database-{{$k}}' data-col="{{$k}}" class="form-control database-name" value='' pattern='^[a-zA-Z0-9_]+$' title="{{"库名仅支持输入字母、数字、下划线"|T}}">
+                                <input id='input-database-{{$k}}' name="databases[]" data-col="{{$k}}" class="form-control database-name" value='{{$grant.Database}}' pattern='^[a-zA-Z0-9_]+$' title="{{"库名仅支持输入字母、数字、下划线"|T}}">
                                 <span class="input-group-addon table-name">{{"表名"|T}}</span>
-                                <input id='input-table-{{$k}}' data-col="{{$k}}" class="form-control table-name" value='' pattern='^[a-zA-Z0-9_]+$' title="{{"表名仅支持输入字母、数字、下划线"|T}}">
+                                <input id='input-table-{{$k}}' name="tables[]" data-col="{{$k}}" class="form-control table-name" value='{{$grant.Table}}' pattern='^[a-zA-Z0-9_]+$' title="{{"表名仅支持输入字母、数字、下划线"|T}}">
                                 <span class="input-group-addon column-name">{{"列名"|T}}</span>
-                                <input id='input-column-{{$k}}' data-col="{{$k}}" class="form-control column-name" value='' pattern='^[a-zA-Z0-9_]+(,[a-zA-Z0-9_]+)*$' title="{{"列名仅支持输入字母、数字、下划线，多列请用半角逗号隔开"|T}}">
+                                <input id='input-column-{{$k}}' name="columns[]" data-col="{{$k}}" class="form-control column-name" value='{{$grant.Columns}}' pattern='^[a-zA-Z0-9_]+(,[a-zA-Z0-9_]+)*$' title="{{"列名仅支持输入字母、数字、下划线，多列请用半角逗号隔开"|T}}">
                                 </div>
                                 <!-- 
                                 <div class="input-group no-margin-bottom">
@@ -360,7 +364,7 @@ $('.select-priv-type').change(function(){
         $('#input-column-'+col).prop('required',true);
         break;
     }
-});
+}).trigger('change');
 });
 </script>
 {{/Block}}

@@ -140,6 +140,39 @@ func (m *mySQL) Privileges() error {
 				}
 				return map[string]bool{}
 			})
+			m.SetFunc(`getScope`, func(object string) *Grant {
+				g := &Grant{Value: object}
+				if object == `*.*` {
+					g.Scope = `all`
+					return g
+				}
+				strs := strings.SplitN(object, `.`, 2)
+				for i, v := range strs {
+					v = strings.Trim(v, "`")
+					switch i {
+					case 0:
+						g.Database = v
+					case 1:
+						if v == `*` {
+							g.Scope = `database`
+						} else if strings.HasSuffix(v, `)`) {
+							vs := strings.SplitN(v, `(`, 2)
+							switch len(vs) {
+							case 2:
+								g.Table = strings.TrimSpace(vs[0])
+								g.Table = strings.TrimSuffix(g.Table, "`")
+								g.Columns = strings.TrimSuffix(vs[1], `)`)
+								g.Scope = `column`
+							}
+						} else {
+							g.Table = strings.TrimSpace(v)
+							g.Table = strings.TrimSuffix(g.Table, "`")
+							g.Scope = `table`
+						}
+					}
+				}
+				return g
+			})
 			m.SetFunc(`fieldName`, func(index int, privilege string) string {
 				return fmt.Sprintf(`grants[%v][%v]`, index, strings.ToUpper(privilege))
 			})

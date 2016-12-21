@@ -127,13 +127,75 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 		}
 	}
 
+	scopes := m.FormValues(`scopes[]`)
+	scopeMaxIndex := len(scopes) - 1
 	objects := m.FormValues(`objects[]`)
 	newGrants := map[string]map[string]string{}
 
 	mapx := NewMapx(m.Forms())
 	mapx = mapx.Get(`grants`)
-
+	//objects: objects[0|1|...]=`*.*|db.*|db.table|db.table.col1,col2`
 	for k, v := range objects {
+		if k > scopeMaxIndex {
+			continue
+		}
+		scope := scopes[k]
+		switch scope {
+		case `all`:
+			v = `*.*`
+		case `database`:
+			v = strings.TrimSuffix(v, `.*`)
+			v = reNotWord.ReplaceAllString(v, ``) + `.*`
+		case `table`:
+			vs := strings.SplitN(v, `.`, 2)
+			for ki, vi := range vs {
+				vi = reNotWord.ReplaceAllString(vi, ``)
+				if len(vi) == 0 {
+					if ki == 0 {
+						r.Error = errors.New(m.T(`数据库名称不正确`))
+					} else {
+						r.Error = errors.New(m.T(`数据表名称不正确`))
+					}
+					return onerror()
+				}
+				vs[ki] = vi
+			}
+			v = strings.Join(vs, `.`)
+		case `column`:
+			cols := []string{}
+			vs := strings.SplitN(v, `.`, 3)
+			for ki, vi := range vs {
+				if ki == 2 {
+					for _, cv := range strings.Split(vi, `,`) {
+						cv = reNotWord.ReplaceAllString(cv, ``)
+						if len(cv) > 0 {
+							cols = append(cols, cv)
+						}
+					}
+					if len(cols) == 0 {
+						vs[1] = `*`
+						vs = vs[0:2]
+					}
+					break
+				}
+				vi = reNotWord.ReplaceAllString(vi, ``)
+				if len(vi) == 0 {
+					switch ki {
+					case 0:
+						r.Error = errors.New(m.T(`数据库名称不正确`))
+					case 1:
+						r.Error = errors.New(m.T(`数据表名称不正确`))
+					}
+					return onerror()
+				}
+				vs[ki] = vi
+			}
+			if len(cols) == 0 {
+				v = vs[0] + `.` + vs[1]
+			} else {
+				v = vs[0] + `.` + vs[1] + `(` + strings.Join(cols, `,`) + `)`
+			}
+		}
 		if _, ok := newGrants[v]; !ok {
 			newGrants[v] = map[string]string{}
 		}
@@ -148,8 +210,10 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 		}
 	}
 	hasURLGrantValue := len(m.Form(`grant`)) > 0
+	//newGrants: newGrants[*.*|db.*|db.table|db.table(col1,col2)][DROP|...]=`0|1`
 	for object, grant := range newGrants {
 		onAndCol := reGrantColumn.FindStringSubmatch(object)
+		//fmt.Printf("object: %v matched: %#v\n", object, onAndCol)
 		if len(onAndCol) < 3 {
 			continue
 		}

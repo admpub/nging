@@ -13,6 +13,7 @@ var (
 	reGrantIdent    = regexp.MustCompile(` IDENTIFIED BY PASSWORD '([^']+)`)
 
 	//以下数据来自客户端
-	reGrantColumn      = regexp.MustCompile(`^(.+)\s*(\(.*\))?$`)
+	reGrantColumn      = regexp.MustCompile(`^([^() ]+)\s*(\([^)]*\))?$`)
 	reGrantOptionValue = regexp.MustCompile(`(GRANT OPTION)\([^)]*\)`)
+	reNotWord          = regexp.MustCompile(`[^a-zA-Z0-9_]+`)
 )

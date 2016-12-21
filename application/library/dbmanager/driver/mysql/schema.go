@@ -257,3 +257,11 @@ func (m *Mapx) Get(names ...string) *Mapx {
 	}
 	return nil
 }
+
+type Grant struct {
+	Scope    string //all|database|table|column
+	Value    string //*.*|db.*|db.table|db.table(col1,col2)
+	Database string
+	Table    string
+	Columns  string //col1,col2
+}
