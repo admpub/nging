@@ -59,6 +59,16 @@ func (m *mySQL) editUser(user string, host string, newUser string, oldPasswd str
 		r := &Result{Error: errors.New(m.T(`用户名不能为空`))}
 		return r
 	}
+
+	oldPass, grants, _, err := m.getUserGrants(host, user)
+	if err != nil {
+		r := &Result{Error: err}
+		return r
+	}
+	if len(oldPasswd) == 0 {
+		oldPasswd = oldPass
+	}
+
 	r := &Result{}
 	newUser = `'` + com.AddSlashes(newUser) + `'@'` + com.AddSlashes(host) + `'`
 	if len(newPasswd) > 0 {
@@ -81,9 +91,12 @@ func (m *mySQL) editUser(user string, host string, newUser string, oldPasswd str
 		newPasswd = oldPasswd
 	}
 	var created bool
+	onerror := func() *Result {
+		return r
+	}
 	if user != newUser {
 		if len(newPasswd) == 0 {
-			r := &Result{Error: errors.New(m.T(`密码不能为空。请注意：创建新用户的时候，必须设置密码`))}
+			r := &Result{Error: errors.New(m.T(`密码不能为空。请注意：修改用户名的时候，必须设置密码`))}
 			return r
 		}
 		r.SQL = `GRANT USAGE ON *.* TO`
@@ -92,6 +105,15 @@ func (m *mySQL) editUser(user string, host string, newUser string, oldPasswd str
 		}
 		r.SQL += ` ` + newUser + ` IDENTIFIED BY PASSWORD '` + com.AddSlashes(newPasswd) + `'`
 		created = true
+		onerror = func() *Result {
+			r2 := &Result{}
+			r2.SQL = "DROP USER " + newUser
+			r2.Exec(m.newParam())
+			if r2.Error != nil {
+				m.Echo().Logger().Error(r2.Error)
+			}
+			return r
+		}
 	} else if len(newPasswd) > 0 && oldPasswd != newPasswd {
 		r.SQL = `SET PASSWORD FOR ` + newUser + `='` + com.AddSlashes(newPasswd) + `'`
 	} else {
@@ -124,23 +146,113 @@ func (m *mySQL) editUser(user string, host string, newUser string, oldPasswd str
 			}
 		}
 	}
-	/* TODO:
-	for k, v := range newGrants {
+	hasURLGrantValue := len(m.Form(`grant`)) > 0
+	for object, grant := range newGrants {
+		onAndCol := reGrantColumn.FindStringSubmatch(object)
+		if len(onAndCol) < 3 {
+			continue
+		}
+		var revokeV, grantV []string
+		if hasURLGrantValue {
+			for key, val := range grant {
+				if val != `1` {
+					revokeV = append(revokeV, key)
+				}
+			}
+		} else if user == newUser {
+			if vals, ok := grants[object]; ok {
+				for key := range vals {
+					if _, ok := grant[key]; !ok {
+						revokeV = append(revokeV, key)
+					}
+				}
+				for key := range grant {
+					if _, ok := vals[key]; !ok {
+						grantV = append(grantV, key)
+					}
+				}
+				delete(grants, object)
+			} else {
+				for key := range grant {
+					grantV = append(grantV, key)
+				}
+			}
+		} else {
+			for key := range grant {
+				grantV = append(grantV, key)
+			}
+		}
+
+		r = m.grant(`REVOKE`, revokeV, onAndCol[2], `ON `+onAndCol[1]+` FROM `+newUser)
+		if r.Error != nil {
+			return onerror()
+		}
+		r = m.grant(`GRANT`, grantV, onAndCol[2], `ON `+onAndCol[1]+` TO `+newUser)
+		if r.Error != nil {
+			return onerror()
+		}
 
 	}
-	*/
-	com.Dump(newGrants)
-	panic(`e`)
-	return nil
-	//*/
-	if created && len(host) > 0 {
-		r.SQL = "DROP USER " + user
-		r.Exec(m.newParam())
-		if r.Error != nil {
-			return r
+	if len(host) > 0 {
+		if created {
+			r.SQL = "DROP USER " + user
+			r.Exec(m.newParam())
+			if r.Error != nil {
+				return r
+			}
+		}
+		if !hasURLGrantValue {
+			for object, revoke := range grants {
+				onAndCol := reGrantColumn.FindStringSubmatch(object)
+				if len(onAndCol) < 3 {
+					continue
+				}
+				var revokeV []string
+				for k := range revoke {
+					revokeV = append(revokeV, k)
+				}
+				r = m.grant(`REVOKE`, revokeV, onAndCol[2], `ON `+onAndCol[1]+` FROM `+newUser)
+				if r.Error != nil {
+					return r
+				}
+			}
 		}
 	}
-	r.SQL = "DROP USER " + user
+	return r
+}
+
+func (m *mySQL) grant(grant string, privileges []string, columns, on string) *Result {
+	length := len(privileges)
+	r := &Result{}
+	if length == 0 {
+		return r
+	}
+	if length == 2 {
+		i := 0
+		for _, v := range privileges {
+			switch v {
+			case `ALL PRIVILEGES`:
+				i++
+			case `GRANT OPTION`:
+				i++
+			}
+		}
+		if i == 2 {
+			if grant == `GRANT` {
+				r.SQL = `GRANT ALL PRIVILEGES ` + on + ` WITH GRANT OPTION`
+				return r.Exec(m.newParam())
+			}
+			r.SQL = grant + ` ALL PRIVILEGES ` + on
+			r.Exec(m.newParam())
+			if r.Error != nil {
+				return r
+			}
+			r.SQL = grant + ` GRANT OPTION ` + on
+			return r.Exec(m.newParam())
+		}
+	}
+	c := strings.Join(privileges, columns+`, `) + columns
+	r.SQL = grant + ` ` + reGrantOptionValue.ReplaceAllString(c, `$1`) + on
 	return r.Exec(m.newParam())
 }
 

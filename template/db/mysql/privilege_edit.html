@@ -67,7 +67,7 @@
                             {{range $k,$object := $sorts}}
 							<td>
                                 {{$grant := getGrantsByKey $object}}
-                                {{$value := getGrantByPrivilege $grant $privilege}}
+                                {{$value := getGrantByPrivilege $grant $k $privilege}}
                                 {{$name := fieldName $k $privilege}}
                                 {{if $fGrant}}
                                 <select name="{{$name}}">
@@ -94,7 +94,7 @@
                             {{range $k,$object := $sorts}}
 							<td>
                                 {{$grant := getGrantsByKey $object}}
-                                {{$value := getGrantByPrivilege $grant $privilege}}
+                                {{$value := getGrantByPrivilege $grant $k $privilege}}
                                 {{$name := fieldName $k $privilege}}
                                 {{if ne (Str Stored.serverAdminObject) $object}}
                                 &nbsp;
@@ -122,7 +122,7 @@
                             {{range $k,$object := $sorts}}
 							<td>
                                 {{$grant := getGrantsByKey $object}}
-                                {{$value := getGrantByPrivilege $grant $privilege}}
+                                {{$value := getGrantByPrivilege $grant $k $privilege}}
                                 {{$name := fieldName $k $privilege}}
                                 {{if $fGrant}}
                                 <select name="{{$name}}">
@@ -149,7 +149,7 @@
                             {{range $k,$object := $sorts}}
 							<td>
                                 {{$grant := getGrantsByKey $object}}
-                                {{$value := getGrantByPrivilege $grant $privilege}}
+                                {{$value := getGrantByPrivilege $grant $k $privilege}}
                                 {{$name := fieldName $k $privilege}}
                                 {{if $fGrant}}
                                 <select name="{{$name}}">
@@ -175,7 +175,7 @@
                             {{range $k,$object := $sorts}}
 							<td>
                                 {{$grant := getGrantsByKey $object}}
-                                {{$value := getGrantByPrivilege $grant $privilege}}
+                                {{$value := getGrantByPrivilege $grant $k $privilege}}
                                 {{$name := fieldName $k $privilege}}
                                 {{if $fGrant}}
                                 <select name="{{$name}}">
@@ -201,7 +201,7 @@
                             {{range $k,$object := $sorts}}
 							<td>
                                 {{$grant := getGrantsByKey $object}}
-                                {{$value := getGrantByPrivilege $grant $privilege}}
+                                {{$value := getGrantByPrivilege $grant $k $privilege}}
                                 {{$name := fieldName $k $privilege}}
                                 {{if $fGrant}}
                                 <select name="{{$name}}">

@@ -3,6 +3,8 @@ package mysql
 import (
 	"strings"
 
+	errs "github.com/admpub/nging/application/library/errors"
+
 	"fmt"
 
 	"github.com/admpub/nging/application/library/dbmanager/driver"
@@ -75,6 +77,7 @@ func (m *mySQL) returnTo() error {
 }
 
 func (m *mySQL) Privileges() error {
+	var err error
 	act := m.Form(`act`)
 	if len(act) > 0 {
 		switch act {
@@ -87,8 +90,12 @@ func (m *mySQL) Privileges() error {
 				newUser := m.Form(`user`)
 				oldPasswd := m.Form(`oldPass`)
 				newPasswd := m.Form(`pass`)
-				m.editUser(user, host, newUser, oldPasswd, newPasswd, isHashed)
-				return m.returnTo()
+				r := m.editUser(user, host, newUser, oldPasswd, newPasswd, isHashed)
+				if r.Error == nil {
+					m.Session().AddFlash(errs.NewOk(m.T(`操作成功`)))
+					return m.returnTo()
+				}
+				err = r.Error
 			}
 			privs, err := m.showPrivileges()
 			if err == nil {
@@ -120,8 +127,13 @@ func (m *mySQL) Privileges() error {
 			m.Set(`oldPass`, oldPass)
 			m.Set(`oldUser`, oldUser)
 			m.Request().Form().Set(`pass`, oldPass)
-			m.SetFunc(`getGrantByPrivilege`, func(grant map[string]bool, privilege string) bool {
-				return grant[strings.ToUpper(privilege)]
+			m.SetFunc(`getGrantByPrivilege`, func(grant map[string]bool, index int, privilege string) bool {
+				priv := strings.ToUpper(privilege)
+				value := m.Form(fmt.Sprintf(`grants[%v][%v]`, index, priv))
+				if len(value) > 0 && value == `1` {
+					return true
+				}
+				return grant[priv]
 			})
 			m.SetFunc(`getGrantsByKey`, func(key string) map[string]bool {
 				if vs, ok := grants[key]; ok {
