@@ -49,9 +49,10 @@ func (m *mySQL) dropUser(user string, host string) *Result {
 	return r.Exec(m.newParam())
 }
 
-func (m *mySQL) editUser(user string, host string, newUser string, oldPasswd string, newPasswd string, isHashed bool) *Result {
+func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd string, newPasswd string, isHashed bool) *Result {
+	var user string
 	if len(host) > 0 {
-		user = `'` + com.AddSlashes(user) + `'@'` + com.AddSlashes(host) + `'`
+		user = `'` + com.AddSlashes(oldUser) + `'@'` + com.AddSlashes(host) + `'`
 	} else {
 		user = `''`
 	}
@@ -60,7 +61,7 @@ func (m *mySQL) editUser(user string, host string, newUser string, oldPasswd str
 		return r
 	}
 
-	oldPass, grants, _, err := m.getUserGrants(host, user)
+	oldPass, grants, _, err := m.getUserGrants(host, oldUser)
 	if err != nil {
 		r := &Result{Error: err}
 		return r
@@ -252,7 +253,7 @@ func (m *mySQL) grant(grant string, privileges []string, columns, on string) *Re
 		}
 	}
 	c := strings.Join(privileges, columns+`, `) + columns
-	r.SQL = grant + ` ` + reGrantOptionValue.ReplaceAllString(c, `$1`) + on
+	r.SQL = grant + ` ` + reGrantOptionValue.ReplaceAllString(c, `$1`) + ` ` + on
 	return r.Exec(m.newParam())
 }
 
