@@ -146,6 +146,9 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 		if k > scopeMaxIndex || k > databaseMaxIndex || k > tableMaxIndex || k > columnMaxIndex {
 			continue
 		}
+		if len(scopes[k]) == 0 {
+			continue
+		}
 		gr := &Grant{
 			Scope:    scopes[k],
 			Value:    v,
@@ -281,85 +284,92 @@ func (m *mySQL) grant(grant string, privileges []string, columns, on string) *Re
 
 func (m *mySQL) getUserGrants(host, user string) (string, map[string]map[string]bool, []string, error) {
 	r := map[string]map[string]bool{}
-	var sortNumber []string
-	var oldPass string
-	sqlStr := "SHOW GRANTS FOR '" + com.AddSlashes(user) + "'@'" + com.AddSlashes(host) + "'"
-	rows, err := m.newParam().SetCollection(sqlStr).Query()
-	if err != nil {
-		return oldPass, r, sortNumber, err
-	}
-	for rows.Next() {
-		var v sql.NullString
-		err = rows.Scan(&v)
-		if err != nil {
-			break
-		}
-		matchOn := reGrantOn.FindStringSubmatch(v.String)
-		/*
-			GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY PASSWORD '*81F5E21E35407D884A6CD4A731AEBFB6AF209E1B' WITH GRANT OPTION
-			matchOn :
-			[
-			  	"GRANT ALL PRIVILEGES ON *.* TO ",
-			  	"ALL PRIVILEGES",
-			  	"*.*"
-			]
-		*/
-		if len(matchOn) > 0 {
-			matchBrackets := reGrantBrackets.FindAllStringSubmatch(matchOn[1], -1)
-			/*
-				GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY PASSWORD '*81F5E21E35407D884A6CD4A731AEBFB6AF209E1B' WITH GRANT OPTION
-				matchBrackets :
-				[
-				  [
-				    "ALL PRIVILEGES",
-				    "ALL PRIVILEGES",
-				    "",
-				    ""
-				  ]
-				]
-			*/
-			if len(matchBrackets) > 0 {
-				for _, val := range matchBrackets {
-					if val[1] != `USAGE` {
-						k := matchOn[2] + val[2]
-						if _, ok := r[k]; !ok {
-							r[k] = map[string]bool{}
-							sortNumber = append(sortNumber, k)
-						}
-						r[k][val[1]] = true
-					}
-					if reGrantOption.MatchString(v.String) {
-						k := matchOn[2] + val[2]
-						if _, ok := r[k]; !ok {
-							r[k] = map[string]bool{}
-							sortNumber = append(sortNumber, k)
-						}
-						r[k]["GRANT OPTION"] = true
-					}
-				}
-			}
-		}
-		matchIdent := reGrantIdent.FindStringSubmatch(v.String)
-		if len(matchIdent) > 0 {
-			oldPass = matchIdent[1]
-		}
-	}
-	sqlStr = "SELECT SUBSTRING_INDEX(CURRENT_USER, '@', -1)"
-	row, err := m.newParam().SetCollection(sqlStr).QueryRow()
-	if err == nil {
-		var v sql.NullString
-		err = row.Scan(&v)
+	var (
+		sortNumber []string
+		oldPass    string
+		err        error
+	)
+	if len(host) > 0 {
+		sqlStr := "SHOW GRANTS FOR '" + com.AddSlashes(user) + "'@'" + com.AddSlashes(host) + "'"
+		rows, err := m.newParam().SetCollection(sqlStr).Query()
 		if err != nil {
 			return oldPass, r, sortNumber, err
 		}
-		m.Request().Form().Set(`host`, v.String)
+		for rows.Next() {
+			var v sql.NullString
+			err = rows.Scan(&v)
+			if err != nil {
+				break
+			}
+			matchOn := reGrantOn.FindStringSubmatch(v.String)
+			/*
+				GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY PASSWORD '*81F5E21E35407D884A6CD4A731AEBFB6AF209E1B' WITH GRANT OPTION
+				matchOn :
+				[
+				  	"GRANT ALL PRIVILEGES ON *.* TO ",
+				  	"ALL PRIVILEGES",
+				  	"*.*"
+				]
+			*/
+			if len(matchOn) > 0 {
+				if matchOn[1] == `PROXY` {
+					continue
+				}
+				matchBrackets := reGrantBrackets.FindAllStringSubmatch(matchOn[1], -1)
+				/*
+					GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY PASSWORD '*81F5E21E35407D884A6CD4A731AEBFB6AF209E1B' WITH GRANT OPTION
+					matchBrackets :
+					[
+					  [
+					    "ALL PRIVILEGES",
+					    "ALL PRIVILEGES",
+					    "",
+					    ""
+					  ]
+					]
+				*/
+				if len(matchBrackets) > 0 {
+					for _, val := range matchBrackets {
+						if val[1] != `USAGE` {
+							k := matchOn[2] + val[2]
+							if _, ok := r[k]; !ok {
+								r[k] = map[string]bool{}
+								sortNumber = append(sortNumber, k)
+							}
+							r[k][val[1]] = true
+						}
+						if reGrantOption.MatchString(v.String) {
+							k := matchOn[2] + val[2]
+							if _, ok := r[k]; !ok {
+								r[k] = map[string]bool{}
+								sortNumber = append(sortNumber, k)
+							}
+							r[k]["GRANT OPTION"] = true
+						}
+					}
+				}
+			}
+			matchIdent := reGrantIdent.FindStringSubmatch(v.String)
+			if len(matchIdent) > 0 {
+				oldPass = matchIdent[1]
+			}
+		}
+		sqlStr = "SELECT SUBSTRING_INDEX(CURRENT_USER, '@', -1)"
+		row, err := m.newParam().SetCollection(sqlStr).QueryRow()
+		if err == nil {
+			var v sql.NullString
+			err = row.Scan(&v)
+			if err != nil {
+				return oldPass, r, sortNumber, err
+			}
+			m.Request().Form().Set(`host`, v.String)
+		}
 	}
 	var key string
 	if len(m.dbName) == 0 || (r != nil && len(r) > 0) {
 	} else {
-		key = com.AddCSlashes(m.dbName, '%', '_', '\\')
+		key = com.AddCSlashes(m.dbName, '%', '_', '\\') + ".*"
 	}
-	key += ".*"
 	r[key] = map[string]bool{}
 	sortNumber = append(sortNumber, key)
 	return oldPass, r, sortNumber, err

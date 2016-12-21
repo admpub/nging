@@ -271,10 +271,41 @@ func (g *Grant) String() string {
 	case `all`:
 		return `*.*`
 	case `database`:
+		g.Database = reNotWord.ReplaceAllString(g.Database, ``)
+		if len(g.Database) == 0 {
+			return ``
+		}
 		return g.Database + `.*`
 	case `table`:
+		g.Database = reNotWord.ReplaceAllString(g.Database, ``)
+		if len(g.Database) == 0 {
+			return ``
+		}
+		g.Table = reNotWord.ReplaceAllString(g.Table, ``)
+		if len(g.Table) == 0 {
+			return ``
+		}
 		return g.Database + `.` + g.Table
 	case `column`:
+		g.Database = reNotWord.ReplaceAllString(g.Database, ``)
+		if len(g.Database) == 0 {
+			return ``
+		}
+		g.Table = reNotWord.ReplaceAllString(g.Table, ``)
+		if len(g.Table) == 0 {
+			return ``
+		}
+		columns := strings.Split(g.Columns, `,`)
+		g.Columns = ``
+		var sep string
+		for _, column := range columns {
+			column = reNotWord.ReplaceAllString(column, ``)
+			if len(column) == 0 {
+				continue
+			}
+			g.Columns += sep + column
+			sep = `,`
+		}
 		return g.Database + `.` + g.Table + `(` + g.Columns + `)`
 	}
 	return ``

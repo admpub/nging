@@ -103,23 +103,17 @@ func (m *mySQL) Privileges() error {
 			m.Set(`list`, privs.privileges)
 			user := m.Form(`user`)
 			host := m.Form(`host`)
-			var (
-				oldPass string
-				grants  map[string]map[string]bool
-				sorts   []string
-				oldUser string
-			)
-			if len(host) > 0 {
-				oldPass, grants, sorts, err = m.getUserGrants(host, user)
-				if _, ok := grants["*.*"]; ok {
-					m.Set(`serverAdminObject`, "*.*")
-				} else {
-					m.Set(`serverAdminObject`, ".*")
-				}
-				if err == nil {
-					oldUser = user
-				}
+			var oldUser string
+			oldPass, grants, sorts, err := m.getUserGrants(host, user)
+			if _, ok := grants["*.*"]; ok {
+				m.Set(`hasGlobalScope`, true)
+			} else {
+				m.Set(`hasGlobalScope`, false)
 			}
+			if err == nil {
+				oldUser = user
+			}
+
 			m.Set(`sorts`, sorts)
 			m.Set(`grants`, grants)
 			m.Set(`hashed`, true)
