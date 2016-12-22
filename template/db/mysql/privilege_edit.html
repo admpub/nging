@@ -334,7 +334,7 @@ $('.select-priv-type').change(function(){
         $('.priv-type-server-'+col+':disabled').prop('disabled',false);
         $('.priv-type-database-'+col+':disabled').prop('disabled',false);
         $('.priv-type-table-'+col+':disabled').prop('disabled',false);
-        $('.priv-type-colum-'+col+':disabled').prop('disabled',false);
+        $('.priv-type-column-'+col+':disabled').prop('disabled',false);
 
         $('#input-database-'+col).prop('required',false);
         $('#input-table-'+col).prop('required',false);
@@ -345,8 +345,8 @@ $('.select-priv-type').change(function(){
         $('#onselect-priv-type-'+col).show().find('.table-name,.column-name').hide();
         $('.priv-type-server-'+col).prop('disabled',true);
         $('.priv-type-database-'+col+':disabled').prop('disabled',false);
-        $('.priv-type-table-'+col+':disabled').prop('disabled',false);
-        $('.priv-type-colum-'+col+':disabled').prop('disabled',false);
+        $('.priv-type-table-'+col).prop('disabled',true);
+        $('.priv-type-column-'+col).prop('disabled',true);
         $('.priv-type-procedure-'+col).prop('disabled',false);
 
         $('#input-database-'+col).prop('required',true);
@@ -360,7 +360,7 @@ $('.select-priv-type').change(function(){
         $('.priv-type-server-'+col).prop('disabled',true);
         $('.priv-type-database-'+col).prop('disabled',true);
         $('.priv-type-table-'+col+':disabled').prop('disabled',false);
-        $('.priv-type-colum-'+col+':disabled').prop('disabled',false);
+        $('.priv-type-column-'+col).prop('disabled',true);
         $('.priv-type-procedure-'+col).prop('disabled',true);
 
         $('#input-database-'+col).prop('required',true);
@@ -373,7 +373,7 @@ $('.select-priv-type').change(function(){
         $('.priv-type-server-'+col).prop('disabled',true);
         $('.priv-type-database-'+col).prop('disabled',true);
         $('.priv-type-table-'+col).prop('disabled',true);
-        $('.priv-type-colum-'+col+':disabled').prop('disabled',false);
+        $('.priv-type-column-'+col+':disabled').prop('disabled',false);
         $('.priv-type-procedure-'+col).prop('disabled',true);
         
         $('#input-database-'+col).prop('required',true);

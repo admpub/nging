@@ -186,6 +186,7 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 		}
 	}
 	hasURLGrantValue := len(m.Form(`grant`)) > 0
+	operations := []*GrantOperation{}
 	//newGrants: newGrants[*.*|db.*|db.table|db.table(col1,col2)][DROP|...]=`0|1`
 	for object, grant := range newGrants {
 		onAndCol := reGrantColumn.FindStringSubmatch(object)
@@ -225,15 +226,13 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 				grantV = append(grantV, key)
 			}
 		}
-
-		r = m.grant(`REVOKE`, revokeV, onAndCol[2], `ON `+onAndCol[1]+` FROM `+newUser)
-		if r.Error != nil {
-			return onerror()
-		}
-		r = m.grant(`GRANT`, grantV, onAndCol[2], `ON `+onAndCol[1]+` TO `+newUser)
-		if r.Error != nil {
-			return onerror()
-		}
+		operations = append(operations, &GrantOperation{
+			Grant:   grantV,
+			Revoke:  revokeV,
+			Columns: onAndCol[2],
+			On:      onAndCol[1],
+			User:    newUser,
+		})
 
 	}
 	if len(host) > 0 {
@@ -241,7 +240,7 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 			r.SQL = "DROP USER " + user
 			r.Exec(m.newParam())
 			if r.Error != nil {
-				return r
+				return onerror()
 			}
 		}
 		if !hasURLGrantValue {
@@ -259,6 +258,16 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 					return r
 				}
 			}
+		}
+	}
+	for _, op := range operations {
+		r = m.grant(`REVOKE`, op.Revoke, op.Columns, `ON `+op.On+` FROM `+op.User)
+		if r.Error != nil {
+			return onerror()
+		}
+		r = m.grant(`GRANT`, op.Grant, op.Columns, `ON `+op.On+` TO `+op.User)
+		if r.Error != nil {
+			return onerror()
 		}
 	}
 	return r
