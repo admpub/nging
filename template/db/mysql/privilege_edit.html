@@ -87,7 +87,6 @@ MySQL grant 权限，分别可以作用在多个层次上
                                 <strong>*.*</strong>
                                 {{else}}
                                 {{$grant := getScope $object}}
-                                <input type='hidden' id="objects-{{$k}}" name='objects[]' value='{{$object}}'>
                                 <div class="input-group no-margin-bottom">
                                 <span class="input-group-addon">{{"作用范围"|T}}</span>
                                 <select id="select-priv-type-{{$k}}" name="scopes[]" data-col="{{$k}}" class="select-priv-type form-control">
@@ -98,9 +97,12 @@ MySQL grant 权限，分别可以作用在多个层次上
                                     <option value="database"{{if eq $grant.Scope "database"}} selected{{end}}>{{"数据库"|T}}</option>
                                     <option value="table"{{if eq $grant.Scope "table"}} selected{{end}}>{{"表"|T}}</option>
                                     <option value="column"{{if eq $grant.Scope "column"}} selected{{end}}>{{"列"|T}}</option>
+                                    <option value="proxy"{{if eq $grant.Scope "proxy"}} selected{{end}}>{{"代理"|T}}</option>
                                 </select>
                                 </div>
                                 <div class="input-group no-margin-bottom onselect-priv-type" id="onselect-priv-type-{{$k}}">
+                                <span class="input-group-addon proxy-user" title="{{"用户名@主机"|T}}">{{"用户"|T}}</span>
+                                <input data-original="{{if eq $grant.Scope "proxy"}}{{$object}}{{end}}" type='hidden' id="objects-{{$k}}" class="form-control proxy-user" name='objects[]' value='{{$object}}'>
                                 <span class="input-group-addon database-name">{{"库名"|T}}</span>
                                 <input id='input-database-{{$k}}' name="databases[]" data-col="{{$k}}" class="form-control database-name" value='{{$grant.Database}}' pattern='^[a-zA-Z0-9_]+$' title="{{"库名仅支持输入字母、数字、下划线"|T}}">
                                 <span class="input-group-addon table-name">{{"表名"|T}}</span>
@@ -321,13 +323,31 @@ $('.onselect-priv-type input').change(function(){
 });
 $('.select-priv-type').change(function(){
     var col=$(this).data('col');
-    switch($(this).val()){
+    var val=$(this).val();
+    if(val!='proxy'){
+        $('#objects-'+col).attr('type','hidden');
+        $('#onselect-priv-type-'+col).find('.proxy-user').hide().siblings('.database-name').show();
+    }
+    switch(val){
+        case 'proxy':
+        $('#onselect-priv-type-'+col).show().find('.proxy-user').show().siblings(':not(.proxy-user)').hide();
+        $('.priv-type-server-'+col).prop('disabled',true);
+        $('.priv-type-database-'+col).prop('disabled',true);
+        $('.priv-type-table-'+col).prop('disabled',true);
+        $('.priv-type-column-'+col).prop('disabled',true);
+        $('.priv-type-procedure-'+col).prop('disabled',true);
+        $('#objects-'+col).attr('type','text').val($('#objects-'+col).data('original'));
+        $('#input-database-'+col).prop('required',false);
+        $('#input-table-'+col).prop('required',false);
+        $('#input-column-'+col).prop('required',false);
+        break;
         case '':
         $('#onselect-priv-type-'+col).hide();
         $('#objects-'+col).val('');
         $('#input-database-'+col).prop('required',false);
         $('#input-table-'+col).prop('required',false);
         $('#input-column-'+col).prop('required',false);
+        break;
         case 'all':
         $('#onselect-priv-type-'+col).hide();
         $('#objects-'+col).val('*.*');

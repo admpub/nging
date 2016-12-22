@@ -170,7 +170,6 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 			Table:    tables[k],
 			Columns:  columns[k],
 		}
-		com.Dump(gr)
 		v = gr.String()
 		if _, ok := newGrants[v]; !ok {
 			newGrants[v] = map[string]string{}
@@ -235,28 +234,19 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 		})
 
 	}
-	if len(host) > 0 {
-		if created {
-			r.SQL = "DROP USER " + user
-			r.Exec(m.newParam())
-			if r.Error != nil {
-				return onerror()
+	if len(host) > 0 && !hasURLGrantValue {
+		for object, revoke := range grants {
+			onAndCol := reGrantColumn.FindStringSubmatch(object)
+			if len(onAndCol) < 3 {
+				continue
 			}
-		}
-		if !hasURLGrantValue {
-			for object, revoke := range grants {
-				onAndCol := reGrantColumn.FindStringSubmatch(object)
-				if len(onAndCol) < 3 {
-					continue
-				}
-				var revokeV []string
-				for k := range revoke {
-					revokeV = append(revokeV, k)
-				}
-				r = m.grant(`REVOKE`, revokeV, onAndCol[2], `ON `+onAndCol[1]+` FROM `+newUser)
-				if r.Error != nil {
-					return r
-				}
+			var revokeV []string
+			for k := range revoke {
+				revokeV = append(revokeV, k)
+			}
+			r = m.grant(`REVOKE`, revokeV, onAndCol[2], `ON `+onAndCol[1]+` FROM `+newUser)
+			if r.Error != nil {
+				return r
 			}
 		}
 	}
@@ -268,6 +258,15 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 		r = m.grant(`GRANT`, op.Grant, op.Columns, `ON `+op.On+` TO `+op.User)
 		if r.Error != nil {
 			return onerror()
+		}
+	}
+	if len(host) > 0 {
+		if created {
+			r.SQL = "DROP USER " + user
+			r.Exec(m.newParam())
+			if r.Error != nil {
+				return onerror()
+			}
 		}
 	}
 	return r
@@ -302,6 +301,29 @@ func (m *mySQL) grant(grant string, privileges []string, columns, on string) *Re
 			r.SQL = grant + ` GRANT OPTION ` + on
 			return r.Exec(m.newParam())
 		}
+	}
+	//*
+	for i, v := range privileges {
+		switch v {
+		case `GRANT OPTION`:
+			if strings.Contains(on, `@`) {
+				r.SQL = grant + ` PROXY ` + on + ` WITH GRANT OPTION`
+				r.Exec(m.newParam())
+				if r.Error != nil {
+					return r
+				}
+				if i+1 < length {
+					privileges = append(privileges[0:i], privileges[i+1:]...)
+				} else {
+					privileges = privileges[0:i]
+				}
+			}
+		}
+	}
+	//*/
+	length = len(privileges)
+	if length == 0 {
+		return r
 	}
 	c := strings.Join(privileges, columns+`, `) + columns
 	r.SQL = grant + ` ` + reGrantOptionValue.ReplaceAllString(c, `$1`) + ` ` + on
@@ -339,7 +361,7 @@ func (m *mySQL) getUserGrants(host, user string) (string, map[string]map[string]
 			*/
 			if len(matchOn) > 0 {
 				if matchOn[1] == `PROXY` {
-					continue
+					//continue
 				}
 				matchBrackets := reGrantBrackets.FindAllStringSubmatch(matchOn[1], -1)
 				/*
@@ -699,6 +721,10 @@ func (m *mySQL) getScopeGrant(object string) *Grant {
 	g := &Grant{Value: object}
 	if object == `*.*` {
 		g.Scope = `all`
+		return g
+	}
+	if strings.Contains(object, `@`) {
+		g.Scope = `proxy`
 		return g
 	}
 	strs := strings.SplitN(object, `.`, 2)

@@ -267,7 +267,7 @@ type GrantOperation struct {
 }
 
 type Grant struct {
-	Scope    string //all|database|table|column
+	Scope    string //all|database|table|column|proxy
 	Value    string //*.*|db.*|db.table|db.table(col1,col2)
 	Database string
 	Table    string
@@ -276,6 +276,14 @@ type Grant struct {
 
 func (g *Grant) String() string {
 	switch g.Scope {
+	case `proxy`:
+		r := strings.SplitN(g.Value, `@`, 2)
+		if len(r) != 2 {
+			return ``
+		}
+		r[0] = strings.Trim(r[0], `'`)
+		r[1] = strings.Trim(r[1], `'`)
+		return `'` + com.AddSlashes(r[0]) + `'@'` + com.AddSlashes(r[1]) + `'`
 	case `all`:
 		return `*.*`
 	case `database`:
