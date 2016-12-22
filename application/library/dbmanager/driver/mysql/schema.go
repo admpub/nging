@@ -275,7 +275,7 @@ func (g *Grant) String() string {
 		if len(g.Database) == 0 {
 			return ``
 		}
-		return g.Database + `.*`
+		return "`" + g.Database + "`.*"
 	case `table`:
 		g.Database = reNotWord.ReplaceAllString(g.Database, ``)
 		if len(g.Database) == 0 {
@@ -285,7 +285,7 @@ func (g *Grant) String() string {
 		if len(g.Table) == 0 {
 			return ``
 		}
-		return g.Database + `.` + g.Table
+		return "`" + g.Database + "`.`" + g.Table + "`"
 	case `column`:
 		g.Database = reNotWord.ReplaceAllString(g.Database, ``)
 		if len(g.Database) == 0 {
@@ -306,7 +306,7 @@ func (g *Grant) String() string {
 			g.Columns += sep + column
 			sep = `,`
 		}
-		return g.Database + `.` + g.Table + `(` + g.Columns + `)`
+		return "`" + g.Database + "`.`" + g.Table + "` (" + g.Columns + ")"
 	}
 	return ``
 }

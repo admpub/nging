@@ -132,7 +132,6 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 	tables := m.FormValues(`tables[]`)
 	columns := m.FormValues(`columns[]`)
 	scopeMaxIndex := len(scopes) - 1
-
 	databaseMaxIndex := len(databases) - 1
 	tableMaxIndex := len(tables) - 1
 	columnMaxIndex := len(columns) - 1
@@ -141,12 +140,27 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 
 	mapx := NewMapx(m.Forms())
 	mapx = mapx.Get(`grants`)
+	logger := m.Echo().Logger()
 	//objects: objects[0|1|...]=`*.*|db.*|db.table|db.table.col1,col2`
 	for k, v := range objects {
-		if k > scopeMaxIndex || k > databaseMaxIndex || k > tableMaxIndex || k > columnMaxIndex {
+		if k > scopeMaxIndex {
+			logger.Debugf(`k > scopeMaxIndex: %v > %v`, k, scopeMaxIndex)
+			continue
+		}
+		if k > databaseMaxIndex {
+			logger.Debugf(`k > databaseMaxIndex: %v > %v`, k, databaseMaxIndex)
+			continue
+		}
+		if k > tableMaxIndex {
+			logger.Debugf(`k > tableMaxIndex: %v > %v`, k, tableMaxIndex)
+			continue
+		}
+		if k > columnMaxIndex {
+			logger.Debugf(`k > columnMaxIndex: %v > %v`, k, columnMaxIndex)
 			continue
 		}
 		if len(scopes[k]) == 0 {
+			logger.Debugf(`scopes[%v] is not set`, k)
 			continue
 		}
 		gr := &Grant{
@@ -156,6 +170,7 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 			Table:    tables[k],
 			Columns:  columns[k],
 		}
+		com.Dump(gr)
 		v = gr.String()
 		if _, ok := newGrants[v]; !ok {
 			newGrants[v] = map[string]string{}
@@ -186,6 +201,7 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 				}
 			}
 		} else if user == newUser {
+			logger.Debug(`dbManager-------------->object: `, object)
 			if vals, ok := grants[object]; ok {
 				for key := range vals {
 					if _, ok := grant[key]; !ok {
@@ -197,6 +213,7 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 						grantV = append(grantV, key)
 					}
 				}
+				logger.Debug(`dbManager-------------->delete: `, object)
 				delete(grants, object)
 			} else {
 				for key := range grant {
