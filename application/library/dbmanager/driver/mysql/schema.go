@@ -7,6 +7,11 @@ import (
 	"github.com/webx-top/com"
 )
 
+type KV struct {
+	Value string
+	Text  string
+}
+
 type ProcessList struct {
 	Id       sql.NullInt64
 	User     sql.NullString
@@ -89,7 +94,7 @@ func NewPrivileges() *Privileges {
 	return &Privileges{
 		Privileges: []*Privilege{},
 		privileges: map[string]map[string]string{
-			"": map[string]string{
+			"_Global_": map[string]string{
 				"All privileges": "",
 			},
 		},
@@ -104,26 +109,28 @@ type Privileges struct {
 func (p *Privileges) Parse() {
 	for _, priv := range p.Privileges {
 		if priv.Privilege.String == `Grant option` {
-			p.privileges[""][priv.Privilege.String] = priv.Comment.String
+			p.privileges["_Global_"][priv.Privilege.String] = priv.Comment.String
 			continue
 		}
 		for _, context := range strings.Split(priv.Context.String, `,`) {
+			context = strings.Replace(context, ` `, `_`, -1)
 			if _, ok := p.privileges[context]; !ok {
 				p.privileges[context] = map[string]string{}
 			}
 			p.privileges[context][priv.Privilege.String] = priv.Comment.String
 		}
 	}
-	if _, ok := p.privileges["Server Admin"]; !ok {
-		p.privileges["Server Admin"] = map[string]string{}
+	//com.Dump(p.privileges)
+	if _, ok := p.privileges["Server_Admin"]; !ok {
+		p.privileges["Server_Admin"] = map[string]string{}
 	}
-	if vs, ok := p.privileges["File access on server"]; ok {
+	if vs, ok := p.privileges["File_access_on_server"]; ok {
 		for k, v := range vs {
-			p.privileges["Server Admin"][k] = v
+			p.privileges["Server_Admin"][k] = v
 		}
 	}
-	if _, ok := p.privileges["Server Admin"]["Usage"]; ok {
-		delete(p.privileges["Server Admin"], "Usage")
+	if _, ok := p.privileges["Server_Admin"]["Usage"]; ok {
+		delete(p.privileges["Server_Admin"], "Usage")
 	}
 	if _, ok := p.privileges["Databases"]; !ok {
 		p.privileges["Databases"] = map[string]string{}
@@ -258,7 +265,7 @@ func (m *Mapx) Get(names ...string) *Mapx {
 	return nil
 }
 
-type GrantOperation struct {
+type Operation struct {
 	Revoke  []string
 	Grant   []string
 	Columns string
@@ -271,7 +278,92 @@ type Grant struct {
 	Value    string //*.*|db.*|db.table|db.table(col1,col2)
 	Database string
 	Table    string
-	Columns  string //col1,col2
+	Columns  string            //col1,col2
+	Settings map[string]string //["CREATE"]="1|0"
+	*Operation
+}
+
+func (op *Operation) Apply(m *mySQL) *Result {
+	r := &Result{}
+	if len(op.Revoke) > 0 {
+		on := `ON ` + op.On + ` FROM ` + op.User
+		hasAll := op.HasAllPrivileges(op.Revoke)
+		hasOpt := op.HasGrantOption(op.Revoke)
+		if hasAll {
+			r.SQL = `REVOKE ALL PRIVILEGES ` + on
+			r.Exec(m.newParam())
+			if r.Error != nil {
+				return r
+			}
+			if hasOpt {
+				r.SQL = `REVOKE GRANT OPTION ` + on
+				return r.Exec(m.newParam())
+			}
+		}
+		if hasOpt {
+			r.SQL = `REVOKE GRANT OPTION ` + on
+			r.Exec(m.newParam())
+			if r.Error != nil || hasAll {
+				return r
+			}
+		}
+		c := strings.Join(op.Revoke, op.Columns+`, `) + op.Columns
+		r.SQL = `REVOKE ` + reGrantOptionValue.ReplaceAllString(c, `$1`) + ` ` + on
+		r.Exec(m.newParam())
+		if r.Error != nil {
+			return r
+		}
+	}
+	if len(op.Grant) > 0 {
+		on := `ON ` + op.On + ` TO ` + op.User
+		if op.HasAllPrivileges(op.Grant) && op.HasGrantOption(op.Grant) {
+			r.SQL = `GRANT ALL PRIVILEGES ` + on + ` WITH GRANT OPTION`
+			return r.Exec(m.newParam())
+		}
+		c := strings.Join(op.Grant, op.Columns+`, `) + op.Columns
+		r.SQL = `GRANT ` + reGrantOptionValue.ReplaceAllString(c, `$1`) + ` ` + on
+		r.Exec(m.newParam())
+		if r.Error != nil {
+			return r
+		}
+	}
+	return r
+}
+
+func (op *Operation) HasAllPrivileges(values []string) bool {
+	for _, name := range values {
+		if name == `ALL PRIVILEGES` {
+			return true
+		}
+	}
+	return false
+}
+
+func (op *Operation) HasGrantOption(values []string) bool {
+
+	for _, name := range values {
+		if name == `GRANT OPTION` {
+			return true
+		}
+	}
+	return false
+}
+
+func (g *Grant) IsValid(group string, values map[string]*Mapx) bool {
+	switch g.Scope {
+	case `all`:
+		return true
+	case `database`:
+		return group == `Databases`
+	case `table`:
+		return group == `Tables`
+	case `column`:
+		return group == `Columns`
+	case `proxy`:
+		return group == `Server_Admin`
+	default:
+		return false
+	}
 }
 
 func (g *Grant) String() string {

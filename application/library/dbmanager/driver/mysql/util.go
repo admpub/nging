@@ -136,7 +136,7 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 	tableMaxIndex := len(tables) - 1
 	columnMaxIndex := len(columns) - 1
 	objects := m.FormValues(`objects[]`)
-	newGrants := map[string]map[string]string{}
+	newGrants := map[string]*Grant{}
 
 	mapx := NewMapx(m.Forms())
 	mapx = mapx.Get(`grants`)
@@ -169,23 +169,34 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 			Database: databases[k],
 			Table:    tables[k],
 			Columns:  columns[k],
+			Settings: map[string]string{},
 		}
 		v = gr.String()
-		if _, ok := newGrants[v]; !ok {
-			newGrants[v] = map[string]string{}
+		if oldGr, ok := newGrants[v]; !ok {
+			newGrants[v] = gr
+		} else {
+			for k, v := range oldGr.Settings {
+				gr.Settings[k] = v
+			}
 		}
 		if mapx == nil {
+			newGrants[v] = gr
 			continue
 		}
 		mp := mapx.Get(strconv.Itoa(k))
 		if mp != nil {
-			for name, m := range mp.Map {
-				newGrants[v][name] = m.Value()
+			for group, settings := range mp.Map {
+				if settings.Map == nil || !gr.IsValid(group, settings.Map) {
+					continue
+				}
+				for name, m := range settings.Map {
+					gr.Settings[name] = m.Value()
+				}
 			}
 		}
 	}
 	hasURLGrantValue := len(m.Form(`grant`)) > 0
-	operations := []*GrantOperation{}
+	operations := []*Grant{}
 	//newGrants: newGrants[*.*|db.*|db.table|db.table(col1,col2)][DROP|...]=`0|1`
 	for object, grant := range newGrants {
 		onAndCol := reGrantColumn.FindStringSubmatch(object)
@@ -193,45 +204,45 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 		if len(onAndCol) < 3 {
 			continue
 		}
-		var revokeV, grantV []string
+		grant.Operation = &Operation{
+			Grant:   []string{},
+			Revoke:  []string{},
+			Columns: onAndCol[2],
+			On:      onAndCol[1],
+			User:    newUser,
+		}
 		if hasURLGrantValue {
-			for key, val := range grant {
+			for key, val := range grant.Settings {
 				if val != `1` {
-					revokeV = append(revokeV, key)
+					grant.Revoke = append(grant.Revoke, key)
 				}
 			}
 		} else if user == newUser {
 			logger.Debug(`dbManager-------------->object: `, object)
 			if vals, ok := grants[object]; ok {
 				for key := range vals {
-					if _, ok := grant[key]; !ok {
-						revokeV = append(revokeV, key)
+					if _, ok := grant.Settings[key]; !ok {
+						grant.Revoke = append(grant.Revoke, key)
 					}
 				}
-				for key := range grant {
+				for key := range grant.Settings {
 					if _, ok := vals[key]; !ok {
-						grantV = append(grantV, key)
+						grant.Grant = append(grant.Grant, key)
 					}
 				}
 				logger.Debug(`dbManager-------------->delete: `, object)
 				delete(grants, object)
 			} else {
-				for key := range grant {
-					grantV = append(grantV, key)
+				for key := range grant.Settings {
+					grant.Grant = append(grant.Grant, key)
 				}
 			}
 		} else {
-			for key := range grant {
-				grantV = append(grantV, key)
+			for key := range grant.Settings {
+				grant.Grant = append(grant.Grant, key)
 			}
 		}
-		operations = append(operations, &GrantOperation{
-			Grant:   grantV,
-			Revoke:  revokeV,
-			Columns: onAndCol[2],
-			On:      onAndCol[1],
-			User:    newUser,
-		})
+		operations = append(operations, grant)
 
 	}
 	if len(host) > 0 && !hasURLGrantValue {
@@ -240,22 +251,24 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 			if len(onAndCol) < 3 {
 				continue
 			}
-			var revokeV []string
-			for k := range revoke {
-				revokeV = append(revokeV, k)
+			op := &Operation{
+				Grant:   []string{},
+				Revoke:  []string{},
+				Columns: onAndCol[2],
+				On:      onAndCol[1],
+				User:    newUser,
 			}
-			r = m.grant(`REVOKE`, revokeV, onAndCol[2], `ON `+onAndCol[1]+` FROM `+newUser)
+			for k := range revoke {
+				op.Revoke = append(op.Revoke, k)
+			}
+			r = op.Apply(m)
 			if r.Error != nil {
 				return r
 			}
 		}
 	}
 	for _, op := range operations {
-		r = m.grant(`REVOKE`, op.Revoke, op.Columns, `ON `+op.On+` FROM `+op.User)
-		if r.Error != nil {
-			return onerror()
-		}
-		r = m.grant(`GRANT`, op.Grant, op.Columns, `ON `+op.On+` TO `+op.User)
+		r = op.Apply(m)
 		if r.Error != nil {
 			return onerror()
 		}
@@ -270,64 +283,6 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 		}
 	}
 	return r
-}
-
-func (m *mySQL) grant(grant string, privileges []string, columns, on string) *Result {
-	length := len(privileges)
-	r := &Result{}
-	if length == 0 {
-		return r
-	}
-	if length == 2 {
-		i := 0
-		for _, v := range privileges {
-			switch v {
-			case `ALL PRIVILEGES`:
-				i++
-			case `GRANT OPTION`:
-				i++
-			}
-		}
-		if i == 2 {
-			if grant == `GRANT` {
-				r.SQL = `GRANT ALL PRIVILEGES ` + on + ` WITH GRANT OPTION`
-				return r.Exec(m.newParam())
-			}
-			r.SQL = grant + ` ALL PRIVILEGES ` + on
-			r.Exec(m.newParam())
-			if r.Error != nil {
-				return r
-			}
-			r.SQL = grant + ` GRANT OPTION ` + on
-			return r.Exec(m.newParam())
-		}
-	}
-	//*
-	for i, v := range privileges {
-		switch v {
-		case `GRANT OPTION`:
-			if strings.Contains(on, `@`) {
-				r.SQL = grant + ` PROXY ` + on + ` WITH GRANT OPTION`
-				r.Exec(m.newParam())
-				if r.Error != nil {
-					return r
-				}
-				if i+1 < length {
-					privileges = append(privileges[0:i], privileges[i+1:]...)
-				} else {
-					privileges = privileges[0:i]
-				}
-			}
-		}
-	}
-	//*/
-	length = len(privileges)
-	if length == 0 {
-		return r
-	}
-	c := strings.Join(privileges, columns+`, `) + columns
-	r.SQL = grant + ` ` + reGrantOptionValue.ReplaceAllString(c, `$1`) + ` ` + on
-	return r.Exec(m.newParam())
 }
 
 func (m *mySQL) getUserGrants(host, user string) (string, map[string]map[string]bool, []string, error) {

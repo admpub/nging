@@ -101,6 +101,14 @@ func (m *mySQL) Privileges() error {
 				privs.Parse()
 			}
 			m.Set(`list`, privs.privileges)
+			m.Set(`groups`, []*KV{
+				&KV{`_Global_`, ``},
+				&KV{`Server_Admin`, m.T(`服务器`)},
+				&KV{`Databases`, m.T(`数据库`)},
+				&KV{`Tables`, m.T(`表`)},
+				&KV{`Columns`, m.T(`列`)},
+				&KV{`Procedures`, m.T(`子程序`)},
+			})
 			user := m.Form(`user`)
 			host := m.Form(`host`)
 			var oldUser string
@@ -120,9 +128,9 @@ func (m *mySQL) Privileges() error {
 			m.Set(`oldPass`, oldPass)
 			m.Set(`oldUser`, oldUser)
 			m.Request().Form().Set(`pass`, oldPass)
-			m.SetFunc(`getGrantByPrivilege`, func(grant map[string]bool, index int, privilege string) bool {
+			m.SetFunc(`getGrantByPrivilege`, func(grant map[string]bool, index int, group string, privilege string) bool {
 				priv := strings.ToUpper(privilege)
-				value := m.Form(fmt.Sprintf(`grants[%v][%v]`, index, priv))
+				value := m.Form(fmt.Sprintf(`grants[%v][%v][%v]`, index, group, priv))
 				if len(value) > 0 && value == `1` {
 					return true
 				}
@@ -135,8 +143,8 @@ func (m *mySQL) Privileges() error {
 				return map[string]bool{}
 			})
 			m.SetFunc(`getScope`, m.getScopeGrant)
-			m.SetFunc(`fieldName`, func(index int, privilege string) string {
-				return fmt.Sprintf(`grants[%v][%v]`, index, strings.ToUpper(privilege))
+			m.SetFunc(`fieldName`, func(index int, group string, privilege string) string {
+				return fmt.Sprintf(`grants[%v][%v][%v]`, index, group, strings.ToUpper(privilege))
 			})
 			ret = common.Err(m.Context, err)
 			return m.Render(`db/mysql/privilege_edit`, ret)

@@ -16,20 +16,20 @@
               <form class="form-horizontal group-border-dashed" method="POST" action="">
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"服务器"|T}}</label>
-                <div class="col-sm-8">
+                <div class="col-sm-9">
                     <input type="text" name="host" class="form-control" required="required" value="{{Form "host"}}">
                     <div class="help-block">{{"支持通配符“%”。例如：% 或者 192.168.10.%"|T}}</div>
                 </div>
               </div>
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"用户名"|T}}</label>
-                <div class="col-sm-8">
+                <div class="col-sm-9">
                     <input type="text" name="user" class="form-control" required="required" value="{{Form "user"}}">
                 </div>
               </div>
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"密码"|T}}</label>
-                <div class="col-sm-8">
+                <div class="col-sm-9">
                     <input type="hidden" name="oldUser" value="{{Stored.oldUser}}">
                     <input type="hidden" name="oldPass" value="{{Stored.oldPass}}">
                     <div class="input-group">
@@ -43,8 +43,8 @@
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label"></label>
-                <div class="col-sm-8">
+                <label class="col-sm-1 control-label"></label>
+                <div class="col-sm-10">
                 {{$sorts := Stored.sorts}}
                 <div class="well hidden" id="grant-tips">
 MySQL grant 权限，分别可以作用在多个层次上
@@ -124,23 +124,31 @@ MySQL grant 权限，分别可以作用在多个层次上
 					<tbody class="no-border-x" id="database-items">
                         {{$fGrant := Form "grant"}}
                         {{$list := Stored.list}}
-                        {{if index $list ""}}
-                        {{range $privilege,$comment := index $list ""}}
+
+                        {{range $index,$group := Stored.groups}}
+
+                        {{if index $list $group.Value}}
+                        {{range $privilege,$comment := index $list $group.Value}}
 						<tr>
+                            {{if eq $group.Value "_Global_"}}
                             <td colspan="2" title="{{if eq $privilege "All privileges"}}{{"所有权限"|T}}{{else if eq $privilege "Grant option"}}{{"分配权限"|T}}{{else}}{{$privilege}}{{end}}">{{$privilege}}</td>
+                            {{else}}
+                            <td>{{$group.Text}}</td>
+                            <td>{{$privilege}}</td>
+                            {{end}}
                             {{range $k,$object := $sorts}}
 							<td>
                                 {{$grant := getGrantsByKey $object}}
-                                {{$value := getGrantByPrivilege $grant $k $privilege}}
-                                {{$name := fieldName $k $privilege}}
+                                {{$value := getGrantByPrivilege $grant $k $group.Value $privilege}}
+                                {{$name := fieldName $k $group.Value $privilege}}
                                 {{if $fGrant}}
-                                <select name="{{$name}}">
+                                <select name="{{$name}}" class="PT-{{$group.Value}}-{{$k}}">
                                     <option value=""></option>
                                     <option value='1'{{if $value}} selected{{end}}>{{"授权"|T}}</option>
                                     <option value='0'{{if not $value}} selected{{end}}>{{"废除"|T}}</option>
                                 </select>
                                 {{else}}
-                                <input type="checkbox" name="{{$name}}" value='1'{{if $value}} checked{{end}}{{if eq $privilege "All privileges"}} id='grants-{{$k}}-all'{{else if eq $privilege "Grant option"}}{{else}} onclick="if (this.checked) $('#grants-{{$k}}-all').prop('checked',false);"{{end}}>
+                                <input class="PT-{{$group.Value}}-{{$k}}" type="checkbox" name="{{$name}}" value='1'{{if $value}} checked{{end}}{{if eq $privilege "All privileges"}} id='grants-{{$k}}-all'{{else if eq $privilege "Grant option"}}{{else}} onclick="if (this.checked) $('#grants-{{$k}}-all').prop('checked',false);"{{end}}>
                                 {{end}}
                             </td>
                             {{end}}
@@ -148,136 +156,6 @@ MySQL grant 权限，分别可以作用在多个层次上
                         {{end}}
                         {{end}}
 
-                        
-                        {{if index $list "Server Admin"}}
-                        {{range $privilege,$comment := index $list "Server Admin"}}
-						<tr>
-                            <td>{{"服务器"|T}}</td>
-                            <td>{{$privilege}}</td>
-                            
-                            {{range $k,$object := $sorts}}
-							<td>
-                                {{$grant := getGrantsByKey $object}}
-                                {{$value := getGrantByPrivilege $grant $k $privilege}}
-                                {{$name := fieldName $k $privilege}}
-                                {{if $fGrant}}
-                                <select name="{{$name}}" class="priv-type-server-{{$k}}">
-                                    <option value="{{$name}}"></option>
-                                    <option value='1'{{if $value}} selected{{end}}>{{"授权"|T}}</option>
-                                    <option value='0'{{if not $value}} selected{{end}}>{{"废除"|T}}</option>
-                                </select>
-                                {{else}}
-                                <input class="priv-type-server-{{$k}}" type="checkbox" name="{{$name}}" value='1'{{if $value}} checked{{end}}{{if eq $privilege "All privileges"}} id='grants-{{$k}}-all'{{else if eq $privilege "Grant option"}}{{else}} onclick="if (this.checked) $('#grants-{{$k}}-all').prop('checked',false);"{{end}}>
-                                {{end}}
-                            </td>
-                            {{end}}
-						</tr>
-                        {{end}}
-                        {{end}}
-
-                        {{if index $list "Databases"}}
-                        {{range $privilege,$comment := index $list "Databases"}}
-						<tr>
-                            <td>{{"数据库"|T}}</td>
-                            <td>{{$privilege}}</td>
-                            
-                            {{range $k,$object := $sorts}}
-							<td>
-                                {{$grant := getGrantsByKey $object}}
-                                {{$value := getGrantByPrivilege $grant $k $privilege}}
-                                {{$name := fieldName $k $privilege}}
-                                {{if $fGrant}}
-                                <select name="{{$name}}" class="priv-type-database-{{$k}}">
-                                    <option value=""></option>
-                                    <option value='1'{{if $value}} selected{{end}}>{{"授权"|T}}</option>
-                                    <option value='0'{{if not $value}} selected{{end}}>{{"废除"|T}}</option>
-                                </select>
-                                {{else}}
-                                <input class="priv-type-database-{{$k}}" type="checkbox" name="{{$name}}" value='1'{{if $value}} checked{{end}}{{if eq $privilege "All privileges"}} id='grants-{{$k}}-all'{{else if eq $privilege "Grant option"}}{{else}} onclick="if (this.checked) $('#grants-{{$k}}-all').prop('checked',false);"{{end}}>
-                                {{end}}
-                            </td>
-                            {{end}}
-						</tr>
-                        {{end}}
-                        {{end}}
-
-                        
-                        {{if index $list "Tables"}}
-                        {{range $privilege,$comment := index $list "Tables"}}
-						<tr>
-                            <td>{{"表"|T}}</td>
-                            <td>{{$privilege}}</td>
-                            
-                            {{range $k,$object := $sorts}}
-							<td>
-                                {{$grant := getGrantsByKey $object}}
-                                {{$value := getGrantByPrivilege $grant $k $privilege}}
-                                {{$name := fieldName $k $privilege}}
-                                {{if $fGrant}}
-                                <select name="{{$name}}" class="priv-type-table-{{$k}}">
-                                    <option value=""></option>
-                                    <option value='1'{{if $value}} selected{{end}}>{{"授权"|T}}</option>
-                                    <option value='0'{{if not $value}} selected{{end}}>{{"废除"|T}}</option>
-                                </select>
-                                {{else}}
-                                <input class="priv-type-table-{{$k}}" type="checkbox" name="{{$name}}" value='1'{{if $value}} checked{{end}}{{if eq $privilege "All privileges"}} id='grants-{{$k}}-all'{{else if eq $privilege "Grant option"}}{{else}} onclick="if (this.checked) $('#grants-{{$k}}-all').prop('checked',false);"{{end}}>
-                                {{end}}
-                            </td>
-                            {{end}}
-						</tr>
-                        {{end}}
-                        {{end}}
-
-                        {{if index $list "Columns"}}
-                        {{range $privilege,$comment := index $list "Columns"}}
-						<tr>
-                            <td>{{"列"|T}}</td>
-                            <td>{{$privilege}}</td>
-                            
-                            {{range $k,$object := $sorts}}
-							<td>
-                                {{$grant := getGrantsByKey $object}}
-                                {{$value := getGrantByPrivilege $grant $k $privilege}}
-                                {{$name := fieldName $k $privilege}}
-                                {{if $fGrant}}
-                                <select name="{{$name}}" class="priv-type-column-{{$k}}">
-                                    <option value=""></option>
-                                    <option value='1'{{if $value}} selected{{end}}>{{"授权"|T}}</option>
-                                    <option value='0'{{if not $value}} selected{{end}}>{{"废除"|T}}</option>
-                                </select>
-                                {{else}}
-                                <input class="priv-type-column-{{$k}}" type="checkbox" name="{{$name}}" value='1'{{if $value}} checked{{end}}{{if eq $privilege "All privileges"}} id='grants-{{$k}}-all'{{else if eq $privilege "Grant option"}}{{else}} onclick="if (this.checked) $('#grants-{{$k}}-all').prop('checked',false);"{{end}}>
-                                {{end}}
-                            </td>
-                            {{end}}
-						</tr>
-                        {{end}}
-                        {{end}}
-
-                        {{if index $list "Procedures"}}
-                        {{range $privilege,$comment := index $list "Procedures"}}
-						<tr>
-                            <td>{{"子程序"|T}}</td>
-                            <td>{{$privilege}}</td>
-                            
-                            {{range $k,$object := $sorts}}
-							<td>
-                                {{$grant := getGrantsByKey $object}}
-                                {{$value := getGrantByPrivilege $grant $k $privilege}}
-                                {{$name := fieldName $k $privilege}}
-                                {{if $fGrant}}
-                                <select name="{{$name}}" class="priv-type-procedure-{{$k}}">
-                                    <option value=""></option>
-                                    <option value='1'{{if $value}} selected{{end}}>{{"授权"|T}}</option>
-                                    <option value='0'{{if not $value}} selected{{end}}>{{"废除"|T}}</option>
-                                </select>
-                                {{else}}
-                                <input class="priv-type-procedure-{{$k}}" type="checkbox" name="{{$name}}" value='1'{{if $value}} checked{{end}}{{if eq $privilege "All privileges"}} id='grants-{{$k}}-all'{{else if eq $privilege "Grant option"}}{{else}} onclick="if (this.checked) $('#grants-{{$k}}-all').prop('checked',false);"{{end}}>
-                                {{end}}
-                            </td>
-                            {{end}}
-						</tr>
-                        {{end}}
                         {{end}}
 					</tbody>
 				</table>
@@ -331,11 +209,11 @@ $('.select-priv-type').change(function(){
     switch(val){
         case 'proxy':
         $('#onselect-priv-type-'+col).show().find('.proxy-user').show().siblings(':not(.proxy-user)').hide();
-        $('.priv-type-server-'+col).prop('disabled',true);
-        $('.priv-type-database-'+col).prop('disabled',true);
-        $('.priv-type-table-'+col).prop('disabled',true);
-        $('.priv-type-column-'+col).prop('disabled',true);
-        $('.priv-type-procedure-'+col).prop('disabled',true);
+        $('.PT-Server_Admin-'+col).prop('disabled',true);
+        $('.PT-Databases-'+col).prop('disabled',true);
+        $('.PT-Tables-'+col).prop('disabled',true);
+        $('.PT-Columns-'+col).prop('disabled',true);
+        $('.PT-Procedures-'+col).prop('disabled',true);
         $('#objects-'+col).attr('type','text').val($('#objects-'+col).data('original'));
         $('#input-database-'+col).prop('required',false);
         $('#input-table-'+col).prop('required',false);
@@ -351,10 +229,10 @@ $('.select-priv-type').change(function(){
         case 'all':
         $('#onselect-priv-type-'+col).hide();
         $('#objects-'+col).val('*.*');
-        $('.priv-type-server-'+col+':disabled').prop('disabled',false);
-        $('.priv-type-database-'+col+':disabled').prop('disabled',false);
-        $('.priv-type-table-'+col+':disabled').prop('disabled',false);
-        $('.priv-type-column-'+col+':disabled').prop('disabled',false);
+        $('.PT-Server_Admin-'+col+':disabled').prop('disabled',false);
+        $('.PT-Databases-'+col+':disabled').prop('disabled',false);
+        $('.PT-Tables-'+col+':disabled').prop('disabled',false);
+        $('.PT-Columns-'+col+':disabled').prop('disabled',false);
 
         $('#input-database-'+col).prop('required',false);
         $('#input-table-'+col).prop('required',false);
@@ -363,11 +241,11 @@ $('.select-priv-type').change(function(){
         case 'database':
         $('#input-database-'+col).trigger('change');
         $('#onselect-priv-type-'+col).show().find('.table-name,.column-name').hide();
-        $('.priv-type-server-'+col).prop('disabled',true);
-        $('.priv-type-database-'+col+':disabled').prop('disabled',false);
-        $('.priv-type-table-'+col).prop('disabled',true);
-        $('.priv-type-column-'+col).prop('disabled',true);
-        $('.priv-type-procedure-'+col).prop('disabled',false);
+        $('.PT-Server_Admin-'+col).prop('disabled',true);
+        $('.PT-Databases-'+col+':disabled').prop('disabled',false);
+        $('.PT-Tables-'+col).prop('disabled',true);
+        $('.PT-Columns-'+col).prop('disabled',true);
+        $('.PT-Procedures-'+col).prop('disabled',false);
 
         $('#input-database-'+col).prop('required',true);
         $('#input-table-'+col).prop('required',false);
@@ -377,11 +255,11 @@ $('.select-priv-type').change(function(){
         $('#input-database-'+col).trigger('change');
         $('#onselect-priv-type-'+col).show().find('.column-name').hide();
         $('#onselect-priv-type-'+col).find('.table-name').show();
-        $('.priv-type-server-'+col).prop('disabled',true);
-        $('.priv-type-database-'+col).prop('disabled',true);
-        $('.priv-type-table-'+col+':disabled').prop('disabled',false);
-        $('.priv-type-column-'+col).prop('disabled',true);
-        $('.priv-type-procedure-'+col).prop('disabled',true);
+        $('.PT-Server_Admin-'+col).prop('disabled',true);
+        $('.PT-Databases-'+col).prop('disabled',true);
+        $('.PT-Tables-'+col+':disabled').prop('disabled',false);
+        $('.PT-Columns-'+col).prop('disabled',true);
+        $('.PT-Procedures-'+col).prop('disabled',true);
 
         $('#input-database-'+col).prop('required',true);
         $('#input-table-'+col).prop('required',true);
@@ -390,11 +268,11 @@ $('.select-priv-type').change(function(){
         case 'column':
         $('#input-database-'+col).trigger('change');
         $('#onselect-priv-type-'+col).show().find('.table-name,.column-name').show();
-        $('.priv-type-server-'+col).prop('disabled',true);
-        $('.priv-type-database-'+col).prop('disabled',true);
-        $('.priv-type-table-'+col).prop('disabled',true);
-        $('.priv-type-column-'+col+':disabled').prop('disabled',false);
-        $('.priv-type-procedure-'+col).prop('disabled',true);
+        $('.PT-Server_Admin-'+col).prop('disabled',true);
+        $('.PT-Databases-'+col).prop('disabled',true);
+        $('.PT-Tables-'+col).prop('disabled',true);
+        $('.PT-Columns-'+col+':disabled').prop('disabled',false);
+        $('.PT-Procedures-'+col).prop('disabled',true);
         
         $('#input-database-'+col).prop('required',true);
         $('#input-table-'+col).prop('required',true);
