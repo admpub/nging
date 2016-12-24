@@ -1321,10 +1321,10 @@
 			"revisionTime": "2016-12-15T05:26:04Z"
 		},
 		{
-			"checksumSHA1": "PuZIx+1b4H7Xc4R9GDLkyetLAEY=",
+			"checksumSHA1": "LXSF9egF9rR04trX+X5kZjeSMvE=",
 			"path": "github.com/webx-top/echo/handler/captcha",
-			"revision": "ac41a8dfadbface8c72ef12170b23a9c7ac7eeae",
-			"revisionTime": "2016-12-24T08:10:53Z"
+			"revision": "e12c173c72a043158665e2e1133bec0ffb94b3bc",
+			"revisionTime": "2016-12-24T08:32:15Z"
 		},
 		{
 			"checksumSHA1": "84K5I7PBCkfhAd2+Mhn7EA9b77A=",

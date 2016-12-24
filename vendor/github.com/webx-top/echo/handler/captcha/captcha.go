@@ -49,8 +49,7 @@ func (o Options) Wrapper(e echo.RouteRegister) {
 			ext = param[p:]
 		}
 		if len(ext) == 0 || len(id) == 0 {
-			ctx.Response().NotFound()
-			return nil
+			return echo.ErrNotFound
 		}
 		if len(ctx.Query("reload")) > 0 {
 			captcha.Reload(id)
@@ -62,8 +61,7 @@ func (o Options) Wrapper(e echo.RouteRegister) {
 		switch ext {
 		case ".png":
 			if !o.EnableImage {
-				ctx.Response().NotFound()
-				return nil
+				return echo.ErrNotFound
 			}
 			if download {
 				header.Set(echo.HeaderContentType, "application/octet-stream")
@@ -73,8 +71,7 @@ func (o Options) Wrapper(e echo.RouteRegister) {
 			return captcha.WriteImage(w.Writer(), id, captcha.StdWidth, captcha.StdHeight)
 		case ".wav":
 			if !o.EnableAudio {
-				ctx.Response().NotFound()
-				return nil
+				return echo.ErrNotFound
 			}
 			lang := strings.ToLower(ctx.Query("lang"))
 			supported := false
