@@ -5588,3 +5588,6 @@ ul.no-list-style{
   white-space:pre-wrap !important;
   display:block;
 }
+.no-padding{
+  padding:0
+}

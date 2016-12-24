@@ -20,7 +20,6 @@ package tplfunc
 import (
 	"fmt"
 	"html/template"
-	"net/http"
 	"path/filepath"
 	"strings"
 	"time"
@@ -154,19 +153,23 @@ func NlToBr(text string) template.HTML {
 
 //CaptchaForm 验证码表单域
 func CaptchaForm(args ...string) template.HTML {
-	var id string
-	if len(args) == 0 {
-		id = "captcha"
-	} else {
+	id := "captcha"
+	format := `<img id="%[2]sImage" src="/captcha/%[1]s.png" alt="Captcha image" onclick="this.src=this.src.split('?')[0]+'?reload='+Math.random();" /><input type="hidden" name="captchaId" id="%[2]sId" value="%[1]s" />`
+	switch len(args) {
+	case 2:
+		format = args[1]
+		fallthrough
+	case 1:
 		id = args[0]
 	}
 	captchaId := captcha.New()
-	return template.HTML(fmt.Sprintf(`<img id="`+id+`Image" src="%scaptcha/%s.png" alt="Captcha image" onclick="this.src=this.src.split('?')[0]+'?reload='+Math.random();" /><input type="hidden" name="captchaId" id="`+id+`Id" value="%s" />`, `/`, captchaId, captchaId))
+	return template.HTML(fmt.Sprintf(format, captchaId, id))
 }
 
 //CaptchaVerify 验证码验证
-func CaptchaVerify(captchaSolution string, r *http.Request) bool {
-	captchaId := r.FormValue("captchaId")
+func CaptchaVerify(captchaSolution string, idGet func(string) string) bool {
+	//captchaId := r.FormValue("captchaId")
+	captchaId := idGet("captchaId")
 	if !captcha.VerifyString(captchaId, captchaSolution) {
 		return false
 	}

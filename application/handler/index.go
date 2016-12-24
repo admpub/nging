@@ -18,8 +18,11 @@
 package handler
 
 import (
+	"errors"
+
 	"github.com/admpub/nging/application/middleware"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/middleware/tplfunc"
 )
 
 func Index(ctx echo.Context) error {
@@ -36,13 +39,17 @@ func Login(ctx echo.Context) error {
 	}
 	var err error
 	if ctx.IsPost() {
-		err = middleware.Auth(ctx, true)
-		if err == nil {
-			returnTo := ctx.Form(`return_to`)
-			if len(returnTo) == 0 {
-				returnTo = `/manage`
+		if !tplfunc.CaptchaVerify(ctx.Form(`code`), ctx.Form) {
+			err = errors.New(ctx.T(`验证码不正确`))
+		} else {
+			err = middleware.Auth(ctx, true)
+			if err == nil {
+				returnTo := ctx.Form(`return_to`)
+				if len(returnTo) == 0 {
+					returnTo = `/manage`
+				}
+				return ctx.Redirect(returnTo)
 			}
-			return ctx.Redirect(returnTo)
 		}
 	}
 	return ctx.Render(`login`, err)

@@ -24,6 +24,7 @@ import (
 	"github.com/admpub/log"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/handler/captcha"
 	sockjsHandler "github.com/webx-top/echo/handler/sockjs"
 	ws "github.com/webx-top/echo/handler/websocket"
 	"github.com/webx-top/echo/middleware/render"
@@ -109,6 +110,9 @@ func addRouter(e *echo.Echo) {
 	}
 
 	addFormHandler(e, `/db`, DbManager, middleware.AuthCheck)
+
+	opt := captcha.Options{EnableImage: true}
+	opt.Wrapper(e)
 }
 
 func addFormHandler(rr echo.RouteRegister, urlPath string, handler interface{}, middlewares ...interface{}) {
