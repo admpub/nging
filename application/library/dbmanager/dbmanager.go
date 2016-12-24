@@ -18,6 +18,7 @@ func New(ctx echo.Context, auth *driver.DbAuth) *dbManager {
 type dbManager struct {
 	echo.Context
 	*driver.DbAuth
+	GenURL func(string, ...string) string
 }
 
 func (d *dbManager) Driver(typeName string) (driver.Driver, error) {
@@ -38,6 +39,7 @@ func (d *dbManager) Run(typeName string, operation string) error {
 		return errors.New(d.T(`很抱歉，不支持此项操作`))
 	}
 	defer drv.SaveResults()
+	drv.SetURLGenerator(d.GenURL)
 	d.SetFunc(`Results`, drv.SavedResults)
 	switch operation {
 	case `login`:

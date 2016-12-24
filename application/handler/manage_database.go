@@ -65,6 +65,7 @@ func DbManager(ctx echo.Context) error {
 			return ``
 		}
 	}
+	mgr.GenURL = genURL
 	ctx.SetFunc(`dbMgrURL`, genURL)
 	if len(driverName) > 0 {
 		ctx.Set(`driver`, driverName)

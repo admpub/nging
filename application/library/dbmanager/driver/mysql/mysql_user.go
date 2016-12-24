@@ -211,7 +211,7 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 		operations = append(operations, grant)
 
 	}
-	if len(oldUser) > 0 && !hasURLGrantValue {
+	if len(oldUser) > 0 && (!hasURLGrantValue && !created) {
 		for object, revoke := range grants {
 			onAndCol := reGrantColumn.FindStringSubmatch(object)
 			if len(onAndCol) < 3 {

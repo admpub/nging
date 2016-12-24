@@ -67,10 +67,14 @@ func (m *mySQL) ProcessList() error {
 	return m.Render(`db/mysql/proccess_list`, e)
 }
 
-func (m *mySQL) returnTo() error {
+func (m *mySQL) returnTo(rets ...string) error {
 	returnTo := m.Form(`return_to`)
 	if len(returnTo) == 0 {
-		returnTo = m.Request().URI()
+		if len(rets) > 0 {
+			returnTo = rets[0]
+		} else {
+			returnTo = m.Request().Referer()
+		}
 	}
 	m.SaveResults()
 	return m.Redirect(returnTo)
@@ -107,7 +111,7 @@ func (m *mySQL) Privileges() error {
 				err = m.editUser(user, host, newUser, oldPasswd, newPasswd, isHashed)
 				if err == nil {
 					m.ok(m.T(`操作成功`))
-					return m.returnTo()
+					return m.returnTo(m.GenURL(`privileges`) + `&act=edit&user=` + newUser + `&host=` + host)
 				}
 				m.fail(err.Error())
 			}

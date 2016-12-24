@@ -12,6 +12,8 @@ var (
 
 type Driver interface {
 	Init(echo.Context, *DbAuth)
+	SetURLGenerator(func(string, ...string) string) Driver
+	GenURL(string, ...string) string
 	Results() []result.Resulter
 	AddResults(...result.Resulter) Driver
 	SetResults(...result.Resulter) Driver
@@ -47,7 +49,17 @@ func NewBaseDriver() *BaseDriver {
 type BaseDriver struct {
 	echo.Context
 	*DbAuth
-	results []result.Resulter
+	results      []result.Resulter
+	urlGenerator func(string, ...string) string
+}
+
+func (m *BaseDriver) SetURLGenerator(fn func(string, ...string) string) Driver {
+	m.urlGenerator = fn
+	return m
+}
+
+func (m *BaseDriver) GenURL(op string, args ...string) string {
+	return m.urlGenerator(op, args...)
 }
 
 func (m *BaseDriver) Results() []result.Resulter {
@@ -71,9 +83,11 @@ func (m *BaseDriver) SaveResults() Driver {
 	if m.results == nil {
 		return m
 	}
-	if v, y := m.Flash(`dbMgrResults`).([]result.Resulter); y {
-		m.results = append(v, m.results...)
-	}
+	/*
+		if v, y := m.Flash(`dbMgrResults`).([]result.Resulter); y {
+			m.results = append(v, m.results...)
+		}
+	*/
 	m.Session().AddFlash(m.results, `dbMgrResults`)
 	return m
 }
