@@ -1,6 +1,9 @@
 package driver
 
-import "github.com/webx-top/echo"
+import (
+	"github.com/admpub/nging/application/library/dbmanager/result"
+	"github.com/webx-top/echo"
+)
 
 var (
 	drivers       = map[string]Driver{}
@@ -9,6 +12,11 @@ var (
 
 type Driver interface {
 	Init(echo.Context, *DbAuth)
+	Results() []result.Resulter
+	AddResults(...result.Resulter) Driver
+	SetResults(...result.Resulter) Driver
+	SaveResults() Driver
+	SavedResults() interface{}
 	IsSupported(string) bool
 	Login() error
 	Logout() error
@@ -39,6 +47,39 @@ func NewBaseDriver() *BaseDriver {
 type BaseDriver struct {
 	echo.Context
 	*DbAuth
+	results []result.Resulter
+}
+
+func (m *BaseDriver) Results() []result.Resulter {
+	return m.results
+}
+
+func (m *BaseDriver) AddResults(rs ...result.Resulter) Driver {
+	if m.results == nil {
+		m.results = []result.Resulter{}
+	}
+	m.results = append(m.results, rs...)
+	return m
+}
+
+func (m *BaseDriver) SetResults(rs ...result.Resulter) Driver {
+	m.results = rs
+	return m
+}
+
+func (m *BaseDriver) SaveResults() Driver {
+	if m.results == nil {
+		return m
+	}
+	if v, y := m.Flash(`dbMgrResults`).([]result.Resulter); y {
+		m.results = append(v, m.results...)
+	}
+	m.Session().AddFlash(m.results, `dbMgrResults`)
+	return m
+}
+
+func (m *BaseDriver) SavedResults() interface{} {
+	return m.Flash(`dbMgrResults`)
 }
 
 func (m *BaseDriver) Init(ctx echo.Context, auth *DbAuth) {

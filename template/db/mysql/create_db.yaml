@@ -5,6 +5,6 @@ Title : ""
 Content : ""
 HelpText : ""
 Animate : "none"
-Type : ""
+Type : "success"
 ContentType : "form"
 ExtButtons : []

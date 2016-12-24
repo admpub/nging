@@ -271,6 +271,7 @@ type Operation struct {
 	Columns string
 	On      string
 	User    string
+	Scope   string //all|database|table|column|proxy
 }
 
 type Grant struct {
@@ -283,66 +284,140 @@ type Grant struct {
 	*Operation
 }
 
-func (op *Operation) Apply(m *mySQL) *Result {
-	r := &Result{}
+func (op *Operation) Apply(m *mySQL) error {
+	//解除权限
 	if len(op.Revoke) > 0 {
 		on := `ON ` + op.On + ` FROM ` + op.User
-		hasAll := op.HasAllPrivileges(op.Revoke)
-		hasOpt := op.HasGrantOption(op.Revoke)
+		hasAll := op.HasAllPrivileges(&op.Revoke, true)
+		hasOpt := op.HasGrantOption(&op.Revoke, true)
 		if hasAll {
+			if op.Scope == `proxy` {
+				r := &Result{}
+				r.SQL = `REVOKE PROXY ` + on
+				r.Exec(m.newParam())
+				m.AddResults(r)
+				return r.err
+			}
+			r := &Result{}
 			r.SQL = `REVOKE ALL PRIVILEGES ` + on
 			r.Exec(m.newParam())
-			if r.Error != nil {
-				return r
+			m.AddResults(r)
+			if r.err != nil {
+				return r.err
 			}
 			if hasOpt {
+				r := &Result{}
 				r.SQL = `REVOKE GRANT OPTION ` + on
-				return r.Exec(m.newParam())
+				r.Exec(m.newParam())
+				m.AddResults(r)
+				return r.err
 			}
 		}
 		if hasOpt {
+			if op.Scope == `proxy` {
+				r := &Result{}
+				r.SQL = `REVOKE PROXY ` + on
+				r.Exec(m.newParam())
+				m.AddResults(r)
+				return r.err
+			}
+			r := &Result{}
 			r.SQL = `REVOKE GRANT OPTION ` + on
 			r.Exec(m.newParam())
-			if r.Error != nil || hasAll {
-				return r
+			m.AddResults(r)
+			if r.err != nil {
+				return r.err
 			}
 		}
-		c := strings.Join(op.Revoke, op.Columns+`, `) + op.Columns
-		r.SQL = `REVOKE ` + reGrantOptionValue.ReplaceAllString(c, `$1`) + ` ` + on
-		r.Exec(m.newParam())
-		if r.Error != nil {
-			return r
+		if len(op.Revoke) > 0 {
+			r := &Result{}
+			c := strings.Join(op.Revoke, op.Columns+`, `) + op.Columns
+			r.SQL = `REVOKE ` + reGrantOptionValue.ReplaceAllString(c, `$1`) + ` ` + on
+			r.Exec(m.newParam())
+			m.AddResults(r)
+			if r.err != nil {
+				return r.err
+			}
 		}
 	}
+	//增加授权
 	if len(op.Grant) > 0 {
 		on := `ON ` + op.On + ` TO ` + op.User
-		if op.HasAllPrivileges(op.Grant) && op.HasGrantOption(op.Grant) {
-			r.SQL = `GRANT ALL PRIVILEGES ` + on + ` WITH GRANT OPTION`
-			return r.Exec(m.newParam())
+		if op.Scope == `proxy` {
+			r := &Result{}
+			r.SQL = `GRANT PROXY ` + on
+			if op.HasGrantOption(&op.Grant, false) {
+				r.SQL += ` WITH GRANT OPTION`
+			}
+			r.Exec(m.newParam())
+			m.AddResults(r)
+			return r.err
 		}
-		c := strings.Join(op.Grant, op.Columns+`, `) + op.Columns
-		r.SQL = `GRANT ` + reGrantOptionValue.ReplaceAllString(c, `$1`) + ` ` + on
-		r.Exec(m.newParam())
-		if r.Error != nil {
-			return r
+		hasAll := op.HasAllPrivileges(&op.Grant, true)
+		hasOpt := op.HasGrantOption(&op.Grant, true)
+		if hasAll && hasOpt {
+			r := &Result{}
+			r.SQL = `GRANT ALL PRIVILEGES ` + on + ` WITH GRANT OPTION`
+			r.Exec(m.newParam())
+			m.AddResults(r)
+			return r.err
+		}
+		if hasAll {
+			r := &Result{}
+			r.SQL = `GRANT ALL PRIVILEGES ` + on
+			r.Exec(m.newParam())
+			m.AddResults(r)
+			return r.err
+		}
+		if hasOpt {
+			r := &Result{}
+			r.SQL = `GRANT GRANT OPTION ` + on
+			r.Exec(m.newParam())
+			m.AddResults(r)
+			if r.err != nil {
+				return r.err
+			}
+		}
+		if len(op.Grant) > 0 {
+			r := &Result{}
+			c := strings.Join(op.Grant, op.Columns+`, `) + op.Columns
+			r.SQL = `GRANT ` + reGrantOptionValue.ReplaceAllString(c, `$1`) + ` ` + on
+			r.Exec(m.newParam())
+			m.AddResults(r)
+			if r.err != nil {
+				return r.err
+			}
 		}
 	}
-	return r
+	return nil
 }
 
-func (op *Operation) HasAllPrivileges(values []string) bool {
-	for _, name := range values {
+func (op *Operation) HasAllPrivileges(values *[]string, deleteIt bool) bool {
+	for index, name := range *values {
 		if name == `ALL PRIVILEGES` {
+			if deleteIt {
+				if index+1 < len(*values) {
+					*values = append((*values)[0:index], (*values)[index+1:]...)
+				} else {
+					*values = (*values)[0:index]
+				}
+			}
 			return true
 		}
 	}
 	return false
 }
 
-func (op *Operation) HasGrantOption(values []string) bool {
-
-	for _, name := range values {
+func (op *Operation) HasGrantOption(values *[]string, deleteIt bool) bool {
+	for index, name := range *values {
 		if name == `GRANT OPTION` {
+			if deleteIt {
+				if index+1 < len(*values) {
+					*values = append((*values)[0:index], (*values)[index+1:]...)
+				} else {
+					*values = (*values)[0:index]
+				}
+			}
 			return true
 		}
 	}
@@ -350,17 +425,20 @@ func (op *Operation) HasGrantOption(values []string) bool {
 }
 
 func (g *Grant) IsValid(group string, values map[string]*Mapx) bool {
+	if group == `_Global_` {
+		return true
+	}
 	switch g.Scope {
 	case `all`:
-		return true
+		return group == `Server_Admin` || group == `Procedures`
 	case `database`:
-		return group == `Databases`
+		return group == `Databases` || group == `Procedures`
 	case `table`:
 		return group == `Tables`
 	case `column`:
 		return group == `Columns`
 	case `proxy`:
-		return group == `Server_Admin`
+		return false
 	default:
 		return false
 	}

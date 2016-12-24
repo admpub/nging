@@ -37,6 +37,8 @@ func (d *dbManager) Run(typeName string, operation string) error {
 	if !drv.IsSupported(operation) {
 		return errors.New(d.T(`很抱歉，不支持此项操作`))
 	}
+	defer drv.SaveResults()
+	d.SetFunc(`Results`, drv.SavedResults)
 	switch operation {
 	case `login`:
 		return drv.Login()

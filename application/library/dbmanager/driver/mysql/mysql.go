@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -71,6 +72,7 @@ func (m *mySQL) returnTo() error {
 	if len(returnTo) == 0 {
 		returnTo = m.Request().URI()
 	}
+	m.SaveResults()
 	return m.Redirect(returnTo)
 }
 
@@ -81,6 +83,19 @@ func (m *mySQL) Privileges() error {
 	if len(act) > 0 {
 		switch act {
 		case `drop`:
+			host := m.Form(`host`)
+			user := m.Form(`user`)
+			if len(user) < 1 {
+				m.Session().AddFlash(errors.New(m.T(`用户名不正确`)))
+				return m.returnTo()
+			}
+			if user == `root` {
+				m.Session().AddFlash(errors.New(m.T(`root 用户不可删除`)))
+				return m.returnTo()
+			}
+			r := m.dropUser(user, host)
+			m.AddResults(r)
+			return m.returnTo()
 		case `edit`:
 			if m.IsPost() {
 				isHashed := len(m.Form(`hashed`)) > 0
@@ -89,12 +104,12 @@ func (m *mySQL) Privileges() error {
 				newUser := m.Form(`user`)
 				oldPasswd := m.Form(`oldPass`)
 				newPasswd := m.Form(`pass`)
-				r := m.editUser(user, host, newUser, oldPasswd, newPasswd, isHashed)
-				if r.Error == nil {
-					m.Session().AddFlash(common.Ok(m.T(`操作成功`)))
+				err = m.editUser(user, host, newUser, oldPasswd, newPasswd, isHashed)
+				if err == nil {
+					m.ok(m.T(`操作成功`))
 					return m.returnTo()
 				}
-				m.Session().AddFlash(r.Error.Error())
+				m.fail(err.Error())
 			}
 			privs, err := m.showPrivileges()
 			if err == nil {
@@ -124,7 +139,11 @@ func (m *mySQL) Privileges() error {
 
 			m.Set(`sorts`, sorts)
 			m.Set(`grants`, grants)
-			m.Set(`hashed`, true)
+			if oldPass != `` {
+				m.Set(`hashed`, true)
+			} else {
+				m.Set(`hashed`, false)
+			}
 			m.Set(`oldPass`, oldPass)
 			m.Set(`oldUser`, oldUser)
 			m.Request().Form().Set(`pass`, oldPass)
@@ -176,8 +195,8 @@ func (m *mySQL) CreateDb() error {
 		data.SetZone(`name`).SetInfo(m.T(`数据库名称不能为空`))
 	} else {
 		res := m.createDatabase(dbName, collate)
-		if res.Error != nil {
-			data.SetError(res.Error)
+		if res.err != nil {
+			data.SetError(res.err)
 		} else {
 			data.SetData(res)
 		}
@@ -197,8 +216,8 @@ func (m *mySQL) ListDb() error {
 		for _, db := range dbs {
 			r := m.dropDatabase(db)
 			rs = append(rs, r)
-			if r.Error != nil {
-				data.SetError(r.Error)
+			if r.err != nil {
+				data.SetError(r.err)
 				code = 0
 				break
 			}

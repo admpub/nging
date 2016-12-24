@@ -2,13 +2,7 @@
 {{Block "main"}}
 <div class="row">
     <div class="col-md-12">
-        <div class="block-flat md-margin-bottom">
-            <a href="javascript:;" class="btn btn-default" id="create-db">{{"创建数据库"|T}}</a>
-            <a href="{{dbMgrURL "privileges"}}" class="btn btn-default" id="privileges">{{"权限"|T}}</a>
-            <a href="{{dbMgrURL "processList"}}" class="btn btn-default" id="process-list">{{"进程列表"|T}}</a>
-            <a href="{{dbMgrURL "info"}}&type=variables" class="btn btn-default" id="info-variables">{{"变量"|T}}</a>
-            <a href="{{dbMgrURL "info"}}&type=status" class="btn btn-default" id="info-status">{{"状态"|T}}</a>
-        </div>
+        {{Include "db/mysql/dbinfo_btn"}}
         <div class="block-flat">
           <div class="header">							
             <h3>{{"选择数据库"|T}}</h3>
@@ -52,8 +46,8 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
-{{Modal "__TMPL__/db/mysql/create_db.yaml"}}
 {{Super}}
+{{Modal "__TMPL__/db/mysql/create_db.yaml"}}
 <script type="text/template" id="tpl-create-db-form">
     <div class="form-group">
         <label>{{"数据库名称"|T|ToJS}}</label>

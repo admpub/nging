@@ -1,0 +1,22 @@
+{{$results := Results}}
+{{if $results}}
+{{range $k,$v:=$results}}
+{{if $v.GetError}}
+<div class="alert alert-danger alert-white rounded">
+	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+	<div class="icon"><i class="fa fa-times-circle"></i></div>
+	<strong>Error!</strong>
+    {{$v.GetBeginTime}}<code class="wrap">{{$v.GetSQL}}</code>
+    ({{$v.GetError}})
+</div>
+{{else}}
+<div class="alert alert-success alert-white rounded">
+	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+	<div class="icon"><i class="fa fa-check"></i></div>
+	<strong>Success</strong>
+    {{$v.GetBeginTime}}<code class="wrap">{{$v.GetSQL}}</code>
+    ({{$v.GetElapsedTime}})
+</div>
+{{end}}
+{{end}}
+{{end}}

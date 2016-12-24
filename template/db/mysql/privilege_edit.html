@@ -2,6 +2,7 @@
 {{Block "main"}}
 <div class="row">
     <div class="col-md-12">
+        {{Include "db/mysql/dbinfo_btn"}}
         <div class="block-flat">
           <div class="header">							
             <h3>
@@ -169,7 +170,7 @@ MySQL grant 权限，分别可以作用在多个层次上
               <div class="form-group">
 				<div class="col-sm-9 col-sm-offset-2">
 				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
-				  <button class="btn btn-danger btn-lg"><i class="fa fa-times"></i> {{"删除"|T}}</button>
+				  <a class="btn btn-default btn-lg" href="{{dbMgrURL "privileges"}}"><i class="fa fa-reply"></i> {{"返回"|T}}</a>
 				</div>
 			</div>
               </form>
@@ -230,9 +231,9 @@ $('.select-priv-type').change(function(){
         $('#onselect-priv-type-'+col).hide();
         $('#objects-'+col).val('*.*');
         $('.PT-Server_Admin-'+col+':disabled').prop('disabled',false);
-        $('.PT-Databases-'+col+':disabled').prop('disabled',false);
-        $('.PT-Tables-'+col+':disabled').prop('disabled',false);
-        $('.PT-Columns-'+col+':disabled').prop('disabled',false);
+        $('.PT-Databases-'+col).prop('disabled',true);
+        $('.PT-Tables-'+col).prop('disabled',true);
+        $('.PT-Columns-'+col).prop('disabled',true);
 
         $('#input-database-'+col).prop('required',false);
         $('#input-table-'+col).prop('required',false);

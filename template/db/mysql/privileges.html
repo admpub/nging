@@ -2,8 +2,13 @@
 {{Block "main"}}
 <div class="row">
     <div class="col-md-12">
+        {{Include "db/mysql/dbinfo_btn"}}
         <div class="block-flat">
-          <div class="header">							
+          <div class="header">
+			<a href="{{dbMgrURL "privileges"}}&act=edit" class="btn btn-success pull-right">
+				<i class="fa fa-plus"></i>
+				{{"创建用户"|T}}
+			</a>
             <h3>{{"权限"|T}}</h3>
           </div>
           <div class="content">
@@ -16,7 +21,7 @@
 						<tr>
                             <th style="width:30%;"><strong>{{"用户名"|T}}</strong></th>
 							<th><strong>{{"服务器"|T}}</strong></th>
-							<th><strong>{{"操作"|T}}</strong></th>
+							<th style="width:100px;"><strong>{{"操作"|T}}</strong></th>
 						</tr>
 					</thead>
 					<tbody class="no-border-y" id="privilege-items">
@@ -28,6 +33,12 @@
 								<a title="{{"编辑"|T}}" class="label label-success" href="{{dbMgrURL "privileges"}}&act=edit&user={{$v.k}}&host={{$v.v}}">
                                     <i class="fa fa-pencil"></i>
                                 </a>
+								{{if ne $v.k "root"}}
+								&nbsp;
+								<a title="{{"删除"|T}}" class="label label-danger" href="{{dbMgrURL "privileges"}}&act=drop&user={{$v.k}}&host={{$v.v}}" onclick="return confirm('{{T "确定要删除用户“%v@%v”吗？" $v.k $v.v}}');">
+                                    <i class="fa fa-times"></i>
+                                </a>
+								{{end}}
 							</td>
 						</tr>
                         {{end}}
