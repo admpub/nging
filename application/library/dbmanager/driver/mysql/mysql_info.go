@@ -4,12 +4,20 @@ import (
 	"database/sql"
 	"strings"
 
+	"fmt"
+
 	"github.com/webx-top/com"
 )
 
 func (m *mySQL) showVariables() ([]map[string]string, error) {
 	sqlStr := "SHOW VARIABLES"
 	return m.kvVal(sqlStr)
+}
+
+func (m *mySQL) killProcess(processId int64) error {
+	sqlStr := fmt.Sprintf("KILL %d", processId)
+	_, err := m.newParam().SetCollection(sqlStr).Exec()
+	return err
 }
 
 func (m *mySQL) processList() ([]*ProcessList, error) {

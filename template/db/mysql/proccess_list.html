@@ -9,9 +9,11 @@
           </div>
           <div class="content">
               <div class="table-responsive">
+				  <form action="" method="POST">
 				<table class="table no-border hover blue">
 					<thead class="no-border">
 						<tr>
+							<th style="width:2%;"><strong></strong></th>
 							<th style="width:2%;"><strong>Id</strong></th>
 							<th><strong>User</strong></th>
 							<th><strong>Host</strong></th>
@@ -26,6 +28,7 @@
 					<tbody class="no-border-x" id="process-items">
                         {{range $k,$v := Stored.processList}}
 						<tr>
+							<td><input type="checkbox" class="icheck" name="pid[]" value="{{$v.Id.Int64}}"></td>
 							<td>{{$v.Id.Int64}}</td>
 							<td>{{$v.User.String}}</td>
 							<td>{{$v.Host.String}}</td>
@@ -38,7 +41,9 @@
 						</tr>
                         {{end}}
 					</tbody>
-				</table>
+				</table> 
+				<button type="submit" class="btn btn-default">{{"终止"|T}}</button>
+				</form>
 			    </div>
           </div><!-- /.content -->
         </div><!-- /.block-flat -->

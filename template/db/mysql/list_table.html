@@ -8,7 +8,11 @@
 <div class="row">
     <div class="col-md-12">
         <div class="block-flat">
-          <div class="header">							
+          <div class="header">
+			<a href="{{dbMgrURL "createTable"}}" class="btn btn-success pull-right">
+				<i class="fa fa-plus"></i>
+				{{"创建表"|T}}
+			</a>						
             <h3>{{"数据表"|T}}</h3>
           </div>
           <div class="content">
@@ -28,25 +32,38 @@
 							<th><strong>{{"注释"|T}}</strong></th>
 						</tr>
 					</thead>
-					<tbody class="no-border-x">
+					<tbody class="no-border-x" id="table-items">
                         {{$dbName := Stored.dbName}}
+                        {{$tableStatus := Stored.tableStatus}}
                         {{range $k,$v := Stored.tableList}}
+						{{$info := index $tableStatus $v}}
 						<tr>
 							<td><input type="checkbox" class="icheck" value="{{$v}}"></td>
 							<td><a href="{{dbMgrURL "viewTable" $dbName $v}}">{{$v}}</a></td>
-							<td></td>
-							<td></td>
-							<td></td>
-                            <td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
+							<td>{{$info.Engine.String}}</td>
+							<td>{{$info.Collation.String}}</td>
+							<td>{{$info.Data_length.Int64}}</td>
+                            <td>{{$info.Index_length.Int64}}</td>
+							<td>{{$info.Data_free.Int64}}</td>
+							<td>{{$info.Auto_increment.Int64}}</td>
+							<td>{{$info.Rows.Int64}}</td>
+							<td>{{$info.Comment.String}}</td>
 						</tr>
                         {{end}}
 					</tbody>
 				</table>		
 			    </div>
+                <fieldset>
+                     <legend>{{"已选中"|T}} (<span id="selected-items-count">0</span>)</legend>
+                     <button type="button" class="btn btn-default" id="analysis-selected">{{"分析"|T}}</button>
+                     <button type="button" class="btn btn-default" id="optimize-selected">{{"优化"|T}}</button>
+                     <button type="button" class="btn btn-default" id="check-selected">{{"检查"|T}}</button>
+                     <button type="button" class="btn btn-default" id="repair-selected">{{"修复"|T}}</button>
+                     <button type="button" class="btn btn-default" id="truncate-selected">{{"清空"|T}}</button>
+                     <button type="button" class="btn btn-default" id="drop-selected">{{"删除"|T}}</button>
+                     <button type="button" class="btn btn-default" id="move-selected">{{"移动"|T}}</button>
+                     <button type="button" class="btn btn-default" id="copy-selected">{{"复制"|T}}</button>
+                </fieldset>
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
     </div>
@@ -55,4 +72,147 @@
 
 {{Block "footer"}}
 {{Super}}
+
+{{Modal "__TMPL__/db/mysql/copy_table.yaml"}}
+{{Modal "__TMPL__/db/mysql/move_table.yaml"}}
+<script type="text/template" id="tpl-move-table-form">
+    <div class="form-group">
+        <label>{{"移动表"|T|ToJS}}</label>
+        <textarea readonly="readonly" class="form-control" id="move-tables">
+        </textarea>
+    </div>
+    <div class="form-group">
+        <label>{{"到数据库"|T|ToJS}}</label>
+        <select class="form-control" id="move-table-to-db">
+			<option value="" disabled>loading...</option>
+        </select>
+    </div>
+</script>
+<script type="text/template" id="tpl-copy-table-form">
+    <div class="form-group">
+        <label>{{"复制表"|T|ToJS}}</label>
+        <textarea readonly="readonly" class="form-control" id="copy-tables">
+        </textarea>
+    </div>
+    <div class="form-group">
+        <label>{{"到数据库"|T|ToJS}}</label>
+        <select class="form-control" id="copy-table-to-db">
+			<option value="" disabled>loading...</option>
+        </select>
+    </div>
+</script>
+<script>
+var currentDb='{{Stored.dbName}}';
+function refreshList(){
+    $.get(window.location.href,{pjax:1},function(r){
+        var e=$(r);
+        $('#table-items').html(e.find('#table-items').html());
+    },'html');
+}
+$(function(){
+    App.iCheck('#table-items .icheck','click',function(){
+        var v=$(this).prop('checked')?1:-1;
+        var c=$('#selected-items-count');
+        var n=parseInt(c.text());
+        c.text(n+v);
+    });
+    $('#selected-items-count').text($('#table-items .icheck:checked').length);
+
+    $('#move-table-modal .modal-body').html($('#tpl-move-table-form').html());
+    $('#copy-table-modal .modal-body').html($('#tpl-copy-table-form').html());
+    $('#move-table-modal .btn-primary:last').removeClass('md-close').on('click',function(){
+        var dbName=$('#move-table-to-db').val();
+        $.post(window.location.href,{json:'move',dbName:dbName,tables:$('#move-tables').val()},function(r){
+            if(r.Code==1){
+                refreshList();
+                $('#move-table-modal').niftyModal('hide');
+                App.showDbLog(r.Data);
+            }else{
+                alert(r.Info);
+            }
+        },'json');
+    });
+    $('#copy-table-modal .btn-primary:last').removeClass('md-close').on('click',function(){
+        var dbName=$('#move-table-to-db').val();
+        $.post(window.location.href,{json:'copy',dbName:dbName,tables:$('#copy-tables').val()},function(r){
+            if(r.Code==1){
+                refreshList();
+                $('#copy-table-modal').niftyModal('hide');
+                App.showDbLog(r.Data);
+            }else{
+                alert(r.Info);
+            }
+        },'json');
+    });
+
+    $('#drop-selected').click(function(){
+        var tables=[];
+        var ckd=$('#table-items .icheck:checked');
+        if(ckd.length<1){
+            return App.message({title:'{{"出错了"|T}}',text:'{{"请选择您要删除的表"|T}}',class_name:'danger'},false);
+        }
+        ckd.each(function(){
+            tables.push($(this).val());
+        });
+        if(confirm('{{"确定要删除下面这些表吗？"|T}}\n'+tables.join('\n')))
+        $.post(window.location.href,{json:'drop',table:tables},function(r){
+            var hasData=typeof(r.Data)!='undefined';
+            if(hasData && r.Data && r.Data.length>1){
+                refreshList();
+                if(hasData&&r.Data){
+                    for(var i=0;i<r.Data.length;i++){
+                        App.showDbLog(r.Data[i]);
+                    }
+                }
+                return
+            }
+            if(r.Code==1){
+                refreshList();
+                if(hasData&&r.Data){
+                    for(var i=0;i<r.Data.length;i++){
+                        App.showDbLog(r.Data[i]);
+                    }
+                }
+            }else{
+                App.message({title:'{{"出错了"|T}}',text:r.Info,class_name:'danger'},false);
+            }
+        },'json');
+    });
+    $('#move-selected,#copy-selected').on('click',function(event){
+		var op,tx;
+		if($(this).attr('id')=='move-selected'){
+			op='move';
+			tx='{{"请选择您要移动的表"|T}}';
+		}else{
+			op='copy';
+			tx='{{"请选择您要复制的表"|T}}';
+		}
+        var tables=[];
+        var ckd=$('#table-items .icheck:checked');
+        if(ckd.length<1){
+            return App.message({title:'{{"出错了"|T}}',text:tx,class_name:'danger'},false);
+        }
+        ckd.each(function(){
+            tables.push($(this).val());
+        });
+		$('#'+op+'-tables').val(tables.join(','));
+		$('#'+op+'-table-modal').niftyModal('show',{afterOpen:function(modal){
+            if(!$('#'+op+'-table-to-db').data('loaded')){
+                $('#'+op+'-table-to-db').data('loaded',1);
+                $.get(window.location.href,{json:'dbs'},function(r){
+                    if(r.Code<1){
+                        return App.message(r.Info);
+                    }
+                    var str='';
+                    for(var i=0;i<r.Data.length;i++){
+						var s=r.Data[i]==currentDb?' selected':'';
+                        str+='<option value="'+r.Data[i]+'"'+s+'>'+r.Data[i]+'</option>';
+                    }
+                    $('#'+op+'-table-to-db').html(str);
+                },'json');
+            }
+        }});
+	});
+});
+</script>
 {{/Block}}

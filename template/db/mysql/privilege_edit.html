@@ -204,7 +204,7 @@ $('.select-priv-type').change(function(){
     var col=$(this).data('col');
     var val=$(this).val();
     if(val!='proxy'){
-        $('#objects-'+col).attr('type','hidden');
+        $('#objects-'+col).attr('type','hidden').removeAttr('pattern');
         $('#onselect-priv-type-'+col).find('.proxy-user').hide().siblings('.database-name').show();
     }
     switch(val){
@@ -215,7 +215,7 @@ $('.select-priv-type').change(function(){
         $('.PT-Tables-'+col).prop('disabled',true);
         $('.PT-Columns-'+col).prop('disabled',true);
         $('.PT-Procedures-'+col).prop('disabled',true);
-        $('#objects-'+col).attr('type','text').val($('#objects-'+col).data('original'));
+        $('#objects-'+col).attr('type','text').attr('title','{{"格式"|T}}: {{"用户名@主机名"|T}}。{{"如果不限主机名可以输入: 用户名@%"|T}}').attr('placeholder','{{"用户名@主机名"|T}}').attr('pattern','^[^@]+@[^@]+$').val($('#objects-'+col).data('original'));
         $('#input-database-'+col).prop('required',false);
         $('#input-table-'+col).prop('required',false);
         $('#input-column-'+col).prop('required',false);

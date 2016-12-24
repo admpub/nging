@@ -75,31 +75,27 @@ $(function(){
         c.text(n+v);
     });
     $('#create-db-modal .modal-body').html($('#tpl-create-db-form').html());
-    $('#create-db,#privileges,#process-list,#info-variables,#info-status').on('click',function(event){
-        switch($(this).attr('id')){
-            case 'create-db':
-		        $('#create-db-modal').niftyModal('show',{afterOpen:function(modal){
-                    modal.find('#create-db-name').focus();
-                    if(!$('#create-db-collation').data('loaded')){
-                        $('#create-db-collation').data('loaded',1);
-                        $.get(window.location.href,{json:'collations'},function(r){
-                            if(r.Code<1){
-                                return App.message(r.Info);
-                            }
-                            var str='';
-                            for(var i in r.Data){
-                                str+='<optgroup label="'+i+'">';
-                                for(var j in r.Data[i]){
-                                    str+='<option>'+r.Data[i][j].Collation.String+'</option>';
-                                }
-                                str+='</optgroup>';
-                            }
-                            $('#create-db-collation').append(str);
-                        },'json');
+    $('#create-db').on('click',function(event){
+		$('#create-db-modal').niftyModal('show',{afterOpen:function(modal){
+            modal.find('#create-db-name').focus();
+            if(!$('#create-db-collation').data('loaded')){
+                $('#create-db-collation').data('loaded',1);
+                $.get(window.location.href,{json:'collations'},function(r){
+                    if(r.Code<1){
+                        return App.message(r.Info);
                     }
-                }});
-                break;
-        }
+                    var str='';
+                    for(var i in r.Data){
+                        str+='<optgroup label="'+i+'">';
+                        for(var j in r.Data[i]){
+                            str+='<option>'+r.Data[i][j].Collation.String+'</option>';
+                        }
+                        str+='</optgroup>';
+                    }
+                    $('#create-db-collation').append(str);
+                },'json');
+            }
+        }});
 	});
     $('#selected-items-count').text($('#database-items .icheck:checked').length);
     $('#create-db-modal .btn-primary:last').removeClass('md-close').on('click',function(){

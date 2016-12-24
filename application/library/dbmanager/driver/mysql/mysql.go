@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 
+	"strconv"
+
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/webx-top/db/lib/factory"
@@ -62,9 +64,20 @@ func (m *mySQL) Logout() error {
 	return nil
 }
 func (m *mySQL) ProcessList() error {
+	var ret interface{}
+	if m.IsPost() {
+		pids := m.FormValues(`pid[]`)
+		for _, pid := range pids {
+			i, e := strconv.ParseInt(pid, 10, 64)
+			if e == nil {
+				e = m.killProcess(i)
+			}
+		}
+	}
 	r, e := m.processList()
+	ret = common.Err(m.Context, e)
 	m.Set(`processList`, r)
-	return m.Render(`db/mysql/proccess_list`, e)
+	return m.Render(`db/mysql/proccess_list`, ret)
 }
 
 func (m *mySQL) returnTo(rets ...string) error {
@@ -285,15 +298,46 @@ func (m *mySQL) ModifyTable() error {
 	return nil
 }
 func (m *mySQL) ListTable() error {
+	switch m.Form(`json`) {
+	case `drop`:
+	case `copy`:
+	case `move`:
+		destDb := m.Form(`dbName`)
+		tables := strings.Split(m.Form(`tables`), `,`)
+		data := m.NewData()
+		var err error
+		if err != nil {
+			data.SetError(err)
+		} else {
+			data.SetData([]interface{}{destDb, tables})
+		}
+		return m.JSON(data)
+	case `dbs`:
+		data := m.NewData()
+		dbList, err := m.getDatabases()
+		if err != nil {
+			data.SetError(err)
+		} else {
+			data.SetData(dbList)
+		}
+		return m.JSON(data)
+	}
 	var err error
 	if len(m.dbName) > 0 {
-		if _, ok := m.Get(`tableList`).([]string); !ok {
-			tableList, err := m.getTables()
+		tableList, ok := m.Get(`tableList`).([]string)
+		if !ok {
+			tableList, err = m.getTables()
 			if err != nil {
 				return err
 			}
 			m.Set(`tableList`, tableList)
 		}
+		var tableStatus map[string]*TableStatus
+		tableStatus, err = m.getTableStatus(m.dbName, ``, true)
+		if err != nil {
+			return err
+		}
+		m.Set(`tableStatus`, tableStatus)
 	}
 	return m.Render(`db/mysql/list_table`, err)
 }
