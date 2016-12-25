@@ -11,11 +11,11 @@
 {{/Block}}
 {{Block "bodyNav"}}
 {{if Stored.Get "dbUsername"}}
-	<div class="page-aside app tree">
+	<div class="page-aside app codeditor tree">
       <div class="fixed nano nscroller">
         <div class="content">
-          <div class="header">
-            <button class="navbar-toggle" data-target=".treeview" data-toggle="collapse" type="button">
+          <div class="header xs-padding-bottom no-padding-top">
+            <button class="navbar-toggle" data-target=".app-nav" data-toggle="collapse" type="button">
               <span class="fa fa-chevron-down"></span>
             </button>      
             <h2 class="page-title" title="{{Stored.Get "dbHost"}}">{{Stored.Get "dbHost"}}</h2>
@@ -27,7 +27,7 @@
             {{$dbList := Stored.Get "dbList"}}
             {{$dbName := Stored.Get "dbName"}}
             {{if $dbList}}
-            <div class="input-group" style="margin-bottom:0">
+            <div class="input-group no-margin-bottom">
               <span class="input-group-addon">{{"数据库"|T}}</span>
               <select name="db" class="form-control" id="db">
                 <option value="">{{"<未选择>"|}}</option>
@@ -37,21 +37,25 @@
               </select>
             </div>
             {{end}}
-          </div>  
-          <ul class="nav nav-list treeview collapse">
-            <li><label class="tree-toggler nav-header"><i class="fa fa-folder-o"></i> {{"数据表"|T}}</label>
-                <ul class="nav nav-list tree">
-                    {{$tableList := Stored.Get "tableList"}}
-                    {{if $tableList}}
-                    {{$currentTable := Form "table"}}
-                    {{range $k,$v:=$tableList}}
-                    <li{{if eq $currentTable $v}} class="current"{{end}}><a href="{{dbMgrURL "viewTable"}}&table={{$v}}" title="{{$v}}">{{$v}}</a></li>
-                    {{end}}
-                    {{end}}
-                    
-                </ul>
-            </li>
+          </div> 
+        <div class="app-nav collapse sm-line-height no-margin-top">
+          <p class="title">{{"数据表"|T}}</p>
+          {{if $dbName}}
+          <ul class="nav nav-pills nav-stacked ">
+              {{$tableList := Stored.Get "tableList"}}
+              {{if $tableList}}
+              {{$currentTable := Form "table"}}
+              {{range $k,$v:=$tableList}}
+              <li{{if eq $currentTable $v}} class="current"{{end}}><a href="{{dbMgrURL "viewTable"}}&table={{$v}}" title="{{$v}}">{{$v}}</a></li>
+              {{end}}
+              {{end}}
           </ul>
+
+          <div class="compose">
+            <a href="{{dbMgrURL "createTable"}}" class="btn btn-flat btn-primary">{{"创建表"|T}}</a>
+          </div>
+          {{end}}
+        </div><!-- .app-nav -->
         </div>
         
       </div>
@@ -138,7 +142,7 @@ $(function(){
           }else{
             fixedDiv.css({height:'100%'});
           }
-      });
+      }).trigger('resize');
 
       $('label.tree-toggler').click(function () {
         var icon = $(this).children(".fa");

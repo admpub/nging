@@ -35,7 +35,7 @@
                                 </button>
 							</div>
 						</div>
-						<div class="content" id="file-list">
+						<div class="content">
 							<div class="table-responsive">
 							<table class="table no-border hover">
 								<thead class="no-border">
@@ -47,7 +47,7 @@
 										<th style="width:15%;" class="text-center"><strong>{{"操作"|T}}</strong></th>
 									</tr>
 								</thead>
-								<tbody class="no-border-y">
+								<tbody class="no-border-y" id="tbody-content">
                                     {{$path := Stored.Get "path"}}
                                     {{if $path}}
                                     <tr>
@@ -111,9 +111,11 @@ function uploadURL(vhostId,currentPath){
     return '/manage/vhost_file?id='+vhostId+'&do=upload&path='+encodeURIComponent(currentPath);
 }
 function refreshList() {
-    $.get(window.location.href,{pjax:1},function(r){
+    App.loading('show');
+    $.get(window.location.href,{'_pjax':'tbody-content'},function(r){
         var e=$(r);
-        $('#pcont .cl-mcont #file-list').html(e.find('#file-list').html());
+        $('#tbody-content').html(e.find('#tbody-content').html());
+        App.loading('hide');
     },'html');
 }
 var dropzone,dropzoneZIP,editor;
@@ -165,8 +167,10 @@ function initCodeMirrorEditor() {
 }
 
 function fileReopen(encoding,url) {
+    App.loading('show');
     if(url==null)url=$('#file-edit-modal .modal-footer .btn-success').data('url');
     $.get(url,{encoding:encoding},function(r){
+        App.loading('hide');
         if(r.Code!=1)return App.message({title: '{{"系统消息"|T}}', text: r.Info},false);
         editor.setValue(r.Data);
     },'json');
@@ -175,7 +179,9 @@ function fileReopen(encoding,url) {
 function fileEdit(obj,file) {
     var url=$(obj).data('url');
     $('#file-edit-modal .modal-footer .btn-success').data('url',url);
+    App.loading('show');
     $.get(url,{},function(r){
+        App.loading('hide');
         if(r.Code!=1)return App.message({title: '{{"系统消息"|T}}', text: r.Info},false);
         $('#file-edit-modal .modal-header h3').html('{{"编辑文件"|T}}: '+file);
         $('#file-edit-modal').niftyModal('show',{
@@ -246,7 +252,9 @@ $(function(){
     initCodeMirrorEditor();
     $('#file-rename-modal .modal-footer .btn-primary:last').click(function(){
         var url=$(this).data('url');
+        App.loading('show');
         $.post(url,{name:$('#file-rename-input').val()},function(r){
+            App.loading('hide');
             if(r.Code!=1)return App.message({title: '{{"系统消息"|T}}', text: r.Info},false);
             App.message({title: '{{"系统消息"|T}}', text: '{{"保存成功"|T}}'},false);
             refreshList();

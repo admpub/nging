@@ -1,8 +1,27 @@
-{{if Form "pjax"}}
-{{Block "main"}}{{/Block}}
-{{else}}<!DOCTYPE html>
-{{$name:=""}}
-{{$breadcrumb:=""}}
+{{$pjax := Form "_pjax"}}
+{{if $pjax}}
+	{{if eq $pjax "#main-container"}}
+		{{Block "head"}}{{/Block}}
+		{{Block "bodyNav"}}{{/Block}}
+		<div class="container-fluid" id="pcont">
+			{{if hasAnyBlock "name" "breadcrumb"}}
+			<div class="page-head">
+				<h2>{{Block "name"}}{{/Block}}</h2>
+				<ol class="breadcrumb">
+				  {{Block "breadcrumb"}}
+				  <li><a href="/manage">Home</a></li>
+				  {{/Block}}
+				</ol>
+			</div>
+			{{end}}
+		    <div class="cl-mcont">{{Block "main"}}{{/Block}}</div>
+		</div><!-- #pcont -->
+		{{Block "footer"}}{{/Block}}
+	{{else}}
+		{{Block "main"}}{{/Block}}
+	{{end}}
+{{else}}
+<!DOCTYPE html>
 <html lang="{{Lang}}">
 <head>
 	<meta charset="utf-8">
@@ -30,38 +49,26 @@
     {{Include "header"}}
 	<div id="cl-wrapper">
 		{{Include "sidebar"}}
+		<div class="cl-body">
+		<div id="main-container">
 		{{Block "bodyNav"}}{{/Block}}
 		<div class="container-fluid" id="pcont">
-			{{if or $name $breadcrumb}}
-			<div class="page-head">
-				<h2>{{$name}}</h2>
-				<ol class="breadcrumb">
-				  <li><a href="/manage">Home</a></li>
-				  {{if $breadcrumb}}
-				  	{{$l := Sub (len $breadcrumb) 1}}
-				  	{{range $k,$v:=$breadcrumb}}
-				  		{{if eq $k $l}}
-				  		<li class="active">{{$v}}</li>
-				  		{{else}}
-				  		<li><a href="#">{{$v}}</a></li>
-				  		{{end}}
-				  	{{end}}
-				  {{end}}
-				</ol>
-			</div>
-			{{else if hasAnyBlock "name" "breadcrumb"}}
+			{{if hasAnyBlock "name" "breadcrumb"}}
 			<div class="page-head">
 				<h2>{{Block "name"}}{{/Block}}</h2>
 				<ol class="breadcrumb">
 				  {{Block "breadcrumb"}}
 				  <li><a href="/manage">Home</a></li>
+				  <!-- <li class="active">Current</li> -->
 				  {{/Block}}
 				</ol>
 			</div>
 			{{end}}
 		    <div class="cl-mcont">{{Block "main"}}{{/Block}}</div>
-		</div>
-	</div>
+		</div><!-- #pcont -->
+		</div><!-- #main-container -->
+		</div><!-- .cl-right -->
+	</div><!-- #cl-wrapper -->
 
 <script src="__ASSETS__/js/jquery.js"></script>
 
@@ -70,6 +77,7 @@
 <script type="text/javascript" src="__ASSETS__/js/bootstrap.switch/bootstrap-switch.min.js"></script>
 <!--<script type="text/javascript" src="__ASSETS__/js/jquery.nestable/jquery.nestable.js"></script>-->
 <script type="text/javascript" src="__ASSETS__/js/jquery.icheck/icheck.min.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/jquery.pjax.js"></script>
 <script type="text/javascript" src="__ASSETS__/js/jquery.niftymodals/js/jquery.modalEffects.js"></script>
 
 <script type="text/javascript" src="__ASSETS__/js/behaviour/general.js"></script>
@@ -79,9 +87,17 @@
 <script>
 $(function(){
 	App.init();
-	App.markNav({{if Stored.Get "activeURL"}}'{{Stored.Get "activeURL"}}'{{else}}null{{end}});
+	App.markNavByURL({{if Stored.Get "activeURL"}}'{{Stored.Get "activeURL"}}'{{else}}null{{end}});
+	App.attachPjax(null,{
+		 onclick: function(obj){
+			 App.unmarkNav();
+			 App.markNav($(obj));
+		 },
+	});
 	App.attachAjaxURL();
-	{{if and . (or (IsError .) (IsOk .))}}App.message({title: '{{"系统消息"|T}}', text: "{{.}}"});{{end}}
+	{{if and . (or (IsError .) (IsOk .))}}
+	App.message({title: '{{"系统消息"|T}}', text: "{{.}}"});
+	{{end}}
 	var messageCount=0,messageMax=20;
 	App.websocket(function(message){
 		var c=$('#notice-message-container');
@@ -108,6 +124,7 @@ $(function(){
 });
 </script>
 {{Block "footer"}}{{/Block}}
+<div id="loading-status"><i class="fa fa-spinner fa-spin fa-3x"></i></div>
 </body>
 </html>
 {{end}}

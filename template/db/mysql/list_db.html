@@ -19,7 +19,7 @@
 							<th><strong>{{"大小"|T}}</strong><!-- ({{"计算"|T}}) --></th>
 						</tr>
 					</thead>
-					<tbody class="no-border-x" id="database-items">
+					<tbody class="no-border-x" id="tbody-content">
                         {{$dbColls := Stored.dbColls}}
                         {{$dbSizes := Stored.dbSizes}}
                         {{$dbTables := Stored.dbTables}}
@@ -62,13 +62,13 @@
 </script>
 <script>
 function refreshList(){
-    $.get(window.location.href,{pjax:1},function(r){
+    $.get(window.location.href,{'_pjax':'#tbody-content'},function(r){
         var e=$(r);
-        $('#database-items').html(e.find('#database-items').html());
+        $('#tbody-content').html(e.find('#tbody-content').html());
     },'html');
 }
 $(function(){
-    App.iCheck('#database-items .icheck','click',function(){
+    App.iCheck('#tbody-content .icheck','click',function(){
         var v=$(this).prop('checked')?1:-1;
         var c=$('#selected-items-count');
         var n=parseInt(c.text());
@@ -97,7 +97,7 @@ $(function(){
             }
         }});
 	});
-    $('#selected-items-count').text($('#database-items .icheck:checked').length);
+    $('#selected-items-count').text($('#tbody-content .icheck:checked').length);
     $('#create-db-modal .btn-primary:last').removeClass('md-close').on('click',function(){
         var name=$('#create-db-name').val();
         var coll=$('#create-db-collation').find('option:checked').text();
@@ -116,7 +116,7 @@ $(function(){
     });
     $('#drop-selected-dbs').click(function(){
         var dbs=[];
-        var ckd=$('#database-items .icheck:checked');
+        var ckd=$('#tbody-content .icheck:checked');
         if(ckd.length<1){
             return App.message({title:'{{"出错了"|T}}',text:'{{"请选择您要删除的数据库"|T}}',class_name:'danger'},false);
         }

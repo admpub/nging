@@ -32,7 +32,7 @@
 							<th><strong>{{"注释"|T}}</strong></th>
 						</tr>
 					</thead>
-					<tbody class="no-border-x" id="table-items">
+					<tbody class="no-border-x" id="tbody-content">
                         {{$dbName := Stored.dbName}}
                         {{$tableStatus := Stored.tableStatus}}
                         {{range $k,$v := Stored.tableList}}
@@ -104,19 +104,19 @@
 <script>
 var currentDb='{{Stored.dbName}}';
 function refreshList(){
-    $.get(window.location.href,{pjax:1},function(r){
+    $.get(window.location.href,{'_pjax':'#tbody-content'},function(r){
         var e=$(r);
-        $('#table-items').html(e.find('#table-items').html());
+        $('#tbody-content').html(e.find('#tbody-content').html());
     },'html');
 }
 $(function(){
-    App.iCheck('#table-items .icheck','click',function(){
+    App.iCheck('#tbody-content .icheck','click',function(){
         var v=$(this).prop('checked')?1:-1;
         var c=$('#selected-items-count');
         var n=parseInt(c.text());
         c.text(n+v);
     });
-    $('#selected-items-count').text($('#table-items .icheck:checked').length);
+    $('#selected-items-count').text($('#tbody-content .icheck:checked').length);
 
     $('#move-table-modal .modal-body').html($('#tpl-move-table-form').html());
     $('#copy-table-modal .modal-body').html($('#tpl-copy-table-form').html());
@@ -147,7 +147,7 @@ $(function(){
 
     $('#drop-selected').click(function(){
         var tables=[];
-        var ckd=$('#table-items .icheck:checked');
+        var ckd=$('#tbody-content .icheck:checked');
         if(ckd.length<1){
             return App.message({title:'{{"出错了"|T}}',text:'{{"请选择您要删除的表"|T}}',class_name:'danger'},false);
         }
@@ -188,7 +188,7 @@ $(function(){
 			tx='{{"请选择您要复制的表"|T}}';
 		}
         var tables=[];
-        var ckd=$('#table-items .icheck:checked');
+        var ckd=$('#tbody-content .icheck:checked');
         if(ckd.length<1){
             return App.message({title:'{{"出错了"|T}}',text:tx,class_name:'danger'},false);
         }
