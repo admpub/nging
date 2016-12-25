@@ -27,6 +27,10 @@
        
        
         var overlay = $($this.o.overlaySelector);
+        if(overlay.length<1){
+            overlay=$('<div class="'+$this.o.overlaySelector.replace(/^\./,'')+'"></div>');
+            $('#' + $(this).attr($this.o.modalAttr)).parent().append(overlay);
+        }
         $(this).click(function() {
         	var modal = $('#' + $(this).attr($this.o.modalAttr)),
         		close = $($this.o.closeSelector, modal);
@@ -171,8 +175,8 @@
           showModal: function(mod){
             var overlay = $(config.overlaySelector);
             if(overlay.length<1){
-                overlay=$('<div class="md-overlay"></div>');
-                mod.after(overlay);
+                overlay=$('<div class="'+config.overlaySelector.replace(/^\./,'')+'"></div>');
+                mod.parent().append(overlay);
             }
             var close = $(config.closeSelector, mod);
             mod.addClass(config.classAddAfterOpen);

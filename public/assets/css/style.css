@@ -922,6 +922,8 @@ body.modal-open,
 .cl-vnavigation .parent ul li a:first-child {
   border-top: 0;
 }
+
+.sb-collapsed .cl-vnavigation li.open > a,
 .cl-vnavigation .active > a {
   background: #2A2C34;
   border-left: 1px solid #2494F2;
