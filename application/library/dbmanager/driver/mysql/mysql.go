@@ -316,6 +316,7 @@ func (m *mySQL) ModifyTable() error {
 }
 func (m *mySQL) ListTable() error {
 	switch m.Form(`json`) {
+	case `truncate`:
 	case `drop`:
 	case `copy`:
 	case `move`:

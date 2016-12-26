@@ -22,6 +22,8 @@ import (
 	"encoding/gob"
 	"time"
 
+	"strings"
+
 	"github.com/admpub/nging/application/library/dbmanager/result"
 	"github.com/webx-top/db/lib/factory"
 )
@@ -34,6 +36,7 @@ var _ result.Resulter = &Result{}
 
 type Result struct {
 	SQL          string
+	SQLs         []string
 	RowsAffected int64
 	TimeStart    time.Time
 	TimeEnd      time.Time
@@ -96,6 +99,31 @@ func (r *Result) Exec(p *factory.Param) *Result {
 func (r *Result) Query(p *factory.Param, readRows func(*sql.Rows) error) *Result {
 	r.start()
 	defer r.end()
+	rows, err := p.SetCollection(r.SQL).Query()
+	r.err = err
+	if err != nil {
+		return r
+	}
+	r.err = readRows(rows)
+	return r
+}
+
+func (r *Result) Queries(p *factory.Param, readRows func(*sql.Rows) error) *Result {
+	if r.TimeStart.IsZero() {
+		r.start()
+	}
+	if r.SQL == `` {
+		r.end()
+		return r
+	}
+	if r.SQLs == nil {
+		r.SQLs = []string{}
+	}
+	if strings.HasSuffix(r.SQL, `;`) {
+		r.SQLs = append(r.SQLs, "DELIMITER ;;\n"+r.SQL+";\nDELIMITER ;")
+	} else {
+		r.SQLs = append(r.SQLs, r.SQL+";")
+	}
 	rows, err := p.SetCollection(r.SQL).Query()
 	r.err = err
 	if err != nil {

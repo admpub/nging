@@ -54,12 +54,25 @@ func (m *mySQL) moveTables(tables []string, targetDb string) error {
 	return r.err
 }
 
-func (m *mySQL) copyTables(tables []string, targetDb string) error {
+func (m *mySQL) copyTables(tables []string, targetDb string, isView bool) error {
 	r := &Result{}
-	r.SQL = `RENAME TABLE `
+	r.SQL = `SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO'`
+	r.Exec(m.newParam())
+	same := m.dbName == targetDb
 	targetDb = quoteCol(targetDb)
+	r2 := &Result{}
+	r2.SQL = `SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO'`
+	r2.Exec(m.newParam())
+
 	for i, table := range tables {
-		table = quoteCol(table)
+		var name string
+		if same {
+			name = `copy_` + table
+			name = quoteCol(name)
+		} else {
+			table = quoteCol(table)
+			name = targetDb + "." + table
+		}
 		if i > 0 {
 			r.SQL += `,`
 		}
