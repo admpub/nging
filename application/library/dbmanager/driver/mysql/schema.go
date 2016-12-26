@@ -470,7 +470,7 @@ func (g *Grant) String() string {
 		}
 		r[0] = strings.Trim(r[0], `'`)
 		r[1] = strings.Trim(r[1], `'`)
-		return `'` + com.AddSlashes(r[0]) + `'@'` + com.AddSlashes(r[1]) + `'`
+		return quoteVal(r[0]) + `@` + quoteVal(r[1])
 	case `all`:
 		return `*.*`
 	case `database`:
@@ -509,7 +509,10 @@ func (g *Grant) String() string {
 			g.Columns += sep + column
 			sep = `,`
 		}
-		return "`" + g.Database + "`.`" + g.Table + "` (" + g.Columns + ")"
+		if len(g.Columns) > 0 {
+			return "`" + g.Database + "`.`" + g.Table + "` (" + g.Columns + ")"
+		}
+		return "`" + g.Database + "`.`" + g.Table + "`"
 	}
 	return ``
 }

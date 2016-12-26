@@ -19,28 +19,27 @@ package mysql
 
 import (
 	"database/sql"
-	"strings"
 
 	"github.com/webx-top/com"
 )
 
 func (m *mySQL) createDatabase(dbName, collate string) *Result {
 	r := &Result{}
-	r.SQL = "CREATE DATABASE `" + strings.Replace(dbName, "`", "", -1) + "`"
+	r.SQL = "CREATE DATABASE " + quoteCol(dbName)
 	if len(collate) > 0 {
-		r.SQL += " COLLATE '" + com.AddSlashes(collate) + "'"
+		r.SQL += " COLLATE " + quoteVal(collate)
 	}
 	return r.Exec(m.newParam())
 }
 
 func (m *mySQL) dropDatabase(dbName string) *Result {
 	r := &Result{}
-	r.SQL = "DROP DATABASE `" + strings.Replace(dbName, "`", "", -1) + "`"
+	r.SQL = "DROP DATABASE " + quoteCol(dbName)
 	return r.Exec(m.newParam())
 }
 
 func (m *mySQL) renameDatabase(newName, collate string) []*Result {
-	newName = strings.Replace(newName, "`", "", -1)
+	newName = quoteCol(newName)
 	rs := []*Result{}
 	r := m.createDatabase(newName, collate)
 	rs = append(rs, r)
@@ -60,11 +59,11 @@ func (m *mySQL) renameDatabase(newName, collate string) []*Result {
 	}
 	var sql string
 	for key, table := range tables {
-		table = com.AddCSlashes(table, '`')
+		table = quoteCol(table)
 		if key > 0 {
 			sql += ", "
 		}
-		sql += "`" + table + "` TO `" + newName + "`.`" + table + "`"
+		sql += table + " TO " + newName + "." + table
 	}
 	if len(sql) > 0 {
 		rRename := &Result{}

@@ -23,6 +23,7 @@ import (
 	"strings"
 
 	"github.com/admpub/nging/application/library/common"
+	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
 )
 
@@ -95,4 +96,12 @@ func (m *mySQL) getScopeGrant(object string) *Grant {
 		}
 	}
 	return g
+}
+
+func quoteCol(col string) string {
+	return "`" + com.AddSlashes(col, '`') + "`"
+}
+
+func quoteVal(val string, otherChars ...rune) string {
+	return "'" + com.AddSlashes(val, otherChars...) + "'"
 }

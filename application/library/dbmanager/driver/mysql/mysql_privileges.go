@@ -17,14 +17,12 @@
 */
 package mysql
 
-import "strings"
-
 func (m *mySQL) listPrivileges() (bool, []map[string]string, error) {
 	sqlStr := "SELECT User, Host FROM mysql."
 	if len(m.dbName) == 0 {
 		sqlStr += `user`
 	} else {
-		sqlStr += "db WHERE `" + strings.Replace(m.dbName, "`", "", -1) + "` LIKE Db"
+		sqlStr += "db WHERE " + quoteCol(m.dbName) + " LIKE Db"
 	}
 	sqlStr += " ORDER BY Host, User"
 	res, err := m.kvVal(sqlStr)

@@ -27,7 +27,7 @@ import (
 
 func (m *mySQL) dropUser(user string, host string) *Result {
 	if len(host) > 0 {
-		user = `'` + com.AddSlashes(user) + `'@'` + com.AddSlashes(host) + `'`
+		user = quoteVal(user) + `@` + quoteVal(host)
 	} else {
 		user = `''`
 	}
@@ -39,7 +39,7 @@ func (m *mySQL) dropUser(user string, host string) *Result {
 func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd string, newPasswd string, isHashed bool) error {
 	var user string
 	if len(oldUser) > 0 {
-		user = `'` + com.AddSlashes(oldUser) + `'@'` + com.AddSlashes(host) + `'`
+		user = quoteVal(oldUser) + `@` + quoteVal(host)
 	} else {
 		user = `''`
 	}
@@ -56,10 +56,10 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 	}
 
 	r := &Result{}
-	newUser = `'` + com.AddSlashes(newUser) + `'@'` + com.AddSlashes(host) + `'`
+	newUser = quoteVal(newUser) + `@` + quoteVal(host)
 	if len(newPasswd) > 0 {
 		if !isHashed {
-			r.SQL = `SELECT PASSWORD('` + com.AddSlashes(newPasswd) + `')`
+			r.SQL = `SELECT PASSWORD(` + quoteVal(newPasswd) + `)`
 			row, err := m.newParam().SetCollection(r.SQL).QueryRow()
 			if err != nil {
 				return err
@@ -86,7 +86,7 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 		if com.VersionCompare(m.version, `5`) >= 0 {
 			r.SQL = `CREATE USER`
 		}
-		r.SQL += ` ` + newUser + ` IDENTIFIED BY PASSWORD '` + com.AddSlashes(newPasswd) + `'`
+		r.SQL += ` ` + newUser + ` IDENTIFIED BY PASSWORD ` + quoteVal(newPasswd)
 		created = true
 		onerror = func(err error) error {
 			r2 := &Result{}
@@ -99,7 +99,7 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 			return err
 		}
 	} else if len(newPasswd) > 0 && oldPasswd != newPasswd {
-		r.SQL = `SET PASSWORD FOR ` + newUser + `='` + com.AddSlashes(newPasswd) + `'`
+		r.SQL = `SET PASSWORD FOR ` + newUser + `=` + quoteVal(newPasswd)
 	} else {
 		r.SQL = ``
 	}
@@ -276,7 +276,7 @@ func (m *mySQL) getUserGrants(host, user string) (string, map[string]map[string]
 		err        error
 	)
 	if len(host) > 0 {
-		sqlStr := "SHOW GRANTS FOR '" + com.AddSlashes(user) + "'@'" + com.AddSlashes(host) + "'"
+		sqlStr := "SHOW GRANTS FOR " + quoteVal(user) + "@" + quoteVal(host)
 		rows, err := m.newParam().SetCollection(sqlStr).Query()
 		if err != nil {
 			return oldPass, r, sortNumber, err

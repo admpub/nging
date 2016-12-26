@@ -19,11 +19,8 @@ package mysql
 
 import (
 	"database/sql"
-	"strings"
 
 	"fmt"
-
-	"github.com/webx-top/com"
 )
 
 func (m *mySQL) showVariables() ([]map[string]string, error) {
@@ -95,7 +92,7 @@ func (m *mySQL) getCollation(dbName string, collations *Collations) (string, err
 			return ``, err
 		}
 	}
-	sqlStr := "SHOW CREATE DATABASE `" + strings.Replace(dbName, "`", "", -1) + "`"
+	sqlStr := "SHOW CREATE DATABASE " + quoteCol(dbName)
 	row, err := m.newParam().SetCollection(sqlStr).QueryRow()
 	if err != nil {
 		return ``, err
@@ -123,11 +120,10 @@ func (m *mySQL) getCollation(dbName string, collations *Collations) (string, err
 func (m *mySQL) getTableStatus(dbName string, tableName string, fast bool) (map[string]*TableStatus, error) {
 	sqlStr := `SHOW TABLE STATUS`
 	if len(dbName) > 0 {
-		sqlStr += " FROM `" + strings.Replace(dbName, "`", "", -1) + "`"
+		sqlStr += " FROM " + quoteCol(dbName)
 	}
 	if len(tableName) > 0 {
-		tableName = com.AddSlashes(tableName, '_', '%')
-		tableName = `'` + tableName + `'`
+		tableName = quoteVal(tableName, '_', '%')
 		sqlStr += ` LIKE ` + tableName
 	}
 	rows, err := m.newParam().SetCollection(sqlStr).Query()

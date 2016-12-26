@@ -17,9 +17,7 @@
 */
 package mysql
 
-import (
-	"database/sql"
-)
+import "database/sql"
 
 // 获取数据表列表
 func (m *mySQL) getTables() ([]string, error) {
@@ -38,4 +36,36 @@ func (m *mySQL) getTables() ([]string, error) {
 		ret = append(ret, v.String)
 	}
 	return ret, nil
+}
+
+func (m *mySQL) moveTables(tables []string, targetDb string) error {
+	r := &Result{}
+	r.SQL = `RENAME TABLE `
+	targetDb = quoteCol(targetDb)
+	for i, table := range tables {
+		table = quoteCol(table)
+		if i > 0 {
+			r.SQL += `,`
+		}
+		r.SQL += table + " TO " + targetDb + "." + table
+	}
+	r.Exec(m.newParam())
+	m.AddResults(r)
+	return r.err
+}
+
+func (m *mySQL) copyTables(tables []string, targetDb string) error {
+	r := &Result{}
+	r.SQL = `RENAME TABLE `
+	targetDb = quoteCol(targetDb)
+	for i, table := range tables {
+		table = quoteCol(table)
+		if i > 0 {
+			r.SQL += `,`
+		}
+		r.SQL += table + " TO " + targetDb + "." + table
+	}
+	r.Exec(m.newParam())
+	m.AddResults(r)
+	return r.err
 }
