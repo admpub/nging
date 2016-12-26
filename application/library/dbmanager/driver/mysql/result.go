@@ -65,6 +65,14 @@ func (r *Result) GetError() string {
 	return r.ErrorString
 }
 
+func (r *Result) Error() error {
+	return r.err
+}
+
+func (r *Result) SetError(err error) {
+	r.err = err
+}
+
 func (r *Result) elapsed() time.Duration {
 	return r.TimeEnd.Sub(r.TimeStart)
 }
@@ -105,6 +113,31 @@ func (r *Result) Query(p *factory.Param, readRows func(*sql.Rows) error) *Result
 		return r
 	}
 	r.err = readRows(rows)
+	return r
+}
+
+func (r *Result) Execs(p *factory.Param) *Result {
+	if r.TimeStart.IsZero() {
+		r.start()
+	}
+	if r.SQL == `` {
+		r.end()
+		return r
+	}
+	if r.SQLs == nil {
+		r.SQLs = []string{}
+	}
+	if strings.HasSuffix(r.SQL, `;`) {
+		r.SQLs = append(r.SQLs, "DELIMITER ;;\n"+r.SQL+";\nDELIMITER ;")
+	} else {
+		r.SQLs = append(r.SQLs, r.SQL+";")
+	}
+	result, err := p.SetCollection(r.SQL).Exec()
+	r.err = err
+	if err != nil {
+		return r
+	}
+	r.RowsAffected, r.err = result.RowsAffected()
 	return r
 }
 
