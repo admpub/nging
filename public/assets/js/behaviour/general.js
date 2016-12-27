@@ -1728,6 +1728,12 @@ var App = function () {
             alert('unsupported '+on);
             return;
         }
+        if($(elem).first().next('.iCheck-helper').length<1){
+          $(elem).iCheck({
+            checkboxClass: 'icheckbox_square-blue checkbox',
+            radioClass: 'iradio_square-blue'
+          });
+        }
         $(elem).on(icOn,function(){
             $(this).trigger(on);
         }).on(on,callback);

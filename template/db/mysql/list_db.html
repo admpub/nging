@@ -65,15 +65,20 @@ function refreshList(){
     $.get(window.location.href,{'_pjax':'#tbody-content'},function(r){
         var e=$(r);
         $('#tbody-content').html(e.find('#tbody-content').html());
+        perttyCheckbox();
     },'html');
 }
-$(function(){
+function perttyCheckbox(){
+    $('#selected-items-count').text($('#tbody-content .icheck:checked').length);
     App.iCheck('#tbody-content .icheck','click',function(){
         var v=$(this).prop('checked')?1:-1;
         var c=$('#selected-items-count');
         var n=parseInt(c.text());
         c.text(n+v);
     });
+}
+$(function(){
+    perttyCheckbox();
     $('#create-db-modal .modal-body').html($('#tpl-create-db-form').html());
     $('#create-db').on('click',function(event){
 		$('#create-db-modal').niftyModal('show',{afterOpen:function(modal){
@@ -97,7 +102,6 @@ $(function(){
             }
         }});
 	});
-    $('#selected-items-count').text($('#tbody-content .icheck:checked').length);
     $('#create-db-modal .btn-primary:last').removeClass('md-close').on('click',function(){
         var name=$('#create-db-name').val();
         var coll=$('#create-db-collation').find('option:checked').text();

@@ -38,7 +38,9 @@
                         {{range $k,$v := Stored.tableList}}
 						{{$info := index $tableStatus $v}}
 						<tr>
-							<td><input type="checkbox" class="icheck" value="{{$v}}"></td>
+                            <td>
+                                <input id="checkbox-{{$k}}" class="icheck" type="checkbox" name="{{if $info.IsView}}view{{else}}table{{end}}[]" value="{{$v}}">
+                            </td>
 							<td><a href="{{dbMgrURL "viewTable" $dbName $v}}">{{$v}}</a></td>
 							<td>{{$info.Engine.String}}</td>
 							<td>{{$info.Collation.String}}</td>
@@ -107,22 +109,37 @@ function refreshList(){
     $.get(window.location.href,{'_pjax':'#tbody-content'},function(r){
         var e=$(r);
         $('#tbody-content').html(e.find('#tbody-content').html());
+        perttyCheckbox();
     },'html');
 }
-$(function(){
+function getSelectedItems(){
+    var tables=[],views=[];
+    $('#tbody-content input[name="table[]"]:checked').each(function(){
+        tables.push($(this).val());
+    });
+    $('#tbody-content input[name="view[]"]:checked').each(function(){
+        views.push($(this).val());
+    });
+    return {tables:tables,views:views};
+}
+function perttyCheckbox(){
+    $('#selected-items-count').text($('#tbody-content .icheck:checked').length);
     App.iCheck('#tbody-content .icheck','click',function(){
         var v=$(this).prop('checked')?1:-1;
         var c=$('#selected-items-count');
         var n=parseInt(c.text());
         c.text(n+v);
     });
-    $('#selected-items-count').text($('#tbody-content .icheck:checked').length);
+}
+$(function(){
+    perttyCheckbox();
 
     $('#move-table-modal .modal-body').html($('#tpl-move-table-form').html());
     $('#copy-table-modal .modal-body').html($('#tpl-copy-table-form').html());
     $('#move-table-modal .btn-primary:last').removeClass('md-close').on('click',function(){
         var dbName=$('#move-table-to-db').val();
-        $.post(window.location.href,{json:'move',dbName:dbName,tables:$('#move-tables').val()},function(r){
+        var se=getSelectedItems();
+        $.post(window.location.href,{json:'move',dbName:dbName,table:se.tables,view:se.views},function(r){
             if(r.Code==1){
                 refreshList();
                 $('#move-table-modal').niftyModal('hide');
@@ -134,7 +151,8 @@ $(function(){
     });
     $('#copy-table-modal .btn-primary:last').removeClass('md-close').on('click',function(){
         var dbName=$('#copy-table-to-db').val();
-        $.post(window.location.href,{json:'copy',dbName:dbName,tables:$('#copy-tables').val()},function(r){
+        var se=getSelectedItems();
+        $.post(window.location.href,{json:'copy',dbName:dbName,table:se.tables,view:se.views},function(r){
             if(r.Code==1){
                 refreshList();
                 $('#copy-table-modal').niftyModal('hide');
@@ -154,15 +172,16 @@ $(function(){
 			op='copy';
 			tx='{{"复制"|T}}';
 		}
-        var tables=[];
-        var ckd=$('#tbody-content .icheck:checked');
-        if(ckd.length<1){
+        var se=getSelectedItems();
+        if(se.tables.length<1&&se.views.length<1){
             return App.message({title:'{{"出错了"|T}}',text:String('{{"请选择您要{op}的表"|T}}').replace(/\{op\}/,tx),class_name:'danger'},false);
         }
-        ckd.each(function(){
-            tables.push($(this).val());
-        });
-		$('#'+op+'-tables').val(tables.join(','));
+        var sed=se.tables.join(',');
+        if(se.views.length>0){
+            if(sed)sed+=',';
+            sed+=se.views.join(',');
+        }
+		$('#'+op+'-tables').val(sed);
 		$('#'+op+'-table-modal').niftyModal('show',{afterOpen:function(modal){
             if(!$('#'+op+'-table-to-db').data('loaded')){
                 $('#'+op+'-table-to-db').data('loaded',1);
@@ -208,18 +227,21 @@ $(function(){
 			tx='{{"删除"|T}}';
             break;
         }
-        var tables=[];
-        var ckd=$('#tbody-content .icheck:checked');
-        if(ckd.length<1){
+        var se=getSelectedItems();
+        if(se.tables.length<1&&se.views.length<1){
             return App.message({title:'{{"出错了"|T}}',text:String('{{"请选择您要{op}的表"|T}}').replace(/\{op\}/,tx),class_name:'danger'},false);
         }
-        ckd.each(function(){
-            tables.push($(this).val());
-        });
-        if((op=='truncate'||op=='drop')&&!confirm(String('{{"确定要{op}下面这些表吗？"|T}}').replace(/\{op\}/,tx)+'\n'+tables.join('\n'))){
-            return;
+        if(op=='truncate'||op=='drop'){
+            var sed=se.tables.join('\n');
+            if(se.views.length>0){
+                if(sed)sed+='\n';
+                sed+=se.views.join('\n');
+            }
+            if(!confirm(String('{{"确定要{op}下面这些表吗？"|T}}').replace(/\{op\}/,tx)+'\n'+sed)){
+                return;
+            }
         }
-        $.post(window.location.href,{json:op,table:tables},function(r){
+        $.post(window.location.href,{json:op,table:se.tables,view:se.views},function(r){
             var hasData=typeof(r.Data)!='undefined';
             if(r.Code==1||(hasData && r.Data && r.Data.length>1)){
                 refreshList();

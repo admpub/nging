@@ -29,7 +29,7 @@ var (
 	reGrantOption   = regexp.MustCompile(` WITH GRANT OPTION`)
 	reGrantIdent    = regexp.MustCompile(` IDENTIFIED BY PASSWORD '([^']+)`)
 
-	reView = regexp.MustCompile("^(?:[^`]|`[^`]*`)*\\s+AS\\s+")
+	reView = regexp.MustCompile("^.+?\\s+AS\\s+")
 
 	//以下数据来自客户端
 	reGrantColumn      = regexp.MustCompile(`^([^() ]+)\s*(\([^)]*\))?$`)

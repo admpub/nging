@@ -30,7 +30,6 @@ func DbManager(ctx echo.Context) error {
 	mgr := dbmanager.New(ctx, auth)
 	driverName := ctx.Form(`driver`)
 	operation := ctx.Form(`operation`)
-	dbName := ctx.Form(`db`)
 	var genURL func(string, ...string) string
 	switch operation {
 	case `login`:
@@ -47,9 +46,6 @@ func DbManager(ctx echo.Context) error {
 	case `logout`:
 	default:
 		if data, ok := ctx.Session().Get(`dbAuth`).(*driver.DbAuth); ok {
-			if len(dbName) > 0 && len(data.Db) == 0 {
-				data.Db = dbName
-			}
 			auth.CopyFrom(data)
 			err = mgr.Run(auth.Driver, `login`)
 			if err == nil {

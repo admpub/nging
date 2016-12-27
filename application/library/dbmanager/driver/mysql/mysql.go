@@ -69,7 +69,7 @@ func (m *mySQL) Login() error {
 	}
 	cluster := factory.NewCluster().AddW(db)
 	m.db.SetCluster(0, cluster)
-	m.Set(`dbName`, settings.Database)
+	m.Set(`dbName`, m.dbName)
 	return m.baseInfo()
 }
 
@@ -325,8 +325,9 @@ func (m *mySQL) listTableAjax(opType string) error {
 	switch opType {
 	case `analyze`, `optimize`, `check`, `repair`:
 		tables := m.FormValues(`table[]`)
+		views := m.FormValues(`view[]`)
 		data := m.NewData()
-		err := m.optimizeTables(tables, opType)
+		err := m.optimizeTables(append(tables, views...), opType)
 		if err != nil {
 			data.SetError(err)
 		} else {
@@ -335,8 +336,12 @@ func (m *mySQL) listTableAjax(opType string) error {
 		return m.JSON(data)
 	case `truncate`:
 		tables := m.FormValues(`table[]`)
+		//views := m.FormValues(`view[]`)
 		data := m.NewData()
-		err := m.truncateTables(tables)
+		var err error
+		if len(tables) > 0 {
+			err = m.truncateTables(tables)
+		}
 		if err != nil {
 			data.SetError(err)
 		} else {
@@ -345,8 +350,15 @@ func (m *mySQL) listTableAjax(opType string) error {
 		return m.JSON(data)
 	case `drop`:
 		tables := m.FormValues(`table[]`)
+		views := m.FormValues(`view[]`)
 		data := m.NewData()
-		err := m.dropTables(tables)
+		var err error
+		if len(tables) > 0 {
+			err = m.dropTables(tables, false)
+		}
+		if len(views) > 0 {
+			err = m.dropTables(views, true)
+		}
 		if err != nil {
 			data.SetError(err)
 		} else {
@@ -355,9 +367,16 @@ func (m *mySQL) listTableAjax(opType string) error {
 		return m.JSON(data)
 	case `copy`:
 		destDb := m.Form(`dbName`)
-		tables := strings.Split(m.Form(`tables`), `,`)
+		tables := m.FormValues(`table[]`)
+		views := m.FormValues(`view[]`)
 		data := m.NewData()
-		err := m.copyTables(tables, destDb, false)
+		var err error
+		if len(tables) > 0 {
+			err = m.copyTables(tables, destDb, false)
+		}
+		if len(views) > 0 {
+			err = m.copyTables(views, destDb, true)
+		}
 		if err != nil {
 			data.SetError(err)
 		} else {
@@ -366,9 +385,10 @@ func (m *mySQL) listTableAjax(opType string) error {
 		return m.JSON(data)
 	case `move`:
 		destDb := m.Form(`dbName`)
-		tables := strings.Split(m.Form(`tables`), `,`)
+		tables := m.FormValues(`table[]`)
+		views := m.FormValues(`view[]`)
 		data := m.NewData()
-		err := m.moveTables(tables, destDb)
+		err := m.moveTables(append(tables, views...), destDb)
 		if err != nil {
 			data.SetError(err)
 		} else {

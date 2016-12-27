@@ -5656,3 +5656,87 @@ ul.no-list-style{
     -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
   }
 }
+
+.x-checkbox{
+  width: 20px;
+  height: 20px;
+  display: block;
+  position: relative;
+}
+.x-checkbox > input[type=checkbox],
+.x-radio > input[type=radio] {
+  visibility: hidden;
+}
+.x-checkbox > label {
+    cursor: pointer;
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 0;
+    left: 0;
+    background: #fff;
+    border:1px solid #ccc;
+    padding:1px;
+}
+.x-checkbox > label:hover {
+    padding:0;
+    border:2px solid #2494f2;
+}
+.x-checkbox > input[type=checkbox]:checked + label {
+    background: #2494f2;
+    border:1px solid #2494f2;
+}
+.x-checkbox > input[type=checkbox]:checked + label:after {
+    content: '';
+    position: absolute;
+    width: 13px;
+    height: 8px;
+    background: transparent;
+    top: 3px;
+    left: 3px;
+    border: 3px solid #fff;
+    border-top: none;
+    border-right: none;
+ 
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+}
+
+.x-radio {
+    width: 20px;
+    height: 20px;
+    position: relative;
+}
+.x-radio > label {
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-radius: 100px;
+    border:1px solid #ccc;
+    cursor: pointer;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    z-index: 1;
+    background: #fff;
+}
+.x-radio > label:hover {
+    padding:0;
+    border:2px solid #2494f2;
+}
+.x-radio > input[type=radio]:checked + label{
+    border:1px solid #2494f2;
+}
+.x-radio > input[type=radio]:checked + label:after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 100px;
+    background: #2494f2;
+    top: 2px;
+    left: 2px;
+}

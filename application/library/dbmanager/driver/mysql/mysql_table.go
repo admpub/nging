@@ -20,6 +20,7 @@ package mysql
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -64,6 +65,7 @@ func (m *mySQL) optimizeTables(tables []string, operation string) error {
 	return r.err
 }
 
+// tables： tables or views
 func (m *mySQL) moveTables(tables []string, targetDb string) error {
 	r := &Result{}
 	r.SQL = `RENAME TABLE `
@@ -81,9 +83,14 @@ func (m *mySQL) moveTables(tables []string, targetDb string) error {
 }
 
 //删除表
-func (m *mySQL) dropTables(tables []string) error {
+func (m *mySQL) dropTables(tables []string, isView bool) error {
 	r := &Result{}
-	r.SQL = `DROP TABLE `
+	r.SQL = `DROP `
+	if isView {
+		r.SQL += `VIEW `
+	} else {
+		r.SQL += `TABLE `
+	}
 	for i, table := range tables {
 		table = quoteCol(table)
 		if i > 0 {
@@ -132,6 +139,7 @@ func (m *mySQL) tableView(name string) (*viewCreateInfo, error) {
 		return info, err
 	}
 	info.Select = reView.ReplaceAllString(info.CreateView.String, ``)
+	fmt.Printf(`------------------>view: %#v`+"\n", info)
 	return info, nil
 }
 
