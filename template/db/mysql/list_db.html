@@ -83,23 +83,22 @@ $(function(){
     $('#create-db').on('click',function(event){
 		$('#create-db-modal').niftyModal('show',{afterOpen:function(modal){
             modal.find('#create-db-name').focus();
-            if(!$('#create-db-collation').data('loaded')){
-                $('#create-db-collation').data('loaded',1);
-                $.get(window.location.href,{json:'collations'},function(r){
-                    if(r.Code<1){
-                        return App.message(r.Info);
+            if($('#create-db-collation').data('loaded'))return;
+            $('#create-db-collation').data('loaded',1);
+            $.get(window.location.href,{json:'collations'},function(r){
+                if(r.Code<1){
+                    return App.message(r.Info);
+                }
+                var str='';
+                for(var i in r.Data){
+                    str+='<optgroup label="'+i+'">';
+                    for(var j in r.Data[i]){
+                        str+='<option>'+r.Data[i][j].Collation.String+'</option>';
                     }
-                    var str='';
-                    for(var i in r.Data){
-                        str+='<optgroup label="'+i+'">';
-                        for(var j in r.Data[i]){
-                            str+='<option>'+r.Data[i][j].Collation.String+'</option>';
-                        }
-                        str+='</optgroup>';
-                    }
-                    $('#create-db-collation').append(str);
-                },'json');
-            }
+                    str+='</optgroup>';
+                }
+                $('#create-db-collation').append(str);
+            },'json');
         }});
 	});
     $('#create-db-modal .btn-primary:last').removeClass('md-close').on('click',function(){
