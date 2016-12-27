@@ -110,7 +110,10 @@ func (m *BaseDriver) SaveResults() Driver {
 }
 
 func (m *BaseDriver) SavedResults() interface{} {
-	return m.Flash(`dbMgrResults`)
+	if v := m.Flash(`dbMgrResults`); v != nil {
+		return v
+	}
+	return m.results
 }
 
 func (m *BaseDriver) Init(ctx echo.Context, auth *DbAuth) {

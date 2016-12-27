@@ -55,7 +55,7 @@
 			    </div>
                 <fieldset>
                      <legend>{{"已选中"|T}} (<span id="selected-items-count">0</span>)</legend>
-                     <button type="button" class="btn btn-default" id="analysis-selected">{{"分析"|T}}</button>
+                     <button type="button" class="btn btn-default" id="analyze-selected">{{"分析"|T}}</button>
                      <button type="button" class="btn btn-default" id="optimize-selected">{{"优化"|T}}</button>
                      <button type="button" class="btn btn-default" id="check-selected">{{"检查"|T}}</button>
                      <button type="button" class="btn btn-default" id="repair-selected">{{"修复"|T}}</button>
@@ -133,7 +133,7 @@ $(function(){
         },'json');
     });
     $('#copy-table-modal .btn-primary:last').removeClass('md-close').on('click',function(){
-        var dbName=$('#move-table-to-db').val();
+        var dbName=$('#copy-table-to-db').val();
         $.post(window.location.href,{json:'copy',dbName:dbName,tables:$('#copy-tables').val()},function(r){
             if(r.Code==1){
                 refreshList();
@@ -145,52 +145,19 @@ $(function(){
         },'json');
     });
 
-    $('#drop-selected').click(function(){
-        var tables=[];
-        var ckd=$('#tbody-content .icheck:checked');
-        if(ckd.length<1){
-            return App.message({title:'{{"出错了"|T}}',text:'{{"请选择您要删除的表"|T}}',class_name:'danger'},false);
-        }
-        ckd.each(function(){
-            tables.push($(this).val());
-        });
-        if(confirm('{{"确定要删除下面这些表吗？"|T}}\n'+tables.join('\n')))
-        $.post(window.location.href,{json:'drop',table:tables},function(r){
-            var hasData=typeof(r.Data)!='undefined';
-            if(hasData && r.Data && r.Data.length>1){
-                refreshList();
-                if(hasData&&r.Data){
-                    for(var i=0;i<r.Data.length;i++){
-                        App.showDbLog(r.Data[i]);
-                    }
-                }
-                return
-            }
-            if(r.Code==1){
-                refreshList();
-                if(hasData&&r.Data){
-                    for(var i=0;i<r.Data.length;i++){
-                        App.showDbLog(r.Data[i]);
-                    }
-                }
-            }else{
-                App.message({title:'{{"出错了"|T}}',text:r.Info,class_name:'danger'},false);
-            }
-        },'json');
-    });
     $('#move-selected,#copy-selected').on('click',function(event){
 		var op,tx;
 		if($(this).attr('id')=='move-selected'){
 			op='move';
-			tx='{{"请选择您要移动的表"|T}}';
+			tx='{{"移动"|T}}';
 		}else{
 			op='copy';
-			tx='{{"请选择您要复制的表"|T}}';
+			tx='{{"复制"|T}}';
 		}
         var tables=[];
         var ckd=$('#tbody-content .icheck:checked');
         if(ckd.length<1){
-            return App.message({title:'{{"出错了"|T}}',text:tx,class_name:'danger'},false);
+            return App.message({title:'{{"出错了"|T}}',text:String('{{"请选择您要{op}的表"|T}}').replace(/\{op\}/,tx),class_name:'danger'},false);
         }
         ckd.each(function(){
             tables.push($(this).val());
@@ -213,6 +180,59 @@ $(function(){
             }
         }});
 	});
+    $('#analyze-selected,#optimize-selected,#check-selected,#repair-selected,#truncate-selected,#drop-selected').on('click',function(event){
+        var op,tx;
+        switch($(this).attr('id')){
+            case 'analyze-selected':
+			op='analyze';
+			tx='{{"分析"|T}}';
+            break;
+            case 'optimize-selected':
+			op='optimize';
+			tx='{{"优化"|T}}';
+            break;
+            case 'check-selected':
+			op='check';
+			tx='{{"检查"|T}}';
+            break;
+            case 'repair-selected':
+			op='repair';
+			tx='{{"修复"|T}}';
+            break;
+            case 'truncate-selected':
+			op='truncate';
+			tx='{{"清空"|T}}';
+            break;
+            case 'drop-selected':
+			op='drop';
+			tx='{{"删除"|T}}';
+            break;
+        }
+        var tables=[];
+        var ckd=$('#tbody-content .icheck:checked');
+        if(ckd.length<1){
+            return App.message({title:'{{"出错了"|T}}',text:String('{{"请选择您要{op}的表"|T}}').replace(/\{op\}/,tx),class_name:'danger'},false);
+        }
+        ckd.each(function(){
+            tables.push($(this).val());
+        });
+        if((op=='truncate'||op=='drop')&&!confirm(String('{{"确定要{op}下面这些表吗？"|T}}').replace(/\{op\}/,tx)+'\n'+tables.join('\n'))){
+            return;
+        }
+        $.post(window.location.href,{json:op,table:tables},function(r){
+            var hasData=typeof(r.Data)!='undefined';
+            if(r.Code==1||(hasData && r.Data && r.Data.length>1)){
+                refreshList();
+                if(hasData&&r.Data){
+                    for(var i=0;i<r.Data.length;i++){
+                        App.showDbLog(r.Data[i]);
+                    }
+                }
+            }else{
+                App.message({title:'{{"出错了"|T}}',text:r.Info,class_name:'danger'},false);
+            }
+        },'json');
+    });
 });
 </script>
 {{/Block}}

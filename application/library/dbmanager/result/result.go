@@ -25,6 +25,7 @@ func init() {
 
 type Resulter interface {
 	GetSQL() string
+	GetSQLs() []string
 	GetBeginTime() string
 	GetElapsedTime() string
 	GetAffected() int64

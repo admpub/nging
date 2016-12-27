@@ -1784,9 +1784,17 @@ var App = function () {
 								<strong>'+title+'</strong> '+content+'</div>';
       }
     },
-    showDbLog:function(result,container){
+    showDbLog:function(results,container){
       if(container==null)container='.block-flat:first';
-        var s=result.Started+'<code class="wrap">'+result.SQL+'</code>';
+      if(typeof(results.length)=='undefined')results=[results];
+      for(var j=0;j<results.length;j++){
+        var result=results[j];
+        var s=result.Started;
+        if(result.SQLs && result.SQLs.length>0){
+          for(var i=0;i<result.SQLs.length;i++) s+='<code class="wrap">'+result.SQLs[i]+'</code>';
+        }else{
+          s+='<code class="wrap">'+result.SQL+'</code>';
+        }
         var t='success';
         if(result.Error){
           s+='('+result.Error+')';
@@ -1795,6 +1803,7 @@ var App = function () {
           s+='('+result.Elapsed+')';
         }
         $(container).before(App.alertBlockx(s,null,t));
+      }
     },
     loading:function(op){
       var obj=$('#loading-status');

@@ -50,6 +50,13 @@ func (r *Result) GetSQL() string {
 	return r.SQL
 }
 
+func (r *Result) GetSQLs() []string {
+	if r.SQLs == nil || len(r.SQLs) == 0 {
+		return []string{r.SQL}
+	}
+	return r.SQLs
+}
+
 func (r *Result) GetBeginTime() string {
 	return r.Started
 }
@@ -116,6 +123,18 @@ func (r *Result) Query(p *factory.Param, readRows func(*sql.Rows) error) *Result
 	return r
 }
 
+func (r *Result) QueryRow(p *factory.Param, recvs ...interface{}) *Result {
+	r.start()
+	defer r.end()
+	row, err := p.SetCollection(r.SQL).QueryRow()
+	r.err = err
+	if err != nil {
+		return r
+	}
+	r.err = row.Scan(recvs...)
+	return r
+}
+
 func (r *Result) Execs(p *factory.Param) *Result {
 	if r.TimeStart.IsZero() {
 		r.start()
@@ -135,6 +154,7 @@ func (r *Result) Execs(p *factory.Param) *Result {
 	result, err := p.SetCollection(r.SQL).Exec()
 	r.err = err
 	if err != nil {
+		r.end()
 		return r
 	}
 	r.RowsAffected, r.err = result.RowsAffected()
@@ -160,6 +180,7 @@ func (r *Result) Queries(p *factory.Param, readRows func(*sql.Rows) error) *Resu
 	rows, err := p.SetCollection(r.SQL).Query()
 	r.err = err
 	if err != nil {
+		r.end()
 		return r
 	}
 	r.err = readRows(rows)

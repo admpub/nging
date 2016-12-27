@@ -17,7 +17,11 @@
 */
 package mysql
 
-import "database/sql"
+import (
+	"database/sql"
+	"errors"
+	"strings"
+)
 
 // 获取数据表列表
 func (m *mySQL) getTables() ([]string, error) {
@@ -36,6 +40,28 @@ func (m *mySQL) getTables() ([]string, error) {
 		ret = append(ret, v.String)
 	}
 	return ret, nil
+}
+
+func (m *mySQL) optimizeTables(tables []string, operation string) error {
+	r := &Result{}
+	defer m.AddResults(r)
+	var op string
+	switch operation {
+	case `optimize`, `check`, `analyze`, `repair`:
+		op = strings.ToUpper(operation)
+	default:
+		return errors.New(m.T(`不支持的操作: %s`, operation))
+	}
+	for _, table := range tables {
+		table = quoteCol(table)
+		r.SQL = op + ` TABLE ` + table
+		r.Execs(m.newParam())
+		if r.err != nil {
+			return r.err
+		}
+	}
+	r.end()
+	return r.err
 }
 
 func (m *mySQL) moveTables(tables []string, targetDb string) error {
@@ -73,6 +99,7 @@ func (m *mySQL) dropTables(tables []string) error {
 //清空表
 func (m *mySQL) truncateTables(tables []string) error {
 	r := &Result{}
+	defer m.AddResults(r)
 	for _, table := range tables {
 		table = quoteCol(table)
 		r.SQL = `TRUNCATE TABLE ` + table
@@ -81,7 +108,7 @@ func (m *mySQL) truncateTables(tables []string) error {
 			return r.err
 		}
 	}
-	m.AddResults(r)
+	r.end()
 	return nil
 }
 
@@ -111,11 +138,11 @@ func (m *mySQL) tableView(name string) (*viewCreateInfo, error) {
 func (m *mySQL) copyTables(tables []string, targetDb string, isView bool) error {
 	r := &Result{}
 	r.SQL = `SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO'`
-	r.Exec(m.newParam())
+	r.Execs(m.newParam())
+	m.AddResults(r)
 	if r.err != nil {
 		return r.err
 	}
-	m.AddResults(r)
 	same := m.dbName == targetDb
 	targetDb = quoteCol(targetDb)
 	for _, table := range tables {
@@ -128,52 +155,42 @@ func (m *mySQL) copyTables(tables []string, targetDb string, isView bool) error 
 			name = targetDb + "." + quotedTable
 		}
 		if isView {
-			r2 := &Result{}
-			r2.SQL = `DROP VIEW IF EXISTS ` + name
-			r2.Exec(m.newParam())
-			if r2.err != nil {
-				return r2.err
+			r.SQL = `DROP VIEW IF EXISTS ` + name
+			r.Execs(m.newParam())
+			if r.err != nil {
+				return r.err
 			}
-			m.AddResults(r2)
 
 			viewInfo, err := m.tableView(table)
 			if err != nil {
 				return err
 			}
-			r3 := &Result{}
-			r3.SQL = `CREATE VIEW ` + name + ` AS ` + viewInfo.Select
-			r3.Exec(m.newParam())
-			if r3.err != nil {
-				return r3.err
+			r.SQL = `CREATE VIEW ` + name + ` AS ` + viewInfo.Select
+			r.Execs(m.newParam())
+			if r.err != nil {
+				return r.err
 			}
-			m.AddResults(r3)
 			continue
 
 		}
-		r2 := &Result{}
-		r2.SQL = `DROP TABLE IF EXISTS ` + name
-		r2.Exec(m.newParam())
-		if r2.err != nil {
-			return r2.err
+		r.SQL = `DROP TABLE IF EXISTS ` + name
+		r.Execs(m.newParam())
+		if r.err != nil {
+			return r.err
 		}
-		m.AddResults(r2)
 
-		r3 := &Result{}
-		r3.SQL = `CREATE TABLE ` + name + ` LIKE ` + quotedTable
-		r3.Exec(m.newParam())
-		if r3.err != nil {
-			return r3.err
+		r.SQL = `CREATE TABLE ` + name + ` LIKE ` + quotedTable
+		r.Execs(m.newParam())
+		if r.err != nil {
+			return r.err
 		}
-		m.AddResults(r3)
 
-		r4 := &Result{}
-		r4.SQL = `INSERT INTO ` + name + ` SELECT * FROM ` + quotedTable
-		r4.Exec(m.newParam())
-		if r4.err != nil {
-			return r4.err
+		r.SQL = `INSERT INTO ` + name + ` SELECT * FROM ` + quotedTable
+		r.Execs(m.newParam())
+		if r.err != nil {
+			return r.err
 		}
-		m.AddResults(r4)
 	}
-	r.Exec(m.newParam())
+	r.end()
 	return r.err
 }

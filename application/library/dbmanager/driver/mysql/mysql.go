@@ -240,8 +240,8 @@ func (m *mySQL) CreateDb() error {
 func (m *mySQL) ModifyDb() error {
 	return nil
 }
-func (m *mySQL) ListDb() error {
-	switch m.Form(`json`) {
+func (m *mySQL) listDbAjax(opType string) error {
+	switch opType {
 	case `drop`:
 		data := m.NewData()
 		dbs := m.FormValues(`db[]`)
@@ -269,6 +269,13 @@ func (m *mySQL) ListDb() error {
 			data.SetData(collations.Collations)
 		}
 		return m.JSON(data)
+	}
+	return nil
+}
+func (m *mySQL) ListDb() error {
+	opType := m.Form(`json`)
+	if len(opType) > 0 {
+		return m.listDbAjax(opType)
 	}
 	var err error
 	dbList, ok := m.Get(`dbList`).([]string)
@@ -314,20 +321,58 @@ func (m *mySQL) CreateTable() error {
 func (m *mySQL) ModifyTable() error {
 	return nil
 }
-func (m *mySQL) ListTable() error {
-	switch m.Form(`json`) {
+func (m *mySQL) listTableAjax(opType string) error {
+	switch opType {
+	case `analyze`, `optimize`, `check`, `repair`:
+		tables := m.FormValues(`table[]`)
+		data := m.NewData()
+		err := m.optimizeTables(tables, opType)
+		if err != nil {
+			data.SetError(err)
+		} else {
+			data.SetData(m.SavedResults())
+		}
+		return m.JSON(data)
 	case `truncate`:
+		tables := m.FormValues(`table[]`)
+		data := m.NewData()
+		err := m.truncateTables(tables)
+		if err != nil {
+			data.SetError(err)
+		} else {
+			data.SetData(m.SavedResults())
+		}
+		return m.JSON(data)
 	case `drop`:
+		tables := m.FormValues(`table[]`)
+		data := m.NewData()
+		err := m.dropTables(tables)
+		if err != nil {
+			data.SetError(err)
+		} else {
+			data.SetData(m.SavedResults())
+		}
+		return m.JSON(data)
 	case `copy`:
+		destDb := m.Form(`dbName`)
+		tables := strings.Split(m.Form(`tables`), `,`)
+		data := m.NewData()
+		err := m.copyTables(tables, destDb, false)
+		if err != nil {
+			data.SetError(err)
+		} else {
+			data.SetData(m.SavedResults())
+		}
+		return m.JSON(data)
 	case `move`:
 		destDb := m.Form(`dbName`)
 		tables := strings.Split(m.Form(`tables`), `,`)
 		data := m.NewData()
-		var err error
+		err := m.moveTables(tables, destDb)
 		if err != nil {
 			data.SetError(err)
 		} else {
-			data.SetData([]interface{}{destDb, tables})
+			data.SetData(m.SavedResults())
 		}
 		return m.JSON(data)
 	case `dbs`:
@@ -339,6 +384,13 @@ func (m *mySQL) ListTable() error {
 			data.SetData(dbList)
 		}
 		return m.JSON(data)
+	}
+	return nil
+}
+func (m *mySQL) ListTable() error {
+	opType := m.Form(`json`)
+	if len(opType) > 0 {
+		return m.listTableAjax(opType)
 	}
 	var err error
 	if len(m.dbName) > 0 {
