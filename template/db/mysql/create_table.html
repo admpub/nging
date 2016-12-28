@@ -69,7 +69,7 @@
                             <th><input type="radio" name="auto_increment" value=""><strong>{{"自增"|T}}</strong></th>
                             <th style="width: 180px"><strong>{{"默认值"|T}}</strong></th>
                             <th><strong>{{"注释"|T}}</strong></th>
-                            <th style="width: 70px"><a href="javascript:;" onclick="addRow()" class="label label-success"><i class="fa fa-plus"></i></a></th>
+                            <th style="width: 70px"><a href="javascript:;" onclick="addRow()" class="label label-success" title="{{"下一行插入"|T}}"><i class="fa fa-plus"></i></a></th>
 						</tr>
 					</thead>
 					<tbody class="no-border-x" id="tbody-content">
@@ -90,10 +90,10 @@
                             </td>
                             <td><input type="text" name="fields[][comment]" value="" class="form-control"></td>
                             <td class="actions">
-                                <a href="javascript:;" onclick="addRow(this)" class="label label-success"><i class="fa fa-plus"></i></a>
-                                <a href="javascript:;" onclick="moveUpRow(this)" class="label label-primary"><i class="fa fa-arrow-up"></i></a>
-                                <a href="javascript:;" onclick="delRow(this)" class="label label-danger"><i class="fa fa-times"></i></a>
-                                <a href="javascript:;" onclick="moveDownRow(this)" class="label label-primary"><i class="fa fa-arrow-down"></i></a>
+                                <a href="javascript:;" onclick="addRow(this)" class="label label-success" title="{{"下一行插入"|T}}"><i class="fa fa-plus"></i></a>
+                                <a href="javascript:;" onclick="moveUpRow(this)" class="label label-primary" title="{{"上移"|T}}"><i class="fa fa-arrow-up"></i></a>
+                                <a href="javascript:;" onclick="delRow(this)" class="label label-danger" title="{{"移除"|T}}"><i class="fa fa-times"></i></a>
+                                <a href="javascript:;" onclick="moveDownRow(this)" class="label label-primary" title="{{"下移"|T}}"><i class="fa fa-arrow-down"></i></a>
                             </td>
 						</tr>
 					</tbody>
