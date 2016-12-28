@@ -1653,6 +1653,19 @@ var App = function () {
         options={text:options};
       }
       options=$.extend({},defaults,options||{});
+      switch(options.class_name){
+        case 'dark':
+        case 'primary':
+        case 'clean':
+        case 'info':
+          options.title='<i class="fa fa-info-circle"></i> '+options.title;break;
+        case 'danger':
+          options.title='<i class="fa fa-comment-o"></i> '+options.title;break;
+        case 'warning':
+          options.title='<i class="fa fa-warning"></i> '+options.title;break;
+        case 'success':
+          options.title='<i class="fa fa-check"></i> '+options.title;break;
+      }
       if(sticky!=null)options.sticky=sticky;
 	    $.gritter.add(options);
     },
