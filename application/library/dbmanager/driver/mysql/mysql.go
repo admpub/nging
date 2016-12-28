@@ -323,6 +323,32 @@ func (m *mySQL) CreateTable() error {
 		}
 		return nil
 	}
+	if m.IsPost() {
+		table := m.Form(`table`)
+		engine := m.Form(`engine`)
+		collation := m.Form(`collation`)
+		autoIncrementStartValue := m.Form(`autoIncrementStartValue`)
+		comment := m.Form(`comment`)
+		aiIndex := m.Formx(`auto_increment`).Int()
+		mapx := NewMapx(m.Forms())
+		fields := mapx.Get(`fields`)
+		if fields != nil {
+			for i := 0; ; i++ {
+				ii := strconv.Itoa(i)
+				fieldName := fields.Value(ii, `field`)
+				if len(fieldName) == 0 {
+					break
+				}
+				fieldType := fields.Value(ii, `type`)
+				fieldLength := fields.Value(ii, `length`)
+				fieldUnsigned := fields.Value(ii, `unsigned`)
+				fieldNull := fields.Value(ii, `null`)
+				fieldHasDefault := fields.Value(ii, `has_default`)
+				fieldDefault := fields.Value(ii, `default`)
+				fieldComment := fields.Value(ii, `comment`)
+			}
+		}
+	}
 	engines, err := m.getEngines()
 	m.Set(`engines`, engines)
 	return m.Render(`db/mysql/create_table`, err)

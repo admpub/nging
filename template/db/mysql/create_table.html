@@ -74,21 +74,21 @@
 					</thead>
 					<tbody class="no-border-x" id="tbody-content">
                         <tr>
-							<td><input type="text" name="fields[][field]" value="" class="form-control"></td>
-                            <td><select name="fields[][type]" class="form-control"></select></td>
-							<td><input type="text" name="fields[][length]" value="" class="form-control"></td>
-                            <td><select name="fields[][unsigned]" class="form-control"></select></td>
-                            <td><label class="x-block"><input type="checkbox" name="fields[][null]" value="1"></label></td>
+							<td><input type="text" name="fields[0][field]" value="" class="form-control"></td>
+                            <td><select name="fields[0][type]" class="form-control"></select></td>
+							<td><input type="text" name="fields[0][length]" value="" class="form-control"></td>
+                            <td><select name="fields[0][unsigned]" class="form-control"></select></td>
+                            <td><label class="x-block"><input type="checkbox" name="fields[0][null]" value="1"></label></td>
                             <td><label class="x-block"><input type="radio" name="auto_increment" value="0"></label></td>
                             <td>
                                 <div class="input-group">
                                     <label class="input-group-addon">
-                                        <input type="checkbox" name="fields[][has_default]" value="1">
+                                        <input type="checkbox" name="fields[0][has_default]" value="1">
                                     </label>
-                                    <input type="text" name="fields[][default]" value="" class="form-control" onkeyup="$(this).trigger('change')" onchange="$(this).prev('label').children('input').prop('checked',true)">
+                                    <input type="text" name="fields[0][default]" value="" class="form-control" onkeyup="$(this).trigger('change')" onchange="$(this).prev('label').children('input').prop('checked',true)">
                                 </div>
                             </td>
-                            <td><input type="text" name="fields[][comment]" value="" class="form-control"></td>
+                            <td><input type="text" name="fields[0][comment]" value="" class="form-control"></td>
                             <td class="actions">
                                 <a href="javascript:;" onclick="addRow(this)" class="label label-success" title="{{"下一行插入"|T}}"><i class="fa fa-plus"></i></a>
                                 <a href="javascript:;" onclick="moveUpRow(this)" class="label label-primary" title="{{"上移"|T}}"><i class="fa fa-arrow-up"></i></a>
@@ -129,15 +129,25 @@ function addRow(obj) {
     var currentTR=$(obj).parent().parent();
     var hasNext=currentTR.next('tr').length>0;
     var clone=currentTR.clone();
-    clone.find('input[name="fields[][field]"]').val('');
-    clone.find('input[name="fields[][comment]"]').val('');
-    clone.find('input[name="fields[][default]"]').val('');
-    clone.find('input[name="fields[][length]"]').val('');
     var index=Number(clone.find('input[name="auto_increment"]').val());
+    var oldIdx=index;
     index++;
+    clone.find('input[name^="fields["]').each(function(){
+        var name=$(this).attr('name');
+        switch(name){
+            case 'fields['+oldIdx+'][field]':
+            case 'fields['+oldIdx+'][comment]':
+            case 'fields['+oldIdx+'][default]':
+            case 'fields['+oldIdx+'][length]':
+            $(this).val('');
+            break;
+            case 'fields['+oldIdx+'][has_default]':
+            case 'fields['+oldIdx+'][null]':
+            $(this).prop('checked',false);
+        }
+        $(this).attr('name',name.replace(new RegExp('\\['+oldIdx+'\\]'),'['+index+']'));
+    });
     clone.find('input[name="auto_increment"]').prop('checked',false).val(index);
-    clone.find('input[name="fields[][has_default]"]').prop('checked',false);
-    clone.find('input[name="fields[][null]"]').prop('checked',false);
     currentTR.after(clone);
     if(hasNext){
         clone=currentTR.next('tr');
@@ -145,6 +155,10 @@ function addRow(obj) {
             index++;
             clone=clone.next('tr');
             clone.find('input[name="auto_increment"]').val(index);
+            clone.find('input[name^="fields["]').each(function(){
+                var name=$(this).attr('name');
+                $(this).attr('name',name.replace(new RegExp('\\[[0-9]+\\]'),'['+index+']'));
+            });
         }
     }
 }
@@ -159,6 +173,11 @@ function delRow(obj) {
 function reorder(){
     $('#tbody-content input[name="auto_increment"]').each(function(index,elem){
         $(this).val(index);
+        
+        $(this).parent().parent().parent().find('input[name^="fields["]').each(function(){
+            var name=$(this).attr('name');
+            $(this).attr('name',name.replace(new RegExp('\\[[0-9]+\\]'),'['+index+']'));
+        });
     });
 }
 function moveUpRow(obj) {

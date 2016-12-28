@@ -21,6 +21,8 @@ import (
 	"database/sql"
 	"strings"
 
+	"strconv"
+
 	"github.com/webx-top/com"
 )
 
@@ -174,8 +176,9 @@ func (p *Privileges) Parse() {
 }
 
 type Mapx struct {
-	Map map[string]*Mapx
-	Val []string
+	Map   map[string]*Mapx `json:",omitempty"`
+	Slice []*Mapx          `json:",omitempty"`
+	Val   []string         `json:",omitempty"`
 }
 
 // ParseFormName user[name][test]
@@ -220,6 +223,23 @@ func (m *Mapx) Parse(data map[string][]string) *Mapx {
 		end := len(names) - 1
 		v := m
 		for idx, key := range names {
+			if len(key) == 0 {
+
+				if v.Slice == nil {
+					v.Slice = []*Mapx{}
+				}
+
+				if idx == end {
+					v.Slice = append(v.Slice, &Mapx{Val: values})
+					continue
+				}
+				mapx := &Mapx{
+					Map: map[string]*Mapx{},
+				}
+				v.Slice = append(v.Slice, mapx)
+				v = mapx
+				continue
+			}
 			if _, ok := v.Map[key]; !ok {
 				if idx == end {
 					v.Map[key] = &Mapx{Val: values}
@@ -270,7 +290,22 @@ func (m *Mapx) Get(names ...string) *Mapx {
 	v := m
 	end := len(names) - 1
 	for idx, key := range names {
-		if _, ok := v.Map[key]; !ok {
+		_, ok := v.Map[key]
+		if !ok {
+			if v.Slice == nil {
+				return nil
+			}
+			i, err := strconv.Atoi(key)
+			if err != nil {
+				return nil
+			}
+			if i < 0 {
+				return nil
+			}
+			if i < len(v.Slice) {
+				v = v.Slice[i]
+				continue
+			}
 			return nil
 		}
 		v = v.Map[key]
