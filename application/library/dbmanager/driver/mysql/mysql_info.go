@@ -191,7 +191,7 @@ func (m *mySQL) baseInfo() error {
 		return err
 	}
 	m.Set(`dbList`, dbList)
-	if len(m.DbAuth.Db) > 0 {
+	if len(m.dbName) > 0 {
 		tableList, err := m.getTables()
 		if err != nil {
 			return err

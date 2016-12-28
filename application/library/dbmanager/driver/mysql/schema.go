@@ -525,3 +525,54 @@ type SupportedEngine struct {
 	XA           sql.NullString //NO|YES
 	Savepoints   sql.NullString //NO|YES
 }
+
+type FieldInfo struct {
+	Field      sql.NullString
+	Type       sql.NullString
+	Collation  sql.NullString
+	Null       sql.NullString
+	Key        sql.NullString
+	Default    sql.NullString
+	Extra      sql.NullString
+	Privileges sql.NullString
+	Comment    sql.NullString
+}
+
+type IndexInfo struct {
+	Table         sql.NullString
+	Non_unique    sql.NullString
+	Key_name      sql.NullString
+	Seq_in_index  sql.NullString
+	Column_name   sql.NullString
+	Collation     sql.NullString
+	Cardinality   sql.NullString
+	Sub_part      sql.NullString
+	Packed        sql.NullString
+	Null          sql.NullString
+	Index_type    sql.NullString
+	Comment       sql.NullString
+	Index_comment sql.NullString
+}
+
+type Indexes struct {
+	Type    string
+	Columns []string
+	Lengths []string
+	Descs   []string
+}
+
+type Field struct {
+	Field          string
+	Full_type      string
+	Type           string
+	Length         string
+	Unsigned       string
+	Default        sql.NullString
+	Null           bool
+	Auto_increment bool
+	On_update      string
+	Collation      string
+	Privileges     map[string]int
+	Comment        string
+	Primary        bool
+}

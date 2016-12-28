@@ -43,6 +43,18 @@
                 </div>
               </div>
               <div class="form-group">
+                <label class="col-sm-2 control-label">{{"自增起始值"|T}}</label>
+                <div class="col-sm-9">
+                    <input type="number" name="autoIncrementStartValue" class="form-control" required="required" value="{{Form "autoIncrementStartValue"}}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"注释"|T}}</label>
+                <div class="col-sm-9">
+                    <input type="text" name="comment" class="form-control" required="required" value="{{Form "comment"}}">
+                </div>
+              </div>
+              <div class="form-group">
                 <label class="col-sm-1 control-label"></label>
                 <div class="col-sm-10">
                 <div class="table-responsive">
@@ -115,7 +127,15 @@ function addRow(obj) {
         return;
     }
     var currentTR=$(obj).parent().parent();
-    currentTR.after(currentTR.clone());
+    var clone=currentTR.clone();
+    clone.find('input[name="fields[][field]"]').val('');
+    clone.find('input[name="fields[][comment]"]').val('');
+    clone.find('input[name="fields[][default]"]').val('');
+    clone.find('input[name="fields[][length]"]').val('');
+    clone.find('input[name="auto_increment"]').prop('checked',false);
+    clone.find('input[name="fields[][has_default]"]').prop('checked',false);
+    clone.find('input[name="fields[][null]"]').prop('checked',false);
+    currentTR.after(clone);
 }
 function delRow(obj) {
     if($('#tbody-content > tr').length<2){
@@ -125,8 +145,18 @@ function delRow(obj) {
     $(obj).parent().parent().remove();
 }
 function moveUpRow(obj) {
+    var currentTR=$(obj).parent().parent();
+    if(currentTR.prev('tr').length>0){
+        currentTR.prev('tr').before(currentTR.clone());
+        currentTR.remove();
+    }
 }
 function moveDownRow(obj) {
+    var currentTR=$(obj).parent().parent();
+    if(currentTR.next('tr').length>0){
+        currentTR.next('tr').after(currentTR.clone());
+        currentTR.remove();
+    }
 }
 $(function(){
     $.get(window.location.href,{json:'collations'},function(r){

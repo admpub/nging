@@ -20,7 +20,6 @@ package mysql
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"strings"
 )
 
@@ -139,7 +138,6 @@ func (m *mySQL) tableView(name string) (*viewCreateInfo, error) {
 		return info, err
 	}
 	info.Select = reView.ReplaceAllString(info.CreateView.String, ``)
-	fmt.Printf(`------------------>view: %#v`+"\n", info)
 	return info, nil
 }
 
@@ -201,4 +199,92 @@ func (m *mySQL) copyTables(tables []string, targetDb string, isView bool) error 
 	}
 	r.end()
 	return r.err
+}
+
+func (m *mySQL) tableFields(table string) (map[string]*Field, error) {
+	sqlStr := `SHOW FULL COLUMNS FROM ` + quoteCol(table)
+	rows, err := m.newParam().SetCollection(sqlStr).Query()
+	if err != nil {
+		return nil, err
+	}
+	ret := map[string]*Field{}
+	for rows.Next() {
+		v := &FieldInfo{}
+		err := rows.Scan(&v.Field, &v.Type, &v.Collation, &v.Null, &v.Key, &v.Default, &v.Extra, &v.Privileges, &v.Comment)
+		if err != nil {
+			return nil, err
+		}
+		match := reField.FindStringSubmatch(v.Type.String)
+		var defaultValue sql.NullString
+		if v.Default.String != `` {
+			defaultValue.Valid = true
+			defaultValue.String = v.Default.String
+		} else if reFieldDefault.MatchString(match[1]) {
+			defaultValue.Valid = true
+			defaultValue.String = v.Default.String
+		}
+		var onUpdate string
+		omatch := reFieldOnUpdate.FindStringSubmatch(match[1])
+		if len(omatch) > 1 {
+			onUpdate = omatch[1]
+		}
+		privileges := map[string]int{}
+		for k, v := range reFieldPrivilegeDelim.Split(v.Privileges.String, -1) {
+			privileges[v] = k
+		}
+		ret[v.Field.String] = &Field{
+			Field:          v.Field.String,
+			Full_type:      v.Type.String,
+			Type:           match[1],
+			Length:         match[2],
+			Unsigned:       strings.TrimLeft(match[3]+match[4], ` `),
+			Default:        defaultValue,
+			Null:           v.Null.String == `YES`,
+			Auto_increment: v.Extra.String == `auto_increment`,
+			On_update:      onUpdate,
+			Collation:      v.Collation.String,
+			Privileges:     privileges,
+			Comment:        v.Comment.String,
+			Primary:        v.Key.String == "PRI",
+		}
+	}
+	return ret, nil
+}
+
+func (m *mySQL) tableIndexes(table string) (map[string]*Indexes, error) {
+	sqlStr := `SHOW INDEX FROM ` + quoteCol(table)
+	rows, err := m.newParam().SetCollection(sqlStr).Query()
+	if err != nil {
+		return nil, err
+	}
+	ret := map[string]*Indexes{}
+	for rows.Next() {
+		v := &IndexInfo{}
+		err := rows.Scan(&v.Table, &v.Non_unique, &v.Key_name, &v.Seq_in_index,
+			&v.Column_name, &v.Collation, &v.Cardinality, &v.Sub_part,
+			&v.Packed, &v.Null, &v.Index_type, &v.Comment, &v.Index_comment)
+		if err != nil {
+			return nil, err
+		}
+		if _, ok := ret[v.Key_name.String]; !ok {
+			ret[v.Key_name.String] = &Indexes{
+				Columns: []string{},
+				Lengths: []string{},
+				Descs:   []string{},
+			}
+		}
+		if v.Key_name.String == `PRIMARY` {
+			ret[v.Key_name.String].Type = `PRIMARY`
+		} else if v.Index_type.String == `FULLTEXT` {
+			ret[v.Key_name.String].Type = `FULLTEXT`
+		} else if v.Non_unique.Valid {
+			ret[v.Key_name.String].Type = `INDEX`
+		} else {
+			ret[v.Key_name.String].Type = `UNIQUE`
+		}
+		ret[v.Key_name.String].Columns = append(ret[v.Key_name.String].Columns, v.Column_name.String)
+		ret[v.Key_name.String].Lengths = append(ret[v.Key_name.String].Lengths, v.Sub_part.String)
+		ret[v.Key_name.String].Descs = append(ret[v.Key_name.String].Descs, ``)
+	}
+	return ret, nil
 }
