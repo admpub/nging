@@ -55,7 +55,7 @@
     </div>
     <div class="form-group">
         <label>{{"字符集"|T|ToJS}}</label>
-        <select class="form-control" id="create-db-collation">
+        <select class="form-control" id="create-db-collation" rel="utf8_general_ci">
             <option value=""></option>
         </select>
     </div>
@@ -89,11 +89,12 @@ $(function(){
                 if(r.Code<1){
                     return App.message(r.Info);
                 }
-                var str='';
+                var str='',sel=$('#create-db-collation').attr('rel');
                 for(var i in r.Data){
                     str+='<optgroup label="'+i+'">';
                     for(var j in r.Data[i]){
-                        str+='<option>'+r.Data[i][j].Collation.String+'</option>';
+                        var s=sel==r.Data[i][j].Collation.String?' selected="selected"':'';
+                        str+='<option'+s+'>'+r.Data[i][j].Collation.String+'</option>';
                     }
                     str+='</optgroup>';
                 }

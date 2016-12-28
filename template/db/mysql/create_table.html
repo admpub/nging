@@ -1,0 +1,149 @@
+{{Extend "db/index"}}
+{{Block "main"}}
+<style>
+    .table > tbody > tr > td.actions{line-height:2.1em;padding:0;text-align:center}
+</style>
+<div class="row">
+    <div class="col-md-12">
+        {{Include "db/mysql/dbinfo_btn"}}
+        <div class="block-flat">
+          <div class="header">							
+            <h3>
+                {{"创建表"|T}}
+            </h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" method="POST" action="">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"表名"|T}}</label>
+                <div class="col-sm-9">
+                    <input type="text" name="table" class="form-control" required="required" value="{{Form "table"}}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"引擎"|T}}</label>
+                <div class="col-sm-9">
+                    <select name="engine" class="form-control" id="engine">
+                        {{if Stored.engines}}
+                        {{$engine := Form "engine"}}
+                        {{range $k,$v := Stored.engines}}
+                        <option value="{{$v.Engine.String}}"{{if eq $v.Engine.String $engine}} selected="selected"{{end}}>{{$v.Engine.String}}</option>
+                        {{end}}
+                        {{end}}
+                    </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"字符集"|T}}</label>
+                <div class="col-sm-9">
+                    {{$collation := Form "collation"}}
+                    <select name="collation" class="form-control" id="collation" rel="{{if $collation}}{{$collation}}{{else}}utf8_general_ci{{end}}">
+                        <option value="" readonly="readonly">loading...</option>
+                    </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-1 control-label"></label>
+                <div class="col-sm-10">
+                <div class="table-responsive">
+				<table class="table no-border hover blue">
+					<thead class="no-border">
+						<tr>
+							<th style="width: 150px"><strong>{{"字段名"|T}}</strong></th>
+                            <th><strong>{{"类型"|T}}</strong></th>
+                            <th style="width: 70px"><strong>{{"长度"|T}}</strong></th>
+                            <th><strong>{{"选项"|T}}</strong></th>
+                            <th><strong>{{"NULL"|T}}</strong></th>
+                            <th><input type="radio" name="auto_increment" value=""><strong>{{"自增"|T}}</strong></th>
+                            <th style="width: 180px"><strong>{{"默认值"|T}}</strong></th>
+                            <th><strong>{{"注释"|T}}</strong></th>
+                            <th style="width: 70px"><a href="javascript:;" onclick="addRow()" class="label label-success"><i class="fa fa-plus"></i></a></th>
+						</tr>
+					</thead>
+					<tbody class="no-border-x" id="tbody-content">
+                        <tr>
+							<td><input type="text" name="fields[][field]" value="" class="form-control"></td>
+                            <td><select name="fields[][type]" class="form-control"></select></td>
+							<td><input type="text" name="fields[][length]" value="" class="form-control"></td>
+                            <td><select name="fields[][unsigned]" class="form-control"></select></td>
+                            <td><label class="x-block"><input type="checkbox" name="fields[][null]" value="1"></label></td>
+                            <td><label class="x-block"><input type="radio" name="auto_increment" value=""></label></td>
+                            <td>
+                                <div class="input-group">
+                                    <label class="input-group-addon">
+                                        <input type="checkbox" name="fields[][has_default]" value="1">
+                                    </label>
+                                    <input type="text" name="fields[][default]" value="" class="form-control" onkeyup="$(this).trigger('change')" onchange="$(this).prev('label').children('input').prop('checked',true)">
+                                </div>
+                            </td>
+                            <td><input type="text" name="fields[][comment]" value="" class="form-control"></td>
+                            <td class="actions">
+                                <a href="javascript:;" onclick="addRow(this)" class="label label-success"><i class="fa fa-plus"></i></a>
+                                <a href="javascript:;" onclick="moveUpRow(this)" class="label label-primary"><i class="fa fa-arrow-up"></i></a>
+                                <a href="javascript:;" onclick="delRow(this)" class="label label-danger"><i class="fa fa-times"></i></a>
+                                <a href="javascript:;" onclick="moveDownRow(this)" class="label label-primary"><i class="fa fa-arrow-down"></i></a>
+                            </td>
+						</tr>
+					</tbody>
+				</table>
+			    </div>
+
+
+                </div>
+              </div>
+
+              
+              <div class="form-group">
+				<div class="col-sm-9 col-sm-offset-2">
+				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+				  <a class="btn btn-default btn-lg" href="{{dbMgrURL "privileges"}}"><i class="fa fa-reply"></i> {{"返回"|T}}</a>
+				</div>
+			</div>
+              </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+{{Super}}
+<script>
+function addRow(obj) {
+    if(obj==null){
+        var firstTR=$('#tbody-content > tr:first');
+        firstTR.before(firstTR.clone());
+        return;
+    }
+    var currentTR=$(obj).parent().parent();
+    currentTR.after(currentTR.clone());
+}
+function delRow(obj) {
+    if($('#tbody-content > tr').length<2){
+        App.message({text:'{{"请至少保留一个字段，不能全部删除"|T}}',class_name:'warning',title:'{{"提醒"|T}}'},false);
+        return;
+    }
+    $(obj).parent().parent().remove();
+}
+function moveUpRow(obj) {
+}
+function moveDownRow(obj) {
+}
+$(function(){
+    $.get(window.location.href,{json:'collations'},function(r){
+        if(r.Code<1){
+            return App.message(r.Info);
+        }
+        var str='',sel=$('#collation').attr('rel');
+        for(var i in r.Data){
+            str+='<optgroup label="'+i+'">';
+            for(var j in r.Data[i]){
+                var s=sel==r.Data[i][j].Collation.String?' selected="selected"':'';
+                str+='<option value="'+r.Data[i][j].Collation.String+'"'+s+'>'+r.Data[i][j].Collation.String+'</option>';
+            }
+            str+='</optgroup>';
+        }
+        $('#collation').html(str);
+    },'json');
+});
+</script>
+{{/Block}}

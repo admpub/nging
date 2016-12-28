@@ -312,11 +312,20 @@ func (m *mySQL) ListDb() error {
 	m.Set(`dbColls`, colls)
 	m.Set(`dbSizes`, sizes)
 	m.Set(`dbTables`, tables)
-	//return m.String(`OK`)
 	return m.Render(`db/mysql/list_db`, err)
 }
 func (m *mySQL) CreateTable() error {
-	return nil
+	opType := m.Form(`json`)
+	if len(opType) > 0 {
+		switch opType {
+		case `collations`:
+			return m.listDbAjax(opType)
+		}
+		return nil
+	}
+	engines, err := m.getEngines()
+	m.Set(`engines`, engines)
+	return m.Render(`db/mysql/create_table`, err)
 }
 func (m *mySQL) ModifyTable() error {
 	return nil

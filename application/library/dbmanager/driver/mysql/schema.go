@@ -516,3 +516,12 @@ func (g *Grant) String() string {
 	}
 	return ``
 }
+
+type SupportedEngine struct {
+	Engine       sql.NullString //CSV|InnoDB|MyISAM|MEMORY...
+	Support      sql.NullString //YES|DEFAULT
+	Comment      sql.NullString
+	Transactions sql.NullString //NO|YES
+	XA           sql.NullString //NO|YES
+	Savepoints   sql.NullString //NO|YES
+}

@@ -5740,3 +5740,6 @@ ul.no-list-style{
     top: 2px;
     left: 2px;
 }
+.x-block{
+  display: block;
+}

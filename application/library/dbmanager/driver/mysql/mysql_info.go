@@ -148,6 +148,26 @@ func (m *mySQL) getTableStatus(dbName string, tableName string, fast bool) (map[
 	return ret, nil
 }
 
+func (m *mySQL) getEngines() ([]*SupportedEngine, error) {
+	sqlStr := `SHOW ENGINES`
+	rows, err := m.newParam().SetCollection(sqlStr).Query()
+	if err != nil {
+		return nil, err
+	}
+	ret := []*SupportedEngine{}
+	for rows.Next() {
+		v := &SupportedEngine{}
+		err := rows.Scan(&v.Engine, &v.Support, &v.Comment, &v.Transactions, &v.XA, &v.Savepoints)
+		if err != nil {
+			return nil, err
+		}
+		if v.Support.String == `YES` || v.Support.String == `DEFAULT` {
+			ret = append(ret, v)
+		}
+	}
+	return ret, nil
+}
+
 func (m *mySQL) getVersion() string {
 	if len(m.version) > 0 {
 		return m.version
