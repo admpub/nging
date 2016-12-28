@@ -79,7 +79,7 @@
 							<td><input type="text" name="fields[][length]" value="" class="form-control"></td>
                             <td><select name="fields[][unsigned]" class="form-control"></select></td>
                             <td><label class="x-block"><input type="checkbox" name="fields[][null]" value="1"></label></td>
-                            <td><label class="x-block"><input type="radio" name="auto_increment" value=""></label></td>
+                            <td><label class="x-block"><input type="radio" name="auto_increment" value="0"></label></td>
                             <td>
                                 <div class="input-group">
                                     <label class="input-group-addon">
@@ -127,15 +127,26 @@ function addRow(obj) {
         return;
     }
     var currentTR=$(obj).parent().parent();
+    var hasNext=currentTR.next('tr').length>0;
     var clone=currentTR.clone();
     clone.find('input[name="fields[][field]"]').val('');
     clone.find('input[name="fields[][comment]"]').val('');
     clone.find('input[name="fields[][default]"]').val('');
     clone.find('input[name="fields[][length]"]').val('');
-    clone.find('input[name="auto_increment"]').prop('checked',false);
+    var index=Number(clone.find('input[name="auto_increment"]').val());
+    index++;
+    clone.find('input[name="auto_increment"]').prop('checked',false).val(index);
     clone.find('input[name="fields[][has_default]"]').prop('checked',false);
     clone.find('input[name="fields[][null]"]').prop('checked',false);
     currentTR.after(clone);
+    if(hasNext){
+        clone=currentTR.next('tr');
+        while(clone.next('tr').length>0){
+            index++;
+            clone=clone.next('tr');
+            clone.find('input[name="auto_increment"]').val(index);
+        }
+    }
 }
 function delRow(obj) {
     if($('#tbody-content > tr').length<2){
@@ -143,12 +154,19 @@ function delRow(obj) {
         return;
     }
     $(obj).parent().parent().remove();
+    reorder();
+}
+function reorder(){
+    $('#tbody-content input[name="auto_increment"]').each(function(index,elem){
+        $(this).val(index);
+    });
 }
 function moveUpRow(obj) {
     var currentTR=$(obj).parent().parent();
     if(currentTR.prev('tr').length>0){
         currentTR.prev('tr').before(currentTR.clone());
         currentTR.remove();
+        reorder();
     }
 }
 function moveDownRow(obj) {
@@ -156,6 +174,7 @@ function moveDownRow(obj) {
     if(currentTR.next('tr').length>0){
         currentTR.next('tr').after(currentTR.clone());
         currentTR.remove();
+        reorder();
     }
 }
 $(function(){
