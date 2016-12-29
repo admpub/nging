@@ -458,8 +458,36 @@ func (m *mySQL) processType(field *Field, collate string) (string, error) {
 	}
 	return r, nil
 }
-func (m *mySQL) processField(field *Field, typeField *Field) ([]string, error) {
-	r := []string{strings.TrimSpace(field.Field)}
+func (m *mySQL) autoIncrement(create string, autoIncrementCol string) (string, error) {
+	autoIncrementIndex := " PRIMARY KEY"
+	// don't overwrite primary key by auto_increment
+	if len(create) > 0 && len(autoIncrementCol) > 0 {
+		indexes, err := m.tableIndexes(create)
+		if err != nil {
+			return ``, err
+		}
+		orig := m.Form(`fields[` + autoIncrementCol + `][orig]`)
+		for _, index := range indexes {
+			exists := false
+			for _, col := range index.Columns {
+				if col == orig {
+					exists = true
+					break
+				}
+			}
+			if exists {
+				autoIncrementIndex = ""
+				break
+			}
+			if index.Type == "PRIMARY" {
+				autoIncrementIndex = " UNIQUE"
+			}
+		}
+	}
+	return " AUTO_INCREMENT" + autoIncrementIndex, nil
+}
+func (m *mySQL) processField(field *Field, typeField *Field, autoIncrementCol string) ([]string, error) {
+	r := []string{quoteCol(strings.TrimSpace(field.Field))}
 	t, e := m.processType(field, "COLLATE")
 	if e != nil {
 		return r, e
@@ -470,8 +498,42 @@ func (m *mySQL) processField(field *Field, typeField *Field) ([]string, error) {
 	} else {
 		r = append(r, ` NOT NULL`)
 	}
+	var defaultValue string
 	if field.Default.Valid {
-
+		var isRaw bool
+		switch strings.ToLower(field.Type) {
+		case `time`:
+			switch strings.ToUpper(field.Default.String) {
+			case `CURRENT_TIMESTAMP`:
+				isRaw = true
+			case `CURRENT_TIME`, `CURRENT_TIMESTAMP`, `CURRENT_DATE`:
+				isRaw = strings.ToLower(m.DbAuth.Driver) == `sqlite`
+			default:
+				switch strings.ToLower(m.DbAuth.Driver) {
+				case `pgsql`:
+					if pgsqlFieldDefaultValue.MatchString(field.Default.String) {
+						isRaw = true
+					}
+				}
+			}
+		case `bit`:
+			if reFieldTypeBit.MatchString(field.Default.String) {
+				isRaw = true
+			}
+		}
+		if isRaw {
+			defaultValue = ` DEFAULT ` + field.Default.String
+		} else {
+			defaultValue = ` DEFAULT ` + quoteVal(field.Default.String)
+		}
+	}
+	r = append(r, defaultValue)
+	if field.AutoIncrement.Valid {
+		v, e := m.autoIncrement(m.Query(`create`), autoIncrementCol)
+		if e != nil {
+			return r, e
+		}
+		r = append(r, v)
 	}
 	return r, nil
 }

@@ -37,8 +37,11 @@ var (
 
 	reFieldTypeNumber    = regexp.MustCompile("(^|[^o])int|float|double|decimal")
 	reFieldTypeText      = regexp.MustCompile("char|text|enum|set")
+	reFieldTypeBit       = regexp.MustCompile("^([0-9]+|b'[0-1]+')\\$")
 	reFieldLengthInvalid = regexp.MustCompile("[^-0-9,+()[\\]]")
 	reFieldLengthNumber  = regexp.MustCompile("^[0-9].*")
+
+	pgsqlFieldDefaultValue = regexp.MustCompile("^[a-z]+\\(('[^']*')+\\)\\$")
 
 	//以下数据来自客户端
 	reGrantColumn      = regexp.MustCompile(`^([^() ]+)\s*(\([^)]*\))?$`)

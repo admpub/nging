@@ -331,7 +331,9 @@ func (m *mySQL) CreateTable() error {
 		collation := m.Form(`collation`)
 		autoIncrementStartValue := m.Form(`autoIncrementStartValue`)
 		comment := m.Form(`comment`)
-		aiIndex := m.Formx(`auto_increment`).Int()
+		aiIndex := m.Formx(`auto_increment`)
+		aiIndexInt := aiIndexStr.Int()
+		aiIndexStr := aiIndexStr.Int()
 		mapx := NewMapx(m.Forms())
 		f := mapx.Get(`fields`)
 		fields := []*fieldItem{}
@@ -360,7 +362,7 @@ func (m *mySQL) CreateTable() error {
 					Valid:  f.Value(ii, `default`) == `1`,
 				}
 				field.AutoIncrement = sql.NullString{
-					Valid: aiIndex == i,
+					Valid: aiIndexInt == i,
 				}
 				if field.AutoIncrement.Valid {
 					field.AutoIncrement.String = autoIncrementStartValue
@@ -377,7 +379,7 @@ func (m *mySQL) CreateTable() error {
 					ProcessField: []string{},
 					After:        ``,
 				}
-				item.ProcessField, err = m.processField(field, typeField)
+				item.ProcessField, err = m.processField(field, typeField, aiIndexStr)
 				allFields = append(allFields, item)
 				if condition {
 
