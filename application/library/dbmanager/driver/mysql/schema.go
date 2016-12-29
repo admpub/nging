@@ -597,17 +597,17 @@ type Indexes struct {
 }
 
 type Field struct {
-	Field          string
-	Full_type      string
-	Type           string
-	Length         string
-	Unsigned       string
-	Default        sql.NullString
-	Null           bool
-	Auto_increment bool
-	On_update      string
-	Collation      string
-	Privileges     map[string]int
-	Comment        string
-	Primary        bool
+	Field         string
+	Full_type     string
+	Type          string
+	Length        string
+	Unsigned      string
+	Default       sql.NullString
+	Null          bool
+	AutoIncrement sql.NullString
+	On_update     string
+	Collation     string
+	Privileges    map[string]int
+	Comment       string
+	Primary       bool
 }

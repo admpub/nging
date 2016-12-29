@@ -19,9 +19,35 @@ package mysql
 
 import (
 	"database/sql"
-
 	"fmt"
+
+	"github.com/webx-top/com"
 )
+
+func (m *mySQL) support(feature string) bool {
+	switch feature {
+	case "scheme", "sequence", "type", "view_trigger":
+		return true
+	default:
+		if com.VersionCompare(m.getVersion(), "5.1") == 1 {
+			switch feature {
+			case "event", "partitioning":
+				return true
+			default:
+				return false
+			}
+		}
+		if com.VersionCompare(m.getVersion(), "5") == 1 {
+			switch feature {
+			case "routine", "trigger", "view":
+				return true
+			default:
+				return false
+			}
+		}
+		return false
+	}
+}
 
 func (m *mySQL) showVariables() ([]map[string]string, error) {
 	sqlStr := "SHOW VARIABLES"

@@ -20,6 +20,8 @@ package mysql
 import (
 	"database/sql"
 	"errors"
+	"fmt"
+	"regexp"
 	"strings"
 )
 
@@ -201,6 +203,103 @@ func (m *mySQL) copyTables(tables []string, targetDb string, isView bool) error 
 	return r.err
 }
 
+type fieldItem struct {
+	Original     string
+	ProcessField []string
+	After        string
+}
+
+func (m *mySQL) alterTable(table string, newName string, fields []*fieldItem, foreign []string, comment sql.NullString, engine string,
+	collation string, auto_increment sql.NullInt64, partitioning string) error {
+	alter := []string{}
+	create := len(table) == 0
+	for _, field := range fields {
+		alt := ``
+		if len(field.ProcessField) > 0 {
+			if !create {
+				if len(field.Original) > 0 {
+					alt += `CHANGE ` + quoteCol(field.Original)
+				} else {
+					alt += `ADD`
+				}
+			}
+			alt += ` ` + strings.Join(field.ProcessField, ``)
+			if !create {
+				alt += ` ` + field.After
+			}
+		} else {
+			alt = `DROP ` + quoteCol(field.Original)
+		}
+		alter = append(alter, alt)
+	}
+	for _, v := range foreign {
+		alter = append(alter, v)
+	}
+	status := ``
+	if comment.Valid {
+		status += " COMMENT=" + quoteVal(comment.String)
+	}
+	if len(engine) > 0 {
+		status += " ENGINE=" + quoteVal(engine)
+	}
+	if len(collation) > 0 {
+		status += " COLLATE " + quoteVal(collation)
+	}
+	if auto_increment.Valid {
+		status += " AUTO_INCREMENT=" + fmt.Sprint(auto_increment.Int64)
+	}
+	r := &Result{}
+	if create {
+		r.SQL = `CREATE TABLE ` + quoteCol(newName) + " (\n" + strings.Join(alter, ",\n") + "\n)" + status + partitioning
+	} else {
+		if table != newName {
+			alter = append(alter, `RENAME TO `+quoteCol(newName))
+		}
+		if len(status) > 0 {
+			status = strings.TrimLeft(status, ` `)
+		}
+		if len(alter) > 0 || len(partitioning) > 0 {
+			r.SQL = `ALTER TABLE ` + quoteCol(table) + "\n" + strings.Join(alter, ",\n") + partitioning
+		} else {
+			return nil
+		}
+	}
+	r.Exec(m.newParam())
+	m.AddResults(r)
+	return r.err
+}
+
+type indexItems struct {
+	Type      string
+	Name      string
+	Columns   []string
+	Operation string
+}
+
+func (m *mySQL) alterIndexes(table string, alter []*indexItems) error {
+	alters := make([]string, len(alter))
+	for k, v := range alter {
+		if v.Operation == `DROP` {
+			alters[k] = "\nDROP INDEX " + quoteCol(v.Name)
+			continue
+		}
+		alters[k] = "\nADD " + v.Type + " "
+		if v.Type == `PRIMARY` {
+			alters[k] += "KEY "
+		}
+		if len(v.Name) > 0 {
+			alters[k] += quoteCol(v.Name) + " "
+		}
+		alters[k] += "(" + strings.Join(v.Columns, ", ") + ")"
+	}
+	r := &Result{
+		SQL: "ALTER TABLE " + quoteCol(table) + strings.Join(alters, ","),
+	}
+	r.Exec(m.newParam())
+	m.AddResults(r)
+	return r.err
+}
+
 func (m *mySQL) tableFields(table string) (map[string]*Field, error) {
 	sqlStr := `SHOW FULL COLUMNS FROM ` + quoteCol(table)
 	rows, err := m.newParam().SetCollection(sqlStr).Query()
@@ -233,19 +332,19 @@ func (m *mySQL) tableFields(table string) (map[string]*Field, error) {
 			privileges[v] = k
 		}
 		ret[v.Field.String] = &Field{
-			Field:          v.Field.String,
-			Full_type:      v.Type.String,
-			Type:           match[1],
-			Length:         match[2],
-			Unsigned:       strings.TrimLeft(match[3]+match[4], ` `),
-			Default:        defaultValue,
-			Null:           v.Null.String == `YES`,
-			Auto_increment: v.Extra.String == `auto_increment`,
-			On_update:      onUpdate,
-			Collation:      v.Collation.String,
-			Privileges:     privileges,
-			Comment:        v.Comment.String,
-			Primary:        v.Key.String == "PRI",
+			Field:         v.Field.String,
+			Full_type:     v.Type.String,
+			Type:          match[1],
+			Length:        match[2],
+			Unsigned:      strings.TrimLeft(match[3]+match[4], ` `),
+			Default:       defaultValue,
+			Null:          v.Null.String == `YES`,
+			AutoIncrement: sql.NullString{Valid: v.Extra.String == `auto_increment`},
+			On_update:     onUpdate,
+			Collation:     v.Collation.String,
+			Privileges:    privileges,
+			Comment:       v.Comment.String,
+			Primary:       v.Key.String == "PRI",
 		}
 	}
 	return ret, nil
@@ -287,4 +386,92 @@ func (m *mySQL) tableIndexes(table string) (map[string]*Indexes, error) {
 		ret[v.Key_name.String].Descs = append(ret[v.Key_name.String].Descs, ``)
 	}
 	return ret, nil
+}
+
+func (m *mySQL) referencablePrimary(tableName string) (map[string]*Field, error) {
+	r := map[string]*Field{}
+	s, e := m.getTableStatus(m.dbName, tableName, true)
+	if e != nil {
+		return r, e
+	}
+	for tblName, table := range s {
+		if tblName != tableName && table.FKSupport(m.getVersion()) {
+			fields, err := m.tableFields(tblName)
+			if err != nil {
+				return r, err
+			}
+			for _, field := range fields {
+				if field.Primary {
+					if _, ok := r[tblName]; ok {
+						delete(r, tblName)
+						break
+					}
+					r[tblName] = field
+				}
+			}
+		}
+	}
+	return r, nil
+}
+func (m *mySQL) processLength(length string) (string, error) {
+	r := ``
+	re, err := regexp.Compile("^\\s*\\(?\\s*" + EnumLength + "(?:\\s*,\\s*" + EnumLength + ")*+\\s*\\)?\\s*\\$")
+	if err != nil {
+		return r, err
+	}
+	if re.MatchString(length) {
+		re, err := regexp.Compile(EnumLength)
+		if err != nil {
+			return r, err
+		}
+		matches := re.FindAllStringSubmatch(length, -1)
+		if len(matches) > 0 {
+			r = "(" + strings.Join(matches[0], ",") + ")"
+			return r, nil
+		}
+	}
+
+	length = reFieldLengthInvalid.ReplaceAllString(length, ``)
+	r = reFieldLengthNumber.ReplaceAllString(length, `($0)`)
+	return r, nil
+}
+func (m *mySQL) processType(field *Field, collate string) (string, error) {
+	r := ` ` + field.Type
+	l, e := m.processLength(field.Length)
+	if e != nil {
+		return ``, e
+	}
+	r += l
+
+	if reFieldTypeNumber.MatchString(field.Type) {
+		for _, v := range UnsignedTags {
+			if field.Unsigned == v {
+				r += ` ` + field.Unsigned
+			}
+		}
+	}
+
+	if reFieldTypeText.MatchString(field.Type) {
+		if len(field.Collation) > 0 {
+			r += ` ` + collate + ` ` + quoteVal(field.Collation)
+		}
+	}
+	return r, nil
+}
+func (m *mySQL) processField(field *Field, typeField *Field) ([]string, error) {
+	r := []string{strings.TrimSpace(field.Field)}
+	t, e := m.processType(field, "COLLATE")
+	if e != nil {
+		return r, e
+	}
+	r = append(r, t)
+	if field.Null {
+		r = append(r, ` NULL`)
+	} else {
+		r = append(r, ` NOT NULL`)
+	}
+	if field.Default.Valid {
+
+	}
+	return r, nil
 }

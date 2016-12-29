@@ -35,8 +35,16 @@ var (
 	reFieldDefault        = regexp.MustCompile("char|set")
 	reFieldPrivilegeDelim = regexp.MustCompile(", *")
 
+	reFieldTypeNumber    = regexp.MustCompile("(^|[^o])int|float|double|decimal")
+	reFieldTypeText      = regexp.MustCompile("char|text|enum|set")
+	reFieldLengthInvalid = regexp.MustCompile("[^-0-9,+()[\\]]")
+	reFieldLengthNumber  = regexp.MustCompile("^[0-9].*")
+
 	//以下数据来自客户端
 	reGrantColumn      = regexp.MustCompile(`^([^() ]+)\s*(\([^)]*\))?$`)
 	reGrantOptionValue = regexp.MustCompile(`(GRANT OPTION)\([^)]*\)`)
 	reNotWord          = regexp.MustCompile(`[^a-zA-Z0-9_]+`)
+
+	UnsignedTags = []string{"unsigned", "zerofill", "unsigned zerofill"}
+	EnumLength   = "'(?:''|[^'\\\\]|\\\\.)*'"
 )

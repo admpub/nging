@@ -24,6 +24,8 @@ import (
 
 	"strconv"
 
+	"database/sql"
+
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/webx-top/db/lib/factory"
@@ -331,21 +333,55 @@ func (m *mySQL) CreateTable() error {
 		comment := m.Form(`comment`)
 		aiIndex := m.Formx(`auto_increment`).Int()
 		mapx := NewMapx(m.Forms())
-		fields := mapx.Get(`fields`)
-		if fields != nil {
+		f := mapx.Get(`fields`)
+		fields := []*fieldItem{}
+		allFields := []*fieldItem{}
+		var useAllFields bool
+		referencablePrimary, err := m.referencablePrimary(table)
+		if err == nil && fields != nil {
+			foreignKeys := map[string]string{}
+			for tblName, field := range referencablePrimary {
+				foreignKeys[strings.Replace(tblName, "`", "``", -1)+"`"+strings.Replace(field.Field, "`", "``", -1)] = tblName
+			}
 			for i := 0; ; i++ {
 				ii := strconv.Itoa(i)
-				fieldName := fields.Value(ii, `field`)
+				fieldName := f.Value(ii, `field`)
 				if len(fieldName) == 0 {
 					break
 				}
-				fieldType := fields.Value(ii, `type`)
-				fieldLength := fields.Value(ii, `length`)
-				fieldUnsigned := fields.Value(ii, `unsigned`)
-				fieldNull := fields.Value(ii, `null`)
-				fieldHasDefault := fields.Value(ii, `has_default`)
-				fieldDefault := fields.Value(ii, `default`)
-				fieldComment := fields.Value(ii, `comment`)
+				field := &Field{}
+				field.Type = f.Value(ii, `type`)
+				field.Length = f.Value(ii, `length`)
+				field.Unsigned = f.Value(ii, `unsigned`)
+				field.Null, _ = strconv.ParseBool(f.Value(ii, `null`))
+				field.Comment = f.Value(ii, `comment`)
+				field.Default = sql.NullString{
+					String: f.Value(ii, `has_default`),
+					Valid:  f.Value(ii, `default`) == `1`,
+				}
+				field.AutoIncrement = sql.NullString{
+					Valid: aiIndex == i,
+				}
+				if field.AutoIncrement.Valid {
+					field.AutoIncrement.String = autoIncrementStartValue
+				}
+				var typeField *Field
+				if foreignKey, ok := foreignKeys[field.Type]; ok {
+					typeField, _ = referencablePrimary[foreignKey]
+				}
+				if typeField == nil {
+					typeField = field
+				}
+				item := &fieldItem{
+					Original:     ``,
+					ProcessField: []string{},
+					After:        ``,
+				}
+				item.ProcessField, err = m.processField(field, typeField)
+				allFields = append(allFields, item)
+				if condition {
+
+				}
 			}
 		}
 	}
