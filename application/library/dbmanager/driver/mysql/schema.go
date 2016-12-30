@@ -606,6 +606,7 @@ type Field struct {
 	Null          bool
 	AutoIncrement sql.NullString
 	On_update     string
+	On_delete     string
 	Collation     string
 	Privileges    map[string]int
 	Comment       string

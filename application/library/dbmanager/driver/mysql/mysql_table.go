@@ -23,6 +23,8 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/webx-top/com"
 )
 
 // 获取数据表列表
@@ -209,8 +211,8 @@ type fieldItem struct {
 	After        string
 }
 
-func (m *mySQL) alterTable(table string, newName string, fields []*fieldItem, foreign []string, comment sql.NullString, engine string,
-	collation string, auto_increment sql.NullInt64, partitioning string) error {
+func (m *mySQL) alterTable(table string, newName string, fields []*fieldItem, foreign map[string]string, comment sql.NullString, engine string,
+	collation string, autoIncrement sql.NullInt64, partitioning string) error {
 	alter := []string{}
 	create := len(table) == 0
 	for _, field := range fields {
@@ -245,8 +247,8 @@ func (m *mySQL) alterTable(table string, newName string, fields []*fieldItem, fo
 	if len(collation) > 0 {
 		status += " COLLATE " + quoteVal(collation)
 	}
-	if auto_increment.Valid {
-		status += " AUTO_INCREMENT=" + fmt.Sprint(auto_increment.Int64)
+	if autoIncrement.Valid {
+		status += " AUTO_INCREMENT=" + fmt.Sprint(autoIncrement.Int64)
 	}
 	r := &Result{}
 	if create {
@@ -300,18 +302,19 @@ func (m *mySQL) alterIndexes(table string, alter []*indexItems) error {
 	return r.err
 }
 
-func (m *mySQL) tableFields(table string) (map[string]*Field, error) {
+func (m *mySQL) tableFields(table string) (map[string]*Field, []string, error) {
 	sqlStr := `SHOW FULL COLUMNS FROM ` + quoteCol(table)
 	rows, err := m.newParam().SetCollection(sqlStr).Query()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	ret := map[string]*Field{}
+	sorts := []string{}
 	for rows.Next() {
 		v := &FieldInfo{}
 		err := rows.Scan(&v.Field, &v.Type, &v.Collation, &v.Null, &v.Key, &v.Default, &v.Extra, &v.Privileges, &v.Comment)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		match := reField.FindStringSubmatch(v.Type.String)
 		var defaultValue sql.NullString
@@ -331,6 +334,7 @@ func (m *mySQL) tableFields(table string) (map[string]*Field, error) {
 		for k, v := range reFieldPrivilegeDelim.Split(v.Privileges.String, -1) {
 			privileges[v] = k
 		}
+		sorts = append(sorts, v.Field.String)
 		ret[v.Field.String] = &Field{
 			Field:         v.Field.String,
 			Full_type:     v.Type.String,
@@ -347,7 +351,7 @@ func (m *mySQL) tableFields(table string) (map[string]*Field, error) {
 			Primary:       v.Key.String == "PRI",
 		}
 	}
-	return ret, nil
+	return ret, sorts, nil
 }
 
 func (m *mySQL) tableIndexes(table string) (map[string]*Indexes, error) {
@@ -396,7 +400,7 @@ func (m *mySQL) referencablePrimary(tableName string) (map[string]*Field, error)
 	}
 	for tblName, table := range s {
 		if tblName != tableName && table.FKSupport(m.getVersion()) {
-			fields, err := m.tableFields(tblName)
+			fields, _, err := m.tableFields(tblName)
 			if err != nil {
 				return r, err
 			}
@@ -415,7 +419,7 @@ func (m *mySQL) referencablePrimary(tableName string) (map[string]*Field, error)
 }
 func (m *mySQL) processLength(length string) (string, error) {
 	r := ``
-	re, err := regexp.Compile("^\\s*\\(?\\s*" + EnumLength + "(?:\\s*,\\s*" + EnumLength + ")*+\\s*\\)?\\s*\\$")
+	re, err := regexp.Compile("^\\s*\\(?\\s*" + EnumLength + "(?:\\s*,\\s*" + EnumLength + ")*\\s*\\)?\\s*$")
 	if err != nil {
 		return r, err
 	}
@@ -487,6 +491,7 @@ func (m *mySQL) autoIncrement(create string, autoIncrementCol string) (string, e
 	return " AUTO_INCREMENT" + autoIncrementIndex, nil
 }
 func (m *mySQL) processField(field *Field, typeField *Field, autoIncrementCol string) ([]string, error) {
+	com.Dump(field)
 	r := []string{quoteCol(strings.TrimSpace(field.Field))}
 	t, e := m.processType(field, "COLLATE")
 	if e != nil {
@@ -506,7 +511,7 @@ func (m *mySQL) processField(field *Field, typeField *Field, autoIncrementCol st
 			switch strings.ToUpper(field.Default.String) {
 			case `CURRENT_TIMESTAMP`:
 				isRaw = true
-			case `CURRENT_TIME`, `CURRENT_TIMESTAMP`, `CURRENT_DATE`:
+			case `CURRENT_TIME`, `CURRENT_DATE`:
 				isRaw = strings.ToLower(m.DbAuth.Driver) == `sqlite`
 			default:
 				switch strings.ToLower(m.DbAuth.Driver) {
@@ -534,6 +539,38 @@ func (m *mySQL) processField(field *Field, typeField *Field, autoIncrementCol st
 			return r, e
 		}
 		r = append(r, v)
+	}
+	return r, nil
+}
+
+type foreignKeyParam struct {
+	Table    string
+	Source   []string
+	Target   []string
+	OnDelete string
+	OnUpdate string
+}
+
+func (m *mySQL) formatForeignKey(foreignKey *foreignKeyParam) (string, error) {
+	source := make([]string, len(foreignKey.Source))
+	for k, v := range foreignKey.Source {
+		source[k] = quoteCol(v)
+	}
+	target := make([]string, len(foreignKey.Target))
+	for k, v := range foreignKey.Target {
+		target[k] = quoteCol(v)
+	}
+	r := " FOREIGN KEY (" + strings.Join(source, ", ") + ") REFERENCES " + quoteCol(foreignKey.Table)
+	r += " (" + strings.Join(target, ", ") + ")" //! reuse $name - check in older MySQL versions
+	re, err := regexp.Compile(`^(` + OnActions + `)\$`)
+	if err != nil {
+		return ``, err
+	}
+	if re.MatchString(foreignKey.OnDelete) {
+		r += " ON DELETE " + foreignKey.OnDelete
+	}
+	if re.MatchString(foreignKey.OnUpdate) {
+		r += " ON UPDATE " + foreignKey.OnUpdate
 	}
 	return r, nil
 }

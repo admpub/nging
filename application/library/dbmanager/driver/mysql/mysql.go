@@ -325,26 +325,62 @@ func (m *mySQL) CreateTable() error {
 		}
 		return nil
 	}
+
+	referencablePrimary, err := m.referencablePrimary(``)
+	foreignKeys := map[string]string{}
+	for tblName, field := range referencablePrimary {
+		foreignKeys[strings.Replace(tblName, "`", "``", -1)+"`"+strings.Replace(field.Field, "`", "``", -1)] = tblName
+	}
 	if m.IsPost() {
-		table := m.Form(`table`)
+		table := m.Form(`name`)
 		engine := m.Form(`engine`)
 		collation := m.Form(`collation`)
-		autoIncrementStartValue := m.Form(`autoIncrementStartValue`)
+		autoIncrementStartValue := m.Form(`ai_start_val`)
+		autoIncrementStart := sql.NullInt64{Valid: len(autoIncrementStartValue) > 0}
+		if autoIncrementStart.Valid {
+			autoIncrementStart.Int64, _ = strconv.ParseInt(autoIncrementStartValue, 10, 64)
+		}
 		comment := m.Form(`comment`)
 		aiIndex := m.Formx(`auto_increment`)
-		aiIndexInt := aiIndexStr.Int()
-		aiIndexStr := aiIndexStr.Int()
+		aiIndexInt := aiIndex.Int()
+		aiIndexStr := aiIndex.String()
 		mapx := NewMapx(m.Forms())
 		f := mapx.Get(`fields`)
-		fields := []*fieldItem{}
-		allFields := []*fieldItem{}
-		var useAllFields bool
-		referencablePrimary, err := m.referencablePrimary(table)
-		if err == nil && fields != nil {
-			foreignKeys := map[string]string{}
-			for tblName, field := range referencablePrimary {
-				foreignKeys[strings.Replace(tblName, "`", "``", -1)+"`"+strings.Replace(field.Field, "`", "``", -1)] = tblName
+		/*
+			oldTable := m.Form(`table`)
+			var origFields map[string]*Field
+			var sortFields []string
+			var tableStatus map[string]*TableStatus
+			if len(oldTable) > 0 {
+				val, sort, err := m.tableFields(oldTable)
+				if err != nil {
+					return err
+				}
+				origFields = val
+				sortFields = sort
+				stt, err := m.getTableStatus(m.dbName, oldTable, false)
+				if err != nil {
+					return err
+				}
+				tableStatus = stt
+			} else {
+				origFields = map[string]*Field{}
+				sortFields = []string{}
+				tableStatus = map[string]*TableStatus{}
 			}
+			var origField *Field
+			origFieldsNum := len(sortFields)
+			if origFieldsNum > 0 {
+				fieldName := sortFields[0]
+				origField = origFields[fieldName]
+			}
+			var useAllFields bool
+			fields := []*fieldItem{}
+		*/
+		allFields := []*fieldItem{}
+		after := " FIRST"
+		foreign := map[string]string{}
+		if err == nil && f != nil {
 			for i := 0; ; i++ {
 				ii := strconv.Itoa(i)
 				fieldName := f.Value(ii, `field`)
@@ -352,6 +388,7 @@ func (m *mySQL) CreateTable() error {
 					break
 				}
 				field := &Field{}
+				field.Field = fieldName
 				field.Type = f.Value(ii, `type`)
 				field.Length = f.Value(ii, `length`)
 				field.Unsigned = f.Value(ii, `unsigned`)
@@ -370,6 +407,15 @@ func (m *mySQL) CreateTable() error {
 				var typeField *Field
 				if foreignKey, ok := foreignKeys[field.Type]; ok {
 					typeField, _ = referencablePrimary[foreignKey]
+					foreignK, err := m.formatForeignKey(&foreignKeyParam{
+						Table:  foreignKey,
+						Source: []string{field.Field},
+						Target: []string{field.On_delete},
+					})
+					if err != nil {
+						return err
+					}
+					foreign[quoteCol(field.Field)] = ` ` + foreignK
 				}
 				if typeField == nil {
 					typeField = field
@@ -377,18 +423,75 @@ func (m *mySQL) CreateTable() error {
 				item := &fieldItem{
 					Original:     ``,
 					ProcessField: []string{},
-					After:        ``,
+					After:        after,
 				}
 				item.ProcessField, err = m.processField(field, typeField, aiIndexStr)
+				if err != nil {
+					return err
+				}
 				allFields = append(allFields, item)
-				if condition {
-
+				after = " AFTER " + quoteCol(field.Field)
+			}
+		}
+		var partitioning string
+		partitions := map[string]string{}
+		for _, p := range PartitionTypes {
+			partitions[p] = p
+		}
+		partitionBy := m.Form(`partition_by`)
+		if _, ok := partitions[partitionBy]; ok {
+			partitioning = "\nPARTITION BY " + partitionBy + "(" + m.Form(`partition`) + ")"
+			parts := []string{}
+			if partitionBy == `RANGE` || partitionBy == `LIST` {
+				values := m.FormValues(`partition_values`)
+				length := len(values)
+				for key, val := range m.FormValues(`partition_names`) {
+					var value string
+					if key < length {
+						value = values[key]
+					}
+					part := "\n  PARTITION " + quoteCol(val) + " VALUES "
+					if partitionBy == `RANGE` {
+						part += "LESS THAN"
+					} else {
+						part += "IN"
+					}
+					if len(value) > 0 {
+						part += "(" + value + ")"
+					} else {
+						part += " MAXVALUE"
+					}
+					//! SQL injection
+					parts = append(parts, part)
 				}
 			}
+			if len(parts) > 0 {
+				partitioning += " (" + strings.Join(parts, ",") + "\n)"
+			} else {
+				partitions := m.Form(`partitions`)
+				if len(partitions) > 0 {
+					partitioning += " PARTITIONS " + partitions
+				}
+			}
+		}
+		err = m.alterTable(``, table, allFields, foreign,
+			sql.NullString{String: comment, Valid: len(comment) > 0},
+			engine, collation,
+			autoIncrementStart,
+			partitioning)
+		if err == nil {
+			return m.returnTo()
 		}
 	}
 	engines, err := m.getEngines()
 	m.Set(`engines`, engines)
+	m.Set(`typeGroups`, typeGroups)
+	m.Set(`foreignKeys`, foreignKeys)
+	m.Set(`onActions`, strings.Split(OnActions, `|`))
+	m.Set(`unsignedTags`, UnsignedTags)
+	if m.Form(`engine`) == `` {
+		m.Request().Form().Set(`engine`, `InnoDB`)
+	}
 	return m.Render(`db/mysql/create_table`, err)
 }
 func (m *mySQL) ModifyTable() error {

@@ -1,11 +1,17 @@
 {{Extend "db/index"}}
+{{Block "title"}}{{"创建表"|T}} - {{Super}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{dbMgrURL "listTable" Stored.dbName}}">{{Stored.dbName}}</a></li>
+<li class="active">{{"创建表"|T}}</li>
+{{/Block}}
 {{Block "main"}}
 <style>
     .table > tbody > tr > td.actions{line-height:2.1em;padding:0;text-align:center}
 </style>
 <div class="row">
     <div class="col-md-12">
-        {{Include "db/mysql/dbinfo_btn"}}
+        {{Include "db/mysql/results"}}
         <div class="block-flat">
           <div class="header">							
             <h3>
@@ -17,7 +23,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"表名"|T}}</label>
                 <div class="col-sm-9">
-                    <input type="text" name="table" class="form-control" required="required" value="{{Form "table"}}">
+                    <input type="text" name="name" class="form-control" required="required" value="{{Form "name"}}">
                 </div>
               </div>
               <div class="form-group">
@@ -45,13 +51,13 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"自增起始值"|T}}</label>
                 <div class="col-sm-9">
-                    <input type="number" name="autoIncrementStartValue" class="form-control" required="required" value="{{Form "autoIncrementStartValue"}}">
+                    <input type="number" name="ai_start_val" class="form-control" value="{{Form "ai_start_val"}}">
                 </div>
               </div>
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"注释"|T}}</label>
                 <div class="col-sm-9">
-                    <input type="text" name="comment" class="form-control" required="required" value="{{Form "comment"}}">
+                    <input type="text" name="comment" class="form-control" value="{{Form "comment"}}">
                 </div>
               </div>
               <div class="form-group">
@@ -75,9 +81,39 @@
 					<tbody class="no-border-x" id="tbody-content">
                         <tr>
 							<td><input type="text" name="fields[0][field]" value="" class="form-control"></td>
-                            <td><select name="fields[0][type]" class="form-control"></select></td>
+                            <td><select name="fields[0][type]" class="form-control" onchange="onselectType(this)">
+                                {{range $k, $group := Stored.typeGroups}}
+                                <optgroup label="{{$group.Label}}" data-type="{{$group.Type}}">
+                                    {{range $k, $t := $group.Types}}
+                                    <option value="{{$t.Name}}">{{$t.Name}}</option>
+                                    {{end}}
+                                </optgroup>
+                                {{end}}
+                                {{if Stored.foreignKeys}}
+                                <optgroup label="{{"外键"|T}}" data-type="ForeignKey">
+                                    {{range $k, $v := Stored.foreignKeys}}
+                                    <option value="{{$k}}">{{$v}}</option>
+                                    {{end}}
+                                </optgroup>
+                                {{end}}
+                            </select></td>
 							<td><input type="text" name="fields[0][length]" value="" class="form-control"></td>
-                            <td><select name="fields[0][unsigned]" class="form-control"></select></td>
+                            <td><select name="fields[0][collation]" class="form-control select-collation" style="display:none">
+                                <option value="" readonly="readonly">loading...</option>
+                            </select>
+                                <select name="fields[0][unsigned]" class="form-control">
+                                    <option value=""></option>
+                                    {{range $k,$v:=Stored.unsignedTags}}
+                                    <option value="{{$v}}">{{$v}}</option>
+                                    {{end}}
+                                </select>
+                                <select name="fields[0][on_delete]" class="form-control" style="display:none">
+                                    <option value="">(ON DELETE)</option>
+                                    {{range $k,$v:=Stored.onActions}}
+                                    <option value="{{$v}}">{{$v}}</option>
+                                    {{end}}
+                                </select>
+                            </td>
                             <td><label class="x-block"><input type="checkbox" name="fields[0][null]" value="1"></label></td>
                             <td><label class="x-block"><input type="radio" name="auto_increment" value="0"></label></td>
                             <td>
@@ -132,7 +168,7 @@ function addRow(obj) {
     var index=Number(clone.find('input[name="auto_increment"]').val());
     var oldIdx=index;
     index++;
-    clone.find('input[name^="fields["]').each(function(){
+    clone.find('[name^="fields["]').each(function(){
         var name=$(this).attr('name');
         switch(name){
             case 'fields['+oldIdx+'][field]':
@@ -155,7 +191,7 @@ function addRow(obj) {
             index++;
             clone=clone.next('tr');
             clone.find('input[name="auto_increment"]').val(index);
-            clone.find('input[name^="fields["]').each(function(){
+            clone.find('[name^="fields["]').each(function(){
                 var name=$(this).attr('name');
                 $(this).attr('name',name.replace(new RegExp('\\[[0-9]+\\]'),'['+index+']'));
             });
@@ -174,7 +210,7 @@ function reorder(){
     $('#tbody-content input[name="auto_increment"]').each(function(index,elem){
         $(this).val(index);
         
-        $(this).parent().parent().parent().find('input[name^="fields["]').each(function(){
+        $(this).parent().parent().parent().find('[name^="fields["]').each(function(){
             var name=$(this).attr('name');
             $(this).attr('name',name.replace(new RegExp('\\[[0-9]+\\]'),'['+index+']'));
         });
@@ -196,6 +232,26 @@ function moveDownRow(obj) {
         reorder();
     }
 }
+function onselectType(obj) {
+    var name=$(obj).attr('name');
+    var prefix=name.substring(0,name.lastIndexOf("["));
+    var tr=$(obj).parent().parent();
+    switch($(obj).find('option:selected').parent('optgroup').data('type')){
+        case 'String':
+        case 'List':
+            tr.find('select[name="'+prefix+'[collation]"]').show().siblings('select').hide();
+            break;
+        case 'ForeignKey':
+            tr.find('select[name="'+prefix+'[on_delete]"]').show().siblings('select').hide();
+            break;
+        case 'Number':
+            tr.find('select[name="'+prefix+'[unsigned]"]').show().siblings('select').hide();
+            break;
+        case 'Datetime':
+        default:
+            tr.find('select[name="'+prefix+'[unsigned]"]').hide().siblings('select').hide();
+    }
+}
 $(function(){
     $.get(window.location.href,{json:'collations'},function(r){
         if(r.Code<1){
@@ -211,6 +267,15 @@ $(function(){
             str+='</optgroup>';
         }
         $('#collation').html(str);
+        $('select.select-collation').each(function(){
+            var sel=$(this).attr('rel');
+            $(this).html('<option value="">({{"字符集"|T}})</option>'+str);
+            if(sel){
+                $(this).find('option[value="'+sel+'"]').prop('selected',true);
+            }else{
+                $(this).find('option:selected').prop('selected',false);
+            }
+        });
     },'json');
 });
 </script>
