@@ -47,6 +47,7 @@ var (
 	reGrantColumn      = regexp.MustCompile(`^([^() ]+)\s*(\([^)]*\))?$`)
 	reGrantOptionValue = regexp.MustCompile(`(GRANT OPTION)\([^)]*\)`)
 	reNotWord          = regexp.MustCompile(`[^a-zA-Z0-9_]+`)
+	reOnlyWord         = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
 
 	UnsignedTags   = []string{"unsigned", "zerofill", "unsigned zerofill"}
 	EnumLength     = "'(?:''|[^'\\\\]|\\\\.)*'"

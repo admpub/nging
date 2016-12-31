@@ -1,0 +1,70 @@
+{{Extend "db/index"}}
+{{Block "title"}}{{"创建表"|T}} - {{Super}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{dbMgrURL "listTable" Stored.dbName}}">{{Stored.dbName}}</a></li>
+<li class="active">{{"修改数据库"|T}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        {{Include "db/mysql/results"}}
+        <div class="block-flat">
+          <div class="header">							
+            <h3>
+                {{"修改数据库"|T}}
+            </h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" method="POST" action="">
+              
+    <div class="form-group">
+        <label class="col-sm-2 control-label">{{"数据库名称"|T}}</label>
+        <div class="col-sm-9">
+        <input class="form-control" type="text" name="name" value="{{Form "name"}}" id="db-name">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">{{"字符集"|T}}</label>
+        <div class="col-sm-9">
+        {{$collation := Form "collation"}}
+        <select class="form-control" name="collation" id="db-collation" rel="{{if $collation}}{{$collation}}{{else}}utf8_general_ci{{end}}">
+            <option value=""></option>
+        </select>
+        </div>
+    </div>
+              
+              <div class="form-group">
+				<div class="col-sm-9 col-sm-offset-2">
+				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+				  <a class="btn btn-default btn-lg" href="{{dbMgrURL "privileges"}}"><i class="fa fa-reply"></i> {{"返回"|T}}</a>
+				</div>
+			</div>
+              </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+{{Super}}
+<script>
+$(function(){
+    $.get(window.location.href,{json:'collations'},function(r){
+        if(r.Code<1){
+            return App.message(r.Info);
+        }
+        var str='',sel=$('#db-collation').attr('rel');
+        for(var i in r.Data){
+            str+='<optgroup label="'+i+'">';
+            for(var j in r.Data[i]){
+                var s=sel==r.Data[i][j].Collation.String?' selected="selected"':'';
+                str+='<option value="'+r.Data[i][j].Collation.String+'"'+s+'>'+r.Data[i][j].Collation.String+'</option>';
+            }
+            str+='</optgroup>';
+        }
+        $('#db-collation').html(str);
+    },'json');
+});
+</script>
+{{/Block}}

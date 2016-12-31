@@ -33,16 +33,18 @@ func DbManager(ctx echo.Context) error {
 	var genURL func(string, ...string) string
 	switch operation {
 	case `login`:
-		data := &driver.DbAuth{}
-		ctx.Bind(data)
-		if len(data.Username) == 0 {
-			data.Username = `root`
+		if ctx.IsPost() {
+			data := &driver.DbAuth{}
+			ctx.Bind(data)
+			if len(data.Username) == 0 {
+				data.Username = `root`
+			}
+			if len(data.Host) == 0 {
+				data.Host = `127.0.0.1`
+			}
+			auth.CopyFrom(data)
+			ctx.Session().Set(`dbAuth`, data)
 		}
-		if len(data.Host) == 0 {
-			data.Host = `127.0.0.1`
-		}
-		auth.CopyFrom(data)
-		ctx.Session().Set(`dbAuth`, data)
 	case `logout`:
 	default:
 		if data, ok := ctx.Session().Get(`dbAuth`).(*driver.DbAuth); ok {
@@ -70,6 +72,10 @@ func DbManager(ctx echo.Context) error {
 					return `/db?driver=` + driverName + `&username=` + auth.Username + `&operation=` + op + p
 				}
 				defer mgr.Run(auth.Driver, `logout`)
+			} else {
+				fail(ctx, err.Error())
+				err = nil
+				driverName = ``
 			}
 		}
 	}

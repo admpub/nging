@@ -61,12 +61,18 @@ func (m *mySQL) Login() error {
 		Host:     m.DbAuth.Host,
 		Database: m.DbAuth.Db,
 	}
+	var dbNameIsEmpty bool
 	if len(settings.Database) == 0 {
+		dbNameIsEmpty = true
 		settings.Database = m.Form(`db`)
 	}
 	m.dbName = settings.Database
 	db, err := mysql.Open(settings)
 	if err != nil {
+		if dbNameIsEmpty {
+			m.fail(err.Error())
+			return m.returnTo(`/db`)
+		}
 		return err
 	}
 	cluster := factory.NewCluster().AddW(db)
@@ -240,7 +246,38 @@ func (m *mySQL) CreateDb() error {
 	return m.JSON(data)
 }
 func (m *mySQL) ModifyDb() error {
-	return nil
+	opType := m.Form(`json`)
+	if len(opType) > 0 {
+		switch opType {
+		case `collations`:
+			return m.listDbAjax(opType)
+		}
+		return nil
+	}
+	if len(m.dbName) < 1 {
+		m.fail(m.T(`请先选择一个数据库`))
+		return m.returnTo(m.GenURL(`listDb`))
+	}
+	var err error
+	if m.IsPost() {
+		name := m.Form(`name`)
+		collation := m.Form(`collation`)
+		if name != m.dbName {
+			results := m.renameDatabase(name, collation)
+			for _, r := range results {
+				m.AddResults(r)
+			}
+		} else {
+			m.AddResults(m.alterDatabase(name, collation))
+		}
+		return m.returnTo(m.GenURL(`listDb`))
+	}
+	form := m.Request().Form()
+	form.Set(`name`, m.dbName)
+	collation, err := m.getCollation(m.dbName, nil)
+	form.Set(`collation`, collation)
+
+	return m.Render(`db/mysql/modify_db`, err)
 }
 func (m *mySQL) listDbAjax(opType string) error {
 	switch opType {
@@ -314,7 +351,7 @@ func (m *mySQL) ListDb() error {
 	m.Set(`dbColls`, colls)
 	m.Set(`dbSizes`, sizes)
 	m.Set(`dbTables`, tables)
-	return m.Render(`db/mysql/list_db`, err)
+	return m.Render(`db/mysql/list_db`, m.checkErr(err))
 }
 func (m *mySQL) CreateTable() error {
 	opType := m.Form(`json`)
@@ -594,14 +631,16 @@ func (m *mySQL) ListTable() error {
 		if !ok {
 			tableList, err = m.getTables()
 			if err != nil {
-				return err
+				m.fail(err.Error())
+				return m.returnTo(m.GenURL(`listDb`))
 			}
 			m.Set(`tableList`, tableList)
 		}
 		var tableStatus map[string]*TableStatus
 		tableStatus, err = m.getTableStatus(m.dbName, ``, true)
 		if err != nil {
-			return err
+			m.fail(err.Error())
+			return m.returnTo(m.GenURL(`listDb`))
 		}
 		m.Set(`tableStatus`, tableStatus)
 	}

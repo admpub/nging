@@ -214,13 +214,15 @@ func (m *mySQL) getVersion() string {
 func (m *mySQL) baseInfo() error {
 	dbList, err := m.getDatabases()
 	if err != nil {
-		return err
+		m.fail(err.Error())
+		return m.returnTo(`/db`)
 	}
 	m.Set(`dbList`, dbList)
 	if len(m.dbName) > 0 {
 		tableList, err := m.getTables()
 		if err != nil {
-			return err
+			m.fail(err.Error())
+			return m.returnTo(m.GenURL(`listDb`))
 		}
 		m.Set(`tableList`, tableList)
 	}

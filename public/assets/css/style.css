@@ -1963,8 +1963,21 @@ table.information > tbody > tr > td {
 .page-aside.codeditor .compose .btn {
   width: 100%;
   border: 0;
-  border-radius: 3px !important;
+  border-radius: 3px;
   max-width: 180px;
+}
+.page-aside.codeditor .compose .btn-group .btn {
+  width: auto;
+  max-width: auto;
+}
+.page-aside.codeditor .compose .btn-group > .btn:last-child:not(:first-child), 
+.page-aside.codeditor .compose .btn-group > .dropdown-toggle:not(:first-child){
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+}
+.page-aside.codeditor .compose .btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle){
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
 }
 .code-cont .main-app {
   height: 100%;

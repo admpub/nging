@@ -95,9 +95,13 @@ $(function(){
 		 },
 	});
 	App.attachAjaxURL();
-	{{if and . (or (IsError .) (IsOk .))}}
-	App.message({title: '{{"系统消息"|T}}', text: "{{.}}"});
+{{if .}}
+	{{if IsError .}}
+	App.message({title: '{{"系统消息"|T}}', text: "{{.}}", class_name: "danger"});
+	{{else if IsOk .}}
+	App.message({title: '{{"系统消息"|T}}', text: "{{.}}", class_name: "success"});
 	{{end}}
+{{end}}
 	var messageCount=0,messageMax=20;
 	App.websocket(function(message){
 		var c=$('#notice-message-container');

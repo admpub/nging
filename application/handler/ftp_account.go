@@ -99,7 +99,7 @@ func FTPAccountAdd(ctx echo.Context) error {
 			m.Password = com.MakePassword(m.Password, model.DefaultSalt)
 			_, err = m.Add()
 			if err == nil {
-				ctx.Session().AddFlash(Ok(ctx.T(`操作成功`)))
+				ok(ctx, ctx.T(`操作成功`))
 				return ctx.Redirect(`/ftp/account`)
 			}
 		}
@@ -145,7 +145,7 @@ func FTPAccountEdit(ctx echo.Context) error {
 			m.Id = id
 			err = m.Edit(nil, db.Cond{`id`: id})
 			if err == nil {
-				ctx.Session().AddFlash(Ok(ctx.T(`操作成功`)))
+				ok(ctx, ctx.T(`操作成功`))
 				return ctx.Redirect(`/ftp/account`)
 			}
 		}
@@ -173,9 +173,9 @@ func FTPAccountDelete(ctx echo.Context) error {
 	m := model.NewFtpUser(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
-		ctx.Session().AddFlash(Ok(ctx.T(`操作成功`)))
+		ok(ctx, ctx.T(`操作成功`))
 	} else {
-		ctx.Session().AddFlash(err)
+		fail(ctx, err.Error())
 	}
 
 	return ctx.Redirect(`/ftp/account`)
@@ -208,7 +208,7 @@ func FTPGroupAdd(ctx echo.Context) error {
 		if err == nil {
 			_, err = m.Add()
 			if err == nil {
-				ctx.Session().AddFlash(Ok(ctx.T(`操作成功`)))
+				ok(ctx, ctx.T(`操作成功`))
 				return ctx.Redirect(`/ftp/group`)
 			}
 		}
@@ -244,7 +244,7 @@ func FTPGroupEdit(ctx echo.Context) error {
 			m.Id = id
 			err = m.Edit(nil, db.Cond{`id`: id})
 			if err == nil {
-				ctx.Session().AddFlash(Ok(ctx.T(`操作成功`)))
+				ok(ctx, ctx.T(`操作成功`))
 				return ctx.Redirect(`/ftp/group`)
 			}
 		}
@@ -261,9 +261,9 @@ func FTPGroupDelete(ctx echo.Context) error {
 	m := model.NewFtpUserGroup(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
-		ctx.Session().AddFlash(Ok(ctx.T(`操作成功`)))
+		ok(ctx, ctx.T(`操作成功`))
 	} else {
-		ctx.Session().AddFlash(err)
+		fail(ctx, err.Error())
 	}
 
 	return ctx.Redirect(`/ftp/group`)

@@ -46,13 +46,16 @@
               {{if $tableList}}
               {{$currentTable := Form "table"}}
               {{range $k,$v:=$tableList}}
-              <li{{if eq $currentTable $v}} class="current"{{end}}><a href="{{dbMgrURL "viewTable"}}&table={{$v}}" title="{{$v}}">{{$v}}</a></li>
+              <li{{if eq $currentTable $v}} class="current"{{end}}><a href="{{dbMgrURL "viewTable" $dbName}}&table={{$v}}" title="{{$v}}">{{$v}}</a></li>
               {{end}}
               {{end}}
           </ul>
 
           <div class="compose">
-            <a href="{{dbMgrURL "createTable"}}&db={{$dbName}}" class="btn btn-flat btn-primary">{{"创建表"|T}}</a>
+            <div class="btn-group">
+            <a href="{{dbMgrURL "createTable" $dbName}}" class="btn btn-flat btn-primary">{{"创建表"|T}}</a>
+            <a href="{{dbMgrURL "modifyDb" $dbName}}" class="btn btn-flat btn-success">{{"修改数据库"|T}}</a>
+            </div>
           </div>
           {{end}}
         </div><!-- .app-nav -->

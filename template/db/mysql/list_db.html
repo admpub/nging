@@ -17,6 +17,7 @@
 							<th><strong>{{"字符集"|T}}</strong></th>
 							<th><strong>{{"表数量"|T}}</strong></th>
 							<th><strong>{{"大小"|T}}</strong><!-- ({{"计算"|T}}) --></th>
+							<th style="width:50px"></th>
 						</tr>
 					</thead>
 					<tbody class="no-border-x" id="tbody-content">
@@ -31,6 +32,7 @@
 							<td>{{if $dbColls}}{{index $dbColls $k}}{{end}}</td>
 							<td>{{if $dbTables}}{{index $dbTables $k}}{{end}}</td>
 							<td>{{if $dbSizes}}{{index $dbSizes $k|FormatByte}}{{end}}</td>
+                            <td><a href="{{dbMgrURL "modifyDb" $v}}" class="label label-primary"><i class="fa fa-pencil"></i></a></td>
 						</tr>
                         {{end}}
 					</tbody>

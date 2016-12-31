@@ -38,8 +38,16 @@ func (m *mySQL) dropDatabase(dbName string) *Result {
 	return r.Exec(m.newParam())
 }
 
+func (m *mySQL) alterDatabase(dbName string, collation string) *Result {
+	r := &Result{}
+	r.SQL = "ALTER DATABASE " + quoteCol(dbName)
+	if reOnlyWord.MatchString(collation) {
+		r.SQL += " COLLATE " + collation
+	}
+	return r.Exec(m.newParam())
+}
+
 func (m *mySQL) renameDatabase(newName, collate string) []*Result {
-	newName = quoteCol(newName)
 	rs := []*Result{}
 	r := m.createDatabase(newName, collate)
 	rs = append(rs, r)
@@ -52,12 +60,16 @@ func (m *mySQL) renameDatabase(newName, collate string) []*Result {
 	rGetTables.end()
 	rGetTables.SQL = `SHOW TABLES`
 	rGetTables.err = err
-	rGetTables.ErrorString = err.Error()
+	if err != nil {
+		rGetTables.ErrorString = err.Error()
+	}
 	rs = append(rs, rGetTables)
 	if err != nil {
 		return rs
 	}
 	var sql string
+
+	newName = quoteCol(newName)
 	for key, table := range tables {
 		table = quoteCol(table)
 		if key > 0 {

@@ -56,6 +56,10 @@ func (m *mySQL) ok(msg string) {
 	m.Session().AddFlash(common.Ok(msg))
 }
 
+func (m *mySQL) checkErr(err error) interface{} {
+	return common.Err(m.Context, err)
+}
+
 func (m *mySQL) fail(msg string) {
 	m.Session().AddFlash(msg)
 }
