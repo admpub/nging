@@ -614,3 +614,17 @@ type Field struct {
 
 	Original string
 }
+
+type Trigger struct {
+	Trigger              sql.NullString
+	Event                sql.NullString
+	Table                sql.NullString
+	Statement            sql.NullString
+	Timing               sql.NullString
+	Created              sql.NullString
+	Sql_mode             sql.NullString
+	Definer              sql.NullString
+	Character_set_client sql.NullString
+	Collation_connection sql.NullString
+	Database_collation   sql.NullString
+}

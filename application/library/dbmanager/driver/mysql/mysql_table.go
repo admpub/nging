@@ -354,20 +354,21 @@ func (m *mySQL) tableFields(table string) (map[string]*Field, []string, error) {
 	return ret, sorts, nil
 }
 
-func (m *mySQL) tableIndexes(table string) (map[string]*Indexes, error) {
+func (m *mySQL) tableIndexes(table string) (map[string]*Indexes, []string, error) {
 	sqlStr := `SHOW INDEX FROM ` + quoteCol(table)
 	rows, err := m.newParam().SetCollection(sqlStr).Query()
-	if err != nil {
-		return nil, err
-	}
 	ret := map[string]*Indexes{}
+	sorts := []string{}
+	if err != nil {
+		return ret, sorts, err
+	}
 	for rows.Next() {
 		v := &IndexInfo{}
 		err := rows.Scan(&v.Table, &v.Non_unique, &v.Key_name, &v.Seq_in_index,
 			&v.Column_name, &v.Collation, &v.Cardinality, &v.Sub_part,
 			&v.Packed, &v.Null, &v.Index_type, &v.Comment, &v.Index_comment)
 		if err != nil {
-			return nil, err
+			return ret, sorts, err
 		}
 		if _, ok := ret[v.Key_name.String]; !ok {
 			ret[v.Key_name.String] = &Indexes{
@@ -388,21 +389,73 @@ func (m *mySQL) tableIndexes(table string) (map[string]*Indexes, error) {
 		ret[v.Key_name.String].Columns = append(ret[v.Key_name.String].Columns, v.Column_name.String)
 		ret[v.Key_name.String].Lengths = append(ret[v.Key_name.String].Lengths, v.Sub_part.String)
 		ret[v.Key_name.String].Descs = append(ret[v.Key_name.String].Descs, ``)
+
+		sorts = append(sorts, v.Key_name.String)
 	}
-	return ret, nil
+	return ret, sorts, nil
 }
 
-func (m *mySQL) referencablePrimary(tableName string) (map[string]*Field, error) {
+func (m *mySQL) tableForeignKeys(table string) (map[string]*ForeignKeyParam, []string, error) {
+	sorts := []string{}
+	result := map[string]*ForeignKeyParam{}
+	sqlStr := `SHOW CREATE TABLE ` + quoteCol(table)
+	row, err := m.newParam().SetCollection(sqlStr).QueryRow()
+	ret := make([]sql.NullString, 2)
+	if err != nil {
+		return result, sorts, err
+	}
+	err = row.Scan(&ret[0], &ret[1])
+	if err != nil {
+		return result, sorts, err
+	}
+	matches := reForeignKey.FindAllStringSubmatch(ret[1].String, -1)
+	for _, match := range matches {
+		source := reQuotedCol.FindAllStringSubmatch(match[2], -1)
+		target := reQuotedCol.FindAllStringSubmatch(match[5], -1)
+		key := strings.Trim(match[1], "`")
+		item := &ForeignKeyParam{
+			Name:     key,
+			Source:   source[0],
+			Target:   target[0],
+			OnDelete: `RESTRICT`,
+			OnUpdate: `RESTRICT`,
+		}
+		for k, v := range item.Source {
+			item.Source[k] = strings.Trim(v, "`")
+		}
+		for k, v := range item.Target {
+			item.Target[k] = strings.Trim(v, "`")
+		}
+		if len(match[4]) > 0 {
+			item.Database = strings.Trim(match[3], "`")
+			item.Table = strings.Trim(match[4], "`")
+		} else {
+			item.Database = strings.Trim(match[4], "`")
+			item.Table = strings.Trim(match[3], "`")
+		}
+		if len(match[6]) > 0 {
+			item.OnDelete = match[6]
+		}
+		if len(match[7]) > 0 {
+			item.OnUpdate = match[7]
+		}
+		result[key] = item
+		sorts = append(sorts, key)
+	}
+	return result, sorts, nil
+}
+
+func (m *mySQL) referencablePrimary(tableName string) (map[string]*Field, []string, error) {
 	r := map[string]*Field{}
-	s, e := m.getTableStatus(m.dbName, tableName, true)
+	s, sorts, e := m.getTableStatus(m.dbName, tableName, true)
 	if e != nil {
-		return r, e
+		return r, sorts, e
 	}
 	for tblName, table := range s {
 		if tblName != tableName && table.FKSupport(m.getVersion()) {
 			fields, _, err := m.tableFields(tblName)
 			if err != nil {
-				return r, err
+				return r, sorts, err
 			}
 			for _, field := range fields {
 				if field.Primary {
@@ -415,8 +468,9 @@ func (m *mySQL) referencablePrimary(tableName string) (map[string]*Field, error)
 			}
 		}
 	}
-	return r, nil
+	return r, sorts, nil
 }
+
 func (m *mySQL) processLength(length string) (string, error) {
 	r := ``
 	re, err := regexp.Compile("^\\s*\\(?\\s*" + EnumLength + "(?:\\s*,\\s*" + EnumLength + ")*\\s*\\)?\\s*$")
@@ -439,6 +493,7 @@ func (m *mySQL) processLength(length string) (string, error) {
 	r = reFieldLengthNumber.ReplaceAllString(length, `($0)`)
 	return r, nil
 }
+
 func (m *mySQL) processType(field *Field, collate string) (string, error) {
 	r := ` ` + field.Type
 	l, e := m.processLength(field.Length)
@@ -462,14 +517,16 @@ func (m *mySQL) processType(field *Field, collate string) (string, error) {
 	}
 	return r, nil
 }
+
 func (m *mySQL) autoIncrement(create string, autoIncrementCol string) (string, error) {
 	autoIncrementIndex := " PRIMARY KEY"
 	// don't overwrite primary key by auto_increment
 	if len(create) > 0 && len(autoIncrementCol) > 0 {
-		indexes, err := m.tableIndexes(create)
+		indexes, sorts, err := m.tableIndexes(create)
 		if err != nil {
 			return ``, err
 		}
+		_ = sorts
 		orig := m.Form(`fields[` + autoIncrementCol + `][orig]`)
 		for _, index := range indexes {
 			exists := false
@@ -490,6 +547,7 @@ func (m *mySQL) autoIncrement(create string, autoIncrementCol string) (string, e
 	}
 	return " AUTO_INCREMENT" + autoIncrementIndex, nil
 }
+
 func (m *mySQL) processField(field *Field, typeField *Field, autoIncrementCol string) ([]string, error) {
 	com.Dump(field)
 	r := []string{quoteCol(strings.TrimSpace(field.Field))}
@@ -543,7 +601,9 @@ func (m *mySQL) processField(field *Field, typeField *Field, autoIncrementCol st
 	return r, nil
 }
 
-type foreignKeyParam struct {
+type ForeignKeyParam struct {
+	Name     string
+	Database string
 	Table    string
 	Source   []string
 	Target   []string
@@ -551,7 +611,7 @@ type foreignKeyParam struct {
 	OnUpdate string
 }
 
-func (m *mySQL) formatForeignKey(foreignKey *foreignKeyParam) (string, error) {
+func (m *mySQL) formatForeignKey(foreignKey *ForeignKeyParam) (string, error) {
 	source := make([]string, len(foreignKey.Source))
 	for k, v := range foreignKey.Source {
 		source[k] = quoteCol(v)
@@ -573,4 +633,24 @@ func (m *mySQL) formatForeignKey(foreignKey *foreignKeyParam) (string, error) {
 		r += " ON UPDATE " + foreignKey.OnUpdate
 	}
 	return r, nil
+}
+
+func (m *mySQL) tableTriggers(table string) (map[string]*Trigger, []string, error) {
+	sqlStr := `SHOW TRIGGERS LIKE ` + quoteVal(table, '_', '%')
+	r := map[string]*Trigger{}
+	s := []string{}
+	rows, err := m.newParam().SetCollection(sqlStr).Query()
+	if err != nil {
+		return r, s, err
+	}
+	for rows.Next() {
+		v := &Trigger{}
+		err = rows.Scan(&v.Trigger, &v.Event, &v.Table, &v.Statement, &v.Timing, &v.Created, &v.Sql_mode, &v.Definer, &v.Character_set_client, &v.Collation_connection, &v.Database_collation)
+		if err != nil {
+			return r, s, err
+		}
+		r[v.Trigger.String] = v
+		s = append(s, v.Trigger.String)
+	}
+	return r, s, nil
 }

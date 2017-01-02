@@ -33,16 +33,12 @@ func (m *mySQL) support(feature string) bool {
 			switch feature {
 			case "event", "partitioning":
 				return true
-			default:
-				return false
 			}
 		}
 		if com.VersionCompare(m.getVersion(), "5") == 1 {
 			switch feature {
 			case "routine", "trigger", "view":
 				return true
-			default:
-				return false
 			}
 		}
 		return false
@@ -143,7 +139,7 @@ func (m *mySQL) getCollation(dbName string, collations *Collations) (string, err
 	return ``, nil
 }
 
-func (m *mySQL) getTableStatus(dbName string, tableName string, fast bool) (map[string]*TableStatus, error) {
+func (m *mySQL) getTableStatus(dbName string, tableName string, fast bool) (map[string]*TableStatus, []string, error) {
 	sqlStr := `SHOW TABLE STATUS`
 	if len(dbName) > 0 {
 		sqlStr += " FROM " + quoteCol(dbName)
@@ -152,26 +148,27 @@ func (m *mySQL) getTableStatus(dbName string, tableName string, fast bool) (map[
 		tableName = quoteVal(tableName, '_', '%')
 		sqlStr += ` LIKE ` + tableName
 	}
+	ret := map[string]*TableStatus{}
+	sorts := []string{}
 	rows, err := m.newParam().SetCollection(sqlStr).Query()
 	if err != nil {
-		return nil, err
+		return ret, sorts, err
 	}
-	ret := map[string]*TableStatus{}
 	for rows.Next() {
 		v := &TableStatus{}
 		err := rows.Scan(&v.Name, &v.Engine, &v.Version, &v.Row_format, &v.Rows, &v.Avg_row_length, &v.Data_length, &v.Max_data_length, &v.Index_length, &v.Data_free, &v.Auto_increment, &v.Create_time, &v.Update_time, &v.Check_time, &v.Collation, &v.Checksum, &v.Create_options, &v.Comment)
 		if err != nil {
-			return nil, err
+			return ret, sorts, err
 		}
 		if v.Engine.String == `InnoDB` {
 			v.Comment.String = reInnoDBComment.ReplaceAllString(v.Comment.String, `$1`)
 		}
 		ret[v.Name.String] = v
 		if len(tableName) > 0 {
-			return ret, nil
+			return ret, sorts, nil
 		}
 	}
-	return ret, nil
+	return ret, sorts, nil
 }
 
 func (m *mySQL) getEngines() ([]*SupportedEngine, error) {

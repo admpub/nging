@@ -129,6 +129,10 @@ var (
 		},
 	}
 	types = map[string]uint64{} ///< @var array ($type,$maximum_unsigned_length, ...)
+
+	pattern      = "`(?:[^`]|``)+`"
+	reQuotedCol  = regexp.MustCompile(pattern)
+	reForeignKey = regexp.MustCompile(`CONSTRAINT (` + pattern + `) FOREIGN KEY ?\(((?:` + pattern + `,? ?)+)\) REFERENCES (` + pattern + `)(?:\.(` + pattern + `))? \(((?:` + pattern + `,? ?)+)\)(?: ON DELETE (` + OnActions + `))?(?: ON UPDATE (` + OnActions + `))?`)
 )
 
 func init() {

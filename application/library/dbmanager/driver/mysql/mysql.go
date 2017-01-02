@@ -336,7 +336,7 @@ func (m *mySQL) ListDb() error {
 		colls[index], err = m.getCollation(dbName, collations)
 		if err == nil {
 			var tableStatus map[string]*TableStatus
-			tableStatus, err = m.getTableStatus(dbName, ``, true)
+			tableStatus, _, err = m.getTableStatus(dbName, ``, true)
 			if err == nil {
 				tables[index] = len(tableStatus)
 				for _, tableStat := range tableStatus {
@@ -363,7 +363,7 @@ func (m *mySQL) CreateTable() error {
 		return nil
 	}
 
-	referencablePrimary, err := m.referencablePrimary(``)
+	referencablePrimary, _, err := m.referencablePrimary(``)
 	foreignKeys := map[string]string{}
 	for tblName, field := range referencablePrimary {
 		foreignKeys[strings.Replace(tblName, "`", "``", -1)+"`"+strings.Replace(field.Field, "`", "``", -1)] = tblName
@@ -417,7 +417,7 @@ func (m *mySQL) CreateTable() error {
 				var typeField *Field
 				if foreignKey, ok := foreignKeys[field.Type]; ok {
 					typeField, _ = referencablePrimary[foreignKey]
-					foreignK, err := m.formatForeignKey(&foreignKeyParam{
+					foreignK, err := m.formatForeignKey(&ForeignKeyParam{
 						Table:  foreignKey,
 						Source: []string{field.Field},
 						Target: []string{field.On_delete},
@@ -519,7 +519,7 @@ func (m *mySQL) ModifyTable() error {
 		return nil
 	}
 
-	referencablePrimary, err := m.referencablePrimary(``)
+	referencablePrimary, _, err := m.referencablePrimary(``)
 	foreignKeys := map[string]string{}
 	for tblName, field := range referencablePrimary {
 		foreignKeys[strings.Replace(tblName, "`", "``", -1)+"`"+strings.Replace(field.Field, "`", "``", -1)] = tblName
@@ -536,7 +536,7 @@ func (m *mySQL) ModifyTable() error {
 		}
 		origFields = val
 		sortFields = sort
-		stt, err := m.getTableStatus(m.dbName, oldTable, false)
+		stt, _, err := m.getTableStatus(m.dbName, oldTable, false)
 		if err != nil {
 			return err
 		}
@@ -621,7 +621,7 @@ func (m *mySQL) ModifyTable() error {
 				var typeField *Field
 				if foreignKey, ok := foreignKeys[field.Type]; ok {
 					typeField, _ = referencablePrimary[foreignKey]
-					foreignK, err := m.formatForeignKey(&foreignKeyParam{
+					foreignK, err := m.formatForeignKey(&ForeignKeyParam{
 						Table:  foreignKey,
 						Source: []string{field.Field},
 						Target: []string{field.On_delete},
@@ -862,7 +862,7 @@ func (m *mySQL) ListTable() error {
 			m.Set(`tableList`, tableList)
 		}
 		var tableStatus map[string]*TableStatus
-		tableStatus, err = m.getTableStatus(m.dbName, ``, true)
+		tableStatus, _, err = m.getTableStatus(m.dbName, ``, true)
 		if err != nil {
 			m.fail(err.Error())
 			return m.returnTo(m.GenURL(`listDb`))
@@ -874,9 +874,19 @@ func (m *mySQL) ListTable() error {
 func (m *mySQL) ViewTable() error {
 	var err error
 	oldTable := m.Form(`table`)
-	var origFields map[string]*Field
-	var sortFields []string
-	var tableStatus *TableStatus
+	foreignKeys, sortForeignKeys, err := m.tableForeignKeys(oldTable)
+	if err != nil {
+		return err
+	}
+	var (
+		origFields   map[string]*Field
+		sortFields   []string
+		origIndexes  map[string]*Indexes
+		sortIndexes  []string
+		origTriggers map[string]*Trigger
+		sortTriggers []string
+		tableStatus  *TableStatus
+	)
 	if len(oldTable) > 0 {
 		val, sort, err := m.tableFields(oldTable)
 		if err != nil {
@@ -884,16 +894,24 @@ func (m *mySQL) ViewTable() error {
 		}
 		origFields = val
 		sortFields = sort
-		stt, err := m.getTableStatus(m.dbName, oldTable, false)
+		stt, _, err := m.getTableStatus(m.dbName, oldTable, false)
 		if err != nil {
 			return err
 		}
 		if ts, ok := stt[oldTable]; ok {
 			tableStatus = ts
 		}
+		val2, sort2, err := m.tableIndexes(oldTable)
+		if err != nil {
+			return err
+		}
+		origIndexes = val2
+		sortIndexes = sort2
 	} else {
 		origFields = map[string]*Field{}
 		sortFields = []string{}
+		origIndexes = map[string]*Indexes{}
+		sortIndexes = []string{}
 	}
 	if tableStatus == nil {
 		tableStatus = &TableStatus{}
@@ -902,8 +920,36 @@ func (m *mySQL) ViewTable() error {
 	for k, v := range sortFields {
 		postFields[k] = origFields[v]
 	}
+	indexes := make([]*Indexes, len(sortIndexes))
+	for k, v := range sortIndexes {
+		indexes[k] = origIndexes[v]
+	}
+	forkeys := make([]*ForeignKeyParam, len(sortForeignKeys))
+	for k, v := range sortForeignKeys {
+		forkeys[k] = foreignKeys[v]
+	}
 	m.Set(`tableStatus`, tableStatus)
 	m.Set(`postFields`, postFields)
+	m.Set(`indexes`, indexes)
+	m.Set(`version`, m.getVersion())
+	m.Set(`foreignKeys`, forkeys)
+	triggerName := `trigger`
+	if tableStatus.IsView() {
+		triggerName = `view_trigger`
+	}
+	supported := m.support(triggerName)
+	m.Set(`supportTrigger`, supported)
+	if supported {
+		origTriggers, sortTriggers, err = m.tableTriggers(oldTable)
+		if err != nil {
+			return err
+		}
+		triggers := make([]*Trigger, len(sortTriggers))
+		for k, v := range sortTriggers {
+			triggers[k] = origTriggers[v]
+		}
+		m.Set(`triggers`, triggers)
+	}
 	return m.Render(`db/mysql/view_table`, err)
 }
 func (m *mySQL) ListData() error {
