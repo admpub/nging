@@ -368,6 +368,162 @@ func (m *mySQL) CreateTable() error {
 	for tblName, field := range referencablePrimary {
 		foreignKeys[strings.Replace(tblName, "`", "``", -1)+"`"+strings.Replace(field.Field, "`", "``", -1)] = tblName
 	}
+	postFields := []*Field{}
+	if m.IsPost() {
+		table := m.Form(`name`)
+		engine := m.Form(`engine`)
+		collation := m.Form(`collation`)
+		autoIncrementStartValue := m.Form(`ai_start_val`)
+		autoIncrementStart := sql.NullInt64{Valid: len(autoIncrementStartValue) > 0}
+		if autoIncrementStart.Valid {
+			autoIncrementStart.Int64, _ = strconv.ParseInt(autoIncrementStartValue, 10, 64)
+		}
+		comment := m.Form(`comment`)
+		aiIndex := m.Formx(`auto_increment`)
+		aiIndexInt := aiIndex.Int()
+		aiIndexStr := aiIndex.String()
+		mapx := NewMapx(m.Forms())
+		f := mapx.Get(`fields`)
+		allFields := []*fieldItem{}
+		after := " FIRST"
+		foreign := map[string]string{}
+		if err == nil && f != nil {
+			for i := 0; ; i++ {
+				ii := strconv.Itoa(i)
+				fieldName := f.Value(ii, `field`)
+				if len(fieldName) == 0 {
+					break
+				}
+				field := &Field{}
+				field.Field = fieldName
+				field.Type = f.Value(ii, `type`)
+				field.Length = f.Value(ii, `length`)
+				field.Unsigned = f.Value(ii, `unsigned`)
+				field.Collation = f.Value(ii, `collation`)
+				field.On_delete = f.Value(ii, `on_delete`)
+				field.On_update = f.Value(ii, `on_update`)
+				field.Null, _ = strconv.ParseBool(f.Value(ii, `null`))
+				field.Comment = f.Value(ii, `comment`)
+				field.Default = sql.NullString{
+					String: f.Value(ii, `has_default`),
+					Valid:  f.Value(ii, `default`) == `1`,
+				}
+				field.AutoIncrement = sql.NullString{
+					Valid: aiIndexInt == i,
+				}
+				if field.AutoIncrement.Valid {
+					field.AutoIncrement.String = autoIncrementStartValue
+				}
+				var typeField *Field
+				if foreignKey, ok := foreignKeys[field.Type]; ok {
+					typeField, _ = referencablePrimary[foreignKey]
+					foreignK, err := m.formatForeignKey(&foreignKeyParam{
+						Table:  foreignKey,
+						Source: []string{field.Field},
+						Target: []string{field.On_delete},
+					})
+					if err != nil {
+						return err
+					}
+					foreign[quoteCol(field.Field)] = ` ` + foreignK
+				}
+				if typeField == nil {
+					typeField = field
+				}
+				item := &fieldItem{
+					Original:     ``,
+					ProcessField: []string{},
+					After:        after,
+				}
+				item.ProcessField, err = m.processField(field, typeField, aiIndexStr)
+				if err != nil {
+					return err
+				}
+				allFields = append(allFields, item)
+				after = " AFTER " + quoteCol(field.Field)
+				postFields = append(postFields, field)
+			}
+		}
+		var partitioning string
+		partitions := map[string]string{}
+		for _, p := range PartitionTypes {
+			partitions[p] = p
+		}
+		partitionBy := m.Form(`partition_by`)
+		if _, ok := partitions[partitionBy]; ok {
+			partitioning = "\nPARTITION BY " + partitionBy + "(" + m.Form(`partition`) + ")"
+			parts := []string{}
+			if partitionBy == `RANGE` || partitionBy == `LIST` {
+				values := m.FormValues(`partition_values`)
+				length := len(values)
+				for key, val := range m.FormValues(`partition_names`) {
+					var value string
+					if key < length {
+						value = values[key]
+					}
+					part := "\n  PARTITION " + quoteCol(val) + " VALUES "
+					if partitionBy == `RANGE` {
+						part += "LESS THAN"
+					} else {
+						part += "IN"
+					}
+					if len(value) > 0 {
+						part += "(" + value + ")"
+					} else {
+						part += " MAXVALUE"
+					}
+					//! SQL injection
+					parts = append(parts, part)
+				}
+			}
+			if len(parts) > 0 {
+				partitioning += " (" + strings.Join(parts, ",") + "\n)"
+			} else {
+				partitions := m.Form(`partitions`)
+				if len(partitions) > 0 {
+					partitioning += " PARTITIONS " + partitions
+				}
+			}
+		}
+		err = m.alterTable(``, table, allFields, foreign,
+			sql.NullString{String: comment, Valid: len(comment) > 0},
+			engine, collation,
+			autoIncrementStart,
+			partitioning)
+		if err == nil {
+			return m.returnTo()
+		}
+	}
+	engines, err := m.getEngines()
+	m.Set(`engines`, engines)
+	m.Set(`typeGroups`, typeGroups)
+	m.Set(`foreignKeys`, foreignKeys)
+	m.Set(`onActions`, strings.Split(OnActions, `|`))
+	m.Set(`unsignedTags`, UnsignedTags)
+	if m.Form(`engine`) == `` {
+		m.Request().Form().Set(`engine`, `InnoDB`)
+	}
+	if len(postFields) == 0 {
+		postFields = append(postFields, &Field{})
+	}
+	m.Set(`postFields`, postFields)
+	return m.Render(`db/mysql/create_table`, err)
+}
+func (m *mySQL) ModifyTable() error {
+	opType := m.Form(`json`)
+	if len(opType) > 0 {
+		switch opType {
+		case `collations`:
+			return m.listDbAjax(opType)
+		}
+		return nil
+	}
+
+	referencablePrimary, err := m.referencablePrimary(``)
+	foreignKeys := map[string]string{}
+	for tblName, field := range referencablePrimary {
+		foreignKeys[strings.Replace(tblName, "`", "``", -1)+"`"+strings.Replace(field.Field, "`", "``", -1)] = tblName
+	}
 	if m.IsPost() {
 		table := m.Form(`name`)
 		engine := m.Form(`engine`)
@@ -530,9 +686,6 @@ func (m *mySQL) CreateTable() error {
 		m.Request().Form().Set(`engine`, `InnoDB`)
 	}
 	return m.Render(`db/mysql/create_table`, err)
-}
-func (m *mySQL) ModifyTable() error {
-	return nil
 }
 func (m *mySQL) listTableAjax(opType string) error {
 	switch opType {

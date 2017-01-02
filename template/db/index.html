@@ -11,13 +11,15 @@
 {{/Block}}
 {{Block "bodyNav"}}
 {{if Stored.Get "dbUsername"}}
-	<div class="page-aside app codeditor tree">
+  <div class="page-aside app codeditor tree">
+      <a class="label label-primary collapse-button"><i class="fa fa-angle-double-left"></i></a>
       <div class="fixed nano nscroller">
         <div class="content">
           <div class="header xs-padding-bottom no-padding-top">
             <button class="navbar-toggle" data-target=".app-nav" data-toggle="collapse" type="button">
               <span class="fa fa-chevron-down"></span>
-            </button>      
+            </button>
+            <a class="label label-primary collapse-button"><i class="fa fa-angle-double-left"></i></a>
             <h2 class="page-title" title="{{Stored.Get "dbHost"}}">{{Stored.Get "dbHost"}}</h2>
             <p class="description">
             <span class="label label-default" title="{{Stored.Get "driver"}} {{Stored.Get "dbVersion"}}">
@@ -172,6 +174,20 @@ $(function(){
         }
       });
       $('#sidebar-collapse').trigger('click');
+      $('.page-aside .collapse-button').on('click',function(){
+        if($('.page-aside').width()>0){
+          $('.page-aside').addClass('collapsed');
+          $('.page-aside .collapse-button .fa').removeClass('fa-angle-double-left').addClass('fa-angle-double-right');
+          store.set('page-aside','collapsed');
+        }else{
+          $('.page-aside').removeClass('collapsed');
+          $('.page-aside .collapse-button .fa').removeClass('fa-angle-double-right').addClass('fa-angle-double-left');
+          store.set('page-aside','');
+        }
+      });
+      if(store.get('page-aside')=='collapsed'){
+        $('.page-aside .content .header .collapse-button').trigger('click');
+      }
 {{end}}
 });
 </script>

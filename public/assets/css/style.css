@@ -1979,6 +1979,24 @@ table.information > tbody > tr > td {
   border-bottom-right-radius: 0;
   border-top-right-radius: 0;
 }
+.page-aside .collapse-button {
+  position:absolute;left:280px;color:#fff;display:block;
+  z-index:9;border-radius:0 3px 3px 0;cursor:pointer;
+}
+.page-aside > .collapse-button {
+  top:120px;display:none;
+  padding:30px 2px;
+}
+.page-aside .content .header .collapse-button {
+  left:240px;top:30px;border-radius:3px;
+}
+.page-aside.collapsed{
+  width:0;
+}
+.page-aside.collapsed > .collapse-button {
+  display:block;
+  left:0;
+}
 .code-cont .main-app {
   height: 100%;
 }
@@ -5380,6 +5398,7 @@ ul.timeline li > .date {
     display: block;
   }
   #main-container, .cl-body{display:block}
+  .page-aside .content .header .collapse-button{display:none;}
   #pcont,
   .sb-collapsed #pcont {
     margin-left: 0;

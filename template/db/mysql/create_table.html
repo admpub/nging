@@ -79,52 +79,53 @@
 						</tr>
 					</thead>
 					<tbody class="no-border-x" id="tbody-content">
+                        {{range $index, $field := Stored.postFields}}
                         <tr>
-							<td><input type="text" name="fields[0][field]" value="" class="form-control"></td>
-                            <td><select name="fields[0][type]" class="form-control" onchange="onselectType(this)">
+							<td><input type="text" name="fields[{{$index}}][field]" value="{{$field.Field}}" class="form-control"></td>
+                            <td><select name="fields[{{$index}}][type]" class="form-control" onchange="onselectType(this)">
                                 {{range $k, $group := Stored.typeGroups}}
                                 <optgroup label="{{$group.Label}}" data-type="{{$group.Type}}">
                                     {{range $k, $t := $group.Types}}
-                                    <option value="{{$t.Name}}">{{$t.Name}}</option>
+                                    <option value="{{$t.Name}}"{{if eq $field.Type $t.Name}} selected="selected"{{end}}>{{$t.Name}}</option>
                                     {{end}}
                                 </optgroup>
                                 {{end}}
                                 {{if Stored.foreignKeys}}
                                 <optgroup label="{{"外键"|T}}" data-type="ForeignKey">
                                     {{range $k, $v := Stored.foreignKeys}}
-                                    <option value="{{$k}}">{{$v}}</option>
+                                    <option value="{{$k}}"{{if eq $field.Type $k}} selected="selected"{{end}}>{{$v}}</option>
                                     {{end}}
                                 </optgroup>
                                 {{end}}
                             </select></td>
-							<td><input type="text" name="fields[0][length]" value="" class="form-control"></td>
-                            <td><select name="fields[0][collation]" class="form-control select-collation" style="display:none">
+							<td><input type="text" name="fields[{{$index}}][length]" value="{{$field.Length}}" class="form-control"></td>
+                            <td><select name="fields[{{$index}}][collation]" class="form-control select-collation" style="display:none" rel="{{$field.Collation}}">
                                 <option value="" readonly="readonly">loading...</option>
                             </select>
-                                <select name="fields[0][unsigned]" class="form-control">
+                                <select name="fields[{{$index}}][unsigned]" class="form-control">
                                     <option value=""></option>
                                     {{range $k,$v:=Stored.unsignedTags}}
-                                    <option value="{{$v}}">{{$v}}</option>
+                                    <option value="{{$v}}"{{if eq $field.Unsigned $v}} selected="selected"{{end}}>{{$v}}</option>
                                     {{end}}
                                 </select>
-                                <select name="fields[0][on_delete]" class="form-control" style="display:none">
+                                <select name="fields[{{$index}}][on_delete]" class="form-control" style="display:none">
                                     <option value="">(ON DELETE)</option>
                                     {{range $k,$v:=Stored.onActions}}
-                                    <option value="{{$v}}">{{$v}}</option>
+                                    <option value="{{$v}}"{{if eq $field.On_delete $v}} selected="selected"{{end}}>{{$v}}</option>
                                     {{end}}
                                 </select>
                             </td>
-                            <td><label class="x-block"><input type="checkbox" name="fields[0][null]" value="1"></label></td>
-                            <td><label class="x-block"><input type="radio" name="auto_increment" value="0"></label></td>
+                            <td><label class="x-block"><input type="checkbox" name="fields[{{$index}}][null]" value="1"{{if $field.Null}} checked="checked"{{end}}></label></td>
+                            <td><label class="x-block"><input type="radio" name="auto_increment" value="{{$index}}"{{if $field.AutoIncrement.Valid}} checked="checked"{{end}}></label></td>
                             <td>
                                 <div class="input-group">
                                     <label class="input-group-addon">
-                                        <input type="checkbox" name="fields[0][has_default]" value="1">
+                                        <input type="checkbox" name="fields[{{$index}}][has_default]" value="1"{{if $field.Default.Valid}} checked="checked"{{end}}>
                                     </label>
-                                    <input type="text" name="fields[0][default]" value="" class="form-control" onkeyup="$(this).trigger('change')" onchange="$(this).prev('label').children('input').prop('checked',true)">
+                                    <input type="text" name="fields[{{$index}}][default]" value="{{$field.Default.String}}" class="form-control" onkeyup="$(this).trigger('change')" onchange="$(this).prev('label').children('input').prop('checked',true)">
                                 </div>
                             </td>
-                            <td><input type="text" name="fields[0][comment]" value="" class="form-control"></td>
+                            <td><input type="text" name="fields[{{$index}}][comment]" value="{{$field.Comment}}" class="form-control"></td>
                             <td class="actions">
                                 <a href="javascript:;" onclick="addRow(this)" class="label label-success" title="{{"下一行插入"|T}}"><i class="fa fa-plus"></i></a>
                                 <a href="javascript:;" onclick="moveUpRow(this)" class="label label-primary" title="{{"上移"|T}}"><i class="fa fa-arrow-up"></i></a>
@@ -132,6 +133,7 @@
                                 <a href="javascript:;" onclick="moveDownRow(this)" class="label label-primary" title="{{"下移"|T}}"><i class="fa fa-arrow-down"></i></a>
                             </td>
 						</tr>
+                        {{end}}
 					</tbody>
 				</table>
 			    </div>
