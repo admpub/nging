@@ -1,0 +1,81 @@
+{{Extend "db/index"}}
+{{Block "title"}}{{"数据库"|T}}: {{Stored.dbName}} - {{Super}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{dbMgrURL "listTable" Stored.dbName}}">{{Stored.dbName}}</a></li>
+<li class="active">{{"表"|T}}: {{Form "table"}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">
+			<a href="{{dbMgrURL "modifyTable" Stored.dbName (Form "table")}}" class="btn btn-success pull-right">
+				<i class="fa fa-plus"></i>
+				{{"修改表"|T}}
+			</a>						
+            <h3>{{"注释"|T}}: {{Stored.tableStatus.Comment.String}}</h3>
+          </div>
+          <div class="content">
+             <div class="table-responsive">
+				<table class="table no-border hover blue">
+					<thead class="no-border">
+						<tr>
+							<th><strong>{{"列"|T}}</strong></th>
+							<th><strong>{{"类型"|T}}</strong></th>
+							<th><strong>{{"注释"|T}}</strong></th>
+						</tr>
+					</thead>
+					<tbody class="no-border-x" id="tbody-content">
+                        {{range $k,$v := Stored.postFields}}
+						<tr>
+							<td>{{$v.Field}}</td>
+							<td>
+                                {{$v.Full_type}}
+                                {{if $v.Null}}<span>NULL</span>{{end}}
+                                {{if $v.AutoIncrement.Valid}}<em>{{"自动增量"|T}}</em>{{end}}
+                                {{if $v.Default.Valid}}[<b>{{$v.Default.String}}</b>]{{end}}
+                            </td>
+							<td>{{$v.Comment}}</td>
+						</tr>
+                        {{end}}
+					</tbody>
+				</table>		
+			    </div>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+
+        <div class="block-flat">
+          <div class="header">	
+            <h3>{{"索引"|T}}</h3>
+          </div>
+          <div class="content">
+             <div class="table-responsive">
+				<table class="table no-border hover blue">
+					<thead class="no-border">
+						<tr>
+							<th><strong>{{"类型"|T}}</strong></th>
+							<th><strong>{{"列"|T}}</strong></th>
+						</tr>
+					</thead>
+					<tbody class="no-border-x" id="tbody-content">
+                        {{/*range $k,$v := Stored.postFields}}
+						<tr>
+							<td>{{$v.Full_type.String}}</td>
+							<td>{{$v.Field.String}}</td>
+						</tr>
+                        {{end*/}}
+					</tbody>
+				</table>		
+			    </div>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+
+{{Block "footer"}}
+{{Super}}
+<script>
+</script>
+{{/Block}}

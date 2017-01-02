@@ -611,4 +611,6 @@ type Field struct {
 	Privileges    map[string]int
 	Comment       string
 	Primary       bool
+
+	Original string
 }

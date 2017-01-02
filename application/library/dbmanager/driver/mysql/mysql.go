@@ -524,6 +524,29 @@ func (m *mySQL) ModifyTable() error {
 	for tblName, field := range referencablePrimary {
 		foreignKeys[strings.Replace(tblName, "`", "``", -1)+"`"+strings.Replace(field.Field, "`", "``", -1)] = tblName
 	}
+	postFields := []*Field{}
+	oldTable := m.Form(`table`)
+	var origFields map[string]*Field
+	var sortFields []string
+	var tableStatus *TableStatus
+	if len(oldTable) > 0 {
+		val, sort, err := m.tableFields(oldTable)
+		if err != nil {
+			return err
+		}
+		origFields = val
+		sortFields = sort
+		stt, err := m.getTableStatus(m.dbName, oldTable, false)
+		if err != nil {
+			return err
+		}
+		if ts, ok := stt[oldTable]; ok {
+			tableStatus = ts
+		}
+	} else {
+		origFields = map[string]*Field{}
+		sortFields = []string{}
+	}
 	if m.IsPost() {
 		table := m.Form(`name`)
 		engine := m.Form(`engine`)
@@ -539,45 +562,40 @@ func (m *mySQL) ModifyTable() error {
 		aiIndexStr := aiIndex.String()
 		mapx := NewMapx(m.Forms())
 		f := mapx.Get(`fields`)
-		/*
-			oldTable := m.Form(`table`)
-			var origFields map[string]*Field
-			var sortFields []string
-			var tableStatus map[string]*TableStatus
-			if len(oldTable) > 0 {
-				val, sort, err := m.tableFields(oldTable)
-				if err != nil {
-					return err
-				}
-				origFields = val
-				sortFields = sort
-				stt, err := m.getTableStatus(m.dbName, oldTable, false)
-				if err != nil {
-					return err
-				}
-				tableStatus = stt
-			} else {
-				origFields = map[string]*Field{}
-				sortFields = []string{}
-				tableStatus = map[string]*TableStatus{}
-			}
-			var origField *Field
-			origFieldsNum := len(sortFields)
-			if origFieldsNum > 0 {
-				fieldName := sortFields[0]
-				origField = origFields[fieldName]
-			}
-			var useAllFields bool
-			fields := []*fieldItem{}
-		*/
+		var origField *Field
+		origFieldsNum := len(sortFields)
+		if origFieldsNum > 0 {
+			fieldName := sortFields[0]
+			origField = origFields[fieldName]
+		}
+		var useAllFields bool
+		fields := []*fieldItem{}
 		allFields := []*fieldItem{}
 		after := " FIRST"
 		foreign := map[string]string{}
+		driverName := strings.ToLower(m.DbAuth.Driver)
+		j := 1
 		if err == nil && f != nil {
 			for i := 0; ; i++ {
 				ii := strconv.Itoa(i)
 				fieldName := f.Value(ii, `field`)
 				if len(fieldName) == 0 {
+					orig := f.Value(ii, `orig`)
+					if len(orig) > 0 {
+						useAllFields = true
+						item := &fieldItem{
+							Original:     orig,
+							ProcessField: []string{},
+						}
+						fields = append(fields, item)
+						if origFieldsNum > j {
+							origField = origFields[sortFields[j]]
+							j++
+						} else {
+							after = ``
+						}
+						continue
+					}
 					break
 				}
 				field := &Field{}
@@ -585,6 +603,9 @@ func (m *mySQL) ModifyTable() error {
 				field.Type = f.Value(ii, `type`)
 				field.Length = f.Value(ii, `length`)
 				field.Unsigned = f.Value(ii, `unsigned`)
+				field.Collation = f.Value(ii, `collation`)
+				field.On_delete = f.Value(ii, `on_delete`)
+				field.On_update = f.Value(ii, `on_update`)
 				field.Null, _ = strconv.ParseBool(f.Value(ii, `null`))
 				field.Comment = f.Value(ii, `comment`)
 				field.Default = sql.NullString{
@@ -608,13 +629,18 @@ func (m *mySQL) ModifyTable() error {
 					if err != nil {
 						return err
 					}
-					foreign[quoteCol(field.Field)] = ` ` + foreignK
+					if driverName == `sqlite` || len(oldTable) == 0 {
+						foreign[quoteCol(field.Field)] = ` ` + foreignK
+					} else {
+						foreign[quoteCol(field.Field)] = `ADD` + foreignK
+					}
 				}
 				if typeField == nil {
 					typeField = field
 				}
+				field.Original = f.Value(ii, `orig`)
 				item := &fieldItem{
-					Original:     ``,
+					Original:     field.Original,
 					ProcessField: []string{},
 					After:        after,
 				}
@@ -623,7 +649,19 @@ func (m *mySQL) ModifyTable() error {
 					return err
 				}
 				allFields = append(allFields, item)
+				processField, err := m.processField(origField, origField, aiIndexStr)
+				if err != nil {
+					return err
+				}
+				isChanged := fmt.Sprintf(`%v`, item.ProcessField) == fmt.Sprintf(`%v`, processField)
+				if isChanged {
+					fields = append(fields, item)
+					if len(field.Original) > 0 || len(after) > 0 {
+						useAllFields = true
+					}
+				}
 				after = " AFTER " + quoteCol(field.Field)
+				postFields = append(postFields, field)
 			}
 		}
 		var partitioning string
@@ -666,14 +704,40 @@ func (m *mySQL) ModifyTable() error {
 					partitioning += " PARTITIONS " + partitions
 				}
 			}
+		} else if m.support(`partitioning`) && strings.Contains(tableStatus.Create_options.String, `partitioned`) {
+			partitioning += "\nREMOVE PARTITIONING"
 		}
-		err = m.alterTable(``, table, allFields, foreign,
-			sql.NullString{String: comment, Valid: len(comment) > 0},
-			engine, collation,
-			autoIncrementStart,
-			partitioning)
+		if tableStatus != nil {
+			if comment == tableStatus.Comment.String {
+				comment = ``
+			}
+			if engine == tableStatus.Engine.String {
+				engine = ``
+			}
+			if collation == tableStatus.Collation.String {
+				collation = ``
+			}
+		}
+		if driverName == `sqlite` && (useAllFields || len(foreign) > 0) {
+			err = m.alterTable(oldTable, table, allFields, foreign,
+				sql.NullString{String: comment, Valid: len(comment) > 0},
+				engine, collation,
+				autoIncrementStart,
+				partitioning)
+		} else {
+			err = m.alterTable(oldTable, table, fields, foreign,
+				sql.NullString{String: comment, Valid: len(comment) > 0},
+				engine, collation,
+				autoIncrementStart,
+				partitioning)
+		}
 		if err == nil {
 			return m.returnTo()
+		}
+	} else {
+		postFields = make([]*Field, len(sortFields))
+		for k, v := range sortFields {
+			postFields[k] = origFields[v]
 		}
 	}
 	engines, err := m.getEngines()
@@ -682,9 +746,17 @@ func (m *mySQL) ModifyTable() error {
 	m.Set(`foreignKeys`, foreignKeys)
 	m.Set(`onActions`, strings.Split(OnActions, `|`))
 	m.Set(`unsignedTags`, UnsignedTags)
-	if m.Form(`engine`) == `` {
-		m.Request().Form().Set(`engine`, `InnoDB`)
+	if tableStatus != nil {
+		form := m.Request().Form()
+		form.Set(`engine`, tableStatus.Engine.String)
+		form.Set(`name`, tableStatus.Name.String)
+		form.Set(`collation`, tableStatus.Collation.String)
+		form.Set(`comment`, tableStatus.Comment.String)
 	}
+	if len(postFields) == 0 {
+		postFields = append(postFields, &Field{})
+	}
+	m.Set(`postFields`, postFields)
 	return m.Render(`db/mysql/create_table`, err)
 }
 func (m *mySQL) listTableAjax(opType string) error {
@@ -800,7 +872,39 @@ func (m *mySQL) ListTable() error {
 	return m.Render(`db/mysql/list_table`, err)
 }
 func (m *mySQL) ViewTable() error {
-	return nil
+	var err error
+	oldTable := m.Form(`table`)
+	var origFields map[string]*Field
+	var sortFields []string
+	var tableStatus *TableStatus
+	if len(oldTable) > 0 {
+		val, sort, err := m.tableFields(oldTable)
+		if err != nil {
+			return err
+		}
+		origFields = val
+		sortFields = sort
+		stt, err := m.getTableStatus(m.dbName, oldTable, false)
+		if err != nil {
+			return err
+		}
+		if ts, ok := stt[oldTable]; ok {
+			tableStatus = ts
+		}
+	} else {
+		origFields = map[string]*Field{}
+		sortFields = []string{}
+	}
+	if tableStatus == nil {
+		tableStatus = &TableStatus{}
+	}
+	postFields := make([]*Field, len(sortFields))
+	for k, v := range sortFields {
+		postFields[k] = origFields[v]
+	}
+	m.Set(`tableStatus`, tableStatus)
+	m.Set(`postFields`, postFields)
+	return m.Render(`db/mysql/view_table`, err)
 }
 func (m *mySQL) ListData() error {
 	return nil
