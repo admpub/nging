@@ -300,6 +300,51 @@ func (m *mySQL) alterIndexes(table string, alter []*indexItems) error {
 	return r.err
 }
 
+type Partition struct {
+	Method     sql.NullString
+	Position   sql.NullString
+	Expression sql.NullString
+	Names      []string
+	Values     []string
+}
+
+func (m *mySQL) tablePartitions(table string) (*Partition, error) {
+	ret := &Partition{
+		Names:  []string{},
+		Values: []string{},
+	}
+	from := `FROM information_schema.PARTITIONS WHERE TABLE_SCHEMA = ` + quoteVal(m.dbName) + ` AND TABLE_NAME = ` + quoteVal(table)
+	sqlStr := `SELECT PARTITION_METHOD, PARTITION_ORDINAL_POSITION, PARTITION_EXPRESSION ` + from + ` ORDER BY PARTITION_ORDINAL_POSITION DESC LIMIT 1`
+	row, err := m.newParam().SetCollection(sqlStr).QueryRow()
+	if err != nil {
+		return ret, err
+	}
+	err = row.Scan(&ret.Method, &ret.Position, &ret.Expression)
+	if err != nil {
+		return ret, err
+	}
+	sqlStr = `SELECT PARTITION_NAME, PARTITION_DESCRIPTION ` + from + ` AND PARTITION_NAME != '' ORDER BY PARTITION_ORDINAL_POSITION`
+	rows, err := m.newParam().SetCollection(sqlStr).Query()
+	if err != nil {
+		return ret, err
+	}
+	for rows.Next() {
+		var k, v sql.NullString
+		err = rows.Scan(&k, &v)
+		if err != nil {
+			return ret, err
+		}
+
+		if !k.Valid || !v.Valid {
+			continue
+		}
+
+		ret.Names = append(ret.Names, k.String)
+		ret.Values = append(ret.Values, v.String)
+	}
+	return ret, nil
+}
+
 func (m *mySQL) tableFields(table string) (map[string]*Field, []string, error) {
 	sqlStr := `SHOW FULL COLUMNS FROM ` + quoteCol(table)
 	rows, err := m.newParam().SetCollection(sqlStr).Query()
@@ -316,7 +361,7 @@ func (m *mySQL) tableFields(table string) (map[string]*Field, []string, error) {
 		}
 		match := reField.FindStringSubmatch(v.Type.String)
 		var defaultValue sql.NullString
-		if v.Default.String != `` || reFieldDefault.MatchString(match[1]) {
+		if v.Default.Valid || reFieldDefault.MatchString(match[1]) {
 			defaultValue.Valid = true
 			defaultValue.String = v.Default.String
 		}
@@ -650,4 +695,52 @@ func (m *mySQL) tableTriggers(table string) (map[string]*Trigger, []string, erro
 		s = append(s, v.Trigger.String)
 	}
 	return r, s, nil
+}
+
+func (m *mySQL) tablePartitioning(partitions map[string]string, tableStatus *TableStatus) string {
+	var partitioning string
+	partitionMethod := m.Form(`partition_method`)
+	if _, ok := partitions[partitionMethod]; ok {
+		partitioning = "\nPARTITION BY " + partitionMethod + "(" + m.Form(`partition_expression`) + ")"
+		parts := []string{}
+		if partitionMethod == `RANGE` || partitionMethod == `LIST` {
+			values := m.FormValues(`partition_values[]`)
+			length := len(values)
+			for key, val := range m.FormValues(`partition_names[]`) {
+				if len(val) == 0 {
+					continue
+				}
+				var value string
+				if key < length {
+					value = values[key]
+				}
+				part := "\n  PARTITION " + quoteCol(val) + " VALUES "
+				if partitionMethod == `RANGE` {
+					part += "LESS THAN"
+				} else {
+					part += "IN"
+				}
+				if len(value) > 0 {
+					part += "(" + value + ")"
+				} else {
+					part += " MAXVALUE"
+				}
+				//! SQL injection
+				parts = append(parts, part)
+			}
+		}
+		if len(parts) > 0 {
+			partitioning += " (" + strings.Join(parts, ",") + "\n)"
+		} else {
+			partitions := m.Form(`partition_position`)
+			if len(partitions) > 0 {
+				partitioning += " PARTITIONS " + partitions
+			}
+		}
+	} else if tableStatus != nil {
+		if m.support(`partitioning`) && strings.Contains(tableStatus.Create_options.String, `partitioned`) {
+			partitioning += "\nREMOVE PARTITIONING"
+		}
+	}
+	return partitioning
 }

@@ -1,9 +1,9 @@
 {{Extend "db/index"}}
-{{Block "title"}}{{"创建表"|T}} - {{Super}}{{/Block}}
+{{Block "title"}}{{if eq (Form "operation") "modifyTable"}}{{"修改表"|T}}: {{Form "table"}}{{else}}{{"创建表"|T}}{{end}} - {{Super}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
 <li><a href="{{dbMgrURL "listTable" Stored.dbName}}">{{Stored.dbName}}</a></li>
-<li class="active">{{"创建表"|T}}</li>
+<li class="active">{{if eq (Form "operation") "modifyTable"}}{{"修改表"|T}}: {{Form "table"}}{{else}}{{"创建表"|T}}{{end}}</li>
 {{/Block}}
 {{Block "main"}}
 <style>
@@ -15,7 +15,7 @@
         <div class="block-flat">
           <div class="header">							
             <h3>
-                {{"创建表"|T}}
+                {{if eq (Form "operation") "modifyTable"}}{{"修改表"|T}}: {{Form "table"}}{{else}}{{"创建表"|T}}{{end}}
             </h3>
           </div>
           <div class="content">
@@ -145,6 +145,53 @@
 				</table>
 			    </div>
 
+{{if Stored.supportPartitioning}}
+{{$partitionTable := or (Contains Stored.partition.Method.String "RANGE") (Contains Stored.partition.Method.String "LIST")}}
+                <fieldset>
+                     <legend><a href="javascript:;" onclick="$('#partition-setting').toggleClass('hidden')">{{"分区设置"|T}}</a></legend>
+<div class="col-sm-12{{if le (len Stored.partition.Names) 1}} hidden{{end}}" id="partition-setting">
+    <div class="col-sm-4">
+                     <select name="partition_method" class="form-control" onchange="onselectPartition(this)">
+                         <option value=""></option>
+                         {{range $k,$v := Stored.partitionTypes}}
+                         <option value="{{$v}}"{{if eq Stored.partition.Method.String $v}} selected="selected"{{end}}>{{$v}}</option>
+                         {{end}}
+                     </select>
+    </div>
+    <div class="col-sm-4">
+        <div class="input-group">
+<label class="input-group-addon">(</label>
+<input name="partition_expression" class="form-control" title="{{"字段名"|T}}" value="{{Stored.partition.Expression.String}}">
+<label class="input-group-addon">)</label>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="input-group" id="partition_position"{{if or $partitionTable (not Stored.partition.Method.String)}} style="display:none"{{end}}>
+<label class="input-group-addon">{{"分区"|T}}: </label>
+<input type="number" name="partition_position" title="{{"数量"|T}}" class="form-control" value="{{Stored.partition.Position.String}}">
+        </div>
+    </div>
+    <div class="col-sm-12">
+<table cellspacing="0" id="partition-table"{{if not $partitionTable}} style="display:none"{{end}}>
+<thead><tr><th>{{"分区名"|T}}</th><th style="width:50%">{{"值"|T}}</th><th style="width:70px">
+        <a href="javascript:;" onclick="addPartitionRow()" class="label label-success" title="{{"下一行插入"|T}}"><i class="fa fa-plus"></i></a></th></tr></thead>
+<tbody>
+{{range $k,$v := Stored.partition.Names}}
+	<tr>
+    <td><input name="partition_names[]" class="form-control" value="{{$v}}" autocapitalize="off"></td>
+	<td><input name="partition_values[]" class="form-control" value="{{index Stored.partition.Values $k}}"></td>
+	<td>
+        <a href="javascript:;" onclick="addPartitionRow(this)" class="label label-success" title="{{"下一行插入"|T}}"><i class="fa fa-plus"></i></a>
+        <a href="javascript:;" onclick="delPartitionRow(this)" class="label label-danger" title="{{"移除"|T}}"><i class="fa fa-times"></i></a>
+    </td>
+    </tr>
+{{end}}
+</tbody>
+</table>
+    </div>
+</div><!-- /.col-sm-12 -->
+                </fieldset>
+{{end}}
 
                 </div>
               </div>
@@ -166,14 +213,16 @@
 {{Super}}
 <script>
 function addRow(obj) {
+    var clone,currentTR,firstTR,hasNext,clone;
     if(obj==null){
-        var firstTR=$('#tbody-content > tr:first');
-        firstTR.before(firstTR.clone());
-        return;
+        firstTR=$('#tbody-content > tr:first');
+        hasNext=firstTR.next('tr').length>0;
+        clone=firstTR.clone();
+    }else{
+        currentTR=$(obj).parent().parent();
+        hasNext=currentTR.next('tr').length>0;
+        clone=currentTR.clone();
     }
-    var currentTR=$(obj).parent().parent();
-    var hasNext=currentTR.next('tr').length>0;
-    var clone=currentTR.clone();
     var index=Number(clone.find('input[name="auto_increment"]').val());
     var oldIdx=index;
     index++;
@@ -193,6 +242,11 @@ function addRow(obj) {
         $(this).attr('name',name.replace(new RegExp('\\['+oldIdx+'\\]'),'['+index+']'));
     });
     clone.find('input[name="auto_increment"]').prop('checked',false).val(index);
+    if(obj==null){
+        firstTR.before(clone);
+        reorder();
+        return;
+    }
     currentTR.after(clone);
     if(hasNext){
         clone=currentTR.next('tr');
@@ -212,7 +266,7 @@ function delRow(obj) {
         App.message({text:'{{"请至少保留一个字段，不能全部删除"|T}}',class_name:'warning',title:'{{"提醒"|T}}'},false);
         return;
     }
-    $(obj).parent().parent().remove();
+    $(obj).parent().parent().hide().find('input[name$="][field]"]').remove();
     reorder();
 }
 function reorder(){
@@ -267,6 +321,49 @@ function onselectType(obj) {
             tr.find('select[name="'+prefix+'[unsigned]"]').hide().siblings('select').hide();
     }
 }
+{{if Stored.supportPartitioning}}
+function onselectPartition(obj){
+    var v=$(obj).val();
+    switch(v){
+        case 'RANGE':
+        case 'LIST':
+        $('#partition-table').show();
+        $('#partition_position').hide();
+        break;
+        case '':
+        $('#partition-table').hide();
+        $('#partition_position').hide();
+        break;
+        default:
+        $('#partition-table').hide();
+        $('#partition_position').show();
+    }
+}
+function addPartitionRow(obj) {
+    var clone,firstTR,currentTR;
+    if(obj==null){
+        firstTR=$('#partition-table > tbody > tr:first');
+        clone=firstTR.clone();
+    }else{
+        currentTR=$(obj).parent().parent();
+        clone=currentTR.clone();
+    }
+    clone.find('input[name="partition_names[]"]').val('');
+    clone.find('input[name="partition_values[]"]').val('');
+    if(obj==null){
+        firstTR.before(clone);
+        return;
+    }
+    currentTR.after(clone);
+}
+function delPartitionRow(obj) {
+    if($('#partition-table > tbody > tr').length<2){
+        App.message({text:'{{"请至少保留一行，不能全部删除"|T}}',class_name:'warning',title:'{{"提醒"|T}}'},false);
+        return;
+    }
+    $(obj).parent().parent().remove();
+}
+{{end}}
 $(function(){
     $.get(window.location.href,{json:'collations'},function(r){
         if(r.Code<1){
@@ -292,6 +389,9 @@ $(function(){
             }
         });
     },'json');
+    {{if Stored.supportPartitioning}}
+    onselectPartition('select[name="partition_method"]');
+    {{end}}
 });
 </script>
 {{/Block}}

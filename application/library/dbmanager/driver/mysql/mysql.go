@@ -368,6 +368,10 @@ func (m *mySQL) CreateTable() error {
 	for tblName, field := range referencablePrimary {
 		foreignKeys[strings.Replace(tblName, "`", "``", -1)+"`"+strings.Replace(field.Field, "`", "``", -1)] = tblName
 	}
+	partitions := map[string]string{}
+	for _, p := range PartitionTypes {
+		partitions[p] = p
+	}
 	postFields := []*Field{}
 	if m.IsPost() {
 		table := m.Form(`name`)
@@ -444,47 +448,7 @@ func (m *mySQL) CreateTable() error {
 				postFields = append(postFields, field)
 			}
 		}
-		var partitioning string
-		partitions := map[string]string{}
-		for _, p := range PartitionTypes {
-			partitions[p] = p
-		}
-		partitionBy := m.Form(`partition_by`)
-		if _, ok := partitions[partitionBy]; ok {
-			partitioning = "\nPARTITION BY " + partitionBy + "(" + m.Form(`partition`) + ")"
-			parts := []string{}
-			if partitionBy == `RANGE` || partitionBy == `LIST` {
-				values := m.FormValues(`partition_values`)
-				length := len(values)
-				for key, val := range m.FormValues(`partition_names`) {
-					var value string
-					if key < length {
-						value = values[key]
-					}
-					part := "\n  PARTITION " + quoteCol(val) + " VALUES "
-					if partitionBy == `RANGE` {
-						part += "LESS THAN"
-					} else {
-						part += "IN"
-					}
-					if len(value) > 0 {
-						part += "(" + value + ")"
-					} else {
-						part += " MAXVALUE"
-					}
-					//! SQL injection
-					parts = append(parts, part)
-				}
-			}
-			if len(parts) > 0 {
-				partitioning += " (" + strings.Join(parts, ",") + "\n)"
-			} else {
-				partitions := m.Form(`partitions`)
-				if len(partitions) > 0 {
-					partitioning += " PARTITIONS " + partitions
-				}
-			}
-		}
+		partitioning := m.tablePartitioning(partitions, nil)
 		err = m.alterTable(``, table, allFields, foreign,
 			sql.NullString{String: comment, Valid: len(comment) > 0},
 			engine, collation,
@@ -509,6 +473,9 @@ func (m *mySQL) CreateTable() error {
 	m.Set(`postFields`, postFields)
 	m.SetFunc(`isString`, reFieldTypeText.MatchString)
 	m.SetFunc(`isNumeric`, reFieldTypeNumber.MatchString)
+	supportPartitioning := m.support(`partitioning`)
+	m.Set(`supportPartitioning`, supportPartitioning)
+	m.Set(`partitionTypes`, PartitionTypes)
 	return m.Render(`db/mysql/create_table`, err)
 }
 func (m *mySQL) ModifyTable() error {
@@ -549,6 +516,10 @@ func (m *mySQL) ModifyTable() error {
 		origFields = map[string]*Field{}
 		sortFields = []string{}
 	}
+	partitions := map[string]string{}
+	for _, p := range PartitionTypes {
+		partitions[p] = p
+	}
 	if m.IsPost() {
 		table := m.Form(`name`)
 		engine := m.Form(`engine`)
@@ -580,11 +551,11 @@ func (m *mySQL) ModifyTable() error {
 		if err == nil && f != nil {
 			for i := 0; ; i++ {
 				ii := strconv.Itoa(i)
-				fieldName, exists := f.ValueOk(ii, `field`)
-				if !exists {
+				fieldName, posted := f.ValueOk(ii, `field`)
+				orig, exists := f.ValueOk(ii, `orig`)
+				if !posted && !exists {
 					break
 				}
-				orig := f.Value(ii, `orig`)
 				if len(fieldName) < 1 {
 					if len(orig) > 0 {
 						useAllFields = true
@@ -606,8 +577,8 @@ func (m *mySQL) ModifyTable() error {
 					field.Null, _ = strconv.ParseBool(f.Value(ii, `null`))
 					field.Comment = f.Value(ii, `comment`)
 					field.Default = sql.NullString{
-						String: f.Value(ii, `has_default`),
-						Valid:  f.Value(ii, `default`) == `1`,
+						String: f.Value(ii, `default`),
+						Valid:  f.Value(ii, `has_default`) == `1`,
 					}
 					field.AutoIncrement = sql.NullString{
 						Valid: aiIndexInt == i,
@@ -651,6 +622,8 @@ func (m *mySQL) ModifyTable() error {
 					if err != nil {
 						return err
 					}
+					//fmt.Printf(`%#v`+"\n", item.ProcessField)
+					//fmt.Printf(`%#v`+"\n", processField)
 					isChanged := fmt.Sprintf(`%#v`, item.ProcessField) != fmt.Sprintf(`%#v`, processField)
 					if isChanged {
 						fields = append(fields, item)
@@ -671,49 +644,7 @@ func (m *mySQL) ModifyTable() error {
 				}
 			}
 		}
-		var partitioning string
-		partitions := map[string]string{}
-		for _, p := range PartitionTypes {
-			partitions[p] = p
-		}
-		partitionBy := m.Form(`partition_by`)
-		if _, ok := partitions[partitionBy]; ok {
-			partitioning = "\nPARTITION BY " + partitionBy + "(" + m.Form(`partition`) + ")"
-			parts := []string{}
-			if partitionBy == `RANGE` || partitionBy == `LIST` {
-				values := m.FormValues(`partition_values`)
-				length := len(values)
-				for key, val := range m.FormValues(`partition_names`) {
-					var value string
-					if key < length {
-						value = values[key]
-					}
-					part := "\n  PARTITION " + quoteCol(val) + " VALUES "
-					if partitionBy == `RANGE` {
-						part += "LESS THAN"
-					} else {
-						part += "IN"
-					}
-					if len(value) > 0 {
-						part += "(" + value + ")"
-					} else {
-						part += " MAXVALUE"
-					}
-					//! SQL injection
-					parts = append(parts, part)
-				}
-			}
-			if len(parts) > 0 {
-				partitioning += " (" + strings.Join(parts, ",") + "\n)"
-			} else {
-				partitions := m.Form(`partitions`)
-				if len(partitions) > 0 {
-					partitioning += " PARTITIONS " + partitions
-				}
-			}
-		} else if m.support(`partitioning`) && strings.Contains(tableStatus.Create_options.String, `partitioned`) {
-			partitioning += "\nREMOVE PARTITIONING"
-		}
+		partitioning := m.tablePartitioning(partitions, tableStatus)
 		if tableStatus != nil {
 			if comment == tableStatus.Comment.String {
 				comment = ``
@@ -767,6 +698,18 @@ func (m *mySQL) ModifyTable() error {
 	m.Set(`postFields`, postFields)
 	m.SetFunc(`isString`, reFieldTypeText.MatchString)
 	m.SetFunc(`isNumeric`, reFieldTypeNumber.MatchString)
+	supportPartitioning := m.support(`partitioning`)
+	if supportPartitioning {
+		partition, err := m.tablePartitions(oldTable)
+		if err != nil {
+			supportPartitioning = false
+		}
+		partition.Names = append(partition.Names, ``)
+		partition.Values = append(partition.Values, ``)
+		m.Set(`partition`, partition)
+	}
+	m.Set(`supportPartitioning`, supportPartitioning)
+	m.Set(`partitionTypes`, PartitionTypes)
 	return m.Render(`db/mysql/create_table`, err)
 }
 func (m *mySQL) listTableAjax(opType string) error {
