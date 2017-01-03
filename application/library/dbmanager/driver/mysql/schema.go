@@ -272,6 +272,30 @@ func (m *Mapx) Value(names ...string) string {
 	return ``
 }
 
+func (m *Mapx) ValueOk(names ...string) (string, bool) {
+	v, y := m.ValuesOk(names...)
+	if y && v != nil {
+		if len(v) > 0 {
+			return v[0], true
+		}
+	}
+	return ``, false
+}
+
+func (m *Mapx) ValuesOk(names ...string) ([]string, bool) {
+	if len(names) == 0 {
+		if m.Val == nil {
+			return []string{}, false
+		}
+		return m.Val, true
+	}
+	v := m.Get(names...)
+	if v != nil {
+		return v.Val, true
+	}
+	return []string{}, false
+}
+
 func (m *Mapx) Values(names ...string) []string {
 	if len(names) == 0 {
 		if m.Val == nil {

@@ -23,8 +23,6 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
-
-	"github.com/webx-top/com"
 )
 
 // 获取数据表列表
@@ -318,15 +316,12 @@ func (m *mySQL) tableFields(table string) (map[string]*Field, []string, error) {
 		}
 		match := reField.FindStringSubmatch(v.Type.String)
 		var defaultValue sql.NullString
-		if v.Default.String != `` {
-			defaultValue.Valid = true
-			defaultValue.String = v.Default.String
-		} else if reFieldDefault.MatchString(match[1]) {
+		if v.Default.String != `` || reFieldDefault.MatchString(match[1]) {
 			defaultValue.Valid = true
 			defaultValue.String = v.Default.String
 		}
 		var onUpdate string
-		omatch := reFieldOnUpdate.FindStringSubmatch(match[1])
+		omatch := reFieldOnUpdate.FindStringSubmatch(v.Extra.String)
 		if len(omatch) > 1 {
 			onUpdate = omatch[1]
 		}
@@ -518,11 +513,11 @@ func (m *mySQL) processType(field *Field, collate string) (string, error) {
 	return r, nil
 }
 
-func (m *mySQL) autoIncrement(create string, autoIncrementCol string) (string, error) {
+func (m *mySQL) autoIncrement(oldTable string, autoIncrementCol string) (string, error) {
 	autoIncrementIndex := " PRIMARY KEY"
 	// don't overwrite primary key by auto_increment
-	if len(create) > 0 && len(autoIncrementCol) > 0 {
-		indexes, sorts, err := m.tableIndexes(create)
+	if len(oldTable) > 0 && len(autoIncrementCol) > 0 {
+		indexes, sorts, err := m.tableIndexes(oldTable)
 		if err != nil {
 			return ``, err
 		}
@@ -548,8 +543,8 @@ func (m *mySQL) autoIncrement(create string, autoIncrementCol string) (string, e
 	return " AUTO_INCREMENT" + autoIncrementIndex, nil
 }
 
-func (m *mySQL) processField(field *Field, typeField *Field, autoIncrementCol string) ([]string, error) {
-	com.Dump(field)
+func (m *mySQL) processField(oldTable string, field *Field, typeField *Field, autoIncrementCol string) ([]string, error) {
+	//com.Dump(field)
 	r := []string{quoteCol(strings.TrimSpace(field.Field))}
 	t, e := m.processType(field, "COLLATE")
 	if e != nil {
@@ -564,8 +559,16 @@ func (m *mySQL) processField(field *Field, typeField *Field, autoIncrementCol st
 	var defaultValue string
 	if field.Default.Valid {
 		var isRaw bool
-		switch strings.ToLower(field.Type) {
-		case `time`:
+		typeN := strings.ToLower(field.Type)
+		switch typeN {
+		case `bit`:
+			if reFieldTypeBit.MatchString(field.Default.String) {
+				isRaw = true
+			}
+		default:
+			if !strings.Contains(typeN, `time`) {
+				break
+			}
 			switch strings.ToUpper(field.Default.String) {
 			case `CURRENT_TIMESTAMP`:
 				isRaw = true
@@ -574,14 +577,8 @@ func (m *mySQL) processField(field *Field, typeField *Field, autoIncrementCol st
 			default:
 				switch strings.ToLower(m.DbAuth.Driver) {
 				case `pgsql`:
-					if pgsqlFieldDefaultValue.MatchString(field.Default.String) {
-						isRaw = true
-					}
+					isRaw = pgsqlFieldDefaultValue.MatchString(field.Default.String)
 				}
-			}
-		case `bit`:
-			if reFieldTypeBit.MatchString(field.Default.String) {
-				isRaw = true
 			}
 		}
 		if isRaw {
@@ -592,7 +589,7 @@ func (m *mySQL) processField(field *Field, typeField *Field, autoIncrementCol st
 	}
 	r = append(r, defaultValue)
 	if field.AutoIncrement.Valid {
-		v, e := m.autoIncrement(m.Query(`create`), autoIncrementCol)
+		v, e := m.autoIncrement(oldTable, autoIncrementCol)
 		if e != nil {
 			return r, e
 		}

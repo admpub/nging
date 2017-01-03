@@ -81,7 +81,10 @@
 					<tbody class="no-border-x" id="tbody-content">
                         {{range $index, $field := Stored.postFields}}
                         <tr>
-							<td><input type="text" name="fields[{{$index}}][field]" value="{{$field.Field}}" class="form-control"></td>
+							<td>
+                                <input type="text" name="fields[{{$index}}][field]" value="{{$field.Field}}" class="form-control">
+                                <input type="hidden" name="fields[{{$index}}][orig]" value="{{$field.Field}}">
+                            </td>
                             <td><select name="fields[{{$index}}][type]" class="form-control" onchange="onselectType(this)">
                                 {{range $k, $group := Stored.typeGroups}}
                                 <optgroup label="{{$group.Label}}" data-type="{{$group.Type}}">
@@ -99,14 +102,18 @@
                                 {{end}}
                             </select></td>
 							<td><input type="text" name="fields[{{$index}}][length]" value="{{$field.Length}}" class="form-control"></td>
-                            <td><select name="fields[{{$index}}][collation]" class="form-control select-collation" style="display:none" rel="{{$field.Collation}}">
+                            <td><select name="fields[{{$index}}][collation]" class="form-control select-collation"{{if and $field.Type (isString $field.Type)}}{{else}} style="display:none"{{end}}rel="{{$field.Collation}}">
                                 <option value="" readonly="readonly">loading...</option>
                             </select>
-                                <select name="fields[{{$index}}][unsigned]" class="form-control">
+                                <select name="fields[{{$index}}][unsigned]" class="form-control"{{if or (not $field.Type) (isNumeric $field.Type)}}{{else}} style="display:none"{{end}}>
                                     <option value=""></option>
                                     {{range $k,$v:=Stored.unsignedTags}}
                                     <option value="{{$v}}"{{if eq $field.Unsigned $v}} selected="selected"{{end}}>{{$v}}</option>
                                     {{end}}
+                                </select>
+                                <select name="fields[{{$index}}][on_update]" class="form-control"{{if or (eq $field.Type "timestamp") (eq $field.Type "datetime")}}{{else}} style="display:none"{{end}}>
+                                    <option value="">(ON UPDATE)</option>
+                                    <option value="CURRENT_TIMESTAMP"{{if eq $field.On_update "CURRENT_TIMESTAMP"}} selected="selected"{{end}}>CURRENT_TIMESTAMP</option>
                                 </select>
                                 <select name="fields[{{$index}}][on_delete]" class="form-control" style="display:none">
                                     <option value="">(ON DELETE)</option>
@@ -250,6 +257,12 @@ function onselectType(obj) {
             tr.find('select[name="'+prefix+'[unsigned]"]').show().siblings('select').hide();
             break;
         case 'Datetime':
+            switch($(obj).val()){
+                case 'datetime':
+                case 'timestamp':
+                tr.find('select[name="'+prefix+'[on_update]"]').show().siblings('select').hide();
+                return;
+            }
         default:
             tr.find('select[name="'+prefix+'[unsigned]"]').hide().siblings('select').hide();
     }

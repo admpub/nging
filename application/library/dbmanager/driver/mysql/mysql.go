@@ -435,7 +435,7 @@ func (m *mySQL) CreateTable() error {
 					ProcessField: []string{},
 					After:        after,
 				}
-				item.ProcessField, err = m.processField(field, typeField, aiIndexStr)
+				item.ProcessField, err = m.processField(``, field, typeField, aiIndexStr)
 				if err != nil {
 					return err
 				}
@@ -507,6 +507,8 @@ func (m *mySQL) CreateTable() error {
 		postFields = append(postFields, &Field{})
 	}
 	m.Set(`postFields`, postFields)
+	m.SetFunc(`isString`, reFieldTypeText.MatchString)
+	m.SetFunc(`isNumeric`, reFieldTypeNumber.MatchString)
 	return m.Render(`db/mysql/create_table`, err)
 }
 func (m *mySQL) ModifyTable() error {
@@ -578,9 +580,12 @@ func (m *mySQL) ModifyTable() error {
 		if err == nil && f != nil {
 			for i := 0; ; i++ {
 				ii := strconv.Itoa(i)
-				fieldName := f.Value(ii, `field`)
-				if len(fieldName) == 0 {
-					orig := f.Value(ii, `orig`)
+				fieldName, exists := f.ValueOk(ii, `field`)
+				if !exists {
+					break
+				}
+				orig := f.Value(ii, `orig`)
+				if len(fieldName) < 1 {
 					if len(orig) > 0 {
 						useAllFields = true
 						item := &fieldItem{
@@ -588,80 +593,82 @@ func (m *mySQL) ModifyTable() error {
 							ProcessField: []string{},
 						}
 						fields = append(fields, item)
-						if origFieldsNum > j {
-							origField = origFields[sortFields[j]]
-							j++
-						} else {
-							after = ``
-						}
-						continue
 					}
-					break
-				}
-				field := &Field{}
-				field.Field = fieldName
-				field.Type = f.Value(ii, `type`)
-				field.Length = f.Value(ii, `length`)
-				field.Unsigned = f.Value(ii, `unsigned`)
-				field.Collation = f.Value(ii, `collation`)
-				field.On_delete = f.Value(ii, `on_delete`)
-				field.On_update = f.Value(ii, `on_update`)
-				field.Null, _ = strconv.ParseBool(f.Value(ii, `null`))
-				field.Comment = f.Value(ii, `comment`)
-				field.Default = sql.NullString{
-					String: f.Value(ii, `has_default`),
-					Valid:  f.Value(ii, `default`) == `1`,
-				}
-				field.AutoIncrement = sql.NullString{
-					Valid: aiIndexInt == i,
-				}
-				if field.AutoIncrement.Valid {
-					field.AutoIncrement.String = autoIncrementStartValue
-				}
-				var typeField *Field
-				if foreignKey, ok := foreignKeys[field.Type]; ok {
-					typeField, _ = referencablePrimary[foreignKey]
-					foreignK, err := m.formatForeignKey(&ForeignKeyParam{
-						Table:  foreignKey,
-						Source: []string{field.Field},
-						Target: []string{field.On_delete},
-					})
+				} else {
+					field := &Field{}
+					field.Field = fieldName
+					field.Type = f.Value(ii, `type`)
+					field.Length = f.Value(ii, `length`)
+					field.Unsigned = f.Value(ii, `unsigned`)
+					field.Collation = f.Value(ii, `collation`)
+					field.On_delete = f.Value(ii, `on_delete`)
+					field.On_update = f.Value(ii, `on_update`)
+					field.Null, _ = strconv.ParseBool(f.Value(ii, `null`))
+					field.Comment = f.Value(ii, `comment`)
+					field.Default = sql.NullString{
+						String: f.Value(ii, `has_default`),
+						Valid:  f.Value(ii, `default`) == `1`,
+					}
+					field.AutoIncrement = sql.NullString{
+						Valid: aiIndexInt == i,
+					}
+					if field.AutoIncrement.Valid {
+						field.AutoIncrement.String = autoIncrementStartValue
+					}
+					var typeField *Field
+					if foreignKey, ok := foreignKeys[field.Type]; ok {
+						typeField, _ = referencablePrimary[foreignKey]
+						foreignK, err := m.formatForeignKey(&ForeignKeyParam{
+							Table:    foreignKey,
+							Source:   []string{field.Field},
+							Target:   []string{typeField.Field},
+							OnDelete: field.On_delete,
+						})
+						if err != nil {
+							return err
+						}
+						if driverName == `sqlite` || len(oldTable) == 0 {
+							foreign[quoteCol(field.Field)] = ` ` + foreignK
+						} else {
+							foreign[quoteCol(field.Field)] = `ADD` + foreignK
+						}
+					}
+					if typeField == nil {
+						typeField = field
+					}
+					field.Original = f.Value(ii, `orig`)
+					item := &fieldItem{
+						Original:     field.Original,
+						ProcessField: []string{},
+						After:        after,
+					}
+					item.ProcessField, err = m.processField(oldTable, field, typeField, aiIndexStr)
 					if err != nil {
 						return err
 					}
-					if driverName == `sqlite` || len(oldTable) == 0 {
-						foreign[quoteCol(field.Field)] = ` ` + foreignK
+					allFields = append(allFields, item)
+					processField, err := m.processField(oldTable, origField, origField, aiIndexStr)
+					if err != nil {
+						return err
+					}
+					isChanged := fmt.Sprintf(`%#v`, item.ProcessField) != fmt.Sprintf(`%#v`, processField)
+					if isChanged {
+						fields = append(fields, item)
+						if len(field.Original) > 0 || len(after) > 0 {
+							useAllFields = true
+						}
+					}
+					after = " AFTER " + quoteCol(field.Field)
+					postFields = append(postFields, field)
+				}
+				if len(orig) > 0 {
+					if origFieldsNum > j {
+						origField = origFields[sortFields[j]]
+						j++
 					} else {
-						foreign[quoteCol(field.Field)] = `ADD` + foreignK
+						after = ``
 					}
 				}
-				if typeField == nil {
-					typeField = field
-				}
-				field.Original = f.Value(ii, `orig`)
-				item := &fieldItem{
-					Original:     field.Original,
-					ProcessField: []string{},
-					After:        after,
-				}
-				item.ProcessField, err = m.processField(field, typeField, aiIndexStr)
-				if err != nil {
-					return err
-				}
-				allFields = append(allFields, item)
-				processField, err := m.processField(origField, origField, aiIndexStr)
-				if err != nil {
-					return err
-				}
-				isChanged := fmt.Sprintf(`%v`, item.ProcessField) == fmt.Sprintf(`%v`, processField)
-				if isChanged {
-					fields = append(fields, item)
-					if len(field.Original) > 0 || len(after) > 0 {
-						useAllFields = true
-					}
-				}
-				after = " AFTER " + quoteCol(field.Field)
-				postFields = append(postFields, field)
 			}
 		}
 		var partitioning string
@@ -743,6 +750,7 @@ func (m *mySQL) ModifyTable() error {
 	engines, err := m.getEngines()
 	m.Set(`engines`, engines)
 	m.Set(`typeGroups`, typeGroups)
+	m.Set(`typeGroups`, typeGroups)
 	m.Set(`foreignKeys`, foreignKeys)
 	m.Set(`onActions`, strings.Split(OnActions, `|`))
 	m.Set(`unsignedTags`, UnsignedTags)
@@ -757,6 +765,8 @@ func (m *mySQL) ModifyTable() error {
 		postFields = append(postFields, &Field{})
 	}
 	m.Set(`postFields`, postFields)
+	m.SetFunc(`isString`, reFieldTypeText.MatchString)
+	m.SetFunc(`isNumeric`, reFieldTypeNumber.MatchString)
 	return m.Render(`db/mysql/create_table`, err)
 }
 func (m *mySQL) listTableAjax(opType string) error {
