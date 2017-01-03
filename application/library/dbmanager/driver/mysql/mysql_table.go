@@ -416,6 +416,7 @@ func (m *mySQL) tableIndexes(table string) (map[string]*Indexes, []string, error
 				Lengths: []string{},
 				Descs:   []string{},
 			}
+			sorts = append(sorts, v.Key_name.String)
 		}
 		if v.Key_name.String == `PRIMARY` {
 			ret[v.Key_name.String].Type = `PRIMARY`
@@ -429,8 +430,6 @@ func (m *mySQL) tableIndexes(table string) (map[string]*Indexes, []string, error
 		ret[v.Key_name.String].Columns = append(ret[v.Key_name.String].Columns, v.Column_name.String)
 		ret[v.Key_name.String].Lengths = append(ret[v.Key_name.String].Lengths, v.Sub_part.String)
 		ret[v.Key_name.String].Descs = append(ret[v.Key_name.String].Descs, ``)
-
-		sorts = append(sorts, v.Key_name.String)
 	}
 	return ret, sorts, nil
 }
@@ -452,6 +451,14 @@ func (m *mySQL) tableForeignKeys(table string) (map[string]*ForeignKeyParam, []s
 	for _, match := range matches {
 		source := reQuotedCol.FindAllStringSubmatch(match[2], -1)
 		target := reQuotedCol.FindAllStringSubmatch(match[5], -1)
+		if len(source) < 1 {
+			m.Logger().Error(m.T(`查询数据表外键时，获取source失败`))
+			continue
+		}
+		if len(target) < 1 {
+			m.Logger().Error(m.T(`查询数据表外键时，获取target失败`))
+			continue
+		}
 		key := strings.Trim(match[1], "`")
 		item := &ForeignKeyParam{
 			Name:     key,
