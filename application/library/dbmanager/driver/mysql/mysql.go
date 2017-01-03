@@ -474,6 +474,13 @@ func (m *mySQL) CreateTable() error {
 	m.SetFunc(`isString`, reFieldTypeText.MatchString)
 	m.SetFunc(`isNumeric`, reFieldTypeNumber.MatchString)
 	supportPartitioning := m.support(`partitioning`)
+	if supportPartitioning {
+		partition := &Partition{
+			Names:  []string{``},
+			Values: []string{``},
+		}
+		m.Set(`partition`, partition)
+	}
 	m.Set(`supportPartitioning`, supportPartitioning)
 	m.Set(`partitionTypes`, PartitionTypes)
 	return m.Render(`db/mysql/create_table`, err)
