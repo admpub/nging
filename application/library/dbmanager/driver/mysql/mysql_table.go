@@ -256,7 +256,7 @@ func (m *mySQL) alterTable(table string, newName string, fields []*fieldItem, fo
 			alter = append(alter, `RENAME TO `+quoteCol(newName))
 		}
 		if len(status) > 0 {
-			status = strings.TrimLeft(status, ` `)
+			alter = append(alter, strings.TrimLeft(status, ` `))
 		}
 		if len(alter) > 0 || len(partitioning) > 0 {
 			r.SQL = `ALTER TABLE ` + quoteCol(table) + "\n" + strings.Join(alter, ",\n") + partitioning
@@ -412,6 +412,7 @@ func (m *mySQL) tableIndexes(table string) (map[string]*Indexes, []string, error
 		}
 		if _, ok := ret[v.Key_name.String]; !ok {
 			ret[v.Key_name.String] = &Indexes{
+				Name:    v.Key_name.String,
 				Columns: []string{},
 				Lengths: []string{},
 				Descs:   []string{},
@@ -598,7 +599,7 @@ func (m *mySQL) autoIncrement(oldTable string, autoIncrementCol string) (string,
 func (m *mySQL) processField(oldTable string, field *Field, typeField *Field, autoIncrementCol string) ([]string, error) {
 	//com.Dump(field)
 	r := []string{quoteCol(strings.TrimSpace(field.Field))}
-	t, e := m.processType(field, "COLLATE")
+	t, e := m.processType(typeField, "COLLATE")
 	if e != nil {
 		return r, e
 	}
@@ -671,7 +672,7 @@ func (m *mySQL) formatForeignKey(foreignKey *ForeignKeyParam) (string, error) {
 	}
 	r := " FOREIGN KEY (" + strings.Join(source, ", ") + ") REFERENCES " + quoteCol(foreignKey.Table)
 	r += " (" + strings.Join(target, ", ") + ")" //! reuse $name - check in older MySQL versions
-	re, err := regexp.Compile(`^(` + OnActions + `)\$`)
+	re, err := regexp.Compile(`^(` + OnActions + `)$`)
 	if err != nil {
 		return ``, err
 	}

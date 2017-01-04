@@ -26,8 +26,11 @@ import (
 
 	"database/sql"
 
+	"regexp"
+
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
+	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/db/mysql"
 	"github.com/webx-top/echo"
@@ -495,33 +498,33 @@ func (m *mySQL) ModifyTable() error {
 		return nil
 	}
 
+	oldTable := m.Form(`table`)
+	if len(oldTable) < 1 {
+		m.fail(m.T(`table参数不能为空`))
+		return m.returnTo(`listDb`)
+	}
+
 	referencablePrimary, _, err := m.referencablePrimary(``)
 	foreignKeys := map[string]string{}
 	for tblName, field := range referencablePrimary {
 		foreignKeys[strings.Replace(tblName, "`", "``", -1)+"`"+strings.Replace(field.Field, "`", "``", -1)] = tblName
 	}
 	postFields := []*Field{}
-	oldTable := m.Form(`table`)
 	var origFields map[string]*Field
 	var sortFields []string
 	var tableStatus *TableStatus
-	if len(oldTable) > 0 {
-		val, sort, err := m.tableFields(oldTable)
-		if err != nil {
-			return err
-		}
-		origFields = val
-		sortFields = sort
-		stt, _, err := m.getTableStatus(m.dbName, oldTable, false)
-		if err != nil {
-			return err
-		}
-		if ts, ok := stt[oldTable]; ok {
-			tableStatus = ts
-		}
-	} else {
-		origFields = map[string]*Field{}
-		sortFields = []string{}
+	val, sort, err := m.tableFields(oldTable)
+	if err != nil {
+		return err
+	}
+	origFields = val
+	sortFields = sort
+	stt, _, err := m.getTableStatus(m.dbName, oldTable, false)
+	if err != nil {
+		return err
+	}
+	if ts, ok := stt[oldTable]; ok {
+		tableStatus = ts
 	}
 	partitions := map[string]string{}
 	for _, p := range PartitionTypes {
@@ -919,7 +922,62 @@ func (m *mySQL) CreateData() error {
 	return nil
 }
 func (m *mySQL) Indexes() error {
+	act := m.Form(`act`)
+	switch act {
+	case `edit`:
+		return m.modifyIndexes()
+	case `fk_add`:
+	case `fk_edit`:
+	case `trigger_add`:
+	case `trigger_edit`:
+	}
 	return nil
+}
+func (m *mySQL) modifyIndexes() error {
+	table := m.Form(`table`)
+	indexTypes := []string{"PRIMARY", "UNIQUE", "INDEX"}
+	rule := `(?i)MyISAM|M?aria`
+	if com.VersionCompare(m.getVersion(), `5.6`) >= 0 {
+		rule += `|InnoDB`
+	}
+	re, err := regexp.Compile(rule)
+	if err != nil {
+		return m.String(err.Error())
+	}
+	status, _, err := m.getTableStatus(m.dbName, table, true)
+	if err != nil {
+		return m.String(err.Error())
+	}
+	tableStatus, ok := status[table]
+	if ok && re.MatchString(tableStatus.Engine.String) {
+		indexTypes = append(indexTypes, "FULLTEXT")
+	}
+	indexes, sorts, err := m.tableIndexes(table)
+	if err != nil {
+		return m.String(err.Error())
+	}
+	indexesSlice := make([]*Indexes, len(sorts))
+	for k, name := range sorts {
+		indexesSlice[k] = indexes[name]
+		indexesSlice[k].Columns = append(indexesSlice[k].Columns, "")
+		indexesSlice[k].Lengths = append(indexesSlice[k].Lengths, "")
+	}
+	indexesSlice = append(indexesSlice, &Indexes{
+		Columns: []string{""},
+		Lengths: []string{""},
+	})
+	fields, sortFields, err := m.tableFields(table)
+	if err != nil {
+		return m.String(err.Error())
+	}
+	fieldsSlice := make([]*Field, len(sortFields))
+	for k, name := range sortFields {
+		fieldsSlice[k] = fields[name]
+	}
+	m.Set(`indexes`, indexesSlice)
+	m.Set(`indexTypes`, indexTypes)
+	m.Set(`fields`, fieldsSlice)
+	return m.Render(`db/mysql/modify_index`, m.checkErr(err))
 }
 func (m *mySQL) Foreign() error {
 	return nil

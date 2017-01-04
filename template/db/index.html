@@ -48,7 +48,7 @@
               {{if $tableList}}
               {{$currentTable := Form "table"}}
               {{range $k,$v:=$tableList}}
-              <li{{if eq $currentTable $v}} class="current"{{end}}><a href="{{dbMgrURL "viewTable" $dbName}}&table={{$v}}" title="{{$v}}">{{$v}}</a></li>
+              <li{{if eq $currentTable $v}} class="active"{{end}}><a href="{{dbMgrURL "viewTable" $dbName}}&table={{$v}}" title="{{$v}}">{{$v}}</a></li>
               {{end}}
               {{end}}
           </ul>

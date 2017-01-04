@@ -1683,7 +1683,7 @@ var App = function () {
       if(!$.support.pjax)return;
       if(elem==null)elem='a';
       if(timeout==null)timeout=5000;
-      var defaults={onclick:null,onsend:null,oncomplete:null,ontimeout:null};
+      var defaults={onclick:null,onsend:null,oncomplete:null,ontimeout:null,onstart:null,onend:null};
       var options=$.extend({},defaults,callbacks||{});
       $(document).on('click', elem+'[data-pjax]', function(event) {
         var container = $(this).data('pjax');
@@ -1698,6 +1698,10 @@ var App = function () {
       }).on('pjax:timeout',function(xhr,option){
         console.log('timeout');
         if(options.ontimeout)options.ontimeout();
+      }).on('pjax:start',function(xhr,option){
+        if(options.onstart)options.onstart();
+      }).on('pjax:end',function(xhr,option){
+        if(options.onend)options.onend();
       });
     },
     

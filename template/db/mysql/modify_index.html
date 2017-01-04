@@ -1,0 +1,95 @@
+{{Extend "db/index"}}
+{{Block "title"}}{{"索引"|T}}: {{Form "table"}} - {{Super}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{dbMgrURL "listTable" Stored.dbName}}">{{Stored.dbName}}</a></li>
+<li class="active">{{"索引"|T}}: {{Form "table"}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        {{Include "db/mysql/results"}}
+        <div class="block-flat">
+          <div class="header">							
+            <h3>
+                {{"索引"|T}}: {{Form "table"}}
+            </h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" method="POST" action="">
+              <table>
+                  <thead>
+                      <th style="width:120px">{{"索引类型"|T}}</th>
+                      <th>{{"列"|T}}({{"长度"|T}})</th>
+                      <th style="width:180px">{{"名称"|T}}</th>
+                      <th style="width:40px"></th>
+                  </thead>
+                  <tbody>
+                      {{range $k, $v := Stored.indexes}}
+                      <tr>
+                          <td>
+                              <select name="indexes[{{$k}}][type]" class="form-control" onchange="onselectType(this)">
+                                <option value=""></option>
+                                {{range $k2,$v2:=Stored.indexTypes}}
+                                <option value="{{$v2}}"{{if eq $v.Type $v2}} selected{{end}}>{{$v2}}</option>
+                                {{end}}
+                              </select>
+                          </td>
+                          <td>
+                            {{range $key,$col:=$v.Columns}}
+                            <span class="columm-info">
+                              <select name="indexes[{{$k}}][columns][]" class="form-control inline" onchange="onselectColumn(this)">
+                                <option value=""></option>
+                                {{range $k2,$field:=Stored.fields}}
+                                <option value="{{$field.Field}}"{{if eq $col $field.Field}} selected{{end}}>{{$field.Field}}</option>
+                                {{end}}
+                              </select>
+                              <input type='number' name='indexes[{{$k}}][lengths][]' class="form-control inline" value='{{index $v.Lengths $key}}' style="width:80px">
+                              </span>
+                            {{end}}
+                          </td>
+                          <td>
+                              <input class="form-control" name='indexes[{{$k}}][name]' value='{{$v.Name}}' autocapitalize='off'>
+                          </td>
+                          <td><a href="javascript:;" onclick="delRow(this)" class="label label-danger"><i class="fa fa-times"></i></a></td>
+                      </tr>
+                      {{end}}
+                  </tbody>
+              </table>
+              <div class="form-group">
+				<div class="col-sm-9 col-sm-offset-2">
+				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+				  <a class="btn btn-default btn-lg" href="{{dbMgrURL "listTable" (Form "db")}}"><i class="fa fa-reply"></i> {{"返回"|T}}</a>
+				</div>
+			</div>
+              </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+{{Super}}
+<script>
+function onselectType(obj){
+    var currentTR=$(obj).parent().parent();
+    var nextTR=currentTR.next('tr');
+    if(nextTR.length<1){
+        var clone=currentTR.clone();
+        var first=clone.find('.columm-info:first');
+        first.find('select[name*="[columns]"]').prop('selected',false);
+        first.find('input[name*="[lengths]"]').val('');
+        first.siblings('.columm-info').remove();
+        currentTR.after(clone);
+    }
+}
+function onselectColumn(obj){
+    
+}
+function delRow(obj){
+    $(obj).parent().parent().remove();
+}
+$(function(){
+});
+</script>
+{{/Block}}

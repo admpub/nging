@@ -5775,3 +5775,6 @@ ul.no-list-style{
 .x-block{
   display: block;
 }
+.form-control.inline{
+  display:inline;width:auto;vertical-align:middle;
+}

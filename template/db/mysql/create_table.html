@@ -230,6 +230,7 @@ function addRow(obj) {
         var name=$(this).attr('name');
         switch(name){
             case 'fields['+oldIdx+'][field]':
+            case 'fields['+oldIdx+'][orig]':
             case 'fields['+oldIdx+'][comment]':
             case 'fields['+oldIdx+'][default]':
             case 'fields['+oldIdx+'][length]':

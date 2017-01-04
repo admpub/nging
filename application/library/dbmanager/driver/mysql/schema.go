@@ -585,6 +585,7 @@ type IndexInfo struct {
 }
 
 type Indexes struct {
+	Name    string
 	Type    string
 	Columns []string
 	Lengths []string
