@@ -26,3 +26,4 @@ _testmain.go
 /access_local.log
 /*.log
 /*.pid
+/installed.lock

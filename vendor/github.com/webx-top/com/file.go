@@ -532,33 +532,43 @@ func GrepFile(patten string, filename string) (lines []string, err error) {
 		return
 	}
 
+	lines = make([]string, 0)
+	err = SeekFileLines(filename, func(line string) error {
+		if re.MatchString(line) {
+			lines = append(lines, line)
+		}
+		return nil
+	})
+	return lines, err
+}
+
+func SeekFileLines(filename string, callback func(string) error) (err error) {
 	fd, err := os.Open(filename)
 	if err != nil {
 		return
 	}
-	lines = make([]string, 0)
+	defer fd.Close()
 	reader := bufio.NewReader(fd)
 	prefix := ""
 	for {
 		byteLine, isPrefix, er := reader.ReadLine()
 		if er != nil && er != io.EOF {
-			return nil, er
+			return er
 		}
 		line := string(byteLine)
 		if isPrefix {
 			prefix += line
 			continue
 		}
-
 		line = prefix + line
-		if re.MatchString(line) {
-			lines = append(lines, line)
+		if e := callback(line); e != nil {
+			return e
 		}
 		if er == io.EOF {
 			break
 		}
 	}
-	return lines, nil
+	return nil
 }
 
 func Readbuf(r io.Reader, length int) ([]byte, error) {

@@ -52,7 +52,7 @@ func Login(ctx echo.Context) error {
 			}
 		}
 	}
-	return ctx.Render(`login`, err)
+	return ctx.Render(`login`, Err(ctx, err))
 }
 
 func Logout(ctx echo.Context) error {

@@ -1,0 +1,89 @@
+{{Extend "base"}}
+{{Block "description"}}{{"安装Nging"|T}}{{/Block}}
+{{Block "title"}}{{"安装Nging"|T}}{{/Block}}
+{{Block "bodyAttr"}} class="texture"{{/Block}}
+{{Block "main"}}
+<div id="cl-wrapper" class="sign-up-container">
+
+	<div class="middle-sign-up">
+		<div class="block-flat">
+			<div class="header">							
+				<h3 class="text-center"><img class="logo-img" src="__ASSETS__/images/logo.png" alt="logo"/>{{"安装Nging"|T}}</h3>
+			</div>
+			<div>
+				<form class="form-horizontal" action="" parsley-validate novalidate method="POST">
+					<div class="content">
+							<div class="form-group">
+								<div class="col-sm-12">
+									<div class="input-group">
+										<span class="input-group-addon"><i class="fa fa-align-justify"></i></span>
+										<select name="type" parsley-trigger="change" parsley-error-container="#type-error" required class="form-control">
+											{{$type := Form "type"}}
+											<option value="mysql"{{if eq $type "mysql"}} selected{{end}}>MySQL</option>
+										</select>
+									</div>
+                  <div id="type-error"></div>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-12">
+									<div class="input-group">
+										<span class="input-group-addon"><i class="fa fa-globe"></i></span>
+										<input type="text" name="host" parsley-trigger="change" parsley-error-container="#host-error" required placeholder="{{"主机地址"|T}}" class="form-control" value="{{Form "host"}}">
+									</div>
+                  <div id="host-error"></div>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-12">
+									<div class="input-group">
+										<span class="input-group-addon"><i class="fa fa-user"></i></span>
+										<input type="text" name="user" parsley-trigger="change" parsley-error-container="#user-error" required placeholder="{{"数据库登录名"|T}}" class="form-control" value="{{Form "user"}}">
+									</div>
+                  <div id="user-error"></div>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-12">
+									<div class="input-group">
+										<span class="input-group-addon"><i class="fa fa-lock"></i></span>
+										<input type="password" name="password" parsley-trigger="change" parsley-error-container="#password-error" required placeholder="{{"数据库密码"|T}}" class="form-control" value="{{Form "password"}}">
+									</div>
+                  <div id="password-error"></div>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-12">
+									<div class="input-group">
+										<span class="input-group-addon"><i class="fa fa-folder"></i></span>
+										<input type="text" name="database" parsley-trigger="change" parsley-error-container="#database-error" required placeholder="{{"数据库名称"|T}}" class="form-control" value="{{Form "database"}}">
+									</div>
+                  <div id="database-error"></div>
+								</div>
+							</div>
+						<button class="btn btn-block btn-success btn-rad btn-lg" type="submit">{{"安装"|T}}</button>
+							
+					</div>
+			  </form>
+			</div>
+		</div>
+		<div class="text-center out-links">
+			<a href="https://github.com/admpub/nging" target="_blank">&copy; {{Now.Year}} Nging</a>
+		</div>
+	</div> 
+	
+</div>
+{{/Block}}
+{{Block "footer"}}
+{{if ne Lang "en"}}
+<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/i18n/messages.{{Lang}}.js"></script>
+{{end}}
+<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/parsley.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/behaviour/general.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/jquery.gritter/js/jquery.gritter.js"></script>
+<script>
+{{if .}}
+App.message({title: '{{"系统消息"|T}}', text: "{{.}}"});
+{{end}}
+</script>
+{{/Block}}
