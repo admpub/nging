@@ -3,7 +3,6 @@ package echo
 import (
 	"encoding/json"
 	"encoding/xml"
-	"errors"
 	"fmt"
 	"net/http"
 	"reflect"
@@ -66,44 +65,37 @@ func (b *binder) structMap(m interface{}, data map[string][]string, filter ...Fo
 	return NamedStructMap(b.Echo, m, data, ``, filter...)
 }
 
-// SplitJSON user[name][test]
-func SplitJSON(s string) ([]string, error) {
+// FormNames user[name][test]
+func FormNames(s string) []string {
 	var res []string
-	var begin, end int
-	var isleft bool
-	for i, r := range s {
-		switch r {
-		case '[':
-			isleft = true
-			if i > 0 && s[i-1] != ']' {
-				if begin == end {
-					return nil, errors.New(`unknow character`)
-				}
-				res = append(res, s[begin:end+1])
+	hasLeft := false
+	hasRight := true
+	var val []rune
+	for _, r := range s {
+		if r == '[' {
+			if hasRight {
+				res = append(res, string(val))
+				val = []rune{}
 			}
-			begin = i + 1
-			end = begin
-		case ']':
-			if !isleft {
-				return nil, errors.New(`unknow character`)
-			}
-			isleft = false
-			if begin != end {
-				res = append(res, s[begin:end+1])
-				begin = i + 1
-				end = begin
-			}
-		default:
-			end = i
+			hasLeft = true
+			hasRight = false
+			continue
 		}
-		if i == len(s)-1 && begin != end {
-			res = append(res, s[begin:end+1])
+		if r == ']' {
+			if hasLeft {
+				hasRight = true
+			}
+			continue
 		}
+		val = append(val, r)
 	}
-	return res, nil
+	if len(val) > 0 {
+		res = append(res, string(val))
+	}
+	return res
 }
 
-func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName string, filterArgs ...FormDataFilter) error {
+func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName string, filters ...FormDataFilter) error {
 	vc := reflect.ValueOf(m)
 	tc := reflect.TypeOf(m)
 
@@ -117,8 +109,8 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 		validator *validation.Validation
 		filter    FormDataFilter
 	)
-	if len(filterArgs) > 0 {
-		filter = filterArgs[0]
+	if len(filters) > 0 {
+		filter = filters[0]
 	}
 	if filter == nil {
 		filter = DefaultNopFilter
@@ -141,11 +133,7 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 		var err error
 		length := len(names)
 		if length == 1 && strings.HasSuffix(k, `]`) {
-			names, err = SplitJSON(k)
-			if err != nil {
-				e.Logger().Warnf(`Unrecognize form key %v %v`, k, err)
-				continue
-			}
+			names = FormNames(k)
 			length = len(names)
 		}
 		value := vc

@@ -24,6 +24,7 @@ import (
 	"strconv"
 
 	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
 )
 
 type KV struct {
@@ -181,36 +182,6 @@ type Mapx struct {
 	Val   []string         `json:",omitempty"`
 }
 
-// ParseFormName user[name][test]
-func ParseFormName(s string) []string {
-	var res []string
-	hasLeft := false
-	hasRight := true
-	var val []rune
-	for _, r := range s {
-		if r == '[' {
-			if hasRight {
-				res = append(res, string(val))
-				val = []rune{}
-			}
-			hasLeft = true
-			hasRight = false
-			continue
-		}
-		if r == ']' {
-			if hasLeft {
-				hasRight = true
-			}
-			continue
-		}
-		val = append(val, r)
-	}
-	if len(val) > 0 {
-		res = append(res, string(val))
-	}
-	return res
-}
-
 func NewMapx(data map[string][]string) *Mapx {
 	m := &Mapx{}
 	return m.Parse(data)
@@ -219,7 +190,7 @@ func NewMapx(data map[string][]string) *Mapx {
 func (m *Mapx) Parse(data map[string][]string) *Mapx {
 	m.Map = map[string]*Mapx{}
 	for name, values := range data {
-		names := ParseFormName(name)
+		names := echo.FormNames(name)
 		end := len(names) - 1
 		v := m
 		for idx, key := range names {
