@@ -57,6 +57,7 @@ type Driver interface {
 	RunCommand() error
 	Import() error
 	Export() error
+	Name() string
 }
 
 func NewBaseDriver() *BaseDriver {
@@ -182,6 +183,9 @@ func (m *BaseDriver) Import() error {
 }
 func (m *BaseDriver) Export() error {
 	return nil
+}
+func (m *BaseDriver) Name() string {
+	return `Base`
 }
 
 func Register(name string, driver Driver) {

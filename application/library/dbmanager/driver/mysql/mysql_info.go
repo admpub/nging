@@ -164,6 +164,7 @@ func (m *mySQL) getTableStatus(dbName string, tableName string, fast bool) (map[
 			v.Comment.String = reInnoDBComment.ReplaceAllString(v.Comment.String, `$1`)
 		}
 		ret[v.Name.String] = v
+		sorts = append(sorts, v.Name.String)
 		if len(tableName) > 0 {
 			return ret, sorts, nil
 		}

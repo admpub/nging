@@ -84,7 +84,7 @@
                   {{$v := Form "driver"}}
                    <select class="form-control" name="driver">
                      {{range $k,$driverName:=Stored.Get "driverList"}}
-                     <option value="{{$driverName}}"{{if eq $v $driverName}} selected{{end}}>{{$driverName}}</option>
+                     <option value="{{$k}}"{{if eq $v $k}} selected{{end}}>{{$driverName}}</option>
                      {{end}}
                    </select>
                 </div>

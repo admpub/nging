@@ -9,6 +9,7 @@
 {{$table := Form "table"}}
 <div class="row">
     <div class="col-md-12">
+        {{Include "db/mysql/results"}}
         <div class="block-flat">
           <div class="header">
             <div class="btn-group pull-right">
@@ -90,7 +91,7 @@
                         {{end}}
 					</tbody>
 				</table>
-                <a href="{{dbMgrURL "indexes" Stored.dbName $table}}&act=edit">{{"修改索引"|T}}</a>	
+                <a href="{{dbMgrURL "indexes" Stored.dbName $table}}">{{"修改索引"|T}}</a>	
 			    </div>
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
@@ -134,12 +135,12 @@
                             </td>
 							<td>{{$v.OnDelete}}</td>
 							<td>{{$v.OnUpdate}}</td>
-                            <td><a href="{{dbMgrURL "indexes" Stored.dbName $table}}&act=fk_edit&name={{$v.Name}}" class="label label-primary"><i class="fa fa-pencil"></i></a></td>
+                            <td><a href="{{dbMgrURL "foreign" Stored.dbName $table}}&name={{$v.Name}}" class="label label-primary"><i class="fa fa-pencil"></i></a></td>
 						</tr>
                         {{end}}
 					</tbody>
 				</table>
-                <a href="{{dbMgrURL "indexes" Stored.dbName $table}}&act=fk_add">{{"添加外键"|T}}</a>	
+                <a href="{{dbMgrURL "foreign" Stored.dbName $table}}">{{"添加外键"|T}}</a>	
 			    </div>
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
@@ -167,12 +168,12 @@
 							<td>{{$v.Timing.String}}</td>
 							<td>{{$v.Event.String}}</td>
 							<td>{{$v.Trigger.String}}</td>
-                            <td><a href="{{dbMgrURL "indexes" Stored.dbName $table}}&act=trigger_edit&name={{$v.Trigger.String}}" class="label label-primary"><i class="fa fa-pencil"></i></a></td>
+                            <td><a href="{{dbMgrURL "trigger" Stored.dbName $table}}&name={{$v.Trigger.String}}" class="label label-primary"><i class="fa fa-pencil"></i></a></td>
 						</tr>
                         {{end}}
 					</tbody>
 				</table>
-                <a href="{{dbMgrURL "indexes" Stored.dbName $table}}&act=trigger_add">{{"创建触发器"|T}}</a>	
+                <a href="{{dbMgrURL "trigger" Stored.dbName $table}}">{{"创建触发器"|T}}</a>	
 			    </div>
           </div><!-- /.content -->
         </div><!-- /.block-flat -->

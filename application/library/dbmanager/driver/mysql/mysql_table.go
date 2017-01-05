@@ -270,9 +270,8 @@ func (m *mySQL) alterTable(table string, newName string, fields []*fieldItem, fo
 }
 
 type indexItems struct {
-	Type      string
-	Name      string
-	Columns   []string
+	*Indexes
+	Set       []string
 	Operation string
 }
 
@@ -290,10 +289,32 @@ func (m *mySQL) alterIndexes(table string, alter []*indexItems) error {
 		if len(v.Name) > 0 {
 			alters[k] += quoteCol(v.Name) + " "
 		}
-		alters[k] += "(" + strings.Join(v.Columns, ", ") + ")"
+		alters[k] += "(" + strings.Join(v.Set, ", ") + ")"
 	}
 	r := &Result{
 		SQL: "ALTER TABLE " + quoteCol(table) + strings.Join(alters, ","),
+	}
+	r.Exec(m.newParam())
+	m.AddResults(r)
+	return r.err
+}
+
+func (m *mySQL) alterForeignKeys(table string, foreignKey *ForeignKeyParam, name string, isDrop bool) error {
+	r := &Result{
+		SQL: "ALTER TABLE " + quoteCol(table),
+	}
+	if len(name) > 0 {
+		r.SQL += "\nDROP FOREIGN KEY " + quoteCol(name)
+	}
+	if !isDrop {
+		if len(name) > 0 {
+			r.SQL += ","
+		}
+		s, e := m.formatForeignKey(foreignKey)
+		if e != nil {
+			return e
+		}
+		r.SQL += "\nADD" + s
 	}
 	r.Exec(m.newParam())
 	m.AddResults(r)
@@ -626,9 +647,9 @@ func (m *mySQL) processField(oldTable string, field *Field, typeField *Field, au
 			case `CURRENT_TIMESTAMP`:
 				isRaw = true
 			case `CURRENT_TIME`, `CURRENT_DATE`:
-				isRaw = strings.ToLower(m.DbAuth.Driver) == `sqlite`
+				isRaw = m.DbAuth.Driver == `sqlite`
 			default:
-				switch strings.ToLower(m.DbAuth.Driver) {
+				switch m.DbAuth.Driver {
 				case `pgsql`:
 					isRaw = pgsqlFieldDefaultValue.MatchString(field.Default.String)
 				}

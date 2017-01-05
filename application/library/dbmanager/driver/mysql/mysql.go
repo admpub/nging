@@ -37,7 +37,7 @@ import (
 )
 
 func init() {
-	driver.Register(`MySQL`, &mySQL{})
+	driver.Register(`mysql`, &mySQL{})
 }
 
 type mySQL struct {
@@ -45,6 +45,10 @@ type mySQL struct {
 	db      *factory.Factory
 	dbName  string
 	version string
+}
+
+func (m *mySQL) Name() string {
+	return `MySQL`
 }
 
 func (m *mySQL) Init(ctx echo.Context, auth *driver.DbAuth) {
@@ -395,7 +399,8 @@ func (m *mySQL) CreateTable() error {
 		after := " FIRST"
 		foreign := map[string]string{}
 		if err == nil && f != nil {
-			for i := 0; ; i++ {
+			size := len(f.Map)
+			for i := 0; i < size; i++ {
 				ii := strconv.Itoa(i)
 				fieldName := f.Value(ii, `field`)
 				if len(fieldName) == 0 {
@@ -559,7 +564,8 @@ func (m *mySQL) ModifyTable() error {
 		driverName := strings.ToLower(m.DbAuth.Driver)
 		j := 1
 		if err == nil && f != nil {
-			for i := 0; ; i++ {
+			size := len(f.Map)
+			for i := 0; i < size; i++ {
 				ii := strconv.Itoa(i)
 				fieldName, posted := f.ValueOk(ii, `field`)
 				orig, exists := f.ValueOk(ii, `orig`)
@@ -913,7 +919,7 @@ func (m *mySQL) ViewTable() error {
 		}
 		m.Set(`triggers`, triggers)
 	}
-	return m.Render(`db/mysql/view_table`, err)
+	return m.Render(`db/mysql/view_table`, m.checkErr(err))
 }
 func (m *mySQL) ListData() error {
 	return nil
@@ -922,16 +928,7 @@ func (m *mySQL) CreateData() error {
 	return nil
 }
 func (m *mySQL) Indexes() error {
-	act := m.Form(`act`)
-	switch act {
-	case `edit`:
-		return m.modifyIndexes()
-	case `fk_add`:
-	case `fk_edit`:
-	case `trigger_add`:
-	case `trigger_edit`:
-	}
-	return nil
+	return m.modifyIndexes()
 }
 func (m *mySQL) modifyIndexes() error {
 	table := m.Form(`table`)
@@ -956,15 +953,111 @@ func (m *mySQL) modifyIndexes() error {
 	if err != nil {
 		return m.String(err.Error())
 	}
+	if m.IsPost() {
+		mapx := NewMapx(m.Forms())
+		mapx = mapx.Get(`indexes`)
+		alter := []*indexItems{}
+		if mapx != nil {
+			size := len(mapx.Map)
+			for i := 0; i < size; i++ {
+				ii := strconv.Itoa(i)
+				item := &indexItems{
+					Indexes: &Indexes{
+						Name:    mapx.Value(ii, `name`),
+						Type:    mapx.Value(ii, `type`),
+						Columns: mapx.Values(ii, `columns`),
+						Lengths: mapx.Values(ii, `lengths`),
+						Descs:   mapx.Values(ii, `descs`),
+					},
+					Set: []string{},
+				}
+				var typeOk bool
+				for _, indexType := range indexTypes {
+					if item.Type == indexType {
+						typeOk = true
+						break
+					}
+				}
+				if !typeOk {
+					continue
+				}
+				lenSize := len(item.Lengths)
+				descSize := len(item.Descs)
+				columns := []string{}
+				lengths := []string{}
+				descs := []string{}
+				for key, col := range item.Columns {
+					if len(col) == 0 {
+						continue
+					}
+					var length, desc string
+					if key < lenSize {
+						length = item.Lengths[key]
+					}
+					if key < descSize {
+						desc = item.Descs[key]
+					}
+					set := quoteCol(col)
+					if len(length) > 0 {
+						set += `(` + length + `)`
+					}
+					if len(desc) > 0 {
+						set += ` DESC`
+					}
+					item.Set = append(item.Set, set)
+					columns = append(columns, col)
+					lengths = append(lengths, length)
+					descs = append(descs, desc)
+				}
+				if len(columns) < 1 {
+					continue
+				}
+				if existing, ok := indexes[item.Name]; ok {
+					/*
+						fmt.Println(item.Type, `==`, existing.Type)
+						fmt.Printf(`columns：%#v`+" == %#v\n", columns, existing.Columns)
+						fmt.Printf(`lengths：%#v`+" == %#v\n", lengths, existing.Lengths)
+						fmt.Printf(`descs：%#v`+" == %#v\n", descs, existing.Descs)
+					// */
+					if item.Type == existing.Type && fmt.Sprintf(`%#v`, columns) == fmt.Sprintf(`%#v`, existing.Columns) &&
+						fmt.Sprintf(`%#v`, lengths) == fmt.Sprintf(`%#v`, existing.Lengths) &&
+						fmt.Sprintf(`%#v`, descs) == fmt.Sprintf(`%#v`, existing.Descs) {
+						delete(indexes, item.Name)
+						continue
+					}
+				}
+				alter = append(alter, item)
+			}
+		}
+		for name, existing := range indexes {
+			alter = append(alter, &indexItems{
+				Indexes: &Indexes{
+					Name: name,
+					Type: existing.Type,
+				},
+				Set:       []string{},
+				Operation: `DROP`,
+			})
+		}
+		if len(alter) > 0 {
+			err = m.alterIndexes(table, alter)
+		}
+		if err != nil {
+			m.fail(err.Error())
+		}
+		return m.returnTo(m.GenURL(`viewTable`, m.dbName, table))
+	}
 	indexesSlice := make([]*Indexes, len(sorts))
 	for k, name := range sorts {
 		indexesSlice[k] = indexes[name]
 		indexesSlice[k].Columns = append(indexesSlice[k].Columns, "")
 		indexesSlice[k].Lengths = append(indexesSlice[k].Lengths, "")
+		indexesSlice[k].Descs = append(indexesSlice[k].Descs, "")
 	}
 	indexesSlice = append(indexesSlice, &Indexes{
 		Columns: []string{""},
 		Lengths: []string{""},
+		Descs:   []string{""},
 	})
 	fields, sortFields, err := m.tableFields(table)
 	if err != nil {
@@ -980,7 +1073,61 @@ func (m *mySQL) modifyIndexes() error {
 	return m.Render(`db/mysql/modify_index`, m.checkErr(err))
 }
 func (m *mySQL) Foreign() error {
-	return nil
+	return m.modifyForeignKeys()
+}
+func (m *mySQL) modifyForeignKeys() error {
+	table := m.Form(`table`)
+	name := m.Form(`name`)
+	_, sortFields, err := m.tableFields(table)
+	if err != nil {
+		return m.String(err.Error())
+	}
+	status, sortStatus, err := m.getTableStatus(m.dbName, ``, true)
+	if err != nil {
+		return m.String(err.Error())
+	}
+	var referencable []string
+	for _, tableName := range sortStatus {
+		tableStatus := status[tableName]
+		if tableStatus.FKSupport(m.getVersion()) {
+			referencable = append(referencable, tableName)
+		}
+	}
+	var foreignKey *ForeignKeyParam
+	if len(name) > 0 {
+		fkeys, _, err := m.tableForeignKeys(table)
+		if err != nil {
+			return m.String(err.Error())
+		}
+		var ok bool
+		foreignKey, ok = fkeys[name]
+		if !ok {
+			return m.String(m.T(`外键不存在`))
+		}
+	} else {
+		foreignKey = &ForeignKeyParam{
+			Table:  table,
+			Source: []string{},
+			Target: []string{},
+		}
+	}
+	foreignKey.Source = append(foreignKey.Source, "")
+	foreignKey.Target = append(foreignKey.Target, "")
+	var target []string
+	if foreignKey.Table == table {
+		target = sortFields
+	} else {
+		_, target, err = m.tableFields(foreignKey.Table)
+		if err != nil {
+			return m.String(err.Error())
+		}
+	}
+	m.Set(`source`, sortFields)         //源(当前表中的字段)
+	m.Set(`target`, target)             //目标(外部表中的字段)
+	m.Set(`referencable`, referencable) //可以使用的目标表
+	m.Set(`onActions`, strings.Split(OnActions, `|`))
+	m.Set(`foreign`, foreignKey)
+	return m.Render(`db/mysql/modify_foreign`, m.checkErr(err))
 }
 func (m *mySQL) Trigger() error {
 	return nil

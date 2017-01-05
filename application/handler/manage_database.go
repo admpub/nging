@@ -109,9 +109,9 @@ func DbManager(ctx echo.Context) error {
 
 	}
 	ret := Err(ctx, err)
-	driverList := []string{}
-	for driverName := range driver.GetAll() {
-		driverList = append(driverList, driverName)
+	driverList := map[string]string{}
+	for driverName, driver := range driver.GetAll() {
+		driverList[driverName] = driver.Name()
 	}
 	ctx.Set(`driverList`, driverList)
 	return ctx.Render(`db/index`, ret)
