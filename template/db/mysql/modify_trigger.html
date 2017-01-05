@@ -1,0 +1,112 @@
+{{Extend "db/index"}}
+{{Block "title"}}{{"触发器"|T}}: {{Form "table"}} - {{Super}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{dbMgrURL "listTable" Stored.dbName}}">{{Stored.dbName}}</a></li>
+<li class="active">{{"触发器"|T}}: {{Form "table"}}</li>
+{{/Block}}
+{{Block "head"}}
+<!-- codemirror -->
+<link rel="stylesheet" href="__ASSETS__/js/codemirror/lib/codemirror.css">
+<link rel="stylesheet" href="__ASSETS__/js/codemirror/theme/night.css">
+<script src="__ASSETS__/js/codemirror/lib/codemirror.js"></script>
+<script src="__ASSETS__/js/codemirror/addon/mode/loadmode.js"></script>
+<style>
+.CodeMirror {
+    border: 1px solid #ccc;
+    min-height:300px
+}
+</style>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        {{Include "db/mysql/results"}}
+        <div class="block-flat">
+          <div class="header">							
+            <h3>
+                {{"触发器"|T}}: {{Form "table"}}
+            </h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" method="POST" action="">
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"时间"|T}}</label>
+				<div class="col-sm-9">
+				  <select name="timing" class="form-control">
+                    <option value=""></option>
+                    {{$foreign := Stored.foreign}}
+                    {{range $k2,$v2 := Stored.referencable}}
+                    <option value="{{$v2}}"{{if eq $foreign.Table $v2}} selected{{end}}>{{$v2}}</option>
+                    {{end}}
+                   </select>
+				</div>
+			</div>
+              
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"事件"|T}}</label>
+				<div class="col-sm-9">
+				  <select name="event" class="form-control">
+                    <option value=""></option>
+                    {{range $k2,$v2 := Stored.onActions}}
+                    <option value="{{$v2}}"{{if eq $foreign.OnDelete $v2}} selected{{end}}>{{$v2}}</option>
+                    {{end}}
+                   </select>
+				</div>
+			</div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"类型"|T}}</label>
+				<div class="col-sm-9">
+				  <select name="type" class="form-control">
+                    <option value=""></option>
+                    {{range $k2,$v2 := Stored.onActions}}
+                    <option value="{{$v2}}"{{if eq $foreign.OnUpdate $v2}} selected{{end}}>{{$v2}}</option>
+                    {{end}}
+                   </select>
+				</div>
+			</div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"名称"|T}}</label>
+				<div class="col-sm-9">
+                    <input type="text" name="trigger" class="form-control">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"表达式"|T}}</label>
+				<div class="col-sm-9">
+                    <textarea name="statement" id="statement" class="form-control"></textarea>
+                </div>
+              </div>
+              <div class="form-group">
+				<div class="col-sm-9 col-sm-offset-2">
+				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+				  <a class="btn btn-default btn-lg" href="{{dbMgrURL "viewTable" Stored.dbName (Form "table")}}"><i class="fa fa-reply"></i> {{"返回"|T}}</a>
+				</div>
+			</div>
+              </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+{{Super}}
+<script>
+var editor;
+CodeMirror.modeURL = "__ASSETS__/js/codemirror/mode/%N/%N.js";
+function initCodeMirrorEditor() {
+    if(editor)return;
+    editor = CodeMirror.fromTextArea($("#statement")[0], {
+        lineNumbers: true
+    });
+    editor.setOption('lineWrapping', true);
+    //editor.setSize('auto', 'auto');
+    editor.setOption("mode", "text/x-{{Form "driver"}}");
+    CodeMirror.autoLoadMode(editor, "sql");
+}
+$(function(){
+    initCodeMirrorEditor();
+});
+</script>
+{{/Block}}

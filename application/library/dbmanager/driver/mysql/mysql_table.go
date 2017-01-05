@@ -299,15 +299,15 @@ func (m *mySQL) alterIndexes(table string, alter []*indexItems) error {
 	return r.err
 }
 
-func (m *mySQL) alterForeignKeys(table string, foreignKey *ForeignKeyParam, name string, isDrop bool) error {
+func (m *mySQL) alterForeignKeys(table string, foreignKey *ForeignKeyParam, isDrop bool) error {
 	r := &Result{
 		SQL: "ALTER TABLE " + quoteCol(table),
 	}
-	if len(name) > 0 {
-		r.SQL += "\nDROP FOREIGN KEY " + quoteCol(name)
+	if len(foreignKey.Name) > 0 {
+		r.SQL += "\nDROP FOREIGN KEY " + quoteCol(foreignKey.Name)
 	}
 	if !isDrop {
-		if len(name) > 0 {
+		if len(foreignKey.Name) > 0 {
 			r.SQL += ","
 		}
 		s, e := m.formatForeignKey(foreignKey)

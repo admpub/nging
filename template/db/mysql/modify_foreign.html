@@ -38,7 +38,7 @@
                   <thead>
                       <th><strong>{{"目标字段"|T}}</strong></th>
                       <th><strong>{{"源字段"|T}}</strong>({{"本表字段"|T}})</th>
-                      <th style="width:40px"></th>
+                      <!-- <th style="width:40px"></th> -->
                   </thead>
                   <tbody>
                       {{range $k,$v := $foreign.Source}}
@@ -60,7 +60,9 @@
                                 {{end}}
                               </select>
                           </td>
-                          <td><a href="javascript:;" onclick="delRow(this)" class="label label-danger"><i class="fa fa-times"></i></a></td>
+                          <!-- <td><a href="javascript:;" onclick="delRow(this)" class="label label-danger">
+                              <i class="fa fa-times"></i>
+                              </a></td> -->
                       </tr>
                       {{end}}
                   </tbody>
@@ -71,7 +73,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">ON DELETE</label>
 				<div class="col-sm-9">
-				  <select name="foreign_table" class="form-control">
+				  <select name="on_delete" class="form-control">
                     <option value=""></option>
                     {{range $k2,$v2 := Stored.onActions}}
                     <option value="{{$v2}}"{{if eq $foreign.OnDelete $v2}} selected{{end}}>{{$v2}}</option>
@@ -82,7 +84,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">ON UPDATE</label>
 				<div class="col-sm-9">
-				  <select name="foreign_table" class="form-control">
+				  <select name="on_update" class="form-control">
                     <option value=""></option>
                     {{range $k2,$v2 := Stored.onActions}}
                     <option value="{{$v2}}"{{if eq $foreign.OnUpdate $v2}} selected{{end}}>{{$v2}}</option>
@@ -93,7 +95,7 @@
               <div class="form-group">
 				<div class="col-sm-9 col-sm-offset-2">
 				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
-				  <a class="btn btn-default btn-lg" href="{{dbMgrURL "viewTable" (Form "db") (Form "table")}}"><i class="fa fa-reply"></i> {{"返回"|T}}</a>
+				  <a class="btn btn-default btn-lg" href="{{dbMgrURL "viewTable" Stored.dbName (Form "table")}}"><i class="fa fa-reply"></i> {{"返回"|T}}</a>
 				</div>
 			</div>
               </form>
@@ -106,17 +108,7 @@
 {{Super}}
 <script>
 function onselectForeignTable(obj){
-    if($(obj).val()=='')return;
-    var currentTR=$(obj).parent().parent();
-    var nextTR=currentTR.next('tr');
-    if(nextTR.length<1){
-        var clone=currentTR.clone();
-        var first=clone.find('.columm-info:first');
-        first.find('select[name*="[columns]"]').children('option:selected').prop('selected',false);
-        first.find('input[name*="[lengths]"]').val('');
-        first.siblings('.columm-info').remove();
-        currentTR.after(clone);
-    }
+    window.location='{{dbMgrURL "foreign" Stored.dbName (Form "table")}}&name={{Form "name"}}&foreign_table='+$(obj).val();
 }
 function onselectSource(obj){
     onselectTarget(obj);

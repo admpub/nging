@@ -2039,9 +2039,9 @@ table.information > tbody > tr > td {
     border-top: 0;
   }
 }
-.CodeMirror {
-  height: auto;
-}
+/*
+.CodeMirror {height: auto;}
+*/
 .CodeMirror-scroll {
   overflow-y: hidden;
   overflow-x: auto;

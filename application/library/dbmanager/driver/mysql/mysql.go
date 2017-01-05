@@ -1078,6 +1078,10 @@ func (m *mySQL) Foreign() error {
 func (m *mySQL) modifyForeignKeys() error {
 	table := m.Form(`table`)
 	name := m.Form(`name`)
+	foreignTable := m.Form(`foreign_table`)
+	if len(foreignTable) == 0 {
+		foreignTable = table
+	}
 	_, sortFields, err := m.tableFields(table)
 	if err != nil {
 		return m.String(err.Error())
@@ -1106,10 +1110,38 @@ func (m *mySQL) modifyForeignKeys() error {
 		}
 	} else {
 		foreignKey = &ForeignKeyParam{
-			Table:  table,
+			Table:  foreignTable,
 			Source: []string{},
 			Target: []string{},
 		}
+	}
+	drop := m.Form(`drop`)
+	isDrop := len(drop) > 0
+	if isDrop || m.IsPost() {
+		targets := m.FormValues(`target[]`)
+		endIndex := len(targets) - 1
+		foreignKey.Source = []string{}
+		foreignKey.Target = []string{}
+		foreignKey.OnDelete = m.Form(`on_delete`)
+		foreignKey.OnUpdate = m.Form(`on_update`)
+		for i, source := range m.FormValues(`source[]`) {
+			if len(source) == 0 {
+				continue
+			}
+			if i > endIndex || len(targets[i]) == 0 {
+				continue
+			}
+			foreignKey.Source = append(foreignKey.Source, source)
+			foreignKey.Target = append(foreignKey.Target, targets[i])
+		}
+		if len(name) > 0 && len(foreignKey.Source) == 0 {
+			isDrop = true
+		}
+		err = m.alterForeignKeys(table, foreignKey, isDrop)
+		if err != nil {
+			m.fail(err.Error())
+		}
+		return m.returnTo(m.GenURL(`viewTable`, m.dbName, table))
 	}
 	foreignKey.Source = append(foreignKey.Source, "")
 	foreignKey.Target = append(foreignKey.Target, "")
@@ -1130,7 +1162,11 @@ func (m *mySQL) modifyForeignKeys() error {
 	return m.Render(`db/mysql/modify_foreign`, m.checkErr(err))
 }
 func (m *mySQL) Trigger() error {
-	return nil
+	return m.modifyTrigger()
+}
+func (m *mySQL) modifyTrigger() error {
+	var err error
+	return m.Render(`db/mysql/modify_trigger`, m.checkErr(err))
 }
 func (m *mySQL) RunCommand() error {
 	return nil
