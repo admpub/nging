@@ -77,6 +77,14 @@ func Result(param *Param) db.Result {
 	return DefaultFactory.Result(param)
 }
 
+func Driver(param *Param) interface{} {
+	return DefaultFactory.Driver(param)
+}
+
+func DB(param *Param) *sql.DB {
+	return DefaultFactory.DB(param)
+}
+
 // ================================
 // API
 // ================================

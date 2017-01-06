@@ -743,7 +743,7 @@ func (m *mySQL) tableTrigger(name string) (*Trigger, error) {
 func (m *mySQL) dropTrigger(table string, name string) error {
 	sqlStr := `DROP TRIGGER ` + quoteCol(name)
 	if m.DbAuth.Driver == `pgsql` {
-		sqlStr += `ON ` + quoteCol(table)
+		sqlStr += ` ON ` + quoteCol(table)
 	}
 	r := &Result{SQL: sqlStr}
 	r.Exec(m.newParam())
@@ -766,7 +766,6 @@ func (m *mySQL) createTrigger(table string, trigger *Trigger) error {
 	sqlStr += ` ` + trigger.Type + "\n"
 	sqlStr += strings.TrimRight(trigger.Statement.String, `;`)
 	r := &Result{
-		//SQL: "DELIMITER ;;\n" + sqlStr + ";;\nDELIMITER ;",
 		SQL: sqlStr,
 	}
 	r.Exec(m.newParam())

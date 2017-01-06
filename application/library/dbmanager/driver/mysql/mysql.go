@@ -101,6 +101,7 @@ func (m *mySQL) Login() error {
 	cluster := factory.NewCluster().AddW(db)
 	m.db.SetCluster(0, cluster)
 	m.Set(`dbName`, m.dbName)
+	m.Set(`table`, m.Form(`table`))
 	return m.baseInfo()
 }
 
@@ -938,7 +939,8 @@ func (m *mySQL) ViewTable() error {
 	return m.Render(`db/mysql/view_table`, m.checkErr(err))
 }
 func (m *mySQL) ListData() error {
-	return nil
+	var err error
+	return m.Render(`db/mysql/list_data`, m.checkErr(err))
 }
 func (m *mySQL) CreateData() error {
 	return nil

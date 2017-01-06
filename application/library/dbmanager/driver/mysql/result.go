@@ -102,7 +102,7 @@ func (r *Result) end() *Result {
 func (r *Result) Exec(p *factory.Param) *Result {
 	r.start()
 	defer r.end()
-	result, err := p.SetCollection(r.SQL).Exec()
+	result, err := p.DB().Exec(r.SQL)
 	r.err = err
 	if err != nil {
 		return r
@@ -151,7 +151,7 @@ func (r *Result) Execs(p *factory.Param) *Result {
 	} else {
 		r.SQLs = append(r.SQLs, r.SQL+";")
 	}
-	result, err := p.SetCollection(r.SQL).Exec()
+	result, err := p.DB().Exec(r.SQL)
 	r.err = err
 	if err != nil {
 		r.end()

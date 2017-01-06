@@ -1,9 +1,10 @@
 {{Extend "db/index"}}
-{{Block "title"}}{{"索引"|T}}: {{Form "table"}} - {{Super}}{{/Block}}
+{{Block "title"}}{{"索引"|T}}: {{Stored.table}} - {{Super}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{dbMgrURL "listTable" Stored.dbName}}">{{Stored.dbName}}</a></li>
-<li class="active">{{"索引"|T}}: {{Form "table"}}</li>
+<li><a href="{{dbMgrURL "listTable" Stored.dbName}}">{{"数据库"|T}}: {{Stored.dbName}}</a></li>
+<li><a href="{{dbMgrURL "viewTable" Stored.dbName Stored.table}}">{{"表"|T}}: {{Stored.table}}</a></li>
+<li class="active">{{"索引"|T}}</li>
 {{/Block}}
 {{Block "main"}}
 {{$driver := Form "driver"}}
@@ -14,7 +15,7 @@
         <div class="block-flat">
           <div class="header">							
             <h3>
-                {{"索引"|T}}: {{Form "table"}}
+                {{"索引"|T}}: {{Stored.table}}
             </h3>
           </div>
           <div class="content">
@@ -66,7 +67,7 @@
               <div class="form-group">
 				<div class="col-sm-9 col-sm-offset-2">
 				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
-				  <a class="btn btn-default btn-lg" href="{{dbMgrURL "viewTable" Stored.dbName (Form "table")}}"><i class="fa fa-reply"></i> {{"返回"|T}}</a>
+				  <a class="btn btn-default btn-lg" href="{{dbMgrURL "viewTable" Stored.dbName Stored.table}}"><i class="fa fa-reply"></i> {{"返回"|T}}</a>
 				</div>
 			</div>
               </form>

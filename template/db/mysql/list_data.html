@@ -1,19 +1,21 @@
 {{Extend "db/index"}}
-{{Block "title"}}{{"数据库"|T}}: {{Stored.dbName}} - {{Super}}{{/Block}}
+{{Block "title"}}{{"数据"|T}}: {{Stored.table}} - {{Super}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li class="active">{{"数据库"|T}}: {{Stored.dbName}}</li>
+<li><a href="{{dbMgrURL "listTable" Stored.dbName}}">{{"数据库"|T}}: {{Stored.dbName}}</a></li>
+<li><a href="{{dbMgrURL "viewTable" Stored.dbName Stored.table}}">{{"表"|T}}: {{Stored.table}}</a></li>
+<li class="active">{{"数据"|T}}</li>
 {{/Block}}
 {{Block "main"}}
 <div class="row">
     <div class="col-md-12">
         <div class="block-flat">
           <div class="header">
-			<a href="{{dbMgrURL "createTable" Stored.dbName}}" class="btn btn-success pull-right">
+			<a href="{{dbMgrURL "createData" Stored.dbName Stored.table}}" class="btn btn-success pull-right">
 				<i class="fa fa-plus"></i>
-				{{"创建表"|T}}
-			</a>						
-            <h3>{{"数据表"|T}}</h3>
+				{{"新建数据"|T}}
+			</a>
+            <h3>{{"数据"|T}}</h3>
           </div>
           <div class="content">
              <div class="table-responsive">
@@ -34,22 +36,12 @@
 					</thead>
 					<tbody class="no-border-x" id="tbody-content">
                         {{$dbName := Stored.dbName}}
-                        {{$tableStatus := Stored.tableStatus}}
-                        {{range $k,$v := Stored.tableList}}
-						{{$info := index $tableStatus $v}}
+                        {{range $k,$v := Stored.list}}
 						<tr>
                             <td>
-                                <input id="checkbox-{{$k}}" class="icheck" type="checkbox" name="{{if $info.IsView}}view{{else}}table{{end}}[]" value="{{$v}}">
+                                <input id="checkbox-{{$k}}" class="icheck" type="checkbox" name="check[]" value="{{$v}}">
                             </td>
 							<td><a href="{{dbMgrURL "viewTable" $dbName $v}}">{{$v}}</a></td>
-							<td>{{$info.Engine.String}}</td>
-							<td>{{$info.Collation.String}}</td>
-							<td>{{$info.Data_length.Int64}}</td>
-                            <td>{{$info.Index_length.Int64}}</td>
-							<td>{{$info.Data_free.Int64}}</td>
-							<td>{{$info.Auto_increment.Int64}}</td>
-							<td>{{$info.Rows.Int64}}</td>
-							<td>{{$info.Comment.String}}</td>
 						</tr>
                         {{end}}
 					</tbody>

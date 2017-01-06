@@ -46,7 +46,7 @@
           <ul class="nav nav-pills nav-stacked ">
               {{$tableList := Stored.Get "tableList"}}
               {{if $tableList}}
-              {{$currentTable := Form "table"}}
+              {{$currentTable := Stored.table}}
               {{range $k,$v:=$tableList}}
               <li{{if eq $currentTable $v}} class="active"{{end}}><a href="{{dbMgrURL "viewTable" $dbName}}&table={{$v}}" title="{{$v}}">{{$v}}</a></li>
               {{end}}

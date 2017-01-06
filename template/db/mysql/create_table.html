@@ -1,9 +1,9 @@
 {{Extend "db/index"}}
-{{Block "title"}}{{if eq (Form "operation") "modifyTable"}}{{"修改表"|T}}: {{Form "table"}}{{else}}{{"创建表"|T}}{{end}} - {{Super}}{{/Block}}
+{{Block "title"}}{{if eq (Form "operation") "modifyTable"}}{{"修改表"|T}}: {{Stored.table}}{{else}}{{"创建表"|T}}{{end}} - {{Super}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
 <li><a href="{{dbMgrURL "listTable" Stored.dbName}}">{{Stored.dbName}}</a></li>
-<li class="active">{{if eq (Form "operation") "modifyTable"}}{{"修改表"|T}}: {{Form "table"}}{{else}}{{"创建表"|T}}{{end}}</li>
+<li class="active">{{if eq (Form "operation") "modifyTable"}}{{"修改表"|T}}: {{Stored.table}}{{else}}{{"创建表"|T}}{{end}}</li>
 {{/Block}}
 {{Block "main"}}
 <style>
@@ -15,7 +15,7 @@
         <div class="block-flat">
           <div class="header">							
             <h3>
-                {{if eq (Form "operation") "modifyTable"}}{{"修改表"|T}}: {{Form "table"}}{{else}}{{"创建表"|T}}{{end}}
+                {{if eq (Form "operation") "modifyTable"}}{{"修改表"|T}}: {{Stored.table}}{{else}}{{"创建表"|T}}{{end}}
             </h3>
           </div>
           <div class="content">
