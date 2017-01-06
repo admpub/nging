@@ -35,6 +35,7 @@ type Driver interface {
 
 	//设置模板内容预处理器
 	SetContentProcessor(fn func([]byte) []byte)
+	SetManager(Manager)
 
 	//设置模板函数
 	SetFuncMap(func() map[string]interface{})

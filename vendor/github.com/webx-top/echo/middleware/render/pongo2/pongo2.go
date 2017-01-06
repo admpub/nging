@@ -30,17 +30,17 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/logger"
 	"github.com/webx-top/echo/middleware/render"
-	. "github.com/webx-top/echo/middleware/render/driver"
-	. "github.com/webx-top/echo/middleware/render/manager"
+	"github.com/webx-top/echo/middleware/render/driver"
+	"github.com/webx-top/echo/middleware/render/manager"
 )
 
 func init() {
-	render.Reg(`pongo2`, func(tmplDir string) Driver {
+	render.Reg(`pongo2`, func(tmplDir string) driver.Driver {
 		return New(tmplDir)
 	})
 }
 
-func New(templateDir string, args ...logger.Logger) Driver {
+func New(templateDir string, args ...logger.Logger) driver.Driver {
 	var err error
 	templateDir, err = filepath.Abs(templateDir)
 	if err != nil {
@@ -68,7 +68,7 @@ type Pongo2 struct {
 	set               *TemplateSet
 	ext               string
 	templateDir       string
-	Mgr               *Manager
+	Mgr               driver.Manager
 	logger            logger.Logger
 	getFuncs          func() map[string]interface{}
 	fileEvents        []func(string)
@@ -106,7 +106,7 @@ func (self *Pongo2) SetLogger(l logger.Logger) {
 	self.logger = l
 	self.loader.logger = l
 	if self.Mgr != nil {
-		self.Mgr.Logger = self.logger
+		self.Mgr.SetLogger(self.logger)
 	}
 }
 func (self *Pongo2) Logger() logger.Logger {
@@ -125,28 +125,7 @@ func (a *Pongo2) MonitorEvent(fn func(string)) {
 }
 
 func (a *Pongo2) Init(cached ...bool) {
-	a.Mgr = new(Manager)
-	a.templates = map[string]*Template{}
-	a.mutex = &sync.RWMutex{}
-	loader := &templateLoader{
-		templateDir: a.templateDir,
-		ext:         a.ext,
-		logger:      a.logger,
-		template:    a,
-	}
-	a.loader = loader
-	a.set = NewSet(a.templateDir, a.loader)
-
-	ln := len(cached)
-	if ln < 1 || !cached[0] {
-		return
-	}
-	reloadTemplates := true
-	if ln > 1 {
-		reloadTemplates = cached[1]
-	}
-
-	a.Mgr.OnChangeCallback = func(name, typ, event string) {
+	callback := func(name, typ, event string) {
 		switch event {
 		case "create":
 		case "delete", "modify", "rename":
@@ -167,7 +146,24 @@ func (a *Pongo2) Init(cached ...bool) {
 			}
 		}
 	}
-	a.Mgr.Init(a.logger, a.templateDir, reloadTemplates, "*"+a.ext)
+	a.Mgr = manager.New(a.logger, a.templateDir, []string{"*" + a.ext}, callback, cached...)
+	a.templates = map[string]*Template{}
+	a.mutex = &sync.RWMutex{}
+	loader := &templateLoader{
+		templateDir: a.templateDir,
+		ext:         a.ext,
+		logger:      a.logger,
+		template:    a,
+	}
+	a.loader = loader
+	a.set = NewSet(a.templateDir, a.loader)
+}
+
+func (a *Pongo2) SetManager(mgr driver.Manager) {
+	if a.Mgr != nil {
+		a.Mgr.Close()
+	}
+	a.Mgr = mgr
 }
 
 func (a *Pongo2) SetContentProcessor(fn func([]byte) []byte) {
@@ -258,7 +254,7 @@ func (a *Pongo2) RawContent(tmpl string) (b []byte, e error) {
 			}
 		}
 	}()
-	if a.Mgr != nil && a.Mgr.Caches != nil {
+	if a.Mgr != nil {
 		b, e = a.Mgr.GetTemplate(tmpl)
 	}
 	if b == nil || e != nil {

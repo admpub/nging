@@ -21,12 +21,16 @@ import (
 	"crypto/tls"
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"strconv"
 	"strings"
 
+	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/engine/standard"
 	"github.com/webx-top/echo/handler/mvc/events"
+	"github.com/webx-top/echo/logger"
 	"github.com/webx-top/echo/middleware"
 	"github.com/webx-top/echo/middleware/render"
 	"github.com/webx-top/echo/middleware/session"
@@ -38,6 +42,26 @@ import (
 )
 
 var Version = `v0.1.0 beta1`
+var BindData = `1`
+
+type assetManager struct {
+	*assetfs.AssetFS
+}
+
+func (a *assetManager) Close()                                            {}
+func (a *assetManager) SetOnChangeCallback(func(name, typ, event string)) {}
+func (a *assetManager) SetLogger(logger.Logger)                           {}
+func (a *assetManager) ClearCache()                                       {}
+func (a *assetManager) GetTemplate(fileName string) ([]byte, error) {
+	file, err := a.Open(fileName)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	b, err := ioutil.ReadAll(file)
+	return b, err
+}
+func (a *assetManager) Init(logger logger.Logger, rootDir string, reload bool, allows ...string) {}
 
 func main() {
 	config.DefaultCLIConfig.InitFlag()
@@ -56,11 +80,30 @@ func main() {
 	e.SetHTTPErrorHandler(render.HTTPErrorHandler(config.DefaultConfig.Sys.ErrorPages))
 	e.Use(middleware.Log(), middleware.Recover())
 
+	bindData, _ := strconv.ParseBool(BindData)
+
 	// 注册静态资源文件
-	e.Use(middleware.Static(&middleware.StaticOptions{
-		Root: "./public",
-		Path: "/public",
-	}))
+	if bindData {
+		asset := &assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, Prefix: ""}
+		e.Get("/public/*", func(c echo.Context) error {
+			fileName := c.Request().URL().Path()
+			file, err := asset.Open(fileName)
+			if err != nil {
+				return echo.ErrNotFound
+			}
+			defer file.Close()
+			info, err := file.Stat()
+			if err != nil {
+				return echo.ErrNotFound
+			}
+			return c.ServeContent(file, info.Name(), info.ModTime())
+		})
+	} else {
+		e.Use(middleware.Static(&middleware.StaticOptions{
+			Root: "./public",
+			Path: "/public",
+		}))
+	}
 
 	// 启用session
 	e.Use(session.Middleware(config.SessionOptions))
@@ -73,6 +116,9 @@ func main() {
 	// 注册模板引擎
 	d := render.New(`standard`, `./template`)
 	d.Init(true)
+	if bindData {
+		d.SetManager(&assetManager{AssetFS: &assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, Prefix: "template"}})
+	}
 	d.SetContentProcessor(func(b []byte) []byte {
 		s := string(b)
 		s = strings.Replace(s, `__PUBLIC__`, `/public`, -1)

@@ -29,6 +29,21 @@ import (
 	"github.com/webx-top/echo/logger"
 )
 
+func New(logger logger.Logger, tmplDir string, allows []string, callback func(name, typ, event string), cached ...bool) *Manager {
+	m := new(Manager)
+	ln := len(cached)
+	if ln < 1 || !cached[0] {
+		return m
+	}
+	reloadTemplates := true
+	if ln > 1 {
+		reloadTemplates = cached[1]
+	}
+	m.SetOnChangeCallback(callback)
+	m.Init(logger, tmplDir, reloadTemplates, allows...)
+	return m
+}
+
 type Manager struct {
 	Caches           map[string][]byte
 	lock             *sync.Once
@@ -36,7 +51,6 @@ type Manager struct {
 	NewRoorDir       string
 	Ignores          map[string]bool
 	CachedAllows     map[string]bool
-	IsReload         bool
 	Logger           logger.Logger
 	Preprocessor     func([]byte) []byte
 	timerCallback    func() bool
@@ -46,11 +60,18 @@ type Manager struct {
 	done             chan bool
 }
 
-func (self *Manager) CloseMoniter() {
+func (self *Manager) closeMoniter() {
 	close(self.done)
 }
 
-func (self *Manager) AllowCached(name string) bool {
+func (self *Manager) SetOnChangeCallback(callback func(name, typ, event string)) {
+	self.OnChangeCallback = callback
+}
+func (self *Manager) SetLogger(logger logger.Logger) {
+	self.Logger = logger
+}
+
+func (self *Manager) allowCached(name string) bool {
 	_, ok := self.CachedAllows["*.*"]
 	if !ok {
 		_, ok = self.CachedAllows[`*`+filepath.Ext(name)]
@@ -94,11 +115,11 @@ func (self *Manager) Moniter(rootDir string) error {
 					if ev.IsCreate() {
 						if d.IsDir() {
 							watcher.Watch(ev.Name)
-							self.OnChange(ev.Name, "dir", "create")
+							self.onChange(ev.Name, "dir", "create")
 							return
 						}
-						self.OnChange(ev.Name, "file", "create")
-						if self.AllowCached(ev.Name) {
+						self.onChange(ev.Name, "file", "create")
+						if self.allowCached(ev.Name) {
 							tmpl := ev.Name[len(self.RootDir)+1:]
 							content, err := ioutil.ReadFile(ev.Name)
 							if err != nil {
@@ -111,21 +132,21 @@ func (self *Manager) Moniter(rootDir string) error {
 					} else if ev.IsDelete() {
 						if d.IsDir() {
 							watcher.RemoveWatch(ev.Name)
-							self.OnChange(ev.Name, "dir", "delete")
+							self.onChange(ev.Name, "dir", "delete")
 							return
 						}
-						self.OnChange(ev.Name, "file", "delete")
-						if self.AllowCached(ev.Name) {
+						self.onChange(ev.Name, "file", "delete")
+						if self.allowCached(ev.Name) {
 							tmpl := ev.Name[len(self.RootDir)+1:]
 							self.CacheDelete(tmpl)
 						}
 					} else if ev.IsModify() {
 						if d.IsDir() {
-							self.OnChange(ev.Name, "dir", "modify")
+							self.onChange(ev.Name, "dir", "modify")
 							return
 						}
-						self.OnChange(ev.Name, "file", "modify")
-						if self.AllowCached(ev.Name) {
+						self.onChange(ev.Name, "file", "modify")
+						if self.allowCached(ev.Name) {
 							tmpl := ev.Name[len(self.RootDir)+1:]
 							content, err := ioutil.ReadFile(ev.Name)
 							if err != nil {
@@ -138,11 +159,11 @@ func (self *Manager) Moniter(rootDir string) error {
 					} else if ev.IsRename() {
 						if d.IsDir() {
 							watcher.RemoveWatch(ev.Name)
-							self.OnChange(ev.Name, "dir", "rename")
+							self.onChange(ev.Name, "dir", "rename")
 							return
 						}
-						self.OnChange(ev.Name, "file", "rename")
-						if self.AllowCached(ev.Name) {
+						self.onChange(ev.Name, "file", "rename")
+						if self.allowCached(ev.Name) {
 							tmpl := ev.Name[len(self.RootDir)+1:]
 							self.CacheDelete(tmpl)
 						}
@@ -180,14 +201,14 @@ func (self *Manager) Moniter(rootDir string) error {
 	return nil
 }
 
-func (self *Manager) OnChange(name, typ, event string) {
+func (self *Manager) onChange(name, typ, event string) {
 	if self.OnChangeCallback != nil {
 		name = FixDirSeparator(name)
 		self.OnChangeCallback(name[len(self.RootDir)+1:], typ, event)
 	}
 }
 
-func (self *Manager) CacheAll(rootDir string) error {
+func (self *Manager) cacheAll(rootDir string) error {
 	fmt.Print("Reading the contents of the template files, please wait... ")
 	err := filepath.Walk(rootDir, func(f string, info os.FileInfo, err error) error {
 		if info.IsDir() {
@@ -238,18 +259,17 @@ func (self *Manager) Close() {
 	self.initialized = false
 }
 
-func (self *Manager) Init(logger logger.Logger, rootDir string, reload bool, allows ...string) error {
+func (self *Manager) Init(logger logger.Logger, rootDir string, reload bool, allows ...string) {
 	if self.initialized {
 		if rootDir == self.RootDir {
-			return nil
-		} else {
-			self.TimerCallback = func() bool {
-				self.ClearCache()
-				self.Ignores = make(map[string]bool)
-				self.CachedAllows = make(map[string]bool)
-				self.TimerCallback = nil
-				return false
-			}
+			return
+		}
+		self.TimerCallback = func() bool {
+			self.ClearCache()
+			self.Ignores = make(map[string]bool)
+			self.CachedAllows = make(map[string]bool)
+			self.TimerCallback = nil
+			return false
 		}
 	} else if !reload {
 		self.TimerCallback = func() bool {
@@ -266,7 +286,7 @@ func (self *Manager) Init(logger logger.Logger, rootDir string, reload bool, all
 	}
 	self.Logger = logger
 	if dirExists(rootDir) {
-		//self.CacheAll(rootDir)
+		//self.cacheAll(rootDir)
 		if reload {
 			self.timerCallback = self.defaultTimerCallback()
 			go self.Moniter(rootDir)
@@ -281,7 +301,6 @@ func (self *Manager) Init(logger logger.Logger, rootDir string, reload bool, all
 		self.CachedAllows["*.*"] = true
 	}
 	self.initialized = true
-	return nil
 }
 
 func (self *Manager) GetTemplate(tmpl string) ([]byte, error) {

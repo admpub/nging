@@ -26,10 +26,11 @@ import (
 )
 
 type Options struct {
-	EnableImage bool
-	EnableAudio bool
-	AudioLangs  []string
-	Prefix      string
+	EnableImage    bool
+	EnableAudio    bool
+	EnableDownload bool
+	AudioLangs     []string
+	Prefix         string
 }
 
 func (o Options) Wrapper(e echo.RouteRegister) {
@@ -56,7 +57,7 @@ func (o Options) Wrapper(e echo.RouteRegister) {
 		}
 		w := ctx.Response()
 		header := w.Header()
-		download := len(ctx.Query("download")) > 0
+		download := o.EnableDownload && len(ctx.Query("download")) > 0
 
 		switch ext {
 		case ".png":

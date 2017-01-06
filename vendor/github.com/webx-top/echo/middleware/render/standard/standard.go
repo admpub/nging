@@ -37,13 +37,13 @@ import (
 	"github.com/admpub/log"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/logger"
-	. "github.com/webx-top/echo/middleware/render/driver"
-	. "github.com/webx-top/echo/middleware/render/manager"
+	"github.com/webx-top/echo/middleware/render/driver"
+	"github.com/webx-top/echo/middleware/render/manager"
 )
 
 var Debug = false
 
-func New(templateDir string, args ...logger.Logger) Driver {
+func New(templateDir string, args ...logger.Logger) driver.Driver {
 	var err error
 	templateDir, err = filepath.Abs(templateDir)
 	if err != nil {
@@ -92,7 +92,7 @@ type CcRel struct {
 type Standard struct {
 	CachedRelation     map[string]*CcRel
 	TemplateDir        string
-	TemplateMgr        *Manager
+	TemplateMgr        driver.Manager
 	contentProcessors  []func([]byte) []byte
 	DelimLeft          string
 	DelimRight         string
@@ -116,7 +116,7 @@ type Standard struct {
 func (self *Standard) SetLogger(l logger.Logger) {
 	self.logger = l
 	if self.TemplateMgr != nil {
-		self.TemplateMgr.Logger = self.logger
+		self.TemplateMgr.SetLogger(self.logger)
 	}
 }
 func (self *Standard) Logger() logger.Logger {
@@ -164,18 +164,7 @@ func (self *Standard) deleteCachedRelation(name string) {
 }
 
 func (self *Standard) Init(cached ...bool) {
-	self.TemplateMgr = new(Manager)
-	self.mutex = &sync.RWMutex{}
-
-	ln := len(cached)
-	if ln < 1 || !cached[0] {
-		return
-	}
-	reloadTemplates := true
-	if ln > 1 {
-		reloadTemplates = cached[1]
-	}
-	self.TemplateMgr.OnChangeCallback = func(name, typ, event string) {
+	callback := func(name, typ, event string) {
 		switch event {
 		case "create":
 		case "delete", "modify", "rename":
@@ -188,10 +177,14 @@ func (self *Standard) Init(cached ...bool) {
 			}
 		}
 	}
-	self.TemplateMgr.Init(self.logger, self.TemplateDir, reloadTemplates, "*"+self.Ext)
+	self.TemplateMgr = manager.New(self.logger, self.TemplateDir, []string{"*" + self.Ext}, callback, cached...)
+	self.mutex = &sync.RWMutex{}
 }
 
-func (self *Standard) SetMgr(mgr *Manager) {
+func (self *Standard) SetManager(mgr driver.Manager) {
+	if self.TemplateMgr != nil {
+		self.TemplateMgr.Close()
+	}
 	self.TemplateMgr = mgr
 }
 
@@ -520,7 +513,7 @@ func (self *Standard) RawContent(tmpl string) (b []byte, e error) {
 			}
 		}
 	}()
-	if self.TemplateMgr != nil && self.TemplateMgr.Caches != nil {
+	if self.TemplateMgr != nil {
 		b, e = self.TemplateMgr.GetTemplate(tmpl)
 		if e != nil {
 			self.logger.Error(e)
