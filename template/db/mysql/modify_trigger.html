@@ -35,10 +35,10 @@
                 <label class="col-sm-2 control-label">{{"时间"|T}}</label>
 				<div class="col-sm-9">
 				  <select name="timing" class="form-control">
-                    <option value=""></option>
-                    {{$foreign := Stored.foreign}}
-                    {{range $k2,$v2 := Stored.referencable}}
-                    <option value="{{$v2}}"{{if eq $foreign.Table $v2}} selected{{end}}>{{$v2}}</option>
+                    {{$options := Stored.triggerOptions}}
+                    {{$trigger := Stored.trigger}}
+                    {{range $k2,$v2 := $options.Get "Timing"}}
+                    <option value="{{$v2}}"{{if eq $trigger.Timing.String $v2}} selected{{end}}>{{$v2}}</option>
                     {{end}}
                    </select>
 				</div>
@@ -48,20 +48,22 @@
                 <label class="col-sm-2 control-label">{{"事件"|T}}</label>
 				<div class="col-sm-9">
 				  <select name="event" class="form-control">
-                    <option value=""></option>
-                    {{range $k2,$v2 := Stored.onActions}}
-                    <option value="{{$v2}}"{{if eq $foreign.OnDelete $v2}} selected{{end}}>{{$v2}}</option>
+                    {{$eventOptions := $options.Get "Event"}}
+                    {{range $k2,$v2 := $eventOptions}}
+                    <option value="{{$v2}}"{{if eq $trigger.Event.String $v2}} selected{{end}}>{{$v2}}</option>
                     {{end}}
                    </select>
+            {{if HasString $eventOptions "UPDATE OF"}}
+                <input type="hidden" name="of" value="{{$trigger.Of}}">
+            {{end}}
 				</div>
 			</div>
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"类型"|T}}</label>
 				<div class="col-sm-9">
 				  <select name="type" class="form-control">
-                    <option value=""></option>
-                    {{range $k2,$v2 := Stored.onActions}}
-                    <option value="{{$v2}}"{{if eq $foreign.OnUpdate $v2}} selected{{end}}>{{$v2}}</option>
+                    {{range $k2,$v2 := $options.Get "Type"}}
+                    <option value="{{$v2}}"{{if eq $trigger.Type $v2}} selected{{end}}>{{$v2}}</option>
                     {{end}}
                    </select>
 				</div>
@@ -69,18 +71,22 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"名称"|T}}</label>
 				<div class="col-sm-9">
-                    <input type="text" name="trigger" class="form-control">
+                    <input type="text" name="trigger" class="form-control" value="{{$trigger.Trigger.String}}">
                 </div>
               </div>
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"表达式"|T}}</label>
 				<div class="col-sm-9">
-                    <textarea name="statement" id="statement" class="form-control"></textarea>
+                    <textarea name="statement" id="statement" class="form-control">{{$trigger.Statement.String}}</textarea>
+                    <div class="help-block">{{"一般以关键字“begin”开始，“end”结束"|T}}</div>
                 </div>
               </div>
               <div class="form-group">
 				<div class="col-sm-9 col-sm-offset-2">
 				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+                  {{if Form "name"}}
+				  <button type="submit" name="drop" value="1" class="btn btn-danger btn-lg" onclick="return confirm('{{"确定要删除吗？"|T}}');"><i class="fa fa-times"></i> {{"删除"|T}}</button>
+                  {{end}}
 				  <a class="btn btn-default btn-lg" href="{{dbMgrURL "viewTable" Stored.dbName (Form "table")}}"><i class="fa fa-reply"></i> {{"返回"|T}}</a>
 				</div>
 			</div>

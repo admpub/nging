@@ -623,4 +623,22 @@ type Trigger struct {
 	Character_set_client sql.NullString
 	Collation_connection sql.NullString
 	Database_collation   sql.NullString
+	Of                   string
+	Type                 string
+}
+
+type TriggerOption struct {
+	Type    string
+	Options []string
+}
+
+type TriggerOptions []*TriggerOption
+
+func (t TriggerOptions) Get(typeName string) []string {
+	for _, v := range t {
+		if v.Type == typeName {
+			return v.Options
+		}
+	}
+	return []string{}
 }

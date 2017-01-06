@@ -37,14 +37,30 @@ import (
 )
 
 func init() {
-	driver.Register(`mysql`, &mySQL{})
+	driver.Register(`mysql`, &mySQL{
+		TriggerOptions: []*TriggerOption{
+			&TriggerOption{
+				Type:    `Timing`,
+				Options: []string{"BEFORE", "AFTER"},
+			},
+			&TriggerOption{
+				Type:    `Event`,
+				Options: []string{"INSERT", "UPDATE", "DELETE"},
+			},
+			&TriggerOption{
+				Type:    `Type`,
+				Options: []string{"FOR EACH ROW"},
+			},
+		},
+	})
 }
 
 type mySQL struct {
 	*driver.BaseDriver
-	db      *factory.Factory
-	dbName  string
-	version string
+	db             *factory.Factory
+	dbName         string
+	version        string
+	TriggerOptions TriggerOptions
 }
 
 func (m *mySQL) Name() string {
@@ -1166,6 +1182,39 @@ func (m *mySQL) Trigger() error {
 }
 func (m *mySQL) modifyTrigger() error {
 	var err error
+	table := m.Form(`table`)
+	name := m.Form(`name`)
+	var trigger *Trigger
+	if len(name) > 0 {
+		trigger, err = m.tableTrigger(name)
+		if err != nil {
+			return err
+		}
+	}
+	if trigger == nil {
+		trigger = &Trigger{}
+	}
+	if m.IsPost() {
+		if len(name) > 0 {
+			err = m.dropTrigger(table, name)
+			if len(m.Form(`drop`)) > 0 {
+				return m.returnTo(m.GenURL(`viewTable`, m.dbName, table))
+			}
+		}
+		trigger.Timing.String = m.Form(`timing`)
+		trigger.Event.String = m.Form(`event`)
+		trigger.Type = m.Form(`type`)
+		trigger.Of = m.Form(`of`)
+		trigger.Trigger.String = m.Form(`trigger`)
+		trigger.Statement.String = m.Form(`statement`)
+		err = m.createTrigger(table, trigger)
+		return m.returnTo(m.GenURL(`viewTable`, m.dbName, table))
+	}
+	if len(trigger.Trigger.String) == 0 {
+		trigger.Trigger.String = table + `_bi`
+	}
+	m.Set(`trigger`, trigger)
+	m.Set(`triggerOptions`, m.TriggerOptions)
 	return m.Render(`db/mysql/modify_trigger`, m.checkErr(err))
 }
 func (m *mySQL) RunCommand() error {

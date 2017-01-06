@@ -726,6 +726,54 @@ func (m *mySQL) tableTriggers(table string) (map[string]*Trigger, []string, erro
 	return r, s, nil
 }
 
+func (m *mySQL) tableTrigger(name string) (*Trigger, error) {
+	sqlStr := "SHOW TRIGGERS WHERE `Trigger`=" + quoteVal(name)
+	v := &Trigger{}
+	row, err := m.newParam().SetCollection(sqlStr).QueryRow()
+	if err != nil {
+		return v, err
+	}
+	err = row.Scan(&v.Trigger, &v.Event, &v.Table, &v.Statement, &v.Timing, &v.Created, &v.Sql_mode, &v.Definer, &v.Character_set_client, &v.Collation_connection, &v.Database_collation)
+	if err != nil {
+		return v, err
+	}
+	return v, nil
+}
+
+func (m *mySQL) dropTrigger(table string, name string) error {
+	sqlStr := `DROP TRIGGER ` + quoteCol(name)
+	if m.DbAuth.Driver == `pgsql` {
+		sqlStr += `ON ` + quoteCol(table)
+	}
+	r := &Result{SQL: sqlStr}
+	r.Exec(m.newParam())
+	m.AddResults(r)
+	return r.err
+}
+
+func (m *mySQL) createTrigger(table string, trigger *Trigger) error {
+	timingEvent := ` ` + trigger.Timing.String + ` ` + trigger.Event.String
+	if trigger.Event.String == `UPDATE OF` {
+		timingEvent += ` ` + quoteCol(trigger.Of)
+	}
+	sqlStr := `CREATE TRIGGER ` + quoteCol(trigger.Trigger.String)
+	on := ` ON ` + quoteCol(table)
+	if m.DbAuth.Driver == `mssql` {
+		sqlStr += on + timingEvent
+	} else {
+		sqlStr += timingEvent + on
+	}
+	sqlStr += ` ` + trigger.Type + "\n"
+	sqlStr += strings.TrimRight(trigger.Statement.String, `;`)
+	r := &Result{
+		//SQL: "DELIMITER ;;\n" + sqlStr + ";;\nDELIMITER ;",
+		SQL: sqlStr,
+	}
+	r.Exec(m.newParam())
+	m.AddResults(r)
+	return r.err
+}
+
 func (m *mySQL) tablePartitioning(partitions map[string]string, tableStatus *TableStatus) string {
 	var partitioning string
 	partitionMethod := m.Form(`partition_method`)
