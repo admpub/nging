@@ -30,6 +30,7 @@
 										<td>{{$v.Opts}}</td>
 									</tr>
                                     {{$diskUsage := index $.DiskUsages $k}}
+									{{if $diskUsage}}
 									<tr>
 										<td>{{"磁盘容量"|T}}</td>
                                         <td>{{$diskUsage.Total|FormatByte}}</td>
@@ -43,6 +44,7 @@
 										<td>{{$diskUsage.UsedPercent}} %</td>
 									</tr>
                                     {{end}}
+									{{end}}
 								</tbody>
 							</table>
 						</div>

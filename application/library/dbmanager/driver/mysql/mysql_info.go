@@ -63,9 +63,21 @@ func (m *mySQL) processList() ([]*ProcessList, error) {
 	if err != nil {
 		return r, err
 	}
+	cols, err := rows.Columns()
+	if err != nil {
+		return r, err
+	}
+	n := len(cols)
 	for rows.Next() {
 		v := &ProcessList{}
-		err = rows.Scan(&v.Id, &v.User, &v.Host, &v.Db, &v.Command, &v.Time, &v.State, &v.Info, &v.Progress)
+		values := []interface{}{
+			&v.Id, &v.User, &v.Host, &v.Db, &v.Command, &v.Time, &v.State, &v.Info, &v.Progress,
+		}
+		if n == 9 {
+			err = rows.Scan(values...)
+		} else {
+			err = rows.Scan(values[0:n]...)
+		}
 		if err != nil {
 			break
 		}

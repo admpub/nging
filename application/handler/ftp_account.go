@@ -196,7 +196,7 @@ func FTPGroupAdd(ctx echo.Context) error {
 	if ctx.IsPost() {
 		m := model.NewFtpUserGroup(ctx)
 		name := ctx.Form(`name`)
-		if len(name) < 6 {
+		if len(name) == 0 {
 			err = errors.New(ctx.T(`用户组名称不能为空`))
 		} else if y, e := m.Exists(name); e != nil {
 			err = e
