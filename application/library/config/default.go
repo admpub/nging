@@ -18,12 +18,29 @@
 package config
 
 import (
+	"database/sql"
 	"errors"
+	"os"
 	"os/exec"
+	"path/filepath"
+
+	"github.com/webx-top/com"
 )
 
 var (
+	Installed             sql.NullBool
 	DefaultConfig         = &Config{}
 	DefaultCLIConfig      = &CLIConfig{cmds: map[string]*exec.Cmd{}}
 	ErrUnknowDatabaseType = errors.New(`unkown database type`)
 )
+
+func IsInstalled() bool {
+	if !Installed.Valid {
+		lockFile := filepath.Join(com.SelfDir(), `installed.lock`)
+		if info, err := os.Stat(lockFile); err == nil && info.IsDir() == false {
+			Installed.Valid = true
+			Installed.Bool = true
+		}
+	}
+	return Installed.Bool
+}

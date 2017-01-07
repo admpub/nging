@@ -20,6 +20,7 @@ package handler
 import (
 	"errors"
 
+	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/middleware"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
@@ -52,6 +53,12 @@ func Login(ctx echo.Context) error {
 			}
 		}
 	}
+
+	//检查是否已安装
+	if !config.IsInstalled() {
+		return ctx.Redirect(`/setup`)
+	}
+
 	return ctx.Render(`login`, Err(ctx, err))
 }
 

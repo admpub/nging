@@ -19,17 +19,10 @@ package middleware
 
 import (
 	"errors"
-	"os"
-	"path/filepath"
-
-	"database/sql"
 
 	"github.com/admpub/nging/application/library/config"
-	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
-
-var installed sql.NullBool
 
 func AuthCheck(h echo.Handler) echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -43,14 +36,7 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 		if err := Auth(c, false); err != nil {
 
 			//检查是否已安装
-			if !installed.Valid {
-				lockFile := filepath.Join(com.SelfDir(), `installed.lock`)
-				if info, err := os.Stat(lockFile); err == nil && info.IsDir() == false {
-					installed.Valid = true
-					installed.Bool = true
-				}
-			}
-			if !installed.Bool {
+			if !config.IsInstalled() {
 				return c.Redirect(`/setup`)
 			}
 

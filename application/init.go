@@ -42,9 +42,18 @@ func Initialize(e *echo.Echo) {
 	addRouter(e)
 	me := com.MonitorEvent{
 		Modify: func(file string) {
-			if strings.HasSuffix(file, `.yaml`) {
-				log.Info(`reload config from ` + file)
-				config.MustOK(config.ParseConfig())
+			if !strings.HasSuffix(file, `.yaml`) {
+				return
+			}
+			log.Info(`reload config from ` + file)
+			err := config.ParseConfig()
+			if err == nil {
+				return
+			}
+			if config.IsInstalled() {
+				config.MustOK(err)
+			} else {
+				log.Error(err)
 			}
 		},
 	}

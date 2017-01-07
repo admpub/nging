@@ -35,6 +35,7 @@ import (
 	"github.com/webx-top/echo/middleware/tplfunc"
 
 	"github.com/admpub/letsencrypt"
+	"github.com/admpub/log"
 	"github.com/admpub/nging/application"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/modal"
@@ -51,7 +52,14 @@ func main() {
 	}
 	config.SetVersion(`nging/` + Version)
 
-	config.MustOK(config.ParseConfig())
+	err := config.ParseConfig()
+	if err != nil {
+		if config.IsInstalled() {
+			config.MustOK(err)
+		} else {
+			log.Error(err)
+		}
+	}
 
 	if config.DefaultCLIConfig.OnlyRunServer() {
 		return
