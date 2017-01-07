@@ -1417,6 +1417,12 @@
 			"revisionTime": "2017-01-06T10:57:47Z"
 		},
 		{
+			"checksumSHA1": "MJskXzSaItRWicIwPXNV5oaYy9I=",
+			"path": "github.com/webx-top/echo/middleware/bindata",
+			"revision": "60213ab1f70cee5a472968a575ef41736b31c3c6",
+			"revisionTime": "2017-01-07T03:48:53Z"
+		},
+		{
 			"checksumSHA1": "W4b9oFwnp0PiYwsupBd97BJQGiY=",
 			"path": "github.com/webx-top/echo/middleware/bytes",
 			"revision": "53bc05ae2496f479ccb92ab1134248ba681a6917",
