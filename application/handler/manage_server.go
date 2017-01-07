@@ -18,7 +18,11 @@
 package handler
 
 import (
+	"io"
+	"runtime"
+
 	"github.com/admpub/log"
+	"github.com/admpub/nging/application/library/charset"
 	"github.com/admpub/sockjs-go/sockjs"
 	"github.com/admpub/websocket"
 	"github.com/shirou/gopsutil/cpu"
@@ -32,10 +36,14 @@ import (
 	"github.com/webx-top/echo"
 )
 
-var WebSocketLogger = log.GetLogger(`websocket`)
+var (
+	WebSocketLogger = log.GetLogger(`websocket`)
+	IsWindows       bool
+)
 
 func init() {
 	WebSocketLogger.SetLevel(`Info`)
+	IsWindows = runtime.GOOS == `windows`
 }
 
 func ManageSysCmd(ctx echo.Context) error {
@@ -59,16 +67,35 @@ func ManageSockJSSendCmd(c sockjs.Session) error {
 
 	//echo
 	var execute = func(session sockjs.Session) error {
+		var w io.WriteCloser
 		for {
 			command, err := session.Recv()
 			if err != nil {
 				return err
 			}
 			if len(command) > 0 {
-				com.RunCmdStr(command, func(b []byte) error {
-					send <- string(b)
-					return nil
-				})
+				if w == nil {
+					cmd := com.CreateCmdStr(command, func(b []byte) (e error) {
+						if IsWindows {
+							b, e = charset.Convert(`gbk`, `utf-8`, b)
+							if e != nil {
+								return e
+							}
+						}
+						send <- string(b)
+						return nil
+					})
+					w, err = cmd.StdinPipe()
+					if err != nil {
+						return err
+					}
+					if e := cmd.Run(); e != nil {
+						cmd.Stderr.Write([]byte(e.Error()))
+					}
+					w = nil
+				} else {
+					w.Write([]byte(command + "\n"))
+				}
 			}
 			err = session.Send(command)
 			if err != nil {

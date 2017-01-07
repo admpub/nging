@@ -26,11 +26,9 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/admpub/nging/application/library/charset"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
-
-	//"github.com/admpub/chardet"
-	sc "github.com/admpub/mahonia"
 )
 
 func New(root string, editableMaxSize int64, ctx echo.Context) *fileManager {
@@ -56,26 +54,6 @@ func (f *fileManager) RealPath(filePath string) string {
 	return absPath
 }
 
-func encodingConvert(fromEnc string, toEnc string, b []byte) ([]byte, error) {
-	if !encodingValidate(fromEnc) || !encodingValidate(toEnc) {
-		return nil, errors.New(`Unsuppored encoding.`)
-	}
-	dec := sc.NewDecoder(fromEnc)
-	s := dec.ConvertString(string(b))
-	enc := sc.NewEncoder(toEnc)
-	s = enc.ConvertString(s)
-	b = []byte(s)
-	return b, nil
-}
-
-func encodingValidate(enc string) bool {
-	switch enc {
-	case `utf-8`, `gbk`:
-		return true
-	}
-	return false
-}
-
 func (f *fileManager) Edit(absPath string, content string, encoding string) (interface{}, error) {
 	fi, err := os.Stat(absPath)
 	if err != nil {
@@ -92,7 +70,7 @@ func (f *fileManager) Edit(absPath string, content string, encoding string) (int
 	if f.IsPost() {
 		b := []byte(content)
 		if !isUTF8 {
-			b, err = encodingConvert(`utf-8`, encoding, b)
+			b, err = charset.Convert(`utf-8`, encoding, b)
 			if err != nil {
 				return ``, err
 			}
@@ -102,7 +80,7 @@ func (f *fileManager) Edit(absPath string, content string, encoding string) (int
 	}
 	b, err := ioutil.ReadFile(absPath)
 	if err == nil && !isUTF8 {
-		b, err = encodingConvert(encoding, `utf-8`, b)
+		b, err = charset.Convert(encoding, `utf-8`, b)
 	}
 	return string(b), err
 }

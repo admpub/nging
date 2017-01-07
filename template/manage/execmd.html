@@ -83,6 +83,7 @@ $(function(){
 
 	$('#cmd-form').on('submit',function(event){
 		event.preventDefault();
+		rows=0;
 		modalBody.empty();
 		$('#cmd-output').niftyModal('show',{afterClose:function(modal){
 			ws.close();

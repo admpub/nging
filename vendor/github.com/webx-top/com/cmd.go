@@ -161,22 +161,22 @@ func (this CmdResultCapturer) WriteString(p string) (n int, err error) {
 	return
 }
 
-func RunCmdStr(command string, recvResult func([]byte) error) *exec.Cmd {
+func CreateCmdStr(command string, recvResult func([]byte) error) *exec.Cmd {
 	out := CmdResultCapturer{Do: recvResult}
-	return RunCmdStrWithWriter(command, out)
+	return CreateCmdStrWithWriter(command, out)
 }
 
-func RunCmd(params []string, recvResult func([]byte) error) *exec.Cmd {
+func CreateCmd(params []string, recvResult func([]byte) error) *exec.Cmd {
 	out := CmdResultCapturer{Do: recvResult}
-	return RunCmdWithWriter(params, out)
+	return CreateCmdWithWriter(params, out)
 }
 
-func RunCmdStrWithWriter(command string, writer ...io.Writer) *exec.Cmd {
+func CreateCmdStrWithWriter(command string, writer ...io.Writer) *exec.Cmd {
 	params := ParseArgs(command)
-	return RunCmdWithWriter(params, writer...)
+	return CreateCmdWithWriter(params, writer...)
 }
 
-func RunCmdWithWriter(params []string, writer ...io.Writer) *exec.Cmd {
+func CreateCmdWithWriter(params []string, writer ...io.Writer) *exec.Cmd {
 	var cmd *exec.Cmd
 	length := len(params)
 	if length == 0 || len(params[0]) == 0 {
@@ -202,6 +202,26 @@ func RunCmdWithWriter(params []string, writer ...io.Writer) *exec.Cmd {
 	}
 	cmd.Stdout = wOut
 	cmd.Stderr = wErr
+	return cmd
+}
+
+func RunCmdStr(command string, recvResult func([]byte) error) *exec.Cmd {
+	out := CmdResultCapturer{Do: recvResult}
+	return RunCmdStrWithWriter(command, out)
+}
+
+func RunCmd(params []string, recvResult func([]byte) error) *exec.Cmd {
+	out := CmdResultCapturer{Do: recvResult}
+	return RunCmdWithWriter(params, out)
+}
+
+func RunCmdStrWithWriter(command string, writer ...io.Writer) *exec.Cmd {
+	params := ParseArgs(command)
+	return RunCmdWithWriter(params, writer...)
+}
+
+func RunCmdWithWriter(params []string, writer ...io.Writer) *exec.Cmd {
+	cmd := CreateCmdWithWriter(params, writer...)
 
 	go func() {
 		err := cmd.Run()
