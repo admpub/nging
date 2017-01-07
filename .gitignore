@@ -27,3 +27,10 @@ _testmain.go
 /*.log
 /*.pid
 /installed.lock
+/dist/config
+/dist/ftp.pid
+/dist/nging_*
+/dist/data
+/dist/access_local.log
+/dist/*.pid
+/bindata_assetfs.go

@@ -22,7 +22,6 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"strconv"
 	"strings"
 
 	assetfs "github.com/elazarl/go-bindata-assetfs"
@@ -39,10 +38,11 @@ import (
 	"github.com/admpub/letsencrypt"
 	"github.com/admpub/nging/application"
 	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/nging/application/library/modal"
 )
 
-var Version = `v0.1.0 beta1`
-var BindData = `1`
+var Version = `0.1.0 beta1`
+var binData bool
 
 type assetManager struct {
 	*assetfs.AssetFS
@@ -66,8 +66,10 @@ func (a *assetManager) Init(logger logger.Logger, rootDir string, reload bool, a
 func main() {
 	config.DefaultCLIConfig.InitFlag()
 	flag.Parse()
-
-	config.SetVersion(Version)
+	if binData {
+		Version += ` (bindata)`
+	}
+	config.SetVersion(`nging/` + Version)
 
 	config.MustOK(config.ParseConfig())
 
@@ -79,12 +81,21 @@ func main() {
 	e := echo.New()
 	e.SetHTTPErrorHandler(render.HTTPErrorHandler(config.DefaultConfig.Sys.ErrorPages))
 	e.Use(middleware.Log(), middleware.Recover())
-
-	bindData, _ := strconv.ParseBool(BindData)
+	e.Use(func(h echo.Handler) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			c.Response().Header().Set(`Server`, `nging/`+Version)
+			return h.Handle(c)
+		}
+	})
 
 	// 注册静态资源文件
-	if bindData {
-		asset := &assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, Prefix: ""}
+	if binData {
+		asset := &assetfs.AssetFS{
+			Asset:     Asset,
+			AssetDir:  AssetDir,
+			AssetInfo: AssetInfo,
+			Prefix:    "",
+		}
 		e.Get("/public/*", func(c echo.Context) error {
 			fileName := c.Request().URL().Path()
 			file, err := asset.Open(fileName)
@@ -116,8 +127,20 @@ func main() {
 	// 注册模板引擎
 	d := render.New(`standard`, `./template`)
 	d.Init(true)
-	if bindData {
-		d.SetManager(&assetManager{AssetFS: &assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, Prefix: "template"}})
+	if binData {
+		asset := &assetManager{
+			AssetFS: &assetfs.AssetFS{
+				Asset:     Asset,
+				AssetDir:  AssetDir,
+				AssetInfo: AssetInfo,
+				Prefix:    "template",
+			},
+		}
+		d.SetManager(asset)
+		modal.ReadConfigFile = func(file string) ([]byte, error) {
+			file = strings.TrimPrefix(file, `./template`)
+			return asset.GetTemplate(file)
+		}
 	}
 	d.SetContentProcessor(func(b []byte) []byte {
 		s := string(b)

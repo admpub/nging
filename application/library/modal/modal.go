@@ -28,9 +28,14 @@ import (
 	"github.com/webx-top/echo"
 )
 
-var DefaultModal = Modal{
-	ExtButtons: []Button{},
-}
+var (
+	DefaultModal = Modal{
+		ExtButtons: []Button{},
+	}
+	ReadConfigFile = func(file string) ([]byte, error) {
+		return ioutil.ReadFile(file)
+	}
+)
 
 type HTMLAttr struct {
 	Attr  string      //属性名
@@ -67,7 +72,10 @@ func Render(ctx echo.Context, param interface{}) template.HTML {
 		if ov, ok := modalConfig[v]; ok {
 			data = ov
 		} else {
-			_, err := confl.DecodeFile(v, &data)
+			b, err := ReadConfigFile(v)
+			if err == nil {
+				err = confl.Unmarshal(b, &data)
+			}
 			if err != nil {
 				if os.IsNotExist(err) || strings.Contains(err.Error(), `cannot find the file`) {
 					var b []byte
