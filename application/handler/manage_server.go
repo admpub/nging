@@ -73,33 +73,30 @@ func ManageSockJSSendCmd(c sockjs.Session) error {
 			if err != nil {
 				return err
 			}
-			if len(command) > 0 {
-				if w == nil {
-					cmd := com.CreateCmdStr(command, func(b []byte) (e error) {
-						if IsWindows {
-							b, e = charset.Convert(`gbk`, `utf-8`, b)
-							if e != nil {
-								return e
-							}
-						}
-						send <- string(b)
-						return nil
-					})
-					w, err = cmd.StdinPipe()
-					if err != nil {
-						return err
-					}
-					if e := cmd.Run(); e != nil {
-						cmd.Stderr.Write([]byte(e.Error()))
-					}
-					w = nil
-				} else {
-					w.Write([]byte(command + "\n"))
-				}
+			if len(command) == 0 {
+				continue
 			}
-			err = session.Send(command)
-			if err != nil {
-				return err
+			if w == nil {
+				cmd := com.CreateCmdStr(command, func(b []byte) (e error) {
+					if IsWindows {
+						b, e = charset.Convert(`gbk`, `utf-8`, b)
+						if e != nil {
+							return e
+						}
+					}
+					send <- string(b)
+					return nil
+				})
+				w, err = cmd.StdinPipe()
+				if err != nil {
+					return err
+				}
+				if e := cmd.Run(); e != nil {
+					cmd.Stderr.Write([]byte(e.Error()))
+				}
+				w = nil
+			} else {
+				w.Write([]byte(command + "\n"))
 			}
 		}
 	}

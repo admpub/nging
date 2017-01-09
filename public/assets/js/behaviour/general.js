@@ -1729,7 +1729,7 @@ var App = function () {
     },
 
     text2html:function(text){
-      return String(text).replace(/\n/g,'<br />').replace(/  /g,'&nbsp; ').replace(/\t/g,'&nbsp; &nbsp; ')
+      return String(text).replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br />').replace(/  /g,'&nbsp; ').replace(/\t/g,'&nbsp; &nbsp; ')
     },
     
     iCheck:function(elem,on,callback){
