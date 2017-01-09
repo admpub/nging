@@ -820,3 +820,28 @@ func (m *mySQL) tablePartitioning(partitions map[string]string, tableStatus *Tab
 	}
 	return partitioning
 }
+
+func (m *mySQL) selectTable(rows *sql.Rows, fields map[string]*Field, orgtables map[string]string, limit int) (columns []string, r []map[string]string, err error) {
+	columns, err = rows.Columns()
+	r = []map[string]string{}
+	if err != nil {
+		return
+	}
+	size := len(columns)
+	for i := 0; i < limit && rows.Next(); i++ {
+		values := make([]interface{}, size)
+		for k := range columns {
+			values[k] = &sql.NullString{}
+		}
+		err = rows.Scan(values...)
+		if err != nil {
+			return
+		}
+		val := map[string]string{}
+		for k, colName := range columns {
+			val[colName] = values[k].(*sql.NullString).String
+		}
+		r = append(r, val)
+	}
+	return
+}

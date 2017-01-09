@@ -45,7 +45,7 @@
                         {{range $k,$v := Stored.postFields}}
 						<tr>
                             <td><b>{{$v.Field}}</b></td>
-							<td>
+							<td title="{{$v.Type}}">
                                 {{$v.Full_type}}
                                 {{if $v.Null}}<span>NULL</span>{{end}}
                                 {{if $v.AutoIncrement.Valid}}<em>{{"自动增量"|T}}</em>{{end}}
