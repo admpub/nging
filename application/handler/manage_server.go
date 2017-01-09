@@ -19,7 +19,12 @@ package handler
 
 import (
 	"io"
+	"os"
 	"runtime"
+
+	"os/exec"
+
+	"strings"
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/library/charset"
@@ -66,8 +71,11 @@ func ManageSockJSSendCmd(c sockjs.Session) error {
 	}()
 
 	//echo
-	var execute = func(session sockjs.Session) error {
-		var w io.WriteCloser
+	exec := func(session sockjs.Session) error {
+		var (
+			w   io.WriteCloser
+			cmd *exec.Cmd
+		)
 		for {
 			command, err := session.Recv()
 			if err != nil {
@@ -77,32 +85,67 @@ func ManageSockJSSendCmd(c sockjs.Session) error {
 				continue
 			}
 			if w == nil {
-				cmd := com.CreateCmdStr(command, func(b []byte) (e error) {
-					if IsWindows {
-						b, e = charset.Convert(`gbk`, `utf-8`, b)
-						if e != nil {
-							return e
-						}
-					}
-					send <- string(b)
-					return nil
+				w, cmd, err = CmdRunner(command, send, func() {
+					w.Close()
+					w = nil
 				})
-				w, err = cmd.StdinPipe()
 				if err != nil {
 					return err
 				}
-				if e := cmd.Run(); e != nil {
-					cmd.Stderr.Write([]byte(e.Error()))
-				}
-				w = nil
-			} else {
-				w.Write([]byte(command + "\n"))
+				continue
+			}
+			err = CmdContinue(command, w, cmd)
+			if err != nil {
+				return err
 			}
 		}
 	}
-	err := execute(c)
+	err := exec(c)
 	if err != nil {
 		WebSocketLogger.Error(err)
+	}
+	return nil
+}
+
+func CmdRunner(command string, send chan string, onEnd func()) (w io.WriteCloser, cmd *exec.Cmd, err error) {
+	cmd = com.CreateCmdStr(command, func(b []byte) (e error) {
+		if IsWindows {
+			b, e = charset.Convert(`gbk`, `utf-8`, b)
+			if e != nil {
+				return e
+			}
+		}
+		send <- string(b)
+		return nil
+	})
+	w, err = cmd.StdinPipe()
+	if err != nil {
+		return
+	}
+	go func() {
+		if e := cmd.Run(); e != nil {
+			cmd.Stderr.Write([]byte(e.Error()))
+		}
+		onEnd()
+	}()
+	return
+}
+
+func CmdContinue(command string, w io.WriteCloser, cmd *exec.Cmd) (err error) {
+	switch command {
+	case `^C`:
+		err = cmd.Process.Signal(os.Interrupt)
+		if err != nil {
+			if !strings.HasPrefix(err.Error(), `not supported by `) {
+				WebSocketLogger.Error(err)
+			}
+			err = cmd.Process.Kill()
+			if err != nil {
+				WebSocketLogger.Error(err)
+			}
+		}
+	default:
+		w.Write([]byte(command + "\n"))
 	}
 	return nil
 }
@@ -122,26 +165,37 @@ func ManageWSSendCmd(c *websocket.Conn, ctx echo.Context) error {
 	}()
 
 	//echo
-	var execute = func(conn *websocket.Conn) error {
+	exec := func(conn *websocket.Conn) error {
+		var (
+			w   io.WriteCloser
+			cmd *exec.Cmd
+		)
 		for {
-			mt, message, err := conn.ReadMessage()
+			_, message, err := conn.ReadMessage()
 			if err != nil {
 				return err
 			}
 			command := string(message)
-			if len(command) > 0 {
-				com.RunCmdStr(command, func(b []byte) error {
-					send <- string(b)
-					return nil
-				})
+			if len(command) == 0 {
+				continue
 			}
-
-			if err = conn.WriteMessage(mt, message); err != nil {
+			if w == nil {
+				w, cmd, err = CmdRunner(command, send, func() {
+					w.Close()
+					w = nil
+				})
+				if err != nil {
+					return err
+				}
+				continue
+			}
+			err = CmdContinue(command, w, cmd)
+			if err != nil {
 				return err
 			}
 		}
 	}
-	err := execute(c)
+	err := exec(c)
 	if err != nil {
 		WebSocketLogger.Error(err)
 	}

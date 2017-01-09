@@ -22,14 +22,12 @@
 						<div class="input">
 							<input placeholder="{{"系统命令"|T}}" id="system_cmd" name="system_cmd" type="text">
 						</div>
-						<!--<div class="chat-tools">
+						<div class="chat-tools">
 							<ul class="nav nav-pills">
-								<li class="active"><i class="fa fa-location-arrow"></i></li>
-								<li><i class="fa fa-camera"></i></li>
-								<li><i class="fa fa-microphone"></i></li>
-								<li><i class="fa fa-cloud"></i></li>
+								<li title="{{T "执行“%s”" "Ctrl+C"}}" data-toggle="tooltip" onclick="sendCmd('^C')"><i class="fa fa-bolt"></i></li>
+								<li title="{{"清空会话内容"|T}}" data-toggle="tooltip" onclick="clearScreen()"><i class="fa fa-eraser"></i></li>
 							</ul>
-						</div>-->
+						</div>
 					</form>
 				</div>
 			</div><!-- /.chat-wi -->
@@ -138,16 +136,22 @@ function scrollToBottom(){
 	$(".chat-space").nanoScroller();//Refresh the scrollbar. This simply re-calculates the position and height of the scrollbar gadget.
 	$(".chat-space").nanoScroller({scroll: 'bottom'});
 }
+function sendCmd(cmd){
+	connectSockJS(function(){
+		var data=$('#send-message-tmpl').html().replace('{message}','{{"发送命令"|T}}: '+cmd).replace('{time}',now());
+		$('.chat-content').append(data);
+		scrollToBottom();
+		ws.send(cmd);
+	});
+}
+function clearScreen(){
+	$('.chat-content').empty();
+	rows=0;
+}
 $(function(){
 	$('#cmd-form').on('submit',function(event){
 		event.preventDefault();
-		var cmd=$('#system_cmd').val();
-		connectSockJS(function(){
-			data=$('#send-message-tmpl').html().replace('{message}','{{"发送命令"|T}}: '+cmd).replace('{time}',now());
-			$('.chat-content').append(data);
-			scrollToBottom();
-			ws.send(cmd);
-		});
+		sendCmd($('#system_cmd').val());
 	});
 	$(window).on('resize',function(){
 		$('.chat-space').height($(window).height()-$('#head-nav').outerHeight()-$('.page-head').outerHeight()-200);
