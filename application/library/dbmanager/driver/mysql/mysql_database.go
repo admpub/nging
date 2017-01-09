@@ -101,6 +101,7 @@ func (m *mySQL) getDatabases() ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 	ret := []string{}
 	for rows.Next() {
 		var v sql.NullString

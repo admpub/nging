@@ -55,6 +55,7 @@
 
           <div class="compose">
             <div class="btn-group">
+            <a href="{{dbMgrURL "runCommand" $dbName}}" class="btn btn-flat btn-info">{{"SQL命令"|T}}</a>
             <a href="{{dbMgrURL "createTable" $dbName}}" class="btn btn-flat btn-primary">{{"创建表"|T}}</a>
             <a href="{{dbMgrURL "modifyDb" $dbName}}" class="btn btn-flat btn-success">{{"修改数据库"|T}}</a>
             </div>

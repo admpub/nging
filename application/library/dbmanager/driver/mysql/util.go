@@ -33,6 +33,7 @@ func (m *mySQL) kvVal(sqlStr string) ([]map[string]string, error) {
 	if err != nil {
 		return r, err
 	}
+	defer rows.Close()
 	for rows.Next() {
 		var k sql.NullString
 		var v sql.NullString

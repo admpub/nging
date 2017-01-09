@@ -63,6 +63,7 @@ func (m *mySQL) processList() ([]*ProcessList, error) {
 	if err != nil {
 		return r, err
 	}
+	defer rows.Close()
 	cols, err := rows.Columns()
 	if err != nil {
 		return r, err
@@ -98,6 +99,7 @@ func (m *mySQL) getCollations() (*Collations, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 	ret := NewCollations()
 	for rows.Next() {
 		var v Collation
@@ -166,6 +168,7 @@ func (m *mySQL) getTableStatus(dbName string, tableName string, fast bool) (map[
 	if err != nil {
 		return ret, sorts, err
 	}
+	defer rows.Close()
 	for rows.Next() {
 		v := &TableStatus{}
 		err := rows.Scan(&v.Name, &v.Engine, &v.Version, &v.Row_format, &v.Rows, &v.Avg_row_length, &v.Data_length, &v.Max_data_length, &v.Index_length, &v.Data_free, &v.Auto_increment, &v.Create_time, &v.Update_time, &v.Check_time, &v.Collation, &v.Checksum, &v.Create_options, &v.Comment)
@@ -190,6 +193,7 @@ func (m *mySQL) getEngines() ([]*SupportedEngine, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 	ret := []*SupportedEngine{}
 	for rows.Next() {
 		v := &SupportedEngine{}

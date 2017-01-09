@@ -120,6 +120,7 @@ func (r *Result) Query(p *factory.Param, readRows func(*sql.Rows) error) *Result
 		return r
 	}
 	r.err = readRows(rows)
+	rows.Close()
 	return r
 }
 
@@ -184,5 +185,6 @@ func (r *Result) Queries(p *factory.Param, readRows func(*sql.Rows) error) *Resu
 		return r
 	}
 	r.err = readRows(rows)
+	rows.Close()
 	return r
 }

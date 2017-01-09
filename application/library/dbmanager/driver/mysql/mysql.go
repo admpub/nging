@@ -1223,17 +1223,22 @@ func (m *mySQL) modifyTrigger() error {
 }
 func (m *mySQL) RunCommand() error {
 	var err error
+	var columns []string
+	var values []map[string]string
 	if m.IsPost() {
 		query := m.Form(`query`)
+		query = strings.TrimSpace(query)
 		errorStops := m.Formx(`error_stops`).Bool()
 		onlyErrors := m.Formx(`only_errors`).Bool()
-		limit := m.Formx(`limit`).Int64()
+		limit := m.Formx(`limit`).Int()
+		if limit <= 0 {
+			limit = 50
+		}
 		var reader *bytes.Reader
 		reader = bytes.NewReader([]byte(query))
-		space := "(?:\\s|/\\*[\\s\\S]*?\\*/|(?:#|-- )[^\n]*\n?|--\r?\n)"
+		space := "(?:\\s|/\\*[\\s\\S]*?\\*/|(?:#|-- )[^\\n]*\\n?|--\\r?\\n)"
 		delimiter := ";"
 		parse := `['"`
-		offset := 0
 		empty := true
 		switch m.DbAuth.Driver {
 		case `sqlite`:
@@ -1252,6 +1257,7 @@ func (m *mySQL) RunCommand() error {
 		}
 		buf := make([]byte, 1e6)
 		query = ``
+		offset := 0
 		for {
 			n, e := reader.Read(buf)
 			if e != nil {
@@ -1262,55 +1268,71 @@ func (m *mySQL) RunCommand() error {
 			}
 			q := string(buf[0:n])
 			if offset == 0 {
-				if match := regexp.MustCompile("(?i)^" + space + "*+DELIMITER\\s+(\\S+)").FindStringSubmatch(q); len(match) > 1 {
+				if match := regexp.MustCompile("(?i)^" + space + "*DELIMITER\\s+(\\S+)").FindStringSubmatch(q); len(match) > 1 {
 					delimiter = match[1]
 					q = q[len(match[0]):]
-					offset += n
 					query += q
+					offset += n
 					continue
 				}
 			}
-			offset += n
 			query += q
+			offset += n
+
+			/*/ 跳过注释和空白
 			match := regexp.MustCompile("(" + regexp.QuoteMeta(delimiter) + "\\s*|" + parse + ")").FindStringSubmatch(query)
-			if len(match) < 1 {
-				continue
-			}
-			found := match[1]
-			if strings.TrimRight(query, " \t\n\r") != delimiter {
-				rule := `(?s)`
-				switch found {
-				case `/*`:
-					rule += `\*/`
-				case `[`:
-					rule += `]`
-				default:
-					match := regexp.MustCompile("^-- |^#").FindStringSubmatch(found)
-					if len(match) > 1 {
-						rule += "\n"
-					} else {
-						rule += regexp.QuoteMeta(found) + "|\\\\."
+			com.Dump(match)
+			if len(match) > 1 {
+				found := match[1]
+				if strings.TrimRight(query, " \t\n\r") != delimiter {
+					rule := `(?s)`
+					switch found {
+					case `/*`:
+						rule += "\\*\/"
+					case `[`:
+						rule += `]`
+					default:
+						match := regexp.MustCompile("^-- |^#").FindStringSubmatch(found)
+						if len(match) > 1 {
+							rule += "\n"
+						} else {
+							rule += regexp.QuoteMeta(found) + "|\\\\."
+						}
+					}
+					pos := strings.Index(query, found)
+					query = query[:pos]
+					rule += `|$`
+					match := regexp.MustCompile(rule).FindStringSubmatch(query)
+					for len(match) > 0 {
+						n, e := reader.Read(buf)
+						if e != nil {
+							if e == io.EOF {
+								break
+							}
+							m.Logger().Error(err)
+						}
+						q := string(buf[0:n])
+						if len(match) > 1 && len(match[1]) > 0 && match[1][0] != '\\' {
+							break
+						}
+						match = regexp.MustCompile(rule).FindStringSubmatch(q)
 					}
 				}
-				rule += `|$`
-				match := regexp.MustCompile(rule).FindStringSubmatch(query)
-				if len(match) == 0 {
-					continue
-				}
-				if match[1][0] != '\\' {
-					break
-				}
 			}
+			// */
+
 			empty = false
-			if m.DbAuth.Driver == `sqlite` && regexp.MustCompile(`(?i)^`+space+`*+ATTACH\b`).MatchString(found) {
+			if m.DbAuth.Driver == `sqlite` && regexp.MustCompile(`(?i)^`+space+`*ATTACH\b`).MatchString(query) {
 				if errorStops {
 					err = errors.New(m.T(`ATTACH queries are not supported.`))
 					break
 				}
 			}
-			if regexp.MustCompile(`(?i)^` + space + `*+USE\b`).MatchString(found) {
-				_, err = m.newParam().DB().Exec(found)
+
+			if regexp.MustCompile(`(?i)^` + space + `*USE\b`).MatchString(query) {
+				_, err = m.newParam().DB().Exec(query)
 				if err != nil {
+					m.Logger().Error(err, query)
 					//return err
 					if onlyErrors {
 
@@ -1318,9 +1340,11 @@ func (m *mySQL) RunCommand() error {
 				}
 				continue
 			}
-			if regexp.MustCompile(`(?i)^` + space + `*+(CREATE|DROP|ALTER)` + space + `++(DATABASE|SCHEMA)\b`).MatchString(found) {
-				_, err = m.newParam().DB().Exec(found)
+
+			if regexp.MustCompile(`(?i)^` + space + `*(CREATE|DROP|ALTER)` + space + `+(DATABASE|SCHEMA)\b`).MatchString(query) {
+				_, err = m.newParam().DB().Exec(query)
 				if err != nil {
+					m.Logger().Error(err, query)
 					//return err
 					if onlyErrors {
 
@@ -1328,15 +1352,34 @@ func (m *mySQL) RunCommand() error {
 				}
 				continue
 			}
-			if regexp.MustCompile(`(?i)^(` + space + `|\()*+SELECT\b`).MatchString(found) {
+
+			if !regexp.MustCompile(`(?i)^(` + space + `|\()*SELECT\b`).MatchString(query) {
 				//explain
 				continue
 			}
-			_ = limit
-			_ = empty
-			m.newParam().DB().Query(found)
+			m.Logger().Info(`SQL: `, query)
+			rows, err := m.newParam().DB().Query(query)
+			if err != nil {
+				m.Logger().Error(err, query)
+				//return err
+				if onlyErrors {
+
+				}
+				continue
+			}
+
+			columns, values, err = m.selectTable(rows, limit)
+			/*
+				com.Dump(columns)
+				com.Dump(values)
+			// */
+			rows.Close()
 		}
+		_ = delimiter
+		_ = empty
 	}
+	m.Set(`columns`, columns)
+	m.Set(`values`, values)
 	return m.Render(`db/mysql/sql`, m.checkErr(err))
 }
 func (m *mySQL) Import() error {

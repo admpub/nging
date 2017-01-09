@@ -32,6 +32,7 @@ func (m *mySQL) getTables() ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 	ret := []string{}
 	for rows.Next() {
 		var v sql.NullString
@@ -349,6 +350,7 @@ func (m *mySQL) tablePartitions(table string) (*Partition, error) {
 	if err != nil {
 		return ret, err
 	}
+	defer rows.Close()
 	for rows.Next() {
 		var k, v sql.NullString
 		err = rows.Scan(&k, &v)
@@ -374,6 +376,7 @@ func (m *mySQL) tableFields(table string) (map[string]*Field, []string, error) {
 	}
 	ret := map[string]*Field{}
 	sorts := []string{}
+	defer rows.Close()
 	for rows.Next() {
 		v := &FieldInfo{}
 		err := rows.Scan(&v.Field, &v.Type, &v.Collation, &v.Null, &v.Key, &v.Default, &v.Extra, &v.Privileges, &v.Comment)
@@ -423,6 +426,7 @@ func (m *mySQL) tableIndexes(table string) (map[string]*Indexes, []string, error
 	if err != nil {
 		return ret, sorts, err
 	}
+	defer rows.Close()
 	for rows.Next() {
 		v := &IndexInfo{}
 		err := rows.Scan(&v.Table, &v.Non_unique, &v.Key_name, &v.Seq_in_index,
@@ -714,6 +718,7 @@ func (m *mySQL) tableTriggers(table string) (map[string]*Trigger, []string, erro
 	if err != nil {
 		return r, s, err
 	}
+	defer rows.Close()
 	for rows.Next() {
 		v := &Trigger{}
 		err = rows.Scan(&v.Trigger, &v.Event, &v.Table, &v.Statement, &v.Timing, &v.Created, &v.Sql_mode, &v.Definer, &v.Character_set_client, &v.Collation_connection, &v.Database_collation)
@@ -821,7 +826,7 @@ func (m *mySQL) tablePartitioning(partitions map[string]string, tableStatus *Tab
 	return partitioning
 }
 
-func (m *mySQL) selectTable(rows *sql.Rows, fields map[string]*Field, orgtables map[string]string, limit int) (columns []string, r []map[string]string, err error) {
+func (m *mySQL) selectTable(rows *sql.Rows, limit int) (columns []string, r []map[string]string, err error) {
 	columns, err = rows.Columns()
 	r = []map[string]string{}
 	if err != nil {

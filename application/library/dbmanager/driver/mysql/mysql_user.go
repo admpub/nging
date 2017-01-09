@@ -281,6 +281,7 @@ func (m *mySQL) getUserGrants(host, user string) (string, map[string]map[string]
 		if err != nil {
 			return oldPass, r, sortNumber, err
 		}
+		defer rows.Close()
 		for rows.Next() {
 			var v sql.NullString
 			err = rows.Scan(&v)
