@@ -953,17 +953,28 @@ func (m *mySQL) ListData() error {
 		textLength = 100
 		m.Request().Form().Set(`text_length`, strconv.Itoa(textLength))
 	}
+	selectFuncs := m.FormValues(`columns[fun][]`)
+	selectCols := m.FormValues(`columns[col][]`)
+	whereCols := m.FormValues(`where[col][]`)
+	whereOperators := m.FormValues(`where[op][]`)
+	whereVals := m.FormValues(`where[val][]`)
+	orderFields := m.FormValues(`order[]`)
+	descs := m.FormValues(`desc[]`)
 	r := &Result{SQL: `SELECT * FROM ` + quoteCol(table)}
 	var (
 		columns []string
 		values  []map[string]string
 	)
 	r.Query(m.newParam(), func(rows *sql.Rows) error {
-		columns, values, err = m.selectTable(rows, limit)
+		columns, values, err = m.selectTable(rows, limit, textLength)
 		return err
 	})
+	m.AddResults(r)
 	m.Set(`columns`, columns)
 	m.Set(`values`, values)
+	m.Set(`functions`, functions)
+	m.Set(`grouping`, grouping)
+	m.Set(`operators`, operators)
 	return m.Render(`db/mysql/list_data`, m.checkErr(err))
 }
 func (m *mySQL) CreateData() error {

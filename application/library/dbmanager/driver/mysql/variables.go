@@ -130,6 +130,22 @@ var (
 	}
 	types = map[string]uint64{} ///< @var array ($type,$maximum_unsigned_length, ...)
 
+	operators     = []string{"=", "<", ">", "<=", ">=", "!=", "LIKE", "LIKE %%", "REGEXP", "IN", "IS NULL", "NOT LIKE", "NOT REGEXP", "NOT IN", "IS NOT NULL", "SQL"} ///< @var array operators used in select
+	functions     = []string{"char_length", "date", "from_unixtime", "lower", "round", "sec_to_time", "time_to_sec", "upper"}                                         ///< @var array functions used in select
+	grouping      = []string{"avg", "count", "count distinct", "group_concat", "max", "min", "sum"}                                                                   ///< @var array grouping functions used in select
+	editFunctions = []map[string]string{                                                                                                                              ///< @var array of array("$type|$type2" => "$function/$function2") functions used in editing, [0] - edit and insert, [1] - edit only
+		map[string]string{
+			"char":      "md5/sha1/password/encrypt/uuid", //! JavaScript for disabling maxlength
+			"binary":    "md5/sha1",
+			"date|time": "now",
+		}, map[string]string{
+			"(^|[^o])int|float|double|decimal": "+/-", // not point
+			"date":      "+ interval/- interval",
+			"time":      "addtime/subtime",
+			"char|text": "concat",
+		},
+	}
+
 	pattern      = "`(?:[^`]|``)+`"
 	reQuotedCol  = regexp.MustCompile(pattern)
 	reForeignKey = regexp.MustCompile(`CONSTRAINT (` + pattern + `) FOREIGN KEY ?\(((?:` + pattern + `,? ?)+)\) REFERENCES (` + pattern + `)(?:\.(` + pattern + `))? \(((?:` + pattern + `,? ?)+)\)(?: ON DELETE (` + OnActions + `))?(?: ON UPDATE (` + OnActions + `))?`)

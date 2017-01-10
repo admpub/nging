@@ -7,21 +7,117 @@
 <li class="active">{{"数据"|T}}</li>
 {{/Block}}
 {{Block "main"}}
+<script>
+function onselectOrder(obj){
+    if(!$(obj).val())return;
+    var iptGrp=$(obj).parent();
+    if(iptGrp.next('.input-group').length<1){
+        var clone=iptGrp.clone();
+        clone.find('select > option:checked,input:checkbox:checked').prop('checked',false);
+        iptGrp.after(clone);
+    }
+}
+function onselectWhere(obj){
+    if(!$(obj).val())return;
+    var iptGrp=$(obj).parent();
+    if(iptGrp.next('.input-group').length<1){
+        var clone=iptGrp.clone();
+        clone.find('input:text').val('');
+        clone.find('select > option:checked').prop('checked',false);
+        iptGrp.after(clone);
+    }
+}
+function onselectColumns(obj){
+    if(!$(obj).val())return;
+    var iptGrp=$(obj).parent();
+    if(!iptGrp.hasClass('input-group'))iptGrp=iptGrp.parent();
+    if(iptGrp.next('.input-group').length<1){
+        var clone=iptGrp.clone();
+        clone.find('input:text').val('');
+        clone.find('select > option:checked').prop('checked',false);
+        iptGrp.after(clone);
+    }
+}
+</script>
 <div class="row">
     <div class="col-md-12">
-        <div class="block-flat">
-          <div class="content no-padding-top">
-              <div class="input-group" style="width:200px">
+        <div class="block-flat row">
+            <form action="" method="get">
+              <input type="hidden" name="driver" value="{{Form "driver"}}">
+              <input type="hidden" name="username" value="{{Form "username"}}">
+              <input type="hidden" name="operation" value="{{Form "operation"}}">
+              <input type="hidden" name="table" value="{{Stored.table}}">
+              <input type="hidden" name="db" value="{{Stored.dbName}}">
+              <div class="col-md-3">
+              <label class="control-label">{{"查询"|T}}</label>
+              <div class="input-group">
+                  <select name="columns[fun][]" class="form-control" onchange="onselectColumns(this)">
+					  <option value=""></option>
+                      <optgroup label="{{"函数"|T}}">
+                          {{range $k,$func := Stored.functions}}
+                          <option value="{{$func}}">{{$func}}</option>
+                          {{end}}
+                      </optgroup>
+                      <optgroup label="{{"集合"|T}}">
+                          {{range $k,$group := Stored.grouping}}
+                          <option value="{{$group}}">{{$group}}</option>
+                          {{end}}
+                      </optgroup>
+                  </select>
+                  <label class="input-group-addon no-padding-bottom no-padding-top">(
+                  <select name="columns[col][]" onchange="onselectColumns(this)">
+					  <option value=""></option>
+                      {{range $k, $colName := Stored.columns}}
+					  <option value="{{$colName}}">{{$colName}}</option>
+                      {{end}}
+                  </select>
+                  )</label>
+              </div>
+              </div>
+              <div class="col-md-4">
+              <label class="control-label">{{"搜索"|T}}</label>
+              <div class="input-group">
+                  <select name="where[col][]" class="form-control" onchange="onselectWhere(this)">
+                      <option value="">({{"任意位置"|T}})</option>
+                      {{range $k, $colName := Stored.columns}}
+					  <option value="{{$colName}}">{{$colName}}</option>
+                      {{end}}
+                  </select>
+                  <span class="input-group-addon no-padding-bottom no-padding-top"><select name="where[op][]">
+                      {{range $k, $op := Stored.operators}}
+					  <option value="{{$op}}">{{$op}}</option>
+                      {{end}}
+                  </select></span>
+                  <input type="text" name="where[val][]" value="" class="form-control" onchange="onselectWhere(this)">
+              </div>
+              </div>
+              <div class="col-md-2">
+              <label class="control-label">{{"排序"|T}}</label>
+              <div class="input-group">
+                  <select name="order[]" class="form-control" onchange="onselectOrder(this)">
+					  <option value=""></option>
+                      {{range $k, $colName := Stored.columns}}
+					  <option value="{{$colName}}">{{$colName}}</option>
+                      {{end}}
+                  </select>
+                  <label class="input-group-addon"><input type="checkbox" name="desc[]" value="1"> {{"降序"|T}}</label>
+              </div>
+              </div>
+              <div class="col-md-3">
+              <label class="control-label">{{"其它设置"|T}}</label>
+              <div class="input-group">
                   <label for="limit" class="input-group-addon">{{"范围"|T}}</label>
-                  <input type="number" name="limit" id="limit" class="form-control inline" value="{{Form "limit"}}" style="width:100px">
+                  <input type="number" name="limit" id="limit" class="form-control" value="{{Form "limit"}}">
+            </div>
+              <div class="input-group">
                   <label for="text_length" class="input-group-addon">{{"文本显示长度"|T}}</label>
-                  <input type="number" name="text_length" id="text_length" class="form-control inline" value="{{Form "text_length"}}" style="width:100px">
+                  <input type="number" name="text_length" id="text_length" class="form-control" value="{{Form "text_length"}}">
               </div>
-             
-              <div class="input-group" style="width:50px">
               </div>
-          </div><!-- /.content -->
+              <button type="submit" class="btn btn-primary btn-flat col-md-12"><span class="fa fa-search"></span> {{"查询"|T}}</button>
+            </form>
         </div><!-- /.block-flat -->
+        {{Include "db/mysql/results"}}
         <div class="block-flat">
           <div class="header">
 			<a href="{{dbMgrURL "createData" Stored.dbName Stored.table}}" class="btn btn-success pull-right">

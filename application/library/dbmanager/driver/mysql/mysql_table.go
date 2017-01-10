@@ -23,6 +23,8 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/webx-top/com"
 )
 
 // 获取数据表列表
@@ -826,13 +828,17 @@ func (m *mySQL) tablePartitioning(partitions map[string]string, tableStatus *Tab
 	return partitioning
 }
 
-func (m *mySQL) selectTable(rows *sql.Rows, limit int) (columns []string, r []map[string]string, err error) {
+func (m *mySQL) selectTable(rows *sql.Rows, limit int, textLength ...int) (columns []string, r []map[string]string, err error) {
 	columns, err = rows.Columns()
 	r = []map[string]string{}
 	if err != nil {
 		return
 	}
 	size := len(columns)
+	var maxLen int
+	if len(textLength) > 0 {
+		maxLen = textLength[0]
+	}
 	for i := 0; i < limit && rows.Next(); i++ {
 		values := make([]interface{}, size)
 		for k := range columns {
@@ -845,6 +851,9 @@ func (m *mySQL) selectTable(rows *sql.Rows, limit int) (columns []string, r []ma
 		val := map[string]string{}
 		for k, colName := range columns {
 			val[colName] = values[k].(*sql.NullString).String
+			if maxLen > 0 {
+				val[colName] = com.Substr(val[colName], ` ...`, maxLen)
+			}
 		}
 		r = append(r, val)
 	}
