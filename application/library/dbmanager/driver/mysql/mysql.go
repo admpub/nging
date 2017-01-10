@@ -942,6 +942,28 @@ func (m *mySQL) ViewTable() error {
 }
 func (m *mySQL) ListData() error {
 	var err error
+	table := m.Form(`table`)
+	limit := m.Formx(`limit`).Int()
+	textLength := m.Formx(`text_length`).Int()
+	if limit < 1 {
+		limit = 50
+		m.Request().Form().Set(`limit`, strconv.Itoa(limit))
+	}
+	if textLength < 1 {
+		textLength = 100
+		m.Request().Form().Set(`text_length`, strconv.Itoa(textLength))
+	}
+	r := &Result{SQL: `SELECT * FROM ` + quoteCol(table)}
+	var (
+		columns []string
+		values  []map[string]string
+	)
+	r.Query(m.newParam(), func(rows *sql.Rows) error {
+		columns, values, err = m.selectTable(rows, limit)
+		return err
+	})
+	m.Set(`columns`, columns)
+	m.Set(`values`, values)
 	return m.Render(`db/mysql/list_data`, m.checkErr(err))
 }
 func (m *mySQL) CreateData() error {

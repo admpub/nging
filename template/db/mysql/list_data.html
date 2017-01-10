@@ -10,6 +10,19 @@
 <div class="row">
     <div class="col-md-12">
         <div class="block-flat">
+          <div class="content no-padding-top">
+              <div class="input-group" style="width:200px">
+                  <label for="limit" class="input-group-addon">{{"范围"|T}}</label>
+                  <input type="number" name="limit" id="limit" class="form-control inline" value="{{Form "limit"}}" style="width:100px">
+                  <label for="text_length" class="input-group-addon">{{"文本显示长度"|T}}</label>
+                  <input type="number" name="text_length" id="text_length" class="form-control inline" value="{{Form "text_length"}}" style="width:100px">
+              </div>
+             
+              <div class="input-group" style="width:50px">
+              </div>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+        <div class="block-flat">
           <div class="header">
 			<a href="{{dbMgrURL "createData" Stored.dbName Stored.table}}" class="btn btn-success pull-right">
 				<i class="fa fa-plus"></i>
@@ -21,27 +34,30 @@
              <div class="table-responsive">
 				<table class="table no-border hover blue">
 					<thead class="no-border">
-						<tr>
-							<th style="width:2%;"><strong></strong></th>
-							<th><strong>{{"表"|T}}</strong></th>
-							<th><strong>{{"引擎"|T}}</strong></th>
-							<th><strong>{{"字符集"|T}}</strong></th>
-							<th><strong>{{"数据长度"|T}}</strong></th>
-							<th><strong>{{"索引长度"|T}}</strong></th>
-							<th><strong>{{"数据空闲"|T}}</strong></th>
-							<th><strong>{{"自动增量"|T}}</strong></th>
-							<th><strong>{{"行数"|T}}</strong></th>
-							<th><strong>{{"注释"|T}}</strong></th>
+                        <tr>
+                            <th style="width:50px">
+                                <input type="checkbox" name="checkedAll" class="icheck" value="1" id="checkedAll">
+                            </th>
+                            <th style="width:50px">
+                                <a href="{{dbMgrURL "listData" Stored.dbName Stored.table}}&modify=1" title="{{"编辑"|T}}"><i class="fa fa-pencil"></i></a>
+                            </th>
+                            {{range $k, $colName := Stored.columns}}
+							<th><strong>{{$colName}}</strong></th>
+                            {{end}}
 						</tr>
 					</thead>
 					<tbody class="no-border-x" id="tbody-content">
-                        {{$dbName := Stored.dbName}}
-                        {{range $k,$v := Stored.list}}
+                        {{range $k,$v := Stored.values}}
 						<tr>
                             <td>
-                                <input id="checkbox-{{$k}}" class="icheck" type="checkbox" name="check[]" value="{{$v}}">
+                                <input type="checkbox" class="icheck" name="check" value="">
                             </td>
-							<td><a href="{{dbMgrURL "viewTable" $dbName $v}}">{{$v}}</a></td>
+                            <td>
+                                <a href="{{dbMgrURL "listData" Stored.dbName Stored.table}}&where[]=1" title="{{"编辑"|T}}"><i class="fa fa-pencil"></i></a>
+                            </td>
+                            {{range $k, $colName := Stored.columns}}
+                            <td>{{index $v $colName}}</td>
+                            {{end}}
 						</tr>
                         {{end}}
 					</tbody>
@@ -49,14 +65,9 @@
 			    </div>
                 <fieldset>
                      <legend>{{"已选中"|T}} (<span id="selected-items-count">0</span>)</legend>
-                     <button type="button" class="btn btn-default" id="analyze-selected">{{"分析"|T}}</button>
-                     <button type="button" class="btn btn-default" id="optimize-selected">{{"优化"|T}}</button>
-                     <button type="button" class="btn btn-default" id="check-selected">{{"检查"|T}}</button>
-                     <button type="button" class="btn btn-default" id="repair-selected">{{"修复"|T}}</button>
-                     <button type="button" class="btn btn-default" id="truncate-selected">{{"清空"|T}}</button>
-                     <button type="button" class="btn btn-default" id="drop-selected">{{"删除"|T}}</button>
-                     <button type="button" class="btn btn-default" id="move-selected">{{"移动"|T}}</button>
+                     <button type="button" class="btn btn-default" id="edit-selected">{{"编辑"|T}}</button>
                      <button type="button" class="btn btn-default" id="copy-selected">{{"复制"|T}}</button>
+                     <button type="button" class="btn btn-default" id="delete-selected">{{"删除"|T}}</button>
                 </fieldset>
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
