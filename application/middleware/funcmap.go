@@ -43,9 +43,20 @@ func FuncMap() echo.MiddlewareFunc {
 			c.SetFunc(`IsOk`, errors.IsOk)
 			c.SetFunc(`Message`, errors.Message)
 			c.SetFunc(`Ok`, errors.Ok)
+			c.SetFunc(`IndexStrSlice`, indexStrSlice)
 			return h.Handle(c)
 		})
 	}
+}
+
+func indexStrSlice(slice []string, index int) string {
+	if slice == nil {
+		return ``
+	}
+	if index >= len(slice) {
+		return ``
+	}
+	return slice[index]
 }
 
 func hasString(slice []string, str string) bool {

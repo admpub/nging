@@ -22,6 +22,8 @@ import (
 
 	"strings"
 
+	"regexp"
+
 	"github.com/admpub/nging/application/library/common"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
@@ -109,4 +111,89 @@ func quoteCol(col string) string {
 
 func quoteVal(val string, otherChars ...rune) string {
 	return "'" + com.AddSlashes(val, otherChars...) + "'"
+}
+
+/** Convert field in select and edit
+* @param array one element from fields()
+* @return string
+ */
+func convertField(field *Field) string {
+	if strings.Contains(field.Type, "binary") {
+		return "HEX(" + quoteCol(field.Field) + ")"
+	}
+	if field.Type == "bit" {
+		return "BIN(" + quoteCol(field.Field) + " + 0)" // + 0 is required outside MySQLnd
+	}
+	switch {
+	case strings.Contains(field.Type, "geometry"),
+		strings.Contains(field.Type, "point"),
+		strings.Contains(field.Type, "linestring"),
+		strings.Contains(field.Type, "polygon"):
+		return "AsWKT(" + quoteCol(field.Field) + ")"
+	}
+	return ``
+}
+
+/** Convert value in edit after applying functions back
+* @param array one element from fields()
+* @param string
+* @return string
+ */
+func unconvertField(field *Field, ret string) string {
+
+	if strings.Contains(field.Type, "binary") {
+		return "UNHEX(" + ret + ")"
+	}
+	if field.Type == "bit" {
+		return "CONV(" + ret + ", 2, 10) + 0"
+	}
+	switch {
+	case strings.Contains(field.Type, "geometry"),
+		strings.Contains(field.Type, "point"),
+		strings.Contains(field.Type, "linestring"),
+		strings.Contains(field.Type, "polygon"):
+		return "GeomFromText(" + ret + ")"
+	}
+	return ret
+}
+
+var reFunction1 = regexp.MustCompile(`^([+-]|\\|)$`)
+var reFunction2 = regexp.MustCompile(`^[+-] interval$`)
+var reSQLValue = regexp.MustCompile(`^(\d+|'[0-9.: -]') [A-Z_]+$`)
+
+func processInput(field *Field, value string, function string) string {
+	if function == "SQL" {
+		return value // SQL injection
+	}
+	ret := quoteVal(value)
+	switch function {
+	case `now`, `getdate`, `uuid`:
+		ret = function + `()`
+	case `current_date`, `current_timestamp`:
+		return function
+	case `addtime`, `subtime`, `concat`:
+		return function + `(` + quoteCol(field.Field) + `,` + ret + `)`
+	case `md5`, `sha1`, `password`, `encrypt`:
+		return function + `(` + ret + `)`
+	default:
+		if reFunction1.MatchString(function) {
+			ret = quoteCol(field.Field) + ` ` + function + ` ` + ret
+		} else if reFunction2.MatchString(function) {
+			ret2 := ret
+			ret = quoteCol(field.Field) + ` ` + function + ` `
+			if reSQLValue.MatchString(value) {
+				ret += value
+			} else {
+				ret += ret2
+			}
+		}
+	}
+	return unconvertField(field, ret)
+}
+
+func getCharset(version string) string {
+	if com.VersionCompare(version, `5.5.3`) >= 0 {
+		return "utf8mb4"
+	}
+	return "utf8" // SHOW CHARSET would require an extra query
 }

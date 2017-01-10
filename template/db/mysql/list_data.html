@@ -50,29 +50,33 @@ function onselectColumns(obj){
               <input type="hidden" name="db" value="{{Stored.dbName}}">
               <div class="col-md-3">
               <label class="control-label">{{"查询"|T}}</label>
+                  {{$cols := FormValues "columns[col][]"}}
+                  {{range $key,$val := FormValues "columns[fun][]"}}
               <div class="input-group">
                   <select name="columns[fun][]" class="form-control" onchange="onselectColumns(this)">
 					  <option value=""></option>
                       <optgroup label="{{"函数"|T}}">
                           {{range $k,$func := Stored.functions}}
-                          <option value="{{$func}}">{{$func}}</option>
+                          <option value="{{$func}}"{{if eq $val $func}} selected{{end}}>{{$func}}</option>
                           {{end}}
                       </optgroup>
                       <optgroup label="{{"集合"|T}}">
                           {{range $k,$group := Stored.grouping}}
-                          <option value="{{$group}}">{{$group}}</option>
+                          <option value="{{$group}}"{{if eq $val $group}} selected{{end}}>{{$group}}</option>
                           {{end}}
                       </optgroup>
                   </select>
+                  {{$col := IndexStrSlice $cols $key}}
                   <label class="input-group-addon no-padding-bottom no-padding-top">(
                   <select name="columns[col][]" onchange="onselectColumns(this)">
 					  <option value=""></option>
                       {{range $k, $colName := Stored.columns}}
-					  <option value="{{$colName}}">{{$colName}}</option>
+                      <option value="{{$colName}}"{{if eq $col $colName}} selected{{end}}>{{$colName}}</option>
                       {{end}}
                   </select>
                   )</label>
               </div>
+                  {{end}}
               </div>
               <div class="col-md-4">
               <label class="control-label">{{"搜索"|T}}</label>
@@ -100,7 +104,10 @@ function onselectColumns(obj){
 					  <option value="{{$colName}}">{{$colName}}</option>
                       {{end}}
                   </select>
-                  <label class="input-group-addon"><input type="checkbox" name="desc[]" value="1"> {{"降序"|T}}</label>
+                  <label class="input-group-addon no-padding-bottom no-padding-top"><select name="desc[]">
+					  <option value="0">{{"升序"|T}}</option>
+                      <option value="1">{{"降序"|T}}</option>
+                  </select></label>
               </div>
               </div>
               <div class="col-md-3">

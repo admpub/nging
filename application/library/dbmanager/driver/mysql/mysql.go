@@ -954,13 +954,166 @@ func (m *mySQL) ListData() error {
 		m.Request().Form().Set(`text_length`, strconv.Itoa(textLength))
 	}
 	selectFuncs := m.FormValues(`columns[fun][]`)
+	if len(selectFuncs) == 0 {
+		m.Request().Form().Set(`columns[fun][]`, ``)
+	}
+	funcNum := len(selectFuncs)
 	selectCols := m.FormValues(`columns[col][]`)
+
 	whereCols := m.FormValues(`where[col][]`)
+
+	if len(whereCols) == 0 {
+		m.Request().Form().Set(`where[col][]`, ``)
+	}
+
 	whereOperators := m.FormValues(`where[op][]`)
 	whereVals := m.FormValues(`where[val][]`)
+
+	opNum := len(whereOperators)
+	valNum := len(whereVals)
 	orderFields := m.FormValues(`order[]`)
+
+	if len(orderFields) == 0 {
+		m.Request().Form().Set(`order[]`, ``)
+	}
+
 	descs := m.FormValues(`desc[]`)
-	r := &Result{SQL: `SELECT * FROM ` + quoteCol(table)}
+	descNum := len(descs)
+	var (
+		wheres  []string
+		selects []string
+		orders  []string
+	)
+	fields, sortFields, err := m.tableFields(table)
+	if err != nil {
+		return err
+	}
+	supportSQL := strings.Contains(m.DbAuth.Driver, `sql`)
+	for index, colName := range orderFields {
+		if len(colName) == 0 {
+			continue
+		}
+		if index >= descNum {
+			continue
+		}
+		order := ``
+		if reSQLValue.MatchString(colName) {
+			order = colName
+		} else {
+			order = quoteCol(colName)
+		}
+		if descs[index] == `1` {
+			order += ` DESC`
+		}
+		orders = append(orders, order)
+	}
+	for index, colName := range whereCols {
+		if index >= opNum || index >= valNum {
+			break
+		}
+		invalidOperator := true
+		for _, op := range operators {
+			if op == whereOperators[index] {
+				invalidOperator = false
+				break
+			}
+		}
+		if invalidOperator {
+			continue
+		}
+		field, ok := fields[colName]
+		if !ok {
+			continue
+		}
+		op := whereOperators[index]
+		val := whereVals[index]
+		cond := ` ` + op
+		switch op {
+		case `SQL`:
+			cond = ` ` + val
+		case `LIKE %%`:
+			cond = ` LIKE ` + processInput(field, `%`+val+`%`, ``)
+		case `ILIKE %%`:
+			cond = ` ILIKE ` + processInput(field, `%`+val+`%`, ``)
+		default:
+			if strings.HasSuffix(op, `IN`) {
+				in, er := m.processLength(val)
+				if er != nil {
+					return er
+				}
+				if len(in) > 0 {
+					cond += ` ` + in
+				} else {
+					cond += ` (NULL)`
+				}
+			} else if strings.HasSuffix(op, `NULL`) {
+				cond += ` ` + processInput(field, val, ``)
+			}
+		}
+
+		if len(colName) == 0 {
+			cols := []string{}
+			charset := getCharset(m.getVersion())
+			for _, fieldName := range sortFields {
+				field := fields[fieldName]
+				isText := reFieldTypeText.MatchString(field.Type)
+				if (reOnlyNumber.MatchString(val) || !reFieldTypeNumber.MatchString(field.Type)) &&
+					(!reChineseAndPunctuation.MatchString(val) || isText) {
+					name := quoteCol(fieldName)
+					col := name
+					if supportSQL && isText && !strings.HasPrefix(field.Collation, `utf8_`) {
+						col = "CONVERT(" + name + " USING " + charset + ")"
+					}
+					cols = append(cols, col)
+				}
+			}
+			if len(cols) > 0 {
+				wheres = append(wheres, `(`+strings.Join(cols, cond+` OR `)+cond+`)`)
+			} else {
+				wheres = append(wheres, `0`)
+			}
+		} else {
+			wheres = append(wheres, quoteCol(colName)+cond)
+		}
+	}
+	for index, colName := range selectCols {
+		if len(colName) == 0 {
+			continue
+		}
+		if index >= funcNum {
+			break
+		}
+		invalidFunc := true
+		for _, f := range functions {
+			if f == selectFuncs[index] {
+				invalidFunc = false
+				break
+			}
+		}
+		if invalidFunc {
+			continue
+		}
+		sel := selectFuncs[index]
+		if len(sel) > 0 {
+			sel += `(` + colName + `)`
+		} else {
+			sel = colName
+		}
+		selects = append(selects, sel)
+	}
+	var fieldStr string
+	if len(selects) > 0 {
+		fieldStr = strings.Join(selects, `, `)
+	} else {
+		fieldStr = `*`
+	}
+	r := &Result{SQL: `SELECT ` + fieldStr + ` FROM ` + quoteCol(table)}
+	if len(wheres) > 0 {
+		r.SQL += ` ` + strings.Join(wheres, `, `)
+	}
+	if len(orders) > 0 {
+		r.SQL += ` ` + strings.Join(orders, `, `)
+	}
 	var (
 		columns []string
 		values  []map[string]string
@@ -970,7 +1123,7 @@ func (m *mySQL) ListData() error {
 		return err
 	})
 	m.AddResults(r)
-	m.Set(`columns`, columns)
+	m.Set(`columns`, sortFields)
 	m.Set(`values`, values)
 	m.Set(`functions`, functions)
 	m.Set(`grouping`, grouping)

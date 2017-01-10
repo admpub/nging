@@ -44,10 +44,13 @@ var (
 	pgsqlFieldDefaultValue = regexp.MustCompile("^[a-z]+\\(('[^']*')+\\)$")
 
 	//以下数据来自客户端
-	reGrantColumn      = regexp.MustCompile(`^([^() ]+)\s*(\([^)]*\))?$`)
-	reGrantOptionValue = regexp.MustCompile(`(GRANT OPTION)\([^)]*\)`)
-	reNotWord          = regexp.MustCompile(`[^a-zA-Z0-9_]+`)
-	reOnlyWord         = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
+	reGrantColumn           = regexp.MustCompile(`^([^() ]+)\s*(\([^)]*\))?$`)
+	reGrantOptionValue      = regexp.MustCompile(`(GRANT OPTION)\([^)]*\)`)
+	reNotWord               = regexp.MustCompile(`[^a-zA-Z0-9_]+`)
+	reOnlyWord              = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
+	reOnlyNumber            = regexp.MustCompile(`^[0-9]+(\.[0-9]+)?$`)
+	reChineseAndPunctuation = regexp.MustCompile(`[\x80-\xFF]`)
+	reSQLCondOrder          = regexp.MustCompile("^((COUNT\\(DISTINCT |[A-Z0-9_]+\\()(`(?:[^`]|``)+`|\"(?:[^\"]|\"\")+\")\\)|COUNT\\(\\*\\))$")
 
 	UnsignedTags   = []string{"unsigned", "zerofill", "unsigned zerofill"}
 	EnumLength     = "'(?:''|[^'\\\\]|\\\\.)*'"
