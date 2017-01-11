@@ -961,13 +961,14 @@ func (m *mySQL) ListData() error {
 	selectCols := m.FormValues(`columns[col][]`)
 
 	whereCols := m.FormValues(`where[col][]`)
-
+	whereOperators := m.FormValues(`where[op][]`)
+	whereVals := m.FormValues(`where[val][]`)
 	if len(whereCols) == 0 {
 		m.Request().Form().Set(`where[col][]`, ``)
 	}
-
-	whereOperators := m.FormValues(`where[op][]`)
-	whereVals := m.FormValues(`where[val][]`)
+	if len(whereVals) == 0 {
+		m.Request().Form().Set(`where[val][]`, ``)
+	}
 
 	opNum := len(whereOperators)
 	valNum := len(whereVals)
@@ -981,6 +982,7 @@ func (m *mySQL) ListData() error {
 	descNum := len(descs)
 	var (
 		wheres  []string
+		groups  []string
 		selects []string
 		orders  []string
 	)
@@ -1048,6 +1050,8 @@ func (m *mySQL) ListData() error {
 				}
 			} else if strings.HasSuffix(op, `NULL`) {
 				cond += ` ` + processInput(field, val, ``)
+			} else {
+				cond += quoteVal(val)
 			}
 		}
 
@@ -1084,20 +1088,25 @@ func (m *mySQL) ListData() error {
 			break
 		}
 		invalidFunc := true
+		invalidGroup := true
 		for _, f := range functions {
 			if f == selectFuncs[index] {
 				invalidFunc = false
 				break
 			}
 		}
-		if invalidFunc {
+		for _, f := range grouping {
+			if f == selectFuncs[index] {
+				invalidGroup = false
+				break
+			}
+		}
+		if invalidFunc && invalidGroup {
 			continue
 		}
-		sel := selectFuncs[index]
-		if len(sel) > 0 {
-			sel += `(` + colName + `)`
-		} else {
-			sel = colName
+		sel := applySQLFunction(selectFuncs[index], quoteCol(colName))
+		if invalidGroup {
+			groups = append(groups, sel)
 		}
 		selects = append(selects, sel)
 	}
@@ -1109,10 +1118,13 @@ func (m *mySQL) ListData() error {
 	}
 	r := &Result{SQL: `SELECT ` + fieldStr + ` FROM ` + quoteCol(table)}
 	if len(wheres) > 0 {
-		r.SQL += ` ` + strings.Join(wheres, `, `)
+		r.SQL += "\nWHERE " + strings.Join(wheres, `, `)
+	}
+	if len(groups) > 0 && len(groups) < len(selects) {
+		r.SQL += "\nGROUP BY " + strings.Join(groups, `, `)
 	}
 	if len(orders) > 0 {
-		r.SQL += ` ` + strings.Join(orders, `, `)
+		r.SQL += "\nORDER BY " + strings.Join(orders, `, `)
 	}
 	var (
 		columns []string

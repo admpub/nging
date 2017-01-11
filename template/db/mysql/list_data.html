@@ -80,35 +80,45 @@ function onselectColumns(obj){
               </div>
               <div class="col-md-4">
               <label class="control-label">{{"搜索"|T}}</label>
+                  {{$cols := FormValues "where[col][]"}}
+                  {{$operators := FormValues "where[op][]"}}
+                  {{range $key,$val := FormValues "where[val][]"}}
+                  {{$col := IndexStrSlice $cols $key}}
+                  {{$ope := IndexStrSlice $operators $key}}
               <div class="input-group">
                   <select name="where[col][]" class="form-control" onchange="onselectWhere(this)">
                       <option value="">({{"任意位置"|T}})</option>
                       {{range $k, $colName := Stored.columns}}
-					  <option value="{{$colName}}">{{$colName}}</option>
+					  <option value="{{$colName}}"{{if eq $col $colName}} selected{{end}}>{{$colName}}</option>
                       {{end}}
                   </select>
                   <span class="input-group-addon no-padding-bottom no-padding-top"><select name="where[op][]">
                       {{range $k, $op := Stored.operators}}
-					  <option value="{{$op}}">{{$op}}</option>
+					  <option value="{{$op}}"{{if eq $ope $op}} selected{{end}}>{{$op}}</option>
                       {{end}}
                   </select></span>
-                  <input type="text" name="where[val][]" value="" class="form-control" onchange="onselectWhere(this)">
+                  <input type="text" name="where[val][]" value="{{$val}}" class="form-control" onchange="onselectWhere(this)">
               </div>
+                  {{end}}
               </div>
               <div class="col-md-2">
               <label class="control-label">{{"排序"|T}}</label>
+                  {{$descs := FormValues "desc[]"}}
+                  {{range $key,$val := FormValues "order[]"}}
+                  {{$desc := IndexStrSlice $descs $key}}
               <div class="input-group">
                   <select name="order[]" class="form-control" onchange="onselectOrder(this)">
 					  <option value=""></option>
                       {{range $k, $colName := Stored.columns}}
-					  <option value="{{$colName}}">{{$colName}}</option>
+					  <option value="{{$colName}}"{{if eq $val $colName}} selected{{end}}>{{$colName}}</option>
                       {{end}}
                   </select>
                   <label class="input-group-addon no-padding-bottom no-padding-top"><select name="desc[]">
-					  <option value="0">{{"升序"|T}}</option>
-                      <option value="1">{{"降序"|T}}</option>
+					  <option value="0"{{if eq $desc "0"}} selected{{end}}>{{"升序"|T}}</option>
+                      <option value="1"{{if eq $desc "1"}} selected{{end}}>{{"降序"|T}}</option>
                   </select></label>
               </div>
+                  {{end}}
               </div>
               <div class="col-md-3">
               <label class="control-label">{{"其它设置"|T}}</label>

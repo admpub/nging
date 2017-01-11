@@ -197,3 +197,17 @@ func getCharset(version string) string {
 	}
 	return "utf8" // SHOW CHARSET would require an extra query
 }
+
+func applySQLFunction(function, column string) string {
+	if len(function) > 0 {
+		switch function {
+		case `unixepoch`:
+			return `DATETIME(` + column + `, '` + function + `')`
+		case `count distinct`:
+			return `COUNT(DISTINCT ` + column + `)`
+		default:
+			return strings.ToUpper(function) + `(` + column + `)`
+		}
+	}
+	return column
+}
