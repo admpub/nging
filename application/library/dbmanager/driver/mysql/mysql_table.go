@@ -828,9 +828,9 @@ func (m *mySQL) tablePartitioning(partitions map[string]string, tableStatus *Tab
 	return partitioning
 }
 
-func (m *mySQL) selectTable(rows *sql.Rows, limit int, textLength ...int) (columns []string, r []map[string]string, err error) {
+func (m *mySQL) selectTable(rows *sql.Rows, limit int, textLength ...int) (columns []string, r []map[string]*sql.NullString, err error) {
 	columns, err = rows.Columns()
-	r = []map[string]string{}
+	r = []map[string]*sql.NullString{}
 	if err != nil {
 		return
 	}
@@ -848,14 +848,29 @@ func (m *mySQL) selectTable(rows *sql.Rows, limit int, textLength ...int) (colum
 		if err != nil {
 			return
 		}
-		val := map[string]string{}
+		val := map[string]*sql.NullString{}
 		for k, colName := range columns {
-			val[colName] = values[k].(*sql.NullString).String
+			val[colName] = values[k].(*sql.NullString)
 			if maxLen > 0 {
-				val[colName] = com.Substr(val[colName], ` ...`, maxLen)
+				val[colName].String = com.Substr(val[colName].String, ` ...`, maxLen)
 			}
 		}
 		r = append(r, val)
 	}
 	return
+}
+
+func (m *mySQL) countRows(table string, wheres []string, isGroup bool, groups []string) string {
+	query := " FROM " + quoteCol(table)
+	if len(wheres) > 0 {
+		query += " WHERE " + strings.Join(wheres, " AND ")
+	}
+	var groupBy string
+	if isGroup {
+		if m.supportSQL || len(groups) > 0 {
+			return "SELECT COUNT(DISTINCT " + strings.Join(groups, ", ") + ")"
+		}
+		return "SELECT COUNT(*) FROM (SELECT 1" + query + groupBy + ") x"
+	}
+	return "SELECT COUNT(*)" + query
 }

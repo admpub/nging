@@ -40,7 +40,7 @@
                         {{range $k,$v := Stored.values}}
 						<tr>
                             {{range $k, $colName := Stored.columns}}
-                            <td>{{index $v $colName}}</td>
+                            <td>{{(index $v $colName).String}}</td>
                             {{end}}
 						</tr>
                         {{end}}
@@ -64,7 +64,7 @@
               </div>
               <div class="form-group">
 				<div class="col-sm-12">
-				    <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"执行"|T}}</button>
+				    <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-check"></i> {{"执行"|T}}</button>
                     <label for="limit">{{"行数"|T}}: </label><input name="limit" id="limit" type="number" style="width:100px" class="form-control inline" />
                     <label>
                         <input name="error_stops" id="error_stops" type="checkbox" class="icheck" />

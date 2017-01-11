@@ -22,6 +22,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/url"
 	"strings"
 
 	"strconv"
@@ -54,6 +55,7 @@ func init() {
 				Options: []string{"FOR EACH ROW"},
 			},
 		},
+		supportSQL: true,
 	})
 }
 
@@ -63,6 +65,7 @@ type mySQL struct {
 	dbName         string
 	version        string
 	TriggerOptions TriggerOptions
+	supportSQL     bool
 }
 
 func (m *mySQL) Name() string {
@@ -72,6 +75,7 @@ func (m *mySQL) Name() string {
 func (m *mySQL) Init(ctx echo.Context, auth *driver.DbAuth) {
 	m.BaseDriver = driver.NewBaseDriver()
 	m.BaseDriver.Init(ctx, auth)
+	m.Set(`supportSQL`, m.supportSQL)
 }
 
 func (m *mySQL) IsSupported(operation string) bool {
@@ -990,7 +994,6 @@ func (m *mySQL) ListData() error {
 	if err != nil {
 		return err
 	}
-	supportSQL := strings.Contains(m.DbAuth.Driver, `sql`)
 	for index, colName := range orderFields {
 		if len(colName) == 0 {
 			continue
@@ -1048,10 +1051,8 @@ func (m *mySQL) ListData() error {
 				} else {
 					cond += ` (NULL)`
 				}
-			} else if strings.HasSuffix(op, `NULL`) {
+			} else if !strings.HasSuffix(op, `NULL`) {
 				cond += ` ` + processInput(field, val, ``)
-			} else {
-				cond += quoteVal(val)
 			}
 		}
 
@@ -1065,7 +1066,7 @@ func (m *mySQL) ListData() error {
 					(!reChineseAndPunctuation.MatchString(val) || isText) {
 					name := quoteCol(fieldName)
 					col := name
-					if supportSQL && isText && !strings.HasPrefix(field.Collation, `utf8_`) {
+					if m.supportSQL && isText && !strings.HasPrefix(field.Collation, `utf8_`) {
 						col = "CONVERT(" + name + " USING " + charset + ")"
 					}
 					cols = append(cols, col)
@@ -1128,7 +1129,7 @@ func (m *mySQL) ListData() error {
 	}
 	var (
 		columns []string
-		values  []map[string]string
+		values  []map[string]*sql.NullString
 	)
 	r.Query(m.newParam(), func(rows *sql.Rows) error {
 		columns, values, err = m.selectTable(rows, limit, textLength)
@@ -1141,6 +1142,51 @@ func (m *mySQL) ListData() error {
 	m.Set(`functions`, functions)
 	m.Set(`grouping`, grouping)
 	m.Set(`operators`, operators)
+	m.SetFunc(`isBlobData`, func(colName string) bool {
+		f, y := fields[colName]
+		if !y {
+			return false
+		}
+		return reFieldTypeBlob.MatchString(f.Type)
+	})
+	indexes, _, err := m.tableIndexes(table)
+	m.SetFunc(`uniqueIdf`, func(row map[string]*sql.NullString) string {
+		idf := ``
+		uniqueArr := uniqueArray(row, indexes)
+		if len(uniqueArr) == 0 {
+			uniqueArr = map[string]*sql.NullString{}
+			for key, val := range row {
+				if !reSQLFunction.MatchString(key) {
+					uniqueArr[key] = val
+				}
+			}
+		}
+		for key, val := range uniqueArr {
+			field, y := fields[key]
+			if !y {
+				fmt.Printf(`not exists: %v in %#v`+"\n", key, fields)
+				return idf
+			}
+			if (m.supportSQL || m.DbAuth.Driver == "pgsql") && len(val.String) > 64 {
+				//! columns looking like functions
+				if strings.Index(key, `(`) <= 0 {
+					key = quoteCol(key)
+				}
+				if m.supportSQL && strings.HasPrefix(field.Collation, `utf8_`) {
+					key = "MD5(" + key + ")"
+				} else {
+					key = "MD5(CONVERT(" + key + " USING " + getCharset(m.getVersion()) + "))"
+				}
+				val.String = com.Md5(val.String)
+			}
+			if val.Valid {
+				idf += "&" + url.QueryEscape("where["+bracketEscape(key, false)+"]") + "=" + url.QueryEscape(val.String)
+			} else {
+				idf += "&null%5B%5D=" + url.QueryEscape(key)
+			}
+		}
+		return idf
+	})
 	return m.Render(`db/mysql/list_data`, m.checkErr(err))
 }
 func (m *mySQL) CreateData() error {
@@ -1423,7 +1469,7 @@ func (m *mySQL) modifyTrigger() error {
 func (m *mySQL) RunCommand() error {
 	var err error
 	var columns []string
-	var values []map[string]string
+	var values []map[string]*sql.NullString
 	if m.IsPost() {
 		query := m.Form(`query`)
 		query = strings.TrimSpace(query)

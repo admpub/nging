@@ -163,13 +163,13 @@ function onselectColumns(obj){
                         {{range $k,$v := Stored.values}}
 						<tr>
                             <td>
-                                <input type="checkbox" class="icheck" name="check" value="">
+                                <input type="checkbox" class="icheck" name="check" value="{{uniqueIdf $v}}">
                             </td>
                             <td>
-                                <a href="{{dbMgrURL "listData" Stored.dbName Stored.table}}&where[]=1" title="{{"编辑"|T}}"><i class="fa fa-pencil"></i></a>
+                                <a href="{{dbMgrURL "listData" Stored.dbName Stored.table}}{{uniqueIdf $v}}" title="{{"编辑"|T}}"><i class="fa fa-pencil"></i></a>
                             </td>
                             {{range $k, $colName := Stored.columns}}
-                            <td>{{index $v $colName}}</td>
+                            <td>{{(index $v $colName).String}}</td>
                             {{end}}
 						</tr>
                         {{end}}

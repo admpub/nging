@@ -113,6 +113,35 @@ func quoteVal(val string, otherChars ...rune) string {
 	return "'" + com.AddSlashes(val, otherChars...) + "'"
 }
 
+func convertFields(columns []string, fields map[string]*Field, selects []string) string {
+	r := ""
+	l := len(selects)
+	for _, colName := range columns {
+		quotedName := quoteCol(colName)
+		if l > 0 {
+			found := false
+			for _, val := range selects {
+				if quotedName == val {
+					found = true
+					break
+				}
+			}
+			if !found {
+				continue
+			}
+		}
+		field, ok := fields[colName]
+		if !ok {
+			continue
+		}
+		as := convertField(field)
+		if len(as) > 0 {
+			r += ", " + as + " AS " + quotedName
+		}
+	}
+	return r
+}
+
 /** Convert field in select and edit
 * @param array one element from fields()
 * @return string
@@ -157,7 +186,7 @@ func unconvertField(field *Field, ret string) string {
 	return ret
 }
 
-var reFunction1 = regexp.MustCompile(`^([+-]|\\|)$`)
+var reFunction1 = regexp.MustCompile(`^([+-]|\|\|)$`)
 var reFunction2 = regexp.MustCompile(`^[+-] interval$`)
 var reSQLValue = regexp.MustCompile(`^(\d+|'[0-9.: -]') [A-Z_]+$`)
 
@@ -210,4 +239,52 @@ func applySQLFunction(function, column string) string {
 		}
 	}
 	return column
+}
+
+/** Find unique identifier of a row
+* @param array
+* @param array result of indexes()
+* @return array or null if there is no unique identifier
+ */
+func uniqueArray(row map[string]*sql.NullString, indexes map[string]*Indexes) map[string]*sql.NullString {
+	ret := map[string]*sql.NullString{}
+	for _, index := range indexes {
+		switch index.Type {
+		case `PRIMARY`, `UNIQUE`:
+			for _, key := range index.Columns {
+				v, y := row[key]
+				if y {
+					ret[key] = v
+					continue
+				}
+				break
+			}
+		}
+	}
+	return ret
+}
+
+var trans = map[string]string{
+	":": ":1",
+	"]": ":2",
+	"[": ":3",
+}
+
+/** Escape or unescape string to use inside form []
+* @param string
+* @param bool
+* @return string
+ */
+func bracketEscape(idf string, back bool) string {
+	// escape brackets inside name="x[]"
+	if back {
+		for k, v := range trans {
+			idf = strings.Replace(idf, v, k, -1)
+		}
+		return idf
+	}
+	for k, v := range trans {
+		idf = strings.Replace(idf, k, v, -1)
+	}
+	return idf
 }

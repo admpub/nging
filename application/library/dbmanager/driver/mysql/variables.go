@@ -38,6 +38,7 @@ var (
 	reFieldTypeNumber    = regexp.MustCompile("(^|[^o])int|float|double|decimal")
 	reFieldTypeText      = regexp.MustCompile("char|text|enum|set")
 	reFieldTypeBit       = regexp.MustCompile("^([0-9]+|b'[0-1]+')$")
+	reFieldTypeBlob      = regexp.MustCompile("blob|bytea|raw|file")
 	reFieldLengthInvalid = regexp.MustCompile("[^-0-9,+()[\\]]")
 	reFieldLengthNumber  = regexp.MustCompile("^[0-9].*")
 
@@ -51,6 +52,7 @@ var (
 	reOnlyNumber            = regexp.MustCompile(`^[0-9]+(\.[0-9]+)?$`)
 	reChineseAndPunctuation = regexp.MustCompile(`[\x80-\xFF]`)
 	reSQLCondOrder          = regexp.MustCompile("^((COUNT\\(DISTINCT |[A-Z0-9_]+\\()(`(?:[^`]|``)+`|\"(?:[^\"]|\"\")+\")\\)|COUNT\\(\\*\\))$")
+	reSQLFunction           = regexp.MustCompile("^(COUNT\\((\\*|(DISTINCT )?`(?:[^`]|``)+`)\\)|(AVG|GROUP_CONCAT|MAX|MIN|SUM)\\(`(?:[^`]|``)+`\\))$")
 
 	UnsignedTags   = []string{"unsigned", "zerofill", "unsigned zerofill"}
 	EnumLength     = "'(?:''|[^'\\\\]|\\\\.)*'"

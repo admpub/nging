@@ -8,7 +8,7 @@
 {{/Block}}
 {{Block "main"}}
 {{$driver := Form "driver"}}
-{{$supportSQL := Contains $driver "sql"}}
+{{$supportSQL := Stored.supportSQL}}
 <div class="row">
     <div class="col-md-12">
         {{Include "db/mysql/results"}}
