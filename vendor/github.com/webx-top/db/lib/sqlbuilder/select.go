@@ -47,7 +47,8 @@ type selector struct {
 	joins     []*exql.Join
 	joinsArgs []interface{}
 
-	mu sync.Mutex
+	mu      sync.Mutex
+	amendFn func(string) string
 
 	err error
 }
@@ -117,6 +118,11 @@ func (qs *selector) And(terms ...interface{}) Selector {
 	return qs
 }
 
+func (qs *selector) Amend(fn func(string) string) Selector {
+	qs.amendFn = fn
+	return qs
+}
+
 func (qs *selector) Arguments() []interface{} {
 	qs.mu.Lock()
 	defer qs.mu.Unlock()
@@ -156,7 +162,7 @@ func (qs *selector) OrderBy(columns ...interface{}) Selector {
 
 		switch value := columns[i].(type) {
 		case db.RawValue:
-			col, args := expandPlaceholders(value.Raw(), value.Arguments()...)
+			col, args := Preprocess(value.Raw(), value.Arguments())
 			sort = &exql.SortColumn{
 				Column: exql.RawValue(col),
 			}
@@ -170,7 +176,7 @@ func (qs *selector) OrderBy(columns ...interface{}) Selector {
 			} else {
 				fnName = fnName + "(?" + strings.Repeat("?, ", len(fnArgs)-1) + ")"
 			}
-			expanded, fnArgs := expandPlaceholders(fnName, fnArgs...)
+			expanded, fnArgs := Preprocess(fnName, fnArgs)
 			sort = &exql.SortColumn{
 				Column: exql.RawValue(expanded),
 			}
@@ -326,7 +332,7 @@ func (qs *selector) Offset(n int) Selector {
 }
 
 func (qs *selector) statement() *exql.Statement {
-	return &exql.Statement{
+	stmt := &exql.Statement{
 		Type:    exql.Select,
 		Table:   qs.table,
 		Columns: qs.columns,
@@ -337,6 +343,10 @@ func (qs *selector) statement() *exql.Statement {
 		OrderBy: qs.orderBy,
 		GroupBy: qs.groupBy,
 	}
+
+	stmt.SetAmendment(qs.amendFn)
+
+	return stmt
 }
 
 func (qs *selector) Query() (*sql.Rows, error) {

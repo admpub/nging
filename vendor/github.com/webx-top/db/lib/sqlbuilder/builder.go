@@ -113,6 +113,8 @@ func (b *sqlBuilder) Exec(query interface{}, args ...interface{}) (sql.Result, e
 		return b.sess.StatementExec(q, args...)
 	case string:
 		return b.sess.StatementExec(exql.RawSQL(q), args...)
+	case db.RawValue:
+		return b.Exec(q.Raw(), q.Arguments()...)
 	default:
 		return nil, fmt.Errorf("Unsupported query type %T.", query)
 	}
@@ -124,6 +126,8 @@ func (b *sqlBuilder) Query(query interface{}, args ...interface{}) (*sql.Rows, e
 		return b.sess.StatementQuery(q, args...)
 	case string:
 		return b.sess.StatementQuery(exql.RawSQL(q), args...)
+	case db.RawValue:
+		return b.Query(q.Raw(), q.Arguments()...)
 	default:
 		return nil, fmt.Errorf("Unsupported query type %T.", query)
 	}
@@ -135,6 +139,8 @@ func (b *sqlBuilder) QueryRow(query interface{}, args ...interface{}) (*sql.Row,
 		return b.sess.StatementQueryRow(q, args...)
 	case string:
 		return b.sess.StatementQueryRow(exql.RawSQL(q), args...)
+	case db.RawValue:
+		return b.QueryRow(q.Raw(), q.Arguments()...)
 	default:
 		return nil, fmt.Errorf("Unsupported query type %T.", query)
 	}
@@ -260,6 +266,10 @@ func Map(item interface{}, options *MapOptions) ([]string, []interface{}, error)
 						if t.IsZero() {
 							continue
 						}
+					} else if fld.Kind() == reflect.Array || fld.Kind() == reflect.Slice {
+						if value == nil {
+							continue
+						}
 					} else if value == fi.Zero.Interface() {
 						continue
 					}
@@ -295,6 +305,10 @@ func Map(item interface{}, options *MapOptions) ([]string, []interface{}, error)
 		return nil, nil, ErrExpectingPointerToEitherMapOrStruct
 	}
 
+	if len(fv.fields) == 0 {
+		return nil, nil, errors.New("No values mapped.")
+	}
+
 	sort.Sort(&fv)
 
 	return fv.fields, fv.values, nil
@@ -320,7 +334,7 @@ func columnFragments(template *templateWithUtils, columns []interface{}) ([]exql
 	for i := 0; i < l; i++ {
 		switch v := columns[i].(type) {
 		case *selector:
-			expanded, rawArgs := expandPlaceholders(v.statement().Compile(v.stringer.t), v.Arguments()...)
+			expanded, rawArgs := Preprocess(v.statement().Compile(v.stringer.t), v.Arguments())
 			f[i] = exql.RawValue(expanded)
 			args = append(args, rawArgs...)
 		case db.Function:
@@ -330,11 +344,11 @@ func columnFragments(template *templateWithUtils, columns []interface{}) ([]exql
 			} else {
 				fnName = fnName + "(?" + strings.Repeat("?, ", len(fnArgs)-1) + ")"
 			}
-			expanded, fnArgs := expandPlaceholders(fnName, fnArgs...)
+			expanded, fnArgs := Preprocess(fnName, fnArgs)
 			f[i] = exql.RawValue(expanded)
 			args = append(args, fnArgs...)
 		case db.RawValue:
-			expanded, rawArgs := expandPlaceholders(v.Raw(), v.Arguments()...)
+			expanded, rawArgs := Preprocess(v.Raw(), v.Arguments())
 			f[i] = exql.RawValue(expanded)
 			args = append(args, rawArgs...)
 		case exql.Fragment:
