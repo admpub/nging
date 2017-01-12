@@ -19,7 +19,6 @@ package mysql
 
 import (
 	"database/sql"
-
 	"strings"
 
 	"regexp"
@@ -186,10 +185,6 @@ func unconvertField(field *Field, ret string) string {
 	return ret
 }
 
-var reFunction1 = regexp.MustCompile(`^([+-]|\|\|)$`)
-var reFunction2 = regexp.MustCompile(`^[+-] interval$`)
-var reSQLValue = regexp.MustCompile(`^(\d+|'[0-9.: -]') [A-Z_]+$`)
-
 func processInput(field *Field, value string, function string) string {
 	if function == "SQL" {
 		return value // SQL injection
@@ -205,9 +200,9 @@ func processInput(field *Field, value string, function string) string {
 	case `md5`, `sha1`, `password`, `encrypt`:
 		return function + `(` + ret + `)`
 	default:
-		if reFunction1.MatchString(function) {
+		if reFunctionAddOrSubOr.MatchString(function) {
 			ret = quoteCol(field.Field) + ` ` + function + ` ` + ret
-		} else if reFunction2.MatchString(function) {
+		} else if reFunctionInterval.MatchString(function) {
 			ret2 := ret
 			ret = quoteCol(field.Field) + ` ` + function + ` `
 			if reSQLValue.MatchString(value) {
@@ -264,12 +259,6 @@ func uniqueArray(row map[string]*sql.NullString, indexes map[string]*Indexes) ma
 	return ret
 }
 
-var trans = map[string]string{
-	":": ":1",
-	"]": ":2",
-	"[": ":3",
-}
-
 /** Escape or unescape string to use inside form []
 * @param string
 * @param bool
@@ -287,4 +276,107 @@ func bracketEscape(idf string, back bool) string {
 		idf = strings.Replace(idf, k, v, -1)
 	}
 	return idf
+}
+
+/** Escape column key used in where()
+* @param string
+* @return string
+ */
+func escapeKey(key string) string {
+	if match := reFieldName.FindAllString(key, 1); len(match) > 3 {
+		return match[1] + quoteCol(match[2]) + match[3] //! SQL injection
+	}
+	return quoteCol(key)
+}
+
+func (m *mySQL) editFunctions(field *Field) []string {
+	var r string
+	if field.AutoIncrement.Valid {
+		r = m.T(`自动增量`)
+	} else {
+		if field.Null {
+			r += "NULL/"
+		}
+		for key, functions := range editFunctions {
+			if key == 0 {
+				for pattern, value := range functions {
+					if len(pattern) == 0 {
+						r += "/" + value
+					} else {
+						re, err := regexp.Compile(pattern)
+						if err != nil {
+							m.Logger().Error(err)
+							continue
+						}
+						if !re.MatchString(field.Type) {
+							continue
+						}
+
+						r += "/" + value
+					}
+				}
+				continue
+			}
+			switch field.Type {
+			case `set`, `enum`:
+			default:
+				if !reFieldTypeBlob.MatchString(field.Type) {
+					r += `/SQL`
+				}
+			}
+		}
+	}
+	if len(r) > 0 {
+		return strings.Split(r, `/`)
+	}
+	return []string{}
+}
+
+func (m *mySQL) where(wheres map[string]*Mapx, nulls map[string]*Mapx, fields map[string]*Field) string {
+	r := []string{}
+	for key, mapx := range wheres {
+		if mapx == nil {
+			continue
+		}
+		key = bracketEscape(key, true)
+		column := escapeKey(key)
+		field, ok := fields[key]
+		if !ok {
+			continue
+		}
+		val := mapx.Value()
+		if (m.DbAuth.Driver == `mssql`) || (m.supportSQL && reOnlyFloatOrEmpty.MatchString(val)) {
+			r = append(r, column+" LIKE "+quoteVal(val, '%', '_'))
+		} else {
+			r = append(r, column+" = "+unconvertField(field, quoteVal(val)))
+		}
+		if m.supportSQL &&
+			(strings.Contains(field.Type, `char`) || strings.Contains(field.Type, `text`)) &&
+			reNotSpaceOrDashOrAt.MatchString(val) {
+			r = append(r, column+" = "+quoteVal(val)+" COLLATE "+getCharset(m.getVersion())+"_bin")
+		}
+	}
+	for key, mapx := range nulls {
+		if mapx == nil {
+			continue
+		}
+		key = mapx.Value()
+		r = append(r, escapeKey(key)+" IS NULL")
+	}
+	return strings.Join(r, " AND ")
+
+}
+
+func enumValues(field *Field) []string {
+	r := []string{}
+	matches := reFieldEnumValue.FindAllStringSubmatch(field.Length, -1)
+	//com.Dump(matches)
+	if len(matches) > 0 {
+		for _, val := range matches {
+			val[1] = strings.Replace(val[1], `''`, `'`, -1)
+			val[1] = strings.Replace(val[1], `\`, ``, -1)
+			r = append(r, val[1])
+		}
+	}
+	return r
 }

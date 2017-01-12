@@ -50,7 +50,7 @@ func main() {
 	if binData {
 		Version += ` (bindata)`
 	}
-	config.SetVersion(`nging/` + Version)
+	config.SetVersion(Version)
 
 	err := config.ParseConfig()
 	if err != nil {
@@ -67,6 +67,7 @@ func main() {
 	config.DefaultCLIConfig.RunStartup()
 
 	e := echo.New()
+	e.SetDebug(true)
 	e.SetHTTPErrorHandler(render.HTTPErrorHandler(config.DefaultConfig.Sys.ErrorPages))
 	e.Use(middleware.Log(), middleware.Recover())
 	e.Use(func(h echo.Handler) echo.HandlerFunc {

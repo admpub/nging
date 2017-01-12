@@ -135,6 +135,7 @@ func HTTPErrorHandler(templates map[int]string, formatRender ...func(string, ech
 	return func(err error, c echo.Context) {
 		code := DefaultErrorHTTPCode
 		msg := http.StatusText(code)
+		title := msg
 		if he, ok := err.(*echo.HTTPError); ok {
 			if he.Code > 0 {
 				code = he.Code
@@ -154,7 +155,12 @@ func HTTPErrorHandler(templates map[int]string, formatRender ...func(string, ech
 					t, y = templates[0]
 				}
 				if y {
-					c.Set(DefaultDataKey, msg)
+					c.Set(DefaultDataKey, c.NewData().SetInfo(echo.H{
+						"title":   title,
+						"content": msg,
+						"debug":   c.Echo().Debug(),
+						"code":    code,
+					}))
 					c.Set(DefaultTmplKey, t)
 					c.SetCode(code)
 					if err := output(c.Format(), c); err != nil {

@@ -1,0 +1,84 @@
+{{Extend "db/index"}}
+{{Block "title"}}{{"修改数据"|T}}: {{Stored.table}} - {{Super}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{dbMgrURL "listTable" Stored.dbName}}">{{"数据库"|T}}: {{Stored.dbName}}</a></li>
+<li><a href="{{dbMgrURL "viewTable" Stored.dbName Stored.table}}">{{"表"|T}}: {{Stored.table}}</a></li>
+<li class="active">{{"修改数据"|T}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        {{Include "db/mysql/results"}}
+        <div class="block-flat">
+          <div class="content">
+             <div class="table-responsive">
+				<table class="table blue">
+					<tbody class="no-border-x" id="tbody-content">
+                        {{range $k,$column := Stored.columns}}
+                        {{$field := index Stored.fields $column}}
+                        <tr>
+                            <th>{{$column}}</th>
+                            <td>
+                                {{$functions := functions $field}}
+                                <select name="function[{{$column}}]" class="form-control"{{if le (len $functions) 0}} style="display:none"{{end}} onchange="onselectFunction(this)">
+                                {{range $k,$v := $functions}}
+                                <option value="{{$v}}">{{$v}}</option>
+                                {{end}}
+                                </select>
+                            </td>
+                            <td>
+                                {{$value := (index Stored.values $column).String}}
+                                {{if isBlob $field.Type}}
+                                <input type="file" name="value[{{$column}}]">
+                                {{else if or (isText $field.Type) (Contains $value "\n")}}
+                                <textarea name="value[{{$column}}]" cols="30" rows="10" class="form-control">{{$value}}</textarea>
+                                {{else if eq $field.Type "enum"}}
+                                <label><input type="radio" name="value[{{$column}}]" class="icheck" value=""{{if eq $value ""}} checked{{end}}> <em>{{"空"|T}}</em></label>
+                                {{range $i,$v:=enumValues $field}}
+                                &nbsp;
+                                <label><input type="radio" name="value[{{$column}}]" class="icheck" value="{{$v}}"{{if eq $value $v}} checked{{end}}> {{$v}}</label>
+                                {{end}}
+                                {{else if eq $field.Type "set"}}
+                                {{range $i,$v:=enumValues $field}}
+                                <label><input type="checkbox" name="value[{{$column}}]" class="icheck" value="{{$v}}"{{if eq $value $v}} checked{{end}}> {{$v}}</label>
+                                &nbsp;
+                                {{end}}
+                                {{else if isNumber $field.Type}}
+                                <input data-type="number" type="number" name="value[{{$column}}]" class="form-control" value="{{$value}}"{{if $field.Unsigned}} min="0"{{end}}>
+                                {{else}}
+                                <input type="text" name="value[{{$column}}]" class="form-control" value="{{$value}}">
+                                {{end}}
+                            </td>
+                        </tr>
+                        {{end}}
+					</tbody>
+				</table>		
+			    </div>
+                <fieldset>
+                     <button type="button" class="btn btn-default" id="edit-selected">{{"保存"|T}}</button>
+                     <button type="button" class="btn btn-default" id="copy-selected">{{"保存并继续编辑"|T}}</button>
+                     <button type="button" class="btn btn-default" id="delete-selected">{{"删除"|T}}</button>
+                </fieldset>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+
+{{Block "footer"}}
+{{Super}}
+
+<script>
+function onselectFunction(obj){
+    var v=$(obj).val();
+    var n=$(obj).attr('name');
+    var valElem=$('input[name="value'+n.replace(/^function/,'')+'"]');
+    if(valElem.data('type')){
+        valElem.attr('type',v?'text':valElem.data('type'));
+    }
+}
+$(function(){
+});
+</script>
+{{/Block}}

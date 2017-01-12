@@ -1190,7 +1190,71 @@ func (m *mySQL) ListData() error {
 	return m.Render(`db/mysql/list_data`, m.checkErr(err))
 }
 func (m *mySQL) CreateData() error {
-	return nil
+	var err error
+	table := m.Form(`table`)
+	mapx := NewMapx(m.Forms())
+	where := mapx.Get(`where`)
+	null := mapx.Get(`null`)
+	fields, _, err := m.tableFields(table)
+	if err != nil {
+		return err
+	}
+	var cond string
+	if where != nil || null != nil {
+		wheres := map[string]*Mapx{}
+		nulls := map[string]*Mapx{}
+		if where != nil {
+			wheres = where.Map
+		}
+		if null != nil {
+			nulls = null.Map
+		}
+		cond = m.where(wheres, nulls, fields)
+	}
+	var columns []string
+	values := map[string]*sql.NullString{}
+	if err == nil {
+		sqlStr := `SELECT * FROM ` + quoteCol(table)
+		if len(cond) > 0 {
+			sqlStr += ` WHERE ` + cond
+		}
+		rows, err := m.newParam().SetCollection(sqlStr).Query()
+		if err == nil {
+			columns, err = rows.Columns()
+			size := len(columns)
+			for rows.Next() {
+				recv := make([]interface{}, size)
+				for i := 0; i < size; i++ {
+					recv[i] = &sql.NullString{}
+				}
+				err = rows.Scan(recv...)
+				if err != nil {
+					continue
+				}
+				for k, colName := range columns {
+					values[colName] = recv[k].(*sql.NullString)
+				}
+				break
+			}
+		}
+	}
+	m.Set(`columns`, columns)
+	m.Set(`values`, values)
+	m.Set(`fields`, fields)
+	m.SetFunc(`isNumber`, func(typ string) bool {
+		return reFieldTypeNumber.MatchString(typ)
+	})
+	m.SetFunc(`isBlob`, func(typ string) bool {
+		return reFieldTypeBlob.MatchString(typ)
+	})
+	m.SetFunc(`isText`, func(typ string) bool {
+		return reFieldTextValue.MatchString(typ)
+	})
+	m.SetFunc(`enumValues`, func(field *Field) []string {
+		return enumValues(field)
+	})
+	m.SetFunc(`functions`, m.editFunctions)
+	return m.Render(`db/mysql/edit_data`, m.checkErr(err))
 }
 func (m *mySQL) Indexes() error {
 	return m.modifyIndexes()
@@ -1598,7 +1662,7 @@ func (m *mySQL) RunCommand() error {
 				continue
 			}
 
-			if !regexp.MustCompile(`(?i)^(` + space + `|\()*SELECT\b`).MatchString(query) {
+			if !regexp.MustCompile(`(?i)^(` + space + `|\()*(SELECT|SHOW)\b`).MatchString(query) {
 				//explain
 				continue
 			}

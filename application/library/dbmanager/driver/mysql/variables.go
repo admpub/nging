@@ -17,7 +17,10 @@
 */
 package mysql
 
-import "regexp"
+import (
+	"regexp"
+	"strings"
+)
 
 var (
 	//数据来自数据库
@@ -41,6 +44,8 @@ var (
 	reFieldTypeBlob      = regexp.MustCompile("blob|bytea|raw|file")
 	reFieldLengthInvalid = regexp.MustCompile("[^-0-9,+()[\\]]")
 	reFieldLengthNumber  = regexp.MustCompile("^[0-9].*")
+	reFieldEnumValue     = regexp.MustCompile(`'((?:[^']|'')*)'`)
+	reFieldTextValue     = regexp.MustCompile(`text|lob`)
 
 	pgsqlFieldDefaultValue = regexp.MustCompile("^[a-z]+\\(('[^']*')+\\)$")
 
@@ -50,6 +55,7 @@ var (
 	reNotWord               = regexp.MustCompile(`[^a-zA-Z0-9_]+`)
 	reOnlyWord              = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
 	reOnlyNumber            = regexp.MustCompile(`^[0-9]+(\.[0-9]+)?$`)
+	reOnlyFloatOrEmpty      = regexp.MustCompile(`^[0-9]*\.[0-9]*$`)
 	reChineseAndPunctuation = regexp.MustCompile(`[\x80-\xFF]`)
 	reSQLCondOrder          = regexp.MustCompile("^((COUNT\\(DISTINCT |[A-Z0-9_]+\\()(`(?:[^`]|``)+`|\"(?:[^\"]|\"\")+\")\\)|COUNT\\(\\*\\))$")
 	reSQLFunction           = regexp.MustCompile("^(COUNT\\((\\*|(DISTINCT )?`(?:[^`]|``)+`)\\)|(AVG|GROUP_CONCAT|MAX|MIN|SUM)\\(`(?:[^`]|``)+`\\))$")
@@ -154,6 +160,18 @@ var (
 	pattern      = "`(?:[^`]|``)+`"
 	reQuotedCol  = regexp.MustCompile(pattern)
 	reForeignKey = regexp.MustCompile(`CONSTRAINT (` + pattern + `) FOREIGN KEY ?\(((?:` + pattern + `,? ?)+)\) REFERENCES (` + pattern + `)(?:\.(` + pattern + `))? \(((?:` + pattern + `,? ?)+)\)(?: ON DELETE (` + OnActions + `))?(?: ON UPDATE (` + OnActions + `))?`)
+
+	trans = map[string]string{
+		":": ":1",
+		"]": ":2",
+		"[": ":3",
+	}
+
+	reFunctionAddOrSubOr = regexp.MustCompile(`^([+-]|\|\|)$`)
+	reFunctionInterval   = regexp.MustCompile(`^[+-] interval$`)
+	reSQLValue           = regexp.MustCompile(`^(\d+|'[0-9.: -]') [A-Z_]+$`)
+	reFieldName          = regexp.MustCompile(`^([\w(]+)(` + strings.Replace(regexp.QuoteMeta(quoteCol(`_`)), "_", ".*", -1) + `)([ \w)]+)$`)
+	reNotSpaceOrDashOrAt = regexp.MustCompile(`[^ -@]`)
 )
 
 func init() {

@@ -1,13 +1,17 @@
 {{Extend "base"}}
-{{Block "description"}}{{.}}{{/Block}}
-{{Block "title"}}{{.}}{{/Block}}
+{{Block "description"}}{{Info.title}}{{/Block}}
+{{Block "title"}}{{Info.title}}{{/Block}}
 {{Block "bodyAttr"}} class="texture"{{/Block}}
 {{Block "main"}}
 <div id="cl-wrapper" class="error-container">
 	<div class="page-error">
 		<h1 class="number text-center">404</h1>
+		{{if Info.debug}}
+		<h2 class="description text-center">{{Info.content}}</h2>
+		{{else}}
 		<h2 class="description text-center">Sorry, but this page doesn't exists!</h2>
 		<h3 class="text-center">Would you like to go <a href="/">home</a>?</h3>
+		{{end}}
 	</div>
 	<div class="text-center copy">&copy; {{Now.Year}} <a href="https://github.com/admpub/nging" target="_blank">Nging</a></div>
 </div>
