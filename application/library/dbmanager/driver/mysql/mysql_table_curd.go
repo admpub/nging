@@ -55,7 +55,7 @@ func (m *mySQL) countRows(table string, wheres []string, isGroup bool, groups []
 	return "SELECT COUNT(*)" + query
 }
 
-func limit(query string, where string, limit int, offset int, separator string) string {
+func withLimit(query string, where string, limit int, offset int, separator string) string {
 	r := " " + query + where
 	if limit > -1 {
 		r += separator + fmt.Sprintf("LIMIT %d", limit)
@@ -71,8 +71,8 @@ func limit(query string, where string, limit int, offset int, separator string) 
 * @param string
 * @return string
  */
-func limit1(query, where string) string {
-	return limit(query, where, 1, 0, " ")
+func withLimit1(query, where string) string {
+	return withLimit(query, where, 1, 0, " ")
 }
 
 /** Delete data from table
@@ -86,7 +86,7 @@ func (m *mySQL) delete(table, queryWhere string, limit int) error {
 	r := &Result{}
 	r.SQL = `DELETE`
 	if limit > 0 {
-		r.SQL += limit1(query, queryWhere)
+		r.SQL += withLimit1(query, queryWhere)
 	} else {
 		r.SQL += " " + query + queryWhere
 	}
@@ -117,7 +117,7 @@ func (m *mySQL) update(table string, set map[string]string, queryWhere string, l
 	r := &Result{}
 	r.SQL = "UPDATE"
 	if limit > 0 {
-		r.SQL += limit1(query, queryWhere)
+		r.SQL += withLimit1(query, queryWhere)
 	} else {
 		r.SQL += " " + query + queryWhere
 	}

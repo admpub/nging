@@ -33,6 +33,7 @@ import (
 
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
+	"github.com/admpub/nging/application/library/pagination"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/db/mysql"
@@ -948,10 +949,14 @@ func (m *mySQL) ListData() error {
 	var err error
 	table := m.Form(`table`)
 	limit := m.Formx(`limit`).Int()
+	page := m.Formx(`page`).Int()
 	textLength := m.Formx(`text_length`).Int()
 	if limit < 1 {
 		limit = 50
 		m.Request().Form().Set(`limit`, strconv.Itoa(limit))
+	}
+	if page < 1 {
+		page = 1
 	}
 	if textLength < 1 {
 		textLength = 100
@@ -1160,15 +1165,27 @@ func (m *mySQL) ListData() error {
 	} else {
 		fieldStr = `*`
 	}
-	r := &Result{SQL: `SELECT ` + fieldStr + ` FROM ` + quoteCol(table)}
+	r := &Result{}
+	var whereStr string
 	if len(wheres) > 0 {
-		r.SQL += "\nWHERE " + strings.Join(wheres, ` AND `)
+		whereStr += "\nWHERE " + strings.Join(wheres, ` AND `)
 	}
-	if len(groups) > 0 && len(groups) < len(selects) {
-		r.SQL += "\nGROUP BY " + strings.Join(groups, `, `)
+	isGroup := len(groups) > 0 && len(groups) < len(selects)
+	if isGroup {
+		whereStr += "\nGROUP BY " + strings.Join(groups, `, `)
 	}
 	if len(orders) > 0 {
-		r.SQL += "\nORDER BY " + strings.Join(orders, `, `)
+		whereStr += "\nORDER BY " + strings.Join(orders, `, `)
+	}
+	r.SQL = `SELECT` + withLimit(fieldStr+` FROM `+quoteCol(table), whereStr, limit, (page-1)*limit, "\n")
+	var total int
+	countSQL := m.countRows(table, wheres, isGroup, groups)
+	row, err := m.newParam().SetCollection(countSQL).QueryRow()
+	if err == nil {
+		err = row.Scan(&total)
+	}
+	if err != nil {
+		return err
 	}
 	var (
 		columns []string
@@ -1185,6 +1202,7 @@ func (m *mySQL) ListData() error {
 	m.Set(`functions`, functions)
 	m.Set(`grouping`, grouping)
 	m.Set(`operators`, operators)
+	m.Set(`total`, total)
 	m.SetFunc(`isBlobData`, func(colName string) bool {
 		f, y := fields[colName]
 		if !y {
@@ -1230,6 +1248,7 @@ func (m *mySQL) ListData() error {
 		}
 		return idf
 	})
+	m.Set(`pagination`, pagination.New(m.Context).SetRows(total))
 	return m.Render(`db/mysql/list_data`, m.checkErr(err))
 }
 func (m *mySQL) CreateData() error {
@@ -1244,7 +1263,7 @@ func (m *mySQL) CreateData() error {
 	}
 	var cond string
 	if where != nil || null != nil {
-		cond = m.whereByMapx(wheres, nulls, fields)
+		cond = m.whereByMapx(where, null, fields)
 	}
 	var columns []string
 	values := map[string]*sql.NullString{}

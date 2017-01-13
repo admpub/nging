@@ -1,0 +1,19 @@
+
+<ul class="pagination">
+    {{$page := .Page}}
+    <li class="prev{{if eq $page 1}} disabled{{end}}">
+        <a href="{{.URL 1}}">
+            <span class="fa fa-angle-left"></span>&nbsp;Previous
+        </a>
+    </li>
+    {{range $k,$v := .List}}
+    <li{{if eq $v $page}} class="active"{{end}}>
+        <a href="{{$.URL $v}}">{{$v}}</a>
+    </li>
+    {{end}}
+    <li class="next{{if ge $page .Pages}} disabled{{end}}">
+        <a href="{{.URL .Pages}}">
+            Next&nbsp;<span class="fa fa-angle-right"></span>
+        </a>
+    </li>
+</ul>
