@@ -1213,30 +1213,62 @@ func (m *mySQL) CreateData() error {
 	}
 	var columns []string
 	values := map[string]*sql.NullString{}
-	if err == nil {
-		sqlStr := `SELECT * FROM ` + quoteCol(table)
-		if len(cond) > 0 {
-			sqlStr += ` WHERE ` + cond
-		}
-		rows, err := m.newParam().SetCollection(sqlStr).Query()
-		if err == nil {
-			columns, err = rows.Columns()
-			size := len(columns)
-			for rows.Next() {
-				recv := make([]interface{}, size)
-				for i := 0; i < size; i++ {
-					recv[i] = &sql.NullString{}
-				}
-				err = rows.Scan(recv...)
-				if err != nil {
-					continue
-				}
-				for k, colName := range columns {
-					values[colName] = recv[k].(*sql.NullString)
-				}
-				break
+	sqlStr := `SELECT * FROM ` + quoteCol(table)
+	var whereStr string
+	if len(cond) > 0 {
+		whereStr = ` WHERE ` + cond
+	}
+	if m.IsPost() {
+		indexes, _, err := m.tableIndexes(table)
+		wheres := map[string]*sql.NullString{}
+		if where != nil {
+			for k, v := range where.Map {
+				val := &sql.NullString{}
+				val.String, val.Valid = v.ValueOk()
+				wheres[k] = val
 			}
 		}
+		uniqueArr := uniqueArray(wheres, indexes)
+		value := mapx.Get(`value`)
+		if value != nil {
+			set := map[string]string{}
+			for col, val := range value.Map {
+				field, ok := fields[col]
+				if !ok {
+					continue
+				}
+				v, y := m.processInputFieldValue(field)
+				if !y {
+					continue
+				}
+				set[col] = v
+			}
+			var limit int
+			if len(uniqueArr) > 0 {
+				limit = 1
+			}
+			err = m.update(table, set, whereStr, limit)
+		}
+	}
+	rows, err := m.newParam().SetCollection(sqlStr + whereStr).Query()
+	if err != nil {
+		return err
+	}
+	columns, err = rows.Columns()
+	size := len(columns)
+	for rows.Next() {
+		recv := make([]interface{}, size)
+		for i := 0; i < size; i++ {
+			recv[i] = &sql.NullString{}
+		}
+		err = rows.Scan(recv...)
+		if err != nil {
+			continue
+		}
+		for k, colName := range columns {
+			values[colName] = recv[k].(*sql.NullString)
+		}
+		break
 	}
 	m.Set(`columns`, columns)
 	m.Set(`values`, values)

@@ -18,10 +18,13 @@
 package mysql
 
 import (
+	"bytes"
 	"database/sql"
 	"strings"
 
 	"regexp"
+
+	"strconv"
 
 	"github.com/admpub/nging/application/library/common"
 	"github.com/webx-top/com"
@@ -183,6 +186,58 @@ func unconvertField(field *Field, ret string) string {
 		return "GeomFromText(" + ret + ")"
 	}
 	return ret
+}
+
+/** Process edit input field
+* @param one field from fields()
+* @return string or false to leave the original value
+ */
+func (m *mySQL) processInputFieldValue(field *Field) (string, bool) {
+	idf := bracketEscape(field.Field, false)
+	function := m.Form("function[" + idf + "]")
+	value := m.Form("value[" + idf + "]")
+	if field.Type == "enum" {
+		i, _ := strconv.Atoi(value)
+		if i == -1 {
+			return ``, false
+		}
+		if value == "" {
+			return "NULL", true
+		}
+		return value, true
+	}
+	if field.AutoIncrement.Valid && value == "" {
+		return ``, false
+	}
+	if function == "orig" {
+		if field.On_update == "CURRENT_TIMESTAMP" {
+			return quoteCol(field.Field), true
+		}
+		return ``, false
+	}
+	if function == "NULL" {
+		return "NULL", true
+	}
+	if field.Type == "set" {
+		total := 0
+		for _, v := range m.FormValues("value[" + idf + "]") {
+			i, _ := strconv.Atoi(v)
+			total += i
+		}
+		return strconv.Itoa(total), true
+	}
+	if function == "json" {
+		return value, true
+	}
+	if reFieldTypeBlob.MatchString(field.Type) {
+		buf := new(bytes.Buffer)
+		_, e := m.SaveUploadedFileToWriter("value["+idf+"]", buf)
+		if e != nil {
+			return ``, false //! report errors
+		}
+		return quoteVal(buf.String()), true
+	}
+	return processInput(field, value, function), true
 }
 
 func processInput(field *Field, value string, function string) string {
