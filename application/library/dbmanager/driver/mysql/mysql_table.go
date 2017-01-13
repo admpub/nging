@@ -23,8 +23,6 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
-
-	"github.com/webx-top/com"
 )
 
 // 获取数据表列表

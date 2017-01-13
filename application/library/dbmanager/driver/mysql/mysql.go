@@ -1220,6 +1220,9 @@ func (m *mySQL) CreateData() error {
 	}
 	if m.IsPost() {
 		indexes, _, err := m.tableIndexes(table)
+		if err != nil {
+			return err
+		}
 		wheres := map[string]*sql.NullString{}
 		if where != nil {
 			for k, v := range where.Map {
@@ -1232,7 +1235,7 @@ func (m *mySQL) CreateData() error {
 		value := mapx.Get(`value`)
 		if value != nil {
 			set := map[string]string{}
-			for col, val := range value.Map {
+			for col, _ := range value.Map {
 				field, ok := fields[col]
 				if !ok {
 					continue
