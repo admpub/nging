@@ -994,24 +994,6 @@ func (m *mySQL) ListData() error {
 	if err != nil {
 		return err
 	}
-	for index, colName := range orderFields {
-		if len(colName) == 0 {
-			continue
-		}
-		if index >= descNum {
-			continue
-		}
-		order := ``
-		if reSQLValue.MatchString(colName) {
-			order = colName
-		} else {
-			order = quoteCol(colName)
-		}
-		if descs[index] == `1` {
-			order += ` DESC`
-		}
-		orders = append(orders, order)
-	}
 	for index, colName := range whereCols {
 		if index >= opNum || index >= valNum {
 			break
@@ -1081,6 +1063,67 @@ func (m *mySQL) ListData() error {
 			wheres = append(wheres, quoteCol(colName)+cond)
 		}
 	}
+	if m.IsPost() {
+		conds := m.FormValues(`check[]`)
+		datas := []string{}
+		for _, cond := range conds {
+			cond = strings.TrimLeft(cond, `&`)
+			cond, err = url.QueryUnescape(cond)
+			if err != nil {
+				return err
+			}
+			values, err := url.ParseQuery(cond)
+			if err != nil {
+				return err
+			}
+			mpx := NewMapx(values)
+			where := mpx.Get(`where`)
+			null := mpx.Get(`null`)
+			if where == nil && null == nil {
+				continue
+			}
+			cond = m.whereByMapx(where, null, fields)
+			if len(cond) < 1 {
+				continue
+			}
+			datas = append(datas, cond)
+		}
+		var condition string
+		if len(datas) > 0 {
+			condition = `(` + strings.Join(datas, `) OR (`) + `)`
+			if len(wheres) > 0 {
+				condition = `(` + strings.Join(wheres, ` AND `) + `) AND (` + condition + `)`
+			}
+			condition = ` WHERE ` + condition
+			switch m.Form(`save`) {
+			case `delete`:
+				err = m.delete(table, condition, 0)
+			case `copy`:
+			case `edit`:
+			}
+			if err == nil {
+				return m.returnTo()
+			}
+		}
+	}
+	for index, colName := range orderFields {
+		if len(colName) == 0 {
+			continue
+		}
+		if index >= descNum {
+			continue
+		}
+		order := ``
+		if reSQLValue.MatchString(colName) {
+			order = colName
+		} else {
+			order = quoteCol(colName)
+		}
+		if descs[index] == `1` {
+			order += ` DESC`
+		}
+		orders = append(orders, order)
+	}
 	for index, colName := range selectCols {
 		if len(colName) == 0 {
 			continue
@@ -1119,7 +1162,7 @@ func (m *mySQL) ListData() error {
 	}
 	r := &Result{SQL: `SELECT ` + fieldStr + ` FROM ` + quoteCol(table)}
 	if len(wheres) > 0 {
-		r.SQL += "\nWHERE " + strings.Join(wheres, `, `)
+		r.SQL += "\nWHERE " + strings.Join(wheres, ` AND `)
 	}
 	if len(groups) > 0 && len(groups) < len(selects) {
 		r.SQL += "\nGROUP BY " + strings.Join(groups, `, `)
@@ -1195,28 +1238,22 @@ func (m *mySQL) CreateData() error {
 	mapx := NewMapx(m.Forms())
 	where := mapx.Get(`where`)
 	null := mapx.Get(`null`)
-	fields, _, err := m.tableFields(table)
+	fields, sortFields, err := m.tableFields(table)
 	if err != nil {
 		return err
 	}
 	var cond string
 	if where != nil || null != nil {
-		wheres := map[string]*Mapx{}
-		nulls := map[string]*Mapx{}
-		if where != nil {
-			wheres = where.Map
-		}
-		if null != nil {
-			nulls = null.Map
-		}
-		cond = m.where(wheres, nulls, fields)
+		cond = m.whereByMapx(wheres, nulls, fields)
 	}
 	var columns []string
 	values := map[string]*sql.NullString{}
 	sqlStr := `SELECT * FROM ` + quoteCol(table)
 	var whereStr string
+	var edit bool
 	if len(cond) > 0 {
 		whereStr = ` WHERE ` + cond
+		edit = true
 	}
 	if m.IsPost() {
 		indexes, _, err := m.tableIndexes(table)
@@ -1232,10 +1269,16 @@ func (m *mySQL) CreateData() error {
 			}
 		}
 		uniqueArr := uniqueArray(wheres, indexes)
-		value := mapx.Get(`value`)
-		if value != nil {
+		var limit int
+		if len(uniqueArr) > 0 {
+			limit = 1
+		}
+		saveType := m.Form(`save`)
+		if saveType == `delete` {
+			err = m.delete(table, whereStr, limit)
+		} else {
 			set := map[string]string{}
-			for col, _ := range value.Map {
+			for _, col := range sortFields {
 				field, ok := fields[col]
 				if !ok {
 					continue
@@ -1246,36 +1289,47 @@ func (m *mySQL) CreateData() error {
 				}
 				set[col] = v
 			}
-			var limit int
-			if len(uniqueArr) > 0 {
-				limit = 1
+			if edit {
+				err = m.update(table, set, whereStr, limit)
+			} else {
+				err = m.insert(table, set)
 			}
-			err = m.update(table, set, whereStr, limit)
+		}
+		if err == nil && (saveType == `1` || saveType == `delete`) {
+			return m.returnTo(m.GenURL(`listData`, m.dbName, table))
 		}
 	}
-	rows, err := m.newParam().SetCollection(sqlStr + whereStr).Query()
-	if err != nil {
-		return err
-	}
-	columns, err = rows.Columns()
-	size := len(columns)
-	for rows.Next() {
-		recv := make([]interface{}, size)
-		for i := 0; i < size; i++ {
-			recv[i] = &sql.NullString{}
-		}
-		err = rows.Scan(recv...)
+	if edit {
+		rows, err := m.newParam().SetCollection(sqlStr + whereStr).Query()
 		if err != nil {
-			continue
+			return err
 		}
-		for k, colName := range columns {
-			values[colName] = recv[k].(*sql.NullString)
+		columns, err = rows.Columns()
+		size := len(columns)
+		for rows.Next() {
+			recv := make([]interface{}, size)
+			for i := 0; i < size; i++ {
+				recv[i] = &sql.NullString{}
+			}
+			err = rows.Scan(recv...)
+			if err != nil {
+				continue
+			}
+			for k, colName := range columns {
+				values[colName] = recv[k].(*sql.NullString)
+			}
+			break
 		}
-		break
+	} else {
+		columns = sortFields
+		for _, v := range sortFields {
+			values[v] = &sql.NullString{}
+		}
 	}
 	m.Set(`columns`, columns)
 	m.Set(`values`, values)
 	m.Set(`fields`, fields)
+	m.Set(`edit`, edit)
 	m.SetFunc(`isNumber`, func(typ string) bool {
 		return reFieldTypeNumber.MatchString(typ)
 	})
@@ -1285,7 +1339,7 @@ func (m *mySQL) CreateData() error {
 	m.SetFunc(`isText`, func(typ string) bool {
 		return reFieldTextValue.MatchString(typ)
 	})
-	m.SetFunc(`enumValues`, func(field *Field) []string {
+	m.SetFunc(`enumValues`, func(field *Field) []*Enum {
 		return enumValues(field)
 	})
 	m.SetFunc(`functions`, m.editFunctions)

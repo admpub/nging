@@ -20,6 +20,7 @@ package mysql
 import (
 	"bytes"
 	"database/sql"
+	"math"
 	"strings"
 
 	"regexp"
@@ -194,6 +195,14 @@ func unconvertField(field *Field, ret string) string {
  */
 func (m *mySQL) processInputFieldValue(field *Field) (string, bool) {
 	idf := bracketEscape(field.Field, false)
+	if field.Type == "set" {
+		total := 0
+		for _, v := range m.FormValues("value[" + idf + "][]") {
+			i, _ := strconv.Atoi(v)
+			total += i
+		}
+		return strconv.Itoa(total), true
+	}
 	function := m.Form("function[" + idf + "]")
 	value := m.Form("value[" + idf + "]")
 	if field.Type == "enum" {
@@ -204,7 +213,7 @@ func (m *mySQL) processInputFieldValue(field *Field) (string, bool) {
 		if value == "" {
 			return "NULL", true
 		}
-		return value, true
+		return strconv.Itoa(i), true
 	}
 	if field.AutoIncrement.Valid && value == "" {
 		return ``, false
@@ -217,14 +226,6 @@ func (m *mySQL) processInputFieldValue(field *Field) (string, bool) {
 	}
 	if function == "NULL" {
 		return "NULL", true
-	}
-	if field.Type == "set" {
-		total := 0
-		for _, v := range m.FormValues("value[" + idf + "]") {
-			i, _ := strconv.Atoi(v)
-			total += i
-		}
-		return strconv.Itoa(total), true
 	}
 	if function == "json" {
 		return value, true
@@ -387,6 +388,18 @@ func (m *mySQL) editFunctions(field *Field) []string {
 	return []string{}
 }
 
+func (m *mySQL) whereByMapx(where *Mapx, null *Mapx, fields map[string]*Field) string {
+	wheres := map[string]*Mapx{}
+	nulls := map[string]*Mapx{}
+	if where != nil {
+		wheres = where.Map
+	}
+	if null != nil {
+		nulls = null.Map
+	}
+	return m.where(wheres, nulls, fields)
+}
+
 func (m *mySQL) where(wheres map[string]*Mapx, nulls map[string]*Mapx, fields map[string]*Field) string {
 	r := []string{}
 	for key, mapx := range wheres {
@@ -422,16 +435,23 @@ func (m *mySQL) where(wheres map[string]*Mapx, nulls map[string]*Mapx, fields ma
 
 }
 
-func enumValues(field *Field) []string {
-	r := []string{}
+func enumValues(field *Field) []*Enum {
+	r := []*Enum{}
 	matches := reFieldEnumValue.FindAllStringSubmatch(field.Length, -1)
 	//com.Dump(matches)
 	if len(matches) > 0 {
-		for _, val := range matches {
+		for i, val := range matches {
 			val[1] = strings.Replace(val[1], `''`, `'`, -1)
 			val[1] = strings.Replace(val[1], `\`, ``, -1)
-			r = append(r, val[1])
+			r = append(r, &Enum{
+				Int:    enumNumber(i),
+				String: val[1],
+			})
 		}
 	}
 	return r
+}
+
+func enumNumber(i int) int {
+	return 1 << uint64(math.Abs(float64(i)))
 }

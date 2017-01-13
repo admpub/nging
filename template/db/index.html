@@ -48,7 +48,10 @@
               {{if $tableList}}
               {{$currentTable := Stored.table}}
               {{range $k,$v:=$tableList}}
-              <li{{if eq $currentTable $v}} class="active"{{end}}><a href="{{dbMgrURL "viewTable" $dbName}}&table={{$v}}" title="{{$v}}">{{$v}}</a></li>
+              <li{{if eq $currentTable $v}} class="active"{{end}}>
+                <a href="{{dbMgrURL "listData" $dbName $v}}" title="{{"查询"|T}}" class="fa fa-search {{Stored.operation}}"></a>
+                <a href="{{dbMgrURL "viewTable" $dbName $v}}" title="{{$v}}">{{$v}}</a>
+              </li>
               {{end}}
               {{end}}
           </ul>

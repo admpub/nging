@@ -611,6 +611,11 @@ type Field struct {
 	Original string
 }
 
+type Enum struct {
+	Int    int
+	String string
+}
+
 type Trigger struct {
 	Trigger              sql.NullString
 	Event                sql.NullString

@@ -86,6 +86,7 @@ func DbManager(ctx echo.Context) error {
 	}
 	mgr.GenURL = genURL
 	ctx.SetFunc(`dbMgrURL`, genURL)
+	ctx.Set(`operation`, operation)
 	if len(driverName) > 0 {
 		ctx.Set(`driver`, driverName)
 		if err == nil {

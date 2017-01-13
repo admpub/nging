@@ -12,6 +12,7 @@
         {{Include "db/mysql/results"}}
         <div class="block-flat">
           <div class="content">
+             <form action="" method="POST" enctype="multipart/form-data">
              <div class="table-responsive">
 				<table class="table blue">
 					<tbody class="no-border-x" id="tbody-content">
@@ -28,26 +29,32 @@
                                 </select>
                             </td>
                             <td>
-                                {{$value := (index Stored.values $column).String}}
+                                {{$value := index Stored.values $column}}
                                 {{if isBlob $field.Type}}
                                 <input type="file" name="value[{{$column}}]">
-                                {{else if or (isText $field.Type) (Contains $value "\n")}}
-                                <textarea name="value[{{$column}}]" cols="30" rows="10" class="form-control">{{$value}}</textarea>
+                                {{else if or (isText $field.Type) (Contains $value.String "\n")}}
+                                <textarea name="value[{{$column}}]" cols="30" rows="10" class="form-control">{{$value.String}}</textarea>
                                 {{else if eq $field.Type "enum"}}
-                                <label><input type="radio" name="value[{{$column}}]" class="icheck" value=""{{if eq $value ""}} checked{{end}}> <em>{{"空"|T}}</em></label>
-                                {{range $i,$v:=enumValues $field}}
+                                {{if $field.Null}}
+                                <label><input type="radio" name="value[{{$column}}]" class="icheck" value=""{{if not $value.Valid}} checked{{end}}> <em>NULL</em></label>
                                 &nbsp;
-                                <label><input type="radio" name="value[{{$column}}]" class="icheck" value="{{$v}}"{{if eq $value $v}} checked{{end}}> {{$v}}</label>
+                                {{end}}
+                                <label><input type="radio" name="value[{{$column}}]" class="icheck" value="0"{{if eq (Int $value.String) 0}} checked{{end}}> <em>{{"空"|T}}</em></label>
+                                &nbsp;
+                                {{range $i,$v:=enumValues $field}}
+                                <label><input type="radio" name="value[{{$column}}]" class="icheck" value="{{$v.Int}}"{{if eq $value.String $v.String}} checked{{end}}> {{$v.String}}</label>
+                                &nbsp;
                                 {{end}}
                                 {{else if eq $field.Type "set"}}
+                                {{$sets := Split $value.String ","}}
                                 {{range $i,$v:=enumValues $field}}
-                                <label><input type="checkbox" name="value[{{$column}}]" class="icheck" value="{{$v}}"{{if eq $value $v}} checked{{end}}> {{$v}}</label>
+                                <label><input type="checkbox" name="value[{{$column}}][]" class="icheck" value="{{$v.Int}}"{{if HasString $sets $v.String}} checked{{end}}> {{$v.String}}</label>
                                 &nbsp;
                                 {{end}}
                                 {{else if isNumber $field.Type}}
-                                <input data-type="number" type="number" name="value[{{$column}}]" class="form-control" value="{{$value}}"{{if $field.Unsigned}} min="0"{{end}}>
+                                <input data-type="number" type="number" name="value[{{$column}}]" class="form-control" value="{{$value.String}}"{{if $field.Unsigned}} min="0"{{end}}>
                                 {{else}}
-                                <input type="text" name="value[{{$column}}]" class="form-control" value="{{$value}}">
+                                <input type="text" name="value[{{$column}}]" class="form-control" value="{{$value.String}}">
                                 {{end}}
                             </td>
                         </tr>
@@ -56,10 +63,31 @@
 				</table>		
 			    </div>
                 <fieldset>
-                     <button type="button" class="btn btn-default" id="edit-selected">{{"保存"|T}}</button>
-                     <button type="button" class="btn btn-default" id="copy-selected">{{"保存并继续编辑"|T}}</button>
-                     <button type="button" class="btn btn-default" id="delete-selected">{{"删除"|T}}</button>
+                     <button type="submit" name="save" value="1" class="btn btn-default">
+                         <i class="fa fa-save"></i>
+                         {{"保存"|T}}
+                    </button>
+                    {{if Stored.edit}}
+                     <button type="submit" name="save" value="2" class="btn btn-default">
+                         <i class="fa fa-save"></i>
+                         {{"保存并继续编辑"|T}}
+                    </button>
+                     <button type="submit" name="save" value="delete" class="btn btn-danger" onclick="return confirm('{{"确定要删除吗？"|T}}');">
+                         <i class="fa fa-times"></i>
+                         {{"删除"|T}}
+                    </button>
+                    {{else}}
+                     <button type="submit" name="save" value="2" class="btn btn-default">
+                         <i class="fa fa-save"></i>
+                         {{"保存并插入下一个"|T}}
+                    </button>
+                    {{end}}
+                     <a href="{{dbMgrURL "listData" Stored.dbName Stored.table}}" class="btn btn-default">
+                         <i class="fa fa-reply"></i>
+                         {{"返回列表"|T}}
+                    </a>
                 </fieldset>
+                </form>
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
     </div>
@@ -78,7 +106,5 @@ function onselectFunction(obj){
         valElem.attr('type',v?'text':valElem.data('type'));
     }
 }
-$(function(){
-});
 </script>
 {{/Block}}

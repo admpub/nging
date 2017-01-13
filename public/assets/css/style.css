@@ -1544,6 +1544,31 @@ body.texture {
 .page-aside.app .app-nav ul li a .label.label3 {
   background: #F4A425;
 }
+.page-aside.email .mail-nav ul li a.fa-search,
+.page-aside.app .app-nav ul li a.fa-search,
+.page-aside.email .mail-nav ul li.active a.fa-search, 
+.page-aside.app .app-nav ul.nav li.active a.fa-search {
+  display:block;
+  height:30px;width:25px;
+  padding:9px 1px 0 1px;
+  position: absolute;
+  margin-left:248px;
+  text-align:center;
+  z-index: 9;
+  font-size: 1em;
+  color:#555;
+  opacity:0.5;
+  border-radius:3px;
+}
+.page-aside.email .mail-nav ul li a.fa-search:hover,
+.page-aside.app .app-nav ul li a.fa-search:hover,
+.page-aside.email .mail-nav ul li.active a.fa-search:hover,
+.page-aside.app .app-nav ul li.active a.fa-search:hover,
+.page-aside.email .mail-nav ul li.active a.fa-search.listData,
+.page-aside.app .app-nav ul li.active a.fa-search.listData {
+  background:#FFF;
+  opacity:1;
+}
 .page-aside.email .mail-nav ul li a i,
 .page-aside.app .app-nav ul.nav li a i {
   font-size: 14px;
