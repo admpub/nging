@@ -103,6 +103,11 @@ func (p *Pagination) URL(page int) string {
 	return s
 }
 
+func (p *Pagination) SetURL(s string) *Pagination {
+	p.urlLayout = s
+	return p
+}
+
 func (p *Pagination) List(num ...int) []int {
 	if len(num) > 0 {
 		p.num = num[0]
@@ -137,11 +142,8 @@ func (p *Pagination) Render(settings ...string) interface{} {
 		p.num = 10
 	}
 	switch len(settings) {
-	case 2:
-		p.tmpl = settings[1]
-		fallthrough
 	case 1:
-		p.urlLayout = settings[0]
+		p.tmpl = settings[0]
 	}
 	if len(p.tmpl) == 0 {
 		p.tmpl = `pagination`

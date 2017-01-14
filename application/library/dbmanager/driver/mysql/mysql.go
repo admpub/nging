@@ -950,6 +950,7 @@ func (m *mySQL) ListData() error {
 	table := m.Form(`table`)
 	limit := m.Formx(`limit`).Int()
 	page := m.Formx(`page`).Int()
+	totalRows := m.Formx(`rows`).Int()
 	textLength := m.Formx(`text_length`).Int()
 	if limit < 1 {
 		limit = 50
@@ -1178,14 +1179,15 @@ func (m *mySQL) ListData() error {
 		whereStr += "\nORDER BY " + strings.Join(orders, `, `)
 	}
 	r.SQL = `SELECT` + withLimit(fieldStr+` FROM `+quoteCol(table), whereStr, limit, (page-1)*limit, "\n")
-	var total int
-	countSQL := m.countRows(table, wheres, isGroup, groups)
-	row, err := m.newParam().SetCollection(countSQL).QueryRow()
-	if err == nil {
-		err = row.Scan(&total)
-	}
-	if err != nil {
-		return err
+	if totalRows < 1 {
+		countSQL := m.countRows(table, wheres, isGroup, groups)
+		row, err := m.newParam().SetCollection(countSQL).QueryRow()
+		if err == nil {
+			err = row.Scan(&totalRows)
+		}
+		if err != nil {
+			return err
+		}
 	}
 	var (
 		columns []string
@@ -1202,7 +1204,7 @@ func (m *mySQL) ListData() error {
 	m.Set(`functions`, functions)
 	m.Set(`grouping`, grouping)
 	m.Set(`operators`, operators)
-	m.Set(`total`, total)
+	m.Set(`total`, totalRows)
 	m.SetFunc(`isBlobData`, func(colName string) bool {
 		f, y := fields[colName]
 		if !y {
@@ -1248,7 +1250,11 @@ func (m *mySQL) ListData() error {
 		}
 		return idf
 	})
-	m.Set(`pagination`, pagination.New(m.Context).SetRows(total))
+	q := m.Request().URL().Query()
+	q.Del(`page`)
+	q.Del(`rows`)
+	m.Set(`pagination`, pagination.New(m.Context).SetURL(`/db?`+q.Encode()+`&page={page}&rows={rows}`).SetPage(page).SetRows(totalRows))
+
 	return m.Render(`db/mysql/list_data`, m.checkErr(err))
 }
 func (m *mySQL) CreateData() error {

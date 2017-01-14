@@ -184,8 +184,7 @@ function onselectColumns(obj){
                      <button type="submit" class="btn btn-danger" name="save" value="delete">{{"删除"|T}}</button>
                 </fieldset>
              </form>
-             {{$url := dbMgrURL "listData" Stored.dbName Stored.table}}
-             {{Stored.pagination.Render "&page={page}&rows={rows}"}}
+             {{Stored.pagination.Render}}
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
     </div>
