@@ -3,8 +3,9 @@ package pagination
 import (
 	"html/template"
 	"math"
+	"strconv"
+	"strings"
 
-	"github.com/admpub/fasttemplate"
 	"github.com/webx-top/echo"
 )
 
@@ -95,15 +96,10 @@ func (p *Pagination) Pages() int {
 }
 
 func (p *Pagination) URL(page int) string {
-	t := fasttemplate.New(p.urlLayout, "{", "}")
-	s := t.ExecuteString(map[string]interface{}{
-		"pages": p.pages,
-		"page":  page,
-		"limit": p.limit,
-		"rows":  p.rows,
-		"num":   p.num,
-		"tmpl":  p.tmpl,
-	})
+	s := strings.Replace(p.urlLayout, `{page}`, strconv.Itoa(page), -1)
+	s = strings.Replace(s, `{rows}`, strconv.Itoa(p.rows), -1)
+	s = strings.Replace(s, `{limit}`, strconv.Itoa(p.limit), -1)
+	s = strings.Replace(s, `{pages}`, strconv.Itoa(p.pages), -1)
 	return s
 }
 

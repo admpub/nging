@@ -53,6 +53,8 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	"ToHTML":          ToHTML,
 	"ToHTMLAttr":      ToHTMLAttr,
 	"ToHTMLAttrs":     ToHTMLAttrs,
+	"ToStrSlice":      ToStrSlice,
+	"Concat":          Concat,
 	"ElapsedMemory":   com.ElapsedMemory, //内存消耗
 	"TotalRunTime":    com.TotalRunTime,  //运行时长(从启动服务时算起)
 	"CaptchaForm":     CaptchaForm,       //验证码图片
@@ -89,11 +91,21 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	"Append":          Append,
 	"Nl2br":           NlToBr,
 	"AddSuffix":       AddSuffix,
+	"InStrSlice":      InStrSlice,
+	"SearchStrSlice":  SearchStrSlice,
 }
 
 func JsonEncode(s interface{}) string {
 	r, _ := com.SetJSON(s)
 	return r
+}
+
+func ToStrSlice(s ...string) []string {
+	return s
+}
+
+func Concat(s ...string) string {
+	return strings.Join(s, ``)
 }
 
 func InExt(fileName string, exts ...string) bool {
@@ -162,15 +174,15 @@ func CaptchaForm(args ...string) template.HTML {
 	case 1:
 		id = args[0]
 	}
-	captchaId := captcha.New()
-	return template.HTML(fmt.Sprintf(format, captchaId, id))
+	cid := captcha.New()
+	return template.HTML(fmt.Sprintf(format, cid, id))
 }
 
 //CaptchaVerify 验证码验证
 func CaptchaVerify(captchaSolution string, idGet func(string) string) bool {
-	//captchaId := r.FormValue("captchaId")
-	captchaId := idGet("captchaId")
-	if !captcha.VerifyString(captchaId, captchaSolution) {
+	//id := r.FormValue("captchaId")
+	id := idGet("captchaId")
+	if !captcha.VerifyString(id, captchaSolution) {
 		return false
 	}
 	return true
@@ -192,7 +204,7 @@ func IsNil(a interface{}) bool {
 func Add(left interface{}, right interface{}) interface{} {
 	var rleft, rright int64
 	var fleft, fright float64
-	var isInt bool = true
+	isInt := true
 	switch left.(type) {
 	case int:
 		rleft = int64(left.(int))
@@ -231,19 +243,18 @@ func Add(left interface{}, right interface{}) interface{} {
 		isInt = false
 	}
 
-	var intSum int64 = rleft + rright
+	intSum := rleft + rright
 
 	if isInt {
 		return intSum
-	} else {
-		return fleft + fright + float64(intSum)
 	}
+	return fleft + fright + float64(intSum)
 }
 
 func Sub(left interface{}, right interface{}) interface{} {
 	var rleft, rright int64
 	var fleft, fright float64
-	var isInt bool = true
+	isInt := true
 	switch left.(type) {
 	case int:
 		rleft = int64(left.(int))
@@ -284,9 +295,8 @@ func Sub(left interface{}, right interface{}) interface{} {
 
 	if isInt {
 		return rleft - rright
-	} else {
-		return fleft + float64(rleft) - (fright + float64(rright))
 	}
+	return fleft + float64(rleft) - (fright + float64(rright))
 }
 
 func Now() time.Time {
@@ -349,17 +359,13 @@ func AddSuffix(s string, suffix string, args ...string) string {
 }
 
 func IsEmpty(a interface{}) bool {
-	switch a.(type) {
+	switch v := a.(type) {
 	case nil:
 		return true
 	case string:
-		if a.(string) == `` {
-			return true
-		}
+		return len(v) == 0
 	case []interface{}:
-		if len(a.([]interface{})) < 1 {
-			return true
-		}
+		return len(v) < 1
 	default:
 		switch fmt.Sprintf(`%v`, a) {
 		case `<nil>`, ``, `[]`:
@@ -371,6 +377,24 @@ func IsEmpty(a interface{}) bool {
 
 func NotEmpty(a interface{}) bool {
 	return !IsEmpty(a)
+}
+
+func InStrSlice(values []string, value string) bool {
+	for _, v := range values {
+		if v == value {
+			return true
+		}
+	}
+	return false
+}
+
+func SearchStrSlice(values []string, value string) int {
+	for i, v := range values {
+		if v == value {
+			return i
+		}
+	}
+	return -1
 }
 
 func FriendlyTime(t interface{}, args ...string) string {
