@@ -50,6 +50,21 @@ func (p *Pagination) Page() int {
 	return p.page
 }
 
+func (p *Pagination) PrevPage() int {
+	if p.page < 2 {
+		return 1
+	}
+	return p.page - 1
+}
+
+func (p *Pagination) NextPage() int {
+	n := p.page + 1
+	if n <= p.pages {
+		return n
+	}
+	return p.pages
+}
+
 func (p *Pagination) SetRows(rows int) *Pagination {
 	p.pages = -1
 	p.rows = rows
