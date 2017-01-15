@@ -21,6 +21,7 @@ type (
 		writer    io.Writer
 		logger    logger.Logger
 		body      []byte
+		keepBody  bool
 	}
 )
 
@@ -48,8 +49,14 @@ func (r *Response) WriteHeader(code int) {
 	r.committed = true
 }
 
+func (r *Response) SetKeepBody(on bool) {
+	r.keepBody = on
+}
+
 func (r *Response) Write(b []byte) (n int, err error) {
-	r.body = b
+	if r.keepBody {
+		r.body = append(r.body, b...)
+	}
 	n, err = r.writer.Write(b)
 	r.size += int64(n)
 	return
@@ -98,6 +105,7 @@ func (r *Response) reset(w http.ResponseWriter, req *http.Request, h engine.Head
 	r.committed = false
 	r.writer = w
 	r.body = nil
+	r.keepBody = false
 }
 
 func (r *Response) Hijack(fn func(net.Conn)) {
@@ -130,6 +138,7 @@ func (r *Response) SetCookie(cookie *http.Cookie) {
 }
 
 func (r *Response) ServeFile(file string) {
+	r.keepBody = false
 	http.ServeFile(r.response, r.request, file)
 	r.committed = true
 }

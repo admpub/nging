@@ -105,6 +105,8 @@ type (
 		// WriteHeader sends an HTTP response header with status code.
 		WriteHeader(int)
 
+		SetKeepBody(bool)
+
 		// Write writes the data to the connection as part of an HTTP reply.
 		Write(b []byte) (int, error)
 

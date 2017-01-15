@@ -149,7 +149,56 @@
                     </div>
                 </div>
               </div>
+
               
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"文件服务"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "browse"}}
+                    <label class="radio-inline">
+                      <input type="radio" value="1" name="browse" class="icheck" data-slide-settings="show"{{if eq $v "1"}} checked{{end}}> {{"启用"|T}}
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" value="0" name="browse" class="icheck" data-slide-settings="hide"{{if or (eq $v "0") (eq $v "")}} checked{{end}}> {{"禁用"|T}}
+                    </label>
+                    <div class="fieldset bg-6e hide" id="browse-settings">
+                        {{if eq $v "1"}}{{Include "addon/form/browse"}}{{end}}
+                    </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"静态文件缓存"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "expires"}}
+                    <label class="radio-inline">
+                      <input type="radio" value="1" name="expires" class="icheck" data-slide-settings="show"{{if eq $v "1"}} checked{{end}}> {{"启用"|T}}
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" value="0" name="expires" class="icheck" data-slide-settings="hide"{{if or (eq $v "0") (eq $v "")}} checked{{end}}> {{"禁用"|T}}
+                    </label>
+                    <div class="fieldset bg-6e hide" id="expires-settings">
+                        {{if eq $v "1"}}{{Include "addon/form/expires"}}{{end}}
+                    </div>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"IP过滤"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "ipfilter"}}
+                    <label class="radio-inline">
+                      <input type="radio" value="1" name="ipfilter" class="icheck" data-slide-settings="show"{{if eq $v "1"}} checked{{end}}> {{"启用"|T}}
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" value="0" name="ipfilter" class="icheck" data-slide-settings="hide"{{if or (eq $v "0") (eq $v "")}} checked{{end}}> {{"禁用"|T}}
+                    </label>
+                    <div class="fieldset bg-6e hide" id="ipfilter-settings">
+                        {{if eq $v "1"}}{{Include "addon/form/ipfilter"}}{{end}}
+                    </div>
+                </div>
+              </div>
+
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"备注"|T}}</label>
                 <div class="col-sm-8">
@@ -209,17 +258,24 @@ function addKVs(obj,k,v){
   tmpl=tmpl.replace(/\{v\}/g,v);
   $(obj).parent().before(tmpl);
 }
-$('#fastcgiAddEnvVarBtn').on('click',function(){
+$(document).on('click','#fastcgiAddEnvVarBtn',function(){
   addKVs(this,'fastcgi_env_k','fastcgi_env_v');
 });
-$('#headerAddVarBtn').on('click',function(){
+$(document).on('click','#headerAddVarBtn',function(){
   addKVs(this,'header_k','header_v');
 });
-$('#proxyHeaderDownstreamBtn').on('click',function(){
+$(document).on('click','#proxyHeaderDownstreamBtn',function(){
   addKVs(this,'proxy_header_downstream_k','proxy_header_downstream_v');
 });
-$('#proxyHeaderUpstreamBtn').on('click',function(){
+$(document).on('click','#proxyHeaderUpstreamBtn',function(){
   addKVs(this,'proxy_header_upstream_k','proxy_header_upstream_v');
+});
+$(document).on('click','#expiresMatchesBtn',function(){
+  addKVs(this,'expires_match_k','expires_match_v');
+});
+$('[data-slide-settings]').each(function(){
+  var eid='#'+$(this).attr('name')+'-settings';
+  if($(eid).data('history'))$(eid).data('history',null);
 });
 App.iCheck('[data-slide-settings]','click',function(){
   var slide=$(this).data('slide-settings');
@@ -227,7 +283,7 @@ App.iCheck('[data-slide-settings]','click',function(){
     slide=$(this).val()=='1'?'show':'hide';
   }
   var eid='#'+$(this).attr('name')+'-settings';
-  var history=$.trim($(eid).html());
+  var history=window.location.pathname.match(/_add$/)?'':$.trim($(eid).html());
   if(slide=='show'){
     if(!history){
       if($(eid).data('history')){

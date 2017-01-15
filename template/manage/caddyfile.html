@@ -59,4 +59,25 @@
         {{AddonAttr "proxy" "preset"}}
     }
     {{end}}
+
+    {{if eq (Form "browse") "1"}}
+    browse {{Form "browse_path"}} {{Form "browse_tmpl"}}
+    {{end}}
+
+    {{if eq (Form "expires") "1"}}
+    expires {
+    {{IteratorKV "expires" "match" "        match    "}}
+    }
+    {{end}}
+
+    {{if eq (Form "ipfilter") "1"}}
+    ipfilter {{Form "ipfilter_paths"}} {
+        rule block
+        {{AddonAttr "ipfilter" "ip"}}
+        {{AddonAttr "ipfilter" "country"}}
+        {{AddonAttr "ipfilter" "database"}}
+        {{AddonAttr "ipfilter" "blockpage"}}
+        {{AddonAttr "ipfilter" "strict"}}
+    }
+    {{end}}
 }

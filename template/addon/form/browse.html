@@ -1,0 +1,35 @@
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"路径"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="browse_path" value="{{Form "browse_path"}}">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"列表模板"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="browse_tmpl" value="{{Form "browse_tmpl"}}">
+                             <div class="help-block">{{"如果不填，将使用默认模板。模板格式："|T}}</div>
+                             <pre>
+<code class="language-html">---
+title: 
+type: docs
+directive: true
+plugin: true
+link: https://github.com/admpub/nging
+---
+&lt;html&gt;
+	&lt;head&gt;
+        &lt;title&gt;{{"{{.Name}}"}}&lt;/title&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+		{{"{{if .CanGoUp}}"}}&lt;a href=&quot;..&quot;&gt;Up one level&lt;/a&gt;&lt;br&gt;{{"{{end}}"}}
+		&lt;h1&gt;{{"{{.Path}}"}}&lt;/h1&gt;
+		{{"{{range .Items}}"}}
+		&lt;a href=&quot;{{"{{.URL}}"}}&quot;&gt;{{"{{.Name}}"}}&lt;/a&gt;&lt;br&gt;
+		{{"{{end}}"}}
+	&lt;/body&gt;
+&lt;/html&gt;
+</code>
+                             </pre>
+                          </div>
+                        </div>

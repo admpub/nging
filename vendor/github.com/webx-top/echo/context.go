@@ -451,6 +451,7 @@ func (c *xContext) Attachment(r io.ReadSeeker, name string) (err error) {
 	c.response.Header().Set(HeaderContentType, ContentTypeByExtension(name))
 	c.response.Header().Set(HeaderContentDisposition, "attachment; filename="+name)
 	c.response.WriteHeader(http.StatusOK)
+	c.response.SetKeepBody(false)
 	_, err = io.Copy(c.response, r)
 	return
 }
@@ -512,6 +513,7 @@ func (c *xContext) ServeContent(content io.ReadSeeker, name string, modtime time
 	rs.Header().Set(HeaderContentType, ContentTypeByExtension(name))
 	rs.Header().Set(HeaderLastModified, modtime.UTC().Format(http.TimeFormat))
 	rs.WriteHeader(http.StatusOK)
+	rs.SetKeepBody(false)
 	_, err := io.Copy(rs, content)
 	return err
 }

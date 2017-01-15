@@ -1,0 +1,46 @@
+              
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"路径"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="ipfilter_paths" value="{{Form "ipfilter_paths"}}">
+                             <div class="help-block">{{"如有多个，用空格分隔开"|T}}</div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"IP范围"|T}}</label>
+                          <div class="col-sm-9">
+                             <textarea class="form-control" name="ipfilter_ip">{{Form "ipfilter_ip"}}</textarea>
+                             <div class="help-block">{{""|T}}</div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"国家"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="ipfilter_country" value="{{Form "ipfilter_country"}}">
+                             <div class="help-block">{{"国家简码(比如:US JP)。如有多个，用空格隔开。"|T}}</div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"国家IP库"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="ipfilter_database" value="{{Form "ipfilter_database"}}" placeholder="">
+                             <div class="help-block">{{"geo-IP数据库路径(例如：/local/data/GeoLite2-Country.mmdb)"|T}}</div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label">{{"受阻时展示页"|T}}</label>
+                          <div class="col-sm-9">
+                             <input type="text" class="form-control" name="ipfilter_blockpage" value="{{Form "ipfilter_blockpage"}}">
+                             <div class="help-block">{{"阻止访问时显示的页面"|T}}</div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-3 control-label"></label>
+                          <div class="col-sm-9">
+                            <label>
+                             <input type="checkbox" class="icheck" name="ipfilter_strict" value="1"{{if eq (Form "ipfilter_strict") "1"}} checked{{end}}>
+                             {{"忽视X-Forwarded-For"}}
+                             </label>
+                             <div class="help-block">{{"不从HTTP头X-Forwarded-For中获取IP"|T}}</div>
+                          </div>
+                        </div>
