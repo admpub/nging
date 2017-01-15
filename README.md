@@ -9,6 +9,52 @@ nging不仅仅包含了caddy的在线可视化配置，还包含了ftp服务的�
 - [x] 文件在线管理
 - [x] 数据库管理
 - [ ] 支持更多caddy指令的在线配置
+    - [ ] awslambda
+    - [ ] basicauth
+    - [ ] bind
+    - [ ] browse
+    - [ ] cors
+    - [ ] errors
+    - [x] expires
+    - [ ] expvar
+    - [ ] ext
+    - [x] fastcgi
+    - [ ] filemanager
+    - [ ] filter
+    - [ ] git
+    - [ ] gzip
+    - [x] header
+    - [ ] hugo
+    - [ ] import
+    - [ ] internal
+    - [x] ipfilter
+    - [ ] jsonp
+    - [ ] jwt
+    - [ ] locale
+    - [x] log
+    - [ ] mailout
+    - [ ] markdown
+    - [ ] maxrequestbody
+    - [ ] mime
+    - [ ] minify
+    - [ ] multipass
+    - [ ] pprof
+    - [ ] prometheus
+    - [ ] proxy
+    - [ ] ratelimit
+    - [ ] realip
+    - [ ] redir
+    - [ ] rewrite
+    - [ ] root
+    - [ ] search
+    - [ ] shutdown
+    - [ ] startup
+    - [ ] status
+    - [ ] templates
+    - [x] tls
+    - [ ] upload
+    - [ ] websocket
+
 
 # 先睹为快
 [![](https://github.com/admpub/nging/blob/master/preview/preview_login.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_login.png)
