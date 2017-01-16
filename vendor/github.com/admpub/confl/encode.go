@@ -5,13 +5,14 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	u "github.com/araddon/gou"
 	"io"
 	"reflect"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	u "github.com/araddon/gou"
 )
 
 type encodeError struct{ error }
@@ -296,15 +297,55 @@ func (enc *Encoder) eMapOrStruct(key Key, rv reflect.Value) {
 
 func (enc *Encoder) eMap(key Key, rv reflect.Value) {
 	rt := rv.Type()
-	if rt.Key().Kind() != reflect.String {
+	var convert func(string) (interface{}, error)
+	switch rt.Key().Kind() {
+	case reflect.String:
+	case reflect.Int:
+		convert = func(key string) (interface{}, error) {
+			return strconv.Atoi(key)
+		}
+	case reflect.Int16:
+		convert = func(key string) (interface{}, error) {
+			r, e := strconv.ParseInt(key, 10, 16)
+			return int16(r), e
+		}
+	case reflect.Int32:
+		convert = func(key string) (interface{}, error) {
+			r, e := strconv.ParseInt(key, 10, 32)
+			return int32(r), e
+		}
+	case reflect.Int64:
+		convert = func(key string) (interface{}, error) {
+			return strconv.ParseInt(key, 10, 64)
+		}
+	case reflect.Uint:
+		convert = func(key string) (interface{}, error) {
+			r, e := strconv.Atoi(key)
+			return uint(r), e
+		}
+	case reflect.Uint16:
+		convert = func(key string) (interface{}, error) {
+			r, e := strconv.ParseUint(key, 10, 16)
+			return uint16(r), e
+		}
+	case reflect.Uint32:
+		convert = func(key string) (interface{}, error) {
+			r, e := strconv.ParseUint(key, 10, 32)
+			return uint32(r), e
+		}
+	case reflect.Uint64:
+		convert = func(key string) (interface{}, error) {
+			return strconv.ParseUint(key, 10, 64)
+		}
+	default:
 		encPanic(errNonString)
 	}
-
 	// Sort keys so that we have deterministic output. And write keys directly
 	// underneath this key first, before writing sub-structs or sub-maps.
 	var mapKeysDirect, mapKeysSub []string
 	for _, mapKey := range rv.MapKeys() {
-		k := mapKey.String()
+		//k := mapKey.String()
+		k := fmt.Sprint(mapKey.Interface())
 		//u.Infof("map key: %v", k)
 		if typeIsHash(confTypeOfGo(rv.MapIndex(mapKey))) {
 			//u.Debugf("found sub? %s  for %v", k, confTypeOfGo(rv.MapIndex(mapKey)))
@@ -318,7 +359,17 @@ func (enc *Encoder) eMap(key Key, rv reflect.Value) {
 		sort.Strings(mapKeys)
 		for _, mapKey := range mapKeys {
 			//u.Infof("mapkey: %v", mapKey)
-			mrv := rv.MapIndex(reflect.ValueOf(mapKey))
+			var v interface{}
+			if convert != nil {
+				var e error
+				v, e = convert(mapKey)
+				if e != nil {
+					encPanic(e)
+				}
+			} else {
+				v = mapKey
+			}
+			mrv := rv.MapIndex(reflect.ValueOf(v))
 			if isNil(mrv) {
 				// Don't write anything for nil fields.
 				continue

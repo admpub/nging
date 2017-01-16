@@ -27,31 +27,31 @@ import (
 func AuthCheck(h echo.Handler) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		if user, _ := c.Session().Get(`user`).(string); len(user) > 0 {
+			if jump, ok := c.Session().Get(`auth2ndURL`).(string); ok && len(jump) > 0 {
+				return c.Redirect(jump)
+			}
 			c.Set(`user`, user)
 			c.SetFunc(`Username`, func() string { return user })
 			return h.Handle(c)
 		}
 
-		//临时认证
-		if err := Auth(c, false); err != nil {
-
-			//检查是否已安装
-			if !config.IsInstalled() {
-				return c.Redirect(`/setup`)
-			}
-
-			return c.Redirect(`/login`)
+		//检查是否已安装
+		if !config.IsInstalled() {
+			return c.Redirect(`/setup`)
 		}
-		return h.Handle(c)
+		return c.Redirect(`/login`)
 	}
 }
 
 func Auth(c echo.Context, saveSession bool) error {
 	user := c.Form(`user`)
 	pass := c.Form(`pass`)
-	if pwd, ok := config.DefaultConfig.Sys.Accounts[user]; ok && pwd == pass {
+	if profile, ok := config.DefaultConfig.Sys.Accounts[user]; ok && profile.Password == pass {
 		if saveSession {
 			c.Session().Set(`user`, user)
+		}
+		if profile.GAuthKey != nil {
+			c.Session().Set(`auth2ndURL`, `/gauth_check`)
 		}
 		return nil
 	}

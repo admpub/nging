@@ -1,0 +1,49 @@
+{{Extend "base"}}
+{{Block "description"}}{{"Nging管理面板登录"|T}}{{/Block}}
+{{Block "title"}}{{"Nging管理面板登录"|T}}{{/Block}}
+{{Block "bodyAttr"}} class="texture"{{/Block}}
+{{Block "main"}}
+<div id="cl-wrapper" class="login-container">
+
+	<div class="middle-login">
+		<div class="block-flat">
+			<div class="header">							
+				<h3 class="text-center"><img class="logo-img" src="__ASSETS__/images/logo.png" alt="logo"/>{{"两步验证"|T}}</h3>
+			</div> 
+			<div>
+				<form class="form-horizontal" action="" method="POST">
+					<div class="content">
+						<div class="form-group">
+							<div class="col-sm-12">
+								<div class="input-group">
+									<span class="input-group-addon"><i class="fa fa-user"></i></span>
+									<input type="text" placeholder="{{"验证码"|T}}" value="{{Form "code"}}" name="code" required="required" class="form-control">
+								</div>
+                                <div class="help-block">{{"请输入Google身份验证器上显示的验证码"|T}}</div>
+							</div>
+						</div>
+					</div>
+					<div class="foot">
+						<input type="hidden" name="return_to" value="{{Form "return_to"}}">
+						<a class="btn btn-default" href="/logout">{{"退出"|T}}</a>
+						<button class="btn btn-primary" data-dismiss="modal" type="submit">{{"验证"|T}}</button>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="text-center out-links">
+			<a href="https://github.com/admpub/nging" target="_blank">&copy; {{Now.Year}} Nging</a>
+		</div>
+	</div> 
+	
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script type="text/javascript" src="__ASSETS__/js/behaviour/general.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/jquery.gritter/js/jquery.gritter.js"></script>
+<script>
+{{if .}}
+App.message({title: '{{"系统消息"|T}}', text: "{{.}}"});
+{{end}}
+</script>
+{{/Block}}

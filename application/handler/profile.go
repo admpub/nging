@@ -7,6 +7,7 @@ import (
 
 	QR "github.com/RaymondChou/goqr/pkg"
 	GAuth "github.com/admpub/dgoogauth"
+	"github.com/admpub/nging/application/library/config"
 	"github.com/webx-top/echo"
 )
 
@@ -39,28 +40,90 @@ func init() {
 }
 
 func GAuthBind(ctx echo.Context) error {
+	var err error
 	user, ok := ctx.Get(`user`).(string)
 	if !ok {
 		return errors.New(ctx.T(`登录信息获取失败，请重新登录`))
 	}
-	if ctx.IsPost() {
-		validOk := GAuthVerify(ctx)
-		ctx.Set(`validOk`, validOk)
+	var binded bool
+	if profile, ok := config.DefaultConfig.Sys.Accounts[user]; ok && profile.GAuthKey != nil {
+		binded = true
 	}
-	var qrCodeUrl string
-	keyData, ok := ctx.Session().Get(`GAuthKeyData`).(*GAuth.KeyData)
-	if !ok {
-		keyData, qrCodeUrl = GAuth.GenQrCode(user, "/qrcode?size=%s&data=%s")
-		ctx.Session().Set(`GAuthKeyData`, keyData)
-	} else {
-		qrCodeUrl = GAuth.QrCode(user, keyData.Encoded, "/qrcode?size=%s&data=%s")
+	if !binded {
+		if ctx.IsPost() {
+			err = GAuthVerify(ctx, true)
+			if err == nil {
+				binded = true
+			}
+		}
+		var qrCodeUrl string
+		keyData, ok := ctx.Session().Get(`GAuthKeyData`).(*GAuth.KeyData)
+		if !ok {
+			keyData, qrCodeUrl = GAuth.GenQrCode(user, "/qrcode?size=%s&data=%s")
+			ctx.Session().Set(`GAuthKeyData`, keyData)
+		} else {
+			qrCodeUrl = GAuth.QrCode(user, keyData.Encoded, "/qrcode?size=%s&data=%s")
+		}
+		ctx.Set(`keyData`, keyData)
+		ctx.Set(`qrCodeUrl`, qrCodeUrl)
 	}
-	ctx.Set(`keyData`, keyData)
-	ctx.Set(`qrCodeUrl`, qrCodeUrl)
-	return ctx.Render(`gauthbind`, nil)
+	ctx.Set(`binded`, binded)
+	return ctx.Render(`gauth/bind`, Err(ctx, err))
 }
 
-func GAuthVerify(ctx echo.Context) bool {
-	key := ctx.Form("key")
-	return GAuth.Verify(key, ctx.Form("code"))
+func GAuthCheck(ctx echo.Context) error {
+	user, ok := ctx.Session().Get(`user`).(string)
+	if !ok {
+		return ctx.Redirect(`/login`)
+	}
+	ctx.Set(`user`, user)
+	var err error
+	if ctx.IsPost() {
+		err = GAuthVerify(ctx)
+		if err == nil {
+			ctx.Session().Delete(`auth2ndURL`)
+			returnTo := ctx.Form(`return_to`)
+			if len(returnTo) == 0 {
+				returnTo = `/`
+			}
+			return ctx.Redirect(returnTo)
+		}
+	}
+	return ctx.Render(`gauth/check`, Err(ctx, err))
+}
+
+func GAuthVerify(ctx echo.Context, test ...bool) error {
+	var keyData *GAuth.KeyData
+	user, ok := ctx.Get(`user`).(string)
+	if !ok {
+		return errors.New(ctx.T(`登录信息获取失败，请重新登录`))
+	}
+	if len(test) > 0 && test[0] {
+		keyData, ok = ctx.Session().Get(`GAuthKeyData`).(*GAuth.KeyData)
+		if !ok {
+			return errors.New(ctx.T(`从session获取GAuthKeyData失败`))
+		}
+		if profile, ok := config.DefaultConfig.Sys.Accounts[user]; ok {
+			profile.GAuthKey = keyData
+			config.DefaultConfig.Sys.Accounts[user] = profile
+			err := config.DefaultConfig.SaveToFile()
+			if err != nil {
+				return err
+			}
+		}
+	} else {
+		if profile, ok := config.DefaultConfig.Sys.Accounts[user]; ok && profile.GAuthKey != nil {
+			keyData = profile.GAuthKey
+		} else {
+			return errors.New(ctx.T(`从用户资料中获取GAuthKey失败`))
+		}
+	}
+	ok, err := GAuth.VerifyFrom(keyData, ctx.Form("code"))
+	if err != nil {
+		return err
+	}
+	if !ok {
+		return errors.New(ctx.T(`验证码不正确`))
+	}
+	return nil
 }

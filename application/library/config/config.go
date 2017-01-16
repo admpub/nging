@@ -18,12 +18,23 @@
 package config
 
 import (
+	"io/ioutil"
+	"os"
+	"path/filepath"
+
+	"github.com/admpub/confl"
+	GAuth "github.com/admpub/dgoogauth"
 	"github.com/admpub/nging/application/library/caddy"
 	"github.com/admpub/nging/application/library/ftp"
 )
 
 func SetVersion(version string) {
 	caddy.DefaultVersion = version
+}
+
+type Profile struct {
+	Password string         `json:"password"`
+	GAuthKey *GAuth.KeyData `json:"gauthKey"`
 }
 
 type Config struct {
@@ -47,18 +58,18 @@ type Config struct {
 	} `json:"log"`
 
 	Sys struct {
-		VhostsfileDir          string            `json:"vhostsfileDir"`
-		AllowIP                []string          `json:"allowIP"`
-		Accounts               map[string]string `json:"accounts"`
-		SSLHosts               []string          `json:"sslHosts"`
-		SSLCacheFile           string            `json:"sslCacheFile"`
-		SSLKeyFile             string            `json:"sslKeyFile"`
-		SSLCertFile            string            `json:"sslCertFile"`
-		Debug                  bool              `json:"debug"`
-		EditableFileExtensions map[string]string `json:"editableFileExtensions"`
-		EditableFileMaxSize    string            `json:"editableFileMaxSize"`
-		EditableFileMaxBytes   int64             `json:"editableFileMaxBytes"`
-		ErrorPages             map[int]string    `json:"errorPages"`
+		VhostsfileDir          string             `json:"vhostsfileDir"`
+		AllowIP                []string           `json:"allowIP"`
+		Accounts               map[string]Profile `json:"accounts"`
+		SSLHosts               []string           `json:"sslHosts"`
+		SSLCacheFile           string             `json:"sslCacheFile"`
+		SSLKeyFile             string             `json:"sslKeyFile"`
+		SSLCertFile            string             `json:"sslCertFile"`
+		Debug                  bool               `json:"debug"`
+		EditableFileExtensions map[string]string  `json:"editableFileExtensions"`
+		EditableFileMaxSize    string             `json:"editableFileMaxSize"`
+		EditableFileMaxBytes   int64              `json:"editableFileMaxBytes"`
+		ErrorPages             map[int]string     `json:"errorPages"`
 	} `json:"sys"`
 
 	Cookie struct {
@@ -72,4 +83,27 @@ type Config struct {
 
 	Caddy caddy.Config `json:"caddy"`
 	FTP   ftp.Config   `json:"ftp"`
+}
+
+func (c *Config) SaveToFile() error {
+	b, err := confl.Marshal(c)
+	if err == nil {
+		err = os.MkdirAll(filepath.Dir(DefaultCLIConfig.Conf), os.ModePerm)
+		if err == nil {
+			_, e := os.Stat(DefaultCLIConfig.Conf + `.sample`)
+			if e != nil {
+				if os.IsNotExist(e) {
+					old, err := ioutil.ReadFile(DefaultCLIConfig.Conf)
+					if err == nil {
+						err = ioutil.WriteFile(DefaultCLIConfig.Conf+`.sample`, old, os.ModePerm)
+					}
+					if err != nil {
+						return err
+					}
+				}
+			}
+			err = ioutil.WriteFile(DefaultCLIConfig.Conf, b, os.ModePerm)
+		}
+	}
+	return err
 }

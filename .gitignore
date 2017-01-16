@@ -34,3 +34,4 @@ _testmain.go
 /dist/access_local.log
 /dist/*.pid
 /bindata_assetfs.go
+/config/vhosts/*

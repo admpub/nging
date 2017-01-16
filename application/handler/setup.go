@@ -26,8 +26,6 @@ import (
 
 	"regexp"
 
-	"fmt"
-
 	"io/ioutil"
 
 	"github.com/admpub/nging/application/library/config"
@@ -80,40 +78,7 @@ func Setup(ctx echo.Context) error {
 		}
 		if err == nil {
 			//保存数据库账号到配置文件
-			var isDbSetting bool
-			var configContent string
-			err = com.SeekFileLines(config.DefaultCLIConfig.Conf, func(line string) error {
-				if isDbSetting {
-					if strings.HasPrefix(line, `}`) {
-						isDbSetting = false
-					} else {
-						matches := reConfigItem.FindStringSubmatch(line)
-						if len(matches) > 1 {
-							switch matches[1] {
-							case `type`:
-								line = matches[0] + fmt.Sprintf(`%q`, config.DefaultConfig.DB.Type)
-							case `host`:
-								line = matches[0] + fmt.Sprintf(`%q`, config.DefaultConfig.DB.Host)
-							case `user`:
-								line = matches[0] + fmt.Sprintf(`%q`, config.DefaultConfig.DB.User)
-							case `password`:
-								line = matches[0] + fmt.Sprintf(`%q`, config.DefaultConfig.DB.Password)
-							case `database`:
-								line = matches[0] + fmt.Sprintf(`%q`, config.DefaultConfig.DB.Database)
-							case `prefix`:
-								line = matches[0] + fmt.Sprintf(`%q`, config.DefaultConfig.DB.Prefix)
-							}
-						}
-					}
-				} else {
-					if strings.HasPrefix(line, `db {`) {
-						isDbSetting = true
-					}
-				}
-				configContent += line + "\n"
-				return nil
-			})
-			_, err = com.SaveFileS(config.DefaultCLIConfig.Conf, configContent)
+			err = config.DefaultConfig.SaveToFile()
 		}
 		if err == nil {
 			//生成锁文件

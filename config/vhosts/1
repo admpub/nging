@@ -1,5 +1,5 @@
-coscms.com {
-    root C:\GoWWW\UPUPW_NP7.0_64\htdocs
+localhost:9001 {
+    root E:\www_pre
 
     log   access_local.log
 
@@ -12,16 +12,9 @@ coscms.com {
     
 
     
-    fastcgi / 127.0.0.1:9070  {
-        ext   .php
-        split   .php
-        index   index.php
-        
-        
-        pool   0
-    }
     
     
+
     
 
     
