@@ -1,0 +1,59 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"绑定两步验证"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="/db">{{"绑定两步验证"|T}}</a></li>
+{{/Block}}
+
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{"绑定两步验证"|T}}</h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" method="POST" action="">
+                  {{Stored.validOk}}
+              <div class="form-group">
+                <label class="col-sm-3 control-label">{{"二维码"|T}}</label>
+                <div class="col-sm-6">
+                    <img src="{{Stored.qrCodeUrl}}" alt="">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">{{"账户名"|T}}</label>
+                <div class="col-sm-6">
+                    <span style="padding-top:5px;vertical-align:middle">{{Stored.user}}</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">{{"密钥"|T}}</label>
+                <div class="col-sm-6">
+                    <span style="padding-top:5px;vertical-align:middle" id="my-secret">{{Stored.keyData.Encoded}}</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-3 control-label">{{"验证码"|T}}</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" name="code" value="">
+                </div>
+              </div>
+              
+
+              <div class="form-group">
+				<div class="col-sm-6 col-sm-offset-3">
+                    <input type="hidden" class="form-control" name="key" value="{{Stored.keyData.Original}}">
+				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-sign-in"></i> {{"测试"|T}}</button>
+				</div>
+			</div>
+            </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+
+{{Block "footer"}}
+{{/Block}}

@@ -67,6 +67,8 @@ func addRouter(e *echo.Echo) {
 
 	addFormHandler(e, `/login`, Login)
 	addFormHandler(e, `/setup`, Setup)
+	addFormHandler(e, `/gauth_bind`, GAuthBind, middleware.AuthCheck)
+	addHandler(e, `/qrcode`, QrCode)
 
 	g := e.Group(`/manage`, middleware.AuthCheck)
 	{
