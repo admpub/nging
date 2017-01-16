@@ -3,6 +3,24 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "9B0FY40jAMUhIXoGd6xY96u7xoU=",
+			"path": "github.com/RaymondChou/goqr/pkg",
+			"revision": "3d1b666878d159eff4d14fba8f56426ba9d82e92",
+			"revisionTime": "2013-04-09T01:22:45Z"
+		},
+		{
+			"checksumSHA1": "CjDAcrFNjy/l0XwbEJhBU/3jc00=",
+			"path": "github.com/RaymondChou/goqr/pkg/coding",
+			"revision": "3d1b666878d159eff4d14fba8f56426ba9d82e92",
+			"revisionTime": "2013-04-09T01:22:45Z"
+		},
+		{
+			"checksumSHA1": "59RQB2JdCVNLLmAW/S2L2fDs66c=",
+			"path": "github.com/RaymondChou/goqr/pkg/gf256",
+			"revision": "3d1b666878d159eff4d14fba8f56426ba9d82e92",
+			"revisionTime": "2013-04-09T01:22:45Z"
+		},
+		{
 			"checksumSHA1": "lMbE1RlcuGIHfR4sV67g+kg2Vg4=",
 			"path": "github.com/Sirupsen/logrus",
 			"revision": "abc6f20dabf4b10195f233ad21ea6c5ba33acae0",
@@ -43,6 +61,12 @@
 			"path": "github.com/admpub/confl",
 			"revision": "bb6f364f59553f22bf320407d53586cb6c7ffda0",
 			"revisionTime": "2016-12-15T03:27:45Z"
+		},
+		{
+			"checksumSHA1": "eyJMnZTNFHQM3Y/sWOoZy8J7mCU=",
+			"path": "github.com/admpub/dgoogauth",
+			"revision": "b5350ac69822d066b160dd85027ea79a799c74fa",
+			"revisionTime": "2017-01-16T06:28:35Z"
 		},
 		{
 			"checksumSHA1": "Vl25su4MLkgwg1EVHK/DudTUUxM=",
