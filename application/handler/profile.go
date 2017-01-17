@@ -98,18 +98,11 @@ func GAuthVerify(ctx echo.Context, test ...bool) error {
 	if !ok {
 		return errors.New(ctx.T(`登录信息获取失败，请重新登录`))
 	}
-	if len(test) > 0 && test[0] {
+	testAndBind := len(test) > 0 && test[0]
+	if testAndBind {
 		keyData, ok = ctx.Session().Get(`GAuthKeyData`).(*GAuth.KeyData)
 		if !ok {
 			return errors.New(ctx.T(`从session获取GAuthKeyData失败`))
-		}
-		if profile, ok := config.DefaultConfig.Sys.Accounts[user]; ok {
-			profile.GAuthKey = keyData
-			config.DefaultConfig.Sys.Accounts[user] = profile
-			err := config.DefaultConfig.SaveToFile()
-			if err != nil {
-				return err
-			}
 		}
 	} else {
 		if profile, ok := config.DefaultConfig.Sys.Accounts[user]; ok && profile.GAuthKey != nil {
@@ -124,6 +117,16 @@ func GAuthVerify(ctx echo.Context, test ...bool) error {
 	}
 	if !ok {
 		return errors.New(ctx.T(`验证码不正确`))
+	}
+	if testAndBind {
+		if profile, ok := config.DefaultConfig.Sys.Accounts[user]; ok {
+			profile.GAuthKey = keyData
+			config.DefaultConfig.Sys.Accounts[user] = profile
+			err := config.DefaultConfig.SaveToFile()
+			if err != nil {
+				return err
+			}
+		}
 	}
 	return nil
 }
