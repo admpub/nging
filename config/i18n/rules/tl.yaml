@@ -1,0 +1,141 @@
+plural : "2B"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "¤#,##0.00;(¤#,##0.00)"
+    percent : "#,##0%"
+  }
+}
+currencies {
+  PHP {
+    symbol : "₱"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, MMMM dd y"
+      long : "MMMM d, y"
+      medium : "MMM d, y"
+      short : "M/d/yy"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+    datetime {
+      full : "{1} {0}"
+      long : "{1} {0}"
+      medium : "{1} {0}"
+      short : "{1} {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Ene"
+        2 : "Peb"
+        3 : "Mar"
+        4 : "Abr"
+        5 : "May"
+        6 : "Hun"
+        7 : "Hul"
+        8 : "Ago"
+        9 : "Set"
+        10 : "Okt"
+        11 : "Nob"
+        12 : "Dis"
+      }
+      narrow {
+        1 : "E"
+        2 : "P"
+        3 : "M"
+        4 : "A"
+        5 : "M"
+        6 : "H"
+        7 : "H"
+        8 : "A"
+        9 : "S"
+        10 : "O"
+        11 : "N"
+        12 : "D"
+      }
+      wide {
+        1 : "Enero"
+        2 : "Pebrero"
+        3 : "Marso"
+        4 : "Abril"
+        5 : "Mayo"
+        6 : "Hunyo"
+        7 : "Hulyo"
+        8 : "Agosto"
+        9 : "Setyembre"
+        10 : "Oktubre"
+        11 : "Nobyembre"
+        12 : "Disyembre"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Lin"
+        mon : "Lun"
+        tue : "Mar"
+        wed : "Mye"
+        thu : "Huw"
+        fri : "Bye"
+        sat : "Sab"
+      }
+      narrow {
+        sun : "L"
+        mon : "L"
+        tue : "M"
+        wed : "M"
+        thu : "H"
+        fri : "B"
+        sat : "S"
+      }
+      short {
+        sun : "Li"
+        mon : "Lu"
+        tue : "Ma"
+        wed : "Mi"
+        thu : "Hu"
+        fri : "Bi"
+        sat : "Sab"
+      }
+      wide {
+        sun : "Linggo"
+        mon : "Lunes"
+        tue : "Martes"
+        wed : "Miyerkules"
+        thu : "Huwebes"
+        fri : "Biyernes"
+        sat : "Sabado"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "AM"
+        pm : "PM"
+      }
+      narrow {
+        am : "a"
+        pm : "p"
+      }
+      wide {
+        am : "AM"
+        pm : "PM"
+      }
+    }
+  }
+}

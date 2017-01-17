@@ -1,0 +1,120 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  formats {
+    currency : "¤#,##0.00;(¤#,##0.00)"
+  }
+}
+currencies {
+  ZMK {
+    symbol : "K"
+  }
+  ZMW {
+    symbol : "KR"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Jan"
+        2 : "Feb"
+        3 : "Mac"
+        4 : "Epr"
+        5 : "Mei"
+        6 : "Jun"
+        7 : "Jul"
+        8 : "Oga"
+        9 : "Sep"
+        10 : "Okt"
+        11 : "Nov"
+        12 : "Dis"
+      }
+      narrow {
+        1 : "J"
+        2 : "F"
+        3 : "M"
+        4 : "E"
+        5 : "M"
+        6 : "J"
+        7 : "J"
+        8 : "O"
+        9 : "S"
+        10 : "O"
+        11 : "N"
+        12 : "D"
+      }
+      wide {
+        1 : "Januari"
+        2 : "Februari"
+        3 : "Machi"
+        4 : "Epreo"
+        5 : "Mei"
+        6 : "Juni"
+        7 : "Julai"
+        8 : "Ogasti"
+        9 : "Septemba"
+        10 : "Oktoba"
+        11 : "Novemba"
+        12 : "Disemba"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Pa Mulungu"
+        mon : "Palichimo"
+        tue : "Palichibuli"
+        wed : "Palichitatu"
+        thu : "Palichine"
+        fri : "Palichisano"
+        sat : "Pachibelushi"
+      }
+      short {
+        sun : "Pa Mulungu"
+        mon : "Palichimo"
+        tue : "Palichibuli"
+        wed : "Palichitatu"
+        thu : "Palichine"
+        fri : "Palichisano"
+        sat : "Pachibelushi"
+      }
+      wide {
+        sun : "Pa Mulungu"
+        mon : "Palichimo"
+        tue : "Palichibuli"
+        wed : "Palichitatu"
+        thu : "Palichine"
+        fri : "Palichisano"
+        sat : "Pachibelushi"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "uluchelo"
+        pm : "akasuba"
+      }
+      narrow {
+        am : "uluchelo"
+        pm : "akasuba"
+      }
+      wide {
+        am : "uluchelo"
+        pm : "akasuba"
+      }
+    }
+  }
+}

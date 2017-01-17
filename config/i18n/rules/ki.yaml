@@ -1,0 +1,126 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  formats {
+    currency : "¤#,##0.00;(¤#,##0.00)"
+  }
+}
+currencies {
+  KES {
+    symbol : "Ksh"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "JEN"
+        2 : "WKR"
+        3 : "WGT"
+        4 : "WKN"
+        5 : "WTN"
+        6 : "WTD"
+        7 : "WMJ"
+        8 : "WNN"
+        9 : "WKD"
+        10 : "WIK"
+        11 : "WMW"
+        12 : "DIT"
+      }
+      narrow {
+        1 : "J"
+        2 : "K"
+        3 : "G"
+        4 : "K"
+        5 : "G"
+        6 : "G"
+        7 : "M"
+        8 : "K"
+        9 : "K"
+        10 : "I"
+        11 : "I"
+        12 : "D"
+      }
+      wide {
+        1 : "Njenuarĩ"
+        2 : "Mwere wa kerĩ"
+        3 : "Mwere wa gatatũ"
+        4 : "Mwere wa kana"
+        5 : "Mwere wa gatano"
+        6 : "Mwere wa gatandatũ"
+        7 : "Mwere wa mũgwanja"
+        8 : "Mwere wa kanana"
+        9 : "Mwere wa kenda"
+        10 : "Mwere wa ikũmi"
+        11 : "Mwere wa ikũmi na ũmwe"
+        12 : "Ndithemba"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "KMA"
+        mon : "NTT"
+        tue : "NMN"
+        wed : "NMT"
+        thu : "ART"
+        fri : "NMA"
+        sat : "NMM"
+      }
+      narrow {
+        sun : "K"
+        mon : "N"
+        tue : "N"
+        wed : "N"
+        thu : "A"
+        fri : "N"
+        sat : "N"
+      }
+      short {
+        sun : "KMA"
+        mon : "NTT"
+        tue : "NMN"
+        wed : "NMT"
+        thu : "ART"
+        fri : "NMA"
+        sat : "NMM"
+      }
+      wide {
+        sun : "Kiumia"
+        mon : "Njumatatũ"
+        tue : "Njumaine"
+        wed : "Njumatana"
+        thu : "Aramithi"
+        fri : "Njumaa"
+        sat : "Njumamothi"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "Kiroko"
+        pm : "Hwaĩ-inĩ"
+      }
+      narrow {
+        am : "Kiroko"
+        pm : "Hwaĩ-inĩ"
+      }
+      wide {
+        am : "Kiroko"
+        pm : "Hwaĩ-inĩ"
+      }
+    }
+  }
+}

@@ -1,0 +1,130 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+  }
+  formats {
+    currency : "¤#,##0.00"
+  }
+}
+currencies {
+  ALL {
+    symbol : "Lek"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, dd MMMM y"
+      long : "dd MMMM y"
+      medium : "y-MM-dd"
+      short : "yy-MM-dd"
+    }
+    time {
+      full : "h.mm.ss.a zzzz"
+      long : "h.mm.ss.a z"
+      medium : "h.mm.ss.a"
+      short : "h.mm.a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Jan"
+        2 : "Shk"
+        3 : "Mar"
+        4 : "Pri"
+        5 : "Maj"
+        6 : "Qer"
+        7 : "Kor"
+        8 : "Gsh"
+        9 : "Sht"
+        10 : "Tet"
+        11 : "Nën"
+        12 : "Dhj"
+      }
+      narrow {
+        1 : "J"
+        2 : "S"
+        3 : "M"
+        4 : "P"
+        5 : "M"
+        6 : "Q"
+        7 : "K"
+        8 : "G"
+        9 : "S"
+        10 : "T"
+        11 : "N"
+        12 : "D"
+      }
+      wide {
+        1 : "janar"
+        2 : "shkurt"
+        3 : "mars"
+        4 : "prill"
+        5 : "maj"
+        6 : "qershor"
+        7 : "korrik"
+        8 : "gusht"
+        9 : "shtator"
+        10 : "tetor"
+        11 : "nëntor"
+        12 : "dhjetor"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Die"
+        mon : "Hën"
+        tue : "Mar"
+        wed : "Mër"
+        thu : "Enj"
+        fri : "Pre"
+        sat : "Sht"
+      }
+      narrow {
+        sun : "D"
+        mon : "H"
+        tue : "M"
+        wed : "M"
+        thu : "E"
+        fri : "P"
+        sat : "S"
+      }
+      short {
+        sun : "Die"
+        mon : "Hën"
+        tue : "Mar"
+        wed : "Mër"
+        thu : "Enj"
+        fri : "Pre"
+        sat : "Sht"
+      }
+      wide {
+        sun : "e diel"
+        mon : "e hënë"
+        tue : "e martë"
+        wed : "e mërkurë"
+        thu : "e enjte"
+        fri : "e premte"
+        sat : "e shtunë"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "PD"
+        pm : "MD"
+      }
+      narrow {
+        am : "PD"
+        pm : "MD"
+      }
+      wide {
+        am : "PD"
+        pm : "MD"
+      }
+    }
+  }
+}

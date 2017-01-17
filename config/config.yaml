@@ -76,3 +76,11 @@ ftp {
 	explicitFTPS   : false
 	welcomeMessage : ""
 }
+language {
+  Default      : "zh-cn"
+  Fallback     : ""
+  AllList      : ["zh-cn","en"]
+  RulesPath    : ["config/i18n/rules"]
+  MessagesPath : ["config/i18n/messages"]
+  Reload       : true
+}

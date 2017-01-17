@@ -1,0 +1,141 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##,##0.###"
+    currency : "#,##,##0.00¤;(#,##,##0.00¤)"
+    percent : "#,##,##0%"
+  }
+}
+currencies {
+  BDT {
+    symbol : "৳"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM, y"
+      long : "d MMMM, y"
+      medium : "d MMM, y"
+      short : "d/M/yy"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+    datetime {
+      full : "{1} {0}"
+      long : "{1} {0}"
+      medium : "{1} {0}"
+      short : "{1} {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "জানুয়ারী"
+        2 : "ফেব্রুয়ারী"
+        3 : "মার্চ"
+        4 : "এপ্রিল"
+        5 : "মে"
+        6 : "জুন"
+        7 : "জুলাই"
+        8 : "আগস্ট"
+        9 : "সেপ্টেম্বর"
+        10 : "অক্টোবর"
+        11 : "নভেম্বর"
+        12 : "ডিসেম্বর"
+      }
+      narrow {
+        1 : "জা"
+        2 : "ফে"
+        3 : "মা"
+        4 : "এ"
+        5 : "মে"
+        6 : "জুন"
+        7 : "জু"
+        8 : "আ"
+        9 : "সে"
+        10 : "অ"
+        11 : "ন"
+        12 : "ডি"
+      }
+      wide {
+        1 : "জানুয়ারী"
+        2 : "ফেব্রুয়ারী"
+        3 : "মার্চ"
+        4 : "এপ্রিল"
+        5 : "মে"
+        6 : "জুন"
+        7 : "জুলাই"
+        8 : "আগস্ট"
+        9 : "সেপ্টেম্বর"
+        10 : "অক্টোবর"
+        11 : "নভেম্বর"
+        12 : "ডিসেম্বর"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "রবি"
+        mon : "সোম"
+        tue : "মঙ্গল"
+        wed : "বুধ"
+        thu : "বৃহস্পতি"
+        fri : "শুক্র"
+        sat : "শনি"
+      }
+      narrow {
+        sun : "র"
+        mon : "সো"
+        tue : "ম"
+        wed : "বু"
+        thu : "বৃ"
+        fri : "শু"
+        sat : "শ"
+      }
+      short {
+        sun : "রঃ"
+        mon : "সোঃ"
+        tue : "মঃ"
+        wed : "বুঃ"
+        thu : "বৃঃ"
+        fri : "শুঃ"
+        sat : "শোঃ"
+      }
+      wide {
+        sun : "রবিবার"
+        mon : "সোমবার"
+        tue : "মঙ্গলবার"
+        wed : "বুধবার"
+        thu : "বৃহষ্পতিবার"
+        fri : "শুক্রবার"
+        sat : "শনিবার"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "পূর্বাহ্ণ"
+        pm : "অপরাহ্ণ"
+      }
+      narrow {
+        am : "পূর্বাহ্ণ"
+        pm : "অপরাহ্ণ"
+      }
+      wide {
+        am : "পূর্বাহ্ণ"
+        pm : "অপরাহ্ণ"
+      }
+    }
+  }
+}

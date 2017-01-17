@@ -1,0 +1,192 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##,##0.###"
+    currency : "¤#,##,##0.00"
+    percent : "#,##,##0 %"
+  }
+}
+currencies {
+  AUD {
+    symbol : "AU$"
+  }
+  BRL {
+    symbol : "R$"
+  }
+  BTN {
+    symbol : "Nu."
+  }
+  CAD {
+    symbol : "CA$"
+  }
+  CNY {
+    symbol : "CN¥"
+  }
+  EUR {
+    symbol : "€"
+  }
+  GBP {
+    symbol : "£"
+  }
+  HKD {
+    symbol : "HK$"
+  }
+  ILS {
+    symbol : "ILS"
+  }
+  INR {
+    symbol : "₹"
+  }
+  JPY {
+    symbol : "JP¥"
+  }
+  KRW {
+    symbol : "KR₩"
+  }
+  MXN {
+    symbol : "MX$"
+  }
+  NZD {
+    symbol : "NZ$"
+  }
+  THB {
+    symbol : "TH฿"
+  }
+  TWD {
+    symbol : "NT$"
+  }
+  USD {
+    symbol : "US$"
+  }
+  XAF {
+    symbol : "XAF"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, སྤྱི་ལོ་y MMMM ཚེས་dd"
+      long : "སྤྱི་ལོ་y MMMM ཚེས་ dd"
+      medium : "སྤྱི་ལོ་y ཟླ་MMM ཚེས་dd"
+      short : "y-MM-dd"
+    }
+    time {
+      full : "ཆུ་ཚོད་ h སྐར་མ་ mm:ss a zzzz"
+      long : "ཆུ་ཚོད་ h སྐར་མ་ mm:ss a z"
+      medium : "ཆུ་ཚོད་h:mm:ss a"
+      short : "ཆུ་ཚོད་ h སྐར་མ་ mm a"
+    }
+    datetime {
+      full : "{1} {0}"
+      long : "{1} {0}"
+      medium : "{1} {0}"
+      short : "{1} {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "༡"
+        2 : "༢"
+        3 : "༣"
+        4 : "༤"
+        5 : "༥"
+        6 : "༦"
+        7 : "༧"
+        8 : "༨"
+        9 : "༩"
+        10 : "༡༠"
+        11 : "༡༡"
+        12 : "12"
+      }
+      narrow {
+        1 : "༡"
+        2 : "༢"
+        3 : "༣"
+        4 : "4"
+        5 : "༥"
+        6 : "༦"
+        7 : "༧"
+        8 : "༨"
+        9 : "9"
+        10 : "༡༠"
+        11 : "༡༡"
+        12 : "༡༢"
+      }
+      wide {
+        1 : "ཟླ་དངཔ་"
+        2 : "ཟླ་གཉིས་པ་"
+        3 : "ཟླ་གསུམ་པ་"
+        4 : "ཟླ་བཞི་པ་"
+        5 : "ཟླ་ལྔ་པ་"
+        6 : "ཟླ་དྲུག་པ"
+        7 : "ཟླ་བདུན་པ་"
+        8 : "ཟླ་བརྒྱད་པ་"
+        9 : "ཟླ་དགུ་པ་"
+        10 : "ཟླ་བཅུ་པ་"
+        11 : "ཟླ་བཅུ་གཅིག་པ་"
+        12 : "ཟླ་བཅུ་གཉིས་པ་"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "ཟླ་"
+        mon : "མིར་"
+        tue : "ལྷག་"
+        wed : "ཕུར་"
+        thu : "སངས་"
+        fri : "སྤེན་"
+        sat : "ཉི་"
+      }
+      narrow {
+        sun : "ཟླ"
+        mon : "མིར"
+        tue : "ལྷག"
+        wed : "ཕུར"
+        thu : "སངྶ"
+        fri : "སྤེན"
+        sat : "ཉི"
+      }
+      short {
+        sun : "ཟླ་"
+        mon : "མིར་"
+        tue : "ལྷག་"
+        wed : "ཕུར་"
+        thu : "སངས་"
+        fri : "སྤེན་"
+        sat : "ཉི་"
+      }
+      wide {
+        sun : "གཟའ་ཟླ་བ་"
+        mon : "གཟའ་མིག་དམར་"
+        tue : "གཟའ་ལྷག་པ་"
+        wed : "གཟའ་ཕུར་བུ་"
+        thu : "གཟའ་པ་སངས་"
+        fri : "གཟའ་སྤེན་པ་"
+        sat : "གཟའ་ཉི་མ་"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "སྔ་ཆ་"
+        pm : "ཕྱི་ཆ་"
+      }
+      narrow {
+        am : "སྔ་ཆ་"
+        pm : "ཕྱི་ཆ་"
+      }
+      wide {
+        am : "སྔ་ཆ་"
+        pm : "ཕྱི་ཆ་"
+      }
+    }
+  }
+}

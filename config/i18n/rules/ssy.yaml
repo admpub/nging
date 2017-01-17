@@ -1,0 +1,126 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  formats {
+    currency : "¤#,##0.00"
+  }
+}
+currencies {
+  ERN {
+    symbol : "Nfk"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, MMMM dd, y"
+      long : "dd MMMM y"
+      medium : "dd-MMM-y"
+      short : "dd/MM/yy"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Qun"
+        2 : "Nah"
+        3 : "Cig"
+        4 : "Agd"
+        5 : "Cax"
+        6 : "Qas"
+        7 : "Qad"
+        8 : "Leq"
+        9 : "Way"
+        10 : "Dit"
+        11 : "Xim"
+        12 : "Kax"
+      }
+      narrow {
+        1 : "Q"
+        2 : "N"
+        3 : "C"
+        4 : "A"
+        5 : "C"
+        6 : "Q"
+        7 : "Q"
+        8 : "L"
+        9 : "W"
+        10 : "D"
+        11 : "X"
+        12 : "K"
+      }
+      wide {
+        1 : "Qunxa Garablu"
+        2 : "Kudo"
+        3 : "Ciggilta Kudo"
+        4 : "Agda Baxis"
+        5 : "Caxah Alsa"
+        6 : "Qasa Dirri"
+        7 : "Qado Dirri"
+        8 : "Liiqen"
+        9 : "Waysu"
+        10 : "Diteli"
+        11 : "Ximoli"
+        12 : "Kaxxa Garablu"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Nab"
+        mon : "San"
+        tue : "Sal"
+        wed : "Rab"
+        thu : "Cam"
+        fri : "Jum"
+        sat : "Qun"
+      }
+      narrow {
+        sun : "N"
+        mon : "S"
+        tue : "S"
+        wed : "R"
+        thu : "C"
+        fri : "J"
+        sat : "Q"
+      }
+      short {
+        sun : "Nab"
+        mon : "San"
+        tue : "Sal"
+        wed : "Rab"
+        thu : "Cam"
+        fri : "Jum"
+        sat : "Qun"
+      }
+      wide {
+        sun : "Naba Sambat"
+        mon : "Sani"
+        tue : "Salus"
+        wed : "Rabuq"
+        thu : "Camus"
+        fri : "Jumqata"
+        sat : "Qunxa Sambat"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "saaku"
+        pm : "carra"
+      }
+      narrow {
+        am : "saaku"
+        pm : "carra"
+      }
+      wide {
+        am : "saaku"
+        pm : "carra"
+      }
+    }
+  }
+}

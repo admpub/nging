@@ -1,0 +1,186 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  formats {
+    currency : "¤#,##0.00;(¤#,##0.00)"
+  }
+}
+currencies {
+  AUD {
+    symbol : "AU$"
+  }
+  BRL {
+    symbol : "R$"
+  }
+  CAD {
+    symbol : "CA$"
+  }
+  CNY {
+    symbol : "CN¥"
+  }
+  EUR {
+    symbol : "€"
+  }
+  GBP {
+    symbol : "£"
+  }
+  GHS {
+    symbol : "GH₵"
+  }
+  HKD {
+    symbol : "HK$"
+  }
+  ILS {
+    symbol : "₪"
+  }
+  INR {
+    symbol : "₹"
+  }
+  JPY {
+    symbol : "JP¥"
+  }
+  KRW {
+    symbol : "₩"
+  }
+  MXN {
+    symbol : "MX$"
+  }
+  NZD {
+    symbol : "NZ$"
+  }
+  THB {
+    symbol : "฿"
+  }
+  TWD {
+    symbol : "NT$"
+  }
+  USD {
+    symbol : "US$"
+  }
+  VND {
+    symbol : "₫"
+  }
+  XCD {
+    symbol : "EC$"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, MMMM d 'lia' y"
+      long : "MMMM d 'lia' y"
+      medium : "MMM d 'lia', y"
+      short : "M/d/yy"
+    }
+    time {
+      full : "a h:mm:ss zzzz"
+      long : "a 'ga' h:mm:ss z"
+      medium : "a 'ga' h:mm:ss"
+      short : "a 'ga' h:mm"
+    }
+    datetime {
+      full : "{0} {1}"
+      long : "{0} {1}"
+      medium : "{0} {1}"
+      short : "{0} {1}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "dzv"
+        2 : "dzd"
+        3 : "ted"
+        4 : "afɔ"
+        5 : "dam"
+        6 : "mas"
+        7 : "sia"
+        8 : "dea"
+        9 : "any"
+        10 : "kel"
+        11 : "ade"
+        12 : "dzm"
+      }
+      narrow {
+        1 : "d"
+        2 : "d"
+        3 : "t"
+        4 : "a"
+        5 : "d"
+        6 : "m"
+        7 : "s"
+        8 : "d"
+        9 : "a"
+        10 : "k"
+        11 : "a"
+        12 : "d"
+      }
+      wide {
+        1 : "dzove"
+        2 : "dzodze"
+        3 : "tedoxe"
+        4 : "afɔfĩe"
+        5 : "dama"
+        6 : "masa"
+        7 : "siamlɔm"
+        8 : "deasiamime"
+        9 : "anyɔnyɔ"
+        10 : "kele"
+        11 : "adeɛmekpɔxe"
+        12 : "dzome"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "kɔs"
+        mon : "dzo"
+        tue : "bla"
+        wed : "kuɖ"
+        thu : "yaw"
+        fri : "fiɖ"
+        sat : "mem"
+      }
+      narrow {
+        sun : "k"
+        mon : "d"
+        tue : "b"
+        wed : "k"
+        thu : "y"
+        fri : "f"
+        sat : "m"
+      }
+      short {
+        sun : "kɔs"
+        mon : "dzo"
+        tue : "bla"
+        wed : "kuɖ"
+        thu : "yaw"
+        fri : "fiɖ"
+        sat : "mem"
+      }
+      wide {
+        sun : "kɔsiɖa"
+        mon : "dzoɖa"
+        tue : "blaɖa"
+        wed : "kuɖa"
+        thu : "yawoɖa"
+        fri : "fiɖa"
+        sat : "memleɖa"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "ŋdi"
+        pm : "ɣetrɔ"
+      }
+      narrow {
+        am : "ŋ"
+        pm : "ɣ"
+      }
+      wide {
+        am : "ŋdi"
+        pm : "ɣetrɔ"
+      }
+    }
+  }
+}

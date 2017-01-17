@@ -1,0 +1,201 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : "."
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "#,##0.00 ¤"
+    percent : "#,##0%"
+  }
+}
+currencies {
+  AUD {
+    symbol : "AU$"
+  }
+  BRL {
+    symbol : "R$"
+  }
+  CAD {
+    symbol : "CA$"
+  }
+  CNY {
+    symbol : "CN¥"
+  }
+  EUR {
+    symbol : "€"
+  }
+  GBP {
+    symbol : "£"
+  }
+  HKD {
+    symbol : "HK$"
+  }
+  ILS {
+    symbol : "₪"
+  }
+  INR {
+    symbol : "₹"
+  }
+  JPY {
+    symbol : "JP¥"
+  }
+  KRW {
+    symbol : "₩"
+  }
+  MXN {
+    symbol : "MX$"
+  }
+  NZD {
+    symbol : "NZ$"
+  }
+  THB {
+    symbol : "฿"
+  }
+  TWD {
+    symbol : "NT$"
+  }
+  USD {
+    symbol : "US$"
+  }
+  VND {
+    symbol : "₫"
+  }
+  XAF {
+    symbol : "FCFA"
+  }
+  XCD {
+    symbol : "EC$"
+  }
+  XOF {
+    symbol : "CFA"
+  }
+  XPF {
+    symbol : "CFPF"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, 'ngày' dd MMMM 'năm' y"
+      long : "'Ngày' dd 'tháng' M 'năm' y"
+      medium : "dd-MM-y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+    datetime {
+      full : "{0} {1}"
+      long : "{0} {1}"
+      medium : "{0} {1}"
+      short : "{0} {1}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "thg 1"
+        2 : "thg 2"
+        3 : "thg 3"
+        4 : "thg 4"
+        5 : "thg 5"
+        6 : "thg 6"
+        7 : "thg 7"
+        8 : "thg 8"
+        9 : "thg 9"
+        10 : "thg 10"
+        11 : "thg 11"
+        12 : "thg 12"
+      }
+      narrow {
+        1 : "1"
+        2 : "2"
+        3 : "3"
+        4 : "4"
+        5 : "5"
+        6 : "6"
+        7 : "7"
+        8 : "8"
+        9 : "9"
+        10 : "10"
+        11 : "11"
+        12 : "12"
+      }
+      wide {
+        1 : "tháng một"
+        2 : "tháng hai"
+        3 : "tháng ba"
+        4 : "tháng tư"
+        5 : "tháng năm"
+        6 : "tháng sáu"
+        7 : "tháng bảy"
+        8 : "tháng tám"
+        9 : "tháng chín"
+        10 : "tháng mười"
+        11 : "tháng mười một"
+        12 : "tháng mười hai"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "CN"
+        mon : "Th 2"
+        tue : "Th 3"
+        wed : "Th 4"
+        thu : "Th 5"
+        fri : "Th 6"
+        sat : "Th 7"
+      }
+      narrow {
+        sun : "CN"
+        mon : "T2"
+        tue : "T3"
+        wed : "T4"
+        thu : "T5"
+        fri : "T6"
+        sat : "T7"
+      }
+      short {
+        sun : "CN"
+        mon : "T2"
+        tue : "T3"
+        wed : "T4"
+        thu : "T5"
+        fri : "T6"
+        sat : "T7"
+      }
+      wide {
+        sun : "Chủ nhật"
+        mon : "Thứ hai"
+        tue : "Thứ ba"
+        wed : "Thứ tư"
+        thu : "Thứ năm"
+        fri : "Thứ sáu"
+        sat : "Thứ bảy"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "SA"
+        pm : "CH"
+      }
+      narrow {
+        am : "SA"
+        pm : "CH"
+      }
+      wide {
+        am : "SA"
+        pm : "CH"
+      }
+    }
+  }
+}

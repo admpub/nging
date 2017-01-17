@@ -1,0 +1,81 @@
+plural : "2B"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "¤#,##0.00"
+    percent : "#,##0%"
+  }
+}
+currencies {
+  ZAR {
+    symbol : "R"
+  }
+}
+datetime {
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Jan"
+        2 : "Feb"
+        3 : "Mat"
+        4 : "Apo"
+        5 : "Mei"
+        6 : "Jun"
+        7 : "Jul"
+        8 : "Ago"
+        9 : "Set"
+        10 : "Okt"
+        11 : "Nof"
+        12 : "Dis"
+      }
+      wide {
+        1 : "Janaware"
+        2 : "Feberware"
+        3 : "Matšhe"
+        4 : "Aporele"
+        5 : "Mei"
+        6 : "June"
+        7 : "Julae"
+        8 : "Agostose"
+        9 : "Setemere"
+        10 : "Oktobore"
+        11 : "Nofemere"
+        12 : "Disemere"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Son"
+        mon : "Mos"
+        tue : "Bed"
+        wed : "Rar"
+        thu : "Ne"
+        fri : "Hla"
+        sat : "Mok"
+      }
+      short {
+        sun : "Son"
+        mon : "Mos"
+        tue : "Bed"
+        wed : "Rar"
+        thu : "Ne"
+        fri : "Hla"
+        sat : "Mok"
+      }
+      wide {
+        sun : "Sontaga"
+        mon : "Mosupalogo"
+        tue : "Labobedi"
+        wed : "Laboraro"
+        thu : "Labone"
+        fri : "Labohlano"
+        sat : "Mokibelo"
+      }
+    }
+  }
+}

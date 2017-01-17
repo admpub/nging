@@ -1,0 +1,126 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  formats {
+    currency : "¤#,##0.00;(¤#,##0.00)"
+  }
+}
+currencies {
+  KES {
+    symbol : "Ksh"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Imb"
+        2 : "Kaw"
+        3 : "Kad"
+        4 : "Kan"
+        5 : "Kas"
+        6 : "Kar"
+        7 : "Mfu"
+        8 : "Wun"
+        9 : "Ike"
+        10 : "Iku"
+        11 : "Imw"
+        12 : "Iwi"
+      }
+      narrow {
+        1 : "I"
+        2 : "K"
+        3 : "K"
+        4 : "K"
+        5 : "K"
+        6 : "K"
+        7 : "M"
+        8 : "W"
+        9 : "I"
+        10 : "I"
+        11 : "I"
+        12 : "I"
+      }
+      wide {
+        1 : "Mori ghwa imbiri"
+        2 : "Mori ghwa kawi"
+        3 : "Mori ghwa kadadu"
+        4 : "Mori ghwa kana"
+        5 : "Mori ghwa kasanu"
+        6 : "Mori ghwa karandadu"
+        7 : "Mori ghwa mfungade"
+        8 : "Mori ghwa wunyanya"
+        9 : "Mori ghwa ikenda"
+        10 : "Mori ghwa ikumi"
+        11 : "Mori ghwa ikumi na imweri"
+        12 : "Mori ghwa ikumi na iwi"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Jum"
+        mon : "Jim"
+        tue : "Kaw"
+        wed : "Kad"
+        thu : "Kan"
+        fri : "Kas"
+        sat : "Ngu"
+      }
+      narrow {
+        sun : "J"
+        mon : "J"
+        tue : "K"
+        wed : "K"
+        thu : "K"
+        fri : "K"
+        sat : "N"
+      }
+      short {
+        sun : "Jum"
+        mon : "Jim"
+        tue : "Kaw"
+        wed : "Kad"
+        thu : "Kan"
+        fri : "Kas"
+        sat : "Ngu"
+      }
+      wide {
+        sun : "Ituku ja jumwa"
+        mon : "Kuramuka jimweri"
+        tue : "Kuramuka kawi"
+        wed : "Kuramuka kadadu"
+        thu : "Kuramuka kana"
+        fri : "Kuramuka kasanu"
+        sat : "Kifula nguwo"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "Luma lwa K"
+        pm : "luma lwa p"
+      }
+      narrow {
+        am : "Luma lwa K"
+        pm : "luma lwa p"
+      }
+      wide {
+        am : "Luma lwa K"
+        pm : "luma lwa p"
+      }
+    }
+  }
+}

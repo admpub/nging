@@ -1,0 +1,127 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "¤#,##0.00;(¤#,##0.00)"
+    percent : "#,##0%"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "d/MM/y"
+    }
+    time {
+      full : "zzzz h:mm:ss a"
+      long : "z h:mm:ss a"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Tiop"
+        2 : "Pɛt"
+        3 : "Duɔ̱ɔ̱"
+        4 : "Guak"
+        5 : "Duä"
+        6 : "Kor"
+        7 : "Pay"
+        8 : "Thoo"
+        9 : "Tɛɛ"
+        10 : "Laa"
+        11 : "Kur"
+        12 : "Tid"
+      }
+      narrow {
+        1 : "T"
+        2 : "P"
+        3 : "D"
+        4 : "G"
+        5 : "D"
+        6 : "K"
+        7 : "P"
+        8 : "T"
+        9 : "T"
+        10 : "L"
+        11 : "K"
+        12 : "T"
+      }
+      wide {
+        1 : "Tiop thar pɛt"
+        2 : "Pɛt"
+        3 : "Duɔ̱ɔ̱ŋ"
+        4 : "Guak"
+        5 : "Duät"
+        6 : "Kornyoot"
+        7 : "Pay yie̱tni"
+        8 : "Tho̱o̱r"
+        9 : "Tɛɛr"
+        10 : "Laath"
+        11 : "Kur"
+        12 : "Tio̱p in di̱i̱t"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Cäŋ"
+        mon : "Jiec"
+        tue : "Rɛw"
+        wed : "Diɔ̱k"
+        thu : "Ŋuaan"
+        fri : "Dhieec"
+        sat : "Bäkɛl"
+      }
+      narrow {
+        sun : "C"
+        mon : "J"
+        tue : "R"
+        wed : "D"
+        thu : "Ŋ"
+        fri : "D"
+        sat : "B"
+      }
+      short {
+        sun : "Cäŋ"
+        mon : "Jiec"
+        tue : "Rɛw"
+        wed : "Diɔ̱k"
+        thu : "Ŋuaan"
+        fri : "Dhieec"
+        sat : "Bäkɛl"
+      }
+      wide {
+        sun : "Cäŋ kuɔth"
+        mon : "Jiec la̱t"
+        tue : "Rɛw lätni"
+        wed : "Diɔ̱k lätni"
+        thu : "Ŋuaan lätni"
+        fri : "Dhieec lätni"
+        sat : "Bäkɛl lätni"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "RW"
+        pm : "TŊ"
+      }
+      narrow {
+        am : "RW"
+        pm : "TŊ"
+      }
+      wide {
+        am : "RW"
+        pm : "TŊ"
+      }
+    }
+  }
+}

@@ -1,0 +1,81 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "¤#,##0.00"
+    percent : "#,##0%"
+  }
+}
+currencies {
+  ZAR {
+    symbol : "R"
+  }
+}
+datetime {
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Jan"
+        2 : "Feb"
+        3 : "Mat"
+        4 : "Epr"
+        5 : "Mey"
+        6 : "Jun"
+        7 : "Jul"
+        8 : "Aga"
+        9 : "Sep"
+        10 : "Okt"
+        11 : "Nov"
+        12 : "Dis"
+      }
+      wide {
+        1 : "Janyuwari"
+        2 : "Februwari"
+        3 : "Matshi"
+        4 : "Epreli"
+        5 : "Meyi"
+        6 : "Juni"
+        7 : "Julayi"
+        8 : "Agasti"
+        9 : "Septemba"
+        10 : "Okthoba"
+        11 : "Novemba"
+        12 : "Disemba"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Caw"
+        mon : "Mvu"
+        tue : "Bin"
+        wed : "Tha"
+        thu : "Sin"
+        fri : "Hla"
+        sat : "Mgq"
+      }
+      short {
+        sun : "Caw"
+        mon : "Mvu"
+        tue : "Bin"
+        wed : "Tha"
+        thu : "Sin"
+        fri : "Hla"
+        sat : "Mgq"
+      }
+      wide {
+        sun : "Cawe"
+        mon : "Mvulo"
+        tue : "Lwesibini"
+        wed : "Lwesithathu"
+        thu : "Lwesine"
+        fri : "Lwesihlanu"
+        sat : "Mgqibelo"
+      }
+    }
+  }
+}

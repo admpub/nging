@@ -1,0 +1,112 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : "’"
+  }
+}
+currencies {
+  JPY {
+    symbol : "¥"
+  }
+  RUB {
+    symbol : "руб"
+  }
+  USD {
+    symbol : "$"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d. MMMM y"
+      long : "d. MMMM y"
+      medium : "d. MMM y"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Jen"
+        2 : "Hor"
+        3 : "Mär"
+        4 : "Abr"
+        5 : "Mei"
+        6 : "Brá"
+        7 : "Hei"
+        8 : "Öig"
+        9 : "Her"
+        10 : "Wím"
+        11 : "Win"
+        12 : "Chr"
+      }
+      narrow {
+        1 : "J"
+        2 : "H"
+        3 : "M"
+        4 : "A"
+        5 : "M"
+        6 : "B"
+        7 : "H"
+        8 : "Ö"
+        9 : "H"
+        10 : "W"
+        11 : "W"
+        12 : "C"
+      }
+      wide {
+        1 : "Jenner"
+        2 : "Hornig"
+        3 : "Märze"
+        4 : "Abrille"
+        5 : "Meije"
+        6 : "Bráčet"
+        7 : "Heiwet"
+        8 : "Öigšte"
+        9 : "Herbštmánet"
+        10 : "Wímánet"
+        11 : "Wintermánet"
+        12 : "Chrištmánet"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Sun"
+        mon : "Män"
+        tue : "Ziš"
+        wed : "Mit"
+        thu : "Fró"
+        fri : "Fri"
+        sat : "Sam"
+      }
+      narrow {
+        sun : "S"
+        mon : "M"
+        tue : "Z"
+        wed : "M"
+        thu : "F"
+        fri : "F"
+        sat : "S"
+      }
+      short {
+        sun : "Sun"
+        mon : "Män"
+        tue : "Ziš"
+        wed : "Mit"
+        thu : "Fró"
+        fri : "Fri"
+        sat : "Sam"
+      }
+      wide {
+        sun : "Sunntag"
+        mon : "Mäntag"
+        tue : "Zištag"
+        wed : "Mittwuč"
+        thu : "Fróntag"
+        fri : "Fritag"
+        sat : "Samštag"
+      }
+    }
+  }
+}

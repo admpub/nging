@@ -1,0 +1,112 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  formats {
+    currency : "#,##0.00¤"
+  }
+}
+currencies {
+  UGX {
+    symbol : "USh"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Jan"
+        2 : "Feb"
+        3 : "Mar"
+        4 : "Apu"
+        5 : "Maa"
+        6 : "Juu"
+        7 : "Jul"
+        8 : "Agu"
+        9 : "Seb"
+        10 : "Oki"
+        11 : "Nov"
+        12 : "Des"
+      }
+      narrow {
+        1 : "J"
+        2 : "F"
+        3 : "M"
+        4 : "A"
+        5 : "M"
+        6 : "J"
+        7 : "J"
+        8 : "A"
+        9 : "S"
+        10 : "O"
+        11 : "N"
+        12 : "D"
+      }
+      wide {
+        1 : "Janwaliyo"
+        2 : "Febwaliyo"
+        3 : "Marisi"
+        4 : "Apuli"
+        5 : "Maayi"
+        6 : "Juuni"
+        7 : "Julaayi"
+        8 : "Agusito"
+        9 : "Sebuttemba"
+        10 : "Okitobba"
+        11 : "Novemba"
+        12 : "Desemba"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Sab"
+        mon : "Bal"
+        tue : "Lw2"
+        wed : "Lw3"
+        thu : "Lw4"
+        fri : "Lw5"
+        sat : "Lw6"
+      }
+      narrow {
+        sun : "S"
+        mon : "B"
+        tue : "L"
+        wed : "L"
+        thu : "L"
+        fri : "L"
+        sat : "L"
+      }
+      short {
+        sun : "Sab"
+        mon : "Bal"
+        tue : "Lw2"
+        wed : "Lw3"
+        thu : "Lw4"
+        fri : "Lw5"
+        sat : "Lw6"
+      }
+      wide {
+        sun : "Sabbiiti"
+        mon : "Balaza"
+        tue : "Lwakubiri"
+        wed : "Lwakusatu"
+        thu : "Lwakuna"
+        fri : "Lwakutaano"
+        sat : "Lwamukaaga"
+      }
+    }
+  }
+}

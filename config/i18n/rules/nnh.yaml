@@ -1,0 +1,106 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : "."
+    percent : "%"
+  }
+}
+currencies {
+  XAF {
+    symbol : "FCFA"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE , 'lyɛ'̌ʼ d 'na' MMMM, y"
+      long : "'lyɛ'̌ʼ d 'na' MMMM, y"
+      medium : "d MMM, y"
+      short : "dd/MM/yy"
+    }
+    time {
+      medium : "HH:mm:ss a"
+    }
+    datetime {
+      full : "{1},{0}"
+      long : "{1}, {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "saŋ tsetsɛ̀ɛ lùm"
+        2 : "saŋ kàg ngwóŋ"
+        3 : "saŋ lepyè shúm"
+        4 : "saŋ cÿó"
+        5 : "saŋ tsɛ̀ɛ cÿó"
+        6 : "saŋ njÿoláʼ"
+        7 : "saŋ tyɛ̀b tyɛ̀b mbʉ̀"
+        8 : "saŋ mbʉ̀ŋ"
+        9 : "saŋ ngwɔ̀ʼ mbÿɛ"
+        10 : "saŋ tàŋa tsetsáʼ"
+        11 : "saŋ mejwoŋó"
+        12 : "saŋ lùm"
+      }
+      wide {
+        1 : "saŋ tsetsɛ̀ɛ lùm"
+        2 : "saŋ kàg ngwóŋ"
+        3 : "saŋ lepyè shúm"
+        4 : "saŋ cÿó"
+        5 : "saŋ tsɛ̀ɛ cÿó"
+        6 : "saŋ njÿoláʼ"
+        7 : "saŋ tyɛ̀b tyɛ̀b mbʉ̀"
+        8 : "saŋ mbʉ̀ŋ"
+        9 : "saŋ ngwɔ̀ʼ mbÿɛ"
+        10 : "saŋ tàŋa tsetsáʼ"
+        11 : "saŋ mejwoŋó"
+        12 : "saŋ lùm"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "lyɛʼɛ́ sẅíŋtè"
+        mon : "mvfò lyɛ̌ʼ"
+        tue : "mbɔ́ɔntè mvfò lyɛ̌ʼ"
+        wed : "tsètsɛ̀ɛ lyɛ̌ʼ"
+        thu : "mbɔ́ɔntè tsetsɛ̀ɛ lyɛ̌ʼ"
+        fri : "mvfò màga lyɛ̌ʼ"
+        sat : "màga lyɛ̌ʼ"
+      }
+      short {
+        sun : "lyɛʼɛ́ sẅíŋtè"
+        mon : "mvfò lyɛ̌ʼ"
+        tue : "mbɔ́ɔntè mvfò lyɛ̌ʼ"
+        wed : "tsètsɛ̀ɛ lyɛ̌ʼ"
+        thu : "mbɔ́ɔntè tsetsɛ̀ɛ lyɛ̌ʼ"
+        fri : "mvfò màga lyɛ̌ʼ"
+        sat : "màga lyɛ̌ʼ"
+      }
+      wide {
+        sun : "lyɛʼɛ́ sẅíŋtè"
+        mon : "mvfò lyɛ̌ʼ"
+        tue : "mbɔ́ɔntè mvfò lyɛ̌ʼ"
+        wed : "tsètsɛ̀ɛ lyɛ̌ʼ"
+        thu : "mbɔ́ɔntè tsetsɛ̀ɛ lyɛ̌ʼ"
+        fri : "mvfò màga lyɛ̌ʼ"
+        sat : "màga lyɛ̌ʼ"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "mbaʼámbaʼ"
+        pm : "ncwònzém"
+      }
+      narrow {
+        am : "mbaʼámbaʼ"
+        pm : "ncwònzém"
+      }
+      wide {
+        am : "mbaʼámbaʼ"
+        pm : "ncwònzém"
+      }
+    }
+  }
+}

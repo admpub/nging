@@ -1,0 +1,127 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : "."
+    group : " "
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "#,##0.00¤"
+    percent : "#,##0%"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "d/M/y"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Žan"
+        2 : "Fee"
+        3 : "Mar"
+        4 : "Awi"
+        5 : "Me"
+        6 : "Žuw"
+        7 : "Žuy"
+        8 : "Ut"
+        9 : "Sek"
+        10 : "Okt"
+        11 : "Noo"
+        12 : "Dee"
+      }
+      narrow {
+        1 : "Ž"
+        2 : "F"
+        3 : "M"
+        4 : "A"
+        5 : "M"
+        6 : "Ž"
+        7 : "Ž"
+        8 : "U"
+        9 : "S"
+        10 : "O"
+        11 : "N"
+        12 : "D"
+      }
+      wide {
+        1 : "Žanwiye"
+        2 : "Feewiriye"
+        3 : "Marsi"
+        4 : "Awiril"
+        5 : "Me"
+        6 : "Žuweŋ"
+        7 : "Žuyye"
+        8 : "Ut"
+        9 : "Sektanbur"
+        10 : "Oktoobur"
+        11 : "Noowanbur"
+        12 : "Deesanbur"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Alh"
+        mon : "Ati"
+        tue : "Ata"
+        wed : "Ala"
+        thu : "Alm"
+        fri : "Alz"
+        sat : "Asi"
+      }
+      narrow {
+        sun : "H"
+        mon : "T"
+        tue : "T"
+        wed : "L"
+        thu : "L"
+        fri : "L"
+        sat : "S"
+      }
+      short {
+        sun : "Alh"
+        mon : "Ati"
+        tue : "Ata"
+        wed : "Ala"
+        thu : "Alm"
+        fri : "Alz"
+        sat : "Asi"
+      }
+      wide {
+        sun : "Alhadi"
+        mon : "Atinni"
+        tue : "Atalaata"
+        wed : "Alarba"
+        thu : "Alhamiisa"
+        fri : "Alzuma"
+        sat : "Asibti"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "Subbaahi"
+        pm : "Zaarikay b"
+      }
+      narrow {
+        am : "Subbaahi"
+        pm : "Zaarikay b"
+      }
+      wide {
+        am : "Subbaahi"
+        pm : "Zaarikay b"
+      }
+    }
+  }
+}

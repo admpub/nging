@@ -1,0 +1,112 @@
+plural : "2B"
+direction : "LTR"
+numbers {
+  symbols {
+    group : " "
+  }
+}
+currencies {
+  MUR {
+    symbol : "Rs"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM, y"
+      short : "d/M/y"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "zan"
+        2 : "fev"
+        3 : "mar"
+        4 : "avr"
+        5 : "me"
+        6 : "zin"
+        7 : "zil"
+        8 : "out"
+        9 : "sep"
+        10 : "okt"
+        11 : "nov"
+        12 : "des"
+      }
+      narrow {
+        1 : "z"
+        2 : "f"
+        3 : "m"
+        4 : "a"
+        5 : "m"
+        6 : "z"
+        7 : "z"
+        8 : "o"
+        9 : "s"
+        10 : "o"
+        11 : "n"
+        12 : "d"
+      }
+      wide {
+        1 : "zanvie"
+        2 : "fevriye"
+        3 : "mars"
+        4 : "avril"
+        5 : "me"
+        6 : "zin"
+        7 : "zilye"
+        8 : "out"
+        9 : "septam"
+        10 : "oktob"
+        11 : "novam"
+        12 : "desam"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "dim"
+        mon : "lin"
+        tue : "mar"
+        wed : "mer"
+        thu : "ze"
+        fri : "van"
+        sat : "sam"
+      }
+      narrow {
+        sun : "d"
+        mon : "l"
+        tue : "m"
+        wed : "m"
+        thu : "z"
+        fri : "v"
+        sat : "s"
+      }
+      short {
+        sun : "dim"
+        mon : "lin"
+        tue : "mar"
+        wed : "mer"
+        thu : "ze"
+        fri : "van"
+        sat : "sam"
+      }
+      wide {
+        sun : "dimans"
+        mon : "lindi"
+        tue : "mardi"
+        wed : "merkredi"
+        thu : "zedi"
+        fri : "vandredi"
+        sat : "samdi"
+      }
+    }
+  }
+}

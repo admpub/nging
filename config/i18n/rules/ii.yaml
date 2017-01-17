@@ -1,0 +1,99 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+  }
+}
+currencies {
+  CNY {
+    symbol : "¥"
+  }
+}
+datetime {
+  formatNames {
+    months {
+      abbreviated {
+        1 : "1"
+        2 : "2"
+        3 : "3"
+        4 : "4"
+        5 : "5"
+        6 : "6"
+        7 : "7"
+        8 : "8"
+        9 : "9"
+        10 : "10"
+        11 : "11"
+        12 : "12"
+      }
+      wide {
+        1 : "ꋍꆪ"
+        2 : "ꑍꆪ"
+        3 : "ꌕꆪ"
+        4 : "ꇖꆪ"
+        5 : "ꉬꆪ"
+        6 : "ꃘꆪ"
+        7 : "ꏃꆪ"
+        8 : "ꉆꆪ"
+        9 : "ꈬꆪ"
+        10 : "ꊰꆪ"
+        11 : "ꊰꊪꆪ"
+        12 : "ꊰꑋꆪ"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "ꑭꆏ"
+        mon : "ꆏꋍ"
+        tue : "ꆏꑍ"
+        wed : "ꆏꌕ"
+        thu : "ꆏꇖ"
+        fri : "ꆏꉬ"
+        sat : "ꆏꃘ"
+      }
+      narrow {
+        sun : "ꆏ"
+        mon : "ꋍ"
+        tue : "ꑍ"
+        wed : "ꌕ"
+        thu : "ꇖ"
+        fri : "ꉬ"
+        sat : "ꃘ"
+      }
+      short {
+        sun : "ꑭꆏ"
+        mon : "ꆏꋍ"
+        tue : "ꆏꑍ"
+        wed : "ꆏꌕ"
+        thu : "ꆏꇖ"
+        fri : "ꆏꉬ"
+        sat : "ꆏꃘ"
+      }
+      wide {
+        sun : "ꑭꆏꑍ"
+        mon : "ꆏꊂꋍ"
+        tue : "ꆏꊂꑍ"
+        wed : "ꆏꊂꌕ"
+        thu : "ꆏꊂꇖ"
+        fri : "ꆏꊂꉬ"
+        sat : "ꆏꊂꃘ"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "ꎸꄑ"
+        pm : "ꁯꋒ"
+      }
+      narrow {
+        am : "ꎸꄑ"
+        pm : "ꁯꋒ"
+      }
+      wide {
+        am : "ꎸꄑ"
+        pm : "ꁯꋒ"
+      }
+    }
+  }
+}

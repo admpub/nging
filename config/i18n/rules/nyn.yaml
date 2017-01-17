@@ -1,0 +1,112 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  formats {
+    currency : "¤#,##0.00;-#,##0.00¤"
+  }
+}
+currencies {
+  UGX {
+    symbol : "USh"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "KBZ"
+        2 : "KBR"
+        3 : "KST"
+        4 : "KKN"
+        5 : "KTN"
+        6 : "KMK"
+        7 : "KMS"
+        8 : "KMN"
+        9 : "KMW"
+        10 : "KKM"
+        11 : "KNK"
+        12 : "KNB"
+      }
+      narrow {
+        1 : "J"
+        2 : "F"
+        3 : "M"
+        4 : "A"
+        5 : "M"
+        6 : "J"
+        7 : "J"
+        8 : "A"
+        9 : "S"
+        10 : "O"
+        11 : "N"
+        12 : "D"
+      }
+      wide {
+        1 : "Okwokubanza"
+        2 : "Okwakabiri"
+        3 : "Okwakashatu"
+        4 : "Okwakana"
+        5 : "Okwakataana"
+        6 : "Okwamukaaga"
+        7 : "Okwamushanju"
+        8 : "Okwamunaana"
+        9 : "Okwamwenda"
+        10 : "Okwaikumi"
+        11 : "Okwaikumi na kumwe"
+        12 : "Okwaikumi na ibiri"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "SAN"
+        mon : "ORK"
+        tue : "OKB"
+        wed : "OKS"
+        thu : "OKN"
+        fri : "OKT"
+        sat : "OMK"
+      }
+      narrow {
+        sun : "S"
+        mon : "K"
+        tue : "R"
+        wed : "S"
+        thu : "N"
+        fri : "T"
+        sat : "M"
+      }
+      short {
+        sun : "SAN"
+        mon : "ORK"
+        tue : "OKB"
+        wed : "OKS"
+        thu : "OKN"
+        fri : "OKT"
+        sat : "OMK"
+      }
+      wide {
+        sun : "Sande"
+        mon : "Orwokubanza"
+        tue : "Orwakabiri"
+        wed : "Orwakashatu"
+        thu : "Orwakana"
+        fri : "Orwakataano"
+        sat : "Orwamukaaga"
+      }
+    }
+  }
+}

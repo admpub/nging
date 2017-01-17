@@ -1,0 +1,96 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+  }
+  formats {
+    currency : "#,##0.00 ¤"
+  }
+}
+currencies {
+  KZT {
+    symbol : "₸"
+  }
+  RUB {
+    symbol : "руб."
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y 'ж'."
+      long : "d MMMM y 'ж'."
+      medium : "dd.MM.y"
+      short : "dd.MM.yy"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "қаң."
+        2 : "ақп."
+        3 : "нау."
+        4 : "сәу."
+        5 : "мам."
+        6 : "мау."
+        7 : "шіл."
+        8 : "там."
+        9 : "қыр."
+        10 : "қаз."
+        11 : "қар."
+        12 : "желт."
+      }
+      wide {
+        1 : "қаңтар"
+        2 : "ақпан"
+        3 : "наурыз"
+        4 : "сәуір"
+        5 : "мамыр"
+        6 : "маусым"
+        7 : "шілде"
+        8 : "тамыз"
+        9 : "қыркүйек"
+        10 : "қазан"
+        11 : "қараша"
+        12 : "желтоқсан"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "жс."
+        mon : "дс."
+        tue : "сс."
+        wed : "ср."
+        thu : "бс."
+        fri : "жм."
+        sat : "сһ."
+      }
+      short {
+        sun : "жс."
+        mon : "дс."
+        tue : "сс."
+        wed : "ср."
+        thu : "бс."
+        fri : "жм."
+        sat : "сһ."
+      }
+      wide {
+        sun : "жексені"
+        mon : "дуйсенбі"
+        tue : "сейсенбі"
+        wed : "сәренбі"
+        thu : "бейсенбі"
+        fri : "жұма"
+        sat : "сенбі"
+      }
+    }
+  }
+}

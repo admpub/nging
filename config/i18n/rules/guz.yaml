@@ -1,0 +1,126 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  formats {
+    currency : "¤#,##0.00;(¤#,##0.00)"
+  }
+}
+currencies {
+  KES {
+    symbol : "Ksh"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Can"
+        2 : "Feb"
+        3 : "Mac"
+        4 : "Apr"
+        5 : "Mei"
+        6 : "Jun"
+        7 : "Cul"
+        8 : "Agt"
+        9 : "Sep"
+        10 : "Okt"
+        11 : "Nob"
+        12 : "Dis"
+      }
+      narrow {
+        1 : "C"
+        2 : "F"
+        3 : "M"
+        4 : "A"
+        5 : "M"
+        6 : "J"
+        7 : "C"
+        8 : "A"
+        9 : "S"
+        10 : "O"
+        11 : "N"
+        12 : "D"
+      }
+      wide {
+        1 : "Chanuari"
+        2 : "Feburari"
+        3 : "Machi"
+        4 : "Apiriri"
+        5 : "Mei"
+        6 : "Juni"
+        7 : "Chulai"
+        8 : "Agosti"
+        9 : "Septemba"
+        10 : "Okitoba"
+        11 : "Nobemba"
+        12 : "Disemba"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Cpr"
+        mon : "Ctt"
+        tue : "Cmn"
+        wed : "Cmt"
+        thu : "Ars"
+        fri : "Icm"
+        sat : "Est"
+      }
+      narrow {
+        sun : "C"
+        mon : "C"
+        tue : "C"
+        wed : "C"
+        thu : "A"
+        fri : "I"
+        sat : "E"
+      }
+      short {
+        sun : "Cpr"
+        mon : "Ctt"
+        tue : "Cmn"
+        wed : "Cmt"
+        thu : "Ars"
+        fri : "Icm"
+        sat : "Est"
+      }
+      wide {
+        sun : "Chumapiri"
+        mon : "Chumatato"
+        tue : "Chumaine"
+        wed : "Chumatano"
+        thu : "Aramisi"
+        fri : "Ichuma"
+        sat : "Esabato"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "Ma/Mo"
+        pm : "Mambia/Mog"
+      }
+      narrow {
+        am : "Ma/Mo"
+        pm : "Mambia/Mog"
+      }
+      wide {
+        am : "Ma/Mo"
+        pm : "Mambia/Mog"
+      }
+    }
+  }
+}

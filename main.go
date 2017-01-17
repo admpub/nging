@@ -30,6 +30,7 @@ import (
 	"github.com/webx-top/echo/handler/mvc/events"
 	"github.com/webx-top/echo/middleware"
 	"github.com/webx-top/echo/middleware/bindata"
+	"github.com/webx-top/echo/middleware/language"
 	"github.com/webx-top/echo/middleware/render"
 	"github.com/webx-top/echo/middleware/session"
 	"github.com/webx-top/echo/middleware/tplfunc"
@@ -91,6 +92,9 @@ func main() {
 			Path: "/public/",
 		}))
 	}
+
+	// 启用多语言支持
+	e.Use(language.New(&config.DefaultConfig.Language).Middleware())
 
 	// 启用session
 	e.Use(session.Middleware(config.SessionOptions))

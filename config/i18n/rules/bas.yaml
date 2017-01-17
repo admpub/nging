@@ -1,0 +1,127 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "#,##0.00 ¤"
+    percent : "#,##0 %"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM, y"
+      short : "d/M/y"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "kɔn"
+        2 : "mac"
+        3 : "mat"
+        4 : "mto"
+        5 : "mpu"
+        6 : "hil"
+        7 : "nje"
+        8 : "hik"
+        9 : "dip"
+        10 : "bio"
+        11 : "may"
+        12 : "liɓ"
+      }
+      narrow {
+        1 : "k"
+        2 : "m"
+        3 : "m"
+        4 : "m"
+        5 : "m"
+        6 : "h"
+        7 : "n"
+        8 : "h"
+        9 : "d"
+        10 : "b"
+        11 : "m"
+        12 : "l"
+      }
+      wide {
+        1 : "Kɔndɔŋ"
+        2 : "Màcɛ̂l"
+        3 : "Màtùmb"
+        4 : "Màtop"
+        5 : "M̀puyɛ"
+        6 : "Hìlòndɛ̀"
+        7 : "Njèbà"
+        8 : "Hìkaŋ"
+        9 : "Dìpɔ̀s"
+        10 : "Bìòôm"
+        11 : "Màyɛsèp"
+        12 : "Lìbuy li ńyèe"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "nɔy"
+        mon : "nja"
+        tue : "uum"
+        wed : "ŋge"
+        thu : "mbɔ"
+        fri : "kɔɔ"
+        sat : "jon"
+      }
+      narrow {
+        sun : "n"
+        mon : "n"
+        tue : "u"
+        wed : "ŋ"
+        thu : "m"
+        fri : "k"
+        sat : "j"
+      }
+      short {
+        sun : "nɔy"
+        mon : "nja"
+        tue : "uum"
+        wed : "ŋge"
+        thu : "mbɔ"
+        fri : "kɔɔ"
+        sat : "jon"
+      }
+      wide {
+        sun : "ŋgwà nɔ̂y"
+        mon : "ŋgwà njaŋgumba"
+        tue : "ŋgwà ûm"
+        wed : "ŋgwà ŋgê"
+        thu : "ŋgwà mbɔk"
+        fri : "ŋgwà kɔɔ"
+        sat : "ŋgwà jôn"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "I bikɛ̂glà"
+        pm : "I ɓugajɔp"
+      }
+      narrow {
+        am : "I bikɛ̂glà"
+        pm : "I ɓugajɔp"
+      }
+      wide {
+        am : "I bikɛ̂glà"
+        pm : "I ɓugajɔp"
+      }
+    }
+  }
+}

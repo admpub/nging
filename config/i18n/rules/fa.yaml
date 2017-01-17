@@ -1,0 +1,141 @@
+plural : "1"
+direction : "RTL"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+    negative : "−"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "‎¤#,##0.00;‎(¤#,##0.00)"
+    percent : "#,##0%"
+  }
+}
+currencies {
+  IRR {
+    symbol : "﷼"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "y/M/d"
+    }
+    time {
+      full : "H:mm:ss (zzzz)"
+      long : "H:mm:ss (z)"
+      medium : "H:mm:ss"
+      short : "H:mm"
+    }
+    datetime {
+      full : "{1}، ساعت {0}"
+      long : "{1}، ساعت {0}"
+      medium : "{1}،‏ {0}"
+      short : "{1}،‏ {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "ژانویهٔ"
+        2 : "فوریهٔ"
+        3 : "مارس"
+        4 : "آوریل"
+        5 : "مهٔ"
+        6 : "ژوئن"
+        7 : "ژوئیهٔ"
+        8 : "اوت"
+        9 : "سپتامبر"
+        10 : "اکتبر"
+        11 : "نوامبر"
+        12 : "دسامبر"
+      }
+      narrow {
+        1 : "ژ"
+        2 : "ف"
+        3 : "م"
+        4 : "آ"
+        5 : "م"
+        6 : "ژ"
+        7 : "ژ"
+        8 : "ا"
+        9 : "س"
+        10 : "ا"
+        11 : "ن"
+        12 : "د"
+      }
+      wide {
+        1 : "ژانویهٔ"
+        2 : "فوریهٔ"
+        3 : "مارس"
+        4 : "آوریل"
+        5 : "مهٔ"
+        6 : "ژوئن"
+        7 : "ژوئیهٔ"
+        8 : "اوت"
+        9 : "سپتامبر"
+        10 : "اکتبر"
+        11 : "نوامبر"
+        12 : "دسامبر"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "یکشنبه"
+        mon : "دوشنبه"
+        tue : "سه‌شنبه"
+        wed : "چهارشنبه"
+        thu : "پنجشنبه"
+        fri : "جمعه"
+        sat : "شنبه"
+      }
+      narrow {
+        sun : "ی"
+        mon : "د"
+        tue : "س"
+        wed : "چ"
+        thu : "پ"
+        fri : "ج"
+        sat : "ش"
+      }
+      short {
+        sun : "۱ش"
+        mon : "۲ش"
+        tue : "۳ش"
+        wed : "۴ش"
+        thu : "۵ش"
+        fri : "ج"
+        sat : "ش"
+      }
+      wide {
+        sun : "یکشنبه"
+        mon : "دوشنبه"
+        tue : "سه‌شنبه"
+        wed : "چهارشنبه"
+        thu : "پنجشنبه"
+        fri : "جمعه"
+        sat : "شنبه"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "قبل‌ازظهر"
+        pm : "بعدازظهر"
+      }
+      narrow {
+        am : "قبل‌ازظهر"
+        pm : "بعدازظهر"
+      }
+      wide {
+        am : "قبل‌ازظهر"
+        pm : "بعدازظهر"
+      }
+    }
+  }
+}

@@ -1,0 +1,126 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  formats {
+    currency : "¤#,##0.00;(¤#,##0.00)"
+  }
+}
+currencies {
+  KES {
+    symbol : "Ksh"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Mbe"
+        2 : "Kai"
+        3 : "Kat"
+        4 : "Kan"
+        5 : "Gat"
+        6 : "Gan"
+        7 : "Mug"
+        8 : "Knn"
+        9 : "Ken"
+        10 : "Iku"
+        11 : "Imw"
+        12 : "Igi"
+      }
+      narrow {
+        1 : "M"
+        2 : "K"
+        3 : "K"
+        4 : "K"
+        5 : "G"
+        6 : "G"
+        7 : "M"
+        8 : "K"
+        9 : "K"
+        10 : "I"
+        11 : "I"
+        12 : "I"
+      }
+      wide {
+        1 : "Mweri wa mbere"
+        2 : "Mweri wa kaĩri"
+        3 : "Mweri wa kathatũ"
+        4 : "Mweri wa kana"
+        5 : "Mweri wa gatano"
+        6 : "Mweri wa gatantatũ"
+        7 : "Mweri wa mũgwanja"
+        8 : "Mweri wa kanana"
+        9 : "Mweri wa kenda"
+        10 : "Mweri wa ikũmi"
+        11 : "Mweri wa ikũmi na ũmwe"
+        12 : "Mweri wa ikũmi na Kaĩrĩ"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Kma"
+        mon : "Tat"
+        tue : "Ine"
+        wed : "Tan"
+        thu : "Arm"
+        fri : "Maa"
+        sat : "NMM"
+      }
+      narrow {
+        sun : "K"
+        mon : "N"
+        tue : "N"
+        wed : "N"
+        thu : "A"
+        fri : "M"
+        sat : "N"
+      }
+      short {
+        sun : "Kma"
+        mon : "Tat"
+        tue : "Ine"
+        wed : "Tan"
+        thu : "Arm"
+        fri : "Maa"
+        sat : "NMM"
+      }
+      wide {
+        sun : "Kiumia"
+        mon : "Njumatatu"
+        tue : "Njumaine"
+        wed : "Njumatano"
+        thu : "Aramithi"
+        fri : "Njumaa"
+        sat : "NJumamothii"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "KI"
+        pm : "UT"
+      }
+      narrow {
+        am : "KI"
+        pm : "UT"
+      }
+      wide {
+        am : "KI"
+        pm : "UT"
+      }
+    }
+  }
+}

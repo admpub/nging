@@ -1,0 +1,135 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "¤#,##0.00;(¤#,##0.00)"
+    percent : "#,##0%"
+  }
+}
+currencies {
+  USD {
+    symbol : "$"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, MMMM d, y"
+      long : "MMMM d, y"
+      medium : "MMM d, y"
+      short : "M/d/yy"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "ᎤᏃ"
+        2 : "ᎧᎦ"
+        3 : "ᎠᏅ"
+        4 : "ᎧᏬ"
+        5 : "ᎠᏂ"
+        6 : "ᏕᎭ"
+        7 : "ᎫᏰ"
+        8 : "ᎦᎶ"
+        9 : "ᏚᎵ"
+        10 : "ᏚᏂ"
+        11 : "ᏅᏓ"
+        12 : "ᎤᏍ"
+      }
+      narrow {
+        1 : "Ꭴ"
+        2 : "Ꭷ"
+        3 : "Ꭰ"
+        4 : "Ꭷ"
+        5 : "Ꭰ"
+        6 : "Ꮥ"
+        7 : "Ꭻ"
+        8 : "Ꭶ"
+        9 : "Ꮪ"
+        10 : "Ꮪ"
+        11 : "Ꮕ"
+        12 : "Ꭴ"
+      }
+      wide {
+        1 : "ᎤᏃᎸᏔᏅ"
+        2 : "ᎧᎦᎵ"
+        3 : "ᎠᏅᏱ"
+        4 : "ᎧᏬᏂ"
+        5 : "ᎠᏂᏍᎬᏘ"
+        6 : "ᏕᎭᎷᏱ"
+        7 : "ᎫᏰᏉᏂ"
+        8 : "ᎦᎶᏂ"
+        9 : "ᏚᎵᏍᏗ"
+        10 : "ᏚᏂᏅᏗ"
+        11 : "ᏅᏓᏕᏆ"
+        12 : "ᎤᏍᎩᏱ"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "ᏆᏍᎬ"
+        mon : "ᏉᏅᎯ"
+        tue : "ᏔᎵᏁ"
+        wed : "ᏦᎢᏁ"
+        thu : "ᏅᎩᏁ"
+        fri : "ᏧᎾᎩ"
+        sat : "ᏈᏕᎾ"
+      }
+      narrow {
+        sun : "Ꮖ"
+        mon : "Ꮙ"
+        tue : "Ꮤ"
+        wed : "Ꮶ"
+        thu : "Ꮕ"
+        fri : "Ꮷ"
+        sat : "Ꭴ"
+      }
+      short {
+        sun : "ᏆᏍᎬ"
+        mon : "ᏉᏅᎯ"
+        tue : "ᏔᎵᏁ"
+        wed : "ᏦᎢᏁ"
+        thu : "ᏅᎩᏁ"
+        fri : "ᏧᎾᎩ"
+        sat : "ᏈᏕᎾ"
+      }
+      wide {
+        sun : "ᎤᎾᏙᏓᏆᏍᎬ"
+        mon : "ᎤᎾᏙᏓᏉᏅᎯ"
+        tue : "ᏔᎵᏁᎢᎦ"
+        wed : "ᏦᎢᏁᎢᎦ"
+        thu : "ᏅᎩᏁᎢᎦ"
+        fri : "ᏧᎾᎩᎶᏍᏗ"
+        sat : "ᎤᎾᏙᏓᏈᏕᎾ"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "ᏌᎾᎴ"
+        pm : "ᏒᎯᏱᎢᏗᏢ"
+      }
+      narrow {
+        am : "ᏌᎾᎴ"
+        pm : "ᏒᎯᏱᎢᏗᏢ"
+      }
+      wide {
+        am : "ᏌᎾᎴ"
+        pm : "ᏒᎯᏱᎢᏗᏢ"
+      }
+    }
+  }
+}

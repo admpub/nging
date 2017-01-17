@@ -20,6 +20,8 @@ package handler
 import (
 	"errors"
 
+	"strings"
+
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/middleware"
 	"github.com/webx-top/echo"
@@ -65,4 +67,13 @@ func Login(ctx echo.Context) error {
 func Logout(ctx echo.Context) error {
 	ctx.Session().Delete(`user`)
 	return ctx.Redirect(`/login`)
+}
+
+func Donation(ctx echo.Context) error {
+	var langSuffix string
+	lang := strings.ToLower(ctx.Lang())
+	if strings.HasPrefix(lang, `zh`) {
+		langSuffix = `_zh-CN`
+	}
+	return ctx.Redirect(`/public/donation` + langSuffix + `.html`)
 }

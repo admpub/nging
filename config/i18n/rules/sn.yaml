@@ -1,0 +1,107 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  formats {
+    currency : "¤#,##0.00;(¤#,##0.00)"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Ndi"
+        2 : "Kuk"
+        3 : "Kur"
+        4 : "Kub"
+        5 : "Chv"
+        6 : "Chk"
+        7 : "Chg"
+        8 : "Nya"
+        9 : "Gun"
+        10 : "Gum"
+        11 : "Mb"
+        12 : "Zvi"
+      }
+      narrow {
+        1 : "N"
+        2 : "K"
+        3 : "K"
+        4 : "K"
+        5 : "C"
+        6 : "C"
+        7 : "C"
+        8 : "N"
+        9 : "G"
+        10 : "G"
+        11 : "M"
+        12 : "Z"
+      }
+      wide {
+        1 : "Ndira"
+        2 : "Kukadzi"
+        3 : "Kurume"
+        4 : "Kubvumbi"
+        5 : "Chivabvu"
+        6 : "Chikumi"
+        7 : "Chikunguru"
+        8 : "Nyamavhuvhu"
+        9 : "Gunyana"
+        10 : "Gumiguru"
+        11 : "Mbudzi"
+        12 : "Zvita"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Svo"
+        mon : "Muv"
+        tue : "Chip"
+        wed : "Chit"
+        thu : "Chin"
+        fri : "Chis"
+        sat : "Mug"
+      }
+      narrow {
+        sun : "S"
+        mon : "M"
+        tue : "C"
+        wed : "C"
+        thu : "C"
+        fri : "C"
+        sat : "M"
+      }
+      short {
+        sun : "Svo"
+        mon : "Muv"
+        tue : "Chip"
+        wed : "Chit"
+        thu : "Chin"
+        fri : "Chis"
+        sat : "Mug"
+      }
+      wide {
+        sun : "Svondo"
+        mon : "Muvhuro"
+        tue : "Chipiri"
+        wed : "Chitatu"
+        thu : "China"
+        fri : "Chishanu"
+        sat : "Mugovera"
+      }
+    }
+  }
+}

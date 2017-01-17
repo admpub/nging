@@ -1,0 +1,201 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "¤#,##0.00;(¤#,##0.00)"
+    percent : "#,##0%"
+  }
+}
+currencies {
+  AUD {
+    symbol : "AU$"
+  }
+  BRL {
+    symbol : "R$"
+  }
+  CAD {
+    symbol : "CA$"
+  }
+  CNY {
+    symbol : "CN¥"
+  }
+  EUR {
+    symbol : "€"
+  }
+  GBP {
+    symbol : "£"
+  }
+  HKD {
+    symbol : "HK$"
+  }
+  ILS {
+    symbol : "₪"
+  }
+  INR {
+    symbol : "₹"
+  }
+  JPY {
+    symbol : "¥"
+  }
+  KRW {
+    symbol : "₩"
+  }
+  MXN {
+    symbol : "MX$"
+  }
+  NZD {
+    symbol : "NZ$"
+  }
+  THB {
+    symbol : "฿"
+  }
+  TWD {
+    symbol : "NT$"
+  }
+  USD {
+    symbol : "US$"
+  }
+  VND {
+    symbol : "₫"
+  }
+  XAF {
+    symbol : "FCFA"
+  }
+  XCD {
+    symbol : "EC$"
+  }
+  XOF {
+    symbol : "CFA"
+  }
+  XPF {
+    symbol : "CFPF"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEEที่ d MMMM G y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "d/M/yy"
+    }
+    time {
+      full : "H นาฬิกา mm นาที ss วินาที zzzz"
+      long : "H นาฬิกา mm นาที ss วินาที z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+    datetime {
+      full : "{1}, {0}"
+      long : "{1}, {0}"
+      medium : "{1}, {0}"
+      short : "{1}, {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "ม.ค."
+        2 : "ก.พ."
+        3 : "มี.ค."
+        4 : "เม.ย."
+        5 : "พ.ค."
+        6 : "มิ.ย."
+        7 : "ก.ค."
+        8 : "ส.ค."
+        9 : "ก.ย."
+        10 : "ต.ค."
+        11 : "พ.ย."
+        12 : "ธ.ค."
+      }
+      narrow {
+        1 : "ม.ค."
+        2 : "ก.พ."
+        3 : "มี.ค."
+        4 : "เม.ย."
+        5 : "พ.ค."
+        6 : "มิ.ย"
+        7 : "ก.ค."
+        8 : "ส.ค."
+        9 : "ก.ย."
+        10 : "ต.ค."
+        11 : "พ.ย."
+        12 : "ธ.ค."
+      }
+      wide {
+        1 : "มกราคม"
+        2 : "กุมภาพันธ์"
+        3 : "มีนาคม"
+        4 : "เมษายน"
+        5 : "พฤษภาคม"
+        6 : "มิถุนายน"
+        7 : "กรกฎาคม"
+        8 : "สิงหาคม"
+        9 : "กันยายน"
+        10 : "ตุลาคม"
+        11 : "พฤศจิกายน"
+        12 : "ธันวาคม"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "อา."
+        mon : "จ."
+        tue : "อ."
+        wed : "พ."
+        thu : "พฤ."
+        fri : "ศ."
+        sat : "ส."
+      }
+      narrow {
+        sun : "อา."
+        mon : "จ."
+        tue : "อ."
+        wed : "พ."
+        thu : "พฤ."
+        fri : "ศ."
+        sat : "ส."
+      }
+      short {
+        sun : "อา."
+        mon : "จ."
+        tue : "อ."
+        wed : "พ."
+        thu : "พฤ."
+        fri : "ศ."
+        sat : "ส."
+      }
+      wide {
+        sun : "วันอาทิตย์"
+        mon : "วันจันทร์"
+        tue : "วันอังคาร"
+        wed : "วันพุธ"
+        thu : "วันพฤหัสบดี"
+        fri : "วันศุกร์"
+        sat : "วันเสาร์"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "ก่อนเที่ยง"
+        pm : "หลังเที่ยง"
+      }
+      narrow {
+        am : "ก่อนเที่ยง"
+        pm : "หลังเที่ยง"
+      }
+      wide {
+        am : "ก่อนเที่ยง"
+        pm : "หลังเที่ยง"
+      }
+    }
+  }
+}

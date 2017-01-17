@@ -1,0 +1,94 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "¤#,##0.00;(¤#,##0.00)"
+  }
+}
+currencies {
+  LRD {
+    symbol : "$"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "ꖨꕪꖃ ꔞꕮ"
+        2 : "ꕒꕡꖝꖕ"
+        3 : "ꕾꖺ"
+        4 : "ꖢꖕ"
+        5 : "ꖑꕱ"
+        6 : "6"
+        7 : "7"
+        8 : "ꗛꔕ"
+        9 : "ꕢꕌ"
+        10 : "ꕭꖃ"
+        11 : "ꔞꘋꕔꕿ ꕸꖃꗏ"
+        12 : "ꖨꕪꕱ ꗏꕮ"
+      }
+      wide {
+        1 : "ꖨꕪꖃ ꔞꕮ"
+        2 : "ꕒꕡꖝꖕ"
+        3 : "ꕾꖺ"
+        4 : "ꖢꖕ"
+        5 : "ꖑꕱ"
+        6 : "6"
+        7 : "7"
+        8 : "ꗛꔕ"
+        9 : "ꕢꕌ"
+        10 : "ꕭꖃ"
+        11 : "ꔞꘋꕔꕿ ꕸꖃꗏ"
+        12 : "ꖨꕪꕱ ꗏꕮ"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "ꕞꕌꔵ"
+        mon : "ꗳꗡꘉ"
+        tue : "ꕚꕞꕚ"
+        wed : "ꕉꕞꕒ"
+        thu : "ꕉꔤꕆꕢ"
+        fri : "ꕉꔤꕀꕮ"
+        sat : "ꔻꔬꔳ"
+      }
+      short {
+        sun : "ꕞꕌꔵ"
+        mon : "ꗳꗡꘉ"
+        tue : "ꕚꕞꕚ"
+        wed : "ꕉꕞꕒ"
+        thu : "ꕉꔤꕆꕢ"
+        fri : "ꕉꔤꕀꕮ"
+        sat : "ꔻꔬꔳ"
+      }
+      wide {
+        sun : "ꕞꕌꔵ"
+        mon : "ꗳꗡꘉ"
+        tue : "ꕚꕞꕚ"
+        wed : "ꕉꕞꕒ"
+        thu : "ꕉꔤꕆꕢ"
+        fri : "ꕉꔤꕀꕮ"
+        sat : "ꔻꔬꔳ"
+      }
+    }
+  }
+}

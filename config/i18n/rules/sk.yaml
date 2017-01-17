@@ -1,0 +1,201 @@
+plural : "3E"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "#,##0.00 ¤"
+    percent : "#,##0 %"
+  }
+}
+currencies {
+  AUD {
+    symbol : "AUD"
+  }
+  BRL {
+    symbol : "BRL"
+  }
+  CAD {
+    symbol : "CAD"
+  }
+  CNY {
+    symbol : "CNY"
+  }
+  GBP {
+    symbol : "GBP"
+  }
+  HKD {
+    symbol : "HKD"
+  }
+  ILS {
+    symbol : "₪"
+  }
+  INR {
+    symbol : "INR"
+  }
+  JPY {
+    symbol : "JPY"
+  }
+  KRW {
+    symbol : "KRW"
+  }
+  MXN {
+    symbol : "Mex$"
+  }
+  NZD {
+    symbol : "NZ$"
+  }
+  PLN {
+    symbol : "zl"
+  }
+  THB {
+    symbol : "THB"
+  }
+  TWD {
+    symbol : "TWD"
+  }
+  USD {
+    symbol : "USD"
+  }
+  VND {
+    symbol : "₫"
+  }
+  XAF {
+    symbol : "FCFA"
+  }
+  XCD {
+    symbol : "EC$"
+  }
+  XOF {
+    symbol : "CFA"
+  }
+  XPF {
+    symbol : "CFPF"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d. MMMM y"
+      long : "d. MMMM y"
+      medium : "d.M.y"
+      short : "d.M.y"
+    }
+    time {
+      full : "H:mm:ss zzzz"
+      long : "H:mm:ss z"
+      medium : "H:mm:ss"
+      short : "H:mm"
+    }
+    datetime {
+      full : "{1} {0}"
+      long : "{1} {0}"
+      medium : "{1} {0}"
+      short : "{1} {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "jan"
+        2 : "feb"
+        3 : "mar"
+        4 : "apr"
+        5 : "máj"
+        6 : "jún"
+        7 : "júl"
+        8 : "aug"
+        9 : "sep"
+        10 : "okt"
+        11 : "nov"
+        12 : "dec"
+      }
+      narrow {
+        1 : "j"
+        2 : "f"
+        3 : "m"
+        4 : "a"
+        5 : "m"
+        6 : "j"
+        7 : "j"
+        8 : "a"
+        9 : "s"
+        10 : "o"
+        11 : "n"
+        12 : "d"
+      }
+      wide {
+        1 : "januára"
+        2 : "februára"
+        3 : "marca"
+        4 : "apríla"
+        5 : "mája"
+        6 : "júna"
+        7 : "júla"
+        8 : "augusta"
+        9 : "septembra"
+        10 : "októbra"
+        11 : "novembra"
+        12 : "decembra"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "ne"
+        mon : "po"
+        tue : "ut"
+        wed : "st"
+        thu : "št"
+        fri : "pi"
+        sat : "so"
+      }
+      narrow {
+        sun : "N"
+        mon : "P"
+        tue : "U"
+        wed : "S"
+        thu : "Š"
+        fri : "P"
+        sat : "S"
+      }
+      short {
+        sun : "Ne"
+        mon : "Po"
+        tue : "Ut"
+        wed : "St"
+        thu : "Št"
+        fri : "Pi"
+        sat : "So"
+      }
+      wide {
+        sun : "nedeľa"
+        mon : "pondelok"
+        tue : "utorok"
+        wed : "streda"
+        thu : "štvrtok"
+        fri : "piatok"
+        sat : "sobota"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "dopoludnia"
+        pm : "popoludní"
+      }
+      narrow {
+        am : "dopoludnia"
+        pm : "popoludní"
+      }
+      wide {
+        am : "dopoludnia"
+        pm : "popoludní"
+      }
+    }
+  }
+}

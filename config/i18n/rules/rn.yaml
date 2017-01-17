@@ -1,0 +1,109 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : "."
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "#,##0.00¤"
+    percent : "#,##0 %"
+  }
+}
+currencies {
+  BIF {
+    symbol : "FBu"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "d/M/y"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Mut."
+        2 : "Gas."
+        3 : "Wer."
+        4 : "Mat."
+        5 : "Gic."
+        6 : "Kam."
+        7 : "Nya."
+        8 : "Kan."
+        9 : "Nze."
+        10 : "Ukw."
+        11 : "Ugu."
+        12 : "Uku."
+      }
+      wide {
+        1 : "Nzero"
+        2 : "Ruhuhuma"
+        3 : "Ntwarante"
+        4 : "Ndamukiza"
+        5 : "Rusama"
+        6 : "Ruheshi"
+        7 : "Mukakaro"
+        8 : "Nyandagaro"
+        9 : "Nyakanga"
+        10 : "Gitugutu"
+        11 : "Munyonyo"
+        12 : "Kigarama"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "cu."
+        mon : "mbe."
+        tue : "kab."
+        wed : "gtu."
+        thu : "kan."
+        fri : "gnu."
+        sat : "gnd."
+      }
+      short {
+        sun : "cu."
+        mon : "mbe."
+        tue : "kab."
+        wed : "gtu."
+        thu : "kan."
+        fri : "gnu."
+        sat : "gnd."
+      }
+      wide {
+        sun : "Ku w'indwi"
+        mon : "Ku wa mbere"
+        tue : "Ku wa kabiri"
+        wed : "Ku wa gatatu"
+        thu : "Ku wa kane"
+        fri : "Ku wa gatanu"
+        sat : "Ku wa gatandatu"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "Z.MU."
+        pm : "Z.MW."
+      }
+      narrow {
+        am : "Z.MU."
+        pm : "Z.MW."
+      }
+      wide {
+        am : "Z.MU."
+        pm : "Z.MW."
+      }
+    }
+  }
+}

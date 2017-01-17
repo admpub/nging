@@ -1,0 +1,204 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : "."
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "¤#,##0.00;(¤#,##0.00)"
+    percent : "#,##0%"
+  }
+}
+currencies {
+  AUD {
+    symbol : "AU$"
+  }
+  BRL {
+    symbol : "BRL"
+  }
+  CAD {
+    symbol : "CA$"
+  }
+  CNY {
+    symbol : "¥"
+  }
+  ESP {
+    symbol : "₧"
+  }
+  EUR {
+    symbol : "€"
+  }
+  GBP {
+    symbol : "£"
+  }
+  HKD {
+    symbol : "HK$"
+  }
+  ILS {
+    symbol : "₪"
+  }
+  INR {
+    symbol : "₹"
+  }
+  JPY {
+    symbol : "JP¥"
+  }
+  KRW {
+    symbol : "₩"
+  }
+  MXN {
+    symbol : "MXN"
+  }
+  NZD {
+    symbol : "NZ$"
+  }
+  THB {
+    symbol : "฿"
+  }
+  TWD {
+    symbol : "NT$"
+  }
+  USD {
+    symbol : "US$"
+  }
+  VND {
+    symbol : "₫"
+  }
+  XAF {
+    symbol : "XAF"
+  }
+  XCD {
+    symbol : "XCD"
+  }
+  XOF {
+    symbol : "XOF"
+  }
+  XPF {
+    symbol : "XPF"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE d MMMM 'de' y"
+      long : "d MMMM 'de' y"
+      medium : "dd/MM/y"
+      short : "dd/MM/yy"
+    }
+    time {
+      full : "H.mm.ss zzzz"
+      long : "H.mm.ss z"
+      medium : "H.mm.ss"
+      short : "H.mm"
+    }
+    datetime {
+      full : "{1} {0}"
+      long : "{1} {0}"
+      medium : "{1} {0}"
+      short : "{1} {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "de gen."
+        2 : "de febr."
+        3 : "de març"
+        4 : "d’abr."
+        5 : "de maig"
+        6 : "de juny"
+        7 : "de jul."
+        8 : "d’ag."
+        9 : "de set."
+        10 : "d’oct."
+        11 : "de nov."
+        12 : "de des."
+      }
+      narrow {
+        1 : "G"
+        2 : "F"
+        3 : "M"
+        4 : "A"
+        5 : "M"
+        6 : "J"
+        7 : "J"
+        8 : "A"
+        9 : "S"
+        10 : "O"
+        11 : "N"
+        12 : "D"
+      }
+      wide {
+        1 : "de gener"
+        2 : "de febrer"
+        3 : "de març"
+        4 : "d’abril"
+        5 : "de maig"
+        6 : "de juny"
+        7 : "de juliol"
+        8 : "d’agost"
+        9 : "de setembre"
+        10 : "d’octubre"
+        11 : "de novembre"
+        12 : "de desembre"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "dg."
+        mon : "dl."
+        tue : "dt."
+        wed : "dc."
+        thu : "dj."
+        fri : "dv."
+        sat : "ds."
+      }
+      narrow {
+        sun : "dg"
+        mon : "dl"
+        tue : "dt"
+        wed : "dc"
+        thu : "dj"
+        fri : "dv"
+        sat : "ds"
+      }
+      short {
+        sun : "dg."
+        mon : "dl."
+        tue : "dt."
+        wed : "dc."
+        thu : "dj."
+        fri : "dv."
+        sat : "ds."
+      }
+      wide {
+        sun : "diumenge"
+        mon : "dilluns"
+        tue : "dimarts"
+        wed : "dimecres"
+        thu : "dijous"
+        fri : "divendres"
+        sat : "dissabte"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "a.m."
+        pm : "p.m."
+      }
+      narrow {
+        am : "a.m."
+        pm : "p.m."
+      }
+      wide {
+        am : "a.m."
+        pm : "p.m."
+      }
+    }
+  }
+}

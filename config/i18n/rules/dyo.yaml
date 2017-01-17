@@ -1,0 +1,113 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "#,##0.00 ¤"
+    percent : "#,##0%"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "d/M/y"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Sa"
+        2 : "Fe"
+        3 : "Ma"
+        4 : "Ab"
+        5 : "Me"
+        6 : "Su"
+        7 : "Sú"
+        8 : "Ut"
+        9 : "Se"
+        10 : "Ok"
+        11 : "No"
+        12 : "De"
+      }
+      narrow {
+        1 : "S"
+        2 : "F"
+        3 : "M"
+        4 : "A"
+        5 : "M"
+        6 : "S"
+        7 : "S"
+        8 : "U"
+        9 : "S"
+        10 : "O"
+        11 : "N"
+        12 : "D"
+      }
+      wide {
+        1 : "Sanvie"
+        2 : "Fébirie"
+        3 : "Mars"
+        4 : "Aburil"
+        5 : "Mee"
+        6 : "Sueŋ"
+        7 : "Súuyee"
+        8 : "Ut"
+        9 : "Settembar"
+        10 : "Oktobar"
+        11 : "Novembar"
+        12 : "Disambar"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Dim"
+        mon : "Ten"
+        tue : "Tal"
+        wed : "Ala"
+        thu : "Ara"
+        fri : "Arj"
+        sat : "Sib"
+      }
+      narrow {
+        sun : "D"
+        mon : "T"
+        tue : "T"
+        wed : "A"
+        thu : "A"
+        fri : "A"
+        sat : "S"
+      }
+      short {
+        sun : "Dim"
+        mon : "Ten"
+        tue : "Tal"
+        wed : "Ala"
+        thu : "Ara"
+        fri : "Arj"
+        sat : "Sib"
+      }
+      wide {
+        sun : "Dimas"
+        mon : "Teneŋ"
+        tue : "Talata"
+        wed : "Alarbay"
+        thu : "Aramisay"
+        fri : "Arjuma"
+        sat : "Sibiti"
+      }
+    }
+  }
+}

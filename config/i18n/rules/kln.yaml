@@ -1,0 +1,126 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  formats {
+    currency : "¤#,##0.00;(¤#,##0.00)"
+  }
+}
+currencies {
+  KES {
+    symbol : "Ksh"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Mul"
+        2 : "Nga"
+        3 : "Kip"
+        4 : "Iwa"
+        5 : "Nge"
+        6 : "Wak"
+        7 : "Rop"
+        8 : "Kog"
+        9 : "Bur"
+        10 : "Epe"
+        11 : "Tai"
+        12 : "Aen"
+      }
+      narrow {
+        1 : "M"
+        2 : "N"
+        3 : "K"
+        4 : "I"
+        5 : "N"
+        6 : "W"
+        7 : "R"
+        8 : "K"
+        9 : "B"
+        10 : "E"
+        11 : "K"
+        12 : "K"
+      }
+      wide {
+        1 : "Mulgul"
+        2 : "Ng'atyato"
+        3 : "Kiptamo"
+        4 : "Iwat kut"
+        5 : "Ng'eiyet"
+        6 : "Waki"
+        7 : "Roptui"
+        8 : "Kipkogaga"
+        9 : "Buret"
+        10 : "Epeso"
+        11 : "Kipsunde netai"
+        12 : "Kipsunde nebo aeng"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Tis"
+        mon : "Tai"
+        tue : "Aen"
+        wed : "Som"
+        thu : "Ang"
+        fri : "Mut"
+        sat : "Loh"
+      }
+      narrow {
+        sun : "T"
+        mon : "T"
+        tue : "A"
+        wed : "S"
+        thu : "A"
+        fri : "M"
+        sat : "L"
+      }
+      short {
+        sun : "Tis"
+        mon : "Tai"
+        tue : "Aen"
+        wed : "Som"
+        thu : "Ang"
+        fri : "Mut"
+        sat : "Loh"
+      }
+      wide {
+        sun : "Betutab tisap"
+        mon : "Betut netai"
+        tue : "Betutab aeng'"
+        wed : "Betutab somok"
+        thu : "Betutab ang'wan"
+        fri : "Betutab mut"
+        sat : "Betutab lo"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "BE"
+        pm : "KE"
+      }
+      narrow {
+        am : "BE"
+        pm : "KE"
+      }
+      wide {
+        am : "Beet"
+        pm : "Kemo"
+      }
+    }
+  }
+}

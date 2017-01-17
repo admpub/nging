@@ -1,0 +1,127 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : "."
+  }
+}
+currencies {
+  MZN {
+    symbol : "MTn"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Kwa"
+        2 : "Una"
+        3 : "Rar"
+        4 : "Che"
+        5 : "Tha"
+        6 : "Moc"
+        7 : "Sab"
+        8 : "Nan"
+        9 : "Tis"
+        10 : "Kum"
+        11 : "Moj"
+        12 : "Yel"
+      }
+      narrow {
+        1 : "K"
+        2 : "U"
+        3 : "R"
+        4 : "C"
+        5 : "T"
+        6 : "M"
+        7 : "S"
+        8 : "N"
+        9 : "T"
+        10 : "K"
+        11 : "M"
+        12 : "Y"
+      }
+      wide {
+        1 : "Mweri wo kwanza"
+        2 : "Mweri wo unayeli"
+        3 : "Mweri wo uneraru"
+        4 : "Mweri wo unecheshe"
+        5 : "Mweri wo unethanu"
+        6 : "Mweri wo thanu na mocha"
+        7 : "Mweri wo saba"
+        8 : "Mweri wo nane"
+        9 : "Mweri wo tisa"
+        10 : "Mweri wo kumi"
+        11 : "Mweri wo kumi na moja"
+        12 : "Mweri wo kumi na yel'li"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Sab"
+        mon : "Jtt"
+        tue : "Jnn"
+        wed : "Jtn"
+        thu : "Ara"
+        fri : "Iju"
+        sat : "Jmo"
+      }
+      narrow {
+        sun : "S"
+        mon : "J"
+        tue : "J"
+        wed : "J"
+        thu : "A"
+        fri : "I"
+        sat : "J"
+      }
+      short {
+        sun : "Sab"
+        mon : "Jtt"
+        tue : "Jnn"
+        wed : "Jtn"
+        thu : "Ara"
+        fri : "Iju"
+        sat : "Jmo"
+      }
+      wide {
+        sun : "Sabato"
+        mon : "Jumatatu"
+        tue : "Jumanne"
+        wed : "Jumatano"
+        thu : "Arahamisi"
+        fri : "Ijumaa"
+        sat : "Jumamosi"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "wichishu"
+        pm : "mchochil'l"
+      }
+      narrow {
+        am : "wichishu"
+        pm : "mchochil'l"
+      }
+      wide {
+        am : "wichishu"
+        pm : "mchochil'l"
+      }
+    }
+  }
+}

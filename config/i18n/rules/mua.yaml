@@ -1,0 +1,127 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : "."
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "¤#,##0.00;(¤#,##0.00)"
+    percent : "#,##0%"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "d/M/y"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "FLO"
+        2 : "CLA"
+        3 : "CKI"
+        4 : "FMF"
+        5 : "MAD"
+        6 : "MBI"
+        7 : "MLI"
+        8 : "MAM"
+        9 : "FDE"
+        10 : "FMU"
+        11 : "FGW"
+        12 : "FYU"
+      }
+      narrow {
+        1 : "O"
+        2 : "A"
+        3 : "I"
+        4 : "F"
+        5 : "D"
+        6 : "B"
+        7 : "L"
+        8 : "M"
+        9 : "E"
+        10 : "U"
+        11 : "W"
+        12 : "Y"
+      }
+      wide {
+        1 : "Fĩi Loo"
+        2 : "Cokcwaklaŋne"
+        3 : "Cokcwaklii"
+        4 : "Fĩi Marfoo"
+        5 : "Madǝǝuutǝbijaŋ"
+        6 : "Mamǝŋgwãafahbii"
+        7 : "Mamǝŋgwãalii"
+        8 : "Madǝmbii"
+        9 : "Fĩi Dǝɓlii"
+        10 : "Fĩi Mundaŋ"
+        11 : "Fĩi Gwahlle"
+        12 : "Fĩi Yuru"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Cya"
+        mon : "Cla"
+        tue : "Czi"
+        wed : "Cko"
+        thu : "Cka"
+        fri : "Cga"
+        sat : "Cze"
+      }
+      narrow {
+        sun : "Y"
+        mon : "L"
+        tue : "Z"
+        wed : "O"
+        thu : "A"
+        fri : "G"
+        sat : "E"
+      }
+      short {
+        sun : "Cya"
+        mon : "Cla"
+        tue : "Czi"
+        wed : "Cko"
+        thu : "Cka"
+        fri : "Cga"
+        sat : "Cze"
+      }
+      wide {
+        sun : "Com'yakke"
+        mon : "Comlaaɗii"
+        tue : "Comzyiiɗii"
+        wed : "Comkolle"
+        thu : "Comkaldǝɓlii"
+        fri : "Comgaisuu"
+        sat : "Comzyeɓsuu"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "comme"
+        pm : "lilli"
+      }
+      narrow {
+        am : "comme"
+        pm : "lilli"
+      }
+      wide {
+        am : "comme"
+        pm : "lilli"
+      }
+    }
+  }
+}

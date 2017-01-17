@@ -1,0 +1,113 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "#,##0.00 ¤"
+    percent : "#,##0%"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "d/M/y"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "ng1"
+        2 : "ng2"
+        3 : "ng3"
+        4 : "ng4"
+        5 : "ng5"
+        6 : "ng6"
+        7 : "ng7"
+        8 : "ng8"
+        9 : "ng9"
+        10 : "ng10"
+        11 : "ng11"
+        12 : "kris"
+      }
+      wide {
+        1 : "ngwɛn matáhra"
+        2 : "ngwɛn ńmba"
+        3 : "ngwɛn ńlal"
+        4 : "ngwɛn ńna"
+        5 : "ngwɛn ńtan"
+        6 : "ngwɛn ńtuó"
+        7 : "ngwɛn hɛmbuɛrí"
+        8 : "ngwɛn lɔmbi"
+        9 : "ngwɛn rɛbvuâ"
+        10 : "ngwɛn wum"
+        11 : "ngwɛn wum navŭr"
+        12 : "krísimin"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "sɔ́n"
+        mon : "mɔ́n"
+        tue : "smb"
+        wed : "sml"
+        thu : "smn"
+        fri : "mbs"
+        sat : "sas"
+      }
+      narrow {
+        sun : "s"
+        mon : "m"
+        tue : "s"
+        wed : "s"
+        thu : "s"
+        fri : "m"
+        sat : "s"
+      }
+      short {
+        sun : "sɔ́n"
+        mon : "mɔ́n"
+        tue : "smb"
+        wed : "sml"
+        thu : "smn"
+        fri : "mbs"
+        sat : "sas"
+      }
+      wide {
+        sun : "sɔ́ndɔ"
+        mon : "mɔ́ndɔ"
+        tue : "sɔ́ndɔ mafú mába"
+        wed : "sɔ́ndɔ mafú málal"
+        thu : "sɔ́ndɔ mafú mána"
+        fri : "mabágá má sukul"
+        sat : "sásadi"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "maná"
+        pm : "kugú"
+      }
+      narrow {
+        am : "maná"
+        pm : "kugú"
+      }
+      wide {
+        am : "maná"
+        pm : "kugú"
+      }
+    }
+  }
+}

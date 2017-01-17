@@ -1,0 +1,113 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "#,##0.00 ¤;(#,##0.00 ¤)"
+    percent : "#,##0%"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "d/M/y"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "o.1"
+        2 : "o.2"
+        3 : "o.3"
+        4 : "o.4"
+        5 : "o.5"
+        6 : "o.6"
+        7 : "o.7"
+        8 : "o.8"
+        9 : "o.9"
+        10 : "o.10"
+        11 : "o.11"
+        12 : "o.12"
+      }
+      wide {
+        1 : "pikítíkítie, oólí ú kutúan"
+        2 : "siɛyɛ́, oóli ú kándíɛ"
+        3 : "ɔnsúmbɔl, oóli ú kátátúɛ"
+        4 : "mesiŋ, oóli ú kénie"
+        5 : "ensil, oóli ú kátánuɛ"
+        6 : "ɔsɔn"
+        7 : "efute"
+        8 : "pisuyú"
+        9 : "imɛŋ i puɔs"
+        10 : "imɛŋ i putúk,oóli ú kátíɛ"
+        11 : "makandikɛ"
+        12 : "pilɔndɔ́"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "sd"
+        mon : "md"
+        tue : "mw"
+        wed : "et"
+        thu : "kl"
+        fri : "fl"
+        sat : "ss"
+      }
+      narrow {
+        sun : "s"
+        mon : "m"
+        tue : "m"
+        wed : "e"
+        thu : "k"
+        fri : "f"
+        sat : "s"
+      }
+      short {
+        sun : "sd"
+        mon : "md"
+        tue : "mw"
+        wed : "et"
+        thu : "kl"
+        fri : "fl"
+        sat : "ss"
+      }
+      wide {
+        sun : "sɔ́ndiɛ"
+        mon : "móndie"
+        tue : "muányáŋmóndie"
+        wed : "metúkpíápɛ"
+        thu : "kúpélimetúkpiapɛ"
+        fri : "feléte"
+        sat : "séselé"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "kiɛmɛ́ɛm"
+        pm : "kisɛ́ndɛ"
+      }
+      narrow {
+        am : "kiɛmɛ́ɛm"
+        pm : "kisɛ́ndɛ"
+      }
+      wide {
+        am : "kiɛmɛ́ɛm"
+        pm : "kisɛ́ndɛ"
+      }
+    }
+  }
+}

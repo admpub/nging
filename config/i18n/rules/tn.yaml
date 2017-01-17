@@ -1,0 +1,81 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "¤#,##0.00"
+    percent : "#,##0%"
+  }
+}
+currencies {
+  ZAR {
+    symbol : "R"
+  }
+}
+datetime {
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Fer"
+        2 : "Tlh"
+        3 : "Mop"
+        4 : "Mor"
+        5 : "Mot"
+        6 : "See"
+        7 : "Phu"
+        8 : "Pha"
+        9 : "Lwe"
+        10 : "Dip"
+        11 : "Ngw"
+        12 : "Sed"
+      }
+      wide {
+        1 : "Ferikgong"
+        2 : "Tlhakole"
+        3 : "Mopitlo"
+        4 : "Moranang"
+        5 : "Motsheganang"
+        6 : "Seetebosigo"
+        7 : "Phukwi"
+        8 : "Phatwe"
+        9 : "Lwetse"
+        10 : "Diphalane"
+        11 : "Ngwanatsele"
+        12 : "Sedimonthole"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Tsh"
+        mon : "Mos"
+        tue : "Bed"
+        wed : "Rar"
+        thu : "Ne"
+        fri : "Tla"
+        sat : "Mat"
+      }
+      short {
+        sun : "Tsh"
+        mon : "Mos"
+        tue : "Bed"
+        wed : "Rar"
+        thu : "Ne"
+        fri : "Tla"
+        sat : "Mat"
+      }
+      wide {
+        sun : "Tshipi"
+        mon : "Mosopulogo"
+        tue : "Labobedi"
+        wed : "Laboraro"
+        thu : "Labone"
+        fri : "Labotlhano"
+        sat : "Matlhatso"
+      }
+    }
+  }
+}

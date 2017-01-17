@@ -1,0 +1,126 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  formats {
+    currency : "¤#,##0.00"
+  }
+}
+currencies {
+  ERN {
+    symbol : "Nfk"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE፡ dd MMMM ግርጋ y G"
+      long : "dd MMMM y"
+      medium : "dd-MMM-y"
+      short : "dd/MM/yy"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "ልደት"
+        2 : "ካብኽ"
+        3 : "ክብላ"
+        4 : "ፋጅኺ"
+        5 : "ክቢቅ"
+        6 : "ም/ት"
+        7 : "ኰር"
+        8 : "ማርያ"
+        9 : "ያኸኒ"
+        10 : "መተሉ"
+        11 : "ም/ም"
+        12 : "ተሕሳ"
+      }
+      narrow {
+        1 : "ል"
+        2 : "ካ"
+        3 : "ክ"
+        4 : "ፋ"
+        5 : "ክ"
+        6 : "ም"
+        7 : "ኰ"
+        8 : "ማ"
+        9 : "ያ"
+        10 : "መ"
+        11 : "ም"
+        12 : "ተ"
+      }
+      wide {
+        1 : "ልደትሪ"
+        2 : "ካብኽብቲ"
+        3 : "ክብላ"
+        4 : "ፋጅኺሪ"
+        5 : "ክቢቅሪ"
+        6 : "ምኪኤል ትጟኒሪ"
+        7 : "ኰርኩ"
+        8 : "ማርያም ትሪ"
+        9 : "ያኸኒ መሳቅለሪ"
+        10 : "መተሉ"
+        11 : "ምኪኤል መሽወሪ"
+        12 : "ተሕሳስሪ"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "ሰ/ቅ"
+        mon : "ሰኑ"
+        tue : "ሰሊጝ"
+        wed : "ለጓ"
+        thu : "ኣምድ"
+        fri : "ኣርብ"
+        sat : "ሰ/ሽ"
+      }
+      narrow {
+        sun : "ሰ"
+        mon : "ሰ"
+        tue : "ሰ"
+        wed : "ለ"
+        thu : "ኣ"
+        fri : "ኣ"
+        sat : "ሰ"
+      }
+      short {
+        sun : "ሰ/ቅ"
+        mon : "ሰኑ"
+        tue : "ሰሊጝ"
+        wed : "ለጓ"
+        thu : "ኣምድ"
+        fri : "ኣርብ"
+        sat : "ሰ/ሽ"
+      }
+      wide {
+        sun : "ሰንበር ቅዳዅ"
+        mon : "ሰኑ"
+        tue : "ሰሊጝ"
+        wed : "ለጓ ወሪ ለብዋ"
+        thu : "ኣምድ"
+        fri : "ኣርብ"
+        sat : "ሰንበር ሽጓዅ"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "ፋዱስ ጃብ"
+        pm : "ፋዱስ ደምቢ"
+      }
+      narrow {
+        am : "ፋዱስ ጃብ"
+        pm : "ፋዱስ ደምቢ"
+      }
+      wide {
+        am : "ፋዱስ ጃብ"
+        pm : "ፋዱስ ደምቢ"
+      }
+    }
+  }
+}

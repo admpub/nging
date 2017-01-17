@@ -1,0 +1,81 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "¤#,##0.00"
+    percent : "#,##0%"
+  }
+}
+currencies {
+  ZAR {
+    symbol : "R"
+  }
+}
+datetime {
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Pha"
+        2 : "Luh"
+        3 : "Ṱhf"
+        4 : "Lam"
+        5 : "Shu"
+        6 : "Lwi"
+        7 : "Lwa"
+        8 : "Ṱha"
+        9 : "Khu"
+        10 : "Tsh"
+        11 : "Ḽar"
+        12 : "Nye"
+      }
+      wide {
+        1 : "Phando"
+        2 : "Luhuhi"
+        3 : "Ṱhafamuhwe"
+        4 : "Lambamai"
+        5 : "Shundunthule"
+        6 : "Fulwi"
+        7 : "Fulwana"
+        8 : "Ṱhangule"
+        9 : "Khubvumedzi"
+        10 : "Tshimedzi"
+        11 : "Ḽara"
+        12 : "Nyendavhusiku"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Swo"
+        mon : "Mus"
+        tue : "Vhi"
+        wed : "Rar"
+        thu : "Ṋa"
+        fri : "Ṱan"
+        sat : "Mug"
+      }
+      short {
+        sun : "Swo"
+        mon : "Mus"
+        tue : "Vhi"
+        wed : "Rar"
+        thu : "Ṋa"
+        fri : "Ṱan"
+        sat : "Mug"
+      }
+      wide {
+        sun : "Swondaha"
+        mon : "Musumbuluwo"
+        tue : "Ḽavhuvhili"
+        wed : "Ḽavhuraru"
+        thu : "Ḽavhuṋa"
+        fri : "Ḽavhuṱanu"
+        sat : "Mugivhela"
+      }
+    }
+  }
+}

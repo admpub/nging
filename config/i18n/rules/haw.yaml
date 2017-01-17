@@ -1,0 +1,89 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  formats {
+    currency : "¤#,##0.00;(¤#,##0.00)"
+  }
+}
+currencies {
+  USD {
+    symbol : "$"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "d/M/yy"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Ian."
+        2 : "Pep."
+        3 : "Mal."
+        4 : "ʻAp."
+        5 : "Mei"
+        6 : "Iun."
+        7 : "Iul."
+        8 : "ʻAu."
+        9 : "Kep."
+        10 : "ʻOk."
+        11 : "Now."
+        12 : "Kek."
+      }
+      wide {
+        1 : "Ianuali"
+        2 : "Pepeluali"
+        3 : "Malaki"
+        4 : "ʻApelila"
+        5 : "Mei"
+        6 : "Iune"
+        7 : "Iulai"
+        8 : "ʻAukake"
+        9 : "Kepakemapa"
+        10 : "ʻOkakopa"
+        11 : "Nowemapa"
+        12 : "Kekemapa"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "LP"
+        mon : "P1"
+        tue : "P2"
+        wed : "P3"
+        thu : "P4"
+        fri : "P5"
+        sat : "P6"
+      }
+      short {
+        sun : "LP"
+        mon : "P1"
+        tue : "P2"
+        wed : "P3"
+        thu : "P4"
+        fri : "P5"
+        sat : "P6"
+      }
+      wide {
+        sun : "Lāpule"
+        mon : "Poʻakahi"
+        tue : "Poʻalua"
+        wed : "Poʻakolu"
+        thu : "Poʻahā"
+        fri : "Poʻalima"
+        sat : "Poʻaono"
+      }
+    }
+  }
+}

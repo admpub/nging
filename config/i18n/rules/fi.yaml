@@ -1,0 +1,201 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "#,##0.00 ¤"
+    percent : "#,##0 %"
+  }
+}
+currencies {
+  AUD {
+    symbol : "AUD"
+  }
+  BRL {
+    symbol : "BRL"
+  }
+  CAD {
+    symbol : "CAD"
+  }
+  CNY {
+    symbol : "CNY"
+  }
+  EUR {
+    symbol : "€"
+  }
+  GBP {
+    symbol : "£"
+  }
+  HKD {
+    symbol : "HKD"
+  }
+  ILS {
+    symbol : "ILS"
+  }
+  INR {
+    symbol : "INR"
+  }
+  JPY {
+    symbol : "¥"
+  }
+  KRW {
+    symbol : "KRW"
+  }
+  MXN {
+    symbol : "MXN"
+  }
+  NZD {
+    symbol : "NZD"
+  }
+  THB {
+    symbol : "THB"
+  }
+  TWD {
+    symbol : "TWD"
+  }
+  USD {
+    symbol : "$"
+  }
+  VND {
+    symbol : "VND"
+  }
+  XAF {
+    symbol : "FCFA"
+  }
+  XCD {
+    symbol : "XCD"
+  }
+  XOF {
+    symbol : "CFA"
+  }
+  XPF {
+    symbol : "XPF"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "cccc d. MMMM y"
+      long : "d. MMMM y"
+      medium : "d.M.y"
+      short : "d.M.y"
+    }
+    time {
+      full : "H.mm.ss zzzz"
+      long : "H.mm.ss z"
+      medium : "H.mm.ss"
+      short : "H.mm"
+    }
+    datetime {
+      full : "{1} {0}"
+      long : "{1} {0}"
+      medium : "{1} {0}"
+      short : "{1} {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "tammikuuta"
+        2 : "helmikuuta"
+        3 : "maaliskuuta"
+        4 : "huhtikuuta"
+        5 : "toukokuuta"
+        6 : "kesäkuuta"
+        7 : "heinäkuuta"
+        8 : "elokuuta"
+        9 : "syyskuuta"
+        10 : "lokakuuta"
+        11 : "marraskuuta"
+        12 : "joulukuuta"
+      }
+      narrow {
+        1 : "T"
+        2 : "H"
+        3 : "M"
+        4 : "H"
+        5 : "T"
+        6 : "K"
+        7 : "H"
+        8 : "E"
+        9 : "S"
+        10 : "L"
+        11 : "M"
+        12 : "J"
+      }
+      wide {
+        1 : "tammikuuta"
+        2 : "helmikuuta"
+        3 : "maaliskuuta"
+        4 : "huhtikuuta"
+        5 : "toukokuuta"
+        6 : "kesäkuuta"
+        7 : "heinäkuuta"
+        8 : "elokuuta"
+        9 : "syyskuuta"
+        10 : "lokakuuta"
+        11 : "marraskuuta"
+        12 : "joulukuuta"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "su"
+        mon : "ma"
+        tue : "ti"
+        wed : "ke"
+        thu : "to"
+        fri : "pe"
+        sat : "la"
+      }
+      narrow {
+        sun : "S"
+        mon : "M"
+        tue : "T"
+        wed : "K"
+        thu : "T"
+        fri : "P"
+        sat : "L"
+      }
+      short {
+        sun : "su"
+        mon : "ma"
+        tue : "ti"
+        wed : "ke"
+        thu : "to"
+        fri : "pe"
+        sat : "la"
+      }
+      wide {
+        sun : "sunnuntaina"
+        mon : "maanantaina"
+        tue : "tiistaina"
+        wed : "keskiviikkona"
+        thu : "torstaina"
+        fri : "perjantaina"
+        sat : "lauantaina"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "ap."
+        pm : "ip."
+      }
+      narrow {
+        am : "ap."
+        pm : "ip."
+      }
+      wide {
+        am : "ap."
+        pm : "ip."
+      }
+    }
+  }
+}

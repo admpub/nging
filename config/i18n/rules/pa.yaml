@@ -1,0 +1,123 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  formats {
+    decimal : "#,##,##0.###"
+    currency : "¤ #,##,##0.00"
+    percent : "#,##,##0%"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, dd MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "ਜਨਵਰੀ"
+        2 : "ਫ਼ਰਵਰੀ"
+        3 : "ਮਾਰਚ"
+        4 : "ਅਪ੍ਰੈਲ"
+        5 : "ਮਈ"
+        6 : "ਜੂਨ"
+        7 : "ਜੁਲਾਈ"
+        8 : "ਅਗਸਤ"
+        9 : "ਸਤੰਬਰ"
+        10 : "ਅਕਤੂਬਰ"
+        11 : "ਨਵੰਬਰ"
+        12 : "ਦਸੰਬਰ"
+      }
+      narrow {
+        1 : "ਜ"
+        2 : "ਫ"
+        3 : "ਮਾ"
+        4 : "ਅ"
+        5 : "ਮ"
+        6 : "ਜੂ"
+        7 : "ਜੁ"
+        8 : "ਅ"
+        9 : "ਸ"
+        10 : "ਅ"
+        11 : "ਨ"
+        12 : "ਦ"
+      }
+      wide {
+        1 : "ਜਨਵਰੀ"
+        2 : "ਫ਼ਰਵਰੀ"
+        3 : "ਮਾਰਚ"
+        4 : "ਅਪ੍ਰੈਲ"
+        5 : "ਮਈ"
+        6 : "ਜੂਨ"
+        7 : "ਜੁਲਾਈ"
+        8 : "ਅਗਸਤ"
+        9 : "ਸਤੰਬਰ"
+        10 : "ਅਕਤੂਬਰ"
+        11 : "ਨਵੰਬਰ"
+        12 : "ਦਸੰਬਰ"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "ਐਤ."
+        mon : "ਸੋਮ."
+        tue : "ਮੰਗਲ."
+        wed : "ਬੁਧ."
+        thu : "ਵੀਰ."
+        fri : "ਸ਼ੁਕਰ."
+        sat : "ਸ਼ਨੀ."
+      }
+      narrow {
+        sun : "ਐ"
+        mon : "ਸੋ"
+        tue : "ਮੰ"
+        wed : "ਬੁੱ"
+        thu : "ਵੀ"
+        fri : "ਸ਼ੁੱ"
+        sat : "ਸ਼"
+      }
+      short {
+        sun : "ਐਤ."
+        mon : "ਸੋਮ."
+        tue : "ਮੰਗਲ."
+        wed : "ਬੁਧ."
+        thu : "ਵੀਰ."
+        fri : "ਸ਼ੁਕਰ."
+        sat : "ਸ਼ਨੀ."
+      }
+      wide {
+        sun : "ਐਤਵਾਰ"
+        mon : "ਸੋਮਵਾਰ"
+        tue : "ਮੰਗਲਵਾਰ"
+        wed : "ਬੁਧਵਾਰ"
+        thu : "ਵੀਰਵਾਰ"
+        fri : "ਸ਼ੁੱਕਰਵਾਰ"
+        sat : "ਸ਼ਨੀਚਰਵਾਰ"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "ਪੂਰਵ ਦੁਪਹਿਰ"
+        pm : "ਬਾਅਦ ਦੁਪਹਿਰ"
+      }
+      narrow {
+        am : "ਪੂਰਵ ਦੁਪਹਿਰ"
+        pm : "ਬਾਅਦ ਦੁਪਹਿਰ"
+      }
+      wide {
+        am : "ਪੂਰਵ ਦੁਪਹਿਰ"
+        pm : "ਬਾਅਦ ਦੁਪਹਿਰ"
+      }
+    }
+  }
+}

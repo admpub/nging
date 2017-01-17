@@ -1,0 +1,125 @@
+plural : "2E"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+  }
+  formats {
+    currency : "#,##0.00 ¤"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Yen"
+        2 : "Yeb"
+        3 : "Mar"
+        4 : "Ibr"
+        5 : "May"
+        6 : "Yun"
+        7 : "Yul"
+        8 : "Ɣuc"
+        9 : "Cut"
+        10 : "Kṭu"
+        11 : "Nwa"
+        12 : "Duj"
+      }
+      narrow {
+        1 : "Y"
+        2 : "Y"
+        3 : "M"
+        4 : "I"
+        5 : "M"
+        6 : "Y"
+        7 : "Y"
+        8 : "Ɣ"
+        9 : "C"
+        10 : "K"
+        11 : "N"
+        12 : "D"
+      }
+      wide {
+        1 : "Yennayer"
+        2 : "Yebrayer"
+        3 : "Mars"
+        4 : "Ibrir"
+        5 : "Mayyu"
+        6 : "Yunyu"
+        7 : "Yulyuz"
+        8 : "Ɣuct"
+        9 : "Cutanbir"
+        10 : "Kṭuber"
+        11 : "Nwanbir"
+        12 : "Dujanbir"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Asa"
+        mon : "Ayn"
+        tue : "Asn"
+        wed : "Akr"
+        thu : "Akw"
+        fri : "Asm"
+        sat : "Asḍ"
+      }
+      narrow {
+        sun : "A"
+        mon : "A"
+        tue : "A"
+        wed : "A"
+        thu : "A"
+        fri : "A"
+        sat : "A"
+      }
+      short {
+        sun : "Asa"
+        mon : "Ayn"
+        tue : "Asn"
+        wed : "Akr"
+        thu : "Akw"
+        fri : "Asm"
+        sat : "Asḍ"
+      }
+      wide {
+        sun : "Asamas"
+        mon : "Aynas"
+        tue : "Asinas"
+        wed : "Akras"
+        thu : "Akwas"
+        fri : "Asimwas"
+        sat : "Asiḍyas"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "Zdat azal"
+        pm : "Ḍeffir aza"
+      }
+      narrow {
+        am : "Zdat azal"
+        pm : "Ḍeffir aza"
+      }
+      wide {
+        am : "Zdat azal"
+        pm : "Ḍeffir aza"
+      }
+    }
+  }
+}

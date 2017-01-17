@@ -1,0 +1,126 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  formats {
+    currency : "#,##0.00¤"
+  }
+}
+currencies {
+  TZS {
+    symbol : "TSh"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Jan"
+        2 : "Feb"
+        3 : "Mac"
+        4 : "Apr"
+        5 : "Mei"
+        6 : "Jun"
+        7 : "Jul"
+        8 : "Ago"
+        9 : "Sep"
+        10 : "Okt"
+        11 : "Nov"
+        12 : "Des"
+      }
+      narrow {
+        1 : "J"
+        2 : "F"
+        3 : "M"
+        4 : "A"
+        5 : "M"
+        6 : "J"
+        7 : "J"
+        8 : "A"
+        9 : "S"
+        10 : "O"
+        11 : "N"
+        12 : "D"
+      }
+      wide {
+        1 : "Januari"
+        2 : "Februari"
+        3 : "Machi"
+        4 : "Aprilyi"
+        5 : "Mei"
+        6 : "Junyi"
+        7 : "Julyai"
+        8 : "Agusti"
+        9 : "Septemba"
+        10 : "Oktoba"
+        11 : "Novemba"
+        12 : "Desemba"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Jpi"
+        mon : "Jtt"
+        tue : "Jnn"
+        wed : "Jtn"
+        thu : "Alh"
+        fri : "Iju"
+        sat : "Jmo"
+      }
+      narrow {
+        sun : "J"
+        mon : "J"
+        tue : "J"
+        wed : "J"
+        thu : "A"
+        fri : "I"
+        sat : "J"
+      }
+      short {
+        sun : "Jpi"
+        mon : "Jtt"
+        tue : "Jnn"
+        wed : "Jtn"
+        thu : "Alh"
+        fri : "Iju"
+        sat : "Jmo"
+      }
+      wide {
+        sun : "Jumapilyi"
+        mon : "Jumatatuu"
+        tue : "Jumanne"
+        wed : "Jumatanu"
+        thu : "Alhamisi"
+        fri : "Ijumaa"
+        sat : "Jumamosi"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "utuko"
+        pm : "kyiukonyi"
+      }
+      narrow {
+        am : "utuko"
+        pm : "kyiukonyi"
+      }
+      wide {
+        am : "utuko"
+        pm : "kyiukonyi"
+      }
+    }
+  }
+}

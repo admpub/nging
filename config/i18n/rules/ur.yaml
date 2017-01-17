@@ -1,0 +1,150 @@
+plural : "2A"
+direction : "RTL"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "¤#,##0.00"
+    percent : "#,##0%"
+  }
+}
+currencies {
+  AUD {
+    symbol : "A$"
+  }
+  PKR {
+    symbol : "Rs"
+  }
+  USD {
+    symbol : "$"
+  }
+  XOF {
+    symbol : "CFA"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE، d MMMM، y"
+      long : "d MMMM، y"
+      medium : "d MMM، y"
+      short : "d/M/yy"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+    datetime {
+      full : "{1} {0}"
+      long : "{1} {0}"
+      medium : "{1} {0}"
+      short : "{1} {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "جنوری"
+        2 : "فروری"
+        3 : "مارچ"
+        4 : "اپریل"
+        5 : "مئ"
+        6 : "جون"
+        7 : "جولائ"
+        8 : "اگست"
+        9 : "ستمبر"
+        10 : "اکتوبر"
+        11 : "نومبر"
+        12 : "دسمبر"
+      }
+      narrow {
+        1 : "J"
+        2 : "F"
+        3 : "M"
+        4 : "A"
+        5 : "M"
+        6 : "J"
+        7 : "J"
+        8 : "A"
+        9 : "S"
+        10 : "O"
+        11 : "N"
+        12 : "D"
+      }
+      wide {
+        1 : "جنوری"
+        2 : "فروری"
+        3 : "مارچ"
+        4 : "اپریل"
+        5 : "مئ"
+        6 : "جون"
+        7 : "جولائ"
+        8 : "اگست"
+        9 : "ستمبر"
+        10 : "اکتوبر"
+        11 : "نومبر"
+        12 : "دسمبر"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "اتوار"
+        mon : "پیر"
+        tue : "منگل"
+        wed : "بده"
+        thu : "جمعرات"
+        fri : "جمعہ"
+        sat : "ہفتہ"
+      }
+      narrow {
+        sun : "S"
+        mon : "M"
+        tue : "T"
+        wed : "W"
+        thu : "T"
+        fri : "F"
+        sat : "S"
+      }
+      short {
+        sun : "اتوار"
+        mon : "سوموار"
+        tue : "منگل"
+        wed : "بدھ"
+        thu : "جمعرات"
+        fri : "جمعہ"
+        sat : "ہفتہ"
+      }
+      wide {
+        sun : "اتوار"
+        mon : "پیر"
+        tue : "منگل"
+        wed : "بده"
+        thu : "جمعرات"
+        fri : "جمعہ"
+        sat : "ہفتہ"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "قبل دوپہر"
+        pm : "بعد دوپہر"
+      }
+      narrow {
+        am : "قبل دوپہر"
+        pm : "بعد دوپہر"
+      }
+      wide {
+        am : "قبل دوپہر"
+        pm : "بعد دوپہر"
+      }
+    }
+  }
+}

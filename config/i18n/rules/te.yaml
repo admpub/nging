@@ -1,0 +1,136 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "¤#,##0.00;(¤#,##0.00)"
+    percent : "#,##0%"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd-MM-yy"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+    datetime {
+      full : "{1} {0}"
+      long : "{1} {0}"
+      medium : "{1} {0}"
+      short : "{1} {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "జన"
+        2 : "ఫిబ్ర"
+        3 : "మార్చి"
+        4 : "ఏప్రి"
+        5 : "మే"
+        6 : "జూన్"
+        7 : "జూలై"
+        8 : "ఆగస్టు"
+        9 : "సెప్టెంబర్"
+        10 : "అక్టోబర్"
+        11 : "నవంబర్"
+        12 : "డిసెంబర్"
+      }
+      narrow {
+        1 : "జ"
+        2 : "ఫి"
+        3 : "మా"
+        4 : "ఏ"
+        5 : "మే"
+        6 : "జూ"
+        7 : "జు"
+        8 : "ఆ"
+        9 : "సె"
+        10 : "అ"
+        11 : "న"
+        12 : "డి"
+      }
+      wide {
+        1 : "జనవరి"
+        2 : "ఫిబ్రవరి"
+        3 : "మార్చి"
+        4 : "ఎప్రిల్"
+        5 : "మే"
+        6 : "జూన్"
+        7 : "జూలై"
+        8 : "ఆగస్టు"
+        9 : "సెప్టెంబర్"
+        10 : "అక్టోబర్"
+        11 : "నవంబర్"
+        12 : "డిసెంబర్"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "ఆది"
+        mon : "సోమ"
+        tue : "మంగళ"
+        wed : "బుధ"
+        thu : "గురు"
+        fri : "శుక్ర"
+        sat : "శని"
+      }
+      narrow {
+        sun : "ఆ"
+        mon : "సో"
+        tue : "మ"
+        wed : "బు"
+        thu : "గు"
+        fri : "శు"
+        sat : "శ"
+      }
+      short {
+        sun : "ఆది"
+        mon : "సోమ"
+        tue : "మం"
+        wed : "బుధ"
+        thu : "గురు"
+        fri : "శుక్ర"
+        sat : "శని"
+      }
+      wide {
+        sun : "ఆదివారం"
+        mon : "సోమవారం"
+        tue : "మంగళవారం"
+        wed : "బుధవారం"
+        thu : "గురువారం"
+        fri : "శుక్రవారం"
+        sat : "శనివారం"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "AM"
+        pm : "PM"
+      }
+      narrow {
+        am : "AM"
+        pm : "PM"
+      }
+      wide {
+        am : "AM"
+        pm : "PM"
+      }
+    }
+  }
+}

@@ -1,0 +1,99 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d-'a' 'de' MMMM y"
+      long : "y-MMMM-dd"
+      medium : "y-MMM-dd"
+      short : "yy-MM-dd"
+    }
+    time {
+      full : "H-'a' 'horo' 'kaj' m:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "jan"
+        2 : "feb"
+        3 : "mar"
+        4 : "apr"
+        5 : "maj"
+        6 : "jun"
+        7 : "jul"
+        8 : "aŭg"
+        9 : "sep"
+        10 : "okt"
+        11 : "nov"
+        12 : "dec"
+      }
+      wide {
+        1 : "januaro"
+        2 : "februaro"
+        3 : "marto"
+        4 : "aprilo"
+        5 : "majo"
+        6 : "junio"
+        7 : "julio"
+        8 : "aŭgusto"
+        9 : "septembro"
+        10 : "oktobro"
+        11 : "novembro"
+        12 : "decembro"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "di"
+        mon : "lu"
+        tue : "ma"
+        wed : "me"
+        thu : "ĵa"
+        fri : "ve"
+        sat : "sa"
+      }
+      short {
+        sun : "di"
+        mon : "lu"
+        tue : "ma"
+        wed : "me"
+        thu : "ĵa"
+        fri : "ve"
+        sat : "sa"
+      }
+      wide {
+        sun : "dimanĉo"
+        mon : "lundo"
+        tue : "mardo"
+        wed : "merkredo"
+        thu : "ĵaŭdo"
+        fri : "vendredo"
+        sat : "sabato"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "atm"
+        pm : "ptm"
+      }
+      narrow {
+        am : "atm"
+        pm : "ptm"
+      }
+      wide {
+        am : "atm"
+        pm : "ptm"
+      }
+    }
+  }
+}

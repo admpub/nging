@@ -1,0 +1,192 @@
+plural : "3D"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+    negative : "–"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "#,##0.00 ¤"
+    percent : "#,##0 %"
+  }
+}
+currencies {
+  AUD {
+    symbol : "AU$"
+  }
+  BRL {
+    symbol : "R$"
+  }
+  CAD {
+    symbol : "CA$"
+  }
+  CNY {
+    symbol : "CN¥"
+  }
+  EUR {
+    symbol : "€"
+  }
+  GBP {
+    symbol : "£"
+  }
+  HKD {
+    symbol : "HK$"
+  }
+  ILS {
+    symbol : "₪"
+  }
+  INR {
+    symbol : "₹"
+  }
+  JPY {
+    symbol : "JP¥"
+  }
+  KRW {
+    symbol : "₩"
+  }
+  LTL {
+    symbol : "Lt"
+  }
+  MXN {
+    symbol : "MX$"
+  }
+  NZD {
+    symbol : "NZ$"
+  }
+  THB {
+    symbol : "฿"
+  }
+  TWD {
+    symbol : "NT$"
+  }
+  USD {
+    symbol : "$"
+  }
+  XCD {
+    symbol : "EC$"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "y 'm'. MMMM d 'd'., EEEE"
+      long : "y 'm'. MMMM d 'd'."
+      medium : "y MMM d"
+      short : "y-MM-dd"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+    datetime {
+      full : "{1} {0}"
+      long : "{1} {0}"
+      medium : "{1} {0}"
+      short : "{1} {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "saus."
+        2 : "vas."
+        3 : "kov."
+        4 : "bal."
+        5 : "geg."
+        6 : "birž."
+        7 : "liep."
+        8 : "rugp."
+        9 : "rugs."
+        10 : "spal."
+        11 : "lapkr."
+        12 : "gruod."
+      }
+      narrow {
+        1 : "S"
+        2 : "V"
+        3 : "K"
+        4 : "B"
+        5 : "G"
+        6 : "B"
+        7 : "L"
+        8 : "R"
+        9 : "R"
+        10 : "S"
+        11 : "L"
+        12 : "G"
+      }
+      wide {
+        1 : "sausis"
+        2 : "vasaris"
+        3 : "kovas"
+        4 : "balandis"
+        5 : "gegužė"
+        6 : "birželis"
+        7 : "liepa"
+        8 : "rugpjūtis"
+        9 : "rugsėjis"
+        10 : "spalis"
+        11 : "lapkritis"
+        12 : "gruodis"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "sk"
+        mon : "pr"
+        tue : "an"
+        wed : "tr"
+        thu : "kt"
+        fri : "pn"
+        sat : "št"
+      }
+      narrow {
+        sun : "S"
+        mon : "P"
+        tue : "A"
+        wed : "T"
+        thu : "K"
+        fri : "P"
+        sat : "Š"
+      }
+      short {
+        sun : "Sk"
+        mon : "Pr"
+        tue : "An"
+        wed : "Tr"
+        thu : "Kt"
+        fri : "Pn"
+        sat : "Št"
+      }
+      wide {
+        sun : "sekmadienis"
+        mon : "pirmadienis"
+        tue : "antradienis"
+        wed : "trečiadienis"
+        thu : "ketvirtadienis"
+        fri : "penktadienis"
+        sat : "šeštadienis"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "pr.p."
+        pm : "pop."
+      }
+      narrow {
+        am : "pr.p."
+        pm : "pop."
+      }
+      wide {
+        am : "priešpiet"
+        pm : "popiet"
+      }
+    }
+  }
+}

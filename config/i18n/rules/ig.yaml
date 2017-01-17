@@ -1,0 +1,103 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  formats {
+    currency : "¤#,##0.00;(¤#,##0.00)"
+  }
+}
+currencies {
+  NGN {
+    symbol : "₦"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Jen"
+        2 : "Feb"
+        3 : "Maa"
+        4 : "Epr"
+        5 : "Mee"
+        6 : "Juu"
+        7 : "Jul"
+        8 : "Ọgọ"
+        9 : "Sep"
+        10 : "Ọkt"
+        11 : "Nov"
+        12 : "Dis"
+      }
+      wide {
+        1 : "Jenụwarị"
+        2 : "Febrụwarị"
+        3 : "Maachị"
+        4 : "Eprel"
+        5 : "Mee"
+        6 : "Juun"
+        7 : "Julaị"
+        8 : "Ọgọọst"
+        9 : "Septemba"
+        10 : "Ọktoba"
+        11 : "Novemba"
+        12 : "Disemba"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Ụka"
+        mon : "Mọn"
+        tue : "Tiu"
+        wed : "Wen"
+        thu : "Tọọ"
+        fri : "Fraị"
+        sat : "Sat"
+      }
+      short {
+        sun : "Ụka"
+        mon : "Mọn"
+        tue : "Tiu"
+        wed : "Wen"
+        thu : "Tọọ"
+        fri : "Fraị"
+        sat : "Sat"
+      }
+      wide {
+        sun : "Mbọsị Ụka"
+        mon : "Mọnde"
+        tue : "Tiuzdee"
+        wed : "Wenezdee"
+        thu : "Tọọzdee"
+        fri : "Fraịdee"
+        sat : "Satọdee"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "A.M."
+        pm : "P.M."
+      }
+      narrow {
+        am : "A.M."
+        pm : "P.M."
+      }
+      wide {
+        am : "A.M."
+        pm : "P.M."
+      }
+    }
+  }
+}

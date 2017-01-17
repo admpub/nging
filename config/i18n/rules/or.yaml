@@ -1,0 +1,127 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+  }
+  formats {
+    decimal : "#,##,##0.###"
+    currency : "¤ #,##,##0.00"
+    percent : "#,##,##0%"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "d-M-yy"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "ଜାନୁଆରୀ"
+        2 : "ଫେବ୍ରୁୟାରୀ"
+        3 : "ମାର୍ଚ୍ଚ"
+        4 : "ଅପ୍ରେଲ"
+        5 : "ମେ"
+        6 : "ଜୁନ"
+        7 : "ଜୁଲାଇ"
+        8 : "ଅଗଷ୍ଟ"
+        9 : "ସେପ୍ଟେମ୍ବର"
+        10 : "ଅକ୍ଟୋବର"
+        11 : "ନଭେମ୍ବର"
+        12 : "ଡିସେମ୍ବର"
+      }
+      narrow {
+        1 : "ଜା"
+        2 : "ଫେ"
+        3 : "ମା"
+        4 : "ଅ"
+        5 : "ମେ"
+        6 : "ଜୁ"
+        7 : "ଜୁ"
+        8 : "ଅ"
+        9 : "ସେ"
+        10 : "ଅ"
+        11 : "ନ"
+        12 : "ଡି"
+      }
+      wide {
+        1 : "ଜାନୁଆରୀ"
+        2 : "ଫେବ୍ରୁୟାରୀ"
+        3 : "ମାର୍ଚ୍ଚ"
+        4 : "ଅପ୍ରେଲ"
+        5 : "ମେ"
+        6 : "ଜୁନ"
+        7 : "ଜୁଲାଇ"
+        8 : "ଅଗଷ୍ଟ"
+        9 : "ସେପ୍ଟେମ୍ବର"
+        10 : "ଅକ୍ଟୋବର"
+        11 : "ନଭେମ୍ବର"
+        12 : "ଡିସେମ୍ବର"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "ରବି"
+        mon : "ସୋମ"
+        tue : "ମଙ୍ଗଳ"
+        wed : "ବୁଧ"
+        thu : "ଗୁରୁ"
+        fri : "ଶୁକ୍ର"
+        sat : "ଶନି"
+      }
+      narrow {
+        sun : "ର"
+        mon : "ସୋ"
+        tue : "ମ"
+        wed : "ବୁ"
+        thu : "ଗୁ"
+        fri : "ଶୁ"
+        sat : "ଶ"
+      }
+      short {
+        sun : "ରବି"
+        mon : "ସୋମ"
+        tue : "ମଙ୍ଗଳ"
+        wed : "ବୁଧ"
+        thu : "ଗୁରୁ"
+        fri : "ଶୁକ୍ର"
+        sat : "ଶନି"
+      }
+      wide {
+        sun : "ରବିବାର"
+        mon : "ସୋମବାର"
+        tue : "ମଙ୍ଗଳବାର"
+        wed : "ବୁଧବାର"
+        thu : "ଗୁରୁବାର"
+        fri : "ଶୁକ୍ରବାର"
+        sat : "ଶନିବାର"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "am"
+        pm : "pm"
+      }
+      narrow {
+        am : "am"
+        pm : "pm"
+      }
+      wide {
+        am : "am"
+        pm : "pm"
+      }
+    }
+  }
+}

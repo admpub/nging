@@ -1,0 +1,126 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  formats {
+    currency : "¤#,##0.00"
+  }
+}
+currencies {
+  TZS {
+    symbol : "TSh"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "M1"
+        2 : "M2"
+        3 : "M3"
+        4 : "M4"
+        5 : "M5"
+        6 : "M6"
+        7 : "M7"
+        8 : "M8"
+        9 : "M9"
+        10 : "M10"
+        11 : "M11"
+        12 : "M12"
+      }
+      narrow {
+        1 : "K"
+        2 : "K"
+        3 : "K"
+        4 : "K"
+        5 : "T"
+        6 : "S"
+        7 : "S"
+        8 : "N"
+        9 : "T"
+        10 : "I"
+        11 : "I"
+        12 : "I"
+      }
+      wide {
+        1 : "Mweri wa kwanza"
+        2 : "Mweri wa kaili"
+        3 : "Mweri wa katatu"
+        4 : "Mweri wa kaana"
+        5 : "Mweri wa tanu"
+        6 : "Mweri wa sita"
+        7 : "Mweri wa saba"
+        8 : "Mweri wa nane"
+        9 : "Mweri wa tisa"
+        10 : "Mweri wa ikumi"
+        11 : "Mweri wa ikumi na moja"
+        12 : "Mweri wa ikumi na mbili"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Ijp"
+        mon : "Ijt"
+        tue : "Ijn"
+        wed : "Ijtn"
+        thu : "Alh"
+        fri : "Iju"
+        sat : "Ijm"
+      }
+      narrow {
+        sun : "2"
+        mon : "3"
+        tue : "4"
+        wed : "5"
+        thu : "6"
+        fri : "7"
+        sat : "1"
+      }
+      short {
+        sun : "Ijp"
+        mon : "Ijt"
+        tue : "Ijn"
+        wed : "Ijtn"
+        thu : "Alh"
+        fri : "Iju"
+        sat : "Ijm"
+      }
+      wide {
+        sun : "Ijumapili"
+        mon : "Ijumatatu"
+        tue : "Ijumanne"
+        wed : "Ijumatano"
+        thu : "Alhamisi"
+        fri : "Ijumaa"
+        sat : "Ijumamosi"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "kang'ama"
+        pm : "kingoto"
+      }
+      narrow {
+        am : "kang'ama"
+        pm : "kingoto"
+      }
+      wide {
+        am : "kang'ama"
+        pm : "kingoto"
+      }
+    }
+  }
+}

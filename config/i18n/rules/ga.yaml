@@ -1,0 +1,130 @@
+plural : "5A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+  }
+  formats {
+    currency : "¤#,##0.00"
+  }
+}
+currencies {
+  ANG {
+    symbol : "AÍ f."
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Ean"
+        2 : "Feabh"
+        3 : "Márta"
+        4 : "Aib"
+        5 : "Beal"
+        6 : "Meith"
+        7 : "Iúil"
+        8 : "Lún"
+        9 : "MFómh"
+        10 : "DFómh"
+        11 : "Samh"
+        12 : "Noll"
+      }
+      narrow {
+        1 : "E"
+        2 : "F"
+        3 : "M"
+        4 : "A"
+        5 : "B"
+        6 : "M"
+        7 : "I"
+        8 : "L"
+        9 : "M"
+        10 : "D"
+        11 : "S"
+        12 : "N"
+      }
+      wide {
+        1 : "Eanáir"
+        2 : "Feabhra"
+        3 : "Márta"
+        4 : "Aibreán"
+        5 : "Bealtaine"
+        6 : "Meitheamh"
+        7 : "Iúil"
+        8 : "Lúnasa"
+        9 : "Meán Fómhair"
+        10 : "Deireadh Fómhair"
+        11 : "Samhain"
+        12 : "Nollaig"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Domh"
+        mon : "Luan"
+        tue : "Máirt"
+        wed : "Céad"
+        thu : "Déar"
+        fri : "Aoine"
+        sat : "Sath"
+      }
+      narrow {
+        sun : "D"
+        mon : "L"
+        tue : "M"
+        wed : "C"
+        thu : "D"
+        fri : "A"
+        sat : "S"
+      }
+      short {
+        sun : "Domh"
+        mon : "Luan"
+        tue : "Máirt"
+        wed : "Céad"
+        thu : "Déar"
+        fri : "Aoine"
+        sat : "Sath"
+      }
+      wide {
+        sun : "Dé Domhnaigh"
+        mon : "Dé Luain"
+        tue : "Dé Máirt"
+        wed : "Dé Céadaoin"
+        thu : "Déardaoin"
+        fri : "Dé hAoine"
+        sat : "Dé Sathairn"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "a.m."
+        pm : "p.m."
+      }
+      narrow {
+        am : "a.m."
+        pm : "p.m."
+      }
+      wide {
+        am : "a.m."
+        pm : "p.m."
+      }
+    }
+  }
+}

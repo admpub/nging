@@ -1,0 +1,207 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : "."
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#0.###"
+    currency : "#0.00 ¤"
+    percent : "#0%"
+  }
+}
+currencies {
+  AMD {
+    symbol : "֏"
+  }
+  AUD {
+    symbol : "A$"
+  }
+  BRL {
+    symbol : "R$"
+  }
+  CAD {
+    symbol : "CA$"
+  }
+  CNY {
+    symbol : "CN¥"
+  }
+  EUR {
+    symbol : "€"
+  }
+  GBP {
+    symbol : "£"
+  }
+  HKD {
+    symbol : "HK$"
+  }
+  ILS {
+    symbol : "₪"
+  }
+  INR {
+    symbol : "₹"
+  }
+  JPY {
+    symbol : "JP¥"
+  }
+  KRW {
+    symbol : "₩"
+  }
+  MXN {
+    symbol : "MX$"
+  }
+  NZD {
+    symbol : "NZ$"
+  }
+  THB {
+    symbol : "฿"
+  }
+  TWD {
+    symbol : "NT$"
+  }
+  USD {
+    symbol : "$"
+  }
+  VND {
+    symbol : "₫"
+  }
+  XAF {
+    symbol : "FCFA"
+  }
+  XCD {
+    symbol : "EC$"
+  }
+  XOF {
+    symbol : "CFA"
+  }
+  XPF {
+    symbol : "CFPF"
+  }
+  ZMW {
+    symbol : "ZMW"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "d MMMM, y թ., EEEE"
+      long : "dd MMMM, y թ."
+      medium : "dd MMM, y թ."
+      short : "dd.MM.yy"
+    }
+    time {
+      full : "H:mm:ss, zzzz"
+      long : "H:mm:ss, z"
+      medium : "H:mm:ss"
+      short : "H:mm"
+    }
+    datetime {
+      full : "{1}, {0}"
+      long : "{1}, {0}"
+      medium : "{1}, {0}"
+      short : "{1}, {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "հնվ"
+        2 : "փտվ"
+        3 : "մրտ"
+        4 : "ապր"
+        5 : "մյս"
+        6 : "հնս"
+        7 : "հլս"
+        8 : "օգս"
+        9 : "սեպ"
+        10 : "հոկ"
+        11 : "նոյ"
+        12 : "դեկ"
+      }
+      narrow {
+        1 : "Հ"
+        2 : "Փ"
+        3 : "Մ"
+        4 : "Ա"
+        5 : "Մ"
+        6 : "Հ"
+        7 : "Հ"
+        8 : "Օ"
+        9 : "Ս"
+        10 : "Հ"
+        11 : "Ն"
+        12 : "Դ"
+      }
+      wide {
+        1 : "հունվարի"
+        2 : "փետրվարի"
+        3 : "մարտի"
+        4 : "ապրիլի"
+        5 : "մայիսի"
+        6 : "հունիսի"
+        7 : "հուլիսի"
+        8 : "օգոստոսի"
+        9 : "սեպտեմբերի"
+        10 : "հոկտեմբերի"
+        11 : "նոյեմբերի"
+        12 : "դեկտեմբերի"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "կիր"
+        mon : "երկ"
+        tue : "երք"
+        wed : "չոր"
+        thu : "հնգ"
+        fri : "ուր"
+        sat : "շաբ"
+      }
+      narrow {
+        sun : "Կ"
+        mon : "Ե"
+        tue : "Ե"
+        wed : "Չ"
+        thu : "Հ"
+        fri : "Ու"
+        sat : "Շ"
+      }
+      short {
+        sun : "կիր"
+        mon : "երկ"
+        tue : "երք"
+        wed : "չոր"
+        thu : "հնգ"
+        fri : "ուր"
+        sat : "շաբ"
+      }
+      wide {
+        sun : "կիրակի"
+        mon : "երկուշաբթի"
+        tue : "երեքշաբթի"
+        wed : "չորեքշաբթի"
+        thu : "հինգշաբթի"
+        fri : "ուրբաթ"
+        sat : "շաբաթ"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "կեսօրից առաջ"
+        pm : "կեսօրից հետո"
+      }
+      narrow {
+        am : "կեսօրից առաջ"
+        pm : "կեսօրից հետո"
+      }
+      wide {
+        am : "կեսօրից առաջ"
+        pm : "կեսօրից հետո"
+      }
+    }
+  }
+}

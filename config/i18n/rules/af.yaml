@@ -1,0 +1,141 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "¤#,##0.00;(¤#,##0.00)"
+    percent : "#,##0%"
+  }
+}
+currencies {
+  ZAR {
+    symbol : "R"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE dd MMMM y"
+      long : "dd MMMM y"
+      medium : "dd MMM y"
+      short : "y-MM-dd"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+    datetime {
+      full : "{1} {0}"
+      long : "{1} {0}"
+      medium : "{1} {0}"
+      short : "{1} {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Jan"
+        2 : "Feb"
+        3 : "Mar"
+        4 : "Apr"
+        5 : "Mei"
+        6 : "Jun"
+        7 : "Jul"
+        8 : "Aug"
+        9 : "Sep"
+        10 : "Okt"
+        11 : "Nov"
+        12 : "Des"
+      }
+      narrow {
+        1 : "J"
+        2 : "F"
+        3 : "M"
+        4 : "A"
+        5 : "M"
+        6 : "J"
+        7 : "J"
+        8 : "A"
+        9 : "S"
+        10 : "O"
+        11 : "N"
+        12 : "D"
+      }
+      wide {
+        1 : "Januarie"
+        2 : "Februarie"
+        3 : "Maart"
+        4 : "April"
+        5 : "Mei"
+        6 : "Junie"
+        7 : "Julie"
+        8 : "Augustus"
+        9 : "September"
+        10 : "Oktober"
+        11 : "November"
+        12 : "Desember"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "So"
+        mon : "Ma"
+        tue : "Di"
+        wed : "Wo"
+        thu : "Do"
+        fri : "Vr"
+        sat : "Sa"
+      }
+      narrow {
+        sun : "S"
+        mon : "M"
+        tue : "D"
+        wed : "W"
+        thu : "D"
+        fri : "V"
+        sat : "S"
+      }
+      short {
+        sun : "So."
+        mon : "Ma."
+        tue : "Di."
+        wed : "Wo."
+        thu : "Do."
+        fri : "Vr."
+        sat : "Sa."
+      }
+      wide {
+        sun : "Sondag"
+        mon : "Maandag"
+        tue : "Dinsdag"
+        wed : "Woensdag"
+        thu : "Donderdag"
+        fri : "Vrydag"
+        sat : "Saterdag"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "vm."
+        pm : "nm."
+      }
+      narrow {
+        am : "vm."
+        pm : "nm."
+      }
+      wide {
+        am : "vm."
+        pm : "nm."
+      }
+    }
+  }
+}

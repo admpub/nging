@@ -1,0 +1,141 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "¤#,##0.00;(¤#,##0.00)"
+    percent : "#,##0%"
+  }
+}
+currencies {
+  ZAR {
+    symbol : "R"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE dd MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "y-MM-dd"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+    datetime {
+      full : "{1} {0}"
+      long : "{1} {0}"
+      medium : "{1} {0}"
+      short : "{1} {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Jan"
+        2 : "Feb"
+        3 : "Mas"
+        4 : "Apr"
+        5 : "Mey"
+        6 : "Jun"
+        7 : "Jul"
+        8 : "Aga"
+        9 : "Sep"
+        10 : "Okt"
+        11 : "Nov"
+        12 : "Dis"
+      }
+      narrow {
+        1 : "J"
+        2 : "F"
+        3 : "M"
+        4 : "A"
+        5 : "M"
+        6 : "J"
+        7 : "J"
+        8 : "A"
+        9 : "S"
+        10 : "O"
+        11 : "N"
+        12 : "D"
+      }
+      wide {
+        1 : "Januwari"
+        2 : "Februwari"
+        3 : "Mashi"
+        4 : "Apreli"
+        5 : "Meyi"
+        6 : "Juni"
+        7 : "Julayi"
+        8 : "Agasti"
+        9 : "Septhemba"
+        10 : "Okthoba"
+        11 : "Novemba"
+        12 : "Disemba"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Son"
+        mon : "Mso"
+        tue : "Bil"
+        wed : "Tha"
+        thu : "Sin"
+        fri : "Hla"
+        sat : "Mgq"
+      }
+      narrow {
+        sun : "S"
+        mon : "M"
+        tue : "B"
+        wed : "T"
+        thu : "S"
+        fri : "H"
+        sat : "M"
+      }
+      short {
+        sun : "Isonto"
+        mon : "Umsombuluko"
+        tue : "Ulwesibili"
+        wed : "Ulwesithathu"
+        thu : "Ulwesine"
+        fri : "Ulwesihlanu"
+        sat : "Umgqibelo"
+      }
+      wide {
+        sun : "Sonto"
+        mon : "Msombuluko"
+        tue : "Lwesibili"
+        wed : "Lwesithathu"
+        thu : "uLwesine"
+        fri : "Lwesihlanu"
+        sat : "Mgqibelo"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "AM"
+        pm : "PM"
+      }
+      narrow {
+        am : "a"
+        pm : "p"
+      }
+      wide {
+        am : "Ekuseni"
+        pm : "Ntambama"
+      }
+    }
+  }
+}

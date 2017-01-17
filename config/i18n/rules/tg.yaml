@@ -1,0 +1,98 @@
+plural : "2B"
+direction : "LTR"
+currencies {
+  TJS {
+    symbol : "сом"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, y MMMM dd"
+      long : "y MMMM d"
+      medium : "y MMM d"
+      short : "yy/MM/dd"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Янв"
+        2 : "Фев"
+        3 : "Мар"
+        4 : "Апр"
+        5 : "Май"
+        6 : "Июн"
+        7 : "Июл"
+        8 : "Авг"
+        9 : "Сен"
+        10 : "Окт"
+        11 : "Ноя"
+        12 : "Дек"
+      }
+      wide {
+        1 : "Январ"
+        2 : "Феврал"
+        3 : "Март"
+        4 : "Апрел"
+        5 : "Май"
+        6 : "Июн"
+        7 : "Июл"
+        8 : "Август"
+        9 : "Сентябр"
+        10 : "Октябр"
+        11 : "Ноябр"
+        12 : "Декабр"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Яшб"
+        mon : "Дшб"
+        tue : "Сшб"
+        wed : "Чшб"
+        thu : "Пшб"
+        fri : "Ҷмъ"
+        sat : "Шнб"
+      }
+      short {
+        sun : "Яшб"
+        mon : "Дшб"
+        tue : "Сшб"
+        wed : "Чшб"
+        thu : "Пшб"
+        fri : "Ҷмъ"
+        sat : "Шнб"
+      }
+      wide {
+        sun : "Якшанбе"
+        mon : "Душанбе"
+        tue : "Сешанбе"
+        wed : "Чоршанбе"
+        thu : "Панҷшанбе"
+        fri : "Ҷумъа"
+        sat : "Шанбе"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "пе. чо."
+        pm : "па. чо."
+      }
+      narrow {
+        am : "пе. чо."
+        pm : "па. чо."
+      }
+      wide {
+        am : "пе. чо."
+        pm : "па. чо."
+      }
+    }
+  }
+}

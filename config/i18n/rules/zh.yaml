@@ -1,0 +1,201 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "¤#,##0.00"
+    percent : "#,##0%"
+  }
+}
+currencies {
+  AUD {
+    symbol : "AU$"
+  }
+  BRL {
+    symbol : "R$"
+  }
+  CAD {
+    symbol : "CA$"
+  }
+  CNY {
+    symbol : "￥"
+  }
+  EUR {
+    symbol : "€"
+  }
+  GBP {
+    symbol : "£"
+  }
+  HKD {
+    symbol : "HK$"
+  }
+  ILS {
+    symbol : "₪"
+  }
+  INR {
+    symbol : "₹"
+  }
+  JPY {
+    symbol : "¥"
+  }
+  KRW {
+    symbol : "￦"
+  }
+  MXN {
+    symbol : "MX$"
+  }
+  NZD {
+    symbol : "NZ$"
+  }
+  THB {
+    symbol : "฿"
+  }
+  TWD {
+    symbol : "NT$"
+  }
+  USD {
+    symbol : "$"
+  }
+  VND {
+    symbol : "₫"
+  }
+  XAF {
+    symbol : "FCFA"
+  }
+  XCD {
+    symbol : "EC$"
+  }
+  XOF {
+    symbol : "CFA"
+  }
+  XPF {
+    symbol : "CFPF"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "y年M月d日EEEE"
+      long : "y年M月d日"
+      medium : "y/M/d"
+      short : "y/M/d"
+    }
+    time {
+      full : "zzzzah時mm分ss秒"
+      long : "zah時mm分ss秒"
+      medium : "ah:mm:ss"
+      short : "ah:mm"
+    }
+    datetime {
+      full : "{1}{0}"
+      long : "{1}{0}"
+      medium : "{1} {0}"
+      short : "{1} {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "1月"
+        2 : "2月"
+        3 : "3月"
+        4 : "4月"
+        5 : "5月"
+        6 : "6月"
+        7 : "7月"
+        8 : "8月"
+        9 : "9月"
+        10 : "10月"
+        11 : "11月"
+        12 : "12月"
+      }
+      narrow {
+        1 : "1"
+        2 : "2"
+        3 : "3"
+        4 : "4"
+        5 : "5"
+        6 : "6"
+        7 : "7"
+        8 : "8"
+        9 : "9"
+        10 : "10"
+        11 : "11"
+        12 : "12"
+      }
+      wide {
+        1 : "一月"
+        2 : "二月"
+        3 : "三月"
+        4 : "四月"
+        5 : "五月"
+        6 : "六月"
+        7 : "七月"
+        8 : "八月"
+        9 : "九月"
+        10 : "十月"
+        11 : "十一月"
+        12 : "十二月"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "周日"
+        mon : "周一"
+        tue : "周二"
+        wed : "周三"
+        thu : "周四"
+        fri : "周五"
+        sat : "周六"
+      }
+      narrow {
+        sun : "日"
+        mon : "一"
+        tue : "二"
+        wed : "三"
+        thu : "四"
+        fri : "五"
+        sat : "六"
+      }
+      short {
+        sun : "周日"
+        mon : "周一"
+        tue : "周二"
+        wed : "周三"
+        thu : "周四"
+        fri : "周五"
+        sat : "周六"
+      }
+      wide {
+        sun : "星期日"
+        mon : "星期一"
+        tue : "星期二"
+        wed : "星期三"
+        thu : "星期四"
+        fri : "星期五"
+        sat : "星期六"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "上午"
+        pm : "下午"
+      }
+      narrow {
+        am : "上午"
+        pm : "下午"
+      }
+      wide {
+        am : "上午"
+        pm : "下午"
+      }
+    }
+  }
+}

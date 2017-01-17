@@ -1,0 +1,207 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "¤ #,##0.00"
+    percent : "#,##0%"
+  }
+}
+currencies {
+  AUD {
+    symbol : "A$"
+  }
+  BRL {
+    symbol : "R$"
+  }
+  CAD {
+    symbol : "CA$"
+  }
+  CNY {
+    symbol : "CN¥"
+  }
+  EUR {
+    symbol : "€"
+  }
+  GBP {
+    symbol : "£"
+  }
+  HKD {
+    symbol : "HK$"
+  }
+  ILS {
+    symbol : "₪"
+  }
+  INR {
+    symbol : "₹"
+  }
+  JPY {
+    symbol : "JP¥"
+  }
+  KRW {
+    symbol : "₩"
+  }
+  MNT {
+    symbol : "₮"
+  }
+  MXN {
+    symbol : "MX$"
+  }
+  NZD {
+    symbol : "NZ$"
+  }
+  THB {
+    symbol : "฿"
+  }
+  TWD {
+    symbol : "TWD"
+  }
+  USD {
+    symbol : "$"
+  }
+  VND {
+    symbol : "₫"
+  }
+  XAF {
+    symbol : "FCFA"
+  }
+  XCD {
+    symbol : "EC$"
+  }
+  XOF {
+    symbol : "CFA"
+  }
+  XPF {
+    symbol : "CFPF"
+  }
+  ZMW {
+    symbol : "ZMW"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, y 'оны' MMM 'сарын' dd"
+      long : "y 'оны' MMM 'сарын' d"
+      medium : "y MMM d"
+      short : "y-MM-dd"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+    datetime {
+      full : "{1} {0}"
+      long : "{1} {0}"
+      medium : "{1} {0}"
+      short : "{1}, {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "хул"
+        2 : "үхэ"
+        3 : "бар"
+        4 : "туу"
+        5 : "луу"
+        6 : "мог"
+        7 : "мор"
+        8 : "хон"
+        9 : "бич"
+        10 : "тах"
+        11 : "нох"
+        12 : "гах"
+      }
+      narrow {
+        1 : "1"
+        2 : "2"
+        3 : "3"
+        4 : "4"
+        5 : "5"
+        6 : "6"
+        7 : "7"
+        8 : "8"
+        9 : "9"
+        10 : "10"
+        11 : "11"
+        12 : "12"
+      }
+      wide {
+        1 : "Хулгана"
+        2 : "Үхэр"
+        3 : "Бар"
+        4 : "Туулай"
+        5 : "Луу"
+        6 : "Могой"
+        7 : "Морь"
+        8 : "Хонь"
+        9 : "Бич"
+        10 : "Тахиа"
+        11 : "Нохой"
+        12 : "Гахай"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Ня"
+        mon : "Да"
+        tue : "Мя"
+        wed : "Лх"
+        thu : "Пү"
+        fri : "Ба"
+        sat : "Бя"
+      }
+      narrow {
+        sun : "1"
+        mon : "2"
+        tue : "3"
+        wed : "4"
+        thu : "5"
+        fri : "6"
+        sat : "7"
+      }
+      short {
+        sun : "Ня"
+        mon : "Да"
+        tue : "Мя"
+        wed : "Лх"
+        thu : "Пү"
+        fri : "Ба"
+        sat : "Бя"
+      }
+      wide {
+        sun : "ням"
+        mon : "даваа"
+        tue : "мягмар"
+        wed : "лхагва"
+        thu : "пүрэв"
+        fri : "баасан"
+        sat : "бямба"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "ҮӨ"
+        pm : "ҮХ"
+      }
+      narrow {
+        am : "ҮӨ"
+        pm : "ҮХ"
+      }
+      wide {
+        am : "ҮӨ"
+        pm : "ҮХ"
+      }
+    }
+  }
+}

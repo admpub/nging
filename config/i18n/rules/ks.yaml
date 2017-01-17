@@ -1,0 +1,122 @@
+plural : "2A"
+direction : "RTL"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##,##0.###"
+    currency : "¤ #,##,##0.00"
+    percent : "#,##,##0%"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, MMMM d, y"
+      long : "MMMM d, y"
+      medium : "MMM d, y"
+      short : "M/d/yy"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+    datetime {
+      full : "{1} {0}"
+      long : "{1} {0}"
+      medium : "{1} {0}"
+      short : "{1} {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "جنؤری"
+        2 : "فرؤری"
+        3 : "مارٕچ"
+        4 : "اپریل"
+        5 : "میٔ"
+        6 : "جوٗن"
+        7 : "جوٗلایی"
+        8 : "اگست"
+        9 : "ستمبر"
+        10 : "اکتوٗبر"
+        11 : "نومبر"
+        12 : "دسمبر"
+      }
+      narrow {
+        1 : "ج"
+        2 : "ف"
+        3 : "م"
+        4 : "ا"
+        5 : "م"
+        6 : "ج"
+        7 : "ج"
+        8 : "ا"
+        9 : "س"
+        10 : "س"
+        11 : "ا"
+        12 : "ن"
+      }
+      wide {
+        1 : "جنؤری"
+        2 : "فرؤری"
+        3 : "مارٕچ"
+        4 : "اپریل"
+        5 : "میٔ"
+        6 : "جوٗن"
+        7 : "جوٗلایی"
+        8 : "اگست"
+        9 : "ستمبر"
+        10 : "اکتوٗبر"
+        11 : "نومبر"
+        12 : "دسمبر"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "آتھوار"
+        mon : "ژٔنٛدٕروار"
+        tue : "بوٚموار"
+        wed : "بودوار"
+        thu : "برٛٮ۪سوار"
+        fri : "جُمہ"
+        sat : "بٹوار"
+      }
+      narrow {
+        sun : "ا"
+        mon : "ژ"
+        tue : "ب"
+        wed : "ب"
+        thu : "ب"
+        fri : "ج"
+        sat : "ب"
+      }
+      short {
+        sun : "آتھوار"
+        mon : "ژٔنٛدٕروار"
+        tue : "بوٚموار"
+        wed : "بودوار"
+        thu : "برٛٮ۪سوار"
+        fri : "جُمہ"
+        sat : "بٹوار"
+      }
+      wide {
+        sun : "اَتھوار"
+        mon : "ژٔنٛدرٕروار"
+        tue : "بوٚموار"
+        wed : "بودوار"
+        thu : "برٛٮ۪سوار"
+        fri : "جُمہ"
+        sat : "بٹوار"
+      }
+    }
+  }
+}

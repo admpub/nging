@@ -1,0 +1,112 @@
+plural : "2B"
+direction : "LTR"
+numbers {
+  formats {
+    currency : "¤#,##0.00"
+  }
+}
+currencies {
+  MGA {
+    symbol : "Ar"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM, y"
+      short : "d/M/y"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Jan"
+        2 : "Feb"
+        3 : "Mar"
+        4 : "Apr"
+        5 : "Mey"
+        6 : "Jon"
+        7 : "Jol"
+        8 : "Aog"
+        9 : "Sep"
+        10 : "Okt"
+        11 : "Nov"
+        12 : "Des"
+      }
+      narrow {
+        1 : "J"
+        2 : "F"
+        3 : "M"
+        4 : "A"
+        5 : "M"
+        6 : "J"
+        7 : "J"
+        8 : "A"
+        9 : "S"
+        10 : "O"
+        11 : "N"
+        12 : "D"
+      }
+      wide {
+        1 : "Janoary"
+        2 : "Febroary"
+        3 : "Martsa"
+        4 : "Aprily"
+        5 : "Mey"
+        6 : "Jona"
+        7 : "Jolay"
+        8 : "Aogositra"
+        9 : "Septambra"
+        10 : "Oktobra"
+        11 : "Novambra"
+        12 : "Desambra"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Alah"
+        mon : "Alats"
+        tue : "Tal"
+        wed : "Alar"
+        thu : "Alak"
+        fri : "Zom"
+        sat : "Asab"
+      }
+      narrow {
+        sun : "A"
+        mon : "A"
+        tue : "T"
+        wed : "A"
+        thu : "A"
+        fri : "Z"
+        sat : "A"
+      }
+      short {
+        sun : "Alah"
+        mon : "Alats"
+        tue : "Tal"
+        wed : "Alar"
+        thu : "Alak"
+        fri : "Zom"
+        sat : "Asab"
+      }
+      wide {
+        sun : "Alahady"
+        mon : "Alatsinainy"
+        tue : "Talata"
+        wed : "Alarobia"
+        thu : "Alakamisy"
+        fri : "Zoma"
+        sat : "Asabotsy"
+      }
+    }
+  }
+}

@@ -1,0 +1,109 @@
+plural : "2A"
+direction : "RTL"
+numbers {
+  symbols {
+    decimal : ","
+    group : "."
+    negative : "−"
+    percent : "%"
+  }
+  formats {
+    currency : "#,##0.00 ¤"
+  }
+}
+currencies {
+  AFN {
+    symbol : "؋"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE د y د MMMM d"
+      long : "د y د MMMM d"
+      medium : "d MMM y"
+      short : "y/M/d"
+    }
+    time {
+      full : "H:mm:ss (zzzz)"
+      long : "H:mm:ss (z)"
+      medium : "H:mm:ss"
+      short : "H:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "جنوري"
+        2 : "فبروري"
+        3 : "مارچ"
+        4 : "اپریل"
+        5 : "می"
+        6 : "جون"
+        7 : "جولای"
+        8 : "اګست"
+        9 : "سپتمبر"
+        10 : "اکتوبر"
+        11 : "نومبر"
+        12 : "دسمبر"
+      }
+      wide {
+        1 : "جنوري"
+        2 : "فبروري"
+        3 : "مارچ"
+        4 : "اپریل"
+        5 : "می"
+        6 : "جون"
+        7 : "جولای"
+        8 : "اګست"
+        9 : "سپتمبر"
+        10 : "اکتوبر"
+        11 : "نومبر"
+        12 : "دسمبر"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "یکشنبه"
+        mon : "دوشنبه"
+        tue : "سه‌شنبه"
+        wed : "چهارشنبه"
+        thu : "پنجشنبه"
+        fri : "جمعه"
+        sat : "شنبه"
+      }
+      short {
+        sun : "یکشنبه"
+        mon : "دوشنبه"
+        tue : "سه‌شنبه"
+        wed : "چهارشنبه"
+        thu : "پنجشنبه"
+        fri : "جمعه"
+        sat : "شنبه"
+      }
+      wide {
+        sun : "یکشنبه"
+        mon : "دوشنبه"
+        tue : "سه‌شنبه"
+        wed : "چهارشنبه"
+        thu : "پنجشنبه"
+        fri : "جمعه"
+        sat : "شنبه"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "غ.م."
+        pm : "غ.و."
+      }
+      narrow {
+        am : "غ.م."
+        pm : "غ.و."
+      }
+      wide {
+        am : "غ.م."
+        pm : "غ.و."
+      }
+    }
+  }
+}

@@ -1,0 +1,130 @@
+plural : "2C"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+  }
+  formats {
+    currency : "#,##0.00¤"
+  }
+}
+currencies {
+  DZD {
+    symbol : "DA"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM, y"
+      short : "d/M/y"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Yen"
+        2 : "Fur"
+        3 : "Meɣ"
+        4 : "Yeb"
+        5 : "May"
+        6 : "Yun"
+        7 : "Yul"
+        8 : "Ɣuc"
+        9 : "Cte"
+        10 : "Tub"
+        11 : "Nun"
+        12 : "Duǧ"
+      }
+      narrow {
+        1 : "Y"
+        2 : "F"
+        3 : "M"
+        4 : "Y"
+        5 : "M"
+        6 : "Y"
+        7 : "Y"
+        8 : "Ɣ"
+        9 : "C"
+        10 : "T"
+        11 : "N"
+        12 : "D"
+      }
+      wide {
+        1 : "Yennayer"
+        2 : "Fuṛar"
+        3 : "Meɣres"
+        4 : "Yebrir"
+        5 : "Mayyu"
+        6 : "Yunyu"
+        7 : "Yulyu"
+        8 : "Ɣuct"
+        9 : "Ctembeṛ"
+        10 : "Tubeṛ"
+        11 : "Nunembeṛ"
+        12 : "Duǧembeṛ"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Yan"
+        mon : "San"
+        tue : "Kraḍ"
+        wed : "Kuẓ"
+        thu : "Sam"
+        fri : "Sḍis"
+        sat : "Say"
+      }
+      narrow {
+        sun : "Y"
+        mon : "S"
+        tue : "K"
+        wed : "K"
+        thu : "S"
+        fri : "S"
+        sat : "S"
+      }
+      short {
+        sun : "Yan"
+        mon : "San"
+        tue : "Kraḍ"
+        wed : "Kuẓ"
+        thu : "Sam"
+        fri : "Sḍis"
+        sat : "Say"
+      }
+      wide {
+        sun : "Yanass"
+        mon : "Sanass"
+        tue : "Kraḍass"
+        wed : "Kuẓass"
+        thu : "Samass"
+        fri : "Sḍisass"
+        sat : "Sayass"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "n tufat"
+        pm : "n tmeddit"
+      }
+      narrow {
+        am : "n tufat"
+        pm : "n tmeddit"
+      }
+      wide {
+        am : "n tufat"
+        pm : "n tmeddit"
+      }
+    }
+  }
+}

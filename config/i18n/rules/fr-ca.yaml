@@ -1,0 +1,62 @@
+direction : "LTR"
+currencies {
+  AFN {
+    symbol : "AFN"
+  }
+  BAM {
+    symbol : "BAM"
+  }
+  BDT {
+    symbol : "BDT"
+  }
+  CAD {
+    symbol : "$"
+  }
+  CNY {
+    symbol : "CN¥"
+  }
+  DJF {
+    symbol : "DJF"
+  }
+  IDR {
+    symbol : "IDR"
+  }
+  MMK {
+    symbol : "MMK"
+  }
+  MNT {
+    symbol : "MNT"
+  }
+  MVR {
+    symbol : "MVR"
+  }
+  MYR {
+    symbol : "MYR"
+  }
+  PGK {
+    symbol : "PGK"
+  }
+  TOP {
+    symbol : "TOP"
+  }
+  VUV {
+    symbol : "VUV"
+  }
+  WST {
+    symbol : "WST"
+  }
+  XOF {
+    symbol : "F CFA"
+  }
+}
+datetime {
+  formats {
+    date {
+      medium : "y-MM-dd"
+      short : "yy-MM-dd"
+    }
+    time {
+      full : "HH 'h' mm 'min' ss 's' zzzz"
+    }
+  }
+}

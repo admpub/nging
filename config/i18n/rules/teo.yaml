@@ -1,0 +1,126 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  formats {
+    currency : "¤#,##0.00;(¤#,##0.00)"
+  }
+}
+currencies {
+  UGX {
+    symbol : "USh"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Rar"
+        2 : "Muk"
+        3 : "Kwa"
+        4 : "Dun"
+        5 : "Mar"
+        6 : "Mod"
+        7 : "Jol"
+        8 : "Ped"
+        9 : "Sok"
+        10 : "Tib"
+        11 : "Lab"
+        12 : "Poo"
+      }
+      narrow {
+        1 : "R"
+        2 : "M"
+        3 : "K"
+        4 : "D"
+        5 : "M"
+        6 : "M"
+        7 : "J"
+        8 : "P"
+        9 : "S"
+        10 : "T"
+        11 : "L"
+        12 : "P"
+      }
+      wide {
+        1 : "Orara"
+        2 : "Omuk"
+        3 : "Okwamg'"
+        4 : "Odung'el"
+        5 : "Omaruk"
+        6 : "Omodok'king'ol"
+        7 : "Ojola"
+        8 : "Opedel"
+        9 : "Osokosokoma"
+        10 : "Otibar"
+        11 : "Olabor"
+        12 : "Opoo"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Jum"
+        mon : "Bar"
+        tue : "Aar"
+        wed : "Uni"
+        thu : "Ung"
+        fri : "Kan"
+        sat : "Sab"
+      }
+      narrow {
+        sun : "J"
+        mon : "B"
+        tue : "A"
+        wed : "U"
+        thu : "U"
+        fri : "K"
+        sat : "S"
+      }
+      short {
+        sun : "Jum"
+        mon : "Bar"
+        tue : "Aar"
+        wed : "Uni"
+        thu : "Ung"
+        fri : "Kan"
+        sat : "Sab"
+      }
+      wide {
+        sun : "Nakaejuma"
+        mon : "Nakaebarasa"
+        tue : "Nakaare"
+        wed : "Nakauni"
+        thu : "Nakaung'on"
+        fri : "Nakakany"
+        sat : "Nakasabiti"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "Taparachu"
+        pm : "Ebongi"
+      }
+      narrow {
+        am : "Taparachu"
+        pm : "Ebongi"
+      }
+      wide {
+        am : "Taparachu"
+        pm : "Ebongi"
+      }
+    }
+  }
+}

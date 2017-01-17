@@ -1,0 +1,264 @@
+plural : "6A"
+direction : "RTL"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###;#,##0.###-"
+    currency : "¤ #,##0.00;¤ #,##0.00-"
+    percent : "#,##0%"
+  }
+}
+currencies {
+  AED {
+    symbol : "د.إ.‏"
+  }
+  AUD {
+    symbol : "AU$"
+  }
+  BHD {
+    symbol : "د.ب.‏"
+  }
+  BRL {
+    symbol : "R$"
+  }
+  CAD {
+    symbol : "CA$"
+  }
+  CNY {
+    symbol : "ي.ص"
+  }
+  DZD {
+    symbol : "د.ج.‏"
+  }
+  EGP {
+    symbol : "ج.م.‏"
+  }
+  EUR {
+    symbol : "€"
+  }
+  GBP {
+    symbol : "£"
+  }
+  HKD {
+    symbol : "HK$"
+  }
+  ILS {
+    symbol : "₪"
+  }
+  INR {
+    symbol : "ر.ه.‏"
+  }
+  IQD {
+    symbol : "د.ع.‏"
+  }
+  JOD {
+    symbol : "د.أ.‏"
+  }
+  JPY {
+    symbol : "JP¥"
+  }
+  KMF {
+    symbol : "ف.ج.ق.‏"
+  }
+  KRW {
+    symbol : "₩"
+  }
+  KWD {
+    symbol : "د.ك.‏"
+  }
+  LBP {
+    symbol : "ل.ل.‏"
+  }
+  LYD {
+    symbol : "د.ل.‏"
+  }
+  MAD {
+    symbol : "د.م.‏"
+  }
+  MRO {
+    symbol : "أ.م.‏"
+  }
+  MXN {
+    symbol : "MX$"
+  }
+  NZD {
+    symbol : "NZ$"
+  }
+  OMR {
+    symbol : "ر.ع.‏"
+  }
+  QAR {
+    symbol : "ر.ق.‏"
+  }
+  SAR {
+    symbol : "ر.س.‏"
+  }
+  SDD {
+    symbol : "د.س.‏"
+  }
+  SDP {
+    symbol : "ج.س.‏"
+  }
+  SYP {
+    symbol : "ل.س.‏"
+  }
+  THB {
+    symbol : "฿"
+  }
+  TND {
+    symbol : "د.ت.‏"
+  }
+  TWD {
+    symbol : "NT$"
+  }
+  USD {
+    symbol : "US$"
+  }
+  VND {
+    symbol : "₫"
+  }
+  XAF {
+    symbol : "FCFA"
+  }
+  XCD {
+    symbol : "EC$"
+  }
+  XOF {
+    symbol : "CFA"
+  }
+  XPF {
+    symbol : "CFPF"
+  }
+  XXX {
+    symbol : "***"
+  }
+  YER {
+    symbol : "ر.ي.‏"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE، d MMMM، y"
+      long : "d MMMM، y"
+      medium : "dd‏/MM‏/y"
+      short : "d‏/M‏/y"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+    datetime {
+      full : "{1} {0}"
+      long : "{1} {0}"
+      medium : "{1} {0}"
+      short : "{1} {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "يناير"
+        2 : "فبراير"
+        3 : "مارس"
+        4 : "أبريل"
+        5 : "مايو"
+        6 : "يونيو"
+        7 : "يوليو"
+        8 : "أغسطس"
+        9 : "سبتمبر"
+        10 : "أكتوبر"
+        11 : "نوفمبر"
+        12 : "ديسمبر"
+      }
+      narrow {
+        1 : "ي"
+        2 : "ف"
+        3 : "م"
+        4 : "أ"
+        5 : "و"
+        6 : "ن"
+        7 : "ل"
+        8 : "غ"
+        9 : "س"
+        10 : "ك"
+        11 : "ب"
+        12 : "د"
+      }
+      wide {
+        1 : "يناير"
+        2 : "فبراير"
+        3 : "مارس"
+        4 : "أبريل"
+        5 : "مايو"
+        6 : "يونيو"
+        7 : "يوليو"
+        8 : "أغسطس"
+        9 : "سبتمبر"
+        10 : "أكتوبر"
+        11 : "نوفمبر"
+        12 : "ديسمبر"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "الأحد"
+        mon : "الاثنين"
+        tue : "الثلاثاء"
+        wed : "الأربعاء"
+        thu : "الخميس"
+        fri : "الجمعة"
+        sat : "السبت"
+      }
+      narrow {
+        sun : "ح"
+        mon : "ن"
+        tue : "ث"
+        wed : "ر"
+        thu : "خ"
+        fri : "ج"
+        sat : "س"
+      }
+      short {
+        sun : "الأحد"
+        mon : "الاثنين"
+        tue : "الثلاثاء"
+        wed : "الأربعاء"
+        thu : "الخميس"
+        fri : "الجمعة"
+        sat : "السبت"
+      }
+      wide {
+        sun : "الأحد"
+        mon : "الاثنين"
+        tue : "الثلاثاء"
+        wed : "الأربعاء"
+        thu : "الخميس"
+        fri : "الجمعة"
+        sat : "السبت"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "ص"
+        pm : "م"
+      }
+      narrow {
+        am : "ص"
+        pm : "م"
+      }
+      wide {
+        am : "ص"
+        pm : "م"
+      }
+    }
+  }
+}

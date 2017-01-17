@@ -1,0 +1,162 @@
+plural : "4B"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "#,##0.00 ¤"
+    percent : "#,##0%"
+  }
+}
+currencies {
+  AUD {
+    symbol : "AU$"
+  }
+  AZN {
+    symbol : "ман."
+  }
+  JPY {
+    symbol : "¥"
+  }
+  RSD {
+    symbol : "дин."
+  }
+  RUB {
+    symbol : "руб."
+  }
+  UAH {
+    symbol : "₴"
+  }
+  UAK {
+    symbol : "крб."
+  }
+  USD {
+    symbol : "$"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y 'р'."
+      long : "d MMMM y 'р'."
+      medium : "d MMM y"
+      short : "dd.MM.yy"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+    datetime {
+      full : "{1} {0}"
+      long : "{1} {0}"
+      medium : "{1} {0}"
+      short : "{1} {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "січ."
+        2 : "лют."
+        3 : "бер."
+        4 : "квіт."
+        5 : "трав."
+        6 : "черв."
+        7 : "лип."
+        8 : "серп."
+        9 : "вер."
+        10 : "жовт."
+        11 : "лист."
+        12 : "груд."
+      }
+      narrow {
+        1 : "С"
+        2 : "Л"
+        3 : "Б"
+        4 : "К"
+        5 : "Т"
+        6 : "Ч"
+        7 : "Л"
+        8 : "С"
+        9 : "В"
+        10 : "Ж"
+        11 : "Л"
+        12 : "Г"
+      }
+      wide {
+        1 : "січня"
+        2 : "лютого"
+        3 : "березня"
+        4 : "квітня"
+        5 : "травня"
+        6 : "червня"
+        7 : "липня"
+        8 : "серпня"
+        9 : "вересня"
+        10 : "жовтня"
+        11 : "листопада"
+        12 : "грудня"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Нд"
+        mon : "Пн"
+        tue : "Вт"
+        wed : "Ср"
+        thu : "Чт"
+        fri : "Пт"
+        sat : "Сб"
+      }
+      narrow {
+        sun : "Н"
+        mon : "П"
+        tue : "В"
+        wed : "С"
+        thu : "Ч"
+        fri : "П"
+        sat : "С"
+      }
+      short {
+        sun : "Нд"
+        mon : "Пн"
+        tue : "Вт"
+        wed : "Ср"
+        thu : "Чт"
+        fri : "Пт"
+        sat : "Сб"
+      }
+      wide {
+        sun : "Неділя"
+        mon : "Понеділок"
+        tue : "Вівторок"
+        wed : "Середа"
+        thu : "Четвер"
+        fri : "Пʼятниця"
+        sat : "Субота"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "дп"
+        pm : "пп"
+      }
+      narrow {
+        am : "дп"
+        pm : "пп"
+      }
+      wide {
+        am : "дп"
+        pm : "пп"
+      }
+    }
+  }
+}

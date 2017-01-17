@@ -1,0 +1,116 @@
+plural : "2B"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+  }
+  formats {
+    currency : "¤#,##0.00"
+  }
+}
+currencies {
+  GHS {
+    symbol : "GH₵"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, y MMMM dd"
+      long : "y MMMM d"
+      medium : "y MMM d"
+      short : "yy/MM/dd"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "S-Ɔ"
+        2 : "K-Ɔ"
+        3 : "E-Ɔ"
+        4 : "E-O"
+        5 : "E-K"
+        6 : "O-A"
+        7 : "A-K"
+        8 : "D-Ɔ"
+        9 : "F-Ɛ"
+        10 : "Ɔ-A"
+        11 : "Ɔ-O"
+        12 : "M-Ɔ"
+      }
+      wide {
+        1 : "Sanda-Ɔpɛpɔn"
+        2 : "Kwakwar-Ɔgyefuo"
+        3 : "Ebɔw-Ɔbenem"
+        4 : "Ebɔbira-Oforisuo"
+        5 : "Esusow Aketseaba-Kɔtɔnimba"
+        6 : "Obirade-Ayɛwohomumu"
+        7 : "Ayɛwoho-Kitawonsa"
+        8 : "Difuu-Ɔsandaa"
+        9 : "Fankwa-Ɛbɔ"
+        10 : "Ɔbɛsɛ-Ahinime"
+        11 : "Ɔberɛfɛw-Obubuo"
+        12 : "Mumu-Ɔpɛnimba"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Kwe"
+        mon : "Dwo"
+        tue : "Ben"
+        wed : "Wuk"
+        thu : "Yaw"
+        fri : "Fia"
+        sat : "Mem"
+      }
+      narrow {
+        sun : "K"
+        mon : "D"
+        tue : "B"
+        wed : "W"
+        thu : "Y"
+        fri : "F"
+        sat : "M"
+      }
+      short {
+        sun : "Kwe"
+        mon : "Dwo"
+        tue : "Ben"
+        wed : "Wuk"
+        thu : "Yaw"
+        fri : "Fia"
+        sat : "Mem"
+      }
+      wide {
+        sun : "Kwesida"
+        mon : "Dwowda"
+        tue : "Benada"
+        wed : "Wukuda"
+        thu : "Yawda"
+        fri : "Fida"
+        sat : "Memeneda"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "AN"
+        pm : "EW"
+      }
+      narrow {
+        am : "AN"
+        pm : "EW"
+      }
+      wide {
+        am : "AN"
+        pm : "EW"
+      }
+    }
+  }
+}

@@ -26,6 +26,7 @@ import (
 	GAuth "github.com/admpub/dgoogauth"
 	"github.com/admpub/nging/application/library/caddy"
 	"github.com/admpub/nging/application/library/ftp"
+	"github.com/webx-top/echo/middleware/language"
 )
 
 func SetVersion(version string) {
@@ -81,8 +82,9 @@ type Config struct {
 		BlockKey string `json:"blockKey"`
 	} `json:"cookie"`
 
-	Caddy caddy.Config `json:"caddy"`
-	FTP   ftp.Config   `json:"ftp"`
+	Caddy    caddy.Config    `json:"caddy"`
+	FTP      ftp.Config      `json:"ftp"`
+	Language language.Config `json:"language"`
 }
 
 func (c *Config) SaveToFile() error {

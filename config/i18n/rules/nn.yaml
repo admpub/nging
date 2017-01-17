@@ -1,0 +1,135 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+    negative : "−"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "#,##0.00 ¤"
+    percent : "#,##0 %"
+  }
+}
+currencies {
+  NOK {
+    symbol : "kr"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE d. MMMM y"
+      long : "d. MMMM y"
+      medium : "d. MMM y"
+      short : "dd.MM.yy"
+    }
+    time {
+      full : "'kl'. HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "jan."
+        2 : "feb."
+        3 : "mars"
+        4 : "apr."
+        5 : "mai"
+        6 : "juni"
+        7 : "juli"
+        8 : "aug."
+        9 : "sep."
+        10 : "okt."
+        11 : "nov."
+        12 : "des."
+      }
+      narrow {
+        1 : "J"
+        2 : "F"
+        3 : "M"
+        4 : "A"
+        5 : "M"
+        6 : "J"
+        7 : "J"
+        8 : "A"
+        9 : "S"
+        10 : "O"
+        11 : "N"
+        12 : "D"
+      }
+      wide {
+        1 : "januar"
+        2 : "februar"
+        3 : "mars"
+        4 : "april"
+        5 : "mai"
+        6 : "juni"
+        7 : "juli"
+        8 : "august"
+        9 : "september"
+        10 : "oktober"
+        11 : "november"
+        12 : "desember"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "sø."
+        mon : "må."
+        tue : "ty."
+        wed : "on."
+        thu : "to."
+        fri : "fr."
+        sat : "la."
+      }
+      narrow {
+        sun : "S"
+        mon : "M"
+        tue : "T"
+        wed : "O"
+        thu : "T"
+        fri : "F"
+        sat : "L"
+      }
+      short {
+        sun : "sø."
+        mon : "må."
+        tue : "ty."
+        wed : "on."
+        thu : "to."
+        fri : "fr."
+        sat : "la."
+      }
+      wide {
+        sun : "søndag"
+        mon : "måndag"
+        tue : "tysdag"
+        wed : "onsdag"
+        thu : "torsdag"
+        fri : "fredag"
+        sat : "laurdag"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "f.m."
+        pm : "e.m."
+      }
+      narrow {
+        am : "f.m."
+        pm : "e.m."
+      }
+      wide {
+        am : "formiddag"
+        pm : "ettermiddag"
+      }
+    }
+  }
+}

@@ -1,0 +1,144 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##,##0.###"
+    currency : "¤ #,##,##0.00"
+    percent : "#,##,##0%"
+  }
+}
+currencies {
+  CAD {
+    symbol : "CA$"
+  }
+  USD {
+    symbol : "US$"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM, y"
+      long : "d MMMM, y"
+      medium : "d MMM, y"
+      short : "d-M-yy"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+    datetime {
+      full : "{1} {0}"
+      long : "{1} {0}"
+      medium : "{1} {0}"
+      short : "{1} {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "ஜன."
+        2 : "பிப்."
+        3 : "மார்."
+        4 : "ஏப்."
+        5 : "மே"
+        6 : "ஜூன்"
+        7 : "ஜூலை"
+        8 : "ஆக."
+        9 : "செப்."
+        10 : "அக்."
+        11 : "நவ."
+        12 : "டிச."
+      }
+      narrow {
+        1 : "ஜ"
+        2 : "பி"
+        3 : "மா"
+        4 : "ஏ"
+        5 : "மே"
+        6 : "ஜூ"
+        7 : "ஜூ"
+        8 : "ஆ"
+        9 : "செ"
+        10 : "அ"
+        11 : "ந"
+        12 : "டி"
+      }
+      wide {
+        1 : "ஜனவரி"
+        2 : "பிப்ரவரி"
+        3 : "மார்ச்"
+        4 : "ஏப்ரல்"
+        5 : "மே"
+        6 : "ஜூன்"
+        7 : "ஜூலை"
+        8 : "ஆகஸ்ட்"
+        9 : "செப்டம்பர்"
+        10 : "அக்டோபர்"
+        11 : "நவம்பர்"
+        12 : "டிசம்பர்"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "ஞா"
+        mon : "தி"
+        tue : "செ"
+        wed : "பு"
+        thu : "வி"
+        fri : "வெ"
+        sat : "ச"
+      }
+      narrow {
+        sun : "ஞா"
+        mon : "தி"
+        tue : "செ"
+        wed : "பு"
+        thu : "வி"
+        fri : "வெ"
+        sat : "ச"
+      }
+      short {
+        sun : "ஞா"
+        mon : "தி"
+        tue : "செ"
+        wed : "பு"
+        thu : "வி"
+        fri : "வெ"
+        sat : "ச"
+      }
+      wide {
+        sun : "ஞாயிறு"
+        mon : "திங்கள்"
+        tue : "செவ்வாய்"
+        wed : "புதன்"
+        thu : "வியாழன்"
+        fri : "வெள்ளி"
+        sat : "சனி"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "முற்பகல்"
+        pm : "பிற்பகல்"
+      }
+      narrow {
+        am : "AM"
+        pm : "PM"
+      }
+      wide {
+        am : "AM"
+        pm : "PM"
+      }
+    }
+  }
+}

@@ -1,0 +1,126 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  formats {
+    currency : "¤#,##0.00;(¤#,##0.00)"
+  }
+}
+currencies {
+  KES {
+    symbol : "Ksh"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Obo"
+        2 : "Waa"
+        3 : "Oku"
+        4 : "Ong"
+        5 : "Ime"
+        6 : "Ile"
+        7 : "Sap"
+        8 : "Isi"
+        9 : "Saa"
+        10 : "Tom"
+        11 : "Tob"
+        12 : "Tow"
+      }
+      narrow {
+        1 : "O"
+        2 : "W"
+        3 : "O"
+        4 : "O"
+        5 : "I"
+        6 : "I"
+        7 : "S"
+        8 : "I"
+        9 : "S"
+        10 : "T"
+        11 : "T"
+        12 : "T"
+      }
+      wide {
+        1 : "Lapa le obo"
+        2 : "Lapa le waare"
+        3 : "Lapa le okuni"
+        4 : "Lapa le ong'wan"
+        5 : "Lapa le imet"
+        6 : "Lapa le ile"
+        7 : "Lapa le sapa"
+        8 : "Lapa le isiet"
+        9 : "Lapa le saal"
+        10 : "Lapa le tomon"
+        11 : "Lapa le tomon obo"
+        12 : "Lapa le tomon waare"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Are"
+        mon : "Kun"
+        tue : "Ong"
+        wed : "Ine"
+        thu : "Ile"
+        fri : "Sap"
+        sat : "Kwe"
+      }
+      narrow {
+        sun : "A"
+        mon : "K"
+        tue : "O"
+        wed : "I"
+        thu : "I"
+        fri : "S"
+        sat : "K"
+      }
+      short {
+        sun : "Are"
+        mon : "Kun"
+        tue : "Ong"
+        wed : "Ine"
+        thu : "Ile"
+        fri : "Sap"
+        sat : "Kwe"
+      }
+      wide {
+        sun : "Mderot ee are"
+        mon : "Mderot ee kuni"
+        tue : "Mderot ee ong'wan"
+        wed : "Mderot ee inet"
+        thu : "Mderot ee ile"
+        fri : "Mderot ee sapa"
+        sat : "Mderot ee kwe"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "Tesiran"
+        pm : "Teipa"
+      }
+      narrow {
+        am : "Tesiran"
+        pm : "Teipa"
+      }
+      wide {
+        am : "Tesiran"
+        pm : "Teipa"
+      }
+    }
+  }
+}

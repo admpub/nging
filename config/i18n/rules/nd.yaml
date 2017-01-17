@@ -1,0 +1,107 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  formats {
+    currency : "¤#,##0.00;(¤#,##0.00)"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Zib"
+        2 : "Nhlo"
+        3 : "Mbi"
+        4 : "Mab"
+        5 : "Nkw"
+        6 : "Nhla"
+        7 : "Ntu"
+        8 : "Ncw"
+        9 : "Mpan"
+        10 : "Mfu"
+        11 : "Lwe"
+        12 : "Mpal"
+      }
+      narrow {
+        1 : "Z"
+        2 : "N"
+        3 : "M"
+        4 : "M"
+        5 : "N"
+        6 : "N"
+        7 : "N"
+        8 : "N"
+        9 : "M"
+        10 : "M"
+        11 : "L"
+        12 : "M"
+      }
+      wide {
+        1 : "Zibandlela"
+        2 : "Nhlolanja"
+        3 : "Mbimbitho"
+        4 : "Mabasa"
+        5 : "Nkwenkwezi"
+        6 : "Nhlangula"
+        7 : "Ntulikazi"
+        8 : "Ncwabakazi"
+        9 : "Mpandula"
+        10 : "Mfumfu"
+        11 : "Lwezi"
+        12 : "Mpalakazi"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Son"
+        mon : "Mvu"
+        tue : "Sib"
+        wed : "Sit"
+        thu : "Sin"
+        fri : "Sih"
+        sat : "Mgq"
+      }
+      narrow {
+        sun : "S"
+        mon : "M"
+        tue : "S"
+        wed : "S"
+        thu : "S"
+        fri : "S"
+        sat : "M"
+      }
+      short {
+        sun : "Son"
+        mon : "Mvu"
+        tue : "Sib"
+        wed : "Sit"
+        thu : "Sin"
+        fri : "Sih"
+        sat : "Mgq"
+      }
+      wide {
+        sun : "Sonto"
+        mon : "Mvulo"
+        tue : "Sibili"
+        wed : "Sithathu"
+        thu : "Sine"
+        fri : "Sihlanu"
+        sat : "Mgqibelo"
+      }
+    }
+  }
+}

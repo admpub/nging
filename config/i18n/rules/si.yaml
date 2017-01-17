@@ -1,0 +1,140 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  formats {
+    decimal : "#,##,##0.###"
+    currency : "¤ #,##,##0.00"
+    percent : "#,##,##0%"
+  }
+}
+currencies {
+  BMD {
+    symbol : "බ.ඩො."
+  }
+  CAD {
+    symbol : "කැ.ඩො."
+  }
+  LKR {
+    symbol : "රු."
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "y MMMM d, EEEE"
+      long : "y MMMM d"
+      medium : "y MMM d"
+      short : "y/MM/dd"
+    }
+    time {
+      full : "a HH:mm:ss zzzz"
+      long : "a h:mm:ss z"
+      medium : "a h.mm.ss"
+      short : "a h.mm"
+    }
+    datetime {
+      full : "{1} {0}"
+      long : "{1} {0}"
+      medium : "{1} {0}"
+      short : "{1} {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "ජන"
+        2 : "පෙබ"
+        3 : "මාර්තු"
+        4 : "අප්‍රේල්"
+        5 : "මැයි"
+        6 : "ජූනි"
+        7 : "ජූලි"
+        8 : "අගෝ"
+        9 : "සැප්"
+        10 : "ඔක්"
+        11 : "නොවැ"
+        12 : "දෙසැ"
+      }
+      narrow {
+        1 : "ජ"
+        2 : "පෙ"
+        3 : "මා"
+        4 : "අ"
+        5 : "මැ"
+        6 : "ජූ"
+        7 : "ජූ"
+        8 : "අ"
+        9 : "සැ"
+        10 : "ඔ"
+        11 : "නෙ"
+        12 : "දෙ"
+      }
+      wide {
+        1 : "ජනවාරි"
+        2 : "පෙබරවාරි"
+        3 : "මාර්තු"
+        4 : "අප්‍රේල්"
+        5 : "මැයි"
+        6 : "ජූනි"
+        7 : "ජූලි"
+        8 : "අගෝස්තු"
+        9 : "සැප්තැම්බර්"
+        10 : "ඔක්තෝබර්"
+        11 : "නොවැම්බර්"
+        12 : "දෙසැම්බර්"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "ඉරි"
+        mon : "සඳු"
+        tue : "අඟ"
+        wed : "බදා"
+        thu : "බ්‍රහ"
+        fri : "සිකු"
+        sat : "සෙන"
+      }
+      narrow {
+        sun : "ඉ"
+        mon : "ස"
+        tue : "අ"
+        wed : "බ"
+        thu : "බ්‍ර"
+        fri : "සි"
+        sat : "සෙ"
+      }
+      short {
+        sun : "ඉ"
+        mon : "ස"
+        tue : "අ"
+        wed : "බ"
+        thu : "බ්‍ර"
+        fri : "සි"
+        sat : "සෙ"
+      }
+      wide {
+        sun : "ඉරිදා"
+        mon : "සඳුදා"
+        tue : "අඟහරුවාදා"
+        wed : "බදාදා"
+        thu : "බ්‍රහස්පතින්දා"
+        fri : "සිකුරාදා"
+        sat : "සෙනසුරාදා"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "පෙ.ව."
+        pm : "ප.ව."
+      }
+      narrow {
+        am : "පෙ.ව."
+        pm : "ප.ව."
+      }
+      wide {
+        am : "පෙ.ව."
+        pm : "ප.ව."
+      }
+    }
+  }
+}

@@ -1,0 +1,136 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "¤#,##0.00;(¤#,##0.00)"
+    percent : "#,##0%"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM, y"
+      long : "d MMMM, y"
+      medium : "d MMM, y"
+      short : "d-MM-yy"
+    }
+    time {
+      full : "hh:mm:ss a zzzz"
+      long : "hh:mm:ss a z"
+      medium : "hh:mm:ss a"
+      short : "hh:mm a"
+    }
+    datetime {
+      full : "{1} {0}"
+      long : "{1} {0}"
+      medium : "{1} {0}"
+      short : "{1} {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "જાન્યુ"
+        2 : "ફેબ્રુ"
+        3 : "માર્ચ"
+        4 : "એપ્રિલ"
+        5 : "મે"
+        6 : "જૂન"
+        7 : "જુલાઈ"
+        8 : "ઑગસ્ટ"
+        9 : "સપ્ટે"
+        10 : "ઑક્ટો"
+        11 : "નવે"
+        12 : "ડિસે"
+      }
+      narrow {
+        1 : "જા"
+        2 : "ફે"
+        3 : "મા"
+        4 : "એ"
+        5 : "મે"
+        6 : "જૂ"
+        7 : "જુ"
+        8 : "ઑ"
+        9 : "સ"
+        10 : "ઑ"
+        11 : "ન"
+        12 : "ડિ"
+      }
+      wide {
+        1 : "જાન્યુઆરી"
+        2 : "ફેબ્રુઆરી"
+        3 : "માર્ચ"
+        4 : "એપ્રિલ"
+        5 : "મે"
+        6 : "જૂન"
+        7 : "જુલાઈ"
+        8 : "ઑગસ્ટ"
+        9 : "સપ્ટેમ્બર"
+        10 : "ઑક્ટોબર"
+        11 : "નવેમ્બર"
+        12 : "ડિસેમ્બર"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "રવિ"
+        mon : "સોમ"
+        tue : "મંગળ"
+        wed : "બુધ"
+        thu : "ગુરુ"
+        fri : "શુક્ર"
+        sat : "શનિ"
+      }
+      narrow {
+        sun : "ર"
+        mon : "સો"
+        tue : "મં"
+        wed : "બુ"
+        thu : "ગુ"
+        fri : "શુ"
+        sat : "શ"
+      }
+      short {
+        sun : "ર"
+        mon : "સો"
+        tue : "મં"
+        wed : "બુ"
+        thu : "ગુ"
+        fri : "શુ"
+        sat : "શ"
+      }
+      wide {
+        sun : "રવિવાર"
+        mon : "સોમવાર"
+        tue : "મંગળવાર"
+        wed : "બુધવાર"
+        thu : "ગુરુવાર"
+        fri : "શુક્રવાર"
+        sat : "શનિવાર"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "AM"
+        pm : "PM"
+      }
+      narrow {
+        am : "AM"
+        pm : "PM"
+      }
+      wide {
+        am : "AM"
+        pm : "PM"
+      }
+    }
+  }
+}

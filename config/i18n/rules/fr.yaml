@@ -1,0 +1,303 @@
+plural : "2C"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "#,##0.00 ¤;(#,##0.00 ¤)"
+    percent : "#,##0 %"
+  }
+}
+currencies {
+  ADP {
+    symbol : "₧A"
+  }
+  AFN {
+    symbol : "Af"
+  }
+  ANG {
+    symbol : "f.NA"
+  }
+  AUD {
+    symbol : "$AU"
+  }
+  BAM {
+    symbol : "KM"
+  }
+  BDT {
+    symbol : "Tk"
+  }
+  BEF {
+    symbol : "FB"
+  }
+  BND {
+    symbol : "$BN"
+  }
+  BRL {
+    symbol : "R$"
+  }
+  CAD {
+    symbol : "$CA"
+  }
+  CNY {
+    symbol : "¥CN"
+  }
+  CYP {
+    symbol : "£CY"
+  }
+  DJF {
+    symbol : "FDj"
+  }
+  EEK {
+    symbol : "krE"
+  }
+  ESP {
+    symbol : "₧"
+  }
+  EUR {
+    symbol : "€"
+  }
+  FJD {
+    symbol : "$FJ"
+  }
+  FRF {
+    symbol : "F"
+  }
+  GBP {
+    symbol : "£UK"
+  }
+  HKD {
+    symbol : "$HK"
+  }
+  IDR {
+    symbol : "Rp"
+  }
+  IEP {
+    symbol : "£IE"
+  }
+  ILP {
+    symbol : "£IL"
+  }
+  ILS {
+    symbol : "₪"
+  }
+  INR {
+    symbol : "₹"
+  }
+  ITL {
+    symbol : "₤IT"
+  }
+  JPY {
+    symbol : "¥JP"
+  }
+  KRW {
+    symbol : "₩"
+  }
+  LKR {
+    symbol : "RsSL"
+  }
+  LSL {
+    symbol : "LLs"
+  }
+  MMK {
+    symbol : "KMm"
+  }
+  MNT {
+    symbol : "Tug"
+  }
+  MTP {
+    symbol : "£MT"
+  }
+  MVR {
+    symbol : "Rf"
+  }
+  MXN {
+    symbol : "$MEX"
+  }
+  MYR {
+    symbol : "RM"
+  }
+  NPR {
+    symbol : "RsNP"
+  }
+  NZD {
+    symbol : "$NZ"
+  }
+  PGK {
+    symbol : "K"
+  }
+  PKR {
+    symbol : "RsPK"
+  }
+  RHD {
+    symbol : "$RH"
+  }
+  SBD {
+    symbol : "$SB"
+  }
+  SGD {
+    symbol : "$SG"
+  }
+  THB {
+    symbol : "฿"
+  }
+  TOP {
+    symbol : "T$"
+  }
+  TWD {
+    symbol : "NT$"
+  }
+  USD {
+    symbol : "$US"
+  }
+  VND {
+    symbol : "₫"
+  }
+  VUV {
+    symbol : "VT"
+  }
+  WST {
+    symbol : "WS$"
+  }
+  XAF {
+    symbol : "FCFA"
+  }
+  XCD {
+    symbol : "$EC"
+  }
+  XOF {
+    symbol : "CFA"
+  }
+  XPF {
+    symbol : "FCFP"
+  }
+  ZWD {
+    symbol : "$Z"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+    datetime {
+      full : "{1} {0}"
+      long : "{1} {0}"
+      medium : "{1} {0}"
+      short : "{1} {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "janv."
+        2 : "févr."
+        3 : "mars"
+        4 : "avr."
+        5 : "mai"
+        6 : "juin"
+        7 : "juil."
+        8 : "août"
+        9 : "sept."
+        10 : "oct."
+        11 : "nov."
+        12 : "déc."
+      }
+      narrow {
+        1 : "J"
+        2 : "F"
+        3 : "M"
+        4 : "A"
+        5 : "M"
+        6 : "J"
+        7 : "J"
+        8 : "A"
+        9 : "S"
+        10 : "O"
+        11 : "N"
+        12 : "D"
+      }
+      wide {
+        1 : "janvier"
+        2 : "février"
+        3 : "mars"
+        4 : "avril"
+        5 : "mai"
+        6 : "juin"
+        7 : "juillet"
+        8 : "août"
+        9 : "septembre"
+        10 : "octobre"
+        11 : "novembre"
+        12 : "décembre"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "dim."
+        mon : "lun."
+        tue : "mar."
+        wed : "mer."
+        thu : "jeu."
+        fri : "ven."
+        sat : "sam."
+      }
+      narrow {
+        sun : "D"
+        mon : "L"
+        tue : "M"
+        wed : "M"
+        thu : "J"
+        fri : "V"
+        sat : "S"
+      }
+      short {
+        sun : "di"
+        mon : "lu"
+        tue : "ma"
+        wed : "me"
+        thu : "je"
+        fri : "ve"
+        sat : "sa"
+      }
+      wide {
+        sun : "dimanche"
+        mon : "lundi"
+        tue : "mardi"
+        wed : "mercredi"
+        thu : "jeudi"
+        fri : "vendredi"
+        sat : "samedi"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "AM"
+        pm : "PM"
+      }
+      narrow {
+        am : "AM"
+        pm : "p"
+      }
+      wide {
+        am : "AM"
+        pm : "PM"
+      }
+    }
+  }
+}

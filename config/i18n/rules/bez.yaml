@@ -1,0 +1,126 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  formats {
+    currency : "#,##0.00¤"
+  }
+}
+currencies {
+  TZS {
+    symbol : "TSh"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Hut"
+        2 : "Vil"
+        3 : "Dat"
+        4 : "Tai"
+        5 : "Han"
+        6 : "Sit"
+        7 : "Sab"
+        8 : "Nan"
+        9 : "Tis"
+        10 : "Kum"
+        11 : "Kmj"
+        12 : "Kmb"
+      }
+      narrow {
+        1 : "H"
+        2 : "V"
+        3 : "D"
+        4 : "T"
+        5 : "H"
+        6 : "S"
+        7 : "S"
+        8 : "N"
+        9 : "T"
+        10 : "K"
+        11 : "K"
+        12 : "K"
+      }
+      wide {
+        1 : "pa mwedzi gwa hutala"
+        2 : "pa mwedzi gwa wuvili"
+        3 : "pa mwedzi gwa wudatu"
+        4 : "pa mwedzi gwa wutai"
+        5 : "pa mwedzi gwa wuhanu"
+        6 : "pa mwedzi gwa sita"
+        7 : "pa mwedzi gwa saba"
+        8 : "pa mwedzi gwa nane"
+        9 : "pa mwedzi gwa tisa"
+        10 : "pa mwedzi gwa kumi"
+        11 : "pa mwedzi gwa kumi na moja"
+        12 : "pa mwedzi gwa kumi na mbili"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Mul"
+        mon : "Vil"
+        tue : "Hiv"
+        wed : "Hid"
+        thu : "Hit"
+        fri : "Hih"
+        sat : "Lem"
+      }
+      narrow {
+        sun : "M"
+        mon : "J"
+        tue : "H"
+        wed : "H"
+        thu : "H"
+        fri : "W"
+        sat : "J"
+      }
+      short {
+        sun : "Mul"
+        mon : "Vil"
+        tue : "Hiv"
+        wed : "Hid"
+        thu : "Hit"
+        fri : "Hih"
+        sat : "Lem"
+      }
+      wide {
+        sun : "pa mulungu"
+        mon : "pa shahuviluha"
+        tue : "pa hivili"
+        wed : "pa hidatu"
+        thu : "pa hitayi"
+        fri : "pa hihanu"
+        sat : "pa shahulembela"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "pamilau"
+        pm : "pamunyi"
+      }
+      narrow {
+        am : "pamilau"
+        pm : "pamunyi"
+      }
+      wide {
+        am : "pamilau"
+        pm : "pamunyi"
+      }
+    }
+  }
+}

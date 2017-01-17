@@ -61,6 +61,7 @@ func Initialize(e *echo.Echo) {
 }
 
 func addRouter(e *echo.Echo) {
+
 	addHandler(e, `/`, Index)
 	addHandler(e, `/logout`, Logout)
 	addHandler(e, `/addon_form`, AddonForm)
@@ -126,6 +127,8 @@ func addRouter(e *echo.Echo) {
 
 	opt := captcha.Options{EnableImage: true}
 	opt.Wrapper(e)
+
+	addHandler(e, `/donation`, Donation)
 }
 
 func addFormHandler(rr echo.RouteRegister, urlPath string, handler interface{}, middlewares ...interface{}) {

@@ -1,0 +1,98 @@
+plural : "2F"
+direction : "LTR"
+numbers {
+  formats {
+    currency : "¤#,##0.00"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE dd MMMM y"
+      long : "dd MMMM y"
+      medium : "MMM dd, y"
+      short : "dd/MM/yy"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "J-guer"
+        2 : "T-arree"
+        3 : "Mayrnt"
+        4 : "Avrril"
+        5 : "Boaldyn"
+        6 : "M-souree"
+        7 : "J-souree"
+        8 : "Luanistyn"
+        9 : "M-fouyir"
+        10 : "J-fouyir"
+        11 : "M.Houney"
+        12 : "M.Nollick"
+      }
+      wide {
+        1 : "Jerrey-geuree"
+        2 : "Toshiaght-arree"
+        3 : "Mayrnt"
+        4 : "Averil"
+        5 : "Boaldyn"
+        6 : "Mean-souree"
+        7 : "Jerrey-souree"
+        8 : "Luanistyn"
+        9 : "Mean-fouyir"
+        10 : "Jerrey-fouyir"
+        11 : "Mee Houney"
+        12 : "Mee ny Nollick"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Jed"
+        mon : "Jel"
+        tue : "Jem"
+        wed : "Jerc"
+        thu : "Jerd"
+        fri : "Jeh"
+        sat : "Jes"
+      }
+      short {
+        sun : "Jed"
+        mon : "Jel"
+        tue : "Jem"
+        wed : "Jerc"
+        thu : "Jerd"
+        fri : "Jeh"
+        sat : "Jes"
+      }
+      wide {
+        sun : "Jedoonee"
+        mon : "Jelhein"
+        tue : "Jemayrt"
+        wed : "Jercean"
+        thu : "Jerdein"
+        fri : "Jeheiney"
+        sat : "Jesarn"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "a.m."
+        pm : "p.m."
+      }
+      narrow {
+        am : "a.m."
+        pm : "p.m."
+      }
+      wide {
+        am : "a.m."
+        pm : "p.m."
+      }
+    }
+  }
+}

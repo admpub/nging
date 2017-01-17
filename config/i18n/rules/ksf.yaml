@@ -1,0 +1,112 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "#,##0.00 ¤"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "d/M/y"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "ŋ1"
+        2 : "ŋ2"
+        3 : "ŋ3"
+        4 : "ŋ4"
+        5 : "ŋ5"
+        6 : "ŋ6"
+        7 : "ŋ7"
+        8 : "ŋ8"
+        9 : "ŋ9"
+        10 : "ŋ10"
+        11 : "ŋ11"
+        12 : "ŋ12"
+      }
+      wide {
+        1 : "ŋwíí a ntɔ́ntɔ"
+        2 : "ŋwíí akǝ bɛ́ɛ"
+        3 : "ŋwíí akǝ ráá"
+        4 : "ŋwíí akǝ nin"
+        5 : "ŋwíí akǝ táan"
+        6 : "ŋwíí akǝ táafɔk"
+        7 : "ŋwíí akǝ táabɛɛ"
+        8 : "ŋwíí akǝ táaraa"
+        9 : "ŋwíí akǝ táanin"
+        10 : "ŋwíí akǝ ntɛk"
+        11 : "ŋwíí akǝ ntɛk di bɔ́k"
+        12 : "ŋwíí akǝ ntɛk di bɛ́ɛ"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "sɔ́n"
+        mon : "lǝn"
+        tue : "maa"
+        wed : "mɛk"
+        thu : "jǝǝ"
+        fri : "júm"
+        sat : "sam"
+      }
+      narrow {
+        sun : "s"
+        mon : "l"
+        tue : "m"
+        wed : "m"
+        thu : "j"
+        fri : "j"
+        sat : "s"
+      }
+      short {
+        sun : "sɔ́n"
+        mon : "lǝn"
+        tue : "maa"
+        wed : "mɛk"
+        thu : "jǝǝ"
+        fri : "júm"
+        sat : "sam"
+      }
+      wide {
+        sun : "sɔ́ndǝ"
+        mon : "lǝndí"
+        tue : "maadí"
+        wed : "mɛkrɛdí"
+        thu : "jǝǝdí"
+        fri : "júmbá"
+        sat : "samdí"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "sárúwá"
+        pm : "cɛɛ́nko"
+      }
+      narrow {
+        am : "sárúwá"
+        pm : "cɛɛ́nko"
+      }
+      wide {
+        am : "sárúwá"
+        pm : "cɛɛ́nko"
+      }
+    }
+  }
+}

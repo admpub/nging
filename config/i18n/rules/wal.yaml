@@ -1,0 +1,129 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  symbols {
+    group : "’"
+  }
+  formats {
+    currency : "¤#,##0.00"
+  }
+}
+currencies {
+  ETB {
+    symbol : "Br"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE፥ dd MMMM ጋላሳ y G"
+      long : "dd MMMM y"
+      medium : "dd-MMM-y"
+      short : "dd/MM/yy"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "ጃንዩ"
+        2 : "ፌብሩ"
+        3 : "ማርች"
+        4 : "ኤፕረ"
+        5 : "ሜይ"
+        6 : "ጁን"
+        7 : "ጁላይ"
+        8 : "ኦገስ"
+        9 : "ሴፕቴ"
+        10 : "ኦክተ"
+        11 : "ኖቬም"
+        12 : "ዲሴም"
+      }
+      narrow {
+        1 : "ጃ"
+        2 : "ፌ"
+        3 : "ማ"
+        4 : "ኤ"
+        5 : "ሜ"
+        6 : "ጁ"
+        7 : "ጁ"
+        8 : "ኦ"
+        9 : "ሴ"
+        10 : "ኦ"
+        11 : "ኖ"
+        12 : "ዲ"
+      }
+      wide {
+        1 : "ጃንዩወሪ"
+        2 : "ፌብሩወሪ"
+        3 : "ማርች"
+        4 : "ኤፕረል"
+        5 : "ሜይ"
+        6 : "ጁን"
+        7 : "ጁላይ"
+        8 : "ኦገስት"
+        9 : "ሴፕቴምበር"
+        10 : "ኦክተውበር"
+        11 : "ኖቬምበር"
+        12 : "ዲሴምበር"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "ወጋ"
+        mon : "ሳይኖ"
+        tue : "ማቆሳኛ"
+        wed : "አሩዋ"
+        thu : "ሃሙሳ"
+        fri : "አርባ"
+        sat : "ቄራ"
+      }
+      narrow {
+        sun : "ወ"
+        mon : "ሳ"
+        tue : "ማ"
+        wed : "አ"
+        thu : "ሃ"
+        fri : "አ"
+        sat : "ቄ"
+      }
+      short {
+        sun : "ወጋ"
+        mon : "ሳይኖ"
+        tue : "ማቆሳኛ"
+        wed : "አሩዋ"
+        thu : "ሃሙሳ"
+        fri : "አርባ"
+        sat : "ቄራ"
+      }
+      wide {
+        sun : "ወጋ"
+        mon : "ሳይኖ"
+        tue : "ማቆሳኛ"
+        wed : "አሩዋ"
+        thu : "ሃሙሳ"
+        fri : "አርባ"
+        sat : "ቄራ"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "ማለዶ"
+        pm : "ቃማ"
+      }
+      narrow {
+        am : "ማለዶ"
+        pm : "ቃማ"
+      }
+      wide {
+        am : "ማለዶ"
+        pm : "ቃማ"
+      }
+    }
+  }
+}

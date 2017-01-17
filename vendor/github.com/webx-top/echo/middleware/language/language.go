@@ -30,13 +30,17 @@ var (
 	DefaultLang = `zh-cn`
 )
 
-func New() *Language {
-	return &Language{
+func New(c ...*Config) *Language {
+	lang := &Language{
 		List:     make(map[string]bool),
 		Index:    make([]string, 0),
 		Default:  DefaultLang,
 		uaRegexp: regexp.MustCompile(`;q=[0-9.]+`),
 	}
+	if len(c) > 0 {
+		lang.Init(c[0])
+	}
+	return lang
 }
 
 type Language struct {

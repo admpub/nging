@@ -1,0 +1,100 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  formats {
+    decimal : "#,##,##0.###"
+    currency : "¤ #,##,##0.00"
+    percent : "#,##,##0%"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE d MMMM y"
+      long : "d MMMM y"
+      medium : "dd-MM-y"
+      short : "d-M-yy"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "जानेवारी"
+        2 : "फेब्रुवारी"
+        3 : "मार्च"
+        4 : "एप्रिल"
+        5 : "मे"
+        6 : "जून"
+        7 : "जुलै"
+        8 : "ओगस्ट"
+        9 : "सेप्टेंबर"
+        10 : "ओक्टोबर"
+        11 : "नोव्हेंबर"
+        12 : "डिसेंबर"
+      }
+      wide {
+        1 : "जानेवारी"
+        2 : "फेब्रुवारी"
+        3 : "मार्च"
+        4 : "एप्रिल"
+        5 : "मे"
+        6 : "जून"
+        7 : "जुलै"
+        8 : "ओगस्ट"
+        9 : "सेप्टेंबर"
+        10 : "ओक्टोबर"
+        11 : "नोव्हेंबर"
+        12 : "डिसेंबर"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "रवि"
+        mon : "सोम"
+        tue : "मंगळ"
+        wed : "बुध"
+        thu : "गुरु"
+        fri : "शुक्र"
+        sat : "शनि"
+      }
+      short {
+        sun : "रवि"
+        mon : "सोम"
+        tue : "मंगळ"
+        wed : "बुध"
+        thu : "गुरु"
+        fri : "शुक्र"
+        sat : "शनि"
+      }
+      wide {
+        sun : "आदित्यवार"
+        mon : "सोमवार"
+        tue : "मंगळार"
+        wed : "बुधवार"
+        thu : "गुरुवार"
+        fri : "शुक्रवार"
+        sat : "शनिवार"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "म.पू."
+        pm : "म.नं."
+      }
+      narrow {
+        am : "म.पू."
+        pm : "म.नं."
+      }
+      wide {
+        am : "म.पू."
+        pm : "म.नं."
+      }
+    }
+  }
+}

@@ -1,0 +1,130 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##,##0.###"
+    currency : "¤ #,##,##0.00"
+    percent : "#,##,##0%"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, MMMM d, y"
+      long : "MMMM d, y"
+      medium : "MMM d, y"
+      short : "M/d/yy"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "जानुवारी"
+        2 : "फेब्रुवारी"
+        3 : "मार्स"
+        4 : "एफ्रिल"
+        5 : "मे"
+        6 : "जुन"
+        7 : "जुलाइ"
+        8 : "आगस्थ"
+        9 : "सेबथेज्ब़र"
+        10 : "अखथबर"
+        11 : "नबेज्ब़र"
+        12 : "दिसेज्ब़र"
+      }
+      narrow {
+        1 : "ज"
+        2 : "फे"
+        3 : "मा"
+        4 : "ए"
+        5 : "मे"
+        6 : "जु"
+        7 : "जु"
+        8 : "आ"
+        9 : "से"
+        10 : "अ"
+        11 : "न"
+        12 : "दि"
+      }
+      wide {
+        1 : "जानुवारी"
+        2 : "फेब्रुवारी"
+        3 : "मार्स"
+        4 : "एफ्रिल"
+        5 : "मे"
+        6 : "जुन"
+        7 : "जुलाइ"
+        8 : "आगस्थ"
+        9 : "सेबथेज्ब़र"
+        10 : "अखथबर"
+        11 : "नबेज्ब़र"
+        12 : "दिसेज्ब़र"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "रबि"
+        mon : "सम"
+        tue : "मंगल"
+        wed : "बुद"
+        thu : "बिसथि"
+        fri : "सुखुर"
+        sat : "सुनि"
+      }
+      narrow {
+        sun : "र"
+        mon : "स"
+        tue : "मं"
+        wed : "बु"
+        thu : "बि"
+        fri : "सु"
+        sat : "सु"
+      }
+      short {
+        sun : "रबि"
+        mon : "सम"
+        tue : "मंगल"
+        wed : "बुद"
+        thu : "बिसथि"
+        fri : "सुखुर"
+        sat : "सुनि"
+      }
+      wide {
+        sun : "रबिबार"
+        mon : "समबार"
+        tue : "मंगलबार"
+        wed : "बुदबार"
+        thu : "बिसथिबार"
+        fri : "सुखुरबार"
+        sat : "सुनिबार"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "फुं"
+        pm : "बेलासे"
+      }
+      narrow {
+        am : "फुं"
+        pm : "बेलासे"
+      }
+      wide {
+        am : "फुं"
+        pm : "बेलासे"
+      }
+    }
+  }
+}

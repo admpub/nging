@@ -1,0 +1,116 @@
+plural : "3G"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+  }
+  formats {
+    currency : "#,##0.00¤"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM, y"
+      short : "d/M/y"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "ⵉⵏⵏ"
+        2 : "ⴱⵕⴰ"
+        3 : "ⵎⴰⵕ"
+        4 : "ⵉⴱⵔ"
+        5 : "ⵎⴰⵢ"
+        6 : "ⵢⵓⵏ"
+        7 : "ⵢⵓⵍ"
+        8 : "ⵖⵓⵛ"
+        9 : "ⵛⵓⵜ"
+        10 : "ⴽⵜⵓ"
+        11 : "ⵏⵓⵡ"
+        12 : "ⴷⵓⵊ"
+      }
+      narrow {
+        1 : "ⵉ"
+        2 : "ⴱ"
+        3 : "ⵎ"
+        4 : "ⵉ"
+        5 : "ⵎ"
+        6 : "ⵢ"
+        7 : "ⵢ"
+        8 : "ⵖ"
+        9 : "ⵛ"
+        10 : "ⴽ"
+        11 : "ⵏ"
+        12 : "ⴷ"
+      }
+      wide {
+        1 : "ⵉⵏⵏⴰⵢⵔ"
+        2 : "ⴱⵕⴰⵢⵕ"
+        3 : "ⵎⴰⵕⵚ"
+        4 : "ⵉⴱⵔⵉⵔ"
+        5 : "ⵎⴰⵢⵢⵓ"
+        6 : "ⵢⵓⵏⵢⵓ"
+        7 : "ⵢⵓⵍⵢⵓⵣ"
+        8 : "ⵖⵓⵛⵜ"
+        9 : "ⵛⵓⵜⴰⵏⴱⵉⵔ"
+        10 : "ⴽⵜⵓⴱⵔ"
+        11 : "ⵏⵓⵡⴰⵏⴱⵉⵔ"
+        12 : "ⴷⵓⵊⴰⵏⴱⵉⵔ"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "ⴰⵙⴰ"
+        mon : "ⴰⵢⵏ"
+        tue : "ⴰⵙⵉ"
+        wed : "ⴰⴽⵕ"
+        thu : "ⴰⴽⵡ"
+        fri : "ⴰⵙⵉⵎ"
+        sat : "ⴰⵙⵉⴹ"
+      }
+      short {
+        sun : "ⴰⵙⴰ"
+        mon : "ⴰⵢⵏ"
+        tue : "ⴰⵙⵉ"
+        wed : "ⴰⴽⵕ"
+        thu : "ⴰⴽⵡ"
+        fri : "ⴰⵙⵉⵎ"
+        sat : "ⴰⵙⵉⴹ"
+      }
+      wide {
+        sun : "ⴰⵙⴰⵎⴰⵙ"
+        mon : "ⴰⵢⵏⴰⵙ"
+        tue : "ⴰⵙⵉⵏⴰⵙ"
+        wed : "ⴰⴽⵕⴰⵙ"
+        thu : "ⴰⴽⵡⴰⵙ"
+        fri : "ⵙⵉⵎⵡⴰⵙ"
+        sat : "ⴰⵙⵉⴹⵢⴰⵙ"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "ⵜⵉⴼⴰⵡⵜ"
+        pm : "ⵜⴰⴷⴳⴳⵯⴰⵜ"
+      }
+      narrow {
+        am : "ⵜⵉⴼⴰⵡⵜ"
+        pm : "ⵜⴰⴷⴳⴳⵯⴰⵜ"
+      }
+      wide {
+        am : "ⵜⵉⴼⴰⵡⵜ"
+        pm : "ⵜⴰⴷⴳⴳⵯⴰⵜ"
+      }
+    }
+  }
+}

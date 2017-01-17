@@ -1,0 +1,204 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "#,##0.00 ¤;(#,##0.00 ¤)"
+    percent : "#,##0%"
+  }
+}
+currencies {
+  AUD {
+    symbol : "AU$"
+  }
+  BRL {
+    symbol : "R$"
+  }
+  CAD {
+    symbol : "CA$"
+  }
+  CNY {
+    symbol : "CN¥"
+  }
+  EEK {
+    symbol : "kr"
+  }
+  EUR {
+    symbol : "€"
+  }
+  GBP {
+    symbol : "£"
+  }
+  HKD {
+    symbol : "HK$"
+  }
+  ILS {
+    symbol : "₪"
+  }
+  INR {
+    symbol : "₹"
+  }
+  JPY {
+    symbol : "¥"
+  }
+  KRW {
+    symbol : "₩"
+  }
+  MXN {
+    symbol : "MX$"
+  }
+  NZD {
+    symbol : "NZ$"
+  }
+  THB {
+    symbol : "฿"
+  }
+  TWD {
+    symbol : "NT$"
+  }
+  USD {
+    symbol : "$"
+  }
+  VND {
+    symbol : "₫"
+  }
+  XAF {
+    symbol : "FCFA"
+  }
+  XCD {
+    symbol : "EC$"
+  }
+  XOF {
+    symbol : "CFA"
+  }
+  XPF {
+    symbol : "CFPF"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d. MMMM y"
+      long : "d. MMMM y"
+      medium : "dd.MM.y"
+      short : "dd.MM.yy"
+    }
+    time {
+      full : "H:mm.ss zzzz"
+      long : "H:mm.ss z"
+      medium : "H:mm.ss"
+      short : "H:mm"
+    }
+    datetime {
+      full : "{1} {0}"
+      long : "{1} {0}"
+      medium : "{1} {0}"
+      short : "{1} {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "jaan"
+        2 : "veebr"
+        3 : "märts"
+        4 : "apr"
+        5 : "mai"
+        6 : "juuni"
+        7 : "juuli"
+        8 : "aug"
+        9 : "sept"
+        10 : "okt"
+        11 : "nov"
+        12 : "dets"
+      }
+      narrow {
+        1 : "J"
+        2 : "V"
+        3 : "M"
+        4 : "A"
+        5 : "M"
+        6 : "J"
+        7 : "J"
+        8 : "A"
+        9 : "S"
+        10 : "O"
+        11 : "N"
+        12 : "D"
+      }
+      wide {
+        1 : "jaanuar"
+        2 : "veebruar"
+        3 : "märts"
+        4 : "aprill"
+        5 : "mai"
+        6 : "juuni"
+        7 : "juuli"
+        8 : "august"
+        9 : "september"
+        10 : "oktoober"
+        11 : "november"
+        12 : "detsember"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "P"
+        mon : "E"
+        tue : "T"
+        wed : "K"
+        thu : "N"
+        fri : "R"
+        sat : "L"
+      }
+      narrow {
+        sun : "P"
+        mon : "E"
+        tue : "T"
+        wed : "K"
+        thu : "N"
+        fri : "R"
+        sat : "L"
+      }
+      short {
+        sun : "P"
+        mon : "E"
+        tue : "T"
+        wed : "K"
+        thu : "N"
+        fri : "R"
+        sat : "L"
+      }
+      wide {
+        sun : "pühapäev"
+        mon : "esmaspäev"
+        tue : "teisipäev"
+        wed : "kolmapäev"
+        thu : "neljapäev"
+        fri : "reede"
+        sat : "laupäev"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "e.k."
+        pm : "p.k."
+      }
+      narrow {
+        am : "e.k."
+        pm : "p.k."
+      }
+      wide {
+        am : "AM"
+        pm : "PM"
+      }
+    }
+  }
+}

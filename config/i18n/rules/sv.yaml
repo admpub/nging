@@ -1,0 +1,231 @@
+plural : "2A"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+    negative : "−"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "#,##0.00 ¤"
+    percent : "#,##0 %"
+  }
+}
+currencies {
+  AUD {
+    symbol : "AU$"
+  }
+  BBD {
+    symbol : "Bds$"
+  }
+  BDT {
+    symbol : "Tk"
+  }
+  BMD {
+    symbol : "BM$"
+  }
+  BND {
+    symbol : "BN$"
+  }
+  BRL {
+    symbol : "BR$"
+  }
+  BSD {
+    symbol : "BS$"
+  }
+  BZD {
+    symbol : "BZ$"
+  }
+  CAD {
+    symbol : "CAN$"
+  }
+  CNY {
+    symbol : "CN¥"
+  }
+  DKK {
+    symbol : "Dkr"
+  }
+  DOP {
+    symbol : "RD$"
+  }
+  EGP {
+    symbol : "EG£"
+  }
+  EUR {
+    symbol : "€"
+  }
+  GBP {
+    symbol : "GB£"
+  }
+  GYD {
+    symbol : "GY$"
+  }
+  HKD {
+    symbol : "HK$"
+  }
+  ILS {
+    symbol : "₪"
+  }
+  INR {
+    symbol : "₹"
+  }
+  ISK {
+    symbol : "Ikr"
+  }
+  JMD {
+    symbol : "JM$"
+  }
+  JPY {
+    symbol : "JP¥"
+  }
+  LVL {
+    symbol : "Ls"
+  }
+  MXN {
+    symbol : "MX$"
+  }
+  NOK {
+    symbol : "NKr"
+  }
+  NZD {
+    symbol : "NZ$"
+  }
+  SEK {
+    symbol : "kr"
+  }
+  THB {
+    symbol : "TH฿"
+  }
+  TWD {
+    symbol : "TW$"
+  }
+  USD {
+    symbol : "US$"
+  }
+  VND {
+    symbol : "VN₫"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE'en' 'den' d:'e' MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "y-MM-dd"
+    }
+    time {
+      full : "'kl'. HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+    datetime {
+      full : "{1} {0}"
+      long : "{1} {0}"
+      medium : "{1} {0}"
+      short : "{1} {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "jan"
+        2 : "feb"
+        3 : "mar"
+        4 : "apr"
+        5 : "maj"
+        6 : "jun"
+        7 : "jul"
+        8 : "aug"
+        9 : "sep"
+        10 : "okt"
+        11 : "nov"
+        12 : "dec"
+      }
+      narrow {
+        1 : "J"
+        2 : "F"
+        3 : "M"
+        4 : "A"
+        5 : "M"
+        6 : "J"
+        7 : "J"
+        8 : "A"
+        9 : "S"
+        10 : "O"
+        11 : "N"
+        12 : "D"
+      }
+      wide {
+        1 : "januari"
+        2 : "februari"
+        3 : "mars"
+        4 : "april"
+        5 : "maj"
+        6 : "juni"
+        7 : "juli"
+        8 : "augusti"
+        9 : "september"
+        10 : "oktober"
+        11 : "november"
+        12 : "december"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "sön"
+        mon : "mån"
+        tue : "tis"
+        wed : "ons"
+        thu : "tors"
+        fri : "fre"
+        sat : "lör"
+      }
+      narrow {
+        sun : "S"
+        mon : "M"
+        tue : "T"
+        wed : "O"
+        thu : "T"
+        fri : "F"
+        sat : "L"
+      }
+      short {
+        sun : "sö"
+        mon : "må"
+        tue : "ti"
+        wed : "on"
+        thu : "to"
+        fri : "fr"
+        sat : "lö"
+      }
+      wide {
+        sun : "söndag"
+        mon : "måndag"
+        tue : "tisdag"
+        wed : "onsdag"
+        thu : "torsdag"
+        fri : "fredag"
+        sat : "lördag"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "FM"
+        pm : "EM"
+      }
+      narrow {
+        am : "f"
+        pm : "e"
+      }
+      wide {
+        am : "fm"
+        pm : "em"
+      }
+    }
+  }
+}

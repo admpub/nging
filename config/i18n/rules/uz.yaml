@@ -1,0 +1,113 @@
+plural : "2B"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+  }
+}
+currencies {
+  UZS {
+    symbol : "сўм"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, y MMMM dd"
+      long : "y MMMM d"
+      medium : "y MMM d"
+      short : "yy/MM/dd"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "Янв"
+        2 : "Фев"
+        3 : "Мар"
+        4 : "Апр"
+        5 : "Май"
+        6 : "Июн"
+        7 : "Июл"
+        8 : "Авг"
+        9 : "Сен"
+        10 : "Окт"
+        11 : "Ноя"
+        12 : "Дек"
+      }
+      narrow {
+        1 : "Я"
+        2 : "Ф"
+        3 : "М"
+        4 : "А"
+        5 : "М"
+        6 : "И"
+        7 : "И"
+        8 : "А"
+        9 : "С"
+        10 : "О"
+        11 : "Н"
+        12 : "Д"
+      }
+      wide {
+        1 : "Январ"
+        2 : "Феврал"
+        3 : "Март"
+        4 : "Апрел"
+        5 : "Май"
+        6 : "Июн"
+        7 : "Июл"
+        8 : "Август"
+        9 : "Сентябр"
+        10 : "Октябр"
+        11 : "Ноябр"
+        12 : "Декабр"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "Якш"
+        mon : "Душ"
+        tue : "Сеш"
+        wed : "Чор"
+        thu : "Пай"
+        fri : "Жум"
+        sat : "Шан"
+      }
+      narrow {
+        sun : "Я"
+        mon : "Д"
+        tue : "С"
+        wed : "Ч"
+        thu : "П"
+        fri : "Ж"
+        sat : "Ш"
+      }
+      short {
+        sun : "Якш"
+        mon : "Душ"
+        tue : "Сеш"
+        wed : "Чор"
+        thu : "Пай"
+        fri : "Жум"
+        sat : "Шан"
+      }
+      wide {
+        sun : "якшанба"
+        mon : "душанба"
+        tue : "сешанба"
+        wed : "чоршанба"
+        thu : "пайшанба"
+        fri : "жума"
+        sat : "шанба"
+      }
+    }
+  }
+}

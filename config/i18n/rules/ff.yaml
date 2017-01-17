@@ -1,0 +1,125 @@
+plural : "2C"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : ","
+    group : " "
+  }
+  formats {
+    currency : "#,##0.00 ¤"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM, y"
+      short : "d/M/y"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "sii"
+        2 : "col"
+        3 : "mbo"
+        4 : "see"
+        5 : "duu"
+        6 : "kor"
+        7 : "mor"
+        8 : "juk"
+        9 : "slt"
+        10 : "yar"
+        11 : "jol"
+        12 : "bow"
+      }
+      narrow {
+        1 : "s"
+        2 : "c"
+        3 : "m"
+        4 : "s"
+        5 : "d"
+        6 : "k"
+        7 : "m"
+        8 : "j"
+        9 : "s"
+        10 : "y"
+        11 : "j"
+        12 : "b"
+      }
+      wide {
+        1 : "siilo"
+        2 : "colte"
+        3 : "mbooy"
+        4 : "seeɗto"
+        5 : "duujal"
+        6 : "korse"
+        7 : "morso"
+        8 : "juko"
+        9 : "siilto"
+        10 : "yarkomaa"
+        11 : "jolal"
+        12 : "bowte"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "dew"
+        mon : "aaɓ"
+        tue : "maw"
+        wed : "nje"
+        thu : "naa"
+        fri : "mwd"
+        sat : "hbi"
+      }
+      narrow {
+        sun : "d"
+        mon : "a"
+        tue : "m"
+        wed : "n"
+        thu : "n"
+        fri : "m"
+        sat : "h"
+      }
+      short {
+        sun : "dew"
+        mon : "aaɓ"
+        tue : "maw"
+        wed : "nje"
+        thu : "naa"
+        fri : "mwd"
+        sat : "hbi"
+      }
+      wide {
+        sun : "dewo"
+        mon : "aaɓnde"
+        tue : "mawbaare"
+        wed : "njeslaare"
+        thu : "naasaande"
+        fri : "mawnde"
+        sat : "hoore-biir"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "subaka"
+        pm : "kikiiɗe"
+      }
+      narrow {
+        am : "subaka"
+        pm : "kikiiɗe"
+      }
+      wide {
+        am : "subaka"
+        pm : "kikiiɗe"
+      }
+    }
+  }
+}

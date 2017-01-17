@@ -1,0 +1,132 @@
+plural : "1"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "¤ #,##0.00"
+    percent : "#,##0%"
+  }
+}
+currencies {
+  MMK {
+    symbol : "K"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, y MMMM dd"
+      long : "y MMMM d"
+      medium : "y MMM d"
+      short : "yy/MM/dd"
+    }
+    time {
+      full : "HH:mm:ss zzzz"
+      long : "HH:mm:ss z"
+      medium : "HH:mm:ss"
+      short : "HH:mm"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "ဇန်"
+        2 : "ဖေ"
+        3 : "မတ်"
+        4 : "ဧ"
+        5 : "မေ"
+        6 : "ဇွန်"
+        7 : "ဇူ"
+        8 : "ဩ"
+        9 : "စက်"
+        10 : "အောက်"
+        11 : "နို"
+        12 : "ဒီ"
+      }
+      narrow {
+        1 : "ဇ"
+        2 : "ဖ"
+        3 : "မ"
+        4 : "ဧ"
+        5 : "မ"
+        6 : "ဇ"
+        7 : "ဇ"
+        8 : "ဩ"
+        9 : "စ"
+        10 : "အ"
+        11 : "န"
+        12 : "ဒ"
+      }
+      wide {
+        1 : "ဇန်နဝါရီ"
+        2 : "ဖေဖော်ဝါရီ"
+        3 : "မတ်"
+        4 : "ဧပြီ"
+        5 : "မေ"
+        6 : "ဇွန်"
+        7 : "ဇူလိုင်"
+        8 : "ဩဂုတ်"
+        9 : "စက်တင်ဘာ"
+        10 : "အောက်တိုဘာ"
+        11 : "နိုဝင်ဘာ"
+        12 : "ဒီဇင်ဘာ"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "နွေ"
+        mon : "လာ"
+        tue : "ဂါ"
+        wed : "ဟူး"
+        thu : "တေး"
+        fri : "ကြာ"
+        sat : "နေ"
+      }
+      narrow {
+        sun : "တ"
+        mon : "တ"
+        tue : "အ"
+        wed : "ဗ"
+        thu : "က"
+        fri : "သ"
+        sat : "စ"
+      }
+      short {
+        sun : "နွေ"
+        mon : "လာ"
+        tue : "ဂါ"
+        wed : "ဟူး"
+        thu : "တေး"
+        fri : "ကြာ"
+        sat : "နေ"
+      }
+      wide {
+        sun : "တနင်္ဂနွေ"
+        mon : "တနင်္လာ"
+        tue : "အင်္ဂါ"
+        wed : "ဗုဒ္ဓဟူး"
+        thu : "ကြာသပတေး"
+        fri : "သောကြာ"
+        sat : "စနေ"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "နံနက်"
+        pm : "ညနေ"
+      }
+      narrow {
+        am : "နံနက်"
+        pm : "ညနေ"
+      }
+      wide {
+        am : "နံနက်"
+        pm : "ညနေ"
+      }
+    }
+  }
+}

@@ -1,0 +1,201 @@
+plural : "2B"
+direction : "LTR"
+numbers {
+  symbols {
+    decimal : "."
+    group : ","
+    negative : "-"
+    percent : "%"
+    permille : "‰"
+  }
+  formats {
+    decimal : "#,##0.###"
+    currency : "¤#,##0.00;(¤#,##0.00)"
+    percent : "#,##0%"
+  }
+}
+currencies {
+  AUD {
+    symbol : "AU$"
+  }
+  BRL {
+    symbol : "R$"
+  }
+  CNY {
+    symbol : "CN¥"
+  }
+  ETB {
+    symbol : "ብር"
+  }
+  EUR {
+    symbol : "€"
+  }
+  GBP {
+    symbol : "£"
+  }
+  HKD {
+    symbol : "HK$"
+  }
+  ILS {
+    symbol : "₪"
+  }
+  INR {
+    symbol : "₹"
+  }
+  JPY {
+    symbol : "JP¥"
+  }
+  KRW {
+    symbol : "₩"
+  }
+  MXN {
+    symbol : "MX$"
+  }
+  NZD {
+    symbol : "NZ$"
+  }
+  THB {
+    symbol : "฿"
+  }
+  TWD {
+    symbol : "NT$"
+  }
+  USD {
+    symbol : "US$"
+  }
+  VND {
+    symbol : "₫"
+  }
+  XAF {
+    symbol : "FCFA"
+  }
+  XCD {
+    symbol : "EC$"
+  }
+  XOF {
+    symbol : "CFA"
+  }
+  XPF {
+    symbol : "CFPF"
+  }
+}
+datetime {
+  formats {
+    date {
+      full : "EEEE, d MMMM y"
+      long : "d MMMM y"
+      medium : "d MMM y"
+      short : "dd/MM/y"
+    }
+    time {
+      full : "h:mm:ss a zzzz"
+      long : "h:mm:ss a z"
+      medium : "h:mm:ss a"
+      short : "h:mm a"
+    }
+    datetime {
+      full : "{1} {0}"
+      long : "{1} {0}"
+      medium : "{1} {0}"
+      short : "{1} {0}"
+    }
+  }
+  formatNames {
+    months {
+      abbreviated {
+        1 : "ጃንዩ"
+        2 : "ፌብሩ"
+        3 : "ማርች"
+        4 : "ኤፕሪ"
+        5 : "ሜይ"
+        6 : "ጁን"
+        7 : "ጁላይ"
+        8 : "ኦገስ"
+        9 : "ሴፕቴ"
+        10 : "ኦክተ"
+        11 : "ኖቬም"
+        12 : "ዲሴም"
+      }
+      narrow {
+        1 : "ጃ"
+        2 : "ፌ"
+        3 : "ማ"
+        4 : "ኤ"
+        5 : "ሜ"
+        6 : "ጁ"
+        7 : "ጁ"
+        8 : "ኦ"
+        9 : "ሴ"
+        10 : "ኦ"
+        11 : "ኖ"
+        12 : "ዲ"
+      }
+      wide {
+        1 : "ጃንዩወሪ"
+        2 : "ፌብሩወሪ"
+        3 : "ማርች"
+        4 : "ኤፕሪል"
+        5 : "ሜይ"
+        6 : "ጁን"
+        7 : "ጁላይ"
+        8 : "ኦገስት"
+        9 : "ሴፕቴምበር"
+        10 : "ኦክተውበር"
+        11 : "ኖቬምበር"
+        12 : "ዲሴምበር"
+      }
+    }
+    days {
+      abbreviated {
+        sun : "እሑድ"
+        mon : "ሰኞ"
+        tue : "ማክሰ"
+        wed : "ረቡዕ"
+        thu : "ሐሙስ"
+        fri : "ዓርብ"
+        sat : "ቅዳሜ"
+      }
+      narrow {
+        sun : "እ"
+        mon : "ሰ"
+        tue : "ማ"
+        wed : "ረ"
+        thu : "ሐ"
+        fri : "ዓ"
+        sat : "ቅ"
+      }
+      short {
+        sun : "እ"
+        mon : "ሰ"
+        tue : "ማ"
+        wed : "ረ"
+        thu : "ሐ"
+        fri : "ዓ"
+        sat : "ቅ"
+      }
+      wide {
+        sun : "እሑድ"
+        mon : "ሰኞ"
+        tue : "ማክሰኞ"
+        wed : "ረቡዕ"
+        thu : "ሐሙስ"
+        fri : "ዓርብ"
+        sat : "ቅዳሜ"
+      }
+    }
+    periods {
+      abbreviated {
+        am : "ጥዋት"
+        pm : "ከሰዓት"
+      }
+      narrow {
+        am : "ጥዋት"
+        pm : "ከሰዓት"
+      }
+      wide {
+        am : "ጥዋት"
+        pm : "ከሰዓት"
+      }
+    }
+  }
+}
