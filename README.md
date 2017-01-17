@@ -44,7 +44,7 @@ nging不仅仅包含了caddy的在线可视化配置，还包含了ftp服务的�
     - [ ] ratelimit
     - [ ] realip
     - [ ] redir
-    - [ ] rewrite
+    - [x] rewrite
     - [ ] root
     - [ ] search
     - [ ] shutdown
