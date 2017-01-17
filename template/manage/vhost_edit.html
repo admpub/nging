@@ -199,6 +199,29 @@
                 </div>
               </div>
 
+<div class="form-group">
+  <label class="col-sm-2 control-label">{{"网址重写"|T}}</label>
+  <div class="col-sm-8">
+     <textarea type="text" id="rewrite_rule" class="form-control" style="min-height:200px" name="rewrite_rule">{{Form "rewrite_rule"}}</textarea>
+     <div class="help-block">
+         语法：<a href="javascript:;" onclick="App.insertAtCursor($('#rewrite_rule')[0],'rewrite from to\n');"><strong>rewrite</strong> <em style="color:green">from</em> <em style="color:green">to</em></a><br />
+         高级语法：<a href="javascript:;" onclick="insertAdvRewrite()">[{{"插入"|T}}]</a><br />
+<style>
+.adv-rewrite-rule [data-popover]{border-bottom:1px dashed #aaa;cursor:help;}
+</style>
+<pre class="adv-rewrite-rule">
+<strong>rewrite</strong> <em style="color:green" data-html="true" data-popover="popover" data-content="{{"正则(网址重写之前匹配的路径)<br />默认为“/”"}}" title="basepath">[basepath]</em> {
+    <strong>regexp</strong> <span data-html="true" data-popover="popover" data-content="{{"匹配规则。<br />支持正则表达式。<br />对于高负载的网站应该尽量避免使用正则表达式"}}" title="pattern">pattern</span>
+    <strong>ext</strong>    <span data-html="true" data-popover="popover" data-content="{{"带点号的扩展名(多个用空格隔开)<br />带前缀“!”则表示排除，如果设为“/”则表示没有扩展名"}}" title="extensions...">extensions...</span>
+    <strong>if</strong>     <span data-html="true" data-popover="popover" data-content="{{"判断条件。<br /><strong>a</strong>和<strong>b</strong>可以是字符串或<a href='javascript:;' onclick='showRequestPlaceholders()'>占位符</a>；<br /><strong>cond</strong>是条件，支持以下条件：<p><a href='javascript:;' onclick='insertCondForRewrite(this)'><strong>is</strong></a> - 等于<br /><a href='javascript:;' onclick='insertCondForRewrite(this)'><strong>not</strong></a> - 不等于<br /><a href='javascript:;' onclick='insertCondForRewrite(this)'><strong>has</strong></a> - 包含子字符串<br /><a href='javascript:;' onclick='insertCondForRewrite(this)'><strong>not_has</strong></a> - 不包含子字符串<br /><a href='javascript:;' onclick='insertCondForRewrite(this)'><strong>starts_with</strong></a> - 带前缀<br /><a href='javascript:;' onclick='insertCondForRewrite(this)'><strong>ends_with</strong></a> - 带后缀<br /><a href='javascript:;' onclick='insertCondForRewrite(this)'><strong>match</strong></a> - 匹配正则表达式<br /><a href='javascript:;' onclick='insertCondForRewrite(this)'><strong>not_match</strong></a> - 不匹配正则表达式<br /></p>"}}" title="a cond b">a cond b</span>
+    <strong>if_op</strong>  <em style="color:green" data-html="true" data-popover="popover" data-content="{{"if条件之间的逻辑关系(默认是and)"}}" title="and|or">[and|or]</em>
+    <strong>to</strong>     <span data-html="true" data-popover="popover" data-content="{{"网址替换规则。<br />可以是一个或多个以空格隔开的路径；<br />支持<a href='javascript:;' onclick='showRequestPlaceholders()'>占位符</a>；<br />支持正则捕获编号(比如：{1},{2}等)"}}" title="destinations...">destinations...</span>
+}
+</pre>
+     </div>
+  </div>
+</div>
+
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"备注"|T}}</label>
                 <div class="col-sm-8">
@@ -250,7 +273,23 @@
   </td>
 </tr>
 </script>
+{{Modal "__TMPL__/request_placeholders.yaml"}}
 <script>
+function showRequestPlaceholders(){
+  $('#request-placeholders-modal').niftyModal('show');
+}
+function insertAdvRewrite(){
+  App.insertAtCursor($('#rewrite_rule')[0],'rewrite / {\n\
+    regexp pattern\n\
+    ext    extensions...\n\
+    if     a cond b\n\
+    if_op  [and|or]\n\
+    to     destinations...\n\
+}\n');
+}
+function insertCondForRewrite(obj){
+  App.insertAtCursor($('#rewrite_rule')[0],$(obj).children('strong').text()+' ');
+}
 $(function(){
 function addKVs(obj,k,v){
   var tmpl=$('#tmplAddVariableRow').html();
@@ -301,6 +340,10 @@ App.iCheck('[data-slide-settings]','click',function(){
   }
 });
 $('[data-slide-settings="show"]:checked').trigger('click');
+$('#request-placeholders-modal').on('click','a[data-placeholder]',function(){
+  App.insertAtCursor($('#rewrite_rule')[0],$(this).data('placeholder'));
+  $('#request-placeholders-modal').niftyModal('hide');
+});
 });
 </script>
 {{/Block}}
