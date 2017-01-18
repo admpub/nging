@@ -1609,6 +1609,12 @@
 			"revisionTime": "2017-01-17T10:01:47Z"
 		},
 		{
+			"checksumSHA1": "C1Lj+LuHoDlEyKLGUD2OAhUvn+k=",
+			"path": "github.com/webx-top/pagination",
+			"revision": "4f3828d6544039406070222cded208e078c72b2b",
+			"revisionTime": "2017-01-18T09:11:25Z"
+		},
+		{
 			"checksumSHA1": "hCTfgxXvMC3YDGOMAFGNg1S+j/U=",
 			"path": "github.com/webx-top/tagfast",
 			"revision": "9a2065ce3dd25846ad772e8f77661b66820c2b73",

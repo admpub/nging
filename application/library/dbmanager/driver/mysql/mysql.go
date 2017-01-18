@@ -33,11 +33,11 @@ import (
 
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
-	"github.com/admpub/nging/application/library/pagination"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/db/mysql"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/pagination"
 )
 
 func init() {
