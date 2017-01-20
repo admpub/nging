@@ -44,6 +44,13 @@ func (a *URLs) SetProjectPath(projectPath string) {
 	a.projectPath = strings.TrimSuffix(projectPath, `/`)
 }
 
+func (a *URLs) urlRecovery(s string) string {
+	if a.URLRecovery != nil {
+		return a.URLRecovery(s)
+	}
+	return s
+}
+
 func (a *URLs) Build(mdl string, ctl string, act string, params ...interface{}) (r string) {
 	module, ok := a.MVC.moduleNames[mdl]
 	if !ok {
@@ -52,9 +59,9 @@ func (a *URLs) Build(mdl string, ctl string, act string, params ...interface{}) 
 	pkg := a.projectPath + `/app/` + module.Name + `/controller`
 	key := ``
 	if len(ctl) == 0 {
-		key = pkg + `.` + act
+		key = pkg + `.` + a.urlRecovery(act)
 	} else {
-		key = pkg + `.(*` + ctl + `).` + act + `-fm`
+		key = pkg + `.(*` + a.urlRecovery(ctl) + `).` + a.urlRecovery(act) + `-fm`
 	}
 	r = module.Router().URL(key, params)
 	if len(module.Domain) > 0 {
@@ -89,9 +96,9 @@ func (a *URLs) BuildFromPath(ppath string, args ...map[string]interface{}) (r st
 	pkg := a.projectPath + `/app/` + module.Name + `/controller`
 	key := ``
 	if len(ctl) == 0 {
-		key = pkg + `.` + act
+		key = pkg + `.` + a.urlRecovery(act)
 	} else {
-		key = pkg + `.(*` + ctl + `).` + act + `-fm`
+		key = pkg + `.(*` + a.urlRecovery(ctl) + `).` + a.urlRecovery(act) + `-fm`
 	}
 	var params url.Values
 	if len(uris) > 1 {

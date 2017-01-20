@@ -24,6 +24,7 @@ import (
 	"strings"
 
 	"github.com/admpub/confl"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/engine/fasthttp"
@@ -52,6 +53,8 @@ func NewWithContext(name string, newContext func(*echo.Echo) echo.Context, middl
 		RootAppName:   `base`,
 		FuncMap:       tplfunc.New(),
 		RouteTagName:  `webx`,
+		URLConvert:    LowerCaseFirst,
+		URLRecovery:   UpperCaseFirst,
 	}
 	mwNum := len(middlewares)
 	if mwNum == 1 && middlewares[0] == nil {
@@ -90,6 +93,19 @@ func NewWithContext(name string, newContext func(*echo.Echo) echo.Context, middl
 	return
 }
 
+type (
+	URLConvert  func(string) string
+	URLRecovery func(string) string
+)
+
+var (
+	SnakeCase      URLConvert = com.SnakeCase
+	LowerCaseFirst URLConvert = com.LowerCaseFirst
+
+	CamelCase      URLRecovery = com.CamelCase
+	UpperCaseFirst URLRecovery = strings.Title
+)
+
 type MVC struct {
 	Core               *echo.Echo
 	Name               string
@@ -97,7 +113,8 @@ type MVC struct {
 	StaticDir          string
 	StaticRes          *resource.Static
 	RouteTagName       string
-	URLConvert         bool
+	URLConvert         URLConvert
+	URLRecovery        URLRecovery
 	MaxUploadSize      int64
 	RootAppName        string
 	URL                string

@@ -117,18 +117,19 @@ func (a *Module) Valid() error {
 }
 
 // Register 注册路由：module.Register(`/index`,Index.Index,"GET","POST")
-func (a *Module) Register(p string, h HandlerFunc, methods ...string) *Module {
+func (a *Module) Register(p string, v interface{}, methods ...string) *Module {
 	if len(methods) < 1 {
 		methods = append(methods, "GET")
 	}
-	a.MVC.URLs.Set(h)
+	a.MVC.URLs.Set(v)
+	h := a.Core.ValidHandler(v)
 	a.Router().Match(methods, p, echo.HandlerFunc(func(ctx echo.Context) error {
 		if c, y := ctx.(Initer); y {
 			if err := c.Init(ctx); err != nil {
 				return err
 			}
 		}
-		return h(ctx)
+		return h.Handle(ctx)
 	}))
 	return a
 }

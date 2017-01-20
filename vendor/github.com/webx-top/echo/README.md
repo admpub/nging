@@ -245,7 +245,7 @@ import (
 )
 ...
 
-e.HandlerWrapper = ws.HanderWrapper
+e.AddHandlerWrapper(ws.HanderWrapper)
 
 e.Get("/websocket", func(c *websocket.Conn, ctx echo.Context) error {
 	//push(writer)

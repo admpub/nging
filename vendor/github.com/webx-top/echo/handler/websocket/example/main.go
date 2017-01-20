@@ -123,7 +123,7 @@ func main() {
 	})
 	//e.Get("/websocket", ws.Websocket(nil))
 
-	e.HandlerWrapper = ws.HanderWrapper
+	e.AddHandlerWrapper(ws.HanderWrapper)
 
 	e.Get("/websocket", func(c *websocket.Conn, ctx echo.Context) error {
 		//push(writer)

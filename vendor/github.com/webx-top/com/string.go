@@ -308,20 +308,20 @@ func CamelCase(s string) string {
 	n := ""
 	capNext := true
 	for _, v := range s {
-		if IsASCIIUpper(v) {
-			n += string(v)
-		}
 		if v >= 'a' && v <= 'z' {
 			if capNext {
 				n += strings.ToUpper(string(v))
+				capNext = false
 			} else {
 				n += string(v)
 			}
+			continue
 		}
 		if v == '_' || v == ' ' {
 			capNext = true
 		} else {
 			capNext = false
+			n += string(v)
 		}
 	}
 	return n

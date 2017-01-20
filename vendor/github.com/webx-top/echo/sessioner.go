@@ -17,10 +17,6 @@
 */
 package echo
 
-import (
-	"fmt"
-)
-
 var (
 	DefaultNopSession     Sessioner = &NopSession{}
 	DefaultSessionOptions           = &SessionOptions{
@@ -30,7 +26,7 @@ var (
 	}
 )
 
-// Options stores configuration for a session or session store.
+// SessionOptions stores configuration for a session or session store.
 // Fields are a subset of http.Cookie fields.
 type SessionOptions struct {
 	Engine string //Store Engine
@@ -38,7 +34,7 @@ type SessionOptions struct {
 	*CookieOptions
 }
 
-// Wraps thinly gorilla-session methods.
+// Sessioner Wraps thinly gorilla-session methods.
 // Session stores the values and optional configuration for a session.
 type Sessioner interface {
 	// Get returns the session value associated to the given key.
@@ -70,27 +66,22 @@ type NopSession struct {
 }
 
 func (n *NopSession) Get(name string) interface{} {
-	fmt.Println(`NopSession#Get:`, name)
 	return nil
 }
 
 func (n *NopSession) Set(name string, value interface{}) Sessioner {
-	fmt.Println(`NopSession#Set:`, name, `Value:`, value)
 	return n
 }
 
 func (n *NopSession) SetId(id string) Sessioner {
-	fmt.Println(`NopSession#SetId:`, id)
 	return n
 }
 
 func (n *NopSession) Id() string {
-	fmt.Println(`NopSession#Id()`)
 	return ``
 }
 
 func (n *NopSession) Delete(name string) Sessioner {
-	fmt.Println(`NopSession#Delete:`, name)
 	return n
 }
 

@@ -22,7 +22,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
 
@@ -38,35 +37,35 @@ var (
 	}
 )
 
-// 结构体中定义路由的字段类型
+//Mapper 结构体中定义路由的字段类型
 type Mapper struct{}
 
-// 静态实例中的前置行为
+//BeforeHandler 静态实例中的前置行为
 type BeforeHandler interface {
 	Before(echo.Context) error
 }
 
-// 静态实例中的后置行为
+//AfterHandler 静态实例中的后置行为
 type AfterHandler interface {
 	After(echo.Context) error
 }
 
-// 动态实例中的初始化行为
+//Initer 动态实例中的初始化行为
 type Initer interface {
 	Init(echo.Context) error
 }
 
-// 动态实例中的前置行为
+//Before 动态实例中的前置行为
 type Before interface {
 	Before() error
 }
 
-// 动态实例中的行为入口
+//Main 动态实例中的行为入口
 type Main interface {
 	Main() error
 }
 
-// 动态实例中的后置行为
+//After 动态实例中的后置行为
 type After interface {
 	After() error
 }
@@ -82,8 +81,6 @@ type ExitChecker interface {
 type AllowFormat interface {
 	AllowFormat(urlPath string, extension string) bool
 }
-
-type HandlerFunc func(echo.Context) error
 
 func NewHandler(h func(echo.Context) error, name string) *Handler {
 	return &Handler{
@@ -107,8 +104,8 @@ func (h *Handler) HandleName() string {
 
 type Wrapper struct {
 	// 静态实例中的行为
-	beforeHandler HandlerFunc
-	afterHandler  HandlerFunc
+	beforeHandler echo.HandlerFunc
+	afterHandler  echo.HandlerFunc
 	// 动态实例中的行为状态
 	hasBefore bool
 	hasMain   bool
@@ -120,7 +117,8 @@ type Wrapper struct {
 	ControllerName string
 }
 
-func (a *Wrapper) wrapHandler(h HandlerFunc, ctl string, act string) func(echo.Context) error {
+func (a *Wrapper) wrapHandler(v interface{}, ctl string, act string) func(echo.Context) error {
+	h := a.Module.Core.ValidHandler(v)
 	a.ControllerName = ctl
 	if a.beforeHandler != nil && a.afterHandler != nil {
 		return func(ctx echo.Context) error {
@@ -138,7 +136,7 @@ func (a *Wrapper) wrapHandler(h HandlerFunc, ctl string, act string) func(echo.C
 			if ok && ex.IsExit() {
 				return nil
 			}
-			if err := h(ctx); err != nil {
+			if err := h.Handle(ctx); err != nil {
 				return err
 			}
 			if ok && ex.IsExit() {
@@ -163,7 +161,7 @@ func (a *Wrapper) wrapHandler(h HandlerFunc, ctl string, act string) func(echo.C
 			if ok && ex.IsExit() {
 				return nil
 			}
-			return h(ctx)
+			return h.Handle(ctx)
 		}
 	}
 	if a.afterHandler != nil {
@@ -176,7 +174,7 @@ func (a *Wrapper) wrapHandler(h HandlerFunc, ctl string, act string) func(echo.C
 				}
 			}
 			ex, ok := ctx.(ExitChecker)
-			if err := h(ctx); err != nil {
+			if err := h.Handle(ctx); err != nil {
 				return err
 			}
 			if ok && ex.IsExit() {
@@ -193,7 +191,7 @@ func (a *Wrapper) wrapHandler(h HandlerFunc, ctl string, act string) func(echo.C
 				return nil
 			}
 		}
-		return h(ctx)
+		return h.Handle(ctx)
 	}
 }
 
@@ -203,7 +201,7 @@ func (a *Wrapper) HandleName(h interface{}) string {
 
 // Register 路由注册方案1：注册函数(可匿名)或静态实例的成员函数
 // 例如：Register(`/index`,Index.Index,"GET","POST")
-func (a *Wrapper) Register(p string, h HandlerFunc, methods ...string) *Wrapper {
+func (a *Wrapper) Register(p string, h interface{}, methods ...string) *Wrapper {
 	if len(methods) < 1 {
 		methods = append(methods, "GET")
 	}
@@ -215,7 +213,7 @@ func (a *Wrapper) Register(p string, h HandlerFunc, methods ...string) *Wrapper 
 // RouteTags 路由注册方案2：从动态实例内Mapper类型字段标签中获取路由信息
 func (a *Wrapper) RouteTags() {
 	if _, y := a.Controller.(Initer); !y {
-		a.Module.Core.Logger().Infof(`%T is no method Init(*Context),skip.`, a.Controller)
+		a.Module.Core.Logger().Infof(`%T is no method Init(echo.Context)error, skiped.`, a.Controller)
 		return
 	}
 	t := reflect.TypeOf(a.Controller)
@@ -225,10 +223,10 @@ func (a *Wrapper) RouteTags() {
 	//github.com/webx-top/{Project}/app/{Module}/controller.(*Index).
 
 	var ctl string
-	if a.Module.URLConvert {
-		ctl = com.SnakeCase(e.Name())
+	if a.Module.URLConvert != nil {
+		ctl = a.Module.URLConvert(e.Name())
 	} else {
-		ctl = com.LowerCaseFirst(e.Name())
+		ctl = e.Name()
 	}
 	a.ControllerName = ctl
 	for i := 0; i < e.NumField(); i++ {
@@ -277,10 +275,10 @@ func (a *Wrapper) RouteTags() {
 			}
 		}
 		if len(p) == 0 {
-			if a.Module.URLConvert {
-				p = `/` + com.SnakeCase(f.Name)
+			if a.Module.URLConvert != nil {
+				p = `/` + a.Module.URLConvert(name)
 			} else {
-				p = `/` + f.Name
+				p = `/` + name
 			}
 		}
 		var ppath string
@@ -418,7 +416,7 @@ func (a *Wrapper) Exec(ctx echo.Context, t reflect.Type, action string) error {
 // RouteMethods 路由注册方案3：自动注册动态实例内带HTTP方法名后缀的成员函数作为路由
 func (a *Wrapper) RouteMethods() {
 	if _, valid := a.Controller.(Initer); !valid {
-		a.Module.Core.Logger().Infof(`%T is no method Init(*Context),skip.`, a.Controller)
+		a.Module.Core.Logger().Infof(`%T is no method Init(echo.Context)error, skiped.`, a.Controller)
 		return
 	}
 	t := reflect.TypeOf(a.Controller)
@@ -426,10 +424,10 @@ func (a *Wrapper) RouteMethods() {
 	ctlPath := e.PkgPath() + `.(*` + e.Name() + `).`
 	//github.com/webx-top/{Project}/app/{Module}/controller.(*Index).
 	var ctl string
-	if a.Module.URLConvert {
-		ctl = com.SnakeCase(e.Name())
+	if a.Module.URLConvert != nil {
+		ctl = a.Module.URLConvert(e.Name())
 	} else {
-		ctl = com.LowerCaseFirst(e.Name())
+		ctl = e.Name()
 	}
 	a.ControllerName = ctl
 	for i := t.NumMethod() - 1; i >= 0; i-- {
@@ -443,10 +441,10 @@ func (a *Wrapper) RouteMethods() {
 		if strings.HasSuffix(name, `_ANY`) {
 			name = strings.TrimSuffix(name, `_ANY`)
 			var pp string
-			if a.Module.URLConvert {
-				pp = com.SnakeCase(name)
+			if a.Module.URLConvert != nil {
+				pp = a.Module.URLConvert(name)
 			} else {
-				pp = com.LowerCaseFirst(name)
+				pp = name
 			}
 			ppath := `/` + ctl + `/` + pp
 			k := ctlPath + name + `-fm`
@@ -462,10 +460,10 @@ func (a *Wrapper) RouteMethods() {
 		methods := strings.Split(strings.TrimPrefix(matches[0], `_`), `_`)
 		name = strings.TrimSuffix(name, matches[0])
 		var pp string
-		if a.Module.URLConvert {
-			pp = com.SnakeCase(name)
+		if a.Module.URLConvert != nil {
+			pp = a.Module.URLConvert(name)
 		} else {
-			pp = com.LowerCaseFirst(name)
+			pp = name
 		}
 		ppath := `/` + ctl + `/` + pp
 		k := ctlPath + name + `-fm`

@@ -33,8 +33,8 @@ type (
 		router            *Router
 		logger            logger.Logger
 		meta              map[string]H
-		HandlerWrapper    func(interface{}) Handler
-		MiddlewareWrapper func(interface{}) Middleware
+		handlerWrapper    []func(interface{}) Handler
+		middlewareWrapper []func(interface{}) Middleware
 		FuncMap           map[string]interface{}
 	}
 
@@ -438,23 +438,43 @@ func (e *Echo) Match(methods []string, path string, h interface{}, middleware ..
 }
 
 func (e *Echo) ValidHandler(v interface{}) (h Handler) {
-	if e.HandlerWrapper != nil {
-		h = e.HandlerWrapper(v)
-		if h != nil {
-			return
+	if e.handlerWrapper != nil {
+		for _, wrapper := range e.handlerWrapper {
+			h = wrapper(v)
+			if h != nil {
+				return
+			}
 		}
 	}
 	return WrapHandler(v)
 }
 
 func (e *Echo) ValidMiddleware(v interface{}) (m Middleware) {
-	if e.MiddlewareWrapper != nil {
-		m = e.MiddlewareWrapper(v)
-		if m != nil {
-			return
+	if e.middlewareWrapper != nil {
+		for _, wrapper := range e.middlewareWrapper {
+			m = wrapper(v)
+			if m != nil {
+				return
+			}
 		}
 	}
 	return WrapMiddleware(v)
+}
+
+func (e *Echo) SetHandlerWrapper(funcs ...func(interface{}) Handler) {
+	e.handlerWrapper = funcs
+}
+
+func (e *Echo) SetMiddlewareWrapper(funcs ...func(interface{}) Middleware) {
+	e.middlewareWrapper = funcs
+}
+
+func (e *Echo) AddHandlerWrapper(funcs ...func(interface{}) Handler) {
+	e.handlerWrapper = append(e.handlerWrapper, funcs...)
+}
+
+func (e *Echo) AddMiddlewareWrapper(funcs ...func(interface{}) Middleware) {
+	e.middlewareWrapper = append(e.middlewareWrapper, funcs...)
 }
 
 func (e *Echo) Prefix() string {
