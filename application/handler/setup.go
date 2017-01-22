@@ -24,8 +24,6 @@ import (
 
 	"strings"
 
-	"regexp"
-
 	"io/ioutil"
 
 	"github.com/admpub/nging/application/library/config"
@@ -33,8 +31,6 @@ import (
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
 )
-
-var reConfigItem = regexp.MustCompile(`^[\s]*([^\s:]+)[\s]*:[\s]*`)
 
 func Setup(ctx echo.Context) error {
 	var err error
