@@ -3,6 +3,7 @@
 package fasthttp
 
 import (
+	"bufio"
 	"errors"
 	"io"
 	"net"
@@ -128,6 +129,12 @@ func (r *Response) SetCookie(cookie *http.Cookie) {
 func (r *Response) ServeFile(file string) {
 	fasthttp.ServeFile(r.context, file)
 	r.committed = true
+}
+
+func (r *Response) Stream(step func(io.Writer) bool) {
+	r.context.SetBodyStreamWriter(func(w *bufio.Writer) {
+		//TODO
+	})
 }
 
 func (r *Response) Error(errMsg string, args ...int) {

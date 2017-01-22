@@ -848,11 +848,22 @@ func (ctx *RequestCtx) LocalAddr() net.Addr {
 	return addr
 }
 
-// RemoteIP returns client ip for the given request.
+// RemoteIP returns the client ip the request came from.
 //
 // Always returns non-nil result.
 func (ctx *RequestCtx) RemoteIP() net.IP {
-	x, ok := ctx.RemoteAddr().(*net.TCPAddr)
+	return addrToIP(ctx.RemoteAddr())
+}
+
+// LocalIP returns the server ip the request came to.
+//
+// Always returns non-nil result.
+func (ctx *RequestCtx) LocalIP() net.IP {
+	return addrToIP(ctx.LocalAddr())
+}
+
+func addrToIP(addr net.Addr) net.IP {
+	x, ok := addr.(*net.TCPAddr)
 	if !ok {
 		return net.IPv4zero
 	}
@@ -1468,8 +1479,8 @@ func (s *Server) serveConn(c net.Conn) error {
 			}
 		} else {
 			br, err = acquireByteReader(&ctx)
-			ctx.Request.isTLS = isTLS
 		}
+		ctx.Request.isTLS = isTLS
 
 		if err == nil {
 			if s.DisableHeaderNamesNormalizing {
@@ -1964,6 +1975,7 @@ func writeErrorResponse(bw *bufio.Writer, ctx *RequestCtx, err error) *bufio.Wri
 	} else {
 		ctx.Error("Error when parsing request", StatusBadRequest)
 	}
+	ctx.SetConnectionClose()
 	if bw == nil {
 		bw = acquireWriter(ctx)
 	}

@@ -132,6 +132,7 @@ type (
 		NotFound()
 		SetCookie(*http.Cookie)
 		ServeFile(string)
+		Stream(func(io.Writer) bool)
 		Error(string, ...int)
 
 		StdResponseWriter() http.ResponseWriter

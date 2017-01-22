@@ -58,3 +58,33 @@ type Driver interface {
 	//关闭并停用模板引擎
 	Close()
 }
+
+type NopRenderer struct{}
+
+func (n *NopRenderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+	return nil
+}
+
+func (n *NopRenderer) Init(_ ...bool) {}
+
+func (n *NopRenderer) TmplDir() string { return `` }
+
+func (n *NopRenderer) SetLogger(_ logger.Logger) {}
+
+func (n *NopRenderer) Logger() logger.Logger { return nil }
+
+func (n *NopRenderer) SetContentProcessor(fn func([]byte) []byte) {}
+
+func (n *NopRenderer) SetManager(_ Manager) {}
+
+func (n *NopRenderer) SetFuncMap(_ func() map[string]interface{}) {}
+
+func (n *NopRenderer) Fetch(_ string, _ interface{}, _ map[string]interface{}) string { return `` }
+
+func (n *NopRenderer) RawContent(_ string) ([]byte, error) { return nil, nil }
+
+func (n *NopRenderer) MonitorEvent(_ func(string)) {}
+
+func (n *NopRenderer) ClearCache() {}
+
+func (n *NopRenderer) Close() {}

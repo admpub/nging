@@ -143,6 +143,23 @@ func (r *Response) ServeFile(file string) {
 	r.committed = true
 }
 
+func (r *Response) Stream(step func(io.Writer) bool) {
+	w := r.response
+	clientGone := w.(http.CloseNotifier).CloseNotify()
+	for {
+		select {
+		case <-clientGone:
+			return
+		default:
+			keepOpen := step(w)
+			w.(http.Flusher).Flush()
+			if !keepOpen {
+				return
+			}
+		}
+	}
+}
+
 func (r *Response) StdResponseWriter() http.ResponseWriter {
 	return r.response
 }

@@ -386,9 +386,9 @@ func (enc *Encoder) eStruct(key Key, rv reflect.Value) {
 	// a field that creates a new table, then all keys under it will be in that
 	// table (not the one we're writing here).
 	rt := rv.Type()
-	var fieldsDirect, fieldsSub [][]int
-	var addFields func(rt reflect.Type, rv reflect.Value, start []int)
-	addFields = func(rt reflect.Type, rv reflect.Value, start []int) {
+	//var fieldsDirect, fieldsSub [][]int
+	var addFields func(rt reflect.Type, rv reflect.Value)
+	addFields = func(rt reflect.Type, rv reflect.Value) {
 		for i := 0; i < rt.NumField(); i++ {
 			f := rt.Field(i)
 			// skip unexporded fields
@@ -419,37 +419,13 @@ func (enc *Encoder) eStruct(key Key, rv reflect.Value) {
 				if t.Kind() != reflect.Struct {
 					encPanic(errAnonNonStruct)
 				}
-				addFields(t, frv, f.Index)
-			} else if typeIsHash(confTypeOfGo(frv)) {
-				fieldsSub = append(fieldsSub, append(start, f.Index...))
-			} else {
-				fieldsDirect = append(fieldsDirect, append(start, f.Index...))
-			}
-		}
-	}
-	addFields(rt, rv, nil)
-
-	var writeFields = func(fields [][]int) {
-		for _, fieldIndex := range fields {
-			sft := rt.FieldByIndex(fieldIndex)
-			sf := rv.FieldByIndex(fieldIndex)
-			if isNil(sf) {
-				// Don't write anything for nil fields.
-				continue
-			}
-			keyName := sft.Tag.Get("confl")
-			if keyName == "-" {
+				addFields(t, frv)
 				continue
 			}
 			if keyName == "" {
-				keyName = sft.Tag.Get("json")
-				if keyName == "-" {
-					continue
-				} else if keyName == "" {
-					keyName = sft.Name
-				}
+				keyName = f.Name
 			}
-			if keyName != sft.Name {
+			if keyName != f.Name {
 				attrs := strings.Split(keyName, `,`)
 				keyName = attrs[0]
 				if keyName == "-" {
@@ -460,7 +436,7 @@ func (enc *Encoder) eStruct(key Key, rv reflect.Value) {
 					for _, attr := range attrs[1:] {
 						switch attr {
 						case `omitempty`:
-							omitEmpty = isZero(sf)
+							omitEmpty = isZero(frv)
 						default:
 						}
 					}
@@ -469,12 +445,10 @@ func (enc *Encoder) eStruct(key Key, rv reflect.Value) {
 					}
 				}
 			}
-			//u.Infof("found key: depth?%v  keyName='%v'\t\tsf=%v", len(key), keyName, sf)
-			enc.encode(key.add(keyName), sf)
+			enc.encode(key.add(keyName), frv)
 		}
 	}
-	writeFields(fieldsDirect)
-	writeFields(fieldsSub)
+	addFields(rt, rv)
 }
 
 // returns the Confl type name of the Go value's type. It is used to
@@ -501,15 +475,13 @@ func confTypeOfGo(rv reflect.Value) confType {
 	case reflect.Array, reflect.Slice:
 		if typeEqual(confHash, confArrayType(rv)) {
 			return confArrayHash
-		} else {
-			return confArray
 		}
+		return confArray
 	case reflect.Ptr, reflect.Interface:
 		return confTypeOfGo(rv.Elem())
 	case reflect.String:
 		return confString
 	case reflect.Map:
-
 		return confHash
 	case reflect.Struct:
 		switch rv.Interface().(type) {

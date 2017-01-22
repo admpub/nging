@@ -64,6 +64,8 @@ type (
 		JSONP(string, interface{}, ...int) error
 		XML(interface{}, ...int) error
 		XMLBlob([]byte, ...int) error
+		Stream(func(io.Writer) bool)
+		SSEvent(string, chan interface{}) error
 		File(string) error
 		Attachment(io.ReadSeeker, string) error
 		NoContent(...int) error
@@ -425,6 +427,31 @@ func (c *xContext) XMLBlob(b []byte, codes ...int) (err error) {
 	c.response.Header().Set(HeaderContentType, MIMEApplicationXMLCharsetUTF8)
 	b = []byte(xml.Header + string(b))
 	err = c.Blob(b, codes...)
+	return
+}
+
+func (c *xContext) Stream(step func(w io.Writer) bool) {
+	c.response.Stream(step)
+}
+
+func (c *xContext) SSEvent(event string, data chan interface{}) (err error) {
+	hdr := c.response.Header()
+	hdr.Set(HeaderContentType, MIMEEventStream)
+	hdr.Set(`Cache-Control`, `no-cache`)
+	hdr.Set(`Connection`, `keep-alive`)
+	c.Stream(func(w io.Writer) bool {
+		b, e := c.Fetch(event, <-data)
+		if e != nil {
+			err = e
+			return false
+		}
+		_, e = w.Write(b)
+		if e != nil {
+			err = e
+			return false
+		}
+		return true
+	})
 	return
 }
 

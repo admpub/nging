@@ -125,6 +125,7 @@ const (
 	MIMETextPlainCharsetUTF8             = MIMETextPlain + "; " + CharsetUTF8
 	MIMEMultipartForm                    = "multipart/form-data"
 	MIMEOctetStream                      = "application/octet-stream"
+	MIMEEventStream                      = "text/event-stream"
 
 	//---------
 	// Charset

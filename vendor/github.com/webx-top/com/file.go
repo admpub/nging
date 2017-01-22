@@ -564,6 +564,7 @@ func SeekFileLines(filename string, callback func(string) error) (err error) {
 		if e := callback(line); e != nil {
 			return e
 		}
+		prefix = ""
 		if er == io.EOF {
 			break
 		}
