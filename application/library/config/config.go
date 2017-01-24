@@ -22,6 +22,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"time"
+
 	"github.com/admpub/confl"
 	GAuth "github.com/admpub/dgoogauth"
 	"github.com/admpub/nging/application/library/caddy"
@@ -71,6 +73,8 @@ type Config struct {
 		EditableFileMaxSize    string             `json:"editableFileMaxSize"`
 		EditableFileMaxBytes   int64              `json:"editableFileMaxBytes"`
 		ErrorPages             map[int]string     `json:"errorPages"`
+		CmdTimeout             string             `json:"cmdTimeout"`
+		CmdTimeoutDuration     time.Duration      `json:"-"`
 	} `json:"sys"`
 
 	Cookie struct {

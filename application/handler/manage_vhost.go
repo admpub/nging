@@ -125,7 +125,7 @@ func ManageVhostDelete(ctx echo.Context) error {
 		var saveFile string
 		saveFile, err = filepath.Abs(config.DefaultConfig.Sys.VhostsfileDir)
 		if err == nil {
-			saveFile = filepath.Join(saveFile, fmt.Sprint(m.Id)+`.conf`)
+			saveFile = filepath.Join(saveFile, fmt.Sprint(id)+`.conf`)
 			err = os.Remove(saveFile)
 			if os.IsNotExist(err) {
 				err = nil

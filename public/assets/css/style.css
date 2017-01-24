@@ -3987,20 +3987,12 @@ h1:first-child {
 .chat-wi .chat-in button,
 .chat-wi .chat-in input[type="submit"] {
   box-shadow: none;
-  background: #E5E7EA;
-  border: 1px solid  #E5E7EA;
-  border-left: 1px solid  #dadada;
   border-radius: 0;
   -webkit-border-radius: 0;
   height: 47px;
   min-width: 70px;
-  color: #777;
   transition: border-color 0.21s ease-out 0s;
   margin: 0;
-}
-.chat-wi .chat-in button:hover {
-  border-color: #4D90FE;
-  color: #555;
 }
 .chat-wi .chat-in .input {
   margin-right: 70px;

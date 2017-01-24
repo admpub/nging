@@ -26,8 +26,11 @@ import (
 
 	"strings"
 
+	"time"
+
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/library/charset"
+	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/sockjs-go/sockjs"
 	"github.com/admpub/websocket"
 	"github.com/shirou/gopsutil/cpu"
@@ -69,7 +72,8 @@ func ManageSockJSSendCmd(c sockjs.Session) error {
 			}
 		}
 	}()
-
+	timeout := c.Request().URL.Query().Get(`timeout`)
+	duration := config.ParseTimeDuration(timeout)
 	//echo
 	exec := func(session sockjs.Session) error {
 		var (
@@ -88,7 +92,7 @@ func ManageSockJSSendCmd(c sockjs.Session) error {
 				w, cmd, err = CmdRunner(command, send, func() {
 					w.Close()
 					w = nil
-				})
+				}, duration)
 				if err != nil {
 					return err
 				}
@@ -107,7 +111,7 @@ func ManageSockJSSendCmd(c sockjs.Session) error {
 	return nil
 }
 
-func CmdRunner(command string, send chan string, onEnd func()) (w io.WriteCloser, cmd *exec.Cmd, err error) {
+func CmdRunner(command string, send chan string, onEnd func(), timeout time.Duration) (w io.WriteCloser, cmd *exec.Cmd, err error) {
 	cmd = com.CreateCmdStr(command, func(b []byte) (e error) {
 		if IsWindows {
 			b, e = charset.Convert(`gbk`, `utf-8`, b)
@@ -122,11 +126,46 @@ func CmdRunner(command string, send chan string, onEnd func()) (w io.WriteCloser
 	if err != nil {
 		return
 	}
+	done := make(chan struct{})
 	go func() {
+		log.Info(`[command] running: `, command)
 		if e := cmd.Run(); e != nil {
 			cmd.Stderr.Write([]byte(e.Error()))
 		}
+		done <- struct{}{}
 		onEnd()
+	}()
+	cmdMaxTimeout := config.DefaultConfig.Sys.CmdTimeoutDuration
+	if timeout <= 0 {
+		timeout = time.Minute * 5
+	}
+	if timeout > cmdMaxTimeout {
+		timeout = cmdMaxTimeout
+	}
+	go func() {
+		ticker := time.NewTicker(timeout)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-done:
+				log.Info(`[command] exited: `, command)
+				return
+			case <-ticker.C:
+				if cmd == nil {
+					return
+				}
+				if cmd.Process == nil {
+					return
+				}
+				cmd.Stderr.Write([]byte(`timeout`))
+				log.Info(`[command] timeout: `, command)
+				err := cmd.Process.Kill()
+				if err != nil {
+					log.Error(err)
+				}
+				return
+			}
+		}
 	}()
 	return
 }
@@ -164,6 +203,8 @@ func ManageWSSendCmd(c *websocket.Conn, ctx echo.Context) error {
 		}
 	}()
 
+	timeout := ctx.Query(`timeout`)
+	duration := config.ParseTimeDuration(timeout)
 	//echo
 	exec := func(conn *websocket.Conn) error {
 		var (
@@ -183,7 +224,7 @@ func ManageWSSendCmd(c *websocket.Conn, ctx echo.Context) error {
 				w, cmd, err = CmdRunner(command, send, func() {
 					w.Close()
 					w = nil
-				})
+				}, duration)
 				if err != nil {
 					return err
 				}

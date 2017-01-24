@@ -22,7 +22,11 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
+	"time"
+
+	"strconv"
 
 	"github.com/admpub/confl"
 	"github.com/admpub/log"
@@ -33,6 +37,24 @@ import (
 	"github.com/webx-top/db/mysql"
 	"github.com/webx-top/echo/middleware/bytes"
 )
+
+var reNumeric = regexp.MustCompile(`^[0-9]+$`)
+
+func ParseTimeDuration(timeout string) time.Duration {
+	var timeoutDuration time.Duration
+	if len(timeout) > 0 {
+		if reNumeric.MatchString(timeout) {
+			if val, err := strconv.ParseUint(timeout, 10, 64); err != nil {
+				log.Error(err)
+			} else {
+				timeoutDuration = time.Second * time.Duration(val)
+			}
+		} else {
+			timeoutDuration, _ = time.ParseDuration(timeout)
+		}
+	}
+	return timeoutDuration
+}
 
 func ParseConfig() error {
 	if false {
@@ -63,6 +85,10 @@ func ParseConfig() error {
 		if err != nil {
 			log.Error(err.Error())
 		}
+	}
+	DefaultConfig.Sys.CmdTimeoutDuration = ParseTimeDuration(DefaultConfig.Sys.CmdTimeout)
+	if DefaultConfig.Sys.CmdTimeoutDuration <= 0 {
+		DefaultConfig.Sys.CmdTimeoutDuration = time.Second * 30
 	}
 	caddy.Fixed(&DefaultConfig.Caddy)
 	ftp.Fixed(&DefaultConfig.FTP)
