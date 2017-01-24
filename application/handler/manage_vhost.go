@@ -96,7 +96,7 @@ func saveVhostData(ctx echo.Context, m *model.Vhost) (err error) {
 	if err != nil {
 		return
 	}
-	saveFile = filepath.Join(saveFile, fmt.Sprint(m.Id))
+	saveFile = filepath.Join(saveFile, fmt.Sprint(m.Id)+`.conf`)
 	if m.Disabled == `Y` {
 		err = os.Remove(saveFile)
 		if os.IsNotExist(err) {
@@ -125,7 +125,7 @@ func ManageVhostDelete(ctx echo.Context) error {
 		var saveFile string
 		saveFile, err = filepath.Abs(config.DefaultConfig.Sys.VhostsfileDir)
 		if err == nil {
-			saveFile = filepath.Join(saveFile, fmt.Sprint(m.Id))
+			saveFile = filepath.Join(saveFile, fmt.Sprint(m.Id)+`.conf`)
 			err = os.Remove(saveFile)
 			if os.IsNotExist(err) {
 				err = nil
