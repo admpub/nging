@@ -120,11 +120,11 @@ $(function(){
 			if(m.status==1){
 				badge='badge-success';
 			}
-			message='<span class="badge '+badge+'">'+m.title+'</span>'+m.content;
+			message='<span class="badge '+badge+'">'+App.text2html(m.title)+'</span>'+App.text2html(m.content);
 		}else{
-			message=m.content;
+			message=App.text2html(m.content);
 		}
-		c.append('<li>'+App.text2html(message)+'</li>');
+		c.append('<li>'+message+'</li>');
 		messageCount++;
 	},'/manage/notice');
 });

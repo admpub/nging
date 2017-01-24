@@ -114,7 +114,11 @@ func (c *CLIConfig) CmdStop(typeName string) error {
 	if cmd.Process == nil {
 		return nil
 	}
-	return cmd.Process.Kill()
+	err := cmd.Process.Kill()
+	if cmd.ProcessState == nil || cmd.ProcessState.Exited() {
+		return nil
+	}
+	return err
 }
 
 var ErrCmdNotRunning = errors.New(`command is not running`)

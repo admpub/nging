@@ -253,6 +253,9 @@ func CloseProcessFromPidFile(pidFile string) (err error) {
 }
 
 func CloseProcessFromPid(pid int) (err error) {
+	if pid <= 0 {
+		return nil
+	}
 	procs, err := os.FindProcess(pid)
 	if err == nil {
 		return procs.Kill()
