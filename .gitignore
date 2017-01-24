@@ -34,6 +34,6 @@ _testmain.go
 /dist/access_local.log
 /dist/*.pid
 /bindata_assetfs.go
-/config/vhosts/*
+/config/vhosts/*.conf
 /vendor/github.com/webx-top/echo/handler/oauth2/example/*.db
-/vendor/github.com/webx-top/echo/handler/oauth2/example/session.db.lock
+/vendor/github.com/webx-top/echo/handler/oauth2/example/*.db.lock
