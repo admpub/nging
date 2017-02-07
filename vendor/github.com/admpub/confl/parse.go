@@ -174,9 +174,8 @@ func (p *parser) processItem(it item) error {
 			if e, ok := err.(*strconv.NumError); ok &&
 				e.Err == strconv.ErrRange {
 				return fmt.Errorf("Integer '%s' is out of the range.", it.val)
-			} else {
-				return fmt.Errorf("Expected integer, but got '%s'.", it.val)
 			}
+			return fmt.Errorf("Expected integer, but got '%s'.", it.val)
 		}
 		p.setValue(num)
 	case itemFloat:
@@ -185,9 +184,8 @@ func (p *parser) processItem(it item) error {
 			if e, ok := err.(*strconv.NumError); ok &&
 				e.Err == strconv.ErrRange {
 				return fmt.Errorf("Float '%s' is out of the range.", it.val)
-			} else {
-				return fmt.Errorf("Expected float, but got '%s'.", it.val)
 			}
+			return fmt.Errorf("Expected float, but got '%s'.", it.val)
 		}
 		p.setValue(num)
 	case itemBool:

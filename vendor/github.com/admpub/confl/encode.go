@@ -18,6 +18,7 @@ import (
 type encodeError struct{ error }
 
 var (
+	KeyEqElement              = ":"
 	errArrayMixedElementTypes = errors.New("can't encode array with mixed element types")
 	errArrayNilElement        = errors.New("can't encode array with nil element")
 	errNonString              = errors.New("can't encode a map with non-string key type")
@@ -56,16 +57,18 @@ type Encoder struct {
 	Indent string
 
 	// hasWritten is whether we have written any output to w yet.
-	hasWritten bool
-	w          *bufio.Writer
+	hasWritten   bool
+	w            *bufio.Writer
+	KeyEqElement string
 }
 
 // NewEncoder returns a encoder that encodes Go values to the io.Writer
 // given. By default, a single indentation level is 2 spaces.
 func NewEncoder(w io.Writer) *Encoder {
 	return &Encoder{
-		w:      bufio.NewWriter(w),
-		Indent: "  ",
+		w:            bufio.NewWriter(w),
+		Indent:       "  ",
+		KeyEqElement: KeyEqElement,
 	}
 }
 
@@ -239,7 +242,7 @@ func (enc *Encoder) eArrayOfTables(key Key, rv reflect.Value) {
 	//enc.wf("%s  [\n%s]]", enc.indentStr(key), key.String())
 	newKey := key.insert("_")
 	keyDelta := 0
-	enc.wf("%s%s : [", enc.indentStrDelta(key, -1), key[len(key)-1])
+	enc.wf("%s%s "+enc.KeyEqElement+" [", enc.indentStrDelta(key, -1), key[len(key)-1])
 	for i := 0; i < rv.Len(); i++ {
 		trv := rv.Index(i)
 		if isNil(trv) {
@@ -545,7 +548,7 @@ func (enc *Encoder) keyEqElement(key Key, val reflect.Value) {
 	}
 	panicIfInvalidKey(key, false)
 	//u.Infof("keyEqElement: %v", key[len(key)-1])
-	enc.wf("%s%s : ", enc.indentStrDelta(key, -1), key[len(key)-1])
+	enc.wf("%s%s "+enc.KeyEqElement+" ", enc.indentStrDelta(key, -1), key[len(key)-1])
 	enc.eElement(val)
 	enc.newline()
 }
