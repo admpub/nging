@@ -197,12 +197,15 @@ func (b *sqlBuilder) Update(table string) Updater {
 // Map receives a pointer to map or struct and maps it to columns and values.
 func Map(item interface{}, options *MapOptions) ([]string, []interface{}, error) {
 	var fv fieldValue
-
 	if options == nil {
 		options = &defaultMapOptions
 	}
 
 	itemV := reflect.ValueOf(item)
+	if !itemV.IsValid() {
+		return nil, nil, nil
+	}
+
 	itemT := itemV.Type()
 
 	if itemT.Kind() == reflect.Ptr {
@@ -214,9 +217,7 @@ func Map(item interface{}, options *MapOptions) ([]string, []interface{}, error)
 	}
 
 	switch itemT.Kind() {
-
 	case reflect.Struct:
-
 		fieldMap := mapper.TypeMap(itemT).Names
 		nfields := len(fieldMap)
 
@@ -233,9 +234,14 @@ func Map(item interface{}, options *MapOptions) ([]string, []interface{}, error)
 
 			fld := reflectx.FieldByIndexesReadOnly(itemV, fi.Index)
 			if fld.Kind() == reflect.Ptr && fld.IsNil() {
-				if options.IncludeNil || !tagOmitEmpty {
-					fv.fields = append(fv.fields, fi.Name)
-					fv.values = append(fv.values, fld.Interface())
+				if tagOmitEmpty && !options.IncludeNil {
+					continue
+				}
+				fv.fields = append(fv.fields, fi.Name)
+				if tagOmitEmpty {
+					fv.values = append(fv.values, sqlDefault)
+				} else {
+					fv.values = append(fv.values, nil)
 				}
 				continue
 			}
@@ -260,26 +266,30 @@ func Map(item interface{}, options *MapOptions) ([]string, []interface{}, error)
 				value = fld.Interface()
 			}
 
-			if !options.IncludeZeroed {
-				if tagOmitEmpty {
-					if t, ok := fld.Interface().(hasIsZero); ok {
-						if t.IsZero() {
-							continue
-						}
-					} else if fld.Kind() == reflect.Array || fld.Kind() == reflect.Slice {
-						if value == nil {
-							continue
-						}
-					} else if value == fi.Zero.Interface() {
-						continue
-					}
+			isZero := false
+			if t, ok := fld.Interface().(hasIsZero); ok {
+				if t.IsZero() {
+					isZero = true
 				}
+			} else if fld.Kind() == reflect.Array || fld.Kind() == reflect.Slice {
+				if fld.Len() == 0 {
+					isZero = true
+				}
+			} else if value == fi.Zero.Interface() {
+				isZero = true
+			}
+
+			if isZero && tagOmitEmpty && !options.IncludeZeroed {
+				continue
 			}
 
 			fv.fields = append(fv.fields, fi.Name)
 			v, err := marshal(value)
 			if err != nil {
 				return nil, nil, err
+			}
+			if isZero && tagOmitEmpty {
+				v = sqlDefault
 			}
 			fv.values = append(fv.values, v)
 		}
@@ -303,10 +313,6 @@ func Map(item interface{}, options *MapOptions) ([]string, []interface{}, error)
 		}
 	default:
 		return nil, nil, ErrExpectingPointerToEitherMapOrStruct
-	}
-
-	if len(fv.fields) == 0 {
-		return nil, nil, errors.New("No values mapped.")
 	}
 
 	sort.Sort(&fv)

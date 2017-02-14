@@ -29,7 +29,7 @@ func (qu *updater) Set(columns ...interface{}) Updater {
 
 	if len(columns) == 1 {
 		ff, vv, err := Map(columns[0], nil)
-		if err == nil {
+		if err == nil && len(ff) > 0 {
 
 			cvs := make([]exql.Fragment, 0, len(ff))
 			args := make([]interface{}, 0, len(vv))
@@ -76,9 +76,23 @@ func (qu *updater) Arguments() []interface{} {
 }
 
 func (qu *updater) Where(terms ...interface{}) Updater {
-	where, arguments := qu.builder.t.ToWhereWithArguments(terms)
-	qu.where = &where
-	qu.whereArgs = append(qu.whereArgs, arguments...)
+	qu.mu.Lock()
+	qu.where, qu.whereArgs = &exql.Where{}, []interface{}{}
+	qu.mu.Unlock()
+	return qu.And(terms...)
+}
+
+func (qu *updater) And(terms ...interface{}) Updater {
+	where, whereArgs := qu.builder.t.ToWhereWithArguments(terms)
+
+	qu.mu.Lock()
+	if qu.where == nil {
+		qu.where, qu.whereArgs = &exql.Where{}, []interface{}{}
+	}
+	qu.where.Append(&where)
+	qu.whereArgs = append(qu.whereArgs, whereArgs...)
+	qu.mu.Unlock()
+
 	return qu
 }
 

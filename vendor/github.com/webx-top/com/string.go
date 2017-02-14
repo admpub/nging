@@ -34,7 +34,7 @@ import (
 	"unicode"
 )
 
-// md5 hash string
+// Md5 md5 hash string
 func Md5(str string) string {
 	m := md5.New()
 	io.WriteString(m, str)
@@ -99,37 +99,37 @@ func sha(m hash.Hash, str string) string {
 	return fmt.Sprintf("%x", m.Sum(nil))
 }
 
-// sha1 hash string
+// Sha1 sha1 hash string
 func Sha1(str string) string {
 	return sha(sha1.New(), str)
 }
 
-// sha256 hash string
+// Sha256 sha256 hash string
 func Sha256(str string) string {
 	return sha(sha256.New(), str)
 }
 
-// trim space on left
+// Ltrim trim space on left
 func Ltrim(str string) string {
 	return strings.TrimLeftFunc(str, unicode.IsSpace)
 }
 
-// trim space on right
+// Rtrim trim space on right
 func Rtrim(str string) string {
 	return strings.TrimRightFunc(str, unicode.IsSpace)
 }
 
-// trim space in all string length
+// Trim trim space in all string length
 func Trim(str string) string {
 	return strings.TrimSpace(str)
 }
 
-// repeat string times
+// StrRepeat repeat string times
 func StrRepeat(str string, times int) string {
 	return strings.Repeat(str, times)
 }
 
-// replace find all occurs to string
+// StrReplace replace find all occurs to string
 func StrReplace(str string, find string, to string) string {
 	return strings.Replace(str, find, to, -1)
 }
@@ -227,7 +227,7 @@ func Substr(s string, dot string, lengthAndStart ...int) string {
 	if start > ln {
 		start = start % ln
 	}
-	var end int = start + length
+	end := start + length
 	if end > (ln - 1) {
 		end = ln
 	}
@@ -303,8 +303,32 @@ func SnakeCase(name string) string {
 	return string(s)
 }
 
-// CamelCase : webx_top => WebxTop
+// CamelCase : webx_top => webxTop
 func CamelCase(s string) string {
+	n := ""
+	var capNext bool
+	for _, v := range s {
+		if v >= 'a' && v <= 'z' {
+			if capNext {
+				n += strings.ToUpper(string(v))
+				capNext = false
+			} else {
+				n += string(v)
+			}
+			continue
+		}
+		if v == '_' || v == ' ' {
+			capNext = true
+		} else {
+			capNext = false
+			n += string(v)
+		}
+	}
+	return n
+}
+
+// PascalCase : webx_top => WebxTop
+func PascalCase(s string) string {
 	n := ""
 	capNext := true
 	for _, v := range s {
@@ -348,7 +372,7 @@ func LowerCaseFirst(name string) string {
 }
 
 func AddSlashes(s string, args ...rune) string {
-	b := []rune{'\\', '\''}
+	b := []rune{'\''}
 	if len(args) > 0 {
 		b = append(b, args...)
 	}
@@ -358,13 +382,18 @@ func AddSlashes(s string, args ...rune) string {
 func AddCSlashes(s string, b ...rune) string {
 	r := []rune{}
 	for _, v := range []rune(s) {
-		for _, f := range b {
-			if v == f {
-				r = append(r, '\\')
-				break
+		if v == '\\' {
+			r = append(r, '\\')
+		} else {
+			for _, f := range b {
+				if v == f {
+					r = append(r, '\\')
+					break
+				}
 			}
 		}
 		r = append(r, v)
 	}
-	return strings.TrimRight(string(r), `\`)
+	s = string(r)
+	return s
 }

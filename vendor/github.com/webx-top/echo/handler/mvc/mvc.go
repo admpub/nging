@@ -37,24 +37,26 @@ import (
 	"github.com/webx-top/echo/middleware/tplfunc"
 )
 
+// New 创建MVC实例
 func New(name string, middlewares ...interface{}) (s *MVC) {
 	return NewWithContext(name, nil, middlewares...)
 }
 
+// NewWithContext 创建MVC实例
 func NewWithContext(name string, newContext func(*echo.Echo) echo.Context, middlewares ...interface{}) (s *MVC) {
 	s = &MVC{
-		Name:          name,
-		moduleHosts:   make(map[string]*Module),
-		moduleNames:   make(map[string]*Module),
-		TemplateDir:   `template`,
-		URL:           `/`,
-		MaxUploadSize: 10 * 1024 * 1024,
-		StaticDir:     `assets`,
-		RootAppName:   `base`,
-		FuncMap:       tplfunc.New(),
-		RouteTagName:  `webx`,
-		URLConvert:    LowerCaseFirst,
-		URLRecovery:   UpperCaseFirst,
+		Name:           name,
+		moduleHosts:    make(map[string]*Module),
+		moduleNames:    make(map[string]*Module),
+		TemplateDir:    `template`,
+		URL:            `/`,
+		MaxUploadSize:  10 * 1024 * 1024,
+		StaticDir:      `assets`,
+		RootModuleName: `base`,
+		FuncMap:        tplfunc.New(),
+		RouteTagName:   `webx`,
+		URLConvert:     LowerCaseFirst,
+		URLRecovery:    UpperCaseFirst,
 	}
 	mwNum := len(middlewares)
 	if mwNum == 1 && middlewares[0] == nil {
@@ -94,15 +96,24 @@ func NewWithContext(name string, newContext func(*echo.Echo) echo.Context, middl
 }
 
 type (
-	URLConvert  func(string) string
+	//URLConvert 网址转换
+	URLConvert func(string) string
+
+	//URLRecovery 网址还原
 	URLRecovery func(string) string
 )
 
 var (
-	SnakeCase      URLConvert = com.SnakeCase
+	//SnakeCase 单词全部小写并用下划线连接
+	SnakeCase URLConvert = com.SnakeCase
+
+	//LowerCaseFirst 小写首字母
 	LowerCaseFirst URLConvert = com.LowerCaseFirst
 
-	CamelCase      URLRecovery = com.CamelCase
+	//PascalCase 帕斯卡命名法
+	PascalCase URLRecovery = com.PascalCase
+
+	//UpperCaseFirst 大写首字母
 	UpperCaseFirst URLRecovery = strings.Title
 )
 
@@ -116,17 +127,17 @@ type MVC struct {
 	URLConvert         URLConvert
 	URLRecovery        URLRecovery
 	MaxUploadSize      int64
-	RootAppName        string
+	RootModuleName     string
 	URL                string
 	URLs               *URLs
 	DefaultMiddlewares []interface{} `json:"-" xml:"-"`
 	SessionOptions     *echo.SessionOptions
-	Renderer           driver.Driver                                                                                          `json:"-" xml:"-"`
-	FuncMap            map[string]interface{}                                                                                 `json:"-" xml:"-"`
-	ContextCreator     func(*echo.Echo) echo.Context                                                                          `json:"-" xml:"-"`
-	ContextInitial     func(ctx echo.Context, wrp *Wrapper, controller interface{}, actionName string) (err error, exit bool) `json:"-" xml:"-"`
-	moduleHosts        map[string]*Module                                                                                     //域名关联
-	moduleNames        map[string]*Module                                                                                     //名称关联
+	Renderer           driver.Driver                                                   `json:"-" xml:"-"`
+	FuncMap            map[string]interface{}                                          `json:"-" xml:"-"`
+	ContextCreator     func(*echo.Echo) echo.Context                                   `json:"-" xml:"-"`
+	ContextInitial     func(echo.Context, *Wrapper, interface{}, string) (error, bool) `json:"-" xml:"-"`
+	moduleHosts        map[string]*Module                                              //域名关联
+	moduleNames        map[string]*Module                                              //名称关联
 	rootDir            string
 	theme              string
 }
@@ -168,7 +179,7 @@ func (s *MVC) SetDomain(name string, domain string) *MVC {
 		}
 		delete(s.moduleHosts, domain)
 		var prefix string
-		if name != s.RootAppName {
+		if name != s.RootModuleName {
 			prefix = `/` + name
 			a.Dir = prefix + `/`
 		} else {
@@ -264,13 +275,13 @@ func (s *MVC) NewModule(name string, middlewares ...interface{}) *Module {
 // NewRenderer 新建渲染接口
 func (s *MVC) NewRenderer(conf *render.Config, a *Module, funcMap map[string]interface{}) driver.Driver {
 	themeAbsPath := s.ThemeDir(conf.Theme)
-	staticUrlPath := `/assets`
+	staticURLPath := `/assets`
 	if a != nil && len(a.Name) > 0 {
-		staticUrlPath = `/` + a.Name + staticUrlPath
+		staticURLPath = `/` + a.Name + staticURLPath
 	}
 	staticAbsPath := themeAbsPath + `/assets`
 	te := s.NewTemplateEngine(themeAbsPath, conf)
-	static := s.NewStatic(staticUrlPath, staticAbsPath, funcMap)
+	static := s.NewStatic(staticURLPath, staticAbsPath, funcMap)
 	te.SetFuncMap(func() map[string]interface{} {
 		return funcMap
 	})
@@ -306,7 +317,7 @@ func (s *MVC) resetRenderer(conf *render.Config) *MVC {
 
 // Module 获取模块实例
 func (s *MVC) Module(args ...string) *Module {
-	name := s.RootAppName
+	name := s.RootModuleName
 	if len(args) > 0 {
 		name = args[0]
 		if ap, ok := s.moduleNames[name]; ok {
@@ -335,7 +346,7 @@ func (s *MVC) SetSessionOptions(sessionOptions *echo.SessionOptions) *MVC {
 
 // ModuleOk 获取模块实例
 func (s *MVC) ModuleOk(args ...string) (app *Module, ok bool) {
-	name := s.RootAppName
+	name := s.RootModuleName
 	if len(args) > 0 {
 		name = args[0]
 	}

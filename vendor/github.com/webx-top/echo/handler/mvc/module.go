@@ -45,7 +45,7 @@ func NewModule(name string, domain string, s *MVC, middlewares ...interface{}) (
 	}
 	if a.Domain == `` {
 		var prefix string
-		if name != s.RootAppName {
+		if name != s.RootModuleName {
 			prefix = `/` + name
 			a.Dir = prefix + `/`
 		} else {
@@ -69,7 +69,7 @@ func NewModule(name string, domain string, s *MVC, middlewares ...interface{}) (
 		a.URL = scheme + `://` + a.Domain + `/`
 		a.Dir = `/`
 	}
-	if s.RootAppName == name {
+	if s.RootModuleName == name {
 		a.Installed = int(time.Now().Unix())
 	}
 	return
