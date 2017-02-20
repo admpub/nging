@@ -60,12 +60,9 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 	if len(newPasswd) > 0 {
 		if !isHashed {
 			r.SQL = `SELECT PASSWORD(` + quoteVal(newPasswd) + `)`
-			row, err := m.newParam().SetCollection(r.SQL).QueryRow()
-			if err != nil {
-				return err
-			}
+			row := m.newParam().SetCollection(r.SQL).QueryRow()
 			var v sql.NullString
-			err = row.Scan(&v)
+			err := row.Scan(&v)
 			if err != nil {
 				return err
 			}
@@ -321,15 +318,13 @@ func (m *mySQL) getUserGrants(host, user string) (string, map[string]map[string]
 			}
 		}
 		sqlStr = "SELECT SUBSTRING_INDEX(CURRENT_USER, '@', -1)"
-		row, err := m.newParam().SetCollection(sqlStr).QueryRow()
-		if err == nil {
-			var v sql.NullString
-			err = row.Scan(&v)
-			if err != nil {
-				return oldPass, r, sortNumber, err
-			}
-			m.Request().Form().Set(`host`, v.String)
+		row := m.newParam().SetCollection(sqlStr).QueryRow()
+		var v sql.NullString
+		err = row.Scan(&v)
+		if err != nil {
+			return oldPass, r, sortNumber, err
 		}
+		m.Request().Form().Set(`host`, v.String)
 	}
 	var key string
 	if len(m.dbName) == 0 || (r != nil && len(r) > 0) {

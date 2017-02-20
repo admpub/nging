@@ -2,6 +2,7 @@
 package factory
 
 import (
+	"context"
 	"errors"
 
 	"github.com/webx-top/db"
@@ -36,11 +37,11 @@ type Factory struct {
 }
 
 func (f *Factory) Debug() bool {
-	return db.Conf.LoggingEnabled()
+	return db.DefaultSettings.LoggingEnabled()
 }
 
 func (f *Factory) SetDebug(on bool) *Factory {
-	db.Conf.SetLogging(on)
+	db.DefaultSettings.SetLogging(on)
 	return f
 }
 
@@ -126,7 +127,7 @@ func (f *Factory) GetCluster(index int) *Cluster {
 	return f.Cluster(index)
 }
 
-func (f *Factory) Tx(param *Param) error {
+func (f *Factory) Tx(param *Param, ctxa ...context.Context) error {
 	if param.TxMiddleware == nil {
 		return nil
 	}
@@ -139,13 +140,17 @@ func (f *Factory) Tx(param *Param) error {
 		trans.Tx = tx
 		return param.TxMiddleware(trans)
 	}
+	var ctx context.Context
+	if len(ctxa) > 0 {
+		ctx = ctxa[0]
+	}
 	if rdb, ok := c.W().(sqlbuilder.Database); ok {
-		return rdb.Tx(fn)
+		return rdb.Tx(ctx, fn)
 	}
 	return db.ErrUnsupported
 }
 
-func (f *Factory) NewTx(args ...int) (trans *Transaction, err error) {
+func (f *Factory) NewTx(ctx context.Context, args ...int) (trans *Transaction, err error) {
 	var index int
 	if len(args) > 0 {
 		index = args[0]
@@ -156,7 +161,7 @@ func (f *Factory) NewTx(args ...int) (trans *Transaction, err error) {
 		Factory: f,
 	}
 	if rdb, ok := c.W().(sqlbuilder.Database); ok {
-		trans.Tx, err = rdb.NewTx()
+		trans.Tx, err = rdb.NewTx(ctx)
 	} else {
 		err = db.ErrUnsupported
 	}

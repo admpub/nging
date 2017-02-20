@@ -23,16 +23,28 @@ package sqladapter
 
 import (
 	"sync"
+	"sync/atomic"
 
 	"github.com/webx-top/db"
+	"github.com/webx-top/db/internal/immutable"
 	"github.com/webx-top/db/lib/sqlbuilder"
 )
 
-// Result represents a delimited set of items bound by a condition.
 type Result struct {
-	b       sqlbuilder.Builder
+	builder sqlbuilder.SQLBuilder
+
+	err atomic.Value
+
+	iter   sqlbuilder.Iterator
+	iterMu sync.Mutex
+
+	prev *Result
+	fn   func(*result) error
+}
+
+// result represents a delimited set of items bound by a condition.
+type result struct {
 	table   string
-	iter    sqlbuilder.Iterator
 	limit   int
 	offset  int
 	fields  []interface{}
@@ -40,97 +52,146 @@ type Result struct {
 	orderBy []interface{}
 	groupBy []interface{}
 	conds   [][]interface{}
-	err     error
-	errMu   sync.RWMutex
-	iterMu  sync.Mutex
+}
+
+func filter(conds []interface{}) []interface{} {
+	return conds
+}
+
+// NewResult creates and Results a new Result set on the given table, this set
+// is limited by the given exql.Where conditions.
+func NewResult(builder sqlbuilder.SQLBuilder, table string, conds []interface{}) *Result {
+	r := &Result{
+		builder: builder,
+	}
+	return r.from(table).where(conds)
+}
+
+func (r *Result) frame(fn func(*result) error) *Result {
+	return &Result{prev: r, fn: fn}
+}
+
+func (r *Result) SQLBuilder() sqlbuilder.SQLBuilder {
+	if r.prev == nil {
+		return r.builder
+	}
+	return r.prev.SQLBuilder()
+}
+
+func (r *Result) from(table string) *Result {
+	return r.frame(func(res *result) error {
+		res.table = table
+		return nil
+	})
+}
+
+func (r *Result) where(conds []interface{}) *Result {
+	return r.frame(func(res *result) error {
+		res.conds = [][]interface{}{conds}
+		return nil
+	})
 }
 
 func (r *Result) setErr(err error) error {
 	if err == nil {
 		return nil
 	}
-
-	r.errMu.Lock()
-	defer r.errMu.Unlock()
-
-	r.err = err
+	r.err.Store(err)
 	return err
 }
 
 // Err returns the last error that has happened with the result set,
 // nil otherwise
 func (r *Result) Err() error {
-	r.errMu.RLock()
-	defer r.errMu.RUnlock()
-	return r.err
+	if errV := r.err.Load(); errV != nil {
+		return errV.(error)
+	}
+	return nil
 }
 
 // Where sets conditions for the result set.
 func (r *Result) Where(conds ...interface{}) db.Result {
-	r.conds = [][]interface{}{conds}
-	return r
+	return r.where(conds)
 }
 
 // And adds more conditions on top of the existing ones.
 func (r *Result) And(conds ...interface{}) db.Result {
-	r.conds = append(r.conds, conds)
-	return r
+	return r.frame(func(res *result) error {
+		res.conds = append(res.conds, conds)
+		return nil
+	})
 }
 
 // Limit determines the maximum limit of Results to be returned.
 func (r *Result) Limit(n int) db.Result {
-	r.limit = n
-	return r
+	return r.frame(func(res *result) error {
+		res.limit = n
+		return nil
+	})
 }
 
 // Offset determines how many documents will be skipped before starting to grab
 // Results.
 func (r *Result) Offset(n int) db.Result {
-	r.offset = n
-	return r
+	return r.frame(func(res *result) error {
+		res.offset = n
+		return nil
+	})
 }
 
 // Group is used to group Results that have the same value in the same column
 // or columns.
 func (r *Result) Group(fields ...interface{}) db.Result {
-	r.groupBy = fields
-	return r
+	return r.frame(func(res *result) error {
+		res.groupBy = fields
+		return nil
+	})
 }
 
 // OrderBy determines sorting of Results according to the provided names. Fields
 // may be prefixed by - (minus) which means descending order, ascending order
 // would be used otherwise.
 func (r *Result) OrderBy(fields ...interface{}) db.Result {
-	r.orderBy = fields
-	return r
+	return r.frame(func(res *result) error {
+		res.orderBy = fields
+		return nil
+	})
 }
 
 // Select determines which fields to return.
 func (r *Result) Select(fields ...interface{}) db.Result {
-	r.fields = fields
-	return r
+	return r.frame(func(res *result) error {
+		res.fields = fields
+		return nil
+	})
 }
 
 // String satisfies fmt.Stringer
 func (r *Result) String() string {
-	return r.buildSelect().String()
+	query, err := r.buildSelect()
+	if err != nil {
+		panic(err.Error())
+	}
+	return query.String()
 }
 
 // All dumps all Results into a pointer to an slice of structs or maps.
 func (r *Result) All(dst interface{}) error {
-	if err := r.Err(); err != nil {
-		return err
+	query, err := r.buildSelect()
+	if err != nil {
+		return r.setErr(err)
 	}
-	err := r.buildSelect().Iterator().All(dst)
+	err = query.Iterator().All(dst)
 	return r.setErr(err)
 }
 
 // One fetches only one Result from the set.
 func (r *Result) One(dst interface{}) error {
-	if err := r.Err(); err != nil {
-		return err
+	query, err := r.buildSelect()
+	if err != nil {
+		return r.setErr(err)
 	}
-	err := r.buildSelect().Iterator().One(dst)
+	err = query.Iterator().One(dst)
 	return r.setErr(err)
 }
 
@@ -140,39 +201,38 @@ func (r *Result) Next(dst interface{}) bool {
 	defer r.iterMu.Unlock()
 
 	if r.iter == nil {
-		r.iter = r.buildSelect().Iterator()
+		query, err := r.buildSelect()
+		if err != nil {
+			r.setErr(err)
+			return false
+		}
+		r.iter = query.Iterator()
 	}
+
 	if r.iter.Next(dst) {
 		return true
 	}
+
 	if err := r.iter.Err(); err != db.ErrNoMoreRows {
 		r.setErr(err)
 	}
+
 	return false
 }
 
 // Delete deletes all matching items from the collection.
 func (r *Result) Delete() error {
-	if err := r.Err(); err != nil {
-		return err
+	query, err := r.buildDelete()
+	if err != nil {
+		return r.setErr(err)
 	}
 
-	q := r.b.DeleteFrom(r.table).
-		Limit(r.limit)
-
-	for i := range r.conds {
-		q = q.And(r.conds[i]...)
-	}
-
-	_, err := q.Exec()
+	_, err = query.Exec()
 	return r.setErr(err)
 }
 
 // Close closes the Result set.
 func (r *Result) Close() error {
-	if err := r.Err(); err != nil {
-		return err
-	}
 	if r.iter != nil {
 		return r.setErr(r.iter.Close())
 	}
@@ -182,41 +242,26 @@ func (r *Result) Close() error {
 // Update updates matching items from the collection with values of the given
 // map or struct.
 func (r *Result) Update(values interface{}) error {
-	if err := r.Err(); err != nil {
-		return err
-	}
-	q := r.b.Update(r.table).
-		Set(values).
-		Limit(r.limit)
-
-	for i := range r.conds {
-		q = q.And(r.conds[i]...)
+	query, err := r.buildUpdate(values)
+	if err != nil {
+		return r.setErr(err)
 	}
 
-	_, err := q.Exec()
+	_, err = query.Exec()
 	return r.setErr(err)
 }
 
 // Count counts the elements on the set.
 func (r *Result) Count() (uint64, error) {
-	if err := r.Err(); err != nil {
-		return 0, err
+	query, err := r.buildCount()
+	if err != nil {
+		return 0, r.setErr(err)
 	}
 
 	counter := struct {
 		Count uint64 `db:"_t"`
 	}{}
-
-	q := r.b.Select(db.Raw("count(1) AS _t")).
-		From(r.table).
-		GroupBy(r.groupBy...).
-		Limit(1)
-
-	for i := range r.conds {
-		q = q.And(r.conds[i]...)
-	}
-
-	if err := q.Iterator().One(&counter); err != nil {
+	if err := query.Iterator().One(&counter); err != nil {
 		if err == db.ErrNoMoreRows {
 			return 0, nil
 		}
@@ -226,19 +271,117 @@ func (r *Result) Count() (uint64, error) {
 	return counter.Count, nil
 }
 
-func (r *Result) buildSelect() sqlbuilder.Selector {
-	q := r.b.Select(r.fields...)
-
-	q.From(r.table)
-	q.Limit(r.limit)
-	q.Offset(r.offset)
-
-	for i := range r.conds {
-		q = q.And(r.conds[i]...)
+func (r *Result) buildSelect() (sqlbuilder.Selector, error) {
+	if err := r.Err(); err != nil {
+		return nil, err
 	}
 
-	q.GroupBy(r.groupBy...)
-	q.OrderBy(r.orderBy...)
+	res, err := r.fastForward()
+	if err != nil {
+		return nil, err
+	}
 
-	return q
+	sel := r.SQLBuilder().Select(res.fields...).
+		From(res.table).
+		Limit(res.limit).
+		Offset(res.offset).
+		GroupBy(res.groupBy...).
+		OrderBy(res.orderBy...)
+
+	for i := range res.conds {
+		sel = sel.And(filter(res.conds[i])...)
+	}
+
+	return sel, nil
 }
+
+func (r *Result) buildDelete() (sqlbuilder.Deleter, error) {
+	if err := r.Err(); err != nil {
+		return nil, err
+	}
+
+	res, err := r.fastForward()
+	if err != nil {
+		return nil, err
+	}
+
+	del := r.SQLBuilder().DeleteFrom(res.table).
+		Limit(res.limit)
+
+	for i := range res.conds {
+		del = del.And(filter(res.conds[i])...)
+	}
+
+	return del, nil
+}
+
+func (r *Result) buildUpdate(values interface{}) (sqlbuilder.Updater, error) {
+	if err := r.Err(); err != nil {
+		return nil, err
+	}
+
+	res, err := r.fastForward()
+	if err != nil {
+		return nil, err
+	}
+
+	upd := r.SQLBuilder().Update(res.table).
+		Set(values).
+		Limit(res.limit)
+
+	for i := range res.conds {
+		upd = upd.And(filter(res.conds[i])...)
+	}
+
+	return upd, nil
+}
+
+func (r *Result) buildCount() (sqlbuilder.Selector, error) {
+	if err := r.Err(); err != nil {
+		return nil, err
+	}
+
+	res, err := r.fastForward()
+	if err != nil {
+		return nil, err
+	}
+
+	sel := r.SQLBuilder().Select(db.Raw("count(1) AS _t")).
+		From(res.table).
+		GroupBy(res.groupBy...).
+		Limit(1)
+
+	for i := range res.conds {
+		sel = sel.And(filter(res.conds[i])...)
+	}
+
+	return sel, nil
+}
+
+func (r *Result) Prev() immutable.Immutable {
+	if r == nil {
+		return nil
+	}
+	return r.prev
+}
+
+func (r *Result) Fn(in interface{}) error {
+	if r.fn == nil {
+		return nil
+	}
+	return r.fn(in.(*result))
+}
+
+func (r *Result) Base() interface{} {
+	return &result{}
+}
+
+func (r *Result) fastForward() (*result, error) {
+	ff, err := immutable.FastForward(r)
+	if err != nil {
+		return nil, err
+	}
+	return ff.(*result), nil
+}
+
+var _ = immutable.Immutable(&Result{})

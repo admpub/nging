@@ -1,6 +1,7 @@
 package sqladapter
 
 import (
+	"context"
 	"database/sql"
 	"math"
 	"strconv"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/internal/cache"
+	"github.com/webx-top/db/internal/sqladapter/compat"
 	"github.com/webx-top/db/internal/sqladapter/exql"
 	"github.com/webx-top/db/lib/sqlbuilder"
 )
@@ -19,15 +21,15 @@ var (
 	lastTxID   uint64
 )
 
-// HasCleanUp is implemented by structs that have a clean up routine that needs
+// hasCleanUp is implemented by structs that have a clean up routine that needs
 // to be called before Close().
-type HasCleanUp interface {
+type hasCleanUp interface {
 	CleanUp() error
 }
 
-// HasStatementExec allows the adapter to have its own exec statement.
-type HasStatementExec interface {
-	StatementExec(query string, args ...interface{}) (sql.Result, error)
+// hasStatementExec allows the adapter to have its own exec statement.
+type hasStatementExec interface {
+	StatementExec(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
 }
 
 // Database represents a SQL database.
@@ -36,54 +38,97 @@ type Database interface {
 	BaseDatabase
 }
 
-// PartialDatabase defines all the methods an adapter must provide.
+// PartialDatabase defines methods to be implemented by SQL database adapters.
 type PartialDatabase interface {
-	sqlbuilder.Builder
+	sqlbuilder.SQLBuilder
 
+	// Collections returns a list of non-system tables from the database.
 	Collections() ([]string, error)
+
+	// Open opens a new connection
 	Open(db.ConnectionURL) error
 
+	// TableExists returns an error if the given table does not exist.
 	TableExists(name string) error
 
-	FindDatabaseName() (string, error)
-	FindTablePrimaryKeys(name string) ([]string, error)
+	// LookupName returns the name of the database.
+	LookupName() (string, error)
 
-	NewLocalCollection(name string) db.Collection
+	// PrimaryKeys returns all primary keys on the table.
+	PrimaryKeys(name string) ([]string, error)
+
+	// NewCollection allocates a new collection by name.
+	NewCollection(name string) db.Collection
+
+	// CompileStatement transforms an internal statement into a format
+	// database/sql can understand.
 	CompileStatement(stmt *exql.Statement, args []interface{}) (string, []interface{})
+
+	// ConnectionURL returns the database's connection URL, if any.
 	ConnectionURL() db.ConnectionURL
 
+	// Err wraps specific database errors (given in string form) and transforms them
+	// into error values.
 	Err(in error) (out error)
-	NewLocalTransaction() (DatabaseTx, error)
+
+	// NewDatabaseTx begins a transaction block and returns a new
+	// session backed by it.
+	NewDatabaseTx(ctx context.Context) (DatabaseTx, error)
 }
 
-// BaseDatabase defines the methods provided by sqladapter that do not have to
-// be implemented by adapters.
+// BaseDatabase provides logic for methods that can be shared across all SQL
+// adapters.
 type BaseDatabase interface {
+	db.Settings
+
+	// Name returns the name of the database.
 	Name() string
+
+	// Close closes the database session
 	Close() error
+
+	// Ping checks if the database server is reachable.
 	Ping() error
+
+	// ClearCache clears all caches the session is using
 	ClearCache()
+
+	// Collection returns a new collection.
 	Collection(string) db.Collection
+
+	// Driver returns the underlying driver the session is using
 	Driver() interface{}
 
+	// WaitForConnection attempts to run the given connection function a fixed
+	// number of times before failing.
 	WaitForConnection(func() error) error
 
+	// BindSession sets the *sql.DB the session will use.
 	BindSession(*sql.DB) error
+
+	// Session returns the *sql.DB the session is using.
 	Session() *sql.DB
 
-	BindTx(*sql.Tx) error
+	// BindTx binds a transaction to the current session.
+	BindTx(context.Context, *sql.Tx) error
+
+	// Returns the current transaction the session is using.
 	Transaction() BaseTx
 
-	SetConnMaxLifetime(time.Duration)
-	SetMaxIdleConns(int)
-	SetMaxOpenConns(int)
+	// NewClone clones the database using the given PartialDatabase as base.
+	NewClone(PartialDatabase, bool) (BaseDatabase, error)
 
-	BindClone(PartialDatabase) (BaseDatabase, error)
+	// Context returns the default context the session is using.
+	Context() context.Context
+
+	// SetContext sets a default context for the session.
+	SetContext(context.Context)
 }
 
 // NewBaseDatabase provides a BaseDatabase given a PartialDatabase
 func NewBaseDatabase(p PartialDatabase) BaseDatabase {
 	d := &database{
+		Settings:          db.NewSettings(),
 		PartialDatabase:   p,
 		cachedCollections: cache.NewCache(),
 		cachedStatements:  cache.NewCache(),
@@ -97,8 +142,12 @@ type database struct {
 	PartialDatabase
 	baseTx BaseTx
 
+	db.Settings
+
+	ctx context.Context
+
 	collectionMu sync.Mutex
-	databaseMu   sync.Mutex
+	mu           sync.Mutex
 
 	name   string
 	sess   *sql.DB
@@ -124,17 +173,35 @@ func (d *database) Session() *sql.DB {
 	return d.sess
 }
 
+// SetContext sets the session's default context.
+func (d *database) SetContext(ctx context.Context) {
+	d.mu.Lock()
+	d.ctx = ctx
+	d.mu.Unlock()
+}
+
+// Context returns the session's default context.
+func (d *database) Context() context.Context {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	if d.ctx == nil {
+		return context.Background()
+	}
+	return d.ctx
+}
+
 // BindTx binds a *sql.Tx into *database
-func (d *database) BindTx(t *sql.Tx) error {
+func (d *database) BindTx(ctx context.Context, t *sql.Tx) error {
 	d.sessMu.Lock()
 	defer d.sessMu.Unlock()
 
-	d.baseTx = newTx(t)
+	d.baseTx = newBaseTx(t)
 	if err := d.Ping(); err != nil {
 		return err
 	}
 
-	d.txID = newTxID()
+	d.SetContext(ctx)
+	d.txID = newBaseTxID()
 	return nil
 }
 
@@ -146,11 +213,11 @@ func (d *database) Transaction() BaseTx {
 
 // Name returns the database named
 func (d *database) Name() string {
-	d.databaseMu.Lock()
-	defer d.databaseMu.Unlock()
+	d.mu.Lock()
+	defer d.mu.Unlock()
 
 	if d.name == "" {
-		d.name, _ = d.PartialDatabase.FindDatabaseName()
+		d.name, _ = d.PartialDatabase.LookupName()
 	}
 
 	return d.name
@@ -167,7 +234,7 @@ func (d *database) BindSession(sess *sql.DB) error {
 	}
 
 	d.sessID = newSessionID()
-	name, err := d.PartialDatabase.FindDatabaseName()
+	name, err := d.PartialDatabase.LookupName()
 	if err != nil {
 		return err
 	}
@@ -189,24 +256,27 @@ func (d *database) Ping() error {
 // SetConnMaxLifetime sets the maximum amount of time a connection may be
 // reused.
 func (d *database) SetConnMaxLifetime(t time.Duration) {
+	d.Settings.SetConnMaxLifetime(t)
 	if sess := d.Session(); sess != nil {
-		sess.SetConnMaxLifetime(t)
+		sess.SetConnMaxLifetime(d.Settings.ConnMaxLifetime())
 	}
 }
 
 // SetMaxIdleConns sets the maximum number of connections in the idle
 // connection pool.
 func (d *database) SetMaxIdleConns(n int) {
+	d.Settings.SetMaxIdleConns(n)
 	if sess := d.Session(); sess != nil {
-		sess.SetMaxIdleConns(n)
+		sess.SetMaxIdleConns(d.MaxIdleConns())
 	}
 }
 
 // SetMaxOpenConns sets the maximum number of open connections to the
 // database.
 func (d *database) SetMaxOpenConns(n int) {
+	d.Settings.SetMaxOpenConns(n)
 	if sess := d.Session(); sess != nil {
-		sess.SetMaxOpenConns(n)
+		sess.SetMaxOpenConns(d.MaxOpenConns())
 	}
 }
 
@@ -221,15 +291,17 @@ func (d *database) ClearCache() {
 	}
 }
 
-// BindClone binds a clone that is linked to the current
+// NewClone binds a clone that is linked to the current
 // session. This is commonly done before creating a transaction
 // session.
-func (d *database) BindClone(p PartialDatabase) (BaseDatabase, error) {
+func (d *database) NewClone(p PartialDatabase, checkConn bool) (BaseDatabase, error) {
 	nd := NewBaseDatabase(p).(*database)
 	nd.name = d.name
 	nd.sess = d.sess
-	if err := nd.Ping(); err != nil {
-		return nil, err
+	if checkConn {
+		if err := nd.Ping(); err != nil {
+			return nil, err
+		}
 	}
 	nd.sessID = newSessionID()
 	return nd, nil
@@ -244,7 +316,7 @@ func (d *database) Close() error {
 		d.sessMu.Unlock()
 	}()
 	if d.sess != nil {
-		if cleaner, ok := d.PartialDatabase.(HasCleanUp); ok {
+		if cleaner, ok := d.PartialDatabase.(hasCleanUp); ok {
 			cleaner.CleanUp()
 		}
 
@@ -277,7 +349,7 @@ func (d *database) Collection(name string) db.Collection {
 		return ccol.(db.Collection)
 	}
 
-	col := d.PartialDatabase.NewLocalCollection(name)
+	col := d.PartialDatabase.NewCollection(name)
 	d.cachedCollections.Write(h, col)
 
 	return col
@@ -285,10 +357,10 @@ func (d *database) Collection(name string) db.Collection {
 
 // StatementExec compiles and executes a statement that does not return any
 // rows.
-func (d *database) StatementExec(stmt *exql.Statement, args ...interface{}) (res sql.Result, err error) {
+func (d *database) StatementExec(ctx context.Context, stmt *exql.Statement, args ...interface{}) (res sql.Result, err error) {
 	var query string
 
-	if db.Conf.LoggingEnabled() {
+	if d.Settings.LoggingEnabled() {
 		defer func(start time.Time) {
 
 			status := db.QueryStatus{
@@ -311,46 +383,46 @@ func (d *database) StatementExec(stmt *exql.Statement, args ...interface{}) (res
 				}
 			}
 
-			db.Log(&status)
+			d.Logger().Log(&status)
 		}(time.Now())
 	}
 
-	if execer, ok := d.PartialDatabase.(HasStatementExec); ok {
+	if execer, ok := d.PartialDatabase.(hasStatementExec); ok {
 		query, args = d.compileStatement(stmt, args)
-		res, err = execer.StatementExec(query, args...)
+		res, err = execer.StatementExec(ctx, query, args...)
 		return
 	}
 
 	tx := d.Transaction()
 
-	if db.Conf.PreparedStatementCacheEnabled() && tx == nil {
+	if d.Settings.PreparedStatementCacheEnabled() && tx == nil {
 		var p *Stmt
-		if p, query, args, err = d.prepareStatement(stmt, args); err != nil {
+		if p, query, args, err = d.prepareStatement(ctx, stmt, args); err != nil {
 			return nil, err
 		}
 		defer p.Close()
 
-		res, err = p.Exec(args...)
+		res, err = compat.PreparedExecContext(p, ctx, args)
 		return
 	}
 
 	query, args = d.compileStatement(stmt, args)
 	if tx != nil {
-		res, err = tx.(*sqlTx).Exec(query, args...)
+		res, err = compat.ExecContext(tx.(*baseTx), ctx, query, args)
 		return
 	}
 
-	res, err = d.sess.Exec(query, args...)
+	res, err = compat.ExecContext(d.sess, ctx, query, args)
 	return
 }
 
 // StatementQuery compiles and executes a statement that returns rows.
-func (d *database) StatementQuery(stmt *exql.Statement, args ...interface{}) (rows *sql.Rows, err error) {
+func (d *database) StatementQuery(ctx context.Context, stmt *exql.Statement, args ...interface{}) (rows *sql.Rows, err error) {
 	var query string
 
-	if db.Conf.LoggingEnabled() {
+	if d.Settings.LoggingEnabled() {
 		defer func(start time.Time) {
-			db.Log(&db.QueryStatus{
+			d.Logger().Log(&db.QueryStatus{
 				TxID:   d.txID,
 				SessID: d.sessID,
 				Query:  query,
@@ -364,36 +436,36 @@ func (d *database) StatementQuery(stmt *exql.Statement, args ...interface{}) (ro
 
 	tx := d.Transaction()
 
-	if db.Conf.PreparedStatementCacheEnabled() && tx == nil {
+	if d.Settings.PreparedStatementCacheEnabled() && tx == nil {
 		var p *Stmt
-		if p, query, args, err = d.prepareStatement(stmt, args); err != nil {
+		if p, query, args, err = d.prepareStatement(ctx, stmt, args); err != nil {
 			return nil, err
 		}
 		defer p.Close()
 
-		rows, err = p.Query(args...)
+		rows, err = compat.PreparedQueryContext(p, ctx, args)
 		return
 	}
 
 	query, args = d.compileStatement(stmt, args)
 	if tx != nil {
-		rows, err = tx.(*sqlTx).Query(query, args...)
+		rows, err = compat.QueryContext(tx.(*baseTx), ctx, query, args)
 		return
 	}
 
-	rows, err = d.sess.Query(query, args...)
+	rows, err = compat.QueryContext(d.sess, ctx, query, args)
 	return
 
 }
 
 // StatementQueryRow compiles and executes a statement that returns at most one
 // row.
-func (d *database) StatementQueryRow(stmt *exql.Statement, args ...interface{}) (row *sql.Row, err error) {
+func (d *database) StatementQueryRow(ctx context.Context, stmt *exql.Statement, args ...interface{}) (row *sql.Row, err error) {
 	var query string
 
-	if db.Conf.LoggingEnabled() {
+	if d.Settings.LoggingEnabled() {
 		defer func(start time.Time) {
-			db.Log(&db.QueryStatus{
+			d.Logger().Log(&db.QueryStatus{
 				TxID:   d.txID,
 				SessID: d.sessID,
 				Query:  query,
@@ -407,24 +479,24 @@ func (d *database) StatementQueryRow(stmt *exql.Statement, args ...interface{}) 
 
 	tx := d.Transaction()
 
-	if db.Conf.PreparedStatementCacheEnabled() && tx == nil {
+	if d.Settings.PreparedStatementCacheEnabled() && tx == nil {
 		var p *Stmt
-		if p, query, args, err = d.prepareStatement(stmt, args); err != nil {
+		if p, query, args, err = d.prepareStatement(ctx, stmt, args); err != nil {
 			return nil, err
 		}
 		defer p.Close()
 
-		row = p.QueryRow(args...)
+		row = compat.PreparedQueryRowContext(p, ctx, args)
 		return
 	}
 
 	query, args = d.compileStatement(stmt, args)
 	if tx != nil {
-		row = tx.(*sqlTx).QueryRow(query, args...)
+		row = compat.QueryRowContext(tx.(*baseTx), ctx, query, args)
 		return
 	}
 
-	row = d.sess.QueryRow(query, args...)
+	row = compat.QueryRowContext(d.sess, ctx, query, args)
 	return
 }
 
@@ -432,7 +504,7 @@ func (d *database) StatementQueryRow(stmt *exql.Statement, args ...interface{}) 
 func (d *database) Driver() interface{} {
 	if tx := d.Transaction(); tx != nil {
 		// A transaction
-		return tx.(*sqlTx).Tx
+		return tx.(*baseTx).Tx
 	}
 	return d.sess
 }
@@ -444,7 +516,7 @@ func (d *database) compileStatement(stmt *exql.Statement, args []interface{}) (s
 
 // prepareStatement compiles a query and tries to use previously generated
 // statement.
-func (d *database) prepareStatement(stmt *exql.Statement, args []interface{}) (*Stmt, string, []interface{}, error) {
+func (d *database) prepareStatement(ctx context.Context, stmt *exql.Statement, args []interface{}) (*Stmt, string, []interface{}, error) {
 	d.sessMu.Lock()
 	defer d.sessMu.Unlock()
 
@@ -466,9 +538,9 @@ func (d *database) prepareStatement(stmt *exql.Statement, args []interface{}) (*
 	query, args := d.compileStatement(stmt, args)
 	sqlStmt, err := func(query *string) (*sql.Stmt, error) {
 		if tx != nil {
-			return tx.(*sqlTx).Prepare(*query)
+			return compat.PrepareContext(tx.(*baseTx), ctx, *query)
 		}
-		return sess.Prepare(*query)
+		return compat.PrepareContext(sess, ctx, *query)
 	}(&query)
 	if err != nil {
 		return nil, "", nil, err
@@ -553,7 +625,7 @@ func newSessionID() uint64 {
 	return atomic.AddUint64(&lastSessID, 1)
 }
 
-func newTxID() uint64 {
+func newBaseTxID() uint64 {
 	if atomic.LoadUint64(&lastTxID) == math.MaxUint64 {
 		atomic.StoreUint64(&lastTxID, 0)
 		return 0

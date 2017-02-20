@@ -35,6 +35,8 @@ func expandQuery(in string, args []interface{}, fn func(interface{}) (string, []
 		}
 		if len(args) > argn {
 			k, values := fn(args[argn])
+			k, values = expandQuery(k, values, fn)
+
 			if k != "" {
 				in = in[:i] + k + in[i+1:]
 				i += len(k) - 1
@@ -51,6 +53,100 @@ func expandQuery(in string, args []interface{}, fn func(interface{}) (string, []
 	return in, argx
 }
 
+func (tu *templateWithUtils) PlaceholderValue(in interface{}) (exql.Fragment, []interface{}) {
+	switch t := in.(type) {
+	case db.RawValue:
+		return exql.RawValue(t.String()), t.Arguments()
+	case db.Function:
+		fnName := t.Name()
+		fnArgs := []interface{}{}
+
+		args, _ := toInterfaceArguments(t.Arguments())
+		fragments := []string{}
+		for i := range args {
+			frag, args := tu.PlaceholderValue(args[i])
+			fragment, err := frag.Compile(tu.Template)
+			if err == nil {
+				fragments = append(fragments, fragment)
+				fnArgs = append(fnArgs, args...)
+			}
+		}
+		return exql.RawValue(fnName + `(` + strings.Join(fragments, `, `) + `)`), fnArgs
+	default:
+		// Value must be escaped.
+		return sqlPlaceholder, []interface{}{in}
+	}
+}
+
+// toInterfaceArguments converts the given value into an array of interfaces.
+func toInterfaceArguments(value interface{}) (args []interface{}, isSlice bool) {
+	v := reflect.ValueOf(value)
+
+	if value == nil {
+		return nil, false
+	}
+
+	switch t := value.(type) {
+	case driver.Valuer:
+		return []interface{}{t}, false
+	}
+
+	if v.Type().Kind() == reflect.Slice {
+		var i, total int
+
+		// Byte slice gets transformed into a string.
+		if v.Type().Elem().Kind() == reflect.Uint8 {
+			return []interface{}{string(value.([]byte))}, false
+		}
+
+		total = v.Len()
+		args = make([]interface{}, total)
+		for i = 0; i < total; i++ {
+			args[i] = v.Index(i).Interface()
+		}
+		return args, true
+	}
+
+	return []interface{}{value}, false
+}
+
+// toColumnsValuesAndArguments maps the given columnNames and columnValues into
+// expr's Columns and Values, it also extracts and returns query arguments.
+func toColumnsValuesAndArguments(columnNames []string, columnValues []interface{}) (*exql.Columns, *exql.Values, []interface{}, error) {
+	var arguments []interface{}
+
+	columns := new(exql.Columns)
+
+	columns.Columns = make([]exql.Fragment, 0, len(columnNames))
+	for i := range columnNames {
+		columns.Columns = append(columns.Columns, exql.ColumnWithName(columnNames[i]))
+	}
+
+	values := new(exql.Values)
+
+	arguments = make([]interface{}, 0, len(columnValues))
+	values.Values = make([]exql.Fragment, 0, len(columnValues))
+
+	for i := range columnValues {
+		switch v := columnValues[i].(type) {
+		case *exql.Raw, exql.Raw:
+			values.Values = append(values.Values, sqlDefault)
+		case *exql.Value:
+			// Adding value.
+			values.Values = append(values.Values, v)
+		case exql.Value:
+			// Adding value.
+			values.Values = append(values.Values, &v)
+		default:
+			// Adding both value and placeholder.
+			values.Values = append(values.Values, sqlPlaceholder)
+			arguments = append(arguments, v)
+		}
+	}
+
+	return columns, values, arguments, nil
+}
+
 func preprocessFn(arg interface{}) (string, []interface{}) {
 	values, isSlice := toInterfaceArguments(arg)
 
@@ -65,8 +161,12 @@ func preprocessFn(arg interface{}) (string, []interface{}) {
 		switch t := arg.(type) {
 		case db.RawValue:
 			return Preprocess(t.Raw(), t.Arguments())
-		case *selector:
-			return `(` + t.statement().Compile(t.stringer.t) + `)`, t.Arguments()
+		case compilable:
+			c, err := t.Compile()
+			if err == nil {
+				return `(` + c + `)`, t.Arguments()
+			}
+			panic(err.Error())
 		}
 	} else if len(values) == 0 {
 		return `NULL`, nil
@@ -75,13 +175,15 @@ func preprocessFn(arg interface{}) (string, []interface{}) {
 	return "", []interface{}{arg}
 }
 
+// Preprocess expands arguments that needs to be expanded and compiles a query
+// into a single string.
 func Preprocess(in string, args []interface{}) (string, []interface{}) {
 	return expandQuery(in, args, preprocessFn)
 }
 
-// ToWhereWithArguments converts the given parameters into a exql.Where
+// toWhereWithArguments converts the given parameters into a exql.Where
 // value.
-func (tu *templateWithUtils) ToWhereWithArguments(term interface{}) (where exql.Where, args []interface{}) {
+func (tu *templateWithUtils) toWhereWithArguments(term interface{}) (where exql.Where, args []interface{}) {
 	args = []interface{}{}
 
 	switch t := term.(type) {
@@ -99,7 +201,7 @@ func (tu *templateWithUtils) ToWhereWithArguments(term interface{}) (where exql.
 					} else {
 						val = t[1]
 					}
-					cv, v := tu.ToColumnValues(db.NewConstraint(key, val))
+					cv, v := tu.toColumnValues(db.NewConstraint(key, val))
 					args = append(args, v...)
 					for i := range cv.ColumnValues {
 						where.Conditions = append(where.Conditions, cv.ColumnValues[i])
@@ -109,7 +211,7 @@ func (tu *templateWithUtils) ToWhereWithArguments(term interface{}) (where exql.
 			}
 		}
 		for i := range t {
-			w, v := tu.ToWhereWithArguments(t[i])
+			w, v := tu.toWhereWithArguments(t[i])
 			if len(w.Conditions) == 0 {
 				continue
 			}
@@ -124,7 +226,7 @@ func (tu *templateWithUtils) ToWhereWithArguments(term interface{}) (where exql.
 		return
 	case db.Constraints:
 		for _, c := range t.Constraints() {
-			w, v := tu.ToWhereWithArguments(c)
+			w, v := tu.toWhereWithArguments(c)
 			if len(w.Conditions) == 0 {
 				continue
 			}
@@ -136,7 +238,7 @@ func (tu *templateWithUtils) ToWhereWithArguments(term interface{}) (where exql.
 		var cond exql.Where
 
 		for _, c := range t.Sentences() {
-			w, v := tu.ToWhereWithArguments(c)
+			w, v := tu.toWhereWithArguments(c)
 			if len(w.Conditions) == 0 {
 				continue
 			}
@@ -161,7 +263,7 @@ func (tu *templateWithUtils) ToWhereWithArguments(term interface{}) (where exql.
 
 		return
 	case db.Constraint:
-		cv, v := tu.ToColumnValues(t)
+		cv, v := tu.toColumnValues(t)
 		args = append(args, v...)
 		where.Conditions = append(where.Conditions, cv.ColumnValues...)
 		return where, args
@@ -170,71 +272,17 @@ func (tu *templateWithUtils) ToWhereWithArguments(term interface{}) (where exql.
 	panic(fmt.Sprintf("Unknown condition type %T", term))
 }
 
-func (tu *templateWithUtils) PlaceholderValue(in interface{}) (exql.Fragment, []interface{}) {
-	switch t := in.(type) {
-	case db.RawValue:
-		return exql.RawValue(t.String()), t.Arguments()
-	case db.Function:
-		fnName := t.Name()
-		fnArgs := []interface{}{}
-
-		args, _ := toInterfaceArguments(t.Arguments())
-		fragments := []string{}
-		for i := range args {
-			frag, args := tu.PlaceholderValue(args[i])
-			fragments = append(fragments, frag.Compile(tu.Template))
-			fnArgs = append(fnArgs, args...)
-		}
-		return exql.RawValue(fnName + `(` + strings.Join(fragments, `, `) + `)`), fnArgs
-	default:
-		// Value must be escaped.
-		return sqlPlaceholder, []interface{}{in}
-	}
-}
-
-// toInterfaceArguments converts the given value into an array of interfaces.
-func toInterfaceArguments(value interface{}) (args []interface{}, isSlice bool) {
-	if value == nil {
-		return nil, false
-	}
-
-	switch t := value.(type) {
-	case driver.Valuer:
-		return []interface{}{t}, false
-	}
-
-	v := reflect.ValueOf(value)
-	if v.Type().Kind() == reflect.Slice {
-		var i, total int
-
-		// Byte slice gets transformed into a string.
-		if v.Type().Elem().Kind() == reflect.Uint8 {
-			return []interface{}{string(value.([]byte))}, false
-		}
-
-		total = v.Len()
-		args = make([]interface{}, total)
-		for i = 0; i < total; i++ {
-			args[i] = v.Index(i).Interface()
-		}
-		return args, true
-	}
-
-	return []interface{}{value}, false
-}
-
-// ToColumnValues converts the given conditions into a exql.ColumnValues struct.
-func (tu *templateWithUtils) ToColumnValues(term interface{}) (cv exql.ColumnValues, args []interface{}) {
+func (tu *templateWithUtils) toColumnValues(term interface{}) (cv exql.ColumnValues, args []interface{}) {
 	args = []interface{}{}
 
 	switch t := term.(type) {
 	case []interface{}:
 		l := len(t)
 		for i := 0; i < l; i++ {
-			column, ok := t[i].(string)
+			column, isString := t[i].(string)
 
-			if !ok {
-				p, q := tu.ToColumnValues(t[i])
+			if !isString {
+				p, q := tu.toColumnValues(t[i])
 				cv.ColumnValues = append(cv.ColumnValues, p.ColumnValues...)
 				args = append(args, q...)
 				continue
@@ -297,13 +345,13 @@ func (tu *templateWithUtils) ToColumnValues(term interface{}) (cv exql.ColumnVal
 				// A function with one or more arguments.
 				fnName = fnName + "(?" + strings.Repeat("?, ", len(fnArgs)-1) + ")"
 			}
-			expanded, fnArgs := Preprocess(fnName, fnArgs)
-			columnValue.Value = exql.RawValue(expanded)
+			fnName, fnArgs = Preprocess(fnName, fnArgs)
+			columnValue.Value = exql.RawValue(fnName)
 			args = append(args, fnArgs...)
 		case db.RawValue:
-			expanded, rawArgs := Preprocess(value.Raw(), value.Arguments())
-			columnValue.Value = exql.RawValue(expanded)
-			args = append(args, rawArgs...)
+			q, a := Preprocess(value.Raw(), value.Arguments())
+			columnValue.Value = exql.RawValue(q)
+			args = append(args, a...)
 		default:
 			v, isSlice := toInterfaceArguments(value)
 
@@ -331,7 +379,6 @@ func (tu *templateWithUtils) ToColumnValues(term interface{}) (cv exql.ColumnVal
 					args = append(args, v...)
 				}
 			}
-
 		}
 
 		// Using guessed operator if no operator was given.
@@ -343,6 +390,7 @@ func (tu *templateWithUtils) ToColumnValues(term interface{}) (cv exql.ColumnVal
 			}
 		}
 
+		// Using guessed operator if no operator was given.
 		cv.ColumnValues = append(cv.ColumnValues, &columnValue)
 
 		return cv, args
@@ -357,7 +405,7 @@ func (tu *templateWithUtils) ToColumnValues(term interface{}) (cv exql.ColumnVal
 		return cv, args
 	case db.Constraints:
 		for _, c := range t.Constraints() {
-			p, q := tu.ToColumnValues(c)
+			p, q := tu.toColumnValues(c)
 			cv.ColumnValues = append(cv.ColumnValues, p.ColumnValues...)
 			args = append(args, q...)
 		}
@@ -365,41 +413,4 @@ func (tu *templateWithUtils) ToColumnValues(term interface{}) (cv exql.ColumnVal
 	}
 
 	panic(fmt.Sprintf("Unknown term type %T.", term))
-}
-
-// ToColumnsValuesAndArguments maps the given columnNames and columnValues into
-// expr's Columns and Values, it also extracts and returns query arguments.
-func (tu *templateWithUtils) ToColumnsValuesAndArguments(columnNames []string, columnValues []interface{}) (*exql.Columns, *exql.Values, []interface{}, error) {
-	var arguments []interface{}
-
-	columns := new(exql.Columns)
-
-	columns.Columns = make([]exql.Fragment, 0, len(columnNames))
-	for i := range columnNames {
-		columns.Columns = append(columns.Columns, exql.ColumnWithName(columnNames[i]))
-	}
-
-	values := new(exql.Values)
-
-	arguments = make([]interface{}, 0, len(columnValues))
-	values.Values = make([]exql.Fragment, 0, len(columnValues))
-
-	for i := range columnValues {
-		switch v := columnValues[i].(type) {
-		case *exql.Raw, exql.Raw:
-			values.Values = append(values.Values, sqlDefault)
-		case *exql.Value:
-			// Adding value.
-			values.Values = append(values.Values, v)
-		case exql.Value:
-			// Adding value.
-			values.Values = append(values.Values, &v)
-		default:
-			// Adding both value and placeholder.
-			values.Values = append(values.Values, sqlPlaceholder)
-			arguments = append(arguments, v)
-		}
-	}
-
-	return columns, values, arguments, nil
 }

@@ -3,7 +3,6 @@ package factory
 
 import (
 	"log"
-	"math/rand"
 
 	"github.com/webx-top/db"
 )
@@ -11,16 +10,20 @@ import (
 // NewCluster : database cluster
 func NewCluster() *Cluster {
 	return &Cluster{
-		masters: []db.Database{},
-		slaves:  []db.Database{},
+		masters:        []db.Database{},
+		slaves:         []db.Database{},
+		masterSelecter: &SelectFirst{},
+		slaveSelecter:  &RoundRobin{},
 	}
 }
 
 // Cluster : database cluster
 type Cluster struct {
-	masters []db.Database
-	slaves  []db.Database
-	prefix  string
+	masters        []db.Database
+	slaves         []db.Database
+	prefix         string
+	masterSelecter Selecter
+	slaveSelecter  Selecter
 }
 
 // W : write
@@ -30,9 +33,24 @@ func (c *Cluster) W() (r db.Database) {
 		panic(`Not connected to any database`)
 	}
 	if length > 1 {
-		r = c.masters[rand.Intn(length-1)]
+		r = c.masters[c.masterSelecter.Select(length)]
 	} else {
 		r = c.masters[0]
+	}
+	return
+}
+
+// R : read-only
+func (c *Cluster) R() (r db.Database) {
+	length := len(c.slaves)
+	if length == 0 {
+		r = c.W()
+	} else {
+		if length > 1 {
+			r = c.slaves[c.slaveSelecter.Select(length)]
+		} else {
+			r = c.slaves[0]
+		}
 	}
 	return
 }
@@ -48,23 +66,27 @@ func (c *Cluster) Table(tableName string) string {
 }
 
 // SetPrefix : setting table prefix
-func (c *Cluster) SetPrefix(prefix string) {
+func (c *Cluster) SetPrefix(prefix string) *Cluster {
 	c.prefix = prefix
+	return c
 }
 
-// R : read-only
-func (c *Cluster) R() (r db.Database) {
-	length := len(c.slaves)
-	if length == 0 {
-		r = c.W()
-	} else {
-		if length > 1 {
-			r = c.slaves[rand.Intn(length-1)]
-		} else {
-			r = c.slaves[0]
-		}
-	}
-	return
+func (c *Cluster) SetSlaveSelecter(selecter Selecter) *Cluster {
+	c.slaveSelecter = selecter
+	return c
+}
+
+func (c *Cluster) SlaveSelecter() Selecter {
+	return c.slaveSelecter
+}
+
+func (c *Cluster) SetMasterSelecter(selecter Selecter) *Cluster {
+	c.masterSelecter = selecter
+	return c
+}
+
+func (c *Cluster) MasterSelecter() Selecter {
+	return c.masterSelecter
 }
 
 // AddW : added writable database

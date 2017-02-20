@@ -42,9 +42,9 @@ func (t *Transaction) DB(param *Param) *sql.DB {
 	return nil
 }
 
-func (t *Transaction) Backend(param *Param) sqlbuilder.Backend {
-	if bkd, ok := t.Database(param).(sqlbuilder.Backend); ok {
-		return bkd
+func (t *Transaction) SQLBuidler(param *Param) sqlbuilder.SQLBuilder {
+	if db, ok := t.Database(param).(sqlbuilder.SQLBuilder); ok {
+		return db
 	}
 	panic(db.ErrUnsupported.Error())
 	return nil
@@ -65,13 +65,13 @@ func (t *Transaction) C(param *Param) db.Collection {
 // Exec execute SQL
 func (t *Transaction) Exec(param *Param) (sql.Result, error) {
 	param.ReadOrWrite = W
-	return t.Backend(param).Exec(param.Collection, param.Args...)
+	return t.DB(param).Exec(param.Collection, param.Args...)
 }
 
 // Query query SQL. sqlRows is an *sql.Rows object, so you can use Scan() on it
 // err = sqlRows.Scan(&a, &b, ...)
 func (t *Transaction) Query(param *Param) (*sql.Rows, error) {
-	return t.Backend(param).Query(param.Collection, param.Args...)
+	return t.DB(param).Query(param.Collection, param.Args...)
 }
 
 // QueryTo query SQL. mapping fields into a struct
@@ -88,8 +88,8 @@ func (t *Transaction) QueryTo(param *Param) (sqlbuilder.Iterator, error) {
 }
 
 // QueryRow query SQL
-func (t *Transaction) QueryRow(param *Param) (*sql.Row, error) {
-	return t.Backend(param).QueryRow(param.Collection, param.Args...)
+func (t *Transaction) QueryRow(param *Param) *sql.Row {
+	return t.DB(param).QueryRow(param.Collection, param.Args...)
 }
 
 // ================================
@@ -193,7 +193,7 @@ func (t *Transaction) SelectCount(param *Param) (int64, error) {
 	counter := struct {
 		Count int64 `db:"_t"`
 	}{}
-	selector := t.Backend(param).Select(db.Raw("count(1) AS _t")).From(param.cluster.Table(param.Collection))
+	selector := t.SQLBuidler(param).Select(db.Raw("count(1) AS _t")).From(param.cluster.Table(param.Collection))
 	selector = t.joinSelect(param, selector)
 	if param.SelectorMiddleware != nil {
 		selector = param.SelectorMiddleware(selector)
@@ -238,7 +238,7 @@ func (t *Transaction) joinSelect(param *Param, selector sqlbuilder.Selector) sql
 }
 
 func (t *Transaction) Select(param *Param) sqlbuilder.Selector {
-	selector := t.Backend(param).Select(param.Cols...).From(param.cluster.Table(param.Collection))
+	selector := t.SQLBuidler(param).Select(param.Cols...).From(param.cluster.Table(param.Collection))
 	return t.joinSelect(param, selector)
 }
 

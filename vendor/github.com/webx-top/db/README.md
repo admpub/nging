@@ -1,23 +1,24 @@
 <p align="center">
-  <img src="https://upper.io/db.v2/images/gopher.svg" width="256" />
+  <img src="https://upper.io/db.v3/images/gopher.svg" width="256" />
 </p>
 
-# upper.io/db.v2 [![Build Status](https://travis-ci.org/upper/db.svg?branch=v2)](https://travis-ci.org/upper/db) [![GoDoc](https://godoc.org/upper.io/db.v2?status.svg)](https://godoc.org/upper.io/db.v2)
+# upper.io/db.v3 [![Build Status](https://travis-ci.org/upper/db.svg?branch=master)](https://travis-ci.org/upper/db) [![GoDoc](https://godoc.org/upper.io/db.v3?status.svg)](https://godoc.org/upper.io/db.v3)
 
-The `upper.io/db.v2` package for [Go][2] is *not* an ORM, it's just a productive
-data access layer for Go which provides a common interface to work with
-different data sources such as [PostgreSQL](https://upper.io/db.v2/postgresql),
-[MySQL](https://upper.io/db.v2/mysql), [SQLite](https://upper.io/db.v2/sqlite),
-[QL](https://upper.io/db.v2/ql) and [MongoDB](https://upper.io/db.v2/mongodb).
+The `upper.io/db.v3` package for [Go][2] is a productive data access layer for
+Go that provides a common interface to work with different data sources such as
+[PostgreSQL](https://upper.io/db.v3/postgresql),
+[MySQL](https://upper.io/db.v3/mysql), [SQLite](https://upper.io/db.v3/sqlite),
+[QL](https://upper.io/db.v3/ql) and [MongoDB](https://upper.io/db.v3/mongodb).
 
 ```
-go get upper.io/db.v2
+go get upper.io/db.v3
 ```
 
 ## User documentation
 
-This is the source code repository, see examples and documentation at
-[upper.io/db.v2][1].
+This is the source code repository, check out our [release
+notes](https://github.com/upper/db/releases/tag/v3.0.0) and see examples and
+documentation at [upper.io/db.v3][1].
 
 ## Demo
 
@@ -86,6 +87,10 @@ go run _examples/booktown-books/main.go
 2016/08/10 08:42:48 "Practical PostgreSQL" (ID: 41472)
 ```
 
+## Changelog
+
+See [CHANGELOG.md](https://github.com/upper/db/blob/master/CHANGELOG.md).
+
 ## License
 
 This project is licensed under the terms of the **MIT License**.
@@ -130,5 +135,5 @@ This project is licensed under the terms of the **MIT License**.
 * rjmcguire <<rjmcguire@gmail.com>>
 * wei2912 <<wei2912_support@hotmail.com>>
 
-[1]: https://upper.io/db.v2
+[1]: https://upper.io/db.v3
 [2]: http://golang.org

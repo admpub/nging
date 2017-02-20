@@ -27,7 +27,7 @@
 // driver. upper-db supports the MySQL, PostgreSQL, SQLite and QL databases and
 // provides partial support (CRUD, no transactions) for MongoDB.
 //
-//  go get upper.io/db.v2
+//  go get upper.io/db.v3
 //
 // Usage
 //
@@ -73,14 +73,15 @@
 //  }
 //
 // See more usage examples and documentation for users at
-// https://upper.io/db.v2.
+// https://upper.io/db.v3.
 package db
 
 import (
 	"fmt"
 	"reflect"
 	"sort"
-	"time"
+
+	"github.com/webx-top/db/internal/immutable"
 )
 
 // Constraint interface represents a single condition, like "a = 1".  where `a`
@@ -96,7 +97,7 @@ type Constraint interface {
 	Value() interface{}
 }
 
-// Constraints interface represents an array of constraints, like "a = 1, b =
+// Constraints interface represents an array or constraints, like "a = 1, b =
 // 2, c = 3".
 type Constraints interface {
 	// Constraints returns an array of constraints.
@@ -206,20 +207,7 @@ func (c Cond) Constraints() []Constraint {
 	return z
 }
 
-type condKeys []interface{}
-
-func (ck condKeys) Len() int {
-	return len(ck)
-}
-
-func (ck condKeys) Less(i, j int) bool {
-	return fmt.Sprintf("%v", ck[i]) < fmt.Sprintf("%v", ck[j])
-}
-
-func (ck condKeys) Swap(i, j int) {
-	ck[i], ck[j] = ck[j], ck[i]
-}
-
+// Keys returns the keys of this map sorted by name.
 func (c Cond) Keys() []interface{} {
 	keys := make(condKeys, 0, len(c))
 	for k := range c {
@@ -289,11 +277,71 @@ func (r rawValue) Empty() bool {
 }
 
 type compound struct {
-	conds []Compound
+	prev *compound
+	fn   func(*[]Compound) error
 }
 
-func newCompound(c ...Compound) *compound {
-	return &compound{c}
+func newCompound(conds ...Compound) *compound {
+	c := &compound{}
+	if len(conds) == 0 {
+		return c
+	}
+	return c.frame(func(in *[]Compound) error {
+		*in = append(*in, conds...)
+		return nil
+	})
+}
+
+var _ = immutable.Immutable(&compound{})
+
+// Sentences returns each one of the conditions as a compound.
+func (c *compound) Sentences() []Compound {
+	conds, err := immutable.FastForward(c)
+	if err == nil {
+		return *(conds.(*[]Compound))
+	}
+	return nil
+}
+
+// Operator returns no operator.
+func (c *compound) Operator() CompoundOperator {
+	return OperatorNone
+}
+
+// Empty returns true if this condition has no elements. False otherwise.
+func (c *compound) Empty() bool {
+	if c.fn != nil {
+		return false
+	}
+	if c.prev != nil {
+		return c.prev.Empty()
+	}
+	return true
+}
+
+func (c *compound) frame(fn func(*[]Compound) error) *compound {
+	return &compound{prev: c, fn: fn}
+}
+
+// Prev is for internal usage.
+func (c *compound) Prev() immutable.Immutable {
+	if c == nil {
+		return nil
+	}
+	return c.prev
+}
+
+// Fn is for internal usage.
+func (c *compound) Fn(in interface{}) error {
+	if c.fn == nil {
+		return nil
+	}
+	return c.fn(in.(*[]Compound))
+}
+
+// Base is for internal usage.
+func (c *compound) Base() interface{} {
+	return &[]Compound{}
 }
 
 func defaultJoin(in ...Compound) []Compound {
@@ -305,32 +353,21 @@ func defaultJoin(in ...Compound) []Compound {
 	return in
 }
 
-func (c *compound) Sentences() []Compound {
-	return c.conds
-}
-
-func (c *compound) Operator() CompoundOperator {
-	return OperatorNone
-}
-
-func (c *compound) Empty() bool {
-	return len(c.conds) == 0
-}
-
-func (c *compound) push(a ...Compound) *compound {
-	c.conds = append(c.conds, a...)
-	return c
-}
-
 // Union represents a compound joined by OR.
 type Union struct {
 	*compound
 }
 
 // Or adds more terms to the compound.
-func (o *Union) Or(conds ...Compound) *Union {
-	o.compound.push(defaultJoin(conds...)...)
-	return o
+func (o *Union) Or(orConds ...Compound) *Union {
+	var fn func(*[]Compound) error
+	if len(orConds) > 0 {
+		fn = func(in *[]Compound) error {
+			*in = append(*in, orConds...)
+			return nil
+		}
+	}
+	return &Union{o.compound.frame(fn)}
 }
 
 // Operator returns the OR operator.
@@ -344,9 +381,15 @@ func (o *Union) Empty() bool {
 }
 
 // And adds more terms to the compound.
-func (a *Intersection) And(conds ...Compound) *Intersection {
-	a.compound.push(conds...)
-	return a
+func (a *Intersection) And(andConds ...Compound) *Intersection {
+	var fn func(*[]Compound) error
+	if len(andConds) > 0 {
+		fn = func(in *[]Compound) error {
+			*in = append(*in, andConds...)
+			return nil
+		}
+	}
+	return &Intersection{a.compound.frame(fn)}
 }
 
 // Empty returns false if this struct holds no conditions.
@@ -443,7 +486,7 @@ func (f *dbFunc) Name() string {
 //		db.Cond{"last_name": "Mouse"},
 //	)
 func And(conds ...Compound) *Intersection {
-	return &Intersection{compound: newCompound(conds...)}
+	return &Intersection{newCompound(conds...)}
 }
 
 // Or joins conditions under logical disjunction. Conditions can be represented
@@ -457,7 +500,7 @@ func And(conds ...Compound) *Intersection {
 //		db.Cond{"year": 1987},
 //	)
 func Or(conds ...Compound) *Union {
-	return &Union{compound: newCompound(defaultJoin(conds...)...)}
+	return &Union{newCompound(defaultJoin(conds...)...)}
 }
 
 // Raw marks chunks of data as protected, so they pass directly to the query
@@ -518,17 +561,7 @@ type Database interface {
 	// ClearCache clears all the cache mechanisms the adapter is using.
 	ClearCache()
 
-	// SetConnMaxLifetime sets the maximum amount of time a connection may be
-	// reused.
-	SetConnMaxLifetime(time.Duration)
-
-	// SetMaxIdleConns sets the maximum number of connections in the idle
-	// connection pool.
-	SetMaxIdleConns(int)
-
-	// SetMaxOpenConns sets the maximum number of open connections to the
-	// database.
-	SetMaxOpenConns(int)
+	Settings
 }
 
 // Tx has methods for transactions that can be either committed or rolled back.
@@ -556,6 +589,13 @@ type Collection interface {
 	// If the database does not support transactions this method returns
 	// db.ErrUnsupported.
 	InsertReturning(interface{}) error
+
+	// UpdateReturning takes a pointer to map or struct and tries to update the
+	// given item on the collection based on the item's primary keys. Once the
+	// element is updated, UpdateReturning will query the element that was just
+	// updated. If the database does not support transactions this method returns
+	// db.ErrUnsupported
+	UpdateReturning(interface{}) error
 
 	// Exists returns true if the collection exists, false otherwise.
 	Exists() bool
@@ -661,12 +701,19 @@ type ConnectionURL interface {
 	String() string
 }
 
-// Default limits for database/sql limit methods.
-var (
-	DefaultConnMaxLifetime = time.Duration(0) // 0 means reuse forever.
-	DefaultMaxIdleConns    = 10               // Keep 10 idle connections.
-	DefaultMaxOpenConns    = 0                // 0 means unlimited.
-)
+type condKeys []interface{}
+
+func (ck condKeys) Len() int {
+	return len(ck)
+}
+
+func (ck condKeys) Less(i, j int) bool {
+	return fmt.Sprintf("%v", ck[i]) < fmt.Sprintf("%v", ck[j])
+}
+
+func (ck condKeys) Swap(i, j int) {
+	ck[i], ck[j] = ck[j], ck[i]
+}
 
 var (
 	_ Function    = &dbFunc{}

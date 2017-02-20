@@ -131,12 +131,9 @@ type viewCreateInfo struct {
 
 func (m *mySQL) tableView(name string) (*viewCreateInfo, error) {
 	sqlStr := `SHOW CREATE VIEW ` + quoteCol(name)
-	row, err := m.newParam().SetCollection(sqlStr).QueryRow()
-	if err != nil {
-		return nil, err
-	}
+	row := m.newParam().SetCollection(sqlStr).QueryRow()
 	info := &viewCreateInfo{}
-	err = row.Scan(&info.View, &info.CreateView, &info.Character_set_client, &info.Collation_connection)
+	err := row.Scan(&info.View, &info.CreateView, &info.Character_set_client, &info.Collation_connection)
 	if err != nil {
 		return info, err
 	}
@@ -337,11 +334,8 @@ func (m *mySQL) tablePartitions(table string) (*Partition, error) {
 	}
 	from := `FROM information_schema.PARTITIONS WHERE TABLE_SCHEMA = ` + quoteVal(m.dbName) + ` AND TABLE_NAME = ` + quoteVal(table)
 	sqlStr := `SELECT PARTITION_METHOD, PARTITION_ORDINAL_POSITION, PARTITION_EXPRESSION ` + from + ` ORDER BY PARTITION_ORDINAL_POSITION DESC LIMIT 1`
-	row, err := m.newParam().SetCollection(sqlStr).QueryRow()
-	if err != nil {
-		return ret, err
-	}
-	err = row.Scan(&ret.Method, &ret.Position, &ret.Expression)
+	row := m.newParam().SetCollection(sqlStr).QueryRow()
+	err := row.Scan(&ret.Method, &ret.Position, &ret.Expression)
 	if err != nil {
 		return ret, err
 	}
@@ -464,12 +458,9 @@ func (m *mySQL) tableForeignKeys(table string) (map[string]*ForeignKeyParam, []s
 	sorts := []string{}
 	result := map[string]*ForeignKeyParam{}
 	sqlStr := `SHOW CREATE TABLE ` + quoteCol(table)
-	row, err := m.newParam().SetCollection(sqlStr).QueryRow()
+	row := m.newParam().SetCollection(sqlStr).QueryRow()
 	ret := make([]sql.NullString, 2)
-	if err != nil {
-		return result, sorts, err
-	}
-	err = row.Scan(&ret[0], &ret[1])
+	err := row.Scan(&ret[0], &ret[1])
 	if err != nil {
 		return result, sorts, err
 	}
@@ -734,11 +725,8 @@ func (m *mySQL) tableTriggers(table string) (map[string]*Trigger, []string, erro
 func (m *mySQL) tableTrigger(name string) (*Trigger, error) {
 	sqlStr := "SHOW TRIGGERS WHERE `Trigger`=" + quoteVal(name)
 	v := &Trigger{}
-	row, err := m.newParam().SetCollection(sqlStr).QueryRow()
-	if err != nil {
-		return v, err
-	}
-	err = row.Scan(&v.Trigger, &v.Event, &v.Table, &v.Statement, &v.Timing, &v.Created, &v.Sql_mode, &v.Definer, &v.Character_set_client, &v.Collation_connection, &v.Database_collation)
+	row := m.newParam().SetCollection(sqlStr).QueryRow()
+	err := row.Scan(&v.Trigger, &v.Event, &v.Table, &v.Statement, &v.Timing, &v.Created, &v.Sql_mode, &v.Definer, &v.Character_set_client, &v.Collation_connection, &v.Database_collation)
 	if err != nil {
 		return v, err
 	}

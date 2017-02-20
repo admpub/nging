@@ -23,18 +23,11 @@ package mysql // import "github.com/webx-top/db/mysql"
 
 import (
 	"database/sql"
-	"time"
 
 	"github.com/webx-top/db"
 
 	"github.com/webx-top/db/internal/sqladapter"
 	"github.com/webx-top/db/lib/sqlbuilder"
-)
-
-var (
-	connMaxLifetime = db.DefaultConnMaxLifetime
-	maxIdleConns    = db.DefaultMaxIdleConns
-	maxOpenConns    = db.DefaultMaxOpenConns
 )
 
 const sqlDriver = `mysql`
@@ -52,87 +45,44 @@ func init() {
 
 // Open stablishes a new connection with the SQL server.
 func Open(settings db.ConnectionURL) (sqlbuilder.Database, error) {
-	d, err := newDatabase(settings)
-	if err != nil {
-		return nil, err
-	}
+	d := newDatabase(settings)
 	if err := d.Open(settings); err != nil {
 		return nil, err
 	}
 	return d, nil
 }
 
-// NewTx returns a transaction session.
+// NewTx wraps a regular *sql.Tx transaction and returns a new upper-db
+// transaction backed by it.
 func NewTx(sqlTx *sql.Tx) (sqlbuilder.Tx, error) {
-	d, err := newDatabase(nil)
-	if err != nil {
-		return nil, err
-	}
+	d := newDatabase(nil)
 
 	// Binding with sqladapter's logic.
 	d.BaseDatabase = sqladapter.NewBaseDatabase(d)
 
 	// Binding with sqlbuilder.
-	b, err := sqlbuilder.WithSession(d.BaseDatabase, template)
-	if err != nil {
-		return nil, err
-	}
-	d.Builder = b
+	d.SQLBuilder = sqlbuilder.WithSession(d.BaseDatabase, template)
 
-	if err := d.BaseDatabase.BindTx(sqlTx); err != nil {
+	if err := d.BaseDatabase.BindTx(d.Context(), sqlTx); err != nil {
 		return nil, err
 	}
 
-	newTx := sqladapter.NewTx(d)
+	newTx := sqladapter.NewDatabaseTx(d)
 	return &tx{DatabaseTx: newTx}, nil
 }
 
 // New wraps the given *sql.DB session and creates a new db session.
 func New(sess *sql.DB) (sqlbuilder.Database, error) {
-	d, err := newDatabase(nil)
-	if err != nil {
-		return nil, err
-	}
+	d := newDatabase(nil)
 
 	// Binding with sqladapter's logic.
 	d.BaseDatabase = sqladapter.NewBaseDatabase(d)
 
 	// Binding with sqlbuilder.
-	b, err := sqlbuilder.WithSession(d.BaseDatabase, template)
-	if err != nil {
-		return nil, err
-	}
-	d.Builder = b
+	d.SQLBuilder = sqlbuilder.WithSession(d.BaseDatabase, template)
 
 	if err := d.BaseDatabase.BindSession(sess); err != nil {
 		return nil, err
 	}
 	return d, nil
-}
-
-// SetConnMaxLifetime sets the default value to be passed to
-// db.SetConnMaxLifetime.
-func SetConnMaxLifetime(d time.Duration) {
-	connMaxLifetime = d
-}
-
-// SetMaxIdleConns sets the default value to be passed to db.SetMaxOpenConns.
-func SetMaxIdleConns(n int) {
-	if n < 0 {
-		n = 0
-	}
-	maxIdleConns = n
-}
-
-// SetMaxOpenConns sets the default value to be passed to db.SetMaxOpenConns.
-// If the value of maxIdleConns is >= 0 and maxOpenConns is less than
-// maxIdleConns, then maxIdleConns will be reduced to match maxOpenConns.
-func SetMaxOpenConns(n int) {
-	if n < 0 {
-		n = 0
-	}
-	if n > maxIdleConns {
-		maxIdleConns = n
-	}
-	maxOpenConns = n
 }

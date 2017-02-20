@@ -2,6 +2,7 @@
 package factory
 
 import (
+	"context"
 	"database/sql"
 	"encoding/gob"
 	"fmt"
@@ -452,16 +453,20 @@ func (p *Param) GetOffset() int {
 	return (p.Page - 1) * p.Size
 }
 
-func (p *Param) NewTx() (*Transaction, error) {
-	return p.factory.NewTx(p.Index)
+func (p *Param) NewTx(ctx context.Context) (*Transaction, error) {
+	return p.factory.NewTx(ctx, p.Index)
 }
 
-func (p *Param) Tx() (*Transaction, error) {
+func (p *Param) Tx(ctxa ...context.Context) (*Transaction, error) {
 	if p.trans != nil {
 		return p.trans, nil
 	}
 	var err error
-	p.trans, err = p.NewTx()
+	var ctx context.Context
+	if len(ctxa) > 0 {
+		ctx = ctxa[0]
+	}
+	p.trans, err = p.NewTx(ctx)
 	return p.trans, err
 }
 
@@ -510,7 +515,7 @@ func (p *Param) QueryTo() (sqlbuilder.Iterator, error) {
 }
 
 // QueryRow query SQL
-func (p *Param) QueryRow() (*sql.Row, error) {
+func (p *Param) QueryRow() *sql.Row {
 	return p.T().QueryRow(p)
 }
 

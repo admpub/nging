@@ -1267,64 +1267,76 @@
 			"revisionTime": "2017-02-14T03:30:55Z"
 		},
 		{
-			"checksumSHA1": "SI07CH8p/JZpDnYIiGdH/BvlGac=",
+			"checksumSHA1": "f8AmnnCJSZo3ao5/jg/ZB1SFAp4=",
 			"path": "github.com/webx-top/db",
-			"revision": "006fa191005f4af396b5bd49341a34db4adf1dd0",
-			"revisionTime": "2017-02-14T02:43:25Z"
+			"revision": "e6dfd9692265e588f083a5261070e87f108fcb0e",
+			"revisionTime": "2017-02-20T07:15:48Z"
 		},
 		{
 			"checksumSHA1": "W9/ZQDx+e2lArMvlJ8/+6JmiUMU=",
 			"path": "github.com/webx-top/db/internal/cache",
-			"revision": "006fa191005f4af396b5bd49341a34db4adf1dd0",
-			"revisionTime": "2017-02-14T02:43:25Z"
+			"revision": "e6dfd9692265e588f083a5261070e87f108fcb0e",
+			"revisionTime": "2017-02-20T07:15:48Z"
 		},
 		{
 			"checksumSHA1": "cupc8dl6ZsU57upr5racB00X9Mc=",
 			"path": "github.com/webx-top/db/internal/cache/hashstructure",
-			"revision": "006fa191005f4af396b5bd49341a34db4adf1dd0",
-			"revisionTime": "2017-02-14T02:43:25Z"
+			"revision": "e6dfd9692265e588f083a5261070e87f108fcb0e",
+			"revisionTime": "2017-02-20T07:15:48Z"
 		},
 		{
-			"checksumSHA1": "V8zU8FKtD0nS6nTJxQLLssj3Jek=",
+			"checksumSHA1": "6bXp5eySoZmOfWVW0SpfdtCeTHk=",
+			"path": "github.com/webx-top/db/internal/immutable",
+			"revision": "e6dfd9692265e588f083a5261070e87f108fcb0e",
+			"revisionTime": "2017-02-20T07:15:48Z"
+		},
+		{
+			"checksumSHA1": "bAO4tHrrGg4rOrcejzmtomRnwZM=",
 			"path": "github.com/webx-top/db/internal/sqladapter",
-			"revision": "006fa191005f4af396b5bd49341a34db4adf1dd0",
-			"revisionTime": "2017-02-14T02:43:25Z"
+			"revision": "e6dfd9692265e588f083a5261070e87f108fcb0e",
+			"revisionTime": "2017-02-20T07:15:48Z"
 		},
 		{
-			"checksumSHA1": "pwg94XDNkT0Xfxo/XEM1qA0BF3Q=",
+			"checksumSHA1": "+HgSm0WarZz3Qpu28/e1SI/GbwA=",
+			"path": "github.com/webx-top/db/internal/sqladapter/compat",
+			"revision": "e6dfd9692265e588f083a5261070e87f108fcb0e",
+			"revisionTime": "2017-02-20T07:15:48Z"
+		},
+		{
+			"checksumSHA1": "X0u9Mf+VQaN3I365dn5ELWCuMNc=",
 			"path": "github.com/webx-top/db/internal/sqladapter/exql",
-			"revision": "006fa191005f4af396b5bd49341a34db4adf1dd0",
-			"revisionTime": "2017-02-14T02:43:25Z"
+			"revision": "e6dfd9692265e588f083a5261070e87f108fcb0e",
+			"revisionTime": "2017-02-20T07:15:48Z"
 		},
 		{
-			"checksumSHA1": "ye+Z6arTCbHCiMzoei9K2LhlTPE=",
+			"checksumSHA1": "SDI2D7L8K7ZZLZg7NcRSXil0+mo=",
 			"path": "github.com/webx-top/db/lib/factory",
-			"revision": "006fa191005f4af396b5bd49341a34db4adf1dd0",
-			"revisionTime": "2017-02-14T02:43:25Z"
+			"revision": "e6dfd9692265e588f083a5261070e87f108fcb0e",
+			"revisionTime": "2017-02-20T07:15:48Z"
 		},
 		{
-			"checksumSHA1": "B8MmtjSSj7nPf1Ew4u4PEEVGlx8=",
+			"checksumSHA1": "1fLZBEbPGmEQDHA8Hq4LSvOfkuo=",
 			"path": "github.com/webx-top/db/lib/reflectx",
-			"revision": "006fa191005f4af396b5bd49341a34db4adf1dd0",
-			"revisionTime": "2017-02-14T02:43:25Z"
+			"revision": "e6dfd9692265e588f083a5261070e87f108fcb0e",
+			"revisionTime": "2017-02-20T07:15:48Z"
 		},
 		{
-			"checksumSHA1": "BI0hnWQL+PngmnHUJ2oQ9yuNvZE=",
+			"checksumSHA1": "rKGgQzR7WMsUKw4rm8Z56XWQakc=",
 			"path": "github.com/webx-top/db/lib/sqlbuilder",
-			"revision": "006fa191005f4af396b5bd49341a34db4adf1dd0",
-			"revisionTime": "2017-02-14T02:43:25Z"
+			"revision": "e6dfd9692265e588f083a5261070e87f108fcb0e",
+			"revisionTime": "2017-02-20T07:15:48Z"
 		},
 		{
-			"checksumSHA1": "EY09UQ6yBgpx/YcSo4V2Q1dkZY4=",
+			"checksumSHA1": "hOLfBF53GI6jCr0FglRH7PxnDuM=",
 			"path": "github.com/webx-top/db/mongo",
-			"revision": "006fa191005f4af396b5bd49341a34db4adf1dd0",
-			"revisionTime": "2017-02-14T02:43:25Z"
+			"revision": "e6dfd9692265e588f083a5261070e87f108fcb0e",
+			"revisionTime": "2017-02-20T07:15:48Z"
 		},
 		{
-			"checksumSHA1": "pq0WAMH77fEtIyKr0YUs2jpGkIM=",
+			"checksumSHA1": "ILouEVLB26Cdx2ARXVTxo0ni5xc=",
 			"path": "github.com/webx-top/db/mysql",
-			"revision": "006fa191005f4af396b5bd49341a34db4adf1dd0",
-			"revisionTime": "2017-02-14T02:43:25Z"
+			"revision": "e6dfd9692265e588f083a5261070e87f108fcb0e",
+			"revisionTime": "2017-02-20T07:15:48Z"
 		},
 		{
 			"checksumSHA1": "E1B7ftGsLO3OYE0WFnEoQ5heUo4=",

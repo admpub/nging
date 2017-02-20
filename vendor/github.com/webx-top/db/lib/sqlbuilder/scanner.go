@@ -89,7 +89,7 @@ type stringArray []string
 
 func (a *stringArray) Scan(src interface{}) error {
 	if src == nil {
-		*a = stringArray{}
+		*a = nil
 		return nil
 	}
 
@@ -98,6 +98,7 @@ func (a *stringArray) Scan(src interface{}) error {
 		return errors.New("Scan source was not []bytes")
 	}
 	if len(b) == 0 {
+		*a = nil
 		return nil
 	}
 
@@ -221,7 +222,7 @@ type int64Array []int64
 
 func (a *int64Array) Scan(src interface{}) error {
 	if src == nil {
-		*a = int64Array{}
+		*a = nil
 		return nil
 	}
 	b, ok := src.([]byte)
@@ -229,6 +230,7 @@ func (a *int64Array) Scan(src interface{}) error {
 		return errors.New("Scan source was not []bytes")
 	}
 	if len(b) == 0 {
+		*a = nil
 		return nil
 	}
 

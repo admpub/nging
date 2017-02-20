@@ -1181,10 +1181,8 @@ func (m *mySQL) ListData() error {
 	r.SQL = `SELECT` + withLimit(fieldStr+` FROM `+quoteCol(table), whereStr, limit, (page-1)*limit, "\n")
 	if totalRows < 1 {
 		countSQL := m.countRows(table, wheres, isGroup, groups)
-		row, err := m.newParam().SetCollection(countSQL).QueryRow()
-		if err == nil {
-			err = row.Scan(&totalRows)
-		}
+		row := m.newParam().SetCollection(countSQL).QueryRow()
+		err := row.Scan(&totalRows)
 		if err != nil {
 			return err
 		}

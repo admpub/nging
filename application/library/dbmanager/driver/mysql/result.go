@@ -127,11 +127,7 @@ func (r *Result) Query(p *factory.Param, readRows func(*sql.Rows) error) *Result
 func (r *Result) QueryRow(p *factory.Param, recvs ...interface{}) *Result {
 	r.start()
 	defer r.end()
-	row, err := p.SetCollection(r.SQL).QueryRow()
-	r.err = err
-	if err != nil {
-		return r
-	}
+	row := p.SetCollection(r.SQL).QueryRow()
 	r.err = row.Scan(recvs...)
 	return r
 }

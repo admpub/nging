@@ -22,8 +22,10 @@
 package mysql
 
 import (
-	"github.com/webx-top/db"
+	"context"
+
 	"github.com/webx-top/db/internal/sqladapter"
+	"github.com/webx-top/db/lib/sqlbuilder"
 )
 
 type tx struct {
@@ -31,5 +33,12 @@ type tx struct {
 }
 
 var (
-	_ = db.Tx(&tx{})
+	_ = sqlbuilder.Tx(&tx{})
 )
+
+func (t *tx) WithContext(ctx context.Context) sqlbuilder.Tx {
+	var newTx tx
+	newTx = *t
+	newTx.DatabaseTx.SetContext(ctx)
+	return &newTx
+}

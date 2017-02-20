@@ -1,123 +1,48 @@
 package sqlbuilder
 
 import (
+	"context"
 	"database/sql"
-	"sync"
 
+	"github.com/webx-top/db/internal/immutable"
 	"github.com/webx-top/db/internal/sqladapter/exql"
 )
 
-type inserter struct {
-	*stringer
-	builder *sqlBuilder
-	table   string
-
+type inserterQuery struct {
+	table          string
 	enqueuedValues [][]interface{}
-	mu             sync.Mutex
-
-	returning   []exql.Fragment
-	columns     []exql.Fragment
-	columnNames []string
-	arguments   []interface{}
-
-	amendFn func(string) string
-	extra   string
+	returning      []exql.Fragment
+	columns        []exql.Fragment
+	values         []*exql.Values
+	arguments      []interface{}
+	extra          string
+	amendFn        func(string) string
 }
 
-func (qi *inserter) clone() *inserter {
-	clone := &inserter{}
-	*clone = *qi
-	return clone
-}
-
-func (qi *inserter) Batch(n int) *BatchInserter {
-	return newBatchInserter(qi.clone(), n)
-}
-
-func (qi *inserter) Amend(fn func(string) string) Inserter {
-	qi.amendFn = fn
-	return qi
-}
-
-func (qi *inserter) Arguments() []interface{} {
-	_ = qi.statement()
-	return qi.arguments
-}
-
-func (qi *inserter) columnsToFragments(dst *[]exql.Fragment, columns []string) error {
-	l := len(columns)
-	f := make([]exql.Fragment, l)
-	for i := 0; i < l; i++ {
-		f[i] = exql.ColumnWithName(columns[i])
-	}
-	*dst = append(*dst, f...)
-	return nil
-}
-
-func (qi *inserter) Returning(columns ...string) Inserter {
-	qi.columnsToFragments(&qi.returning, columns)
-	return qi
-}
-
-func (qi *inserter) Exec() (sql.Result, error) {
-	return qi.builder.sess.StatementExec(qi.statement(), qi.arguments...)
-}
-
-func (qi *inserter) Query() (*sql.Rows, error) {
-	return qi.builder.sess.StatementQuery(qi.statement(), qi.arguments...)
-}
-
-func (qi *inserter) QueryRow() (*sql.Row, error) {
-	return qi.builder.sess.StatementQueryRow(qi.statement(), qi.arguments...)
-}
-
-func (qi *inserter) Iterator() Iterator {
-	rows, err := qi.builder.sess.StatementQuery(qi.statement(), qi.arguments...)
-	return &iterator{rows, err}
-}
-
-func (qi *inserter) Columns(columns ...string) Inserter {
-	qi.columnsToFragments(&qi.columns, columns)
-	return qi
-}
-
-func (qi *inserter) Values(values ...interface{}) Inserter {
-	qi.mu.Lock()
-	defer qi.mu.Unlock()
-
-	if qi.enqueuedValues == nil {
-		qi.enqueuedValues = [][]interface{}{}
-	}
-	qi.enqueuedValues = append(qi.enqueuedValues, values)
-	return qi
-}
-
-func (qi *inserter) processValues() (values []*exql.Values, arguments []interface{}) {
-	// TODO: simplify with immutable queries
-
+func (iq *inserterQuery) processValues() (values []*exql.Values, arguments []interface{}) {
 	var mapOptions *MapOptions
-	if len(qi.enqueuedValues) > 1 {
+	if len(iq.enqueuedValues) > 1 {
 		mapOptions = &MapOptions{IncludeZeroed: true, IncludeNil: true}
 	}
 
-	for _, enqueuedValue := range qi.enqueuedValues {
+	for _, enqueuedValue := range iq.enqueuedValues {
 		if len(enqueuedValue) == 1 {
 			ff, vv, err := Map(enqueuedValue[0], mapOptions)
 			if err == nil {
-				columns, vals, args, _ := qi.builder.t.ToColumnsValuesAndArguments(ff, vv)
+				columns, vals, args, _ := toColumnsValuesAndArguments(ff, vv)
 
 				values, arguments = append(values, vals), append(arguments, args...)
 
-				if len(qi.columns) == 0 {
+				if len(iq.columns) == 0 {
 					for _, c := range columns.Columns {
-						qi.columns = append(qi.columns, c)
+						iq.columns = append(iq.columns, c)
 					}
 				}
 				continue
 			}
 		}
 
-		if len(qi.columns) == 0 || len(enqueuedValue) == len(qi.columns) {
+		if len(iq.columns) == 0 || len(enqueuedValue) == len(iq.columns) {
 			arguments = append(arguments, enqueuedValue...)
 
 			l := len(enqueuedValue)
@@ -132,29 +57,203 @@ func (qi *inserter) processValues() (values []*exql.Values, arguments []interfac
 	return
 }
 
-func (qi *inserter) statement() *exql.Statement {
+func (iq *inserterQuery) statement() *exql.Statement {
 	stmt := &exql.Statement{
 		Type:  exql.Insert,
-		Table: exql.TableWithName(qi.table),
+		Table: exql.TableWithName(iq.table),
 	}
 
-	values, arguments := qi.processValues()
-
-	qi.arguments = arguments
-
-	if len(qi.columns) > 0 {
-		stmt.Columns = exql.JoinColumns(qi.columns...)
+	if len(iq.values) > 0 {
+		stmt.Values = exql.JoinValueGroups(iq.values...)
 	}
 
-	if len(values) > 0 {
-		stmt.Values = exql.JoinValueGroups(values...)
+	if len(iq.columns) > 0 {
+		stmt.Columns = exql.JoinColumns(iq.columns...)
 	}
 
-	if len(qi.returning) > 0 {
-		stmt.Returning = exql.ReturningColumns(qi.returning...)
+	if len(iq.returning) > 0 {
+		stmt.Returning = exql.ReturningColumns(iq.returning...)
 	}
 
-	stmt.SetAmendment(qi.amendFn)
+	stmt.SetAmendment(iq.amendFn)
 
 	return stmt
+}
+
+type inserter struct {
+	builder *sqlBuilder
+
+	fn   func(*inserterQuery) error
+	prev *inserter
+}
+
+var _ = immutable.Immutable(&inserter{})
+
+func (ins *inserter) SQLBuilder() *sqlBuilder {
+	if ins.prev == nil {
+		return ins.builder
+	}
+	return ins.prev.SQLBuilder()
+}
+
+func (ins *inserter) template() *exql.Template {
+	return ins.SQLBuilder().t.Template
+}
+
+func (ins *inserter) String() string {
+	s, err := ins.Compile()
+	if err != nil {
+		panic(err.Error())
+	}
+	return prepareQueryForDisplay(s)
+}
+
+func (ins *inserter) frame(fn func(*inserterQuery) error) *inserter {
+	return &inserter{prev: ins, fn: fn}
+}
+
+func (ins *inserter) Batch(n int) *BatchInserter {
+	return newBatchInserter(ins, n)
+}
+
+func (ins *inserter) Amend(fn func(string) string) Inserter {
+	return ins.frame(func(iq *inserterQuery) error {
+		iq.amendFn = fn
+		return nil
+	})
+}
+
+func (ins *inserter) Arguments() []interface{} {
+	iq, err := ins.build()
+	if err != nil {
+		return nil
+	}
+	return iq.arguments
+}
+
+func (ins *inserter) Returning(columns ...string) Inserter {
+	return ins.frame(func(iq *inserterQuery) error {
+		columnsToFragments(&iq.returning, columns)
+		return nil
+	})
+}
+
+func (ins *inserter) Exec() (sql.Result, error) {
+	return ins.ExecContext(ins.SQLBuilder().sess.Context())
+}
+
+func (ins *inserter) ExecContext(ctx context.Context) (sql.Result, error) {
+	iq, err := ins.build()
+	if err != nil {
+		return nil, err
+	}
+	return ins.SQLBuilder().sess.StatementExec(ctx, iq.statement(), iq.arguments...)
+}
+
+func (ins *inserter) Query() (*sql.Rows, error) {
+	return ins.QueryContext(ins.SQLBuilder().sess.Context())
+}
+
+func (ins *inserter) QueryContext(ctx context.Context) (*sql.Rows, error) {
+	iq, err := ins.build()
+	if err != nil {
+		return nil, err
+	}
+	return ins.SQLBuilder().sess.StatementQuery(ctx, iq.statement(), iq.arguments...)
+}
+
+func (ins *inserter) QueryRow() (*sql.Row, error) {
+	return ins.QueryRowContext(ins.SQLBuilder().sess.Context())
+}
+
+func (ins *inserter) QueryRowContext(ctx context.Context) (*sql.Row, error) {
+	iq, err := ins.build()
+	if err != nil {
+		return nil, err
+	}
+	return ins.SQLBuilder().sess.StatementQueryRow(ctx, iq.statement(), iq.arguments...)
+}
+
+func (ins *inserter) Iterator() Iterator {
+	return ins.IteratorContext(ins.SQLBuilder().sess.Context())
+}
+
+func (ins *inserter) IteratorContext(ctx context.Context) Iterator {
+	rows, err := ins.QueryContext(ctx)
+	return &iterator{rows, err}
+}
+
+func (ins *inserter) Into(table string) Inserter {
+	return ins.frame(func(iq *inserterQuery) error {
+		iq.table = table
+		return nil
+	})
+}
+
+func (ins *inserter) Columns(columns ...string) Inserter {
+	return ins.frame(func(iq *inserterQuery) error {
+		columnsToFragments(&iq.columns, columns)
+		return nil
+	})
+}
+
+func (ins *inserter) Values(values ...interface{}) Inserter {
+	return ins.frame(func(iq *inserterQuery) error {
+		iq.enqueuedValues = append(iq.enqueuedValues, values)
+		return nil
+	})
+}
+
+func (ins *inserter) statement() (*exql.Statement, error) {
+	iq, err := ins.build()
+	if err != nil {
+		return nil, err
+	}
+	return iq.statement(), nil
+}
+
+func (ins *inserter) build() (*inserterQuery, error) {
+	iq, err := immutable.FastForward(ins)
+	if err != nil {
+		return nil, err
+	}
+	ret := iq.(*inserterQuery)
+	ret.values, ret.arguments = ret.processValues()
+	return ret, nil
+}
+
+func (ins *inserter) Compile() (string, error) {
+	s, err := ins.statement()
+	if err != nil {
+		return "", err
+	}
+	return s.Compile(ins.template())
+}
+
+func (ins *inserter) Prev() immutable.Immutable {
+	if ins == nil {
+		return nil
+	}
+	return ins.prev
+}
+
+func (ins *inserter) Fn(in interface{}) error {
+	if ins.fn == nil {
+		return nil
+	}
+	return ins.fn(in.(*inserterQuery))
+}
+
+func (ins *inserter) Base() interface{} {
+	return &inserterQuery{}
+}
+
+func columnsToFragments(dst *[]exql.Fragment, columns []string) error {
+	l := len(columns)
+	f := make([]exql.Fragment, l)
+	for i := 0; i < l; i++ {
+		f[i] = exql.ColumnWithName(columns[i])
+	}
+	*dst = append(*dst, f...)
+	return nil
 }

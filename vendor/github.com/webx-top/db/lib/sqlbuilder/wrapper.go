@@ -22,6 +22,7 @@
 package sqlbuilder
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"sync"
@@ -38,35 +39,66 @@ func init() {
 	adapters = make(map[string]*AdapterFuncMap)
 }
 
-// Backend holds common methods for SQL databases.
-type Backend interface {
-	db.Database
-	Builder
-}
-
-// Tx represents transaction on a SQL database. Transactions can only accept
-// intructions until being commited or rolled back, they become useless
-// afterwards and are automatically closed.
+// Tx represents a transaction on a SQL database. A transaction is like a
+// regular Database except it has two extra methods: Commit and Rollback.
+//
+// A transaction needs to be committed (with Commit) to make changes permanent,
+// changes can be discarded before committing by rolling back (with Rollback).
+// After either committing or rolling back a transaction it can not longer be
+// used and it's automatically closed.
 type Tx interface {
-	Backend
+	// All db.Database methods are available on transaction sessions. They will
+	// run on the same transaction.
+	db.Database
+
+	// All SQLBuilder methods are available on transaction sessions. They will
+	// run on the same transaction.
+	SQLBuilder
+
+	// db.Tx adds Commit and Rollback methods to the transaction.
 	db.Tx
+
+	// Context returns the context used as default for queries on this transaction.
+	// If no context has been set, a default context.Background() is returned.
+	Context() context.Context
+
+	// WithContext returns a copy of the transaction that uses the given context
+	// as default. Copies are safe to use concurrently but they're backed by the
+	// same *sql.Tx, so any copy may commit or rollback the parent transaction.
+	WithContext(context.Context) Tx
 }
 
-// Database represents a Database which is capable of both creating
-// transactions and use SQL builder methods.
+// Database represents a SQL database.
 type Database interface {
-	Backend
+	// All db.Database methods are available on this session.
+	db.Database
 
-	// NewTx returns a new session that lives within a transaction. This session
-	// is completely independent from its parent.
-	NewTx() (Tx, error)
+	// All SQLBuilder methods are available on this session.
+	SQLBuilder
 
-	// Tx creates a new transaction that is passed as context to the fn function.
-	// The fn function defines a transaction operation.  If the fn function
-	// returns nil, the transaction is commited, otherwise the transaction is
-	// rolled back.  The transaction session is closed after the function exists,
-	// regardless of the error value returned by fn.
-	Tx(fn func(sess Tx) error) error
+	// NewTx creates and returns a transaction that runs on the given context.
+	// If a nil context is given, then the transaction will use the session's
+	// default context.  The user is responsible for committing or rolling back
+	// the session.
+	NewTx(ctx context.Context) (Tx, error)
+
+	// Tx creates a new transaction that is passed as argument to the fn
+	// function.  The fn function defines a transactional operation.  If the fn
+	// function returns nil, the transaction is committed, else the transaction
+	// is rolled back.  The transaction session is closed after the function
+	// exits, regardless of the error value returned by fn.
+	Tx(ctx context.Context, fn func(sess Tx) error) error
+
+	// Context returns the context used as default for queries on this session
+	// and for new transactions.  If no context has been set, a default
+	// context.Background() is returned.
+	Context() context.Context
+
+	// WithContext returns a copy of the session that uses the given context as
+	// default. Copies are safe to use concurrently but they're backed by the
+	// same *sql.DB. You may close a copy at any point but that won't close the
+	// parent session.
+	WithContext(context.Context) Database
 }
 
 // AdapterFuncMap is a struct that defines a set of functions that adapters
@@ -115,12 +147,24 @@ func Open(adapterName string, settings db.ConnectionURL) (Database, error) {
 	return adapter(adapterName).Open(settings)
 }
 
-// New wraps an active *sql.DB session.
+// New wraps an active *sql.DB session and returns a SQLBuilder database.  The
+// adapter needs to be imported to the blank namespace in order for it to be
+// used here.
+//
+// This method is internally used by upper-db to create a builder backed by the
+// given database.  You may want to use your adapter's New function instead of
+// this one.
 func New(adapterName string, sqlDB *sql.DB) (Database, error) {
 	return adapter(adapterName).New(sqlDB)
 }
 
-// NewTx wraps an active *sql.Tx transation.
+// NewTx wraps an active *sql.Tx transation and returns a SQLBuilder
+// transaction.  The adapter needs to be imported to the blank namespace in
+// order for it to be used.
+//
+// This method is internally used by upper-db to create a builder backed by the
+// given transaction.  You may want to use your adapter's NewTx function
+// instead of this one.
 func NewTx(adapterName string, sqlTx *sql.Tx) (Tx, error) {
 	return adapter(adapterName).NewTx(sqlTx)
 }

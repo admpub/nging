@@ -24,6 +24,7 @@ package db
 import (
 	"sync"
 	"sync/atomic"
+	"time"
 )
 
 // Settings defines methods to get or set configuration values.
@@ -44,18 +45,48 @@ type Settings interface {
 	// PreparedStatementCacheEnabled returns true if the prepared statement cache
 	// is enabled, false otherwise.
 	PreparedStatementCacheEnabled() bool
+
+	// SetConnMaxLifetime sets the default maximum amount of time a connection
+	// may be reused.
+	SetConnMaxLifetime(time.Duration)
+
+	// ConnMaxLifetime returns the default maximum amount of time a connection
+	// may be reused.
+	ConnMaxLifetime() time.Duration
+
+	// SetMaxIdleConns sets the default maximum number of connections in the idle
+	// connection pool.
+	SetMaxIdleConns(int)
+
+	// MaxIdleConns returns the default maximum number of connections in the idle
+	// connection pool.
+	MaxIdleConns() int
+
+	// SetMaxOpenConns sets the default maximum number of open connections to the
+	// database.
+	SetMaxOpenConns(int)
+
+	// MaxOpenConns returns the default maximum number of open connections to the
+	// database.
+	MaxOpenConns() int
 }
 
-type conf struct {
-	loggingEnabled                uint32
+type settings struct {
+	sync.RWMutex
+
 	preparedStatementCacheEnabled uint32
 
-	queryLogger   Logger
-	queryLoggerMu sync.RWMutex
-	defaultLogger defaultLogger
+	connMaxLifetime time.Duration
+	maxOpenConns    int
+	maxIdleConns    int
+
+	loggingEnabled uint32
+	queryLogger    Logger
+	queryLoggerMu  sync.RWMutex
+	defaultLogger  defaultLogger
 }
 
-func (c *conf) Logger() Logger {
+func (c *settings) Logger() Logger {
 	c.queryLoggerMu.RLock()
 	defer c.queryLoggerMu.RUnlock()
 
@@ -66,21 +97,21 @@ func (c *conf) Logger() Logger {
 	return c.queryLogger
 }
 
-func (c *conf) SetLogger(lg Logger) {
+func (c *settings) SetLogger(lg Logger) {
 	c.queryLoggerMu.Lock()
 	defer c.queryLoggerMu.Unlock()
 
 	c.queryLogger = lg
 }
 
-func (c *conf) binaryOption(opt *uint32) bool {
+func (c *settings) binaryOption(opt *uint32) bool {
 	if atomic.LoadUint32(opt) == 1 {
 		return true
 	}
 	return false
 }
 
-func (c *conf) setBinaryOption(opt *uint32, value bool) {
+func (c *settings) setBinaryOption(opt *uint32, value bool) {
 	if value {
 		atomic.StoreUint32(opt, 1)
 		return
@@ -88,23 +119,69 @@ func (c *conf) setBinaryOption(opt *uint32, value bool) {
 	atomic.StoreUint32(opt, 0)
 }
 
-func (c *conf) SetLogging(value bool) {
+func (c *settings) SetLogging(value bool) {
 	c.setBinaryOption(&c.loggingEnabled, value)
 }
 
-func (c *conf) LoggingEnabled() bool {
+func (c *settings) LoggingEnabled() bool {
 	return c.binaryOption(&c.loggingEnabled)
 }
 
-func (c *conf) SetPreparedStatementCache(value bool) {
+func (c *settings) SetPreparedStatementCache(value bool) {
 	c.setBinaryOption(&c.preparedStatementCacheEnabled, value)
 }
 
-func (c *conf) PreparedStatementCacheEnabled() bool {
+func (c *settings) PreparedStatementCacheEnabled() bool {
 	return c.binaryOption(&c.preparedStatementCacheEnabled)
 }
 
-// Conf provides global configuration settings for upper-db.
-var Conf Settings = &conf{
+func (c *settings) SetConnMaxLifetime(t time.Duration) {
+	c.Lock()
+	c.connMaxLifetime = t
+	c.Unlock()
+}
+
+func (c *settings) ConnMaxLifetime() time.Duration {
+	c.RLock()
+	defer c.RUnlock()
+	return c.connMaxLifetime
+}
+
+func (c *settings) SetMaxIdleConns(n int) {
+	c.Lock()
+	c.maxIdleConns = n
+	c.Unlock()
+}
+
+func (c *settings) MaxIdleConns() int {
+	c.RLock()
+	defer c.RUnlock()
+	return c.maxIdleConns
+}
+
+func (c *settings) SetMaxOpenConns(n int) {
+	c.Lock()
+	c.maxOpenConns = n
+	c.Unlock()
+}
+
+func (c *settings) MaxOpenConns() int {
+	c.RLock()
+	defer c.RUnlock()
+	return c.maxOpenConns
+}
+
+// NewSettings returns a new settings value prefilled with the current default
+// settings.
+func NewSettings() Settings {
+	newSettings := *(DefaultSettings.(*settings))
+	return &newSettings
+}
+
+// Settings provides global configuration settings for database sessions.
+var DefaultSettings Settings = &settings{
 	preparedStatementCacheEnabled: 0,
+	connMaxLifetime:               time.Duration(0),
+	maxIdleConns:                  10,
+	maxOpenConns:                  0,
 }

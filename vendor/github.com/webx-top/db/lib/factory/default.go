@@ -1,6 +1,7 @@
 package factory
 
 import (
+	"context"
 	"database/sql"
 
 	"github.com/webx-top/db"
@@ -61,12 +62,12 @@ func GetCluster(index int) *Cluster {
 	return DefaultFactory.GetCluster(index)
 }
 
-func Tx(param *Param) error {
-	return DefaultFactory.Tx(param)
+func Tx(param *Param, ctxa ...context.Context) error {
+	return DefaultFactory.Tx(param, ctxa...)
 }
 
-func NewTx(args ...int) (*Transaction, error) {
-	return DefaultFactory.NewTx(args...)
+func NewTx(ctx context.Context, args ...int) (*Transaction, error) {
+	return DefaultFactory.NewTx(ctx, args...)
 }
 
 func CloseAll() {
@@ -103,7 +104,7 @@ func QueryTo(param *Param) (sqlbuilder.Iterator, error) {
 }
 
 // QueryRow query SQL
-func QueryRow(param *Param) (*sql.Row, error) {
+func QueryRow(param *Param) *sql.Row {
 	return DefaultFactory.QueryRow(param)
 }
 
