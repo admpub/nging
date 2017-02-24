@@ -2,10 +2,12 @@ package echo
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"encoding/xml"
 	"io"
 	"mime"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -13,12 +15,9 @@ import (
 	"strings"
 	"time"
 
-	"mime/multipart"
-
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/logger"
 	"github.com/webx-top/echo/param"
-	"golang.org/x/net/context"
 )
 
 type (
@@ -27,12 +26,22 @@ type (
 	Context interface {
 		context.Context
 		Translator
+		SetTranslator(Translator)
 		Request() engine.Request
 		Response() engine.Response
+		Handle(Context) error
+		Logger() logger.Logger
+		Object() *xContext
+		Echo() *Echo
+		Reset(engine.Request, engine.Response)
+
+		//----------------
+		// Param
+		//----------------
+
 		Path() string
 		P(int) string
 		Param(string) string
-
 		// ParamNames returns path parameter names.
 		ParamNames() []string
 		SetParamNames(...string)
@@ -44,17 +53,42 @@ type (
 		QueryValues(string) []string
 		Query(string) string
 
+		//----------------
+		// Form data
+		//----------------
+
 		Form(string) string
 		FormValues(string) []string
-
 		// Forms returns the form parameters as map. It is an alias for `engine.Request#Form().All()`.
 		Forms() map[string][]string
+
+		// Param+
+		Px(int) param.String
+		Paramx(string) param.String
+		Queryx(string) param.String
+		Formx(string) param.String
+		// string to param.String
+		Atop(string) param.String
+
+		//----------------
+		// Context data
+		//----------------
 
 		Set(string, interface{})
 		Get(string) interface{}
 		Stored() store
+
+		//----------------
+		// Bind
+		//----------------
+
 		Bind(interface{}, ...FormDataFilter) error
 		MustBind(interface{}, ...FormDataFilter) error
+
+		//----------------
+		// Response data
+		//----------------
+
 		Render(string, interface{}, ...int) error
 		HTML(string, ...int) error
 		String(string, ...int) error
@@ -71,27 +105,35 @@ type (
 		NoContent(...int) error
 		Redirect(string, ...int) error
 		Error(err error)
-		Handle(Context) error
-		Logger() logger.Logger
-		Object() *xContext
-		Echo() *Echo
+		SetCode(int)
+		Code() int
+		NewData(...interface{}) *Data
 
 		// ServeContent sends static content from `io.Reader` and handles caching
 		// via `If-Modified-Since` request header. It automatically sets `Content-Type`
 		// and `Last-Modified` response headers.
 		ServeContent(io.ReadSeeker, string, time.Time) error
 
+		//----------------
+		// FuncMap
+		//----------------
+
 		SetFunc(string, interface{})
 		GetFunc(string) interface{}
 		ResetFuncs(map[string]interface{})
 		Funcs() map[string]interface{}
-		Reset(engine.Request, engine.Response)
+
+		//----------------
+		// Render
+		//----------------
+
 		Fetch(string, interface{}) ([]byte, error)
 		SetRenderer(Renderer)
 
-		SetSessionOptions(*SessionOptions)
-		SessionOptions() *SessionOptions
+		//----------------
 		// Cookie
+		//----------------
+
 		SetCookieOptions(*CookieOptions)
 		CookieOptions() *CookieOptions
 		NewCookie(string, string) *Cookie
@@ -99,19 +141,19 @@ type (
 		GetCookie(string) string
 		SetCookie(string, string, ...interface{})
 
+		//----------------
+		// Session
+		//----------------
+
+		SetSessionOptions(*SessionOptions)
+		SessionOptions() *SessionOptions
 		SetSessioner(Sessioner)
 		Session() Sessioner
 		Flash(...string) interface{}
 
-		//with type action
-		Px(int) param.String
-		Paramx(string) param.String
-		Queryx(string) param.String
-		Formx(string) param.String
-		//string to param.String
-		Atop(string) param.String
-
-		SetTranslator(Translator)
+		//----------------
+		// Request data
+		//----------------
 
 		Header(string) string
 		IsAjax() bool
@@ -138,11 +180,13 @@ type (
 		Proxy() []string
 		Referer() string
 		Port() int
-		SetCode(int)
-		Code() int
-		NewData(...interface{}) *Data
 		SaveUploadedFile(string, string, ...string) (*multipart.FileHeader, error)
 		SaveUploadedFileToWriter(string, io.Writer) (*multipart.FileHeader, error)
+
+		//----------------
+		// Hook
+		//----------------
+
 		AddPreResponseHook(func() error) Context
 		SetPreResponseHook(...func() error) Context
 	}

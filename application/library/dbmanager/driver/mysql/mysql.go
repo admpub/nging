@@ -417,7 +417,7 @@ func (m *mySQL) CreateTable() error {
 		aiIndex := m.Formx(`auto_increment`)
 		aiIndexInt := aiIndex.Int()
 		aiIndexStr := aiIndex.String()
-		mapx := NewMapx(m.Forms())
+		mapx := echo.NewMapx(m.Forms())
 		f := mapx.Get(`fields`)
 		allFields := []*fieldItem{}
 		after := " FIRST"
@@ -572,7 +572,7 @@ func (m *mySQL) ModifyTable() error {
 		aiIndex := m.Formx(`auto_increment`)
 		aiIndexInt := aiIndex.Int()
 		aiIndexStr := aiIndex.String()
-		mapx := NewMapx(m.Forms())
+		mapx := echo.NewMapx(m.Forms())
 		f := mapx.Get(`fields`)
 		var origField *Field
 		origFieldsNum := len(sortFields)
@@ -1082,7 +1082,7 @@ func (m *mySQL) ListData() error {
 			if err != nil {
 				return err
 			}
-			mpx := NewMapx(values)
+			mpx := echo.NewMapx(values)
 			where := mpx.Get(`where`)
 			null := mpx.Get(`null`)
 			if where == nil && null == nil {
@@ -1258,7 +1258,7 @@ func (m *mySQL) ListData() error {
 func (m *mySQL) CreateData() error {
 	var err error
 	table := m.Form(`table`)
-	mapx := NewMapx(m.Forms())
+	mapx := echo.NewMapx(m.Forms())
 	where := mapx.Get(`where`)
 	null := mapx.Get(`null`)
 	fields, sortFields, err := m.tableFields(table)
@@ -1395,7 +1395,7 @@ func (m *mySQL) modifyIndexes() error {
 		return m.String(err.Error())
 	}
 	if m.IsPost() {
-		mapx := NewMapx(m.Forms())
+		mapx := echo.NewMapx(m.Forms())
 		mapx = mapx.Get(`indexes`)
 		alter := []*indexItems{}
 		if mapx != nil {

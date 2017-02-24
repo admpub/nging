@@ -124,8 +124,8 @@ type MVC struct {
 	StaticDir          string
 	StaticRes          *resource.Static
 	RouteTagName       string
-	URLConvert         URLConvert
-	URLRecovery        URLRecovery
+	URLConvert         URLConvert  `json:"-" xml:"-"`
+	URLRecovery        URLRecovery `json:"-" xml:"-"`
 	MaxUploadSize      int64
 	RootModuleName     string
 	URL                string
@@ -524,11 +524,7 @@ func (s *MVC) Run(args ...interface{}) {
 		}
 	}
 	s.Core.Logger().Infof(`Server "%v" has been launched.`, s.Name)
-
-	eng.SetHandler(s)
-	eng.SetLogger(s.Core.Logger())
-	eng.Start()
-
+	s.Core.Run(eng, s)
 	s.Core.Logger().Infof(`Server "%v" has been closed.`, s.Name)
 	s.GoEvent(`mvc.serverExit`, func(_ bool) {})
 }

@@ -362,18 +362,21 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 			default:
 				break
 			}
+
+			//validation
 			valid := tagfast.Value(tc, f, `valid`)
-			if len(valid) > 0 {
-				if validator == nil {
-					validator = validation.New()
-				}
-				ok, err := validator.ValidSimple(name, fmt.Sprintf(`%v`, l), valid)
-				if !ok {
-					return validator.Errors[0].WithField()
-				}
-				if err != nil {
-					e.Logger().Warn(err)
-				}
+			if len(valid) == 0 {
+				continue
+			}
+			if validator == nil {
+				validator = validation.New()
+			}
+			ok, err := validator.ValidSimple(name, fmt.Sprintf(`%v`, l), valid)
+			if !ok {
+				return validator.Errors[0].WithField()
+			}
+			if err != nil {
+				e.Logger().Warn(err)
 			}
 		}
 	}
@@ -453,7 +456,7 @@ func StructToForm(ctx Context, m interface{}, topName string, fieldNameFormatter
 		case "time.Time":
 			if t, y := fVal.Interface().(time.Time); y {
 				dateformat := tagfast.Value(tc, fTyp, `form_format`)
-				if dateformat != `` {
+				if len(dateformat) > 0 {
 					f.Add(fName, t.Format(dateformat))
 				} else {
 					f.Add(fName, t.Format(`2006-01-02 15:04:05`))

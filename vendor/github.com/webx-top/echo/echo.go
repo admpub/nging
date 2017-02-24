@@ -529,14 +529,14 @@ func (e *Echo) addMeta(meta H, handler string) {
 	}
 }
 
-// Add meta information about endpoint
+// MetaMiddleware Add meta information about endpoint
 func (e *Echo) MetaMiddleware(m H, middleware interface{}) interface{} {
 	name := HandlerName(middleware)
 	e.meta[name] = m
 	return middleware
 }
 
-// Add meta information about endpoint
+// MetaHandler Add meta information about endpoint
 func (e *Echo) MetaHandler(m H, handler interface{}) interface{} {
 	name := HandlerName(handler)
 	e.meta[name] = m
@@ -683,14 +683,30 @@ func (e *Echo) ServeHTTP(req engine.Request, res engine.Response) {
 }
 
 // Run starts the HTTP engine.
-func (e *Echo) Run(eng engine.Engine) {
-	e.engine = eng
-	eng.SetHandler(e)
-	eng.SetLogger(e.logger)
+func (e *Echo) Run(eng engine.Engine, handler ...engine.Handler) {
+	e.setEngine(eng).start(handler...)
+}
+
+func (e *Echo) start(handler ...engine.Handler) {
+	if len(handler) > 0 {
+		e.engine.SetHandler(handler[0])
+	} else {
+		e.engine.SetHandler(e)
+	}
+	e.engine.SetLogger(e.logger)
 	if e.Debug() {
 		e.logger.Debug("running in debug mode")
 	}
-	eng.Start()
+	e.engine.Start()
+}
+
+func (e *Echo) setEngine(eng engine.Engine) *Echo {
+	e.engine = eng
+	return e
+}
+
+func (e *Echo) Engine() engine.Engine {
+	return e.engine
 }
 
 // Stop stops the HTTP server.
@@ -714,6 +730,7 @@ func (e *HTTPError) Error() string {
 	return e.Message
 }
 
+// HandlerName returns the handler name
 func HandlerName(h interface{}) string {
 	v := reflect.ValueOf(h)
 	t := v.Type()
@@ -723,6 +740,7 @@ func HandlerName(h interface{}) string {
 	return t.String()
 }
 
+// Methods returns methods
 func Methods() []string {
 	return methods
 }

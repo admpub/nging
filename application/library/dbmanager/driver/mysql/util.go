@@ -30,6 +30,7 @@ import (
 	"github.com/admpub/nging/application/library/common"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo"
 )
 
 func (m *mySQL) kvVal(sqlStr string) ([]map[string]string, error) {
@@ -388,9 +389,9 @@ func (m *mySQL) editFunctions(field *Field) []string {
 	return []string{}
 }
 
-func (m *mySQL) whereByMapx(where *Mapx, null *Mapx, fields map[string]*Field) string {
-	wheres := map[string]*Mapx{}
-	nulls := map[string]*Mapx{}
+func (m *mySQL) whereByMapx(where *echo.Mapx, null *echo.Mapx, fields map[string]*Field) string {
+	wheres := map[string]*echo.Mapx{}
+	nulls := map[string]*echo.Mapx{}
 	if where != nil {
 		wheres = where.Map
 	}
@@ -400,7 +401,7 @@ func (m *mySQL) whereByMapx(where *Mapx, null *Mapx, fields map[string]*Field) s
 	return m.where(wheres, nulls, fields)
 }
 
-func (m *mySQL) where(wheres map[string]*Mapx, nulls map[string]*Mapx, fields map[string]*Field) string {
+func (m *mySQL) where(wheres map[string]*echo.Mapx, nulls map[string]*echo.Mapx, fields map[string]*Field) string {
 	r := []string{}
 	for key, mapx := range wheres {
 		if mapx == nil {

@@ -26,16 +26,16 @@ import (
 )
 
 var (
-	LangVarName = `lang`
-	DefaultLang = `zh-cn`
+	LangVarName        = `lang`
+	DefaultLang        = `zh-cn`
+	headerAcceptRemove = regexp.MustCompile(`;q=[0-9.]+`)
 )
 
 func New(c ...*Config) *Language {
 	lang := &Language{
-		List:     make(map[string]bool),
-		Index:    make([]string, 0),
-		Default:  DefaultLang,
-		uaRegexp: regexp.MustCompile(`;q=[0-9.]+`),
+		List:    make(map[string]bool),
+		Index:   make([]string, 0),
+		Default: DefaultLang,
 	}
 	if len(c) > 0 {
 		lang.Init(c[0])
@@ -44,11 +44,10 @@ func New(c ...*Config) *Language {
 }
 
 type Language struct {
-	List     map[string]bool //语种列表
-	Index    []string        //索引
-	Default  string          //默认语种
-	uaRegexp *regexp.Regexp
-	I18n     *I18n
+	List    map[string]bool //语种列表
+	Index   []string        //索引
+	Default string          //默认语种
+	I18n    *I18n
 }
 
 func (a *Language) Init(c *Config) {
@@ -82,7 +81,7 @@ func (a *Language) Set(lang string, on bool, args ...bool) *Language {
 	return a
 }
 
-func (a *Language) DetectURI(_ engine.Response, r engine.Request) string {
+func (a *Language) DetectURI(r engine.Request) string {
 	p := strings.TrimPrefix(r.URL().Path(), `/`)
 	s := strings.Index(p, `/`)
 	var lang string
@@ -113,9 +112,9 @@ func (a *Language) Valid(lang string) bool {
 	return false
 }
 
-func (a *Language) DetectUA(r engine.Request) string {
+func (a *Language) DetectHeader(r engine.Request) string {
 	al := r.Header().Get(`Accept-Language`)
-	al = a.uaRegexp.ReplaceAllString(al, ``)
+	al = headerAcceptRemove.ReplaceAllString(al, ``)
 	lg := strings.SplitN(al, `,`, 5)
 	for _, lang := range lg {
 		lang = strings.ToLower(lang)
@@ -130,13 +129,13 @@ func (a *Language) Middleware() echo.MiddlewareFunc {
 	return echo.MiddlewareFunc(func(h echo.Handler) echo.Handler {
 		return echo.HandlerFunc(func(c echo.Context) error {
 			lang := c.Query(LangVarName)
-			hasCookie := false
+			var hasCookie bool
 			if !a.Valid(lang) {
-				lang = a.DetectURI(c.Response(), c.Request())
+				lang = a.DetectURI(c.Request())
 				if !a.Valid(lang) {
 					lang = c.GetCookie(LangVarName)
 					if !a.Valid(lang) {
-						lang = a.DetectUA(c.Request())
+						lang = a.DetectHeader(c.Request())
 					} else {
 						hasCookie = true
 					}

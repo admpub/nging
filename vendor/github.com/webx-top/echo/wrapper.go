@@ -1,3 +1,20 @@
+/*
+
+   Copyright 2016 Wenhui Shen <www.webx.top>
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+*/
 package echo
 
 import "net/http"
@@ -85,7 +102,7 @@ func WrapMiddleware(m interface{}) Middleware {
 	panic(`unknown middleware`)
 }
 
-// WrapMiddlewareFromHandler wrap `echo.HandlerFunc` into `echo.MiddlewareFunc`.
+// WrapMiddlewareFromHandler wrap `echo.HandlerFunc` into `echo.Middleware`.
 func WrapMiddlewareFromHandler(h HandlerFunc) Middleware {
 	return MiddlewareFunc(func(next Handler) Handler {
 		return HandlerFunc(func(c Context) error {
@@ -97,6 +114,7 @@ func WrapMiddlewareFromHandler(h HandlerFunc) Middleware {
 	})
 }
 
+// WrapMiddlewareFromStdHandler wrap `http.HandlerFunc` into `echo.Middleware`.
 func WrapMiddlewareFromStdHandler(h http.Handler) Middleware {
 	return MiddlewareFunc(func(next Handler) Handler {
 		return HandlerFunc(func(c Context) error {
@@ -109,6 +127,7 @@ func WrapMiddlewareFromStdHandler(h http.Handler) Middleware {
 	})
 }
 
+// WrapMiddlewareFromStdHandleFunc wrap `func(http.ResponseWriter, *http.Request)` into `echo.Middleware`.
 func WrapMiddlewareFromStdHandleFunc(h func(http.ResponseWriter, *http.Request)) Middleware {
 	return MiddlewareFunc(func(next Handler) Handler {
 		return HandlerFunc(func(c Context) error {
@@ -121,11 +140,15 @@ func WrapMiddlewareFromStdHandleFunc(h func(http.ResponseWriter, *http.Request))
 	})
 }
 
+// WrapMiddlewareFromStdHandleFuncd wrap `func(http.ResponseWriter, *http.Request)` into `echo.Middleware`.
 func WrapMiddlewareFromStdHandleFuncd(h func(http.ResponseWriter, *http.Request) error) Middleware {
 	return MiddlewareFunc(func(next Handler) Handler {
 		return HandlerFunc(func(c Context) error {
 			if err := h(c.Response().StdResponseWriter(), c.Request().StdRequest()); err != nil {
 				return err
+			}
+			if c.Response().Committed() {
+				return nil
 			}
 			return next.Handle(c)
 		})

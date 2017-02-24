@@ -44,7 +44,7 @@ func (g *Group) Pre(middleware ...interface{}) {
 }
 
 func (g *Group) PreUse(middleware ...interface{}) {
-	middlewares := make([]interface{}, 0)
+	var middlewares []interface{}
 	for _, m := range middleware {
 		g.echo.ValidMiddleware(m)
 		middlewares = append(middlewares, m)

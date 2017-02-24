@@ -23,6 +23,7 @@ import (
 	"strconv"
 
 	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
 )
 
 func (m *mySQL) dropUser(user string, host string) *Result {
@@ -119,7 +120,7 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 	objects := m.FormValues(`objects[]`)
 	newGrants := map[string]*Grant{}
 
-	mapx := NewMapx(m.Forms())
+	mapx := echo.NewMapx(m.Forms())
 	mapx = mapx.Get(`grants`)
 	logger := m.Echo().Logger()
 	//objects: objects[0|1|...]=`*.*|db.*|db.table|db.table.col1,col2`
