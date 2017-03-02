@@ -183,6 +183,9 @@ func (s *Static) ImgTag(staticFile string, attrs ...string) template.HTML {
 }
 
 func (s *Static) Register(funcMap map[string]interface{}) map[string]interface{} {
+	if funcMap == nil {
+		funcMap = map[string]interface{}{}
+	}
 	funcMap["StaticURL"] = s.StaticURL
 	funcMap["JsURL"] = s.JsURL
 	funcMap["CssURL"] = s.CssURL

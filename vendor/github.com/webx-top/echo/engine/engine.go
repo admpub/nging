@@ -181,6 +181,8 @@ type (
 		QueryValues(string) []string
 		Query() url.Values
 		RawQuery() string
+		SetRawQuery(string)
+		String() string
 		Object() interface{}
 	}
 

@@ -157,6 +157,7 @@ type (
 
 		Header(string) string
 		IsAjax() bool
+		IsPjax() bool
 		Method() string
 		Format() string
 		IsPost() bool
@@ -180,6 +181,10 @@ type (
 		Proxy() []string
 		Referer() string
 		Port() int
+		RealIP() string
+
+		MapForm(i interface{}, names ...string) error
+		MapData(i interface{}, data map[string][]string, names ...string) error
 		SaveUploadedFile(string, string, ...string) (*multipart.FileHeader, error)
 		SaveUploadedFileToWriter(string, io.Writer) (*multipart.FileHeader, error)
 
@@ -740,6 +745,10 @@ func (c *xContext) IsAjax() bool {
 	return c.Header(`X-Requested-With`) == `XMLHttpRequest`
 }
 
+func (c *xContext) IsPjax() bool {
+	return len(c.Header(`X-PJAX`)) > 0
+}
+
 func (c *xContext) Method() string {
 	return c.Request().Method()
 }
@@ -909,6 +918,10 @@ func (c *xContext) Referer() string {
 	return c.Header(`Referer`)
 }
 
+func (c *xContext) RealIP() string {
+	return c.Request().RealIP()
+}
+
 // Port returns request client port.
 // when error or empty, return 80.
 func (c *xContext) Port() int {
@@ -947,6 +960,37 @@ func (c *xContext) NewData(args ...interface{}) *Data {
 		}
 	}
 	return &Data{}
+}
+
+// MapForm 映射表单数据到结构体
+// ParseStruct mapping forms' name and values to struct's field
+// For example:
+//		<form>
+//			<input name=`user.id`/>
+//			<input name=`user.name`/>
+//			<input name=`user.age`/>
+//		</form>
+//
+//		type User struct {
+//			Id int64
+//			Name string
+//			Age string
+//		}
+//
+//		var user User
+//		err := c.MapForm(&user,`user`)
+//
+func (c *xContext) MapForm(i interface{}, names ...string) error {
+	return c.MapData(i, c.Request().Form().All(), names...)
+}
+
+// MapData 映射数据到结构体
+func (c *xContext) MapData(i interface{}, data map[string][]string, names ...string) error {
+	var name string
+	if len(names) > 0 {
+		name = names[0]
+	}
+	return NamedStructMap(c.echo, i, data, name)
 }
 
 func (c *xContext) SaveUploadedFile(fieldName string, saveAbsPath string, saveFileName ...string) (*multipart.FileHeader, error) {

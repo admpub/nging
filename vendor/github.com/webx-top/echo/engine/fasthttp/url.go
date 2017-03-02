@@ -54,6 +54,14 @@ func (u *URL) RawQuery() string {
 	return engine.Bytes2str(u.url.QueryString())
 }
 
+func (u *URL) SetRawQuery(rawQuery string) {
+	u.url.SetQueryString(rawQuery)
+}
+
+func (u *URL) String() string {
+	return u.url.String()
+}
+
 func (u *URL) Object() interface{} {
 	return u.url
 }

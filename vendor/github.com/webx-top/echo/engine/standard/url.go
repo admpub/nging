@@ -54,6 +54,14 @@ func (u *URL) RawQuery() string {
 	return u.url.RawQuery
 }
 
+func (u *URL) SetRawQuery(rawQuery string) {
+	u.url.RawQuery = rawQuery
+}
+
+func (u *URL) String() string {
+	return u.url.String()
+}
+
 func (u *URL) Object() interface{} {
 	return u.url
 }

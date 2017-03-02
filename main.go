@@ -33,7 +33,6 @@ import (
 	"github.com/webx-top/echo/middleware/language"
 	"github.com/webx-top/echo/middleware/render"
 	"github.com/webx-top/echo/middleware/session"
-	"github.com/webx-top/echo/middleware/tplfunc"
 
 	"github.com/admpub/letsencrypt"
 	"github.com/admpub/log"
@@ -69,7 +68,6 @@ func main() {
 
 	e := echo.New()
 	e.SetDebug(true)
-	e.SetHTTPErrorHandler(render.HTTPErrorHandler(config.DefaultConfig.Sys.ErrorPages))
 	e.Use(middleware.Log(), middleware.Recover())
 	e.Use(func(h echo.Handler) echo.HandlerFunc {
 		return func(c echo.Context) error {
@@ -99,14 +97,20 @@ func main() {
 	// 启用session
 	e.Use(session.Middleware(config.SessionOptions))
 
-	// 为模板注册常用函数
-	e.Use(middleware.FuncMap(tplfunc.TplFuncMap, func(c echo.Context) bool {
-		return c.Format() != `html`
-	}))
+	renderOptions := &render.Config{
+		TmplDir: `./template`,
+		Engine:  `standard`,
+		ParseStrings: map[string]string{
+			`__PUBLIC__`: `/public`,
+			`__ASSETS__`: `/public/assets`,
+			`__TMPL__`:   `./template`,
+		},
+		Reload:     true,
+		ErrorPages: config.DefaultConfig.Sys.ErrorPages,
+	}
+	renderOptions.ApplyTo(e)
 
 	// 注册模板引擎
-	d := render.New(`standard`, `./template`)
-	d.Init(true)
 	if binData {
 		manager := bindata.NewTmplManager(&assetfs.AssetFS{
 			Asset:     Asset,
@@ -114,25 +118,16 @@ func main() {
 			AssetInfo: AssetInfo,
 			Prefix:    "template",
 		})
-		d.SetManager(manager)
+		renderOptions.Renderer().SetManager(manager)
 		modal.ReadConfigFile = func(file string) ([]byte, error) {
 			file = strings.TrimPrefix(file, `./template`)
 			return manager.GetTemplate(file)
 		}
 	}
-	d.SetContentProcessor(func(b []byte) []byte {
-		s := string(b)
-		s = strings.Replace(s, `__PUBLIC__`, `/public`, -1)
-		s = strings.Replace(s, `__ASSETS__`, `/public/assets`, -1)
-		s = strings.Replace(s, `__TMPL__`, `./template`, -1)
-		return []byte(s)
-	})
 	events.AddEvent(`clearCache`, func(next func(r bool), args ...interface{}) {
-		d.ClearCache()
+		renderOptions.Renderer().ClearCache()
 		next(true)
 	})
-
-	e.Use(render.Middleware(d))
 
 	application.Initialize(e)
 

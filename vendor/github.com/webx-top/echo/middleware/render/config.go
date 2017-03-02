@@ -1,13 +1,26 @@
 package render
 
-import "strings"
+import (
+	"path/filepath"
+	"strings"
+
+	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/handler/mvc/static/resource"
+	"github.com/webx-top/echo/middleware"
+	"github.com/webx-top/echo/middleware/render/driver"
+	"github.com/webx-top/echo/middleware/tplfunc"
+)
 
 type Config struct {
-	Theme        string
-	Engine       string
-	Style        string
-	Reload       bool
-	ParseStrings map[string]string
+	TmplDir       string
+	Theme         string
+	Engine        string
+	Style         string
+	Reload        bool
+	ParseStrings  map[string]string
+	ErrorPages    map[int]string
+	StaticOptions *middleware.StaticOptions
+	renderer      driver.Driver
 }
 
 func (t *Config) Parser() func([]byte) []byte {
@@ -21,4 +34,60 @@ func (t *Config) Parser() func([]byte) []byte {
 		}
 		return []byte(s)
 	}
+}
+
+// NewRenderer 新建渲染接口
+func (t *Config) NewRenderer(manager ...driver.Manager) driver.Driver {
+	tmplDir := t.TmplDir
+	if len(t.Theme) > 0 {
+		tmplDir = filepath.Join(tmplDir, t.Theme)
+	}
+	renderer := New(t.Engine, tmplDir)
+	renderer.Init(true, t.Reload)
+	if len(manager) > 0 {
+		renderer.SetManager(manager[0])
+	}
+	renderer.SetContentProcessor(t.Parser())
+	if t.StaticOptions != nil {
+		st := t.NewStatic()
+		renderer.SetFuncMap(func() map[string]interface{} {
+			return st.Register(nil)
+		})
+		renderer.MonitorEvent(st.OnUpdate(tmplDir))
+	}
+	return renderer
+}
+
+func (t *Config) ApplyTo(e *echo.Echo, manager ...driver.Manager) *Config {
+	if t.renderer != nil {
+		t.renderer.Close()
+	}
+	e.SetHTTPErrorHandler(HTTPErrorHandler(t.ErrorPages))
+	e.Use(middleware.FuncMap(tplfunc.New(), func(c echo.Context) bool {
+		return c.Format() != `html`
+	}))
+	renderer := t.NewRenderer(manager...)
+	if t.StaticOptions != nil {
+		e.Use(middleware.Static(t.StaticOptions))
+	}
+	e.Use(Middleware(renderer))
+	e.SetRenderer(renderer)
+	t.renderer = renderer
+	return t
+}
+
+func (t *Config) Renderer() driver.Driver {
+	return t.renderer
+}
+
+func (t *Config) NewStatic() *resource.Static {
+	return resource.NewStatic(t.StaticOptions.Path, t.StaticOptions.Root)
+}
+
+// ThemeDir 主题所在文件夹的路径
+func (t *Config) ThemeDir(args ...string) string {
+	if len(args) < 1 {
+		return filepath.Join(t.TmplDir, t.Theme)
+	}
+	return filepath.Join(t.TmplDir, args[0])
 }
