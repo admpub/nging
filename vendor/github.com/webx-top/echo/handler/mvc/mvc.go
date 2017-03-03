@@ -427,7 +427,7 @@ func (s *MVC) LoadConfig(file string, config interface{}) error {
 // RootDir 网站根目录
 func (s *MVC) RootDir() string {
 	if len(s.rootDir) == 0 {
-		ppath := os.Getenv(`MVC_` + strings.ToUpper(s.Name))
+		ppath := os.Getenv(strings.ToUpper(s.Name) + `PATH`)
 		if len(ppath) == 0 {
 			ppath, _ = filepath.Abs(os.Args[0])
 			ppath = filepath.Dir(ppath)

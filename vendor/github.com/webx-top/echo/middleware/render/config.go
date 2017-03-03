@@ -53,7 +53,17 @@ func (t *Config) NewRenderer(manager ...driver.Manager) driver.Driver {
 		renderer.SetFuncMap(func() map[string]interface{} {
 			return st.Register(nil)
 		})
-		renderer.MonitorEvent(st.OnUpdate(tmplDir))
+		absTmplPath, err := filepath.Abs(tmplDir)
+		var absFilePath string
+		if err == nil {
+			absFilePath, err = filepath.Abs(t.StaticOptions.Root)
+		}
+		if err == nil {
+			if strings.HasPrefix(absFilePath, absTmplPath) {
+				//如果静态文件在模板的子文件夹时，监控模板时判断静态文件更改
+				renderer.MonitorEvent(st.OnUpdate(tmplDir))
+			}
+		}
 	}
 	return renderer
 }
@@ -70,7 +80,6 @@ func (t *Config) ApplyTo(e *echo.Echo, manager ...driver.Manager) *Config {
 	if t.StaticOptions != nil {
 		e.Use(middleware.Static(t.StaticOptions))
 	}
-	e.Use(Middleware(renderer))
 	e.SetRenderer(renderer)
 	t.renderer = renderer
 	return t
