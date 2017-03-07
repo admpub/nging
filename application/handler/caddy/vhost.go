@@ -15,7 +15,7 @@
    limitations under the License.
 
 */
-package handler
+package caddy
 
 import (
 	"encoding/json"
@@ -28,6 +28,7 @@ import (
 
 	"strings"
 
+	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/filemanager"
 	"github.com/admpub/nging/application/library/modal"
@@ -38,17 +39,17 @@ import (
 	"github.com/webx-top/echo/handler/mvc/events"
 )
 
-func ManageIndex(ctx echo.Context) error {
+func VhostIndex(ctx echo.Context) error {
 	m := model.NewVhost(ctx)
-	page, size := Paging(ctx)
+	page, size := handler.Paging(ctx)
 	cnt, err := m.List(nil, nil, page, size)
-	ret := Err(ctx, err)
+	ret := handler.Err(ctx, err)
 	ctx.SetFunc(`totalRows`, cnt)
 	ctx.Set(`listData`, m.Objects())
 	return ctx.Render(`manage/index`, ret)
 }
 
-func ManageVhostAdd(ctx echo.Context) error {
+func VhostAdd(ctx echo.Context) error {
 	var err error
 	if ctx.IsPost() {
 		m := model.NewVhost(ctx)
@@ -69,7 +70,7 @@ func ManageVhostAdd(ctx echo.Context) error {
 			err = saveVhostData(ctx, m)
 		}
 		if err == nil {
-			ok(ctx, ctx.T(`操作成功`))
+			handler.SendOk(ctx, ctx.T(`操作成功`))
 			return ctx.Redirect(`/manage`)
 		}
 
@@ -111,16 +112,16 @@ func saveVhostData(ctx echo.Context, m *model.Vhost) (err error) {
 	return
 }
 
-func ManageVhostDelete(ctx echo.Context) error {
+func VhostDelete(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
 	if id < 1 {
-		fail(ctx, ctx.T(`id无效`))
+		handler.SendFail(ctx, ctx.T(`id无效`))
 		return ctx.Redirect(`/manage`)
 	}
 	m := model.NewVhost(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err != nil {
-		fail(ctx, err.Error())
+		handler.SendFail(ctx, err.Error())
 	} else {
 		var saveFile string
 		saveFile, err = filepath.Abs(config.DefaultConfig.Sys.VhostsfileDir)
@@ -131,17 +132,17 @@ func ManageVhostDelete(ctx echo.Context) error {
 				err = nil
 			}
 			if err == nil {
-				ok(ctx, ctx.T(`操作成功`))
+				handler.SendOk(ctx, ctx.T(`操作成功`))
 			}
 		}
 	}
 	return ctx.Redirect(`/manage`)
 }
 
-func ManageVhostEdit(ctx echo.Context) error {
+func VhostEdit(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
 	if id < 1 {
-		fail(ctx, ctx.T(`id无效`))
+		handler.SendFail(ctx, ctx.T(`id无效`))
 		return ctx.Redirect(`/manage`)
 	}
 
@@ -149,7 +150,7 @@ func ManageVhostEdit(ctx echo.Context) error {
 	m := model.NewVhost(ctx)
 	err = m.Get(nil, db.Cond{`id`: id})
 	if err != nil {
-		fail(ctx, err.Error())
+		handler.SendFail(ctx, err.Error())
 		return ctx.Redirect(`/manage`)
 	}
 	if ctx.IsPost() {
@@ -170,7 +171,7 @@ func ManageVhostEdit(ctx echo.Context) error {
 			err = saveVhostData(ctx, m)
 		}
 		if err == nil {
-			ok(ctx, ctx.T(`操作成功`))
+			handler.SendOk(ctx, ctx.T(`操作成功`))
 			return ctx.Redirect(`/manage`)
 		}
 	} else {
@@ -190,7 +191,7 @@ func ManageVhostEdit(ctx echo.Context) error {
 	return ctx.Render(`manage/vhost_edit`, err)
 }
 
-func ManageClearCache(ctx echo.Context) error {
+func ClearCache(ctx echo.Context) error {
 	if err := modal.Clear(); err != nil {
 		return err
 	}
@@ -199,7 +200,7 @@ func ManageClearCache(ctx echo.Context) error {
 	return ctx.String(ctx.T(`已经清理完毕`))
 }
 
-func ManageVhostFile(ctx echo.Context) error {
+func VhostFile(ctx echo.Context) error {
 	var err error
 	vhostId := ctx.Formx(`id`).Uint()
 	filePath := ctx.Form(`path`)
@@ -246,7 +247,7 @@ func ManageVhostFile(ctx echo.Context) error {
 		case `delete`:
 			err = mgr.Remove(absPath)
 			if err != nil {
-				fail(ctx, err.Error())
+				handler.SendFail(ctx, err.Error())
 			}
 			return ctx.Redirect(ctx.Referer())
 		case `upload`:

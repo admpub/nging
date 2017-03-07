@@ -15,7 +15,7 @@
    limitations under the License.
 
 */
-package handler
+package caddy
 
 import (
 	"net/http"

@@ -15,7 +15,7 @@
    limitations under the License.
 
 */
-package handler
+package database
 
 import (
 	"github.com/admpub/nging/application/library/dbmanager"

@@ -15,23 +15,24 @@
    limitations under the License.
 
 */
-package handler
+package ftp
 
 import (
 	"errors"
 
 	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
 
-func FTPAccountIndex(ctx echo.Context) error {
+func AccountIndex(ctx echo.Context) error {
 	m := model.NewFtpUser(ctx)
-	page, size := Paging(ctx)
+	page, size := handler.Paging(ctx)
 	cnt, err := m.List(nil, nil, page, size)
-	ret := Err(ctx, err)
+	ret := handler.Err(ctx, err)
 	ctx.SetFunc(`totalRows`, cnt)
 	users := m.Objects()
 	gIds := []uint{}
@@ -76,7 +77,7 @@ func FTPAccountIndex(ctx echo.Context) error {
 	return ctx.Render(`ftp/account`, ret)
 }
 
-func FTPAccountAdd(ctx echo.Context) error {
+func AccountAdd(ctx echo.Context) error {
 	var err error
 	if ctx.IsPost() {
 		m := model.NewFtpUser(ctx)
@@ -99,7 +100,7 @@ func FTPAccountAdd(ctx echo.Context) error {
 			m.Password = com.MakePassword(m.Password, model.DefaultSalt)
 			_, err = m.Add()
 			if err == nil {
-				ok(ctx, ctx.T(`操作成功`))
+				handler.SendOk(ctx, ctx.T(`操作成功`))
 				return ctx.Redirect(`/ftp/account`)
 			}
 		}
@@ -113,7 +114,7 @@ func FTPAccountAdd(ctx echo.Context) error {
 	return ctx.Render(`ftp/account_edit`, err)
 }
 
-func FTPAccountEdit(ctx echo.Context) error {
+func AccountEdit(ctx echo.Context) error {
 	var err error
 	id := ctx.Formx(`id`).Uint()
 	m := model.NewFtpUser(ctx)
@@ -145,7 +146,7 @@ func FTPAccountEdit(ctx echo.Context) error {
 			m.Id = id
 			err = m.Edit(nil, db.Cond{`id`: id})
 			if err == nil {
-				ok(ctx, ctx.T(`操作成功`))
+				handler.SendOk(ctx, ctx.T(`操作成功`))
 				return ctx.Redirect(`/ftp/account`)
 			}
 		}
@@ -168,20 +169,20 @@ func FTPAccountEdit(ctx echo.Context) error {
 	return ctx.Render(`ftp/account_edit`, err)
 }
 
-func FTPAccountDelete(ctx echo.Context) error {
+func AccountDelete(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
 	m := model.NewFtpUser(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
-		ok(ctx, ctx.T(`操作成功`))
+		handler.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
-		fail(ctx, err.Error())
+		handler.SendFail(ctx, err.Error())
 	}
 
 	return ctx.Redirect(`/ftp/account`)
 }
 
-func FTPGroupIndex(ctx echo.Context) error {
+func GroupIndex(ctx echo.Context) error {
 	m := model.NewFtpUserGroup(ctx)
 	page, size := Paging(ctx)
 	cnt, err := m.List(nil, nil, page, size)
@@ -191,7 +192,7 @@ func FTPGroupIndex(ctx echo.Context) error {
 	return ctx.Render(`ftp/group`, ret)
 }
 
-func FTPGroupAdd(ctx echo.Context) error {
+func GroupAdd(ctx echo.Context) error {
 	var err error
 	if ctx.IsPost() {
 		m := model.NewFtpUserGroup(ctx)
@@ -208,7 +209,7 @@ func FTPGroupAdd(ctx echo.Context) error {
 		if err == nil {
 			_, err = m.Add()
 			if err == nil {
-				ok(ctx, ctx.T(`操作成功`))
+				handler.SendOk(ctx, ctx.T(`操作成功`))
 				return ctx.Redirect(`/ftp/group`)
 			}
 		}
@@ -217,7 +218,7 @@ func FTPGroupAdd(ctx echo.Context) error {
 	return ctx.Render(`ftp/group_edit`, err)
 }
 
-func FTPGroupEdit(ctx echo.Context) error {
+func GroupEdit(ctx echo.Context) error {
 	var err error
 	id := ctx.Formx(`id`).Uint()
 	m := model.NewFtpUserGroup(ctx)
@@ -244,7 +245,7 @@ func FTPGroupEdit(ctx echo.Context) error {
 			m.Id = id
 			err = m.Edit(nil, db.Cond{`id`: id})
 			if err == nil {
-				ok(ctx, ctx.T(`操作成功`))
+				handler.SendOk(ctx, ctx.T(`操作成功`))
 				return ctx.Redirect(`/ftp/group`)
 			}
 		}
@@ -256,14 +257,14 @@ func FTPGroupEdit(ctx echo.Context) error {
 	return ctx.Render(`ftp/group_edit`, err)
 }
 
-func FTPGroupDelete(ctx echo.Context) error {
+func GroupDelete(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
 	m := model.NewFtpUserGroup(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
-		ok(ctx, ctx.T(`操作成功`))
+		handler.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
-		fail(ctx, err.Error())
+		handler.SendFail(ctx, err.Error())
 	}
 
 	return ctx.Redirect(`/ftp/group`)

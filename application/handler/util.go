@@ -35,10 +35,10 @@ func Err(ctx echo.Context, err error) (ret interface{}) {
 	return common.Err(ctx, err)
 }
 
-func ok(ctx echo.Context, msg string) {
+func SendOk(ctx echo.Context, msg string) {
 	ctx.Session().AddFlash(Ok(msg))
 }
 
-func fail(ctx echo.Context, msg string) {
+func SendFail(ctx echo.Context, msg string) {
 	ctx.Session().AddFlash(msg)
 }
