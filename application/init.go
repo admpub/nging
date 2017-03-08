@@ -64,6 +64,9 @@ func Initialize(e *echo.Echo) {
 func addRouter(e *echo.Echo) {
 	opt := captcha.Options{EnableImage: true}
 	opt.Wrapper(e)
+	e.Get(`/icon`, func(c echo.Context) error {
+		return c.Render(`icon`, nil)
+	}, middleware.AuthCheck)
 	for _, register := range Handlers {
 		register(e)
 	}
