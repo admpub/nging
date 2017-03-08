@@ -28,6 +28,20 @@ import (
 	"github.com/webx-top/echo"
 )
 
+func init() {
+	handler.RegisterToGroup(`/ftp`, func(g *echo.Group) {
+		g.Route(`GET`, `/account`, AccountIndex)
+		g.Route(`GET,POST`, `/account_add`, AccountAdd)
+		g.Route(`GET,POST`, `/account_edit`, AccountEdit)
+		g.Route(`GET,POST`, `/account_delete`, AccountDelete)
+
+		g.Route(`GET`, `/group`, GroupIndex)
+		g.Route(`GET,POST`, `/group_add`, GroupAdd)
+		g.Route(`GET,POST`, `/group_edit`, GroupEdit)
+		g.Route(`GET,POST`, `/group_delete`, GroupDelete)
+	})
+}
+
 func AccountIndex(ctx echo.Context) error {
 	m := model.NewFtpUser(ctx)
 	page, size := handler.Paging(ctx)
@@ -184,9 +198,9 @@ func AccountDelete(ctx echo.Context) error {
 
 func GroupIndex(ctx echo.Context) error {
 	m := model.NewFtpUserGroup(ctx)
-	page, size := Paging(ctx)
+	page, size := handler.Paging(ctx)
 	cnt, err := m.List(nil, nil, page, size)
-	ret := Err(ctx, err)
+	ret := handler.Err(ctx, err)
 	ctx.SetFunc(`totalRows`, cnt)
 	ctx.Set(`listData`, m.Objects())
 	return ctx.Render(`ftp/group`, ret)

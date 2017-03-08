@@ -80,7 +80,7 @@ function connectSockJS(onopen){
 		if(onopen!=null)onopen();
 		return false;
 	}
-	ws = new SockJS('/manage/execmd_send');
+	ws = new SockJS('/manage/cmdSend');
 	ws.onopen    = function(){
 		showMsg('{{"连接服务器"|T}}');
 		if(onopen!=null)onopen();
@@ -102,7 +102,7 @@ function connectWS(onopen){
 	//console.dir(window.location.protocol)
 	var protocol='ws:';
 	if(window.location.protocol=='https:')protocol='wss:';
-	ws = new WebSocket(protocol+"//"+window.location.host+"/manage/execmd_send_ws");
+	ws = new WebSocket(protocol+"//"+window.location.host+"/manage/cmdSendWS");
 	ws.onopen = function(evt) {
 	    showMsg('{{"连接服务器"|T}}');
 		  if(onopen!=null)onopen();

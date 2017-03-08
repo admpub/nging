@@ -18,13 +18,21 @@
 package database
 
 import (
+	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/dbmanager"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	_ "github.com/admpub/nging/application/library/dbmanager/driver/mysql"
+	"github.com/admpub/nging/application/middleware"
 	"github.com/webx-top/echo"
 )
 
-func DbManager(ctx echo.Context) error {
+func init() {
+	handler.Register(func(e *echo.Echo) {
+		e.Route(`GET,POST`, `/db`, Manager, middleware.AuthCheck)
+	})
+}
+
+func Manager(ctx echo.Context) error {
 	var err error
 	auth := &driver.DbAuth{}
 	mgr := dbmanager.New(ctx, auth)
@@ -73,7 +81,7 @@ func DbManager(ctx echo.Context) error {
 				}
 				defer mgr.Run(auth.Driver, `logout`)
 			} else {
-				fail(ctx, err.Error())
+				handler.SendFail(ctx, err.Error())
 				err = nil
 				driverName = ``
 			}
@@ -109,7 +117,7 @@ func DbManager(ctx echo.Context) error {
 		}
 
 	}
-	ret := Err(ctx, err)
+	ret := handler.Err(ctx, err)
 	driverList := map[string]string{}
 	for driverName, driver := range driver.GetAll() {
 		driverList[driverName] = driver.Name()

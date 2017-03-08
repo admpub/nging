@@ -39,6 +39,17 @@ import (
 	"github.com/webx-top/echo/handler/mvc/events"
 )
 
+func init() {
+	handler.RegisterToGroup(`/manage`, func(g *echo.Group) {
+		g.Route(`GET`, ``, VhostIndex)
+		g.Route(`GET,POST`, `/vhost_add`, VhostAdd)
+		g.Route(`GET,POST`, `/vhost_edit`, VhostEdit)
+		g.Route(`GET,POST`, `/vhost_delete`, VhostDelete)
+		g.Route(`GET,POST`, `/vhost_file`, VhostFile)
+		g.Route(`GET`, `/clear_cache`, ClearCache)
+	})
+}
+
 func VhostIndex(ctx echo.Context) error {
 	m := model.NewVhost(ctx)
 	page, size := handler.Paging(ctx)

@@ -19,6 +19,7 @@ package server
 
 import (
 	"github.com/admpub/log"
+	"github.com/admpub/nging/application/handler"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/host"
@@ -27,7 +28,14 @@ import (
 	"github.com/shirou/gopsutil/net"
 	"github.com/shirou/gopsutil/process"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/middleware/render"
 )
+
+func init() {
+	handler.RegisterToGroup(`/manage`, func(g *echo.Group) {
+		g.Route("GET", `/sysinfo`, Info, render.AutoOutput(nil))
+	})
+}
 
 var data *echo.Data
 

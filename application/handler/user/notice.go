@@ -15,17 +15,29 @@
    limitations under the License.
 
 */
-package handler
+package user
 
 import (
 	"errors"
 
+	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/notice"
 	"github.com/admpub/websocket"
 	"github.com/webx-top/echo"
+	ws "github.com/webx-top/echo/handler/websocket"
 )
 
-func ManageNotice(c *websocket.Conn, ctx echo.Context) error {
+func init() {
+	handler.RegisterToGroup(`/manage`, func(g *echo.Group) {
+		wsOpts := ws.Options{
+			Handle: Notice,
+			Prefix: "/notice",
+		}
+		wsOpts.Wrapper(g)
+	})
+}
+
+func Notice(c *websocket.Conn, ctx echo.Context) error {
 	user, ok := ctx.Get(`user`).(string)
 	if !ok {
 		return errors.New(ctx.T(`登录信息获取失败，请重新登录`))
@@ -36,9 +48,9 @@ func ManageNotice(c *websocket.Conn, ctx echo.Context) error {
 	go func() {
 		for {
 			message := notice.RecvJSON(user)
-			WebSocketLogger.Debug(`Push message: `, string(message))
+			handler.WebSocketLogger.Debug(`Push message: `, string(message))
 			if err := c.WriteMessage(websocket.TextMessage, message); err != nil {
-				WebSocketLogger.Error(`Push error: `, err.Error())
+				handler.WebSocketLogger.Error(`Push error: `, err.Error())
 				return
 			}
 		}
@@ -59,7 +71,7 @@ func ManageNotice(c *websocket.Conn, ctx echo.Context) error {
 	}
 	err := execute(c)
 	if err != nil {
-		WebSocketLogger.Error(err)
+		handler.WebSocketLogger.Error(err)
 	}
 	return nil
 }

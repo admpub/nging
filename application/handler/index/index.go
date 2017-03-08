@@ -15,18 +15,28 @@
    limitations under the License.
 
 */
-package handler
+package index
 
 import (
 	"errors"
 
 	"strings"
 
+	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/middleware"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
 )
+
+func init() {
+	handler.Register(func(e *echo.Echo) {
+		e.Route("GET", `/`, Index)
+		e.Route("GET,POST", `/login`, Login)
+		e.Route("GET", `/logout`, Logout)
+		e.Route("GET", `/donation`, Donation)
+	})
+}
 
 func Index(ctx echo.Context) error {
 	return ctx.Redirect(`/manage`)
@@ -61,7 +71,7 @@ func Login(ctx echo.Context) error {
 		return ctx.Redirect(`/setup`)
 	}
 
-	return ctx.Render(`login`, Err(ctx, err))
+	return ctx.Render(`login`, handler.Err(ctx, err))
 }
 
 func Logout(ctx echo.Context) error {

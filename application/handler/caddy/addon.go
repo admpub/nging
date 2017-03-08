@@ -21,8 +21,15 @@ import (
 	"net/http"
 	"regexp"
 
+	"github.com/admpub/nging/application/handler"
 	"github.com/webx-top/echo"
 )
+
+func init() {
+	handler.Register(func(e *echo.Echo) {
+		e.Route(`GET`, `/addon_form`, AddonForm)
+	})
+}
 
 var validAddonName = regexp.MustCompile(`^[a-z0-9]+$`)
 

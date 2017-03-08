@@ -15,7 +15,7 @@
    limitations under the License.
 
 */
-package handler
+package setup
 
 import (
 	"os"
@@ -26,11 +26,18 @@ import (
 
 	"io/ioutil"
 
+	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
 )
+
+func init() {
+	handler.Register(func(e *echo.Echo) {
+		e.Route("GET,POST", `/setup`, Setup)
+	})
+}
 
 func Setup(ctx echo.Context) error {
 	var err error
@@ -81,11 +88,11 @@ func Setup(ctx echo.Context) error {
 			err = ioutil.WriteFile(lockFile, []byte(time.Now().Format(`2006-01-02 15:04:05`)), os.ModePerm)
 		}
 		if err == nil {
-			ok(ctx, ctx.T(`安装成功`))
+			handler.SendOk(ctx, ctx.T(`安装成功`))
 			return ctx.Redirect(`/`)
 		}
 	}
-	return ctx.Render(`setup`, Err(ctx, err))
+	return ctx.Render(`setup`, handler.Err(ctx, err))
 }
 
 func createDatabase(err error) error {

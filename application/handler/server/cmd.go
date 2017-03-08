@@ -20,7 +20,6 @@ package server
 import (
 	"io"
 	"os"
-	"runtime"
 
 	"os/exec"
 
@@ -29,27 +28,37 @@ import (
 	"time"
 
 	"github.com/admpub/log"
+	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/charset"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/sockjs-go/sockjs"
 	"github.com/admpub/websocket"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
-)
-
-var (
-	WebSocketLogger = log.GetLogger(`websocket`)
-	IsWindows       bool
+	sockjsHandler "github.com/webx-top/echo/handler/sockjs"
+	ws "github.com/webx-top/echo/handler/websocket"
 )
 
 func init() {
-	WebSocketLogger.SetLevel(`Info`)
-	IsWindows = runtime.GOOS == `windows`
+	handler.RegisterToGroup(`/manage`, func(g *echo.Group) {
+		g.Route("GET", `/cmd`, Cmd)
+		sockjsOpts := sockjsHandler.Options{
+			Handle: CmdSendBySockJS,
+			Prefix: "/cmdSend",
+		}
+		sockjsOpts.Wrapper(g)
+		_ = sockjsOpts
+		wsOpts := ws.Options{
+			Handle: CmdSendByWebsocket,
+			Prefix: "/cmdSendWS",
+		}
+		wsOpts.Wrapper(g)
+	})
 }
 
 func Cmd(ctx echo.Context) error {
 	var err error
-	return ctx.Render(`manage/execmd`, err)
+	return ctx.Render(`manage/cmd`, err)
 }
 
 func CmdSendBySockJS(c sockjs.Session) error {
@@ -58,9 +67,9 @@ func CmdSendBySockJS(c sockjs.Session) error {
 	go func() {
 		for {
 			message := <-send
-			WebSocketLogger.Debug(`Push message: `, message)
+			handler.WebSocketLogger.Debug(`Push message: `, message)
 			if err := c.Send(message); err != nil {
-				WebSocketLogger.Error(`Push error: `, err.Error())
+				handler.WebSocketLogger.Error(`Push error: `, err.Error())
 				return
 			}
 		}
@@ -99,14 +108,14 @@ func CmdSendBySockJS(c sockjs.Session) error {
 	}
 	err := exec(c)
 	if err != nil {
-		WebSocketLogger.Error(err)
+		handler.WebSocketLogger.Error(err)
 	}
 	return nil
 }
 
 func cmdRunner(command string, send chan string, onEnd func(), timeout time.Duration) (w io.WriteCloser, cmd *exec.Cmd, err error) {
 	cmd = com.CreateCmdStr(command, func(b []byte) (e error) {
-		if IsWindows {
+		if handler.IsWindows {
 			b, e = charset.Convert(`gbk`, `utf-8`, b)
 			if e != nil {
 				return e
@@ -169,11 +178,11 @@ func cmdContinue(command string, w io.WriteCloser, cmd *exec.Cmd) (err error) {
 		err = cmd.Process.Signal(os.Interrupt)
 		if err != nil {
 			if !strings.HasPrefix(err.Error(), `not supported by `) {
-				WebSocketLogger.Error(err)
+				handler.WebSocketLogger.Error(err)
 			}
 			err = cmd.Process.Kill()
 			if err != nil {
-				WebSocketLogger.Error(err)
+				handler.WebSocketLogger.Error(err)
 			}
 		}
 	default:
@@ -188,9 +197,9 @@ func CmdSendByWebsocket(c *websocket.Conn, ctx echo.Context) error {
 	go func() {
 		for {
 			message := <-send
-			WebSocketLogger.Debug(`Push message: `, message)
+			handler.WebSocketLogger.Debug(`Push message: `, message)
 			if err := c.WriteMessage(websocket.TextMessage, []byte(message)); err != nil {
-				WebSocketLogger.Error(`Push error: `, err.Error())
+				handler.WebSocketLogger.Error(`Push error: `, err.Error())
 				return
 			}
 		}
@@ -231,7 +240,7 @@ func CmdSendByWebsocket(c *websocket.Conn, ctx echo.Context) error {
 	}
 	err := exec(c)
 	if err != nil {
-		WebSocketLogger.Error(err)
+		handler.WebSocketLogger.Error(err)
 	}
 	return nil
 }

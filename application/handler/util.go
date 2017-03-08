@@ -18,10 +18,50 @@
 package handler
 
 import (
+	"io"
+	"os"
+	"runtime"
+
+	"github.com/admpub/log"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/errors"
+	"github.com/admpub/nging/application/library/notice"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
+
+type handle struct {
+	Methods     []string
+	Function    interface{}
+	Middlewares []interface{}
+}
+
+var (
+	Handlers      = []func(*echo.Echo){}
+	GroupHandlers = map[string][]func(*echo.Group){}
+)
+
+func Register(fn func(*echo.Echo)) {
+	Handlers = append(Handlers, fn)
+}
+
+func RegisterToGroup(groupName string, fn func(*echo.Group)) {
+	_, ok := GroupHandlers[groupName]
+	if !ok {
+		GroupHandlers[groupName] = []func(*echo.Group){}
+	}
+	GroupHandlers[groupName] = append(GroupHandlers[groupName], fn)
+}
+
+var (
+	WebSocketLogger = log.GetLogger(`websocket`)
+	IsWindows       bool
+)
+
+func init() {
+	WebSocketLogger.SetLevel(`Info`)
+	IsWindows = runtime.GOOS == `windows`
+}
 
 func Paging(ctx echo.Context) (page int, size int) {
 	return common.Paging(ctx)
@@ -41,4 +81,25 @@ func SendOk(ctx echo.Context, msg string) {
 
 func SendFail(ctx echo.Context, msg string) {
 	ctx.Session().AddFlash(msg)
+}
+
+func NoticeWriter(ctx echo.Context, noticeType string) (wOut io.Writer, wErr io.Writer, err error) {
+	user, ok := ctx.Get(`user`).(string)
+	if !ok {
+		return nil, nil, ctx.Redirect(`/login`)
+	}
+	typ := `service:` + noticeType
+	notice.OpenMessage(user, typ)
+
+	wOut = &com.CmdResultCapturer{Do: func(b []byte) error {
+		os.Stdout.Write(b)
+		notice.Send(user, notice.NewMessageWithValue(typ, noticeType, string(b), notice.Succeed))
+		return nil
+	}}
+	wErr = &com.CmdResultCapturer{Do: func(b []byte) error {
+		os.Stderr.Write(b)
+		notice.Send(user, notice.NewMessageWithValue(typ, noticeType, string(b), notice.Failed))
+		return nil
+	}}
+	return
 }

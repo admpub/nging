@@ -25,17 +25,18 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/handler/captcha"
-	sockjsHandler "github.com/webx-top/echo/handler/sockjs"
-	ws "github.com/webx-top/echo/handler/websocket"
-	"github.com/webx-top/echo/middleware/render"
 
 	. "github.com/admpub/nging/application/handler"
+	_ "github.com/admpub/nging/application/handler/caddy"
+	_ "github.com/admpub/nging/application/handler/database"
+	_ "github.com/admpub/nging/application/handler/ftp"
+	_ "github.com/admpub/nging/application/handler/index"
+	_ "github.com/admpub/nging/application/handler/server"
+	_ "github.com/admpub/nging/application/handler/setup"
+	_ "github.com/admpub/nging/application/handler/user"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/middleware"
 )
-
-var DefaultRequestMethods = []string{echo.GET}
-var DefaultFormPageMethods = []string{echo.GET, echo.POST}
 
 func Initialize(e *echo.Echo) {
 	e.Use(middleware.FuncMap())
@@ -61,80 +62,15 @@ func Initialize(e *echo.Echo) {
 }
 
 func addRouter(e *echo.Echo) {
-
-	addHandler(e, `/`, Index)
-	addHandler(e, `/logout`, Logout)
-	addHandler(e, `/addon_form`, AddonForm)
-
-	addFormHandler(e, `/login`, Login)
-	addFormHandler(e, `/setup`, Setup)
-	addFormHandler(e, `/gauth_bind`, GAuthBind, middleware.AuthCheck)
-	addFormHandler(e, `/gauth_check`, GAuthCheck)
-	addHandler(e, `/qrcode`, QrCode)
-
-	g := e.Group(`/manage`, middleware.AuthCheck)
-	{
-		addHandler(g, ``, ManageIndex)
-		addFormHandler(g, `/vhost_add`, ManageVhostAdd)
-		addFormHandler(g, `/vhost_edit`, ManageVhostEdit)
-		addFormHandler(g, `/vhost_delete`, ManageVhostDelete)
-		addFormHandler(g, `/vhost_file`, ManageVhostFile)
-		addFormHandler(g, `/service`, ManageService)
-		addFormHandler(g, `/web_restart`, ManageWebRestart)
-		addFormHandler(g, `/web_stop`, ManageWebStop)
-		addFormHandler(g, `/ftp_restart`, ManageFTPRestart)
-		addFormHandler(g, `/web_log`, ManageWebLog)
-		addFormHandler(g, `/ftp_log`, ManageFTPLog)
-		addFormHandler(g, `/ftp_stop`, ManageFTPStop)
-		addFormHandler(g, `/clear_cache`, ManageClearCache)
-		addFormHandler(g, `/execmd`, ManageSysCmd)
-
-		sockjsOpts := sockjsHandler.Options{
-			Handle: ManageSockJSSendCmd,
-			Prefix: "/execmd_send",
-		}
-		sockjsOpts.Wrapper(g)
-		_ = sockjsOpts
-		wsOpts := ws.Options{
-			Handle: ManageWSSendCmd,
-			Prefix: "/execmd_send_ws",
-		}
-		wsOpts.Wrapper(g)
-
-		addHandler(g, `/sysinfo`, ManageSysInfo, render.AutoOutput(nil))
-
-		wsOpts = ws.Options{
-			Handle: ManageNotice,
-			Prefix: "/notice",
-		}
-		wsOpts.Wrapper(g)
-	}
-
-	g = e.Group(`/ftp`, middleware.AuthCheck)
-	{
-		addHandler(g, `/account`, FTPAccountIndex)
-		addFormHandler(g, `/account_add`, FTPAccountAdd)
-		addFormHandler(g, `/account_edit`, FTPAccountEdit)
-		addFormHandler(g, `/account_delete`, FTPAccountDelete)
-
-		addHandler(g, `/group`, FTPGroupIndex)
-		addFormHandler(g, `/group_add`, FTPGroupAdd)
-		addFormHandler(g, `/group_edit`, FTPGroupEdit)
-		addFormHandler(g, `/group_delete`, FTPGroupDelete)
-	}
-
-	addFormHandler(e, `/db`, DbManager, middleware.AuthCheck)
-
 	opt := captcha.Options{EnableImage: true}
 	opt.Wrapper(e)
-
-	addHandler(e, `/donation`, Donation)
-}
-
-func addFormHandler(rr echo.RouteRegister, urlPath string, handler interface{}, middlewares ...interface{}) {
-	rr.Match(DefaultFormPageMethods, urlPath, handler, middlewares...)
-}
-
-func addHandler(rr echo.RouteRegister, urlPath string, handler interface{}, middlewares ...interface{}) {
-	rr.Match(DefaultRequestMethods, urlPath, handler, middlewares...)
+	for _, register := range Handlers {
+		register(e)
+	}
+	for group, handlers := range GroupHandlers {
+		g := e.Group(group, middleware.AuthCheck)
+		for _, register := range handlers {
+			register(g)
+		}
+	}
 }

@@ -7,12 +7,19 @@ import (
 
 	QR "github.com/RaymondChou/goqr/pkg"
 	GAuth "github.com/admpub/dgoogauth"
+	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/nging/application/middleware"
 	"github.com/webx-top/echo"
 )
 
 func init() {
 	GAuth.Issuer = `nging`
+	handler.Register(func(e *echo.Echo) {
+		e.Route("GET,POST", `/gauth_bind`, GAuthBind, middleware.AuthCheck)
+		e.Route("GET,POST", `/gauth_check`, GAuthCheck)
+		e.Route("GET", `/qrcode`, QrCode)
+	})
 }
 
 func QrCode(ctx echo.Context) error {
@@ -68,7 +75,7 @@ func GAuthBind(ctx echo.Context) error {
 		ctx.Set(`qrCodeUrl`, qrCodeUrl)
 	}
 	ctx.Set(`binded`, binded)
-	return ctx.Render(`gauth/bind`, Err(ctx, err))
+	return ctx.Render(`gauth/bind`, handler.Err(ctx, err))
 }
 
 func GAuthCheck(ctx echo.Context) error {
@@ -89,7 +96,7 @@ func GAuthCheck(ctx echo.Context) error {
 			return ctx.Redirect(returnTo)
 		}
 	}
-	return ctx.Render(`gauth/check`, Err(ctx, err))
+	return ctx.Render(`gauth/check`, handler.Err(ctx, err))
 }
 
 func GAuthVerify(ctx echo.Context, test ...bool) error {
