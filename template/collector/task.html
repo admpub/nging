@@ -1,0 +1,60 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"采集任务"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"采集任务"|T}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+				<div class="col-md-12">
+					<div class="block-flat">
+						<div class="header">							
+							<h3>{{"采集任务"|T}}</h3>
+						</div>
+						<div class="content">
+							<div class="table-responsive">
+							<table class="table no-border hover">
+								<thead class="no-border">
+									<tr>
+										<th style="width:2%;"><strong>UID</strong></th>
+										<th><strong>{{"用户组名称"|T}}</strong></th>
+										<th style="width:15%;"><strong>{{"授权目录"|T}}</strong></th>
+										<th style="width:15%;"><strong>{{"创建时间"|T}}</strong></th>
+										<th style="width:15%;"><strong>{{"更新时间"|T}}</strong></th>
+										<th style="width:6%;"><strong>{{"状态"|T}}</strong></th>
+										<th style="width:6%;"><strong>{{"用户连接"|T}}</strong></th>
+										<th style="width:15%;" class="text-center"><strong>{{"操作"|T}}</strong></th>
+									</tr>
+								</thead>
+								<tbody class="no-border-y">
+                                    {{range $k,$v := Stored.listData}}
+									<tr>
+										<td>{{$v.Id}}</td>
+										<td>{{$v.Name}}</td>
+										<td>{{$v.Directory}}</td>
+										<td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}</td>
+										<td>{{if gt $v.Updated 0}}{{(Date $v.Updated).Format "2006-01-02 15:04:05"}}{{end}}</td>
+                                        {{if eq $v.Disabled "Y"}}
+										<td class="color-danger">{{"禁用"|T}}</td>
+                                        {{else}}
+                                        <td class="color-success">{{"启用"|T}}</td>
+                                        {{end}}
+										{{if eq $v.Banned "Y"}}
+										<td class="color-danger">{{"禁止连接"|T}}</td>
+                                        {{else}}
+                                        <td class="color-success">{{"允许连接"|T}}</td>
+                                        {{end}}
+										<td class="text-center">
+										<a class="label label-default" href="/ftp/group_edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a> 
+										<a class="label label-danger" href="/ftp/group_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
+										</td>
+									</tr>
+                                    {{end}}
+								</tbody>
+							</table>		
+							</div>
+						</div>
+					</div>				
+				</div>
+			</div>
+{{/Block}}

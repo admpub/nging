@@ -28,6 +28,7 @@ import (
 
 	. "github.com/admpub/nging/application/handler"
 	_ "github.com/admpub/nging/application/handler/caddy"
+	_ "github.com/admpub/nging/application/handler/collector"
 	_ "github.com/admpub/nging/application/handler/database"
 	_ "github.com/admpub/nging/application/handler/ftp"
 	_ "github.com/admpub/nging/application/handler/index"
