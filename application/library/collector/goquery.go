@@ -17,6 +17,11 @@ func NewGoQuery(ctx *Context) *GoQuery {
 	return &GoQuery{Context: ctx}
 }
 
+type Selection struct {
+	Function   string
+	Parameters []string
+}
+
 type GoQuery struct {
 	Context *Context
 }
@@ -53,7 +58,7 @@ func (g *GoQuery) ParsePage(index int, config *PageConfig) (err error) {
 			continue
 		}
 		var value string
-		value, err = g.parseSelections(doc.Selection, strings.Split(rule, "."))
+		value, err = g.parseSelections(doc.Selection, rule)
 		if err != nil {
 			return
 		}
@@ -106,70 +111,61 @@ func (g *GoQuery) ParsePage(index int, config *PageConfig) (err error) {
 	return
 }
 
-func (g *GoQuery) parseSelections(s *goquery.Selection, selections []string) (r string, err error) {
-	for _, selector := range selections {
-		var (
-			function  = selector
-			selection string
-			quote     string
-		)
-		if pos := strings.Index(selector, "("); pos > 0 {
-			function = selector[0:pos]
-			selection = selector[pos+1:]
-			selection = strings.TrimSuffix(selection, ")")
-			if len(selection) > 0 {
-				quote = selection[0:1]
-				selection = strings.Trim(selection, quote)
-			}
-		}
-		switch function {
+func (g *GoQuery) parseSelections(rootSelection *goquery.Selection, rule string) (r string, err error) {
+	s := rootSelection
+	for _, selector := range parseSelections(rule) {
+		switch selector.Function {
 		case "$":
-			s = g.Document.Selection
-			if len(selection) > 0 {
-				s = s.Find(selection)
+			s = rootSelection
+			if len(selector.Parameters) > 0 && len(selector.Parameters[0]) > 0 {
+				s = s.Find(selector.Parameters[0])
 			}
 		case "find":
-			s = s.Find(selection)
+			if len(selector.Parameters) > 0 && len(selector.Parameters[0]) > 0 {
+				s = s.Find(selector.Parameters[0])
+			}
 		case "children":
-			if len(selection) > 0 {
-				s = s.ChildrenFiltered(selection)
+			if len(selector.Parameters) > 0 && len(selector.Parameters[0]) > 0 {
+				s = s.ChildrenFiltered(selector.Parameters[0])
 			} else {
 				s = s.Children()
 			}
 		case "parent":
-			if len(selection) > 0 {
-				s = s.ParentFiltered(selection)
+			if len(selector.Parameters) > 0 && len(selector.Parameters[0]) > 0 {
+				s = s.ParentFiltered(selector.Parameters[0])
 			} else {
 				s = s.Parent()
 			}
 		case "parents":
-			if len(selection) > 0 {
-				s = s.ParentsFiltered(selection)
+			if len(selector.Parameters) > 0 && len(selector.Parameters[0]) > 0 {
+				s = s.ParentsFiltered(selector.Parameters[0])
 			} else {
 				s = s.Parents()
 			}
 		case "closest":
-			s = s.Closest(selection)
+			s = s.Closest(selector.Parameters[0])
 		case "siblings":
-			if len(selection) > 0 {
-				s = s.SiblingsFiltered(selection)
+			if len(selector.Parameters) > 0 && len(selector.Parameters[0]) > 0 {
+				s = s.SiblingsFiltered(selector.Parameters[0])
 			} else {
 				s = s.Siblings()
 			}
 		case "next":
-			if len(selection) > 0 {
-				s = s.NextFiltered(selection)
+			if len(selector.Parameters) > 0 && len(selector.Parameters[0]) > 0 {
+				s = s.NextFiltered(selector.Parameters[0])
 			} else {
 				s = s.Next()
 			}
 		case "prev":
-			if len(selection) > 0 {
-				s = s.PrevFiltered(selection)
+			if len(selector.Parameters) > 0 && len(selector.Parameters[0]) > 0 {
+				s = s.PrevFiltered(selector.Parameters[0])
 			} else {
 				s = s.Prev()
 			}
 		case "attr":
-			r, _ = s.Attr(selection)
+			if len(selector.Parameters) > 0 && len(selector.Parameters[0]) > 0 {
+				r, _ = s.Attr(selector.Parameters[0])
+			}
 		case "text":
 			r = s.Text()
 		case "html":
@@ -194,9 +190,9 @@ func (g *GoQuery) parseSelections(s *goquery.Selection, selections []string) (r 
 			}
 			n, _ := arithmetic.ToFloat(v)
 			prec := 2
-			if len(selection) > 0 {
+			if len(selector.Parameters) > 0 && len(selector.Parameters[0]) > 0 {
 				var i64 int64
-				i64, err = strconv.ParseInt(selection, 10, 32)
+				i64, err = strconv.ParseInt(selector.Parameters[0], 10, 32)
 				if err != nil {
 					return
 				}
@@ -206,37 +202,113 @@ func (g *GoQuery) parseSelections(s *goquery.Selection, selections []string) (r 
 		case "expand":
 			var (
 				rx *regexp.Regexp
-				ry *regexp.Regexp
 			)
-			ry, err = regexp.Compile(quote + `[\s]*,[\s]*` + quote)
-			if err != nil {
-				return
-			}
-			params := ry.Split(selection, 2)
-			if len(params) != 2 {
+			if len(selector.Parameters) != 2 {
 				err = ErrMissingParam
 				return
 			}
-			rx, err = regexp.Compile(params[0])
+			rx, err = regexp.Compile(selector.Parameters[0])
 			if err != nil {
 				return
 			}
 			src := r
 			dst := []byte{}
 			m := rx.FindStringSubmatchIndex(src)
-			s := rx.ExpandString(dst, params[1], src, m)
+			s := rx.ExpandString(dst, selector.Parameters[1], src, m)
 			r = string(s)
 		case "match":
-			var rx *regexp.Regexp
-			rx, err = regexp.Compile(selection)
-			if err != nil {
-				return
-			}
-			rs := rx.FindAllStringSubmatch(r, -1)
-			if len(rs) > 0 && len(rs[0]) > 1 {
-				r = rs[0][1]
+			if len(selector.Parameters) > 0 && len(selector.Parameters[0]) > 0 {
+				var rx *regexp.Regexp
+				rx, err = regexp.Compile(selector.Parameters[0])
+				if err != nil {
+					return
+				}
+				rs := rx.FindAllStringSubmatch(r, -1)
+				if len(rs) > 0 && len(rs[0]) > 1 {
+					r = rs[0][1]
+				}
 			}
 		}
 	}
 	return
+}
+
+func parseSelections(rule string) []*Selection {
+	selections := []*Selection{}
+	//$('#ID').find('.class').text
+	var (
+		function     string
+		parameters   []string
+		paramItem    []rune
+		paramStarted bool
+		quoteStarted bool
+		quote        rune
+		slashAdded   bool
+	)
+	for index, v := range rule {
+		if index == 0 && v == '$' {
+			function = "$"
+			continue
+		}
+		if !paramStarted {
+			if v == '(' {
+				paramStarted = true
+				continue
+			}
+			if v == '.' {
+				continue
+			}
+			function += string(v)
+			continue
+		}
+		if !quoteStarted {
+			if v == ')' {
+				if paramItem != nil {
+					parameters = append(parameters, string(paramItem))
+				}
+				selections = append(selections, &Selection{
+					Function:   function,
+					Parameters: parameters,
+				})
+				function = ``
+				paramItem = nil
+				paramStarted = false
+				parameters = []string{}
+				slashAdded = false
+				continue
+			}
+			if v == '\'' || v == '"' {
+				quote = v
+				quoteStarted = true
+			}
+			continue
+		}
+		if !slashAdded {
+			if v == '\\' {
+				slashAdded = true
+				continue
+			}
+			if quote == v {
+				if paramItem != nil {
+					parameters = append(parameters, string(paramItem))
+				}
+				paramItem = nil
+				quoteStarted = false
+				slashAdded = false
+				continue
+			}
+		}
+		paramItem = append(paramItem, v)
+		slashAdded = false
+	}
+	if len(function) > 0 {
+		if paramItem != nil {
+			parameters = append(parameters, string(paramItem))
+		}
+		selections = append(selections, &Selection{
+			Function:   function,
+			Parameters: parameters,
+		})
+	}
+	return selections
 }
