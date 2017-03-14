@@ -11,3 +11,7 @@ func New(engine string) Collector {
 
 type Collector interface {
 }
+
+type Browser interface {
+	Open(string) string
+}
