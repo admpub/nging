@@ -7,6 +7,8 @@ import (
 
 	"strings"
 
+	"fmt"
+
 	"github.com/PuerkitoBio/goquery"
 	"github.com/moxar/arithmetic"
 )
@@ -48,12 +50,13 @@ func (g *GoQuery) ParsePage(index int, config *PageConfig) (err error) {
 		//$('#ID').find('.class').text => title
 		//$('#ID').find('.class').text => @next@params->post->name
 		//$('#ID').find('.class').text => @next@url
-		info := strings.SplitN(rule, `=>`, 2)
-		if len(info) != 2 {
+		//$('#ID').find('.class').each('') => @next@url
+		pos := strings.LastIndex(rule, `=>`)
+		if pos <= 0 {
 			continue
 		}
-		rule = strings.TrimSpace(info[0])
-		name := strings.TrimSpace(info[1])
+		name := strings.TrimSpace(rule[pos+2:])
+		rule = strings.TrimSpace(rule[0:pos])
 		if len(name) < 1 {
 			continue
 		}
@@ -162,6 +165,25 @@ func (g *GoQuery) parseSelections(rootSelection *goquery.Selection, rule string)
 			} else {
 				s = s.Prev()
 			}
+		case "eq":
+			if len(selector.Parameters) > 0 && len(selector.Parameters[0]) > 0 {
+				i, e := strconv.Atoi(selector.Parameters[0])
+				if e == nil {
+					s = s.Eq(i)
+				}
+			}
+		case "each":
+			if len(selector.Parameters) > 0 && len(selector.Parameters[0]) > 0 {
+				s = s.EachWithBreak(func(index int, selection *goquery.Selection) bool {
+					v, e := g.parseSelections(selection, selector.Parameters[0])
+					if e != nil {
+						fmt.Println(e)
+						return false
+					}
+					fmt.Println(v)
+					return true
+				})
+			}
 		case "attr":
 			if len(selector.Parameters) > 0 && len(selector.Parameters[0]) > 0 {
 				r, _ = s.Attr(selector.Parameters[0])
@@ -265,13 +287,13 @@ func parseSelections(rule string) []*Selection {
 			if v == ')' {
 				if paramItem != nil {
 					parameters = append(parameters, string(paramItem))
+					paramItem = nil
 				}
 				selections = append(selections, &Selection{
 					Function:   function,
 					Parameters: parameters,
 				})
 				function = ``
-				paramItem = nil
 				paramStarted = false
 				parameters = []string{}
 				slashAdded = false
@@ -280,6 +302,13 @@ func parseSelections(rule string) []*Selection {
 			if v == '\'' || v == '"' {
 				quote = v
 				quoteStarted = true
+			} else if (v >= '0' && v <= '9') || v == '.' {
+				paramItem = append(paramItem, v)
+			} else if v == ',' {
+				if paramItem != nil {
+					parameters = append(parameters, string(paramItem))
+					paramItem = nil
+				}
 			}
 			continue
 		}
@@ -291,8 +320,8 @@ func parseSelections(rule string) []*Selection {
 			if quote == v {
 				if paramItem != nil {
 					parameters = append(parameters, string(paramItem))
+					paramItem = nil
 				}
-				paramItem = nil
 				quoteStarted = false
 				slashAdded = false
 				continue
