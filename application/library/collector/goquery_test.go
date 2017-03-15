@@ -42,7 +42,7 @@ func TestParseSelections(t *testing.T) {
 			assert.Equal(t, "[/<a>(.*)</a>/i $1]", fmt.Sprint(v.Parameters))
 		}
 	}
-	s = parseSelections(`$('.aaa').each('$(".a").find(\'ddd\')')`)
+	s = parseSelections(`$('.aaa').each('$(".a").find(\'ddd\').href')`)
 	com.Dump(s)
 	for i, v := range s {
 		switch i {
@@ -51,7 +51,7 @@ func TestParseSelections(t *testing.T) {
 			assert.Equal(t, "[.aaa]", fmt.Sprint(v.Parameters))
 		case 1:
 			assert.Equal(t, "each", v.Function)
-			assert.Equal(t, "[$(\".a\").find('ddd')]", fmt.Sprint(v.Parameters))
+			assert.Equal(t, "[$(\".a\").find('ddd').href]", fmt.Sprint(v.Parameters))
 		}
 	}
 }
