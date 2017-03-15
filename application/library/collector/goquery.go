@@ -222,13 +222,11 @@ func (g *GoQuery) parseSelections(rootSelection *goquery.Selection, rule string)
 			}
 			r = strconv.FormatFloat(n, 'g', prec, 64)
 		case "expand":
-			var (
-				rx *regexp.Regexp
-			)
 			if len(selector.Parameters) != 2 {
 				err = ErrMissingParam
 				return
 			}
+			var rx *regexp.Regexp
 			rx, err = regexp.Compile(selector.Parameters[0])
 			if err != nil {
 				return
