@@ -95,6 +95,10 @@ $(function(){
 			 App.unmarkNav();
 			 App.markNav($(obj));
 		 },
+		 onend: function(evt,xhr,opt){
+			 opt.container.find('[data-popover="popover"]').popover();
+			 opt.container.find('.ttip, [data-toggle="tooltip"]').tooltip();
+		 }
 	});
 	App.attachAjaxURL();
 {{if .}}

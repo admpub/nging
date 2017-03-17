@@ -527,19 +527,19 @@ var App = function () {
         var container = $(this).data('pjax');
         $.pjax.click(event, $(container),{timeout:timeout});
         if(options.onclick)options.onclick(this);
-      }).on('pjax:send',function(xhr,option){
+      }).on('pjax:send',function(evt,xhr,option){
         App.loading('show');
-        if(options.onsend)options.onsend();
-      }).on('pjax:complete',function(xhr, textStatus, option){
+        if(options.onsend)options.onsend(evt,xhr,option);
+      }).on('pjax:complete',function(evt, xhr, textStatus, option){
         App.loading('hide');
-        if(options.oncomplete)options.oncomplete();
-      }).on('pjax:timeout',function(xhr,option){
+        if(options.oncomplete)options.oncomplete(evt, xhr, textStatus, option);
+      }).on('pjax:timeout',function(evt,xhr,option){
         console.log('timeout');
-        if(options.ontimeout)options.ontimeout();
-      }).on('pjax:start',function(xhr,option){
-        if(options.onstart)options.onstart();
-      }).on('pjax:end',function(xhr,option){
-        if(options.onend)options.onend();
+        if(options.ontimeout)options.ontimeout(evt,xhr,option);
+      }).on('pjax:start',function(evt,xhr,option){
+        if(options.onstart)options.onstart(evt,xhr,option);
+      }).on('pjax:end',function(evt,xhr,option){
+        if(options.onend)options.onend(evt,xhr,option);
       });
     },
     
