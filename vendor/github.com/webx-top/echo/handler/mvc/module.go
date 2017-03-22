@@ -25,20 +25,23 @@ import (
 	"strings"
 	"time"
 
+	"sync"
+
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/render"
 	"github.com/webx-top/echo/middleware/render/driver"
 )
 
-func NewModule(name string, domain string, s *MVC, middlewares ...interface{}) (a *Module) {
+func NewModule(name string, domain string, s *Application, middlewares ...interface{}) (a *Module) {
 	a = &Module{
-		MVC:                s,
+		Application:        s,
 		Name:               name,
 		Domain:             domain,
 		wrappers:           make(map[string]*Wrapper),
 		cachedHandlerNames: make(map[string]string),
 		Middlewares:        middlewares,
 		Config:             &ModuleConfig{},
+		lock:               &sync.RWMutex{},
 	}
 	if s.Renderer != nil {
 		a.Renderer = s.Renderer
@@ -76,7 +79,7 @@ func NewModule(name string, domain string, s *MVC, middlewares ...interface{}) (
 }
 
 type Module struct {
-	*MVC               `json:"-" xml:"-"`
+	*Application       `json:"-" xml:"-"`
 	Group              *echo.Group   `json:"-" xml:"-"`
 	Handler            *echo.Echo    `json:"-" xml:"-"` //指定域名时有效
 	Middlewares        []interface{} `json:"-" xml:"-"`
@@ -101,6 +104,8 @@ type Module struct {
 	// 安装和卸载逻辑
 	Install   func() error `json:"-" xml:"-"`
 	Uninstall func() error `json:"-" xml:"-"`
+
+	lock *sync.RWMutex
 }
 
 func (a *Module) Valid() error {
@@ -121,7 +126,7 @@ func (a *Module) Register(p string, v interface{}, methods ...string) *Module {
 	if len(methods) < 1 {
 		methods = append(methods, "GET")
 	}
-	a.MVC.URLs.Set(v)
+	a.Application.URLs.Set(v)
 	h := a.Core.ValidHandler(v)
 	a.Router().Match(methods, p, echo.HandlerFunc(func(ctx echo.Context) error {
 		if c, y := ctx.(Initer); y {
@@ -193,7 +198,7 @@ func (a *Module) Use(args ...interface{}) *Module {
 
 // InitRenderer 初始化渲染接口(用于单独对app指定renderer，如不指定，默认会使用Server中Renderer)
 func (a *Module) InitRenderer(conf *render.Config, funcMap map[string]interface{}) *Module {
-	a.Renderer = a.MVC.NewRenderer(conf, a, funcMap)
+	a.Renderer = a.Application.NewRenderer(conf, a, funcMap)
 	return a
 }
 
@@ -211,7 +216,7 @@ func (a *Module) SafelyCall(fn reflect.Value, args []reflect.Value) (resp []refl
 				}
 				content += "\n" + fmt.Sprintf(`%v %v`, file, line)
 			}
-			a.MVC.Core.Logger().Error(content)
+			a.Application.Core.Logger().Error(content)
 			err = errors.New(content)
 		}
 	}()
@@ -227,6 +232,8 @@ func (a *Module) ClearCachedHandlerNames() {
 
 // ExecAction 执行Action的通用方式
 func (a *Module) ExecAction(action string, t reflect.Type, v reflect.Value, c echo.Context) (err error) {
+	a.lock.Lock()
+	defer a.lock.Unlock()
 	k := t.PkgPath() + `.` + t.Name() + `.` + action + `_` + c.Method() + `_` + c.Format()
 	var m reflect.Value
 	if methodName, ok := a.cachedHandlerNames[k]; ok {

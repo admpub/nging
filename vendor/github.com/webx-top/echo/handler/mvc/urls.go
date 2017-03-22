@@ -26,18 +26,18 @@ import (
 	"github.com/webx-top/echo"
 )
 
-func NewURLs(project string, mvc *MVC) *URLs {
+func NewURLs(project string, mvc *Application) *URLs {
 	return &URLs{
 		projectPath: `github.com/webx-top/` + project,
 		extensions:  map[string]map[string]int{},
-		MVC:         mvc,
+		Application: mvc,
 	}
 }
 
 type URLs struct {
-	projectPath string
-	extensions  map[string]map[string]int
-	*MVC        `json:"-" xml:"-"`
+	projectPath  string
+	extensions   map[string]map[string]int
+	*Application `json:"-" xml:"-"`
 }
 
 func (a *URLs) SetProjectPath(projectPath string) {
@@ -52,7 +52,7 @@ func (a *URLs) urlRecovery(s string) string {
 }
 
 func (a *URLs) Build(mdl string, ctl string, act string, params ...interface{}) (r string) {
-	module, ok := a.MVC.moduleNames[mdl]
+	module, ok := a.Application.moduleNames[mdl]
 	if !ok {
 		return
 	}
@@ -63,10 +63,10 @@ func (a *URLs) Build(mdl string, ctl string, act string, params ...interface{}) 
 	} else {
 		key = pkg + `.(*` + a.urlRecovery(ctl) + `).` + a.urlRecovery(act) + `-fm`
 	}
-	r = module.Router().URL(key, params)
+	r = module.Router().URL(key, params...)
 	if len(module.Domain) > 0 {
 		scheme := `http`
-		if a.MVC.SessionOptions.Secure {
+		if a.Application.SessionOptions.Secure {
 			scheme = `https`
 		}
 		r = scheme + `://` + module.Domain + r
@@ -89,7 +89,7 @@ func (a *URLs) BuildFromPath(ppath string, args ...map[string]interface{}) (r st
 	default:
 		return
 	}
-	module, ok := a.MVC.moduleNames[mdl]
+	module, ok := a.Application.moduleNames[mdl]
 	if !ok {
 		return
 	}
@@ -112,7 +112,7 @@ func (a *URLs) BuildFromPath(ppath string, args ...map[string]interface{}) (r st
 	r = module.Router().URL(key, params)
 	if len(module.Domain) > 0 {
 		scheme := `http`
-		if a.MVC.SessionOptions.Secure {
+		if a.Application.SessionOptions.Secure {
 			scheme = `https`
 		}
 		r = scheme + `://` + module.Domain + r

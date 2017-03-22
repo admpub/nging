@@ -30,6 +30,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/admpub/log"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/handler/mvc/static/minify"
@@ -49,6 +50,9 @@ type urlMapInfo struct {
 }
 
 func NewStatic(staticPath, rootPath string) *Static {
+	if len(staticPath) > 0 && staticPath[0] != '/' {
+		staticPath = `/` + staticPath
+	}
 	return &Static{
 		Path:            staticPath,
 		RootPath:        rootPath,
@@ -59,6 +63,7 @@ func NewStatic(staticPath, rootPath string) *Static {
 		Combines:        make(map[string]bool),
 		urlMap:          make(map[string]*urlMapInfo),
 		mutex:           &sync.Mutex{},
+		logger:          log.GetLogger(`echo`),
 	}
 }
 
@@ -73,6 +78,7 @@ type Static struct {
 	urlMap          map[string]*urlMapInfo
 	mutex           *sync.Mutex
 	Public          *Static
+	logger          *log.Logger
 }
 
 func (s *Static) StaticURL(staticFile string) (r string) {
@@ -199,15 +205,19 @@ func (s *Static) Register(funcMap map[string]interface{}) map[string]interface{}
 func (s *Static) DeleteCombined(url string) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
+
+	s.logger.Debug(`update resource `, url)
 	if val, ok := s.Combined[url]; ok {
 		for _, v := range val {
 			if _, has := s.Combines[v]; !has {
+				s.logger.Debug(`skip resource `, url)
 				continue
 			}
+			s.logger.Debug(`remove combines `, v)
 			err := os.Remove(v)
 			delete(s.Combines, v)
 			if err != nil {
-				fmt.Println(err)
+				s.logger.Error(err)
 			}
 		}
 	}

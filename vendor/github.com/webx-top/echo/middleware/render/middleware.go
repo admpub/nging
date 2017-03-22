@@ -24,15 +24,30 @@ import (
 )
 
 var (
-	DefaultDataKey       = `data`
-	DefaultTmplKey       = `tmpl`
-	DefaultTmplName      = `index`
-	DefaultErrorTmpl     = `error`
-	JSONPCallbackName    = `callback`
-	DefaultErrorFunc     = OutputError
-	DefaultOutputFunc    = Output
-	DefaultErrorHTTPCode = http.StatusInternalServerError
+	DefaultOptions = &Options{
+		Skipper:              echo.DefaultSkipper,
+		DataKey:              `data`,
+		TmplKey:              `tmpl`,
+		DefaultTmpl:          `index`,
+		DefaultErrorTmpl:     `error`,
+		JSONPCallbackName:    `callback`,
+		ErrorFunc:            OutputError,
+		OutputFunc:           Output,
+		DefaultErrorHTTPCode: http.StatusInternalServerError,
+	}
 )
+
+type Options struct {
+	Skipper              echo.Skipper
+	DataKey              string
+	TmplKey              string
+	DefaultTmpl          string
+	DefaultErrorTmpl     string
+	JSONPCallbackName    string
+	ErrorFunc            func(err error, format string, c echo.Context, opt *Options) error
+	OutputFunc           func(format string, c echo.Context, opt *Options) error
+	DefaultErrorHTTPCode int
+}
 
 // Middleware set renderer
 func Middleware(d echo.Renderer) echo.MiddlewareFunc {
@@ -44,50 +59,83 @@ func Middleware(d echo.Renderer) echo.MiddlewareFunc {
 	}
 }
 
+func SetDefaultOptions(opt *Options) *Options {
+	if opt.Skipper == nil {
+		opt.Skipper = DefaultOptions.Skipper
+	}
+	if opt.ErrorFunc == nil {
+		opt.ErrorFunc = DefaultOptions.ErrorFunc
+	}
+	if opt.OutputFunc == nil {
+		opt.OutputFunc = DefaultOptions.OutputFunc
+	}
+	if len(opt.DataKey) == 0 {
+		opt.DataKey = DefaultOptions.DataKey
+	}
+	if len(opt.TmplKey) == 0 {
+		opt.TmplKey = DefaultOptions.TmplKey
+	}
+	if len(opt.DefaultTmpl) == 0 {
+		opt.DefaultTmpl = DefaultOptions.DefaultTmpl
+	}
+	if len(opt.DefaultErrorTmpl) == 0 {
+		opt.DefaultErrorTmpl = DefaultOptions.DefaultErrorTmpl
+	}
+	if len(opt.JSONPCallbackName) == 0 {
+		opt.JSONPCallbackName = DefaultOptions.JSONPCallbackName
+	}
+	return opt
+}
+
+func checkOptions(options ...*Options) *Options {
+	var opt *Options
+	if len(options) > 0 {
+		opt = options[0]
+	}
+	if opt == nil {
+		opt = DefaultOptions
+	}
+	return opt
+}
+
 // AutoOutput Outputs the specified format
-func AutoOutput(outputFunc func(string, echo.Context) error, skipper ...echo.Skipper) echo.MiddlewareFunc {
-	isSkiped := echo.DefaultSkipper
-	if len(skipper) > 0 {
-		isSkiped = skipper[0]
-	}
-	if outputFunc == nil {
-		outputFunc = DefaultOutputFunc
-	}
+func AutoOutput(options ...*Options) echo.MiddlewareFunc {
+	opt := checkOptions(options...)
 	return func(h echo.Handler) echo.Handler {
 		return echo.HandlerFunc(func(c echo.Context) error {
-			if isSkiped(c) {
+			if opt.Skipper(c) {
 				return h.Handle(c)
 			}
 			format := c.Format()
 			if err := h.Handle(c); err != nil {
-				return DefaultErrorFunc(err, format, c)
+				return opt.ErrorFunc(err, format, c, opt)
 			}
-			return outputFunc(format, c)
+			return opt.OutputFunc(format, c, opt)
 		})
 	}
 }
 
 // Output Outputs the specified format
-func Output(format string, c echo.Context) error {
+func Output(format string, c echo.Context, opt *Options) error {
 	switch format {
 	case `json`:
-		return c.JSON(c.Get(DefaultDataKey))
+		return c.JSON(c.Get(opt.DataKey))
 	case `jsonp`:
-		return c.JSONP(c.Query(JSONPCallbackName), c.Get(DefaultDataKey))
+		return c.JSONP(c.Query(opt.JSONPCallbackName), c.Get(opt.DataKey))
 	case `xml`:
-		return c.XML(c.Get(DefaultDataKey))
+		return c.XML(c.Get(opt.DataKey))
 	default:
-		tmpl, ok := c.Get(DefaultTmplKey).(string)
+		tmpl, ok := c.Get(opt.TmplKey).(string)
 		if !ok {
-			tmpl = DefaultTmplName
+			tmpl = opt.DefaultTmpl
 		}
-		data := c.Get(DefaultDataKey)
+		data := c.Get(opt.DataKey)
 		if v, y := data.(*echo.Data); y {
 			SetFuncs(c, v)
 			return c.Render(tmpl, v.Data)
 		}
 		if h, y := data.(echo.H); y {
-			v := h.ToData()
+			v := h.ToData().SetContext(c)
 			SetFuncs(c, v)
 			return c.Render(tmpl, v.Data)
 		}
@@ -109,31 +157,25 @@ func SetFuncs(c echo.Context, v *echo.Data) {
 }
 
 // OutputError Outputs the specified format
-func OutputError(err error, format string, c echo.Context) error {
+func OutputError(err error, format string, c echo.Context, opt *Options) error {
 	if apiData, ok := err.(*echo.Data); ok {
-		c.Set(DefaultDataKey, apiData)
+		c.Set(opt.DataKey, apiData)
 	} else {
-		c.Set(DefaultDataKey, echo.NewData(c.Code(), err.Error()))
+		c.Set(opt.DataKey, echo.NewData(c, c.Code(), err.Error()))
 	}
-	c.Set(DefaultTmplKey, DefaultErrorTmpl)
-	c.SetCode(DefaultErrorHTTPCode)
-	return Output(format, c)
+	c.Set(opt.TmplKey, opt.DefaultErrorTmpl)
+	c.SetCode(opt.DefaultErrorHTTPCode)
+	return Output(format, c, opt)
 }
 
-func HTTPErrorHandler(templates map[int]string, formatRender ...func(string, echo.Context) error) echo.HTTPErrorHandler {
+func HTTPErrorHandler(templates map[int]string, options ...*Options) echo.HTTPErrorHandler {
 	if templates == nil {
 		templates = make(map[int]string)
 	}
 	tmplNum := len(templates)
-	var output func(string, echo.Context) error
-	if len(formatRender) > 0 {
-		output = formatRender[0]
-	}
-	if output == nil {
-		output = DefaultOutputFunc
-	}
+	opt := checkOptions(options...)
 	return func(err error, c echo.Context) {
-		code := DefaultErrorHTTPCode
+		code := opt.DefaultErrorHTTPCode
 		msg := http.StatusText(code)
 		title := msg
 		if he, ok := err.(*echo.HTTPError); ok {
@@ -155,15 +197,15 @@ func HTTPErrorHandler(templates map[int]string, formatRender ...func(string, ech
 					t, y = templates[0]
 				}
 				if y {
-					c.Set(DefaultDataKey, c.NewData().SetInfo(echo.H{
+					c.Set(opt.DataKey, c.NewData().SetInfo(echo.H{
 						"title":   title,
 						"content": msg,
 						"debug":   c.Echo().Debug(),
 						"code":    code,
 					}))
-					c.Set(DefaultTmplKey, t)
+					c.Set(opt.TmplKey, t)
 					c.SetCode(code)
-					if err := output(c.Format(), c); err != nil {
+					if err := opt.OutputFunc(c.Format(), c, opt); err != nil {
 						msg += "\n" + err.Error()
 						y = false
 						c.Echo().Logger().Error(err)

@@ -4,28 +4,52 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/admpub/log"
 	"github.com/webx-top/echo"
 )
 
-func Log() echo.MiddlewareFunc {
+type VisitorInfo struct {
+	RealIP       string
+	Time         time.Time
+	Elapsed      time.Duration
+	URI          string
+	Method       string
+	UserAgent    string
+	Referer      string
+	RequestSize  int64
+	ResponseSize int64
+	ResponseCode int
+}
+
+func Log(recv ...func(*VisitorInfo)) echo.MiddlewareFunc {
+	var logging func(*VisitorInfo)
+	if len(recv) > 0 {
+		logging = recv[0]
+	}
+	if logging == nil {
+		logger := log.GetLogger(`http`)
+		logging = func(v *VisitorInfo) {
+			logger.Info(v.RealIP + " " + v.Method + " " + v.URI + " " + fmt.Sprint(v.ResponseCode) + " " + v.Elapsed.String() + " " + fmt.Sprint(v.ResponseSize))
+		}
+	}
 	return func(h echo.Handler) echo.Handler {
 		return echo.HandlerFunc(func(c echo.Context) error {
 			req := c.Request()
 			res := c.Response()
-			logger := c.Logger()
-
-			start := time.Now()
+			info := &VisitorInfo{Time: time.Now()}
 			if err := h.Handle(c); err != nil {
 				c.Error(err)
 			}
-
-			remoteAddr := req.RealIP()
-			stop := time.Now()
-			method := req.Method()
-			uri := req.URI()
-			size := res.Size()
-			code := res.Status()
-			logger.Info(remoteAddr + " " + method + " " + uri + " " + fmt.Sprint(code) + " " + stop.Sub(start).String() + " " + fmt.Sprint(size))
+			info.RealIP = req.RealIP()
+			info.UserAgent = req.UserAgent()
+			info.Referer = req.Referer()
+			info.RequestSize = req.Size()
+			info.Elapsed = time.Now().Sub(info.Time)
+			info.Method = req.Method()
+			info.URI = req.URI()
+			info.ResponseSize = res.Size()
+			info.ResponseCode = res.Status()
+			logging(info)
 			return nil
 		})
 	}

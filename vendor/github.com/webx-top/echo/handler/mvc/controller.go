@@ -17,14 +17,24 @@
 */
 package mvc
 
-var (
-	defaultApp = New(`default`)
-	globalApp  = map[string]*Application{}
+import (
+	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/logger"
 )
 
-func App(name string) *Application {
-	if app, ok := globalApp[name]; ok {
-		return app
-	}
-	return defaultApp
+func NewController(c echo.Context) *Controller {
+	a := &Controller{}
+	a.Init(c)
+	return a
+}
+
+type Controller struct {
+	*Context
+	logger.Logger
+}
+
+func (a *Controller) Init(c echo.Context) error {
+	a.Context = c.(*Context)
+	a.Logger = c.Echo().Logger()
+	return nil
 }

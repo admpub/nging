@@ -20,6 +20,7 @@ package tplfunc
 import (
 	"fmt"
 	"html/template"
+	"net/url"
 	"path/filepath"
 	"strings"
 	"time"
@@ -78,7 +79,7 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	"Float32":         com.Float32,
 	"Float64":         com.Float64,
 	"InSlice":         com.InSlice,
-	"InSliceI":        com.InSliceIface,
+	"InSlicex":        com.InSliceIface,
 	"Substr":          com.Substr,
 	"StripTags":       com.StripTags,
 	"Default":         Default,
@@ -93,6 +94,8 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	"AddSuffix":       AddSuffix,
 	"InStrSlice":      InStrSlice,
 	"SearchStrSlice":  SearchStrSlice,
+	"URLValues":       URLValues,
+	"ToSlice":         ToSlice,
 }
 
 func JsonEncode(s interface{}) string {
@@ -100,7 +103,29 @@ func JsonEncode(s interface{}) string {
 	return r
 }
 
+func URLValues(values ...interface{}) url.Values {
+	v := url.Values{}
+	var k string
+	for i, j := 0, len(values); i < j; i++ {
+		if i%2 == 0 {
+			k = fmt.Sprint(values[i])
+			continue
+		}
+		v.Add(k, fmt.Sprint(values[i]))
+		k = ``
+	}
+	if len(k) > 0 {
+		v.Add(k, ``)
+		k = ``
+	}
+	return v
+}
+
 func ToStrSlice(s ...string) []string {
+	return s
+}
+
+func ToSlice(s ...interface{}) []interface{} {
 	return s
 }
 
@@ -120,24 +145,23 @@ func InExt(fileName string, exts ...string) bool {
 }
 
 func Default(defaultV interface{}, v interface{}) interface{} {
-	switch v.(type) {
+	switch val := v.(type) {
 	case nil:
 		return defaultV
 	case string:
-		val, _ := v.(string)
-		if val == `` {
+		if len(val) == 0 {
 			return defaultV
 		}
 	case uint8, int8, uint, int, uint32, int32, int64, uint64:
-		if com.Int64(v) == 0 {
+		if val == 0 {
 			return defaultV
 		}
 	case float32, float64:
-		if com.Float64(v) == 0.0 {
+		if val == 0.0 {
 			return defaultV
 		}
 	default:
-		if com.Str(v) == `` {
+		if len(com.Str(v)) == 0 {
 			return defaultV
 		}
 	}

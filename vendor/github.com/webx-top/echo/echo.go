@@ -604,9 +604,8 @@ func (e *Echo) URI(handler interface{}, params ...interface{}) string {
 		r := e.router.routes[indexes[0]]
 		length := len(params)
 		if length == 1 {
-			switch params[0].(type) {
+			switch val := params[0].(type) {
 			case url.Values:
-				val := params[0].(url.Values)
 				uri = r.Path
 				for _, name := range r.Params {
 					tag := `:` + name
@@ -618,11 +617,10 @@ func (e *Echo) URI(handler interface{}, params ...interface{}) string {
 					val.Del(name)
 				}
 				q := val.Encode()
-				if q != `` {
+				if len(q) > 0 {
 					uri += `?` + q
 				}
 			case map[string]string:
-				val := params[0].(map[string]string)
 				uri = r.Path
 				for _, name := range r.Params {
 					tag := `:` + name
@@ -633,7 +631,6 @@ func (e *Echo) URI(handler interface{}, params ...interface{}) string {
 					}
 				}
 			case []interface{}:
-				val := params[0].([]interface{})
 				uri = fmt.Sprintf(r.Format, val...)
 			}
 		} else {

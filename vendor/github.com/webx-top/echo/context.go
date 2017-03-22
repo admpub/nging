@@ -76,6 +76,7 @@ type (
 
 		Set(string, interface{})
 		Get(string) interface{}
+		Delete(...string)
 		Stored() store
 
 		//----------------
@@ -233,6 +234,14 @@ func (s store) Get(key string) interface{} {
 	return nil
 }
 
+func (s store) Delete(keys ...string) {
+	for _, key := range keys {
+		if _, y := s[key]; y {
+			delete(s, key)
+		}
+	}
+}
+
 // NewContext creates a Context object.
 func NewContext(req engine.Request, res engine.Response, e *Echo) Context {
 	c := &xContext{
@@ -365,6 +374,15 @@ func (c *xContext) Get(key string) interface{} {
 // Set saves data in the context.
 func (c *xContext) Set(key string, val interface{}) {
 	c.store[key] = val
+}
+
+// Delete saves data in the context.
+func (c *xContext) Delete(keys ...string) {
+	for _, key := range keys {
+		if _, y := c.store[key]; y {
+			delete(c.store, key)
+		}
+	}
 }
 
 func (c *xContext) Stored() store {
@@ -950,16 +968,16 @@ func (c *xContext) NewData(args ...interface{}) *Data {
 	length := len(args)
 	if length > 1 {
 		if code, ok := args[0].(int); ok {
-			return NewData(code, args[1:]...)
+			return NewData(c, code, args[1:]...)
 		}
 	} else if length == 1 {
 		if code, ok := args[0].(int); ok {
-			return NewData(code)
+			return NewData(c, code)
 		} else if mapd, ok := args[0].(H); ok {
-			return mapd.ToData()
+			return mapd.ToData().SetContext(c)
 		}
 	}
-	return &Data{}
+	return &Data{context: c}
 }
 
 // MapForm 映射表单数据到结构体

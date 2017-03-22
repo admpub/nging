@@ -22,6 +22,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"strconv"
+	"sync"
 )
 
 // Dump 输出对象和数组的结构信息
@@ -114,14 +115,22 @@ type Mapx struct {
 	Map   map[string]*Mapx `json:",omitempty"`
 	Slice []*Mapx          `json:",omitempty"`
 	Val   []string         `json:",omitempty"`
+	lock  *sync.RWMutex
 }
 
 func NewMapx(data map[string][]string) *Mapx {
-	m := &Mapx{}
+	m := &Mapx{
+		lock: &sync.RWMutex{},
+	}
 	return m.Parse(data)
 }
 
 func (m *Mapx) Parse(data map[string][]string) *Mapx {
+	if m.lock == nil {
+		m.lock = &sync.RWMutex{}
+	}
+	m.lock.Lock()
+	defer m.lock.Unlock()
 	m.Map = map[string]*Mapx{}
 	for name, values := range data {
 		names := FormNames(name)
@@ -135,11 +144,12 @@ func (m *Mapx) Parse(data map[string][]string) *Mapx {
 				}
 
 				if idx == end {
-					v.Slice = append(v.Slice, &Mapx{Val: values})
+					v.Slice = append(v.Slice, &Mapx{lock: m.lock, Val: values})
 					continue
 				}
 				mapx := &Mapx{
-					Map: map[string]*Mapx{},
+					lock: m.lock,
+					Map:  map[string]*Mapx{},
 				}
 				v.Slice = append(v.Slice, mapx)
 				v = mapx
@@ -147,18 +157,19 @@ func (m *Mapx) Parse(data map[string][]string) *Mapx {
 			}
 			if _, ok := v.Map[key]; !ok {
 				if idx == end {
-					v.Map[key] = &Mapx{Val: values}
+					v.Map[key] = &Mapx{lock: m.lock, Val: values}
 					continue
 				}
 				v.Map[key] = &Mapx{
-					Map: map[string]*Mapx{},
+					lock: m.lock,
+					Map:  map[string]*Mapx{},
 				}
 				v = v.Map[key]
 				continue
 			}
 
 			if idx == end {
-				v.Map[key] = &Mapx{Val: values}
+				v.Map[key] = &Mapx{lock: m.lock, Val: values}
 			} else {
 				v = v.Map[key]
 			}
@@ -216,6 +227,8 @@ func (m *Mapx) Values(names ...string) []string {
 }
 
 func (m *Mapx) Get(names ...string) *Mapx {
+	m.lock.Lock()
+	defer m.lock.Unlock()
 	v := m
 	end := len(names) - 1
 	for idx, key := range names {
