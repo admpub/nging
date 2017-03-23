@@ -18,6 +18,7 @@
 package pagination
 
 import (
+	"fmt"
 	"html/template"
 	"math"
 	"strconv"
@@ -27,7 +28,7 @@ import (
 )
 
 func New(ctx echo.Context) *Pagination {
-	return &Pagination{context: ctx, pages: -1}
+	return &Pagination{context: ctx, pages: -1, data: make(map[string]interface{})}
 }
 
 type Pagination struct {
@@ -39,6 +40,7 @@ type Pagination struct {
 	tmpl      string
 	pages     int //total pages
 	urlLayout string
+	data      map[string]interface{}
 }
 
 func (p *Pagination) SetAll(tmpl string, rows int, pnl ...int) *Pagination {
@@ -56,6 +58,34 @@ func (p *Pagination) SetAll(tmpl string, rows int, pnl ...int) *Pagination {
 	p.tmpl = tmpl
 	p.pages = -1
 	return p
+}
+
+func (p *Pagination) Set(key string, data interface{}) *Pagination {
+	p.data[key] = data
+	return p
+}
+
+func (p *Pagination) Sets(args ...interface{}) *Pagination {
+	var key string
+	for i, j := 0, len(args); i < j; i++ {
+		if i%2 == 0 {
+			key = fmt.Sprint(args[i])
+			continue
+		}
+		p.data[key] = args[i]
+	}
+	return p
+}
+
+func (p *Pagination) Get(key string) interface{} {
+	if v, y := p.data[key]; y {
+		return v
+	}
+	return nil
+}
+
+func (p *Pagination) Data() map[string]interface{} {
+	return p.data
 }
 
 func (p *Pagination) SetPage(page int) *Pagination {
@@ -135,8 +165,15 @@ func (p *Pagination) URL(page int) string {
 	return s
 }
 
-func (p *Pagination) SetURL(s string) *Pagination {
-	p.urlLayout = s
+func (p *Pagination) SetURL(s interface{}, delKeys ...string) *Pagination {
+	switch v := s.(type) {
+	case string:
+		p.urlLayout = v
+	case map[string]string:
+		p.urlLayout = p.RebuildURL(v, delKeys...)
+	default:
+		panic(`Unsupported type: ` + fmt.Sprintf(`%T`, s))
+	}
 	return p
 }
 
@@ -146,6 +183,24 @@ func (p *Pagination) RebuildQueryString(delKeys ...string) string {
 		query.Del(key)
 	}
 	return query.Encode()
+}
+
+func (p *Pagination) RebuildURL(pageVars map[string]string, delKeys ...string) string {
+	var (
+		pq string
+		jn string
+	)
+	for name, urlVar := range pageVars {
+		delKeys = append(delKeys, urlVar)
+		pq += jn + urlVar + `={` + name + `}`
+		jn = `&`
+	}
+	q := p.RebuildQueryString(delKeys...)
+	if len(q) > 0 {
+		q += `&`
+	}
+	url := p.context.Request().URL().Path() + `?` + q + pq
+	return url
 }
 
 func (p *Pagination) List(num ...int) []int {
