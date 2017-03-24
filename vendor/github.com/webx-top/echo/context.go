@@ -973,11 +973,12 @@ func (c *xContext) NewData(args ...interface{}) *Data {
 	} else if length == 1 {
 		if code, ok := args[0].(int); ok {
 			return NewData(c, code)
-		} else if mapd, ok := args[0].(H); ok {
+		}
+		if mapd, ok := args[0].(H); ok {
 			return mapd.ToData().SetContext(c)
 		}
 	}
-	return &Data{context: c}
+	return &Data{Code: 1, context: c}
 }
 
 // MapForm 映射表单数据到结构体

@@ -70,16 +70,23 @@ func Static(options ...*StaticOptions) echo.MiddlewareFunc {
 				return echo.ErrNotFound
 			}
 			if fi.IsDir() {
-				// Index file
-				indexFile := filepath.Join(absFile, opts.Index)
-				fi, err = os.Stat(indexFile)
-				if err != nil || fi.IsDir() {
+				if hasIndex {
+					// Index file
+					indexFile := filepath.Join(absFile, opts.Index)
+					fi, err = os.Stat(indexFile)
+					if err != nil || fi.IsDir() {
+						if opts.Browse {
+							return listDir(absFile, file, w)
+						}
+						return echo.ErrNotFound
+					}
+					absFile = indexFile
+				} else {
 					if opts.Browse {
 						return listDir(absFile, file, w)
 					}
 					return echo.ErrNotFound
 				}
-				absFile = indexFile
 			}
 			w.ServeFile(absFile)
 			return nil
