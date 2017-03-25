@@ -632,6 +632,8 @@ func (e *Echo) URI(handler interface{}, params ...interface{}) string {
 				}
 			case []interface{}:
 				uri = fmt.Sprintf(r.Format, val...)
+			default:
+				uri = fmt.Sprintf(r.Format, val)
 			}
 		} else {
 			uri = fmt.Sprintf(r.Format, params...)

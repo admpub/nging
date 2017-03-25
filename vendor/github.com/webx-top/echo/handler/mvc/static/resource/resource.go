@@ -37,7 +37,7 @@ import (
 )
 
 var (
-	regexCssUrlAttr      = regexp.MustCompile(`url\(['"]?(\.\./[^\)'"]+)['"]?\)`)
+	regexCssUrlAttr      = regexp.MustCompile(`url\(['"]?([^\)'"]+)['"]?\)`)
 	regexCssImport       = regexp.MustCompile(`@import[\s]+["']([^"']+)["'][\s]*;`)
 	regexCssCleanSpace   = regexp.MustCompile(`(?s)\s*(\{|\}|;|:)\s*`)
 	regexCssCleanSpace2  = regexp.MustCompile(`(?s)\s{2,}`)

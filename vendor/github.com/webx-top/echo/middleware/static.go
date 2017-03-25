@@ -35,7 +35,6 @@ func Static(options ...*StaticOptions) echo.MiddlewareFunc {
 	if opts.Skipper == nil {
 		opts.Skipper = echo.DefaultSkipper
 	}
-	check := hasIndex || opts.Browse
 	opts.Root, _ = filepath.Abs(opts.Root)
 	length := len(opts.Path)
 	if length > 0 && opts.Path[0] != '/' {
@@ -61,11 +60,12 @@ func Static(options ...*StaticOptions) echo.MiddlewareFunc {
 				return next.Handle(c)
 			}
 			w := c.Response()
-			if !check {
-				w.ServeFile(absFile)
-				return nil
+			fp, err := os.Open(absFile)
+			if err != nil {
+				return echo.ErrNotFound
 			}
-			fi, err := os.Stat(absFile)
+			defer fp.Close()
+			fi, err := fp.Stat()
 			if err != nil {
 				return echo.ErrNotFound
 			}
@@ -88,8 +88,7 @@ func Static(options ...*StaticOptions) echo.MiddlewareFunc {
 					return echo.ErrNotFound
 				}
 			}
-			w.ServeFile(absFile)
-			return nil
+			return c.ServeContent(fp, fi.Name(), fi.ModTime())
 		})
 	}
 }
