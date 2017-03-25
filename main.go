@@ -69,15 +69,7 @@ func main() {
 	e := echo.New()
 	e.SetDebug(true)
 	e.Use(middleware.Log(), middleware.Recover())
-	e.Use(middleware.Gzip(&middleware.GzipConfig{
-		Skipper: func(c echo.Context) bool {
-			if strings.HasPrefix(c.Request().URL().Path(), `/captcha/`) {
-				return true
-			}
-			return false
-		},
-		Level: -1,
-	}))
+	e.Use(middleware.Gzip())
 	e.Use(func(h echo.Handler) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			c.Response().Header().Set(`Server`, `nging/`+Version)
