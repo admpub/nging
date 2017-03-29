@@ -42,11 +42,11 @@ func HtmlDecode(str string) string {
 }
 
 var (
-	regexpAnyHtmlTag    *regexp.Regexp = regexp.MustCompile("\\<[\\S\\s]+?\\>")
-	regexpStyleHtmlTag  *regexp.Regexp = regexp.MustCompile("\\<(?i:style)[\\S\\s]+?\\</(?i:style)\\>")
-	regexpScriptHtmlTag *regexp.Regexp = regexp.MustCompile("\\<(?i:script)[\\S\\s]+?\\</(?i:script)\\>")
-	regexpMoreSpace     *regexp.Regexp = regexp.MustCompile("\\s{2,}")
-	regexpAnyHtmlAttr   *regexp.Regexp = regexp.MustCompile("<([/]?[\\S]+)[^>]*([/]?)>")
+	regexpAnyHtmlTag    = regexp.MustCompile("\\<[\\S\\s]+?\\>")
+	regexpStyleHtmlTag  = regexp.MustCompile("\\<(?i:style)[\\S\\s]+?\\</(?i:style)\\>")
+	regexpScriptHtmlTag = regexp.MustCompile("\\<(?i:script)[\\S\\s]+?\\</(?i:script)\\>")
+	regexpMoreSpace     = regexp.MustCompile("\\s{2,}")
+	regexpAnyHtmlAttr   = regexp.MustCompile("<([/]?[\\S]+)[^>]*([/]?)>")
 )
 
 // clear all attributes

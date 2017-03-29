@@ -1,16 +1,11 @@
 package com
 
 import (
-	_ "errors"
-	_ "fmt"
-	"math"
-	_ "strconv"
-	_ "strings"
 	cryptoRand "crypto/rand"
+	"math"
 	"math/rand"
 	"time"
 )
-
 
 var (
 	defaultRand = rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -162,7 +157,7 @@ func RandStr(count int) (r string) {
 	_, err := cryptoRand.Read(b)
 	if err != nil {
 		r = RandomString(uint(count))
-	}else{
+	} else {
 		r = string(b)
 	}
 	return

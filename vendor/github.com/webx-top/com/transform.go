@@ -62,6 +62,45 @@ func Int32(i interface{}) int32 {
 	return int32(out)
 }
 
+func Uint64(i interface{}) uint64 {
+	in := Str(i)
+	if in == "" {
+		return 0
+	}
+	out, err := strconv.ParseUint(in, 10, 64)
+	if err != nil {
+		log.Printf("string[%s] covert uint64 fail. %s", in, err)
+		return 0
+	}
+	return out
+}
+
+func Uint(i interface{}) uint {
+	in := Str(i)
+	if in == "" {
+		return 0
+	}
+	out, err := strconv.ParseUint(in, 10, 32)
+	if err != nil {
+		log.Printf("string[%s] covert uint fail. %s", in, err)
+		return 0
+	}
+	return uint(out)
+}
+
+func Uint32(i interface{}) uint32 {
+	in := Str(i)
+	if in == "" {
+		return 0
+	}
+	out, err := strconv.ParseUint(in, 10, 32)
+	if err != nil {
+		log.Printf("string[%s] covert uint32 fail. %s", in, err)
+		return 0
+	}
+	return uint32(out)
+}
+
 func Float32(i interface{}) float32 {
 	in := Str(i)
 	if in == "" {
@@ -88,6 +127,23 @@ func Float64(i interface{}) float64 {
 	return out
 }
 
+func Bool(i interface{}) bool {
+	in := Str(i)
+	if in == "" {
+		return false
+	}
+	out, err := strconv.ParseBool(in)
+	if err != nil {
+		log.Printf("string[%s] covert bool fail. %s", in, err)
+		return false
+	}
+	return out
+}
+
 func Str(v interface{}) string {
 	return fmt.Sprintf("%v", v)
+}
+
+func String(v interface{}) string {
+	return Str(v)
 }

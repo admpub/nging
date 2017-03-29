@@ -118,7 +118,7 @@ func SliceRandList(min, max int) []int {
 	t0 := time.Now()
 	rand.Seed(int64(t0.Nanosecond()))
 	list := rand.Perm(length)
-	for index, _ := range list {
+	for index := range list {
 		list[index] += min
 	}
 	return list
@@ -239,6 +239,9 @@ func SliceRemove(slice []interface{}, start int, args ...int) []interface{} {
 		end = start + 1
 	} else {
 		end = args[0]
+	}
+	if end > len(slice)-1 {
+		return slice[:start]
 	}
 	return append(slice[:start], slice[end:]...)
 }

@@ -19,7 +19,7 @@ import (
 	"strconv"
 )
 
-// Convert string to specify type.
+// StrTo Convert string to specify type.
 type StrTo string
 
 func (f StrTo) Exist() bool {
@@ -36,9 +36,34 @@ func (f StrTo) Int() (int, error) {
 	return int(v), err
 }
 
+func (f StrTo) Uint() (uint, error) {
+	v, err := strconv.ParseUint(f.String(), 10, 32)
+	return uint(v), err
+}
+
 func (f StrTo) Int64() (int64, error) {
 	v, err := strconv.ParseInt(f.String(), 10, 64)
 	return int64(v), err
+}
+
+func (f StrTo) Uint64() (uint64, error) {
+	v, err := strconv.ParseUint(f.String(), 10, 64)
+	return uint64(v), err
+}
+
+func (f StrTo) Float64() (float64, error) {
+	v, err := strconv.ParseFloat(f.String(), 64)
+	return v, err
+}
+
+func (f StrTo) Float32() (float32, error) {
+	v, err := strconv.ParseFloat(f.String(), 32)
+	return float32(v), err
+}
+
+func (f StrTo) Bool() (bool, error) {
+	v, err := strconv.ParseBool(f.String())
+	return v, err
 }
 
 func (f StrTo) MustUint8() uint8 {
@@ -51,8 +76,33 @@ func (f StrTo) MustInt() int {
 	return v
 }
 
+func (f StrTo) MustUint() uint {
+	v, _ := f.Uint()
+	return v
+}
+
 func (f StrTo) MustInt64() int64 {
 	v, _ := f.Int64()
+	return v
+}
+
+func (f StrTo) MustUint64() uint64 {
+	v, _ := f.Uint64()
+	return v
+}
+
+func (f StrTo) MustFloat64() float64 {
+	v, _ := f.Float64()
+	return v
+}
+
+func (f StrTo) MustFloat32() float32 {
+	v, _ := f.Float32()
+	return v
+}
+
+func (f StrTo) MustBool() bool {
+	v, _ := f.Bool()
 	return v
 }
 
@@ -63,7 +113,7 @@ func (f StrTo) String() string {
 	return ""
 }
 
-// Convert any type to string.
+// ToStr Convert any type to string.
 func ToStr(value interface{}, args ...int) (s string) {
 	switch v := value.(type) {
 	case bool:

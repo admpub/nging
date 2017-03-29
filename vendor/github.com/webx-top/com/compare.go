@@ -24,8 +24,11 @@ var (
 )
 
 const (
+	// VersionCompareGt 左大于右
 	VersionCompareGt = 1
+	// VersionCompareEq 左等于右
 	VersionCompareEq = 0
+	// VersionCompareLt 左小于右
 	VersionCompareLt = -1
 )
 

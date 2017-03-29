@@ -154,9 +154,8 @@ func IsExist(path string) bool {
 func Unlink(file string) bool {
 	if err := os.Remove(file); err == nil {
 		return true
-	} else {
-		return false
 	}
+	return false
 }
 
 // SaveFile saves content type '[]byte' to file by given path.

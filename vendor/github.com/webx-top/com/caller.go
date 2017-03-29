@@ -24,22 +24,24 @@ import (
 	"strings"
 )
 
+// FuncName 函数名
 func FuncName(i interface{}) string {
 	return runtime.FuncForPC(reflect.ValueOf(i).Pointer()).Name()
 }
 
-//返回包名、实例名和函数名
+// FuncPath 返回包名、实例名和函数名
 func FuncPath(i interface{}) (pkgName string, objName string, funcName string) {
 	s := FuncName(i)
 	_, file := path.Split(s)
 	return ParseFuncName(file)
 }
 
-//返回完整路径包名、实例名和函数名
+// FuncFullPath 返回完整路径包名、实例名和函数名
 func FuncFullPath(i interface{}) (pkgName string, objName string, funcName string) {
 	return ParseFuncName(FuncName(i))
 }
 
+// ParseFuncName 解析函数名
 func ParseFuncName(funcString string) (pkgName string, objName string, funcName string) {
 	if strings.HasSuffix(funcString, `-fm`) {
 		funcString = strings.TrimSuffix(funcString, `-fm`)
