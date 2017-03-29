@@ -325,6 +325,7 @@ func (s *Application) NewTemplateEngine(tmplPath string, conf *render.Config) dr
 	}
 	eng := render.New(conf.Engine, tmplPath, s.Core.Logger())
 	eng.Init(true, conf.Reload)
+	eng.SetDebug(conf.Debug)
 	return eng
 }
 

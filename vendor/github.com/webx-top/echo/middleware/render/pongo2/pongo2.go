@@ -25,6 +25,8 @@ import (
 	"strings"
 	"sync"
 
+	"regexp"
+
 	"github.com/admpub/log"
 	. "github.com/admpub/pongo2"
 	"github.com/webx-top/echo"
@@ -73,6 +75,7 @@ type Pongo2 struct {
 	getFuncs          func() map[string]interface{}
 	fileEvents        []func(string)
 	contentProcessors []func([]byte) []byte
+	debug             bool
 }
 
 type templateLoader struct {
@@ -89,17 +92,23 @@ func (a *templateLoader) Abs(base, name string) string {
 
 // Get returns an io.Reader where the template's content can be read from.
 func (a *templateLoader) Get(tmpl string) (io.Reader, error) {
-	var b []byte
-	var e error
 	tmpl += a.ext
 	tmpl = strings.TrimPrefix(tmpl, a.templateDir)
-	b, e = a.template.RawContent(tmpl)
+	b, e := a.template.RawContent(tmpl)
 	if e != nil {
 		a.logger.Error(e)
 	}
 	buf := new(bytes.Buffer)
-	buf.WriteString(string(b))
+	buf.Write(b)
 	return buf, e
+}
+
+func (self *Pongo2) Debug() bool {
+	return self.debug
+}
+
+func (self *Pongo2) SetDebug(on bool) {
+	self.debug = on
 }
 
 func (self *Pongo2) SetLogger(l logger.Logger) {
@@ -246,12 +255,23 @@ func (a *Pongo2) Fetch(tmpl string, data interface{}, funcMap map[string]interfa
 	return r
 }
 
+var (
+	ibRegex = regexp.MustCompile(`(?s)(\}|>)[\s]{2,}(\{|<})`)
+)
+
 func (a *Pongo2) RawContent(tmpl string) (b []byte, e error) {
 	defer func() {
 		if b != nil && a.contentProcessors != nil {
 			for _, fn := range a.contentProcessors {
 				b = fn(b)
 			}
+		}
+		if !a.debug {
+			var pres [][]byte
+			b, pres = driver.ReplacePRE(b)
+			b = ibRegex.ReplaceAll(b, driver.FE)
+			b = bytes.TrimSpace(b)
+			b = driver.RecoveryPRE(b, pres)
 		}
 	}()
 	if a.Mgr != nil {

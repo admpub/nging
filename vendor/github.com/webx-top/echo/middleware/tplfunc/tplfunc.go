@@ -96,11 +96,16 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	"SearchStrSlice":  SearchStrSlice,
 	"URLValues":       URLValues,
 	"ToSlice":         ToSlice,
+	"NoOutput":        NoOutput,
 }
 
 func JsonEncode(s interface{}) string {
 	r, _ := com.SetJSON(s)
 	return r
+}
+
+func NoOutput(_ interface{}) interface{} {
+	return nil
 }
 
 func URLValues(values ...interface{}) url.Values {

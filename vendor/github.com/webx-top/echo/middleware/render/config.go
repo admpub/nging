@@ -20,6 +20,7 @@ type Config struct {
 	ParseStrings  map[string]string
 	ErrorPages    map[int]string
 	StaticOptions *middleware.StaticOptions
+	Debug         bool
 	renderer      driver.Driver
 }
 

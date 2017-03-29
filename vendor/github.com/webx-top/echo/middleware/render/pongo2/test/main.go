@@ -10,6 +10,7 @@ import (
 func main() {
 	t := New(`./template/`)
 	t.Init(true)
+	//t.SetDebug(true)
 	for i := 0; i < 5; i++ {
 		ts := time.Now()
 		fmt.Printf("==========%v: %v========\\\n", i, ts)

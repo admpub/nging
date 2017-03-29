@@ -15,7 +15,7 @@ log {
   targets : "console"
 }
 sys {
-  vhostsfileDir : "config\\vhosts"
+  vhostsfileDir : "config\\\\vhosts"
   allowIP : []
   accounts {
     admin {
@@ -23,7 +23,7 @@ sys {
     }
   }
   sslHosts : []
-  sslCacheFile : "config\\letsencrypt.cache"
+  sslCacheFile : "config\\\\letsencrypt.cache"
   sslKeyFile : ""
   sslCertFile : ""
   debug : true

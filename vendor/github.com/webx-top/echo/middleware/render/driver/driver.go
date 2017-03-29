@@ -18,7 +18,10 @@
 package driver
 
 import (
+	"bytes"
 	"io"
+	"regexp"
+	"strconv"
 
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/logger"
@@ -30,6 +33,8 @@ type Driver interface {
 
 	//获取模板根路径
 	TmplDir() string
+	Debug() bool
+	SetDebug(bool)
 	SetLogger(logger.Logger)
 	Logger() logger.Logger
 
@@ -65,6 +70,10 @@ func (n *NopRenderer) Render(w io.Writer, name string, data interface{}, c echo.
 	return nil
 }
 
+func (n *NopRenderer) Debug() bool { return false }
+
+func (n *NopRenderer) SetDebug(_ bool) {}
+
 func (n *NopRenderer) Init(_ ...bool) {}
 
 func (n *NopRenderer) TmplDir() string { return `` }
@@ -88,3 +97,25 @@ func (n *NopRenderer) MonitorEvent(_ func(string)) {}
 func (n *NopRenderer) ClearCache() {}
 
 func (n *NopRenderer) Close() {}
+
+var (
+	FE       = []byte(`$1 $2`)
+	preRegex = regexp.MustCompile(`(?is)<pre( [^>]*)?>.*?<\/pre>`)
+)
+
+func ReplacePRE(b []byte) ([]byte, [][]byte) {
+	var pres [][]byte
+	b = preRegex.ReplaceAllFunc(b, func(r []byte) []byte {
+		index := strconv.Itoa(len(pres))
+		pres = append(pres, r)
+		return []byte(`<!-- <[#pre:` + index + `#]> -->`)
+	})
+	return b, pres
+}
+
+func RecoveryPRE(b []byte, pres [][]byte) []byte {
+	for k, v := range pres {
+		b = bytes.Replace(b, []byte(`<!-- <[#pre:`+strconv.Itoa(k)+`#]> -->`), v, 1)
+	}
+	return b
+}
