@@ -46,6 +46,7 @@ type Model interface {
 	Edit(mw func(db.Result) db.Result, args ...interface{}) error
 	Upsert(mw func(db.Result) db.Result, args ...interface{}) (interface{}, error)
 	Delete(mw func(db.Result) db.Result, args ...interface{}) error
+	Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error)
 }
 
 type Param struct {
@@ -196,14 +197,15 @@ func (p *Param) SetCollection(collection string, alias ...string) *Param {
 	p.Collection = collection
 	if len(alias) > 0 {
 		p.Alias = alias[0]
-		p.Collection += ` ` + p.Alias
-	} else {
-		pos := strings.LastIndex(p.Collection, ` `)
-		if pos > 0 {
-			p.Alias = p.Collection[pos+1:]
-		}
 	}
 	return p
+}
+
+func (p *Param) TableName() string {
+	if len(p.Alias) > 0 {
+		return p.cluster.Table(p.Collection) + ` ` + p.Alias
+	}
+	return p.cluster.Table(p.Collection)
 }
 
 func (p *Param) TableField(m interface{}, structField *string, tableField ...*string) *Param {
@@ -457,21 +459,12 @@ func (p *Param) NewTx(ctx context.Context) (*Transaction, error) {
 	return p.factory.NewTx(ctx, p.Index)
 }
 
-func (p *Param) Tx(ctxa ...context.Context) (*Transaction, error) {
-	if p.trans != nil {
-		return p.trans, nil
-	}
-	var err error
-	var ctx context.Context
-	if len(ctxa) > 0 {
-		ctx = ctxa[0]
-	}
-	p.trans, err = p.NewTx(ctx)
-	return p.trans, err
+func (p *Param) Tx(ctxa ...context.Context) error {
+	return p.factory.Tx(p, ctxa...)
 }
 
 func (p *Param) MustTx() *Transaction {
-	trans, err := p.Tx()
+	trans, err := p.NewTx(nil)
 	if err != nil {
 		panic(err.Error())
 	}

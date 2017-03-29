@@ -3,8 +3,28 @@ package factory
 
 import (
 	"log"
+	"strings"
 
 	"github.com/webx-top/db"
+)
+
+type masterLogger struct {
+}
+
+func (lg *masterLogger) Log(m *db.QueryStatus) {
+	log.Printf("<master>\n\t%s\n\n", strings.Replace(m.String(), "\n", "\n\t", -1))
+}
+
+type slaveLogger struct {
+}
+
+func (lg *slaveLogger) Log(m *db.QueryStatus) {
+	log.Printf("<slave>\n\t%s\n\n", strings.Replace(m.String(), "\n", "\n\t", -1))
+}
+
+var (
+	DefaultMasterLog = db.Logger(&masterLogger{})
+	DefaultSlaveLog  = db.Logger(&slaveLogger{})
 )
 
 // NewCluster : database cluster
@@ -91,18 +111,35 @@ func (c *Cluster) MasterSelecter() Selecter {
 
 // AddW : added writable database
 func (c *Cluster) AddW(databases ...db.Database) *Cluster {
+	c.setMasterLogger(databases...)
 	c.masters = append(c.masters, databases...)
+	return c
+}
+
+func (c *Cluster) setMasterLogger(databases ...db.Database) *Cluster {
+	for _, v := range databases {
+		v.SetLogger(DefaultMasterLog)
+	}
+	return c
+}
+
+func (c *Cluster) setSlaveLogger(databases ...db.Database) *Cluster {
+	for _, v := range databases {
+		v.SetLogger(DefaultSlaveLog)
+	}
 	return c
 }
 
 // AddR : added read-only database
 func (c *Cluster) AddR(databases ...db.Database) *Cluster {
+	c.setSlaveLogger(databases...)
 	c.slaves = append(c.slaves, databases...)
 	return c
 }
 
 // SetW : set writable database
 func (c *Cluster) SetW(index int, database db.Database) error {
+	c.setMasterLogger(database)
 	if len(c.masters) > index {
 		c.masters[index] = database
 		return nil
@@ -112,6 +149,7 @@ func (c *Cluster) SetW(index int, database db.Database) error {
 
 // SetR : set read-only database
 func (c *Cluster) SetR(index int, database db.Database) error {
+	c.setSlaveLogger(database)
 	if len(c.masters) > index {
 		c.slaves[index] = database
 		return nil

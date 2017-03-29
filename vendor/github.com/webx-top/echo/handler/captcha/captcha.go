@@ -18,12 +18,20 @@
 package captcha
 
 import (
+	"bytes"
 	"strconv"
 	"strings"
 
 	"github.com/webx-top/captcha"
 	"github.com/webx-top/echo"
 )
+
+var DefaultOptions = &Options{
+	EnableImage:    true,
+	EnableAudio:    true,
+	EnableDownload: true,
+	AudioLangs:     []string{`zh`, `ru`, `en`},
+}
 
 type Options struct {
 	EnableImage    bool
@@ -42,7 +50,18 @@ func (o Options) Wrapper(e echo.RouteRegister) {
 	} else {
 		o.Prefix = strings.TrimRight(o.Prefix, "/")
 	}
-	e.Get(o.Prefix+"/*", func(ctx echo.Context) error {
+	e.Get(o.Prefix+"/*", Captcha(&o))
+}
+
+func Captcha(opts ...*Options) func(echo.Context) error {
+	var o *Options
+	if len(opts) > 0 {
+		o = opts[0]
+	}
+	if o == nil {
+		o = DefaultOptions
+	}
+	return func(ctx echo.Context) (err error) {
 		var id, ext string
 		param := ctx.P(0)
 		if p := strings.LastIndex(param, `.`); p > 0 {
@@ -58,7 +77,7 @@ func (o Options) Wrapper(e echo.RouteRegister) {
 		w := ctx.Response()
 		header := w.Header()
 		download := o.EnableDownload && len(ctx.Query("download")) > 0
-
+		b := bytes.NewBufferString(``)
 		switch ext {
 		case ".png":
 			if !o.EnableImage {
@@ -69,7 +88,7 @@ func (o Options) Wrapper(e echo.RouteRegister) {
 			} else {
 				header.Set(echo.HeaderContentType, "image/png")
 			}
-			return captcha.WriteImage(w.Writer(), id, captcha.StdWidth, captcha.StdHeight)
+			err = captcha.WriteImage(b, id, captcha.StdWidth, captcha.StdHeight)
 		case ".wav":
 			if !o.EnableAudio {
 				return echo.ErrNotFound
@@ -85,9 +104,10 @@ func (o Options) Wrapper(e echo.RouteRegister) {
 			if !supported && len(o.AudioLangs) > 0 {
 				lang = o.AudioLangs[0]
 			}
-			au, err := captcha.GetAudio(id, lang)
+			var au *captcha.Audio
+			au, err = captcha.GetAudio(id, lang)
 			if err != nil {
-				return err
+				return
 			}
 			if download {
 				header.Set(echo.HeaderContentType, "application/octet-stream")
@@ -95,9 +115,13 @@ func (o Options) Wrapper(e echo.RouteRegister) {
 				header.Set(echo.HeaderContentType, "audio/x-wav")
 			}
 			header.Set("Content-Length", strconv.Itoa(au.EncodedLen()))
-			_, err = au.WriteTo(w.Writer())
-			return err
+			_, err = au.WriteTo(b)
+		default:
+			return nil
 		}
-		return nil
-	})
+		if err != nil {
+			return
+		}
+		return ctx.Blob(b.Bytes())
+	}
 }

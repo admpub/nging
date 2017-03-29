@@ -75,11 +75,6 @@ type (
 	// HTTPErrorHandler is a centralized HTTP error handler.
 	HTTPErrorHandler func(error, Context)
 
-	// Validator is the interface that wraps the Validate method.
-	Validator interface {
-		Validate() error
-	}
-
 	// Renderer is the interface that wraps the Render method.
 	Renderer interface {
 		Render(w io.Writer, name string, data interface{}, c Context) error
@@ -632,6 +627,8 @@ func (e *Echo) URI(handler interface{}, params ...interface{}) string {
 				}
 			case []interface{}:
 				uri = fmt.Sprintf(r.Format, val...)
+			default:
+				uri = fmt.Sprintf(r.Format, val)
 			}
 		} else {
 			uri = fmt.Sprintf(r.Format, params...)

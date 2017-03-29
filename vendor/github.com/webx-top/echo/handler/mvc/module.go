@@ -233,7 +233,6 @@ func (a *Module) ClearCachedHandlerNames() {
 // ExecAction 执行Action的通用方式
 func (a *Module) ExecAction(action string, t reflect.Type, v reflect.Value, c echo.Context) (err error) {
 	a.lock.Lock()
-	defer a.lock.Unlock()
 	k := t.PkgPath() + `.` + t.Name() + `.` + action + `_` + c.Method() + `_` + c.Format()
 	var m reflect.Value
 	if methodName, ok := a.cachedHandlerNames[k]; ok {
@@ -257,10 +256,12 @@ func (a *Module) ExecAction(action string, t reflect.Type, v reflect.Value, c ec
 		}
 		if !valid {
 			err = echo.NewHTTPError(404, `invalid action: `+t.Name()+`#`+action)
+			a.lock.Unlock()
 			return
 		}
 		a.cachedHandlerNames[k] = methodName
 	}
+	a.lock.Unlock()
 	r, err := a.SafelyCall(m, []reflect.Value{})
 	if err != nil {
 		return err

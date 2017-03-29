@@ -95,7 +95,7 @@ err = factory.NewParam().SetCollection(`post`).SetRecv(&posts).All()
 ### 关联查询
 ```go
 m := []*PostCollection{}
-err = factory.NewParam().SetCollection(`post AS a`).SetCols(db.Raw(`a.*`)).AddJoin(`LEFT`, `user`, `b`, `b.id=a.id`).Select().All(&m)
+err = factory.NewParam().SetCollection(`post`,`a`).SetCols(db.Raw(`a.*`)).AddJoin(`LEFT`, `user`, `b`, `b.id=a.id`).Select().All(&m)
 ```
 
 ## 查询分页数据 (使用List方法)
@@ -246,12 +246,13 @@ generator.exe -u <数据库用户名> -p <数据库密码> -h <数据库主机�
 * 获取参数对象 `Param() *factory.Param` (如果有默认参数对象则使用默认，否则新建参数对象)
 * 复制列表数据结果集 `Objects() []*结构体名` 
 * 新建列表数据结果集 `NewObjects() *[]*结构体名` 
-* 查询一行 `Get(mw func(db.Result) db.Result) error`
-* 分页查询 `List(recv interface{}, mw func(db.Result) db.Result, page, size int) (func() int64, error)`
-* 根据偏移量查询 `ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int) (func() int64, error)`
+* 查询一行 `Get(mw func(db.Result) db.Result, args ...interface{}) error`
+* 分页查询 `List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error)`
+* 根据偏移量查询 `ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error)`
 * 添加数据 `Add() (interface{}, error)`
-* 修改数据 `Edit(mw func(db.Result) db.Result) error`
-* 删除数据 `Delete(mw func(db.Result) db.Result) error`
+* 修改数据 `Edit(mw func(db.Result) db.Result, args ...interface{}) error`
+* 删除数据 `Delete(mw func(db.Result) db.Result, args ...interface{}) error`
+* 统计行数 `Count(mw func(db.Result) db.Result, args ...interface{}) error`
 
 > 如果数据库中的字段含有注释，并且注释内容是以反引号``` `...` ```这样的样式开头，  
 > 那么反引号内的内容会作为是否在该表结构体字段上的db标签添加`omitempty`和`pk`的依据。  

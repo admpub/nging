@@ -3,15 +3,15 @@ package middleware
 import "github.com/webx-top/echo"
 
 func FuncMap(funcMap map[string]interface{}, skipper ...echo.Skipper) echo.MiddlewareFunc {
-	var isSkiped echo.Skipper
+	var skip echo.Skipper
 	if len(skipper) > 0 {
-		isSkiped = skipper[0]
+		skip = skipper[0]
 	} else {
-		isSkiped = echo.DefaultSkipper
+		skip = echo.DefaultSkipper
 	}
 	return func(h echo.Handler) echo.Handler {
 		return echo.HandlerFunc(func(c echo.Context) error {
-			if isSkiped(c) {
+			if skip(c) {
 				return h.Handle(c)
 			}
 

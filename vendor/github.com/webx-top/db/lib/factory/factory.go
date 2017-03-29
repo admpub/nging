@@ -42,6 +42,14 @@ func (f *Factory) Debug() bool {
 
 func (f *Factory) SetDebug(on bool) *Factory {
 	db.DefaultSettings.SetLogging(on)
+	for _, cluster := range f.databases {
+		for _, master := range cluster.masters {
+			master.SetLogging(on)
+		}
+		for _, slave := range cluster.slaves {
+			slave.SetLogging(on)
+		}
+	}
 	return f
 }
 

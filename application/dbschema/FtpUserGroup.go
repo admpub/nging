@@ -120,3 +120,6 @@ func (this *FtpUserGroup) Delete(mw func(db.Result) db.Result, args ...interface
 	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
 }
 
+func (this *FtpUserGroup) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
+	return this.Param().SetArgs(args...).SetMiddleware(mw).Count()
+}

@@ -162,6 +162,8 @@ type database struct {
 	cachedCollections *cache.Cache
 
 	template *exql.Template
+
+	cloned bool // [SWH|+] 本对象是否是通过NewClone创建
 }
 
 var (
@@ -298,6 +300,12 @@ func (d *database) NewClone(p PartialDatabase, checkConn bool) (BaseDatabase, er
 	nd := NewBaseDatabase(p).(*database)
 	nd.name = d.name
 	nd.sess = d.sess
+
+	// [SWH|+] 使用原有缓存
+	nd.cachedCollections = d.cachedCollections
+	nd.cachedStatements = d.cachedStatements
+	nd.cloned = true
+
 	if checkConn {
 		if err := nd.Ping(); err != nil {
 			return nil, err
@@ -319,10 +327,11 @@ func (d *database) Close() error {
 		if cleaner, ok := d.PartialDatabase.(hasCleanUp); ok {
 			cleaner.CleanUp()
 		}
-
-		d.cachedCollections.Clear()
-		d.cachedStatements.Clear() // Closes prepared statements as well.
-
+		// [SWH|+] 在不是通过NewClone创建时才清理缓存
+		if !d.cloned {
+			d.cachedCollections.Clear()
+			d.cachedStatements.Clear() // Closes prepared statements as well.
+		}
 		tx := d.Transaction()
 		if tx == nil {
 			// Not within a transaction.

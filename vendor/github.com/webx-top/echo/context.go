@@ -25,6 +25,10 @@ type (
 	// response objects, path parameters, data and registered handler.
 	Context interface {
 		context.Context
+		StdContext() context.Context
+		SetStdContext(context.Context)
+		Validator
+		SetValidator(Validator)
 		Translator
 		SetTranslator(Translator)
 		Request() engine.Request
@@ -198,6 +202,7 @@ type (
 	}
 
 	xContext struct {
+		Validator
 		Translator
 		sessioner           Sessioner
 		cookier             Cookier
@@ -260,11 +265,11 @@ func NewContext(req engine.Request, res engine.Response, e *Echo) Context {
 	return c
 }
 
-func (c *xContext) Context() context.Context {
+func (c *xContext) StdContext() context.Context {
 	return c.context
 }
 
-func (c *xContext) SetContext(ctx context.Context) {
+func (c *xContext) SetStdContext(ctx context.Context) {
 	c.context = ctx
 }
 
@@ -632,6 +637,7 @@ func (c *xContext) SetTranslator(t Translator) {
 }
 
 func (c *xContext) Reset(req engine.Request, res engine.Response) {
+	c.Validator = DefaultNopValidate
 	c.Translator = DefaultNopTranslate
 	c.sessioner = DefaultNopSession
 	c.context = context.Background()
@@ -678,6 +684,10 @@ func (c *xContext) Fetch(name string, data interface{}) (b []byte, err error) {
 	}
 	b = buf.Bytes()
 	return
+}
+
+func (c *xContext) SetValidator(v Validator) {
+	c.Validator = v
 }
 
 // SetRenderer registers an HTML template renderer.
