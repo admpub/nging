@@ -2,8 +2,8 @@ db {
   type : "mysql"
   user : "root"
   password : "root"
-  host : "127.0.0.1:3306"
-  database : "caddyui"
+  host : "localhost"
+  database : "nging"
   prefix : ""
   debug : true
 }
@@ -15,72 +15,89 @@ log {
   targets : "console"
 }
 sys {
-  accounts : {
-    admin : {
+  vhostsfileDir : "config\\vhosts"
+  allowIP : []
+  accounts {
+    admin {
       password : "admin"
     }
   }
-  sslHosts               : []
-  sslCertFile            : ""
-  sslKeyFile             : ""
-  debug                  : true
-  editableFileExtensions : {  #允许在线编辑的文件扩展名(不含点号)
-    html      : "html"
-    htm       : "html"
-    js        : "javascript"
-    go        : "golang"
-    php       : "php"
-    css       : "css"
-    txt       : "txt"
-    xml       : "xml"
-    md        : "markdown"
-    markdown  : "markdown"
-    ini       : "ini"
-    bat       : "bat"
-    sh        : "sh"
-    pl        : "pl"
-    sql       : "sql"
-    yaml      : "yaml"
-    yml       : "yaml"
+  sslHosts : []
+  sslCacheFile : "config\\letsencrypt.cache"
+  sslKeyFile : ""
+  sslCertFile : ""
+  debug : true
+  editableFileExtensions {
+    bat : "bat"
+    css : "css"
+    go : "golang"
+    htm : "html"
+    html : "html"
+    ini : "ini"
+    js : "javascript"
+    markdown : "markdown"
+    md : "markdown"
+    php : "php"
+    pl : "pl"
+    sh : "sh"
+    sql : "sql"
+    txt : "txt"
+    xml : "xml"
+    yaml : "yaml"
+    yml : "yaml"
   }
-  editableFileMaxSize   : "1M" #允许在线编辑的最大文件尺寸
-  errorPages            : { #指定错误页面模板
-    "404" : "error/404"
-    "500" : "error/500"
-    "0"   : "error/other" #其它所有错误显示的模板
+  editableFileMaxSize : "1M"
+  editableFileMaxBytes : 1048576
+  errorPages {
+    0 : "error/other"
+    404 : "error/404"
+    500 : "error/500"
   }
+  cmdTimeout : ""
 }
 cookie {
-  path     : "/"
-  domain   : ""
-  maxAge   : 0
+  domain : ""
+  maxAge : 0
+  path : "/"
   httpOnly : true
-  hashKey  : "123456789012345678901234567890aa" #32位
-  blockKey : "123456789012345678901234567890cc" #32位
+  hashKey : "123456789012345678901234567890aa"
+  blockKey : "123456789012345678901234567890cc"
+}
+caddy {
+  agreed : false
+  caURL : "https://acme-v01.api.letsencrypt.org/directory"
+  caddyFile : "./Caddyfile"
+  cpu : "100%"
+  caEmail : ""
+  caTimeout : 10
+  logFile : ""
+  pidFile : "./caddy.pid"
+  quiet : false
+  revoke : ""
+  serverType : "http"
+  plugins : false
+  version : false
 }
 ftp {
-  pidFile        : ""
-  ###########暂时无效################
-	#dbType         : ""
-	#ftpStoreType   : ""
-	#ftpOptions     : ""
-  ###########################
-  name           : ""
-  hostName       : ""
-  publicIP       : ""
-  passivePorts   : ""
-  port           : 233
-	tls            : false
-	certFile       : ""
-  keyFile        : ""
-	explicitFTPS   : false
-	welcomeMessage : ""
+  pidFile : "ftp.pid"
+  dbType : "mysql"
+  ftpStoreType : "file"
+  name : "TinyFTP"
+  hostName : ""
+  publicIP : "127.0.0.1"
+  passivePorts : "6001-7000"
+  port : 233
+  tls : false
+  certFile : ""
+  keyFile : ""
+  explicitFTPS : false
+  welcomeMessage : "Welcome to the TinyFTP"
 }
 language {
-  Default      : "zh-cn"
-  Fallback     : ""
-  AllList      : ["zh-cn","en"]
-  RulesPath    : ["config/i18n/rules"]
+  Default : "zh-cn"
+  Fallback : ""
+  AllList : ["zh-cn", "en"]
+  RulesPath : ["config/i18n/rules"]
   MessagesPath : ["config/i18n/messages"]
-  Reload       : true
+  Reload : true
 }
