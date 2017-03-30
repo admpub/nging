@@ -411,6 +411,7 @@ func (c *xContext) Render(name string, data interface{}, codes ...int) (err erro
 	if err != nil {
 		return
 	}
+	b = bytes.TrimLeft(b, ` `)
 	c.response.Header().Set(HeaderContentType, MIMETextHTMLCharsetUTF8)
 	err = c.Blob(b, codes...)
 	return
