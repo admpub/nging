@@ -258,7 +258,7 @@ func (v *Validation) SetError(fieldName string, errMsg string) *ValidationError 
 	return err
 }
 
-// Apply a group of validators to a field, in order, and return the
+// Check Apply a group of validators to a field, in order, and return the
 // ValidationResult from the first one that fails, or the last one that
 // succeeds.
 func (v *Validation) Check(obj interface{}, checks ...Validator) *ValidationResult {
@@ -272,7 +272,7 @@ func (v *Validation) Check(obj interface{}, checks ...Validator) *ValidationResu
 	return result
 }
 
-// the obj parameter must be a struct or a struct pointer
+// Valid the obj parameter must be a struct or a struct pointer
 func (v *Validation) Valid(obj interface{}, args ...string) (ok bool, err error) {
 	err = v.validExec(obj, "", args...)
 	if err != nil {
@@ -288,7 +288,7 @@ func (v *Validation) Valid(obj interface{}, args ...string) (ok bool, err error)
 	return
 }
 
-// the obj parameter must be a struct or a struct pointer
+// ValidResult the obj parameter must be a struct or a struct pointer
 func (v *Validation) ValidResult(obj interface{}, args ...string) (ok bool, errs map[string]string) {
 	ok, _ = v.Valid(obj, args...)
 	if !ok {
@@ -414,12 +414,12 @@ func (v *Validation) ValidSimple(name string, val string, rule string) (b bool, 
 	return
 }
 
-func (v *Validation) OkBy(name string, val string, rule string) (b bool) {
+func (v *Validation) ValidField(name string, val string, rule string) (b bool) {
 	b, _ = v.ValidSimple(name, val, rule)
 	return
 }
 
-func (v *Validation) Ok(obj interface{}, args ...string) (b bool) {
+func (v *Validation) ValidOk(obj interface{}, args ...string) (b bool) {
 	b, _ = v.Valid(obj, args...)
 	return
 }

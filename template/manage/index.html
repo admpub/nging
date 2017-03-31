@@ -29,7 +29,17 @@
                                     {{range $k,$v := Stored.listData}}
 									<tr>
 										<td>{{$v.Id}}</td>
-										<td>{{$v.Domain}}</td>
+										<td>
+											{{if and (not (Contains $v.Domain "$")) (not (Contains $v.Domain "%")) }}
+											{{if not (Contains $v.Domain "//")}}
+											<a href="http://{{$v.Domain}}" target="_blank">{{$v.Domain}}</a>
+											{{else}}
+											<a href="{{Replace $v.Domain "*" "test" -1}}" target="_blank">{{$v.Domain}}</a>
+											{{end}}
+											{{else}}
+											{{$v.Domain}}
+											{{end}}
+										</td>
 										<td>{{$v.Root}}</td>
 										<td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}</td>
 										<td>{{if gt $v.Updated 0}}{{(Date $v.Updated).Format "2006-01-02 15:04:05"}}{{end}}</td>

@@ -54,5 +54,5 @@ func (v *Validation) ValidateOk(i interface{}, args ...string) bool {
 }
 
 func (v *Validation) ValidateField(fieldName string, value string, rule string) bool {
-	return v.validator.OkBy(fieldName, value, rule)
+	return v.validator.ValidField(fieldName, value, rule)
 }

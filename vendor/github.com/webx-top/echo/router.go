@@ -4,36 +4,57 @@ import (
 	"bytes"
 )
 
+var (
+	NotFoundRoute = &Route{
+		Handler: NotFoundHandler,
+	}
+	MethodNotAllowedRoute = &Route{
+		Handler: MethodNotAllowedHandler,
+	}
+)
+
 type (
 	Router struct {
 		tree   *node
-		static map[string]*methodHandler
+		static map[string]*methodRoute
 		routes []*Route
 		nroute map[string][]int
 		echo   *Echo
 	}
-	node struct {
-		kind          kind
-		label         byte
-		prefix        string
-		parent        *node
-		children      children
-		ppath         string
-		pnames        []string
-		methodHandler *methodHandler
+
+	Route struct {
+		Method      string
+		Path        string
+		Handler     Handler `json:"-" xml:"-"`
+		HandlerName string
+		Format      string
+		Params      []string //param names
+		Prefix      string
+		Meta        H
 	}
-	kind          uint8
-	children      []*node
-	methodHandler struct {
-		connect Handler
-		delete  Handler
-		get     Handler
-		head    Handler
-		options Handler
-		patch   Handler
-		post    Handler
-		put     Handler
-		trace   Handler
+
+	node struct {
+		kind        kind
+		label       byte
+		prefix      string
+		parent      *node
+		children    children
+		ppath       string
+		pnames      []string
+		methodRoute *methodRoute
+	}
+	kind        uint8
+	children    []*node
+	methodRoute struct {
+		connect *Route
+		delete  *Route
+		get     *Route
+		head    *Route
+		options *Route
+		patch   *Route
+		post    *Route
+		put     *Route
+		trace   *Route
 	}
 )
 
@@ -43,8 +64,8 @@ const (
 	akind
 )
 
-func (m *methodHandler) addHandler(method string, h Handler) {
-	switch method {
+func (m *methodRoute) addRoute(h *Route) {
+	switch h.Method {
 	case GET:
 		m.get = h
 	case POST:
@@ -66,7 +87,7 @@ func (m *methodHandler) addHandler(method string, h Handler) {
 	}
 }
 
-func (m *methodHandler) findHandler(method string) Handler {
+func (m *methodRoute) findRoute(method string) *Route {
 	switch method {
 	case GET:
 		return m.get
@@ -91,12 +112,21 @@ func (m *methodHandler) findHandler(method string) Handler {
 	}
 }
 
+func (m *methodRoute) check405() *Route {
+	for _, method := range methods {
+		if r := m.findRoute(method); r != nil {
+			return MethodNotAllowedRoute
+		}
+	}
+	return NotFoundRoute
+}
+
 func NewRouter(e *Echo) *Router {
 	return &Router{
 		tree: &node{
-			methodHandler: new(methodHandler),
+			methodRoute: new(methodRoute),
 		},
-		static: map[string]*methodHandler{},
+		static: map[string]*methodRoute{},
 		routes: []*Route{},
 		nroute: map[string][]int{},
 		echo:   e,
@@ -112,20 +142,27 @@ func (r *Router) Handle(h Handler) Handler {
 	})
 }
 
-func (r *Router) Add(method, path string, h Handler, e *Echo) (fpath string, pnames []string) {
-	ppath := path       // Pristine path
-	pnames = []string{} // Param names
+func (r *Router) Add(method, path string, h Handler, name string, meta H, e *Echo) (route *Route) {
+	ppath := path        // Pristine path
+	pnames := []string{} // Param names
 	uri := new(bytes.Buffer)
-	defer func() {
-		fpath = uri.String()
-	}()
-
+	newRoute := func(h Handler, name string, ppath string, pnames []string) *Route {
+		return &Route{
+			Method:      method,
+			Path:        ppath,
+			Handler:     h,
+			HandlerName: name,
+			Format:      uri.String(),
+			Params:      pnames,
+			Meta:        meta,
+		}
+	}
 	for i, l := 0, len(path); i < l; i++ {
 		if path[i] == ':' {
 			uri.WriteString(`%v`)
 			j := i + 1
 
-			r.insert(method, path[:i], nil, skind, "", nil, e)
+			r.insert(path[:i], skind, newRoute(nil, ``, ``, nil), e)
 			for ; i < l && path[i] != '/'; i++ {
 			}
 
@@ -134,15 +171,17 @@ func (r *Router) Add(method, path string, h Handler, e *Echo) (fpath string, pna
 			i, l = j, len(path)
 
 			if i == l {
-				r.insert(method, path[:i], h, pkind, ppath, pnames, e)
+				route = newRoute(h, name, ppath, pnames)
+				r.insert(path[:i], pkind, route, e)
 				return
 			}
-			r.insert(method, path[:i], nil, pkind, ppath, pnames, e)
+			r.insert(path[:i], pkind, newRoute(nil, ``, ppath, pnames), e)
 		} else if path[i] == '*' {
 			uri.WriteString(`%v`)
-			r.insert(method, path[:i], nil, skind, "", nil, e)
+			r.insert(path[:i], skind, newRoute(h, ``, ``, nil), e)
 			pnames = append(pnames, "_*")
-			r.insert(method, path[:i+1], h, akind, ppath, pnames, e)
+			route = newRoute(h, name, ppath, pnames)
+			r.insert(path[:i+1], akind, route, e)
 			return
 		}
 
@@ -151,21 +190,22 @@ func (r *Router) Add(method, path string, h Handler, e *Echo) (fpath string, pna
 		}
 	}
 
+	route = newRoute(h, name, ppath, pnames)
 	//static route
 	if m, ok := r.static[path]; ok {
-		m.addHandler(method, h)
+		m.addRoute(route)
 	} else {
-		m = &methodHandler{}
-		m.addHandler(method, h)
+		m = &methodRoute{}
+		m.addRoute(route)
 		r.static[path] = m
 	}
-	//r.insert(method, path, h, skind, ppath, pnames, e)
+	//r.insert(path, skind, route, e)
 	return
 }
 
-func (r *Router) insert(method, path string, h Handler, t kind, ppath string, pnames []string, e *Echo) {
+func (r *Router) insert(path string, t kind, route *Route, e *Echo) {
 	// Adjust max param
-	l := len(pnames)
+	l := len(route.Params)
 	if *e.maxParam < l {
 		*e.maxParam = l
 	}
@@ -193,22 +233,22 @@ func (r *Router) insert(method, path string, h Handler, t kind, ppath string, pn
 			// At root node
 			cn.label = search[0]
 			cn.prefix = search
-			if h != nil {
+			if route.Handler != nil {
 				cn.kind = t
-				cn.addHandler(method, h)
-				cn.ppath = ppath
-				cn.pnames = pnames
+				cn.addRoute(route)
+				cn.ppath = route.Path
+				cn.pnames = route.Params
 			}
 		} else if l < pl {
 			// Split node
-			n := newNode(cn.kind, cn.prefix[l:], cn, cn.children, cn.methodHandler, cn.ppath, cn.pnames)
+			n := newNode(cn.kind, cn.prefix[l:], cn, cn.children, cn.methodRoute, cn.ppath, cn.pnames)
 
 			// Reset parent node
 			cn.kind = skind
 			cn.label = cn.prefix[0]
 			cn.prefix = cn.prefix[:l]
 			cn.children = nil
-			cn.methodHandler = new(methodHandler)
+			cn.methodRoute = new(methodRoute)
 			cn.ppath = ""
 			cn.pnames = nil
 
@@ -217,13 +257,13 @@ func (r *Router) insert(method, path string, h Handler, t kind, ppath string, pn
 			if l == sl {
 				// At parent node
 				cn.kind = t
-				cn.addHandler(method, h)
-				cn.ppath = ppath
-				cn.pnames = pnames
+				cn.addRoute(route)
+				cn.ppath = route.Path
+				cn.pnames = route.Params
 			} else {
 				// Create child node
-				n = newNode(t, search[l:], cn, nil, new(methodHandler), ppath, pnames)
-				n.addHandler(method, h)
+				n = newNode(t, search[l:], cn, nil, new(methodRoute), route.Path, route.Params)
+				n.addRoute(route)
 				cn.addChild(n)
 			}
 		} else if l < sl {
@@ -235,31 +275,31 @@ func (r *Router) insert(method, path string, h Handler, t kind, ppath string, pn
 				continue
 			}
 			// Create child node
-			n := newNode(t, search, cn, nil, new(methodHandler), ppath, pnames)
-			n.addHandler(method, h)
+			n := newNode(t, search, cn, nil, new(methodRoute), route.Path, route.Params)
+			n.addRoute(route)
 			cn.addChild(n)
 		} else {
 			// Node already exists
-			if h != nil {
-				cn.addHandler(method, h)
-				cn.ppath = ppath
-				cn.pnames = pnames
+			if route.Handler != nil {
+				cn.addRoute(route)
+				cn.ppath = route.Path
+				cn.pnames = route.Params
 			}
 		}
 		return
 	}
 }
 
-func newNode(t kind, pre string, p *node, c children, mh *methodHandler, ppath string, pnames []string) *node {
+func newNode(t kind, pre string, p *node, c children, mh *methodRoute, ppath string, pnames []string) *node {
 	return &node{
-		kind:          t,
-		label:         pre[0],
-		prefix:        pre,
-		parent:        p,
-		children:      c,
-		ppath:         ppath,
-		pnames:        pnames,
-		methodHandler: mh,
+		kind:        t,
+		label:       pre[0],
+		prefix:      pre,
+		parent:      p,
+		children:    c,
+		ppath:       ppath,
+		pnames:      pnames,
+		methodRoute: mh,
 	}
 }
 
@@ -294,21 +334,16 @@ func (n *node) findChildByKind(t kind) *node {
 	return nil
 }
 
-func (n *node) addHandler(method string, h Handler) {
-	n.methodHandler.addHandler(method, h)
+func (n *node) addRoute(route *Route) {
+	n.methodRoute.addRoute(route)
 }
 
-func (n *node) findHandler(method string) Handler {
-	return n.methodHandler.findHandler(method)
+func (n *node) findRoute(method string) *Route {
+	return n.methodRoute.findRoute(method)
 }
 
-func (n *node) check405() HandlerFunc {
-	for _, m := range methods {
-		if h := n.findHandler(m); h != nil {
-			return MethodNotAllowedHandler
-		}
-	}
-	return NotFoundHandler
+func (n *node) check405() *Route {
+	return n.methodRoute.check405()
 }
 
 func (r *Router) Find(method, path string, context Context) {
@@ -316,11 +351,9 @@ func (r *Router) Find(method, path string, context Context) {
 	cn := r.tree // Current node as root
 
 	if m, ok := r.static[path]; ok {
-		ctx.handler = m.findHandler(method)
-		ctx.path = path
-		ctx.pnames = []string{}
-		if ctx.handler == nil {
-			ctx.handler = cn.check405()
+		ctx.route = m.findRoute(method)
+		if ctx.route == nil {
+			ctx.route = m.check405()
 		}
 		return
 	}
@@ -434,25 +467,20 @@ func (r *Router) Find(method, path string, context Context) {
 	}
 
 End:
-	ctx.path = cn.ppath
-	ctx.pnames = cn.pnames
-	ctx.handler = cn.findHandler(method)
+	ctx.route = cn.findRoute(method)
 
 	// NOTE: Slow zone...
-	if ctx.handler == nil {
-		ctx.handler = cn.check405()
-
+	if ctx.route == nil {
+		check405 := cn.check405
 		// Dig further for any, might have an empty value for *, e.g.
 		// serving a directory. Issue #207.
-		if cn = cn.findChildByKind(akind); cn == nil {
-			return
+		if cn = cn.findChildByKind(akind); cn != nil {
+			ctx.route = cn.findRoute(method)
+			pvalues[len(cn.pnames)-1] = ""
 		}
-		if ctx.handler = cn.findHandler(method); ctx.handler == nil {
-			ctx.handler = cn.check405()
+		if ctx.route == nil {
+			ctx.route = check405()
 		}
-		ctx.path = cn.ppath
-		ctx.pnames = cn.pnames
-		pvalues[len(cn.pnames)-1] = ""
 	}
 	return
 }

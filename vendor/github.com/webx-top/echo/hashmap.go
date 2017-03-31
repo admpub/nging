@@ -90,17 +90,17 @@ func (h H) ToData() *Data {
 func (h H) DeepMerge(source H) {
 	for k, value := range source {
 		var (
-			destinationValue interface{}
-			ok               bool
+			destValue interface{}
+			ok        bool
 		)
-		if destinationValue, ok = h[k]; !ok {
+		if destValue, ok = h[k]; !ok {
 			h[k] = value
 			continue
 		}
 		sourceM, sourceOk := value.(H)
-		destinationM, destinationOk := destinationValue.(H)
-		if sourceOk && sourceOk == destinationOk {
-			destinationM.DeepMerge(sourceM)
+		destM, destOk := destValue.(H)
+		if sourceOk && sourceOk == destOk {
+			destM.DeepMerge(sourceM)
 		} else {
 			h[k] = value
 		}
@@ -222,13 +222,18 @@ func (m *Mapx) Values(names ...string) []string {
 	return []string{}
 }
 
-func (m *Mapx) Get(names ...string) *Mapx {
+func (m *Mapx) get(k string) (*Mapx, bool) {
 	m.lock.Lock()
 	defer m.lock.Unlock()
+	r, y := m.Map[k]
+	return r, y
+}
+
+func (m *Mapx) Get(names ...string) *Mapx {
 	v := m
 	end := len(names) - 1
 	for idx, key := range names {
-		_, ok := v.Map[key]
+		_, ok := v.get(key)
 		if !ok {
 			if v.Slice == nil {
 				return nil
@@ -246,7 +251,7 @@ func (m *Mapx) Get(names ...string) *Mapx {
 			}
 			return nil
 		}
-		v = v.Map[key]
+		v, _ = v.get(key)
 
 		if idx == end {
 			return v

@@ -57,8 +57,17 @@ nging不仅仅包含了caddy的在线可视化配置，还包含了ftp服务的�
 
 
 # 先睹为快
+
+### 登录：
 [![](https://github.com/admpub/nging/blob/master/preview/preview_login.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_login.png)
+
+### 系统信息：
 [![](https://github.com/admpub/nging/blob/master/preview/preview_sysinfo.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_sysinfo.png)
+
+### 在线编辑文件：
+[![](https://github.com/admpub/nging/blob/master/preview/preview_editfile.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_editfile.png)
+
+### MySQL数据库管理：
 [![](https://github.com/admpub/nging/blob/master/preview/preview_listtable.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_listtable.png)
 
 # 开发环境下的启动方式

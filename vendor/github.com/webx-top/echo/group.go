@@ -23,7 +23,7 @@ func (g *Group) Any(path string, h interface{}, middleware ...interface{}) {
 }
 
 func (g *Group) Route(methods string, path string, h interface{}, middleware ...interface{}) {
-	g.Match(httpMethodRegexp.Split(methods, -1), path, h, middleware...)
+	g.Match(splitHTTPMethod.Split(methods, -1), path, h, middleware...)
 }
 
 func (g *Group) Match(methods []string, path string, h interface{}, middleware ...interface{}) {

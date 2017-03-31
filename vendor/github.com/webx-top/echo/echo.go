@@ -38,17 +38,6 @@ type (
 		FuncMap           map[string]interface{}
 	}
 
-	Route struct {
-		Method      string
-		Path        string
-		Handler     Handler `json:"-" xml:"-"`
-		HandlerName string
-		Format      string
-		Params      []string
-		Prefix      string
-		Meta        H
-	}
-
 	HTTPError struct {
 		Code    int
 		Message string
@@ -66,8 +55,12 @@ type (
 		Handle(Context) error
 	}
 
-	HandleNamer interface {
+	HandleName interface {
 		HandleName() string
+	}
+
+	Meta interface {
+		Meta() H
 	}
 
 	HandlerFunc func(Context) error
@@ -171,7 +164,7 @@ const (
 )
 
 var (
-	httpMethodRegexp = regexp.MustCompile(`[^A-Z]+`)
+	splitHTTPMethod = regexp.MustCompile(`[^A-Z]+`)
 
 	methods = []string{
 		CONNECT,
@@ -247,27 +240,12 @@ func (m MiddlewareFunc) Handle(h Handler) Handler {
 	return m(h)
 }
 
-func (m MiddlewareFunc) SetMeta(e *Echo, meta H) MiddlewareFunc {
-	e.meta[HandlerName(m)] = meta
-	return m
-}
-
 func (m MiddlewareFuncd) Handle(h Handler) Handler {
 	return m(h)
 }
 
-func (m MiddlewareFuncd) SetMeta(e *Echo, meta H) MiddlewareFuncd {
-	e.meta[HandlerName(m)] = meta
-	return m
-}
-
 func (h HandlerFunc) Handle(c Context) error {
 	return h(c)
-}
-
-func (h HandlerFunc) SetMeta(e *Echo, meta H) HandlerFunc {
-	e.meta[HandlerName(h)] = meta
-	return h
 }
 
 // Router returns router.
@@ -423,7 +401,7 @@ func (e *Echo) Any(path string, h interface{}, middleware ...interface{}) {
 }
 
 func (e *Echo) Route(methods string, path string, h interface{}, middleware ...interface{}) {
-	e.Match(httpMethodRegexp.Split(methods, -1), path, h, middleware...)
+	e.Match(splitHTTPMethod.Split(methods, -1), path, h, middleware...)
 }
 
 // Match adds a route > handler to the router for multiple HTTP methods provided.
@@ -483,7 +461,7 @@ func (e *Echo) add(method, path string, h interface{}, middleware ...interface{}
 		return
 	}
 	var name string
-	if hn, ok := handler.(HandleNamer); ok {
+	if hn, ok := handler.(HandleName); ok {
 		name = hn.HandleName()
 	} else {
 		name = HandlerName(handler)
@@ -491,25 +469,23 @@ func (e *Echo) add(method, path string, h interface{}, middleware ...interface{}
 	meta := H{}
 	for i := len(middleware) - 1; i >= 0; i-- {
 		m := middleware[i]
-		e.addMeta(meta, HandlerName(m))
 		mw := e.ValidMiddleware(m)
+		if mt, ok := mw.(Meta); ok {
+			e.addMeta(mt.Meta(), HandlerName(m))
+		} else {
+			e.addMeta(meta, HandlerName(m))
+		}
 		handler = mw.Handle(handler)
+	}
+	if mt, ok := handler.(Meta); ok {
+		meta = mt.Meta()
 	}
 	e.addMeta(meta, name)
 	hdl := HandlerFunc(func(c Context) error {
 		return handler.Handle(c)
 	})
-	fpath, pnames := e.router.Add(method, path, hdl, e)
-	e.logger.Debugf(`Route: %7v %-30v -> %v`, method, fpath, name)
-	r := &Route{
-		Method:      method,
-		Path:        path,
-		Handler:     hdl,
-		HandlerName: name,
-		Format:      fpath,
-		Params:      pnames,
-		Meta:        meta,
-	}
+	r := e.router.Add(method, path, hdl, name, meta, e)
+	e.logger.Debugf(`Route: %7v %-30v -> %v`, method, r.Format, name)
 	if _, ok := e.router.nroute[name]; !ok {
 		e.router.nroute[name] = []int{len(e.router.routes)}
 	} else {
@@ -521,6 +497,8 @@ func (e *Echo) add(method, path string, h interface{}, middleware ...interface{}
 func (e *Echo) addMeta(meta H, handler string) {
 	if m, ok := e.meta[handler]; ok {
 		meta.DeepMerge(m)
+	} else {
+		e.meta[handler] = meta
 	}
 }
 
@@ -547,7 +525,7 @@ func (e *Echo) RebuildRouter(args ...[]*Route) {
 	e.router = NewRouter(e)
 	for index, r := range routes {
 		//e.logger.Debugf(`%p rebuild: %#v`, e, *r)
-		e.router.Add(r.Method, r.Path, r.Handler, e)
+		e.router.Add(r.Method, r.Path, r.Handler, r.HandlerName, r.Meta, e)
 
 		if _, ok := e.router.nroute[r.HandlerName]; !ok {
 			e.router.nroute[r.HandlerName] = []int{index}
@@ -562,7 +540,7 @@ func (e *Echo) RebuildRouter(args ...[]*Route) {
 // AppendRouter append router
 func (e *Echo) AppendRouter(routes []*Route) {
 	for index, r := range routes {
-		e.router.Add(r.Method, r.Path, r.Handler, e)
+		e.router.Add(r.Method, r.Path, r.Handler, r.HandlerName, r.Meta, e)
 		index = len(e.router.routes)
 		if _, ok := e.router.nroute[r.HandlerName]; !ok {
 			e.router.nroute[r.HandlerName] = []int{index}
@@ -585,7 +563,7 @@ func (e *Echo) Group(prefix string, m ...interface{}) (g *Group) {
 func (e *Echo) URI(handler interface{}, params ...interface{}) string {
 	var uri, name string
 	if h, ok := handler.(Handler); ok {
-		if hn, ok := h.(HandleNamer); ok {
+		if hn, ok := h.(HandleName); ok {
 			name = hn.HandleName()
 		} else {
 			name = HandlerName(h)
@@ -709,6 +687,10 @@ func (e *Echo) Stop() error {
 		return nil
 	}
 	return e.engine.Stop()
+}
+
+func (e *Echo) Meta() map[string]H {
+	return e.meta
 }
 
 func NewHTTPError(code int, msg ...string) *HTTPError {
