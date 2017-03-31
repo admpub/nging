@@ -24,7 +24,6 @@ package standard
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	htmlTpl "html/template"
 	"io"
@@ -108,10 +107,10 @@ type Standard struct {
 	Ext                string
 	TemplatePathParser func(string) string
 	debug              bool
-	FuncMapFn          func() map[string]interface{}
+	getFuncs           func() map[string]interface{}
 	logger             logger.Logger
 	fileEvents         []func(string)
-	mutex              *sync.RWMutex
+	mutex              sync.RWMutex
 }
 
 func (self *Standard) Debug() bool {
@@ -151,7 +150,7 @@ func (self *Standard) SetContentProcessor(fn func([]byte) []byte) {
 }
 
 func (self *Standard) SetFuncMap(fn func() map[string]interface{}) {
-	self.FuncMapFn = fn
+	self.getFuncs = fn
 }
 
 func (self *Standard) deleteCachedRelation(name string) {
@@ -187,7 +186,6 @@ func (self *Standard) Init(cached ...bool) {
 		}
 	}
 	self.TemplateMgr = manager.New(self.logger, self.TemplateDir, []string{"*" + self.Ext}, callback, cached...)
-	self.mutex = &sync.RWMutex{}
 }
 
 func (self *Standard) SetManager(mgr driver.Manager) {
@@ -216,34 +214,20 @@ func (self *Standard) InitRegexp() {
 
 // Render HTML
 func (self *Standard) Render(w io.Writer, tmplName string, values interface{}, c echo.Context) error {
-	var funcMap htmlTpl.FuncMap
-	funcs := c.Funcs()
-	if self.FuncMapFn != nil {
-		funcMap = self.FuncMapFn()
-		if funcs != nil {
-			for k, v := range funcs {
-				funcMap[k] = v
-			}
-		}
-	} else {
-		if funcs != nil {
-			funcMap = funcs
-		}
-	}
-	tmpl := self.parse(tmplName, funcMap)
+	tmpl := self.parse(tmplName, c.Funcs())
 	buf := new(bytes.Buffer)
 	err := tmpl.ExecuteTemplate(buf, tmpl.Name(), values)
 	if err != nil {
-		return errors.New(fmt.Sprintf("Parse %v err: %v", tmpl.Name(), err))
+		return fmt.Errorf("Parse %v err: %v", tmpl.Name(), err)
 	}
 	_, err = io.Copy(w, buf)
 	if err != nil {
-		return errors.New(fmt.Sprintf("Parse %v err: %v", tmpl.Name(), err))
+		return fmt.Errorf("Parse %v err: %v", tmpl.Name(), err)
 	}
 	return err
 }
 
-func (self *Standard) parse(tmplName string, funcMap htmlTpl.FuncMap) (tmpl *htmlTpl.Template) {
+func (self *Standard) parse(tmplName string, funcs map[string]interface{}) (tmpl *htmlTpl.Template) {
 	self.mutex.Lock()
 	defer self.mutex.Unlock()
 	tmplName = tmplName + self.Ext
@@ -251,6 +235,16 @@ func (self *Standard) parse(tmplName string, funcMap htmlTpl.FuncMap) (tmpl *htm
 	cachedKey := tmplName
 	if tmplName[0] == '/' {
 		cachedKey = tmplName[1:]
+	}
+	var funcMap htmlTpl.FuncMap
+	if self.getFuncs != nil {
+		funcMap = htmlTpl.FuncMap(self.getFuncs())
+	}
+	if funcMap == nil {
+		funcMap = htmlTpl.FuncMap{}
+	}
+	for k, v := range funcs {
+		funcMap[k] = v
 	}
 	rel, ok := self.CachedRelation[cachedKey]
 	if ok && rel.Tpl[0].Template != nil {

@@ -65,7 +65,7 @@ func New(templateDir string, args ...logger.Logger) driver.Driver {
 
 type Pongo2 struct {
 	templates         map[string]*Template
-	mutex             *sync.RWMutex
+	mutex             sync.RWMutex
 	loader            *templateLoader
 	set               *TemplateSet
 	ext               string
@@ -157,7 +157,6 @@ func (a *Pongo2) Init(cached ...bool) {
 	}
 	a.Mgr = manager.New(a.logger, a.templateDir, []string{"*" + a.ext}, callback, cached...)
 	a.templates = map[string]*Template{}
-	a.mutex = &sync.RWMutex{}
 	loader := &templateLoader{
 		templateDir: a.templateDir,
 		ext:         a.ext,
