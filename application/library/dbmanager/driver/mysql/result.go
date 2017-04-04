@@ -136,8 +136,8 @@ func (r *Result) Execs(p *factory.Param) *Result {
 	if r.TimeStart.IsZero() {
 		r.start()
 	}
+	defer r.end()
 	if r.SQL == `` {
-		r.end()
 		return r
 	}
 	if r.SQLs == nil {
@@ -151,7 +151,6 @@ func (r *Result) Execs(p *factory.Param) *Result {
 	result, err := p.DB().Exec(r.SQL)
 	r.err = err
 	if err != nil {
-		r.end()
 		return r
 	}
 	r.RowsAffected, r.err = result.RowsAffected()
@@ -162,8 +161,8 @@ func (r *Result) Queries(p *factory.Param, readRows func(*sql.Rows) error) *Resu
 	if r.TimeStart.IsZero() {
 		r.start()
 	}
+	defer r.end()
 	if r.SQL == `` {
-		r.end()
 		return r
 	}
 	if r.SQLs == nil {
@@ -177,7 +176,6 @@ func (r *Result) Queries(p *factory.Param, readRows func(*sql.Rows) error) *Resu
 	rows, err := p.SetCollection(r.SQL).Query()
 	r.err = err
 	if err != nil {
-		r.end()
 		return r
 	}
 	r.err = readRows(rows)
