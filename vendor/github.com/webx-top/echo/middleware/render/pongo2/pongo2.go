@@ -186,13 +186,19 @@ func (a *Pongo2) SetFuncMap(fn func() map[string]interface{}) {
 }
 
 func (a *Pongo2) Render(w io.Writer, tmpl string, data interface{}, c echo.Context) error {
+	if c.Get(`webx:render.locked`) == nil {
+		c.Set(`webx:render.locked`, true)
+		a.mutex.Lock()
+		defer func() {
+			a.mutex.Unlock()
+			c.Delete(`webx:render.locked`)
+		}()
+	}
 	t, context := a.parse(tmpl, data, c.Funcs())
 	return t.ExecuteWriter(context, w)
 }
 
 func (a *Pongo2) parse(tmpl string, data interface{}, funcMap map[string]interface{}) (*Template, Context) {
-	a.mutex.Lock()
-	defer a.mutex.Unlock()
 	k := tmpl
 	if tmpl[0] == '/' {
 		k = tmpl[1:]

@@ -39,7 +39,7 @@ type CookieOptions struct {
 
 type Cookier interface {
 	Get(key string) string
-	Set(key string, val string, args ...interface{})
+	Set(key string, val string, args ...interface{}) Cookier
 }
 
 func NewCookier(ctx Context) Cookier {
@@ -124,7 +124,7 @@ func (c *cookie) Get(key string) string {
 	return val
 }
 
-func (c *cookie) Set(key string, val string, args ...interface{}) {
+func (c *cookie) Set(key string, val string, args ...interface{}) Cookier {
 	val = url.QueryEscape(val)
 	cookie := NewCookie(key, val, c.context.CookieOptions())
 	switch len(args) {
@@ -157,4 +157,5 @@ func (c *cookie) Set(key string, val string, args ...interface{}) {
 		cookie.Expires(liftTime)
 	}
 	cookie.Send(c.context)
+	return c
 }

@@ -14,7 +14,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 
+	"github.com/anacrolix/sync"
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/logger"
 	"github.com/webx-top/echo/param"
@@ -225,12 +227,18 @@ type (
 	store map[string]interface{}
 )
 
+var mutex sync.RWMutex
+
 func (s store) Set(key string, value interface{}) store {
+	mutex.Lock()
 	s[key] = value
+	mutex.Unlock()
 	return s
 }
 
 func (s store) Get(key string) interface{} {
+	mutex.RLock()
+	defer mutex.RUnlock()
 	if v, y := s[key]; y {
 		return v
 	}
@@ -238,11 +246,13 @@ func (s store) Get(key string) interface{} {
 }
 
 func (s store) Delete(keys ...string) {
+	mutex.Lock()
 	for _, key := range keys {
 		if _, y := s[key]; y {
 			delete(s, key)
 		}
 	}
+	mutex.Unlock()
 }
 
 // NewContext creates a Context object.
@@ -374,21 +384,17 @@ func (c *xContext) Forms() map[string][]string {
 
 // Get retrieves data from the context.
 func (c *xContext) Get(key string) interface{} {
-	return c.store[key]
+	return c.store.Get(key)
 }
 
 // Set saves data in the context.
 func (c *xContext) Set(key string, val interface{}) {
-	c.store[key] = val
+	c.store.Set(key, val)
 }
 
 // Delete saves data in the context.
 func (c *xContext) Delete(keys ...string) {
-	for _, key := range keys {
-		if _, y := c.store[key]; y {
-			delete(c.store, key)
-		}
-	}
+	c.store.Delete(keys...)
 }
 
 func (c *xContext) Stored() store {
@@ -412,7 +418,7 @@ func (c *xContext) Render(name string, data interface{}, codes ...int) (err erro
 	if err != nil {
 		return
 	}
-	b = bytes.TrimLeft(b, ` `)
+	b = bytes.TrimLeftFunc(b, unicode.IsSpace)
 	c.response.Header().Set(HeaderContentType, MIMETextHTMLCharsetUTF8)
 	err = c.Blob(b, codes...)
 	return

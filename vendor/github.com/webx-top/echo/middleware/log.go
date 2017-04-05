@@ -27,9 +27,18 @@ func Log(recv ...func(*VisitorInfo)) echo.MiddlewareFunc {
 		logging = recv[0]
 	}
 	if logging == nil {
-		logger := log.GetLogger(`http`)
+		logger := log.GetLogger(`HTTP`)
 		logging = func(v *VisitorInfo) {
-			logger.Info(v.RealIP + " " + v.Method + " " + v.URI + " " + fmt.Sprint(v.ResponseCode) + " " + v.Elapsed.String() + " " + fmt.Sprint(v.ResponseSize))
+			icon := "●"
+			switch {
+			case v.ResponseCode >= 500:
+				icon = "▣"
+			case v.ResponseCode >= 400:
+				icon = "■"
+			case v.ResponseCode >= 300:
+				icon = "▲"
+			}
+			logger.Info(" " + icon + " " + fmt.Sprint(v.ResponseCode) + " " + v.RealIP + " " + v.Method + " " + v.URI + " " + v.Elapsed.String() + " " + fmt.Sprint(v.ResponseSize))
 		}
 	}
 	return func(h echo.Handler) echo.Handler {
