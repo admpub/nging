@@ -1,54 +1,25 @@
 {{Extend "layout"}}
-{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加FTP账号"|T}}{{else}}{{"修改FTP账号"|T}}{{end}}{{/Block}}
+{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加分组"|T}}{{else}}{{"修改分组"|T}}{{end}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="/ftp/account">{{"FTP账号"|T}}</a></li>
+<li><a href="/task/group">{{"任务分组"|T}}</a></li>
 <li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
 {{/Block}}
 {{Block "main"}}
-
-{{$addingMode:=HasSuffix URL.Path "_add"}}
 <div class="row">
     <div class="col-md-12">
         <div class="block-flat">
           <div class="header">							
-            <h3>{{if $addingMode}}{{"添加FTP账号"|T}}{{else}}{{"修改FTP账号"|T}}{{end}}</h3>
+            <h3>{{if HasSuffix URL.Path "_add"}}{{"添加分组"|T}}{{else}}{{"修改分组"|T}}{{end}}</h3>
           </div>
           <div class="content">
               <form class="form-horizontal group-border-dashed" method="POST" action="">
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"账户名"|T}}</label>
+                <label class="col-sm-2 control-label">{{"组名称"|T}}</label>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" name="username" value="{{Form "username"}}">
+                    <input type="text" class="form-control" name="name" value="{{Form "name"}}">
                 </div>
               </div>
-              <div class="form-group">
-                <label class="col-sm-2 control-label">{{"密码"|T}}</label>
-                <div class="col-sm-8">
-                    <input type="password" class="form-control" name="password" value="" autocomplete="off">
-                    {{if not $addingMode}}<div class="help-block">{{"如果不修改密码，请留空"|T}}</div>{{end}}
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="col-sm-2 control-label">{{"再输入一次"|T}}</label>
-                <div class="col-sm-8">
-                    <input type="password" class="form-control" name="confirmPassword" value="" autocomplete="off">
-                    <div class="help-block">{{"再输入一次上面的密码"|T}}{{if not $addingMode}}. {{"如果不修改密码，请留空"|T}}{{end}}</div>
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="col-sm-2 control-label">{{"用户组"|T}}</label>
-                <div class="col-sm-8">
-                  {{$v := Form "groupId"}}
-                   <select class="form-control" name="groupId">
-                     <option value=""{{if eq $v ""}} selected{{end}}>{{"<无>"|T}}</option>
-                     {{range $k,$g:=Stored.Get "groupList"}}
-                     <option value="{{$g.Id}}"{{if eq $v (Str $g.Id)}} selected{{end}}>{{$g.Name}}</option>
-                     {{end}}
-                   </select>
-                </div>
-              </div>
-
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"授权目录"|T}}</label>
                 <div class="col-sm-8">
@@ -71,7 +42,21 @@
               </div>
               
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"连接控制"|T}}</label>
+                <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "disabled"}}
+                  <label class="radio-inline">
+                      <input type="radio" value="N" name="disabled" class="icheck"{{if or (eq $v "N") (eq $v "")}} checked{{end}}> {{"启用"|T}}
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" value="Y" name="disabled" class="icheck"{{if eq $v "Y"}} checked{{end}}> {{"禁用"|T}}
+                    </label>
+                </div>
+              </div>
+
+              
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"组用户连接控制"|T}}</label>
                 <div class="col-sm-8">
                   {{$v := Form "banned"}}
                   <label class="radio-inline">

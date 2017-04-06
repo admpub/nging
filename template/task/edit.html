@@ -1,0 +1,109 @@
+{{Extend "layout"}}
+{{Block "title"}}{{if HasSuffix URL.Path "/add"}}{{"添加任务"|T}}{{else}}{{"修改任务"|T}}{{end}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="/task/index">{{"任务列表"|T}}</a></li>
+<li class="active">{{if HasSuffix URL.Path "/add"}}{{"添加任务"|T}}{{else}}{{"修改任务"|T}}{{end}}</li>
+{{/Block}}
+{{Block "main"}}
+
+{{$addingMode:=HasSuffix URL.Path "/add"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{if $addingMode}}{{"添加任务"|T}}{{else}}{{"修改任务"|T}}{{end}}</h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" method="POST" action="">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"任务名称"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" name="name" value="{{Form "name"}}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"任务说明"|T}}</label>
+                <div class="col-sm-8">
+                    <textarea class="form-control" name="description">{{Form "description"}}</textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"分组"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "groupId"}}
+                    <select class="form-control" name="groupId">
+                      <option value="">{{"未分组"|T}}</option>
+                     {{range $k,$g:=Stored.Get "groupList"}}
+                     <option value="{{$g.Id}}"{{if eq $v (Str $g.Id)}} selected{{end}}>{{$g.Name}}</option>
+                     {{end}}
+                    </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"时间"|T}}</label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control" name="directory" value="{{Form "directory"}}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"命令"|T}}</label>
+                <div class="col-sm-8">
+                  <textarea class="form-control" name="command">{{Form "command"}}</textarea>
+                  <div class="help-block">{{"命令"|T}}</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"超时"|T}}</label>
+                <div class="col-sm-8">
+                  <input type="number" class="form-control" name="timeout" value="{{Form "timeout"}}" min="0">
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"单实例"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "concurrent"}}
+                  <label class="radio-inline">
+                      <input type="radio" value="0" name="concurrent"{{if or (eq $v "0") (eq $v "")}} checked{{end}}> {{"否"|T}}
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" value="1" name="concurrent"{{if eq $v "1"}} checked{{end}}> {{"是"|T}}
+                    </label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"通知邮件"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "enableNotify"}}
+                  <label class="radio-inline">
+                      <input type="radio" value="0" name="enableNotify" {{if or (eq $v "0") (eq $v "")}} checked{{end}} onclick="$('#cc-email-addr').addClass('hidden')"> {{"不通知"|T}}
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" value="1" name="enableNotify" {{if eq $v "1"}} checked{{end}} onclick="$('#cc-email-addr').removeClass('hidden')"> {{"执行结束时通知"|T}}
+                    </label>
+                    <label class="radio-inline">
+                      <input type="radio" value="2" name="enableNotify" {{if eq $v "2"}} checked{{end}} onclick="$('#cc-email-addr').removeClass('hidden')"> {{"执行失败时通知"|T}}
+                    </label>
+                </div>
+              </div>
+              <div class="form-group{{if or (eq $v "0") (eq $v "")}} hidden{{end}}" id="cc-email-addr">
+                <label class="col-sm-2 control-label">{{"通知邮件抄送"|T}}</label>
+                <div class="col-sm-8">
+                  <textarea class="form-control" name="notifyEmail">{{Form "notifyEmail"}}</textarea>
+                  <div class="help-block">{{"每行一个Email地址"|T}}</div>
+                </div>
+              </div>
+              
+              <div class="form-group">
+									<div class="col-sm-9 col-sm-offset-2">
+									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+									</div>
+							</div>
+            </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}

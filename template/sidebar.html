@@ -19,20 +19,20 @@
                   </a></li>
                 </ul>
               </li>
-              <li><a href="#"><i class="fa fa-desktop nav-icon"></i><span>{{"服务器管理"|T}}</span></a>
+              <li><a href="#"><i class="fa fa-desktop nav-icon"></i><span>{{"服务器"|T}}</span></a>
                 <ul class="sub-menu">
                   <li><a href="/manage/sysinfo" data-pjax="#main-container">{{"服务器信息"|T}}</a></li>
-                  <li><a href="/manage/cmd" data-pjax="#main-container">{{"执行系统命令"|T}}</a></li>
+                  <li><a href="/manage/cmd" data-pjax="#main-container">{{"执行命令"|T}}</a></li>
                   <li><a href="/manage/service" data-pjax="#main-container">{{"服务管理"|T}}</a></li>
                 </ul>
               </li>
-              <li><a href="#"><i class="fa fa-users nav-icon"></i><span>{{"FTP账号管理"|T}}</span></a>
+              <li><a href="#"><i class="fa fa-users nav-icon"></i><span>{{"FTP账号"|T}}</span></a>
                 <ul class="sub-menu">
-                  <li><a href="/ftp/account" data-pjax="#main-container">{{"账号列表"|T}}</a></li>
+                  <li><a href="/ftp/account" data-pjax="#main-container">{{"账号管理"|T}}</a></li>
                   <li><a href="/ftp/account_add" data-pjax="#main-container">
                   <span class="label label-primary pull-right">New</span>
                   {{"添加账号"|T}}</a></li>
-                  <li><a href="/ftp/group" data-pjax="#main-container">{{"用户组列表"|T}}</a></li>
+                  <li><a href="/ftp/group" data-pjax="#main-container">{{"用户组"|T}}</a></li>
                   <li><a href="/ftp/group_add" data-pjax="#main-container">
                   <span class="label label-primary pull-right">New</span>
                   {{"添加用户组"|T}}</a></li>
@@ -45,8 +45,16 @@
                   <li><a href="/collector/rule_add" data-pjax="#main-container"><span class="label label-primary pull-right">New</span>{{"新建规则"|T}}</a></li>
                 </ul>
               </li>-->
+              <li><a href="#"><i class="fa fa-clock-o nav-icon"></i><span>{{"计划任务"|T}}</span></a>
+                <ul class="sub-menu">
+                  <li><a href="/task/index" data-pjax="#main-container">{{"任务管理"|T}}</a></li>
+                  <li><a href="/task/add" data-pjax="#main-container"><span class="label label-primary pull-right">New</span>{{"新建任务"|T}}</a></li>
+                  <li><a href="/task/group" data-pjax="#main-container">{{"分组管理"|T}}</a></li>
+                  <li><a href="/task/group_add" data-pjax="#main-container"><span class="label label-primary pull-right">New</span>{{"添加分组"|T}}</a></li>
+                </ul>
+              </li>
               <li>
-                <a href="/db" data-pjax="#main-container"><i class="fa fa-table"></i><span>{{"数据库管理"|T}}</span></a>
+                <a href="/db" data-pjax="#main-container"><i class="fa fa-table"></i><span>{{"数据库"|T}}</span></a>
               </li>
               <li>
                 <a href="javascript:;" data-ajax-url="/manage/clear_cache">

@@ -2,7 +2,8 @@
 {{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加FTP用户组"|T}}{{else}}{{"修改FTP用户组"|T}}{{end}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加FTP用户组"|T}}{{else}}{{"修改FTP用户组"|T}}{{end}}</li>
+<li><a href="/ftp/account">{{"FTP用户组"|T}}</a></li>
+<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
 {{/Block}}
 {{Block "main"}}
 <div class="row">

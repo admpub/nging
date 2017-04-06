@@ -34,6 +34,7 @@ import (
 	_ "github.com/admpub/nging/application/handler/index"
 	_ "github.com/admpub/nging/application/handler/server"
 	_ "github.com/admpub/nging/application/handler/setup"
+	_ "github.com/admpub/nging/application/handler/task"
 	_ "github.com/admpub/nging/application/handler/user"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/middleware"
