@@ -15,7 +15,7 @@ type TaskGroup struct {
 	
 	Id         	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"" json:"id" xml:"id"`
 	Uid        	uint    	`db:"uid" bson:"uid" comment:"用户ID" json:"uid" xml:"uid"`
-	GroupName  	string  	`db:"group_name" bson:"group_name" comment:"组名" json:"group_name" xml:"group_name"`
+	Name       	string  	`db:"name" bson:"name" comment:"组名" json:"name" xml:"name"`
 	Description	string  	`db:"description" bson:"description" comment:"说明" json:"description" xml:"description"`
 	Created    	uint    	`db:"created" bson:"created" comment:"创建时间" json:"created" xml:"created"`
 }

@@ -449,6 +449,9 @@ func (p *Param) GetOffset() int {
 	if p.Offset > -1 {
 		return p.Offset
 	}
+	if p.Size < 0 {
+		return 0
+	}
 	if p.Page < 1 {
 		p.Page = 1
 	}

@@ -60,18 +60,22 @@ CREATE TABLE `task` (
   KEY `idx_group_id` (`group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='任务';
 
+INSERT INTO `task` (`id`, `uid`, `group_id`, `name`, `type`, `description`, `cron_spec`, `concurrent`, `command`, `disabled`, `enable_notify`, `notify_email`, `timeout`, `execute_times`, `prev_time`, `created`) VALUES
+(1,	0,	1,	'test',	0,	'test',	'test',	0,	'test',	'',	1,	'2222@3333.vvv',	0,	0,	0,	1491460247);
 
 DROP TABLE IF EXISTS `task_group`;
 CREATE TABLE `task_group` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
-  `group_name` varchar(50) NOT NULL DEFAULT '' COMMENT '组名',
+  `name` varchar(60) NOT NULL COMMENT '组名',
   `description` varchar(255) NOT NULL DEFAULT '' COMMENT '说明',
   `created` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   PRIMARY KEY (`id`),
   KEY `idx_uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='任务组';
 
+INSERT INTO `task_group` (`id`, `uid`, `name`, `description`, `created`) VALUES
+(1,	0,	'test',	'test',	1491460226);
 
 DROP TABLE IF EXISTS `task_log`;
 CREATE TABLE `task_log` (
@@ -127,4 +131,4 @@ CREATE TABLE `vhost` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='虚拟主机';
 
 
--- 2017-04-06 03:15:48
+-- 2017-04-06 09:25:16

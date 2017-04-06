@@ -18,28 +18,82 @@
 package task
 
 import (
+	"errors"
+
 	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/model"
+	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
 
-func Group(c echo.Context) error {
-	var err error
-	return c.Render(`task/group`, handler.Err(c, err))
+func Group(ctx echo.Context) error {
+	m := model.NewTaskGroup(ctx)
+	page, size := handler.Paging(ctx)
+	cnt, err := m.List(nil, nil, page, size)
+	ret := handler.Err(ctx, err)
+	ctx.SetFunc(`totalRows`, cnt)
+	ctx.Set(`listData`, m.Objects())
+	return ctx.Render(`task/group`, ret)
 }
 
-func GroupAdd(c echo.Context) error {
+func GroupAdd(ctx echo.Context) error {
 	var err error
-
-	c.Set(`activeURL`, `/task/group`)
-	return c.Render(`task/group_edit`, handler.Err(c, err))
+	if ctx.IsPost() {
+		m := model.NewTaskGroup(ctx)
+		err = ctx.MustBind(m.TaskGroup)
+		if err == nil {
+			if len(m.Name) == 0 {
+				err = errors.New(ctx.T(`分组名称不能为空`))
+			} else {
+				_, err = m.Add()
+			}
+		}
+		if err == nil {
+			handler.SendOk(ctx, ctx.T(`操作成功`))
+			return ctx.Redirect(`/task/group`)
+		}
+	}
+	ctx.Set(`activeURL`, `/task/group`)
+	return ctx.Render(`task/group_edit`, handler.Err(ctx, err))
 }
 
-func GroupEdit(c echo.Context) error {
-	var err error
-	c.Set(`activeURL`, `/task/group`)
-	return c.Render(`task/group_edit`, handler.Err(c, err))
+func GroupEdit(ctx echo.Context) error {
+	id := ctx.Formx(`id`).Uint()
+	m := model.NewTaskGroup(ctx)
+	err := m.Get(nil, `id`, id)
+	if err != nil {
+		handler.SendFail(ctx, err.Error())
+		return ctx.Redirect(`/task/group`)
+	}
+	if ctx.IsPost() {
+		err = ctx.MustBind(m.TaskGroup)
+		if err == nil {
+			m.Id = id
+			if len(m.Name) == 0 {
+				err = errors.New(ctx.T(`分组名称不能为空`))
+			} else {
+				err = m.Edit(nil, `id`, id)
+			}
+		}
+		if err == nil {
+			handler.SendOk(ctx, ctx.T(`修改成功`))
+			return ctx.Redirect(`/task/group`)
+		}
+	}
+	echo.StructToForm(ctx, m.TaskGroup, ``, nil)
+	ctx.Set(`activeURL`, `/task/group`)
+	return ctx.Render(`task/group_edit`, handler.Err(ctx, err))
 }
 
-func GroupDelete(c echo.Context) error {
-	return c.Redirect(`/task/group`)
+func GroupDelete(ctx echo.Context) error {
+	id := ctx.Formx(`id`).Uint()
+	m := model.NewTaskGroup(ctx)
+	err := m.Delete(nil, db.Cond{`id`: id})
+	if err == nil {
+		handler.SendOk(ctx, ctx.T(`操作成功`))
+	} else {
+		handler.SendFail(ctx, err.Error())
+	}
+
+	return ctx.Redirect(`/task/group`)
 }

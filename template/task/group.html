@@ -16,13 +16,9 @@
 							<table class="table no-border hover">
 								<thead class="no-border">
 									<tr>
-										<th style="width:2%;"><strong>UID</strong></th>
+										<th style="width:2%;"><strong>ID</strong></th>
 										<th><strong>{{"组名称"|T}}</strong></th>
-										<th style="width:15%;"><strong>{{"授权目录"|T}}</strong></th>
-										<th style="width:15%;"><strong>{{"创建时间"|T}}</strong></th>
-										<th style="width:15%;"><strong>{{"更新时间"|T}}</strong></th>
-										<th style="width:6%;"><strong>{{"状态"|T}}</strong></th>
-										<th style="width:6%;"><strong>{{"用户连接"|T}}</strong></th>
+										<th><strong>{{"描述"|T}}</strong></th>
 										<th style="width:15%;" class="text-center"><strong>{{"操作"|T}}</strong></th>
 									</tr>
 								</thead>
@@ -31,22 +27,10 @@
 									<tr>
 										<td>{{$v.Id}}</td>
 										<td>{{$v.Name}}</td>
-										<td>{{$v.Directory}}</td>
-										<td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}</td>
-										<td>{{if gt $v.Updated 0}}{{(Date $v.Updated).Format "2006-01-02 15:04:05"}}{{end}}</td>
-                                        {{if eq $v.Disabled "Y"}}
-										<td class="color-danger">{{"禁用"|T}}</td>
-                                        {{else}}
-                                        <td class="color-success">{{"启用"|T}}</td>
-                                        {{end}}
-										{{if eq $v.Banned "Y"}}
-										<td class="color-danger">{{"禁止连接"|T}}</td>
-                                        {{else}}
-                                        <td class="color-success">{{"允许连接"|T}}</td>
-                                        {{end}}
+										<td>{{$v.Description}}</td>
 										<td class="text-center">
-										<a class="label label-default" href="/ftp/group_edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a> 
-										<a class="label label-danger" href="/ftp/group_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
+										<a class="label label-default" href="/task/group_edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a> 
+										<a class="label label-danger" href="/task/group_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
 										</td>
 									</tr>
                                     {{end}}

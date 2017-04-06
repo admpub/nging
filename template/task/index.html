@@ -16,12 +16,12 @@
 							<table class="table no-border hover">
 								<thead class="no-border">
 									<tr>
-										<th style="width:2%;"><strong>UID</strong></th>
-										<th><strong>{{"账户名"|T}}</strong></th>
-										<th style="width:15%;"><strong>{{"用户组"|T}}</strong></th>
-										<th style="width:15%;"><strong>{{"授权目录"|T}}</strong></th>
-										<th style="width:15%;"><strong>{{"创建时间"|T}}</strong></th>
-										<th style="width:15%;"><strong>{{"更新时间"|T}}</strong></th>
+										<th style="width:2%;"><strong>ID</strong></th>
+										<th><strong>{{"任务名"|T}}</strong></th>
+										<th style="width:15%;"><strong>{{"执行时间"|T}}</strong></th>
+										<th style="width:15%;"><strong>{{"任务组"|T}}</strong></th>
+										<th style="width:15%;"><strong>{{"上次执行时间"|T}}</strong></th>
+										<th style="width:15%;"><strong>{{"下次执行时间"|T}}</strong></th>
 										<th style="width:6%;"><strong>{{"状态"|T}}</strong></th>
 										<th style="width:15%;" class="text-center"><strong>{{"操作"|T}}</strong></th>
 									</tr>
@@ -30,19 +30,19 @@
                                     {{range $k,$v := Stored.listData}}
 									<tr>
 										<td>{{$v.Id}}</td>
-										<td>{{$v.Username}}</td>
+										<td>{{$v.Name}}</td>
+										<td>{{$v.CronSpec}}</td>
 										<td>{{if $v.Group}}{{$v.Group.Name}}{{else}}{{"无"|T}}{{end}}</td>
-										<td>{{$v.Directory}}</td>
-										<td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}</td>
-										<td>{{if gt $v.Updated 0}}{{(Date $v.Updated).Format "2006-01-02 15:04:05"}}{{end}}</td>
-                                        {{if eq $v.Banned "Y"}}
-										<td class="color-danger">{{"禁止连接"|T}}</td>
+										<td>{{if gt $v.PrevTime 0}}{{(Date $v.PrevTime).Format "2006-01-02 15:04:05"}}{{else}}N/A{{end}}</td>
+										<td></td>
+                                        {{if eq $v.Disabled "Y"}}
+										<td class="color-danger">{{"禁用"|T}}</td>
                                         {{else}}
-                                        <td class="color-success">{{"允许连接"|T}}</td>
+                                        <td class="color-success">{{"启用"|T}}</td>
                                         {{end}}
 										<td class="text-center">
-										<a class="label label-default" href="/ftp/account_edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a> 
-										<a class="label label-danger" href="/ftp/account_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
+										<a class="label label-default" href="/task/edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a> 
+										<a class="label label-danger" href="/task/delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
 										</td>
 									</tr>
                                     {{end}}

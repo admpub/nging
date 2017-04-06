@@ -19,7 +19,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"任务名称"|T}}</label>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" name="name" value="{{Form "name"}}">
+                    <input type="text" class="form-control" name="name" required value="{{Form "name"}}">
                 </div>
               </div>
               <div class="form-group">
@@ -41,22 +41,25 @@
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"时间"|T}}</label>
+                <label class="col-sm-2 control-label">{{"执行时间"|T}}</label>
                 <div class="col-sm-8">
-                  <input type="text" class="form-control" name="directory" value="{{Form "directory"}}">
+                  <input type="text" class="form-control" required name="cronSpec" value="{{Form "cronSpec"}}">
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"命令"|T}}</label>
+                <label class="col-sm-2 control-label">{{"执行命令"|T}}</label>
                 <div class="col-sm-8">
-                  <textarea class="form-control" name="command">{{Form "command"}}</textarea>
+                  <textarea class="form-control" name="command" required>{{Form "command"}}</textarea>
                   <div class="help-block">{{"命令"|T}}</div>
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"超时"|T}}</label>
+                <label class="col-sm-2 control-label">{{"超时时间"|T}}</label>
                 <div class="col-sm-8">
+                  <div class="input-group">
                   <input type="number" class="form-control" name="timeout" value="{{Form "timeout"}}" min="0">
+                  <span class="input-group-addon">{{"秒"|T}}</span>
+                  </div><div class="help-block">{{"默认为86400(1天)"|T}}</div>
                 </div>
               </div>
               
