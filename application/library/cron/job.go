@@ -9,14 +9,20 @@ import (
 	"strings"
 	"time"
 
+	"runtime"
+
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/email"
 )
 
-var mailTpl *template.Template
+var (
+	mailTpl *template.Template
+	isWin   bool
+)
 
 func init() {
+	isWin = runtime.GOOS == `windows`
 	mailTpl, _ = template.New("notifyMailTmpl").Parse(`
 	你好 {{.username}}，<br/>
 
@@ -68,7 +74,13 @@ func NewCommandJob(id uint, name string, command string) *Job {
 	job.runFunc = func(timeout time.Duration) (string, string, error, bool) {
 		bufOut := new(bytes.Buffer)
 		bufErr := new(bytes.Buffer)
-		cmd := exec.Command("/bin/bash", "-c", command)
+		var cmd *exec.Cmd
+		if isWin {
+			cmd = exec.Command("cmd.exe", "/c", command)
+			//cmd = exec.Command("bash.exe", "-c", command)
+		} else {
+			cmd = exec.Command("/bin/bash", "-c", command)
+		}
 		cmd.Stdout = bufOut
 		cmd.Stderr = bufErr
 		cmd.Start()
