@@ -10,7 +10,7 @@ import (
 
 func InitJobs() {
 	m := new(dbschema.Task)
-	cnt, err := m.ListByOffset(nil, nil, 0, -1, "disabled", 0)
+	cnt, err := m.ListByOffset(nil, nil, 0, -1, "disabled", `N`)
 	if err != nil {
 		log.Error(err)
 		return

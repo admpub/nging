@@ -181,13 +181,13 @@ func Start(ctx echo.Context) error {
 		return err
 	}
 
-	job, err := cron.NewJobFromTask(m)
+	job, err := cron.NewJobFromTask(m.Task)
 	if err != nil {
 		return err
 	}
 
 	if cron.AddJob(m.CronSpec, job) {
-		m.Disabled = 0
+		m.Disabled = `N`
 		m.Edit(nil, `id`, id)
 	}
 
@@ -204,7 +204,7 @@ func Pause(ctx echo.Context) error {
 	}
 
 	cron.RemoveJob(id)
-	m.Disabled = 1
+	m.Disabled = `Y`
 	m.Edit(nil, `id`, id)
 
 	return ctx.Redirect(`/task/index`)
@@ -219,9 +219,9 @@ func Run(ctx echo.Context) error {
 		return err
 	}
 
-	job, err := cron.NewJobFromTask(m)
+	job, err := cron.NewJobFromTask(m.Task)
 	if err != nil {
-		this.showMsg(err.Error())
+		return err
 	}
 
 	job.Run()
