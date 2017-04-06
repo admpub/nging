@@ -57,10 +57,22 @@
 			"revisionTime": "2017-02-07T04:10:40Z"
 		},
 		{
+			"checksumSHA1": "Ulsy4ialdaN5L6G9iW2vbKi5mJU=",
+			"path": "github.com/admpub/cron",
+			"revision": "1c5ac61b9f223a25acfc6754287389b821f64656",
+			"revisionTime": "2015-12-25T08:11:49Z"
+		},
+		{
 			"checksumSHA1": "eyJMnZTNFHQM3Y/sWOoZy8J7mCU=",
 			"path": "github.com/admpub/dgoogauth",
 			"revision": "b5350ac69822d066b160dd85027ea79a799c74fa",
 			"revisionTime": "2017-01-16T06:28:35Z"
+		},
+		{
+			"checksumSHA1": "96wGXyfJbA4VOJUhSgqUaSkGpA4=",
+			"path": "github.com/admpub/email",
+			"revision": "069959e43da10c27e79f881766997dbb41d3a451",
+			"revisionTime": "2017-04-06T07:10:11Z"
 		},
 		{
 			"checksumSHA1": "PEEBspOWHvaBDipmc67RauHRQOw=",
