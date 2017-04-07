@@ -18,8 +18,9 @@ import (
 )
 
 var (
-	mailTpl     *template.Template
-	defaultTmpl = `
+	defaultOuputSize uint64 = 1024 * 200
+	mailTpl          *template.Template
+	defaultTmpl      = `
 	你好 {{.username}}，<br/>
 
 <p>以下是任务执行结果：</p>
@@ -97,8 +98,8 @@ func NewCommandJob(id uint, name string, command string) *Job {
 		name: name,
 	}
 	job.runFunc = func(timeout time.Duration) (string, string, error, bool) {
-		bufOut := NewCmdRec(1024)
-		bufErr := NewCmdRec(1024)
+		bufOut := NewCmdRec(defaultOuputSize)
+		bufErr := NewCmdRec(defaultOuputSize)
 		params := append([]string{}, CmdPreParams...)
 		params = append(params, command)
 		cmd := exec.Command(params[0], params[1:]...)
