@@ -28,6 +28,7 @@ import (
 	"github.com/admpub/nging/application/library/notice"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/pagination"
 )
 
 type handle struct {
@@ -65,6 +66,10 @@ func init() {
 
 func Paging(ctx echo.Context) (page int, size int) {
 	return common.Paging(ctx)
+}
+
+func PagingWithPagination(ctx echo.Context, delKeys ...string) (page int, size int, rows int, p *pagination.Pagination) {
+	return common.PagingWithPagination(ctx, delKeys...)
 }
 
 func Ok(v string) errors.Successor {

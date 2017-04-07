@@ -97,6 +97,7 @@ func main() {
 
 	// 启用session
 	e.Use(session.Middleware(config.SessionOptions))
+	e.Use(middleware.Validate(echo.NewValidation))
 
 	renderOptions := &render.Config{
 		TmplDir: `./template`,

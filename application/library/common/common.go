@@ -22,6 +22,7 @@ import (
 
 	"github.com/admpub/nging/application/library/errors"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/pagination"
 )
 
 var PageMaxSize = 1000
@@ -35,6 +36,17 @@ func Paging(ctx echo.Context) (page int, size int) {
 	if size < 1 || size > PageMaxSize {
 		size = 50
 	}
+	return
+}
+
+func PagingWithPagination(ctx echo.Context, delKeys ...string) (page int, size int, totalRows int, p *pagination.Pagination) {
+	page, size = Paging(ctx)
+	totalRows = ctx.Formx(`rows`).Int()
+	p = pagination.New(ctx).SetAll(``, totalRows, page, 10, size).SetURL(map[string]string{
+		`rows`: `rows`,
+		`page`: `page`,
+		`size`: `size`,
+	}, delKeys...)
 	return
 }
 

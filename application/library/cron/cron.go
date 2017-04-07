@@ -5,6 +5,7 @@ import (
 
 	"github.com/admpub/cron"
 	"github.com/admpub/log"
+	"github.com/admpub/nging/application/library/config"
 )
 
 var (
@@ -13,10 +14,31 @@ var (
 	lock     sync.Mutex
 )
 
-func Initial(size int) {
+func Initial(sizes ...int) {
+	var size int
+	if len(sizes) > 0 {
+		size = sizes[0]
+	} else {
+		size = config.DefaultConfig.Cron.PoolSize
+	}
+	if size <= 0 {
+		size = 1
+	}
+	if mainCron != nil {
+		mainCron.Stop()
+		mainCron = nil
+		close(workPool)
+	}
 	workPool = make(chan bool, size)
 	mainCron = cron.New()
 	mainCron.Start()
+}
+
+func MainCron() *cron.Cron {
+	if mainCron == nil {
+		Initial()
+	}
+	return mainCron
 }
 
 func Parse(spec string) error {
@@ -31,7 +53,7 @@ func AddJob(spec string, job *Job) bool {
 	if GetEntryById(job.id) != nil {
 		return false
 	}
-	err := mainCron.AddJob(spec, job)
+	err := MainCron().AddJob(spec, job)
 	if err != nil {
 		log.Error("AddJob: ", err.Error())
 		return false
@@ -40,7 +62,7 @@ func AddJob(spec string, job *Job) bool {
 }
 
 func RemoveJob(id uint) {
-	mainCron.RemoveJob(func(e *cron.Entry) bool {
+	MainCron().RemoveJob(func(e *cron.Entry) bool {
 		if v, ok := e.Job.(*Job); ok {
 			if v.id == id {
 				return true
@@ -51,7 +73,7 @@ func RemoveJob(id uint) {
 }
 
 func GetEntryById(id uint) *cron.Entry {
-	entries := mainCron.Entries()
+	entries := MainCron().Entries()
 	for _, e := range entries {
 		if v, ok := e.Job.(*Job); ok {
 			if v.id == id {
@@ -63,7 +85,7 @@ func GetEntryById(id uint) *cron.Entry {
 }
 
 func GetEntries(size int) []*cron.Entry {
-	ret := mainCron.Entries()
+	ret := MainCron().Entries()
 	if len(ret) > size {
 		return ret[:size]
 	}

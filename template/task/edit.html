@@ -43,7 +43,31 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"执行时间"|T}}</label>
                 <div class="col-sm-8">
-                  <input type="text" class="form-control" required name="cronSpec" value="{{Form "cronSpec"}}">
+                  <div class="input-group">
+                    <span class="input-group-addon">{{"秒"|T}}:</span>
+                    <input type="text" class="form-control" data-toggle="tooltip" title="秒，有效范围为0-59的整数。可出现'*'、'/'、','、'-'四个字符" required name="seconds" onfocus="onfocusInput(this)" pattern="[0-5]?[0-9*]([*/,-][0-5]?[0-9])?" value="{{Form "seconds"}}">
+                    <span class="input-group-addon">{{"分"|T}}:</span>
+                    <input type="text" class="form-control" data-toggle="tooltip" title="分，有效范围为0-59的整数。可出现'*'、'/'、','、'-'四个字符" required name="minutes" onfocus="onfocusInput(this)" pattern="[0-5]?[0-9*]([*/,-][0-5]?[0-9])?" value="{{Form "minutes"}}">
+                    <span class="input-group-addon">{{"时"|T}}:</span>
+                    <input type="text" class="form-control" data-toggle="tooltip" title="小时，有效范围为0-23的整数。可出现'*'、'/'、','、'-'四个字符" required name="hours" onfocus="onfocusInput(this)" pattern="[0-2]?[0-9*]([*/,-][0-2]?[0-9])?" value="{{Form "hours"}}">
+                    <span class="input-group-addon">{{"日"|T}}:</span>
+                    <input type="text" class="form-control" data-toggle="tooltip" title="日，有效范围为0-31的整数，0代表月份中的第一天。可出现'*'、'/'、','、'-'、'?'五个字符" required name="dayOfMonth" onfocus="onfocusInput(this)" pattern="[0-3]?[0-9*?]([*/,-][0-3]?[0-9])?" value="{{Form "dayOfMonth"}}">
+                    <span class="input-group-addon">{{"月"|T}}:</span>
+                    <input type="text" class="form-control" data-toggle="tooltip" title="月，有效范围为1-12的整数。可出现'*'、'/'、','、'-'四个字符" required name="month" onfocus="onfocusInput(this)" pattern="[0-1]?[0-9*]([*/,-][0-1]?[0-9])?" value="{{Form "month"}}">
+                    <span class="input-group-addon">{{"周"|T}}:</span>
+                    <input type="text" class="form-control" data-toggle="tooltip" title="周，有效范围为0-6的整数，0代表星期天。可出现'*'、'/'、','、'-'、'?'五个字符" required name="dayOfWeek" onfocus="onfocusInput(this)" pattern="[0-6*?]([*/,-][0-6])?" value="{{Form "dayOfWeek"}}">
+                  </div>
+                  <!--<input type="text" class="form-control" required name="cronSpec" value="{{Form "cronSpec"}}">-->
+                  <div class="help-block">
+                    特定字符的含义如下：
+			<ul>
+				<li><code><a href="javascript:;" onclick="insertAtCursor(this)">*</a></code> 表示匹配该域的任意值，假如在Minutes域使用*, 即表示每分钟都会触发事件。</li>
+				<li><code><a href="javascript:;" onclick="insertAtCursor(this)">?</a></code> 字符仅被用于“日”和“周”两个子表达式，表示不指定值，当两个子表达式其中之一被指定了值以后，为了避免冲突，需要将另一个子表达式的值设为“?”。</li>
+				<li><code><a href="javascript:;" onclick="insertAtCursor(this)">-</a></code> 表示范围，例如在Minutes域使用5-20，表示从5分到20分每分钟触发一次。</li>
+				<li><code><a href="javascript:;" onclick="insertAtCursor(this)">/</a></code> 表示起始时间开始触发，然后每隔固定时间触发一次，例如在Minutes域使用5/20,则意味着在5分的时候开始触发一次，而25，45等分别触发一次。</li>
+				<li><code><a href="javascript:;" onclick="insertAtCursor(this)">,</a></code> 表示列出枚举值。例如：在Minutes域使用5,20，则意味着在5和20分每分钟触发一次。</li>
+			</ul>
+                  </div>
                 </div>
               </div>
               <div class="form-group">
@@ -109,4 +133,16 @@
         </div><!-- /.block-flat -->
     </div>
 </div>
+{{/Block}}
+{{Block "footer"}}
+<script type="text/javascript">
+var currentFocusInput;
+function insertAtCursor(obj){
+  if(!currentFocusInput)return;
+  App.insertAtCursor(currentFocusInput,$(obj).text());
+}
+function onfocusInput(obj){
+  currentFocusInput=obj;
+}
+</script>
 {{/Block}}

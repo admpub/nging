@@ -33,7 +33,7 @@ func (v *NopValidation) ValidateField(_ string, _ string, _ string) bool {
 	return false
 }
 
-func NewValidation() *Validation {
+func NewValidation() Validator {
 	return &Validation{
 		validator: validation.New(),
 	}

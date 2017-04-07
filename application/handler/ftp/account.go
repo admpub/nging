@@ -44,10 +44,14 @@ func init() {
 
 func AccountIndex(ctx echo.Context) error {
 	m := model.NewFtpUser(ctx)
-	page, size := handler.Paging(ctx)
+	page, size, totalRows, p := handler.PagingWithPagination(ctx)
 	cnt, err := m.List(nil, nil, page, size)
 	ret := handler.Err(ctx, err)
-	ctx.SetFunc(`totalRows`, cnt)
+	if totalRows <= 0 {
+		totalRows = int(cnt())
+		p.SetRows(totalRows)
+	}
+	ctx.Set(`pagination`, p)
 	users := m.Objects()
 	gIds := []uint{}
 	userAndGroup := make([]*model.FtpUserAndGroup, len(users))
@@ -198,10 +202,14 @@ func AccountDelete(ctx echo.Context) error {
 
 func GroupIndex(ctx echo.Context) error {
 	m := model.NewFtpUserGroup(ctx)
-	page, size := handler.Paging(ctx)
+	page, size, totalRows, p := handler.PagingWithPagination(ctx)
 	cnt, err := m.List(nil, nil, page, size)
 	ret := handler.Err(ctx, err)
-	ctx.SetFunc(`totalRows`, cnt)
+	if totalRows <= 0 {
+		totalRows = int(cnt())
+		p.SetRows(totalRows)
+	}
+	ctx.Set(`pagination`, p)
 	ctx.Set(`listData`, m.Objects())
 	return ctx.Render(`ftp/group`, ret)
 }

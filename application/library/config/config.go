@@ -77,6 +77,17 @@ type Config struct {
 		CmdTimeoutDuration     time.Duration      `json:"-"`
 	} `json:"sys"`
 
+	Email struct {
+		*SMTPConfig
+		From      string `json:"from"`
+		QueueSize int    `json:"queueSize"`
+	} `json:"email"`
+
+	Cron struct {
+		PoolSize int    `json:"poolSize"`
+		Template string `json:"template"` //发信模板
+	} `json:"cron"`
+
 	Cookie struct {
 		Domain   string `json:"domain"`
 		MaxAge   int    `json:"maxAge"`

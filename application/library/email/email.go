@@ -3,11 +3,13 @@ package email
 import (
 	"errors"
 	"net/smtp"
-	"strconv"
 	"time"
+
+	"strings"
 
 	"github.com/admpub/email"
 	"github.com/admpub/log"
+	"github.com/admpub/nging/application/library/config"
 )
 
 type queueItem struct {
@@ -15,27 +17,8 @@ type queueItem struct {
 	Config Config
 }
 
-type SMTPConfig struct {
-	Identity string
-	Host     string
-	Port     int
-	Username string
-	Password string
-}
-
-func (s *SMTPConfig) Address() string {
-	if s.Port == 0 {
-		s.Port = 25
-	}
-	return s.Host + `:` + strconv.Itoa(s.Port)
-}
-
-func (s *SMTPConfig) Auth() smtp.Auth {
-	return smtp.PlainAuth(s.Identity, s.Username, s.Password, s.Host)
-}
-
 type Config struct {
-	SMTP       *SMTPConfig
+	SMTP       *config.SMTPConfig
 	From       string
 	ToAddress  string
 	ToUsername string
@@ -51,7 +34,19 @@ var (
 	ErrSendChannelTimeout = errors.New(`SendMail: The sending channel timed out`)
 )
 
-func Initial(queueSize int) {
+func Initial(queueSizes ...int) {
+	var queueSize int
+	if len(queueSizes) > 0 {
+		queueSize = queueSizes[0]
+	} else {
+		queueSize = config.DefaultConfig.Email.QueueSize
+	}
+	if sendCh != nil {
+		close(sendCh)
+	}
+	if queueSize <= 0 {
+		queueSize = 1
+	}
 	sendCh = make(chan *queueItem, queueSize)
 	go func() {
 		for {
@@ -70,7 +65,7 @@ func Initial(queueSize int) {
 
 func SendMail(conf *Config) error {
 	if sendCh == nil {
-		Initial(1)
+		Initial()
 	}
 	if conf.SMTP == nil {
 		return ErrSMTPNoSet
@@ -80,6 +75,12 @@ func SendMail(conf *Config) error {
 	}
 	mail := email.NewEmail()
 	mail.From = conf.From
+	if len(mail.From) == 0 {
+		mail.From = conf.SMTP.Username
+		if !strings.Contains(mail.From, `@`) {
+			mail.From += `@` + conf.SMTP.Host
+		}
+	}
 	mail.To = []string{conf.ToAddress}
 	mail.Subject = conf.Subject
 	mail.HTML = conf.Content

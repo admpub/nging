@@ -28,27 +28,49 @@
 								</thead>
 								<tbody class="no-border-y">
                                     {{range $k,$v := Stored.listData}}
+									{{$extra := index Stored.extraList $k}}
 									<tr>
 										<td>{{$v.Id}}</td>
-										<td>{{$v.Name}}</td>
+										<td>
+											{{if $extra.Running}}
+											<span class="fa fa-play text-success"></span>
+											{{else}}
+											<span class="fa fa-ban text-danger"></span>
+											{{end}}
+											{{$v.Name}}
+										</td>
 										<td>{{$v.CronSpec}}</td>
 										<td>{{if $v.Group}}{{$v.Group.Name}}{{else}}{{"无"|T}}{{end}}</td>
 										<td>{{if gt $v.PrevTime 0}}{{(Date $v.PrevTime).Format "2006-01-02 15:04:05"}}{{else}}N/A{{end}}</td>
-										<td></td>
+										<td>
+											{{if $extra.NextTime.IsZero}}
+											{{"未知"|T}}
+											{{else}}
+											{{$extra.NextTime.Format "2006-01-02 15:04:05"}}
+											{{end}}
+										</td>
                                         {{if eq $v.Disabled "Y"}}
 										<td class="color-danger">{{"禁用"|T}}</td>
                                         {{else}}
                                         <td class="color-success">{{"启用"|T}}</td>
                                         {{end}}
 										<td class="text-center">
-										<a class="label label-default" href="/task/edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a> 
-										<a class="label label-danger" href="/task/delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
+										{{if $extra.Running}}
+                                        <a class="label label-success" title="{{"暂停"|T}}" href="/task/pause?id={{$v.Id}}"><i class="fa fa-pause"></i></a>
+                                        {{else}}
+										<a class="label label-danger" href="/task/start?id={{$v.Id}}" title="{{"启动"|T}}"><i class="fa fa-play"></i></a>
+										<a class="label label-info" href="/task/run?id={{$v.Id}}" onclick="return confirm('{{"该功能建议只用来做任务测试，确定要立即执行该任务吗？"|T}}')" title="{{"运行"|T}}"><i class="fa fa-refresh"></i></a>
+                                        {{end}}
+										<a class="label label-primary" title="{{"日志"|T}}" href="/task/log?taskId={{$v.Id}}"><i class="fa fa-comments-o"></i></a>
+										<a class="label label-default" title="{{"修改"|T}}" href="/task/edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a> 
+										<a class="label label-danger" title="{{"删除"|T}}" href="/task/delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
 										</td>
 									</tr>
                                     {{end}}
 								</tbody>
 							</table>		
 							</div>
+							{{Stored.pagination.Render}}
 						</div>
 					</div>				
 				</div>

@@ -20,6 +20,7 @@ package task
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"strings"
 
@@ -37,26 +38,52 @@ func init() {
 		g.Route(`GET,POST`, `/add`, Add)
 		g.Route(`GET,POST`, `/edit`, Edit)
 		g.Route(`GET,POST`, `/delete`, Delete)
+		g.Route(`GET,POST`, `/start`, Start)
+		g.Route(`GET,POST`, `/pause`, Pause)
+		g.Route(`GET,POST`, `/run`, Run)
 		g.Route(`GET,POST`, `/group`, Group)
 		g.Route(`GET,POST`, `/group_add`, GroupAdd)
 		g.Route(`GET,POST`, `/group_edit`, GroupEdit)
 		g.Route(`GET,POST`, `/group_delete`, GroupDelete)
+		g.Route(`GET,POST`, `/log`, Log)
+		g.Route(`GET,POST`, `/log_view/:id`, LogView)
+		g.Route(`GET,POST`, `/log_delete`, LogDelete)
 	})
+}
+
+type extra struct {
+	NextTime time.Time
+	Running  bool
 }
 
 func Index(ctx echo.Context) error {
 	m := model.NewTask(ctx)
-	page, size := handler.Paging(ctx)
+	page, size, totalRows, p := handler.PagingWithPagination(ctx)
 	cnt, err := m.List(nil, nil, page, size)
 	ret := handler.Err(ctx, err)
-	ctx.SetFunc(`totalRows`, cnt)
+	if totalRows <= 0 {
+		totalRows = int(cnt())
+		p.SetRows(totalRows)
+	}
+	ctx.Set(`pagination`, p)
 	tasks := m.Objects()
 	gIds := []uint{}
 	tg := make([]*model.TaskAndGroup, len(tasks))
+	extraList := make([]*extra, len(tasks))
 	for k, u := range tasks {
 		tg[k] = &model.TaskAndGroup{
 			Task: u,
 		}
+		ex := &extra{}
+		entry := cron.GetEntryById(u.Id)
+		if entry != nil {
+			ex.NextTime = entry.Next
+			ex.Running = true
+		} else {
+			ex.NextTime = time.Time{}
+		}
+		extraList[k] = ex
+
 		if u.GroupId < 1 {
 			continue
 		}
@@ -90,7 +117,36 @@ func Index(ctx echo.Context) error {
 		}
 	}
 	ctx.Set(`listData`, tg)
+	ctx.Set(`extraList`, extraList)
 	return ctx.Render(`task/index`, ret)
+}
+
+func getCronSpec(ctx echo.Context) string {
+	seconds := ctx.Form(`seconds`)
+	minutes := ctx.Form(`minutes`)
+	hours := ctx.Form(`hours`)
+	dayOfMonth := ctx.Form(`dayOfMonth`)
+	month := ctx.Form(`month`)
+	dayOfWeek := ctx.Form(`dayOfWeek`)
+	return seconds + ` ` + minutes + ` ` + hours + ` ` + dayOfMonth + ` ` + month + ` ` + dayOfWeek
+}
+
+func checkTaskData(ctx echo.Context, m *dbschema.Task) error {
+	var err error
+	if len(m.Name) == 0 {
+		err = errors.New(ctx.T(`任务名不能为空`))
+	} else if m.EnableNotify > 0 && len(m.NotifyEmail) > 0 {
+		for _, email := range strings.Split(m.NotifyEmail, "\n") {
+			email = strings.TrimSpace(email)
+			if !ctx.ValidateField(`notifyEmail`, email, `email`) {
+				err = errors.New(ctx.T(`无效的Email地址：%s`, email))
+				break
+			}
+		}
+	} else if err = cron.Parse(m.CronSpec); err != nil {
+		err = errors.New(ctx.T(`无效的Cron时间：%s`, m.CronSpec))
+	}
+	return err
 }
 
 func Add(ctx echo.Context) error {
@@ -100,19 +156,10 @@ func Add(ctx echo.Context) error {
 		err = ctx.MustBind(m.Task)
 		if err == nil {
 			m.NotifyEmail = strings.TrimSpace(m.NotifyEmail)
-			if len(m.Name) == 0 {
-				err = errors.New(ctx.T(`任务名不能为空`))
-			} else if m.EnableNotify > 0 && len(m.NotifyEmail) > 0 {
-				for _, email := range strings.Split(m.NotifyEmail, "\n") {
-					email = strings.TrimSpace(email)
-					if !ctx.ValidateField(`notifyEmail`, email, `email`) {
-						err = errors.New(ctx.T(`无效的Email地址：%s`, email))
-						break
-					}
-				}
-			} else if err = cron.Parse(m.CronSpec); err != nil {
-				err = errors.New(ctx.T(`无效的Cron时间：%s`, m.CronSpec))
-			}
+			m.Command = strings.TrimSpace(m.Command)
+			m.CronSpec = getCronSpec(ctx)
+			m.Disabled = `Y`
+			err = checkTaskData(ctx, m.Task)
 			if err == nil {
 				_, err = m.Add()
 			}
@@ -123,7 +170,9 @@ func Add(ctx echo.Context) error {
 		}
 	}
 	mg := model.NewTaskGroup(ctx)
-	_, err = mg.ListByOffset(nil, nil, 0, -1)
+	if _, e := mg.ListByOffset(nil, nil, 0, -1); e != nil {
+		err = e
+	}
 	ctx.Set(`groupList`, mg.Objects())
 	return ctx.Render(`task/edit`, handler.Err(ctx, err))
 }
@@ -137,12 +186,19 @@ func Edit(ctx echo.Context) error {
 		return ctx.Redirect(`/task/index`)
 	}
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.Task)
+		err = ctx.MustBind(m.Task, func(k string, v []string) (string, []string) {
+			if strings.ToLower(k) == `disabled` {
+				return ``, nil
+			}
+			return k, v
+		})
 		if err == nil {
 			m.Id = id
-			if len(m.Name) == 0 {
-				err = errors.New(ctx.T(`任务名不能为空`))
-			} else {
+			m.NotifyEmail = strings.TrimSpace(m.NotifyEmail)
+			m.Command = strings.TrimSpace(m.Command)
+			m.CronSpec = getCronSpec(ctx)
+			err = checkTaskData(ctx, m.Task)
+			if err == nil {
 				err = m.Edit(nil, `id`, id)
 			}
 		}
@@ -151,8 +207,30 @@ func Edit(ctx echo.Context) error {
 			return ctx.Redirect(`/task/index`)
 		}
 	}
+	specs := strings.Split(m.CronSpec, ` `)
+	switch len(specs) {
+	case 6:
+		ctx.Request().Form().Set(`dayOfWeek`, specs[5])
+		fallthrough
+	case 5:
+		ctx.Request().Form().Set(`month`, specs[4])
+		fallthrough
+	case 4:
+		ctx.Request().Form().Set(`dayOfMonth`, specs[3])
+		fallthrough
+	case 3:
+		ctx.Request().Form().Set(`hours`, specs[2])
+		fallthrough
+	case 2:
+		ctx.Request().Form().Set(`minutes`, specs[1])
+		fallthrough
+	case 1:
+		ctx.Request().Form().Set(`seconds`, specs[0])
+	}
 	mg := model.NewTaskGroup(ctx)
-	_, err = mg.ListByOffset(nil, nil, 0, -1)
+	if _, e := mg.ListByOffset(nil, nil, 0, -1); e != nil {
+		err = e
+	}
 	ctx.Set(`groupList`, mg.Objects())
 	echo.StructToForm(ctx, m.Task, ``, echo.LowerCaseFirstLetter)
 	ctx.Set(`activeURL`, `/task/index`)

@@ -28,10 +28,14 @@ import (
 
 func Group(ctx echo.Context) error {
 	m := model.NewTaskGroup(ctx)
-	page, size := handler.Paging(ctx)
+	page, size, totalRows, p := handler.PagingWithPagination(ctx)
 	cnt, err := m.List(nil, nil, page, size)
 	ret := handler.Err(ctx, err)
-	ctx.SetFunc(`totalRows`, cnt)
+	if totalRows <= 0 {
+		totalRows = int(cnt())
+		p.SetRows(totalRows)
+	}
+	ctx.Set(`pagination`, p)
 	ctx.Set(`listData`, m.Objects())
 	return ctx.Render(`task/group`, ret)
 }

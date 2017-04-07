@@ -13,17 +13,13 @@ import (
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/email"
 )
 
 var (
-	mailTpl *template.Template
-	isWin   bool
-)
-
-func init() {
-	isWin = runtime.GOOS == `windows`
-	mailTpl, _ = template.New("notifyMailTmpl").Parse(`
+	mailTpl     *template.Template
+	defaultTmpl = `
 	你好 {{.username}}，<br/>
 
 <p>以下是任务执行结果：</p>
@@ -42,8 +38,31 @@ func init() {
 本邮件由系统自动发出，请勿回复<br />
 如果要取消邮件通知，请登录到系统进行设置<br />
 </p>
-`)
+`
+	isWin bool
+)
 
+func init() {
+	isWin = runtime.GOOS == `windows`
+}
+
+func InitialMailTpl() {
+	tmpl := config.DefaultConfig.Cron.Template
+	if len(tmpl) == 0 {
+		tmpl = defaultTmpl
+	}
+	var err error
+	mailTpl, err = template.New("notifyMailTmpl").Parse(tmpl)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func MailTpl() *template.Template {
+	if mailTpl == nil {
+		InitialMailTpl()
+	}
+	return mailTpl
 }
 
 type Job struct {
@@ -72,8 +91,8 @@ func NewCommandJob(id uint, name string, command string) *Job {
 		name: name,
 	}
 	job.runFunc = func(timeout time.Duration) (string, string, error, bool) {
-		bufOut := new(bytes.Buffer)
-		bufErr := new(bytes.Buffer)
+		bufOut := NewCmdRec(1024)
+		bufErr := NewCmdRec(1024)
 		var cmd *exec.Cmd
 		if isWin {
 			cmd = exec.Command("cmd.exe", "/c", command)
@@ -148,6 +167,7 @@ func (j *Job) Run() {
 	tl.TaskId = j.id
 	tl.Output = cmdOut
 	tl.Error = cmdErr
+	tl.Created = uint(t.Unix())
 	tl.Elapsed = uint(ut)
 
 	if isTimeout {
@@ -159,9 +179,17 @@ func (j *Job) Run() {
 	} else {
 		tl.Status = `success`
 	}
-	_, err2 := tl.Add()
+	pk, err2 := tl.Param().SetSend(tl).Insert()
 	if err2 != nil {
-		log.Error(err2)
+		log.Error("日志写入失败: ", err2)
+	}
+	switch id := pk.(type) {
+	case uint:
+		tl.Id = id
+	case int64:
+		tl.Id = uint(id)
+	default:
+		log.Fatalf("无法获取写入日志的主键ID，返回的数据类型为: %T", pk)
 	}
 	j.logId = tl.Id
 
@@ -206,7 +234,7 @@ func (j *Job) Run() {
 		}
 
 		content := new(bytes.Buffer)
-		mailTpl.Execute(content, data)
+		MailTpl().Execute(content, data)
 		var ccList []string
 		if len(j.task.NotifyEmail) > 0 {
 			ccList = strings.Split(j.task.NotifyEmail, "\n")
@@ -215,8 +243,8 @@ func (j *Job) Run() {
 			}
 		}
 		conf := &email.Config{
-			SMTP:       &email.SMTPConfig{},
-			From:       ``,
+			SMTP:       config.DefaultConfig.Email.SMTPConfig,
+			From:       config.DefaultConfig.Email.From,
 			ToAddress:  user.Email,
 			ToUsername: user.Username,
 			Subject:    title,
