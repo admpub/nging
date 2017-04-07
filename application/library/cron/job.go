@@ -39,11 +39,17 @@ var (
 如果要取消邮件通知，请登录到系统进行设置<br />
 </p>
 `
-	isWin bool
+	CmdPreParams []string
 )
 
 func init() {
-	isWin = runtime.GOOS == `windows`
+	isWin := runtime.GOOS == `windows`
+	if isWin {
+		CmdPreParams = []string{"cmd.exe", "/c"}
+		//CmdPreParams = []string{"bash.exe", "-c"}
+	} else {
+		CmdPreParams = []string{"/bin/bash", "-c"}
+	}
 }
 
 func InitialMailTpl() {
@@ -93,13 +99,9 @@ func NewCommandJob(id uint, name string, command string) *Job {
 	job.runFunc = func(timeout time.Duration) (string, string, error, bool) {
 		bufOut := NewCmdRec(1024)
 		bufErr := NewCmdRec(1024)
-		var cmd *exec.Cmd
-		if isWin {
-			cmd = exec.Command("cmd.exe", "/c", command)
-			//cmd = exec.Command("bash.exe", "-c", command)
-		} else {
-			cmd = exec.Command("/bin/bash", "-c", command)
-		}
+		params := append([]string{}, CmdPreParams...)
+		params = append(params, command)
+		cmd := exec.Command(params[0], params[1:]...)
 		cmd.Stdout = bufOut
 		cmd.Stderr = bufErr
 		cmd.Start()
@@ -160,7 +162,7 @@ func (j *Job) Run() {
 
 	cmdOut, cmdErr, err, isTimeout := j.runFunc(timeout)
 
-	ut := time.Now().Sub(t) / time.Millisecond
+	ut := time.Now().Sub(t).Seconds()
 
 	// 插入日志
 	tl := new(dbschema.TaskLog)

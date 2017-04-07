@@ -1,38 +1,41 @@
 {{Extend "layout"}}
-{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加分组"|T}}{{else}}{{"修改分组"|T}}{{end}}{{/Block}}
+{{Block "title"}}{{"日志详情"|T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="/task/group">{{"任务分组"|T}}</a></li>
-<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
+<li><a href="/task/index">{{"任务管理"|T}}</a></li>
+<li><a href="/task/log{{if Stored.task}}?taskId={{Stored.task.Id}}{{end}}">{{"任务日志"|T}}</a></li>
+<li class="active">{{"日志详情"|T}}</li>
 {{/Block}}
 {{Block "main"}}
 <div class="row">
     <div class="col-md-12">
+        {{if Stored.task}}{{Include "task/view_content"}}{{end}}
         <div class="block-flat">
-          <div class="header">							
-            <h3>{{if HasSuffix URL.Path "_add"}}{{"添加分组"|T}}{{else}}{{"修改分组"|T}}{{end}}</h3>
+          <div class="header">
+            <h3>{{"日志详情"|T}}</h3>
           </div>
           <div class="content">
-              <form class="form-horizontal group-border-dashed" method="POST" action="">
-              <div class="form-group">
-                <label class="col-sm-2 control-label">{{"组名称"|T}}</label>
-                <div class="col-sm-8">
-                    <input type="text" class="form-control" required name="name" value="{{Form "name"}}">
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="col-sm-2 control-label">{{"说明"|T}}</label>
-                <div class="col-sm-8">
-                  <textarea class="form-control" name="description">{{Form "description"}}</textarea>
-                </div>
-              </div>
-              <div class="form-group">
-									<div class="col-sm-9 col-sm-offset-2">
-									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
-									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
-									</div>
-							</div>
-            </form>
+              {{$v := Stored.data}}
+							{{"启动时间"|T}}: {{$v.Created|Ts2date "2006-01-02 15:04:05"}}<br />
+							{{"消耗时间"|T}}: {{$v.Elapsed|FriendlyTime}}<br />
+              {{"状态"|T}}: {{if eq $v.Status "success"}}
+							<span class="color-success"><span class="fa fa-check-circle"></span> {{"成功"|T}}</span>
+							{{else if eq $v.Status "failure"}}
+							<span class="color-danger"><span class="fa fa-times-circle"></span> {{"出错"|T}}</span>
+							{{else if eq $v.Status "timeout"}}
+							<span class="color-warning"><span class="fa fa-times-circle"></span> {{"超时"|T}}</span>
+							{{else if eq $v.Status "stop"}}
+							<span class="color-info"><span class="fa fa-info-circle"></span> {{"停止"|T}}</span>
+							{{else if eq $v.Status "restart"}}
+							<span class="color-info"><span class="fa fa-info-circle"></span> {{"重启"|T}}</span>
+              {{else}}
+              <span class="color-default">{{"未知"|T}}</span>
+              {{end}}
+              <br />
+              <h4>{{"输出"|T}}</h4>
+              <p><pre>{{$v.Output}}</pre></p>
+              <h4>{{"错误"|T}}</h4>
+              <p><pre>{{$v.Error}}</pre></p>
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
     </div>

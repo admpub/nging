@@ -20,10 +20,14 @@ package tplfunc
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"net/url"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
+
+	"regexp"
 
 	"github.com/webx-top/captcha"
 	"github.com/webx-top/com"
@@ -90,13 +94,17 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	"Base64Decode":    com.Base64Decode,
 	"Set":             Set,
 	"Append":          Append,
-	"Nl2br":           NlToBr,
+	"Nl2br":           NlToBr,   // \n替换为<br>
+	"Ts2time":         TsToTime, // 时间戳数字转time.Time
+	"Ts2date":         TsToDate, // 时间戳数字转日期字符串
 	"AddSuffix":       AddSuffix,
 	"InStrSlice":      InStrSlice,
 	"SearchStrSlice":  SearchStrSlice,
 	"URLValues":       URLValues,
 	"ToSlice":         ToSlice,
 	"NoOutput":        NoOutput,
+	"Regexp":          regexp.MustCompile,
+	"RegexpPOSIX":     regexp.MustCompilePOSIX,
 }
 
 func JsonEncode(s interface{}) string {
@@ -427,23 +435,61 @@ func SearchStrSlice(values []string, value string) int {
 }
 
 func FriendlyTime(t interface{}, args ...string) string {
-	if v, y := t.(time.Duration); y {
-		return com.FriendlyTime(v, args...)
+	var td time.Duration
+	switch v := t.(type) {
+	case time.Duration:
+		td = v
+	case int64:
+		td = time.Duration(v)
+	case int:
+		td = time.Duration(v)
+	case uint:
+		td = time.Duration(v)
+	case int32:
+		td = time.Duration(v)
+	case uint32:
+		td = time.Duration(v)
+	case uint64:
+		td = time.Duration(v)
+	default:
+		td = time.Duration(com.Int64(t))
 	}
-	if v, y := t.(int64); y {
-		return com.FriendlyTime(time.Duration(v), args...)
+	return com.FriendlyTime(td, args...)
+}
+
+func TsToTime(timestamp interface{}) time.Time {
+	return TimestampToTime(timestamp)
+}
+
+func TsToDate(format string, timestamp interface{}) string {
+	t := TimestampToTime(timestamp)
+	if t.IsZero() {
+		return ``
 	}
-	if v, y := t.(int); y {
-		return com.FriendlyTime(time.Duration(v), args...)
+	return t.Format(format)
+}
+
+func TimestampToTime(timestamp interface{}) time.Time {
+	var ts int64
+	switch v := timestamp.(type) {
+	case int64:
+		ts = v
+	case uint:
+		ts = int64(v)
+	case int:
+		ts = int64(v)
+	case uint32:
+		ts = int64(v)
+	case int32:
+		ts = int64(v)
+	case uint64:
+		ts = int64(v)
+	default:
+		i, e := strconv.ParseInt(fmt.Sprint(timestamp), 10, 64)
+		if e != nil {
+			log.Println(e)
+		}
+		ts = i
 	}
-	if v, y := t.(uint); y {
-		return com.FriendlyTime(time.Duration(v), args...)
-	}
-	if v, y := t.(int32); y {
-		return com.FriendlyTime(time.Duration(v), args...)
-	}
-	if v, y := t.(uint32); y {
-		return com.FriendlyTime(time.Duration(v), args...)
-	}
-	return com.FriendlyTime(time.Duration(com.Int64(t)), args...)
+	return time.Unix(ts, 0)
 }

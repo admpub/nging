@@ -18,7 +18,10 @@
 package task
 
 import (
+	"time"
+
 	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/library/cron"
 	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
@@ -37,7 +40,9 @@ func Log(ctx echo.Context) error {
 		err = task.Get(nil, `id`, taskID)
 		cond[`task_id`] = taskID
 	}
-	cnt, err2 := m.List(nil, nil, page, size, cond)
+	cnt, err2 := m.List(nil, func(r db.Result) db.Result {
+		return r.OrderBy(`-id`)
+	}, page, size, cond)
 	if err2 != nil {
 		err = err2
 	}
@@ -68,7 +73,16 @@ func LogView(ctx echo.Context) error {
 		task = model.NewTask(ctx)
 		err = task.Get(nil, `id`, m.TaskId)
 	}
+	ex := &extra{}
+	entry := cron.GetEntryById(task.Id)
+	if entry != nil {
+		ex.NextTime = entry.Next
+		ex.Running = true
+	} else {
+		ex.NextTime = time.Time{}
+	}
 	ctx.Set(`task`, task)
+	ctx.Set(`extra`, ex)
 	return ctx.Render(`task/log_view`, handler.Err(ctx, err))
 }
 

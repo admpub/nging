@@ -20,8 +20,6 @@ import (
 	"strings"
 	"unicode"
 	"unicode/utf8"
-
-	u "github.com/araddon/gou"
 )
 
 var (
@@ -30,8 +28,6 @@ var (
 	// A lax identity char set rule, we use as default
 	// if you want the one above, swap them out
 	//IdentityChars = "_./- "
-
-	_ = u.EMPTY
 )
 
 type itemType int
@@ -151,7 +147,6 @@ func (lx *lexer) next() (r rune) {
 	// stackTraceStr := string(stackBuf[0:stackBufLen])
 
 	if lx.pos >= len(lx.input) {
-		//u.Warnf("next() pos=%d len=%d  %v", lx.pos, len(lx.input), string(stackTraceStr))
 		lx.width = 0
 		// if lx.circuitBreaker > 0 {
 		// 	panic("hm")
@@ -159,8 +154,6 @@ func (lx *lexer) next() (r rune) {
 		// lx.circuitBreaker++
 		return eof
 	}
-
-	//u.Debugf("next() pos=%d len=%d  %v", lx.pos, len(lx.input), string(stackTraceStr))
 
 	if lx.input[lx.pos] == '\n' {
 		lx.line++
@@ -376,7 +369,6 @@ func lexValue(lx *lexer) stateFn {
 	// We allow whitespace to precede a value, but NOT new lines.
 	// In array syntax, the array states are responsible for ignoring new lines.
 	r := lx.next()
-	//u.Infof("lexValue r = %v", string(r))
 	if isWhitespace(r) {
 		return lexSkip(lx, lexValue)
 	}
@@ -421,7 +413,6 @@ func lexValue(lx *lexer) stateFn {
 // have already been consumed. All whitespace and new lines are ignored.
 func lexArrayValue(lx *lexer) stateFn {
 	r := lx.next()
-	//u.Infof("lexArrayValue  r = %v", string(r))
 	switch {
 	case isWhitespace(r) || isNL(r):
 		return lexSkip(lx, lexArrayValue)
@@ -451,7 +442,6 @@ func lexArrayValue(lx *lexer) stateFn {
 // it ignores whitespace and expects either a ',' or a ']'.
 func lexArrayValueEnd(lx *lexer) stateFn {
 	r := lx.next()
-	//u.Infof("lexArrayValueEnd  r = %v", string(r))
 	switch {
 	case isWhitespace(r):
 		return lexSkip(lx, lexArrayValueEnd)
@@ -683,7 +673,6 @@ func lexDubQuotedString(lx *lexer) stateFn {
 // beginning '"' has already been consumed and ignored.
 func lexString(lx *lexer) stateFn {
 	r := lx.next()
-	//u.Infof("lexString  r = %v", string(r))
 	switch {
 	case r == '\\':
 		return lexStringEscape
@@ -737,8 +726,6 @@ func lexDubString(lx *lexer) stateFn {
 // processing until it finds a ')' on a new line by itself.
 func lexBlock(lx *lexer) stateFn {
 	r := lx.next()
-
-	//u.Debugf("lexBlock() pos=%d len=%d  %q", lx.pos, len(lx.input), lx.input[lx.pos:])
 
 	switch {
 	case r == blockEnd:

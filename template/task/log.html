@@ -3,23 +3,15 @@
 {{Block "breadcrumb"}}
 {{Super}}
 <li><a href="/task/index">{{"任务管理"|T}}</a></li>
-<li class="active">{{"任务日志"|T}}</li>
+<li class="active">{{"任务日志"|T}}
+{{if Stored.task}}
+({{"任务"|T}}: <a href="/task/edit?id={{Stored.task.Id}}">{{Stored.task.Name}} #{{Stored.task.Id}}</a>)
+{{end}}
+</li>
 {{/Block}}
 {{Block "main"}}
 <div class="row">
 				<div class="col-md-12">
-					{{if Stored.task}}
-					<div class="block-flat">
-						<div class="header">							
-							<h3>{{"任务："|T}}<a href="/task/edit?id={{Stored.task.Id}}">{{Stored.task.Name}}(#{{Stored.task.Id}})</a></h3>
-						</div>
-						<div class="content">
-							<pre>{{Stored.task.Command}}</pre>					
-						</div>
-					</div>
-					{{end}}
-
-
 					<div class="block-flat">
 						<div class="header">							
 							<h3>{{"任务日志"|T}}</h3>
@@ -31,7 +23,7 @@
 									<tr>
 										<th style="width:2%;"><strong>ID</strong></th>
 										<th style="width:15%;"><strong>{{"启动时间"|T}}</strong></th>
-										<th style="width:15%;"><strong>{{"执行时间"|T}}</strong></th>
+										<th style="width:15%;"><strong>{{"耗时"|T}}</strong></th>
 										<th><strong>{{"输出"|T}}</strong></th>
 										<th style="width:6%;"><strong>{{"状态"|T}}</strong></th>
 										<th style="width:15%;" class="text-center"><strong>{{"操作"|T}}</strong></th>
@@ -41,9 +33,9 @@
                                     {{range $k,$v := Stored.listData}}
 									<tr>
 										<td>{{$v.Id}}</td>
-										<td>{{(Date $v.Created)|DateFormat "2006-01-02 15:04:05"}}</td>
-										<td>{{if gt $v.Elapsed 0}}{{(Date $v.Elapsed)|DateFormat "2006-01-02 15:04:05"}}{{end}}</td>
-										<td>{{if $v.Output}}{{len $v.Output}}{{else}}{{"无"|T}}{{end}}</td>
+										<td>{{$v.Created|Ts2date "2006-01-02 15:04:05"}}</td>
+										<td>{{$v.Elapsed|FriendlyTime}}</td>
+										<td>{{len $v.Output|FormatByte}}</td>
                                         {{if eq $v.Status "success"}}
 										<td class="color-success"><span class="fa fa-check-circle"></span> {{"成功"|T}}</td>
 										{{else if eq $v.Status "failure"}}

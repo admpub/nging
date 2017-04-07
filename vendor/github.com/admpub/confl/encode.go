@@ -11,8 +11,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	u "github.com/araddon/gou"
 )
 
 type encodeError struct{ error }
@@ -26,18 +24,16 @@ var (
 	errArrayNoTable           = errors.New("array element can't contain a table")
 	errNoKey                  = errors.New("top-level values must be a Go map or struct")
 	errAnything               = errors.New("") // used in testing
-	_                         = u.EMPTY
 )
 
 var quotedReplacer = strings.NewReplacer(
-	"\t", "\\t",
-	"\n", "\\n",
-	"\r", "\\r",
-	"\"", "\\\"",
-	"\\", "\\\\",
+	"\t", `\t`,
+	"\n", `\n`,
+	"\r", `\r`,
+	`"`, `\"`,
 )
 
-// Marshall a go struct into bytes
+// Marshal a go struct into bytes
 func Marshal(v interface{}) ([]byte, error) {
 	buf := bytes.Buffer{}
 	enc := NewEncoder(&buf)
@@ -129,7 +125,6 @@ func (enc *Encoder) encode(key Key, rv reflect.Value) {
 	}
 
 	k := rv.Kind()
-	//u.Debugf("key:%v len:%v  val=%v", key.String(), len(key), k.String())
 	switch k {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
 		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32,
@@ -220,7 +215,6 @@ func (enc *Encoder) writeQuoted(s string) {
 
 func (enc *Encoder) eArrayOrSliceElement(rv reflect.Value) {
 	length := rv.Len()
-	//u.Infof("arrayorslice?  %v", rv)
 	enc.wf("[")
 	for i := 0; i < length; i++ {
 		elem := rv.Index(i)
@@ -236,10 +230,8 @@ func (enc *Encoder) eArrayOfTables(key Key, rv reflect.Value) {
 	if len(key) == 0 {
 		encPanic(errNoKey)
 	}
-	//u.Debugf("eArrayOfTables  key=%s key.len=%v rv=%v", key, len(key), rv)
 	panicIfInvalidKey(key, true)
 	//enc.newline()
-	//enc.wf("%s  [\n%s]]", enc.indentStr(key), key.String())
 	newKey := key.insert("_")
 	keyDelta := 0
 	enc.wf("%s%s "+enc.KeyEqElement+" [", enc.indentStrDelta(key, -1), key[len(key)-1])
@@ -274,7 +266,6 @@ func (enc *Encoder) eTable(key Key, rv reflect.Value) {
 	}
 	if len(key) > 0 {
 		panicIfInvalidKey(key, true)
-		//u.Infof("table?  %v  %v", key, rv)
 		enc.wf("%s%s {", enc.indentStrDelta(key, -1), key[len(key)-1])
 		enc.newline()
 	}
@@ -349,9 +340,7 @@ func (enc *Encoder) eMap(key Key, rv reflect.Value) {
 	for _, mapKey := range rv.MapKeys() {
 		//k := mapKey.String()
 		k := fmt.Sprint(mapKey.Interface())
-		//u.Infof("map key: %v", k)
 		if typeIsHash(confTypeOfGo(rv.MapIndex(mapKey))) {
-			//u.Debugf("found sub? %s  for %v", k, confTypeOfGo(rv.MapIndex(mapKey)))
 			mapKeysSub = append(mapKeysSub, k)
 		} else {
 			mapKeysDirect = append(mapKeysDirect, k)
@@ -361,7 +350,6 @@ func (enc *Encoder) eMap(key Key, rv reflect.Value) {
 	var writeMapKeys = func(mapKeys []string) {
 		sort.Strings(mapKeys)
 		for _, mapKey := range mapKeys {
-			//u.Infof("mapkey: %v", mapKey)
 			var v interface{}
 			if convert != nil {
 				var e error
@@ -417,7 +405,15 @@ func (enc *Encoder) eStruct(key Key, rv reflect.Value) {
 			}
 			frv := rv.Field(i)
 			if f.Anonymous {
-				frv := eindirect(frv)
+				// skip nil field
+				if !frv.IsValid() {
+					continue
+				}
+				frv = eindirect(frv)
+				// skip nil field
+				if !frv.IsValid() {
+					continue
+				}
 				t := frv.Type()
 				if t.Kind() != reflect.Struct {
 					encPanic(errAnonNonStruct)
@@ -547,7 +543,6 @@ func (enc *Encoder) keyEqElement(key Key, val reflect.Value) {
 		encPanic(errNoKey)
 	}
 	panicIfInvalidKey(key, false)
-	//u.Infof("keyEqElement: %v", key[len(key)-1])
 	enc.wf("%s%s "+enc.KeyEqElement+" ", enc.indentStrDelta(key, -1), key[len(key)-1])
 	enc.eElement(val)
 	enc.newline()

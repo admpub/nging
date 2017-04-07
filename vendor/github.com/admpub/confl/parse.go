@@ -21,11 +21,7 @@ import (
 	"strings"
 	"time"
 	"unicode/utf8"
-
-	u "github.com/araddon/gou"
 )
-
-var _ = u.EMPTY
 
 // Parser will return a map of keys to interface{}, although concrete types
 // underly them. The values supported are string, bool, int64, float64, DateTime.
@@ -205,7 +201,7 @@ func (p *parser) processItem(it item) error {
 		}
 		p.setValue(dt)
 	case itemArrayStart:
-		array := make([]interface{}, 0)
+		var array []interface{}
 		p.pushContext(array)
 	case itemArrayEnd:
 		array := p.ctx
@@ -298,23 +294,24 @@ findIndent:
 	}
 
 	for i, line := range lines {
-		//u.Debugf("%v indent=%d line %q", i, indent, line)
 		lines[i] = line[indent:]
 	}
 	return strings.Join(lines, "\n")
 }
 
+var escapesReplacer = strings.NewReplacer(
+	"\\b", "\u0008",
+	"\\t", "\u0009",
+	"\\n", "\u000A",
+	"\\f", "\u000C",
+	"\\r", "\u000D",
+	"\\\"", "\u0022",
+	"\\/", "\u002F",
+	"\\\\", "\u005C",
+)
+
 func replaceEscapes(s string) string {
-	return strings.NewReplacer(
-		"\\b", "\u0008",
-		"\\t", "\u0009",
-		"\\n", "\u000A",
-		"\\f", "\u000C",
-		"\\r", "\u000D",
-		"\\\"", "\u0022",
-		"\\/", "\u002F",
-		"\\\\", "\u005C",
-	).Replace(s)
+	return escapesReplacer.Replace(s)
 }
 
 func (p *parser) replaceUnicode(s string) string {

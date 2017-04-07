@@ -239,6 +239,7 @@ func Edit(ctx echo.Context) error {
 
 func Delete(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
+	returnTo := ctx.Query("returnTo")
 	m := model.NewTask(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
@@ -247,12 +248,17 @@ func Delete(ctx echo.Context) error {
 		handler.SendFail(ctx, err.Error())
 	}
 
-	return ctx.Redirect(`/task/index`)
+	if len(returnTo) == 0 {
+		returnTo = `/task/index`
+	}
+
+	return ctx.Redirect(returnTo)
 }
 
 //Start 启动任务
 func Start(ctx echo.Context) error {
 	id := ctx.Formx("id").Uint()
+	returnTo := ctx.Query("returnTo")
 	m := model.NewTask(ctx)
 	err := m.Get(nil, `id`, id)
 	if err != nil {
@@ -269,12 +275,17 @@ func Start(ctx echo.Context) error {
 		m.Edit(nil, `id`, id)
 	}
 
-	return ctx.Redirect(`/task/index`)
+	if len(returnTo) == 0 {
+		returnTo = `/task/index`
+	}
+
+	return ctx.Redirect(returnTo)
 }
 
 //Pause 暂停任务
 func Pause(ctx echo.Context) error {
 	id := ctx.Formx("id").Uint()
+	returnTo := ctx.Query("returnTo")
 	m := model.NewTask(ctx)
 	err := m.Get(nil, `id`, id)
 	if err != nil {
@@ -285,12 +296,17 @@ func Pause(ctx echo.Context) error {
 	m.Disabled = `Y`
 	m.Edit(nil, `id`, id)
 
-	return ctx.Redirect(`/task/index`)
+	if len(returnTo) == 0 {
+		returnTo = `/task/index`
+	}
+
+	return ctx.Redirect(returnTo)
 }
 
 //Run 立即执行
 func Run(ctx echo.Context) error {
 	id := ctx.Formx("id").Uint()
+	returnTo := ctx.Query("returnTo")
 	m := model.NewTask(ctx)
 	err := m.Get(nil, `id`, id)
 	if err != nil {
@@ -304,5 +320,9 @@ func Run(ctx echo.Context) error {
 
 	job.Run()
 
-	return ctx.Redirect(fmt.Sprintf(`/task/log_view/%d`, job.LogId()))
+	if len(returnTo) == 0 {
+		returnTo = fmt.Sprintf(`/task/log_view/%d`, job.LogId())
+	}
+
+	return ctx.Redirect(returnTo)
 }

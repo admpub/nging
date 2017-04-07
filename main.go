@@ -69,7 +69,14 @@ func main() {
 	e := echo.New()
 	e.SetDebug(true)
 	e.Use(middleware.Log(), middleware.Recover())
-	e.Use(middleware.Gzip())
+	e.Use(middleware.Gzip(&middleware.GzipConfig{
+		Skipper: func(c echo.Context) bool {
+			if c.Request().URL().Path() == `/manage/cmdSend/info` {
+				return true
+			}
+			return false
+		},
+	}))
 	e.Use(func(h echo.Handler) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			c.Response().Header().Set(`Server`, `nging/`+Version)

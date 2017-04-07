@@ -2,7 +2,7 @@ package cron
 
 import "bytes"
 
-var dot6bytes = []byte(` ...... `)
+var dot6bytes = []byte("\n" + `......` + "\n")
 
 func NewCmdRec(max uint64) *cmdRec {
 	return &cmdRec{
@@ -53,7 +53,7 @@ func (c *cmdRec) String() string {
 	}
 	s := c.buf.String()
 	if len(s) > 0 && len(c.last) > 0 {
-		s += ` ...... ` + string(c.last)
+		s += "\n" + `......` + "\n" + string(c.last)
 	}
 	return s
 }

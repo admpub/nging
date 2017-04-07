@@ -22,25 +22,25 @@
 											<option value="mysql"{{if eq $type "mysql"}} selected{{end}}>MySQL</option>
 										</select>
 									</div>
-                  <div id="type-error"></div>
+                  					<div id="type-error"></div>
 								</div>
 							</div>
 							<div class="form-group">
 								<div class="col-sm-12">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-globe"></i></span>
-										<input type="text" name="host" parsley-trigger="change" parsley-error-container="#host-error" required placeholder="{{"主机地址"|T}}" class="form-control" value="{{Form "host"}}">
+										<input type="text" name="host" parsley-trigger="change" parsley-error-container="#host-error" required placeholder="{{"主机地址"|T}}" class="form-control" value="{{(Form "host")|Default "127.0.0.1:3306"}}">
 									</div>
-                  <div id="host-error"></div>
+                  					<div id="host-error"></div>
 								</div>
 							</div>
 							<div class="form-group">
 								<div class="col-sm-12">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-user"></i></span>
-										<input type="text" name="user" parsley-trigger="change" parsley-error-container="#user-error" required placeholder="{{"数据库登录名"|T}}" class="form-control" value="{{Form "user"}}">
+										<input type="text" name="user" parsley-trigger="change" parsley-error-container="#user-error" required placeholder="{{"数据库登录名"|T}}" class="form-control" value="{{(Form "user")|Default "root"}}">
 									</div>
-                  <div id="user-error"></div>
+                  					<div id="user-error"></div>
 								</div>
 							</div>
 							<div class="form-group">
@@ -49,16 +49,16 @@
 										<span class="input-group-addon"><i class="fa fa-lock"></i></span>
 										<input type="password" name="password" parsley-trigger="change" parsley-error-container="#password-error" required placeholder="{{"数据库密码"|T}}" class="form-control" value="{{Form "password"}}">
 									</div>
-                  <div id="password-error"></div>
+                  					<div id="password-error"></div>
 								</div>
 							</div>
 							<div class="form-group">
 								<div class="col-sm-12">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-folder"></i></span>
-										<input type="text" name="database" parsley-trigger="change" parsley-error-container="#database-error" required placeholder="{{"数据库名称"|T}}" class="form-control" value="{{Form "database"}}">
+										<input type="text" name="database" parsley-trigger="change" parsley-error-container="#database-error" required placeholder="{{"数据库名称"|T}}" class="form-control" value="{{(Form "database")|Default "nging"}}">
 									</div>
-                  <div id="database-error"></div>
+                  					<div id="database-error"></div>
 								</div>
 							</div>
 						<button class="btn btn-block btn-success btn-rad btn-lg" type="submit">{{"安装"|T}}</button>

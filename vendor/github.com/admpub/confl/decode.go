@@ -6,15 +6,11 @@ import (
 	"io/ioutil"
 	"math"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
-
-	"strconv"
-
-	u "github.com/araddon/gou"
 )
 
-var _ = u.EMPTY
 var e = fmt.Errorf
 
 // Primitive is a value that hasn't been decoded into a Go value.

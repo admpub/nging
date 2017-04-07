@@ -22,8 +22,7 @@
 										<th style="width:15%;"><strong>{{"任务组"|T}}</strong></th>
 										<th style="width:15%;"><strong>{{"上次执行时间"|T}}</strong></th>
 										<th style="width:15%;"><strong>{{"下次执行时间"|T}}</strong></th>
-										<th style="width:6%;"><strong>{{"状态"|T}}</strong></th>
-										<th style="width:15%;" class="text-center"><strong>{{"操作"|T}}</strong></th>
+										<th style="width:156px;" class="text-center"><strong>{{"操作"|T}}</strong></th>
 									</tr>
 								</thead>
 								<tbody class="no-border-y">
@@ -49,11 +48,6 @@
 											{{$extra.NextTime.Format "2006-01-02 15:04:05"}}
 											{{end}}
 										</td>
-                                        {{if eq $v.Disabled "Y"}}
-										<td class="color-danger">{{"禁用"|T}}</td>
-                                        {{else}}
-                                        <td class="color-success">{{"启用"|T}}</td>
-                                        {{end}}
 										<td class="text-center">
 										{{if $extra.Running}}
                                         <a class="label label-success" title="{{"暂停"|T}}" href="/task/pause?id={{$v.Id}}"><i class="fa fa-pause"></i></a>
