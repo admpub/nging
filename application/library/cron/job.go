@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
+	"os"
 	"os/exec"
 	"runtime/debug"
 	"strings"
@@ -52,7 +53,11 @@ func init() {
 		cmdPreParams = []string{"cmd.exe", "/c"}
 		//CmdPreParams = []string{"bash.exe", "-c"}
 	} else {
-		cmdPreParams = []string{"/bin/bash", "-c"}
+		shell := os.Getenv("SHELL")
+		if len(shell) == 0 {
+			shell = "/bin/bash"
+		}
+		cmdPreParams = []string{shell, "-c"}
 	}
 }
 
@@ -264,17 +269,21 @@ func (j *Job) Run() {
 				ccList[index] = strings.TrimSpace(email)
 			}
 		}
-		conf := &email.Config{
-			SMTP:       config.DefaultConfig.Email.SMTPConfig,
-			From:       config.DefaultConfig.Email.From,
-			ToAddress:  user.Email,
-			ToUsername: user.Username,
-			Subject:    title,
-			Content:    content.Bytes(),
-			CcAddress:  ccList,
-		}
-		if err = email.SendMail(conf); err != nil {
+		if err = SendMail(user.Email, user.Username, title, content.Bytes(), ccList...); err != nil {
 			log.Error(err)
 		}
 	}
+}
+
+func SendMail(toEmail string, toUsername string, title string, content []byte, ccList ...string) error {
+	conf := &email.Config{
+		SMTP:       config.DefaultConfig.Email.SMTPConfig,
+		From:       config.DefaultConfig.Email.From,
+		ToAddress:  toEmail,
+		ToUsername: toUsername,
+		Subject:    title,
+		Content:    content,
+		CcAddress:  ccList,
+	}
+	return email.SendMail(conf)
 }

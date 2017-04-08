@@ -56,8 +56,14 @@ sys {
   cmdTimeout : ""
 }
 email {
-  from : ""
-  queueSize : 0
+	Identity : ""
+	Host : "smtp.exmail.qq.com"
+	Port : 465
+	Username : "swh@admpub.com"
+	Password : ""
+  Secure : "SSL"
+  From : "swh@admpub.com"
+  QueueSize : 10
 }
 cron {
   poolSize : 0

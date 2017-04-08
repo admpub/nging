@@ -26,6 +26,7 @@ import (
 
 	"github.com/admpub/confl"
 	GAuth "github.com/admpub/dgoogauth"
+	"github.com/admpub/mail"
 	"github.com/admpub/nging/application/library/caddy"
 	"github.com/admpub/nging/application/library/ftp"
 	"github.com/webx-top/echo/middleware/language"
@@ -78,9 +79,11 @@ type Config struct {
 	} `json:"sys"`
 
 	Email struct {
-		*SMTPConfig
-		From      string `json:"from"`
-		QueueSize int    `json:"queueSize"`
+		*mail.SMTPConfig
+		Timeout   int64  //超时时间(秒)，采用默认引擎发信时，此项无效
+		Engine    string //值为email时采用github.com/jordan-wright/email包发送，否则采用默认的github.com/admpub/mail发送
+		From      string //发信人Email地址
+		QueueSize int    //允许同一时间发信的数量
 	} `json:"email"`
 
 	Cron struct {

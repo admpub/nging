@@ -50,6 +50,7 @@ func init() {
 		g.Route(`GET,POST`, `/log`, Log)
 		g.Route(`GET,POST`, `/log_view/:id`, LogView)
 		g.Route(`GET,POST`, `/log_delete`, LogDelete)
+		g.Route(`GET,POST`, `/email_test`, EmailTest)
 	})
 }
 
