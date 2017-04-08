@@ -62,6 +62,7 @@ email {
 	Username : "swh@admpub.com"
 	Password : ""
   Secure : "SSL"
+  Engine : ""
   From : "swh@admpub.com"
   QueueSize : 10
 }

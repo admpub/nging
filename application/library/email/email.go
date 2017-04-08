@@ -19,6 +19,7 @@ type queueItem struct {
 }
 
 func (q *queueItem) send1() error {
+	log.Info(`<SendMail> Using: send1`)
 	if q.Config.SMTP.Secure == "SSL" || q.Config.SMTP.Secure == "TLS" {
 		tlsconfig := &tls.Config{
 			InsecureSkipVerify: true,
@@ -30,6 +31,7 @@ func (q *queueItem) send1() error {
 }
 
 func (q *queueItem) send2() error {
+	log.Info(`<SendMail> Using: send2`)
 	return mail.SendMail(q.Config.Subject, string(q.Config.Content), q.Config.ToAddress, q.Config.From,
 		q.Config.CcAddress, q.Config.SMTP, nil)
 }
@@ -126,7 +128,7 @@ func SendMail(conf *Config) error {
 		conf.Auth = conf.SMTP.Auth()
 	}
 	var mail *email.Email
-	if config.DefaultConfig.Email.Engine == `email` {
+	if config.DefaultConfig.Email.Engine == `email` || config.DefaultConfig.Email.Engine == `send1` {
 		mail = email.NewEmail()
 		mail.From = conf.From
 		if len(mail.From) == 0 {

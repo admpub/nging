@@ -422,7 +422,7 @@ func (e *Email) SendWithTLS(addr string, a smtp.Auth, t *tls.Config) error {
 		to[i] = addr.Address
 	}
 	// Check to make sure there is at least one recipient and one "From" address
-	if e.From == "" || len(to) == 0 {
+	if len(e.From) == 0 || len(to) == 0 {
 		return errors.New("Must specify at least one From address and one To address")
 	}
 	sender, err := e.parseSender()
@@ -439,7 +439,7 @@ func (e *Email) SendWithTLS(addr string, a smtp.Auth, t *tls.Config) error {
 		return err
 	}
 
-	conn, err := tls.Dial("tcp", addr, &tls.Config{ServerName: host})
+	conn, err := tls.Dial("tcp", addr, t)
 	if err != nil {
 		return err
 	}
