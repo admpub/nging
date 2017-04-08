@@ -16,6 +16,7 @@ import (
 	"mime"
 	"mime/multipart"
 	"mime/quotedprintable"
+	"net"
 	"net/mail"
 	"net/smtp"
 	"net/textproto"
@@ -27,7 +28,8 @@ import (
 )
 
 const (
-	MaxLineLength      = 76                             // MaxLineLength is the maximum line length per RFC 2045
+	// MaxLineLength is the maximum line length per RFC 2045
+	MaxLineLength      = 76
 	defaultContentType = "text/plain; charset=us-ascii" // defaultContentType is the default Content-Type according to RFC 2045, section 5.2
 )
 
@@ -46,6 +48,7 @@ type Email struct {
 	Subject     string
 	Text        []byte // Plaintext message (optional)
 	HTML        []byte // Html message (optional)
+	Sender      string // override From as SMTP envelope sender (optional)
 	Headers     textproto.MIMEHeader
 	Attachments []*Attachment
 	ReadReceipt []string
@@ -228,6 +231,8 @@ func (e *Email) AttachFile(filename string) (a *Attachment, err error) {
 	if err != nil {
 		return
 	}
+	defer f.Close()
+
 	ct := mime.TypeByExtension(filepath.Ext(filename))
 	basename := filepath.Base(filename)
 	return e.Attach(f, basename, ct)
@@ -375,7 +380,7 @@ func (e *Email) Send(addr string, a smtp.Auth) error {
 	if e.From == "" || len(to) == 0 {
 		return errors.New("Must specify at least one From address and one To address")
 	}
-	from, err := mail.ParseAddress(e.From)
+	sender, err := e.parseSender()
 	if err != nil {
 		return err
 	}
@@ -383,7 +388,23 @@ func (e *Email) Send(addr string, a smtp.Auth) error {
 	if err != nil {
 		return err
 	}
-	return smtp.SendMail(addr, a, from.Address, to, raw)
+	return smtp.SendMail(addr, a, sender, to, raw)
+}
+
+// Select and parse an SMTP envelope sender address.  Choose Email.Sender if set, or fallback to Email.From.
+func (e *Email) parseSender() (string, error) {
+	if len(e.Sender) > 0 {
+		sender, err := mail.ParseAddress(e.Sender)
+		if err != nil {
+			return "", err
+		}
+		return sender.Address, nil
+	}
+	from, err := mail.ParseAddress(e.From)
+	if err != nil {
+		return "", err
+	}
+	return from.Address, nil
 }
 
 // SendWithTLS sends an email with an optional TLS config.
@@ -404,7 +425,7 @@ func (e *Email) SendWithTLS(addr string, a smtp.Auth, t *tls.Config) error {
 	if e.From == "" || len(to) == 0 {
 		return errors.New("Must specify at least one From address and one To address")
 	}
-	from, err := mail.ParseAddress(e.From)
+	sender, err := e.parseSender()
 	if err != nil {
 		return err
 	}
@@ -412,12 +433,22 @@ func (e *Email) SendWithTLS(addr string, a smtp.Auth, t *tls.Config) error {
 	if err != nil {
 		return err
 	}
-	// Taken from the standard library
-	// https://github.com/golang/go/blob/master/src/net/smtp/smtp.go#L300
-	c, err := smtp.Dial(addr)
+
+	host, _, err := net.SplitHostPort(addr)
 	if err != nil {
 		return err
 	}
+
+	conn, err := tls.Dial("tcp", addr, &tls.Config{ServerName: host})
+	if err != nil {
+		return err
+	}
+
+	c, err := smtp.NewClient(conn, host)
+	if err != nil {
+		return err
+	}
+
 	defer c.Close()
 	if err = c.Hello("localhost"); err != nil {
 		return err
@@ -436,7 +467,7 @@ func (e *Email) SendWithTLS(addr string, a smtp.Auth, t *tls.Config) error {
 			}
 		}
 	}
-	if err = c.Mail(from.Address); err != nil {
+	if err = c.Mail(sender); err != nil {
 		return err
 	}
 	for _, addr := range to {
