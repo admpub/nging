@@ -123,6 +123,12 @@
 			"revisionTime": "2015-10-19T00:40:08Z"
 		},
 		{
+			"checksumSHA1": "UNw1tew0IPH8i+9KAewMRLYCdHg=",
+			"path": "github.com/admpub/mail",
+			"revision": "d63147b0317bf02b0092e9371d09abfcbc3b2b8c",
+			"revisionTime": "2017-04-08T11:03:49Z"
+		},
+		{
 			"checksumSHA1": "pdmkkXcX7vjIBoAVjm/C+e8ZIzc=",
 			"path": "github.com/admpub/pongo2",
 			"revision": "a269242022ae534b052672d6a9326a40560a63e7",
@@ -1292,6 +1298,12 @@
 			"path": "golang.org/x/oauth2/internal",
 			"revision": "d5040cddfc0da40b408c9a1da4728662435176a9",
 			"revisionTime": "2016-11-03T22:50:36Z"
+		},
+		{
+			"checksumSHA1": "ArDa4bMPKzhiS1I7iioemBwZ6tE=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "f3918c30c5c2cb527c0b071a27c35120a6c0719a",
+			"revisionTime": "2017-04-05T16:58:12Z"
 		},
 		{
 			"checksumSHA1": "W/LDYJL5E/MfMm64hFhVGs5Q5Zw=",
