@@ -41,6 +41,8 @@ func init() {
 		g.Route(`GET,POST`, `/start`, Start)
 		g.Route(`GET,POST`, `/pause`, Pause)
 		g.Route(`GET,POST`, `/run`, Run)
+		g.Route(`GET,POST`, `/exit`, Exit)
+		g.Route(`GET,POST`, `/start_history`, StartHistory)
 		g.Route(`GET,POST`, `/group`, Group)
 		g.Route(`GET,POST`, `/group_add`, GroupAdd)
 		g.Route(`GET,POST`, `/group_edit`, GroupEdit)
@@ -118,6 +120,8 @@ func Index(ctx echo.Context) error {
 	}
 	ctx.Set(`listData`, tg)
 	ctx.Set(`extraList`, extraList)
+	ctx.Set(`cronRunning`, cron.Running())
+	ctx.Set(`histroyRunning`, cron.HistoryJobsRunning())
 	return ctx.Render(`task/index`, ret)
 }
 
@@ -243,6 +247,7 @@ func Delete(ctx echo.Context) error {
 	m := model.NewTask(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
+		cron.RemoveJob(id)
 		handler.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
 		handler.SendFail(ctx, err.Error())
@@ -322,6 +327,33 @@ func Run(ctx echo.Context) error {
 
 	if len(returnTo) == 0 {
 		returnTo = fmt.Sprintf(`/task/log_view/%d`, job.LogId())
+	}
+
+	return ctx.Redirect(returnTo)
+}
+
+//Exit 关闭所有任务
+func Exit(ctx echo.Context) error {
+	cron.Close()
+	returnTo := ctx.Query("returnTo")
+	if len(returnTo) == 0 {
+		returnTo = `/task/index`
+	}
+
+	return ctx.Redirect(returnTo)
+}
+
+//StartHistory 继续历史任务
+func StartHistory(ctx echo.Context) error {
+	if !cron.HistoryJobsRunning() {
+		err := cron.InitJobs()
+		if err != nil {
+			return err
+		}
+	}
+	returnTo := ctx.Query("returnTo")
+	if len(returnTo) == 0 {
+		returnTo = `/task/index`
 	}
 
 	return ctx.Redirect(returnTo)

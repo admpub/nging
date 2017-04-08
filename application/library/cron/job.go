@@ -13,11 +13,14 @@ import (
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/library/charset"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/email"
+	"github.com/webx-top/echo/engine"
 )
 
 var (
+	isWin            bool
 	defaultOuputSize uint64 = 1024 * 200
 	mailTpl          *template.Template
 	defaultTmpl      = `
@@ -40,17 +43,23 @@ var (
 如果要取消邮件通知，请登录到系统进行设置<br />
 </p>
 `
-	CmdPreParams []string
+	cmdPreParams []string
 )
 
 func init() {
-	isWin := runtime.GOOS == `windows`
+	isWin = runtime.GOOS == `windows`
 	if isWin {
-		CmdPreParams = []string{"cmd.exe", "/c"}
+		cmdPreParams = []string{"cmd.exe", "/c"}
 		//CmdPreParams = []string{"bash.exe", "-c"}
 	} else {
-		CmdPreParams = []string{"/bin/bash", "-c"}
+		cmdPreParams = []string{"/bin/bash", "-c"}
 	}
+}
+
+func CmdParams(command string) []string {
+	params := append([]string{}, cmdPreParams...)
+	params = append(params, command)
+	return params
 }
 
 func InitialMailTpl() {
@@ -100,13 +109,23 @@ func NewCommandJob(id uint, name string, command string) *Job {
 	job.runFunc = func(timeout time.Duration) (string, string, error, bool) {
 		bufOut := NewCmdRec(defaultOuputSize)
 		bufErr := NewCmdRec(defaultOuputSize)
-		params := append([]string{}, CmdPreParams...)
-		params = append(params, command)
+		params := CmdParams(command)
 		cmd := exec.Command(params[0], params[1:]...)
 		cmd.Stdout = bufOut
 		cmd.Stderr = bufErr
 		cmd.Start()
 		err, isTimeout := runCmdWithTimeout(cmd, timeout)
+		if isWin {
+			bOut, e := charset.Convert(`gbk`, `utf-8`, bufOut.Bytes())
+			if e != nil {
+				log.Error(e)
+			}
+			bErr, e := charset.Convert(`gbk`, `utf-8`, bufErr.Bytes())
+			if e != nil {
+				log.Error(e)
+			}
+			return engine.Bytes2str(bOut), engine.Bytes2str(bErr), err, isTimeout
+		}
 
 		return bufOut.String(), bufErr.String(), err, isTimeout
 	}

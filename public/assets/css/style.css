@@ -4137,6 +4137,9 @@ h1:first-child {
 .label-info {
   background-color: #5DC4EA;
 }
+.label-lg {
+  padding:8px;font-size:100%;
+}
 /*Bagde*/
 .badge {
   font-weight: normal;

@@ -24,19 +24,33 @@ func Initial(sizes ...int) {
 	if size <= 0 {
 		size = 1
 	}
-	if mainCron != nil {
+	Close()
+	workPool = make(chan bool, size)
+	mainCron = cron.New()
+}
+
+func Running() bool {
+	return mainCron != nil && mainCron.Running()
+}
+
+func Close() {
+	if Running() {
 		mainCron.Stop()
 		mainCron = nil
 		close(workPool)
+		historyJobsRunning = false
+		log.Info(`退出任务处理`)
 	}
-	workPool = make(chan bool, size)
-	mainCron = cron.New()
-	mainCron.Start()
 }
 
-func MainCron() *cron.Cron {
+func MainCron(mustStart bool) *cron.Cron {
 	if mainCron == nil {
 		Initial()
+	}
+	if mustStart {
+		if !mainCron.Running() {
+			mainCron.Start()
+		}
 	}
 	return mainCron
 }
@@ -53,7 +67,7 @@ func AddJob(spec string, job *Job) bool {
 	if GetEntryById(job.id) != nil {
 		return false
 	}
-	err := MainCron().AddJob(spec, job)
+	err := MainCron(true).AddJob(spec, job)
 	if err != nil {
 		log.Error("AddJob: ", err.Error())
 		return false
@@ -62,7 +76,7 @@ func AddJob(spec string, job *Job) bool {
 }
 
 func RemoveJob(id uint) {
-	MainCron().RemoveJob(func(e *cron.Entry) bool {
+	MainCron(false).RemoveJob(func(e *cron.Entry) bool {
 		if v, ok := e.Job.(*Job); ok {
 			if v.id == id {
 				return true
@@ -73,7 +87,7 @@ func RemoveJob(id uint) {
 }
 
 func GetEntryById(id uint) *cron.Entry {
-	entries := MainCron().Entries()
+	entries := MainCron(false).Entries()
 	for _, e := range entries {
 		if v, ok := e.Job.(*Job); ok {
 			if v.id == id {
@@ -85,7 +99,7 @@ func GetEntryById(id uint) *cron.Entry {
 }
 
 func GetEntries(size int) []*cron.Entry {
-	ret := MainCron().Entries()
+	ret := MainCron(false).Entries()
 	if len(ret) > size {
 		return ret[:size]
 	}

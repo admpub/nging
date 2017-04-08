@@ -12,6 +12,16 @@
 							<h3>{{"任务列表"|T}}</h3>
 						</div>
 						<div class="content">
+							{{if Stored.cronRunning}}
+							<span class="label label-success label-lg">{{"任务处理中"|T}}</span>
+							<a href="/task/exit" class="btn btn-danger" onclick="return confirm('{{"确定要强制退出全部任务吗？\n本操作将会彻底退出任务处理功能。\n\n可以通过点击“继续历史任务”按钮，重新开启"|T}}')" data-toggle="tooltip" title="{{"强制退出全部任务。下次可以点击“继续历史任务”按钮，继续执行本次退出的任务。"|T}}">{{"退出任务处理"|T}}</a>
+							{{else}}
+							<span class="label label-danger label-lg">{{"任务已停止"|T}}</span>
+							{{end}}
+							{{if not Stored.histroyRunning}}
+							<a href="/task/start_history" class="btn btn-primary" data-toggle="tooltip" title="{{"继续执行上次异常退出的任务。"|T}}">{{"继续历史任务"|T}}</a>
+							{{end}}
+							<hr />
 							<div class="table-responsive">
 							<table class="table no-border hover">
 								<thead class="no-border">
@@ -19,10 +29,11 @@
 										<th style="width:2%;"><strong>ID</strong></th>
 										<th><strong>{{"任务名"|T}}</strong></th>
 										<th style="width:15%;"><strong>{{"执行时间"|T}}</strong></th>
-										<th style="width:15%;"><strong>{{"任务组"|T}}</strong></th>
+										<th style="width:100px"><strong>{{"任务组"|T}}</strong></th>
 										<th style="width:15%;"><strong>{{"上次执行时间"|T}}</strong></th>
 										<th style="width:15%;"><strong>{{"下次执行时间"|T}}</strong></th>
-										<th style="width:156px;" class="text-center"><strong>{{"操作"|T}}</strong></th>
+										<th style="width:80px"><strong>{{"状态"|T}}</strong></th>
+										<th style="width:156px" class="text-center"><strong>{{"操作"|T}}</strong></th>
 									</tr>
 								</thead>
 								<tbody class="no-border-y">
@@ -31,11 +42,6 @@
 									<tr>
 										<td>{{$v.Id}}</td>
 										<td>
-											{{if $extra.Running}}
-											<span class="fa fa-play text-success"></span>
-											{{else}}
-											<span class="fa fa-ban text-danger"></span>
-											{{end}}
 											{{$v.Name}}
 										</td>
 										<td>{{$v.CronSpec}}</td>
@@ -48,16 +54,27 @@
 											{{$extra.NextTime.Format "2006-01-02 15:04:05"}}
 											{{end}}
 										</td>
+										<td>
+											{{if $extra.Running}}
+											<span class="fa fa-play text-success"> {{"运行中"|T}}</span>
+											{{else}}
+											{{if eq $v.Disabled "N"}}
+											<span class="fa fa-ban text-default"> {{"已退出"|T}}</span>
+											{{else}}
+											<span class="fa fa-ban text-danger"> {{"已停止"|T}}</span>
+											{{end}}
+											{{end}}
+										</td>
 										<td class="text-center">
 										{{if $extra.Running}}
-                                        <a class="label label-success" title="{{"暂停"|T}}" href="/task/pause?id={{$v.Id}}"><i class="fa fa-pause"></i></a>
+                                        <a class="label label-success" data-toggle="tooltip" title="{{"暂停"|T}}" href="/task/pause?id={{$v.Id}}"><i class="fa fa-pause"></i></a>
                                         {{else}}
-										<a class="label label-danger" href="/task/start?id={{$v.Id}}" title="{{"启动"|T}}"><i class="fa fa-play"></i></a>
+										<a class="label label-danger" href="/task/start?id={{$v.Id}}" data-toggle="tooltip" title="{{"启动"|T}}"><i class="fa fa-play"></i></a>
 										<a class="label label-info" href="/task/run?id={{$v.Id}}" onclick="return confirm('{{"该功能建议只用来做任务测试，确定要立即执行该任务吗？"|T}}')" title="{{"运行"|T}}"><i class="fa fa-refresh"></i></a>
                                         {{end}}
-										<a class="label label-primary" title="{{"日志"|T}}" href="/task/log?taskId={{$v.Id}}"><i class="fa fa-comments-o"></i></a>
-										<a class="label label-default" title="{{"修改"|T}}" href="/task/edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a> 
-										<a class="label label-danger" title="{{"删除"|T}}" href="/task/delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
+										<a class="label label-primary" data-toggle="tooltip" title="{{"日志"|T}}" href="/task/log?taskId={{$v.Id}}"><i class="fa fa-comments-o"></i></a>
+										<a class="label label-default" data-toggle="tooltip" title="{{"修改"|T}}" href="/task/edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a> 
+										<a class="label label-danger" data-toggle="tooltip" title="{{"删除"|T}}" href="/task/delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
 										</td>
 									</tr>
                                     {{end}}

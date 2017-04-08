@@ -26,7 +26,8 @@ func (c *cmdRec) Write(p []byte) (n int, err error) {
 		c.start += uint64(n)
 		return
 	}
-	size := uint64(len(p))
+	n = len(p)
+	size := uint64(n)
 	if c.end > c.max {
 		if c.max > size {
 			c.last = append(c.last[0:c.max-size], p...)

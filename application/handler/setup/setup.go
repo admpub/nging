@@ -18,16 +18,16 @@
 package setup
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
-	"time"
-
 	"strings"
-
-	"io/ioutil"
+	"time"
 
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/nging/application/library/cron"
+	"github.com/lunny/log"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
@@ -102,13 +102,21 @@ func createDatabase(err error) error {
 			dbName := config.DefaultConfig.DB.Database
 			config.DefaultConfig.DB.Database = ``
 			err2 := config.ConnectDB()
-			if err2 == nil {
-				sqlStr := "CREATE DATABASE `" + dbName + "`"
-				_, err2 = factory.NewParam().SetCollection(sqlStr).Exec()
-				if err2 == nil {
-					config.DefaultConfig.DB.Database = dbName
-					err = config.ConnectDB()
-				}
+			if err2 != nil {
+				break
+			}
+			sqlStr := "CREATE DATABASE `" + dbName + "`"
+			_, err = factory.NewParam().SetCollection(sqlStr).Exec()
+			if err != nil {
+				break
+			}
+			config.DefaultConfig.DB.Database = dbName
+			err = config.ConnectDB()
+			if err != nil {
+				break
+			}
+			if err2 = cron.InitJobs(); err2 != nil {
+				log.Error(err2)
 			}
 		}
 	}

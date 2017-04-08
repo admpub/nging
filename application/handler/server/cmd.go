@@ -20,11 +20,8 @@ package server
 import (
 	"io"
 	"os"
-
 	"os/exec"
-
 	"strings"
-
 	"time"
 
 	"github.com/admpub/log"
@@ -115,8 +112,7 @@ func CmdSendBySockJS(c sockjs.Session) error {
 }
 
 func cmdRunner(command string, send chan string, onEnd func(), timeout time.Duration) (w io.WriteCloser, cmd *exec.Cmd, err error) {
-	params := append([]string{}, cron.CmdPreParams...)
-	params = append(params, command)
+	params := cron.CmdParams(command)
 	cmd = com.CreateCmd(params, func(b []byte) (e error) {
 		if handler.IsWindows {
 			b, e = charset.Convert(`gbk`, `utf-8`, b)

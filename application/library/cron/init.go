@@ -8,22 +8,41 @@ import (
 	"github.com/admpub/nging/application/dbschema"
 )
 
-func InitJobs() {
+var historyJobsRunning bool
+
+func InitJobs() error {
 	m := new(dbschema.Task)
-	cnt, err := m.ListByOffset(nil, nil, 0, -1, "disabled", `N`)
+	limit := 1000
+	cnt, err := m.ListByOffset(nil, nil, 0, limit, "disabled", `N`)
 	if err != nil {
-		log.Error(err)
-		return
+		return err
 	}
-	_ = cnt
-	for _, task := range m.Objects() {
-		job, err := NewJobFromTask(task)
-		if err != nil {
-			log.Error("InitJobs: ", err.Error())
-			continue
+	total := int(cnt())
+	for offset := 0; offset < total; offset += limit {
+		if offset > 0 {
+			_, err := m.ListByOffset(nil, nil, offset, limit, "disabled", `N`)
+			if err != nil {
+				return err
+			}
 		}
-		AddJob(task.CronSpec, job)
+		for _, task := range m.Objects() {
+			job, err := NewJobFromTask(task)
+			if err != nil {
+				log.Error("InitJobs: ", err.Error())
+				continue
+			}
+			if AddJob(task.CronSpec, job) {
+				log.Infof("InitJobs: 添加任务[%d]", task.Id)
+				continue
+			}
+		}
 	}
+	historyJobsRunning = true
+	return nil
+}
+
+func HistoryJobsRunning() bool {
+	return historyJobsRunning
 }
 
 func runCmdWithTimeout(cmd *exec.Cmd, timeout time.Duration) (error, bool) {

@@ -102,7 +102,23 @@ func (c *Cron) AddJob(spec string, cmd Job) error {
 	return nil
 }
 
+func (c *Cron) Running() bool {
+	return c.running
+}
+
 func (c *Cron) RemoveJob(cb RemoveCheckFunc) {
+
+	if !c.running {
+		var newEntries []*Entry
+		for _, e := range c.entries {
+			if !cb(e) {
+				newEntries = append(newEntries, e)
+			}
+		}
+		c.entries = newEntries
+		return
+	}
+
 	c.remove <- cb
 }
 
@@ -176,7 +192,7 @@ func (c *Cron) run() {
 			newEntry.Next = newEntry.Schedule.Next(now)
 
 		case cb := <-c.remove:
-			newEntries := make([]*Entry, 0)
+			var newEntries []*Entry
 			for _, e := range c.entries {
 				if !cb(e) {
 					newEntries = append(newEntries, e)

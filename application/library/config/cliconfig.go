@@ -23,7 +23,6 @@ import (
 	"io"
 	"os"
 	"os/exec"
-
 	"strings"
 
 	"github.com/admpub/log"
@@ -61,6 +60,7 @@ func (c *CLIConfig) OnlyRunServer() bool {
 	return false
 }
 
+//RunStartup manager启动时同时启动的服务
 func (c *CLIConfig) RunStartup() {
 	c.Startup = strings.TrimSpace(c.Startup)
 	if len(c.Startup) < 1 {

@@ -38,6 +38,7 @@ import (
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application"
 	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/nging/application/library/cron"
 	"github.com/admpub/nging/application/library/modal"
 )
 
@@ -65,6 +66,13 @@ func main() {
 		return
 	}
 	config.DefaultCLIConfig.RunStartup()
+
+	if config.IsInstalled() {
+		// 继续上次任务
+		if err := cron.InitJobs(); err != nil {
+			log.Error(err)
+		}
+	}
 
 	e := echo.New()
 	e.SetDebug(true)

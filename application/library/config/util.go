@@ -23,10 +23,9 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
-
-	"strconv"
 
 	"github.com/admpub/confl"
 	"github.com/admpub/log"
@@ -106,6 +105,9 @@ func ParseConfig() error {
 	}
 
 	err = DefaultCLIConfig.Reload()
+	if err != nil {
+		return err
+	}
 	return err
 }
 
