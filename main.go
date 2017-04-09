@@ -42,7 +42,7 @@ import (
 	"github.com/admpub/nging/application/library/modal"
 )
 
-var Version = `0.1.0 beta1`
+var Version = `1.0.0`
 var binData bool
 
 func main() {
