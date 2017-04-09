@@ -1,9 +1,41 @@
--- Adminer 4.2.3 MySQL dump
+-- Adminer 4.2.5 MySQL dump
 
 SET NAMES utf8;
 SET time_zone = '+00:00';
 SET foreign_key_checks = 0;
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+
+DROP TABLE IF EXISTS `code_invitation`;
+CREATE TABLE `code_invitation` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `code` varchar(40) NOT NULL COMMENT '邀请码',
+  `created` int(11) unsigned NOT NULL COMMENT '创建时间',
+  `uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建者',
+  `recv_uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '使用者',
+  `used` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '使用时间',
+  `start` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '有效时间',
+  `end` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '失效时间',
+  `disabled` enum('Y','N') NOT NULL DEFAULT 'N' COMMENT '是否禁用',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `code` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='邀请码';
+
+
+DROP TABLE IF EXISTS `code_verification`;
+CREATE TABLE `code_verification` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `code` varchar(40) NOT NULL COMMENT '验证码',
+  `created` int(11) unsigned NOT NULL COMMENT '创建时间',
+  `uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建者',
+  `used` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '使用时间',
+  `purpose` varchar(40) NOT NULL COMMENT '目的',
+  `start` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '有效时间',
+  `end` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '失效时间',
+  `disabled` enum('Y','N') NOT NULL DEFAULT 'N' COMMENT '是否禁用',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `code` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='验证码';
+
 
 DROP TABLE IF EXISTS `ftp_user`;
 CREATE TABLE `ftp_user` (
@@ -60,8 +92,6 @@ CREATE TABLE `task` (
   KEY `idx_group_id` (`group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='任务';
 
-INSERT INTO `task` (`id`, `uid`, `group_id`, `name`, `type`, `description`, `cron_spec`, `concurrent`, `command`, `disabled`, `enable_notify`, `notify_email`, `timeout`, `execute_times`, `prev_time`, `created`) VALUES
-(1,	0,	1,	'test',	0,	'test',	'test',	0,	'test',	'',	1,	'2222@3333.vvv',	0,	0,	0,	1491460247);
 
 DROP TABLE IF EXISTS `task_group`;
 CREATE TABLE `task_group` (
@@ -74,8 +104,6 @@ CREATE TABLE `task_group` (
   KEY `idx_uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='任务组';
 
-INSERT INTO `task_group` (`id`, `uid`, `name`, `description`, `created`) VALUES
-(1,	0,	'test',	'test',	1491460226);
 
 DROP TABLE IF EXISTS `task_log`;
 CREATE TABLE `task_log` (
@@ -96,8 +124,8 @@ CREATE TABLE `user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(30) NOT NULL DEFAULT '' COMMENT '用户名',
   `email` varchar(50) NOT NULL DEFAULT '' COMMENT '邮箱',
-  `password` char(40) NOT NULL DEFAULT '' COMMENT '密码',
-  `salt` char(40) NOT NULL DEFAULT '' COMMENT '盐值',
+  `password` char(64) NOT NULL DEFAULT '' COMMENT '密码',
+  `salt` char(64) NOT NULL DEFAULT '' COMMENT '盐值',
   `last_login` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '最后登录时间',
   `last_ip` varchar(150) NOT NULL DEFAULT '' COMMENT '最后登录IP',
   `disabled` enum('Y','N') NOT NULL DEFAULT 'N' COMMENT '状态',
@@ -114,7 +142,8 @@ CREATE TABLE `user_u2f` (
   `type` varchar(30) NOT NULL COMMENT '类型',
   `extra` text NOT NULL COMMENT '扩展设置',
   `created` int(11) unsigned NOT NULL COMMENT '绑定时间',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uid_type` (`uid`,`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='两步验证';
 
 
@@ -131,4 +160,4 @@ CREATE TABLE `vhost` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='虚拟主机';
 
 
--- 2017-04-06 09:25:16
+-- 2017-04-09 11:49:42

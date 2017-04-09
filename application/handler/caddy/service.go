@@ -62,12 +62,12 @@ func Log(ctx echo.Context) error {
 	if err != nil {
 		return ctx.String(err.Error())
 	}
-	user, ok := ctx.Get(`user`).(string)
-	if !ok {
+	user := handler.User(ctx)
+	if user == nil {
 		return ctx.String(ctx.T(`请先登录`))
 	}
 	typ := `service:` + ctx.T(`Web服务`)
-	notice.CloseMessage(user, typ)
+	notice.CloseMessage(user.Username, typ)
 	return ctx.String(ctx.T(`已经停止直播Web服务状态`))
 }
 

@@ -268,10 +268,10 @@ func VhostFile(ctx echo.Context) error {
 		case `upload`:
 			err = mgr.Upload(absPath)
 			if err != nil {
-				user, _ := ctx.Get(`user`).(string)
-				if len(user) > 0 {
-					notice.OpenMessage(user, `upload`)
-					notice.Send(user, notice.NewMessageWithValue(`upload`, ctx.T(`文件上传出错`), err.Error()))
+				user := handler.User(ctx)
+				if user != nil {
+					notice.OpenMessage(user.Username, `upload`)
+					notice.Send(user.Username, notice.NewMessageWithValue(`upload`, ctx.T(`文件上传出错`), err.Error()))
 				}
 				return err
 			}

@@ -19,19 +19,22 @@ package middleware
 
 import (
 	"errors"
+	"time"
 
+	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/echo"
 )
 
 func AuthCheck(h echo.Handler) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		if user, _ := c.Session().Get(`user`).(string); len(user) > 0 {
+		if user, _ := c.Session().Get(`user`).(*dbschema.User); user != nil {
 			if jump, ok := c.Session().Get(`auth2ndURL`).(string); ok && len(jump) > 0 {
 				return c.Redirect(jump)
 			}
 			c.Set(`user`, user)
-			c.SetFunc(`Username`, func() string { return user })
+			c.SetFunc(`Username`, func() string { return user.Username })
 			return h.Handle(c)
 		}
 
@@ -46,14 +49,25 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 func Auth(c echo.Context, saveSession bool) error {
 	user := c.Form(`user`)
 	pass := c.Form(`pass`)
-	if profile, ok := config.DefaultConfig.Sys.Accounts[user]; ok && profile.Password == pass {
+
+	m := model.NewUser(c)
+	exists, err := m.CheckPasswd(user, pass)
+	if !exists {
+		return errors.New(c.T(`用户不存在`))
+	}
+	if err == nil {
 		if saveSession {
-			c.Session().Set(`user`, user)
+			m.SetSession()
 		}
-		if profile.GAuthKey != nil {
+		if m.NeedCheckU2F(m.User.Id) {
 			c.Session().Set(`auth2ndURL`, `/gauth_check`)
 		}
-		return nil
+		m.User.LastLogin = uint(time.Now().Unix())
+		m.User.LastIp = c.RealIP()
+		m.User.Param().SetSend(map[string]interface{}{
+			`last_login`: m.User.LastLogin,
+			`last_ip`:    m.User.LastIp,
+		}).SetArgs(`id`, m.User.Id).Update()
 	}
-	return errors.New(c.T(`登录失败，用户名或密码不正确`))
+	return err
 }

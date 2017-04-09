@@ -1197,12 +1197,14 @@ input::-webkit-input-speech-button {
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.6);
   margin-bottom: 20px;
 }
-.login-container .block-flat .header {
+.login-container .block-flat .header,
+.header.hd-block-flat {
   padding: 9px 20px;
   background: #2494F2;
   border-bottom: 1px solid #2082D5;
 }
-.login-container .block-flat .header h3 {
+.login-container .block-flat .header h3,
+.header.hd-block-flat h3 {
   line-height: 35px;
   margin: 0;
   color: #FFF;
@@ -2128,7 +2130,8 @@ table {
   border-collapse: collapse;
   width: 100%;
 }
-table.no-border {
+table.no-border,
+.no-all-border {
   border: 0;
 }
 table .right {
@@ -2645,7 +2648,8 @@ div.dataTables_length label select {
 .block-flat .header.no-border {
   border: 0;
 }
-.block-flat .header h3 {
+.block-flat .header h3,
+.header.hd-block-flat h3 {
   margin-top: 3px;
   font-family: "Raleway", Helvetica, sans-serif;
   font-weight: 200;
@@ -5798,4 +5802,8 @@ ul.no-list-style{
 .form-control.inline{
   display:inline;width:auto;vertical-align:middle;
 }
+.form-control.no-border{
+  border:0;box-shadow:none;
+}
 .normal{font-weight:normal;}
+

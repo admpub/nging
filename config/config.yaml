@@ -2,7 +2,7 @@ db {
   type : "mysql"
   user : "root"
   password : "root"
-  host : "localhost"
+  host : "127.0.0.1:3306"
   database : "nging"
   prefix : ""
   debug : true
@@ -17,11 +17,6 @@ log {
 sys {
   vhostsfileDir : "config\vhosts"
   allowIP : []
-  accounts {
-    admin {
-      password : "admin"
-    }
-  }
   sslHosts : []
   sslCacheFile : "config\letsencrypt.cache"
   sslKeyFile : ""
@@ -56,12 +51,13 @@ sys {
   cmdTimeout : ""
 }
 email {
-	Identity : ""
-	Host : "smtp.exmail.qq.com"
-	Port : 465
-	Username : "swh@admpub.com"
-	Password : ""
+  Username : "swh@admpub.com"
+  Password : ""
+  Host : "smtp.exmail.qq.com"
+  Port : 465
   Secure : "SSL"
+  Identity : ""
+  Timeout : 0
   Engine : ""
   From : "swh@admpub.com"
   QueueSize : 10

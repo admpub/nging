@@ -28,12 +28,13 @@ func Hash(str string) string {
 	return Sha256(str)
 }
 
-// Salt 盐值加密
+// Salt 盐值加密(生成64个字符)
 func Salt() string {
 	return Hash(RandStr(64))
 }
 
-// MakePassword 创建密码
+// MakePassword 创建密码(生成64个字符)
+// 可以指定positions用来在hash处理后的密码的不同位置插入salt片段(数量取决于positions的数量)，然后再次hash
 func MakePassword(password string, salt string, positions ...uint) string {
 	length := len(positions)
 	if length < 1 {
@@ -75,7 +76,7 @@ func MakePassword(password string, salt string, positions ...uint) string {
 			}
 		}
 	}
-	return result
+	return Hash(result)
 }
 
 // CheckPassword 检查密码(密码原文，数据库中保存的哈希过后的密码，数据库中保存的盐值)
@@ -83,7 +84,7 @@ func CheckPassword(rawPassword string, hashedPassword string, salt string, posit
 	return MakePassword(rawPassword, salt, positions...) == hashedPassword
 }
 
-// Key derives a key from the password, salt and iteration count, returning a
+// PBKDF2Key derives a key from the password, salt and iteration count, returning a
 // []byte of length keylen that can be used as cryptographic key. The key is
 // derived based on the method described as PBKDF2 with the HMAC variant using
 // the supplied hash function.

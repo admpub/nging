@@ -38,16 +38,16 @@ func init() {
 }
 
 func Notice(c *websocket.Conn, ctx echo.Context) error {
-	user, ok := ctx.Get(`user`).(string)
-	if !ok {
+	user := handler.User(ctx)
+	if user == nil {
 		return errors.New(ctx.T(`登录信息获取失败，请重新登录`))
 	}
-	notice.OpenClient(user)
-	defer notice.CloseClient(user)
+	notice.OpenClient(user.Username)
+	defer notice.CloseClient(user.Username)
 	//push(writer)
 	go func() {
 		for {
-			message := notice.RecvJSON(user)
+			message := notice.RecvJSON(user.Username)
 			handler.WebSocketLogger.Debug(`Push message: `, string(message))
 			if err := c.WriteMessage(websocket.TextMessage, message); err != nil {
 				handler.WebSocketLogger.Error(`Push error: `, err.Error())

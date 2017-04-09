@@ -23,6 +23,7 @@ import (
 	"runtime"
 
 	"github.com/admpub/log"
+	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/errors"
 	"github.com/admpub/nging/application/library/notice"
@@ -88,22 +89,27 @@ func SendFail(ctx echo.Context, msg string) {
 	ctx.Session().AddFlash(msg)
 }
 
+func User(ctx echo.Context) *dbschema.User {
+	user, _ := ctx.Get(`user`).(*dbschema.User)
+	return user
+}
+
 func NoticeWriter(ctx echo.Context, noticeType string) (wOut io.Writer, wErr io.Writer, err error) {
-	user, ok := ctx.Get(`user`).(string)
-	if !ok {
+	user := User(ctx)
+	if user == nil {
 		return nil, nil, ctx.Redirect(`/login`)
 	}
 	typ := `service:` + noticeType
-	notice.OpenMessage(user, typ)
+	notice.OpenMessage(user.Username, typ)
 
 	wOut = &com.CmdResultCapturer{Do: func(b []byte) error {
 		os.Stdout.Write(b)
-		notice.Send(user, notice.NewMessageWithValue(typ, noticeType, string(b), notice.Succeed))
+		notice.Send(user.Username, notice.NewMessageWithValue(typ, noticeType, string(b), notice.Succeed))
 		return nil
 	}}
 	wErr = &com.CmdResultCapturer{Do: func(b []byte) error {
 		os.Stderr.Write(b)
-		notice.Send(user, notice.NewMessageWithValue(typ, noticeType, string(b), notice.Failed))
+		notice.Send(user.Username, notice.NewMessageWithValue(typ, noticeType, string(b), notice.Failed))
 		return nil
 	}}
 	return

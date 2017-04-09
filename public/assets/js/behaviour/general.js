@@ -24,6 +24,29 @@ var App = function () {
   };//End of widgets
   
   
+  /*Form Wizard*/
+  var wizard = function(){
+    //Fuel UX
+    $('.wizard-ux').wizard();
+
+    $('.wizard-ux').on('changed',function(){
+      //delete $.fn.slider;
+      $('.bslider').slider();
+    });
+    
+    $(".wizard-next").click(function(e){
+      var id = $(this).data("wizard");
+      $(id).wizard('next');
+      e.preventDefault();
+    });
+    
+    $(".wizard-previous").click(function(e){
+      var id = $(this).data("wizard");
+      $(id).wizard('previous');
+      e.preventDefault();
+    });
+  };//End of wizard
+
   /*Speech Recognition*/
   var speech_commands = [];
   if(('webkitSpeechRecognition' in window)){
@@ -471,6 +494,10 @@ var App = function () {
       widgets();
     },
 
+    wizard: function(){
+      wizard();
+    },
+    
     markNavByURL:function(url){
       if(url==null)url=window.location.pathname;
       App.markNav($('.cl-vnavigation a[href="'+url+'"]'));

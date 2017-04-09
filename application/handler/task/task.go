@@ -164,6 +164,7 @@ func Add(ctx echo.Context) error {
 			m.Command = strings.TrimSpace(m.Command)
 			m.CronSpec = getCronSpec(ctx)
 			m.Disabled = `Y`
+			m.Uid = handler.User(ctx).Id
 			err = checkTaskData(ctx, m.Task)
 			if err == nil {
 				_, err = m.Add()

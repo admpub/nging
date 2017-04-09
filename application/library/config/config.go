@@ -25,7 +25,6 @@ import (
 	"time"
 
 	"github.com/admpub/confl"
-	GAuth "github.com/admpub/dgoogauth"
 	"github.com/admpub/mail"
 	"github.com/admpub/nging/application/library/caddy"
 	"github.com/admpub/nging/application/library/ftp"
@@ -34,11 +33,6 @@ import (
 
 func SetVersion(version string) {
 	caddy.DefaultVersion = version
-}
-
-type Profile struct {
-	Password string         `json:"password"`
-	GAuthKey *GAuth.KeyData `json:"gauthKey"`
 }
 
 type Config struct {
@@ -62,20 +56,19 @@ type Config struct {
 	} `json:"log"`
 
 	Sys struct {
-		VhostsfileDir          string             `json:"vhostsfileDir"`
-		AllowIP                []string           `json:"allowIP"`
-		Accounts               map[string]Profile `json:"accounts"`
-		SSLHosts               []string           `json:"sslHosts"`
-		SSLCacheFile           string             `json:"sslCacheFile"`
-		SSLKeyFile             string             `json:"sslKeyFile"`
-		SSLCertFile            string             `json:"sslCertFile"`
-		Debug                  bool               `json:"debug"`
-		EditableFileExtensions map[string]string  `json:"editableFileExtensions"`
-		EditableFileMaxSize    string             `json:"editableFileMaxSize"`
-		EditableFileMaxBytes   int64              `json:"editableFileMaxBytes"`
-		ErrorPages             map[int]string     `json:"errorPages"`
-		CmdTimeout             string             `json:"cmdTimeout"`
-		CmdTimeoutDuration     time.Duration      `json:"-"`
+		VhostsfileDir          string            `json:"vhostsfileDir"`
+		AllowIP                []string          `json:"allowIP"`
+		SSLHosts               []string          `json:"sslHosts"`
+		SSLCacheFile           string            `json:"sslCacheFile"`
+		SSLKeyFile             string            `json:"sslKeyFile"`
+		SSLCertFile            string            `json:"sslCertFile"`
+		Debug                  bool              `json:"debug"`
+		EditableFileExtensions map[string]string `json:"editableFileExtensions"`
+		EditableFileMaxSize    string            `json:"editableFileMaxSize"`
+		EditableFileMaxBytes   int64             `json:"editableFileMaxBytes"`
+		ErrorPages             map[int]string    `json:"errorPages"`
+		CmdTimeout             string            `json:"cmdTimeout"`
+		CmdTimeoutDuration     time.Duration     `json:"-"`
 	} `json:"sys"`
 
 	Email struct {

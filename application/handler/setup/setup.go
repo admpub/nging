@@ -18,16 +18,18 @@
 package setup
 
 import (
+	"errors"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
-	"github.com/admpub/log"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/cron"
+	"github.com/admpub/nging/application/model"
+	"github.com/lunny/log"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
@@ -50,48 +52,90 @@ func Setup(ctx echo.Context) error {
 		return ctx.String(ctx.T(`找不到文件%s，无法安装`, sqlFile))
 	}
 	if ctx.IsPost() {
+		adminUser := ctx.Form(`adminUser`)
+		adminPass := ctx.Form(`adminPass`)
+		adminEmail := ctx.Form(`adminEmail`)
+		if len(adminUser) == 0 {
+			err = errors.New(ctx.T(`管理员用户名不能为空`))
+			goto DIE
+		}
+		if !com.IsUsername(adminUser) {
+			err = errors.New(ctx.T(`管理员名不能包含特殊字符(只能由字母、数字、下划线和汉字组成)`))
+			goto DIE
+		}
+		if len(adminPass) < 8 {
+			err = errors.New(ctx.T(`管理员密码不能少于8个字符`))
+			goto DIE
+		}
+		if len(adminEmail) == 0 {
+			err = errors.New(ctx.T(`管理员邮箱不能为空`))
+			goto DIE
+		}
+		if !ctx.ValidateField(`adminEmail`, adminEmail, `email`) {
+			err = errors.New(ctx.T(`管理员邮箱格式不正确`))
+			goto DIE
+		}
 		err = ctx.MustBind(&config.DefaultConfig.DB)
 		config.DefaultConfig.DB.Database = strings.Replace(config.DefaultConfig.DB.Database, "'", "", -1)
 		config.DefaultConfig.DB.Database = strings.Replace(config.DefaultConfig.DB.Database, "`", "", -1)
-		if err == nil {
-			//连接数据库
-			err = config.ConnectDB()
-			if err != nil {
-				err = createDatabase(err)
-			}
+		if err != nil {
+			goto DIE
 		}
-		if err == nil {
-			//创建数据库数据
-			var sqlStr string
-			err = com.SeekFileLines(sqlFile, func(line string) error {
-				if strings.HasPrefix(line, `--`) {
-					return nil
-				}
-				line = strings.TrimSpace(line)
-				sqlStr += line
-				if strings.HasSuffix(line, `;`) && len(sqlStr) > 0 {
-					_, err := factory.NewParam().SetCollection(sqlStr).Exec()
-					sqlStr = ``
-					if err != nil {
-						return err
-					}
-				}
+		//连接数据库
+		err = config.ConnectDB()
+		if err != nil {
+			err = createDatabase(err)
+		}
+		if err != nil {
+			goto DIE
+		}
+		//创建数据库数据
+		var sqlStr string
+		err = com.SeekFileLines(sqlFile, func(line string) error {
+			if strings.HasPrefix(line, `--`) {
 				return nil
-			})
+			}
+			line = strings.TrimSpace(line)
+			sqlStr += line
+			if strings.HasSuffix(line, `;`) && len(sqlStr) > 0 {
+				_, err := factory.NewParam().SetCollection(sqlStr).Exec()
+				sqlStr = ``
+				if err != nil {
+					return err
+				}
+			}
+			return nil
+		})
+		if err != nil {
+			goto DIE
 		}
-		if err == nil {
-			//保存数据库账号到配置文件
-			err = config.DefaultConfig.SaveToFile()
+
+		if err2 := cron.InitJobs(); err2 != nil {
+			log.Error(err2)
 		}
-		if err == nil {
-			//生成锁文件
-			err = ioutil.WriteFile(lockFile, []byte(time.Now().Format(`2006-01-02 15:04:05`)), os.ModePerm)
+
+		m := model.NewUser(ctx)
+		err = m.Register(adminUser, adminPass, adminEmail)
+		if err != nil {
+			goto DIE
 		}
-		if err == nil {
-			handler.SendOk(ctx, ctx.T(`安装成功`))
-			return ctx.Redirect(`/`)
+
+		//保存数据库账号到配置文件
+		err = config.DefaultConfig.SaveToFile()
+		if err != nil {
+			goto DIE
 		}
+
+		//生成锁文件
+		err = ioutil.WriteFile(lockFile, []byte(time.Now().Format(`2006-01-02 15:04:05`)), os.ModePerm)
+		if err != nil {
+			goto DIE
+		}
+		handler.SendOk(ctx, ctx.T(`安装成功`))
+		return ctx.Redirect(`/`)
 	}
+
+DIE:
 	return ctx.Render(`setup`, handler.Err(ctx, err))
 }
 
@@ -112,12 +156,6 @@ func createDatabase(err error) error {
 			}
 			config.DefaultConfig.DB.Database = dbName
 			err = config.ConnectDB()
-			if err != nil {
-				break
-			}
-			if err2 = cron.InitJobs(); err2 != nil {
-				log.Error(err2)
-			}
 		}
 	}
 	return err
