@@ -28,6 +28,7 @@ import (
 )
 
 var (
+	ngingVersion          string
 	Installed             sql.NullBool
 	DefaultConfig         = &Config{}
 	DefaultCLIConfig      = &CLIConfig{cmds: map[string]*exec.Cmd{}}

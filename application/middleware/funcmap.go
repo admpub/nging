@@ -24,6 +24,7 @@ import (
 
 	"strconv"
 
+	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/errors"
 	"github.com/admpub/nging/application/library/modal"
 	"github.com/webx-top/echo"
@@ -44,6 +45,7 @@ func FuncMap() echo.MiddlewareFunc {
 			c.SetFunc(`Message`, errors.Message)
 			c.SetFunc(`Ok`, errors.Ok)
 			c.SetFunc(`IndexStrSlice`, indexStrSlice)
+			c.SetFunc(`Version`, config.Version)
 			return h.Handle(c)
 		})
 	}

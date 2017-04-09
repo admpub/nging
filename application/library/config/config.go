@@ -32,7 +32,12 @@ import (
 )
 
 func SetVersion(version string) {
+	ngingVersion = version
 	caddy.DefaultVersion = version
+}
+
+func Version() string {
+	return ngingVersion
 }
 
 type Config struct {
