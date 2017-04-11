@@ -65,11 +65,10 @@
 <script>
 function killSubmit(pid){
     $.get('/manage/procskill/'+pid,{},function(r){
+        var td=$('td[data-pid="'+pid+'"]');
          if(r.Code==1){
             App.message({title: '{{"系统提示"|T}}', text: '{{"操作成功"|T}}', class_name:'success'});
-            window.setTimeout(function(){
-                window.location.reload();
-            },2000);
+            td.parent('tr').remove();
          }else{
             App.message({title: '{{"出错了"|T}}', text: r.Info, class_name:'danger'});
          }
