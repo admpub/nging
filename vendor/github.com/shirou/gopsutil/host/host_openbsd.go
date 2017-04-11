@@ -123,6 +123,8 @@ func Users() ([]UserStat, error) {
 	if err != nil {
 		return ret, err
 	}
+	defer file.Close()
+
 	buf, err := ioutil.ReadAll(file)
 	if err != nil {
 		return ret, err
@@ -151,4 +153,8 @@ func Users() ([]UserStat, error) {
 	}
 
 	return ret, nil
+}
+
+func SensorsTemperatures() ([]TemperatureStat, error) {
+	return []TemperatureStat{}, common.ErrNotImplementedError
 }

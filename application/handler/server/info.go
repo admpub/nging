@@ -18,6 +18,11 @@
 package server
 
 import (
+	"runtime"
+	"strings"
+
+	"time"
+
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/handler"
 	"github.com/shirou/gopsutil/cpu"
@@ -27,6 +32,7 @@ import (
 	"github.com/shirou/gopsutil/mem"
 	"github.com/shirou/gopsutil/net"
 	"github.com/shirou/gopsutil/process"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/render"
 )
@@ -34,6 +40,9 @@ import (
 func init() {
 	handler.RegisterToGroup(`/manage`, func(g *echo.Group) {
 		g.Route("GET", `/sysinfo`, Info, render.AutoOutput(nil))
+		g.Route("GET", `/netstat`, Connections, render.AutoOutput(nil))
+		g.Route("GET", `/process/:pid`, ProcessInfo)
+		g.Route("GET", `/procskill/:pid`, ProcessKill)
 	})
 }
 
@@ -121,6 +130,101 @@ func Info(ctx echo.Context) error {
 
 	ctx.Set(`data`, data)
 	return nil
+}
+
+func processInfo(pid int32) (echo.H, error) {
+	procs, err := process.NewProcess(pid)
+	if err != nil {
+		return nil, err
+	}
+	cpuPercent, _ := procs.Percent(time.Second * 5)
+	memPercent, _ := procs.MemoryPercent()
+	name, _ := procs.Name()
+	cmdLine, _ := procs.Cmdline()
+	exe, _ := procs.Exe()
+	createTime, _ := procs.CreateTime()
+	row := echo.H{
+		"name":           name,
+		"cmd_line":       cmdLine,
+		"exe":            exe,
+		"created":        "",
+		"cpu_percent":    cpuPercent,
+		"memory_percent": memPercent,
+	}
+	if createTime > 0 {
+		row["created"] = com.DateFormat(`Y-m-d H:i:s`, createTime/1000)
+	}
+	return row, nil
+}
+
+func ProcessInfo(ctx echo.Context) error {
+	pid := ctx.Paramx(`pid`).Int32()
+	row, err := processInfo(pid)
+	data := ctx.NewData()
+	if err != nil {
+		data.SetError(err)
+	} else {
+		data.SetData(row)
+	}
+	return ctx.JSON(data)
+}
+
+func ProcessKill(ctx echo.Context) error {
+	pid := ctx.Paramx(`pid`).Int()
+	err := com.CloseProcessFromPid(pid)
+	data := ctx.NewData()
+	if err != nil {
+		data.SetError(err)
+	} else {
+		data.SetData(nil)
+	}
+	return ctx.JSON(data)
+}
+
+func Connections(ctx echo.Context) (err error) {
+	ctx.Set(`tmpl`, `manage/netstat`)
+	var conns []net.ConnectionStat
+	var kind string
+	switch kind {
+	case "tcp", "tcp4", "tcp6", "udp", "udp4", "udp6", "unix", "inet", "inet4", "inet6":
+	default:
+		kind = "all"
+	}
+	conns, err = net.Connections(kind)
+	if err != nil {
+		if err.Error() == "not implemented yet" {
+			if runtime.GOOS == "windows" {
+				err = nil
+				var conn <-chan net.ConnectionStat
+				if strings.HasPrefix(kind, `udp`) {
+					conn, err = NetStatUDP()
+				} else {
+					conn, err = NetStatTCP()
+				}
+				if err != nil {
+					return
+				}
+				done := make(chan bool)
+				go func() {
+					defer func() {
+						done <- true
+					}()
+					for {
+						select {
+						case c, r := <-conn:
+							if !r {
+								return
+							}
+							conns = append(conns, c)
+						}
+					}
+				}()
+				<-done
+			}
+		}
+	}
+	ctx.Set(`listData`, conns)
+	return
 }
 
 type SystemInformation struct {

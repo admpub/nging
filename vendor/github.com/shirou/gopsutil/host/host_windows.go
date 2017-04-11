@@ -7,7 +7,9 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"syscall"
 	"time"
+	"unsafe"
 
 	"github.com/StackExchange/wmi"
 
@@ -33,32 +35,75 @@ func Info() (*InfoStat, error) {
 		OS: runtime.GOOS,
 	}
 
-	hostname, err := os.Hostname()
-	if err == nil {
-		ret.Hostname = hostname
+	{
+		hostname, err := os.Hostname()
+		if err == nil {
+			ret.Hostname = hostname
+		}
 	}
 
-	platform, family, version, err := PlatformInformation()
-	if err == nil {
-		ret.Platform = platform
-		ret.PlatformFamily = family
-		ret.PlatformVersion = version
-	} else {
-		return ret, err
+	{
+		platform, family, version, err := PlatformInformation()
+		if err == nil {
+			ret.Platform = platform
+			ret.PlatformFamily = family
+			ret.PlatformVersion = version
+		} else {
+			return ret, err
+		}
 	}
 
-	boot, err := BootTime()
-	if err == nil {
-		ret.BootTime = boot
-		ret.Uptime, _ = Uptime()
+	{
+		boot, err := BootTime()
+		if err == nil {
+			ret.BootTime = boot
+			ret.Uptime, _ = Uptime()
+		}
 	}
 
-	procs, err := process.Pids()
-	if err == nil {
-		ret.Procs = uint64(len(procs))
+	{
+		hostID, err := getMachineGuid()
+		if err == nil {
+			ret.HostID = strings.ToLower(hostID)
+		}
+	}
+
+	{
+		procs, err := process.Pids()
+		if err == nil {
+			ret.Procs = uint64(len(procs))
+		}
 	}
 
 	return ret, nil
+}
+
+func getMachineGuid() (string, error) {
+	var h syscall.Handle
+	err := syscall.RegOpenKeyEx(syscall.HKEY_LOCAL_MACHINE, syscall.StringToUTF16Ptr(`SOFTWARE\Microsoft\Cryptography`), 0, syscall.KEY_READ|syscall.KEY_WOW64_64KEY, &h)
+	if err != nil {
+		return "", err
+	}
+	defer syscall.RegCloseKey(h)
+
+	const windowsRegBufLen = 74 // len(`{`) + len(`abcdefgh-1234-456789012-123345456671` * 2) + len(`}`) // 2 == bytes/UTF16
+	const uuidLen = 36
+
+	var regBuf [windowsRegBufLen]uint16
+	bufLen := uint32(windowsRegBufLen)
+	var valType uint32
+	err = syscall.RegQueryValueEx(h, syscall.StringToUTF16Ptr(`MachineGuid`), nil, &valType, (*byte)(unsafe.Pointer(&regBuf[0])), &bufLen)
+	if err != nil {
+		return "", err
+	}
+
+	hostID := syscall.UTF16ToString(regBuf[:])
+	hostIDLen := len(hostID)
+	if hostIDLen != uuidLen {
+		return "", fmt.Errorf("HostID incorrect: %q\n", hostID)
+	}
+
+	return hostID, nil
 }
 
 func GetOSInfo() (Win32_OperatingSystem, error) {
@@ -91,11 +136,15 @@ func bootTime(up uint64) uint64 {
 }
 
 func BootTime() (uint64, error) {
+	if cachedBootTime != 0 {
+		return cachedBootTime, nil
+	}
 	up, err := Uptime()
 	if err != nil {
 		return 0, err
 	}
-	return bootTime(up), nil
+	cachedBootTime = bootTime(up)
+	return cachedBootTime, nil
 }
 
 func PlatformInformation() (platform string, family string, version string, err error) {
@@ -126,8 +175,11 @@ func PlatformInformation() (platform string, family string, version string, err 
 }
 
 func Users() ([]UserStat, error) {
-
 	var ret []UserStat
 
 	return ret, nil
+}
+
+func SensorsTemperatures() ([]TemperatureStat, error) {
+	return []TemperatureStat{}, common.ErrNotImplementedError
 }

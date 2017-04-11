@@ -29,9 +29,7 @@ var (
 		DataKey:              `data`,
 		TmplKey:              `tmpl`,
 		DefaultTmpl:          `index`,
-		DefaultErrorTmpl:     `error`,
 		JSONPCallbackName:    `callback`,
-		ErrorFunc:            OutputError,
 		OutputFunc:           Output,
 		DefaultErrorHTTPCode: http.StatusInternalServerError,
 	}
@@ -44,7 +42,6 @@ type Options struct {
 	DefaultTmpl          string
 	DefaultErrorTmpl     string
 	JSONPCallbackName    string
-	ErrorFunc            func(err error, format string, c echo.Context, opt *Options) error
 	OutputFunc           func(format string, c echo.Context, opt *Options) error
 	DefaultErrorHTTPCode int
 }
@@ -62,9 +59,6 @@ func Middleware(d echo.Renderer) echo.MiddlewareFunc {
 func SetDefaultOptions(opt *Options) *Options {
 	if opt.Skipper == nil {
 		opt.Skipper = DefaultOptions.Skipper
-	}
-	if opt.ErrorFunc == nil {
-		opt.ErrorFunc = DefaultOptions.ErrorFunc
 	}
 	if opt.OutputFunc == nil {
 		opt.OutputFunc = DefaultOptions.OutputFunc
@@ -106,11 +100,10 @@ func AutoOutput(options ...*Options) echo.MiddlewareFunc {
 			if opt.Skipper(c) {
 				return h.Handle(c)
 			}
-			format := c.Format()
 			if err := h.Handle(c); err != nil {
-				return opt.ErrorFunc(err, format, c, opt)
+				return err
 			}
-			return opt.OutputFunc(format, c, opt)
+			return opt.OutputFunc(c.Format(), c, opt)
 		})
 	}
 }
@@ -154,18 +147,6 @@ func SetFuncs(c echo.Context, v *echo.Data) {
 	c.SetFunc(`Zone`, func() interface{} {
 		return v.Zone
 	})
-}
-
-// OutputError Outputs the specified format
-func OutputError(err error, format string, c echo.Context, opt *Options) error {
-	if apiData, ok := err.(*echo.Data); ok {
-		c.Set(opt.DataKey, apiData)
-	} else {
-		c.Set(opt.DataKey, echo.NewData(c, c.Code(), err.Error()))
-	}
-	c.Set(opt.TmplKey, opt.DefaultErrorTmpl)
-	c.SetCode(opt.DefaultErrorHTTPCode)
-	return Output(format, c, opt)
 }
 
 func HTTPErrorHandler(templates map[int]string, options ...*Options) echo.HTTPErrorHandler {
