@@ -127,20 +127,23 @@ $(function(){
         },'json');
 	});
     $('#query-procs').on('click',function(){
-    $('td.has-pid-row').each(function(){
-        if($(this).data('name'))return;
-        var pid=$(this).data('pid');
-        var me=$(this);
-        me.html('{{"查询中"|T}}...');
-        $.get('/manage/process/'+pid,{},function(r){
-            if(r.Code==1){
-                me.html('<span title="'+r.Data.cmd_line.replace(/"/g,"&quot;")+'">'+r.Data.name+'</span>');
-                me.data('name',r.Data.name);
-                return;
-            }
-            me.html(r.Info);
-        },'json');
-    });
+        var queried={};
+        $('td.has-pid-row').each(function(){
+            if($(this).data('name'))return;
+            var pid=$(this).data('pid');
+            $(this).html('{{"查询中"|T}}...');
+            if(typeof(queried[pid])!='undefined')return;
+            queried[pid]=true;
+            $.get('/manage/process/'+pid,{},function(r){
+                var me=$('td[data-pid="'+pid+'"]');
+                if(r.Code==1){
+                    me.html('<span title="'+r.Data.cmd_line.replace(/"/g,"&quot;")+'">'+r.Data.name+'</span>');
+                    me.data('name',r.Data.name);
+                    return;
+                }
+                me.html(r.Info);
+            },'json');
+        });
     });
 });
 </script>
