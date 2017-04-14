@@ -73,9 +73,11 @@ func (h H) ToData() *Data {
 	if v, y := h["Info"]; y {
 		info = v
 	}
-	var code int
+	var code State
 	if v, y := h["Code"]; y {
 		if c, y := v.(int); y {
+			code = State(c)
+		} else if c, y := v.(State); y {
 			code = c
 		}
 	}

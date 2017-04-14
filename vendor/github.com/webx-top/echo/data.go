@@ -26,9 +26,31 @@ func init() {
 	gob.Register(&Data{})
 }
 
+type State int
+
+func (s State) String() string {
+	switch s {
+	case -2:
+		return `Non-Privileged` //无权限
+	case -1:
+		return `Unauthenticated` //未登录
+	case 0:
+		return `Failure` //操作失败
+	case 1:
+		return `Success` //操作成功
+	default:
+		return ``
+	}
+}
+
+func (s State) Int() int {
+	return int(s)
+}
+
 type Data struct {
 	context Context
-	Code    int
+	Code    State
+	State   string `json:",omitempty" xml:",omitempty"`
 	Info    interface{}
 	Zone    interface{} `json:",omitempty" xml:",omitempty"`
 	Data    interface{} `json:",omitempty" xml:",omitempty"`
@@ -46,7 +68,7 @@ func (d *Data) Render(tmpl string, code ...int) error {
 	return d.context.Render(tmpl, d.Data, code...)
 }
 
-func (d *Data) Gets() (int, interface{}, interface{}, interface{}) {
+func (d *Data) Gets() (State, interface{}, interface{}, interface{}) {
 	return d.Code, d.Info, d.Zone, d.Data
 }
 
@@ -57,26 +79,27 @@ func (d *Data) GetData() interface{} {
 func (d *Data) SetError(err error, args ...int) *Data {
 	if err != nil {
 		if len(args) > 0 {
-			d.Code = args[0]
+			d.SetCode(args[0])
 		} else {
-			d.Code = 0
+			d.SetCode(0)
 		}
 		d.Info = err.Error()
 	} else {
-		d.Code = 1
+		d.SetCode(1)
 	}
 	return d
 }
 
 func (d *Data) SetCode(code int) *Data {
-	d.Code = code
+	d.Code = State(code)
+	d.State = d.Code.String()
 	return d
 }
 
 func (d *Data) SetInfo(info interface{}, args ...int) *Data {
 	d.Info = info
 	if len(args) > 0 {
-		d.Code = args[0]
+		d.SetCode(args[0])
 	}
 	return d
 }
@@ -89,9 +112,9 @@ func (d *Data) SetZone(zone interface{}) *Data {
 func (d *Data) SetData(data interface{}, args ...int) *Data {
 	d.Data = data
 	if len(args) > 0 {
-		d.Code = args[0]
+		d.SetCode(args[0])
 	} else {
-		d.Code = 1
+		d.SetCode(1)
 	}
 	return d
 }
@@ -128,7 +151,7 @@ func (c *Data) SetTmplFuncs() {
 	flash, ok := c.context.Session().Get(`webx:flash`).(*Data)
 	if ok {
 		c.context.Session().Delete(`webx:flash`).Save()
-		c.context.SetFunc(`Code`, func() int {
+		c.context.SetFunc(`Code`, func() State {
 			return flash.Code
 		})
 		c.context.SetFunc(`Info`, func() interface{} {
@@ -138,7 +161,7 @@ func (c *Data) SetTmplFuncs() {
 			return flash.Zone
 		})
 	} else {
-		c.context.SetFunc(`Code`, func() int {
+		c.context.SetFunc(`Code`, func() State {
 			return c.Code
 		})
 		c.context.SetFunc(`Info`, func() interface{} {
@@ -152,7 +175,7 @@ func (c *Data) SetTmplFuncs() {
 
 // Set 设置输出(code,info,zone,data)
 func (c *Data) Set(code int, args ...interface{}) {
-	c.Code = code
+	c.SetCode(code)
 	var hasData bool
 	switch len(args) {
 	case 3:
@@ -190,9 +213,11 @@ func NewData(ctx Context, code int, args ...interface{}) *Data {
 	case 1:
 		info = args[0]
 	}
+	c := State(code)
 	return &Data{
 		context: ctx,
-		Code:    code,
+		Code:    c,
+		State:   c.String(),
 		Info:    info,
 		Zone:    zone,
 		Data:    data,

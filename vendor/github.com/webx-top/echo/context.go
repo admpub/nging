@@ -996,7 +996,7 @@ func (c *xContext) NewData(args ...interface{}) *Data {
 			return mapd.ToData().SetContext(c)
 		}
 	}
-	return &Data{Code: 1, context: c}
+	return &Data{Code: State(1), context: c}
 }
 
 // MapForm 映射表单数据到结构体
