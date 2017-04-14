@@ -8,8 +8,8 @@ nging不仅仅包含了caddy的在线可视化配置，还包含了ftp服务的�
 
 - [x] 文件在线管理
 - [x] 计划任务
-- [x] 数据库管理
-- [ ] 支持更多caddy指令的在线配置
+- [x] 数据库管理（adminer的Golang版）
+- [x] 网站管理（支持caddy指令在线配置）
     - [ ] awslambda
     - [ ] basicauth
     - [ ] bind
@@ -59,6 +59,9 @@ nging不仅仅包含了caddy的在线可视化配置，还包含了ftp服务的�
 
 # 先睹为快
 
+### 安装：
+[![](https://github.com/admpub/nging/blob/master/preview/preview_install.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_install.png)
+
 ### 登录：
 [![](https://github.com/admpub/nging/blob/master/preview/preview_login.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_login.png)
 
@@ -67,6 +70,9 @@ nging不仅仅包含了caddy的在线可视化配置，还包含了ftp服务的�
 
 ### 在线编辑文件：
 [![](https://github.com/admpub/nging/blob/master/preview/preview_editfile.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_editfile.png)
+
+### 添加计划任务：
+[![](https://github.com/admpub/nging/blob/master/preview/preview_task.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_task.png)
 
 ### MySQL数据库管理：
 [![](https://github.com/admpub/nging/blob/master/preview/preview_listtable.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_listtable.png)
