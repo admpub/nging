@@ -4,7 +4,7 @@ cd ..
 go-bindata-assetfs -tags bindata public/... template/...
 cd tool
 
-set NGINGEX=""
+set NGINGEX=
 
 set GOOS=linux
 set GOARCH=amd64
@@ -20,7 +20,7 @@ call inc-build-zip.bat
 
 
 
-set NGINGEX=".exe"
+set NGINGEX=.exe
 
 set GOOS=windows
 set GOARCH=386
