@@ -21,17 +21,16 @@ import (
 	"crypto/tls"
 	"flag"
 	"fmt"
-	"strings"
+	"net/http"
 
-	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/engine/standard"
 	"github.com/webx-top/echo/handler/mvc/events"
 	"github.com/webx-top/echo/middleware"
-	"github.com/webx-top/echo/middleware/bindata"
 	"github.com/webx-top/echo/middleware/language"
 	"github.com/webx-top/echo/middleware/render"
+	"github.com/webx-top/echo/middleware/render/driver"
 	"github.com/webx-top/echo/middleware/session"
 
 	"github.com/admpub/letsencrypt"
@@ -39,11 +38,17 @@ import (
 	"github.com/admpub/nging/application"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/cron"
-	"github.com/admpub/nging/application/library/modal"
 )
 
-var Version = `1.0.1`
-var binData bool
+var (
+	//Version 版本号
+	Version = `1.0.2`
+
+	binData    bool
+	staticMW   interface{}
+	tmplMgr    driver.Manager
+	langFSFunc func(dir string) http.FileSystem
+)
 
 func main() {
 	config.DefaultCLIConfig.InitFlag()
@@ -75,7 +80,7 @@ func main() {
 	}
 
 	e := echo.New()
-	e.SetDebug(true)
+	e.SetDebug(binData == false)
 	e.Use(middleware.Log(), middleware.Recover())
 	e.Use(middleware.Gzip(&middleware.GzipConfig{
 		Skipper: func(c echo.Context) bool {
@@ -93,27 +98,17 @@ func main() {
 	})
 
 	// 注册静态资源文件
-	if binData {
-		e.Use(bindata.Static("/public/", &assetfs.AssetFS{
-			Asset:     Asset,
-			AssetDir:  AssetDir,
-			AssetInfo: AssetInfo,
-			Prefix:    "",
-		}))
-	} else {
-		e.Use(middleware.Static(&middleware.StaticOptions{
-			Root: "./public",
-			Path: "/public/",
-		}))
-	}
+	e.Use(staticMW)
 
 	// 启用多语言支持
+	config.DefaultConfig.Language.SetFSFunc(langFSFunc)
 	e.Use(language.New(&config.DefaultConfig.Language).Middleware())
 
 	// 启用session
 	e.Use(session.Middleware(config.SessionOptions))
 	e.Use(middleware.Validate(echo.NewValidation))
 
+	// 注册模板引擎
 	renderOptions := &render.Config{
 		TmplDir: `./template`,
 		Engine:  `standard`,
@@ -126,20 +121,8 @@ func main() {
 		ErrorPages: config.DefaultConfig.Sys.ErrorPages,
 	}
 	renderOptions.ApplyTo(e)
-
-	// 注册模板引擎
-	if binData {
-		manager := bindata.NewTmplManager(&assetfs.AssetFS{
-			Asset:     Asset,
-			AssetDir:  AssetDir,
-			AssetInfo: AssetInfo,
-			Prefix:    "template",
-		})
-		renderOptions.Renderer().SetManager(manager)
-		modal.ReadConfigFile = func(file string) ([]byte, error) {
-			file = strings.TrimPrefix(file, `./template`)
-			return manager.GetTemplate(file)
-		}
+	if tmplMgr != nil {
+		renderOptions.Renderer().SetManager(tmplMgr)
 	}
 	events.AddEvent(`clearCache`, func(next func(r bool), args ...interface{}) {
 		renderOptions.Renderer().ClearCache()

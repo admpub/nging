@@ -15,7 +15,8 @@ import (
 	"github.com/webx-top/validation"
 )
 
-var DefaultHtmlFilter = func(v string) (r string) {
+// DefaultHTMLFilter html filter (`form_filter:"html"`)
+var DefaultHTMLFilter = func(v string) (r string) {
 	return v
 }
 
@@ -95,6 +96,7 @@ func FormNames(s string) []string {
 	return res
 }
 
+// NamedStructMap 自动将map值映射到结构体
 func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName string, filters ...FormDataFilter) error {
 	vc := reflect.ValueOf(m)
 	tc := reflect.TypeOf(m)
@@ -197,7 +199,7 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 			case reflect.String:
 				switch tagfast.Value(tc, f, `form_filter`) {
 				case `html`:
-					v = DefaultHtmlFilter(v)
+					v = DefaultHTMLFilter(v)
 				}
 				l = v
 				tv.Set(reflect.ValueOf(l))
@@ -395,14 +397,18 @@ type ToConversion interface {
 }
 
 type (
+	//FieldNameFormatter 结构体字段值映射到表单时，结构体字段名称格式化处理
 	FieldNameFormatter func(topName, fieldName string) string
-	FormDataFilter     func(key string, values []string) (string, []string)
+	//FormDataFilter 将map映射到结构体时，对名称和值的过滤处理，如果返回的名称为空，则跳过本字段
+	FormDataFilter func(key string, values []string) (string, []string)
 )
 
 var (
+	//DefaultNopFilter 默认过滤器(map->struct)
 	DefaultNopFilter FormDataFilter = func(k string, v []string) (string, []string) {
 		return k, v
 	}
+	//DefaultFieldNameFormatter 默认格式化函数(struct->form)
 	DefaultFieldNameFormatter FieldNameFormatter = func(topName, fieldName string) string {
 		var fName string
 		if len(topName) == 0 {
@@ -412,6 +418,7 @@ var (
 		}
 		return fName
 	}
+	//LowerCaseFirstLetter 小写首字母(struct->form)
 	LowerCaseFirstLetter FieldNameFormatter = func(topName, fieldName string) string {
 		var fName string
 		s := []rune(fieldName)
@@ -428,6 +435,7 @@ var (
 	}
 )
 
+//StructToForm 映射struct到form
 func StructToForm(ctx Context, m interface{}, topName string, fieldNameFormatter FieldNameFormatter) {
 	vc := reflect.ValueOf(m)
 	tc := reflect.TypeOf(m)

@@ -2,13 +2,17 @@ package i18n
 
 import (
 	// standard library
+	"errors"
 	"io/ioutil"
+	"log"
+	"net/http"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 
 	// third party
+
 	"github.com/admpub/confl"
 )
 
@@ -21,6 +25,7 @@ type TranslatorFactory struct {
 	rulesPaths    []string
 	translators   map[string]*Translator
 	fallback      *Translator
+	getFileSystem func(file string) http.FileSystem
 }
 
 // Translator is a struct which contains all the rules and messages necessary
@@ -90,8 +95,11 @@ func (e translatorError) Error() string {
 //
 //  Using the second way allows you to organize your messages into multiple
 //  files.
-func NewTranslatorFactory(rulesPaths []string, messagesPaths []string, fallbackLocale string) (f *TranslatorFactory, errors []error) {
+func NewTranslatorFactory(rulesPaths []string, messagesPaths []string, fallbackLocale string, fs ...func(file string) http.FileSystem) (f *TranslatorFactory, errors []error) {
 	f = new(TranslatorFactory)
+	if len(fs) > 0 {
+		f.getFileSystem = fs[0]
+	}
 
 	if len(rulesPaths) == 0 {
 		errors = append(errors, translatorError{message: "rules paths empty"})
@@ -106,41 +114,87 @@ func NewTranslatorFactory(rulesPaths []string, messagesPaths []string, fallbackL
 
 	for _, p := range rulesPaths {
 		p = strings.TrimRight(p, pathSeparator)
-		_, err := os.Stat(p)
-		if err != nil {
-			errors = append(errors, translatorError{message: "can't read rules path " + p + ": " + err.Error()})
+		var fs http.FileSystem
+		if f.getFileSystem == nil {
+			fs = http.Dir(p)
+		} else {
+			fs = f.getFileSystem(p)
 		}
+		file, err := fs.Open(".")
+		if err != nil {
+			message := "can't read rules path <" + p + ">: " + err.Error()
+			log.Println(message)
+			errors = append(errors, translatorError{message: message})
+			continue
+		}
+		_, err = file.Stat()
+		if err != nil {
+			message := "can't read rules path <" + p + ">: " + err.Error()
+			log.Println(message)
+			errors = append(errors, translatorError{message: message})
+		}
+		file.Close()
 
 		if !foundRules {
-			_, err = os.Stat(p + pathSeparator + fallbackLocale + ".yaml")
+			file, err = fs.Open(fallbackLocale + ".yaml")
 			if err == nil {
-				foundRules = true
+				if fi, err := file.Stat(); err == nil && fi.IsDir() == false {
+					foundRules = true
+				}
+				file.Close()
 			}
 		}
 	}
 
 	for _, p := range messagesPaths {
 		p = strings.TrimRight(p, pathSeparator)
-		_, err := os.Stat(p)
-		if err != nil {
-			errors = append(errors, translatorError{message: "can't read messages path " + p + ": " + err.Error()})
+		var fs http.FileSystem
+		if f.getFileSystem == nil {
+			fs = http.Dir(p)
+		} else {
+			fs = f.getFileSystem(p)
 		}
+		file, err := fs.Open(".")
+		if err != nil {
+			message := "can't read messages path <" + p + ">: " + err.Error()
+			log.Println(message)
+			errors = append(errors, translatorError{message: message})
+			continue
+		}
+		_, err = file.Stat()
+		if err != nil {
+			message := "can't read messages path " + p + ": " + err.Error()
+			log.Println(message)
+			errors = append(errors, translatorError{message: message})
+		}
+		file.Close()
 
 		if !foundMessages {
-			_, err = os.Stat(p + pathSeparator + fallbackLocale + ".yaml")
+			file, err = fs.Open(fallbackLocale + ".yaml")
 			if err == nil {
-				foundMessages = true
+				if fi, err := file.Stat(); err == nil && fi.IsDir() == false {
+					foundMessages = true
+				}
+				file.Close()
 			} else {
-				info, err := os.Stat(p + pathSeparator + fallbackLocale)
-				if err == nil && info.IsDir() {
-					files, _ := filepath.Glob(p + pathSeparator + fallbackLocale + pathSeparator + "*.yaml")
-					for _, file := range files {
-						_, err = os.Stat(file)
+				file, err = fs.Open(fallbackLocale)
+				if err == nil {
+					if fi, err := file.Stat(); err == nil && fi.IsDir() {
+						dirList, err := file.Readdir(-1)
 						if err == nil {
-							foundMessages = true
-							break
+							for _, fileInfo := range dirList {
+								if fileInfo.IsDir() {
+									continue
+								}
+								if !strings.HasSuffix(fileInfo.Name(), ".yaml") {
+									continue
+								}
+								foundMessages = true
+								break
+							}
 						}
 					}
+					file.Close()
 				}
 			}
 		}
@@ -207,7 +261,7 @@ func (f *TranslatorFactory) GetTranslator(localeCode string) (t *Translator, err
 	// load less specific fallback locale rules
 	parts := strings.Split(localeCode, "-")
 	if len(parts) > 1 {
-		for i, _ := range parts {
+		for i := range parts {
 			fb := strings.Join(parts[0:i+1], "-")
 			for _, p := range f.rulesPaths {
 				p = strings.TrimRight(p, pathSeparator)
@@ -222,12 +276,12 @@ func (f *TranslatorFactory) GetTranslator(localeCode string) (t *Translator, err
 		files = append(files, p+pathSeparator+localeCode+".yaml")
 	}
 
-	errs = rules.load(files)
+	errs = rules.load(files, f.getFileSystem)
 	for _, err := range errs {
 		errors = append(errors, err)
 	}
 
-	messages, errs := loadMessages(localeCode, f.messagesPaths)
+	messages, errs := loadMessages(localeCode, f.messagesPaths, f.getFileSystem)
 	for _, err := range errs {
 		errors = append(errors, err)
 	}
@@ -278,26 +332,52 @@ func (f *TranslatorFactory) getFallback(localeCode string) *Translator {
 func (f *TranslatorFactory) LocaleExists(localeCode string) (exists bool, errs []error) {
 	for _, p := range f.messagesPaths {
 		p = strings.TrimRight(p, pathSeparator)
-		_, err := os.Stat(p + pathSeparator + localeCode + ".yaml")
+		var fs http.FileSystem
+		if f.getFileSystem == nil {
+			fs = http.Dir(p)
+		} else {
+			fs = f.getFileSystem(p)
+		}
+		file, err := fs.Open(localeCode + ".yaml")
+		if err == nil {
+			fi, e := file.Stat()
+			if e != nil {
+				err = e
+			} else if fi.IsDir() {
+				err = errors.New(filepath.Join(p, localeCode+".yaml") + " is dir")
+			}
+			file.Close()
+		}
 		if err == nil {
 			exists = true
 			return
-		} else if !os.IsNotExist(err) {
+		}
+		if !os.IsNotExist(err) {
 			errs = append(errs, translatorError{message: "error getting file info: " + err.Error()})
 		}
 
-		info, err := os.Stat(p + pathSeparator + localeCode)
-		if err == nil && info.IsDir() {
-			files, _ := filepath.Glob(p + pathSeparator + localeCode + pathSeparator + "*.yaml")
-			for _, file := range files {
-				_, err := os.Stat(file)
+		file, err = fs.Open(localeCode)
+		if err == nil {
+			info, err := file.Stat()
+			if err == nil && info.IsDir() {
+				dirList, err := file.Readdir(-1)
 				if err == nil {
-					exists = true
-					return
+					for _, fileInfo := range dirList {
+						if fileInfo.IsDir() {
+							continue
+						}
+						if !strings.HasSuffix(fileInfo.Name(), ".yaml") {
+							continue
+						}
+						exists = true
+						file.Close()
+						return
+					}
 				} else if !os.IsNotExist(err) {
 					errs = append(errs, translatorError{message: "error getting file info: " + err.Error()})
 				}
 			}
+			file.Close()
 		}
 	}
 
@@ -360,7 +440,7 @@ func (t *Translator) Pluralize(key string, number float64, numberStr string) (tr
 	return
 }
 
-// Translate returns the translated message, performang any substitutions
+// Rules Translate returns the translated message, performang any substitutions
 // requested in the substitutions map. If neither this translator nor its
 // fallback translator (or the fallback's fallback and so on) have a translation
 // for the requested key, and empty string and an error will be returned.
@@ -395,65 +475,97 @@ func (t *Translator) substitute(str string, substitutions map[string]string) (su
 // loadMessages loads all messages from the properly named locale message yaml
 // files in the requested messagesPaths.  if multiple paths are provided, paths
 // further down the list take precedence over earlier paths.
-func loadMessages(locale string, messagesPaths []string) (messages map[string]string, errors []error) {
-
+func loadMessages(locale string, messagesPaths []string, fsFunc func(string) http.FileSystem) (messages map[string]string, errorList []error) {
 	messages = make(map[string]string)
 
 	found := false
 	for _, p := range messagesPaths {
 		p = strings.TrimRight(p, pathSeparator)
-		file := p + pathSeparator + locale + ".yaml"
-
-		_, statErr := os.Stat(file)
-		if statErr == nil {
-			contents, readErr := ioutil.ReadFile(file)
-			if readErr != nil {
-				errors = append(errors, translatorError{message: "can't open messages file: " + readErr.Error()})
-			} else {
-				newmap := map[string]string{}
-				yamlErr := confl.Unmarshal(contents, &newmap)
-				if yamlErr != nil {
-					errors = append(errors, translatorError{message: "can't load messages YAML: " + yamlErr.Error()})
-				} else {
-					found = true
-					for key, value := range newmap {
-						messages[key] = value
-					}
-				}
+		var fs http.FileSystem
+		if fsFunc == nil {
+			fs = http.Dir(p)
+		} else {
+			fs = fsFunc(p)
+		}
+		file, err := fs.Open(locale + ".yaml")
+		if err == nil {
+			fi, e := file.Stat()
+			if e != nil {
+				err = e
+			} else if fi.IsDir() {
+				err = errors.New(filepath.Join(p, locale+".yaml") + " is dir")
 			}
+			var contents []byte
+			newmap := map[string]string{}
+			if err == nil {
+				contents, err = ioutil.ReadAll(file)
+			}
+			if err == nil {
+				err = confl.Unmarshal(contents, &newmap)
+			}
+			if err == nil {
+				found = true
+				for key, value := range newmap {
+					messages[key] = value
+				}
+			} else {
+				errorList = append(errorList, translatorError{message: "can't load messages YAML: " + err.Error()})
+			}
+			file.Close()
 		}
 
 		// now look for a directory named after this locale and get an *.yaml children
-		dir := p + pathSeparator + locale
-		info, statErr := os.Stat(dir)
-		if statErr == nil && info.IsDir() {
+		file, err = fs.Open(locale)
+		var info os.FileInfo
+		if err == nil {
+			info, err = file.Stat()
+		}
+		if err == nil && info.IsDir() {
 			// found the directory - now look for *.yaml files
-			files, globErr := filepath.Glob(dir + pathSeparator + "*.yaml")
-			if globErr != nil {
-				errors = append(errors, translatorError{message: "can't glob messages files: " + globErr.Error()})
-			}
-			for _, file := range files {
-				contents, readErr := ioutil.ReadFile(file)
-				if readErr != nil {
-					errors = append(errors, translatorError{message: "can't open messages file: " + readErr.Error()})
-				} else {
+			dirList, err := file.Readdir(-1)
+			if err == nil {
+				for _, fileInfo := range dirList {
+					if fileInfo.IsDir() {
+						continue
+					}
+					if !strings.HasSuffix(fileInfo.Name(), ".yaml") {
+						continue
+					}
+					var fp http.File
+					fp, err = fs.Open(path.Join(locale, fileInfo.Name()))
+					if err != nil {
+						errorList = append(errorList, translatorError{message: "can't open messages file: " + err.Error()})
+						fp.Close()
+						continue
+					}
+					var contents []byte
+					contents, err = ioutil.ReadAll(fp)
+					if err != nil {
+						errorList = append(errorList, translatorError{message: "can't open messages file: " + err.Error()})
+						fp.Close()
+						continue
+					}
 					newmap := map[string]string{}
 					yamlErr := confl.Unmarshal(contents, &newmap)
 					if yamlErr != nil {
-						errors = append(errors, translatorError{message: "can't load messages YAML: " + yamlErr.Error()})
+						errorList = append(errorList, translatorError{message: "can't load messages YAML: " + yamlErr.Error()})
 					} else {
 						found = true
 						for key, value := range newmap {
 							messages[key] = value
 						}
 					}
+					fp.Close()
 				}
+			} else if !os.IsNotExist(err) {
+				errorList = append(errorList, translatorError{message: err.Error()})
 			}
+			file.Close()
 		}
 	}
 
 	if !found {
-		errors = append(errors, translatorError{message: "no messages files found: " + locale})
+		errorList = append(errorList, translatorError{message: "no messages files found: " + locale})
 	}
 
 	return

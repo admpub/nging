@@ -189,11 +189,15 @@ type (
 		Referer() string
 		Port() int
 		RealIP() string
+		HasAnyRequest() bool
 
 		MapForm(i interface{}, names ...string) error
 		MapData(i interface{}, data map[string][]string, names ...string) error
-		SaveUploadedFile(string, string, ...string) (*multipart.FileHeader, error)
+		SaveUploadedFile(fieldName string, saveAbsPath string, saveFileName ...string) (*multipart.FileHeader, error)
 		SaveUploadedFileToWriter(string, io.Writer) (*multipart.FileHeader, error)
+		//Multiple file upload
+		SaveUploadedFiles(fieldName string, savePath func(*multipart.FileHeader) string) error
+		SaveUploadedFilesToWriter(fieldName string, writer func(*multipart.FileHeader) io.Writer) error
 
 		//----------------
 		// Hook
@@ -1065,6 +1069,58 @@ func (c *xContext) SaveUploadedFileToWriter(fieldName string, writer io.Writer) 
 		return fileHdr, err
 	}
 	return fileHdr, nil
+}
+
+func (c *xContext) SaveUploadedFiles(fieldName string, savePath func(*multipart.FileHeader) string) error {
+	m := c.Request().MultipartForm()
+	files := m.File[fieldName]
+	for _, fileHdr := range files {
+		//for each fileheader, get a handle to the actual file
+		file, err := fileHdr.Open()
+		defer file.Close()
+		if err != nil {
+			return err
+		}
+
+		//create destination file making sure the path is writeable.
+		dst, err := os.Create(savePath(fileHdr))
+		defer dst.Close()
+		if err != nil {
+			return err
+		}
+		//copy the uploaded file to the destination file
+		if _, err := io.Copy(dst, file); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *xContext) SaveUploadedFilesToWriter(fieldName string, writer func(*multipart.FileHeader) io.Writer) error {
+	m := c.Request().MultipartForm()
+	files := m.File[fieldName]
+	for _, fileHdr := range files {
+		//for each fileheader, get a handle to the actual file
+		file, err := fileHdr.Open()
+		defer file.Close()
+		if err != nil {
+			return err
+		}
+		w := writer(fileHdr)
+		if v, ok := w.(Closer); ok {
+			defer v.Close()
+		}
+		//copy the uploaded file to the destination file
+		if _, err := io.Copy(w, file); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// HasAnyRequest 是否提交了参数
+func (c *xContext) HasAnyRequest() bool {
+	return len(c.Request().Form().All()) > 0
 }
 
 func (c *xContext) AddPreResponseHook(hook func() error) Context {

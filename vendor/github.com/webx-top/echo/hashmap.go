@@ -15,6 +15,8 @@
    limitations under the License.
 
 */
+
+// Package echo is a fast and unfancy web framework for Go (Golang)
 package echo
 
 import (

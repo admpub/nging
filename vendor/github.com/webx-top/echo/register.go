@@ -15,6 +15,8 @@
    limitations under the License.
 
 */
+
+// Package echo is a fast and unfancy web framework for Go (Golang)
 package echo
 
 type RouteRegister interface {
@@ -45,4 +47,8 @@ type ICore interface {
 	RouteRegister
 	MiddlewareRegister
 	URLBuilder
+}
+
+type Closer interface {
+	Close() error
 }

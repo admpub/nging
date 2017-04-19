@@ -17,6 +17,8 @@
 */
 package language
 
+import "net/http"
+
 type Config struct {
 	Default      string
 	Fallback     string
@@ -24,4 +26,14 @@ type Config struct {
 	RulesPath    []string
 	MessagesPath []string
 	Reload       bool
+	fsFunc       func(string) http.FileSystem
+}
+
+func (c *Config) SetFSFunc(fsFunc func(string) http.FileSystem) *Config {
+	c.fsFunc = fsFunc
+	return c
+}
+
+func (c *Config) FSFunc() func(string) http.FileSystem {
+	return c.fsFunc
 }

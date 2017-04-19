@@ -3,7 +3,8 @@ package i18n
 import (
 	// standard library
 	"io/ioutil"
-	"os"
+	"net/http"
+	"path/filepath"
 
 	// third party
 	"github.com/admpub/confl"
@@ -167,25 +168,28 @@ type currency struct {
 }
 
 // load unmarshalls rule data from yaml files into the translator's rules
-func (t *TranslatorRules) load(files []string) (errors []error) {
-
+func (t *TranslatorRules) load(files []string, fsFunc func(string) http.FileSystem) (errors []error) {
 	for _, file := range files {
-		_, statErr := os.Stat(file)
-		if statErr == nil {
-			contents, readErr := ioutil.ReadFile(file)
-
+		var fs http.FileSystem
+		if fsFunc == nil {
+			fs = http.Dir(filepath.Dir(file))
+		} else {
+			fs = fsFunc(filepath.Dir(file))
+		}
+		fp, err := fs.Open(filepath.Base(file))
+		if err == nil {
+			contents, readErr := ioutil.ReadAll(fp)
 			if readErr != nil {
 				errors = append(errors, translatorError{message: "can't open rules file: " + readErr.Error()})
 			}
-
 			tNew := new(TranslatorRules)
 			yamlErr := confl.Unmarshal(contents, tNew)
-
 			if yamlErr != nil {
 				errors = append(errors, translatorError{message: "can't load rules YAML: " + yamlErr.Error()})
 			} else {
 				t.merge(tNew)
 			}
+			fp.Close()
 		}
 	}
 

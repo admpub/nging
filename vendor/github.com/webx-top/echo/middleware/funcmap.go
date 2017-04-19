@@ -30,6 +30,7 @@ func FuncMap(funcMap map[string]interface{}, skipper ...echo.Skipper) echo.Middl
 			c.SetFunc(`URL`, req.URL)
 			c.SetFunc(`Header`, req.Header)
 			c.SetFunc(`Flash`, c.Flash)
+			c.SetFunc(`HasAnyRequest`, c.HasAnyRequest)
 			if c.Echo().FuncMap != nil {
 				for name, function := range c.Echo().FuncMap {
 					c.SetFunc(name, function)

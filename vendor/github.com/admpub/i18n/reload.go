@@ -35,7 +35,7 @@ func (f *TranslatorFactory) Reload(localeCode string) (t *Translator, errors []e
 	// load less specific fallback locale rules
 	parts := strings.Split(localeCode, "-")
 	if len(parts) > 1 {
-		for i, _ := range parts {
+		for i := range parts {
 			fb := strings.Join(parts[0:i+1], "-")
 			for _, p := range f.rulesPaths {
 				p = strings.TrimRight(p, pathSeparator)
@@ -50,12 +50,12 @@ func (f *TranslatorFactory) Reload(localeCode string) (t *Translator, errors []e
 		files = append(files, p+pathSeparator+localeCode+".yaml")
 	}
 
-	errs = rules.load(files)
+	errs = rules.load(files, f.getFileSystem)
 	for _, err := range errs {
 		errors = append(errors, err)
 	}
 
-	messages, errs := loadMessages(localeCode, f.messagesPaths)
+	messages, errs := loadMessages(localeCode, f.messagesPaths, f.getFileSystem)
 	for _, err := range errs {
 		fmt.Println(err)
 		errors = append(errors, err)

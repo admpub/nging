@@ -36,7 +36,7 @@ type I18n struct {
 }
 
 func NewI18n(c *Config) *I18n {
-	f, errs := i18n.NewTranslatorFactory(c.RulesPath, c.MessagesPath, c.Fallback)
+	f, errs := i18n.NewTranslatorFactory(c.RulesPath, c.MessagesPath, c.Fallback, c.FSFunc())
 	if errs != nil && len(errs) > 0 {
 		var errMsg string
 		for idx, err := range errs {
