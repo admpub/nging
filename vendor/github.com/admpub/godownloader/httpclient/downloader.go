@@ -2,9 +2,7 @@ package httpclient
 
 import (
 	"log"
-	"os"
-	"os/user"
-	"strconv"
+	"path/filepath"
 
 	"github.com/admpub/godownloader/iotools"
 	"github.com/admpub/godownloader/monitor"
@@ -47,21 +45,14 @@ func (dl *Downloader) State() monitor.State {
 	return dl.wp.State()
 }
 
-func getDown() string {
-	usr, _ := user.Current()
-	st := strconv.QuoteRune(os.PathSeparator)
-	st = st[1 : len(st)-1]
-	return usr.HomeDir + st + "Downloads" + st
-}
-
-func CreateDownloader(url string, fp string, seg int64) (dl *Downloader, err error) {
+func CreateDownloader(url string, fp string, seg int64, getDown func() string) (dl *Downloader, err error) {
 	c, err := GetSize(url)
 	if err != nil {
 		//can't get file size
 		return nil, err
 	}
-
 	dfs := getDown() + fp
+	dfs = filepath.Clean(dfs)
 	sf, err := iotools.CreateSafeFile(dfs)
 	if err != nil {
 		//can't create file on path
@@ -95,7 +86,7 @@ func CreateDownloader(url string, fp string, seg int64) (dl *Downloader, err err
 	return d, nil
 }
 
-func RestoreDownloader(url string, fp string, dp []DownloadProgress) (dl *Downloader, err error) {
+func RestoreDownloader(url string, fp string, dp []DownloadProgress, getDown func() string) (dl *Downloader, err error) {
 	dfs := getDown() + fp
 	sf, err := iotools.OpenSafeFile(dfs)
 	if err != nil {

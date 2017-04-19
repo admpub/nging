@@ -69,20 +69,20 @@ function FormatSpeedByte(cellValue) {
     var cellHtml = (intVal).toFixed(1) + ras;
     return cellHtml;
 }
-var ws,iv,prefix='/download';
+var downloadWS,downloadWSInterval,downloadAPIPrefix='/download';
 function connectSockJS(onopen,onmessage){
-	if (ws) {
+	if (downloadWS) {
 		if(onopen!=null)onopen();
 		return false;
 	}
-	ws = new SockJS(prefix+'/progress');
-	ws.onopen    = function(){
+	downloadWS = new SockJS(downloadAPIPrefix+'/progress');
+	downloadWS.onopen    = function(){
 		if(onopen!=null)onopen();
 	};
-	ws.onclose   = function(){
-        ws = null;
+	downloadWS.onclose   = function(){
+        downloadWS = null;
     };
-	ws.onmessage = function(msg){
+	downloadWS.onmessage = function(msg){
 		if(onmessage!=null)onmessage(msg.data);
 	};
 }
@@ -90,7 +90,7 @@ function connectSockJS(onopen,onmessage){
 function sockJSConnect(){
     var tmpl = $('#tr-template').html();
     connectSockJS(function(){
-        ws.send("1");
+        downloadWS.send("progress");
     },function(r){
         var rows=JSON.parse(r);
         var total = 100*rows.length, finished = 0;
@@ -138,22 +138,26 @@ function sockJSConnect(){
             }
             $('#fileList').append(tmplCopy);
         }
-        if(iv && total<=finished){
-            window.clearInterval(iv);
-            iv=null;
+        if(downloadWSInterval && total<=finished){
+            window.clearInterval(downloadWSInterval);
+            downloadWSInterval=null;
         }
     });
 }
 
 function sockJSRead(){
-    if(iv)return;
-    if(!ws)sockJSConnect();
-    iv=setInterval(function(){
-        if(!ws){
-            window.clearInterval(iv);
+    if(downloadWSInterval)return;
+    if(!downloadWS){
+        sockJSConnect();
+    }else{
+        downloadWS.send("progress");
+    }
+    downloadWSInterval=setInterval(function(){
+        if(!downloadWS){
+            window.clearInterval(downloadWSInterval);
             return;
         }
-        ws.send("progress");
+        downloadWS.send("progress");
     }, 2000);
 }
 
@@ -161,7 +165,7 @@ function reqJSON(url,data,callback) {
     loading(false);
     var opt={
         contentType: "application/json; charset=utf-8",
-        url: prefix+url,
+        url: downloadAPIPrefix+url,
         type: "POST",
         dataType: "json"
     };
@@ -172,7 +176,7 @@ function reqJSON(url,data,callback) {
     }).success(function(jsonData){
         loading(true);
         if(jsonData.Code!=1) {
-            alert(jsonData.Info);
+            App.message({text: jsonData.Info,type:'error'},false);
             return;
         }
         if(callback)callback();
@@ -183,7 +187,7 @@ function reqJSON(url,data,callback) {
 function reqForm(url,data,callback) {
     loading(false);
     var opt={
-        url: prefix+url,
+        url: downloadAPIPrefix+url,
         type: "POST",
         dataType: "json"
     };
@@ -194,7 +198,7 @@ function reqForm(url,data,callback) {
     }).success(function(jsonData){
         loading(true);
         if(jsonData.Code!=1) {
-            alert(jsonData.Info);
+            App.message({text: jsonData.Info,type:'error'},false);
             return;
         }
         if(callback)callback();
@@ -244,13 +248,12 @@ function OnChangeUrl() {
     $("#save_path_id").val(filename)
 }
 function loading(close){
-
+    App.loading(close?'hide':'show');
 }
 
 $(function(){
     sockJSRead();
-    var allChk=$('#fileTable .allCheck');
-    allChk.on('click',function(){
+    $('body').on('click','#fileTable .allCheck',function(){
         $('#fileTable .idCheck').prop('checked',$(this).prop('checked'));
     });
 });

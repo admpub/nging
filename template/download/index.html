@@ -124,14 +124,19 @@
 	</div>
 </div>
 
+{{if Form "_pjax"}}
+<script type="text/javascript">
+App.loading('hide');
+sockJSRead();
+</script>
+{{end}}
+{{/Block}}
+
+{{Block "footer"}}
 <script type="text/javascript">
 var tableHead={fileName:'{{"File Name"|T}}',size:'{{"Size"|T}}',downloaded:'{{"Downloaded"|T}}',speed:'{{"Speed"|T}}',progress:'{{"Progress"|T}}'};
 var states={Completed:'{{"Completed"|T}}',Running:'{{"Running"|T}}',Stopped:'{{"Stopped"|T}}',Failed:'{{"Failed"|T}}'};
 </script>
-
-{{/Block}}
-
-{{Block "footer"}}
 <script type="text/javascript" src="__ASSETS__/js/sockjs.min.js"></script>
 <script type="text/javascript" src="__ASSETS__/js/behaviour/download.js"></script>
 {{/Block}}

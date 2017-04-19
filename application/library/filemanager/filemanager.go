@@ -106,6 +106,8 @@ func (f *fileManager) Rename(absPath string, newName string) (err error) {
 }
 
 func (f *fileManager) enterPath(absPath string) (d http.File, fi os.FileInfo, err error) {
+	absPath = strings.TrimRight(absPath, `/`)
+	absPath = strings.TrimRight(absPath, `\`)
 	fs := http.Dir(filepath.Dir(absPath))
 	fileName := filepath.Base(absPath)
 	d, err = fs.Open(fileName)

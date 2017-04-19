@@ -10,7 +10,6 @@ import (
 
 	"github.com/admpub/log"
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/engine"
 )
 
 var ListDirTemplate = `<!doctype html>
@@ -60,17 +59,23 @@ func Static(options ...*StaticOptions) echo.MiddlewareFunc {
 		opts.Path = `/` + opts.Path
 		length++
 	}
-	var t *template.Template
+	var render func(echo.Context, interface{}) error
 	if opts.Browse {
-		t = template.New(opts.Template)
-		var e error
 		if len(opts.Template) > 0 {
-			t, e = t.ParseFiles(opts.Template)
+			render = func(c echo.Context, data interface{}) error {
+				return c.Render(opts.Template, data)
+			}
 		} else {
-			t, e = t.Parse(ListDirTemplate)
-		}
-		if e != nil {
-			panic(e)
+			t := template.New(opts.Template)
+			_, e := t.Parse(ListDirTemplate)
+			if e != nil {
+				panic(e)
+			}
+			render = func(c echo.Context, data interface{}) error {
+				w := c.Response()
+				w.Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
+				return t.Execute(w, data)
+			}
 		}
 	}
 
@@ -91,7 +96,6 @@ func Static(options ...*StaticOptions) echo.MiddlewareFunc {
 			if !strings.HasPrefix(absFile, opts.Root) {
 				return next.Handle(c)
 			}
-			w := c.Response()
 			fp, err := os.Open(absFile)
 			if err != nil {
 				return echo.ErrNotFound
@@ -108,14 +112,14 @@ func Static(options ...*StaticOptions) echo.MiddlewareFunc {
 					fi, err = os.Stat(indexFile)
 					if err != nil || fi.IsDir() {
 						if opts.Browse {
-							return listDir(absFile, file, w, t)
+							return listDir(absFile, file, c, render)
 						}
 						return echo.ErrNotFound
 					}
 					absFile = indexFile
 				} else {
 					if opts.Browse {
-						return listDir(absFile, file, w, t)
+						return listDir(absFile, file, c, render)
 					}
 					return echo.ErrNotFound
 				}
@@ -125,7 +129,7 @@ func Static(options ...*StaticOptions) echo.MiddlewareFunc {
 	}
 }
 
-func listDir(absFile string, file string, w engine.Response, t *template.Template) error {
+func listDir(absFile string, file string, c echo.Context, render func(echo.Context, interface{}) error) error {
 	fs := http.Dir(filepath.Dir(absFile))
 	d, err := fs.Open(filepath.Base(absFile))
 	if err != nil {
@@ -137,8 +141,7 @@ func listDir(absFile string, file string, w engine.Response, t *template.Templat
 		return echo.ErrNotFound
 	}
 
-	w.Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
-	return t.Execute(w, map[string]interface{}{
+	return render(c, map[string]interface{}{
 		`file`: file,
 		`dirs`: dirs,
 	})

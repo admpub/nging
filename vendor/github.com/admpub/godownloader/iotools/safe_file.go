@@ -3,6 +3,8 @@ package iotools
 import (
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 	"sync"
 )
 
@@ -64,6 +66,13 @@ func OpenSafeFile(name string) (file *SafeFile, err error) {
 
 func CreateSafeFile(name string) (file *SafeFile, err error) {
 	var f *os.File
+	name = strings.TrimRight(name, `/`)
+	name = strings.TrimRight(name, `\`)
+	dir := filepath.Dir(name)
+	fi, err := os.Stat(dir)
+	if err != nil || !fi.IsDir() {
+		os.MkdirAll(dir, 0666)
+	}
 	f, err = os.OpenFile(name, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 	file = &SafeFile{File: f, filePath: name}
 	return

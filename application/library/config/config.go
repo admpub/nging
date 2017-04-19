@@ -101,6 +101,9 @@ type Config struct {
 	Caddy    caddy.Config    `json:"caddy"`
 	FTP      ftp.Config      `json:"ftp"`
 	Language language.Config `json:"language"`
+	Download struct {
+		SavePath string `json:"savePath"`
+	} `json:"download"`
 }
 
 func (c *Config) SaveToFile() error {

@@ -509,14 +509,18 @@ var App = function () {
     },
     unmarkNav:function(){
       $('.cl-vnavigation > .open').removeClass('open').children('.sub-menu').hide().children('li.active').removeClass('active');
-      $('.cl-vnavigation > .active').removeClass('active');
+      $('.cl-vnavigation .active').removeClass('active');
     },
     message:function(options,sticky){
-      var defaults={title: '', text: "", image: '', class_name: 'clean',//primary|info|danger|warning|success|dark
-        sticky: true};
-      if(typeof(options)!="object"){
-        options={text:options};
-      }
+      var defaults={title: '',
+        text: '',
+        image: '',
+        class_name: 'clean',//primary|info|danger|warning|success|dark
+        sticky: true
+        //,time: 1000,speed: 500,position: 'bottom-right'
+      };
+      if(typeof(options)!="object")options={text:options};
+      if(typeof(options.type)!="undefined"&&options.type)options.class_name=options.type;
       options=$.extend({},defaults,options||{});
       switch(options.class_name){
         case 'dark':
@@ -524,10 +528,15 @@ var App = function () {
         case 'clean':
         case 'info':
           options.title='<i class="fa fa-info-circle"></i> '+options.title;break;
+
+        case 'error':
+          options.class_name='danger';
         case 'danger':
           options.title='<i class="fa fa-comment-o"></i> '+options.title;break;
+
         case 'warning':
           options.title='<i class="fa fa-warning"></i> '+options.title;break;
+          
         case 'success':
           options.title='<i class="fa fa-check"></i> '+options.title;break;
       }
@@ -562,10 +571,12 @@ var App = function () {
         if(options.oncomplete)options.oncomplete(evt, xhr, textStatus, option);
       }).on('pjax:timeout',function(evt,xhr,option){
         console.log('timeout');
+        App.loading('hide');
         if(options.ontimeout)options.ontimeout(evt,xhr,option);
       }).on('pjax:start',function(evt,xhr,option){
         if(options.onstart)options.onstart(evt,xhr,option);
       }).on('pjax:end',function(evt,xhr,option){
+        App.loading('hide');
         if(options.onend)options.onend(evt,xhr,option);
       });
     },
