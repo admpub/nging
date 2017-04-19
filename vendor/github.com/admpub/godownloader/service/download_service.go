@@ -6,10 +6,10 @@ import (
 	"log"
 	"os"
 	"os/user"
+	"sort"
 	"strconv"
-	"sync"
-
 	"strings"
+	"sync"
 
 	"github.com/admpub/godownloader/httpclient"
 	"github.com/admpub/sockjs-go/sockjs"
@@ -219,14 +219,32 @@ func (srv *DServ) removeTask(ctx echo.Context) error {
 	srv.oplock.Lock()
 	defer srv.oplock.Unlock()
 	data := ctx.NewData()
+	var decr int
+	var ids []int
 	for _, id := range ctx.FormValues(`id[]`) {
 		ind := ctx.Atop(id).Int()
+		var exists bool
+		for _, i := range ids {
+			if i == ind {
+				exists = true
+				break
+			}
+		}
+		if exists {
+			continue
+		}
+		ids = append(ids, ind)
+	}
+	sort.Ints(ids)
+	for _, ind := range ids {
+		ind -= decr
 		if !(len(srv.dls) > ind) {
 			return ctx.JSON(data.SetError(errors.New("error: id is out of jobs list")))
 		}
 
 		log.Printf("try stop segment download %v", srv.dls[ind].StopAll())
 		srv.dls = append(srv.dls[:ind], srv.dls[ind+1:]...)
+		decr++
 	}
 	return ctx.JSON(data)
 }
