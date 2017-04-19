@@ -90,7 +90,8 @@ func main() {
 	e.Use(middleware.Log(), middleware.Recover())
 	e.Use(middleware.Gzip(&middleware.GzipConfig{
 		Skipper: func(c echo.Context) bool {
-			if c.Request().URL().Path() == `/manage/cmdSend/info` {
+			switch c.Request().URL().Path() {
+			case `/manage/cmdSend/info`, `/download/progress/info`:
 				return true
 			}
 			return false
