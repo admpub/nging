@@ -80,7 +80,13 @@ func main() {
 	}
 
 	e := echo.New()
-	e.SetDebug(binData == false)
+	if binData {
+		e.SetDebug(false)
+		log.SetLevel(`Info`)
+	} else {
+		e.SetDebug(true)
+		log.SetLevel(`Debug`)
+	}
 	e.Use(middleware.Log(), middleware.Recover())
 	e.Use(middleware.Gzip(&middleware.GzipConfig{
 		Skipper: func(c echo.Context) bool {

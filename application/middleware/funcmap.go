@@ -40,6 +40,9 @@ func FuncMap() echo.MiddlewareFunc {
 				return modal.Render(c, data)
 			})
 			c.SetFunc(`IsMessage`, errors.IsMessage)
+			c.SetFunc(`Languages`, func() []string {
+				return config.DefaultConfig.Language.AllList
+			})
 			c.SetFunc(`IsError`, errors.IsError)
 			c.SetFunc(`IsOk`, errors.IsOk)
 			c.SetFunc(`Message`, errors.Message)
