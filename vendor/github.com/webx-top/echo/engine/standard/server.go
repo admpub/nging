@@ -79,9 +79,9 @@ func NewWithConfig(c *engine.Config) (s *Server) {
 				},
 			},
 		},
-		handler: engine.ClearHandler(engine.HandlerFunc(func(req engine.Request, res engine.Response) {
+		handler: engine.HandlerFunc(func(req engine.Request, res engine.Response) {
 			s.logger.Error("handler not set, use `SetHandler()` to set it.")
-		})),
+		}),
 		logger: log.GetLogger("echo"),
 	}
 	s.Handler = s
@@ -89,7 +89,7 @@ func NewWithConfig(c *engine.Config) (s *Server) {
 }
 
 func (s *Server) SetHandler(h engine.Handler) {
-	s.handler = engine.ClearHandler(h)
+	s.handler = h
 }
 
 func (s *Server) SetLogger(l logger.Logger) {

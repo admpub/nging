@@ -25,11 +25,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/admpub/log"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/cron"
 	"github.com/admpub/nging/application/model"
-	"github.com/lunny/log"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"

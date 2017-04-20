@@ -7,25 +7,33 @@ import (
 	ss "github.com/webx-top/echo/middleware/session/engine"
 )
 
+var defaultOptions = &CookieOptions{
+	KeyPairs: [][]byte{
+		[]byte(codec.GenerateRandomKey(32)),
+		[]byte(codec.GenerateRandomKey(32)),
+	},
+	SessionOptions: &echo.SessionOptions{
+		Name:   `GOSESSIONID`,
+		Engine: `cookie`,
+		CookieOptions: &echo.CookieOptions{
+			Path:     `/`,
+			HttpOnly: true,
+		},
+	},
+}
+
 func init() {
-	RegWithOptions(&CookieOptions{
-		KeyPairs: [][]byte{
-			[]byte(codec.GenerateRandomKey(32)),
-			[]byte(codec.GenerateRandomKey(32)),
-		},
-		SessionOptions: &echo.SessionOptions{
-			Name:   `GOSESSIONID`,
-			Engine: `cookie`,
-			CookieOptions: &echo.CookieOptions{
-				Path:     `/`,
-				HttpOnly: true,
-			},
-		},
-	})
+	RegWithOptions(defaultOptions)
 }
 
 func New(opts *CookieOptions) CookieStore {
+	if opts == nil {
+		opts = defaultOptions
+	}
 	store := NewCookieStore(opts.KeyPairs...)
+	if opts.SessionOptions == nil {
+		opts.SessionOptions = defaultOptions.SessionOptions
+	}
 	store.Options(*opts.SessionOptions)
 	return store
 }

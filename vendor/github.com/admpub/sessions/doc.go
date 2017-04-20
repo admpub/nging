@@ -22,26 +22,26 @@ The key features are:
 Let's start with an example that shows the sessions API in a nutshell:
 
 	import (
-		"net/http"
-		"github.com/gorilla/sessions"
+		"github.com/admpub/sessions"
+		"github.com/webx-top/echo"
 	)
 
 	var store = sessions.NewCookieStore([]byte("something-very-secret"))
 
-	func MyHandler(w http.ResponseWriter, r *http.Request) {
+	func MyHandler(ctx echo.Context) error {
 		// Get a session. We're ignoring the error resulted from decoding an
 		// existing session: Get() always returns a session, even if empty.
-		session, err := store.Get(r, "session-name")
+		session, err := store.Get(ctx, "session-name")
 		if err != nil {
-			http.Error(w, err.Error(), 500)
-			return
+			return err
 		}
 
 		// Set some session values.
 		session.Values["foo"] = "bar"
 		session.Values[42] = 43
 		// Save it before we write to the response/return from the handler.
-		session.Save(r, w)
+		session.Save(ctx)
+		return nil
 	}
 
 First we initialize a session store calling NewCookieStore() and passing a
@@ -72,12 +72,11 @@ Ruby On Rails a few years back. When we request a flash message, it is removed
 from the session. To add a flash, call session.AddFlash(), and to get all
 flashes, call session.Flashes(). Here is an example:
 
-	func MyHandler(w http.ResponseWriter, r *http.Request) {
+	func MyHandler(ctx echo.Context) error {
 		// Get a session.
-		session, err := store.Get(r, "session-name")
+		session, err := store.Get(ctx, "session-name")
 		if err != nil {
-			http.Error(w, err.Error(), 500)
-			return
+			return error
 		}
 
 		// Get the previously flashes, if any.
@@ -87,7 +86,8 @@ flashes, call session.Flashes(). Here is an example:
 			// Set a new flash.
 			session.AddFlash("Hello, flash messages world!")
 		}
-		session.Save(r, w)
+		session.Save(ctx)
+		return nil
 	}
 
 Flash messages are useful to set information to be read after a redirection,
@@ -99,7 +99,8 @@ so it is easy to register new datatypes for storage in sessions:
 
 	import(
 		"encoding/gob"
-		"github.com/gorilla/sessions"
+		"github.com/admpub/sessions"
+		"github.com/webx-top/echo"
 	)
 
 	type Person struct {
@@ -126,11 +127,10 @@ values of those types to and from our sessions.
 Note that because session values are stored in a map[string]interface{}, there's
 a need to type-assert data when retrieving it. We'll use the Person struct we registered above:
 
-	func MyHandler(w http.ResponseWriter, r *http.Request) {
-		session, err := store.Get(r, "session-name")
+	func MyHandler(ctx echo.Context) error {
+		session, err := store.Get(ctx, "session-name")
 		if err != nil {
-			http.Error(w, err.Error(), 500)
-			return
+			return err
 		}
 
 		// Retrieve our struct and type-assert it
@@ -141,6 +141,8 @@ a need to type-assert data when retrieving it. We'll use the Person struct we re
 		}
 
 		// Now we can use our person object
+
+		return nil
 	}
 
 By default, session cookies last for a month. This is probably too long for
@@ -182,15 +184,16 @@ at once: it's sessions.Save(). Here's an example:
 
 	var store = sessions.NewCookieStore([]byte("something-very-secret"))
 
-	func MyHandler(w http.ResponseWriter, r *http.Request) {
+	func MyHandler(ctx echo.Context) error {
 		// Get a session and set a value.
-		session1, _ := store.Get(r, "session-one")
+		session1, _ := store.Get(ctx, "session-one")
 		session1.Values["foo"] = "bar"
 		// Get another session and set another value.
-		session2, _ := store.Get(r, "session-two")
+		session2, _ := store.Get(ctx, "session-two")
 		session2.Values[42] = 43
 		// Save all sessions.
-		sessions.Save(r, w)
+		sessions.Save(ctx)
+		return nil
 	}
 
 This is possible because when we call Get() from a session store, it adds the

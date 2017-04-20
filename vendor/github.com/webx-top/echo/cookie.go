@@ -50,6 +50,7 @@ type Cookier interface {
 func NewCookier(ctx Context) Cookier {
 	return &cookie{
 		context: ctx,
+		cookies: []*Cookie{},
 	}
 }
 
@@ -128,11 +129,12 @@ func (c *Cookie) Send(ctx Context) {
 
 type cookie struct {
 	context Context
+	cookies []*Cookie
 }
 
 func (c *cookie) Get(key string) string {
 	var val string
-	if v := c.context.Request().Cookie(c.context.CookieOptions().Prefix + key); v != `` {
+	if v := c.context.Request().Cookie(c.context.CookieOptions().Prefix + key); len(v) > 0 {
 		val, _ = url.QueryUnescape(v)
 	}
 	return val
@@ -140,7 +142,18 @@ func (c *cookie) Get(key string) string {
 
 func (c *cookie) Set(key string, val string, args ...interface{}) Cookier {
 	val = url.QueryEscape(val)
-	cookie := NewCookie(key, val, c.context.CookieOptions())
+	var cookie *Cookie
+	var found bool
+	for _, v := range c.cookies {
+		if key == v.cookie.Name {
+			cookie = v
+			found = true
+			break
+		}
+	}
+	if cookie == nil {
+		cookie = NewCookie(key, val, c.context.CookieOptions())
+	}
 	switch len(args) {
 	case 5:
 		httpOnly, _ := args[4].(bool)
@@ -170,6 +183,14 @@ func (c *cookie) Set(key string, val string, args ...interface{}) Cookier {
 		}
 		cookie.Expires(liftTime)
 	}
-	cookie.Send(c.context)
+	if !found {
+		c.cookies = append(c.cookies, cookie)
+		cookie.Send(c.context)
+	} else {
+		c.context.Response().Header().Del(HeaderSetCookie)
+		for _, cookie := range c.cookies {
+			cookie.Send(c.context)
+		}
+	}
 	return c
 }

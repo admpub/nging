@@ -20,10 +20,21 @@ package session
 import "github.com/webx-top/echo"
 
 func Sessions(options *echo.SessionOptions, store Store) echo.MiddlewareFuncd {
+	var newSession func(ctx echo.Context) echo.Sessioner
+	if options == nil {
+		newSession = func(ctx echo.Context) echo.Sessioner {
+			options = ctx.SessionOptions()
+			return NewMySession(store, options.Name, ctx)
+		}
+	} else {
+		newSession = func(ctx echo.Context) echo.Sessioner {
+			ctx.SetSessionOptions(options)
+			return NewMySession(store, options.Name, ctx)
+		}
+	}
 	return func(h echo.Handler) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			c.SetSessionOptions(options)
-			s := NewMySession(store, options.Name, c)
+			s := newSession(c)
 			c.SetSessioner(s)
 			c.AddPreResponseHook(func() error {
 				if options.Engine == `cookie` {

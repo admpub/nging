@@ -9,7 +9,6 @@ import (
 	"github.com/admpub/sessions"
 	"github.com/boltdb/bolt"
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/engine"
 	ss "github.com/webx-top/echo/middleware/session/engine"
 )
 
@@ -85,24 +84,24 @@ func (s *Storex) Get(ctx echo.Context, name string) (*sessions.Session, error) {
 	return s.Store.Get(ctx, name)
 }
 
-func (s *Storex) New(r engine.Request, name string) (*sessions.Session, error) {
+func (s *Storex) New(ctx echo.Context, name string) (*sessions.Session, error) {
 	if s.initialized == false {
 		err := s.b.Init()
 		if err != nil {
 			return nil, err
 		}
 	}
-	return s.Store.New(r, name)
+	return s.Store.New(ctx, name)
 }
 
-func (s *Storex) Save(r engine.Request, w engine.Response, session *sessions.Session) error {
+func (s *Storex) Save(ctx echo.Context, session *sessions.Session) error {
 	if s.initialized == false {
 		err := s.b.Init()
 		if err != nil {
 			return err
 		}
 	}
-	return s.Store.Save(r, w, session)
+	return s.Store.Save(ctx, session)
 }
 
 type boltStore struct {

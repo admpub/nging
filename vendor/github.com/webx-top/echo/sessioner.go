@@ -22,9 +22,11 @@ package echo
 var (
 	DefaultNopSession     Sessioner = &NopSession{}
 	DefaultSessionOptions           = &SessionOptions{
-		Engine:        `cookie`,
-		Name:          `SID`,
-		CookieOptions: &CookieOptions{},
+		Engine: `cookie`,
+		Name:   `SID`,
+		CookieOptions: &CookieOptions{
+			Path: `/`,
+		},
 	}
 )
 

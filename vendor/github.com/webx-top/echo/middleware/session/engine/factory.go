@@ -21,7 +21,8 @@ import (
 	"github.com/webx-top/echo"
 )
 
-func NewSession(options *echo.SessionOptions, ctx echo.Context) echo.Sessioner {
+func NewSession(ctx echo.Context) echo.Sessioner {
+	options := ctx.SessionOptions()
 	store := StoreEngine(options)
 	return NewMySession(store, options.Name, ctx)
 }
@@ -31,6 +32,9 @@ func NewMySession(store Store, name string, ctx echo.Context) echo.Sessioner {
 }
 
 func StoreEngine(options *echo.SessionOptions) (store Store) {
+	if options == nil {
+		return nil
+	}
 	store = Get(options.Engine)
 	if store == nil {
 		if options.Engine != `cookie` {
