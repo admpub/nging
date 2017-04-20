@@ -561,7 +561,8 @@ var App = function () {
       var options=$.extend({},defaults,callbacks||{});
       $(document).on('click', elem+'[data-pjax]', function(event) {
         var container = $(this).data('pjax');
-        $.pjax.click(event, $(container),{timeout:timeout});
+        var keepjs=$(this).data('keepjs');
+        $.pjax.click(event, $(container),{timeout:timeout,keepjs:keepjs});
         if(options.onclick)options.onclick(this);
       }).on('pjax:send',function(evt,xhr,option){
         App.loading('show');

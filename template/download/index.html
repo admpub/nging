@@ -123,13 +123,6 @@
 		</div>
 	</div>
 </div>
-
-{{if Form "_pjax"}}
-<script type="text/javascript">
-App.loading('hide');
-sockJSRead();
-</script>
-{{end}}
 {{/Block}}
 
 {{Block "footer"}}
@@ -139,4 +132,10 @@ var states={Completed:'{{"Completed"|T}}',Running:'{{"Running"|T}}',Stopped:'{{"
 </script>
 <script type="text/javascript" src="__ASSETS__/js/sockjs.min.js"></script>
 <script type="text/javascript" src="__ASSETS__/js/behaviour/download.js"></script>
+{{if Form "_pjax"}}
+<script type="text/javascript">
+App.loading('hide');
+sockJSRead();
+</script>
+{{end}}
 {{/Block}}

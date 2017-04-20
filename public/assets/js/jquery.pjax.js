@@ -32,10 +32,10 @@
 function fnPjax(selector, container, options) {
   var context = this
   return this.on('click.pjax', selector, function(event) {
-    var opts = $.extend({}, optionsFor(container, options))
-    if (!opts.container)
-      opts.container = $(this).attr('data-pjax') || context
-    handleClick(event, opts)
+    var opts = $.extend({}, optionsFor(container, options));
+    if (!opts.container) opts.container = $(this).attr('data-pjax') || context;
+    opts.keepjs=$(this).attr('data-keepjs');
+    handleClick(event, opts);
   })
 }
 
@@ -646,16 +646,16 @@ function optionsFor(container, options) {
 //
 // Returns a jQuery object whose context is `document` and has a selector.
 function findContainerFor(container) {
-  container = $(container)
+  container = $(container);
 
   if ( !container.length ) {
-    throw "no pjax container for " + container.selector
+    throw "no pjax container for " + container.selector;
   } else if ( container.selector !== '' && container.context === document ) {
-    return container
+    return container;
   } else if ( container.attr('id') ) {
-    return $('#' + container.attr('id'))
+    return $('#' + container.attr('id'));
   } else {
-    throw "cant get selector for pjax container!"
+    throw "cant get selector for pjax container!";
   }
 }
 
@@ -673,7 +673,7 @@ function findAll(elems, selector) {
 }
 
 function parseHTML(html) {
-  return $.parseHTML(html, document, true)
+  return $.parseHTML(html, document, true);
 }
 
 // Internal: Extracts container and metadata from response.
@@ -688,68 +688,71 @@ function parseHTML(html) {
 //
 // Returns an Object with url, title, and contents keys.
 function extractContainer(data, xhr, options) {
-  var obj = {}, fullDocument = /<html/i.test(data)
+  var obj = {}, fullDocument = /<html/i.test(data);
 
   // Prefer X-PJAX-URL header if it was set, otherwise fallback to
   // using the original requested url.
-  var serverUrl = xhr.getResponseHeader('X-PJAX-URL')
-  obj.url = serverUrl ? stripInternalParams(parseURL(serverUrl)) : options.requestUrl
+  var serverUrl = xhr.getResponseHeader('X-PJAX-URL');
+  obj.url = serverUrl ? stripInternalParams(parseURL(serverUrl)) : options.requestUrl;
 
   // Attempt to parse response html into elements
   if (fullDocument) {
-    var $head = $(parseHTML(data.match(/<head[^>]*>([\s\S.]*)<\/head>/i)[0]))
-    var $body = $(parseHTML(data.match(/<body[^>]*>([\s\S.]*)<\/body>/i)[0]))
+    var $head = $(parseHTML(data.match(/<head[^>]*>([\s\S.]*)<\/head>/i)[0]));
+    var $body = $(parseHTML(data.match(/<body[^>]*>([\s\S.]*)<\/body>/i)[0]));
   } else {
-    var $head = $body = $(parseHTML(data))
+    var $head = $body = $(parseHTML(data));
   }
 
   // If response data is empty, return fast
-  if ($body.length === 0)
-    return obj
+  if ($body.length === 0) return obj;
 
   // If there's a <title> tag in the header, use it as
   // the page's title.
-  obj.title = findAll($head, 'title').last().text()
+  obj.title = findAll($head, 'title').last().text();
 
   if (options.fragment) {
+    var $fragment;
     // If they specified a fragment, look for it in the response
     // and pull it out.
     if (options.fragment === 'body') {
-      var $fragment = $body
+      $fragment = $body;
     } else {
-      var $fragment = findAll($body, options.fragment).first()
+      $fragment = findAll($body, options.fragment).first();
     }
 
     if ($fragment.length) {
-      obj.contents = options.fragment === 'body' ? $fragment : $fragment.contents()
+      obj.contents = options.fragment === 'body' ? $fragment : $fragment.contents();
 
       // If there's no title, look for data-title and title attributes
       // on the fragment
       if (!obj.title)
-        obj.title = $fragment.attr('title') || $fragment.data('title')
+        obj.title = $fragment.attr('title') || $fragment.data('title');
     }
 
   } else if (!fullDocument) {
-    obj.contents = $body
+    obj.contents = $body;
   }
 
   // Clean up any <title> tags
   if (obj.contents) {
     // Remove any parent title elements
-    obj.contents = obj.contents.not(function() { return $(this).is('title') })
+    obj.contents = obj.contents.not(function() { return $(this).is('title') });
 
     // Then scrub any titles from their descendants
-    obj.contents.find('title').remove()
+    obj.contents.find('title').remove();
 
-    // Gather all script[src] elements
-    obj.scripts = findAll(obj.contents, 'script[src]').remove()
-    obj.contents = obj.contents.not(obj.scripts)
+    // 如果没有指定保留js文件引用则删除引用标签
+    if(!options.keepjs||options.keepjs=='false'||options.keepjs=='0'){
+      // Gather all script[src] elements
+      obj.scripts = findAll(obj.contents, 'script[src]').remove();
+      obj.contents = obj.contents.not(obj.scripts);
+    }
   }
 
   // Trim any whitespace off the title
-  if (obj.title) obj.title = $.trim(obj.title)
+  if (obj.title) obj.title = $.trim(obj.title);
 
-  return obj
+  return obj;
 }
 
 // Load an execute scripts using standard script request.
@@ -761,29 +764,29 @@ function extractContainer(data, xhr, options) {
 //
 // Returns nothing.
 function executeScriptTags(scripts) {
-  if (!scripts) return
+  if (!scripts) return;
 
-  var existingScripts = $('script[src]')
+  var existingScripts = $('script[src]');
 
   scripts.each(function() {
-    var src = this.src
+    var src = this.src;
     var matchedScripts = existingScripts.filter(function() {
-      return this.src === src
-    })
-    if (matchedScripts.length) return
+      return this.src === src;
+    });
+    if (matchedScripts.length) return;
 
-    var script = document.createElement('script')
-    var type = $(this).attr('type')
-    if (type) script.type = type
-    script.src = $(this).attr('src')
-    document.head.appendChild(script)
-  })
+    var script = document.createElement('script');
+    var type = $(this).attr('type');
+    if (type) script.type = type;
+    script.src = $(this).attr('src');
+    document.head.appendChild(script);
+  });
 }
 
 // Internal: History DOM caching class.
-var cacheMapping      = {}
-var cacheForwardStack = []
-var cacheBackStack    = []
+var cacheMapping      = {};
+var cacheForwardStack = [];
+var cacheBackStack    = [];
 
 // Push previous state id and container contents into the history
 // cache. Should be called in conjunction with `pushState` to save the
@@ -880,7 +883,8 @@ function enable() {
     dataType: 'html',
     scrollTo: 0,
     maxCacheLength: 20,
-    version: findVersion
+    version: findVersion,
+    keepjs: false
   }
   $(window).on('popstate.pjax', onPjaxPopstate)
 }

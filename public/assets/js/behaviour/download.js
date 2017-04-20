@@ -87,6 +87,17 @@ function connectSockJS(onopen,onmessage){
 	};
 }
 
+function closeSockJS(){
+    if(downloadWSInterval){
+        window.clearInterval(downloadWSInterval);
+        downloadWSInterval=null;
+    }
+    if(downloadWS){
+        downloadWS.close();
+        downloadWS=null;
+    }
+}
+
 function sockJSConnect(){
     var tmpl = $('#tr-template').html();
     connectSockJS(function(){
@@ -98,7 +109,11 @@ function sockJSConnect(){
         var checkedAll = $('#fileTable .allCheck').prop('checked');
         for (var i = 0; i < rows.length; i++){
             var v = rows[i];
-            finished=finished+v.Progress;
+            if(v.State!='Running'){
+                finished+=100;
+            }else{
+                finished+=v.Progress;
+            }
             if($('#id-'+v.Id).length>0){
                 $('#downed-'+v.Id).text(FormatByte(v.Downloaded));
                 $('#percent-'+v.Id).text(v.Progress);
@@ -139,8 +154,7 @@ function sockJSConnect(){
             $('#fileList').append(tmplCopy);
         }
         if(downloadWSInterval && total<=finished){
-            window.clearInterval(downloadWSInterval);
-            downloadWSInterval=null;
+            closeSockJS();
         }
     });
 }
