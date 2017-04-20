@@ -4,6 +4,10 @@ import (
 	"unsafe"
 )
 
+var (
+	HeaderSetCookie = `Set-Cookie`
+)
+
 func Str2bytes(s string) []byte {
 	x := (*[2]uintptr)(unsafe.Pointer(&s))
 	h := [3]uintptr{x[0], x[1], x[1]}

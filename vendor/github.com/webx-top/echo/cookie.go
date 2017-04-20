@@ -123,7 +123,7 @@ func (c *Cookie) HttpOnly(p bool) *Cookie {
 
 //Send 发送cookie数据到响应头
 func (c *Cookie) Send(ctx Context) {
-	ctx.Response().Header().Set(HeaderSetCookie, c.cookie.String())
+	ctx.Response().SetCookie(c.cookie)
 }
 
 type cookie struct {

@@ -123,7 +123,7 @@ func (r *Response) NotFound() {
 }
 
 func (r *Response) SetCookie(cookie *http.Cookie) {
-	r.header.Set("Set-Cookie", cookie.String())
+	r.header.Add(engine.HeaderSetCookie, cookie.String())
 }
 
 func (r *Response) ServeFile(file string) {

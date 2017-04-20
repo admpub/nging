@@ -107,12 +107,14 @@ func main() {
 	// 注册静态资源文件(网站素材文件)
 	e.Use(staticMW)
 
+	// 启用session
+	e.Use(session.Middleware(config.SessionOptions))
+
 	// 启用多语言支持
 	config.DefaultConfig.Language.SetFSFunc(langFSFunc)
 	e.Use(language.New(&config.DefaultConfig.Language).Middleware())
 
-	// 启用session
-	e.Use(session.Middleware(config.SessionOptions))
+	// 启用Validation
 	e.Use(middleware.Validate(echo.NewValidation))
 
 	// 注册模板引擎
