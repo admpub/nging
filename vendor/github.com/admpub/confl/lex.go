@@ -69,18 +69,27 @@ const (
 	optValTerm        = ';'
 	blockStart        = '('
 	blockEnd          = ')'
+	backslash         = '\\'
 )
 
 type stateFn func(lx *lexer) stateFn
 
 type lexer struct {
-	input          string
-	start          int
-	pos            int
-	width          int
-	line           int
-	state          stateFn
-	items          chan item
+	input string
+	start int
+	pos   int
+	line  int
+	state stateFn
+	items chan item
+
+	// Allow for backing up up to three runes.
+	// This is necessary because TOML contains 3-rune tokens (""" and ''').
+	prevWidths [3]int
+	nprev      int // how many of prevWidths are in use
+	// If we emit an eof, we can still back up, but it is not OK to call
+	// next again.
+	atEOF bool
+
 	circuitBreaker int
 	isEnd          func(lx *lexer, r rune) bool
 
@@ -135,31 +144,40 @@ func (lx *lexer) pop() stateFn {
 	return last
 }
 
+func (lx *lexer) current() string {
+	return lx.input[lx.start:lx.pos]
+}
+
 func (lx *lexer) emit(typ itemType) {
-	lx.items <- item{typ, lx.input[lx.start:lx.pos], lx.line}
+	lx.items <- item{typ, lx.current(), lx.line}
+	lx.start = lx.pos
+}
+
+func (lx *lexer) emitTrim(typ itemType) {
+	lx.items <- item{typ, strings.TrimSpace(lx.current()), lx.line}
 	lx.start = lx.pos
 }
 
 func (lx *lexer) next() (r rune) {
-
-	// stackBuf := make([]byte, 4096)
-	// stackBufLen := runtime.Stack(stackBuf, false)
-	// stackTraceStr := string(stackBuf[0:stackBufLen])
-
+	if lx.atEOF {
+		panic("next called after EOF")
+	}
 	if lx.pos >= len(lx.input) {
-		lx.width = 0
-		// if lx.circuitBreaker > 0 {
-		// 	panic("hm")
-		// }
-		// lx.circuitBreaker++
+		lx.atEOF = true
 		return eof
 	}
 
 	if lx.input[lx.pos] == '\n' {
 		lx.line++
 	}
-	r, lx.width = utf8.DecodeRuneInString(lx.input[lx.pos:])
-	lx.pos += lx.width
+	lx.prevWidths[2] = lx.prevWidths[1]
+	lx.prevWidths[1] = lx.prevWidths[0]
+	if lx.nprev < 3 {
+		lx.nprev++
+	}
+	r, w := utf8.DecodeRuneInString(lx.input[lx.pos:])
+	lx.prevWidths[0] = w
+	lx.pos += w
 	return r
 }
 
@@ -170,10 +188,18 @@ func (lx *lexer) ignore() {
 
 // backup steps back one rune. Can be called only once per call of next.
 func (lx *lexer) backup() {
-	// This backup has a problem, if eof has already been hit
-	// lx.width will be = 0
-	// possibly just manually set to 1?
-	lx.pos -= lx.width
+	if lx.atEOF {
+		lx.atEOF = false
+		return
+	}
+	if lx.nprev < 0 {
+		panic("backed up too far")
+	}
+	w := lx.prevWidths[0]
+	lx.prevWidths[0] = lx.prevWidths[1]
+	lx.prevWidths[1] = lx.prevWidths[2]
+	lx.nprev--
+	lx.pos -= w
 	if lx.pos < len(lx.input) && lx.input[lx.pos] == '\n' {
 		lx.line--
 	}
@@ -193,6 +219,19 @@ func (lx *lexer) peek() rune {
 	r := lx.next()
 	lx.backup()
 	return r
+}
+
+// skip ignores all input that matches the given predicate.
+func (lx *lexer) skip(pred func(rune) bool) {
+	for {
+		r := lx.next()
+		if pred(r) {
+			continue
+		}
+		lx.backup()
+		lx.ignore()
+		return
+	}
 }
 
 // errorf stops all lexing by emitting an error and returning `nil`.
@@ -218,12 +257,11 @@ func lexTop(lx *lexer) stateFn {
 	if r != eof && (isWhitespace(r) || isNL(r)) {
 		return lexSkip(lx, lexTop)
 	}
-
-	switch {
-	case r == commentHashStart:
+	switch r {
+	case commentHashStart:
 		lx.push(lexTop)
 		return lexCommentStart
-	case r == commentSlashStart:
+	case commentSlashStart:
 		rn := lx.next()
 		if rn == commentSlashStart {
 			lx.push(lexTop)
@@ -231,7 +269,7 @@ func lexTop(lx *lexer) stateFn {
 		}
 		lx.backup()
 		fallthrough
-	case r == eof:
+	case eof:
 		if lx.pos > lx.start {
 			return lx.errorf("Unexpected EOF.")
 		}
@@ -242,14 +280,14 @@ func lexTop(lx *lexer) stateFn {
 	// At this point, the only valid item can be a key, so we back up
 	// and let the key lexer do the rest.
 	lx.backup()
-	lx.push(lexTopValueEnd)
+	lx.push(lexTopEnd)
 	return lexKeyStart
 }
 
-// lexTopValueEnd is entered whenever a top-level value has been consumed.
+// lexTopEnd is entered whenever a top-level value has been consumed.
 // It must see only whitespace, and will turn back to lexTop upon a new line.
 // If it sees EOF, it will quit the lexer successfully.
-func lexTopValueEnd(lx *lexer) stateFn {
+func lexTopEnd(lx *lexer) stateFn {
 	r := lx.next()
 	switch {
 	case r == commentHashStart:
@@ -265,16 +303,17 @@ func lexTopValueEnd(lx *lexer) stateFn {
 		lx.backup()
 		fallthrough
 	case isWhitespace(r):
-		return lexTopValueEnd
-	case isNL(r) || r == eof || r == optValTerm:
+		return lexTopEnd
+	case isNL(r) || r == optValTerm:
 		lx.ignore()
 		return lexTop
-		// case r == ')':
-		// 	lx.ignore()
-		// 	return lexTop
+	case r == eof:
+		lx.emit(itemEOF)
+		return nil
 	}
+
 	return lx.errorf("Expected a top-level value to end with a new line, "+
-		"comment or EOF, but got '%v' instead.", r)
+		"comment or EOF, but got '%v' instead.\nSource:-------------\n%v\n------------EndSource", r, lx.input)
 }
 
 // lexKeyStart consumes a key name up until the first non-whitespace character.
@@ -369,39 +408,58 @@ func lexValue(lx *lexer) stateFn {
 	// We allow whitespace to precede a value, but NOT new lines.
 	// In array syntax, the array states are responsible for ignoring new lines.
 	r := lx.next()
-	if isWhitespace(r) {
+	switch {
+	case isWhitespace(r):
 		return lexSkip(lx, lexValue)
+	case isDigit(r):
+		lx.backup() // avoid an extra state and use the same as above
+		return lexNumberOrDateStart
+	case isNL(r):
+		return lx.errorf("Expected value but found new line")
 	}
 
-	switch {
-	case r == arrayStart:
+	switch r {
+	case arrayStart:
 		lx.ignore()
 		lx.emit(itemArrayStart)
 		lx.isEnd = isEndArrayUnQuoted
 		return lexArrayValue
-	case r == mapStart:
+	case mapStart:
 		lx.ignore()
 		lx.emit(itemMapStart)
 		return lexMapKeyStart
-	case r == sqStringStart: //  single quote:   '
+	case sqStringStart: //  single quote:   '
+		if lx.accept(sqStringStart) {
+			if lx.accept(sqStringStart) {
+				lx.ignore() // Ignore """
+				return lexMultilineRawString
+			}
+			lx.backup()
+		}
 		lx.ignore() // ignore the " or '
 		return lexQuotedString
-	case r == dqStringStart: // "
+	case dqStringStart: // "
+		if lx.accept(dqStringStart) {
+			if lx.accept(dqStringStart) {
+				lx.ignore() // Ignore """
+				return lexMultilineString
+			}
+			lx.backup()
+		}
 		lx.ignore() // ignore the " or '
 		return lexDubQuotedString
-	case r == '-':
+	case '-':
 		return lexNumberStart
-	case r == blockStart:
-		lx.next()   // ignore the /n after {
+	case blockStart:
+		r = lx.next() // ignore the \n after {
+		if r == '\r' {
+			lx.ignore()
+			lx.next()
+		}
 		lx.ignore() // Ignore the (
 		return lexBlock
-	case isDigit(r):
-		lx.backup() // avoid an extra state and use the same as above
-		return lexNumberOrDateStart
-	case r == '.': // special error case, be kind to users
+	case '.': // special error case, be kind to users
 		return lx.errorf("Floats must start with a digit, not '.'.")
-	case isNL(r):
-		return lx.errorf("Expected value but found new line")
 	}
 	// we didn't consume it, so backup
 	lx.backup()
@@ -658,8 +716,8 @@ func lexQuotedString(lx *lexer) stateFn {
 // internal contents.
 func lexDubQuotedString(lx *lexer) stateFn {
 	r := lx.next()
-	switch {
-	case r == dqStringEnd:
+	switch r {
+	case dqStringEnd:
 		lx.backup()
 		lx.emit(itemString)
 		lx.next()
@@ -674,7 +732,7 @@ func lexDubQuotedString(lx *lexer) stateFn {
 func lexString(lx *lexer) stateFn {
 	r := lx.next()
 	switch {
-	case r == '\\':
+	case r == backslash:
 		return lexStringEscape
 	// Termination of non-quoted strings
 	case lx.isEnd(lx, r):
@@ -700,10 +758,10 @@ func lexString(lx *lexer) stateFn {
 func lexDubString(lx *lexer) stateFn {
 	r := lx.next()
 	switch {
-	case r == '\\':
+	case r == backslash:
 		return lexStringEscape
 	// Termination of non-quoted strings
-	case isNL(r) || r == eof || r == optValTerm || isWhitespace(r):
+	case lx.isEnd(lx, r):
 		lx.backup()
 		if lx.isBool() {
 			lx.emit(itemBool)
@@ -721,12 +779,76 @@ func lexDubString(lx *lexer) stateFn {
 	return lexDubString
 }
 
+// lexMultilineString consumes the inner contents of a string. It assumes that
+// the beginning '"""' has already been consumed and ignored.
+func lexMultilineString(lx *lexer) stateFn {
+	switch lx.next() {
+	case eof:
+		return lx.errorf("unexpected EOF")
+	case backslash:
+		return lexMultilineStringEscape
+	case dqStringEnd:
+		if lx.accept(dqStringEnd) {
+			if lx.accept(dqStringEnd) {
+				lx.backup()
+				lx.backup()
+				lx.backup()
+				lx.emit(itemString)
+				lx.next()
+				lx.next()
+				lx.next()
+				lx.ignore()
+				return lx.pop()
+			}
+			lx.backup()
+		}
+	}
+	return lexMultilineString
+}
+
+// lexMultilineRawString consumes a raw string. Nothing can be escaped in such
+// a string. It assumes that the beginning "'''" has already been consumed and
+// ignored.
+func lexMultilineRawString(lx *lexer) stateFn {
+	switch lx.next() {
+	case eof:
+		return lx.errorf("unexpected EOF")
+	case sqStringEnd:
+		if lx.accept(sqStringEnd) {
+			if lx.accept(sqStringEnd) {
+				lx.backup()
+				lx.backup()
+				lx.backup()
+				lx.emit(itemString)
+				lx.next()
+				lx.next()
+				lx.next()
+				lx.ignore()
+				return lx.pop()
+			}
+			lx.backup()
+		}
+	}
+	return lexMultilineRawString
+}
+
+// lexMultilineStringEscape consumes an escaped character. It assumes that the
+// preceding '\\' has already been consumed.
+func lexMultilineStringEscape(lx *lexer) stateFn {
+	// Handle the special case first:
+	if isNL(lx.next()) {
+		return lexMultilineString
+	}
+	lx.backup()
+	lx.push(lexMultilineString)
+	return lexStringEscape(lx)
+}
+
 // lexBlock consumes the inner contents as a string. It assumes that the
 // beginning '(' has already been consumed and ignored. It will continue
 // processing until it finds a ')' on a new line by itself.
 func lexBlock(lx *lexer) stateFn {
 	r := lx.next()
-
 	switch {
 	case r == blockEnd:
 
@@ -735,18 +857,17 @@ func lexBlock(lx *lexer) stateFn {
 
 		// Looking for a ')' character on a line by itself, if the previous
 		// character isn't a new line, then break so we keep processing the block.
-		if lx.next() != '\n' {
+		if !isNL(lx.next()) {
 			lx.next() // if inline ( this will consume it
 			break
 		}
 		lx.next()
-
 		// Make sure the next character is a new line or an eof. We want a ')' on a
 		// bare line by itself.
 		switch r = lx.next(); r {
-		case '\n', eof:
+		case '\r', '\n', eof:
 			if r == eof {
-				lx.width = 1
+				lx.prevWidths[0] = 1
 			}
 			lx.backup() // unconsume the \n, or eof
 			r = lx.peek()
@@ -754,6 +875,10 @@ func lexBlock(lx *lexer) stateFn {
 				lx.backup() // unconsume the )
 			}
 			lx.backup() // unconsume the \n
+			lx.backup()
+			if lx.next() == '\r' {
+				lx.backup()
+			}
 			lx.emit(itemString)
 			lx.next() // consume the previous line \n
 			lx.next() // consume the )
@@ -772,19 +897,52 @@ func lexStringEscape(lx *lexer) stateFn {
 	switch r {
 	case 'x':
 		return lexStringBinary
+	case 'b':
+		fallthrough
 	case 't':
 		fallthrough
 	case 'n':
+		fallthrough
+	case 'f':
 		fallthrough
 	case 'r':
 		fallthrough
 	case '"':
 		fallthrough
-	case '\\':
-		return lexString
+	case backslash:
+		return lx.pop()
+	case 'u':
+		return lexShortUnicodeEscape
+	case 'U':
+		return lexLongUnicodeEscape
 	}
-	return lx.errorf("Invalid escape character '%v'. Only the following "+
-		"escape characters are allowed: \\xXX, \\t, \\n, \\r, \\\", \\\\.", r)
+	return lx.errorf("invalid escape character %q; only the following "+
+		"escape characters are allowed: "+
+		`\xXXX, \b, \t, \n, \f, \r, \", \\, \uXXXX, and \UXXXXXXXX`, r)
+}
+
+func lexShortUnicodeEscape(lx *lexer) stateFn {
+	var r rune
+	for i := 0; i < 4; i++ {
+		r = lx.next()
+		if !isHexadecimal(r) {
+			return lx.errorf(`expected four hexadecimal digits after '\u', `+
+				"but got %q instead", lx.current())
+		}
+	}
+	return lx.pop()
+}
+
+func lexLongUnicodeEscape(lx *lexer) stateFn {
+	var r rune
+	for i := 0; i < 8; i++ {
+		r = lx.next()
+		if !isHexadecimal(r) {
+			return lx.errorf(`expected eight hexadecimal digits after '\U', `+
+				"but got %q instead", lx.current())
+		}
+	}
+	return lx.pop()
 }
 
 // lexStringBinary consumes two hexadecimal digits following '\x'. It assumes
@@ -808,32 +966,54 @@ func lexStringBinary(lx *lexer) stateFn {
 // It assumes that NO negative sign has been consumed.
 func lexNumberOrDateStart(lx *lexer) stateFn {
 	r := lx.next()
-	if !isDigit(r) {
-		if r == '.' {
-			return lx.errorf("Floats must start with a digit, not '.'.")
-		}
-		return lx.errorf("Expected a digit but got '%v'.", r)
+	if isDigit(r) {
+		return lexNumberOrDate
 	}
-	return lexNumberOrDate
+	switch r {
+	case '_':
+		return lexNumber
+	case 'e', 'E':
+		return lexFloat
+	case '.':
+		return lx.errorf("floats must start with a digit, not '.'")
+	}
+	return lx.errorf("expected a digit but got %q", r)
 }
 
 // lexNumberOrDate consumes either a (positive) integer, float or datetime.
 func lexNumberOrDate(lx *lexer) stateFn {
 	r := lx.next()
-	switch {
-	case r == '-':
-		if lx.pos-lx.start != 5 {
-			return lx.errorf("All ISO8601 dates must be in full Zulu form.")
-		}
-		return lexDateAfterYear
-	case isDigit(r):
+
+	if isDigit(r) {
 		return lexNumberOrDate
-	case r == '.':
-		return lexFloatStart
+	}
+	switch r {
+	case '-':
+		return lexDatetime
+	case '_':
+		return lexNumber
+	case '.', 'e', 'E':
+		return lexFloat
+	}
+	lx.backup()
+	lx.emit(itemInteger)
+	return lx.pop()
+}
+
+// lexDatetime consumes a Datetime, to a first approximation.
+// The parser validates that it matches one of the accepted formats.
+func lexDatetime(lx *lexer) stateFn {
+	r := lx.next()
+	if isDigit(r) {
+		return lexDatetime
+	}
+	switch r {
+	case '-', 'T', ':', '.', 'Z':
+		return lexDatetime
 	}
 
 	lx.backup()
-	lx.emit(itemInteger)
+	lx.emit(itemDatetime)
 	return lx.pop()
 }
 

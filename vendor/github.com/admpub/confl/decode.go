@@ -106,7 +106,6 @@ func Unmarshal(bs []byte, v interface{}) error {
 // This decoder will not handle cyclic types. If a cyclic type is passed,
 // `Decode` will not terminate.
 func Decode(data string, v interface{}) (MetaData, error) {
-	data = strings.Replace(data, "\r", "", -1)
 	p, err := parse(data)
 	if err != nil {
 		return MetaData{}, err
