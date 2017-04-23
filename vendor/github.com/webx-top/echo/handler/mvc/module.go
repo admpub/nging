@@ -28,6 +28,8 @@ import (
 	"sync"
 
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/handler/mvc/static/resource"
+	mw "github.com/webx-top/echo/middleware"
 	"github.com/webx-top/echo/middleware/render"
 	"github.com/webx-top/echo/middleware/render/driver"
 )
@@ -46,7 +48,7 @@ func NewModule(name string, domain string, s *Application, middlewares ...interf
 	if s.Renderer != nil {
 		a.Renderer = s.Renderer
 	}
-	if a.Domain == `` {
+	if len(a.Domain) == 0 {
 		var prefix string
 		if name != s.RootModuleName {
 			prefix = `/` + name
@@ -62,6 +64,9 @@ func NewModule(name string, domain string, s *Application, middlewares ...interf
 		a.Group.Use(middlewares...)
 	} else {
 		e := echo.NewWithContext(s.ContextCreator)
+		e.SetRenderer(s.Core.Renderer())
+		e.SetHTTPErrorHandler(s.Core.HTTPErrorHandler())
+		e.Pre(s.DefaultPreMiddlewares...)
 		e.Use(s.DefaultMiddlewares...)
 		e.Use(middlewares...)
 		a.Handler = e
@@ -82,8 +87,10 @@ type Module struct {
 	*Application       `json:"-" xml:"-"`
 	Group              *echo.Group   `json:"-" xml:"-"`
 	Handler            *echo.Echo    `json:"-" xml:"-"` //指定域名时有效
+	PreMiddlewares     []interface{} `json:"-" xml:"-"`
 	Middlewares        []interface{} `json:"-" xml:"-"`
 	Renderer           driver.Driver `json:"-" xml:"-"`
+	Resource           *resource.Static
 	Name               string
 	Domain             string
 	wrappers           map[string]*Wrapper
@@ -188,17 +195,40 @@ func (a *Module) AddHandler(c interface{}) *Wrapper {
 	return wr
 }
 
-// Use 批量注册控制器路由
-func (a *Module) Use(args ...interface{}) *Module {
+// Add 批量注册控制器路由
+func (a *Module) Add(args ...interface{}) *Module {
 	for _, c := range args {
 		a.AddHandler(c).Auto()
 	}
 	return a
 }
 
+// Pre 前置中间件
+func (a *Module) Pre(middleware ...interface{}) {
+	if a.Handler != nil {
+		a.Handler.Pre(middleware...)
+	} else {
+		a.Application.Core.Pre(middleware...)
+	}
+	a.PreMiddlewares = append(middleware, a.PreMiddlewares...)
+
+}
+
+// Use 中间件
+func (a *Module) Use(middleware ...interface{}) {
+	a.Router().Use(middleware...)
+	a.Middlewares = append(a.Middlewares, middleware...)
+}
+
 // InitRenderer 初始化渲染接口(用于单独对app指定renderer，如不指定，默认会使用Server中Renderer)
 func (a *Module) InitRenderer(conf *render.Config, funcMap map[string]interface{}) *Module {
-	a.Renderer = a.Application.NewRenderer(conf, a, funcMap)
+	a.Renderer, a.Resource = a.Application.NewRenderer(conf, a, funcMap)
+	if a.Handler != nil {
+		a.Handler.SetRenderer(a.Renderer)
+	}
+	a.Use(mw.SimpleFuncMap(funcMap))
+	//为了支持域名绑定和解除绑定，此处使用路由Hander的方式服务静态资源文件
+	a.Resource.Wrapper(a.Router())
 	return a
 }
 

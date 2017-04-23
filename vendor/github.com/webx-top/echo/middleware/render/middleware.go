@@ -191,7 +191,7 @@ func HTTPErrorHandler(templates map[int]string, options ...*Options) echo.HTTPEr
 					if err := opt.OutputFunc(c.Format(), c, opt); err != nil {
 						msg += "\n" + err.Error()
 						y = false
-						c.Echo().Logger().Error(err)
+						c.Logger().Error(err)
 					}
 				}
 				if y {
@@ -202,6 +202,6 @@ func HTTPErrorHandler(templates map[int]string, options ...*Options) echo.HTTPEr
 				c.String(msg, code)
 			}
 		}
-		c.Echo().Logger().Debug(err)
+		c.Logger().Debug(err)
 	}
 }

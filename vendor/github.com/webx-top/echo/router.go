@@ -13,6 +13,8 @@ var (
 	}
 )
 
+const ParamStar = "_*"
+
 type (
 	Router struct {
 		tree   *node
@@ -142,7 +144,14 @@ func (r *Router) Handle(h Handler) Handler {
 	})
 }
 
-func (r *Router) Add(method, path string, h Handler, name string, meta H, e *Echo) (route *Route) {
+// Add 添加路由
+// method: 方法(GET/POST/PUT/DELETE/PATCH/OPTIONS/HEAD/CONNECT/TRACE)
+// prefix: group前缀
+// path: 路径(含前缀)
+// h: Handler
+// name: Handler名
+// meta: meta数据
+func (r *Router) Add(method, prefix, path string, h Handler, name string, meta H, e *Echo) (route *Route) {
 	ppath := path        // Pristine path
 	pnames := []string{} // Param names
 	uri := new(bytes.Buffer)
@@ -154,6 +163,7 @@ func (r *Router) Add(method, path string, h Handler, name string, meta H, e *Ech
 			HandlerName: name,
 			Format:      uri.String(),
 			Params:      pnames,
+			Prefix:      prefix,
 			Meta:        meta,
 		}
 	}
@@ -179,7 +189,7 @@ func (r *Router) Add(method, path string, h Handler, name string, meta H, e *Ech
 		} else if path[i] == '*' {
 			uri.WriteString(`%v`)
 			r.insert(path[:i], skind, newRoute(h, ``, ``, nil), e)
-			pnames = append(pnames, "_*")
+			pnames = append(pnames, ParamStar)
 			route = newRoute(h, name, ppath, pnames)
 			r.insert(path[:i+1], akind, route, e)
 			return

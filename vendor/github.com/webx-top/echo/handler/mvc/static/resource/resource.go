@@ -34,6 +34,7 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/handler/mvc/static/minify"
+	mw "github.com/webx-top/echo/middleware"
 )
 
 var (
@@ -54,8 +55,10 @@ func NewStatic(staticPath, rootPath string) *Static {
 		staticPath = `/` + staticPath
 	}
 	return &Static{
-		Path:            staticPath,
-		RootPath:        rootPath,
+		StaticOptions: &mw.StaticOptions{
+			Path: staticPath,
+			Root: rootPath,
+		},
 		CombineJs:       true,
 		CombineCss:      true,
 		CombineSavePath: `combine`,
@@ -68,8 +71,7 @@ func NewStatic(staticPath, rootPath string) *Static {
 }
 
 type Static struct {
-	RootPath        string //根路径：相对于本程序的路径,本程序读取时需要
-	Path            string //网址访问的路径
+	*mw.StaticOptions
 	CombineJs       bool
 	CombineCss      bool
 	CombineSavePath string //合并文件保存路径，首尾均不带斜杠
@@ -79,6 +81,26 @@ type Static struct {
 	mutex           *sync.Mutex
 	Public          *Static
 	logger          *log.Logger
+	middleware      echo.MiddlewareFunc
+}
+
+// Wrapper 包装路由（作为路由时使用）
+func (s *Static) Wrapper(r echo.RouteRegister) {
+	r.Get(s.Path+`/*`, func(ctx echo.Context) error {
+		file := filepath.Join(s.Root, ctx.P(0))
+		if !strings.HasPrefix(file, s.Root) {
+			return echo.ErrNotFound
+		}
+		return ctx.File(file)
+	})
+}
+
+// Middleware 中间件（作为中间件使用）
+func (s *Static) Middleware() echo.MiddlewareFunc {
+	if s.middleware == nil {
+		s.middleware = mw.Static(s.StaticOptions)
+	}
+	return s.middleware
 }
 
 func (s *Static) StaticURL(staticFile string) (r string) {
@@ -108,7 +130,7 @@ func (s *Static) cachedURLInfo(key string, ext string) (absPath string, fileName
 	} else {
 		md5 := com.Md5(key)
 		fileName = md5 + "." + ext
-		absPath = filepath.Join(s.RootPath, s.CombineSavePath, fileName)
+		absPath = filepath.Join(s.Root, s.CombineSavePath, fileName)
 		s.urlMap[key] = &urlMapInfo{
 			AbsPath: absPath,
 			Md5:     md5,
@@ -129,7 +151,7 @@ func (s *Static) JsTag(staticFiles ...string) template.HTML {
 	if s.IsCombined(r) == false || com.FileExists(r) == false {
 		var content string
 		for _, url := range staticFiles {
-			absPath := filepath.Join(s.RootPath, "js", url)
+			absPath := filepath.Join(s.Root, "js", url)
 			if con, err := s.genCombinedJS(absPath, url); err != nil {
 				fmt.Println(err)
 			} else {
@@ -156,11 +178,11 @@ func (s *Static) CssTag(staticFiles ...string) template.HTML {
 	r, combinedFile := s.cachedURLInfo(strings.Join(staticFiles, "|"), `css`)
 	if s.IsCombined(r) == false || com.FileExists(r) == false {
 		var onImportFn = func(urlPath string) {
-			s.RecordCombined(filepath.Join(s.RootPath, "css", urlPath), r)
+			s.RecordCombined(filepath.Join(s.Root, "css", urlPath), r)
 		}
 		var content string
 		for _, url := range staticFiles {
-			absPath := filepath.Join(s.RootPath, "css", url)
+			absPath := filepath.Join(s.Root, "css", url)
 			if con, err := s.genCombinedCSS(absPath, url, onImportFn); err != nil {
 				fmt.Println(err)
 			} else {
@@ -265,9 +287,6 @@ func (s *Static) ClearCache() {
 
 func (s *Static) OnUpdate(tmplDir string) func(string) {
 	return func(name string) {
-		if s == nil {
-			return
-		}
 		if s.Public != nil {
 			s.Public.ClearCache()
 			if s.Public == s {

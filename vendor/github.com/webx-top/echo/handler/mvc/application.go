@@ -23,6 +23,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"strings"
+	"sync"
 
 	"github.com/admpub/confl"
 	codec "github.com/gorilla/securecookie"
@@ -41,8 +42,8 @@ import (
 )
 
 // New 创建Application实例
-func New(name string, middlewares ...interface{}) (s *Application) {
-	s = NewWithContext(name, nil, middlewares...)
+func New(name string) (s *Application) {
+	s = NewWithContext(name, nil)
 	globalApp[name] = s
 	return
 }
@@ -57,50 +58,36 @@ func HandlerWrapper(h interface{}) echo.Handler {
 }
 
 // NewWithContext 创建Application实例
-func NewWithContext(name string, newContext func(*echo.Echo) echo.Context, middlewares ...interface{}) (s *Application) {
+func NewWithContext(name string, newContext func(*echo.Echo) echo.Context) (s *Application) {
 	s = &Application{
-		Name:           name,
-		moduleHosts:    make(map[string]*Module),
-		moduleNames:    make(map[string]*Module),
-		TemplateDir:    `template`,
-		URL:            `/`,
-		MaxUploadSize:  10 * 1024 * 1024,
-		StaticDir:      `assets`,
+		Name:          name,
+		moduleHosts:   make(map[string]*Module),
+		moduleNames:   make(map[string]*Module),
+		TemplateDir:   `template`,
+		URL:           `/`,
+		MaxUploadSize: 10 * 1024 * 1024,
+		Resource: &Resource{
+			Dir: `assets`,
+		},
 		RootModuleName: `base`,
-		FuncMap:        tplfunc.New(),
 		RouteTagName:   `webx`,
 		URLConvert:     LowerCaseFirst,
 		URLRecovery:    UpperCaseFirst,
 		MapperCheck:    DefaultMapperCheck,
-	}
-	mwNum := len(middlewares)
-	if mwNum == 1 && middlewares[0] == nil {
-		s.DefaultMiddlewares = []interface{}{}
-	} else {
-		s.DefaultMiddlewares = []interface{}{
-			mw.Log(),
-			mw.Recover(),
-			mw.FuncMap(s.FuncMap, func(ctx echo.Context) bool {
-				return ctx.Format() != `html`
-			}),
-		}
-		if mwNum > 0 {
-			s.DefaultMiddlewares = append(s.DefaultMiddlewares, middlewares...)
-		}
-	}
-	s.SessionOptions = &echo.SessionOptions{
-		Engine: `cookie`,
-		Name:   `GOSID`,
-		CookieOptions: &echo.CookieOptions{
-			Prefix:   name + `_`,
-			HttpOnly: true,
-			Path:     `/`,
+		SessionOptions: &echo.SessionOptions{
+			Engine: `cookie`,
+			Name:   `GOSID`,
+			CookieOptions: &echo.CookieOptions{
+				Prefix:   name + `_`,
+				HttpOnly: true,
+				Path:     `/`,
+			},
 		},
+		ContextInitial: func(ctx echo.Context, wrp *Wrapper, controller interface{}, actionName string) (err error, exit bool) {
+			return ctx.(*Context).Init(wrp, controller, actionName)
+		}, //[1]
 	}
-	s.FuncMap = s.DefaultFuncMap()
-	s.ContextInitial = func(ctx echo.Context, wrp *Wrapper, controller interface{}, actionName string) (err error, exit bool) {
-		return ctx.(*Context).Init(wrp, controller, actionName)
-	} //[1]
+	s.URLs = NewURLs(name, s)
 	if newContext == nil {
 		newContext = func(e *echo.Echo) echo.Context {
 			return NewContext(s, echo.NewContext(nil, nil, e))
@@ -108,11 +95,20 @@ func NewWithContext(name string, newContext func(*echo.Echo) echo.Context, middl
 	}
 	s.ContextCreator = newContext //[1]
 	s.Core = echo.NewWithContext(s.ContextCreator)
-	s.Core.Use(s.DefaultMiddlewares...)
 	s.Core.SetHandlerWrapper(HandlerWrapper) //[1]
-	s.SetErrorPages(nil)
 
-	s.URLs = NewURLs(name, s)
+	//Core middleware
+	s.FuncMap = s.DefaultFuncMap()
+	s.DefaultMiddlewares = []interface{}{
+		mw.Log(),
+		mw.Recover(),
+		mw.FuncMap(s.FuncMap, func(ctx echo.Context) bool {
+			return ctx.Format() != `html`
+		}),
+	}
+	s.Core.Use(s.DefaultMiddlewares...)
+
+	s.SetErrorPages(nil)
 	return
 }
 
@@ -139,30 +135,61 @@ var (
 )
 
 type Application struct {
-	Core               *echo.Echo
-	Name               string
-	TemplateDir        string
-	StaticDir          string
-	StaticRes          *resource.Static
-	RouteTagName       string
-	URLConvert         URLConvert  `json:"-" xml:"-"`
-	URLRecovery        URLRecovery `json:"-" xml:"-"`
-	MaxUploadSize      int64
-	RootModuleName     string
-	URL                string
-	URLs               *URLs
-	DefaultMiddlewares []interface{} `json:"-" xml:"-"`
-	SessionOptions     *echo.SessionOptions
-	Renderer           driver.Driver                                                   `json:"-" xml:"-"`
-	FuncMap            map[string]interface{}                                          `json:"-" xml:"-"`
-	ContextCreator     func(*echo.Echo) echo.Context                                   `json:"-" xml:"-"`
-	ContextInitial     func(echo.Context, *Wrapper, interface{}, string) (error, bool) `json:"-" xml:"-"`
-	Codec              codec.Codec                                                     `json:"-" xml:"-"`
-	MapperCheck        func(t reflect.Type) bool                                       `json:"-" xml:"-"`
-	moduleHosts        map[string]*Module                                              //域名关联
-	moduleNames        map[string]*Module                                              //名称关联
-	rootDir            string
-	theme              string
+	Core                  *echo.Echo
+	Name                  string
+	TemplateDir           string
+	Resource              *Resource
+	RouteTagName          string
+	URLConvert            URLConvert  `json:"-" xml:"-"`
+	URLRecovery           URLRecovery `json:"-" xml:"-"`
+	MaxUploadSize         int64
+	RootModuleName        string
+	URL                   string
+	URLs                  *URLs
+	DefaultMiddlewares    []interface{} `json:"-" xml:"-"`
+	DefaultPreMiddlewares []interface{} `json:"-" xml:"-"`
+	SessionOptions        *echo.SessionOptions
+	Renderer              driver.Driver                                                   `json:"-" xml:"-"`
+	FuncMap               map[string]interface{}                                          `json:"-" xml:"-"`
+	ContextCreator        func(*echo.Echo) echo.Context                                   `json:"-" xml:"-"`
+	ContextInitial        func(echo.Context, *Wrapper, interface{}, string) (error, bool) `json:"-" xml:"-"`
+	Codec                 codec.Codec                                                     `json:"-" xml:"-"`
+	MapperCheck           func(t reflect.Type) bool                                       `json:"-" xml:"-"`
+	moduleHosts           map[string]*Module                                              //域名关联
+	moduleNames           map[string]*Module                                              //名称关联
+	rootDir               string
+	theme                 string
+	mutex                 sync.RWMutex
+}
+
+// Pre 全局前置中间件
+func (s *Application) Pre(middleware ...interface{}) {
+	if len(s.moduleNames) > 0 {
+		panic(`The global pre-middleware must be set before Module is not created`)
+	}
+	if len(middleware) == 1 && middleware[0] == nil {
+		s.DefaultPreMiddlewares = []interface{}{}
+		s.Core.Clear()
+		s.Core.Use(s.DefaultMiddlewares...)
+		return
+	}
+	s.Core.Pre(middleware...)
+	s.DefaultPreMiddlewares = append(middleware, s.DefaultPreMiddlewares...)
+}
+
+// Use 全局中间件
+func (s *Application) Use(middleware ...interface{}) {
+	if len(s.moduleNames) > 0 {
+		panic(`The global middleware must be set before Module is not created`)
+	}
+	if len(middleware) == 1 && middleware[0] == nil {
+		s.DefaultMiddlewares = []interface{}{}
+		s.Core.Clear()
+		s.Core.Pre(s.DefaultPreMiddlewares...)
+		return
+	}
+	s.Core.Use(middleware...)
+	s.DefaultMiddlewares = append(s.DefaultMiddlewares, middleware...)
 }
 
 // ServeHTTP HTTP服务执行入口
@@ -195,6 +222,8 @@ func (s *Application) SetErrorPages(templates map[int]string, options ...*render
 
 // SetDomain 为模块设置域名
 func (s *Application) SetDomain(name string, domain string) *Application {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
 	a, ok := s.moduleNames[name]
 	if !ok {
 		s.Core.Logger().Warn(`Module does not exist: `, name)
@@ -270,6 +299,9 @@ func (s *Application) SetDomain(name string, domain string) *Application {
 	a.Domain = domain
 	a.Group = nil
 	e := echo.NewWithContext(s.ContextCreator)
+	e.SetRenderer(a.Renderer)
+	e.SetHTTPErrorHandler(s.Core.HTTPErrorHandler())
+	e.Pre(s.DefaultPreMiddlewares...)
 	e.Use(s.DefaultMiddlewares...)
 	e.Use(a.Middlewares...)
 	s.Core.RebuildRouter(coreRoutes)
@@ -286,7 +318,9 @@ func (s *Application) SetDomain(name string, domain string) *Application {
 
 // NewModule 创建新模块
 func (s *Application) NewModule(name string, middlewares ...interface{}) *Module {
-	r := strings.Split(name, `@`) //blog@www.blog.com
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	r := strings.SplitN(name, `@`, 2) //blog@www.blog.com
 	var domain string
 	if len(r) > 1 {
 		name = r[0]
@@ -301,13 +335,15 @@ func (s *Application) NewModule(name string, middlewares ...interface{}) *Module
 }
 
 // NewRenderer 为特殊module(比如admin)单独新建渲染接口
-func (s *Application) NewRenderer(conf *render.Config, a *Module, funcMap map[string]interface{}) driver.Driver {
+func (s *Application) NewRenderer(conf *render.Config, a *Module, funcMap map[string]interface{}) (driver.Driver, *resource.Static) {
 	themeAbsPath := s.ThemeDir(conf.Theme)
 	staticURLPath := `/assets`
 	if a != nil && len(a.Name) > 0 {
-		staticURLPath = `/` + a.Name + staticURLPath
+		if a.Handler == nil {
+			staticURLPath = `/` + a.Name + staticURLPath
+		}
 	}
-	staticAbsPath := themeAbsPath + `/assets`
+	staticAbsPath := filepath.Join(themeAbsPath, `assets`)
 	te := s.NewTemplateEngine(themeAbsPath, conf)
 	static := s.NewStatic(staticURLPath, staticAbsPath, funcMap)
 	te.SetFuncMap(func() map[string]interface{} {
@@ -315,12 +351,12 @@ func (s *Application) NewRenderer(conf *render.Config, a *Module, funcMap map[st
 	})
 	te.MonitorEvent(static.OnUpdate(themeAbsPath))
 	te.SetContentProcessor(conf.Parser())
-	return te
+	return te, static
 }
 
 // NewTemplateEngine 新建模板引擎实例
 func (s *Application) NewTemplateEngine(tmplPath string, conf *render.Config) driver.Driver {
-	if tmplPath == `` {
+	if len(tmplPath) == 0 {
 		tmplPath = s.ThemeDir()
 	}
 	eng := render.New(conf.Engine, tmplPath, s.Core.Logger())
@@ -334,9 +370,18 @@ func (s *Application) resetRenderer(conf *render.Config) *Application {
 	if s.Renderer != nil {
 		s.Renderer.Close()
 	}
-	s.Renderer = s.NewTemplateEngine(s.ThemeDir(conf.Theme), conf)
+	themeAbsPath := s.ThemeDir(conf.Theme)
+	s.Renderer = s.NewTemplateEngine(themeAbsPath, conf)
 	s.Core.SetRenderer(s.Renderer)
-	s.TemplateMonitor()
+
+	if s.Resource.Static != nil {
+		s.TemplateMonitor()
+		staticURLPath := `/assets`
+		staticAbsPath := filepath.Join(themeAbsPath, s.Resource.Dir)
+		s.Resource.Static.Root = staticAbsPath
+		s.Resource.Static.Path = staticURLPath
+	}
+
 	s.Renderer.SetFuncMap(func() map[string]interface{} {
 		return s.FuncMap
 	})
@@ -363,10 +408,10 @@ func (s *Application) SetSessionOptions(sessionOptions *echo.SessionOptions) *Ap
 			HttpOnly: true,
 		}
 	}
-	if sessionOptions.Name == `` {
+	if len(sessionOptions.Name) == 0 {
 		sessionOptions.Name = `GOSID`
 	}
-	if sessionOptions.Engine == `` {
+	if len(sessionOptions.Engine) == 0 {
 		sessionOptions.Engine = `cookie`
 	}
 	s.SessionOptions = sessionOptions
@@ -401,7 +446,6 @@ func (s *Application) NewStatic(urlPath string, absPath string, f ...map[string]
 	if len(f) > 0 {
 		f[0] = st.Register(f[0])
 	}
-	s.Core.Use(mw.Static(&mw.StaticOptions{Path: urlPath, Root: absPath}))
 	return st
 }
 
@@ -415,17 +459,18 @@ func (s *Application) ThemeDir(args ...string) string {
 
 // InitStatic 初始化静态资源
 func (s *Application) InitStatic() *Application {
-	absPath := filepath.Join(s.ThemeDir(), s.StaticDir)
-	s.StaticRes = s.NewStatic(s.StaticDir, absPath, s.FuncMap)
+	absPath := filepath.Join(s.ThemeDir(), s.Resource.Dir)
+	s.Resource.Static = s.NewStatic(s.Resource.Dir, absPath, s.FuncMap)
 	if s.Renderer != nil {
 		s.TemplateMonitor()
 	}
+	s.Core.Pre(s.Resource.Middleware())
 	return s
 }
 
 // TemplateMonitor 模板监控事件
 func (s *Application) TemplateMonitor() *Application {
-	s.Renderer.MonitorEvent(s.StaticRes.OnUpdate(s.ThemeDir()))
+	s.Renderer.MonitorEvent(s.Resource.Static.OnUpdate(s.ThemeDir()))
 	return s
 }
 
@@ -529,7 +574,7 @@ func (s *Application) Run(args ...interface{}) {
 			}
 		} else {
 			addr := `:80`
-			if v, ok := arg.(string); ok && v != `` {
+			if v, ok := arg.(string); ok && len(v) > 0 {
 				addr = v
 			}
 			if v, ok := args[1].(string); ok {
@@ -543,11 +588,11 @@ func (s *Application) Run(args ...interface{}) {
 			}
 		}
 	} else {
-		switch arg.(type) {
+		switch v := arg.(type) {
 		case string:
-			eng = fasthttp.New(arg.(string))
+			eng = fasthttp.New(v)
 		case engine.Engine:
-			eng = arg.(engine.Engine)
+			eng = v
 		default:
 			eng = fasthttp.New(`:80`)
 		}
@@ -577,6 +622,10 @@ func (s *Application) DefaultFuncMap() (r map[string]interface{}) {
 		}
 		return s.URL
 	}
+	r["RootModuleURL"] = func(ctl string, act string, params ...interface{}) string {
+		return s.URLs.Build(s.RootModuleName, ctl, act, params...)
+	}
+	r["URLFor"] = s.URLs.Build
 	return
 }
 
@@ -624,4 +673,11 @@ func (s *Application) Tree(args ...*echo.Echo) (r map[string]map[string]map[stri
 		}
 	}
 	return
+}
+
+func (s *Application) FuncMapCopyTo(m map[string]interface{}) *Application {
+	for k, v := range s.FuncMap {
+		m[k] = v
+	}
+	return s
 }

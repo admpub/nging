@@ -36,6 +36,9 @@ func (g *Group) Use(middleware ...interface{}) {
 	for _, m := range middleware {
 		g.echo.ValidMiddleware(m)
 		g.middleware = append(g.middleware, m)
+		if g.echo.MiddlewareDebug {
+			g.echo.logger.Debugf(`Middleware[Use](%p): [%s] -> %s`, m, g.prefix, HandlerName(m))
+		}
 	}
 }
 
@@ -48,6 +51,9 @@ func (g *Group) PreUse(middleware ...interface{}) {
 	for _, m := range middleware {
 		g.echo.ValidMiddleware(m)
 		middlewares = append(middlewares, m)
+		if g.echo.MiddlewareDebug {
+			g.echo.logger.Debugf(`Middleware[Pre](%p): [%s] -> %s`, m, g.prefix, HandlerName(m))
+		}
 	}
 	g.middleware = append(middlewares, g.middleware...)
 }
@@ -104,5 +110,5 @@ func (g *Group) add(method, path string, h interface{}, middleware ...interface{
 	m = append(m, g.middleware...)
 	m = append(m, middleware...)
 
-	g.echo.add(method, g.prefix+path, h, m...)
+	g.echo.add(method, g.prefix, g.prefix+path, h, m...)
 }

@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"encoding/xml"
+	"fmt"
 	"io"
 	"mime"
 	"mime/multipart"
@@ -129,6 +130,7 @@ type (
 		GetFunc(string) interface{}
 		ResetFuncs(map[string]interface{})
 		Funcs() map[string]interface{}
+		PrintFuncs()
 
 		//----------------
 		// Render
@@ -1147,4 +1149,10 @@ func (c *xContext) preResponse() error {
 		}
 	}
 	return nil
+}
+
+func (c *xContext) PrintFuncs() {
+	for key, fn := range c.Funcs() {
+		fmt.Printf("[Template Func](%p) %-15s -> %s \n", fn, key, HandlerName(fn))
+	}
 }

@@ -92,9 +92,9 @@ func (c *Context) Init(wrp *Wrapper, controller interface{}, actName string) (er
 	c.Tmpl = c.Module.Name + `/` + c.ControllerName + `/` + c.ActionName
 	c.Context.SetRenderer(c.Module.Renderer)
 	c.Context.SetSessionOptions(c.Application.SessionOptions)
-	c.Context.SetFunc(`URLFor`, c.URLFor)
+	c.Context.SetFunc(`URLPath`, c.URLPath)
 	c.Context.SetFunc(`BuildURL`, c.BuildURL)
-	c.Context.SetFunc(`ModuleURLFor`, c.ModuleURLFor)
+	c.Context.SetFunc(`ModuleURLPath`, c.ModuleURLPath)
 	c.Context.SetFunc(`ModuleURL`, c.ModuleURL)
 	c.Context.SetFunc(`ControllerName`, func() string {
 		return c.ControllerName
@@ -317,9 +317,14 @@ func (c *Context) SetNoPerm(args ...interface{}) *Context {
 	return c.SetOutput(NO_PERM, args...)
 }
 
-// ModuleURLFor 生成指定Module网址
-func (c *Context) ModuleURLFor(ppath string, args ...map[string]interface{}) string {
+// ModuleURLPath 生成指定Module网址
+func (c *Context) ModuleURLPath(ppath string, args ...map[string]interface{}) string {
 	return c.Application.URLs.BuildFromPath(ppath, args...)
+}
+
+// RootModuleURL 生成根Module网址
+func (c *Context) RootModuleURL(ctl string, act string, args ...interface{}) string {
+	return c.Application.URLs.Build(c.Module.RootModuleName, ctl, act, args...)
 }
 
 // ModuleURL 生成指定Module网址
@@ -327,8 +332,13 @@ func (c *Context) ModuleURL(mod string, ctl string, act string, args ...interfac
 	return c.Application.URLs.Build(mod, ctl, act, args...)
 }
 
-// URLFor 生成当前Module网址
-func (c *Context) URLFor(ppath string, args ...map[string]interface{}) string {
+// URLFor ModuleURL的别名。生成指定Module网址
+func (c *Context) URLFor(mod string, ctl string, act string, args ...interface{}) string {
+	return c.Application.URLs.Build(mod, ctl, act, args...)
+}
+
+// URLPath 生成当前Module网址
+func (c *Context) URLPath(ppath string, args ...map[string]interface{}) string {
 	if len(ppath) == 0 {
 		if len(c.ControllerName) > 0 {
 			ppath = c.ControllerName + `/`
@@ -460,7 +470,7 @@ func (c *Context) U(args ...string) (s string) {
 			if size > 0 {
 				switch args[0][0] {
 				case '/': //usage: /webx/index => {module}/webx/index
-					s = c.URLFor(args[0])
+					s = c.URLPath(args[0])
 					return s + p
 				case ':': //usage: :http://webx.top => http://webx.top
 					s = args[0][1:]
@@ -468,7 +478,7 @@ func (c *Context) U(args ...string) (s string) {
 				}
 			}
 			if strings.Contains(args[0], `/`) {
-				s = c.ModuleURLFor(args[0])
+				s = c.ModuleURLPath(args[0])
 			} else {
 				s = c.ModuleURL(c.Module.Name, c.ControllerName, args[0])
 			}
