@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"reflect"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -24,14 +25,28 @@ var (
 	errArrayNoTable           = errors.New("array element can't contain a table")
 	errNoKey                  = errors.New("top-level values must be a Go map or struct")
 	errAnything               = errors.New("") // used in testing
+	quotedReplacer            = strings.NewReplacer(
+		"\t", `\t`,
+		"\n", `\n`,
+		"\r", `\r`,
+		`"`, `\"`,
+	)
+	reNeedQuoted = regexp.MustCompile(`[\s:=]`)
 )
 
-var quotedReplacer = strings.NewReplacer(
-	"\t", `\t`,
-	"\n", `\n`,
-	"\r", `\r`,
-	`"`, `\"`,
-)
+// SafeKey key
+func SafeKey(key string) string {
+	if reNeedQuoted.MatchString(key) {
+		if !strings.Contains(key, `"`) {
+			key = `"` + key + `"`
+		} else if !strings.Contains(key, `'`) {
+			key = `'` + key + `'`
+		} else {
+			key = fmt.Sprintf(`"%q"`, key)
+		}
+	}
+	return key
+}
 
 // Marshal a go struct into bytes
 func Marshal(v interface{}) ([]byte, error) {
@@ -210,7 +225,40 @@ func floatAddDecimal(fstr string) string {
 }
 
 func (enc *Encoder) writeQuoted(s string) {
-	enc.wf("\"%s\"", quotedReplacer.Replace(s))
+	switch {
+	case strings.Contains(s, "\n"):
+		switch {
+		case !strings.HasPrefix(s, `"`) && !strings.HasSuffix(s, `"`) && !strings.Contains(s, `"""`):
+			enc.wf(`"""%s"""`, s)
+		case !strings.HasPrefix(s, `'`) && !strings.HasSuffix(s, `'`) && !strings.Contains(s, `'''`):
+			enc.wf(`'''%s'''`, s)
+		default:
+			enc.wf("(")
+			enc.newline()
+			for idx, row := range strings.Split(s, "\n") {
+				if idx > 0 {
+					enc.wf("\n")
+				}
+				enc.wf("\t" + row)
+			}
+			enc.newline()
+			enc.wf(")")
+			enc.newline()
+		}
+	case strings.Contains(s, `"`):
+		switch {
+		case !strings.Contains(s, `'`):
+			enc.wf(`'%s'`, s)
+		case !strings.HasPrefix(s, `"`) && !strings.HasSuffix(s, `"`) && !strings.Contains(s, `"""`):
+			enc.wf(`"""%s"""`, s)
+		case !strings.HasPrefix(s, `'`) && !strings.HasSuffix(s, `'`) && !strings.Contains(s, `'''`):
+			enc.wf(`'''%s'''`, s)
+		default:
+			enc.wf(`"%s"`, quotedReplacer.Replace(s))
+		}
+	default:
+		enc.wf(`"%s"`, quotedReplacer.Replace(s))
+	}
 }
 
 func (enc *Encoder) eArrayOrSliceElement(rv reflect.Value) {
@@ -234,7 +282,7 @@ func (enc *Encoder) eArrayOfTables(key Key, rv reflect.Value) {
 	//enc.newline()
 	newKey := key.insert("_")
 	keyDelta := 0
-	enc.wf("%s%s "+enc.KeyEqElement+" [", enc.indentStrDelta(key, -1), key[len(key)-1])
+	enc.wf("%s%s "+enc.KeyEqElement+" [", enc.indentStrDelta(key, -1), SafeKey(key[len(key)-1]))
 	for i := 0; i < rv.Len(); i++ {
 		trv := rv.Index(i)
 		if isNil(trv) {
@@ -543,7 +591,7 @@ func (enc *Encoder) keyEqElement(key Key, val reflect.Value) {
 		encPanic(errNoKey)
 	}
 	panicIfInvalidKey(key, false)
-	enc.wf("%s%s "+enc.KeyEqElement+" ", enc.indentStrDelta(key, -1), key[len(key)-1])
+	enc.wf("%s%s "+enc.KeyEqElement+" ", enc.indentStrDelta(key, -1), SafeKey(key[len(key)-1]))
 	enc.eElement(val)
 	enc.newline()
 }
