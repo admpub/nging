@@ -31,9 +31,11 @@ import (
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/library/caddy"
 	"github.com/admpub/nging/application/library/ftp"
+	_ "github.com/admpub/nging/application/library/sqlite"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/db/mongo"
 	"github.com/webx-top/db/mysql"
+	"github.com/webx-top/db/sqlite"
 	"github.com/webx-top/echo/middleware/bytes"
 )
 
@@ -114,6 +116,18 @@ func ParseConfig() error {
 func ConnectDB() error {
 	factory.CloseAll()
 	switch DefaultConfig.DB.Type {
+	case `sqlite`:
+		settings := sqlite.ConnectionURL{
+			Database: DefaultConfig.DB.Database,
+			Options:  DefaultConfig.DB.Options,
+		}
+		database, err := sqlite.Open(settings)
+		if err != nil {
+			return err
+		}
+		factory.SetDebug(DefaultConfig.DB.Debug)
+		cluster := factory.NewCluster().AddW(database)
+		factory.SetCluster(0, cluster).Cluster(0).SetPrefix(DefaultConfig.DB.Prefix)
 	case `mysql`:
 		settings := mysql.ConnectionURL{
 			Host:     DefaultConfig.DB.Host,
