@@ -19,11 +19,15 @@ package setup
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
+
+	"regexp"
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/handler"
@@ -39,6 +43,68 @@ func init() {
 	handler.Register(func(e *echo.Echo) {
 		e.Route("GET,POST", `/setup`, Setup)
 	})
+}
+
+var (
+	sqlComment  = regexp.MustCompile("(?is) COMMENT '[^']*'")
+	sqlPK       = regexp.MustCompile("(?is),PRIMARY KEY \\(([^)]+)\\)(,)?")
+	sqlEngine   = regexp.MustCompile("(?is)\\) ENGINE=InnoDB [^;]*;")
+	sqlEnum     = regexp.MustCompile("(?is) enum\\(([^)]+)\\) ")
+	sqlUnsigned = regexp.MustCompile("(?is) unsigned ")
+	sqlUnique   = regexp.MustCompile("(?is),UNIQUE KEY [^(]+\\(([^)]+)\\)(,)?")
+	sqlIndex    = regexp.MustCompile("(?is),KEY [^(]+\\(([^)]+)\\)(,)?")
+)
+
+func sqliteSQLFilter(sqlStr string) string {
+	if strings.HasPrefix(sqlStr, `SET `) {
+		return ``
+	}
+	if strings.HasPrefix(sqlStr, `CREATE TABLE `) {
+		sqlStr = sqlComment.ReplaceAllString(sqlStr, ``)
+		sqlStr = sqlEngine.ReplaceAllString(sqlStr, `);`)
+		matches := sqlPK.FindStringSubmatch(sqlStr)
+		if len(matches) > 1 {
+			sqlStr = sqlPK.ReplaceAllString(sqlStr, `$2`)
+			items := strings.Split(matches[1], `,`)
+			for _, item := range items {
+				item = strings.Trim(item, "`")
+				sqlPKCol := regexp.MustCompile("(?is)(`" + item + "`) [^ ]+ (unsigned )?(NOT NULL )?AUTO_INCREMENT")
+				sqlStr = sqlPKCol.ReplaceAllString(sqlStr, `$1 integer PRIMARY KEY $3`)
+			}
+		}
+		matches = sqlEnum.FindStringSubmatch(sqlStr)
+		if len(matches) > 1 {
+			items := strings.Split(matches[1], `,`)
+			var maxSize int
+			for _, item := range items {
+				size := len(item)
+				if size > maxSize {
+					maxSize = size
+				}
+			}
+			if maxSize > 1 {
+				maxSize -= 2
+			}
+			sqlStr = sqlEnum.ReplaceAllString(sqlStr, ` char(`+strconv.Itoa(maxSize)+`) `)
+		}
+
+		matches = sqlUnique.FindStringSubmatch(sqlStr)
+		if len(matches) > 1 {
+			sqlStr = sqlUnique.ReplaceAllString(sqlStr, `$2`)
+			items := strings.Split(matches[1], `,`)
+			for _, item := range items {
+				item = strings.Trim(item, "`")
+				sqlCol := regexp.MustCompile("(?is)(`" + item + "` [^ ]+[^,)]+)")
+				sqlStr = sqlCol.ReplaceAllString(sqlStr, `$1 UNIQUE`)
+			}
+		}
+		sqlStr = sqlIndex.ReplaceAllString(sqlStr, `$2`)
+		sqlStr = sqlIndex.ReplaceAllString(sqlStr, `$2`)
+		sqlStr = sqlUnsigned.ReplaceAllString(sqlStr, ``)
+		//fmt.Println(sqlStr)
+		//panic(`--------------`)
+	}
+	return sqlStr
 }
 
 func Setup(ctx echo.Context) error {
@@ -78,6 +144,14 @@ func Setup(ctx echo.Context) error {
 		err = ctx.MustBind(&config.DefaultConfig.DB)
 		config.DefaultConfig.DB.Database = strings.Replace(config.DefaultConfig.DB.Database, "'", "", -1)
 		config.DefaultConfig.DB.Database = strings.Replace(config.DefaultConfig.DB.Database, "`", "", -1)
+		if config.DefaultConfig.DB.Type == `sqlite` {
+			config.DefaultConfig.DB.User = ``
+			config.DefaultConfig.DB.Password = ``
+			config.DefaultConfig.DB.Host = ``
+			if strings.HasSuffix(config.DefaultConfig.DB.Database, `.db`) == false {
+				config.DefaultConfig.DB.Database += `.db`
+			}
+		}
 		if err != nil {
 			goto DIE
 		}
@@ -98,9 +172,19 @@ func Setup(ctx echo.Context) error {
 			line = strings.TrimSpace(line)
 			sqlStr += line
 			if strings.HasSuffix(line, `;`) && len(sqlStr) > 0 {
+				defer func() {
+					sqlStr = ``
+				}()
+				if config.DefaultConfig.DB.Type == `sqlite` {
+					sqlStr = sqliteSQLFilter(sqlStr)
+					if len(sqlStr) == 0 {
+						return nil
+					}
+				}
+
 				_, err := factory.NewParam().SetCollection(sqlStr).Exec()
-				sqlStr = ``
 				if err != nil {
+					fmt.Println(err.Error(), `->SQL:`, sqlStr)
 					return err
 				}
 			}
@@ -156,6 +240,15 @@ func createDatabase(err error) error {
 			}
 			config.DefaultConfig.DB.Database = dbName
 			err = config.ConnectDB()
+		}
+	case `sqlite`:
+		if strings.Contains(err.Error(), `unable to open database file`) {
+			var f *os.File
+			f, err = os.Create(config.DefaultConfig.DB.Database)
+			if err == nil {
+				f.Close()
+				err = config.ConnectDB()
+			}
 		}
 	}
 	return err

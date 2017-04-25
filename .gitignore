@@ -35,3 +35,4 @@ tower-app-*.exe
 /vendor/github.com/webx-top/echo/handler/oauth2/example/*.db
 /vendor/github.com/webx-top/echo/handler/oauth2/example/*.db.lock
 /.vscode
+/*.db

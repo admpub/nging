@@ -3,5 +3,5 @@
 package sqlite
 
 import (
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/mattn/go-sqlite3" //sqlite driver
 )

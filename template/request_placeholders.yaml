@@ -2,7 +2,7 @@ Id : "request-placeholders-modal"
 Custom : true
 HeadTitle : "占位符: Request Placeholders"
 Title : ""
-Content : (
+Content : """
 <ul>
 <li><a href="javascript:;" data-placeholder="{dir}"><strong>{dir}</strong></a> - The directory of the requested file (from request URI)</li>
 <li><a href="javascript:;" data-placeholder="{file}"><strong>{file}</strong></a> - The name of the requested file (from request URI)</li>
@@ -26,7 +26,7 @@ Content : (
 <li><a href="javascript:;" data-placeholder="{uri_escaped}"><strong>{uri_escaped}</strong></a> - The query-escaped variant of {uri}</li>
 <li><a href="javascript:;" data-placeholder="{when}"><strong>{when}</strong></a> - Timestamp in the format <code>02/Jan/2006:15:04:05 -0700</code></li>
 </ul>
-)
+"""
 HelpText : ""
 Animate : ""
 Type : ""

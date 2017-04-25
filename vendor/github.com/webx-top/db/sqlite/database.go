@@ -29,6 +29,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 	"sync"
 	"sync/atomic"
 
@@ -129,7 +130,7 @@ func (d *database) open() error {
 	openFn := func() error {
 		openFiles := atomic.LoadInt32(&fileOpenCount)
 		if openFiles < maxOpenFiles {
-			sess, err := sql.Open("sqlite3", d.ConnectionURL().String())
+			sess, err := sql.Open("sqlite3", strings.TrimPrefix(d.ConnectionURL().String(), `file:///`))
 			if err == nil {
 				if err := d.BaseDatabase.BindSession(sess); err != nil {
 					return err
