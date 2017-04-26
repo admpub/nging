@@ -4,29 +4,29 @@ cd ..
 go-bindata-assetfs -tags bindata public/... template/...
 cd tool
 
-set NGINGEX=
+export NGINGEX=
 
-set GOOS=linux
-set GOARCH=amd64
+export GOOS=linux
+export GOARCH=amd64
 source ${PWD}/inc-build-tar.sh
 
 
-set GOOS=linux
-set GOARCH=386
+export GOOS=linux
+export GOARCH=386
 source ${PWD}/inc-build-tar.sh
 
-set GOOS=darwin
-set GOARCH=amd64
+export GOOS=darwin
+export GOARCH=amd64
 source ${PWD}/inc-build-tar.sh
 
 
 
-set NGINGEX=.exe
+export NGINGEX=.exe
 
-set GOOS=windows
-set GOARCH=386
+export GOOS=windows
+export GOARCH=386
 source ${PWD}/inc-build-tar.sh
 
-set GOOS=windows
-set GOARCH=amd64
+export GOOS=windows
+export GOARCH=amd64
 source ${PWD}/inc-build-tar.sh
