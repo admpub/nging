@@ -198,7 +198,7 @@ $(function(){
 				if(dbName==''){
 					$('#database-name').val('nging.db');
 				}else{
-					$('#database-name').val(dbName+'.db');
+					$('#database-name').val(dbName.replace(/\.db$/g,'')+'.db');
 				}
 			break;
 		}

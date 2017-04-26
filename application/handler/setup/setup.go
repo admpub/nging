@@ -19,20 +19,17 @@ package setup
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
-
-	"regexp"
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/cron"
+	"github.com/admpub/nging/application/library/sqlite"
 	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
@@ -43,68 +40,6 @@ func init() {
 	handler.Register(func(e *echo.Echo) {
 		e.Route("GET,POST", `/setup`, Setup)
 	})
-}
-
-var (
-	sqlComment  = regexp.MustCompile("(?is) COMMENT '[^']*'")
-	sqlPK       = regexp.MustCompile("(?is),PRIMARY KEY \\(([^)]+)\\)(,)?")
-	sqlEngine   = regexp.MustCompile("(?is)\\) ENGINE=InnoDB [^;]*;")
-	sqlEnum     = regexp.MustCompile("(?is) enum\\(([^)]+)\\) ")
-	sqlUnsigned = regexp.MustCompile("(?is) unsigned ")
-	sqlUnique   = regexp.MustCompile("(?is),UNIQUE KEY [^(]+\\(([^)]+)\\)(,)?")
-	sqlIndex    = regexp.MustCompile("(?is),KEY [^(]+\\(([^)]+)\\)(,)?")
-)
-
-func sqliteSQLFilter(sqlStr string) string {
-	if strings.HasPrefix(sqlStr, `SET `) {
-		return ``
-	}
-	if strings.HasPrefix(sqlStr, `CREATE TABLE `) {
-		sqlStr = sqlComment.ReplaceAllString(sqlStr, ``)
-		sqlStr = sqlEngine.ReplaceAllString(sqlStr, `);`)
-		matches := sqlPK.FindStringSubmatch(sqlStr)
-		if len(matches) > 1 {
-			sqlStr = sqlPK.ReplaceAllString(sqlStr, `$2`)
-			items := strings.Split(matches[1], `,`)
-			for _, item := range items {
-				item = strings.Trim(item, "`")
-				sqlPKCol := regexp.MustCompile("(?is)(`" + item + "`) [^ ]+ (unsigned )?(NOT NULL )?AUTO_INCREMENT")
-				sqlStr = sqlPKCol.ReplaceAllString(sqlStr, `$1 integer PRIMARY KEY $3`)
-			}
-		}
-		matches = sqlEnum.FindStringSubmatch(sqlStr)
-		if len(matches) > 1 {
-			items := strings.Split(matches[1], `,`)
-			var maxSize int
-			for _, item := range items {
-				size := len(item)
-				if size > maxSize {
-					maxSize = size
-				}
-			}
-			if maxSize > 1 {
-				maxSize -= 2
-			}
-			sqlStr = sqlEnum.ReplaceAllString(sqlStr, ` char(`+strconv.Itoa(maxSize)+`) `)
-		}
-
-		matches = sqlUnique.FindStringSubmatch(sqlStr)
-		if len(matches) > 1 {
-			sqlStr = sqlUnique.ReplaceAllString(sqlStr, `$2`)
-			items := strings.Split(matches[1], `,`)
-			for _, item := range items {
-				item = strings.Trim(item, "`")
-				sqlCol := regexp.MustCompile("(?is)(`" + item + "` [^ ]+[^,)]+)")
-				sqlStr = sqlCol.ReplaceAllString(sqlStr, `$1 UNIQUE`)
-			}
-		}
-		sqlStr = sqlIndex.ReplaceAllString(sqlStr, `$2`)
-		sqlStr = sqlIndex.ReplaceAllString(sqlStr, `$2`)
-		sqlStr = sqlUnsigned.ReplaceAllString(sqlStr, ``)
-		//fmt.Println(sqlStr)
-		//panic(`--------------`)
-	}
-	return sqlStr
 }
 
 func Setup(ctx echo.Context) error {
@@ -176,17 +111,9 @@ func Setup(ctx echo.Context) error {
 					sqlStr = ``
 				}()
 				if config.DefaultConfig.DB.Type == `sqlite` {
-					sqlStr = sqliteSQLFilter(sqlStr)
-					if len(sqlStr) == 0 {
-						return nil
-					}
+					return sqlite.Exec(sqlStr)
 				}
-
-				_, err := factory.NewParam().SetCollection(sqlStr).Exec()
-				if err != nil {
-					fmt.Println(err.Error(), `->SQL:`, sqlStr)
-					return err
-				}
+				return sqlite.ExecSQL(sqlStr)
 			}
 			return nil
 		})
