@@ -86,13 +86,16 @@ type Static struct {
 
 // Wrapper 包装路由（作为路由时使用）
 func (s *Static) Wrapper(r echo.RouteRegister) {
-	r.Get(s.Path+`/*`, func(ctx echo.Context) error {
-		file := filepath.Join(s.Root, ctx.P(0))
-		if !strings.HasPrefix(file, s.Root) {
-			return echo.ErrNotFound
-		}
-		return ctx.File(file)
-	})
+	r.Get(s.Path+`/*`, s)
+}
+
+// Handle 处理
+func (s *Static) Handle(ctx echo.Context) error {
+	file := filepath.Join(s.Root, ctx.P(0))
+	if !strings.HasPrefix(file, s.Root) {
+		return echo.ErrNotFound
+	}
+	return ctx.File(file)
 }
 
 // Middleware 中间件（作为中间件使用）

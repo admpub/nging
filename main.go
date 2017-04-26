@@ -18,7 +18,6 @@
 package main
 
 import (
-	"crypto/tls"
 	"flag"
 	"fmt"
 	"net/http"
@@ -33,7 +32,6 @@ import (
 	"github.com/webx-top/echo/middleware/render/driver"
 	"github.com/webx-top/echo/middleware/session"
 
-	"github.com/admpub/letsencrypt"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application"
 	"github.com/admpub/nging/application/library/config"
@@ -42,7 +40,7 @@ import (
 
 var (
 	//Version 版本号
-	Version = `1.0.2`
+	Version = `1.1.0`
 
 	binData    bool
 	staticMW   interface{}
@@ -139,23 +137,12 @@ func main() {
 	})
 
 	application.Initialize(e)
-
 	c := &engine.Config{
-		Address: fmt.Sprintf(`:%v`, config.DefaultCLIConfig.Port),
-
+		Address:     fmt.Sprintf(`:%v`, config.DefaultCLIConfig.Port),
+		TLSAuto:     false,
+		TLSCacheDir: config.DefaultConfig.Sys.SSLCacheDir,
 		TLSCertFile: config.DefaultConfig.Sys.SSLCertFile,
 		TLSKeyFile:  config.DefaultConfig.Sys.SSLKeyFile,
 	}
-	if len(config.DefaultConfig.Sys.SSLHosts) > 0 {
-		var tlsManager letsencrypt.Manager
-		tlsManager.SetHosts(config.DefaultConfig.Sys.SSLHosts)
-		if err := tlsManager.CacheFile(config.DefaultConfig.Sys.SSLCacheFile); err != nil {
-			panic(err.Error())
-		}
-		c.TLSConfig = &tls.Config{
-			GetCertificate: tlsManager.GetCertificate,
-		}
-	}
 	e.Run(standard.NewWithConfig(c))
-
 }

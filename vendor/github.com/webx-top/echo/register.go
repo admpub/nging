@@ -32,6 +32,8 @@ type RouteRegister interface {
 	Post(path string, h interface{}, m ...interface{})
 	Put(path string, h interface{}, m ...interface{})
 	Trace(path string, h interface{}, m ...interface{})
+	Static(prefix, root string)
+	File(path, file string)
 }
 
 type MiddlewareRegister interface {

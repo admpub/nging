@@ -1,14 +1,10 @@
 package echo
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
-	"reflect"
-	"regexp"
-	"runtime"
 	"strings"
 	"sync"
 
@@ -31,17 +27,11 @@ type (
 		debug             bool
 		router            *Router
 		logger            logger.Logger
-		meta              map[string]H
 		handlerWrapper    []func(interface{}) Handler
 		middlewareWrapper []func(interface{}) Middleware
 		FuncMap           map[string]interface{}
 		RouteDebug        bool
 		MiddlewareDebug   bool
-	}
-
-	HTTPError struct {
-		Code    int
-		Message string
 	}
 
 	Middleware interface {
@@ -75,141 +65,6 @@ type (
 	}
 )
 
-const (
-	// CONNECT HTTP method
-	CONNECT = "CONNECT"
-	// DELETE HTTP method
-	DELETE = "DELETE"
-	// GET HTTP method
-	GET = "GET"
-	// HEAD HTTP method
-	HEAD = "HEAD"
-	// OPTIONS HTTP method
-	OPTIONS = "OPTIONS"
-	// PATCH HTTP method
-	PATCH = "PATCH"
-	// POST HTTP method
-	POST = "POST"
-	// PUT HTTP method
-	PUT = "PUT"
-	// TRACE HTTP method
-	TRACE = "TRACE"
-
-	//-------------
-	// Media types
-	//-------------
-
-	MIMEApplicationJSON                  = "application/json"
-	MIMEApplicationJSONCharsetUTF8       = MIMEApplicationJSON + "; " + CharsetUTF8
-	MIMEApplicationJavaScript            = "application/javascript"
-	MIMEApplicationJavaScriptCharsetUTF8 = MIMEApplicationJavaScript + "; " + CharsetUTF8
-	MIMEApplicationXML                   = "application/xml"
-	MIMEApplicationXMLCharsetUTF8        = MIMEApplicationXML + "; " + CharsetUTF8
-	MIMEApplicationForm                  = "application/x-www-form-urlencoded"
-	MIMEApplicationProtobuf              = "application/protobuf"
-	MIMEApplicationMsgpack               = "application/msgpack"
-	MIMETextHTML                         = "text/html"
-	MIMETextHTMLCharsetUTF8              = MIMETextHTML + "; " + CharsetUTF8
-	MIMETextPlain                        = "text/plain"
-	MIMETextPlainCharsetUTF8             = MIMETextPlain + "; " + CharsetUTF8
-	MIMEMultipartForm                    = "multipart/form-data"
-	MIMEOctetStream                      = "application/octet-stream"
-	MIMEEventStream                      = "text/event-stream"
-
-	//---------
-	// Charset
-	//---------
-
-	CharsetUTF8 = "charset=utf-8"
-
-	//---------
-	// Headers
-	//---------
-
-	HeaderAcceptEncoding                = "Accept-Encoding"
-	HeaderAuthorization                 = "Authorization"
-	HeaderContentDisposition            = "Content-Disposition"
-	HeaderContentEncoding               = "Content-Encoding"
-	HeaderContentLength                 = "Content-Length"
-	HeaderContentType                   = "Content-Type"
-	HeaderIfModifiedSince               = "If-Modified-Since"
-	HeaderCookie                        = "Cookie"
-	HeaderSetCookie                     = "Set-Cookie"
-	HeaderLastModified                  = "Last-Modified"
-	HeaderLocation                      = "Location"
-	HeaderUpgrade                       = "Upgrade"
-	HeaderVary                          = "Vary"
-	HeaderWWWAuthenticate               = "WWW-Authenticate"
-	HeaderXForwardedProto               = "X-Forwarded-Proto"
-	HeaderXHTTPMethodOverride           = "X-HTTP-Method-Override"
-	HeaderXForwardedFor                 = "X-Forwarded-For"
-	HeaderXRealIP                       = "X-Real-IP"
-	HeaderServer                        = "Server"
-	HeaderOrigin                        = "Origin"
-	HeaderAccessControlRequestMethod    = "Access-Control-Request-Method"
-	HeaderAccessControlRequestHeaders   = "Access-Control-Request-Headers"
-	HeaderAccessControlAllowOrigin      = "Access-Control-Allow-Origin"
-	HeaderAccessControlAllowMethods     = "Access-Control-Allow-Methods"
-	HeaderAccessControlAllowHeaders     = "Access-Control-Allow-Headers"
-	HeaderAccessControlAllowCredentials = "Access-Control-Allow-Credentials"
-	HeaderAccessControlExposeHeaders    = "Access-Control-Expose-Headers"
-	HeaderAccessControlMaxAge           = "Access-Control-Max-Age"
-
-	// Security
-	HeaderStrictTransportSecurity = "Strict-Transport-Security"
-	HeaderXContentTypeOptions     = "X-Content-Type-Options"
-	HeaderXXSSProtection          = "X-XSS-Protection"
-	HeaderXFrameOptions           = "X-Frame-Options"
-	HeaderContentSecurityPolicy   = "Content-Security-Policy"
-	HeaderXCSRFToken              = "X-CSRF-Token"
-)
-
-var (
-	splitHTTPMethod = regexp.MustCompile(`[^A-Z]+`)
-
-	methods = []string{
-		CONNECT,
-		DELETE,
-		GET,
-		HEAD,
-		OPTIONS,
-		PATCH,
-		POST,
-		PUT,
-		TRACE,
-	}
-
-	//--------
-	// Errors
-	//--------
-
-	ErrUnsupportedMediaType        error = NewHTTPError(http.StatusUnsupportedMediaType)
-	ErrNotFound                    error = NewHTTPError(http.StatusNotFound)
-	ErrUnauthorized                error = NewHTTPError(http.StatusUnauthorized)
-	ErrStatusRequestEntityTooLarge error = NewHTTPError(http.StatusRequestEntityTooLarge)
-	ErrMethodNotAllowed            error = NewHTTPError(http.StatusMethodNotAllowed)
-	ErrRendererNotRegistered             = errors.New("renderer not registered")
-	ErrInvalidRedirectCode               = errors.New("invalid redirect status code")
-
-	//----------------
-	// Error handlers
-	//----------------
-
-	NotFoundHandler = HandlerFunc(func(c Context) error {
-		return ErrNotFound
-	})
-
-	MethodNotAllowedHandler = HandlerFunc(func(c Context) error {
-		return ErrMethodNotAllowed
-	})
-
-	_ MiddlewareFuncd = func(h Handler) HandlerFunc {
-		return func(c Context) error {
-			return h.Handle(c)
-		}
-	}
-)
-
 // New creates an instance of Echo.
 func New() (e *Echo) {
 	return NewWithContext(func(e *Echo) Context {
@@ -223,7 +78,6 @@ func NewWithContext(fn func(*Echo) Context) (e *Echo) {
 		return fn(e)
 	}
 	e.router = NewRouter(e)
-	e.meta = map[string]H{}
 
 	//----------
 	// Defaults
@@ -347,7 +201,7 @@ func (e *Echo) Use(middleware ...interface{}) {
 	}
 }
 
-// Pre is alias
+// Pre is an alias for `PreUse` function.
 func (e *Echo) Pre(middleware ...interface{}) {
 	e.PreUse(middleware...)
 }
@@ -453,6 +307,22 @@ func (e *Echo) Match(methods []string, path string, h interface{}, middleware ..
 	}
 }
 
+// Static registers a new route with path prefix to serve static files from the
+// provided root directory.
+func (e *Echo) Static(prefix, root string) {
+	if root == "" {
+		root = "." // For security we want to restrict to CWD.
+	}
+	static(e, prefix, root)
+}
+
+// File registers a new route with path to serve a static file.
+func (e *Echo) File(path, file string) {
+	e.Get(path, func(c Context) error {
+		return c.File(file)
+	})
+}
+
 func (e *Echo) ValidHandler(v interface{}) (h Handler) {
 	if e.handlerWrapper != nil {
 		for _, wrapper := range e.handlerWrapper {
@@ -494,66 +364,30 @@ func (e *Echo) AddMiddlewareWrapper(funcs ...func(interface{}) Middleware) {
 }
 
 func (e *Echo) add(method, prefix string, path string, h interface{}, middleware ...interface{}) {
-	handler := e.ValidHandler(h)
-	if handler == nil {
-		return
+	r := &Route{
+		Method:     method,
+		Path:       path,
+		Prefix:     prefix,
+		handler:    h,
+		middleware: middleware,
 	}
-	var name string
-	if hn, ok := handler.(HandleName); ok {
-		name = hn.HandleName()
-	} else {
-		name = HandlerName(handler)
-	}
-	meta := H{}
-	for i := len(middleware) - 1; i >= 0; i-- {
-		m := middleware[i]
-		mw := e.ValidMiddleware(m)
-		if mt, ok := mw.(Meta); ok {
-			e.addMeta(mt.Meta(), HandlerName(m))
-		} else {
-			e.addMeta(meta, HandlerName(m))
-		}
-		handler = mw.Handle(handler)
-	}
-	if mt, ok := handler.(Meta); ok {
-		meta = mt.Meta()
-	}
-	e.addMeta(meta, name)
-	hdl := HandlerFunc(func(c Context) error {
-		return handler.Handle(c)
-	})
-	r := e.router.Add(method, prefix, path, hdl, name, meta, e)
+	r.apply(e)
+	rid := len(e.router.routes)
+	e.router.Add(r, rid)
 	if e.RouteDebug {
-		e.logger.Debugf(`Route: %7v %-30v -> %v`, method, r.Format, name)
+		e.logger.Debugf(`Route: %7v %-30v -> %v`, method, r.Format, r.HandlerName)
 	}
-	if _, ok := e.router.nroute[name]; !ok {
-		e.router.nroute[name] = []int{len(e.router.routes)}
+	if _, ok := e.router.nroute[r.HandlerName]; !ok {
+		e.router.nroute[r.HandlerName] = []int{rid}
 	} else {
-		e.router.nroute[name] = append(e.router.nroute[name], len(e.router.routes))
+		e.router.nroute[r.HandlerName] = append(e.router.nroute[r.HandlerName], rid)
 	}
 	e.router.routes = append(e.router.routes, r)
 }
 
-func (e *Echo) addMeta(meta H, handler string) {
-	if m, ok := e.meta[handler]; ok {
-		meta.DeepMerge(m)
-	} else {
-		e.meta[handler] = meta
-	}
-}
-
-// MetaMiddleware Add meta information about endpoint
-func (e *Echo) MetaMiddleware(m H, middleware interface{}) interface{} {
-	name := HandlerName(middleware)
-	e.meta[name] = m
-	return middleware
-}
-
 // MetaHandler Add meta information about endpoint
-func (e *Echo) MetaHandler(m H, handler interface{}) interface{} {
-	name := HandlerName(handler)
-	e.meta[name] = m
-	return handler
+func (e *Echo) MetaHandler(m H, handler interface{}) Handler {
+	return &MetaHandler{m, e.ValidHandler(handler)}
 }
 
 // RebuildRouter rebuild router
@@ -565,7 +399,8 @@ func (e *Echo) RebuildRouter(args ...[]*Route) {
 	e.router = NewRouter(e)
 	for i, r := range routes {
 		//e.logger.Debugf(`%p rebuild: %#v`, e, *r)
-		e.router.Add(r.Method, r.Prefix, r.Path, r.Handler, r.HandlerName, r.Meta, e)
+		r.apply(e)
+		e.router.Add(r, i)
 
 		if _, ok := e.router.nroute[r.HandlerName]; !ok {
 			e.router.nroute[r.HandlerName] = []int{i}
@@ -580,8 +415,9 @@ func (e *Echo) RebuildRouter(args ...[]*Route) {
 // AppendRouter append router
 func (e *Echo) AppendRouter(routes []*Route) {
 	for i, r := range routes {
-		e.router.Add(r.Method, r.Prefix, r.Path, r.Handler, r.HandlerName, r.Meta, e)
 		i = len(e.router.routes)
+		r.apply(e)
+		e.router.Add(r, i)
 		if _, ok := e.router.nroute[r.HandlerName]; !ok {
 			e.router.nroute[r.HandlerName] = []int{i}
 		} else {
@@ -727,36 +563,4 @@ func (e *Echo) Stop() error {
 		return nil
 	}
 	return e.engine.Stop()
-}
-
-func (e *Echo) Meta() map[string]H {
-	return e.meta
-}
-
-func NewHTTPError(code int, msg ...string) *HTTPError {
-	he := &HTTPError{Code: code, Message: http.StatusText(code)}
-	if len(msg) > 0 {
-		he.Message = msg[0]
-	}
-	return he
-}
-
-// Error returns message.
-func (e *HTTPError) Error() string {
-	return e.Message
-}
-
-// HandlerName returns the handler name
-func HandlerName(h interface{}) string {
-	v := reflect.ValueOf(h)
-	t := v.Type()
-	if t.Kind() == reflect.Func {
-		return runtime.FuncForPC(v.Pointer()).Name()
-	}
-	return t.String()
-}
-
-// Methods returns methods
-func Methods() []string {
-	return methods
 }

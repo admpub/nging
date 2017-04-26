@@ -64,7 +64,7 @@ type Config struct {
 		VhostsfileDir          string            `json:"vhostsfileDir"`
 		AllowIP                []string          `json:"allowIP"`
 		SSLHosts               []string          `json:"sslHosts"`
-		SSLCacheFile           string            `json:"sslCacheFile"`
+		SSLCacheDir            string            `json:"sslCacheDir"`
 		SSLKeyFile             string            `json:"sslKeyFile"`
 		SSLCertFile            string            `json:"sslCertFile"`
 		Debug                  bool              `json:"debug"`

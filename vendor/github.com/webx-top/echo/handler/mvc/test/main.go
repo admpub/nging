@@ -50,6 +50,6 @@ func main() {
 	m.Register(`/`, func(ctx echo.Context) error {
 		return ctx.String(`Hello world.`)
 	})
-	m.Use(&Index{})
+	m.Add(&Index{})
 	s.Run(`:8181`)
 }

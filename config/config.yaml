@@ -1,9 +1,9 @@
 db {
-  type : "mysql"
-  user : "root"
-  password : "root"
-  host : "127.0.0.1:3306"
-  database : "nging"
+  type : "sqlite"
+  user : ""
+  password : ""
+  host : ""
+  database : "nging.db"
   prefix : ""
   debug : true
 }
@@ -111,4 +111,7 @@ language {
   RulesPath : ["config/i18n/rules"]
   MessagesPath : ["config/i18n/messages"]
   Reload : true
+}
+download {
+  savePath : ""
 }

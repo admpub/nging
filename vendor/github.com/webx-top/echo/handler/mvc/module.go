@@ -225,10 +225,12 @@ func (a *Module) InitRenderer(conf *render.Config, funcMap map[string]interface{
 	a.Renderer, a.Resource = a.Application.NewRenderer(conf, a, funcMap)
 	if a.Handler != nil {
 		a.Handler.SetRenderer(a.Renderer)
+		//为了支持域名绑定和解除绑定，此处使用路由Hander的方式服务静态资源文件
+		a.Resource.Wrapper(a.Handler)
+	} else {
+		a.Group.Get(strings.TrimPrefix(a.Resource.Path, `/`+a.Name)+`/*`, a.Resource)
 	}
 	a.Use(mw.SimpleFuncMap(funcMap))
-	//为了支持域名绑定和解除绑定，此处使用路由Hander的方式服务静态资源文件
-	a.Resource.Wrapper(a.Router())
 	return a
 }
 

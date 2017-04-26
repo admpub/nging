@@ -70,9 +70,6 @@ func ParseConfig() error {
 		return err
 	}
 	confDir := filepath.Dir(DefaultCLIConfig.Conf)
-	if len(DefaultConfig.Sys.SSLCacheFile) == 0 {
-		DefaultConfig.Sys.SSLCacheFile = filepath.Join(confDir, `letsencrypt.cache`)
-	}
 	if len(DefaultConfig.Caddy.Caddyfile) == 0 {
 		DefaultConfig.Caddy.Caddyfile = `./Caddyfile`
 	} else if strings.HasSuffix(DefaultConfig.Caddy.Caddyfile, `/`) || strings.HasSuffix(DefaultConfig.Caddy.Caddyfile, `\`) {

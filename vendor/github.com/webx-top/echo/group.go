@@ -42,6 +42,7 @@ func (g *Group) Use(middleware ...interface{}) {
 	}
 }
 
+// Pre is an alias for `PreUse` function.
 func (g *Group) Pre(middleware ...interface{}) {
 	g.PreUse(middleware...)
 }
@@ -94,8 +95,21 @@ func (g *Group) Trace(path string, h interface{}, m ...interface{}) {
 	g.add(TRACE, path, h, m...)
 }
 
-func (g *Group) Group(prefix string, m ...interface{}) *Group {
+func (g *Group) Group(prefix string, middleware ...interface{}) *Group {
+	m := []interface{}{}
+	m = append(m, g.middleware...)
+	m = append(m, middleware...)
 	return g.echo.Group(g.prefix+prefix, m...)
+}
+
+// Static implements `Echo#Static()` for sub-routes within the Group.
+func (g *Group) Static(prefix, root string) {
+	static(g, prefix, root)
+}
+
+// File implements `Echo#File()` for sub-routes within the Group.
+func (g *Group) File(path, file string) {
+	g.echo.File(g.prefix+path, file)
 }
 
 func (g *Group) Prefix() string {

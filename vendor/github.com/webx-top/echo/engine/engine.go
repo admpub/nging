@@ -1,13 +1,11 @@
 package engine
 
 import (
-	"crypto/tls"
 	"io"
 	"mime/multipart"
 	"net"
 	"net/http"
 	"net/url"
-	"time"
 
 	"github.com/webx-top/echo/logger"
 )
@@ -184,21 +182,6 @@ type (
 		SetRawQuery(string)
 		String() string
 		Object() interface{}
-	}
-
-	// Config defines engine configuration.
-	Config struct {
-		Address            string       // TCP address to listen on.
-		Listener           net.Listener // Custom `net.Listener`. If set, server accepts connections on it.
-		TLSConfig          *tls.Config
-		TLSCertFile        string        // TLS certificate file path.
-		TLSKeyFile         string        // TLS key file path.
-		DisableHTTP2       bool          // Disables HTTP/2.
-		ReadTimeout        time.Duration // Maximum duration before timing out read of the request.
-		WriteTimeout       time.Duration // Maximum duration before timing out write of the response.
-		MaxConnsPerIP      int
-		MaxRequestsPerConn int
-		MaxRequestBodySize int
 	}
 
 	// Handler defines an interface to server HTTP requests via `ServeHTTP(Request, Response)`

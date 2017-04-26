@@ -3,8 +3,6 @@
 package fasthttp
 
 import (
-	"crypto/tls"
-	"net"
 	"sync"
 
 	"github.com/admpub/fasthttp"
@@ -102,9 +100,20 @@ func (s *Server) SetLogger(l logger.Logger) {
 // Start implements `engine.Server#Start` function.
 func (s *Server) Start() error {
 	if s.config.Listener == nil {
-		return s.startDefaultListener()
+		s.config.DisableHTTP2 = true
+		err := s.config.InitListener(func() error {
+			if s.config.TLSConfig == nil {
+				return nil
+			}
+			s.config.TLSConfig.PreferServerCipherSuites = true
+			return nil
+		})
+		if err != nil {
+			return err
+		}
 	}
-	return s.startCustomListener()
+	s.config.Print(`fast`)
+	return s.Serve(s.config.Listener)
 
 }
 
@@ -114,30 +123,6 @@ func (s *Server) Stop() error {
 		return nil
 	}
 	return s.config.Listener.Close()
-}
-
-func (s *Server) startDefaultListener() error {
-	ln, err := net.Listen("tcp4", s.config.Address)
-	if err != nil {
-		return err
-	}
-	if s.config.TLSConfig != nil {
-		s.logger.Info(`StandardHTTP is running at `, s.config.Address, ` [TLS]`)
-		s.config.Listener = tls.NewListener(ln, s.config.TLSConfig)
-	} else {
-		s.config.Listener = ln
-	}
-	return s.startCustomListener()
-}
-
-func (s *Server) startCustomListener() error {
-	c := s.config
-	if c.TLSConfig == nil && len(c.TLSCertFile) > 0 && len(c.TLSKeyFile) > 0 {
-		s.logger.Info(`FastHTTP is running at `, c.Listener.Addr(), ` [TLS]`)
-		return s.ServeTLS(c.Listener, c.TLSCertFile, c.TLSKeyFile)
-	}
-	s.logger.Info(`FastHTTP is running at `, c.Listener.Addr())
-	return s.Serve(c.Listener)
 }
 
 func (s *Server) ServeHTTP(c *fasthttp.RequestCtx) {
