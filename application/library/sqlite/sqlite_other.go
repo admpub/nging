@@ -1,5 +1,5 @@
 // +build sqlite
-// +build !windows windows,i386
+// +build !windows windows,386
 
 package sqlite
 
