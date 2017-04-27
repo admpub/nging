@@ -10,7 +10,7 @@ cp -R ../config/config.yaml ../dist/nging_${GOOS}_${GOARCH}/config/config.yaml
 cp -R ../config/config.yaml.sample ../dist/nging_${GOOS}_${GOARCH}/config/config.yaml.sample
 cp -R ../config/install.sql ../dist/nging_${GOOS}_${GOARCH}/config/install.sql
 
-if [ ${GOOS} = "windows" ] then
+if [ $GOOS = "windows" ] then
     cp -R support/sqlite3_${GOARCH}.dll ../dist/nging_${GOOS}_${GOARCH}/sqlite3_${GOARCH}.dll
 fi
 
