@@ -48,8 +48,9 @@
 										<span class="input-group-addon"><i class="fa fa-align-justify"></i></span>
 										<select name="type" id="database-type" parsley-trigger="change" parsley-error-container="#type-error" required class="form-control">
 											{{$type := Form "type"}}
-											<option value="mysql"{{if eq $type "mysql"}} selected{{end}}>MySQL</option>
-											<option value="sqlite"{{if eq $type "sqlite"}} selected{{end}}>SQLite</option>
+											{{range $k, $v := Stored.dbEngines}}
+											<option value="{{$v.K}}"{{if eq $type $v.K}} selected{{end}}>{{$v.V}}</option>
+											{{end}}
 										</select>
 									</div>
                   <div id="type-error"></div>

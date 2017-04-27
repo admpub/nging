@@ -1,9 +1,9 @@
 db {
-  type : "sqlite"
-  user : ""
-  password : ""
-  host : ""
-  database : "nging.db"
+  type : "mysql"
+  user : "root"
+  password : "root"
+  host : "127.0.0.1:3306"
+  database : "nging"
   prefix : ""
   debug : true
 }
@@ -18,7 +18,7 @@ sys {
   vhostsfileDir : "config\vhosts"
   allowIP : []
   sslHosts : []
-  sslCacheFile : "config\letsencrypt.cache"
+  sslCacheDir : ""
   sslKeyFile : ""
   sslCertFile : ""
   debug : true

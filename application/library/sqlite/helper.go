@@ -20,12 +20,11 @@ package sqlite
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 
-	"regexp"
-
-	"github.com/webx-top/db/lib/factory"
+	"github.com/admpub/nging/application/library/config"
 )
 
 var (
@@ -106,33 +105,25 @@ func Exec(sqlStr string) error {
 			matches2 = sqlIndex.FindAllStringSubmatch(sqlStr, -1)
 		}
 		sqlStr = sqlUnsigned.ReplaceAllString(sqlStr, ``)
-		err := ExecSQL(sqlStr)
+		err := config.ExecMySQL(sqlStr)
 		if err != nil {
 			return err
 		}
 		for _, v := range indexes {
 			sql := fmt.Sprintf("CREATE INDEX `IDX_%[2]s_%[1]s` ON `%[2]s`(%[3]s)", v["name"], v["table"], v["columns"])
-			err = ExecSQL(sql)
+			err = config.ExecMySQL(sql)
 			if err != nil {
 				return err
 			}
 		}
 		for _, v := range uniqueIndexes {
 			sql := fmt.Sprintf("CREATE UNIQUE INDEX `UNQ_%[2]s_%[1]s` ON `%[2]s`(%[3]s)", v["name"], v["table"], v["columns"])
-			err = ExecSQL(sql)
+			err = config.ExecMySQL(sql)
 			if err != nil {
 				return err
 			}
 		}
 		return nil
 	}
-	return ExecSQL(sqlStr)
-}
-
-func ExecSQL(sqlStr string) error {
-	_, err := factory.NewParam().SetCollection(sqlStr).Exec()
-	if err != nil {
-		fmt.Println(err.Error(), `->SQL:`, sqlStr)
-	}
-	return err
+	return config.ExecMySQL(sqlStr)
 }

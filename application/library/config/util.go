@@ -19,6 +19,7 @@ package config
 
 import (
 	"io/ioutil"
+	stdLog "log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -31,11 +32,10 @@ import (
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/library/caddy"
 	"github.com/admpub/nging/application/library/ftp"
-	_ "github.com/admpub/nging/application/library/sqlite"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/db/mongo"
 	"github.com/webx-top/db/mysql"
-	"github.com/webx-top/db/sqlite"
+	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/bytes"
 )
 
@@ -110,55 +110,89 @@ func ParseConfig() error {
 	return err
 }
 
+var (
+	DBConnecters = map[string]func(*Config) error{
+		`mysql`: ConnectMySQL,
+		`mongo`: ConnectMongoDB,
+	}
+	DBInstallers = map[string]func(string) error{
+		`mysql`: ExecMySQL,
+	}
+	DBCreaters = map[string]func(error, *Config) error{
+		`mysql`: CreaterMySQL,
+	}
+	DBEngines = echo.NewKVData().Add(`mysql`, `MySQL`)
+)
+
+func CreaterMySQL(err error, c *Config) error {
+	if strings.Contains(err.Error(), `Unknown database`) {
+		dbName := c.DB.Database
+		c.DB.Database = ``
+		err2 := ConnectDB()
+		if err2 != nil {
+			return err
+		}
+		sqlStr := "CREATE DATABASE `" + dbName + "`"
+		_, err = factory.NewParam().SetCollection(sqlStr).Exec()
+		if err != nil {
+			return err
+		}
+		c.DB.Database = dbName
+		err = ConnectDB()
+	}
+	return err
+}
+
+func ConnectMySQL(c *Config) error {
+	settings := mysql.ConnectionURL{
+		Host:     c.DB.Host,
+		Database: c.DB.Database,
+		User:     c.DB.User,
+		Password: c.DB.Password,
+		Options:  c.DB.Options,
+	}
+	database, err := mysql.Open(settings)
+	if err != nil {
+		return err
+	}
+	factory.SetDebug(c.DB.Debug)
+	cluster := factory.NewCluster().AddW(database)
+	factory.SetCluster(0, cluster).Cluster(0).SetPrefix(c.DB.Prefix)
+	return nil
+}
+
+func ConnectMongoDB(c *Config) error {
+	settings := mongo.ConnectionURL{
+		Host:     c.DB.Host,
+		Database: c.DB.Database,
+		User:     c.DB.User,
+		Password: c.DB.Password,
+		Options:  c.DB.Options,
+	}
+	database, err := mongo.Open(settings)
+	if err != nil {
+		return err
+	}
+	factory.SetDebug(c.DB.Debug)
+	cluster := factory.NewCluster().AddW(database)
+	factory.SetCluster(0, cluster).Cluster(0).SetPrefix(c.DB.Prefix)
+	return nil
+}
+
+func ExecMySQL(sqlStr string) error {
+	_, err := factory.NewParam().SetCollection(sqlStr).Exec()
+	if err != nil {
+		stdLog.Println(err.Error(), `->SQL:`, sqlStr)
+	}
+	return err
+}
+
 func ConnectDB() error {
 	factory.CloseAll()
-	switch DefaultConfig.DB.Type {
-	case `sqlite`:
-		settings := sqlite.ConnectionURL{
-			Database: DefaultConfig.DB.Database,
-			Options:  DefaultConfig.DB.Options,
-		}
-		database, err := sqlite.Open(settings)
-		if err != nil {
-			return err
-		}
-		factory.SetDebug(DefaultConfig.DB.Debug)
-		cluster := factory.NewCluster().AddW(database)
-		factory.SetCluster(0, cluster).Cluster(0).SetPrefix(DefaultConfig.DB.Prefix)
-	case `mysql`:
-		settings := mysql.ConnectionURL{
-			Host:     DefaultConfig.DB.Host,
-			Database: DefaultConfig.DB.Database,
-			User:     DefaultConfig.DB.User,
-			Password: DefaultConfig.DB.Password,
-			Options:  DefaultConfig.DB.Options,
-		}
-		database, err := mysql.Open(settings)
-		if err != nil {
-			return err
-		}
-		factory.SetDebug(DefaultConfig.DB.Debug)
-		cluster := factory.NewCluster().AddW(database)
-		factory.SetCluster(0, cluster).Cluster(0).SetPrefix(DefaultConfig.DB.Prefix)
-	case `mongo`:
-		settings := mongo.ConnectionURL{
-			Host:     DefaultConfig.DB.Host,
-			Database: DefaultConfig.DB.Database,
-			User:     DefaultConfig.DB.User,
-			Password: DefaultConfig.DB.Password,
-			Options:  DefaultConfig.DB.Options,
-		}
-		database, err := mongo.Open(settings)
-		if err != nil {
-			return err
-		}
-		factory.SetDebug(DefaultConfig.DB.Debug)
-		cluster := factory.NewCluster().AddW(database)
-		factory.SetCluster(0, cluster).Cluster(0).SetPrefix(DefaultConfig.DB.Prefix)
-	default:
-		return ErrUnknowDatabaseType
+	if fn, ok := DBConnecters[DefaultConfig.DB.Type]; ok {
+		return fn(DefaultConfig)
 	}
-	return nil
+	return ErrUnknowDatabaseType
 }
 
 func InitLog() {

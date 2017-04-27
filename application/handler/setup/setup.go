@@ -29,10 +29,8 @@ import (
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/cron"
-	"github.com/admpub/nging/application/library/sqlite"
 	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/com"
-	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
 )
 
@@ -100,6 +98,11 @@ func Setup(ctx echo.Context) error {
 		}
 		//创建数据库数据
 		var sqlStr string
+		installer, ok := config.DBInstallers[config.DefaultConfig.DB.Type]
+		if !ok {
+			err = errors.New(ctx.T(`不支持安装到%s`, config.DefaultConfig.DB.Type))
+			goto DIE
+		}
 		err = com.SeekFileLines(sqlFile, func(line string) error {
 			if strings.HasPrefix(line, `--`) {
 				return nil
@@ -110,10 +113,7 @@ func Setup(ctx echo.Context) error {
 				defer func() {
 					sqlStr = ``
 				}()
-				if config.DefaultConfig.DB.Type == `sqlite` {
-					return sqlite.Exec(sqlStr)
-				}
-				return sqlite.ExecSQL(sqlStr)
+				return installer(sqlStr)
 			}
 			return nil
 		})
@@ -147,36 +147,13 @@ func Setup(ctx echo.Context) error {
 	}
 
 DIE:
+	ctx.Set(`dbEngines`, config.DBEngines.Slice())
 	return ctx.Render(`setup`, handler.Err(ctx, err))
 }
 
 func createDatabase(err error) error {
-	switch config.DefaultConfig.DB.Type {
-	case `mysql`:
-		if strings.Contains(err.Error(), `Unknown database`) {
-			dbName := config.DefaultConfig.DB.Database
-			config.DefaultConfig.DB.Database = ``
-			err2 := config.ConnectDB()
-			if err2 != nil {
-				break
-			}
-			sqlStr := "CREATE DATABASE `" + dbName + "`"
-			_, err = factory.NewParam().SetCollection(sqlStr).Exec()
-			if err != nil {
-				break
-			}
-			config.DefaultConfig.DB.Database = dbName
-			err = config.ConnectDB()
-		}
-	case `sqlite`:
-		if strings.Contains(err.Error(), `unable to open database file`) {
-			var f *os.File
-			f, err = os.Create(config.DefaultConfig.DB.Database)
-			if err == nil {
-				f.Close()
-				err = config.ConnectDB()
-			}
-		}
+	if fn, ok := config.DBCreaters[config.DefaultConfig.DB.Type]; ok {
+		return fn(err, config.DefaultConfig)
 	}
 	return err
 }

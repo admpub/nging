@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"net/http"
 
+	_ "github.com/admpub/nging/application/library/sqlite"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/engine/standard"
