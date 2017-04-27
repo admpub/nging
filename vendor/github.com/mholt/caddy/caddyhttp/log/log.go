@@ -3,9 +3,7 @@ package log
 
 import (
 	"fmt"
-	"log"
 	"net/http"
-	"os"
 
 	"github.com/mholt/caddy"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
@@ -65,11 +63,8 @@ func (l Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 
 // Entry represents a log entry under a path scope
 type Entry struct {
-	OutputFile string
-	Format     string
-	Log        *log.Logger
-	Roller     *httpserver.LogRoller
-	file       *os.File // if logging to a file that needs to be closed
+	Format string
+	Log    *httpserver.Logger
 }
 
 // Rule configures the logging middleware.
@@ -82,7 +77,7 @@ const (
 	// DefaultLogFilename is the default log filename.
 	DefaultLogFilename = "access.log"
 	// CommonLogFormat is the common log format.
-	CommonLogFormat = `{remote} ` + CommonLogEmptyValue + ` [{when}] "{method} {uri} {proto}" {status} {size}`
+	CommonLogFormat = `{remote} ` + CommonLogEmptyValue + " " + CommonLogEmptyValue + ` [{when}] "{method} {uri} {proto}" {status} {size}`
 	// CommonLogEmptyValue is the common empty log value.
 	CommonLogEmptyValue = "-"
 	// CombinedLogFormat is the combined log format.

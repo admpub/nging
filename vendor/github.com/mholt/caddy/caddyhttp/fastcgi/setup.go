@@ -22,10 +22,6 @@ func init() {
 // setup configures a new FastCGI middleware instance.
 func setup(c *caddy.Controller) error {
 	cfg := httpserver.GetConfig(c)
-	absRoot, err := filepath.Abs(cfg.Root)
-	if err != nil {
-		return err
-	}
 
 	rules, err := fastcgiParse(c)
 	if err != nil {
@@ -37,7 +33,6 @@ func setup(c *caddy.Controller) error {
 			Next:            next,
 			Rules:           rules,
 			Root:            cfg.Root,
-			AbsRoot:         absRoot,
 			FileSys:         http.Dir(cfg.Root),
 			SoftwareName:    caddy.AppName,
 			SoftwareVersion: caddy.AppVersion,
@@ -52,16 +47,25 @@ func setup(c *caddy.Controller) error {
 func fastcgiParse(c *caddy.Controller) ([]Rule, error) {
 	var rules []Rule
 
-	for c.Next() {
-		var rule Rule
+	cfg := httpserver.GetConfig(c)
+	absRoot, err := filepath.Abs(cfg.Root)
+	if err != nil {
+		return nil, err
+	}
 
+	for c.Next() {
 		args := c.RemainingArgs()
 
 		if len(args) < 2 || len(args) > 3 {
 			return rules, c.ArgErr()
 		}
 
-		rule.Path = args[0]
+		rule := Rule{
+			Root:        absRoot,
+			Path:        args[0],
+			ReadTimeout: 60 * time.Second,
+			SendTimeout: 60 * time.Second,
+		}
 		upstreams := []string{args[1]}
 
 		if len(args) == 3 {
@@ -72,12 +76,18 @@ func fastcgiParse(c *caddy.Controller) ([]Rule, error) {
 
 		var err error
 		var pool int
-		var timeout time.Duration
+		var connectTimeout = 60 * time.Second
 		var dialers []dialer
 		var poolSize = -1
 
 		for c.NextBlock() {
 			switch c.Val() {
+			case "root":
+				if !c.NextArg() {
+					return rules, c.ArgErr()
+				}
+				rule.Root = c.Val()
+
 			case "ext":
 				if !c.NextArg() {
 					return rules, c.ArgErr()
@@ -133,7 +143,7 @@ func fastcgiParse(c *caddy.Controller) ([]Rule, error) {
 				if !c.NextArg() {
 					return rules, c.ArgErr()
 				}
-				timeout, err = time.ParseDuration(c.Val())
+				connectTimeout, err = time.ParseDuration(c.Val())
 				if err != nil {
 					return rules, err
 				}
@@ -146,15 +156,33 @@ func fastcgiParse(c *caddy.Controller) ([]Rule, error) {
 					return rules, err
 				}
 				rule.ReadTimeout = readTimeout
+			case "send_timeout":
+				if !c.NextArg() {
+					return rules, c.ArgErr()
+				}
+				sendTimeout, err := time.ParseDuration(c.Val())
+				if err != nil {
+					return rules, err
+				}
+				rule.SendTimeout = sendTimeout
 			}
 		}
 
 		for _, rawAddress := range upstreams {
 			network, address := parseAddress(rawAddress)
 			if poolSize >= 0 {
-				dialers = append(dialers, &persistentDialer{size: poolSize, network: network, address: address, timeout: timeout})
+				dialers = append(dialers, &persistentDialer{
+					size:    poolSize,
+					network: network,
+					address: address,
+					timeout: connectTimeout,
+				})
 			} else {
-				dialers = append(dialers, basicDialer{network: network, address: address, timeout: timeout})
+				dialers = append(dialers, basicDialer{
+					network: network,
+					address: address,
+					timeout: connectTimeout,
+				})
 			}
 		}
 

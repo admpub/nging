@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -18,10 +19,12 @@ import (
 const serverType = "http"
 
 func init() {
+	flag.StringVar(&HTTPPort, "http-port", HTTPPort, "Default port to use for HTTP")
+	flag.StringVar(&HTTPSPort, "https-port", HTTPSPort, "Default port to use for HTTPS")
 	flag.StringVar(&Host, "host", DefaultHost, "Default host")
 	flag.StringVar(&Port, "port", DefaultPort, "Default port")
 	flag.StringVar(&Root, "root", DefaultRoot, "Root path of default site")
-	flag.DurationVar(&GracefulTimeout, "grace", 5*time.Second, "Maximum duration of graceful shutdown") // TODO
+	flag.DurationVar(&GracefulTimeout, "grace", 5*time.Second, "Maximum duration of graceful shutdown")
 	flag.BoolVar(&HTTP2, "http2", true, "Use HTTP/2")
 	flag.BoolVar(&QUIC, "quic", false, "Use experimental QUIC")
 
@@ -44,8 +47,33 @@ func init() {
 		NewContext: newContext,
 	})
 	caddy.RegisterCaddyfileLoader("short", caddy.LoaderFunc(shortCaddyfileLoader))
+	caddy.RegisterParsingCallback(serverType, "root", hideCaddyfile)
 	caddy.RegisterParsingCallback(serverType, "tls", activateHTTPS)
 	caddytls.RegisterConfigGetter(serverType, func(c *caddy.Controller) *caddytls.Config { return GetConfig(c).TLS })
+}
+
+// hideCaddyfile hides the source/origin Caddyfile if it is within the
+// site root. This function should be run after parsing the root directive.
+func hideCaddyfile(cctx caddy.Context) error {
+	ctx := cctx.(*httpContext)
+	for _, cfg := range ctx.siteConfigs {
+		// if no Caddyfile exists exit.
+		if cfg.originCaddyfile == "" {
+			return nil
+		}
+		absRoot, err := filepath.Abs(cfg.Root)
+		if err != nil {
+			return err
+		}
+		absOriginCaddyfile, err := filepath.Abs(cfg.originCaddyfile)
+		if err != nil {
+			return err
+		}
+		if strings.HasPrefix(absOriginCaddyfile, absRoot) {
+			cfg.HiddenFiles = append(cfg.HiddenFiles, strings.TrimPrefix(absOriginCaddyfile, absRoot))
+		}
+	}
+	return nil
 }
 
 func newContext() caddy.Context {
@@ -93,12 +121,26 @@ func (h *httpContext) InspectServerBlocks(sourceFile string, serverBlocks []cadd
 				addr.Port = Port
 			}
 
+			// If default HTTP or HTTPS ports have been customized,
+			// make sure the ACME challenge ports match
+			var altHTTPPort, altTLSSNIPort string
+			if HTTPPort != DefaultHTTPPort {
+				altHTTPPort = HTTPPort
+			}
+			if HTTPSPort != DefaultHTTPSPort {
+				altTLSSNIPort = HTTPSPort
+			}
+
 			// Save the config to our master list, and key it for lookups
 			cfg := &SiteConfig{
-				Addr:        addr,
-				Root:        Root,
-				TLS:         &caddytls.Config{Hostname: addr.Host},
-				HiddenFiles: []string{sourceFile},
+				Addr: addr,
+				Root: Root,
+				TLS: &caddytls.Config{
+					Hostname:      addr.Host,
+					AltHTTPPort:   altHTTPPort,
+					AltTLSSNIPort: altTLSSNIPort,
+				},
+				originCaddyfile: sourceFile,
 			}
 			h.saveConfig(key, cfg)
 		}
@@ -128,7 +170,7 @@ func (h *httpContext) MakeServers() ([]caddy.Server, error) {
 		if !cfg.TLS.Enabled {
 			continue
 		}
-		if cfg.Addr.Port == "80" || cfg.Addr.Scheme == "http" {
+		if cfg.Addr.Port == HTTPPort || cfg.Addr.Scheme == "http" {
 			cfg.TLS.Enabled = false
 			log.Printf("[WARNING] TLS disabled for %s", cfg.Addr)
 		} else if cfg.Addr.Scheme == "" {
@@ -143,7 +185,7 @@ func (h *httpContext) MakeServers() ([]caddy.Server, error) {
 			// this is vital, otherwise the function call below that
 			// sets the listener address will use the default port
 			// instead of 443 because it doesn't know about TLS.
-			cfg.Addr.Port = "443"
+			cfg.Addr.Port = HTTPSPort
 		}
 	}
 
@@ -212,7 +254,7 @@ func groupSiteConfigsByListenAddr(configs []*SiteConfig) (map[string][]*SiteConf
 		// We would add a special case here so that localhost addresses
 		// bind to 127.0.0.1 if conf.ListenHost is not already set, which
 		// would prevent outsiders from even connecting; but that was problematic:
-		// https://forum.caddyserver.com/t/wildcard-virtual-domains-with-wildcard-roots/221/5?u=matt
+		// https://caddy.community/t/wildcard-virtual-domains-with-wildcard-roots/221/5?u=matt
 
 		if conf.Addr.Port == "" {
 			conf.Addr.Port = Port
@@ -244,7 +286,7 @@ func (a Address) String() string {
 	}
 	scheme := a.Scheme
 	if scheme == "" {
-		if a.Port == "443" {
+		if a.Port == HTTPSPort {
 			scheme = "https"
 		} else {
 			scheme = "http"
@@ -256,8 +298,8 @@ func (a Address) String() string {
 	}
 	s += a.Host
 	if a.Port != "" &&
-		((scheme == "https" && a.Port != "443") ||
-			(scheme == "http" && a.Port != "80")) {
+		((scheme == "https" && a.Port != DefaultHTTPSPort) ||
+			(scheme == "http" && a.Port != DefaultHTTPPort)) {
 		s += ":" + a.Port
 	}
 	if a.Path != "" {
@@ -301,9 +343,9 @@ func standardizeAddress(str string) (Address, error) {
 	// see if we can set port based off scheme
 	if port == "" {
 		if u.Scheme == "http" {
-			port = "80"
+			port = HTTPPort
 		} else if u.Scheme == "https" {
-			port = "443"
+			port = HTTPSPort
 		}
 	}
 
@@ -313,17 +355,17 @@ func standardizeAddress(str string) (Address, error) {
 	}
 
 	// error if scheme and port combination violate convention
-	if (u.Scheme == "http" && port == "443") || (u.Scheme == "https" && port == "80") {
+	if (u.Scheme == "http" && port == HTTPSPort) || (u.Scheme == "https" && port == HTTPPort) {
 		return Address{}, fmt.Errorf("[%s] scheme and port violate convention", input)
 	}
 
 	// standardize http and https ports to their respective port numbers
 	if port == "http" {
 		u.Scheme = "http"
-		port = "80"
+		port = HTTPPort
 	} else if port == "https" {
 		u.Scheme = "https"
-		port = "443"
+		port = HTTPSPort
 	}
 
 	return Address{Original: input, Scheme: u.Scheme, Host: host, Port: port, Path: u.Path}, err
@@ -392,8 +434,10 @@ func RegisterDevDirective(name, before string) {
 var directives = []string{
 	// primitive actions that set up the fundamental vitals of each config
 	"root",
+	"index",
 	"bind",
-	"maxrequestbody",
+	"maxrequestbody", // TODO: 'limits'
+	"timeouts",
 	"tls",
 
 	// services/utilities, or other directives that don't necessarily inject handlers
@@ -401,6 +445,9 @@ var directives = []string{
 	"shutdown",
 	"realip", // github.com/captncraig/caddy-realip
 	"git",    // github.com/abiosoft/caddy-git
+
+	// directives that add listener middleware to the stack
+	"proxyprotocol", // github.com/mastercactapus/caddy-proxyprotocol
 
 	// directives that add middleware to the stack
 	"locale", // github.com/simia-tech/caddy-locale
@@ -410,6 +457,7 @@ var directives = []string{
 	"gzip",
 	"header",
 	"errors",
+	"filter",    // github.com/echocat/caddy-filter
 	"minify",    // github.com/hacdias/caddy-minify
 	"ipfilter",  // github.com/pyed/ipfilter
 	"ratelimit", // github.com/xuqingfeng/caddy-rate-limit
@@ -427,9 +475,11 @@ var directives = []string{
 	"internal",
 	"pprof",
 	"expvar",
+	"push",
 	"prometheus", // github.com/miekg/caddy-prometheus
 	"proxy",
 	"fastcgi",
+	"cgi", // github.com/jung-kurt/caddy-cgi
 	"websocket",
 	"filemanager", // github.com/hacdias/caddy-filemanager
 	"markdown",
@@ -438,7 +488,6 @@ var directives = []string{
 	"hugo",      // github.com/hacdias/caddy-hugo
 	"mailout",   // github.com/SchumacherFM/mailout
 	"awslambda", // github.com/coopernurse/caddy-awslambda
-	"filter",    // github.com/echocat/caddy-filter
 }
 
 const (
@@ -448,6 +497,10 @@ const (
 	DefaultPort = "2015"
 	// DefaultRoot is the default root folder.
 	DefaultRoot = "."
+	// DefaultHTTPPort is the default port for HTTP.
+	DefaultHTTPPort = "80"
+	// DefaultHTTPSPort is the default port for HTTPS.
+	DefaultHTTPSPort = "443"
 )
 
 // These "soft defaults" are configurable by
@@ -470,4 +523,10 @@ var (
 
 	// QUIC indicates whether QUIC is enabled or not.
 	QUIC bool
+
+	// HTTPPort is the port to use for HTTP.
+	HTTPPort = DefaultHTTPPort
+
+	// HTTPSPort is the port to use for HTTPS.
+	HTTPSPort = DefaultHTTPSPort
 )

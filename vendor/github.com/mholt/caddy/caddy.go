@@ -5,6 +5,8 @@
 //   1. Set the AppName and AppVersion variables.
 //   2. Call LoadCaddyfile() to get the Caddyfile.
 //      Pass in the name of the server type (like "http").
+//      Make sure the server type's package is imported
+//      (import _ "github.com/mholt/caddy/caddyhttp").
 //   3. Call caddy.Start() to start Caddy. You get back
 //      an Instance, on which you can call Restart() to
 //      restart it or Stop() to stop it.
@@ -432,31 +434,7 @@ func startWithListenerFds(cdyfile Input, inst *Instance, restartFds map[string]r
 		cdyfile = CaddyfileInput{}
 	}
 
-	stypeName := cdyfile.ServerType()
-
-	stype, err := getServerType(stypeName)
-	if err != nil {
-		return err
-	}
-
-	inst.caddyfileInput = cdyfile
-
-	sblocks, err := loadServerBlocks(stypeName, cdyfile.Path(), bytes.NewReader(cdyfile.Body()))
-	if err != nil {
-		return err
-	}
-
-	inst.context = stype.NewContext()
-	if inst.context == nil {
-		return fmt.Errorf("server type %s produced a nil Context", stypeName)
-	}
-
-	sblocks, err = inst.context.InspectServerBlocks(cdyfile.Path(), sblocks)
-	if err != nil {
-		return err
-	}
-
-	err = executeDirectives(inst, cdyfile.Path(), stype.Directives(), sblocks)
+	err := ValidateAndExecuteDirectives(cdyfile, inst, false)
 	if err != nil {
 		return err
 	}
@@ -516,9 +494,53 @@ func startWithListenerFds(cdyfile Input, inst *Instance, restartFds map[string]r
 	return nil
 }
 
-func executeDirectives(inst *Instance, filename string,
-	directives []string, sblocks []caddyfile.ServerBlock) error {
+// ValidateAndExecuteDirectives will load the server blocks from cdyfile
+// by parsing it, then execute the directives configured by it and store
+// the resulting server blocks into inst. If justValidate is true, parse
+// callbacks will not be executed between directives, since the purpose
+// is only to check the input for valid syntax.
+func ValidateAndExecuteDirectives(cdyfile Input, inst *Instance, justValidate bool) error {
 
+	// If parsing only inst will be nil, create an instance for this function call only.
+	if justValidate {
+		inst = &Instance{serverType: cdyfile.ServerType(), wg: new(sync.WaitGroup)}
+	}
+
+	stypeName := cdyfile.ServerType()
+
+	stype, err := getServerType(stypeName)
+	if err != nil {
+		return err
+	}
+
+	inst.caddyfileInput = cdyfile
+
+	sblocks, err := loadServerBlocks(stypeName, cdyfile.Path(), bytes.NewReader(cdyfile.Body()))
+	if err != nil {
+		return err
+	}
+
+	inst.context = stype.NewContext()
+	if inst.context == nil {
+		return fmt.Errorf("server type %s produced a nil Context", stypeName)
+	}
+
+	sblocks, err = inst.context.InspectServerBlocks(cdyfile.Path(), sblocks)
+	if err != nil {
+		return err
+	}
+
+	err = executeDirectives(inst, cdyfile.Path(), stype.Directives(), sblocks, justValidate)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func executeDirectives(inst *Instance, filename string,
+	directives []string, sblocks []caddyfile.ServerBlock, justValidate bool) error {
 	// map of server block ID to map of directive name to whatever.
 	storages := make(map[int]map[string]interface{})
 
@@ -568,12 +590,14 @@ func executeDirectives(inst *Instance, filename string,
 			}
 		}
 
-		// See if there are any callbacks to execute after this directive
-		if allCallbacks, ok := parsingCallbacks[inst.serverType]; ok {
-			callbacks := allCallbacks[dir]
-			for _, callback := range callbacks {
-				if err := callback(inst.context); err != nil {
-					return err
+		if !justValidate {
+			// See if there are any callbacks to execute after this directive
+			if allCallbacks, ok := parsingCallbacks[inst.serverType]; ok {
+				callbacks := allCallbacks[dir]
+				for _, callback := range callbacks {
+					if err := callback(inst.context); err != nil {
+						return err
+					}
 				}
 			}
 		}
@@ -739,6 +763,38 @@ func IsLoopback(addr string) bool {
 		strings.HasPrefix(host, "127.")
 }
 
+// IsInternal returns true if the IP of addr
+// belongs to a private network IP range. addr must only
+// be an IP or an IP:port combination.
+// Loopback addresses are considered false.
+func IsInternal(addr string) bool {
+	private_networks := []string{
+		"10.0.0.0/8",
+		"172.16.0.0/12",
+		"192.168.0.0/16",
+		"fc00::/7",
+	}
+
+	host, _, err := net.SplitHostPort(addr)
+	if err != nil {
+		host = addr // happens if the addr is just a hostname, missing port
+		// if we encounter an error, the brackets need to be stripped
+		// because SplitHostPort didn't do it for us
+		host = strings.Trim(host, "[]")
+	}
+	ip := net.ParseIP(host)
+	if ip == nil {
+		return false
+	}
+	for _, private_network := range private_networks {
+		_, ipnet, _ := net.ParseCIDR(private_network)
+		if ipnet.Contains(ip) {
+			return true
+		}
+	}
+	return false
+}
+
 // Upgrade re-launches the process, preserving the listeners
 // for a graceful restart. It does NOT load new configuration;
 // it only starts the process anew with a fresh binary.
@@ -750,7 +806,7 @@ func Upgrade() error {
 }
 
 // IsUpgrade returns true if this process is part of an upgrade
-// where a parent caddy process spawned this one to ugprade
+// where a parent caddy process spawned this one to upgrade
 // the binary.
 func IsUpgrade() bool {
 	mu.Lock()
@@ -845,3 +901,6 @@ var (
 	// by default if no other file is specified.
 	DefaultConfigFile = "Caddyfile"
 )
+
+// CtxKey is a value type for use with context.WithValue.
+type CtxKey string

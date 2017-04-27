@@ -8,6 +8,7 @@ import (
 
 	"github.com/mholt/caddy"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
+	"github.com/mholt/caddy/caddyhttp/staticfiles"
 )
 
 func init() {
@@ -61,7 +62,11 @@ func browseParse(c *caddy.Controller) ([]Config, error) {
 		} else {
 			bc.PathScope = "/"
 		}
-		bc.Root = http.Dir(cfg.Root)
+
+		bc.Fs = staticfiles.FileServer{
+			Root: http.Dir(cfg.Root),
+			Hide: httpserver.GetConfig(c).HiddenFiles,
+		}
 
 		// Second argument would be the template file to use
 		var tplText string
@@ -96,7 +101,8 @@ func browseParse(c *caddy.Controller) ([]Config, error) {
 const defaultTemplate = `<!DOCTYPE html>
 <html>
 	<head>
-		<title>{{.Name}}</title>
+		<title>{{html .Name}}</title>
+		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 * { padding: 0; margin: 0; }
@@ -162,12 +168,17 @@ main {
 	font-size: 12px;
 	font-family: Verdana, sans-serif;
 	border-bottom: 1px solid #9C9C9C;
-	padding-top: 15px;
-	padding-bottom: 15px;
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
 
 .meta-item {
 	margin-right: 1em;
+}
+
+#filter {
+	padding: 4px;
+	border: 1px solid #CCC;
 }
 
 table {
@@ -227,6 +238,30 @@ td .goup {
 	word-break: break-all;
 	overflow-wrap: break-word;
 	white-space: pre-wrap;
+}
+
+.icon {
+	margin-right: 5px;
+}
+
+.icon.sort {
+	display: inline-block;
+	width: 1em;
+	height: 1em;
+	position: relative;
+	top: .2em;
+}
+
+.icon.sort .top {
+	position: absolute;
+	left: 0;
+	top: -1px;
+}
+
+.icon.sort .bottom {
+	position: absolute;
+	bottom: -1px;
+	left: 0;
 }
 
 footer {
@@ -312,7 +347,7 @@ footer {
 
 		<header>
 			<h1>
-				{{range $url, $name := .BreadcrumbMap}}<a href="{{$url}}">{{$name}}</a>{{if ne $url "/"}}/{{end}}{{end}}
+				{{range $i, $crumb := .Breadcrumbs}}<a href="{{html $crumb.Link}}">{{html $crumb.Text}}</a>{{if ne $i 0}}/{{end}}{{end}}
 			</h1>
 		</header>
 		<main>
@@ -323,6 +358,7 @@ footer {
 					{{- if ne 0 .ItemsLimitedTo}}
 					<span class="meta-item">(of which only <b>{{.ItemsLimitedTo}}</b> are displayed)</span>
 					{{- end}}
+					<span class="meta-item"><input type="text" placeholder="filter" id="filter" onkeyup='filter()'></span>
 				</div>
 			</div>
 			<div class="listing">
@@ -330,28 +366,36 @@ footer {
 					<thead>
 					<tr>
 						<th>
+							{{- if and (eq .Sort "namedirfirst") (ne .Order "desc")}}
+							<a href="?sort=namedirfirst&order=desc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}" class="icon"><svg width="1em" height=".5em" version="1.1" viewBox="0 0 12.922194 6.0358899"><use xlink:href="#up-arrow"></use></svg></a>
+							{{- else if and (eq .Sort "namedirfirst") (ne .Order "asc")}}
+							<a href="?sort=namedirfirst&order=asc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}" class="icon"><svg width="1em" height=".5em" version="1.1" viewBox="0 0 12.922194 6.0358899"><use xlink:href="#down-arrow"></use></svg></a>
+							{{- else}}
+							<a href="?sort=namedirfirst&order=asc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}" class="icon sort"><svg class="top" width="1em" height=".5em" version="1.1" viewBox="0 0 12.922194 6.0358899"><use xlink:href="#up-arrow"></use></svg><svg class="bottom" width="1em" height=".5em" version="1.1" viewBox="0 0 12.922194 6.0358899"><use xlink:href="#down-arrow"></use></svg></a>
+							{{- end}}
+							
 							{{- if and (eq .Sort "name") (ne .Order "desc")}}
-							<a href="?sort=name&order=desc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Name <svg width="1em" height=".4em" version="1.1" viewBox="0 0 12.922194 6.0358899"><use xlink:href="#up-arrow"></use></svg></a>
+							<a href="?sort=name&order=desc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Name <svg width="1em" height=".5em" version="1.1" viewBox="0 0 12.922194 6.0358899"><use xlink:href="#up-arrow"></use></svg></a>
 							{{- else if and (eq .Sort "name") (ne .Order "asc")}}
-							<a href="?sort=name&order=asc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Name <svg width="1em" height=".4em" version="1.1" viewBox="0 0 12.922194 6.0358899"><use xlink:href="#down-arrow"></use></svg></a>
+							<a href="?sort=name&order=asc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Name <svg width="1em" height=".5em" version="1.1" viewBox="0 0 12.922194 6.0358899"><use xlink:href="#down-arrow"></use></svg></a>
 							{{- else}}
 							<a href="?sort=name&order=asc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Name</a>
 							{{- end}}
 						</th>
 						<th>
 							{{- if and (eq .Sort "size") (ne .Order "desc")}}
-							<a href="?sort=size&order=desc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Size <svg width="1em" height=".4em" version="1.1" viewBox="0 0 12.922194 6.0358899"><use xlink:href="#up-arrow"></use></svg></a>
+							<a href="?sort=size&order=desc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Size <svg width="1em" height=".5em" version="1.1" viewBox="0 0 12.922194 6.0358899"><use xlink:href="#up-arrow"></use></svg></a>
 							{{- else if and (eq .Sort "size") (ne .Order "asc")}}
-							<a href="?sort=size&order=asc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Size <svg width="1em" height=".4em" version="1.1" viewBox="0 0 12.922194 6.0358899"><use xlink:href="#down-arrow"></use></svg></a>
+							<a href="?sort=size&order=asc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Size <svg width="1em" height=".5em" version="1.1" viewBox="0 0 12.922194 6.0358899"><use xlink:href="#down-arrow"></use></svg></a>
 							{{- else}}
 							<a href="?sort=size&order=asc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Size</a>
 							{{- end}}
 						</th>
 						<th class="hideable">
 							{{- if and (eq .Sort "time") (ne .Order "desc")}}
-							<a href="?sort=time&order=desc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Modified <svg width="1em" height=".4em" version="1.1" viewBox="0 0 12.922194 6.0358899"><use xlink:href="#up-arrow"></use></svg></a>
+							<a href="?sort=time&order=desc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Modified <svg width="1em" height=".5em" version="1.1" viewBox="0 0 12.922194 6.0358899"><use xlink:href="#up-arrow"></use></svg></a>
 							{{- else if and (eq .Sort "time") (ne .Order "asc")}}
-							<a href="?sort=time&order=asc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Modified <svg width="1em" height=".4em" version="1.1" viewBox="0 0 12.922194 6.0358899"><use xlink:href="#down-arrow"></use></svg></a>
+							<a href="?sort=time&order=asc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Modified <svg width="1em" height=".5em" version="1.1" viewBox="0 0 12.922194 6.0358899"><use xlink:href="#down-arrow"></use></svg></a>
 							{{- else}}
 							<a href="?sort=time&order=asc{{if ne 0 .ItemsLimitedTo}}&limit={{.ItemsLimitedTo}}{{end}}">Modified</a>
 							{{- end}}
@@ -371,15 +415,15 @@ footer {
 					</tr>
 					{{- end}}
 					{{- range .Items}}
-					<tr>
+					<tr class="file">
 						<td>
-							<a href="{{.URL}}">
+							<a href="{{html .URL}}">
 								{{- if .IsDir}}
 								<svg width="1.5em" height="1em" version="1.1" viewBox="0 0 35.678803 28.527945"><use xlink:href="#folder"></use></svg>
 								{{- else}}
 								<svg width="1.5em" height="1em" version="1.1" viewBox="0 0 26.604381 29.144726"><use xlink:href="#file"></use></svg>
 								{{- end}}
-								<span class="name">{{.Name}}</span>
+								<span class="name">{{html .Name}}</span>
 							</a>
 						</td>
 						{{- if .IsDir}}
@@ -395,9 +439,28 @@ footer {
 			</div>
 		</main>
 		<footer>
-			Served with <a rel="noopener noreferrer" href="https://caddyserver.com">Caddy</a>.
+			Served with <a rel="noopener noreferrer" href="https://caddyserver.com">Caddy</a>
 		</footer>
-		<script type="text/javascript">
+		<script>
+			var filterEl = document.getElementById('filter');
+			function filter() {
+				var q = filterEl.value.trim().toLowerCase();
+				var elems = document.querySelectorAll('tr.file');
+				elems.forEach(function(el) {
+					if (!q) {
+						el.style.display = '';
+						return;
+					}
+					var nameEl = el.querySelector('.name');
+					var nameVal = nameEl.textContent.trim().toLowerCase();
+					if (nameVal.indexOf(q) !== -1) {
+						el.style.display = '';
+					} else {
+						el.style.display = 'none';
+					}
+				});
+			}
+
 			function localizeDatetime(e, index, ar) {
 				if (e.textContent === undefined) {
 					return;

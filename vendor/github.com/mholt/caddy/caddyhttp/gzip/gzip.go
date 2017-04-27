@@ -4,12 +4,12 @@ package gzip
 
 import (
 	"bufio"
-	"compress/gzip"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"strings"
+
+	"errors"
 
 	"github.com/mholt/caddy"
 	"github.com/mholt/caddy/caddyhttp/httpserver"
@@ -20,6 +20,8 @@ func init() {
 		ServerType: "http",
 		Action:     setup,
 	})
+
+	initWriterPool()
 }
 
 // Gzip is a middleware type which gzips HTTP responses. It is
@@ -53,18 +55,11 @@ outer:
 			}
 		}
 
-		// Delete this header so gzipping is not repeated later in the chain
-		r.Header.Del("Accept-Encoding")
-
 		// gzipWriter modifies underlying writer at init,
 		// use a discard writer instead to leave ResponseWriter in
 		// original form.
-		gzipWriter, err := newWriter(c, ioutil.Discard)
-		if err != nil {
-			// should not happen
-			return http.StatusInternalServerError, err
-		}
-		defer gzipWriter.Close()
+		gzipWriter := getWriter(c.Level)
+		defer putWriter(c.Level, gzipWriter)
 		gz := &gzipResponseWriter{Writer: gzipWriter, ResponseWriter: w}
 
 		var rw http.ResponseWriter
@@ -93,16 +88,6 @@ outer:
 
 	// no matching filter
 	return g.Next.ServeHTTP(w, r)
-}
-
-// newWriter create a new Gzip Writer based on the compression level.
-// If the level is valid (i.e. between 1 and 9), it uses the level.
-// Otherwise, it uses default compression level.
-func newWriter(c Config, w io.Writer) (*gzip.Writer, error) {
-	if c.Level >= gzip.BestSpeed && c.Level <= gzip.BestCompression {
-		return gzip.NewWriterLevel(w, c.Level)
-	}
-	return gzip.NewWriter(w), nil
 }
 
 // gzipResponeWriter wraps the underlying Write method
@@ -164,3 +149,17 @@ func (w *gzipResponseWriter) CloseNotify() <-chan bool {
 	}
 	panic(httpserver.NonCloseNotifierError{Underlying: w.ResponseWriter})
 }
+
+func (w *gzipResponseWriter) Push(target string, opts *http.PushOptions) error {
+	if pusher, hasPusher := w.ResponseWriter.(http.Pusher); hasPusher {
+		return pusher.Push(target, opts)
+	}
+
+	return errors.New("push is unavailable (probably chained http.ResponseWriter does not implement http.Pusher)")
+}
+
+// Interface guards
+var _ http.Pusher = (*gzipResponseWriter)(nil)
+var _ http.Flusher = (*gzipResponseWriter)(nil)
+var _ http.CloseNotifier = (*gzipResponseWriter)(nil)
+var _ http.Hijacker = (*gzipResponseWriter)(nil)

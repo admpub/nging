@@ -89,8 +89,8 @@ func getCertificate(name string) (cert Certificate, matched, defaulted bool) {
 // cache, flagging it as Managed and, if onDemand is true, as "OnDemand"
 // (meaning that it was obtained or loaded during a TLS handshake).
 //
-// This function is safe for concurrent use.
-func CacheManagedCertificate(domain string, cfg *Config) (Certificate, error) {
+// This method is safe for concurrent use.
+func (cfg *Config) CacheManagedCertificate(domain string) (Certificate, error) {
 	storage, err := cfg.StorageFor(cfg.CAUrl)
 	if err != nil {
 		return Certificate{}, err
@@ -229,7 +229,7 @@ func cacheCertificate(cert Certificate) {
 	}
 	certCacheMu.Lock()
 	if _, ok := certCache[""]; !ok {
-		// use as default - must be *appended* to list, or bad things happen!
+		// use as default - must be *appended* to end of list, or bad things happen!
 		cert.Names = append(cert.Names, "")
 		certCache[""] = cert
 	}

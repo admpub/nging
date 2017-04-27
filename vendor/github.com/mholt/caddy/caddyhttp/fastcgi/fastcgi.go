@@ -6,6 +6,7 @@ package fastcgi
 import (
 	"errors"
 	"io"
+	"net"
 	"net/http"
 	"os"
 	"path"
@@ -22,7 +23,6 @@ type Handler struct {
 	Next    httpserver.Handler
 	Rules   []Rule
 	Root    string
-	AbsRoot string // same as root, but absolute path
 	FileSys http.FileSystem
 
 	// These are sent to CGI scripts in env variables
@@ -31,11 +31,6 @@ type Handler struct {
 	ServerName      string
 	ServerPort      string
 }
-
-// When a rewrite is performed, a header field of this name
-// is added to the request
-// It contains the original request URI before the rewrite.
-const internalRewriteFieldName = "Caddy-Rewrite-Original-URI"
 
 // ServeHTTP satisfies the httpserver.Handler interface.
 func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
@@ -80,12 +75,24 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) 
 			// Connect to FastCGI gateway
 			fcgiBackend, err := rule.dialer.Dial()
 			if err != nil {
+				if err, ok := err.(net.Error); ok && err.Timeout() {
+					return http.StatusGatewayTimeout, err
+				}
 				return http.StatusBadGateway, err
 			}
+			defer fcgiBackend.Close()
 			fcgiBackend.SetReadTimeout(rule.ReadTimeout)
+			fcgiBackend.SetSendTimeout(rule.SendTimeout)
 
 			var resp *http.Response
-			contentLength, _ := strconv.Atoi(r.Header.Get("Content-Length"))
+
+			var contentLength int64
+			// if ContentLength is already set
+			if r.ContentLength > 0 {
+				contentLength = r.ContentLength
+			} else {
+				contentLength, _ = strconv.ParseInt(r.Header.Get("Content-Length"), 10, 64)
+			}
 			switch r.Method {
 			case "HEAD":
 				resp, err = fcgiBackend.Head(env)
@@ -97,8 +104,12 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) 
 				resp, err = fcgiBackend.Post(env, r.Method, r.Header.Get("Content-Type"), r.Body, contentLength)
 			}
 
-			if err != nil && err != io.EOF {
-				return http.StatusBadGateway, err
+			if err != nil {
+				if err, ok := err.(net.Error); ok && err.Timeout() {
+					return http.StatusGatewayTimeout, err
+				} else if err != io.EOF {
+					return http.StatusBadGateway, err
+				}
 			}
 
 			// Write response header
@@ -109,8 +120,6 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) 
 			if err != nil {
 				return http.StatusBadGateway, err
 			}
-
-			defer rule.dialer.Close(fcgiBackend)
 
 			// Log any stderr output from upstream
 			if stderr := fcgiBackend.StdErr(); stderr.Len() != 0 {
@@ -176,7 +185,7 @@ func (h Handler) buildEnv(r *http.Request, rule Rule, fpath string) (map[string]
 	var env map[string]string
 
 	// Get absolute path of requested resource
-	absPath := filepath.Join(h.AbsRoot, fpath)
+	absPath := filepath.Join(rule.Root, fpath)
 
 	// Separate remote IP and port; more lenient than net.SplitHostPort
 	var ip, port string
@@ -204,14 +213,18 @@ func (h Handler) buildEnv(r *http.Request, rule Rule, fpath string) (map[string]
 	// Strip PATH_INFO from SCRIPT_NAME
 	scriptName = strings.TrimSuffix(scriptName, pathInfo)
 
-	// Get the request URI. The request URI might be as it came in over the wire,
+	// Get the request URI from context. The request URI might be as it came in over the wire,
 	// or it might have been rewritten internally by the rewrite middleware (see issue #256).
-	// If it was rewritten, there will be a header indicating the original URL,
+	// If it was rewritten, there will be a context value with the original URL,
 	// which is needed to get the correct RequestURI value for PHP apps.
 	reqURI := r.URL.RequestURI()
-	if origURI := r.Header.Get(internalRewriteFieldName); origURI != "" {
+	if origURI, _ := r.Context().Value(httpserver.URIxRewriteCtxKey).(string); origURI != "" {
 		reqURI = origURI
 	}
+
+	// Retrieve name of remote user that was set by some downstream middleware,
+	// possibly basicauth.
+	remoteUser, _ := r.Context().Value(httpserver.RemoteUserCtxKey).(string) // Blank if not set
 
 	// Some variables are unused but cleared explicitly to prevent
 	// the parent environment from interfering.
@@ -228,7 +241,7 @@ func (h Handler) buildEnv(r *http.Request, rule Rule, fpath string) (map[string]
 		"REMOTE_HOST":       ip, // For speed, remote host lookups disabled
 		"REMOTE_PORT":       port,
 		"REMOTE_IDENT":      "", // Not used
-		"REMOTE_USER":       "", // Not used
+		"REMOTE_USER":       remoteUser,
 		"REQUEST_METHOD":    r.Method,
 		"SERVER_NAME":       h.ServerName,
 		"SERVER_PORT":       h.ServerPort,
@@ -236,7 +249,7 @@ func (h Handler) buildEnv(r *http.Request, rule Rule, fpath string) (map[string]
 		"SERVER_SOFTWARE":   h.SoftwareName + "/" + h.SoftwareVersion,
 
 		// Other variables
-		"DOCUMENT_ROOT":   h.AbsRoot,
+		"DOCUMENT_ROOT":   rule.Root,
 		"DOCUMENT_URI":    docURI,
 		"HTTP_HOST":       r.Host, // added here, since not always part of headers
 		"REQUEST_URI":     reqURI,
@@ -248,7 +261,7 @@ func (h Handler) buildEnv(r *http.Request, rule Rule, fpath string) (map[string]
 	// should only exist if PATH_INFO is defined.
 	// Info: https://www.ietf.org/rfc/rfc3875 Page 14
 	if env["PATH_INFO"] != "" {
-		env["PATH_TRANSLATED"] = filepath.Join(h.AbsRoot, pathInfo) // Info: http://www.oreilly.com/openbook/cgi/ch02_04.html
+		env["PATH_TRANSLATED"] = filepath.Join(rule.Root, pathInfo) // Info: http://www.oreilly.com/openbook/cgi/ch02_04.html
 	}
 
 	// Some web apps rely on knowing HTTPS or not
@@ -263,11 +276,8 @@ func (h Handler) buildEnv(r *http.Request, rule Rule, fpath string) (map[string]
 		env[envVar[0]] = replacer.Replace(envVar[1])
 	}
 
-	// Add all HTTP headers (except Caddy-Rewrite-Original-URI ) to env variables
+	// Add all HTTP headers to env variables
 	for field, val := range r.Header {
-		if strings.ToLower(field) == strings.ToLower(internalRewriteFieldName) {
-			continue
-		}
 		header := strings.ToUpper(field)
 		header = headerNameReplacer.Replace(header)
 		env["HTTP_"+header] = strings.Join(val, ", ")
@@ -287,6 +297,10 @@ type Rule struct {
 	// Always process files with this extension with fastcgi.
 	Ext string
 
+	// Use this directory as the fastcgi root directory. Defaults to the root
+	// directory of the parent virtual host.
+	Root string
+
 	// The path in the URL will be split into two, with the first piece ending
 	// with the value of SplitPath. The first piece will be assumed as the
 	// actual resource (CGI script) name, and the second piece will be set to
@@ -305,6 +319,9 @@ type Rule struct {
 
 	// The duration used to set a deadline when reading from the FastCGI server.
 	ReadTimeout time.Duration
+
+	// The duration used to set a deadline when sending to the FastCGI server.
+	SendTimeout time.Duration
 
 	// FCGI dialer
 	dialer dialer
