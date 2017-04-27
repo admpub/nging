@@ -4,28 +4,7 @@ cd ..
 go-bindata-assetfs -tags bindata public/... template/... config/i18n/...
 cd tool
 
-set NGINGEX=
-
-set GOOS=linux
-set GOARCH=amd64
-call inc-build-zip.bat
-
-set GOOS=linux
-set GOARCH=386
-call inc-build-zip.bat
-
-set GOOS=darwin
-set GOARCH=amd64
-call inc-build-zip.bat
-
-
-
 set NGINGEX=.exe
-
-set GOOS=windows
-set GOARCH=386
-call inc-build-zip.bat
-
 set GOOS=windows
 set GOARCH=amd64
 call inc-build-zip.bat
