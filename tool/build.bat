@@ -6,7 +6,7 @@ cd tool
 
 set NGINGEX=.exe
 set GOOS=windows
-set GOARCH=amd64
+set GOARCH=386
 call inc-build-zip.bat
 
 pause
