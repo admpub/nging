@@ -29,7 +29,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"strings"
 	"sync"
 	"sync/atomic"
 
@@ -57,6 +56,9 @@ var (
 )
 
 var (
+	FixFilePath = func(file string) string {
+		return file
+	}
 	fileOpenCount       int32
 	errTooManyOpenFiles       = errors.New(`Too many open database files.`)
 	maxOpenFiles        int32 = 100
@@ -130,7 +132,7 @@ func (d *database) open() error {
 	openFn := func() error {
 		openFiles := atomic.LoadInt32(&fileOpenCount)
 		if openFiles < maxOpenFiles {
-			sess, err := sql.Open("sqlite3", strings.TrimPrefix(d.ConnectionURL().String(), `file:///`))
+			sess, err := sql.Open("sqlite3", FixFilePath(d.ConnectionURL().String()))
 			if err == nil {
 				if err := d.BaseDatabase.BindSession(sess); err != nil {
 					return err
