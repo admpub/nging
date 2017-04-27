@@ -1,4 +1,4 @@
-// +build windows,amd64
+// +build windows
 // Copyright (C) 2016 Samuel Melrose <sam@infitialis.com>.
 //
 // Based on work by Yasuhiro Matsumoto <mattn.jp@gmail.com>

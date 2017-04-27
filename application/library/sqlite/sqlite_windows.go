@@ -1,5 +1,4 @@
 // +build sqlite
-// +build windows,amd64
 
 package sqlite
 
