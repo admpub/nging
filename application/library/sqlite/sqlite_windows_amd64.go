@@ -4,12 +4,5 @@
 package sqlite
 
 import (
-	_ "github.com/iamacarpet/go-sqlite3-win64" //sqlite driver
-	"github.com/webx-top/db/sqlite"
+	_ "github.com/admpub/go-sqlite3-win64" //sqlite driver
 )
-
-func init() {
-	sqlite.FixFilePath = func(file string) string {
-		return strings.TrimPrefix(file, `file:///`)
-	}
-}

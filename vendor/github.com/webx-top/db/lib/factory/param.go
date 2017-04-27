@@ -1,10 +1,11 @@
-// added by swh@admpub.com
+//Package factory added by swh@admpub.com
 package factory
 
 import (
 	"context"
 	"database/sql"
 	"encoding/gob"
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -15,12 +16,16 @@ import (
 	"github.com/webx-top/tagfast"
 )
 
-var tagParser = func(tag string) interface{} {
-	if len(tag) == 0 {
-		return nil
+var (
+	tagParser = func(tag string) interface{} {
+		if len(tag) == 0 {
+			return nil
+		}
+		return strings.Split(tag, `,`)
 	}
-	return strings.Split(tag, `,`)
-}
+
+	ErrExpectingStruct = errors.New(`bean must be an address of struct or struct.`)
+)
 
 func init() {
 	gob.Register(&Param{})
@@ -560,6 +565,26 @@ func (p *Param) Exec() (sql.Result, error) {
 
 func (p *Param) Insert() (interface{}, error) {
 	return p.T().Insert(p)
+}
+
+// UpdateField 通过设置数据库字段名和字段值来更新数据(无需使用SetSend)
+// 支持“key1, value1, key2, value2, ..., keyN, valueN”的顺序赋值
+// e.g. UpdateField("user","admin") or UpdateField("user","admin","score",5)
+func (p *Param) UpdateField(keyAndValue ...interface{}) error {
+	if len(keyAndValue) == 0 {
+		return nil
+	}
+	p.SetSend(keyAndValue)
+	return p.T().Update(p)
+}
+
+// UpdateByStruct 通过指定Struct中的字段名来更新相应数据(无需使用SetSend)
+func (p *Param) UpdateByStruct(bean interface{}, fields ...string) error {
+	err := p.UsingStructField(bean)
+	if err != nil {
+		return err
+	}
+	return p.T().Update(p)
 }
 
 func (p *Param) Update() error {

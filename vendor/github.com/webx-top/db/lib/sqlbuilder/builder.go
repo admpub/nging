@@ -218,8 +218,18 @@ func (b *sqlBuilder) Update(table string) Updater {
 	return qu.setTable(table)
 }
 
+// Mapper [SWH|+] 供外部使用
+func Mapper() *reflectx.Mapper {
+	return mapper
+}
+
 // Map receives a pointer to map or struct and maps it to columns and values.
 func Map(item interface{}, options *MapOptions) ([]string, []interface{}, error) {
+	//[SWH|+]
+	if keysValues, ok := item.(*db.KeysValues); ok {
+		return keysValues.Keys(), keysValues.Values(), nil
+	}
+
 	var fv fieldValue
 	if options == nil {
 		options = &defaultMapOptions
@@ -239,6 +249,8 @@ func Map(item interface{}, options *MapOptions) ([]string, []interface{}, error)
 		itemV = reflect.ValueOf(item)
 		itemT = itemV.Type()
 	}
+
+	sortable := true //[SWH|+]
 
 	switch itemT.Kind() {
 	case reflect.Struct:
@@ -335,11 +347,37 @@ func Map(item interface{}, options *MapOptions) ([]string, []interface{}, error)
 
 			fv.values[i] = v
 		}
+
+	// [SWH|+] 支持 key1,val1,key2,val2,...,keyN,valN 这种形式组成键值
+	case reflect.Slice:
+		nfields := itemV.Len()
+		fv.values = make([]interface{}, 0)
+		fv.fields = make([]string, 0)
+
+		for i := 0; i < nfields; i++ {
+			valv := itemV.Index(i)
+			if i%2 == 0 {
+				fv.fields = append(fv.fields, fmt.Sprintf("%v", valv.Interface()))
+				continue
+			}
+
+			v, err := marshal(valv.Interface())
+			if err != nil {
+				return nil, nil, err
+			}
+			fv.values = append(fv.values, v)
+		}
+		for idx, end := len(fv.values), len(fv.fields); idx < end; idx++ {
+			fv.values = append(fv.values, nil)
+		}
+		sortable = false
 	default:
 		return nil, nil, ErrExpectingPointerToEitherMapOrStruct
 	}
 
-	sort.Sort(&fv)
+	if sortable {
+		sort.Sort(&fv)
+	}
 
 	return fv.fields, fv.values, nil
 }
