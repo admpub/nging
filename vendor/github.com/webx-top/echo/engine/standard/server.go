@@ -1,10 +1,8 @@
 package standard
 
 import (
-	"net"
 	"net/http"
 	"sync"
-	"time"
 
 	"github.com/admpub/log"
 	"github.com/webx-top/echo/engine"
@@ -140,22 +138,4 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.pool.url.Put(reqURL)
 	s.pool.response.Put(res)
 	s.pool.responseHeader.Put(resHdr)
-}
-
-// tcpKeepAliveListener sets TCP keep-alive timeouts on accepted
-// connections. It's used by ListenAndServe and ListenAndServeTLS so
-// dead TCP connections (e.g. closing laptop mid-download) eventually
-// go away.
-type tcpKeepAliveListener struct {
-	*net.TCPListener
-}
-
-func (ln tcpKeepAliveListener) Accept() (c net.Conn, err error) {
-	tc, err := ln.AcceptTCP()
-	if err != nil {
-		return
-	}
-	tc.SetKeepAlive(true)
-	tc.SetKeepAlivePeriod(3 * time.Minute)
-	return tc, nil
 }

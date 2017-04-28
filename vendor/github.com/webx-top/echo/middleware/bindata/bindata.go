@@ -19,7 +19,7 @@
 package bindata
 
 import (
-	assetfs "github.com/elazarl/go-bindata-assetfs"
+	assetfs "github.com/admpub/go-bindata-assetfs"
 	"github.com/webx-top/echo"
 )
 

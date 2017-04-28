@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
+	assetfs "github.com/admpub/go-bindata-assetfs"
 	"github.com/admpub/nging/application/library/modal"
-	assetfs "github.com/elazarl/go-bindata-assetfs"
 	"github.com/webx-top/echo/middleware/bindata"
 )
 

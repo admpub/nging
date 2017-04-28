@@ -20,7 +20,7 @@ package bindata
 import (
 	"io/ioutil"
 
-	assetfs "github.com/elazarl/go-bindata-assetfs"
+	assetfs "github.com/admpub/go-bindata-assetfs"
 	"github.com/webx-top/echo/logger"
 )
 
