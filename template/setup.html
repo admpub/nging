@@ -41,12 +41,12 @@
                     <h3 class="hthin">{{"数据库信息"|T}}</h3>
                   </div>
                 </div>
-                
+
 							<div class="form-group">
 								<div class="col-sm-12">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-align-justify"></i></span>
-										<select name="type" id="database-type" parsley-trigger="change" parsley-error-container="#type-error" required data-toggle="tooltip" title="{{"数据库类型"|T}}" class="form-control">
+										<select name="type" id="database-type" parsley-trigger="change" parsley-error-container="#type-error" required title="{{"数据库类型"|T}}" class="form-control">
 											{{$type := Form "type"}}
 											{{range $k, $v := Stored.dbEngines}}
 											<option value="{{$v.K}}"{{if eq $type $v.K}} selected{{end}}>{{$v.V}}</option>
