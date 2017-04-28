@@ -205,10 +205,10 @@ $(function(){
 			break;
 		}
 	}).trigger('change');
-});
 {{if .}}
 App.message({title: '{{"系统消息"|T}}', text: "{{.}}"});
 {{end}}
  $('[data-toggle="tooltip"]').tooltip();
+});
 </script>
 {{/Block}}

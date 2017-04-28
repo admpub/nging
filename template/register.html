@@ -21,7 +21,7 @@
 								<div class="col-sm-12">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-code"></i></span>
-										<input type="text" name="invitationCode" parsley-trigger="change" parsley-error-container="#invitationCode-error" required placeholder="{{"邀请码"|T}}" class="form-control" autocomplete="off" value="{{Form "invitationCode"}}">
+										<input type="text" name="invitationCode" parsley-trigger="change" parsley-error-container="#invitationCode-error" required data-toggle="tooltip" title="{{"邀请码"|T}}" placeholder="{{"邀请码"|T}}" class="form-control" autocomplete="off" value="{{Form "invitationCode"}}">
 									</div>
                                     <div id="invitationCode-error"></div>
 								</div>
@@ -30,7 +30,7 @@
 								<div class="col-sm-12">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-user"></i></span>
-										<input type="text" name="username" parsley-trigger="change" parsley-error-container="#username-error" required placeholder="{{"用户名"|T}}" class="form-control" autocomplete="off" value="{{Form "username"}}">
+										<input type="text" name="username" parsley-trigger="change" parsley-error-container="#username-error" required data-toggle="tooltip" title="{{"用户名"|T}}" placeholder="{{"用户名"|T}}" class="form-control" autocomplete="off" value="{{Form "username"}}">
 									</div>
                                     <div id="username-error"></div>
 								</div>
@@ -39,7 +39,7 @@
 								<div class="col-sm-12">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-										<input type="email" name="email" parsley-trigger="change" parsley-error-container="#email-error" required placeholder="E-mail" class="form-control" autocomplete="off" value="{{Form "email"}}">
+										<input type="email" name="email" parsley-trigger="change" parsley-error-container="#email-error" required data-toggle="tooltip" title="E-mail" placeholder="E-mail" class="form-control" autocomplete="off" value="{{Form "email"}}">
 									</div>
                                     <div id="email-error"></div>
 								</div>
@@ -48,14 +48,14 @@
 								<div class="col-sm-6 col-xs-6">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-										<input id="pass1" type="password" name="password" parsley-error-container="#password-error" placeholder="{{"密码"|T}}" required class="form-control" autocomplete="off" value="{{Form "password"}}">
+										<input id="pass1" type="password" name="password" parsley-error-container="#password-error" placeholder="{{"密码"|T}}" required data-toggle="tooltip" title="{{"密码"|T}}" class="form-control" autocomplete="off" value="{{Form "password"}}">
 									</div>
                                     <div id="password-error"></div>
 								</div>
 								<div class="col-sm-6 col-xs-6">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-										<input parsley-equalto="#pass1" type="password" parsley-error-container="#confirmation-error" name="confirmationPassword" required placeholder="{{"确认密码"|T}}" class="form-control" autocomplete="off" value="{{Form "confirmationPassword"}}">
+										<input parsley-equalto="#pass1" type="password" parsley-error-container="#confirmation-error" name="confirmationPassword" required data-toggle="tooltip" title="{{"确认密码"|T}}" placeholder="{{"确认密码"|T}}" class="form-control" autocomplete="off" value="{{Form "confirmationPassword"}}">
 									</div>
                                     <div id="confirmation-error"></div>
 								</div>
@@ -74,13 +74,17 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
+<script type="text/javascript" src="__ASSETS__/js/bootstrap/dist/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="__ASSETS__/js/jquery.parsley/i18n/messages.{{(Replace Lang "-" "_" -1)|ToLower}}.js" charset="utf-8"></script>
 <script type="text/javascript" src="__ASSETS__/js/jquery.parsley/parsley.js"></script>
 <script type="text/javascript" src="__ASSETS__/js/behaviour/general.js"></script>
 <script type="text/javascript" src="__ASSETS__/js/jquery.gritter/js/jquery.gritter.js"></script>
 <script>
+$(function(){
 {{if .}}
 App.message({title: '{{"系统消息"|T}}', text: "{{.}}"});
 {{end}}
+ $('[data-toggle="tooltip"]').tooltip();
+});
 </script>
 {{/Block}}
