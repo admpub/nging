@@ -15,7 +15,7 @@ log {
   targets : "console"
 }
 sys {
-  vhostsfileDir : "config\vhosts"
+  vhostsfileDir : "config/vhosts"
   allowIP : []
   sslHosts : []
   sslCacheDir : ""
