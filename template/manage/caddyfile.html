@@ -1,26 +1,26 @@
-# <pre>
-{{Form "domain"}} {
-    root {{Form "root"}}
+{{$v := Stored.values}}
+{{$v.Get "domain"}} {
+    root {{$v.Get "root"}}
 
     {{AddonAttr "" "log"}}
 
-    {{if Form "header_path"}}
-    header {{Form "header_path"}} {
+    {{if $v.Get "header_path"}}
+    header {{$v.Get "header_path"}} {
         {{IteratorKV "header" "" "        "}}
     }
     {{end}}
 
-    {{if eq (Form "tls") "1"}}
-        {{if and (Form "tls_cert") (Form "tls_key")}}
-    tls {{Form "tls_cert"}} {{Form "tls_key"}}
-        {{else if Form "tls_email"}}
-    tls {{Form "tls_email"}}
+    {{if eq ($v.Get "tls") "1"}}
+        {{if and ($v.Get "tls_cert") ($v.Get "tls_key")}}
+    tls {{$v.Get "tls_cert"}} {{$v.Get "tls_key"}}
+        {{else if $v.Get "tls_email"}}
+    tls {{$v.Get "tls_email"}}
         {{end}}
     {{else}}
     tls off
     {{end}}
 
-    {{if eq (Form "gzip") "1"}}
+    {{if eq ($v.Get "gzip") "1"}}
     gzip {
         {{AddonAttr "gzip" "ext"}}
         {{AddonAttr "gzip" "not"}}
@@ -29,8 +29,8 @@
     }
     {{end}}
 
-    {{if eq (Form "fastcgi") "1"}}
-    fastcgi {{Form "fastcgi_path"}} {{Form "fastcgi_endpoint"}} {{Form "fastcgi_preset"}} {
+    {{if eq ($v.Get "fastcgi") "1"}}
+    fastcgi {{$v.Get "fastcgi_path"}} {{$v.Get "fastcgi_endpoint"}} {{$v.Get "fastcgi_preset"}} {
         {{AddonAttr "fastcgi" "ext"}}
         {{AddonAttr "fastcgi" "split"}}
         {{AddonAttr "fastcgi" "index"}}
@@ -40,8 +40,8 @@
     }
     {{end}}
     
-    {{if eq (Form "proxy") "1"}}
-    proxy {{Form "proxy_from"}} {{Form "proxy_to"}} {
+    {{if eq ($v.Get "proxy") "1"}}
+    proxy {{$v.Get "proxy_from"}} {{$v.Get "proxy_to"}} {
         {{AddonAttr "proxy" "policy"}}
         {{AddonAttr "proxy" "fail_timeout"}}
         {{AddonAttr "proxy" "max_fails"}}
@@ -61,18 +61,18 @@
     }
     {{end}}
 
-    {{if eq (Form "browse") "1"}}
-    browse {{Form "browse_path"}} {{Form "browse_tmpl"}}
+    {{if eq ($v.Get "browse") "1"}}
+    browse {{$v.Get "browse_path"}} {{$v.Get "browse_tmpl"}}
     {{end}}
 
-    {{if eq (Form "expires") "1"}}
+    {{if eq ($v.Get "expires") "1"}}
     expires {
     {{IteratorKV "expires" "match" "        match    "}}
     }
     {{end}}
 
-    {{if eq (Form "ipfilter") "1"}}
-    ipfilter {{Form "ipfilter_paths"}} {
+    {{if eq ($v.Get "ipfilter") "1"}}
+    ipfilter {{$v.Get "ipfilter_paths"}} {
         rule block
         {{AddonAttr "ipfilter" "ip"}}
         {{AddonAttr "ipfilter" "country"}}
@@ -82,6 +82,5 @@
     }
     {{end}}
 
-{{Form "rewrite_rule"}}
+    {{$v.Get "rewrite_rule"}}
 }
-# </pre>

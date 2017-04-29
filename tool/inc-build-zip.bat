@@ -6,7 +6,6 @@ xcopy ..\data ..\dist\nging_%GOOS%_%GOARCH%\data /E /Q /H /I /Y
 xcopy ..\config\config.yaml ..\dist\nging_%GOOS%_%GOARCH%\config\ /E /Q /H /I /Y
 xcopy ..\config\config.yaml.sample ..\dist\nging_%GOOS%_%GOARCH%\config\ /E /Q /H /I /Y
 xcopy ..\config\install.sql ..\dist\nging_%GOOS%_%GOARCH%\config\ /E /Q /H /I /Y
-xcopy ..\config\vhost ..\dist\nging_%GOOS%_%GOARCH%\config\vhost /E /Q /H /I /Y
 
 if "%GOOS%"=="windows" (xcopy ..\support\sqlite3_%GOARCH%.dll ..\dist\nging_%GOOS%_%GOARCH%\ /E /Q /H /I /Y)
 

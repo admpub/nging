@@ -28,6 +28,7 @@ import (
 
 	"strings"
 
+	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/filemanager"
@@ -46,6 +47,7 @@ func init() {
 		g.Route(`GET,POST`, `/vhost_edit`, VhostEdit)
 		g.Route(`GET,POST`, `/vhost_delete`, VhostDelete)
 		g.Route(`GET,POST`, `/vhost_file`, VhostFile)
+		g.Route(`GET`, `/vhost_build`, Vhostbuild)
 		g.Route(`GET`, `/clear_cache`, ClearCache)
 	})
 }
@@ -62,6 +64,55 @@ func VhostIndex(ctx echo.Context) error {
 	ctx.Set(`pagination`, p)
 	ctx.Set(`listData`, m.Objects())
 	return ctx.Render(`manage/index`, ret)
+}
+
+func Vhostbuild(ctx echo.Context) error {
+	saveFile, err := getSaveDir()
+	if err == nil {
+		err = filepath.Walk(saveFile, func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if info.IsDir() {
+				return filepath.SkipDir
+			}
+			return os.Remove(path)
+		})
+	}
+	if err != nil {
+		handler.SendFail(ctx, err.Error())
+		return ctx.Redirect(`/manage`)
+	}
+	m := model.NewVhost(ctx)
+	n := 100
+	cnt, err := m.ListByOffset(nil, nil, 0, n)
+	for i, j := 0, cnt(); int64(i) < j; i += n {
+		if i > 0 {
+			_, err = m.ListByOffset(nil, nil, i, n)
+			if err != nil {
+				handler.SendFail(ctx, err.Error())
+				return ctx.Redirect(`/manage`)
+			}
+		}
+		for _, m := range m.Objects() {
+			var formData url.Values
+			err := json.Unmarshal([]byte(m.Setting), &formData)
+			if err == nil {
+				file := filepath.Join(saveFile, fmt.Sprint(m.Id)+`.conf`)
+				err = saveVhostConf(ctx, file, formData)
+			}
+			if err != nil {
+				handler.SendFail(ctx, err.Error())
+				return ctx.Redirect(`/manage`)
+			}
+		}
+	}
+	err = config.DefaultCLIConfig.CaddyRestart()
+	if err != nil {
+		ctx.Logger().Error(err)
+	}
+	handler.SendOk(ctx, ctx.T(`操作成功`))
+	return ctx.Redirect(`/manage`)
 }
 
 func VhostAdd(ctx echo.Context) error {
@@ -82,7 +133,7 @@ func VhostAdd(ctx echo.Context) error {
 			}
 			fallthrough
 		case 0 == 1:
-			err = saveVhostData(ctx, m)
+			err = saveVhostData(ctx, m.Vhost, ctx.Forms())
 		}
 		if err == nil {
 			handler.SendOk(ctx, ctx.T(`操作成功`))
@@ -100,15 +151,34 @@ func VhostAdd(ctx echo.Context) error {
 	return ctx.Render(`manage/vhost_edit`, err)
 }
 
-func saveVhostData(ctx echo.Context, m *model.Vhost) (err error) {
-	var b []byte
-	var saveFile string
-	SetCaddyfileFunc(ctx)
-	b, err = ctx.Fetch(`manage/caddyfile`, nil)
+func getSaveDir() (saveFile string, err error) {
+	saveFile, err = filepath.Abs(config.DefaultConfig.Sys.VhostsfileDir)
 	if err != nil {
 		return
 	}
-	saveFile, err = filepath.Abs(config.DefaultConfig.Sys.VhostsfileDir)
+	if fi, er := os.Stat(saveFile); er != nil || !fi.IsDir() {
+		err = os.MkdirAll(saveFile, 0666)
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
+func saveVhostConf(ctx echo.Context, saveFile string, values url.Values) error {
+	SetCaddyfileFunc(ctx, values)
+	ctx.Set(`values`, values)
+	b, err := ctx.Fetch(`manage/caddyfile`, nil)
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(saveFile, b, os.ModePerm)
+	return err
+}
+
+func saveVhostData(ctx echo.Context, m *dbschema.Vhost, values url.Values) (err error) {
+	var saveFile string
+	saveFile, err = getSaveDir()
 	if err != nil {
 		return
 	}
@@ -119,7 +189,7 @@ func saveVhostData(ctx echo.Context, m *model.Vhost) (err error) {
 			err = nil
 		}
 	} else {
-		err = ioutil.WriteFile(saveFile, b, os.ModePerm)
+		err = saveVhostConf(ctx, saveFile, values)
 		if len(ctx.Form(`restart`)) > 0 {
 			err = config.DefaultCLIConfig.CaddyRestart()
 		}
@@ -183,7 +253,7 @@ func VhostEdit(ctx echo.Context) error {
 			}
 			fallthrough
 		case 0 == 1:
-			err = saveVhostData(ctx, m)
+			err = saveVhostData(ctx, m.Vhost, ctx.Forms())
 		}
 		if err == nil {
 			handler.SendOk(ctx, ctx.T(`操作成功`))

@@ -17,15 +17,19 @@
 */
 package caddy
 
-import "github.com/webx-top/echo"
+import (
+	"net/url"
 
-func addonAttr(ctx echo.Context) {
+	"github.com/webx-top/echo"
+)
+
+func addonAttr(ctx echo.Context, v url.Values) {
 	ctx.SetFunc(`AddonAttr`, func(addon string, item string) string {
 		if len(addon) > 0 {
 			addon += `_`
 		}
 		k := addon + item
-		v := ctx.Form(k)
+		v := v.Get(k)
 		if len(v) == 0 {
 			return ``
 		}
@@ -33,16 +37,16 @@ func addonAttr(ctx echo.Context) {
 	})
 }
 
-func iteratorKV(ctx echo.Context) {
+func iteratorKV(ctx echo.Context, v url.Values) {
 	ctx.SetFunc(`IteratorKV`, func(addon string, item string, prefix string) string {
 		if len(addon) > 0 {
 			addon += `_`
 		}
 		k := addon + item + `_k`
-		keys := ctx.FormValues(k)
+		keys, _ := v[k]
 
 		k = addon + item + `_v`
-		values := ctx.FormValues(k)
+		values, _ := v[k]
 
 		r := ``
 		l := len(values)
@@ -57,7 +61,7 @@ func iteratorKV(ctx echo.Context) {
 	})
 }
 
-func SetCaddyfileFunc(ctx echo.Context) {
-	addonAttr(ctx)
-	iteratorKV(ctx)
+func SetCaddyfileFunc(ctx echo.Context, v url.Values) {
+	addonAttr(ctx, v)
+	iteratorKV(ctx, v)
 }
