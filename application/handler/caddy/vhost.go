@@ -85,10 +85,10 @@ func Vhostbuild(ctx echo.Context) error {
 	}
 	m := model.NewVhost(ctx)
 	n := 100
-	cnt, err := m.ListByOffset(nil, nil, 0, n)
+	cnt, err := m.ListByOffset(nil, nil, 0, n, `disabled`, `N`)
 	for i, j := 0, cnt(); int64(i) < j; i += n {
 		if i > 0 {
-			_, err = m.ListByOffset(nil, nil, i, n)
+			_, err = m.ListByOffset(nil, nil, i, n, `disabled`, `N`)
 			if err != nil {
 				handler.SendFail(ctx, err.Error())
 				return ctx.Redirect(`/manage`)

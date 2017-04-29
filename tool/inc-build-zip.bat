@@ -2,6 +2,8 @@ mkdir ..\dist\nging_%GOOS%_%GOARCH%
 go build -tags "bindata sqlite" -o ../dist/nging_%GOOS%_%GOARCH%/nging_%GOOS%_%GOARCH%%NGINGEX% ..
 
 xcopy ..\data ..\dist\nging_%GOOS%_%GOARCH%\data /E /Q /H /I /Y
+mkdir ..\dist\nging_%GOOS%_%GOARCH%\config
+mkdir ..\dist\nging_%GOOS%_%GOARCH%\config\vhosts
 
 xcopy ..\config\config.yaml ..\dist\nging_%GOOS%_%GOARCH%\config\ /E /Q /H /I /Y
 xcopy ..\config\config.yaml.sample ..\dist\nging_%GOOS%_%GOARCH%\config\ /E /Q /H /I /Y
