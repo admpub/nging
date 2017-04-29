@@ -105,12 +105,6 @@
 			"revisionTime": "2016-05-07T01:00:35Z"
 		},
 		{
-			"checksumSHA1": "+WcMTZiR+HbDJxQtFmhXs85H+EE=",
-			"path": "github.com/admpub/go-sqlite3-win64",
-			"revision": "679e4dbb54c4556d246214b3b5e13ff00cd85f52",
-			"revisionTime": "2017-04-27T13:37:55Z"
-		},
-		{
 			"checksumSHA1": "cZru3n6DBSugUp4OWbzhe01HA8c=",
 			"path": "github.com/admpub/godownloader/httpclient",
 			"revision": "48d754b31131c4a67fb4edd0d9a651e3d07fafb7",
@@ -200,6 +194,12 @@
 			"path": "github.com/dustin/go-humanize",
 			"revision": "e2917784d0fb41e3b84847f84302a287a2988f7a",
 			"revisionTime": "2016-11-27T12:35:54Z"
+		},
+		{
+			"checksumSHA1": "SvNimSKDmJopJXAiz42vOPDKdvA=",
+			"path": "github.com/elazarl/go-bindata-assetfs",
+			"revision": "30f82fa23fd844bd5bb1e5f216db87fd77b5eb43",
+			"revisionTime": "2017-02-27T21:27:28Z"
 		},
 		{
 			"checksumSHA1": "JAvNqCuYxRTHkVyk8vlM9pKU44o=",
@@ -1340,12 +1340,6 @@
 			"revisionTime": "2016-11-27T12:35:54Z"
 		},
 		{
-			"checksumSHA1": "VrzPJyWI6disCgYuVEQzkjqUsJk=",
-			"path": "golang.org/x/net/idna",
-			"revision": "ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d",
-			"revisionTime": "2017-03-29T01:43:45Z"
-		},
-		{
 			"checksumSHA1": "yhndhWXMs/VSEDLks4dNyFMQStA=",
 			"origin": "github.com/mholt/caddy/vendor/golang.org/x/net/lex/httplex",
 			"path": "golang.org/x/net/lex/httplex",
@@ -1401,22 +1395,10 @@
 			"revisionTime": "2017-04-20T13:36:16Z"
 		},
 		{
-			"checksumSHA1": "faFDXp++cLjLBlvsr+izZ+go1WU=",
-			"path": "golang.org/x/text/secure/bidirule",
-			"revision": "f28f36722d5ef2f9655ad3de1f248e3e52ad5ebd",
-			"revisionTime": "2017-02-28T17:26:26Z"
-		},
-		{
 			"checksumSHA1": "ziMb9+ANGRJSSIuxYdRbA+cDRBQ=",
 			"path": "golang.org/x/text/transform",
 			"revision": "a9a820217f98f7c8a207ec1e45a874e1fe12c478",
 			"revisionTime": "2017-04-20T13:36:16Z"
-		},
-		{
-			"checksumSHA1": "VoN1N+QSzZGXJuTX2mVH7fAUXNM=",
-			"path": "golang.org/x/text/unicode/bidi",
-			"revision": "f28f36722d5ef2f9655ad3de1f248e3e52ad5ebd",
-			"revisionTime": "2017-02-28T17:26:26Z"
 		},
 		{
 			"checksumSHA1": "sQ2iPLRUXfPPpQeREkr6F+z93f0=",
