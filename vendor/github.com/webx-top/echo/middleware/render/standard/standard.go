@@ -58,6 +58,7 @@ func New(templateDir string, args ...logger.Logger) driver.Driver {
 		ExtendTag:         "Extend",
 		BlockTag:          "Block",
 		SuperTag:          "Super",
+		StripTag:          "Strip",
 		Ext:               ".html",
 		debug:             Debug,
 		fileEvents:        make([]func(string), 0),
@@ -100,11 +101,13 @@ type Standard struct {
 	extTagRegex        *regexp.Regexp
 	blkTagRegex        *regexp.Regexp
 	innerTagBlankRegex *regexp.Regexp
+	stripTagRegex      *regexp.Regexp
 	cachedRegexIdent   string
 	IncludeTag         string
 	ExtendTag          string
 	BlockTag           string
 	SuperTag           string
+	StripTag           string
 	Ext                string
 	TemplatePathParser func(string) string
 	debug              bool
@@ -211,6 +214,7 @@ func (self *Standard) InitRegexp() {
 	self.extTagRegex = regexp.MustCompile(left + self.ExtendTag + `[\s]+"([^"]+)"(?:[\s]+([^` + rfirst + `]+))?[\s]*` + right)
 	self.blkTagRegex = regexp.MustCompile(`(?s)` + left + self.BlockTag + `[\s]+"([^"]+)"[\s]*` + right + `(.*?)` + left + `\/` + self.BlockTag + right)
 	self.innerTagBlankRegex = regexp.MustCompile(`(?s)(` + right + `|>)[\s]{2,}(` + left + `|<)`)
+	self.stripTagRegex = regexp.MustCompile(`(?s)` + left + self.StripTag + right + `(.*?)` + left + `\/` + self.StripTag + right)
 }
 
 // Render HTML
@@ -306,6 +310,7 @@ func (self *Standard) parse(tmplName string, funcs map[string]interface{}) (tmpl
 		}
 	}
 	content = self.ContainsSubTpl(content, subcs)
+	content = string(self.strip([]byte(content)))
 	tmpl, err = t.Parse(content)
 	if err != nil {
 		content = fmt.Sprintf("Parse %v err: %v", tmplName, err)
@@ -493,13 +498,7 @@ func (self *Standard) RawContent(tmpl string) (b []byte, e error) {
 				b = fn(b)
 			}
 		}
-		if !self.debug {
-			var pres [][]byte
-			b, pres = driver.ReplacePRE(b)
-			b = self.innerTagBlankRegex.ReplaceAll(b, driver.FE)
-			b = bytes.TrimSpace(b)
-			b = driver.RecoveryPRE(b, pres)
-		}
+		b = self.strip(b)
 	}()
 	if self.TemplateMgr != nil {
 		b, e = self.TemplateMgr.GetTemplate(tmpl)
@@ -509,6 +508,33 @@ func (self *Standard) RawContent(tmpl string) (b []byte, e error) {
 		return
 	}
 	return ioutil.ReadFile(filepath.Join(self.TemplateDir, tmpl))
+}
+
+func (self *Standard) strip(src []byte) []byte {
+	if self.debug {
+		return self.stripTagRegex.ReplaceAll(src, driver.First)
+	}
+	src = self.stripTagRegex.ReplaceAllFunc(src, func(b []byte) []byte {
+		b = bytes.TrimPrefix(b, []byte(self.DelimLeft+self.StripTag+self.DelimRight))
+		b = bytes.TrimSuffix(b, []byte(self.DelimLeft+`/`+self.StripTag+self.DelimRight))
+		var pres [][]byte
+		b, pres = driver.ReplacePRE(b)
+		b = self.innerTagBlankRegex.ReplaceAll(b, driver.FE)
+		b = driver.RemoveMultiCRLF(b)
+		b = bytes.TrimSpace(b)
+		b = driver.RecoveryPRE(b, pres)
+		return b
+	})
+	return src
+}
+
+func (self *Standard) stripSpace(b []byte) []byte {
+	var pres [][]byte
+	b, pres = driver.ReplacePRE(b)
+	b = self.innerTagBlankRegex.ReplaceAll(b, driver.FE)
+	b = bytes.TrimSpace(b)
+	b = driver.RecoveryPRE(b, pres)
+	return b
 }
 
 func (self *Standard) ClearCache() {

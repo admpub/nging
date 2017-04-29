@@ -100,7 +100,9 @@ func (n *NopRenderer) Close() {}
 
 var (
 	FE       = []byte(`$1 $2`)
+	First    = []byte(`$1`)
 	preRegex = regexp.MustCompile(`(?is)<pre( [^>]*)?>.*?<\/pre>`)
+	eolRegex = regexp.MustCompile("(?s)(\r?\n){2,}")
 )
 
 func ReplacePRE(b []byte) ([]byte, [][]byte) {
@@ -111,6 +113,10 @@ func ReplacePRE(b []byte) ([]byte, [][]byte) {
 		return []byte(`<!-- <[#pre:` + index + `#]> -->`)
 	})
 	return b, pres
+}
+
+func RemoveMultiCRLF(b []byte) []byte {
+	return eolRegex.ReplaceAll(b, First)
 }
 
 func RecoveryPRE(b []byte, pres [][]byte) []byte {

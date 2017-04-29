@@ -1,4 +1,5 @@
 // +build sqlite
+// +build windll
 
 package sqlite
 

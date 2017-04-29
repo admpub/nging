@@ -1,5 +1,5 @@
 // +build sqlite
-// +build !windows
+// +build !windll
 
 package sqlite
 

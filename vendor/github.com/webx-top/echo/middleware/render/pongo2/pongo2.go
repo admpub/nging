@@ -271,13 +271,7 @@ func (a *Pongo2) RawContent(tmpl string) (b []byte, e error) {
 				b = fn(b)
 			}
 		}
-		if !a.debug {
-			var pres [][]byte
-			b, pres = driver.ReplacePRE(b)
-			b = ibRegex.ReplaceAll(b, driver.FE)
-			b = bytes.TrimSpace(b)
-			b = driver.RecoveryPRE(b, pres)
-		}
+		//b = Strip(b)
 	}()
 	if a.Mgr != nil {
 		b, e = a.Mgr.GetTemplate(tmpl)
@@ -286,6 +280,15 @@ func (a *Pongo2) RawContent(tmpl string) (b []byte, e error) {
 		b, e = ioutil.ReadFile(filepath.Join(a.templateDir, tmpl))
 	}
 	return
+}
+
+func Strip(b []byte) []byte {
+	var pres [][]byte
+	b, pres = driver.ReplacePRE(b)
+	b = ibRegex.ReplaceAll(b, driver.FE)
+	b = bytes.TrimSpace(b)
+	b = driver.RecoveryPRE(b, pres)
+	return b
 }
 
 func (a *Pongo2) ClearCache() {
