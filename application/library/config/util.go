@@ -22,6 +22,7 @@ import (
 	stdLog "log"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -73,10 +74,10 @@ func ParseConfig() error {
 	if len(DefaultConfig.Caddy.Caddyfile) == 0 {
 		DefaultConfig.Caddy.Caddyfile = `./Caddyfile`
 	} else if strings.HasSuffix(DefaultConfig.Caddy.Caddyfile, `/`) || strings.HasSuffix(DefaultConfig.Caddy.Caddyfile, `\`) {
-		DefaultConfig.Caddy.Caddyfile = filepath.Join(DefaultConfig.Caddy.Caddyfile, `Caddyfile`)
+		DefaultConfig.Caddy.Caddyfile = path.Join(DefaultConfig.Caddy.Caddyfile, `Caddyfile`)
 	}
 	if len(DefaultConfig.Sys.VhostsfileDir) == 0 {
-		DefaultConfig.Sys.VhostsfileDir = filepath.Join(confDir, `vhosts`)
+		DefaultConfig.Sys.VhostsfileDir = path.Join(confDir, `vhosts`)
 	}
 	if DefaultConfig.Sys.EditableFileMaxBytes < 1 && len(DefaultConfig.Sys.EditableFileMaxSize) > 0 {
 		DefaultConfig.Sys.EditableFileMaxBytes, err = bytes.Parse(DefaultConfig.Sys.EditableFileMaxSize)
