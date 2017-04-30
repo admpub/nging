@@ -1,2 +1,2 @@
-go get github.com/mholt/archiver
-go install github.com/mholt/archiver/cmd/archiver
+go get github.com/admpub/archiver
+go install github.com/admpub/archiver/cmd/archiver

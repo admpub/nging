@@ -11,7 +11,7 @@ cp -R ../config/install.sql ../dist/nging_${GOOS}_${GOARCH}/config/install.sql
 
 if [ $GOOS = "windows" ]; then
     cp -R ../support/sqlite3_${GOARCH}.dll ../dist/nging_${GOOS}_${GOARCH}/sqlite3_${GOARCH}.dll
-	export archiver_extension=tar.gz
+	export archiver_extension=tar.bz2
 else
 	export archiver_extension=zip
 fi
