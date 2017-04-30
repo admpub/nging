@@ -516,7 +516,7 @@ var App = function () {
         text: '',
         image: '',
         class_name: 'clean',//primary|info|danger|warning|success|dark
-        sticky: true
+        sticky: false
         //,time: 1000,speed: 500,position: 'bottom-right'
       };
       if(typeof(options)!="object")options={text:options};

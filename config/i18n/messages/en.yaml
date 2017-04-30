@@ -631,5 +631,5 @@ table参数不能为空 : "The table parameter can not be empty"
 "默认值30s。设置的值需要带单位(秒:s / 分钟:m)，比如，输入30s表示30秒" : "The default value is 30s. "
 "默认值60s。设置的值需要带单位(秒:s / 分钟:m)，比如，输入30s表示30秒" : "The default value is 60s. "
 默认首页文件 : "Default home page file"
-
 重建全部配置并重启Web服务 : "Rebuild conf and restart service"
+"例如: " : "e.g. "

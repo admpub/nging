@@ -22,6 +22,16 @@
 </tr>
                                         
                                     {{end}}
+																{{else}}
+<tr>
+	<td><input type="text" class="form-control" name="expires_match_k" value="" required="required"></td>
+	<td><input type="text" class="form-control" name="expires_match_v" pattern="^[0-9]+(y|m|d|h|i|s)([0-9]+(y|m|d|h|i|s))*$" value="" required="required"></td>
+	<td class="text-center">
+    <button type="button" class="btn btn-danger" onclick="$(this).parent().parent().remove()">
+      <i class="fa fa-times"></i>
+    </button>
+  </td>
+</tr>
                                 {{end}}
 								        	<tr>
 								        		<td colspan="3" class="text-center primary-emphasis" style="cursor:pointer" id="expiresMatchesBtn"><i class="fa fa-plus"></i></td>

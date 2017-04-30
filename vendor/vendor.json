@@ -105,6 +105,12 @@
 			"revisionTime": "2016-05-07T01:00:35Z"
 		},
 		{
+			"checksumSHA1": "pGUjqi1mrsmi45nQYid+XuqWfAI=",
+			"path": "github.com/admpub/go-sqlite3-win64",
+			"revision": "effd196dfa1f3a4caa72f1fdf8c74a65161f0b93",
+			"revisionTime": "2017-04-30T05:00:04Z"
+		},
+		{
 			"checksumSHA1": "cZru3n6DBSugUp4OWbzhe01HA8c=",
 			"path": "github.com/admpub/godownloader/httpclient",
 			"revision": "48d754b31131c4a67fb4edd0d9a651e3d07fafb7",

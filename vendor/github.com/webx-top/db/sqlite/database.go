@@ -32,7 +32,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	_ "github.com/mattn/go-sqlite3" // SQLite3 driver.
+	//_ "github.com/mattn/go-sqlite3" // SQLite3 driver.
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/internal/sqladapter"
 	"github.com/webx-top/db/internal/sqladapter/compat"
