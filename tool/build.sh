@@ -16,5 +16,5 @@ export NGINGEX=
 
 export GOOS=linux
 export GOARCH=amd64
-source ${PWD}/inc-build-tar.sh
+source ${PWD}/inc-build.sh
 

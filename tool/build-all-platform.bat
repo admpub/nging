@@ -8,15 +8,15 @@ set NGINGEX=
 
 set GOOS=linux
 set GOARCH=amd64
-call inc-build-zip.bat
+call inc-build.bat
 
 set GOOS=linux
 set GOARCH=386
-call inc-build-zip.bat
+call inc-build.bat
 
 set GOOS=darwin
 set GOARCH=amd64
-call inc-build-zip.bat
+call inc-build.bat
 
 
 
@@ -24,10 +24,10 @@ set NGINGEX=.exe
 
 set GOOS=windows
 set GOARCH=386
-call inc-build-zip.bat
+call inc-build.bat
 
 set GOOS=windows
 set GOARCH=amd64
-call inc-build-zip.bat
+call inc-build.bat
 
 pause

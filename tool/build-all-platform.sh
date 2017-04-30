@@ -8,16 +8,16 @@ export NGINGEX=
 
 export GOOS=linux
 export GOARCH=amd64
-source ${PWD}/inc-build-tar.sh
+source ${PWD}/inc-build.sh
 
 
 export GOOS=linux
 export GOARCH=386
-source ${PWD}/inc-build-tar.sh
+source ${PWD}/inc-build.sh
 
 export GOOS=darwin
 export GOARCH=amd64
-source ${PWD}/inc-build-tar.sh
+source ${PWD}/inc-build.sh
 
 
 
@@ -25,8 +25,8 @@ export NGINGEX=.exe
 
 export GOOS=windows
 export GOARCH=386
-source ${PWD}/inc-build-tar.sh
+source ${PWD}/inc-build.sh
 
 export GOOS=windows
 export GOARCH=amd64
-source ${PWD}/inc-build-tar.sh
+source ${PWD}/inc-build.sh
