@@ -5,6 +5,8 @@ cd ..
 cd tool
 
 set NGINGEX=.exe
+set BUILDTAGS= windll
+
 set GOOS=windows
 set GOARCH=386
 call inc-build.bat

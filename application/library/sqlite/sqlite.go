@@ -11,7 +11,7 @@ import (
 	"github.com/webx-top/db/sqlite"
 )
 
-func init() {
+func register() {
 	config.DBCreaters[`sqlite`] = CreaterSQLite
 	config.DBConnecters[`sqlite`] = ConnectSQLite
 	config.DBInstallers[`sqlite`] = Exec

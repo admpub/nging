@@ -1,5 +1,5 @@
 mkdir ../dist/nging_${GOOS}_${GOARCH}
-go build -tags "bindata sqlite windll" -o ../dist/nging_${GOOS}_${GOARCH}/nging_${GOOS}_${GOARCH}${NGINGEX} ..
+go build -tags "bindata sqlite${BUILDTAGS}" -o ../dist/nging_${GOOS}_${GOARCH}/nging_${GOOS}_${GOARCH}${NGINGEX} ..
 cp -R ../data ../dist/nging_${GOOS}_${GOARCH}/data
 
 mkdir ../dist/nging_${GOOS}_${GOARCH}/config
