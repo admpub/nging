@@ -407,11 +407,11 @@ func (n *node) applyHandler(method string, ctx *xContext) {
 
 func (r *Router) Find(method, path string, context Context) {
 	ctx := context.Object()
+	ctx.path = path
 	cn := r.tree // Current node as root
 
 	if m, ok := r.static[path]; ok {
 		m.applyHandler(method, ctx)
-		ctx.path = path
 		if ctx.handler == nil {
 			ctx.handler = m.check405()
 		}
