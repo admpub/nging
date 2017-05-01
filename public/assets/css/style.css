@@ -690,6 +690,7 @@ body.modal-open,
 /*Collapsed Sidebar*/
 .sb-collapsed .cl-sidebar {
   width: 55px;
+  overflow: hidden;
 }
 .sb-collapsed #pcont {
   margin-left: 55px;
@@ -2006,21 +2007,21 @@ table.information > tbody > tr > td {
   border-bottom-right-radius: 0;
   border-top-right-radius: 0;
 }
-.page-aside .collapse-button {
-  position:absolute;left:280px;color:#fff;display:block;
-  z-index:9;border-radius:0 3px 3px 0;cursor:pointer;
-}
-.page-aside > .collapse-button {
+.page-aside > .collapsed-button {
   top:120px;display:none;
   padding:30px 2px;
+  position:absolute;left:280px;color:#fff;
+  z-index:9;border-radius:0 3px 3px 0;cursor:pointer;
 }
 .page-aside .content .header .collapse-button {
+  position:absolute;left:280px;color:#fff;display:block;
+  z-index:9;border-radius:0 3px 3px 0;cursor:pointer;
   left:240px;top:30px;border-radius:3px;
 }
 .page-aside.collapsed{
   width:0;
 }
-.page-aside.collapsed > .collapse-button {
+.page-aside.collapsed > .collapsed-button {
   display:block;
   left:0;
 }

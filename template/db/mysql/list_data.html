@@ -135,7 +135,7 @@ function onselectColumns(obj){
             </form>
         </div><!-- /.block-flat -->
         {{Include "db/mysql/results"}}
-        <div class="block-flat">
+        <div class="block-flat row">
           <div class="header">
 			<a href="{{dbMgrURL "createData" Stored.dbName Stored.table}}" class="btn btn-success pull-right">
 				<i class="fa fa-plus"></i>
@@ -175,7 +175,7 @@ function onselectColumns(obj){
 						</tr>
                         {{end}}
 					</tbody>
-				</table>		
+				</table>
 			    </div>
                 <fieldset>
                      <legend>{{"已选中"|T}} (<span id="selected-items-count">0</span>) {{T "共有%d项" Stored.total}}</legend>

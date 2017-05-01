@@ -223,13 +223,59 @@ var App = function () {
           $("#cl-wrapper .nscroller").nanoScroller({ preventPageScrolling: true });
         }
       }
-        
+
+      function pageAside(){
+        var pageKey=window.location.pathname.replace(/^\//,'').replace(/[^\w]/g,'-')+'-'+window.location.search.replace(/[^\w]/g,'_');
+        $('.page-aside').each(function(index){
+          var aside=$(this);
+          $(this).find('.header > .collapse-button').on('click',function(){
+              aside.addClass('collapsed');
+              store.set(pageKey+'.page-aside-'+index,'collapsed');
+              aside.trigger('collapsed');
+              tableReponsive(0);
+          }); 
+          $(this).children('.collapsed-button').on('click',function(){
+              aside.removeClass('collapsed');
+              store.set(pageKey+'.page-aside-'+index,'');
+              aside.trigger('expanded');
+              tableReponsive(280);
+          }); 
+          if(store.get(pageKey+'.page-aside-'+index)=='collapsed'){
+            $(this).trigger('click');
+          }
+        });
+      }
+
+      function tableReponsiveInit(){
+        var aside=$('#main-container > .page-aside');
+        var asideWidth=aside.width();
+        //if($('#pcont').width()>bodyWidth){
+        if(asideWidth<270){
+          aside.find('.header > .collapse-button').trigger('click');
+          return;
+        }
+        tableReponsive(asideWidth);
+      }
+      
+      function tableReponsive(asideWidth){
+        var sidebarWidth=$('#cl-wrapper > .cl-sidebar').width();
+        var windowWidth=$(window).width();
+        var bodyWidth=windowWidth-sidebarWidth-asideWidth;
+        bodyWidth-=80;
+        $('#cl-wrapper > .cl-body .table-responsive').each(function(){
+          if($(this).children('table').width()>bodyWidth){
+            $(this).addClass('overflow').css('max-width',bodyWidth);
+          }else{
+            $(this).removeClass('overflow');
+          }
+        });
+      }
+
   return {
    
     init: function (options) {
       //Extends basic config with options
       $.extend( config, options );
-      
       /*VERTICAL MENU*/
       $(".cl-vnavigation li ul").each(function(){
         $(this).parent().addClass("parent");
@@ -273,7 +319,6 @@ var App = function () {
       $("#sidebar-collapse").click(function(){
           toggleSideBar();
       });
-      
       
       if($("#cl-wrapper").hasClass("fixed-menu")){
         var scroll =  $("#cl-wrapper .menu-space");
@@ -368,11 +413,10 @@ var App = function () {
             e.stopPropagation();
           }
         });
-        
+
         $(".cl-vnavigation li").on('touchstart click', function(){
           //alert($(window).width());
         });
-        
       $(window).resize(function(){
         //updateHeight();
       });
@@ -475,11 +519,19 @@ var App = function () {
           $(".nscroller").nanoScroller();
         });
       }
-      
     },
       
     speech: function(options){
       speech(options);
+    },
+    pageAside: function(options){
+      pageAside(options);
+    },
+    tableReponsiveInit: function(options){
+      tableReponsiveInit(options);
+    },
+    tableReponsive: function(options){
+      tableReponsive(options);
     },
     
     speechCommand: function(com, options){
