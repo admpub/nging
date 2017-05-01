@@ -55,36 +55,40 @@ func Manager(ctx echo.Context) error {
 		}
 	case `logout`:
 	default:
-		if data, ok := ctx.Session().Get(`dbAuth`).(*driver.DbAuth); ok {
-			auth.CopyFrom(data)
-			err = mgr.Run(auth.Driver, `login`)
-			if err == nil {
-				driverName = auth.Driver
-				if operation == `` {
-					operation = `listDb`
-				}
-				ctx.Set(`dbUsername`, auth.Username)
-				ctx.Set(`dbHost`, auth.Host)
-				genURL = func(op string, args ...string) string {
-					if op == `` {
-						op = operation
-					}
-					var p string
-					switch len(args) {
-					case 2:
-						p += `&table=` + args[1]
-						fallthrough
-					case 1:
-						p += `&db=` + args[0]
-					}
-					return `/db?driver=` + driverName + `&username=` + auth.Username + `&operation=` + op + p
-				}
-				defer mgr.Run(auth.Driver, `logout`)
-			} else {
-				handler.SendFail(ctx, err.Error())
-				err = nil
-				driverName = ``
+		data, ok := ctx.Session().Get(`dbAuth`).(*driver.DbAuth)
+		if !ok {
+			ctx.Session().Delete(`dbAuth`)
+			return ctx.Redirect(`/db`)
+		}
+
+		auth.CopyFrom(data)
+		err = mgr.Run(auth.Driver, `login`)
+		if err == nil {
+			driverName = auth.Driver
+			if operation == `` {
+				operation = `listDb`
 			}
+			ctx.Set(`dbUsername`, auth.Username)
+			ctx.Set(`dbHost`, auth.Host)
+			genURL = func(op string, args ...string) string {
+				if op == `` {
+					op = operation
+				}
+				var p string
+				switch len(args) {
+				case 2:
+					p += `&table=` + args[1]
+					fallthrough
+				case 1:
+					p += `&db=` + args[0]
+				}
+				return `/db?driver=` + driverName + `&username=` + auth.Username + `&operation=` + op + p
+			}
+			defer mgr.Run(auth.Driver, `logout`)
+		} else {
+			handler.SendFail(ctx, err.Error())
+			err = nil
+			driverName = ``
 		}
 	}
 	if genURL == nil {
