@@ -45,7 +45,7 @@ import (
 
 var (
 	//Version 版本号
-	Version = `1.1.2`
+	Version = `1.1.3`
 
 	binData    bool
 	staticMW   interface{}
