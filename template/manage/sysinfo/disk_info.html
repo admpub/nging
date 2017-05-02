@@ -16,8 +16,9 @@
 								</thead>
 								<tbody>
                                     {{range $k,$v:=.Partitions}}
+                                    {{$diskUsage := index $.DiskUsages $k}}
 									<tr>
-                                        <td rowspan="4" class="text-center">{{$k}}</td>
+                                        <td rowspan="{{if $diskUsage}}4{{else}}2{{end}}" class="text-center">{{$k}}</td>
 										<td>{{"设备"|T}}</td>
                                         <td>{{$v.Device}}</td>
 										<td>{{"挂载点"|T}}</td>
@@ -29,7 +30,6 @@
 										<td>{{"属性"|T}}</td>
 										<td>{{$v.Opts}}</td>
 									</tr>
-                                    {{$diskUsage := index $.DiskUsages $k}}
 									{{if $diskUsage}}
 									<tr>
 										<td>{{"磁盘容量"|T}}</td>
