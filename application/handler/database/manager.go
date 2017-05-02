@@ -58,12 +58,11 @@ func Manager(ctx echo.Context) error {
 		data, ok := ctx.Session().Get(`dbAuth`).(*driver.DbAuth)
 		if !ok {
 			ctx.Session().Delete(`dbAuth`)
-			return ctx.Redirect(`/db`)
+		} else {
+			auth.CopyFrom(data)
+			err = mgr.Run(auth.Driver, `login`)
 		}
-
-		auth.CopyFrom(data)
-		err = mgr.Run(auth.Driver, `login`)
-		if err == nil {
+		if ok && err == nil {
 			driverName = auth.Driver
 			if operation == `` {
 				operation = `listDb`
@@ -86,8 +85,10 @@ func Manager(ctx echo.Context) error {
 			}
 			defer mgr.Run(auth.Driver, `logout`)
 		} else {
-			handler.SendFail(ctx, err.Error())
-			err = nil
+			if err != nil {
+				handler.SendFail(ctx, err.Error())
+				err = nil
+			}
 			driverName = ``
 		}
 	}
