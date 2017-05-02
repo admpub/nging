@@ -58,14 +58,7 @@ func ParseTimeDuration(timeout string) time.Duration {
 	return timeoutDuration
 }
 
-func ParseConfig() error {
-	if false {
-		b, err := confl.Marshal(DefaultConfig)
-		err = ioutil.WriteFile(DefaultCLIConfig.Conf, b, os.ModePerm)
-		if err != nil {
-			return err
-		}
-	}
+func InitConfig() error {
 	_, err := confl.DecodeFile(DefaultCLIConfig.Conf, DefaultConfig)
 	if err != nil {
 		return err
@@ -91,6 +84,21 @@ func ParseConfig() error {
 	}
 	caddy.Fixed(&DefaultConfig.Caddy)
 	ftp.Fixed(&DefaultConfig.FTP)
+	return nil
+}
+
+func ParseConfig() error {
+	if false {
+		b, err := confl.Marshal(DefaultConfig)
+		err = ioutil.WriteFile(DefaultCLIConfig.Conf, b, os.ModePerm)
+		if err != nil {
+			return err
+		}
+	}
+	err := InitConfig()
+	if err != nil {
+		return err
+	}
 	InitLog()
 	InitSessionOptions()
 	if DefaultConfig.Sys.Debug {

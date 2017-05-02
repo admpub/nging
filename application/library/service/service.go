@@ -23,10 +23,15 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 
 	"io/ioutil"
 
+	"runtime"
+	"strings"
+
+	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/service"
 	"github.com/webx-top/com"
 )
@@ -60,10 +65,34 @@ func New(cfg *Config, action string) error {
 	return s.Run()
 }
 
+func getPidFiles() []string {
+	pidFile := []string{}
+	ftpPid := config.DefaultConfig.FTP.PidFile
+	caddyPid := config.DefaultConfig.Caddy.PidFile
+	if runtime.GOOS == `windows` {
+		if !strings.Contains(ftpPid, `:`) {
+			ftpPid = filepath.Join(com.SelfDir(), ftpPid)
+		}
+		if !strings.Contains(caddyPid, `:`) {
+			caddyPid = filepath.Join(com.SelfDir(), caddyPid)
+		}
+	} else {
+		if !strings.HasPrefix(ftpPid, `/`) {
+			ftpPid = filepath.Join(com.SelfDir(), ftpPid)
+		}
+		if !strings.HasPrefix(caddyPid, `/`) {
+			caddyPid = filepath.Join(com.SelfDir(), caddyPid)
+		}
+	}
+	pidFile = append(pidFile, caddyPid)
+	pidFile = append(pidFile, ftpPid)
+	return pidFile
+}
+
 func NewProgram(cfg *Config) *program {
 	return &program{
 		Config:  cfg,
-		pidFile: `nging.pid`,
+		pidFile: filepath.Join(com.SelfDir(), `nging.pid`),
 	}
 }
 
@@ -121,6 +150,9 @@ func (p *program) killCmd() {
 		}
 	}
 	com.CloseProcessFromPidFile(p.pidFile)
+	for _, pidFile := range getPidFiles() {
+		com.CloseProcessFromPidFile(pidFile)
+	}
 }
 
 func (p *program) close() {

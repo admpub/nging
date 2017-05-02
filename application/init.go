@@ -44,17 +44,21 @@ import (
 func Initialize(e *echo.Echo) {
 	e.Use(middleware.FuncMap())
 	addRouter(e)
+	WatchConfig(config.ParseConfig, true)
+}
+
+func WatchConfig(fn func() error, mustOk bool) {
 	me := com.MonitorEvent{
 		Modify: func(file string) {
 			if !strings.HasSuffix(file, `.yaml`) {
 				return
 			}
 			log.Info(`reload config from ` + file)
-			err := config.ParseConfig()
+			err := fn()
 			if err == nil {
 				return
 			}
-			if config.IsInstalled() {
+			if mustOk && config.IsInstalled() {
 				config.MustOK(err)
 			} else {
 				log.Error(err)

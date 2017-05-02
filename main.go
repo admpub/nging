@@ -64,6 +64,7 @@ func main() {
 
 	// Service
 	if len(os.Args) > 1 && !strings.HasPrefix(os.Args[1], `-`) {
+		application.WatchConfig(config.InitConfig, false)
 		if err := service.Run(os.Args[1]); err != nil {
 			stdLog.Println(err)
 		}
