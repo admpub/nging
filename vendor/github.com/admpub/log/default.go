@@ -12,24 +12,24 @@ func GetLogger(category string, formatter ...Formatter) *Logger {
 	return DefaultLog.GetLogger(category, formatter...)
 }
 
-func Sync(args ...bool) {
-	DefaultLog.Sync(args...)
+func Sync(args ...bool) *Logger {
+	return DefaultLog.Sync(args...)
 }
 
-func SetTarget(targets ...Target) {
-	DefaultLog.SetTarget(targets...)
+func SetTarget(targets ...Target) *Logger {
+	return DefaultLog.SetTarget(targets...)
 }
 
-func SetFatalAction(action Action) {
-	DefaultLog.SetFatalAction(action)
+func SetFatalAction(action Action) *Logger {
+	return DefaultLog.SetFatalAction(action)
 }
 
-func AddTarget(targets ...Target) {
-	DefaultLog.AddTarget(targets...)
+func AddTarget(targets ...Target) *Logger {
+	return DefaultLog.AddTarget(targets...)
 }
 
-func SetLevel(level string) {
-	DefaultLog.SetLevel(level)
+func SetLevel(level string) *Logger {
+	return DefaultLog.SetLevel(level)
 }
 
 func Fatalf(format string, a ...interface{}) {
@@ -76,7 +76,7 @@ func Writer(level Level) io.Writer {
 	return DefaultLog.Writer(level)
 }
 
-func UseCommonTargets(levelName string, targetNames ...string) {
+func UseCommonTargets(levelName string, targetNames ...string) *Logger {
 	DefaultLog.SetLevel(levelName)
 	targets := []Target{}
 
@@ -122,4 +122,5 @@ func UseCommonTargets(levelName string, targetNames ...string) {
 	}
 	SetTarget(targets...)
 	SetFatalAction(ActionExit)
+	return DefaultLog.Logger
 }

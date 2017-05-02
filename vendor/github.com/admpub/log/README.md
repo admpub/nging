@@ -84,7 +84,7 @@ sending them in emails, etc.
 
 A logger can be equipped with multiple targets each with different filtering conditions.
 
-The following targets are included in the ozzo-log package.
+The following targets are included in the log package.
 
 * `ConsoleTarget`: displays filtered messages to console window
 * `FileTarget`: saves filtered messages in a file (supporting file rotating)

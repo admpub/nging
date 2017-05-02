@@ -26,12 +26,19 @@ var colorBrushes = map[Level]colorSetting{
 	LevelFatal: colorSetting{ct.Magenta, true}, // magenta
 }
 
+const (
+	ColorFlag = iota
+	ColorRow
+)
+
 // ConsoleTarget writes filtered log messages to console window.
 type ConsoleTarget struct {
 	*Filter
-	ColorMode bool      // whether to use colors to differentiate log levels
-	Writer    io.Writer // the writer to write log messages
-	close     chan bool
+	ColorMode  bool // whether to use colors to differentiate log levels
+	ColorType  int
+	Writer     io.Writer // the writer to write log messages
+	close      chan bool
+	outputFunc func(*ConsoleTarget, *Entry)
 }
 
 // NewConsoleTarget creates a ConsoleTarget.
@@ -41,6 +48,7 @@ func NewConsoleTarget() *ConsoleTarget {
 	return &ConsoleTarget{
 		Filter:    &Filter{MaxLevel: LevelDebug},
 		ColorMode: true,
+		ColorType: ColorFlag,
 		Writer:    os.Stdout,
 		close:     make(chan bool, 0),
 	}
@@ -51,6 +59,25 @@ func (t *ConsoleTarget) Open(io.Writer) error {
 	t.Filter.Init()
 	if t.Writer == nil {
 		return errors.New("ConsoleTarget.Writer cannot be nil")
+	}
+	if t.ColorMode {
+		switch t.ColorType {
+		case ColorFlag:
+			t.outputFunc = func(t *ConsoleTarget, e *Entry) {
+				t.ColorizeFlag(e.Level)
+				fmt.Fprintln(t.Writer, e.String())
+			}
+		default:
+			t.outputFunc = func(t *ConsoleTarget, e *Entry) {
+				t.ColorizeRow(e.Level)
+				fmt.Fprintln(t.Writer, e.String())
+				ct.ResetColor()
+			}
+		}
+	} else {
+		t.outputFunc = func(t *ConsoleTarget, e *Entry) {
+			fmt.Fprintln(t.Writer, e.String())
+		}
 	}
 	return nil
 }
@@ -64,16 +91,20 @@ func (t *ConsoleTarget) Process(e *Entry) {
 	if !t.Allow(e) {
 		return
 	}
-	msg := e.String()
-	if t.ColorMode {
-		if t.Colorize(e.Level) {
-			defer ct.ResetColor()
-		}
-	}
-	fmt.Fprintln(t.Writer, msg)
+	t.outputFunc(t, e)
 }
 
-func (t *ConsoleTarget) Colorize(level Level) bool {
+func (t *ConsoleTarget) ColorizeFlag(level Level) bool {
+	cs, ok := colorBrushes[level]
+	if ok {
+		ct.Foreground(cs.Color, cs.Bright)
+		fmt.Fprint(t.Writer, `[`+level.String()[0:1]+`]`)
+		ct.ResetColor()
+	}
+	return ok
+}
+
+func (t *ConsoleTarget) ColorizeRow(level Level) bool {
 	cs, ok := colorBrushes[level]
 	if ok {
 		ct.Foreground(cs.Color, cs.Bright)

@@ -20,7 +20,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	stdLog "log"
 	"net/http"
+	"os"
+	"strings"
 
 	_ "github.com/admpub/nging/application/library/sqlite"
 	"github.com/webx-top/echo"
@@ -37,6 +40,7 @@ import (
 	"github.com/admpub/nging/application"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/cron"
+	"github.com/admpub/nging/application/library/service"
 )
 
 var (
@@ -52,10 +56,19 @@ var (
 func main() {
 	config.DefaultCLIConfig.InitFlag()
 	flag.Parse()
+
 	if binData {
 		Version += ` (bindata)`
 	}
 	config.SetVersion(Version)
+
+	// Service
+	if len(os.Args) > 1 && !strings.HasPrefix(os.Args[1], `-`) {
+		if err := service.Run(os.Args[1]); err != nil {
+			stdLog.Println(err)
+		}
+		return
+	}
 
 	err := config.ParseConfig()
 	if err != nil {
@@ -69,6 +82,8 @@ func main() {
 	if config.DefaultCLIConfig.OnlyRunServer() {
 		return
 	}
+
+	//Manager
 	config.DefaultCLIConfig.RunStartup()
 
 	if config.IsInstalled() {

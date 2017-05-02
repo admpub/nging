@@ -86,6 +86,10 @@ func (l *LoggerWriter) Write(p []byte) (n int, err error) {
 	return
 }
 
+func (l *LoggerWriter) Printf(format string, v ...interface{}) {
+	l.Logger.newEntry(l.Level, fmt.Sprintf(format, v...))
+}
+
 // Entry represents a log entry.
 type Entry struct {
 	Level     Level
@@ -189,6 +193,7 @@ func (l *Logger) GetLogger(category string, formatter ...Formatter) *Logger {
 		logger = &Logger{
 			coreLogger: l.coreLogger,
 			Category:   category,
+			categories: make(map[string]*Logger),
 		}
 		if len(formatter) > 0 {
 			logger.Formatter = formatter[0]
@@ -204,15 +209,16 @@ func (l *Logger) GetLogger(category string, formatter ...Formatter) *Logger {
 	return logger
 }
 
-func (l *Logger) Sync(args ...bool) {
+func (l *Logger) Sync(args ...bool) *Logger {
 	if len(args) < 1 {
 		l.SyncMode = true
-		return
+		return l
 	}
 	l.SyncMode = args[0]
+	return l
 }
 
-func (l *Logger) SetTarget(targets ...Target) {
+func (l *Logger) SetTarget(targets ...Target) *Logger {
 	l.Close()
 	if len(targets) > 0 {
 		l.Targets = targets
@@ -220,22 +226,26 @@ func (l *Logger) SetTarget(targets ...Target) {
 	} else {
 		l.Targets = []Target{}
 	}
+	return l
 }
 
-func (l *Logger) SetFatalAction(action Action) {
+func (l *Logger) SetFatalAction(action Action) *Logger {
 	l.fatalAction = action
+	return l
 }
 
-func (l *Logger) AddTarget(targets ...Target) {
+func (l *Logger) AddTarget(targets ...Target) *Logger {
 	l.Close()
 	l.Targets = append(l.Targets, targets...)
 	l.Open()
+	return l
 }
 
-func (l *Logger) SetLevel(level string) {
+func (l *Logger) SetLevel(level string) *Logger {
 	if le, ok := GetLevel(level); ok {
 		l.MaxLevel = le
 	}
+	return l
 }
 
 func (l *Logger) Fatalf(format string, a ...interface{}) {

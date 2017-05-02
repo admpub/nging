@@ -141,10 +141,10 @@
 			"revisionTime": "2017-04-17T10:39:33Z"
 		},
 		{
-			"checksumSHA1": "MtkF+qR08Yk9LD9Ytz0ixTuEV/Q=",
+			"checksumSHA1": "tgsYAChQFYKfvHzUtilwzcNUZsg=",
 			"path": "github.com/admpub/log",
-			"revision": "692c7accfa0f939591d96db663ee241bcc909adc",
-			"revisionTime": "2016-12-15T05:17:00Z"
+			"revision": "ec86ed7cfcca578452dd4e857907dec9e2c0efe2",
+			"revisionTime": "2017-03-14T03:50:59Z"
 		},
 		{
 			"checksumSHA1": "PD8qTRDHTEobg/lYtBFITWrfzeY=",
@@ -169,6 +169,12 @@
 			"path": "github.com/admpub/queueChan",
 			"revision": "79908f7a499f379d32d1b1eabe1bf653129bb154",
 			"revisionTime": "2015-10-01T07:43:56Z"
+		},
+		{
+			"checksumSHA1": "8LWfTiRJLg5t84j9hGE4RNjr9mo=",
+			"path": "github.com/admpub/service",
+			"revision": "8f7c16aabb5cda7ff72dce4a0fcc0cac1c43752e",
+			"revisionTime": "2017-05-02T04:58:59Z"
 		},
 		{
 			"checksumSHA1": "5jJ48mzsxK54cuUKF/8dS93usHQ=",
@@ -289,6 +295,12 @@
 			"path": "github.com/jimstudt/http-authentication/basic",
 			"revision": "e2917784d0fb41e3b84847f84302a287a2988f7a",
 			"revisionTime": "2016-11-27T12:35:54Z"
+		},
+		{
+			"checksumSHA1": "VjpXVKWK6Luq3k3a1QtpqCRt47c=",
+			"path": "github.com/kardianos/osext",
+			"revision": "29ae4ffbc9a6fe9fb2bc5029050ce6996ea1d3bc",
+			"revisionTime": "2015-12-22T15:32:29Z"
 		},
 		{
 			"checksumSHA1": "TFSynLcilsKu6nj8sxS/3BtHeoY=",
@@ -1375,6 +1387,36 @@
 			"path": "golang.org/x/sys/unix",
 			"revision": "f3918c30c5c2cb527c0b071a27c35120a6c0719a",
 			"revisionTime": "2017-04-05T16:58:12Z"
+		},
+		{
+			"checksumSHA1": "9YX4DNBhOM8krIjoT9eT2fnh1G0=",
+			"path": "golang.org/x/sys/windows",
+			"revision": "9ccfe848b9db8435a24c424abbc07a921adf1df5",
+			"revisionTime": "2017-04-27T03:54:25Z"
+		},
+		{
+			"checksumSHA1": "ZdFZFaXmCgEEaEhVPkyXrnhKhsg=",
+			"path": "golang.org/x/sys/windows/registry",
+			"revision": "9ccfe848b9db8435a24c424abbc07a921adf1df5",
+			"revisionTime": "2017-04-27T03:54:25Z"
+		},
+		{
+			"checksumSHA1": "IRqLaXM/VQRzkbXPuiqOxTb2W0Y=",
+			"path": "golang.org/x/sys/windows/svc",
+			"revision": "9ccfe848b9db8435a24c424abbc07a921adf1df5",
+			"revisionTime": "2017-04-27T03:54:25Z"
+		},
+		{
+			"checksumSHA1": "uVlUSSKplihZG7N+QJ6fzDZ4Kh8=",
+			"path": "golang.org/x/sys/windows/svc/eventlog",
+			"revision": "9ccfe848b9db8435a24c424abbc07a921adf1df5",
+			"revisionTime": "2017-04-27T03:54:25Z"
+		},
+		{
+			"checksumSHA1": "6dvXhF7BOHN87mMJ8SaAuFxai0Q=",
+			"path": "golang.org/x/sys/windows/svc/mgr",
+			"revision": "9ccfe848b9db8435a24c424abbc07a921adf1df5",
+			"revisionTime": "2017-04-27T03:54:25Z"
 		},
 		{
 			"checksumSHA1": "5AKasas4CO8g/Wiizgd34EGLoMQ=",
