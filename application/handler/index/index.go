@@ -46,12 +46,18 @@ func Index(ctx echo.Context) error {
 }
 
 func Login(ctx echo.Context) error {
+	//检查是否已安装
+	if !config.IsInstalled() {
+		return ctx.Redirect(`/setup`)
+	}
+
+	returnTo := ctx.Form(`return_to`)
+	if len(returnTo) == 0 {
+		returnTo = `/manage`
+	}
+
 	user := handler.User(ctx)
 	if user != nil {
-		returnTo := ctx.Query(`return_to`)
-		if len(returnTo) == 0 {
-			returnTo = `/manage`
-		}
 		return ctx.Redirect(returnTo)
 	}
 	var err error
@@ -61,18 +67,9 @@ func Login(ctx echo.Context) error {
 		} else {
 			err = middleware.Auth(ctx, true)
 			if err == nil {
-				returnTo := ctx.Form(`return_to`)
-				if len(returnTo) == 0 {
-					returnTo = `/manage`
-				}
 				return ctx.Redirect(returnTo)
 			}
 		}
-	}
-
-	//检查是否已安装
-	if !config.IsInstalled() {
-		return ctx.Redirect(`/setup`)
 	}
 
 	return ctx.Render(`login`, handler.Err(ctx, err))
