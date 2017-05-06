@@ -651,6 +651,7 @@ func (c *xContext) Reset(req engine.Request, res engine.Response) {
 	c.Validator = DefaultNopValidate
 	c.Translator = DefaultNopTranslate
 	c.sessioner = DefaultNopSession
+	c.cookier = NewCookier(c)
 	c.context = context.Background()
 	c.request = req
 	c.response = res

@@ -21,7 +21,7 @@ import (
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/dbmanager"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
-	_ "github.com/admpub/nging/application/library/dbmanager/driver/mysql"
+	_ "github.com/admpub/nging/application/library/dbmanager/driver/mysql" //mysql
 	"github.com/admpub/nging/application/middleware"
 	"github.com/webx-top/echo"
 )
@@ -56,9 +56,7 @@ func Manager(ctx echo.Context) error {
 	case `logout`:
 	default:
 		data, ok := ctx.Session().Get(`dbAuth`).(*driver.DbAuth)
-		if !ok {
-			ctx.Session().Delete(`dbAuth`)
-		} else {
+		if ok {
 			auth.CopyFrom(data)
 			err = mgr.Run(auth.Driver, `login`)
 		}
@@ -111,6 +109,7 @@ func Manager(ctx echo.Context) error {
 				mgr.Run(auth.Driver, `logout`)
 				return ctx.Redirect(`/db`)
 			case `logout`:
+				mgr.Run(auth.Driver, `logout`)
 				ctx.Session().Delete(`dbAuth`)
 			default:
 				return err

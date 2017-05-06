@@ -38,12 +38,14 @@ func Sessions(options *echo.SessionOptions, store Store) echo.MiddlewareFuncd {
 			c.SetSessioner(s)
 			c.AddPreResponseHook(func() error {
 				if options.Engine == `cookie` {
-					s.Save()
+					return s.Save()
 				}
 				return nil
 			})
 			err := h.Handle(c)
-			s.Save()
+			if e := s.Save(); e != nil {
+				c.Logger().Error(e)
+			}
 			return err
 		}
 	}

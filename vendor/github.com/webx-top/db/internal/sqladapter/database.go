@@ -163,7 +163,7 @@ type database struct {
 
 	template *exql.Template
 
-	cloned bool // [SWH|+] 本对象是否是通过NewClone创建
+	cloned bool // [SWH|+] Whether the object was created with NewClone
 }
 
 var (
@@ -301,7 +301,7 @@ func (d *database) NewClone(p PartialDatabase, checkConn bool) (BaseDatabase, er
 	nd.name = d.name
 	nd.sess = d.sess
 
-	// [SWH|+] 使用原有缓存
+	// [SWH|+] Use the previous cache
 	nd.cachedCollections = d.cachedCollections
 	nd.cachedStatements = d.cachedStatements
 	nd.cloned = true
@@ -327,7 +327,7 @@ func (d *database) Close() error {
 		if cleaner, ok := d.PartialDatabase.(hasCleanUp); ok {
 			cleaner.CleanUp()
 		}
-		// [SWH|+] 在不是通过NewClone创建时才清理缓存
+		// [SWH|+] Clears the cache when it is not created by NewClone
 		if !d.cloned {
 			d.cachedCollections.Clear()
 			d.cachedStatements.Clear() // Closes prepared statements as well.
@@ -362,6 +362,35 @@ func (d *database) Collection(name string) db.Collection {
 	d.cachedCollections.Write(h, col)
 
 	return col
+}
+
+// StatementPrepare creates a prepared statement.
+func (d *database) StatementPrepare(ctx context.Context, stmt *exql.Statement) (sqlStmt *sql.Stmt, err error) {
+	var query string
+
+	if d.Settings.LoggingEnabled() {
+		defer func(start time.Time) {
+			d.Logger().Log(&db.QueryStatus{
+				TxID:   d.txID,
+				SessID: d.sessID,
+				Query:  query,
+				Err:    err,
+				Start:  start,
+				End:    time.Now(),
+			})
+		}(time.Now())
+	}
+
+	tx := d.Transaction()
+
+	query, _ = d.compileStatement(stmt, nil)
+	if tx != nil {
+		sqlStmt, err = compat.PrepareContext(tx.(*baseTx), ctx, query)
+		return
+	}
+
+	sqlStmt, err = compat.PrepareContext(d.sess, ctx, query)
+	return
 }
 
 // StatementExec compiles and executes a statement that does not return any
