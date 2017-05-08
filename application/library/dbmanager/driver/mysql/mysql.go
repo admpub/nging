@@ -1644,8 +1644,7 @@ func (m *mySQL) modifyTrigger() error {
 }
 func (m *mySQL) RunCommand() error {
 	var err error
-	var columns []string
-	var values []map[string]*sql.NullString
+	selects := []*SelectData{}
 	if m.IsPost() {
 		query := m.Form(`query`)
 		query = strings.TrimSpace(query)
@@ -1754,9 +1753,8 @@ func (m *mySQL) RunCommand() error {
 				_, err = m.newParam().DB().Exec(query)
 				if err != nil {
 					m.Logger().Error(err, query)
-					//return err
 					if onlyErrors {
-
+						return err
 					}
 				}
 				continue
@@ -1766,41 +1764,67 @@ func (m *mySQL) RunCommand() error {
 				_, err = m.newParam().DB().Exec(query)
 				if err != nil {
 					m.Logger().Error(err, query)
-					//return err
 					if onlyErrors {
-
+						return err
 					}
 				}
 				continue
 			}
 
-			if !regexp.MustCompile(`(?i)^(` + space + `|\()*(SELECT|SHOW)\b`).MatchString(query) {
-				//explain
-				continue
-			}
-			m.Logger().Info(`SQL: `, query)
-			rows, err := m.newParam().DB().Query(query)
-			if err != nil {
-				m.Logger().Error(err, query)
-				//return err
-				if onlyErrors {
-
+			if !regexp.MustCompile(`(?i)^(` + space + `|\()*(SELECT|SHOW|EXPLAIN)\b`).MatchString(query) {
+				r := &Result{
+					SQL: query,
+				}
+				r.Exec(m.newParam())
+				m.AddResults(r)
+				err = r.Error()
+				if err != nil {
+					m.Logger().Error(err, query)
+					if onlyErrors {
+						return err
+					}
 				}
 				continue
 			}
-
-			columns, values, err = m.selectTable(rows, limit)
+			r := &Result{
+				SQL: query,
+			}
+			dt := &DataTable{}
+			r.Query(m.newParam(), func(rows *sql.Rows) error {
+				dt.Columns, dt.Values, err = m.selectTable(rows, limit)
+				return err
+			})
+			if r.err != nil {
+				m.Logger().Error(r.err, query)
+				if onlyErrors {
+					return err
+				}
+				continue
+			}
+			selectData := &SelectData{Result: r, Data: dt}
+			if regexp.MustCompile(`(?i)^(` + space + `|\()*SELECT\b`).MatchString(query) {
+				rows, err := m.newParam().DB().Query(`EXPLAIN ` + query)
+				if err != nil {
+					m.Logger().Error(err, `EXPLAIN `+query)
+					if onlyErrors {
+						return err
+					}
+					continue
+				}
+				dt := &DataTable{}
+				dt.Columns, dt.Values, err = m.selectTable(rows, limit)
+				selectData.Explain = dt
+			}
+			selects = append(selects, selectData)
 			/*
 				com.Dump(columns)
 				com.Dump(values)
 			// */
-			rows.Close()
 		}
 		_ = delimiter
 		_ = empty
 	}
-	m.Set(`columns`, columns)
-	m.Set(`values`, values)
+	m.Set(`selects`, selects)
 	return m.Render(`db/mysql/sql`, m.checkErr(err))
 }
 func (m *mySQL) Import() error {

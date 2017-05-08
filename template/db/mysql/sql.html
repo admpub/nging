@@ -22,8 +22,10 @@
 <div class="row">
     <div class="col-md-12">
         {{Include "db/mysql/dbinfo_btn"}}
-        {{if Stored.columns}}
+        {{if Stored.selects}}
+        {{range $keyd,$data := Stored.selects}}
         <div class="block-flat">
+          {{Include "db/mysql/result" $data.Result}}
           <div class="header">
             <h3>{{"数据"|T}}</h3>
           </div>
@@ -31,28 +33,49 @@
              <div class="table-responsive">
 				<table class="table no-border hover blue">
 					<thead class="no-border">
-						<tr>{{range $k, $colName := Stored.columns}}
+						<tr>{{range $k, $colName := $data.Data.Columns}}
 							<th><strong>{{$colName}}</strong></th>
                             {{end}}
 						</tr>
 					</thead>
 					<tbody class="no-border-x" id="tbody-content">
-                        {{range $k,$v := Stored.values}}
+                        {{range $k,$v := $data.Data.Values}}
 						<tr>
-                            {{range $k, $colName := Stored.columns}}
+                            {{range $k, $colName := $data.Data.Columns}}
                             <td>{{(index $v $colName).String}}</td>
                             {{end}}
 						</tr>
                         {{end}}
 					</tbody>
-				</table>		
+				</table>
 			    </div>
+                {{if $data.Explain}}
                 <fieldset>
-                     <legend>{{"已选中"|T}} (<span id="selected-items-count">0</span>)</legend>
-                     <button type="button" class="btn btn-default" id="analyze-selected">{{"分析"|T}}</button>
+                    <legend class="no-margin-bottom"><a href="javascript:;" onclick="$('#explain-table-{{$keyd}}').toggleClass('hidden');">EXPLAIN</a></legend>
+                    <div id="explain-table-{{$keyd}}" class="table-responsive hidden">
+				<table class="table no-border hover blue">
+					<thead class="no-border">
+						<tr>{{range $k, $colName := $data.Explain.Columns}}
+							<th><strong>{{$colName}}</strong></th>
+                            {{end}}
+						</tr>
+					</thead>
+					<tbody class="no-border-x" id="explain-tbody-content-{{$keyd}}">
+                        {{range $k,$v := $data.Explain.Values}}
+						<tr>
+                            {{range $k, $colName := $data.Explain.Columns}}
+                            <td>{{(index $v $colName).String}}</td>
+                            {{end}}
+						</tr>
+                        {{end}}
+					</tbody>
+				</table>
+                    </div>
                 </fieldset>
+                {{end}}
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
+        {{end}}
         {{end}}
         <div class="block-flat no-padding">
           <div class="content no-padding">

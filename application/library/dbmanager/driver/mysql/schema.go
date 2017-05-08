@@ -509,3 +509,21 @@ func (t TriggerOptions) Get(typeName string) []string {
 	}
 	return []string{}
 }
+
+func NewDataTable() *DataTable {
+	return &DataTable{
+		Columns: []string{},
+		Values:  []map[string]*sql.NullString{},
+	}
+}
+
+type DataTable struct {
+	Columns []string
+	Values  []map[string]*sql.NullString
+}
+
+type SelectData struct {
+	Result  *Result
+	Data    *DataTable
+	Explain *DataTable
+}
