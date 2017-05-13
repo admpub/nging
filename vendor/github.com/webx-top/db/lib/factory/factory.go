@@ -62,45 +62,49 @@ func (f *Factory) Cacher() Cacher {
 	return f.cacher
 }
 
+// AddDB : add the master database
 func (f *Factory) AddDB(databases ...db.Database) *Factory {
 	if len(f.databases) > 0 {
-		f.databases[0].AddW(databases...)
+		f.databases[0].AddMaster(databases...)
 	} else {
 		c := NewCluster()
-		c.AddW(databases...)
+		c.AddMaster(databases...)
 		f.databases = append(f.databases, c)
 	}
 	return f
 }
 
+// AddSlaveDB : add the slave database
 func (f *Factory) AddSlaveDB(databases ...db.Database) *Factory {
 	if len(f.databases) > 0 {
-		f.databases[0].AddR(databases...)
+		f.databases[0].AddSlave(databases...)
 	} else {
 		c := NewCluster()
-		c.AddR(databases...)
+		c.AddSlave(databases...)
 		f.databases = append(f.databases, c)
 	}
 	return f
 }
 
+// AddDBToCluster : add the master database to cluster
 func (f *Factory) AddDBToCluster(index int, databases ...db.Database) *Factory {
 	if len(f.databases) > index {
-		f.databases[index].AddW(databases...)
+		f.databases[index].AddMaster(databases...)
 	} else {
 		c := NewCluster()
-		c.AddW(databases...)
+		c.AddMaster(databases...)
 		f.databases = append(f.databases, c)
 	}
 	return f
 }
 
+// AddSlaveDBToCluster : add the slave database to cluster
 func (f *Factory) AddSlaveDBToCluster(index int, databases ...db.Database) *Factory {
 	if len(f.databases) > index {
-		f.databases[index].AddR(databases...)
+		f.databases[index].AddSlave(databases...)
 	} else {
 		c := NewCluster()
-		c.AddR(databases...)
+		c.AddSlave(databases...)
 		f.databases = append(f.databases, c)
 	}
 	return f
@@ -152,7 +156,7 @@ func (f *Factory) Tx(param *Param, ctxa ...context.Context) error {
 	if len(ctxa) > 0 {
 		ctx = ctxa[0]
 	}
-	if rdb, ok := c.W().(sqlbuilder.Database); ok {
+	if rdb, ok := c.Master().(sqlbuilder.Database); ok {
 		return rdb.Tx(ctx, fn)
 	}
 	return db.ErrUnsupported
@@ -168,7 +172,7 @@ func (f *Factory) NewTx(ctx context.Context, args ...int) (trans *Transaction, e
 		Cluster: c,
 		Factory: f,
 	}
-	if rdb, ok := c.W().(sqlbuilder.Database); ok {
+	if rdb, ok := c.Master().(sqlbuilder.Database); ok {
 		trans.Tx, err = rdb.NewTx(ctx)
 	} else {
 		err = db.ErrUnsupported

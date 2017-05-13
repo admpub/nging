@@ -187,7 +187,7 @@ func (s *Static) CssTag(staticFiles ...string) template.HTML {
 		for _, url := range staticFiles {
 			absPath := filepath.Join(s.Root, "css", url)
 			if con, err := s.genCombinedCSS(absPath, url, onImportFn); err != nil {
-				fmt.Println(err)
+				log.Warn(err)
 			} else {
 				s.RecordCombined(absPath, r)
 				content += con
@@ -308,12 +308,12 @@ func (s *Static) genCombinedJS(absPath, urlPath string) (content string, err err
 	}
 	content += "\n/* <from: " + urlPath + "> */\n"
 	if !strings.Contains(urlPath, `/min.`) && !strings.Contains(urlPath, `.min.`) {
-		b, err := minify.MinifyJS([]byte(con))
+		b, err := minify.MinifyJS2([]byte(con))
 		if err != nil {
-			fmt.Println(err)
+			log.Warn(err)
 		}
 		con = string(b)
-		con = regexCssCleanComment.ReplaceAllString(con, ``)
+		//con = regexCssCleanComment.ReplaceAllString(con, ``)
 	}
 	content += con
 	return
@@ -349,7 +349,7 @@ func (s *Static) genCombinedCSS(absPath, urlPath string, onImportFn func(string)
 		val = strings.TrimLeft(val, "/")
 		//con = strings.Replace(con, v[0], `@import "`+res+"/"+val+`";`, 1)
 		if icon, err := com.ReadFileS(absRes + "/" + val); err != nil {
-			fmt.Println(err)
+			log.Warn(err)
 		} else {
 			if onImportFn != nil {
 				onImportFn(strings.Trim(res, `/`) + "/" + val)
@@ -358,9 +358,16 @@ func (s *Static) genCombinedCSS(absPath, urlPath string, onImportFn func(string)
 		}
 	}
 	content += "\n/* <from: " + urlPath + "> */\n"
-	con = regexCssCleanComment.ReplaceAllString(con, ``)
-	con = regexCssCleanSpace.ReplaceAllString(con, `$1`)
-	con = regexCssCleanSpace2.ReplaceAllString(con, ` `)
+	/*
+		con = regexCssCleanComment.ReplaceAllString(con, ``)
+		con = regexCssCleanSpace.ReplaceAllString(con, `$1`)
+		con = regexCssCleanSpace2.ReplaceAllString(con, ` `)
+	*/
+	b, err := minify.MinifyCSS2([]byte(con))
+	if err != nil {
+		log.Warn(err)
+	}
+	con = string(b)
 	content += con
 	return
 }
@@ -398,7 +405,7 @@ func (s *Static) HandleMinify(ctx echo.Context, filePathFn func(string) string) 
 				f += `.` + fileType
 				absPath := filePathFn(f)
 				if con, err := s.genCombinedJS(absPath, f); err != nil {
-					fmt.Println(err)
+					log.Error(err)
 				} else {
 					s.RecordCombined(absPath, combinedSavePath)
 					content += con
@@ -412,7 +419,7 @@ func (s *Static) HandleMinify(ctx echo.Context, filePathFn func(string) string) 
 				f += `.` + fileType
 				absPath := filePathFn(f)
 				if con, err := s.genCombinedCSS(absPath, f, onImportFn); err != nil {
-					fmt.Println(err)
+					log.Error(err)
 				} else {
 					s.RecordCombined(absPath, combinedSavePath)
 					content += con

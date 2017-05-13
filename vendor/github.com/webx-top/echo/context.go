@@ -107,7 +107,7 @@ type (
 		XMLBlob([]byte, ...int) error
 		Stream(func(io.Writer) bool)
 		SSEvent(string, chan interface{}) error
-		File(string) error
+		File(string, ...http.FileSystem) error
 		Attachment(io.ReadSeeker, string) error
 		NoContent(...int) error
 		Redirect(string, ...int) error
@@ -548,8 +548,14 @@ func (c *xContext) SSEvent(event string, data chan interface{}) (err error) {
 	return
 }
 
-func (c *xContext) File(file string) error {
-	f, err := os.Open(file)
+func (c *xContext) File(file string, fs ...http.FileSystem) (err error) {
+	var f http.File
+	customFS := len(fs) > 0 && fs[0] != nil
+	if customFS {
+		f, err = fs[0].Open(file)
+	} else {
+		f, err = os.Open(file)
+	}
 	if err != nil {
 		return ErrNotFound
 	}
@@ -558,7 +564,11 @@ func (c *xContext) File(file string) error {
 	fi, _ := f.Stat()
 	if fi.IsDir() {
 		file = filepath.Join(file, "index.html")
-		f, err = os.Open(file)
+		if customFS {
+			f, err = fs[0].Open(file)
+		} else {
+			f, err = os.Open(file)
+		}
 		if err != nil {
 			return ErrNotFound
 		}
@@ -571,7 +581,7 @@ func (c *xContext) Attachment(r io.ReadSeeker, name string) (err error) {
 	c.response.Header().Set(HeaderContentType, ContentTypeByExtension(name))
 	c.response.Header().Set(HeaderContentDisposition, "attachment; filename="+name)
 	c.response.WriteHeader(http.StatusOK)
-	c.response.SetKeepBody(false)
+	c.response.KeepBody(false)
 	_, err = io.Copy(c.response, r)
 	return
 }
@@ -633,7 +643,7 @@ func (c *xContext) ServeContent(content io.ReadSeeker, name string, modtime time
 	rs.Header().Set(HeaderContentType, ContentTypeByExtension(name))
 	rs.Header().Set(HeaderLastModified, modtime.UTC().Format(http.TimeFormat))
 	rs.WriteHeader(http.StatusOK)
-	rs.SetKeepBody(false)
+	rs.KeepBody(false)
 	_, err := io.Copy(rs, content)
 	return err
 }

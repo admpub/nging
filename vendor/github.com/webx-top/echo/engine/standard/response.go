@@ -49,7 +49,7 @@ func (r *Response) WriteHeader(code int) {
 	r.committed = true
 }
 
-func (r *Response) SetKeepBody(on bool) {
+func (r *Response) KeepBody(on bool) {
 	r.keepBody = on
 }
 

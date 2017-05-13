@@ -25,9 +25,9 @@ func (t *Transaction) Database(param *Param) db.Database {
 		return t.Tx
 	}
 	if param.ReadOrWrite == R {
-		return param.cluster.R()
+		return param.cluster.Slave()
 	}
-	return param.cluster.W()
+	return param.cluster.Master()
 }
 
 func (t *Transaction) Driver(param *Param) interface{} {

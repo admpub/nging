@@ -28,7 +28,7 @@ func ConnectSQLite(c *config.Config) error {
 		return err
 	}
 	factory.SetDebug(c.DB.Debug)
-	cluster := factory.NewCluster().AddW(database)
+	cluster := factory.NewCluster().AddMaster(database)
 	factory.SetCluster(0, cluster).Cluster(0).SetPrefix(c.DB.Prefix)
 	return nil
 }

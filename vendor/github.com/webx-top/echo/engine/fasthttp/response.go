@@ -58,7 +58,7 @@ func (r *Response) WriteHeader(code int) {
 	r.committed = true
 }
 
-func (r *Response) SetKeepBody(_ bool) {
+func (r *Response) KeepBody(_ bool) {
 }
 
 func (r *Response) Write(b []byte) (n int, err error) {

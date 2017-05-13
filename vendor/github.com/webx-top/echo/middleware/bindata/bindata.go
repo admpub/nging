@@ -19,11 +19,12 @@
 package bindata
 
 import (
-	assetfs "github.com/admpub/go-bindata-assetfs"
+	"net/http"
+
 	"github.com/webx-top/echo"
 )
 
-func Static(path string, fs *assetfs.AssetFS) echo.MiddlewareFunc {
+func Static(path string, fs http.FileSystem) echo.MiddlewareFunc {
 	length := len(path)
 	return func(next echo.Handler) echo.Handler {
 		return echo.HandlerFunc(func(c echo.Context) error {

@@ -46,8 +46,8 @@ type Cluster struct {
 	slaveSelecter  Selecter
 }
 
-// W : write
-func (c *Cluster) W() (r db.Database) {
+// Master : write
+func (c *Cluster) Master() (r db.Database) {
 	length := len(c.masters)
 	if length == 0 {
 		panic(`Not connected to any database`)
@@ -60,11 +60,11 @@ func (c *Cluster) W() (r db.Database) {
 	return
 }
 
-// R : read-only
-func (c *Cluster) R() (r db.Database) {
+// Slave : read-only
+func (c *Cluster) Slave() (r db.Database) {
 	length := len(c.slaves)
 	if length == 0 {
-		r = c.W()
+		r = c.Master()
 	} else {
 		if length > 1 {
 			r = c.slaves[c.slaveSelecter.Select(length)]
@@ -109,11 +109,21 @@ func (c *Cluster) MasterSelecter() Selecter {
 	return c.masterSelecter
 }
 
-// AddW : added writable database
-func (c *Cluster) AddW(databases ...db.Database) *Cluster {
+// AddMaster : added writable database
+func (c *Cluster) AddMaster(databases ...db.Database) *Cluster {
 	c.setMasterLogger(databases...)
 	c.masters = append(c.masters, databases...)
 	return c
+}
+
+// AddW : Deprecated
+func (c *Cluster) AddW(databases ...db.Database) *Cluster {
+	return c.AddMaster(databases...)
+}
+
+// AddR : Deprecated
+func (c *Cluster) AddR(databases ...db.Database) *Cluster {
+	return c.AddSlave(databases...)
 }
 
 func (c *Cluster) setMasterLogger(databases ...db.Database) *Cluster {
@@ -130,15 +140,15 @@ func (c *Cluster) setSlaveLogger(databases ...db.Database) *Cluster {
 	return c
 }
 
-// AddR : added read-only database
-func (c *Cluster) AddR(databases ...db.Database) *Cluster {
+// AddSlave : added read-only database
+func (c *Cluster) AddSlave(databases ...db.Database) *Cluster {
 	c.setSlaveLogger(databases...)
 	c.slaves = append(c.slaves, databases...)
 	return c
 }
 
-// SetW : set writable database
-func (c *Cluster) SetW(index int, database db.Database) error {
+// SetMaster : set writable database
+func (c *Cluster) SetMaster(index int, database db.Database) error {
 	c.setMasterLogger(database)
 	if len(c.masters) > index {
 		c.masters[index] = database
@@ -147,8 +157,8 @@ func (c *Cluster) SetW(index int, database db.Database) error {
 	return ErrNotFoundKey
 }
 
-// SetR : set read-only database
-func (c *Cluster) SetR(index int, database db.Database) error {
+// SetSlave : set read-only database
+func (c *Cluster) SetSlave(index int, database db.Database) error {
 	c.setSlaveLogger(database)
 	if len(c.masters) > index {
 		c.slaves[index] = database

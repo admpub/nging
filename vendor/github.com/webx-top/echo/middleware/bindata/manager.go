@@ -19,19 +19,19 @@ package bindata
 
 import (
 	"io/ioutil"
+	"net/http"
 
-	assetfs "github.com/admpub/go-bindata-assetfs"
 	"github.com/webx-top/echo/logger"
 )
 
-func NewTmplManager(fs *assetfs.AssetFS) *TmplManager {
+func NewTmplManager(fs http.FileSystem) *TmplManager {
 	return &TmplManager{
-		AssetFS: fs,
+		FileSystem: fs,
 	}
 }
 
 type TmplManager struct {
-	*assetfs.AssetFS
+	http.FileSystem
 }
 
 func (a *TmplManager) Close()                                            {}

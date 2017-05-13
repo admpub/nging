@@ -105,7 +105,7 @@ func (m *mySQL) Login() error {
 		}
 		return err
 	}
-	cluster := factory.NewCluster().AddW(db)
+	cluster := factory.NewCluster().AddMaster(db)
 	m.db.SetCluster(0, cluster)
 	m.Set(`dbName`, m.dbName)
 	m.Set(`table`, m.Form(`table`))

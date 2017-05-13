@@ -72,7 +72,7 @@ func MinifyHTML(data []byte, options *Options) (out []byte, err error) {
 				}
 				if string(k) == "style" && options.MinifyStyles {
 					v = []byte("a{" + string(v) + "}") // simulate "full" CSS
-					v = MinifyCSS(v)
+					v, _ = MinifyCSS(v)
 					v = v[2 : len(v)-1] // strip simulation
 				}
 				if isFirst {
@@ -124,7 +124,8 @@ func MinifyHTML(data []byte, options *Options) (out []byte, err error) {
 					b.Write(min)
 				}
 			} else if style && options.MinifyStyles {
-				b.Write(MinifyCSS(z.Raw()))
+				v, _ := MinifyCSS(z.Raw())
+				b.Write(v)
 			} else if raw {
 				b.Write(z.Raw())
 			} else {
