@@ -20,15 +20,13 @@ package service
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strconv"
-
-	"io/ioutil"
-
 	"runtime"
+	"strconv"
 	"strings"
 
 	"github.com/admpub/nging/application/library/config"
@@ -69,6 +67,12 @@ func getPidFiles() []string {
 	pidFile := []string{}
 	ftpPid := config.DefaultConfig.FTP.PidFile
 	caddyPid := config.DefaultConfig.Caddy.PidFile
+	if len(ftpPid) == 0 {
+		ftpPid = `ftp.pid`
+	}
+	if len(caddyPid) == 0 {
+		caddyPid = `caddy.pid`
+	}
 	if runtime.GOOS == `windows` {
 		if !strings.Contains(ftpPid, `:`) {
 			ftpPid = filepath.Join(com.SelfDir(), ftpPid)
@@ -149,9 +153,15 @@ func (p *program) killCmd() {
 			p.cmd.Process.Kill()
 		}
 	}
-	com.CloseProcessFromPidFile(p.pidFile)
+	err := com.CloseProcessFromPidFile(p.pidFile)
+	if err != nil {
+		log.Println(p.pidFile+`:`, err)
+	}
 	for _, pidFile := range getPidFiles() {
-		com.CloseProcessFromPidFile(pidFile)
+		err = com.CloseProcessFromPidFile(pidFile)
+		if err != nil {
+			log.Println(pidFile+`:`, err)
+		}
 	}
 }
 

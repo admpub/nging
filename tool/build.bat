@@ -8,7 +8,7 @@ set NGINGEX=.exe
 set BUILDTAGS= windll
 
 set GOOS=windows
-set GOARCH=386
+set GOARCH=amd64
 call inc-build.bat
 
 pause
