@@ -664,6 +664,7 @@ func (m *mySQL) processField(oldTable string, field *Field, typeField *Field, au
 		}
 		r = append(r, v)
 	}
+	r = append(r, ` COMMENT `+quoteVal(field.Comment))
 	return r, nil
 }
 
