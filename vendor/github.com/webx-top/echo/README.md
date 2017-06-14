@@ -380,7 +380,6 @@ Middleware  | Import path | Description
 [Language](https://github.com/webx-top/echo/tree/master/middleware/language) | github.com/webx-top/echo/middleware/language | Multi-language support
 [Session](https://github.com/webx-top/echo/blob/master/middleware/session/middleware.go)  | github.com/webx-top/echo/middleware/session | Sessions Manager
 [JWT](https://github.com/webx-top/echo/blob/master/middleware/jwt/jwt.go)  | github.com/webx-top/echo/middleware/jwt | JWT authentication
-[Hydra](https://github.com/webx-top/echo/blob/master/middleware/hydra/hydra.go)  | github.com/webx-top/echo/middleware/hydra | It uses [Hydra](https://github.com/ory-am/hydra)'s API to extract and validate auth token.
 [Markdown](https://github.com/webx-top/echo/blob/master/middleware/markdown/markdown.go)  | github.com/webx-top/echo/middleware/markdown | Markdown rendering
 [Render](https://github.com/webx-top/echo/blob/master/middleware/render/middleware.go)  | github.com/webx-top/echo/middleware/render | HTML template rendering
 [ReverseProxy](https://github.com/webx-top/reverseproxy/blob/master/middleware.go)  | github.com/webx-top/reverseproxy | Reverse proxy

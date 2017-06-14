@@ -74,28 +74,29 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	// ======================
 	// conversion type
 	// ======================
-	"Html":        ToHTML,
-	"Js":          ToJS,
-	"Css":         ToCSS,
-	"ToJS":        ToJS,
-	"ToCSS":       ToCSS,
-	"ToURL":       ToURL,
-	"ToHTML":      ToHTML,
-	"ToHTMLAttr":  ToHTMLAttr,
-	"ToHTMLAttrs": ToHTMLAttrs,
-	"ToStrSlice":  ToStrSlice,
-	"Str":         com.Str,
-	"Int":         com.Int,
-	"Int32":       com.Int32,
-	"Int64":       com.Int64,
-	"Uint":        com.Uint,
-	"Uint32":      com.Uint32,
-	"Uint64":      com.Uint64,
-	"Float32":     com.Float32,
-	"Float64":     com.Float64,
-	"ToFloat64":   ToFloat64,
-	"ToFixed":     ToFixed,
-	"Math":        Math,
+	"Html":         ToHTML,
+	"Js":           ToJS,
+	"Css":          ToCSS,
+	"ToJS":         ToJS,
+	"ToCSS":        ToCSS,
+	"ToURL":        ToURL,
+	"ToHTML":       ToHTML,
+	"ToHTMLAttr":   ToHTMLAttr,
+	"ToHTMLAttrs":  ToHTMLAttrs,
+	"ToStrSlice":   ToStrSlice,
+	"Str":          com.Str,
+	"Int":          com.Int,
+	"Int32":        com.Int32,
+	"Int64":        com.Int64,
+	"Uint":         com.Uint,
+	"Uint32":       com.Uint32,
+	"Uint64":       com.Uint64,
+	"Float32":      com.Float32,
+	"Float64":      com.Float64,
+	"ToFloat64":    ToFloat64,
+	"ToFixed":      ToFixed,
+	"Math":         Math,
+	"NumberFormat": NumberFormat,
 
 	// ======================
 	// string
@@ -153,8 +154,8 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	// ======================
 	// other
 	// ======================
-	"NoOutput": NoOutput,
-	"Default":  Default,
+	"Ignore":  Ignore,
+	"Default": Default,
 }
 
 func JsonEncode(s interface{}) string {
@@ -162,7 +163,7 @@ func JsonEncode(s interface{}) string {
 	return r
 }
 
-func NoOutput(_ interface{}) interface{} {
+func Ignore(_ interface{}) interface{} {
 	return nil
 }
 
@@ -661,4 +662,29 @@ func TimestampToTime(timestamp interface{}) time.Time {
 		ts = i
 	}
 	return time.Unix(ts, 0)
+}
+
+func NumberFormat(number interface{}, precision int, delim ...string) string {
+	r := fmt.Sprintf(`%.*f`, precision, ToFloat64(number))
+	d := `,`
+	if len(delim) > 0 {
+		d = delim[0]
+		if len(d) == 0 {
+			return r
+		}
+	}
+	i := len(r) - 1 - precision
+	j := int(math.Ceil(float64(i) / float64(3)))
+	s := make([]string, j)
+	v := r[i:]
+	for i > 0 && j > 0 {
+		j--
+		start := i - 3
+		if start < 0 {
+			start = 0
+		}
+		s[j] = r[start:i]
+		i = start
+	}
+	return strings.Join(s, d) + v
 }

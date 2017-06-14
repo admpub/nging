@@ -59,7 +59,6 @@ func New(templateDir string, args ...logger.Logger) driver.Driver {
 	} else {
 		a.logger = log.New("render-pongo2")
 	}
-	a.templateDir, _ = filepath.Abs(templateDir)
 	return a
 }
 
