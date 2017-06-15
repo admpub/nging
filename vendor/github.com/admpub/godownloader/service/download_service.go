@@ -141,7 +141,7 @@ func (srv *DServ) addTask(ctx echo.Context) error {
 	srv.oplock.Lock()
 	defer srv.oplock.Unlock()
 	var nj NewJob
-	data := ctx.NewData()
+	data := ctx.Data()
 	if err := ctx.MustBind(&nj); err != nil {
 		return ctx.JSON(data.SetError(err))
 	}
@@ -159,7 +159,7 @@ func (srv *DServ) addTask(ctx echo.Context) error {
 func (srv *DServ) startTask(ctx echo.Context) error {
 	srv.oplock.Lock()
 	defer srv.oplock.Unlock()
-	data := ctx.NewData()
+	data := ctx.Data()
 	for _, id := range ctx.FormValues(`id[]`) {
 		ind := ctx.Atop(id).Int()
 		if !(len(srv.dls) > ind) {
@@ -176,7 +176,7 @@ func (srv *DServ) startTask(ctx echo.Context) error {
 func (srv *DServ) stopTask(ctx echo.Context) error {
 	srv.oplock.Lock()
 	defer srv.oplock.Unlock()
-	data := ctx.NewData()
+	data := ctx.Data()
 	for _, id := range ctx.FormValues(`id[]`) {
 		ind := ctx.Atop(id).Int()
 		if !(len(srv.dls) > ind) {
@@ -189,9 +189,8 @@ func (srv *DServ) stopTask(ctx echo.Context) error {
 }
 
 func (srv *DServ) startAllTask(ctx echo.Context) error {
-	data := ctx.NewData()
 	srv.StartAllTask()
-	return ctx.JSON(data)
+	return ctx.JSON(ctx.Data())
 }
 
 func (srv *DServ) StopAllTask() {
@@ -210,15 +209,14 @@ func (srv *DServ) StartAllTask() {
 	}
 }
 func (srv *DServ) stopAllTask(ctx echo.Context) error {
-	data := ctx.NewData()
 	srv.StopAllTask()
-	return ctx.JSON(data)
+	return ctx.JSON(ctx.Data())
 }
 
 func (srv *DServ) removeTask(ctx echo.Context) error {
 	srv.oplock.Lock()
 	defer srv.oplock.Unlock()
-	data := ctx.NewData()
+	data := ctx.Data()
 	var decr int
 	var ids []int
 	for _, id := range ctx.FormValues(`id[]`) {

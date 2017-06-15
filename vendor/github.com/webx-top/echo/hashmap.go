@@ -16,7 +16,6 @@
 
 */
 
-
 package echo
 
 import (
@@ -63,8 +62,8 @@ func (h H) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	return e.EncodeToken(xml.EndElement{Name: start.Name})
 }
 
-// ToData conversion to *Data
-func (h H) ToData() *Data {
+// ToData conversion to *RawData
+func (h H) ToData() *RawData {
 	var info, zone, data interface{}
 	if v, y := h["Data"]; y {
 		data = v
@@ -83,7 +82,7 @@ func (h H) ToData() *Data {
 			code = c
 		}
 	}
-	return &Data{
+	return &RawData{
 		Code: code,
 		Info: info,
 		Zone: zone,

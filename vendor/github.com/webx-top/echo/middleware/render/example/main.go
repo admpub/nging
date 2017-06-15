@@ -35,7 +35,7 @@ func main() {
 	g := e.Group("/api", render.AutoOutput(nil))
 	{
 		g.Get("", func(c echo.Context) error {
-			c.Set("data", c.NewData().SetCode(1).SetData(echo.H{
+			c.Set("data", c.Data().SetCode(1).SetData(echo.H{
 				"Name": "Webx",
 			}))
 

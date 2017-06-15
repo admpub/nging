@@ -113,7 +113,8 @@ type (
 		Error(err error)
 		SetCode(int)
 		Code() int
-		NewData(...interface{}) *Data
+		SetData(Data)
+		Data() Data
 
 		// ServeContent sends static content from `io.Reader` and handles caching
 		// via `If-Modified-Since` request header. It automatically sets `Content-Type`
@@ -231,6 +232,7 @@ type (
 		format              string
 		code                int
 		preResponseHook     []func() error
+		dataEngine          Data
 	}
 )
 
@@ -249,6 +251,7 @@ func NewContext(req engine.Request, res engine.Response, e *Echo) Context {
 		sessioner:  DefaultNopSession,
 	}
 	c.cookier = NewCookier(c)
+	c.dataEngine = NewData(c)
 	return c
 }
 
@@ -648,6 +651,7 @@ func (c *xContext) Reset(req engine.Request, res engine.Response) {
 	c.format = ""
 	c.code = 0
 	c.preResponseHook = nil
+	c.dataEngine = NewData(c)
 	// NOTE: Don't reset because it has to have length c.echo.maxParam at all times
 	// c.pvalues = nil
 }
@@ -976,21 +980,12 @@ func (c *xContext) Code() int {
 	return c.code
 }
 
-func (c *xContext) NewData(args ...interface{}) *Data {
-	length := len(args)
-	if length > 1 {
-		if code, ok := args[0].(int); ok {
-			return NewData(c, code, args[1:]...)
-		}
-	} else if length == 1 {
-		if code, ok := args[0].(int); ok {
-			return NewData(c, code)
-		}
-		if mapd, ok := args[0].(H); ok {
-			return mapd.ToData().SetContext(c)
-		}
-	}
-	return &Data{Code: State(1), context: c}
+func (c *xContext) SetData(data Data) {
+	c.dataEngine = data
+}
+
+func (c *xContext) Data() Data {
+	return c.dataEngine
 }
 
 // MapForm 映射表单数据到结构体

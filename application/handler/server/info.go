@@ -126,7 +126,7 @@ func Info(ctx echo.Context) error {
 		}
 		info.DiskUsages[k] = usageStat
 	}
-	data := ctx.NewData().SetData(info).SetCode(1)
+	data := ctx.Data().SetData(info, 1)
 
 	ctx.Set(`data`, data)
 	return nil
@@ -160,7 +160,7 @@ func processInfo(pid int32) (echo.H, error) {
 func ProcessInfo(ctx echo.Context) error {
 	pid := ctx.Paramx(`pid`).Int32()
 	row, err := processInfo(pid)
-	data := ctx.NewData()
+	data := ctx.Data()
 	if err != nil {
 		data.SetError(err)
 	} else {
@@ -172,7 +172,7 @@ func ProcessInfo(ctx echo.Context) error {
 func ProcessKill(ctx echo.Context) error {
 	pid := ctx.Paramx(`pid`).Int()
 	err := com.CloseProcessFromPid(pid)
-	data := ctx.NewData()
+	data := ctx.Data()
 	if err != nil {
 		data.SetError(err)
 	} else {

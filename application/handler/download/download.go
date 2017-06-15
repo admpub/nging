@@ -18,7 +18,6 @@
 package download
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 
@@ -67,29 +66,28 @@ func File(ctx echo.Context) error {
 
 	switch do {
 	case `edit`:
-		data := ctx.NewData()
+		data := ctx.Data()
 		if _, ok := caddy.Editable(absPath); !ok {
-			data.Info = errors.New(ctx.T(`此文件不能在线编辑`))
+			data.SetInfo(ctx.T(`此文件不能在线编辑`), 0)
 		} else {
 			content := ctx.Form(`content`)
 			encoding := ctx.Form(`encoding`)
 			dat, err := mgr.Edit(absPath, content, encoding)
 			if err != nil {
-				data.Info = err.Error()
+				data.SetInfo(err.Error(), 0)
 			} else {
-				data.Code = 1
-				data.Data = dat
+				data.SetData(dat, 1)
 			}
 		}
 		return ctx.JSON(data)
 	case `rename`:
-		data := ctx.NewData()
+		data := ctx.Data()
 		newName := ctx.Form(`name`)
 		err = mgr.Rename(absPath, newName)
 		if err != nil {
-			data.Info = err.Error()
+			data.SetInfo(err.Error(), 0)
 		} else {
-			data.Code = 1
+			data.SetCode(1)
 		}
 		return ctx.JSON(data)
 	case `delete`:

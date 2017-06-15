@@ -32,7 +32,7 @@ func EmailTest(ctx echo.Context) error {
 		title := ctx.T(`恭喜！邮件发送功能正常`)
 		content := []byte(ctx.T(`如果您收到这封邮件，说明邮件发送功能正常。<br /><br /> 来自：%s<br />时间：%s`, ctx.Site(), time.Now().String()))
 		err := cron.SendMail(toEmail, toUsername, title, content)
-		data := ctx.NewData()
+		data := ctx.Data()
 		if err != nil {
 			data.SetError(err)
 		}

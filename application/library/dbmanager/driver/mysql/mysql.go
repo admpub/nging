@@ -263,9 +263,9 @@ func (m *mySQL) Info() error {
 func (m *mySQL) CreateDb() error {
 	dbName := m.Form(`name`)
 	collate := m.Form(`collation`)
-	data := m.NewData()
+	data := m.Data()
 	if len(dbName) < 1 {
-		data.SetZone(`name`).SetInfo(m.T(`数据库名称不能为空`))
+		data.SetZone(`name`).SetInfo(m.T(`数据库名称不能为空`), 0)
 	} else {
 		res := m.createDatabase(dbName, collate)
 		if res.err != nil {
@@ -313,7 +313,7 @@ func (m *mySQL) ModifyDb() error {
 func (m *mySQL) listDbAjax(opType string) error {
 	switch opType {
 	case `drop`:
-		data := m.NewData()
+		data := m.Data()
 		dbs := m.FormValues(`db[]`)
 		rs := []*Result{}
 		code := 1
@@ -331,7 +331,7 @@ func (m *mySQL) listDbAjax(opType string) error {
 	case `create`:
 		return m.CreateDb()
 	case `collations`:
-		data := m.NewData()
+		data := m.Data()
 		collations, err := m.getCollations()
 		if err != nil {
 			data.SetError(err)
@@ -757,7 +757,7 @@ func (m *mySQL) listTableAjax(opType string) error {
 	case `analyze`, `optimize`, `check`, `repair`:
 		tables := m.FormValues(`table[]`)
 		views := m.FormValues(`view[]`)
-		data := m.NewData()
+		data := m.Data()
 		err := m.optimizeTables(append(tables, views...), opType)
 		if err != nil {
 			data.SetError(err)
@@ -768,7 +768,7 @@ func (m *mySQL) listTableAjax(opType string) error {
 	case `truncate`:
 		tables := m.FormValues(`table[]`)
 		//views := m.FormValues(`view[]`)
-		data := m.NewData()
+		data := m.Data()
 		var err error
 		if len(tables) > 0 {
 			err = m.truncateTables(tables)
@@ -782,7 +782,7 @@ func (m *mySQL) listTableAjax(opType string) error {
 	case `drop`:
 		tables := m.FormValues(`table[]`)
 		views := m.FormValues(`view[]`)
-		data := m.NewData()
+		data := m.Data()
 		var err error
 		if len(tables) > 0 {
 			err = m.dropTables(tables, false)
@@ -800,7 +800,7 @@ func (m *mySQL) listTableAjax(opType string) error {
 		destDb := m.Form(`dbName`)
 		tables := m.FormValues(`table[]`)
 		views := m.FormValues(`view[]`)
-		data := m.NewData()
+		data := m.Data()
 		var err error
 		if len(tables) > 0 {
 			err = m.copyTables(tables, destDb, false)
@@ -818,7 +818,7 @@ func (m *mySQL) listTableAjax(opType string) error {
 		destDb := m.Form(`dbName`)
 		tables := m.FormValues(`table[]`)
 		views := m.FormValues(`view[]`)
-		data := m.NewData()
+		data := m.Data()
 		err := m.moveTables(append(tables, views...), destDb)
 		if err != nil {
 			data.SetError(err)
@@ -827,7 +827,7 @@ func (m *mySQL) listTableAjax(opType string) error {
 		}
 		return m.JSON(data)
 	case `dbs`:
-		data := m.NewData()
+		data := m.Data()
 		dbList, err := m.getDatabases()
 		if err != nil {
 			data.SetError(err)

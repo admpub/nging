@@ -16,7 +16,6 @@
 
 */
 
-
 package echo
 
 import (
@@ -25,7 +24,8 @@ import (
 )
 
 func init() {
-	gob.Register(&Data{})
+	gob.Register(&RawData{})
+	gob.Register(H{})
 }
 
 //States 状态码对应的文本
@@ -49,7 +49,28 @@ func (s State) Int() int {
 }
 
 //Data 响应数据
-type Data struct {
+type Data interface {
+	Assign(key string, val interface{})
+	Assignx(values *map[string]interface{})
+	SetTmplFuncs()
+	Render(tmpl string, code ...int) error
+	SetContext(ctx Context) Data
+	String() string
+	Set(code int, args ...interface{}) Data
+	Reset() Data
+	SetError(err error, args ...int) Data
+	SetCode(code int) Data
+	SetInfo(info interface{}, args ...int) Data
+	SetZone(zone interface{}) Data
+	SetData(data interface{}, args ...int) Data
+	Gets() (code State, info interface{}, zone interface{}, data interface{})
+	GetCode() State
+	GetInfo() interface{}
+	GetZone() interface{}
+	GetData() interface{}
+}
+
+type RawData struct {
 	context Context
 	Code    State
 	State   string `json:",omitempty" xml:",omitempty"`
@@ -58,31 +79,52 @@ type Data struct {
 	Data    interface{} `json:",omitempty" xml:",omitempty"`
 }
 
-func (d *Data) Error() string {
+func (d *RawData) Error() string {
 	return fmt.Sprintf(`%v`, d.Info)
 }
 
-func (d *Data) String() string {
+func (d *RawData) Reset() Data {
+	d.Code = State(0)
+	d.State = ``
+	d.Info = nil
+	d.Zone = nil
+	d.Data = nil
+	return d
+}
+
+func (d *RawData) String() string {
 	return fmt.Sprintf(`%v`, d.Info)
 }
 
 //Render 通过模板渲染结果
-func (d *Data) Render(tmpl string, code ...int) error {
+func (d *RawData) Render(tmpl string, code ...int) error {
 	return d.context.Render(tmpl, d.Data, code...)
 }
 
 //Gets 获取全部数据
-func (d *Data) Gets() (State, interface{}, interface{}, interface{}) {
+func (d *RawData) Gets() (State, interface{}, interface{}, interface{}) {
 	return d.Code, d.Info, d.Zone, d.Data
 }
 
+func (d *RawData) GetCode() State {
+	return d.Code
+}
+
+func (d *RawData) GetInfo() interface{} {
+	return d.Info
+}
+
+func (d *RawData) GetZone() interface{} {
+	return d.Zone
+}
+
 //GetData 获取数据
-func (d *Data) GetData() interface{} {
+func (d *RawData) GetData() interface{} {
 	return d.Data
 }
 
 //SetError 设置错误
-func (d *Data) SetError(err error, args ...int) *Data {
+func (d *RawData) SetError(err error, args ...int) Data {
 	if err != nil {
 		if len(args) > 0 {
 			d.SetCode(args[0])
@@ -97,14 +139,14 @@ func (d *Data) SetError(err error, args ...int) *Data {
 }
 
 //SetCode 设置状态码
-func (d *Data) SetCode(code int) *Data {
+func (d *RawData) SetCode(code int) Data {
 	d.Code = State(code)
 	d.State = d.Code.String()
 	return d
 }
 
 //SetInfo 设置提示信息
-func (d *Data) SetInfo(info interface{}, args ...int) *Data {
+func (d *RawData) SetInfo(info interface{}, args ...int) Data {
 	d.Info = info
 	if len(args) > 0 {
 		d.SetCode(args[0])
@@ -113,13 +155,13 @@ func (d *Data) SetInfo(info interface{}, args ...int) *Data {
 }
 
 //SetZone 设置提示区域
-func (d *Data) SetZone(zone interface{}) *Data {
+func (d *RawData) SetZone(zone interface{}) Data {
 	d.Zone = zone
 	return d
 }
 
 //SetData 设置正常数据
-func (d *Data) SetData(data interface{}, args ...int) *Data {
+func (d *RawData) SetData(data interface{}, args ...int) Data {
 	d.Data = data
 	if len(args) > 0 {
 		d.SetCode(args[0])
@@ -130,39 +172,39 @@ func (d *Data) SetData(data interface{}, args ...int) *Data {
 }
 
 //SetContext 设置Context
-func (d *Data) SetContext(ctx Context) *Data {
+func (d *RawData) SetContext(ctx Context) Data {
 	d.context = ctx
 	return d
 }
 
 //Assign 赋值
-func (d *Data) Assign(key string, val interface{}) {
-	data, _ := d.Data.(H)
-	if data == nil {
-		data = H{}
+func (d *RawData) Assign(key string, val interface{}) {
+	RawData, _ := d.Data.(H)
+	if RawData == nil {
+		RawData = H{}
 	}
-	data[key] = val
-	d.Data = data
+	RawData[key] = val
+	d.Data = RawData
 }
 
 //Assignx 批量赋值
-func (d *Data) Assignx(values *map[string]interface{}) {
+func (d *RawData) Assignx(values *map[string]interface{}) {
 	if values == nil {
 		return
 	}
-	data, _ := d.Data.(H)
-	if data == nil {
-		data = H{}
+	RawData, _ := d.Data.(H)
+	if RawData == nil {
+		RawData = H{}
 	}
 	for key, val := range *values {
-		data[key] = val
+		RawData[key] = val
 	}
-	d.Data = data
+	d.Data = RawData
 }
 
 //SetTmplFuncs 设置模板函数
-func (d *Data) SetTmplFuncs() {
-	flash, ok := d.context.Session().Get(`webx:flash`).(*Data)
+func (d *RawData) SetTmplFuncs() {
+	flash, ok := d.context.Session().Get(`webx:flash`).(*RawData)
 	if ok {
 		d.context.Session().Delete(`webx:flash`).Save()
 		d.context.SetFunc(`Code`, func() State {
@@ -187,8 +229,8 @@ func (d *Data) SetTmplFuncs() {
 	}
 }
 
-// Set 设置输出(code,info,zone,data)
-func (d *Data) Set(code int, args ...interface{}) {
+// Set 设置输出(code,info,zone,RawData)
+func (d *RawData) Set(code int, args ...interface{}) Data {
 	d.SetCode(code)
 	var hasData bool
 	switch len(args) {
@@ -202,7 +244,7 @@ func (d *Data) Set(code int, args ...interface{}) {
 	case 1:
 		d.Info = args[0]
 		if !hasData {
-			flash := &Data{
+			flash := &RawData{
 				context: d.context,
 				Code:    d.Code,
 				State:   d.State,
@@ -213,29 +255,15 @@ func (d *Data) Set(code int, args ...interface{}) {
 			d.context.Session().Set(`webx:flash`, flash).Save()
 		}
 	}
+	return d
 }
 
-// NewData params: Code,Info,Zone,Data
-func NewData(ctx Context, code int, args ...interface{}) *Data {
-	var info, zone, data interface{}
-	switch len(args) {
-	case 3:
-		data = args[2]
-		fallthrough
-	case 2:
-		zone = args[1]
-		fallthrough
-	case 1:
-		info = args[0]
-	}
-	c := State(code)
-	return &Data{
+func NewData(ctx Context) *RawData {
+	c := State(1)
+	return &RawData{
 		context: ctx,
 		Code:    c,
 		State:   c.String(),
-		Info:    info,
-		Zone:    zone,
-		Data:    data,
 	}
 }
 
