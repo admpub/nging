@@ -21,6 +21,7 @@ package echo
 import (
 	"encoding/gob"
 	"fmt"
+	"net/http"
 )
 
 func init() {
@@ -28,24 +29,48 @@ func init() {
 	gob.Register(H{})
 }
 
-//States 状态码对应的文本
-var States = map[State]string{
-	-2: `Non-Privileged`,  //无权限
-	-1: `Unauthenticated`, //未登录
-	0:  `Failure`,         //操作失败
-	1:  `Success`,         //操作成功
+//Status 状态值
+type Status struct {
+	Text string
+	Code int
 }
+
+var (
+	//States 状态码对应的文本
+	States = map[State]*Status{
+		-2: {`Non-Privileged`, http.StatusOK},  //无权限
+		-1: {`Unauthenticated`, http.StatusOK}, //未登录
+		0:  {`Failure`, http.StatusOK},         //操作失败
+		1:  {`Success`, http.StatusOK},         //操作成功
+	}
+	//GetStatus 获取状态值
+	GetStatus = func(key State) (*Status, bool) {
+		v, y := States[key]
+		return v, y
+	}
+)
 
 //State 状态码类型
 type State int
 
 func (s State) String() string {
-	return States[s]
+	if v, y := GetStatus(s); y {
+		return v.Text
+	}
+	return `Undefined`
 }
 
-//Int 返回int类型的状态码
+//Int 返回int类型的自定义状态码
 func (s State) Int() int {
 	return int(s)
+}
+
+//HTTPCode 返回HTTP状态码
+func (s State) HTTPCode() int {
+	if v, y := GetStatus(s); y {
+		return v.Code
+	}
+	return http.StatusOK
 }
 
 //Data 响应数据

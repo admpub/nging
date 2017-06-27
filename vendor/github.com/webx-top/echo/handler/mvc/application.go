@@ -625,6 +625,9 @@ func (s *Application) DefaultFuncMap() (r map[string]interface{}) {
 	r["RootModuleURL"] = func(ctl string, act string, params ...interface{}) string {
 		return s.URLs.Build(s.RootModuleName, ctl, act, params...)
 	}
+	r["ModuleRootURL"] = func(module string) string {
+		return s.Module(module).URL
+	}
 	r["URLFor"] = s.URLs.Build
 	return
 }

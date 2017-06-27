@@ -70,7 +70,7 @@ func Setup(ctx echo.Context) error {
 			err = errors.New(ctx.T(`管理员邮箱不能为空`))
 			goto DIE
 		}
-		if !ctx.ValidateField(`adminEmail`, adminEmail, `email`) {
+		if !ctx.Validate(`adminEmail`, adminEmail, `email`).Ok() {
 			err = errors.New(ctx.T(`管理员邮箱格式不正确`))
 			goto DIE
 		}

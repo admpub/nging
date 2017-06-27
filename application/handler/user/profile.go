@@ -67,7 +67,7 @@ func Edit(ctx echo.Context) error {
 			//两步验证码
 			err = GAuthVerify(ctx, `u2fCode`)
 		}
-		if err == nil && !ctx.ValidateField(`email`, email, `email`) {
+		if err == nil && !ctx.Validate(`email`, email, `email`).Ok() {
 			err = errors.New(ctx.T(`Email地址格式不正确`))
 		}
 		if err == nil {

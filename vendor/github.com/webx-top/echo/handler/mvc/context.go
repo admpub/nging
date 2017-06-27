@@ -252,7 +252,7 @@ func (c *Context) Display(args ...interface{}) error {
 		}
 	}
 	if c.Code() <= 0 {
-		c.SetCode(http.StatusOK)
+		c.SetCode(c.Data().GetCode().HTTPCode())
 	}
 	if ignore, _ := c.Get(`webx:ignoreRender`).(bool); ignore {
 		return nil

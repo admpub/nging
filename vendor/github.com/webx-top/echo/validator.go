@@ -16,7 +16,6 @@
 
 */
 
-
 package echo
 
 import (
@@ -27,29 +26,73 @@ import (
 
 // Validator is the interface that wraps the Validate method.
 type Validator interface {
-	Validate(i interface{}, args ...string) error
-	ValidateOk(i interface{}, args ...string) bool
-	ValidateField(fieldName string, value string, rule string) bool
+	Validate(i interface{}, args ...string) ValidateResult
+}
+
+type ValidateResult interface {
+	Ok() bool
+	Error() error
+	Field() string
+	Raw() interface{}
+
+	//setter
+	SetError(error) ValidateResult
+	SetField(string) ValidateResult
+	SetRaw(interface{}) ValidateResult
+}
+
+func NewValidateResult() ValidateResult {
+	return &ValidatorResult{}
+}
+
+type ValidatorResult struct {
+	error
+	field string
+	raw   interface{}
+}
+
+func (v *ValidatorResult) Ok() bool {
+	return v.error == nil
+}
+
+func (v *ValidatorResult) Error() error {
+	return v.error
+}
+
+func (v *ValidatorResult) Field() string {
+	return v.field
+}
+
+func (v *ValidatorResult) Raw() interface{} {
+	return v.raw
+}
+
+func (v *ValidatorResult) SetError(err error) ValidateResult {
+	v.error = err
+	return v
+}
+
+func (v *ValidatorResult) SetField(field string) ValidateResult {
+	v.field = field
+	return v
+}
+
+func (v *ValidatorResult) SetRaw(raw interface{}) ValidateResult {
+	v.raw = raw
+	return v
 }
 
 var (
-	DefaultNopValidate Validator = &NopValidation{}
-	ErrNoSetValidator            = errors.New(`The validator is not set`)
+	DefaultNopValidate     Validator = &NopValidation{}
+	defaultValidatorResult           = NewValidateResult()
+	ErrNoSetValidator                = errors.New(`The validator is not set`)
 )
 
 type NopValidation struct {
 }
 
-func (v *NopValidation) Validate(_ interface{}, _ ...string) error {
-	return ErrNoSetValidator
-}
-
-func (v *NopValidation) ValidateOk(_ interface{}, _ ...string) bool {
-	return false
-}
-
-func (v *NopValidation) ValidateField(_ string, _ string, _ string) bool {
-	return false
+func (v *NopValidation) Validate(_ interface{}, _ ...string) ValidateResult {
+	return defaultValidatorResult
 }
 
 func NewValidation() Validator {
@@ -62,16 +105,36 @@ type Validation struct {
 	validator *validation.Validation
 }
 
-func (v *Validation) Validate(i interface{}, args ...string) error {
-	_, err := v.validator.Valid(i, args...)
-	return err
-}
-
-func (v *Validation) ValidateOk(i interface{}, args ...string) bool {
-	ok, _ := v.validator.Valid(i, args...)
-	return ok
-}
-
-func (v *Validation) ValidateField(fieldName string, value string, rule string) bool {
-	return v.validator.ValidField(fieldName, value, rule)
+func (v *Validation) Validate(i interface{}, args ...string) ValidateResult {
+	e := NewValidateResult()
+	var err error
+	switch m := i.(type) {
+	case string:
+		field := m
+		var value, rule string
+		switch len(args) {
+		case 2:
+			rule = args[1]
+			fallthrough
+		case 1:
+			value = args[0]
+		}
+		if len(rule) == 0 {
+			return e
+		}
+		_, err = v.validator.ValidSimple(field, value, rule)
+	default:
+		_, err = v.validator.Valid(i, args...)
+	}
+	if err != nil {
+		return e.SetError(err)
+	}
+	if v.validator.HasError() {
+		vErr := v.validator.Errors[0]
+		e.SetError(vErr)
+		e.SetField(vErr.Field)
+		e.SetRaw(vErr)
+		v.validator.Errors = nil
+	}
+	return e
 }

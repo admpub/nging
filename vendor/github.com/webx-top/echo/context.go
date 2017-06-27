@@ -16,6 +16,8 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/admpub/events"
+	"github.com/admpub/events/emitter"
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/logger"
 	"github.com/webx-top/echo/param"
@@ -26,6 +28,8 @@ type (
 	// response objects, path parameters, data and registered handler.
 	Context interface {
 		context.Context
+		events.Emitter
+		SetEmitter(events.Emitter)
 		StdContext() context.Context
 		SetStdContext(context.Context)
 		Validator
@@ -212,6 +216,7 @@ type (
 	xContext struct {
 		Validator
 		Translator
+		events.Emitter
 		sessioner           Sessioner
 		cookier             Cookier
 		context             context.Context
@@ -239,7 +244,9 @@ type (
 // NewContext creates a Context object.
 func NewContext(req engine.Request, res engine.Response, e *Echo) Context {
 	c := &xContext{
+		Validator:  DefaultNopValidate,
 		Translator: DefaultNopTranslate,
+		Emitter:    emitter.DefaultCondEmitter,
 		context:    context.Background(),
 		request:    req,
 		response:   res,
@@ -261,6 +268,10 @@ func (c *xContext) StdContext() context.Context {
 
 func (c *xContext) SetStdContext(ctx context.Context) {
 	c.context = ctx
+}
+
+func (c *xContext) SetEmitter(emitter events.Emitter) {
+	c.Emitter = emitter
 }
 
 func (c *xContext) Deadline() (deadline time.Time, ok bool) {
@@ -632,6 +643,7 @@ func (c *xContext) SetTranslator(t Translator) {
 
 func (c *xContext) Reset(req engine.Request, res engine.Response) {
 	c.Validator = DefaultNopValidate
+	c.Emitter = emitter.DefaultCondEmitter
 	c.Translator = DefaultNopTranslate
 	c.sessioner = DefaultNopSession
 	c.cookier = NewCookier(c)

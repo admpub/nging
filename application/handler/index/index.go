@@ -106,7 +106,7 @@ func Register(ctx echo.Context) error {
 			if err == nil {
 				err = c.VerfyInvitationCode(code)
 			}
-			if err == nil && !ctx.ValidateField(`email`, email, `email`) {
+			if err == nil && !ctx.Validate(`email`, email, `email`).Ok() {
 				err = errors.New(ctx.T(`Email地址格式不正确`))
 			}
 		}

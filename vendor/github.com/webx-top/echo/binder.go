@@ -132,7 +132,10 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 
 		v := t[0]
 		names := strings.Split(k, `.`)
-		var err error
+		var (
+			err      error
+			propPath string
+		)
 		length := len(names)
 		if length == 1 && strings.HasSuffix(k, `]`) {
 			names = FormNames(k)
@@ -142,20 +145,28 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 		typev := tc
 		for i, name := range names {
 			name = strings.Title(name)
+			if i > 0 {
+				propPath += `.`
+			}
+			propPath += name
 
 			//不是最后一个元素
 			if i != length-1 {
 				if value.Kind() != reflect.Struct {
-					e.Logger().Warnf(`arg error, value kind is %v`, value.Kind())
+					e.Logger().Warnf(`binder: arg error, value kind is %v`, value.Kind())
+					break
+				}
+				f, _ := typev.FieldByName(name)
+				if tagfast.Value(tc, f, `form_options`) == `-` {
 					break
 				}
 				value = value.FieldByName(name)
 				if !value.IsValid() {
-					e.Logger().Warnf(`(%v value is not valid %v)`, name, value)
+					e.Logger().Debugf(`binder: %T#%v value is not valid %v`, m, propPath, value)
 					break
 				}
 				if !value.CanSet() {
-					e.Logger().Warnf(`can not set %v -> %v`, name, value.Interface())
+					e.Logger().Warnf(`binder: can not set %T#%v -> %v`, m, propPath, value.Interface())
 					break
 				}
 				if value.Kind() == reflect.Ptr {
@@ -164,8 +175,12 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 					}
 					value = value.Elem()
 				}
+				if value.Kind() != reflect.Struct {
+					e.Logger().Warnf(`binder: arg error, value %T#%v kind is %v`, m, propPath, value.Kind())
+					break
+				}
 				typev = value.Type()
-				f, _ := typev.FieldByName(name)
+				f, _ = typev.FieldByName(name)
 				if tagfast.Value(tc, f, `form_options`) == `-` {
 					break
 				}
@@ -173,16 +188,12 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 			}
 
 			//最后一个元素
-			if value.Kind() != reflect.Struct {
-				e.Logger().Warnf(`arg error, value %v kind is %v`, name, value.Kind())
-				break
-			}
 			tv := value.FieldByName(name)
 			if !tv.IsValid() {
 				break
 			}
 			if !tv.CanSet() {
-				e.Logger().Warnf(`can not set %v to %v`, k, tv)
+				e.Logger().Warnf(`binder: can not set %v to %v`, k, tv)
 				break
 			}
 			f, _ := typev.FieldByName(name)
@@ -211,7 +222,7 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 				if dateformat != `` {
 					t, err := time.Parse(dateformat, v)
 					if err != nil {
-						e.Logger().Warnf(`arg %v as int: %v`, v, err)
+						e.Logger().Warnf(`binder: arg %v as int: %v`, v, err)
 						l = int(0)
 					} else {
 						l = int(t.Unix())
@@ -219,7 +230,7 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 				} else {
 					x, err := strconv.Atoi(v)
 					if err != nil {
-						e.Logger().Warnf(`arg %v as int: %v`, v, err)
+						e.Logger().Warnf(`binder: arg %v as int: %v`, v, err)
 					}
 					l = x
 				}
@@ -229,7 +240,7 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 				if dateformat != `` {
 					t, err := time.Parse(dateformat, v)
 					if err != nil {
-						e.Logger().Warnf(`arg %v as int64: %v`, v, err)
+						e.Logger().Warnf(`binder: arg %v as int64: %v`, v, err)
 						l = int64(0)
 					} else {
 						l = t.Unix()
@@ -237,7 +248,7 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 				} else {
 					x, err := strconv.ParseInt(v, 10, 64)
 					if err != nil {
-						e.Logger().Warnf(`arg %v as int64: %v`, v, err)
+						e.Logger().Warnf(`binder: arg %v as int64: %v`, v, err)
 					}
 					l = x
 				}
@@ -245,7 +256,7 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 			case reflect.Float32, reflect.Float64:
 				x, err := strconv.ParseFloat(v, 64)
 				if err != nil {
-					e.Logger().Warnf(`arg %v as float64: %v`, v, err)
+					e.Logger().Warnf(`binder: arg %v as float64: %v`, v, err)
 				}
 				l = x
 				tv.Set(reflect.ValueOf(l))
@@ -266,7 +277,7 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 				if dateformat != `` {
 					t, err := time.Parse(dateformat, v)
 					if err != nil {
-						e.Logger().Warnf(`arg %v as uint: %v`, v, err)
+						e.Logger().Warnf(`binder: arg %v as uint: %v`, v, err)
 						x = uint64(0)
 					} else {
 						x = uint64(t.Unix())
@@ -274,7 +285,7 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 				} else {
 					x, err = strconv.ParseUint(v, 10, bitSize)
 					if err != nil {
-						e.Logger().Warnf(`arg %v as uint: %v`, v, err)
+						e.Logger().Warnf(`binder: arg %v as uint: %v`, v, err)
 					}
 				}
 				switch k {
@@ -294,7 +305,7 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 				if tvf, ok := tv.Interface().(FromConversion); ok {
 					err := tvf.FromString(v)
 					if err != nil {
-						e.Logger().Warnf(`struct %v invoke FromString faild`, tvf)
+						e.Logger().Warnf(`binder: struct %v invoke FromString faild`, tvf)
 					}
 				} else if tv.Type().String() == `time.Time` {
 					x, err := time.Parse(`2006-01-02 15:04:05.000 -0700`, v)
@@ -303,64 +314,19 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 						if err != nil {
 							x, err = time.Parse(`2006-01-02`, v)
 							if err != nil {
-								e.Logger().Warnf(`unsupported time format %v, %v`, v, err)
+								e.Logger().Warnf(`binder: unsupported time format %v, %v`, v, err)
 							}
 						}
 					}
 					l = x
 					tv.Set(reflect.ValueOf(l))
 				} else {
-					e.Logger().Warn(`can not set an struct which is not implement Fromconversion interface`)
+					e.Logger().Warn(`binder: can not set an struct which is not implement Fromconversion interface`)
 				}
 			case reflect.Ptr:
-				e.Logger().Warn(`can not set an ptr of ptr`)
+				e.Logger().Warn(`binder: can not set an ptr of ptr`)
 			case reflect.Slice, reflect.Array:
-				tt := tv.Type().Elem()
-				tk := tt.Kind()
-
-				if tv.IsNil() {
-					tv.Set(reflect.MakeSlice(tv.Type(), len(t), len(t)))
-				}
-
-				for i, s := range t {
-					var err error
-					switch tk {
-					case reflect.Int, reflect.Int16, reflect.Int32, reflect.Int8, reflect.Int64:
-						var v int64
-						v, err = strconv.ParseInt(s, 10, tt.Bits())
-						if err == nil {
-							tv.Index(i).SetInt(v)
-						}
-					case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-						var v uint64
-						v, err = strconv.ParseUint(s, 10, tt.Bits())
-						if err == nil {
-							tv.Index(i).SetUint(v)
-						}
-					case reflect.Float32, reflect.Float64:
-						var v float64
-						v, err = strconv.ParseFloat(s, tt.Bits())
-						if err == nil {
-							tv.Index(i).SetFloat(v)
-						}
-					case reflect.Bool:
-						var v bool
-						v, err = strconv.ParseBool(s)
-						if err == nil {
-							tv.Index(i).SetBool(v)
-						}
-					case reflect.String:
-						tv.Index(i).SetString(s)
-					case reflect.Complex64, reflect.Complex128:
-						// TODO:
-						err = fmt.Errorf(`unsupported slice element type %v`, tk.String())
-					default:
-						err = fmt.Errorf(`unsupported slice element type %v`, tk.String())
-					}
-					if err != nil {
-						e.Logger().Warnf(`slice error: %v, %v`, name, err)
-					}
-				}
+				setSlice(e, name, tv, t)
 			default:
 				break
 			}
@@ -383,6 +349,56 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 		}
 	}
 	return nil
+}
+
+func setSlice(e *Echo, fieldName string, tv reflect.Value, t []string) {
+
+	tt := tv.Type().Elem()
+	tk := tt.Kind()
+
+	if tv.IsNil() {
+		tv.Set(reflect.MakeSlice(tv.Type(), len(t), len(t)))
+	}
+
+	for i, s := range t {
+		var err error
+		switch tk {
+		case reflect.Int, reflect.Int16, reflect.Int32, reflect.Int8, reflect.Int64:
+			var v int64
+			v, err = strconv.ParseInt(s, 10, tt.Bits())
+			if err == nil {
+				tv.Index(i).SetInt(v)
+			}
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+			var v uint64
+			v, err = strconv.ParseUint(s, 10, tt.Bits())
+			if err == nil {
+				tv.Index(i).SetUint(v)
+			}
+		case reflect.Float32, reflect.Float64:
+			var v float64
+			v, err = strconv.ParseFloat(s, tt.Bits())
+			if err == nil {
+				tv.Index(i).SetFloat(v)
+			}
+		case reflect.Bool:
+			var v bool
+			v, err = strconv.ParseBool(s)
+			if err == nil {
+				tv.Index(i).SetBool(v)
+			}
+		case reflect.String:
+			tv.Index(i).SetString(s)
+		case reflect.Complex64, reflect.Complex128:
+			// TODO:
+			err = fmt.Errorf(`binder: unsupported slice element type %v`, tk.String())
+		default:
+			err = fmt.Errorf(`binder: unsupported slice element type %v`, tk.String())
+		}
+		if err != nil {
+			e.Logger().Warnf(`binder: slice error: %v, %v`, fieldName, err)
+		}
+	}
 }
 
 // FromConversion a struct implements this interface can be convert from request param to a struct
