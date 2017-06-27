@@ -1182,10 +1182,8 @@ func (m *mySQL) ListData() error {
 		whereStr += "\nORDER BY " + strings.Join(orders, `, `)
 	}
 	r.SQL = `SELECT` + withLimit(fieldStr+` FROM `+quoteCol(table), whereStr, limit, (page-1)*limit, "\n")
-	fmt.Println(`------------------------------>`, r.SQL)
 	if totalRows < 1 {
 		countSQL := m.countRows(table, wheres, isGroup, groups)
-		fmt.Println(`------------------------------>`, countSQL)
 		row := m.newParam().SetCollection(countSQL).QueryRow()
 		err := row.Scan(&totalRows)
 		if err != nil {
