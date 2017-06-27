@@ -137,10 +137,20 @@ function onselectColumns(obj){
         {{Include "db/mysql/results"}}
         <div class="block-flat row">
           <div class="header">
-			<a href="{{dbMgrURL "createData" Stored.dbName Stored.table}}" class="btn btn-success pull-right">
+            <div class="btn-group pull-right">
+			<a href="{{dbMgrURL "viewTable" Stored.dbName Stored.table}}" class="btn btn-default">
+				<i class="fa fa-list"></i>
+				{{"查看结构"|T}}
+			</a>
+			<a href="{{dbMgrURL "modifyTable" Stored.dbName Stored.table}}" class="btn btn-default">
+				<i class="fa fa-pencil"></i>
+				{{"修改表"|T}}
+			</a>
+			<a href="{{dbMgrURL "createData" Stored.dbName Stored.table}}" class="btn btn-success">
 				<i class="fa fa-plus"></i>
 				{{"新建数据"|T}}
 			</a>
+            </div>
             <h3>{{"数据"|T}}</h3>
           </div>
           <div class="content">

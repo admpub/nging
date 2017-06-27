@@ -65,7 +65,7 @@ func (m *mySQL) countRows(table string, wheres []string, isGroup bool, groups []
 	var groupBy string
 	if isGroup {
 		if m.supportSQL || len(groups) > 0 {
-			return "SELECT COUNT(DISTINCT " + strings.Join(groups, ", ") + ")"
+			return "SELECT COUNT(DISTINCT " + strings.Join(groups, ", ") + ")" + query
 		}
 		return "SELECT COUNT(*) FROM (SELECT 1" + query + groupBy + ") x"
 	}

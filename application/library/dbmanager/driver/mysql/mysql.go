@@ -1131,31 +1131,34 @@ func (m *mySQL) ListData() error {
 		orders = append(orders, order)
 	}
 	for index, colName := range selectCols {
+		var (
+			fn         string
+			isGrouping bool
+			sel        string
+		)
+		if index < funcNum {
+			for _, f := range functions {
+				if f == selectFuncs[index] {
+					fn = f
+					break
+				}
+			}
+			for _, f := range grouping {
+				if f == selectFuncs[index] {
+					fn = f
+					isGrouping = true
+					break
+				}
+			}
+		}
+		if len(fn) == 0 && len(colName) == 0 {
+			continue
+		}
 		if len(colName) == 0 {
-			continue
+			colName = `*`
 		}
-		if index >= funcNum {
-			break
-		}
-		invalidFunc := true
-		invalidGroup := true
-		for _, f := range functions {
-			if f == selectFuncs[index] {
-				invalidFunc = false
-				break
-			}
-		}
-		for _, f := range grouping {
-			if f == selectFuncs[index] {
-				invalidGroup = false
-				break
-			}
-		}
-		if invalidFunc && invalidGroup {
-			continue
-		}
-		sel := applySQLFunction(selectFuncs[index], quoteCol(colName))
-		if invalidGroup {
+		sel = applySQLFunction(fn, quoteCol(colName))
+		if !isGrouping {
 			groups = append(groups, sel)
 		}
 		selects = append(selects, sel)
@@ -1179,8 +1182,10 @@ func (m *mySQL) ListData() error {
 		whereStr += "\nORDER BY " + strings.Join(orders, `, `)
 	}
 	r.SQL = `SELECT` + withLimit(fieldStr+` FROM `+quoteCol(table), whereStr, limit, (page-1)*limit, "\n")
+	fmt.Println(`------------------------------>`, r.SQL)
 	if totalRows < 1 {
 		countSQL := m.countRows(table, wheres, isGroup, groups)
+		fmt.Println(`------------------------------>`, countSQL)
 		row := m.newParam().SetCollection(countSQL).QueryRow()
 		err := row.Scan(&totalRows)
 		if err != nil {
