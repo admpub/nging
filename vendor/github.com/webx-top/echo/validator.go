@@ -105,6 +105,10 @@ type Validation struct {
 	validator *validation.Validation
 }
 
+// Validate 此处支持两种用法：
+// 1. Validate(表单字段名, 表单值, 验证规则名)
+// 2. Validate(结构体实例, 要验证的结构体字段1，要验证的结构体字段2)
+// Validate(结构体实例) 代表验证所有带“valid”标签的字段
 func (v *Validation) Validate(i interface{}, args ...string) ValidateResult {
 	e := NewValidateResult()
 	var err error
@@ -133,7 +137,7 @@ func (v *Validation) Validate(i interface{}, args ...string) ValidateResult {
 		vErr := v.validator.Errors[0]
 		e.SetError(vErr)
 		e.SetField(vErr.Field)
-		e.SetRaw(vErr)
+		e.SetRaw(v.validator.Errors)
 		v.validator.Errors = nil
 	}
 	return e

@@ -224,7 +224,6 @@ cookieStore.RegWithOptions(&cookieStore.CookieOptions{
 	KeyPairs: [][]byte{
 		[]byte(`123456789012345678901234567890ab`),
 	},
-	SessionOptions: sessionOptions,
 })
 
 e.Use(session.Middleware(sessionOptions))

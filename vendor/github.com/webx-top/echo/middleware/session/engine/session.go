@@ -15,15 +15,10 @@ const (
 	errorFormat = "[sessions] ERROR! %s\n"
 )
 
-type Store interface {
-	sessions.Store
-	Options(echo.SessionOptions)
-}
-
 type Session struct {
 	name    string
 	context echo.Context
-	store   Store
+	store   sessions.Store
 	session *sessions.Session
 	written bool
 }
@@ -64,24 +59,12 @@ func (s *Session) Flashes(vars ...string) []interface{} {
 	return s.Session().Flashes(vars...)
 }
 
-func (s *Session) Options(options echo.SessionOptions) echo.Sessioner {
-	s.Session().Options = &sessions.Options{
-		Path:     options.Path,
-		Domain:   options.Domain,
-		MaxAge:   options.MaxAge,
-		Secure:   options.Secure,
-		HttpOnly: options.HttpOnly,
-	}
-	s.store.Options(options)
-	return s
-}
-
-func (s *Session) SetId(id string) echo.Sessioner {
+func (s *Session) SetID(id string) echo.Sessioner {
 	s.Session().ID = id
 	return s
 }
 
-func (s *Session) Id() string {
+func (s *Session) ID() string {
 	return s.Session().ID
 }
 

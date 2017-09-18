@@ -3,6 +3,7 @@ package echo
 import (
 	"encoding/json"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"net/http"
 	"reflect"
@@ -28,29 +29,57 @@ type (
 	}
 	binder struct {
 		*Echo
+		decoders map[string]func(interface{}, Context, ...FormDataFilter) error
 	}
 )
 
-func (b *binder) MustBind(i interface{}, c Context, filter ...FormDataFilter) (err error) {
-	r := c.Request()
-	body := r.Body()
-	if body == nil {
-		err = NewHTTPError(http.StatusBadRequest, "Request body can't be nil")
-		return
+func NewBinder(e *Echo) Binder {
+	return &binder{
+		Echo: e,
+		decoders: map[string]func(interface{}, Context, ...FormDataFilter) error{
+			MIMEApplicationJSON: func(i interface{}, ctx Context, filter ...FormDataFilter) error {
+				body := ctx.Request().Body()
+				if body == nil {
+					return NewHTTPError(http.StatusBadRequest, "Request body can't be nil")
+				}
+				defer body.Close()
+				return json.NewDecoder(body).Decode(i)
+			},
+			MIMEApplicationXML: func(i interface{}, ctx Context, filter ...FormDataFilter) error {
+				body := ctx.Request().Body()
+				if body == nil {
+					return NewHTTPError(http.StatusBadRequest, "Request body can't be nil")
+				}
+				defer body.Close()
+				return xml.NewDecoder(body).Decode(i)
+			},
+			MIMEApplicationForm: func(i interface{}, ctx Context, filter ...FormDataFilter) error {
+				body := ctx.Request().Body()
+				if body == nil {
+					return NewHTTPError(http.StatusBadRequest, "Request body can't be nil")
+				}
+				defer body.Close()
+				return NamedStructMap(ctx.Echo(), i, ctx.Request().PostForm().All(), ``, filter...)
+			},
+			MIMEMultipartForm: func(i interface{}, ctx Context, filter ...FormDataFilter) error {
+				body := ctx.Request().Body()
+				if body == nil {
+					return NewHTTPError(http.StatusBadRequest, "Request body can't be nil")
+				}
+				defer body.Close()
+				return NamedStructMap(ctx.Echo(), i, ctx.Request().Form().All(), ``, filter...)
+			},
+		},
 	}
-	defer body.Close()
-	ct := r.Header().Get(HeaderContentType)
-	err = ErrUnsupportedMediaType
-	if strings.HasPrefix(ct, MIMEApplicationJSON) {
-		err = json.NewDecoder(body).Decode(i)
-	} else if strings.HasPrefix(ct, MIMEApplicationXML) {
-		err = xml.NewDecoder(body).Decode(i)
-	} else if strings.HasPrefix(ct, MIMEApplicationForm) {
-		err = b.structMap(i, r.PostForm().All(), filter...)
-	} else if strings.Contains(ct, MIMEMultipartForm) {
-		err = b.structMap(i, r.Form().All(), filter...)
+}
+
+func (b *binder) MustBind(i interface{}, c Context, filter ...FormDataFilter) error {
+	contentType := c.Request().Header().Get(HeaderContentType)
+	contentType = strings.ToLower(strings.TrimSpace(strings.SplitN(contentType, `;`, 2)[0]))
+	if decoder, ok := b.decoders[contentType]; ok {
+		return decoder(i, c, filter...)
 	}
-	return
+	return ErrUnsupportedMediaType
 }
 
 func (b *binder) Bind(i interface{}, c Context, filter ...FormDataFilter) (err error) {
@@ -61,9 +90,12 @@ func (b *binder) Bind(i interface{}, c Context, filter ...FormDataFilter) (err e
 	return
 }
 
-// StructMap function mapping params to controller's properties
-func (b *binder) structMap(m interface{}, data map[string][]string, filter ...FormDataFilter) error {
-	return NamedStructMap(b.Echo, m, data, ``, filter...)
+func (b *binder) SetDecoders(decoders map[string]func(interface{}, Context, ...FormDataFilter) error) {
+	b.decoders = decoders
+}
+
+func (b *binder) AddDecoder(mime string, decoder func(interface{}, Context, ...FormDataFilter) error) {
+	b.decoders[mime] = decoder
 }
 
 // FormNames user[name][test]
@@ -106,6 +138,8 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 	case reflect.Ptr:
 		vc = vc.Elem()
 		tc = tc.Elem()
+	default:
+		return errors.New(`binder: unsupported type ` + tc.Kind().String())
 	}
 	var (
 		validator *validation.Validation

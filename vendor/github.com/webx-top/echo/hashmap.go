@@ -110,6 +110,25 @@ func (h H) DeepMerge(source H) {
 	}
 }
 
+func (h H) Clone() H {
+	r := make(H)
+	for k, value := range h {
+		switch v := value.(type) {
+		case H:
+			r[k] = v.Clone()
+		case []H:
+			vCopy := make([]H, len(v))
+			for i, row := range v {
+				vCopy[i] = row.Clone()
+			}
+			r[k] = vCopy
+		default:
+			r[k] = value
+		}
+	}
+	return r
+}
+
 type Mapx struct {
 	Map   map[string]*Mapx `json:",omitempty"`
 	Slice []*Mapx          `json:",omitempty"`

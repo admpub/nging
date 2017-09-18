@@ -18,7 +18,8 @@
 package session
 
 import (
-	codec "github.com/gorilla/securecookie"
+	codec "github.com/admpub/securecookie"
+	"github.com/admpub/sessions"
 	"github.com/webx-top/echo"
 	ss "github.com/webx-top/echo/middleware/session/engine"
 	cookieStore "github.com/webx-top/echo/middleware/session/engine/cookie"
@@ -28,15 +29,11 @@ func NewSession(ctx echo.Context) echo.Sessioner {
 	return ss.NewSession(ctx)
 }
 
-type Store interface {
-	ss.Store
-}
-
-func NewMySession(store ss.Store, name string, ctx echo.Context) echo.Sessioner {
+func NewMySession(store sessions.Store, name string, ctx echo.Context) echo.Sessioner {
 	return ss.NewMySession(store, name, ctx)
 }
 
-func StoreEngine(options *echo.SessionOptions) (store Store) {
+func StoreEngine(options *echo.SessionOptions) (store sessions.Store) {
 	store = ss.StoreEngine(options)
 	if store == nil {
 		cs := cookieStore.New(&cookieStore.CookieOptions{
@@ -44,7 +41,6 @@ func StoreEngine(options *echo.SessionOptions) (store Store) {
 				[]byte(codec.GenerateRandomKey(32)),
 				[]byte(codec.GenerateRandomKey(32)),
 			},
-			SessionOptions: options,
 		})
 		cookieStore.Reg(cs)
 		store = cs

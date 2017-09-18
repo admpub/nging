@@ -17,9 +17,12 @@
 */
 package session
 
-import "github.com/webx-top/echo"
+import (
+	"github.com/admpub/sessions"
+	"github.com/webx-top/echo"
+)
 
-func Sessions(options *echo.SessionOptions, store Store) echo.MiddlewareFuncd {
+func Sessions(options *echo.SessionOptions, store sessions.Store) echo.MiddlewareFuncd {
 	var newSession func(ctx echo.Context) echo.Sessioner
 	if options == nil {
 		newSession = func(ctx echo.Context) echo.Sessioner {

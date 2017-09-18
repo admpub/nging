@@ -60,6 +60,7 @@ type (
 		// Queries returns the query parameters as map. It is an alias for `engine.URL#Query()`.
 		Queries() map[string][]string
 		QueryValues(string) []string
+		QueryxValues(string) param.StringSlice
 		Query(string) string
 
 		//----------------
@@ -68,6 +69,7 @@ type (
 
 		Form(string) string
 		FormValues(string) []string
+		FormxValues(string) param.StringSlice
 		// Forms returns the form parameters as map. It is an alias for `engine.Request#Form().All()`.
 		Forms() map[string][]string
 
@@ -78,6 +80,8 @@ type (
 		Formx(string) param.String
 		// string to param.String
 		Atop(string) param.String
+		ToParamString(string) param.String
+		ToStringSlice([]string) param.StringSlice
 
 		//----------------
 		// Context data
@@ -170,6 +174,7 @@ type (
 		Header(string) string
 		IsAjax() bool
 		IsPjax() bool
+		PjaxContainer() string
 		Method() string
 		Format() string
 		SetFormat(string)
@@ -255,7 +260,7 @@ func NewContext(req engine.Request, res engine.Response, e *Echo) Context {
 		store:      make(store),
 		handler:    NotFoundHandler,
 		funcs:      make(map[string]interface{}),
-		sessioner:  DefaultNopSession,
+		sessioner:  DefaultSession,
 	}
 	c.cookier = NewCookier(c)
 	c.dataEngine = NewData(c)
@@ -362,6 +367,10 @@ func (c *xContext) QueryValues(name string) []string {
 	return c.request.URL().QueryValues(name)
 }
 
+func (c *xContext) QueryxValues(name string) param.StringSlice {
+	return param.StringSlice(c.request.URL().QueryValues(name))
+}
+
 func (c *xContext) Queries() map[string][]string {
 	return c.request.URL().Query()
 }
@@ -373,6 +382,10 @@ func (c *xContext) Form(name string) string {
 
 func (c *xContext) FormValues(name string) []string {
 	return c.request.Form().Gets(name)
+}
+
+func (c *xContext) FormxValues(name string) param.StringSlice {
+	return param.StringSlice(c.request.Form().Gets(name))
 }
 
 func (c *xContext) Forms() map[string][]string {
@@ -645,7 +658,7 @@ func (c *xContext) Reset(req engine.Request, res engine.Response) {
 	c.Validator = DefaultNopValidate
 	c.Emitter = emitter.DefaultCondEmitter
 	c.Translator = DefaultNopTranslate
-	c.sessioner = DefaultNopSession
+	c.sessioner = DefaultSession
 	c.cookier = NewCookier(c)
 	c.context = context.Background()
 	c.request = req
@@ -779,6 +792,14 @@ func (c *xContext) Atop(v string) param.String {
 	return param.String(v)
 }
 
+func (c *xContext) ToParamString(v string) param.String {
+	return param.String(v)
+}
+
+func (c *xContext) ToStringSlice(v []string) param.StringSlice {
+	return param.StringSlice(v)
+}
+
 func (c *xContext) Header(name string) string {
 	return c.Request().Header().Get(name)
 }
@@ -789,6 +810,14 @@ func (c *xContext) IsAjax() bool {
 
 func (c *xContext) IsPjax() bool {
 	return len(c.Header(`X-PJAX`)) > 0
+}
+
+func (c *xContext) PjaxContainer() string {
+	container := c.Header(`X-PJAX-Container`)
+	if len(container) > 0 {
+		return container
+	}
+	return c.Query(`_pjax`)
 }
 
 func (c *xContext) Method() string {
@@ -852,14 +881,14 @@ func (c *xContext) IsWebsocket() bool {
 
 // IsUpload returns boolean of whether file uploads in this request or not..
 func (c *xContext) IsUpload() bool {
-	return strings.Contains(c.Header(`Content-Type`), `multipart/form-data`)
+	return c.ResolveContentType() == MIMEMultipartForm
 }
 
 // ResolveContentType Get the content type.
 // e.g. From `multipart/form-data; boundary=--` to `multipart/form-data`
 // If none is specified, returns `text/html` by default.
 func (c *xContext) ResolveContentType() string {
-	contentType := c.Header(`Content-Type`)
+	contentType := c.Header(HeaderContentType)
 	if len(contentType) == 0 {
 		return `text/html`
 	}
@@ -886,21 +915,14 @@ func (c *xContext) ResolveFormat() string {
 	}
 
 	accept := c.Header(`Accept`)
-	switch {
-	case accept == ``,
-		strings.HasPrefix(accept, `*/*`), // */
-		strings.HasPrefix(accept, `application/xhtml`),
-		strings.HasPrefix(accept, `text/html`):
-		return `html`
-	case strings.HasPrefix(accept, `application/json`),
-		strings.HasPrefix(accept, `text/javascript`),
-		strings.HasPrefix(accept, `application/javascript`):
-		return `json`
-	case strings.HasPrefix(accept, `application/xml`),
-		strings.HasPrefix(accept, `text/xml`):
-		return `xml`
-	case strings.HasPrefix(accept, `text/plain`):
-		return `text`
+	for _, mimeType := range strings.Split(strings.SplitN(accept, `;`, 2)[0], `,`) {
+		mimeType = strings.TrimSpace(mimeType)
+		if format, ok := c.echo.acceptFormats[mimeType]; ok {
+			return format
+		}
+	}
+	if format, ok := c.echo.acceptFormats[`*`]; ok {
+		return format
 	}
 	return `html`
 }

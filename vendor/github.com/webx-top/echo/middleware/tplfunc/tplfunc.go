@@ -101,9 +101,14 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	// ======================
 	// string
 	// ======================
-	"Contains":  strings.Contains,
-	"HasPrefix": strings.HasPrefix,
-	"HasSuffix": strings.HasSuffix,
+	"Contains":   strings.Contains,
+	"HasPrefix":  strings.HasPrefix,
+	"HasSuffix":  strings.HasSuffix,
+	"Trim":       strings.TrimSpace,
+	"TrimLeft":   strings.TrimLeft,
+	"TrimRight":  strings.TrimRight,
+	"TrimPrefix": strings.TrimPrefix,
+	"TrimSuffix": strings.TrimSuffix,
 
 	"ToLower":        strings.ToLower,
 	"ToUpper":        strings.ToUpper,
@@ -128,6 +133,7 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	// encode & decode
 	// ======================
 	"JsonEncode":   JsonEncode,
+	"JsonDecode":   JsonDecode,
 	"UrlEncode":    com.UrlEncode,
 	"UrlDecode":    com.UrlDecode,
 	"Base64Encode": com.Base64Encode,
@@ -144,6 +150,8 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	"SearchStrSlice": SearchStrSlice,
 	"URLValues":      URLValues,
 	"ToSlice":        ToSlice,
+	"StrToSlice":     StrToSlice,
+	"StrToStrSlice":  StrToStrSlice,
 
 	// ======================
 	// regexp
@@ -160,6 +168,15 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 
 func JsonEncode(s interface{}) string {
 	r, _ := com.SetJSON(s)
+	return r
+}
+
+func JsonDecode(s string) map[string]interface{} {
+	r := map[string]interface{}{}
+	e := com.GetJSON(&s, &r)
+	if e != nil {
+		log.Println(e)
+	}
 	return r
 }
 
@@ -191,6 +208,19 @@ func ToStrSlice(s ...string) []string {
 
 func ToSlice(s ...interface{}) []interface{} {
 	return s
+}
+
+func StrToStrSlice(s string, sep string) []string {
+	return ToStrSlice(strings.Split(s, sep)...)
+}
+
+func StrToSlice(s string, sep string) []interface{} {
+	ss := strings.Split(s, sep)
+	r := make([]interface{}, len(ss))
+	for i, s := range ss {
+		r[i] = s
+	}
+	return r
 }
 
 func Concat(s ...string) string {
@@ -252,18 +282,44 @@ func NlToBr(text string) template.HTML {
 }
 
 //CaptchaForm 验证码表单域
-func CaptchaForm(args ...string) template.HTML {
+func CaptchaForm(args ...interface{}) template.HTML {
 	id := "captcha"
-	format := `<img id="%[2]sImage" src="/captcha/%[1]s.png" alt="Captcha image" onclick="this.src=this.src.split('?')[0]+'?reload='+Math.random();" /><input type="hidden" name="captchaId" id="%[2]sId" value="%[1]s" />`
+	msg := "页面验证码已经失效，必须重新请求当前页面。确定要刷新本页面吗？"
+	onErr := "if(this.src.indexOf('?reload=')!=-1 && confirm('%s')) window.location.reload();"
+	format := `<img id="%[2]sImage" src="/captcha/%[1]s.png" alt="Captcha image" onclick="this.src=this.src.split('?')[0]+'?reload='+Math.random();" onerror="%[3]s" style="cursor:pointer" /><input type="hidden" name="captchaId" id="%[2]sId" value="%[1]s" />`
+	var customOnErr bool
 	switch len(args) {
+	case 3:
+		switch v := args[2].(type) {
+		case template.JS:
+			onErr = string(v)
+			customOnErr = true
+		case string:
+			msg = v
+		}
+		fallthrough
 	case 2:
-		format = args[1]
+		if args[1] != nil {
+			v := fmt.Sprint(args[1])
+			format = v
+		}
 		fallthrough
 	case 1:
-		id = args[0]
+		switch v := args[0].(type) {
+		case template.JS:
+			onErr = string(v)
+			customOnErr = true
+		case template.HTML:
+			format = string(v)
+		case string:
+			id = v
+		}
 	}
 	cid := captcha.New()
-	return template.HTML(fmt.Sprintf(format, cid, id))
+	if !customOnErr {
+		onErr = fmt.Sprintf(onErr, msg)
+	}
+	return template.HTML(fmt.Sprintf(format, cid, id, onErr))
 }
 
 //CaptchaVerify 验证码验证

@@ -42,8 +42,7 @@ func InitSessionOptions() {
 		},
 	}
 	CookieOptions = &cookie.CookieOptions{
-		KeyPairs:       [][]byte{},
-		SessionOptions: SessionOptions,
+		KeyPairs: [][]byte{},
 	}
 	if len(DefaultConfig.Cookie.HashKey) > 0 {
 		CookieOptions.KeyPairs = append(CookieOptions.KeyPairs, []byte(DefaultConfig.Cookie.HashKey))

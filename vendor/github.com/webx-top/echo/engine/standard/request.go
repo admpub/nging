@@ -6,6 +6,7 @@ import (
 	"mime/multipart"
 	"net"
 	"net/http"
+	"strings"
 
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
@@ -70,6 +71,7 @@ func (r *Request) RealIP() string {
 	}
 	r.realIP = r.RemoteAddress()
 	if ip := r.header.Get(echo.HeaderXForwardedFor); len(ip) > 0 {
+		ip = strings.TrimSpace(strings.SplitN(ip, ",", 2)[0])
 		r.realIP = ip
 	} else if ip := r.header.Get(echo.HeaderXRealIP); len(ip) > 0 {
 		r.realIP = ip

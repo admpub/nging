@@ -112,8 +112,8 @@ func (sg *SnippetGroup) TableRow() string {
 		cd = strings.Replace(cd, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;", -1)
 		cd = strings.Replace(cd, " ", "&nbsp;", -1)
 		if snippet.Current {
-			ns = "<strong>" + ns + "<strong>"
-			cd = "<strong>" + cd + "<strong>"
+			ns = "<strong>" + ns + "</strong>"
+			cd = "<strong>" + cd + "</strong>"
 		}
 		s += "<tr><td class='left'>" + ns + "</td><td class='right'>" + cd + "</td></tr>"
 	}
@@ -177,7 +177,7 @@ func (p *PanicError) HTML() template.HTML {
 	table += `<thead><tr><th colspan="2">Trace</th></tr><tr><th>File</th><th>Func</th></tr></thead>`
 	table += `<tbody>`
 	for _, ts := range p.Traces {
-		f := ts.File + `:` + strconv.Itoa(ts.Line)
+		f := html.EscapeString(ts.File) + `:` + strconv.Itoa(ts.Line)
 		table += `<tr><td class='left'>`
 		if ts.HasErr {
 			table += `<strong>` + f + `</strong>`

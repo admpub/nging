@@ -1,9 +1,8 @@
 package cookie
 
 import (
+	codec "github.com/admpub/securecookie"
 	"github.com/admpub/sessions"
-	codec "github.com/gorilla/securecookie"
-	"github.com/webx-top/echo"
 	ss "github.com/webx-top/echo/middleware/session/engine"
 )
 
@@ -12,33 +11,21 @@ var defaultOptions = &CookieOptions{
 		[]byte(codec.GenerateRandomKey(32)),
 		[]byte(codec.GenerateRandomKey(32)),
 	},
-	SessionOptions: &echo.SessionOptions{
-		Name:   `GOSESSIONID`,
-		Engine: `cookie`,
-		CookieOptions: &echo.CookieOptions{
-			Path:     `/`,
-			HttpOnly: true,
-		},
-	},
 }
 
 func init() {
 	RegWithOptions(defaultOptions)
 }
 
-func New(opts *CookieOptions) CookieStore {
+func New(opts *CookieOptions) sessions.Store {
 	if opts == nil {
 		opts = defaultOptions
 	}
 	store := NewCookieStore(opts.KeyPairs...)
-	if opts.SessionOptions == nil {
-		opts.SessionOptions = defaultOptions.SessionOptions
-	}
-	store.Options(*opts.SessionOptions)
 	return store
 }
 
-func Reg(store CookieStore, args ...string) {
+func Reg(store sessions.Store, args ...string) {
 	name := `cookie`
 	if len(args) > 0 {
 		name = args[0]
@@ -50,13 +37,8 @@ func RegWithOptions(opts *CookieOptions, args ...string) {
 	Reg(New(opts), args...)
 }
 
-type CookieStore interface {
-	ss.Store
-}
-
 type CookieOptions struct {
-	KeyPairs             [][]byte `json:"keyPairs"`
-	*echo.SessionOptions `json:"session"`
+	KeyPairs [][]byte `json:"keyPairs"`
 }
 
 // Keys are defined in pairs to allow key rotation, but the common case is to set a single
@@ -68,21 +50,10 @@ type CookieOptions struct {
 //
 // It is recommended to use an authentication key with 32 or 64 bytes. The encryption key,
 // if set, must be either 16, 24, or 32 bytes to select AES-128, AES-192, or AES-256 modes.
-func NewCookieStore(keyPairs ...[]byte) CookieStore {
+func NewCookieStore(keyPairs ...[]byte) sessions.Store {
 	return &cookieStore{sessions.NewCookieStore(keyPairs...)}
 }
 
 type cookieStore struct {
 	*sessions.CookieStore
-}
-
-func (c *cookieStore) Options(options echo.SessionOptions) {
-	c.CookieStore.Options = &sessions.Options{
-		Path:     options.Path,
-		Domain:   options.Domain,
-		MaxAge:   options.MaxAge,
-		Secure:   options.Secure,
-		HttpOnly: options.HttpOnly,
-	}
-	c.CookieStore.MaxAge(c.CookieStore.Options.MaxAge)
 }

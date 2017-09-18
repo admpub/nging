@@ -298,6 +298,25 @@ type KV struct {
 	V string
 }
 
+type KVList []*KV
+
+func (list *KVList) Add(k, v string) {
+	*list = append(*list, &KV{K: k, V: v})
+}
+
+func (list *KVList) Del(i int) {
+	n := len(*list)
+	if i+1 < n {
+		*list = append((*list)[0:i], (*list)[i+1:]...)
+	} else if i < n {
+		*list = (*list)[0:i]
+	}
+}
+
+func (list *KVList) Reset() {
+	*list = (*list)[0:0]
+}
+
 //NewKVData 键值对数据
 func NewKVData() *KVData {
 	return &KVData{
@@ -350,6 +369,22 @@ func (a *KVData) Set(k, v string) *KVData {
 	a.index[k] = []int{0}
 	a.slice = []*KV{&KV{K: k, V: v}}
 	return a
+}
+
+func (a *KVData) Get(k string) string {
+	if indexes, ok := a.index[k]; ok {
+		if len(indexes) > 0 {
+			return a.slice[indexes[0]].V
+		}
+	}
+	return ``
+}
+
+func (a *KVData) Has(k string) bool {
+	if _, ok := a.index[k]; ok {
+		return true
+	}
+	return false
 }
 
 //Delete 设置某个键的所有值

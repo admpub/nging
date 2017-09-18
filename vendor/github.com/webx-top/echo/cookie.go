@@ -16,7 +16,6 @@
 
 */
 
-
 package echo
 
 import (
@@ -38,6 +37,11 @@ type CookieOptions struct {
 	Domain   string
 	Secure   bool
 	HttpOnly bool
+}
+
+func (c *CookieOptions) Clone() *CookieOptions {
+	clone := *c
+	return &clone
 }
 
 //Cookier interface

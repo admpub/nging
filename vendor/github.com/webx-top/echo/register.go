@@ -16,7 +16,6 @@
 
 */
 
-
 package echo
 
 type RouteRegister interface {
@@ -36,6 +35,10 @@ type RouteRegister interface {
 	File(path, file string)
 }
 
+type ContextRegister interface {
+	SetContext(Context)
+}
+
 type MiddlewareRegister interface {
 	Use(middleware ...interface{})
 	Pre(middleware ...interface{})
@@ -53,4 +56,8 @@ type ICore interface {
 
 type Closer interface {
 	Close() error
+}
+
+type Prefixer interface {
+	Prefix() string
 }

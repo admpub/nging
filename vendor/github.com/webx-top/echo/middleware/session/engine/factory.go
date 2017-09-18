@@ -18,6 +18,7 @@
 package engine
 
 import (
+	"github.com/admpub/sessions"
 	"github.com/webx-top/echo"
 )
 
@@ -27,11 +28,11 @@ func NewSession(ctx echo.Context) echo.Sessioner {
 	return NewMySession(store, options.Name, ctx)
 }
 
-func NewMySession(store Store, name string, ctx echo.Context) echo.Sessioner {
+func NewMySession(store sessions.Store, name string, ctx echo.Context) echo.Sessioner {
 	return &Session{name, ctx, store, nil, false}
 }
 
-func StoreEngine(options *echo.SessionOptions) (store Store) {
+func StoreEngine(options *echo.SessionOptions) (store sessions.Store) {
 	if options == nil {
 		return nil
 	}
@@ -44,13 +45,13 @@ func StoreEngine(options *echo.SessionOptions) (store Store) {
 	return
 }
 
-var stores = map[string]Store{}
+var stores = map[string]sessions.Store{}
 
-func Reg(name string, store Store) {
+func Reg(name string, store sessions.Store) {
 	stores[name] = store
 }
 
-func Get(name string) Store {
+func Get(name string) sessions.Store {
 	if store, ok := stores[name]; ok {
 		return store
 	}

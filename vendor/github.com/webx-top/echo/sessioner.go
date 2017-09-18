@@ -16,11 +16,16 @@
 
 */
 
-
 package echo
+
+import (
+	"log"
+)
 
 var (
 	DefaultNopSession     Sessioner = &NopSession{}
+	DefaultDebugSession   Sessioner = &DebugSession{}
+	DefaultSession                  = DefaultNopSession
 	DefaultSessionOptions           = &SessionOptions{
 		Engine: `cookie`,
 		Name:   `SID`,
@@ -38,6 +43,14 @@ type SessionOptions struct {
 	*CookieOptions
 }
 
+func (s *SessionOptions) Clone() *SessionOptions {
+	clone := *s
+	if s.CookieOptions != nil {
+		clone.CookieOptions = s.CookieOptions.Clone()
+	}
+	return &clone
+}
+
 // Sessioner Wraps thinly gorilla-session methods.
 // Session stores the values and optional configuration for a session.
 type Sessioner interface {
@@ -45,8 +58,8 @@ type Sessioner interface {
 	Get(key string) interface{}
 	// Set sets the session value associated to the given key.
 	Set(key string, val interface{}) Sessioner
-	SetId(id string) Sessioner
-	Id() string
+	SetID(id string) Sessioner
+	ID() string
 	// Delete removes the session value associated to the given key.
 	Delete(key string) Sessioner
 	// Clear deletes all values in the session.
@@ -59,9 +72,6 @@ type Sessioner interface {
 	// A single variadic argument is accepted, and it is optional: it defines the flash key.
 	// If not defined "_flash" is used by default.
 	Flashes(vars ...string) []interface{}
-
-	Options(SessionOptions) Sessioner
-
 	// Save saves all sessions used during the current request.
 	Save() error
 }
@@ -77,11 +87,11 @@ func (n *NopSession) Set(name string, value interface{}) Sessioner {
 	return n
 }
 
-func (n *NopSession) SetId(id string) Sessioner {
+func (n *NopSession) SetID(id string) Sessioner {
 	return n
 }
 
-func (n *NopSession) Id() string {
+func (n *NopSession) ID() string {
 	return ``
 }
 
@@ -106,5 +116,58 @@ func (n *NopSession) Options(_ SessionOptions) Sessioner {
 }
 
 func (n *NopSession) Save() error {
+	return nil
+}
+
+type DebugSession struct {
+}
+
+func (n *DebugSession) Get(name string) interface{} {
+	log.Println(`DebugSession.Get`, name)
+	return nil
+}
+
+func (n *DebugSession) Set(name string, value interface{}) Sessioner {
+	log.Println(`DebugSession.Set`, name, value)
+	return n
+}
+
+func (n *DebugSession) SetID(id string) Sessioner {
+	log.Println(`DebugSession.SetID`, id)
+	return n
+}
+
+func (n *DebugSession) ID() string {
+	log.Println(`DebugSession.ID`)
+	return ``
+}
+
+func (n *DebugSession) Delete(name string) Sessioner {
+	log.Println(`DebugSession.Delete`, name)
+	return n
+}
+
+func (n *DebugSession) Clear() Sessioner {
+	log.Println(`DebugSession.Clear`)
+	return n
+}
+
+func (n *DebugSession) AddFlash(name interface{}, args ...string) Sessioner {
+	log.Println(`DebugSession.AddFlash`, name, args)
+	return n
+}
+
+func (n *DebugSession) Flashes(args ...string) []interface{} {
+	log.Println(`DebugSession.Flashes`, args)
+	return []interface{}{}
+}
+
+func (n *DebugSession) Options(options SessionOptions) Sessioner {
+	log.Println(`DebugSession.Options`, options)
+	return n
+}
+
+func (n *DebugSession) Save() error {
+	log.Println(`DebugSession.Save`)
 	return nil
 }
