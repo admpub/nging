@@ -16,8 +16,9 @@
 
 */
 
-
 package echo
+
+import "path/filepath"
 
 const (
 	// CONNECT HTTP method
@@ -107,4 +108,6 @@ const (
 	HeaderXFrameOptions           = "X-Frame-Options"
 	HeaderContentSecurityPolicy   = "Content-Security-Policy"
 	HeaderXCSRFToken              = "X-CSRF-Token"
+
+	FilePathSeparator = string(filepath.Separator)
 )

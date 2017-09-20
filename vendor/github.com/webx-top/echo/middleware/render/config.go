@@ -44,7 +44,7 @@ func (t *Config) NewRenderer(manager ...driver.Manager) driver.Driver {
 		tmplDir = filepath.Join(tmplDir, t.Theme)
 	}
 	renderer := New(t.Engine, tmplDir)
-	renderer.Init(true, t.Reload)
+	renderer.Init()
 	if len(manager) > 0 {
 		renderer.SetManager(manager[0])
 	}

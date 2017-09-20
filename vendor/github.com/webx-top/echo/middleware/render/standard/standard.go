@@ -52,6 +52,7 @@ func New(templateDir string, args ...logger.Logger) driver.Driver {
 	t := &Standard{
 		CachedRelation:    make(map[string]*CcRel),
 		TemplateDir:       templateDir,
+		TemplateMgr:       manager.Default,
 		DelimLeft:         "{{",
 		DelimRight:        "}}",
 		IncludeTag:        "Include",
@@ -175,7 +176,7 @@ func (self *Standard) deleteCachedRelation(name string) {
 	}
 }
 
-func (self *Standard) Init(cached ...bool) {
+func (self *Standard) Init() {
 	callback := func(name, typ, event string) {
 		switch event {
 		case "create":
@@ -189,7 +190,9 @@ func (self *Standard) Init(cached ...bool) {
 			}
 		}
 	}
-	self.TemplateMgr = manager.New(self.logger, self.TemplateDir, []string{"*" + self.Ext}, callback, cached...)
+	self.TemplateMgr.AddAllow("*" + self.Ext)
+	self.TemplateMgr.AddWatchDir(self.TemplateDir)
+	self.TemplateMgr.AddCallback(self.TemplateDir, callback)
 }
 
 func (self *Standard) SetManager(mgr driver.Manager) {
@@ -200,10 +203,11 @@ func (self *Standard) SetManager(mgr driver.Manager) {
 }
 
 func (self *Standard) TemplatePath(p string) string {
-	if self.TemplatePathParser == nil {
-		return p
+	if self.TemplatePathParser != nil {
+		p = self.TemplatePathParser(p)
 	}
-	return self.TemplatePathParser(p)
+	p = filepath.Join(self.TemplateDir, p)
+	return p
 }
 
 func (self *Standard) InitRegexp() {
@@ -227,17 +231,17 @@ func (self *Standard) Render(w io.Writer, tmplName string, values interface{}, c
 			c.Delete(`webx:render.locked`)
 		}()
 	}
-	tmpl := self.parse(tmplName, c.Funcs())
+	tmpl, err := self.parse(tmplName, c.Funcs())
+	if err != nil {
+		return err
+	}
 	return tmpl.ExecuteTemplate(w, tmpl.Name(), values)
 }
 
-func (self *Standard) parse(tmplName string, funcs map[string]interface{}) (tmpl *htmlTpl.Template) {
+func (self *Standard) parse(tmplName string, funcs map[string]interface{}) (tmpl *htmlTpl.Template, err error) {
 	tmplName = tmplName + self.Ext
 	tmplName = self.TemplatePath(tmplName)
 	cachedKey := tmplName
-	if tmplName[0] == '/' {
-		cachedKey = tmplName[1:]
-	}
 	var funcMap htmlTpl.FuncMap
 	if self.getFuncs != nil {
 		funcMap = htmlTpl.FuncMap(self.getFuncs())
@@ -262,7 +266,7 @@ func (self *Standard) parse(tmplName string, funcs map[string]interface{}) (tmpl
 			self.logger.Debug(` ◑ finished compile: `+tmplName, ` (elapsed: `+time.Now().Sub(start).String()+`)`)
 		}()
 	}
-	t := htmlTpl.New(tmplName)
+	t := htmlTpl.New(driver.CleanTemplateName(tmplName))
 	t.Delims(self.DelimLeft, self.DelimRight)
 	if rel == nil {
 		rel = &CcRel{
@@ -272,7 +276,8 @@ func (self *Standard) parse(tmplName string, funcs map[string]interface{}) (tmpl
 	}
 	funcMap = setFunc(rel.Tpl[0], funcMap)
 	t.Funcs(funcMap)
-	b, err := self.RawContent(tmplName)
+	var b []byte
+	b, err = self.RawContent(tmplName)
 	if err != nil {
 		tmpl, _ = t.Parse(err.Error())
 		return
@@ -329,7 +334,7 @@ func (self *Standard) parse(tmplName string, funcs map[string]interface{}) (tmpl
 			t = tmpl
 		} else {
 			t = tmpl.New(name)
-			subc = self.Tag(`define "`+name+`"`) + subc + self.Tag(`end`)
+			subc = self.Tag(`define "`+driver.CleanTemplateName(name)+`"`) + subc + self.Tag(`end`)
 			_, err = t.Parse(subc)
 			if err != nil {
 				t.Parse(fmt.Sprintf("Parse File %v err: %v", name, err))
@@ -353,7 +358,7 @@ func (self *Standard) parse(tmplName string, funcs map[string]interface{}) (tmpl
 			t = tmpl
 		} else {
 			t = tmpl.New(name)
-			extc = self.Tag(`define "`+name+`"`) + extc + self.Tag(`end`)
+			extc = self.Tag(`define "`+driver.CleanTemplateName(name)+`"`) + extc + self.Tag(`end`)
 			_, err = t.Parse(extc)
 			if err != nil {
 				t.Parse(fmt.Sprintf("Parse Block %v err: %v", name, err))
@@ -368,7 +373,8 @@ func (self *Standard) parse(tmplName string, funcs map[string]interface{}) (tmpl
 }
 
 func (self *Standard) Fetch(tmplName string, data interface{}, funcMap map[string]interface{}) string {
-	return self.execute(self.parse(tmplName, funcMap), data)
+	content, _ := self.parse(tmplName, funcMap)
+	return self.execute(content, data)
 }
 
 func (self *Standard) execute(tmpl *htmlTpl.Template, data interface{}) string {
@@ -482,7 +488,7 @@ func (self *Standard) ContainsSubTpl(content string, subcs map[string]string) st
 		if len(passObject) == 0 {
 			passObject = "."
 		}
-		content = strings.Replace(content, matched, self.Tag(`template "`+tmplFile+`" `+passObject), -1)
+		content = strings.Replace(content, matched, self.Tag(`template "`+driver.CleanTemplateName(tmplFile)+`" `+passObject), -1)
 	}
 	return content
 }
@@ -547,7 +553,12 @@ func (self *Standard) ClearCache() {
 func (self *Standard) Close() {
 	self.ClearCache()
 	if self.TemplateMgr != nil {
-		self.TemplateMgr.Close()
+		if self.TemplateMgr == manager.Default {
+			self.TemplateMgr.CancelWatchDir(self.TemplateDir)
+			self.TemplateMgr.DelCallback(self.TemplateDir)
+		} else {
+			self.TemplateMgr.Close()
+		}
 	}
 }
 

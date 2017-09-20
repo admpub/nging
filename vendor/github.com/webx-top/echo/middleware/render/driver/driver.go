@@ -20,8 +20,10 @@ package driver
 import (
 	"bytes"
 	"io"
+	"path/filepath"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/logger"
@@ -29,7 +31,7 @@ import (
 
 type Driver interface {
 	//初始化模板引擎
-	Init(...bool)
+	Init()
 
 	//获取模板根路径
 	TmplDir() string
@@ -124,4 +126,12 @@ func RecoveryPRE(b []byte, pres [][]byte) []byte {
 		b = bytes.Replace(b, []byte(`<!-- <[#pre:`+strconv.Itoa(k)+`#]> -->`), v, 1)
 	}
 	return b
+}
+
+func CleanTemplateName(p string) string {
+	p = strings.TrimPrefix(p, echo.FilePathSeparator)
+	if filepath.Separator == '\\' {
+		p = strings.Replace(p, `\`, `\\`, -1)
+	}
+	return p
 }
