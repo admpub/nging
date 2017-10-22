@@ -19,26 +19,45 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-// Package sqladapter provides common logic for SQL adapters.
-package sqladapter
+package db
 
-import (
-	"database/sql/driver"
-)
+// Union represents a compound joined by OR.
+type Union struct {
+	*compound
+}
 
-// IsKeyValue reports whether v is a valid value for a primary key that can be
-// used with Find(pKey).
-func IsKeyValue(v interface{}) bool {
-	if v == nil {
-		return true
+// Or adds more terms to the compound.
+func (o *Union) Or(orConds ...Compound) *Union {
+	var fn func(*[]Compound) error
+	if len(orConds) > 0 {
+		fn = func(in *[]Compound) error {
+			*in = append(*in, orConds...)
+			return nil
+		}
 	}
-	switch v.(type) {
-	case int64, int, uint, uint64,
-		[]int64, []int, []uint, []uint64,
-		[]byte, []string,
-		[]interface{},
-		driver.Valuer:
-		return true
-	}
-	return false
+	return &Union{o.compound.frame(fn)}
+}
+
+// Operator returns the OR operator.
+func (o *Union) Operator() CompoundOperator {
+	return OperatorOr
+}
+
+// Empty returns false if this struct holds no conditions.
+func (o *Union) Empty() bool {
+	return o.compound.Empty()
+}
+
+// Or joins conditions under logical disjunction. Conditions can be represented
+// by db.Cond{}, db.Or() or db.And().
+//
+// Example:
+//
+//	// year = 2012 OR year = 1987
+//	db.Or(
+//		db.Cond{"year": 2012},
+//		db.Cond{"year": 1987},
+//	)
+func Or(conds ...Compound) *Union {
+	return &Union{newCompound(defaultJoin(conds...)...)}
 }

@@ -19,26 +19,43 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-// Package sqladapter provides common logic for SQL adapters.
-package sqladapter
+package sqlbuilder
 
 import (
+	"database/sql"
 	"database/sql/driver"
+
+	"reflect"
 )
 
-// IsKeyValue reports whether v is a valid value for a primary key that can be
-// used with Find(pKey).
-func IsKeyValue(v interface{}) bool {
-	if v == nil {
-		return true
-	}
-	switch v.(type) {
-	case int64, int, uint, uint64,
-		[]int64, []int, []uint, []uint64,
-		[]byte, []string,
-		[]interface{},
-		driver.Valuer:
-		return true
-	}
-	return false
+var (
+	// ValuerType is the reflection type for the driver.Valuer interface.
+	ValuerType = reflect.TypeOf((*driver.Valuer)(nil)).Elem()
+
+	// ScannerType is the reflection type for the sql.Scanner interface.
+	ScannerType = reflect.TypeOf((*sql.Scanner)(nil)).Elem()
+
+	// ValueWrapperType is the reflection type for the sql.ValueWrapper interface.
+	ValueWrapperType = reflect.TypeOf((*ValueWrapper)(nil)).Elem()
+)
+
+// ValueWrapper defines a method WrapValue that query arguments can use to wrap
+// themselves around helper types right before being used in a query.
+//
+// Example:
+//
+//   func (a MyCustomArray) WrapValue(value interface{}) interface{} {
+//     // postgresql.Array adds a driver.Valuer and sql.Scanner around
+//     // custom arrays.
+//	   return postgresql.Array(values)
+//   }
+type ValueWrapper interface {
+	WrapValue(value interface{}) interface{}
+}
+
+// ScannerValuer represents a value that satisfies both driver.Valuer and
+// sql.Scanner interfaces.
+type ScannerValuer interface {
+	driver.Valuer
+	sql.Scanner
 }

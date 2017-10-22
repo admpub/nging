@@ -5,6 +5,13 @@ import (
 	"unicode"
 )
 
+type Timeout interface {
+	Timeout() bool
+}
+type Temporary interface {
+	Temporary() bool
+}
+
 func NetError(err error) net.Error {
 	if netErr, ok := err.(net.Error); ok {
 		return netErr
@@ -13,15 +20,15 @@ func NetError(err error) net.Error {
 }
 
 func IsTimeoutError(err error) bool {
-	if netErr := NetError(err); netErr != nil {
-		return netErr.Timeout()
+	if e, ok := err.(Timeout); ok {
+		return e.Timeout()
 	}
 	return false
 }
 
 func IsTemporaryError(err error) bool {
-	if netErr := NetError(err); netErr != nil {
-		return netErr.Temporary()
+	if e, ok := err.(Temporary); ok {
+		return e.Temporary()
 	}
 	return false
 }

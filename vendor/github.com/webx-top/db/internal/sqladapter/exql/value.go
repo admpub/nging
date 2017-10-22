@@ -1,9 +1,7 @@
 package exql
 
 import (
-	//"database/sql/driver"
 	"fmt"
-	//"log"
 	"strings"
 )
 
@@ -13,17 +11,23 @@ type ValueGroups struct {
 	hash   hash
 }
 
+var _ = Fragment(&ValueGroups{})
+
 // Values represents an array of Value.
 type Values struct {
 	Values []Fragment
 	hash   hash
 }
 
+var _ = Fragment(&Values{})
+
 // Value represents an escaped SQL value.
 type Value struct {
 	V    interface{}
 	hash hash
 }
+
+var _ = Fragment(&Value{})
 
 // NewValue creates and returns a Value.
 func NewValue(v interface{}) *Value {
@@ -67,18 +71,6 @@ func (v *Value) Compile(layout *Template) (compiled string, err error) {
 	return
 }
 
-/*
-func (v *Value) Scan(src interface{}) error {
-	log.Println("Scan(", src, ") on", v.V)
-	return nil
-}
-
-func (v *Value) Value() (driver.Value, error) {
-	log.Println("Value() on", v.V)
-	return v.V, nil
-}
-*/
-
 // Hash returns a unique identifier for the struct.
 func (vs *Values) Hash() string {
 	return vs.hash.Hash(vs)
@@ -105,18 +97,6 @@ func (vs *Values) Compile(layout *Template) (compiled string, err error) {
 	layout.Write(vs, compiled)
 	return
 }
-
-/*
-func (vs Values) Scan(src interface{}) error {
-	log.Println("Values.Scan(", src, ")")
-	return nil
-}
-
-func (vs Values) Value() (driver.Value, error) {
-	log.Println("Values.Value()")
-	return vs, nil
-}
-*/
 
 // Hash returns a unique identifier for the struct.
 func (vg *ValueGroups) Hash() string {

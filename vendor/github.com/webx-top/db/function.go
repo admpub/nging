@@ -19,26 +19,62 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-// Package sqladapter provides common logic for SQL adapters.
-package sqladapter
+package db
 
 import (
-	"database/sql/driver"
+	"reflect"
 )
 
-// IsKeyValue reports whether v is a valid value for a primary key that can be
-// used with Find(pKey).
-func IsKeyValue(v interface{}) bool {
-	if v == nil {
-		return true
-	}
-	switch v.(type) {
-	case int64, int, uint, uint64,
-		[]int64, []int, []uint, []uint64,
-		[]byte, []string,
-		[]interface{},
-		driver.Valuer:
-		return true
-	}
-	return false
+// Function interface defines methods for representing database functions.
+// This is an exported interface but it's rarely used directly, you may want to
+// use the `db.Func()` function instead.
+type Function interface {
+	// Name returns the function name.
+	Name() string
+
+	// Argument returns the function arguments.
+	Arguments() []interface{}
 }
+
+// Func represents a database function and satisfies the db.Function interface.
+//
+// Examples:
+//
+//	// MOD(29, 9)
+//	db.Func("MOD", 29, 9)
+//
+//	// CONCAT("foo", "bar")
+//	db.Func("CONCAT", "foo", "bar")
+//
+//	// NOW()
+//	db.Func("NOW")
+//
+//	// RTRIM("Hello  ")
+//	db.Func("RTRIM", "Hello  ")
+func Func(name string, args ...interface{}) Function {
+	if len(args) == 1 {
+		if reflect.TypeOf(args[0]).Kind() == reflect.Slice {
+			iargs := make([]interface{}, len(args))
+			for i := range args {
+				iargs[i] = args[i]
+			}
+			args = iargs
+		}
+	}
+	return &dbFunc{name: name, args: args}
+}
+
+type dbFunc struct {
+	name string
+	args []interface{}
+}
+
+func (f *dbFunc) Arguments() []interface{} {
+	return f.args
+}
+
+func (f *dbFunc) Name() string {
+	return f.name
+}
+
+var _ Function = &dbFunc{}

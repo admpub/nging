@@ -19,26 +19,48 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-// Package sqladapter provides common logic for SQL adapters.
-package sqladapter
+package db
 
-import (
-	"database/sql/driver"
-)
+// Constraint interface represents a single condition, like "a = 1".  where `a`
+// is the key and `1` is the value. This is an exported interface but it's
+// rarely used directly, you may want to use the `db.Cond{}` map instead.
+type Constraint interface {
+	// Key is the leftmost part of the constraint and usually contains a column
+	// name.
+	Key() interface{}
 
-// IsKeyValue reports whether v is a valid value for a primary key that can be
-// used with Find(pKey).
-func IsKeyValue(v interface{}) bool {
-	if v == nil {
-		return true
-	}
-	switch v.(type) {
-	case int64, int, uint, uint64,
-		[]int64, []int, []uint, []uint64,
-		[]byte, []string,
-		[]interface{},
-		driver.Valuer:
-		return true
-	}
-	return false
+	// Value if the rightmost part of the constraint and usually contains a
+	// column value.
+	Value() interface{}
 }
+
+// Constraints interface represents an array or constraints, like "a = 1, b =
+// 2, c = 3".
+type Constraints interface {
+	// Constraints returns an array of constraints.
+	Constraints() []Constraint
+	// Keys returns the map keys always in the same order.
+	Keys() []interface{}
+}
+
+type constraint struct {
+	k interface{}
+	v interface{}
+}
+
+func (c constraint) Key() interface{} {
+	return c.k
+}
+
+func (c constraint) Value() interface{} {
+	return c.v
+}
+
+// NewConstraint creates a constraint.
+func NewConstraint(key interface{}, value interface{}) Constraint {
+	return constraint{k: key, v: value}
+}
+
+var _ Constraints = Cond{}
+
+var _ Constraint = &constraint{}

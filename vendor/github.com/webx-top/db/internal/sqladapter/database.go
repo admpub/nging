@@ -32,6 +32,10 @@ type hasStatementExec interface {
 	StatementExec(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
 }
 
+type hasConvertValues interface {
+	ConvertValues(values []interface{}) []interface{}
+}
+
 // Database represents a SQL database.
 type Database interface {
 	PartialDatabase
@@ -123,6 +127,13 @@ type BaseDatabase interface {
 
 	// SetContext sets a default context for the session.
 	SetContext(context.Context)
+
+	// TxOptions returns the default TxOptions for new transactions in the
+	// session.
+	TxOptions() *sql.TxOptions
+
+	// SetTxOptions sets default TxOptions for the session.
+	SetTxOptions(txOptions sql.TxOptions)
 }
 
 // NewBaseDatabase provides a BaseDatabase given a PartialDatabase
@@ -144,7 +155,8 @@ type database struct {
 
 	db.Settings
 
-	ctx context.Context
+	ctx       context.Context
+	txOptions *sql.TxOptions
 
 	collectionMu sync.Mutex
 	mu           sync.Mutex
@@ -190,6 +202,24 @@ func (d *database) Context() context.Context {
 		return context.Background()
 	}
 	return d.ctx
+}
+
+// SetTxOptions sets the session's default TxOptions.
+func (d *database) SetTxOptions(txOptions sql.TxOptions) {
+	d.mu.Lock()
+	d.txOptions = &txOptions
+	d.mu.Unlock()
+}
+
+// TxOptions returns the session's default TxOptions.
+func (d *database) TxOptions() *sql.TxOptions {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+
+	if d.txOptions == nil {
+		return nil
+	}
+	return d.txOptions
 }
 
 // BindTx binds a *sql.Tx into *database
@@ -298,6 +328,7 @@ func (d *database) ClearCache() {
 // session.
 func (d *database) NewClone(p PartialDatabase, checkConn bool) (BaseDatabase, error) {
 	nd := NewBaseDatabase(p).(*database)
+
 	nd.name = d.name
 	nd.sess = d.sess
 
@@ -311,7 +342,12 @@ func (d *database) NewClone(p PartialDatabase, checkConn bool) (BaseDatabase, er
 			return nil, err
 		}
 	}
+
 	nd.sessID = newSessionID()
+
+	// New transaction should inherit parent settings
+	copySettings(d, nd)
+
 	return nd, nil
 }
 
@@ -371,12 +407,13 @@ func (d *database) StatementPrepare(ctx context.Context, stmt *exql.Statement) (
 	if d.Settings.LoggingEnabled() {
 		defer func(start time.Time) {
 			d.Logger().Log(&db.QueryStatus{
-				TxID:   d.txID,
-				SessID: d.sessID,
-				Query:  query,
-				Err:    err,
-				Start:  start,
-				End:    time.Now(),
+				TxID:    d.txID,
+				SessID:  d.sessID,
+				Query:   query,
+				Err:     err,
+				Start:   start,
+				End:     time.Now(),
+				Context: ctx,
 			})
 		}(time.Now())
 	}
@@ -393,6 +430,14 @@ func (d *database) StatementPrepare(ctx context.Context, stmt *exql.Statement) (
 	return
 }
 
+// ConvertValues converts native values into driver specific values.
+func (d *database) ConvertValues(values []interface{}) []interface{} {
+	if converter, ok := d.PartialDatabase.(hasConvertValues); ok {
+		return converter.ConvertValues(values)
+	}
+	return values
+}
+
 // StatementExec compiles and executes a statement that does not return any
 // rows.
 func (d *database) StatementExec(ctx context.Context, stmt *exql.Statement, args ...interface{}) (res sql.Result, err error) {
@@ -402,13 +447,14 @@ func (d *database) StatementExec(ctx context.Context, stmt *exql.Statement, args
 		defer func(start time.Time) {
 
 			status := db.QueryStatus{
-				TxID:   d.txID,
-				SessID: d.sessID,
-				Query:  query,
-				Args:   args,
-				Err:    err,
-				Start:  start,
-				End:    time.Now(),
+				TxID:    d.txID,
+				SessID:  d.sessID,
+				Query:   query,
+				Args:    args,
+				Err:     err,
+				Start:   start,
+				End:     time.Now(),
+				Context: ctx,
 			}
 
 			if res != nil {
@@ -461,13 +507,14 @@ func (d *database) StatementQuery(ctx context.Context, stmt *exql.Statement, arg
 	if d.Settings.LoggingEnabled() {
 		defer func(start time.Time) {
 			d.Logger().Log(&db.QueryStatus{
-				TxID:   d.txID,
-				SessID: d.sessID,
-				Query:  query,
-				Args:   args,
-				Err:    err,
-				Start:  start,
-				End:    time.Now(),
+				TxID:    d.txID,
+				SessID:  d.sessID,
+				Query:   query,
+				Args:    args,
+				Err:     err,
+				Start:   start,
+				End:     time.Now(),
+				Context: ctx,
 			})
 		}(time.Now())
 	}
@@ -504,13 +551,14 @@ func (d *database) StatementQueryRow(ctx context.Context, stmt *exql.Statement, 
 	if d.Settings.LoggingEnabled() {
 		defer func(start time.Time) {
 			d.Logger().Log(&db.QueryStatus{
-				TxID:   d.txID,
-				SessID: d.sessID,
-				Query:  query,
-				Args:   args,
-				Err:    err,
-				Start:  start,
-				End:    time.Now(),
+				TxID:    d.txID,
+				SessID:  d.sessID,
+				Query:   query,
+				Args:    args,
+				Err:     err,
+				Start:   start,
+				End:     time.Now(),
+				Context: ctx,
 			})
 		}(time.Now())
 	}
@@ -549,6 +597,9 @@ func (d *database) Driver() interface{} {
 
 // compileStatement compiles the given statement into a string.
 func (d *database) compileStatement(stmt *exql.Statement, args []interface{}) (string, []interface{}) {
+	if converter, ok := d.PartialDatabase.(hasConvertValues); ok {
+		args = converter.ConvertValues(args)
+	}
 	return d.PartialDatabase.CompileStatement(stmt, args)
 }
 
@@ -644,15 +695,34 @@ func ReplaceWithDollarSign(in string) string {
 	for i < t {
 		if buf[i] == '?' {
 			out = append(out, buf[k:i]...)
-			out = append(out, []byte("$"+strconv.Itoa(j))...)
 			k = i + 1
-			j++
+
+			if k < t && buf[k] == '?' {
+				i = k
+			} else {
+				out = append(out, []byte("$"+strconv.Itoa(j))...)
+				j++
+			}
 		}
 		i++
 	}
 	out = append(out, buf[k:i]...)
 
 	return string(out)
+}
+
+func copySettings(from BaseDatabase, into BaseDatabase) {
+	into.SetLogging(from.LoggingEnabled())
+	into.SetLogger(from.Logger())
+	into.SetPreparedStatementCache(from.PreparedStatementCacheEnabled())
+	into.SetConnMaxLifetime(from.ConnMaxLifetime())
+	into.SetMaxIdleConns(from.MaxIdleConns())
+	into.SetMaxOpenConns(from.MaxOpenConns())
+
+	txOptions := from.TxOptions()
+	if txOptions != nil {
+		into.SetTxOptions(*txOptions)
+	}
 }
 
 func newSessionID() uint64 {

@@ -12,6 +12,8 @@ type ColumnValue struct {
 	hash     hash
 }
 
+var _ = Fragment(&ColumnValue{})
+
 type columnValueT struct {
 	Column   string
 	Operator string
@@ -46,7 +48,7 @@ func (c *ColumnValue) Compile(layout *Template) (compiled string, err error) {
 		}
 	}
 
-	compiled = mustParse(layout.ColumnValue, data)
+	compiled = strings.TrimSpace(mustParse(layout.ColumnValue, data))
 
 	layout.Write(c, compiled)
 
@@ -58,6 +60,8 @@ type ColumnValues struct {
 	ColumnValues []Fragment
 	hash         hash
 }
+
+var _ = Fragment(&ColumnValues{})
 
 // JoinColumnValues returns an array of ColumnValue
 func JoinColumnValues(values ...Fragment) *ColumnValues {
@@ -96,7 +100,7 @@ func (c *ColumnValues) Compile(layout *Template) (compiled string, err error) {
 		}
 	}
 
-	compiled = strings.Join(out, layout.IdentifierSeparator)
+	compiled = strings.TrimSpace(strings.Join(out, layout.IdentifierSeparator))
 
 	layout.Write(c, compiled)
 

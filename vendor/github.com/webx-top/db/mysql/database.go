@@ -26,8 +26,11 @@ package mysql
 
 import (
 	"context"
+	"database/sql/driver"
+	"reflect"
 	"strings"
 	"sync"
+	"time"
 
 	"database/sql"
 
@@ -150,6 +153,32 @@ func (d *database) clone(ctx context.Context, checkConn bool) (*database, error)
 	return clone, nil
 }
 
+func (d *database) ConvertValues(values []interface{}) []interface{} {
+	for i := range values {
+		switch v := values[i].(type) {
+		case *string, *bool, *int, *uint, *int64, *uint64, *int32, *uint32, *int16, *uint16, *int8, *uint8, *float32, *float64, *[]uint8, sql.Scanner, *sql.Scanner, *time.Time:
+		case string, bool, int, uint, int64, uint64, int32, uint32, int16, uint16, int8, uint8, float32, float64, []uint8, driver.Valuer, *driver.Valuer, time.Time:
+		case JSONMap, JSON:
+			// Already with scanner/valuer.
+		case *JSONMap, *JSON:
+			// Already with scanner/valuer.
+
+		case *map[string]interface{}:
+			values[i] = (*JSONMap)(v)
+
+		case map[string]interface{}:
+			values[i] = (*JSONMap)(&v)
+
+		case sqlbuilder.ValueWrapper:
+			values[i] = v.WrapValue(v)
+
+		default:
+			values[i] = autoWrap(reflect.ValueOf(values[i]), values[i])
+		}
+	}
+	return values
+}
+
 // CompileStatement compiles a *exql.Statement into arguments that sql/database
 // accepts.
 func (d *database) CompileStatement(stmt *exql.Statement, args []interface{}) (string, []interface{}) {
@@ -196,7 +225,7 @@ func (d *database) NewDatabaseTx(ctx context.Context) (sqladapter.DatabaseTx, er
 	defer clone.mu.Unlock()
 
 	connFn := func() error {
-		sqlTx, err := compat.BeginTx(clone.BaseDatabase.Session(), ctx, nil)
+		sqlTx, err := compat.BeginTx(clone.BaseDatabase.Session(), ctx, clone.TxOptions())
 		if err == nil {
 			return clone.BindTx(ctx, sqlTx)
 		}

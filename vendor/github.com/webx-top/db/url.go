@@ -19,26 +19,11 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-// Package sqladapter provides common logic for SQL adapters.
-package sqladapter
+package db
 
-import (
-	"database/sql/driver"
-)
-
-// IsKeyValue reports whether v is a valid value for a primary key that can be
-// used with Find(pKey).
-func IsKeyValue(v interface{}) bool {
-	if v == nil {
-		return true
-	}
-	switch v.(type) {
-	case int64, int, uint, uint64,
-		[]int64, []int, []uint, []uint64,
-		[]byte, []string,
-		[]interface{},
-		driver.Valuer:
-		return true
-	}
-	return false
+// ConnectionURL represents a connection string.
+type ConnectionURL interface {
+	// String returns the connection string that is going to be passed to the
+	// adapter.
+	String() string
 }

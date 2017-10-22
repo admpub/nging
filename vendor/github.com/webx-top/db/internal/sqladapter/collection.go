@@ -1,6 +1,7 @@
 package sqladapter
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 
@@ -10,6 +11,8 @@ import (
 )
 
 var mapper = reflectx.NewMapper("db")
+
+var errMissingPrimaryKeys = errors.New("Table %q has no primary keys")
 
 // Collection represents a SQL table.
 type Collection interface {
@@ -88,7 +91,7 @@ func (c *collection) filterConds(conds ...interface{}) []interface{} {
 	}
 	if len(conds) == 1 && len(c.pk) == 1 {
 		if id := conds[0]; IsKeyValue(id) {
-			conds[0] = db.Cond{c.pk[0]: id}
+			conds[0] = db.Cond{c.pk[0]: db.Eq(id)}
 		}
 	}
 	return conds
@@ -125,7 +128,10 @@ func (c *collection) InsertReturning(item interface{}) error {
 	// Grab primary keys
 	pks := c.PrimaryKeys()
 	if len(pks) == 0 {
-		return fmt.Errorf("InsertReturning: Cannot update an item without primary keys")
+		if !c.Exists() {
+			return db.ErrCollectionDoesNotExist
+		}
+		return fmt.Errorf(errMissingPrimaryKeys.Error(), c.Name())
 	}
 
 	var tx DatabaseTx
@@ -163,7 +169,8 @@ func (c *collection) InsertReturning(item interface{}) error {
 	}
 
 	// Fetch the row that was just interted into newItem
-	if err = col.Find(id).One(newItem); err != nil {
+	err = col.Find(id).One(newItem)
+	if err != nil {
 		goto cancel
 	}
 
@@ -184,7 +191,8 @@ func (c *collection) InsertReturning(item interface{}) error {
 			itemV.SetMapIndex(keyV, newItemV.MapIndex(keyV))
 		}
 	default:
-		panic("default")
+		err = fmt.Errorf("InsertReturning: expecting a pointer to map or struct, got %T", newItem)
+		goto cancel
 	}
 
 	if !inTx {
@@ -192,6 +200,7 @@ func (c *collection) InsertReturning(item interface{}) error {
 		// sess was created with sess.NewTransaction().
 		return tx.Commit()
 	}
+
 	return err
 
 cancel:
@@ -214,7 +223,10 @@ func (c *collection) UpdateReturning(item interface{}) error {
 	// Grab primary keys
 	pks := c.PrimaryKeys()
 	if len(pks) == 0 {
-		return fmt.Errorf("InsertReturning: Cannot update an item without primary keys")
+		if !c.Exists() {
+			return db.ErrCollectionDoesNotExist
+		}
+		return fmt.Errorf(errMissingPrimaryKeys.Error(), c.Name())
 	}
 
 	var tx DatabaseTx
@@ -241,7 +253,7 @@ func (c *collection) UpdateReturning(item interface{}) error {
 
 	conds := db.Cond{}
 	for _, pk := range pks {
-		conds[pk] = mapper.FieldByName(itemValue, pk).Interface()
+		conds[pk] = db.Eq(mapper.FieldByName(itemValue, pk).Interface())
 	}
 
 	col := tx.(Database).Collection(c.Name())

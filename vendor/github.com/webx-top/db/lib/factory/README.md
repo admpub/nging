@@ -51,8 +51,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	factory.SetDebug(true)
 	factory.AddDB(database).Cluster(0).SetPrefix(`webx_`)
+	factory.SetDebug(true)
 	defer factory.Default().CloseAll()
 
 	var posts []*Post
@@ -77,6 +77,7 @@ func main() {
 err = factory.All(factory.NewParam().SetCollection(`post`).SetRecv(&posts))
 ```
 
+
 也可以附加更多条件（后面介绍的所有方法均支持这种方式）：
 ```go
  err = factory.NewParam().SetCollection(`post`).SetRecv(&posts).SetArgs(db.Cond{`title LIKE`:`%test%`}).SetMiddleware(func(r db.Result)db.Result{
@@ -89,7 +90,17 @@ err = factory.All(factory.NewParam().SetCollection(`post`).SetRecv(&posts))
 ### 方法 2.
 ```go
 err = factory.NewParam().SetCollection(`post`).SetRecv(&posts).All()
+```
 
+### 方法 3.
+```go
+post := &Post{}
+res := factory.NewParam().SetCollection(`post`).Result()
+//defer res.Close() //操作结束后别忘了执行关闭操作
+for res.Next(post) {
+	log.Printf("%q (ID: %d)\n", post.Title, post.Id)
+}
+res.Close() //操作结束后别忘了执行关闭操作
 ```
 
 ### 关联查询
