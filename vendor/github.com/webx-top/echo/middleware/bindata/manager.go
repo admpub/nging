@@ -21,23 +21,21 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/webx-top/echo/logger"
+	"github.com/webx-top/echo/middleware/render/driver"
 )
 
-func NewTmplManager(fs http.FileSystem) *TmplManager {
+func NewTmplManager(fs http.FileSystem) driver.Manager {
 	return &TmplManager{
-		FileSystem: fs,
+		BaseManager: &driver.BaseManager{},
+		FileSystem:  fs,
 	}
 }
 
 type TmplManager struct {
+	*driver.BaseManager
 	http.FileSystem
 }
 
-func (a *TmplManager) Close()                                            {}
-func (a *TmplManager) SetOnChangeCallback(func(name, typ, event string)) {}
-func (a *TmplManager) SetLogger(logger.Logger)                           {}
-func (a *TmplManager) ClearCache()                                       {}
 func (a *TmplManager) GetTemplate(fileName string) ([]byte, error) {
 	file, err := a.Open(fileName)
 	if err != nil {
@@ -47,4 +45,3 @@ func (a *TmplManager) GetTemplate(fileName string) ([]byte, error) {
 	b, err := ioutil.ReadAll(file)
 	return b, err
 }
-func (a *TmplManager) Init(logger logger.Logger, rootDir string, reload bool, allows ...string) {}

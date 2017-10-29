@@ -76,7 +76,7 @@ func (n *NopRenderer) Debug() bool { return false }
 
 func (n *NopRenderer) SetDebug(_ bool) {}
 
-func (n *NopRenderer) Init(_ ...bool) {}
+func (n *NopRenderer) Init() {}
 
 func (n *NopRenderer) TmplDir() string { return `` }
 

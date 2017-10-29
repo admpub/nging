@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"sort"
 	"strings"
 	"sync"
 
@@ -512,11 +513,24 @@ func (e *Echo) URI(handler interface{}, params ...interface{}) string {
 				uri = r.Path
 				for _, name := range r.Params {
 					tag := `:` + name
-					v, _ := val[name]
+					v, y := val[name]
+					if y {
+						delete(val, name)
+					}
 					uri = strings.Replace(uri, tag+`/`, v+`/`, -1)
 					if strings.HasSuffix(uri, tag) {
 						uri = strings.TrimSuffix(uri, tag) + v
 					}
+				}
+				sep := `?`
+				keys := make([]string, 0, len(val))
+				for k := range val {
+					keys = append(keys, k)
+				}
+				sort.Strings(keys)
+				for _, k := range keys {
+					uri += sep + url.QueryEscape(k) + `=` + url.QueryEscape(val[k])
+					sep = `&`
 				}
 			case []interface{}:
 				uri = fmt.Sprintf(r.Format, val...)

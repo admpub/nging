@@ -40,3 +40,26 @@ type Manager interface {
 	ClearCache()
 	GetTemplate(string) ([]byte, error)
 }
+
+var _ Manager = &BaseManager{}
+
+type BaseManager struct {
+}
+
+func (b *BaseManager) Start() error                                                       { return nil }
+func (b *BaseManager) Close()                                                             {}
+func (b *BaseManager) ClearCallback()                                                     {}
+func (b *BaseManager) AddCallback(rootDir string, callback func(name, typ, event string)) {}
+func (b *BaseManager) DelCallback(rootDir string)                                         {}
+func (b *BaseManager) ClearAllows()                                                       {}
+func (b *BaseManager) AddAllow(allows ...string)                                          {}
+func (b *BaseManager) DelAllow(allow string)                                              {}
+func (b *BaseManager) ClearIgnores()                                                      {}
+func (b *BaseManager) AddIgnore(ignores ...string)                                        {}
+func (b *BaseManager) DelIgnore(ignore string)                                            {}
+func (b *BaseManager) AddWatchDir(ppath string) (err error)                               { return nil }
+func (b *BaseManager) CancelWatchDir(oldDir string) (err error)                           { return nil }
+func (b *BaseManager) ChangeWatchDir(oldDir string, newDir string) (err error)            { return nil }
+func (b *BaseManager) SetLogger(logger.Logger)                                            {}
+func (b *BaseManager) ClearCache()                                                        {}
+func (b *BaseManager) GetTemplate(string) ([]byte, error)                                 { return nil, nil }
