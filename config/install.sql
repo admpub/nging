@@ -175,6 +175,6 @@ CREATE TABLE `db_account` (
   `created` int(10) unsigned NOT NULL COMMENT '创建时间',
   `updated` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='数据库账号';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='数据库账号';
 
 -- 2017-10-29 12:19:00
