@@ -44,9 +44,12 @@ import (
 )
 
 var (
-	//Version 版本号
-	Version = `1.2.0`
+	BUILD_TIME string
+	CLOUD_GOX  string
+	COMMIT     string
+	VERSION    = `1.2.0`
 
+	version    string
 	binData    bool
 	staticMW   interface{}
 	tmplMgr    driver.Manager
@@ -56,11 +59,12 @@ var (
 func main() {
 	config.DefaultCLIConfig.InitFlag()
 	flag.Parse()
-
 	if binData {
-		Version += ` (bindata)`
+		version = VERSION + ` (bindata)`
+	} else {
+		version = VERSION
 	}
-	config.SetVersion(Version)
+	config.SetVersion(version)
 
 	// Service
 	if len(os.Args) > 1 && !strings.HasPrefix(os.Args[1], `-`) {
