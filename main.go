@@ -119,7 +119,7 @@ func main() {
 	}))
 	e.Use(func(h echo.Handler) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			c.Response().Header().Set(`Server`, `nging/`+Version)
+			c.Response().Header().Set(`Server`, `nging/`+version)
 			return h.Handle(c)
 		}
 	})
