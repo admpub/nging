@@ -161,3 +161,20 @@ CREATE TABLE `vhost` (
 
 
 -- 2017-04-09 11:49:42
+
+DROP TABLE IF EXISTS `db_account`;
+CREATE TABLE `db_account` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `uid` int(11) unsigned NOT NULL COMMENT 'UID',
+  `engine` varchar(30) NOT NULL DEFAULT 'mysql' COMMENT '数据库引擎',
+  `host` varchar(200) NOT NULL DEFAULT 'localhost:3306' COMMENT '服务器地址',
+  `user` varchar(100) NOT NULL DEFAULT 'root' COMMENT '用户名',
+  `password` varchar(128) NOT NULL DEFAULT '' COMMENT '密码',
+  `name` varchar(120) NOT NULL DEFAULT '' COMMENT '数据库名称',
+  `options` text NOT NULL COMMENT '其它选项(JSON)',
+  `created` int(10) unsigned NOT NULL COMMENT '创建时间',
+  `updated` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='数据库账号';
+
+-- 2017-10-29 12:19:00
