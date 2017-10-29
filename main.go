@@ -25,6 +25,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/admpub/nging/application/handler/setup"
 	_ "github.com/admpub/nging/application/library/sqlite"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
@@ -93,6 +94,9 @@ func main() {
 	config.DefaultCLIConfig.RunStartup()
 
 	if config.IsInstalled() {
+		if err := setup.Upgrade(); err != nil {
+			log.Error(err)
+		}
 		// 继续上次任务
 		if err := cron.InitJobs(); err != nil {
 			log.Error(err)
