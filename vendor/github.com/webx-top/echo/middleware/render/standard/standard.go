@@ -200,6 +200,7 @@ func (self *Standard) SetManager(mgr driver.Manager) {
 		self.TemplateMgr.Close()
 	}
 	self.TemplateMgr = mgr
+	self.TemplateMgr.Start()
 }
 
 func (self *Standard) TemplatePath(p string) string {

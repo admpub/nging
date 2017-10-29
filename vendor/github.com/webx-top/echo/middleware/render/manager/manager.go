@@ -47,7 +47,6 @@ func New() *Manager {
 		done:     make(chan bool),
 	}
 	m.watcher, _ = fsnotify.NewWatcher()
-	go m.Start()
 	return m
 }
 
@@ -184,6 +183,11 @@ func (self *Manager) ChangeWatchDir(oldDir string, newDir string) (err error) {
 }
 
 func (self *Manager) Start() error {
+	go self.watch()
+	return nil
+}
+
+func (self *Manager) watch() error {
 	watcher := self.watcher
 	//fmt.Println("[webx] TemplateMgr watcher is start.")
 	defer watcher.Close()
