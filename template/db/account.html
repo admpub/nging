@@ -1,0 +1,54 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"数据库账号列表"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"数据库账号列表"|T}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+				<div class="col-md-12">
+					<div class="block-flat">
+						<div class="header">							
+							<h3>{{"数据库账号列表"|T}}</h3>
+						</div>
+						<div class="content">
+							<div class="table-responsive">
+							<table class="table no-border hover">
+								<thead class="no-border">
+									<tr>
+										<th style="width:2%;"><strong>ID</strong></th>
+										<th><strong>{{"类型"|T}}</strong></th>
+										<th><strong>{{"地址"|T}}</strong></th>
+										<th style="width:15%;"><strong>{{"账号"|T}}</strong></th>
+										<th><strong>{{"库名"|T}}</strong></th>
+										<th><strong>{{"创建时间"|T}}</strong></th>
+										<th><strong>{{"更新时间"|T}}</strong></th>
+										<th style="width:15%;" class="text-center"><strong>{{"操作"|T}}</strong></th>
+									</tr>
+								</thead>
+								<tbody class="no-border-y">
+                                    {{range $k,$v := Stored.listData}}
+									<tr>
+										<td>{{$v.Id}}</td>
+										<td>{{$v.Engine}}</td>
+										<td>{{$v.Host}}</td>
+										<td>{{$v.User}}</td>
+										<td>{{$v.Name}}</td>
+										<td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}</td>
+										<td>{{if gt $v.Updated 0}}{{(Date $v.Updated).Format "2006-01-02 15:04:05"}}{{end}}</td>
+										<td class="text-center">
+										<a title="{{"连接"|T}}" class="label label-success" href="/db?accountId={{$v.Id}}"><i class="fa fa-link"></i></a>
+										<a title="{{"修改"|T}}" class="label label-default" href="/db/account_edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a>
+										<a title="{{"删除"|T}}" class="label label-danger" href="/db/account_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
+										</td>
+									</tr>
+                                    {{end}}
+								</tbody>
+							</table>		
+							</div>
+							{{Stored.pagination.Render}}
+						</div>
+					</div>				
+				</div>
+			</div>
+{{/Block}}

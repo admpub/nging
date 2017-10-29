@@ -109,6 +109,9 @@ func (m *mySQL) Login() error {
 	m.db.SetCluster(0, cluster)
 	m.Set(`dbName`, m.dbName)
 	m.Set(`table`, m.Form(`table`))
+	if len(settings.Database) > 0 {
+		m.Set(`dbList`, []string{settings.Database})
+	}
 	return m.baseInfo()
 }
 
@@ -441,8 +444,8 @@ func (m *mySQL) CreateTable() error {
 				field.Null, _ = strconv.ParseBool(f.Value(ii, `null`))
 				field.Comment = f.Value(ii, `comment`)
 				field.Default = sql.NullString{
-					String: f.Value(ii, `has_default`),
-					Valid:  f.Value(ii, `default`) == `1`,
+					String: f.Value(ii, `default`),
+					Valid:  f.Value(ii, `has_default`) == `1`,
 				}
 				field.AutoIncrement = sql.NullString{
 					Valid: aiIndexInt == i,
@@ -735,6 +738,7 @@ func (m *mySQL) ModifyTable() error {
 	if len(postFields) == 0 {
 		postFields = append(postFields, &Field{})
 	}
+	com.Dump(postFields)
 	m.Set(`postFields`, postFields)
 	m.SetFunc(`isString`, reFieldTypeText.MatchString)
 	m.SetFunc(`isNumeric`, reFieldTypeNumber.MatchString)

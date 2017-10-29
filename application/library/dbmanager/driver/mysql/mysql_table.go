@@ -378,11 +378,6 @@ func (m *mySQL) tableFields(table string) (map[string]*Field, []string, error) {
 			return nil, nil, err
 		}
 		match := reField.FindStringSubmatch(v.Type.String)
-		var defaultValue sql.NullString
-		if v.Default.Valid || reFieldDefault.MatchString(match[1]) {
-			defaultValue.Valid = true
-			defaultValue.String = v.Default.String
-		}
 		var onUpdate string
 		omatch := reFieldOnUpdate.FindStringSubmatch(v.Extra.String)
 		if len(omatch) > 1 {
@@ -399,7 +394,7 @@ func (m *mySQL) tableFields(table string) (map[string]*Field, []string, error) {
 			Type:          match[1],
 			Length:        match[2],
 			Unsigned:      strings.TrimLeft(match[3]+match[4], ` `),
-			Default:       defaultValue,
+			Default:       v.Default,
 			Null:          v.Null.String == `YES`,
 			AutoIncrement: sql.NullString{Valid: v.Extra.String == `auto_increment`},
 			On_update:     onUpdate,

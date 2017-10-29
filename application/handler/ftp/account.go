@@ -19,6 +19,7 @@ package ftp
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
@@ -146,7 +147,7 @@ func AccountEdit(ctx echo.Context) error {
 			err = errors.New(ctx.T(`密码不能少于6个字符`))
 		} else {
 			err = ctx.MustBind(m.FtpUser, func(k string, v []string) (string, []string) {
-				switch k {
+				switch strings.ToLower(k) {
 				case `password`:
 					if len(v) < 1 || v[0] == `` {
 						//忽略密码为空的情况

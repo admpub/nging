@@ -220,12 +220,14 @@ func (m *mySQL) getVersion() string {
 }
 
 func (m *mySQL) baseInfo() error {
-	dbList, err := m.getDatabases()
-	if err != nil {
-		m.fail(err.Error())
-		return m.returnTo(`/db`)
+	if m.Get(`dbList`) == nil {
+		dbList, err := m.getDatabases()
+		if err != nil {
+			m.fail(err.Error())
+			return m.returnTo(`/db`)
+		}
+		m.Set(`dbList`, dbList)
 	}
-	m.Set(`dbList`, dbList)
 	if len(m.dbName) > 0 {
 		tableList, err := m.getTables()
 		if err != nil {

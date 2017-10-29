@@ -15,6 +15,7 @@
    limitations under the License.
 
 */
+
 package database
 
 import (
@@ -23,6 +24,8 @@ import (
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	_ "github.com/admpub/nging/application/library/dbmanager/driver/mysql" //mysql
 	"github.com/admpub/nging/application/middleware"
+	"github.com/admpub/nging/application/model"
+	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
 
@@ -33,11 +36,20 @@ func init() {
 }
 
 func Manager(ctx echo.Context) error {
+	user := handler.User(ctx)
+	m := model.NewDbAccount(ctx)
 	var err error
 	auth := &driver.DbAuth{}
 	mgr := dbmanager.New(ctx, auth)
 	driverName := ctx.Form(`driver`)
 	operation := ctx.Form(`operation`)
+	var accountId uint
+	if user != nil {
+		accountId = ctx.Formx(`accountId`).Uint()
+		if accountId > 0 {
+			err = m.Get(nil, db.And(db.Cond{`id`: accountId}, db.Cond{`uid`: user.Id}))
+		}
+	}
 	var genURL func(string, ...string) string
 	switch operation {
 	case `login`:
@@ -51,24 +63,49 @@ func Manager(ctx echo.Context) error {
 				data.Host = `127.0.0.1`
 			}
 			auth.CopyFrom(data)
-			ctx.Session().Set(`dbAuth`, data)
+			if accountId > 0 && ctx.Form(`remember`) == `1` {
+				m.Engine = auth.Driver
+				m.Host = auth.Host
+				m.User = auth.Username
+				m.Password = auth.Password
+				m.Name = auth.Db
+				if err == db.ErrNoMoreRows {
+					m.Uid = user.Id
+					_, err = m.Add()
+				} else {
+					err = m.Edit(nil, db.Cond{`id`: accountId})
+				}
+			}
+			ctx.Session().Set(`dbAuth`, auth)
 		}
+
 	case `logout`:
+		//pass
+
 	default:
-		data, ok := ctx.Session().Get(`dbAuth`).(*driver.DbAuth)
-		if ok {
-			auth.CopyFrom(data)
+		if accountId > 0 {
+			auth.Driver = m.Engine
+			auth.Username = m.User
+			auth.Password = m.Password
+			auth.Host = m.Host
+			auth.Db = m.Name
+			ctx.Session().Set(`dbAuth`, auth)
 			err = mgr.Run(auth.Driver, `login`)
+		} else {
+			if data, exists := ctx.Session().Get(`dbAuth`).(*driver.DbAuth); exists {
+				auth.CopyFrom(data)
+				err = mgr.Run(auth.Driver, `login`)
+			}
 		}
-		if ok && err == nil {
+		if err == nil {
 			driverName = auth.Driver
-			if operation == `` {
+			if len(operation) == 0 {
 				operation = `listDb`
 			}
 			ctx.Set(`dbUsername`, auth.Username)
 			ctx.Set(`dbHost`, auth.Host)
 			genURL = func(op string, args ...string) string {
-				if op == `` {
+				if len(op) == 0 {
 					op = operation
 				}
 				var p string
@@ -126,6 +163,15 @@ func Manager(ctx echo.Context) error {
 	for driverName, driver := range driver.GetAll() {
 		driverList[driverName] = driver.Name()
 	}
+
+	if accountId > 0 {
+		ctx.Request().Form().Set(`db`, m.Name)
+		ctx.Request().Form().Set(`driver`, m.Engine)
+		ctx.Request().Form().Set(`username`, m.User)
+		ctx.Request().Form().Set(`password`, m.Password)
+		ctx.Request().Form().Set(`host`, m.Host)
+	}
+
 	ctx.Set(`driverList`, driverList)
 	return ctx.Render(`db/index`, ret)
 }

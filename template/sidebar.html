@@ -63,7 +63,16 @@
                 </ul>
               </li>
               <li>
-                <a href="/db" data-pjax="#main-container"><i class="fa fa-table"></i><span>{{"数据库"|T}}</span></a>
+                <a href="#"><i class="fa fa-table"></i><span>{{"数据库"|T}}</span></a>
+                <ul class="sub-menu">
+                  <li><a href="/db/account" data-pjax="#main-container">{{"数据库账号"|T}}
+                  </a></li>
+                  <li><a href="/db/account_add" data-pjax="#main-container">
+                    <span class="label label-primary pull-right">New</span>{{"添加账号"|T}}
+                  </a></li>
+                  <li><a href="/db" data-pjax="#main-container">{{"连接数据库"|T}}
+                  </a></li>
+                </ul>
               </li>
               <li>
                 <a href="javascript:;" data-ajax-url="/manage/clear_cache">
