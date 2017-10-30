@@ -738,7 +738,6 @@ func (m *mySQL) ModifyTable() error {
 	if len(postFields) == 0 {
 		postFields = append(postFields, &Field{})
 	}
-	com.Dump(postFields)
 	m.Set(`postFields`, postFields)
 	m.SetFunc(`isString`, reFieldTypeText.MatchString)
 	m.SetFunc(`isNumeric`, reFieldTypeNumber.MatchString)
