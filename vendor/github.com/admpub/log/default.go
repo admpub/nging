@@ -16,6 +16,10 @@ func Sync(args ...bool) *Logger {
 	return DefaultLog.Sync(args...)
 }
 
+func Async(args ...bool) *Logger {
+	return DefaultLog.Async(args...)
+}
+
 func SetTarget(targets ...Target) *Logger {
 	return DefaultLog.SetTarget(targets...)
 }

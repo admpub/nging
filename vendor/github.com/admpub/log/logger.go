@@ -128,18 +128,24 @@ type coreLogger struct {
 	lock        sync.Mutex
 	open        bool        // whether the logger is open
 	entries     chan *Entry // log entries
-	goroutines  int32
+	sendN       uint32
+	procsN      uint32
+	waiting     *sync.Once
 	fatalAction Action
+	syncMode    bool // Whether the use of non-asynchronous mode （是否使用非异步模式）
 
-	ErrorWriter     io.Writer // the writer used to write errors caused by log targets
-	BufferSize      int       // the size of the channel storing log entries
-	CallStackDepth  int       // the number of call stack frames to be logged for each message. 0 means do not log any call stack frame.
-	CallStackFilter string    // a substring that a call stack frame file path should contain in order for the frame to be counted
-	MaxLevel        Level     // the maximum level of messages to be logged
-	Targets         []Target  // targets for sending log messages to
-	SyncMode        bool      // Whether the use of non-asynchronous mode （是否使用非异步模式）
-	MaxGoroutines   int32     // Max Goroutine
-	AddSpace        bool      // Add a space between two arguments.
+	ErrorWriter   io.Writer // the writer used to write errors caused by log targets
+	BufferSize    int       // the size of the channel storing log entries
+	CallStack     map[Level]*CallStack
+	MaxLevel      Level    // the maximum level of messages to be logged
+	Targets       []Target // targets for sending log messages to
+	MaxGoroutines int32    // Max Goroutine
+	AddSpace      bool     // Add a space between two arguments.
+}
+
+type CallStack struct {
+	Depth  int
+	Filter string
 }
 
 // Formatter formats a log message into an appropriate string.
@@ -159,11 +165,12 @@ type Logger struct {
 // Category: app, Formatter: DefaultFormatter
 func NewLogger(args ...string) *Logger {
 	logger := &coreLogger{
-		ErrorWriter:   os.Stderr,
-		BufferSize:    1024,
-		MaxLevel:      LevelDebug,
-		Targets:       make([]Target, 0),
-		MaxGoroutines: 100000,
+		ErrorWriter: os.Stderr,
+		BufferSize:  1024,
+		MaxLevel:    LevelDebug,
+		CallStack:   make(map[Level]*CallStack),
+		Targets:     make([]Target, 0),
+		waiting:     &sync.Once{},
 	}
 	category := `app`
 	if len(args) > 0 {
@@ -210,11 +217,28 @@ func (l *Logger) GetLogger(category string, formatter ...Formatter) *Logger {
 }
 
 func (l *Logger) Sync(args ...bool) *Logger {
+	var on bool
+	if len(args) > 0 {
+		on = !args[0]
+	}
+	return l.Async(on)
+}
+
+func (l *Logger) sendEntry(entry *Entry) {
+	atomic.AddUint32(&l.sendN, 1)
+	l.entries <- entry
+}
+
+func (l *Logger) Async(args ...bool) *Logger {
 	if len(args) < 1 {
-		l.SyncMode = true
+		l.syncMode = false
 		return l
 	}
-	l.SyncMode = args[0]
+	l.syncMode = !args[0]
+	if l.open {
+		l.Close()
+		l.Open()
+	}
 	return l
 }
 
@@ -354,24 +378,11 @@ func (l *Logger) newEntry(level Level, message string) {
 		Message:  message,
 		Time:     time.Now(),
 	}
-	if l.CallStackDepth > 0 {
-		entry.CallStack = GetCallStack(3, l.CallStackDepth, l.CallStackFilter)
+	if cs, ok := l.CallStack[level]; ok && cs != nil && cs.Depth > 0 {
+		entry.CallStack = GetCallStack(3, cs.Depth, cs.Filter)
 	}
 	entry.FormattedMessage = l.Formatter(l, entry)
-	if l.SyncMode {
-		l.syncProcess(entry)
-	} else {
-		send := func() {
-			atomic.AddInt32(&l.goroutines, 1)
-			l.entries <- entry
-		}
-
-		if atomic.LoadInt32(&l.goroutines) < l.MaxGoroutines {
-			go send()
-		} else {
-			send()
-		}
-	}
+	l.sendEntry(entry)
 }
 
 func (l *Logger) newFatalEntry(level Level, message string) {
@@ -381,41 +392,47 @@ func (l *Logger) newFatalEntry(level Level, message string) {
 		Message:  message,
 		Time:     time.Now(),
 	}
-	stackDepth := l.CallStackDepth
-	if stackDepth == 0 {
+	var (
+		stackDepth  int
+		stackFilter string
+	)
+	if cs, ok := l.CallStack[level]; ok && cs != nil {
+		stackDepth = cs.Depth
+		stackFilter = cs.Filter
+	}
+	if stackDepth < 20 {
 		stackDepth = 20
 	}
-	entry.CallStack = GetCallStack(3, stackDepth, l.CallStackFilter)
+	entry.CallStack = GetCallStack(3, stackDepth, stackFilter)
 	entry.FormattedMessage = l.Formatter(l, entry)
-	if l.SyncMode {
-		l.syncProcess(entry)
-	} else {
-		atomic.AddInt32(&l.goroutines, 1)
-		l.entries <- entry
+	l.sendEntry(entry)
+	l.wait()
+	switch l.fatalAction {
+	case ActionPanic:
+		panic(entry.FormattedMessage)
+	case ActionExit:
+		os.Exit(-1)
 	}
+}
 
-	for {
-		goroutines := atomic.LoadInt32(&l.goroutines)
-		//fmt.Println(`waiting ...`, goroutines)
-		if goroutines <= 0 {
-			switch l.fatalAction {
-			case ActionPanic:
-				panic(entry.FormattedMessage)
-			case ActionExit:
-				entry := &Entry{
-					Category: l.Category,
-					Level:    LevelWarn,
-					Message:  message + `[Forced to exit]`,
-					Time:     time.Now(),
-				}
-				entry.FormattedMessage = l.Formatter(l, entry)
-				l.syncProcess(entry)
-				os.Exit(-1)
+func (l *coreLogger) wait() {
+	l.waiting.Do(func() {
+		for {
+			sendN := atomic.LoadUint32(&l.sendN)
+			//fmt.Println(`waiting ...`, len(l.entries), sendN)
+			if sendN <= atomic.LoadUint32(&l.procsN) {
+				l.sendN = 0
+				l.procsN = 0
+				l.waiting = &sync.Once{}
+				return
 			}
-			break
+			delay := sendN
+			if delay < 500 {
+				delay = 500
+			}
+			time.Sleep(time.Duration(delay) * time.Microsecond)
 		}
-		time.Sleep(time.Duration(goroutines) * time.Microsecond)
-	}
+	})
 }
 
 // Open prepares the logger and the targets for logging purpose.
@@ -427,18 +444,17 @@ func (l *coreLogger) Open() error {
 	if l.open {
 		return nil
 	}
-
 	if l.ErrorWriter == nil {
 		return errors.New("Logger.ErrorWriter must be set.")
 	}
-	if l.BufferSize < 0 {
-		return errors.New("Logger.BufferSize must be no less than 0.")
+	var size int
+	if !l.syncMode {
+		if l.BufferSize < 0 {
+			return errors.New("Logger.BufferSize must be no less than 0.")
+		}
+		size = l.BufferSize
 	}
-	if l.CallStackDepth < 0 {
-		return errors.New("Logger.CallStackDepth must be no less than 0.")
-	}
-
-	l.entries = make(chan *Entry, l.BufferSize)
+	l.entries = make(chan *Entry, size)
 	var targets []Target
 	for _, target := range l.Targets {
 		if err := target.Open(l.ErrorWriter); err != nil {
@@ -463,20 +479,10 @@ func (l *coreLogger) process() {
 		for _, target := range l.Targets {
 			target.Process(entry)
 		}
-		atomic.AddInt32(&l.goroutines, -1)
-
 		if entry == nil {
 			break
 		}
-	}
-}
-
-func (l *coreLogger) syncProcess(entry *Entry) {
-	if entry == nil {
-		return
-	}
-	for _, target := range l.Targets {
-		target.Process(entry)
+		atomic.AddUint32(&l.procsN, 1)
 	}
 }
 
@@ -488,6 +494,7 @@ func (l *coreLogger) Close() {
 		return
 	}
 	l.open = false
+	l.wait()
 	// use a nil entry to signal the close of logger
 	l.entries <- nil
 	for _, target := range l.Targets {
@@ -538,12 +545,13 @@ func JSONFormatter(l *Logger, e *Entry) string {
 // the frames parameter specifies at most how many frames should be returned.
 func GetCallStack(skip int, frames int, filter string) string {
 	buf := new(bytes.Buffer)
+	hasFilter := len(filter) > 0
 	for i, count := skip, 0; count < frames; i++ {
 		_, file, line, ok := runtime.Caller(i)
 		if !ok {
 			break
 		}
-		if filter == "" || strings.Contains(file, filter) {
+		if !hasFilter || strings.Contains(file, filter) {
 			fmt.Fprintf(buf, "\n%s:%d", file, line)
 			count++
 		}
