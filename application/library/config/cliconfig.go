@@ -31,7 +31,8 @@ import (
 )
 
 type CLIConfig struct {
-	Port    int
+	Address string //监听IP地址
+	Port    int    //监听端口
 	Conf    string
 	Type    string //启动类型: webserver/ftpserver/manager
 	Startup string //manager启动时同时启动的服务，可选的有webserver/ftpserver,如有多个需用半角逗号“,”隔开
@@ -39,6 +40,7 @@ type CLIConfig struct {
 }
 
 func (c *CLIConfig) InitFlag() {
+	flag.StringVar(&c.Address, `a`, `0.0.0.0`, `address`)
 	flag.IntVar(&c.Port, `p`, 9999, `port`)
 	flag.StringVar(&c.Conf, `c`, `config/config.yaml`, `config`)
 	flag.StringVar(&c.Type, `t`, `manager`, `operation type`)

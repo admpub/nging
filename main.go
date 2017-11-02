@@ -164,7 +164,7 @@ func main() {
 
 	application.Initialize(e)
 	c := &engine.Config{
-		Address:     fmt.Sprintf(`:%v`, config.DefaultCLIConfig.Port),
+		Address:     fmt.Sprintf(`%s:%v`, config.DefaultCLIConfig.Address, config.DefaultCLIConfig.Port),
 		TLSAuto:     false,
 		TLSCacheDir: config.DefaultConfig.Sys.SSLCacheDir,
 		TLSCertFile: config.DefaultConfig.Sys.SSLCertFile,
