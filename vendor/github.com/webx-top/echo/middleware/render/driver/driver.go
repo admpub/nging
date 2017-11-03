@@ -129,7 +129,6 @@ func RecoveryPRE(b []byte, pres [][]byte) []byte {
 }
 
 func CleanTemplateName(p string) string {
-	p = strings.TrimPrefix(p, echo.FilePathSeparator)
 	if filepath.Separator == '\\' {
 		p = strings.Replace(p, `\`, `\\`, -1)
 	}

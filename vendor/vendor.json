@@ -1108,10 +1108,10 @@
 			"revisionTime": "2017-10-22T03:52:53Z"
 		},
 		{
-			"checksumSHA1": "NS1wceC340FVeSdowlppQvkjF14=",
+			"checksumSHA1": "L441hD+x4xTBBJl3RRvg7OQPyYc=",
 			"path": "github.com/webx-top/echo",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "50f3f208a237eed7d5d072f72db9362e5e85a5fa",
+			"revisionTime": "2017-11-03T04:48:30Z"
 		},
 		{
 			"checksumSHA1": "az+e6mKpmPUIZFcG7BbuNVY3r1M=",
@@ -1204,10 +1204,10 @@
 			"revisionTime": "2017-10-29T12:03:41Z"
 		},
 		{
-			"checksumSHA1": "4l6c+0goYM9KoScdvXRatGPoFwE=",
+			"checksumSHA1": "wGafwAU0FJflFTBIhew2G7JnXCk=",
 			"path": "github.com/webx-top/echo/middleware/render/driver",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "50f3f208a237eed7d5d072f72db9362e5e85a5fa",
+			"revisionTime": "2017-11-03T04:48:30Z"
 		},
 		{
 			"checksumSHA1": "qkbMXhe+BjyL8z5CZRnOPG6O8do=",
