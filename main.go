@@ -15,6 +15,14 @@
    limitations under the License.
 
 */
+
+// 也可以以服务的方式启动nging
+// 服务支持的操作有：
+// nging install  	-- 安装服务
+// nging uninstall  -- 卸载服务
+// nging start 		-- 启动服务
+// nging stop 		-- 停止服务
+// nging restart 	-- 重启服务
 package main
 
 import (
