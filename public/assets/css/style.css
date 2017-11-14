@@ -917,7 +917,7 @@ body.modal-open,
   background-color: #1e2025;
   border-left: 1px solid #2494F2;
   color: #2494F2;
-  text-shadow: 1px 1px 1px #222;
+  text-shadow: 1px 1px 1px #000;
 }
 .cl-vnavigation .parent ul li a:hover {
   background-color: #1e2025;
