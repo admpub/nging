@@ -18,6 +18,8 @@
 package task
 
 import (
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/admpub/nging/application/handler"
@@ -89,12 +91,61 @@ func LogView(ctx echo.Context) error {
 func LogDelete(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
 	m := model.NewTaskLog(ctx)
-	err := m.Delete(nil, db.Cond{`id`: id})
+	var (
+		cond db.Cond
+		err  error
+		n    int
+	)
+	if id > 0 {
+		cond = db.Cond{`id`: id}
+	} else {
+		ago := ctx.Form(`ago`)
+		if len(ago) < 2 {
+			handler.SendFail(ctx, ctx.T(`missing param`))
+			goto END
+		}
+
+		switch ago[len(ago)-1] {
+		case 'd': //删除几天前的。例如：7d
+			n, err = strconv.Atoi(strings.TrimSuffix(ago, `d`))
+			if err != nil {
+				handler.SendFail(ctx, err.Error()+`:`+ago)
+				goto END
+			}
+
+			cond = db.Cond{`created`: db.Lt(time.Now().AddDate(0, 0, -n).Unix())}
+		case 'm': //删除几个月前的。例如：1m
+			n, err = strconv.Atoi(strings.TrimSuffix(ago, `m`))
+			if err != nil {
+				handler.SendFail(ctx, err.Error()+`:`+ago)
+				goto END
+			}
+
+			cond = db.Cond{`created`: db.Lt(time.Now().AddDate(0, -n, 0).Unix())}
+		case 'y': //删除几年前的。例如：1y
+			n, err = strconv.Atoi(strings.TrimSuffix(ago, `y`))
+			if err != nil {
+				handler.SendFail(ctx, err.Error()+`:`+ago)
+				goto END
+			}
+
+			cond = db.Cond{`created`: db.Lt(time.Now().AddDate(-n, 0, 0).Unix())}
+		default:
+			handler.SendFail(ctx, ctx.T(`invalid param`))
+			goto END
+		}
+		taskId := ctx.Formx(`taskId`).Uint()
+		if taskId > 0 {
+			cond[`task_id`] = taskId
+		}
+	}
+	err = m.Delete(nil, cond)
 	if err == nil {
 		handler.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
 		handler.SendFail(ctx, err.Error())
 	}
 
+END:
 	return ctx.Redirect(`/task/log`)
 }
