@@ -18,6 +18,7 @@
 package task
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -54,6 +55,9 @@ func Log(ctx echo.Context) error {
 	}
 	ctx.Set(`listData`, m.Objects())
 	ctx.Set(`pagination`, p)
+	if task == nil {
+		task = model.NewTask(ctx)
+	}
 	ctx.Set(`task`, task)
 	ret := handler.Err(ctx, err)
 	ctx.Set(`activeURL`, `/task/index`)
@@ -90,6 +94,7 @@ func LogView(ctx echo.Context) error {
 
 func LogDelete(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
+	taskId := ctx.Formx(`taskId`).Uint()
 	m := model.NewTaskLog(ctx)
 	var (
 		cond db.Cond
@@ -134,7 +139,6 @@ func LogDelete(ctx echo.Context) error {
 			handler.SendFail(ctx, ctx.T(`invalid param`))
 			goto END
 		}
-		taskId := ctx.Formx(`taskId`).Uint()
 		if taskId > 0 {
 			cond[`task_id`] = taskId
 		}
@@ -147,5 +151,5 @@ func LogDelete(ctx echo.Context) error {
 	}
 
 END:
-	return ctx.Redirect(`/task/log`)
+	return ctx.Redirect(`/task/log?taskId=` + fmt.Sprint(taskId))
 }

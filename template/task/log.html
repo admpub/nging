@@ -20,11 +20,11 @@
 			</div>
 			<div class="content">
 				<a href="/task/log_delete?taskId={{Stored.task.Id}}&ago=7d" class="btn btn-danger" onclick="return confirm('{{"确定要删除一周前的日志吗？"|T}}')" data-toggle="tooltip"
-				 title="{{"删除一周以前的日志数据，即只保留最近一周的日志。"|T}}">{{"删除一周前的日志"|T}}</a>
-				<a href="/task/log_delete?taskId={{Stored.task.Id}}&ago=1m" class="btn btn-danger" onclick="return confirm('{{"确定要删除一个月前的日志吗？"|T}}')" data-toggle="tooltip"
-				 title="{{"删除一个月以前的日志数据，即只保留最近一个月的日志。"|T}}">{{"删除一个月前的日志"|T}}</a>
-				<a href="/task/log_delete?taskId={{Stored.task.Id}}&ago=1y" class="btn btn-danger" onclick="return confirm('{{"确定要删除一年前的日志吗？"|T}}')" data-toggle="tooltip"
-				 title="{{"删除一年以前的日志数据，即只保留最近一年的日志。"|T}}">{{"删除一年前的日志"|T}}</a>
+				 title="{{"保留最近一周的日志"|T}}">{{"删除一周前的日志"|T}}</a>
+				<a href="/task/log_delete?taskId={{Stored.task.Id}}&ago=1m" class="btn btn-warning" onclick="return confirm('{{"确定要删除一个月前的日志吗？"|T}}')" data-toggle="tooltip"
+				 title="{{"保留最近一个月的日志"|T}}">{{"删除一个月前的日志"|T}}</a>
+				<a href="/task/log_delete?taskId={{Stored.task.Id}}&ago=1y" class="btn btn-info" onclick="return confirm('{{"确定要删除一年前的日志吗？"|T}}')" data-toggle="tooltip"
+				 title="{{"保留最近一年的日志"|T}}">{{"删除一年前的日志"|T}}</a>
 				<hr />
 				<div class="table-responsive">
 					<table class="table no-border hover">
@@ -79,7 +79,7 @@
 									<a class="label label-info" href="/task/log_view/{{$v.Id}}">
 										<i class="fa fa-comment-o"></i>
 									</a>
-									<a class="label label-danger" href="/task/log_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');">
+									<a class="label label-danger" href="/task/log_delete?taskId={{Stored.task.Id}}&id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');">
 										<i class="fa fa-times"></i>
 									</a>
 								</td>
