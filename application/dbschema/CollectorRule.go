@@ -18,6 +18,7 @@ type CollectorRule struct {
 	Rule   	string  	`db:"rule" bson:"rule" comment:"规则" json:"rule" xml:"rule"`
 	Parse  	string  	`db:"parse" bson:"parse" comment:"规则解析方式" json:"parse" xml:"parse"`
 	Created	uint    	`db:"created" bson:"created" comment:"创建时间" json:"created" xml:"created"`
+	Sort   	int     	`db:"sort" bson:"sort" comment:"排序" json:"sort" xml:"sort"`
 }
 
 func (this *CollectorRule) Trans() *factory.Transaction {
