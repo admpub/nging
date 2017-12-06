@@ -20,12 +20,12 @@ type Task struct {
 	Type         	int     	`db:"type" bson:"type" comment:"任务类型" json:"type" xml:"type"`
 	Description  	string  	`db:"description" bson:"description" comment:"任务描述" json:"description" xml:"description"`
 	CronSpec     	string  	`db:"cron_spec" bson:"cron_spec" comment:"时间表达式" json:"cron_spec" xml:"cron_spec"`
-	Concurrent   	uint    	`db:"concurrent" bson:"concurrent" comment:"是否只允许一个实例" json:"concurrent" xml:"concurrent"`
+	Concurrent   	uint    	`db:"concurrent" bson:"concurrent" comment:"是否支持多实例" json:"concurrent" xml:"concurrent"`
 	Command      	string  	`db:"command" bson:"command" comment:"命令详情" json:"command" xml:"command"`
 	Disabled     	string  	`db:"disabled" bson:"disabled" comment:"是否禁用" json:"disabled" xml:"disabled"`
 	EnableNotify 	uint    	`db:"enable_notify" bson:"enable_notify" comment:"是否启用通知" json:"enable_notify" xml:"enable_notify"`
 	NotifyEmail  	string  	`db:"notify_email" bson:"notify_email" comment:"通知人列表" json:"notify_email" xml:"notify_email"`
-	Timeout      	uint    	`db:"timeout" bson:"timeout" comment:"超时设置" json:"timeout" xml:"timeout"`
+	Timeout      	uint64  	`db:"timeout" bson:"timeout" comment:"超时设置" json:"timeout" xml:"timeout"`
 	ExecuteTimes 	uint    	`db:"execute_times" bson:"execute_times" comment:"累计执行次数" json:"execute_times" xml:"execute_times"`
 	PrevTime     	uint    	`db:"prev_time" bson:"prev_time" comment:"上次执行时间" json:"prev_time" xml:"prev_time"`
 	Created      	uint    	`db:"created" bson:"created" comment:"创建时间" json:"created" xml:"created"`

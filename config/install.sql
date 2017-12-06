@@ -83,7 +83,7 @@ CREATE TABLE `task` (
   `disabled` enum('Y','N') NOT NULL DEFAULT 'N' COMMENT '是否禁用',
   `enable_notify` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否启用通知',
   `notify_email` text NOT NULL COMMENT '通知人列表',
-  `timeout` smallint(6) unsigned NOT NULL DEFAULT '0' COMMENT '超时设置',
+  `timeout` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '超时设置',
   `execute_times` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '累计执行次数',
   `prev_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '上次执行时间',
   `created` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
