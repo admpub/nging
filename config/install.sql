@@ -78,7 +78,7 @@ CREATE TABLE `task` (
   `type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '任务类型',
   `description` varchar(200) NOT NULL DEFAULT '' COMMENT '任务描述',
   `cron_spec` varchar(100) NOT NULL DEFAULT '' COMMENT '时间表达式',
-  `concurrent` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否只允许一个实例',
+  `concurrent` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否支持多实例',
   `command` text NOT NULL COMMENT '命令详情',
   `disabled` enum('Y','N') NOT NULL DEFAULT 'N' COMMENT '是否禁用',
   `enable_notify` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否启用通知',

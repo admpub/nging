@@ -88,15 +88,15 @@
               </div>
               
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"单实例"|T}}</label>
+                <label class="col-sm-2 control-label">{{"多实例"|T}}</label>
                 <div class="col-sm-8">
                   {{$v := Form "concurrent"}}
                   <label class="radio-inline">
-                      <input type="radio" value="0" name="concurrent"{{if eq $v "0"}} checked{{end}}> {{"否"|T}}
-                    </label>
-                    <label class="radio-inline">
-                      <input type="radio" value="1" name="concurrent"{{if or (eq $v "1") (eq $v "")}} checked{{end}}> {{"是"|T}}
-                    </label>
+                      <input type="radio" value="0" name="concurrent"{{if or (eq $v "0") (eq $v "")}} checked{{end}}> {{"否"|T}}
+                  </label>
+                  <label class="radio-inline">
+                      <input type="radio" value="1" name="concurrent"{{if eq $v "1"}} checked{{end}}> {{"是"|T}}
+                  </label>
                 </div>
               </div>
               <div class="form-group">
