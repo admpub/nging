@@ -17,7 +17,7 @@
           <div class="content">
               {{$v := Stored.data}}
 							{{"启动时间"|T}}: {{$v.Created|Ts2date "2006-01-02 15:04:05"}}<br />
-							{{"消耗时间"|T}}: {{$v.Elapsed|FriendlyTime}}<br />
+							{{"消耗时间"|T}}: {{$v.Elapsed|ToDuration}}<br />
               {{"状态"|T}}: {{if eq $v.Status "success"}}
 							<span class="color-success"><span class="fa fa-check-circle"></span> {{"成功"|T}}</span>
 							{{else if eq $v.Status "failure"}}

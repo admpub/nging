@@ -55,7 +55,7 @@
 							<tr>
 								<td>{{$v.Id}}</td>
 								<td>{{$v.Created|Ts2date "2006-01-02 15:04:05"}}</td>
-								<td>{{$v.Elapsed|FriendlyTime}}</td>
+								<td>{{$v.Elapsed|ToDuration}}</td>
 								<td>{{len $v.Output|FormatByte}}</td>
 								{{if eq $v.Status "success"}}
 								<td class="color-success">

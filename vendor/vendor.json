@@ -1110,146 +1110,146 @@
 		{
 			"checksumSHA1": "L441hD+x4xTBBJl3RRvg7OQPyYc=",
 			"path": "github.com/webx-top/echo",
-			"revision": "50f3f208a237eed7d5d072f72db9362e5e85a5fa",
-			"revisionTime": "2017-11-03T04:48:30Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
 			"checksumSHA1": "az+e6mKpmPUIZFcG7BbuNVY3r1M=",
 			"path": "github.com/webx-top/echo/engine",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
 			"checksumSHA1": "TEEImX69nSH+DivHpreVv02dyWg=",
 			"path": "github.com/webx-top/echo/engine/standard",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
-			"checksumSHA1": "MskaaWw7cmYMfB7YxAf93CAblv4=",
+			"checksumSHA1": "D87qnT/6rpCcD+opC/Fhu7+hCD0=",
 			"path": "github.com/webx-top/echo/handler/captcha",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
-			"checksumSHA1": "hjMbDX8zmqUy/jQfYK7zancBI2U=",
+			"checksumSHA1": "nqrVTfILij1mSmg8e01k4I2whsw=",
 			"path": "github.com/webx-top/echo/handler/mvc/events",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
-			"checksumSHA1": "77k3yxcKRuv36zNxWV56KD/o8x0=",
+			"checksumSHA1": "Qj2lX9e197XqHzXjJQ7rUJbxvB4=",
 			"path": "github.com/webx-top/echo/handler/mvc/static/minify",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
 			"checksumSHA1": "WK6zNTmDbTFZTaeDPZcDb+9///w=",
 			"path": "github.com/webx-top/echo/handler/mvc/static/resource",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
 			"checksumSHA1": "A5INXYunm/EJQQDwYl05X8yjZPo=",
 			"path": "github.com/webx-top/echo/handler/sockjs",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
 			"checksumSHA1": "Z0tDRujKaeDRMbjTIUAkhx2mm4U=",
 			"path": "github.com/webx-top/echo/handler/websocket",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
 			"checksumSHA1": "kL7Dpc0M5x8sK9iiPAbaeg1gP3A=",
 			"path": "github.com/webx-top/echo/logger",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
 			"checksumSHA1": "rGXswmph80ue9tVItXudhnWslfg=",
 			"path": "github.com/webx-top/echo/middleware",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
 			"checksumSHA1": "bB1QPZ03NtKyKIhrF37NUplsEKU=",
 			"path": "github.com/webx-top/echo/middleware/bindata",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
 			"checksumSHA1": "W4b9oFwnp0PiYwsupBd97BJQGiY=",
 			"path": "github.com/webx-top/echo/middleware/bytes",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
-			"checksumSHA1": "DJzIVTmiVfQtNishtSdaav5lWcc=",
+			"checksumSHA1": "SzjmieD4jSuDyTu3mipBZUXXWAk=",
 			"path": "github.com/webx-top/echo/middleware/language",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
-			"checksumSHA1": "dnxKJwEjBNr98pn0rlrnP1AmUy0=",
+			"checksumSHA1": "yptIJch8YmBZKH9a8Uqmd5nowc8=",
 			"path": "github.com/webx-top/echo/middleware/random",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
 			"checksumSHA1": "YkQsU+HumtXhj0mug0GiPFrpD7I=",
 			"path": "github.com/webx-top/echo/middleware/render",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
 			"checksumSHA1": "wGafwAU0FJflFTBIhew2G7JnXCk=",
 			"path": "github.com/webx-top/echo/middleware/render/driver",
-			"revision": "50f3f208a237eed7d5d072f72db9362e5e85a5fa",
-			"revisionTime": "2017-11-03T04:48:30Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
 			"checksumSHA1": "qkbMXhe+BjyL8z5CZRnOPG6O8do=",
 			"path": "github.com/webx-top/echo/middleware/render/manager",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
-			"checksumSHA1": "8hnyYLVapc+ldXpejE3O+1kFxmk=",
+			"checksumSHA1": "G0pwVDFzaX9sn4Jyh9QgZwcd//A=",
 			"path": "github.com/webx-top/echo/middleware/render/standard",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
-			"checksumSHA1": "CQSLQS078XmxTl7BuTdprvACd8M=",
+			"checksumSHA1": "oBranGQasAOA69kh6yTpNUVmv6I=",
 			"path": "github.com/webx-top/echo/middleware/session",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
 			"checksumSHA1": "39+om8aAYDGVnsttJOf81M0lgxA=",
 			"path": "github.com/webx-top/echo/middleware/session/engine",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
 			"checksumSHA1": "kTdw7lmR1Xc2qYeHUuPLWpfOmf8=",
 			"path": "github.com/webx-top/echo/middleware/session/engine/cookie",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
-			"checksumSHA1": "VCR61Dxc2we6vxF/sEjWVXT1YDM=",
+			"checksumSHA1": "3oTVQDZNZKAurnmvqEne/a/hFSY=",
 			"path": "github.com/webx-top/echo/middleware/tplfunc",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
-			"checksumSHA1": "JkBSDEnggjOgpKLwpU2WM86z1+g=",
+			"checksumSHA1": "H2rEPbvHt0fn3PbiSfR54aHizL4=",
 			"path": "github.com/webx-top/echo/param",
-			"revision": "5257f526c6acd5fe71a4a468878f2d5e333b7b59",
-			"revisionTime": "2017-10-29T12:03:41Z"
+			"revision": "c3549567a2944459ab752e5a70326118c7631089",
+			"revisionTime": "2017-12-09T06:25:50Z"
 		},
 		{
 			"checksumSHA1": "MIFNa9FFgLQA75jwOydTa2sQXX8=",

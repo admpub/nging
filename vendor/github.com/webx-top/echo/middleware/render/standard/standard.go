@@ -52,7 +52,6 @@ func New(templateDir string, args ...logger.Logger) driver.Driver {
 	t := &Standard{
 		CachedRelation:    make(map[string]*CcRel),
 		TemplateDir:       templateDir,
-		TemplateMgr:       manager.Default,
 		DelimLeft:         "{{",
 		DelimRight:        "}}",
 		IncludeTag:        "Include",
@@ -71,6 +70,7 @@ func New(templateDir string, args ...logger.Logger) driver.Driver {
 		t.logger = log.New("render-standard")
 	}
 	t.InitRegexp()
+	t.SetManager(manager.Default)
 	return t
 }
 
