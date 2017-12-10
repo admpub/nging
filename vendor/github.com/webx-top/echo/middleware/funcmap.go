@@ -3,7 +3,9 @@ package middleware
 import (
 	"html/template"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/middleware/tplfunc"
 )
 
 func FuncMap(funcMap map[string]interface{}, skipper ...echo.Skipper) echo.MiddlewareFunc {
@@ -46,6 +48,9 @@ func FuncMap(funcMap map[string]interface{}, skipper ...echo.Skipper) echo.Middl
 					c.SetFunc(name, function)
 				}
 			}
+			c.SetFunc(`DurationFormat`, func(t interface{}, args ...string) *com.Durafmt {
+				return tplfunc.DurationFormat(c.Lang(), t, args...)
+			})
 			return h.Handle(c)
 		})
 	}

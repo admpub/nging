@@ -18,6 +18,7 @@
 package com
 
 import (
+	"errors"
 	"path"
 	"reflect"
 	"runtime"
@@ -71,4 +72,21 @@ func ParseFuncName(funcString string) (pkgName string, objName string, funcName 
 		pkgName = part[0]
 	}
 	return
+}
+
+//CallFunc 根据名称调用对应函数
+func CallFunc(getFuncByName func(string) (interface{}, bool), funcName string, params ...interface{}) ([]reflect.Value, error) {
+	fn, ok := getFuncByName(funcName)
+	if !ok {
+		return nil, errors.New("no func found: " + funcName)
+	}
+	f := reflect.ValueOf(fn)
+	if len(params) != f.Type().NumIn() {
+		return nil, errors.New("parameter mismatched")
+	}
+	in := make([]reflect.Value, len(params))
+	for k, param := range params {
+		in[k] = reflect.ValueOf(param)
+	}
+	return f.Call(in), nil
 }

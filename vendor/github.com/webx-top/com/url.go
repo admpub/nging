@@ -16,6 +16,7 @@ package com
 
 import (
 	"encoding/base64"
+	"math"
 	"net/url"
 )
 
@@ -38,4 +39,17 @@ func Base64Encode(str string) string {
 func Base64Decode(str string) (string, error) {
 	s, e := base64.StdEncoding.DecodeString(str)
 	return string(s), e
+}
+
+// TotalPages 总页数
+func TotalPages(totalRows uint, limit uint) uint {
+	return uint(math.Ceil(float64(totalRows) / float64(limit)))
+}
+
+// Offset 根据页码计算偏移值
+func Offset(page uint, limit uint) uint {
+	if page == 0 {
+		page = 1
+	}
+	return (page - 1) * limit
 }

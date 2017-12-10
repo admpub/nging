@@ -74,30 +74,31 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	// ======================
 	// conversion type
 	// ======================
-	"Html":         ToHTML,
-	"Js":           ToJS,
-	"Css":          ToCSS,
-	"ToJS":         ToJS,
-	"ToCSS":        ToCSS,
-	"ToURL":        ToURL,
-	"ToHTML":       ToHTML,
-	"ToHTMLAttr":   ToHTMLAttr,
-	"ToHTMLAttrs":  ToHTMLAttrs,
-	"ToStrSlice":   ToStrSlice,
-	"ToDuration":   ToDuration,
-	"Str":          com.Str,
-	"Int":          com.Int,
-	"Int32":        com.Int32,
-	"Int64":        com.Int64,
-	"Uint":         com.Uint,
-	"Uint32":       com.Uint32,
-	"Uint64":       com.Uint64,
-	"Float32":      com.Float32,
-	"Float64":      com.Float64,
-	"ToFloat64":    ToFloat64,
-	"ToFixed":      ToFixed,
-	"Math":         Math,
-	"NumberFormat": NumberFormat,
+	"Html":           ToHTML,
+	"Js":             ToJS,
+	"Css":            ToCSS,
+	"ToJS":           ToJS,
+	"ToCSS":          ToCSS,
+	"ToURL":          ToURL,
+	"ToHTML":         ToHTML,
+	"ToHTMLAttr":     ToHTMLAttr,
+	"ToHTMLAttrs":    ToHTMLAttrs,
+	"ToStrSlice":     ToStrSlice,
+	"ToDuration":     ToDuration,
+	"Str":            com.Str,
+	"Int":            com.Int,
+	"Int32":          com.Int32,
+	"Int64":          com.Int64,
+	"Uint":           com.Uint,
+	"Uint32":         com.Uint32,
+	"Uint64":         com.Uint64,
+	"Float32":        com.Float32,
+	"Float64":        com.Float64,
+	"ToFloat64":      ToFloat64,
+	"ToFixed":        ToFixed,
+	"Math":           Math,
+	"NumberFormat":   NumberFormat,
+	"DurationFormat": DurationFormat,
 
 	// ======================
 	// string
@@ -659,6 +660,11 @@ func SearchStrSlice(values []string, value string) int {
 		}
 	}
 	return -1
+}
+
+func DurationFormat(lang interface{}, t interface{}, args ...string) *com.Durafmt {
+	duration := ToDuration(t, args...)
+	return com.ParseDuration(duration, lang)
 }
 
 func ToDuration(t interface{}, args ...string) time.Duration {

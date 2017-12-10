@@ -18,7 +18,7 @@
 										<td>{{"主机名"|T}}</td>
                                         <td>{{.Host.Hostname}}</td>
 										<td>{{"已运行"|T}}</td>
-										<td><span class="badge">{{.Host.Uptime|FriendlyTime}}</span></td>
+										<td><span class="badge">{{DurationFormat .Host.Uptime}}</span></td>
 									</tr>
 									<tr>
 										<td>{{"启动时间"|T}}</td>

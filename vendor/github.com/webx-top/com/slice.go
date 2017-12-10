@@ -232,7 +232,7 @@ func SliceInsert(slice, insertion []interface{}, index int) []interface{} {
 	return result
 }
 
-//SliceRomove(a,4,5) //a[4]
+//SliceRomove SliceRomove(a,4,5) //a[4]
 func SliceRemove(slice []interface{}, start int, args ...int) []interface{} {
 	var end int
 	if len(args) == 0 {
@@ -244,4 +244,38 @@ func SliceRemove(slice []interface{}, start int, args ...int) []interface{} {
 		return slice[:start]
 	}
 	return append(slice[:start], slice[end:]...)
+}
+
+// SliceRemoveCallback : 根据条件删除
+// a=[]int{1,2,3,4,5,6}
+// SliceRemoveCallback(50, func(i int) func(bool)error{
+//	if a[i]!=4 {
+//	 	return nil
+// 	}
+// 	return func(inside bool)error{
+//		if inside {
+//			a=append(a[0:i],a[i+1:]...)
+// 		}else{
+//			a=a[0:i]
+//		}
+//		return 1,nil
+// 	}
+//})
+func SliceRemoveCallback(length int, callback func(int) func(bool) error) error {
+	for i, j := 0, length-1; i <= j; i++ {
+		if removeFunc := callback(i); removeFunc != nil {
+			var err error
+			if i+1 <= j {
+				err = removeFunc(true)
+			} else {
+				err = removeFunc(false)
+			}
+			if err != nil {
+				return err
+			}
+			i--
+			j--
+		}
+	}
+	return nil
 }

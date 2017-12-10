@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -268,4 +269,21 @@ func NewCookie(name string, value string, args ...interface{}) *http.Cookie {
 		cookie.Expires = time.Unix(1, 0)
 	}
 	return cookie
+}
+
+func HTTPClientWithTimeout(timeout time.Duration) *http.Client {
+	client := &http.Client{
+		Transport: &http.Transport{
+			Dial: func(netw, addr string) (net.Conn, error) {
+				conn, err := net.DialTimeout(netw, addr, timeout)
+				if err != nil {
+					return nil, err
+				}
+				conn.SetDeadline(time.Now().Add(timeout))
+				return conn, nil
+			},
+			ResponseHeaderTimeout: timeout,
+		},
+	}
+	return client
 }

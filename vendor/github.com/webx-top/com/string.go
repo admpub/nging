@@ -21,10 +21,10 @@ import (
 	"crypto/rand"
 	"crypto/sha1"
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/gob"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"hash"
 	"io"
 	r "math/rand"
@@ -32,13 +32,24 @@ import (
 	"strings"
 	"time"
 	"unicode"
+	"unsafe"
 )
+
+func Str2bytes(s string) []byte {
+	x := (*[2]uintptr)(unsafe.Pointer(&s))
+	h := [3]uintptr{x[0], x[1], x[1]}
+	return *(*[]byte)(unsafe.Pointer(&h))
+}
+
+func Bytes2str(b []byte) string {
+	return *(*string)(unsafe.Pointer(&b))
+}
 
 // Md5 md5 hash string
 func Md5(str string) string {
 	m := md5.New()
 	io.WriteString(m, str)
-	return fmt.Sprintf("%x", m.Sum(nil))
+	return hex.EncodeToString(m.Sum(nil))
 }
 
 func ByteMd5(b []byte) string {
@@ -53,7 +64,16 @@ func Token(key string, val []byte, args ...string) string {
 	for _, v := range args {
 		hm.Write([]byte(v))
 	}
-	return fmt.Sprintf("%02x", hm.Sum(nil))
+	return base64.URLEncoding.EncodeToString(hm.Sum(nil))
+}
+
+func Token256(key string, val []byte, args ...string) string {
+	hm := hmac.New(sha256.New, []byte(key))
+	hm.Write(val)
+	for _, v := range args {
+		hm.Write([]byte(v))
+	}
+	return base64.URLEncoding.EncodeToString(hm.Sum(nil))
 }
 
 func Encode(data interface{}) ([]byte, error) {
@@ -96,7 +116,7 @@ func JsonDecode(data []byte, to interface{}) error {
 
 func sha(m hash.Hash, str string) string {
 	io.WriteString(m, str)
-	return fmt.Sprintf("%x", m.Sum(nil))
+	return hex.EncodeToString(m.Sum(nil))
 }
 
 // Sha1 sha1 hash string
@@ -396,4 +416,39 @@ func AddCSlashes(s string, b ...rune) string {
 	}
 	s = string(r)
 	return s
+}
+
+// MaskString 0123456789 => 012****789
+func MaskString(v string, width ...float64) string {
+	size := len(v)
+	if size < 1 {
+		return ``
+	}
+	if size == 1 {
+		return `*`
+	}
+	show := 0.3
+	if len(width) > 0 {
+		show = width[0]
+	}
+	showSize := int(float64(size) * show)
+	if showSize < 1 {
+		showSize = 1
+	}
+	hideSize := size - showSize*2
+	rights := showSize + hideSize
+	if rights > 0 && hideSize > 0 && rights < size && showSize < size {
+		return v[0:showSize] + strings.Repeat(`*`, hideSize) + v[rights:]
+	}
+	if show < 0.5 {
+		showSize = int(float64(size) * 0.5)
+		if showSize < 1 {
+			showSize = 1
+		}
+		hideSize = size - showSize
+		if hideSize > 0 && showSize < size {
+			return v[0:showSize] + strings.Repeat(`*`, hideSize)
+		}
+	}
+	return v[0:1] + strings.Repeat(`*`, size-1)
 }
