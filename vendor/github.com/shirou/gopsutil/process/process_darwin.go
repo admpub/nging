@@ -9,13 +9,13 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
-	"syscall"
 	"time"
 	"unsafe"
 
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/internal/common"
 	"github.com/shirou/gopsutil/net"
+	"golang.org/x/sys/unix"
 )
 
 // copied from sys/sysctl.h
@@ -99,8 +99,8 @@ func (p *Process) Exe() (string, error) {
 		return "", err
 	}
 
-	lsof := exec.Command(lsof_bin, "-p", strconv.Itoa(int(p.Pid)), "-Fn")
-	awk := exec.Command(awk_bin, "NR==3{print}")
+	lsof := exec.Command(lsof_bin, "-p", strconv.Itoa(int(p.Pid)), "-Fpfn")
+	awk := exec.Command(awk_bin, "NR==5{print}")
 	sed := exec.Command(sed_bin, "s/n\\//\\//")
 
 	output, _, err := common.Pipeline(lsof, awk, sed)
@@ -152,7 +152,7 @@ func (p *Process) CreateTime() (int64, error) {
 		elapsedDurations = append(elapsedDurations, time.Duration(p))
 	}
 
-	var elapsed time.Duration = time.Duration(elapsedDurations[0]) * time.Second
+	var elapsed = time.Duration(elapsedDurations[0]) * time.Second
 	if len(elapsedDurations) > 1 {
 		elapsed += time.Duration(elapsedDurations[1]) * time.Minute
 	}
@@ -248,6 +248,10 @@ func (p *Process) Rlimit() ([]RlimitStat, error) {
 	var rlimit []RlimitStat
 	return rlimit, common.ErrNotImplementedError
 }
+func (p *Process) RlimitUsage(_ bool) ([]RlimitStat, error) {
+	var rlimit []RlimitStat
+	return rlimit, common.ErrNotImplementedError
+}
 func (p *Process) IOCounters() (*IOCountersStat, error) {
 	return nil, common.ErrNotImplementedError
 }
@@ -264,8 +268,8 @@ func (p *Process) NumThreads() (int32, error) {
 	}
 	return int32(len(r)), nil
 }
-func (p *Process) Threads() (map[string]string, error) {
-	ret := make(map[string]string, 0)
+func (p *Process) Threads() (map[int32]*cpu.TimesStat, error) {
+	ret := make(map[int32]*cpu.TimesStat)
 	return ret, common.ErrNotImplementedError
 }
 
@@ -386,8 +390,8 @@ func (p *Process) MemoryMaps(grouped bool) (*[]MemoryMapsStat, error) {
 	return &ret, common.ErrNotImplementedError
 }
 
-func processes() ([]Process, error) {
-	results := make([]Process, 0, 50)
+func Processes() ([]*Process, error) {
+	results := []*Process{}
 
 	mib := []int32{CTLKern, KernProc, KernProcAll, 0}
 	buf, length, err := common.CallSyscall(mib)
@@ -399,13 +403,6 @@ func processes() ([]Process, error) {
 	k := KinfoProc{}
 	procinfoLen := int(unsafe.Sizeof(k))
 	count := int(length / uint64(procinfoLen))
-	/*
-		fmt.Println(length, procinfoLen, count)
-		b := buf[0*procinfoLen : 0*procinfoLen+procinfoLen]
-		fmt.Println(b)
-		kk, err := parseKinfoProc(b)
-		fmt.Printf("%#v", kk)
-	*/
 
 	// parse buf to procs
 	for i := 0; i < count; i++ {
@@ -418,7 +415,7 @@ func processes() ([]Process, error) {
 		if err != nil {
 			continue
 		}
-		results = append(results, *p)
+		results = append(results, p)
 	}
 
 	return results, nil
@@ -443,8 +440,8 @@ func (p *Process) getKProc() (*KinfoProc, error) {
 	procK := KinfoProc{}
 	length := uint64(unsafe.Sizeof(procK))
 	buf := make([]byte, length)
-	_, _, syserr := syscall.Syscall6(
-		syscall.SYS___SYSCTL,
+	_, _, syserr := unix.Syscall6(
+		unix.SYS___SYSCTL,
 		uintptr(unsafe.Pointer(&mib[0])),
 		uintptr(len(mib)),
 		uintptr(unsafe.Pointer(&buf[0])),

@@ -7,13 +7,13 @@ import (
 	"bytes"
 	"encoding/binary"
 	"strings"
-	"syscall"
 	"unsafe"
 
 	cpu "github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/internal/common"
 	mem "github.com/shirou/gopsutil/mem"
 	net "github.com/shirou/gopsutil/net"
+	"golang.org/x/sys/unix"
 )
 
 // MemoryInfoExStat is different between OSes
@@ -25,7 +25,7 @@ type MemoryMapsStat struct {
 
 func Pids() ([]int32, error) {
 	var ret []int32
-	procs, err := processes()
+	procs, err := Processes()
 	if err != nil {
 		return ret, nil
 	}
@@ -170,6 +170,10 @@ func (p *Process) Rlimit() ([]RlimitStat, error) {
 	var rlimit []RlimitStat
 	return rlimit, common.ErrNotImplementedError
 }
+func (p *Process) RlimitUsage(_ bool) ([]RlimitStat, error) {
+	var rlimit []RlimitStat
+	return rlimit, common.ErrNotImplementedError
+}
 func (p *Process) IOCounters() (*IOCountersStat, error) {
 	k, err := p.getKProc()
 	if err != nil {
@@ -190,8 +194,8 @@ func (p *Process) NumThreads() (int32, error) {
 	/* not supported, just return 1 */
 	return 1, nil
 }
-func (p *Process) Threads() (map[string]string, error) {
-	ret := make(map[string]string, 0)
+func (p *Process) Threads() (map[int32]*cpu.TimesStat, error) {
+	ret := make(map[int32]*cpu.TimesStat)
 	return ret, common.ErrNotImplementedError
 }
 func (p *Process) Times() (*cpu.TimesStat, error) {
@@ -264,8 +268,8 @@ func (p *Process) MemoryMaps(grouped bool) (*[]MemoryMapsStat, error) {
 	return &ret, common.ErrNotImplementedError
 }
 
-func processes() ([]Process, error) {
-	results := make([]Process, 0, 50)
+func Processes() ([]*Process, error) {
+	results := []*Process{}
 
 	buf, length, err := CallKernProcSyscall(KernProcAll, 0)
 
@@ -288,7 +292,7 @@ func processes() ([]Process, error) {
 			continue
 		}
 
-		results = append(results, *p)
+		results = append(results, p)
 	}
 
 	return results, nil
@@ -328,8 +332,8 @@ func CallKernProcSyscall(op int32, arg int32) ([]byte, uint64, error) {
 	mibptr := unsafe.Pointer(&mib[0])
 	miblen := uint64(len(mib))
 	length := uint64(0)
-	_, _, err := syscall.Syscall6(
-		syscall.SYS___SYSCTL,
+	_, _, err := unix.Syscall6(
+		unix.SYS___SYSCTL,
 		uintptr(mibptr),
 		uintptr(miblen),
 		0,
@@ -346,8 +350,8 @@ func CallKernProcSyscall(op int32, arg int32) ([]byte, uint64, error) {
 	miblen = uint64(len(mib))
 	// get proc info itself
 	buf := make([]byte, length)
-	_, _, err = syscall.Syscall6(
-		syscall.SYS___SYSCTL,
+	_, _, err = unix.Syscall6(
+		unix.SYS___SYSCTL,
 		uintptr(mibptr),
 		uintptr(miblen),
 		uintptr(unsafe.Pointer(&buf[0])),

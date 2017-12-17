@@ -6,11 +6,11 @@ import (
 	"bytes"
 	"encoding/binary"
 	"strings"
-	"syscall"
 
 	cpu "github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/internal/common"
 	net "github.com/shirou/gopsutil/net"
+	"golang.org/x/sys/unix"
 )
 
 // MemoryInfoExStat is different between OSes
@@ -22,7 +22,7 @@ type MemoryMapsStat struct {
 
 func Pids() ([]int32, error) {
 	var ret []int32
-	procs, err := processes()
+	procs, err := Processes()
 	if err != nil {
 		return ret, nil
 	}
@@ -176,6 +176,10 @@ func (p *Process) Rlimit() ([]RlimitStat, error) {
 	var rlimit []RlimitStat
 	return rlimit, common.ErrNotImplementedError
 }
+func (p *Process) RlimitUsage(_ bool) ([]RlimitStat, error) {
+	var rlimit []RlimitStat
+	return rlimit, common.ErrNotImplementedError
+}
 func (p *Process) IOCounters() (*IOCountersStat, error) {
 	k, err := p.getKProc()
 	if err != nil {
@@ -200,8 +204,8 @@ func (p *Process) NumThreads() (int32, error) {
 
 	return k.Numthreads, nil
 }
-func (p *Process) Threads() (map[string]string, error) {
-	ret := make(map[string]string, 0)
+func (p *Process) Threads() (map[int32]*cpu.TimesStat, error) {
+	ret := make(map[int32]*cpu.TimesStat)
 	return ret, common.ErrNotImplementedError
 }
 func (p *Process) Times() (*cpu.TimesStat, error) {
@@ -223,7 +227,7 @@ func (p *Process) MemoryInfo() (*MemoryInfoStat, error) {
 	if err != nil {
 		return nil, err
 	}
-	v, err := syscall.Sysctl("vm.stats.vm.v_page_size")
+	v, err := unix.Sysctl("vm.stats.vm.v_page_size")
 	if err != nil {
 		return nil, err
 	}
@@ -274,8 +278,8 @@ func (p *Process) MemoryMaps(grouped bool) (*[]MemoryMapsStat, error) {
 	return &ret, common.ErrNotImplementedError
 }
 
-func processes() ([]Process, error) {
-	results := make([]Process, 0, 50)
+func Processes() ([]*Process, error) {
+	results := []*Process{}
 
 	mib := []int32{CTLKern, KernProc, KernProcProc, 0}
 	buf, length, err := common.CallSyscall(mib)
@@ -298,7 +302,7 @@ func processes() ([]Process, error) {
 			continue
 		}
 
-		results = append(results, *p)
+		results = append(results, p)
 	}
 
 	return results, nil

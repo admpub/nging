@@ -4,8 +4,7 @@
 package disk
 
 /*
-#cgo CFLAGS: -mmacosx-version-min=10.10 -DMACOSX_DEPLOYMENT_TARGET=10.10
-#cgo LDFLAGS: -mmacosx-version-min=10.10 -lobjc -framework Foundation -framework IOKit
+#cgo LDFLAGS: -lobjc -framework Foundation -framework IOKit
 #include <stdint.h>
 
 // ### enough?
@@ -34,7 +33,7 @@ import (
 	"github.com/shirou/gopsutil/internal/common"
 )
 
-func IOCountersForNames(names []string) (map[string]IOCountersStat, error) {
+func IOCounters(names ...string) (map[string]IOCountersStat, error) {
 	if C.StartIOCounterFetch() == 0 {
 		return nil, errors.New("Unable to fetch disk list")
 	}
