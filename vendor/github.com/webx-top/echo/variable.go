@@ -16,7 +16,6 @@
 
 */
 
-
 package echo
 
 import (
@@ -47,6 +46,7 @@ var (
 	ErrUnsupportedMediaType        error = NewHTTPError(http.StatusUnsupportedMediaType)
 	ErrNotFound                    error = NewHTTPError(http.StatusNotFound)
 	ErrUnauthorized                error = NewHTTPError(http.StatusUnauthorized)
+	ErrForbidden                   error = NewHTTPError(http.StatusForbidden)
 	ErrStatusRequestEntityTooLarge error = NewHTTPError(http.StatusRequestEntityTooLarge)
 	ErrMethodNotAllowed            error = NewHTTPError(http.StatusMethodNotAllowed)
 	ErrRendererNotRegistered             = errors.New("renderer not registered")

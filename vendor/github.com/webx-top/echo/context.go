@@ -876,7 +876,8 @@ func (c *xContext) IsSecure() bool {
 
 // IsWebsocket returns boolean of this request is in webSocket.
 func (c *xContext) IsWebsocket() bool {
-	return c.Header(`Upgrade`) == `websocket`
+	upgrade := c.Header(`Upgrade`)
+	return upgrade == `websocket` || upgrade == `Websocket`
 }
 
 // IsUpload returns boolean of whether file uploads in this request or not..
@@ -914,7 +915,7 @@ func (c *xContext) ResolveFormat() string {
 		}
 	}
 
-	accept := c.Header(`Accept`)
+	accept := c.Header(HeaderAccept)
 	for _, mimeType := range strings.Split(strings.SplitN(accept, `;`, 2)[0], `,`) {
 		mimeType = strings.TrimSpace(mimeType)
 		if format, ok := c.echo.acceptFormats[mimeType]; ok {
@@ -932,15 +933,16 @@ func (c *xContext) Protocol() string {
 	return c.Request().Proto()
 }
 
-// Site returns base site url as scheme://domain type.
+// Site returns base site url as scheme://domain/ type.
 func (c *xContext) Site() string {
-	return c.Scheme() + `://` + c.Domain()
+	return c.Scheme() + `://` + c.Request().Host() + `/`
 }
 
 // Scheme returns request scheme as `http` or `https`.
 func (c *xContext) Scheme() string {
-	if c.Request().Scheme() != `` {
-		return c.Request().Scheme()
+	scheme := c.Request().Scheme()
+	if len(scheme) > 0 {
+		return scheme
 	}
 	if c.Request().IsTLS() == false {
 		return `http`

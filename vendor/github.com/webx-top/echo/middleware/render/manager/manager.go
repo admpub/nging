@@ -268,7 +268,9 @@ func (self *Manager) watch() error {
 
 				})
 			case err := <-watcher.Errors:
-				self.Logger.Error("error:", err)
+				if err != nil {
+					self.Logger.Error("error:", err)
+				}
 			}
 		}
 	}()

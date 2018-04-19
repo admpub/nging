@@ -9,21 +9,19 @@ import (
 	"github.com/webx-top/echo/logger"
 )
 
-type (
-	Response struct {
-		config    *engine.Config
-		response  http.ResponseWriter
-		request   *http.Request
-		header    engine.Header
-		status    int
-		size      int64
-		committed bool
-		writer    io.Writer
-		logger    logger.Logger
-		body      []byte
-		keepBody  bool
-	}
-)
+type Response struct {
+	config    *engine.Config
+	response  http.ResponseWriter
+	request   *http.Request
+	header    engine.Header
+	status    int
+	size      int64
+	committed bool
+	writer    io.Writer
+	logger    logger.Logger
+	body      []byte
+	keepBody  bool
+}
 
 func NewResponse(w http.ResponseWriter, r *http.Request, l logger.Logger) *Response {
 	return &Response{

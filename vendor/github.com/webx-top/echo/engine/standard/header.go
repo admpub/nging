@@ -2,11 +2,9 @@ package standard
 
 import "net/http"
 
-type (
-	Header struct {
-		header http.Header
-	}
-)
+type Header struct {
+	header http.Header
+}
 
 func (h *Header) Add(key, val string) {
 	h.header.Add(key, val)

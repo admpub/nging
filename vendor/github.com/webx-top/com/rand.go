@@ -11,7 +11,7 @@ var (
 	defaultRand = rand.New(rand.NewSource(time.Now().UnixNano()))
 )
 
-// Creates a random string based on a variety of options, using
+// RandomSpec0 Creates a random string based on a variety of options, using
 // supplied source of randomness.
 //
 // If start and end are both 0, start and end are set
@@ -82,7 +82,7 @@ func RandomSpec0(count uint, start, end int, letters, numbers bool,
 	return string(buffer)
 }
 
-// Creates a random string whose length is the number of characters specified.
+// RandomSpec1 Creates a random string whose length is the number of characters specified.
 //
 // Characters will be chosen from the set of alpha-numeric
 // characters as indicated by the arguments.
@@ -98,7 +98,7 @@ func RandomSpec1(count uint, start, end int, letters, numbers bool) string {
 	return RandomSpec0(count, start, end, letters, numbers, nil, defaultRand)
 }
 
-// Creates a random string whose length is the number of characters specified.
+// RandomAlphaOrNumeric Creates a random string whose length is the number of characters specified.
 //
 // Characters will be chosen from the set of alpha-numeric
 // characters as indicated by the arguments.
@@ -124,33 +124,33 @@ func RandomStringSpec1(count uint, set string) string {
 	return RandomStringSpec0(count, []rune(set))
 }
 
-// Creates a random string whose length is the number of characters
+// RandomASCII Creates a random string whose length is the number of characters
 // specified.
-//
 // Characters will be chosen from the set of characters whose
 // ASCII value is between 32 and 126 (inclusive).
-func RandomAscii(count uint) string {
+func RandomASCII(count uint) string {
 	return RandomSpec1(count, 32, 127, false, false)
 }
 
-// Creates a random string whose length is the number of characters specified.
+// RandomAlphabetic Creates a random string whose length is the number of characters specified.
 // Characters will be chosen from the set of alphabetic characters.
 func RandomAlphabetic(count uint) string {
 	return RandomAlphaOrNumeric(count, true, false)
 }
 
-// Creates a random string whose length is the number of characters specified.
+// RandomAlphanumeric Creates a random string whose length is the number of characters specified.
 // Characters will be chosen from the set of alpha-numeric characters.
 func RandomAlphanumeric(count uint) string {
 	return RandomAlphaOrNumeric(count, true, true)
 }
 
-// Creates a random string whose length is the number of characters specified.
+// RandomNumeric Creates a random string whose length is the number of characters specified.
 // Characters will be chosen from the set of numeric characters.
 func RandomNumeric(count uint) string {
 	return RandomAlphaOrNumeric(count, false, true)
 }
 
+// RandStr .
 func RandStr(count int) (r string) {
 	//count := 64
 	b := make([]byte, count)
@@ -163,25 +163,25 @@ func RandStr(count int) (r string) {
 	return
 }
 
-// Get in the range [0, max], a random integer type int
+// RandInt Get in the range [0, max], a random integer type int
 func RandInt(max int) int {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	return r.Intn(max)
 }
 
-// 获取范围为[0.0, 1.0]，类型为float32的随机小数
+// RandFloat32 获取范围为[0.0, 1.0]，类型为float32的随机小数
 func RandFloat32() float32 {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	return r.Float32()
 }
 
-// 获取范围为[0.0, 1.0]，类型为float64的随机小数
+// RandFloat64 获取范围为[0.0, 1.0]，类型为float64的随机小数
 func RandFloat64() float64 {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	return r.Float64()
 }
 
-// 获取范围为[0,max]，数量为max，类型为int的随机整数slice
+// RandPerm 获取范围为[0,max]，数量为max，类型为int的随机整数slice
 func RandPerm(max int) []int {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	return r.Perm(max)

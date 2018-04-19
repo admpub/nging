@@ -73,3 +73,27 @@ func VersionCompare(a, b string) (ret int) {
 	}
 	return
 }
+
+// VersionComparex compare two versions in x.y.z form
+// @param  {string} a     version string
+// @param  {string} b     version string
+// @param  {string} op    <,<=,>,>=,= or lt,le,elt,gt,ge,egt,eq
+// @return {bool}
+func VersionComparex(a, b string, op string) bool {
+	switch op {
+	case `<`, `lt`:
+		return VersionCompare(a, b) == VersionCompareLt
+	case `<=`, `le`, `elt`:
+		r := VersionCompare(a, b)
+		return r == VersionCompareLt || r == VersionCompareEq
+	case `>`, `gt`:
+		return VersionCompare(a, b) == VersionCompareGt
+	case `>=`, `ge`, `egt`:
+		r := VersionCompare(a, b)
+		return r == VersionCompareGt || r == VersionCompareEq
+	case `=`, `eq`:
+		return VersionCompare(a, b) == VersionCompareEq
+	default:
+		return false
+	}
+}

@@ -16,7 +16,6 @@
 
 */
 
-
 package echo
 
 type MetaHandler struct {
@@ -24,9 +23,9 @@ type MetaHandler struct {
 	Handler
 }
 
-func (m *MetaHandler) HandleName() string {
-	if v, y := m.Handler.(HandleName); y {
-		return v.HandleName()
+func (m *MetaHandler) Name() string {
+	if v, y := m.Handler.(Name); y {
+		return v.Name()
 	}
 	return HandlerName(m.Handler)
 }

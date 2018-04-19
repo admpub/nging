@@ -76,8 +76,8 @@ func (r *Route) IsZero() bool {
 func (r *Route) apply(e *Echo) *Route {
 	handler := e.ValidHandler(r.handler)
 	middleware := r.middleware
-	if hn, ok := handler.(HandleName); ok {
-		r.HandlerName = hn.HandleName()
+	if hn, ok := handler.(Name); ok {
+		r.HandlerName = hn.Name()
 	} else {
 		r.HandlerName = HandlerName(handler)
 	}

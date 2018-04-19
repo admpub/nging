@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/webx-top/echo"
 )
@@ -90,7 +91,7 @@ func HTTPSWWWRedirectWithConfig(config RedirectConfig) echo.MiddlewareFuncd {
 			req := c.Request()
 			host := req.Host()
 			uri := req.URI()
-			if !req.IsTLS() && host[:4] != "www." {
+			if !req.IsTLS() && !strings.HasPrefix(host, `www.`) {
 				return c.Redirect("https://www."+host+uri, http.StatusMovedPermanently)
 			}
 			return next.Handle(c)
@@ -126,7 +127,7 @@ func WWWRedirectWithConfig(config RedirectConfig) echo.MiddlewareFuncd {
 			req := c.Request()
 			scheme := req.Scheme()
 			host := req.Host()
-			if host[:4] != "www." {
+			if !strings.HasPrefix(host, `www.`) {
 				uri := req.URI()
 				return c.Redirect(scheme+"://www."+host+uri, http.StatusMovedPermanently)
 			}
@@ -162,7 +163,7 @@ func NonWWWRedirectWithConfig(config RedirectConfig) echo.MiddlewareFuncd {
 			req := c.Request()
 			scheme := req.Scheme()
 			host := req.Host()
-			if host[:4] == "www." {
+			if strings.HasPrefix(host, `www.`) {
 				uri := req.URI()
 				return c.Redirect(scheme+"://"+host[4:]+uri, http.StatusMovedPermanently)
 			}

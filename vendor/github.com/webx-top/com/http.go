@@ -46,9 +46,9 @@ func (e *RemoteError) Error() string {
 
 var UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1541.0 Safari/537.36"
 
-// HttpGet gets the specified resource. ErrNotFound is returned if the
+// HTTPGet gets the specified resource. ErrNotFound is returned if the
 // server responds with status 404.
-func HttpGet(client *http.Client, url string, header http.Header) (io.ReadCloser, error) {
+func HTTPGet(client *http.Client, url string, header http.Header) (io.ReadCloser, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
@@ -73,10 +73,10 @@ func HttpGet(client *http.Client, url string, header http.Header) (io.ReadCloser
 	return nil, err
 }
 
-// HttpGetToFile gets the specified resource and writes to file.
+// HTTPGetToFile gets the specified resource and writes to file.
 // ErrNotFound is returned if the server responds with status 404.
-func HttpGetToFile(client *http.Client, url string, header http.Header, fileName string) error {
-	rc, err := HttpGet(client, url, header)
+func HTTPGetToFile(client *http.Client, url string, header http.Header, fileName string) error {
+	rc, err := HTTPGet(client, url, header)
 	if err != nil {
 		return err
 	}
@@ -92,10 +92,10 @@ func HttpGetToFile(client *http.Client, url string, header http.Header, fileName
 	return err
 }
 
-// HttpGetBytes gets the specified resource. ErrNotFound is returned if the server
+// HTTPGetBytes gets the specified resource. ErrNotFound is returned if the server
 // responds with status 404.
-func HttpGetBytes(client *http.Client, url string, header http.Header) ([]byte, error) {
-	rc, err := HttpGet(client, url, header)
+func HTTPGetBytes(client *http.Client, url string, header http.Header) ([]byte, error) {
+	rc, err := HTTPGet(client, url, header)
 	if err != nil {
 		return nil, err
 	}
@@ -103,10 +103,10 @@ func HttpGetBytes(client *http.Client, url string, header http.Header) ([]byte, 
 	return ioutil.ReadAll(rc)
 }
 
-// HttpGetJSON gets the specified resource and mapping to struct.
+// HTTPGetJSON gets the specified resource and mapping to struct.
 // ErrNotFound is returned if the server responds with status 404.
-func HttpGetJSON(client *http.Client, url string, v interface{}) error {
-	rc, err := HttpGet(client, url, nil)
+func HTTPGetJSON(client *http.Client, url string, v interface{}) error {
+	rc, err := HTTPGet(client, url, nil)
 	if err != nil {
 		return err
 	}
@@ -131,7 +131,7 @@ func FetchFiles(client *http.Client, files []RawFile, header http.Header) error 
 	ch := make(chan error, len(files))
 	for i := range files {
 		go func(i int) {
-			p, err := HttpGetBytes(client, files[i].RawUrl(), nil)
+			p, err := HTTPGetBytes(client, files[i].RawUrl(), nil)
 			if err != nil {
 				ch <- err
 				return
@@ -148,7 +148,7 @@ func FetchFiles(client *http.Client, files []RawFile, header http.Header) error 
 	return nil
 }
 
-// FetchFiles uses command `curl` to fetch files specified by the rawURL field in parallel.
+// FetchFilesCurl uses command `curl` to fetch files specified by the rawURL field in parallel.
 func FetchFilesCurl(files []RawFile, curlOptions ...string) error {
 	ch := make(chan error, len(files))
 	for i := range files {
@@ -171,8 +171,8 @@ func FetchFilesCurl(files []RawFile, curlOptions ...string) error {
 	return nil
 }
 
-// ==============================
-func HttpPost(client *http.Client, url string, body []byte, header http.Header) (io.ReadCloser, error) {
+// HTTPPost ==============================
+func HTTPPost(client *http.Client, url string, body []byte, header http.Header) (io.ReadCloser, error) {
 	req, err := http.NewRequest("POST", url, bytes.NewReader(body))
 	if err != nil {
 		return nil, err
@@ -197,8 +197,8 @@ func HttpPost(client *http.Client, url string, body []byte, header http.Header) 
 	return nil, err
 }
 
-func HttpPostBytes(client *http.Client, url string, body []byte, header http.Header) ([]byte, error) {
-	rc, err := HttpPost(client, url, body, header)
+func HTTPPostBytes(client *http.Client, url string, body []byte, header http.Header) ([]byte, error) {
+	rc, err := HTTPPost(client, url, body, header)
 	if err != nil {
 		return nil, err
 	}
@@ -207,12 +207,12 @@ func HttpPostBytes(client *http.Client, url string, body []byte, header http.Hea
 	return p, nil
 }
 
-func HttpPostJSON(client *http.Client, url string, body []byte, header http.Header) ([]byte, error) {
+func HTTPPostJSON(client *http.Client, url string, body []byte, header http.Header) ([]byte, error) {
 	if header == nil {
 		header = http.Header{}
 	}
 	header.Add("Content-Type", "application/json")
-	p, err := HttpPostBytes(client, url, body, header)
+	p, err := HTTPPostBytes(client, url, body, header)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -224,7 +224,7 @@ func HttpPostJSON(client *http.Client, url string, body []byte, header http.Head
 // This can be used in conjunction with ctx.SetCookie.
 func NewCookie(name string, value string, args ...interface{}) *http.Cookie {
 	var (
-		alen     int = len(args)
+		alen     = len(args)
 		age      int64
 		path     string
 		domain   string

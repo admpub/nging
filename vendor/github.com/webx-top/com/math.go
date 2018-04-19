@@ -27,7 +27,7 @@ func PowInt(x int, y int) int {
 	return num
 }
 
-// 保留几位小数(四舍五入)
+// Round 保留几位小数(四舍五入)
 func Round(f float64, n int) float64 {
 	pow10n := math.Pow10(n)
 	return math.Trunc((f+0.5/pow10n)*pow10n) / pow10n

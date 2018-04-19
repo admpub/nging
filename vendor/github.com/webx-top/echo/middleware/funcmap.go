@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"html/template"
+	"strings"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -36,6 +37,16 @@ func FuncMap(funcMap map[string]interface{}, skipper ...echo.Skipper) echo.Middl
 			c.SetFunc(`Atop`, c.Atop)
 			c.SetFunc(`URL`, req.URL)
 			c.SetFunc(`URI`, req.URI)
+			c.SetFunc(`Site`, c.Site)
+
+			var pageURL string
+			c.SetFunc(`SiteURI`, func() string {
+				if len(pageURL) > 0 {
+					return pageURL
+				}
+				pageURL = c.Site() + strings.TrimPrefix(req.URI(), `/`)
+				return pageURL
+			})
 			c.SetFunc(`Referer`, c.Referer)
 			c.SetFunc(`Header`, req.Header)
 			c.SetFunc(`Flash`, c.Flash)

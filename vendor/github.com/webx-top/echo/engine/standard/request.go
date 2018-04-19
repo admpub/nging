@@ -14,16 +14,14 @@ import (
 
 var defaultMaxRequestBodySize int64 = 32 << 20 // 32 MB
 
-type (
-	Request struct {
-		config  *engine.Config
-		request *http.Request
-		url     engine.URL
-		header  engine.Header
-		value   *Value
-		realIP  string
-	}
-)
+type Request struct {
+	config  *engine.Config
+	request *http.Request
+	url     engine.URL
+	header  engine.Header
+	value   *Value
+	realIP  string
+}
 
 func NewRequest(r *http.Request) *Request {
 	req := &Request{

@@ -76,13 +76,17 @@ func Token256(key string, val []byte, args ...string) string {
 	return base64.URLEncoding.EncodeToString(hm.Sum(nil))
 }
 
-func Encode(data interface{}) ([]byte, error) {
-	//return JsonEncode(data)
+func Encode(data interface{}, args ...string) ([]byte, error) {
+	if len(args) > 0 && args[0] == `JSON` {
+		return JSONEncode(data)
+	}
 	return GobEncode(data)
 }
 
-func Decode(data []byte, to interface{}) error {
-	//return JsonDecode(data, to)
+func Decode(data []byte, to interface{}, args ...string) error {
+	if len(args) > 0 && args[0] == `JSON` {
+		return JSONDecode(data, to)
+	}
 	return GobDecode(data, to)
 }
 
@@ -102,15 +106,14 @@ func GobDecode(data []byte, to interface{}) error {
 	return dec.Decode(to)
 }
 
-func JsonEncode(data interface{}) ([]byte, error) {
-	val, err := json.Marshal(data)
-	if err != nil {
-		return nil, err
+func JSONEncode(data interface{}, indents ...string) ([]byte, error) {
+	if len(indents) > 0 && len(indents[0]) > 0 {
+		return json.MarshalIndent(data, ``, indents[0])
 	}
-	return val, nil
+	return json.Marshal(data)
 }
 
-func JsonDecode(data []byte, to interface{}) error {
+func JSONDecode(data []byte, to interface{}) error {
 	return json.Unmarshal(data, to)
 }
 

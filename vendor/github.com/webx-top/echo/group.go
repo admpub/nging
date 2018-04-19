@@ -1,12 +1,10 @@
 package echo
 
-type (
-	Group struct {
-		prefix     string
-		middleware []interface{}
-		echo       *Echo
-	}
-)
+type Group struct {
+	prefix     string
+	middleware []interface{}
+	echo       *Echo
+}
 
 func (g *Group) URL(h interface{}, params ...interface{}) string {
 	return g.echo.URL(h, params...)
@@ -114,6 +112,15 @@ func (g *Group) File(path, file string) {
 
 func (g *Group) Prefix() string {
 	return g.prefix
+}
+
+func (g *Group) Echo() *Echo {
+	return g.echo
+}
+
+// MetaHandler Add meta information about endpoint
+func (g *Group) MetaHandler(m H, handler interface{}) Handler {
+	return &MetaHandler{m, g.echo.ValidHandler(handler)}
 }
 
 func (g *Group) add(method, path string, h interface{}, middleware ...interface{}) {

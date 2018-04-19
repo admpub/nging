@@ -49,8 +49,8 @@ type (
 		Handle(Context) error
 	}
 
-	HandleName interface {
-		HandleName() string
+	Name interface {
+		Name() string
 	}
 
 	Meta interface {
@@ -479,8 +479,8 @@ func (e *Echo) GetGroup(prefix string) (g *Group) {
 func (e *Echo) URI(handler interface{}, params ...interface{}) string {
 	var uri, name string
 	if h, ok := handler.(Handler); ok {
-		if hn, ok := h.(HandleName); ok {
-			name = hn.HandleName()
+		if hn, ok := h.(Name); ok {
+			name = hn.Name()
 		} else {
 			name = HandlerName(h)
 		}

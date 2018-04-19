@@ -289,6 +289,7 @@ func TotalRunTime() string {
 var (
 	units     = []string{"years", "weeks", "days", "hours", "minutes", "seconds", "milliseconds"}
 	unitsZhCN = map[string]string{"years": "年", "weeks": "周", "days": "天", "hours": "小时", "minutes": "分", "seconds": "秒", "milliseconds": "毫秒"}
+	TimeUnits = map[string]map[string]string{`zh-cn`: unitsZhCN}
 )
 
 // Durafmt holds the parsed duration and the original input duration.
@@ -305,6 +306,11 @@ func getDurationUnits(args []interface{}) map[string]string {
 		case map[string]string:
 			units = v
 		case string:
+			var ok bool
+			units, ok = TimeUnits[v]
+			if ok {
+				return units
+			}
 			switch strings.ToLower(v) {
 			case `zh_cn`, `zh-cn`:
 				units = unitsZhCN

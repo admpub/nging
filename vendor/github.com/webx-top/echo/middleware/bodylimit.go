@@ -91,6 +91,7 @@ func (r *limitedReader) Read(b []byte) (n int, err error) {
 func (r *limitedReader) Reset(reader io.Reader, context echo.Context) {
 	r.reader = reader
 	r.context = context
+	r.read = 0
 }
 
 func limitedReaderPool(c BodyLimitConfig) sync.Pool {

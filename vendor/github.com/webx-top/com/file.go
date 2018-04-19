@@ -510,7 +510,7 @@ func FileExists(name string) bool {
 	return true
 }
 
-// search a file in paths.
+// SearchFile search a file in paths.
 // this is offen used in search config file in /etc ~/
 func SearchFile(filename string, paths ...string) (fullpath string, err error) {
 	for _, path := range paths {
@@ -522,7 +522,7 @@ func SearchFile(filename string, paths ...string) (fullpath string, err error) {
 	return
 }
 
-// like command grep -E
+// GrepFile like command grep -E
 // for example: GrepFile(`^hello`, "hello.txt")
 // \n is striped while read
 func GrepFile(patten string, filename string) (lines []string, err error) {

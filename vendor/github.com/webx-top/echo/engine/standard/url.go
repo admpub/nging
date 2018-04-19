@@ -4,12 +4,10 @@ import (
 	"net/url"
 )
 
-type (
-	URL struct {
-		url   *url.URL
-		query url.Values
-	}
-)
+type URL struct {
+	url   *url.URL
+	query url.Values
+}
 
 func (u *URL) SetPath(path string) {
 	u.url.Path = path

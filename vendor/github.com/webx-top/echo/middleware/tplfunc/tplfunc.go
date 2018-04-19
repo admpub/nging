@@ -15,6 +15,7 @@
    limitations under the License.
 
 */
+
 package tplfunc
 
 import (
@@ -134,12 +135,14 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	// ======================
 	// encode & decode
 	// ======================
-	"JsonEncode":   JsonEncode,
-	"JsonDecode":   JsonDecode,
-	"UrlEncode":    com.UrlEncode,
-	"UrlDecode":    com.UrlDecode,
-	"Base64Encode": com.Base64Encode,
-	"Base64Decode": com.Base64Decode,
+	"JSONEncode":       JSONEncode,
+	"JSONDecode":       JSONDecode,
+	"URLEncode":        com.URLEncode,
+	"URLDecode":        URLDecode,
+	"Base64Encode":     com.Base64Encode,
+	"Base64Decode":     Base64Decode,
+	"SafeBase64Encode": com.SafeBase64Encode,
+	"SafeBase64Decode": SafeBase64Decode,
 
 	// ======================
 	// map & slice
@@ -153,7 +156,6 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	"URLValues":      URLValues,
 	"ToSlice":        ToSlice,
 	"StrToSlice":     StrToSlice,
-	"StrToStrSlice":  StrToStrSlice,
 
 	// ======================
 	// regexp
@@ -168,14 +170,38 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	"Default": Default,
 }
 
-func JsonEncode(s interface{}) string {
-	r, _ := com.SetJSON(s)
+func JSONEncode(s interface{}, indents ...string) string {
+	r, _ := com.JSONEncode(s, indents...)
+	return string(r)
+}
+
+func JSONDecode(s string) map[string]interface{} {
+	r := map[string]interface{}{}
+	e := com.JSONDecode([]byte(s), &r)
+	if e != nil {
+		log.Println(e)
+	}
 	return r
 }
 
-func JsonDecode(s string) map[string]interface{} {
-	r := map[string]interface{}{}
-	e := com.GetJSON(&s, &r)
+func URLDecode(s string) string {
+	r, e := com.URLDecode(s)
+	if e != nil {
+		log.Println(e)
+	}
+	return r
+}
+
+func Base64Decode(s string) string {
+	r, e := com.Base64Decode(s)
+	if e != nil {
+		log.Println(e)
+	}
+	return r
+}
+
+func SafeBase64Decode(s string) string {
+	r, e := com.SafeBase64Decode(s)
 	if e != nil {
 		log.Println(e)
 	}
@@ -210,10 +236,6 @@ func ToStrSlice(s ...string) []string {
 
 func ToSlice(s ...interface{}) []interface{} {
 	return s
-}
-
-func StrToStrSlice(s string, sep string) []string {
-	return ToStrSlice(strings.Split(s, sep)...)
 }
 
 func StrToSlice(s string, sep string) []interface{} {
