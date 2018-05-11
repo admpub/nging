@@ -17,6 +17,6 @@ fi
 
 cp -R ../dist/default/* ../dist/nging_${GOOS}_${GOARCH}/
 
-archiver make ../nging_${GOOS}_${GOARCH}.${archiver_extension} ../dist/nging_${GOOS}_${GOARCH}/
+archiver make ../dist/nging_${GOOS}_${GOARCH}.${archiver_extension} ../dist/nging_${GOOS}_${GOARCH}/
 
 rm -rf ../dist/nging_${GOOS}_${GOARCH}
