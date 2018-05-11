@@ -1,5 +1,5 @@
 mkdir ../dist/nging_${GOOS}_${GOARCH}
-gox -tags "bindata sqlite" -osarch ${GOOS}/${GOARCH} -output ../dist/nging_${GOOS}_${GOARCH}/nging${NGINGEX} ..
+xgo --targets=${GOOS}/${GOARCH} -dest ../dist/nging_${GOOS}_${GOARCH} -tags 'bindata sqlite' -ldflags '-linkmode external -extldflags "-static" $(LDFLAGS)'
 cp -R ../data ../dist/nging_${GOOS}_${GOARCH}/data
 
 mkdir ../dist/nging_${GOOS}_${GOARCH}/config
