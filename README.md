@@ -85,4 +85,3 @@ nging不仅仅包含了caddy的在线可视化配置，还包含了ftp服务的�
 - 第三步： 进入`%GOPATH%/src/github.com/admpub/nging/`目录中启动`run_first_time.bat`(linux系统启动`run_first_time.sh`)
 - 第四步： 打开浏览器，访问网址`http://localhost:8080/setup`，在页面中配置数据库账号和管理员账号信息进行安装
 - 第五步： 安装成功后会自动跳转到登录页面，使用安装时设置的管理员账号进行登录
-...
