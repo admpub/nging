@@ -1,13 +1,12 @@
 package redis
 
 import (
-	"fmt"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/webx-top/echo"
 	"testing"
 )
 
-func TestInfo(t *testing.T) {
+func connect() *Redis {
 	e := echo.New()
 	c := echo.NewContext(nil, nil, e)
 	r := &Redis{}
@@ -22,7 +21,21 @@ func TestInfo(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
+	return r
+}
+
+func TestInfo(t *testing.T) {
+	r := connect()
 	info, err := r.Info()
+	if err != nil {
+		panic(err)
+	}
+	echo.Dump(info)
+}
+
+func TestFindKeys(t *testing.T) {
+	r := connect()
+	info, err := r.FindKeys(`*`)
 	if err != nil {
 		panic(err)
 	}

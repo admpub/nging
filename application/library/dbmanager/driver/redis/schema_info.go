@@ -57,14 +57,14 @@ type InfoKV struct {
 }
 
 type Infos struct {
-	Name    string
-	Configs []*InfoKV
+	Name  string
+	Attrs []*InfoKV
 }
 
-func NewInfos(name string, configs ...*InfoKV) *Infos {
+func NewInfos(name string, attrs ...*InfoKV) *Infos {
 	return &Infos{
-		Name:    name,
-		Configs: configs,
+		Name:  name,
+		Attrs: attrs,
 	}
 }
 
@@ -122,7 +122,7 @@ func ParseInfos(infoText string) []*Infos {
 			indexes[sectionName] = index
 			infoList = append(infoList, NewInfos(sectionName))
 		}
-		infoList[index].Configs = append(infoList[index].Configs, &InfoKV{
+		infoList[index].Attrs = append(infoList[index].Attrs, &InfoKV{
 			Name:  kv[0],
 			Value: kv[1],
 		})

@@ -87,3 +87,11 @@ func (r *Redis) Info() ([]*Infos, error) {
 	}
 	return ParseInfos(info), err
 }
+
+func (r *Redis) FindKeys(pattern string) ([]string, error) {
+	reply, err := redis.Strings(r.conn.Do("KEYS", pattern))
+	if err != nil {
+		return nil, err
+	}
+	return reply, err
+}
