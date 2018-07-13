@@ -19,10 +19,12 @@
 package redis
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/gomodule/redigo/redis"
 	"github.com/webx-top/echo"
-	"strings"
 )
 
 type Redis struct {
@@ -94,4 +96,23 @@ func (r *Redis) FindKeys(pattern string) ([]string, error) {
 		return nil, err
 	}
 	return reply, err
+}
+
+func (r *Redis) DatabaseList() ([]int64, error) {
+	reply, err := redis.Strings(r.conn.Do("CONFIG", "GET", "databases"))
+	if err != nil {
+		return nil, err
+	}
+	var ids []int64
+	if len(reply) > 1 {
+		num, err := strconv.ParseInt(reply[1], 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		var id int64
+		for ; id < num; id++ {
+			ids = append(ids, id)
+		}
+	}
+	return ids, err
 }

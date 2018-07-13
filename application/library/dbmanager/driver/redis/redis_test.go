@@ -41,3 +41,12 @@ func TestFindKeys(t *testing.T) {
 	}
 	echo.Dump(info)
 }
+
+func TestDatabaseList(t *testing.T) {
+	r := connect()
+	info, err := r.DatabaseList()
+	if err != nil {
+		panic(err)
+	}
+	echo.Dump(info)
+}
