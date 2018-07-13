@@ -21,33 +21,30 @@ package redis
 import (
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/gomodule/redigo/redis"
-	"github.com/webx-top/com"
-	"github.com/webx-top/db/lib/factory"
-	"github.com/webx-top/db/mysql"
 	"github.com/webx-top/echo"
-	"github.com/webx-top/pagination"
 	"strings"
 )
 
-type redis struct {
+type Redis struct {
+	*driver.BaseDriver
 	conn redis.Conn
 }
 
-func (r *redis) Name() string {
+func (r *Redis) Name() string {
 	return `Redis`
 }
 
-func (r *redis) Init(ctx echo.Context, auth *driver.DbAuth) {
-	m.BaseDriver = driver.NewBaseDriver()
-	m.BaseDriver.Init(ctx, auth)
-	m.Set(`supportSQL`, false)
+func (r *Redis) Init(ctx echo.Context, auth *driver.DbAuth) {
+	r.BaseDriver = driver.NewBaseDriver()
+	r.BaseDriver.Init(ctx, auth)
+	r.Set(`supportSQL`, false)
 }
 
-func (r *redis) IsSupported(operation string) bool {
+func (r *Redis) IsSupported(operation string) bool {
 	return true
 }
 
-func (r *redis) Login() (err error) {
+func (r *Redis) Login() (err error) {
 	/*
 	  Scheme syntax:
 	  Example: redis://user:secret@localhost:6379/0?foo=bar&qux=baz
@@ -69,24 +66,24 @@ func (r *redis) Login() (err error) {
 	    NZDIGIT      = %x31-39
 	                 ; the digits 1-9
 	*/
-	if len(m.DbAuth.Db) == 0 {
-		m.DbAuth.Db = `0`
+	if len(r.DbAuth.Db) == 0 {
+		r.DbAuth.Db = `0`
 	}
 	scheme := `redis`
-	host := m.DbAuth.Host
-	if strings.Contains(m.DbAuth.Host, `://`) {
-		info := strings.SplitAfterN(m.DbAuth.Host, `://`, 1)
+	host := r.DbAuth.Host
+	if strings.Contains(r.DbAuth.Host, `://`) {
+		info := strings.SplitAfterN(r.DbAuth.Host, `://`, 2)
 		scheme = info[0]
 		host = info[1]
 	}
-	r.conn, err = redis.DialURL(scheme + `://` + m.DbAuth.Username + `:` + m.DbAuth.Password + `@` + host + `/` + m.DbAuth.Db)
+	r.conn, err = redis.DialURL(scheme + `://` + r.DbAuth.Username + `:` + r.DbAuth.Password + `@` + host + `/` + r.DbAuth.Db)
 	return
 }
 
-func (r *redis) Info() error {
-	r, err := r.conn.Do("INFO")
+func (r *Redis) Info() ([]*Infos, error) {
+	info, err := redis.String(r.conn.Do("INFO"))
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return err
+	return ParseInfos(info), err
 }
