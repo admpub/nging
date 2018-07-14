@@ -82,6 +82,7 @@ func (r *Redis) Login() (err error) {
 	return
 }
 
+// Info 获取redis服务信息
 func (r *Redis) Info() ([]*Infos, error) {
 	info, err := redis.String(r.conn.Do("INFO"))
 	if err != nil {
@@ -90,6 +91,7 @@ func (r *Redis) Info() ([]*Infos, error) {
 	return ParseInfos(info), err
 }
 
+// FindKeys 搜索key
 func (r *Redis) FindKeys(pattern string) ([]string, error) {
 	reply, err := redis.Strings(r.conn.Do("KEYS", pattern))
 	if err != nil {
@@ -98,6 +100,7 @@ func (r *Redis) FindKeys(pattern string) ([]string, error) {
 	return reply, err
 }
 
+// DatabaseList 获取数据库列表
 func (r *Redis) DatabaseList() ([]int64, error) {
 	reply, err := redis.Strings(r.conn.Do("CONFIG", "GET", "databases"))
 	if err != nil {
@@ -115,4 +118,53 @@ func (r *Redis) DatabaseList() ([]int64, error) {
 		}
 	}
 	return ids, err
+}
+
+// TTL 获取数据有效期
+func (r *Redis) TTL(key string) (int64, error) {
+	reply, err := redis.Int64(r.conn.Do("TTL", key))
+	if err != nil {
+		return -3, err
+	}
+	//reply(-2:key不存在;-1:永不过期;>=0:过期时间)
+	return reply, err
+}
+
+// ObjectEncoding 获取对象编码方式
+func (r *Redis) ObjectEncoding(key string) (string, error) {
+	reply, err := redis.String(r.conn.Do("OBJECT", "encoding", key))
+	if err != nil {
+		return ``, err
+	}
+	return reply, err
+}
+
+func (r *Redis) DataType(key string) (string, error) {
+	reply, err := redis.String(r.conn.Do("TYPE", key))
+	if err != nil {
+		return ``, err
+	}
+	return reply, err
+}
+
+func (r *Redis) Exists(key string) (bool, error) {
+	reply, err := redis.Int(r.conn.Do("EXISTS", key))
+	if err != nil {
+		return false, err
+	}
+	return reply == 1, err
+}
+
+func (r *Redis) ViewValue(key string, typ string, encoding string) {
+	switch typ {
+	case `string`:
+	case `hash`:
+	case `list`:
+	case `set`:
+	case `zset`:
+	}
+}
+
+func Codec(action string, key string, data string, encoding string) {
+
 }
