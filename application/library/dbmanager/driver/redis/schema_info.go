@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"strconv"
 	"strings"
 )
 
@@ -52,8 +53,9 @@ func NewInfoSection() *InfoSection {
 }
 
 type InfoKV struct {
-	Name  string
-	Value string
+	Name           string
+	Value          string
+	parsedKeyspace map[string]int64
 }
 
 type Infos struct {
@@ -92,6 +94,26 @@ func ParseInfo(infoText string) *Info {
 		info.MustSection(sectionName).Add(kv[0], kv[1])
 	}
 	return info
+}
+
+func (a *InfoKV) ParseKeyspace() map[string]int64 {
+	if a.parsedKeyspace != nil {
+		return a.parsedKeyspace
+	}
+	if !strings.HasPrefix(a.Name, `db`) {
+		return nil
+	}
+	a.parsedKeyspace = map[string]int64{}
+	//keys=5,expires=0,avg_ttl=0
+	for _, v := range strings.Split(a.Value, `,`) {
+		kv := strings.SplitN(v, `=`, 2)
+		var n int64
+		if len(kv) > 1 {
+			n, _ = strconv.ParseInt(kv[1], 10, 64)
+		}
+		a.parsedKeyspace[kv[0]] = n
+	}
+	return a.parsedKeyspace
 }
 
 func ParseInfos(infoText string) []*Infos {

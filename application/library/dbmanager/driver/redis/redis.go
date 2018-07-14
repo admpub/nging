@@ -30,6 +30,7 @@ import (
 type Redis struct {
 	*driver.BaseDriver
 	conn redis.Conn
+	//codecs map[string]map[string]func(string)string
 }
 
 func (r *Redis) Name() string {
@@ -155,16 +156,57 @@ func (r *Redis) Exists(key string) (bool, error) {
 	return reply == 1, err
 }
 
-func (r *Redis) ViewValue(key string, typ string, encoding string) {
+func (r *Redis) ViewValue(key string, typ string, encoding string) (ret string, siz int, err error) {
 	switch typ {
 	case `string`:
+		ret, err = redis.String(r.conn.Do("GET", key))
+		if err != nil {
+			return
+		}
+		ret = r.Codec(`load`, key, ret, encoding)
+		siz = len(ret)
 	case `hash`:
+		var arr map[string]string
+		arr, err = redis.StringMap(r.conn.Do("HGETALL", key))
+		if err != nil {
+			return
+		}
+		for k, v := range arr {
+			arr[k] = r.Codec(`load`, key, v, encoding)
+		}
+		siz = len(arr)
 	case `list`:
+		siz, err = redis.Int(r.conn.Do("LLEN", key))
+		if err != nil {
+			return
+		}
 	case `set`:
+		var arr map[string]string
+		arr, err = redis.StringMap(r.conn.Do("SMEMBERS", key))
+		if err != nil {
+			return
+		}
+		for k, v := range arr {
+			arr[k] = r.Codec(`load`, key, v, encoding)
+		}
+		siz = len(arr)
 	case `zset`:
+		var arr map[string]string
+		arr, err = redis.StringMap(r.conn.Do("ZRANGE", key, 0, -1))
+		if err != nil {
+			return
+		}
+		for k, v := range arr {
+			arr[k] = r.Codec(`load`, key, v, encoding)
+		}
+		siz = len(arr)
 	}
+	return
 }
 
-func Codec(action string, key string, data string, encoding string) {
-
+func (r *Redis) Codec(action string, key string, data string, encoding string) string {
+	if encoding == `raw` {
+		return data
+	}
+	return data
 }
