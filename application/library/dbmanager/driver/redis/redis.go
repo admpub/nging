@@ -101,6 +101,14 @@ func (r *Redis) FindKeys(pattern string) ([]string, error) {
 	return reply, err
 }
 
+func (r *Redis) SetString(key string, value string) error {
+	_, err := r.conn.Do("SET", key, value)
+	if err != nil {
+		return err
+	}
+	return err
+}
+
 // DatabaseList 获取数据库列表
 func (r *Redis) DatabaseList() ([]int64, error) {
 	reply, err := redis.Strings(r.conn.Do("CONFIG", "GET", "databases"))
@@ -209,4 +217,11 @@ func (r *Redis) Codec(action string, key string, data string, encoding string) s
 		return data
 	}
 	return data
+}
+
+func (r *Redis) Close() error {
+	if r.conn == nil {
+		return nil
+	}
+	return r.conn.Close()
 }
