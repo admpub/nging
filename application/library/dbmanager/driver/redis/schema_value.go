@@ -5,10 +5,10 @@ import (
 	"strings"
 )
 
-func NewValueInfo(r *Redis,k string) &ValueInfo{
+func NewValueInfo(r *Redis, k string) *ValueInfo {
 	return &ValueInfo{
-		r:r,
-		k:k,
+		r: r,
+		k: k,
 	}
 }
 
@@ -18,8 +18,8 @@ type ValueInfo struct {
 	encoding string
 	ttl      int
 	typeName string
-	k      string
-	r    *Redis
+	k        string
+	r        *Redis
 }
 
 func (v *ValueInfo) Size() {
