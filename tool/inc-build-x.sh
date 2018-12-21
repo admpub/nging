@@ -1,13 +1,14 @@
 mkdir ../dist/nging_${GOOS}_${GOARCH}
-xgo --targets=${GOOS}/${GOARCH} -dest ../dist/nging_${GOOS}_${GOARCH} -tags 'bindata sqlite' -ldflags '-linkmode external -extldflags "-static" $(LDFLAGS)'
+xgo -go=1.11 -image=admpub/xgo:latest -targets=${GOOS}/${GOARCH} -dest=../dist/nging_${GOOS}_${GOARCH} -tags="bindata sqlite${BUILDTAGS}" -ldflags="-X main.BUILD_TIME=${NGING_BUILD} -X main.COMMIT=${NGING_COMMIT} -X main.VERSION=${NGING_VERSION} -X main.LABEL=${NGING_LABEL}" ../
 cp -R ../data ../dist/nging_${GOOS}_${GOARCH}/data
 
 mkdir ../dist/nging_${GOOS}_${GOARCH}/config
 mkdir ../dist/nging_${GOOS}_${GOARCH}/config/vhosts
 
-cp -R ../config/config.yaml ../dist/nging_${GOOS}_${GOARCH}/config/config.yaml
+#cp -R ../config/config.yaml ../dist/nging_${GOOS}_${GOARCH}/config/config.yaml
 cp -R ../config/config.yaml.sample ../dist/nging_${GOOS}_${GOARCH}/config/config.yaml.sample
 cp -R ../config/install.sql ../dist/nging_${GOOS}_${GOARCH}/config/install.sql
+cp -R ../config/ua.txt ../dist/nging_${GOOS}_${GOARCH}/config/ua.txt
 
 if [ $GOOS = "windows" ]; then
 	export archiver_extension=zip

@@ -56,7 +56,7 @@ var (
 	BUILD_TIME string
 	CLOUD_GOX  string
 	COMMIT     string
-	VERSION    = `1.3.0`
+	VERSION    = `1.3.1`
 
 	version    string
 	binData    bool
