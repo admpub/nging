@@ -78,7 +78,7 @@ nging不仅仅包含了caddy的在线可视化配置，还包含了ftp服务的�
 chmod +x ./nging-linux-amd64
 ./nging-linux-amd64
 ```
-
+打开浏览器，访问网址`http://localhost:9999/setup`，在页面中配置数据库和管理员账号信息进行安装。安装成功后会自动跳转到登录页面，使用安装时设置的管理员账号进行登录
 
 # 先睹为快
 
