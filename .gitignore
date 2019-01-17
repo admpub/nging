@@ -20,7 +20,7 @@ _cgo_export.*
 _testmain.go
 
 /*.exe
-tower-app-*.exe
+tower-app-*
 *.test
 *.prof
 *.log
