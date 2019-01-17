@@ -59,6 +59,11 @@ type extra struct {
 	Running  bool
 }
 
+func buidlPattern(subPattern string, extras ...string) string {
+	chars := strings.Join(extras, ``)
+	return `^([*` + chars + `]|` + subPattern + `(,` + subPattern + `)*)$`
+}
+
 func Index(ctx echo.Context) error {
 	m := model.NewTask(ctx)
 	page, size, totalRows, p := handler.PagingWithPagination(ctx)
@@ -180,6 +185,7 @@ func Add(ctx echo.Context) error {
 		err = e
 	}
 	ctx.Set(`groupList`, mg.Objects())
+	ctx.SetFunc(`buildPattern`, buidlPattern)
 	return ctx.Render(`task/edit`, handler.Err(ctx, err))
 }
 
@@ -240,6 +246,7 @@ func Edit(ctx echo.Context) error {
 	ctx.Set(`groupList`, mg.Objects())
 	echo.StructToForm(ctx, m.Task, ``, echo.LowerCaseFirstLetter)
 	ctx.Set(`activeURL`, `/task/index`)
+	ctx.SetFunc(`buildPattern`, buidlPattern)
 	return ctx.Render(`task/edit`, handler.Err(ctx, err))
 }
 
