@@ -18,6 +18,8 @@
 package pagination
 
 import (
+	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"html/template"
 	"math"
@@ -25,22 +27,37 @@ import (
 	"strings"
 
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/engine"
+)
+
+const (
+	ModePageNumber = iota + 1
+	ModePosition
 )
 
 func New(ctx echo.Context) *Pagination {
-	return &Pagination{context: ctx, pages: -1, data: make(map[string]interface{})}
+	return &Pagination{context: ctx, pages: -1, data: echo.H{}, mode: ModePageNumber}
 }
 
 type Pagination struct {
 	context   echo.Context
-	page      int
-	rows      int //total rows
-	limit     int
-	num       int
 	tmpl      string
-	pages     int //total pages
 	urlLayout string
-	data      map[string]interface{}
+	data      echo.H
+	mode      int
+
+	// 按基准位置分页
+	position     string
+	prevPosition string
+	nextPosition string
+
+	// 按页码分页
+	page  int
+	rows  int //total rows
+	limit int
+	num   int
+	pages int //total pages
+
 }
 
 func (p *Pagination) SetAll(tmpl string, rows int, pnl ...int) *Pagination {
@@ -57,6 +74,14 @@ func (p *Pagination) SetAll(tmpl string, rows int, pnl ...int) *Pagination {
 	p.rows = rows
 	p.tmpl = tmpl
 	p.pages = -1
+	return p
+}
+
+func (p *Pagination) SetPosition(prev string, next string, curr string) *Pagination {
+	p.prevPosition = prev
+	p.nextPosition = next
+	p.position = curr
+	p.mode = ModePosition
 	return p
 }
 
@@ -84,8 +109,20 @@ func (p *Pagination) Get(key string) interface{} {
 	return nil
 }
 
-func (p *Pagination) Data() map[string]interface{} {
+func (p *Pagination) Data() echo.H {
 	return p.data
+}
+
+func (p *Pagination) Position() string {
+	return p.position
+}
+
+func (p *Pagination) PrevPosition() string {
+	return p.prevPosition
+}
+
+func (p *Pagination) NextPosition() string {
+	return p.nextPosition
 }
 
 func (p *Pagination) SetPage(page int) *Pagination {
@@ -157,11 +194,18 @@ func (p *Pagination) Pages() int {
 	return p.pages
 }
 
-func (p *Pagination) URL(page int) string {
-	s := strings.Replace(p.urlLayout, `{page}`, strconv.Itoa(page), -1)
-	s = strings.Replace(s, `{rows}`, strconv.Itoa(p.rows), -1)
-	s = strings.Replace(s, `{limit}`, strconv.Itoa(p.limit), -1)
-	s = strings.Replace(s, `{pages}`, strconv.Itoa(p.pages), -1)
+func (p *Pagination) URL(curr interface{}) (s string) {
+	if p.mode == ModePageNumber {
+		s = strings.Replace(p.urlLayout, `{page}`, fmt.Sprint(curr), -1)
+		s = strings.Replace(s, `{rows}`, strconv.Itoa(p.rows), -1)
+		s = strings.Replace(s, `{size}`, strconv.Itoa(p.limit), -1)
+		s = strings.Replace(s, `{limit}`, strconv.Itoa(p.limit), -1)
+		s = strings.Replace(s, `{pages}`, strconv.Itoa(p.pages), -1)
+	} else {
+		s = strings.Replace(p.urlLayout, `{curr}`, fmt.Sprint(curr), -1)
+		s = strings.Replace(s, `{prev}`, p.prevPosition, -1)
+		s = strings.Replace(s, `{next}`, p.nextPosition, -1)
+	}
 	return s
 }
 
@@ -226,16 +270,23 @@ func (p *Pagination) List(num ...int) []int {
 	return r
 }
 
+func (p *Pagination) setDefault() *Pagination {
+	if p.mode == ModePageNumber {
+		if p.page < 1 {
+			p.page = 1
+		}
+		if p.limit < 1 {
+			p.limit = 50
+		}
+		if p.num < 1 {
+			p.num = 10
+		}
+	}
+	return p
+}
+
 func (p *Pagination) Render(settings ...string) interface{} {
-	if p.page < 1 {
-		p.page = 1
-	}
-	if p.limit < 1 {
-		p.limit = 50
-	}
-	if p.num < 1 {
-		p.num = 10
-	}
+	p.setDefault()
 	switch len(settings) {
 	case 1:
 		p.tmpl = settings[0]
@@ -248,4 +299,70 @@ func (p *Pagination) Render(settings ...string) interface{} {
 		return e
 	}
 	return template.HTML(string(b))
+}
+
+// MarshalJSON allows type Pagination to be used with json.Marshal
+func (p *Pagination) MarshalJSON() ([]byte, error) {
+	b, e := json.Marshal(p.data)
+	var s string
+	if e != nil {
+		s = fmt.Sprintf(`%q`, e.Error())
+	} else {
+		s = engine.Bytes2str(b)
+	}
+	if p.mode == ModePageNumber {
+		p.setDefault()
+		s = fmt.Sprintf(`{"page":%d,"rows":%d,"limit":%d,"pages":%d,"urlLayout":%q,"data":%s}`, p.Page(), p.Rows(), p.Limit(), p.Pages(), p.urlLayout, s)
+	} else {
+		s = fmt.Sprintf(`{"curr":%q,"prev":%q,"next":%q,"urlLayout":%q,"data":%s}`, p.Position(), p.PrevPosition(), p.NextPosition(), p.urlLayout, s)
+	}
+	return engine.Str2bytes(s), nil
+}
+
+// MarshalXML allows type Pagination to be used with xml.Marshal
+func (p *Pagination) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	start.Name.Local = `Pagination`
+	if err := e.EncodeToken(start); err != nil {
+		return err
+	}
+	if p.mode == ModePageNumber {
+		p.setDefault()
+		if err := xmlEncode(e, `page`, p.Page()); err != nil {
+			return err
+		}
+		if err := xmlEncode(e, `rows`, p.Rows()); err != nil {
+			return err
+		}
+		if err := xmlEncode(e, `limit`, p.Limit()); err != nil {
+			return err
+		}
+		if err := xmlEncode(e, `pages`, p.Pages()); err != nil {
+			return err
+		}
+	} else {
+		if err := xmlEncode(e, `curr`, p.Position()); err != nil {
+			return err
+		}
+		if err := xmlEncode(e, `prev`, p.PrevPosition()); err != nil {
+			return err
+		}
+		if err := xmlEncode(e, `next`, p.NextPosition()); err != nil {
+			return err
+		}
+	}
+	if err := xmlEncode(e, `urlLayout`, p.urlLayout); err != nil {
+		return err
+	}
+	if err := xmlEncode(e, `data`, p.data); err != nil {
+		return err
+	}
+	return e.EncodeToken(xml.EndElement{Name: start.Name})
+}
+
+func xmlEncode(e *xml.Encoder, key string, value interface{}) error {
+	elem := xml.StartElement{
+		Name: xml.Name{Space: ``, Local: key},
+		Attr: []xml.Attr{},
+	}
+	return e.EncodeElement(value, elem)
 }
