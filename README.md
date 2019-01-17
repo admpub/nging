@@ -23,7 +23,7 @@ nging不仅仅包含了caddy的在线可视化配置，还包含了ftp服务的�
 # 下载地址
 
 ## 最新版本
------- 
+
 ### v1.3.2 下载
 
 * MacOS64位版本：[nging_darwin_amd64.tar.bz2](http://www.admpub.com:9000/api/file/getAttach?fileId=5c40191404aa045d8a00003c)
@@ -38,7 +38,7 @@ nging不仅仅包含了caddy的在线可视化配置，还包含了ftp服务的�
 
 
 ## 历史版本
-------
+
 ### v1.3.1 CSDN 下载
 
 * MacOS64位版本：https://download.csdn.net/download/admpub/10868709
