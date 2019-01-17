@@ -42,6 +42,10 @@ func Paging(ctx echo.Context) (page int, size int) {
 func PagingWithPagination(ctx echo.Context, delKeys ...string) (page int, size int, totalRows int, p *pagination.Pagination) {
 	page, size = Paging(ctx)
 	totalRows = ctx.Formx(`rows`).Int()
+	pjax := ctx.PjaxContainer()
+	if len(pjax) > 0 {
+		delKeys = append(delKeys, `_pjax`)
+	}
 	p = pagination.New(ctx).SetAll(``, totalRows, page, 10, size).SetURL(map[string]string{
 		`rows`: `rows`,
 		`page`: `page`,
