@@ -9,9 +9,10 @@ import (
 )
 
 var (
-	mainCron *cron.Cron
-	workPool chan bool
-	lock     sync.Mutex
+	mainCron        *cron.Cron
+	workPool        chan bool
+	lock            sync.Mutex
+	PoolDefaultSize = 1000
 )
 
 func Initial(sizes ...int) {
@@ -22,7 +23,7 @@ func Initial(sizes ...int) {
 		size = config.DefaultConfig.Cron.PoolSize
 	}
 	if size <= 0 {
-		size = 1000
+		size = PoolDefaultSize
 	}
 	Close()
 	workPool = make(chan bool, size)
