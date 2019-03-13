@@ -63,7 +63,7 @@ email {
   QueueSize : 10
 }
 cron {
-  poolSize : 0
+  poolSize : 100
   template : ""
 }
 cookie {

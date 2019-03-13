@@ -22,7 +22,7 @@ func Initial(sizes ...int) {
 		size = config.DefaultConfig.Cron.PoolSize
 	}
 	if size <= 0 {
-		size = 1
+		size = 1000
 	}
 	Close()
 	workPool = make(chan bool, size)
@@ -38,6 +38,7 @@ func Close() {
 		mainCron.Stop()
 		mainCron = nil
 		close(workPool)
+		workPool = nil
 		historyJobsRunning = false
 		log.Info(`退出任务处理`)
 	}
