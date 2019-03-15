@@ -25,9 +25,12 @@ import (
 	"time"
 
 	"github.com/admpub/confl"
+	"github.com/admpub/log"
 	"github.com/admpub/mail"
 	"github.com/admpub/nging/application/library/caddy"
 	"github.com/admpub/nging/application/library/ftp"
+	"github.com/admpub/null"
+	"github.com/webx-top/db/lib/sqlbuilder"
 	"github.com/webx-top/echo/middleware/language"
 )
 
@@ -40,17 +43,61 @@ func Version() string {
 	return ngingVersion
 }
 
+var dbConnMaxDuration = 10 * time.Second
+
+type DB struct {
+	Type            string            `json:"type"`
+	User            string            `json:"user"`
+	Password        string            `json:"password"`
+	Host            string            `json:"host"`
+	Database        string            `json:"database"`
+	Prefix          string            `json:"prefix"`
+	Options         map[string]string `json:"options"`
+	Debug           bool              `json:"debug"`
+	ConnMaxLifetime string            `json:"connMaxLifetime"`
+	connMaxDuration time.Duration
+}
+
+func (d *DB) ConnMaxDuration() time.Duration {
+	if d.connMaxDuration > 0 {
+		return d.connMaxDuration
+	}
+	if len(d.ConnMaxLifetime) > 0 {
+		d.connMaxDuration, _ = time.ParseDuration(d.ConnMaxLifetime)
+		if d.connMaxDuration <= 0 {
+			d.connMaxDuration = dbConnMaxDuration
+		}
+	} else {
+		d.connMaxDuration = dbConnMaxDuration
+	}
+	return d.connMaxDuration
+}
+
+func (d *DB) SetConnMaxLifetime(database sqlbuilder.Database) error {
+	if d.Type != `mysql` {
+		database.SetConnMaxLifetime(d.ConnMaxDuration())
+		return nil
+	}
+	row, err := database.QueryRow(`show variables where Variable_name = 'wait_timeout'`)
+	if err != nil {
+		log.Error(err)
+	} else {
+		name := null.String{}
+		timeout := null.String{}
+		err = row.Scan(&name, &timeout)
+		if err != nil {
+			log.Error(err)
+		} else {
+			d.connMaxDuration = time.Duration(timeout.Int64()) * time.Second
+			d.connMaxDuration /= 2
+		}
+	}
+	database.SetConnMaxLifetime(d.ConnMaxDuration())
+	return err
+}
+
 type Config struct {
-	DB struct {
-		Type     string            `json:"type"`
-		User     string            `json:"user"`
-		Password string            `json:"password"`
-		Host     string            `json:"host"`
-		Database string            `json:"database"`
-		Prefix   string            `json:"prefix"`
-		Options  map[string]string `json:"options"`
-		Debug    bool              `json:"debug"`
-	} `json:"db"`
+	DB DB `json:"db"`
 
 	Log struct {
 		Debug        bool   `json:"debug"`

@@ -164,6 +164,7 @@ func ConnectMySQL(c *Config) error {
 	if err != nil {
 		return err
 	}
+	c.DB.SetConnMaxLifetime(database)
 	cluster := factory.NewCluster().AddMaster(database)
 	factory.SetCluster(0, cluster).Cluster(0).SetPrefix(c.DB.Prefix)
 	factory.SetDebug(c.DB.Debug)
