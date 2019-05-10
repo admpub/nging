@@ -1,9 +1,30 @@
+/*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
+
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 package redis
 
 import (
+	"fmt"
+	"testing"
+	"time"
+
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/webx-top/echo"
-	"testing"
 )
 
 func connect() *Redis {
@@ -17,7 +38,7 @@ func connect() *Redis {
 		Host:     `127.0.0.1`,
 		Db:       `0`,
 	})
-	err := r.Login()
+	err := r.login()
 	if err != nil {
 		panic(err)
 	}
@@ -27,13 +48,25 @@ func connect() *Redis {
 func TestInfo(t *testing.T) {
 	r := connect()
 	defer r.Close()
-	info, err := r.Info()
+	info, err := r.info()
 	if err != nil {
 		panic(err)
 	}
 	echo.Dump(info)
 }
 
+func TestSetString(t *testing.T) {
+	r := connect()
+	defer r.Close()
+	for i := 0; i < 5000; i++ {
+		err := r.SetString(fmt.Sprintf(`test_%d`, i), time.Now().Format(`2006-01-02 15:04:05`))
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
+/*
 func TestFindKeys(t *testing.T) {
 	r := connect()
 	defer r.Close()
@@ -42,6 +75,17 @@ func TestFindKeys(t *testing.T) {
 		panic(err)
 	}
 	echo.Dump(info)
+}
+*/
+func TestListKeys(t *testing.T) {
+	r := connect()
+	defer r.Close()
+	offset, keys, err := r.ListKeys(20, 0, `*`)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("--------------> cursor: %v\n", offset)
+	echo.Dump(keys)
 }
 
 func TestDatabaseList(t *testing.T) {

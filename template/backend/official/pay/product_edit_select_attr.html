@@ -1,0 +1,150 @@
+<div class="form-group">
+    <!-- <label class="col-sm-2 control-label">{{"属性"|T}}</label> -->
+    <div class="col-sm-12">
+        <div class="table-responsive">
+        <table class="table table-bordered">
+	        <thead class="no-border">
+		        <tr>
+                    <th class="text-right text-middle" style="min-width:60px"><strong>{{"属性"|T}}</strong></th>
+                    {{range $index, $pdata := Stored.priceList}}
+                    <th style="max-width:200px" class="column-{{$index}}">
+                        <div class="btn-group">
+                        <a class="btn btn-primary" href="javascript:;" data-index="{{$index}}" onclick="addCol(this)"><i class="fa fa-plus"></i></a><a class="btn btn-danger" href="javascript:;" data-index="{{$index}}" onclick="removeCol(this)"><i class="fa fa-times"></i></a>
+                        </div>
+                    </th>
+                    {{else}}
+                    <th style="max-width:200px" class="column-0">
+                        <div class="btn-group">
+                        <a class="btn btn-primary" href="javascript:;" data-index="0" onclick="addCol(this)"><i class="fa fa-plus"></i></a><a class="btn btn-danger" href="javascript:;" data-index="0" onclick="removeCol(this)"><i class="fa fa-times"></i></a>
+                        </div>
+                    </th>
+                    {{end}}
+		        </tr>
+	        </thead>
+	        <tbody class="no-border-y">
+            {{range $k,$v := Stored.listData}}
+		    <tr>
+                <td class="text-right text-middle"><strong>{{$v.Name}}</strong></td>
+                {{range $index, $pdata := Stored.priceList}}
+                {{- $attrIDs := Split $pdata.AttrIds "," -}}
+                <td class="column-{{$index}}">
+                    <div class="checkbox checkbox-success checkbox-inline no-padding-y">
+                        <input type="checkbox" class="checkbox-attrid" name="attr[id][{{$index}}][]" value="{{$v.Id}}" id="attr-id-{{$index}}-{{$v.Id}}"{{if InSlice (Str $v.Id) $attrIDs}} checked{{end}}>
+                        <label for="attr-id-{{$index}}-{{$v.Id}}"></label>
+                    </div>
+                </td>
+                {{else}}
+                <td class="column-0">
+                    <div class="checkbox checkbox-success checkbox-inline no-padding-y">
+                        <input type="checkbox" class="checkbox-attrid" name="attr[id][0][]" value="{{$v.Id}}" id="attr-id-0-{{$v.Id}}">
+                        <label for="attr-id-0-{{$v.Id}}"></label>
+                    </div>
+                </td>
+                {{end}}
+            </tr>
+            {{end}}
+            </tbody>
+            <tfoot>
+		    <tr>
+                <td class="text-right text-middle text-danger bg-warning"><strong>{{"价格"|T}}: </strong></td>
+                {{range $index, $pdata := Stored.priceList}}
+                <td class="bg-warning column-{{$index}}">
+                    <input type="number" class="form-control" name="attr[price][]" placeholder="{{"套餐价格"|T}}" id="attr-price-{{$index}}" value="{{$pdata.Price}}" min="0">
+                </td>
+                {{else}}
+                <td class="bg-warning column-0">
+                    <input type="number" class="form-control" name="attr[price][]" placeholder="{{"套餐价格"|T}}" id="attr-price-0" min="0">
+                </td>
+                {{end}}
+            </tr>
+		    <tr>
+                <td class="text-right text-middle text-success bg-info"><strong>{{"名称"|T}}: </strong></td>
+                {{range $index, $pdata := Stored.priceList}}
+                <td class="bg-info column-{{$index}}">
+                    <input type="text" class="form-control" name="attr[name][]" placeholder="{{"套餐名称"|T}}" id="attr-name-{{$index}}" value="{{$pdata.Name}}">
+                    <input type="hidden" name="attr[index][]" value="{{$index}}">
+                    <input type="hidden" name="attr[priceID][]" value="{{$pdata.Id}}">
+                </td>
+                {{else}}
+                <td class="bg-info column-0">
+                    <input type="text" class="form-control" name="attr[name][]" placeholder="{{"套餐名称"|T}}" id="attr-name-0">
+                    <input type="hidden" name="attr[index][]" value="0">
+                    <input type="hidden" name="attr[priceID][]" value="">
+                </td>
+                {{end}}
+            </tr>
+		    <tr>
+                <td class="text-right text-middle"><strong>{{"说明"|T}}: </strong></td>
+                {{range $index, $pdata := Stored.priceList}}
+                <td class="column-{{$index}}">
+                    <textarea class="form-control" name="attr[description][]" placeholder="{{"功能说明"|T}}" id="attr-description-{{$index}}">{{$pdata.Description}}</textarea>
+                </td>
+                {{else}}
+                <td class="column-0">
+                    <textarea class="form-control" name="attr[description][]" placeholder="{{"功能说明"|T}}" id="attr-description-0"></textarea>
+                </td>
+                {{end}}
+            </tr>
+		    <tr>
+                <td class="text-right text-middle">
+                    ({{"从小到大排序"|T}}) 
+                    <strong>{{"排序"|T}}: </strong>
+                </td>
+                {{range $index, $pdata := Stored.priceList}}
+                <td class="column-{{$index}}">
+                    <input type="number" class="form-control" name="attr[sort][]" placeholder="{{"排序编号(从小到大排序)"|T}}" id="attr-sort-{{$index}}" value="{{$pdata.Sort}}">
+                </td>
+                {{else}}
+                <td class="column-0">
+                    <input type="number" class="form-control" name="attr[sort][]" placeholder="{{"排序编号(从小到大排序)"|T}}" id="attr-sort-0" value="0">
+                </td>
+                {{end}}
+            </tr>
+            </tfoot>
+        </table>		
+        </div>
+    </div>
+</div>
+<script>
+function addCol(a){
+    var i=$(a).data('index')*1;
+    var list=['name','id','price','sort'];
+    var j=i;
+    while($('.column-'+j).length>0) j++;
+    $('.column-'+i).each(function(){
+        var td=$(this).clone();
+        td.removeClass('column-'+i).addClass('column-'+j);
+        td.find('[data-index]').attr('data-index',j);
+        td.find('[name="attr[name][]"]').val('');
+        td.find('[name="attr[priceID][]"]').val('');
+        td.find('[name="attr[index][]"]').val(j);
+        for(var x=0;x<list.length;x++){
+            var v=list[x];
+            if(v=='id'){
+                var e=td.find('.checkbox-attrid');
+                var id='attr-'+v+'-'+j+'-'+e.val();
+                e.attr('name','attr['+v+']['+j+'][]');
+                e.attr('id',id);
+                e.next('label').attr('for',id);
+                continue;
+            }
+            var e=td.find('[name="attr['+v+'][]"]');
+            e.attr('id','attr-'+v+'-'+j);
+        }
+        $(this).after(td);
+    });
+}
+function removeCol(a){
+    var i=$(a).data('index')*1;
+    if(i<1){
+        App.message({
+            "title":App.i18n.SYS_INFO,
+            "text":'{{"第一列不能删除"|T}}',
+            "class_name":"danger"
+        });
+        return false;
+    }
+    $('.column-'+i).remove();
+    return true;
+}
+</script>

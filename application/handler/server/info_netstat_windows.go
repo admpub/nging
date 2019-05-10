@@ -15,6 +15,7 @@
    limitations under the License.
 
 */
+
 package server
 
 import (
@@ -66,6 +67,7 @@ var (
 	procGetExtendedTcpTable = modIphlpapi.NewProc("GetExtendedTcpTable")
 	procGetExtendedUdpTable = modIphlpapi.NewProc("GetExtendedUdpTable")
 	AF_INET                 = 2
+	MaxCount                = 200
 )
 
 type MIB_TCPROW_OWNER_PID struct {
@@ -94,7 +96,7 @@ type MIB_UDPTABLE_OWNER_PID struct {
 }
 
 func NetStatTCP() (<-chan net.ConnectionStat, error) {
-	b := make([]byte, 100)
+	b := make([]byte, MaxCount)
 	size := uint32(len(b))
 	ret, _, _ := procGetExtendedTcpTable.Call(
 		uintptr(unsafe.Pointer(&b[0])),
@@ -136,7 +138,7 @@ func NetStatTCP() (<-chan net.ConnectionStat, error) {
 }
 
 func NetStatUDP() (<-chan net.ConnectionStat, error) {
-	b := make([]byte, 100)
+	b := make([]byte, MaxCount)
 	size := uint32(len(b))
 	ret, _, _ := procGetExtendedUdpTable.Call(
 		uintptr(unsafe.Pointer(&b[0])),

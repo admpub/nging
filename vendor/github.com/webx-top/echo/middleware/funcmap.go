@@ -3,7 +3,9 @@ package middleware
 import (
 	"html/template"
 	"strings"
+	"time"
 
+	"github.com/admpub/humanize"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
@@ -30,10 +32,15 @@ func FuncMap(funcMap map[string]interface{}, skipper ...echo.Skipper) echo.Middl
 			c.SetFunc(`Cookie`, c.Cookie)
 			c.SetFunc(`Session`, c.Session)
 			c.SetFunc(`Form`, c.Form)
+			c.SetFunc(`Formx`, c.Formx)
 			c.SetFunc(`Query`, c.Query)
+			c.SetFunc(`Queryx`, c.Queryx)
 			c.SetFunc(`FormValues`, c.FormValues)
 			c.SetFunc(`QueryValues`, c.QueryValues)
+			c.SetFunc(`FormxValues`, c.FormxValues)
+			c.SetFunc(`QueryxValues`, c.QueryxValues)
 			c.SetFunc(`Param`, c.Param)
+			c.SetFunc(`Paramx`, c.Paramx)
 			c.SetFunc(`Atop`, c.Atop)
 			c.SetFunc(`URL`, req.URL)
 			c.SetFunc(`URI`, req.URI)
@@ -61,6 +68,26 @@ func FuncMap(funcMap map[string]interface{}, skipper ...echo.Skipper) echo.Middl
 			}
 			c.SetFunc(`DurationFormat`, func(t interface{}, args ...string) *com.Durafmt {
 				return tplfunc.DurationFormat(c.Lang(), t, args...)
+			})
+			c.SetFunc(`TsHumanize`, func(startTime interface{}, endTime ...interface{}) string {
+				humanizer, err := humanize.New(c.Lang())
+				if err != nil {
+					return err.Error()
+				}
+				var (
+					startDate = tplfunc.ToTime(startTime)
+					endDate   time.Time
+				)
+				if len(endTime) > 0 {
+					endDate = tplfunc.ToTime(endTime[0])
+				}
+				if endDate.IsZero() {
+					endDate = time.Now().Local()
+				}
+				return humanizer.TimeDiff(endDate, startDate, 0)
+			})
+			c.SetFunc(`CaptchaForm`, func(args ...interface{}) template.HTML {
+				return tplfunc.CaptchaFormWithURLPrefix(c.Echo().Prefix(), args...)
 			})
 			return h.Handle(c)
 		})

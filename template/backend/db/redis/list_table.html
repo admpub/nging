@@ -1,0 +1,49 @@
+{{Extend "db/redis/layout"}}
+{{Block "title"}}{{"数据库"|T}}: {{Stored.dbName}} - {{Super}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"数据库"|T}}: {{Stored.dbName}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">
+			<a href="{{dbMgrURL "createTable" Stored.dbName}}" class="btn btn-success pull-right" data-pjax="#pcont" data-keepjs="true">
+				<i class="fa fa-plus"></i>
+				{{"创建"|T}}
+			</a>
+            <h3>Keys</h3>
+          </div>
+          <div class="content">
+             <div class="table-responsive">
+				<table class="table no-border hover blue">
+					<thead class="no-border">
+						<tr>
+							<th style="width:2%;"><div class="checkbox checkbox-primary no-margin-y"><input type="checkbox" id="checkedAll"><label for="checkedAll"></label></div></th>
+							<th><strong>{{"Key"|T}}</strong></th>
+						</tr>
+					</thead>
+					<tbody class="no-border-x" id="tbody-content">
+                        {{$dbName := Stored.dbName}}
+                        {{range $k,$v := Stored.tableList}}
+						<tr>
+                            <td>
+                                <div class="checkbox checkbox-primary no-margin-y"><input id="checkbox-{{$k}}" class="check-table" type="checkbox" name="key[]" value="{{$v}}"><label for="checkbox-{{$k}}"></label></div>
+                            </td>
+							<td><a href="{{dbMgrURL "viewTable" $dbName $v}}">{{$v}}</a></td>
+						</tr>
+                        {{end}}
+					</tbody>
+				</table>
+				</div>
+				{{Stored.pagination.Render "pagination_cursor"}}
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+
+{{Block "footer"}}
+{{Super}}
+{{/Block}}

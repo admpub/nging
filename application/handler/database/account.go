@@ -1,19 +1,19 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package database
 
@@ -22,18 +22,18 @@ import (
 
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
-	"github.com/admpub/nging/application/middleware"
 	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
 
 func init() {
-	handler.Register(func(e *echo.Echo) {
-		e.Route(`GET,POST`, `/db/account`, AccountIndex, middleware.AuthCheck)
-		e.Route(`GET,POST`, `/db/account_add`, AccountAdd, middleware.AuthCheck)
-		e.Route(`GET,POST`, `/db/account_edit`, AccountEdit, middleware.AuthCheck)
-		e.Route(`GET,POST`, `/db/account_delete`, AccountDelete, middleware.AuthCheck)
+	handler.RegisterToGroup(`/db`, func(g *echo.Group) {
+		g.Route(`GET,POST`, ``, Manager)
+		g.Route(`GET,POST`, `/account`, g.MetaHandler(echo.H{`name`: `账号列表`}, AccountIndex))
+		g.Route(`GET,POST`, `/account_add`, g.MetaHandler(echo.H{`name`: `添加账号`}, AccountAdd))
+		g.Route(`GET,POST`, `/account_edit`, g.MetaHandler(echo.H{`name`: `修改账号`}, AccountEdit))
+		g.Route(`GET,POST`, `/account_delete`, g.MetaHandler(echo.H{`name`: `删除账号`}, AccountDelete))
 	})
 }
 
@@ -45,7 +45,7 @@ func AccountIndex(ctx echo.Context) error {
 		`uid`: user.Id,
 	}
 	cnt, err := m.List(nil, func(r db.Result) db.Result {
-		return r
+		return r.OrderBy(`-id`)
 	}, page, size, cond)
 	if totalRows <= 0 {
 		totalRows = int(cnt())
@@ -69,14 +69,20 @@ func AccountAdd(ctx echo.Context) error {
 	if ctx.IsPost() {
 		m := model.NewDbAccount(ctx)
 		err = ctx.MustBind(m.DbAccount)
-
 		if err == nil {
 			m.Uid = user.Id
 			_, err = m.Add()
 			if err == nil {
+				if ctx.IsAjax() {
+					data := ctx.Data().SetInfo(ctx.T(`数据库账号成功`)).SetData(m.DbAccount)
+					return ctx.JSON(data)
+				}
 				handler.SendOk(ctx, ctx.T(`操作成功`))
-				return ctx.Redirect(`/db/account`)
+				return ctx.Redirect(handler.URLFor(`/db/account`))
 			}
+		}
+		if err != nil && ctx.IsAjax() {
+			return ctx.JSON(ctx.Data().SetError(err))
 		}
 	}
 	ret := handler.Err(ctx, err)
@@ -107,16 +113,14 @@ func AccountEdit(ctx echo.Context) error {
 
 		if err == nil {
 			m.Id = id
-			err = m.Edit(nil, cond)
+			err = m.Edit(id, nil, cond)
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))
-				return ctx.Redirect(`/db/account`)
+				return ctx.Redirect(handler.URLFor(`/db/account`))
 			}
 		}
 	} else if err == nil {
-		echo.StructToForm(ctx, m.DbAccount, ``, func(topName, fieldName string) string {
-			return echo.LowerCaseFirstLetter(topName, fieldName)
-		})
+		echo.StructToForm(ctx, m.DbAccount, ``, echo.LowerCaseFirstLetter)
 	}
 
 	ret := handler.Err(ctx, err)
@@ -139,5 +143,5 @@ func AccountDelete(ctx echo.Context) error {
 		handler.SendFail(ctx, err.Error())
 	}
 
-	return ctx.Redirect(`/db/account`)
+	return ctx.Redirect(handler.URLFor(`/db/account`))
 }

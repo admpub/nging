@@ -1,0 +1,32 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"执行系统命令"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"执行系统命令"|T}}</li>
+{{/Block}}
+{{Block "main"}}
+<link rel="stylesheet" href="__ASSETS__/js/xterm/xterm.css"/>
+<link rel="stylesheet" href="__ASSETS__/js/xterm/addons/fullscreen/fullscreen.css"/>
+<div class="row no-margin-top">
+	<div class="col-sm-12 col-md-12">
+		<ul class="nav nav-tabs">
+		  <li class="active"><a href="#term-1" data-toggle="tab">{{"执行系统命令"|T}}</a></li>
+		</ul>
+		<div class="tab-content no-padding no-margin">
+			<div class="tab-pane active cont" id="term-1">
+			<div id="terminal-container"></div><!-- /#terminal-container -->
+			</div><!-- /#term-1 -->
+					  
+		</div><!-- /.tab-content -->
+	</div><!-- /.col-sm-12 -->
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script>
+$(function(){
+	$(window).on('resize',function(){
+		$('#terminal-container').height($(window).height()-$('#head-nav').outerHeight()-$('.page-head').outerHeight()-70);
+	}).trigger('resize');
+});
+</script>
+{{/Block}}

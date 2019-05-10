@@ -1,0 +1,153 @@
+{{Extend "layout"}}
+{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加产品"|T}}{{else}}{{"修改产品"|T}}{{end}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="__BACKEND__/official/pay/product_index">{{"产品管理"|T}}</a></li>
+<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
+{{/Block}}
+{{Block "head"}}
+<link rel="stylesheet" href="__ASSETS__/js/jquery.crop/css/jquery.Jcrop.min.css?t={{BuildTime}}" type="text/css" />
+<link rel="stylesheet" href="__ASSETS__/js/bootstrap.summernote/summernote.css?t={{BuildTime}}" type="text/css" />
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{if HasSuffix URL.Path "_add"}}{{"添加产品"|T}}{{else}}{{"修改产品"|T}}{{end}}</h3>
+          </div>
+          <div class="content">
+            <form class="form-horizontal group-border-dashed" parsley-validate novalidate method="POST" action="">
+<div class="row">
+  <div class="col-sm-8">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"产品名称"|T}}</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="name" value="{{Form "name"}}" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"宣传语"|T}}</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="slogan" value="{{Form "slogan"}}" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"关键词"|T}}</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="keywords" value="{{Form "keywords"}}" />
+                    <div class="help-block">{{"多个关键词间用半角逗号分隔"|T}}</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"摘要"|T}}</label>
+                <div class="col-sm-10">
+                  <textarea class="form-control" name="summary" parsley-trigger="keyup" parsley-maxlength="255" parsley-validation-threshold="10">{{Form "summary"}}</textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"产品详情"|T}}</label>
+                <div class="col-sm-10">{{$unixtime:=UnixTime}}
+                  <textarea class="summernote" id="content" name="content" placeholder="{{"产品详情"|T}}" action="__BACKEND__/manager/upload/pay-product?refid={{Form "id"}}&time={{$unixtime}}&token={{Token "refid" ((Formx "id").Uint64) "time" $unixtime}}">{{Form "content"}}</textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"产品类型"|T}}</label>
+                <div class="col-sm-10">
+                    <select name="attrGroupId" id="attrGroupId" class="form-control">
+                      <option value="0"> - {{"请选择"|T}} - </option>
+                      {{$attrGroupId := (Formx "attrGroupId").Uint}} 
+                      {{range $k, $v := Stored.attrGroupList}}
+                      <option value="{{$v.Id}}"{{if eq $attrGroupId $v.Id}} selected{{end}}>{{$v.Name}}</option>
+                      {{end}}
+                    </select>
+                </div>
+              </div>
+  </div>
+  <div class="col-sm-4">
+      <div class="form-group">
+        <label class="col-sm-3 control-label">{{"唯一标识"|T}}</label>
+        <div class="col-sm-9">
+            <input type="text" class="form-control" name="ident" value="{{Form "ident"}}" required="required" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-3 control-label">{{"产品价格"|T}}</label>
+        <div class="col-sm-9">
+            <input type="number" class="form-control" name="price" value="{{Form "price"}}" min="0.00" />
+        </div>
+      </div>
+      <div class="form-group">
+          <label class="col-sm-3 control-label">{{"封面图"|T}}</label>
+          <div class="col-sm-9">
+            <div class="avatar-upload">
+              {{$image := Form "image"}}
+              <img src="{{$image|Default "__ASSETS__/images/user_128.png"}}" class="profile-avatar img-thumbnail" onerror="this.src='__ASSETS__/images/user_128.png';" />
+              <input id="fileupload" type="file" name="files[]">
+              <input type="hidden" id="product-image" name="image" value="{{$image}}" />
+              <input type="hidden" id="product-image-original" name="imageOriginal" value="{{Form "imageOriginal"}}" />
+              <div id="progress" class="overlay"></div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">{{"状态"|T}}</label>
+            <div class="col-sm-9">
+              {{$v := Form "status"}}
+              <div class="radio radio-primary radio-inline">
+                  <input type="radio" value="normal" name="status" id="status-normal"{{if or (eq $v "normal") (eq $v "")}} checked{{end}}> <label for="status-normal">{{"启用"|T}}</label>
+              </div>
+                <div class="radio radio-primary radio-inline">
+                  <input type="radio" value="hidden" name="status" id="status-hidden"{{if eq $v "hidden"}} checked{{end}}> <label for="status-hidden">{{"禁用"|T}}</label>
+                </div>
+            </div>
+          </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">{{"模版名称"|T}}</label>
+        <div class="col-sm-9">
+            <input type="text" class="form-control" name="tplName" value="{{Form "tplName"}}" />
+            <div class="help-block">{{"不包含扩展名.html。如果不填写则默认使用detail"|T}}</div>
+        </div>
+      </div>
+  </div>
+  
+  <div id="attrSelectContainer"></div>           
+  <div class="form-group form-submit-group">
+      <div class="col-sm-10 col-sm-offset-2">
+        <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+        <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+      </div>
+  </div>
+</div><!-- .row -->
+            </form>
+{{Include "modal_crop_image"}}
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script src="__ASSETS__/js/jquery.upload/js/vendor/jquery.ui.widget.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="__ASSETS__/js/jquery.crop/js/jquery.Jcrop.js?t={{BuildTime}}"></script>
+<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+<script src="__ASSETS__/js/jquery.upload/js/jquery.iframe-transport.js?t={{BuildTime}}"></script>
+<!-- The basic File Upload plugin -->
+<script src="__ASSETS__/js/jquery.upload/js/jquery.fileupload.js?t={{BuildTime}}"></script>
+<script src="__ASSETS__/js/bootstrap.summernote/summernote.min.js?t={{BuildTime}}"></script>
+<script src="__ASSETS__/js/bootstrap.summernote/lang/summernote-zh-CN.js?t={{BuildTime}}"></script>
+<script src="__ASSETS__/js/behaviour/page/summernote.min.js?t={{BuildTime}}"></script>
+{{$unixtime:=UnixTime}}
+<script>
+$(function(){
+cropImage(BACKEND_URL+'/manager/upload/pay-product?refid={{Form "id"}}&time={{$unixtime}}&token={{Token "refid" ((Formx "id").Uint64) "time" $unixtime}}',"#product-image",'#product-image-original');
+summernoteEditor('#content');
+  $('#attrGroupId').off().on('change',function(){
+    var groupId=$(this).val(),productId='{{Form "id"}}';
+    $.get(window.location.href,{'op':'selectAttr','groupId':groupId,'productId':productId},function(r){
+      $('#attrSelectContainer').html(r);
+    },'html');
+  }).trigger('change');
+});
+</script>
+{{/Block}}

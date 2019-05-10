@@ -1,0 +1,97 @@
+{{$config := Stored.sms}}
+
+<div class="form-group no-padding no-margin">
+<div class="alert alert-warning no-margin">
+    <i class="fa fa-lightbulb-o text-warning"></i>
+    {{"以下短信提供商，如果启用多个，只会有一个生效"|T}}
+</div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{"Twilio"|T}}</label>
+    <div class="col-sm-8">
+        <div class="fieldset bg-fc">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+                <div class="col-sm-9">{{$disabled := $config.twilio.Disabled|Default "Y"}}
+                    <div class="radio radio-success radio-inline">
+                        <input type="radio" value="N" name="sms[twilio][disabled]" id="sms-twilio-disabled-N"{{if eq $disabled "N"}} checked{{end}}> <label for="sms-twilio-disabled-N">{{"启用"|T}}</label>
+                    </div>
+                    <div class="radio radio-danger radio-inline">
+                        <input type="radio" value="Y" name="sms[twilio][disabled]" id="sms-twilio-disabled-Y"{{if eq $disabled "Y"}} checked{{end}}> <label for="sms-twilio-disabled-Y">{{"禁用"|T}}</label>
+                    </div>
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"ACCOUNT SID"|T}}</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="sms[twilio][value][accessKey]" value="{{$config.twilio.ValueObject.AccessKey}}">
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"AUTH TOKEN"|T}}</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="sms[twilio][value][accessSecret]" value="{{$config.twilio.ValueObject.AccessSecret}}">
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"发送者手机号"|T}}</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="sms[twilio][value][from]" value="{{$config.twilio.ValueObject.From}}">
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"收信人默认国家代码"|T}}</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="sms[twilio][value][countryCode]" placeholder="+86" value="{{$config.twilio.ValueObject.CountryCode}}">
+                    <div class="help-block">{{"例如中国的国家码是：+86"|T}}</div>
+                </div>
+            </div><!-- form-group -->
+        </div><!-- fieldset -->
+    </div><!-- col-sm-8 -->
+</div>
+
+
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{"阿里云通信"|T}}</label>
+    <div class="col-sm-8">
+        <div class="fieldset bg-fc">
+            <div class="form-group">{{$disabled := $config.aliyun.Disabled|Default "Y"}}
+                <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+                <div class="col-sm-9">
+                    <div class="radio radio-success radio-inline">
+                        <input type="radio" value="N" name="sms[aliyun][disabled]" id="sms-aliyun-disabled-N"{{if eq $disabled "N"}} checked{{end}}> <label for="sms-aliyun-disabled-N">{{"启用"|T}}</label>
+                    </div>
+                    <div class="radio radio-danger radio-inline">
+                        <input type="radio" value="Y" name="sms[aliyun][disabled]" id="sms-aliyun-disabled-Y"{{if eq $disabled "Y"}} checked{{end}}> <label for="sms-aliyun-disabled-Y">{{"禁用"|T}}</label>
+                    </div>
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"Access Key"|T}}</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="sms[aliyun][value][accessKey]" value="{{$config.aliyun.ValueObject.AccessKey}}">
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"Access Secret"|T}}</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="sms[aliyun][value][accessSecret]" value="{{$config.aliyun.ValueObject.AccessSecret}}">
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"默认签名"|T}}</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="sms[aliyun][value][signName]" value="{{$config.aliyun.ValueObject.SignName}}">
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"默认模板代码"|T}}</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="sms[aliyun][value][tmplCode]" value="{{$config.aliyun.ValueObject.TmplCode}}">
+                </div>
+            </div><!-- form-group -->
+        </div><!-- fieldset -->
+    </div><!-- col-sm-8 -->
+</div>
+

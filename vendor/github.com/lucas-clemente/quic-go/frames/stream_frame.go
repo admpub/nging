@@ -3,10 +3,11 @@ package frames
 import (
 	"bytes"
 	"errors"
+	"io"
 
+	"github.com/lucas-clemente/quic-go/internal/utils"
 	"github.com/lucas-clemente/quic-go/protocol"
 	"github.com/lucas-clemente/quic-go/qerr"
-	"github.com/lucas-clemente/quic-go/utils"
 )
 
 // A StreamFrame of QUIC
@@ -64,22 +65,22 @@ func ParseStreamFrame(r *bytes.Reader) (*StreamFrame, error) {
 		return nil, qerr.Error(qerr.InvalidStreamData, "data len too large")
 	}
 
-	if dataLen == 0 {
+	if !frame.DataLenPresent {
 		// The rest of the packet is data
 		dataLen = uint16(r.Len())
 	}
 	if dataLen != 0 {
 		frame.Data = make([]byte, dataLen)
-		n, err := r.Read(frame.Data)
-		if n != int(dataLen) {
-			return nil, errors.New("BUG: StreamFrame could not read dataLen bytes")
-		}
-		if err != nil {
+		if _, err := io.ReadFull(r, frame.Data); err != nil {
 			return nil, err
 		}
 	}
 
-	if !frame.FinBit && len(frame.Data) == 0 {
+	if frame.Offset+frame.DataLen() < frame.Offset {
+		return nil, qerr.Error(qerr.InvalidStreamData, "data overflows maximum offset")
+	}
+
+	if !frame.FinBit && frame.DataLen() == 0 {
 		return nil, qerr.EmptyStreamFrameNoFin
 	}
 

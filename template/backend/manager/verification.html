@@ -1,0 +1,113 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"验证码管理"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"验证码管理"|T}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+	<div class="col-md-12">
+		<div class="block-flat">
+			<div class="header">
+				<div class="pull-right" style="margin-left:10px">
+					<form class="form-horizontal" action="" id="search-form" method="GET">
+						<div class="input-group">
+							<span class="input-group-addon">{{"发送状态"|T}}</span>
+							<select name="sendStatus" class="form-control" id="sendStatus" onchange="$('#search-form').submit()">
+                                <option value=""> - {{"不限"|T}} - </option>
+                                {{$sendStatus := Form "sendStatus"}}
+								<option value="success" {{if eq $sendStatus "success"}} selected{{end}}>{{"成功"|T}}</option>
+								<option value="failure" {{if eq $sendStatus "failure"}} selected{{end}}>{{"失败"|T}}</option>
+								<option value="waiting" {{if eq $sendStatus "waiting"}} selected{{end}}>{{"预约等待中"|T}}</option>
+							</select>
+							<span class="input-group-addon">{{"使用状态"|T}}</span>
+							<select name="usedStatus" class="form-control" id="usedStatus" onchange="$('#search-form').submit()">
+                                <option value=""> - {{"不限"|T}} - </option>
+                                {{$usedStatus := Form "usedStatus"}}
+								<option value="1" {{if eq $usedStatus "1"}} selected{{end}}>{{"已使用"|T}}</option>
+								<option value="0" {{if eq $usedStatus "0"}} selected{{end}}>{{"未使用"|T}}</option>
+							</select>
+							<span class="input-group-addon">{{"发送目标"|T}}</span>
+							<input name="sendTo" class="form-control" id="sendTo" value="{{Form "sendTo"}}" placeholder="{{"手机号或邮箱地址"|T}}" onkeyup="if(event.keyCode==13)$('#search-form').submit()">
+                        </div>
+					</form>
+				</div>	
+				<h3>{{"验证码记录"|T}}</h3>
+			</div>
+			<div class="content">
+				<div class="table-responsive">
+				<table class="table no-border hover">
+					<thead class="no-border">
+						<tr>
+							<th style="width:2%;"><strong>ID</strong></th>
+							<th><strong>{{"验证码"|T}}</strong></th>
+							<th><strong>{{"有效期"|T}}</strong></th>
+							<th><strong>{{"时间"|T}}</strong></th>
+							<th><strong>{{"使用者"|T}}</strong></th>
+							<th><strong>{{"通知"|T}}</strong></th>
+							<th><strong>{{"发送状态"|T}}</strong></th>
+							<th><strong>{{"状态"|T}}</strong></th>
+							<th style="width:100px" class="text-center"><strong>{{"操作"|T}}</strong></th>
+						</tr>
+					</thead>
+					<tbody class="no-border-y">
+                        {{range $k,$v := Stored.listData}}{{$id := $v.Uint64 "id"}}
+						<tr>
+							<td>{{$id}}</td>
+							<td>{{$v.String "code"}}</td>
+							<td>{{$start:=$v.Uint "start"}}
+								{{$end:=$v.Uint "end"}}
+								{{if and (gt $start 0) (gt $end 0)}}
+								{{$start|DateFormat "2006-01-02 15:04:05"}} ~ {{$end|DateFormat "2006-01-02 15:04:05"}}
+								{{else if gt $start 0}}
+								{{$start|DateFormat "2006-01-02 15:04:05"}}{{"以后"|T}}
+								{{else if gt $end 0}}
+								{{$end|DateFormat "2006-01-02 15:04:05"}}{{"以前"|T}}
+								{{else}}
+								{{"不限制"|T}}
+								{{end}}
+							</td>
+							<td>
+								{{"创建"}}: {{$v.created.Uint|DateFormat "2006-01-02 15:04:05"}}<br />
+								{{"使用"}}: 
+								{{$used := $v.Uint "used"}}
+								{{if gt $used 0}}
+								{{$used|DateFormat "2006-01-02 15:04:05"}}
+								{{else}}
+								{{"未使用"|T}}
+								{{end}}
+							</td>
+							<td>
+                                ID: {{$v.Uint64 "owner_id"}}<br />
+								{{"类型"|T}}: 
+								{{$ownerType := $v.String "owner_type"}}
+                                {{if eq $ownerType "user"}}
+                                {{"后台用户"|T}}
+                                {{else if eq $ownerType "customer"}}
+                                {{"前台客户"|T}}
+                                {{else}}
+                                {{$ownerType}}
+                                {{end}}
+                            </td>
+							<td>
+                                {{"方式"|T}}: {{$v.String "send_method"}}<br />
+                                {{"地址"|T}}: {{$v.String "send_to"}}
+                            </td>
+							<td><a data-toggle="tooltip" title="{{$v.String "result"}}">{{$v.String "status"}}</a></td>
+							<td>{{if eq ($v.String "disabled") "Y"}}{{"无效"|T}}{{else}}{{"有效"|T}}{{end}}</td>
+							<td class="text-center">
+							<a class="label label-info" data-href="__BACKEND__/manager/verification_detail?id={{$id}}" onclick="$('#send-content-{{$id}}').toggleClass('hidden')" data-toggle="tooltip" title="{{"查看发送内容"|T}}"><i class="fa fa-eye"></i></a> 
+							<a class="label label-danger" href="__BACKEND__/manager/verification_delete?id={{$id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" data-toggle="tooltip" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
+							</td>
+                        </tr>
+                        <tr id="send-content-{{$id}}" class="hidden"><td colspan="10">{{$v.String "content"|ToHTML}}</td></tr>
+                        {{end}}
+					</tbody>
+				</table>		
+				</div>
+				{{Stored.pagination.Render}}
+			</div>
+		</div>				
+	</div>
+</div>
+{{/Block}}

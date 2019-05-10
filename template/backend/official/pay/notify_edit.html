@@ -1,0 +1,41 @@
+{{Extend "layout"}}
+{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加通知"|T}}{{else}}{{"修改通知"|T}}{{end}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="__BACKEND__/official/pay/notify_index">{{"通知管理"|T}}</a></li>
+<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{if HasSuffix URL.Path "_add"}}{{"添加通知"|T}}{{else}}{{"修改通知"|T}}{{end}}</h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" parsley-validate novalidate method="POST" action="">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"组名称"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" name="name" value="{{Form "name"}}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"说明"|T}}</label>
+                <div class="col-sm-8">
+                  <textarea class="form-control" name="description">{{Form "description"}}</textarea>
+                </div>
+              </div>
+              
+              <div class="form-group form-submit-group">
+									<div class="col-sm-9 col-sm-offset-2">
+									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+									</div>
+							</div>
+            </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}

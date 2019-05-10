@@ -1,0 +1,25 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"服务器信息"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"服务器信息"|T}}</li>
+{{/Block}}
+{{Block "main"}}{{Strip}}
+<style>
+.progress{background-color:#888;}
+</style>
+<!-- {{/* Include "server/chart/chart" */}} -->
+{{/* Include "server/chart/cpu" */}}
+<div class="row">
+	<div class="col-sm-12 col-md-12">
+{{Include "server/sysinfo/host_info"}}
+{{Include "server/sysinfo/mem_info"}}
+{{Include "server/sysinfo/disk_info"}}
+{{Include "server/sysinfo/net_info"}}
+	</div>
+</div>
+{{/Strip}}{{/Block}}
+{{Block "footer"}}
+<!-- {{/* Include "server/chart/chart.js" */}} -->
+{{/* Include "server/chart/cpu.js" */}}
+{{/Block}}

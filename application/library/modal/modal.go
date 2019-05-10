@@ -1,19 +1,19 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package modal
 
@@ -23,18 +23,22 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/admpub/confl"
+	"github.com/admpub/log"
 	"github.com/webx-top/echo"
 )
 
 var (
+	modalConfig  = map[string]Modal{}
 	DefaultModal = Modal{
 		ExtButtons: []Button{},
 	}
 	ReadConfigFile = func(file string) ([]byte, error) {
 		return ioutil.ReadFile(file)
 	}
+	mutext = &sync.RWMutex{}
 )
 
 type HTMLAttr struct {
@@ -60,39 +64,48 @@ type Modal struct {
 	ExtButtons  []Button //附加按钮
 }
 
-var modalConfig = map[string]Modal{}
+func UnmarshalFile(confile string) (Modal, error) {
+	mutext.Lock()
+	defer mutext.Unlock()
+	ov, ok := modalConfig[confile]
+	if ok {
+		return ov, nil
+	}
+	b, err := ReadConfigFile(confile)
+	if err == nil {
+		err = confl.Unmarshal(b, &ov)
+	}
+	if err != nil {
+		if os.IsNotExist(err) || strings.Contains(err.Error(), `cannot find the file`) {
+			var b []byte
+			b, err = confl.Marshal(DefaultModal)
+			if err == nil {
+				err = os.MkdirAll(filepath.Dir(confile), os.ModePerm)
+				if err == nil {
+					err = ioutil.WriteFile(confile, b, os.ModePerm)
+				}
+			}
+		}
+		if err != nil {
+			return ov, err
+		}
+	}
+	modalConfig[confile] = ov
+	return ov, nil
+}
 
 func Render(ctx echo.Context, param interface{}) template.HTML {
 	var data Modal
-	if v, y := param.(*Modal); y {
+	switch v := param.(type) {
+	case *Modal:
 		data = *v
-	} else if v, y := param.(Modal); y {
+	case Modal:
 		data = v
-	} else if v, y := param.(string); y {
-		if ov, ok := modalConfig[v]; ok {
-			data = ov
-		} else {
-			b, err := ReadConfigFile(v)
-			if err == nil {
-				err = confl.Unmarshal(b, &data)
-			}
-			if err != nil {
-				if os.IsNotExist(err) || strings.Contains(err.Error(), `cannot find the file`) {
-					var b []byte
-					data = DefaultModal
-					b, err = confl.Marshal(data)
-					if err == nil {
-						err = os.MkdirAll(filepath.Dir(v), os.ModePerm)
-						if err == nil {
-							err = ioutil.WriteFile(v, b, os.ModePerm)
-						}
-					}
-				}
-				if err != nil {
-					return template.HTML(err.Error())
-				}
-			}
-			modalConfig[v] = data
+	case string:
+		var err error
+		data, err = UnmarshalFile(v)
+		if err != nil {
+			return template.HTML(err.Error())
 		}
 	}
 	b, err := ctx.Fetch(`modal`, data)
@@ -103,13 +116,19 @@ func Render(ctx echo.Context, param interface{}) template.HTML {
 }
 
 func Remove(confPath string) error {
+	mutext.Lock()
+	defer mutext.Unlock()
 	if _, ok := modalConfig[confPath]; ok {
 		delete(modalConfig, confPath)
+		log.Debugf(`remove: modalConfig[%s] (remains:%d)`, confPath, len(modalConfig))
 	}
 	return nil
 }
 
 func Clear() error {
+	mutext.Lock()
+	defer mutext.Unlock()
 	modalConfig = map[string]Modal{}
+	log.Debugf(`clear: modalConfig (remains:%d)`, len(modalConfig))
 	return nil
 }

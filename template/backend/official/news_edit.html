@@ -1,0 +1,183 @@
+{{Extend "layout"}}
+{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加资讯"|T}}{{else}}{{"修改资讯"|T}}{{end}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="__BACKEND__/official/news_index">{{"资讯管理"|T}}</a></li>
+<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
+{{/Block}}
+{{Block "head"}}
+<link rel="stylesheet" type="text/css" href="__ASSETS__/js/jquery.select2/select2.css" />
+<link rel="stylesheet" type="text/css" href="__ASSETS__/js/selectpage/selectpage.css?t={{BuildTime}}" />
+<link rel="stylesheet" href="__ASSETS__/js/jquery.crop/css/jquery.Jcrop.min.css?t={{BuildTime}}" type="text/css" />
+<link rel="stylesheet" href="__ASSETS__/js/bootstrap.summernote/summernote.css?t={{BuildTime}}" type="text/css" />
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{if HasSuffix URL.Path "_add"}}{{"添加资讯"|T}}{{else}}{{"修改资讯"|T}}{{end}}</h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" parsley-validate novalidate method="POST" action="">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"选择产品"|T}}</label>
+                <div class="col-sm-8">
+                  {{$productId := (Formx "productId").Uint64}}
+                  <input type="text" name="productId" id="productId" data-init="{{$productId}}" value="{{$productId}}" class="form-control">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"资讯标题"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" required name="title" value="{{Form "title"}}">
+                </div>
+              </div>
+              <div class="form-group">
+                  <label class="col-sm-2 control-label">{{"封面图"|T}}</label>
+                  <div class="col-sm-8">
+                    <div class="avatar-upload">
+                      {{$image := Form "image"}}
+                      <img src="{{$image|Default "__ASSETS__/images/user_128.png"}}" class="profile-avatar img-thumbnail" onerror="this.src='__ASSETS__/images/user_128.png';" />
+                      <input id="fileupload" type="file" name="files[]">
+                      <input type="hidden" id="news-image" name="image" value="{{$image}}" />
+                      <input type="hidden" id="news-image-original" name="imageOriginal" value="{{Form "imageOriginal"}}" />
+                      <div id="progress" class="overlay"></div>
+                    </div>
+                  </div>
+                </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"资讯摘要"|T}}</label>
+                <div class="col-sm-8">
+                  <textarea class="form-control" name="summary" parsley-trigger="keyup" parsley-maxlength="255" parsley-validation-threshold="10">{{Form "summary"}}</textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"资讯内容"|T}}</label>
+                <div class="col-sm-8">{{$unixtime:=UnixTime}}
+                  <textarea name="content" class="summernote" id="content" placeholder="{{"资讯内容"|T}}" action="__BACKEND__/manager/upload/news?refid={{Form "id"}}&time={{$unixtime}}&token={{Token "refid" ((Formx "id").Uint64) "time" $unixtime}}">{{Form "content"}}</textarea>
+                  <input type="hidden" name="contentType" value="{{Form "contentType" "html"}}">
+                </div>
+              </div>
+              <div class="form-group">
+                  <label class="col-sm-2 control-label">{{"资讯状态"|T}}</label>
+                  <div class="col-sm-8">
+                    {{$v := Form "display"}}
+                    <div class="radio radio-success radio-inline">
+                        <input type="radio" value="Y" name="display" id="display-Y"{{if or (eq $v "Y") (eq $v "")}} checked{{end}}> <label for="display-Y">{{"显示"|T}}</label>
+                    </div>
+                      <div class="radio radio-danger radio-inline">
+                        <input type="radio" value="N" name="display" id="display-N"{{if eq $v "N"}} checked{{end}}> <label for="display-N">{{"隐藏"|T}}</label>
+                      </div>
+                  </div>
+                </div>
+              <div class="form-group">
+                  <label class="col-sm-2 control-label">{{"评论开关"|T}}</label>
+                  <div class="col-sm-8">
+                    {{$closeComment := Form "closeComment"}}
+                    <div class="radio radio-success radio-inline">
+                      <input type="radio" value="N" name="closeComment" id="closeComment-N"{{if or (eq $closeComment "N") (eq $closeComment "")}} checked{{end}} onclick="$('#comment-settings').removeClass('hide');"> <label for="closeComment-N">{{"允许评论"|T}}</label>
+                    </div>
+                    <div class="radio radio-danger radio-inline">
+                        <input type="radio" value="Y" name="closeComment" id="closeComment-Y"{{if eq $closeComment "Y"}} checked{{end}} onclick="$('#comment-settings').addClass('hide');"> <label for="closeComment-Y">{{"关闭评论"|T}}</label>
+                    </div>
+
+                    <!-- comment-settings -->
+
+                  <div id="comment-settings" class="fieldset bg-fc{{if eq $closeComment "Y"}} hide{{end}}">
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">{{"显示评论"|T}}</label>
+                    <div class="col-sm-8">
+                      {{$v := Form "commentAutoDisplay"}}
+                      <div class="radio radio-success radio-inline">
+                        <input type="radio" value="Y" name="commentAutoDisplay" id="commentAutoDisplay-Y"{{if or (eq $v "Y") (eq $v "")}} checked{{end}}> <label for="commentAutoDisplay-Y">{{"直接显示"|T}}</label>
+                      </div>
+                      <div class="radio radio-primary radio-inline">
+                          <input type="radio" value="N" name="commentAutoDisplay" id="commentAutoDisplay-N"{{if eq $v "N"}} checked{{end}}> <label for="commentAutoDisplay-N">{{"需要审核"|T}}</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                      <label class="col-sm-2 control-label">{{"允许评论"|T}}</label>
+                      <div class="col-sm-8">
+                        {{$v := Form "commentAllowUser"}}
+                        {{range $i,$r := Stored.allowUsers}}
+                        <div class="radio radio-success radio-inline">
+                          <input type="radio" value="{{$r.K}}" name="commentAllowUser" id="commentAllowUser-{{$r.K}}"{{if or (eq $v $r.K) (and (eq $v "") (eq $r.K "all") )}} checked{{end}}> <label for="commentAllowUser-{{$r.K}}">{{$r.V}}</label>
+                        </div>
+                        {{end}}
+                      </div>
+                    </div>
+                  </div><!-- /fieldset -->
+                    <!-- /comment-settings -->
+
+
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">{{"标签"|T}}</label>
+                  <div class="col-sm-8">
+                    <input id="select2tags" name="tags" type="hidden" value="{{Form "tags"}}" />
+                  </div>
+                </div>
+              <div class="form-group form-submit-group">
+									<div class="col-sm-9 col-sm-offset-2">
+									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+									</div>
+							</div>
+            </form>
+{{Include "modal_crop_image"}}
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script src="__ASSETS__/js/jquery.select2/select2.min.js" type="text/javascript"></script>
+<script src="__ASSETS__/js/selectpage/selectpage.min.js?t={{BuildTime}}" type="text/javascript"></script>
+<script src="__ASSETS__/js/jquery.upload/js/vendor/jquery.ui.widget.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="__ASSETS__/js/jquery.crop/js/jquery.Jcrop.js?t={{BuildTime}}"></script>
+<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+<script src="__ASSETS__/js/jquery.upload/js/jquery.iframe-transport.js?t={{BuildTime}}"></script>
+<!-- The basic File Upload plugin -->
+<script src="__ASSETS__/js/jquery.upload/js/jquery.fileupload.js?t={{BuildTime}}"></script>
+<script src="__ASSETS__/js/bootstrap.summernote/summernote.min.js?t={{BuildTime}}"></script>
+<script src="__ASSETS__/js/bootstrap.summernote/lang/summernote-zh-CN.js?t={{BuildTime}}"></script>
+<script src="__ASSETS__/js/behaviour/page/summernote.min.js?t={{BuildTime}}"></script>
+{{$unixtime:=UnixTime}}
+<script type="text/javascript">
+$(function(){
+  cropImage(BACKEND_URL+'/manager/upload/news?refid={{Form "id"}}&time={{$unixtime}}&token={{Token "refid" ((Formx "id").Uint64) "time" $unixtime}}',"#news-image",'#news-image-original');
+  $('#productId').selectPage({
+    showField : 'name',
+    keyField : 'id',
+    data : BACKEND_URL+'/official/pay/product_index',
+    params : function(){return {};},
+    eAjaxSuccess : function(d){
+        var result;
+        if(d) result = {
+          "list":d.Data.listData,
+          "pageSize": d.Data.pagination.limit,
+          "pageNumber": d.Data.pagination.page,
+          "totalRow": d.Data.pagination.rows,
+          "totalPage":d.Data.pagination.pages
+        };
+        else result = undefined;
+        return result;
+    }
+  });
+
+  summernoteEditor('#content');
+  var checked=$('[name="closeComment"]:checked');
+  if(checked.length>0){
+    checked.trigger('click');
+  }
+  var options={tags:true,width:'100%'};
+  var tagList={{Stored.tagList|JSONEncode|ToJS}};
+  if(tagList && tagList.length>0) options.data=tagList;
+  $('#select2tags').select2(options);
+});
+</script>
+{{/Block}}

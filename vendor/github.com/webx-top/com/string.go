@@ -25,9 +25,12 @@ import (
 	"encoding/gob"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"hash"
 	"io"
+	"io/ioutil"
 	r "math/rand"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -56,6 +59,11 @@ func ByteMd5(b []byte) string {
 	m := md5.New()
 	m.Write(b)
 	return hex.EncodeToString(m.Sum(nil))
+}
+
+func Md5file(file string) string {
+	barray, _ := ioutil.ReadFile(file)
+	return ByteMd5(barray)
 }
 
 func Token(key string, val []byte, args ...string) string {
@@ -271,6 +279,27 @@ func ToASCIIUpper(r rune) rune {
 	return r
 }
 
+func IsAlpha(r rune) bool {
+	if ('Z' < r || r < 'A') && ('z' < r || r < 'a') {
+		return false
+	}
+	return true
+}
+
+func IsAlphaNumeric(r rune) bool {
+	if ('Z' < r || r < 'A') && ('z' < r || r < 'a') && ('9' < r || r < '0') {
+		return false
+	}
+	return true
+}
+
+func IsNumeric(r rune) bool {
+	if '9' < r || r < '0' {
+		return false
+	}
+	return true
+}
+
 // GonicCase : webxTop => webx_top
 func GonicCase(name string) string {
 	s := make([]rune, 0, len(name)+3)
@@ -454,4 +483,23 @@ func MaskString(v string, width ...float64) string {
 		}
 	}
 	return v[0:1] + strings.Repeat(`*`, size-1)
+}
+
+// LeftPadZero 字符串指定长度，长度不足的时候左边补零
+func LeftPadZero(input string, padLength int) string {
+	return fmt.Sprintf(`%0*s`, padLength, input)
+}
+
+var (
+	reSpaceLine     = regexp.MustCompile("([\\t\\s\r]*\n){2,}")
+	BreakLine       = []byte("\n")
+	BreakLineString = "\n"
+)
+
+func CleanSpaceLine(b []byte) []byte {
+	return reSpaceLine.ReplaceAll(b, BreakLine)
+}
+
+func CleanSpaceLineString(b string) string {
+	return reSpaceLine.ReplaceAllString(b, BreakLineString)
 }

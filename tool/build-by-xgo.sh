@@ -4,7 +4,7 @@ go get github.com/admpub/go-bindata-assetfs/...
 cd ..
 $GOPATH/bin/go-bindata-assetfs -tags bindata public/... template/... config/i18n/...
 cd tool
-export NGING_VERSION="1.3.3"
+export NGING_VERSION="2.0.0"
 export NGING_BUILD=`date +%Y%m%d%H%M%S`
 export NGING_COMMIT=`git rev-parse HEAD`
 export NGING_LABEL="beta"

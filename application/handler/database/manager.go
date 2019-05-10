@@ -1,19 +1,19 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 package database
@@ -23,17 +23,11 @@ import (
 	"github.com/admpub/nging/application/library/dbmanager"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	_ "github.com/admpub/nging/application/library/dbmanager/driver/mysql" //mysql
-	"github.com/admpub/nging/application/middleware"
+	_ "github.com/admpub/nging/application/library/dbmanager/driver/redis" //redis
 	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
-
-func init() {
-	handler.Register(func(e *echo.Echo) {
-		e.Route(`GET,POST`, `/db`, Manager, middleware.AuthCheck)
-	})
-}
 
 func Manager(ctx echo.Context) error {
 	user := handler.User(ctx)
@@ -63,17 +57,18 @@ func Manager(ctx echo.Context) error {
 				data.Host = `127.0.0.1`
 			}
 			auth.CopyFrom(data)
-			if accountId > 0 && ctx.Form(`remember`) == `1` {
+			if ctx.Form(`remember`) == `1` {
+				m.Title = auth.Driver + `://` + auth.Username + `@` + auth.Host + `/` + auth.Db
 				m.Engine = auth.Driver
 				m.Host = auth.Host
 				m.User = auth.Username
 				m.Password = auth.Password
 				m.Name = auth.Db
-				if err == db.ErrNoMoreRows {
+				if accountId < 1 || err == db.ErrNoMoreRows {
 					m.Uid = user.Id
 					_, err = m.Add()
 				} else {
-					err = m.Edit(nil, db.Cond{`id`: accountId})
+					err = m.Edit(accountId, nil, db.Cond{`id`: accountId})
 				}
 			}
 			ctx.Session().Set(`dbAuth`, auth)
@@ -102,6 +97,7 @@ func Manager(ctx echo.Context) error {
 			if len(operation) == 0 {
 				operation = `listDb`
 			}
+			ctx.Set(`signedIn`, true)
 			ctx.Set(`dbUsername`, auth.Username)
 			ctx.Set(`dbHost`, auth.Host)
 			genURL = func(op string, args ...string) string {
@@ -144,7 +140,7 @@ func Manager(ctx echo.Context) error {
 			switch operation {
 			case `login`:
 				mgr.Run(auth.Driver, `logout`)
-				return ctx.Redirect(`/db`)
+				return ctx.Redirect(handler.URLFor(`/db`))
 			case `logout`:
 				mgr.Run(auth.Driver, `logout`)
 				ctx.Session().Delete(`dbAuth`)
@@ -173,5 +169,6 @@ func Manager(ctx echo.Context) error {
 	}
 
 	ctx.Set(`driverList`, driverList)
+	ctx.Set(`dbType`, ctx.T(`数据库`))
 	return ctx.Render(`db/index`, ret)
 }

@@ -186,3 +186,27 @@ func RandPerm(max int) []int {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	return r.Perm(max)
 }
+
+// RandRangeInt64 生成区间随机数
+// @param int64 min 最小值
+// @param int64 max 最大值
+// @return int64 生成的随机数
+func RandRangeInt64(min, max int64) int64 {
+	if min >= max || min == 0 || max == 0 {
+		return max
+	}
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	return r.Int63n(max-min) + min
+}
+
+// RandRangeInt 生成区间随机数
+// @param int min 最小值
+// @param int max 最大值
+// @return int 生成的随机数
+func RandRangeInt(min, max int) int {
+	if min >= max || min == 0 || max == 0 {
+		return max
+	}
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	return r.Intn(max-min) + min
+}

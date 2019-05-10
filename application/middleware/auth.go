@@ -1,48 +1,108 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package middleware
 
 import (
-	"errors"
+	"strings"
 	"time"
 
-	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/nging/application/library/license"
 	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/application/registry/perm"
 	"github.com/webx-top/echo"
 )
 
 func AuthCheck(h echo.Handler) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		if user, _ := c.Session().Get(`user`).(*dbschema.User); user != nil {
+		//检查是否已安装
+		if !config.IsInstalled() {
+			return c.Redirect(handler.URLFor(`/setup`))
+		}
+
+		//验证授权文件
+		if !license.Ok(c.Host()) {
+			return c.Redirect(handler.URLFor(`/license`))
+		}
+
+		if user := handler.User(c); user != nil {
 			if jump, ok := c.Session().Get(`auth2ndURL`).(string); ok && len(jump) > 0 {
 				return c.Redirect(jump)
 			}
-			c.Set(`user`, user)
-			c.SetFunc(`Username`, func() string { return user.Username })
+			var (
+				rpath = c.Path()
+				ppath string
+			)
+			//println(`--------------------->>>`, rpath)
+			if len(handler.BackendPrefix) > 0 {
+				rpath = strings.TrimPrefix(rpath, handler.BackendPrefix)
+			}
+			if user.Id == 1 || strings.HasPrefix(rpath, `/user/`) {
+				c.SetFunc(`CheckPerm`, func(route string) error {
+					return nil
+				})
+				return h.Handle(c)
+			}
+			roleList := handler.RoleList(c)
+			roleM := model.NewUserRole(c)
+			if checker, ok := perm.SpecialAuths[rpath]; ok {
+				var err error
+				var ret bool
+				err, ppath, ret = checker(h, c, rpath, user, roleM, roleList)
+				if ret {
+					return err
+				}
+				if err != nil {
+					return err
+				}
+			} else {
+				ppath = rpath
+				if len(ppath) >= 13 {
+					switch ppath[0:13] {
+					case `/term/client/`:
+						ppath = `term/client`
+					default:
+						if strings.HasPrefix(rpath, `/frp/dashboard/`) {
+							ppath = `/frp/dashboard`
+						} else {
+							ppath = strings.TrimPrefix(rpath, `/`)
+						}
+					}
+				} else {
+					ppath = strings.TrimPrefix(rpath, `/`)
+				}
+			}
+			if !roleM.CheckPerm2(roleList, ppath) {
+				return echo.ErrForbidden
+			}
+			c.SetFunc(`CheckPerm`, func(route string) error {
+				if user.Id == 1 {
+					return nil
+				}
+				if !roleM.CheckPerm2(roleList, route) {
+					return echo.ErrForbidden
+				}
+				return nil
+			})
 			return h.Handle(c)
 		}
-
-		//检查是否已安装
-		if !config.IsInstalled() {
-			return c.Redirect(`/setup`)
-		}
-		return c.Redirect(`/login`)
+		return c.Redirect(handler.URLFor(`/login`))
 	}
 }
 
@@ -53,14 +113,14 @@ func Auth(c echo.Context, saveSession bool) error {
 	m := model.NewUser(c)
 	exists, err := m.CheckPasswd(user, pass)
 	if !exists {
-		return errors.New(c.T(`用户不存在`))
+		return c.E(`用户不存在`)
 	}
 	if err == nil {
 		if saveSession {
 			m.SetSession()
 		}
 		if m.NeedCheckU2F(m.User.Id) {
-			c.Session().Set(`auth2ndURL`, `/gauth_check`)
+			c.Session().Set(`auth2ndURL`, handler.URLFor(`/gauth_check`))
 		}
 		m.User.LastLogin = uint(time.Now().Unix())
 		m.User.LastIp = c.RealIP()

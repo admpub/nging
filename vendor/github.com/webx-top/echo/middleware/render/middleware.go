@@ -19,6 +19,7 @@ package render
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/webx-top/echo"
 )
@@ -26,24 +27,40 @@ import (
 var (
 	DefaultOptions = &Options{
 		Skipper:              echo.DefaultSkipper,
-		DataKey:              `data`,
-		TmplKey:              `tmpl`,
-		DefaultTmpl:          `index`,
-		JSONPCallbackName:    `callback`,
-		OutputFunc:           Output,
-		DefaultErrorHTTPCode: http.StatusInternalServerError,
+		ErrorPages:           make(map[int]string),
+		DefaultHTTPErrorCode: http.StatusInternalServerError,
+		SetFuncMap: []echo.HandlerFunc{
+			func(c echo.Context) error {
+				c.SetFunc(`Lang`, c.Lang)
+				c.SetFunc(`Now`, time.Now)
+				c.SetFunc(`T`, c.T)
+				return nil
+			},
+		},
 	}
 )
 
 type Options struct {
 	Skipper              echo.Skipper
-	DataKey              string
-	TmplKey              string
-	DefaultTmpl          string
-	DefaultErrorTmpl     string
-	JSONPCallbackName    string
-	OutputFunc           func(format string, c echo.Context, opt *Options) error
-	DefaultErrorHTTPCode int
+	ErrorPages           map[int]string
+	DefaultHTTPErrorCode int
+	SetFuncMap           []echo.HandlerFunc
+}
+
+func (opt *Options) AddFuncSetter(set ...echo.HandlerFunc) *Options {
+	if opt.SetFuncMap == nil {
+		opt.SetFuncMap = make([]echo.HandlerFunc, len(DefaultOptions.SetFuncMap))
+		for index, setter := range DefaultOptions.SetFuncMap {
+			opt.SetFuncMap[index] = setter
+		}
+	}
+	opt.SetFuncMap = append(opt.SetFuncMap, set...)
+	return opt
+}
+
+func (opt *Options) SetFuncSetter(set ...echo.HandlerFunc) *Options {
+	opt.SetFuncMap = set
+	return opt
 }
 
 // Middleware set renderer
@@ -56,94 +73,31 @@ func Middleware(d echo.Renderer) echo.MiddlewareFunc {
 	}
 }
 
-func SetDefaultOptions(opt *Options) *Options {
-	if opt.Skipper == nil {
-		opt.Skipper = DefaultOptions.Skipper
-	}
-	if opt.OutputFunc == nil {
-		opt.OutputFunc = DefaultOptions.OutputFunc
-	}
-	if len(opt.DataKey) == 0 {
-		opt.DataKey = DefaultOptions.DataKey
-	}
-	if len(opt.TmplKey) == 0 {
-		opt.TmplKey = DefaultOptions.TmplKey
-	}
-	if len(opt.DefaultTmpl) == 0 {
-		opt.DefaultTmpl = DefaultOptions.DefaultTmpl
-	}
-	if len(opt.DefaultErrorTmpl) == 0 {
-		opt.DefaultErrorTmpl = DefaultOptions.DefaultErrorTmpl
-	}
-	if len(opt.JSONPCallbackName) == 0 {
-		opt.JSONPCallbackName = DefaultOptions.JSONPCallbackName
-	}
-	return opt
-}
-
-func checkOptions(options ...*Options) *Options {
-	var opt *Options
-	if len(options) > 0 {
-		opt = options[0]
-	}
-	if opt == nil {
-		opt = DefaultOptions
-	}
-	return opt
-}
-
-// AutoOutput Outputs the specified format
-func AutoOutput(options ...*Options) echo.MiddlewareFunc {
-	opt := checkOptions(options...)
+func Auto() echo.MiddlewareFunc {
 	return func(h echo.Handler) echo.Handler {
 		return echo.HandlerFunc(func(c echo.Context) error {
-			if opt.Skipper(c) {
-				return h.Handle(c)
-			}
-			if err := h.Handle(c); err != nil {
-				return err
-			}
-			return opt.OutputFunc(c.Format(), c, opt)
+			c.SetAuto(true)
+			return h.Handle(c)
 		})
 	}
 }
 
-// Output Outputs the specified format
-func Output(format string, c echo.Context, opt *Options) error {
-	data := c.Get(opt.DataKey)
-	switch format {
-	case `json`:
-		return c.JSON(data)
-	case `jsonp`:
-		return c.JSONP(c.Query(opt.JSONPCallbackName), data)
-	case `xml`:
-		return c.XML(data)
-	default:
-		tmpl, ok := c.Get(opt.TmplKey).(string)
-		if !ok {
-			tmpl = opt.DefaultTmpl
-		}
-		if v, y := data.(echo.Data); y {
-			v.SetTmplFuncs()
-			return v.Render(tmpl)
-		}
-		if h, y := data.(echo.H); y {
-			v := h.ToData().SetContext(c)
-			v.SetTmplFuncs()
-			return v.Render(tmpl)
-		}
-		return c.Render(tmpl, data)
+func HTTPErrorHandler(opt *Options) echo.HTTPErrorHandler {
+	if opt == nil {
+		opt = DefaultOptions
 	}
-}
-
-func HTTPErrorHandler(templates map[int]string, options ...*Options) echo.HTTPErrorHandler {
-	if templates == nil {
-		templates = make(map[int]string)
+	if opt.ErrorPages == nil {
+		opt.ErrorPages = DefaultOptions.ErrorPages
 	}
-	tmplNum := len(templates)
-	opt := checkOptions(options...)
+	if opt.DefaultHTTPErrorCode < 1 {
+		opt.DefaultHTTPErrorCode = DefaultOptions.DefaultHTTPErrorCode
+	}
+	if opt.SetFuncMap == nil {
+		opt.SetFuncMap = DefaultOptions.SetFuncMap
+	}
+	tmplNum := len(opt.ErrorPages)
 	return func(err error, c echo.Context) {
-		code := opt.DefaultErrorHTTPCode
+		code := DefaultOptions.DefaultHTTPErrorCode
 		var msg string
 		var panicErr *echo.PanicError
 		switch e := err.(type) {
@@ -154,6 +108,7 @@ func HTTPErrorHandler(templates map[int]string, options ...*Options) echo.HTTPEr
 			msg = e.Message
 		case *echo.PanicError:
 			panicErr = e
+
 		}
 		title := http.StatusText(code)
 		if c.Echo().Debug() {
@@ -166,21 +121,35 @@ func HTTPErrorHandler(templates map[int]string, options ...*Options) echo.HTTPEr
 			case c.Request().Method() == echo.HEAD:
 				c.NoContent(code)
 			case tmplNum > 0:
-				t, y := templates[code]
+				t, y := opt.ErrorPages[code]
 				if !y && code != 0 {
-					t, y = templates[0]
+					t, y = opt.ErrorPages[0]
 				}
 				if y {
-					c.Set(opt.TmplKey, t)
-					c.Set(opt.DataKey, c.Data().Reset().SetInfo(echo.H{
-						"title":   title,
-						"content": msg,
-						"debug":   c.Echo().Debug(),
-						"code":    code,
-						"panic":   panicErr,
-					}, 0))
-					c.SetCode(code)
-					if err := opt.OutputFunc(c.Format(), c, opt); err != nil {
+					data := c.Data().Reset().SetInfo(msg, 0)
+					if c.Format() == `html` {
+						c.SetCode(code)
+						c.SetFunc(`Lang`, c.Lang)
+						if len(opt.SetFuncMap) > 0 {
+							for _, setFunc := range opt.SetFuncMap {
+								err = setFunc(c)
+								if err != nil {
+									c.String(err.Error())
+									return
+								}
+							}
+						}
+						data.SetData(echo.H{
+							"title":   title,
+							"content": msg,
+							"debug":   c.Echo().Debug(),
+							"code":    code,
+							"panic":   panicErr,
+						}, 0)
+					} else {
+						c.SetCode(opt.DefaultHTTPErrorCode)
+					}
+					if err := c.SetAuto(true).Render(t, nil); err != nil {
 						msg += "\n" + err.Error()
 						y = false
 						c.Logger().Error(err)

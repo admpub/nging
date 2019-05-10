@@ -1,0 +1,149 @@
+{{Extend "layout"}}
+{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加许可证"|T}}{{else}}{{"修改许可证"|T}}{{end}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="__BACKEND__/official/license_index">{{"许可证管理"|T}}</a></li>
+<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
+{{/Block}}
+{{Block "head"}}
+<link rel="stylesheet" type="text/css" href="__ASSETS__/js/selectpage/selectpage.css?t={{BuildTime}}" />
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{if HasSuffix URL.Path "_add"}}{{"添加许可证"|T}}{{else}}{{"修改许可证"|T}}{{end}}</h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" parsley-validate novalidate method="POST" action="">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"选择产品"|T}}</label>
+                <div class="col-sm-8">
+                  {{$productId := (Formx "productId").Uint64}}
+                  <input type="text" name="productId" id="productId" data-init="{{$productId}}" value="{{$productId}}" class="form-control">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"选择客户"|T}}</label>
+                <div class="col-sm-8">
+                  {{$customerId := (Formx "customerId").Uint64}}
+                  <input type="text" name="customerId" id="customerId" data-init="{{$customerId}}" value="{{$customerId}}" class="form-control">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"选择证书"|T}}</label>
+                <div class="col-sm-8">
+                  {{$certId := (Formx "certId").Uint64}}
+                  <input type="text" name="certId" id="certId" data-init="{{$certId}}" value="{{$certId}}" class="form-control">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"机器码"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" name="machineId" value="{{Form "machineId"}}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"域名"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" name="domain" value="{{Form "domain"}}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"付款状态"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := (Formx "paidAt").Uint}}
+                  <div class="radio radio-primary radio-inline">
+                      <input type="radio" value="0" name="paidAt" id="paidAt-0"{{if gt $v 0}} checked{{end}}> <label for="paidAt-0">{{"已付款"|T}}</label>
+                  </div>
+                    <div class="radio radio-primary radio-inline">
+                      <input type="radio" value="1" name="paidAt" id="paidAt-1"{{if eq $v 0}} checked{{end}}> <label for="paidAt-1">{{"未付款"|T}}</label>
+                    </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := (Formx "blocked").Uint}}
+                  <div class="radio radio-primary radio-inline">
+                      <input type="radio" value="0" name="blocked" id="blocked-0"{{if gt $v 0}} checked{{end}}> <label for="blocked-0">{{"有效"|T}}</label>
+                  </div>
+                    <div class="radio radio-primary radio-inline">
+                      <input type="radio" value="1" name="blocked" id="blocked-1"{{if eq $v 0}} checked{{end}}> <label for="blocked-1">{{"冻结"|T}}</label>
+                    </div>
+                </div>
+              </div>
+              <div class="form-group form-submit-group">
+									<div class="col-sm-9 col-sm-offset-2">
+									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+									</div>
+							</div>
+            </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script src="__ASSETS__/js/selectpage/selectpage.min.js?t={{BuildTime}}" type="text/javascript"></script>
+<script type="text/javascript">
+$(function(){
+  $('#productId').selectPage({
+    showField : 'name',
+    keyField : 'id',
+    data : BACKEND_URL+'/official/pay/product_index',
+    params : function(){return {};},
+    eAjaxSuccess : function(d){
+        var result;
+        if(d) result = {
+          "list":d.Data.listData,
+          "pageSize": d.Data.pagination.limit,
+          "pageNumber": d.Data.pagination.page,
+          "totalRow": d.Data.pagination.rows,
+          "totalPage":d.Data.pagination.pages
+        };
+        else result = undefined;
+        return result;
+    }
+  });
+  $('#customerId').selectPage({
+    showField : 'name',
+    keyField : 'id',
+    data : BACKEND_URL+'/official/customer_index',
+    params : function(){return {};},
+    eAjaxSuccess : function(d){
+        var result;
+        if(d) result = {
+          "list":d.Data.listData,
+          "pageSize": d.Data.pagination.limit,
+          "pageNumber": d.Data.pagination.page,
+          "totalRow": d.Data.pagination.rows,
+          "totalPage":d.Data.pagination.pages
+        };
+        else result = undefined;
+        return result;
+    }
+  });
+  $('#certId').selectPage({
+    showField : 'name',
+    keyField : 'id',
+    data : BACKEND_URL+'/official/cert_index',
+    params : function(){return {};},
+    eAjaxSuccess : function(d){
+        var result;
+        if(d) result = {
+          "list":d.Data.listData,
+          "pageSize": d.Data.pagination.limit,
+          "pageNumber": d.Data.pagination.page,
+          "totalRow": d.Data.pagination.rows,
+          "totalPage":d.Data.pagination.pages
+        };
+        else result = undefined;
+        return result;
+    }
+  });
+});
+</script>
+{{/Block}}

@@ -1,32 +1,26 @@
 package protocol
 
-import (
-	"bytes"
-	"encoding/binary"
-	"strconv"
-)
-
 // VersionNumber is a version number as int
 type VersionNumber int
 
 // The version numbers, making grepping easier
 const (
-	Version34 VersionNumber = 34 + iota
-	Version35
+	Version35 VersionNumber = 35 + iota
 	Version36
-	VersionWhatever = 0 // for when the version doesn't matter
+	Version37
+	Version38
+	VersionWhatever    VersionNumber = 0 // for when the version doesn't matter
+	VersionUnsupported VersionNumber = -1
 )
 
 // SupportedVersions lists the versions that the server supports
+// must be in sorted descending order
 var SupportedVersions = []VersionNumber{
-	Version34, Version35, Version36,
+	Version38,
+	Version37,
+	Version36,
+	Version35,
 }
-
-// SupportedVersionsAsTags is needed for the SHLO crypto message
-var SupportedVersionsAsTags []byte
-
-// SupportedVersionsAsString is needed for the Alt-Scv HTTP header
-var SupportedVersionsAsString string
 
 // VersionNumberToTag maps version numbers ('32') to tags ('Q032')
 func VersionNumberToTag(vn VersionNumber) uint32 {
@@ -40,8 +34,8 @@ func VersionTagToNumber(v uint32) VersionNumber {
 }
 
 // IsSupportedVersion returns true if the server supports this version
-func IsSupportedVersion(v VersionNumber) bool {
-	for _, t := range SupportedVersions {
+func IsSupportedVersion(supported []VersionNumber, v VersionNumber) bool {
+	for _, t := range supported {
 		if t == v {
 			return true
 		}
@@ -49,19 +43,17 @@ func IsSupportedVersion(v VersionNumber) bool {
 	return false
 }
 
-func init() {
-	var b bytes.Buffer
-	for _, v := range SupportedVersions {
-		s := make([]byte, 4)
-		binary.LittleEndian.PutUint32(s, VersionNumberToTag(v))
-		b.Write(s)
-	}
-	SupportedVersionsAsTags = b.Bytes()
-
-	for i := len(SupportedVersions) - 1; i >= 0; i-- {
-		SupportedVersionsAsString += strconv.Itoa(int(SupportedVersions[i]))
-		if i != 0 {
-			SupportedVersionsAsString += ","
+// ChooseSupportedVersion finds the best version in the overlap of ours and theirs
+// ours is a slice of versions that we support, sorted by our preference (descending)
+// theirs is a slice of versions offered by the peer. The order does not matter
+// if no suitable version is found, it returns VersionUnsupported
+func ChooseSupportedVersion(ours, theirs []VersionNumber) VersionNumber {
+	for _, ourVer := range ours {
+		for _, theirVer := range theirs {
+			if ourVer == theirVer {
+				return ourVer
+			}
 		}
 	}
+	return VersionUnsupported
 }

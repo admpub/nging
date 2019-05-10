@@ -212,3 +212,11 @@ func (c *Cluster) CloseSlave(index int) bool {
 	}
 	return false
 }
+
+func (c *Cluster) CountSlave() int {
+	return len(c.slaves)
+}
+
+func (c *Cluster) CountMaster() int {
+	return len(c.masters)
+}

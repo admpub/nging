@@ -1,0 +1,160 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"数据库管理"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Include "db/logout_button"}}
+{{Super}}
+<li><a href="__BACKEND__/db">{{T "%s管理" Stored.dbType}}</a></li>
+{{/Block}}
+{{Block "head"}}
+<link rel="stylesheet" type="text/css" href="__ASSETS__/js/jquery.nanoscroller/nanoscroller.css" />
+<link rel="stylesheet" type="text/css" href="__ASSETS__/js/bootstrap.slider/css/slider.css" />
+{{/Block}}
+{{Block "bodyNav"}}
+{{if Stored.Get "signedIn"}}
+  <div class="page-aside app codeditor tree">
+      <a class="label label-primary collapsed-button"><i class="fa fa-angle-double-right"></i></a>
+      <div class="fixed nano nscroller">
+        <div class="content">
+          <div class="header xs-padding-bottom no-padding-top">
+            <button class="navbar-toggle" data-target=".app-nav" data-toggle="collapse" type="button">
+              <span class="fa fa-chevron-down"></span>
+            </button>
+            <a class="label label-primary collapse-button"><i class="fa fa-angle-double-left"></i></a>
+            <h2 class="page-title" title="{{Stored.Get "dbHost"}}">{{Stored.Get "dbHost"}}</h2>
+            <p class="description">
+            <span class="label label-default" title="{{Stored.Get "driver"}} {{Stored.Get "dbVersion"}}">
+               {{Stored.Get "driver"}} {{Stored.Get "dbVersion"}}
+            </span>
+            </p>
+            {{$dbList := Stored.Get "dbList"}}
+            {{$dbName := Stored.Get "dbName"}}
+            {{if $dbList}}
+            <div class="input-group">
+              <span class="input-group-addon">{{"数据库"|T}}</span>
+              <select name="db" class="form-control" id="db">
+                <option value="">{{"<未选择>"|}}</option>
+                {{range $k,$v:=$dbList}}
+                <option value="{{$v}}"{{if eq $dbName $v}} selected{{end}}>{{$v}}</option>
+                {{end}}
+              </select>
+            </div>
+            {{end}}
+            <div class="input-group no-margin-bottom">
+              <input type="text" name="searchkey" value="{{Form "searchkey"}}" class="form-control" id="ipt-search-key" placeholder="*">
+              <span class="input-group-btn"><button class="btn btn-primary" type="button" id="btn-search-key"><i class="fa fa-search"></i></button></span>
+            </div>
+          </div> 
+        <div class="app-nav collapse sm-line-height no-margin-top">
+          <p class="title">{{"Keys"|T}}</p>
+          {{if $dbName}}
+          <ul class="nav nav-pills nav-stacked ">
+              {{$tableList := Stored.Get "tableList"}}
+              {{if $tableList}}
+              {{$currentTable := Stored.table}}
+              {{range $k,$v:=$tableList}}
+              <li{{if eq $currentTable $v}} class="active"{{end}}>
+                <a href="{{dbMgrURL "viewTable" $dbName $v}}" title="{{$v}}" data-pjax="#pcont" data-keepjs="true">{{$v}}</a>
+              </li>
+              {{end}}
+              {{end}}
+          </ul>
+
+          <div class="compose">
+            {{Stored.pagination.Render "pagination_cursor"}}
+            <div class="btn-group">
+            <a href="{{dbMgrURL "createTable" $dbName}}" class="btn btn-flat btn-primary" data-pjax="#pcont" data-keepjs="true">{{"添加Key"|T}}</a>
+            <a href="javascript:;" id="flush-db" class="btn btn-flat btn-warning" title="{{"删除当前数据库数据"|T}}">{{"清空当前"|T}}</a>
+            <a href="javascript:;" id="flush-all" class="btn btn-flat btn-danger" title="{{"删除所有数据库数据"|T}}">{{"全部清空"|T}}</a>
+            </div>
+          </div>
+          {{end}}
+        </div><!-- .app-nav -->
+        </div>
+        
+      </div>
+	</div>		
+{{end}}
+{{/Block}}
+
+{{Block "main"}}
+{{Include "db/_login"}}
+{{/Block}}
+
+{{Block "footer"}}
+{{$pjax:=Form "_pjax"}}
+{{if ne $pjax "#pcont"}}
+<script src="__ASSETS__/js/bootstrap.slider/js/bootstrap-slider.min.js" type="text/javascript"></script>
+<script>
+$(function(){
+{{if Stored.Get "signedIn"}}
+{{$dbName := Stored.dbName}}
+  $('#flush-db').on('click',function(){
+    if(!confirm('{{T "确定要清空数据“%v”中的数据吗？" $dbName}}')) return;
+    $.get('{{dbMgrURL "modifyDb" $dbName}}',{deldb:'{{$dbName}}'},function(r){
+      if(r.Code==1){
+        window.setTimeout(function(){
+          window.location.reload();
+        },3000);
+      }
+			App.message({text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
+    },'json');
+  });
+  $('#flush-all').on('click',function(){
+    if(!confirm('{{T "确定要清空所有的数据吗？"}}')) return;
+    $.get('{{dbMgrURL "modifyDb" $dbName}}',{deldb:'all'},function(r){
+      if(r.Code==1){
+        window.setTimeout(function(){
+          window.location.reload();
+        },3000);
+      }
+			App.message({text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
+    },'json');
+  });
+  $(window).on('resize',function(){
+      var fixedDiv=$(".page-aside div.fixed");
+      if(!fixedDiv.find(".content > .header > .navbar-toggle").is(":visible")){
+        fixedDiv.css({bottom:0,height:$(window).height()-50});
+      }else{
+        fixedDiv.css({height:'100%'});
+      }
+  }).trigger('resize');
+
+  $('label.tree-toggler').click(function () {
+    var icon = $(this).children(".fa");
+    if(icon.hasClass("fa-folder-o")){
+      icon.removeClass("fa-folder-o").addClass("fa-folder-open-o");
+    }else{
+      icon.removeClass("fa-folder-open-o").addClass("fa-folder-o");
+    }
+
+    $(this).parent().children('ul.tree').toggle(300,function(){
+      $(this).parent().toggleClass("open");
+      $(".tree .nscroller").nanoScroller({ preventPageScrolling: true });
+      $(window).trigger('resize');
+    });
+    
+  }).trigger('click');
+
+  $('#db').on('change',function(){
+    var db=$(this).val();
+    if(db){
+      window.location='{{dbMgrURL "listTable"}}&db='+db;
+    }else{
+      window.location='{{dbMgrURL "info"}}';
+    }
+  });
+  $('#ipt-search-key').on('keyup',function(event){
+      if(event.keyCode!=13)return;
+      $('#btn-search-key').trigger('click');
+  });
+  $('#btn-search-key').on('click',function(event){
+      window.location='{{dbMgrURL "listTable"}}&db='+$('#db').val()+'&searchkey='+encodeURIComponent($('#ipt-search-key').val());
+  });
+  $('#sidebar-collapse').trigger('click');
+  App.pageAside();
+  App.tableReponsiveInit();
+{{end}}
+});
+</script>
+{{end}}<!-- ne $pjax "#pcont" -->
+{{/Block}}

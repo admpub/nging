@@ -19,17 +19,20 @@
 package tplfunc
 
 import (
+	"bytes"
 	"fmt"
 	"html/template"
 	"log"
 	"math"
 	"net/url"
+	"path"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/admpub/decimal"
 	"github.com/webx-top/captcha"
 	"github.com/webx-top/com"
 )
@@ -97,8 +100,10 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	"Float64":        com.Float64,
 	"ToFloat64":      ToFloat64,
 	"ToFixed":        ToFixed,
+	"ToDecimal":      ToDecimal,
 	"Math":           Math,
 	"NumberFormat":   NumberFormat,
+	"NumberTrim":     NumberTrim,
 	"DurationFormat": DurationFormat,
 
 	// ======================
@@ -115,12 +120,18 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 
 	"ToLower":        strings.ToLower,
 	"ToUpper":        strings.ToUpper,
+	"Title":          strings.Title,
 	"LowerCaseFirst": com.LowerCaseFirst,
 	"CamelCase":      com.CamelCase,
 	"PascalCase":     com.PascalCase,
 	"SnakeCase":      com.SnakeCase,
 	"Reverse":        com.Reverse,
+	"Dir":            filepath.Dir,
+	"Base":           filepath.Base,
 	"Ext":            filepath.Ext,
+	"Dirname":        path.Dir,
+	"Basename":       path.Base,
+	"Extension":      path.Ext,
 	"InExt":          InExt,
 
 	"Concat":    Concat,
@@ -141,8 +152,12 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	"URLDecode":        URLDecode,
 	"Base64Encode":     com.Base64Encode,
 	"Base64Decode":     Base64Decode,
+	"UnicodeDecode":    UnicodeDecode,
 	"SafeBase64Encode": com.SafeBase64Encode,
 	"SafeBase64Decode": SafeBase64Decode,
+	"Hash":             Hash,
+	"Unquote":          Unquote,
+	"Quote":            strconv.Quote,
 
 	// ======================
 	// map & slice
@@ -168,6 +183,52 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	// ======================
 	"Ignore":  Ignore,
 	"Default": Default,
+}
+
+var (
+	HashSalt          = time.Now().Format(time.RFC3339)
+	HashClipPositions = []uint{1, 3, 8, 9}
+)
+
+func Hash(text, salt string, positions ...uint) string {
+	if len(salt) < 1 {
+		salt = HashSalt
+	}
+	if len(positions) < 1 {
+		positions = HashClipPositions
+	}
+	return com.MakePassword(text, salt, positions...)
+}
+
+func Unquote(s string) string {
+	r, _ := strconv.Unquote(`"` + s + `"`)
+	return r
+}
+
+func UnicodeDecode(str string) string {
+	buf := bytes.NewBuffer(nil)
+	i, j := 0, len(str)
+	for i < j {
+		x := i + 6
+		if x > j {
+			buf.WriteString(str[i:])
+			break
+		}
+		if str[i] == '\\' && str[i+1] == 'u' {
+			hex := str[i+2 : x]
+			r, err := strconv.ParseUint(hex, 16, 64)
+			if err == nil {
+				buf.WriteRune(rune(r))
+			} else {
+				buf.WriteString(str[i:x])
+			}
+			i = x
+		} else {
+			buf.WriteByte(str[i])
+			i++
+		}
+	}
+	return buf.String()
 }
 
 func JSONEncode(s interface{}, indents ...string) string {
@@ -307,10 +368,15 @@ func NlToBr(text string) template.HTML {
 
 //CaptchaForm 验证码表单域
 func CaptchaForm(args ...interface{}) template.HTML {
+	return CaptchaFormWithURLPrefix(``, args...)
+}
+
+//CaptchaFormWithURLPrefix 验证码表单域
+func CaptchaFormWithURLPrefix(urlPrefix string, args ...interface{}) template.HTML {
 	id := "captcha"
 	msg := "页面验证码已经失效，必须重新请求当前页面。确定要刷新本页面吗？"
 	onErr := "if(this.src.indexOf('?reload=')!=-1 && confirm('%s')) window.location.reload();"
-	format := `<img id="%[2]sImage" src="/captcha/%[1]s.png" alt="Captcha image" onclick="this.src=this.src.split('?')[0]+'?reload='+Math.random();" onerror="%[3]s" style="cursor:pointer" /><input type="hidden" name="captchaId" id="%[2]sId" value="%[1]s" />`
+	format := `<img id="%[2]sImage" src="` + urlPrefix + `/captcha/%[1]s.png" alt="Captcha image" onclick="this.src=this.src.split('?')[0]+'?reload='+Math.random();" onerror="%[3]s" style="cursor:pointer" /><input type="hidden" name="captchaId" id="%[2]sId" value="%[1]s" />`
 	var customOnErr bool
 	switch len(args) {
 	case 3:
@@ -347,7 +413,7 @@ func CaptchaForm(args ...interface{}) template.HTML {
 }
 
 //CaptchaVerify 验证码验证
-func CaptchaVerify(captchaSolution string, idGet func(string) string) bool {
+func CaptchaVerify(captchaSolution string, idGet func(string, ...string) string) bool {
 	//id := r.FormValue("captchaId")
 	id := idGet("captchaId")
 	if !captcha.VerifyString(id, captchaSolution) {
@@ -689,6 +755,21 @@ func DurationFormat(lang interface{}, t interface{}, args ...string) *com.Durafm
 	return com.ParseDuration(duration, lang)
 }
 
+func ToTime(t interface{}) time.Time {
+	switch v := t.(type) {
+	case time.Time:
+		return v
+	case string:
+		t, err := time.ParseInLocation(`2006-01-02 15:04:05`, v, time.Local)
+		if err != nil {
+			panic(err)
+		}
+		return t
+	default:
+		return TsToTime(t)
+	}
+}
+
 func ToDuration(t interface{}, args ...string) time.Duration {
 	td := time.Second
 	if len(args) > 0 {
@@ -788,19 +869,59 @@ func TimestampToTime(timestamp interface{}) time.Time {
 	return time.Unix(ts, 0)
 }
 
-func NumberFormat(number interface{}, precision int, delim ...string) string {
-	r := fmt.Sprintf(`%.*f`, precision, ToFloat64(number))
+func ToDecimal(number interface{}) decimal.Decimal {
+	money := ToFloat64(number)
+	return decimal.NewFromFloat(money)
+}
+
+func NumberTrim(number interface{}, precision int, separator ...string) string {
+	money := ToFloat64(number)
+	s := decimal.NewFromFloat(money).Truncate(int32(precision)).String()
+	if len(s) == 0 {
+		if precision <= 0 {
+			return `0`
+		}
+		return `0.` + strings.Repeat(`0`, precision)
+	}
+	p := strings.LastIndex(s, `.`)
+	if p < 0 {
+		if precision > 0 {
+			s += `.` + strings.Repeat(`0`, precision)
+		}
+		return numberWithSeparator(s, separator...)
+	}
+	if precision <= 0 {
+		return numberWithSeparator(s[0:p], separator...)
+	}
+	r := s[p+1:]
+	if len(r) >= precision {
+		return numberWithSeparator(s[0:p]+`.`+r[0:precision], separator...)
+	}
+	return numberWithSeparator(s, separator...)
+}
+
+func numberWithSeparator(r string, separator ...string) string {
 	d := `,`
-	if len(delim) > 0 {
-		d = delim[0]
+	if len(separator) > 0 {
+		d = separator[0]
 		if len(d) == 0 {
 			return r
 		}
 	}
-	i := len(r) - 1 - precision
+	p := strings.LastIndex(r, `.`)
+	var (
+		i int
+		v string
+	)
+	size := len(r)
+	if p <= 0 {
+		i = size
+	} else {
+		i = p
+		v = r[i:]
+	}
 	j := int(math.Ceil(float64(i) / float64(3)))
 	s := make([]string, j)
-	v := r[i:]
 	for i > 0 && j > 0 {
 		j--
 		start := i - 3
@@ -811,4 +932,9 @@ func NumberFormat(number interface{}, precision int, delim ...string) string {
 		i = start
 	}
 	return strings.Join(s, d) + v
+}
+
+func NumberFormat(number interface{}, precision int, separator ...string) string {
+	r := fmt.Sprintf(`%.*f`, precision, ToFloat64(number))
+	return numberWithSeparator(r, separator...)
 }

@@ -193,6 +193,7 @@ func (self *Standard) Init() {
 	self.TemplateMgr.AddAllow("*" + self.Ext)
 	self.TemplateMgr.AddWatchDir(self.TemplateDir)
 	self.TemplateMgr.AddCallback(self.TemplateDir, callback)
+	self.TemplateMgr.Start()
 }
 
 func (self *Standard) SetManager(mgr driver.Manager) {
@@ -200,7 +201,6 @@ func (self *Standard) SetManager(mgr driver.Manager) {
 		self.TemplateMgr.Close()
 	}
 	self.TemplateMgr = mgr
-	self.TemplateMgr.Start()
 }
 
 func (self *Standard) TemplatePath(p string) string {

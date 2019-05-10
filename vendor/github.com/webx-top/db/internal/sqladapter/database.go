@@ -151,25 +151,23 @@ func NewBaseDatabase(p PartialDatabase) BaseDatabase {
 // BaseDatabase and PartialDatabase
 type database struct {
 	PartialDatabase
-	baseTx BaseTx
-
 	db.Settings
 
+	lookupNameOnce sync.Once
+	name           string
+
+	mu        sync.Mutex // guards ctx, txOptions
 	ctx       context.Context
 	txOptions *sql.TxOptions
 
-	collectionMu sync.Mutex
-	mu           sync.Mutex
-
-	name   string
+	sessMu sync.Mutex // guards sess, baseTx
 	sess   *sql.DB
-	sessMu sync.Mutex
-
-	psMu sync.Mutex
+	baseTx BaseTx
 
 	sessID uint64
 	txID   uint64
 
+	cacheMu           sync.Mutex // guards cachedStatements and cachedCollections
 	cachedStatements  *cache.Cache
 	cachedCollections *cache.Cache
 
@@ -245,12 +243,11 @@ func (d *database) Transaction() BaseTx {
 
 // Name returns the database named
 func (d *database) Name() string {
-	d.mu.Lock()
-	defer d.mu.Unlock()
-
-	if d.name == "" {
-		d.name, _ = d.PartialDatabase.LookupName()
-	}
+	d.lookupNameOnce.Do(func() {
+		if d.name == "" {
+			d.name, _ = d.PartialDatabase.LookupName()
+		}
+	})
 
 	return d.name
 }
@@ -314,8 +311,8 @@ func (d *database) SetMaxOpenConns(n int) {
 
 // ClearCache removes all caches.
 func (d *database) ClearCache() {
-	d.collectionMu.Lock()
-	defer d.collectionMu.Unlock()
+	d.cacheMu.Lock()
+	defer d.cacheMu.Unlock()
 	d.cachedCollections.Clear()
 	d.cachedStatements.Clear()
 	if d.template != nil {
@@ -336,10 +333,10 @@ func (d *database) NewClone(p PartialDatabase, checkConn bool) (BaseDatabase, er
 	nd.cachedCollections = d.cachedCollections
 	nd.cachedStatements = d.cachedStatements
 	nd.cloned = true
-
 	if checkConn {
 		if err := nd.Ping(); err != nil {
-			return nil, err
+			// Retry once if ping fails.
+			return d.NewClone(p, false)
 		}
 	}
 
@@ -363,6 +360,7 @@ func (d *database) Close() error {
 		if cleaner, ok := d.PartialDatabase.(hasCleanUp); ok {
 			cleaner.CleanUp()
 		}
+
 		// [SWH|+] Clears the cache when it is not created by NewClone
 		if !d.cloned {
 			d.cachedCollections.Clear()
@@ -384,8 +382,8 @@ func (d *database) Close() error {
 
 // Collection returns a db.Collection given a name. Results are cached.
 func (d *database) Collection(name string) db.Collection {
-	d.collectionMu.Lock()
-	defer d.collectionMu.Unlock()
+	d.cacheMu.Lock()
+	defer d.cacheMu.Unlock()
 
 	h := cache.String(name)
 

@@ -5,42 +5,63 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/lucas-clemente/quic-go/handshake"
 	"github.com/lucas-clemente/quic-go/protocol"
 	"github.com/lucas-clemente/quic-go/qerr"
-	"github.com/lucas-clemente/quic-go/utils"
 )
 
 type streamsMap struct {
 	mutex sync.RWMutex
 
-	streams     map[protocol.StreamID]*stream
-	openStreams []protocol.StreamID
+	perspective          protocol.Perspective
+	connectionParameters handshake.ConnectionParametersManager
 
-	highestStreamOpenedByClient          protocol.StreamID
-	streamsOpenedAfterLastGarbageCollect int
+	streams map[protocol.StreamID]*stream
+	// needed for round-robin scheduling
+	openStreams     []protocol.StreamID
+	roundRobinIndex uint32
 
-	newStream     newStreamLambda
-	maxNumStreams int
+	nextStream                protocol.StreamID // StreamID of the next Stream that will be returned by OpenStream()
+	highestStreamOpenedByPeer protocol.StreamID
+	nextStreamOrErrCond       sync.Cond
+	openStreamOrErrCond       sync.Cond
 
-	roundRobinIndex int
+	closeErr           error
+	nextStreamToAccept protocol.StreamID
+
+	newStream newStreamLambda
+
+	numOutgoingStreams uint32
+	numIncomingStreams uint32
 }
 
 type streamLambda func(*stream) (bool, error)
-type newStreamLambda func(protocol.StreamID) (*stream, error)
+type newStreamLambda func(protocol.StreamID) *stream
 
 var (
 	errMapAccess = errors.New("streamsMap: Error accessing the streams map")
 )
 
-func newStreamsMap(newStream newStreamLambda) *streamsMap {
-	maxNumStreams := utils.Max(int(float32(protocol.MaxIncomingDynamicStreams)*protocol.MaxStreamsMultiplier), int(protocol.MaxIncomingDynamicStreams))
-
-	return &streamsMap{
-		streams:       map[protocol.StreamID]*stream{},
-		openStreams:   make([]protocol.StreamID, 0, maxNumStreams),
-		newStream:     newStream,
-		maxNumStreams: maxNumStreams,
+func newStreamsMap(newStream newStreamLambda, pers protocol.Perspective, connectionParameters handshake.ConnectionParametersManager) *streamsMap {
+	sm := streamsMap{
+		perspective:          pers,
+		streams:              map[protocol.StreamID]*stream{},
+		openStreams:          make([]protocol.StreamID, 0),
+		newStream:            newStream,
+		connectionParameters: connectionParameters,
 	}
+	sm.nextStreamOrErrCond.L = &sm.mutex
+	sm.openStreamOrErrCond.L = &sm.mutex
+
+	if pers == protocol.PerspectiveClient {
+		sm.nextStream = 1
+		sm.nextStreamToAccept = 2
+	} else {
+		sm.nextStream = 2
+		sm.nextStreamToAccept = 1
+	}
+
+	return &sm
 }
 
 // GetOrOpenStream either returns an existing stream, a newly opened stream, or nil if a stream with the provided ID is already closed.
@@ -53,7 +74,7 @@ func (m *streamsMap) GetOrOpenStream(id protocol.StreamID) (*stream, error) {
 		return s, nil // s may be nil
 	}
 
-	// ... we don't have an existing stream, try opening a new one
+	// ... we don't have an existing stream
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 	// We need to check whether another invocation has already created a stream (between RUnlock() and Lock()).
@@ -61,44 +82,147 @@ func (m *streamsMap) GetOrOpenStream(id protocol.StreamID) (*stream, error) {
 	if ok {
 		return s, nil
 	}
-	if len(m.openStreams) == m.maxNumStreams {
+
+	if m.perspective == protocol.PerspectiveServer {
+		if id%2 == 0 {
+			if id <= m.nextStream { // this is a server-side stream that we already opened. Must have been closed already
+				return nil, nil
+			}
+			return nil, qerr.Error(qerr.InvalidStreamID, fmt.Sprintf("attempted to open stream %d from client-side", id))
+		}
+		if id <= m.highestStreamOpenedByPeer { // this is a client-side stream that doesn't exist anymore. Must have been closed already
+			return nil, nil
+		}
+	}
+	if m.perspective == protocol.PerspectiveClient {
+		if id%2 == 1 {
+			if id <= m.nextStream { // this is a client-side stream that we already opened.
+				return nil, nil
+			}
+			return nil, qerr.Error(qerr.InvalidStreamID, fmt.Sprintf("attempted to open stream %d from server-side", id))
+		}
+		if id <= m.highestStreamOpenedByPeer { // this is a server-side stream that doesn't exist anymore. Must have been closed already
+			return nil, nil
+		}
+	}
+
+	// sid is the next stream that will be opened
+	sid := m.highestStreamOpenedByPeer + 2
+	// if there is no stream opened yet, and this is the server, stream 1 should be openend
+	if sid == 2 && m.perspective == protocol.PerspectiveServer {
+		sid = 1
+	}
+
+	for ; sid <= id; sid += 2 {
+		_, err := m.openRemoteStream(sid)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	m.nextStreamOrErrCond.Broadcast()
+	return m.streams[id], nil
+}
+
+func (m *streamsMap) openRemoteStream(id protocol.StreamID) (*stream, error) {
+	if m.numIncomingStreams >= m.connectionParameters.GetMaxIncomingStreams() {
 		return nil, qerr.TooManyOpenStreams
 	}
-	if id%2 == 0 {
-		return nil, qerr.Error(qerr.InvalidStreamID, fmt.Sprintf("attempted to open stream %d from client-side", id))
-	}
-	if id+protocol.MaxNewStreamIDDelta < m.highestStreamOpenedByClient {
-		return nil, qerr.Error(qerr.InvalidStreamID, fmt.Sprintf("attempted to open stream %d, which is a lot smaller than the highest opened stream, %d", id, m.highestStreamOpenedByClient))
+	if id+protocol.MaxNewStreamIDDelta < m.highestStreamOpenedByPeer {
+		return nil, qerr.Error(qerr.InvalidStreamID, fmt.Sprintf("attempted to open stream %d, which is a lot smaller than the highest opened stream, %d", id, m.highestStreamOpenedByPeer))
 	}
 
-	s, err := m.newStream(id)
-	if err != nil {
-		return nil, err
+	if m.perspective == protocol.PerspectiveServer {
+		m.numIncomingStreams++
+	} else {
+		m.numOutgoingStreams++
 	}
 
-	if id > m.highestStreamOpenedByClient {
-		m.highestStreamOpenedByClient = id
+	if id > m.highestStreamOpenedByPeer {
+		m.highestStreamOpenedByPeer = id
 	}
 
-	m.streamsOpenedAfterLastGarbageCollect++
-	if m.streamsOpenedAfterLastGarbageCollect%protocol.MaxNewStreamIDDelta == 0 {
-		m.garbageCollectClosedStreams()
-	}
-
+	s := m.newStream(id)
 	m.putStream(s)
 	return s, nil
 }
 
-// OpenStream opens a stream from the server's side
-func (m *streamsMap) OpenStream(id protocol.StreamID) (*stream, error) {
-	panic("OpenStream: not implemented")
+func (m *streamsMap) openStreamImpl() (*stream, error) {
+	id := m.nextStream
+	if m.numOutgoingStreams >= m.connectionParameters.GetMaxOutgoingStreams() {
+		return nil, qerr.TooManyOpenStreams
+	}
+
+	if m.perspective == protocol.PerspectiveServer {
+		m.numOutgoingStreams++
+	} else {
+		m.numIncomingStreams++
+	}
+
+	m.nextStream += 2
+	s := m.newStream(id)
+	m.putStream(s)
+	return s, nil
+}
+
+// OpenStream opens the next available stream
+func (m *streamsMap) OpenStream() (*stream, error) {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
+	if m.closeErr != nil {
+		return nil, m.closeErr
+	}
+	return m.openStreamImpl()
+}
+
+func (m *streamsMap) OpenStreamSync() (*stream, error) {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
+	for {
+		if m.closeErr != nil {
+			return nil, m.closeErr
+		}
+		str, err := m.openStreamImpl()
+		if err == nil {
+			return str, err
+		}
+		if err != nil && err != qerr.TooManyOpenStreams {
+			return nil, err
+		}
+		m.openStreamOrErrCond.Wait()
+	}
+}
+
+// AcceptStream returns the next stream opened by the peer
+// it blocks until a new stream is opened
+func (m *streamsMap) AcceptStream() (*stream, error) {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+	var str *stream
+	for {
+		var ok bool
+		if m.closeErr != nil {
+			return nil, m.closeErr
+		}
+		str, ok = m.streams[m.nextStreamToAccept]
+		if ok {
+			break
+		}
+		m.nextStreamOrErrCond.Wait()
+	}
+	m.nextStreamToAccept += 2
+	return str, nil
 }
 
 func (m *streamsMap) Iterate(fn streamLambda) error {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
-	for _, streamID := range m.openStreams {
+	openStreams := append([]protocol.StreamID{}, m.openStreams...)
+
+	for _, streamID := range openStreams {
 		cont, err := m.iterateFunc(streamID, fn)
 		if err != nil {
 			return err
@@ -117,7 +241,7 @@ func (m *streamsMap) RoundRobinIterate(fn streamLambda) error {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
-	numStreams := len(m.openStreams)
+	numStreams := uint32(len(m.streams))
 	startIndex := m.roundRobinIndex
 
 	for _, i := range []protocol.StreamID{1, 3} {
@@ -130,9 +254,8 @@ func (m *streamsMap) RoundRobinIterate(fn streamLambda) error {
 		}
 	}
 
-	for i := 0; i < numStreams; i++ {
+	for i := uint32(0); i < numStreams; i++ {
 		streamID := m.openStreams[(i+startIndex)%numStreams]
-
 		if streamID == 1 || streamID == 3 {
 			continue
 		}
@@ -154,9 +277,6 @@ func (m *streamsMap) iterateFunc(streamID protocol.StreamID, fn streamLambda) (b
 	if !ok {
 		return true, errMapAccess
 	}
-	if str == nil {
-		return false, fmt.Errorf("BUG: Stream %d is closed, but still in openStreams map", streamID)
-	}
 	return fn(str)
 }
 
@@ -168,7 +288,6 @@ func (m *streamsMap) putStream(s *stream) error {
 
 	m.streams[id] = s
 	m.openStreams = append(m.openStreams, id)
-
 	return nil
 }
 
@@ -179,41 +298,36 @@ func (m *streamsMap) RemoveStream(id protocol.StreamID) error {
 		return fmt.Errorf("attempted to remove non-existing stream: %d", id)
 	}
 
-	m.streams[id] = nil
+	if id%2 == 0 {
+		m.numOutgoingStreams--
+	} else {
+		m.numIncomingStreams--
+	}
 
 	for i, s := range m.openStreams {
 		if s == id {
 			// delete the streamID from the openStreams slice
 			m.openStreams = m.openStreams[:i+copy(m.openStreams[i:], m.openStreams[i+1:])]
 			// adjust round-robin index, if necessary
-			if i < m.roundRobinIndex {
+			if uint32(i) < m.roundRobinIndex {
 				m.roundRobinIndex--
 			}
 			break
 		}
 	}
 
+	delete(m.streams, id)
+	m.openStreamOrErrCond.Signal()
 	return nil
 }
 
-// NumberOfStreams gets the number of open streams
-func (m *streamsMap) NumberOfStreams() int {
-	m.mutex.RLock()
-	n := len(m.openStreams)
-	m.mutex.RUnlock()
-	return n
-}
-
-// garbageCollectClosedStreams deletes nil values in the streams if they are smaller than protocol.MaxNewStreamIDDelta than the highest stream opened by the client
-// note that this garbage collection is relatively expensive, since it iterates over the whole streams map. It should not be called every time a stream is openend or closed
-func (m *streamsMap) garbageCollectClosedStreams() {
-	for id, str := range m.streams {
-		if str != nil {
-			continue
-		}
-		if id+protocol.MaxNewStreamIDDelta <= m.highestStreamOpenedByClient {
-			delete(m.streams, id)
-		}
+func (m *streamsMap) CloseWithError(err error) {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+	m.closeErr = err
+	m.nextStreamOrErrCond.Broadcast()
+	m.openStreamOrErrCond.Broadcast()
+	for _, s := range m.openStreams {
+		m.streams[s].Cancel(err)
 	}
-	m.streamsOpenedAfterLastGarbageCollect = 0
 }

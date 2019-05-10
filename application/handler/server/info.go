@@ -1,65 +1,48 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package server
 
 import (
 	"runtime"
 	"strings"
-
 	"time"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/handler"
+	collectd "github.com/admpub/logcool/input/collectd"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/host"
-	"github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/mem"
 	"github.com/shirou/gopsutil/net"
 	"github.com/shirou/gopsutil/process"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/middleware/render"
 )
 
-func init() {
-	handler.RegisterToGroup(`/manage`, func(g *echo.Group) {
-		g.Route("GET", `/sysinfo`, Info, render.AutoOutput(nil))
-		g.Route("GET", `/netstat`, Connections, render.AutoOutput(nil))
-		g.Route("GET", `/process/:pid`, ProcessInfo)
-		g.Route("GET", `/procskill/:pid`, ProcessKill)
-	})
-}
-
-var data *echo.Data
+var _ = collectd.SystemInfo
 
 func Info(ctx echo.Context) error {
-	ctx.Set(`tmpl`, `manage/sysinfo`)
-	if data != nil {
-		ctx.Set(`data`, data)
-		return nil
-	}
 	var err error
 	cpuInfo, err := cpu.Info()
 	if err != nil {
 		log.Error(err)
 	}
-	partitions, err := disk.Partitions(true)
+	partitions, err := disk.Partitions(false)
 	if err != nil {
 		log.Error(err)
 	}
@@ -87,36 +70,26 @@ func Info(ctx echo.Context) error {
 	if err != nil {
 		log.Error(err)
 	}
+	if swapMem.UsedPercent == 0 {
+		swapMem.UsedPercent = (float64(swapMem.Used) / float64(swapMem.Total)) * 100
+	}
 	netIOCounter, err := net.IOCounters(false)
 	if err != nil {
 		log.Error(err)
 	}
-	/*
-		pids, err := process.Pids()
-		if err != nil {
-			log.Error(err)
-		}
-		procses := []*process.Process{}
-		for _, pid := range pids {
-			procs, err := process.NewProcess(pid)
-			if err != nil {
-				log.Error(err)
-			}
-			procses = append(procses, procs)
-		}
-		//*/
+	cpuPercent, err := cpu.Percent(0, false)
+	if err != nil {
+		log.Error(err)
+	}
 	info := &SystemInformation{
 		CPU:        cpuInfo,
+		CPUPercent: cpuPercent,
 		Partitions: partitions,
 		//DiskIO:         ioCounter,
 		Host: hostInfo,
 		//Load:       avgLoad,
 		Memory: &MemoryInformation{Virtual: virtualMem, Swap: swapMem},
 		NetIO:  netIOCounter,
-		/*
-			PIDs:       pids,
-			Process:    procses,
-		//*/
 	}
 	info.DiskUsages = make([]*disk.UsageStat, len(info.Partitions))
 	for k, v := range info.Partitions {
@@ -126,10 +99,24 @@ func Info(ctx echo.Context) error {
 		}
 		info.DiskUsages[k] = usageStat
 	}
-	data := ctx.Data().SetData(info, 1)
+	ctx.Data().SetData(info, 1)
+	return ctx.Render(`server/sysinfo`, nil)
+}
 
-	ctx.Set(`data`, data)
-	return nil
+func processList() ([]int32, []*process.Process) {
+	pids, err := process.Pids()
+	if err != nil {
+		log.Error(err)
+	}
+	processes := []*process.Process{}
+	for _, pid := range pids {
+		procs, err := process.NewProcess(pid)
+		if err != nil {
+			log.Error(err)
+		}
+		processes = append(processes, procs)
+	}
+	return pids, processes
 }
 
 func processInfo(pid int32) (echo.H, error) {
@@ -182,7 +169,6 @@ func ProcessKill(ctx echo.Context) error {
 }
 
 func Connections(ctx echo.Context) (err error) {
-	ctx.Set(`tmpl`, `manage/netstat`)
 	var conns []net.ConnectionStat
 	var kind string
 	switch kind {
@@ -224,23 +210,5 @@ func Connections(ctx echo.Context) (err error) {
 		}
 	}
 	ctx.Set(`listData`, conns)
-	return
-}
-
-type SystemInformation struct {
-	CPU        []cpu.InfoStat
-	Partitions []disk.PartitionStat
-	DiskUsages []*disk.UsageStat
-	DiskIO     map[string]disk.IOCountersStat
-	Host       *host.InfoStat
-	Load       *load.AvgStat
-	Memory     *MemoryInformation
-	NetIO      []net.IOCountersStat
-	PIDs       []int32
-	Process    []*process.Process
-}
-
-type MemoryInformation struct {
-	Virtual *mem.VirtualMemoryStat
-	Swap    *mem.SwapMemoryStat
+	return ctx.Render(`server/netstat`, nil)
 }

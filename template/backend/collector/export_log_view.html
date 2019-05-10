@@ -1,0 +1,54 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"日志详情"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="__BACKEND__/collector/export">{{"导出管理"|T}}</a></li>
+<li><a href="__BACKEND__/collector/export_log{{if Stored.export}}?exportId={{Stored.export.Id}}{{end}}">{{"任务日志"|T}}</a></li>
+<li class="active">{{"日志详情"|T}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">
+            <h3>{{"日志详情"|T}}</h3>
+          </div>
+          <div class="content">
+              {{$v := Stored.data}}
+              <table class="table table-bordered">
+                <colgroup>
+                  <col width="10%">
+                  <col width="20%">
+                  <col width="10%">
+                  <col width="20%">
+                  <col width="10%">
+                  <col width="20%">
+                </colgroup>
+                <tbody>
+                  <tr>
+                    <th class="text-right">{{"导出时间"|T}}</th>
+                    <td>{{$v.Created|Ts2date "2006-01-02 15:04:05"}}</td>
+                    <th class="text-right">{{"采集规则"|T}}</th>
+                    <td>{{$v.PageId}}</td>
+                    <th class="text-right">{{"状态"|T}}</th>
+                    <td>{{if eq $v.Status "success"}}
+                        <span class="color-success"><span class="fa fa-check-circle"></span> {{"成功"|T}}</span>
+                        {{else if eq $v.Status "failure"}}
+                        <span class="color-danger"><span class="fa fa-times-circle"></span> {{"出错"|T}}</span>
+                        {{else if eq $v.Status "idle"}}
+                        <span class="color-info"><span class="fa fa-info-circle"></span> {{"空闲"|T}}</span>
+                        {{else if eq $v.Status "start"}}
+                        <span class="color-info"><span class="fa fa-info-circle"></span> {{"运行中"|T}}</span>
+                        {{else}}
+                        <span class="color-default">{{"未知"|T}}</span>
+                        {{end}}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h4>{{"结果"|T}}</h4>
+              <p><pre>{{$v.Result}}</pre></p>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}

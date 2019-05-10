@@ -1,56 +1,79 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 package notice
 
-var DefaultUserNotices = NewUserNotices()
+var (
+	defaultUserNotices *userNotices
+	debug              bool
+)
 
-func Send(user string, message *Message) {
-	DefaultUserNotices.Send(user, message)
+func SetDebug(on bool) {
+	debug = on
 }
 
-func Recv(user string) <-chan *Message {
-	return DefaultUserNotices.Recv(user)
+func Default() *userNotices {
+	if defaultUserNotices == nil {
+		defaultUserNotices = NewUserNotices(debug)
+	}
+	return defaultUserNotices
 }
 
-func RecvJSON(user string) []byte {
-	return DefaultUserNotices.RecvJSON(user)
+func OnClose(fn ...func(user string)) *userNotices {
+	return Default().OnClose(fn...)
 }
 
-func RecvXML(user string) []byte {
-	return DefaultUserNotices.RecvXML(user)
+func OnOpen(fn ...func(user string)) *userNotices {
+	return Default().OnOpen(fn...)
 }
 
-func CloseClient(user string) bool {
-	return DefaultUserNotices.CloseClient(user)
+func Send(user string, message *Message) error {
+	return Default().Send(user, message)
 }
 
-func OpenClient(user string) {
-	DefaultUserNotices.OpenClient(user)
+func Recv(user string, clientID uint) <-chan *Message {
+	return Default().Recv(user, clientID)
+}
+
+func RecvJSON(user string, clientID uint) []byte {
+	return Default().RecvJSON(user, clientID)
+}
+
+func RecvXML(user string, clientID uint) []byte {
+	return Default().RecvXML(user, clientID)
+}
+
+func CloseClient(user string, clientID uint) bool {
+	return Default().CloseClient(user, clientID)
+}
+
+func OpenClient(user string) uint {
+	return Default().OpenClient(user)
 }
 
 func CloseMessage(user string, types ...string) {
-	DefaultUserNotices.CloseMessage(user, types...)
+	Default().CloseMessage(user, types...)
 }
 
 func OpenMessage(user string, types ...string) {
-	DefaultUserNotices.OpenMessage(user, types...)
+	Default().OpenMessage(user, types...)
 }
 
 func Clear() {
-	DefaultUserNotices.Clear()
+	Default().Clear()
 }

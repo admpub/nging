@@ -2,151 +2,132 @@ package middleware
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/webx-top/echo"
 )
 
-type (
-	// RedirectConfig defines the config for Redirect middleware.
-	RedirectConfig struct {
-		// Skipper defines a function to skip middleware.
-		Skipper echo.Skipper `json:"-"`
+// RedirectConfig defines the config for Redirect middleware.
+type RedirectConfig struct {
+	// Skipper defines a function to skip middleware.
+	echo.Skipper
 
-		// Status code to be used when redirecting the request.
-		// Optional. Default value http.StatusMovedPermanently.
-		Code int `json:"code"`
-	}
-)
+	// Status code to be used when redirecting the request.
+	// Optional. Default value http.StatusMovedPermanently.
+	Code int `yaml:"code"`
+}
 
-var (
-	// DefaultRedirectConfig is the default Redirect middleware config.
-	DefaultRedirectConfig = RedirectConfig{
-		Skipper: echo.DefaultSkipper,
-		Code:    http.StatusMovedPermanently,
-	}
-)
+// redirectLogic represents a function that given a scheme, host and uri
+// can both: 1) determine if redirect is needed (will set ok accordingly) and
+// 2) return the appropriate redirect url.
+type redirectLogic func(scheme, host, uri string) (ok bool, url string)
 
-// HTTPSRedirect redirects HTTP requests to HTTPS.
-// For example, http://webx.top will be redirect to https://webx.top.
+const www = "www"
+
+// DefaultRedirectConfig is the default Redirect middleware config.
+var DefaultRedirectConfig = RedirectConfig{
+	Skipper: echo.DefaultSkipper,
+	Code:    http.StatusMovedPermanently,
+}
+
+// HTTPSRedirect redirects http requests to https.
+// For example, http://labstack.com will be redirect to https://labstack.com.
 //
 // Usage `Echo#Pre(HTTPSRedirect())`
-func HTTPSRedirect() echo.MiddlewareFuncd {
+func HTTPSRedirect() echo.MiddlewareFunc {
 	return HTTPSRedirectWithConfig(DefaultRedirectConfig)
 }
 
-// HTTPSRedirectWithConfig returns a HTTPSRedirect middleware with config.
+// HTTPSRedirectWithConfig returns an HTTPSRedirect middleware with config.
 // See `HTTPSRedirect()`.
-func HTTPSRedirectWithConfig(config RedirectConfig) echo.MiddlewareFuncd {
-	// Defaults
-	if config.Skipper == nil {
-		config.Skipper = DefaultTrailingSlashConfig.Skipper
-	}
-	if config.Code == 0 {
-		config.Code = DefaultRedirectConfig.Code
-	}
-
-	return func(next echo.Handler) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			if config.Skipper(c) {
-				return next.Handle(c)
-			}
-
-			req := c.Request()
-			if !req.IsTLS() {
-				host := req.Host()
-				uri := req.URI()
-				return c.Redirect("https://"+host+uri, config.Code)
-			}
-			return next.Handle(c)
+func HTTPSRedirectWithConfig(config RedirectConfig) echo.MiddlewareFunc {
+	return redirect(config, func(scheme, host, uri string) (ok bool, url string) {
+		if ok = scheme != "https"; ok {
+			url = "https://" + host + uri
 		}
-	}
+		return
+	})
 }
 
-// HTTPSWWWRedirect redirects HTTP requests to WWW HTTPS.
-// For example, http://webx.top will be redirect to https://www.webx.top.
+// HTTPSWWWRedirect redirects http requests to https www.
+// For example, http://labstack.com will be redirect to https://www.labstack.com.
 //
 // Usage `Echo#Pre(HTTPSWWWRedirect())`
-func HTTPSWWWRedirect() echo.MiddlewareFuncd {
+func HTTPSWWWRedirect() echo.MiddlewareFunc {
 	return HTTPSWWWRedirectWithConfig(DefaultRedirectConfig)
 }
 
-// HTTPSWWWRedirectWithConfig returns a HTTPSRedirect middleware with config.
+// HTTPSWWWRedirectWithConfig returns an HTTPSRedirect middleware with config.
 // See `HTTPSWWWRedirect()`.
-func HTTPSWWWRedirectWithConfig(config RedirectConfig) echo.MiddlewareFuncd {
-	// Defaults
-	if config.Skipper == nil {
-		config.Skipper = DefaultTrailingSlashConfig.Skipper
-	}
-	if config.Code == 0 {
-		config.Code = DefaultRedirectConfig.Code
-	}
-
-	return func(next echo.Handler) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			if config.Skipper(c) {
-				return next.Handle(c)
-			}
-
-			req := c.Request()
-			host := req.Host()
-			uri := req.URI()
-			if !req.IsTLS() && !strings.HasPrefix(host, `www.`) {
-				return c.Redirect("https://www."+host+uri, http.StatusMovedPermanently)
-			}
-			return next.Handle(c)
+func HTTPSWWWRedirectWithConfig(config RedirectConfig) echo.MiddlewareFunc {
+	return redirect(config, func(scheme, host, uri string) (ok bool, url string) {
+		if ok = scheme != "https" && host[:3] != www; ok {
+			url = "https://www." + host + uri
 		}
-	}
+		return
+	})
 }
 
-// WWWRedirect redirects non WWW requests to WWW.
-// For example, http://webx.top will be redirect to http://www.webx.top.
+// HTTPSNonWWWRedirect redirects http requests to https non www.
+// For example, http://www.labstack.com will be redirect to https://labstack.com.
+//
+// Usage `Echo#Pre(HTTPSNonWWWRedirect())`
+func HTTPSNonWWWRedirect() echo.MiddlewareFunc {
+	return HTTPSNonWWWRedirectWithConfig(DefaultRedirectConfig)
+}
+
+// HTTPSNonWWWRedirectWithConfig returns an HTTPSRedirect middleware with config.
+// See `HTTPSNonWWWRedirect()`.
+func HTTPSNonWWWRedirectWithConfig(config RedirectConfig) echo.MiddlewareFunc {
+	return redirect(config, func(scheme, host, uri string) (ok bool, url string) {
+		if ok = scheme != "https"; ok {
+			if host[:3] == www {
+				host = host[4:]
+			}
+			url = "https://" + host + uri
+		}
+		return
+	})
+}
+
+// WWWRedirect redirects non www requests to www.
+// For example, http://labstack.com will be redirect to http://www.labstack.com.
 //
 // Usage `Echo#Pre(WWWRedirect())`
-func WWWRedirect() echo.MiddlewareFuncd {
+func WWWRedirect() echo.MiddlewareFunc {
 	return WWWRedirectWithConfig(DefaultRedirectConfig)
 }
 
-// WWWRedirectWithConfig returns a HTTPSRedirect middleware with config.
+// WWWRedirectWithConfig returns an HTTPSRedirect middleware with config.
 // See `WWWRedirect()`.
-func WWWRedirectWithConfig(config RedirectConfig) echo.MiddlewareFuncd {
-	// Defaults
-	if config.Skipper == nil {
-		config.Skipper = DefaultTrailingSlashConfig.Skipper
-	}
-	if config.Code == 0 {
-		config.Code = DefaultRedirectConfig.Code
-	}
-
-	return func(next echo.Handler) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			if config.Skipper(c) {
-				return next.Handle(c)
-			}
-
-			req := c.Request()
-			scheme := req.Scheme()
-			host := req.Host()
-			if !strings.HasPrefix(host, `www.`) {
-				uri := req.URI()
-				return c.Redirect(scheme+"://www."+host+uri, http.StatusMovedPermanently)
-			}
-			return next.Handle(c)
+func WWWRedirectWithConfig(config RedirectConfig) echo.MiddlewareFunc {
+	return redirect(config, func(scheme, host, uri string) (ok bool, url string) {
+		if ok = host[:3] != www; ok {
+			url = scheme + "://www." + host + uri
 		}
-	}
+		return
+	})
 }
 
-// NonWWWRedirect redirects WWW requests to non WWW.
-// For example, http://www.webx.top will be redirect to http://webx.top.
+// NonWWWRedirect redirects www requests to non www.
+// For example, http://www.labstack.com will be redirect to http://labstack.com.
 //
 // Usage `Echo#Pre(NonWWWRedirect())`
-func NonWWWRedirect() echo.MiddlewareFuncd {
+func NonWWWRedirect() echo.MiddlewareFunc {
 	return NonWWWRedirectWithConfig(DefaultRedirectConfig)
 }
 
-// NonWWWRedirectWithConfig returns a HTTPSRedirect middleware with config.
+// NonWWWRedirectWithConfig returns an HTTPSRedirect middleware with config.
 // See `NonWWWRedirect()`.
-func NonWWWRedirectWithConfig(config RedirectConfig) echo.MiddlewareFuncd {
+func NonWWWRedirectWithConfig(config RedirectConfig) echo.MiddlewareFunc {
+	return redirect(config, func(scheme, host, uri string) (ok bool, url string) {
+		if ok = host[:3] == www; ok {
+			url = scheme + "://" + host[4:] + uri
+		}
+		return
+	})
+}
+
+func redirect(config RedirectConfig, cb redirectLogic) echo.MiddlewareFunc {
 	if config.Skipper == nil {
 		config.Skipper = DefaultTrailingSlashConfig.Skipper
 	}
@@ -154,20 +135,19 @@ func NonWWWRedirectWithConfig(config RedirectConfig) echo.MiddlewareFuncd {
 		config.Code = DefaultRedirectConfig.Code
 	}
 
-	return func(next echo.Handler) echo.HandlerFunc {
-		return func(c echo.Context) error {
+	return echo.MiddlewareFunc(func(next echo.Handler) echo.Handler {
+		return echo.HandlerFunc(func(c echo.Context) error {
 			if config.Skipper(c) {
 				return next.Handle(c)
 			}
 
-			req := c.Request()
-			scheme := req.Scheme()
+			req, scheme := c.Request(), c.Scheme()
 			host := req.Host()
-			if strings.HasPrefix(host, `www.`) {
-				uri := req.URI()
-				return c.Redirect(scheme+"://"+host[4:]+uri, http.StatusMovedPermanently)
+			if ok, url := cb(scheme, host, req.URI()); ok {
+				return c.Redirect(url, config.Code)
 			}
+
 			return next.Handle(c)
-		}
-	}
+		})
+	})
 }

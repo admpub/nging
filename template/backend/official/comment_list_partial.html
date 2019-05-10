@@ -1,0 +1,82 @@
+
+          <ul class="timeline">
+            {{range $k,$v := Stored.listData}}
+            <li>
+            <img src="{{$v.Extra.avatar|Default "__ASSETS__/images/user_50.png"}}" onerror="this.onerror=null;this.src='__ASSETS__/images/user_50.png';" class="fa comment-avatar" alt="{{$v.Extra.name}}">
+              <!-- <i class="fa fa-comment"></i> -->
+              <!-- <span class="date"></span> -->
+              <div class="content">
+                <div class="comment-head margin-bottom-10">
+                    <span class="pull-right margin-left-10">
+                        {{(DateFormat "2006-01-02 15:04" $v.Created)}}
+                    </span>
+                    <span class="pull-right margin-left-10">
+                        <i class="fa fa-thumbs-up"></i> {{$v.Likes}}
+                    </span>
+                    <span class="pull-right margin-left-10">
+                        
+            <a href="javascript:;" data-target-id="{{$v.TargetId}}" data-target-type="{{$v.TargetType}}" data-comment-id="{{$v.Id}}" data-root-id="{{$v.RootId}}" data-comment-author="{{$v.Extra.name}}" data-comment-content="#comment-content-{{$v.Id}}" onclick="commentReply(this)">{{"回复"|T}}</a>
+            {{if not Stored.isReply}}
+            (<a href="javascript:;" data-reply-id="{{$v.Id}}">{{$v.Replies}}</a>)
+            {{end}}
+                    </span>
+                    <strong>{{$v.Extra.name}}</strong>
+                    {{if $v.Extra.isTargetAuthor}}
+                    <span class="badge badge-primary">{{"作者"|T}}</span>
+                    {{end}}
+                    {{if $v.Extra.isBought}}
+                    <span class="badge badge-success">{{"已购买"|T}}</span>
+                    {{end}}
+                    {{if $v.Extra.isAdmin}}
+                    <span class="badge badge-warning">{{"管理员"|T}}</span>
+                    {{end}}
+      
+                    {{if gt $v.ReplyCommentId 0}}
+                    <span class="tx-gray-light tx-light">{{"回复"|T}}</span>
+                    <strong>{{$v.Extra.repliedCustomerName}}</strong>
+                    {{if $v.Extra.repliedCustomerIsTargetAuthor}}
+                    <span class="badge badge-primary">{{"作者"|T}}</span>
+                    {{end}}
+                    {{if $v.Extra.repliedCustomerIsBought}}
+                    <span class="badge badge-success">{{"已购买"|T}}</span>
+                    {{end}}
+                    {{if $v.Extra.repliedCustomerIsAdmin}}
+                    <span class="badge badge-warning">{{"管理员"|T}}</span>
+                    {{end}}
+                    {{end}}
+                </div><!-- .comment-head -->
+                <div class="comment-body{{if eq $v.Contype "markdown"}} markdown-code{{end}}" id="comment-content-{{$v.Id}}">
+                    {{- if eq $v.Contype "text" -}}
+                    {{- $v.Content|Nl2br -}}
+                    {{- else if eq $v.Contype "html" -}}
+                    {{- $v.Content|ToHTML -}}
+                    {{- else if eq $v.Contype "markdown" -}}
+                    {{- $v.Content -}}
+                    {{- else -}}
+                    {{- $v.Content -}}
+                    {{- end -}}
+                </div><!-- .comment-body -->
+                <div class="comment-foot clearfix" style="margin-top:10px">
+                    <div class="pull-right sm-margin-left">
+                        <div class="switch" data-on="success" data-on-label="显示" data-off-label="{{`隐藏`|T}}">
+                          <input type="checkbox" name="display[{{$v.Id}}]" data-comment-id="{{$v.Id}}"{{if eq $v.Display "Y"}} checked{{end}} value="Y" onchange="commentDisplay(this)">
+                        </div>
+                    </div>
+                    <div class="pull-right sm-margin-left">
+                        <a href="javascript:;" data-comment-id="{{$v.Id}}" class="btn btn-danger btn-sm padding-x-15 btn-rad-20" onclick="commentRemove(this)"><i class="fa fa-times"></i> {{"删除"|T}}</a>
+                    </div>
+                    {{if $v.Extra.targetObject.detailURL}}
+                    <div class="pull-left" style="line-height:30px">
+                      <span class="label label-default">{{"评论对象"|T}}</span>
+                      <a href="{{$v.Extra.targetObject.detailURL}}" target="_blank" rel="noopener noreferrer">
+                        {{$v.Extra.targetObject.title|Default (T "无标题")}}
+                        <i class="fa fa-share-square"></i>
+                      </a>
+                    </div>
+                    {{end}}
+                </div>
+              </div>
+            </li>
+            {{end}}
+          </ul>
+        {{Stored.pagination.Render}}

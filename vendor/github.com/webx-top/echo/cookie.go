@@ -24,6 +24,12 @@ import (
 	"time"
 )
 
+var (
+	DefaultCookieOptions = &CookieOptions{
+		Path: `/`,
+	}
+)
+
 // CookieOptions cookie options
 type CookieOptions struct {
 	Prefix string
@@ -37,6 +43,7 @@ type CookieOptions struct {
 	Domain   string
 	Secure   bool
 	HttpOnly bool
+	SameSite string // strict / lax
 }
 
 func (c *CookieOptions) Clone() *CookieOptions {
@@ -59,11 +66,7 @@ func NewCookier(ctx Context) Cookier {
 }
 
 //NewCookie create a cookie instance
-func NewCookie(name string, value string, opts ...*CookieOptions) *Cookie {
-	opt := &CookieOptions{}
-	if len(opts) > 0 {
-		opt = opts[0]
-	}
+func newCookie(name string, value string, opt *CookieOptions) *Cookie {
 	if len(opt.Path) == 0 {
 		opt.Path = `/`
 	}
@@ -105,9 +108,10 @@ func (c *Cookie) MaxAge(p int) *Cookie {
 }
 
 //Expires 设置过期时间戳
-func (c *Cookie) Expires(p int64) *Cookie {
+func (c *Cookie) Expires(p int) *Cookie {
+	c.MaxAge(p)
 	if p > 0 {
-		c.cookie.Expires = time.Unix(time.Now().Unix()+p, 0)
+		c.cookie.Expires = time.Unix(time.Now().Unix()+int64(p), 0)
 	} else if p < 0 {
 		c.cookie.Expires = time.Unix(1, 0)
 	}
@@ -159,6 +163,10 @@ func (c *cookie) Set(key string, val string, args ...interface{}) Cookier {
 		cookie = NewCookie(key, val, c.context.CookieOptions())
 	}
 	switch len(args) {
+	case 6:
+		sameSite, _ := args[5].(string)
+		cookie.SameSite(sameSite)
+		fallthrough
 	case 5:
 		httpOnly, _ := args[4].(bool)
 		cookie.HttpOnly(httpOnly)
@@ -176,14 +184,14 @@ func (c *cookie) Set(key string, val string, args ...interface{}) Cookier {
 		cookie.Path(ppath)
 		fallthrough
 	case 1:
-		var liftTime int64
-		switch args[0].(type) {
+		var liftTime int
+		switch v := args[0].(type) {
 		case int:
-			liftTime = int64(args[0].(int))
+			liftTime = v
 		case int64:
-			liftTime = args[0].(int64)
+			liftTime = int(v)
 		case time.Duration:
-			liftTime = int64(args[0].(time.Duration).Seconds())
+			liftTime = int(v.Seconds())
 		}
 		cookie.Expires(liftTime)
 	}

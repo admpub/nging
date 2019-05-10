@@ -1,19 +1,19 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package task
 
@@ -23,6 +23,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/cron"
 	"github.com/admpub/nging/application/model"
@@ -61,17 +62,11 @@ func Log(ctx echo.Context) error {
 	ctx.Set(`task`, task)
 	ret := handler.Err(ctx, err)
 	ctx.Set(`activeURL`, `/task/index`)
+	ctx.Set(`notRecordPrefixFlag`, cron.NotRecordPrefixFlag)
 	return ctx.Render(`task/log`, ret)
 }
 
-func LogView(ctx echo.Context) error {
-	id := ctx.Paramx(`id`).Uint()
-	m := model.NewTaskLog(ctx)
-	err := m.Get(nil, `id`, id)
-	if err != nil {
-		handler.SendFail(ctx, err.Error())
-		return ctx.Redirect(`/task/log`)
-	}
+func renderLogViewData(ctx echo.Context, m *dbschema.TaskLog, err error) error {
 	ctx.Set(`data`, m)
 	ctx.Set(`activeURL`, `/task/index`)
 	var task *model.Task
@@ -89,7 +84,19 @@ func LogView(ctx echo.Context) error {
 	}
 	ctx.Set(`task`, task)
 	ctx.Set(`extra`, ex)
+	ctx.Set(`notRecordPrefixFlag`, cron.NotRecordPrefixFlag)
 	return ctx.Render(`task/log_view`, handler.Err(ctx, err))
+}
+
+func LogView(ctx echo.Context) error {
+	id := ctx.Paramx(`id`).Uint()
+	m := model.NewTaskLog(ctx)
+	err := m.Get(nil, `id`, id)
+	if err != nil {
+		handler.SendFail(ctx, err.Error())
+		return ctx.Redirect(handler.URLFor(`/task/log`))
+	}
+	return renderLogViewData(ctx, m.TaskLog, err)
 }
 
 func LogDelete(ctx echo.Context) error {
@@ -151,5 +158,5 @@ func LogDelete(ctx echo.Context) error {
 	}
 
 END:
-	return ctx.Redirect(`/task/log?taskId=` + fmt.Sprint(taskId))
+	return ctx.Redirect(handler.URLFor(`/task/log?taskId=`) + fmt.Sprint(taskId))
 }

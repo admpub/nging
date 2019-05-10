@@ -1,0 +1,75 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"邀请码管理"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"邀请码管理"|T}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+				<div class="col-md-12">
+					<div class="block-flat">
+						<div class="header">
+							<a href="__BACKEND__/manager/invitation_add" class="btn btn-success pull-right">
+								<i class="fa fa-plus"></i>
+								{{"添加邀请码"|T}}
+							</a>
+							<h3>{{"邀请码列表"|T}}</h3>
+						</div>
+						<div class="content">
+							<div class="table-responsive">
+							<table class="table no-border hover">
+								<thead class="no-border">
+									<tr>
+										<th style="width:2%;"><strong>ID</strong></th>
+										<th><strong>{{"邀请码"|T}}</strong></th>
+										<th><strong>{{"有效期"|T}}</strong></th>
+										<th><strong>{{"创建时间"|T}}</strong></th>
+										<th><strong>{{"使用时间"|T}}</strong></th>
+										<th><strong>{{"使用者UID"|T}}</strong></th>
+										<th><strong>{{"状态"|T}}</strong></th>
+										<th style="width:15%;" class="text-center"><strong>{{"操作"|T}}</strong></th>
+									</tr>
+								</thead>
+								<tbody class="no-border-y">
+                                    {{range $k,$v := Stored.listData}}
+									<tr>
+										<td>{{$v.Id}}</td>
+										<td>{{$v.Code}}</td>
+										<td>
+											{{if and (gt $v.Start 0) (gt $v.End 0)}}
+											{{$v.Start|DateFormat "2006-01-02 15:04:05"}} ~ {{$v.End|DateFormat "2006-01-02 15:04:05"}}
+											{{else if gt $v.Start 0}}
+											{{$v.Start|DateFormat "2006-01-02 15:04:05"}}{{"以后"|T}}
+											{{else if gt $v.End 0}}
+											{{$v.End|DateFormat "2006-01-02 15:04:05"}}{{"以前"|T}}
+											{{else}}
+											{{"不限制"|T}}
+											{{end}}
+										</td>
+										<td>
+											{{$v.Created|DateFormat "2006-01-02 15:04:05"}}
+										</td>
+										<td>
+											{{if gt $v.Used 0}}
+											{{$v.Used|DateFormat "2006-01-02 15:04:05"}}
+											{{else}}
+											{{"未使用"|T}}
+											{{end}}
+										</td>
+										<td>{{$v.RecvUid}}</td>
+										<td>{{if eq $v.Disabled "Y"}}{{"禁用"|T}}{{else}}{{"启用"|T}}{{end}}</td>
+										<td class="text-center">
+										<a class="label label-success" href="__BACKEND__/manager/invitation_edit?id={{$v.Id}}" data-toggle="tooltip" title="{{"修改"|T}}"><i class="fa fa-pencil"></i></a> 
+										<a class="label label-danger" href="__BACKEND__/manager/invitation_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" data-toggle="tooltip" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
+										</td>
+									</tr>
+                                    {{end}}
+								</tbody>
+							</table>		
+							</div>
+							{{Stored.pagination.Render}}
+						</div>
+					</div>				
+				</div>
+			</div>
+{{/Block}}

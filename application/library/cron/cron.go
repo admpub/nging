@@ -1,3 +1,21 @@
+/*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
+
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 package cron
 
 import (
@@ -5,25 +23,33 @@ import (
 
 	"github.com/admpub/cron"
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/mail"
 )
 
 var (
-	mainCron        *cron.Cron
-	workPool        chan bool
-	lock            sync.Mutex
-	PoolDefaultSize = 1000
+	mainCron           *cron.Cron
+	workPool           chan bool
+	lock               sync.Mutex
+	PoolSize           = 50                 //连接池容量
+	DefaultSMTPConfig  = &mail.SMTPConfig{} //STMP配置
+	DefaultEmailConfig = &EmailConfig{}
 )
+
+type EmailConfig struct {
+	Template  string
+	Sender    string
+	Engine    string
+	Timeout   int64
+	QueueSize int
+}
 
 func Initial(sizes ...int) {
 	var size int
 	if len(sizes) > 0 {
 		size = sizes[0]
-	} else {
-		size = config.DefaultConfig.Cron.PoolSize
 	}
 	if size <= 0 {
-		size = PoolDefaultSize
+		size = PoolSize
 	}
 	Close()
 	workPool = make(chan bool, size)

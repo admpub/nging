@@ -64,19 +64,22 @@ func (a *I18n) Monitor() *I18n {
 		log.Info("reload language: ", file)
 		defaultInstance.Reload(file)
 	}
+	callback := &com.MonitorEvent{
+		Modify: onchange,
+		Delete: onchange,
+		Rename: onchange,
+	}
+	callback.Watch(func(f string) bool {
+		log.Info("changed language: ", f)
+		return strings.HasSuffix(f, `.yaml`)
+	})
 	for _, mp := range a.config.MessagesPath {
 		if len(mp) == 0 {
 			continue
 		}
-		callback := &com.MonitorEvent{
-			Modify: onchange,
-			Delete: onchange,
-			Rename: onchange,
+		if err := callback.AddDir(mp); err != nil {
+			log.Error(err)
 		}
-		callback.Watch(mp, func(f string) bool {
-			log.Info("changed language: ", f)
-			return strings.HasSuffix(f, `.yaml`)
-		})
 	}
 	return a
 }

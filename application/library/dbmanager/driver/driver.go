@@ -1,23 +1,24 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package driver
 
 import (
+	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/dbmanager/result"
 	"github.com/webx-top/echo"
 )
@@ -57,6 +58,7 @@ type Driver interface {
 	RunCommand() error
 	Import() error
 	Export() error
+	Analysis() error
 	Name() string
 }
 
@@ -184,8 +186,40 @@ func (m *BaseDriver) Import() error {
 func (m *BaseDriver) Export() error {
 	return nil
 }
+func (m *BaseDriver) Analysis() error {
+	data := m.Data()
+	data.SetInfo(m.T(`不支持此功能`), 0)
+	return m.JSON(data)
+}
 func (m *BaseDriver) Name() string {
 	return `Base`
+}
+
+//========================================================
+
+func (m *BaseDriver) CheckErr(err error) interface{} {
+	return common.Err(m.Context, err)
+}
+
+func (m *BaseDriver) SetOk(msg string) {
+	m.Session().AddFlash(common.Ok(msg))
+}
+
+func (m *BaseDriver) SetFail(msg string) {
+	m.Session().AddFlash(msg)
+}
+
+func (m *BaseDriver) ReturnTo(rets ...string) error {
+	returnTo := m.Form(`return_to`)
+	if len(returnTo) == 0 {
+		if len(rets) > 0 {
+			returnTo = rets[0]
+		} else {
+			returnTo = m.Request().Referer()
+		}
+	}
+	m.SaveResults()
+	return m.Redirect(returnTo)
 }
 
 func Register(name string, driver Driver) {

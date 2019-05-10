@@ -1,19 +1,19 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package config
 
@@ -31,9 +31,12 @@ import (
 
 	"github.com/admpub/confl"
 	"github.com/admpub/log"
+	"github.com/admpub/nging/application/cmd/event"
 	"github.com/admpub/nging/application/library/caddy"
+	"github.com/admpub/nging/application/library/cron"
 	"github.com/admpub/nging/application/library/ftp"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/db/lib/sqlbuilder"
 	"github.com/webx-top/db/mongo"
 	"github.com/webx-top/db/mysql"
 	"github.com/webx-top/echo"
@@ -58,33 +61,70 @@ func ParseTimeDuration(timeout string) time.Duration {
 	return timeoutDuration
 }
 
-func InitConfig() error {
-	_, err := confl.DecodeFile(DefaultCLIConfig.Conf, DefaultConfig)
+func InitConfig() (*Config, error) {
+	configFiles := []string{
+		DefaultCLIConfig.Conf,
+		filepath.Join(echo.Wd(), `config/config.yaml.sample`),
+	}
+	var (
+		configFile      string
+		err             error
+		temporaryConfig = NewConfig()
+	)
+	temporaryConfig.Debug = event.Develop
+	for key, conf := range configFiles {
+		if !filepath.IsAbs(conf) {
+			conf = filepath.Join(echo.Wd(), conf)
+			configFiles[key] = conf
+			if key == 0 {
+				DefaultCLIConfig.Conf = conf
+			}
+		}
+		_, err = os.Stat(conf)
+		if err == nil {
+			configFile = conf
+			break
+		}
+		if !os.IsNotExist(err) {
+			return temporaryConfig, err
+		}
+	}
 	if err != nil {
-		return err
+		return temporaryConfig, err
 	}
-	confDir := filepath.Dir(DefaultCLIConfig.Conf)
-	if len(DefaultConfig.Caddy.Caddyfile) == 0 {
-		DefaultConfig.Caddy.Caddyfile = `./Caddyfile`
-	} else if strings.HasSuffix(DefaultConfig.Caddy.Caddyfile, `/`) || strings.HasSuffix(DefaultConfig.Caddy.Caddyfile, `\`) {
-		DefaultConfig.Caddy.Caddyfile = path.Join(DefaultConfig.Caddy.Caddyfile, `Caddyfile`)
+	_, err = confl.DecodeFile(configFile, temporaryConfig)
+	if err != nil {
+		return temporaryConfig, err
 	}
-	if len(DefaultConfig.Sys.VhostsfileDir) == 0 {
-		DefaultConfig.Sys.VhostsfileDir = path.Join(confDir, `vhosts`)
+	confDir := filepath.Dir(configFile)
+	if len(temporaryConfig.Caddy.Caddyfile) == 0 {
+		temporaryConfig.Caddy.Caddyfile = `./Caddyfile`
+	} else if strings.HasSuffix(temporaryConfig.Caddy.Caddyfile, `/`) || strings.HasSuffix(temporaryConfig.Caddy.Caddyfile, `\`) {
+		temporaryConfig.Caddy.Caddyfile = path.Join(temporaryConfig.Caddy.Caddyfile, `Caddyfile`)
 	}
-	if DefaultConfig.Sys.EditableFileMaxBytes < 1 && len(DefaultConfig.Sys.EditableFileMaxSize) > 0 {
-		DefaultConfig.Sys.EditableFileMaxBytes, err = bytes.Parse(DefaultConfig.Sys.EditableFileMaxSize)
+	if len(temporaryConfig.Sys.VhostsfileDir) == 0 {
+		temporaryConfig.Sys.VhostsfileDir = path.Join(confDir, `vhosts`)
+	}
+	if temporaryConfig.Sys.EditableFileMaxBytes < 1 && len(temporaryConfig.Sys.EditableFileMaxSize) > 0 {
+		temporaryConfig.Sys.EditableFileMaxBytes, err = bytes.Parse(temporaryConfig.Sys.EditableFileMaxSize)
 		if err != nil {
 			log.Error(err.Error())
 		}
 	}
-	DefaultConfig.Sys.CmdTimeoutDuration = ParseTimeDuration(DefaultConfig.Sys.CmdTimeout)
-	if DefaultConfig.Sys.CmdTimeoutDuration <= 0 {
-		DefaultConfig.Sys.CmdTimeoutDuration = time.Second * 30
+	temporaryConfig.Sys.CmdTimeoutDuration = ParseTimeDuration(temporaryConfig.Sys.CmdTimeout)
+	if temporaryConfig.Sys.CmdTimeoutDuration <= 0 {
+		temporaryConfig.Sys.CmdTimeoutDuration = time.Second * 30
 	}
-	caddy.Fixed(&DefaultConfig.Caddy)
-	ftp.Fixed(&DefaultConfig.FTP)
-	return nil
+	if len(temporaryConfig.Cookie.Path) == 0 {
+		temporaryConfig.Cookie.Path = `/`
+	}
+	if len(temporaryConfig.Sys.SSLCacheDir) == 0 {
+		temporaryConfig.Sys.SSLCacheDir = filepath.Join(echo.Wd(), `data`, `cache`, `autocert`)
+	}
+	caddy.Fixed(&temporaryConfig.Caddy)
+	ftp.Fixed(&temporaryConfig.FTP)
+
+	return temporaryConfig, nil
 }
 
 func ParseConfig() error {
@@ -95,27 +135,28 @@ func ParseConfig() error {
 			return err
 		}
 	}
-	err := InitConfig()
+	conf, err := InitConfig()
 	if err != nil {
 		return err
 	}
-	InitLog()
-	InitSessionOptions()
-	if DefaultConfig.Sys.Debug {
-		log.SetLevel(`Debug`)
-	} else {
-		log.SetLevel(`Info`)
+	InitSessionOptions(conf)
+	if conf.Cron.PoolSize > 0 {
+		cron.PoolSize = conf.Cron.PoolSize
 	}
-
-	err = ConnectDB()
-	if err != nil {
-		return err
+	cron.DefaultEmailConfig.Template = conf.Cron.Template
+	if IsInstalled() {
+		err = conf.connectDB()
+		if err != nil {
+			return err
+		}
+		if DefaultConfig != nil {
+			err = DefaultConfig.Reload(conf)
+			if err != nil {
+				return err
+			}
+		}
 	}
-
-	err = DefaultCLIConfig.Reload()
-	if err != nil {
-		return err
-	}
+	conf.AsDefault()
 	return err
 }
 
@@ -137,7 +178,7 @@ func CreaterMySQL(err error, c *Config) error {
 	if strings.Contains(err.Error(), `Unknown database`) {
 		dbName := c.DB.Database
 		c.DB.Database = ``
-		err2 := ConnectDB()
+		err2 := ConnectDB(c)
 		if err2 != nil {
 			return err
 		}
@@ -147,7 +188,7 @@ func CreaterMySQL(err error, c *Config) error {
 			return err
 		}
 		c.DB.Database = dbName
-		err = ConnectDB()
+		err = ConnectDB(c)
 	}
 	return err
 }
@@ -160,11 +201,18 @@ func ConnectMySQL(c *Config) error {
 		Password: c.DB.Password,
 		Options:  c.DB.Options,
 	}
+	if settings.Options == nil {
+		settings.Options = map[string]string{}
+	}
+	// Default options.
+	if _, ok := settings.Options["charset"]; !ok {
+		settings.Options["charset"] = "utf8mb4"
+	}
 	database, err := mysql.Open(settings)
 	if err != nil {
 		return err
 	}
-	c.DB.SetConnMaxLifetime(database)
+	c.DB.SetConn(database)
 	cluster := factory.NewCluster().AddMaster(database)
 	factory.SetCluster(0, cluster).Cluster(0).SetPrefix(c.DB.Prefix)
 	factory.SetDebug(c.DB.Debug)
@@ -179,10 +227,14 @@ func ConnectMongoDB(c *Config) error {
 		Password: c.DB.Password,
 		Options:  c.DB.Options,
 	}
+	if c.DB.ConnMaxDuration() > 0 {
+		mongo.ConnTimeout = c.DB.ConnMaxDuration()
+	}
 	database, err := mongo.Open(settings)
 	if err != nil {
 		return err
 	}
+	c.DB.SetConn(database)
 	cluster := factory.NewCluster().AddMaster(database)
 	factory.SetCluster(0, cluster).Cluster(0).SetPrefix(c.DB.Prefix)
 	factory.SetDebug(c.DB.Debug)
@@ -197,46 +249,16 @@ func ExecMySQL(sqlStr string) error {
 	return err
 }
 
-func ConnectDB() error {
-	factory.CloseAll()
-	if fn, ok := DBConnecters[DefaultConfig.DB.Type]; ok {
-		return fn(DefaultConfig)
-	}
-	return ErrUnknowDatabaseType
+func QueryTo(sqlStr string, result interface{}) (sqlbuilder.Iterator, error) {
+	return factory.NewParam().SetRecv(result).SetCollection(sqlStr).QueryTo()
 }
 
-func InitLog() {
-
-	//======================================================
-	// 配置日志
-	//======================================================
-	if DefaultConfig.Log.Debug {
-		log.DefaultLog.MaxLevel = log.LevelDebug
-	} else {
-		log.DefaultLog.MaxLevel = log.LevelInfo
+func ConnectDB(c *Config) error {
+	factory.CloseAll()
+	if fn, ok := DBConnecters[c.DB.Type]; ok {
+		return fn(c)
 	}
-	targets := []log.Target{}
-
-	for _, targetName := range strings.Split(DefaultConfig.Log.Targets, `,`) {
-		switch targetName {
-		case "console":
-			//输出到命令行
-			consoleTarget := log.NewConsoleTarget()
-			consoleTarget.ColorMode = DefaultConfig.Log.Colorable
-			targets = append(targets, consoleTarget)
-
-		case "file":
-			//输出到文件
-			fileTarget := log.NewFileTarget()
-			fileTarget.FileName = DefaultConfig.Log.SaveFile
-			fileTarget.Filter.MaxLevel = log.LevelInfo
-			fileTarget.MaxBytes = DefaultConfig.Log.FileMaxBytes
-			targets = append(targets, fileTarget)
-		}
-	}
-
-	log.SetTarget(targets...)
-	log.SetFatalAction(log.ActionExit)
+	return ErrUnknowDatabaseType
 }
 
 func MustOK(err error) {

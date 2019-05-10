@@ -15,16 +15,44 @@
    limitations under the License.
 
 */
+
 package param
 
 import (
 	"strconv"
+	"strings"
+	"time"
 )
+
+var emptyTime = time.Time{}
 
 type String string
 
 func (p String) String() string {
+	return strings.TrimSpace(string(p))
+}
+
+func (p String) Raw() string {
 	return string(p)
+}
+
+func (p String) Split(sep string, limit ...int) StringSlice {
+	s := p.String()
+	if len(s) == 0 {
+		return StringSlice{}
+	}
+	if len(limit) > 0 {
+		return strings.SplitN(s, sep, limit[0])
+	}
+	return strings.Split(s, sep)
+}
+
+func (p String) Trim() String {
+	return String(strings.TrimSpace(string(p)))
+}
+
+func (p String) Interface() interface{} {
+	return interface{}(p)
 }
 
 func (p String) Int() int {
@@ -97,4 +125,33 @@ func (p String) Bool() bool {
 		return r
 	}
 	return false
+}
+
+func (p String) Timestamp() time.Time {
+	if len(p) > 0 {
+		s := strings.SplitN(p.String(), `.`, 2)
+		var sec int64
+		var nsec int64
+		switch len(s) {
+		case 2:
+			nsec = String(s[1]).Int64()
+			fallthrough
+		case 1:
+			sec = String(s[0]).Int64()
+		}
+		return time.Unix(sec, nsec)
+	}
+	return emptyTime
+}
+
+func (p String) DateTime(layouts ...string) time.Time {
+	if len(p) > 0 {
+		layout := `2006-01-02 15:04:05`
+		if len(layouts) > 0 {
+			layout = layouts[0]
+		}
+		t, _ := time.Parse(layout, p.String())
+		return t
+	}
+	return emptyTime
 }

@@ -1,0 +1,60 @@
+{{Strip}}
+{{Extend "base"}}
+{{Block "description"}}{{"Nging授权"|T}}{{/Block}}
+{{Block "title"}}{{"Nging授权"|T}}{{/Block}}
+{{Block "bodyAttr"}} class="texture"{{/Block}}
+{{Block "main"}}
+<div id="cl-wrapper" class="sign-up-container">
+	<div class="middle-sign-up">
+		<div class="block-flat">
+			<div class="header">
+				<h3 class="text-center"><i class="fa fa-leaf"></i> {{"Nging授权"|T}}</h3>
+			</div>
+			<div>
+			<div class="content">
+				{{if Stored.downloaded}}
+                <div class="alert alert-success">
+                    {{"授权成功！已经自动从官方服务器获取到授权证书 :)"|T}}
+                </div>
+                <a class="btn btn-block btn-success btn-rad btn-lg" href="__BACKEND__/">{{"返回首页"|T}}</a>
+				{{else}}
+                <div class="alert alert-danger">
+                    {{"很抱歉！本软件必须获取商业授权才能继续使用"|T}}
+                </div>
+				<div class="input-group">
+					<span class="input-group-addon">{{"机器码"|T}}</span>
+					<textarea class="form-control" readonly="readonly" style="resize:none" onclick="this.select()" ondblclick="this.select()">{{Stored.machineID}}</textarea>
+				</div>
+                <div class="spacer">
+                    <ul>
+                        <li class="wrap-only">{{T "如果您已经购买了授权，请刷新本页面或者将授权证书文件 “%s” 放到：" Stored.fileName}}{{Stored.licenseFile}}</li>
+                        <li>{{"如果尚未购买，请点击："|T}}</li>
+                    </ul>
+                </div>
+                <a class="btn btn-block btn-success btn-rad btn-lg" href="{{Stored.productURL}}?source={{SiteURI}}" target="_blank">{{"立即购买"|T}}</a>
+				{{end}}
+				<a class="btn btn-block btn-default btn-rad btn-lg" href="__BACKEND__/logout">{{"退出登录"|T}}</a>
+			</div>
+			</div>
+		</div>
+		<div class="text-center out-links"><a href="https://github.com/admpub/nging" target="_blank">&copy; {{Now.Year}} {{Version}}</a></div>
+	</div>
+
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script type="text/javascript" src="__ASSETS__/js/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/i18n/messages.{{(Replace Lang "-" "_" -1)|ToLower}}.js" charset="utf-8"></script>
+<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/dist/parsley.min.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/behaviour/general.min.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/jquery.gritter/js/jquery.gritter.min.js"></script>
+<script type="text/javascript">
+$(function(){
+{{- if . -}}
+App.message({title: '{{"系统消息"|T}}', text: "{{.}}"});
+{{- end -}}
+$('[data-toggle="tooltip"]').tooltip();
+});
+</script>
+{{/Block}}
+{{/Strip}}

@@ -1,19 +1,19 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package config
 
@@ -21,115 +21,49 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-
+	"reflect"
 	"time"
 
 	"github.com/admpub/confl"
 	"github.com/admpub/log"
-	"github.com/admpub/mail"
+
+	//"github.com/admpub/license_gen/lib"
+
 	"github.com/admpub/nging/application/library/caddy"
 	"github.com/admpub/nging/application/library/ftp"
-	"github.com/admpub/null"
-	"github.com/webx-top/db/lib/sqlbuilder"
+	"github.com/admpub/securecookie"
+	"github.com/webx-top/codec"
+	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/language"
 )
 
-func SetVersion(version string) {
-	ngingVersion = version
-	caddy.DefaultVersion = version
-}
-
-func Version() string {
-	return ngingVersion
-}
-
-var dbConnMaxDuration = 10 * time.Second
-
-type DB struct {
-	Type            string            `json:"type"`
-	User            string            `json:"user"`
-	Password        string            `json:"password"`
-	Host            string            `json:"host"`
-	Database        string            `json:"database"`
-	Prefix          string            `json:"prefix"`
-	Options         map[string]string `json:"options"`
-	Debug           bool              `json:"debug"`
-	ConnMaxLifetime string            `json:"connMaxLifetime"`
-	connMaxDuration time.Duration
-}
-
-func (d *DB) ConnMaxDuration() time.Duration {
-	if d.connMaxDuration > 0 {
-		return d.connMaxDuration
-	}
-	if len(d.ConnMaxLifetime) > 0 {
-		d.connMaxDuration, _ = time.ParseDuration(d.ConnMaxLifetime)
-		if d.connMaxDuration <= 0 {
-			d.connMaxDuration = dbConnMaxDuration
-		}
-	} else {
-		d.connMaxDuration = dbConnMaxDuration
-	}
-	return d.connMaxDuration
-}
-
-func (d *DB) SetConnMaxLifetime(database sqlbuilder.Database) error {
-	if d.Type != `mysql` {
-		database.SetConnMaxLifetime(d.ConnMaxDuration())
-		return nil
-	}
-	row, err := database.QueryRow(`show variables where Variable_name = 'wait_timeout'`)
-	if err != nil {
-		log.Error(err)
-	} else {
-		name := null.String{}
-		timeout := null.String{}
-		err = row.Scan(&name, &timeout)
-		if err != nil {
-			log.Error(err)
-		} else {
-			d.connMaxDuration = time.Duration(timeout.Int64()) * time.Second
-			d.connMaxDuration /= 2
-		}
-	}
-	database.SetConnMaxLifetime(d.ConnMaxDuration())
-	return err
+func NewConfig() *Config {
+	c := &Config{}
+	c.ConfigInDB = NewConfigInDB(c)
+	return c
 }
 
 type Config struct {
 	DB DB `json:"db"`
 
-	Log struct {
-		Debug        bool   `json:"debug"`
-		Colorable    bool   `json:"colorable"`    // for console
-		SaveFile     string `json:"saveFile"`     // for file
-		FileMaxBytes int64  `json:"fileMaxBytes"` // for file
-		Targets      string `json:"targets"`
-	} `json:"log"`
-
 	Sys struct {
 		VhostsfileDir          string            `json:"vhostsfileDir"`
 		AllowIP                []string          `json:"allowIP"`
+		SSLAuto                bool              `json:"sslAuto"`
+		SSLEmail               string            `json:"sslEmail"`
 		SSLHosts               []string          `json:"sslHosts"`
 		SSLCacheDir            string            `json:"sslCacheDir"`
 		SSLKeyFile             string            `json:"sslKeyFile"`
 		SSLCertFile            string            `json:"sslCertFile"`
-		Debug                  bool              `json:"debug"`
 		EditableFileExtensions map[string]string `json:"editableFileExtensions"`
 		EditableFileMaxSize    string            `json:"editableFileMaxSize"`
 		EditableFileMaxBytes   int64             `json:"editableFileMaxBytes"`
 		ErrorPages             map[int]string    `json:"errorPages"`
 		CmdTimeout             string            `json:"cmdTimeout"`
 		CmdTimeoutDuration     time.Duration     `json:"-"`
+		ShowExpirationTime     int64             `json:"showExpirationTime"` //显示过期时间：0为始终显示；大于0为距离剩余到期时间多少秒的时候显示；小于0为不显示
 	} `json:"sys"`
-
-	Email struct {
-		*mail.SMTPConfig
-		Timeout   int64  //超时时间(秒)，采用默认引擎发信时，此项无效
-		Engine    string //值为email时采用github.com/jordan-wright/email包发送，否则采用默认的github.com/admpub/mail发送
-		From      string //发信人Email地址
-		QueueSize int    //允许同一时间发信的数量
-	} `json:"email"`
 
 	Cron struct {
 		PoolSize int    `json:"poolSize"`
@@ -151,6 +85,95 @@ type Config struct {
 	Download struct {
 		SavePath string `json:"savePath"`
 	} `json:"download"`
+	//License lib.LicenseData `json:"license,omitempty"`
+
+	*ConfigInDB `json:"-"`
+
+	connectedDB bool
+}
+
+// ConnectedDB 数据库是否已连接，如果没有连接则自动连接
+func (c *Config) ConnectedDB(autoConn ...bool) bool {
+	if c.connectedDB {
+		return c.connectedDB
+	}
+	n := len(autoConn)
+	if n == 0 || (n > 0 && autoConn[0]) {
+		err := c.connectDB()
+		if err != nil {
+			log.Error(err)
+		}
+	}
+	return c.connectedDB
+}
+
+func (c *Config) connectDB() error {
+	err := ConnectDB(c)
+	if err != nil {
+		return err
+	}
+	c.connectedDB = true
+	return nil
+}
+
+func (c *Config) SetDebug(on bool) *Config {
+	c.ConfigInDB.SetDebug(on)
+	return c
+}
+
+func (c *Config) Codec() codec.Codec {
+	return codec.Default
+}
+
+func (c *Config) Encode(raw string, keys ...string) string {
+	var key string
+	if len(keys) > 0 && len(keys[0]) > 0 {
+		key = com.Md5(keys[0])
+	} else {
+		key = c.Cookie.HashKey
+	}
+	return codec.Default.Encode(raw, key)
+}
+
+func (c *Config) Decode(encrypted string, keys ...string) string {
+	if len(encrypted) == 0 {
+		return ``
+	}
+	var key string
+	if len(keys) > 0 && len(keys[0]) > 0 {
+		key = com.Md5(keys[0])
+	} else {
+		key = c.Cookie.HashKey
+	}
+	return codec.Default.Decode(encrypted, key)
+}
+
+func (c *Config) InitSecretKey() *Config {
+	c.Cookie.BlockKey = c.GenerateRandomKey()
+	c.Cookie.HashKey = c.GenerateRandomKey()
+	return c
+}
+
+func (c *Config) GenerateRandomKey() string {
+	return com.Md5(string(securecookie.GenerateRandomKey(32)))
+}
+
+func (c *Config) Reload(newConfig *Config) error {
+	engines := []string{}
+	if !reflect.DeepEqual(newConfig.Caddy, c.Caddy) {
+		engines = append(engines, `caddy`)
+	}
+	if !reflect.DeepEqual(newConfig.FTP, c.FTP) {
+		engines = append(engines, `ftp`)
+	}
+	DefaultCLIConfig.Reload(engines...)
+	return nil
+}
+
+func (c *Config) AsDefault() {
+	echo.Set(`DefaultConfig`, c)
+	c.ConfigInDB.Init()
+	DefaultConfig = c
 }
 
 func (c *Config) SaveToFile() error {
@@ -158,18 +181,20 @@ func (c *Config) SaveToFile() error {
 	if err == nil {
 		err = os.MkdirAll(filepath.Dir(DefaultCLIConfig.Conf), os.ModePerm)
 		if err == nil {
-			_, e := os.Stat(DefaultCLIConfig.Conf + `.sample`)
-			if e != nil {
-				if os.IsNotExist(e) {
-					old, err := ioutil.ReadFile(DefaultCLIConfig.Conf)
-					if err == nil {
-						err = ioutil.WriteFile(DefaultCLIConfig.Conf+`.sample`, old, os.ModePerm)
-					}
-					if err != nil {
-						return err
+			/*
+				_, e := os.Stat(DefaultCLIConfig.Conf + `.sample`)
+				if e != nil {
+					if os.IsNotExist(e) {
+						old, err := ioutil.ReadFile(DefaultCLIConfig.Conf)
+						if err == nil {
+							err = ioutil.WriteFile(DefaultCLIConfig.Conf+`.sample`, old, os.ModePerm)
+						}
+						if err != nil {
+							return err
+						}
 					}
 				}
-			}
+			*/
 			err = ioutil.WriteFile(DefaultCLIConfig.Conf, b, os.ModePerm)
 		}
 	}

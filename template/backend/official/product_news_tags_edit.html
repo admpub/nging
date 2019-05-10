@@ -1,0 +1,52 @@
+{{Extend "layout"}}
+{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加标签"|T}}{{else}}{{"修改标签"|T}}{{end}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="__BACKEND__/official/pay/product_index">{{"产品列表"|T}}</a></li>
+<li><a href="__BACKEND__/official/news_index?productId={{Stored.productId}}">{{"资讯列表"|T}}</a></li>
+<li><a href="__BACKEND__/official/product_news_tags_index?productId={{Stored.productId}}">{{"标签管理"|T}}</a></li>
+<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{if HasSuffix URL.Path "_add"}}{{"添加标签"|T}}{{else}}{{"修改标签"|T}}{{end}}</h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" parsley-validate novalidate method="POST" action="">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"标签名称"|T}}</label>
+                <div class="col-sm-8">
+                    {{if HasSuffix URL.Path "_add"}}
+                    <input type="text" class="form-control" required name="name" value="{{Form "name"}}">
+                    {{else}}
+                    <span class="form-control no-border">{{Form "name"}}</span>
+                    {{end}}
+                </div>
+              </div>
+              <div class="form-group">
+                  <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+                  <div class="col-sm-8">
+                    {{$v := Form "display"}}
+                    <div class="radio radio-success radio-inline">
+                        <input type="radio" value="Y" name="display" id="display-Y"{{if or (eq $v "Y") (eq $v "")}} checked{{end}}> <label for="display-Y">{{"显示"|T}}</label>
+                    </div>
+                      <div class="radio radio-danger radio-inline">
+                        <input type="radio" value="N" name="display" id="display-N"{{if eq $v "N"}} checked{{end}}> <label for="display-N">{{"隐藏"|T}}</label>
+                      </div>
+                  </div>
+                </div>
+              <div class="form-group form-submit-group">
+									<div class="col-sm-9 col-sm-offset-2">
+									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+									</div>
+							</div>
+            </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}

@@ -1,0 +1,107 @@
+<div class="form-group">
+        <label class="col-sm-2 control-label">{{"协议"|T}}</label>
+        <div class="col-sm-9">
+          {{$v := Val . "protocol"}}
+          <select name="{{Key . "protocol"}}" class="form-control">
+            <option value="http"{{if eq $v "http"}} selected="selected"{{end}}>http</option>
+            <option value="https"{{if eq $v "https"}} selected="selected"{{end}}>https</option>
+          </select>
+        </div>
+</div>
+<div class="form-group">
+      <label class="col-sm-2 control-label">{{"内网主机"|T}}</label>
+      <div class="col-sm-9">
+          <div class="input-group">
+            <div class="input-group-addon">{{"主机"|T}}</div>
+            <input type="text" class="form-control" name="{{Key . "local_ip"}}" value="{{Val . "local_ip"}}">
+            <div class="input-group-addon">{{"端口"|T}}</div>
+            <input type="text" class="form-control" name="{{Key . "local_port"}}" value="{{Val . "local_port"}}">
+          </div><!-- /.input-group -->
+      </div>
+</div>
+<div class="form-group">
+      <label class="col-sm-2 control-label">{{"数据处理"|T}}</label>
+      <div class="col-sm-9">
+        {{$v := Val . "use_encryption"}}
+        <div class="checkbox checkbox-primary checkbox-inline"> 
+          <input type="checkbox" value="1" id="web-{{Key . "use_encryption"}}-1" name="{{Key . "use_encryption"}}"{{if eq $v "1"}} checked{{end}}><label for="web-{{Key . "use_encryption"}}-1">{{"加密"|T}}</label> 
+        </div>
+        {{$v := Val . "use_compression"}}
+        <div class="checkbox checkbox-primary checkbox-inline"> 
+          <input type="checkbox" value="1" id="web-{{Key . "use_compression"}}-1" name="{{Key . "use_compression"}}"{{if eq $v "1"}} checked{{end}}><label for="web-{{Key . "use_compression"}}-1">{{"压缩"|T}}</label> 
+        </div>
+      </div>
+</div>
+<div class="form-group">
+      <label class="col-sm-2 control-label">{{"密码访问"|T}}</label>
+      <div class="col-sm-9">
+          <div class="input-group">
+            <div class="input-group-addon">{{"用户名"|T}}</div>
+            <input type="text" class="form-control" name="{{Key . "http_user"}}" value="{{Val . "http_user"}}">
+            <div class="input-group-addon">{{"密码"|T}}</div>
+            <input type="text" class="form-control" name="{{Key . "http_pwd"}}" value="{{Val . "http_pwd"}}">
+          </div><!-- /.input-group -->
+          <div class="help-block">{{"如果不设置，则不用认证"|T}}</div>
+      </div>
+</div>
+<div class="form-group">
+      <label class="col-sm-2 control-label">{{"域名"|T}}</label>
+      <div class="col-sm-9">
+          <div class="input-group">
+            <div class="input-group-addon">{{"子域名"|T}}</div>
+            <input type="text" class="form-control" name="{{Key . "subdomain"}}" placeholder="" title="{{"如果设置为web2，服务端设置了根域名coscms.com，则完整的访问域名为web2.coscms.com"|T}}" data-toggle="tooltip" value="{{Val . "subdomain"}}">
+            <div class="input-group-addon">{{"域名"|T}}</div>
+            <input type="text" class="form-control" name="{{Key . "custom_domains"}}" title="{{"多个域名之间用半角逗号隔开"|T}}" value="{{Val . "custom_domains"}}">
+          </div><!-- /.input-group -->
+      </div>
+</div>
+<div class="form-group">
+      <label class="col-sm-2 control-label">{{"匹配网站路径"|T}}</label>
+      <div class="col-sm-9">
+          <input type="text" class="form-control" name="{{Key . "locations"}}" value="{{Val . "locations"}}">
+          <div class="help-block">{{"如果指定，则只有符合条件的网址才会被处理。如要指定多个路径，请用半角逗号隔开，例如："|T}}<em>/,/pic</em></div>
+      </div>
+</div>
+<div class="form-group">
+      <label class="col-sm-2 control-label">{{"重写HOST名"|T}}</label>
+      <div class="col-sm-9">
+          <input type="text" class="form-control" name="{{Key . "host_header_rewrite"}}" value="{{Val . "host_header_rewrite"}}">
+      </div>
+</div>
+<div class="form-group">
+      <label class="col-sm-2 control-label">{{"设置Header"|T}}</label>
+      <div class="col-sm-9">
+<table>
+        <thead>
+            <tr>
+                <th style="width:50%;">{{"字段名"|T}}</th>
+                <th>{{"值"|T}}</th>
+                <th width="70">{{"删除"|T}}</th>
+            </tr>
+        </thead>
+        <tbody>
+{{$vals := Vals . "header" "v"}}
+{{$vlen := len $vals}}
+{{range $k,$v := Vals . "header" "k"}}
+    {{if lt $k $vlen}}
+<tr>
+<td><input type="text" class="form-control" name="{{Key . "header" "k"}}" value="{{$v}}"></td>
+<td><input type="text" class="form-control" name="{{Key . "header" "v"}}" value="{{index $vals $k}}"></td>
+<td class="text-center">
+<button type="button" class="btn btn-danger" onclick="$(this).parent().parent().remove()">
+<i class="fa fa-times"></i>
+</button>
+</td>
+</tr>
+        
+    {{end}}
+{{end}}
+            <tr>
+                <td colspan="3" class="text-center primary-emphasis" style="cursor:pointer" onclick="addKVs(this,'{{Key . "header"}}[k]','{{Key . "header"}}[v]');"><i class="fa fa-plus"></i></td>
+            </tr>
+        </tbody>
+  </table>
+<div class="help-block">{{"例如字段名“Content-Type”，字段值“text/html”"|T}}</div>
+                  
+</div>
+</div>

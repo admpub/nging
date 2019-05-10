@@ -36,7 +36,7 @@ var Default driver.Manager = New()
 func New() *Manager {
 	m := &Manager{
 		caches: make(map[string][]byte),
-		lock:   &sync.Once{},
+		mutex:  &sync.RWMutex{},
 		ignores: map[string]bool{
 			"*.tmp": false,
 			"*.TMP": false,
@@ -46,13 +46,14 @@ func New() *Manager {
 		Logger:   log.GetLogger(`watcher`),
 		done:     make(chan bool),
 	}
-	m.watcher, _ = fsnotify.NewWatcher()
 	return m
 }
 
+// Manager Tempate manager
 type Manager struct {
 	caches       map[string][]byte
-	lock         *sync.Once
+	firstDir     string
+	mutex        *sync.RWMutex
 	ignores      map[string]bool
 	allows       map[string]bool
 	Logger       logger.Logger
@@ -63,11 +64,34 @@ type Manager struct {
 }
 
 func (self *Manager) closeMoniter() {
+	self.mutex.Lock()
+	defer self.mutex.Unlock()
+	self.firstDir = ``
+	if self.done == nil {
+		return
+	}
 	close(self.done)
+	self.done = nil
+	if self.watcher != nil {
+		self.watcher.Close()
+	}
+}
+
+func (self *Manager) getWatcher() *fsnotify.Watcher {
+	if self.watcher == nil {
+		var err error
+		self.watcher, err = fsnotify.NewWatcher()
+		if err != nil {
+			self.Logger.Error(err)
+		}
+	}
+	return self.watcher
 }
 
 func (self *Manager) AddCallback(rootDir string, callback func(name, typ, event string)) {
+	self.mutex.Lock()
 	self.callback[rootDir] = callback
+	self.mutex.Unlock()
 }
 
 func (self *Manager) ClearCallback() {
@@ -75,9 +99,11 @@ func (self *Manager) ClearCallback() {
 }
 
 func (self *Manager) DelCallback(rootDir string) {
+	self.mutex.Lock()
 	if _, ok := self.callback[rootDir]; ok {
 		delete(self.callback, rootDir)
 	}
+	self.mutex.Unlock()
 }
 
 func (self *Manager) ClearAllows() {
@@ -128,11 +154,16 @@ func (self *Manager) allowCached(name string) bool {
 }
 
 func (self *Manager) AddWatchDir(ppath string) (err error) {
+	self.mutex.Lock()
+	defer self.mutex.Unlock()
 	ppath, err = filepath.Abs(ppath)
 	if err != nil {
 		return
 	}
-	err = self.watcher.Add(ppath)
+	if len(self.firstDir) == 0 {
+		self.firstDir = ppath
+	}
+	err = self.getWatcher().Add(ppath)
 	if err != nil {
 		self.Logger.Error(err.Error())
 		return
@@ -140,7 +171,7 @@ func (self *Manager) AddWatchDir(ppath string) (err error) {
 
 	err = filepath.Walk(ppath, func(f string, info os.FileInfo, err error) error {
 		if info.IsDir() {
-			return self.watcher.Add(f)
+			return self.getWatcher().Add(f)
 		}
 		return nil
 	})
@@ -150,6 +181,8 @@ func (self *Manager) AddWatchDir(ppath string) (err error) {
 }
 
 func (self *Manager) CancelWatchDir(oldDir string) (err error) {
+	self.mutex.Lock()
+	defer self.mutex.Unlock()
 	oldDir, err = filepath.Abs(oldDir)
 	if err != nil {
 		return
@@ -164,12 +197,12 @@ func (self *Manager) CancelWatchDir(oldDir string) (err error) {
 	}
 	filepath.Walk(oldDir, func(f string, info os.FileInfo, err error) error {
 		if info.IsDir() {
-			self.watcher.Remove(f)
+			self.getWatcher().Remove(f)
 			return nil
 		}
 		return nil
 	})
-	self.watcher.Remove(oldDir)
+	self.getWatcher().Remove(oldDir)
 	return
 }
 
@@ -188,85 +221,86 @@ func (self *Manager) Start() error {
 }
 
 func (self *Manager) watch() error {
-	watcher := self.watcher
-	//fmt.Println("[webx] TemplateMgr watcher is start.")
-	defer watcher.Close()
+	watcher := self.getWatcher()
+	var logSuffix string
+	if len(self.firstDir) > 0 {
+		logSuffix = ": " + self.firstDir + " etc"
+	}
+	self.Logger.Debug("TemplateMgr watcher is start" + logSuffix + ".")
+	defer func() {
+		watcher.Close()
+		self.watcher = nil
+	}()
 	go func() {
 		for {
 			select {
 			case ev := <-watcher.Events:
-				self.lock.Do(func() {
-					defer func() {
-						self.lock = &sync.Once{}
-					}()
-					if _, ok := self.ignores[filepath.Base(ev.Name)]; ok {
+				if _, ok := self.ignores[filepath.Base(ev.Name)]; ok {
+					return
+				}
+				if _, ok := self.ignores[`*`+filepath.Ext(ev.Name)]; ok {
+					return
+				}
+				d, err := os.Stat(ev.Name)
+				if err != nil {
+					return
+				}
+				if ev.Op&fsnotify.Create == fsnotify.Create {
+					if d.IsDir() {
+						watcher.Add(ev.Name)
+						self.onChange(ev.Name, "dir", "create")
 						return
 					}
-					if _, ok := self.ignores[`*`+filepath.Ext(ev.Name)]; ok {
+					self.onChange(ev.Name, "file", "create")
+					if self.allowCached(ev.Name) {
+						tmpl := ev.Name
+						content, err := ioutil.ReadFile(ev.Name)
+						if err != nil {
+							self.Logger.Infof("loaded template %v failed: %v", tmpl, err)
+							return
+						}
+						self.Logger.Infof("loaded template file %v success", tmpl)
+						self.CacheTemplate(tmpl, content)
+					}
+				} else if ev.Op&fsnotify.Remove == fsnotify.Remove {
+					if d.IsDir() {
+						watcher.Remove(ev.Name)
+						self.onChange(ev.Name, "dir", "delete")
 						return
 					}
-					d, err := os.Stat(ev.Name)
-					if err != nil {
+					self.onChange(ev.Name, "file", "delete")
+					if self.allowCached(ev.Name) {
+						tmpl := ev.Name
+						self.CacheDelete(tmpl)
+					}
+				} else if ev.Op&fsnotify.Write == fsnotify.Write {
+					if d.IsDir() {
+						self.onChange(ev.Name, "dir", "modify")
 						return
 					}
-					if ev.Op&fsnotify.Create == fsnotify.Create {
-						if d.IsDir() {
-							watcher.Add(ev.Name)
-							self.onChange(ev.Name, "dir", "create")
+					self.onChange(ev.Name, "file", "modify")
+					if self.allowCached(ev.Name) {
+						tmpl := ev.Name
+						content, err := ioutil.ReadFile(ev.Name)
+						if err != nil {
+							self.Logger.Errorf("reloaded template %v failed: %v", tmpl, err)
 							return
 						}
-						self.onChange(ev.Name, "file", "create")
-						if self.allowCached(ev.Name) {
-							tmpl := ev.Name
-							content, err := ioutil.ReadFile(ev.Name)
-							if err != nil {
-								self.Logger.Infof("loaded template %v failed: %v", tmpl, err)
-								return
-							}
-							self.Logger.Infof("loaded template file %v success", tmpl)
-							self.CacheTemplate(tmpl, content)
-						}
-					} else if ev.Op&fsnotify.Remove == fsnotify.Remove {
-						if d.IsDir() {
-							watcher.Remove(ev.Name)
-							self.onChange(ev.Name, "dir", "delete")
-							return
-						}
-						self.onChange(ev.Name, "file", "delete")
-						if self.allowCached(ev.Name) {
-							tmpl := ev.Name
-							self.CacheDelete(tmpl)
-						}
-					} else if ev.Op&fsnotify.Write == fsnotify.Write {
-						if d.IsDir() {
-							self.onChange(ev.Name, "dir", "modify")
-							return
-						}
-						self.onChange(ev.Name, "file", "modify")
-						if self.allowCached(ev.Name) {
-							tmpl := ev.Name
-							content, err := ioutil.ReadFile(ev.Name)
-							if err != nil {
-								self.Logger.Errorf("reloaded template %v failed: %v", tmpl, err)
-								return
-							}
-							self.CacheTemplate(tmpl, content)
-							self.Logger.Infof("reloaded template %v success", tmpl)
-						}
-					} else if ev.Op&fsnotify.Rename == fsnotify.Rename {
-						if d.IsDir() {
-							watcher.Remove(ev.Name)
-							self.onChange(ev.Name, "dir", "rename")
-							return
-						}
-						self.onChange(ev.Name, "file", "rename")
-						if self.allowCached(ev.Name) {
-							tmpl := ev.Name
-							self.CacheDelete(tmpl)
-						}
+						self.CacheTemplate(tmpl, content)
+						self.Logger.Infof("reloaded template %v success", tmpl)
 					}
-
-				})
+				} else if ev.Op&fsnotify.Rename == fsnotify.Rename {
+					if d.IsDir() {
+						watcher.Remove(ev.Name)
+						self.onChange(ev.Name, "dir", "rename")
+						return
+					}
+					self.onChange(ev.Name, "file", "rename")
+					if self.allowCached(ev.Name) {
+						tmpl := ev.Name
+						self.CacheDelete(tmpl)
+					}
+				}
 			case err := <-watcher.Errors:
 				if err != nil {
 					self.Logger.Error("error:", err)
@@ -276,7 +310,7 @@ func (self *Manager) watch() error {
 	}()
 
 	<-self.done
-	//fmt.Println("[webx] TemplateMgr watcher is closed.")
+	self.Logger.Debug("TemplateMgr watcher is closed" + logSuffix + ".")
 	return nil
 }
 
@@ -318,6 +352,8 @@ func (self *Manager) GetTemplate(tmpl string) ([]byte, error) {
 		return nil, err
 	}
 
+	self.mutex.Lock()
+	defer self.mutex.Unlock()
 	if content, ok := self.caches[tmpl]; ok {
 		self.Logger.Debugf("load template %v from cache", tmpl)
 		return content, nil
@@ -336,15 +372,19 @@ func (self *Manager) CacheTemplate(tmpl string, content []byte) {
 		content = self.preprocessor(content)
 	}
 	self.Logger.Debugf("update template %v on cache", tmpl)
+	self.mutex.Lock()
 	self.caches[tmpl] = content
+	self.mutex.Unlock()
 	return
 }
 
 func (self *Manager) CacheDelete(tmpl string) {
+	self.mutex.Lock()
 	if _, ok := self.caches[tmpl]; ok {
 		self.Logger.Infof("delete template %v from cache", tmpl)
 		delete(self.caches, tmpl)
 	}
+	self.mutex.Unlock()
 	return
 }
 

@@ -1,9 +1,6 @@
 package middleware
 
 import (
-	"fmt"
-	"runtime"
-
 	"github.com/webx-top/echo"
 )
 
@@ -63,34 +60,7 @@ func RecoverWithConfig(config RecoverConfig) echo.MiddlewareFunc {
 
 			defer func() {
 				if r := recover(); r != nil {
-					panicErr := echo.NewPanicError(r, nil)
-					panicErr.SetDebug(c.Echo().Debug())
-					var err error
-					switch r := r.(type) {
-					case error:
-						err = r
-					default:
-						err = fmt.Errorf("%v", r)
-					}
-					if config.DisableStackAll {
-						c.Error(panicErr.SetError(err))
-						return
-					}
-					content := "[PANIC RECOVER] " + err.Error()
-					for i := 1; len(content) < config.StackSize; i++ {
-						pc, file, line, ok := runtime.Caller(i)
-						if !ok {
-							break
-						}
-						t := &echo.Trace{
-							File: file,
-							Line: line,
-							Func: runtime.FuncForPC(pc).Name(),
-						}
-						panicErr.AddTrace(t)
-						content += "\n" + fmt.Sprintf(`%v:%v`, file, line)
-					}
-					panicErr.SetErrorString(content)
+					panicErr := echo.NewPanicError(r, nil, c.Echo().Debug(), config.DisableStackAll).Parse(config.StackSize)
 					c.Logger().Error(panicErr)
 					c.Error(panicErr)
 				}

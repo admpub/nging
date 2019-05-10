@@ -1,0 +1,14 @@
+Id : "modal-comment-form"
+Custom : true
+HeadTitle : "回复评论"
+Title : ""
+Content : """
+<form id="modal-comment-form-container">
+  <div class="form-group" id="modal-comment-form-input-container"></div>
+</form>
+"""
+HelpText : ""
+Animate : ""
+Type : ""
+ContentType : "form"
+ExtButtons : []

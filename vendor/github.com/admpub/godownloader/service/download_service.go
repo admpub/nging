@@ -30,7 +30,7 @@ func GetDownloadPath() string {
 	sv := usr.HomeDir + st + "Downloads" + st + "GoDownloader" + st
 	fi, err := os.Stat(sv)
 	if err != nil || !fi.IsDir() {
-		os.MkdirAll(sv, 0666)
+		os.MkdirAll(sv, 0755)
 	}
 	savePath = sv
 	return sv

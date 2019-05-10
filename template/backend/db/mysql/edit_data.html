@@ -1,0 +1,118 @@
+{{Extend "db/index"}}
+{{Block "title"}}{{"修改数据"|T}}: {{Stored.table}} - {{Super}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{dbMgrURL "listTable" Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|T}}: {{Stored.dbName}}</a></li>
+<li><a href="{{dbMgrURL "viewTable" Stored.dbName Stored.table}}" data-pjax="#pcont" data-keepjs="true">{{"表"|T}}: {{Stored.table}}</a></li>
+<li class="active">{{"修改数据"|T}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        {{Include "db/mysql/results"}}
+        <div class="block-flat">
+          <div class="content">
+             <form action="" method="POST" enctype="multipart/form-data">
+             <div class="table-responsive">
+				<table class="table blue">
+					<tbody class="no-border-x" id="tbody-content">
+                        {{range $k,$column := Stored.columns}}
+                        {{$field := index Stored.fields $column}}
+                        <tr>
+                            <th>{{$column}}</th>
+                            <td>
+                                {{$functions := functions $field}}
+                                <select name="function[{{$column}}]" class="form-control"{{if le (len $functions) 0}} style="display:none"{{end}} onchange="onselectFunction(this)">
+                                {{range $k,$v := $functions}}
+                                <option value="{{$v}}">{{$v}}</option>
+                                {{end}}
+                                </select>
+                            </td>
+                            <td>
+                                {{$value := index Stored.values $column}}
+                                {{if isBlob $field.Type}}
+                                <input type="file" name="value[{{$column}}]">
+                                {{else if or (isText $field.Type) (Contains $value.String "\n")}}
+                                <textarea name="value[{{$column}}]" cols="30" rows="10" class="form-control">{{$value.String}}</textarea>
+                                {{else if eq $field.Type "enum"}}
+                                {{if $field.Null}}
+                                <div class="radio radio-primary radio-inline"> 
+                                  <input type="radio" value="" id="data-value-null-{{$column}}" name="value[{{$column}}]"{{if not $value.Valid}} checked{{end}}><label for="data-value-null-{{$column}}"><em>NULL</em></label> 
+                                </div>
+                                &nbsp;
+                                {{end}}
+                                <div class="radio radio-primary radio-inline"> 
+                                  <input type="radio" value="0" id="data-value-empty-{{$column}}" name="value[{{$column}}]"{{if eq (Int $value.String) 0}} checked{{end}}><label for="data-value-empty-{{$column}}"><em>{{"空"|T}}</em></label> 
+                                </div>
+                                &nbsp;
+                                {{range $i,$v:=enumValues $field}}
+                                <div class="radio radio-primary radio-inline"> 
+                                  <input type="radio" value="{{$v.Int}}" id="data-value-enum-{{$column}}-{{$i}}" name="value[{{$column}}]"{{if eq $value.String $v.String}} checked{{end}}><label for="data-value-enum-{{$column}}-{{$i}}"> {{$v.String}}</label> 
+                                </div>
+                                &nbsp;
+                                {{end}}
+                                {{else if eq $field.Type "set"}}
+                                {{$sets := Split $value.String ","}}
+                                {{range $i,$v:=enumValues $field}}
+                                <div class="checkbox checkbox-primary checkbox-inline"> 
+                                  <input type="checkbox" value="{{$v.Int}}" id="data-value-enum-{{$column}}-{{$i}}" name="value[{{$column}}][]"{{if HasString $sets $v.String}} checked{{end}}><label for="data-value-enum-{{$column}}-{{$i}}"> {{$v.String}}</label> 
+                                </div>
+                                &nbsp;
+                                {{end}}
+                                {{else if isNumber $field.Type}}
+                                <input data-type="number" type="number" name="value[{{$column}}]" class="form-control" value="{{$value.String}}"{{if $field.Unsigned}} min="0"{{end}}>
+                                {{else}}
+                                <input type="text" name="value[{{$column}}]" class="form-control" value="{{$value.String}}">
+                                {{end}}
+                            </td>
+                        </tr>
+                        {{end}}
+					</tbody>
+				</table>		
+			    </div>
+                <fieldset>
+                     <button type="submit" name="save" value="1" class="btn btn-default">
+                         <i class="fa fa-save"></i>
+                         {{"保存"|T}}
+                    </button>
+                    {{if Stored.edit}}
+                     <button type="submit" name="save" value="2" class="btn btn-default">
+                         <i class="fa fa-save"></i>
+                         {{"保存并继续编辑"|T}}
+                    </button>
+                     <button type="submit" name="save" value="delete" class="btn btn-danger" onclick="return confirm('{{"确定要删除吗？"|T}}');">
+                         <i class="fa fa-times"></i>
+                         {{"删除"|T}}
+                    </button>
+                    {{else}}
+                     <button type="submit" name="save" value="2" class="btn btn-default">
+                         <i class="fa fa-save"></i>
+                         {{"保存并插入下一个"|T}}
+                    </button>
+                    {{end}}
+                     <a href="{{dbMgrURL "listData" Stored.dbName Stored.table}}" class="btn btn-default" data-pjax="#pcont" data-keepjs="true">
+                         <i class="fa fa-reply"></i>
+                         {{"返回列表"|T}}
+                    </a>
+                </fieldset>
+                </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+
+{{Block "footer"}}
+{{Super}}
+
+<script>
+function onselectFunction(obj){
+    var v=$(obj).val();
+    var n=$(obj).attr('name');
+    var valElem=$('input[name="value'+n.replace(/^function/,'')+'"]');
+    if(valElem.data('type')){
+        valElem.attr('type',v?'text':valElem.data('type'));
+    }
+}
+</script>
+{{/Block}}

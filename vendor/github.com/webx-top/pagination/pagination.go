@@ -1,6 +1,6 @@
 /*
 
-   Copyright 2017 Wenhui Shen <www.webx.top>
+   Copyright since 2017 Wenhui Shen <www.webx.top>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
    limitations under the License.
 
 */
+
 package pagination
 
 import (
@@ -251,23 +252,29 @@ func (p *Pagination) List(num ...int) []int {
 	if len(num) > 0 {
 		p.num = num[0]
 	}
-	r := []int{}
-	half := p.num / 2
-	lefts := []int{}
-	for i, j := p.page, p.num; i > 0 && j > half; i-- {
-		lefts = append(lefts, i)
-		j--
-	}
-	c := len(lefts)
-	for i := c - 1; i >= 0; i-- {
-		r = append(r, lefts[i])
-	}
 	pages := p.Pages()
-	for i := p.page + 1; i <= pages && c < p.num; i++ {
-		r = append(r, i)
-		c++
+	var (
+		pList []int
+		start int
+		count int
+	)
+	remainPages := pages - p.page
+	if remainPages < p.num {
+		start = pages - p.num + 1
+	} else {
+		start = p.Page() - (p.num / 2)
 	}
-	return r
+	if start < 1 {
+		start = 1
+	}
+	for page := start; page <= pages; page++ {
+		count++
+		if count > p.num {
+			break
+		}
+		pList = append(pList, page)
+	}
+	return pList
 }
 
 func (p *Pagination) setDefault() *Pagination {

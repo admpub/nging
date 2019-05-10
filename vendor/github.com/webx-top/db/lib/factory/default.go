@@ -18,6 +18,10 @@ func Debug() bool {
 	return DefaultFactory.Debug()
 }
 
+func CountCluster() int {
+	return DefaultFactory.CountCluster()
+}
+
 func SetDebug(on bool) *Factory {
 	DefaultFactory.SetDebug(on)
 	return DefaultFactory

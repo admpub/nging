@@ -294,7 +294,9 @@ findIndent:
 	}
 
 	for i, line := range lines {
-		lines[i] = line[indent:]
+		if len(line) >= indent {
+			lines[i] = line[indent:]
+		}
 	}
 	return strings.Join(lines, "\n")
 }

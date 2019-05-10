@@ -2,10 +2,13 @@ package echo
 
 import (
 	"mime"
+	"path"
 	"path/filepath"
 	"reflect"
 	"runtime"
 	"strings"
+
+	"github.com/webx-top/com"
 )
 
 // HandlerName returns the handler name
@@ -16,6 +19,51 @@ func HandlerName(h interface{}) string {
 		return runtime.FuncForPC(v.Pointer()).Name()
 	}
 	return t.String()
+}
+
+// HandlerPath returns the handler path
+func HandlerPath(h interface{}) string {
+	v := reflect.ValueOf(h)
+	t := v.Type()
+	switch t.Kind() {
+	case reflect.Func:
+		return runtime.FuncForPC(v.Pointer()).Name()
+	case reflect.Ptr:
+		t = t.Elem()
+		fallthrough
+	case reflect.Struct:
+		return t.PkgPath() + `.` + t.Name()
+	}
+	return ``
+}
+
+func HandlerTmpl(handlerPath string) string {
+	name := path.Base(handlerPath)
+	var r []string
+	var u []rune
+	for _, b := range name {
+		switch b {
+		case '*', '(', ')':
+			continue
+		case '-':
+			goto END
+		case '.':
+			r = append(r, string(u))
+			u = []rune{}
+		default:
+			u = append(u, b)
+		}
+	}
+
+END:
+	if len(u) > 0 {
+		r = append(r, string(u))
+		u = []rune{}
+	}
+	for i, s := range r {
+		r[i] = com.SnakeCase(s)
+	}
+	return `/` + strings.Join(r, `/`)
 }
 
 // Methods returns methods

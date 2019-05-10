@@ -1,0 +1,36 @@
+<form action='###' id='regexp-test-form'>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label>{{"正则引擎"|T}}</label>
+            {{$v := Form "type"}}
+            <div>
+            <div class="radio radio-primary radio-inline"> 
+                <input type="radio" value="regexp" id="regexp-test-type-regexp" name="type"{{if eq $v "regexp"}} checked{{end}}><label for="regexp-test-type-regexp">regexp</label> 
+              </div>
+              <div class="radio radio-primary radio-inline"> 
+                <input type="radio" value="regexp2" id="regexp-test-type-regexp2" name="type"{{if or (eq $v "regexp2") (eq $v "")}} checked{{end}}><label for="regexp-test-type-regexp2">regexp2</label> 
+              </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>{{"目标内容"|T}}</label>
+            <textarea name='src' class='form-control'></textarea>
+        </div>
+        <div class="form-group">
+            <label>{{"正则表达式"|T}}</label>
+            <textarea name='regexp' class='form-control'></textarea>
+        </div>
+    </div>
+    <div class="col-md-6 no-padding-left">
+        <div class="form-group">
+            <table class="table table-bordered result">
+                <caption>{{"匹配结果"|T}}</caption>
+                <thead>
+                    <th style="width:50px">{{"序号"|T}}</th>
+                    <th>{{"捕获"|T}}</th>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</form>

@@ -1,28 +1,28 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package filemanager
 
 import "os"
 
-type byFileType []os.FileInfo
+type SortByFileType []os.FileInfo
 
-func (s byFileType) Len() int { return len(s) }
-func (s byFileType) Less(i, j int) bool {
+func (s SortByFileType) Len() int { return len(s) }
+func (s SortByFileType) Less(i, j int) bool {
 	if s[i].IsDir() {
 		if !s[j].IsDir() {
 			return true
@@ -34,28 +34,28 @@ func (s byFileType) Less(i, j int) bool {
 	}
 	return s[i].Name() < s[j].Name()
 }
-func (s byFileType) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
+func (s SortByFileType) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
 
-type byModTime []os.FileInfo
+type SortByModTime []os.FileInfo
 
-func (s byModTime) Len() int { return len(s) }
-func (s byModTime) Less(i, j int) bool {
+func (s SortByModTime) Len() int { return len(s) }
+func (s SortByModTime) Less(i, j int) bool {
 	return s[i].ModTime().UnixNano() < s[j].ModTime().UnixNano()
 }
-func (s byModTime) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
+func (s SortByModTime) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
 
-type byModTimeDesc []os.FileInfo
+type SortByModTimeDesc []os.FileInfo
 
-func (s byModTimeDesc) Len() int { return len(s) }
-func (s byModTimeDesc) Less(i, j int) bool {
+func (s SortByModTimeDesc) Len() int { return len(s) }
+func (s SortByModTimeDesc) Less(i, j int) bool {
 	return s[i].ModTime().UnixNano() > s[j].ModTime().UnixNano()
 }
-func (s byModTimeDesc) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
+func (s SortByModTimeDesc) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
 
-type byNameDesc []os.FileInfo
+type SortByNameDesc []os.FileInfo
 
-func (s byNameDesc) Len() int { return len(s) }
-func (s byNameDesc) Less(i, j int) bool {
+func (s SortByNameDesc) Len() int { return len(s) }
+func (s SortByNameDesc) Less(i, j int) bool {
 	return s[i].Name() > s[j].Name()
 }
-func (s byNameDesc) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
+func (s SortByNameDesc) Swap(i, j int) { s[i], s[j] = s[j], s[i] }

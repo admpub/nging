@@ -1,19 +1,19 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package mysql
 
@@ -26,29 +26,38 @@ import (
 	"github.com/webx-top/echo"
 )
 
-func (m *mySQL) dropUser(user string, host string) *Result {
+func (m *mySQL) dropUser(user string, host string) error {
 	if len(host) > 0 {
 		user = quoteVal(user) + `@` + quoteVal(host)
 	} else {
-		user = `''`
+		user = quoteVal(user) + `@''`
 	}
 	r := &Result{}
 	r.SQL = "DROP USER " + user
-	return r.Exec(m.newParam())
+	r.Exec(m.newParam())
+	m.AddResults(r)
+	if r.err != nil {
+		return r.err
+	}
+	r2 := &Result{}
+	r2.SQL = "FLUSH PRIVILEGES"
+	r2.Exec(m.newParam())
+	m.AddResults(r2)
+	return r2.err
 }
 
-func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd string, newPasswd string, isHashed bool) error {
+func (m *mySQL) editUser(oldUser string, oldHost string, newUser string, newHost string, oldPasswd string, newPasswd string, isHashed bool) error {
 	var user string
-	if len(oldUser) > 0 {
-		user = quoteVal(oldUser) + `@` + quoteVal(host)
+	if len(oldHost) > 0 {
+		user = quoteVal(oldUser) + `@` + quoteVal(oldHost)
 	} else {
-		user = `''`
+		user = quoteVal(oldUser) + `@''`
 	}
 	if len(newUser) == 0 {
 		return errors.New(m.T(`用户名不能为空`))
 	}
 
-	oldPass, grants, _, err := m.getUserGrants(host, oldUser)
+	oldPass, grants, _, err := m.getUserGrants(oldHost, oldUser)
 	if err != nil {
 		return err
 	}
@@ -57,7 +66,7 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 	}
 
 	r := &Result{}
-	newUser = quoteVal(newUser) + `@` + quoteVal(host)
+	newUser = quoteVal(newUser) + `@` + quoteVal(newHost)
 	if len(newPasswd) > 0 {
 		if !isHashed {
 			r.SQL = `SELECT PASSWORD(` + quoteVal(newPasswd) + `)`
@@ -101,6 +110,7 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 	} else {
 		r.SQL = ``
 	}
+	//panic(r.SQL)
 	if len(r.SQL) > 0 {
 		r.Exec(m.newParam())
 		m.AddResults(r)
@@ -263,6 +273,13 @@ func (m *mySQL) editUser(oldUser string, host string, newUser string, oldPasswd 
 			}
 		}
 	}
+	r2 := &Result{}
+	r2.SQL = "FLUSH PRIVILEGES"
+	r2.Exec(m.newParam())
+	m.AddResults(r2)
+	if r2.err != nil {
+		return onerror(err)
+	}
 	return nil
 }
 
@@ -318,7 +335,8 @@ func (m *mySQL) getUserGrants(host, user string) (string, map[string]map[string]
 				oldPass = matchIdent[1]
 			}
 		}
-		sqlStr = "SELECT SUBSTRING_INDEX(CURRENT_USER, '@', -1)"
+	} else {
+		sqlStr := "SELECT SUBSTRING_INDEX(CURRENT_USER, '@', -1)"
 		row := m.newParam().SetCollection(sqlStr).QueryRow()
 		var v sql.NullString
 		err = row.Scan(&v)

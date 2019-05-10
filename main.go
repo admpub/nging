@@ -1,182 +1,66 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 // 也可以以服务的方式启动nging
 // 服务支持的操作有：
-// nging install  	-- 安装服务
-// nging uninstall  -- 卸载服务
-// nging start 		-- 启动服务
-// nging stop 		-- 停止服务
-// nging restart 	-- 重启服务
+// nging service install  	-- 安装服务
+// nging service uninstall  -- 卸载服务
+// nging service start 		-- 启动服务
+// nging service stop 		-- 停止服务
+// nging service restart 	-- 重启服务
 package main
 
+//go:generate go get github.com/go-bindata/go-bindata/...
+//go:generate go get github.com/admpub/go-bindata-assetfs/...
+//go:generate go-bindata-assetfs -ignore "\\.(git|svn|DS_Store|less|scss)$" -tags bindata public/assets/... template/... config/i18n/...
+
 import (
-	"flag"
-	"fmt"
-	stdLog "log"
-	"net/http"
-	"os"
-	"strings"
-
-	"github.com/admpub/nging/application/handler/setup"
-	_ "github.com/admpub/nging/application/library/sqlite"
-	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/engine"
-	"github.com/webx-top/echo/engine/standard"
-	"github.com/webx-top/echo/handler/mvc/events"
-	"github.com/webx-top/echo/middleware"
-	"github.com/webx-top/echo/middleware/language"
-	"github.com/webx-top/echo/middleware/render"
-	"github.com/webx-top/echo/middleware/render/driver"
-	"github.com/webx-top/echo/middleware/session"
-
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application"
-	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/nging/application/library/cron"
-	"github.com/admpub/nging/application/library/service"
+	"github.com/admpub/nging/application/cmd"
+	"github.com/webx-top/echo"
+
+	//register
+	_ "github.com/admpub/nging/application"
+	_ "github.com/admpub/nging/application/initialize/manager"
+	_ "github.com/admpub/nging/application/library/sqlite"
 )
 
 var (
 	BUILD_TIME string
 	CLOUD_GOX  string
 	COMMIT     string
-	VERSION    = `1.3.3`
+	LABEL      = `beta` //beta/alpha/stable
+	VERSION    = `2.0.0`
 
-	version    string
-	binData    bool
-	staticMW   interface{}
-	tmplMgr    driver.Manager
-	langFSFunc func(dir string) http.FileSystem
+	version   string
+	schemaVer = 2.0 //数据表结构版本
 )
 
 func main() {
-	config.DefaultCLIConfig.InitFlag()
-	flag.Parse()
-	if binData {
-		version = VERSION + ` (bindata)`
-	} else {
-		version = VERSION
-	}
-	config.SetVersion(version)
+	defer log.Sync()
+	echo.Set(`BUILD_TIME`, BUILD_TIME)
+	echo.Set(`COMMIT`, COMMIT)
+	echo.Set(`LABEL`, LABEL)
+	echo.Set(`VERSION`, VERSION)
+	echo.Set(`SCHEMA_VER`, schemaVer)
+	exec()
+}
 
-	// Service
-	if len(os.Args) > 1 && !strings.HasPrefix(os.Args[1], `-`) {
-		config.MustOK(config.InitConfig())
-		application.WatchConfig(config.InitConfig, false)
-		if err := service.Run(os.Args[1]); err != nil {
-			stdLog.Println(err)
-		}
-		return
-	}
-
-	err := config.ParseConfig()
-	if err != nil {
-		if config.IsInstalled() {
-			config.MustOK(err)
-		} else {
-			log.Error(err)
-		}
-	}
-
-	if config.DefaultCLIConfig.OnlyRunServer() {
-		return
-	}
-
-	//Manager
-	config.DefaultCLIConfig.RunStartup()
-
-	if config.IsInstalled() {
-		if err := setup.Upgrade(); err != nil {
-			log.Error(err)
-		}
-		// 继续上次任务
-		if err := cron.InitJobs(); err != nil {
-			log.Error(err)
-		}
-	}
-
-	e := echo.New()
-	if binData {
-		e.SetDebug(false)
-		log.SetLevel(`Info`)
-	} else {
-		e.SetDebug(true)
-		log.SetLevel(`Debug`)
-	}
-	e.Use(middleware.Log(), middleware.Recover())
-	e.Use(middleware.Gzip(&middleware.GzipConfig{
-		Skipper: func(c echo.Context) bool {
-			switch c.Request().URL().Path() {
-			case `/manage/cmdSend/info`, `/download/progress/info`:
-				return true
-			}
-			return false
-		},
-	}))
-	e.Use(func(h echo.Handler) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			c.Response().Header().Set(`Server`, `nging/`+version)
-			return h.Handle(c)
-		}
-	})
-
-	// 注册静态资源文件(网站素材文件)
-	e.Use(staticMW)
-
-	// 启用session
-	e.Use(session.Middleware(config.SessionOptions))
-
-	// 启用多语言支持
-	config.DefaultConfig.Language.SetFSFunc(langFSFunc)
-	e.Use(language.New(&config.DefaultConfig.Language).Middleware())
-
-	// 启用Validation
-	e.Use(middleware.Validate(echo.NewValidation))
-
-	// 注册模板引擎
-	renderOptions := &render.Config{
-		TmplDir: `./template`,
-		Engine:  `standard`,
-		ParseStrings: map[string]string{
-			`__PUBLIC__`: `/public`,
-			`__ASSETS__`: `/public/assets`,
-			`__TMPL__`:   `./template`,
-		},
-		Reload:     true,
-		ErrorPages: config.DefaultConfig.Sys.ErrorPages,
-	}
-	renderOptions.ApplyTo(e)
-	if tmplMgr != nil {
-		renderOptions.Renderer().SetManager(tmplMgr)
-	}
-	events.AddEvent(`clearCache`, func(next func(r bool), args ...interface{}) {
-		renderOptions.Renderer().ClearCache()
-		next(true)
-	})
-
-	application.Initialize(e)
-	c := &engine.Config{
-		Address:     fmt.Sprintf(`%s:%v`, config.DefaultCLIConfig.Address, config.DefaultCLIConfig.Port),
-		TLSAuto:     false,
-		TLSCacheDir: config.DefaultConfig.Sys.SSLCacheDir,
-		TLSCertFile: config.DefaultConfig.Sys.SSLCertFile,
-		TLSKeyFile:  config.DefaultConfig.Sys.SSLKeyFile,
-	}
-	e.Run(standard.NewWithConfig(c))
+func exec() {
+	cmd.Execute()
 }

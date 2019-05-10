@@ -288,7 +288,7 @@ func (s *Static) ClearCache() {
 	s.urlMap = make(map[string]*urlMapInfo)
 }
 
-func (s *Static) OnUpdate(tmplDir string) func(string) {
+func (s *Static) OnUpdate() func(string) {
 	return func(name string) {
 		if s.Public != nil {
 			s.Public.ClearCache()
@@ -296,7 +296,6 @@ func (s *Static) OnUpdate(tmplDir string) func(string) {
 				return
 			}
 		}
-		name = filepath.Join(tmplDir, name)
 		s.DeleteCombined(name)
 	}
 }
@@ -376,9 +375,19 @@ func (s *Static) genCombinedCSS(absPath, urlPath string, onImportFn func(string)
 // Handle
 // =====================
 
+// HandleMinify 网址格式 类型/文件，例如 css/style/reset.css
 func (s *Static) HandleMinify(ctx echo.Context, filePathFn func(string) string) error {
-	fileStr := ctx.Param(`files`)
-	fileType := ctx.Param(`type`)
+	param := ctx.Param(`*`)
+	size := len(param)
+	if size == 0 {
+		return echo.ErrNotFound
+	}
+	first := strings.Index(param, `/`)
+	if first < 0 || size < first+2 {
+		return echo.ErrNotFound
+	}
+	fileStr := param[first+1:]
+	fileType := param[0:first]
 	files := strings.Split(fileStr, `,`)
 	var (
 		name    string
@@ -405,7 +414,7 @@ func (s *Static) HandleMinify(ctx echo.Context, filePathFn func(string) string) 
 				f += `.` + fileType
 				absPath := filePathFn(f)
 				if con, err := s.genCombinedJS(absPath, f); err != nil {
-					log.Error(err)
+					return err
 				} else {
 					s.RecordCombined(absPath, combinedSavePath)
 					content += con
@@ -419,12 +428,15 @@ func (s *Static) HandleMinify(ctx echo.Context, filePathFn func(string) string) 
 				f += `.` + fileType
 				absPath := filePathFn(f)
 				if con, err := s.genCombinedCSS(absPath, f, onImportFn); err != nil {
-					log.Error(err)
+					return err
 				} else {
 					s.RecordCombined(absPath, combinedSavePath)
 					content += con
 				}
 			}
+		}
+		if len(content) == 0 {
+			return nil
 		}
 		byteContent := []byte(content)
 		com.WriteFile(combinedSavePath, byteContent)

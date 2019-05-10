@@ -15,7 +15,10 @@
    limitations under the License.
 
 */
+
 package language
+
+import "errors"
 
 func NewTranslate(language string, i18nObject *I18n) *Translate {
 	return &Translate{
@@ -31,6 +34,10 @@ type Translate struct {
 
 func (t *Translate) T(format string, args ...interface{}) string {
 	return t.i18nObject.T(t.language, format, args...)
+}
+
+func (t *Translate) E(format string, args ...interface{}) error {
+	return errors.New(t.T(format, args...))
 }
 
 func (t *Translate) Lang() string {

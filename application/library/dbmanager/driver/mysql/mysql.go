@@ -1,35 +1,32 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package mysql
 
 import (
 	"bytes"
+	"database/sql"
 	"errors"
 	"fmt"
 	"io"
 	"net/url"
-	"strings"
-
-	"strconv"
-
-	"database/sql"
-
 	"regexp"
+	"strconv"
+	"strings"
 
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
@@ -140,16 +137,7 @@ func (m *mySQL) ProcessList() error {
 }
 
 func (m *mySQL) returnTo(rets ...string) error {
-	returnTo := m.Form(`return_to`)
-	if len(returnTo) == 0 {
-		if len(rets) > 0 {
-			returnTo = rets[0]
-		} else {
-			returnTo = m.Request().Referer()
-		}
-	}
-	m.SaveResults()
-	return m.Redirect(returnTo)
+	return m.ReturnTo(rets...)
 }
 
 func (m *mySQL) Privileges() error {
@@ -169,21 +157,24 @@ func (m *mySQL) Privileges() error {
 				m.Session().AddFlash(errors.New(m.T(`root 用户不可删除`)))
 				return m.returnTo()
 			}
-			r := m.dropUser(user, host)
-			m.AddResults(r)
-			return m.returnTo()
+			err = m.dropUser(user, host)
+			if err != nil {
+				m.fail(err.Error())
+			}
+			return m.returnTo(m.GenURL(`privileges`))
 		case `edit`:
 			if m.IsPost() {
 				isHashed := len(m.Form(`hashed`)) > 0
 				user := m.Form(`oldUser`)
-				host := m.Form(`host`)
+				host := m.Query(`host`)
+				newHost := m.Form(`host`)
 				newUser := m.Form(`user`)
 				oldPasswd := m.Form(`oldPass`)
 				newPasswd := m.Form(`pass`)
-				err = m.editUser(user, host, newUser, oldPasswd, newPasswd, isHashed)
+				err = m.editUser(user, host, newUser, newHost, oldPasswd, newPasswd, isHashed)
 				if err == nil {
 					m.ok(m.T(`操作成功`))
-					return m.returnTo(m.GenURL(`privileges`) + `&act=edit&user=` + newUser + `&host=` + host)
+					return m.returnTo(m.GenURL(`privileges`) + `&act=edit&user=` + url.QueryEscape(newUser) + `&host=` + url.QueryEscape(newHost))
 				}
 				m.fail(err.Error())
 			}

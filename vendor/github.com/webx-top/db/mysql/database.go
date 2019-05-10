@@ -252,6 +252,7 @@ func (d *database) LookupName() (string, error) {
 		return name.String, err
 	}
 
+
 	return "", iter.Err()
 }
 
@@ -277,14 +278,14 @@ func (d *database) TableExists(name string) error {
 
 // PrimaryKeys returns the names of all the primary keys on the table.
 func (d *database) PrimaryKeys(tableName string) ([]string, error) {
-	q := d.Select("column_name").
-		From("information_schema.key_column_usage").
+	q := d.Select("k.column_name").
+		From("information_schema.key_column_usage AS k").
 		Where(`
-			table_schema = ?
-			AND table_name = ?
-			AND constraint_name = 'PRIMARY'
+			k.constraint_name = 'PRIMARY'
+			AND k.table_schema = ?
+			AND k.table_name = ?
 		`, d.BaseDatabase.Name(), tableName).
-		OrderBy("ordinal_position")
+		OrderBy("k.ordinal_position")
 
 	iter := q.Iterator()
 	defer iter.Close()

@@ -1,0 +1,143 @@
+{{Extend "db/index"}}
+{{Block "title"}}{{"SQL命令"|T}} - {{Super}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+{{if Stored.dbName}}<li><a href="{{dbMgrURL "listTable" Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|T}}: {{Stored.dbName}}</a></li>{{end}}
+<li class="active">{{"SQL命令"|T}}</li>
+{{/Block}}
+{{Block "head"}}
+<!-- codemirror -->
+<link rel="stylesheet" href="__ASSETS__/js/codemirror/lib/codemirror.min.css">
+<link rel="stylesheet" href="__ASSETS__/js/codemirror/theme/night.css">
+<script src="__ASSETS__/js/codemirror/lib/codemirror.min.js"></script>
+<script src="__ASSETS__/js/codemirror/addon/mode/loadmode.js"></script>
+<style>
+.CodeMirror {
+    border: 1px solid #ccc;
+    min-height:350px
+}
+</style>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12" id="block-container">
+        {{Include "db/mysql/dbinfo_btn"}}
+        {{if Stored.selects}}
+        {{range $keyd,$data := Stored.selects}}
+        <div class="block-flat">
+          {{Include "db/mysql/result" $data.Result}}
+          <div class="header">
+            <h3>{{"数据"|T}}</h3>
+          </div>
+          <div class="content">
+             <div class="table-responsive">
+				<table class="table no-border hover blue">
+					<thead class="no-border">
+						<tr>{{range $k, $colName := $data.Data.Columns}}
+							<th><strong>{{$colName}}</strong></th>
+                            {{end}}
+						</tr>
+					</thead>
+					<tbody class="no-border-x" id="tbody-content">
+                        {{range $k,$v := $data.Data.Values}}
+						<tr>
+                            {{range $k, $colName := $data.Data.Columns}}
+                            <td>{{(index $v $colName).String}}</td>
+                            {{end}}
+						</tr>
+                        {{end}}
+					</tbody>
+				</table>
+			    </div>
+                {{if $data.Explain}}
+                <fieldset>
+                    <legend class="no-margin-bottom"><a href="javascript:;" onclick="$('#explain-table-{{$keyd}}').toggleClass('hidden');">EXPLAIN</a></legend>
+                    <div id="explain-table-{{$keyd}}" class="table-responsive hidden">
+				<table class="table no-border hover blue">
+					<thead class="no-border">
+						<tr>{{range $k, $colName := $data.Explain.Columns}}
+							<th><strong>{{$colName}}</strong></th>
+                            {{end}}
+						</tr>
+					</thead>
+					<tbody class="no-border-x" id="explain-tbody-content-{{$keyd}}">
+                        {{range $k,$v := $data.Explain.Values}}
+						<tr>
+                            {{range $k, $colName := $data.Explain.Columns}}
+                            <td>{{(index $v $colName).String}}</td>
+                            {{end}}
+						</tr>
+                        {{end}}
+					</tbody>
+				</table>
+                    </div>
+                </fieldset>
+                {{end}}
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+        {{end}}
+        {{end}}
+        <div class="block-flat no-padding">
+          <div class="content no-padding">
+              <form class="form-horizontal group-border-dashed" method="POST" action="">
+              <div class="form-group">
+				<div class="col-sm-12">
+                    <textarea name="query" id="query" class="form-control">{{Form "query"}}</textarea>
+                </div>
+              </div>
+              <div class="form-group form-submit-group">
+				<div class="col-sm-12">
+                    <button type="button" class="btn btn-info btn-lg" id="btn-sql-analysis"><i class="fa fa-search"></i> {{"分析"|T}}</button>
+				    <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-check"></i> {{"执行"|T}}</button>
+                    <label for="limit">{{"行数"|T}}: </label><input name="limit" id="limit" type="number" style="width:100px" class="form-control inline" />
+                    <div class="checkbox checkbox-primary checkbox-inline"> 
+                      <input type="checkbox" id="error_stops" name="error_stops"><label for="error_stops"> {{"出错时停止"|T}}</label> 
+                    </div>
+                    <div class="checkbox checkbox-primary checkbox-inline"> 
+                      <input type="checkbox" id="only_errors" name="only_errors"><label for="only_errors"> {{"只显示错误"|T}}</label> 
+                    </div>
+				</div>
+			    </div>
+              </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+{{Super}}
+{{Modal "__TMPL__/db/mysql/analysis.yaml"}}
+<script>
+var editor;
+CodeMirror.modeURL = "__ASSETS__/js/codemirror/mode/%N/%N.js";
+function initCodeMirrorEditor() {
+    //if(editor)return;
+    editor = CodeMirror.fromTextArea($("#query")[0], {
+        lineNumbers: true
+    });
+    editor.setOption('lineWrapping', true);
+    //editor.setSize('auto', 'auto');
+    editor.setOption("mode", "text/x-{{Form "driver"}}");
+    CodeMirror.autoLoadMode(editor, "sql");
+}
+$(function(){
+    initCodeMirrorEditor();
+    $('#sql-analysis-modal').find('.modal-body').css({"max-height":$(window).height()-200});
+    $(window).on('resize',function(){
+        $('#sql-analysis-modal').find('.modal-body').
+            css({"max-height":$(window).height()-200});
+    });
+    $('#btn-sql-analysis').on('click',function(){
+        var query=$('#query').text();
+        $.post('{{dbMgrURL "analysis" Stored.dbName}}',{sql:query},function(r){
+            if(r.Code!=1){
+                return App.message({title: '{{"系统消息"|T}}', text: r.Info, class_name: "danger"});
+            }
+            $('#sql-analysis-modal').niftyModal('show',{afterOpen:function(modal){
+                modal.find('.modal-body').html(r.Data);
+            }});
+        });
+    });
+});
+</script>
+{{/Block}}

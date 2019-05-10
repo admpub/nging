@@ -1,0 +1,61 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"日志详情"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="__BACKEND__/task/index">{{"任务管理"|T}}</a></li>
+<li><a href="__BACKEND__/task/log{{if Stored.task}}?taskId={{Stored.task.Id}}{{end}}">{{"任务日志"|T}}</a></li>
+<li class="active">{{"日志详情"|T}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        {{if Stored.task}}{{Include "task/view_content"}}{{end}}
+        <div class="block-flat">
+          <div class="header">
+            <h3>{{"日志详情"|T}}</h3>
+          </div>
+          <div class="content">
+              {{$v := Stored.data}}
+              <table class="table table-bordered">
+                <colgroup>
+                  <col width="10%">
+                  <col width="20%">
+                  <col width="10%">
+                  <col width="20%">
+                  <col width="10%">
+                  <col width="20%">
+                </colgroup>
+                <tbody>
+                  <tr>
+                    <th class="text-right">{{"启动时间"|T}}</th>
+                    <td>{{$v.Created|Ts2date "2006-01-02 15:04:05"}}</td>
+                    <th class="text-right">{{"消耗时间"|T}}</th>
+                    <td>{{$v.Elapsed|ToDuration}}</td>
+                    <th class="text-right">{{"状态"|T}}</th>
+                    <td>{{if eq $v.Status "success"}}
+                        <span class="color-success"><span class="fa fa-check-circle"></span> {{"成功"|T}}</span>
+                        {{else if eq $v.Status "failure"}}
+                        <span class="color-danger"><span class="fa fa-times-circle"></span> {{"出错"|T}}</span>
+                        {{else if eq $v.Status "timeout"}}
+                        <span class="color-warning"><span class="fa fa-times-circle"></span> {{"超时"|T}}</span>
+                        {{else if eq $v.Status "stop"}}
+                        <span class="color-info"><span class="fa fa-info-circle"></span> {{"停止"|T}}</span>
+                        {{else if eq $v.Status "restart"}}
+                        <span class="color-info"><span class="fa fa-info-circle"></span> {{"重启"|T}}</span>
+                        {{else}}
+                        <span class="color-default">{{"未知"|T}}</span>
+                        {{end}}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h4>{{"输出"|T}}</h4>
+              <p><pre>{{$v.Output}}</pre></p>
+							{{if $v.Error}}
+              <h4>{{"错误"|T}}</h4>
+              <p><pre>{{$v.Error}}</pre></p>
+              {{end}}
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}

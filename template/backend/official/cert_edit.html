@@ -1,0 +1,107 @@
+{{Extend "layout"}}
+{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加证书"|T}}{{else}}{{"修改证书"|T}}{{end}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="__BACKEND__/official/cert_index">{{"证书管理"|T}}</a></li>
+<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
+{{/Block}}
+{{Block "head"}}
+<link rel="stylesheet" type="text/css" href="__ASSETS__/js/selectpage/selectpage.css?t={{BuildTime}}" />
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{if HasSuffix URL.Path "_add"}}{{"添加证书"|T}}{{else}}{{"修改证书"|T}}{{end}}</h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" parsley-validate novalidate method="POST" action="">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"选择产品"|T}}</label>
+                <div class="col-sm-8">
+                  {{$productId := (Formx "productId").Uint64}}
+                  <input type="text" name="productId" id="productId" data-init="{{$productId}}" value="{{$productId}}" class="form-control">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"证书名称"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" required name="name" value="{{Form "name"}}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"版本号"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" name="version" value="{{Form "version"}}">
+                    <div class="help-block">{{"例如：1.0.1"|T}}</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"私钥"|T}}</label>
+                <div class="col-sm-8">
+                  <textarea class="form-control" name="privateKey" style="height:300px" parsley-trigger="keyup" parsley-maxlength="2000" parsley-validation-threshold="10">{{Form "privateKey"}}</textarea>
+                  <div class="help-block">{{"如果不输入私钥，则会自动生成私钥和公钥"|T}}</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"公钥"|T}}</label>
+                <div class="col-sm-8">
+                  <textarea class="form-control" name="publicKey" style="height:200px" parsley-trigger="keyup" parsley-maxlength="2000" parsley-validation-threshold="10">{{Form "publicKey"}}</textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"说明"|T}}</label>
+                <div class="col-sm-8">
+                  <textarea class="form-control" name="description" parsley-trigger="keyup" parsley-maxlength="255" parsley-validation-threshold="10">{{Form "description"}}</textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                  <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+                  <div class="col-sm-8">
+                    {{$v := Form "disabled"}}
+                    <div class="radio radio-success radio-inline">
+                        <input type="radio" value="N" name="disabled" id="disabled-N"{{if or (eq $v "N") (eq $v "")}} checked{{end}}> <label for="disabled-N">{{"启用"|T}}</label>
+                    </div>
+                      <div class="radio radio-danger radio-inline">
+                        <input type="radio" value="Y" name="disabled" id="disabled-Y"{{if eq $v "Y"}} checked{{end}}> <label for="disabled-Y">{{"禁用"|T}}</label>
+                      </div>
+                  </div>
+                </div>
+              <div class="form-group form-submit-group">
+									<div class="col-sm-9 col-sm-offset-2">
+									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+									</div>
+							</div>
+            </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script src="__ASSETS__/js/selectpage/selectpage.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+$(function(){
+  $('#productId').selectPage({
+    showField : 'name',
+    keyField : 'id',
+    data : BACKEND_URL+'/official/pay/product_index',
+    params : function(){return {};},
+    eAjaxSuccess : function(d){
+        var result;
+        if(d) result = {
+          "list":d.Data.listData,
+          "pageSize": d.Data.pagination.limit,
+          "pageNumber": d.Data.pagination.page,
+          "totalRow": d.Data.pagination.rows,
+          "totalPage":d.Data.pagination.pages
+        };
+        else result = undefined;
+        return result;
+    }
+});
+});
+</script>
+{{/Block}}

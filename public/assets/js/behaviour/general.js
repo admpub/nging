@@ -11,18 +11,7 @@ var App = function () {
     select2:true,
     tags:true,
     slider:true
-  }; 
-  
-  var voice_methods = [];
-
-  /*Widgets*/
-  var widgets = function(){
-    var skycons = new Skycons({"color": "#FFFFFF"});
-    skycons.add($("#sun-icon")[0], Skycons.PARTLY_CLOUDY_DAY);
-    skycons.play();
-    
-  };//End of widgets
-  
+  };
   
   /*Form Wizard*/
   var wizard = function(){
@@ -47,145 +36,9 @@ var App = function () {
     });
   };//End of wizard
 
-  /*Speech Recognition*/
-  var speech_commands = [];
-  if(('webkitSpeechRecognition' in window)){
-    var rec = new webkitSpeechRecognition();  
-  }
-  
-  var speech = function(options){
-   
-    if(('webkitSpeechRecognition' in window)){
-    
-      if(options=="start"){
-        rec.start();
-      }else if(options=="stop"){
-        rec.stop();
-      }else{
-        var config = {
-          continuous: true,
-          interim: true,
-          lang: false,
-          onEnd: false,
-          onResult: false,
-          onNoMatch: false,
-          onSpeechStart: false,
-          onSpeechEnd: false
-        };
-        $.extend( config, options );
-        
-        if(config.continuous){rec.continuous = true;}
-        if(config.interim){rec.interimResults = true;}
-        if(config.lang){rec.lang = config.lang;}        
-        var values = false;
-        var val_command = "";
-        
-        rec.onresult = function(event){
-          for (var i = event.resultIndex; i < event.results.length; ++i) {
-            if (event.results[i].isFinal) {
-              var command = event.results[i][0].transcript;//Return the voice command
-              command = command.toLowerCase();//Lowercase
-              command = command.replace(/^\s+|\s+$/g,'');//Trim spaces
-              console.log(command);
-              if(config.onResult){
-                config.onResult(command);
-              }   
-              
-              $.each(speech_commands,function(i, v){
-                if(values){//Second command
-                  if(val_command == v.command){
-                    if(v.dictation){
-                      if(command == v.dictationEndCommand){
-                        values = false;
-                        v.dictationEnd(command);
-                      }else{
-                        v.listen(command);
-                      }
-                    }else{
-                      values = false;
-                      v.listen(command);
-                    }
-                  }
-                }else{//Primary command
-                  if(v.command == command){
-                    v.action(command);
-                    if(v.listen){
-                      values = true;
-                      val_command = v.command;
-                    }
-                  }
-                }
-              });
-            }else{
-              var res = event.results[i][0].transcript;//Return the interim results
-              $.each(speech_commands,function(i, v){
-                if(v.interim !== false){
-                  if(values){                
-                    if(val_command == v.command){
-                      v.interim(res);
-                    }
-                  }
-                }
-              });
-            }
-          }
-        };      
-        
-        
-        if(config.onNoMatch){rec.onnomatch = function(){config.onNoMatch();};}
-        if(config.onSpeechStart){rec.onspeechstart = function(){config.onSpeechStart();};}
-        if(config.onSpeechEnd){rec.onspeechend = function(){config.onSpeechEnd();};}
-        rec.onaudiostart = function(){ $(".speech-button i").addClass("blur"); }
-        rec.onend = function(){
-          $(".speech-button i").removeClass("blur");
-          if(config.onEnd){config.onEnd();}
-        };
-        
-        
-      }    
-      
-    }else{ 
-      alert("Only Chrome25+ browser support voice recognition.");
-    }
-   
-    
-  };
-  
-  var speechCommand = function(command, options){
-    var config = {
-      action: false,
-      dictation: false,
-      interim: false,
-      dictationEnd: false,
-      dictationEndCommand: 'final.',
-      listen: false
-    };
-    
-    $.extend( config, options );
-    if(command){
-      if(config.action){
-        speech_commands.push({
-          command: command, 
-          dictation: config.dictation,
-          dictationEnd: config.dictationEnd,
-          dictationEndCommand: config.dictationEndCommand,
-          interim: config.interim,
-          action: config.action, 
-          listen: config.listen 
-        });
-      }else{
-        alert("Must have an action function");
-      }
-    }else{
-      alert("Must have a command text");
-    }
-  };
-  
       function toggleSideBar(_this){
         var b = $("#sidebar-collapse")[0];
         var w = $("#cl-wrapper");
-        var s = $(".cl-sidebar");
-        
         if(w.hasClass("sb-collapsed")){
           $(".fa",b).addClass("fa-angle-left").removeClass("fa-angle-right");
           w.removeClass("sb-collapsed");
@@ -193,37 +46,8 @@ var App = function () {
           $(".fa",b).removeClass("fa-angle-left").addClass("fa-angle-right");
           w.addClass("sb-collapsed");
         }
-        //updateHeight();
       }
       
-      function updateHeight(){
-        if(!$("#cl-wrapper").hasClass("fixed-menu")){
-          var button = $("#cl-wrapper .collapse-button").outerHeight();
-          var navH = $("#head-nav").height();
-          //var document = $(document).height();
-          var cont = $("#pcont").height();
-          var sidebar = ($(window).width() > 755 && $(window).width() < 963)?0:$("#cl-wrapper .menu-space .content").height();
-          var windowH = $(window).height();
-          
-          if(sidebar < windowH && cont < windowH){
-            if(($(window).width() > 755 && $(window).width() < 963)){
-              var height = windowH;
-            }else{
-              var height = windowH - button - navH;
-            }
-          }else if((sidebar < cont && sidebar > windowH) || (sidebar < windowH && sidebar < cont)){
-            var height = cont + button + navH;
-          }else if(sidebar > windowH && sidebar > cont){
-            var height = sidebar + button;
-          }  
-          
-          // var height = ($("#pcont").height() < $(window).height())?$(window).height():$(document).height();
-          $("#cl-wrapper .menu-space").css("min-height",height);
-        }else{
-          $("#cl-wrapper .nscroller").nanoScroller({ preventPageScrolling: true });
-        }
-      }
-
       function pageAside(){
         var pageKey=window.location.pathname.replace(/^\//,'').replace(/[^\w]/g,'-')+'-'+window.location.search.replace(/[^\w]/g,'_');
         $('.page-aside').each(function(index){
@@ -270,9 +94,23 @@ var App = function () {
           }
         });
       }
-
+      var cachedLang=null;
   return {
-   
+    clientID: {},
+    i18n: {SYS_INFO:'System Information',UPLOAD_ERR:'Upload Error'},
+    lang: 'en',
+    langInfo: function(){
+      if(cachedLang!=null) return cachedLang;
+      var _lang=App.lang.split('-',2);
+      cachedLang={encoding:_lang[0],country:''};
+      if(_lang.length>1)cachedLang.country=_lang[1].toUpperCase();
+      return cachedLang;
+    },
+    langTag: function(){
+      var l=App.langInfo();
+      if(l.country) return l.encoding+'-'+l.country;
+      return l.encoding;
+    },
     init: function (options) {
       //Extends basic config with options
       $.extend( config, options );
@@ -499,14 +337,6 @@ var App = function () {
         if($('.bslider').length>0)$('.bslider').slider();     
       }
       
-      /*Input & Radio Buttons*/
-      if(jQuery().iCheck){
-        $('.icheck').iCheck({
-          checkboxClass: 'icheckbox_square-blue checkbox',
-          radioClass: 'iradio_square-blue'
-        });
-      }
-      
       /*Bind plugins on hidden elements*/
       if(config.hiddenElements){
       	/*Dropdown shown event*/
@@ -520,10 +350,6 @@ var App = function () {
         });
       }
     },
-      
-    speech: function(options){
-      speech(options);
-    },
     pageAside: function(options){
       pageAside(options);
     },
@@ -533,38 +359,62 @@ var App = function () {
     tableReponsive: function(options){
       tableReponsive(options);
     },
-    
-    speechCommand: function(com, options){
-      speechCommand(com, options);
-    },
-    
     toggleSideBar: function(){
       toggleSideBar();
     },
-    
-    widgets: function(){
-      widgets();
-    },
-
     wizard: function(){
       wizard();
     },
-    
     markNavByURL:function(url){
       if(url==null)url=window.location.pathname;
-      App.markNav($('.cl-vnavigation a[href="'+url+'"]'));
+      App.markNav($('#leftnav a[href="'+url+'"]'),'left');
+      App.markNav($('#topnav a[href="'+url+'"]'),'top');
     },
-    markNav:function(curNavA){
+    markNav:function(curNavA,position){
 	    if(curNavA.length>0){
-        curNavA.parent('li').addClass('active').parent().show().parent().addClass("open");
+        var li=curNavA.parent('li').addClass('active');
+        switch(position){
+          case 'left':
+          li.parent('.from-left').show().parent('li').addClass("open");
+          break;
+
+          case 'top':
+          li.parent('.from-top').parent('li').addClass("active").siblings('li.active').removeClass('active');
+          break;
+        }
 	    }
     },
-    unmarkNav:function(){
-      $('.cl-vnavigation > .open').removeClass('open').children('.sub-menu').hide().children('li.active').removeClass('active');
-      $('.cl-vnavigation .active').removeClass('active');
+    unmarkNav:function(curNavA,position){
+      var li=curNavA.parent('li');
+      var siblings=li.siblings('li.active');
+      if(siblings.length>0){
+        siblings.removeClass('active');
+      }else{
+        switch(position){
+          case 'left':
+          // 点击的左侧边栏菜单
+          if(li.parent('ul.sub-menu').length>0){
+            var op2=$('.col-menu-2').children('li.open');
+            if(op2.length>0) op2.removeClass('open').find('li.active').removeClass('active');
+          }
+          $('#leftnav > .open').removeClass('open').children('ul.sub-menu').hide().children('li.active').removeClass('active');
+          $('#leftnav .active').removeClass('active');
+          break;
+
+          case 'top':
+          var topnavDropdown=li.parent('ul.dropdown-menu.from-top');
+          if(topnavDropdown.length>0){
+            siblings=topnavDropdown.parent('li').addClass('active').siblings('li.active');
+          }
+          if(siblings.length>0){
+            siblings.removeClass('active').children('ul.dropdown-menu.from-top').children('li.active').removeClass('active');
+          }
+          break;
+        }
+      }
     },
     message:function(options,sticky){
-      var defaults={title: '',
+      var defaults={title: App.i18n.SYS_INFO,
         text: '',
         image: '',
         class_name: 'clean',//primary|info|danger|warning|success|dark
@@ -579,26 +429,25 @@ var App = function () {
         case 'primary':
         case 'clean':
         case 'info':
-          options.title='<i class="fa fa-info-circle"></i> '+options.title;break;
+        if(options.title) options.title='<i class="fa fa-info-circle"></i> '+options.title;break;
 
         case 'error':
           options.class_name='danger';
         case 'danger':
-          options.title='<i class="fa fa-comment-o"></i> '+options.title;break;
+        if(options.title) options.title='<i class="fa fa-comment-o"></i> '+options.title;break;
 
         case 'warning':
-          options.title='<i class="fa fa-warning"></i> '+options.title;break;
+        if(options.title) options.title='<i class="fa fa-warning"></i> '+options.title;break;
           
         case 'success':
-          options.title='<i class="fa fa-check"></i> '+options.title;break;
+        if(options.title) options.title='<i class="fa fa-check"></i> '+options.title;break;
       }
       if(sticky!=null)options.sticky=sticky;
 	    $.gritter.add(options);
     },
     attachAjaxURL:function(){
       $(document).on('click','[data-ajax-url]',function(){
-        var url=$(this).data('ajax-url');
-        var title=$(this).attr('title');
+        var url=$(this).data('ajax-url'),title=$(this).attr('title');
         if(!title)title=$(this).text();
         $.get(url,{},function(r){
           App.message({title:title,text:r,time:5000,sticky:false});
@@ -612,10 +461,11 @@ var App = function () {
       var defaults={onclick:null,onsend:null,oncomplete:null,ontimeout:null,onstart:null,onend:null};
       var options=$.extend({},defaults,callbacks||{});
       $(document).on('click', elem+'[data-pjax]', function(event) {
-        var container = $(this).data('pjax');
-        var keepjs=$(this).data('keepjs');
+        var container = $(this).data('pjax'),keepjs=$(this).data('keepjs');
+        var onclick=$(this).data('onclick');
         $.pjax.click(event, $(container),{timeout:timeout,keepjs:keepjs});
         if(options.onclick)options.onclick(this);
+        if(onclick && typeof(window[onclick])=='function')window[onclick](this);
       }).on('pjax:send',function(evt,xhr,option){
         App.loading('show');
         if(options.onsend)options.onsend(evt,xhr,option);
@@ -631,16 +481,33 @@ var App = function () {
       }).on('pjax:end',function(evt,xhr,option){
         App.loading('hide');
         if(options.onend)options.onend(evt,xhr,option);
+        //console.debug(option);
+        var id=option.container.attr('id');
+        if(id){
+          App.bottomFloat('#'+id+' .pagination');
+          App.bottomFloat('#'+id+' .form-submit-group',0,true);
+          $('#'+id+' .switch').bootstrapSwitch();
+        }
+        if(option.type=='GET') $('#global-search-form').attr('action',option.url);
       });
     },
-    
-    websocket:function(showmsg,url,onopen){
+    wsURL:function(url) {
     	var protocol='ws:';
-    	if(window.location.protocol=='https:')protocol='wss:';
-    	var ws = new WebSocket(protocol+"//"+window.location.host+url);
+      if(window.location.protocol=='https:')protocol='wss:';
+      var p=String(url).indexOf('//');
+      if(p==-1){
+        url=protocol+"//"+window.location.host+url;
+      }else{
+        url=protocol+String(url).substring(p);
+      }
+      return url;
+    },
+    websocket:function(showmsg,url,onopen){
+      url = App.wsURL(url);
+    	var ws = new WebSocket(url);
     	ws.onopen = function(evt) {
     	    console.log('Websocket Server is connected');
-    		  if(onopen!=null&&typeof(onopen)=='function')onopen();
+    		  if(onopen!=null&&$.isFunction(onopen))onopen.apply(this,arguments);
     	};
     	ws.onclose = function(evt) {
     	    console.log('Websocket Server is disconnected');
@@ -656,33 +523,133 @@ var App = function () {
       }
       return ws;
     },
-
+    notifyListen:function(){
+      var messageCount={
+        notify:0,
+        element:0,
+        modal:0,
+      },
+      messageMax={
+        notify:20,
+        element:50,
+        modal:50,
+      };
+      App.websocket(function(message){
+        //console.dir(message);
+        var m=$.parseJSON(message);
+        if(typeof(App.clientID['notify'])=='undefined'){
+          App.clientID['notify']=m.client_id;
+        }
+        switch(m.mode){
+          case '-':
+          break;
+          case 'element':
+          var c=$('#notify-element-'+m.type);
+          if(c.length<1){
+            var callback='recv_notice_'+m.type;
+            if(typeof(window[callback])!='undefined'){
+              return window[callback](m);
+            }
+            if(m.status>0){
+              console.info(m.content);
+            }else{
+              console.error(m.content);
+            }
+            return;
+          }
+          if(messageCount[m.mode]>=messageMax[m.mode]){
+            c.find('li:first').remove();
+          }
+          if(m.title){
+            var badge='badge-danger';
+            if(m.status>0) badge='badge-success';
+            message='<span class="badge '+badge+'">'+App.text2html(m.title)+'</span> '+App.text2html(m.content);
+          }else{
+            message=App.text2html(m.content);
+          }
+          c.append('<li>'+message+'</li>');
+          messageCount[m.mode]++;
+          break;
+          case 'modal':
+          var c=$('#notify-modal-'+m.type);
+          if(c.length<1){
+            var callback='recv_notice_'+m.type;
+            if(typeof(window[callback])!='undefined'){
+              return window[callback](m);
+            }
+            if(m.status>0){
+              console.info(m.content);
+            }else{
+              console.error(m.content);
+            }
+            return;
+          }
+          if(m.title){
+            var badge='badge-danger';
+            if(m.status>0) badge='badge-success';
+            message='<span class="badge '+badge+'">'+App.text2html(m.title)+'</span> '+App.text2html(m.content);
+          }else{
+            message=App.text2html(m.content);
+          }
+          if(!c.data('shown')){
+            messageCount[m.mode]=0;
+            c.data('shown',true);
+            var mbody=c.find('.modal-body'),mbodyUL=mbody.children('ul.modal-body-ul');
+            if(mbodyUL.length<1){
+              mbody.html('<ul class="modal-body-ul" id="notify-modal-'+m.type+'-container"><li>'+message+'</li></ul>');
+            }else{
+              mbodyUL.html('<li>'+message+'</li>');
+            }
+            c.niftyModal('show',{
+              afterOpen: function(modal) {},
+              afterClose: function(modal) {
+                c.data('shown',false);
+              }
+            });
+          }else{
+            var cc=$('#notify-modal-'+m.type+'-container');
+            if(messageCount[m.mode]>=messageMax[m.mode]){
+              cc.find('li:first').remove();
+            }
+            cc.append('<li>'+message+'</li>');
+          }
+          messageCount[m.mode]++;
+          break;
+          case 'notify':
+          default:
+            if('notify'!=m.mode) m.mode='notify';
+            var c=$('#notice-message-container');
+            if(c.length<1){
+              App.message({title: App.i18n.SYS_INFO, text: '<ul id="notice-message-container" class="no-list-style" style="max-height:500px;overflow-y:auto;overflow-x:hidden"></ul>'});
+              c=$('#notice-message-container');
+            }
+            if(messageCount[m.mode]>=messageMax[m.mode]){
+              c.find('li:first').remove();
+            }
+            if(m.title){
+              var badge='badge-danger';
+              if(m.status>0) badge='badge-success';
+              message='<span class="badge '+badge+'">'+App.text2html(m.title)+'</span>'+App.text2html(m.content);
+            }else{
+              message=App.text2html(m.content);
+            }
+            c.append('<li>'+message+'</li>');
+            messageCount[m.mode]++;
+          break;
+        }
+      },BACKEND_URL+'/user/notice');
+    },
     text2html:function(text){
       return String(text).replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br />').replace(/  /g,'&nbsp; ').replace(/\t/g,'&nbsp; &nbsp; ')
     },
-    
-    iCheck:function(elem,on,callback){
-        var icOn='';
-        switch(on){
-            case 'click':
-            icOn='ifClicked';
-            break;
-            case 'change':
-            icOn='ifChanged';
-            break;
-            default:
-            alert('unsupported '+on);
-            return;
-        }
-        if($(elem).first().next('.iCheck-helper').length<1){
-          $(elem).iCheck({
-            checkboxClass: 'icheckbox_square-blue checkbox',
-            radioClass: 'iradio_square-blue'
-          });
-        }
-        $(elem).on(icOn,function(){
-            $(this).trigger(on);
-        }).on(on,callback);
+    checkedAll:function(ctrl,target){
+      return $(target).prop('checked',$(ctrl).prop('checked'));
+    },
+    attachCheckedAll:function(ctrl,target,showNumElem){
+      $(ctrl).on('ifChecked ifUnchecked click',function(){
+        App.checkedAll(this,target);
+        if(showNumElem) $(showNumElem).text($(target+':checked').length);
+      });
     },
     alertBlock:function(content,title,type){
       switch(type){
@@ -773,7 +740,12 @@ var App = function () {
           }
       }
     },
-    insertAtCursor: function(myField, myValue) { /* IE support */
+    insertAtCursor: function(myField, myValue,posStart,posEnd) { 
+      if (typeof TextAreaEditor != 'undefined') {
+        TextAreaEditor.setSelectText(myField, myValue,posStart,posEnd);
+        return;
+      } 
+      /* IE support */
 			if (document.selection) {
 				myField.focus();
 				sel = document.selection.createRange();
@@ -792,8 +764,94 @@ var App = function () {
 			} else {
 				myField.value += myValue;
 				myField.focus();
-			}
-		}
+      }
+    },
+    searchFS:function(elem,size,type,url,before){
+      if(size==null)size=10;
+      if(url==null)url=BACKEND_URL+'/user/autocomplete_path';
+      $(elem).typeahead({
+       hint: true, highlight: true, minLength: 1
+      }, {source: function (query, sync, async) {
+          var data={query:query,size:size,type:type};
+          $.ajax({
+            url: url,
+            type: 'get',
+            data: before?before(data):data,
+            dataType: 'json',
+            async: false,
+            success: function (data) {
+              var arr = [];
+              if(!data.Data) return;
+              $.each(data.Data, function (index, val) {
+                arr.push(val);
+              });
+              sync(arr);
+            }
+          });
+      },limit: size});
+    },
+    randomString:function (len) {
+      　　len = len || 32;
+      　　var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678'; //默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1
+      　　var maxPos = $chars.length;
+      　　var pwd = '';
+      　　for (i = 0; i < len; i++) {
+      　　　　pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+      　　}
+      　　return pwd;
+      },
+      bottomFloat:function (elems, top, autoWith) {
+      	if ($(elems).length<1) return;
+        if (top == null) top = 0;
+        $(elems).not('[disabled-fixed]').each(function(){
+        var elem=this;
+      	var _offset = $(elem).height() + top;
+      	var offsetY = $(elem).offset().top + _offset;
+      	var w = $(elem).outerWidth(), h = $(elem).outerHeight();
+      	if (autoWith||$(elem).data('auto-width')) $(elem).css('width', w);
+      	$(window).on('scroll',function () {
+      		var scrollH = $(this).scrollTop() + $(window).height();
+      		if (scrollH >= offsetY) {
+      			if ($(elem).hasClass('always-bottom')) {
+      				$(elem).removeClass('always-bottom');
+      				$(elem).next('.fixed-placeholder').hide();
+      			}
+      			return;
+      		}
+      		if (!$(elem).hasClass('always-bottom')) {
+      			$(elem).addClass('always-bottom');
+      			if ($(elem).next('.fixed-placeholder').length > 0) {
+      				$(elem).next('.fixed-placeholder').show();
+      			} else {
+      				$(elem).after('<div style="width:' + w + 'px;height:' + h + 'px" class="fixed-placeholder"></div>');
+      			}
+      		}
+      	});
+      });
+      $(window).trigger('scroll');
+    },
+    getImgNaturalDimensions:function (oImg, callback) {
+      if (!oImg.naturalWidth) { // 现代浏览器
+      　　callback({w: oImg.naturalWidth, h:oImg.naturalHeight});
+        return;
+      } 
+      // IE6/7/8
+      var nImg = new Image();
+      nImg.onload = function() {
+        callback({w: nImg.width, h:nImg.height});
+      }
+      nImg.src = oImg.src;
+    },
+    reportBug:function(url){
+	    $.post(url,{"panic":$('#panic-content').html(),"url":window.location.href},function(r){},'json');
+    },
+    switchLang:function(lang){
+      var url=window.location.href;
+      url=url.replace(/[\?&]lang=[^&]*(&|$)/,'');
+      var sep=url.indexOf(url,'?')==-1?'?':'&';
+      url+=sep+'lang='+lang;
+      window.location=url;
+    }
   };
  
 }();

@@ -1,0 +1,104 @@
+{{Extend "layout"}}
+{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加角色"|T}}{{else}}{{"修改角色"|T}}{{end}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="__BACKEND__/manager/role">{{"角色列表"|T}}</a></li>
+<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
+{{/Block}}
+{{Block "main"}}
+{{Strip}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>
+              {{if HasSuffix URL.Path "_add"}}
+              {{"添加角色"|T}}
+              {{else}}
+              {{"修改角色"|T}}
+              {{end}}
+            </h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" method="POST" action="">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"角色名"|T}}</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" required name="name" value="{{Form "name"}}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"说明"|T}}</label>
+                <div class="col-sm-9">
+                  <textarea class="form-control" name="description">{{Form "description"}}</textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+                <div class="col-sm-9">
+                  {{$v := Form "disabled"}}
+                  <span class="radio radio-success radio-inline">
+                      <input type="radio" value="N" name="disabled"{{if or (eq $v "N") (eq $v "")}} checked{{end}} id="disabled-N"> <label for="disabled-N">{{"启用"|T}}
+                    </label>
+                    </span>
+                    <span class="radio radio-danger radio-inline">
+                      <input type="radio" value="Y" name="disabled"{{if eq $v "Y"}} checked{{end}} id="disabled-Y"> <label for="disabled-Y">{{"禁用"|T}}
+                    </label>
+                  </span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"权限"|T}}</label>
+                <div class="col-sm-9">
+                  <div class="tab-container" style="background-color:#F6F6F6">
+                    <ul class="nav nav-tabs">
+                      <li class="active"><a href="#home" data-toggle="tab">{{"操作权限"|T}}</a></li>
+                      <li><a href="#command" data-toggle="tab">{{"指令权限"|T}}</a></li>
+                    </ul>
+                    <div class="tab-content" id="perm-settings">
+                      <div class="tab-pane active" id="home">
+                      {{Include "/manager/role_edit_perm_action"}}
+                      </div>
+                      <div class="tab-pane" id="command">
+                      {{Include "/manager/role_edit_perm_cmd"}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group form-submit-group">
+									<div class="col-sm-9 col-sm-offset-2">
+									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+									</div>
+							</div>
+            </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Strip}}
+{{/Block}}
+{{Block "footer"}}
+<script type="text/javascript">
+$(function(){
+  $('#perm-settings').on('click','input:checkbox[name="permAction[]"]',function(){
+    var checked=$(this).prop('checked'),value=$(this).val(),batchRegExp=/\/\*$/;
+    if(batchRegExp.test(value)){
+      var prefix=value.replace(batchRegExp,'');
+      $('input:checkbox[name="permAction[]"][value^="'+prefix+'/"]').prop('checked',checked);
+      $('input:checkbox[name="permAction[]"][value="'+prefix+'"]').prop('checked',checked);
+    }else{
+      if(!checked){
+        $(this).parents('fieldset').children('legend').find('input:checkbox[name="permAction[]"]').prop('checked',checked);
+      }else{
+        var ul=$(this).parents('ul'),n=ul.find('li').length;
+        if(ul.find('input:checkbox[name="permAction[]"]:checked').length==n){
+          ul.prev('legend').find('input:checkbox[name="permAction[]"]').prop('checked',checked);
+        }
+      }
+    }
+  });
+});
+</script>
+{{/Block}}

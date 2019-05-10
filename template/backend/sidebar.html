@@ -1,0 +1,69 @@
+{{Strip}}
+{{- $leftNavigate := Navigate "left" -}}
+{{- if $leftNavigate -}}
+<div class="cl-sidebar">
+			<div class="cl-toggle">
+        <i class="fa fa-bars"></i>
+      </div>
+			<div class="cl-navblock">
+        <div class="menu-space">
+          <div class="content">
+            <div class="side-user">
+              <div class="avatar">
+                <img src="{{if Stored.user.Avatar}}{{AddSuffix Stored.user.Avatar "_200_200"}}{{else}}__ASSETS__/images/user_50.png{{end}}" onerror="this.onerror=null;this.src='__ASSETS__/images/user_50.png';" style="width:50px;height:50px" alt="Avatar" />
+              </div>
+              <div class="info">
+                <a href="javascript:;">{{Username}}</a>
+                <img src="__ASSETS__/images/state_online.png" alt="Status" />
+                <span>Online</span>
+              </div>
+            </div>
+            <ul class="cl-vnavigation" id="leftnav">
+              {{- range $key, $nav := $leftNavigate -}}
+              {{- if $nav.DisplayOnMenu -}}
+              <li>
+                <a href="javascript:;">
+                  <i class="fa fa-{{$nav.Icon}} nav-icon"></i>
+                  <span>{{$nav.Name|T}}</span>
+                </a>
+                <ul class="sub-menu from-left">
+                  {{- range $k, $c := $nav.Children -}}
+                  {{- if $c.DisplayOnMenu -}}
+                  <li>
+                    <a{{if eq $c.Target "ajax"}} href="javascript:;" data-ajax-url="__BACKEND__/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{else}} href="__BACKEND__/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if $c.Target}} target="{{$c.Target}}"{{else}} data-pjax="#main-container" data-keepjs="true" data-marknav="left"{{end}}{{end}}>
+                      {{- if eq $c.Icon "plus"}}
+                      <span class="label label-primary pull-right">+</span>
+                      {{- else if eq $c.Target "_blank"}}
+                      <span class="pull-right" title="{{"新窗口打开"|T}}">
+                        <i class="fa fa-mail-forward"></i>
+                      </span>
+                      {{end -}}
+                      {{$c.Name|T}}
+                    </a>
+                  </li>
+                  {{- end -}}
+                  {{- end -}}
+                </ul>
+              </li>
+              {{- end -}}
+              {{- end -}}
+            </ul>
+          </div>
+        </div>
+        <div class="text-right collapse-button" style="padding:7px 9px;">
+          <form action="{{Path}}" id="global-search-form" method="GET">
+          {{- range $field,$values:=Queries -}}
+          {{- range $k,$value:=$values -}}
+          <input type="hidden" name="{{$field}}" value="{{$value}}" />
+          {{- end -}}
+          {{- end -}}
+          <input type="text" value="{{Form "q"}}" name="q" class="form-control search" placeholder="Search..." onkeyup="if(event.keyCode==13)$('#global-search-form').submit()" />
+          <button type="button" id="sidebar-collapse" class="btn btn-default">
+            <i style="color:#fff;" class="fa fa-angle-left"></i>
+          </button>
+          </form>
+        </div>
+			</div>
+    </div>
+{{end}}
+{{/Strip}}

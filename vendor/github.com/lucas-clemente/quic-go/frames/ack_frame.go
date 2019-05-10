@@ -5,8 +5,8 @@ import (
 	"errors"
 	"time"
 
+	"github.com/lucas-clemente/quic-go/internal/utils"
 	"github.com/lucas-clemente/quic-go/protocol"
-	"github.com/lucas-clemente/quic-go/utils"
 )
 
 var (
@@ -27,8 +27,10 @@ type AckFrame struct {
 	LowestAcked  protocol.PacketNumber
 	AckRanges    []AckRange // has to be ordered. The ACK range with the highest FirstPacketNumber goes first, the ACK range with the lowest FirstPacketNumber goes last
 
+	// time when the LargestAcked was receiveid
+	// this field Will not be set for received ACKs frames
+	PacketReceivedTime time.Time
 	DelayTime          time.Duration
-	PacketReceivedTime time.Time // only for received packets. Will not be modified for received ACKs frames
 }
 
 // ParseAckFrame reads an ACK frame
@@ -83,7 +85,7 @@ func ParseAckFrame(r *bytes.Reader, version protocol.VersionNumber) (*AckFrame, 
 	if err != nil {
 		return nil, err
 	}
-	if ackBlockLength < 1 {
+	if frame.LargestAcked > 0 && ackBlockLength < 1 {
 		return nil, ErrInvalidFirstAckRange
 	}
 
@@ -141,7 +143,11 @@ func ParseAckFrame(r *bytes.Reader, version protocol.VersionNumber) (*AckFrame, 
 
 		frame.LowestAcked = frame.AckRanges[len(frame.AckRanges)-1].FirstPacketNumber
 	} else {
-		frame.LowestAcked = protocol.PacketNumber(largestAcked + 1 - ackBlockLength)
+		if frame.LargestAcked == 0 {
+			frame.LowestAcked = 0
+		} else {
+			frame.LowestAcked = protocol.PacketNumber(largestAcked + 1 - ackBlockLength)
+		}
 	}
 
 	if !frame.validateAckRanges() {
@@ -216,7 +222,7 @@ func (f *AckFrame) Write(b *bytes.Buffer, version protocol.VersionNumber) error 
 		utils.WriteUint48(b, uint64(f.LargestAcked))
 	}
 
-	f.DelayTime = time.Now().Sub(f.PacketReceivedTime)
+	f.DelayTime = time.Since(f.PacketReceivedTime)
 	utils.WriteUfloat16(b, uint64(f.DelayTime/time.Microsecond))
 
 	var numRanges uint64
@@ -326,8 +332,7 @@ func (f *AckFrame) Write(b *bytes.Buffer, version protocol.VersionNumber) error 
 
 // MinLength of a written frame
 func (f *AckFrame) MinLength(version protocol.VersionNumber) (protocol.ByteCount, error) {
-	var length protocol.ByteCount
-	length = 1 + 2 + 1 // 1 TypeByte, 2 ACK delay time, 1 Num Timestamp
+	length := protocol.ByteCount(1 + 2 + 1) // 1 TypeByte, 2 ACK delay time, 1 Num Timestamp
 	length += protocol.ByteCount(protocol.GetPacketNumberLength(f.LargestAcked))
 
 	missingSequenceNumberDeltaLen := protocol.ByteCount(f.getMissingSequenceNumberDeltaLen())
@@ -345,10 +350,7 @@ func (f *AckFrame) MinLength(version protocol.VersionNumber) (protocol.ByteCount
 
 // HasMissingRanges returns if this frame reports any missing packets
 func (f *AckFrame) HasMissingRanges() bool {
-	if len(f.AckRanges) > 0 {
-		return true
-	}
-	return false
+	return len(f.AckRanges) > 0
 }
 
 func (f *AckFrame) validateAckRanges() bool {

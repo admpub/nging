@@ -1,0 +1,34 @@
+{{Strip}}<!-- Fixed navbar -->
+  <div id="head-nav" class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="fa fa-gear"></span>
+        </button>
+        <a class="navbar-brand" href="__BACKEND__/"><span>Nging</span></a>
+      </div>
+      <div class="navbar-collapse collapse">
+        {{Include "topnav"}}
+        <ul class="nav navbar-nav navbar-right user-nav">
+          <li class="dropdown profile_menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img alt="Avatar" src="{{if Stored.user.Avatar}}{{AddSuffix Stored.user.Avatar "_200_200"}}{{else}}__ASSETS__/images/user_30.png{{end}}" onerror="this.onerror=null;this.src='__ASSETS__/images/user_30.png';" style="width:30px;height:30px" />{{Username}} <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="__BACKEND__/user/gauth_bind">{{"两步验证"|T}}</a></li>
+              <li><a href="__BACKEND__/user/edit">{{"修改资料"|T}}</a></li>
+              {{if eq Stored.user.Id 1}}
+              <li class="divider"></li>
+              <li><a href="__BACKEND__/icon" target="_blank">{{"图标大全"|T}}</a></li>
+              <li><a href="__BACKEND__/routeNotin" target="_blank">{{"未登记权限的路由"|T}}</a></li>
+              {{end}}
+              <li class="divider"></li>
+              <li><a href="__BACKEND__/logout">{{"退出登录"|T}}</a></li>
+            </ul>
+          </li>
+        </ul>
+        {{/*Include "topnotice"*/}}
+        {{Include "topbutton"}}
+
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+{{/Strip}}

@@ -17,6 +17,7 @@ import (
 type (
 	Echo struct {
 		engine            engine.Engine
+		prefix            string
 		middleware        []interface{}
 		head              Handler
 		maxParam          *int
@@ -32,9 +33,12 @@ type (
 		handlerWrapper    []func(interface{}) Handler
 		middlewareWrapper []func(interface{}) Middleware
 		acceptFormats     map[string]string //mime=>format
+		formatRenderers   map[string]func(ctx Context, data interface{}) error
 		FuncMap           map[string]interface{}
 		RouteDebug        bool
 		MiddlewareDebug   bool
+		JSONPVarName      string
+		parseHeaderAccept bool
 	}
 
 	Middleware interface {
@@ -76,7 +80,11 @@ func New() (e *Echo) {
 }
 
 func NewWithContext(fn func(*Echo) Context) (e *Echo) {
-	e = &Echo{maxParam: new(int)}
+	e = &Echo{
+		maxParam:        new(int),
+		JSONPVarName:    `callback`,
+		formatRenderers: make(map[string]func(ctx Context, data interface{}) error),
+	}
 	e.pool.New = func() interface{} {
 		return fn(e)
 	}
@@ -112,6 +120,18 @@ func NewWithContext(fn func(*Echo) Context) (e *Echo) {
 		//default
 		`*`: `html`,
 	}
+	e.formatRenderers[`json`] = func(c Context, data interface{}) error {
+		return c.JSON(c.Data())
+	}
+	e.formatRenderers[`jsonp`] = func(c Context, data interface{}) error {
+		return c.JSONP(c.Query(e.JSONPVarName), c.Data())
+	}
+	e.formatRenderers[`xml`] = func(c Context, data interface{}) error {
+		return c.XML(c.Data())
+	}
+	e.formatRenderers[`text`] = func(c Context, data interface{}) error {
+		return c.String(fmt.Sprint(data))
+	}
 	return
 }
 
@@ -127,6 +147,11 @@ func (h HandlerFunc) Handle(c Context) error {
 	return h(c)
 }
 
+func (e *Echo) ParseHeaderAccept(on bool) *Echo {
+	e.parseHeaderAccept = on
+	return e
+}
+
 func (e *Echo) SetAcceptFormats(acceptFormats map[string]string) *Echo {
 	e.acceptFormats = acceptFormats
 	return e
@@ -134,6 +159,25 @@ func (e *Echo) SetAcceptFormats(acceptFormats map[string]string) *Echo {
 
 func (e *Echo) AddAcceptFormat(mime, format string) *Echo {
 	e.acceptFormats[mime] = format
+	return e
+}
+
+func (e *Echo) SetFormatRenderers(formatRenderers map[string]func(c Context, data interface{}) error) *Echo {
+	e.formatRenderers = formatRenderers
+	return e
+}
+
+func (e *Echo) AddFormatRenderer(format string, renderer func(c Context, data interface{}) error) *Echo {
+	e.formatRenderers[format] = renderer
+	return e
+}
+
+func (e *Echo) RemoveFormatRenderer(formats ...string) *Echo {
+	for _, format := range formats {
+		if _, ok := e.formatRenderers[format]; ok {
+			delete(e.formatRenderers, format)
+		}
+	}
 	return e
 }
 
@@ -397,10 +441,28 @@ func (e *Echo) AddMiddlewareWrapper(funcs ...func(interface{}) Middleware) {
 	e.middlewareWrapper = append(e.middlewareWrapper, funcs...)
 }
 
+func (e *Echo) Prefix() string {
+	return e.prefix
+}
+
+func (e *Echo) SetPrefix(prefix string) *Echo {
+	if len(prefix) == 0 {
+		return e
+	}
+	if !strings.HasPrefix(prefix, `/`) {
+		prefix = `/` + prefix
+	}
+	if strings.HasSuffix(prefix, `/`) {
+		prefix = strings.TrimSuffix(prefix, `/`)
+	}
+	e.prefix = prefix
+	return e
+}
+
 func (e *Echo) add(method, prefix string, path string, h interface{}, middleware ...interface{}) {
 	r := &Route{
 		Method:     method,
-		Path:       path,
+		Path:       e.prefix + path,
 		Prefix:     prefix,
 		handler:    h,
 		middleware: middleware,
@@ -463,16 +525,16 @@ func (e *Echo) AppendRouter(routes []*Route) {
 }
 
 // Group creates a new sub-router with prefix.
-func (e *Echo) Group(prefix string, m ...interface{}) (g *Group) {
-	g = &Group{prefix: prefix, echo: e}
-	g.Use(m...)
-	e.groups[prefix] = g
-	return
-}
-
-func (e *Echo) GetGroup(prefix string) (g *Group) {
-	g, _ = e.groups[prefix]
-	return
+func (e *Echo) Group(prefix string, m ...interface{}) *Group {
+	g, y := e.groups[prefix]
+	if !y {
+		g = &Group{prefix: prefix, echo: e}
+		e.groups[prefix] = g
+	}
+	if len(m) > 0 {
+		g.Use(m...)
+	}
+	return g
 }
 
 // URI generates a URI from handler.
@@ -584,11 +646,15 @@ func (e *Echo) ServeHTTP(req engine.Request, res engine.Response) {
 }
 
 // Run starts the HTTP engine.
-func (e *Echo) Run(eng engine.Engine, handler ...engine.Handler) {
-	e.setEngine(eng).start(handler...)
+func (e *Echo) Run(eng engine.Engine, handler ...engine.Handler) error {
+	err := e.setEngine(eng).start(handler...)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return err
 }
 
-func (e *Echo) start(handler ...engine.Handler) {
+func (e *Echo) start(handler ...engine.Handler) error {
 	if len(handler) > 0 {
 		e.engine.SetHandler(handler[0])
 	} else {
@@ -598,7 +664,7 @@ func (e *Echo) start(handler ...engine.Handler) {
 	if e.Debug() {
 		e.logger.Debug("running in debug mode")
 	}
-	e.engine.Start()
+	return e.engine.Start()
 }
 
 func (e *Echo) setEngine(eng engine.Engine) *Echo {

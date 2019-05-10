@@ -339,6 +339,10 @@ func ParseDurationString(input string, args ...interface{}) (*Durafmt, error) {
 	return &Durafmt{duration, input, getDurationUnits(args)}, nil
 }
 
+func (d *Durafmt) Duration() time.Duration {
+	return d.duration
+}
+
 // String parses d *Durafmt into a human readable duration.
 func (d *Durafmt) String() string {
 	var duration string

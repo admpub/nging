@@ -1,9 +1,140 @@
+/*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
+
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 package redis
 
 import (
 	"strconv"
 	"strings"
+
+	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/library/common"
+	"github.com/webx-top/echo"
+	"github.com/webx-top/pagination"
 )
+
+func NewValue(c echo.Context) *Value {
+	return &Value{
+		TotalRows:  -1,
+		List:       []string{},
+		Keys:       []string{},
+		NextOffset: `0`,
+		context:    c,
+	}
+}
+
+type Value struct {
+	TotalRows  int
+	List       []string
+	Keys       []string
+	NextOffset string
+	context    echo.Context
+	paging     *pagination.Pagination
+	Text       string
+}
+
+func (a *Value) Add(key, value string) *Value {
+	a.Keys = append(a.Keys, key)
+	a.List = append(a.List, value)
+	return a
+}
+
+func (a *Value) Value(index int) string {
+	if len(a.List) < index {
+		return `[not-found]`
+	}
+	return a.List[index]
+}
+
+func (a *Value) String() string {
+	return a.Text
+}
+
+func (a *Value) SetPaging(paging *pagination.Pagination) *Value {
+	a.paging = paging
+	return a
+}
+
+func (a *Value) Paging(vkeys ...string) *pagination.Pagination {
+	if a.paging != nil {
+		return a.paging
+	}
+	var (
+		pageKey = `vpage`
+		sizeKey = `vsize`
+		rowsKey = `vrows`
+	)
+	if len(vkeys) > 0 {
+		pageKey = vkeys[0]
+		if len(vkeys) > 1 {
+			sizeKey = vkeys[1]
+			if len(vkeys) > 2 {
+				rowsKey = vkeys[2]
+			}
+		}
+	}
+	page := a.context.Formx(pageKey).Int()
+	size := a.context.Formx(sizeKey).Int()
+	if page < 1 {
+		page = 1
+	}
+	if size < 1 || size > common.PageMaxSize {
+		size = 50
+	}
+	delKeys := []string{}
+	totalRows := a.context.Formx(rowsKey).Int()
+	if totalRows < 1 {
+		totalRows = a.TotalRows
+	}
+	pjax := a.context.PjaxContainer()
+	if len(pjax) > 0 {
+		delKeys = append(delKeys, `_pjax`)
+	}
+	a.paging = pagination.New(a.context).SetAll(``, totalRows, page, 10, size).SetURL(map[string]string{
+		`rows`: rowsKey,
+		`page`: pageKey,
+		`size`: sizeKey,
+	}, delKeys...)
+	return a.paging
+}
+
+func (a *Value) CursorPaging(vkeys ...string) *pagination.Pagination {
+	if a.paging != nil {
+		return a.paging
+	}
+	var (
+		currOffsetKey = `voffset`
+		prevOffsetKey = `vprev`
+	)
+	if len(vkeys) > 0 {
+		currOffsetKey = vkeys[0]
+		if len(vkeys) > 1 {
+			prevOffsetKey = vkeys[1]
+		}
+	}
+	_, _, _, a.paging = handler.PagingWithPagination(a.context)
+	prevOffset := a.context.Form(currOffsetKey, `0`)
+	q := a.context.Request().URL().Query()
+	q.Del(currOffsetKey)
+	q.Del(prevOffsetKey)
+	a.paging.SetURL(`/db?`+q.Encode()+`&`+currOffsetKey+`={curr}&`+prevOffsetKey+`={prev}`).SetPosition(prevOffset, a.NextOffset, a.NextOffset)
+	return a.paging
+}
 
 type InfoSection struct {
 	Map map[string]string

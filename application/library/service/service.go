@@ -1,37 +1,34 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package service
 
 import (
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strconv"
-	"strings"
 
-	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/service"
 	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
 )
 
 func ValidServiceAction(action string) error {
@@ -45,15 +42,13 @@ func ValidServiceAction(action string) error {
 
 // New 以服务的方式启动nging
 // 服务支持的操作有：
-// nging install  	-- 安装服务
-// nging uninstall  -- 卸载服务
-// nging start 		-- 启动服务
-// nging stop 		-- 停止服务
-// nging restart 	-- 重启服务
+// nging service install  	-- 安装服务
+// nging service uninstall  -- 卸载服务
+// nging service start 		-- 启动服务
+// nging service stop 		-- 停止服务
+// nging service restart 	-- 重启服务
 func New(cfg *Config, action string) error {
 	p := NewProgram(cfg)
-	p.Config.Arguments = append([]string{`run`}, p.Args...)
-
 	s, err := service.New(p, &p.Config.Config)
 	if err != nil {
 		return err
@@ -72,65 +67,68 @@ func New(cfg *Config, action string) error {
 
 func getPidFiles() []string {
 	pidFile := []string{}
-	ftpPid := config.DefaultConfig.FTP.PidFile
-	caddyPid := config.DefaultConfig.Caddy.PidFile
-	if len(ftpPid) == 0 {
-		ftpPid = `ftp.pid`
+	pidFilePath := filepath.Join(echo.Wd(), `data/pid`)
+	err := filepath.Walk(pidFilePath, func(pidPath string, info os.FileInfo, err error) error {
+		if err != nil || info.IsDir() {
+			return err
+		}
+		if filepath.Ext(pidPath) == `.pid` {
+			pidFile = append(pidFile, pidPath)
+		}
+		return nil
+	})
+	if err != nil {
+		log.Println(err)
 	}
-	if len(caddyPid) == 0 {
-		caddyPid = `caddy.pid`
-	}
-	if runtime.GOOS == `windows` {
-		if !strings.Contains(ftpPid, `:`) {
-			ftpPid = filepath.Join(com.SelfDir(), ftpPid)
-		}
-		if !strings.Contains(caddyPid, `:`) {
-			caddyPid = filepath.Join(com.SelfDir(), caddyPid)
-		}
-	} else {
-		if !strings.HasPrefix(ftpPid, `/`) {
-			ftpPid = filepath.Join(com.SelfDir(), ftpPid)
-		}
-		if !strings.HasPrefix(caddyPid, `/`) {
-			caddyPid = filepath.Join(com.SelfDir(), caddyPid)
-		}
-	}
-	pidFile = append(pidFile, caddyPid)
-	pidFile = append(pidFile, ftpPid)
 	return pidFile
 }
 
 func NewProgram(cfg *Config) *program {
-	return &program{
-		Config:  cfg,
-		pidFile: filepath.Join(com.SelfDir(), `nging.pid`),
+	pidFile := filepath.Join(echo.Wd(), `data/pid`)
+	if !com.IsDir(pidFile) {
+		err := os.MkdirAll(pidFile, os.ModePerm)
+		if err != nil {
+			log.Println(err)
+		}
 	}
+	pidFile = filepath.Join(pidFile, `nging.pid`)
+	p := &program{
+		Config:  cfg,
+		pidFile: pidFile,
+	}
+	p.Config.Config.Arguments = append([]string{`service`, `run`}, p.Args...)
+	p.Config.Config.WorkingDirectory = p.Dir
+	p.Config.Config.Option = map[string]interface{}{
+		//`PIDFile`:   pidFile,
+		`RunAtLoad`: true,
+		//`UserService`:   true, //Install as a current user service.
+		//`SessionCreate`: true, //Create a full user session.
+	}
+	return p
 }
 
 type program struct {
 	*Config
 	service  service.Service
 	cmd      *exec.Cmd
-	stopped  bool
-	exited   chan struct{}
 	fullExec string
 	pidFile  string
 }
 
 func (p *program) Start(s service.Service) (err error) {
 	if service.Interactive() {
-		log.Println("Running in terminal.")
+		p.logger.Info("Running in terminal.")
 	} else {
-		log.Println("Running under service manager.")
+		p.logger.Info("Running under service manager.")
 	}
-	// Look for exec.
-	// Verify home directory.
-	p.fullExec, err = exec.LookPath(p.Exec)
-	if err != nil {
-		return fmt.Errorf("Failed to find executable %q: %v", p.Exec, err)
+	if filepath.Base(p.Exec) == p.Exec {
+		p.fullExec, err = exec.LookPath(p.Exec)
+		if err != nil {
+			return fmt.Errorf("Failed to find executable %q: %v", p.Exec, err)
+		}
+	} else {
+		p.fullExec = p.Exec
 	}
-	p.stopped = false
-	p.exited = make(chan struct{})
 	p.createCmd()
 
 	go p.run()
@@ -141,13 +139,20 @@ func (p *program) createCmd() {
 	p.cmd = exec.Command(p.fullExec, p.Args...)
 	p.cmd.Dir = p.Dir
 	p.cmd.Env = append(os.Environ(), p.Env...)
-	log.Printf("Running cmd: %s %#v\n", p.fullExec, p.Args)
+	if p.Stderr != nil {
+		p.cmd.Stderr = p.Stderr
+	}
+	if p.Stdout != nil {
+		p.cmd.Stdout = p.Stdout
+	}
+	p.logger.Infof("Running cmd: %s %#v", p.fullExec, p.Args)
+	p.logger.Infof("Workdir: %s", p.cmd.Dir)
+	//p.logger.Infof("Env: %s", com.Dump(p.cmd.Env, false))
 }
 
 func (p *program) Stop(s service.Service) error {
-	p.stopped = true
 	p.killCmd()
-	log.Println("Stopping", p.DisplayName)
+	p.logger.Infof("Stopping %s", p.DisplayName)
 	if service.Interactive() {
 		os.Exit(0)
 	}
@@ -162,12 +167,12 @@ func (p *program) killCmd() {
 	}
 	err := com.CloseProcessFromPidFile(p.pidFile)
 	if err != nil {
-		log.Println(p.pidFile+`:`, err)
+		p.logger.Error(p.pidFile+`:`, err)
 	}
 	for _, pidFile := range getPidFiles() {
 		err = com.CloseProcessFromPidFile(pidFile)
 		if err != nil {
-			log.Println(pidFile+`:`, err)
+			p.logger.Error(pidFile+`:`, err)
 		}
 	}
 }
@@ -180,42 +185,19 @@ func (p *program) close() {
 	}
 }
 
-func FileWriter(file string) (io.WriteCloser, error) {
-	f, err := os.OpenFile(file, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0777)
-	return f, err
-}
-
 func (p *program) run() {
-	log.Println("Starting", p.DisplayName)
-
+	p.logger.Infof("Starting %s", p.DisplayName)
+	//return
 	//如果调用的程序停止了，则本服务同时也停止
 	defer p.close()
-
-	if p.Stderr != nil {
-		p.cmd.Stderr = p.Stderr
+	err := p.cmd.Start()
+	if err == nil {
+		log.Println("APP PID:", p.cmd.Process.Pid)
+		ioutil.WriteFile(p.pidFile, []byte(strconv.Itoa(p.cmd.Process.Pid)), os.ModePerm)
+		err = p.cmd.Wait()
 	}
-	if p.Stdout != nil {
-		p.cmd.Stdout = p.Stdout
+	if err != nil {
+		p.logger.Error("Error running:", err)
 	}
-
-	go func() {
-		for i := 0; i < 10 && !p.stopped; i++ {
-			err := p.cmd.Start()
-			if err == nil {
-				log.Println("APP PID:", p.cmd.Process.Pid)
-				ioutil.WriteFile(p.pidFile, []byte(strconv.Itoa(p.cmd.Process.Pid)), os.ModePerm)
-				err = p.cmd.Wait()
-			}
-			if err != nil {
-				log.Println("Error running:", err)
-				p.killCmd()
-				p.createCmd()
-			} else {
-				i = -1
-			}
-		}
-		p.exited <- struct{}{}
-	}()
-	<-p.exited
 	p.killCmd()
 }

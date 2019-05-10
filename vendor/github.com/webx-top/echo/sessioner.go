@@ -26,14 +26,20 @@ var (
 	DefaultNopSession     Sessioner = &NopSession{}
 	DefaultDebugSession   Sessioner = &DebugSession{}
 	DefaultSession                  = DefaultNopSession
-	DefaultSessionOptions           = &SessionOptions{
-		Engine: `cookie`,
-		Name:   `SID`,
-		CookieOptions: &CookieOptions{
-			Path: `/`,
-		},
-	}
+	DefaultSessionOptions           = NewSessionOptions(`cookie`, `SID`)
 )
+
+func NewSessionOptions(engine string, name string, args ...*CookieOptions) *SessionOptions {
+	cookieOptions := DefaultCookieOptions
+	if len(args) > 0 {
+		cookieOptions = args[0]
+	}
+	return &SessionOptions{
+		Engine:        engine,
+		Name:          name,
+		CookieOptions: cookieOptions,
+	}
+}
 
 // SessionOptions stores configuration for a session or session store.
 // Fields are a subset of http.Cookie fields.
@@ -152,8 +158,8 @@ func (n *DebugSession) Clear() Sessioner {
 	return n
 }
 
-func (n *DebugSession) AddFlash(name interface{}, args ...string) Sessioner {
-	log.Println(`DebugSession.AddFlash`, name, args)
+func (n *DebugSession) AddFlash(value interface{}, args ...string) Sessioner {
+	log.Println(`DebugSession.AddFlash`, value, args)
 	return n
 }
 

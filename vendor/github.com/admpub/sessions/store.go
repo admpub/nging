@@ -12,7 +12,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/gorilla/securecookie"
+	"github.com/admpub/securecookie"
 	"github.com/webx-top/echo"
 )
 
@@ -53,20 +53,13 @@ type Store interface {
 func NewCookieStore(keyPairs ...[]byte) *CookieStore {
 	cs := &CookieStore{
 		Codecs: securecookie.CodecsFromPairs(keyPairs...),
-		Options: &Options{
-			Path:   "/",
-			MaxAge: 86400 * 30,
-		},
 	}
-
-	cs.MaxAge(cs.Options.MaxAge)
 	return cs
 }
 
 // CookieStore stores sessions using secure cookies.
 type CookieStore struct {
-	Codecs  []securecookie.Codec
-	Options *Options // default configuration
+	Codecs []securecookie.Codec
 }
 
 // Get returns a session for the given name after adding it to the registry.
@@ -87,12 +80,12 @@ func (s *CookieStore) Get(ctx echo.Context, name string) (*Session, error) {
 // decoded session after the first call.
 func (s *CookieStore) New(ctx echo.Context, name string) (*Session, error) {
 	session := NewSession(s, name)
-	opts := *s.Options
-	session.Options = &opts
 	session.IsNew = true
 	var err error
 	if v := ctx.GetCookie(name); len(v) > 0 {
-		err = securecookie.DecodeMulti(name, v, &session.Values,
+		err = securecookie.DecodeMultiWithMaxAge(
+			name, v, &session.Values,
+			ctx.CookieOptions().MaxAge,
 			s.Codecs...)
 		if err == nil {
 			session.IsNew = false
@@ -108,7 +101,7 @@ func (s *CookieStore) Save(ctx echo.Context, session *Session) error {
 	if err != nil {
 		return err
 	}
-	SetCookie(ctx, session.Name(), encoded, session.Options)
+	SetCookie(ctx, session.Name(), encoded)
 	return nil
 }
 
@@ -116,8 +109,6 @@ func (s *CookieStore) Save(ctx echo.Context, session *Session) error {
 // implementation. Individual sessions can be deleted by setting Options.MaxAge
 // = -1 for that session.
 func (s *CookieStore) MaxAge(age int) {
-	s.Options.MaxAge = age
-
 	// Set the maxAge for each securecookie instance.
 	for _, codec := range s.Codecs {
 		if sc, ok := codec.(*securecookie.SecureCookie); ok {
@@ -142,14 +133,8 @@ func NewFilesystemStore(path string, keyPairs ...[]byte) *FilesystemStore {
 	}
 	fs := &FilesystemStore{
 		Codecs: securecookie.CodecsFromPairs(keyPairs...),
-		Options: &Options{
-			Path:   "/",
-			MaxAge: 86400 * 30,
-		},
-		path: path,
+		path:   path,
 	}
-
-	fs.MaxAge(fs.Options.MaxAge)
 	return fs
 }
 
@@ -159,9 +144,8 @@ func NewFilesystemStore(path string, keyPairs ...[]byte) *FilesystemStore {
 //
 // This store is still experimental and not well tested. Feedback is welcome.
 type FilesystemStore struct {
-	Codecs  []securecookie.Codec
-	Options *Options // default configuration
-	path    string
+	Codecs []securecookie.Codec
+	path   string
 }
 
 // MaxLength restricts the maximum length of new sessions to l.
@@ -187,14 +171,15 @@ func (s *FilesystemStore) Get(ctx echo.Context, name string) (*Session, error) {
 // See CookieStore.New().
 func (s *FilesystemStore) New(ctx echo.Context, name string) (*Session, error) {
 	session := NewSession(s, name)
-	opts := *s.Options
-	session.Options = &opts
 	session.IsNew = true
 	var err error
 	if v := ctx.GetCookie(name); len(v) > 0 {
-		err = securecookie.DecodeMulti(name, v, &session.ID, s.Codecs...)
+		err = securecookie.DecodeMultiWithMaxAge(
+			name, v, &session.ID,
+			ctx.CookieOptions().MaxAge,
+			s.Codecs...)
 		if err == nil {
-			err = s.load(session)
+			err = s.load(ctx, session)
 			if err == nil {
 				session.IsNew = false
 			}
@@ -206,6 +191,14 @@ func (s *FilesystemStore) New(ctx echo.Context, name string) (*Session, error) {
 // Save adds a single session to the response.
 func (s *FilesystemStore) Save(ctx echo.Context,
 	session *Session) error {
+	// Delete if max-age is < 0
+	if ctx.CookieOptions().MaxAge < 0 {
+		if err := s.erase(session); err != nil {
+			return err
+		}
+		SetCookie(ctx, session.Name(), "", -1)
+		return nil
+	}
 	if len(session.ID) == 0 {
 		// Because the ID is used in the filename, encode it to
 		// use alphanumeric characters only.
@@ -221,16 +214,27 @@ func (s *FilesystemStore) Save(ctx echo.Context,
 	if err != nil {
 		return err
 	}
-	SetCookie(ctx, session.Name(), encoded, session.Options)
+	SetCookie(ctx, session.Name(), encoded)
 	return nil
+}
+
+// delete session file
+func (s *FilesystemStore) erase(session *Session) error {
+	if len(session.ID) == 0 {
+		return nil
+	}
+	filename := filepath.Join(s.path, "session_"+session.ID)
+	fileMutex.RLock()
+	defer fileMutex.RUnlock()
+
+	err := os.Remove(filename)
+	return err
 }
 
 // MaxAge sets the maximum age for the store and the underlying cookie
 // implementation. Individual sessions can be deleted by setting Options.MaxAge
 // = -1 for that session.
 func (s *FilesystemStore) MaxAge(age int) {
-	s.Options.MaxAge = age
-
 	// Set the maxAge for each securecookie instance.
 	for _, codec := range s.Codecs {
 		if sc, ok := codec.(*securecookie.SecureCookie); ok {
@@ -253,7 +257,7 @@ func (s *FilesystemStore) save(session *Session) error {
 }
 
 // load reads a file and decodes its content into session.Values.
-func (s *FilesystemStore) load(session *Session) error {
+func (s *FilesystemStore) load(ctx echo.Context, session *Session) error {
 	filename := filepath.Join(s.path, "session_"+session.ID)
 	fileMutex.RLock()
 	defer fileMutex.RUnlock()
@@ -261,8 +265,11 @@ func (s *FilesystemStore) load(session *Session) error {
 	if err != nil {
 		return err
 	}
-	if err = securecookie.DecodeMulti(session.Name(), string(fdata),
-		&session.Values, s.Codecs...); err != nil {
+	if err = securecookie.DecodeMultiWithMaxAge(
+		session.Name(), string(fdata),
+		&session.Values,
+		ctx.CookieOptions().MaxAge,
+		s.Codecs...); err != nil {
 		return err
 	}
 	return nil

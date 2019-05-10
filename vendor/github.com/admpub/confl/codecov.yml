@@ -1,0 +1,3 @@
+ignore:
+  - "cmd/*"
+  - "_examples/*"

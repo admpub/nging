@@ -48,28 +48,9 @@ function StateIcon(state) {
     return '<span class="glyphicon glyphicon-'+c+'" title="'+t+'"></span>';
 }
 function FormatSpeedByte(cellValue) {
-    var intVal = parseInt(cellValue);
-    var ras = " B/s"
-    if (intVal > 1024) {
-        intVal /= 1024
-        ras = " KB/s"
-    }
-    if (intVal > 1024) {
-        intVal /= 1024
-        ras = " MB/s"
-    }
-    if (intVal > 1024) {
-        intVal /= 1024
-        ras = " GB/s"
-    }
-    if (intVal > 1024) {
-        intVal /= 1024
-        ras = " TB/s"
-    }
-    var cellHtml = (intVal).toFixed(1) + ras;
-    return cellHtml;
+    return FormatByte(cellValue)+'/s';
 }
-var downloadWS,downloadWSInterval,downloadAPIPrefix='/download';
+var downloadWS,downloadWSInterval,downloadAPIPrefix=BACKEND_URL+'/download';
 function connectSockJS(onopen,onmessage){
 	if (downloadWS) {
 		if(onopen!=null)onopen();

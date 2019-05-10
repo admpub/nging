@@ -1,0 +1,21 @@
+{{Extend "base"}}
+{{Block "description"}}{{.title}}{{/Block}}
+{{Block "title"}}{{.title}}{{/Block}}
+{{Block "bodyAttr"}} class="texture"{{/Block}}
+{{Block "main"}}
+<div id="cl-wrapper" class="error-container">
+	<div class="page-error">
+		<h1 class="number text-center">404</h1>
+		{{if .debug}}
+		<h2 class="description text-center">{{.content}}</h2>
+		{{else}}
+		<h2 class="description text-center">Sorry, but this page doesn't exists!</h2>
+		<h3 class="text-center">Would you like to go <a href="/">home</a>?</h3>
+		{{end}}
+	</div>
+	<div class="text-center copy">&copy; {{Now.Year}} <a href="https://github.com/admpub/nging" target="_blank">Nging</a></div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script type="text/javascript" src="__ASSETS__/js/behaviour/general.min.js"></script>
+{{/Block}}

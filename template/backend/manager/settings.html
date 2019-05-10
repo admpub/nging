@@ -1,0 +1,65 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"系统设置"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"系统设置"|T}}</li>
+{{/Block}}
+{{Block "head"}}
+<link rel="stylesheet" type="text/css" href="__ASSETS__/js/selectpage/selectpage.css?t={{BuildTime}}" />
+<link rel="stylesheet" href="__ASSETS__/js/jquery.crop/css/jquery.Jcrop.min.css?t={{BuildTime}}" type="text/css" />
+<link rel="stylesheet" href="__ASSETS__/js/bootstrap.summernote/summernote.css?t={{BuildTime}}" type="text/css" />
+{{/Block}}
+{{Block "main"}}
+{{Strip}}
+{{$config := Stored.config}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="tab-container">
+            <ul class="nav nav-tabs">
+            {{range $k,$v := Stored.settings}}
+              <li{{if eq $k 0}} class="active"{{end}}><a href="#{{$v.Group}}" data-toggle="tab">{{$v.Short|T}}</a></li>
+            {{end}}
+            </ul>
+            <form class="form-horizontal group-border-dashed" method="POST" action="">
+            <div class="tab-content">
+            {{range $k,$v := Stored.settings}}
+              <div class="tab-pane cont{{if eq $k 0}} active{{end}}" id="{{$v.Group}}">
+                    <h3 class="hthin">{{$v.Label|T}}</h3>
+                    {{- range $i,$t := $v.Tmpl -}}
+                    {{- if $t -}}
+                    {{Fetch $t $}}
+                    {{- end -}}
+                    {{- end -}}
+              </div>
+            {{end}}
+              <div class="form-group form-submit-group">
+                  <div class="col-sm-9 col-sm-offset-2">
+                    <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+                    <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+                  </div>
+              </div>
+            </div>
+            </form>
+        </div>   
+    </div>
+</div>
+{{/Strip}}
+{{/Block}}
+{{Block "footer"}}
+<script src="__ASSETS__/js/selectpage/selectpage.min.js?t={{BuildTime}}" type="text/javascript"></script>
+<script src="__ASSETS__/js/jquery.upload/js/vendor/jquery.ui.widget.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="__ASSETS__/js/jquery.crop/js/jquery.Jcrop.js?t={{BuildTime}}"></script>
+<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+<script src="__ASSETS__/js/jquery.upload/js/jquery.iframe-transport.js?t={{BuildTime}}"></script>
+<!-- The basic File Upload plugin -->
+<script src="__ASSETS__/js/jquery.upload/js/jquery.fileupload.js?t={{BuildTime}}"></script>
+<script src="__ASSETS__/js/bootstrap.summernote/summernote.min.js?t={{BuildTime}}"></script>
+<script src="__ASSETS__/js/bootstrap.summernote/lang/summernote-zh-CN.js?t={{BuildTime}}"></script>
+<script src="__ASSETS__/js/behaviour/page/summernote.min.js?t={{BuildTime}}"></script>
+{{$unixtime:=UnixTime}}
+<script type="text/javascript">
+$(function(){
+summernoteEditor('.summernote');
+});
+</script>
+{{/Block}}

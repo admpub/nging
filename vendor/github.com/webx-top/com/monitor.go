@@ -28,6 +28,22 @@ import (
 	"github.com/admpub/fsnotify"
 )
 
+var (
+	DefaultMonitor      = NewMonitor()
+	MonitorEventEmptyFn = func(string) {}
+)
+
+func NewMonitor() *MonitorEvent {
+	return &MonitorEvent{
+		Create:  MonitorEventEmptyFn,
+		Delete:  MonitorEventEmptyFn,
+		Modify:  MonitorEventEmptyFn,
+		Chmod:   MonitorEventEmptyFn,
+		Rename:  MonitorEventEmptyFn,
+		filters: []func(string) bool{},
+	}
+}
+
 //MonitorEvent 监控事件函数
 type MonitorEvent struct {
 	//文件事件
@@ -42,26 +58,148 @@ type MonitorEvent struct {
 	Debug   bool
 	lock    *sync.Once
 	watcher *fsnotify.Watcher
+	filters []func(string) bool
 }
 
-func (m *MonitorEvent) Watch(rootDir string, args ...func(string) bool) {
+func (m *MonitorEvent) AddFilter(args ...func(string) bool) *MonitorEvent {
+	if m.filters == nil {
+		m.filters = []func(string) bool{}
+	}
+	m.filters = append(m.filters, args...)
+	return m
+}
+
+func (m *MonitorEvent) SetFilters(args ...func(string) bool) *MonitorEvent {
+	m.filters = args
+	return m
+}
+
+func (m *MonitorEvent) Watch(args ...func(string) bool) *MonitorEvent {
+	m.SetFilters(args...)
 	go func() {
-		err := Monitor(rootDir, m, args...)
-		if err != nil {
-			log.Println(err.Error())
-		}
+		m.backendListen()
+		<-m.Channel
 	}()
+	return m
+}
+
+func (m *MonitorEvent) Close() error {
+	if m.Channel != nil {
+		close(m.Channel)
+	}
+	if m.watcher != nil {
+		return m.watcher.Close()
+	}
+	return nil
 }
 
 func (m *MonitorEvent) Watcher() *fsnotify.Watcher {
 	if m.watcher == nil {
 		var err error
 		m.watcher, err = fsnotify.NewWatcher()
+		m.lock = &sync.Once{}
+		m.Channel = make(chan bool)
+		m.filters = []func(string) bool{}
 		if err != nil {
 			log.Panic(err)
 		}
 	}
 	return m.watcher
+}
+
+func (m *MonitorEvent) backendListen() *MonitorEvent {
+	go m.listen()
+	return m
+}
+
+func (m *MonitorEvent) AddDir(dir string) error {
+	f, err := os.Stat(dir)
+	if err != nil {
+		return err
+	}
+	if !f.IsDir() {
+		return errors.New(dir + ` is not dir.`)
+	}
+	err = filepath.Walk(dir, func(f string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			if m.Debug {
+				log.Println(`[Monitor]`, `Add Watch:`, f)
+			}
+			return m.Watcher().Add(f)
+		}
+		return nil
+	})
+	return err
+}
+
+func (m *MonitorEvent) AddFile(file string) error {
+	return m.Watcher().Add(file)
+}
+
+func (m *MonitorEvent) Remove(fileOrDir string) error {
+	if m.watcher != nil {
+		return m.watcher.Remove(fileOrDir)
+	}
+	return nil
+}
+
+func (m *MonitorEvent) listen() {
+	for {
+		watcher := m.Watcher()
+		select {
+		case ev := <-watcher.Events:
+			if m.Debug {
+				log.Println(`[Monitor]`, `Trigger Event:`, ev)
+			}
+			if m.filters != nil {
+				var skip bool
+				for _, filter := range m.filters {
+					if !filter(ev.Name) {
+						skip = true
+						break
+					}
+				}
+				if skip {
+					break
+				}
+			}
+			m.lock.Do(func() {
+				switch ev.Op {
+				case fsnotify.Create:
+					if m.IsDir(ev.Name) {
+						watcher.Add(ev.Name)
+					}
+					if m.Create != nil {
+						m.Create(ev.Name)
+					}
+				case fsnotify.Remove:
+					if m.Delete != nil {
+						m.Delete(ev.Name)
+					}
+				case fsnotify.Write:
+					if m.Modify != nil {
+						m.Modify(ev.Name)
+					}
+				case fsnotify.Rename:
+					if m.Rename != nil {
+						m.Rename(ev.Name)
+					}
+				case fsnotify.Chmod:
+					if m.Chmod != nil {
+						m.Chmod(ev.Name)
+					}
+				}
+				m.lock = &sync.Once{}
+			})
+		case err := <-watcher.Errors:
+			if err != nil {
+				log.Println("Watcher error:", err)
+			}
+		}
+	}
 }
 
 func (m *MonitorEvent) IsDir(path string) bool {
@@ -74,87 +212,13 @@ func (m *MonitorEvent) IsDir(path string) bool {
 
 //Monitor 文件监测
 func Monitor(rootDir string, callback *MonitorEvent, args ...func(string) bool) error {
-	var filter func(string) bool
-	if len(args) > 0 {
-		filter = args[0]
-	}
-	f, err := os.Stat(rootDir)
-	if err != nil {
-		return err
-	}
-	if !f.IsDir() {
-		return errors.New(rootDir + ` is not dir.`)
-	}
 	watcher := callback.Watcher()
 	defer watcher.Close()
-	callback.lock = &sync.Once{}
-	callback.Channel = make(chan bool)
-	go func() {
-		for {
-			select {
-			case ev := <-watcher.Events:
-				if callback.Debug {
-					log.Println(`[Monitor]`, `Trigger Event:`, ev)
-				}
-				if filter != nil {
-					if !filter(ev.Name) {
-						break
-					}
-				}
-				callback.lock.Do(func() {
-					switch ev.Op {
-					case fsnotify.Create:
-						if callback.IsDir(ev.Name) {
-							watcher.Add(ev.Name)
-						}
-						if callback.Create != nil {
-							callback.Create(ev.Name)
-						}
-					case fsnotify.Remove:
-						if callback.Delete != nil {
-							callback.Delete(ev.Name)
-						}
-					case fsnotify.Write:
-						if callback.Modify != nil {
-							callback.Modify(ev.Name)
-						}
-					case fsnotify.Rename:
-						if callback.Rename != nil {
-							callback.Rename(ev.Name)
-						}
-					case fsnotify.Chmod:
-						if callback.Chmod != nil {
-							callback.Chmod(ev.Name)
-						}
-					}
-					callback.lock = &sync.Once{}
-				})
-			case err := <-watcher.Errors:
-				if err != nil {
-					log.Println("Watcher error:", err)
-				}
-			}
-		}
-	}()
-
-	err = filepath.Walk(rootDir, func(f string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if info.IsDir() {
-			if callback.Debug {
-				log.Println(`[Monitor]`, `Add Watch:`, f)
-			}
-			return watcher.Add(f)
-		}
-		return nil
-	})
-
+	callback.Watch(args...)
+	err := callback.AddDir(rootDir)
 	if err != nil {
-		close(callback.Channel)
+		callback.Close()
 		return err
 	}
-
-	<-callback.Channel
 	return nil
 }

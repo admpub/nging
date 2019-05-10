@@ -1,0 +1,89 @@
+{{Extend "layout"}} 
+{{Block "title"}}
+{{"任务日志"|T}}
+{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li>
+	<a href="__BACKEND__/collector/export">{{"导出管理"|T}}</a>
+</li>
+<li class="active">{{"日志"|T}} {{if Stored.export}} ({{"方案"|T}}:
+	<a href="__BACKEND__/collector/export_edit?id={{Stored.export.Id}}">{{Stored.export.Name}} #{{Stored.export.Id}}</a>) {{end}}
+</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+	<div class="col-md-12">
+		<div class="block-flat">
+			<div class="header">
+				<h3>{{"日志"|T}}</h3>
+			</div>
+			<div class="content">
+				<a href="__BACKEND__/collector/export_log_delete?exportId={{Stored.export.Id}}&ago=7d" class="btn btn-danger" onclick="return confirm('{{"确定要删除一周前的日志吗？"|T}}')" data-toggle="tooltip"
+				 title="{{"保留最近一周的日志"|T}}">{{"删除一周前的日志"|T}}</a>
+				<a href="__BACKEND__/collector/export_log_delete?exportId={{Stored.export.Id}}&ago=1m" class="btn btn-warning" onclick="return confirm('{{"确定要删除一个月前的日志吗？"|T}}')" data-toggle="tooltip"
+				 title="{{"保留最近一个月的日志"|T}}">{{"删除一个月前的日志"|T}}</a>
+				<a href="__BACKEND__/collector/export_log_delete?exportId={{Stored.export.Id}}&ago=1y" class="btn btn-info" onclick="return confirm('{{"确定要删除一年前的日志吗？"|T}}')" data-toggle="tooltip"
+				 title="{{"保留最近一年的日志"|T}}">{{"删除一年前的日志"|T}}</a>
+				<hr />
+				<div class="table-responsive">
+					<table class="table no-border hover">
+						<thead class="no-border">
+							<tr>
+								<th style="width:2%;">
+									<strong>ID</strong>
+								</th>
+								<th style="width:15%;">
+									<strong>{{"导出规则"|T}}</strong>
+								</th>
+								<th>
+									<strong>{{"采集规则"|T}}</strong>
+								</th>
+								<th style="width:15%;">
+									<strong>{{"时间"|T}}</strong>
+								</th>
+								<th style="width:6%;">
+									<strong>{{"状态"|T}}</strong>
+								</th>
+								<th style="width:15%;" class="text-center">
+									<strong>{{"操作"|T}}</strong>
+								</th>
+							</tr>
+						</thead>
+						<tbody class="no-border-y">
+							{{range $k,$v := Stored.listData}}
+							<tr>
+								<td>{{$v.Id}}</td>
+								<td>{{$v.ExportId}}</td>
+								<td>{{$v.PageId}}</td>
+								<td>{{$v.Created|Ts2date "2006-01-02 15:04:05"}}</td>
+								{{if eq $v.Status "success"}}
+								<td class="color-success">
+									<span class="fa fa-check-circle"></span> {{"成功"|T}}</td>
+								{{else if eq $v.Status "failure"}}
+								<td class="color-danger">
+									<span class="fa fa-times-circle"></span> {{"出错"|T}}</td>
+								{{else if eq $v.Status "idle"}}
+								<td class="color-info">
+									<span class="fa fa-info-circle"></span> {{"空闲"|T}}</td>
+								{{else if eq $v.Status "start"}}
+								<td class="color-info">
+									<span class="fa fa-info-circle"></span> {{"运行中"|T}}</td>
+								{{else}}
+								<td class="color-default">{{"未知"|T}}</td>
+								{{end}}
+								<td class="text-center">
+									<a class="label label-info" data-toggle="tooltip" href="__BACKEND__/collector/export_log_view/{{$v.Id}}" title="{{"详情"|T}}"><i class="fa fa-comment-o"></i></a>
+									<a class="label label-danger" data-toggle="tooltip" href="__BACKEND__/collector/export_log_delete?exportId={{Stored.export.Id}}&id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
+								</td>
+							</tr>
+							{{end}}
+						</tbody>
+					</table>
+				</div>
+				{{Stored.pagination.Render}}
+			</div>
+		</div>
+	</div>
+</div>
+{{/Block}}

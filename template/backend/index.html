@@ -1,0 +1,90 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"管理中心首页"|T}}{{/Block}}
+{{Block "main"}}
+<div class="row">
+    {{$cardSize := len Stored.cards}}
+    {{range $k,$card := Stored.cards}}
+    <div class="col-md-{{if lt $cardSize 4}}4{{else}}3{{end}}">
+        <div class="block-flat">
+            <div class="content no-padding">
+                <div class="overflow-hidden">
+                    <i class="fa {{$card.IconName}} fa-4x pull-left color-{{$card.IconColor}}"></i>
+                    <h3 class="no-margin">{{$card.Short}}</h3>
+                    <p class="color-primary">{{$card.Name}}</p>
+                </div>
+                <h1 class="no-margin big-text">{{$card.Content}}</h1>
+            </div>
+        </div>
+    </div>
+    {{end}}
+        
+    <div class="col-md-12">
+        <div class="block-flat">
+            <div class="header">
+                <h3>{{"欢迎回来"|}}</h3>
+            </div>
+            <div class="content">
+                <div class="alert alert-success">
+					<ul>
+						<li>{{"欢迎使用"|T}} {{Version}}</li>
+						<li>BUILD: {{BuildTime}}</li>
+						<li>COMMIT: {{CommitID}}</li>
+						<li>{{"今天是"|T}} {{Now.Format "2006-01-02"}} {{Now.Weekday}}</li>
+					</ul>
+                </div>
+            {{if Stored.license.Key}}
+                <h4>{{"授权信息"|T}}</h4>
+                <p>
+                    <b>{{"授权用户"|T}}</b>: {{Stored.license.Info.Name}}<br />
+                {{if Stored.license.Info.LicenseID}}
+                    <b>{{"证书编号"|T}}</b>: {{Stored.license.Info.LicenseID}}<br />
+                {{end}}
+                    <b>{{"机器编号"|T}}</b>: {{Stored.license.Info.MachineID}}<br />
+                {{if Stored.license.Info.Expiration.IsZero}}
+                    <b>{{"过期时间"|T}}</b>: 
+                    {{"永久有效"|T}}
+                {{else}}
+                    {{$remaining := Stored.license.Info.Remaining Lang}}
+                    {{$showExpirationTime := Stored.showExpirationTime}}
+                    {{if and (ge $showExpirationTime 0) (or (eq $showExpirationTime 0) (lt $remaining.Duration.Seconds (Float64 $showExpirationTime)))}}
+                        <b>{{"过期时间"|T}}</b>: 
+                        {{Stored.license.Info.Expiration.Format "2006-01-02"}}
+                        {{$remainingString := $remaining.String}}
+                        &nbsp;
+                        {{if HasPrefix $remainingString "-"}}
+                            (<span class="color-danger">{{"已过期"|T}} {{TrimPrefix $remainingString "-"}}</span>)
+                        {{else}}
+                            (<span class="color-success">{{"还剩"|T}} {{$remainingString}}</span>)
+                        {{end}}
+                        <a class="btn btn-xs btn-default" href="{{Stored.productURL}}?source={{SiteURI}}" target="_blank"><i class="fa fa-shopping-cart"></i>{{"续期"|T}}</a>
+                    {{end}}
+                {{end}}
+                    <br />
+                </p>
+            {{end}}
+            </div>
+        </div>
+    </div>
+    {{range $k,$block := Stored.blocks}}
+    {{if $block.Tmp}}{{Fetch $block.Tmpl $}}{{end}}
+    {{end}}
+    <div class="col-md-12">
+        <div class="block-flat">
+            <div class="header">
+                <h3>{{"快捷指令"|}}</h3>
+            </div>
+            <div class="content">
+                <div class="row icon-show">
+                    {{range $k,$v := Stored.cmdList}}
+                    <div class="col-md-3 col-sm-4">
+                        <a href="__BACKEND__/server/cmd?id={{$v.Id}}" data-toggle="tooltip" title="{{"执行"|T}} {{$v.Command}}">
+                        <i class="fa fa-play"></i>{{$v.Name}}
+                        </a>
+                    </div>
+                    {{end}}
+                </div>
+            </div>
+        </div>
+
+    </div>
+{{/Block}}

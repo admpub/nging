@@ -19,6 +19,7 @@ package com
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"io/ioutil"
 	"os"
@@ -27,6 +28,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/admpub/log"
 )
@@ -84,6 +86,7 @@ func WritePidFile(pidFile string) error {
 }
 
 var (
+	equal  = rune('=')
 	space  = rune(' ')
 	quote  = rune('"')
 	slash  = rune('\\')
@@ -99,7 +102,7 @@ func ParseArgs(command string) (params []string) {
 	//tower.exe -c tower.yaml -p "eee\"ddd" -t aaaa
 	for k, v := range command {
 		if !hasQuote {
-			if v == space {
+			if v == space || v == equal {
 				params = append(params, string(item))
 				item = []rune{}
 				continue
@@ -161,6 +164,71 @@ func (this CmdResultCapturer) WriteString(p string) (n int, err error) {
 	return
 }
 
+func NewCmdChanReader() *CmdChanReader {
+	return &CmdChanReader{ch: make(chan io.Reader)}
+}
+
+type CmdChanReader struct {
+	ch chan io.Reader
+}
+
+func (c *CmdChanReader) Read(p []byte) (n int, err error) {
+	if c.ch == nil {
+		c.ch = make(chan io.Reader)
+	}
+	r := <-c.ch
+	if r == nil {
+		return 0, errors.New(`CmdChanReader Chan has been closed`)
+	}
+	return r.Read(p)
+}
+
+func (c *CmdChanReader) Close() {
+	close(c.ch)
+	c.ch = nil
+}
+
+func (c *CmdChanReader) Send(b []byte) *CmdChanReader {
+	c.ch <- bytes.NewReader(b)
+	return c
+}
+
+func (c *CmdChanReader) SendString(s string) *CmdChanReader {
+	c.ch <- strings.NewReader(s)
+	return c
+}
+
+func NewCmdStartResultCapturer(writer io.Writer, duration time.Duration) *CmdStartResultCapturer {
+	return &CmdStartResultCapturer{
+		writer:   writer,
+		duration: duration,
+		started:  time.Now(),
+		buffer:   bytes.NewBuffer(nil),
+	}
+}
+
+type CmdStartResultCapturer struct {
+	writer   io.Writer
+	started  time.Time
+	duration time.Duration
+	buffer   *bytes.Buffer
+}
+
+func (this CmdStartResultCapturer) Write(p []byte) (n int, err error) {
+	if time.Now().Sub(this.started) < this.duration {
+		this.buffer.Write(p)
+	}
+	return this.writer.Write(p)
+}
+
+func (this CmdStartResultCapturer) Buffer() *bytes.Buffer {
+	return this.buffer
+}
+
+func (this CmdStartResultCapturer) Writer() io.Writer {
+	return this.writer
+}
+
 func CreateCmdStr(command string, recvResult func([]byte) error) *exec.Cmd {
 	out := CmdResultCapturer{Do: recvResult}
 	return CreateCmdStrWithWriter(command, out)
@@ -187,18 +255,15 @@ func CreateCmdWithWriter(params []string, writer ...io.Writer) *exec.Cmd {
 	} else {
 		cmd = exec.Command(params[0])
 	}
-	var wOut, wErr io.Writer
+	var wOut, wErr io.Writer = os.Stdout, os.Stderr
 	length = len(writer)
-	if length > 0 && writer[0] != nil {
-		wOut = writer[0]
-		if length > 1 {
-			wErr = writer[1]
-		} else {
-			wErr = wOut
+	if length > 0 {
+		if writer[0] != nil {
+			wOut = writer[0]
 		}
-	} else {
-		wOut = os.Stdout
-		wErr = os.Stderr
+		if length > 1 && writer[1] != nil {
+			wErr = writer[1]
+		}
 	}
 	cmd.Stdout = wOut
 	cmd.Stderr = wErr
@@ -220,6 +285,20 @@ func RunCmdStrWithWriter(command string, writer ...io.Writer) *exec.Cmd {
 	return RunCmdWithWriter(params, writer...)
 }
 
+func RunCmdWithReaderWriter(params []string, reader io.Reader, writer ...io.Writer) *exec.Cmd {
+	cmd := CreateCmdWithWriter(params, writer...)
+	cmd.Stdin = reader
+
+	go func() {
+		err := cmd.Run()
+		if err != nil {
+			cmd.Stderr.Write([]byte(err.Error()))
+		}
+	}()
+
+	return cmd
+}
+
 func RunCmdWithWriter(params []string, writer ...io.Writer) *exec.Cmd {
 	cmd := CreateCmdWithWriter(params, writer...)
 
@@ -231,6 +310,33 @@ func RunCmdWithWriter(params []string, writer ...io.Writer) *exec.Cmd {
 	}()
 
 	return cmd
+}
+
+func RunCmdWithWriterx(params []string, wait time.Duration, writer ...io.Writer) (cmd *exec.Cmd, err error, newOut *CmdStartResultCapturer, newErr *CmdStartResultCapturer) {
+	length := len(writer)
+	var wOut, wErr io.Writer = os.Stdout, os.Stderr
+	if length > 0 {
+		if writer[0] != nil {
+			wOut = writer[0]
+		}
+		if length > 1 {
+			if writer[1] != nil {
+				wErr = writer[1]
+			}
+		}
+	}
+	newOut = NewCmdStartResultCapturer(wOut, wait)
+	newErr = NewCmdStartResultCapturer(wErr, wait)
+	writer = []io.Writer{newOut, newErr}
+	cmd = CreateCmdWithWriter(params, writer...)
+	go func() {
+		err = cmd.Run()
+		if err != nil {
+			cmd.Stderr.Write([]byte(err.Error()))
+		}
+	}()
+	time.Sleep(wait)
+	return
 }
 
 func CloseProcessFromPidFile(pidFile string) (err error) {

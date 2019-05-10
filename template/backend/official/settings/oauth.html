@@ -1,0 +1,184 @@
+{{$config := Stored.oauth}}
+{{/*$config|JSONEncode*/}}
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{"支付宝登录"|T}}</label>
+    <div class="col-sm-8">
+        <div class="fieldset bg-fc">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+                <div class="col-sm-9">
+                    <div class="radio radio-success radio-inline">
+                        <input type="radio" value="N" name="oauth[alipay][disabled]" id="oauth-alipay-disabled-N"{{if eq $config.alipay.Disabled "N"}} checked{{end}}> <label for="oauth-alipay-disabled-N">{{"启用"|T}}</label>
+                    </div>
+                    <div class="radio radio-danger radio-inline">
+                        <input type="radio" value="Y" name="oauth[alipay][disabled]" id="oauth-alipay-disabled-Y"{{if eq $config.alipay.Disabled "Y"}} checked{{end}}> <label for="oauth-alipay-disabled-Y">{{"禁用"|T}}</label>
+                    </div>
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">App ID</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="oauth[alipay][value][key]" value="{{$config.alipay.ValueObject.Key}}">
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Secret Key</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="oauth[alipay][value][secret]" value="{{$config.alipay.ValueObject.Secret}}">
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"图标类名"|T}}</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="oauth[alipay][value][extra][iconClass]" value="{{$config.alipay.ValueObject.Extra.iconClass}}">
+                    <div class="help-block">{{"例如: "|T}}<code>iconfont icon-zhifubao1 </code></div>
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"登录标题"|T}}</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="oauth[alipay][value][extra][title]" value="{{$config.alipay.ValueObject.Extra.title}}">
+                    <div class="help-block">{{"例如: 支付宝登录"|T}}</div>
+                </div>
+            </div><!-- form-group -->
+        </div><!-- fieldset -->
+    </div><!-- col-sm-8 -->
+</div>
+
+
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{"微信登录"|T}}</label>
+    <div class="col-sm-8">
+        <div class="fieldset bg-fc">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+                <div class="col-sm-9">
+                    <div class="radio radio-success radio-inline">
+                        <input type="radio" value="N" name="oauth[wechat][disabled]" id="oauth-wechat-disabled-N"{{if eq $config.wechat.Disabled "N"}} checked{{end}}> <label for="oauth-wechat-disabled-N">{{"启用"|T}}</label>
+                    </div>
+                    <div class="radio radio-danger radio-inline">
+                        <input type="radio" value="Y" name="oauth[wechat][disabled]" id="oauth-wechat-disabled-Y"{{if eq $config.wechat.Disabled "Y"}} checked{{end}}> <label for="oauth-wechat-disabled-Y">{{"禁用"|T}}</label>
+                    </div>
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">App ID</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="oauth[wechat][value][key]" value="{{$config.wechat.ValueObject.Key}}">
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Secret Key</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="oauth[wechat][value][secret]" value="{{$config.wechat.ValueObject.Secret}}">
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"图标类名"|T}}</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="oauth[wechat][value][extra][iconClass]" value="{{$config.wechat.ValueObject.Extra.iconClass}}">
+                    <div class="help-block">{{"例如: "|T}}<code>fa fa-wechat</code></div>
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"登录标题"|T}}</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="oauth[wechat][value][extra][title]" value="{{$config.wechat.ValueObject.Extra.title}}">
+                    <div class="help-block">{{"例如: 微信登录"|T}}</div>
+                </div>
+            </div><!-- form-group -->
+        </div><!-- fieldset -->
+    </div><!-- col-sm-8 -->
+</div>
+
+
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{"QQ登录"|T}}</label>
+    <div class="col-sm-8">
+        <div class="fieldset bg-fc">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+                <div class="col-sm-9">
+                    <div class="radio radio-success radio-inline">
+                        <input type="radio" value="N" name="oauth[qq][disabled]" id="oauth-qq-disabled-N"{{if eq $config.qq.Disabled "N"}} checked{{end}}> <label for="oauth-qq-disabled-N">{{"启用"|T}}</label>
+                    </div>
+                    <div class="radio radio-danger radio-inline">
+                        <input type="radio" value="Y" name="oauth[qq][disabled]" id="oauth-qq-disabled-Y"{{if eq $config.qq.Disabled "Y"}} checked{{end}}> <label for="oauth-qq-disabled-Y">{{"禁用"|T}}</label>
+                    </div>
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">App ID</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="oauth[qq][value][key]" value="{{$config.qq.ValueObject.Key}}">
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Secret Key</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="oauth[qq][value][secret]" value="{{$config.qq.ValueObject.Secret}}">
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"图标类名"|T}}</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="oauth[qq][value][extra][iconClass]" value="{{$config.qq.ValueObject.Extra.iconClass}}">
+                    <div class="help-block">{{"例如: "|T}}<code>fa fa-qq</code></div>
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"登录标题"|T}}</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="oauth[qq][value][extra][title]" value="{{$config.qq.ValueObject.Extra.title}}">
+                    <div class="help-block">{{"例如: QQ登录"|T}}</div>
+                </div>
+            </div><!-- form-group -->
+        </div><!-- fieldset -->
+    </div><!-- col-sm-8 -->
+</div>
+
+
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{"Github登录"|T}}</label>
+    <div class="col-sm-8">
+        <div class="fieldset bg-fc">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+                <div class="col-sm-9">
+                    <div class="radio radio-success radio-inline">
+                        <input type="radio" value="N" name="oauth[github][disabled]" id="oauth-github-disabled-N"{{if eq $config.github.Disabled "N"}} checked{{end}}> <label for="oauth-github-disabled-N">{{"启用"|T}}</label>
+                    </div>
+                    <div class="radio radio-danger radio-inline">
+                        <input type="radio" value="Y" name="oauth[github][disabled]" id="oauth-github-disabled-Y"{{if eq $config.github.Disabled "Y"}} checked{{end}}> <label for="oauth-github-disabled-Y">{{"禁用"|T}}</label>
+                    </div>
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">App ID</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="oauth[github][value][key]" value="{{$config.github.ValueObject.Key}}">
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Secret Key</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="oauth[github][value][secret]" value="{{$config.github.ValueObject.Secret}}">
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"图标类名"|T}}</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="oauth[github][value][extra][iconClass]" value="{{$config.github.ValueObject.Extra.iconClass}}">
+                    <div class="help-block">{{"例如: "|T}}<code>fa fa-github</code></div>
+                </div>
+            </div><!-- form-group -->
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"登录标题"|T}}</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" name="oauth[github][value][extra][title]" value="{{$config.github.ValueObject.Extra.title}}">
+                    <div class="help-block">{{"例如: Github登录"|T}}</div>
+                </div>
+            </div><!-- form-group -->
+        </div><!-- fieldset -->
+    </div><!-- col-sm-8 -->
+</div>

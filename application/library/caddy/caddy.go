@@ -1,25 +1,27 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package caddy
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -29,24 +31,27 @@ import (
 	"strings"
 	"time"
 
-	lumberjack "gopkg.in/natefinch/lumberjack.v2"
-
+	"github.com/admpub/nging/application/library/msgbox"
 	"github.com/mholt/caddy"
 	_ "github.com/mholt/caddy/caddyhttp"
 	"github.com/mholt/caddy/caddytls"
-	"github.com/xenolf/lego/acme"
+	"github.com/mholt/certmagic"
+	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
+	lumberjack "gopkg.in/natefinch/lumberjack.v2"
 )
 
 var (
-	DefaultCAUrl  = `https://acme-v01.api.letsencrypt.org/directory`
 	DefaultConfig = &Config{
-		CAUrl:      DefaultCAUrl,
-		CATimeout:  int64(acme.HTTPClient.Timeout.Seconds()),
-		ServerType: `http`,
-		CPU:        `100%`,
-		PidFile:    `./caddy.pid`,
+		CAUrl:                   certmagic.CA,
+		CATimeout:               int64(certmagic.HTTPTimeout),
+		DisableHTTPChallenge:    certmagic.DisableHTTPChallenge,
+		DisableTLSALPNChallenge: certmagic.DisableTLSALPNChallenge,
+		ServerType:              `http`,
+		CPU:                     `100%`,
+		PidFile:                 `./caddy.pid`,
 	}
-	DefaultVersion = `v0.1.0`
+	DefaultVersion = `v1.5.1`
 )
 
 func TrapSignals() {
@@ -54,103 +59,148 @@ func TrapSignals() {
 }
 
 func Fixed(c *Config) {
-	if c.CAUrl == `` {
+	if len(c.CAUrl) == 0 {
 		c.CAUrl = DefaultConfig.CAUrl
 	}
 	if c.CATimeout == 0 {
 		c.CATimeout = DefaultConfig.CATimeout
 	}
-	if c.ServerType == `` {
+	if len(c.ServerType) == 0 {
 		c.ServerType = DefaultConfig.ServerType
 	}
-	if c.CPU == `` {
+	if len(c.CPU) == 0 {
 		c.CPU = DefaultConfig.CPU
 	}
-	if c.PidFile == `` {
-		c.PidFile = DefaultConfig.PidFile
+	//if len(c.PidFile) == 0 {
+	pidFile := filepath.Join(echo.Wd(), `data/pid`)
+	if !com.IsDir(pidFile) {
+		err := os.MkdirAll(pidFile, os.ModePerm)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+	pidFile = filepath.Join(pidFile, `caddy.pid`)
+	c.PidFile = pidFile
+	//}
+	if len(c.LogFile) == 0 {
+		logFile := filepath.Join(echo.Wd(), `data/logs`)
+		if !com.IsDir(logFile) {
+			err := os.MkdirAll(logFile, os.ModePerm)
+			if err != nil {
+				log.Println(err)
+			}
+		}
+		c.LogFile = filepath.Join(logFile, `caddy.log`)
 	}
 	c.appName = `nging`
 	c.appVersion = DefaultVersion
 }
 
 type Config struct {
-	Agreed     bool   `json:"agreed"`     //Agree to the CA's Subscriber Agreement
-	CAUrl      string `json:"caURL"`      //URL to certificate authority's ACME server directory
-	Caddyfile  string `json:"caddyFile"`  //Caddyfile to load (default caddy.DefaultConfigFile)
-	CPU        string `json:"cpu"`        //CPU cap
-	CAEmail    string `json:"caEmail"`    //Default ACME CA account email address
-	CATimeout  int64  `json:"caTimeout"`  //Default ACME CA HTTP timeout
-	LogFile    string `json:"logFile"`    //Process log file
-	PidFile    string `json:"pidFile"`    //Path to write pid file
-	Quiet      bool   `json:"quiet"`      //Quiet mode (no initialization output)
-	Revoke     string `json:"revoke"`     //Hostname for which to revoke the certificate
-	ServerType string `json:"serverType"` //Type of server to run
+	Agreed                  bool   `json:"agreed"` //Agree to the CA's Subscriber Agreement
+	CAUrl                   string `json:"caURL"`  //URL to certificate authority's ACME server directory
+	DisableHTTPChallenge    bool   `json:"disableHTTPChallenge"`
+	DisableTLSALPNChallenge bool   `json:"disableTLSALPNChallenge"`
+	Caddyfile               string `json:"caddyFile"`  //Caddyfile to load (default caddy.DefaultConfigFile)
+	CPU                     string `json:"cpu"`        //CPU cap
+	CAEmail                 string `json:"caEmail"`    //Default ACME CA account email address
+	CATimeout               int64  `json:"caTimeout"`  //Default ACME CA HTTP timeout
+	LogFile                 string `json:"logFile"`    //Process log file
+	PidFile                 string `json:"-"`          //Path to write pid file
+	Quiet                   bool   `json:"quiet"`      //Quiet mode (no initialization output)
+	Revoke                  string `json:"revoke"`     //Hostname for which to revoke the certificate
+	ServerType              string `json:"serverType"` //Type of server to run
 
 	//---
-	Plugins bool `json:"plugins"` //List installed plugins
-	Version bool `json:"version"` //Show version
+	EnvFile string `json:"envFile"` //Path to file with environment variables to load in KEY=VALUE format
+	Plugins bool   `json:"plugins"` //List installed plugins
+	Version bool   `json:"version"` //Show version
 
 	//---
 	appVersion string
 	appName    string
 	instance   *caddy.Instance
+	stopped    bool
 }
 
-func (c *Config) Start() {
+func (c *Config) Start() error {
+	c.stopped = false
+
+	// Executes Startup events
+	caddy.EmitEvent(caddy.StartupEvent, nil)
+
 	// Get Caddyfile input
 	caddyfile, err := caddy.LoadCaddyfile(c.ServerType)
 	if err != nil {
-		mustLogFatalf(err.Error())
+		return err
 	}
-
+	caddy.AppName = c.appName
+	caddy.AppVersion = c.appVersion
+	certmagic.UserAgent = c.appName + "/" + c.appVersion
 	// Start your engines
 	c.instance, err = caddy.Start(caddyfile)
 	if err != nil {
-		mustLogFatalf(err.Error())
+		return err
 	}
+
+	// Execute instantiation events
+	caddy.EmitEvent(caddy.InstanceStartupEvent, c.instance)
+
+	// Listen to keypress of "return" and restart the app automatically
+	go func() {
+		in := bufio.NewReader(os.Stdin)
+		for {
+			input, _ := in.ReadString('\n')
+			if input == "\n" || input == "\r\n" {
+				c.Restart()
+			}
+			if c.stopped {
+				break
+			}
+		}
+	}()
 
 	// Twiddle your thumbs
 	c.instance.Wait()
+	return nil
 }
 
-func (c *Config) Restart() {
+func (c *Config) Restart() error {
+	msgbox.Info(`Information`, `Caddy Server has been successfully reloaded at `+time.Now().Format(`2006-01-02 15:04:05`))
 	if c.instance == nil {
-		return
+		return nil
 	}
 	// Get Caddyfile input
 	caddyfile, err := caddy.LoadCaddyfile(c.ServerType)
 	if err != nil {
-		mustLogFatalf(err.Error())
+		return err
 	}
 	c.instance, err = c.instance.Restart(caddyfile)
 	if err != nil {
-		mustLogFatalf(err.Error())
+		return err
 	}
-
-	c.instance.Wait()
+	return nil
 }
 
-func (c *Config) Stop() {
+func (c *Config) Stop() error {
+	c.stopped = true
 	if c.instance == nil {
-		return
+		return nil
 	}
-	err := c.instance.Stop()
-	if err != nil {
-		mustLogFatalf(err.Error())
-	}
+	return c.instance.Stop()
 }
 
 func (c *Config) Init() *Config {
-	caddytls.Agreed = c.Agreed
-	caddytls.DefaultCAUrl = c.CAUrl
-	caddytls.DefaultEmail = c.CAEmail
-	acme.HTTPClient.Timeout = time.Duration(c.CATimeout)
+	certmagic.Agreed = c.Agreed
+	certmagic.CA = c.CAUrl
+	certmagic.DisableHTTPChallenge = c.DisableHTTPChallenge
+	certmagic.DisableTLSALPNChallenge = c.DisableTLSALPNChallenge
+	certmagic.Email = c.CAEmail
+	certmagic.HTTPTimeout = time.Duration(c.CATimeout)
 	caddy.PidFile = c.PidFile
 	caddy.Quiet = c.Quiet
 	caddy.RegisterCaddyfileLoader("flag", caddy.LoaderFunc(c.confLoader))
 	caddy.SetDefaultCaddyfileLoader("default", caddy.LoaderFunc(c.defaultLoader))
-
-	acme.UserAgent = c.appName + "/" + c.appVersion
 
 	// Set up process log before anything bad happens
 	switch c.LogFile {
@@ -169,8 +219,13 @@ func (c *Config) Init() *Config {
 		})
 	}
 
+	//Load all additional envs as soon as possible
+	if err := LoadEnvFromFile(c.EnvFile); err != nil {
+		mustLogFatalf("%v", err)
+	}
+
 	// Check for one-time actions
-	if c.Revoke != "" {
+	if len(c.Revoke) > 0 {
 		err := caddytls.Revoke(c.Revoke)
 		if err != nil {
 			mustLogFatalf(err.Error())
@@ -187,8 +242,6 @@ func (c *Config) Init() *Config {
 		os.Exit(0)
 	}
 
-	moveStorage() // TODO: This is temporary for the 0.9 release, or until most users upgrade to 0.9+
-
 	// Set CPU cap
 	err := setCPU(c.CPU)
 	if err != nil {
@@ -199,9 +252,22 @@ func (c *Config) Init() *Config {
 
 // confLoader loads the Caddyfile using the -conf flag.
 func (c *Config) confLoader(serverType string) (caddy.Input, error) {
-	contents, err := ioutil.ReadFile(c.Caddyfile)
-	if err != nil {
-		return nil, err
+	if c.Caddyfile == "" {
+		return nil, nil
+	}
+	if c.Caddyfile == "stdin" {
+		return caddy.CaddyfileFromPipe(os.Stdin, serverType)
+	}
+	var contents []byte
+	if strings.Contains(c.Caddyfile, "*") {
+		// Let caddyfile.doImport logic handle the globbed path
+		contents = []byte("import " + c.Caddyfile)
+	} else {
+		var err error
+		contents, err = ioutil.ReadFile(c.Caddyfile)
+		if err != nil {
+			return nil, err
+		}
 	}
 	return caddy.CaddyfileInput{
 		Contents:       contents,
@@ -239,51 +305,6 @@ func mustLogFatalf(format string, args ...interface{}) {
 	log.Fatalf(format, args...)
 }
 
-// moveStorage moves the old certificate storage location by
-// renaming the "letsencrypt" folder to the hostname of the
-// CA URL. This is TEMPORARY until most users have upgraded to 0.9+.
-func moveStorage() {
-	oldPath := filepath.Join(caddy.AssetsPath(), "letsencrypt")
-	_, err := os.Stat(oldPath)
-	if os.IsNotExist(err) {
-		return
-	}
-	// Just use a default config to get default (file) storage
-	fileStorage, err := new(caddytls.Config).StorageFor(caddytls.DefaultCAUrl)
-	if err != nil {
-		mustLogFatalf("[ERROR] Unable to get new path for certificate storage: %v", err)
-	}
-	newPath := fileStorage.(*caddytls.FileStorage).Path
-	err = os.MkdirAll(string(newPath), 0700)
-	if err != nil {
-		mustLogFatalf("[ERROR] Unable to make new certificate storage path: %v\n\nPlease follow instructions at:\nhttps://github.com/mholt/caddy/issues/902#issuecomment-228876011", err)
-	}
-	err = os.Rename(oldPath, string(newPath))
-	if err != nil {
-		mustLogFatalf("[ERROR] Unable to migrate certificate storage: %v\n\nPlease follow instructions at:\nhttps://github.com/mholt/caddy/issues/902#issuecomment-228876011", err)
-	}
-	// convert mixed case folder and file names to lowercase
-	var done bool // walking is recursive and preloads the file names, so we must restart walk after a change until no changes
-	for !done {
-		done = true
-		filepath.Walk(string(newPath), func(path string, info os.FileInfo, err error) error {
-			// must be careful to only lowercase the base of the path, not the whole thing!!
-			base := filepath.Base(path)
-			if lowerBase := strings.ToLower(base); base != lowerBase {
-				lowerPath := filepath.Join(filepath.Dir(path), lowerBase)
-				err = os.Rename(path, lowerPath)
-				if err != nil {
-					mustLogFatalf("[ERROR] Unable to lower-case: %v\n\nPlease follow instructions at:\nhttps://github.com/mholt/caddy/issues/902#issuecomment-228876011", err)
-				}
-				// terminate traversal and restart since Walk needs the updated file list with new file names
-				done = false
-				return errors.New("start over")
-			}
-			return nil
-		})
-	}
-}
-
 // setCPU parses string cpu and sets GOMAXPROCS
 // according to its value. It accepts either
 // a number (e.g. 3) or a percent (e.g. 50%).
@@ -302,6 +323,9 @@ func setCPU(cpu string) error {
 		}
 		percent = float32(pctInt) / 100
 		numCPU = int(float32(availCPU) * percent)
+		if numCPU < 1 {
+			numCPU = 1
+		}
 	} else {
 		// Number
 		num, err := strconv.Atoi(cpu)
@@ -317,4 +341,78 @@ func setCPU(cpu string) error {
 
 	runtime.GOMAXPROCS(numCPU)
 	return nil
+}
+
+// LoadEnvFromFile loads additional envs if file provided and exists
+// Envs in file should be in KEY=VALUE format
+func LoadEnvFromFile(envFile string) error {
+	if envFile == "" {
+		return nil
+	}
+
+	file, err := os.Open(envFile)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	envMap, err := ParseEnvFile(file)
+	if err != nil {
+		return err
+	}
+
+	for k, v := range envMap {
+		if err := os.Setenv(k, v); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// ParseEnvFile implements parse logic for environment files
+func ParseEnvFile(envInput io.Reader) (map[string]string, error) {
+	envMap := make(map[string]string)
+
+	scanner := bufio.NewScanner(envInput)
+	var line string
+	lineNumber := 0
+
+	for scanner.Scan() {
+		line = strings.TrimSpace(scanner.Text())
+		lineNumber++
+
+		// skip lines starting with comment
+		if strings.HasPrefix(line, "#") {
+			continue
+		}
+
+		// skip empty line
+		if len(line) == 0 {
+			continue
+		}
+
+		fields := strings.SplitN(line, "=", 2)
+		if len(fields) != 2 {
+			return nil, fmt.Errorf("Can't parse line %d; line should be in KEY=VALUE format", lineNumber)
+		}
+
+		if strings.Contains(fields[0], " ") {
+			return nil, fmt.Errorf("Can't parse line %d; KEY contains whitespace", lineNumber)
+		}
+
+		key := fields[0]
+		val := fields[1]
+
+		if key == "" {
+			return nil, fmt.Errorf("Can't parse line %d; KEY can't be empty string", lineNumber)
+		}
+		envMap[key] = val
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+
+	return envMap, nil
 }

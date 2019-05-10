@@ -1,0 +1,68 @@
+<div class="block-flat">
+	{{$v := Stored.task}}
+	<div class="header">
+		<span class="pull-right">
+			{{$extra := Stored.extra}}
+			{{if $extra.Running}}
+			<a class="label label-success" data-toggle="tooltip" title="{{"暂停"|T}}" href="__BACKEND__/task/pause?id={{$v.Id}}&returnTo={{URL.Path}}"><i
+				 class="fa fa-pause"></i></a>
+			{{else}}
+			<a class="label label-danger" data-toggle="tooltip" href="__BACKEND__/task/start?id={{$v.Id}}&returnTo={{URL.Path}}" title="{{"启动"|T}}"><i class="fa fa-play"></i></a>
+			<a class="label label-info" data-toggle="tooltip" href="__BACKEND__/task/run?id={{$v.Id}}" onclick="return confirm('{{"该功能建议只用来做任务测试，确定要立即执行该任务吗？"|T}}')" title="{{"运行"|T}}"><i class="fa fa-refresh"></i></a>
+			{{end}}
+		</span>
+		<h3>{{"任务："|T}}<a href="__BACKEND__/task/edit?id={{Stored.task.Id}}">{{Stored.task.Name}}(#{{Stored.task.Id}})</a></h3>
+	</div>
+	<div class="content">
+		<table class="table table-bordered">
+			<tbody>
+				<tr>
+					<th class="text-right">{{"实例数量"|T}}</th>
+					<td>{{if eq $v.Concurrent 0}}{{"允许多实例"|T}}{{else}}{{"单实例"|T}}{{end}}</td>
+					<th class="text-right">{{"超时时间"|T}}</th>
+					<td>{{if eq $v.Timeout 0}}{{"默认"|T}}(24h){{else}}{{$v.Timeout}}s{{end}}</td>
+					<th class="text-right">{{"任务时间"|T}}</th>
+					<td>{{$v.CronSpec}}</td>
+				</tr>
+				<tr>
+					<th class="text-right">{{"运行次数"|T}}</th>
+					<td>{{$v.ExecuteTimes}}</td>
+					<th class="text-right">{{"上次执行"|T}}</th>
+					<td>{{$v.PrevTime|Ts2date "2006-01-02 15:04:05"}}</td>
+					<th class="text-right">{{"创建时间"|T}}</th>
+					<td>{{$v.Created|Ts2date "2006-01-02 15:04:05"}}</td>
+				</tr>
+				<tr>
+					<th class="text-right">{{"通知邮件"|T}}</th>
+					<td>{{if eq $v.EnableNotify 0}}
+							<span class="color-default">{{"不通知"|T}}</span>
+							{{else if eq $v.EnableNotify 1}}
+							<span class="color-success">{{"执行结束时通知"|T}}</span>
+							{{else if eq $v.EnableNotify 2}}
+							<span class="color-danger">{{"执行失败时通知"|T}}</span>
+							{{end}}</td>
+					<th class="text-right">{{"邮件抄送"|T}}</th>
+					<td>{{$v.NotifyEmail|Default "N/A"}}</td>
+					<th class="text-right">{{"工作目录"|T}}</th>
+					<td>{{$v.WorkDirectory|Default (T "默认")}}</td>
+				</tr>
+			</tbody>
+		</table>
+		{{if $v.Env}}
+		<h4>{{"环境变量"|T}}</h4>
+		<p>
+			<pre>{{$v.Env}}</pre>
+		</p>
+		{{end}}
+		<h4>{{"命令"|T}}</h4>
+		<p>
+			<pre>{{$v.Command}}</pre>
+		</p>
+		{{if $v.Description}}
+		<h4>{{"描述"|T}}</h4>
+		<p>
+			<pre>{{$v.Description}}</pre>
+		</p>
+		{{end}}
+	</div>
+</div>

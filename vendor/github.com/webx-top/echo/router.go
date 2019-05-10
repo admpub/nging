@@ -78,7 +78,8 @@ func (r *Route) apply(e *Echo) *Route {
 	middleware := r.middleware
 	if hn, ok := handler.(Name); ok {
 		r.HandlerName = hn.Name()
-	} else {
+	}
+	if len(r.HandlerName) == 0 {
 		r.HandlerName = HandlerName(handler)
 	}
 	if mt, ok := handler.(Meta); ok {

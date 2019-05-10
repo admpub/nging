@@ -67,6 +67,11 @@ func (s *Setting) C(collection string) *Setting {
 	return s
 }
 
+func (s *Setting) Alias(alias string) *Setting {
+	s.SetAlias(alias)
+	return s
+}
+
 func (s *Setting) Middleware(middleware func(db.Result) db.Result, name ...string) *Setting {
 	s.Param.SetMiddleware(middleware, name...)
 	return s

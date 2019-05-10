@@ -12,16 +12,29 @@ import (
 )
 
 type Config struct {
-	TmplDir       string
-	Theme         string
-	Engine        string
-	Style         string
-	Reload        bool
-	ParseStrings  map[string]string
-	ErrorPages    map[int]string
-	StaticOptions *middleware.StaticOptions
-	Debug         bool
-	renderer      driver.Driver
+	TmplDir              string
+	Theme                string
+	Engine               string
+	Style                string
+	Reload               bool
+	ParseStrings         map[string]string
+	ParseStringFuncs     map[string]func() string
+	ErrorPages           map[int]string
+	DefaultHTTPErrorCode int
+	StaticOptions        *middleware.StaticOptions
+	Debug                bool
+	renderer             driver.Driver
+	errorPageFuncSetter  []echo.HandlerFunc
+	FuncMapSkipper       echo.Skipper
+}
+
+var DefaultFuncMapSkipper = func(c echo.Context) bool {
+	return c.Format() != `html` && !c.IsAjax() && !c.IsPjax()
+}
+
+func (t *Config) SetFuncMapSkipper(skipper echo.Skipper) *Config {
+	t.FuncMapSkipper = skipper
+	return t
 }
 
 func (t *Config) Parser() func([]byte) []byte {
@@ -32,6 +45,11 @@ func (t *Config) Parser() func([]byte) []byte {
 		s := string(b)
 		for oldVal, newVal := range t.ParseStrings {
 			s = strings.Replace(s, oldVal, newVal, -1)
+		}
+		if t.ParseStringFuncs != nil {
+			for oldVal, newVal := range t.ParseStringFuncs {
+				s = strings.Replace(s, oldVal, newVal(), -1)
+			}
 		}
 		return []byte(s)
 	}
@@ -44,10 +62,10 @@ func (t *Config) NewRenderer(manager ...driver.Manager) driver.Driver {
 		tmplDir = filepath.Join(tmplDir, t.Theme)
 	}
 	renderer := New(t.Engine, tmplDir)
-	renderer.Init()
-	if len(manager) > 0 {
+	if len(manager) > 0 && manager[0] != nil {
 		renderer.SetManager(manager[0])
 	}
+	renderer.Init()
 	renderer.SetContentProcessor(t.Parser())
 	if t.StaticOptions != nil {
 		st := t.NewStatic()
@@ -62,21 +80,46 @@ func (t *Config) NewRenderer(manager ...driver.Manager) driver.Driver {
 		if err == nil {
 			if strings.HasPrefix(absFilePath, absTmplPath) {
 				//如果静态文件在模板的子文件夹时，监控模板时判断静态文件更改
-				renderer.MonitorEvent(st.OnUpdate(tmplDir))
+				renderer.MonitorEvent(st.OnUpdate())
 			}
 		}
 	}
 	return renderer
 }
 
+func (t *Config) AddFuncSetter(set ...echo.HandlerFunc) *Config {
+	if t.errorPageFuncSetter == nil {
+		t.errorPageFuncSetter = make([]echo.HandlerFunc, len(DefaultOptions.SetFuncMap))
+		for index, setter := range DefaultOptions.SetFuncMap {
+			t.errorPageFuncSetter[index] = setter
+		}
+	}
+	t.errorPageFuncSetter = append(t.errorPageFuncSetter, set...)
+	return t
+}
+
+func (t *Config) SetFuncSetter(set ...echo.HandlerFunc) *Config {
+	t.errorPageFuncSetter = set
+	return t
+}
+
 func (t *Config) ApplyTo(e *echo.Echo, manager ...driver.Manager) *Config {
 	if t.renderer != nil {
 		t.renderer.Close()
 	}
-	e.SetHTTPErrorHandler(HTTPErrorHandler(t.ErrorPages))
-	e.Use(middleware.FuncMap(tplfunc.New(), func(c echo.Context) bool {
-		return c.Format() != `html`
-	}))
+	opt := &Options{
+		ErrorPages:           t.ErrorPages,
+		DefaultHTTPErrorCode: t.DefaultHTTPErrorCode,
+	}
+	opt.SetFuncSetter(t.errorPageFuncSetter...)
+	e.SetHTTPErrorHandler(HTTPErrorHandler(opt))
+	var funcMapSkipper echo.Skipper
+	if t.FuncMapSkipper != nil {
+		funcMapSkipper = t.FuncMapSkipper
+	} else {
+		funcMapSkipper = DefaultFuncMapSkipper
+	}
+	e.Use(middleware.FuncMap(tplfunc.New(), funcMapSkipper))
 	renderer := t.NewRenderer(manager...)
 	if t.StaticOptions != nil {
 		e.Use(middleware.Static(t.StaticOptions))

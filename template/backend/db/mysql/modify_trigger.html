@@ -1,0 +1,119 @@
+{{Extend "db/index"}}
+{{Block "title"}}{{"触发器"|T}}: {{Stored.table}} - {{Super}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="{{dbMgrURL "listTable" Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|T}}: {{Stored.dbName}}</a></li>
+<li><a href="{{dbMgrURL "viewTable" Stored.dbName Stored.table}}" data-pjax="#pcont" data-keepjs="true">{{"表"|T}}: {{Stored.table}}</a></li>
+<li class="active">{{"触发器"|T}}</li>
+{{/Block}}
+{{Block "head"}}
+<!-- codemirror -->
+<link rel="stylesheet" href="__ASSETS__/js/codemirror/lib/codemirror.min.css">
+<link rel="stylesheet" href="__ASSETS__/js/codemirror/theme/night.css">
+<script src="__ASSETS__/js/codemirror/lib/codemirror.min.js"></script>
+<script src="__ASSETS__/js/codemirror/addon/mode/loadmode.js"></script>
+<style>
+.CodeMirror {
+    border: 1px solid #ccc;
+    min-height:300px
+}
+</style>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        {{Include "db/mysql/results"}}
+        <div class="block-flat">
+          <div class="header">							
+            <h3>
+                {{"触发器"|T}}: {{Stored.table}}
+            </h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" method="POST" action="">
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"时间"|T}}</label>
+				<div class="col-sm-9">
+				  <select name="timing" class="form-control">
+                    {{$options := Stored.triggerOptions}}
+                    {{$trigger := Stored.trigger}}
+                    {{range $k2,$v2 := $options.Get "Timing"}}
+                    <option value="{{$v2}}"{{if eq $trigger.Timing.String $v2}} selected{{end}}>{{$v2}}</option>
+                    {{end}}
+                   </select>
+				</div>
+			</div>
+              
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"事件"|T}}</label>
+				<div class="col-sm-9">
+				  <select name="event" class="form-control">
+                    {{$eventOptions := $options.Get "Event"}}
+                    {{range $k2,$v2 := $eventOptions}}
+                    <option value="{{$v2}}"{{if eq $trigger.Event.String $v2}} selected{{end}}>{{$v2}}</option>
+                    {{end}}
+                   </select>
+            {{if HasString $eventOptions "UPDATE OF"}}
+                <input type="hidden" name="of" value="{{$trigger.Of}}">
+            {{end}}
+				</div>
+			</div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"类型"|T}}</label>
+				<div class="col-sm-9">
+				  <select name="type" class="form-control">
+                    {{range $k2,$v2 := $options.Get "Type"}}
+                    <option value="{{$v2}}"{{if eq $trigger.Type $v2}} selected{{end}}>{{$v2}}</option>
+                    {{end}}
+                   </select>
+				</div>
+			</div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"名称"|T}}</label>
+				<div class="col-sm-9">
+                    <input type="text" name="trigger" class="form-control" value="{{$trigger.Trigger.String}}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"表达式"|T}}</label>
+				<div class="col-sm-9">
+                    <textarea name="statement" id="statement" class="form-control">{{$trigger.Statement.String}}</textarea>
+                    <div class="help-block">{{"一般以关键字“begin”开始，“end”结束"|T}}</div>
+                </div>
+              </div>
+              <div class="form-group form-submit-group">
+				<div class="col-sm-9 col-sm-offset-2">
+				  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+                  {{if Form "name"}}
+				  <button type="submit" name="drop" value="1" class="btn btn-danger btn-lg" onclick="return confirm('{{"确定要删除吗？"|T}}');"><i class="fa fa-times"></i> {{"删除"|T}}</button>
+                  {{end}}
+				  <a class="btn btn-default btn-lg" href="{{dbMgrURL "viewTable" Stored.dbName Stored.table}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-reply"></i> {{"返回"|T}}</a>
+				</div>
+			</div>
+              </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+{{Super}}
+<script>
+var editor;
+CodeMirror.modeURL = "__ASSETS__/js/codemirror/mode/%N/%N.js";
+function initCodeMirrorEditor() {
+    if(editor)return;
+    editor = CodeMirror.fromTextArea($("#statement")[0], {
+        lineNumbers: true
+    });
+    editor.setOption('lineWrapping', true);
+    //editor.setSize('auto', 'auto');
+    editor.setOption("mode", "text/x-{{Form "driver"}}");
+    CodeMirror.autoLoadMode(editor, "sql");
+}
+$(function(){
+    initCodeMirrorEditor();
+});
+</script>
+{{/Block}}

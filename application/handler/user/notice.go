@@ -1,55 +1,75 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package user
 
 import (
-	"errors"
+	"encoding/json"
+
+	"github.com/admpub/log"
+	"github.com/admpub/nging/application/dbschema"
 
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/notice"
 	"github.com/admpub/websocket"
 	"github.com/webx-top/echo"
-	ws "github.com/webx-top/echo/handler/websocket"
 )
 
 func init() {
-	handler.RegisterToGroup(`/manage`, func(g *echo.Group) {
-		wsOpts := ws.Options{
-			Handle: Notice,
-			Prefix: "/notice",
+	notice.OnOpen(func(user string) {
+		userM := &dbschema.User{}
+		err := userM.SetField(nil, `online`, `Y`, `username`, user)
+		if err != nil {
+			log.Error(err)
 		}
-		wsOpts.Wrapper(g)
+	})
+	notice.OnClose(func(user string) {
+		userM := &dbschema.User{}
+		err := userM.SetField(nil, `online`, `N`, `username`, user)
+		if err != nil {
+			log.Error(err)
+		}
 	})
 }
 
 func Notice(c *websocket.Conn, ctx echo.Context) error {
 	user := handler.User(ctx)
 	if user == nil {
-		return errors.New(ctx.T(`登录信息获取失败，请重新登录`))
+		return ctx.E(`登录信息获取失败，请重新登录`)
 	}
-	notice.OpenClient(user.Username)
-	defer notice.CloseClient(user.Username)
+	clientID := notice.OpenClient(user.Username)
+	defer notice.CloseClient(user.Username, clientID)
 	//push(writer)
 	go func() {
+		message, err := json.Marshal(notice.NewMessage().SetMode(`-`).SetType(`clientID`).SetClientID(clientID))
+		if err != nil {
+			handler.WebSocketLogger.Error(`Push error: `, err.Error())
+		}
+		handler.WebSocketLogger.Debug(`Push message: `, string(message))
+		if err = c.WriteMessage(websocket.TextMessage, message); err != nil {
+			handler.WebSocketLogger.Error(`Push error: `, err.Error())
+			return
+		}
 		for {
-			message := notice.RecvJSON(user.Username)
+			//message := []byte(echo.Dump(notice.NewMessageWithValue(`type`, `title`, `content:`+time.Now().Format(time.RFC1123)), false))
+			//time.Sleep(time.Second)
+			message = notice.RecvJSON(user.Username, clientID)
 			handler.WebSocketLogger.Debug(`Push message: `, string(message))
-			if err := c.WriteMessage(websocket.TextMessage, message); err != nil {
+			if err = c.WriteMessage(websocket.TextMessage, message); err != nil {
 				handler.WebSocketLogger.Error(`Push error: `, err.Error())
 				return
 			}

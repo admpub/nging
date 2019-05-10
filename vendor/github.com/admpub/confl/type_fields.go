@@ -99,11 +99,22 @@ func typeFields(t reflect.Type) []field {
 				name := sf.Tag.Get("confl")
 				if name == "-" {
 					continue
+				} else if name != "" {
+					// ClientID         string `confl:"Client_id,omitempty"`
+					parts := strings.Split(name, ",")
+					if len(parts) > 1 {
+						name = parts[0]
+					}
 				}
 				if name == "" {
 					name = sf.Tag.Get("json")
 					if name == "-" {
 						continue
+					}
+					// ClientID         string `json:"Client_id,omitempty"`
+					parts := strings.Split(name, ",")
+					if len(parts) > 1 {
+						name = parts[0]
 					}
 				}
 				if len(name) > 0 {

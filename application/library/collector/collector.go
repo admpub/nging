@@ -1,14 +1,85 @@
+/*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
+
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 package collector
 
 import (
-	"github.com/admpub/log"
-	"github.com/admpub/nging/application/dbschema"
+	"sort"
+	"sync"
+
+	"github.com/webx-top/echo"
 )
 
-var _ = dbschema.Base{}
-var _ = log.SetLevel
+type Browser interface {
+	Start(echo.Store) error
+	Close() error
+	Name() string
+	Description() string
+	Transcoded() bool
+	Do(pageURL string, data echo.Store) ([]byte, error)
+}
 
-/**
-案例1：列表页面(支持分页) -> 获取内容页面链接 -> 采集页面内容(支持分页)
-案例2：列表页面(支持分页) -> 获取封面页面链接 -> 采集封面页面信息(封面标题、图片、内容页面链接等)(支持分页) -> 采集链接页面内容(支持分页)
-*/
+var (
+	Browsers = map[string]Browser{}
+	Services = sync.Map{}
+)
+
+func ServiceGet(engine string) (browser Browser) {
+	browserService, ok := Services.Load(engine)
+	if ok {
+		browser = browserService.(Browser)
+	}
+	return
+}
+
+func ServiceSet(engine string, browser Browser) {
+	Services.Store(engine, browser)
+}
+
+func ServiceClose(engine ...string) (err error) {
+	if len(engine) < 1 {
+		Services.Range(func(key, val interface{}) bool {
+			err = val.(Browser).Close()
+			if err != nil {
+				return false
+			}
+			Services.Delete(key)
+			return true
+		})
+		return
+	}
+	for _, eng := range engine {
+		if svr, ok := Services.Load(eng); ok {
+			err = svr.(Browser).Close()
+			if err != nil {
+				return
+			}
+			Services.Delete(eng)
+		}
+	}
+	return
+}
+
+func BrowserKeys() []string {
+	keys := make([]string, 0)
+	for key := range Browsers {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	return keys
+}

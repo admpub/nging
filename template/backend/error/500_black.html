@@ -1,0 +1,21 @@
+{{Extend "base"}}
+{{Block "description"}}{{.title}}{{/Block}}
+{{Block "title"}}{{.title}}{{/Block}}
+{{Block "bodyAttr"}} class="texture"{{/Block}}
+{{Block "main"}}
+<div id="cl-wrapper" class="error-container">
+	<div class="page-error">
+		<h1 class="number text-center">500</h1>
+		{{if .debug}}
+		<p><pre style="background:#000;color:#888;border:0">{{.content}}</pre></p>
+		{{else}}
+		<h2 class="description text-center">Don't worry, there is a little turbulence!</h2>
+		<h3 class="text-center"> We're trying to fix it, please try again later.</h3>
+		{{end}}
+	</div>
+	<div class="text-center copy">&copy; {{Now.Year}} <a href="https://github.com/admpub/nging" target="_blank">Nging</a></div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script type="text/javascript" src="__ASSETS__/js/behaviour/general.min.js"></script>
+{{/Block}}

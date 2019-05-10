@@ -1,0 +1,235 @@
+@import url("https://fonts.googleapis.com/css?family=Lato:400,700");
+:root {
+  --base-vertical-rhythm: 1.5rem;
+  --base-transition: 600ms cubic-bezier(0.22, 1, 0.19, 1);
+  --button-bg-color: mediumseagreen;
+  --button-border-radius: 0.15rem;
+  --button-focus-bg-color: seagreen;
+  --button-font-size: 1rem;
+  --button-text-color: white;
+  --form-font-family: 'Lato', sans-serif;
+  --input-bg-color: white;
+  --input-border-color: #eaeaea;
+  --input-border-focus-color: #d8d8d8;
+  --input-border-radius: 0.15rem;
+  --input-error-color: red;
+  --input-padding: 0.75rem;
+  --input-placeholder-color: gray;
+  --input-text-color: black;
+  --input-underline-color: dodgerblue;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+  font-family: 'Lato', sans-serif;
+  min-height: 100vh;
+  padding: 1rem;
+  background-color: #fafafa;
+}
+
+h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+p {
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+section {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 500px;
+}
+section > * + * {
+  margin-top: var(--base-vertical-rhythm);
+}
+
+.form-group {
+  position: relative;
+  display: flex;
+  flex-direction: column-reverse;
+  width: 100%;
+  border-radius: var(--input-border-radius);
+}
+.form-group + * {
+  margin-top: var(--base-vertical-rhythm);
+}
+
+label {
+  position: absolute;
+  top: var(--input-padding);
+  left: calc(var(--input-padding) + 1px);
+  margin-bottom: calc(var(--input-padding) * -1.5);
+  font-size: 0.5rem;
+  letter-spacing: 0.0025rem;
+  text-transform: uppercase;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  -webkit-transform: translateY(calc(var(--input-padding) / 4));
+          transform: translateY(calc(var(--input-padding) / 4));
+  transition: opacity var(--base-transition), -webkit-transform var(--base-transition);
+  transition: opacity var(--base-transition), transform var(--base-transition);
+  transition: opacity var(--base-transition), transform var(--base-transition), -webkit-transform var(--base-transition);
+}
+.form-group:focus-within label {
+  opacity: 1;
+  -webkit-transform: translateY(0);
+          transform: translateY(0);
+}
+label .error {
+  color: var(--input-error-color);
+  opacity: 0;
+  transition: opacity var(--base-transition);
+}
+label .error:before {
+  content: ' - ';
+}
+
+input[type="text"],
+input[type="email"] {
+  -webkit-appearance: none;
+  padding: calc(var(--input-padding) * 1.5) var(--input-padding);
+  font-family: var(--form-font-family);
+  font-size: 1rem;
+  width: 100%;
+  color: var(--input-text-color);
+  background-color: var(--input-bg-color);
+  outline: none;
+  border: 1px solid var(--input-border-color);
+  border-radius: var(--input-border-radius);
+  box-shadow: rgba(0, 0, 0, 0.05) 0 0.5rem 1rem -0.25rem;
+  transition: border-color var(--base-transition), box-shadow var(--base-transition), transition var(--base-transition);
+}
+input[type="text"]::-webkit-input-placeholder,
+input[type="email"]::-webkit-input-placeholder {
+  color: var(--input-placeholder-color);
+  transition: color var(--base-transition), -webkit-transform var(--base-transition);
+  transition: color var(--base-transition), transform var(--base-transition);
+  transition: color var(--base-transition), transform var(--base-transition), -webkit-transform var(--base-transition);
+  transition-delay: 200ms;
+}
+input[type="text"]:-ms-input-placeholder,
+input[type="email"]:-ms-input-placeholder {
+  color: var(--input-placeholder-color);
+  transition: color var(--base-transition), -webkit-transform var(--base-transition);
+  transition: color var(--base-transition), transform var(--base-transition);
+  transition: color var(--base-transition), transform var(--base-transition), -webkit-transform var(--base-transition);
+  transition-delay: 200ms;
+}
+input[type="text"]::-ms-input-placeholder,
+input[type="email"]::-ms-input-placeholder {
+  color: var(--input-placeholder-color);
+  transition: color var(--base-transition), -webkit-transform var(--base-transition);
+  transition: color var(--base-transition), transform var(--base-transition);
+  transition: color var(--base-transition), transform var(--base-transition), -webkit-transform var(--base-transition);
+  transition-delay: 200ms;
+}
+input[type="text"]::placeholder,
+input[type="email"]::placeholder {
+  color: var(--input-placeholder-color);
+  transition: color var(--base-transition), -webkit-transform var(--base-transition);
+  transition: color var(--base-transition), transform var(--base-transition);
+  transition: color var(--base-transition), transform var(--base-transition), -webkit-transform var(--base-transition);
+  transition-delay: 200ms;
+}
+input[type="text"]:focus,
+input[type="email"]:focus {
+  border-color: var(--input-border-focus-color);
+  box-shadow: none;
+}
+input[type="text"]:focus::-webkit-input-placeholder,
+input[type="email"]:focus::-webkit-input-placeholder {
+  color: transparent;
+  -webkit-transform: translateX(calc(var(--input-padding) / 2));
+          transform: translateX(calc(var(--input-padding) / 2));
+  transition-duration: 0ms;
+  transition-delay: 0ms;
+}
+input[type="text"]:focus:-ms-input-placeholder,
+input[type="email"]:focus:-ms-input-placeholder {
+  color: transparent;
+  transform: translateX(calc(var(--input-padding) / 2));
+  transition-duration: 0ms;
+  transition-delay: 0ms;
+}
+input[type="text"]:focus::-ms-input-placeholder,
+input[type="email"]:focus::-ms-input-placeholder {
+  color: transparent;
+  transform: translateX(calc(var(--input-padding) / 2));
+  transition-duration: 0ms;
+  transition-delay: 0ms;
+}
+input[type="text"]:focus::placeholder,
+input[type="email"]:focus::placeholder {
+  color: transparent;
+  -webkit-transform: translateX(calc(var(--input-padding) / 2));
+          transform: translateX(calc(var(--input-padding) / 2));
+  transition-duration: 0ms;
+  transition-delay: 0ms;
+}
+input[type="text"]:focus, input[type="text"]:not(:placeholder-shown),
+input[type="email"]:focus,
+input[type="email"]:not(:placeholder-shown) {
+  padding: calc(var(--input-padding) * 2) var(--input-padding) var(--input-padding);
+}
+input[type="text"]:not(:placeholder-shown):invalid:not(:focus),
+input[type="email"]:not(:placeholder-shown):invalid:not(:focus) {
+  color: var(--input-error-color);
+  border-color: var(--input-error-color);
+}
+input[type="text"]:not(:placeholder-shown):invalid:not(:focus) + label .error,
+input[type="email"]:not(:placeholder-shown):invalid:not(:focus) + label .error {
+  opacity: 1;
+}
+input[type="text"]:not(:placeholder-shown) + label,
+input[type="email"]:not(:placeholder-shown) + label {
+  opacity: 1;
+  -webkit-transform: translateY(0);
+          transform: translateY(0);
+}
+input[type="text"]:-webkit-autofill + label,
+input[type="email"]:-webkit-autofill + label {
+  opacity: 1;
+}
+
+button {
+  padding: calc(var(--input-padding) * 1.5) calc(var(--input-padding) * 3);
+  width: 100%;
+  font-family: var(--form-font-family);
+  font-size: var(--button-font-size);
+  color: var(--button-text-color);
+  background-color: var(--button-bg-color);
+  border: none;
+  border-radius: var(--button-border-radius);
+  box-shadow: rgba(0, 0, 0, 0.05) 0 0.5rem 1rem -0.25rem;
+  transition: background-color var(--base-transition), box-shadow var(--base-transition), transition var(--base-transition);
+}
+button:hover, button:focus {
+  cursor: pointer;
+  outline: none;
+  background-color: var(--button-focus-bg-color);
+  box-shadow: none;
+  -webkit-transform: translateY(1px);
+          transform: translateY(1px);
+}
+button:active {
+  -webkit-transform: translateY(2px);
+          transform: translateY(2px);
+}
+
+@media (min-width: 400px) {
+  button {
+    width: auto;
+  }
+}

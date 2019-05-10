@@ -47,7 +47,7 @@ type (
 
 		// Max age (in seconds) of the CSRF cookie.
 		// Optional. Default value 86400 (24hr).
-		CookieMaxAge int64 `json:"cookie_max_age"`
+		CookieMaxAge int `json:"cookie_max_age"`
 
 		// Indicates if CSRF cookie is secure.
 		// Optional. Default value false.

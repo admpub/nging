@@ -7,13 +7,6 @@ db {
   prefix : ""
   debug : true
 }
-log {
-  debug : false
-  colorable : false
-  saveFile : ""
-  fileMaxBytes : 0
-  targets : "console"
-}
 sys {
   accounts : {
     admin : {
@@ -23,7 +16,6 @@ sys {
   sslHosts               : []
   sslCertFile            : ""
   sslKeyFile             : ""
-  debug                  : true
   editableFileExtensions : {  #允许在线编辑的文件扩展名(不含点号)
     html      : "html"
     htm       : "html"
@@ -42,13 +34,16 @@ sys {
     sql       : "sql"
     yaml      : "yaml"
     yml       : "yaml"
+    log       : "log"
   }
   editableFileMaxSize   : "1M" #允许在线编辑的最大文件尺寸
   errorPages            : { #指定错误页面模板
+    "403" : "error/403"
     "404" : "error/404"
     "500" : "error/500"
-    "0"   : "error/other" #其它所有错误显示的模板
+    "0"   : "error/500" #其它所有错误显示的模板
   }
+  showExpirationTime    : 0 #显示过期时间：0为始终显示；大于0为距离剩余到期时间多少秒的时候显示(例如3153600表示有效期只剩1年的时候显示)；小于0为不显示
 }
 cookie {
   path     : "/"
@@ -59,12 +54,6 @@ cookie {
   blockKey : "123456789012345678901234567890cc" #32位
 }
 ftp {
-  pidFile        : ""
-  ###########暂时无效################
-	#dbType         : ""
-	#ftpStoreType   : ""
-	#ftpOptions     : ""
-  ###########################
   name           : ""
   hostName       : ""
   publicIP       : ""

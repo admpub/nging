@@ -1,19 +1,19 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package notice
 
@@ -23,6 +23,8 @@ import (
 	"fmt"
 	"os"
 	"sync"
+
+	"github.com/admpub/nging/application/library/msgbox"
 )
 
 const (
@@ -32,16 +34,99 @@ const (
 	Forbid          = -2
 )
 
+func NewProgress() *Progress {
+	return &Progress{
+		Total:   -1,
+		Finish:  -1,
+		Percent: 0,
+	}
+}
+
+type Progress struct {
+	Total    int64   `json:"total" xml:"total"`
+	Finish   int64   `json:"finish" xml:"finish"`
+	Percent  float64 `json:"percent" xml:"percent"`
+	Complete bool    `json:"complete" xml:"complete"`
+}
+
 type Message struct {
-	Type    string      `json:"type" xml:"type"`
-	Title   string      `json:"title" xml:"title"`
-	Status  int         `json:"status" xml:"status"`
-	Content interface{} `json:"content" xml:"content"`
+	ClientID uint        `json:"client_id" xml:"client_id"`
+	ID       interface{} `json:"id" xml:"id"`
+	Type     string      `json:"type" xml:"type"`
+	Title    string      `json:"title" xml:"title"`
+	Status   int         `json:"status" xml:"status"`
+	Content  interface{} `json:"content" xml:"content"`
+	Mode     string      `json:"mode" xml:"mode"` //显示模式：notify/element/modal
+	Progress *Progress   `json:"progress" xml:"progress"`
+}
+
+func (m *Message) SetType(t string) *Message {
+	m.Type = t
+	return m
+}
+
+func (m *Message) SetTitle(title string) *Message {
+	m.Title = title
+	return m
+}
+
+func (m *Message) SetID(id interface{}) *Message {
+	m.ID = id
+	return m
+}
+
+func (m *Message) SetClientID(clientID uint) *Message {
+	m.ClientID = clientID
+	return m
+}
+
+func (m *Message) SetStatus(status int) *Message {
+	m.Status = status
+	return m
+}
+
+func (m *Message) SetContent(content interface{}) *Message {
+	m.Content = content
+	return m
+}
+
+func (m *Message) SetMode(mode string) *Message {
+	m.Mode = mode
+	return m
+}
+
+func (m *Message) SetProgress(progress *Progress) *Message {
+	m.Progress = progress
+	if m.Progress != nil && m.Progress.Percent == 0 {
+		m.CalcPercent()
+	}
+	return m
+}
+
+func (m *Message) SetProgressValue(finish int64, total int64) *Message {
+	if m.Progress == nil {
+		m.Progress = NewProgress()
+	}
+	m.Progress.Finish = finish
+	m.Progress.Total = total
+	m.CalcPercent()
+	return m
+}
+
+func (m *Message) CalcPercent() *Message {
+	if m.Progress.Total > 0 {
+		m.Progress.Percent = (float64(m.Progress.Finish) / float64(m.Progress.Total)) * 100
+	} else if m.Progress.Total == 0 {
+		m.Progress.Percent = 100
+	} else {
+		m.Progress.Percent = 0
+	}
+	return m
 }
 
 type Notice struct {
-	Types   map[string]bool
-	Message chan *Message `json:"-" xml:"-"`
+	Types    map[string]bool
+	Messages map[uint]chan *Message `json:"-" xml:"-"`
 }
 
 func NewMessageWithValue(typ string, title string, content interface{}, status ...int) *Message {
@@ -63,8 +148,8 @@ func NewMessage() *Message {
 
 func NewNotice() *Notice {
 	return &Notice{
-		Types:   map[string]bool{},
-		Message: make(chan *Message),
+		Types:    map[string]bool{},
+		Messages: map[uint](chan *Message){},
 	}
 }
 
@@ -76,19 +161,25 @@ type OnlineUser struct {
 func NewOnlineUser() *OnlineUser {
 	return &OnlineUser{
 		Notice:  NewNotice(),
-		Clients: 1,
+		Clients: 0,
 	}
 }
 
 type userNotices struct {
-	Lock *sync.RWMutex
-	User map[string]*OnlineUser //key: user
+	Lock    *sync.RWMutex
+	User    map[string]*OnlineUser //key: user
+	Debug   bool
+	onClose []func(user string)
+	onOpen  []func(user string)
 }
 
-func NewUserNotices() *userNotices {
+func NewUserNotices(debug bool) *userNotices {
 	return &userNotices{
-		Lock: &sync.RWMutex{},
-		User: map[string]*OnlineUser{},
+		Lock:    &sync.RWMutex{},
+		User:    map[string]*OnlineUser{},
+		Debug:   debug,
+		onClose: []func(user string){},
+		onOpen:  []func(user string){},
 	}
 }
 
@@ -98,6 +189,16 @@ func Stdout(message *Message) {
 	} else {
 		os.Stderr.WriteString(fmt.Sprint(message.Content))
 	}
+}
+
+func (u *userNotices) OnClose(fn ...func(user string)) *userNotices {
+	u.onClose = append(u.onClose, fn...)
+	return u
+}
+
+func (u *userNotices) OnOpen(fn ...func(user string)) *userNotices {
+	u.onOpen = append(u.onOpen, fn...)
+	return u
 }
 
 func (u *userNotices) Sendable(user string, types ...string) bool {
@@ -113,22 +214,51 @@ func (u *userNotices) Sendable(user string, types ...string) bool {
 	return true
 }
 
-func (u *userNotices) Send(user string, message *Message) {
+func (u *userNotices) Send(user string, message *Message) error {
+	if u.Debug {
+		msgbox.Debug(`[NOTICE]`, `[Send][FindUser]: `+user)
+	}
 	u.Lock.Lock()
 	defer u.Lock.Unlock()
 	oUser, exists := u.User[user]
 	if !exists {
+		if u.Debug {
+			msgbox.Debug(`[NOTICE]`, `[Send][NotFoundUser]: `+user)
+		}
 		Stdout(message)
-		return
+		return ErrUserNotOnline
+	}
+	if u.Debug {
+		msgbox.Debug(`[NOTICE]`, `[Send][CheckRecvType]: `+message.Type+` (for user: `+user+`)`)
 	}
 	if !oUser.Notice.Types[message.Type] {
 		Stdout(message)
-		return
+		return ErrMsgTypeNotAccept
 	}
-	oUser.Notice.Message <- message
+	if u.Debug {
+		msgbox.Debug(`[NOTICE]`, `[Send][MessageTo]: `+user)
+	}
+	msg, ok := oUser.Notice.Messages[message.ClientID]
+	if ok {
+		msg <- message
+		return nil
+	}
+	/*
+		for clientID, msg := range oUser.Notice.Messages {
+			msg <- message
+			if u.Debug {
+				msgbox.Debug(`[NOTICE]`, `[Send][MessageTo]: `+user+` [ClientID]: `+fmt.Sprint(clientID))
+			}
+			return
+		}
+	*/
+	if u.Debug {
+		msgbox.Debug(`[NOTICE]`, `[Send][MessageTo]: `+user+` [NotFoundClientID]: `+fmt.Sprint(message.ClientID))
+	}
+	return ErrClientIDNotOnline
 }
 
-func (u *userNotices) Recv(user string) <-chan *Message {
+func (u *userNotices) Recv(user string, clientID uint) <-chan *Message {
 	//race...
 	//u.Lock.Lock()
 	//defer u.Lock.Unlock()
@@ -137,28 +267,50 @@ func (u *userNotices) Recv(user string) <-chan *Message {
 		oUser = NewOnlineUser()
 		u.User[user] = oUser
 	}
-	return oUser.Notice.Message
+	msg, ok := oUser.Notice.Messages[clientID]
+	if ok {
+		return msg
+	}
+	return nil
 }
 
-func (u *userNotices) RecvJSON(user string) []byte {
-	message := <-u.Recv(user)
+func (u *userNotices) RecvJSON(user string, clientID uint) []byte {
+	if u.Debug {
+		msgbox.Warn(`[NOTICE]`, `[RecvJSON][Waiting]: `+user)
+	}
+	message := <-u.Recv(user, clientID)
+	if message != nil {
+		message.ClientID = clientID
+	}
 	b, err := json.Marshal(message)
 	if err != nil {
 		return []byte(err.Error())
 	}
-	return b
-}
-
-func (u *userNotices) RecvXML(user string) []byte {
-	message := <-u.Recv(user)
-	b, err := xml.Marshal(message)
-	if err != nil {
-		return []byte(err.Error())
+	if u.Debug {
+		msgbox.Warn(`[NOTICE]`, `[RecvJSON][Received]: `+user)
 	}
 	return b
 }
 
-func (u *userNotices) CloseClient(user string) bool {
+func (u *userNotices) RecvXML(user string, clientID uint) []byte {
+	if u.Debug {
+		msgbox.Warn(`[NOTICE]`, `[RecvXML][Waiting]: `+user)
+	}
+	message := <-u.Recv(user, clientID)
+	if message != nil {
+		message.ClientID = clientID
+	}
+	b, err := xml.Marshal(message)
+	if err != nil {
+		return []byte(err.Error())
+	}
+	if u.Debug {
+		msgbox.Warn(`[NOTICE]`, `[RecvXML][Received]: `+user)
+	}
+	return b
+}
+
+func (u *userNotices) CloseClient(user string, clientID uint) bool {
 	u.Lock.Lock()
 	defer u.Lock.Unlock()
 	oUser, exists := u.User[user]
@@ -166,22 +318,43 @@ func (u *userNotices) CloseClient(user string) bool {
 		return true
 	}
 	oUser.Clients--
+	if u.Debug {
+		msgbox.Error(`[NOTICE]`, `[CloseClient][Clients]: `+fmt.Sprint(oUser.Clients))
+	}
+	msg, ok := oUser.Notice.Messages[clientID]
+	if ok {
+		close(msg)
+		delete(oUser.Notice.Messages, clientID)
+	}
 	if oUser.Clients <= 0 {
+		for key, msg := range oUser.Notice.Messages {
+			close(msg)
+			delete(oUser.Notice.Messages, key)
+		}
 		delete(u.User, user)
+		for _, fn := range u.onClose {
+			fn(user)
+		}
 		return true
 	}
 	return false
 }
 
-func (u *userNotices) OpenClient(user string) {
+func (u *userNotices) OpenClient(user string) uint {
 	u.Lock.Lock()
 	defer u.Lock.Unlock()
 	oUser, exists := u.User[user]
 	if !exists {
 		oUser = NewOnlineUser()
 		u.User[user] = oUser
+		for _, fn := range u.onOpen {
+			fn(user)
+		}
 	}
+	clientID := oUser.Clients
+	oUser.Notice.Messages[clientID] = make(chan *Message)
 	oUser.Clients++
+	return clientID
 }
 
 func (u *userNotices) CloseMessage(user string, types ...string) {

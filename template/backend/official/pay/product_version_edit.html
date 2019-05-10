@@ -1,0 +1,182 @@
+{{Extend "layout"}}
+{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加版本"|T}}{{else}}{{"修改版本"|T}}{{end}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="__BACKEND__/official/pay/product_index">{{"产品管理"|T}}</a></li>
+<li><a href="__FRONTEND__/product/detail/{{Stored.product.Ident}}" target="_blank">{{Stored.product.Name}}</a></li>
+<li><a href="__BACKEND__/official/pay/product_version_index?productId={{Stored.product.Id}}">{{"版本管理"|T}}</a></li>
+<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
+{{/Block}}
+{{Block "head"}}
+<link rel="stylesheet" href="__ASSETS__/js/bootstrap.summernote/summernote.css?t={{BuildTime}}" type="text/css" />
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{if HasSuffix URL.Path "_add"}}{{"添加版本"|T}}{{else}}{{"修改版本"|T}}{{end}}</h3>
+          </div>
+          <div class="content">
+            <form class="form-horizontal group-border-dashed" parsley-validate novalidate method="POST" action="">
+    <div class="form-group">
+      <label class="col-sm-2 control-label">{{"版本号"|T}}</label>
+      <div class="col-sm-8">
+          <input type="text" class="form-control" id="version" name="version" value="{{Form "version"}}" required />
+					<div class="help-block">
+						格式：<code>{大版本号}.{小版本号}.{微调修复版本号}</code>
+						例如：<code>1.0.1</code>
+					</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-2 control-label">{{"类型"|T}}</label>
+      <div class="col-sm-8">
+        {{$v := Form "type"}}
+        <div class="radio radio-success radio-inline">
+          <input type="radio" value="stable" id="type-stable" name="type"{{if or (eq $v "stable") (eq $v "")}} checked{{end}}> <label for="type-stable">{{"稳定版"|T}} <code>stable</code></label>
+        </div>
+        <div class="radio radio-warning radio-inline">
+          <input type="radio" value="beta" id="type-beta" name="type"{{if eq $v "beta"}} checked{{end}}> 
+          <label for="type-beta">{{"公测版"|T}} <code>beta</code></label>
+        </div>
+        <div class="radio radio-danger radio-inline">
+          <input type="radio" value="alpha" id="type-alpha" name="type"{{if eq $v "alpha"}} checked{{end}}> 
+          <label for="type-alpha">{{"内测版"|T}} <code>alpha</code></label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-2 control-label">{{"升级"|T}}</label>
+      <div class="col-sm-8">
+        {{$v := Form "forceUpgrade"}}
+        <div class="radio radio-success radio-inline">
+          <input type="radio" value="N" id="forceUpgrade-N" name="forceUpgrade"{{if or (eq $v "N") (eq $v "")}} checked{{end}}> <label for="forceUpgrade-N">{{"不强制"|T}}</label>
+        </div>
+        <div class="radio radio-danger radio-inline">
+          <input type="radio" value="Y" id="forceUpgrade-Y" name="forceUpgrade"{{if eq $v "Y"}} checked{{end}}> 
+          <label for="forceUpgrade-Y">{{"强制升级"|T}}</label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-2 control-label">{{"发布时间"|T}}</label>
+      <div class="col-sm-8">
+          <input type="date" class="form-control" name="releasedAt" value="{{Form "releasedAt"}}" required />
+      </div>
+    </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"下载地址"|T}}</label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control" name="downloadUrl" value="{{Form "downloadUrl"}}" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"安装文件签名"|T}}</label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control" id="sign" name="sign" value="{{Form "sign"}}" />
+                  <div class="help-block">{{"文件签名，用于验证安装文件完整性。多个签名之间用半角逗号分隔"|T}}</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"备用下载地址"|T}}</label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control" name="downloadUrlOther" value="{{Form "downloadUrlOther"}}" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "disabled"}}
+                  <div class="radio radio-success radio-inline">
+                    <input type="radio" value="N" id="disabled-N" name="disabled"{{if or (eq $v "N") (eq $v "")}} checked{{end}}> <label for="disabled-N">{{"启用"|T}}</label>
+                  </div>
+                  <div class="radio radio-danger radio-inline">
+                    <input type="radio" value="Y" id="disabled-Y" name="disabled"{{if eq $v "Y"}} checked{{end}}> 
+                    <label for="disabled-Y">{{"禁用"|T}}</label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"审核"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "audited"}}
+                  <div class="radio radio-success radio-inline">
+                    <input type="radio" value="Y" id="audited-Y" name="audited"{{if or (eq $v "Y") (eq $v "")}} checked{{end}}> <label for="audited-Y">{{"已审"|T}}</label>
+                  </div>
+                  <div class="radio radio-danger radio-inline">
+                    <input type="radio" value="N" id="audited-N" name="audited"{{if eq $v "N"}} checked{{end}}> 
+                    <label for="audited-N">{{"未审"|T}}</label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"备注"|T}}</label>
+                <div class="col-sm-8">
+                  <textarea class="form-control" name="remark" parsley-trigger="keyup" parsley-maxlength="255" parsley-validation-threshold="10">{{Form "remark"}}</textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"产品详情"|T}}</label>
+                <div class="col-sm-8">
+                  <textarea class="summernote" id="description" name="description" placeholder="{{"版本说明"|T}}" action="__BACKEND__/manager/upload/product-version">{{Form "content"}}</textarea>
+                </div>
+              </div>
+  <div class="form-group form-submit-group">
+      <div class="col-sm-10 col-sm-offset-2">
+        <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+        <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+      </div>
+  </div>
+            </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script src="__ASSETS__/js/inputmask/inputmask.min.js?t={{BuildTime}}"></script>
+<script src="__ASSETS__/js/inputmask/jquery.inputmask.min.js?t={{BuildTime}}"></script>
+<script src="__ASSETS__/js/bootstrap.summernote/summernote.min.js?t={{BuildTime}}"></script>
+<script src="__ASSETS__/js/bootstrap.summernote/lang/summernote-zh-CN.js?t={{BuildTime}}"></script>
+<script>
+$(function(){
+  $('#description').summernote({lang:'zh-CN',minHeight:400,
+    callbacks:{
+      onImageUpload:function(files, editor, $editable) {
+        var $files = $(files);
+        $files.each(function() {
+        var file = this;
+        var formdata = new FormData();
+        formdata.append("files[]", file);
+        $.ajax({
+            data : formdata,
+            type : "POST",
+            url : $('#description').attr('action'),
+            cache : false,
+            contentType : false,
+            processData : false,
+            dataType : "json",
+            success: function(r) {
+              if(r.Code!=1){
+                return App.message({title:'{{"系统消息"|T}}',text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
+              }
+              $.each(r.Data.files, function (index, file) {
+                $('#description').summernote('insertImage', file, function($image) {});
+              });
+            },
+            error:function(){  
+              alert('{{"上传失败"|T}}');  
+            }  
+        });
+       });
+      }
+    }
+  });
+  /*if ($('#content').summernote('isEmpty')) {
+  alert('editor content is empty');
+  }*/
+  $("#version").inputmask("9{1,10}.9{1,10}.9{1,10}");
+});
+</script>
+{{/Block}}

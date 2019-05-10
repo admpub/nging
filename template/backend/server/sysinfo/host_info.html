@@ -1,0 +1,91 @@
+{{Strip}}
+<div class="block-flat">
+	<div class="header">
+		<h3>{{"基本信息"|T}}</h3>
+	</div>
+	<div class="content">
+		<table>
+            <thead class="no-border">
+				<tr>
+					<th>{{"属性名"|T}}</th>
+					<th>{{"属性值"|T}}</th>
+					<th>{{"属性名"|T}}</th>
+					<th>{{"属性值"|T}}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>{{"主机名"|T}}</td>
+                    <td>{{.Host.Hostname}}</td>
+					<td>{{"已运行"|T}}</td>
+					<td><span class="badge">{{DurationFormat .Host.Uptime}}</span></td>
+				</tr>
+				<tr>
+					<td>{{"启动时间"|T}}</td>
+                    <td>{{(Date .Host.BootTime).Format "2006-01-02 15:04:05"}}</td>
+					<td>{{"进程数"|T}}</td>
+					<td><span class="badge">{{.Host.Procs}}</span></td>
+				</tr>
+				<tr>
+					<td>{{"系统"|T}}</td>
+                    <td>{{.Host.OS}}</td>
+					<td>{{"平台"|T}}</td>
+					<td><span class="badge">{{.Host.Platform}}</span></td>
+				</tr>
+				<tr>
+					<td>{{"平台家族"|T}}</td>
+                    <td>{{.Host.PlatformFamily}}</td>
+					<td>{{"平台版本"|T}}</td>
+					<td>{{.Host.PlatformVersion}}</td>
+				</tr>
+				<tr>
+					<td>
+						{{"CPU型号"|T}}
+					</td>
+                    <td colspan="3">
+						{{range $k,$v:=.CPU}}
+						<span class="badge badge-primary">{{$v.ModelName}}</span>
+						{{if gt $v.Cores 1}}
+						<strong title="{{T "%d核" $v.Cores}}">&times; {{$v.Cores}}</strong>
+						{{end}}
+						{{if $v.PhysicalID}}
+						<span title="{{"物理ID"|T}}">({{$v.PhysicalID}})</span>
+						{{end}}
+						<br />
+						{{end}}
+					</td>
+				</tr>
+				<tr>
+                    <td colspan="4" class="text-center default-emphasis text-bold">
+						{{"CPU负载"|T}}
+					</td>
+				</tr>
+				<tr>
+                    <td colspan="4" class="no-padding">
+						<table class="table table-striped no-margin-bottom">
+						<thead>
+							<tr>
+								<th style="width:50px">#</th>
+								<th>{{"使用率"|T}}</th>
+							</tr>
+						</thead>
+						<tbody>
+						{{range $k, $v := .CPUPercent}}
+							<tr>
+								<td>{{$k}}</td>
+								<td>
+								<div class="progress progress-striped active">
+								<div class="progress-bar progress-bar-{{if le $v 80.0}}success{{else if gt $v 95.0}}danger{{else}}warning{{end}}" style="width:{{$v}}%">{{ToFixed $v 2}}%</div>
+								</div>
+								</td>
+							</tr>
+						{{end}}
+						</tbody>
+						</table>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+{{/Strip}}

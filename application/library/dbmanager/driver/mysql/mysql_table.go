@@ -1,19 +1,19 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package mysql
 
@@ -337,19 +337,19 @@ func (m *mySQL) tablePartitions(table string) (*Partition, error) {
 	row := m.newParam().SetCollection(sqlStr).QueryRow()
 	err := row.Scan(&ret.Method, &ret.Position, &ret.Expression)
 	if err != nil {
-		return ret, err
+		return ret, fmt.Errorf(`%v: %v`, sqlStr, err)
 	}
 	sqlStr = `SELECT PARTITION_NAME, PARTITION_DESCRIPTION ` + from + ` AND PARTITION_NAME != '' ORDER BY PARTITION_ORDINAL_POSITION`
 	rows, err := m.newParam().SetCollection(sqlStr).Query()
 	if err != nil {
-		return ret, err
+		return ret, fmt.Errorf(`%v: %v`, sqlStr, err)
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var k, v sql.NullString
 		err = rows.Scan(&k, &v)
 		if err != nil {
-			return ret, err
+			return ret, fmt.Errorf(`%v: %v`, sqlStr, err)
 		}
 
 		if !k.Valid || !v.Valid {
@@ -375,7 +375,7 @@ func (m *mySQL) tableFields(table string) (map[string]*Field, []string, error) {
 		v := &FieldInfo{}
 		err := rows.Scan(&v.Field, &v.Type, &v.Collation, &v.Null, &v.Key, &v.Default, &v.Extra, &v.Privileges, &v.Comment)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, fmt.Errorf(`%v: %v`, sqlStr, err)
 		}
 		match := reField.FindStringSubmatch(v.Type.String)
 		var onUpdate string
@@ -413,16 +413,27 @@ func (m *mySQL) tableIndexes(table string) (map[string]*Indexes, []string, error
 	ret := map[string]*Indexes{}
 	sorts := []string{}
 	if err != nil {
-		return ret, sorts, err
+		return ret, sorts, fmt.Errorf(`%v: %v`, sqlStr, err)
 	}
 	defer rows.Close()
+	cols, err := rows.Columns()
+	if err != nil {
+		return ret, sorts, fmt.Errorf(`%v: %v`, sqlStr, err)
+	}
 	for rows.Next() {
 		v := &IndexInfo{}
-		err := rows.Scan(&v.Table, &v.Non_unique, &v.Key_name, &v.Seq_in_index,
-			&v.Column_name, &v.Collation, &v.Cardinality, &v.Sub_part,
-			&v.Packed, &v.Null, &v.Index_type, &v.Comment, &v.Index_comment)
+		switch len(cols) {
+		case 14:
+			err = rows.Scan(&v.Table, &v.Non_unique, &v.Key_name, &v.Seq_in_index,
+				&v.Column_name, &v.Collation, &v.Cardinality, &v.Sub_part,
+				&v.Packed, &v.Null, &v.Index_type, &v.Comment, &v.Index_comment, &v.Visible)
+		case 13:
+			err = rows.Scan(&v.Table, &v.Non_unique, &v.Key_name, &v.Seq_in_index,
+				&v.Column_name, &v.Collation, &v.Cardinality, &v.Sub_part,
+				&v.Packed, &v.Null, &v.Index_type, &v.Comment, &v.Index_comment)
+		}
 		if err != nil {
-			return ret, sorts, err
+			return ret, sorts, fmt.Errorf(`%v: %v`, sqlStr, err)
 		}
 		if _, ok := ret[v.Key_name.String]; !ok {
 			ret[v.Key_name.String] = &Indexes{
@@ -453,11 +464,26 @@ func (m *mySQL) tableForeignKeys(table string) (map[string]*ForeignKeyParam, []s
 	sorts := []string{}
 	result := map[string]*ForeignKeyParam{}
 	sqlStr := `SHOW CREATE TABLE ` + quoteCol(table)
-	row := m.newParam().SetCollection(sqlStr).QueryRow()
-	ret := make([]sql.NullString, 2)
-	err := row.Scan(&ret[0], &ret[1])
+	rows, err := m.newParam().SetCollection(sqlStr).Query()
 	if err != nil {
-		return result, sorts, err
+		return result, sorts, fmt.Errorf(`%v: %v`, sqlStr, err)
+	}
+	cols, err := rows.Columns()
+	if err != nil {
+		return result, sorts, fmt.Errorf(`%v: %v`, sqlStr, err)
+	}
+	ret := make([]*sql.NullString, len(cols))
+	recv := make([]interface{}, len(cols))
+	for i, v := range ret {
+		v = &sql.NullString{}
+		ret[i] = v
+		recv[i] = v
+	}
+	if rows.Next() {
+		err = rows.Scan(recv...)
+		if err != nil {
+			return result, sorts, fmt.Errorf(`%v: %v`, sqlStr, err)
+		}
 	}
 	matches := reForeignKey.FindAllStringSubmatch(ret[1].String, -1)
 	for _, match := range matches {
@@ -703,14 +729,14 @@ func (m *mySQL) tableTriggers(table string) (map[string]*Trigger, []string, erro
 	s := []string{}
 	rows, err := m.newParam().SetCollection(sqlStr).Query()
 	if err != nil {
-		return r, s, err
+		return r, s, fmt.Errorf(`%v: %v`, sqlStr, err)
 	}
 	defer rows.Close()
 	for rows.Next() {
 		v := &Trigger{}
 		err = rows.Scan(&v.Trigger, &v.Event, &v.Table, &v.Statement, &v.Timing, &v.Created, &v.Sql_mode, &v.Definer, &v.Character_set_client, &v.Collation_connection, &v.Database_collation)
 		if err != nil {
-			return r, s, err
+			return r, s, fmt.Errorf(`%v: %v`, sqlStr, err)
 		}
 		r[v.Trigger.String] = v
 		s = append(s, v.Trigger.String)
@@ -724,7 +750,7 @@ func (m *mySQL) tableTrigger(name string) (*Trigger, error) {
 	row := m.newParam().SetCollection(sqlStr).QueryRow()
 	err := row.Scan(&v.Trigger, &v.Event, &v.Table, &v.Statement, &v.Timing, &v.Created, &v.Sql_mode, &v.Definer, &v.Character_set_client, &v.Collation_connection, &v.Database_collation)
 	if err != nil {
-		return v, err
+		return v, fmt.Errorf(`%v: %v`, sqlStr, err)
 	}
 	return v, nil
 }

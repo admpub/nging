@@ -1,92 +1,65 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 package handler
 
 import (
 	"io"
 	"os"
-	"runtime"
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/library/errors"
 	"github.com/admpub/nging/application/library/notice"
+	"github.com/admpub/nging/application/registry/route"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
-	"github.com/webx-top/pagination"
+	"github.com/webx-top/echo/subdomains"
 )
-
-type handle struct {
-	Methods     []string
-	Function    interface{}
-	Middlewares []interface{}
-}
 
 var (
-	Handlers      = []func(*echo.Echo){}
-	GroupHandlers = map[string][]func(*echo.Group){}
+	NewLister            = common.NewLister
+	Paging               = common.Paging
+	PagingWithPagination = common.PagingWithPagination
+	PagingWithLister     = common.PagingWithLister
+	PagingWithListerCond = common.PagingWithListerCond
+	PagingWithSelectList = common.PagingWithSelectList
+	Ok                   = common.Ok
+	Err                  = common.Err
+	SendErr              = common.SendErr
+	SendFail             = common.SendFail
+	SendOk               = common.SendOk
+
+	//route
+	Register        = route.Register
+	Use             = route.Use
+	Apply           = route.Apply
+	RegisterToGroup = route.RegisterToGroup
 )
-
-func Register(fn func(*echo.Echo)) {
-	Handlers = append(Handlers, fn)
-}
-
-func RegisterToGroup(groupName string, fn func(*echo.Group)) {
-	_, ok := GroupHandlers[groupName]
-	if !ok {
-		GroupHandlers[groupName] = []func(*echo.Group){}
-	}
-	GroupHandlers[groupName] = append(GroupHandlers[groupName], fn)
-}
-
 var (
 	WebSocketLogger = log.GetLogger(`websocket`)
-	IsWindows       bool
+	OfficialSQL     string
+	FrontendPrefix  string
+	BackendPrefix   string
 )
 
 func init() {
 	WebSocketLogger.SetLevel(`Info`)
-	IsWindows = runtime.GOOS == `windows`
-}
-
-func Paging(ctx echo.Context) (page int, size int) {
-	return common.Paging(ctx)
-}
-
-func PagingWithPagination(ctx echo.Context, delKeys ...string) (page int, size int, rows int, p *pagination.Pagination) {
-	return common.PagingWithPagination(ctx, delKeys...)
-}
-
-func Ok(v string) errors.Successor {
-	return common.Ok(v)
-}
-
-func Err(ctx echo.Context, err error) (ret interface{}) {
-	return common.Err(ctx, err)
-}
-
-func SendOk(ctx echo.Context, msg string) {
-	ctx.Session().AddFlash(Ok(msg))
-}
-
-func SendFail(ctx echo.Context, msg string) {
-	ctx.Session().AddFlash(msg)
 }
 
 func User(ctx echo.Context) *dbschema.User {
@@ -94,10 +67,15 @@ func User(ctx echo.Context) *dbschema.User {
 	return user
 }
 
+func RoleList(ctx echo.Context) []*dbschema.UserRole {
+	roleList, _ := ctx.Get(`roleList`).([]*dbschema.UserRole)
+	return roleList
+}
+
 func NoticeWriter(ctx echo.Context, noticeType string) (wOut io.Writer, wErr io.Writer, err error) {
 	user := User(ctx)
 	if user == nil {
-		return nil, nil, ctx.Redirect(`/login`)
+		return nil, nil, ctx.Redirect(URLFor(`/login`))
 	}
 	typ := `service:` + noticeType
 	notice.OpenMessage(user.Username, typ)
@@ -113,4 +91,12 @@ func NoticeWriter(ctx echo.Context, noticeType string) (wOut io.Writer, wErr io.
 		return nil
 	}}
 	return
+}
+
+func URLFor(purl string) string {
+	return subdomains.Default.URL(purl, `backend`)
+}
+
+func FrontendURLFor(purl string) string {
+	return subdomains.Default.URL(purl, `frontend`)
 }

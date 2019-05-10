@@ -40,6 +40,10 @@ func (f *Factory) Debug() bool {
 	return db.DefaultSettings.LoggingEnabled()
 }
 
+func (f *Factory) CountCluster() int {
+	return len(f.databases)
+}
+
 func (f *Factory) SetDebug(on bool) *Factory {
 	db.DefaultSettings.SetLogging(on)
 	for _, cluster := range f.databases {

@@ -5,7 +5,7 @@ cd ..
 cd tool
 
 set NGINGEX=.exe
-set BUILDTAGS= windll
+set BUILDTAGS=
 
 set GOOS=windows
 set GOARCH=amd64

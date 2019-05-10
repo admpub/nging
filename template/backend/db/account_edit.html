@@ -1,0 +1,89 @@
+{{Extend "layout"}}
+{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加数据库账号"|T}}{{else}}{{"修改数据库账号"|T}}{{end}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="__BACKEND__/db/account">{{"数据库账号"|T}}</a></li>
+<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
+{{/Block}}
+{{Block "main"}}
+
+{{$addingMode:=HasSuffix URL.Path "_add"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{if $addingMode}}{{"添加数据库账号"|T}}{{else}}{{"修改数据库账号"|T}}{{end}}</h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" id="account-add-form" method="POST" action="">
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">{{"标题"|T}}</label>
+                  <div class="col-sm-8">
+                      <input type="text" class="form-control" name="title" placeholder="{{"账号说明"|}}" value="{{Form "title"}}" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">{{"数据库类型"|T}}</label>
+                  <div class="col-sm-8">
+                    {{$v := Form "engine"}}
+                     <select class="form-control" name="engine">
+                       {{range $k,$driverName:=Stored.Get "driverList"}}
+                       <option value="{{$k}}"{{if eq $v $k}} selected{{end}}>{{$driverName}}</option>
+                       {{end}}
+                     </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">{{"服务器地址"|T}}</label>
+                  <div class="col-sm-8">
+                      <input type="text" class="form-control" name="host" placeholder="127.0.0.1:3306" value="{{Form "host"}}">
+                  </div>
+                </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"账户名"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" name="user" placeholder="root" value="{{Form "user"}}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"密码"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="password" class="form-control" name="password" placeholder="" value="{{Form "password"}}" autocomplete="off">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"数据库名称"|T}}</label>
+                <div class="col-sm-8">
+                  <input type="text" class="form-control" name="name" value="{{Form "name"}}">
+                </div>
+              </div>
+              
+              <div class="form-group form-submit-group">
+									<div class="col-sm-9 col-sm-offset-2">
+									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+									</div>
+							</div>
+            </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script type="text/javascript">
+if(window.opener && window.opener.dbAccountAdded){
+  $('#account-add-form').on('submit',function(event){
+    event.preventDefault();
+    var data=$(this).serializeArray();
+    $.post(window.location.href,data,function(r){
+      window.opener.App.message({title:'{{"系统消息"|T}}',text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
+      if(r.Code==1){
+        window.opener.dbAccountAdded(r.Data.id,r.Data.title);
+        window.close();
+      }
+    },'json');
+  });
+}
+</script>
+{{/Block}}

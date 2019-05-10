@@ -1,0 +1,114 @@
+{{Extend "layout"}}
+{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加账号"|T}}{{else}}{{"修改账号"|T}}{{end}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="__BACKEND__/term/account">{{"SSH账号"|T}}</a></li>
+<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
+{{/Block}}
+{{Block "main"}}
+
+{{$addingMode:=HasSuffix URL.Path "_add"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{if $addingMode}}{{"添加账号"|T}}{{else}}{{"修改账号"|T}}{{end}}</h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" method="POST" action="" id="account-add-form">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"用户组"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "groupId"}}
+                   <select class="form-control" name="groupId">
+                     <option value="">{{"<无>"|T}}</option>
+                     {{range $k,$g:=Stored.Get "groupList"}}
+                     <option value="{{$g.Id}}"{{if eq $v (Str $g.Id)}} selected{{end}}>{{$g.Name}}</option>
+                     {{end}}
+                   </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"账号描述"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" name="name" value="{{Form "name"}}" autocomplete="off">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"网络地址"|T}}</label>
+                <div class="col-sm-8">
+                  <div class="input-group">
+                    <div class="input-group-addon">{{"IP"|T}}</div>
+                    <input type="text" class="form-control" name="host" value="{{Form "host"}}">
+                    <div class="input-group-addon">{{"端口"|T}}</div>
+                    <input type="text" class="form-control" name="port" value="{{Form "port" "22"}}">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"账户名"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" name="username" value="{{Form "username" "root"}}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"密码"|T}}</label>
+                <div class="col-sm-8">
+                  <div class="input-group">
+                    <input type="password" class="form-control" id="ssh-password" name="password" value="{{Form "password"}}" autocomplete="off">
+                    <div class="input-group-addon"><i class="fa fa-eye fa-eye-slash" onclick="$('#ssh-password').attr('type',$(this).hasClass('fa-eye-slash')?'text':'password');$(this).toggleClass('fa-eye-slash');"></i></div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"私钥内容"|T}}</label>
+                <div class="col-sm-8">
+                  <textarea class="form-control" name="privateKey" rows="10">{{Form "privateKey"}}</textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"私钥口令"|T}}</label>
+                <div class="col-sm-8">
+                  <div class="input-group">
+                    <input type="password" class="form-control" id="ssh-passphrase" name="passphrase" value="{{Form "passphrase"}}" autocomplete="off">
+                    <div class="input-group-addon"><i class="fa fa-eye fa-eye-slash" onclick="$('#ssh-passphrase').attr('type',$(this).hasClass('fa-eye-slash')?'text':'password');$(this).toggleClass('fa-eye-slash');"></i></div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"说明"|T}}</label>
+                <div class="col-sm-8">
+                  <textarea class="form-control" name="description">{{Form "description"}}</textarea>
+                </div>
+              </div>
+
+              
+              <div class="form-group form-submit-group">
+									<div class="col-sm-9 col-sm-offset-2">
+									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+									</div>
+							</div>
+            </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script type="text/javascript">
+if(window.opener && window.opener.sshAccountAdded){
+  $('#account-add-form').on('submit',function(event){
+    event.preventDefault();
+    var data=$(this).serializeArray();
+    $.post(window.location.href,data,function(r){
+      window.opener.App.message({title:'{{"系统消息"|T}}',text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
+      if(r.Code==1){
+        window.opener.sshAccountAdded(r.Data.id,r.Data.name);
+        window.close();
+      }
+    },'json');
+  });
+}
+</script>
+{{/Block}}

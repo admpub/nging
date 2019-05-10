@@ -1,32 +1,34 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package index
 
 import (
 	"errors"
-
 	"strings"
 
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/nging/application/library/license"
 	"github.com/admpub/nging/application/middleware"
 	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/application/registry/dashboard"
 	"github.com/webx-top/com"
+	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
 )
@@ -34,6 +36,7 @@ import (
 func init() {
 	handler.Register(func(e *echo.Echo) {
 		e.Route("GET", `/`, Index)
+		e.Route("GET", `/index`, Index)
 		e.Route("GET,POST", `/login`, Login)
 		e.Route("GET,POST", `/register`, Register)
 		e.Route("GET", `/logout`, Logout)
@@ -42,18 +45,51 @@ func init() {
 }
 
 func Index(ctx echo.Context) error {
-	return ctx.Redirect(`/manage`)
+	user := handler.User(ctx)
+	if user == nil {
+		return ctx.Redirect(handler.URLFor(`/login`))
+	}
+	var err error
+	ctx.Set(`cards`, dashboard.CardAll().Build(ctx))
+	blocks := dashboard.BlockAll()
+	if err = blocks.Ready(ctx); err != nil {
+		return err
+	}
+	ctx.Set(`blocks`, blocks)
+
+	//指令集
+	cmdMdl := model.NewCommand(ctx)
+	if user.Id == 1 {
+		cmdMdl.List(nil, nil, 1, -1)
+	} else {
+		roleList := handler.RoleList(ctx)
+		cmdIds := []string{}
+		for _, role := range roleList {
+			if len(role.PermCmd) > 0 {
+				cmdIds = append(cmdIds, strings.Split(role.PermCmd, `,`)...)
+			}
+		}
+		if len(cmdIds) > 0 {
+			cmdMdl.List(nil, nil, 1, -1, db.Cond{`id`: db.In(cmdIds)})
+		}
+	}
+	ctx.Set(`cmdList`, cmdMdl.Objects())
+	ctx.Set(`license`, license.License())
+	ctx.Set(`showExpirationTime`, config.DefaultConfig.Sys.ShowExpirationTime)
+	machineID, _ := license.MachineID()
+	ctx.Set(`productURL`, license.ProductURL()+config.Version.Number+`/`+machineID)
+	return ctx.Render(`index`, handler.Err(ctx, err))
 }
 
 func Login(ctx echo.Context) error {
 	//检查是否已安装
 	if !config.IsInstalled() {
-		return ctx.Redirect(`/setup`)
+		return ctx.Redirect(handler.URLFor(`/setup`))
 	}
 
 	returnTo := ctx.Form(`return_to`)
 	if len(returnTo) == 0 {
-		returnTo = `/manage`
+		returnTo = handler.URLFor(`/index`)
 	}
 
 	user := handler.User(ctx)
@@ -63,7 +99,7 @@ func Login(ctx echo.Context) error {
 	var err error
 	if ctx.IsPost() {
 		if !tplfunc.CaptchaVerify(ctx.Form(`code`), ctx.Form) {
-			err = errors.New(ctx.T(`验证码不正确`))
+			err = ctx.E(`验证码不正确`)
 		} else {
 			err = middleware.Auth(ctx, true)
 			if err == nil {
@@ -86,28 +122,30 @@ func Register(ctx echo.Context) error {
 		passwd := ctx.Form(`password`)
 		repwd := ctx.Form(`confirmationPassword`)
 		if len(code) == 0 {
-			err = errors.New(ctx.T(`邀请码不能为空`))
+			err = ctx.E(`邀请码不能为空`)
 		} else if len(user) == 0 {
-			err = errors.New(ctx.T(`用户名不能为空`))
+			err = ctx.E(`用户名不能为空`)
 		} else if len(email) == 0 {
-			err = errors.New(ctx.T(`Email不能为空`))
+			err = ctx.E(`Email不能为空`)
 		} else if len(passwd) < 8 {
-			err = errors.New(ctx.T(`密码不能少于8个字符`))
+			err = ctx.E(`密码不能少于8个字符`)
 		} else if repwd != passwd {
-			err = errors.New(ctx.T(`密码与确认密码不一致`))
+			err = ctx.E(`密码与确认密码不一致`)
 		} else if !com.IsUsername(user) {
 			err = errors.New(ctx.T(`用户名不能包含特殊字符(只能由字母、数字、下划线和汉字组成)`))
+		} else if !ctx.Validate(`email`, email, `email`).Ok() {
+			err = ctx.E(`Email地址格式不正确`)
 		} else {
 			var exists bool
 			exists, err = m.Exists(user)
 			if exists {
-				err = errors.New(ctx.T(`用户名已经存在`))
+				err = ctx.E(`用户名已经存在`)
 			}
 			if err == nil {
 				err = c.VerfyInvitationCode(code)
 			}
 			if err == nil && !ctx.Validate(`email`, email, `email`).Ok() {
-				err = errors.New(ctx.T(`Email地址格式不正确`))
+				err = ctx.E(`Email地址格式不正确`)
 			}
 		}
 		if err == nil {
@@ -117,10 +155,10 @@ func Register(ctx echo.Context) error {
 			}
 		}
 		if err == nil {
-			ctx.Session().Set(`user`, m.User)
+			m.SetSession()
 			returnTo := ctx.Query(`return_to`)
 			if len(returnTo) == 0 {
-				returnTo = `/manage`
+				returnTo = handler.URLFor(`/index`)
 			}
 			return ctx.Redirect(returnTo)
 		}
@@ -130,7 +168,7 @@ func Register(ctx echo.Context) error {
 
 func Logout(ctx echo.Context) error {
 	ctx.Session().Delete(`user`)
-	return ctx.Redirect(`/login`)
+	return ctx.Redirect(handler.URLFor(`/login`))
 }
 
 func Donation(ctx echo.Context) error {
@@ -139,5 +177,5 @@ func Donation(ctx echo.Context) error {
 	if strings.HasPrefix(lang, `zh`) {
 		langSuffix = `_zh-CN`
 	}
-	return ctx.Redirect(`/public/donation` + langSuffix + `.html`)
+	return ctx.Redirect(`/public/assets/html/donation` + langSuffix + `.html`)
 }

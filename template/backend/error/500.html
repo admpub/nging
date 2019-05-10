@@ -1,0 +1,56 @@
+{{Strip}}{{Extend "base"}}
+{{Block "description"}}{{.title}}{{/Block}}
+{{Block "title"}}{{"错误"|T}}{{/Block}}
+{{Block "bodyAttr"}} class="texture"{{/Block}}
+{{Block "main"}}
+<div id="cl-wrapper" class="forgotpassword-container">
+<div class="middle">
+	<div class="block-flat">
+		<div class="header">
+			<h3 class="text-center">
+				<i class="fa fa-warning"></i> 
+				{{"系统消息"|T}}
+			</h3>
+		</div>
+		<div>
+			<div class="content">
+				<h4 class="title text-center"><strong>{{"非常抱歉，操作出错了"|T}}</strong></h4>
+				{{if .panic}}
+				<pre id="panic-content">{{.content}}</pre>
+				{{else}}
+				<p class="text-center"><i class="fa fa-lightbulb-o"></i> {{.content}}</p>
+				{{end}}
+				<hr/>
+				<!-- <p class="spacer text-center">{{"如果您发现程序有异常，请联系我们修复。"|T}} <a href="#">{{"联系我们"|T}}</a></p> -->
+				<div class="row">
+				<div class="btn-group col-sm-12">
+					<a class="btn btn-primary btn-rad btn-lg col-sm-6" href="javascript:;" onclick="history.back()">
+						<i class="fa fa-reply"></i>
+						{{"回到上一页"|T}}
+					</a>
+					<a class="btn btn-success btn-rad btn-lg col-sm-6" href="/">
+						<i class="fa fa-home"></i>
+						{{"回到首页"|T}}
+					</a>
+				</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="text-center out-links">
+		<a href="https://github.com/admpub/nging" target="_blank">&copy; {{Now.Year}} {{Version}}</a>
+	</div>
+</div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script type="text/javascript" src="__ASSETS__/js/behaviour/general.min.js"></script>
+{{/Block}}
+{{Block "tracker"}}
+{{- if .panic -}}
+<script type="text/javascript">
+$(function(){App.reportBug('{{TrackerURL}}');});
+</script>
+{{- end -}}
+{{/Block}}
+{{/Strip}}

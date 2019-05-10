@@ -1,7 +1,7 @@
 
 app {
   # 生产环境下的可执行文件。支持用“*”代替文件名的一部分，例如："tower-app-*.exe"
-  exec : "tower-app-*.exe"
+  exec : "./tower-app-*.exe"
 
   # 开发环境下用“go run”命令运行的源文件，一般为“main.go”
   main : ""
@@ -16,10 +16,10 @@ app {
   buildDir : ""
   
   # go build所需的其它参数，例如：-tags sqlite
-  buildParams : ':~:-tags~sqlite windll'
+  buildParams : ':~:-tags~sqlite windll zbar officail'
 
   # 运行app所需的其它参数，例如：webx.exe -p 8080 -e 90 -d 100 其中的“-e 90 -d 100”就是(注意：内部用[单个]半角空格隔开)。
-  params : ""
+  params : "--frontenddomain www.coscms.com,nging.coscms.com:8080"
 }
 
 proxy {
@@ -43,7 +43,7 @@ watch {
   otherDir : ""
   
   # 忽略的路径(正则表达式)，不填则不限制(排除某个完整的文件夹名请用“/文件夹名/”的格式)
-  ignoredPath : ""
+  ignoredPath : "/.git/|/node_modules/|/web-terminal/"
 }
 
 # 是否显示细节信息。如果设置为true，会自动将下面的logLevel设置为Debug

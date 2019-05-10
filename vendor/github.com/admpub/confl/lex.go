@@ -23,11 +23,8 @@ import (
 )
 
 var (
-	// Which Identity Characters are allowed?
+	// IdentityChars Which Identity Characters are allowed?
 	IdentityChars = "_."
-	// A lax identity char set rule, we use as default
-	// if you want the one above, swap them out
-	//IdentityChars = "_./- "
 )
 
 type itemType int
@@ -205,6 +202,13 @@ func (lx *lexer) backup() {
 	}
 }
 
+// peek returns but does not consume the next rune in the input.
+func (lx *lexer) peek() rune {
+	r := lx.next()
+	lx.backup()
+	return r
+}
+
 // accept consumes the next rune if it's equal to `valid`.
 func (lx *lexer) accept(valid rune) bool {
 	if lx.next() == valid {
@@ -212,13 +216,6 @@ func (lx *lexer) accept(valid rune) bool {
 	}
 	lx.backup()
 	return false
-}
-
-// peek returns but does not consume the next rune in the input.
-func (lx *lexer) peek() rune {
-	r := lx.next()
-	lx.backup()
-	return r
 }
 
 // skip ignores all input that matches the given predicate.
@@ -312,8 +309,7 @@ func lexTopEnd(lx *lexer) stateFn {
 		return nil
 	}
 
-	return lx.errorf("Expected a top-level value to end with a new line, "+
-		"comment or EOF, but got '%v' instead.\nSource:-------------\n%v\n------------EndSource", r, lx.input)
+	return lx.errorf("Source:-------------\n%v 👈 <------- ❌ Expected a top-level value to end with a new line, comment or EOF, but got '%v' instead.\n", lx.input[0:lx.start]+`[`+lx.input[lx.start:lx.pos]+`]`, r)
 }
 
 // lexKeyStart consumes a key name up until the first non-whitespace character.
@@ -324,6 +320,7 @@ func lexKeyStart(lx *lexer) stateFn {
 	case isKeySeparator(r):
 		return lx.errorf("Unexpected key separator '%v'.", r)
 	case isWhitespace(r) || isNL(r):
+		// Most likely this is not-reachable, as the lexTop already checks for it.
 		lx.next()
 		return lexSkip(lx, lexKeyStart)
 	case r == dqStringStart:
@@ -1172,44 +1169,8 @@ func isHexadecimal(r rune) bool {
 		(r >= 'A' && r <= 'F')
 }
 
-func (itype itemType) String() string {
-	switch itype {
-	case itemError:
-		return "Error"
-	case itemNIL:
-		return "NIL"
-	case itemEOF:
-		return "EOF"
-	case itemText:
-		return "Text"
-	case itemString:
-		return "String"
-	case itemBool:
-		return "Bool"
-	case itemInteger:
-		return "Integer"
-	case itemFloat:
-		return "Float"
-	case itemDatetime:
-		return "DateTime"
-	case itemKey:
-		return "Key"
-	case itemArrayStart:
-		return "ArrayStart"
-	case itemArrayEnd:
-		return "ArrayEnd"
-	case itemMapStart:
-		return "MapStart"
-	case itemMapEnd:
-		return "MapEnd"
-	case itemCommentStart:
-		return "CommentStart"
-	}
-	panic(fmt.Sprintf("BUG: Unknown type '%s'.", itype.String()))
-}
-
 func (item item) String() string {
-	return fmt.Sprintf("(%s, '%s', %d)", item.typ.String(), item.val, item.line)
+	return fmt.Sprintf("(%T, '%s', %d)", item.typ, item.val, item.line)
 }
 
 func escapeSpecial(c rune) string {

@@ -25,6 +25,7 @@ import (
 	"context"
 	"database/sql"
 	"sync/atomic"
+	"time"
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/sqlbuilder"
@@ -53,10 +54,20 @@ type databaseTx struct {
 }
 
 // NewDatabaseTx creates a database session within a transaction.
-func NewDatabaseTx(db Database) DatabaseTx {
+func NewDatabaseTx(dba Database) DatabaseTx {
+	if dba.LoggingEnabled() {
+		defer func(start time.Time) {
+			dba.Logger().Log(&db.QueryStatus{
+				Query: `BEGIN TRANSACTION`,
+				Err:   nil,
+				Start: start,
+				End:   time.Now(),
+			})
+		}(time.Now())
+	}
 	return &databaseTx{
-		Database: db,
-		BaseTx:   db.Transaction(),
+		Database: dba,
+		BaseTx:   dba.Transaction(),
 	}
 }
 
@@ -86,12 +97,32 @@ func (b *baseTx) Commit() (err error) {
 	return nil
 }
 
-func (w *databaseTx) Commit() error {
+func (w *databaseTx) Commit() (err error) {
+	if w.Database.LoggingEnabled() {
+		defer func(start time.Time) {
+			w.Database.Logger().Log(&db.QueryStatus{
+				Query: `COMMIT`, //`COMMIT TRANSACTION`,
+				Err:   err,
+				Start: start,
+				End:   time.Now(),
+			})
+		}(time.Now())
+	}
 	defer w.Database.Close() // Automatic close on commit.
 	return w.BaseTx.Commit()
 }
 
-func (w *databaseTx) Rollback() error {
+func (w *databaseTx) Rollback() (err error) {
+	if w.Database.LoggingEnabled() {
+		defer func(start time.Time) {
+			w.Database.Logger().Log(&db.QueryStatus{
+				Query: `ROLLBACK`, //`ROLLBACK TRANSACTION`,
+				Err:   err,
+				Start: start,
+				End:   time.Now(),
+			})
+		}(time.Now())
+	}
 	defer w.Database.Close() // Automatic close on rollback.
 	return w.BaseTx.Rollback()
 }

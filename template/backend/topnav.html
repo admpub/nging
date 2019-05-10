@@ -1,0 +1,95 @@
+ {{Strip}}
+        <ul class="nav navbar-nav" id="topnav">
+          <li class="active"><a href="__BACKEND__/"><i class="fa fa-dashboard"></i> Nging</a></li>
+          <!-- 
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{"其它产品"|T}} <b class="caret"></b></a>
+            <ul class="dropdown-menu from-top">
+              <li><a href="http://www.webx.top/product/coscms" target="_blank">COSCMS</a></li>
+              <li><a href="http://www.webx.top/product/adsystem" target="_blank">{{"广告系统"|T}}</a></li>
+              <li class="dropdown-submenu"><a href="#">{{"第三方产品"|T}}</a>
+                <ul class="dropdown-menu">
+                  <li><a href="#" target="_blank">Product</a></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{"赞助商"|T}} <b class="caret"></b></a>
+            <ul class="dropdown-menu col-menu-2 from-top">
+              <li class="col-sm-6 no-padding">
+                <ul>
+                <li class="dropdown-header"><i class="fa fa-group"></i>Users</li>
+                <li><a href="#">Action</a></li>
+                <li><a href="#">Another action</a></li>
+                <li><a href="#">Something else here</a></li>
+                <li class="dropdown-header"><i class="fa fa-gear"></i>Config</li>
+                <li><a href="#">Action</a></li>
+                <li><a href="#">Another action</a></li>
+                <li><a href="#">Something else here</a></li> 
+                </ul>
+              </li>
+              <li  class="col-sm-6 no-padding">
+                <ul>
+                <li class="dropdown-header"><i class="fa fa-legal"></i>Sales</li>
+                <li><a href="#">New sale</a></li>
+                <li><a href="#">Register a product</a></li>
+                <li><a href="#">Register a client</a></li> 
+                <li><a href="#">Month sales</a></li>
+                <li><a href="#">Delivered orders</a></li>
+                </ul>
+              </li>
+            </ul>
+          </li> -->
+          
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-smile-o"></i> {{"赞助我们"|T}} <b class="caret"></b></a>
+            <ul class="dropdown-menu from-top">
+              <li><a href="__ASSETS__/donation/alipay.jpg" target="_blank">{{"支付宝付款"|T}}</a></li>
+              <li><a href="__ASSETS__/donation/wechat_pay.png" target="_blank">{{"微信付款"|T}}</a></li>
+              <li><a href="__BACKEND__/donation" target="_blank">{{"赞助比特币"|T}}</a></li>
+            </ul>
+          </li>
+				  <li class="dropdown">
+				  	<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-text-width"></i> {{"Languages"|T}} <b class="caret"></b></a>
+				  	<ul class="dropdown-menu from-top">
+				  		{{range $k, $v := Languages}}
+				  		<li{{if eq $v Lang}} class="active"{{end}}>
+				  			<a href="?lang={{$v}}">{{$v}}</a>
+				  		</li>
+				  		{{end}}
+				  	</ul>
+          </li>
+          
+          {{$topNavigate := Navigate "top"}}
+          {{range $key, $nav := $topNavigate}}{{if $nav.DisplayOnMenu}}
+          <li class="dropdown">
+            {{if $nav.Children}}
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <i class="fa fa-{{$nav.Icon|Default "gear"}}"></i>
+              {{$nav.Name}} <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu from-top">
+              {{range $k, $c := $nav.Children}}
+              {{if $c.DisplayOnMenu}}
+              <li>
+                <a{{if eq $c.Target "ajax"}} href="javascript:;" data-ajax-url="__BACKEND__/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{else}} href="__BACKEND__/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if ne $c.Target "redirect"}} data-pjax="#main-container" data-keepjs="true" data-marknav="top"{{end}}{{end}}>
+                {{if eq $c.Icon "plus"}}
+                <span class="label label-primary pull-right">+</span>
+                {{end}}
+                {{$c.Name|T}}
+                </a>
+              </li>
+              {{end}}
+              {{end}}
+            </ul>
+            {{else}}
+            <a{{if eq $nav.Target "ajax"}} href="javascript:;" data-ajax-url="__BACKEND__/{{$nav.Action}}"{{else}} href="__BACKEND__/{{$nav.Action}}"{{if ne $nav.Target "redirect"}} data-pjax="#main-container" data-keepjs="true" data-marknav="true"{{end}}{{end}}>
+                <i class="fa fa-{{$nav.Icon|Default "gear"}}"></i>
+                {{$nav.Name}} <b class="caret"></b>
+              </a>
+            {{end}}
+          </li>
+          {{end}}{{end}} 
+        </ul>
+{{/Strip}}

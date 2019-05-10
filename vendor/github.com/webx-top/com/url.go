@@ -46,9 +46,12 @@ func Base64Decode(str string) (string, error) {
 // SafeBase64Encode base64 encode
 func SafeBase64Encode(str string) string {
 	str = Base64Encode(str)
+	var suf string
 	for strings.HasSuffix(str, `=`) {
-		str = strings.TrimSuffix(str, `=`) + `_`
+		str = strings.TrimSuffix(str, `=`)
+		suf += `_`
 	}
+	str += suf
 	str = strings.Replace(str, `/`, `-`, -1)
 	return str
 }
@@ -57,9 +60,12 @@ func SafeBase64Encode(str string) string {
 func SafeBase64Decode(str string) (string, error) {
 	str = strings.Replace(str, `-`, `/`, -1)
 	str = strings.Replace(str, ` `, `+`, -1)
+	var suf string
 	for strings.HasSuffix(str, `_`) {
-		str = strings.TrimSuffix(str, `_`) + `=`
+		str = strings.TrimSuffix(str, `_`)
+		suf += `=`
 	}
+	str += suf
 	return Base64Decode(str)
 }
 

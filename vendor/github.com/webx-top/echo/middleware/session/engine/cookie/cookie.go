@@ -33,8 +33,17 @@ func Reg(store sessions.Store, args ...string) {
 	ss.Reg(name, store)
 }
 
-func RegWithOptions(opts *CookieOptions, args ...string) {
-	Reg(New(opts), args...)
+func RegWithOptions(opts *CookieOptions, args ...string) sessions.Store {
+	store := New(opts)
+	Reg(store, args...)
+	return store
+}
+
+func NewCookieOptions(keys ...string) *CookieOptions {
+	options := &CookieOptions{
+		KeyPairs: KeyPairs(keys...),
+	}
+	return options
 }
 
 type CookieOptions struct {

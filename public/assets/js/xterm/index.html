@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="author" content="nging@coscms.com"/>
+    <title>Web TTY - Nging</title>
+    <link rel="shortcut icon" href="/static/favicon.ico">
+    <style>
+        body {
+            margin: 0;
+            font-family: helvetica, sans-serif, arial;
+            font-size: 14px;
+            color: #fefefe;
+            background-color:#000;
+            padding:0;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #terminal-container {
+            width: 100%;
+            height: 450px;
+            margin: 0 auto;
+            padding: 2px;
+        }
+
+        #options, #login {
+            width: 300px;
+            /*-webkit-transition: height .5s;*/
+            /*-moz-transition: height .5s;*/
+            /*-o-transition: height .5s;*/
+            position: fixed;
+            z-index: 9;
+        }
+
+        #options.active {
+            margin: 0;
+            height: 350px;
+        }
+
+        #login.active {
+            margin: 0;
+            height: 200px;
+        }
+
+        .hide {
+            display: none;
+        }
+        
+        #title{
+            margin:0;padding:0 10px;line-height:30px;
+            border-bottom:1px solid #888;
+        }
+    </style>
+
+    <link rel="stylesheet" href="./xterm.css"/>
+    <link rel="stylesheet" href="./addons/fullscreen/fullscreen.css"/>
+    <script src="./xterm.js"></script>
+    <script src="./addons/attach/attach.js"></script>
+    <!-- <script src="./zmodem.js"></script>
+    <script src="./addons/zmodem/zmodem.js"></script> -->
+    <script src="./addons/fit/fit.js"></script>
+    <script src="./addons/fullscreen/fullscreen.js"></script>
+    <script src="./addons/search/search.js"></script>
+    <script src="./addons/webLinks/webLinks.js"></script>
+    <script src="./addons/winptyCompat/winptyCompat.js"></script>
+</head>
+<body>
+<div style="overflow:hidden">
+    <div style="float:right;">
+        <p style="margin: 3px;height: 25px;line-height: 20px">
+            <label><input id="find-text"/></label>
+            <button id="find-next">查找</button>
+            <button id="find-previous">向前</button>
+            <button id="toggle-options">选项</button>
+            <button onclick="toggleLogin()">登录</button>
+            <!-- <button onclick="toggleFullscreen()">全屏</button> -->
+        </p>
+        <div id="login" class="hide">
+            <h2 style="margin-top:0">请输入用户名和密码</h2>
+            <p>
+                <label>用户名 <input type="text" id="userName"> </label>
+            </p>
+            <p>
+                <label>密码 <input type="password" id="password"></label>
+            </p>
+            <button id="ssh-login">确认</button>
+        </div>
+        <div id="options" class="hide">
+            <h2 style="margin-top:0">选项</h2>
+            <p>
+                <label><input type="checkbox" id="option-cursor-blink"> 光标闪烁</label>
+            </p>
+            <p>
+                <label>
+                    光标样式
+                    <select id="option-cursor-style">
+                        <option value="block">block</option>
+                        <option value="underline">underline</option>
+                        <option value="bar">bar</option>
+                    </select>
+                </label>
+            </p>
+            <p>
+                <label>
+                    铃声(试验性功能)
+                    <select id="option-bell-style">
+                        <option value="">none</option>
+                        <option value="sound">sound</option>
+                        <option value="visual">visual</option>
+                        <option value="both">both</option>
+                    </select>
+                </label>
+            </p>
+            <p>
+                <label>屏幕缓冲区 <input type="number" id="option-scrollback" value="1000"/></label>
+            </p>
+            <p>
+                <label>Tab 字符宽度 <input type="number" id="option-tabstopwidth" value="8"/></label>
+            </p>
+            <div>
+                <h3>大小</h3>
+                <p>
+                    <label for="cols">列</label>
+                    <input type="number" id="cols" value="80"/>
+                </p>
+                <p>
+                    <label for="rows">行</label>
+                    <input type="number" id="rows" value="32"/>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div>
+        <h3 id="title">23444</h3>
+    </div>
+</div>
+<div id="terminal-container"></div>
+<script src="./main.js"></script>
+</body>
+</html>

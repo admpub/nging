@@ -1,24 +1,23 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package ftp
 
 import (
-	"errors"
 	"strings"
 
 	"github.com/admpub/nging/application/dbschema"
@@ -29,30 +28,17 @@ import (
 	"github.com/webx-top/echo"
 )
 
-func init() {
-	handler.RegisterToGroup(`/ftp`, func(g *echo.Group) {
-		g.Route(`GET`, `/account`, AccountIndex)
-		g.Route(`GET,POST`, `/account_add`, AccountAdd)
-		g.Route(`GET,POST`, `/account_edit`, AccountEdit)
-		g.Route(`GET,POST`, `/account_delete`, AccountDelete)
-
-		g.Route(`GET`, `/group`, GroupIndex)
-		g.Route(`GET,POST`, `/group_add`, GroupAdd)
-		g.Route(`GET,POST`, `/group_edit`, GroupEdit)
-		g.Route(`GET,POST`, `/group_delete`, GroupDelete)
-	})
-}
-
 func AccountIndex(ctx echo.Context) error {
+	groupId := ctx.Formx(`groupId`).Uint()
 	m := model.NewFtpUser(ctx)
-	page, size, totalRows, p := handler.PagingWithPagination(ctx)
-	cnt, err := m.List(nil, nil, page, size)
-	ret := handler.Err(ctx, err)
-	if totalRows <= 0 {
-		totalRows = int(cnt())
-		p.SetRows(totalRows)
+	cond := db.Cond{}
+	if groupId > 0 {
+		cond[`group_id`] = groupId
 	}
-	ctx.Set(`pagination`, p)
+	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, nil, func(r db.Result) db.Result {
+		return r.OrderBy(`-id`)
+	}, cond))
+	ret := handler.Err(ctx, err)
 	users := m.Objects()
 	gIds := []uint{}
 	userAndGroup := make([]*model.FtpUserAndGroup, len(users))
@@ -63,54 +49,52 @@ func AccountIndex(ctx echo.Context) error {
 		if u.GroupId < 1 {
 			continue
 		}
-		has := false
-		for _, gid := range gIds {
-			if gid == u.GroupId {
-				has = true
-				break
-			}
-		}
-		if !has {
+		if !com.InUintSlice(u.GroupId, gIds) {
 			gIds = append(gIds, u.GroupId)
 		}
 	}
 
 	mg := model.NewFtpUserGroup(ctx)
 	var groupList []*dbschema.FtpUserGroup
-	_, err = mg.List(&groupList, nil, 1, 1000, db.Cond{`id IN`: gIds})
-	if err != nil {
-		if ret == nil {
-			ret = err
-		}
-	} else {
-		for k, v := range userAndGroup {
-			for _, g := range groupList {
-				if g.Id == v.GroupId {
-					userAndGroup[k].Group = g
-					break
+	if len(gIds) > 0 {
+		_, err = mg.List(&groupList, nil, 1, 1000, db.Cond{`id IN`: gIds})
+		if err != nil {
+			if ret == nil {
+				ret = err
+			}
+		} else {
+			for k, v := range userAndGroup {
+				for _, g := range groupList {
+					if g.Id == v.GroupId {
+						userAndGroup[k].Group = g
+						break
+					}
 				}
 			}
 		}
 	}
 	ctx.Set(`listData`, userAndGroup)
+	mg.ListByOffset(&groupList, nil, 0, -1)
+	ctx.Set(`groupList`, groupList)
+	ctx.Set(`groupId`, groupId)
 	return ctx.Render(`ftp/account`, ret)
 }
 
 func AccountAdd(ctx echo.Context) error {
 	var err error
+	m := model.NewFtpUser(ctx)
 	if ctx.IsPost() {
-		m := model.NewFtpUser(ctx)
 		username := ctx.Form(`username`)
 		if ctx.Form(`confirmPassword`) != ctx.Form(`password`) {
-			err = errors.New(ctx.T(`两次输入的密码之间不匹配，请输入一样的密码，以确认自己没有输入错误`))
+			err = ctx.E(`两次输入的密码之间不匹配，请输入一样的密码，以确认自己没有输入错误`)
 		} else if len(ctx.Form(`password`)) < 6 {
-			err = errors.New(ctx.T(`密码不能少于6个字符`))
+			err = ctx.E(`密码不能少于6个字符`)
 		} else if len(username) == 0 {
-			err = errors.New(ctx.T(`账户名不能为空`))
+			err = ctx.E(`账户名不能为空`)
 		} else if y, e := m.Exists(username); e != nil {
 			err = e
 		} else if y {
-			err = errors.New(ctx.T(`账户名已经存在`))
+			err = ctx.E(`账户名已经存在`)
 		} else {
 			err = ctx.MustBind(m.FtpUser)
 		}
@@ -120,7 +104,21 @@ func AccountAdd(ctx echo.Context) error {
 			_, err = m.Add()
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))
-				return ctx.Redirect(`/ftp/account`)
+				return ctx.Redirect(handler.URLFor(`/ftp/account`))
+			}
+		}
+	} else {
+		id := ctx.Formx(`copyId`).Uint()
+		if id > 0 {
+			err = m.Get(nil, `id`, id)
+			if err == nil {
+				echo.StructToForm(ctx, m.FtpUser, ``, func(topName, fieldName string) string {
+					if topName == `` && fieldName == `Password` {
+						return ``
+					}
+					return echo.LowerCaseFirstLetter(topName, fieldName)
+				})
+				ctx.Request().Form().Set(`id`, `0`)
 			}
 		}
 	}
@@ -142,9 +140,9 @@ func AccountEdit(ctx echo.Context) error {
 		password := ctx.Form(`password`)
 		length := len(password)
 		if ctx.Form(`confirmPassword`) != password {
-			err = errors.New(ctx.T(`两次输入的密码之间不匹配，请输入一样的密码，以确认自己没有输入错误`))
+			err = ctx.E(`两次输入的密码之间不匹配，请输入一样的密码，以确认自己没有输入错误`)
 		} else if length > 0 && length < 6 {
-			err = errors.New(ctx.T(`密码不能少于6个字符`))
+			err = ctx.E(`密码不能少于6个字符`)
 		} else {
 			err = ctx.MustBind(m.FtpUser, func(k string, v []string) (string, []string) {
 				switch strings.ToLower(k) {
@@ -166,7 +164,7 @@ func AccountEdit(ctx echo.Context) error {
 			err = m.Edit(nil, db.Cond{`id`: id})
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))
-				return ctx.Redirect(`/ftp/account`)
+				return ctx.Redirect(handler.URLFor(`/ftp/account`))
 			}
 		}
 	} else if err == nil {
@@ -198,34 +196,28 @@ func AccountDelete(ctx echo.Context) error {
 		handler.SendFail(ctx, err.Error())
 	}
 
-	return ctx.Redirect(`/ftp/account`)
+	return ctx.Redirect(handler.URLFor(`/ftp/account`))
 }
 
 func GroupIndex(ctx echo.Context) error {
 	m := model.NewFtpUserGroup(ctx)
-	page, size, totalRows, p := handler.PagingWithPagination(ctx)
-	cnt, err := m.List(nil, nil, page, size)
+	_, err := handler.PagingWithLister(ctx, m)
 	ret := handler.Err(ctx, err)
-	if totalRows <= 0 {
-		totalRows = int(cnt())
-		p.SetRows(totalRows)
-	}
-	ctx.Set(`pagination`, p)
 	ctx.Set(`listData`, m.Objects())
 	return ctx.Render(`ftp/group`, ret)
 }
 
 func GroupAdd(ctx echo.Context) error {
 	var err error
+	m := model.NewFtpUserGroup(ctx)
 	if ctx.IsPost() {
-		m := model.NewFtpUserGroup(ctx)
 		name := ctx.Form(`name`)
 		if len(name) == 0 {
-			err = errors.New(ctx.T(`用户组名称不能为空`))
+			err = ctx.E(`用户组名称不能为空`)
 		} else if y, e := m.Exists(name); e != nil {
 			err = e
 		} else if y {
-			err = errors.New(ctx.T(`用户组名称已经存在`))
+			err = ctx.E(`用户组名称已经存在`)
 		} else {
 			err = ctx.MustBind(m.FtpUserGroup)
 		}
@@ -233,7 +225,16 @@ func GroupAdd(ctx echo.Context) error {
 			_, err = m.Add()
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))
-				return ctx.Redirect(`/ftp/group`)
+				return ctx.Redirect(handler.URLFor(`/ftp/group`))
+			}
+		}
+	} else {
+		id := ctx.Formx(`copyId`).Uint()
+		if id > 0 {
+			err = m.Get(nil, `id`, id)
+			if err == nil {
+				echo.StructToForm(ctx, m.FtpUserGroup, ``, echo.LowerCaseFirstLetter)
+				ctx.Request().Form().Set(`id`, `0`)
 			}
 		}
 	}
@@ -248,12 +249,12 @@ func GroupEdit(ctx echo.Context) error {
 	err = m.Get(nil, db.Cond{`id`: id})
 	if ctx.IsPost() {
 		name := ctx.Form(`name`)
-		if len(name) < 6 {
-			err = errors.New(ctx.T(`用户组名称不能为空`))
+		if len(name) < 1 {
+			err = ctx.E(`用户组名称不能为空`)
 		} else if y, e := m.ExistsOther(name, id); e != nil {
 			err = e
 		} else if y {
-			err = errors.New(ctx.T(`用户组名称已经存在`))
+			err = ctx.E(`用户组名称已经存在`)
 		} else {
 			err = ctx.MustBind(m.FtpUserGroup, func(k string, v []string) (string, []string) {
 				switch strings.ToLower(k) {
@@ -269,7 +270,7 @@ func GroupEdit(ctx echo.Context) error {
 			err = m.Edit(nil, db.Cond{`id`: id})
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))
-				return ctx.Redirect(`/ftp/group`)
+				return ctx.Redirect(handler.URLFor(`/ftp/group`))
 			}
 		}
 	} else if err == nil {
@@ -290,5 +291,5 @@ func GroupDelete(ctx echo.Context) error {
 		handler.SendFail(ctx, err.Error())
 	}
 
-	return ctx.Redirect(`/ftp/group`)
+	return ctx.Redirect(handler.URLFor(`/ftp/group`))
 }

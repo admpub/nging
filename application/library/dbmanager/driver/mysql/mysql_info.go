@@ -1,19 +1,19 @@
 /*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
 
-   Copyright 2016 Wenhui Shen <www.webx.top>
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 package mysql
 
@@ -80,6 +80,7 @@ func (m *mySQL) processList() ([]*ProcessList, error) {
 			err = rows.Scan(values[0:n]...)
 		}
 		if err != nil {
+			err = fmt.Errorf(`%v: %v`, sqlStr, err)
 			break
 		}
 		r = append(r, v)
@@ -97,15 +98,24 @@ func (m *mySQL) getCollations() (*Collations, error) {
 	sqlStr := `SHOW COLLATION`
 	rows, err := m.newParam().SetCollection(sqlStr).Query()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf(`%v: %v`, sqlStr, err)
 	}
 	defer rows.Close()
+	cols, err := rows.Columns()
+	if err != nil {
+		return nil, fmt.Errorf(`%v: %v`, sqlStr, err)
+	}
 	ret := NewCollations()
 	for rows.Next() {
 		var v Collation
-		err := rows.Scan(&v.Collation, &v.Charset, &v.Id, &v.Default, &v.Compiled, &v.Sortlen)
+		switch len(cols) {
+		case 7:
+			err = rows.Scan(&v.Collation, &v.Charset, &v.Id, &v.Default, &v.Compiled, &v.Sortlen, &v.PadAttribute)
+		case 6:
+			err = rows.Scan(&v.Collation, &v.Charset, &v.Id, &v.Default, &v.Compiled, &v.Sortlen)
+		}
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf(`%v: %v`, sqlStr, err)
 		}
 		coll, ok := ret.Collations[v.Charset.String]
 		if !ok {
@@ -170,7 +180,7 @@ func (m *mySQL) getTableStatus(dbName string, tableName string, fast bool) (map[
 		v := &TableStatus{}
 		err := rows.Scan(&v.Name, &v.Engine, &v.Version, &v.Row_format, &v.Rows, &v.Avg_row_length, &v.Data_length, &v.Max_data_length, &v.Index_length, &v.Data_free, &v.Auto_increment, &v.Create_time, &v.Update_time, &v.Check_time, &v.Collation, &v.Checksum, &v.Create_options, &v.Comment)
 		if err != nil {
-			return ret, sorts, err
+			return ret, sorts, fmt.Errorf(`%v: %v`, sqlStr, err)
 		}
 		if v.Engine.String == `InnoDB` {
 			v.Comment.String = reInnoDBComment.ReplaceAllString(v.Comment.String, `$1`)
@@ -196,7 +206,7 @@ func (m *mySQL) getEngines() ([]*SupportedEngine, error) {
 		v := &SupportedEngine{}
 		err := rows.Scan(&v.Engine, &v.Support, &v.Comment, &v.Transactions, &v.XA, &v.Savepoints)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf(`%v: %v`, sqlStr, err)
 		}
 		if v.Support.String == `YES` || v.Support.String == `DEFAULT` {
 			ret = append(ret, v)
@@ -209,11 +219,12 @@ func (m *mySQL) getVersion() string {
 	if len(m.version) > 0 {
 		return m.version
 	}
-	row := m.newParam().SetCollection(`SELECT version()`).QueryRow()
+	sqlStr := `SELECT version()`
+	row := m.newParam().SetCollection(sqlStr).QueryRow()
 	var v sql.NullString
 	err := row.Scan(&v)
 	if err != nil {
-		return err.Error()
+		return fmt.Sprintf(`%v: %v`, sqlStr, err)
 	}
 	m.version = v.String
 	return v.String

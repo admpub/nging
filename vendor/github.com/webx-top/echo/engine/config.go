@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"log"
 	"net"
+	"net/http"
 	"os"
 	"path/filepath"
 	"time"
@@ -17,6 +18,7 @@ type Config struct {
 	Address            string       // TCP address to listen on.
 	Listener           net.Listener // Custom `net.Listener`. If set, server accepts connections on it.
 	TLSAuto            bool
+	TLSEmail           string
 	TLSCacheDir        string
 	TLSConfig          *tls.Config
 	TLSCertFile        string        // TLS certificate file path.
@@ -77,20 +79,26 @@ func (c *Config) SupportAutoTLS(autoTLSManager *autocert.Manager, hosts ...strin
 	if autoTLSManager == nil {
 		autoTLSManager = &autocert.Manager{
 			Prompt: autocert.AcceptTOS,
+			Email:  c.TLSEmail,
 		}
 		autoTLSManager.HostPolicy = autocert.HostWhitelist(hosts...) // Added security
-		home, err := homedir.Dir()
-		if err != nil {
-			panic(err)
-		}
 		if len(c.TLSCacheDir) == 0 {
-			c.TLSCacheDir = filepath.Join(home, ".webx-top-echo", "cache")
+			home, err := homedir.Dir()
+			if err != nil {
+				panic(err)
+			}
+			c.TLSCacheDir = filepath.Join(home, ".webx.top", "cache", "autocert")
+		}
+		if _, err := os.Stat(c.TLSCacheDir); os.IsNotExist(err) {
 			err = os.MkdirAll(c.TLSCacheDir, 0666)
 			if err != nil {
 				panic(err)
 			}
 		}
 		autoTLSManager.Cache = autocert.DirCache(c.TLSCacheDir)
+	}
+	if c.Listener == nil && AddressPort(c.Address) != 80 {
+		go http.ListenAndServe(":http", autoTLSManager.HTTPHandler(nil))
 	}
 	//c.TLSConfig.GetCertificate = autoTLSManager.GetCertificate
 	c.TLSConfig.BuildNameToCertificate()

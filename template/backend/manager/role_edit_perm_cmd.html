@@ -1,0 +1,12 @@
+{{Strip}}
+<ul class="list-inline clearfix">
+{{range $k, $c := Stored.cmdList}}
+<li class="pull-left">
+  <span class="checkbox checkbox-success">
+    <input type="checkbox" name="permCmd[]" value="{{$c.Id}}"{{if Stored.data.CheckCmdPerm (Str $c.Id)}} checked{{end}} id="permCmd-{{$c.Id}}" /> 
+  <label for="permCmd-{{$c.Id}}">{{$c.Name|T}}</label>
+  </span>
+</li>
+{{end}}
+</ul>
+{{/Strip}}

@@ -1,7 +1,6 @@
 package echo
 
 import (
-	"encoding/json"
 	"encoding/xml"
 	"errors"
 	"fmt"
@@ -12,6 +11,7 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/webx-top/echo/encoding/json"
 	"github.com/webx-top/tagfast"
 	"github.com/webx-top/validation"
 )
@@ -116,7 +116,9 @@ func FormNames(s string) []string {
 		}
 		if r == ']' {
 			if hasLeft {
-				hasRight = true
+				res = append(res, string(val))
+				val = []rune{}
+				hasLeft = false
 			}
 			continue
 		}
@@ -153,11 +155,11 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 	}
 	for k, t := range data {
 		k, t = filter(k, t)
-		if k == `` || k[0] == '_' {
+		if len(k) == 0 || k[0] == '_' {
 			continue
 		}
 
-		if topName != `` {
+		if len(topName) > 0 {
 			if !strings.HasPrefix(k, topName) {
 				continue
 			}
@@ -172,6 +174,7 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 		)
 		length := len(names)
 		if length == 1 && strings.HasSuffix(k, `]`) {
+			k = strings.TrimRight(k, `[]`)
 			names = FormNames(k)
 			length = len(names)
 		}
@@ -245,6 +248,11 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 				switch tagfast.Value(tc, f, `form_filter`) {
 				case `html`:
 					v = DefaultHTMLFilter(v)
+				default:
+					delimter := tagfast.Value(tc, f, `form_delimiter`)
+					if len(delimter) > 0 {
+						v = strings.Join(t, delimter)
+					}
 				}
 				l = v
 				tv.Set(reflect.ValueOf(l))
@@ -253,7 +261,7 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 				tv.Set(reflect.ValueOf(l))
 			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32:
 				dateformat := tagfast.Value(tc, f, `form_format`)
-				if dateformat != `` {
+				if len(dateformat) > 0 {
 					t, err := time.Parse(dateformat, v)
 					if err != nil {
 						e.Logger().Warnf(`binder: arg %v as int: %v`, v, err)
@@ -271,7 +279,7 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 				tv.Set(reflect.ValueOf(l))
 			case reflect.Int64:
 				dateformat := tagfast.Value(tc, f, `form_format`)
-				if dateformat != `` {
+				if len(dateformat) > 0 {
 					t, err := time.Parse(dateformat, v)
 					if err != nil {
 						e.Logger().Warnf(`binder: arg %v as int64: %v`, v, err)
@@ -308,7 +316,7 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 				default:
 					bitSize = 64
 				}
-				if dateformat != `` {
+				if len(dateformat) > 0 {
 					t, err := time.Parse(dateformat, v)
 					if err != nil {
 						e.Logger().Warnf(`binder: arg %v as uint: %v`, v, err)

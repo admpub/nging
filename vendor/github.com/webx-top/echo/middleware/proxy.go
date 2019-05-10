@@ -29,19 +29,25 @@ type (
 
 		Handler ProxyHandler `json:"-"`
 		Rewrite RewriteConfig
+
+		// Context key to store selected ProxyTarget into context.
+		// Optional. Default value "target".
+		ContextKey string
 	}
 
 	// ProxyTarget defines the upstream target.
 	ProxyTarget struct {
-		Name string
-		URL  *url.URL
+		Name          string
+		URL           *url.URL
+		FlushInterval time.Duration
+		Meta          echo.Store
 	}
 
 	// ProxyBalancer defines an interface to implement a load balancing technique.
 	ProxyBalancer interface {
 		AddTarget(*ProxyTarget) bool
 		RemoveTarget(string) bool
-		Next() *ProxyTarget
+		Next(echo.Context) *ProxyTarget
 	}
 
 	// ProxyHandler defines an interface to implement a proxy handler.
@@ -68,22 +74,33 @@ type (
 var (
 	// DefaultProxyConfig is the default Proxy middleware config.
 	DefaultProxyConfig = ProxyConfig{
-		Skipper: echo.DefaultSkipper,
-		Handler: DefaultProxyHandler,
-		Rewrite: DefaultRewriteConfig,
+		Skipper:    echo.DefaultSkipper,
+		Handler:    DefaultProxyHandler,
+		Rewrite:    DefaultRewriteConfig,
+		ContextKey: "target",
 	}
 	// DefaultProxyHandler Proxy Handler
 	DefaultProxyHandler ProxyHandler = func(t *ProxyTarget, c echo.Context) error {
+		resp := c.Response().StdResponseWriter()
+		req := c.Request().StdRequest()
 		switch {
 		case c.IsWebsocket():
-			proxyRaw(t, c).ServeHTTP(c.Response().StdResponseWriter(), c.Request().StdRequest())
+			proxyRaw(t, c).ServeHTTP(resp, req)
 		case c.Header(echo.HeaderAccept) == "text/event-stream":
+			proxyHTTPWithFlushInterval(t).ServeHTTP(resp, req)
 		default:
-			proxyHTTP(t, c).ServeHTTP(c.Response().StdResponseWriter(), c.Request().StdRequest())
+			proxyHTTP(t, c).ServeHTTP(resp, req)
 		}
 		return nil
 	}
 )
+
+// Server-Sent Events
+func proxyHTTPWithFlushInterval(t *ProxyTarget) http.Handler {
+	proxy := httputil.NewSingleHostReverseProxy(t.URL)
+	proxy.FlushInterval = t.FlushInterval
+	return proxy
+}
 
 // http
 func proxyHTTP(t *ProxyTarget, _ echo.Context) http.Handler {
@@ -154,6 +171,11 @@ func (b *commonBalancer) AddTarget(target *ProxyTarget) bool {
 	}
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
+
+	if target.FlushInterval <= 0 {
+		target.FlushInterval = 100 * time.Millisecond
+	}
+
 	b.targets = append(b.targets, target)
 	return true
 }
@@ -172,7 +194,7 @@ func (b *commonBalancer) RemoveTarget(name string) bool {
 }
 
 // Next randomly returns an upstream target.
-func (b *randomBalancer) Next() *ProxyTarget {
+func (b *randomBalancer) Next(c echo.Context) *ProxyTarget {
 	if b.random == nil {
 		b.random = rand.New(rand.NewSource(int64(time.Now().Nanosecond())))
 	}
@@ -182,7 +204,7 @@ func (b *randomBalancer) Next() *ProxyTarget {
 }
 
 // Next returns an upstream target using round-robin technique.
-func (b *roundRobinBalancer) Next() *ProxyTarget {
+func (b *roundRobinBalancer) Next(c echo.Context) *ProxyTarget {
 	b.i = b.i % uint32(len(b.targets))
 	t := b.targets[b.i]
 	atomic.AddUint32(&b.i, 1)
@@ -219,7 +241,10 @@ func ProxyWithConfig(config ProxyConfig) echo.MiddlewareFuncd {
 			}
 
 			req := c.Request()
-			tgt := config.Balancer.Next()
+			tgt := config.Balancer.Next(c)
+			if len(config.ContextKey) > 0 {
+				c.Set(config.ContextKey, tgt)
+			}
 			req.URL().SetPath(config.Rewrite.Rewrite(req.URL().Path()))
 			// Fix header
 			if len(c.Header(echo.HeaderXRealIP)) == 0 {

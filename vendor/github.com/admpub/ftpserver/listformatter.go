@@ -1,3 +1,7 @@
+// Copyright 2018 The goftp Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 package server
 
 import (
@@ -16,7 +20,6 @@ func (formatter listFormatter) Short() []byte {
 	for _, file := range formatter {
 		fmt.Fprintf(&buf, "%s\r\n", file.Name())
 	}
-	fmt.Fprintf(&buf, "\r\n")
 	return buf.Bytes()
 }
 
@@ -27,11 +30,10 @@ func (formatter listFormatter) Detailed() []byte {
 	for _, file := range formatter {
 		fmt.Fprintf(&buf, file.Mode().String())
 		fmt.Fprintf(&buf, " 1 %s %s ", file.Owner(), file.Group())
-		fmt.Fprintf(&buf, lpad(strconv.Itoa(int(file.Size())), 12))
+		fmt.Fprintf(&buf, lpad(strconv.FormatInt(file.Size(), 10), 12))
 		fmt.Fprintf(&buf, file.ModTime().Format(" Jan _2 15:04 "))
 		fmt.Fprintf(&buf, "%s\r\n", file.Name())
 	}
-	fmt.Fprintf(&buf, "\r\n")
 	return buf.Bytes()
 }
 

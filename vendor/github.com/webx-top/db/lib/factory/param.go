@@ -41,6 +41,11 @@ type Join struct {
 type Model interface {
 	Trans() *Transaction
 	Use(trans *Transaction) Model
+	SetNamer(func(string) string) Model
+	Name_() string
+	SetConnID(connID int) Model
+	FullName_(connID ...int) string
+	New(structName string, connID ...int) Model
 	NewParam() *Param
 	SetParam(param *Param) Model
 	Param() *Param
@@ -52,9 +57,12 @@ type Model interface {
 	Upsert(mw func(db.Result) db.Result, args ...interface{}) (interface{}, error)
 	Delete(mw func(db.Result) db.Result, args ...interface{}) error
 	Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error)
+	SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error
+	SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error
 }
 
 type Param struct {
+	ctx                    context.Context
 	factory                *Factory
 	Index                  int //数据库对象元素所在的索引位置
 	ReadOrWrite            int
@@ -123,6 +131,15 @@ func (p *Param) Setter() *Setting {
 func (p *Param) SetIndex(index int) *Param {
 	p.Index = index
 	return p
+}
+
+func (p *Param) SetContext(ctx context.Context) *Param {
+	p.ctx = ctx
+	return p
+}
+
+func (p *Param) Context() context.Context {
+	return p.ctx
 }
 
 func (p *Param) SetModel(model Model) *Param {
@@ -203,6 +220,11 @@ func (p *Param) SetCollection(collection string, alias ...string) *Param {
 	if len(alias) > 0 {
 		p.Alias = alias[0]
 	}
+	return p
+}
+
+func (p *Param) SetAlias(alias string) *Param {
+	p.Alias = alias
 	return p
 }
 
@@ -434,22 +456,6 @@ func (p *Param) TransFrom(param *Param) *Param {
 	return p
 }
 
-func (p *Param) Begin() *Param {
-	p.trans = p.MustTx()
-	return p
-}
-
-func (p *Param) End(err error) error {
-	if p.trans == nil || p.trans.Tx == nil {
-		return nil
-	}
-	defer p.SetTrans(nil)
-	if err == nil {
-		return p.trans.Commit()
-	}
-	return p.trans.Rollback()
-}
-
 func (p *Param) GetOffset() int {
 	if p.Offset > -1 {
 		return p.Offset
@@ -477,6 +483,39 @@ func (p *Param) MustTx() *Transaction {
 		panic(err.Error())
 	}
 	return trans
+}
+
+func (p *Param) Begin() (err error) {
+	p.trans, err = p.NewTx(nil)
+	return
+}
+
+func (p *Param) MustBegin() *Param {
+	p.trans = p.MustTx()
+	return p
+}
+
+func (p *Param) Rollback() error {
+	t := p.T()
+	if t.Tx == nil {
+		return nil
+	}
+	return t.Rollback()
+}
+
+func (p *Param) Commit() error {
+	t := p.T()
+	if t.Tx == nil {
+		return nil
+	}
+	return t.Commit()
+}
+
+func (p *Param) End(succeed bool) error {
+	if succeed {
+		return p.Commit()
+	}
+	return p.Rollback()
 }
 
 func (p *Param) T() *Transaction {

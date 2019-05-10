@@ -284,6 +284,8 @@ func (w *requestBodyWriter) Write(p []byte) (int, error) {
 }
 
 // Body returns response body.
+//
+// The returned body is valid until the response modification.
 func (resp *Response) Body() []byte {
 	if resp.bodyStream != nil {
 		bodyBuf := resp.bodyBuffer()
@@ -525,6 +527,8 @@ func (req *Request) SwapBody(body []byte) []byte {
 }
 
 // Body returns request body.
+//
+// The returned body is valid until the request modification.
 func (req *Request) Body() []byte {
 	if req.bodyStream != nil {
 		bodyBuf := req.bodyBuffer()
@@ -1145,6 +1149,7 @@ func (resp *Response) WriteGzip(w *bufio.Writer) error {
 //     * CompressBestSpeed
 //     * CompressBestCompression
 //     * CompressDefaultCompression
+//     * CompressHuffmanOnly
 //
 // The method gzips response body and sets 'Content-Encoding: gzip'
 // header before writing response to w.
@@ -1175,6 +1180,7 @@ func (resp *Response) WriteDeflate(w *bufio.Writer) error {
 //     * CompressBestSpeed
 //     * CompressBestCompression
 //     * CompressDefaultCompression
+//     * CompressHuffmanOnly
 //
 // The method deflates response body and sets 'Content-Encoding: deflate'
 // header before writing response to w.
@@ -1194,30 +1200,42 @@ func (resp *Response) gzipBody(level int) error {
 		return nil
 	}
 
-	// Do not care about memory allocations here, since gzip is slow
-	// and allocates a lot of memory by itself.
+	if !resp.Header.isCompressibleContentType() {
+		// The content-type cannot be compressed.
+		return nil
+	}
+
 	if resp.bodyStream != nil {
+		// Reset Content-Length to -1, since it is impossible
+		// to determine body size beforehand of streamed compression.
+		// For https://github.com/valyala/fasthttp/issues/176 .
+		resp.Header.SetContentLength(-1)
+
+		// Do not care about memory allocations here, since gzip is slow
+		// and allocates a lot of memory by itself.
 		bs := resp.bodyStream
 		resp.bodyStream = NewStreamReader(func(sw *bufio.Writer) {
-			zw := acquireGzipWriter(sw, level)
+			zw := acquireStacklessGzipWriter(sw, level)
 			fw := &flushWriter{
 				wf: zw,
 				bw: sw,
 			}
 			copyZeroAlloc(fw, bs)
-			releaseGzipWriter(zw)
+			releaseStacklessGzipWriter(zw, level)
 			if bsc, ok := bs.(io.Closer); ok {
 				bsc.Close()
 			}
 		})
 	} else {
-		w := responseBodyPool.Get()
-		zw := acquireGzipWriter(w, level)
-		_, err := zw.Write(resp.bodyBytes())
-		releaseGzipWriter(zw)
-		if err != nil {
-			return err
+		bodyBytes := resp.bodyBytes()
+		if len(bodyBytes) < minCompressLen {
+			// There is no sense in spending CPU time on small body compression,
+			// since there is a very high probability that the compressed
+			// body size will be bigger than the original body size.
+			return nil
 		}
+		w := responseBodyPool.Get()
+		w.B = AppendGzipBytesLevel(w.B, bodyBytes, level)
 
 		// Hack: swap resp.body with w.
 		if resp.body != nil {
@@ -1236,30 +1254,42 @@ func (resp *Response) deflateBody(level int) error {
 		return nil
 	}
 
-	// Do not care about memory allocations here, since flate is slow
-	// and allocates a lot of memory by itself.
+	if !resp.Header.isCompressibleContentType() {
+		// The content-type cannot be compressed.
+		return nil
+	}
+
 	if resp.bodyStream != nil {
+		// Reset Content-Length to -1, since it is impossible
+		// to determine body size beforehand of streamed compression.
+		// For https://github.com/valyala/fasthttp/issues/176 .
+		resp.Header.SetContentLength(-1)
+
+		// Do not care about memory allocations here, since flate is slow
+		// and allocates a lot of memory by itself.
 		bs := resp.bodyStream
 		resp.bodyStream = NewStreamReader(func(sw *bufio.Writer) {
-			zw := acquireFlateWriter(sw, level)
+			zw := acquireStacklessDeflateWriter(sw, level)
 			fw := &flushWriter{
 				wf: zw,
 				bw: sw,
 			}
 			copyZeroAlloc(fw, bs)
-			releaseFlateWriter(zw)
+			releaseStacklessDeflateWriter(zw, level)
 			if bsc, ok := bs.(io.Closer); ok {
 				bsc.Close()
 			}
 		})
 	} else {
-		w := responseBodyPool.Get()
-		zw := acquireFlateWriter(w, level)
-		_, err := zw.Write(resp.bodyBytes())
-		releaseFlateWriter(zw)
-		if err != nil {
-			return err
+		bodyBytes := resp.bodyBytes()
+		if len(bodyBytes) < minCompressLen {
+			// There is no sense in spending CPU time on small body compression,
+			// since there is a very high probability that the compressed
+			// body size will be bigger than the original body size.
+			return nil
 		}
+		w := responseBodyPool.Get()
+		w.B = AppendDeflateBytesLevel(w.B, bodyBytes, level)
 
 		// Hack: swap resp.body with w.
 		if resp.body != nil {
@@ -1270,6 +1300,9 @@ func (resp *Response) deflateBody(level int) error {
 	resp.Header.SetCanonical(strContentEncoding, strDeflate)
 	return nil
 }
+
+// Bodies with sizes smaller than minCompressLen aren't compressed at all
+const minCompressLen = 200
 
 type writeFlusher interface {
 	io.Writer

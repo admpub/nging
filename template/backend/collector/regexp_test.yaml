@@ -1,0 +1,10 @@
+Id : "regexp-test-modal"
+Custom : true
+HeadTitle : "正则表达式测试"
+Title : "正则表达式测试"
+Content : ""
+HelpText : ""
+Animate : ""
+Type : "primary"
+ContentType : "form"
+ExtButtons : []

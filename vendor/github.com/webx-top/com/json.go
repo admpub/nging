@@ -1,11 +1,12 @@
 package com
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
+
+	"github.com/webx-top/echo/encoding/json"
 )
 
 // GetJSON Read json data, writes in struct f

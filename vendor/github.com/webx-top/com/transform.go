@@ -21,129 +21,290 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 )
 
 func Int64(i interface{}) int64 {
-	in := Str(i)
-	if in == "" {
+	switch v := i.(type) {
+	case int64:
+		return v
+	case int32:
+		return int64(v)
+	case uint32:
+		return int64(v)
+	case int:
+		return int64(v)
+	case uint:
+		return int64(v)
+	case string:
+		out, _ := strconv.ParseInt(v, 10, 64)
+		return out
+	case nil:
 		return 0
+	default:
+		in := Str(i)
+		if len(in) == 0 {
+			return 0
+		}
+		out, err := strconv.ParseInt(in, 10, 64)
+		if err != nil {
+			log.Printf("string[%s] covert int64 fail. %s", in, err)
+			return 0
+		}
+		return out
 	}
-	out, err := strconv.ParseInt(in, 10, 64)
-	if err != nil {
-		log.Printf("string[%s] covert int64 fail. %s", in, err)
-		return 0
-	}
-	return out
 }
 
 func Int(i interface{}) int {
-	in := Str(i)
-	if in == "" {
+	switch v := i.(type) {
+	case int:
+		return v
+	case string:
+		out, _ := strconv.Atoi(v)
+		return out
+	case nil:
 		return 0
+	default:
+		in := Str(i)
+		if len(in) == 0 {
+			return 0
+		}
+		out, err := strconv.Atoi(in)
+		if err != nil {
+			log.Printf("string[%s] covert int fail. %s", in, err)
+			return 0
+		}
+		return out
 	}
-	out, err := strconv.Atoi(in)
-	if err != nil {
-		log.Printf("string[%s] covert int fail. %s", in, err)
-		return 0
-	}
-	return out
 }
 
 func Int32(i interface{}) int32 {
-	in := Str(i)
-	if in == "" {
+	switch v := i.(type) {
+	case int32:
+		return v
+	case string:
+		out, _ := strconv.ParseInt(v, 10, 32)
+		return int32(out)
+	case nil:
 		return 0
+	default:
+		in := Str(i)
+		if len(in) == 0 {
+			return 0
+		}
+		out, err := strconv.ParseInt(in, 10, 32)
+		if err != nil {
+			log.Printf("string[%s] covert int32 fail. %s", in, err)
+			return 0
+		}
+		return int32(out)
 	}
-	out, err := strconv.ParseInt(in, 10, 32)
-	if err != nil {
-		log.Printf("string[%s] covert int32 fail. %s", in, err)
-		return 0
-	}
-	return int32(out)
 }
 
 func Uint64(i interface{}) uint64 {
-	in := Str(i)
-	if in == "" {
+	switch v := i.(type) {
+	case uint64:
+		return v
+	case string:
+		out, _ := strconv.ParseUint(v, 10, 64)
+		return out
+	case nil:
 		return 0
+	default:
+		in := Str(i)
+		if len(in) == 0 {
+			return 0
+		}
+		out, err := strconv.ParseUint(in, 10, 64)
+		if err != nil {
+			log.Printf("string[%s] covert uint64 fail. %s", in, err)
+			return 0
+		}
+		return out
 	}
-	out, err := strconv.ParseUint(in, 10, 64)
-	if err != nil {
-		log.Printf("string[%s] covert uint64 fail. %s", in, err)
-		return 0
-	}
-	return out
 }
 
 func Uint(i interface{}) uint {
-	in := Str(i)
-	if in == "" {
+	switch v := i.(type) {
+	case uint:
+		return v
+	case string:
+		out, _ := strconv.ParseUint(v, 10, 32)
+		return uint(out)
+	case nil:
 		return 0
+	default:
+		in := Str(i)
+		if len(in) == 0 {
+			return 0
+		}
+		out, err := strconv.ParseUint(in, 10, 32)
+		if err != nil {
+			log.Printf("string[%s] covert uint fail. %s", in, err)
+			return 0
+		}
+		return uint(out)
 	}
-	out, err := strconv.ParseUint(in, 10, 32)
-	if err != nil {
-		log.Printf("string[%s] covert uint fail. %s", in, err)
-		return 0
-	}
-	return uint(out)
 }
 
 func Uint32(i interface{}) uint32 {
-	in := Str(i)
-	if in == "" {
+	switch v := i.(type) {
+	case uint32:
+		return v
+	case string:
+		out, _ := strconv.ParseUint(v, 10, 32)
+		return uint32(out)
+	case nil:
 		return 0
+	default:
+		in := Str(i)
+		if len(in) == 0 {
+			return 0
+		}
+		out, err := strconv.ParseUint(in, 10, 32)
+		if err != nil {
+			log.Printf("string[%s] covert uint32 fail. %s", in, err)
+			return 0
+		}
+		return uint32(out)
 	}
-	out, err := strconv.ParseUint(in, 10, 32)
-	if err != nil {
-		log.Printf("string[%s] covert uint32 fail. %s", in, err)
-		return 0
-	}
-	return uint32(out)
 }
 
 func Float32(i interface{}) float32 {
-	in := Str(i)
-	if in == "" {
+	switch v := i.(type) {
+	case float32:
+		return v
+	case int32:
+		return float32(v)
+	case uint32:
+		return float32(v)
+	case string:
+		out, _ := strconv.ParseFloat(v, 32)
+		return float32(out)
+	case nil:
 		return 0
+	default:
+		in := Str(i)
+		if len(in) == 0 {
+			return 0
+		}
+		out, err := strconv.ParseFloat(in, 32)
+		if err != nil {
+			log.Printf("string[%s] covert float32 fail. %s", in, err)
+			return 0
+		}
+		return float32(out)
 	}
-	out, err := strconv.ParseFloat(in, 32)
-	if err != nil {
-		log.Printf("string[%s] covert float32 fail. %s", in, err)
-		return 0
-	}
-	return float32(out)
 }
 
 func Float64(i interface{}) float64 {
-	in := Str(i)
-	if in == "" {
+	switch v := i.(type) {
+	case float64:
+		return v
+	case int64:
+		return float64(v)
+	case uint64:
+		return float64(v)
+	case float32:
+		return float64(v)
+	case int32:
+		return float64(v)
+	case uint32:
+		return float64(v)
+	case int:
+		return float64(v)
+	case uint:
+		return float64(v)
+	case string:
+		out, _ := strconv.ParseFloat(v, 64)
+		return out
+	case nil:
 		return 0
+	default:
+		in := Str(i)
+		if len(in) == 0 {
+			return 0
+		}
+		out, err := strconv.ParseFloat(in, 64)
+		if err != nil {
+			log.Printf("string[%s] covert float64 fail. %s", in, err)
+			return 0
+		}
+		return out
 	}
-	out, err := strconv.ParseFloat(in, 64)
-	if err != nil {
-		log.Printf("string[%s] covert float64 fail. %s", in, err)
-		return 0
-	}
-	return out
 }
 
 func Bool(i interface{}) bool {
-	in := Str(i)
-	if in == "" {
+	switch v := i.(type) {
+	case bool:
+		return v
+	case nil:
 		return false
+	default:
+		in := Str(i)
+		if len(in) == 0 {
+			return false
+		}
+		out, err := strconv.ParseBool(in)
+		if err != nil {
+			log.Printf("string[%s] covert bool fail. %s", in, err)
+			return false
+		}
+		return out
 	}
-	out, err := strconv.ParseBool(in)
-	if err != nil {
-		log.Printf("string[%s] covert bool fail. %s", in, err)
-		return false
-	}
-	return out
 }
 
-func Str(v interface{}) string {
-	return fmt.Sprintf("%v", v)
+func Str(i interface{}) string {
+	switch v := i.(type) {
+	case string:
+		return v
+	case nil:
+		return ``
+	default:
+		return fmt.Sprint(v)
+	}
 }
 
 func String(v interface{}) string {
 	return Str(v)
+}
+
+// SeekRangeNumbers 遍历范围数值，支持设置步进值。格式例如：1-2,2-3:2
+func SeekRangeNumbers(expr string, fn func(int) bool) {
+	expa := strings.SplitN(expr, ":", 2)
+	step := 1
+	switch len(expa) {
+	case 2:
+		if i, e := strconv.Atoi(strings.TrimSpace(expa[1])); e == nil {
+			step = i
+		}
+		fallthrough
+	case 1:
+		for _, exp := range strings.Split(strings.TrimSpace(expa[0]), `,`) {
+			exp = strings.TrimSpace(exp)
+			if len(exp) == 0 {
+				continue
+			}
+			expb := strings.SplitN(exp, `-`, 2)
+			var minN, maxN int
+			switch len(expb) {
+			case 2:
+				maxN, _ = strconv.Atoi(strings.TrimSpace(expb[1]))
+				fallthrough
+			case 1:
+				minN, _ = strconv.Atoi(strings.TrimSpace(expb[0]))
+			}
+			if maxN == 0 {
+				if !fn(minN) {
+					return
+				}
+				continue
+			}
+			for ; minN <= maxN; minN += step {
+				if !fn(minN) {
+					return
+				}
+			}
+		}
+	}
 }

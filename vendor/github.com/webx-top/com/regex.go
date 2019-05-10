@@ -22,17 +22,21 @@ const (
 		`(?:\.[A-Z0-9!#$%&'*+/=?^_{|}~-]+)*` +
 		`@(?:[A-Z0-9](?:[A-Z0-9-]*[A-Z0-9])?\.)+` +
 		`[A-Z0-9](?:[A-Z0-9-]*[A-Z0-9])?`
-	regexURLPattern      = `(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?`
-	regexUsernamePattern = `^[\w\p{Han}]+$`
-	regexEOLPattern      = "[\r\n]+"
+	regexURLPattern             = `(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?`
+	regexUsernamePattern        = `^[\w\p{Han}]+$`
+	regexChinesePattern         = `^[\p{Han}]+$`
+	regexContainsChinesePattern = `[\p{Han}]+`
+	regexEOLPattern             = "[\r\n]+"
 )
 
 var (
-	regexEmail       = regexp.MustCompile(regexEmailPattern)
-	regexStrictEmail = regexp.MustCompile(regexStrictEmailPattern)
-	regexURL         = regexp.MustCompile(regexURLPattern)
-	regexUsername    = regexp.MustCompile(regexUsernamePattern)
-	regexEOL         = regexp.MustCompile(regexEOLPattern)
+	regexEmail           = regexp.MustCompile(regexEmailPattern)
+	regexStrictEmail     = regexp.MustCompile(regexStrictEmailPattern)
+	regexURL             = regexp.MustCompile(regexURLPattern)
+	regexUsername        = regexp.MustCompile(regexUsernamePattern)
+	regexChinese         = regexp.MustCompile(regexChinesePattern)
+	regexContainsChinese = regexp.MustCompile(regexContainsChinesePattern)
+	regexEOL             = regexp.MustCompile(regexEOLPattern)
 )
 
 // IsEmail validate string is an email address, if not return false
@@ -56,6 +60,16 @@ func IsURL(url string) bool {
 // IsUsername validate string is a available username
 func IsUsername(username string) bool {
 	return regexUsername.MatchString(username)
+}
+
+// IsChinese validate string is Chinese
+func IsChinese(str string) bool {
+	return regexChinese.MatchString(str)
+}
+
+// HasChinese contains Chinese
+func HasChinese(str string) bool {
+	return regexContainsChinese.MatchString(str)
 }
 
 // IsSingleLineText validate string is a single-line text

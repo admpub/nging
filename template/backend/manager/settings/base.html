@@ -1,0 +1,19 @@
+{{$config := Stored.base}}
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{"API密钥"|T}}</label>
+    <div class="col-sm-3">
+        <input type="text" class="form-control" name="base[apiKey][value]" value="{{$config.apiKey.Value}}" placeholder="">
+    </div>
+    <label class="col-sm-2 control-label">{{"调试模式"|T}}</label>
+    {{$debug := $config.debug.Value|Default "0"}}
+    <div class="col-sm-3">
+        <span class="radio radio-primary radio-inline">
+            <input type="radio" name="base[debug][value]" value="1"{{if eq $debug "1"}} checked{{end}} id="base-debug-1">
+            <label for="base-debug-1">{{"开启"|T}}</label>
+        </span>
+        <span class="radio radio-primary radio-inline">
+            <input type="radio" name="base[debug][value]" value="0"{{if eq $debug "0"}} checked{{end}} id="base-debug-0">
+            <label for="base-debug-0">{{"关闭"|T}}</label>
+        </span>
+    </div>
+</div>

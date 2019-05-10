@@ -1,0 +1,30 @@
+{{Strip}}{{$pjax := Form "_pjax"}}
+<ul class="pagination">
+    {{$page := .Page}}
+    <li class="prev{{if eq $page 1}} disabled{{end}}">
+        <a href="{{.URL 1}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}>
+            {{"首页"|T}}
+        </a>
+    </li>
+    <li class="prev{{if eq $page 1}} disabled{{end}}">
+        <a href="{{.URL .PrevPage}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}>
+            <span class="fa fa-angle-left"></span>&nbsp;{{"上一页"|T}}
+        </a>
+    </li>
+    {{range $k,$v := .List}}
+    <li{{if eq $v $page}} class="active"{{end}}>
+        <a href="{{$.URL $v}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}>{{$v}}</a>
+    </li>
+    {{end}}
+    <li class="next{{if ge $page .Pages}} disabled{{end}}">
+        <a href="{{.URL .NextPage}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}>
+            {{"下一页"|T}}&nbsp;<span class="fa fa-angle-right"></span>
+        </a>
+    </li>
+    <li class="next{{if ge $page .Pages}} disabled{{end}}">
+        <a href="{{.URL .Pages}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}>
+            {{"末页"|T}}
+        </a>
+    </li>
+</ul>
+{{/Strip}}

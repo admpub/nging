@@ -165,7 +165,7 @@ func compileStatement(cond db.Cond) bson.M {
 		if op == "" {
 			conds[field] = value
 		} else {
-			
+
 			if v, y := conds[field]; y {
 				if bsonM, ok := v.(bson.M); ok {
 					bsonM[op] = value
@@ -173,7 +173,6 @@ func compileStatement(cond db.Cond) bson.M {
 				}
 			}
 			conds[field] = bson.M{op: value}
-
 		}
 	}
 
