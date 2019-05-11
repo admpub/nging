@@ -1,7 +1,10 @@
 mkdir ..\dist\nging_%GOOS%_%GOARCH%
 go build -tags "bindata%BUILDTAGS%" -o ../dist/nging_%GOOS%_%GOARCH%/nging_%GOOS%_%GOARCH%%NGINGEX% ..
 
-xcopy ..\data ..\dist\nging_%GOOS%_%GOARCH%\data /E /Q /H /I /Y
+mkdir ..\dist\nging_%GOOS%_%GOARCH%\data
+mkdir ..\dist\nging_%GOOS%_%GOARCH%\data\logs
+xcopy ..\data\ip2region ..\dist\nging_%GOOS%_%GOARCH%\data\ip2region /E /Q /H /I /Y
+
 mkdir ..\dist\nging_%GOOS%_%GOARCH%\config
 mkdir ..\dist\nging_%GOOS%_%GOARCH%\config\vhosts
 
