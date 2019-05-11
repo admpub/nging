@@ -326,7 +326,7 @@ func init() {
 				{
 					DisplayOnMenu: false,
 					Name:          `查看导出日志`,
-					Action:        `export_log_view`,
+					Action:        `export_log_view/:id`,
 				},
 				{
 					DisplayOnMenu: false,

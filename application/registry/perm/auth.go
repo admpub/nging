@@ -93,6 +93,17 @@ var SpecialAuths = map[string]AuthChecker{
 		ppath = `cmd`
 		return
 	},
+	`/manager/crop`: func(
+		h echo.Handler,
+		c echo.Context,
+		rpath string,
+		user *dbschema.User,
+		roleM *model.UserRole,
+		roleList []*dbschema.UserRole,
+	) (err error, ppath string, returning bool) {
+		ppath = `/manager/upload/:type`
+		return
+	},
 }
 
 func init() {

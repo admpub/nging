@@ -142,6 +142,11 @@ var TopNavigate = List{
 				Name:          `删除指令`,
 				Action:        `command_delete`,
 			},
+			{
+				DisplayOnMenu: false,
+				Name:          `上传图片`,
+				Action:        `upload/:type`,
+			},
 		},
 	},
 }

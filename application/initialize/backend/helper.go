@@ -19,14 +19,17 @@
 package backend
 
 import (
+	"io/ioutil"
 	"path/filepath"
 	"strings"
+
+	"github.com/admpub/nging/application/registry/perm"
 
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/nging/application/registry/navigate"
 	"github.com/admpub/nging/application/middleware"
+	"github.com/admpub/nging/application/registry/navigate"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/handler/captcha"
 	"github.com/webx-top/echo/handler/mvc/static/resource"
@@ -154,24 +157,26 @@ func addRouter(e *echo.Echo) {
 			if exists {
 				continue
 			}
+			_, exists = perm.SpecialAuths[route.Path]
+			if exists {
+				continue
+			}
 			unuse = append(unuse, route.Path)
 		}
 
 		return ctx.JSON(unuse)
 	}, middleware.AuthCheck)
-	/*
-		e.Route(`GET,POST`, `/ping`, func(ctx echo.Context) error {
-			header := ctx.Request().Header()
-			body := ctx.Request().Body()
-			b, _ := ioutil.ReadAll(body)
-			body.Close()
-			content := `---[Header]:---------------------------` + "\n"
-			content += echo.Dump(header, false) + "\n"
-			content += `---[Form]:---------------------------` + "\n"
-			content += echo.Dump(ctx.Request().Form().All(), false) + "\n"
-			content += `---[Body]:---------------------------` + "\n"
-			content += string(b)
-			return ctx.String(content)
-		})
-	*/
+	e.Route(`GET,POST`, `/ping`, func(ctx echo.Context) error {
+		header := ctx.Request().Header()
+		body := ctx.Request().Body()
+		b, _ := ioutil.ReadAll(body)
+		body.Close()
+		content := `---[Header]:---------------------------` + "\n"
+		content += echo.Dump(header, false) + "\n"
+		content += `---[Form]:---------------------------` + "\n"
+		content += echo.Dump(ctx.Request().Form().All(), false) + "\n"
+		content += `---[Body]:---------------------------` + "\n"
+		content += string(b)
+		return ctx.String(content)
+	})
 }
