@@ -171,12 +171,17 @@ func addRouter(e *echo.Echo) {
 		body := ctx.Request().Body()
 		b, _ := ioutil.ReadAll(body)
 		body.Close()
-		content := `---[Header]:---------------------------` + "\n"
-		content += echo.Dump(header, false) + "\n"
-		content += `---[Form]:---------------------------` + "\n"
-		content += echo.Dump(ctx.Request().Form().All(), false) + "\n"
-		content += `---[Body]:---------------------------` + "\n"
-		content += string(b)
-		return ctx.String(content)
+		r := echo.H{
+			`header`: header.Object(),
+			`form`:   echo.NewMapx(ctx.Request().Form().All()).AsStore(),
+			`body`:   string(b),
+		}
+		data := ctx.Data()
+		data.SetData(r)
+		callback := ctx.Form(`callback`)
+		if len(callback) > 0 {
+			return ctx.JSONP(callback, data)
+		}
+		return ctx.JSON(data)
 	})
 }
