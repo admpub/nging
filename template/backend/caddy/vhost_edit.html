@@ -33,7 +33,7 @@
                       {{"可以是网址、域名或IP。如果不提供端口则默认为2005，如果不提供协议(比如https://)则默认为http，如果不提供IP和域名则默认为0.0.0.0，如果只想允许本机访问请设置为localhost或127.0.0.1。"|T}}<br />
                       {{"域名支持通配符“*”(例如*.admpub.com)和环境变量(环境变量用花括号括起来，例如localhost:{$PORT})。"|T}}<br />
                       {{"例子"|T}}: 
-                      <span class="badge badge-success clickable" onclick="App.insertAtCursor($('#bind-address')[0],$(this).text(),8,18);">https://admpub.com:433</span>
+                      <span class="badge badge-success clickable" onclick="App.insertAtCursor($('#bind-address')[0],$(this).text(),8,18);">https://admpub.com:443</span>
                       <span class="badge badge-primary clickable" onclick="App.insertAtCursor($('#bind-address')[0],$(this).text(),0,10);">admpub.com:80</span>
                       <span class="badge badge-danger clickable" onclick="App.insertAtCursor($('#bind-address')[0],$(this).text(),1,6);">:8080</span>
                       <span class="badge badge-info clickable" onclick="App.insertAtCursor($('#bind-address')[0],$(this).text(),10,14);">127.0.0.1:9999</span><br />
