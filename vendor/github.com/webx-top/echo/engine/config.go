@@ -73,36 +73,47 @@ func (c *Config) AddTLSCert(certFile, keyFile string) *Config {
 	return c
 }
 
+func (c *Config) NewAutoTLSManager(hosts ...string) *autocert.Manager {
+	autoTLSManager := &autocert.Manager{
+		Prompt: autocert.AcceptTOS,
+		Email:  c.TLSEmail,
+	}
+	if len(hosts) > 0 {
+		c.TLSHosts = append(c.TLSHosts, hosts...)
+	}
+	autoTLSManager.HostPolicy = autocert.HostWhitelist(c.TLSHosts...) // Added security
+	if len(c.TLSCacheDir) == 0 {
+		home, err := homedir.Dir()
+		if err != nil {
+			panic(err)
+		}
+		c.TLSCacheDir = filepath.Join(home, ".webx.top", "cache", "autocert")
+	}
+	if _, err := os.Stat(c.TLSCacheDir); os.IsNotExist(err) {
+		err = os.MkdirAll(c.TLSCacheDir, 0666)
+		if err != nil {
+			panic(err)
+		}
+	}
+	autoTLSManager.Cache = autocert.DirCache(c.TLSCacheDir)
+	return autoTLSManager
+}
+
 func (c *Config) SupportAutoTLS(autoTLSManager *autocert.Manager, hosts ...string) *Config {
 	if c.TLSConfig == nil {
 		c.InitTLSConfig()
 	}
 	if autoTLSManager == nil {
-		autoTLSManager = &autocert.Manager{
-			Prompt: autocert.AcceptTOS,
-			Email:  c.TLSEmail,
-		}
-		if len(hosts) > 0 {
-			c.TLSHosts = append(c.TLSHosts, hosts...)
-		}
-		autoTLSManager.HostPolicy = autocert.HostWhitelist(c.TLSHosts...) // Added security
-		if len(c.TLSCacheDir) == 0 {
-			home, err := homedir.Dir()
-			if err != nil {
-				panic(err)
-			}
-			c.TLSCacheDir = filepath.Join(home, ".webx.top", "cache", "autocert")
-		}
-		if _, err := os.Stat(c.TLSCacheDir); os.IsNotExist(err) {
-			err = os.MkdirAll(c.TLSCacheDir, 0666)
-			if err != nil {
-				panic(err)
-			}
-		}
-		autoTLSManager.Cache = autocert.DirCache(c.TLSCacheDir)
+		autoTLSManager = c.NewAutoTLSManager(hosts...)
 	}
 	if c.Listener == nil && AddressPort(c.Address) != 80 {
-		go http.ListenAndServe(":http", autoTLSManager.HTTPHandler(nil))
+		go func() {
+			log.Println(`Starting serve: ACME "http-01" challenge responses.`)
+			err := http.ListenAndServe(":http", autoTLSManager.HTTPHandler(nil))
+			if err != nil {
+				log.Println(err)
+			}
+		}()
 	}
 	//c.TLSConfig.GetCertificate = autoTLSManager.GetCertificate
 	c.TLSConfig.BuildNameToCertificate()
