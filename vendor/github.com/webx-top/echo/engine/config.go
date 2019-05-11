@@ -18,6 +18,7 @@ type Config struct {
 	Address            string       // TCP address to listen on.
 	Listener           net.Listener // Custom `net.Listener`. If set, server accepts connections on it.
 	TLSAuto            bool
+	TLSHosts           []string
 	TLSEmail           string
 	TLSCacheDir        string
 	TLSConfig          *tls.Config
@@ -81,7 +82,10 @@ func (c *Config) SupportAutoTLS(autoTLSManager *autocert.Manager, hosts ...strin
 			Prompt: autocert.AcceptTOS,
 			Email:  c.TLSEmail,
 		}
-		autoTLSManager.HostPolicy = autocert.HostWhitelist(hosts...) // Added security
+		if len(hosts) > 0 {
+			c.TLSHosts = append(c.TLSHosts, hosts...)
+		}
+		autoTLSManager.HostPolicy = autocert.HostWhitelist(c.TLSHosts...) // Added security
 		if len(c.TLSCacheDir) == 0 {
 			home, err := homedir.Dir()
 			if err != nil {

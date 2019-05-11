@@ -2795,22 +2795,22 @@
 			"revisionTime": "2019-05-06T14:40:17Z"
 		},
 		{
-			"checksumSHA1": "S5Xv95cNuse/kM8qMpsnNq1OJLQ=",
+			"checksumSHA1": "qmjPhSLx+4F+hDKl9YifDyHkZNo=",
 			"path": "github.com/webx-top/echo/engine",
-			"revision": "e5696c25a8dfbd504e1e87771d7c393c2903e128",
-			"revisionTime": "2019-05-06T14:40:17Z"
+			"revision": "0f682fe9b9b8683b7b5af663f8e65c37fd36fded",
+			"revisionTime": "2019-05-11T05:35:08Z"
 		},
 		{
 			"checksumSHA1": "LIhtsC4gjAlFQxT+Sb0ZeK6vDHI=",
 			"path": "github.com/webx-top/echo/engine/fasthttp",
-			"revision": "e5696c25a8dfbd504e1e87771d7c393c2903e128",
-			"revisionTime": "2019-05-06T14:40:17Z"
+			"revision": "0f682fe9b9b8683b7b5af663f8e65c37fd36fded",
+			"revisionTime": "2019-05-11T05:35:08Z"
 		},
 		{
 			"checksumSHA1": "ZpB4MJawvHeaJJ+tRLD5WeusyBY=",
 			"path": "github.com/webx-top/echo/engine/standard",
-			"revision": "e5696c25a8dfbd504e1e87771d7c393c2903e128",
-			"revisionTime": "2019-05-06T14:40:17Z"
+			"revision": "0f682fe9b9b8683b7b5af663f8e65c37fd36fded",
+			"revisionTime": "2019-05-11T05:35:08Z"
 		},
 		{
 			"checksumSHA1": "D87qnT/6rpCcD+opC/Fhu7+hCD0=",

@@ -104,6 +104,7 @@ If you have already purchased a license, please place the ` + license.FileName()
 	c := &engine.Config{
 		TLSAuto:     config.DefaultConfig.Sys.SSLAuto,
 		TLSEmail:    config.DefaultConfig.Sys.SSLEmail,
+		TLSHosts:    config.DefaultConfig.Sys.SSLHosts,
 		TLSCacheDir: config.DefaultConfig.Sys.SSLCacheDir,
 		TLSCertFile: config.DefaultConfig.Sys.SSLCertFile,
 		TLSKeyFile:  config.DefaultConfig.Sys.SSLKeyFile,
@@ -153,8 +154,9 @@ func initCertMagic(c *engine.Config) error {
 		certmagic.CA = certmagic.LetsEncryptProductionCA
 	}
 	certmagic.Email = c.TLSEmail
+	certmagic.Agreed = true
 	certmagic.DefaultStorage = fileStorage
-	ln, err := certmagic.Listen(config.DefaultConfig.Sys.SSLHosts)
+	ln, err := certmagic.Listen(c.TLSHosts)
 	if err == nil {
 		c.SetListener(ln)
 	}

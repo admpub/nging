@@ -43,6 +43,7 @@ import (
 
 var (
 	DefaultConfig = &Config{
+		Agreed:                  true,
 		CAUrl:                   certmagic.CA,
 		CATimeout:               int64(certmagic.HTTPTimeout),
 		DisableHTTPChallenge:    certmagic.DisableHTTPChallenge,
@@ -94,6 +95,7 @@ func Fixed(c *Config) {
 	}
 	c.appName = `nging`
 	c.appVersion = DefaultVersion
+	c.Agreed = true
 }
 
 type Config struct {
