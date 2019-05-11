@@ -2707,80 +2707,80 @@
 		{
 			"checksumSHA1": "bp4mlKNFlIgyLZCpTnfEPjwGtjo=",
 			"path": "github.com/webx-top/db",
-			"revision": "fc6d4a6a9128c3e5264eca864fae08077a8ad338",
-			"revisionTime": "2019-05-09T10:23:57Z"
+			"revision": "2feacb70d37fa0a4edd4166d5f6bfff1a4db8f75",
+			"revisionTime": "2019-05-11T00:41:14Z"
 		},
 		{
 			"checksumSHA1": "y7b9USNO6/tOCuF4KElMCQTbYrU=",
 			"path": "github.com/webx-top/db/internal/cache",
-			"revision": "fc6d4a6a9128c3e5264eca864fae08077a8ad338",
-			"revisionTime": "2019-05-09T10:23:57Z"
+			"revision": "2feacb70d37fa0a4edd4166d5f6bfff1a4db8f75",
+			"revisionTime": "2019-05-11T00:41:14Z"
 		},
 		{
 			"checksumSHA1": "mk/w7cQcAAqhPyJmCFGGEp29Bag=",
 			"path": "github.com/webx-top/db/internal/cache/hashstructure",
-			"revision": "fc6d4a6a9128c3e5264eca864fae08077a8ad338",
-			"revisionTime": "2019-05-09T10:23:57Z"
+			"revision": "2feacb70d37fa0a4edd4166d5f6bfff1a4db8f75",
+			"revisionTime": "2019-05-11T00:41:14Z"
 		},
 		{
 			"checksumSHA1": "lGDQ5JHbr7saSRN1SVzVJzfzd4s=",
 			"path": "github.com/webx-top/db/internal/immutable",
-			"revision": "fc6d4a6a9128c3e5264eca864fae08077a8ad338",
-			"revisionTime": "2019-05-09T10:23:57Z"
+			"revision": "2feacb70d37fa0a4edd4166d5f6bfff1a4db8f75",
+			"revisionTime": "2019-05-11T00:41:14Z"
 		},
 		{
 			"checksumSHA1": "bcNKan5R+RzC8GmeGuQStpGV4wc=",
 			"path": "github.com/webx-top/db/internal/sqladapter",
-			"revision": "fc6d4a6a9128c3e5264eca864fae08077a8ad338",
-			"revisionTime": "2019-05-09T10:23:57Z"
+			"revision": "2feacb70d37fa0a4edd4166d5f6bfff1a4db8f75",
+			"revisionTime": "2019-05-11T00:41:14Z"
 		},
 		{
 			"checksumSHA1": "eKZkRWmJl2R4uhmEpdhVXW5uEDQ=",
 			"path": "github.com/webx-top/db/internal/sqladapter/compat",
-			"revision": "fc6d4a6a9128c3e5264eca864fae08077a8ad338",
-			"revisionTime": "2019-05-09T10:23:57Z"
+			"revision": "2feacb70d37fa0a4edd4166d5f6bfff1a4db8f75",
+			"revisionTime": "2019-05-11T00:41:14Z"
 		},
 		{
 			"checksumSHA1": "qmymmhAjVfA4xz5QFb09MP4f4hA=",
 			"path": "github.com/webx-top/db/internal/sqladapter/exql",
-			"revision": "fc6d4a6a9128c3e5264eca864fae08077a8ad338",
-			"revisionTime": "2019-05-09T10:23:57Z"
+			"revision": "2feacb70d37fa0a4edd4166d5f6bfff1a4db8f75",
+			"revisionTime": "2019-05-11T00:41:14Z"
 		},
 		{
-			"checksumSHA1": "tcX+7l8Kznw3HwmriHmEVE30ldo=",
+			"checksumSHA1": "omhnPQHuScO8eZvdMA+z4EpkvvM=",
 			"path": "github.com/webx-top/db/lib/factory",
-			"revision": "fc6d4a6a9128c3e5264eca864fae08077a8ad338",
-			"revisionTime": "2019-05-09T10:23:57Z"
+			"revision": "2feacb70d37fa0a4edd4166d5f6bfff1a4db8f75",
+			"revisionTime": "2019-05-11T00:41:14Z"
 		},
 		{
 			"checksumSHA1": "ApnPhUdCHE4NQ/p3iSyHvchpVIY=",
 			"path": "github.com/webx-top/db/lib/reflectx",
-			"revision": "fc6d4a6a9128c3e5264eca864fae08077a8ad338",
-			"revisionTime": "2019-05-09T10:23:57Z"
+			"revision": "2feacb70d37fa0a4edd4166d5f6bfff1a4db8f75",
+			"revisionTime": "2019-05-11T00:41:14Z"
 		},
 		{
 			"checksumSHA1": "zvzP6VC/v+zR+fm7KuVRTrzMGFw=",
 			"path": "github.com/webx-top/db/lib/sqlbuilder",
-			"revision": "fc6d4a6a9128c3e5264eca864fae08077a8ad338",
-			"revisionTime": "2019-05-09T10:23:57Z"
+			"revision": "2feacb70d37fa0a4edd4166d5f6bfff1a4db8f75",
+			"revisionTime": "2019-05-11T00:41:14Z"
 		},
 		{
 			"checksumSHA1": "GJ1fKArOU4fHQJQ/hA2NIF4ISq8=",
 			"path": "github.com/webx-top/db/mongo",
-			"revision": "fc6d4a6a9128c3e5264eca864fae08077a8ad338",
-			"revisionTime": "2019-05-09T10:23:57Z"
+			"revision": "2feacb70d37fa0a4edd4166d5f6bfff1a4db8f75",
+			"revisionTime": "2019-05-11T00:41:14Z"
 		},
 		{
 			"checksumSHA1": "mOH15Qmk84EuVLLr/5qBON7/F+g=",
 			"path": "github.com/webx-top/db/mysql",
-			"revision": "fc6d4a6a9128c3e5264eca864fae08077a8ad338",
-			"revisionTime": "2019-05-09T10:23:57Z"
+			"revision": "2feacb70d37fa0a4edd4166d5f6bfff1a4db8f75",
+			"revisionTime": "2019-05-11T00:41:14Z"
 		},
 		{
 			"checksumSHA1": "LI/Ka1F03dE0FGEK0mSTbI2J36k=",
 			"path": "github.com/webx-top/db/sqlite",
-			"revision": "fc6d4a6a9128c3e5264eca864fae08077a8ad338",
-			"revisionTime": "2019-05-09T10:23:57Z"
+			"revision": "2feacb70d37fa0a4edd4166d5f6bfff1a4db8f75",
+			"revisionTime": "2019-05-11T00:41:14Z"
 		},
 		{
 			"checksumSHA1": "1IfQb/YJgwHDXBoPVqVm9ANa8E8=",
@@ -3946,5 +3946,5 @@
 			"revisionTime": "2018-09-18T15:00:10Z"
 		}
 	],
-	"rootPath": "github.com/admpub/nging-free"
+	"rootPath": "github.com/admpub/nging"
 }

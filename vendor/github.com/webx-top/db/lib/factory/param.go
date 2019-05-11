@@ -139,6 +139,9 @@ func (p *Param) SetContext(ctx context.Context) *Param {
 }
 
 func (p *Param) Context() context.Context {
+	if p.ctx == nil {
+		p.ctx = context.Background()
+	}
 	return p.ctx
 }
 
