@@ -114,6 +114,7 @@ func (this *TaskLog) ListByOffset(recv interface{}, mw func(db.Result) db.Result
 func (this *TaskLog) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.Status) == 0 { this.Status = "success" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -154,6 +155,7 @@ func (this *TaskLog) Upsert(mw func(db.Result) db.Result, args ...interface{}) (
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.Status) == 0 { this.Status = "success" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {

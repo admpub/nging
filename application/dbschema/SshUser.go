@@ -122,6 +122,8 @@ func (this *SshUser) ListByOffset(recv interface{}, mw func(db.Result) db.Result
 func (this *SshUser) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.Host) == 0 { this.Host = "localhost" }
+	if len(this.Username) == 0 { this.Username = "root" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -165,6 +167,8 @@ func (this *SshUser) Upsert(mw func(db.Result) db.Result, args ...interface{}) (
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.Host) == 0 { this.Host = "localhost" }
+	if len(this.Username) == 0 { this.Username = "root" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {

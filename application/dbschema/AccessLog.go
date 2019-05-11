@@ -130,6 +130,7 @@ func (this *AccessLog) ListByOffset(recv interface{}, mw func(db.Result) db.Resu
 func (this *AccessLog) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.TimeLocal) == 0 { this.TimeLocal = "1970-01-01 00:00:00" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -170,6 +171,7 @@ func (this *AccessLog) Upsert(mw func(db.Result) db.Result, args ...interface{})
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.TimeLocal) == 0 { this.TimeLocal = "1970-01-01 00:00:00" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {

@@ -113,6 +113,7 @@ func (this *CollectorExportLog) ListByOffset(recv interface{}, mw func(db.Result
 func (this *CollectorExportLog) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.Status) == 0 { this.Status = "idle" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -153,6 +154,7 @@ func (this *CollectorExportLog) Upsert(mw func(db.Result) db.Result, args ...int
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.Status) == 0 { this.Status = "idle" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {

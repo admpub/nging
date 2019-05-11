@@ -115,6 +115,7 @@ func (this *CollectorRule) ListByOffset(recv interface{}, mw func(db.Result) db.
 func (this *CollectorRule) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.Type) == 0 { this.Type = "string" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -155,6 +156,7 @@ func (this *CollectorRule) Upsert(mw func(db.Result) db.Result, args ...interfac
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.Type) == 0 { this.Type = "string" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {

@@ -116,6 +116,7 @@ func (this *UserRole) ListByOffset(recv interface{}, mw func(db.Result) db.Resul
 func (this *UserRole) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -156,6 +157,7 @@ func (this *UserRole) Upsert(mw func(db.Result) db.Result, args ...interface{}) 
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {

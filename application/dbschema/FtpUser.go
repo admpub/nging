@@ -117,6 +117,7 @@ func (this *FtpUser) ListByOffset(recv interface{}, mw func(db.Result) db.Result
 func (this *FtpUser) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.Banned) == 0 { this.Banned = "N" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -157,6 +158,7 @@ func (this *FtpUser) Upsert(mw func(db.Result) db.Result, args ...interface{}) (
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.Banned) == 0 { this.Banned = "N" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {

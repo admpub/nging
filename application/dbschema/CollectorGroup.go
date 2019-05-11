@@ -113,6 +113,7 @@ func (this *CollectorGroup) ListByOffset(recv interface{}, mw func(db.Result) db
 func (this *CollectorGroup) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.Type) == 0 { this.Type = "page" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -153,6 +154,7 @@ func (this *CollectorGroup) Upsert(mw func(db.Result) db.Result, args ...interfa
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.Type) == 0 { this.Type = "page" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
