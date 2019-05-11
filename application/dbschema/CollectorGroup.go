@@ -142,7 +142,7 @@ func (this *CollectorGroup) SetField(mw func(db.Result) db.Result, field string,
 
 func (this *CollectorGroup) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if v, ok := kvset["type"]; ok && v == nil { kvset["type"] = "page" }
+	if val, ok := kvset["type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["type"] = "page" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 

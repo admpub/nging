@@ -148,8 +148,8 @@ func (this *Command) SetField(mw func(db.Result) db.Result, field string, value 
 
 func (this *Command) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if v, ok := kvset["disabled"]; ok && v == nil { kvset["disabled"] = "N" }
-	if v, ok := kvset["remote"]; ok && v == nil { kvset["remote"] = "N" }
+	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
+	if val, ok := kvset["remote"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["remote"] = "N" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 

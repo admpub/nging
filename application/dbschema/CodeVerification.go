@@ -132,9 +132,9 @@ func (this *CodeVerification) Add() (pk interface{}, err error) {
 
 func (this *CodeVerification) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	
-	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
-	if len(this.SendMethod) == 0 { this.SendMethod = "mobile" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.SendMethod) == 0 { this.SendMethod = "mobile" }
+	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -150,18 +150,18 @@ func (this *CodeVerification) SetField(mw func(db.Result) db.Result, field strin
 
 func (this *CodeVerification) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if v, ok := kvset["owner_type"]; ok && v == nil { kvset["owner_type"] = "user" }
-	if v, ok := kvset["send_method"]; ok && v == nil { kvset["send_method"] = "mobile" }
-	if v, ok := kvset["disabled"]; ok && v == nil { kvset["disabled"] = "N" }
+	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
+	if val, ok := kvset["send_method"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["send_method"] = "mobile" } }
+	if val, ok := kvset["owner_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["owner_type"] = "user" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *CodeVerification) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		
-	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
-	if len(this.SendMethod) == 0 { this.SendMethod = "mobile" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.SendMethod) == 0 { this.SendMethod = "mobile" }
+	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0

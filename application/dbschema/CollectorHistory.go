@@ -150,7 +150,7 @@ func (this *CollectorHistory) SetField(mw func(db.Result) db.Result, field strin
 
 func (this *CollectorHistory) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if v, ok := kvset["has_child"]; ok && v == nil { kvset["has_child"] = "N" }
+	if val, ok := kvset["has_child"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["has_child"] = "N" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 

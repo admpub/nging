@@ -144,7 +144,7 @@ func (this *CollectorRule) SetField(mw func(db.Result) db.Result, field string, 
 
 func (this *CollectorRule) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if v, ok := kvset["type"]; ok && v == nil { kvset["type"] = "string" }
+	if val, ok := kvset["type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["type"] = "string" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 

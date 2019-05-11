@@ -151,14 +151,14 @@ func (this *FrpClient) Add() (pk interface{}, err error) {
 func (this *FrpClient) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
 	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
-	if len(this.ServerAddr) == 0 { this.ServerAddr = "0.0.0.0" }
-	if len(this.Type) == 0 { this.Type = "web" }
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Protocol) == 0 { this.Protocol = "tcp" }
-	if len(this.LoginFailExit) == 0 { this.LoginFailExit = "Y" }
-	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
-	if len(this.LogFile) == 0 { this.LogFile = "console" }
 	if len(this.LogWay) == 0 { this.LogWay = "console" }
+	if len(this.Type) == 0 { this.Type = "web" }
+	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
+	if len(this.LoginFailExit) == 0 { this.LoginFailExit = "Y" }
+	if len(this.ServerAddr) == 0 { this.ServerAddr = "0.0.0.0" }
+	if len(this.LogFile) == 0 { this.LogFile = "console" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -174,15 +174,15 @@ func (this *FrpClient) SetField(mw func(db.Result) db.Result, field string, valu
 
 func (this *FrpClient) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if v, ok := kvset["log_level"]; ok && v == nil { kvset["log_level"] = "info" }
-	if v, ok := kvset["server_addr"]; ok && v == nil { kvset["server_addr"] = "0.0.0.0" }
-	if v, ok := kvset["type"]; ok && v == nil { kvset["type"] = "web" }
-	if v, ok := kvset["disabled"]; ok && v == nil { kvset["disabled"] = "N" }
-	if v, ok := kvset["protocol"]; ok && v == nil { kvset["protocol"] = "tcp" }
-	if v, ok := kvset["login_fail_exit"]; ok && v == nil { kvset["login_fail_exit"] = "Y" }
-	if v, ok := kvset["tcp_mux"]; ok && v == nil { kvset["tcp_mux"] = "Y" }
-	if v, ok := kvset["log_file"]; ok && v == nil { kvset["log_file"] = "console" }
-	if v, ok := kvset["log_way"]; ok && v == nil { kvset["log_way"] = "console" }
+	if val, ok := kvset["log_level"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["log_level"] = "info" } }
+	if val, ok := kvset["protocol"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["protocol"] = "tcp" } }
+	if val, ok := kvset["log_way"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["log_way"] = "console" } }
+	if val, ok := kvset["type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["type"] = "web" } }
+	if val, ok := kvset["tcp_mux"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["tcp_mux"] = "Y" } }
+	if val, ok := kvset["login_fail_exit"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["login_fail_exit"] = "Y" } }
+	if val, ok := kvset["server_addr"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["server_addr"] = "0.0.0.0" } }
+	if val, ok := kvset["log_file"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["log_file"] = "console" } }
+	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
@@ -190,14 +190,14 @@ func (this *FrpClient) Upsert(mw func(db.Result) db.Result, args ...interface{})
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
 	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
-	if len(this.ServerAddr) == 0 { this.ServerAddr = "0.0.0.0" }
-	if len(this.Type) == 0 { this.Type = "web" }
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Protocol) == 0 { this.Protocol = "tcp" }
-	if len(this.LoginFailExit) == 0 { this.LoginFailExit = "Y" }
-	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
-	if len(this.LogFile) == 0 { this.LogFile = "console" }
 	if len(this.LogWay) == 0 { this.LogWay = "console" }
+	if len(this.Type) == 0 { this.Type = "web" }
+	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
+	if len(this.LoginFailExit) == 0 { this.LoginFailExit = "Y" }
+	if len(this.ServerAddr) == 0 { this.ServerAddr = "0.0.0.0" }
+	if len(this.LogFile) == 0 { this.LogFile = "console" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0

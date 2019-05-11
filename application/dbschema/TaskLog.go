@@ -143,7 +143,7 @@ func (this *TaskLog) SetField(mw func(db.Result) db.Result, field string, value 
 
 func (this *TaskLog) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if v, ok := kvset["status"]; ok && v == nil { kvset["status"] = "success" }
+	if val, ok := kvset["status"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["status"] = "success" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 

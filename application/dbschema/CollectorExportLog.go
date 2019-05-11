@@ -142,7 +142,7 @@ func (this *CollectorExportLog) SetField(mw func(db.Result) db.Result, field str
 
 func (this *CollectorExportLog) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if v, ok := kvset["status"]; ok && v == nil { kvset["status"] = "idle" }
+	if val, ok := kvset["status"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["status"] = "idle" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 

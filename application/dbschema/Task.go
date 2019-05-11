@@ -140,8 +140,8 @@ func (this *Task) Add() (pk interface{}, err error) {
 
 func (this *Task) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
-	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -157,16 +157,16 @@ func (this *Task) SetField(mw func(db.Result) db.Result, field string, value int
 
 func (this *Task) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if v, ok := kvset["closed_log"]; ok && v == nil { kvset["closed_log"] = "N" }
-	if v, ok := kvset["disabled"]; ok && v == nil { kvset["disabled"] = "N" }
+	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
+	if val, ok := kvset["closed_log"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["closed_log"] = "N" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *Task) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
-	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0

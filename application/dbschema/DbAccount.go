@@ -132,8 +132,8 @@ func (this *DbAccount) Add() (pk interface{}, err error) {
 func (this *DbAccount) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
 	if len(this.Engine) == 0 { this.Engine = "mysql" }
-	if len(this.Host) == 0 { this.Host = "localhost:3306" }
 	if len(this.User) == 0 { this.User = "root" }
+	if len(this.Host) == 0 { this.Host = "localhost:3306" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -149,9 +149,9 @@ func (this *DbAccount) SetField(mw func(db.Result) db.Result, field string, valu
 
 func (this *DbAccount) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if v, ok := kvset["engine"]; ok && v == nil { kvset["engine"] = "mysql" }
-	if v, ok := kvset["host"]; ok && v == nil { kvset["host"] = "localhost:3306" }
-	if v, ok := kvset["user"]; ok && v == nil { kvset["user"] = "root" }
+	if val, ok := kvset["engine"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["engine"] = "mysql" } }
+	if val, ok := kvset["user"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["user"] = "root" } }
+	if val, ok := kvset["host"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["host"] = "localhost:3306" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
@@ -159,8 +159,8 @@ func (this *DbAccount) Upsert(mw func(db.Result) db.Result, args ...interface{})
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
 	if len(this.Engine) == 0 { this.Engine = "mysql" }
-	if len(this.Host) == 0 { this.Host = "localhost:3306" }
 	if len(this.User) == 0 { this.User = "root" }
+	if len(this.Host) == 0 { this.Host = "localhost:3306" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0

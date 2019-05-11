@@ -149,8 +149,8 @@ func (this *CollectorExport) SetField(mw func(db.Result) db.Result, field string
 
 func (this *CollectorExport) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if v, ok := kvset["disabled"]; ok && v == nil { kvset["disabled"] = "N" }
-	if v, ok := kvset["dest_type"]; ok && v == nil { kvset["dest_type"] = "dbAccountID" }
+	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
+	if val, ok := kvset["dest_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["dest_type"] = "dbAccountID" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 

@@ -146,8 +146,8 @@ func (this *FtpUserGroup) SetField(mw func(db.Result) db.Result, field string, v
 
 func (this *FtpUserGroup) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if v, ok := kvset["disabled"]; ok && v == nil { kvset["disabled"] = "N" }
-	if v, ok := kvset["banned"]; ok && v == nil { kvset["banned"] = "N" }
+	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
+	if val, ok := kvset["banned"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["banned"] = "N" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 

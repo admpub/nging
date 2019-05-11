@@ -159,7 +159,7 @@ func (this *AccessLog) SetField(mw func(db.Result) db.Result, field string, valu
 
 func (this *AccessLog) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if v, ok := kvset["time_local"]; ok && v == nil { kvset["time_local"] = "1970-01-01 00:00:00" }
+	if val, ok := kvset["time_local"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["time_local"] = "1970-01-01 00:00:00" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
