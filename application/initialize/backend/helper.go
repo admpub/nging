@@ -19,7 +19,6 @@
 package backend
 
 import (
-	"io/ioutil"
 	"path/filepath"
 	"strings"
 
@@ -166,22 +165,24 @@ func addRouter(e *echo.Echo) {
 
 		return ctx.JSON(unuse)
 	}, middleware.AuthCheck)
-	e.Route(`GET,POST`, `/ping`, func(ctx echo.Context) error {
-		header := ctx.Request().Header()
-		body := ctx.Request().Body()
-		b, _ := ioutil.ReadAll(body)
-		body.Close()
-		r := echo.H{
-			`header`: header.Object(),
-			`form`:   echo.NewMapx(ctx.Request().Form().All()).AsStore(),
-			`body`:   string(b),
-		}
-		data := ctx.Data()
-		data.SetData(r)
-		callback := ctx.Form(`callback`)
-		if len(callback) > 0 {
-			return ctx.JSONP(callback, data)
-		}
-		return ctx.JSON(data)
-	})
+	/*
+		e.Route(`GET,POST`, `/ping`, func(ctx echo.Context) error {
+			header := ctx.Request().Header()
+			body := ctx.Request().Body()
+			b, _ := ioutil.ReadAll(body)
+			body.Close()
+			r := echo.H{
+				`header`: header.Object(),
+				`form`:   echo.NewMapx(ctx.Request().Form().All()).AsStore(),
+				`body`:   string(b),
+			}
+			data := ctx.Data()
+			data.SetData(r)
+			callback := ctx.Form(`callback`)
+			if len(callback) > 0 {
+				return ctx.JSONP(callback, data)
+			}
+			return ctx.JSON(data)
+		})
+	*/
 }
