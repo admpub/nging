@@ -121,9 +121,9 @@ func (this *Config) Add() (pk interface{}, err error) {
 
 func (this *Config) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.Encrypted) == 0 { this.Encrypted = "N" }
 	if len(this.Type) == 0 { this.Type = "text" }
+	if len(this.Encrypted) == 0 { this.Encrypted = "N" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -139,18 +139,18 @@ func (this *Config) SetField(mw func(db.Result) db.Result, field string, value i
 
 func (this *Config) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
-	if val, ok := kvset["encrypted"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["encrypted"] = "N" } }
 	if val, ok := kvset["type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["type"] = "text" } }
+	if val, ok := kvset["encrypted"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["encrypted"] = "N" } }
+	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *Config) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.Encrypted) == 0 { this.Encrypted = "N" }
 	if len(this.Type) == 0 { this.Type = "text" }
+	if len(this.Encrypted) == 0 { this.Encrypted = "N" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	},func(){
 		
 	})
