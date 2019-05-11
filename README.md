@@ -2,8 +2,6 @@
 
 ![Nging's logo](https://github.com/admpub/nging/blob/master/public/assets/images/nging-gear.png?raw=true)
 
-#### [下载2.0.0可执行文件](http://dl.eget.io/nging/)
-
 > 注意：这是Nging2.0.0源代码，旧版1.x已经转移到 [v1分支](https://github.com/admpub/nging/tree/v1)
 
 
@@ -30,6 +28,11 @@ import (
 	_ "github.com/admpub/nging/application/initialize/manager"
 )
 ```
+
+## 下载
+
+[下载2.0.0可执行文件](http://dl.eget.io/nging/)
+
 
 ## 0、基本功能
 
