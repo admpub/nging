@@ -22,13 +22,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/admpub/nging/application/registry/perm"
-
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/middleware"
 	"github.com/admpub/nging/application/registry/navigate"
+	"github.com/admpub/nging/application/registry/perm"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/handler/captcha"
 	"github.com/webx-top/echo/handler/mvc/static/resource"
@@ -165,24 +164,4 @@ func addRouter(e *echo.Echo) {
 
 		return ctx.JSON(unuse)
 	}, middleware.AuthCheck)
-	/*
-		e.Route(`GET,POST`, `/ping`, func(ctx echo.Context) error {
-			header := ctx.Request().Header()
-			body := ctx.Request().Body()
-			b, _ := ioutil.ReadAll(body)
-			body.Close()
-			r := echo.H{
-				`header`: header.Object(),
-				`form`:   echo.NewMapx(ctx.Request().Form().All()).AsStore(),
-				`body`:   string(b),
-			}
-			data := ctx.Data()
-			data.SetData(r)
-			callback := ctx.Form(`callback`)
-			if len(callback) > 0 {
-				return ctx.JSONP(callback, data)
-			}
-			return ctx.JSON(data)
-		})
-	*/
 }
