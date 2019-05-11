@@ -1,5 +1,5 @@
 mkdir ..\dist\nging_%GOOS%_%GOARCH%
-go build -tags "bindata%BUILDTAGS%" -o ../dist/nging_%GOOS%_%GOARCH%/nging_%GOOS%_%GOARCH%%NGINGEX% ..
+go build -tags "bindata%BUILDTAGS%" -ldflags="-X main.BUILD_TIME=%NGING_BUILD% -X main.COMMIT=%NGING_COMMIT% -X main.VERSION=%NGING_VERSION% -X main.LABEL=%NGING_LABEL%" -o ../dist/nging_%GOOS%_%GOARCH%/nging_%GOOS%_%GOARCH%%NGINGEX% ..
 
 mkdir ..\dist\nging_%GOOS%_%GOARCH%\data
 mkdir ..\dist\nging_%GOOS%_%GOARCH%\data\logs
