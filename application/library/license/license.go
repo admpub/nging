@@ -51,7 +51,7 @@ var (
 	domain             string
 	emptyLicense       = lib.LicenseData{}
 	ErrLicenseNotFound = errors.New(`License does not exist`)
-	SkipLicenseCheck   bool
+	SkipLicenseCheck   = true
 )
 
 type ServerURL struct {
