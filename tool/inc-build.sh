@@ -1,6 +1,9 @@
 mkdir ../dist/nging_${GOOS}_${GOARCH}
 go build -tags "bindata sqlite${BUILDTAGS}" -o ../dist/nging_${GOOS}_${GOARCH}/nging ..
-cp -R ../data ../dist/nging_${GOOS}_${GOARCH}/data
+mkdir ../dist/nging_${GOOS}_${GOARCH}/data
+mkdir ../dist/nging_${GOOS}_${GOARCH}/data/logs
+cp -R ../data/ip2region ../dist/nging_${GOOS}_${GOARCH}/data/ip2region
+
 
 mkdir ../dist/nging_${GOOS}_${GOARCH}/config
 mkdir ../dist/nging_${GOOS}_${GOARCH}/config/vhosts

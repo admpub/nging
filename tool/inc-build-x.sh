@@ -1,6 +1,8 @@
 mkdir ../dist/nging_${GOOS}_${GOARCH}
 xgo -go=1.12 -image=admpub/xgo:latest -targets=${GOOS}/${GOARCH} -dest=../dist/nging_${GOOS}_${GOARCH} -tags="bindata sqlite${BUILDTAGS}" -ldflags="-X main.BUILD_TIME=${NGING_BUILD} -X main.COMMIT=${NGING_COMMIT} -X main.VERSION=${NGING_VERSION} -X main.LABEL=${NGING_LABEL}" ../
-cp -R ../data ../dist/nging_${GOOS}_${GOARCH}/data
+mkdir ../dist/nging_${GOOS}_${GOARCH}/data
+mkdir ../dist/nging_${GOOS}_${GOARCH}/data/logs
+cp -R ../data/ip2region ../dist/nging_${GOOS}_${GOARCH}/data/ip2region
 
 mkdir ../dist/nging_${GOOS}_${GOARCH}/config
 mkdir ../dist/nging_${GOOS}_${GOARCH}/config/vhosts
