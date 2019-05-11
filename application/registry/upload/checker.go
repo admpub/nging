@@ -31,7 +31,7 @@ var UploadLinkLifeTime int64 = 86400
 
 type Checker func(echo.Context) (subdir string, name string, err error)
 
-func defaultChecker(ctx echo.Context) (subdir string, name string, err error) {
+var DefaultChecker = func(ctx echo.Context) (subdir string, name string, err error) {
 	refid := ctx.Formx(`refid`).Uint64()
 	timestamp := ctx.Formx(`time`).Int64()
 	// 验证签名（避免上传接口被滥用）
@@ -87,18 +87,18 @@ var checkers = map[string]Checker{
 	},
 }
 
-func Register(typ string, checker Checker) {
+func CheckerRegister(typ string, checker Checker) {
 	checkers[typ] = checker
 }
 
-func AllCheckers() map[string]Checker {
+func CheckerAll() map[string]Checker {
 	return checkers
 }
 
-func GetChecker(typ string) Checker {
+func CheckerGet(typ string) Checker {
 	checker, ok := checkers[typ]
 	if !ok {
-		return defaultChecker
+		return DefaultChecker
 	}
 	return checker
 }

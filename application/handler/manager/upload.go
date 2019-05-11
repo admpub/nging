@@ -29,12 +29,11 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/admpub/nging/application/handler/manager/upload"
-
 	imageproxy "git.webx.top/coscms/app/base/lib/image/proxy"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/library/collector/exec"
 	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/qrcode"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -43,29 +42,7 @@ import (
 
 // ResponseDataForUpload 根据不同的上传方式响应不同的数据格式
 func ResponseDataForUpload(ctx echo.Context, field string, err error, imageURLs []string) (result echo.H, embed bool) {
-	switch field {
-	case `editormd-image-file`:
-		var code int
-		var msg string
-		if err == nil {
-			code = 1
-		} else {
-			msg = err.Error()
-		}
-		result = echo.H{
-			`success`: code, // 0 表示上传失败，1 表示上传成功
-			`message`: msg,
-			//`url`     : imageURLs        // 上传成功时才返回
-		}
-		if len(imageURLs) > 0 {
-			result[`url`] = imageURLs[0]
-		}
-		return
-	default:
-		return echo.H{
-			`files`: imageURLs,
-		}, true
-	}
+	return upload.ResponserGet(field)(ctx, field, err, imageURLs)
 }
 
 // Upload 上传文件
@@ -82,15 +59,13 @@ func Upload(ctx echo.Context) error {
 		}
 		return err
 	}
-	for _, t := range typ {
-		if !com.IsAlphaNumeric(t) && t != '_' && t != '-' {
-			err := errors.New(ctx.T(`参数“%s”只能由字母(a-zA-Z)、数字(0-9)、下划线(_)或短横线(-)组成`, typ))
-			datax, embed := ResponseDataForUpload(ctx, field, err, files)
-			if !embed {
-				return ctx.JSON(datax)
-			}
-			return err
+	if !upload.SubdirIsAllowed(typ) {
+		err := errors.New(ctx.T(`参数“%s”只能由字母(a-zA-Z)、数字(0-9)、下划线(_)或短横线(-)组成`, typ))
+		datax, embed := ResponseDataForUpload(ctx, field, err, files)
+		if !embed {
+			return ctx.JSON(datax)
 		}
+		return err
 	}
 	//echo.Dump(ctx.Forms())
 	saveDir := filepath.Join(echo.Wd(), `public/upload/`+typ)
@@ -103,7 +78,7 @@ func Upload(ctx echo.Context) error {
 		return err
 	}
 	var subdir, name string
-	subdir, name, err = upload.GetChecker(typ)(ctx)
+	subdir, name, err = upload.CheckerGet(typ)(ctx)
 	if err != nil {
 		return err
 	}
