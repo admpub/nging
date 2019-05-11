@@ -143,6 +143,7 @@ func (this *AccessLog) Add() (pk interface{}, err error) {
 
 func (this *AccessLog) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	
+	if len(this.TimeLocal) == 0 { this.TimeLocal = "1970-01-01 00:00:00" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -158,12 +159,14 @@ func (this *AccessLog) SetField(mw func(db.Result) db.Result, field string, valu
 
 func (this *AccessLog) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
+	if v, ok := kvset["time_local"]; ok && v == nil { kvset["time_local"] = "1970-01-01 00:00:00" }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *AccessLog) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		
+	if len(this.TimeLocal) == 0 { this.TimeLocal = "1970-01-01 00:00:00" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0

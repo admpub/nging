@@ -128,6 +128,7 @@ func (this *CollectorRule) Add() (pk interface{}, err error) {
 
 func (this *CollectorRule) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	
+	if len(this.Type) == 0 { this.Type = "string" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -143,12 +144,14 @@ func (this *CollectorRule) SetField(mw func(db.Result) db.Result, field string, 
 
 func (this *CollectorRule) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
+	if v, ok := kvset["type"]; ok && v == nil { kvset["type"] = "string" }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *CollectorRule) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		
+	if len(this.Type) == 0 { this.Type = "string" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0

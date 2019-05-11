@@ -135,6 +135,10 @@ func (this *SendingLog) Add() (pk interface{}, err error) {
 
 func (this *SendingLog) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	
+	if len(this.SourceType) == 0 { this.SourceType = "user" }
+	if len(this.Method) == 0 { this.Method = "mobile" }
+	if len(this.Status) == 0 { this.Status = "waiting" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -150,12 +154,20 @@ func (this *SendingLog) SetField(mw func(db.Result) db.Result, field string, val
 
 func (this *SendingLog) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
+	if v, ok := kvset["source_type"]; ok && v == nil { kvset["source_type"] = "user" }
+	if v, ok := kvset["method"]; ok && v == nil { kvset["method"] = "mobile" }
+	if v, ok := kvset["status"]; ok && v == nil { kvset["status"] = "waiting" }
+	if v, ok := kvset["disabled"]; ok && v == nil { kvset["disabled"] = "N" }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *SendingLog) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		
+	if len(this.SourceType) == 0 { this.SourceType = "user" }
+	if len(this.Method) == 0 { this.Method = "mobile" }
+	if len(this.Status) == 0 { this.Status = "waiting" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0

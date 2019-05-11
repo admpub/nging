@@ -141,6 +141,9 @@ func (this *ForeverProcess) Add() (pk interface{}, err error) {
 
 func (this *ForeverProcess) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Debug) == 0 { this.Debug = "N" }
+	if len(this.Status) == 0 { this.Status = "idle" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -155,13 +158,19 @@ func (this *ForeverProcess) SetField(mw func(db.Result) db.Result, field string,
 }
 
 func (this *ForeverProcess) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
-	kvset["updated"] = uint(time.Now().Unix())
+	
+	if v, ok := kvset["disabled"]; ok && v == nil { kvset["disabled"] = "N" }
+	if v, ok := kvset["debug"]; ok && v == nil { kvset["debug"] = "N" }
+	if v, ok := kvset["status"]; ok && v == nil { kvset["status"] = "idle" }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *ForeverProcess) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Debug) == 0 { this.Debug = "N" }
+	if len(this.Status) == 0 { this.Status = "idle" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0

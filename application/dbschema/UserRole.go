@@ -129,6 +129,7 @@ func (this *UserRole) Add() (pk interface{}, err error) {
 
 func (this *UserRole) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -143,13 +144,15 @@ func (this *UserRole) SetField(mw func(db.Result) db.Result, field string, value
 }
 
 func (this *UserRole) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
-	kvset["updated"] = uint(time.Now().Unix())
+	
+	if v, ok := kvset["disabled"]; ok && v == nil { kvset["disabled"] = "N" }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *UserRole) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0

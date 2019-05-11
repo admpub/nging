@@ -153,6 +153,16 @@ func (this *FrpServer) Add() (pk interface{}, err error) {
 
 func (this *FrpServer) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.DashboardPwd) == 0 { this.DashboardPwd = "admin" }
+	if len(this.ProxyAddr) == 0 { this.ProxyAddr = "0.0.0.0" }
+	if len(this.LogFile) == 0 { this.LogFile = "console" }
+	if len(this.LogWay) == 0 { this.LogWay = "console" }
+	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
+	if len(this.Addr) == 0 { this.Addr = "0.0.0.0" }
+	if len(this.DashboardUser) == 0 { this.DashboardUser = "admin" }
+	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
+	if len(this.DashboardAddr) == 0 { this.DashboardAddr = "0.0.0.0" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -167,13 +177,33 @@ func (this *FrpServer) SetField(mw func(db.Result) db.Result, field string, valu
 }
 
 func (this *FrpServer) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
-	kvset["updated"] = uint(time.Now().Unix())
+	
+	if v, ok := kvset["disabled"]; ok && v == nil { kvset["disabled"] = "N" }
+	if v, ok := kvset["dashboard_pwd"]; ok && v == nil { kvset["dashboard_pwd"] = "admin" }
+	if v, ok := kvset["proxy_addr"]; ok && v == nil { kvset["proxy_addr"] = "0.0.0.0" }
+	if v, ok := kvset["log_file"]; ok && v == nil { kvset["log_file"] = "console" }
+	if v, ok := kvset["log_way"]; ok && v == nil { kvset["log_way"] = "console" }
+	if v, ok := kvset["tcp_mux"]; ok && v == nil { kvset["tcp_mux"] = "Y" }
+	if v, ok := kvset["addr"]; ok && v == nil { kvset["addr"] = "0.0.0.0" }
+	if v, ok := kvset["dashboard_user"]; ok && v == nil { kvset["dashboard_user"] = "admin" }
+	if v, ok := kvset["log_level"]; ok && v == nil { kvset["log_level"] = "info" }
+	if v, ok := kvset["dashboard_addr"]; ok && v == nil { kvset["dashboard_addr"] = "0.0.0.0" }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *FrpServer) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.DashboardPwd) == 0 { this.DashboardPwd = "admin" }
+	if len(this.ProxyAddr) == 0 { this.ProxyAddr = "0.0.0.0" }
+	if len(this.LogFile) == 0 { this.LogFile = "console" }
+	if len(this.LogWay) == 0 { this.LogWay = "console" }
+	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
+	if len(this.Addr) == 0 { this.Addr = "0.0.0.0" }
+	if len(this.DashboardUser) == 0 { this.DashboardUser = "admin" }
+	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
+	if len(this.DashboardAddr) == 0 { this.DashboardAddr = "0.0.0.0" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0

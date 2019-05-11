@@ -134,6 +134,7 @@ func (this *CollectorHistory) Add() (pk interface{}, err error) {
 
 func (this *CollectorHistory) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	
+	if len(this.HasChild) == 0 { this.HasChild = "N" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -149,12 +150,14 @@ func (this *CollectorHistory) SetField(mw func(db.Result) db.Result, field strin
 
 func (this *CollectorHistory) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
+	if v, ok := kvset["has_child"]; ok && v == nil { kvset["has_child"] = "N" }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *CollectorHistory) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		
+	if len(this.HasChild) == 0 { this.HasChild = "N" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0

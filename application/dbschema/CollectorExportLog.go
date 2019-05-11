@@ -126,6 +126,7 @@ func (this *CollectorExportLog) Add() (pk interface{}, err error) {
 
 func (this *CollectorExportLog) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	
+	if len(this.Status) == 0 { this.Status = "idle" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -141,12 +142,14 @@ func (this *CollectorExportLog) SetField(mw func(db.Result) db.Result, field str
 
 func (this *CollectorExportLog) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
+	if v, ok := kvset["status"]; ok && v == nil { kvset["status"] = "idle" }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *CollectorExportLog) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		
+	if len(this.Status) == 0 { this.Status = "idle" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0

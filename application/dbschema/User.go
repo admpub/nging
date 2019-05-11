@@ -136,6 +136,9 @@ func (this *User) Add() (pk interface{}, err error) {
 
 func (this *User) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Online) == 0 { this.Online = "N" }
+	if len(this.Gender) == 0 { this.Gender = "secret" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -150,13 +153,19 @@ func (this *User) SetField(mw func(db.Result) db.Result, field string, value int
 }
 
 func (this *User) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
-	kvset["updated"] = uint(time.Now().Unix())
+	
+	if v, ok := kvset["disabled"]; ok && v == nil { kvset["disabled"] = "N" }
+	if v, ok := kvset["online"]; ok && v == nil { kvset["online"] = "N" }
+	if v, ok := kvset["gender"]; ok && v == nil { kvset["gender"] = "secret" }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *User) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Online) == 0 { this.Online = "N" }
+	if len(this.Gender) == 0 { this.Gender = "secret" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0

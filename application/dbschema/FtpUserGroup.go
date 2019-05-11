@@ -129,6 +129,8 @@ func (this *FtpUserGroup) Add() (pk interface{}, err error) {
 
 func (this *FtpUserGroup) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Banned) == 0 { this.Banned = "N" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -143,13 +145,17 @@ func (this *FtpUserGroup) SetField(mw func(db.Result) db.Result, field string, v
 }
 
 func (this *FtpUserGroup) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
-	kvset["updated"] = uint(time.Now().Unix())
+	
+	if v, ok := kvset["disabled"]; ok && v == nil { kvset["disabled"] = "N" }
+	if v, ok := kvset["banned"]; ok && v == nil { kvset["banned"] = "N" }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *FtpUserGroup) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Banned) == 0 { this.Banned = "N" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0

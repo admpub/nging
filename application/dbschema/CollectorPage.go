@@ -140,6 +140,10 @@ func (this *CollectorPage) Add() (pk interface{}, err error) {
 
 func (this *CollectorPage) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	
+	if len(this.HasChild) == 0 { this.HasChild = "N" }
+	if len(this.Type) == 0 { this.Type = "content" }
+	if len(this.ContentType) == 0 { this.ContentType = "html" }
+	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -155,12 +159,20 @@ func (this *CollectorPage) SetField(mw func(db.Result) db.Result, field string, 
 
 func (this *CollectorPage) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
+	if v, ok := kvset["has_child"]; ok && v == nil { kvset["has_child"] = "N" }
+	if v, ok := kvset["type"]; ok && v == nil { kvset["type"] = "content" }
+	if v, ok := kvset["content_type"]; ok && v == nil { kvset["content_type"] = "html" }
+	if v, ok := kvset["duplicate_rule"]; ok && v == nil { kvset["duplicate_rule"] = "none" }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *CollectorPage) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		
+	if len(this.HasChild) == 0 { this.HasChild = "N" }
+	if len(this.Type) == 0 { this.Type = "content" }
+	if len(this.ContentType) == 0 { this.ContentType = "html" }
+	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
