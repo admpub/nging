@@ -126,6 +126,12 @@ func Upload(ctx echo.Context) error {
 }
 
 func Crop(ctx echo.Context) error {
+	up := upload.UploaderGet(UploaderEngine)
+	if up == nil {
+		return ctx.E(`存储引擎“%s”未被登记`, UploaderEngine)
+	}
+	typ := ctx.Param(`type`)
+	uploader := up(typ)
 	src := ctx.Form(`src`)
 	src, _ = com.URLDecode(src)
 	if err := common.IsRightUploadFile(ctx, src); err != nil {

@@ -2,6 +2,8 @@ package model
 
 import (
 	"encoding/json"
+	"io"
+	"io/ioutil"
 	"strings"
 
 	"github.com/admpub/goseaweedfs/libs"
@@ -69,6 +71,26 @@ func (f *Filer) Dir(pathname string) (result *Dir, err error) {
 	return
 }
 
+func (f *Filer) DownloadFile(fileURL string) (string, []byte, error) {
+	fileName, rc, err := f.HTTPClient.DownloadFromURL(f.URL + fileURL)
+	if err != nil {
+		return "", nil, err
+	}
+	defer rc.Close()
+	fileData, err := ioutil.ReadAll(rc)
+	if err != nil {
+		return "", nil, err
+	}
+	return fileName, fileData, nil
+}
+
+// Download download file from url.
+// Note: rc must be closed after finishing as other ReadCloser.
+func (f *Filer) Download(fileURL string) (string, io.ReadCloser, error) {
+	fileName, rc, err := f.HTTPClient.DownloadFromURL(f.URL + fileURL)
+	return fileName, rc, err
+}
+
 // UploadFile a file
 func (f *Filer) UploadFile(filePath, newFilerPath, collection, ttl string) (result *FilerUploadResult, err error) {
 	fp, err := NewFilePart(filePath)
@@ -83,6 +105,29 @@ func (f *Filer) UploadFile(filePath, newFilerPath, collection, ttl string) (resu
 	}
 
 	data, _, err := f.HTTPClient.Upload(f.URL+newFilerPath, filePath, fp.Reader, fp.IsGzipped, fp.MimeType)
+	if err != nil {
+		return
+	}
+
+	result = &FilerUploadResult{}
+	if err = json.Unmarshal(data, result); err != nil {
+		return
+	}
+
+	return
+}
+
+// Upload file by reader
+func (f *Filer) Upload(reader io.Reader, fileSize int64, newFilerPath, collection, ttl string) (result *FilerUploadResult, err error) {
+	fp := NewFilePartFromReader(reader, newFilerPath, fileSize)
+	fp.Collection = collection
+	fp.TTL = ttl
+
+	if !strings.HasPrefix(newFilerPath, "/") {
+		newFilerPath = "/" + newFilerPath
+	}
+
+	data, _, err := f.HTTPClient.Upload(f.URL+newFilerPath, newFilerPath, fp.Reader, fp.IsGzipped, fp.MimeType)
 	if err != nil {
 		return
 	}

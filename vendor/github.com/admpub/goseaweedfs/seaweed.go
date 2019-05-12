@@ -631,13 +631,27 @@ func (c *Seaweed) DownloadFile(fileID string, args url.Values) (string, []byte, 
 	if err != nil {
 		return "", nil, err
 	}
+	defer rc.Close()
 	fileData, err := ioutil.ReadAll(rc)
 	if err != nil {
 		return "", nil, err
 	}
-	defer rc.Close()
 	return fileName, fileData, nil
 
+}
+
+// Download download file from url.
+// Note: rc must be closed after finishing as other ReadCloser.
+func (c *Seaweed) Download(fileID string, args url.Values) (string, io.ReadCloser, error) {
+	if args == nil {
+		args = make(url.Values)
+	}
+	fileURL, err := c.LookupFileID(fileID, args, true)
+	if err != nil {
+		return "", nil, err
+	}
+	fileName, rc, err := c.Client.DownloadFromURL(fileURL)
+	return fileName, rc, err
 }
 
 // DeleteChunks concurrently delete chunks

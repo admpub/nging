@@ -352,22 +352,22 @@
 			"revisionTime": "2018-12-19T13:05:47Z"
 		},
 		{
-			"checksumSHA1": "bdHCixY+ZdoMICEAnNrclBtuXUA=",
+			"checksumSHA1": "jaaEOChy0tHqyvkupIa6qindaWk=",
 			"path": "github.com/admpub/goseaweedfs",
-			"revision": "c31d55269bc76c7283a1bdf748746d32968326e4",
-			"revisionTime": "2019-05-11T11:32:56Z"
+			"revision": "50fb5fad161872dcd31010f4825d07afc45a19ce",
+			"revisionTime": "2019-05-12T11:36:10Z"
 		},
 		{
-			"checksumSHA1": "bIgPZt7cHAisO+eYf2NpsCQxVbY=",
+			"checksumSHA1": "3ytRFJMX8qau8voSfSEXJkPQygQ=",
 			"path": "github.com/admpub/goseaweedfs/libs",
-			"revision": "c31d55269bc76c7283a1bdf748746d32968326e4",
-			"revisionTime": "2019-05-11T11:32:56Z"
+			"revision": "50fb5fad161872dcd31010f4825d07afc45a19ce",
+			"revisionTime": "2019-05-12T11:36:10Z"
 		},
 		{
-			"checksumSHA1": "DQt/CgCB5EFtbARwT26Le0p4UYs=",
+			"checksumSHA1": "YjjwYTkfdZ23hfHPq9d2mttfE3I=",
 			"path": "github.com/admpub/goseaweedfs/model",
-			"revision": "c31d55269bc76c7283a1bdf748746d32968326e4",
-			"revisionTime": "2019-05-11T11:32:56Z"
+			"revision": "50fb5fad161872dcd31010f4825d07afc45a19ce",
+			"revisionTime": "2019-05-12T11:36:10Z"
 		},
 		{
 			"checksumSHA1": "4TOYxx2mRAalnIBStStQ/ImmpWg=",

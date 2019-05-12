@@ -158,8 +158,8 @@ func (c *HTTPClient) Delete(url string) (statusCode int, err error) {
 	return
 }
 
-// // DownloadFromURL download file from url.
-// // Note: rc must be closed after finishing as other ReadCloser.
+// DownloadFromURL download file from url.
+// Note: rc must be closed after finishing as other ReadCloser.
 func (c *HTTPClient) DownloadFromURL(fileURL string) (filename string, rc io.ReadCloser, err error) {
 	r, err := c.Client.Get(fileURL)
 	if err != nil {

@@ -19,9 +19,7 @@
 package seaweedfs
 
 import (
-	"bytes"
 	"io"
-	"io/ioutil"
 	"net/url"
 	"path"
 
@@ -41,17 +39,20 @@ func init() {
 
 func NewSeaweedfs(typ string) *Seaweedfs {
 	a := DefaultConfig.New()
+	uploadPath := `public/upload/` + typ
 	return &Seaweedfs{
-		config:   DefaultConfig,
-		instance: a,
-		Type:     typ,
+		config:     DefaultConfig,
+		instance:   a,
+		Type:       typ,
+		UploadPath: uploadPath,
 	}
 }
 
 type Seaweedfs struct {
-	config   *Config
-	instance *goseaweedfs.Seaweed
-	Type     string
+	config     *Config
+	instance   *goseaweedfs.Seaweed
+	Type       string
+	UploadPath string
 }
 
 func (s *Seaweedfs) Engine() string {
@@ -59,10 +60,34 @@ func (s *Seaweedfs) Engine() string {
 }
 
 func (f *Seaweedfs) filepath(fname string) string {
-	return path.Join(f.Type, fname)
+	return path.Join(f.UploadPath, fname)
 }
 
 func (f *Seaweedfs) Put(dstFile string, src io.Reader, size int64) (string, error) {
+	file := f.filepath(dstFile)
+	rs, err := f.instance.Filers[0].Upload(src, size, file, f.Type, f.config.TTL)
+	if err != nil {
+		return "", err
+	}
+	return rs.FileURL, nil
+}
+
+func (f *Seaweedfs) Get(dstFile string) (io.ReadCloser, error) {
+	filer := f.instance.Filers[0]
+	_, readCloser, err := filer.Download(dstFile)
+	return readCloser, err
+}
+
+func (f *Seaweedfs) Delete(dstFile string) error {
+	filer := f.instance.Filers[0]
+	return filer.Delete(dstFile)
+}
+
+func (f *Seaweedfs) DeleteDir(dstDir string) error {
+	return f.instance.Filers[0].Delete(dstDir, true)
+}
+
+func (f *Seaweedfs) apiPut(dstFile string, src io.Reader, size int64) (string, error) {
 	_, fID, err := f.instance.Upload(src, dstFile, size, f.Type, f.config.TTL)
 	if err != nil {
 		return "", err
@@ -74,21 +99,11 @@ func (f *Seaweedfs) Put(dstFile string, src io.Reader, size int64) (string, erro
 	return view, nil
 }
 
-func (f *Seaweedfs) Get(fileID string) (io.ReadCloser, error) {
-	_, fileData, err := f.instance.DownloadFile(fileID, nil)
-	if err != nil {
-		return nil, err
-	}
-	return ioutil.NopCloser(bytes.NewBuffer(fileData)), nil
+func (f *Seaweedfs) apiGet(fileID string) (io.ReadCloser, error) {
+	_, readCloser, err := f.instance.Download(fileID, nil)
+	return readCloser, err
 }
 
-func (f *Seaweedfs) Delete(fileID string) error {
+func (f *Seaweedfs) apiDelete(fileID string) error {
 	return f.instance.DeleteFile(fileID, nil)
-}
-
-func (f *Seaweedfs) DeleteDir(dstDir string) error {
-	if len(f.instance.Filers) > 0 {
-		return f.instance.Filers[0].Delete(dstDir, true)
-	}
-	return nil
 }
