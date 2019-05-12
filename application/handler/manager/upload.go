@@ -132,6 +132,7 @@ func Crop(ctx echo.Context) error {
 	}
 	typ := ctx.Param(`type`)
 	uploader := up(typ)
+	_ = uploader //TODO: WIP
 	src := ctx.Form(`src`)
 	src, _ = com.URLDecode(src)
 	if err := common.IsRightUploadFile(ctx, src); err != nil {
