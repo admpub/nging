@@ -38,7 +38,11 @@ func TestSeaweedfs(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer f.Close()
-	purl, err := r.Put(``, f)
+	fi, err := f.Stat()
+	if err != nil {
+		t.Fatal(err)
+	}
+	purl, err := r.Put(`/config.go`, f, fi.Size())
 	if err != nil {
 		t.Fatal(err)
 	}

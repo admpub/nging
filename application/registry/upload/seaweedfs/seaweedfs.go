@@ -69,7 +69,16 @@ func (f *Seaweedfs) Put(dstFile string, src io.Reader, size int64) (string, erro
 	if err != nil {
 		return "", err
 	}
-	return rs.FileURL, nil
+	//com.Dump(rs)
+	/*
+		{
+		  "name": "config.go",
+		  "url": "http://127.0.0.1:9001/6,070894a14c",
+		  "fid": "6,070894a14c",
+		  "size": 1734
+		}
+	*/
+	return rs.FileID, nil //TODO: fileID VS filePath
 }
 
 func (f *Seaweedfs) Get(dstFile string) (io.ReadCloser, error) {
