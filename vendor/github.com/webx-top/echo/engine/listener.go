@@ -26,7 +26,7 @@ func (ln tcpKeepAliveListener) Accept() (c net.Conn, err error) {
 	return tc, nil
 }
 
-func NewListener(address string, reuse bool) (*tcpKeepAliveListener, error) {
+func NewListener(address string, reuse bool) (net.Listener, error) {
 	scheme := "tcp"
 	delim := "://"
 	if pos := strings.Index(address, delim); pos > 0 {
@@ -45,5 +45,12 @@ func NewListener(address string, reuse bool) (*tcpKeepAliveListener, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &tcpKeepAliveListener{l.(*net.TCPListener)}, nil
+	switch listener := l.(type) {
+	case *net.TCPListener:
+		return &tcpKeepAliveListener{listener}, nil
+	case *net.UnixListener:
+		return listener, nil
+	default:
+		return l, nil
+	}
 }

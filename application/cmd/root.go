@@ -102,6 +102,7 @@ If you have already purchased a license, please place the ` + license.FileName()
 	event.Start()
 
 	c := &engine.Config{
+		ReusePort:   true,
 		TLSAuto:     config.DefaultConfig.Sys.SSLAuto,
 		TLSEmail:    config.DefaultConfig.Sys.SSLEmail,
 		TLSHosts:    config.DefaultConfig.Sys.SSLHosts,
@@ -136,7 +137,7 @@ If you have already purchased a license, please place the ` + license.FileName()
 			now.Format("Monday, 02 Jan 2006"))
 	}
 	subdomains.Default.Run(standard.NewWithConfig(c))
-	return nil
+	return c.Listener.Close()
 }
 
 func initCertMagic(c *engine.Config) error {
