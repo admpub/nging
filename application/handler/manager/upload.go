@@ -110,6 +110,16 @@ func Upload(ctx echo.Context) error {
 	if pipe == `deqr` { //解析二维码
 		if len(files) > 0 {
 			reader, err := uploader.Get(files[0])
+			if reader != nil {
+				defer reader.Close()
+			}
+			if err != nil {
+				if !embed {
+					datax[`raw`] = err.Error()
+					return ctx.JSON(datax)
+				}
+				return err
+			}
 			raw, err := qrcode.Decode(reader, strings.TrimPrefix(path.Ext(files[0]), `.`))
 			if err != nil {
 				raw = err.Error()
