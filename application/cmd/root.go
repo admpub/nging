@@ -150,13 +150,13 @@ func initCertMagic(c *engine.Config) error {
 		}
 	}
 	if event.Develop { // use the staging endpoint while we're developing
-		certmagic.CA = certmagic.LetsEncryptStagingCA
+		certmagic.Default.CA = certmagic.LetsEncryptStagingCA
 	} else {
-		certmagic.CA = certmagic.LetsEncryptProductionCA
+		certmagic.Default.CA = certmagic.LetsEncryptProductionCA
 	}
-	certmagic.Email = c.TLSEmail
-	certmagic.Agreed = true
-	certmagic.DefaultStorage = fileStorage
+	certmagic.Default.Email = c.TLSEmail
+	certmagic.Default.Agreed = true
+	certmagic.Default.Storage = fileStorage
 	ln, err := certmagic.Listen(c.TLSHosts)
 	if err == nil {
 		c.SetListener(ln)

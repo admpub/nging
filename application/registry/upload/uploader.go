@@ -54,7 +54,7 @@ func BatchUpload(
 			file.Close()
 			continue
 		}
-		viewURL, err := uploader.Put(dstFile, file)
+		viewURL, err := uploader.Put(dstFile, file.(*os.File))
 		if err != nil {
 			file.Close()
 			return viewURLs, err
