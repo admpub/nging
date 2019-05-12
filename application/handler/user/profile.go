@@ -61,9 +61,9 @@ func Edit(ctx echo.Context) error {
 		} else if modifyPass && newPass != confirmPass {
 			err = ctx.E(`新密码与确认新密码不一致`)
 		} else if !ctx.Validate(`email`, email, `email`).Ok() {
-			err = ctx.E(`Email地址格式不正确`)
+			err = ctx.E(`Email地址"%s"格式不正确`, email)
 		} else if len(mobile) > 0 && !ctx.Validate(`mobile`, mobile, `mobile`).Ok() {
-			err = ctx.E(`手机号格式不正确`)
+			err = ctx.E(`手机号"%s"格式不正确`, mobile)
 		} else if m.User.Password != com.MakePassword(passwd, m.User.Salt) {
 			err = ctx.E(`旧密码输入不正确`)
 		} else if needCheckU2F {

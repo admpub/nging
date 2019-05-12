@@ -25,15 +25,16 @@ import (
 	"io"
 	"io/ioutil"
 	"mime/multipart"
-	"os"
 	"path"
 	"path/filepath"
+	"strings"
 
 	imageproxy "git.webx.top/coscms/app/base/lib/image/proxy"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/library/collector/exec"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/registry/upload"
+	"github.com/admpub/nging/application/registry/upload/filesystem"
 	"github.com/admpub/qrcode"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -45,14 +46,17 @@ func ResponseDataForUpload(ctx echo.Context, field string, err error, imageURLs 
 	return upload.ResponserGet(field)(ctx, field, err, imageURLs)
 }
 
+var UploaderEngine = filesystem.Name
+
 // Upload 上传文件
 func Upload(ctx echo.Context) error {
+	var err error
 	typ := ctx.Param(`type`)
 	field := ctx.Query(`field`)
 	pipe := ctx.Form(`pipe`)
 	var files []string
 	if len(typ) == 0 {
-		err := ctx.E(`请提供参数“%s”`, ctx.Path())
+		err = ctx.E(`请提供参数“%s”`, ctx.Path())
 		datax, embed := ResponseDataForUpload(ctx, field, err, files)
 		if !embed {
 			return ctx.JSON(datax)
@@ -60,7 +64,7 @@ func Upload(ctx echo.Context) error {
 		return err
 	}
 	if !upload.SubdirIsAllowed(typ) {
-		err := errors.New(ctx.T(`参数“%s”只能由字母(a-zA-Z)、数字(0-9)、下划线(_)或短横线(-)组成`, typ))
+		err = errors.New(ctx.T(`参数“%s”未被登记`, typ))
 		datax, embed := ResponseDataForUpload(ctx, field, err, files)
 		if !embed {
 			return ctx.JSON(datax)
@@ -68,21 +72,22 @@ func Upload(ctx echo.Context) error {
 		return err
 	}
 	//echo.Dump(ctx.Forms())
-	saveDir := filepath.Join(echo.Wd(), `public/upload/`+typ)
-	err := os.MkdirAll(saveDir, os.ModePerm)
-	if err != nil {
+	up := upload.UploaderGet(UploaderEngine)
+	if up == nil {
+		err := errors.New(ctx.T(`存储引擎“%s”未被登记`, UploaderEngine))
 		datax, embed := ResponseDataForUpload(ctx, field, err, files)
 		if !embed {
 			return ctx.JSON(datax)
 		}
 		return err
 	}
+	uploader := up(typ)
 	var subdir, name string
 	subdir, name, err = upload.CheckerGet(typ)(ctx)
 	if err != nil {
 		return err
 	}
-	err = ctx.SaveUploadedFiles(`files[]`, func(hd *multipart.FileHeader) (string, error) {
+	files, err = upload.BatchUpload(ctx, `files[]`, func(hd *multipart.FileHeader) (string, error) {
 		ext := filepath.Ext(hd.Filename)
 		fname := name
 		if len(fname) == 0 {
@@ -92,11 +97,8 @@ func Upload(ctx echo.Context) error {
 			}
 		}
 		fname += ext
-		files = append(files, `/public/upload/`+typ+`/`+subdir+fname)
-		file := filepath.Join(saveDir, subdir)
-		os.MkdirAll(file, os.ModePerm)
-		return file + echo.FilePathSeparator + fname, nil
-	})
+		return subdir + fname, nil
+	}, uploader)
 	datax, embed := ResponseDataForUpload(ctx, field, err, files)
 	if err != nil {
 		if !embed {
@@ -107,7 +109,8 @@ func Upload(ctx echo.Context) error {
 
 	if pipe == `deqr` { //解析二维码
 		if len(files) > 0 {
-			raw, err := qrcode.DecodeFile(filepath.Join(echo.Wd(), files[0]))
+			reader, err := uploader.Get(files[0])
+			raw, err := qrcode.Decode(reader, strings.TrimPrefix(path.Ext(files[0]), `.`))
 			if err != nil {
 				raw = err.Error()
 			}

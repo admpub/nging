@@ -23,13 +23,21 @@ import (
 	"io"
 	"io/ioutil"
 	"net/url"
-	"os"
 	"path"
 
 	"github.com/admpub/goseaweedfs"
+	"github.com/admpub/nging/application/registry/upload"
 )
 
 const Name = `seaweedfs`
+
+var _ upload.Uploader = &Seaweedfs{}
+
+func init() {
+	upload.UploaderRegister(Name, func(typ string) upload.Uploader {
+		return NewSeaweedfs(typ)
+	})
+}
 
 func NewSeaweedfs(typ string) *Seaweedfs {
 	a := DefaultConfig.New()
@@ -54,16 +62,7 @@ func (f *Seaweedfs) filepath(fname string) string {
 	return path.Join(f.Type, fname)
 }
 
-func (f *Seaweedfs) Put(dstFile string, src *os.File) (string, error) {
-	var size int64
-	fi, fiErr := src.Stat()
-	if fiErr != nil {
-		return "", fiErr
-	}
-	size = fi.Size()
-	if len(dstFile) == 0 {
-		dstFile = src.Name()
-	}
+func (f *Seaweedfs) Put(dstFile string, src io.Reader, size int64) (string, error) {
 	_, fID, err := f.instance.Upload(src, dstFile, size, f.Type, f.config.TTL)
 	if err != nil {
 		return "", err

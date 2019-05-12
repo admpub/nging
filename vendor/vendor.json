@@ -504,16 +504,16 @@
 			"revisionTime": "2018-09-24T15:30:38Z"
 		},
 		{
-			"checksumSHA1": "vvEjpdhGUI7Kh48LCsxdzSzFzW0=",
+			"checksumSHA1": "/e2RWaEBOByrwg8s5THSn2T4GjQ=",
 			"path": "github.com/admpub/qrcode",
-			"revision": "c12d07e70dd4b2bb21993dfce5da1514ed6abd5e",
-			"revisionTime": "2018-11-24T07:28:41Z"
+			"revision": "0a2b75fa9edc473bbf595ae73f9b901afaf485e8",
+			"revisionTime": "2019-05-12T10:39:23Z"
 		},
 		{
 			"checksumSHA1": "xLdtwx31cUi8wIVCLxlXiEhjtLg=",
 			"path": "github.com/admpub/qrcode/decode",
-			"revision": "c12d07e70dd4b2bb21993dfce5da1514ed6abd5e",
-			"revisionTime": "2018-11-24T07:28:41Z"
+			"revision": "0a2b75fa9edc473bbf595ae73f9b901afaf485e8",
+			"revisionTime": "2019-05-12T10:39:23Z"
 		},
 		{
 			"checksumSHA1": "2emS0uAt4bgu1O+kaG7L+cd+s8U=",

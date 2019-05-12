@@ -3,13 +3,14 @@
 package qrcode
 
 import (
+	"io"
 	"os"
 
 	"github.com/tuotoo/qrcode"
 )
 
-func Decode(file *os.File) (string, error) {
-	qrmatrix, err := qrcode.Decode(file)
+func Decode(reader io.Reader, imageType string) (string, error) {
+	qrmatrix, err := qrcode.Decode(reader)
 	if err != nil {
 		return ``, err
 	}
@@ -22,5 +23,5 @@ func DecodeFile(imgPath string) (string, error) {
 		return ``, err
 	}
 	defer fi.Close()
-	return Decode(fi)
+	return Decode(fi, ``)
 }

@@ -19,8 +19,8 @@
 package upload
 
 import (
+	"io"
 	"mime/multipart"
-	"os"
 
 	"github.com/webx-top/echo"
 )
@@ -45,6 +45,7 @@ func BatchUpload(
 			file.Close()
 			return viewURLs, err
 		}
+
 		dstFile, err = dstNamer(fileHdr)
 		if err != nil {
 			file.Close()
@@ -54,7 +55,7 @@ func BatchUpload(
 			file.Close()
 			continue
 		}
-		viewURL, err := uploader.Put(dstFile, file.(*os.File))
+		viewURL, err := uploader.Put(dstFile, file, fileHdr.Size)
 		if err != nil {
 			file.Close()
 			return viewURLs, err
@@ -65,13 +66,23 @@ func BatchUpload(
 	return viewURLs, nil
 }
 
+type Sizer interface {
+	Size() int64
+}
+
 type Uploader interface {
-	Put(dst string, src *os.File) (string, error)
+	Engine() string
+	Put(dst string, src io.Reader, size int64) (string, error)
+	Get(file string) (io.ReadCloser, error)
+	Delete(file string) error
+	DeleteDir(dir string) error
 }
 
 type Constructor func(typ string) Uploader
 
 var uploaders = map[string]Constructor{}
+
+var DefaultConstructor Constructor
 
 func UploaderRegister(engine string, constructor Constructor) {
 	uploaders[engine] = constructor
@@ -80,7 +91,7 @@ func UploaderRegister(engine string, constructor Constructor) {
 func UploaderGet(engine string) Constructor {
 	constructor, ok := uploaders[engine]
 	if !ok {
-		return nil
+		return DefaultConstructor
 	}
 	return constructor
 }

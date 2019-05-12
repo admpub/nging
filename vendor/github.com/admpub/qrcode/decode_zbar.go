@@ -7,29 +7,35 @@ import (
 	"image"
 	"image/jpeg"
 	"image/png"
+	"io"
 	"os"
 	"strings"
 
 	"github.com/admpub/qrcode/decode"
 )
 
-func Decode(file *os.File) (string, error) {
+func Decode(reader io.Reader, imageType string) (string, error) {
 	var body string
 	var img image.Image
 	var err error
-	imageTypeArr := strings.Split(file.Name(), ".")
-	if len(imageTypeArr) <= 1 {
-		err = errors.New("Image file format error")
-		return body, err
+	if len(imageType) == 0 {
+		imageType = `png`
+	}
+	if name, ok := reader.(Name); ok {
+		fileName := name.Name()
+		p := strings.LastIndex(fileName, `.`)
+		if p < 0 || len(fileName) <= p+1 {
+			err = errors.New("Image file format error")
+			return body, err
+		}
+		imageType = fileName[p+1:]
 	}
 
-	imageType := imageTypeArr[len(imageTypeArr)-1]
-
-	switch imageType {
+	switch strings.ToLower(imageType) {
 	case "jpeg", "jpg":
-		img, err = jpeg.Decode(file)
+		img, err = jpeg.Decode(reader)
 	case "png":
-		img, err = png.Decode(file)
+		img, err = png.Decode(reader)
 	default:
 		err = errors.New("Image file format error")
 		return body, err
@@ -57,5 +63,5 @@ func DecodeFile(imgPath string) (string, error) {
 		return ``, err
 	}
 	defer fi.Close()
-	return Decode(fi)
+	return Decode(fi, ``)
 }

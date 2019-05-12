@@ -46,3 +46,7 @@ func EncodeToFile(value string, width, height int, qrcodeFile string) error {
 	defer file.Close()
 	return EncodeToWriter(value, width, height, file)
 }
+
+type Name interface {
+	Name() string
+}

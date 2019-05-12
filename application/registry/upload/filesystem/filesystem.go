@@ -23,10 +23,19 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/admpub/nging/application/registry/upload"
 	"github.com/webx-top/echo"
 )
 
 const Name = `filesystem`
+
+var _ upload.Uploader = &Filesystem{}
+
+func init() {
+	upload.UploaderRegister(Name, func(typ string) upload.Uploader {
+		return NewFilesystem(typ)
+	})
+}
 
 func NewFilesystem(typ string) *Filesystem {
 	uploadPath := `public/upload/` + typ
@@ -49,8 +58,13 @@ func (f *Filesystem) filepath(fname string) string {
 	return filepath.Join(echo.Wd(), f.UploadPath, fname)
 }
 
-func (f *Filesystem) Put(dstFile string, src *os.File) (string, error) {
+func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (string, error) {
 	file := f.filepath(dstFile)
+	saveDir := filepath.Dir(file)
+	err := os.MkdirAll(saveDir, os.ModePerm)
+	if err != nil {
+		return "", err
+	}
 	view := `/` + f.UploadPath + `/` + dstFile
 	//create destination file making sure the path is writeable.
 	dst, err := os.Create(file)

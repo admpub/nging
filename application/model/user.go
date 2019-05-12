@@ -91,10 +91,10 @@ func (u *User) check(editMode bool) (err error) {
 		return errors.New(ctx.T(`用户名不能包含特殊字符(只能由字母、数字、下划线和汉字组成)`))
 	}
 	if !ctx.Validate(`email`, u.Email, `email`).Ok() {
-		return ctx.E(`Email地址格式不正确`)
+		return ctx.E(`Email地址"%s"格式不正确`, u.Email)
 	}
 	if len(u.Mobile) > 0 && !ctx.Validate(`mobile`, u.Mobile, `mobile`).Ok() {
-		return ctx.E(`手机号格式不正确`)
+		return ctx.E(`手机号"%s"格式不正确`, u.Mobile)
 	}
 	if !editMode || ctx.Form(`modifyPwd`) == `1` {
 		if len(u.Password) < 8 {
