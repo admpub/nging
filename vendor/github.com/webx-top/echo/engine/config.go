@@ -17,6 +17,7 @@ import (
 type Config struct {
 	Address            string       // TCP address to listen on.
 	Listener           net.Listener // Custom `net.Listener`. If set, server accepts connections on it.
+	ReusePort          bool
 	TLSAuto            bool
 	TLSHosts           []string
 	TLSEmail           string
@@ -142,7 +143,7 @@ func (c *Config) InitTLSListener(before ...func() error) error {
 			return err
 		}
 	}
-	ln, err := NewListener(c.Address)
+	ln, err := NewListener(c.Address, c.ReusePort)
 	if err != nil {
 		return err
 	}
@@ -159,7 +160,7 @@ func (c *Config) InitListener(before ...func() error) error {
 			return err
 		}
 	}
-	ln, err := NewListener(c.Address)
+	ln, err := NewListener(c.Address, c.ReusePort)
 	if err != nil {
 		return err
 	}
