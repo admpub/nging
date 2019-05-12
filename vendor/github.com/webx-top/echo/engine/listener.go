@@ -4,8 +4,6 @@ import (
 	"net"
 	"strings"
 	"time"
-
-	reuseport "github.com/admpub/go-reuseport"
 )
 
 // tcpKeepAliveListener sets TCP keep-alive timeouts on accepted
@@ -16,14 +14,17 @@ type tcpKeepAliveListener struct {
 	*net.TCPListener
 }
 
-func (ln tcpKeepAliveListener) Accept() (c net.Conn, err error) {
+func (ln tcpKeepAliveListener) Accept() (net.Conn, error) {
 	tc, err := ln.AcceptTCP()
 	if err != nil {
-		return
+		return tc, err
 	}
-	tc.SetKeepAlive(true)
-	tc.SetKeepAlivePeriod(3 * time.Minute)
-	return tc, nil
+	err = tc.SetKeepAlive(true)
+	if err != nil {
+		return tc, err
+	}
+	err = tc.SetKeepAlivePeriod(3 * time.Minute)
+	return tc, err
 }
 
 func NewListener(address string, reuse bool) (net.Listener, error) {
@@ -33,15 +34,7 @@ func NewListener(address string, reuse bool) (net.Listener, error) {
 		scheme = address[0:pos]
 		address = address[pos+len(delim):]
 	}
-	var (
-		l   net.Listener
-		err error
-	)
-	if reuse {
-		l, err = reuseport.Listen(scheme, address)
-	} else {
-		l, err = net.Listen(scheme, address)
-	}
+	l, err := newListener(scheme, address, reuse)
 	if err != nil {
 		return nil, err
 	}
