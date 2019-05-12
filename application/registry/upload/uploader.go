@@ -19,8 +19,8 @@
 package upload
 
 import (
-	"io"
 	"mime/multipart"
+	"os"
 
 	"github.com/webx-top/echo"
 )
@@ -66,7 +66,7 @@ func BatchUpload(
 }
 
 type Uploader interface {
-	Put(dst string, src io.Reader) (string, error)
+	Put(dst string, src *os.File) (string, error)
 }
 
 type Constructor func(typ string) Uploader

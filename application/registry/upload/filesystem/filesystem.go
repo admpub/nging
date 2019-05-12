@@ -49,7 +49,7 @@ func (f *Filesystem) filepath(fname string) string {
 	return filepath.Join(echo.Wd(), f.UploadPath, fname)
 }
 
-func (f *Filesystem) Put(dstFile string, src io.Reader) (string, error) {
+func (f *Filesystem) Put(dstFile string, src *os.File) (string, error) {
 	file := f.filepath(dstFile)
 	view := `/` + f.UploadPath + `/` + dstFile
 	//create destination file making sure the path is writeable.
@@ -66,10 +66,10 @@ func (f *Filesystem) Put(dstFile string, src io.Reader) (string, error) {
 }
 
 func (f *Filesystem) Get(dstFile string) (io.ReadCloser, error) {
-	return f.OpenFile(dstFile)
+	return f.openFile(dstFile)
 }
 
-func (f *Filesystem) OpenFile(dstFile string) (*os.File, error) {
+func (f *Filesystem) openFile(dstFile string) (*os.File, error) {
 	//file := f.filepath(dstFile)
 	file := filepath.Join(echo.Wd(), dstFile)
 	return os.Open(file)
