@@ -76,6 +76,7 @@ type Uploader interface {
 	Get(file string) (io.ReadCloser, error)
 	Delete(file string) error
 	DeleteDir(dir string) error
+	PublicURL(dst string) string
 }
 
 type Constructor func(typ string) Uploader

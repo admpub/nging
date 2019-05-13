@@ -28,6 +28,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/admpub/nging/application/registry/upload/helper"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
@@ -53,7 +54,7 @@ func IsRightUploadFile(ctx echo.Context, src string) error {
 	if !ok {
 		return stdErr.New(ctx.T(`不支持的文件扩展名`) + `: ` + invalidExt)
 	}
-	if !strings.Contains(src, `/upload/`) {
+	if !strings.Contains(src, helper.UploadDir) {
 		return stdErr.New(ctx.T(`路径不合法`))
 	}
 	return nil
@@ -61,7 +62,7 @@ func IsRightUploadFile(ctx echo.Context, src string) error {
 
 // RemoveAvatar 删除头像
 func RemoveAvatar(typ string, id uint64) error {
-	userDir := filepath.Join(echo.Wd(), `public/upload/`+typ, fmt.Sprint(id))
+	userDir := filepath.Join(echo.Wd(), strings.TrimPrefix(helper.UploadDir, `/`)+typ, fmt.Sprint(id))
 	if !com.IsDir(userDir) {
 		return nil
 	}
@@ -78,11 +79,12 @@ func MoveAvatarToUserDir(ctx echo.Context, src string, typ string, id uint64) (s
 		return newPath, err
 	}
 	name := path.Base(src)
-	guestFile := filepath.Join(echo.Wd(), `public/upload/`+typ+`/0`, name)
+	updir := strings.TrimPrefix(helper.UploadDir, `/`)
+	guestFile := filepath.Join(echo.Wd(), updir+typ+`/0`, name)
 	if !com.FileExists(guestFile) {
 		return src, nil
 	}
-	userDir := filepath.Join(echo.Wd(), `public/upload/`+typ, fmt.Sprint(id))
+	userDir := filepath.Join(echo.Wd(), updir+typ, fmt.Sprint(id))
 	os.MkdirAll(userDir, os.ModePerm)
 	ext := path.Ext(src)
 	userFile := userDir + echo.FilePathSeparator + `avatar` + ext
@@ -90,7 +92,7 @@ func MoveAvatarToUserDir(ctx echo.Context, src string, typ string, id uint64) (s
 	if err != nil {
 		return newPath, err
 	}
-	newPath = `/public/upload/` + typ + `/` + fmt.Sprint(id) + `/` + name
+	newPath = helper.UploadDir + typ + `/` + fmt.Sprint(id) + `/` + name
 	p := strings.LastIndex(guestFile, `.`)
 	if p > 0 {
 		filePrefix := guestFile[0:p] + `_`
@@ -118,7 +120,7 @@ func DirSharding(id uint64) uint64 {
 
 // RemoveUploadedFile 删除被上传的文件
 func RemoveUploadedFile(typ string, id uint64) error {
-	sdir := filepath.Join(echo.Wd(), `public/upload/`+typ, fmt.Sprint(id))
+	sdir := filepath.Join(echo.Wd(), strings.TrimPrefix(helper.UploadDir, `/`)+typ, fmt.Sprint(id))
 	if !com.IsDir(sdir) {
 		return nil
 	}
@@ -132,18 +134,19 @@ func MoveUploadedFileToOwnerDir(ctx echo.Context, src string, typ string, id uin
 		return newPath, err
 	}
 	name := path.Base(src)
-	unownedFile := filepath.Join(echo.Wd(), `public/upload/`+typ+`/0`, name)
+	updir := strings.TrimPrefix(helper.UploadDir, `/`)
+	unownedFile := filepath.Join(echo.Wd(), updir+typ+`/0`, name)
 	if !com.FileExists(unownedFile) {
 		return src, nil
 	}
-	sdir := filepath.Join(echo.Wd(), `public/upload/`+typ, fmt.Sprint(id))
+	sdir := filepath.Join(echo.Wd(), updir+typ, fmt.Sprint(id))
 	os.MkdirAll(sdir, os.ModePerm)
 	ownedFile := sdir + echo.FilePathSeparator + name
 	err := os.Rename(unownedFile, ownedFile)
 	if err != nil {
 		return newPath, err
 	}
-	newPath = `/public/upload/` + typ + `/` + fmt.Sprint(id) + `/` + name
+	newPath = helper.UploadDir + typ + `/` + fmt.Sprint(id) + `/` + name
 	p := strings.LastIndex(unownedFile, `.`)
 	if p > 0 {
 		filePrefix := unownedFile[0:p] + `_`
@@ -180,8 +183,8 @@ func ModifyAsThumbnailName(originName, thumbnailName string) string {
 }
 
 var (
-	temporaryFileRegexp  = regexp.MustCompile(`/public/upload/[\w-]+/0/[\w]+\.[a-zA-Z]+`)
-	persistentFileRegexp = regexp.MustCompile(`/public/upload/[\w-]+/([^0]|[0-9]{2,})/[\w]+\.[a-zA-Z]+`)
+	temporaryFileRegexp  = regexp.MustCompile(helper.UploadDir + `[\w-]+/0/[\w]+\.[a-zA-Z]+`)
+	persistentFileRegexp = regexp.MustCompile(helper.UploadDir + `[\w-]+/([^0]|[0-9]{2,})/[\w]+\.[a-zA-Z]+`)
 )
 
 // ParseTemporaryFileName 从文本中解析出临时文件名称

@@ -29,9 +29,15 @@ import (
 
 //step1. weed master
 //step2. weed volume -port=9001 -dir=./_test
-//step3. weed filer -collection=test -port=8888 -master=localhost:9333
-// or weed filer -collection=test -port=8888 -master=localhost:9333,localhost:9334
+//step3. weed filer -collection=test -port=8888 -port.readonly=8989 -master=localhost:9333
+// or weed filer -collection=test -port=8888 -port.readonly=8989 -master=localhost:9333,localhost:9334
+//============================================================================
+// 映射为本地虚拟目录(此时可以使用filesystem驱动像操作本地文件一样操作seaweedfs中的文件)
+//============================================================================
+//挂载：sudo weed mount -filer=localhost:8888 -dir=./public/upload/test -filer.path=/ -collection=test
+//取消挂载：关闭服务后执行 sudo umount -l ./public/upload/test
 func TestSeaweedfs(t *testing.T) {
+	return
 	r := NewSeaweedfs(`test`)
 	f, err := os.Open(`./config.go`)
 	if err != nil {

@@ -22,8 +22,10 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/admpub/nging/application/registry/upload"
+	"github.com/admpub/nging/application/registry/upload/helper"
 	"github.com/webx-top/echo"
 )
 
@@ -38,7 +40,7 @@ func init() {
 }
 
 func NewFilesystem(typ string) *Filesystem {
-	uploadPath := `public/upload/` + typ
+	uploadPath := helper.UploadDir + typ
 	return &Filesystem{
 		Type:       typ,
 		UploadPath: uploadPath,
@@ -55,7 +57,7 @@ func (f *Filesystem) Engine() string {
 }
 
 func (f *Filesystem) filepath(fname string) string {
-	return filepath.Join(echo.Wd(), f.UploadPath, fname)
+	return filepath.Join(echo.Wd(), strings.TrimPrefix(f.UploadPath, `/`), fname)
 }
 
 func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (string, error) {
@@ -65,7 +67,7 @@ func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (string, err
 	if err != nil {
 		return "", err
 	}
-	view := `/` + f.UploadPath + `/` + dstFile
+	view := f.UploadPath + `/` + dstFile
 	//create destination file making sure the path is writeable.
 	dst, err := os.Create(file)
 	if err != nil {
@@ -77,6 +79,10 @@ func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (string, err
 		return view, err
 	}
 	return view, nil
+}
+
+func (f *Filesystem) PublicURL(dstFile string) string {
+	return dstFile
 }
 
 func (f *Filesystem) Get(dstFile string) (io.ReadCloser, error) {

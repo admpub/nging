@@ -34,7 +34,7 @@ import (
 	"github.com/admpub/nging/application/library/collector/exec"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/registry/upload"
-	"github.com/admpub/nging/application/registry/upload/filesystem"
+	"github.com/admpub/nging/application/registry/upload/driver/filesystem"
 	"github.com/admpub/qrcode"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"

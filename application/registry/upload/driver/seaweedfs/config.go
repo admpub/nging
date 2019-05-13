@@ -28,10 +28,15 @@ import (
 
 var DefaultConfig = &Config{}
 
+type FilerURL struct {
+	Public  string //Readonly URL
+	Private string //Manage URL
+}
+
 type Config struct {
 	Scheme    string
 	Master    string
-	Filers    []string
+	Filers    []*FilerURL
 	ChunkSize int64
 	Timeout   time.Duration
 	// TTL Time to live.
@@ -58,9 +63,18 @@ func (c *Config) New() *goseaweedfs.Seaweed {
 		c.Master = `localhost:9333`
 	}
 	if c.Filers == nil || len(c.Filers) == 0 {
-		c.Filers = []string{`localhost:8888`}
+		c.Filers = []*FilerURL{
+			{
+				Public:  `http://localhost:8989`,
+				Private: `http://localhost:8888`,
+			},
+		}
 	}
-	return goseaweedfs.NewSeaweed(c.Scheme, c.Master, c.Filers, c.ChunkSize, c.Timeout)
+	filers := make([]string, len(c.Filers))
+	for index, filerURL := range c.Filers {
+		filers[index] = filerURL.Private
+	}
+	return goseaweedfs.NewSeaweed(c.Scheme, c.Master, filers, c.ChunkSize, c.Timeout)
 }
 
 func (c *Config) MakeURL(path string, args url.Values) string {
