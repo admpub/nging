@@ -36,6 +36,12 @@ import (
 //============================================================================
 //挂载：sudo weed mount -filer=localhost:8888 -dir=./public/upload/test -filer.path=/ -collection=test
 //取消挂载：关闭服务后执行 sudo umount -l ./public/upload/test
+
+// SeaweedFS对图片有很好的支持，可以指定图片显示的长度、宽度、模式，如：
+// http://localhost:8888/3/01637037d6.jpg?height=200&width=200
+// http://localhost:8888/3/01637037d6.jpg?height=200&width=200&mode=fit
+// http://localhost:8888/3/01637037d6.jpg?height=200&width=200&mode=fill
+
 func TestSeaweedfs(t *testing.T) {
 	return
 	r := NewSeaweedfs(`test`)
