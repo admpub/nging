@@ -12,11 +12,7 @@ cp -R ../config/config.yaml.sample ../dist/nging_${GOOS}_${GOARCH}/config/config
 cp -R ../config/install.sql ../dist/nging_${GOOS}_${GOARCH}/config/install.sql
 cp -R ../config/ua.txt ../dist/nging_${GOOS}_${GOARCH}/config/ua.txt
 
-if [ $GOOS = "windows" ]; then
-	export archiver_extension=zip
-else
-	export archiver_extension=tar.bz2
-fi
+export archiver_extension=zip
 
 cp -R ../dist/default/* ../dist/nging_${GOOS}_${GOARCH}/
 

@@ -18,10 +18,31 @@
 
 package helper
 
-// UploadDir 定义上传目录（首尾必须带“/”）
-var UploadDir = `/public/upload/`
+import (
+	"path"
+	"strings"
 
-// AllowedUploadFileExtensions 被允许上传的文件的扩展名
-var AllowedUploadFileExtensions = []string{
-	`.jpeg`, `.jpg`, `.gif`, `.png`,
+	"github.com/webx-top/echo"
+)
+
+// IsRightUploadFile 是否是正确的上传文件
+var IsRightUploadFile = func(ctx echo.Context, src string) error {
+	src = path.Clean(src)
+	ext := strings.ToLower(path.Ext(src))
+	var ok bool
+	var invalidExt string
+	for _, ex := range AllowedUploadFileExtensions {
+		if ext == ex {
+			ok = true
+			invalidExt = ext
+			break
+		}
+	}
+	if !ok {
+		return ctx.E(`不支持的文件扩展名: %s`, invalidExt)
+	}
+	if !strings.Contains(src, UploadDir) {
+		return ctx.E(`路径不合法`)
+	}
+	return nil
 }

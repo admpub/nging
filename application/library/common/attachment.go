@@ -19,13 +19,11 @@
 package common
 
 import (
-	stdErr "errors"
 	"fmt"
 	"math"
 	"os"
 	"path"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	"github.com/admpub/nging/application/registry/upload/helper"
@@ -33,31 +31,9 @@ import (
 	"github.com/webx-top/echo"
 )
 
-// AllowedUploadFileExtensions 被允许上传的文件的扩展名
-var AllowedUploadFileExtensions = []string{
-	`.jpeg`, `.jpg`, `.gif`, `.png`,
-}
-
 // IsRightUploadFile 是否是正确的上传文件
 func IsRightUploadFile(ctx echo.Context, src string) error {
-	src = path.Clean(src)
-	ext := strings.ToLower(path.Ext(src))
-	var ok bool
-	var invalidExt string
-	for _, ex := range AllowedUploadFileExtensions {
-		if ext == ex {
-			ok = true
-			invalidExt = ext
-			break
-		}
-	}
-	if !ok {
-		return stdErr.New(ctx.T(`不支持的文件扩展名`) + `: ` + invalidExt)
-	}
-	if !strings.Contains(src, helper.UploadDir) {
-		return stdErr.New(ctx.T(`路径不合法`))
-	}
-	return nil
+	return helper.IsRightUploadFile(ctx, src)
 }
 
 // RemoveAvatar 删除头像
@@ -75,7 +51,7 @@ func MoveAvatarToUserDir(ctx echo.Context, src string, typ string, id uint64) (s
 		return src, nil
 	}
 	var newPath string
-	if err := IsRightUploadFile(ctx, src); err != nil {
+	if err := helper.IsRightUploadFile(ctx, src); err != nil {
 		return newPath, err
 	}
 	name := path.Base(src)
@@ -130,7 +106,7 @@ func RemoveUploadedFile(typ string, id uint64) error {
 // MoveUploadedFileToOwnerDir 移动上传的文件到所有者目录
 func MoveUploadedFileToOwnerDir(ctx echo.Context, src string, typ string, id uint64) (string, error) {
 	var newPath string
-	if err := IsRightUploadFile(ctx, src); err != nil {
+	if err := helper.IsRightUploadFile(ctx, src); err != nil {
 		return newPath, err
 	}
 	name := path.Base(src)
@@ -182,17 +158,6 @@ func ModifyAsThumbnailName(originName, thumbnailName string) string {
 	return originName
 }
 
-var (
-	temporaryFileRegexp  = regexp.MustCompile(helper.UploadDir + `[\w-]+/0/[\w]+\.[a-zA-Z]+`)
-	persistentFileRegexp = regexp.MustCompile(helper.UploadDir + `[\w-]+/([^0]|[0-9]{2,})/[\w]+\.[a-zA-Z]+`)
-)
-
-// ParseTemporaryFileName 从文本中解析出临时文件名称
-func ParseTemporaryFileName(s string) []string {
-	files := temporaryFileRegexp.FindAllString(s, -1)
-	return files
-}
-
 // Replacex 根据map替换
 func Replacex(s string, oldAndNew map[string]string) string {
 	for oldName, newName := range oldAndNew {
@@ -203,7 +168,7 @@ func Replacex(s string, oldAndNew map[string]string) string {
 
 // MoveEmbedTemporaryFiles 转移被嵌入到文本内容中临时文件
 func MoveEmbedTemporaryFiles(ctx echo.Context, content string, typ string, id uint64) (int, string, error) {
-	files := ParseTemporaryFileName(content)
+	files := helper.ParseTemporaryFileName(content)
 	oldAndNew := map[string]string{}
 	for _, fileN := range files {
 		if _, ok := oldAndNew[fileN]; ok {

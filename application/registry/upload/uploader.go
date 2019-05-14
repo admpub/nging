@@ -77,6 +77,7 @@ type Uploader interface {
 	Delete(file string) error
 	DeleteDir(dir string) error
 	PublicURL(dst string) string
+	WithURL(content string, embedded ...bool) string
 }
 
 type Constructor func(typ string) Uploader

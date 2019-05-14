@@ -24,6 +24,7 @@ import (
 	"path"
 
 	"github.com/admpub/nging/application/registry/upload/driver/filesystem"
+	"github.com/admpub/nging/application/registry/upload/helper"
 
 	"github.com/admpub/goseaweedfs"
 	"github.com/admpub/nging/application/registry/upload"
@@ -88,6 +89,15 @@ func (s *Seaweedfs) xGet(dstFile string) (io.ReadCloser, error) {
 
 func (s *Seaweedfs) PublicURL(dstFile string) string {
 	return s.config.Filers[0].Public + dstFile
+}
+
+func (f *Seaweedfs) WithURL(content string, embedded ...bool) string {
+	if len(embedded) > 0 && embedded[0] {
+		return helper.ReplaceAnyFileName(content, func(r string) string {
+			return f.PublicURL(r)
+		})
+	}
+	return f.PublicURL(content)
 }
 
 func (s *Seaweedfs) xDelete(dstFile string) error {

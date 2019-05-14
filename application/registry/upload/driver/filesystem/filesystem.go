@@ -85,6 +85,10 @@ func (f *Filesystem) PublicURL(dstFile string) string {
 	return dstFile
 }
 
+func (f *Filesystem) WithURL(content string, embedded ...bool) string {
+	return content
+}
+
 func (f *Filesystem) Get(dstFile string) (io.ReadCloser, error) {
 	return f.openFile(dstFile)
 }

@@ -15,7 +15,7 @@ cp -R ../config/ua.txt ../dist/nging_${GOOS}_${GOARCH}/config/ua.txt
 
 if [ $GOOS = "windows" ]; then
     cp -R ../support/sqlite3_${GOARCH}.dll ../dist/nging_${GOOS}_${GOARCH}/sqlite3_${GOARCH}.dll
-	export archiver_extension=tar.bz2
+	export archiver_extension=zip
 else
 	export archiver_extension=zip
 fi

@@ -18,7 +18,8 @@ if "%GOOS%"=="windows" (xcopy ..\support\sqlite3_%GOARCH%.dll ..\dist\nging_%GOO
 
 xcopy ..\dist\default ..\dist\nging_%GOOS%_%GOARCH%\ /E /Q /H /I /Y
 
-if "%GOOS%"=="windows" (set archiver_extension=zip) else (set archiver_extension=tar.bz2)
+set archiver_extension=zip
+rem if "%GOOS%"=="windows" (set archiver_extension=zip) else (set archiver_extension=tar.bz2)
 
 archiver make ..\dist\nging_%GOOS%_%GOARCH%.%archiver_extension% ..\dist\nging_%GOOS%_%GOARCH%\
 
