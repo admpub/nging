@@ -17,6 +17,16 @@
                               <span class="input-group-addon">{{"E-mail"|T}}</span>
                              <input type="text" class="form-control" name="tls_email" value="{{Form "tls_email"}}" placeholder="{{"例如: "|T}}boy@admpub.com">
                              </span>
-                             <div class="help-block">{{"用于自动化管理 Let's encrypt 证书"|T}}</div>
+                             <div class="help-block">{{"用于自动化管理 Let's encrypt 证书"|T}}
+                               <div>
+                                {{"想要自动启用HTTPS功能，必须满足以下条件："|T}}
+                                <ol class="no-margin-bottom">
+                                  <li>{{"“监听地址”中的主机名不能为空、localhost、IP地址；主机名中的通配符“*”的数量不能超过1个，且必须是最左边的标签"|T}}</li>
+                                  <li>{{"不得采用80端口和http协议"|T}}</li>
+                                  <li>{{"“手动设置”项中的“证书”和“私钥”输入框必须留空"|T}}</li>
+                                </ol>
+                                {{"一旦自动启用HTTPS，Caddy将会自动绑定80和443端口，并且自动将80端口的http访问重定向到https"|T}}
+                              </div>
+                             </div>
                           </div>
                         </div>

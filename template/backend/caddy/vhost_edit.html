@@ -44,7 +44,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"网站位置"|T}}</label>
                 <div class="col-sm-8">
-                    <input type="text" id="www-root-path" name="root" class="form-control typeahead" required="required" value="{{Form "root"}}" data-provide="typeahead">
+                    <input type="text" id="www-root-path" name="root" class="form-control typeahead" value="{{Form "root"}}" data-provide="typeahead">
                     <div class="help-block">{{"网站文件夹在服务器上的绝对路径"|T}}</div>
                 </div>
               </div>
@@ -281,6 +281,15 @@
 }
 </pre>
      </div>
+
+     {{"此处除了支持重写规则外，还支持输入其它Caddyfile指令"|T}}，例如重定向指令<strong>redir</strong><a href="javascript:;" onclick="insertAdvRedir()">[{{"插入例子"|T}}]</a><br />
+     <pre>
+redir [code] {
+  if    a cond b
+  if_op [and|or]
+  ...
+  from to [code]
+}</pre>
   </div>
 </div>
 
@@ -302,19 +311,16 @@
                   </div>
                 </div>
               </div>
-              <div class="form-group">
-                <label class="col-sm-2 control-label">{{"是否重启"|T}}</label>
-                <div class="col-sm-8">
-                  <div class="checkbox checkbox-primary radio-inline"> 
-                    <input type="checkbox" value="1" id="restart-enable" name="restart"><label for="restart-enable">{{"保存并重启服务器"|T}}</label> 
-                  </div>
-                </div>
-              </div>
 
               <div class="form-group form-submit-group">
-									<div class="col-sm-9 col-sm-offset-2">
+                <div class="col-sm-2 control-label">
+                  <div class="checkbox checkbox-success"> 
+                    <input type="checkbox" value="1" id="restart-enable" name="restart" checked="checked"><label for="restart-enable" class="text-left">{{"重启服务"|T}}</label> 
+                  </div>
+                </div>
+									<div class="col-sm-9">
 									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
-									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+                    <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
 									</div>
 							</div>
             </form>
@@ -353,6 +359,12 @@ function insertAdvRewrite(){
     to     destinations...\n\
 }\n',23,31);
 }
+function insertAdvRedir(){
+  App.insertAtCursor($('#rewrite_rule')[0],'redir 301 {\n\
+    if {>X-Forwarded-Proto} is http\n\
+    /  https://{host}{uri}\n\
+}\n');
+}
 function insertCondForRewrite(obj){
   App.insertAtCursor($('#rewrite_rule')[0],$(obj).children('strong').text()+' ');
 }
@@ -374,17 +386,36 @@ $('[data-slide-settings]').each(function(){
   var eid='#'+$(this).attr('name')+'-settings';
   if($(eid).data('history'))$(eid).data('history',null);
 });
+var requiredWWWRootPathFields=['fastcgi','browse'];//必须设置“网站位置”的模块
 $('[data-slide-settings]').on('click',function(){
-  var slide=$(this).data('slide-settings');
+  var slide=$(this).data('slide-settings'),name=$(this).attr('name');
   if(slide=="")slide=$(this).val()=='1'?'show':'hide';
-  var eid='#'+$(this).attr('name')+'-settings';
+  var eid='#'+name+'-settings';
   var history=$.trim($(eid).html());
+  for(var i=0;i<requiredWWWRootPathFields.length;i++){
+    if(name==requiredWWWRootPathFields[i]){
+      if(slide=='show'){
+        $('#www-root-path').prop('required',true);
+      }else{
+        var checked=false;
+        for(var j=0;j<requiredWWWRootPathFields.length;j++){
+          var f=requiredWWWRootPathFields[j];
+          if($('#'+f+'-enable').prop('checked')){
+            checked=true;
+            break;
+          }
+        }
+        $('#www-root-path').prop('required',checked);
+      }
+      break;
+    }
+  }
   if(slide=='show'){
     if(!history){
       if($(eid).data('history')){
         $(eid).html($(eid).data('history'));
       }else{
-        $.get(BACKEND_URL+'/caddy/addon_form',{addon:$(this).attr('name')},function(r){
+        $.get(BACKEND_URL+'/caddy/addon_form',{addon:name},function(r){
           $(eid).html(r);
         },'html');
       }
