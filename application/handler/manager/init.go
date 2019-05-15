@@ -24,7 +24,7 @@ import (
 )
 
 func init() {
-	handler.RegisterToGroup(`/manager`, func(g *echo.Group) {
+	handler.RegisterToGroup(`/manager`, func(g echo.RouteRegister) {
 		g.Route(`GET,POST`, `/user`, User)
 		g.Route(`GET,POST`, `/role`, Role)
 		g.Route(`GET,POST`, `/user_add`, UserAdd)

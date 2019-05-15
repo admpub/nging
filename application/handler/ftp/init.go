@@ -23,7 +23,7 @@ import (
 )
 
 func init() {
-	handler.RegisterToGroup(`/ftp`, func(g *echo.Group) {
+	handler.RegisterToGroup(`/ftp`, func(g echo.RouteRegister) {
 		g.Route(`GET`, `/account`, AccountIndex)
 		g.Route(`GET,POST`, `/account_add`, AccountAdd)
 		g.Route(`GET,POST`, `/account_edit`, AccountEdit)

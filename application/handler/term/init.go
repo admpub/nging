@@ -46,7 +46,7 @@ type key string
 var contextKey key = `param`
 
 func init() {
-	handler.RegisterToGroup(`/term`, func(g *echo.Group) {
+	handler.RegisterToGroup(`/term`, func(g echo.RouteRegister) {
 		g.Route(`GET`, `/account`, AccountIndex)
 		g.Route(`GET,POST`, `/account_add`, AccountAdd)
 		g.Route(`GET,POST`, `/account_edit`, AccountEdit)

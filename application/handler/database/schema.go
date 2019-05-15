@@ -35,16 +35,17 @@ import (
 )
 
 func init() {
-	handler.RegisterToGroup(`/db`, func(g *echo.Group) {
-		g.Route(`GET,POST`, `/schema_sync`, g.MetaHandler(echo.H{`name`: `同步方案列表`}, SchemaSync))
-		g.Route(`GET,POST`, `/schema_sync_add`, g.MetaHandler(echo.H{`name`: `添加同步方案`}, SchemaSyncAdd))
-		g.Route(`GET,POST`, `/schema_sync_edit`, g.MetaHandler(echo.H{`name`: `编辑同步方案`}, SchemaSyncEdit))
-		g.Route(`GET`, `/schema_sync_delete`, g.MetaHandler(echo.H{`name`: `删除同步方案`}, SchemaSyncDelete))
-		g.Route(`GET`, `/schema_sync_preview`, g.MetaHandler(echo.H{`name`: `预览要同步的项`}, SchemaSyncPreview))
-		g.Route(`GET`, `/schema_sync_run`, g.MetaHandler(echo.H{`name`: `执行同步方案`}, SchemaSyncRun))
-		g.Route(`GET`, `/schema_sync_log/:id`, g.MetaHandler(echo.H{`name`: `日志列表`}, SchemaSyncLog))
-		g.Route(`GET`, `/schema_sync_log_view/:id`, g.MetaHandler(echo.H{`name`: `日志详情`}, SchemaSyncLogView))
-		g.Route(`GET`, `/schema_sync_log_delete`, g.MetaHandler(echo.H{`name`: `删除日志`}, SchemaSyncLogDelete))
+	handler.RegisterToGroup(`/db`, func(g echo.RouteRegister) {
+		e := handler.Echo()
+		g.Route(`GET,POST`, `/schema_sync`, e.MetaHandler(echo.H{`name`: `同步方案列表`}, SchemaSync))
+		g.Route(`GET,POST`, `/schema_sync_add`, e.MetaHandler(echo.H{`name`: `添加同步方案`}, SchemaSyncAdd))
+		g.Route(`GET,POST`, `/schema_sync_edit`, e.MetaHandler(echo.H{`name`: `编辑同步方案`}, SchemaSyncEdit))
+		g.Route(`GET`, `/schema_sync_delete`, e.MetaHandler(echo.H{`name`: `删除同步方案`}, SchemaSyncDelete))
+		g.Route(`GET`, `/schema_sync_preview`, e.MetaHandler(echo.H{`name`: `预览要同步的项`}, SchemaSyncPreview))
+		g.Route(`GET`, `/schema_sync_run`, e.MetaHandler(echo.H{`name`: `执行同步方案`}, SchemaSyncRun))
+		g.Route(`GET`, `/schema_sync_log/:id`, e.MetaHandler(echo.H{`name`: `日志列表`}, SchemaSyncLog))
+		g.Route(`GET`, `/schema_sync_log_view/:id`, e.MetaHandler(echo.H{`name`: `日志详情`}, SchemaSyncLogView))
+		g.Route(`GET`, `/schema_sync_log_delete`, e.MetaHandler(echo.H{`name`: `删除日志`}, SchemaSyncLogDelete))
 	})
 	cron.AddSYSJob(`mysql_schema_sync`, SchemaSyncJob, `>mysql_schema_sync:1`, `同步MySQL数据表结构`)
 }

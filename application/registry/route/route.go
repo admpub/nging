@@ -21,13 +21,18 @@ package route
 import (
 	"github.com/admpub/nging/application/library/route"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/defaults"
 )
 
 var (
-	routeRegister = route.NewRegister()
+	routeRegister = route.NewRegister(defaults.Default)
 )
 
-func Register(fn func(*echo.Echo)) {
+func Echo() *echo.Echo {
+	return routeRegister.Echo
+}
+
+func Register(fn func(echo.RouteRegister)) {
 	routeRegister.Register(fn)
 }
 
@@ -35,10 +40,14 @@ func Use(groupName string, middlewares ...interface{}) {
 	routeRegister.Use(groupName, middlewares...)
 }
 
-func Apply(e *echo.Echo) {
-	routeRegister.Apply(e)
+func SetRootGroup(groupName string) {
+	routeRegister.RootGroup = groupName
 }
 
-func RegisterToGroup(groupName string, fn func(*echo.Group), middlewares ...interface{}) {
+func Apply() {
+	routeRegister.Apply()
+}
+
+func RegisterToGroup(groupName string, fn func(echo.RouteRegister), middlewares ...interface{}) {
 	routeRegister.RegisterToGroup(groupName, fn, middlewares...)
 }

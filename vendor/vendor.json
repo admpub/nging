@@ -2922,6 +2922,12 @@
 			"revisionTime": "2019-05-06T14:40:17Z"
 		},
 		{
+			"checksumSHA1": "vO62X8j41YzXZMHH8K2s2I0vuIk=",
+			"path": "github.com/webx-top/echo/defaults",
+			"revision": "0611fbdf52a36e17a4a9b9e094f2cfd1f2fb287e",
+			"revisionTime": "2019-05-12T06:55:04Z"
+		},
+		{
 			"checksumSHA1": "Y5lG2twdz+L9OnK1VnL4kW9Qtkw=",
 			"path": "github.com/webx-top/echo/encoding/json",
 			"revision": "e5696c25a8dfbd504e1e87771d7c393c2903e128",

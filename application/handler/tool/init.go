@@ -24,7 +24,7 @@ import (
 )
 
 func init() {
-	handler.RegisterToGroup(`/tool`, func(g *echo.Group) {
+	handler.RegisterToGroup(`/tool`, func(g echo.RouteRegister) {
 		g.Route(`GET,POST`, `/ip`, IP2Region)
 	})
 }

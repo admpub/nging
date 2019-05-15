@@ -41,7 +41,7 @@ func init() {
 		}
 		return config.DefaultConfig.Download.SavePath
 	})
-	handler.RegisterToGroup(`/download`, func(g *echo.Group) {
+	handler.RegisterToGroup(`/download`, func(g echo.RouteRegister) {
 		server.Register(g, true)
 		g.Route(`GET,POST`, `/file`, File)
 	})

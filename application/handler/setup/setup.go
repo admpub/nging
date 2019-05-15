@@ -53,7 +53,7 @@ var (
 )
 
 func init() {
-	handler.Register(func(e *echo.Echo) {
+	handler.Register(func(e echo.RouteRegister) {
 		e.Route("GET,POST", `/setup`, Setup)
 		e.Route("GET", `/progress`, Progress)
 		e.Route("GET,POST", `/license`, License)

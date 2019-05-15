@@ -15,24 +15,10 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-package user
+package index
 
-import (
-	"github.com/admpub/nging/application/handler"
-	"github.com/webx-top/echo"
-	ws "github.com/webx-top/echo/handler/websocket"
-)
+import "github.com/webx-top/echo"
 
-func init() {
-	handler.RegisterToGroup(`/user`, func(g echo.RouteRegister) {
-		e := handler.Echo()
-		g.Route("GET,POST", `/edit`, e.MetaHandler(echo.H{`name`: `修改个人资料`}, Edit))
-		g.Route("GET,POST", `/gauth_bind`, e.MetaHandler(echo.H{`name`: `绑定两步验证`}, GAuthBind))
-		g.Route("GET,POST", `/autocomplete_path`, AutoCompletePath)
-		wsOpts := ws.Options{
-			Handle: Notice,
-			Prefix: "/notice",
-		}
-		wsOpts.Wrapper(g)
-	})
+func Icon(c echo.Context) error {
+	return c.Render(`icon`, nil)
 }

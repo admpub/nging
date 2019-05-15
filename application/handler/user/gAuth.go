@@ -33,7 +33,7 @@ import (
 func init() {
 	GAuth.Issuer = `nging`
 	GAuth.Size = `300x300`
-	handler.Register(func(e *echo.Echo) {
+	handler.Register(func(e echo.RouteRegister) {
 		e.Route("GET,POST", `/gauth_check`, GAuthCheck)
 		e.Route("GET", `/qrcode`, QrCode)
 	})

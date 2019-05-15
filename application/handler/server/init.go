@@ -25,7 +25,7 @@ import (
 )
 
 func init() {
-	handler.RegisterToGroup(`/server`, func(g *echo.Group) {
+	handler.RegisterToGroup(`/server`, func(g echo.RouteRegister) {
 		g.Route("GET", `/sysinfo`, Info)
 		g.Route("GET", `/netstat`, Connections)
 		g.Route("GET", `/process/:pid`, ProcessInfo)

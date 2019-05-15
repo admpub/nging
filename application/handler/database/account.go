@@ -28,12 +28,13 @@ import (
 )
 
 func init() {
-	handler.RegisterToGroup(`/db`, func(g *echo.Group) {
+	handler.RegisterToGroup(`/db`, func(g echo.RouteRegister) {
+		e := handler.Echo()
 		g.Route(`GET,POST`, ``, Manager)
-		g.Route(`GET,POST`, `/account`, g.MetaHandler(echo.H{`name`: `账号列表`}, AccountIndex))
-		g.Route(`GET,POST`, `/account_add`, g.MetaHandler(echo.H{`name`: `添加账号`}, AccountAdd))
-		g.Route(`GET,POST`, `/account_edit`, g.MetaHandler(echo.H{`name`: `修改账号`}, AccountEdit))
-		g.Route(`GET,POST`, `/account_delete`, g.MetaHandler(echo.H{`name`: `删除账号`}, AccountDelete))
+		g.Route(`GET,POST`, `/account`, e.MetaHandler(echo.H{`name`: `账号列表`}, AccountIndex))
+		g.Route(`GET,POST`, `/account_add`, e.MetaHandler(echo.H{`name`: `添加账号`}, AccountAdd))
+		g.Route(`GET,POST`, `/account_edit`, e.MetaHandler(echo.H{`name`: `修改账号`}, AccountEdit))
+		g.Route(`GET,POST`, `/account_delete`, e.MetaHandler(echo.H{`name`: `删除账号`}, AccountDelete))
 	})
 }
 

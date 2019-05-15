@@ -39,7 +39,8 @@ type Section struct {
 }
 
 func init() {
-	handler.RegisterToGroup(`/frp`, func(g *echo.Group) {
+	handler.RegisterToGroup(`/frp`, func(g echo.RouteRegister) {
+		e := handler.Echo()
 		g.Route(`GET`, `/server_index`, ServerIndex)
 		g.Route(`GET,POST`, `/server_add`, ServerAdd)
 		g.Route(`GET,POST`, `/server_edit`, ServerEdit)
@@ -57,9 +58,9 @@ func init() {
 		g.Route(`GET,POST`, `/server_stop`, ServerStop)
 		g.Route(`GET,POST`, `/client_restart`, ClientRestart)
 		g.Route(`GET,POST`, `/client_stop`, ClientStop)
-		g.Route(`GET`, `/addon_form`, g.MetaHandler(echo.H{`name`: `FRP客户端配置表单`}, AddonForm))
+		g.Route(`GET`, `/addon_form`, e.MetaHandler(echo.H{`name`: `FRP客户端配置表单`}, AddonForm))
 	})
-	handler.RegisterToGroup(`/frp/dashboard`, func(g *echo.Group) {
+	handler.RegisterToGroup(`/frp/dashboard`, func(g echo.RouteRegister) {
 		g.Get(``, func(c echo.Context) error {
 			m := &dbschema.FrpServer{}
 			err := m.Get(nil, `disabled`, `N`)

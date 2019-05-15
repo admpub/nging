@@ -44,18 +44,32 @@ var (
 	SendErr              = common.SendErr
 	SendFail             = common.SendFail
 	SendOk               = common.SendOk
-
-	//route
-	Register        = route.Register
-	Use             = route.Use
-	Apply           = route.Apply
-	RegisterToGroup = route.RegisterToGroup
 )
 var (
 	WebSocketLogger = log.GetLogger(`websocket`)
 	OfficialSQL     string
-	FrontendPrefix  string
-	BackendPrefix   string
+	GlobalPrefix    string //路由前缀（全局）
+	FrontendPrefix  string //路由前缀（前台）
+	BackendPrefix   string //路由前缀（后台）
+	//=============================
+	// 后台路由注册函数
+	//=============================
+
+	Echo         = route.Echo
+	Apply        = route.Apply
+	SetRootGroup = route.SetRootGroup
+	Register     = func(fn func(echo.RouteRegister)) {
+		route.RegisterToGroup(BackendPrefix, fn)
+	}
+	Use = func(groupName string, middlewares ...interface{}) {
+		if groupName != `*` {
+			groupName = BackendPrefix + groupName
+		}
+		route.Use(groupName, middlewares...)
+	}
+	RegisterToGroup = func(groupName string, fn func(echo.RouteRegister), middlewares ...interface{}) {
+		route.RegisterToGroup(BackendPrefix+groupName, fn, middlewares...)
+	}
 )
 
 func init() {
@@ -70,6 +84,10 @@ func User(ctx echo.Context) *dbschema.User {
 func RoleList(ctx echo.Context) []*dbschema.UserRole {
 	roleList, _ := ctx.Get(`roleList`).([]*dbschema.UserRole)
 	return roleList
+}
+
+func Prefix() string {
+	return Echo().Prefix() + BackendPrefix
 }
 
 func NoticeWriter(ctx echo.Context, noticeType string) (wOut io.Writer, wErr io.Writer, err error) {
@@ -94,9 +112,9 @@ func NoticeWriter(ctx echo.Context, noticeType string) (wOut io.Writer, wErr io.
 }
 
 func URLFor(purl string) string {
-	return subdomains.Default.URL(purl, `backend`)
+	return subdomains.Default.URL(BackendPrefix+purl, `backend`)
 }
 
 func FrontendURLFor(purl string) string {
-	return subdomains.Default.URL(purl, `frontend`)
+	return subdomains.Default.URL(FrontendPrefix+purl, `frontend`)
 }

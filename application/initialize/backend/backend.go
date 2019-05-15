@@ -36,8 +36,7 @@ import (
 )
 
 var (
-	Root = echo.New()
-	Dir  = `.`
+	Dir = `.`
 )
 
 func init() {
@@ -45,8 +44,9 @@ func init() {
 	event.OnStart(0, func() {
 		handler.BackendPrefix = echo.String(`BackendPrefix`, `/admin`)
 		handler.FrontendPrefix = echo.String(`FrontendPrefix`)
-		e := Root
-		e.SetPrefix(handler.BackendPrefix)
+		e := handler.Echo()
+		e.SetPrefix(handler.GlobalPrefix)
+		handler.SetRootGroup(handler.BackendPrefix)
 		if event.Develop {
 			e.RouteDebug = true
 		}
@@ -116,8 +116,8 @@ func init() {
 				`__TMPL__`:   Dir + `/template/backend`,
 			},
 			ParseStringFuncs: map[string]func() string{
-				`__BACKEND__`:  func() string { return subdomains.Default.URL(``, `backend`) },
-				`__FRONTEND__`: func() string { return subdomains.Default.URL(``, `frontend`) },
+				`__BACKEND__`:  func() string { return subdomains.Default.URL(handler.BackendPrefix, `backend`) },
+				`__FRONTEND__`: func() string { return subdomains.Default.URL(handler.FrontendPrefix, `frontend`) },
 			},
 			DefaultHTTPErrorCode: http.StatusOK,
 			Reload:               true,
@@ -133,6 +133,6 @@ func init() {
 		if event.Develop {
 			pprof.Wrap(e)
 		}
-		Initialize(e)
+		Initialize()
 	})
 }

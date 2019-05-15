@@ -26,17 +26,14 @@ import (
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/middleware"
-	"github.com/admpub/nging/application/registry/navigate"
-	"github.com/admpub/nging/application/registry/perm"
-	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/handler/captcha"
 	"github.com/webx-top/echo/handler/mvc/static/resource"
 	"github.com/webx-top/echo/middleware/render"
 )
 
-func Initialize(e *echo.Echo) {
-	e.Use(middleware.FuncMap(), render.Auto())
-	addRouter(e)
+func Initialize() {
+	handler.Echo().Use(middleware.FuncMap(), render.Auto())
+	addRouter()
 	DefaultConfigWatcher(true)
 	//config.RunDaemon()
 }
@@ -81,14 +78,11 @@ func DefaultConfigWatcher(mustOk bool) {
 	}, mustOk)
 }
 
-func addRouter(e *echo.Echo) {
+func addRouter() {
 	opt := captcha.Options{EnableImage: true}
-	opt.Wrapper(e)
-	e.Get(`/icon`, func(c echo.Context) error {
-		return c.Render(`icon`, nil)
-	}, middleware.AuthCheck)
-	handler.Use(`*`, middleware.AuthCheck)
-	handler.Apply(e)
+	opt.Wrapper(handler.Echo())
+	handler.Use(`*`, middleware.AuthCheck) //应用中间件到所有子组
+	handler.Apply()
 	/*
 		res := resource.NewStatic(`/public/assets`, filepath.Join(echo.Wd(), `public/assets`))
 		resPath := func(rpath string) string {
@@ -99,69 +93,4 @@ func addRouter(e *echo.Echo) {
 		})
 	*/
 	_ = resource.Static{}
-	e.Get(`/routeList`, func(ctx echo.Context) error {
-		return ctx.JSON(e.Routes())
-	}, middleware.AuthCheck)
-	e.Get(`/routeNotin`, func(ctx echo.Context) error {
-		var unuse []string
-		for _, route := range e.Routes() {
-			if strings.HasPrefix(route.Path, `/term/client/`) {
-				continue
-			}
-			if strings.HasPrefix(route.Path, `/frp/dashboard/`) {
-				continue
-			}
-			var exists bool
-			for _, navGroup := range navigate.TopNavigate {
-				for _, navItem := range navGroup.Children {
-					var navRoute string
-					if len(navItem.Action) > 0 {
-						navRoute = `/` + navGroup.Action + `/` + navItem.Action
-					} else {
-						navRoute = `/` + navGroup.Action
-					}
-					if navRoute == route.Path {
-						exists = true
-						break
-					}
-				}
-			}
-			if exists {
-				continue
-			}
-			for _, navGroup := range navigate.LeftNavigate {
-				for _, navItem := range navGroup.Children {
-					var navRoute string
-					if len(navItem.Action) > 0 {
-						navRoute = `/` + navGroup.Action + `/` + navItem.Action
-					} else {
-						navRoute = `/` + navGroup.Action
-					}
-					if navRoute == route.Path {
-						exists = true
-						break
-					}
-				}
-			}
-			if exists {
-				continue
-			}
-			for _, v := range unuse {
-				if v == route.Path {
-					exists = true
-					break
-				}
-			}
-			if exists {
-				continue
-			}
-			_, exists = perm.SpecialAuths[route.Path]
-			if exists {
-				continue
-			}
-			unuse = append(unuse, route.Path)
-		}
-
-		return ctx.JSON(unuse)
-	}, middleware.AuthCheck)
 }
