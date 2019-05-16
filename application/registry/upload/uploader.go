@@ -21,6 +21,7 @@ package upload
 import (
 	"io"
 	"mime/multipart"
+	"net/url"
 
 	"github.com/webx-top/echo"
 )
@@ -77,7 +78,8 @@ type Uploader interface {
 	Delete(file string) error
 	DeleteDir(dir string) error
 	PublicURL(dst string) string
-	WithURL(content string, embedded ...bool) string
+	FixURL(content string, embedded ...bool) string
+	FixURLWithParams(content string, values url.Values, embedded ...bool) string
 }
 
 type Constructor func(typ string) Uploader

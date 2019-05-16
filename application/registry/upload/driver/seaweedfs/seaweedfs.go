@@ -91,13 +91,22 @@ func (s *Seaweedfs) PublicURL(dstFile string) string {
 	return s.config.Filers[0].Public + dstFile
 }
 
-func (f *Seaweedfs) WithURL(content string, embedded ...bool) string {
+func (f *Seaweedfs) FixURL(content string, embedded ...bool) string {
 	if len(embedded) > 0 && embedded[0] {
 		return helper.ReplaceAnyFileName(content, func(r string) string {
 			return f.PublicURL(r)
 		})
 	}
 	return f.PublicURL(content)
+}
+
+func (f *Seaweedfs) FixURLWithParams(content string, values url.Values, embedded ...bool) string {
+	if len(embedded) > 0 && embedded[0] {
+		return helper.ReplaceAnyFileName(content, func(r string) string {
+			return f.URLWithParams(f.PublicURL(r), values)
+		})
+	}
+	return f.URLWithParams(f.PublicURL(content), values)
 }
 
 func (s *Seaweedfs) xDelete(dstFile string) error {

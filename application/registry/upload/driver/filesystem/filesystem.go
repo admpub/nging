@@ -20,6 +20,7 @@ package filesystem
 
 import (
 	"io"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -85,8 +86,29 @@ func (f *Filesystem) PublicURL(dstFile string) string {
 	return dstFile
 }
 
-func (f *Filesystem) WithURL(content string, embedded ...bool) string {
+func (f *Filesystem) FixURL(content string, embedded ...bool) string {
 	return content
+}
+
+func (f *Filesystem) FixURLWithParams(content string, values url.Values, embedded ...bool) string {
+	if len(embedded) > 0 && embedded[0] {
+		return helper.ReplaceAnyFileName(content, func(r string) string {
+			return f.URLWithParams(f.PublicURL(r), values)
+		})
+	}
+	return f.URLWithParams(f.PublicURL(content), values)
+}
+
+func (f *Filesystem) URLWithParams(rawURL string, values url.Values) string {
+	if values == nil {
+		return rawURL
+	}
+	queryString := values.Encode()
+	if len(queryString) > 0 {
+		rawURL += `?`
+	}
+	rawURL += queryString
+	return rawURL
 }
 
 func (f *Filesystem) Get(dstFile string) (io.ReadCloser, error) {
