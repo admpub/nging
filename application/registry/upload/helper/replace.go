@@ -18,7 +18,9 @@
 
 package helper
 
-import "regexp"
+import (
+	"regexp"
+)
 
 var (
 	temporaryFileRegexp  *regexp.Regexp
@@ -27,9 +29,14 @@ var (
 )
 
 func init() {
-	temporaryFileRegexp = regexp.MustCompile(UploadDir + `[\w-]+/0/[\w]+\.[a-zA-Z]+`)
-	persistentFileRegexp = regexp.MustCompile(UploadDir + `[\w-]+/([^0]|[0-9]{2,})/[\w]+\.[a-zA-Z]+`)
-	anyFileRegexp = regexp.MustCompile(UploadDir + `[\w-]+/([\w-]+/)+[\w-]+\.[a-zA-Z]+`)
+	Init()
+}
+
+func Init() {
+	ruleEnd := ExtensionRegexpEnd()
+	temporaryFileRegexp = regexp.MustCompile(UploadDir + `[\w-]+/0/[\w]+` + ruleEnd)
+	persistentFileRegexp = regexp.MustCompile(UploadDir + `[\w-]+/([^0]|[0-9]{2,})/[\w]+` + ruleEnd)
+	anyFileRegexp = regexp.MustCompile(UploadDir + `[\w-]+/([\w-]+/)+[\w-]+` + ruleEnd)
 }
 
 // ParseTemporaryFileName 从文本中解析出临时文件名称

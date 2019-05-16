@@ -18,10 +18,45 @@
 
 package helper
 
+import (
+	"regexp"
+	"strings"
+
+	"github.com/webx-top/com"
+)
+
 // UploadDir 定义上传目录（首尾必须带“/”）
 var UploadDir = `/public/upload/`
 
 // AllowedUploadFileExtensions 被允许上传的文件的扩展名
 var AllowedUploadFileExtensions = []string{
 	`.jpeg`, `.jpg`, `.gif`, `.png`,
+}
+
+func ExtensionRegister(extensions ...string) {
+	AllowedUploadFileExtensions = append(AllowedUploadFileExtensions, extensions...)
+}
+
+func ExtensionUnregister(extensions ...string) {
+	com.SliceRemoveCallback(len(AllowedUploadFileExtensions), func(i int) func(bool) error {
+		if !com.InStringSlice(AllowedUploadFileExtensions[i], extensions) {
+			return nil
+		}
+		return func(inside bool) error {
+			if inside {
+				AllowedUploadFileExtensions = append(AllowedUploadFileExtensions[0:i], AllowedUploadFileExtensions[i+1:]...)
+			} else {
+				AllowedUploadFileExtensions = AllowedUploadFileExtensions[0:i]
+			}
+			return nil
+		}
+	})
+}
+
+func ExtensionRegexpEnd() string {
+	extensions := make([]string, len(AllowedUploadFileExtensions))
+	for index, extension := range AllowedUploadFileExtensions {
+		extensions[index] = regexp.QuoteMeta(extension)
+	}
+	return `(` + strings.Join(extensions, `|`) + `)`
 }
