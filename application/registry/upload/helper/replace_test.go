@@ -24,7 +24,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSeaweedfs(t *testing.T) {
+func TestParseFileName(t *testing.T) {
 	excepted := []string{
 		"/public/upload/test/0/1232aawdwwd.jpg",
 		"/public/upload/test/0/1232aawdwwe.jpg",
