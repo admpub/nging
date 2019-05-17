@@ -18,7 +18,15 @@
 
 package echo
 
+var (
+	e       = &Echo{}
+	g       = &Group{}
+	_ ICore = e
+	_ ICore = g
+)
+
 type RouteRegister interface {
+	Group(prefix string, middleware ...interface{}) *Group
 	Any(path string, h interface{}, middleware ...interface{})
 	Route(methods string, path string, h interface{}, middleware ...interface{})
 	Match(methods []string, path string, h interface{}, middleware ...interface{})
@@ -39,6 +47,10 @@ type ContextRegister interface {
 	SetContext(Context)
 }
 
+type RendererRegister interface {
+	SetRenderer(Renderer)
+}
+
 type MiddlewareRegister interface {
 	Use(middleware ...interface{})
 	Pre(middleware ...interface{})
@@ -52,6 +64,8 @@ type ICore interface {
 	RouteRegister
 	MiddlewareRegister
 	URLBuilder
+	RendererRegister
+	Prefixer
 }
 
 type Closer interface {

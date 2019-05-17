@@ -41,7 +41,9 @@ var (
 
 func init() {
 	echo.Set(`BackendPrefix`, handler.BackendPrefix)
+	echo.Set(`GlobalPrefix`, handler.GlobalPrefix)
 	event.OnStart(0, func() {
+		handler.GlobalPrefix = echo.String(`GlobalPrefix`)
 		handler.BackendPrefix = echo.String(`BackendPrefix`, `/admin`)
 		handler.FrontendPrefix = echo.String(`FrontendPrefix`)
 		e := handler.Echo()
