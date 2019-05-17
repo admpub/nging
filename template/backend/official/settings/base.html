@@ -22,7 +22,7 @@
 <div class="form-group">
     <label class="col-sm-2 control-label">{{"网站状态"|T}}</label>
     <div class="col-sm-3">
-        {{$siteClose := $config.siteClose.Value}}
+        {{$siteClose := $config.siteClose.Value | Default "0"}}
         <span class="radio radio-primary radio-inline">
             <input type="radio" name="base[siteClose][value]" value="0"{{if eq $siteClose "0"}} checked{{end}} id="db-siteClose-0">
             <label for="db-siteClose-0">{{"开启网站"|T}}</label>
@@ -41,7 +41,7 @@
     <label class="col-sm-2 control-label">{{"站点公告"|T}}</label>
     <div class="col-sm-10">
         
-        {{$showAnnouncement := $config.showAnnouncement.Value}}
+        {{$showAnnouncement := $config.showAnnouncement.Value | Default "0"}}
         <span class="radio radio-primary radio-inline">
             <input type="radio" name="base[showAnnouncement][value]" value="1"{{if eq $showAnnouncement "1"}} checked{{end}} id="db-showAnnouncement-1">
             <label for="db-showAnnouncement-1">{{"显示公告"|T}}</label>
