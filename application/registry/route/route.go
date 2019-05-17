@@ -32,6 +32,10 @@ func Echo() *echo.Echo {
 	return routeRegister.Echo
 }
 
+func AddGroupNamer(namers ...func(string) string) {
+	routeRegister.AddGroupNamer(namers...)
+}
+
 func Register(fn func(echo.RouteRegister)) {
 	routeRegister.Register(fn)
 }

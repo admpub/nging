@@ -21,6 +21,7 @@ package handler
 import (
 	"io"
 	"os"
+	"strings"
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/dbschema"
@@ -59,21 +60,33 @@ var (
 	Apply        = route.Apply
 	SetRootGroup = route.SetRootGroup
 	Register     = func(fn func(echo.RouteRegister)) {
-		route.RegisterToGroup(BackendPrefix, fn)
+		route.RegisterToGroup(`@`, fn)
 	}
 	Use = func(groupName string, middlewares ...interface{}) {
 		if groupName != `*` {
-			groupName = BackendPrefix + groupName
+			groupName = `@` + groupName
 		}
 		route.Use(groupName, middlewares...)
 	}
 	RegisterToGroup = func(groupName string, fn func(echo.RouteRegister), middlewares ...interface{}) {
-		route.RegisterToGroup(BackendPrefix+groupName, fn, middlewares...)
+		route.RegisterToGroup(`@`+groupName, fn, middlewares...)
 	}
 )
 
 func init() {
 	WebSocketLogger.SetLevel(`Info`)
+	route.AddGroupNamer(func(group string) string {
+		if len(group) == 0 {
+			return group
+		}
+		if group == `@` {
+			return BackendPrefix
+		}
+		if strings.HasPrefix(group, `@`) {
+			return BackendPrefix + group[1:]
+		}
+		return group
+	})
 }
 
 func User(ctx echo.Context) *dbschema.User {

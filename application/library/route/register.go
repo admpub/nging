@@ -24,13 +24,14 @@ import (
 	"github.com/webx-top/echo"
 )
 
-func NewRegister(e *echo.Echo) *Register {
+func NewRegister(e *echo.Echo, groupNamers ...func(string) string) *Register {
 	return &Register{
 		Echo:              e,
 		Handlers:          []func(echo.RouteRegister){},
 		GroupHandlers:     map[string][]func(echo.RouteRegister){},
 		GroupMiddlewares:  map[string][]interface{}{},
 		PrefixMiddlewares: map[string][]interface{}{},
+		GroupNamers:       groupNamers,
 	}
 }
 
@@ -39,8 +40,17 @@ type Register struct {
 	RootGroup         string
 	Handlers          []func(echo.RouteRegister)
 	GroupHandlers     map[string][]func(echo.RouteRegister)
+	GroupNamers       []func(string) string
 	GroupMiddlewares  map[string][]interface{}
 	PrefixMiddlewares map[string][]interface{}
+}
+
+func (r *Register) AddGroupNamer(namers ...func(string) string) {
+	r.GroupNamers = append(r.GroupNamers, namers...)
+}
+
+func (r *Register) SetGroupNamer(namers ...func(string) string) {
+	r.GroupNamers = namers
 }
 
 func (r *Register) Apply() {
@@ -54,6 +64,9 @@ func (r *Register) Apply() {
 		groupDefaultMiddlewares = append(groupDefaultMiddlewares, middlewares...)
 	}
 	for group, handlers := range r.GroupHandlers {
+		for _, namer := range r.GroupNamers {
+			group = namer(group)
+		}
 		g := e.Group(group)
 		if group != r.RootGroup { // 组名为空时，为顶层组
 			g.Use(groupDefaultMiddlewares...)
