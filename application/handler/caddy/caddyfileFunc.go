@@ -43,8 +43,8 @@ func addonAttr(ctx echo.Context, v url.Values) {
 		values, _ := v[k]
 		r := ``
 		t := ``
-		for i, v := range values {
-			r += t + prefix + v + `   ` + values[i]
+		for _, v := range values {
+			r += t + prefix + v
 			t = "\n"
 		}
 		return r

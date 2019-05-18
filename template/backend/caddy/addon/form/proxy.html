@@ -183,7 +183,7 @@
                           <label class="col-sm-3 control-label">{{"TLS验证"|T}}</label>
                           <div class="col-sm-9">
                             <div class="checkbox checkbox-primary checkbox-inline">
-                             <input type="checkbox" name="proxy_preset" id="proxy_insecure_skip_verify" value="1"{{if HasString $proxyPreset "insecure_skip_verify"}} checked="checked"{{end}}>
+                             <input type="checkbox" name="proxy_preset" id="proxy_insecure_skip_verify" value="insecure_skip_verify"{{if HasString $proxyPreset "insecure_skip_verify"}} checked="checked"{{end}}>
                             <label for="proxy_insecure_skip_verify">{{"跳过TLS验证"|T}}</label>
                             </div>
                              <div class="help-block">{{"通过覆盖后端TLS证书的方式来禁用HTTPS功能"|T}}</div>
