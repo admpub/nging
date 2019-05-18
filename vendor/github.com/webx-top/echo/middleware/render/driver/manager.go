@@ -24,8 +24,6 @@ import (
 type Manager interface {
 	Start() error
 	Close()
-	AddFallback(fallback ...func(string) (string, bool))
-	SetFallback(fallback ...func(string) (string, bool))
 	ClearCallback()
 	AddCallback(rootDir string, callback func(name, typ, event string))
 	DelCallback(rootDir string)
@@ -48,13 +46,9 @@ var _ Manager = &BaseManager{}
 type BaseManager struct {
 }
 
-func (b *BaseManager) Start() error                                 { return nil }
-func (b *BaseManager) Close()                                       {}
-func (b *BaseManager) ClearCallback()                               {}
-func (b *BaseManager) AddFallback(_ ...func(string) (string, bool)) {}
-
-func (b *BaseManager) SetFallback(_ ...func(string) (string, bool)) {}
-
+func (b *BaseManager) Start() error                                                       { return nil }
+func (b *BaseManager) Close()                                                             {}
+func (b *BaseManager) ClearCallback()                                                     {}
 func (b *BaseManager) AddCallback(rootDir string, callback func(name, typ, event string)) {}
 func (b *BaseManager) DelCallback(rootDir string)                                         {}
 func (b *BaseManager) ClearAllows()                                                       {}

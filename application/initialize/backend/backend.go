@@ -132,6 +132,9 @@ func init() {
 			Reload:               true,
 			ErrorPages:           config.DefaultConfig.Sys.ErrorPages,
 		}
+		if RendererDo != nil {
+			renderOptions.AddRendererDo(RendererDo)
+		}
 		renderOptions.AddFuncSetter(ngingMW.ErrorPageFunc)
 		renderOptions.ApplyTo(e, event.BackendTmplMgr)
 		RendererDo(renderOptions.Renderer())

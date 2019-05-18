@@ -26,6 +26,7 @@ type Config struct {
 	renderer             driver.Driver
 	errorPageFuncSetter  []echo.HandlerFunc
 	FuncMapSkipper       echo.Skipper
+	RendererDo           []func(driver.Driver)
 }
 
 var DefaultFuncMapSkipper = func(c echo.Context) bool {
@@ -34,6 +35,19 @@ var DefaultFuncMapSkipper = func(c echo.Context) bool {
 
 func (t *Config) SetFuncMapSkipper(skipper echo.Skipper) *Config {
 	t.FuncMapSkipper = skipper
+	return t
+}
+
+func (t *Config) SetRendererDo(rd ...func(driver.Driver)) *Config {
+	t.RendererDo = rd
+	return t
+}
+
+func (t *Config) AddRendererDo(rd ...func(driver.Driver)) *Config {
+	if t.RendererDo == nil {
+		t.RendererDo = []func(driver.Driver){}
+	}
+	t.RendererDo = append(t.RendererDo, rd...)
 	return t
 }
 
@@ -64,6 +78,11 @@ func (t *Config) NewRenderer(manager ...driver.Manager) driver.Driver {
 	renderer := New(t.Engine, tmplDir)
 	if len(manager) > 0 && manager[0] != nil {
 		renderer.SetManager(manager[0])
+	}
+	if t.RendererDo != nil {
+		for _, rendererDo := range t.RendererDo {
+			rendererDo(renderer)
+		}
 	}
 	renderer.Init()
 	renderer.SetContentProcessor(t.Parser())
