@@ -209,7 +209,7 @@ func (self *Standard) SetTmplPathFixer(fn func(string) string) {
 
 func (self *Standard) TemplatePath(p string) string {
 	if self.tmplPathFixer != nil {
-		p = self.tmplPathFixer(p)
+		return self.tmplPathFixer(p)
 	}
 	p = filepath.Join(self.TemplateDir, p)
 	return p
