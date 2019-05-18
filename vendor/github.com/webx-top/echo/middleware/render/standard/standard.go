@@ -203,6 +203,10 @@ func (self *Standard) SetManager(mgr driver.Manager) {
 	self.TemplateMgr = mgr
 }
 
+func (self *Standard) Manager() driver.Manager {
+	return self.TemplateMgr
+}
+
 func (self *Standard) SetTmplPathFixer(fn func(string) string) {
 	self.tmplPathFixer = fn
 }

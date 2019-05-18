@@ -44,6 +44,7 @@ type Driver interface {
 	//设置模板内容预处理器
 	SetContentProcessor(fn func([]byte) []byte)
 	SetManager(Manager)
+	Manager() Manager
 
 	//设置模板函数
 	SetFuncMap(func() map[string]interface{})
@@ -67,10 +68,16 @@ type Driver interface {
 	Close()
 }
 
-type NopRenderer struct{}
+type NopRenderer struct {
+	mgr Manager
+}
 
 func (n *NopRenderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	return nil
+}
+
+func (n *NopRenderer) Manager() Manager {
+	return n.mgr
 }
 
 func (n *NopRenderer) Debug() bool { return false }
@@ -89,7 +96,9 @@ func (n *NopRenderer) Logger() logger.Logger { return nil }
 
 func (n *NopRenderer) SetContentProcessor(fn func([]byte) []byte) {}
 
-func (n *NopRenderer) SetManager(_ Manager) {}
+func (n *NopRenderer) SetManager(mgr Manager) {
+	n.mgr = mgr
+}
 
 func (n *NopRenderer) SetFuncMap(_ func() map[string]interface{}) {}
 
