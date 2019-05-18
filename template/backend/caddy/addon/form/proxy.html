@@ -178,11 +178,12 @@
                              <div class="help-block">{{"可以使用端口范围，像这样“:8080-8085”"|T}}</div>
                           </div>
                         </div>
+                        {{$proxyPreset := FormValues "proxy_preset"}}
                         <div class="form-group">
                           <label class="col-sm-3 control-label">{{"TLS验证"|T}}</label>
                           <div class="col-sm-9">
                             <div class="checkbox checkbox-primary checkbox-inline">
-                             <input type="checkbox" name="proxy_insecure_skip_verify" id="proxy_insecure_skip_verify" value="{{Val "proxy_insecure_skip_verify" "1"}}">
+                             <input type="checkbox" name="proxy_preset" id="proxy_insecure_skip_verify" value="1"{{if HasString $proxyPreset "insecure_skip_verify"}} checked="checked"{{end}}>
                             <label for="proxy_insecure_skip_verify">{{"跳过TLS验证"|T}}</label>
                             </div>
                              <div class="help-block">{{"通过覆盖后端TLS证书的方式来禁用HTTPS功能"|T}}</div>
@@ -192,7 +193,7 @@
                           <label class="col-sm-3 control-label">{{"预置功能"|T}}</label>
                           <div class="col-sm-9">
                             <div class="checkbox checkbox-primary checkbox-inline">
-                                <input type="checkbox" id="proxy_preset-websocket" name="proxy_preset" value="websocket"{{if HasString (FormValues "proxy_preset") "random"}} checked{{end}}> <label for="proxy_preset-websocket">websocket</label>
+                                <input type="checkbox" id="proxy_preset-websocket" name="proxy_preset" value="websocket"{{if HasString $proxyPreset "websocket"}} checked{{end}}> <label for="proxy_preset-websocket">websocket</label>
                             </div>
                               <p>
 表示当前代理转发WebSocket连接。 等同于: <pre>
@@ -200,7 +201,7 @@ header_upstream Connection {&gt;Connection}
 header_upstream Upgrade {&gt;Upgrade}</pre>
 注意：HTTP/2不支持upgrade协议</p>
                               <div class="checkbox checkbox-primary checkbox-inline">
-                                <input type="checkbox" id="proxy_preset-transparent" name="proxy_preset" value="transparent"{{if HasString (FormValues "proxy_preset") "transparent"}} checked{{end}}> <label for="proxy_preset-transparent">transparent</label>
+                                <input type="checkbox" id="proxy_preset-transparent" name="proxy_preset" value="transparent"{{if HasString $proxyPreset "transparent"}} checked{{end}}> <label for="proxy_preset-transparent">transparent</label>
                               </div>
                               <p>
 把来自浏览器端提交的原始主机信息传递给后端。等同于: <pre>

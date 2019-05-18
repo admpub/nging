@@ -35,6 +35,20 @@ func addonAttr(ctx echo.Context, v url.Values) {
 		}
 		return item + `   ` + v
 	})
+	ctx.SetFunc(`Iterator`, func(addon string, item string, prefix string) string {
+		if len(addon) > 0 {
+			addon += `_`
+		}
+		k := addon + item
+		values, _ := v[k]
+		r := ``
+		t := ``
+		for i, v := range values {
+			r += t + prefix + v + `   ` + values[i]
+			t = "\n"
+		}
+		return r
+	})
 }
 
 func iteratorKV(ctx echo.Context, v url.Values) {
