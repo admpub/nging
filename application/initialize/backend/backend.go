@@ -31,6 +31,7 @@ import (
 	"github.com/webx-top/echo/middleware"
 	"github.com/webx-top/echo/middleware/language"
 	"github.com/webx-top/echo/middleware/render"
+	"github.com/webx-top/echo/middleware/render/driver"
 	"github.com/webx-top/echo/middleware/session"
 	"github.com/webx-top/echo/subdomains"
 )
@@ -43,6 +44,7 @@ const (
 var (
 	TemplateDir = DefaultTemplateDir //模板文件夹
 	AssetsDir   = DefaultAssetsDir   //素材文件夹
+	RendererDo  = func(driver.Driver) {}
 )
 
 func init() {
@@ -132,6 +134,7 @@ func init() {
 		}
 		renderOptions.AddFuncSetter(ngingMW.ErrorPageFunc)
 		renderOptions.ApplyTo(e, event.BackendTmplMgr)
+		RendererDo(renderOptions.Renderer())
 		events.AddEvent(`clearCache`, func(next func(r bool), args ...interface{}) {
 			renderOptions.Renderer().ClearCache()
 			next(true)
