@@ -163,6 +163,8 @@ func HTTPErrorHandler(opt *Options) echo.HTTPErrorHandler {
 				c.String(msg, code)
 			}
 		}
-		c.Logger().Debug(err)
+		if err != nil {
+			c.Logger().Debug(err)
+		}
 	}
 }
