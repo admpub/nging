@@ -35,9 +35,14 @@ import (
 	"github.com/webx-top/echo/subdomains"
 )
 
+const (
+	DefaultTemplateDir = `./template/backend`
+	DefaultPublicDir   = `./public`
+)
+
 var (
-	TemplateDir = `./template/backend` //模板文件夹
-	PublicDir   = `./public`           //素材文件夹
+	TemplateDir = DefaultTemplateDir //模板文件夹
+	PublicDir   = DefaultPublicDir   //素材文件夹
 )
 
 func init() {
