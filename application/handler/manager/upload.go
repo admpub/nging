@@ -35,6 +35,7 @@ import (
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/driver/filesystem"
+	"github.com/admpub/nging/application/registry/upload/helper"
 	"github.com/admpub/qrcode"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -47,6 +48,13 @@ func ResponseDataForUpload(ctx echo.Context, field string, err error, imageURLs 
 }
 
 var UploaderEngine = filesystem.Name
+
+func File(ctx echo.Context) error {
+	typ := ctx.Param(`type`)
+	file := ctx.Param(`*`)
+	file = filepath.Join(helper.UploadDir, typ, file)
+	return ctx.File(file)
+}
 
 // Upload 上传文件
 func Upload(ctx echo.Context) error {

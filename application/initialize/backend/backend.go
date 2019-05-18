@@ -37,12 +37,12 @@ import (
 
 const (
 	DefaultTemplateDir = `./template/backend`
-	DefaultPublicDir   = `./public`
+	DefaultAssetsDir   = `./public/assets`
 )
 
 var (
 	TemplateDir = DefaultTemplateDir //模板文件夹
-	PublicDir   = DefaultPublicDir   //素材文件夹
+	AssetsDir   = DefaultAssetsDir   //素材文件夹
 )
 
 func init() {
@@ -96,11 +96,11 @@ func init() {
 
 		// 注册静态资源文件(网站素材文件)
 		e.Use(event.StaticMW) //打包的静态资源
-		// 没有打包的上传文件等静态资源
-		e.Use(middleware.Static(&middleware.StaticOptions{
-			Root: PublicDir,
-			Path: "/public/",
-		}))
+		// 上传文件资源(改到manager中用File函数实现)
+		// e.Use(middleware.Static(&middleware.StaticOptions{
+		// 	Root: helper.UploadDir,
+		// 	Path: helper.UploadURLPath,
+		// }))
 
 		// 启用session
 		e.Use(session.Middleware(config.SessionOptions))
@@ -119,7 +119,6 @@ func init() {
 			TmplDir: TemplateDir,
 			Engine:  `standard`,
 			ParseStrings: map[string]string{
-				`__PUBLIC__`: `/public`,
 				`__ASSETS__`: `/public/assets/backend`,
 				`__TMPL__`:   TemplateDir,
 			},

@@ -25,13 +25,23 @@ import (
 	"github.com/webx-top/com"
 )
 
-// UploadDir 定义上传目录（首尾必须带“/”）
-var UploadDir = `/public/upload/`
+const (
+	DefaultUploadURLPath = `/public/upload/`
+	DefaultUploadDir     = `./public/upload`
+)
 
-// AllowedUploadFileExtensions 被允许上传的文件的扩展名
-var AllowedUploadFileExtensions = []string{
-	`.jpeg`, `.jpg`, `.gif`, `.png`,
-}
+var (
+	// UploadURLPath 上传文件网址访问路径
+	UploadURLPath = DefaultUploadURLPath
+
+	// UploadDir 定义上传目录（首尾必须带“/”）
+	UploadDir = DefaultUploadDir
+
+	// AllowedUploadFileExtensions 被允许上传的文件的扩展名
+	AllowedUploadFileExtensions = []string{
+		`.jpeg`, `.jpg`, `.gif`, `.png`,
+	}
+)
 
 func ExtensionRegister(extensions ...string) {
 	AllowedUploadFileExtensions = append(AllowedUploadFileExtensions, extensions...)

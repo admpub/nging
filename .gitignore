@@ -50,5 +50,4 @@ debug.log
 /data/cache/*
 nohup.out
 /public/upload/*
-/public/collect/*
 .DS_Store

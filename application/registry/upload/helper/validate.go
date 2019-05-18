@@ -41,7 +41,7 @@ var IsRightUploadFile = func(ctx echo.Context, src string) error {
 	if !ok {
 		return ctx.E(`不支持的文件扩展名: %s`, invalidExt)
 	}
-	if !strings.Contains(src, UploadDir) {
+	if !strings.Contains(src, UploadURLPath) {
 		return ctx.E(`路径不合法`)
 	}
 	return nil

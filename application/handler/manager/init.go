@@ -20,11 +20,13 @@ package manager
 
 import (
 	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/registry/upload/helper"
 	"github.com/webx-top/echo"
 )
 
 func init() {
 	handler.RegisterToGroup(`/manager`, func(g echo.RouteRegister) {
+		handler.Echo().Route(`GET,HEAD`, helper.UploadURLPath+`:type/`+`*`, File)
 		g.Route(`GET,POST`, `/user`, User)
 		g.Route(`GET,POST`, `/role`, Role)
 		g.Route(`GET,POST`, `/user_add`, UserAdd)
@@ -47,6 +49,5 @@ func init() {
 		g.Route(`GET,POST`, `/settings`, Settings)
 		g.Route(`POST`, `/upload/:type`, Upload) //文件上传
 		g.Route(`GET,POST`, `/crop`, Crop)       //裁剪图片
-
 	})
 }

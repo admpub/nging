@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/helper"
@@ -41,16 +40,17 @@ func init() {
 }
 
 func NewFilesystem(typ string) *Filesystem {
-	uploadPath := helper.UploadDir + typ
 	return &Filesystem{
-		Type:       typ,
-		UploadPath: uploadPath,
+		Type:          typ,
+		UploadURLPath: helper.UploadURLPath + typ,
+		UploadDir:     filepath.Join(helper.UploadDir, typ),
 	}
 }
 
 type Filesystem struct {
-	Type       string
-	UploadPath string
+	Type          string
+	UploadURLPath string
+	UploadDir     string
 }
 
 func (f *Filesystem) Engine() string {
@@ -58,7 +58,7 @@ func (f *Filesystem) Engine() string {
 }
 
 func (f *Filesystem) filepath(fname string) string {
-	return filepath.Join(echo.Wd(), strings.TrimPrefix(f.UploadPath, `/`), fname)
+	return filepath.Join(f.UploadDir, fname)
 }
 
 func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (string, error) {
@@ -68,7 +68,7 @@ func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (string, err
 	if err != nil {
 		return "", err
 	}
-	view := f.UploadPath + `/` + dstFile
+	view := f.UploadURLPath + `/` + dstFile
 	//create destination file making sure the path is writeable.
 	dst, err := os.Create(file)
 	if err != nil {
