@@ -166,5 +166,5 @@ func Donation(ctx echo.Context) error {
 	if strings.HasPrefix(lang, `zh`) {
 		langSuffix = `_zh-CN`
 	}
-	return ctx.Redirect(`/public/assets/html/donation` + langSuffix + `.html`)
+	return ctx.Render(`index/donation/donation`+langSuffix, nil)
 }

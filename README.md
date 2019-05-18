@@ -1,6 +1,6 @@
 # Nging2
 
-![Nging's logo](https://github.com/admpub/nging/blob/master/public/assets/images/nging-gear.png?raw=true)
+![Nging's logo](https://github.com/admpub/nging/blob/master/public/assets/backend/images/nging-gear.png?raw=true)
 
 > 注意：这是Nging2.0.0源代码，旧版1.x已经转移到 [v1分支](https://github.com/admpub/nging/tree/v1)
 

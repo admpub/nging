@@ -114,7 +114,7 @@ func init() {
 			Engine:  `standard`,
 			ParseStrings: map[string]string{
 				`__PUBLIC__`: `/public`,
-				`__ASSETS__`: `/public/assets`,
+				`__ASSETS__`: `/public/assets/backend`,
 				`__TMPL__`:   Dir + `/template/backend`,
 			},
 			ParseStringFuncs: map[string]func() string{

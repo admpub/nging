@@ -36,7 +36,7 @@ var (
 	SupportManager  bool
 	MustLicensed    bool //是否必须被许可才能运行(如为true,则未许可的情况下会强制退出程序,否则不会退出程序) Must be licensed before starting
 	FaviconHandler  func(echo.Context) error
-	FaviconPath     = "/public/assets/images/favicon-xs.ico"
+	FaviconPath     = "/public/assets/backend/images/favicon-xs.ico"
 	SofewareName    = `Nging`
 
 	// Short 简述
