@@ -61,6 +61,7 @@ type Manager struct {
 	callback     map[string]func(string, string, string) //参数为：目标名称，类型(file/dir)，事件名(create/delete/modify/rename)
 	done         chan bool
 	watcher      *fsnotify.Watcher
+	fallback     []func(string) (string, bool)
 }
 
 func (self *Manager) closeMoniter() {
@@ -86,6 +87,18 @@ func (self *Manager) getWatcher() *fsnotify.Watcher {
 		}
 	}
 	return self.watcher
+}
+
+func (self *Manager) AddFallback(fallback ...func(string) (string, bool)) {
+	if self.fallback == nil {
+		self.fallback = []func(string) (string, bool){}
+		return
+	}
+	self.fallback = append(self.fallback, fallback...)
+}
+
+func (self *Manager) SetFallback(fallback ...func(string) (string, bool)) {
+	self.fallback = fallback
 }
 
 func (self *Manager) AddCallback(rootDir string, callback func(name, typ, event string)) {
@@ -346,23 +359,37 @@ func (self *Manager) Close() {
 }
 
 func (self *Manager) GetTemplate(tmpl string) ([]byte, error) {
-	var err error
-	tmpl, err = filepath.Abs(tmpl)
+	tmplPath, err := filepath.Abs(tmpl)
 	if err != nil {
 		return nil, err
 	}
-
 	self.mutex.Lock()
 	defer self.mutex.Unlock()
-	if content, ok := self.caches[tmpl]; ok {
-		self.Logger.Debugf("load template %v from cache", tmpl)
+	if content, ok := self.caches[tmplPath]; ok {
+		self.Logger.Debugf("load template %v from cache", tmplPath)
 		return content, nil
 	}
-
-	content, err := ioutil.ReadFile(tmpl)
+	content, err := ioutil.ReadFile(tmplPath)
 	if err == nil {
-		self.Logger.Debugf("load template %v from the file", tmpl)
-		self.caches[tmpl] = content
+		self.Logger.Debugf("load template %v from the file", tmplPath)
+		self.caches[tmplPath] = content
+	} else if os.IsNotExist(err) && self.fallback != nil {
+		for _, fallback := range self.fallback {
+			var exists bool
+			tmplPath, exists = fallback(tmpl)
+			if exists {
+				content, err = ioutil.ReadFile(tmplPath)
+				if err == nil {
+					self.Logger.Debugf("load template %v from the file", tmplPath)
+					self.caches[tmplPath] = content
+				} else {
+					if os.IsNotExist(err) {
+						continue
+					}
+				}
+				break
+			}
+		}
 	}
 	return content, err
 }
