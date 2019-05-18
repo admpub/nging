@@ -2,6 +2,7 @@ package echo
 
 import (
 	"mime"
+	"os"
 	"path"
 	"path/filepath"
 	"reflect"
@@ -10,6 +11,39 @@ import (
 
 	"github.com/webx-top/com"
 )
+
+var workDir string
+
+func SetWorkDir(dir string) {
+	if len(dir) == 0 {
+		if len(workDir) == 0 {
+			setWorkDir()
+		}
+		return
+	}
+	if !strings.HasSuffix(dir, FilePathSeparator) {
+		dir += FilePathSeparator
+	}
+	workDir = dir
+}
+
+func setWorkDir() {
+	workDir, _ = os.Getwd()
+	workDir = workDir + FilePathSeparator
+}
+
+func init() {
+	if len(workDir) == 0 {
+		setWorkDir()
+	}
+}
+
+func Wd() string {
+	if len(workDir) == 0 {
+		setWorkDir()
+	}
+	return workDir
+}
 
 // HandlerName returns the handler name
 func HandlerName(h interface{}) string {

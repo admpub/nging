@@ -25,6 +25,9 @@ import (
 
 func init() {
 	handler.RegisterToGroup(`/tool`, func(g echo.RouteRegister) {
+
+		dictFile = echo.Wd() + echo.FilePathSeparator + `data` + echo.FilePathSeparator + `ip2region` + echo.FilePathSeparator + `ip2region.db`
+
 		g.Route(`GET,POST`, `/ip`, IP2Region)
 	})
 }

@@ -28,10 +28,6 @@ var (
 	dictFile string
 )
 
-func init() {
-	dictFile = echo.Wd() + echo.FilePathSeparator + `data` + echo.FilePathSeparator + `ip2region` + echo.FilePathSeparator + `ip2region.db`
-}
-
 func IP2Region(c echo.Context) (err error) {
 	ip := c.Form(`ip`)
 	if len(ip) > 0 {

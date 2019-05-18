@@ -25,8 +25,6 @@ import (
 	"html/template"
 	"io/ioutil"
 	"net/http"
-	"os"
-	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
@@ -36,17 +34,6 @@ const (
 	SnippetLineNumbers = 13
 	StackSize          = 4 << 10 // 4 KB
 )
-
-var workDir string
-
-func init() {
-	workDir, _ = os.Getwd()
-	workDir = filepath.ToSlash(workDir) + "/"
-}
-
-func Wd() string {
-	return workDir
-}
 
 func NewHTTPError(code int, msg ...string) *HTTPError {
 	he := &HTTPError{Code: code, Message: http.StatusText(code)}
