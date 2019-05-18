@@ -37,7 +37,7 @@ var StaticOptions = &middleware.StaticOptions{
 func Initialize() {
 	event.Bindata = false
 	if len(StaticOptions.Root) == 0 {
-		StaticOptions.Root = backend.Dir + `/public/assets`
+		StaticOptions.Root = backend.PublicDir + `/assets`
 	}
 	event.StaticMW = middleware.Static(StaticOptions)
 	faviconPath := filepath.Join(echo.Wd(), event.FaviconPath)

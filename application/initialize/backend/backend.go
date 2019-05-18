@@ -36,7 +36,8 @@ import (
 )
 
 var (
-	Dir = `.`
+	TemplateDir = `./template/backend` //模板文件夹
+	PublicDir   = `./public`           //素材文件夹
 )
 
 func init() {
@@ -92,7 +93,7 @@ func init() {
 		e.Use(event.StaticMW) //打包的静态资源
 		// 没有打包的上传文件等静态资源
 		e.Use(middleware.Static(&middleware.StaticOptions{
-			Root: Dir + "/public",
+			Root: PublicDir,
 			Path: "/public/",
 		}))
 
@@ -110,12 +111,12 @@ func init() {
 
 		// 注册模板引擎
 		renderOptions := &render.Config{
-			TmplDir: Dir + `/template/backend`,
+			TmplDir: TemplateDir,
 			Engine:  `standard`,
 			ParseStrings: map[string]string{
 				`__PUBLIC__`: `/public`,
 				`__ASSETS__`: `/public/assets/backend`,
-				`__TMPL__`:   Dir + `/template/backend`,
+				`__TMPL__`:   TemplateDir,
 			},
 			ParseStringFuncs: map[string]func() string{
 				`__BACKEND__`:  func() string { return subdomains.Default.URL(handler.BackendPrefix, `backend`) },
