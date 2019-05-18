@@ -8,6 +8,7 @@ import (
 
 func init() {
 	handler.Register(func(e echo.RouteRegister) {
+		e.Route("GET", ``, Index)
 		e.Route("GET", `/`, Index)
 		e.Route("GET", `/index`, Index)
 		e.Route("GET,POST", `/login`, Login)
