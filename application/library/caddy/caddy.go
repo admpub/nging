@@ -15,6 +15,7 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 package caddy
 
 import (
@@ -52,7 +53,7 @@ var (
 		CPU:                     `100%`,
 		PidFile:                 `./caddy.pid`,
 	}
-	DefaultVersion = `v1.5.1`
+	DefaultVersion = `2.0.0`
 )
 
 func TrapSignals() {
@@ -94,7 +95,7 @@ func Fixed(c *Config) {
 		c.LogFile = filepath.Join(logFile, `caddy.log`)
 	}
 	c.appName = `nging`
-	c.appVersion = DefaultVersion
+	c.appVersion = echo.String(`VERSION`, DefaultVersion)
 	c.Agreed = true
 }
 
@@ -126,6 +127,9 @@ type Config struct {
 }
 
 func (c *Config) Start() error {
+	caddy.AppName = c.appName
+	caddy.AppVersion = c.appVersion
+	certmagic.UserAgent = c.appName + "/" + c.appVersion
 	c.stopped = false
 
 	// Executes Startup events
@@ -136,9 +140,6 @@ func (c *Config) Start() error {
 	if err != nil {
 		return err
 	}
-	caddy.AppName = c.appName
-	caddy.AppVersion = c.appVersion
-	certmagic.UserAgent = c.appName + "/" + c.appVersion
 	// Start your engines
 	c.instance, err = caddy.Start(caddyfile)
 	if err != nil {
