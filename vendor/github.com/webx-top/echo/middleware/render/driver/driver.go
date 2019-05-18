@@ -35,6 +35,7 @@ type Driver interface {
 
 	//获取模板根路径
 	TmplDir() string
+	SetTmplPathFixer(func(string) string)
 	Debug() bool
 	SetDebug(bool)
 	SetLogger(logger.Logger)
@@ -79,6 +80,8 @@ func (n *NopRenderer) SetDebug(_ bool) {}
 func (n *NopRenderer) Init() {}
 
 func (n *NopRenderer) TmplDir() string { return `` }
+
+func (n *NopRenderer) SetTmplPathFixer(_ func(string) string) {}
 
 func (n *NopRenderer) SetLogger(_ logger.Logger) {}
 

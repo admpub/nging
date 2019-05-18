@@ -110,7 +110,7 @@ type Standard struct {
 	SuperTag           string
 	StripTag           string
 	Ext                string
-	TemplatePathParser func(string) string
+	tmplPathFixer      func(string) string
 	debug              bool
 	getFuncs           func() map[string]interface{}
 	logger             logger.Logger
@@ -203,9 +203,13 @@ func (self *Standard) SetManager(mgr driver.Manager) {
 	self.TemplateMgr = mgr
 }
 
+func (self *Standard) SetTmplPathFixer(fn func(string) string) {
+	self.tmplPathFixer = fn
+}
+
 func (self *Standard) TemplatePath(p string) string {
-	if self.TemplatePathParser != nil {
-		p = self.TemplatePathParser(p)
+	if self.tmplPathFixer != nil {
+		p = self.tmplPathFixer(p)
 	}
 	p = filepath.Join(self.TemplateDir, p)
 	return p
