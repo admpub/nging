@@ -1,6 +1,9 @@
 {{$v := Stored.values}}
 {{$v.Get "domain"}} {
-    root {{$v.Get "root"|ToHTML}}
+    {{$root := $v.Get "root"}}
+    {{if $root}}
+    root {{$root|ToHTML}}
+    {{end}}
 
     {{if eq ($v.Get "log") "1"}}
     log / {{$v.Get "log_file"}} "{{$v.Get "log_format"|Default "{combined} {latency}"|ToHTML}}" {
