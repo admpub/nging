@@ -414,6 +414,16 @@ func VhostFile(ctx echo.Context) error {
 				data.SetCode(1)
 			}
 			return ctx.JSON(data)
+		case `mkdir`:
+			data := ctx.Data()
+			newName := ctx.Form(`name`)
+			err = mgr.Mkdir(filepath.Join(absPath, newName), os.ModePerm)
+			if err != nil {
+				data.SetInfo(err.Error(), 0)
+			} else {
+				data.SetCode(1)
+			}
+			return ctx.JSON(data)
 		case `delete`:
 			err = mgr.Remove(absPath)
 			if err != nil {

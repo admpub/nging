@@ -102,6 +102,10 @@ func (f *fileManager) Remove(absPath string) error {
 	return os.Remove(absPath)
 }
 
+func (f *fileManager) Mkdir(absPath string, mode os.FileMode) error {
+	return os.MkdirAll(absPath, mode)
+}
+
 func (f *fileManager) Rename(absPath string, newName string) (err error) {
 	if len(newName) > 0 {
 		err = os.Rename(absPath, filepath.Join(filepath.Dir(absPath), filepath.Base(newName)))
