@@ -28,12 +28,16 @@
 {{/Block}}
 
 {{Block "main"}}
-
+{{$path := Stored.Get "path"}}
 <div class="row">
 				<div class="col-md-12">
 					<div class="block-flat">
 						<div class="header">
 							<div class="btn-group">
+								<button type="button" id="mkdirBtn" class="btn btn-success" data-url="__BACKEND__/caddy/vhost_file?id={{Stored.data.Id}}&do=mkdir&path={{if $path}}{{$path}}/{{end}}" onclick="fileMkdir(this)">
+                                    <i class="fa fa-plus"></i>
+                                    {{"新建文件夹"|T}}
+                                </button>
 								<button type="button" id="uploadBtn" class="btn btn-primary">
                                     <i class="fa fa-upload"></i>
                                     {{"上传文件到当前目录"|T}}
@@ -61,7 +65,6 @@
 									</tr>
 								</thead>
 								<tbody class="no-border-y" id="tbody-content">
-                                    {{$path := Stored.Get "path"}}
                                     {{if $path}}
                                     <tr>
 										<td>
@@ -118,6 +121,7 @@
 {{Modal "__TMPL__/caddy/file_zip.yaml"}}
 {{Modal "__TMPL__/caddy/file_edit.yaml"}}
 {{Modal "__TMPL__/caddy/file_rename.yaml"}}
+{{Modal "__TMPL__/caddy/file_mkdir.yaml"}}
 <script type="text/javascript" src="__ASSETS__/js/dropzone/min/dropzone.min.js"></script>
 <script>
 function uploadURL(vhostId,currentPath){
@@ -217,6 +221,17 @@ function fileRename(obj,file,isDir) {
         $('#file-rename-input').val(file);
     }});
 }
+
+function fileMkdir(obj) {
+    var url=$(obj).data('url');
+    $('#file-mkdir-modal .modal-footer .btn-primary:last').data('url',url);
+    $('#file-mkdir-modal .modal-header h3').html('{{"新建文件夹"|T}}');
+    $('#file-mkdir-modal').niftyModal('show',{afterOpen:function(modal){
+        $('#file-mkdir-input').val('');
+        $('#file-mkdir-input').focus();
+    }});
+}
+
 function codeMirrorChangeMode(editor,val) {
   var m, mode, spec;
   if (m = /.+\.([^.]+)$/.exec(val)) {
@@ -270,6 +285,16 @@ $(function(){
             App.loading('hide');
             if(r.Code!=1)return App.message({title: '{{"系统消息"|T}}', text: r.Info},false);
             App.message({title: '{{"系统消息"|T}}', text: '{{"保存成功"|T}}'},false);
+            refreshList();
+        },'json');
+    });
+    $('#file-mkdir-modal .modal-footer .btn-primary:last').off().on('click',function(){
+        var url=$(this).data('url');
+        App.loading('show');
+        $.post(url,{name:$('#file-mkdir-input').val()},function(r){
+            App.loading('hide');
+            if(r.Code!=1)return App.message({title: '{{"系统消息"|T}}', text: r.Info},false);
+            App.message({title: '{{"系统消息"|T}}', text: '{{"创建成功"|T}}'},false);
             refreshList();
         },'json');
     });

@@ -312,7 +312,7 @@ func Client(ctx echo.Context) error {
 		q.Add(`user`, m.Username)
 		q.Add(`password`, m.Password)
 		q.Add(`url_prefix`, `term/client`)
-		return ctx.Redirect(`/public/assets/js/xterm/index.html?` + q.Encode())
+		return ctx.Redirect(`/public/assets/backend/js/xterm/index.html?` + q.Encode())
 		//return ctx.Redirect(handler.URLFor(`/term/client?`) + q.Encode())
 	}
 	return ctx.Render(`/term/client`, err)
