@@ -37,7 +37,7 @@ import (
 )
 
 var (
-	trackerURL         = `http://www.webx.top/product/script/nging/tracker.js`
+	trackerURL         = `//www.webx.top/product/script/nging/tracker.js`
 	productURL         = `http://www.webx.top/product/detail/nging`
 	licenseURL         = `http://www.webx.top/product/license/nging`
 	versionURL         = `http://www.webx.top/product/version/nging`
