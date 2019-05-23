@@ -42,13 +42,17 @@ import (
 func VhostIndex(ctx echo.Context) error {
 	m := model.NewVhost(ctx)
 	groupID := ctx.Formx(`groupId`).Uint()
-	cond := db.Cond{}
+	cond := db.Compounds{}
 	if groupID > 0 {
-		cond[`group_id`] = groupID
+		cond.AddKV(`group_id`, groupID)
+	}
+	q := ctx.Formx(`q`).String()
+	if len(q) > 0 {
+		cond.AddKV(`name`, db.Like(`%`+q+`%`))
 	}
 	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, nil, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
-	}, cond))
+	}, cond.And()))
 	ret := handler.Err(ctx, err)
 	rows := m.Objects()
 	gIds := []uint{}

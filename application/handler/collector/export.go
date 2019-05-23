@@ -38,14 +38,18 @@ var destTypeInputField = map[string]string{
 
 func Export(c echo.Context) error {
 	m := model.NewCollectorExport(c)
-	var cond []db.Compound
+	cond := db.Compounds{}
 	groupID := c.Formx(`groupId`).Uint()
 	if groupID > 0 {
-		cond = append(cond, db.Cond{`group_id`: groupID})
+		cond.AddKV(`group_id`, groupID)
+	}
+	q := c.Formx(`q`).String()
+	if len(q) > 0 {
+		cond.AddKV(`name`, db.Like(`%`+q+`%`))
 	}
 	_, err := handler.PagingWithLister(c, handler.NewLister(m, nil, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
-	}, db.And(cond...)))
+	}, cond.And()))
 	ret := handler.Err(c, err)
 	rows := m.Objects()
 	gIds := []uint{}

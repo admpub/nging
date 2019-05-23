@@ -66,3 +66,30 @@ func (k *KeysValues) Map() map[string]interface{} {
 	}
 	return data
 }
+
+type Compounds []Compound
+
+func (c *Compounds) AddKV(key, value interface{}) Compounds {
+	*c = append(*c, Cond{key: value})
+	return *c
+}
+
+func (c *Compounds) Set(compounds ...Compound) Compounds {
+	*c = compounds
+	return *c
+}
+
+func (c *Compounds) Add(compounds ...Compound) Compounds {
+	*c = append(*c, compounds...)
+	return *c
+}
+
+func (c *Compounds) And(compounds ...Compound) Compound {
+	c.Add(compounds...)
+	return And(*c...)
+}
+
+func (c *Compounds) Or(compounds ...Compound) Compound {
+	c.Add(compounds...)
+	return Or(*c...)
+}

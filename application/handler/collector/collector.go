@@ -68,14 +68,18 @@ func init() {
 func Rule(c echo.Context) error {
 	m := model.NewCollectorPage(c)
 	groupID := c.Formx(`groupId`).Uint()
-	cond := []db.Compound{db.Cond{`parent_id`: 0}}
+	cond := db.Compounds{db.Cond{`parent_id`: 0}}
 	if groupID > 0 {
-		cond = append(cond, db.Cond{`group_id`: groupID})
+		cond.AddKV(`group_id`, groupID)
+	}
+	q := c.Formx(`q`).String()
+	if len(q) > 0 {
+		cond.AddKV(`name`, db.Like(`%`+q+`%`))
 	}
 	page, size, totalRows, p := handler.PagingWithPagination(c)
 	cnt, err := m.List(nil, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
-	}, page, size, db.And(cond...))
+	}, page, size, cond.And())
 	ret := handler.Err(c, err)
 	if totalRows <= 0 {
 		totalRows = int(cnt())

@@ -34,13 +34,17 @@ import (
 func AccountIndex(ctx echo.Context) error {
 	groupId := ctx.Formx(`groupId`).Uint()
 	m := model.NewSshUser(ctx)
-	cond := db.Cond{}
+	cond := db.Compounds{}
 	if groupId > 0 {
-		cond[`group_id`] = groupId
+		cond.AddKV(`group_id`, groupId)
+	}
+	q := ctx.Formx(`q`).String()
+	if len(q) > 0 {
+		cond.AddKV(`name`, db.Like(`%`+q+`%`))
 	}
 	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, nil, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
-	}, cond))
+	}, cond.And()))
 	ret := handler.Err(ctx, err)
 	users := m.Objects()
 	gIds := []uint{}

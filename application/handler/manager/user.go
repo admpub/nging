@@ -31,20 +31,24 @@ import (
 )
 
 func User(ctx echo.Context) error {
-	username := ctx.Form(`username`)
+	username := ctx.Formx(`username`).String()
 	online := ctx.Form(`online`)
-	cond := db.Cond{}
+	cond := db.Compounds{}
 	if len(username) > 0 {
-		cond[`username`] = db.Like(username + `%`)
+		cond.AddKV(`username`, db.Like(username+`%`))
 	} else if len(ctx.Formx(`searchValue`).String()) > 0 {
-		cond[`id`] = ctx.Formx(`searchValue`).Uint64()
+		cond.AddKV(`id`, ctx.Formx(`searchValue`).Uint64())
 	} else if len(online) > 0 {
-		cond[`online`] = online
+		cond.AddKV(`online`, online)
+	}
+	q := ctx.Formx(`q`).String()
+	if len(q) > 0 {
+		cond.AddKV(`username`, db.Like(`%`+q+`%`))
 	}
 	m := model.NewUser(ctx)
 	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, nil, func(r db.Result) db.Result {
 		return r.Select(factory.Fields.SortedFieldLists(`user`, `password`, `salt`, `safe_pwd`)...).OrderBy(`-id`)
-	}, cond))
+	}, cond.And()))
 	ret := handler.Err(ctx, err)
 	ctx.Set(`listData`, m.Objects())
 	return ctx.Render(`/manager/user`, ret)

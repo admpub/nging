@@ -28,27 +28,31 @@ import (
 )
 
 func Verification(ctx echo.Context) error {
-	cond := db.Cond{}
+	cond := db.Compounds{}
 	sendStatus := ctx.Form(`sendStatus`)
 	sendTo := ctx.Form(`sendTo`)
 	usedStatus := ctx.Form(`usedStatus`)
+	q := ctx.Formx(`q`).String()
+	if len(q) > 0 {
+		cond.AddKV(`code`, q)
+	}
 	if len(sendStatus) > 0 {
-		cond[`b.status`] = sendStatus
+		cond.AddKV(`b.status`, sendStatus)
 	}
 	if len(sendTo) > 0 {
-		cond[`a.send_to`] = sendTo
+		cond.AddKV(`a.send_to`, sendTo)
 	}
 	if len(usedStatus) > 0 {
 		if usedStatus == `1` {
-			cond[`a.used`] = db.Gt(0)
+			cond.AddKV(`a.used`, db.Gt(0))
 		} else {
-			cond[`a.used`] = 0
+			cond.AddKV(`a.used`, 0)
 		}
 	}
 	m := model.NewVerification(ctx)
 	logM := model.NewSendingLog(ctx)
 	recv := []null.StringMap{}
-	pagination, err := handler.PagingWithSelectList(ctx, m.NewParam().SetRecv(&recv).SetArgs(cond).SetAlias(`a`).SetSelMW(func(r sqlbuilder.Selector) sqlbuilder.Selector {
+	pagination, err := handler.PagingWithSelectList(ctx, m.NewParam().SetRecv(&recv).SetArgs(cond.And()).SetAlias(`a`).SetSelMW(func(r sqlbuilder.Selector) sqlbuilder.Selector {
 		return r.OrderBy(`-a.id`)
 	}).SetCols(`a.*`, `a.created createdAt`, `b.sent_at`, `b.method`, `b.to`, `b.provider`, `b.result`, `b.status`, `b.retries`, `b.content`, `b.params`, `b.appointment_time`).AddJoin(`LEFT`, logM.Name_(), `b`, `b.source_type='code_verification' AND b.source_id=a.id`))
 	if err != nil {

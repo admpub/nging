@@ -54,9 +54,14 @@ func dateString2UnixString(k string, v []string) (string, []string) {
 
 func Invitation(ctx echo.Context) error {
 	m := model.NewInvitation(ctx)
+	cond := db.Compounds{}
+	q := ctx.Formx(`q`).String()
+	if len(q) > 0 {
+		cond.AddKV(`code`, q)
+	}
 	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, nil, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
-	}))
+	}, cond.And()))
 	ret := handler.Err(ctx, err)
 	ctx.Set(`listData`, m.Objects())
 	return ctx.Render(`/manager/invitation`, ret)

@@ -42,12 +42,16 @@ func AccountIndex(ctx echo.Context) error {
 	user := handler.User(ctx)
 	m := model.NewDbAccount(ctx)
 	page, size, totalRows, p := handler.PagingWithPagination(ctx)
-	cond := db.Cond{
-		`uid`: user.Id,
+	cond := db.Compounds{
+		db.Cond{`uid`: user.Id},
+	}
+	q := ctx.Formx(`q`).String()
+	if len(q) > 0 {
+		cond.AddKV(`name`, db.Like(`%`+q+`%`))
 	}
 	cnt, err := m.List(nil, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
-	}, page, size, cond)
+	}, page, size, cond.And())
 	if totalRows <= 0 {
 		totalRows = int(cnt())
 		p.SetRows(totalRows)
