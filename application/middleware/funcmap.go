@@ -38,6 +38,8 @@ import (
 	"github.com/webx-top/echo/subdomains"
 )
 
+var DefaultAvatarURL = `/public/assets/backend/images/user_128.png`
+
 func ErrorPageFunc(c echo.Context) error {
 	c.SetFunc(`URLFor`, subdomains.Default.URL)
 	c.SetFunc(`IsMessage`, common.IsMessage)
@@ -100,6 +102,15 @@ func FuncMap() echo.MiddlewareFunc {
 				roleList = roleM.ListByUser(user)
 				c.Set(`roleList`, roleList)
 			}
+			c.SetFunc(`Avatar`, func(avatar string, defaults ...string) string {
+				if len(avatar) > 0 {
+					return tplfunc.AddSuffix(avatar, `_200_200`)
+				}
+				if len(defaults) > 0 && len(defaults[0]) > 0 {
+					return defaults[0]
+				}
+				return DefaultAvatarURL
+			})
 			c.SetFunc(`Navigate`, func(side string) navigate.List {
 				switch side {
 				case `top`:

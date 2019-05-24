@@ -37,14 +37,17 @@ import (
 )
 
 const (
-	DefaultTemplateDir = `./template/backend`
-	DefaultAssetsDir   = `./public/assets`
+	DefaultTemplateDir   = `./template/backend`
+	DefaultAssetsDir     = `./public/assets`
+	DefaultAssetsURLPath = `/public/assets/backend`
 )
 
 var (
-	TemplateDir = DefaultTemplateDir //模板文件夹
-	AssetsDir   = DefaultAssetsDir   //素材文件夹
-	RendererDo  = func(driver.Driver) {}
+	TemplateDir      = DefaultTemplateDir //模板文件夹
+	AssetsDir        = DefaultAssetsDir   //素材文件夹
+	AssetsURLPath    = DefaultAssetsURLPath
+	DefaultAvatarURL = AssetsURLPath + `/images/user_128.png`
+	RendererDo       = func(driver.Driver) {}
 )
 
 func init() {
@@ -52,8 +55,9 @@ func init() {
 	echo.Set(`GlobalPrefix`, handler.GlobalPrefix)
 	event.OnStart(0, func() {
 		handler.GlobalPrefix = echo.String(`GlobalPrefix`)
-		handler.BackendPrefix = echo.String(`BackendPrefix`, `/admin`)
+		handler.BackendPrefix = echo.String(`BackendPrefix`)
 		handler.FrontendPrefix = echo.String(`FrontendPrefix`)
+		ngingMW.DefaultAvatarURL = DefaultAssetsURLPath
 		e := handler.Echo()
 		e.SetPrefix(handler.GlobalPrefix)
 		handler.SetRootGroup(handler.BackendPrefix)
@@ -121,7 +125,7 @@ func init() {
 			TmplDir: TemplateDir,
 			Engine:  `standard`,
 			ParseStrings: map[string]string{
-				`__ASSETS__`: `/public/assets/backend`,
+				`__ASSETS__`: AssetsURLPath,
 				`__TMPL__`:   TemplateDir,
 			},
 			ParseStringFuncs: map[string]func() string{
