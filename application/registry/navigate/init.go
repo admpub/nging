@@ -31,6 +31,21 @@ var TopNavigate = List{
 				Name:          `IP归属地`,
 				Action:        `ip`,
 			},
+			{
+				DisplayOnMenu: true,
+				Name:          `Base64解码`,
+				Action:        `base64`,
+			},
+			{
+				DisplayOnMenu: true,
+				Name:          `URL解码`,
+				Action:        `url`,
+			},
+			{
+				DisplayOnMenu: true,
+				Name:          `时间戳转换`,
+				Action:        `timestamp`,
+			},
 		},
 	},
 	{

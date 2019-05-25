@@ -29,5 +29,8 @@ func init() {
 		dictFile = echo.Wd() + echo.FilePathSeparator + `data` + echo.FilePathSeparator + `ip2region` + echo.FilePathSeparator + `ip2region.db`
 
 		g.Route(`GET,POST`, `/ip`, IP2Region)
+		g.Route(`GET,POST`, `/base64`, Base64)
+		g.Route(`GET,POST`, `/url`, URL)
+		g.Route(`GET,POST`, `/timestamp`, Timestamp)
 	})
 }

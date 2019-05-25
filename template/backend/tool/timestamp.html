@@ -1,9 +1,9 @@
 {{Extend "layout"}}
-{{Block "title"}}{{"IP查询"|T}}{{/Block}}
+{{Block "title"}}{{Stored.title}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
 <li>{{"工具箱"|T}}</li>
-<li class="active">{{"IP查询"|T}}</li>
+<li class="active">{{Stored.title}}</li>
 {{/Block}}
 {{Block "main"}}
 
@@ -11,14 +11,27 @@
     <div class="col-md-12">
         <div class="block-flat">
           <div class="header">							
-            <h3>{{"IP查询"|T}}</h3>
+            <h3>{{Stored.title}}</h3>
           </div>
           <div class="content">
               <form class="form-horizontal group-border-dashed" method="POST" id="search-form" action="">
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"IP"|T}}</label>
+                <label class="col-sm-2 control-label">{{"内容"|T}}</label>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" name="ip" placeholder="{{"输入IP地址"|T}}" required value="{{Form "ip"}}" pattern="^[\d]+\.[\d]+\.[\d]+\.[\d]+$">
+                    <input type="text" class="form-control" name="text" placeholder="{{"输入内容"|T}}" value="{{Form "text" (Now.Format "2006-01-02 15:04:05")}}" required>
+                    <div class="help-block">{{"如果是转为时间戳，请输入“2006-01-02 15:04:05”这样的格式；解析时间戳的时候请输入时间戳"|T}}</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"操作类型"|T}}</label>
+                <div class="col-sm-8">
+                    {{$v := Form "type"}}
+                    <div class="radio radio-primary radio-inline">
+                        <input type="radio" value="encode" name="type"{{if or (eq $v "encode") (eq $v "")}} checked{{end}} id="type-0"> <label for="type-0">{{"转为时间戳"|T}}</label>
+                    </div>
+                    <div class="radio radio-primary radio-inline">
+                        <input type="radio" value="decode" name="type"{{if eq $v "decode"}} checked{{end}} id="type-1"> <label for="type-1">{{"解析时间戳"|T}}</label>
+                      </div>
                 </div>
               </div>
               <div class="form-group form-submit-group">
@@ -30,7 +43,7 @@
             <div class="form-group">
               <label class="col-sm-2 control-label">{{"查询结果"|T}}</label>
               <div class="col-sm-8">
-                  <p><pre id="search-result">{{if .}}{{JSONEncode . " "}}{{else}}{{"无结果"|T}}{{end}}</pre></p>
+                  <p><pre id="search-result">{{if .}}{{.}}{{else}}{{"无结果"|T}}{{end}}</pre></p>
               </div>
             </div>
             </form>
@@ -46,8 +59,7 @@ $(function(){
         e.preventDefault();
         $.post(window.location.href,$(this).serialize(),function(r){
             if(r.Code==1){
-                $('#search-result').text(JSON.stringify(r.Data,null," "));
-                //App.message({title: '{{"查询结果"|T}}', text: '', class_name: "success"});
+                $('#search-result').text(r.Data);
                 return;
             }
             App.message({title: '{{"查询结果"|T}}', text: r.Info, class_name: "danger"});
