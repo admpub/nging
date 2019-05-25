@@ -136,6 +136,7 @@ If you have already purchased a license, please place the ` + license.FileName()
 			config.Version.VString(),
 			now.Format("Monday, 02 Jan 2006"))
 	}
+	subdomains.Default.SetDebug(config.DefaultConfig.Debug)
 	subdomains.Default.Run(standard.NewWithConfig(c))
 	return c.Listener.Close()
 }
