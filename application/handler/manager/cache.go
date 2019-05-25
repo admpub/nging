@@ -22,7 +22,6 @@ import (
 	"github.com/admpub/nging/application/library/modal"
 	"github.com/admpub/nging/application/library/notice"
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/handler/mvc/events"
 )
 
 func ClearCache(ctx echo.Context) error {
@@ -30,6 +29,6 @@ func ClearCache(ctx echo.Context) error {
 		return err
 	}
 	notice.Clear()
-	events.Event(`clearCache`, func(_ bool) {})
+	ctx.Fire(`clearCache`, -1)
 	return ctx.String(ctx.T(`已经清理完毕`))
 }

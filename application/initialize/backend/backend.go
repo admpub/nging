@@ -21,12 +21,15 @@ package backend
 import (
 	"net/http"
 
+	"github.com/admpub/events"
+	"github.com/admpub/log"
+
+	"github.com/admpub/events/emitter"
 	"github.com/admpub/nging/application/cmd/event"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	ngingMW "github.com/admpub/nging/application/middleware"
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/handler/mvc/events"
 	"github.com/webx-top/echo/handler/pprof"
 	"github.com/webx-top/echo/middleware"
 	"github.com/webx-top/echo/middleware/language"
@@ -139,10 +142,11 @@ func init() {
 		renderOptions.AddFuncSetter(ngingMW.ErrorPageFunc)
 		renderOptions.ApplyTo(e, event.BackendTmplMgr)
 		RendererDo(renderOptions.Renderer())
-		events.AddEvent(`clearCache`, func(next func(r bool), args ...interface{}) {
+		emitter.DefaultCondEmitter.On(`clearCache`, events.Callback(func(_ events.Event) error {
+			log.Debug(`clear: Backend Template Object Cache`)
 			renderOptions.Renderer().ClearCache()
-			next(true)
-		})
+			return nil
+		}))
 		e.Get(`/favicon.ico`, event.FaviconHandler)
 		if event.Develop {
 			pprof.Wrap(e)
