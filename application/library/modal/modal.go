@@ -35,6 +35,9 @@ var (
 	DefaultModal = Modal{
 		ExtButtons: []Button{},
 	}
+	PathFixer = func(conf string) string {
+		return conf
+	}
 	ReadConfigFile = func(file string) ([]byte, error) {
 		return ioutil.ReadFile(file)
 	}
@@ -67,6 +70,7 @@ type Modal struct {
 func UnmarshalFile(confile string) (Modal, error) {
 	mutext.Lock()
 	defer mutext.Unlock()
+	confile = PathFixer(confile)
 	ov, ok := modalConfig[confile]
 	if ok {
 		return ov, nil
