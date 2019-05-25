@@ -41,6 +41,13 @@ var (
 	ReadConfigFile = func(file string) ([]byte, error) {
 		return ioutil.ReadFile(file)
 	}
+	WriteConfigFile = func(file string, b []byte) error {
+		err := os.MkdirAll(filepath.Dir(file), os.ModePerm)
+		if err != nil {
+			return err
+		}
+		return ioutil.WriteFile(file, b, os.ModePerm)
+	}
 	mutext = &sync.RWMutex{}
 )
 
@@ -84,9 +91,8 @@ func UnmarshalFile(confile string) (Modal, error) {
 			var b []byte
 			b, err = confl.Marshal(DefaultModal)
 			if err == nil {
-				err = os.MkdirAll(filepath.Dir(confile), os.ModePerm)
-				if err == nil {
-					err = ioutil.WriteFile(confile, b, os.ModePerm)
+				if WriteConfigFile != nil {
+					err = WriteConfigFile(confile, b)
 				}
 			}
 		}
