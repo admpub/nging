@@ -20,7 +20,10 @@ var (
 func init() {
 	executableFolder, e := osext.ExecutableFolder()
 	if nil != e {
-		panic(e)
+		log.Println(e)
+		if len(os.Args) > 0 {
+			executableFolder = filepath.Dir(os.Args[0])
+		}
 	}
 	ExecutableFolder = executableFolder
 }

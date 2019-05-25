@@ -588,28 +588,28 @@
 			"revisionTime": "2019-01-23T14:03:48Z"
 		},
 		{
-			"checksumSHA1": "vUH3YVRHZ67JjfTZQdpzAFPGDiw=",
+			"checksumSHA1": "9CQxniDK0Jlk8IpclZEgumiN9Eg=",
 			"path": "github.com/admpub/web-terminal/config",
-			"revision": "514d9157bfaec32df61ea6f0a51b71b358b0f9d5",
-			"revisionTime": "2018-09-04T16:43:22Z"
+			"revision": "f49a350ad4f1c79cc9f25d5186f91f402a3231d2",
+			"revisionTime": "2019-05-25T16:36:51Z"
 		},
 		{
 			"checksumSHA1": "NCu+MTCqtsHkdl9nooH/S+KAo/E=",
 			"path": "github.com/admpub/web-terminal/handler",
-			"revision": "514d9157bfaec32df61ea6f0a51b71b358b0f9d5",
-			"revisionTime": "2018-09-04T16:43:22Z"
+			"revision": "f49a350ad4f1c79cc9f25d5186f91f402a3231d2",
+			"revisionTime": "2019-05-25T16:36:51Z"
 		},
 		{
 			"checksumSHA1": "KtY9t7FVIgCnC09JqN041I+yvBI=",
 			"path": "github.com/admpub/web-terminal/library/ssh",
-			"revision": "514d9157bfaec32df61ea6f0a51b71b358b0f9d5",
-			"revisionTime": "2018-09-04T16:43:22Z"
+			"revision": "f49a350ad4f1c79cc9f25d5186f91f402a3231d2",
+			"revisionTime": "2019-05-25T16:36:51Z"
 		},
 		{
 			"checksumSHA1": "aPgOt4cLrVts+YpOAXWS63nJ3zY=",
 			"path": "github.com/admpub/web-terminal/library/telnet",
-			"revision": "514d9157bfaec32df61ea6f0a51b71b358b0f9d5",
-			"revisionTime": "2018-09-04T16:43:22Z"
+			"revision": "f49a350ad4f1c79cc9f25d5186f91f402a3231d2",
+			"revisionTime": "2019-05-25T16:36:51Z"
 		},
 		{
 			"checksumSHA1": "DzHFKgRizNrqg22lhWHsvaZxuvo=",
