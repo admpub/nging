@@ -848,7 +848,14 @@ var App = function () {
     switchLang:function(lang){
       var url=window.location.href;
       url=url.replace(/[\?&]lang=[^&]*(&|$)/,'');
-      var sep=url.indexOf(url,'?')==-1?'?':'&';
+      var pos=url.indexOf(url,'?'),sep='?',q='';
+      if(pos>=0){
+	sep='&';
+	q=url.substring(pos);
+	url=url.substring(0,pos);
+	q=q.replace(/([\?&])lang=[^&]*(&|$)/,'$1').replace(/[&]$/,'');
+	url=url+q;
+      }
       url+=sep+'lang='+lang;
       window.location=url;
     }
