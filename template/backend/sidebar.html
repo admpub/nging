@@ -20,7 +20,7 @@
             </div>
             <ul class="cl-vnavigation" id="leftnav">
               {{- range $key, $nav := $leftNavigate -}}
-              {{- if $nav.DisplayOnMenu -}}
+              {{- if and $nav $nav.DisplayOnMenu -}}
               <li>
                 <a href="javascript:;">
                   <i class="fa fa-{{$nav.Icon}} nav-icon"></i>

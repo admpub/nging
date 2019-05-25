@@ -1,5 +1,6 @@
 {{Strip}}
 {{range $key, $nav := Stored.leftNavigate}}
+{{if $nav}}
 <fieldset class="fieldset">
   <legend>
     <span class="checkbox checkbox-success">
@@ -19,7 +20,9 @@
   </ul>
 </fieldset>
 {{end}}
+{{end}}
 {{range $key, $nav := Stored.topNavigate}}
+{{if $nav}}
 <fieldset class="fieldset">
   <legend>
     <span class="checkbox checkbox-success">
@@ -38,5 +41,6 @@
   {{end}}
   </ul>
 </fieldset>
+{{end}}
 {{end}}
 {{/Strip}}

@@ -1,4 +1,64 @@
     <ul class="nav navbar-nav navbar-right not-nav">
+      <li class="button dropdown">
+        <a href="javascript:;" class="dropdown-toggle ttip" data-toggle="dropdown" title="{{"赞助我们"|T}}" data-placement="bottom">
+          <i class="fa fa-smile-o"></i>
+          <!-- <span class="bubble">2</span> -->
+        </a>
+        <ul class="dropdown-menu">
+          <li>
+            <div><!--  class="nano nscroller" -->
+              <div class="content">
+                <ul>
+                  <li>
+                    <a href="__ASSETS__/donation/alipay.jpg" target="_blank">
+                      <i class="fa iconfont icon-zhifubao1 info"></i>
+                      <b>{{"支付宝"|T}}</b> {{"付款"|T}}
+                    </a>
+                  </li>
+                  <li>
+                    <a href="__ASSETS__/donation/wechat_pay.png" target="_blank">
+                      <i class="fa fa-wechat info"></i>
+                      <b>{{"微信"|T}}</b> {{"付款"|T}}
+                    </a>
+                  </li>
+                  <li>
+                    <a href="__BACKEND__/donation" target="_blank">
+                      <i class="fa fa-bitcoin info"></i>
+                      <b>{{"比特币"|T}}</b> {{"付款"|T}}
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <!-- <ul class="foot"><li><a href="#">View all activity </a></li></ul> -->
+          </li>
+        </ul>
+      </li>
+      <li class="button dropdown">
+        <a href="javascript:;" class="dropdown-toggle ttip" data-toggle="dropdown" title="{{"Languages"|T}}" data-placement="bottom">
+          <i class="fa fa-globe"></i>
+          <!-- <span class="bubble">2</span> -->
+        </a>
+        <ul class="dropdown-menu">
+          <li>
+            <div><!--  class="nano nscroller" -->
+              <div class="content">
+                <ul>
+                  {{range $k, $v := Languages}}
+                  <li>
+                    <a href="?lang={{$v}}">
+                      <i class="fa {{if eq $v Lang}}fa-check-square{{else}}fa-square{{end}} info"></i>
+                      <b>{{$v}}</b>
+                    </a>
+                  </li>
+                  {{end}}
+                </ul>
+              </div>
+            </div>
+            <!-- <ul class="foot"><li><a href="#">View all activity </a></li></ul> -->
+          </li>
+        </ul>
+      </li>
       <li class="button">
         <a href="https://github.com/admpub/nging" target="_blank" data-toggle="tooltip" title="{{"程序源码"|T}}" data-placement="bottom"><i class="fa fa-code"></i></a>
       </li>

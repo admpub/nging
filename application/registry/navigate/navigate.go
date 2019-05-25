@@ -30,3 +30,67 @@ type Item struct {
 
 //List 操作列表
 type List []*Item
+
+func (a *List) Remove(index int) List {
+	if index < 0 {
+		*a = (*a)[0:0]
+		return *a
+	}
+	size := len(*a)
+	if size > index {
+		if size > index+1 {
+			*a = append((*a)[0:index], (*a)[index+1:]...)
+		} else {
+			*a = (*a)[0:index]
+		}
+	}
+	return *a
+}
+
+func (a *List) Set(index int, list ...*Item) List {
+	if len(list) == 0 {
+		return *a
+	}
+	if index < 0 {
+		*a = append(*a, list...)
+		return *a
+	}
+	size := len(*a)
+	if size > index {
+		(*a)[index] = list[0]
+		if len(list) > 1 {
+			a.Set(index+1, list[1:]...)
+		}
+		return *a
+	}
+	for start := size; start < index; start++ {
+		*a = append(*a, nil)
+	}
+	*a = append(*a, list...)
+	return *a
+}
+
+//Add 添加列表项
+func (a *List) Add(index int, list ...*Item) List {
+	if len(list) == 0 {
+		return *a
+	}
+	if index < 0 {
+		*a = append(*a, list...)
+		return *a
+	}
+	size := len(*a)
+	if size > index {
+		list = append(list, (*a)[index])
+		(*a)[index] = list[0]
+		if len(list) > 1 {
+			a.Add(index+1, list[1:]...)
+		}
+		return *a
+	}
+	for start := size; start < index; start++ {
+		*a = append(*a, nil)
+	}
+	*a = append(*a, list...)
+	return *a
+}
