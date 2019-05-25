@@ -24,6 +24,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/admpub/nging/application/initialize/backend"
+
 	assetfs "github.com/admpub/go-bindata-assetfs"
 	"github.com/admpub/nging/application/cmd/event"
 	"github.com/admpub/nging/application/library/modal"
@@ -70,7 +72,7 @@ func Initialize() {
 	event.BackendTmplMgr = bindata.NewTmplManager(BackendTmplAssetFS)
 	event.FrontendTmplMgr = bindata.NewTmplManager(FrontendTmplAssetFS)
 	modal.ReadConfigFile = func(file string) ([]byte, error) {
-		file = strings.TrimPrefix(file, `./template/backend`)
+		file = strings.TrimPrefix(file, backend.TemplateDir)
 		return event.BackendTmplMgr.GetTemplate(file)
 	}
 	event.LangFSFunc = LanguageAssetFSFunc
