@@ -61,9 +61,6 @@ func init() {
 		e := handler.Echo()
 		e.SetPrefix(handler.GlobalPrefix)
 		handler.SetRootGroup(handler.BackendPrefix)
-		if event.Develop {
-			e.RouteDebug = true
-		}
 		subdomains.Default.Default = `backend`
 		domainName := subdomains.Default.Default
 		if len(config.DefaultCLIConfig.BackendDomain) > 0 {
