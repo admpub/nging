@@ -22,34 +22,6 @@ package navigate
 var TopNavigate = List{
 	{
 		DisplayOnMenu: true,
-		Name:          `工具箱`,
-		Action:        `tool`,
-		Icon:          `suitcase`,
-		Children: List{
-			{
-				DisplayOnMenu: true,
-				Name:          `IP归属地`,
-				Action:        `ip`,
-			},
-			{
-				DisplayOnMenu: true,
-				Name:          `Base64解码`,
-				Action:        `base64`,
-			},
-			{
-				DisplayOnMenu: true,
-				Name:          `URL解码`,
-				Action:        `url`,
-			},
-			{
-				DisplayOnMenu: true,
-				Name:          `时间戳转换`,
-				Action:        `timestamp`,
-			},
-		},
-	},
-	{
-		DisplayOnMenu: true,
 		Name:          `设置`,
 		Action:        `manager`,
 		Icon:          `gear`,
@@ -161,6 +133,34 @@ var TopNavigate = List{
 				DisplayOnMenu: false,
 				Name:          `上传图片`,
 				Action:        `upload/:type`,
+			},
+		},
+	},
+	{
+		DisplayOnMenu: true,
+		Name:          `工具箱`,
+		Action:        `tool`,
+		Icon:          `suitcase`,
+		Children: List{
+			{
+				DisplayOnMenu: true,
+				Name:          `IP归属地`,
+				Action:        `ip`,
+			},
+			{
+				DisplayOnMenu: true,
+				Name:          `Base64解码`,
+				Action:        `base64`,
+			},
+			{
+				DisplayOnMenu: true,
+				Name:          `URL解码`,
+				Action:        `url`,
+			},
+			{
+				DisplayOnMenu: true,
+				Name:          `时间戳转换`,
+				Action:        `timestamp`,
 			},
 		},
 	},
