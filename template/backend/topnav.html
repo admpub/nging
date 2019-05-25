@@ -52,7 +52,7 @@
             </a>
             <ul class="dropdown-menu from-top">
               {{range $k, $c := $nav.Children}}
-              {{if $c.DisplayOnMenu}}
+              {{if and $c $c.DisplayOnMenu}}
               <li>
                 <a{{if eq $c.Target "ajax"}} href="javascript:;" data-ajax-url="__BACKEND__/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{else}} href="__BACKEND__/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if ne $c.Target "redirect"}} data-pjax="#main-container" data-keepjs="true" data-marknav="top"{{end}}{{end}}>
                 {{if eq $c.Icon "plus"}}
