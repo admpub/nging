@@ -34,8 +34,8 @@
           <div class="step-content">
             <form class="form-horizontal" action="" parsley-validate novalidate method="POST" id="form-setup">
               <div class="step-pane active" id="step1">
-                <div class="form-group no-padding">
-                  <div class="col-sm-7">
+                <div class="form-group no-padding no-margin-top">
+                  <div class="col-sm-12">
                     <h3 class="hthin">{{"数据库信息"|T}}</h3>
                   </div>
                 </div>
@@ -101,8 +101,8 @@
                 </div>
               </div>
               <div class="step-pane" id="step2">
-                <div class="form-group no-padding">
-                  <div class="col-sm-7">
+                <div class="form-group no-padding no-margin-top">
+                  <div class="col-sm-12">
                     <h3 class="hthin">{{"管理员信息"|T}}</h3>
                   </div>
                 </div>
@@ -214,6 +214,9 @@ function fetchProgress(){
 	},1000);
 }
 $(function(){
+	$('#switch-language').on('click',function(){
+		$(this).parent('div').toggleClass('open');
+	});
 	App.wizard();
 	$('#database-type').on('change',function(){
 		var dbName=$('#database-name').val();
