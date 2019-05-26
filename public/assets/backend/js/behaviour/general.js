@@ -845,19 +845,26 @@ var App = function () {
     reportBug:function(url){
 	    $.post(url,{"panic":$('#panic-content').html(),"url":window.location.href},function(r){},'json');
     },
+    replaceURLParam:function(name,value,url){
+      if(url==null) url=window.location.href;
+      value=encodeURIComponent(value);
+      var pos=String(url).indexOf('?');
+      if(pos<0) return url+'?'+name+'='+value;
+      var q=url.substring(pos),r=new RegExp('([\\?&]'+name+'=)[^&]*(&|$)');
+      if(!r.test(q)) return url+'&'+name+'='+value;
+      url=url.substring(0,pos);
+	    q=q.replace(r,'$1'+value+'$2');
+	    return url+q;
+    },
     switchLang:function(lang){
-      var url=window.location.href;
-      url=url.replace(/[\?&]lang=[^&]*(&|$)/,'');
-      var pos=url.indexOf(url,'?'),sep='?',q='';
-      if(pos>=0){
-	sep='&';
-	q=url.substring(pos);
-	url=url.substring(0,pos);
-	q=q.replace(/([\?&])lang=[^&]*(&|$)/,'$1').replace(/[&]$/,'');
-	url=url+q;
-      }
-      url+=sep+'lang='+lang;
-      window.location=url;
+      window.location=App.replaceURLParam('lang',lang);
+    },
+    extends:function(child,parent){
+      //parent.call(this);
+      var obj = function(){};
+      obj.prototype = parent.prototype;
+      child.prototype = new obj();
+      child.prototype.constructor = child;
     }
   };
  

@@ -30,8 +30,8 @@
  
 <body{{Block "bodyAttr"}}{{/Block}}>
 <div class="dropdown" style="position:fixed;z-index:99;">
-	<a href="#" class="dropdown-toggle" style="color:white" data-toggle="dropdown" id="dropdownMenu2" aria-haspopup="true" aria-expanded="true">{{"Languages"|T}} <b class="caret"></b></a>
-	<ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+	<a href="javascript:;" class="dropdown-toggle" style="color:white" data-toggle="dropdown">{{"Languages"|T}} <b class="caret"></b></a>
+	<ul class="dropdown-menu">
 		{{range $k, $v := Languages}}
 		<li{{if eq $v Lang}} class="active"{{end}}>
 			<a href="?lang={{$v}}" onclick="App.switchLang('{{$v}}');return false;">{{$v}}</a>
