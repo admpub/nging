@@ -24,14 +24,12 @@ var App = function () {
     });
     
     $(".wizard-next").click(function(e){
-      var id = $(this).data("wizard");
-      $(id).wizard('next');
+      $('.wizard-ux').wizard('next');
       e.preventDefault();
     });
     
     $(".wizard-previous").click(function(e){
-      var id = $(this).data("wizard");
-      $(id).wizard('previous');
+      $('.wizard-ux').wizard('previous');
       e.preventDefault();
     });
   };//End of wizard

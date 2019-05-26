@@ -3,8 +3,7 @@
 {{Block "description"}}{{"安装向导"|T}}{{/Block}}
 {{Block "title"}}{{"安装向导"|T}}{{/Block}}
 {{Block "head"}}
-<link href="__ASSETS__/js/fuelux/css/fuelux.css" rel="stylesheet">
-<link href="__ASSETS__/js/fuelux/css/fuelux-responsive.min.css" rel="stylesheet">
+<link href="__ASSETS__/js/fuelux/css/fuelux.min.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="__ASSETS__/js/jquery.nanoscroller/nanoscroller.css" />
 <link rel="stylesheet" type="text/css" href="__ASSETS__/js/bootstrap.slider/css/slider.css" />
 {{/Block}}
@@ -14,160 +13,206 @@
 
 	<div class="middle-login" style="top:30%">
 
-    <div class="wizard-row" style="position:static">
-      <div class="col-md-12 fuelux">
-		  
-        <div class="block-wizard">
-			<div class="header hd-block-flat" style="margin:0 -1px;border-radius:3px 3px 0 0">							
-				<h3 class="text-center"><img class="logo-img" src="__ASSETS__/images/logo.png" alt="logo"/>{{"安装Nging"|T}}</h3>
-			</div>
-          <div id="wizard1" class="wizard wizard-ux" style="margin:0 -1px">
-            <ul class="steps">
-              <li data-target="#step1" class="active">{{"第一步"|T}}<span class="chevron"></span></li>
-              <li data-target="#step2">{{"第二步"|T}}<span class="chevron"></span></li>
-            </ul>
-            <div class="actions">
-              <button type="button" class="btn btn-xs btn-prev btn-default"> <i class="icon-arrow-left"></i>{{"上一步"|T}}</button>
-              <button type="button" class="btn btn-xs btn-next btn-default" data-last="{{"完成"|T}}">{{"下一步"|T}}<i class="icon-arrow-right"></i></button>
-            </div>
-          </div>
-          <div class="step-content">
-            <form class="form-horizontal" action="" parsley-validate novalidate method="POST" id="form-setup">
-              <div class="step-pane active" id="step1">
-                <div class="form-group no-padding no-margin-top">
-                  <div class="col-sm-12">
-                    <h3 class="hthin">{{"数据库信息"|T}}</h3>
-                  </div>
-                </div>
+		<div class="wizard-row" style="position:static">
+			<div class="col-md-12 fuelux">
 
-							<div class="form-group">
-								<div class="col-sm-12">
-									<div class="input-group">
-										<span class="input-group-addon"><i class="fa fa-align-justify"></i></span>
-										<select name="type" id="database-type" parsley-trigger="change" parsley-error-container="#type-error" required title="{{"数据库类型"|T}}" class="form-control">
-											{{$type := Form "type"}}
-											{{range $k, $v := Stored.dbEngines}}
-											<option value="{{$v.K}}"{{if eq $type $v.K}} selected{{end}}>{{$v.V}}</option>
-											{{end}}
-										</select>
+				<div class="block-wizard">
+					<div class="header hd-block-flat" style="margin:0 -1px;border-radius:3px 3px 0 0">
+						<h3 class="text-center"><img class="logo-img" src="__ASSETS__/images/logo.png" alt="logo" />{{"安装Nging"|T}}
+						</h3>
+					</div>
+					<div id="wizard1" class="wizard wizard-ux" style="margin:0 -1px">
+						<div class="steps-container">
+							<ul class="steps">
+								<li data-step="1" class="active" data-toggle="tooltip" title="{{"数据库信息"|T}}">
+									<span class="badge badge-info">1</span>
+									<span class="chevron"></span>
+								</li>
+								<li data-step="2" data-toggle="tooltip" title="{{"管理员信息"|T}}">
+									<span class="badge">2</span>
+									<span class="chevron"></span>
+								</li>
+							</ul>
+						</div><!-- .steps-container -->
+						<div class="actions">
+							<button type="button" class="btn btn-xs btn-prev btn-default">
+								<i class="glyphicon glyphicon-arrow-left"></i>
+								{{"上一步"|T}}
+							</button>
+							<button type="button" class="btn btn-xs btn-next btn-default" data-last="{{"开始安装"|T}}">
+								{{"下一步"|T}}
+								<i class="glyphicon glyphicon-arrow-right" style="margin-left:5px"></i>
+							</button>
+						</div>
+						<form class="form-horizontal" action="" parsley-validate novalidate method="POST" id="form-setup">
+						<div class="step-content" style="padding:30px;padding-top:0">
+								<div class="step-pane active" data-step="1">
+									<div class="form-group no-padding no-margin-top">
+										<div class="col-sm-12">
+											<h3 class="hthin">1. {{"数据库信息"|T}}</h3>
+										</div>
 									</div>
-                  <div id="type-error"></div>
-								</div>
-							</div>
-							<div class="form-group">
-								<div class="col-sm-12">
-									<div class="input-group">
-										<span class="input-group-addon"><i class="fa fa-globe"></i></span>
-										<input type="text" name="host" id="database-host" parsley-trigger="change" parsley-error-container="#host-error" required data-toggle="tooltip" title="{{"主机地址"|T}}" placeholder="{{"主机地址"|T}}" class="form-control" value="{{(Form "host")|Default "127.0.0.1:3306"}}">
+									<div class="form-group">
+										<div class="col-sm-12">
+											<div class="input-group">
+												<span class="input-group-addon"><i class="fa fa-align-justify"></i></span>
+												<select name="type" id="database-type" parsley-trigger="change"
+													parsley-error-container="#type-error" required title="{{"数据库类型"|T}}" class="form-control">
+													{{$type := Form "type"}}
+													{{range $k, $v := Stored.dbEngines}}
+													<option value="{{$v.K}}" {{if eq $type $v.K}} selected{{end}}>{{$v.V}}</option>
+													{{end}}
+												</select>
+											</div>
+											<div id="type-error"></div>
+										</div>
 									</div>
-                  <div id="host-error"></div>
-								</div>
-							</div>
-							<div class="form-group">
-								<div class="col-sm-12">
-									<div class="input-group">
-										<span class="input-group-addon"><i class="fa fa-user"></i></span>
-										<input type="text" name="user" id="database-user" parsley-trigger="change" parsley-error-container="#user-error" required data-toggle="tooltip" title="{{"数据库登录名"|T}}" placeholder="{{"数据库登录名"|T}}" class="form-control" value="{{(Form "user")|Default "root"}}">
+									<div class="form-group">
+										<div class="col-sm-12">
+											<div class="input-group">
+												<span class="input-group-addon"><i class="fa fa-globe"></i></span>
+												<input type="text" name="host" id="database-host" parsley-trigger="change"
+													parsley-error-container="#host-error" required data-toggle="tooltip" title="{{"主机地址"|T}}"
+													placeholder="{{"主机地址"|T}}" class="form-control"
+													value="{{(Form "host")|Default "127.0.0.1:3306"}}">
+											</div>
+											<div id="host-error"></div>
+										</div>
 									</div>
-                  <div id="user-error"></div>
-								</div>
-							</div>
-							<div class="form-group">
-								<div class="col-sm-12">
-									<div class="input-group">
-										<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-										<input type="password" id="database-password" name="password" parsley-trigger="change" parsley-error-container="#password-error" data-toggle="tooltip" title="{{"数据库密码"|T}}" placeholder="{{"数据库密码"|T}}" class="form-control" value="{{Form "password"}}">
+									<div class="form-group">
+										<div class="col-sm-12">
+											<div class="input-group">
+												<span class="input-group-addon"><i class="fa fa-user"></i></span>
+												<input type="text" name="user" id="database-user" parsley-trigger="change"
+													parsley-error-container="#user-error" required data-toggle="tooltip" title="{{"数据库登录名"|T}}"
+													placeholder="{{"数据库登录名"|T}}" class="form-control" value="{{(Form "user")|Default "root"}}">
+											</div>
+											<div id="user-error"></div>
+										</div>
 									</div>
-                  <div id="password-error"></div>
-								</div>
-							</div>
-							<div class="form-group">
-								<div class="col-sm-12">
-									<div class="input-group">
-										<span class="input-group-addon"><i class="fa fa-folder"></i></span>
-										<input type="text" name="database" id="database-name" parsley-trigger="change" parsley-error-container="#database-error" required data-toggle="tooltip" title="{{"数据库名称"|T}}" placeholder="{{"数据库名称"|T}}" class="form-control" value="{{(Form "database")|Default "nging"}}">
+									<div class="form-group">
+										<div class="col-sm-12">
+											<div class="input-group">
+												<span class="input-group-addon"><i class="fa fa-lock"></i></span>
+												<input type="password" id="database-password" name="password" parsley-trigger="change"
+													parsley-error-container="#password-error" data-toggle="tooltip" title="{{"数据库密码"|T}}"
+													placeholder="{{"数据库密码"|T}}" class="form-control" value="{{Form "password"}}">
+											</div>
+											<div id="password-error"></div>
+										</div>
 									</div>
-                  <div id="database-error"></div>
-								</div>
-							</div>
-
-
-
-                <div class="form-group">
-                  <div class="col-sm-offset-2 col-sm-10">
-                    <button class="btn btn-default" type="reset">{{"取消"|T}}</button>
-                    <button data-wizard="#wizard1" class="btn btn-primary wizard-next" type="button">{{"下一步"|T}} <i class="fa fa-caret-right"></i></button>
-                  </div>
-                </div>
-              </div>
-              <div class="step-pane" id="step2">
-                <div class="form-group no-padding no-margin-top">
-                  <div class="col-sm-12">
-                    <h3 class="hthin">{{"管理员信息"|T}}</h3>
-                  </div>
-                </div>
-				
-
-							<div class="form-group">
-								<div class="col-sm-12">
-									<div class="input-group">
-										<span class="input-group-addon"><i class="fa fa-user"></i></span>
-										<input type="text" name="adminUser" parsley-trigger="change" parsley-error-container="#adminUser-error" required data-toggle="tooltip" title="{{"管理员用户名"|T}}" placeholder="{{"管理员用户名"|T}}" class="form-control" value="{{(Form "adminUser")|Default "admin"}}">
+									<div class="form-group">
+										<div class="col-sm-12">
+											<div class="input-group">
+												<span class="input-group-addon"><i class="fa fa-folder"></i></span>
+												<input type="text" name="database" id="database-name" parsley-trigger="change"
+													parsley-error-container="#database-error" required data-toggle="tooltip" title="{{"数据库名称"|T}}"
+													placeholder="{{"数据库名称"|T}}" class="form-control"
+													value="{{(Form "database")|Default "nging"}}">
+											</div>
+											<div id="database-error"></div>
+										</div>
 									</div>
-                  <div id="adminUser-error"></div>
-								</div>
-							</div>
-							<div class="form-group">
-								<div class="col-sm-12">
-									<div class="input-group">
-										<span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-										<input type="email" name="adminEmail" parsley-trigger="change" parsley-error-container="#adminEmail-error" required data-toggle="tooltip" title="{{"管理员Email"|T}}" placeholder="{{"管理员Email"|T}}" class="form-control" value="{{Form "adminEmail"}}">
+
+
+
+									<div class="form-group">
+										<div class="col-sm-12 text-center">
+											<button class="btn btn-default" type="reset">{{"取消"|T}}</button>
+											<button class="btn btn-primary wizard-next" type="button">
+												{{"下一步"|T}} 
+												<i class="fa fa-caret-right"></i>
+											</button>
+										</div>
 									</div>
-                  <div id="adminEmail-error"></div>
 								</div>
-							</div>
-							<div class="form-group">
-								<div class="col-sm-12">
-									<div class="input-group">
-										<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-										<input id="pass1" type="password" name="adminPass" parsley-trigger="change" parsley-error-container="#adminPass-error" required data-toggle="tooltip" title="{{"管理员密码"|T}}" placeholder="{{"管理员密码"|T}}" class="form-control" value="{{Form "adminPass"}}">
+								<div class="step-pane" data-step="2">
+									<div class="form-group no-padding no-margin-top">
+										<div class="col-sm-12">
+											<h3 class="hthin">2. {{"管理员信息"|T}}</h3>
+										</div>
 									</div>
-                  <div id="adminPass-error"></div>
-								</div>
-							</div>
-							<div class="form-group">
-								<div class="col-sm-12">
-									<div class="input-group">
-										<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-										<input type="password" name="confirmPass" parsley-equalto="#pass1" parsley-trigger="change" parsley-error-container="#confirmPass-error" required data-toggle="tooltip" title="{{"确认管理员密码"|T}}" placeholder="{{"确认管理员密码"|T}}" class="form-control" value="{{Form "confirmPass"}}">
+
+
+									<div class="form-group">
+										<div class="col-sm-12">
+											<div class="input-group">
+												<span class="input-group-addon"><i class="fa fa-user"></i></span>
+												<input type="text" name="adminUser" parsley-trigger="change"
+													parsley-error-container="#adminUser-error" required data-toggle="tooltip"
+													title="{{"管理员用户名"|T}}" placeholder="{{"管理员用户名"|T}}" class="form-control"
+													value="{{(Form "adminUser")|Default "admin"}}">
+											</div>
+											<div id="adminUser-error"></div>
+										</div>
 									</div>
-                  <div id="confirmPass-error"></div>
+									<div class="form-group">
+										<div class="col-sm-12">
+											<div class="input-group">
+												<span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+												<input type="email" name="adminEmail" parsley-trigger="change"
+													parsley-error-container="#adminEmail-error" required data-toggle="tooltip"
+													title="{{"管理员Email"|T}}" placeholder="{{"管理员Email"|T}}" class="form-control"
+													value="{{Form "adminEmail"}}">
+											</div>
+											<div id="adminEmail-error"></div>
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="col-sm-12">
+											<div class="input-group">
+												<span class="input-group-addon"><i class="fa fa-lock"></i></span>
+												<input id="pass1" type="password" name="adminPass" parsley-trigger="change"
+													parsley-error-container="#adminPass-error" required data-toggle="tooltip"
+													title="{{"管理员密码"|T}}" placeholder="{{"管理员密码"|T}}" class="form-control"
+													value="{{Form "adminPass"}}">
+											</div>
+											<div id="adminPass-error"></div>
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="col-sm-12">
+											<div class="input-group">
+												<span class="input-group-addon"><i class="fa fa-lock"></i></span>
+												<input type="password" name="confirmPass" parsley-equalto="#pass1" parsley-trigger="change"
+													parsley-error-container="#confirmPass-error" required data-toggle="tooltip"
+													title="{{"确认管理员密码"|T}}" placeholder="{{"确认管理员密码"|T}}" class="form-control"
+													value="{{Form "confirmPass"}}">
+											</div>
+											<div id="confirmPass-error"></div>
+										</div>
+									</div>
+
+
+
+
+									<div class="form-group">
+										<div class="col-sm-12 text-center">
+											<button type="button" class="btn btn-default wizard-previous">
+												<i class="fa fa-caret-left"></i> 
+												{{"上一步"|T}}
+											</button>
+											<button type="submit" class="btn btn-success">
+												<i class="fa fa-check"></i> 
+												{{"安装"|T}}
+											</button>
+										</div>
+									</div>
 								</div>
-							</div>
 
+								<div class="text-center">
+									<a href="https://github.com/admpub/nging" target="_blank">&copy; {{Now.Year}} {{Version}}</a>
+								</div>
+						</div><!-- .step-content -->
+					</form>
+					</div><!-- .wizard -->
+				</div><!-- .block-wizard -->
+			</div><!-- .fuelux -->
+		</div><!-- .wizard-row -->
 
+	</div><!-- .middle-login -->
 
-
-                <div class="form-group">
-                  <div class="col-sm-offset-2 col-sm-10">
-                    <button type="button" data-wizard="#wizard1" class="btn btn-default wizard-previous"><i class="fa fa-caret-left"></i> {{"上一步"|T}}</button>
-                    <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> {{"安装"|T}}</button>
-                  </div>
-                </div>
-              </div>
-             
-		<div class="text-center">
-			<a href="https://github.com/admpub/nging" target="_blank">&copy; {{Now.Year}} {{Version}}</a>
-		</div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-	</div>
-	
-</div>
+</div><!-- .login-container -->
 {{/Block}}
 {{Block "footer"}}
 <script type="text/template" id="progress-template">
@@ -181,91 +226,89 @@
 		</div>
 	</div>
 </script>
-<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/i18n/messages.{{(Replace Lang "-" "_" -1)|ToLower}}.js" charset="utf-8"></script>
+<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/i18n/messages.{{(Replace Lang "-" "_" -1)|ToLower}}.js"
+	charset="utf-8"></script>
 <script type="text/javascript" src="__ASSETS__/js/jquery.parsley/dist/parsley.min.js"></script>
-<script type="text/javascript" src="__ASSETS__/js/fuelux/loader.min.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/fuelux/js/fuelux.min.js"></script>
 <script type="text/javascript" src="__ASSETS__/js/behaviour/general.min.js"></script>
 <script type="text/javascript" src="__ASSETS__/js/bootstrap.slider/js/bootstrap-slider.min.js"></script>
 <script type="text/javascript">
-function fetchProgress(){
-	if($('#install-progress').length<1){
-	 $('body').append($('#progress-template').html());
-	 $(window).on('resize',function(){
-	 	$('#install-progress').css('height',$(document).height()+'px');
-	 }).trigger('resize');
+	function fetchProgress() {
+		if ($('#install-progress').length < 1) {
+			$('body').append($('#progress-template').html());
+			$(window).on('resize', function () {
+				$('#install-progress').css('height', $(document).height() + 'px');
+			}).trigger('resize');
+		}
+		var t = window.setInterval(function () {
+			if ($('#install-progress').length < 1) {
+				window.clearInterval(t);
+				return;
+			}
+			$.get('__BACKEND__/progress', {}, function (r) {
+				if (r.Code != 1) {
+					window.clearInterval(t);
+					$('#install-progress-bar').css('width', '100%').text('100%');
+					$('#install-progress').remove();
+					return;
+				}
+				var progress = (r.Data.Finished / r.Data.TotalSize) * 100;
+				if (progress >= 100) window.clearInterval(t);
+				var percent = progress.toFixed(2) + '%';
+				$('#install-progress-bar').css('width', percent).text(percent);
+			}, 'json');
+		}, 1000);
 	}
-	var t=window.setInterval(function(){
-		if($('#install-progress').length<1){
-				 window.clearInterval(t);
-				 return;
-		}
- 		$.get('__BACKEND__/progress',{},function(r){
-			 if(r.Code!=1){
-				 window.clearInterval(t);
-			 	$('#install-progress-bar').css('width','100%').text('100%');
-				$('#install-progress').remove();
-				 return;
-			 }
-			 var progress=(r.Data.Finished/r.Data.TotalSize)*100;
-			 if(progress>=100)window.clearInterval(t);
-			 var percent=progress.toFixed(2)+'%';
-			 $('#install-progress-bar').css('width',percent).text(percent);
- 		},'json');
-	},1000);
-}
-$(function(){
-	$('#switch-language').on('click',function(){
-		$(this).parent('div').toggleClass('open');
+	$(function () {
+		App.wizard();
+		$('#database-type').on('change', function () {
+			var dbName = $('#database-name').val();
+			switch ($(this).val()) {
+				case 'mysql':
+					var inputs = ['host', 'user', 'password', 'name'];
+					for (var i = 0; i < inputs.length; i++) {
+						$('#database-' + inputs[i]).parents('.form-group').show();
+					}
+					$('#database-name').val(dbName.replace(/\.db$/g, ''));
+					break;
+				case 'sqlite':
+					var inputs = ['host', 'user', 'password'];
+					for (var i = 0; i < inputs.length; i++) {
+						if ($('#database-' + inputs[i]).val() == '') $('#database-' + inputs[i]).val('none');
+						$('#database-' + inputs[i]).parents('.form-group').hide();
+					}
+					if (dbName == '') {
+						$('#database-name').val('nging.db');
+					} else {
+						$('#database-name').val(dbName.replace(/\.db$/g, '') + '.db');
+					}
+					break;
+			}
+		}).trigger('change');
+		{{if .}}
+		App.message({ title: '{{"系统消息"|T}}', text: "{{.}}" });
+		{{end}}
+		$('[data-toggle="tooltip"]').tooltip();
+		$('#form-setup').on('submit', function (e) {
+			e.preventDefault();
+			$.post(window.location.href, $(this).serializeArray(), function (r) {
+				if (r.Code != 1) {
+					if ($('#install-progress').length > 0) $('#install-progress').remove();
+					var pane = $('.parsley-error:first').parents('.step-pane');
+					pane.removeClass('active').addClass('active').siblings('.active').removeClass('active');
+					$('li[data-target="#' + pane.attr('id') + '"]').removeClass('active').addClass('active').siblings('.active').removeClass('active');
+					return App.message({ title: '{{"系统消息"|T}}', text: r.Info, class_name: 'error' });
+				}
+				$('#install-progress-summary').html('<i class="fa fa-smile-o"></i> ' + r.Info);
+				App.message({ title: '{{"系统消息"|T}}', text: r.Info, class_name: 'success' });
+				window.setTimeout(function () {
+					window.location = '__BACKEND__/';
+				}, 2000);
+			}, 'json');
+			fetchProgress();
+			return false;
+		});
 	});
-	App.wizard();
-	$('#database-type').on('change',function(){
-		var dbName=$('#database-name').val();
-		switch($(this).val()){
-			case 'mysql':
-				var inputs=['host','user','password','name'];
-				for(var i=0;i<inputs.length;i++){
-					$('#database-'+inputs[i]).parents('.form-group').show();
-				}
-				$('#database-name').val(dbName.replace(/\.db$/g,''));
-			break;
-			case 'sqlite':
-				var inputs=['host','user','password'];
-				for(var i=0;i<inputs.length;i++){
-					if($('#database-'+inputs[i]).val()=='')$('#database-'+inputs[i]).val('none');
-					$('#database-'+inputs[i]).parents('.form-group').hide();
-				}
-				if(dbName==''){
-					$('#database-name').val('nging.db');
-				}else{
-					$('#database-name').val(dbName.replace(/\.db$/g,'')+'.db');
-				}
-			break;
-		}
-	}).trigger('change');
-{{if .}}
-App.message({title: '{{"系统消息"|T}}', text: "{{.}}"});
-{{end}}
- $('[data-toggle="tooltip"]').tooltip();
- $('#form-setup').on('submit',function(e){
-	 e.preventDefault();
-	 $.post(window.location.href,$(this).serializeArray(),function(r){
-		 if(r.Code!=1){
-			 if($('#install-progress').length>0) $('#install-progress').remove();
-			 var pane=$('.parsley-error:first').parents('.step-pane');
-			 pane.removeClass('active').addClass('active').siblings('.active').removeClass('active');
-			 $('li[data-target="#'+pane.attr('id')+'"]').removeClass('active').addClass('active').siblings('.active').removeClass('active');
-			 return App.message({title:'{{"系统消息"|T}}', text:r.Info, class_name:'error'});
-		 }
-		 $('#install-progress-summary').html('<i class="fa fa-smile-o"></i> '+r.Info);
-		 App.message({title:'{{"系统消息"|T}}', text:r.Info, class_name:'success'});
-		 window.setTimeout(function(){
-			 window.location='__BACKEND__/';
-		 },2000);
-	 },'json');
-	 fetchProgress();
-	 return false;
- });
-});
 </script>
 {{/Block}}
 {{/Strip}}
