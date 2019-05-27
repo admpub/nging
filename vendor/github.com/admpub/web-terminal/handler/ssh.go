@@ -48,11 +48,12 @@ func SSHShell(ws *websocket.Conn) {
 	if "true" == strings.ToLower(ParamGet(ctx, "debug")) {
 		debug = true
 	}
-
+	charset := ParamGet(ctx, "charset")
 	// Dial code is taken from the ssh package example
 	account := &sshx.AccountConfig{
 		User:     user,
 		Password: pwd,
+		Charset:  charset,
 	}
 	if privKey := ParamGet(ctx, "privateKey"); len(privKey) > 0 {
 		account.PrivateKey = []byte(privKey)
@@ -91,11 +92,11 @@ func SSHShell(ws *websocket.Conn) {
 		return
 	}
 
-	var combinedOut io.Writer = ws
+	combinedOut := decodeBy(account.Charset, ws)
 	if debug {
 		dumpOut, err = os.OpenFile(config.Default.LogDir+hostname+".dump_ssh_out.txt", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
 		if nil == err {
-			combinedOut = io.MultiWriter(dumpOut, ws)
+			combinedOut = io.MultiWriter(dumpOut, decodeBy(account.Charset, ws))
 		}
 
 		dumpIn, err = os.OpenFile(config.Default.LogDir+hostname+".dump_ssh_in.txt", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
@@ -139,7 +140,7 @@ func SSHExec(ws *websocket.Conn) {
 	if "true" == strings.ToLower(ParamGet(ctx, "debug")) {
 		debug = true
 	}
-
+	charset := ParamGet(ctx, "charset")
 	cmd := ParamGet(ctx, "cmd")
 	cmdAlias := ParamGet(ctx, "dump_file")
 	if 0 == len(cmdAlias) {
@@ -150,6 +151,7 @@ func SSHExec(ws *websocket.Conn) {
 	account := &sshx.AccountConfig{
 		User:     user,
 		Password: pwd,
+		Charset:  charset,
 	}
 	if privKey := ParamGet(ctx, "privateKey"); len(privKey) > 0 {
 		account.PrivateKey = []byte(privKey)
@@ -176,12 +178,12 @@ func SSHExec(ws *websocket.Conn) {
 	session := sshClient.Session
 	defer sshClient.Close()
 
-	var combinedOut io.Writer = ws
+	combinedOut := decodeBy(account.Charset, ws)
 	if debug {
 		dumpOut, err = os.OpenFile(config.Default.LogDir+hostname+"_"+cmdAlias+".dump_ssh_out.txt", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
 		if nil == err {
 			fmt.Println("log to file", config.Default.LogDir+hostname+"_"+cmdAlias+".dump_ssh_out.txt")
-			combinedOut = io.MultiWriter(dumpOut, ws)
+			combinedOut = io.MultiWriter(dumpOut, decodeBy(account.Charset, ws))
 		} else {
 			fmt.Println("failed to open log file,", err)
 		}

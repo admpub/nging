@@ -3,9 +3,11 @@ package telnet
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"net"
+	"strconv"
 	"sync/atomic"
 	"time"
 	"unicode"
@@ -210,6 +212,45 @@ func (c *Conn) cmd(cmd byte) error {
 	case cmdGA:
 		return nil
 	case cmdDo, cmdDont, cmdWill, cmdWont:
+	case cmdSB:
+
+		var data []byte
+		o, err := c.r.ReadByte()
+		if err != nil {
+			return err
+		}
+		for {
+			char, err := c.r.ReadByte()
+			if err != nil {
+				return errors.New("read IAC SE of IAC SB '" + strconv.FormatInt(int64(char), 10) + "' fail, " + err.Error())
+			}
+			if char != cmdIAC {
+				data = append(data, char)
+				continue
+			}
+
+			char, err = c.r.ReadByte()
+			if err != nil {
+				return errors.New("read IAC SE of IAC SB '" + strconv.FormatInt(int64(char), 10) + "' fail, " + err.Error())
+			}
+
+			if char == cmdSE {
+				break
+			}
+
+			data = append(data, cmdIAC)
+			data = append(data, char)
+		}
+
+		switch o {
+		case optWndType:
+			if len(data) == 1 && data[0] == 1 {
+				// IAC SB TERMINAL-TYPE IS xterm IAC SE
+				_, err = c.Conn.Write([]byte{cmdIAC, cmdSB, optWndType, 0, 'x', 't', 'e', 'r', 'm', cmdIAC, cmdSE})
+				return err
+			}
+		}
+		return nil
 	default:
 		return nil //fmt.Errorf("unknwn command: %d", cmd)
 	}
@@ -260,6 +301,15 @@ func (c *Conn) cmd(cmd byte) error {
 	case optWndSize:
 		if cmd == cmdDo {
 			_, err = c.Conn.Write([]byte{cmdIAC, cmdSB, optWndSize, 0, c.columns, 0, c.rows, cmdIAC, cmdSE})
+		}
+	case optWndType:
+		// Accept any echo configuration.
+		switch cmd {
+		case cmdDo:
+			err = c.will(o)
+		case cmdDont:
+		case cmdWill, cmdWont:
+			err = c.dont(o)
 		}
 	default:
 		// Deny any other option

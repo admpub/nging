@@ -6,6 +6,7 @@ import (
 	"io"
 	"strings"
 
+	"github.com/admpub/web-terminal/library/utils"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -17,6 +18,7 @@ func NewSSHConfig(reader io.Reader, writer io.Writer, account *AccountConfig) (*
 		User:            account.User,
 		Auth:            []ssh.AuthMethod{},
 	}
+	account.SetDefault()
 	if account.PrivateKey != nil {
 		var signer ssh.Signer
 		var err error
@@ -36,7 +38,7 @@ func NewSSHConfig(reader io.Reader, writer io.Writer, account *AccountConfig) (*
 		sshConfig.Auth = append(sshConfig.Auth, ssh.Password(account.Password))
 		if reader != nil && writer != nil {
 			bufReader := bufio.NewReader(reader)
-			sshConfig.Auth = append(sshConfig.Auth, ssh.KeyboardInteractive(KeyboardInteractivefunc(bufReader, writer, account.Password)))
+			sshConfig.Auth = append(sshConfig.Auth, ssh.KeyboardInteractive(KeyboardInteractivefunc(bufReader, writer, account)))
 		}
 	}
 
@@ -44,10 +46,12 @@ func NewSSHConfig(reader io.Reader, writer io.Writer, account *AccountConfig) (*
 	return sshConfig, nil
 }
 
-func KeyboardInteractivefunc(reader *bufio.Reader, writer io.Writer, password string) func(user, instruction string, questions []string, echos []bool) (answers []string, err error) {
+func KeyboardInteractivefunc(reader *bufio.Reader, writer io.Writer, account *AccountConfig) func(user, instruction string, questions []string, echos []bool) (answers []string, err error) {
 	var (
 		passwordCount         int
 		emptyInteractiveCount int
+		password              = account.Password
+		charset               = account.Charset
 	)
 	return func(user, instruction string, questions []string, echos []bool) (answers []string, err error) {
 		if len(questions) == 0 {
@@ -58,7 +62,7 @@ func KeyboardInteractivefunc(reader *bufio.Reader, writer io.Writer, password st
 			return []string{}, nil
 		}
 		for _, question := range questions {
-			io.WriteString(writer, question)
+			io.WriteString(utils.DecodeBy(charset, writer), question)
 
 			switch strings.ToLower(strings.TrimSpace(question)) {
 			case "password:", "password as":

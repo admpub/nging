@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/admpub/web-terminal/config"
+	"github.com/admpub/web-terminal/library/utils"
 	"github.com/fd/go-shellwords/shellwords"
 	"golang.org/x/net/websocket"
 )
@@ -111,7 +112,7 @@ func execShell(ws *websocket.Conn, pa string, args []string, charset, wd, stdin,
 	}
 
 	if strings.HasPrefix(pa, "snmp") {
-		args = addMibDir(args)
+		args = utils.AddMibDir(args)
 	} else if pa == "tpt" || pa == "tpt.exe" {
 		if "windows" == runtime.GOOS {
 			args = append([]string{"-gbk=true"}, args...)
@@ -121,7 +122,7 @@ func execShell(ws *websocket.Conn, pa string, args []string, charset, wd, stdin,
 	if c, ok := commands[pa]; ok {
 		pa = c
 	} else {
-		if newPa, ok := lookPath(config.ExecutableFolder, pa); ok {
+		if newPa, ok := utils.LookPath(config.ExecutableFolder, pa); ok {
 			pa = newPa
 		}
 	}
@@ -193,6 +194,6 @@ func execShell(ws *websocket.Conn, pa string, args []string, charset, wd, stdin,
 	}
 
 	if isConnectionAbandoned {
-		saveSessionKey(pa, args, wd)
+		utils.SaveSessionKey(pa, args, wd)
 	}
 }
