@@ -51,6 +51,8 @@ var (
 	AssetsURLPath    = DefaultAssetsURLPath
 	DefaultAvatarURL = AssetsURLPath + `/images/user_128.png`
 	RendererDo       = func(driver.Driver) {}
+	ParseStrings     = map[string]string{}
+	ParseStringFuncs = map[string]func() string{}
 )
 
 func init() {
@@ -119,7 +121,6 @@ func init() {
 
 		// 事物支持
 		e.Use(ngingMW.Tansaction())
-
 		// 注册模板引擎
 		renderOptions := &render.Config{
 			TmplDir: TemplateDir,
@@ -135,6 +136,16 @@ func init() {
 			DefaultHTTPErrorCode: http.StatusOK,
 			Reload:               true,
 			ErrorPages:           config.DefaultConfig.Sys.ErrorPages,
+		}
+		if ParseStrings != nil {
+			for key, val := range ParseStrings {
+				renderOptions.ParseStrings[key] = val
+			}
+		}
+		if ParseStringFuncs != nil {
+			for key, val := range ParseStringFuncs {
+				renderOptions.ParseStringFuncs[key] = val
+			}
 		}
 		if RendererDo != nil {
 			renderOptions.AddRendererDo(RendererDo)
