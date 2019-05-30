@@ -299,6 +299,10 @@ SSH管理功能实现了SSH的Web客户端管理功能，您可以在Nging网页
 
 ## Ⅱ、先睹为快
 
+### 运行
+
+[![安装](https://github.com/admpub/nging/blob/master/preview/preview_cli.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_cli.png)
+
 ### 安装：
 
 [![安装](https://github.com/admpub/nging/blob/master/preview/preview_install.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_install.png)
