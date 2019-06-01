@@ -22,9 +22,10 @@
     {{end}}
 
     {{if eq ($v.Get "cors") "1"}}
-    cors {{Get "cors" "path" "/"}} {
+    cors {{Get "cors" "path" "/"}} {{Get "cors" "domains"}} {
         {{AddonAttr "cors" "origin"}}
-        {{AddonAttr "cors" "methods" "POST,PUT"}}
+        {{AddonAttr "cors" "origin_regexp"}}
+        {{AddonAttr "cors" "methods"}}
         {{AddonAttr "cors" "allow_credentials" "false"}}
         {{AddonAttr "cors" "max_age"}}
         {{AddonAttr "cors" "allowed_headers"}}
@@ -36,13 +37,29 @@
     jwt {
         {{AddonAttr "jwt" "path" "/"}}
         {{AddonAttr "jwt" "redirect"}}
-        {{AddonAttr "jwt" "allow"}}
-        {{AddonAttr "jwt" "deny"}}
+        {{IteratorKV "jwt" "allow" "        allow "}}
+        {{IteratorKV "jwt" "deny" "        deny "}}
+        {{AddonAttr "jwt" "except"}}
+        {{IteratorKV "jwt" "token_source" "        token_source "}}
+        {{$strip_header := Get "jwt" "strip_header"}}
+        {{if $strip_header}}
+        strip_header
+        {{end}}
+        {{$passthrough := Get "jwt" "passthrough"}}
+        {{if $passthrough}}
+        passthrough
+        {{end}}
+        {{$allowroot := Get "jwt" "allowroot"}}
+        {{if $allowroot}}
+        allowroot
+        {{end}}
+        {{Iterator "jwt" "publickey" "        publickey "}}
+        {{AddonAttr "jwt" "secret"}}
     }
     {{end}}
     
     {{if eq ($v.Get "locale") "1"}}
-    locale {{Get "cors" "available" "en zh-CN"}} {
+    locale {{Get "locale" "available" "en zh-CN"}} {
         {{AddonAttr "locale" "detect" "header"}}
         {{AddonAttr "locale" "cookie" "locale"}}
         {{AddonAttr "locale" "available" "en zh-CN"}}
@@ -52,7 +69,7 @@
 
 
     {{if eq ($v.Get "nobots") "1"}}
-    nobots "{{Get "nobots" "bombGZ" "bomb.gz"}}" {
+    nobots "{{Get "nobots" "bomb" "bomb.gz"}}" {
         {{Iterator "nobots" "userAgent" "        " true}}
         {{Iterator "nobots" "userAgentRegexp" "        regexp " true}}
         {{Iterator "nobots" "publicPathRegexp" "        public " true}}
@@ -61,11 +78,15 @@
 
     {{if eq ($v.Get "prometheus") "1"}}
     prometheus {
-        {{AddonAttr "prometheus" "use_caddy_addr"}}
-        {{AddonAttr "prometheus" "address"}}
+        {{$use_caddy_addr := Get "prometheus" "use_caddy_addr"}}
+        {{if $use_caddy_addr}}
+        use_caddy_addr
+        {{else}}
+        {{AddonAttr "prometheus" "address" "localhost:9180"}}
+        {{end}}
         {{AddonAttr "prometheus" "path" "/metrics"}}
         {{AddonAttr "prometheus" "hostname"}}
-        {{AddonAttr "prometheus" "label"}}
+        {{IteratorKV "header" "label" "        label    "}}
     }
     {{end}}
 

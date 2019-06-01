@@ -58,6 +58,15 @@
                 </div>
               </div>
               <div class="form-group">
+                <label class="col-sm-2 control-label">{{"默认首页"|T}}</label>
+                <div class="col-sm-8">
+                    <input type="text" name="index" class="form-control" value="{{Form "index"}}">
+                    <div class="help-block">{{"默认首页文件，多个之间用半角空格隔开，如不填写，默认为："|T}}<br/> 
+                      index.html index.htm index.txt default.html default.htm default.txt
+                    </div>
+                </div>
+              </div>
+              <div class="form-group">
                 <label class="col-sm-2 control-label">{{"访问日志"|T}}</label>
                 <div class="col-sm-8">
                   {{$v := Form "log" "1"}}
@@ -70,15 +79,6 @@
                   <div class="fieldset bg-fc hide" id="log-settings">
                     {{if eq $v "1"}}{{Include "caddy/addon/form/log"}}{{end}}
                   </div>
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="col-sm-2 control-label">{{"默认首页"|T}}</label>
-                <div class="col-sm-8">
-                    <input type="text" name="index" class="form-control" value="{{Form "index"}}">
-                    <div class="help-block">{{"默认首页文件，多个之间用半角空格隔开，如不填写，默认为："|T}}<br/> 
-                      index.html index.htm index.txt default.html default.htm default.txt
-                    </div>
                 </div>
               </div>
               <div class="form-group">
@@ -214,7 +214,7 @@
                 </div>
               </div>
 
-              <!-- <div class="form-group">
+              <div class="form-group">
                 <label class="col-sm-2 control-label">{{"静态文件缓存"|T}}<a href="https://caddyserver.com/docs/http.expires" target="_blank" data-toggle="tooltip" title="{{"查看文档"|T}}" class="normal">(?)</a></label>
                 <div class="col-sm-8">
                   {{$v := Form "expires"}}
@@ -228,7 +228,7 @@
                     {{if eq $v "1"}}{{Include "caddy/addon/form/expires"}}{{end}}
                   </div>
                 </div>
-              </div> -->
+              </div>
               
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"IP过滤"|T}}<a href="https://caddyserver.com/docs/http.ipfilter" target="_blank" data-toggle="tooltip" title="{{"查看文档"|T}}" class="normal">(?)</a></label>
@@ -294,6 +294,113 @@ redir [code] {
 </div>
 
               <div class="form-group">
+                <label class="col-sm-2 control-label">{{"BasicAuth"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "basicauth"}}
+                  <div class="radio radio-primary radio-inline"> 
+                    <input type="radio" value="1" id="basicauth-enable" name="basicauth" data-slide-settings="show"{{if eq $v "1"}} checked{{end}}><label for="basicauth-enable">{{"启用"|T}}</label> 
+                  </div>
+                  <div class="radio radio-danger radio-inline"> 
+                    <input type="radio" value="0" id="basicauth-disable" name="basicauth" data-slide-settings="hide"{{if or (eq $v "0") (eq $v "")}} checked{{end}}><label for="basicauth-disable">{{"禁用"|T}}</label> 
+                  </div>
+                  <div class="fieldset bg-fc hide" id="basicauth-settings">
+                    {{if eq $v "1"}}{{Include "caddy/addon/form/basicauth"}}{{end}}
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"限流"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "ratelimit"}}
+                  <div class="radio radio-primary radio-inline"> 
+                    <input type="radio" value="1" id="ratelimit-enable" name="ratelimit" data-slide-settings="show"{{if eq $v "1"}} checked{{end}}><label for="ratelimit-enable">{{"启用"|T}}</label> 
+                  </div>
+                  <div class="radio radio-danger radio-inline"> 
+                    <input type="radio" value="0" id="ratelimit-disable" name="ratelimit" data-slide-settings="hide"{{if or (eq $v "0") (eq $v "")}} checked{{end}}><label for="ratelimit-disable">{{"禁用"|T}}</label> 
+                  </div>
+                  <div class="fieldset bg-fc hide" id="ratelimit-settings">
+                    {{if eq $v "1"}}{{Include "caddy/addon/form/ratelimit"}}{{end}}
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"跨域支持(CORS)"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "cors"}}
+                  <div class="radio radio-primary radio-inline"> 
+                    <input type="radio" value="1" id="cors-enable" name="cors" data-slide-settings="show"{{if eq $v "1"}} checked{{end}}><label for="cors-enable">{{"启用"|T}}</label> 
+                  </div>
+                  <div class="radio radio-danger radio-inline"> 
+                    <input type="radio" value="0" id="cors-disable" name="cors" data-slide-settings="hide"{{if or (eq $v "0") (eq $v "")}} checked{{end}}><label for="cors-disable">{{"禁用"|T}}</label> 
+                  </div>
+                  <div class="fieldset bg-fc hide" id="cors-settings">
+                    {{if eq $v "1"}}{{Include "caddy/addon/form/cors"}}{{end}}
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"JWT"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "jwt"}}
+                  <div class="radio radio-primary radio-inline"> 
+                    <input type="radio" value="1" id="jwt-enable" name="jwt" data-slide-settings="show"{{if eq $v "1"}} checked{{end}}><label for="jwt-enable">{{"启用"|T}}</label> 
+                  </div>
+                  <div class="radio radio-danger radio-inline"> 
+                    <input type="radio" value="0" id="jwt-disable" name="jwt" data-slide-settings="hide"{{if or (eq $v "0") (eq $v "")}} checked{{end}}><label for="jwt-disable">{{"禁用"|T}}</label> 
+                  </div>
+                  <div class="fieldset bg-fc hide" id="jwt-settings">
+                    {{if eq $v "1"}}{{Include "caddy/addon/form/jwt"}}{{end}}
+                  </div>
+                  <div class="help-block">JSON Web Token</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"多语言"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "locale"}}
+                  <div class="radio radio-primary radio-inline"> 
+                    <input type="radio" value="1" id="locale-enable" name="locale" data-slide-settings="show"{{if eq $v "1"}} checked{{end}}><label for="locale-enable">{{"启用"|T}}</label> 
+                  </div>
+                  <div class="radio radio-danger radio-inline"> 
+                    <input type="radio" value="0" id="locale-disable" name="locale" data-slide-settings="hide"{{if or (eq $v "0") (eq $v "")}} checked{{end}}><label for="locale-disable">{{"禁用"|T}}</label> 
+                  </div>
+                  <div class="fieldset bg-fc hide" id="locale-settings">
+                    {{if eq $v "1"}}{{Include "caddy/addon/form/locale"}}{{end}}
+                  </div>
+                  <div class="help-block">{{"获取当前语言类型并设置到占位符{>Detected-Locale}中"|T}}</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"反爬虫"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "nobots"}}
+                  <div class="radio radio-primary radio-inline"> 
+                    <input type="radio" value="1" id="nobots-enable" name="nobots" data-slide-settings="show"{{if eq $v "1"}} checked{{end}}><label for="nobots-enable">{{"启用"|T}}</label> 
+                  </div>
+                  <div class="radio radio-danger radio-inline"> 
+                    <input type="radio" value="0" id="nobots-disable" name="nobots" data-slide-settings="hide"{{if or (eq $v "0") (eq $v "")}} checked{{end}}><label for="nobots-disable">{{"禁用"|T}}</label> 
+                  </div>
+                  <div class="fieldset bg-fc hide" id="nobots-settings">
+                    {{if eq $v "1"}}{{Include "caddy/addon/form/nobots"}}{{end}}
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"Prometheus"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "prometheus"}}
+                  <div class="radio radio-primary radio-inline"> 
+                    <input type="radio" value="1" id="prometheus-enable" name="prometheus" data-slide-settings="show"{{if eq $v "1"}} checked{{end}}><label for="prometheus-enable">{{"启用"|T}}</label> 
+                  </div>
+                  <div class="radio radio-danger radio-inline"> 
+                    <input type="radio" value="0" id="prometheus-disable" name="prometheus" data-slide-settings="hide"{{if or (eq $v "0") (eq $v "")}} checked{{end}}><label for="prometheus-disable">{{"禁用"|T}}</label> 
+                  </div>
+                  <div class="fieldset bg-fc hide" id="prometheus-settings">
+                    {{if eq $v "1"}}{{Include "caddy/addon/form/prometheus"}}{{end}}
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
                 <label class="col-sm-2 control-label">{{"备注"|T}}</label>
                 <div class="col-sm-8">
                   <textarea class="form-control" name="remark">{{Form "remark"}}</textarea>
@@ -342,6 +449,16 @@ redir [code] {
   </td>
 </tr>
 </script>
+<script type="text/template" id="tmplAddVariableRowSingleCell">
+<tr>
+	<td><input type="text" class="form-control" name="{k}" value=""></td>
+	<td class="text-center">
+    <button type="button" class="btn btn-danger" onclick="$(this).parent().parent().remove()">
+      <i class="fa fa-times"></i>
+    </button>
+  </td>
+</tr>
+</script>
 {{Modal "__TMPL__/caddy/request_placeholders.yaml"}}
 <script>
 var inputRequestPlaceholder=null;
@@ -372,6 +489,11 @@ function addKVs(obj,k,v){
   var tmpl=$('#tmplAddVariableRow').html();
   tmpl=tmpl.replace(/\{k\}/g,k);
   tmpl=tmpl.replace(/\{v\}/g,v);
+  $(obj).parent().before(tmpl);
+}
+function addKs(obj,k,v){
+  var tmpl=$('#tmplAddVariableRowSingleCell').html();
+  tmpl=tmpl.replace(/\{k\}/g,k);
   $(obj).parent().before(tmpl);
 }
 function initReqPlaceholdersModal(){

@@ -1,0 +1,66 @@
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{"路径"|T}}</label>
+    <div class="col-sm-10">
+       <input type="text" class="form-control" value="{{Form "prometheus_path" "/"}}" name="prometheus_path" required="required" placeholder="">
+       <div class="help-block">{{"访问路径，默认为“/metrics”"|T}}</div>
+    </div>
+  </div>
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{"主机名"|T}}</label>
+    <div class="col-sm-10">
+       <input type="text" class="form-control" value="{{Form "prometheus_hostname"}}" name="prometheus_hostname" placeholder="">
+       <div class="help-block">{{"在导出数据中设置的host名，默认使用当前服务设置中的host名"|T}}</div>
+    </div>
+  </div>
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{"标签"|T}}</label>
+    <div class="col-sm-10">
+       <table>
+            <thead>
+                <tr>
+                    <th style="width:50%;">{{"名称"|T}}</th>
+                    <th>{{"值"|T}}</th>
+                    <th width="70">{{"删除"|T}}</th>
+                </tr>
+            </thead>
+            <tbody>
+           {{$vals := FormValues "prometheus_label_v"}}
+           {{$vlen := len $vals}}
+           {{range $k,$v:=FormValues "prometheus_label_k"}}
+               {{if lt $k $vlen}}
+<tr>
+<td><input type="text" class="form-control" name="prometheus_label_k" value="{{$v}}"></td>
+<td><input type="text" class="form-control" name="prometheus_label_v" value="{{index $vals $k}}"></td>
+<td class="text-center">
+<button type="button" class="btn btn-danger" onclick="$(this).parent().parent().remove()">
+<i class="fa fa-times"></i>
+</button>
+</td>
+</tr>
+                   
+               {{end}}
+           {{end}}
+                  <tr>
+                      <td colspan="3" class="text-center primary-emphasis" style="cursor:pointer" id="prometheusLabelBtn" onclick="addKVs(this,'prometheus_label_k','prometheus_label_v');"><i class="fa fa-plus"></i></td>
+                  </tr>
+              </tbody>
+        </table>
+       <div class="help-block">{{"自定义标签，可添加到所有指标。值支持占位符"|T}}</div>
+    </div>
+  </div>
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{"监听地址"|T}}</label>
+    <div class="col-sm-10">
+       <input type="text" class="form-control" value="{{Form "prometheus_address"}}" name="prometheus_address" placeholder="">
+       <div class="help-block">{{"向外提供服务的监听地址，默认为："|T}}<code>localhost:9180</code></div>
+    </div>
+  </div>
+<div class="form-group">
+    <label class="col-sm-2 control-label">&nbsp;</label>
+    <div class="col-sm-10">
+        <div class="checkbox checkbox-primary checkbox-inline"> 
+          <input type="checkbox" value="1" id="prometheus_use_caddy_addr" name="prometheus_use_caddy_addr"{{if eq (Form "prometheus_use_caddy_addr") "1"}} checked{{end}}><label for="prometheus_use_caddy_addr">{{"使用caddy地址"|T}}</label> 
+        </div>
+       <div class="help-block">{{"与caddy使用相同的端口和地址。选中此项后，将忽略“监听地址”设置"|T}}</div>
+    </div>
+  </div>
