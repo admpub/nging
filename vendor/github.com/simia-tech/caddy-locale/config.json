@@ -1,0 +1,5 @@
+{
+	"directive" : "locale",
+	"source": "github.com/simia-tech/caddy-locale",
+	"after": "git"
+}

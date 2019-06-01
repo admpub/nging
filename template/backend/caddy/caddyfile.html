@@ -5,6 +5,70 @@
     root {{$root|ToHTML}}
     {{end}}
 
+    {{if eq ($v.Get "basicauth") "1"}}
+    basicauth "{{Get "basicauth" "username"}}" "{{Get "basicauth" "password"}}" {
+        realm "{{Get "basicauth" "realm" "Restricted"}}"
+        {{Iterator "basicauth" "resources" "        "}}
+    }
+    {{end}}
+
+    {{if eq ($v.Get "ratelimit") "1"}}
+    ratelimit {{Get "ratelimit" "methods"}} {{Get "ratelimit" "rate"}} {{Get "ratelimit" "burst"}} {{Get "ratelimit" "unit"}} {
+        {{AddonAttr "ratelimit" "whitelist"}}
+        {{AddonAttr "ratelimit" "limit_by_header"}}
+        {{AddonAttr "ratelimit" "status"}}
+        {{Iterator "ratelimit" "resources" "        "}}
+    }
+    {{end}}
+
+    {{if eq ($v.Get "cors") "1"}}
+    cors {{Get "cors" "path" "/"}} {
+        {{AddonAttr "cors" "origin"}}
+        {{AddonAttr "cors" "methods" "POST,PUT"}}
+        {{AddonAttr "cors" "allow_credentials" "false"}}
+        {{AddonAttr "cors" "max_age"}}
+        {{AddonAttr "cors" "allowed_headers"}}
+        {{AddonAttr "cors" "exposed_headers"}}
+    }
+    {{end}}
+
+    {{if eq ($v.Get "jwt") "1"}}
+    jwt {
+        {{AddonAttr "jwt" "path" "/"}}
+        {{AddonAttr "jwt" "redirect"}}
+        {{AddonAttr "jwt" "allow"}}
+        {{AddonAttr "jwt" "deny"}}
+    }
+    {{end}}
+    
+    {{if eq ($v.Get "locale") "1"}}
+    locale {{Get "cors" "available" "en zh-CN"}} {
+        {{AddonAttr "locale" "detect" "header"}}
+        {{AddonAttr "locale" "cookie" "locale"}}
+        {{AddonAttr "locale" "available" "en zh-CN"}}
+        {{AddonAttr "locale" "path" "/"}}
+    }
+    {{end}}
+
+
+    {{if eq ($v.Get "nobots") "1"}}
+    nobots "{{Get "nobots" "bombGZ" "bomb.gz"}}" {
+        {{Iterator "nobots" "userAgent" "        " true}}
+        {{Iterator "nobots" "userAgentRegexp" "        regexp " true}}
+        {{Iterator "nobots" "publicPathRegexp" "        public " true}}
+    }
+    {{end}}
+
+    {{if eq ($v.Get "prometheus") "1"}}
+    prometheus {
+        {{AddonAttr "prometheus" "use_caddy_addr"}}
+        {{AddonAttr "prometheus" "address"}}
+        {{AddonAttr "prometheus" "path" "/metrics"}}
+        {{AddonAttr "prometheus" "hostname"}}
+        {{AddonAttr "prometheus" "label"}}
+    }
+    {{end}}
+
     {{if eq ($v.Get "log") "1"}}
     log / {{$v.Get "log_file"}} "{{$v.Get "log_format"|Default "{combined} {latency}"|ToHTML}}" {
         {{AddonAttr "log" "rotate_size"}}
@@ -87,6 +151,7 @@
     {{if eq ($v.Get "expires") "1"}}
     expires {
     {{IteratorKV "expires" "match" "        match    "}}
+    {{IteratorKV "expires" "match_header" "        match_header    "}}
     }
     {{end}}
 

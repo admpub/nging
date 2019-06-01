@@ -20,30 +20,55 @@ package caddy
 import (
 	"net/url"
 
+	"github.com/webx-top/com"
+
 	"github.com/webx-top/echo"
 )
 
 func addonAttr(ctx echo.Context, v url.Values) {
-	ctx.SetFunc(`AddonAttr`, func(addon string, item string) string {
+	ctx.SetFunc(`Get`, func(addon string, item string, defaults ...string) string {
 		if len(addon) > 0 {
 			addon += `_`
 		}
 		k := addon + item
 		v := v.Get(k)
 		if len(v) == 0 {
+			if len(defaults) > 0 {
+				return defaults[0]
+			}
+			return ``
+		}
+		return v
+	})
+	ctx.SetFunc(`AddonAttr`, func(addon string, item string, defaults ...string) string {
+		if len(addon) > 0 {
+			addon += `_`
+		}
+		k := addon + item
+		v := v.Get(k)
+		if len(v) == 0 {
+			if len(defaults) > 0 && len(defaults[0]) > 0 {
+				return item + `   ` + defaults[0]
+			}
 			return ``
 		}
 		return item + `   ` + v
 	})
-	ctx.SetFunc(`Iterator`, func(addon string, item string, prefix string) string {
+	ctx.SetFunc(`Iterator`, func(addon string, item string, prefix string, withQuotes ...bool) string {
 		if len(addon) > 0 {
 			addon += `_`
 		}
 		k := addon + item
 		values, _ := v[k]
-		r := ``
-		t := ``
+		var r, t string
+		var withQuote bool
+		if len(withQuotes) > 0 {
+			withQuote = withQuotes[0]
+		}
 		for _, v := range values {
+			if withQuote {
+				v = `"` + com.AddSlashes(v, '"') + `"`
+			}
 			r += t + prefix + v
 			t = "\n"
 		}
@@ -52,7 +77,7 @@ func addonAttr(ctx echo.Context, v url.Values) {
 }
 
 func iteratorKV(ctx echo.Context, v url.Values) {
-	ctx.SetFunc(`IteratorKV`, func(addon string, item string, prefix string) string {
+	ctx.SetFunc(`IteratorKV`, func(addon string, item string, prefix string, withQuotes ...bool) string {
 		if len(addon) > 0 {
 			addon += `_`
 		}
@@ -62,12 +87,19 @@ func iteratorKV(ctx echo.Context, v url.Values) {
 		k = addon + item + `_v`
 		values, _ := v[k]
 
-		r := ``
+		var r, t string
+		var withQuote bool
+		if len(withQuotes) > 0 {
+			withQuote = withQuotes[0]
+		}
 		l := len(values)
-		t := ``
-		for i, v := range keys {
+		for i, k := range keys {
 			if i < l {
-				r += t + prefix + v + `   ` + values[i]
+				v := values[i]
+				if withQuote {
+					v = `"` + com.AddSlashes(v, '"') + `"`
+				}
+				r += t + prefix + k + `   ` + v
 				t = "\n"
 			}
 		}
