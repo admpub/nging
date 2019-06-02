@@ -47,13 +47,13 @@ func init() {
 			Prefix: "/cmdSendWS",
 		}
 		wsOpts.Wrapper(g)
-		//*
-		wsOptsDynamicInfo := ws.Options{
-			Handle: InfoByWebsocket,
-			Prefix: "/dynamic",
-		}
-		wsOptsDynamicInfo.Wrapper(g)
-		//*/
+		/*
+			wsOptsDynamicInfo := ws.Options{
+				Handle: InfoByWebsocket,
+				Prefix: "/dynamic",
+			}
+			wsOptsDynamicInfo.Wrapper(g)
+		// */
 	})
 	//ListenRealTimeStatus()
 }
