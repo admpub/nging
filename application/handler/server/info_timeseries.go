@@ -27,11 +27,14 @@ import (
 )
 
 var (
-	realTimeStatus                 = NewRealTimeStatus(time.Second*2, 80)
+	realTimeStatus                 *RealTimeStatus
 	CancelRealTimeStatusCollection context.CancelFunc
 )
 
 func ListenRealTimeStatus() {
+	if realTimeStatus == nil {
+		realTimeStatus = NewRealTimeStatus(time.Second*2, 80)
+	}
 	ctx, cancel := context.WithCancel(context.Background())
 	go realTimeStatus.Listen(ctx)
 	CancelRealTimeStatusCollection = cancel
