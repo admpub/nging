@@ -27,7 +27,7 @@ import (
 )
 
 func InfoBySockJS(c sockjs.Session) error {
-	send := make(chan *DynamicInformation)
+	send := make(chan interface{})
 	//push(writer)
 	go func() {
 		for {
@@ -50,7 +50,10 @@ func InfoBySockJS(c sockjs.Session) error {
 			if err != nil {
 				return err
 			}
-			if message == `ping` {
+			switch message {
+			case `ping`: // Net/Memory/CPU
+				send <- realTimeStatus
+			case `pingAll`:
 				info := &DynamicInformation{}
 				send <- info.Init()
 			}
@@ -65,7 +68,7 @@ func InfoBySockJS(c sockjs.Session) error {
 }
 
 func InfoByWebsocket(c *websocket.Conn, ctx echo.Context) error {
-	send := make(chan *DynamicInformation)
+	send := make(chan interface{})
 	//push(writer)
 	go func() {
 		for {
@@ -84,9 +87,8 @@ func InfoByWebsocket(c *websocket.Conn, ctx echo.Context) error {
 				return err
 			}
 			switch com.Bytes2str(message) {
-			case `ping`: //Memory and CPU
-				info := &DynamicInformation{}
-				send <- info.MemoryAndCPU()
+			case `ping`: // Net/Memory/CPU
+				send <- realTimeStatus
 			case `pingAll`:
 				info := &DynamicInformation{}
 				send <- info.Init()

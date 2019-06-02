@@ -52,8 +52,13 @@ type DynamicInformation struct {
 }
 
 func (d *DynamicInformation) Init() *DynamicInformation {
-	d.MemoryAndCPU()
+	d.NetMemoryCPU()
 	d.Load, _ = load.Avg()
+	return d
+}
+
+func (d *DynamicInformation) NetMemoryCPU() *DynamicInformation {
+	d.MemoryAndCPU()
 	d.NetIO, _ = net.IOCounters(false)
 	return d
 }

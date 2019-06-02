@@ -55,4 +55,5 @@ func init() {
 		wsOptsDynamicInfo.Wrapper(g)
 		//*/
 	})
+	//ListenRealTimeStatus()
 }
