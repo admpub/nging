@@ -11,7 +11,9 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/admpub/log"
 	"github.com/webx-top/echo/encoding/json"
+	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/tagfast"
 	"github.com/webx-top/validation"
 )
@@ -491,7 +493,34 @@ var (
 		}
 		return fName
 	}
+
+	//DateToTimestamp 日期时间转时间戳
+	DateToTimestamp = func(layouts ...string) FormDataFilter {
+		layout := `2006-01-02`
+		if len(layouts) > 0 && len(layouts[0]) > 0 {
+			layout = layouts[0]
+		}
+		return func(k string, v []string) (string, []string) {
+			if len(v) > 0 && len(v[0]) > 0 {
+				t, e := time.Parse(layout, v[0])
+				if e != nil {
+					log.Error(e)
+					return k, []string{`0`}
+				}
+				return k, []string{fmt.Sprint(t.Unix())}
+			}
+			return k, []string{`0`}
+		}
+	}
 )
+
+func SetFormValue(f engine.URLValuer, fName string, index int, value interface{}) {
+	if index == 0 {
+		f.Set(fName, fmt.Sprint(value))
+	} else {
+		f.Add(fName, fmt.Sprint(value))
+	}
+}
 
 //StructToForm 映射struct到form
 func StructToForm(ctx Context, m interface{}, topName string, fieldNameFormatter FieldNameFormatter) {
@@ -519,19 +548,75 @@ func StructToForm(ctx Context, m interface{}, topName string, fieldNameFormatter
 			continue
 		}
 		switch fTyp.Type.String() {
-		case "time.Time":
+		case `time.Time`:
 			if t, y := fVal.Interface().(time.Time); y {
 				dateformat := tagfast.Value(tc, fTyp, `form_format`)
 				if len(dateformat) > 0 {
-					f.Add(fName, t.Format(dateformat))
+					f.Set(fName, t.Format(dateformat))
 				} else {
-					f.Add(fName, t.Format(`2006-01-02 15:04:05`))
+					f.Set(fName, t.Format(`2006-01-02 15:04:05`))
 				}
 			}
-		case "struct":
+		case `struct`:
 			StructToForm(ctx, fVal.Interface(), fName, fieldNameFormatter)
 		default:
-			f.Add(fName, fmt.Sprint(fVal.Interface()))
+			switch fTyp.Type.Kind() {
+			case reflect.Slice:
+				switch sl := fVal.Interface().(type) {
+				case []uint:
+					for k, v := range sl {
+						SetFormValue(f, fName, k, v)
+					}
+				case []uint16:
+					for k, v := range sl {
+						SetFormValue(f, fName, k, v)
+					}
+				case []uint32:
+					for k, v := range sl {
+						SetFormValue(f, fName, k, v)
+					}
+				case []uint64:
+					for k, v := range sl {
+						SetFormValue(f, fName, k, v)
+					}
+				case []int:
+					for k, v := range sl {
+						SetFormValue(f, fName, k, v)
+					}
+				case []int16:
+					for k, v := range sl {
+						SetFormValue(f, fName, k, v)
+					}
+				case []int32:
+					for k, v := range sl {
+						SetFormValue(f, fName, k, v)
+					}
+				case []int64:
+					for k, v := range sl {
+						SetFormValue(f, fName, k, v)
+					}
+				case []float32:
+					for k, v := range sl {
+						SetFormValue(f, fName, k, v)
+					}
+				case []float64:
+					for k, v := range sl {
+						SetFormValue(f, fName, k, v)
+					}
+				case []string:
+					for k, v := range sl {
+						SetFormValue(f, fName, k, v)
+					}
+				case []interface{}:
+					for k, v := range sl {
+						SetFormValue(f, fName, k, v)
+					}
+				default:
+					// ignore
+				}
+			default:
+				f.Set(fName, fmt.Sprint(fVal.Interface()))
+			}
 		}
 	}
 }
