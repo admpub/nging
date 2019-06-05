@@ -23,6 +23,10 @@
 						</div>
 					</form>
 				</div>
+				<a href="javascript:;" data-url="__BACKEND__/server/log_show/caddy" id="caddy-log-show" class="btn btn-info pull-right">
+					<i class="fa fa-search"></i>
+					{{"Caddy日志"|T}}
+				</a>
 				<a href="__BACKEND__/caddy/vhost_add" class="btn btn-success pull-right">
 					<i class="fa fa-plus"></i>
 					{{"添加网站"|T}}
@@ -102,6 +106,7 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
+{{Modal "__TMPL__/server/log_show.yaml"}}
 <script>
 $(function(){
 	$('input.switch-disabled').on('click',function(r){
@@ -117,6 +122,7 @@ $(function(){
 			App.message({title:'{{"系统消息"|T}}',text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
 		},'json');
 	});
+	App.logShow('#caddy-log-show');
 });
 </script>
 {{/Block}}

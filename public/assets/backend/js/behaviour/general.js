@@ -863,6 +863,34 @@ var App = function () {
       obj.prototype = parent.prototype;
       child.prototype = new obj();
       child.prototype.constructor = child;
+    },
+    logShow:function(elem,lastLines){
+      if(lastLines==null) lastLines=100;
+	    $(elem).on('click',function(r){
+	    	var url=$(this).data('url');
+            $('#log-show-modal').niftyModal('show',{
+                afterOpen: function(modal) {
+	    			$.get(url,{lastLines:lastLines},function(r){
+	    				if(r.Code==1){
+	    					$('#log-show-content').text(r.Data);
+	    				}else{
+	    					$('#log-show-content').text(r.Info);
+	    				}
+	    				var textarea=$('#log-show-content')[0];
+	    				textarea.scrollTop = textarea.scrollHeight;
+	    			},'json');
+                },
+                afterClose: function(modal) {}
+            });
+      });
+      if($('#log-show-modal').data('init')) return;
+      $('#log-show-modal').data('init',true);
+      $(window).off().on('resize',function(){
+        $('#log-show-modal').css({height:$(window).height(),width:'100%', 'max-width':'100%',left:0,top:0,transform:'none'});
+		    $('#log-show-modal').find('.md-content').css('height',$(window).height());
+		    $('#log-show-content').css('height',$(window).height()-200);
+      });
+      $(window).trigger('resize');
     }
   };
  

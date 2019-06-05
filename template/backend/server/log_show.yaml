@@ -1,0 +1,9 @@
+Id : "log-show-modal"
+Custom : true
+HeadTitle : "查看日志"
+Title : ""
+Animate : "none"
+HelpText : ""
+Content : "<textarea name='content' class='form-control' id='log-show-content'></textarea>"
+Type : "info"
+ExtButtons : []
