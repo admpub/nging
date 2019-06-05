@@ -864,12 +864,14 @@ var App = function () {
       child.prototype = new obj();
       child.prototype.constructor = child;
     },
-    logShow:function(elem,lastLines){
-      if(lastLines==null) lastLines=100;
+    logShow:function(elem){
 	    $(elem).on('click',function(r){
 	    	var url=$(this).data('url');
-            $('#log-show-modal').niftyModal('show',{
-                afterOpen: function(modal) {
+	    	var lastLines=$(this).data('last-lines');
+        if(lastLines==null) lastLines=100;
+        $('#log-show-last-lines').data('target',$(this));
+        $('#log-show-modal').niftyModal('show',{
+          afterOpen: function(modal) {
 	    			$.get(url,{lastLines:lastLines},function(r){
 	    				if(r.Code==1){
 	    					$('#log-show-content').text(r.Data);
@@ -879,9 +881,9 @@ var App = function () {
 	    				var textarea=$('#log-show-content')[0];
 	    				textarea.scrollTop = textarea.scrollHeight;
 	    			},'json');
-                },
-                afterClose: function(modal) {}
-            });
+          },
+          afterClose: function(modal) {}
+        });
       });
       if($('#log-show-modal').data('init')) return;
       $('#log-show-modal').data('init',true);
@@ -889,6 +891,13 @@ var App = function () {
         $('#log-show-modal').css({height:$(window).height(),width:'100%', 'max-width':'100%',left:0,top:0,transform:'none'});
 		    $('#log-show-modal').find('.md-content').css('height',$(window).height());
 		    $('#log-show-content').css('height',$(window).height()-200);
+      });
+      $('#log-show-last-lines').on('change',function(r){
+        var target=$('#log-show-last-lines').data('target');
+        if(!target)return;
+        var lastLines=$(this).val();
+        target.data('last-lines',lastLines);
+        target.trigger('click');
       });
       $(window).trigger('resize');
     }
