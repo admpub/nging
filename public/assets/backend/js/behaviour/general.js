@@ -893,7 +893,7 @@ var App = function () {
 		    $('#log-show-content').css('height',$(window).height()-200);
       });
       $('#log-show-last-lines').on('change',function(r){
-        var target=$('#log-show-last-lines').data('target');
+        var target=$(this).data('target');
         if(!target)return;
         var lastLines=$(this).val();
         target.data('last-lines',lastLines);
