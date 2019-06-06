@@ -36,7 +36,7 @@ func init() {
 		g.Route(`GET,POST`, `/daemon_edit`, DaemonEdit)
 		g.Route(`GET,POST`, `/daemon_delete`, DaemonDelete)
 		g.Route("GET", `/cmd`, Cmd)
-		g.Route(`GET,POST`, `/log_show/:type`, LogShow)
+		g.Route(`GET,POST`, `/daemon_log`, DaemonLog)
 		sockjsOpts := sockjsHandler.Options{
 			Handle: CmdSendBySockJS,
 			Prefix: "/cmdSend",

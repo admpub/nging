@@ -24,6 +24,7 @@ import (
 
 	"github.com/admpub/goforever"
 	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/db"
@@ -197,4 +198,29 @@ func DaemonDelete(ctx echo.Context) error {
 	}
 
 	return ctx.Redirect(handler.URLFor(`/server/daemon_index`))
+}
+
+func DaemonLog(ctx echo.Context) error {
+	typ := ctx.Form(`type`)
+	id := ctx.Formx(`id`).Uint()
+	if id < 1 {
+		return ctx.JSON(ctx.Data().SetError(ctx.E(`id无效`)))
+	}
+	var err error
+	m := model.NewForeverProcess(ctx)
+	err = m.Get(nil, db.Cond{`id`: id})
+	if err != nil {
+		if err == db.ErrNoMoreRows {
+			err = ctx.E(`不存在id为%d的任务`)
+		}
+		return ctx.JSON(ctx.Data().SetError(err))
+	}
+	var logFile string
+	switch typ {
+	case `error`:
+		logFile = m.Errfile
+	default:
+		logFile = m.Logfile
+	}
+	return common.LogShow(ctx, logFile, echo.H{`title`: m.Name})
 }

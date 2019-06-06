@@ -16,25 +16,25 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package server
+package common
 
 import (
-	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/tail"
 	"github.com/webx-top/echo"
 )
 
-func LogShow(ctx echo.Context) error {
-	var logFile string
-	typ := ctx.Paramx(`type`).String()
-	switch typ {
-	case `caddy`:
-		logFile = config.DefaultConfig.Caddy.LogFile
-	}
+func LogShow(ctx echo.Context, logFile string, extensions ...echo.H) error {
 	data := ctx.Data()
 	if len(logFile) == 0 {
 		data.SetData(`没有日志文件`)
 		return ctx.JSON(data)
+	}
+	var result echo.H
+	if len(extensions) > 0 {
+		result = extensions[0]
+	}
+	if result == nil {
+		result = echo.H{}
 	}
 	lastLines := ctx.Formx(`lastLines`).Int()
 	config := tail.Config{
@@ -52,7 +52,8 @@ func LogShow(ctx echo.Context) error {
 		for line := range obj.Lines {
 			content += line.Text + "\n"
 		}
-		data.SetData(content)
+		result.Set(`content`, content)
+		data.SetData(result)
 	}
 	return ctx.JSON(data)
 }

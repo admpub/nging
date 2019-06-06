@@ -864,28 +864,8 @@ var App = function () {
       child.prototype = new obj();
       child.prototype.constructor = child;
     },
-    logShow:function(elem){
-	    $(elem).on('click',function(r){
-	    	var url=$(this).data('url');
-	    	var lastLines=$(this).data('last-lines');
-        if(lastLines==null) lastLines=100;
-        $('#log-show-last-lines').data('target',$(this));
-        $('#log-show-modal').niftyModal('show',{
-          afterOpen: function(modal) {
-	    			$.get(url,{lastLines:lastLines},function(r){
-	    				if(r.Code==1){
-	    					$('#log-show-content').text(r.Data);
-	    				}else{
-	    					$('#log-show-content').text(r.Info);
-	    				}
-	    				var textarea=$('#log-show-content')[0];
-	    				textarea.scrollTop = textarea.scrollHeight;
-	    			},'json');
-          },
-          afterClose: function(modal) {}
-        });
-      });
-      if($('#log-show-modal').data('init')) return;
+    logShow:function(elem,trigger){
+      if(!$('#log-show-modal').data('init')){
       $('#log-show-modal').data('init',true);
       $(window).off().on('resize',function(){
         $('#log-show-modal').css({height:$(window).height(),width:'100%', 'max-width':'100%',left:0,top:0,transform:'none'});
@@ -899,7 +879,44 @@ var App = function () {
         target.data('last-lines',lastLines);
         target.trigger('click');
       });
+      $('#log-show-modal .modal-footer .btn-refresh').on('click',function(r){
+        var target=$('#log-show-last-lines').data('target');
+        if(!target)return;
+        target.trigger('click');
+      });
       $(window).trigger('resize');
+      }
+      var done=function(a){
+	    	var url=$(a).data('url');
+	    	var lastLines=$(a).data('last-lines');
+        if(lastLines==null) lastLines=100;
+        $('#log-show-last-lines').data('target',$(a));
+        $('#log-show-modal').niftyModal('show',{
+          afterOpen: function(modal) {
+	    			$.get(url,{lastLines:lastLines},function(r){
+	    				if(r.Code==1){
+                var subTitle=$('#log-show-modal .modal-header .modal-subtitle');
+                if(typeof(r.Data.title)!='undefined'){
+                  if(r.Data.title)r.Data.title=' ('+r.Data.title+')';
+                  subTitle.html(r.Data.title);
+                }else{
+                  subTitle.empty();
+                }
+	    					$('#log-show-content').text(r.Data.content);
+	    				}else{
+	    					$('#log-show-content').text(r.Info);
+	    				}
+	    				var textarea=$('#log-show-content')[0];
+	    				textarea.scrollTop = textarea.scrollHeight;
+	    			},'json');
+          },
+          afterClose: function(modal) {}
+        });
+      };
+      if(trigger) return done(elem);
+	    $(elem).on('click',function(){
+        done(this);
+      });
     }
   };
  

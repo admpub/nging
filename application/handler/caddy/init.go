@@ -35,6 +35,8 @@ func init() {
 		g.Route(`GET,POST`, `/vhost_delete`, e.MetaHandler(echo.H{`name`: `删除网站`}, VhostDelete))
 		g.Route(`GET,POST`, `/vhost_file`, e.MetaHandler(echo.H{`name`: `管理网站文件`}, VhostFile))
 		g.Route(`GET`, `/vhost_build`, e.MetaHandler(echo.H{`name`: `生成Caddyfile`}, Vhostbuild))
+		g.Route(`GET,POST`, `/log_show`, LogShow)
+		g.Route(`GET,POST`, `/vhost_log`, VhostLog)
 
 		g.Route(`GET`, `/group`, Group)
 		g.Route(`GET,POST`, `/group_add`, GroupAdd)
