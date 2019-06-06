@@ -55,7 +55,22 @@
                 </div>
             </dd>
         </dl>
+
+
+        <dl class="clearfix">
+            <dt>{{"Nging"|T}}:</dt>
+            <dd class="pull-left">
+                <div class="btn-group">
+                <button type="button" class="btn btn-default" data-url="__BACKEND__/server/log" title="{{"查看Nging日志"|T}}" onclick="App.logShow(this,true);">
+                <i class="fa fa-eye"></i> {{"查看日志"|T}}
+                </button>
+                </div>
+            </dd>
+        </dl>
         </div>
 	</div>
 </div>
+{{/Block}}
+{{Block "footer"}}
+{{Modal "__TMPL__/server/log_show.yaml"}}
 {{/Block}}

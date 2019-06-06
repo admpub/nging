@@ -42,6 +42,11 @@ func init() {
 			Icon:          `sitemap`,
 			Children: navigate.List{
 				{
+					DisplayOnMenu: false,
+					Name:          `Caddy日志`,
+					Action:        `log_show`,
+				},
+				{
 					DisplayOnMenu: true,
 					Name:          `网站列表`,
 					Action:        `vhost`,
@@ -67,8 +72,7 @@ func init() {
 				{
 					DisplayOnMenu: false,
 					Name:          `查看网站日志`,
-					Action:        `log`,
-					Icon:          ``,
+					Action:        `vhost_log`,
 				},
 				{
 					DisplayOnMenu: false,
@@ -154,6 +158,11 @@ func init() {
 				},
 				{
 					DisplayOnMenu: false,
+					Name:          `查看Nging日志`,
+					Action:        `log`,
+				},
+				{
+					DisplayOnMenu: false,
 					Name:          `查看进程详情`,
 					Action:        `process/:pid`,
 				},
@@ -176,6 +185,11 @@ func init() {
 					DisplayOnMenu: true,
 					Name:          `进程值守`,
 					Action:        `daemon_index`,
+				},
+				{
+					DisplayOnMenu: false,
+					Name:          `进程值守日志`,
+					Action:        `daemon_log`,
 				},
 				{
 					DisplayOnMenu: false,
@@ -632,6 +646,11 @@ func init() {
 				},
 				{
 					DisplayOnMenu: false,
+					Name:          `查看服务端日志`,
+					Action:        `server_log`,
+				},
+				{
+					DisplayOnMenu: false,
 					Name:          `添加服务端配置`,
 					Action:        `server_add`,
 				},
@@ -649,6 +668,11 @@ func init() {
 					DisplayOnMenu: true,
 					Name:          `客户端配置`,
 					Action:        `client_index`,
+				},
+				{
+					DisplayOnMenu: false,
+					Name:          `查看客户端日志`,
+					Action:        `client_log`,
 				},
 				{
 					DisplayOnMenu: false,

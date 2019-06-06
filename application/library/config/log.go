@@ -22,8 +22,10 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/admpub/log"
+	"github.com/admpub/nging/application/library/common"
 	"github.com/webx-top/echo"
 )
 
@@ -33,6 +35,21 @@ type Log struct {
 	SaveFile     string `json:"saveFile"`     // for file
 	FileMaxBytes int64  `json:"fileMaxBytes"` // for file
 	Targets      string `json:"targets" form_delimiter:","`
+}
+
+func (c *Log) Show(ctx echo.Context) error {
+	prefix, timeformat, filename, err := log.DateFormatFilename(c.SaveFile)
+	if err != nil {
+		return ctx.JSON(ctx.Data().SetError(err))
+	}
+	var logFile string
+	if len(timeformat) > 0 {
+		logFile = fmt.Sprintf(filename, time.Now().Format(timeformat))
+	} else {
+		logFile = filename
+	}
+	_ = prefix
+	return common.LogShow(ctx, logFile)
 }
 
 func (c *Log) SetBy(r echo.H, defaults echo.H) *Log {

@@ -60,7 +60,7 @@ var (
 		"Fatal": LevelFatal,
 	}
 
-	CallDepth = 5
+	CallDepth = 4
 )
 
 func GetLevel(level string) (Level, bool) {

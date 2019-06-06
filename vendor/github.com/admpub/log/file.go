@@ -66,56 +66,10 @@ func (t *FileTarget) Open(errWriter io.Writer) (err error) {
 	}
 	t.timeFormat = ``
 	t.openedFile = ``
-	p := strings.Index(t.FileName, `{date:`)
-	t.filePrefix = t.FileName
-	if p > -1 {
-		fileName := t.FileName[0:p]
-		if p == 0 {
-			fileName = "./"
-		}
-		t.filePrefix = fileName
-		placeholder := t.FileName[p+6:]
-		p2 := strings.Index(placeholder, `}`)
-		var hs bool
-		switch fileName[len(fileName)-1] {
-		case '/', '\\':
-			hs = true
-		}
-		if fileName, err = filepath.Abs(fileName); err != nil {
-			return err
-		}
-		if p2 > -1 {
-			t.timeFormat = placeholder[0:p2]
-			fileSuffix := placeholder[p2+1:]
-			switch filepath.Separator {
-			case '/':
-				t.timeFormat = strings.Replace(t.timeFormat, "\\", "/", -1)
-				fileSuffix = strings.Replace(fileSuffix, "\\", "/", -1)
-			case '\\':
-				t.timeFormat = strings.Replace(t.timeFormat, "/", "\\", -1)
-				fileSuffix = strings.Replace(fileSuffix, "/", "\\", -1)
-			}
-			if hs {
-				fileName = filepath.Join(fileName, `%v`+fileSuffix)
-			} else {
-				fileName += `%v` + fileSuffix
-			}
-
-		}
-		t.FileName = fileName
-		if t.FileName == `` {
-			return errors.New("FileTarget.FileName must be set")
-		}
-		if t.filePrefix, err = filepath.Abs(t.filePrefix); err != nil {
-			return err
-		}
-	} else {
-		if t.filePrefix, err = filepath.Abs(t.filePrefix); err != nil {
-			return err
-		}
-		t.FileName = t.filePrefix
+	t.filePrefix, t.timeFormat, t.FileName, err = DateFormatFilename(t.FileName)
+	if err != nil {
+		return
 	}
-
 	t.errWriter = errWriter
 
 	if t.Rotate {
@@ -317,4 +271,58 @@ func (t *FileTarget) createDir(fileName string) {
 			fmt.Fprintf(t.errWriter, "%v\n", err)
 		}
 	}
+}
+
+func DateFormatFilename(dfile string) (prefix string, dateformat string, filename string, err error) {
+	p := strings.Index(dfile, `{date:`)
+	prefix = dfile
+	if p > -1 {
+		fileName := dfile[0:p]
+		if p == 0 {
+			fileName = "./"
+		}
+		prefix = fileName
+		placeholder := dfile[p+6:]
+		p2 := strings.Index(placeholder, `}`)
+		var hs bool
+		switch fileName[len(fileName)-1] {
+		case '/', '\\':
+			hs = true
+		}
+		if fileName, err = filepath.Abs(fileName); err != nil {
+			return "", "", "", err
+		}
+		if p2 > -1 {
+			dateformat = placeholder[0:p2]
+			fileSuffix := placeholder[p2+1:]
+			switch filepath.Separator {
+			case '/':
+				dateformat = strings.Replace(dateformat, "\\", "/", -1)
+				fileSuffix = strings.Replace(fileSuffix, "\\", "/", -1)
+			case '\\':
+				dateformat = strings.Replace(dateformat, "/", "\\", -1)
+				fileSuffix = strings.Replace(fileSuffix, "/", "\\", -1)
+			}
+			if hs {
+				fileName = filepath.Join(fileName, `%v`+fileSuffix)
+			} else {
+				fileName += `%v` + fileSuffix
+			}
+
+		}
+		filename = fileName
+		if filename == `` {
+			err = errors.New("FileTarget.FileName must be set")
+			return
+		}
+		if prefix, err = filepath.Abs(prefix); err != nil {
+			return "", "", "", err
+		}
+	} else {
+		if prefix, err = filepath.Abs(prefix); err != nil {
+			return "", "", "", err
+		}
+		filename = prefix
+	}
+	return
 }

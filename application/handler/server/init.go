@@ -19,6 +19,7 @@ package server
 
 import (
 	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/library/config"
 	"github.com/webx-top/echo"
 	sockjsHandler "github.com/webx-top/echo/handler/sockjs"
 	ws "github.com/webx-top/echo/handler/websocket"
@@ -37,6 +38,9 @@ func init() {
 		g.Route(`GET,POST`, `/daemon_delete`, DaemonDelete)
 		g.Route("GET", `/cmd`, Cmd)
 		g.Route(`GET,POST`, `/daemon_log`, DaemonLog)
+		g.Route(`GET,POST`, `/log`, func(c echo.Context) error {
+			return config.DefaultConfig.Log.Show(c)
+		})
 		sockjsOpts := sockjsHandler.Options{
 			Handle: CmdSendBySockJS,
 			Prefix: "/cmdSend",
