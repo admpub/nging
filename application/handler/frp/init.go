@@ -45,10 +45,12 @@ func init() {
 		g.Route(`GET,POST`, `/server_add`, ServerAdd)
 		g.Route(`GET,POST`, `/server_edit`, ServerEdit)
 		g.Route(`GET,POST`, `/server_delete`, ServerDelete)
+		g.Route(`GET,POST`, `/server_log`, ServerLog)
 		g.Route(`GET`, `/client_index`, ClientIndex)
 		g.Route(`GET,POST`, `/client_add`, ClientAdd)
 		g.Route(`GET,POST`, `/client_edit`, ClientEdit)
 		g.Route(`GET,POST`, `/client_delete`, ClientDelete)
+		g.Route(`GET,POST`, `/client_log`, ClientLog)
 
 		g.Route(`GET`, `/group_index`, GroupIndex)
 		g.Route(`GET,POST`, `/group_add`, GroupAdd)

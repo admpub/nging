@@ -26,6 +26,7 @@ import (
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/com"
@@ -281,4 +282,21 @@ func ClientDelete(ctx echo.Context) error {
 	}
 
 	return ctx.Redirect(handler.URLFor(`/frp/client_index`))
+}
+
+func ClientLog(ctx echo.Context) error {
+	id := ctx.Formx(`id`).Uint()
+	if id < 1 {
+		return ctx.JSON(ctx.Data().SetError(ctx.E(`id无效`)))
+	}
+	var err error
+	m := model.NewFrpClient(ctx)
+	err = m.Get(nil, db.Cond{`id`: id})
+	if err != nil {
+		if err == db.ErrNoMoreRows {
+			err = ctx.E(`不存在id为%d的配置`)
+		}
+		return ctx.JSON(ctx.Data().SetError(err))
+	}
+	return common.LogShow(ctx, m.LogFile, echo.H{`title`: m.Name})
 }
