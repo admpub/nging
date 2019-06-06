@@ -19,6 +19,7 @@
 package config
 
 import (
+	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -41,12 +42,25 @@ func (c *Log) SetBy(r echo.H, defaults echo.H) *Log {
 	loge := r.Store(`log`)
 	c.Colorable = loge.Bool(`colorable`)
 	c.SaveFile = loge.String(`saveFile`)
-	c.Targets = loge.String(`targets`)
+	switch t := loge.Get(`targets`).(type) {
+	case []interface{}:
+		for k, v := range t {
+			if k > 0 {
+				c.Targets += `,`
+			}
+			c.Targets = fmt.Sprint(v)
+		}
+	case []string:
+		c.Targets = strings.Join(t, `,`)
+	case string:
+		c.Targets = t
+	}
 	c.FileMaxBytes = loge.Int64(`fileMaxBytes`)
 	return c
 }
 
 func (c *Log) Init() {
+	//echo.Dump(c)
 	//======================================================
 	// 配置日志
 	//======================================================
