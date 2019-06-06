@@ -76,6 +76,11 @@ func init() {
 				},
 				{
 					DisplayOnMenu: false,
+					Name:          `查看网站动态`,
+					Action:        `log`,
+				},
+				{
+					DisplayOnMenu: false,
 					Name:          `配置表单`,
 					Action:        `addon_form`,
 					Icon:          ``,
@@ -274,7 +279,7 @@ func init() {
 				},
 				{
 					DisplayOnMenu: false,
-					Name:          `查看FTP日志`,
+					Name:          `查看FTP动态`,
 					Action:        `log`,
 					Icon:          ``,
 				},
