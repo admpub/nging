@@ -38,7 +38,7 @@ type Log struct {
 }
 
 func (c *Log) Show(ctx echo.Context) error {
-	prefix, timeformat, filename, err := log.DateFormatFilename(c.SaveFile)
+	prefix, timeformat, filename, err := log.DateFormatFilename(c.LogFile())
 	if err != nil {
 		return ctx.JSON(ctx.Data().SetError(err))
 	}
@@ -76,6 +76,13 @@ func (c *Log) SetBy(r echo.H, defaults echo.H) *Log {
 	return c
 }
 
+func (c *Log) LogFile() string {
+	if len(c.SaveFile) > 0 {
+		return c.SaveFile
+	}
+	return filepath.Join(echo.Wd(), `data/logs/{date:20060102}_info.log`)
+}
+
 func (c *Log) Init() {
 	//echo.Dump(c)
 	//======================================================
@@ -97,11 +104,7 @@ func (c *Log) Init() {
 		case "file":
 			//输出到文件
 			fileTarget := log.NewFileTarget()
-			if len(c.SaveFile) > 0 {
-				fileTarget.FileName = c.SaveFile
-			} else {
-				fileTarget.FileName = filepath.Join(echo.Wd(), `data/logs/{date:20060102}_info.log`)
-			}
+			fileTarget.FileName = c.LogFile()
 			fileTarget.Filter.MaxLevel = log.DefaultLog.MaxLevel
 			if c.FileMaxBytes > 0 {
 				fileTarget.MaxBytes = c.FileMaxBytes

@@ -26,7 +26,6 @@ import (
 	"html/template"
 	"os"
 	"os/exec"
-	"runtime"
 	"runtime/debug"
 	"strings"
 	"sync/atomic"
@@ -36,11 +35,11 @@ import (
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/charset"
 	"github.com/admpub/nging/application/library/email"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo/engine"
 )
 
 var (
-	isWin            bool
 	defaultOuputSize uint64 = 1024 * 200
 	mailTpl          *template.Template
 	defaultTmpl      = `
@@ -89,8 +88,7 @@ type Jobx struct {
 }
 
 func init() {
-	isWin = runtime.GOOS == `windows`
-	if isWin {
+	if com.IsWindows {
 		cmdPreParams = []string{"cmd.exe", "/c"}
 		//cmdPreParams = []string{"bash.exe", "-c"}
 	} else {
@@ -215,7 +213,7 @@ func NewCommandJob(ctx context.Context, id uint, name string, command string, di
 		cmd.Stderr = bufErr
 		cmd.Start()
 		err, isTimeout := runCmdWithTimeout(cmd, timeout, ctx)
-		if isWin {
+		if com.IsWindows {
 			bOut, e := charset.Convert(`gbk`, `utf-8`, bufOut.Bytes())
 			if e != nil {
 				log.Error(e)
