@@ -29,15 +29,16 @@ var (
 )
 
 func IPInfo(ip string) (info ip2region.IpInfo, err error) {
-	if len(ip) > 0 {
-		if region == nil {
-			region, err = ip2region.New(dictFile)
-			if err != nil {
-				return
-			}
-		}
-		info, err = region.MemorySearch(ip)
+	if len(ip) == 0 {
+		return
 	}
+	if region == nil {
+		region, err = ip2region.New(dictFile)
+		if err != nil {
+			return
+		}
+	}
+	info, err = region.MemorySearch(ip)
 	return
 }
 
