@@ -28,8 +28,7 @@ var (
 	dictFile string
 )
 
-func IP2Region(c echo.Context) (err error) {
-	ip := c.Form(`ip`)
+func IPInfo(ip string) (info ip2region.IpInfo, err error) {
 	if len(ip) > 0 {
 		if region == nil {
 			region, err = ip2region.New(dictFile)
@@ -37,10 +36,17 @@ func IP2Region(c echo.Context) (err error) {
 				return
 			}
 		}
-		var info ip2region.IpInfo
 		info, err = region.MemorySearch(ip)
+	}
+	return
+}
+
+func IP2Region(c echo.Context) error {
+	ip := c.Form(`ip`)
+	if len(ip) > 0 {
+		info, err := IPInfo(ip)
 		if err != nil {
-			return
+			return err
 		}
 		c.Data().SetData(info)
 	}
