@@ -44,7 +44,7 @@ var (
 	BUILD_TIME string
 	CLOUD_GOX  string
 	COMMIT     string
-	LABEL      = `beta3` //beta/alpha/stable
+	LABEL      = `beta4` //beta/alpha/stable
 	VERSION    = `2.0.0`
 
 	version   string
