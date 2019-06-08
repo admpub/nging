@@ -51,7 +51,7 @@
           </div>
         </div>
         <div class="text-right collapse-button" style="padding:7px 9px;">
-          <form action="{{Path}}" id="global-search-form" method="GET">
+          <form action="{{URL.Path}}" id="global-search-form" method="GET">
           {{- range $field,$values:=Queries -}}
           {{- range $k,$value:=$values -}}
           <input type="hidden" name="{{$field}}" value="{{$value}}" />
