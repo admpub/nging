@@ -25,16 +25,17 @@ import (
 
 func LogShow(ctx echo.Context, logFile string, extensions ...echo.H) error {
 	data := ctx.Data()
-	if len(logFile) == 0 {
-		data.SetData(`没有日志文件`)
-		return ctx.JSON(data)
-	}
 	var result echo.H
 	if len(extensions) > 0 {
 		result = extensions[0]
 	}
 	if result == nil {
 		result = echo.H{}
+	}
+	if len(logFile) == 0 {
+		result.Set(`content`, ctx.T(`没有日志文件`))
+		data.SetData(result)
+		return ctx.JSON(data)
 	}
 	lastLines := ctx.Formx(`lastLines`).Int()
 	config := tail.Config{
