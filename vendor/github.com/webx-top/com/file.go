@@ -18,6 +18,7 @@ import (
 	"archive/tar"
 	"archive/zip"
 	"bufio"
+	"bytes"
 	"compress/gzip"
 	"errors"
 	"fmt"
@@ -585,4 +586,8 @@ func Readbuf(r io.Reader, length int) ([]byte, error) {
 	}
 
 	return buf, nil
+}
+
+func Bytes2readCloser(b []byte) io.ReadCloser {
+	return ioutil.NopCloser(bytes.NewBuffer(b))
 }
