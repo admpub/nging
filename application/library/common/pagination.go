@@ -19,6 +19,8 @@
 package common
 
 import (
+	"strings"
+
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
@@ -97,4 +99,14 @@ func PagingWithSelectList(ctx echo.Context, param *factory.Param, varSuffix ...s
 		ctx.Set(`pagination`, p)
 	}
 	return p, err
+}
+
+func Sorts(ctx echo.Context, table string, defaultSort string) []interface{} {
+	sorts := []interface{}{}
+	sort := ctx.Form(`sort`)
+	if len(sort) > 0 && factory.Fields.ExistField(table, strings.TrimPrefix(sort, `-`)) {
+		sorts = append(sorts, sort)
+	}
+	sorts = append(sorts, defaultSort)
+	return sorts
 }
