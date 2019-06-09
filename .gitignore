@@ -51,3 +51,5 @@ debug.log
 nohup.out
 /public/upload/*
 .DS_Store
+node_modules
+package-lock.json
