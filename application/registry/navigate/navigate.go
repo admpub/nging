@@ -20,17 +20,19 @@ package navigate
 
 //Item 操作
 type Item struct {
-	DisplayOnMenu bool
-	Name          string
-	Action        string
-	Icon          string
-	Target        string
+	DisplayOnMenu bool   //是否在菜单三显示
+	Name          string //名称
+	Action        string //操作(一般为网址)
+	Icon          string //图标
+	Target        string //打开方式
+	Unlimited     bool   //是否不限制权限
 	Children      List
 }
 
 //List 操作列表
 type List []*Item
 
+//Remove 删除元素
 func (a *List) Remove(index int) List {
 	if index < 0 {
 		*a = (*a)[0:0]
@@ -47,6 +49,7 @@ func (a *List) Remove(index int) List {
 	return *a
 }
 
+//Set 设置元素
 func (a *List) Set(index int, list ...*Item) List {
 	if len(list) == 0 {
 		return *a
