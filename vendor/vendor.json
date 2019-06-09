@@ -39,6 +39,12 @@
 			"revisionTime": "2016-08-11T21:45:55Z"
 		},
 		{
+			"checksumSHA1": "8+knpv3Y1wkp3z9UbveaGigVkaE=",
+			"path": "github.com/admpub/9t",
+			"revision": "a68069ace5e1575ccaea67324ed36019b683fd9e",
+			"revisionTime": "2019-06-05T15:49:03Z"
+		},
+		{
 			"checksumSHA1": "GLnPxyEqOMxB/TMUUBRP1pVsnfY=",
 			"path": "github.com/admpub/color",
 			"revision": "2d684516a8861da43017284349b7e303e809ac21",
@@ -586,6 +592,36 @@
 			"path": "github.com/admpub/sqlboiler/strmangle",
 			"revision": "752989bf7c9e0b6d5025816c3233facf543387f6",
 			"revisionTime": "2019-01-23T14:03:48Z"
+		},
+		{
+			"checksumSHA1": "TdROGN/P5tcx7GSHxifgaUeWuFQ=",
+			"path": "github.com/admpub/tail",
+			"revision": "ebed1abebefce69dbe913b1ac07907540d2ab1cb",
+			"revisionTime": "2019-06-05T16:51:03Z"
+		},
+		{
+			"checksumSHA1": "/P/Hrs78Icz3+XANuMzNOiBzgq0=",
+			"path": "github.com/admpub/tail/ratelimiter",
+			"revision": "ebed1abebefce69dbe913b1ac07907540d2ab1cb",
+			"revisionTime": "2019-06-05T16:51:03Z"
+		},
+		{
+			"checksumSHA1": "eI5VP4iDW1UYKBQm5972/bzFmiQ=",
+			"path": "github.com/admpub/tail/util",
+			"revision": "ebed1abebefce69dbe913b1ac07907540d2ab1cb",
+			"revisionTime": "2019-06-05T16:51:03Z"
+		},
+		{
+			"checksumSHA1": "5z/i5DYxJjxM/D/Qwu3DR0UtSbk=",
+			"path": "github.com/admpub/tail/watch",
+			"revision": "ebed1abebefce69dbe913b1ac07907540d2ab1cb",
+			"revisionTime": "2019-06-05T16:51:03Z"
+		},
+		{
+			"checksumSHA1": "PHHRIbFOIQZVrAOgt89Pmil3ASk=",
+			"path": "github.com/admpub/tail/winfile",
+			"revision": "ebed1abebefce69dbe913b1ac07907540d2ab1cb",
+			"revisionTime": "2019-06-05T16:51:03Z"
 		},
 		{
 			"checksumSHA1": "9CQxniDK0Jlk8IpclZEgumiN9Eg=",
@@ -3821,6 +3857,12 @@
 			"revisionTime": "2018-04-12T16:56:04Z"
 		},
 		{
+			"checksumSHA1": "8Vjxiz2qAtkg3zjJgoXiDq7AI64=",
+			"path": "gopkg.in/fsnotify/fsnotify.v1",
+			"revision": "c2828203cd70a50dcccfb2761f8b1f8ceef9a8e9",
+			"revisionTime": "2018-01-10T05:33:47Z"
+		},
+		{
 			"checksumSHA1": "bDSCvmvwCYcN5mPjePIzpPyqGYM=",
 			"path": "gopkg.in/mgo.v2",
 			"revision": "d90005c5262a3463800497ea5a89aed5fe22c886",
@@ -4137,6 +4179,12 @@
 			"path": "gopkg.in/src-d/go-git.v4/utils/merkletrie/noder",
 			"revision": "d0a3f1eecf7d1ae9bedce29ad5d903cb1a563864",
 			"revisionTime": "2018-09-25T09:13:35Z"
+		},
+		{
+			"checksumSHA1": "TO8baX+t1Qs7EmOYth80MkbKzFo=",
+			"path": "gopkg.in/tomb.v1",
+			"revision": "dd632973f1e7218eb1089048e0798ec9ae7dceb8",
+			"revisionTime": "2014-10-24T13:56:13Z"
 		},
 		{
 			"origin": "github.com/jesseduffield/lazygit/vendor/gopkg.in/warnings.v0",
