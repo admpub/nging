@@ -17,7 +17,9 @@
         </div>
     </div>
     {{end}}
-        
+</div>
+{{Include "server/chart/cpu"}}
+<div class="row no-margin-top">
     <div class="col-md-12">
         <div class="block-flat">
             <div class="header">
@@ -65,6 +67,8 @@
             </div>
         </div>
     </div>
+</div>
+<div class="row no-margin-top">
     {{range $k,$block := Stored.blocks}}
     {{if $block.Tmp}}{{Fetch $block.Tmpl $}}{{end}}
     {{end}}
@@ -87,4 +91,8 @@
         </div>
 
     </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+{{Include "server/chart/cpu.js"}}
 {{/Block}}

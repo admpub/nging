@@ -1,6 +1,6 @@
 <script type="text/javascript" src="__ASSETS__/js/echarts/echarts.min.js"></script>
 <script>
-var ws;
+var ws,idElem='#net_statistics';
 function connectWS(onopen){
 	if (ws) {
 		if(onopen!=null)onopen();
@@ -103,10 +103,17 @@ netChart.setOption({
     ]
 });
 $(function(){
-  window.setInterval(function(){
+  if(typeof(window._interval)!='undefined' && window._interval){
+    clearInterval(window._interval);
+  }
+  window._interval=window.setInterval(function(){
     connectWS(function(){
 		  ws.send("ping");
     });
+    if($(idElem).length<1){
+      clearInterval(window._interval);
+      window._interval=null;
+    }
   },1000);
 });
 </script>

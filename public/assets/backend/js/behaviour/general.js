@@ -864,6 +864,32 @@ var App = function () {
       child.prototype = new obj();
       child.prototype.constructor = child;
     },
+    formatBytes:function(cellValue,precision) {
+      if(precision==null) precision=1
+      var intVal = parseInt(cellValue);
+      var ras = " B"
+      if (intVal > 1024) {
+          intVal /= 1024
+          ras = " KB"
+      }
+      if (intVal > 1024) {
+          intVal /= 1024
+          ras = " MB"
+      }
+      if (intVal > 1024) {
+          intVal /= 1024
+          ras = " GB"
+      }
+      if (intVal > 1024) {
+          intVal /= 1024
+          ras = " TB"
+      }
+      if (intVal > 1024) {
+          intVal /= 1024
+          ras = " PB"
+      }
+      return (intVal).toFixed(precision) + ras;
+    },
     logShow:function(elem,trigger){
       if(!$('#log-show-modal').data('init')){
       $('#log-show-modal').data('init',true);

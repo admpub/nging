@@ -4,26 +4,7 @@ function FormatProgressBar(cellValue) {
     return cellHtml;
 }
 function FormatByte(cellValue) {
-    var intVal = parseInt(cellValue);
-    var ras = " B"
-    if (intVal > 1024) {
-        intVal /= 1024
-        ras = " KB"
-    }
-    if (intVal > 1024) {
-        intVal /= 1024
-        ras = " MB"
-    }
-    if (intVal > 1024) {
-        intVal /= 1024
-        ras = " GB"
-    }
-    if (intVal > 1024) {
-        intVal /= 1024
-        ras = " TB"
-    }
-    var cellHtml = (intVal).toFixed(1) + ras;
-    return cellHtml;
+    App.formatBytes(cellValue);
 }
 function StateIcon(state) {
     var c,t;

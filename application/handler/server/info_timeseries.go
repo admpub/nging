@@ -20,6 +20,7 @@ package server
 
 import (
 	"context"
+	"math"
 	"time"
 
 	"github.com/admpub/log"
@@ -52,14 +53,28 @@ func NewRealTimeStatus(interval time.Duration, maxSize int) *RealTimeStatus {
 
 func NewNetIOTimeSeries() NetIOTimeSeries {
 	return NetIOTimeSeries{
-		BytesSent:   TimeSeries{},
-		BytesRecv:   TimeSeries{},
-		PacketsSent: TimeSeries{},
-		PacketsRecv: TimeSeries{},
+		lastBytesSent:   LastTimeValue{},
+		lastBytesRecv:   LastTimeValue{},
+		lastPacketsSent: LastTimeValue{},
+		lastPacketsRecv: LastTimeValue{},
+		BytesSent:       TimeSeries{},
+		BytesRecv:       TimeSeries{},
+		PacketsSent:     TimeSeries{},
+		PacketsRecv:     TimeSeries{},
 	}
 }
 
+type LastTimeValue struct {
+	Time  time.Time
+	Value float64
+}
+
 type NetIOTimeSeries struct {
+	lastBytesSent   LastTimeValue
+	lastBytesRecv   LastTimeValue
+	lastPacketsSent LastTimeValue
+	lastPacketsRecv LastTimeValue
+
 	BytesSent   TimeSeries
 	BytesRecv   TimeSeries
 	PacketsSent TimeSeries
@@ -91,7 +106,7 @@ func (r *RealTimeStatus) Listen(ctx context.Context) *RealTimeStatus {
 				r.CPUAdd(0)
 			}
 			r.MemAdd(info.Memory.Virtual.UsedPercent)
-			//r.NetAdd(info.NetIO[0])
+			r.NetAdd(info.NetIO[0])
 			//log.Info(`Collect server status`)
 		}
 	}
@@ -126,29 +141,67 @@ func (r *RealTimeStatus) NetAdd(stat net.IOCountersStat) *RealTimeStatus {
 	if r.max <= 0 {
 		return r
 	}
+	now := time.Now()
 	l := len(r.Net.BytesRecv)
 	if l >= r.max {
 		r.Net.BytesRecv = r.Net.BytesRecv[1+l-r.max:]
 	}
-	r.Net.BytesRecv = append(r.Net.BytesRecv, NewXY(float64(stat.BytesRecv)))
+	n := float64(stat.BytesRecv)
+	var speed float64
+	if !r.Net.lastBytesRecv.Time.IsZero() {
+		speed = (n - r.Net.lastBytesRecv.Value) / now.Sub(r.Net.lastBytesRecv.Time).Seconds()
+		speed = math.Ceil(speed)
+	} else {
+		speed = 0
+	}
+	r.Net.BytesRecv = append(r.Net.BytesRecv, NewXY(speed))
+	r.Net.lastBytesRecv.Time = now
+	r.Net.lastBytesRecv.Value = n
 
 	l = len(r.Net.BytesSent)
 	if l >= r.max {
 		r.Net.BytesSent = r.Net.BytesSent[1+l-r.max:]
 	}
-	r.Net.BytesSent = append(r.Net.BytesSent, NewXY(float64(stat.BytesSent)))
+	n = float64(stat.BytesSent)
+	if !r.Net.lastBytesSent.Time.IsZero() {
+		speed = (n - r.Net.lastBytesSent.Value) / now.Sub(r.Net.lastBytesSent.Time).Seconds()
+		speed = math.Ceil(speed)
+	} else {
+		speed = 0
+	}
+	r.Net.BytesSent = append(r.Net.BytesSent, NewXY(speed))
+	r.Net.lastBytesSent.Time = now
+	r.Net.lastBytesSent.Value = n
 
 	l = len(r.Net.PacketsRecv)
 	if l >= r.max {
 		r.Net.PacketsRecv = r.Net.PacketsRecv[1+l-r.max:]
 	}
-	r.Net.PacketsRecv = append(r.Net.PacketsRecv, NewXY(float64(stat.PacketsRecv)))
+	n = float64(stat.PacketsRecv)
+	if !r.Net.lastPacketsRecv.Time.IsZero() {
+		speed = (n - r.Net.lastPacketsRecv.Value) / now.Sub(r.Net.lastPacketsRecv.Time).Seconds()
+		speed = math.Ceil(speed)
+	} else {
+		speed = 0
+	}
+	r.Net.PacketsRecv = append(r.Net.PacketsRecv, NewXY(speed))
+	r.Net.lastPacketsRecv.Time = now
+	r.Net.lastPacketsRecv.Value = n
 
 	l = len(r.Net.PacketsSent)
 	if l >= r.max {
 		r.Net.PacketsSent = r.Net.PacketsSent[1+l-r.max:]
 	}
-	r.Net.PacketsSent = append(r.Net.PacketsSent, NewXY(float64(stat.PacketsSent)))
+	n = float64(stat.PacketsSent)
+	if !r.Net.lastPacketsSent.Time.IsZero() {
+		speed = (n - r.Net.lastPacketsSent.Value) / now.Sub(r.Net.lastPacketsSent.Time).Seconds()
+		speed = math.Ceil(speed)
+	} else {
+		speed = 0
+	}
+	r.Net.PacketsSent = append(r.Net.PacketsSent, NewXY(speed))
+	r.Net.lastPacketsSent.Time = now
+	r.Net.lastPacketsSent.Value = n
 	return r
 }
 
