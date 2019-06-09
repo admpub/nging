@@ -255,7 +255,7 @@ function connectWS(onopen){
 	  ws = null;
   };
 	ws.onmessage = function(evt) {
-    console.dir(evt.data);
+    //console.dir(evt.data);
     var info=JSON.parse(evt.data);
     chartCPU(info);
     chartNet(info);
