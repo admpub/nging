@@ -18,7 +18,9 @@
     </div>
     {{end}}
 </div>
-{{Include "server/chart/cpu"}}
+{{range $k,$block := Stored.blocks}}
+{{if $block.Tmpl}}{{Fetch $block.Tmpl $}}{{end}}
+{{end}}
 <div class="row no-margin-top">
     <div class="col-md-12">
         <div class="block-flat">
@@ -69,9 +71,6 @@
     </div>
 </div>
 <div class="row no-margin-top">
-    {{range $k,$block := Stored.blocks}}
-    {{if $block.Tmp}}{{Fetch $block.Tmpl $}}{{end}}
-    {{end}}
     <div class="col-md-12">
         <div class="block-flat">
             <div class="header">
@@ -94,5 +93,7 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
-{{Include "server/chart/cpu.js"}}
+{{range $k,$block := Stored.blocks}}
+{{if $block.Footer}}{{Fetch $block.Footer $}}{{end}}
+{{end}}
 {{/Block}}

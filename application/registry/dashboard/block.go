@@ -28,6 +28,7 @@ func NewBlock(content func(echo.Context) error) *Block {
 
 type Block struct {
 	Tmpl    string //模板文件
+	Footer  string //末尾模版或JS代码
 	content func(echo.Context) error
 }
 

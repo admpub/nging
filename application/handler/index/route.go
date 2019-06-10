@@ -21,6 +21,7 @@ import (
 	"strings"
 
 	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/model"
 	"github.com/admpub/nging/application/registry/navigate"
 	"github.com/admpub/nging/application/registry/perm"
 	"github.com/webx-top/echo"
@@ -28,6 +29,10 @@ import (
 
 func RouteList(ctx echo.Context) error {
 	return ctx.JSON(handler.Echo().Routes())
+}
+
+func NavTree(ctx echo.Context) error {
+	return ctx.JSON(model.NavTreeCached())
 }
 
 func RouteNotin(ctx echo.Context) error {

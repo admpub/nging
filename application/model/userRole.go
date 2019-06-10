@@ -18,22 +18,26 @@
 package model
 
 import (
-	"regexp"
 	"strings"
 
 	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/registry/navigate"
+	"github.com/admpub/nging/application/library/perm"
 	"github.com/admpub/nging/application/model/base"
+	"github.com/admpub/nging/application/registry/navigate"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
 
-type Map struct {
-	V map[string]*Map
-}
+var navTreeCached *perm.Map
 
-func NewMap() *Map {
-	return &Map{V: map[string]*Map{}}
+func NavTreeCached() *perm.Map {
+	if navTreeCached != nil {
+		return navTreeCached
+	}
+	navTreeCached = perm.NewMap()
+	navTreeCached.Import(navigate.LeftNavigate)
+	navTreeCached.Import(navigate.TopNavigate)
+	return navTreeCached
 }
 
 func NewUserRole(ctx echo.Context) *UserRole {
@@ -46,8 +50,8 @@ func NewUserRole(ctx echo.Context) *UserRole {
 type UserRole struct {
 	*dbschema.UserRole
 	*base.Base
-	permActions *Map
-	permCmds    *Map
+	permActions *perm.Map
+	permCmds    *perm.Map
 }
 
 func (u *UserRole) Exists(name string) (bool, error) {
@@ -67,6 +71,7 @@ func (u *UserRole) ListByUser(user *dbschema.User) (roleList []*dbschema.UserRol
 }
 
 func (u *UserRole) CheckPerm2(roleList []*dbschema.UserRole, perm string) (hasPerm bool) {
+	perm = strings.TrimPrefix(perm, `/`)
 	for _, role := range roleList {
 		r := NewUserRole(nil)
 		r.UserRole = role
@@ -87,44 +92,11 @@ func (u *UserRole) Exists2(name string, excludeID uint) (bool, error) {
 }
 
 func (u *UserRole) CleanPermAction(values []string) *UserRole {
-	u.PermAction = ``
-	if len(values) > 0 && values[0] == `*` {
-		u.PermAction = `*`
-		return u
-	}
-	var prefix string
-	for _, v := range values {
-		length := len(v)
-		var suffix string
-		if length > 2 {
-			suffix = v[length-2:]
-		}
-		if suffix == `/*` {
-			if len(prefix) > 0 {
-				prefix += `|`
-			}
-			prefix += regexp.QuoteMeta(v[0 : length-2])
-			if len(u.PermAction) > 0 {
-				u.PermAction += `,`
-			}
-			u.PermAction += v
-			continue
-		}
-		if len(prefix) > 0 {
-			re := regexp.MustCompile(`^(` + prefix + `)`)
-			if re.MatchString(v) {
-				continue
-			}
-		}
-		if len(u.PermAction) > 0 {
-			u.PermAction += `,`
-		}
-		u.PermAction += v
-	}
+	u.PermAction = perm.BuildPermActions(values)
 	return u
 }
 
-func (u *UserRole) CheckPerm(perm string) bool {
+func (u *UserRole) CheckPerm(permPath string) bool {
 	if len(u.PermAction) == 0 {
 		return false
 	}
@@ -132,32 +104,11 @@ func (u *UserRole) CheckPerm(perm string) bool {
 		return true
 	}
 	if u.permActions == nil {
-		u.permActions = NewMap()
-		perms := strings.Split(u.PermAction, `,`)
-		for _, perm := range perms {
-			arr := strings.Split(perm, `/`)
-			result := u.permActions.V
-			for _, a := range arr {
-				if _, y := result[a]; !y {
-					result[a] = NewMap()
-				}
-				result = result[a].V
-			}
-		}
+		navTree := NavTreeCached()
+		u.permActions = perm.NewMap()
+		u.permActions.Parse(u.PermAction, navTree)
 	}
-	arr := strings.Split(perm, `/`)
-	result := u.permActions.V
-	for _, a := range arr {
-		v, y := result[a]
-		if !y {
-			return false
-		}
-		if _, y := v.V[`*`]; y {
-			return true
-		}
-		result = v.V
-	}
-	return true
+	return u.permActions.Check(permPath)
 }
 
 func (u *UserRole) CheckCmdPerm2(roleList []*dbschema.UserRole, perm string) (hasPerm bool) {
@@ -172,7 +123,7 @@ func (u *UserRole) CheckCmdPerm2(roleList []*dbschema.UserRole, perm string) (ha
 	return
 }
 
-func (u *UserRole) CheckCmdPerm(perm string) bool {
+func (u *UserRole) CheckCmdPerm(permPath string) bool {
 	if len(u.PermCmd) == 0 {
 		return false
 	}
@@ -180,21 +131,21 @@ func (u *UserRole) CheckCmdPerm(perm string) bool {
 		return true
 	}
 	if u.permCmds == nil {
-		u.permCmds = NewMap()
+		u.permCmds = perm.NewMap()
 		perms := strings.Split(u.PermCmd, `,`)
-		for _, perm := range perms {
-			arr := strings.Split(perm, `/`)
+		for _, _perm := range perms {
+			arr := strings.Split(_perm, `/`)
 			result := u.permCmds.V
 			for _, a := range arr {
 				if _, y := result[a]; !y {
-					result[a] = NewMap()
+					result[a] = perm.NewMap()
 				}
 				result = result[a].V
 			}
 		}
 	}
 
-	arr := strings.Split(perm, `/`)
+	arr := strings.Split(permPath, `/`)
 	result := u.permCmds.V
 	for _, a := range arr {
 		v, y := result[a]
@@ -210,7 +161,7 @@ func (u *UserRole) CheckCmdPerm(perm string) bool {
 func (u *UserRole) FilterNavigate(roleList []*dbschema.UserRole, navList navigate.List) navigate.List {
 	var result navigate.List
 	for _, nav := range navList {
-		if !u.CheckPerm2(roleList, nav.Action) {
+		if !nav.Unlimited && !u.CheckPerm2(roleList, nav.Action) {
 			continue
 		}
 		navCopy := *nav
@@ -222,7 +173,7 @@ func (u *UserRole) FilterNavigate(roleList []*dbschema.UserRole, navList navigat
 			} else {
 				perm = nav.Action
 			}
-			if !u.CheckPerm2(roleList, perm) {
+			if !nav.Unlimited && !u.CheckPerm2(roleList, perm) {
 				continue
 			}
 			navCopy.Children = append(navCopy.Children, child)

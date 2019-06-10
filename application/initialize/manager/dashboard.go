@@ -51,4 +51,9 @@ func init() {
 			return taskCount
 		}),
 	)
+
+	dashboard.BlockRegister(&dashboard.Block{
+		Tmpl:   `server/chart/cpu`,
+		Footer: `server/chart/cpu.js`,
+	})
 }

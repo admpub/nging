@@ -19,5 +19,6 @@ func init() {
 		e.Get(`/icon`, Icon, middleware.AuthCheck)
 		e.Get(`/routeList`, RouteList, middleware.AuthCheck)
 		e.Get(`/routeNotin`, RouteNotin, middleware.AuthCheck)
+		e.Get(`/navTree`, NavTree, middleware.AuthCheck)
 	})
 }

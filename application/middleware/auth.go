@@ -76,16 +76,12 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 				if len(ppath) >= 13 {
 					switch ppath[0:13] {
 					case `/term/client/`:
-						ppath = `term/client`
+						ppath = `/term/client`
 					default:
 						if strings.HasPrefix(rpath, `/frp/dashboard/`) {
 							ppath = `/frp/dashboard`
-						} else {
-							ppath = strings.TrimPrefix(rpath, `/`)
 						}
 					}
-				} else {
-					ppath = strings.TrimPrefix(rpath, `/`)
 				}
 			}
 			if !roleM.CheckPerm2(roleList, ppath) {
