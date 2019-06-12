@@ -57,7 +57,7 @@ func (c *CLIConfig) CaddyStop() error {
 var eol = []byte("\n")
 
 func (c *CLIConfig) CaddyReload() error {
-	if c.caddyCh == nil {
+	if c.caddyCh == nil || com.IsWindows { //windows不支持重载，需要重启
 		return c.CaddyRestart()
 	}
 	c.caddyCh.Send(eol)
