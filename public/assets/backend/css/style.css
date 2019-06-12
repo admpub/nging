@@ -5216,6 +5216,7 @@ ul.timeline > li > .date {
   }
   .cl-sidebar {
     width: 55px;
+    min-width: 55px;
   }
   #pcont {
     margin-left: 55px;
