@@ -1,6 +1,6 @@
 {{Strip}}
 {{range $key, $nav := Stored.leftNavigate}}
-{{if $nav}}
+{{if and $nav (not $nav.Unlimited)}}
 <fieldset class="fieldset">
   <legend>
     <span class="checkbox checkbox-success">
@@ -10,6 +10,7 @@
   </legend>
   <ul class="list-inline clearfix">
   {{range $k, $c := $nav.Children}}
+  {{if and $c (not $c.Unlimited)}}
   <li class="pull-left">
     <span class="checkbox checkbox-success">
       <input type="checkbox" name="permAction[]" value="{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if $c.Action}}{{if Stored.data.CheckPerm (printf "%v/%v" $nav.Action $c.Action)}} checked{{end}}{{else}}{{if Stored.data.CheckPerm $nav.Action}} checked{{end}}{{end}} id="permAction-{{$nav.Action}}{{if $c.Action}}-{{$c.Action}}{{end}}" /> 
@@ -17,12 +18,13 @@
     </span>
   </li>
   {{end}}
+  {{end}}
   </ul>
 </fieldset>
 {{end}}
 {{end}}
 {{range $key, $nav := Stored.topNavigate}}
-{{if $nav}}
+{{if and $nav (not $nav.Unlimited)}}
 <fieldset class="fieldset">
   <legend>
     <span class="checkbox checkbox-success">
@@ -32,12 +34,14 @@
   </legend>
   <ul class="list-inline clearfix">
   {{range $k, $c := $nav.Children}}
+  {{if and $c (not $c.Unlimited)}}
   <li class="pull-left">
     <span class="checkbox checkbox-success">
       <input type="checkbox" name="permAction[]" value="{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if $c.Action}}{{if Stored.data.CheckPerm (printf "%v/%v" $nav.Action $c.Action)}} checked{{end}}{{else}}{{if Stored.data.CheckPerm $nav.Action}} checked{{end}}{{end}} id="permAction-{{$nav.Action}}{{if $c.Action}}-{{$c.Action}}{{end}}" /> 
       <label for="permAction-{{$nav.Action}}{{if $c.Action}}-{{$c.Action}}{{end}}">{{$c.Name|T}}</label>
     </span>
   </li>
+  {{end}}
   {{end}}
   </ul>
 </fieldset>
