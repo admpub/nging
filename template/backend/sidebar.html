@@ -53,8 +53,10 @@
         <div class="text-right collapse-button" style="padding:7px 9px;">
           <form action="{{URL.Path}}" id="global-search-form" method="GET">
           {{- range $field,$values:=Queries -}}
+          {{- if ne $field "q" -}}
           {{- range $k,$value:=$values -}}
           <input type="hidden" name="{{$field}}" value="{{$value}}" />
+          {{- end -}}
           {{- end -}}
           {{- end -}}
           <input type="text" value="{{Form "q"}}" name="q" class="form-control search" placeholder="Search..." onkeyup="if(event.keyCode==13)$('#global-search-form').submit()" />
