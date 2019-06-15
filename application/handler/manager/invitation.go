@@ -19,11 +19,9 @@
 package manager
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
-	"github.com/admpub/log"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/com"
@@ -37,15 +35,7 @@ func dateString2UnixString(k string, v []string) (string, []string) {
 	case `Start`:
 		fallthrough
 	case `End`:
-		if len(v) > 0 && len(v[0]) > 0 {
-			t, e := time.Parse(`2006-01-02`, v[0])
-			if e != nil {
-				log.Error(e)
-				return k, []string{`0`}
-			}
-			return k, []string{fmt.Sprint(t.Unix())}
-		}
-		return k, []string{`0`}
+		return echo.DateToTimestamp()(k, v)
 	case `RoleIds`:
 		return k, []string{strings.Join(v, `,`)}
 	}

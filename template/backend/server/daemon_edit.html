@@ -108,6 +108,26 @@
                     </div>
                   </div>
                   <div class="form-group">
+                    <label class="col-sm-2 control-label">{{"通知邮件"|T}}</label>
+                    <div class="col-sm-8">
+                      {{$v := Form "enableNotify"}}
+                      <div class="radio radio-primary radio-inline">
+                          <input type="radio" value="0" name="enableNotify" {{if or (eq $v "0") (eq $v "")}} checked{{end}} onclick="$('#cc-email-addr').addClass('hidden')" id="enableNotify-0"> <label for="enableNotify-0">{{"不通知"|T}}</label>
+                        </div>
+                        <div class="radio radio-primary radio-inline">
+                          <input type="radio" value="1" name="enableNotify" {{if eq $v "1"}} checked{{end}} onclick="$('#cc-email-addr').removeClass('hidden')" id="enableNotify-1"> <label for="enableNotify-1">{{"达到最大重试次数后通知"|T}}</label>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="form-group{{if or (eq $v "0") (eq $v "")}} hidden{{end}}" id="cc-email-addr">
+                    <label class="col-sm-2 control-label">{{"通知邮件抄送"|T}}</label>
+                    <div class="col-sm-8">
+                      <textarea class="form-control" name="notifyEmail">{{Form "notifyEmail"}}</textarea>
+                      <div class="help-block">{{"每行一个Email地址"|T}}</div>
+                    </div>
+                  </div>
+                  
+                  <div class="form-group">
                     <label class="col-sm-2 control-label">{{"说明"|T}}</label>
                     <div class="col-sm-8">
                       <textarea class="form-control" name="description">{{Form "description"}}</textarea>

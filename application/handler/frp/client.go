@@ -157,13 +157,7 @@ func ClientEdit(ctx echo.Context) error {
 		} else if y {
 			err = ctx.E(`名称已经存在`)
 		} else {
-			err = ctx.MustBind(m.FrpClient, func(k string, v []string) (string, []string) {
-				switch strings.ToLower(k) {
-				case `created`: //禁止修改创建时间和用户名
-					return ``, v
-				}
-				return k, v
-			})
+			err = ctx.MustBind(m.FrpClient, echo.ExcludeFieldName(`created`))
 		}
 		if err == nil {
 			m.FrpClient.Extra, err = form2ExtraStr(ctx)

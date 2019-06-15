@@ -20,7 +20,6 @@ package frp
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
@@ -151,13 +150,7 @@ func ServerEdit(ctx echo.Context) error {
 		} else if y {
 			err = ctx.E(`名称已经存在`)
 		} else {
-			err = ctx.MustBind(m.FrpServer, func(k string, v []string) (string, []string) {
-				switch strings.ToLower(k) {
-				case `created`: //禁止修改创建时间和用户名
-					return ``, v
-				}
-				return k, v
-			})
+			err = ctx.MustBind(m.FrpServer, echo.ExcludeFieldName(`created`))
 		}
 
 		if err == nil {

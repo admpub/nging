@@ -156,13 +156,7 @@ func SchemaSyncEdit(ctx echo.Context) error {
 	cond := db.Cond{`id`: id}
 	err = m.Get(nil, cond)
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.DbSync, func(k string, v []string) (string, []string) {
-			switch strings.ToLower(k) {
-			case `created`: //禁止修改创建时间
-				return ``, v
-			}
-			return k, v
-		})
+		err = ctx.MustBind(m.DbSync, echo.ExcludeFieldName(`created`))
 		if err == nil {
 			user := m.Form(`dsn_source_user`)
 			passwd := m.Form(`dsn_source_passwd`)

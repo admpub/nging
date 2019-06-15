@@ -28,56 +28,69 @@ import (
 	"github.com/admpub/goforever"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/library/cron"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
 
-var Daemon = goforever.Default
+var (
+	Daemon            = goforever.Default
+	DaemonDefaultHook = DaemonCommonHook
+)
 
 func init() {
 	Daemon.Name = `nging`
 	Daemon.Debug = true
 }
 
+func DaemonCommonHook(p *goforever.Process) {
+	/*
+		if p.Status == goforever.StatusRestarted {
+			return
+		}
+	*/
+	processM := &dbschema.ForeverProcess{}
+	err := processM.Get(nil, nil, `id`, p.Name)
+	if err != nil {
+		log.Errorf(`Not found ForeverProcess: %v (%v)`, p.Name, err)
+		return
+	}
+	switch p.Status {
+	case goforever.StatusStarted:
+		processM.Lastrun = uint(time.Now().Unix())
+		processM.Pid = p.Pid
+	case goforever.StatusStopped:
+		processM.Pid = 0
+	case goforever.StatusExited:
+		OnExitedDaemon(processM)
+		processM.Pid = 0
+	case goforever.StatusKilled:
+		processM.Pid = 0
+	}
+	processM.Status = p.Status
+	set := echo.H{
+		`status`: processM.Status,
+	}
+	if p.Error() != nil {
+		set[`error`] = p.Error().Error()
+	}
+	err = processM.SetFields(nil, set, `id`, p.Name)
+	if err != nil {
+		log.Errorf(`Update ForeverProcess: %v (%v)`, p.Name, err)
+	}
+}
+
+// RunDaemon 运行值守程序
 func RunDaemon() {
 	if !IsInstalled() {
 		return
 	}
-	processHook := func(p *goforever.Process) {
-		/*
-			if p.Status == goforever.StatusRestarted {
-				return
-			}
-		*/
-		processM := &dbschema.ForeverProcess{}
-		err := processM.Get(nil, nil, `id`, p.Name)
-		if err != nil {
-			return
-		}
-		switch p.Status {
-		case goforever.StatusStarted:
-			processM.Lastrun = uint(time.Now().Unix())
-			processM.Pid = p.Pid
-		case goforever.StatusStopped:
-			processM.Pid = 0
-		case goforever.StatusExited:
-			processM.Pid = 0
-		case goforever.StatusKilled:
-			processM.Pid = 0
-		}
-		processM.Status = p.Status
-		err = processM.Edit(nil, `id`, p.Name)
-		if err != nil {
-			log.Error(err)
-		}
-	}
-	Daemon.AddHook(goforever.StatusStarted, processHook)
-	Daemon.AddHook(goforever.StatusStopped, processHook)
-	Daemon.AddHook(goforever.StatusRunning, processHook)
-	Daemon.AddHook(goforever.StatusRestarted, processHook)
-	Daemon.AddHook(goforever.StatusExited, processHook)
-	Daemon.AddHook(goforever.StatusKilled, processHook)
-	_ = processHook
+	Daemon.SetHook(goforever.StatusStarted, DaemonDefaultHook)
+	Daemon.SetHook(goforever.StatusStopped, DaemonDefaultHook)
+	Daemon.SetHook(goforever.StatusRunning, DaemonDefaultHook)
+	Daemon.SetHook(goforever.StatusRestarted, DaemonDefaultHook)
+	Daemon.SetHook(goforever.StatusExited, DaemonDefaultHook)
+	Daemon.SetHook(goforever.StatusKilled, DaemonDefaultHook)
 	processM := &dbschema.ForeverProcess{}
 	_, err := processM.ListByOffset(nil, nil, 0, -1, `disabled`, `N`)
 	if err != nil {
@@ -143,4 +156,42 @@ func ParseArgsSlice(a string) []string {
 		}
 	}
 	return args
+}
+
+// OnExitedDaemon 当值守程序达到最大重试次数退出时
+func OnExitedDaemon(processM *dbschema.ForeverProcess) {
+	// 发送邮件通知
+	if processM.EnableNotify == 0 {
+		return
+	}
+	user := new(dbschema.User)
+	if processM.Uid > 0 {
+		user.Get(nil, `id`, processM.Uid)
+	}
+	var ccList []string
+	if len(processM.NotifyEmail) > 0 {
+		ccList = strings.Split(processM.NotifyEmail, "\n")
+		for index, email := range ccList {
+			email = strings.TrimSpace(email)
+			if len(email) == 0 {
+				continue
+			}
+			ccList[index] = email
+		}
+	}
+	if len(user.Email) == 0 {
+		if len(ccList) == 0 {
+			return
+		}
+		user.Email = ccList[0]
+		user.Username = strings.SplitN(user.Email, `@`, 2)[0]
+		if len(ccList) > 1 {
+			ccList = ccList[1:]
+		}
+	}
+	title := `[Nging][进程值守警报]进程[` + processM.Name + `]已经异常退出`
+	content := `<h1>进程值守警报</h1><p>进程<strong>` + processM.Name + `</strong>已经于<strong>` + time.Now().Local().Format(time.RFC3339) + `</strong>异常退出，请马上处理</p>`
+	if err := cron.SendMail(user.Email, user.Username, title, com.Str2bytes(content), ccList...); err != nil {
+		log.Errorf(`发送进程值守警报失败：%v`, err)
+	}
 }

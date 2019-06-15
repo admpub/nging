@@ -18,8 +18,6 @@
 package database
 
 import (
-	"strings"
-
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/admpub/nging/application/model"
@@ -108,13 +106,7 @@ func AccountEdit(ctx echo.Context) error {
 	cond := db.And(db.Cond{`id`: id}, db.Cond{`uid`: user.Id})
 	err = m.Get(nil, cond)
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.DbAccount, func(k string, v []string) (string, []string) {
-			switch strings.ToLower(k) {
-			case `created`, `uid`: //禁止修改创建时间
-				return ``, v
-			}
-			return k, v
-		})
+		err = ctx.MustBind(m.DbAccount, echo.ExcludeFieldName(`created`, `uid`))
 
 		if err == nil {
 			m.Id = id

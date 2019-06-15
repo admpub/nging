@@ -99,14 +99,22 @@ func (p *Process) RunHook(status string) {
 	}
 }
 
-func (p *Process) AddHook(status string, hook func(procs *Process)) *Process {
+func (p *Process) SetHook(status string, hooks ...func(procs *Process)) *Process {
+	if p.hooks == nil {
+		p.hooks = map[string][]func(procs *Process){}
+	}
+	p.hooks[status] = hooks
+	return p
+}
+
+func (p *Process) AddHook(status string, hooks ...func(procs *Process)) *Process {
 	if p.hooks == nil {
 		p.hooks = map[string][]func(procs *Process){}
 	}
 	if _, ok := p.hooks[status]; !ok {
 		p.hooks[status] = []func(procs *Process){}
 	}
-	p.hooks[status] = append(p.hooks[status], hook)
+	p.hooks[status] = append(p.hooks[status], hooks...)
 	return p
 }
 

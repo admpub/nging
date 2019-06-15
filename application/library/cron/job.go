@@ -139,7 +139,7 @@ type Job struct {
 
 func NewJobFromTask(ctx context.Context, task *dbschema.Task) (*Job, error) {
 	if task.Id < 1 {
-		return nil, fmt.Errorf("Job: 缺少task.Id")
+		return nil, fmt.Errorf("Job: missing task.Id")
 	}
 	var env []string
 	task.Env = strings.TrimSpace(task.Env)
@@ -254,7 +254,7 @@ func (j *Job) addAndReturningLog() *Job {
 	// 插入日志
 	_, err := j.taskLog.Add()
 	if err != nil {
-		log.Error("日志写入失败: ", err)
+		log.Error("Job: 日志写入失败: ", err)
 	}
 	j.logID = j.taskLog.Id
 	return j

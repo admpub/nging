@@ -19,8 +19,6 @@
 package frp
 
 import (
-	"strings"
-
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/db"
@@ -85,13 +83,7 @@ func GroupEdit(ctx echo.Context) error {
 		} else if y {
 			err = ctx.E(`用户组名称已经存在`)
 		} else {
-			err = ctx.MustBind(m.FrpGroup, func(k string, v []string) (string, []string) {
-				switch strings.ToLower(k) {
-				case `created`: //禁止修改创建时间
-					return ``, v
-				}
-				return k, v
-			})
+			err = ctx.MustBind(m.FrpGroup, echo.ExcludeFieldName(`created`))
 		}
 
 		if err == nil {

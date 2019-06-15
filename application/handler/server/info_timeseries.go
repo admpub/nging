@@ -106,7 +106,9 @@ func (r *RealTimeStatus) Listen(ctx context.Context) *RealTimeStatus {
 				r.CPUAdd(0)
 			}
 			r.MemAdd(info.Memory.Virtual.UsedPercent)
-			r.NetAdd(info.NetIO[0])
+			if len(info.NetIO) > 0 {
+				r.NetAdd(info.NetIO[0])
+			}
 			//log.Info(`Collect server status`)
 		}
 	}

@@ -364,6 +364,7 @@ DROP TABLE IF EXISTS `forever_process`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `forever_process` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '添加人ID',
   `name` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '名称',
   `command` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '命令',
   `workdir` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '工作目录',
@@ -384,6 +385,8 @@ CREATE TABLE `forever_process` (
   `error` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '错误信息',
   `lastrun` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '上次运行时间',
   `description` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '说明',
+  `enable_notify` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否启用通知',
+  `notify_email` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '通知人列表',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='持久进程';
@@ -804,4 +807,4 @@ CREATE TABLE `vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-05-11 12:40:07
+-- Dump completed on 2019-06-15 11:50:30

@@ -20,7 +20,6 @@ package server
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/admpub/goforever"
 	"github.com/admpub/nging/application/handler"
@@ -53,6 +52,7 @@ func DaemonIndex(ctx echo.Context) error {
 }
 
 func DaemonAdd(ctx echo.Context) error {
+	user := handler.User(ctx)
 	var err error
 	m := model.NewForeverProcess(ctx)
 	if ctx.IsPost() {
@@ -67,6 +67,7 @@ func DaemonAdd(ctx echo.Context) error {
 			err = ctx.MustBind(m.ForeverProcess)
 		}
 		if err == nil {
+			m.Uid = user.Id
 			_, err = m.Add()
 			if err == nil {
 				if m.Disabled == `N` {
@@ -110,13 +111,7 @@ func DaemonEdit(ctx echo.Context) error {
 		} else if y {
 			err = ctx.E(`名称已经存在`)
 		} else {
-			err = ctx.MustBind(m.ForeverProcess, func(k string, v []string) (string, []string) {
-				switch strings.ToLower(k) {
-				case `created`: //禁止修改创建时间和用户名
-					return ``, v
-				}
-				return k, v
-			})
+			err = ctx.MustBind(m.ForeverProcess, echo.ExcludeFieldName(`created`, `uid`, `lastrun`))
 		}
 		if err == nil {
 			m.Id = id

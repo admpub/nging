@@ -213,12 +213,7 @@ func Edit(ctx echo.Context) error {
 		return ctx.Redirect(handler.URLFor(`/task/index`))
 	}
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.Task, func(k string, v []string) (string, []string) {
-			if strings.ToLower(k) == `disabled` {
-				return ``, nil
-			}
-			return k, v
-		})
+		err = ctx.MustBind(m.Task, echo.ExcludeFieldName(`disabled`))
 		if err == nil {
 			m.Id = id
 			m.NotifyEmail = strings.TrimSpace(m.NotifyEmail)

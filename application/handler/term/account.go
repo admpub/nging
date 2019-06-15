@@ -257,13 +257,7 @@ func GroupEdit(ctx echo.Context) error {
 		} else if y {
 			err = ctx.E(`组名称已经存在`)
 		} else {
-			err = ctx.MustBind(m.SshUserGroup, func(k string, v []string) (string, []string) {
-				switch strings.ToLower(k) {
-				case `created`: //禁止修改创建时间
-					return ``, v
-				}
-				return k, v
-			})
+			err = ctx.MustBind(m.SshUserGroup, echo.ExcludeFieldName(`created`))
 		}
 
 		if err == nil {
