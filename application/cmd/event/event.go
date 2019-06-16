@@ -28,14 +28,15 @@ func OnStart(index int, fn ...func()) {
 		OnStartList = append(OnStartList, fn...)
 		return
 	}
-	if len(OnStartList) > index {
+	size := len(OnStartList)
+	if size > index {
 		OnStartList[index] = fn[0]
 		if len(fn) > 1 {
 			OnStart(index+1, fn[1:]...)
 		}
 		return
 	}
-	for start := len(OnStartList); start < index; start++ {
+	for start, end := size, index-1; start < end; start++ {
 		OnStartList = append(OnStartList, nil)
 	}
 	OnStartList = append(OnStartList, fn...)

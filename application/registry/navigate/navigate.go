@@ -94,7 +94,7 @@ func (a *List) Set(index int, list ...*Item) *List {
 		}
 		return a
 	}
-	for start := size; start < index; start++ {
+	for start, end := size, index-1; start < end; start++ {
 		*a = append(*a, nil)
 	}
 	*a = append(*a, list...)
@@ -119,7 +119,7 @@ func (a *List) Add(index int, list ...*Item) *List {
 		}
 		return a
 	}
-	for start := size; start < index; start++ {
+	for start, end := size, index-1; start < end; start++ {
 		*a = append(*a, nil)
 	}
 	*a = append(*a, list...)

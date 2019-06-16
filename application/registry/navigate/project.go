@@ -200,7 +200,7 @@ func (a *ProjectList) Set(index int, list ...*ProjectItem) *ProjectList {
 		}
 		return a
 	}
-	for start := size; start < index; start++ {
+	for start, end := size, index-1; start < end; start++ {
 		*a = append(*a, nil)
 	}
 	*a = append(*a, list...)
@@ -225,7 +225,7 @@ func (a *ProjectList) Add(index int, list ...*ProjectItem) *ProjectList {
 		}
 		return a
 	}
-	for start := size; start < index; start++ {
+	for start, end := size, index-1; start < end; start++ {
 		*a = append(*a, nil)
 	}
 	*a = append(*a, list...)
