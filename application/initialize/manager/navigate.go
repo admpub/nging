@@ -156,6 +156,27 @@ func init() {
 					Name:          `执行命令`,
 					Action:        `cmd`,
 				},
+				//指令集
+				{
+					DisplayOnMenu: true,
+					Name:          `指令集`,
+					Action:        `command`,
+				},
+				{
+					DisplayOnMenu: false,
+					Name:          `添加指令`,
+					Action:        `command_add`,
+				},
+				{
+					DisplayOnMenu: false,
+					Name:          `修改指令`,
+					Action:        `command_edit`,
+				},
+				{
+					DisplayOnMenu: false,
+					Name:          `删除指令`,
+					Action:        `command_delete`,
+				},
 				{
 					DisplayOnMenu: true,
 					Name:          `服务管理`,

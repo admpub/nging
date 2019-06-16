@@ -41,10 +41,6 @@ func init() {
 		g.Route(`GET,POST`, `/invitation_delete`, InvitationDelete)
 		g.Route(`GET,POST`, `/verification`, Verification)
 		g.Route(`GET,POST`, `/verification_delete`, VerificationDelete)
-		g.Route(`GET,POST`, `/command`, Command)
-		g.Route(`GET,POST`, `/command_add`, CommandAdd)
-		g.Route(`GET,POST`, `/command_edit`, CommandEdit)
-		g.Route(`GET,POST`, `/command_delete`, CommandDelete)
 		g.Route(`GET`, `/clear_cache`, ClearCache)
 		g.Route(`GET,POST`, `/settings`, Settings)
 		g.Route(`POST`, `/upload/:type`, Upload) //文件上传

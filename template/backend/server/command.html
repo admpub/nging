@@ -9,7 +9,7 @@
 	<div class="col-md-12">
 		<div class="block-flat">
 			<div class="header">
-				<a href="__BACKEND__/manager/command_add" class="btn btn-success pull-right">
+				<a href="__BACKEND__/server/command_add" class="btn btn-success pull-right">
 					<i class="fa fa-plus"></i>
 					{{"添加指令"|T}}
 				</a>
@@ -50,9 +50,9 @@
 							</td>
 							<td class="text-center">
 							<a class="label label-danger" href="__BACKEND__/server/cmd?id={{$v.Id}}" data-toggle="tooltip" title="{{"执行"|T}}"><i class="fa fa-play"></i></a>
-							<a class="label label-default" href="__BACKEND__/manager/command_add?copyId={{$v.Id}}" title="{{"复制"|T}}"><i class="fa fa-copy"></i></a>
-							<a class="label label-success" href="__BACKEND__/manager/command_edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a> 
-							<a class="label label-danger" href="__BACKEND__/manager/command_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
+							<a class="label label-default" href="__BACKEND__/server/command_add?copyId={{$v.Id}}" title="{{"复制"|T}}"><i class="fa fa-copy"></i></a>
+							<a class="label label-success" href="__BACKEND__/server/command_edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a> 
+							<a class="label label-danger" href="__BACKEND__/server/command_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
 							</td>
 						</tr>
                         {{end}}
@@ -70,7 +70,7 @@
 $(function(){
 	$('input.switch-disabled').on('click',function(r){
 		var that=$(this),disabled=that.data('disabled')=='Y'?'N':'Y';
-		$.get(BACKEND_URL+'/manager/command_edit',{
+		$.get(BACKEND_URL+'/server/command_edit',{
 			disabled:disabled,
 			id:that.data('id')
 		},function(r){

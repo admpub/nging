@@ -37,6 +37,10 @@ func init() {
 		g.Route(`GET,POST`, `/daemon_edit`, DaemonEdit)
 		g.Route(`GET,POST`, `/daemon_delete`, DaemonDelete)
 		g.Route("GET", `/cmd`, Cmd)
+		g.Route(`GET,POST`, `/command`, Command)
+		g.Route(`GET,POST`, `/command_add`, CommandAdd)
+		g.Route(`GET,POST`, `/command_edit`, CommandEdit)
+		g.Route(`GET,POST`, `/command_delete`, CommandDelete)
 		g.Route(`GET,POST`, `/daemon_log`, DaemonLog)
 		g.Route(`GET,POST`, `/log`, func(c echo.Context) error {
 			return config.DefaultConfig.Log.Show(c)

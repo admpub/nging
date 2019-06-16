@@ -16,7 +16,7 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package manager
+package server
 
 import (
 	"github.com/admpub/nging/application/handler"
@@ -32,7 +32,7 @@ func Command(ctx echo.Context) error {
 	}))
 	ret := handler.Err(ctx, err)
 	ctx.Set(`listData`, m.Objects())
-	return ctx.Render(`/manager/command`, ret)
+	return ctx.Render(`/server/command`, ret)
 }
 
 func CommandAdd(ctx echo.Context) error {
@@ -53,7 +53,7 @@ func CommandAdd(ctx echo.Context) error {
 		}
 		if err == nil {
 			handler.SendOk(ctx, ctx.T(`操作成功`))
-			return ctx.Redirect(handler.URLFor(`/manager/command`))
+			return ctx.Redirect(handler.URLFor(`/server/command`))
 		}
 	} else {
 		id := ctx.Formx(`copyId`).Uint()
@@ -65,13 +65,13 @@ func CommandAdd(ctx echo.Context) error {
 			}
 		}
 	}
-	ctx.Set(`activeURL`, `/manager/command`)
+	ctx.Set(`activeURL`, `/server/command`)
 	sshUser := model.NewSshUser(ctx)
 	_, err = sshUser.ListByOffset(nil, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
 	}, 0, -1)
 	ctx.Set(`sshAccountList`, sshUser.Objects())
-	return ctx.Render(`/manager/command_edit`, handler.Err(ctx, err))
+	return ctx.Render(`/server/command_edit`, handler.Err(ctx, err))
 }
 
 func CommandEdit(ctx echo.Context) error {
@@ -80,7 +80,7 @@ func CommandEdit(ctx echo.Context) error {
 	err := m.Get(nil, `id`, id)
 	if err != nil {
 		handler.SendFail(ctx, err.Error())
-		return ctx.Redirect(handler.URLFor(`/manager/command`))
+		return ctx.Redirect(handler.URLFor(`/server/command`))
 	}
 	if ctx.IsPost() {
 		err = ctx.MustBind(m.Command)
@@ -98,7 +98,7 @@ func CommandEdit(ctx echo.Context) error {
 		}
 		if err == nil {
 			handler.SendOk(ctx, ctx.T(`修改成功`))
-			return ctx.Redirect(handler.URLFor(`/manager/command`))
+			return ctx.Redirect(handler.URLFor(`/server/command`))
 		}
 	} else if ctx.IsAjax() {
 		disabled := ctx.Query(`disabled`)
@@ -116,13 +116,13 @@ func CommandEdit(ctx echo.Context) error {
 	}
 
 	echo.StructToForm(ctx, m.Command, ``, echo.LowerCaseFirstLetter)
-	ctx.Set(`activeURL`, `/manager/command`)
+	ctx.Set(`activeURL`, `/server/command`)
 	sshUser := model.NewSshUser(ctx)
 	_, err = sshUser.ListByOffset(nil, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
 	}, 0, -1)
 	ctx.Set(`sshAccountList`, sshUser.Objects())
-	return ctx.Render(`/manager/command_edit`, handler.Err(ctx, err))
+	return ctx.Render(`/server/command_edit`, handler.Err(ctx, err))
 }
 
 func CommandDelete(ctx echo.Context) error {
@@ -135,5 +135,5 @@ func CommandDelete(ctx echo.Context) error {
 		handler.SendFail(ctx, err.Error())
 	}
 
-	return ctx.Redirect(handler.URLFor(`/manager/command`))
+	return ctx.Redirect(handler.URLFor(`/server/command`))
 }

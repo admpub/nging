@@ -65,11 +65,6 @@ var TopNavigate = List{
 			},
 			{
 				DisplayOnMenu: true,
-				Name:          `指令集`,
-				Action:        `command`,
-			},
-			{
-				DisplayOnMenu: true,
 				Name:          `清理缓存`,
 				Action:        `clear_cache`,
 				Target:        `ajax`,
@@ -113,21 +108,6 @@ var TopNavigate = List{
 				DisplayOnMenu: false,
 				Name:          `删除验证码`,
 				Action:        `verification_delete`,
-			},
-			{
-				DisplayOnMenu: false,
-				Name:          `添加指令`,
-				Action:        `command_add`,
-			},
-			{
-				DisplayOnMenu: false,
-				Name:          `修改指令`,
-				Action:        `command_edit`,
-			},
-			{
-				DisplayOnMenu: false,
-				Name:          `删除指令`,
-				Action:        `command_delete`,
 			},
 			{
 				DisplayOnMenu: false,
