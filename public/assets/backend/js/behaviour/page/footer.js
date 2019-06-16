@@ -19,6 +19,6 @@ $(function(){
 			$('#leftnav').html(r.Data.list);
 			App.initLeftNav();
 			App.initLeftNavAjax(window.activeURL,'#leftnav');
-		},'html');
+		},'json');
 	});
 });
