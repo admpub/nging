@@ -11,6 +11,10 @@ $(function(){
 		e.preventDefault();
 		var ident=$(this).data('project');
 		if(ident==$('#leftnav').data('project')) return;
+		$('#leftnav').data('project',ident);
+		var li=$(this).parent('li');
+		li.sibling('li.active').removeClass('active')
+		li.addClass('active');
 		$.get(window.BACKEND_URL+'/project/'+ident,{partial:1},function(r){
 			if(r.Code!=1){
 				App.message({title:App.i18n.SYS_INFO,text:r.Info,type:'error'});

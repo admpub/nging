@@ -133,13 +133,20 @@ func FuncMap() echo.MiddlewareFunc {
 				case `left`:
 					fallthrough
 				default:
+					leftNav := navigate.LeftNavigate
+					ident := navigate.ProjectIdent(c.Path())
+					if len(ident) > 0 {
+						if proj := navigate.ProjectGet(ident); proj != nil {
+							leftNav = proj.NavList
+						}
+					}
 					if user != nil && user.Id == 1 {
-						if navigate.LeftNavigate == nil {
+						if leftNav == nil {
 							return navigate.EmptyList
 						}
-						return *navigate.LeftNavigate
+						return *leftNav
 					}
-					return roleM.FilterNavigate(roleList, navigate.LeftNavigate)
+					return roleM.FilterNavigate(roleList, leftNav)
 				}
 			})
 			return h.Handle(c)
