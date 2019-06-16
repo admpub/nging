@@ -127,22 +127,6 @@ App.lang='{{Lang}}';
 	window.successMSG="{{.}}";
 	{{- end -}}
 {{end -}}
-$(function(){
-	$('#topnav a[data-project]').on('click',function(e){
-		e.preventDefault();
-		var ident=$(this).data('project');
-		if(ident==$('#leftnav').data('project')) return;
-		$.get('__BACKEND__/project/'+ident,{partial:1},function(r){
-			if(r.Code!=1){
-				App.message({title:App.i18n.SYS_INFO,text:r.Info,type:'error'});
-				return;
-			}
-			$('#leftnav').html(r.Data.list);
-			App.initLeftNav();
-			App.initLeftNavAjax(window.activeURL,'#leftnav');
-		},'html');
-	});
-});
 </script>
 <script type="text/javascript" src="__ASSETS__/js/behaviour/page/footer.min.js?t={{BuildTime}}"></script>
 {{Block "footer"}}{{/Block}}
