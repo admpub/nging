@@ -308,7 +308,7 @@ var App = function () {
       
       /*Switch*/
       if(config.bootstrapSwitch){
-        if($('.switch').length>0)$('.switch').bootstrapSwitch();
+        if($('.switch:not(.has-switch)').length>0)$('.switch:not(.has-switch)').bootstrapSwitch();
       }
       
       /*DateTime Picker*/
@@ -483,7 +483,7 @@ var App = function () {
         if(id){
           App.bottomFloat('#'+id+' .pagination');
           App.bottomFloat('#'+id+' .form-submit-group',0,true);
-          $('#'+id+' .switch').bootstrapSwitch();
+          $('#'+id+' .switch:not(.has-switch)').bootstrapSwitch();
         }
         if(option.type=='GET') $('#global-search-form').attr('action',option.url);
       });
