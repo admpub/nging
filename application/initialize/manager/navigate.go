@@ -40,7 +40,7 @@ func init() {
 			Name:          `网站管理`,
 			Action:        `caddy`,
 			Icon:          `sitemap`,
-			Children: navigate.List{
+			Children: &navigate.List{
 				{
 					DisplayOnMenu: false,
 					Name:          `Caddy日志`,
@@ -140,7 +140,7 @@ func init() {
 			Name:          `服务器`,
 			Action:        `server`,
 			Icon:          `desktop`,
-			Children: navigate.List{
+			Children: &navigate.List{
 				{
 					DisplayOnMenu: true,
 					Name:          `服务器信息`,
@@ -239,7 +239,7 @@ func init() {
 			Name:          `FTP账号`,
 			Action:        `ftp`,
 			Icon:          `users`,
-			Children: navigate.List{
+			Children: &navigate.List{
 				{
 					DisplayOnMenu: true,
 					Name:          `账号管理`,
@@ -311,7 +311,7 @@ func init() {
 			Name:          `数据采集`,
 			Action:        `collector`,
 			Icon:          `truck`,
-			Children: navigate.List{
+			Children: &navigate.List{
 				{
 					DisplayOnMenu: true,
 					Name:          `规则管理`,
@@ -432,7 +432,7 @@ func init() {
 			Name:          `计划任务`,
 			Action:        `task`,
 			Icon:          `clock-o`,
-			Children: navigate.List{
+			Children: &navigate.List{
 				{
 					DisplayOnMenu: true,
 					Name:          `任务管理`,
@@ -527,7 +527,7 @@ func init() {
 			Name:          `离线下载`,
 			Action:        `download`,
 			Icon:          `download`,
-			Children: navigate.List{
+			Children: &navigate.List{
 				{
 					DisplayOnMenu: true,
 					Name:          `下载管理`,
@@ -585,7 +585,7 @@ func init() {
 			Name:          `数据库`,
 			Action:        `db`,
 			Icon:          `table`,
-			Children: navigate.List{
+			Children: &navigate.List{
 				{
 					DisplayOnMenu: true,
 					Name:          `数据库账号`,
@@ -664,7 +664,7 @@ func init() {
 			Name:          `内网穿透`,
 			Action:        `frp`,
 			Icon:          `road`,
-			Children: navigate.List{
+			Children: &navigate.List{
 				{
 					DisplayOnMenu: true,
 					Name:          `服务端配置`,
@@ -773,7 +773,7 @@ func init() {
 			Name:          `SSH管理`,
 			Action:        `term`,
 			Icon:          `terminal`,
-			Children: navigate.List{
+			Children: &navigate.List{
 				{
 					DisplayOnMenu: true,
 					Name:          `账号管理`,

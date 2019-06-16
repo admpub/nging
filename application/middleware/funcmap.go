@@ -115,14 +115,20 @@ func FuncMap() echo.MiddlewareFunc {
 				switch side {
 				case `top`:
 					if user != nil && user.Id == 1 {
-						return navigate.TopNavigate
+						if navigate.TopNavigate == nil {
+							return navigate.EmptyList
+						}
+						return *navigate.TopNavigate
 					}
 					return roleM.FilterNavigate(roleList, navigate.TopNavigate)
 				case `left`:
 					fallthrough
 				default:
 					if user != nil && user.Id == 1 {
-						return navigate.LeftNavigate
+						if navigate.LeftNavigate == nil {
+							return navigate.EmptyList
+						}
+						return *navigate.LeftNavigate
 					}
 					return roleM.FilterNavigate(roleList, navigate.LeftNavigate)
 				}

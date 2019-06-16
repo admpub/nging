@@ -26,17 +26,17 @@ type Item struct {
 	Icon          string //图标
 	Target        string //打开方式
 	Unlimited     bool   //是否不限制权限
-	Children      List
+	Children      *List
 }
 
 //List 操作列表
 type List []*Item
 
 //Remove 删除元素
-func (a *List) Remove(index int) List {
+func (a *List) Remove(index int) *List {
 	if index < 0 {
 		*a = (*a)[0:0]
-		return *a
+		return a
 	}
 	size := len(*a)
 	if size > index {
@@ -46,17 +46,17 @@ func (a *List) Remove(index int) List {
 			*a = (*a)[0:index]
 		}
 	}
-	return *a
+	return a
 }
 
 //Set 设置元素
-func (a *List) Set(index int, list ...*Item) List {
+func (a *List) Set(index int, list ...*Item) *List {
 	if len(list) == 0 {
-		return *a
+		return a
 	}
 	if index < 0 {
 		*a = append(*a, list...)
-		return *a
+		return a
 	}
 	size := len(*a)
 	if size > index {
@@ -64,23 +64,23 @@ func (a *List) Set(index int, list ...*Item) List {
 		if len(list) > 1 {
 			a.Set(index+1, list[1:]...)
 		}
-		return *a
+		return a
 	}
 	for start := size; start < index; start++ {
 		*a = append(*a, nil)
 	}
 	*a = append(*a, list...)
-	return *a
+	return a
 }
 
 //Add 添加列表项
-func (a *List) Add(index int, list ...*Item) List {
+func (a *List) Add(index int, list ...*Item) *List {
 	if len(list) == 0 {
-		return *a
+		return a
 	}
 	if index < 0 {
 		*a = append(*a, list...)
-		return *a
+		return a
 	}
 	size := len(*a)
 	if size > index {
@@ -89,11 +89,11 @@ func (a *List) Add(index int, list ...*Item) List {
 		if len(list) > 1 {
 			a.Add(index+1, list[1:]...)
 		}
-		return *a
+		return a
 	}
 	for start := size; start < index; start++ {
 		*a = append(*a, nil)
 	}
 	*a = append(*a, list...)
-	return *a
+	return a
 }

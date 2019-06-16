@@ -18,6 +18,8 @@
 
 package navigate
 
+var EmptyList = List{}
+
 //TopNavigate 顶部导航菜单
 var TopNavigate = &List{
 	{
@@ -25,7 +27,7 @@ var TopNavigate = &List{
 		Name:          `设置`,
 		Action:        `manager`,
 		Icon:          `gear`,
-		Children: List{
+		Children: &List{
 			{
 				DisplayOnMenu: true,
 				Name:          `系统设置`,
@@ -121,7 +123,7 @@ var TopNavigate = &List{
 		Name:          `工具箱`,
 		Action:        `tool`,
 		Icon:          `suitcase`,
-		Children: List{
+		Children: &List{
 			{
 				DisplayOnMenu: true,
 				Name:          `IP归属地`,

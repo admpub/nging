@@ -45,39 +45,43 @@ func RouteNotin(ctx echo.Context) error {
 			continue
 		}
 		var exists bool
-		for _, navGroup := range navigate.TopNavigate {
-			for _, navItem := range navGroup.Children {
-				var navRoute string
-				if len(navItem.Action) > 0 {
-					navRoute = `/` + navGroup.Action + `/` + navItem.Action
-				} else {
-					navRoute = `/` + navGroup.Action
-				}
-				if navRoute == route.Path {
-					exists = true
-					break
-				}
-			}
-		}
-		if exists {
-			continue
-		}
-		for _, navGroup := range navigate.LeftNavigate {
-			for _, navItem := range navGroup.Children {
-				var navRoute string
-				if len(navItem.Action) > 0 {
-					navRoute = `/` + navGroup.Action + `/` + navItem.Action
-				} else {
-					navRoute = `/` + navGroup.Action
-				}
-				if navRoute == route.Path {
-					exists = true
-					break
+		if navigate.TopNavigate != nil {
+			for _, navGroup := range *navigate.TopNavigate {
+				for _, navItem := range *navGroup.Children {
+					var navRoute string
+					if len(navItem.Action) > 0 {
+						navRoute = `/` + navGroup.Action + `/` + navItem.Action
+					} else {
+						navRoute = `/` + navGroup.Action
+					}
+					if navRoute == route.Path {
+						exists = true
+						break
+					}
 				}
 			}
+			if exists {
+				continue
+			}
 		}
-		if exists {
-			continue
+		if navigate.LeftNavigate != nil {
+			for _, navGroup := range *navigate.LeftNavigate {
+				for _, navItem := range *navGroup.Children {
+					var navRoute string
+					if len(navItem.Action) > 0 {
+						navRoute = `/` + navGroup.Action + `/` + navItem.Action
+					} else {
+						navRoute = `/` + navGroup.Action
+					}
+					if navRoute == route.Path {
+						exists = true
+						break
+					}
+				}
+			}
+			if exists {
+				continue
+			}
 		}
 		for _, v := range unuse {
 			if v == route.Path {

@@ -32,6 +32,9 @@ type Map struct {
 
 //Import 导入菜单（用户缓存结果）
 func (m *Map) Import(navList *navigate.List) *Map {
+	if navList == nil {
+		return m
+	}
 	for _, nav := range *navList {
 		item := NewMap()
 		item.Nav = nav

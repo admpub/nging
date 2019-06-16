@@ -158,15 +158,18 @@ func (u *UserRole) CheckCmdPerm(permPath string) bool {
 }
 
 //FilterNavigate 过滤导航菜单，只显示有权限的菜单
-func (u *UserRole) FilterNavigate(roleList []*dbschema.UserRole, navList navigate.List) navigate.List {
+func (u *UserRole) FilterNavigate(roleList []*dbschema.UserRole, navList *navigate.List) navigate.List {
 	var result navigate.List
-	for _, nav := range navList {
+	if navList == nil {
+		return result
+	}
+	for _, nav := range *navList {
 		if !nav.Unlimited && !u.CheckPerm2(roleList, nav.Action) {
 			continue
 		}
 		navCopy := *nav
-		navCopy.Children = []*navigate.Item{}
-		for _, child := range nav.Children {
+		navCopy.Children = &navigate.List{}
+		for _, child := range *nav.Children {
 			var perm string
 			if len(child.Action) > 0 {
 				perm = nav.Action + `/` + child.Action
@@ -176,7 +179,7 @@ func (u *UserRole) FilterNavigate(roleList []*dbschema.UserRole, navList navigat
 			if !nav.Unlimited && !u.CheckPerm2(roleList, perm) {
 				continue
 			}
-			navCopy.Children = append(navCopy.Children, child)
+			*navCopy.Children = append(*navCopy.Children, child)
 		}
 		result = append(result, &navCopy)
 	}
