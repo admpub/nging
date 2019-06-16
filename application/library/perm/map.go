@@ -31,8 +31,8 @@ type Map struct {
 }
 
 //Import 导入菜单（用户缓存结果）
-func (m *Map) Import(navList navigate.List) *Map {
-	for _, nav := range navList {
+func (m *Map) Import(navList *navigate.List) *Map {
+	for _, nav := range *navList {
 		item := NewMap()
 		item.Nav = nav
 		m.V[nav.Action] = item
