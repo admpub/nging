@@ -5792,6 +5792,9 @@ fieldset.fieldset legend{
 .progress-description{position:absolute;color:white;text-shadow:0px 0px 2px #000;text-overflow:ellipsis;overflow:hidden;}
 .form-submit-group.always-bottom{background-color:white;opacity:0.9;border-top:1px solid #ddd;width:80%}
 .form-submit-group.always-bottom:hover{opacity:1;}
+.navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus{
+  color:#fff;
+}
 .always-top{z-index:9999;position:fixed;top:0;_position:absolute;_bottom:auto;_top:expression(eval(document.documentElement.scrollTop));}
 .always-bottom{z-index:9999;position:fixed;bottom:0;_position:absolute;_bottom:auto;_top:expression(eval(document.documentElement.scrollTop+document.documentElement.clientHeight-this.offsetHeight-(parseInt(this.currentStyle.marginTop,10)||0)-(parseInt(this.currentStyle.marginBottom,10)||0)));}
 

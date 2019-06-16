@@ -18,6 +18,11 @@
 
 package navigate
 
+import (
+	"github.com/admpub/events"
+	"github.com/admpub/events/emitter"
+)
+
 var EmptyList = List{}
 
 //TopNavigate 顶部导航菜单
@@ -152,3 +157,10 @@ var defaultNavigate = &List{}
 
 //LeftNavigate 左边导航菜单
 var LeftNavigate = defaultNavigate
+
+func init() {
+	emitter.DefaultCondEmitter.On(`beforeRun`, events.Callback(func(_ events.Event) error {
+		ProjectInitURLsIdent()
+		return nil
+	}))
+}

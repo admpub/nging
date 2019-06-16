@@ -18,6 +18,10 @@
 
 package navigate
 
+import (
+	"path"
+)
+
 //Item 操作
 type Item struct {
 	DisplayOnMenu bool   //是否在菜单三显示
@@ -29,8 +33,32 @@ type Item struct {
 	Children      *List
 }
 
+func (a *Item) FullPath(parentPath string) string {
+	if a == nil {
+		return parentPath
+	}
+	return path.Join(parentPath, a.Action)
+}
+
 //List 操作列表
 type List []*Item
+
+func (a *List) FullPath(parentPath string) []string {
+	var r []string
+	if a == nil {
+		return r
+	}
+	for _, nav := range *a {
+		urlPath := path.Join(parentPath, nav.Action)
+		//fmt.Println(`<FullPath>`, urlPath)
+		if nav.Children == nil {
+			r = append(r, urlPath)
+			continue
+		}
+		r = append(r, nav.Children.FullPath(urlPath)...)
+	}
+	return r
+}
 
 //Remove 删除元素
 func (a *List) Remove(index int) *List {

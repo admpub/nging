@@ -18,7 +18,9 @@
 
 package navigate
 
-import "strings"
+import (
+	"strings"
+)
 
 var projects = NewProjects()
 
@@ -35,36 +37,18 @@ func ProjectAdd(index int, list ...*ProjectItem) {
 	projects.Add(index, list...)
 }
 
+func ProjectURLsIdent() map[string]string {
+	return projects.URLsIdent()
+}
+
+func ProjectInitURLsIdent() *Projects {
+	return projects.InitURLsIdent()
+}
+
 func ProjectIdent(urlPath string) string {
-	if projects.List == nil {
-		return ``
-	}
-	arr := strings.Split(urlPath, `/`)
-	var spath string
-	for _, a := range arr {
-		if len(spath) == 0 {
-			spath = a
-		}
-		var hasPrefix bool
-		for _, proj := range *projects.List {
-			if proj.NavList == nil {
-				continue
-			}
-			for _, nav := range *proj.NavList {
-				if len(nav.Action) < len(spath) {
-					continue
-				}
-				if nav.Action == spath {
-					return proj.Ident
-				}
-				if strings.HasPrefix(nav.Action, spath+`/`) {
-					hasPrefix = true
-				}
-			}
-		}
-		if hasPrefix && spath != a {
-			spath += `/` + a
-		}
+	urlPath = strings.TrimPrefix(urlPath, `/`)
+	if ident, ok := ProjectURLsIdent()[urlPath]; ok {
+		return ident
 	}
 	return ``
 }
@@ -101,8 +85,29 @@ func NewProject(name string, ident string, navList *List) *ProjectItem {
 }
 
 type Projects struct {
-	List *ProjectList
-	Hash map[string]*ProjectItem
+	urlsIdent map[string]string
+	List      *ProjectList
+	Hash      map[string]*ProjectItem
+}
+
+func (p *Projects) URLsIdent() map[string]string {
+	if p.urlsIdent != nil {
+		return p.urlsIdent
+	}
+	return p.InitURLsIdent().urlsIdent
+}
+
+func (p *Projects) InitURLsIdent() *Projects {
+	p.urlsIdent = map[string]string{}
+	for ident, proj := range p.Hash {
+		if proj.NavList == nil {
+			continue
+		}
+		for _, urlPath := range proj.NavList.FullPath(``) {
+			p.urlsIdent[urlPath] = ident
+		}
+	}
+	return p
 }
 
 func (p *Projects) Get(ident string) *ProjectItem {

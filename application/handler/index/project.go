@@ -20,15 +20,32 @@ package index
 import (
 	"github.com/admpub/nging/application/registry/navigate"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
 
 func Project(ctx echo.Context) error {
 	ident := ctx.Param(`ident`)
+	partial := ctx.Formx(`partial`).Bool()
 	proj := navigate.ProjectGet(ident)
-	var data navigate.List
+	var list navigate.List
 	if proj != nil {
-		data = *proj.NavList
+		list = *proj.NavList
 	}
-	return ctx.Render(`sidebar_nav`, data)
+	//echo.Dump(navigate.ProjectURLsIdent())
+	data := ctx.Data()
+	if !partial {
+		data.SetData(echo.H{
+			`list`: list,
+		})
+		return ctx.JSON(data)
+	}
+	b, err := ctx.Fetch(`sidebar_nav`, list)
+	if err != nil {
+		return ctx.JSON(data.SetError(err))
+	}
+	data.SetData(echo.H{
+		`list`: com.Bytes2str(b),
+	})
+	return ctx.JSON(data)
 }
