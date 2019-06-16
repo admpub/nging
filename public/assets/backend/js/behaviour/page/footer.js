@@ -13,7 +13,7 @@ $(function(){
 		if(ident==$('#leftnav').data('project')) return;
 		$('#leftnav').data('project',ident);
 		var li=$(this).parent('li');
-		li.sibling('li.active').removeClass('active')
+		li.siblings('li.active').removeClass('active');
 		li.addClass('active');
 		$.get(window.BACKEND_URL+'/project/'+ident,{partial:1},function(r){
 			if(r.Code!=1){
