@@ -154,6 +154,18 @@ type ProjectItem struct {
 	NavList *List
 }
 
+func (a *ProjectItem) Is(ident string) bool {
+	return a.Ident == ident
+}
+
+func (a *ProjectItem) GetName() string {
+	return a.Name
+}
+
+func (a *ProjectItem) GetIdent() string {
+	return a.Ident
+}
+
 //Remove 删除元素
 func (a *ProjectList) Remove(index int) *ProjectList {
 	if index < 0 {
