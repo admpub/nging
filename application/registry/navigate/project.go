@@ -22,6 +22,15 @@ import "strings"
 
 var projects = NewProjects()
 
+func ProjectAddNavList(name string, ident string, navList *List) {
+	proj := ProjectGet(ident)
+	if proj == nil {
+		ProjectAdd(-1, NewProject(name, ident, navList))
+		return
+	}
+	proj.NavList.Add(-1, *navList...)
+}
+
 func ProjectAdd(index int, list ...*ProjectItem) {
 	projects.Add(index, list...)
 }
@@ -80,6 +89,14 @@ func NewProjects() *Projects {
 	return &Projects{
 		List: &ProjectList{},
 		Hash: map[string]*ProjectItem{},
+	}
+}
+
+func NewProject(name string, ident string, navList *List) *ProjectItem {
+	return &ProjectItem{
+		Name:    name,
+		Ident:   ident,
+		NavList: navList,
 	}
 }
 
