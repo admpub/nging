@@ -34,7 +34,7 @@ import (
 
 func init() {
 	event.SupportManager = true
-	navigate.LeftNavigate = navigate.List{
+	navigate.LeftNavigate = &navigate.List{
 		{
 			DisplayOnMenu: true,
 			Name:          `网站管理`,

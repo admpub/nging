@@ -19,7 +19,7 @@
 package navigate
 
 //TopNavigate 顶部导航菜单
-var TopNavigate = List{
+var TopNavigate = &List{
 	{
 		DisplayOnMenu: true,
 		Name:          `设置`,
@@ -147,4 +147,4 @@ var TopNavigate = List{
 }
 
 //LeftNavigate 左边导航菜单
-var LeftNavigate = List{}
+var LeftNavigate = &List{}
