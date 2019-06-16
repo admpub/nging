@@ -19,34 +19,7 @@
               </div>
             </div>
             <ul class="cl-vnavigation" id="leftnav">
-              {{- range $key, $nav := $leftNavigate -}}
-              {{- if and $nav $nav.DisplayOnMenu -}}
-              <li>
-                <a href="javascript:;">
-                  <i class="fa fa-{{$nav.Icon}} nav-icon"></i>
-                  <span>{{$nav.Name|T}}</span>
-                </a>
-                <ul class="sub-menu from-left">
-                  {{- range $k, $c := $nav.Children -}}
-                  {{- if $c.DisplayOnMenu -}}
-                  <li>
-                    <a{{if eq $c.Target "ajax"}} href="javascript:;" data-ajax-url="__BACKEND__/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{else}} href="__BACKEND__/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if $c.Target}} target="{{$c.Target}}"{{else}} data-pjax="#main-container" data-keepjs="true" data-marknav="left"{{end}}{{end}}>
-                      {{- if eq $c.Icon "plus"}}
-                      <span class="label label-primary pull-right">+</span>
-                      {{- else if eq $c.Target "_blank"}}
-                      <span class="pull-right" title="{{"新窗口打开"|T}}">
-                        <i class="fa fa-mail-forward"></i>
-                      </span>
-                      {{end -}}
-                      {{$c.Name|T}}
-                    </a>
-                  </li>
-                  {{- end -}}
-                  {{- end -}}
-                </ul>
-              </li>
-              {{- end -}}
-              {{- end -}}
+              {{Include "sidebar_nav" $leftNavigate}}
             </ul>
           </div>
         </div>

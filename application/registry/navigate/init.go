@@ -148,5 +148,7 @@ var TopNavigate = &List{
 	},
 }
 
+var defaultNavigate = &List{}
+
 //LeftNavigate 左边导航菜单
-var LeftNavigate = &List{}
+var LeftNavigate = defaultNavigate

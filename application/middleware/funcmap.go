@@ -111,6 +111,12 @@ func FuncMap() echo.MiddlewareFunc {
 				}
 				return DefaultAvatarURL
 			})
+			c.SetFunc(`Project`, func(ident string) *navigate.ProjectItem {
+				return navigate.ProjectGet(ident)
+			})
+			c.SetFunc(`Projects`, func() navigate.ProjectList {
+				return navigate.ProjectListAll()
+			})
 			c.SetFunc(`Navigate`, func(side string) navigate.List {
 				switch side {
 				case `top`:
