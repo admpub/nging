@@ -2,7 +2,9 @@
         <ul class="nav navbar-nav" id="topnav">
           {{$ident := ProjectIdent}}
           {{range $key,$project := Projects}}
-          <li{{if eq $ident $project.Ident}} class="active"{{end}}><a href="__BACKEND__/" data-project="{{$project.Ident}}"><i class="fa fa-dashboard"></i> {{$project.Name}}</a></li>
+          {{if $project}}
+          <li{{if $project.Is $ident}} class="active"{{end}}><a href="__BACKEND__/" data-project="{{$project.GetIdent}}"><i class="fa fa-dashboard"></i> {{$project.GetName}}</a></li>
+          {{end}}
           {{end}}
           <!-- 
           <li class="dropdown">
