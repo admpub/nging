@@ -92,19 +92,16 @@ func (m *Map) Parse(permActions string, navTree *Map) *Map {
 		result := m.V
 		var spath string
 		for _, a := range arr {
-			if mp, y := navTree.V[a]; y {
+			if len(spath) == 0 {
+				spath = a
+			}
+			if mp, y := navTree.V[spath]; y {
 				amap.Nav = m.Nav
 				spath = ``
 				amap = mp
 			} else {
-				if len(spath) > 0 {
-					spath += `/`
-				}
-				spath += a
-				if mp, y := navTree.V[spath]; y {
-					amap.Nav = m.Nav
-					spath = ``
-					amap = mp
+				if spath != a {
+					spath += `/` + a
 				}
 			}
 			if _, y := result[a]; !y {
