@@ -29,7 +29,6 @@ import (
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	ngingMW "github.com/admpub/nging/application/middleware"
-	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/handler/pprof"
 	"github.com/webx-top/echo/middleware"
@@ -60,7 +59,6 @@ func init() {
 	echo.Set(`BackendPrefix`, handler.BackendPrefix)
 	echo.Set(`GlobalPrefix`, handler.GlobalPrefix)
 	event.OnStart(0, func() {
-		model.NavTreeCached()
 		handler.GlobalPrefix = echo.String(`GlobalPrefix`)
 		handler.BackendPrefix = echo.String(`BackendPrefix`)
 		handler.FrontendPrefix = echo.String(`FrontendPrefix`)

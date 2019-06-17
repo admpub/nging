@@ -153,7 +153,14 @@ var TopNavigate = &List{
 	},
 }
 
-var defaultNavigate = &List{}
+var (
+	defaultNavigate = &List{}
+	topNavURLs      = map[string]int{}
+)
+
+func TopNavURLs() map[string]int {
+	return topNavURLs
+}
 
 //LeftNavigate 左边导航菜单
 var LeftNavigate = defaultNavigate
@@ -161,6 +168,9 @@ var LeftNavigate = defaultNavigate
 func init() {
 	emitter.DefaultCondEmitter.On(`beforeRun`, events.Callback(func(_ events.Event) error {
 		ProjectInitURLsIdent()
+		for index, urlPath := range TopNavigate.FullPath(``) {
+			topNavURLs[urlPath] = index
+		}
 		return nil
 	}))
 }

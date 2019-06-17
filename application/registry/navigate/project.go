@@ -69,6 +69,10 @@ func ProjectGet(ident string) *ProjectItem {
 	return projects.Get(ident)
 }
 
+func ProjectFirst() *ProjectItem {
+	return projects.First()
+}
+
 func NewProjects() *Projects {
 	return &Projects{
 		List: &ProjectList{},
@@ -85,9 +89,9 @@ func NewProject(name string, ident string, navList *List) *ProjectItem {
 }
 
 type Projects struct {
-	urlsIdent map[string]string
+	urlsIdent map[string]string //网址路由=>项目标识(Ident)
 	List      *ProjectList
-	Hash      map[string]*ProjectItem
+	Hash      map[string]*ProjectItem //项目标识(Ident)=>项目信息
 }
 
 func (p *Projects) URLsIdent() map[string]string {
@@ -95,6 +99,14 @@ func (p *Projects) URLsIdent() map[string]string {
 		return p.urlsIdent
 	}
 	return p.InitURLsIdent().urlsIdent
+}
+
+func (p *Projects) First() *ProjectItem {
+	if p.List != nil && len(*p.List) > 0 {
+		list := *p.List
+		return list[0]
+	}
+	return nil
 }
 
 func (p *Projects) InitURLsIdent() *Projects {

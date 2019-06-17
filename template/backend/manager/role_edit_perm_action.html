@@ -1,5 +1,9 @@
 {{Strip}}
-{{range $key, $nav := Stored.leftNavigate}}
+{{range $idx,$proj := Projects}}
+{{if $proj}}
+<h4>{{$proj.Name}}</h4>
+<hr />
+{{range $key, $nav := $proj.NavList}}
 {{if and $nav (not $nav.Unlimited)}}
 <fieldset class="fieldset">
   <legend>
@@ -23,6 +27,10 @@
 </fieldset>
 {{end}}
 {{end}}
+{{end}}<!-- /if:$proj -->
+{{end}}<!-- /range:Projects -->
+<h4>{{"系统功能"|T}}</h4>
+<hr />
 {{range $key, $nav := Stored.topNavigate}}
 {{if and $nav (not $nav.Unlimited)}}
 <fieldset class="fieldset">

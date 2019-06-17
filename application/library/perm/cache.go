@@ -15,35 +15,35 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-package index
+
+package perm
 
 import (
+	"github.com/admpub/events"
+	"github.com/admpub/events/emitter"
 	"github.com/admpub/nging/application/registry/navigate"
-
-	"github.com/webx-top/com"
-	"github.com/webx-top/echo"
 )
 
-func Project(ctx echo.Context) error {
-	ident := ctx.Param(`ident`)
-	partial := ctx.Formx(`partial`).Bool()
-	proj := navigate.ProjectGet(ident)
-	var list navigate.List
-	if proj != nil {
-		list = *proj.NavList
+var navTreeCached *Map
+
+func NavTreeCached() *Map {
+	if navTreeCached != nil {
+		return navTreeCached
 	}
-	//echo.Dump(navigate.ProjectURLsIdent())
-	data := ctx.Data()
-	result := echo.H{}
-	if !partial {
-		result.Set(`list`, list)
-	} else {
-		b, err := ctx.Fetch(`sidebar_nav`, list)
-		if err != nil {
-			return ctx.JSON(data.SetError(err))
+	navTreeCached = NewMap()
+	for _, project := range navigate.ProjectListAll() {
+		if project == nil {
+			continue
 		}
-		result.Set(`list`, com.Bytes2str(b))
+		navTreeCached.Import(project.NavList)
 	}
-	data.SetData(result)
-	return ctx.JSON(data)
+	navTreeCached.Import(navigate.TopNavigate)
+	return navTreeCached
+}
+
+func init() {
+	emitter.DefaultCondEmitter.On(`beforeRun`, events.Callback(func(_ events.Event) error {
+		NavTreeCached()
+		return nil
+	}))
 }

@@ -70,7 +70,6 @@ func RoleAdd(ctx echo.Context) error {
 	}
 	ctx.Set(`activeURL`, `/manager/role`)
 	ctx.Set(`topNavigate`, navigate.TopNavigate)
-	ctx.Set(`leftNavigate`, navigate.LeftNavigate)
 	cmdM := model.NewCommand(ctx)
 	cmdM.ListByOffset(nil, nil, 0, -1, `disabled`, `N`)
 	ctx.Set(`cmdList`, cmdM.Objects())
@@ -111,7 +110,6 @@ func RoleEdit(ctx echo.Context) error {
 	echo.StructToForm(ctx, m.UserRole, ``, echo.LowerCaseFirstLetter)
 	ctx.Set(`activeURL`, `/manager/role`)
 	ctx.Set(`topNavigate`, navigate.TopNavigate)
-	ctx.Set(`leftNavigate`, navigate.LeftNavigate)
 	cmdM := model.NewCommand(ctx)
 	cmdM.ListByOffset(nil, nil, 0, -1, `disabled`, `N`)
 	ctx.Set(`cmdList`, cmdM.Objects())

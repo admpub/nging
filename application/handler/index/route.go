@@ -20,8 +20,10 @@ package index
 import (
 	"strings"
 
+	"github.com/webx-top/com"
+
 	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/model"
+	premLib "github.com/admpub/nging/application/library/perm"
 	"github.com/admpub/nging/application/registry/navigate"
 	"github.com/admpub/nging/application/registry/perm"
 	"github.com/webx-top/echo"
@@ -32,71 +34,72 @@ func RouteList(ctx echo.Context) error {
 }
 
 func NavTree(ctx echo.Context) error {
-	return ctx.JSON(model.NavTreeCached())
+	return ctx.JSON(premLib.NavTreeCached())
+}
+
+// UnlimitedURLs 不用采用权限验证的路由
+var UnlimitedURLs = []string{
+	`/favicon.ico`,
+	`/captcha/*`,
+	`/setup`,
+	`/progress`,
+	`/license`,
+	``,
+	`/`,
+	`/project/:ident`,
+	`/index`,
+	`/login`,
+	`/register`,
+	`/logout`,
+	`/donation`,
+	`/icon`,
+	`/routeList`,
+	`/routeNotin`,
+	`/navTree`,
+	`/gauth_check`,
+	`/qrcode`,
+	`/server/dynamic`,
+	`/public/upload/:type/*`, //查看上传后的文件
 }
 
 func RouteNotin(ctx echo.Context) error {
 	var unuse []string
 	for _, route := range handler.Echo().Routes() {
-		if strings.HasPrefix(route.Path, `/term/client/`) {
+		urlPath := route.Path
+		if com.InSlice(urlPath, UnlimitedURLs) {
 			continue
 		}
-		if strings.HasPrefix(route.Path, `/frp/dashboard/`) {
+		if strings.HasPrefix(urlPath, `/term/client/`) {
 			continue
 		}
-		var exists bool
-		if navigate.TopNavigate != nil {
-			for _, navGroup := range *navigate.TopNavigate {
-				for _, navItem := range *navGroup.Children {
-					var navRoute string
-					if len(navItem.Action) > 0 {
-						navRoute = `/` + navGroup.Action + `/` + navItem.Action
-					} else {
-						navRoute = `/` + navGroup.Action
-					}
-					if navRoute == route.Path {
-						exists = true
-						break
-					}
-				}
-			}
-			if exists {
-				continue
-			}
-		}
-		if navigate.LeftNavigate != nil {
-			for _, navGroup := range *navigate.LeftNavigate {
-				for _, navItem := range *navGroup.Children {
-					var navRoute string
-					if len(navItem.Action) > 0 {
-						navRoute = `/` + navGroup.Action + `/` + navItem.Action
-					} else {
-						navRoute = `/` + navGroup.Action
-					}
-					if navRoute == route.Path {
-						exists = true
-						break
-					}
-				}
-			}
-			if exists {
-				continue
-			}
-		}
-		for _, v := range unuse {
-			if v == route.Path {
-				exists = true
-				break
-			}
-		}
-		if exists {
+		if strings.HasPrefix(urlPath, `/frp/dashboard/`) {
 			continue
 		}
-		_, exists = perm.SpecialAuths[route.Path]
-		if exists {
+		if strings.HasPrefix(urlPath, `/debug/`) {
 			continue
 		}
-		unuse = append(unuse, route.Path)
+		if strings.HasPrefix(urlPath, `/captcha/`) {
+			continue
+		}
+		if strings.HasPrefix(urlPath, `/user/`) {
+			continue
+		}
+		if _, ok := navigate.TopNavURLs()[strings.TrimPrefix(urlPath, `/`)]; ok {
+			continue
+		}
+		if urlPath == `/download/` {
+			urlPath = `/download/index.html`
+		}
+		if ident := navigate.ProjectIdent(urlPath); len(ident) > 0 {
+			continue
+		}
+		if com.InSlice(urlPath, unuse) {
+			continue
+		}
+		if _, ok := perm.SpecialAuths[urlPath]; ok {
+			continue
+		}
+		unuse = append(unuse, urlPath)
 	}
 
 	return ctx.JSON(unuse)

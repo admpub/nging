@@ -28,18 +28,6 @@ import (
 	"github.com/webx-top/echo"
 )
 
-var navTreeCached *perm.Map
-
-func NavTreeCached() *perm.Map {
-	if navTreeCached != nil {
-		return navTreeCached
-	}
-	navTreeCached = perm.NewMap()
-	navTreeCached.Import(navigate.LeftNavigate)
-	navTreeCached.Import(navigate.TopNavigate)
-	return navTreeCached
-}
-
 func NewUserRole(ctx echo.Context) *UserRole {
 	return &UserRole{
 		UserRole: &dbschema.UserRole{},
@@ -104,7 +92,7 @@ func (u *UserRole) CheckPerm(permPath string) bool {
 		return true
 	}
 	if u.permActions == nil {
-		navTree := NavTreeCached()
+		navTree := perm.NavTreeCached()
 		u.permActions = perm.NewMap()
 		u.permActions.Parse(u.PermAction, navTree)
 	}
