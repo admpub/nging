@@ -88,24 +88,30 @@ func (m *Map) Parse(permActions string, navTree *Map) *Map {
 	perms := strings.Split(permActions, `,`)
 	for _, perm := range perms {
 		arr := strings.Split(perm, `/`)
-		amap := m
+		tree := navTree
 		result := m.V
 		var spath string
 		for _, a := range arr {
-			if len(spath) == 0 {
-				spath = a
-			}
-			if mp, y := navTree.V[spath]; y {
-				amap.Nav = m.Nav
-				spath = ``
-				amap = mp
-			} else {
-				if spath != a {
-					spath += `/` + a
-				}
-			}
 			if _, y := result[a]; !y {
 				result[a] = NewMap()
+			}
+			if a == `*` { //"*"是最后一个字符
+				break
+			}
+			if mp, y := tree.V[a]; y {
+				result[a].Nav = mp.Nav
+				spath = ``
+				tree = mp
+			} else {
+				if len(spath) > 0 {
+					spath += `/`
+				}
+				spath += a
+				if mp, y := tree.V[spath]; y {
+					result[a].Nav = mp.Nav
+					spath = ``
+					tree = mp
+				}
 			}
 			result = result[a].V
 		}
