@@ -253,11 +253,7 @@ func copyClientExtra2Form(ctx echo.Context, cfg *dbschema.FrpClient) (err error)
 		}
 		sections = append(sections, s)
 	}
-	for k, vv := range extra {
-		for _, v := range vv {
-			f.Add(k, v)
-		}
-	}
+	f.Merge(extra)
 	ctx.Set(`sections`, sections)
 	return
 }

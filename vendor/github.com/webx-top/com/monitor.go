@@ -23,7 +23,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"sync"
 
 	"github.com/admpub/fsnotify"
 )
@@ -56,7 +55,6 @@ type MonitorEvent struct {
 	//其它
 	Channel chan bool //管道
 	Debug   bool
-	lock    *sync.Once
 	watcher *fsnotify.Watcher
 	filters []func(string) bool
 }
@@ -97,7 +95,6 @@ func (m *MonitorEvent) Watcher() *fsnotify.Watcher {
 	if m.watcher == nil {
 		var err error
 		m.watcher, err = fsnotify.NewWatcher()
-		m.lock = &sync.Once{}
 		m.Channel = make(chan bool)
 		m.filters = []func(string) bool{}
 		if err != nil {
@@ -166,34 +163,31 @@ func (m *MonitorEvent) listen() {
 					break
 				}
 			}
-			m.lock.Do(func() {
-				switch ev.Op {
-				case fsnotify.Create:
-					if m.IsDir(ev.Name) {
-						watcher.Add(ev.Name)
-					}
-					if m.Create != nil {
-						m.Create(ev.Name)
-					}
-				case fsnotify.Remove:
-					if m.Delete != nil {
-						m.Delete(ev.Name)
-					}
-				case fsnotify.Write:
-					if m.Modify != nil {
-						m.Modify(ev.Name)
-					}
-				case fsnotify.Rename:
-					if m.Rename != nil {
-						m.Rename(ev.Name)
-					}
-				case fsnotify.Chmod:
-					if m.Chmod != nil {
-						m.Chmod(ev.Name)
-					}
+			switch ev.Op {
+			case fsnotify.Create:
+				if m.IsDir(ev.Name) {
+					watcher.Add(ev.Name)
 				}
-				m.lock = &sync.Once{}
-			})
+				if m.Create != nil {
+					m.Create(ev.Name)
+				}
+			case fsnotify.Remove:
+				if m.Delete != nil {
+					m.Delete(ev.Name)
+				}
+			case fsnotify.Write:
+				if m.Modify != nil {
+					m.Modify(ev.Name)
+				}
+			case fsnotify.Rename:
+				if m.Rename != nil {
+					m.Rename(ev.Name)
+				}
+			case fsnotify.Chmod:
+				if m.Chmod != nil {
+					m.Chmod(ev.Name)
+				}
+			}
 		case err := <-watcher.Errors:
 			if err != nil {
 				log.Println("Watcher error:", err)

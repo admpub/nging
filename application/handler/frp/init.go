@@ -31,7 +31,7 @@ import (
 	"github.com/webx-top/echo"
 )
 
-var regexNumEnd = regexp.MustCompile(`[\d]+$`)
+var regexNumEnd = regexp.MustCompile(`_[\d]+$`)
 
 type Section struct {
 	Section string

@@ -380,20 +380,23 @@ func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]con
 		return err
 	}
 
+	err = svr.Run()
+
 	// Capture the exit signal if we use kcp.
 	if g.GlbClientCfg.Protocol == "kcp" {
-		go handleSignal(svr)
+		var kcpDoneCh = make(chan struct{})
+		go handleSignal(svr, kcpDoneCh)
+		<-kcpDoneCh
 	}
-
-	err = svr.Run()
 	return
 }
 
-func handleSignal(svr *client.Service) {
+func handleSignal(svr *client.Service, kcpDoneCh chan struct{}) {
 	ch := make(chan os.Signal)
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 	<-ch
 	svr.Close()
 	time.Sleep(250 * time.Millisecond)
+	close(kcpDoneCh)
 	os.Exit(0)
 }

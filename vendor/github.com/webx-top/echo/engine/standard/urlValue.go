@@ -2,6 +2,13 @@ package standard
 
 import (
 	"net/url"
+
+	"github.com/webx-top/echo/engine"
+)
+
+var (
+	_ engine.URLValuer = &UrlValue{}
+	_ engine.URLValuer = &Value{}
 )
 
 type UrlValue struct {
@@ -56,6 +63,19 @@ func (u *UrlValue) init() {
 		return
 	}
 	u.values = u.initFn()
+}
+
+func (u *UrlValue) Merge(data url.Values) {
+	u.init()
+	for key, values := range data {
+		for index, value := range values {
+			if index == 0 {
+				u.values.Set(key, value)
+			} else {
+				u.values.Add(key, value)
+			}
+		}
+	}
 }
 
 func NewValue(r *Request) *Value {
@@ -130,4 +150,17 @@ func (v *Value) All() map[string][]string {
 
 func (v *Value) Reset(data url.Values) {
 	v.form = &data
+}
+
+func (v *Value) Merge(data url.Values) {
+	v.init()
+	for key, values := range data {
+		for index, value := range values {
+			if index == 0 {
+				v.form.Set(key, value)
+			} else {
+				v.form.Add(key, value)
+			}
+		}
+	}
 }

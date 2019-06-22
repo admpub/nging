@@ -168,6 +168,7 @@ type (
 		Encode() string
 		All() map[string][]string
 		Reset(url.Values)
+		Merge(url.Values)
 	}
 
 	// URL defines an interface for HTTP request url.
