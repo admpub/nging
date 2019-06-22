@@ -13,9 +13,9 @@
       <div class="col-sm-9">
           <div class="input-group">
             <div class="input-group-addon">{{"主机"|T}}</div>
-            <input type="text" class="form-control" name="{{Key . "local_ip"}}" value="{{Val . "local_ip"}}">
+            <input type="text" class="form-control" name="{{Key . "local_ip"}}" value="{{Val . "local_ip"}}" required="required">
             <div class="input-group-addon">{{"端口"|T}}</div>
-            <input type="text" class="form-control" name="{{Key . "local_port"}}" value="{{Val . "local_port"}}">
+            <input type="text" class="form-control" name="{{Key . "local_port"}}" value="{{Val . "local_port"}}" required="required">
           </div><!-- /.input-group -->
       </div>
 </div>
@@ -49,10 +49,14 @@
       <div class="col-sm-9">
           <div class="input-group">
             <div class="input-group-addon">{{"子域名"|T}}</div>
-            <input type="text" class="form-control" name="{{Key . "subdomain"}}" placeholder="" title="{{"如果设置为web2，服务端设置了根域名coscms.com，则完整的访问域名为web2.coscms.com"|T}}" data-toggle="tooltip" value="{{Val . "subdomain"}}">
-            <div class="input-group-addon">{{"域名"|T}}</div>
+            <input type="text" class="form-control" name="{{Key . "subdomain"}}" placeholder="" value="{{Val . "subdomain"}}">
+            <div class="input-group-addon">{{"完整域名"|T}}</div>
             <input type="text" class="form-control" name="{{Key . "custom_domains"}}" title="{{"多个域名之间用半角逗号隔开"|T}}" value="{{Val . "custom_domains"}}">
           </div><!-- /.input-group -->
+          <div class="help-block">
+            <code>{{"子域名"|T}}</code>{{"如果设置为web2，服务端设置了根域名coscms.com，则完整的访问域名为web2.coscms.com"|T}}<br />
+            <code>{{"完整域名"|T}}</code>{{"您也可以指定完整域名，多个域名之间用半角逗号隔开"|T}}<br />
+          </div>
       </div>
 </div>
 <div class="form-group">

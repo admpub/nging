@@ -224,8 +224,8 @@
                         <label class="col-sm-2 control-label">{{"映射管理"|T}}</label>
                         <div class="col-sm-8">
                           {{$v := Form "type"}}
-                          <div class="radio radio-primary radio-inline" title="{{"通过域名访问内网网站"|T}}"> 
-                            <input type="radio" value="web" id="type-web" name="type"{{if or (eq $v "web") (eq $v "")}} checked{{end}} class="connect-type"><label for="type-web">{{"HTTP"|T}}</label> 
+                          <div class="radio radio-primary radio-inline margin-left-10" title="{{"通过域名访问内网网站"|T}}"> 
+                            <input type="radio" value="web" id="type-web" name="type"{{if or (eq $v "web") (eq $v "")}} checked{{end}} class="connect-type"><label for="type-web">{{"内网网站"|T}}</label> 
                           </div>
                           <div class="radio radio-primary radio-inline" title="{{"通过SSH访问内网"|T}}"> 
                             <input type="radio" value="ssh" id="type-ssh" name="type"{{if eq $v "ssh"}} checked{{end}} class="connect-type"><label for="type-ssh">{{"SSH"|T}}</label> 
@@ -245,6 +245,12 @@
                           <div class="radio radio-primary radio-inline" title="{{"点对点内网穿透"|T}}"> 
                             <input type="radio" value="p2p" id="type-p2p" name="type"{{if eq $v "p2p"}} checked{{end}} class="connect-type"><label for="type-p2p">{{"P2P"|T}}</label> 
                           </div>
+                          <div class="radio radio-primary radio-inline" title="{{"HTTP代理"|T}}"> 
+                            <input type="radio" value="http_proxy" id="type-http_proxy" name="type"{{if eq $v "http_proxy"}} checked{{end}} class="connect-type"><label for="type-http_proxy">{{"HTTP代理"|T}}</label> 
+                          </div>
+                          <div class="radio radio-primary radio-inline" title="{{"Socks5代理"|T}}"> 
+                            <input type="radio" value="socks5" id="type-socks5" name="type"{{if eq $v "socks5"}} checked{{end}} class="connect-type"><label for="type-socks5">{{"Socks5代理"|T}}</label> 
+                          </div>
                           <div class="fieldset bg-fc" id="connect-settings">
                             {{if $v}}
                             {{Fetch (printf "frp/client/form/%s" $v) $v}}
@@ -254,12 +260,12 @@
                           </div>
                         </div>
                         <div class="col-sm-2">
-                          <div class="btn-group" style="z-index:99;position:fixed;bottom:300px;right:60px">
+                          <div class="btn-group" style="z-index:99;position:fixed;top:170px;right:60px">
                             <button type="button" class="btn btn-success btn-flat dropdown-toggle" data-toggle="dropdown">
                             <i class="fa fa-plus"></i> {{"添加映射"|T}} <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" role="menu" id="btn-adding-mapping">
-                            <li><a href="javascript:;" data-map-type="web">{{"HTTP"|T}}</a></li>
+                            <li><a href="javascript:;" data-map-type="web">{{"内网网站"|T}}</a></li>
                             <li><a href="javascript:;" data-map-type="ssh">{{"SSH"|T}}</a></li>
                             <li><a href="javascript:;" data-map-type="dns">{{"DNS"|T}}</a></li>
                             <li class="divider"></li>
@@ -268,6 +274,9 @@
                             <li class="divider"></li>
                             <li><a href="javascript:;" data-map-type="stcp">{{"STCP"|T}}</a></li>
                             <li><a href="javascript:;" data-map-type="p2p">{{"P2P"|T}}</a></li>
+                            <li class="divider"></li>
+                            <li><a href="javascript:;" data-map-type="http_proxy">{{"HTTP代理"|T}}</a></li>
+                            <li><a href="javascript:;" data-map-type="socks5">{{"Socks5代理"|T}}</a></li>
                             </ul>
                           </div>
                         </div>
@@ -338,8 +347,11 @@ $(function(){
 $('#btn-adding-mapping > li > a[data-map-type]').off().on('click',function(){
   var mapType=$(this).data('map-type'),
   index=$('.mapping-addon[data-map-type="'+mapType+'"]').length;
-  while($('#addon-mapping-'+mapType+index).length>0) index++;
-  var section=mapType+index;
+  var section=mapType+'_'+index;
+  while($('#addon-mapping-'+section).length>0) {
+    index++;
+    section=mapType+'_'+index;
+  }
   $.get(BACKEND_URL+'/frp/addon_form',{addon:mapType,section:section},function(r){
     var html=$('#tmplMapping').html();
     html=html.replace(/\{mapType\}/g,mapType);

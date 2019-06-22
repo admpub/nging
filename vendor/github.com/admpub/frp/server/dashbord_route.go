@@ -3,72 +3,37 @@ package server
 import (
 	"github.com/admpub/frp/assets"
 	"github.com/admpub/frp/g"
-	"github.com/admpub/frp/utils/version"
 	"github.com/webx-top/echo"
 )
 
 func APIServerInfo(c echo.Context) error {
-	cfg := &g.GlbServerCfg.ServerCommonConf
-	serverStats := StatsGetServer()
-	res := ServerInfoResp{
-		Version:           version.Full(),
-		BindPort:          cfg.BindPort,
-		BindUdpPort:       cfg.BindUdpPort,
-		VhostHttpPort:     cfg.VhostHttpPort,
-		VhostHttpsPort:    cfg.VhostHttpsPort,
-		KcpBindPort:       cfg.KcpBindPort,
-		AuthTimeout:       cfg.AuthTimeout,
-		SubdomainHost:     cfg.SubDomainHost,
-		MaxPoolCount:      cfg.MaxPoolCount,
-		MaxPortsPerClient: cfg.MaxPortsPerClient,
-		HeartBeatTimeout:  cfg.HeartBeatTimeout,
-
-		TotalTrafficIn:  serverStats.TotalTrafficIn,
-		TotalTrafficOut: serverStats.TotalTrafficOut,
-		CurConns:        serverStats.CurConns,
-		ClientCounts:    serverStats.ClientCounts,
-		ProxyTypeCounts: serverStats.ProxyTypeCounts,
-	}
-	return c.JSON(res)
+	return ServerService.ApiServerInfo(c)
 }
 
 func APIProxyByType(c echo.Context) error {
-	var res GetProxyInfoResp
-	proxyType := c.Param(`type`)
-	res.Proxies = getProxyStatsByType(proxyType)
-	return c.JSON(res)
+	return ServerService.ApiProxyByType(c)
 }
 
 func APIProxyByTypeAndName(c echo.Context) error {
-	proxyType := c.Param(`type`)
-	name := c.Param(`name`)
-	res := getProxyStatsByTypeAndName(proxyType, name)
-	return c.JSON(res)
+	return ServerService.ApiProxyByTypeAndName(c)
 }
 
 func APIProxyTraffic(c echo.Context) error {
-	var res GetProxyTrafficResp
-	res.Name = c.Param(`name`)
-	proxyTrafficInfo := StatsGetProxyTraffic(res.Name)
-	if proxyTrafficInfo == nil {
-		res.Code = 1
-		res.Msg = "no proxy info found"
-	} else {
-		res.TrafficIn = proxyTrafficInfo.TrafficIn
-		res.TrafficOut = proxyTrafficInfo.TrafficOut
-	}
-
-	return c.JSON(res)
+	return ServerService.ApiProxyTraffic(c)
 }
 
 // RegisterTo 为echo框架创建路由
 func RegisterTo(router echo.RouteRegister) {
-	// api
-	router.Get("/api/serverinfo", APIServerInfo)
-	router.Get("/api/proxy/:type", APIProxyByType)
-	router.Get("/api/proxy/:type/:name", APIProxyByTypeAndName)
-	router.Get("/api/traffic/:name", APIProxyTraffic)
+	ServerService.RegisterTo(router)
+}
 
+// RegisterTo 为echo框架创建路由
+func (svr *Service) RegisterTo(router echo.RouteRegister) {
+	// api, see dashboard_api.go
+	router.Get("/api/serverinfo", svr.ApiServerInfo)
+	router.Get("/api/proxy/:type", svr.ApiProxyByType)
+	router.Get("/api/proxy/:type/:name", svr.ApiProxyByTypeAndName)
+	router.Get("/api/traffic/:name", svr.ApiProxyTraffic)
 	// view
 	router.Get("/", func(c echo.Context) error {
 		return c.Redirect("./static/")
@@ -81,6 +46,9 @@ func RegisterTo(router echo.RouteRegister) {
 	}
 	router.Get("/static*", func(c echo.Context) error {
 		file := c.Param(`*`)
+		if len(file) == 0 || file == `/` {
+			file = `/index.html`
+		}
 		return c.File(file, assets.FileSystem)
 	})
 }

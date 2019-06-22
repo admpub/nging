@@ -129,118 +129,160 @@
 			"revisionTime": "2018-01-14T09:41:02Z"
 		},
 		{
-			"checksumSHA1": "JhZr9axEGzUbneAW7/2tO2HjovE=",
+			"checksumSHA1": "xXGN3zGLO2+r8YQV5xbR9dgTksY=",
 			"path": "github.com/admpub/frp/assets",
-			"revision": "c13cdbd23aca03508a7a70a5ccc81de911188e03",
-			"revisionTime": "2018-08-16T13:57:11Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
-			"checksumSHA1": "xEPZCwyaBuPHF8RN2xxxlCH8ZD8=",
-			"path": "github.com/admpub/frp/assets/statik",
-			"revision": "c13cdbd23aca03508a7a70a5ccc81de911188e03",
-			"revisionTime": "2018-08-16T13:57:11Z"
+			"checksumSHA1": "zIAp+YZZem0RUBh1m60cxJcXhSk=",
+			"path": "github.com/admpub/frp/assets/frps/statik",
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
-			"checksumSHA1": "3QLhZwmF8CEfTs6iZq/iISydDnI=",
+			"checksumSHA1": "fd4iHNHh5ef/Hc2ZoJmo750oqxU=",
 			"path": "github.com/admpub/frp/client",
-			"revision": "c13cdbd23aca03508a7a70a5ccc81de911188e03",
-			"revisionTime": "2018-08-16T13:57:11Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
+		},
+		{
+			"checksumSHA1": "L8IDfnljO67e5qTmpH6297o0fQM=",
+			"path": "github.com/admpub/frp/client/event",
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
+		},
+		{
+			"checksumSHA1": "zZfxB66AyMUfbAHqJgz/QeFv6us=",
+			"path": "github.com/admpub/frp/client/health",
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
+		},
+		{
+			"checksumSHA1": "tn5yWwyaS8Tst8CHxU6FuaCdfjo=",
+			"path": "github.com/admpub/frp/client/proxy",
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
 			"checksumSHA1": "+Fh8Lw6wtQV3W1oNst23KqxwR6s=",
 			"path": "github.com/admpub/frp/g",
-			"revision": "c13cdbd23aca03508a7a70a5ccc81de911188e03",
-			"revisionTime": "2018-08-16T13:57:11Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
-			"checksumSHA1": "Oa9F9rP+2698A6T1xiU+rwqm7mc=",
+			"checksumSHA1": "NfAnyxtedQu/SbPTQgBSqNkC7fg=",
 			"path": "github.com/admpub/frp/models/config",
-			"revision": "c13cdbd23aca03508a7a70a5ccc81de911188e03",
-			"revisionTime": "2018-08-16T13:57:11Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
 			"checksumSHA1": "gSe6q6Qo2zHE9BbeWbo2I/E10eA=",
 			"path": "github.com/admpub/frp/models/consts",
-			"revision": "c13cdbd23aca03508a7a70a5ccc81de911188e03",
-			"revisionTime": "2018-08-16T13:57:11Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
 			"checksumSHA1": "ot2traLAB68DpH6zpmAUyL1PVZI=",
 			"path": "github.com/admpub/frp/models/errors",
-			"revision": "c13cdbd23aca03508a7a70a5ccc81de911188e03",
-			"revisionTime": "2018-08-16T13:57:11Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
-			"checksumSHA1": "LImPVyKYeJ5VC/nU+FjZlatHU00=",
+			"checksumSHA1": "IYdhLs37I6VCNdgVcOqZ6VCLEDQ=",
 			"path": "github.com/admpub/frp/models/msg",
-			"revision": "c13cdbd23aca03508a7a70a5ccc81de911188e03",
-			"revisionTime": "2018-08-16T13:57:11Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
-			"checksumSHA1": "F386HroHy7iHFADvxr+w5uE5vh4=",
+			"checksumSHA1": "n9xikL7N0oT2DCp79IQHU1kJPzM=",
+			"path": "github.com/admpub/frp/models/nathole",
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
+		},
+		{
+			"checksumSHA1": "gSrDZXqSBgasNGS029hLQL0+f+o=",
 			"path": "github.com/admpub/frp/models/plugin",
-			"revision": "c13cdbd23aca03508a7a70a5ccc81de911188e03",
-			"revisionTime": "2018-08-16T13:57:11Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
-			"checksumSHA1": "UUFRXgp/IHAEp/XD8X9sSl0DVmg=",
+			"checksumSHA1": "WbtSEB6hUOtuKZEkeXgKFwilP6Q=",
 			"path": "github.com/admpub/frp/models/proto/udp",
-			"revision": "c13cdbd23aca03508a7a70a5ccc81de911188e03",
-			"revisionTime": "2018-08-16T13:57:11Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
-			"checksumSHA1": "rEB7WMjuog7PG3E3eojbv4oJ4KY=",
+			"checksumSHA1": "hrY0DWZcEDrIUidFMPGb1hzGu2w=",
 			"path": "github.com/admpub/frp/server",
-			"revision": "c13cdbd23aca03508a7a70a5ccc81de911188e03",
-			"revisionTime": "2018-08-16T13:57:11Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
-			"checksumSHA1": "eYb3oqaxpEL+4uMSbJR/byZ37fc=",
+			"checksumSHA1": "/MWdgjtjDeH6haftQvzJ3WI6ork=",
+			"path": "github.com/admpub/frp/server/controller",
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
+		},
+		{
+			"checksumSHA1": "OarxbSgbYU4CGw9uFMi4V8ULDXc=",
 			"path": "github.com/admpub/frp/server/group",
-			"revision": "c13cdbd23aca03508a7a70a5ccc81de911188e03",
-			"revisionTime": "2018-08-16T13:57:11Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
 			"checksumSHA1": "uUKBPSiDl7IwnJI5+abqLVSCE+w=",
 			"path": "github.com/admpub/frp/server/ports",
-			"revision": "c13cdbd23aca03508a7a70a5ccc81de911188e03",
-			"revisionTime": "2018-08-16T13:57:11Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
-			"checksumSHA1": "cR7FZdSZB5BV224Oo5VEe5zwWqc=",
+			"checksumSHA1": "YCytRXCIj1ziybdwrzXDUcLQobw=",
+			"path": "github.com/admpub/frp/server/proxy",
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
+		},
+		{
+			"checksumSHA1": "vBXH0EBQHYZ+OUBpraeuFT+6cc0=",
+			"path": "github.com/admpub/frp/server/stats",
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
+		},
+		{
+			"checksumSHA1": "x6RFqhUxO668lOYEazeT0h/AgLE=",
 			"path": "github.com/admpub/frp/utils/log",
-			"revision": "c13cdbd23aca03508a7a70a5ccc81de911188e03",
-			"revisionTime": "2018-08-16T13:57:11Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
 			"checksumSHA1": "WsgYgxjaUoRatzUzCslE9zRr/ZM=",
 			"path": "github.com/admpub/frp/utils/metric",
-			"revision": "c13cdbd23aca03508a7a70a5ccc81de911188e03",
-			"revisionTime": "2018-08-16T13:57:11Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
-			"checksumSHA1": "XnOkP3Kzao6N63xZF0bMRucz5G4=",
+			"checksumSHA1": "ecaMW60OIckVfXVQtYxP50JiCi4=",
 			"path": "github.com/admpub/frp/utils/net",
-			"revision": "c13cdbd23aca03508a7a70a5ccc81de911188e03",
-			"revisionTime": "2018-08-16T13:57:11Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
 			"checksumSHA1": "1LJ/HQnSyusROhx6eom0rY8HqsE=",
 			"path": "github.com/admpub/frp/utils/util",
-			"revision": "c13cdbd23aca03508a7a70a5ccc81de911188e03",
-			"revisionTime": "2018-08-16T13:57:11Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
-			"checksumSHA1": "B0MZ3NCiV/HQ3LKfsxB04U0twPk=",
+			"checksumSHA1": "NEcs4LhRTtgFRsgbLEmIdSd83Uo=",
 			"path": "github.com/admpub/frp/utils/version",
-			"revision": "c13cdbd23aca03508a7a70a5ccc81de911188e03",
-			"revisionTime": "2018-08-16T13:57:11Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
-			"checksumSHA1": "GcRC5rKDyVWU/hsln8GZGPf6vPw=",
+			"checksumSHA1": "8a0qbmIrBApbSSfUDtN3h/FYj5o=",
 			"path": "github.com/admpub/frp/utils/vhost",
-			"revision": "c13cdbd23aca03508a7a70a5ccc81de911188e03",
-			"revisionTime": "2018-08-16T13:57:11Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
 			"checksumSHA1": "6oERWxBKZxC0pxt1ruhbR5syRF0=",
@@ -1295,57 +1337,57 @@
 			"checksumSHA1": "ucgkDKMUy5tLZYiR18sq4sG7OSQ=",
 			"origin": "github.com/admpub/frp/vendor/github.com/fatedier/golib/control/shutdown",
 			"path": "github.com/fatedier/golib/control/shutdown",
-			"revision": "f6c265d783d6c18c57cc4844e8db5a348ebff0a2",
-			"revisionTime": "2018-07-29T04:33:30Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
 			"checksumSHA1": "vzMnpubFEWtCntkzzwuSwC/fU2k=",
 			"origin": "github.com/admpub/frp/vendor/github.com/fatedier/golib/crypto",
 			"path": "github.com/fatedier/golib/crypto",
-			"revision": "f6c265d783d6c18c57cc4844e8db5a348ebff0a2",
-			"revisionTime": "2018-07-29T04:33:30Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
 			"checksumSHA1": "38NsqTY+wE323nLwv9i0t9zt3vM=",
 			"origin": "github.com/admpub/frp/vendor/github.com/fatedier/golib/errors",
 			"path": "github.com/fatedier/golib/errors",
-			"revision": "f6c265d783d6c18c57cc4844e8db5a348ebff0a2",
-			"revisionTime": "2018-07-29T04:33:30Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
 			"checksumSHA1": "0lbLKqDQngAUzJgEa8aSy4jRWEM=",
 			"origin": "github.com/admpub/frp/vendor/github.com/fatedier/golib/io",
 			"path": "github.com/fatedier/golib/io",
-			"revision": "f6c265d783d6c18c57cc4844e8db5a348ebff0a2",
-			"revisionTime": "2018-07-29T04:33:30Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
 			"checksumSHA1": "JUJtkYoTCI0KCKfj9HlIr55HMKg=",
 			"origin": "github.com/admpub/frp/vendor/github.com/fatedier/golib/msg/json",
 			"path": "github.com/fatedier/golib/msg/json",
-			"revision": "f6c265d783d6c18c57cc4844e8db5a348ebff0a2",
-			"revisionTime": "2018-07-29T04:33:30Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
-			"checksumSHA1": "y4J3ucTrFQP6zaB7+U1gwU33A90=",
+			"checksumSHA1": "ABQxppnLSf5hesgbZJG/AKl6DJ0=",
 			"origin": "github.com/admpub/frp/vendor/github.com/fatedier/golib/net",
 			"path": "github.com/fatedier/golib/net",
-			"revision": "f6c265d783d6c18c57cc4844e8db5a348ebff0a2",
-			"revisionTime": "2018-07-29T04:33:30Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
-			"checksumSHA1": "yE5J4aoeV82dw/l3jBYF3TliZJU=",
+			"checksumSHA1": "nD9vhtRqS0s4ljdz61/WdPDwSLk=",
 			"origin": "github.com/admpub/frp/vendor/github.com/fatedier/golib/net/mux",
 			"path": "github.com/fatedier/golib/net/mux",
-			"revision": "f6c265d783d6c18c57cc4844e8db5a348ebff0a2",
-			"revisionTime": "2018-07-29T04:33:30Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
 			"checksumSHA1": "FDwC6y7FHCQB8XKnSIY8+w2HMP8=",
 			"origin": "github.com/admpub/frp/vendor/github.com/fatedier/golib/pool",
 			"path": "github.com/fatedier/golib/pool",
-			"revision": "f6c265d783d6c18c57cc4844e8db5a348ebff0a2",
-			"revisionTime": "2018-07-29T04:33:30Z"
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
 			"checksumSHA1": "BNAYh8EF4+DNdv/YoxOAm/33TKs=",
@@ -1858,6 +1900,13 @@
 			"path": "github.com/klauspost/cpuid",
 			"revision": "09cded8978dc9e80714c4d85b0322337b0a1e5e0",
 			"revisionTime": "2016-03-02T07:53:16Z"
+		},
+		{
+			"checksumSHA1": "oNPIJ4td9Sy3KJNG32jzw0WN9nc=",
+			"origin": "github.com/admpub/frp/vendor/github.com/klauspost/reedsolomon",
+			"path": "github.com/klauspost/reedsolomon",
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
 			"checksumSHA1": "AQ5QA8O8WMAmN4ZOTxhoac6etWg=",
@@ -2562,6 +2611,13 @@
 			"path": "github.com/peterbourgon/diskv",
 			"revision": "b35654b11867e9c1722da18e538ff7956db134fb",
 			"revisionTime": "2018-10-26T12:31:56Z"
+		},
+		{
+			"checksumSHA1": "7APk634f7uvPV1pAjsrjqagv3Qo=",
+			"origin": "github.com/admpub/frp/vendor/github.com/pires/go-proxyproto",
+			"path": "github.com/pires/go-proxyproto",
+			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
+			"revisionTime": "2019-06-22T03:48:17Z"
 		},
 		{
 			"checksumSHA1": "ynJSWoF6v+3zMnh9R0QmmG6iGV8=",

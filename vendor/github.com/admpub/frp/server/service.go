@@ -16,8 +16,14 @@ package server
 
 import (
 	"bytes"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/tls"
+	"crypto/x509"
+	"encoding/pem"
 	"fmt"
 	"io/ioutil"
+	"math/big"
 	"net"
 	"net/http"
 	"time"
@@ -25,8 +31,12 @@ import (
 	"github.com/admpub/frp/assets"
 	"github.com/admpub/frp/g"
 	"github.com/admpub/frp/models/msg"
+	"github.com/admpub/frp/models/nathole"
+	"github.com/admpub/frp/server/controller"
 	"github.com/admpub/frp/server/group"
 	"github.com/admpub/frp/server/ports"
+	"github.com/admpub/frp/server/proxy"
+	"github.com/admpub/frp/server/stats"
 	"github.com/admpub/frp/utils/log"
 	frpNet "github.com/admpub/frp/utils/net"
 	"github.com/admpub/frp/utils/util"
@@ -57,51 +67,50 @@ type Service struct {
 	// Accept connections using websocket
 	websocketListener frpNet.Listener
 
-	// For https proxies, route requests to different clients by hostname and other infomation
-	VhostHttpsMuxer *vhost.HttpsMuxer
-
-	httpReverseProxy *vhost.HttpReverseProxy
+	// Accept frp tls connections
+	tlsListener frpNet.Listener
 
 	// Manage all controllers
 	ctlManager *ControlManager
 
 	// Manage all proxies
-	pxyManager *ProxyManager
+	pxyManager *proxy.ProxyManager
 
-	// Manage all visitor listeners
-	visitorManager *VisitorManager
+	// All resource managers and controllers
+	rc *controller.ResourceController
 
-	// Manage all tcp ports
-	tcpPortManager *ports.PortManager
+	// stats collector to store server and proxies stats info
+	statsCollector stats.Collector
 
-	// Manage all udp ports
-	udpPortManager *ports.PortManager
-
-	// Tcp Group Controller
-	tcpGroupCtl *group.TcpGroupCtl
-
-	// Controller for nat hole connections
-	natHoleController *NatHoleController
+	tlsConfig *tls.Config
 }
 
 func NewService() (svr *Service, err error) {
 	cfg := &g.GlbServerCfg.ServerCommonConf
 	svr = &Service{
-		ctlManager:     NewControlManager(),
-		pxyManager:     NewProxyManager(),
-		visitorManager: NewVisitorManager(),
-		tcpPortManager: ports.NewPortManager("tcp", cfg.ProxyBindAddr, cfg.AllowPorts),
-		udpPortManager: ports.NewPortManager("udp", cfg.ProxyBindAddr, cfg.AllowPorts),
+		ctlManager: NewControlManager(),
+		pxyManager: proxy.NewProxyManager(),
+		rc: &controller.ResourceController{
+			VisitorManager: controller.NewVisitorManager(),
+			TcpPortManager: ports.NewPortManager("tcp", cfg.ProxyBindAddr, cfg.AllowPorts),
+			UdpPortManager: ports.NewPortManager("udp", cfg.ProxyBindAddr, cfg.AllowPorts),
+		},
+		tlsConfig: generateTLSConfig(),
 	}
-	svr.tcpGroupCtl = group.NewTcpGroupCtl(svr.tcpPortManager)
 
-	// Init assets.
+	// Init group controller
+	svr.rc.TcpGroupCtl = group.NewTcpGroupCtl(svr.rc.TcpPortManager)
+
+	// Init assets
 	err = assets.Load(cfg.AssetsDir)
 	if err != nil {
 		err = fmt.Errorf("Load assets error: %v", err)
 		log.Error(err.Error())
 		//return
 	}
+
+	// Init 404 not found page
+	vhost.NotFoundPagePath = cfg.Custom404Page
 
 	var (
 		httpMuxOn  bool
@@ -123,8 +132,8 @@ func NewService() (svr *Service, err error) {
 		return
 	}
 
-	svr.muxer = mux.NewMux()
-	go svr.muxer.Serve(ln)
+	svr.muxer = mux.NewMux(ln)
+	go svr.muxer.Serve()
 	ln = svr.muxer.DefaultListener()
 
 	svr.listener = frpNet.WrapLogListener(ln)
@@ -152,7 +161,7 @@ func NewService() (svr *Service, err error) {
 		rp := vhost.NewHttpReverseProxy(vhost.HttpReverseProxyOptions{
 			ResponseHeaderTimeoutS: cfg.VhostHttpTimeout,
 		})
-		svr.httpReverseProxy = rp
+		svr.rc.HttpReverseProxy = rp
 
 		address := fmt.Sprintf("%s:%d", cfg.ProxyBindAddr, cfg.VhostHttpPort)
 		server := &http.Server{
@@ -186,7 +195,7 @@ func NewService() (svr *Service, err error) {
 			}
 		}
 
-		svr.VhostHttpsMuxer, err = vhost.NewHttpsMuxer(frpNet.WrapLogListener(l), 30*time.Second)
+		svr.rc.VhostHttpsMuxer, err = vhost.NewHttpsMuxer(frpNet.WrapLogListener(l), 30*time.Second)
 		if err != nil {
 			err = fmt.Errorf("Create vhost httpsMuxer error, %v", err)
 			return
@@ -194,41 +203,51 @@ func NewService() (svr *Service, err error) {
 		log.Info("https service listen on %s:%d", cfg.ProxyBindAddr, cfg.VhostHttpsPort)
 	}
 
+	// frp tls listener
+	tlsListener := svr.muxer.Listen(1, 1, func(data []byte) bool {
+		return int(data[0]) == frpNet.FRP_TLS_HEAD_BYTE
+	})
+	svr.tlsListener = frpNet.WrapLogListener(tlsListener)
+
 	// Create nat hole controller.
 	if cfg.BindUdpPort > 0 {
-		var nc *NatHoleController
+		var nc *nathole.NatHoleController
 		addr := fmt.Sprintf("%s:%d", cfg.BindAddr, cfg.BindUdpPort)
-		nc, err = NewNatHoleController(addr)
+		nc, err = nathole.NewNatHoleController(addr)
 		if err != nil {
 			err = fmt.Errorf("Create nat hole controller error, %v", err)
 			return
 		}
-		svr.natHoleController = nc
+		svr.rc.NatHoleController = nc
 		log.Info("nat hole udp service listen on %s:%d", cfg.BindAddr, cfg.BindUdpPort)
 	}
 
+	var statsEnable bool
 	// Create dashboard web server.
 	if cfg.DashboardPort > 0 {
-		err = RunDashboardServer(cfg.DashboardAddr, cfg.DashboardPort)
+		err = svr.RunDashboardServer(cfg.DashboardAddr, cfg.DashboardPort)
 		if err != nil {
 			err = fmt.Errorf("Create dashboard web server error, %v", err)
 			return
 		}
 		log.Info("Dashboard listen on %s:%d", cfg.DashboardAddr, cfg.DashboardPort)
+		statsEnable = true
 	}
 
+	svr.statsCollector = stats.NewInternalCollector(statsEnable)
 	return
 }
 
 func (svr *Service) Run() {
-	if svr.natHoleController != nil {
-		go svr.natHoleController.Run()
+	if svr.rc.NatHoleController != nil {
+		go svr.rc.NatHoleController.Run()
 	}
 	if g.GlbServerCfg.KcpBindPort > 0 {
 		go svr.HandleListener(svr.kcpListener)
 	}
 
 	go svr.HandleListener(svr.websocketListener)
+	go svr.HandleListener(svr.tlsListener)
 
 	svr.HandleListener(svr.listener)
 }
@@ -241,6 +260,7 @@ func (svr *Service) HandleListener(l frpNet.Listener) {
 			log.Warn("Listener for incoming connections from client closed")
 			return
 		}
+		c = frpNet.CheckAndEnableTLSServerConn(c, svr.tlsConfig)
 
 		// Start a new goroutine for dealing connections.
 		go func(frpConn frpNet.Conn) {
@@ -291,6 +311,7 @@ func (svr *Service) HandleListener(l frpNet.Listener) {
 
 			if g.GlbServerCfg.TcpMux {
 				fmuxCfg := fmux.DefaultConfig()
+				fmuxCfg.KeepAliveInterval = 20 * time.Second
 				fmuxCfg.LogOutput = ioutil.Discard
 				session, err := fmux.Server(frpConn, fmuxCfg)
 				if err != nil {
@@ -327,11 +348,6 @@ func (svr *Service) RegisterControl(ctlConn frpNet.Conn, loginMsg *msg.Login) (e
 	}
 
 	// Check auth.
-	nowTime := time.Now().Unix()
-	if g.GlbServerCfg.AuthTimeout != 0 && nowTime-loginMsg.Timestamp > g.GlbServerCfg.AuthTimeout {
-		err = fmt.Errorf("authorization timeout")
-		return
-	}
 	if util.GetAuthKey(g.GlbServerCfg.Token, loginMsg.Timestamp) != loginMsg.PrivilegeKey {
 		err = fmt.Errorf("authorization failed")
 		return
@@ -346,7 +362,7 @@ func (svr *Service) RegisterControl(ctlConn frpNet.Conn, loginMsg *msg.Login) (e
 		}
 	}
 
-	ctl := NewControl(svr, ctlConn, loginMsg)
+	ctl := NewControl(svr.rc, svr.pxyManager, svr.statsCollector, ctlConn, loginMsg)
 
 	if oldCtl := svr.ctlManager.Add(loginMsg.RunId, ctl); oldCtl != nil {
 		oldCtl.allShutdown.WaitDone()
@@ -356,7 +372,13 @@ func (svr *Service) RegisterControl(ctlConn frpNet.Conn, loginMsg *msg.Login) (e
 	ctl.Start()
 
 	// for statistics
-	StatsNewClient()
+	svr.statsCollector.Mark(stats.TypeNewClient, &stats.NewClientPayload{})
+
+	go func() {
+		// block until control closed
+		ctl.WaitClosed()
+		svr.ctlManager.Del(loginMsg.RunId, ctl)
+	}()
 	return
 }
 
@@ -372,14 +394,27 @@ func (svr *Service) RegisterWorkConn(workConn frpNet.Conn, newMsg *msg.NewWorkCo
 }
 
 func (svr *Service) RegisterVisitorConn(visitorConn frpNet.Conn, newMsg *msg.NewVisitorConn) error {
-	return svr.visitorManager.NewConn(newMsg.ProxyName, visitorConn, newMsg.Timestamp, newMsg.SignKey,
+	return svr.rc.VisitorManager.NewConn(newMsg.ProxyName, visitorConn, newMsg.Timestamp, newMsg.SignKey,
 		newMsg.UseEncryption, newMsg.UseCompression)
 }
 
-func (svr *Service) RegisterProxy(name string, pxy Proxy) error {
-	return svr.pxyManager.Add(name, pxy)
-}
+// Setup a bare-bones TLS config for the server
+func generateTLSConfig() *tls.Config {
+	key, err := rsa.GenerateKey(rand.Reader, 1024)
+	if err != nil {
+		panic(err)
+	}
+	template := x509.Certificate{SerialNumber: big.NewInt(1)}
+	certDER, err := x509.CreateCertificate(rand.Reader, &template, &template, &key.PublicKey, key)
+	if err != nil {
+		panic(err)
+	}
+	keyPEM := pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(key)})
+	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: certDER})
 
-func (svr *Service) DelProxy(name string) {
-	svr.pxyManager.Del(name)
+	tlsCert, err := tls.X509KeyPair(certPEM, keyPEM)
+	if err != nil {
+		panic(err)
+	}
+	return &tls.Config{Certificates: []tls.Certificate{tlsCert}}
 }

@@ -31,7 +31,7 @@ var (
 	httpServerWriteTimeout = 10 * time.Second
 )
 
-func RunDashboardServer(addr string, port int) (err error) {
+func (svr *Service) RunDashboardServer(addr string, port int) (err error) {
 	// url router
 	e := echo.New()
 	e.Use(middleware.Log(), middleware.Recover(), middleware.Gzip())
@@ -40,7 +40,7 @@ func RunDashboardServer(addr string, port int) (err error) {
 			return user == g.GlbServerCfg.DashboardUser && passwd == g.GlbServerCfg.DashboardPwd
 		}))
 	}
-	RegisterTo(e)
+	svr.RegisterTo(e)
 	// view
 	e.Get("/favicon.ico", func(c echo.Context) error {
 		return c.File(c.Path(), assets.FileSystem)

@@ -44,6 +44,7 @@ type ClientCommonConf struct {
 	LoginFailExit     bool                `json:"login_fail_exit"`
 	Start             map[string]struct{} `json:"start"`
 	Protocol          string              `json:"protocol"`
+	TLSEnable         bool                `json:"tls_enable"`
 	HeartBeatInterval int64               `json:"heartbeat_interval"`
 	HeartBeatTimeout  int64               `json:"heartbeat_timeout"`
 }

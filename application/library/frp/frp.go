@@ -42,6 +42,8 @@ import (
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+
+	_ "github.com/admpub/frp/assets/frps/statik"
 )
 
 func SetClientConfigFromDB(conf *dbschema.FrpClient) *g.ClientCfg {
@@ -102,7 +104,6 @@ func SetServerConfigFromDB(conf *dbschema.FrpServer) *g.ServerCfg {
 	g.GlbServerCfg.LogLevel = conf.LogLevel
 	g.GlbServerCfg.LogMaxDays = int64(conf.LogMaxDays)
 	g.GlbServerCfg.Token = conf.Token
-	g.GlbServerCfg.AuthTimeout = int64(conf.AuthTimeout)
 	g.GlbServerCfg.SubDomainHost = conf.SubdomainHost
 	g.GlbServerCfg.MaxPortsPerClient = int64(conf.MaxPortsPerClient)
 	g.GlbServerCfg.TcpMux = conf.TcpMux == `Y`
@@ -181,9 +182,9 @@ func StartServer(pidFile string) error {
 	return err
 }
 
-func parseProxyConfig(extra echo.H) (pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]config.ProxyConf) {
+func parseProxyConfig(extra echo.H) (pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]config.VisitorConf) {
 	pxyCfgs = map[string]config.ProxyConf{}
-	visitorCfgs = map[string]config.ProxyConf{}
+	visitorCfgs = map[string]config.VisitorConf{}
 	proxyConfs := NewProxyConfig()
 	proxyConfs.Visitor, _ = extra[`visitor`].(map[string]interface{})
 	proxyConfs.Proxy, _ = extra[`proxy`].(map[string]interface{})
@@ -225,11 +226,11 @@ func parseProxyConfig(extra echo.H) (pxyCfgs map[string]config.ProxyConf, visito
 		if !_ok {
 			continue
 		}
-		recv := RecvProxyConfig(_cfg)
+		recv := RecvVisitorConfig(_cfg)
 		if recv == nil {
 			continue
 		}
-		err := recv.CheckForCli()
+		err := recv.Check()
 		if err != nil {
 			log.Error(`[frp]parseProxyConfig:`, err)
 			continue
@@ -269,8 +270,33 @@ func RecvProxyConfig(data map[string]interface{}) (recv config.ProxyConf) {
 	return
 }
 
+func RecvVisitorConfig(data map[string]interface{}) (recv config.VisitorConf) {
+	proxyType, _ := data[`proxy_type`].(string)
+	switch proxyType {
+	case consts.StcpProxy:
+		recv = &config.StcpVisitorConf{}
+	case consts.XtcpProxy:
+		recv = &config.XtcpVisitorConf{}
+	default:
+		log.Error(`[frp]Unsupported Visitor Type:`, proxyType)
+		return
+	}
+	b, err := json.Marshal(data)
+	if err == nil {
+		err = json.Unmarshal(b, recv)
+	}
+	if err != nil {
+		log.Error(`[frp]RecvVisitorConfig:`, err)
+		return
+	}
+	return
+}
+
 func StartClientByConfigFile(filePath string, pidFile string) error {
-	var pxyCfgs, visitorCfgs map[string]config.ProxyConf
+	var (
+		pxyCfgs     map[string]config.ProxyConf
+		visitorCfgs map[string]config.VisitorConf
+	)
 	ext := filepath.Ext(filePath)
 	switch strings.ToLower(ext) {
 	case `.json`:
@@ -302,7 +328,7 @@ func StartClientByConfigFile(filePath string, pidFile string) error {
 		if err != nil {
 			return err
 		}
-		pxyCfgs, visitorCfgs, err = config.LoadProxyConfFromIni(g.GlbClientCfg.User, conf, g.GlbClientCfg.Start)
+		pxyCfgs, visitorCfgs, err = config.LoadAllConfFromIni(g.GlbClientCfg.User, conf, g.GlbClientCfg.Start)
 		if err != nil {
 			return err
 		}
@@ -315,14 +341,14 @@ func StartClientByConfig(configContent string, pidFile string) error {
 	if err != nil {
 		return err
 	}
-	pxyCfgs, visitorCfgs, err := config.LoadProxyConfFromIni(g.GlbClientCfg.User, conf, g.GlbClientCfg.Start)
+	pxyCfgs, visitorCfgs, err := config.LoadAllConfFromIni(g.GlbClientCfg.User, conf, g.GlbClientCfg.Start)
 	if err != nil {
 		return err
 	}
 	return StartClient(pxyCfgs, visitorCfgs, pidFile)
 }
 
-func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]config.ProxyConf, pidFile string) (err error) {
+func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]config.VisitorConf, pidFile string) (err error) {
 	log.InitLog(g.GlbClientCfg.LogWay, g.GlbClientCfg.LogFile, g.GlbClientCfg.LogLevel, g.GlbClientCfg.LogMaxDays)
 	if len(g.GlbClientCfg.DnsServer) > 0 {
 		s := g.GlbClientCfg.DnsServer
@@ -349,7 +375,10 @@ func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]con
 		echo.Dump(pxyCfgs)
 		echo.Dump(visitorCfgs)
 	*/
-	svr := client.NewService(pxyCfgs, visitorCfgs)
+	svr, err := client.NewService(pxyCfgs, visitorCfgs)
+	if err != nil {
+		return err
+	}
 
 	// Capture the exit signal if we use kcp.
 	if g.GlbClientCfg.Protocol == "kcp" {

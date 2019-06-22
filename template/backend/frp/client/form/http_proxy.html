@@ -1,0 +1,27 @@
+<div class="form-group">
+        <label class="col-sm-2 control-label">{{"协议"|T}}</label>
+        <div class="col-sm-9">
+          {{$v := Val . "protocol"}}
+          <select name="{{Key . "protocol"}}" class="form-control">
+            <option value="tcp"{{if eq $v "tcp"}} selected="selected"{{end}}>tcp</option>
+          </select>
+        </div>
+</div>
+<div class="form-group">
+      <label class="col-sm-2 control-label">{{"密码访问"|T}}</label>
+      <div class="col-sm-9">
+          <div class="input-group">
+            <div class="input-group-addon">{{"用户名"|T}}</div>
+            <input type="text" class="form-control" name="{{Key . "plugin_http_user"}}" value="{{Val . "plugin_http_user"}}">
+            <div class="input-group-addon">{{"密码"|T}}</div>
+            <input type="text" class="form-control" name="{{Key . "plugin_http_passwd"}}" value="{{Val . "plugin_http_passwd"}}">
+          </div><!-- /.input-group -->
+          <div class="help-block">{{"如果不设置，则不用认证"|T}}</div>
+      </div>
+</div>
+<div class="form-group">
+      <label class="col-sm-2 control-label">{{"远程端口"|T}}</label>
+      <div class="col-sm-9">
+          <input type="number" class="form-control" name="{{Key . "remote_port"}}" value="{{Val . "remote_port"}}">
+      </div>
+</div>

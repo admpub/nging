@@ -76,6 +76,12 @@ func ProxyConfigFromForm(prefix string, data url.Values) (visitor echo.H, proxy 
 		}
 	}
 	for proxyName, m := range extra.Map {
+		localC := config.LocalSvrConf{
+			LocalIp:      m.Value(`local_ip`),
+			LocalPort:    param.String(m.Value(`local_port`)).Int(),
+			Plugin:       m.Value(`plugin`),
+			PluginParams: map[string]string{},
+		}
 		baseC := config.BaseProxyConf{
 			ProxyName:      prefix + proxyName,
 			ProxyType:      m.Value(`protocol`),
@@ -83,12 +89,7 @@ func ProxyConfigFromForm(prefix string, data url.Values) (visitor echo.H, proxy 
 			UseCompression: param.String(m.Value(`use_compression`)).Bool(),
 			Group:          m.Value(`group`),
 			GroupKey:       m.Value(`group_key`),
-		}
-		localC := config.LocalSvrConf{
-			LocalIp:      m.Value(`local_ip`),
-			LocalPort:    param.String(m.Value(`local_port`)).Int(),
-			Plugin:       m.Value(`plugin`),
-			PluginParams: map[string]string{},
+			LocalSvrConf:   localC,
 		}
 		if pluginParams := m.Get(`plugin_params`); pluginParams != nil {
 			for kk, vv := range pluginParams.Map {
@@ -107,14 +108,12 @@ func ProxyConfigFromForm(prefix string, data url.Values) (visitor echo.H, proxy 
 		case consts.UdpProxy:
 			recv := &config.UdpProxyConf{
 				BaseProxyConf: baseC,
-				LocalSvrConf:  localC,
 			}
 			recv.BindInfoConf.RemotePort = param.String(m.Value(`remote_port`)).Int()
 			value = recv
 		case consts.HttpProxy:
 			recv := &config.HttpProxyConf{
 				BaseProxyConf: baseC,
-				LocalSvrConf:  localC,
 			}
 			recv.DomainConf.CustomDomains = strings.Split(m.Value(`custom_domains`), `,`)
 			recv.DomainConf.SubDomain = m.Value(`subdomain`)
@@ -142,7 +141,6 @@ func ProxyConfigFromForm(prefix string, data url.Values) (visitor echo.H, proxy 
 		case consts.HttpsProxy:
 			recv := &config.HttpsProxyConf{
 				BaseProxyConf: baseC,
-				LocalSvrConf:  localC,
 			}
 			customDomains := m.Value(`custom_domains`)
 			if len(customDomains) > 0 {
@@ -153,7 +151,6 @@ func ProxyConfigFromForm(prefix string, data url.Values) (visitor echo.H, proxy 
 		case consts.StcpProxy:
 			recv := &config.StcpProxyConf{
 				BaseProxyConf: baseC,
-				LocalSvrConf:  localC,
 			}
 			recv.Role = m.Value(`role`)
 			recv.Sk = m.Value(`sk`)
@@ -161,7 +158,6 @@ func ProxyConfigFromForm(prefix string, data url.Values) (visitor echo.H, proxy 
 		case consts.XtcpProxy:
 			recv := &config.XtcpProxyConf{
 				BaseProxyConf: baseC,
-				LocalSvrConf:  localC,
 			}
 			recv.Role = m.Value(`role`)
 			recv.Sk = m.Value(`sk`)
