@@ -47,7 +47,13 @@ func DefaultConfigWatcher(mustOk bool) {
 		name := filepath.Base(file)
 		switch name {
 		case conf:
-			return config.ParseConfig()
+			err := config.ParseConfig()
+			if err != nil {
+				if mustOk && config.IsInstalled() {
+					config.MustOK(err)
+				}
+			}
+			return err
 		default:
 			if !config.IsInstalled() {
 				return nil
@@ -75,7 +81,7 @@ func DefaultConfigWatcher(mustOk bool) {
 			}
 			return common.ErrIgnoreConfigChange
 		}
-	}, mustOk)
+	})
 }
 
 func addRouter() {

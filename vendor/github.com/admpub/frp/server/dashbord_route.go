@@ -44,11 +44,12 @@ func (svr *Service) RegisterTo(router echo.RouteRegister) {
 	if err != nil {
 		panic(err)
 	}
+	fs := assets.FS(`server`)
 	router.Get("/static*", func(c echo.Context) error {
 		file := c.Param(`*`)
 		if len(file) == 0 || file == `/` {
 			file = `/index.html`
 		}
-		return c.File(file, assets.FileSystem)
+		return c.File(file, fs)
 	})
 }

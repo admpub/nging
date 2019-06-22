@@ -27,7 +27,7 @@ import (
 	"github.com/webx-top/com"
 )
 
-func WatchConfig(fn func(string) error, mustOk bool) {
+func WatchConfig(fn func(string) error) {
 	me := com.MonitorEvent{
 		Modify: func(file string) {
 			if !strings.HasSuffix(file, `.yaml`) {
@@ -43,11 +43,7 @@ func WatchConfig(fn func(string) error, mustOk bool) {
 				log.Info(`No need to reload the configuration file: ` + file)
 				return
 			}
-			if mustOk && IsInstalled() {
-				MustOK(err)
-			} else {
-				log.Error(err)
-			}
+			log.Error(err)
 		},
 	}
 	me.Watch()

@@ -42,8 +42,9 @@ func (svr *Service) RunDashboardServer(addr string, port int) (err error) {
 	}
 	svr.RegisterTo(e)
 	// view
+	fs := assets.FS(`server`)
 	e.Get("/favicon.ico", func(c echo.Context) error {
-		return c.File(c.Path(), assets.FileSystem)
+		return c.File(c.Path(), fs)
 	})
 
 	address := fmt.Sprintf("%s:%d", addr, port)

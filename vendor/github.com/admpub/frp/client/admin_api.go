@@ -262,6 +262,13 @@ func (svr *Service) apiPutConfig(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
+	if len(g.GlbClientCfg.CfgFile) == 0 {
+		res.Code = 400
+		res.Msg = "frpc has no config file path"
+		log.Warn("%s", res.Msg)
+		return
+	}
+
 	// get new config content
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {

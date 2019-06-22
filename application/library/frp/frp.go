@@ -43,6 +43,7 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
+	_ "github.com/admpub/frp/assets/frpc/statik"
 	_ "github.com/admpub/frp/assets/frps/statik"
 )
 

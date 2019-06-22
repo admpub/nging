@@ -9,7 +9,7 @@
         </div>
 </div>
 <div class="form-group">
-      <label class="col-sm-2 control-label">{{"内网主机"|T}}</label>
+      <label class="col-sm-2 control-label">{{"内网地址"|T}}</label>
       <div class="col-sm-9">
           <div class="input-group">
             <div class="input-group-addon">{{"主机"|T}}</div>
@@ -17,6 +17,9 @@
             <div class="input-group-addon">{{"端口"|T}}</div>
             <input type="text" class="form-control" name="{{Key . "local_port"}}" value="{{Val . "local_port"}}" required="required">
           </div><!-- /.input-group -->
+          <div class="help-block">
+              {{"内网地址是供FRP服务端访问的地址"|T}}
+          </div>
       </div>
 </div>
 <div class="form-group">
@@ -56,6 +59,7 @@
           <div class="help-block">
             <code>{{"子域名"|T}}</code>{{"如果设置为web2，服务端设置了根域名coscms.com，则完整的访问域名为web2.coscms.com"|T}}<br />
             <code>{{"完整域名"|T}}</code>{{"您也可以指定完整域名，多个域名之间用半角逗号隔开"|T}}<br />
+            {{"这里的域名用于供访客访问"|T}}
           </div>
       </div>
 </div>

@@ -7,7 +7,7 @@
         </div>
 </div>
 <div class="form-group">
-      <label class="col-sm-2 control-label">{{"内网主机"|T}}</label>
+      <label class="col-sm-2 control-label">{{"内网地址"|T}}</label>
       <div class="col-sm-9">
           <div class="input-group">
             <div class="input-group-addon">{{"主机"|T}}</div>
@@ -15,6 +15,9 @@
             <div class="input-group-addon">{{"端口"|T}}</div>
             <input type="text" class="form-control" name="{{Key . "local_port"}}" value="{{Val . "local_port"}}">
           </div><!-- /.input-group -->
+          <div class="help-block">
+              {{"内网地址是供FRP服务端访问的地址"|T}}
+          </div>
       </div>
 </div>
 <div class="form-group">
