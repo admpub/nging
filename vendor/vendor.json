@@ -1914,13 +1914,6 @@
 			"revisionTime": "2016-03-02T07:53:16Z"
 		},
 		{
-			"checksumSHA1": "oNPIJ4td9Sy3KJNG32jzw0WN9nc=",
-			"origin": "github.com/admpub/frp/vendor/github.com/klauspost/reedsolomon",
-			"path": "github.com/klauspost/reedsolomon",
-			"revision": "0cd2ba136c402f3a7046aff5781d99afb9fbdb03",
-			"revisionTime": "2019-06-22T03:48:17Z"
-		},
-		{
 			"checksumSHA1": "AQ5QA8O8WMAmN4ZOTxhoac6etWg=",
 			"path": "github.com/knq/sysutil",
 			"revision": "0218e141a794643e8c0fa283b9cd076fc0df662d",
@@ -2718,13 +2711,6 @@
 			"revisionTime": "2018-10-05T14:02:18Z"
 		},
 		{
-			"checksumSHA1": "++Uxr4F++QrnFEbBlQsJ3VuQoNM=",
-			"origin": "github.com/admpub/frp/vendor/github.com/rakyll/statik/fs",
-			"path": "github.com/rakyll/statik/fs",
-			"revision": "f6c265d783d6c18c57cc4844e8db5a348ebff0a2",
-			"revisionTime": "2018-07-29T04:33:30Z"
-		},
-		{
 			"checksumSHA1": "4zMchNW55arPzBLg2zMp6Avhwh0=",
 			"origin": "github.com/mholt/caddy/vendor/github.com/russross/blackfriday",
 			"path": "github.com/russross/blackfriday",
@@ -3208,12 +3194,6 @@
 		{
 			"checksumSHA1": "D87qnT/6rpCcD+opC/Fhu7+hCD0=",
 			"path": "github.com/webx-top/echo/handler/captcha",
-			"revision": "947a5b53a485ae54ee5ce1e666205379b7a76704",
-			"revisionTime": "2019-06-22T07:33:14Z"
-		},
-		{
-			"checksumSHA1": "nqrVTfILij1mSmg8e01k4I2whsw=",
-			"path": "github.com/webx-top/echo/handler/mvc/events",
 			"revision": "947a5b53a485ae54ee5ce1e666205379b7a76704",
 			"revisionTime": "2019-06-22T07:33:14Z"
 		},
@@ -3702,13 +3682,6 @@
 			"path": "golang.org/x/net/ipv4",
 			"revision": "f6c265d783d6c18c57cc4844e8db5a348ebff0a2",
 			"revisionTime": "2018-07-29T04:33:30Z"
-		},
-		{
-			"checksumSHA1": "hDszlYGI8m9puPsEIDr59ccTiF8=",
-			"origin": "github.com/go-acme/lego/vendor/golang.org/x/net/ipv6",
-			"path": "golang.org/x/net/ipv6",
-			"revision": "b9bafc582ce3ef7263217fdfe22e2a3e59f0d216",
-			"revisionTime": "2019-05-09T11:58:24Z"
 		},
 		{
 			"checksumSHA1": "M67VbeXMkCwHoiKOrKN7gd4TOFg=",
