@@ -31,7 +31,7 @@
             {{if $dbList}}
             <div class="input-group no-margin-bottom">
               <span class="input-group-addon">{{"数据库"|T}}</span>
-              <select name="db" class="form-control" id="db">
+              <select name="db" class="form-control" id="dbmanager-db-list">
                 <option value="">{{"<未选择>"|}}</option>
                 {{range $k,$v:=$dbList}}
                 <option value="{{$v}}"{{if eq $dbName $v}} selected{{end}}>{{$v}}</option>
@@ -43,7 +43,7 @@
         <div class="app-nav collapse sm-line-height no-margin-top">
           <p class="title">{{"数据表"|T}}</p>
           {{if $dbName}}
-          <ul class="nav nav-pills nav-stacked ">
+          <ul class="nav nav-pills nav-stacked" id="dbmanager-table-list">
               {{$tableList := Stored.Get "tableList"}}
               {{if $tableList}}
               {{$currentTable := Stored.table}}
@@ -111,7 +111,7 @@ $(function(){
         
       }).trigger('click');
   
-      $('#db').on('change',function(){
+      $('#dbmanager-db-list').on('change',function(){
         var db=$(this).val();
         if(db){
           window.location='{{dbMgrURL "listTable"}}&db='+db;
@@ -122,6 +122,10 @@ $(function(){
       $('#sidebar-collapse').trigger('click');
       App.pageAside();
       App.tableReponsiveInit();
+      if($('#dbmanager-table-list').length>0){
+        var activeElem=$('#dbmanager-table-list').find('li.active');
+        if(activeElem.length>0) $('#main-container > .page-aside > .nano').nanoScroller({ scrollTo: activeElem });
+      }
 {{- end -}}
 });
 </script>
