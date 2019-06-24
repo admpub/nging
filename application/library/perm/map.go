@@ -38,6 +38,9 @@ func (m *Map) Import(navList *navigate.List) *Map {
 	for _, nav := range *navList {
 		item := NewMap()
 		item.Nav = nav
+		if _, ok := m.V[nav.Action]; ok {
+			panic(`The navigate name conflicts. Already existed name: ` + nav.Action)
+		}
 		m.V[nav.Action] = item
 		item.Import(nav.Children)
 	}
