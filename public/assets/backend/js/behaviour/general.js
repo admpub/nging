@@ -942,6 +942,51 @@ var App = function () {
 	    $(elem).on('click',function(){
         done(this);
       });
+    },
+    tableSorting:function(table){
+      table=table==null?'':table+' ';
+       $(table+'thead[sort-current!=""]').each(function(){
+        var current=$(this).attr('sort-current');
+        var sortObj=$(this).find('th[sort="'+current+'"]');
+        var newCls='fa-arrow-down',oldCls='fa-arrow-up';
+        if(sortObj.length<1){
+          newCls='fa-arrow-up';
+          oldCls='fa-arrow-down';
+          sortObj=$(this).find('th[sort="-'+current+'"]');
+        }
+        if(sortObj.length>0){
+          var icon=sortObj.children('.fa');
+          if(icon.length<1){
+            sortObj.append('<i class="fa '+newCls+'"></i>');
+          }else{
+            icon.removeClass(oldCls).addClass(newCls);
+          }
+        }
+       $(table+'thead[sort-current] th[sort]').on('click',function(e){
+         var thead=$(this).parents('thead[sort-current]');
+         var current=thead.attr('sort-current');
+         var url=thead.attr('sort-url')||window.location.href;
+         var trigger=thead.attr('sort-trigger');
+         var sort=$(this).attr('sort');
+         if(current && (current==sort || current=='-'+sort)){
+          var reg=/^\-/;
+          current=reg.test(current)?current.replace(reg,''):'-'+current;
+         }else{
+          current=sort;
+         }
+         url=App.replaceURLParam('sort',current,url);
+         if(trigger){
+           thead.trigger('sort');
+         }else{
+           var setto=thead.attr('sort-setto');
+           if(setto){
+             $(setto).load(url);
+           }else{
+             window.location=url;
+           }
+         }
+       });
+      });
     }
   };
  
