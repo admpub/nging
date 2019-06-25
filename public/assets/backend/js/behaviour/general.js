@@ -962,7 +962,7 @@ var App = function () {
             icon.removeClass(oldCls).addClass(newCls);
           }
         }
-       $(table+'thead[sort-current] th[sort]').on('click',function(e){
+       $(table+'thead[sort-current] th[sort]').css('cursor','pointer').on('click',function(e){
          var thead=$(this).parents('thead[sort-current]');
          var current=thead.attr('sort-current');
          var url=thead.attr('sort-url')||window.location.href;
