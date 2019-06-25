@@ -101,12 +101,21 @@ func PagingWithSelectList(ctx echo.Context, param *factory.Param, varSuffix ...s
 	return p, err
 }
 
-func Sorts(ctx echo.Context, table string, defaultSort string) []interface{} {
+func Sorts(ctx echo.Context, table string, defaultSorts ...string) []interface{} {
 	sorts := []interface{}{}
 	sort := ctx.Form(`sort`)
-	if len(sort) > 0 && factory.Fields.ExistField(table, strings.TrimPrefix(sort, `-`)) {
+	field := strings.TrimPrefix(sort, `-`)
+	if len(field) > 0 && factory.Fields.ExistField(table, field) {
 		sorts = append(sorts, sort)
+		for _, defaultSort := range defaultSorts {
+			if field != strings.TrimPrefix(defaultSort, `-`) {
+				sorts = append(sorts, defaultSort)
+			}
+		}
+	} else {
+		for _, defaultSort := range defaultSorts {
+			sorts = append(sorts, defaultSort)
+		}
 	}
-	sorts = append(sorts, defaultSort)
 	return sorts
 }
