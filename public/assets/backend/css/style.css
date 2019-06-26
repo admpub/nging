@@ -3880,10 +3880,11 @@ h1:first-child {
   padding: 3px 5px 5px 18px;
 }
 .select2-container-multi .select2-choices {
-  padding: 5px;
+  padding: 2px;
   background: #fff;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
 }
+.select2-container-multi .select2-choices .select2-search-field input{padding-top:2px;padding-bottom:2px}
 /*Slider*/
 .slider.slider-vertical {
   margin-right: 13px;
