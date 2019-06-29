@@ -4,6 +4,7 @@
 <div class="row">
     {{$cardSize := len Stored.cards}}
     {{range $k,$card := Stored.cards}}
+    {{if $card}}
     <div class="col-md-{{if lt $cardSize 4}}4{{else}}3{{end}}">
         <div class="block-flat">
             <div class="content no-padding">
@@ -17,9 +18,12 @@
         </div>
     </div>
     {{end}}
+    {{end}}
 </div>
 {{range $k,$block := Stored.blocks}}
+{{if $block}}
 {{if $block.Tmpl}}{{Fetch $block.Tmpl $}}{{end}}
+{{end}}
 {{end}}
 <div class="row no-margin-top">
     <div class="col-md-12">
@@ -70,30 +74,11 @@
         </div>
     </div>
 </div>
-<div class="row no-margin-top">
-    <div class="col-md-12">
-        <div class="block-flat">
-            <div class="header">
-                <h3>{{"快捷指令"|}}</h3>
-            </div>
-            <div class="content">
-                <div class="row icon-show">
-                    {{range $k,$v := Stored.cmdList}}
-                    <div class="col-md-3 col-sm-4">
-                        <a href="__BACKEND__/server/cmd?id={{$v.Id}}" data-toggle="tooltip" title="{{"执行"|T}} {{$v.Command}}">
-                        <i class="fa fa-play"></i>{{$v.Name}}
-                        </a>
-                    </div>
-                    {{end}}
-                </div>
-            </div>
-        </div>
-
-    </div>
-</div>
 {{/Block}}
 {{Block "footer"}}
 {{range $k,$block := Stored.blocks}}
+{{if $block}}
 {{if $block.Footer}}{{Fetch $block.Footer $}}{{end}}
+{{end}}
 {{end}}
 {{/Block}}

@@ -28,7 +28,6 @@ import (
 	"github.com/admpub/nging/application/model"
 	"github.com/admpub/nging/application/registry/dashboard"
 	"github.com/webx-top/com"
-	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
 )
@@ -45,24 +44,6 @@ func Index(ctx echo.Context) error {
 		return err
 	}
 	ctx.Set(`blocks`, blocks)
-
-	//指令集
-	cmdMdl := model.NewCommand(ctx)
-	if user.Id == 1 {
-		cmdMdl.List(nil, nil, 1, -1)
-	} else {
-		roleList := handler.RoleList(ctx)
-		cmdIds := []string{}
-		for _, role := range roleList {
-			if len(role.PermCmd) > 0 {
-				cmdIds = append(cmdIds, strings.Split(role.PermCmd, `,`)...)
-			}
-		}
-		if len(cmdIds) > 0 {
-			cmdMdl.List(nil, nil, 1, -1, db.Cond{`id`: db.In(cmdIds)})
-		}
-	}
-	ctx.Set(`cmdList`, cmdMdl.Objects())
 	ctx.Set(`license`, license.License())
 	ctx.Set(`showExpirationTime`, config.DefaultConfig.Sys.ShowExpirationTime)
 	machineID, _ := license.MachineID()

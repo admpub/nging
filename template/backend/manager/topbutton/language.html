@@ -1,0 +1,25 @@
+<li class="button dropdown">
+  <a href="javascript:;" class="dropdown-toggle ttip" data-toggle="dropdown" title="{{"Languages"|T}}" data-placement="bottom">
+    <i class="fa fa-globe"></i>
+    <!-- <span class="bubble">2</span> -->
+  </a>
+  <ul class="dropdown-menu">
+    <li>
+      <div><!--  class="nano nscroller" -->
+        <div class="content">
+          <ul>
+            {{range $k, $v := Languages}}
+            <li>
+              <a href="?lang={{$v}}" onclick="App.switchLang('{{$v}}');return false;">
+                <i class="fa {{if eq $v Lang}}fa-check-square{{else}}fa-square{{end}} info"></i>
+                <b>{{$v}}</b>
+              </a>
+            </li>
+            {{end}}
+          </ul>
+        </div>
+      </div>
+      <!-- <ul class="foot"><li><a href="#">View all activity </a></li></ul> -->
+    </li>
+  </ul>
+</li>

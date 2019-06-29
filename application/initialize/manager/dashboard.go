@@ -19,8 +19,12 @@
 package manager
 
 import (
+	"strings"
+
+	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/model"
 	"github.com/admpub/nging/application/registry/dashboard"
+	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
 
@@ -56,4 +60,27 @@ func init() {
 		Tmpl:   `server/chart/cpu`,
 		Footer: `server/chart/cpu.js`,
 	})
+	dashboard.BlockRegister((&dashboard.Block{
+		Tmpl: `server/dashbord/cmd_list`,
+	}).SetContentGenerator(func(ctx echo.Context) error {
+		user := handler.User(ctx)
+		//指令集
+		cmdMdl := model.NewCommand(ctx)
+		if user.Id == 1 {
+			cmdMdl.List(nil, nil, 1, -1)
+		} else {
+			roleList := handler.RoleList(ctx)
+			cmdIds := []string{}
+			for _, role := range roleList {
+				if len(role.PermCmd) > 0 {
+					cmdIds = append(cmdIds, strings.Split(role.PermCmd, `,`)...)
+				}
+			}
+			if len(cmdIds) > 0 {
+				cmdMdl.List(nil, nil, 1, -1, db.Cond{`id`: db.In(cmdIds)})
+			}
+		}
+		ctx.Set(`cmdList`, cmdMdl.Objects())
+		return nil
+	}))
 }

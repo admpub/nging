@@ -24,6 +24,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/admpub/nging/application/registry/dashboard"
+
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo/middleware/tplfunc"
 
@@ -119,6 +121,11 @@ func FuncMap() echo.MiddlewareFunc {
 			})
 			c.SetFunc(`Projects`, func() navigate.ProjectList {
 				return navigate.ProjectListAll()
+			})
+			c.SetFunc(`TopButtons`, func() dashboard.TopButtons {
+				buttons := dashboard.TopButtonAll()
+				buttons.Ready(c)
+				return buttons
 			})
 			c.SetFunc(`Navigate`, func(side string) navigate.List {
 				switch side {

@@ -78,6 +78,45 @@ func CardRegister(card ...*Card) {
 	cards = append(cards, card...)
 }
 
+//CardRemove 删除元素
+func CardRemove(index int) {
+	if index < 0 {
+		cards = cards[0:0]
+		return
+	}
+	size := len(cards)
+	if size > index {
+		if size > index+1 {
+			cards = append(cards[0:index], cards[index+1:]...)
+		} else {
+			cards = cards[0:index]
+		}
+	}
+}
+
+//CardSet 设置元素
+func CardSet(index int, list ...*Card) {
+	if len(list) == 0 {
+		return
+	}
+	if index < 0 {
+		cards = append(cards, list...)
+		return
+	}
+	size := len(cards)
+	if size > index {
+		cards[index] = list[0]
+		if len(list) > 1 {
+			CardSet(index+1, list[1:]...)
+		}
+		return
+	}
+	for start, end := size, index-1; start < end; start++ {
+		cards = append(cards, nil)
+	}
+	cards = append(cards, list...)
+}
+
 func CardAll() Cards {
 	return cards
 }
