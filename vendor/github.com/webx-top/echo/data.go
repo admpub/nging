@@ -93,6 +93,7 @@ type Data interface {
 	GetInfo() interface{}
 	GetZone() interface{}
 	GetData() interface{}
+	GetURL() string
 }
 
 type RawData struct {
@@ -138,6 +139,10 @@ func (d *RawData) GetInfo() interface{} {
 
 func (d *RawData) GetZone() interface{} {
 	return d.Zone
+}
+
+func (d *RawData) GetURL() string {
+	return d.URL
 }
 
 //GetData 获取数据
@@ -238,26 +243,21 @@ func (d *RawData) SetTmplFuncs() {
 	flash, ok := d.context.Flash().(*RawData)
 	if ok {
 		d.context.Session().Save()
-		d.context.SetFunc(`Code`, func() State {
-			return flash.Code
-		})
-		d.context.SetFunc(`Info`, func() interface{} {
-			return flash.Info
-		})
-		d.context.SetFunc(`Zone`, func() interface{} {
-			return flash.Zone
-		})
 	} else {
-		d.context.SetFunc(`Code`, func() State {
-			return d.Code
-		})
-		d.context.SetFunc(`Info`, func() interface{} {
-			return d.Info
-		})
-		d.context.SetFunc(`Zone`, func() interface{} {
-			return d.Zone
-		})
+		flash = d
 	}
+	d.context.SetFunc(`Code`, func() State {
+		return flash.Code
+	})
+	d.context.SetFunc(`Info`, func() interface{} {
+		return flash.Info
+	})
+	d.context.SetFunc(`Zone`, func() interface{} {
+		return flash.Zone
+	})
+	d.context.SetFunc(`FURL`, func() interface{} {
+		return flash.URL
+	})
 }
 
 // Set 设置输出(code,info,zone,RawData)
