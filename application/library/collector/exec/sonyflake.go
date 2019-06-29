@@ -45,7 +45,7 @@ func init() {
 	SonyFlake = sonyflake.NewSonyflake(st)
 }
 
-func RandomString() (string, error) {
+func UniqueID() (string, error) {
 	id, err := SonyFlake.NextID()
 	if err != nil {
 		return ``, err

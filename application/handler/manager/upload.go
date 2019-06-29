@@ -99,7 +99,7 @@ func Upload(ctx echo.Context) error {
 		ext := filepath.Ext(hd.Filename)
 		fname := name
 		if len(fname) == 0 {
-			fname, err = exec.RandomString()
+			fname, err = exec.UniqueID()
 			if err != nil {
 				return ``, err
 			}

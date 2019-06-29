@@ -154,6 +154,6 @@ func (c *Recv) Parents(lasts ...int) *Recv {
 	return r
 }
 
-func (_ *Recv) Random() (string, error) {
-	return RandomString()
+func (_ *Recv) UniqueID() (string, error) {
+	return UniqueID()
 }
