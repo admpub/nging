@@ -27,10 +27,12 @@ import (
 	"github.com/webx-top/echo/subdomains"
 )
 
+// Ok 操作成功
 func Ok(v string) Successor {
 	return NewOk(v)
 }
 
+// Err 获取错误信息
 func Err(ctx echo.Context, err error) (ret interface{}) {
 	if err == nil {
 		flash := ctx.Flash()
@@ -47,18 +49,22 @@ func Err(ctx echo.Context, err error) (ret interface{}) {
 	return
 }
 
+// SendOk 记录成功信息
 func SendOk(ctx echo.Context, msg string) {
 	ctx.Session().AddFlash(Ok(msg))
 }
 
+// SendFail 记录失败信息
 func SendFail(ctx echo.Context, msg string) {
 	ctx.Session().AddFlash(msg)
 }
 
+// SendErr 记录错误信息 (SendFail的别名)
 func SendErr(ctx echo.Context, err error) {
 	SendFail(ctx, err.Error())
 }
 
+// VerifyCaptcha 验证码验证
 func VerifyCaptcha(ctx echo.Context, hostAlias string, captchaName string, args ...string) echo.Data {
 	data := ctx.Data()
 	idGet := ctx.Form
@@ -82,6 +88,7 @@ func VerifyCaptcha(ctx echo.Context, hostAlias string, captchaName string, args 
 	return data
 }
 
+// VerifyAndSetCaptcha 验证码验证并设置新验证码信息
 func VerifyAndSetCaptcha(ctx echo.Context, hostAlias string, captchaName string, args ...string) echo.Data {
 	data := VerifyCaptcha(ctx, hostAlias, captchaName, args...)
 	if data.GetCode() != StatusCaptchaError {
@@ -90,6 +97,7 @@ func VerifyAndSetCaptcha(ctx echo.Context, hostAlias string, captchaName string,
 	return data
 }
 
+// CaptchaInfo 新验证码信息
 func CaptchaInfo(hostAlias string, captchaName string, args ...string) echo.H {
 	captchaID := captcha.New()
 	captchaIdent := `captchaId`

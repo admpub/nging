@@ -23,6 +23,7 @@ import (
 	"github.com/webx-top/echo"
 )
 
+// LogShow 获取日志内容用于显示
 func LogShow(ctx echo.Context, logFile string, extensions ...echo.H) error {
 	data := ctx.Data()
 	var result echo.H

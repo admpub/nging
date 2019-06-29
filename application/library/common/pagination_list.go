@@ -24,14 +24,17 @@ import (
 	"github.com/webx-top/pagination"
 )
 
+// Lister 页码分页列表查询接口
 type Lister interface {
 	List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error)
 }
 
+// OffsetLister 偏移值分页列表查询接口
 type OffsetLister interface {
 	ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error)
 }
 
+// NewLister 创建页码分页列表查询
 func NewLister(list Lister, recv interface{}, mw func(db.Result) db.Result, args ...interface{}) *List {
 	return &List{
 		mw:   mw,
@@ -41,6 +44,7 @@ func NewLister(list Lister, recv interface{}, mw func(db.Result) db.Result, args
 	}
 }
 
+// List 页码分页列表封装
 type List struct {
 	recv interface{}
 	mw   func(db.Result) db.Result
@@ -48,6 +52,7 @@ type List struct {
 	args []interface{}
 }
 
+// List 分页查询
 func (f *List) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
 		recv = f.recv
@@ -58,10 +63,12 @@ func (f *List) List(recv interface{}, mw func(db.Result) db.Result, page, size i
 	return f.ls.List(recv, mw, page, size, f.args...)
 }
 
+// Paging 分页信息
 func (f *List) Paging(ctx echo.Context, varSuffix ...string) (*pagination.Pagination, error) {
 	return PagingWithLister(ctx, f, varSuffix...)
 }
 
+// NewOffsetLister 创建偏移值分页列表查询
 func NewOffsetLister(list OffsetLister, recv interface{}, mw func(db.Result) db.Result, args ...interface{}) *OffsetList {
 	return &OffsetList{
 		mw:   mw,
@@ -71,6 +78,7 @@ func NewOffsetLister(list OffsetLister, recv interface{}, mw func(db.Result) db.
 	}
 }
 
+// OffsetList 偏移值分页列表查询封装
 type OffsetList struct {
 	recv interface{}
 	mw   func(db.Result) db.Result
@@ -78,6 +86,7 @@ type OffsetList struct {
 	args []interface{}
 }
 
+// ListByOffset 分页查询
 func (f *OffsetList) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
 		recv = f.recv
@@ -91,6 +100,7 @@ func (f *OffsetList) ListByOffset(recv interface{}, mw func(db.Result) db.Result
 	return f.ls.ListByOffset(recv, mw, offset, size, args...)
 }
 
+// ChunkList 分批查询列表
 func (f *OffsetList) ChunkList(eachPageCallback func() error, size int, offset int) error {
 	cnt, err := f.ListByOffset(nil, nil, offset, size)
 	if err != nil {

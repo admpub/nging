@@ -27,8 +27,10 @@ import (
 	"github.com/webx-top/pagination"
 )
 
+// PageMaxSize 每页最大数据量
 var PageMaxSize = 1000
 
+// Paging 获取当前页码和每页数据量
 func Paging(ctx echo.Context) (page int, size int) {
 	page = ctx.Formx(`page`, ctx.Form(`pageNumber`)).Int()
 	size = ctx.Formx(`size`, ctx.Form(`pageSize`)).Int()
@@ -41,6 +43,7 @@ func Paging(ctx echo.Context) (page int, size int) {
 	return
 }
 
+// PagingWithPagination 获取分页信息
 func PagingWithPagination(ctx echo.Context, delKeys ...string) (page int, size int, totalRows int, p *pagination.Pagination) {
 	page, size = Paging(ctx)
 	totalRows = ctx.Formx(`rows`).Int()
@@ -56,6 +59,7 @@ func PagingWithPagination(ctx echo.Context, delKeys ...string) (page int, size i
 	return
 }
 
+// PagingWithLister 通过分页查询接口获取分页信息
 func PagingWithLister(ctx echo.Context, m Lister, varSuffix ...string) (*pagination.Pagination, error) {
 	page, size, totalRows, p := PagingWithPagination(ctx)
 	cnt, err := m.List(nil, nil, page, size)
@@ -71,6 +75,7 @@ func PagingWithLister(ctx echo.Context, m Lister, varSuffix ...string) (*paginat
 	return p, err
 }
 
+// PagingWithListerCond 通过分页查询接口和附加条件获取分页信息
 func PagingWithListerCond(ctx echo.Context, m Lister, cond db.Compound, varSuffix ...string) (*pagination.Pagination, error) {
 	page, size, totalRows, p := PagingWithPagination(ctx)
 	cnt, err := m.List(nil, nil, page, size, cond)
@@ -86,6 +91,7 @@ func PagingWithListerCond(ctx echo.Context, m Lister, cond db.Compound, varSuffi
 	return p, err
 }
 
+// PagingWithSelectList 通过Select查询参数获取分页信息
 func PagingWithSelectList(ctx echo.Context, param *factory.Param, varSuffix ...string) (*pagination.Pagination, error) {
 	page, size, totalRows, p := PagingWithPagination(ctx)
 	cnt, err := param.SetPage(page).SetSize(size).SelectList()
@@ -101,6 +107,7 @@ func PagingWithSelectList(ctx echo.Context, param *factory.Param, varSuffix ...s
 	return p, err
 }
 
+// Sorts 获取数据查询时的排序方式
 func Sorts(ctx echo.Context, table string, defaultSorts ...string) []interface{} {
 	sorts := []interface{}{}
 	sort := ctx.Form(`sort`)

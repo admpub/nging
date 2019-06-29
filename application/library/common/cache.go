@@ -26,6 +26,7 @@ import (
 	"github.com/webx-top/echo"
 )
 
+// WriteCache 写缓存文件
 func WriteCache(dir string, name string, content []byte) (err error) {
 	savePath := filepath.Join(echo.Wd(), `data`, `cache`, dir)
 	if _, err = os.Stat(savePath); os.IsNotExist(err) {
@@ -38,11 +39,13 @@ func WriteCache(dir string, name string, content []byte) (err error) {
 	return
 }
 
+// ReadCache 读缓存文件
 func ReadCache(dir string, name string) (content []byte, err error) {
 	savePath := filepath.Join(echo.Wd(), `data`, `cache`, dir, name)
 	return ioutil.ReadFile(savePath)
 }
 
+// RemoveCache 删除缓存文件
 func RemoveCache(dir string, names ...string) (err error) {
 	savePath := filepath.Join(echo.Wd(), `data`, `cache`, dir)
 	if len(names) < 1 {

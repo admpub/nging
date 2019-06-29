@@ -31,18 +31,22 @@ const (
 	StatusSuccess = 1
 )
 
+// IsUserNotLoggedIn 用户是否未登录
 func IsUserNotLoggedIn(err error) bool {
 	return err == ErrUserNotLoggedIn
 }
 
+// IsUserNotFound 用户是否不存在
 func IsUserNotFound(err error) bool {
 	return err == ErrUserNotFound
 }
 
+// IsUserNoPerm 用户是否没有操作权限
 func IsUserNoPerm(err error) bool {
 	return err == ErrUserNoPerm
 }
 
+// IsUserDisabled 用户是否被禁用
 func IsUserDisabled(err error) bool {
 	return err == ErrUserDisabled
 }
