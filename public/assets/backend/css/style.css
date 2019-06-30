@@ -1686,10 +1686,6 @@ body.texture {
 .main-app .items .item > div:first-child > div {
   margin-top: 2px;
 }
-.mail-inbox .checkbox,
-.main-app .checkbox {
-  background-color: #FFF;
-}
 .mail-inbox .mails .item .from,
 .main-app .items .item .from {
   font-weight: 600;
