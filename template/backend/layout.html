@@ -89,7 +89,7 @@
 				</ol>
 			</div>
 			{{end}}
-		    <div class="cl-mcont">{{Block "main"}}{{/Block}}</div>
+		    <div class="cl-mcont{{if hasAnyBlock "bodyClass"}} {{Block "bodyClass"}}{{/Block}}{{end}}">{{Block "main"}}{{/Block}}</div>
 		</div><!-- #pcont -->
 		</div><!-- #main-container -->
 		</div><!-- .cl-right -->
