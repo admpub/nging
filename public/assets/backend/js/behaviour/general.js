@@ -945,14 +945,14 @@ var App = function () {
     },
     tableSorting:function(table){
       table=table==null?'':table+' ';
-       $(table+'[sort-current!=""]').each(function(){
+       $(table+'[sort-current!=""]').each(function(){//<thead sort-current="created">
         var current=$(this).attr('sort-current');
-        var sortObj=$(this).find('[sort="'+current+'"]');
+        var sortObj=$(this).find('[sort="'+current+'"]');//<th sort="-created">
         var newCls='fa-arrow-down',oldCls='fa-arrow-up';
         if(sortObj.length<1){
           newCls='fa-arrow-up';
           oldCls='fa-arrow-down';
-          sortObj=$(this).find('th[sort="-'+current+'"]');
+          sortObj=$(this).find('[sort="-'+current+'"]');
         }
         if(sortObj.length>0){
           var icon=sortObj.children('.fa');
