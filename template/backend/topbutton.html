@@ -1,9 +1,9 @@
 {{Strip}}
 <ul class="nav navbar-nav navbar-right not-nav">
-{{range $k,$btn := TopButtons}}
-{{if $btn}}
-{{if $btn.Tmpl}}{{Fetch $btn.Tmpl $}}{{end}}
-{{end}}
-{{end}}
+{{- range $k,$btn := TopButtons -}}
+{{- if $btn -}}
+{{- if $btn.Tmpl}}{{Fetch $btn.Tmpl $}}{{end -}}
+{{- end -}}
+{{- end -}}
 </ul>
 {{/Strip}}

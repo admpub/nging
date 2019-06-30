@@ -2,9 +2,9 @@
 {{Block "title"}}{{"管理中心首页"|T}}{{/Block}}
 {{Block "main"}}
 <div class="row">
-    {{$cardSize := len Stored.cards}}
-    {{range $k,$card := Stored.cards}}
-    {{if $card}}
+    {{- $cardSize := len Stored.cards -}}
+    {{- range $k,$card := Stored.cards -}}
+    {{- if $card -}}
     <div class="col-md-{{if lt $cardSize 4}}4{{else}}3{{end}}">
         <div class="block-flat">
             <div class="content no-padding">
@@ -17,14 +17,14 @@
             </div>
         </div>
     </div>
-    {{end}}
-    {{end}}
+    {{- end -}}
+    {{- end -}}
 </div>
-{{range $k,$block := Stored.blocks}}
-{{if $block}}
-{{if $block.Tmpl}}{{Fetch $block.Tmpl $}}{{end}}
-{{end}}
-{{end}}
+{{- range $k,$block := Stored.blocks -}}
+{{- if $block -}}
+{{- if $block.Tmpl}}{{Fetch $block.Tmpl $}}{{end -}}
+{{- end -}}
+{{- end -}}
 <div class="row no-margin-top">
     <div class="col-md-12">
         <div class="block-flat">
@@ -40,45 +40,45 @@
 						<li>{{"今天是"|T}} {{Now.Format "2006-01-02"}} {{Now.Weekday}}</li>
 					</ul>
                 </div>
-            {{if Stored.license.Key}}
+            {{- if Stored.license.Key -}}
                 <h4>{{"授权信息"|T}}</h4>
                 <p>
                     <b>{{"授权用户"|T}}</b>: {{Stored.license.Info.Name}}<br />
-                {{if Stored.license.Info.LicenseID}}
+                {{- if Stored.license.Info.LicenseID -}}
                     <b>{{"证书编号"|T}}</b>: {{Stored.license.Info.LicenseID}}<br />
-                {{end}}
+                {{- end -}}
                     <b>{{"机器编号"|T}}</b>: {{Stored.license.Info.MachineID}}<br />
-                {{if Stored.license.Info.Expiration.IsZero}}
+                {{- if Stored.license.Info.Expiration.IsZero -}}
                     <b>{{"过期时间"|T}}</b>: 
                     {{"永久有效"|T}}
-                {{else}}
-                    {{$remaining := Stored.license.Info.Remaining Lang}}
-                    {{$showExpirationTime := Stored.showExpirationTime}}
-                    {{if and (ge $showExpirationTime 0) (or (eq $showExpirationTime 0) (lt $remaining.Duration.Seconds (Float64 $showExpirationTime)))}}
+                {{- else -}}
+                    {{- $remaining := Stored.license.Info.Remaining Lang -}}
+                    {{- $showExpirationTime := Stored.showExpirationTime -}}
+                    {{- if and (ge $showExpirationTime 0) (or (eq $showExpirationTime 0) (lt $remaining.Duration.Seconds (Float64 $showExpirationTime))) -}}
                         <b>{{"过期时间"|T}}</b>: 
-                        {{Stored.license.Info.Expiration.Format "2006-01-02"}}
-                        {{$remainingString := $remaining.String}}
+                        {{- Stored.license.Info.Expiration.Format "2006-01-02" -}}
+                        {{- $remainingString := $remaining.String -}}
                         &nbsp;
-                        {{if HasPrefix $remainingString "-"}}
+                        {{- if HasPrefix $remainingString "-" -}}
                             (<span class="color-danger">{{"已过期"|T}} {{TrimPrefix $remainingString "-"}}</span>)
-                        {{else}}
+                        {{- else -}}
                             (<span class="color-success">{{"还剩"|T}} {{$remainingString}}</span>)
-                        {{end}}
+                        {{- end -}}
                         <a class="btn btn-xs btn-default" href="{{Stored.productURL}}?source={{SiteURI}}" target="_blank"><i class="fa fa-shopping-cart"></i>{{"续期"|T}}</a>
-                    {{end}}
-                {{end}}
+                    {{- end -}}
+                {{- end -}}
                     <br />
                 </p>
-            {{end}}
+            {{- end -}}
             </div>
         </div>
     </div>
 </div>
 {{/Block}}
 {{Block "footer"}}
-{{range $k,$block := Stored.blocks}}
-{{if $block}}
-{{if $block.Footer}}{{Fetch $block.Footer $}}{{end}}
-{{end}}
-{{end}}
+{{- range $k,$block := Stored.blocks -}}
+{{- if $block -}}
+{{- if $block.Footer}}{{Fetch $block.Footer $}}{{end -}}
+{{- end -}}
+{{- end -}}
 {{/Block}}
