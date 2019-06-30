@@ -945,9 +945,9 @@ var App = function () {
     },
     tableSorting:function(table){
       table=table==null?'':table+' ';
-       $(table+'thead[sort-current!=""]').each(function(){
+       $(table+'[sort-current!=""]').each(function(){
         var current=$(this).attr('sort-current');
-        var sortObj=$(this).find('th[sort="'+current+'"]');
+        var sortObj=$(this).find('[sort="'+current+'"]');
         var newCls='fa-arrow-down',oldCls='fa-arrow-up';
         if(sortObj.length<1){
           newCls='fa-arrow-up';
@@ -962,8 +962,8 @@ var App = function () {
             icon.removeClass(oldCls).addClass(newCls);
           }
         }
-       $(table+'thead[sort-current] th[sort]').css('cursor','pointer').on('click',function(e){
-         var thead=$(this).parents('thead[sort-current]');
+       $(table+'[sort-current] [sort]').css('cursor','pointer').on('click',function(e){
+         var thead=$(this).parents('[sort-current]');
          var current=thead.attr('sort-current');
          var url=thead.attr('sort-url')||window.location.href;
          var trigger=thead.attr('sort-trigger');
