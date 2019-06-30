@@ -235,6 +235,8 @@ pre {
   font-size: 19px;
   line-height: 18px;
   height: auto;
+  position: relative;
+  z-index: 9;
 }
 .navbar-default .navbar-brand:hover,
 .navbar-default .navbar-brand:focus {
