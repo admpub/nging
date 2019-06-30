@@ -1,0 +1,5 @@
+{{Strip}}{{$pjax := Form "_pjax"}}
+{{$page := .Page}}
+<a class="btn btn-sm btn-flat btn-default{{if eq $page 1}} disabled{{end}}" href="{{.URL 1}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}><i class="fa fa-angle-left"></i></a>
+<a class="btn btn-sm btn-flat btn-default{{if ge $page .Pages}} disabled{{end}}" href="{{.URL .NextPage}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}><i class="fa fa-angle-right"></i></a>
+{{/Strip}}
