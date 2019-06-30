@@ -19,6 +19,7 @@
 package database
 
 import (
+	"github.com/admpub/log"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/dbmanager"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
@@ -37,11 +38,18 @@ func Manager(ctx echo.Context) error {
 	mgr := dbmanager.New(ctx, auth)
 	driverName := ctx.Form(`driver`)
 	operation := ctx.Form(`operation`)
-	var accountId uint
+	var accountID uint
 	if user != nil {
-		accountId = ctx.Formx(`accountId`).Uint()
-		if accountId > 0 {
-			err = m.Get(nil, db.And(db.Cond{`id`: accountId}, db.Cond{`uid`: user.Id}))
+		accountID = ctx.Formx(`accountId`).Uint()
+		if accountID > 0 {
+			err = m.Get(nil, db.And(
+				db.Cond{`id`: accountID},
+				db.Cond{`uid`: user.Id},
+			))
+			if err != nil && db.ErrNoMoreRows != err {
+				log.Error(err)
+			}
+			accountID = m.Id
 		}
 	}
 	var genURL func(string, ...string) string
@@ -64,11 +72,11 @@ func Manager(ctx echo.Context) error {
 				m.User = auth.Username
 				m.Password = auth.Password
 				m.Name = auth.Db
-				if accountId < 1 || err == db.ErrNoMoreRows {
+				if accountID < 1 || err == db.ErrNoMoreRows {
 					m.Uid = user.Id
 					_, err = m.Add()
 				} else {
-					err = m.Edit(accountId, nil, db.Cond{`id`: accountId})
+					err = m.Edit(accountID, nil, db.Cond{`id`: accountID})
 				}
 			}
 			ctx.Session().Set(`dbAuth`, auth)
@@ -78,7 +86,7 @@ func Manager(ctx echo.Context) error {
 		//pass
 
 	default:
-		if accountId > 0 {
+		if accountID > 0 {
 			auth.Driver = m.Engine
 			auth.Username = m.User
 			auth.Password = m.Password
@@ -160,7 +168,7 @@ func Manager(ctx echo.Context) error {
 		driverList[driverName] = driver.Name()
 	}
 
-	if accountId > 0 {
+	if accountID > 0 {
 		ctx.Request().Form().Set(`db`, m.Name)
 		ctx.Request().Form().Set(`driver`, m.Engine)
 		ctx.Request().Form().Set(`username`, m.User)

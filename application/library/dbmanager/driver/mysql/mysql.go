@@ -20,7 +20,6 @@ package mysql
 import (
 	"bytes"
 	"database/sql"
-	"errors"
 	"fmt"
 	"io"
 	"net/url"
@@ -28,6 +27,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/admpub/errors"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/webx-top/com"
@@ -100,7 +100,8 @@ func (m *mySQL) Login() error {
 			m.fail(err.Error())
 			return m.returnTo(`/db`)
 		}
-		return err
+		settings.Password = strings.Repeat(`*`, len(settings.Password))
+		return errors.Wrap(err, m.T(`连接数据库出错`)+`: `+echo.Dump(settings, false))
 	}
 	cluster := factory.NewCluster().AddMaster(db)
 	m.db.SetCluster(0, cluster)
