@@ -656,6 +656,10 @@ body.modal-open,
 .cl-mcont h1 {
   line-height: 1.3em;
 }
+.cl-mcont .checkbox > label,
+.cl-mcont .radio > label{
+  line-height:17px !important;
+}
 #cl-wrapper {
   padding-top: 50px;
 }
