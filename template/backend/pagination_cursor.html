@@ -1,7 +1,7 @@
-{{Strip}}{{$pjax := Form "_pjax"}}
+{{Strip}}{{- $pjax := Form "_pjax" -}}
+{{- $position := .Position -}}
+{{- $prev := .PrevPosition -}}
 <ul class="pagination" disabled-fixed>
-    {{$position := .Position}}
-    {{$prev := .PrevPosition}}
     <li class="prev{{if eq $prev "0"}} disabled{{end}}">
         <a href="{{.URL 0}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}>
             <span class="fa fa-angle-left"></span>&nbsp;{{"第一页"|T}}

@@ -1,5 +1,5 @@
 {{Strip}}<!-- Modal -->
-{{if not .HeadTitle}}
+{{- if not .HeadTitle -}}
 <div class="modal{{if .Animate}} {{.Animate}}{{else}} fade{{end}}" id="{{.Id}}" tabindex="-1" role="dialog">
 	<div class="modal-dialog">
 	  <div class="modal-content">
@@ -8,23 +8,23 @@
 		</div>
         
 		<div class="modal-body">
-     {{if .Custom}}
+     {{- if .Custom -}}
      		{{.Content|T|ToHTML}}
-     {{else}}
+     {{- else -}}
 			<div class="text-center">
 				<div class="i-circle {{if .Type}}{{.Type}}{{else}}primary{{end}}"><i class="fa fa-{{if .Type}}{{.Type}}{{else}}primary{{end}}"></i></div>
 				{{if .Title}}<h4>{{.Title|T|ToHTML}}</h4>{{end}}
 				<p>{{.Content|T|ToHTML}}</p>
 			</div>
-      {{end}}
+      {{- end -}}
 		</div>
 		<div class="modal-footer">
-			{{if .HelpText}}
+			{{- if .HelpText -}}
 			<div class="pull-left">{{.HelpText|T|ToHTML}}</div>
-			{{end}}
-      {{range $k, $v := .ExtButtons}}
+			{{- end -}}
+      {{- range $k, $v := .ExtButtons -}}
 		  <button type="button" data-dismiss="modal"{{range $bk, $bv := $v.Attributes}} {{$bv.Attr|ToHTMLAttr}}="{{$bv.Value}}"{{else}} class="btn btn-default"{{end}}>{{$v.Text}}</button>
-      {{end}}
+      {{- end -}}
 		  <button type="button" class="btn btn-default" data-dismiss="modal">{{"取消"|T}}</button>
 		  <button type="button" class="btn btn-{{if .Type}}{{.Type}}{{else}}primary{{end}}" data-dismiss="modal">{{"确定"|T}}</button>
 		</div>
@@ -33,7 +33,7 @@
 	</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-{{else}}
+{{- else -}}
 
 <div class="md-modal {{if eq .ContentType "blackform"}}md-dark custom-width{{else}}colored-header{{end}} {{.Type}}{{if .Animate}} {{.Animate}}{{else}} md-effect-10{{end}}" id="{{.Id}}">
     <div class="md-content">
@@ -42,28 +42,27 @@
         <button type="button" class="close md-close" data-dismiss="modal" aria-hidden="true">&times;</button>
       </div>
       <div class="modal-body{{if or (eq .ContentType "blackform") (eq .ContentType "form")}} form{{end}}">
-				{{if .Custom}}
+		{{- if .Custom -}}
             {{.Content|T|ToHTML}}
-        {{else}}
+        {{- else -}}
         <div class="text-center">
           <div class="i-circle {{if .Type}}{{.Type}}{{else}}primary{{end}}"><i class="fa fa-{{if .Type}}{{.Type}}{{else}}primary{{end}}"></i></div>
          	{{if .Title}}<h4>{{.Title|T|ToHTML}}</h4>{{end}}
           <p>{{.Content|T|ToHTML}}</p>
         </div>
-				{{end}}
+		{{- end -}}
       </div>
       <div class="modal-footer">
-			{{if .HelpText}}
+			{{- if .HelpText -}}
 			<div class="pull-left">{{.HelpText|T|ToHTML}}</div>
-			{{end}}
-			{{range $k, $v := .ExtButtons}}
+			{{- end -}}
+		{{- range $k, $v := .ExtButtons -}}
 		  <button type="button" data-dismiss="modal"{{range $bk, $bv := $v.Attributes}} {{$bv.Attr|ToHTMLAttr}}="{{$bv.Value}}"{{else}} class="btn btn-default"{{end}}>{{$v.Text}}</button>
-      {{end}}
+        {{- end -}}
         <button type="button" class="btn btn-default btn-flat md-close" data-dismiss="modal">{{"取消"|T}}</button>
         <button type="button" class="btn btn-{{if .Type}}{{.Type}}{{else}}primary{{end}} btn-flat md-close" data-dismiss="modal">{{"确定"|T}}</button>
       </div>
     </div>
 </div>
-
-{{end}}
+{{- end -}}
 {{/Strip}}
