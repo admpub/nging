@@ -127,6 +127,11 @@ func FuncMap() echo.MiddlewareFunc {
 				buttons.Ready(c)
 				return buttons
 			})
+			c.SetFunc(`GlobalFooters`, func() dashboard.GlobalFooters {
+				footers := dashboard.GlobalFooterAll()
+				footers.Ready(c)
+				return footers
+			})
 			c.SetFunc(`Navigate`, func(side string) navigate.List {
 				switch side {
 				case `top`:
