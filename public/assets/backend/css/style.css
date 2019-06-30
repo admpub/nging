@@ -1736,9 +1736,6 @@ body.texture {
   background: #FFF;
   border-top: 1px solid #E5E5E5;
   padding: 30px;
-  font-size: 26px;
-}
-.message .mail p {
   font-size: 15px;
   font-weight: 100;
 }
