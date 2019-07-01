@@ -199,3 +199,26 @@ func (this *TaskLog) AsMap() map[string]interface{} {
 	return r
 }
 
+func (this *TaskLog) AsRow() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["id"] = this.Id
+	r["task_id"] = this.TaskId
+	r["output"] = this.Output
+	r["error"] = this.Error
+	r["status"] = this.Status
+	r["elapsed"] = this.Elapsed
+	r["created"] = this.Created
+	return r
+}
+
+func (this *TaskLog) BatchValidate(kvset map[string]interface{}) error {
+	if kvset == nil {
+		kvset = this.AsRow()
+	}
+	return factory.BatchValidate("task_log", kvset)
+}
+
+func (this *TaskLog) Validate(field string, value interface{}) error {
+	return factory.Validate("task_log", field, value)
+}
+

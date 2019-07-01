@@ -205,3 +205,28 @@ func (this *UserRole) AsMap() map[string]interface{} {
 	return r
 }
 
+func (this *UserRole) AsRow() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["id"] = this.Id
+	r["name"] = this.Name
+	r["description"] = this.Description
+	r["created"] = this.Created
+	r["updated"] = this.Updated
+	r["disabled"] = this.Disabled
+	r["parent_id"] = this.ParentId
+	r["perm_cmd"] = this.PermCmd
+	r["perm_action"] = this.PermAction
+	return r
+}
+
+func (this *UserRole) BatchValidate(kvset map[string]interface{}) error {
+	if kvset == nil {
+		kvset = this.AsRow()
+	}
+	return factory.BatchValidate("user_role", kvset)
+}
+
+func (this *UserRole) Validate(field string, value interface{}) error {
+	return factory.Validate("user_role", field, value)
+}
+

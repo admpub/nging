@@ -247,3 +247,42 @@ func (this *AccessLog) AsMap() map[string]interface{} {
 	return r
 }
 
+func (this *AccessLog) AsRow() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["id"] = this.Id
+	r["vhost_id"] = this.VhostId
+	r["remote_addr"] = this.RemoteAddr
+	r["x_real_ip"] = this.XRealIp
+	r["x_forward_for"] = this.XForwardFor
+	r["local_addr"] = this.LocalAddr
+	r["elapsed"] = this.Elapsed
+	r["host"] = this.Host
+	r["user"] = this.User
+	r["time_local"] = this.TimeLocal
+	r["minute"] = this.Minute
+	r["method"] = this.Method
+	r["uri"] = this.Uri
+	r["version"] = this.Version
+	r["status_code"] = this.StatusCode
+	r["body_bytes"] = this.BodyBytes
+	r["referer"] = this.Referer
+	r["user_agent"] = this.UserAgent
+	r["hit_status"] = this.HitStatus
+	r["scheme"] = this.Scheme
+	r["brower_name"] = this.BrowerName
+	r["brower_type"] = this.BrowerType
+	r["created"] = this.Created
+	return r
+}
+
+func (this *AccessLog) BatchValidate(kvset map[string]interface{}) error {
+	if kvset == nil {
+		kvset = this.AsRow()
+	}
+	return factory.BatchValidate("access_log", kvset)
+}
+
+func (this *AccessLog) Validate(field string, value interface{}) error {
+	return factory.Validate("access_log", field, value)
+}
+

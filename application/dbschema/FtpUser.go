@@ -208,3 +208,29 @@ func (this *FtpUser) AsMap() map[string]interface{} {
 	return r
 }
 
+func (this *FtpUser) AsRow() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["id"] = this.Id
+	r["username"] = this.Username
+	r["password"] = this.Password
+	r["banned"] = this.Banned
+	r["directory"] = this.Directory
+	r["ip_whitelist"] = this.IpWhitelist
+	r["ip_blacklist"] = this.IpBlacklist
+	r["created"] = this.Created
+	r["updated"] = this.Updated
+	r["group_id"] = this.GroupId
+	return r
+}
+
+func (this *FtpUser) BatchValidate(kvset map[string]interface{}) error {
+	if kvset == nil {
+		kvset = this.AsRow()
+	}
+	return factory.BatchValidate("ftp_user", kvset)
+}
+
+func (this *FtpUser) Validate(field string, value interface{}) error {
+	return factory.Validate("ftp_user", field, value)
+}
+

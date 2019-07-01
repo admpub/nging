@@ -205,3 +205,28 @@ func (this *Vhost) AsMap() map[string]interface{} {
 	return r
 }
 
+func (this *Vhost) AsRow() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["id"] = this.Id
+	r["name"] = this.Name
+	r["group_id"] = this.GroupId
+	r["domain"] = this.Domain
+	r["root"] = this.Root
+	r["created"] = this.Created
+	r["updated"] = this.Updated
+	r["setting"] = this.Setting
+	r["disabled"] = this.Disabled
+	return r
+}
+
+func (this *Vhost) BatchValidate(kvset map[string]interface{}) error {
+	if kvset == nil {
+		kvset = this.AsRow()
+	}
+	return factory.BatchValidate("vhost", kvset)
+}
+
+func (this *Vhost) Validate(field string, value interface{}) error {
+	return factory.Validate("vhost", field, value)
+}
+

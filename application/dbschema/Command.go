@@ -216,3 +216,30 @@ func (this *Command) AsMap() map[string]interface{} {
 	return r
 }
 
+func (this *Command) AsRow() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["id"] = this.Id
+	r["name"] = this.Name
+	r["description"] = this.Description
+	r["command"] = this.Command
+	r["work_directory"] = this.WorkDirectory
+	r["env"] = this.Env
+	r["created"] = this.Created
+	r["updated"] = this.Updated
+	r["disabled"] = this.Disabled
+	r["remote"] = this.Remote
+	r["ssh_account_id"] = this.SshAccountId
+	return r
+}
+
+func (this *Command) BatchValidate(kvset map[string]interface{}) error {
+	if kvset == nil {
+		kvset = this.AsRow()
+	}
+	return factory.BatchValidate("command", kvset)
+}
+
+func (this *Command) Validate(field string, value interface{}) error {
+	return factory.Validate("command", field, value)
+}
+

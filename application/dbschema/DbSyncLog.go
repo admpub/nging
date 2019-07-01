@@ -197,3 +197,27 @@ func (this *DbSyncLog) AsMap() map[string]interface{} {
 	return r
 }
 
+func (this *DbSyncLog) AsRow() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["id"] = this.Id
+	r["sync_id"] = this.SyncId
+	r["created"] = this.Created
+	r["result"] = this.Result
+	r["change_tables"] = this.ChangeTables
+	r["change_table_num"] = this.ChangeTableNum
+	r["elapsed"] = this.Elapsed
+	r["failed"] = this.Failed
+	return r
+}
+
+func (this *DbSyncLog) BatchValidate(kvset map[string]interface{}) error {
+	if kvset == nil {
+		kvset = this.AsRow()
+	}
+	return factory.BatchValidate("db_sync_log", kvset)
+}
+
+func (this *DbSyncLog) Validate(field string, value interface{}) error {
+	return factory.Validate("db_sync_log", field, value)
+}
+

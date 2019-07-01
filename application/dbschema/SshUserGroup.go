@@ -191,3 +191,25 @@ func (this *SshUserGroup) AsMap() map[string]interface{} {
 	return r
 }
 
+func (this *SshUserGroup) AsRow() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["id"] = this.Id
+	r["uid"] = this.Uid
+	r["name"] = this.Name
+	r["description"] = this.Description
+	r["created"] = this.Created
+	r["updated"] = this.Updated
+	return r
+}
+
+func (this *SshUserGroup) BatchValidate(kvset map[string]interface{}) error {
+	if kvset == nil {
+		kvset = this.AsRow()
+	}
+	return factory.BatchValidate("ssh_user_group", kvset)
+}
+
+func (this *SshUserGroup) Validate(field string, value interface{}) error {
+	return factory.Validate("ssh_user_group", field, value)
+}
+

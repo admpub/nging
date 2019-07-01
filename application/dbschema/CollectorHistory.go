@@ -220,3 +220,33 @@ func (this *CollectorHistory) AsMap() map[string]interface{} {
 	return r
 }
 
+func (this *CollectorHistory) AsRow() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["id"] = this.Id
+	r["parent_id"] = this.ParentId
+	r["page_id"] = this.PageId
+	r["page_parent_id"] = this.PageParentId
+	r["page_root_id"] = this.PageRootId
+	r["has_child"] = this.HasChild
+	r["url"] = this.Url
+	r["url_md5"] = this.UrlMd5
+	r["title"] = this.Title
+	r["content"] = this.Content
+	r["rule_md5"] = this.RuleMd5
+	r["data"] = this.Data
+	r["created"] = this.Created
+	r["exported"] = this.Exported
+	return r
+}
+
+func (this *CollectorHistory) BatchValidate(kvset map[string]interface{}) error {
+	if kvset == nil {
+		kvset = this.AsRow()
+	}
+	return factory.BatchValidate("collector_history", kvset)
+}
+
+func (this *CollectorHistory) Validate(field string, value interface{}) error {
+	return factory.Validate("collector_history", field, value)
+}
+

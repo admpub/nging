@@ -127,10 +127,10 @@ func (this *CollectorPage) ListByOffset(recv interface{}, mw func(db.Result) db.
 func (this *CollectorPage) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
 	if len(this.Type) == 0 { this.Type = "content" }
 	if len(this.ContentType) == 0 { this.ContentType = "html" }
 	if len(this.HasChild) == 0 { this.HasChild = "N" }
-	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -144,10 +144,10 @@ func (this *CollectorPage) Add() (pk interface{}, err error) {
 
 func (this *CollectorPage) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	
+	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
 	if len(this.Type) == 0 { this.Type = "content" }
 	if len(this.ContentType) == 0 { this.ContentType = "html" }
 	if len(this.HasChild) == 0 { this.HasChild = "N" }
-	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -163,27 +163,27 @@ func (this *CollectorPage) SetField(mw func(db.Result) db.Result, field string, 
 
 func (this *CollectorPage) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
+	if val, ok := kvset["duplicate_rule"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["duplicate_rule"] = "none" } }
 	if val, ok := kvset["type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["type"] = "content" } }
 	if val, ok := kvset["content_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["content_type"] = "html" } }
 	if val, ok := kvset["has_child"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["has_child"] = "N" } }
-	if val, ok := kvset["duplicate_rule"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["duplicate_rule"] = "none" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *CollectorPage) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		
+	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
 	if len(this.Type) == 0 { this.Type = "content" }
 	if len(this.ContentType) == 0 { this.ContentType = "html" }
 	if len(this.HasChild) == 0 { this.HasChild = "N" }
-	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
 	if len(this.Type) == 0 { this.Type = "content" }
 	if len(this.ContentType) == 0 { this.ContentType = "html" }
 	if len(this.HasChild) == 0 { this.HasChild = "N" }
-	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -251,5 +251,41 @@ func (this *CollectorPage) AsMap() map[string]interface{} {
 	r["Waits"] = this.Waits
 	r["Proxy"] = this.Proxy
 	return r
+}
+
+func (this *CollectorPage) AsRow() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["id"] = this.Id
+	r["parent_id"] = this.ParentId
+	r["root_id"] = this.RootId
+	r["has_child"] = this.HasChild
+	r["uid"] = this.Uid
+	r["group_id"] = this.GroupId
+	r["name"] = this.Name
+	r["description"] = this.Description
+	r["enter_url"] = this.EnterUrl
+	r["sort"] = this.Sort
+	r["created"] = this.Created
+	r["browser"] = this.Browser
+	r["type"] = this.Type
+	r["scope_rule"] = this.ScopeRule
+	r["duplicate_rule"] = this.DuplicateRule
+	r["content_type"] = this.ContentType
+	r["charset"] = this.Charset
+	r["timeout"] = this.Timeout
+	r["waits"] = this.Waits
+	r["proxy"] = this.Proxy
+	return r
+}
+
+func (this *CollectorPage) BatchValidate(kvset map[string]interface{}) error {
+	if kvset == nil {
+		kvset = this.AsRow()
+	}
+	return factory.BatchValidate("collector_page", kvset)
+}
+
+func (this *CollectorPage) Validate(field string, value interface{}) error {
+	return factory.Validate("collector_page", field, value)
 }
 

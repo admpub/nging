@@ -197,3 +197,27 @@ func (this *TaskGroup) AsMap() map[string]interface{} {
 	return r
 }
 
+func (this *TaskGroup) AsRow() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["id"] = this.Id
+	r["uid"] = this.Uid
+	r["name"] = this.Name
+	r["description"] = this.Description
+	r["created"] = this.Created
+	r["updated"] = this.Updated
+	r["cmd_prefix"] = this.CmdPrefix
+	r["cmd_suffix"] = this.CmdSuffix
+	return r
+}
+
+func (this *TaskGroup) BatchValidate(kvset map[string]interface{}) error {
+	if kvset == nil {
+		kvset = this.AsRow()
+	}
+	return factory.BatchValidate("task_group", kvset)
+}
+
+func (this *TaskGroup) Validate(field string, value interface{}) error {
+	return factory.Validate("task_group", field, value)
+}
+

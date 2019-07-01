@@ -219,3 +219,31 @@ func (this *CollectorExport) AsMap() map[string]interface{} {
 	return r
 }
 
+func (this *CollectorExport) AsRow() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["id"] = this.Id
+	r["page_root"] = this.PageRoot
+	r["page_id"] = this.PageId
+	r["group_id"] = this.GroupId
+	r["mapping"] = this.Mapping
+	r["dest"] = this.Dest
+	r["dest_type"] = this.DestType
+	r["name"] = this.Name
+	r["description"] = this.Description
+	r["created"] = this.Created
+	r["exported"] = this.Exported
+	r["disabled"] = this.Disabled
+	return r
+}
+
+func (this *CollectorExport) BatchValidate(kvset map[string]interface{}) error {
+	if kvset == nil {
+		kvset = this.AsRow()
+	}
+	return factory.BatchValidate("collector_export", kvset)
+}
+
+func (this *CollectorExport) Validate(field string, value interface{}) error {
+	return factory.Validate("collector_export", field, value)
+}
+

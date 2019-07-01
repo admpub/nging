@@ -131,9 +131,9 @@ func (this *ForeverProcess) ListByOffset(recv interface{}, mw func(db.Result) db
 func (this *ForeverProcess) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Status) == 0 { this.Status = "idle" }
-	if len(this.Debug) == 0 { this.Debug = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Debug) == 0 { this.Debug = "N" }
+	if len(this.Status) == 0 { this.Status = "idle" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -147,9 +147,9 @@ func (this *ForeverProcess) Add() (pk interface{}, err error) {
 
 func (this *ForeverProcess) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
-	if len(this.Status) == 0 { this.Status = "idle" }
-	if len(this.Debug) == 0 { this.Debug = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Debug) == 0 { this.Debug = "N" }
+	if len(this.Status) == 0 { this.Status = "idle" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -165,24 +165,24 @@ func (this *ForeverProcess) SetField(mw func(db.Result) db.Result, field string,
 
 func (this *ForeverProcess) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["status"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["status"] = "idle" } }
-	if val, ok := kvset["debug"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["debug"] = "N" } }
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
+	if val, ok := kvset["debug"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["debug"] = "N" } }
+	if val, ok := kvset["status"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["status"] = "idle" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *ForeverProcess) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
-	if len(this.Status) == 0 { this.Status = "idle" }
-	if len(this.Debug) == 0 { this.Debug = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Debug) == 0 { this.Debug = "N" }
+	if len(this.Status) == 0 { this.Status = "idle" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Status) == 0 { this.Status = "idle" }
-	if len(this.Debug) == 0 { this.Debug = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Debug) == 0 { this.Debug = "N" }
+	if len(this.Status) == 0 { this.Status = "idle" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -258,5 +258,45 @@ func (this *ForeverProcess) AsMap() map[string]interface{} {
 	r["EnableNotify"] = this.EnableNotify
 	r["NotifyEmail"] = this.NotifyEmail
 	return r
+}
+
+func (this *ForeverProcess) AsRow() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["id"] = this.Id
+	r["uid"] = this.Uid
+	r["name"] = this.Name
+	r["command"] = this.Command
+	r["workdir"] = this.Workdir
+	r["env"] = this.Env
+	r["args"] = this.Args
+	r["pidfile"] = this.Pidfile
+	r["logfile"] = this.Logfile
+	r["errfile"] = this.Errfile
+	r["respawn"] = this.Respawn
+	r["delay"] = this.Delay
+	r["ping"] = this.Ping
+	r["pid"] = this.Pid
+	r["status"] = this.Status
+	r["debug"] = this.Debug
+	r["disabled"] = this.Disabled
+	r["created"] = this.Created
+	r["updated"] = this.Updated
+	r["error"] = this.Error
+	r["lastrun"] = this.Lastrun
+	r["description"] = this.Description
+	r["enable_notify"] = this.EnableNotify
+	r["notify_email"] = this.NotifyEmail
+	return r
+}
+
+func (this *ForeverProcess) BatchValidate(kvset map[string]interface{}) error {
+	if kvset == nil {
+		kvset = this.AsRow()
+	}
+	return factory.BatchValidate("forever_process", kvset)
+}
+
+func (this *ForeverProcess) Validate(field string, value interface{}) error {
+	return factory.Validate("forever_process", field, value)
 }
 

@@ -191,3 +191,25 @@ func (this *UserU2f) AsMap() map[string]interface{} {
 	return r
 }
 
+func (this *UserU2f) AsRow() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["id"] = this.Id
+	r["uid"] = this.Uid
+	r["token"] = this.Token
+	r["type"] = this.Type
+	r["extra"] = this.Extra
+	r["created"] = this.Created
+	return r
+}
+
+func (this *UserU2f) BatchValidate(kvset map[string]interface{}) error {
+	if kvset == nil {
+		kvset = this.AsRow()
+	}
+	return factory.BatchValidate("user_u2f", kvset)
+}
+
+func (this *UserU2f) Validate(field string, value interface{}) error {
+	return factory.Validate("user_u2f", field, value)
+}
+

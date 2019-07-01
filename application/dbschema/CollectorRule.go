@@ -202,3 +202,27 @@ func (this *CollectorRule) AsMap() map[string]interface{} {
 	return r
 }
 
+func (this *CollectorRule) AsRow() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["id"] = this.Id
+	r["page_id"] = this.PageId
+	r["name"] = this.Name
+	r["rule"] = this.Rule
+	r["type"] = this.Type
+	r["filter"] = this.Filter
+	r["created"] = this.Created
+	r["sort"] = this.Sort
+	return r
+}
+
+func (this *CollectorRule) BatchValidate(kvset map[string]interface{}) error {
+	if kvset == nil {
+		kvset = this.AsRow()
+	}
+	return factory.BatchValidate("collector_rule", kvset)
+}
+
+func (this *CollectorRule) Validate(field string, value interface{}) error {
+	return factory.Validate("collector_rule", field, value)
+}
+

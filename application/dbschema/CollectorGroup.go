@@ -196,3 +196,25 @@ func (this *CollectorGroup) AsMap() map[string]interface{} {
 	return r
 }
 
+func (this *CollectorGroup) AsRow() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["id"] = this.Id
+	r["uid"] = this.Uid
+	r["name"] = this.Name
+	r["type"] = this.Type
+	r["description"] = this.Description
+	r["created"] = this.Created
+	return r
+}
+
+func (this *CollectorGroup) BatchValidate(kvset map[string]interface{}) error {
+	if kvset == nil {
+		kvset = this.AsRow()
+	}
+	return factory.BatchValidate("collector_group", kvset)
+}
+
+func (this *CollectorGroup) Validate(field string, value interface{}) error {
+	return factory.Validate("collector_group", field, value)
+}
+

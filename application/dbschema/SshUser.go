@@ -228,3 +228,34 @@ func (this *SshUser) AsMap() map[string]interface{} {
 	return r
 }
 
+func (this *SshUser) AsRow() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["id"] = this.Id
+	r["uid"] = this.Uid
+	r["host"] = this.Host
+	r["port"] = this.Port
+	r["username"] = this.Username
+	r["password"] = this.Password
+	r["name"] = this.Name
+	r["options"] = this.Options
+	r["private_key"] = this.PrivateKey
+	r["passphrase"] = this.Passphrase
+	r["protocol"] = this.Protocol
+	r["description"] = this.Description
+	r["group_id"] = this.GroupId
+	r["created"] = this.Created
+	r["updated"] = this.Updated
+	return r
+}
+
+func (this *SshUser) BatchValidate(kvset map[string]interface{}) error {
+	if kvset == nil {
+		kvset = this.AsRow()
+	}
+	return factory.BatchValidate("ssh_user", kvset)
+}
+
+func (this *SshUser) Validate(field string, value interface{}) error {
+	return factory.Validate("ssh_user", field, value)
+}
+

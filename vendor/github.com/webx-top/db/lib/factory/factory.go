@@ -17,7 +17,9 @@ const (
 )
 
 var (
-	ErrNotFoundKey = errors.New(`not found the key`)
+	ErrNotFoundKey   = errors.New(`not found the key`)
+	ErrNotFoundTable = errors.New(`not found the table`)
+	ErrNotFoundField = errors.New(`not found the field`)
 )
 
 func New() *Factory {

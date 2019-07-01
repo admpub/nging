@@ -208,3 +208,29 @@ func (this *CodeInvitation) AsMap() map[string]interface{} {
 	return r
 }
 
+func (this *CodeInvitation) AsRow() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["id"] = this.Id
+	r["uid"] = this.Uid
+	r["recv_uid"] = this.RecvUid
+	r["code"] = this.Code
+	r["created"] = this.Created
+	r["used"] = this.Used
+	r["start"] = this.Start
+	r["end"] = this.End
+	r["disabled"] = this.Disabled
+	r["role_ids"] = this.RoleIds
+	return r
+}
+
+func (this *CodeInvitation) BatchValidate(kvset map[string]interface{}) error {
+	if kvset == nil {
+		kvset = this.AsRow()
+	}
+	return factory.BatchValidate("code_invitation", kvset)
+}
+
+func (this *CodeInvitation) Validate(field string, value interface{}) error {
+	return factory.Validate("code_invitation", field, value)
+}
+

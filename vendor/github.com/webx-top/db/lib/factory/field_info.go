@@ -2,6 +2,11 @@ package factory
 
 import (
 	"sort"
+	"strings"
+
+	"github.com/admpub/errors"
+	"github.com/webx-top/com"
+	"github.com/webx-top/echo/param"
 )
 
 type ModelInstancer func(connID int) Model
@@ -14,8 +19,8 @@ type FieldInfo struct {
 	Unsigned      bool     `json:"unsigned" xml:"unsigned" bson:"unsigned"`                //是否是无符号类型
 	PrimaryKey    bool     `json:"primaryKey" xml:"primaryKey" bson:"primaryKey"`          //是否是主键
 	AutoIncrement bool     `json:"autoIncrement" xml:"autoIncrement" bson:"autoIncrement"` //是否是自增字段
-	Min           int      `json:"min" xml:"min" bson:"min"`                               //最小值
-	Max           int      `json:"max" xml:"max" bson:"max"`                               //最大值
+	Min           float64  `json:"min" xml:"min" bson:"min"`                               //最小值
+	Max           float64  `json:"max" xml:"max" bson:"max"`                               //最大值
 	Precision     int      `json:"precision" xml:"precision" bson:"precision"`             //小数精度(小数保留位数)
 	MaxSize       int      `json:"maxSize" xml:"maxSize" bson:"maxSize"`                   //最大尺寸
 	Options       []string `json:"options" xml:"options" bson:"options"`                   //选项值
@@ -27,6 +32,62 @@ type FieldInfo struct {
 	GoName string `json:"goName" xml:"goName" bson:"goName"` //Golang字段名
 }
 
+func (f *FieldInfo) Validate(value interface{}) error {
+	switch {
+	case f.DataType == `enum`:
+		if len(f.Options) == 0 {
+			return nil
+		}
+		r := param.AsString(value)
+		if !com.InSlice(r, f.Options) {
+			return errors.Errorf(`The value "%v" does not exist in [%s]`, value, strings.Join(f.Options, `,`))
+		}
+	case f.DataType == `set`:
+		if len(f.Options) == 0 {
+			return nil
+		}
+		var values []string
+		switch v := value.(type) {
+		case []string:
+			values = v
+		default:
+			values = param.Split(value, `,`)
+		}
+		for _, r := range values {
+			if !com.InSlice(r, f.Options) {
+				return errors.Errorf(`The value "%v" does not exist in [%s]`, value, strings.Join(f.Options, `,`))
+			}
+		}
+	case strings.HasPrefix(f.DataType, `char`):
+		r := param.AsString(value)
+		if len(r) > f.MaxSize {
+			return errors.Errorf(`Content "%v" cannot exceed %d characters`, value, f.MaxSize)
+		}
+	default:
+		//case f.DataType == `decimal`:
+		//case f.DataType == `double`:
+		//case f.DataType == `float`:
+		//case strings.HasPrefix(f.DataType, `int`):
+		if f.Max <= 0 {
+			if f.MaxSize > 0 {
+				r := param.AsString(value)
+				if len(r) > f.MaxSize {
+					return errors.Errorf(`Content "%v" cannot exceed %d characters`, value, f.MaxSize)
+				}
+			}
+			return nil
+		}
+		r := param.AsFloat64(value)
+		if r < f.Min {
+			return errors.Errorf(`The value "%v" cannot be less than %v`, value, f.Min)
+		}
+		if r > f.Max {
+			return errors.Errorf(`The value "%v" cannot be greater than %v`, value, f.Max)
+		}
+	}
+	return nil
+}
+
 type FieldValidator map[string]map[string]*FieldInfo
 
 func (f FieldValidator) ExistField(table string, field string) bool {
@@ -35,6 +96,36 @@ func (f FieldValidator) ExistField(table string, field string) bool {
 		return ok
 	}
 	return false
+}
+
+func (f FieldValidator) Validate(table string, field string, value interface{}) error {
+	tb, ok := f[table]
+	if !ok {
+		return errors.WithMessage(ErrNotFoundTable, table)
+	}
+	fieldInfo, ok := tb[field]
+	if !ok {
+		return errors.WithMessage(ErrNotFoundField, field)
+	}
+	return fieldInfo.Validate(value)
+}
+
+func (f FieldValidator) BatchValidate(table string, row map[string]interface{}) error {
+	tb, ok := f[table]
+	if !ok {
+		return errors.WithMessage(ErrNotFoundTable, table)
+	}
+	for field, value := range row {
+		fieldInfo, ok := tb[field]
+		if !ok {
+			return errors.WithMessage(ErrNotFoundField, field)
+		}
+		err := fieldInfo.Validate(value)
+		if err != nil {
+			return errors.WithMessage(err, field)
+		}
+	}
+	return nil
 }
 
 func (f FieldValidator) ExistTable(table string) bool {
@@ -147,4 +238,12 @@ func ExistTable(table string) bool {
 
 func NewModel(structName string, connID int) Model {
 	return Models[structName](connID)
+}
+
+func Validate(table string, field string, value interface{}) error {
+	return Fields.Validate(table, field, value)
+}
+
+func BatchValidate(table string, row map[string]interface{}) error {
+	return Fields.BatchValidate(table, row)
 }

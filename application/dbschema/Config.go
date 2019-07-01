@@ -200,3 +200,28 @@ func (this *Config) AsMap() map[string]interface{} {
 	return r
 }
 
+func (this *Config) AsRow() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["key"] = this.Key
+	r["label"] = this.Label
+	r["description"] = this.Description
+	r["value"] = this.Value
+	r["group"] = this.Group
+	r["type"] = this.Type
+	r["sort"] = this.Sort
+	r["disabled"] = this.Disabled
+	r["encrypted"] = this.Encrypted
+	return r
+}
+
+func (this *Config) BatchValidate(kvset map[string]interface{}) error {
+	if kvset == nil {
+		kvset = this.AsRow()
+	}
+	return factory.BatchValidate("config", kvset)
+}
+
+func (this *Config) Validate(field string, value interface{}) error {
+	return factory.Validate("config", field, value)
+}
+

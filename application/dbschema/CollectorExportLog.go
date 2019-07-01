@@ -196,3 +196,25 @@ func (this *CollectorExportLog) AsMap() map[string]interface{} {
 	return r
 }
 
+func (this *CollectorExportLog) AsRow() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["id"] = this.Id
+	r["page_id"] = this.PageId
+	r["export_id"] = this.ExportId
+	r["result"] = this.Result
+	r["status"] = this.Status
+	r["created"] = this.Created
+	return r
+}
+
+func (this *CollectorExportLog) BatchValidate(kvset map[string]interface{}) error {
+	if kvset == nil {
+		kvset = this.AsRow()
+	}
+	return factory.BatchValidate("collector_export_log", kvset)
+}
+
+func (this *CollectorExportLog) Validate(field string, value interface{}) error {
+	return factory.Validate("collector_export_log", field, value)
+}
+

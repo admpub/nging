@@ -191,3 +191,25 @@ func (this *FrpGroup) AsMap() map[string]interface{} {
 	return r
 }
 
+func (this *FrpGroup) AsRow() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["id"] = this.Id
+	r["uid"] = this.Uid
+	r["name"] = this.Name
+	r["description"] = this.Description
+	r["created"] = this.Created
+	r["updated"] = this.Updated
+	return r
+}
+
+func (this *FrpGroup) BatchValidate(kvset map[string]interface{}) error {
+	if kvset == nil {
+		kvset = this.AsRow()
+	}
+	return factory.BatchValidate("frp_group", kvset)
+}
+
+func (this *FrpGroup) Validate(field string, value interface{}) error {
+	return factory.Validate("frp_group", field, value)
+}
+
