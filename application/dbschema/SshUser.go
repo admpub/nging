@@ -20,6 +20,7 @@ type SshUser struct {
 	Uid        	uint    	`db:"uid" bson:"uid" comment:"UID" json:"uid" xml:"uid"`
 	Host       	string  	`db:"host" bson:"host" comment:"主机名" json:"host" xml:"host"`
 	Port       	int     	`db:"port" bson:"port" comment:"端口" json:"port" xml:"port"`
+	Charset    	string  	`db:"charset" bson:"charset" comment:"字符集" json:"charset" xml:"charset"`
 	Username   	string  	`db:"username" bson:"username" comment:"用户名" json:"username" xml:"username"`
 	Password   	string  	`db:"password" bson:"password" comment:"密码" json:"password" xml:"password"`
 	Name       	string  	`db:"name" bson:"name" comment:"账号名称" json:"name" xml:"name"`
@@ -194,6 +195,7 @@ func (this *SshUser) Reset() *SshUser {
 	this.Uid = 0
 	this.Host = ``
 	this.Port = 0
+	this.Charset = ``
 	this.Username = ``
 	this.Password = ``
 	this.Name = ``
@@ -214,6 +216,7 @@ func (this *SshUser) AsMap() map[string]interface{} {
 	r["Uid"] = this.Uid
 	r["Host"] = this.Host
 	r["Port"] = this.Port
+	r["Charset"] = this.Charset
 	r["Username"] = this.Username
 	r["Password"] = this.Password
 	r["Name"] = this.Name
@@ -234,6 +237,7 @@ func (this *SshUser) AsRow() map[string]interface{} {
 	r["uid"] = this.Uid
 	r["host"] = this.Host
 	r["port"] = this.Port
+	r["charset"] = this.Charset
 	r["username"] = this.Username
 	r["password"] = this.Password
 	r["name"] = this.Name

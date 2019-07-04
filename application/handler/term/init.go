@@ -99,7 +99,10 @@ func init() {
 				case `passphrase`:
 					return config.DefaultConfig.Decode(param.User.Passphrase)
 				case `charset`:
-					//return param.User.Charset
+					if len(param.User.Charset) == 0 {
+						return `UTF-8`
+					}
+					return param.User.Charset
 				}
 			}
 			value = param.Query.Get(name)

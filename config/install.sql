@@ -581,6 +581,7 @@ CREATE TABLE `ssh_user` (
   `uid` int(11) unsigned NOT NULL COMMENT 'UID',
   `host` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'localhost' COMMENT '主机名',
   `port` int(2) NOT NULL DEFAULT '0' COMMENT '端口',
+  `charset` varchar(30) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '字符集',
   `username` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'root' COMMENT '用户名',
   `password` varchar(225) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '密码',
   `name` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '账号名称',
@@ -807,4 +808,4 @@ CREATE TABLE `vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-07-01 23:21:40
+-- Dump completed on 2019-07-04 20:55:47
