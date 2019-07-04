@@ -64,6 +64,9 @@ func LogShow(ctx echo.Context, logFile string, extensions ...echo.H) error {
 				if err != nil {
 					return ctx.JSON(data.SetError(err))
 				}
+				if row == nil {
+					continue
+				}
 				rows = append(rows, row)
 			}
 			result.Set(`list`, rows)
