@@ -67,6 +67,30 @@ func (l *AccessLog) Parse(line string, args ...interface{}) (err error) {
 	return
 }
 
+func (m *AccessLog) ToLite() *AccessLogLite {
+	a := &AccessLogLite{
+		Date:   m.TimeLocal,
+		OS:     ``,
+		Brower: m.BrowerName,
+		Region: ``,
+		Type:   m.BrowerType,
+
+		Version: m.Version,
+		User:    m.User,
+		Method:  m.Method,
+		Scheme:  m.Scheme,
+		URI:     m.Uri,
+
+		Referer: m.Referer,
+
+		BodyBytes:  m.BodyBytes,
+		Elapsed:    m.Elapsed,
+		StatusCode: m.StatusCode,
+		UserAgent:  m.UserAgent,
+	}
+	return a
+}
+
 func (m *AccessLog) ToMap() echo.Store {
 	data := echo.Store{}
 	data.Set(`TimeLocal`, m.TimeLocal)

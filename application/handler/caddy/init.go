@@ -55,40 +55,28 @@ func init() {
 	common.LogParsers[`access`] = func(line *tail.Line) (interface{}, error) {
 		logM := model.NewAccessLog(nil)
 		err := logM.Parse(line.Text)
-		res := logM.AsMap()
+		res := logM.ToLite()
 		realIP := logM.RemoteAddr
 		if len(logM.XForwardFor) > 0 {
 			realIP = strings.TrimSpace(strings.SplitN(logM.XForwardFor, ",", 2)[0])
 		} else if len(logM.XRealIp) > 0 {
 			realIP = logM.XRealIp
 		}
-		delete(res, `Id`)
-		delete(res, `Created`)
-		delete(res, `VhostId`)
-		delete(res, `RemoteAddr`)
-		delete(res, `XForwardFor`)
-		delete(res, `XRealIp`)
-		delete(res, `Minute`)
-		delete(res, `HitStatus`)
-		delete(res, `Host`)
-		delete(res, `LocalAddr`)
-		delete(res, `BrowerName`)
-		delete(res, `BrowerType`)
 		if ipInfo, _err := tool.IPInfo(realIP); _err == nil {
-			res[`Region`] = ipInfo.Country + " - " + ipInfo.Region + " - " + ipInfo.Province + " - " + ipInfo.City + " " + ipInfo.ISP + " (" + realIP + ")"
+			res.Region = ipInfo.Country + " - " + ipInfo.Region + " - " + ipInfo.Province + " - " + ipInfo.City + " " + ipInfo.ISP + " (" + realIP + ")"
 		} else {
-			res[`Region`] = realIP
+			res.Region = realIP
 		}
 		infoUA := ua.Parse(logM.UserAgent)
 		if len(infoUA.OSVersion) > 0 {
-			infoUA.OS += ` (` + infoUA.OSVersion + `)`
+			res.OS += ` (` + infoUA.OSVersion + `)`
 		}
-		res[`OS`] = infoUA.OS
+		res.OS = infoUA.OS
 		if len(infoUA.Version) > 0 {
 			logM.BrowerName += ` (` + infoUA.Version + `)`
 		}
-		res[`Brower`] = logM.BrowerName
-		res[`Type`] = logM.BrowerType
+		res.Brower = logM.BrowerName
+		res.Type = logM.BrowerType
 		return res, err
 	}
 }
