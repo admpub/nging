@@ -67,8 +67,8 @@ func init() {
 		} else {
 			res.Region = realIP
 		}
-		res.OS = infoUA.OS
 		infoUA := ua.Parse(logM.UserAgent)
+		res.OS = infoUA.OS
 		if len(infoUA.OSVersion) > 0 {
 			res.OS += ` (` + infoUA.OSVersion + `)`
 		}

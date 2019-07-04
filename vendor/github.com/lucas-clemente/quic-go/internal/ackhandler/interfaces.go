@@ -5,6 +5,7 @@ import (
 
 	"github.com/lucas-clemente/quic-go/internal/protocol"
 	"github.com/lucas-clemente/quic-go/internal/wire"
+	"github.com/lucas-clemente/quic-go/quictrace"
 )
 
 // SentPacketHandler handles ACKs received for outgoing packets
@@ -13,7 +14,6 @@ type SentPacketHandler interface {
 	SentPacket(packet *Packet)
 	SentPacketsAsRetransmission(packets []*Packet, retransmissionOf protocol.PacketNumber)
 	ReceivedAck(ackFrame *wire.AckFrame, withPacketNumber protocol.PacketNumber, encLevel protocol.EncryptionLevel, recvTime time.Time) error
-	SetMaxAckDelay(time.Duration)
 	DropPackets(protocol.EncryptionLevel)
 	ResetForRetry() error
 
@@ -39,6 +39,9 @@ type SentPacketHandler interface {
 
 	GetAlarmTimeout() time.Time
 	OnAlarm() error
+
+	// report some congestion statistics. For tracing only.
+	GetStats() *quictrace.TransportState
 }
 
 // ReceivedPacketHandler handles ACKs needed to send for incoming packets

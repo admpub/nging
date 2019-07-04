@@ -11,6 +11,7 @@ import (
 	"github.com/lucas-clemente/quic-go/internal/qerr"
 	"github.com/lucas-clemente/quic-go/internal/utils"
 	"github.com/lucas-clemente/quic-go/internal/wire"
+	"github.com/lucas-clemente/quic-go/quictrace"
 )
 
 const (
@@ -59,8 +60,6 @@ type sentPacketHandler struct {
 	congestion congestion.SendAlgorithmWithDebugInfos
 	rttStats   *congestion.RTTStats
 
-	maxAckDelay time.Duration
-
 	// The number of times the crypto packets have been retransmitted without receiving an ack.
 	cryptoCount uint32
 	// The number of times a PTO has been sent without receiving an ack.
@@ -75,6 +74,8 @@ type sentPacketHandler struct {
 	// The alarm timeout
 	alarm time.Time
 
+	traceCallback func(quictrace.Event)
+
 	logger utils.Logger
 }
 
@@ -82,6 +83,7 @@ type sentPacketHandler struct {
 func NewSentPacketHandler(
 	initialPacketNumber protocol.PacketNumber,
 	rttStats *congestion.RTTStats,
+	traceCallback func(quictrace.Event),
 	logger utils.Logger,
 ) SentPacketHandler {
 	congestion := congestion.NewCubicSender(
@@ -98,6 +100,7 @@ func NewSentPacketHandler(
 		oneRTTPackets:    newPacketNumberSpace(0),
 		rttStats:         rttStats,
 		congestion:       congestion,
+		traceCallback:    traceCallback,
 		logger:           logger,
 	}
 }
@@ -128,10 +131,6 @@ func (h *sentPacketHandler) DropPackets(encLevel protocol.EncryptionLevel) {
 	default:
 		panic(fmt.Sprintf("Cannot drop keys for encryption level %s", encLevel))
 	}
-}
-
-func (h *sentPacketHandler) SetMaxAckDelay(mad time.Duration) {
-	h.maxAckDelay = mad
 }
 
 func (h *sentPacketHandler) SentPacket(packet *Packet) {
@@ -221,7 +220,7 @@ func (h *sentPacketHandler) ReceivedAck(ackFrame *wire.AckFrame, withPacketNumbe
 		// don't use the ack delay for Initial and Handshake packets
 		var ackDelay time.Duration
 		if encLevel == protocol.Encryption1RTT {
-			ackDelay = utils.MinDuration(ackFrame.DelayTime, h.maxAckDelay)
+			ackDelay = utils.MinDuration(ackFrame.DelayTime, h.rttStats.MaxAckDelay())
 		}
 		h.rttStats.UpdateRTT(rcvTime.Sub(p.SendTime), ackDelay, rcvTime)
 		if h.logger.Debug() {
@@ -343,7 +342,7 @@ func (h *sentPacketHandler) updateLossDetectionAlarm() {
 		// Early retransmit timer or time loss detection.
 		h.alarm = h.lossTime
 	} else { // PTO alarm
-		h.alarm = h.lastSentAckElicitingPacketTime.Add(h.computePTOTimeout())
+		h.alarm = h.lastSentAckElicitingPacketTime.Add(h.rttStats.PTO() << h.ptoCount)
 	}
 }
 
@@ -403,6 +402,17 @@ func (h *sentPacketHandler) detectLostPackets(
 			}
 		}
 		pnSpace.history.Remove(p.PacketNumber)
+		if h.traceCallback != nil {
+			h.traceCallback(quictrace.Event{
+				Time:            now,
+				EventType:       quictrace.PacketLost,
+				EncryptionLevel: p.EncryptionLevel,
+				PacketNumber:    p.PacketNumber,
+				PacketSize:      p.Length,
+				Frames:          p.Frames,
+				TransportState:  h.GetStats(),
+			})
+		}
 	}
 	return nil
 }
@@ -647,11 +657,6 @@ func (h *sentPacketHandler) computeCryptoTimeout() time.Duration {
 	return duration << h.cryptoCount
 }
 
-func (h *sentPacketHandler) computePTOTimeout() time.Duration {
-	duration := h.rttStats.SmoothedOrInitialRTT() + utils.MaxDuration(4*h.rttStats.MeanDeviation(), protocol.TimerGranularity) + h.maxAckDelay
-	return duration << h.ptoCount
-}
-
 func (h *sentPacketHandler) ResetForRetry() error {
 	h.cryptoCount = 0
 	h.bytesInFlight = 0
@@ -669,4 +674,16 @@ func (h *sentPacketHandler) ResetForRetry() error {
 	h.initialPackets = newPacketNumberSpace(h.initialPackets.pns.Pop())
 	h.updateLossDetectionAlarm()
 	return nil
+}
+
+func (h *sentPacketHandler) GetStats() *quictrace.TransportState {
+	return &quictrace.TransportState{
+		MinRTT:           h.rttStats.MinRTT(),
+		SmoothedRTT:      h.rttStats.SmoothedOrInitialRTT(),
+		LatestRTT:        h.rttStats.LatestRTT(),
+		BytesInFlight:    h.bytesInFlight,
+		CongestionWindow: h.congestion.GetCongestionWindow(),
+		InSlowStart:      h.congestion.InSlowStart(),
+		InRecovery:       h.congestion.InRecovery(),
+	}
 }

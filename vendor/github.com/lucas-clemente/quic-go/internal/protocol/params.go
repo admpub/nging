@@ -57,8 +57,11 @@ const MaxTrackedSkippedPackets = 10
 // If the queue is full, new connection attempts will be rejected.
 const MaxAcceptQueueSize = 32
 
-// TokenExpiryTime is the valid time of a token
-const TokenExpiryTime = 24 * time.Hour
+// TokenValidity is the duration that a (non-retry) token is considered valid
+const TokenValidity = 24 * time.Hour
+
+// RetryTokenValidity is the duration that a retry token is considered valid
+const RetryTokenValidity = 10 * time.Second
 
 // MaxOutstandingSentPackets is maximum number of packets saved for retransmission.
 // When reached, it imposes a soft limit on sending new packets:
@@ -136,3 +139,6 @@ const MaxAckDelay = 25 * time.Millisecond
 // MaxAckDelayInclGranularity is the max_ack_delay including the timer granularity.
 // This is the value that should be advertised to the peer.
 const MaxAckDelayInclGranularity = MaxAckDelay + TimerGranularity
+
+// KeyUpdateInterval is the maximum number of packets we send or receive before initiating a key udpate.
+const KeyUpdateInterval = 100 * 1000

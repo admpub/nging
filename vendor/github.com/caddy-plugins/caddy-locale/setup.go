@@ -3,10 +3,10 @@ package locale
 import (
 	"strings"
 
-	"github.com/mholt/caddy"
-	"github.com/mholt/caddy/caddyhttp/httpserver"
+	"github.com/caddyserver/caddy"
+	"github.com/caddyserver/caddy/caddyhttp/httpserver"
 
-	"github.com/simia-tech/caddy-locale/method"
+	"github.com/caddy-plugins/caddy-locale/method"
 )
 
 func init() {

@@ -33,9 +33,9 @@ import (
 	"time"
 
 	"github.com/admpub/nging/application/library/msgbox"
-	"github.com/mholt/caddy"
-	_ "github.com/mholt/caddy/caddyhttp"
-	"github.com/mholt/caddy/caddytls"
+	"github.com/caddyserver/caddy"
+	_ "github.com/caddyserver/caddy/caddyhttp"
+	"github.com/caddyserver/caddy/caddytls"
 	"github.com/mholt/certmagic"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"

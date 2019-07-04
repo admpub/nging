@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/mholt/caddy/caddyhttp/httpserver"
+	"github.com/caddyserver/caddy/caddyhttp/httpserver"
 
-	"github.com/simia-tech/caddy-locale/method"
+	"github.com/caddy-plugins/caddy-locale/method"
 )
 
 // Middleware is a httpserver to detect the user's locale.

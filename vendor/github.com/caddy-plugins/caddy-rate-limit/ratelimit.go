@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mholt/caddy/caddyhttp/httpserver"
+	"github.com/caddyserver/caddy/caddyhttp/httpserver"
 )
 
 // RateLimit is an http.Handler that can limit request rate to specific paths or files
