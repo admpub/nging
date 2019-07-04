@@ -71,6 +71,7 @@ func init() {
 		} else {
 			res[`Region`] = ``
 		}
+		res[`IP`] = realIP
 		return res, err
 	}
 }
