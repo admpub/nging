@@ -1,66 +1,59 @@
 package toml
 
 import (
-	"go/ast"
+	"fmt"
 	"reflect"
 	"strings"
-	"unicode"
 )
 
-// toCamelCase returns a copy of the string s with all Unicode letters mapped to their camel case.
-// It will convert to upper case previous letter of '_' and first letter, and remove letter of '_'.
-func toCamelCase(s string) string {
-	if s == "" {
-		return ""
-	}
-	result := make([]rune, 0, len(s))
-	upper := false
-	for _, r := range s {
-		if r == '_' {
-			upper = true
-			continue
-		}
-		if upper {
-			result = append(result, unicode.ToUpper(r))
-			upper = false
-			continue
-		}
-		result = append(result, r)
-	}
-	result[0] = unicode.ToUpper(result[0])
-	return string(result)
+const fieldTagName = "toml"
+
+// fieldCache maps normalized field names to their position in a struct.
+type fieldCache struct {
+	named map[string]fieldInfo // fields with an explicit name in tag
+	auto  map[string]fieldInfo // fields with auto-assigned normalized names
 }
 
-const (
-	fieldTagName = "toml"
-)
+type fieldInfo struct {
+	index   []int
+	name    string
+	ignored bool
+}
 
-func findField(rv reflect.Value, name string) (field reflect.Value, fieldName string, found bool) {
-	switch rv.Kind() {
-	case reflect.Struct:
-		rt := rv.Type()
-		for i := 0; i < rt.NumField(); i++ {
-			ft := rt.Field(i)
-			if !ast.IsExported(ft.Name) {
-				continue
-			}
-			if col, _ := extractTag(ft.Tag.Get(fieldTagName)); col == name {
-				return rv.Field(i), ft.Name, true
-			}
+func makeFieldCache(cfg *Config, rt reflect.Type) fieldCache {
+	named, auto := make(map[string]fieldInfo), make(map[string]fieldInfo)
+	for i := 0; i < rt.NumField(); i++ {
+		ft := rt.Field(i)
+		// skip unexported fields
+		if ft.PkgPath != "" && !ft.Anonymous {
+			continue
 		}
-		for _, name := range []string{
-			strings.Title(name),
-			toCamelCase(name),
-			strings.ToUpper(name),
-		} {
-			if field := rv.FieldByName(name); field.IsValid() {
-				return field, name, true
-			}
+		col, _ := extractTag(ft.Tag.Get(fieldTagName))
+		info := fieldInfo{index: ft.Index, name: ft.Name, ignored: col == "-"}
+		if col == "" || col == "-" {
+			auto[cfg.NormFieldName(rt, ft.Name)] = info
+		} else {
+			named[col] = info
 		}
-	case reflect.Map:
-		return reflect.New(rv.Type().Elem()).Elem(), name, true
 	}
-	return field, "", false
+	return fieldCache{named, auto}
+}
+
+func (fc fieldCache) findField(cfg *Config, rv reflect.Value, name string) (reflect.Value, string, error) {
+	info, found := fc.named[name]
+	if !found {
+		info, found = fc.auto[cfg.NormFieldName(rv.Type(), name)]
+	}
+	if !found {
+		if cfg.MissingField == nil {
+			return reflect.Value{}, "", fmt.Errorf("field corresponding to `%s' is not defined in %v", name, rv.Type())
+		} else {
+			return reflect.Value{}, "", cfg.MissingField(rv.Type(), name)
+		}
+	} else if info.ignored {
+		return reflect.Value{}, "", fmt.Errorf("field corresponding to `%s' in %v cannot be set through TOML", name, rv.Type())
+	}
+	return rv.FieldByIndex(info.index), info.name, nil
 }
 
 func extractTag(tag string) (col, rest string) {
@@ -69,11 +62,4 @@ func extractTag(tag string) (col, rest string) {
 		return strings.TrimSpace(tags[0]), strings.TrimSpace(tags[1])
 	}
 	return strings.TrimSpace(tags[0]), ""
-}
-
-func tableName(prefix, name string) string {
-	if prefix != "" {
-		return prefix + string(tableSeparator) + name
-	}
-	return name
 }
