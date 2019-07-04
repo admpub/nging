@@ -41,12 +41,20 @@ func Path() string {
 func Init() {
 	var paths []string
 	if com.IsWindows {
-
+		winDir := os.Getenv(`WinDir`)
+		if len(winDir) == 0 {
+			winDir = os.Getenv(`windir`)
+		}
 		paths = append(
 			paths,
 			os.Getenv(`SystemRoot`)+`\system32\drivers\etc\hosts`,
-			os.Getenv(`WinDir`)+`\hosts`,
 		)
+		if len(winDir) > 0 {
+			paths = append(
+				paths,
+				winDir+`\hosts`,
+			)
+		}
 	} else {
 		paths = append(
 			paths,
@@ -58,6 +66,7 @@ func Init() {
 	for _, hpath := range paths {
 		if com.FileExists(hpath) {
 			hostsPath = hpath
+			break
 		}
 	}
 }
