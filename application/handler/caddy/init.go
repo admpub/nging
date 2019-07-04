@@ -65,6 +65,9 @@ func init() {
 		delete(res, `Id`)
 		delete(res, `Created`)
 		delete(res, `VhostId`)
+		delete(res, `RemoteAddr`)
+		delete(res, `XForwardFor`)
+		delete(res, `XRealIp`)
 		if ipInfo, _err := tool.IPInfo(realIP); _err == nil {
 			res[`ClientRegion`] = ipInfo.Country + " - " + ipInfo.Region + " - " + ipInfo.Province + " - " + ipInfo.City + " " + ipInfo.ISP
 		} else {

@@ -889,7 +889,24 @@ var App = function () {
       }
       return (intVal).toFixed(precision) + ras;
     },
-    logShow:function(elem,trigger){
+    genTable:function(rows){
+      var h='<table class="table table-bordered">';
+      var th='<thead>',bd='<tbody>';
+      for(var i=0;i<rows.length;i++){
+        var v=rows[i];
+        if(i==0){
+          for(var k in v) th+='<th class="'+k+'">'+k+'</th>';
+        }
+        bd+='<tr>';
+        for(var k in v) bd+='<td class="'+k+'">'+v[k]+'</td>';
+        bd+='</tr>';
+      }
+      th+='</thead>';
+      bd+='</tbody>';
+      h+=th+bd+'</table>';
+      return h;
+    },
+    logShow:function(elem,trigger,pipe){
       if(!$('#log-show-modal').data('init')){
       $('#log-show-modal').data('init',true);
       $(window).off().on('resize',function(){
@@ -911,6 +928,7 @@ var App = function () {
       });
       $(window).trigger('resize');
       }
+      if(pipe==null) pipe='';
       var done=function(a){
 	    	var url=$(a).data('url');
 	    	var lastLines=$(a).data('last-lines');
@@ -918,7 +936,7 @@ var App = function () {
         $('#log-show-last-lines').data('target',$(a));
         $('#log-show-modal').niftyModal('show',{
           afterOpen: function(modal) {
-	    			$.get(url,{lastLines:lastLines},function(r){
+	    			$.get(url,{lastLines:lastLines,pipe:pipe},function(r){
 	    				if(r.Code==1){
                 var subTitle=$('#log-show-modal .modal-header .modal-subtitle');
                 if(typeof(r.Data.title)!='undefined'){
@@ -927,7 +945,13 @@ var App = function () {
                 }else{
                   subTitle.empty();
                 }
-	    					$('#log-show-content').text(r.Data.content);
+                if(typeof(r.Data.list)!='undefined'){
+                  var h='<div class="table-responsive" id="log-show-content">'+App.genTable(r.Data.list)+'</div>';
+                  $('#log-show-content').parent('.modal-body').css('padding',0);
+                  $('#log-show-content').replaceWith(h);
+                }else{
+                  $('#log-show-content').text(r.Data.content);
+                }
 	    				}else{
 	    					$('#log-show-content').text(r.Info);
 	    				}
