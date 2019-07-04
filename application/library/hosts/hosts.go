@@ -41,10 +41,11 @@ func Path() string {
 func Init() {
 	var paths []string
 	if com.IsWindows {
+
 		paths = append(
 			paths,
-			`%SystemRoot%\system32\drivers\etc\hosts`,
-			`%WinDir%\hosts`,
+			os.Getenv(`SystemRoot`)+`\system32\drivers\etc\hosts`,
+			os.Getenv(`WinDir`)+`\hosts`,
 		)
 	} else {
 		paths = append(
@@ -66,5 +67,5 @@ func ReadFile() ([]byte, error) {
 }
 
 func WriteFile(content []byte) error {
-	return ioutil.WriteFile(Path(), data, os.ModePerm)
+	return ioutil.WriteFile(Path(), content, os.ModePerm)
 }
