@@ -18,7 +18,6 @@
 package caddy
 
 import (
-	"net"
 	"strings"
 
 	"github.com/admpub/nging/application/handler"
@@ -60,8 +59,6 @@ func init() {
 			realIP = strings.TrimSpace(strings.SplitN(logM.XForwardFor, ",", 2)[0])
 		} else if len(logM.XRealIp) > 0 {
 			realIP = logM.XRealIp
-		} else {
-			realIP, _, _ = net.SplitHostPort(realIP)
 		}
 		delete(res, `Id`)
 		delete(res, `Created`)
