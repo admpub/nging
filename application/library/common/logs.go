@@ -23,6 +23,8 @@ import (
 	"github.com/webx-top/echo"
 )
 
+var LogParsers = map[string]func(line *tail.Line) (interface{}, error){}
+
 // LogShow 获取日志内容用于显示
 func LogShow(ctx echo.Context, logFile string, extensions ...echo.H) error {
 	data := ctx.Data()
@@ -50,6 +52,24 @@ func LogShow(ctx echo.Context, logFile string, extensions ...echo.H) error {
 	if err != nil {
 		data.SetError(err)
 	} else {
+		pipe := ctx.Query(`pipe`)
+		if len(pipe) > 0 {
+			parser, ok := LogParsers[pipe]
+			if !ok {
+				return ctx.JSON(data.SetInfo(ctx.T(`Invalid pipe: %s`, pipe), 0))
+			}
+			rows := []interface{}{}
+			for line := range obj.Lines {
+				row, err := parser(line)
+				if err != nil {
+					return ctx.JSON(data.SetError(err))
+				}
+				rows = append(rows, row)
+			}
+			result.Set(`list`, rows)
+			data.SetData(result)
+			return ctx.JSON(data)
+		}
 		var content string
 		for line := range obj.Lines {
 			content += line.Text + "\n"
