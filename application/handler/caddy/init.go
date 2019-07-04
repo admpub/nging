@@ -67,15 +67,15 @@ func init() {
 		} else {
 			res.Region = realIP
 		}
+		res.OS = infoUA.OS
 		infoUA := ua.Parse(logM.UserAgent)
 		if len(infoUA.OSVersion) > 0 {
 			res.OS += ` (` + infoUA.OSVersion + `)`
 		}
-		res.OS = infoUA.OS
-		if len(infoUA.Version) > 0 {
-			logM.BrowerName += ` (` + infoUA.Version + `)`
-		}
 		res.Brower = logM.BrowerName
+		if len(infoUA.Version) > 0 {
+			res.Brower += ` (` + infoUA.Version + `)`
+		}
 		res.Type = logM.BrowerType
 		return res, err
 	}
