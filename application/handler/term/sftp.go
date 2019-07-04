@@ -168,7 +168,7 @@ func Sftp(ctx echo.Context) error {
 				return ctx.JSON(data.SetInfo(ctx.T(`很抱歉，不支持编辑超过%v的文件`, com.FormatByte(config.DefaultConfig.Sys.EditableFileMaxBytes), 0)))
 			}
 			encoding = strings.ToLower(encoding)
-			isUTF8 := encoding == `` || encoding == `utf-8`
+			isUTF8 := len(encoding) == 0 || encoding == `utf-8`
 			if ctx.IsPost() {
 				b := []byte(content)
 				if !isUTF8 {
