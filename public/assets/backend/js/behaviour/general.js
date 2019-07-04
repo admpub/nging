@@ -895,7 +895,7 @@ var App = function () {
       for(var i=0;i<rows.length;i++){
         var v=rows[i];
         if(i==0){
-          for(var k in v) th+='<th class="'+k+'">'+k+'</th>';
+          for(var k in v) th+='<th class="'+k+'"><strong>'+k+'</strong></th>';
         }
         bd+='<tr>';
         for(var k in v) bd+='<td class="'+k+'">'+v[k]+'</td>';

@@ -72,10 +72,11 @@ func init() {
 		delete(res, `HitStatus`)
 		delete(res, `Host`)
 		delete(res, `LocalAddr`)
+		delete(res, `BrowerName`)
 		if ipInfo, _err := tool.IPInfo(realIP); _err == nil {
-			res[`ClientRegion`] = ipInfo.Country + " - " + ipInfo.Region + " - " + ipInfo.Province + " - " + ipInfo.City + " " + ipInfo.ISP + " (" + realIP + ")"
+			res[`Region`] = ipInfo.Country + " - " + ipInfo.Region + " - " + ipInfo.Province + " - " + ipInfo.City + " " + ipInfo.ISP + " (" + realIP + ")"
 		} else {
-			res[`ClientRegion`] = realIP
+			res[`Region`] = realIP
 		}
 		infoUA := ua.Parse(logM.UserAgent)
 		if len(infoUA.OSVersion) > 0 {
@@ -85,7 +86,7 @@ func init() {
 		if len(infoUA.Version) > 0 {
 			logM.BrowerName += ` (` + infoUA.Version + `)`
 		}
-		res[`BrowerName`] = logM.BrowerName
+		res[`Brower`] = logM.BrowerName
 		return res, err
 	}
 }
