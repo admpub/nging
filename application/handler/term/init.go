@@ -98,6 +98,8 @@ func init() {
 					return param.User.PrivateKey
 				case `passphrase`:
 					return config.DefaultConfig.Decode(param.User.Passphrase)
+				case `charset`:
+					//return param.User.Charset
 				}
 			}
 			value = param.Query.Get(name)

@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -14,49 +15,63 @@ import (
 	"github.com/admpub/web-terminal/config"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/japanese"
-	"golang.org/x/text/encoding/korean"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/encoding/traditionalchinese"
 	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
 )
 
-func CharsetEncoding(charset string) encoding.Encoding {
-	switch strings.ToUpper(charset) {
-	case "GB18030":
-		return simplifiedchinese.GB18030
-	case "GB2312", "HZ-GB2312":
-		return simplifiedchinese.HZGB2312
-	case "GBK":
-		return simplifiedchinese.GBK
-	case "BIG5":
-		return traditionalchinese.Big5
-	case "EUC-JP":
-		return japanese.EUCJP
-	case "ISO2022JP":
-		return japanese.ISO2022JP
-	case "SHIFTJIS":
-		return japanese.ShiftJIS
-	case "EUC-KR":
-		return korean.EUCKR
-	case "UTF8", "UTF-8":
-		return encoding.Nop
-	case "UTF16-BOM", "UTF-16-BOM":
-		return unicode.UTF16(unicode.BigEndian, unicode.UseBOM)
-	case "UTF16-BE-BOM", "UTF-16-BE-BOM":
-		return unicode.UTF16(unicode.BigEndian, unicode.UseBOM)
-	case "UTF16-LE-BOM", "UTF-16-LE-BOM":
-		return unicode.UTF16(unicode.LittleEndian, unicode.UseBOM)
-	case "UTF16", "UTF-16":
-		return unicode.UTF16(unicode.BigEndian, unicode.IgnoreBOM)
-	case "UTF16-BE", "UTF-16-BE":
-		return unicode.UTF16(unicode.BigEndian, unicode.IgnoreBOM)
-	case "UTF16-LE", "UTF-16-LE":
-		return unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM)
-	//case "UTF32", "UTF-32": return simplifiedchinese.GBK
-	default:
-		return nil
+var CharsetList = map[string]encoding.Encoding{
+	`GB18030`:       simplifiedchinese.GB18030,
+	`GB2312`:        simplifiedchinese.HZGB2312,
+	`HZ-GB2312`:     simplifiedchinese.HZGB2312,
+	`GBK`:           simplifiedchinese.GBK,
+	`BIG5`:          traditionalchinese.Big5,
+	`EUC-JP`:        japanese.EUCJP,
+	`ISO2022JP`:     japanese.ISO2022JP,
+	`SHIFTJIS`:      japanese.ShiftJIS,
+	`UTF-8`:         encoding.Nop,
+	`UTF-16`:        unicode.UTF16(unicode.BigEndian, unicode.IgnoreBOM),
+	`UTF-16-BE`:     unicode.UTF16(unicode.BigEndian, unicode.IgnoreBOM),
+	`UTF-16-LE`:     unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM),
+	`UTF-16-BOM`:    unicode.UTF16(unicode.BigEndian, unicode.UseBOM),
+	`UTF-16-BE-BOM`: unicode.UTF16(unicode.BigEndian, unicode.UseBOM),
+	`UTF-16-LE-BOM`: unicode.UTF16(unicode.LittleEndian, unicode.UseBOM),
+}
+
+func SupportedCharsets() []string {
+	r := []string{}
+	for k := range CharsetList {
+		r = append(r, k)
 	}
+	sort.Strings(r)
+	return r
+}
+
+func CharsetEncoding(charset string) encoding.Encoding {
+	charset = strings.ToUpper(charset)
+	switch charset {
+	case "UTF8":
+		charset = "UTF-8"
+	case "UTF16-BOM":
+		charset = "UTF-16-BOM"
+	case "UTF16-BE-BOM":
+		charset = "UTF-16-BE-BOM"
+	case "UTF16-LE-BOM":
+		charset = "UTF-16-LE-BOM"
+	case "UTF16":
+		charset = "UTF-16"
+	case "UTF16-BE":
+		charset = "UTF-16-BE"
+	case "UTF16-LE":
+		charset = "UTF-16-LE"
+	case "UTF32":
+		charset = "UTF-32"
+	}
+	if enc, ok := CharsetList[charset]; ok {
+		return enc
+	}
+	return nil
 }
 
 func Warp(dst io.ReadCloser, dump io.Writer) io.ReadCloser {

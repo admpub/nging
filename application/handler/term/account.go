@@ -26,6 +26,7 @@ import (
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/model"
+	"github.com/admpub/web-terminal/library/utils"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
@@ -133,6 +134,7 @@ func AccountAdd(ctx echo.Context) error {
 		err = e
 	}
 	ctx.Set(`groupList`, mg.Objects())
+	ctx.Set(`charsetList`, utils.SupportedCharsets())
 	return ctx.Render(`term/account_edit`, err)
 }
 
@@ -182,6 +184,7 @@ func AccountEdit(ctx echo.Context) error {
 	}
 	ctx.Set(`groupList`, mg.Objects())
 	ctx.Set(`activeURL`, `/term/account`)
+	ctx.Set(`charsetList`, utils.SupportedCharsets())
 	return ctx.Render(`term/account_edit`, err)
 }
 

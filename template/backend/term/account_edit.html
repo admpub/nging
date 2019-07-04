@@ -46,6 +46,18 @@
                 </div>
               </div>
               <div class="form-group">
+                <label class="col-sm-2 control-label">{{"字符集"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "charset" "UTF-8"}}
+                   <select class="form-control" name="charset">
+                     <option value="">{{"<无>"|T}}</option>
+                     {{range $k,$g:=Stored.Get "charsetList"}}
+                     <option value="{{$g}}"{{if eq $v $g}} selected{{end}}>{{$g}}</option>
+                     {{end}}
+                   </select>
+                </div>
+              </div>
+              <div class="form-group">
                 <label class="col-sm-2 control-label">{{"账户名"|T}}</label>
                 <div class="col-sm-8">
                     <input type="text" class="form-control" name="username" value="{{Form "username" "root"}}">
