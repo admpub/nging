@@ -68,16 +68,23 @@ func init() {
 		delete(res, `RemoteAddr`)
 		delete(res, `XForwardFor`)
 		delete(res, `XRealIp`)
+		delete(res, `Minute`)
+		delete(res, `HitStatus`)
+		delete(res, `Host`)
+		delete(res, `LocalAddr`)
 		if ipInfo, _err := tool.IPInfo(realIP); _err == nil {
-			res[`ClientRegion`] = ipInfo.Country + " - " + ipInfo.Region + " - " + ipInfo.Province + " - " + ipInfo.City + " " + ipInfo.ISP
+			res[`ClientRegion`] = ipInfo.Country + " - " + ipInfo.Region + " - " + ipInfo.Province + " - " + ipInfo.City + " " + ipInfo.ISP + " (" + realIP + ")"
 		} else {
-			res[`ClientRegion`] = ``
+			res[`ClientRegion`] = realIP
 		}
-		res[`ClientIP`] = realIP
 		infoUA := ua.Parse(logM.UserAgent)
+		if len(infoUA.OSVersion) > 0 {
+			infoUA.OS += ` (` + infoUA.OSVersion + `)`
+		}
 		res[`OS`] = infoUA.OS
-		res[`OSVersion`] = infoUA.OSVersion
-		res[`BrowserVersion`] = infoUA.Version
+		if len(infoUA.Version) > 0 {
+			logM.BrowerName += ` (` + infoUA.Version + `)`
+		}
 		return res, err
 	}
 }

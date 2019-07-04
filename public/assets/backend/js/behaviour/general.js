@@ -890,7 +890,7 @@ var App = function () {
       return (intVal).toFixed(precision) + ras;
     },
     genTable:function(rows){
-      var h='<table class="table table-bordered">';
+      var h='<table class="table table-bordered no-margin">';
       var th='<thead>',bd='<tbody>';
       for(var i=0;i<rows.length;i++){
         var v=rows[i];
