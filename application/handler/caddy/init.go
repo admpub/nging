@@ -63,6 +63,9 @@ func init() {
 		} else {
 			realIP, _, _ = net.SplitHostPort(realIP)
 		}
+		delete(res, `Id`)
+		delete(res, `Created`)
+		delete(res, `VhostId`)
 		if ipInfo, _err := tool.IPInfo(realIP); _err == nil {
 			res[`Region`] = ipInfo.Country + " - " + ipInfo.Region + " - " + ipInfo.Province + " - " + ipInfo.City + " " + ipInfo.ISP
 		} else {
