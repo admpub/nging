@@ -18,7 +18,11 @@
 package caddy
 
 import (
+	"net"
+	"strings"
+
 	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/handler/tool"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/model"
 	"github.com/admpub/tail"
@@ -50,6 +54,20 @@ func init() {
 	common.LogParsers[`access`] = func(line *tail.Line) (interface{}, error) {
 		logM := model.NewAccessLog(nil)
 		err := logM.Parse(line.Text)
-		return logM.AccessLog, err
+		res := logM.AsMap()
+		realIP := logM.RemoteAddr
+		if len(logM.XForwardFor) > 0 {
+			realIP = strings.TrimSpace(strings.SplitN(logM.XForwardFor, ",", 2)[0])
+		} else if len(logM.XRealIp) > 0 {
+			realIP = logM.XRealIp
+		} else {
+			realIP, _, _ = net.SplitHostPort(realIP)
+		}
+		if ipInfo, _err := tool.IPInfo(realIP); _err == nil {
+			res[`Region`] = ipInfo.Country + " - " + ipInfo.Region + " - " + ipInfo.Province + " - " + ipInfo.City + " " + ipInfo.ISP
+		} else {
+			res[`Region`] = ``
+		}
+		return res, err
 	}
 }
