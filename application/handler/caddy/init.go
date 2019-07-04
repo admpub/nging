@@ -15,6 +15,7 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 package caddy
 
 import (
@@ -25,6 +26,7 @@ import (
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/model"
 	"github.com/admpub/tail"
+	ua "github.com/admpub/useragent"
 	"github.com/webx-top/echo"
 )
 
@@ -69,6 +71,10 @@ func init() {
 			res[`ClientRegion`] = ``
 		}
 		res[`ClientIP`] = realIP
+		infoUA := ua.Parse(logM.UserAgent)
+		res[`OS`] = infoUA.OS
+		res[`OSVersion`] = infoUA.OSVersion
+		res[`BrowserVersion`] = infoUA.Version
 		return res, err
 	}
 }
