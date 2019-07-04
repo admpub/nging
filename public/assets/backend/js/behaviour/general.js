@@ -953,11 +953,11 @@ var App = function () {
                   $('#log-show-content').text(r.Data.content);
                 }
                 $(window).trigger('resize');
+	    				  var textarea=$('#log-show-content')[0];
+	    				  textarea.scrollTop = textarea.scrollHeight;
 	    				}else{
 	    					$('#log-show-content').text(r.Info);
 	    				}
-	    				var textarea=$('#log-show-content')[0];
-	    				textarea.scrollTop = textarea.scrollHeight;
 	    			},'json');
           },
           afterClose: function(modal) {}
