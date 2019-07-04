@@ -19,6 +19,9 @@ package caddy
 
 import (
 	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/application/model"
+	"github.com/admpub/tail"
 	"github.com/webx-top/echo"
 )
 
@@ -43,4 +46,10 @@ func init() {
 		g.Route(`GET,POST`, `/group_edit`, GroupEdit)
 		g.Route(`GET,POST`, `/group_delete`, GroupDelete)
 	})
+
+	common.LogParsers[`access`] = func(line *tail.Line) (interface{}, error) {
+		logM := model.NewAccessLog(nil)
+		err := logM.Parse(line.Text)
+		return logM.AccessLog, err
+	}
 }
