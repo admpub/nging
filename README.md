@@ -330,6 +330,11 @@ SSH管理功能实现了SSH的Web客户端管理功能，您可以在Nging网页
 
 [![系统信息](https://github.com/admpub/nging/blob/master/preview/preview_sysinfo.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_sysinfo.png)
 
+### 实时状态：
+
+[![实时状态](https://user-images.githubusercontent.com/512718/59155431-376ebe00-8abc-11e9-8d29-cee91978e574.png)](https://user-images.githubusercontent.com/512718/59155431-376ebe00-8abc-11e9-8d29-cee91978e574.png)
+
+
 ### 在线编辑文件：
 
 [![在线编辑文件](https://github.com/admpub/nging/blob/master/preview/preview_editfile.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_editfile.png)
