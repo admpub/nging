@@ -73,6 +73,7 @@ func init() {
 		delete(res, `Host`)
 		delete(res, `LocalAddr`)
 		delete(res, `BrowerName`)
+		delete(res, `BrowerType`)
 		if ipInfo, _err := tool.IPInfo(realIP); _err == nil {
 			res[`Region`] = ipInfo.Country + " - " + ipInfo.Region + " - " + ipInfo.Province + " - " + ipInfo.City + " " + ipInfo.ISP + " (" + realIP + ")"
 		} else {
@@ -87,6 +88,7 @@ func init() {
 			logM.BrowerName += ` (` + infoUA.Version + `)`
 		}
 		res[`Brower`] = logM.BrowerName
+		res[`Type`] = logM.BrowerType
 		return res, err
 	}
 }
