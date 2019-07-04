@@ -67,11 +67,11 @@ func init() {
 		delete(res, `Created`)
 		delete(res, `VhostId`)
 		if ipInfo, _err := tool.IPInfo(realIP); _err == nil {
-			res[`Region`] = ipInfo.Country + " - " + ipInfo.Region + " - " + ipInfo.Province + " - " + ipInfo.City + " " + ipInfo.ISP
+			res[`ClientRegion`] = ipInfo.Country + " - " + ipInfo.Region + " - " + ipInfo.Province + " - " + ipInfo.City + " " + ipInfo.ISP
 		} else {
-			res[`Region`] = ``
+			res[`ClientRegion`] = ``
 		}
-		res[`IP`] = realIP
+		res[`ClientIP`] = realIP
 		return res, err
 	}
 }
