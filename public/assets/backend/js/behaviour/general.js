@@ -952,6 +952,7 @@ var App = function () {
                 }else{
                   $('#log-show-content').text(r.Data.content);
                 }
+                $(window).trigger('resize');
 	    				}else{
 	    					$('#log-show-content').text(r.Info);
 	    				}
