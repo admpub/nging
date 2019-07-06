@@ -13,8 +13,6 @@ $(function(){
 		if(ident==$('#leftnav').data('project')) return;
 		$('#leftnav').data('project',ident);
 		var li=$(this).parent('li');
-		li.siblings('li.active').removeClass('active');
-		li.addClass('active');
 		$.get(window.BACKEND_URL+'/project/'+ident,{partial:1},function(r){
 			if(r.Code!=1){
 				App.message({title:App.i18n.SYS_INFO,text:r.Info,type:'error'});
@@ -23,6 +21,8 @@ $(function(){
 			$('#leftnav').html(r.Data.list);
 			App.initLeftNav();
 			App.initLeftNavAjax(window.activeURL,'#leftnav');
+			li.siblings('li.active').removeClass('active');
+			li.addClass('active');
 		},'json');
 	});
 });
