@@ -1585,7 +1585,7 @@ table th[class*="col-"] {
     width: 100%;
     margin-bottom: 15px;
     overflow-x: scroll;
-    overflow-y: hidden;
+    /* overflow-y: hidden; */
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: -ms-autohiding-scrollbar;
     border: 1px solid #ddd;
