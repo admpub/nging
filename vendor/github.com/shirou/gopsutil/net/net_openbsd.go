@@ -3,6 +3,7 @@
 package net
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os/exec"
@@ -40,7 +41,7 @@ func ParseNetstat(output string, mode string,
 			continue
 		}
 		base := 1
-		// sometimes Address is ommitted
+		// sometimes Address is omitted
 		if len(values) < columns {
 			base = 0
 		}
@@ -97,15 +98,19 @@ func ParseNetstat(output string, mode string,
 }
 
 func IOCounters(pernic bool) ([]IOCountersStat, error) {
+	return IOCountersWithContext(context.Background(), pernic)
+}
+
+func IOCountersWithContext(ctx context.Context, pernic bool) ([]IOCountersStat, error) {
 	netstat, err := exec.LookPath("netstat")
 	if err != nil {
 		return nil, err
 	}
-	out, err := invoke.Command(netstat, "-inb")
+	out, err := invoke.CommandWithContext(ctx, netstat, "-inb")
 	if err != nil {
 		return nil, err
 	}
-	out2, err := invoke.Command(netstat, "-ind")
+	out2, err := invoke.CommandWithContext(ctx, netstat, "-ind")
 	if err != nil {
 		return nil, err
 	}
@@ -136,11 +141,27 @@ func IOCounters(pernic bool) ([]IOCountersStat, error) {
 
 // NetIOCountersByFile is an method which is added just a compatibility for linux.
 func IOCountersByFile(pernic bool, filename string) ([]IOCountersStat, error) {
+	return IOCountersByFileWithContext(context.Background(), pernic, filename)
+}
+
+func IOCountersByFileWithContext(ctx context.Context, pernic bool, filename string) ([]IOCountersStat, error) {
 	return IOCounters(pernic)
 }
 
 func FilterCounters() ([]FilterStat, error) {
+	return FilterCountersWithContext(context.Background())
+}
+
+func FilterCountersWithContext(ctx context.Context) ([]FilterStat, error) {
 	return nil, errors.New("NetFilterCounters not implemented for openbsd")
+}
+
+func ConntrackStats(percpu bool) ([]ConntrackStat, error) {
+	return ConntrackStatsWithContext(context.Background(), percpu)
+}
+
+func ConntrackStatsWithContext(ctx context.Context, percpu bool) ([]ConntrackStat, error) {
+	return nil, common.ErrNotImplementedError
 }
 
 // NetProtoCounters returns network statistics for the entire system
@@ -148,6 +169,10 @@ func FilterCounters() ([]FilterStat, error) {
 // just the protocols in the list are returned.
 // Not Implemented for OpenBSD
 func ProtoCounters(protocols []string) ([]ProtoCountersStat, error) {
+	return ProtoCountersWithContext(context.Background(), protocols)
+}
+
+func ProtoCountersWithContext(ctx context.Context, protocols []string) ([]ProtoCountersStat, error) {
 	return nil, errors.New("NetProtoCounters not implemented for openbsd")
 }
 
@@ -233,6 +258,10 @@ func parseNetstatAddr(local string, remote string, family uint32) (laddr Addr, r
 
 // Return a list of network connections opened.
 func Connections(kind string) ([]ConnectionStat, error) {
+	return ConnectionsWithContext(context.Background(), kind)
+}
+
+func ConnectionsWithContext(ctx context.Context, kind string) ([]ConnectionStat, error) {
 	var ret []ConnectionStat
 
 	args := []string{"-na"}
@@ -269,7 +298,7 @@ func Connections(kind string) ([]ConnectionStat, error) {
 	if err != nil {
 		return nil, err
 	}
-	out, err := invoke.Command(netstat, args...)
+	out, err := invoke.CommandWithContext(ctx, netstat, args...)
 
 	if err != nil {
 		return nil, err

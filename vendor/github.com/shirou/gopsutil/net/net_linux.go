@@ -4,6 +4,7 @@ package net
 
 import (
 	"bytes"
+	"context"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -17,17 +18,45 @@ import (
 	"github.com/shirou/gopsutil/internal/common"
 )
 
+const ( // Conntrack Column numbers
+	CT_ENTRIES = iota
+	CT_SEARCHED
+	CT_FOUND
+	CT_NEW
+	CT_INVALID
+	CT_IGNORE
+	CT_DELETE
+	CT_DELETE_LIST
+	CT_INSERT
+	CT_INSERT_FAILED
+	CT_DROP
+	CT_EARLY_DROP
+	CT_ICMP_ERROR
+	CT_EXPECT_NEW
+	CT_EXPECT_CREATE
+	CT_EXPECT_DELETE
+	CT_SEARCH_RESTART
+)
+
 // NetIOCounters returnes network I/O statistics for every network
 // interface installed on the system.  If pernic argument is false,
 // return only sum of all information (which name is 'all'). If true,
 // every network interface installed on the system is returned
 // separately.
 func IOCounters(pernic bool) ([]IOCountersStat, error) {
+	return IOCountersWithContext(context.Background(), pernic)
+}
+
+func IOCountersWithContext(ctx context.Context, pernic bool) ([]IOCountersStat, error) {
 	filename := common.HostProc("net/dev")
 	return IOCountersByFile(pernic, filename)
 }
 
 func IOCountersByFile(pernic bool, filename string) ([]IOCountersStat, error) {
+	return IOCountersByFileWithContext(context.Background(), pernic, filename)
+}
+
+func IOCountersByFileWithContext(ctx context.Context, pernic bool, filename string) ([]IOCountersStat, error) {
 	lines, err := common.ReadLines(filename)
 	if err != nil {
 		return nil, err
@@ -132,6 +161,10 @@ var netProtocols = []string{
 // Available protocols:
 //   ip,icmp,icmpmsg,tcp,udp,udplite
 func ProtoCounters(protocols []string) ([]ProtoCountersStat, error) {
+	return ProtoCountersWithContext(context.Background(), protocols)
+}
+
+func ProtoCountersWithContext(ctx context.Context, protocols []string) ([]ProtoCountersStat, error) {
 	if len(protocols) == 0 {
 		protocols = netProtocols
 	}
@@ -191,6 +224,10 @@ func ProtoCounters(protocols []string) ([]ProtoCountersStat, error) {
 // the currently in use conntrack count and the max.
 // If the file does not exist or is invalid it will return nil.
 func FilterCounters() ([]FilterStat, error) {
+	return FilterCountersWithContext(context.Background())
+}
+
+func FilterCountersWithContext(ctx context.Context) ([]FilterStat, error) {
 	countfile := common.HostProc("sys/net/netfilter/nf_conntrack_count")
 	maxfile := common.HostProc("sys/net/netfilter/nf_conntrack_max")
 
@@ -213,6 +250,58 @@ func FilterCounters() ([]FilterStat, error) {
 
 	stats = append(stats, payload)
 	return stats, nil
+}
+
+// ConntrackStats returns more detailed info about the conntrack table
+func ConntrackStats(percpu bool) ([]ConntrackStat, error) {
+	return ConntrackStatsWithContext(context.Background(), percpu)
+}
+
+// ConntrackStatsWithContext returns more detailed info about the conntrack table
+func ConntrackStatsWithContext(ctx context.Context, percpu bool) ([]ConntrackStat, error) {
+	return conntrackStatsFromFile(common.HostProc("net/stat/nf_conntrack"), percpu)
+}
+
+// conntrackStatsFromFile returns more detailed info about the conntrack table
+// from `filename`
+// If 'percpu' is false, the result will contain exactly one item with totals/summary
+func conntrackStatsFromFile(filename string, percpu bool) ([]ConntrackStat, error) {
+	lines, err := common.ReadLines(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	statlist := NewConntrackStatList()
+
+	for _, line := range lines {
+		fields := strings.Fields(line)
+		if len(fields) == 17 && fields[0] != "entries" {
+			statlist.Append(NewConntrackStat(
+				common.HexToUint32(fields[CT_ENTRIES]),
+				common.HexToUint32(fields[CT_SEARCHED]),
+				common.HexToUint32(fields[CT_FOUND]),
+				common.HexToUint32(fields[CT_NEW]),
+				common.HexToUint32(fields[CT_INVALID]),
+				common.HexToUint32(fields[CT_IGNORE]),
+				common.HexToUint32(fields[CT_DELETE]),
+				common.HexToUint32(fields[CT_DELETE_LIST]),
+				common.HexToUint32(fields[CT_INSERT]),
+				common.HexToUint32(fields[CT_INSERT_FAILED]),
+				common.HexToUint32(fields[CT_DROP]),
+				common.HexToUint32(fields[CT_EARLY_DROP]),
+				common.HexToUint32(fields[CT_ICMP_ERROR]),
+				common.HexToUint32(fields[CT_EXPECT_NEW]),
+				common.HexToUint32(fields[CT_EXPECT_CREATE]),
+				common.HexToUint32(fields[CT_EXPECT_DELETE]),
+				common.HexToUint32(fields[CT_SEARCH_RESTART]),
+			))
+		}
+	}
+
+	if percpu {
+		return statlist.Items(), nil
+	}
+	return statlist.Summary(), nil
 }
 
 // http://students.mimuw.edu.pl/lxr/source/include/net/tcp_states.h
@@ -294,17 +383,29 @@ type connTmp struct {
 
 // Return a list of network connections opened.
 func Connections(kind string) ([]ConnectionStat, error) {
+	return ConnectionsWithContext(context.Background(), kind)
+}
+
+func ConnectionsWithContext(ctx context.Context, kind string) ([]ConnectionStat, error) {
 	return ConnectionsPid(kind, 0)
 }
 
 // Return a list of network connections opened returning at most `max`
 // connections for each running process.
 func ConnectionsMax(kind string, max int) ([]ConnectionStat, error) {
+	return ConnectionsMaxWithContext(context.Background(), kind, max)
+}
+
+func ConnectionsMaxWithContext(ctx context.Context, kind string, max int) ([]ConnectionStat, error) {
 	return ConnectionsPidMax(kind, 0, max)
 }
 
 // Return a list of network connections opened by a process.
 func ConnectionsPid(kind string, pid int32) ([]ConnectionStat, error) {
+	return ConnectionsPidWithContext(context.Background(), kind, pid)
+}
+
+func ConnectionsPidWithContext(ctx context.Context, kind string, pid int32) ([]ConnectionStat, error) {
 	tmap, ok := netConnectionKindMap[kind]
 	if !ok {
 		return nil, fmt.Errorf("invalid kind, %s", kind)
@@ -329,6 +430,10 @@ func ConnectionsPid(kind string, pid int32) ([]ConnectionStat, error) {
 
 // Return up to `max` network connections opened by a process.
 func ConnectionsPidMax(kind string, pid int32, max int) ([]ConnectionStat, error) {
+	return ConnectionsPidMaxWithContext(context.Background(), kind, pid, max)
+}
+
+func ConnectionsPidMaxWithContext(ctx context.Context, kind string, pid int32, max int) ([]ConnectionStat, error) {
 	tmap, ok := netConnectionKindMap[kind]
 	if !ok {
 		return nil, fmt.Errorf("invalid kind, %s", kind)
@@ -360,11 +465,13 @@ func statsFromInodes(root string, pid int32, tmap []netConnectionKindType, inode
 		var path string
 		var connKey string
 		var ls []connTmp
-		path = fmt.Sprintf("%s/net/%s", root, t.filename)
+		if pid == 0 {
+			path = fmt.Sprintf("%s/net/%s", root, t.filename)
+		} else {
+			path = fmt.Sprintf("%s/%d/net/%s", root, pid, t.filename)
+		}
 		switch t.family {
-		case syscall.AF_INET:
-			fallthrough
-		case syscall.AF_INET6:
+		case syscall.AF_INET, syscall.AF_INET6:
 			ls, err = processInet(path, t, inodes, pid)
 		case syscall.AF_UNIX:
 			ls, err = processUnix(path, t, inodes, pid)
@@ -459,6 +566,10 @@ func getProcInodes(root string, pid int32, max int) (map[string][]inodeMap, erro
 // FIXME: Import process occures import cycle.
 // move to common made other platform breaking. Need consider.
 func Pids() ([]int32, error) {
+	return PidsWithContext(context.Background())
+}
+
+func PidsWithContext(ctx context.Context) ([]int32, error) {
 	var ret []int32
 
 	d, err := os.Open(common.HostProc())
@@ -592,6 +703,10 @@ func decodeAddress(family uint32, src string) (Addr, error) {
 
 // Reverse reverses array of bytes.
 func Reverse(s []byte) []byte {
+	return ReverseWithContext(context.Background(), s)
+}
+
+func ReverseWithContext(ctx context.Context, s []byte) []byte {
 	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
 		s[i], s[j] = s[j], s[i]
 	}
