@@ -4169,23 +4169,32 @@ h1:first-child {
   width: auto !important;
   min-width: 11px;
 }
-.label-success {
+.label-success,.label-hover-success:hover {
   background-color: #60C060;
 }
-.label-primary {
+.label-primary,.label-hover-primary:hover {
   background-color: #4D90FD;
 }
-.label-warning {
+.label-warning,.label-hover-warning:hover {
   background-color: #fcad37;
 }
-.label-danger {
+.label-danger,.label-hover-danger:hover {
   background-color: #ED5B56;
 }
-.label-info {
+.label-info,.label-hover-info:hover {
   background-color: #5DC4EA;
 }
 .label-lg {
   padding:8px;font-size:100%;
+}
+.label-xs {
+  padding:0px 3px;
+}
+.label-sm {
+  padding:1px 5px;
+}
+.label-md {
+  padding:2px 5px;
 }
 /*Bagde*/
 .badge {
@@ -4194,19 +4203,19 @@ h1:first-child {
   padding: 4px 6px;
   background-color: #a1a1a1;
 }
-.badge-primary {
+.badge-primary,.badge-hover-primary:hover {
   background-color: #4D90FD !important;
 }
-.badge-success {
+.badge-success,.badge-hover-success:hover {
   background-color: #60C060 !important;
 }
-.badge-info {
+.badge-info,.badge-hover-info:hover {
   background-color: #5DC4EA !important;
 }
-.badge-warning {
+.badge-warning,.badge-hover-warning:hover {
   background-color: #fcad37 !important;
 }
-.badge-danger {
+.badge-danger,.badge-hover-danger:hover {
   background-color: #ED5B56 !important;
 }
 /*Progress*/
