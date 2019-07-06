@@ -10,9 +10,15 @@ $(function(){
 	$('#topnav a[data-project]').on('click',function(e){
 		e.preventDefault();
 		var ident=$(this).data('project');
-		if(ident==$('#leftnav').data('project')) return;
-		$('#leftnav').data('project',ident);
 		var li=$(this).parent('li');
+		var active=function(){
+			if(!li.hasClass('active')){
+				li.siblings('li.active').removeClass('active');
+				li.addClass('active');
+			}
+		};
+		if(ident==$('#leftnav').data('project')) return active();
+		$('#leftnav').data('project',ident);
 		$.get(window.BACKEND_URL+'/project/'+ident,{partial:1},function(r){
 			if(r.Code!=1){
 				App.message({title:App.i18n.SYS_INFO,text:r.Info,type:'error'});
@@ -21,8 +27,7 @@ $(function(){
 			$('#leftnav').html(r.Data.list);
 			App.initLeftNav();
 			App.initLeftNavAjax(window.activeURL,'#leftnav');
-			li.siblings('li.active').removeClass('active');
-			li.addClass('active');
+			active();
 		},'json');
 	});
 });
