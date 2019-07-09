@@ -69,19 +69,23 @@ func (k *KeysValues) Map() map[string]interface{} {
 
 type Compounds []Compound
 
-func (c *Compounds) AddKV(key, value interface{}) Compounds {
+func NewCompounds() *Compounds {
+	return &Compounds{}
+}
+
+func (c *Compounds) AddKV(key, value interface{}) *Compounds {
 	*c = append(*c, Cond{key: value})
-	return *c
+	return c
 }
 
-func (c *Compounds) Set(compounds ...Compound) Compounds {
+func (c *Compounds) Set(compounds ...Compound) *Compounds {
 	*c = compounds
-	return *c
+	return c
 }
 
-func (c *Compounds) Add(compounds ...Compound) Compounds {
+func (c *Compounds) Add(compounds ...Compound) *Compounds {
 	*c = append(*c, compounds...)
-	return *c
+	return c
 }
 
 func (c *Compounds) And(compounds ...Compound) Compound {

@@ -25,10 +25,11 @@ var (
 	}
 
 	ErrExpectingStruct = errors.New(`bean must be an address of struct or struct.`)
+	_                  = gob.Register
 )
 
 func init() {
-	gob.Register(&Param{})
+	//gob.Register(&Param{})
 }
 
 type Join struct {

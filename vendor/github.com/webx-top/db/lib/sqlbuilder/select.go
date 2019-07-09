@@ -475,11 +475,11 @@ func (sel *selector) IteratorContext(ctx context.Context) Iterator {
 	sess := sel.SQLBuilder().sess
 	sq, err := sel.build()
 	if err != nil {
-		return &iterator{sess, nil, err}
+		return &iterator{sel.SQLBuilder(), nil, err}
 	}
 
 	rows, err := sess.StatementQuery(ctx, sq.statement(), sq.arguments()...)
-	return &iterator{sess, rows, err}
+	return &iterator{sel.SQLBuilder(), rows, err}
 }
 
 func (sel *selector) Paginate(pageSize uint) Paginator {

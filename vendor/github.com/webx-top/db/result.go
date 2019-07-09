@@ -187,4 +187,6 @@ type Result interface {
 
 	// Close closes the result set and frees all locked resources.
 	Close() error
+
+	Relation(name string, fn interface{}) Result //[SWH|+]
 }

@@ -205,7 +205,7 @@ func (ins *inserter) Iterator() Iterator {
 
 func (ins *inserter) IteratorContext(ctx context.Context) Iterator {
 	rows, err := ins.QueryContext(ctx)
-	return &iterator{ins.SQLBuilder().sess, rows, err}
+	return &iterator{ins.SQLBuilder(), rows, err}
 }
 
 func (ins *inserter) Into(table string) Inserter {

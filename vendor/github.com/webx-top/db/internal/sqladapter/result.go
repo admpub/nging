@@ -22,6 +22,7 @@
 package sqladapter
 
 import (
+	"fmt"
 	"sync"
 	"sync/atomic"
 
@@ -495,6 +496,19 @@ func (r *Result) fastForward() (*result, error) {
 		return nil, err
 	}
 	return ff.(*result), nil
+}
+
+func (r *Result) Relation(name string, fn interface{}) db.Result {
+	switch fnn := fn.(type) {
+	case func(sqlbuilder.Selector) sqlbuilder.Selector:
+		r.SQLBuilder().Relation(name, fnn)
+		return r
+	case sqlbuilder.BuilderChainFunc:
+		r.SQLBuilder().Relation(name, fnn)
+		return r
+	default:
+		panic(fmt.Sprintf(`Unsupported type: %T`, fn))
+	}
 }
 
 var _ = immutable.Immutable(&Result{})

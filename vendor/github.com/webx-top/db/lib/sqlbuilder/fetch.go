@@ -78,7 +78,7 @@ func fetchRow(iter *iterator, dst interface{}) error {
 		itemV.Set(reflect.Indirect(item))
 	}
 
-	return nil
+	return RelationOne(iter.SQLBuilder, dst)
 }
 
 // fetchRows receives a *sql.Rows value and tries to map all the rows into a
@@ -126,8 +126,10 @@ func fetchRows(iter *iterator, dst interface{}) error {
 	}
 
 	dstv.Elem().Set(slicev)
-
-	return rows.Err()
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	return RelationAll(iter.SQLBuilder, dst)
 }
 
 func fetchResult(iter *iterator, itemT reflect.Type, columns []string) (reflect.Value, error) {
@@ -179,7 +181,7 @@ func fetchResult(iter *iterator, itemT reflect.Type, columns []string) (reflect.
 			}
 		}
 
-		if converter, ok := iter.sess.(hasConvertValues); ok {
+		if converter, ok := iter.SQLBuilder.(*sqlBuilder).sess.(hasConvertValues); ok {
 			values = converter.ConvertValues(values)
 		}
 
