@@ -155,7 +155,7 @@ func RelationOne(builder SQLBuilder, data interface{}) error {
 					sel = chainFn(sel)
 				}
 			}
-			err = sel.All(foreignIV)
+			err = sel.One(foreignIV)
 			// If one-to-one NoRows is not an error that needs to be terminated
 			if err != nil && err != db.ErrNoMoreRows {
 				return err
