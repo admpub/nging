@@ -13,8 +13,8 @@ import (
 type BuilderChainFunc func(Selector) Selector
 
 const (
-	ForeignKeyIndex = 1
-	PrimaryKeyIndex = 0
+	ForeignKeyIndex = 0 //外键名下标
+	PrimaryKeyIndex = 1 //主键名下标
 )
 
 func (b *sqlBuilder) Relation(name string, fn BuilderChainFunc) SQLBuilder {
@@ -38,14 +38,15 @@ func eachField(t reflect.Type, fn func(field reflect.StructField, relations []st
 	typeMap := mapper.TypeMap(t)
 	for _, fieldInfo := range typeMap.Index {
 		//fmt.Println(`==>`, fieldInfo.Name, fieldInfo.Embedded, com.Dump(fieldInfo.Options, false))
-		// `db:",relation=PrimaryKey:ForeignKey"`
+		// `db:",relation=ForeignKey:PrimaryKey"`
+		// `db:",relation=外键名:主键名"`
 		rel, ok := fieldInfo.Options[`relation`]
 		if !ok || len(rel) == 0 || rel == `-` {
 			continue
 		}
 		relations := strings.SplitN(rel, `:`, 2)
 		if len(relations) != 2 {
-			return fmt.Errorf("Wrong relation option, length must 2, but get %v. Reference format: `db:\",relation=PrimaryKey:ForeignKey\"`", relations)
+			return fmt.Errorf("Wrong relation option, length must 2, but get %v. Reference format: `db:\",relation=ForeignKey:PrimaryKey\"`", relations)
 		}
 		err := fn(fieldInfo.Field, relations)
 		if err != nil {
