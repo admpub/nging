@@ -20,6 +20,7 @@ package com
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -53,6 +54,11 @@ func ExecCmdDirBytes(dir, cmdName string, args ...string) ([]byte, []byte, error
 	cmd.Stderr = bufErr
 
 	err := cmd.Run()
+	if err != nil {
+		if e, y := err.(*exec.ExitError); y {
+			OnCmdExitError(append([]string{cmdName}, args...), e)
+		}
+	}
 	return bufOut.Bytes(), bufErr.Bytes(), err
 }
 
@@ -285,6 +291,10 @@ func RunCmdStrWithWriter(command string, writer ...io.Writer) *exec.Cmd {
 	return RunCmdWithWriter(params, writer...)
 }
 
+var OnCmdExitError = func(params []string, err *exec.ExitError) {
+	fmt.Printf("[%v]The process exited abnormally: PID(%d) PARAMS(%#v)\n", time.Now().Format(`2006-01-02 15:04:05`), err.Pid(), params)
+}
+
 func RunCmdWithReaderWriter(params []string, reader io.Reader, writer ...io.Writer) *exec.Cmd {
 	cmd := CreateCmdWithWriter(params, writer...)
 	cmd.Stdin = reader
@@ -292,6 +302,9 @@ func RunCmdWithReaderWriter(params []string, reader io.Reader, writer ...io.Writ
 	go func() {
 		err := cmd.Run()
 		if err != nil {
+			if e, y := err.(*exec.ExitError); y {
+				OnCmdExitError(params, e)
+			}
 			cmd.Stderr.Write([]byte(err.Error()))
 		}
 	}()
@@ -305,6 +318,9 @@ func RunCmdWithWriter(params []string, writer ...io.Writer) *exec.Cmd {
 	go func() {
 		err := cmd.Run()
 		if err != nil {
+			if e, y := err.(*exec.ExitError); y {
+				OnCmdExitError(params, e)
+			}
 			cmd.Stderr.Write([]byte(err.Error()))
 		}
 	}()
@@ -332,6 +348,9 @@ func RunCmdWithWriterx(params []string, wait time.Duration, writer ...io.Writer)
 	go func() {
 		err = cmd.Run()
 		if err != nil {
+			if e, y := err.(*exec.ExitError); y {
+				OnCmdExitError(params, e)
+			}
 			cmd.Stderr.Write([]byte(err.Error()))
 		}
 	}()
