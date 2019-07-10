@@ -291,7 +291,7 @@ func (d *database) PrimaryKeys(tableName string) ([]string, error) {
 		PK   int    `db:"pk"`
 	}{}
 
-	if err := sqlbuilder.NewIterator(rows).All(&columns); err != nil {
+	if err := sqlbuilder.NewIterator(d.SQLBuilder, rows).All(&columns); err != nil {
 		return nil, err
 	}
 

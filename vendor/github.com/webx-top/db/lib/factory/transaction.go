@@ -38,16 +38,14 @@ func (t *Transaction) DB(param *Param) *sql.DB {
 	if db, ok := t.Driver(param).(*sql.DB); ok {
 		return db
 	}
-	panic(db.ErrUnsupported.Error())
-	return nil
+	panic(db.ErrUnsupported)
 }
 
-func (t *Transaction) SQLBuidler(param *Param) sqlbuilder.SQLBuilder {
+func (t *Transaction) SQLBuilder(param *Param) sqlbuilder.SQLBuilder {
 	if db, ok := t.Database(param).(sqlbuilder.SQLBuilder); ok {
 		return db
 	}
-	panic(db.ErrUnsupported.Error())
-	return nil
+	panic(db.ErrUnsupported)
 }
 
 func (t *Transaction) Result(param *Param) db.Result {
@@ -80,7 +78,7 @@ func (t *Transaction) QueryTo(param *Param) (sqlbuilder.Iterator, error) {
 	if err != nil {
 		return nil, err
 	}
-	iter := sqlbuilder.NewIterator(rows)
+	iter := sqlbuilder.NewIterator(t.SQLBuilder(param), rows)
 	if param.ResultData != nil {
 		err = iter.All(param.ResultData)
 	}
@@ -193,7 +191,7 @@ func (t *Transaction) SelectCount(param *Param) (int64, error) {
 	counter := struct {
 		Count int64 `db:"_t"`
 	}{}
-	selector := t.SQLBuidler(param).Select(db.Raw("count(1) AS _t")).From(param.TableName()).Where(param.Args...)
+	selector := t.SQLBuilder(param).Select(db.Raw("count(1) AS _t")).From(param.TableName()).Where(param.Args...)
 	selector = t.joinSelect(param, selector)
 	if param.SelectorMiddleware != nil {
 		selector = param.SelectorMiddleware(selector)
@@ -238,7 +236,7 @@ func (t *Transaction) joinSelect(param *Param, selector sqlbuilder.Selector) sql
 }
 
 func (t *Transaction) Select(param *Param) sqlbuilder.Selector {
-	selector := t.SQLBuidler(param).Select(param.Cols...).From(param.TableName()).Where(param.Args...)
+	selector := t.SQLBuilder(param).Select(param.Cols...).From(param.TableName()).Where(param.Args...)
 	return t.joinSelect(param, selector)
 }
 

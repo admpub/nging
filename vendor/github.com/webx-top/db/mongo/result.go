@@ -30,11 +30,10 @@ import (
 
 	"encoding/json"
 
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 	"github.com/webx-top/db"
-
 	"github.com/webx-top/db/internal/immutable"
+	mgo "gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type resultQuery struct {
@@ -577,4 +576,8 @@ func mustJSON(in interface{}) (out []byte) {
 		panic(err)
 	}
 	return out
+}
+
+func (res *result) Relation(name string, fn interface{}) db.Result {
+	return res
 }

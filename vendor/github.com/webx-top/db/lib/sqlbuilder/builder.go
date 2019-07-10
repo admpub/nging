@@ -69,7 +69,7 @@ type hasStatement interface {
 }
 
 type iterator struct {
-	sess   exprDB
+	SQLBuilder
 	cursor *sql.Rows // This is the main query cursor. It starts as a nil value.
 	err    error
 }
@@ -102,8 +102,9 @@ type exprDB interface {
 }
 
 type sqlBuilder struct {
-	sess exprDB
-	t    *templateWithUtils
+	sess        exprDB
+	t           *templateWithUtils
+	relationMap map[string]BuilderChainFunc //[SWH|+]
 }
 
 // WithSession returns a query builder that is bound to the given database session.
@@ -125,8 +126,8 @@ func WithTemplate(t *exql.Template) SQLBuilder {
 }
 
 // NewIterator creates an iterator using the given *sql.Rows.
-func NewIterator(rows *sql.Rows) Iterator {
-	return &iterator{nil, rows, nil}
+func NewIterator(builder SQLBuilder, rows *sql.Rows) Iterator {
+	return &iterator{builder, rows, nil}
 }
 
 func (b *sqlBuilder) Iterator(query interface{}, args ...interface{}) Iterator {
@@ -135,7 +136,7 @@ func (b *sqlBuilder) Iterator(query interface{}, args ...interface{}) Iterator {
 
 func (b *sqlBuilder) IteratorContext(ctx context.Context, query interface{}, args ...interface{}) Iterator {
 	rows, err := b.QueryContext(ctx, query, args...)
-	return &iterator{b.sess, rows, err}
+	return &iterator{b, rows, err}
 }
 
 func (b *sqlBuilder) Prepare(query interface{}) (*sql.Stmt, error) {

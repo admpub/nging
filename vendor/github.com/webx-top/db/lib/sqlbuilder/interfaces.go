@@ -155,6 +155,9 @@ type SQLBuilder interface {
 	//
 	//  sqlbuilder.IteratorContext(ctx, `SELECT * FROM people WHERE name LIKE "M%"`)
 	IteratorContext(ctx context.Context, query interface{}, args ...interface{}) Iterator
+
+	Relation(name string, fn BuilderChainFunc) SQLBuilder //[SWH|+]
+	RelationMap() map[string]BuilderChainFunc             //[SWH|+]
 }
 
 // Selector represents a SELECT statement.
@@ -375,6 +378,8 @@ type Selector interface {
 
 	// Arguments returns the arguments that are prepared for this query.
 	Arguments() []interface{}
+
+	Relation(name string, fn BuilderChainFunc) Selector //[SWH|+]
 }
 
 // Inserter represents an INSERT statement.
