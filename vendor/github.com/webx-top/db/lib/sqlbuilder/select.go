@@ -39,6 +39,8 @@ type selectorQuery struct {
 	joinsArgs []interface{}
 
 	amendFn func(string) string
+
+	forceIndex *exql.Columns //[SWH|+]
 }
 
 func (sq *selectorQuery) and(b *sqlBuilder, terms ...interface{}) error {
@@ -66,15 +68,16 @@ func (sq *selectorQuery) arguments() []interface{} {
 
 func (sq *selectorQuery) statement() *exql.Statement {
 	stmt := &exql.Statement{
-		Type:     exql.Select,
-		Table:    sq.table,
-		Columns:  sq.columns,
-		Distinct: sq.distinct,
-		Limit:    sq.limit,
-		Offset:   sq.offset,
-		Where:    sq.where,
-		OrderBy:  sq.orderBy,
-		GroupBy:  sq.groupBy,
+		Type:       exql.Select,
+		Table:      sq.table,
+		Columns:    sq.columns,
+		Distinct:   sq.distinct,
+		Limit:      sq.limit,
+		Offset:     sq.offset,
+		Where:      sq.where,
+		OrderBy:    sq.orderBy,
+		GroupBy:    sq.groupBy,
+		ForceIndex: sq.forceIndex,
 	}
 
 	if len(sq.joins) > 0 {
@@ -522,4 +525,15 @@ func (sel *selector) Fn(in interface{}) error {
 
 func (sel *selector) Base() interface{} {
 	return &selectorQuery{}
+}
+
+// ForceIndex [SWH|+]
+func (sel *selector) ForceIndex(index string) Selector {
+	if len(index) == 0 {
+		return sel
+	}
+	return sel.frame(func(sq *selectorQuery) error {
+		sq.forceIndex = exql.JoinColumns(exql.Fragment(exql.ColumnWithName(index)))
+		return nil
+	})
 }

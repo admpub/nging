@@ -581,3 +581,7 @@ func mustJSON(in interface{}) (out []byte) {
 func (res *result) Relation(name string, fn interface{}) db.Result {
 	return res
 }
+
+func (res *result) ForceIndex(index string) db.Result {
+	return res
+}

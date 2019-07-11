@@ -189,4 +189,5 @@ type Result interface {
 	Close() error
 
 	Relation(name string, fn interface{}) Result //[SWH|+]
+	ForceIndex(index string) Result              //[SWH|+]
 }

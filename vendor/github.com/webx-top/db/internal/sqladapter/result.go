@@ -61,6 +61,8 @@ type result struct {
 	orderBy []interface{}
 	groupBy []interface{}
 	conds   [][]interface{}
+
+	forceIndex string //[SWH|+]
 }
 
 func filter(conds []interface{}) []interface{} {
@@ -386,6 +388,7 @@ func (r *Result) buildPaginator() (sqlbuilder.Paginator, error) {
 
 	sel := r.SQLBuilder().Select(res.fields...).
 		From(res.table).
+		ForceIndex(res.forceIndex).
 		Limit(res.limit).
 		Offset(res.offset).
 		GroupBy(res.groupBy...).
@@ -509,6 +512,13 @@ func (r *Result) Relation(name string, fn interface{}) db.Result {
 	default:
 		panic(fmt.Sprintf(`Unsupported type: %T`, fn))
 	}
+}
+
+func (r *Result) ForceIndex(index string) db.Result {
+	return r.frame(func(res *result) error {
+		res.forceIndex = index
+		return nil
+	})
 }
 
 var _ = immutable.Immutable(&Result{})

@@ -100,6 +100,11 @@ const (
 
       {{if defined .Table}}
         FROM {{.Table | compile}}
+
+        {{if defined .ForceIndex}}
+          FORCE INDEX({{.ForceIndex | compile}})
+        {{end}}
+
       {{end}}
 
       {{.Joins | compile}}

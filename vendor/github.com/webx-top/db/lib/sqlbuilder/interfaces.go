@@ -380,6 +380,7 @@ type Selector interface {
 	Arguments() []interface{}
 
 	Relation(name string, fn BuilderChainFunc) Selector //[SWH|+]
+	ForceIndex(index string) Selector
 }
 
 // Inserter represents an INSERT statement.
