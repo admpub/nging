@@ -24,7 +24,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	natsd "github.com/nats-io/nats-server/v2/server"
+	natsd "github.com/nats-io/nats-server/server"
 	stand "github.com/nats-io/nats-streaming-server/server"
 	stores "github.com/nats-io/nats-streaming-server/stores"
 	"github.com/webx-top/echo"
