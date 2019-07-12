@@ -39,6 +39,7 @@ func register() {
 func ConnectSQLite(c *config.Config) error {
 	settings := sqlite.ConnectionURL{
 		Database: c.DB.Database,
+		Prefix:   c.DB.Prefix,
 		Options:  c.DB.Options,
 	}
 	database, err := sqlite.Open(settings)
@@ -46,7 +47,7 @@ func ConnectSQLite(c *config.Config) error {
 		return err
 	}
 	cluster := factory.NewCluster().AddMaster(database)
-	factory.SetCluster(0, cluster).Cluster(0).SetPrefix(c.DB.Prefix)
+	factory.SetCluster(0, cluster)
 	factory.SetDebug(c.DB.Debug)
 	return nil
 }
