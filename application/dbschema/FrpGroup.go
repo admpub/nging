@@ -73,13 +73,6 @@ func (this *FrpGroup) Name_() string {
 	return factory.TableNamerGet("frp_group")(this)
 }
 
-func (this *FrpGroup) FullName_(connID ...int) string {
-	if len(connID) > 0 {
-		return factory.DefaultFactory.Cluster(connID[0]).Table(this.Name_())
-	}
-	return factory.DefaultFactory.Cluster(this.connID).Table(this.Name_())
-}
-
 func (this *FrpGroup) SetParam(param *factory.Param) factory.Model {
 	this.param = param
 	return this

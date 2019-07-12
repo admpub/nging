@@ -116,7 +116,7 @@ func (d *database) open() error {
 	d.BaseDatabase = sqladapter.NewBaseDatabase(d)
 
 	// Binding with sqlbuilder.
-	d.SQLBuilder = sqlbuilder.WithSession(d.BaseDatabase, template)
+	d.SQLBuilder = sqlbuilder.WithSession(d.BaseDatabase, template, d.connURL.GetPrefix())
 
 	connFn := func() error {
 		sess, err := sql.Open("mysql", d.ConnectionURL().String())
@@ -251,7 +251,6 @@ func (d *database) LookupName() (string, error) {
 		err := iter.Scan(&name)
 		return name.String, err
 	}
-
 
 	return "", iter.Err()
 }

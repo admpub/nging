@@ -199,6 +199,7 @@ func ConnectMySQL(c *Config) error {
 		Database: c.DB.Database,
 		User:     c.DB.User,
 		Password: c.DB.Password,
+		Prefix:   c.DB.Prefix,
 		Options:  c.DB.Options,
 	}
 	if settings.Options == nil {
@@ -214,7 +215,7 @@ func ConnectMySQL(c *Config) error {
 	}
 	c.DB.SetConn(database)
 	cluster := factory.NewCluster().AddMaster(database)
-	factory.SetCluster(0, cluster).Cluster(0).SetPrefix(c.DB.Prefix)
+	factory.SetCluster(0, cluster)
 	factory.SetDebug(c.DB.Debug)
 	return nil
 }
@@ -225,6 +226,7 @@ func ConnectMongoDB(c *Config) error {
 		Database: c.DB.Database,
 		User:     c.DB.User,
 		Password: c.DB.Password,
+		Prefix:   c.DB.Prefix,
 		Options:  c.DB.Options,
 	}
 	if c.DB.ConnMaxDuration() > 0 {
@@ -236,7 +238,7 @@ func ConnectMongoDB(c *Config) error {
 	}
 	c.DB.SetConn(database)
 	cluster := factory.NewCluster().AddMaster(database)
-	factory.SetCluster(0, cluster).Cluster(0).SetPrefix(c.DB.Prefix)
+	factory.SetCluster(0, cluster)
 	factory.SetDebug(c.DB.Debug)
 	return nil
 }

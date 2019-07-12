@@ -77,13 +77,6 @@ func (this *DbSync) Name_() string {
 	return factory.TableNamerGet("db_sync")(this)
 }
 
-func (this *DbSync) FullName_(connID ...int) string {
-	if len(connID) > 0 {
-		return factory.DefaultFactory.Cluster(connID[0]).Table(this.Name_())
-	}
-	return factory.DefaultFactory.Cluster(this.connID).Table(this.Name_())
-}
-
 func (this *DbSync) SetParam(param *factory.Param) factory.Model {
 	this.param = param
 	return this

@@ -28,9 +28,9 @@ import (
 
 	"reflect"
 
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 	"github.com/webx-top/db"
+	mgo "gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 // Collection represents a mongodb collection.

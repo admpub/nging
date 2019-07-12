@@ -79,13 +79,6 @@ func (this *CollectorExport) Name_() string {
 	return factory.TableNamerGet("collector_export")(this)
 }
 
-func (this *CollectorExport) FullName_(connID ...int) string {
-	if len(connID) > 0 {
-		return factory.DefaultFactory.Cluster(connID[0]).Table(this.Name_())
-	}
-	return factory.DefaultFactory.Cluster(this.connID).Table(this.Name_())
-}
-
 func (this *CollectorExport) SetParam(param *factory.Param) factory.Model {
 	this.param = param
 	return this

@@ -76,13 +76,6 @@ func (this *UserRole) Name_() string {
 	return factory.TableNamerGet("user_role")(this)
 }
 
-func (this *UserRole) FullName_(connID ...int) string {
-	if len(connID) > 0 {
-		return factory.DefaultFactory.Cluster(connID[0]).Table(this.Name_())
-	}
-	return factory.DefaultFactory.Cluster(this.connID).Table(this.Name_())
-}
-
 func (this *UserRole) SetParam(param *factory.Param) factory.Model {
 	this.param = param
 	return this

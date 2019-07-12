@@ -145,9 +145,10 @@ func (sel *selector) clone() Selector {
 }
 
 func (sel *selector) From(tables ...interface{}) Selector {
+	prefix := sel.SQLBuilder().Prefix()
 	return sel.frame(
 		func(sq *selectorQuery) error {
-			fragments, args, err := columnFragments(tables)
+			fragments, args, err := columnFragments(tables, prefix)
 			if err != nil {
 				return err
 			}

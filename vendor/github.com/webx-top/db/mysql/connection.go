@@ -53,7 +53,12 @@ type ConnectionURL struct {
 	Database string
 	Host     string
 	Socket   string
+	Prefix   string //[SWH|+]
 	Options  map[string]string
+}
+
+func (c ConnectionURL) GetPrefix() string {
+	return c.Prefix
 }
 
 func (c ConnectionURL) String() (s string) {

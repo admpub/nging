@@ -75,13 +75,6 @@ func (this *CollectorRule) Name_() string {
 	return factory.TableNamerGet("collector_rule")(this)
 }
 
-func (this *CollectorRule) FullName_(connID ...int) string {
-	if len(connID) > 0 {
-		return factory.DefaultFactory.Cluster(connID[0]).Table(this.Name_())
-	}
-	return factory.DefaultFactory.Cluster(this.connID).Table(this.Name_())
-}
-
 func (this *CollectorRule) SetParam(param *factory.Param) factory.Model {
 	this.param = param
 	return this

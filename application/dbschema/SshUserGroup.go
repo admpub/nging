@@ -73,13 +73,6 @@ func (this *SshUserGroup) Name_() string {
 	return factory.TableNamerGet("ssh_user_group")(this)
 }
 
-func (this *SshUserGroup) FullName_(connID ...int) string {
-	if len(connID) > 0 {
-		return factory.DefaultFactory.Cluster(connID[0]).Table(this.Name_())
-	}
-	return factory.DefaultFactory.Cluster(this.connID).Table(this.Name_())
-}
-
 func (this *SshUserGroup) SetParam(param *factory.Param) factory.Model {
 	this.param = param
 	return this

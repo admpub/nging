@@ -41,7 +41,6 @@ func NewCluster() *Cluster {
 type Cluster struct {
 	masters        []db.Database
 	slaves         []db.Database
-	prefix         string
 	masterSelecter Selecter
 	slaveSelecter  Selecter
 }
@@ -73,22 +72,6 @@ func (c *Cluster) Slave() (r db.Database) {
 		}
 	}
 	return
-}
-
-// Prefix : table prefix
-func (c *Cluster) Prefix() string {
-	return c.prefix
-}
-
-// Table : Table full name (including the prefix)
-func (c *Cluster) Table(tableName string) string {
-	return c.prefix + tableName
-}
-
-// SetPrefix : setting table prefix
-func (c *Cluster) SetPrefix(prefix string) *Cluster {
-	c.prefix = prefix
-	return c
 }
 
 func (c *Cluster) SetSlaveSelecter(selecter Selecter) *Cluster {

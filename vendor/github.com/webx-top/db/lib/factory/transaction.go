@@ -211,8 +211,9 @@ func (t *Transaction) joinSelect(param *Param, selector sqlbuilder.Selector) sql
 	if param.Joins == nil {
 		return selector
 	}
+	builder := t.SQLBuilder(param)
 	for _, join := range param.Joins {
-		coll := param.cluster.Table(join.Collection)
+		coll := builder.TableName(join.Collection)
 		if len(join.Alias) > 0 {
 			coll += ` ` + join.Alias
 		}

@@ -26,4 +26,5 @@ type ConnectionURL interface {
 	// String returns the connection string that is going to be passed to the
 	// adapter.
 	String() string
+	GetPrefix() string
 }

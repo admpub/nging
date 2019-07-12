@@ -8,7 +8,6 @@ type Model interface {
 	SetNamer(func(string) string) Model
 	Name_() string
 	SetConnID(connID int) Model
-	FullName_(connID ...int) string
 	New(structName string, connID ...int) Model
 	NewParam() *Param
 	SetParam(param *Param) Model

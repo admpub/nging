@@ -4,9 +4,9 @@ import (
 	"github.com/webx-top/db/lib/sqlbuilder"
 )
 
-func NewBuilder(sesses ...interface{}) sqlbuilder.SQLBuilder {
-	if len(sesses) > 0 && sesses[0] != nil {
-		return sqlbuilder.WithSession(sesses[0], template)
+func NewBuilder(sess interface{}, prefixx ...string) sqlbuilder.SQLBuilder {
+	if sess != nil {
+		return sqlbuilder.WithSession(sess, template, prefixx...)
 	}
-	return sqlbuilder.WithTemplate(template)
+	return sqlbuilder.WithTemplate(template, prefixx...)
 }

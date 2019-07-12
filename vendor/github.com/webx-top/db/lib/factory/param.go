@@ -211,9 +211,9 @@ func (p *Param) SetAlias(alias string) *Param {
 
 func (p *Param) TableName() string {
 	if len(p.Alias) > 0 {
-		return p.cluster.Table(p.Collection) + ` ` + p.Alias
+		return p.T().SQLBuilder(p).TableName(p.Collection) + ` ` + p.Alias
 	}
-	return p.cluster.Table(p.Collection)
+	return p.T().SQLBuilder(p).TableName(p.Collection)
 }
 
 func (p *Param) TableField(m interface{}, structField *string, tableField ...*string) *Param {

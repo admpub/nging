@@ -91,13 +91,6 @@ func (this *ForeverProcess) Name_() string {
 	return factory.TableNamerGet("forever_process")(this)
 }
 
-func (this *ForeverProcess) FullName_(connID ...int) string {
-	if len(connID) > 0 {
-		return factory.DefaultFactory.Cluster(connID[0]).Table(this.Name_())
-	}
-	return factory.DefaultFactory.Cluster(this.connID).Table(this.Name_())
-}
-
 func (this *ForeverProcess) SetParam(param *factory.Param) factory.Model {
 	this.param = param
 	return this
@@ -131,9 +124,9 @@ func (this *ForeverProcess) ListByOffset(recv interface{}, mw func(db.Result) db
 func (this *ForeverProcess) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Status) == 0 { this.Status = "idle" }
 	if len(this.Debug) == 0 { this.Debug = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Status) == 0 { this.Status = "idle" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -147,9 +140,9 @@ func (this *ForeverProcess) Add() (pk interface{}, err error) {
 
 func (this *ForeverProcess) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
-	if len(this.Status) == 0 { this.Status = "idle" }
 	if len(this.Debug) == 0 { this.Debug = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Status) == 0 { this.Status = "idle" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -165,24 +158,24 @@ func (this *ForeverProcess) SetField(mw func(db.Result) db.Result, field string,
 
 func (this *ForeverProcess) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["status"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["status"] = "idle" } }
 	if val, ok := kvset["debug"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["debug"] = "N" } }
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
+	if val, ok := kvset["status"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["status"] = "idle" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *ForeverProcess) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
-	if len(this.Status) == 0 { this.Status = "idle" }
 	if len(this.Debug) == 0 { this.Debug = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Status) == 0 { this.Status = "idle" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Status) == 0 { this.Status = "idle" }
 	if len(this.Debug) == 0 { this.Debug = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Status) == 0 { this.Status = "idle" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
