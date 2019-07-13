@@ -36,17 +36,21 @@ func (sel *selector) Relation(name string, fn BuilderChainFunc) Selector {
 
 func eachField(t reflect.Type, fn func(field reflect.StructField, relations []string) error) error {
 	typeMap := mapper.TypeMap(t)
-	for _, fieldInfo := range typeMap.Index {
+	options, ok := typeMap.Options[`relation`]
+	if !ok {
+		return nil
+	}
+	for _, fieldInfo := range options {
 		//fmt.Println(`==>`, fieldInfo.Name, fieldInfo.Embedded, com.Dump(fieldInfo.Options, false))
-		// `db:",relation=ForeignKey:PrimaryKey"`
-		// `db:",relation=外键名:主键名"`
+		// `db:"-,relation=ForeignKey:PrimaryKey"`
+		// `db:"-,relation=外键名:主键名"`
 		rel, ok := fieldInfo.Options[`relation`]
 		if !ok || len(rel) == 0 || rel == `-` {
 			continue
 		}
 		relations := strings.SplitN(rel, `:`, 2)
 		if len(relations) != 2 {
-			return fmt.Errorf("Wrong relation option, length must 2, but get %v. Reference format: `db:\",relation=ForeignKey:PrimaryKey\"`", relations)
+			return fmt.Errorf("Wrong relation option, length must 2, but get %v. Reference format: `db:\"-,relation=ForeignKey:PrimaryKey\"`", relations)
 		}
 		err := fn(fieldInfo.Field, relations)
 		if err != nil {

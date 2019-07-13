@@ -29,10 +29,11 @@ type FieldInfo struct {
 
 // A StructMap is an index of field metadata for a struct.
 type StructMap struct {
-	Tree  *FieldInfo
-	Index []*FieldInfo
-	Paths map[string]*FieldInfo
-	Names map[string]*FieldInfo
+	Tree    *FieldInfo
+	Index   []*FieldInfo
+	Paths   map[string]*FieldInfo
+	Names   map[string]*FieldInfo
+	Options map[string][]*FieldInfo
 }
 
 // GetByPath returns a *FieldInfo for a given string path.
@@ -303,6 +304,7 @@ func getMapping(t reflect.Type, tagName string, mapFunc, tagMapFunc func(string)
 	root := &FieldInfo{}
 	queue := []typeQueue{}
 	queue = append(queue, typeQueue{Deref(t), root, ""})
+	options := map[string][]*FieldInfo{} //[SWH|+]
 
 QueueLoop:
 	for len(queue) != 0 {
@@ -351,6 +353,17 @@ QueueLoop:
 						fi.Options[kv[0]] = kv[1]
 					} else {
 						fi.Options[kv[0]] = ""
+					}
+				}
+				//[SWH|+]
+				if len(fi.Options) > 0 {
+					for option := range fi.Options {
+						_, ok := options[option]
+						if !ok {
+							options[option] = []*FieldInfo{&fi}
+							continue
+						}
+						options[option] = append(options[option], &fi)
 					}
 				}
 			}
@@ -406,7 +419,7 @@ QueueLoop:
 		}
 	}
 
-	flds := &StructMap{Index: m, Tree: root, Paths: map[string]*FieldInfo{}, Names: map[string]*FieldInfo{}}
+	flds := &StructMap{Index: m, Tree: root, Paths: map[string]*FieldInfo{}, Names: map[string]*FieldInfo{}, Options: options}
 	for _, fi := range flds.Index {
 		flds.Paths[fi.Path] = fi
 		if fi.Name != "" && !fi.Embedded {
