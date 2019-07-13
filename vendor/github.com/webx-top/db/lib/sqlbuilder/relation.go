@@ -257,7 +257,7 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 			// Batch get field values, but must new slice []*Struct
 			fi := reflect.New(reflect.SliceOf(foreignModel.Type()))
 
-			foreignIV := foreignModel.Interface()
+			foreignIV := fi.Interface()
 			table, err := TableName(foreignIV)
 			if err != nil {
 				return err
