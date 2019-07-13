@@ -75,11 +75,19 @@ func (this *SendingLog) SetNamer(namer func (string) string) factory.Model {
 	return this
 }
 
+func (this *SendingLog) Short_() string {
+	return "sending_log"
+}
+
+func (this *SendingLog) Struct_() string {
+	return "SendingLog"
+}
+
 func (this *SendingLog) Name_() string {
 	if this.namer != nil {
-		return this.namer("sending_log")
+		return this.namer(this.Short_())
 	}
-	return factory.TableNamerGet("sending_log")(this)
+	return factory.TableNamerGet(this.Short_())(this)
 }
 
 func (this *SendingLog) SetParam(param *factory.Param) factory.Model {
@@ -115,9 +123,9 @@ func (this *SendingLog) ListByOffset(recv interface{}, mw func(db.Result) db.Res
 func (this *SendingLog) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.SourceType) == 0 { this.SourceType = "user" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Status) == 0 { this.Status = "waiting" }
-	if len(this.SourceType) == 0 { this.SourceType = "user" }
 	if len(this.Method) == 0 { this.Method = "mobile" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
@@ -132,9 +140,9 @@ func (this *SendingLog) Add() (pk interface{}, err error) {
 
 func (this *SendingLog) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	
+	if len(this.SourceType) == 0 { this.SourceType = "user" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Status) == 0 { this.Status = "waiting" }
-	if len(this.SourceType) == 0 { this.SourceType = "user" }
 	if len(this.Method) == 0 { this.Method = "mobile" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
@@ -151,9 +159,9 @@ func (this *SendingLog) SetField(mw func(db.Result) db.Result, field string, val
 
 func (this *SendingLog) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
+	if val, ok := kvset["source_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["source_type"] = "user" } }
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	if val, ok := kvset["status"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["status"] = "waiting" } }
-	if val, ok := kvset["source_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["source_type"] = "user" } }
 	if val, ok := kvset["method"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["method"] = "mobile" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
@@ -161,16 +169,16 @@ func (this *SendingLog) SetFields(mw func(db.Result) db.Result, kvset map[string
 func (this *SendingLog) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		
+	if len(this.SourceType) == 0 { this.SourceType = "user" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Status) == 0 { this.Status = "waiting" }
-	if len(this.SourceType) == 0 { this.SourceType = "user" }
 	if len(this.Method) == 0 { this.Method = "mobile" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.SourceType) == 0 { this.SourceType = "user" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Status) == 0 { this.Status = "waiting" }
-	if len(this.SourceType) == 0 { this.SourceType = "user" }
 	if len(this.Method) == 0 { this.Method = "mobile" }
 	})
 	if err == nil && pk != nil {
@@ -255,10 +263,10 @@ func (this *SendingLog) BatchValidate(kvset map[string]interface{}) error {
 	if kvset == nil {
 		kvset = this.AsRow()
 	}
-	return factory.BatchValidate("sending_log", kvset)
+	return factory.BatchValidate(this.Short_(), kvset)
 }
 
 func (this *SendingLog) Validate(field string, value interface{}) error {
-	return factory.Validate("sending_log", field, value)
+	return factory.Validate(this.Short_(), field, value)
 }
 

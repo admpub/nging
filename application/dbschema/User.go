@@ -76,11 +76,19 @@ func (this *User) SetNamer(namer func (string) string) factory.Model {
 	return this
 }
 
+func (this *User) Short_() string {
+	return "user"
+}
+
+func (this *User) Struct_() string {
+	return "User"
+}
+
 func (this *User) Name_() string {
 	if this.namer != nil {
-		return this.namer("user")
+		return this.namer(this.Short_())
 	}
-	return factory.TableNamerGet("user")(this)
+	return factory.TableNamerGet(this.Short_())(this)
 }
 
 func (this *User) SetParam(param *factory.Param) factory.Model {
@@ -117,8 +125,8 @@ func (this *User) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.Gender) == 0 { this.Gender = "secret" }
-	if len(this.Online) == 0 { this.Online = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Online) == 0 { this.Online = "N" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -133,8 +141,8 @@ func (this *User) Add() (pk interface{}, err error) {
 func (this *User) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
 	if len(this.Gender) == 0 { this.Gender = "secret" }
-	if len(this.Online) == 0 { this.Online = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Online) == 0 { this.Online = "N" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -151,8 +159,8 @@ func (this *User) SetField(mw func(db.Result) db.Result, field string, value int
 func (this *User) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
 	if val, ok := kvset["gender"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["gender"] = "secret" } }
-	if val, ok := kvset["online"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["online"] = "N" } }
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
+	if val, ok := kvset["online"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["online"] = "N" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
@@ -160,14 +168,14 @@ func (this *User) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk 
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
 	if len(this.Gender) == 0 { this.Gender = "secret" }
-	if len(this.Online) == 0 { this.Online = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Online) == 0 { this.Online = "N" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.Gender) == 0 { this.Gender = "secret" }
-	if len(this.Online) == 0 { this.Online = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Online) == 0 { this.Online = "N" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -254,10 +262,10 @@ func (this *User) BatchValidate(kvset map[string]interface{}) error {
 	if kvset == nil {
 		kvset = this.AsRow()
 	}
-	return factory.BatchValidate("user", kvset)
+	return factory.BatchValidate(this.Short_(), kvset)
 }
 
 func (this *User) Validate(field string, value interface{}) error {
-	return factory.Validate("user", field, value)
+	return factory.Validate(this.Short_(), field, value)
 }
 

@@ -68,11 +68,19 @@ func (this *CollectorRule) SetNamer(namer func (string) string) factory.Model {
 	return this
 }
 
+func (this *CollectorRule) Short_() string {
+	return "collector_rule"
+}
+
+func (this *CollectorRule) Struct_() string {
+	return "CollectorRule"
+}
+
 func (this *CollectorRule) Name_() string {
 	if this.namer != nil {
-		return this.namer("collector_rule")
+		return this.namer(this.Short_())
 	}
-	return factory.TableNamerGet("collector_rule")(this)
+	return factory.TableNamerGet(this.Short_())(this)
 }
 
 func (this *CollectorRule) SetParam(param *factory.Param) factory.Model {
@@ -212,10 +220,10 @@ func (this *CollectorRule) BatchValidate(kvset map[string]interface{}) error {
 	if kvset == nil {
 		kvset = this.AsRow()
 	}
-	return factory.BatchValidate("collector_rule", kvset)
+	return factory.BatchValidate(this.Short_(), kvset)
 }
 
 func (this *CollectorRule) Validate(field string, value interface{}) error {
-	return factory.Validate("collector_rule", field, value)
+	return factory.Validate(this.Short_(), field, value)
 }
 

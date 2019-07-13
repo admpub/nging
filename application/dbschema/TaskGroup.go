@@ -68,11 +68,19 @@ func (this *TaskGroup) SetNamer(namer func (string) string) factory.Model {
 	return this
 }
 
+func (this *TaskGroup) Short_() string {
+	return "task_group"
+}
+
+func (this *TaskGroup) Struct_() string {
+	return "TaskGroup"
+}
+
 func (this *TaskGroup) Name_() string {
 	if this.namer != nil {
-		return this.namer("task_group")
+		return this.namer(this.Short_())
 	}
-	return factory.TableNamerGet("task_group")(this)
+	return factory.TableNamerGet(this.Short_())(this)
 }
 
 func (this *TaskGroup) SetParam(param *factory.Param) factory.Model {
@@ -207,10 +215,10 @@ func (this *TaskGroup) BatchValidate(kvset map[string]interface{}) error {
 	if kvset == nil {
 		kvset = this.AsRow()
 	}
-	return factory.BatchValidate("task_group", kvset)
+	return factory.BatchValidate(this.Short_(), kvset)
 }
 
 func (this *TaskGroup) Validate(field string, value interface{}) error {
-	return factory.Validate("task_group", field, value)
+	return factory.Validate(this.Short_(), field, value)
 }
 

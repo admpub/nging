@@ -66,11 +66,19 @@ func (this *SshUserGroup) SetNamer(namer func (string) string) factory.Model {
 	return this
 }
 
+func (this *SshUserGroup) Short_() string {
+	return "ssh_user_group"
+}
+
+func (this *SshUserGroup) Struct_() string {
+	return "SshUserGroup"
+}
+
 func (this *SshUserGroup) Name_() string {
 	if this.namer != nil {
-		return this.namer("ssh_user_group")
+		return this.namer(this.Short_())
 	}
-	return factory.TableNamerGet("ssh_user_group")(this)
+	return factory.TableNamerGet(this.Short_())(this)
 }
 
 func (this *SshUserGroup) SetParam(param *factory.Param) factory.Model {
@@ -199,10 +207,10 @@ func (this *SshUserGroup) BatchValidate(kvset map[string]interface{}) error {
 	if kvset == nil {
 		kvset = this.AsRow()
 	}
-	return factory.BatchValidate("ssh_user_group", kvset)
+	return factory.BatchValidate(this.Short_(), kvset)
 }
 
 func (this *SshUserGroup) Validate(field string, value interface{}) error {
-	return factory.Validate("ssh_user_group", field, value)
+	return factory.Validate(this.Short_(), field, value)
 }
 

@@ -7,6 +7,8 @@ type Model interface {
 	Use(trans *Transaction) Model
 	SetNamer(func(string) string) Model
 	Name_() string
+	Short_() string
+	Struct_() string
 	SetConnID(connID int) Model
 	New(structName string, connID ...int) Model
 	NewParam() *Param

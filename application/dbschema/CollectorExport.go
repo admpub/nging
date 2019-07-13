@@ -72,11 +72,19 @@ func (this *CollectorExport) SetNamer(namer func (string) string) factory.Model 
 	return this
 }
 
+func (this *CollectorExport) Short_() string {
+	return "collector_export"
+}
+
+func (this *CollectorExport) Struct_() string {
+	return "CollectorExport"
+}
+
 func (this *CollectorExport) Name_() string {
 	if this.namer != nil {
-		return this.namer("collector_export")
+		return this.namer(this.Short_())
 	}
-	return factory.TableNamerGet("collector_export")(this)
+	return factory.TableNamerGet(this.Short_())(this)
 }
 
 func (this *CollectorExport) SetParam(param *factory.Param) factory.Model {
@@ -112,8 +120,8 @@ func (this *CollectorExport) ListByOffset(recv interface{}, mw func(db.Result) d
 func (this *CollectorExport) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -127,8 +135,8 @@ func (this *CollectorExport) Add() (pk interface{}, err error) {
 
 func (this *CollectorExport) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	
-	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -144,21 +152,21 @@ func (this *CollectorExport) SetField(mw func(db.Result) db.Result, field string
 
 func (this *CollectorExport) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["dest_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["dest_type"] = "dbAccountID" } }
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
+	if val, ok := kvset["dest_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["dest_type"] = "dbAccountID" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *CollectorExport) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		
-	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -233,10 +241,10 @@ func (this *CollectorExport) BatchValidate(kvset map[string]interface{}) error {
 	if kvset == nil {
 		kvset = this.AsRow()
 	}
-	return factory.BatchValidate("collector_export", kvset)
+	return factory.BatchValidate(this.Short_(), kvset)
 }
 
 func (this *CollectorExport) Validate(field string, value interface{}) error {
-	return factory.Validate("collector_export", field, value)
+	return factory.Validate(this.Short_(), field, value)
 }
 

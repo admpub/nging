@@ -98,6 +98,14 @@ func (f FieldValidator) ExistField(table string, field string) bool {
 	return false
 }
 
+func (f FieldValidator) Find(table string, field string) (*FieldInfo, bool) {
+	if tb, ok := f[table]; ok {
+		fi, ok := tb[field]
+		return fi, ok
+	}
+	return nil, false
+}
+
 func (f FieldValidator) Validate(table string, field string, value interface{}) error {
 	tb, ok := f[table]
 	if !ok {
@@ -220,6 +228,10 @@ func FieldRegister(tables map[string]map[string]*FieldInfo) {
 	for table, info := range tables {
 		Fields[table] = info
 	}
+}
+
+func FieldFind(table string, field string) (*FieldInfo, bool) {
+	return Fields.Find(table, field)
 }
 
 func ModelRegister(instancers map[string]ModelInstancer) {

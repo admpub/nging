@@ -84,11 +84,19 @@ func (this *ForeverProcess) SetNamer(namer func (string) string) factory.Model {
 	return this
 }
 
+func (this *ForeverProcess) Short_() string {
+	return "forever_process"
+}
+
+func (this *ForeverProcess) Struct_() string {
+	return "ForeverProcess"
+}
+
 func (this *ForeverProcess) Name_() string {
 	if this.namer != nil {
-		return this.namer("forever_process")
+		return this.namer(this.Short_())
 	}
-	return factory.TableNamerGet("forever_process")(this)
+	return factory.TableNamerGet(this.Short_())(this)
 }
 
 func (this *ForeverProcess) SetParam(param *factory.Param) factory.Model {
@@ -286,10 +294,10 @@ func (this *ForeverProcess) BatchValidate(kvset map[string]interface{}) error {
 	if kvset == nil {
 		kvset = this.AsRow()
 	}
-	return factory.BatchValidate("forever_process", kvset)
+	return factory.BatchValidate(this.Short_(), kvset)
 }
 
 func (this *ForeverProcess) Validate(field string, value interface{}) error {
-	return factory.Validate("forever_process", field, value)
+	return factory.Validate(this.Short_(), field, value)
 }
 

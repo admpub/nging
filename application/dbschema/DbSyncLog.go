@@ -68,11 +68,19 @@ func (this *DbSyncLog) SetNamer(namer func (string) string) factory.Model {
 	return this
 }
 
+func (this *DbSyncLog) Short_() string {
+	return "db_sync_log"
+}
+
+func (this *DbSyncLog) Struct_() string {
+	return "DbSyncLog"
+}
+
 func (this *DbSyncLog) Name_() string {
 	if this.namer != nil {
-		return this.namer("db_sync_log")
+		return this.namer(this.Short_())
 	}
-	return factory.TableNamerGet("db_sync_log")(this)
+	return factory.TableNamerGet(this.Short_())(this)
 }
 
 func (this *DbSyncLog) SetParam(param *factory.Param) factory.Model {
@@ -207,10 +215,10 @@ func (this *DbSyncLog) BatchValidate(kvset map[string]interface{}) error {
 	if kvset == nil {
 		kvset = this.AsRow()
 	}
-	return factory.BatchValidate("db_sync_log", kvset)
+	return factory.BatchValidate(this.Short_(), kvset)
 }
 
 func (this *DbSyncLog) Validate(field string, value interface{}) error {
-	return factory.Validate("db_sync_log", field, value)
+	return factory.Validate(this.Short_(), field, value)
 }
 

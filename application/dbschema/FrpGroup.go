@@ -66,11 +66,19 @@ func (this *FrpGroup) SetNamer(namer func (string) string) factory.Model {
 	return this
 }
 
+func (this *FrpGroup) Short_() string {
+	return "frp_group"
+}
+
+func (this *FrpGroup) Struct_() string {
+	return "FrpGroup"
+}
+
 func (this *FrpGroup) Name_() string {
 	if this.namer != nil {
-		return this.namer("frp_group")
+		return this.namer(this.Short_())
 	}
-	return factory.TableNamerGet("frp_group")(this)
+	return factory.TableNamerGet(this.Short_())(this)
 }
 
 func (this *FrpGroup) SetParam(param *factory.Param) factory.Model {
@@ -199,10 +207,10 @@ func (this *FrpGroup) BatchValidate(kvset map[string]interface{}) error {
 	if kvset == nil {
 		kvset = this.AsRow()
 	}
-	return factory.BatchValidate("frp_group", kvset)
+	return factory.BatchValidate(this.Short_(), kvset)
 }
 
 func (this *FrpGroup) Validate(field string, value interface{}) error {
-	return factory.Validate("frp_group", field, value)
+	return factory.Validate(this.Short_(), field, value)
 }
 

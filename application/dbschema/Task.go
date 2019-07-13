@@ -80,11 +80,19 @@ func (this *Task) SetNamer(namer func (string) string) factory.Model {
 	return this
 }
 
+func (this *Task) Short_() string {
+	return "task"
+}
+
+func (this *Task) Struct_() string {
+	return "Task"
+}
+
 func (this *Task) Name_() string {
 	if this.namer != nil {
-		return this.namer("task")
+		return this.namer(this.Short_())
 	}
-	return factory.TableNamerGet("task")(this)
+	return factory.TableNamerGet(this.Short_())(this)
 }
 
 func (this *Task) SetParam(param *factory.Param) factory.Model {
@@ -120,8 +128,8 @@ func (this *Task) ListByOffset(recv interface{}, mw func(db.Result) db.Result, o
 func (this *Task) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -135,8 +143,8 @@ func (this *Task) Add() (pk interface{}, err error) {
 
 func (this *Task) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -152,21 +160,21 @@ func (this *Task) SetField(mw func(db.Result) db.Result, field string, value int
 
 func (this *Task) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	if val, ok := kvset["closed_log"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["closed_log"] = "N" } }
+	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *Task) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -265,10 +273,10 @@ func (this *Task) BatchValidate(kvset map[string]interface{}) error {
 	if kvset == nil {
 		kvset = this.AsRow()
 	}
-	return factory.BatchValidate("task", kvset)
+	return factory.BatchValidate(this.Short_(), kvset)
 }
 
 func (this *Task) Validate(field string, value interface{}) error {
-	return factory.Validate("task", field, value)
+	return factory.Validate(this.Short_(), field, value)
 }
 

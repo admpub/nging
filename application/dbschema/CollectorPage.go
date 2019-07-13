@@ -80,11 +80,19 @@ func (this *CollectorPage) SetNamer(namer func (string) string) factory.Model {
 	return this
 }
 
+func (this *CollectorPage) Short_() string {
+	return "collector_page"
+}
+
+func (this *CollectorPage) Struct_() string {
+	return "CollectorPage"
+}
+
 func (this *CollectorPage) Name_() string {
 	if this.namer != nil {
-		return this.namer("collector_page")
+		return this.namer(this.Short_())
 	}
-	return factory.TableNamerGet("collector_page")(this)
+	return factory.TableNamerGet(this.Short_())(this)
 }
 
 func (this *CollectorPage) SetParam(param *factory.Param) factory.Model {
@@ -121,9 +129,9 @@ func (this *CollectorPage) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.Type) == 0 { this.Type = "content" }
+	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
 	if len(this.ContentType) == 0 { this.ContentType = "html" }
 	if len(this.HasChild) == 0 { this.HasChild = "N" }
-	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -138,9 +146,9 @@ func (this *CollectorPage) Add() (pk interface{}, err error) {
 func (this *CollectorPage) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	
 	if len(this.Type) == 0 { this.Type = "content" }
+	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
 	if len(this.ContentType) == 0 { this.ContentType = "html" }
 	if len(this.HasChild) == 0 { this.HasChild = "N" }
-	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -157,9 +165,9 @@ func (this *CollectorPage) SetField(mw func(db.Result) db.Result, field string, 
 func (this *CollectorPage) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
 	if val, ok := kvset["type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["type"] = "content" } }
+	if val, ok := kvset["duplicate_rule"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["duplicate_rule"] = "none" } }
 	if val, ok := kvset["content_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["content_type"] = "html" } }
 	if val, ok := kvset["has_child"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["has_child"] = "N" } }
-	if val, ok := kvset["duplicate_rule"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["duplicate_rule"] = "none" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
@@ -167,16 +175,16 @@ func (this *CollectorPage) Upsert(mw func(db.Result) db.Result, args ...interfac
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		
 	if len(this.Type) == 0 { this.Type = "content" }
+	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
 	if len(this.ContentType) == 0 { this.ContentType = "html" }
 	if len(this.HasChild) == 0 { this.HasChild = "N" }
-	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.Type) == 0 { this.Type = "content" }
+	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
 	if len(this.ContentType) == 0 { this.ContentType = "html" }
 	if len(this.HasChild) == 0 { this.HasChild = "N" }
-	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -275,10 +283,10 @@ func (this *CollectorPage) BatchValidate(kvset map[string]interface{}) error {
 	if kvset == nil {
 		kvset = this.AsRow()
 	}
-	return factory.BatchValidate("collector_page", kvset)
+	return factory.BatchValidate(this.Short_(), kvset)
 }
 
 func (this *CollectorPage) Validate(field string, value interface{}) error {
-	return factory.Validate("collector_page", field, value)
+	return factory.Validate(this.Short_(), field, value)
 }
 

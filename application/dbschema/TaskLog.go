@@ -67,11 +67,19 @@ func (this *TaskLog) SetNamer(namer func (string) string) factory.Model {
 	return this
 }
 
+func (this *TaskLog) Short_() string {
+	return "task_log"
+}
+
+func (this *TaskLog) Struct_() string {
+	return "TaskLog"
+}
+
 func (this *TaskLog) Name_() string {
 	if this.namer != nil {
-		return this.namer("task_log")
+		return this.namer(this.Short_())
 	}
-	return factory.TableNamerGet("task_log")(this)
+	return factory.TableNamerGet(this.Short_())(this)
 }
 
 func (this *TaskLog) SetParam(param *factory.Param) factory.Model {
@@ -208,10 +216,10 @@ func (this *TaskLog) BatchValidate(kvset map[string]interface{}) error {
 	if kvset == nil {
 		kvset = this.AsRow()
 	}
-	return factory.BatchValidate("task_log", kvset)
+	return factory.BatchValidate(this.Short_(), kvset)
 }
 
 func (this *TaskLog) Validate(field string, value interface{}) error {
-	return factory.Validate("task_log", field, value)
+	return factory.Validate(this.Short_(), field, value)
 }
 

@@ -66,11 +66,19 @@ func (this *CollectorExportLog) SetNamer(namer func (string) string) factory.Mod
 	return this
 }
 
+func (this *CollectorExportLog) Short_() string {
+	return "collector_export_log"
+}
+
+func (this *CollectorExportLog) Struct_() string {
+	return "CollectorExportLog"
+}
+
 func (this *CollectorExportLog) Name_() string {
 	if this.namer != nil {
-		return this.namer("collector_export_log")
+		return this.namer(this.Short_())
 	}
-	return factory.TableNamerGet("collector_export_log")(this)
+	return factory.TableNamerGet(this.Short_())(this)
 }
 
 func (this *CollectorExportLog) SetParam(param *factory.Param) factory.Model {
@@ -204,10 +212,10 @@ func (this *CollectorExportLog) BatchValidate(kvset map[string]interface{}) erro
 	if kvset == nil {
 		kvset = this.AsRow()
 	}
-	return factory.BatchValidate("collector_export_log", kvset)
+	return factory.BatchValidate(this.Short_(), kvset)
 }
 
 func (this *CollectorExportLog) Validate(field string, value interface{}) error {
-	return factory.Validate("collector_export_log", field, value)
+	return factory.Validate(this.Short_(), field, value)
 }
 

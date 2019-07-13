@@ -66,11 +66,19 @@ func (this *CollectorGroup) SetNamer(namer func (string) string) factory.Model {
 	return this
 }
 
+func (this *CollectorGroup) Short_() string {
+	return "collector_group"
+}
+
+func (this *CollectorGroup) Struct_() string {
+	return "CollectorGroup"
+}
+
 func (this *CollectorGroup) Name_() string {
 	if this.namer != nil {
-		return this.namer("collector_group")
+		return this.namer(this.Short_())
 	}
-	return factory.TableNamerGet("collector_group")(this)
+	return factory.TableNamerGet(this.Short_())(this)
 }
 
 func (this *CollectorGroup) SetParam(param *factory.Param) factory.Model {
@@ -204,10 +212,10 @@ func (this *CollectorGroup) BatchValidate(kvset map[string]interface{}) error {
 	if kvset == nil {
 		kvset = this.AsRow()
 	}
-	return factory.BatchValidate("collector_group", kvset)
+	return factory.BatchValidate(this.Short_(), kvset)
 }
 
 func (this *CollectorGroup) Validate(field string, value interface{}) error {
-	return factory.Validate("collector_group", field, value)
+	return factory.Validate(this.Short_(), field, value)
 }
 

@@ -69,11 +69,19 @@ func (this *FtpUserGroup) SetNamer(namer func (string) string) factory.Model {
 	return this
 }
 
+func (this *FtpUserGroup) Short_() string {
+	return "ftp_user_group"
+}
+
+func (this *FtpUserGroup) Struct_() string {
+	return "FtpUserGroup"
+}
+
 func (this *FtpUserGroup) Name_() string {
 	if this.namer != nil {
-		return this.namer("ftp_user_group")
+		return this.namer(this.Short_())
 	}
-	return factory.TableNamerGet("ftp_user_group")(this)
+	return factory.TableNamerGet(this.Short_())(this)
 }
 
 func (this *FtpUserGroup) SetParam(param *factory.Param) factory.Model {
@@ -221,10 +229,10 @@ func (this *FtpUserGroup) BatchValidate(kvset map[string]interface{}) error {
 	if kvset == nil {
 		kvset = this.AsRow()
 	}
-	return factory.BatchValidate("ftp_user_group", kvset)
+	return factory.BatchValidate(this.Short_(), kvset)
 }
 
 func (this *FtpUserGroup) Validate(field string, value interface{}) error {
-	return factory.Validate("ftp_user_group", field, value)
+	return factory.Validate(this.Short_(), field, value)
 }
 

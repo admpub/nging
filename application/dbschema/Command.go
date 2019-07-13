@@ -71,11 +71,19 @@ func (this *Command) SetNamer(namer func (string) string) factory.Model {
 	return this
 }
 
+func (this *Command) Short_() string {
+	return "command"
+}
+
+func (this *Command) Struct_() string {
+	return "Command"
+}
+
 func (this *Command) Name_() string {
 	if this.namer != nil {
-		return this.namer("command")
+		return this.namer(this.Short_())
 	}
-	return factory.TableNamerGet("command")(this)
+	return factory.TableNamerGet(this.Short_())(this)
 }
 
 func (this *Command) SetParam(param *factory.Param) factory.Model {
@@ -111,8 +119,8 @@ func (this *Command) ListByOffset(recv interface{}, mw func(db.Result) db.Result
 func (this *Command) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Remote) == 0 { this.Remote = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Remote) == 0 { this.Remote = "N" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -126,8 +134,8 @@ func (this *Command) Add() (pk interface{}, err error) {
 
 func (this *Command) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
-	if len(this.Remote) == 0 { this.Remote = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Remote) == 0 { this.Remote = "N" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -143,21 +151,21 @@ func (this *Command) SetField(mw func(db.Result) db.Result, field string, value 
 
 func (this *Command) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["remote"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["remote"] = "N" } }
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
+	if val, ok := kvset["remote"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["remote"] = "N" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *Command) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
-	if len(this.Remote) == 0 { this.Remote = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Remote) == 0 { this.Remote = "N" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Remote) == 0 { this.Remote = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Remote) == 0 { this.Remote = "N" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -229,10 +237,10 @@ func (this *Command) BatchValidate(kvset map[string]interface{}) error {
 	if kvset == nil {
 		kvset = this.AsRow()
 	}
-	return factory.BatchValidate("command", kvset)
+	return factory.BatchValidate(this.Short_(), kvset)
 }
 
 func (this *Command) Validate(field string, value interface{}) error {
-	return factory.Validate("command", field, value)
+	return factory.Validate(this.Short_(), field, value)
 }
 

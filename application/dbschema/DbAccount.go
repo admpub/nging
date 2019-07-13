@@ -71,11 +71,19 @@ func (this *DbAccount) SetNamer(namer func (string) string) factory.Model {
 	return this
 }
 
+func (this *DbAccount) Short_() string {
+	return "db_account"
+}
+
+func (this *DbAccount) Struct_() string {
+	return "DbAccount"
+}
+
 func (this *DbAccount) Name_() string {
 	if this.namer != nil {
-		return this.namer("db_account")
+		return this.namer(this.Short_())
 	}
-	return factory.TableNamerGet("db_account")(this)
+	return factory.TableNamerGet(this.Short_())(this)
 }
 
 func (this *DbAccount) SetParam(param *factory.Param) factory.Model {
@@ -234,10 +242,10 @@ func (this *DbAccount) BatchValidate(kvset map[string]interface{}) error {
 	if kvset == nil {
 		kvset = this.AsRow()
 	}
-	return factory.BatchValidate("db_account", kvset)
+	return factory.BatchValidate(this.Short_(), kvset)
 }
 
 func (this *DbAccount) Validate(field string, value interface{}) error {
-	return factory.Validate("db_account", field, value)
+	return factory.Validate(this.Short_(), field, value)
 }
 

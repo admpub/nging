@@ -70,11 +70,19 @@ func (this *CodeInvitation) SetNamer(namer func (string) string) factory.Model {
 	return this
 }
 
+func (this *CodeInvitation) Short_() string {
+	return "code_invitation"
+}
+
+func (this *CodeInvitation) Struct_() string {
+	return "CodeInvitation"
+}
+
 func (this *CodeInvitation) Name_() string {
 	if this.namer != nil {
-		return this.namer("code_invitation")
+		return this.namer(this.Short_())
 	}
-	return factory.TableNamerGet("code_invitation")(this)
+	return factory.TableNamerGet(this.Short_())(this)
 }
 
 func (this *CodeInvitation) SetParam(param *factory.Param) factory.Model {
@@ -220,10 +228,10 @@ func (this *CodeInvitation) BatchValidate(kvset map[string]interface{}) error {
 	if kvset == nil {
 		kvset = this.AsRow()
 	}
-	return factory.BatchValidate("code_invitation", kvset)
+	return factory.BatchValidate(this.Short_(), kvset)
 }
 
 func (this *CodeInvitation) Validate(field string, value interface{}) error {
-	return factory.Validate("code_invitation", field, value)
+	return factory.Validate(this.Short_(), field, value)
 }
 

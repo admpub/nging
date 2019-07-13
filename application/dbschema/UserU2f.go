@@ -66,11 +66,19 @@ func (this *UserU2f) SetNamer(namer func (string) string) factory.Model {
 	return this
 }
 
+func (this *UserU2f) Short_() string {
+	return "user_u2f"
+}
+
+func (this *UserU2f) Struct_() string {
+	return "UserU2f"
+}
+
 func (this *UserU2f) Name_() string {
 	if this.namer != nil {
-		return this.namer("user_u2f")
+		return this.namer(this.Short_())
 	}
-	return factory.TableNamerGet("user_u2f")(this)
+	return factory.TableNamerGet(this.Short_())(this)
 }
 
 func (this *UserU2f) SetParam(param *factory.Param) factory.Model {
@@ -199,10 +207,10 @@ func (this *UserU2f) BatchValidate(kvset map[string]interface{}) error {
 	if kvset == nil {
 		kvset = this.AsRow()
 	}
-	return factory.BatchValidate("user_u2f", kvset)
+	return factory.BatchValidate(this.Short_(), kvset)
 }
 
 func (this *UserU2f) Validate(field string, value interface{}) error {
-	return factory.Validate("user_u2f", field, value)
+	return factory.Validate(this.Short_(), field, value)
 }
 

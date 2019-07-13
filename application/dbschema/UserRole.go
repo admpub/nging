@@ -69,11 +69,19 @@ func (this *UserRole) SetNamer(namer func (string) string) factory.Model {
 	return this
 }
 
+func (this *UserRole) Short_() string {
+	return "user_role"
+}
+
+func (this *UserRole) Struct_() string {
+	return "UserRole"
+}
+
 func (this *UserRole) Name_() string {
 	if this.namer != nil {
-		return this.namer("user_role")
+		return this.namer(this.Short_())
 	}
-	return factory.TableNamerGet("user_role")(this)
+	return factory.TableNamerGet(this.Short_())(this)
 }
 
 func (this *UserRole) SetParam(param *factory.Param) factory.Model {
@@ -216,10 +224,10 @@ func (this *UserRole) BatchValidate(kvset map[string]interface{}) error {
 	if kvset == nil {
 		kvset = this.AsRow()
 	}
-	return factory.BatchValidate("user_role", kvset)
+	return factory.BatchValidate(this.Short_(), kvset)
 }
 
 func (this *UserRole) Validate(field string, value interface{}) error {
-	return factory.Validate("user_role", field, value)
+	return factory.Validate(this.Short_(), field, value)
 }
 

@@ -69,11 +69,19 @@ func (this *Vhost) SetNamer(namer func (string) string) factory.Model {
 	return this
 }
 
+func (this *Vhost) Short_() string {
+	return "vhost"
+}
+
+func (this *Vhost) Struct_() string {
+	return "Vhost"
+}
+
 func (this *Vhost) Name_() string {
 	if this.namer != nil {
-		return this.namer("vhost")
+		return this.namer(this.Short_())
 	}
-	return factory.TableNamerGet("vhost")(this)
+	return factory.TableNamerGet(this.Short_())(this)
 }
 
 func (this *Vhost) SetParam(param *factory.Param) factory.Model {
@@ -216,10 +224,10 @@ func (this *Vhost) BatchValidate(kvset map[string]interface{}) error {
 	if kvset == nil {
 		kvset = this.AsRow()
 	}
-	return factory.BatchValidate("vhost", kvset)
+	return factory.BatchValidate(this.Short_(), kvset)
 }
 
 func (this *Vhost) Validate(field string, value interface{}) error {
-	return factory.Validate("vhost", field, value)
+	return factory.Validate(this.Short_(), field, value)
 }
 

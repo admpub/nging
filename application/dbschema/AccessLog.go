@@ -83,11 +83,19 @@ func (this *AccessLog) SetNamer(namer func (string) string) factory.Model {
 	return this
 }
 
+func (this *AccessLog) Short_() string {
+	return "access_log"
+}
+
+func (this *AccessLog) Struct_() string {
+	return "AccessLog"
+}
+
 func (this *AccessLog) Name_() string {
 	if this.namer != nil {
-		return this.namer("access_log")
+		return this.namer(this.Short_())
 	}
-	return factory.TableNamerGet("access_log")(this)
+	return factory.TableNamerGet(this.Short_())(this)
 }
 
 func (this *AccessLog) SetParam(param *factory.Param) factory.Model {
@@ -272,10 +280,10 @@ func (this *AccessLog) BatchValidate(kvset map[string]interface{}) error {
 	if kvset == nil {
 		kvset = this.AsRow()
 	}
-	return factory.BatchValidate("access_log", kvset)
+	return factory.BatchValidate(this.Short_(), kvset)
 }
 
 func (this *AccessLog) Validate(field string, value interface{}) error {
-	return factory.Validate("access_log", field, value)
+	return factory.Validate(this.Short_(), field, value)
 }
 
