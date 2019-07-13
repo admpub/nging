@@ -1,6 +1,6 @@
 # webx-top/db
 
-Forked by upper/db
+Forked from upper/db
 
 ## 本仓库新增功能
 
