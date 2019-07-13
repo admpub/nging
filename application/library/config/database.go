@@ -60,6 +60,10 @@ func (d *DB) Table(table string) string {
 	return d.Prefix + table
 }
 
+func (d *DB) ToTable(m sqlbuilder.Name_) string {
+	return d.Table(m.Name_())
+}
+
 func (d *DB) ConnMaxDuration() time.Duration {
 	if d.connMaxDuration > 0 {
 		return d.connMaxDuration
