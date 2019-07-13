@@ -56,6 +56,10 @@ func (d *DB) SetDebug(on bool) {
 	factory.SetDebug(on)
 }
 
+func (d *DB) Table(table string) string {
+	return d.Prefix + table
+}
+
 func (d *DB) ConnMaxDuration() time.Duration {
 	if d.connMaxDuration > 0 {
 		return d.connMaxDuration
