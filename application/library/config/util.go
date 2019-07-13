@@ -272,3 +272,11 @@ func MustOK(err error) {
 func CmdIsRunning(cmd *exec.Cmd) bool {
 	return cmd != nil && cmd.ProcessState == nil
 }
+
+func Table(table string) string {
+	return DefaultConfig.DB.Table(table)
+}
+
+func ToTable(m sqlbuilder.Name_) string {
+	return DefaultConfig.DB.ToTable(m)
+}
