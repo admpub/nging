@@ -59,3 +59,8 @@ func (f *ListParam) AddMiddleware(mw ...func(db.Result) db.Result) {
 func (f *ListParam) AddCond(args ...interface{}) {
 	f.args = append(f.args, args...)
 }
+
+// Model 模型实例
+func (f *ListParam) Model() interface{} {
+	return f.recv
+}
