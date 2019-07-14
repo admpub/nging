@@ -23,6 +23,7 @@ import (
 	"github.com/webx-top/echo"
 )
 
+// LogParsers 日志格式解析器
 var LogParsers = map[string]func(line *tail.Line) (interface{}, error){}
 
 // LogShow 获取日志内容用于显示

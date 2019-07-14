@@ -20,16 +20,21 @@ package common
 
 import "github.com/webx-top/db"
 
+// PageListFunc 分页列表函数
 type PageListFunc func(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error)
 
+// List 实现Lister接口
 func (f PageListFunc) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	return f(recv, mw, page, size, args...)
 }
 
+// OffsetListFunc 偏移列表函数
 type OffsetListFunc func(recv interface{}, mw func(db.Result) db.Result, pageOrOffset, size int, args ...interface{}) (func() int64, error)
 
+// ListByOffset 实现OffsetLiser接口
 func (f OffsetListFunc) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	return f(recv, mw, offset, size, args...)
 }
 
+// ListFunc PageListFunc别名
 type ListFunc = PageListFunc

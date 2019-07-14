@@ -20,6 +20,7 @@ package common
 
 import "github.com/webx-top/db"
 
+// NewListParam 列表参数
 func NewListParam(recv interface{}, mw func(db.Result) db.Result, args ...interface{}) *ListParam {
 	return &ListParam{
 		mw:   mw,
@@ -28,6 +29,7 @@ func NewListParam(recv interface{}, mw func(db.Result) db.Result, args ...interf
 	}
 }
 
+// ListParam 列表参数
 type ListParam struct {
 	recv interface{}
 	mw   func(db.Result) db.Result
