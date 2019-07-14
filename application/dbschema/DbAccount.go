@@ -3,6 +3,8 @@
 package dbschema
 
 import (
+	"fmt"
+
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
 	
@@ -81,9 +83,9 @@ func (this *DbAccount) Struct_() string {
 
 func (this *DbAccount) Name_() string {
 	if this.namer != nil {
-		return this.namer(this.Short_())
+		return WithPrefix(this.namer(this.Short_()))
 	}
-	return factory.TableNamerGet(this.Short_())(this)
+	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
 }
 
 func (this *DbAccount) SetParam(param *factory.Param) factory.Model {
@@ -109,6 +111,41 @@ func (this *DbAccount) List(recv interface{}, mw func(db.Result) db.Result, page
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
 
+func (this *DbAccount) GroupByKey(keyField string, inputRows ...[]*DbAccount) map[string][]*DbAccount {
+	var rows []*DbAccount
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string][]*DbAccount{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*DbAccount{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (this *DbAccount) AsKV(keyField string, valueField string, inputRows ...[]*DbAccount) map[string]interface{} {
+	var rows []*DbAccount
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string]interface{}{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
 func (this *DbAccount) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
 		recv = this.NewObjects()
@@ -119,8 +156,8 @@ func (this *DbAccount) ListByOffset(recv interface{}, mw func(db.Result) db.Resu
 func (this *DbAccount) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Engine) == 0 { this.Engine = "mysql" }
 	if len(this.Host) == 0 { this.Host = "localhost:3306" }
+	if len(this.Engine) == 0 { this.Engine = "mysql" }
 	if len(this.User) == 0 { this.User = "root" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
@@ -135,8 +172,8 @@ func (this *DbAccount) Add() (pk interface{}, err error) {
 
 func (this *DbAccount) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
-	if len(this.Engine) == 0 { this.Engine = "mysql" }
 	if len(this.Host) == 0 { this.Host = "localhost:3306" }
+	if len(this.Engine) == 0 { this.Engine = "mysql" }
 	if len(this.User) == 0 { this.User = "root" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
@@ -153,8 +190,8 @@ func (this *DbAccount) SetField(mw func(db.Result) db.Result, field string, valu
 
 func (this *DbAccount) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["engine"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["engine"] = "mysql" } }
 	if val, ok := kvset["host"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["host"] = "localhost:3306" } }
+	if val, ok := kvset["engine"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["engine"] = "mysql" } }
 	if val, ok := kvset["user"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["user"] = "root" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
@@ -162,14 +199,14 @@ func (this *DbAccount) SetFields(mw func(db.Result) db.Result, kvset map[string]
 func (this *DbAccount) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
-	if len(this.Engine) == 0 { this.Engine = "mysql" }
 	if len(this.Host) == 0 { this.Host = "localhost:3306" }
+	if len(this.Engine) == 0 { this.Engine = "mysql" }
 	if len(this.User) == 0 { this.User = "root" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Engine) == 0 { this.Engine = "mysql" }
 	if len(this.Host) == 0 { this.Host = "localhost:3306" }
+	if len(this.Engine) == 0 { this.Engine = "mysql" }
 	if len(this.User) == 0 { this.User = "root" }
 	})
 	if err == nil && pk != nil {

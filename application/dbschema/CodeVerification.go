@@ -3,6 +3,8 @@
 package dbschema
 
 import (
+	"fmt"
+
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
 	
@@ -82,9 +84,9 @@ func (this *CodeVerification) Struct_() string {
 
 func (this *CodeVerification) Name_() string {
 	if this.namer != nil {
-		return this.namer(this.Short_())
+		return WithPrefix(this.namer(this.Short_()))
 	}
-	return factory.TableNamerGet(this.Short_())(this)
+	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
 }
 
 func (this *CodeVerification) SetParam(param *factory.Param) factory.Model {
@@ -110,6 +112,41 @@ func (this *CodeVerification) List(recv interface{}, mw func(db.Result) db.Resul
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
 
+func (this *CodeVerification) GroupByKey(keyField string, inputRows ...[]*CodeVerification) map[string][]*CodeVerification {
+	var rows []*CodeVerification
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string][]*CodeVerification{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*CodeVerification{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (this *CodeVerification) AsKV(keyField string, valueField string, inputRows ...[]*CodeVerification) map[string]interface{} {
+	var rows []*CodeVerification
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string]interface{}{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
 func (this *CodeVerification) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
 		recv = this.NewObjects()
@@ -121,8 +158,8 @@ func (this *CodeVerification) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
-	if len(this.SendMethod) == 0 { this.SendMethod = "mobile" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.SendMethod) == 0 { this.SendMethod = "mobile" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -137,8 +174,8 @@ func (this *CodeVerification) Add() (pk interface{}, err error) {
 func (this *CodeVerification) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
-	if len(this.SendMethod) == 0 { this.SendMethod = "mobile" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.SendMethod) == 0 { this.SendMethod = "mobile" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -155,8 +192,8 @@ func (this *CodeVerification) SetField(mw func(db.Result) db.Result, field strin
 func (this *CodeVerification) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
 	if val, ok := kvset["owner_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["owner_type"] = "user" } }
-	if val, ok := kvset["send_method"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["send_method"] = "mobile" } }
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
+	if val, ok := kvset["send_method"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["send_method"] = "mobile" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
@@ -164,14 +201,14 @@ func (this *CodeVerification) Upsert(mw func(db.Result) db.Result, args ...inter
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
-	if len(this.SendMethod) == 0 { this.SendMethod = "mobile" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.SendMethod) == 0 { this.SendMethod = "mobile" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
-	if len(this.SendMethod) == 0 { this.SendMethod = "mobile" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.SendMethod) == 0 { this.SendMethod = "mobile" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {

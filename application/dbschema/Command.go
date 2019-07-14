@@ -3,6 +3,8 @@
 package dbschema
 
 import (
+	"fmt"
+
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
 	
@@ -81,9 +83,9 @@ func (this *Command) Struct_() string {
 
 func (this *Command) Name_() string {
 	if this.namer != nil {
-		return this.namer(this.Short_())
+		return WithPrefix(this.namer(this.Short_()))
 	}
-	return factory.TableNamerGet(this.Short_())(this)
+	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
 }
 
 func (this *Command) SetParam(param *factory.Param) factory.Model {
@@ -107,6 +109,41 @@ func (this *Command) List(recv interface{}, mw func(db.Result) db.Result, page, 
 		recv = this.NewObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
+}
+
+func (this *Command) GroupByKey(keyField string, inputRows ...[]*Command) map[string][]*Command {
+	var rows []*Command
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string][]*Command{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*Command{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (this *Command) AsKV(keyField string, valueField string, inputRows ...[]*Command) map[string]interface{} {
+	var rows []*Command
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string]interface{}{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
 }
 
 func (this *Command) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {

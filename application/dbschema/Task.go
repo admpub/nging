@@ -3,6 +3,8 @@
 package dbschema
 
 import (
+	"fmt"
+
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
 	
@@ -90,9 +92,9 @@ func (this *Task) Struct_() string {
 
 func (this *Task) Name_() string {
 	if this.namer != nil {
-		return this.namer(this.Short_())
+		return WithPrefix(this.namer(this.Short_()))
 	}
-	return factory.TableNamerGet(this.Short_())(this)
+	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
 }
 
 func (this *Task) SetParam(param *factory.Param) factory.Model {
@@ -118,6 +120,41 @@ func (this *Task) List(recv interface{}, mw func(db.Result) db.Result, page, siz
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
 
+func (this *Task) GroupByKey(keyField string, inputRows ...[]*Task) map[string][]*Task {
+	var rows []*Task
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string][]*Task{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*Task{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (this *Task) AsKV(keyField string, valueField string, inputRows ...[]*Task) map[string]interface{} {
+	var rows []*Task
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string]interface{}{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
 func (this *Task) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
 		recv = this.NewObjects()
@@ -128,8 +165,8 @@ func (this *Task) ListByOffset(recv interface{}, mw func(db.Result) db.Result, o
 func (this *Task) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -143,8 +180,8 @@ func (this *Task) Add() (pk interface{}, err error) {
 
 func (this *Task) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
-	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -160,21 +197,21 @@ func (this *Task) SetField(mw func(db.Result) db.Result, field string, value int
 
 func (this *Task) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["closed_log"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["closed_log"] = "N" } }
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
+	if val, ok := kvset["closed_log"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["closed_log"] = "N" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *Task) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
-	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {

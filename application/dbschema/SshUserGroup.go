@@ -3,6 +3,8 @@
 package dbschema
 
 import (
+	"fmt"
+
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
 	
@@ -76,9 +78,9 @@ func (this *SshUserGroup) Struct_() string {
 
 func (this *SshUserGroup) Name_() string {
 	if this.namer != nil {
-		return this.namer(this.Short_())
+		return WithPrefix(this.namer(this.Short_()))
 	}
-	return factory.TableNamerGet(this.Short_())(this)
+	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
 }
 
 func (this *SshUserGroup) SetParam(param *factory.Param) factory.Model {
@@ -102,6 +104,41 @@ func (this *SshUserGroup) List(recv interface{}, mw func(db.Result) db.Result, p
 		recv = this.NewObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
+}
+
+func (this *SshUserGroup) GroupByKey(keyField string, inputRows ...[]*SshUserGroup) map[string][]*SshUserGroup {
+	var rows []*SshUserGroup
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string][]*SshUserGroup{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*SshUserGroup{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (this *SshUserGroup) AsKV(keyField string, valueField string, inputRows ...[]*SshUserGroup) map[string]interface{} {
+	var rows []*SshUserGroup
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string]interface{}{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
 }
 
 func (this *SshUserGroup) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
