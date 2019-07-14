@@ -69,7 +69,7 @@ func (f *List) Paging(ctx echo.Context, varSuffix ...string) (*pagination.Pagina
 }
 
 // DataTable 分页信息
-func (f *List) DataTable(ctx echo.Context, args ...string) (echo.H, error) {
+func (f *List) DataTable(ctx echo.Context, args ...string) (map[string]interface{}, error) {
 	pageRowsKey := `length`
 	totalRowsKey := `totalrows`
 	offsetKey := `start`
@@ -97,7 +97,7 @@ func (f *List) DataTable(ctx echo.Context, args ...string) (echo.H, error) {
 	if totalRows < 1 {
 		totalRows = int(cnt())
 	}
-	data := echo.H{
+	data := map[string]interface{}{
 		"draw":            ctx.Form(`draw`),
 		"recordsTotal":    totalRows,
 		"recordsFiltered": totalRows,
