@@ -68,6 +68,44 @@ func (f *List) Paging(ctx echo.Context, varSuffix ...string) (*pagination.Pagina
 	return PagingWithLister(ctx, f, varSuffix...)
 }
 
+// DataTable 分页信息
+func (f *List) DataTable(ctx echo.Context, args ...string) (echo.H, error) {
+	pageRowsKey := `length`
+	totalRowsKey := `totalrows`
+	offsetKey := `start`
+	switch len(args) {
+	case 3:
+		pageRowsKey = args[2]
+		fallthrough
+	case 2:
+		totalRowsKey = args[1]
+		fallthrough
+	case 1:
+		offsetKey = args[0]
+	}
+	size := ctx.Formx(pageRowsKey).Int()
+	offset := ctx.Formx(offsetKey).Int()
+	if size < 1 || size > 1000 {
+		size = 10
+	}
+	if offset < 0 {
+		offset = 0
+	}
+	page := (offset + size) / size
+	totalRows := ctx.Formx(totalRowsKey).Int()
+	cnt, err := f.List(nil, nil, page, size)
+	if totalRows < 1 {
+		totalRows = int(cnt())
+	}
+	data := echo.H{
+		"draw":            ctx.Form(`draw`),
+		"recordsTotal":    totalRows,
+		"recordsFiltered": totalRows,
+		"list":            f.recv,
+	}
+	return data, err
+}
+
 // NewOffsetLister 创建偏移值分页列表查询
 func NewOffsetLister(list OffsetLister, recv interface{}, mw func(db.Result) db.Result, args ...interface{}) *OffsetList {
 	return &OffsetList{
