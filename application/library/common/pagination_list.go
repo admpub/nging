@@ -29,27 +29,18 @@ type Lister interface {
 	List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error)
 }
 
-// OffsetLister 偏移值分页列表查询接口
-type OffsetLister interface {
-	ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error)
-}
-
 // NewLister 创建页码分页列表查询
 func NewLister(list Lister, recv interface{}, mw func(db.Result) db.Result, args ...interface{}) *List {
 	return &List{
-		mw:   mw,
-		recv: recv,
-		ls:   list,
-		args: args,
+		ListParam: NewListParam(recv, mw, args...),
+		ls:        list,
 	}
 }
 
 // List 页码分页列表封装
 type List struct {
-	recv interface{}
-	mw   func(db.Result) db.Result
-	ls   Lister
-	args []interface{}
+	*ListParam
+	ls Lister
 }
 
 // List 分页查询
@@ -104,63 +95,4 @@ func (f *List) DataTable(ctx echo.Context, args ...string) (map[string]interface
 		"list":            f.recv,
 	}
 	return data, err
-}
-
-// NewOffsetLister 创建偏移值分页列表查询
-func NewOffsetLister(list OffsetLister, recv interface{}, mw func(db.Result) db.Result, args ...interface{}) *OffsetList {
-	return &OffsetList{
-		mw:   mw,
-		recv: recv,
-		ls:   list,
-		args: args,
-	}
-}
-
-// OffsetList 偏移值分页列表查询封装
-type OffsetList struct {
-	recv interface{}
-	mw   func(db.Result) db.Result
-	ls   OffsetLister
-	args []interface{}
-}
-
-// ListByOffset 分页查询
-func (f *OffsetList) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
-	if recv == nil {
-		recv = f.recv
-	}
-	if mw == nil {
-		mw = f.mw
-	}
-	if len(args) < 1 {
-		args = f.args
-	}
-	return f.ls.ListByOffset(recv, mw, offset, size, args...)
-}
-
-// ChunkList 分批查询列表
-func (f *OffsetList) ChunkList(eachPageCallback func() error, size int, offset int) error {
-	cnt, err := f.ListByOffset(nil, nil, offset, size)
-	if err != nil {
-		if err == db.ErrNoMoreRows {
-			return nil
-		}
-		return err
-	}
-	for total := cnt(); int64(offset) < total; offset += size {
-		if offset > 0 {
-			_, err = f.ListByOffset(nil, nil, offset, size)
-			if err != nil {
-				if err == db.ErrNoMoreRows {
-					return nil
-				}
-				return err
-			}
-		}
-		err = eachPageCallback()
-		if err != nil {
-			return err
-		}
-	}
-	return err
 }
