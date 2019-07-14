@@ -39,7 +39,6 @@ func register() {
 func ConnectSQLite(c *config.Config) error {
 	settings := sqlite.ConnectionURL{
 		Database: c.DB.Database,
-		Prefix:   c.DB.Prefix,
 		Options:  c.DB.Options,
 	}
 	database, err := sqlite.Open(settings)

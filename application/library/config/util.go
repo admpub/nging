@@ -199,7 +199,6 @@ func ConnectMySQL(c *Config) error {
 		Database: c.DB.Database,
 		User:     c.DB.User,
 		Password: c.DB.Password,
-		Prefix:   c.DB.Prefix,
 		Options:  c.DB.Options,
 	}
 	if settings.Options == nil {
@@ -226,7 +225,6 @@ func ConnectMongoDB(c *Config) error {
 		Database: c.DB.Database,
 		User:     c.DB.User,
 		Password: c.DB.Password,
-		Prefix:   c.DB.Prefix,
 		Options:  c.DB.Options,
 	}
 	if c.DB.ConnMaxDuration() > 0 {
