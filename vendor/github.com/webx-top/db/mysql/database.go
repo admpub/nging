@@ -116,7 +116,7 @@ func (d *database) open() error {
 	d.BaseDatabase = sqladapter.NewBaseDatabase(d)
 
 	// Binding with sqlbuilder.
-	d.SQLBuilder = sqlbuilder.WithSession(d.BaseDatabase, template, d.connURL.GetPrefix())
+	d.SQLBuilder = sqlbuilder.WithSession(d.BaseDatabase, template)
 
 	connFn := func() error {
 		sess, err := sql.Open("mysql", d.ConnectionURL().String())

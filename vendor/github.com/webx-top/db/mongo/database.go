@@ -183,7 +183,7 @@ func (s *Source) Collection(name string) db.Collection {
 
 	var col *Collection
 	var ok bool
-	name = s.connURL.GetPrefix() + name
+
 	if col, ok = s.collections[name]; !ok {
 		col = &Collection{
 			parent:     s,

@@ -73,6 +73,8 @@ func DefaultTableName(data interface{}, retry ...bool) (string, error) {
 	switch m := data.(type) {
 	case Name_:
 		return m.Name_(), nil
+	case db.TableName:
+		return m.TableName(), nil
 	default:
 		if len(retry) > 0 && retry[0] {
 			return ``, ErrUnableDetermineTableName

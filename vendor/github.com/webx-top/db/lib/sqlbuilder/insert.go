@@ -209,7 +209,6 @@ func (ins *inserter) IteratorContext(ctx context.Context) Iterator {
 }
 
 func (ins *inserter) Into(table string) Inserter {
-	table = ins.SQLBuilder().TableName(table)
 	return ins.frame(func(iq *inserterQuery) error {
 		iq.table = table
 		return nil

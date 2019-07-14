@@ -97,3 +97,17 @@ func (c *Compounds) Or(compounds ...Compound) Compound {
 	c.Add(compounds...)
 	return Or(*c...)
 }
+
+type TableName interface {
+	TableName() string
+}
+
+type tableNameString string
+
+func (t tableNameString) TableName() string {
+	return string(t)
+}
+
+func Table(tableName string) TableName {
+	return tableNameString(tableName)
+}

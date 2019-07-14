@@ -92,7 +92,6 @@ func (upd *updater) String() string {
 }
 
 func (upd *updater) setTable(table string) *updater {
-	table = upd.SQLBuilder().TableName(table)
 	return upd.frame(func(uq *updaterQuery) error {
 		uq.table = table
 		return nil

@@ -78,7 +78,6 @@ func (del *deleter) String() string {
 }
 
 func (del *deleter) setTable(table string) *deleter {
-	table = del.SQLBuilder().TableName(table)
 	return del.frame(func(uq *deleterQuery) error {
 		uq.table = table
 		return nil

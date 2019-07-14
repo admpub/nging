@@ -158,8 +158,6 @@ type SQLBuilder interface {
 
 	Relation(name string, fn BuilderChainFunc) SQLBuilder //[SWH|+]
 	RelationMap() map[string]BuilderChainFunc             //[SWH|+]
-	Prefix() string                                       //[SWH|+]
-	TableName(table string) string                        //[SWH|+]
 }
 
 // Selector represents a SELECT statement.
