@@ -224,7 +224,7 @@ func (t *Transaction) joinSelect(param *Param, selector sqlbuilder.Selector) sql
 		case "CROSS":
 			selector = selector.CrossJoin(coll)
 		case "INNER":
-			selector = selector.FullJoin(coll)
+			selector = selector.Join(coll)
 		default:
 			selector = selector.FullJoin(coll)
 		}

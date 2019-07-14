@@ -579,9 +579,16 @@ func mustJSON(in interface{}) (out []byte) {
 }
 
 func (res *result) Relation(name string, fn interface{}) db.Result {
+	panic(db.ErrUnsupported)
 	return res
 }
 
 func (res *result) ForceIndex(index string) db.Result {
+	panic(db.ErrUnsupported)
+	return res
+}
+
+func (res *result) Callback(m interface{}) db.Result {
+	panic(db.ErrUnsupported)
 	return res
 }

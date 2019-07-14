@@ -190,4 +190,5 @@ type Result interface {
 
 	Relation(name string, fn interface{}) Result //[SWH|+]
 	ForceIndex(index string) Result              //[SWH|+]
+	Callback(m interface{}) Result               //[SWH|+]
 }

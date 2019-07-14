@@ -62,7 +62,10 @@ type result struct {
 	groupBy []interface{}
 	conds   [][]interface{}
 
-	forceIndex string //[SWH|+]
+	forceIndex string                                        //[SWH|+]
+	onSelector func(sqlbuilder.Selector) sqlbuilder.Selector //[SWH|+]
+	onUpdater  func(sqlbuilder.Updater) sqlbuilder.Updater   //[SWH|+]
+	onDeleter  func(sqlbuilder.Deleter) sqlbuilder.Deleter   //[SWH|+]
 }
 
 func filter(conds []interface{}) []interface{} {
@@ -398,6 +401,10 @@ func (r *Result) buildPaginator() (sqlbuilder.Paginator, error) {
 		sel = sel.And(filter(res.conds[i])...)
 	}
 
+	if res.onSelector != nil {
+		sel = res.onSelector(sel)
+	}
+
 	pag := sel.Paginate(res.pageSize).
 		Page(res.pageNumber).
 		Cursor(res.cursorColumn)
@@ -430,6 +437,10 @@ func (r *Result) buildDelete() (sqlbuilder.Deleter, error) {
 		del = del.And(filter(res.conds[i])...)
 	}
 
+	if res.onDeleter != nil {
+		del = res.onDeleter(del)
+	}
+
 	return del, nil
 }
 
@@ -451,6 +462,10 @@ func (r *Result) buildUpdate(values interface{}) (sqlbuilder.Updater, error) {
 		upd = upd.And(filter(res.conds[i])...)
 	}
 
+	if res.onUpdater != nil {
+		upd = res.onUpdater(upd)
+	}
+
 	return upd, nil
 }
 
@@ -470,6 +485,10 @@ func (r *Result) buildCount() (sqlbuilder.Selector, error) {
 
 	for i := range res.conds {
 		sel = sel.And(filter(res.conds[i])...)
+	}
+
+	if res.onSelector != nil {
+		sel = res.onSelector(sel)
 	}
 
 	return sel, nil
@@ -519,6 +538,27 @@ func (r *Result) ForceIndex(index string) db.Result {
 		res.forceIndex = index
 		return nil
 	})
+}
+
+func (r *Result) Callback(m interface{}) db.Result {
+	switch v := m.(type) {
+	case func(sqlbuilder.Selector) sqlbuilder.Selector:
+		return r.frame(func(res *result) error {
+			res.onSelector = v
+			return nil
+		})
+	case func(sqlbuilder.Updater) sqlbuilder.Updater:
+		return r.frame(func(res *result) error {
+			res.onUpdater = v
+			return nil
+		})
+	case func(sqlbuilder.Deleter) sqlbuilder.Deleter:
+		return r.frame(func(res *result) error {
+			res.onDeleter = v
+			return nil
+		})
+	}
+	return r
 }
 
 var _ = immutable.Immutable(&Result{})
