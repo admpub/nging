@@ -2,6 +2,7 @@
 package factory
 
 import (
+	"context"
 	"time"
 
 	"github.com/webx-top/db"
@@ -164,8 +165,8 @@ func (s *Setting) TransFrom(param *Param) *Setting {
 	return s
 }
 
-func (s *Setting) Begin() *Setting {
-	s.Param.Begin()
+func (s *Setting) Begin(ctx context.Context) *Setting {
+	s.Param.Begin(ctx)
 	return s
 }
 

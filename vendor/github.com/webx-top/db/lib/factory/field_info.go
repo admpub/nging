@@ -9,9 +9,13 @@ import (
 	"github.com/webx-top/echo/param"
 )
 
+// ModelInstancer 模型实例化
 type ModelInstancer func(connID int) Model
+
+// ModelInstancers 模型实例化
 type ModelInstancers map[string]ModelInstancer
 
+// FieldInfo 字段信息
 type FieldInfo struct {
 	//以下为数据库中的信息
 	Name          string   `json:"name" xml:"name" bson:"name"`                            //字段名
@@ -32,6 +36,7 @@ type FieldInfo struct {
 	GoName string `json:"goName" xml:"goName" bson:"goName"` //Golang字段名
 }
 
+// Validate 验证值是否符合数据库要求
 func (f *FieldInfo) Validate(value interface{}) error {
 	switch {
 	case f.DataType == `enum`:
@@ -88,8 +93,10 @@ func (f *FieldInfo) Validate(value interface{}) error {
 	return nil
 }
 
+// FieldValidator 字段验证器
 type FieldValidator map[string]map[string]*FieldInfo
 
+// ExistField 字段是否存在(表名不带前缀)
 func (f FieldValidator) ExistField(table string, field string) bool {
 	if tb, ok := f[table]; ok {
 		_, ok = tb[field]
@@ -98,6 +105,7 @@ func (f FieldValidator) ExistField(table string, field string) bool {
 	return false
 }
 
+// Find 获取字段信息(表名不带前缀)
 func (f FieldValidator) Find(table string, field string) (*FieldInfo, bool) {
 	if tb, ok := f[table]; ok {
 		fi, ok := tb[field]
@@ -106,6 +114,7 @@ func (f FieldValidator) Find(table string, field string) (*FieldInfo, bool) {
 	return nil, false
 }
 
+// Validate 验证值是否符合数据库要求(表名不带前缀)
 func (f FieldValidator) Validate(table string, field string, value interface{}) error {
 	tb, ok := f[table]
 	if !ok {
@@ -118,6 +127,7 @@ func (f FieldValidator) Validate(table string, field string, value interface{}) 
 	return fieldInfo.Validate(value)
 }
 
+// BatchValidate 批量验证值是否符合数据库要求(表名不带前缀)
 func (f FieldValidator) BatchValidate(table string, row map[string]interface{}) error {
 	tb, ok := f[table]
 	if !ok {
@@ -136,37 +146,33 @@ func (f FieldValidator) BatchValidate(table string, row map[string]interface{}) 
 	return nil
 }
 
+// ExistTable 表是否存在(表名不带前缀)
 func (f FieldValidator) ExistTable(table string) bool {
 	_, ok := f[table]
 	return ok
 }
 
+// FieldList 获取表的字段列表(表名不带前缀)
 func (f FieldValidator) FieldList(table string, excludeField ...string) []string {
-	fields := []string{}
+	var fields []string
 	if tb, ok := f[table]; ok {
 		for field := range tb {
-			var exists bool
-			for _, ex := range excludeField {
-				if field == ex {
-					exists = true
-					break
-				}
+			if !com.InSlice(field, excludeField) {
+				fields = append(fields, field)
 			}
-			if exists {
-				continue
-			}
-			fields = append(fields, field)
 		}
 	}
 	return fields
 }
 
+// SortedFieldList 获取表的字段列表，并排序(表名不带前缀)
 func (f FieldValidator) SortedFieldList(table string, excludeField ...string) []string {
 	fields := f.FieldList(table, excludeField...)
 	sort.Strings(fields)
 	return fields
 }
 
+// SortedFieldLists 获取表的字段列表，并排序，返回[]interface{}(表名不带前缀)
 func (f FieldValidator) SortedFieldLists(table string, excludeField ...string) []interface{} {
 	fields := f.SortedFieldList(table, excludeField...)
 	returns := make([]interface{}, len(fields))
@@ -176,21 +182,14 @@ func (f FieldValidator) SortedFieldLists(table string, excludeField ...string) [
 	return returns
 }
 
+// FieldLists 获取表的字段列表，返回[]interface{}(表名不带前缀)
 func (f FieldValidator) FieldLists(table string, excludeField ...string) []interface{} {
-	fields := []interface{}{}
+	var fields []interface{}
 	if tb, ok := f[table]; ok {
 		for field := range tb {
-			var exists bool
-			for _, ex := range excludeField {
-				if field == ex {
-					exists = true
-					break
-				}
+			if !com.InSlice(field, excludeField) {
+				fields = append(fields, field)
 			}
-			if exists {
-				continue
-			}
-			fields = append(fields, field)
 		}
 	}
 	return fields
@@ -211,12 +210,14 @@ var (
 	}
 )
 
+// TableNamerRegister 注册表名称生成器(表名不带前缀)
 func TableNamerRegister(namers map[string]func(obj interface{}) string) {
 	for table, namer := range namers {
 		TableNamers[table] = namer
 	}
 }
 
+// TableNamerGet 获取表名称生成器(表名不带前缀)
 func TableNamerGet(table string) func(obj interface{}) string {
 	if namer, ok := TableNamers[table]; ok {
 		return namer
@@ -224,38 +225,46 @@ func TableNamerGet(table string) func(obj interface{}) string {
 	return DefaultTableNamer(table)
 }
 
+// FieldRegister 注册字段信息(表名不带前缀)
 func FieldRegister(tables map[string]map[string]*FieldInfo) {
 	for table, info := range tables {
 		Fields[table] = info
 	}
 }
 
+// FieldFind 获取字段信息(表名不带前缀)
 func FieldFind(table string, field string) (*FieldInfo, bool) {
 	return Fields.Find(table, field)
 }
 
+// ModelRegister 模型构造函数登记
 func ModelRegister(instancers map[string]ModelInstancer) {
 	for structName, instancer := range instancers {
 		Models[structName] = instancer
 	}
 }
 
+// ExistField 字段是否存在(表名不带前缀)
 func ExistField(table string, field string) bool {
 	return Fields.ExistField(table, field)
 }
 
+// ExistTable 表是否存在(表名不带前缀)
 func ExistTable(table string) bool {
 	return Fields.ExistTable(table)
 }
 
+// NewModel 模型实例化
 func NewModel(structName string, connID int) Model {
 	return Models[structName](connID)
 }
 
+// Validate 验证值是否符合数据库要求
 func Validate(table string, field string, value interface{}) error {
 	return Fields.Validate(table, field, value)
 }
 
+// BatchValidate 批量验证值是否符合数据库要求
 func BatchValidate(table string, row map[string]interface{}) error {
 	return Fields.BatchValidate(table, row)
 }

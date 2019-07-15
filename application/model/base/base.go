@@ -59,6 +59,6 @@ func (b *Base) SetError(err error) error {
 }
 
 func (b *Base) Tx() *factory.Transaction {
-	t := b.Object().Transaction.(*factory.Param).Trans()
+	t := b.Transaction().(*factory.Param).Trans()
 	return t
 }

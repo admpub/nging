@@ -43,7 +43,7 @@ type Param struct {
 	ctx                    context.Context
 	factory                *Factory
 	Index                  int //数据库对象元素所在的索引位置
-	ReadOrWrite            int
+	ReadOnly               bool
 	Collection             string //集合名或表名称
 	Alias                  string //表别名
 	Middleware             func(db.Result) db.Result
@@ -177,12 +177,12 @@ func (p *Param) SetTrans(trans *Transaction) *Param {
 }
 
 func (p *Param) SetRead() *Param {
-	p.ReadOrWrite = R
+	p.ReadOnly = true
 	return p
 }
 
 func (p *Param) SetWrite() *Param {
-	p.ReadOrWrite = W
+	p.ReadOnly = false
 	return p
 }
 
@@ -454,29 +454,29 @@ func (p *Param) NewTx(ctx context.Context) (*Transaction, error) {
 	return p.factory.NewTx(ctx, p.Index)
 }
 
-func (p *Param) Tx(ctxa ...context.Context) error {
-	return p.factory.Tx(p, ctxa...)
+func (p *Param) Tx(ctx context.Context) error {
+	return p.factory.Tx(p, ctx)
 }
 
-func (p *Param) MustTx() *Transaction {
-	trans, err := p.NewTx(nil)
+func (p *Param) MustTx(ctx context.Context) *Transaction {
+	trans, err := p.NewTx(ctx)
 	if err != nil {
 		panic(err.Error())
 	}
 	return trans
 }
 
-func (p *Param) Begin() (err error) {
-	p.trans, err = p.NewTx(nil)
+func (p *Param) Begin(ctx context.Context) (err error) {
+	p.trans, err = p.NewTx(ctx)
 	return
 }
 
-func (p *Param) MustBegin() *Param {
-	p.trans = p.MustTx()
+func (p *Param) MustBegin(ctx context.Context) *Param {
+	p.trans = p.MustTx(ctx)
 	return p
 }
 
-func (p *Param) Rollback() error {
+func (p *Param) Rollback(ctx context.Context) error {
 	t := p.T()
 	if t.Tx == nil {
 		return nil
@@ -484,7 +484,7 @@ func (p *Param) Rollback() error {
 	return t.Rollback()
 }
 
-func (p *Param) Commit() error {
+func (p *Param) Commit(ctx context.Context) error {
 	t := p.T()
 	if t.Tx == nil {
 		return nil
@@ -492,11 +492,11 @@ func (p *Param) Commit() error {
 	return t.Commit()
 }
 
-func (p *Param) End(succeed bool) error {
+func (p *Param) End(ctx context.Context, succeed bool) error {
 	if succeed {
-		return p.Commit()
+		return p.Commit(ctx)
 	}
-	return p.Rollback()
+	return p.Rollback(ctx)
 }
 
 func (p *Param) T() *Transaction {

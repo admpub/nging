@@ -24,7 +24,7 @@ func (t *Transaction) Database(param *Param) db.Database {
 	if t.Tx != nil {
 		return t.Tx
 	}
-	if param.ReadOrWrite == R {
+	if param.ReadOnly {
 		return param.cluster.Slave()
 	}
 	return param.cluster.Master()
@@ -62,7 +62,7 @@ func (t *Transaction) C(param *Param) db.Collection {
 
 // Exec execute SQL
 func (t *Transaction) Exec(param *Param) (sql.Result, error) {
-	param.ReadOrWrite = W
+	param.ReadOnly = false
 	return t.DB(param).ExecContext(param.Context(), param.Collection, param.Args...)
 }
 
@@ -395,12 +395,12 @@ func (t *Transaction) Count(param *Param) (int64, error) {
 // Write ==========================
 
 func (t *Transaction) Insert(param *Param) (interface{}, error) {
-	param.ReadOrWrite = W
+	param.ReadOnly = false
 	return t.C(param).Insert(param.SaveData)
 }
 
 func (t *Transaction) Update(param *Param) error {
-	param.ReadOrWrite = W
+	param.ReadOnly = false
 	res := t.Result(param)
 	if param.Middleware != nil {
 		res = param.Middleware(res)
@@ -409,7 +409,7 @@ func (t *Transaction) Update(param *Param) error {
 }
 
 func (t *Transaction) Upsert(param *Param, beforeUpsert ...func()) (interface{}, error) {
-	param.ReadOrWrite = W
+	param.ReadOnly = false
 	res := t.Result(param)
 	if param.Middleware != nil {
 		res = param.Middleware(res)
@@ -437,7 +437,7 @@ func (t *Transaction) Upsert(param *Param, beforeUpsert ...func()) (interface{},
 }
 
 func (t *Transaction) Delete(param *Param) error {
-	param.ReadOrWrite = W
+	param.ReadOnly = false
 	res := t.Result(param)
 	if param.Middleware != nil {
 		res = param.Middleware(res)

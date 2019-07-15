@@ -9,13 +9,6 @@ import (
 	"github.com/webx-top/db/lib/sqlbuilder"
 )
 
-const (
-	// R : read mode
-	R = iota
-	// W : write mode
-	W
-)
-
 var (
 	ErrNotFoundKey   = errors.New(`not found the key`)
 	ErrNotFoundTable = errors.New(`not found the table`)
@@ -145,7 +138,7 @@ func (f *Factory) GetCluster(index int) *Cluster {
 	return f.Cluster(index)
 }
 
-func (f *Factory) Tx(param *Param, ctxa ...context.Context) error {
+func (f *Factory) Tx(param *Param, ctx context.Context) error {
 	if param.TxMiddleware == nil {
 		return nil
 	}
@@ -157,10 +150,6 @@ func (f *Factory) Tx(param *Param, ctxa ...context.Context) error {
 	fn := func(tx sqlbuilder.Tx) error {
 		trans.Tx = tx
 		return param.TxMiddleware(trans)
-	}
-	var ctx context.Context
-	if len(ctxa) > 0 {
-		ctx = ctxa[0]
 	}
 	if rdb, ok := c.Master().(sqlbuilder.Database); ok {
 		return rdb.Tx(ctx, fn)

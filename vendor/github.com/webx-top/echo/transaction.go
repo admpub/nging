@@ -18,13 +18,16 @@
 
 package echo
 
-import "sync/atomic"
+import (
+	"context"
+	"sync/atomic"
+)
 
 type Transaction interface {
-	Begin() error
-	Rollback() error
-	Commit() error
-	End(succeed bool) error
+	Begin(ctx context.Context) error
+	Rollback(ctx context.Context) error
+	Commit(ctx context.Context) error
+	End(ctx context.Context, succeed bool) error
 }
 
 var (
@@ -35,23 +38,23 @@ var (
 type NopTransaction struct {
 }
 
-func (b *NopTransaction) Begin() error {
+func (b *NopTransaction) Begin(ctx context.Context) error {
 	return nil
 }
 
-func (b *NopTransaction) Rollback() error {
+func (b *NopTransaction) Rollback(ctx context.Context) error {
 	return nil
 }
 
-func (b *NopTransaction) Commit() error {
+func (b *NopTransaction) Commit(ctx context.Context) error {
 	return nil
 }
 
-func (b *NopTransaction) End(succeed bool) error {
+func (b *NopTransaction) End(ctx context.Context, succeed bool) error {
 	if succeed {
-		return b.Commit()
+		return b.Commit(ctx)
 	}
-	return b.Rollback()
+	return b.Rollback(ctx)
 }
 
 func NewTransaction(trans Transaction) *BaseTransaction {
@@ -63,32 +66,32 @@ type BaseTransaction struct {
 	Transaction
 }
 
-func (b *BaseTransaction) Begin() error {
+func (b *BaseTransaction) Begin(ctx context.Context) error {
 	atomic.AddUint64(&b.i, 1)
-	return b.Transaction.Begin()
+	return b.Transaction.Begin(ctx)
 }
 
-func (b *BaseTransaction) Rollback() error {
+func (b *BaseTransaction) Rollback(ctx context.Context) error {
 	newValue := atomic.LoadUint64(&b.i) - 1
 	atomic.SwapUint64(&b.i, newValue)
 	if newValue > 0 {
 		return nil
 	}
-	return b.Transaction.Rollback()
+	return b.Transaction.Rollback(ctx)
 }
 
-func (b *BaseTransaction) Commit() error {
+func (b *BaseTransaction) Commit(ctx context.Context) error {
 	newValue := atomic.LoadUint64(&b.i) - 1
 	atomic.SwapUint64(&b.i, newValue)
 	if newValue > 0 {
 		return nil
 	}
-	return b.Transaction.Commit()
+	return b.Transaction.Commit(ctx)
 }
 
-func (b *BaseTransaction) End(succeed bool) error {
+func (b *BaseTransaction) End(ctx context.Context, succeed bool) error {
 	if succeed {
-		return b.Commit()
+		return b.Commit(ctx)
 	}
-	return b.Rollback()
+	return b.Rollback(ctx)
 }

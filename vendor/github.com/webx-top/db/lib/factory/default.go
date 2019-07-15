@@ -66,8 +66,8 @@ func GetCluster(index int) *Cluster {
 	return DefaultFactory.GetCluster(index)
 }
 
-func Tx(param *Param, ctxa ...context.Context) error {
-	return DefaultFactory.Tx(param, ctxa...)
+func Tx(param *Param, ctx context.Context) error {
+	return DefaultFactory.Tx(param, ctx)
 }
 
 func NewTx(ctx context.Context, args ...int) (*Transaction, error) {
