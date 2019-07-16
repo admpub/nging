@@ -1831,5 +1831,9 @@ func (m *mySQL) Import() error {
 }
 func (m *mySQL) Export() error {
 	var err error
+	if m.IsPost() {
+		var tables []string
+		err = Export(m.DbAuth, tables, m.Response(), m.Response())
+	}
 	return m.Render(`db/mysql/export`, m.checkErr(err))
 }

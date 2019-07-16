@@ -25,6 +25,7 @@ type DbAuth struct {
 	Password string
 	Host     string
 	Db       string
+	Charset  string
 }
 
 func (d *DbAuth) CopyFrom(auth *DbAuth) *DbAuth {
@@ -33,6 +34,7 @@ func (d *DbAuth) CopyFrom(auth *DbAuth) *DbAuth {
 	d.Password = auth.Password
 	d.Host = auth.Host
 	d.Db = auth.Db
+	d.Charset = auth.Charset
 	return d
 }
 

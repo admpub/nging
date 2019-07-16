@@ -109,7 +109,7 @@ func (m *mySQL) getScopeGrant(object string) *Grant {
 }
 
 func quoteCol(col string) string {
-	return "`" + com.AddSlashes(col, '`') + "`"
+	return "`" + strings.Replace(com.AddSlashes(col), "`", "``", -1) + "`"
 }
 
 func quoteVal(val string, otherChars ...rune) string {
@@ -117,7 +117,7 @@ func quoteVal(val string, otherChars ...rune) string {
 }
 
 func convertFields(columns []string, fields map[string]*Field, selects []string) string {
-	r := ""
+	var r string
 	l := len(selects)
 	for _, colName := range columns {
 		quotedName := quoteCol(colName)
