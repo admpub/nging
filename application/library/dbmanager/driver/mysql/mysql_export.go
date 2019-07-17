@@ -281,6 +281,6 @@ func (m *mySQL) Export() error {
 		}
 		return nil
 	}
-
-	return m.Render(`db/mysql/export`, m.checkErr(err))
+	return m.Redirect(m.GenURL(`listTable`, m.dbName))
+	//return m.Render(`db/mysql/export`, m.checkErr(err))
 }
