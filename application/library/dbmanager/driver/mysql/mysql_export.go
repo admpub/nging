@@ -84,6 +84,7 @@ func Export(cfg *driver.DbAuth, tables []string, structWriter, dataWriter interf
 		"-u" + cfg.Username,
 		"-p" + cfg.Password,
 		cfg.Db,
+		//"--result-file=/root/backup.sql",
 	}
 	clean := func(w io.Writer) {
 		if c, y := w.(io.Closer); y {
