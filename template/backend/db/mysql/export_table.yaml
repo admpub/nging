@@ -1,0 +1,11 @@
+Id : "export-table-modal"
+Custom : true
+HeadTitle : "导出表"
+Title : ""
+Content : ""
+HelpText : ""
+Animate : ""
+Type : ""
+ContentType : "form"
+ExtButtons : []
+

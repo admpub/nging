@@ -65,6 +65,7 @@
                      <button type="button" class="btn btn-default" id="drop-selected">{{"删除"|T}}</button>
                      <button type="button" class="btn btn-default" id="move-selected">{{"移动"|T}}</button>
                      <button type="button" class="btn btn-default" id="copy-selected">{{"复制"|T}}</button>
+                     <button type="button" class="btn btn-default" id="export-selected">{{"导出"|T}}</button>
                 </fieldset>
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
@@ -74,7 +75,7 @@
 
 {{Block "footer"}}
 {{Super}}
-
+{{$dbName := Stored.dbName}}
 {{Modal "__TMPL__/db/mysql/copy_table.yaml"}}
 {{Modal "__TMPL__/db/mysql/move_table.yaml"}}
 <script type="text/template" id="tpl-move-table-form">
@@ -102,6 +103,37 @@
 			<option value="" disabled>loading...</option>
         </select>
     </div>
+</script>
+<script type="text/template" id="tpl-export-table-form">
+<form action="" id="form-export-settings">
+    <div class="form-group">
+        <label>{{"导出表"|T|ToJS}}</label>
+        <textarea readonly="readonly" class="form-control" id="export-tables">
+        </textarea>
+    </div>
+    <div class="form-group">
+        <label>{{"输出方式"|T|ToJS}}</label>
+        <div class="radio radio-primary radio-inline">
+            <input id="export-output-open" type="radio" name="output" value="open">
+            <label for="export-output-open">{{"打开"|T|ToJS}}</label>
+        </div>
+        <div class="radio radio-primary radio-inline">
+            <input id="export-output-open" type="radio" name="output" value="save" checked="checked">
+            <label for="export-output-save">{{"保存"|T|ToJS}}</label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>{{"导出类型"|T|ToJS}}</label>
+        <div class="checkbox checkbox-primary checkbox-inline">
+            <input id="export-type-struct" type="checkbox" name="type" value="struct" checked="checked">
+            <label for="export-type-struct">{{"结构"|T|ToJS}}</label>
+        </div>
+        <div class="checkbox checkbox-primary checkbox-inline">
+            <input id="export-type-data" type="checkbox" name="type" value="data" checked="checked">
+            <label for="export-type-data">{{"数据"|T|ToJS}}</label>
+        </div>
+    </div>
+</form>
 </script>
 <script>
 var currentDb='{{Stored.dbName}}';
@@ -163,6 +195,37 @@ $(function(){
         },'json');
     });
 
+    $('#export-table-modal .btn-primary:last').removeClass('md-close').on('click',function(){
+        var se=getSelectedItems();
+        var data=$('#form-export-settings').serializeArray();
+        data.push({name:'table',value:se.tables});
+        data.push({name:'view',value:se.views});
+        App.loading('show');
+        $.post('{{dbMgrURL "export" $dbName}}',data,function(r){
+            App.loading('hide');
+            if(r.Code==1){
+                $('#export-table-modal').niftyModal('hide');
+                App.message({title:App.i18n.SYS_INFO,text:r.info,class_name:'success'});
+            }else{
+                alert(r.Info);
+            }
+        },'json');
+    });
+
+    $('#export-selected').on('click',function(event){
+        var se=getSelectedItems();
+        if(se.tables.length<1&&se.views.length<1){
+            return App.message({title:'{{"出错了"|T}}',text:'{{"请选择您要导出的表"|T}}',class_name:'danger'},false);
+        }
+        var sed=se.tables.join(',');
+        if(se.views.length>0){
+            if(sed)sed+=',';
+            sed+=se.views.join(',');
+        }
+		$('#export-tables').val(sed);
+		$('#export-table-modal').niftyModal('show',{afterOpen:function(modal){}});
+    });
+    
     $('#move-selected,#copy-selected').on('click',function(event){
 		var op,tx;
 		if($(this).attr('id')=='move-selected'){
