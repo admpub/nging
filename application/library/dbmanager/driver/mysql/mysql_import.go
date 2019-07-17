@@ -28,7 +28,7 @@ import (
 )
 
 // Import 导入SQL文件
-func Import(cfg *driver.DbAuth, structFile, sqlFiles []string, outWriter io.Writer, asyncs ...bool) error {
+func Import(cfg *driver.DbAuth, sqlFiles []string, outWriter io.Writer, asyncs ...bool) error {
 	if len(sqlFiles) == 0 {
 		return nil
 	}

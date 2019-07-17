@@ -15,6 +15,7 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 package mysql
 
 import (
@@ -22,7 +23,10 @@ import (
 	"database/sql"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/url"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -1827,13 +1831,53 @@ func (m *mySQL) RunCommand() error {
 }
 func (m *mySQL) Import() error {
 	var err error
+	if m.IsPost() {
+		async := m.Formx(`async`).Bool()
+		var sqlFiles []string
+		saveDir := os.TempDir()
+		err = m.SaveUploadedFiles(`sqlFile[]`, func(fdr *multipart.FileHeader) (string, error) {
+			sqlFile := filepath.Join(saveDir, fdr.Filename)
+			sqlFiles = append(sqlFiles, sqlFile)
+			return sqlFile, nil
+		})
+		err = Import(m.DbAuth, sqlFiles, nil, async)
+		if err != nil {
+			goto END
+		}
+		return nil
+	}
+
+END:
 	return m.Render(`db/mysql/import`, m.checkErr(err))
 }
 func (m *mySQL) Export() error {
 	var err error
 	if m.IsPost() {
 		var tables []string
+		if m.Formx(`all`).Bool() {
+			if len(m.dbName) == 0 {
+				m.fail(m.T(`请选择数据库`))
+				return m.returnTo(m.GenURL(`listDb`))
+			}
+			var ok bool
+			tables, ok = m.Get(`tableList`).([]string)
+			if !ok {
+				tables, err = m.getTables()
+				if err != nil {
+					m.fail(err.Error())
+					return m.returnTo(m.GenURL(`export`))
+				}
+			}
+		} else {
+			tables = m.FormValues(`table[]`)
+		}
 		err = Export(m.DbAuth, tables, m.Response(), m.Response())
+		if err != nil {
+			goto END
+		}
+		return nil
 	}
+
+END:
 	return m.Render(`db/mysql/export`, m.checkErr(err))
 }
