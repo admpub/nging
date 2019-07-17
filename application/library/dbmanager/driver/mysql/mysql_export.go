@@ -76,7 +76,7 @@ func Export(cfg *driver.DbAuth, tables []string, structWriter, dataWriter interf
 		"--set-gtid-purged=OFF",
 		"--no-autocommit",
 		//"--ignore-table="+cfg.Db+".details",
-		//"--ignore-table="+cfg.Db+".large_table2"
+		//"--ignore-table="+cfg.Db+".large_table2",
 		"--opt",
 		"-d", //加上此参数代表只导出表结构，不导出数据
 		"-h" + host,
