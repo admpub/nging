@@ -116,7 +116,7 @@ func (this *User) List(recv interface{}, mw func(db.Result) db.Result, page, siz
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
 
-func (this *User) GroupByKey(keyField string, inputRows ...[]*User) map[string][]*User {
+func (this *User) GroupBy(keyField string, inputRows ...[]*User) map[string][]*User {
 	var rows []*User
 	if len(inputRows) > 0 {
 		rows = inputRows[0]
@@ -131,6 +131,22 @@ func (this *User) GroupByKey(keyField string, inputRows ...[]*User) map[string][
 			r[vkey] = []*User{}
 		}
 		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (this *User) KeyBy(keyField string, inputRows ...[]*User) map[string]*User {
+	var rows []*User
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string]*User{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
 	}
 	return r
 }
@@ -161,8 +177,8 @@ func (this *User) ListByOffset(recv interface{}, mw func(db.Result) db.Result, o
 func (this *User) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Gender) == 0 { this.Gender = "secret" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Online) == 0 { this.Online = "N" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
@@ -177,8 +193,8 @@ func (this *User) Add() (pk interface{}, err error) {
 
 func (this *User) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Gender) == 0 { this.Gender = "secret" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Online) == 0 { this.Online = "N" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
@@ -195,8 +211,8 @@ func (this *User) SetField(mw func(db.Result) db.Result, field string, value int
 
 func (this *User) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	if val, ok := kvset["gender"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["gender"] = "secret" } }
+	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	if val, ok := kvset["online"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["online"] = "N" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
@@ -204,14 +220,14 @@ func (this *User) SetFields(mw func(db.Result) db.Result, kvset map[string]inter
 func (this *User) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Gender) == 0 { this.Gender = "secret" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Online) == 0 { this.Online = "N" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Gender) == 0 { this.Gender = "secret" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Online) == 0 { this.Online = "N" }
 	})
 	if err == nil && pk != nil {

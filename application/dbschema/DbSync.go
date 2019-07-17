@@ -110,7 +110,7 @@ func (this *DbSync) List(recv interface{}, mw func(db.Result) db.Result, page, s
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
 
-func (this *DbSync) GroupByKey(keyField string, inputRows ...[]*DbSync) map[string][]*DbSync {
+func (this *DbSync) GroupBy(keyField string, inputRows ...[]*DbSync) map[string][]*DbSync {
 	var rows []*DbSync
 	if len(inputRows) > 0 {
 		rows = inputRows[0]
@@ -125,6 +125,22 @@ func (this *DbSync) GroupByKey(keyField string, inputRows ...[]*DbSync) map[stri
 			r[vkey] = []*DbSync{}
 		}
 		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (this *DbSync) KeyBy(keyField string, inputRows ...[]*DbSync) map[string]*DbSync {
+	var rows []*DbSync
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string]*DbSync{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
 	}
 	return r
 }

@@ -23,16 +23,11 @@ import (
 	"database/sql"
 	"fmt"
 	"io"
-	"mime/multipart"
 	"net/url"
-	"os"
-	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 
-	"github.com/admpub/archiver"
 	"github.com/admpub/errors"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
@@ -1830,99 +1825,4 @@ func (m *mySQL) RunCommand() error {
 	}
 	m.Set(`selects`, selects)
 	return m.Render(`db/mysql/sql`, m.checkErr(err))
-}
-func (m *mySQL) Import() error {
-	var err error
-	if m.IsPost() {
-		async := m.Formx(`async`).Bool()
-		var sqlFiles []string
-		saveDir := os.TempDir()
-		err = m.SaveUploadedFiles(`sqlFile[]`, func(fdr *multipart.FileHeader) (string, error) {
-			sqlFile := filepath.Join(saveDir, fdr.Filename)
-			sqlFiles = append(sqlFiles, sqlFile)
-			return sqlFile, nil
-		})
-		err = Import(m.DbAuth, sqlFiles, nil, async)
-		if err != nil {
-			goto END
-		}
-		return nil
-	}
-
-END:
-	return m.Render(`db/mysql/import`, m.checkErr(err))
-}
-func (m *mySQL) Export() error {
-	var err error
-	if m.IsPost() {
-		var tables []string
-		if m.Formx(`all`).Bool() {
-			if len(m.dbName) == 0 {
-				m.fail(m.T(`请选择数据库`))
-				return m.returnTo(m.GenURL(`listDb`))
-			}
-			var ok bool
-			tables, ok = m.Get(`tableList`).([]string)
-			if !ok {
-				tables, err = m.getTables()
-				if err != nil {
-					m.fail(err.Error())
-					return m.returnTo(m.GenURL(`export`))
-				}
-			}
-		} else {
-			tables = m.FormValues(`tables`)
-		}
-		output := m.Form(`output`)
-		types := m.FormValues(`type`)
-		var structWriter, dataWriter interface{}
-		var sqlFiles []string
-		nowTime := com.String(time.Now().Unix())
-		saveDir := os.TempDir()
-		if output == `open` {
-			if com.InSlice(`struct`, types) {
-				structWriter = m.Response()
-			}
-			if com.InSlice(`data`, types) {
-				dataWriter = m.Response()
-			}
-		} else {
-			if com.InSlice(`struct`, types) {
-				structFile := filepath.Join(saveDir, m.dbName+`-struct-`+nowTime+`.sql`)
-				sqlFiles = append(sqlFiles, structFile)
-				structWriter = structFile
-			}
-			if com.InSlice(`data`, types) {
-				dataFile := filepath.Join(saveDir, m.dbName+`-data-`+nowTime+`.sql`)
-				sqlFiles = append(sqlFiles, dataFile)
-				structWriter = dataFile
-			}
-		}
-		err = Export(m.DbAuth, tables, structWriter, dataWriter, true)
-		if err != nil {
-			return err
-		}
-		if len(sqlFiles) > 0 {
-			zipFile := filepath.Join(saveDir, m.dbName+"-sql-"+nowTime+".zip")
-			err = archiver.Zip.Make(zipFile, sqlFiles)
-			if err != nil {
-				return err
-			}
-			for _, sqlFile := range sqlFiles {
-				os.Remove(sqlFile)
-			}
-			fp, err := os.Open(zipFile)
-			if err != nil {
-				return err
-			}
-			defer func() {
-				fp.Close()
-				os.Remove(zipFile)
-			}()
-			return m.Attachment(fp, filepath.Base(zipFile))
-		}
-		return nil
-	}
-
-	return m.Render(`db/mysql/export`, m.checkErr(err))
 }

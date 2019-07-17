@@ -23,9 +23,10 @@ import (
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/dbmanager"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
-	_ "github.com/admpub/nging/application/library/dbmanager/driver/mysql" //mysql
+	"github.com/admpub/nging/application/library/dbmanager/driver/mysql"   //mysql
 	_ "github.com/admpub/nging/application/library/dbmanager/driver/redis" //redis
 	"github.com/admpub/nging/application/model"
+	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
@@ -72,6 +73,7 @@ func Manager(ctx echo.Context) error {
 				m.User = auth.Username
 				m.Password = auth.Password
 				m.Name = auth.Db
+				m.SetOptions()
 				if accountID < 1 || err == db.ErrNoMoreRows {
 					m.Uid = user.Id
 					_, err = m.Add()
@@ -92,6 +94,14 @@ func Manager(ctx echo.Context) error {
 			auth.Password = m.Password
 			auth.Host = m.Host
 			auth.Db = m.Name
+			if len(m.Options) > 0 {
+				options := echo.H{}
+				com.JSONDecode(com.Str2bytes(m.Options), &options)
+				auth.Charset = options.String(`charset`)
+			}
+			if len(auth.Charset) == 0 {
+				auth.Charset = `utf8mb4`
+			}
 			ctx.Session().Set(`dbAuth`, auth)
 			err = mgr.Run(auth.Driver, `login`)
 		} else {
@@ -178,5 +188,6 @@ func Manager(ctx echo.Context) error {
 
 	ctx.Set(`driverList`, driverList)
 	ctx.Set(`dbType`, ctx.T(`数据库`))
+	ctx.Set(`charsetList`, mysql.Charsets)
 	return ctx.Render(`db/index`, ret)
 }

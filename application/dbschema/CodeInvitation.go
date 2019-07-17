@@ -110,7 +110,7 @@ func (this *CodeInvitation) List(recv interface{}, mw func(db.Result) db.Result,
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
 
-func (this *CodeInvitation) GroupByKey(keyField string, inputRows ...[]*CodeInvitation) map[string][]*CodeInvitation {
+func (this *CodeInvitation) GroupBy(keyField string, inputRows ...[]*CodeInvitation) map[string][]*CodeInvitation {
 	var rows []*CodeInvitation
 	if len(inputRows) > 0 {
 		rows = inputRows[0]
@@ -125,6 +125,22 @@ func (this *CodeInvitation) GroupByKey(keyField string, inputRows ...[]*CodeInvi
 			r[vkey] = []*CodeInvitation{}
 		}
 		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (this *CodeInvitation) KeyBy(keyField string, inputRows ...[]*CodeInvitation) map[string]*CodeInvitation {
+	var rows []*CodeInvitation
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string]*CodeInvitation{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
 	}
 	return r
 }

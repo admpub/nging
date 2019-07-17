@@ -15,6 +15,7 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 package mysql
 
 import (
@@ -26,10 +27,15 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
+	"time"
 
+	"github.com/admpub/archiver"
 	"github.com/admpub/errors"
+	loga "github.com/admpub/log"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
+	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 )
 
@@ -50,7 +56,7 @@ var cleanRegExp = regexp.MustCompile(` AUTO_INCREMENT=[0-9]*\s*`)
 // Export 导出SQL文件
 func Export(cfg *driver.DbAuth, tables []string, structWriter, dataWriter interface{}, resetAutoIncrements ...bool) error {
 	if len(tables) == 0 {
-		return nil
+		return errors.New(`No table selected for export`)
 	}
 	log.Println(`Starting backup:`, tables)
 	var (
@@ -71,7 +77,7 @@ func Export(cfg *driver.DbAuth, tables []string, structWriter, dataWriter interf
 	}
 	args := []string{
 		"--default-character-set=" + cfg.Charset,
-		"--single-transaction=TRUE",
+		"--single-transaction",
 		"--column-statistics=0",
 		"--set-gtid-purged=OFF",
 		"--no-autocommit",
@@ -98,6 +104,7 @@ func Export(cfg *driver.DbAuth, tables []string, structWriter, dataWriter interf
 			break
 		}
 	}
+	//args = append(args, `--tables`)
 	args = append(args, tables...)
 	for index, writer := range []interface{}{structWriter, dataWriter} {
 		if writer == nil {
@@ -106,6 +113,7 @@ func Export(cfg *driver.DbAuth, tables []string, structWriter, dataWriter interf
 		if index > 0 {
 			args[typeOptIndex] = `-t` //导出数据
 		}
+		//log.Println(`mysqldump`, strings.Join(args, ` `))
 		cmd := exec.Command("mysqldump", args...)
 		var (
 			w        io.Writer
@@ -154,6 +162,7 @@ func Export(cfg *driver.DbAuth, tables []string, structWriter, dataWriter interf
 			clean(w)
 			return fmt.Errorf(`Failed to backup: %v`, err)
 		}
+		cmd.Wait()
 		clean(w)
 		stdout.Close()
 		if onFinish != nil {
@@ -173,4 +182,105 @@ func ResetAutoIncrement(sqlStructFile string) error {
 	}
 	b = cleanRegExp.ReplaceAll(b, []byte(` `))
 	return ioutil.WriteFile(sqlStructFile, b, 0666)
+}
+
+func (m *mySQL) getCharsetList() []string {
+	e, _ := m.getCharsets()
+	cs := make([]string, 0)
+	for k := range e {
+		cs = append(cs, k)
+	}
+	sort.Strings(cs)
+	return cs
+}
+
+func (m *mySQL) Export() error {
+	//fmt.Printf("%#v\n", m.getCharsetList())
+	var err error
+	if m.IsPost() {
+		var tables []string
+		if len(m.dbName) == 0 {
+			m.fail(m.T(`请选择数据库`))
+			return m.returnTo(m.GenURL(`listDb`))
+		}
+		if m.Formx(`all`).Bool() {
+			var ok bool
+			tables, ok = m.Get(`tableList`).([]string)
+			if !ok {
+				tables, err = m.getTables()
+				if err != nil {
+					m.fail(err.Error())
+					return m.returnTo(m.GenURL(`export`))
+				}
+			}
+		} else {
+			tables = m.FormValues(`table`)
+			if len(tables) == 1 && len(tables[0]) > 0 {
+				tables = strings.Split(tables[0], `,`)
+			}
+			views := m.FormValues(`view`)
+			if len(views) == 1 && len(views[0]) > 0 {
+				views = append(tables, strings.Split(views[0], `,`)...)
+			}
+			if len(views) > 0 {
+				tables = append(tables, views...)
+			}
+		}
+		output := m.Form(`output`)
+		types := m.FormValues(`type`)
+		var structWriter, dataWriter interface{}
+		var sqlFiles []string
+		nowTime := com.String(time.Now().Unix())
+		saveDir := os.TempDir()
+		if output == `open` {
+			if com.InSlice(`struct`, types) {
+				structWriter = m.Response()
+			}
+			if com.InSlice(`data`, types) {
+				dataWriter = m.Response()
+			}
+		} else {
+			if com.InSlice(`struct`, types) {
+				structFile := filepath.Join(saveDir, m.dbName+`-struct-`+nowTime+`.sql`)
+				sqlFiles = append(sqlFiles, structFile)
+				structWriter = structFile
+			}
+			if com.InSlice(`data`, types) {
+				dataFile := filepath.Join(saveDir, m.dbName+`-data-`+nowTime+`.sql`)
+				sqlFiles = append(sqlFiles, dataFile)
+				dataWriter = dataFile
+			}
+		}
+		cfg := *m.DbAuth
+		cfg.Db = m.dbName
+		err = Export(&cfg, tables, structWriter, dataWriter, true)
+		if err != nil {
+			loga.Error(err)
+			return err
+		}
+		if len(sqlFiles) > 0 {
+			zipFile := filepath.Join(saveDir, m.dbName+"-sql-"+nowTime+".zip")
+			err = archiver.Zip.Make(zipFile, sqlFiles)
+			if err != nil {
+				loga.Error(err)
+				return err
+			}
+			for _, sqlFile := range sqlFiles {
+				os.Remove(sqlFile)
+			}
+			fp, err := os.Open(zipFile)
+			if err != nil {
+				loga.Error(err)
+				return err
+			}
+			defer func() {
+				fp.Close()
+				os.Remove(zipFile)
+			}()
+			return m.Attachment(fp, filepath.Base(zipFile))
+		}
+		return nil
+	}
+
+	return m.Render(`db/mysql/export`, m.checkErr(err))
 }

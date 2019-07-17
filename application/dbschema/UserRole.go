@@ -109,7 +109,7 @@ func (this *UserRole) List(recv interface{}, mw func(db.Result) db.Result, page,
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
 
-func (this *UserRole) GroupByKey(keyField string, inputRows ...[]*UserRole) map[string][]*UserRole {
+func (this *UserRole) GroupBy(keyField string, inputRows ...[]*UserRole) map[string][]*UserRole {
 	var rows []*UserRole
 	if len(inputRows) > 0 {
 		rows = inputRows[0]
@@ -124,6 +124,22 @@ func (this *UserRole) GroupByKey(keyField string, inputRows ...[]*UserRole) map[
 			r[vkey] = []*UserRole{}
 		}
 		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (this *UserRole) KeyBy(keyField string, inputRows ...[]*UserRole) map[string]*UserRole {
+	var rows []*UserRole
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string]*UserRole{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
 	}
 	return r
 }

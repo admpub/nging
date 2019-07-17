@@ -120,7 +120,7 @@ func (this *Task) List(recv interface{}, mw func(db.Result) db.Result, page, siz
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
 
-func (this *Task) GroupByKey(keyField string, inputRows ...[]*Task) map[string][]*Task {
+func (this *Task) GroupBy(keyField string, inputRows ...[]*Task) map[string][]*Task {
 	var rows []*Task
 	if len(inputRows) > 0 {
 		rows = inputRows[0]
@@ -135,6 +135,22 @@ func (this *Task) GroupByKey(keyField string, inputRows ...[]*Task) map[string][
 			r[vkey] = []*Task{}
 		}
 		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (this *Task) KeyBy(keyField string, inputRows ...[]*Task) map[string]*Task {
+	var rows []*Task
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string]*Task{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
 	}
 	return r
 }

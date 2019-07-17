@@ -93,6 +93,25 @@ func (m *mySQL) showStatus() ([]map[string]string, error) {
 	return m.kvVal(sqlStr)
 }
 
+func (m *mySQL) getCharsets() (map[string]CharsetData, error) {
+	sqlStr := `SHOW CHARSET`
+	rows, err := m.newParam().SetCollection(sqlStr).Query()
+	if err != nil {
+		return nil, fmt.Errorf(`%v: %v`, sqlStr, err)
+	}
+	defer rows.Close()
+	ret := map[string]CharsetData{}
+	for rows.Next() {
+		var v CharsetData
+		err = rows.Scan(&v.Charset, &v.Description, &v.DefaultCollation, &v.Maxlen)
+		if err != nil {
+			return nil, fmt.Errorf(`%v: %v`, sqlStr, err)
+		}
+		ret[v.Charset.String] = v
+	}
+	return ret, nil
+}
+
 // 获取支持的字符集
 func (m *mySQL) getCollations() (*Collations, error) {
 	sqlStr := `SHOW COLLATION`

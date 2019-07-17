@@ -23,6 +23,7 @@ import (
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
+	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
@@ -37,6 +38,16 @@ func NewDbAccount(ctx echo.Context) *DbAccount {
 type DbAccount struct {
 	*dbschema.DbAccount
 	*base.Base
+}
+
+func (a *DbAccount) SetOptions() {
+	options := echo.H{}
+	charset := a.Formx(`charset`).String()
+	if len(charset) > 0 {
+		options.Set(`charset`, charset)
+	}
+	b, _ := com.JSONEncode(options)
+	a.Options = com.Bytes2str(b)
 }
 
 func (a *DbAccount) setDefaultValue() {

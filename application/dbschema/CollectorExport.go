@@ -112,7 +112,7 @@ func (this *CollectorExport) List(recv interface{}, mw func(db.Result) db.Result
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
 
-func (this *CollectorExport) GroupByKey(keyField string, inputRows ...[]*CollectorExport) map[string][]*CollectorExport {
+func (this *CollectorExport) GroupBy(keyField string, inputRows ...[]*CollectorExport) map[string][]*CollectorExport {
 	var rows []*CollectorExport
 	if len(inputRows) > 0 {
 		rows = inputRows[0]
@@ -127,6 +127,22 @@ func (this *CollectorExport) GroupByKey(keyField string, inputRows ...[]*Collect
 			r[vkey] = []*CollectorExport{}
 		}
 		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (this *CollectorExport) KeyBy(keyField string, inputRows ...[]*CollectorExport) map[string]*CollectorExport {
+	var rows []*CollectorExport
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string]*CollectorExport{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
 	}
 	return r
 }
@@ -157,8 +173,8 @@ func (this *CollectorExport) ListByOffset(recv interface{}, mw func(db.Result) d
 func (this *CollectorExport) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -172,8 +188,8 @@ func (this *CollectorExport) Add() (pk interface{}, err error) {
 
 func (this *CollectorExport) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	
-	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -189,21 +205,21 @@ func (this *CollectorExport) SetField(mw func(db.Result) db.Result, field string
 
 func (this *CollectorExport) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["dest_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["dest_type"] = "dbAccountID" } }
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
+	if val, ok := kvset["dest_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["dest_type"] = "dbAccountID" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *CollectorExport) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		
-	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {

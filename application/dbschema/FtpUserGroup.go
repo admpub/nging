@@ -109,7 +109,7 @@ func (this *FtpUserGroup) List(recv interface{}, mw func(db.Result) db.Result, p
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
 
-func (this *FtpUserGroup) GroupByKey(keyField string, inputRows ...[]*FtpUserGroup) map[string][]*FtpUserGroup {
+func (this *FtpUserGroup) GroupBy(keyField string, inputRows ...[]*FtpUserGroup) map[string][]*FtpUserGroup {
 	var rows []*FtpUserGroup
 	if len(inputRows) > 0 {
 		rows = inputRows[0]
@@ -124,6 +124,22 @@ func (this *FtpUserGroup) GroupByKey(keyField string, inputRows ...[]*FtpUserGro
 			r[vkey] = []*FtpUserGroup{}
 		}
 		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (this *FtpUserGroup) KeyBy(keyField string, inputRows ...[]*FtpUserGroup) map[string]*FtpUserGroup {
+	var rows []*FtpUserGroup
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string]*FtpUserGroup{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
 	}
 	return r
 }

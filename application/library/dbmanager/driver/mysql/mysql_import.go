@@ -21,7 +21,10 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"mime/multipart"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/admpub/nging/application/library/dbmanager/driver"
@@ -64,6 +67,7 @@ func Import(cfg *driver.DbAuth, sqlFiles []string, outWriter io.Writer, asyncs .
 		}
 		lastIndex := len(args) - 1
 		args[lastIndex] = fmt.Sprintf(args[lastIndex], sqlFile)
+		//log.Println(`mysql`, strings.Join(args, ` `))
 		cmd := exec.Command("mysql", args...)
 		if outWriter != nil {
 			stdout, err := cmd.StdoutPipe()
@@ -87,4 +91,26 @@ func Import(cfg *driver.DbAuth, sqlFiles []string, outWriter io.Writer, asyncs .
 		}
 	}
 	return nil
+}
+
+func (m *mySQL) Import() error {
+	var err error
+	if m.IsPost() {
+		async := m.Formx(`async`).Bool()
+		var sqlFiles []string
+		saveDir := os.TempDir()
+		err = m.SaveUploadedFiles(`sqlFile[]`, func(fdr *multipart.FileHeader) (string, error) {
+			sqlFile := filepath.Join(saveDir, fdr.Filename)
+			sqlFiles = append(sqlFiles, sqlFile)
+			return sqlFile, nil
+		})
+		err = Import(m.DbAuth, sqlFiles, nil, async)
+		if err != nil {
+			goto END
+		}
+		return nil
+	}
+
+END:
+	return m.Render(`db/mysql/import`, m.checkErr(err))
 }

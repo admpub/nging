@@ -78,6 +78,7 @@
 {{$dbName := Stored.dbName}}
 {{Modal "__TMPL__/db/mysql/copy_table.yaml"}}
 {{Modal "__TMPL__/db/mysql/move_table.yaml"}}
+{{Modal "__TMPL__/db/mysql/export_table.yaml"}}
 <script type="text/template" id="tpl-move-table-form">
     <div class="form-group">
         <label>{{"移动表"|T|ToJS}}</label>
@@ -105,10 +106,10 @@
     </div>
 </script>
 <script type="text/template" id="tpl-export-table-form">
-<form action="" id="form-export-settings">
+<form action="{{dbMgrURL "export" $dbName}}" method="POST" target="_blank" id="form-export-settings">
     <div class="form-group">
         <label>{{"导出表"|T|ToJS}}</label>
-        <textarea readonly="readonly" class="form-control" id="export-tables">
+        <textarea readonly="readonly" name="table" class="form-control" id="export-tables">
         </textarea>
     </div>
     <div class="form-group">
@@ -118,7 +119,7 @@
             <label for="export-output-open">{{"打开"|T|ToJS}}</label>
         </div>
         <div class="radio radio-primary radio-inline">
-            <input id="export-output-open" type="radio" name="output" value="save" checked="checked">
+            <input id="export-output-save" type="radio" name="output" value="save" checked="checked">
             <label for="export-output-save">{{"保存"|T|ToJS}}</label>
         </div>
     </div>
@@ -168,6 +169,7 @@ $(function(){
     App.attachCheckedAll('#checkedAll','input[type=checkbox].check-table','#selected-items-count');
     $('#move-table-modal .modal-body').html($('#tpl-move-table-form').html());
     $('#copy-table-modal .modal-body').html($('#tpl-copy-table-form').html());
+    $('#export-table-modal .modal-body').html($('#tpl-export-table-form').html());
     $('#move-table-modal .btn-primary:last').removeClass('md-close').on('click',function(){
         var dbName=$('#move-table-to-db').val();
         var se=getSelectedItems();
@@ -196,20 +198,7 @@ $(function(){
     });
 
     $('#export-table-modal .btn-primary:last').removeClass('md-close').on('click',function(){
-        var se=getSelectedItems();
-        var data=$('#form-export-settings').serializeArray();
-        data.push({name:'table',value:se.tables});
-        data.push({name:'view',value:se.views});
-        App.loading('show');
-        $.post('{{dbMgrURL "export" $dbName}}',data,function(r){
-            App.loading('hide');
-            if(r.Code==1){
-                $('#export-table-modal').niftyModal('hide');
-                App.message({title:App.i18n.SYS_INFO,text:r.info,class_name:'success'});
-            }else{
-                alert(r.Info);
-            }
-        },'json');
+        $('#form-export-settings').submit();
     });
 
     $('#export-selected').on('click',function(event){

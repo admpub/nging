@@ -20,7 +20,9 @@ package database
 import (
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
+	"github.com/admpub/nging/application/library/dbmanager/driver/mysql"
 	"github.com/admpub/nging/application/model"
+	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
@@ -66,6 +68,10 @@ func AccountIndex(ctx echo.Context) error {
 	return ctx.Render(`db/account`, ret)
 }
 
+func setOptions(ctx echo.Context, m *model.DbAccount) {
+	m.SetOptions()
+}
+
 func AccountAdd(ctx echo.Context) error {
 	user := handler.User(ctx)
 	var err error
@@ -74,6 +80,7 @@ func AccountAdd(ctx echo.Context) error {
 		err = ctx.MustBind(m.DbAccount)
 		if err == nil {
 			m.Uid = user.Id
+			setOptions(ctx, m)
 			_, err = m.Add()
 			if err == nil {
 				if ctx.IsAjax() {
@@ -95,6 +102,7 @@ func AccountAdd(ctx echo.Context) error {
 	}
 	ctx.Set(`driverList`, driverList)
 	ctx.Set(`activeURL`, `/db/account_add`)
+	ctx.Set(`charsetList`, mysql.Charsets)
 	return ctx.Render(`db/account_edit`, ret)
 }
 
@@ -110,6 +118,7 @@ func AccountEdit(ctx echo.Context) error {
 
 		if err == nil {
 			m.Id = id
+			setOptions(ctx, m)
 			err = m.Edit(id, nil, cond)
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))
@@ -118,6 +127,16 @@ func AccountEdit(ctx echo.Context) error {
 		}
 	} else if err == nil {
 		echo.StructToForm(ctx, m.DbAccount, ``, echo.LowerCaseFirstLetter)
+		var charset string
+		if len(m.DbAccount.Options) > 0 {
+			options := echo.H{}
+			com.JSONDecode(com.Str2bytes(m.DbAccount.Options), &options)
+			charset = options.String(`charset`)
+		}
+		if len(charset) == 0 {
+			charset = `utf8mb4`
+		}
+		ctx.Request().Form().Set(`charset`, charset)
 	}
 
 	ret := handler.Err(ctx, err)
@@ -127,6 +146,7 @@ func AccountEdit(ctx echo.Context) error {
 	}
 	ctx.Set(`driverList`, driverList)
 	ctx.Set(`activeURL`, `/db/account`)
+	ctx.Set(`charsetList`, mysql.Charsets)
 	return ctx.Render(`db/account_edit`, ret)
 }
 

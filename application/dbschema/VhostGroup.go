@@ -105,7 +105,7 @@ func (this *VhostGroup) List(recv interface{}, mw func(db.Result) db.Result, pag
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
 
-func (this *VhostGroup) GroupByKey(keyField string, inputRows ...[]*VhostGroup) map[string][]*VhostGroup {
+func (this *VhostGroup) GroupBy(keyField string, inputRows ...[]*VhostGroup) map[string][]*VhostGroup {
 	var rows []*VhostGroup
 	if len(inputRows) > 0 {
 		rows = inputRows[0]
@@ -120,6 +120,22 @@ func (this *VhostGroup) GroupByKey(keyField string, inputRows ...[]*VhostGroup) 
 			r[vkey] = []*VhostGroup{}
 		}
 		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (this *VhostGroup) KeyBy(keyField string, inputRows ...[]*VhostGroup) map[string]*VhostGroup {
+	var rows []*VhostGroup
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string]*VhostGroup{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
 	}
 	return r
 }

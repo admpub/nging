@@ -123,7 +123,7 @@ func (this *AccessLog) List(recv interface{}, mw func(db.Result) db.Result, page
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
 
-func (this *AccessLog) GroupByKey(keyField string, inputRows ...[]*AccessLog) map[string][]*AccessLog {
+func (this *AccessLog) GroupBy(keyField string, inputRows ...[]*AccessLog) map[string][]*AccessLog {
 	var rows []*AccessLog
 	if len(inputRows) > 0 {
 		rows = inputRows[0]
@@ -138,6 +138,22 @@ func (this *AccessLog) GroupByKey(keyField string, inputRows ...[]*AccessLog) ma
 			r[vkey] = []*AccessLog{}
 		}
 		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (this *AccessLog) KeyBy(keyField string, inputRows ...[]*AccessLog) map[string]*AccessLog {
+	var rows []*AccessLog
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string]*AccessLog{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
 	}
 	return r
 }

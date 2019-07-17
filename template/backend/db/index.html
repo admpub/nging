@@ -127,6 +127,10 @@ $(function(){
         if(activeElem.length>0) $('#main-container > .page-aside > .nano').nanoScroller({ scrollTo: activeElem });
       }
 {{- end -}}
+  $('#sel-driver').on('change',function(){
+    var v=$(this).val(),cs=$('#charset-container');
+    v=='mysql'?cs.show():cs.hide();
+  }).trigger('change');
 });
 </script>
 {{end}}<!-- ne $pjax "#pcont" -->

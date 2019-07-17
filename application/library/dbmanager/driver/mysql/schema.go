@@ -529,3 +529,10 @@ type SelectData struct {
 	Data    *DataTable
 	Explain *DataTable
 }
+
+type CharsetData struct {
+	Charset          sql.NullString
+	Description      sql.NullString
+	DefaultCollation sql.NullString
+	Maxlen           sql.NullInt64
+}

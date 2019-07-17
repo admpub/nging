@@ -108,7 +108,7 @@ func (this *Config) List(recv interface{}, mw func(db.Result) db.Result, page, s
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
 
-func (this *Config) GroupByKey(keyField string, inputRows ...[]*Config) map[string][]*Config {
+func (this *Config) GroupBy(keyField string, inputRows ...[]*Config) map[string][]*Config {
 	var rows []*Config
 	if len(inputRows) > 0 {
 		rows = inputRows[0]
@@ -123,6 +123,22 @@ func (this *Config) GroupByKey(keyField string, inputRows ...[]*Config) map[stri
 			r[vkey] = []*Config{}
 		}
 		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (this *Config) KeyBy(keyField string, inputRows ...[]*Config) map[string]*Config {
+	var rows []*Config
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string]*Config{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
 	}
 	return r
 }
@@ -152,9 +168,9 @@ func (this *Config) ListByOffset(recv interface{}, mw func(db.Result) db.Result,
 
 func (this *Config) Add() (pk interface{}, err error) {
 	
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Encrypted) == 0 { this.Encrypted = "N" }
 	if len(this.Type) == 0 { this.Type = "text" }
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	pk, err = this.Param().SetSend(this).Insert()
 	
 	return
@@ -162,9 +178,9 @@ func (this *Config) Add() (pk interface{}, err error) {
 
 func (this *Config) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Encrypted) == 0 { this.Encrypted = "N" }
 	if len(this.Type) == 0 { this.Type = "text" }
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -180,23 +196,23 @@ func (this *Config) SetField(mw func(db.Result) db.Result, field string, value i
 
 func (this *Config) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
+	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	if val, ok := kvset["encrypted"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["encrypted"] = "N" } }
 	if val, ok := kvset["type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["type"] = "text" } }
-	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *Config) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Encrypted) == 0 { this.Encrypted = "N" }
 	if len(this.Type) == 0 { this.Type = "text" }
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	},func(){
 		
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Encrypted) == 0 { this.Encrypted = "N" }
 	if len(this.Type) == 0 { this.Type = "text" }
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	})
 	
 	return 

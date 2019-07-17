@@ -106,7 +106,7 @@ func (this *CollectorGroup) List(recv interface{}, mw func(db.Result) db.Result,
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
 
-func (this *CollectorGroup) GroupByKey(keyField string, inputRows ...[]*CollectorGroup) map[string][]*CollectorGroup {
+func (this *CollectorGroup) GroupBy(keyField string, inputRows ...[]*CollectorGroup) map[string][]*CollectorGroup {
 	var rows []*CollectorGroup
 	if len(inputRows) > 0 {
 		rows = inputRows[0]
@@ -121,6 +121,22 @@ func (this *CollectorGroup) GroupByKey(keyField string, inputRows ...[]*Collecto
 			r[vkey] = []*CollectorGroup{}
 		}
 		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (this *CollectorGroup) KeyBy(keyField string, inputRows ...[]*CollectorGroup) map[string]*CollectorGroup {
+	var rows []*CollectorGroup
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string]*CollectorGroup{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
 	}
 	return r
 }

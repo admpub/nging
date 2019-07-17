@@ -2,7 +2,7 @@ package log
 
 import "io"
 
-var DefaultLog = &defaultLogger{Logger: New()}
+var DefaultLog = &defaultLogger{Logger: NewWithCallDepth(5)}
 
 type defaultLogger struct {
 	*Logger

@@ -108,7 +108,7 @@ func (this *CollectorRule) List(recv interface{}, mw func(db.Result) db.Result, 
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
 
-func (this *CollectorRule) GroupByKey(keyField string, inputRows ...[]*CollectorRule) map[string][]*CollectorRule {
+func (this *CollectorRule) GroupBy(keyField string, inputRows ...[]*CollectorRule) map[string][]*CollectorRule {
 	var rows []*CollectorRule
 	if len(inputRows) > 0 {
 		rows = inputRows[0]
@@ -123,6 +123,22 @@ func (this *CollectorRule) GroupByKey(keyField string, inputRows ...[]*Collector
 			r[vkey] = []*CollectorRule{}
 		}
 		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (this *CollectorRule) KeyBy(keyField string, inputRows ...[]*CollectorRule) map[string]*CollectorRule {
+	var rows []*CollectorRule
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string]*CollectorRule{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
 	}
 	return r
 }

@@ -106,7 +106,7 @@ func (this *SshUserGroup) List(recv interface{}, mw func(db.Result) db.Result, p
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
 
-func (this *SshUserGroup) GroupByKey(keyField string, inputRows ...[]*SshUserGroup) map[string][]*SshUserGroup {
+func (this *SshUserGroup) GroupBy(keyField string, inputRows ...[]*SshUserGroup) map[string][]*SshUserGroup {
 	var rows []*SshUserGroup
 	if len(inputRows) > 0 {
 		rows = inputRows[0]
@@ -121,6 +121,22 @@ func (this *SshUserGroup) GroupByKey(keyField string, inputRows ...[]*SshUserGro
 			r[vkey] = []*SshUserGroup{}
 		}
 		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (this *SshUserGroup) KeyBy(keyField string, inputRows ...[]*SshUserGroup) map[string]*SshUserGroup {
+	var rows []*SshUserGroup
+	if len(inputRows) > 0 {
+		rows = inputRows[0]
+	} else {
+		rows = this.Objects()
+	}
+	r := map[string]*SshUserGroup{}
+	for _, row := range rows {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
 	}
 	return r
 }

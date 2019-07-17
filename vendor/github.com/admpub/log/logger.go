@@ -60,7 +60,7 @@ var (
 		"Fatal": LevelFatal,
 	}
 
-	CallDepth = 4
+	DefaultCallDepth = 4
 )
 
 func GetLevel(level string) (Level, bool) {
@@ -164,6 +164,7 @@ type Logger struct {
 	*coreLogger
 	Category   string    // the category associated with this logger
 	Formatter  Formatter // message formatter
+	CallDepth  int
 	categories map[string]*Logger
 }
 
@@ -172,6 +173,11 @@ type Logger struct {
 // ErrorWriter: os.Stderr, BufferSize: 1024, MaxLevel: LevelDebug,
 // Category: app, Formatter: DefaultFormatter
 func NewLogger(args ...string) *Logger {
+	return NewWithCallDepth(0, args...)
+}
+
+// NewWithCallDepth creates a root logger.
+func NewWithCallDepth(callDepth int, args ...string) *Logger {
 	logger := &coreLogger{
 		ErrorWriter: os.Stderr,
 		BufferSize:  1024,
@@ -190,6 +196,7 @@ func NewLogger(args ...string) *Logger {
 		coreLogger: logger,
 		Category:   category,
 		Formatter:  NormalFormatter,
+		CallDepth:  callDepth,
 		categories: make(map[string]*Logger),
 	}
 }
@@ -211,6 +218,7 @@ func (l *Logger) GetLogger(category string, formatter ...Formatter) *Logger {
 			coreLogger: l.coreLogger,
 			Category:   category,
 			categories: make(map[string]*Logger),
+			CallDepth:  l.CallDepth,
 		}
 		if len(formatter) > 0 {
 			logger.Formatter = formatter[0]
@@ -516,7 +524,11 @@ func NormalFormatter(l *Logger, e *Entry) string {
 }
 
 func ShortFileFormatter(l *Logger, e *Entry) string {
-	_, file, line, ok := runtime.Caller(CallDepth)
+	callDepth := DefaultCallDepth
+	if l.CallDepth > 0 {
+		callDepth = l.CallDepth
+	}
+	_, file, line, ok := runtime.Caller(callDepth)
 	if !ok {
 		return e.Time.Format(`2006-01-02 15:04:05`) + "|" + e.Level.String() + "|" + e.Category + "|" + e.Message + e.CallStack
 	}

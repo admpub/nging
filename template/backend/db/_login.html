@@ -11,7 +11,7 @@
                 <label class="col-sm-3 control-label">{{"系统"|T}}</label>
                 <div class="col-sm-6">
                   {{$v := Form "driver"}}
-                   <select class="form-control" name="driver">
+                   <select class="form-control" id="sel-driver" name="driver">
                      {{range $k,$driverName:=Stored.Get "driverList"}}
                      <option value="{{$k}}"{{if eq $v $k}} selected{{end}}>{{$driverName}}</option>
                      {{end}}
@@ -44,6 +44,18 @@
                 <label class="col-sm-3 control-label">{{"数据库"|T}}</label>
                 <div class="col-sm-6">
                     <input type="text" class="form-control" name="db" value="{{Form "db"}}">
+                </div>
+              </div>
+
+
+              <div class="form-group" id="charset-container">
+                <label class="col-sm-3 control-label">{{"字符集"|T}}</label>
+                <div class="col-sm-6">{{$v := Form "charset" "utf8mb4"}}
+                  <select name="charset" class="form-control" id="charset">
+                    {{range $k, $charset := Stored.charsetList}}
+                    <option value="{{$charset}}"{{if eq $v $charset}} selected{{end}}>{{$charset}}</option>
+                    {{end}}
+                  </select>
                 </div>
               </div>
 

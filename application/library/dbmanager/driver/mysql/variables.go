@@ -15,6 +15,7 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 package mysql
 
 import (
@@ -60,9 +61,14 @@ var (
 	reSQLCondOrder          = regexp.MustCompile("^((COUNT\\(DISTINCT |[A-Z0-9_]+\\()(`(?:[^`]|``)+`|\"(?:[^\"]|\"\")+\")\\)|COUNT\\(\\*\\))$")
 	reSQLFunction           = regexp.MustCompile("^(COUNT\\((\\*|(DISTINCT )?`(?:[^`]|``)+`)\\)|(AVG|GROUP_CONCAT|MAX|MIN|SUM)\\(`(?:[^`]|``)+`\\))$")
 
-	UnsignedTags   = []string{"unsigned", "zerofill", "unsigned zerofill"}
-	EnumLength     = "'(?:''|[^'\\\\]|\\\\.)*'"
-	OnActions      = "RESTRICT|NO ACTION|CASCADE|SET NULL|SET DEFAULT" ///< @var string used in foreignKeys()
+	//Charsets MySQL 支持的字符集
+	Charsets = []string{"armscii8", "ascii", "big5", "binary", "cp1250", "cp1251", "cp1256", "cp1257", "cp850", "cp852", "cp866", "cp932", "dec8", "eucjpms", "euckr", "gb18030", "gb2312", "gbk", "geostd8", "greek", "hebrew", "hp8", "keybcs2", "koi8r", "koi8u", "latin1", "latin2", "latin5", "latin7", "macce", "macroman", "sjis", "swe7", "tis620", "ucs2", "ujis", "utf16", "utf16le", "utf32", "utf8", "utf8mb4"}
+	// UnsignedTags 无符号标签
+	UnsignedTags = []string{"unsigned", "zerofill", "unsigned zerofill"}
+	// EnumLength .
+	EnumLength = "'(?:''|[^'\\\\]|\\\\.)*'"
+	OnActions  = "RESTRICT|NO ACTION|CASCADE|SET NULL|SET DEFAULT" ///< @var string used in foreignKeys()
+	// PartitionTypes 分区类型
 	PartitionTypes = []string{`HASH`, `LINEAR HASH`, `KEY`, `LINEAR KEY`, `RANGE`, `LIST`}
 
 	typeGroups = []*FieldTypeGroup{
@@ -151,9 +157,9 @@ var (
 			"date|time": "now",
 		}, map[string]string{
 			"(^|[^o])int|float|double|decimal": "+/-", // not point
-			"date":      "+ interval/- interval",
-			"time":      "addtime/subtime",
-			"char|text": "concat",
+			"date":                             "+ interval/- interval",
+			"time":                             "addtime/subtime",
+			"char|text":                        "concat",
 		},
 	}
 

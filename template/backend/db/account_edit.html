@@ -17,16 +17,16 @@
           <div class="content">
               <form class="form-horizontal group-border-dashed" id="account-add-form" method="POST" action="">
                 <div class="form-group">
-                  <label class="col-sm-2 control-label">{{"标题"|T}}</label>
-                  <div class="col-sm-8">
+                  <label class="col-sm-3 control-label">{{"标题"|T}}</label>
+                  <div class="col-sm-6">
                       <input type="text" class="form-control" name="title" placeholder="{{"账号说明"|}}" value="{{Form "title"}}" required>
                   </div>
                 </div>
                 <div class="form-group">
-                  <label class="col-sm-2 control-label">{{"数据库类型"|T}}</label>
-                  <div class="col-sm-8">
+                  <label class="col-sm-3 control-label">{{"数据库类型"|T}}</label>
+                  <div class="col-sm-6">
                     {{$v := Form "engine"}}
-                     <select class="form-control" name="engine">
+                     <select class="form-control" id="sel-engine" name="engine">
                        {{range $k,$driverName:=Stored.Get "driverList"}}
                        <option value="{{$k}}"{{if eq $v $k}} selected{{end}}>{{$driverName}}</option>
                        {{end}}
@@ -34,32 +34,41 @@
                   </div>
                 </div>
                 <div class="form-group">
-                  <label class="col-sm-2 control-label">{{"服务器地址"|T}}</label>
-                  <div class="col-sm-8">
+                  <label class="col-sm-3 control-label">{{"服务器地址"|T}}</label>
+                  <div class="col-sm-6">
                       <input type="text" class="form-control" name="host" placeholder="127.0.0.1:3306" value="{{Form "host"}}">
                   </div>
                 </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"账户名"|T}}</label>
-                <div class="col-sm-8">
+                <label class="col-sm-3 control-label">{{"账户名"|T}}</label>
+                <div class="col-sm-6">
                     <input type="text" class="form-control" name="user" placeholder="root" value="{{Form "user"}}">
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"密码"|T}}</label>
-                <div class="col-sm-8">
+                <label class="col-sm-3 control-label">{{"密码"|T}}</label>
+                <div class="col-sm-6">
                     <input type="password" class="form-control" name="password" placeholder="" value="{{Form "password"}}" autocomplete="off">
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label">{{"数据库名称"|T}}</label>
-                <div class="col-sm-8">
+                <label class="col-sm-3 control-label">{{"数据库名称"|T}}</label>
+                <div class="col-sm-6">
                   <input type="text" class="form-control" name="name" value="{{Form "name"}}">
                 </div>
               </div>
-              
+              <div class="form-group" id="charset-container">
+                <label class="col-sm-3 control-label">{{"字符集"|T}}</label>
+                <div class="col-sm-6">{{$v := Form "charset" "utf8mb4"}}
+                  <select name="charset" class="form-control" id="charset">
+                    {{range $k, $charset := Stored.charsetList}}
+                    <option value="{{$charset}}"{{if eq $v $charset}} selected{{end}}>{{$charset}}</option>
+                    {{end}}
+                  </select>
+                </div>
+              </div>
               <div class="form-group form-submit-group">
-									<div class="col-sm-9 col-sm-offset-2">
+									<div class="col-sm-8 col-sm-offset-3">
 									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
 									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
 									</div>
@@ -72,6 +81,12 @@
 {{/Block}}
 {{Block "footer"}}
 <script type="text/javascript">
+$(function(){
+  $('#sel-engine').on('change',function(){
+    var v=$(this).val(),cs=$('#charset-container');
+    v=='mysql'?cs.show():cs.hide();
+  }).trigger('change');
+});
 if(window.opener && window.opener.dbAccountAdded){
   $('#account-add-form').on('submit',function(event){
     event.preventDefault();
