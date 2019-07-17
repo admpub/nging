@@ -55,14 +55,15 @@ func Import(cfg *driver.DbAuth, structFile, sqlFiles []string, outWriter io.Writ
 		"-u" + cfg.Username,
 		"-p" + cfg.Password,
 		cfg.Db,
-		"<",
-		"",
+		"-e",
+		"SET FOREIGN_KEY_CHECKS=0;SET UNIQUE_CHECKS=0;source %s;SET FOREIGN_KEY_CHECKS=1;SET UNIQUE_CHECKS=1;",
 	}
 	for _, sqlFile := range sqlFiles {
 		if len(sqlFile) == 0 {
 			continue
 		}
-		args[len(args)-1] = sqlFile
+		lastIndex := len(args) - 1
+		args[lastIndex] = fmt.Sprintf(args[lastIndex], sqlFile)
 		cmd := exec.Command("mysql", args...)
 		if outWriter != nil {
 			stdout, err := cmd.StdoutPipe()

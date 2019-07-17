@@ -24,6 +24,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -70,7 +71,12 @@ func Export(cfg *driver.DbAuth, tables []string, structWriter, dataWriter interf
 	}
 	args := []string{
 		"--default-character-set=" + cfg.Charset,
-		"--single-transaction",
+		"--single-transaction=TRUE",
+		"--column-statistics=0",
+		"--set-gtid-purged=OFF",
+		"--no-autocommit",
+		//"--ignore-table="+cfg.Db+".details",
+		//"--ignore-table="+cfg.Db+".large_table2"
 		"--opt",
 		"-d", //加上此参数代表只导出表结构，不导出数据
 		"-h" + host,
@@ -84,13 +90,20 @@ func Export(cfg *driver.DbAuth, tables []string, structWriter, dataWriter interf
 			c.Close()
 		}
 	}
+	var typeOptIndex int
+	for index, value := range args {
+		if value == `-d` {
+			typeOptIndex = index
+			break
+		}
+	}
 	args = append(args, tables...)
 	for index, writer := range []interface{}{structWriter, dataWriter} {
 		if writer == nil {
 			continue
 		}
 		if index > 0 {
-			args[3] = `-t` //导出数据
+			args[typeOptIndex] = `-t` //导出数据
 		}
 		cmd := exec.Command("mysqldump", args...)
 		var (
@@ -102,6 +115,13 @@ func Export(cfg *driver.DbAuth, tables []string, structWriter, dataWriter interf
 		case io.Writer:
 			w = v
 		case string:
+			dir := filepath.Dir(v)
+			if _, err := os.Stat(dir); os.IsNotExist(err) {
+				err = os.MkdirAll(dir, os.ModePerm)
+				if err != nil {
+					return fmt.Errorf(`Failed to backup: %v`, err)
+				}
+			}
 			w, err = os.Create(v)
 			if err != nil {
 				return fmt.Errorf(`Failed to backup: %v`, err)
