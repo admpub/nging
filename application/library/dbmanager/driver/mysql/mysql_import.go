@@ -19,23 +19,30 @@ package mysql
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"mime/multipart"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
+	"github.com/admpub/archiver"
+	"github.com/admpub/errors"
+	loga "github.com/admpub/log"
+	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
+	"github.com/admpub/nging/application/library/notice"
+	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
 )
 
 // Import 导入SQL文件
-func Import(cfg *driver.DbAuth, sqlFiles []string, outWriter io.Writer, asyncs ...bool) error {
-	if len(sqlFiles) == 0 {
+func Import(cfg *driver.DbAuth, files []string, asyncs ...bool) error {
+	if len(files) == 0 {
 		return nil
 	}
-	log.Println(`Starting import:`, sqlFiles)
+	log.Println(`Starting import:`, files)
 	var (
 		port, host string
 		async      bool
@@ -61,26 +68,62 @@ func Import(cfg *driver.DbAuth, sqlFiles []string, outWriter io.Writer, asyncs .
 		"-e",
 		"SET FOREIGN_KEY_CHECKS=0;SET UNIQUE_CHECKS=0;source %s;SET FOREIGN_KEY_CHECKS=1;SET UNIQUE_CHECKS=1;",
 	}
+	var delDirs []string
+	sqlFiles := []string{}
+	defer func() {
+		for _, delDir := range delDirs {
+			os.RemoveAll(delDir)
+		}
+		for _, sqlFile := range sqlFiles {
+			if !com.FileExists(sqlFile) {
+				continue
+			}
+			os.Remove(sqlFile)
+		}
+	}()
+	nowTime := com.String(time.Now().Unix())
+	for index, sqlFile := range files {
+		switch strings.ToLower(filepath.Ext(sqlFile)) {
+		case `.sql`:
+			sqlFiles = append(sqlFiles, sqlFile)
+		case `.zip`:
+			dir := filepath.Join(os.TempDir(), fmt.Sprintf("upload-"+nowTime+"-%d", index))
+			err := archiver.Zip.Open(sqlFile, dir)
+			if err != nil {
+				loga.Error(err)
+				continue
+			}
+			delDirs = append(delDirs, dir)
+			err = os.Remove(sqlFile)
+			if err != nil {
+				loga.Error(err)
+			}
+			ifiles := []string{}
+			err = filepath.Walk(dir, func(fpath string, info os.FileInfo, err error) error {
+				if err != nil || info.IsDir() {
+					return err
+				}
+				if strings.ToLower(filepath.Ext(fpath)) != `.sql` {
+					return nil
+				}
+				if strings.Contains(info.Name(), `struct`) {
+					sqlFiles = append(sqlFiles, fpath)
+					return nil
+				}
+				ifiles = append(ifiles, fpath)
+				return nil
+			})
+			sqlFiles = append(sqlFiles, ifiles...)
+		}
+	}
 	for _, sqlFile := range sqlFiles {
 		if len(sqlFile) == 0 {
 			continue
 		}
 		lastIndex := len(args) - 1
 		args[lastIndex] = fmt.Sprintf(args[lastIndex], sqlFile)
-		//log.Println(`mysql`, strings.Join(args, ` `))
+		log.Println(`mysql`, strings.Join(args, ` `))
 		cmd := exec.Command("mysql", args...)
-		if outWriter != nil {
-			stdout, err := cmd.StdoutPipe()
-			if err != nil {
-				return fmt.Errorf(`Failed to import: %v`, err)
-			}
-			_, err = io.Copy(outWriter, stdout)
-			if err != nil {
-				stdout.Close()
-				return fmt.Errorf(`Failed to import: %v`, err)
-			}
-			stdout.Close()
-		}
 		if err := cmd.Start(); err != nil {
 			return fmt.Errorf(`Failed to import: %v`, err)
 		}
@@ -93,24 +136,48 @@ func Import(cfg *driver.DbAuth, sqlFiles []string, outWriter io.Writer, asyncs .
 	return nil
 }
 
+func responseDropzone(err error, ctx echo.Context) error {
+	if err != nil {
+		user := handler.User(ctx)
+		if user != nil {
+			notice.OpenMessage(user.Username, `upload`)
+			notice.Send(user.Username, notice.NewMessageWithValue(`upload`, ctx.T(`文件上传出错`), err.Error()))
+		}
+		return ctx.JSON(echo.H{`error`: err.Error()}, 500)
+	}
+	return ctx.String(`OK`)
+}
+
 func (m *mySQL) Import() error {
 	var err error
 	if m.IsPost() {
+		if len(m.dbName) == 0 {
+			m.fail(m.T(`请选择数据库`))
+			return m.returnTo(m.GenURL(`listDb`))
+		}
 		async := m.Formx(`async`).Bool()
 		var sqlFiles []string
 		saveDir := os.TempDir()
-		err = m.SaveUploadedFiles(`sqlFile[]`, func(fdr *multipart.FileHeader) (string, error) {
+		err = m.SaveUploadedFiles(`file`, func(fdr *multipart.FileHeader) (string, error) {
+			extension := filepath.Ext(fdr.Filename)
+			switch strings.ToLower(extension) {
+			case `.sql`:
+			case `.zip`:
+			default:
+				return ``, errors.New(`只能上传扩展名为“.sql”和“.zip”的文件`)
+			}
 			sqlFile := filepath.Join(saveDir, fdr.Filename)
 			sqlFiles = append(sqlFiles, sqlFile)
 			return sqlFile, nil
 		})
-		err = Import(m.DbAuth, sqlFiles, nil, async)
 		if err != nil {
-			goto END
+			return responseDropzone(err, m.Context)
 		}
-		return nil
+		cfg := *m.DbAuth
+		cfg.Db = m.dbName
+		err = Import(&cfg, sqlFiles, async)
+		return responseDropzone(err, m.Context)
 	}
 
-END:
 	return m.Render(`db/mysql/import`, m.checkErr(err))
 }
