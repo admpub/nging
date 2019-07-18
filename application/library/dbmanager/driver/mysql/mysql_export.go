@@ -75,6 +75,9 @@ func Export(cfg *driver.DbAuth, tables []string, structWriter, dataWriter interf
 	if len(port) == 0 {
 		port = `3306`
 	}
+	if !com.InSlice(cfg.Charset, Charsets) {
+		return errors.New(`字符集charset值无效`)
+	}
 	args := []string{
 		"--default-character-set=" + cfg.Charset,
 		"--single-transaction",

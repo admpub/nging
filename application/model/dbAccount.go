@@ -22,6 +22,7 @@ import (
 	"errors"
 
 	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/library/dbmanager/driver/mysql"
 	"github.com/admpub/nging/application/model/base"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
@@ -40,14 +41,18 @@ type DbAccount struct {
 	*base.Base
 }
 
-func (a *DbAccount) SetOptions() {
+func (a *DbAccount) SetOptions() error {
 	options := echo.H{}
 	charset := a.Formx(`charset`).String()
 	if len(charset) > 0 {
+		if !com.InSlice(charset, mysql.Charsets) {
+			return a.E(`字符集charset值无效`)
+		}
 		options.Set(`charset`, charset)
 	}
 	b, _ := com.JSONEncode(options)
 	a.Options = com.Bytes2str(b)
+	return nil
 }
 
 func (a *DbAccount) setDefaultValue() {

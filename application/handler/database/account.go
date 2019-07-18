@@ -68,8 +68,8 @@ func AccountIndex(ctx echo.Context) error {
 	return ctx.Render(`db/account`, ret)
 }
 
-func setOptions(ctx echo.Context, m *model.DbAccount) {
-	m.SetOptions()
+func setOptions(ctx echo.Context, m *model.DbAccount) error {
+	return m.SetOptions()
 }
 
 func AccountAdd(ctx echo.Context) error {
@@ -79,8 +79,10 @@ func AccountAdd(ctx echo.Context) error {
 		m := model.NewDbAccount(ctx)
 		err = ctx.MustBind(m.DbAccount)
 		if err == nil {
+			err = setOptions(ctx, m)
+		}
+		if err == nil {
 			m.Uid = user.Id
-			setOptions(ctx, m)
 			_, err = m.Add()
 			if err == nil {
 				if ctx.IsAjax() {
@@ -115,10 +117,11 @@ func AccountEdit(ctx echo.Context) error {
 	err = m.Get(nil, cond)
 	if ctx.IsPost() {
 		err = ctx.MustBind(m.DbAccount, echo.ExcludeFieldName(`created`, `uid`))
-
+		if err == nil {
+			err = setOptions(ctx, m)
+		}
 		if err == nil {
 			m.Id = id
-			setOptions(ctx, m)
 			err = m.Edit(id, nil, cond)
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))

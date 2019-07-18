@@ -73,7 +73,10 @@ func Manager(ctx echo.Context) error {
 				m.User = auth.Username
 				m.Password = auth.Password
 				m.Name = auth.Db
-				m.SetOptions()
+				err = m.SetOptions()
+				if err != nil {
+					return err
+				}
 				if accountID < 1 || err == db.ErrNoMoreRows {
 					m.Uid = user.Id
 					_, err = m.Add()
