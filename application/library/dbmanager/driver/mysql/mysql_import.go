@@ -31,6 +31,7 @@ import (
 	"github.com/admpub/errors"
 	loga "github.com/admpub/log"
 	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/library/cron"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/admpub/nging/application/library/notice"
 	"github.com/webx-top/com"
@@ -66,7 +67,7 @@ func Import(cfg *driver.DbAuth, files []string, asyncs ...bool) error {
 		"-p" + cfg.Password,
 		cfg.Db,
 		"-e",
-		"SET FOREIGN_KEY_CHECKS=0;SET UNIQUE_CHECKS=0;source %s;SET FOREIGN_KEY_CHECKS=1;SET UNIQUE_CHECKS=1;",
+		`SET FOREIGN_KEY_CHECKS=0;SET UNIQUE_CHECKS=0;source %s;SET FOREIGN_KEY_CHECKS=1;SET UNIQUE_CHECKS=1;`,
 	}
 	var delDirs []string
 	sqlFiles := []string{}
@@ -116,6 +117,7 @@ func Import(cfg *driver.DbAuth, files []string, asyncs ...bool) error {
 			sqlFiles = append(sqlFiles, ifiles...)
 		}
 	}
+	rec := cron.NewCmdRec(1000)
 	for _, sqlFile := range sqlFiles {
 		if len(sqlFile) == 0 {
 			continue
@@ -124,12 +126,13 @@ func Import(cfg *driver.DbAuth, files []string, asyncs ...bool) error {
 		args[lastIndex] = fmt.Sprintf(args[lastIndex], sqlFile)
 		log.Println(`mysql`, strings.Join(args, ` `))
 		cmd := exec.Command("mysql", args...)
+		cmd.Stderr = rec
 		if err := cmd.Start(); err != nil {
 			return fmt.Errorf(`Failed to import: %v`, err)
 		}
 		if !async {
 			if err := cmd.Wait(); err != nil {
-				return err
+				return errors.New(err.Error() + `: ` + rec.String())
 			}
 		}
 	}

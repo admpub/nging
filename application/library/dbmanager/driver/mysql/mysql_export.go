@@ -34,6 +34,7 @@ import (
 	"github.com/admpub/archiver"
 	"github.com/admpub/errors"
 	loga "github.com/admpub/log"
+	"github.com/admpub/nging/application/library/cron"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
@@ -81,7 +82,7 @@ func Export(cfg *driver.DbAuth, tables []string, structWriter, dataWriter interf
 	args := []string{
 		"--default-character-set=" + cfg.Charset,
 		"--single-transaction",
-		"--column-statistics=0",
+		//"--column-statistics=0",//低版本不支持
 		"--set-gtid-purged=OFF",
 		"--no-autocommit",
 		//"--ignore-table="+cfg.Db+".details",
@@ -109,6 +110,7 @@ func Export(cfg *driver.DbAuth, tables []string, structWriter, dataWriter interf
 	}
 	//args = append(args, `--tables`)
 	args = append(args, tables...)
+	rec := cron.NewCmdRec(1000)
 	for index, writer := range []interface{}{structWriter, dataWriter} {
 		if writer == nil {
 			continue
@@ -118,6 +120,7 @@ func Export(cfg *driver.DbAuth, tables []string, structWriter, dataWriter interf
 		}
 		//log.Println(`mysqldump`, strings.Join(args, ` `))
 		cmd := exec.Command("mysqldump", args...)
+		cmd.Stderr = rec
 		var (
 			w        io.Writer
 			err      error
@@ -165,7 +168,11 @@ func Export(cfg *driver.DbAuth, tables []string, structWriter, dataWriter interf
 			clean(w)
 			return fmt.Errorf(`Failed to backup: %v`, err)
 		}
-		cmd.Wait()
+		if err := cmd.Wait(); err != nil {
+			stdout.Close()
+			clean(w)
+			return errors.New(err.Error() + `: ` + rec.String())
+		}
 		clean(w)
 		stdout.Close()
 		if onFinish != nil {
