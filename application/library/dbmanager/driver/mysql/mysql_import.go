@@ -67,8 +67,9 @@ func Import(cfg *driver.DbAuth, files []string, asyncs ...bool) error {
 		"-p" + cfg.Password,
 		cfg.Db,
 		"-e",
-		`SET FOREIGN_KEY_CHECKS=0;SET UNIQUE_CHECKS=0;source %s;SET FOREIGN_KEY_CHECKS=1;SET UNIQUE_CHECKS=1;`,
+		``,
 	}
+	sqls := `SET FOREIGN_KEY_CHECKS=0;SET UNIQUE_CHECKS=0;source %s;SET FOREIGN_KEY_CHECKS=1;SET UNIQUE_CHECKS=1;`
 	var delDirs []string
 	sqlFiles := []string{}
 	defer func() {
@@ -124,7 +125,7 @@ func Import(cfg *driver.DbAuth, files []string, asyncs ...bool) error {
 		}
 		sqlFile = filepath.ToSlash(sqlFile)
 		lastIndex := len(args) - 1
-		args[lastIndex] = fmt.Sprintf(args[lastIndex], sqlFile)
+		args[lastIndex] = fmt.Sprintf(sqls, sqlFile)
 		log.Println(`mysql`, strings.Join(args, ` `))
 		cmd := exec.Command("mysql", args...)
 		cmd.Stderr = rec
