@@ -122,6 +122,7 @@ func Import(cfg *driver.DbAuth, files []string, asyncs ...bool) error {
 		if len(sqlFile) == 0 {
 			continue
 		}
+		sqlFile = filepath.ToSlash(sqlFile)
 		lastIndex := len(args) - 1
 		args[lastIndex] = fmt.Sprintf(args[lastIndex], sqlFile)
 		log.Println(`mysql`, strings.Join(args, ` `))
