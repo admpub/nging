@@ -31,7 +31,7 @@ $(function(){
 
     $('#my-awesome-dropzone').dropzone({
         url:'{{URI}}',
-        dictDefaultMessage:'{{"可以把sql文件拖到这里来进行上传哦"|T}}<p>{{"支持上传zip压缩包，系统会自动执行sql文件"|T}}</p>'
+        dictDefaultMessage:'{{"可以把sql文件拖到这里来进行上传哦"|T}}<p>{{"支持上传zip压缩包，系统会自动执行sql文件"|T}}<br />{{T "文件名如果包含单词%v则会被优先执行" `<code>struct</code>`|ToHTML}}</p>'
     });
 
 });

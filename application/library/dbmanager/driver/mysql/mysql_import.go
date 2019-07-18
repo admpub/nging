@@ -84,10 +84,15 @@ func Import(cfg *driver.DbAuth, files []string, asyncs ...bool) error {
 		}
 	}()
 	nowTime := com.String(time.Now().Unix())
+	dataFiles := []string{}
 	for index, sqlFile := range files {
 		switch strings.ToLower(filepath.Ext(sqlFile)) {
 		case `.sql`:
-			sqlFiles = append(sqlFiles, sqlFile)
+			if strings.Contains(filepath.Base(sqlFile), `struct`) {
+				sqlFiles = append(sqlFiles, sqlFile)
+			} else {
+				dataFiles = append(dataFiles, sqlFile)
+			}
 		case `.zip`:
 			dir := filepath.Join(os.TempDir(), fmt.Sprintf("upload-"+nowTime+"-%d", index))
 			err := archiver.Zip.Open(sqlFile, dir)
@@ -118,6 +123,7 @@ func Import(cfg *driver.DbAuth, files []string, asyncs ...bool) error {
 			sqlFiles = append(sqlFiles, ifiles...)
 		}
 	}
+	sqlFiles = append(sqlFiles, dataFiles...)
 	rec := cron.NewCmdRec(1000)
 	for _, sqlFile := range sqlFiles {
 		if len(sqlFile) == 0 {
