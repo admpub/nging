@@ -279,7 +279,7 @@ func (m *mySQL) Export() error {
 		cacheKey := com.Md5(com.Dump([]interface{}{tables, output, types}, false))
 
 		var exports map[string]*FileInfos
-		if old, exists := backgrounds.Load(Export); exists {
+		if old, exists := backgrounds.Load(OpExport); exists {
 			exports = old.(map[string]*FileInfos)
 		} else {
 			exports = map[string]*FileInfos{}
