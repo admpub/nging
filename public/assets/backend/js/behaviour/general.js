@@ -875,25 +875,27 @@ var App = function () {
         var hCopy=$(elem).clone();
         eCopy.append(hCopy);
         eCopy.data('offset-left',$(elem).offset().left);//记录偏移左侧
-        var setSize=function(){
+        var setSize=function(init){
+          if(init==null) init=false;
           var cols=hCopy.find('td,th'),rawCols=$(elem).find('td,th');
           rawCols.each(function(index){
-            var col=cols.eq(index),chk=col.find('input:checkbox');
-            if(chk.length>0){
-              var rawChk=rawCols.find('input:checkbox');
-              chk.each(function(idx){
-                rawChk.eq(idx).on('click change',function(){
-                  chk.prop('checked',$(this).prop('checked'));
-                });
-              });
-            }
+            var col=cols.eq(index);
             col.css('width',$(this).width());
+            if(!init)return;
+            var chk=col.find('input:checkbox');
+            if(chk.length<1)return;
+            var rawChk=rawCols.find('input:checkbox');
+            chk.each(function(idx){
+              rawChk.eq(idx).on('click change',function(){
+                chk.prop('checked',$(this).prop('checked'));
+              });
+            });
           });
           var offsetX = $(elem).offset().left;
           var w = $(elem).outerWidth(), h = $(elem).outerHeight()
           eCopy.css({'top':top,'left':offsetX,'width':w,'height':h});
         }
-        setSize();
+        setSize(true);
         eCopy.hide();
         $('body').append(eCopy);
       	$(window).on('scroll',function () {
