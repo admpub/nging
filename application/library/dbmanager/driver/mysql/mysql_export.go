@@ -24,6 +24,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -36,6 +37,7 @@ import (
 	"github.com/admpub/archiver"
 	"github.com/admpub/errors"
 	loga "github.com/admpub/log"
+	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/cron"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/webx-top/com"
@@ -62,18 +64,21 @@ var (
 	SQLTempDir = os.TempDir
 )
 
+const (
+	OpExport = `export`
+	OpImport = `export`
+)
+
+type FileInfos []*FileInfo
+
 type FileInfo struct {
+	Start      time.Time
+	End        time.Time
+	Elapsed    time.Duration
 	Path       string
 	Size       int64
 	Compressed bool
 	Error      string
-}
-
-type ExportResult struct {
-	Start   time.Time
-	End     time.Time
-	Elapsed time.Duration
-	Files   []*FileInfo
 }
 
 func TempDir(op string) string {
@@ -271,8 +276,25 @@ func (m *mySQL) Export() error {
 		}
 		output := m.Form(`output`)
 		types := m.FormValues(`type`)
-		var structWriter, dataWriter interface{}
-		var sqlFiles []string
+		cacheKey := com.Md5(com.Dump([]interface{}{tables, output, types}, false))
+
+		var exports map[string]*FileInfos
+		if old, exists := backgrounds.Load(Export); exists {
+			exports = old.(map[string]*FileInfos)
+		} else {
+			exports = map[string]*FileInfos{}
+		}
+		if _, ok := exports[cacheKey]; !ok {
+			return errors.New(m.T(`任务正在后台处理中，请稍候...`))
+		}
+
+		var (
+			structWriter, dataWriter interface{}
+			sqlFiles                 []string
+			async                    bool
+			fileInfos                = &FileInfos{}
+		)
+		exports[cacheKey] = fileInfos
 		nowTime := com.String(time.Now().Unix())
 		saveDir := TempDir(`export`)
 		switch output {
@@ -287,46 +309,117 @@ func (m *mySQL) Export() error {
 				dataWriter = m.Response()
 			}
 		default:
+			async = true
 			if com.InSlice(`struct`, types) {
 				structFile := filepath.Join(saveDir, m.dbName+`-struct-`+nowTime+`.sql`)
 				sqlFiles = append(sqlFiles, structFile)
 				structWriter = structFile
+				fi := &FileInfo{
+					Start: time.Now(),
+					Path:  structFile,
+				}
+				*fileInfos = append(*fileInfos, fi)
 			}
 			if com.InSlice(`data`, types) {
 				dataFile := filepath.Join(saveDir, m.dbName+`-data-`+nowTime+`.sql`)
 				sqlFiles = append(sqlFiles, dataFile)
 				dataWriter = dataFile
+				fi := &FileInfo{
+					Start: time.Now(),
+					Path:  dataFile,
+				}
+				*fileInfos = append(*fileInfos, fi)
 			}
 		}
 		cfg := *m.DbAuth
 		cfg.Db = m.dbName
-		err = Export(m, &cfg, tables, structWriter, dataWriter, true)
-		if err != nil {
-			loga.Error(err)
+		worker := func(ctx context.Context) error {
+			defer func() {
+				if r := recover(); r != nil {
+					err = fmt.Errorf(`%v`, r)
+				}
+			}()
+			err = Export(ctx, &cfg, tables, structWriter, dataWriter, true)
+			if err != nil {
+				loga.Error(err)
+				return err
+			}
+			if len(sqlFiles) > 0 {
+				now := time.Now()
+				for _, fi := range *fileInfos {
+					fi.End = now
+					fi.Size, err = com.FileSize(fi.Path)
+					if err != nil {
+						fi.Error = err.Error()
+					}
+					fi.Elapsed = fi.End.Sub(fi.Start)
+				}
+				zipFile := filepath.Join(saveDir, m.dbName+"-sql-"+nowTime+".zip")
+				fi := &FileInfo{
+					Start:      now,
+					Path:       zipFile,
+					Compressed: true,
+				}
+				err = archiver.Zip.Make(zipFile, sqlFiles)
+				if err != nil {
+					loga.Error(err)
+					return err
+				}
+				for _, sqlFile := range sqlFiles {
+					os.Remove(sqlFile)
+				}
+				fi.Size, err = com.FileSize(zipFile)
+				if err != nil {
+					fi.Error = err.Error()
+				}
+				fi.End = time.Now()
+				fi.Elapsed = fi.End.Sub(fi.Start)
+				*fileInfos = append(*fileInfos, fi)
+				ioutil.WriteFile(zipFile+`.txt`, com.Str2bytes(com.Dump(fileInfos, false)), os.ModePerm)
+				if _, ok := exports[cacheKey]; ok {
+					delete(exports, cacheKey)
+				}
+				/*
+					fp, err := os.Open(zipFile)
+					if err != nil {
+						loga.Error(err)
+						return err
+					}
+					defer func() {
+						fp.Close()
+						os.Remove(zipFile)
+					}()
+					return m.Attachment(fp, filepath.Base(zipFile))
+				*/
+			}
+			return nil
+		}
+		if !async {
+			ctx, cancel := context.WithCancel(m.StdContext())
+			done := make(chan error)
+			clientGone := m.Response().(http.CloseNotifier).CloseNotify()
+			go func() {
+				for {
+					select {
+					case <-clientGone:
+						cancel()
+						return
+					case <-done:
+						return
+					}
+				}
+			}()
+			err = worker(ctx)
+			done <- err
 			return err
 		}
-		if len(sqlFiles) > 0 {
-			zipFile := filepath.Join(saveDir, m.dbName+"-sql-"+nowTime+".zip")
-			err = archiver.Zip.Make(zipFile, sqlFiles)
-			if err != nil {
-				loga.Error(err)
-				return err
-			}
-			for _, sqlFile := range sqlFiles {
-				os.Remove(sqlFile)
-			}
-			fp, err := os.Open(zipFile)
-			if err != nil {
-				loga.Error(err)
-				return err
-			}
-			defer func() {
-				fp.Close()
-				os.Remove(zipFile)
-			}()
-			return m.Attachment(fp, filepath.Base(zipFile))
-		}
-		return nil
+		data := m.Data()
+		data.SetInfo(m.T(`任务已经在后台成功启动`))
+		data.SetURL(handler.URLFor(`/download/file?path=dbmanager/cache/export`))
+		go worker(m)
+		exports[cacheKey] = fileInfos
+		backgrounds.Store(OpExport, exports)
+		return m.JSON(data)
 	}
 	return m.Redirect(m.GenURL(`listTable`, m.dbName))
 }
