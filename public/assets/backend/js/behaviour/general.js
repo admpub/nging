@@ -805,7 +805,8 @@ var App = function () {
       	var _offset = $(elem).height() + top;
       	var offsetY = $(elem).offset().top + _offset;
       	var w = $(elem).outerWidth(), h = $(elem).outerHeight();
-      	if (autoWith||$(elem).data('auto-width')) $(elem).css('width', w);
+      	if(!autoWith) autoWith=$(elem).data('auto-width');
+      	if(autoWith) $(elem).css('width', w);
       	$(window).on('scroll',function () {
       		var scrollH = $(this).scrollTop() + $(window).height();
       		if (scrollH >= offsetY) {
@@ -823,7 +824,84 @@ var App = function () {
       				$(elem).after('<div style="width:' + w + 'px;height:' + h + 'px" class="fixed-placeholder"></div>');
       			}
       		}
-      	});
+      	});//on-scroll
+        });//end-each
+        $(window).trigger('scroll');
+      },
+      topFloat:function (elems, top, autoWith) {
+      	if ($(elems).length<1) return;
+        if (top == null) top = 0;
+        $(elems).not('[disabled-fixed]').each(function(){
+        var elem=this;
+      	var offsetY = $(elem).offset().top;
+        var w = $(elem).outerWidth(), h = $(elem).outerHeight();
+        if(!autoWith) autoWith=$(elem).data('auto-width');
+      	if(autoWith) $(elem).css('width', w);
+      	$(window).on('scroll',function () {
+      		var scrollH = $(this).scrollTop();
+      		if (scrollH <= offsetY) {
+      			if ($(elem).hasClass('always-top')) {
+      				$(elem).removeClass('always-top');
+      				$(elem).next('.fixed-placeholder').hide();
+      			}
+      			return;
+      		}
+      		if (!$(elem).hasClass('always-top')) {
+      			$(elem).addClass('always-top').css('top',top);
+      			if ($(elem).next('.fixed-placeholder').length > 0) {
+      				$(elem).next('.fixed-placeholder').show();
+      			} else {
+      				$(elem).after('<div style="width:' + w + 'px;height:' + h + 'px" class="fixed-placeholder"></div>');
+      			}
+      		}
+      	});//on-scroll
+        });//end-each
+        $(window).trigger('scroll');
+      },
+      topFloatThead:function (elems, top) {
+      	if ($(elems).length<1) return;
+        if (top == null) top = 0;
+        $(elems).not('[disabled-fixed]').each(function(){
+        $(this).attr('disabled-fixed','fixed');
+        var elem=this;
+      	var offsetY = $(elem).offset().top, cid = $(elem).data('copy');
+        if(cid) {
+          $('#tableCopy'+cid).remove();
+        }else{
+          cid = Math.random();
+          $(elem).data('copy',cid);
+        }
+        var eCopy=$('<table class="'+$(elem).parent('table').attr('class')+' always-top" style="background-color:white" id="tableCopy'+cid+'"></table>');
+        var hCopy=$(elem).clone();
+        eCopy.append(hCopy);
+        eCopy.data('offset-left',$(elem).offset().left);//记录偏移左侧
+        var setSize=function(){
+          var cols=hCopy.find('td,th'),rawCols=$(elem).find('td,th');
+          rawCols.each(function(index){
+            var col=cols.eq(index),chk=col.find('input:checkbox');
+            if(chk.length>0){
+              var rawChk=rawCols.find('input:checkbox');
+              chk.each(function(idx){
+                rawChk.eq(idx).on('click change',function(){
+                  chk.prop('checked',$(this).prop('checked'));
+                });
+              });
+            }
+            col.css('width',$(this).width());
+          });
+          var offsetX = $(elem).offset().left;
+          var w = $(elem).outerWidth(), h = $(elem).outerHeight()
+          eCopy.css({'top':top,'left':offsetX,'width':w,'height':h});
+        }
+        setSize();
+        eCopy.hide();
+        $('body').append(eCopy);
+      	$(window).on('scroll',function () {
+          if(eCopy.data('offset-left')!=$(elem).offset().left)setSize();
+          var scrollH = $(this).scrollTop();
+          if (scrollH <= offsetY) return eCopy.hide();
+      		eCopy.show();
+        });
       });
       $(window).trigger('scroll');
     },

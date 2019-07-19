@@ -53,7 +53,7 @@
 						</tr>
                         {{end}}
 					</tbody>
-				</table>		
+				</table>
 			    </div>
                 <fieldset>
                      <legend class="sm-padding-bottom">{{"已选中"|T}} (<span id="selected-items-count">0</span>)</legend>
@@ -169,6 +169,7 @@ function perttyCheckbox(){
     });
 }
 $(function(){
+    App.topFloatThead('table>thead',$('#head-nav').height());
     perttyCheckbox();
     App.attachCheckedAll('#checkedAll','input[type=checkbox].check-table','#selected-items-count');
     $('#move-table-modal .modal-body').html($('#tpl-move-table-form').html());
