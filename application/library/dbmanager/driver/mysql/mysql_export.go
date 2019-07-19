@@ -19,6 +19,7 @@
 package mysql
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -38,6 +39,7 @@ import (
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
 )
 
 /*
@@ -52,10 +54,25 @@ mysqldump 参数说明：
 --tables 	表列表（单个表时可省略）
 */
 
-var cleanRegExp = regexp.MustCompile(` AUTO_INCREMENT=[0-9]*\s*`)
+var (
+	cleanRegExp = regexp.MustCompile(` AUTO_INCREMENT=[0-9]*\s*`)
+	// SQLTempDir sql文件缓存目录获取函数(用于导入导出SQL)
+	SQLTempDir = os.TempDir
+)
+
+func TempDir(op string) string {
+	dir := filepath.Join(SQLTempDir(), `dbmanager/cache`, op)
+	if !com.IsDir(dir) {
+		err := os.MkdirAll(dir, os.ModePerm)
+		if err != nil {
+			loga.Error(err)
+		}
+	}
+	return dir
+}
 
 // Export 导出SQL文件
-func Export(cfg *driver.DbAuth, tables []string, structWriter, dataWriter interface{}, resetAutoIncrements ...bool) error {
+func Export(ctx context.Context, cfg *driver.DbAuth, tables []string, structWriter, dataWriter interface{}, resetAutoIncrements ...bool) error {
 	if len(tables) == 0 {
 		return errors.New(`No table selected for export`)
 	}
@@ -119,7 +136,7 @@ func Export(cfg *driver.DbAuth, tables []string, structWriter, dataWriter interf
 			args[typeOptIndex] = `-t` //导出数据
 		}
 		//log.Println(`mysqldump`, strings.Join(args, ` `))
-		cmd := exec.Command("mysqldump", args...)
+		cmd := exec.CommandContext(ctx, "mysqldump", args...)
 		cmd.Stderr = rec
 		var (
 			w        io.Writer
@@ -241,15 +258,19 @@ func (m *mySQL) Export() error {
 		var structWriter, dataWriter interface{}
 		var sqlFiles []string
 		nowTime := com.String(time.Now().Unix())
-		saveDir := os.TempDir()
-		if output == `open` {
+		saveDir := TempDir(`export`)
+		switch output {
+		case `down`:
+			m.Response().Header().Set(echo.HeaderContentDisposition, fmt.Sprintf("attachment; filename=%q", m.dbName+"-sql-"+nowTime+".sql"))
+			fallthrough
+		case `open`:
 			if com.InSlice(`struct`, types) {
 				structWriter = m.Response()
 			}
 			if com.InSlice(`data`, types) {
 				dataWriter = m.Response()
 			}
-		} else {
+		default:
 			if com.InSlice(`struct`, types) {
 				structFile := filepath.Join(saveDir, m.dbName+`-struct-`+nowTime+`.sql`)
 				sqlFiles = append(sqlFiles, structFile)
@@ -263,7 +284,7 @@ func (m *mySQL) Export() error {
 		}
 		cfg := *m.DbAuth
 		cfg.Db = m.dbName
-		err = Export(&cfg, tables, structWriter, dataWriter, true)
+		err = Export(m, &cfg, tables, structWriter, dataWriter, true)
 		if err != nil {
 			loga.Error(err)
 			return err

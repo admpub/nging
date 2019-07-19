@@ -54,7 +54,6 @@ func (g *GoProcess) IsExited() bool {
 }
 
 func Exit(k interface{}) (bool, error) {
-	println(`===================1`)
 	proc, exists := GoProcs.Load(k)
 	if exists {
 		if p, ok := proc.(*GoProcess); ok {

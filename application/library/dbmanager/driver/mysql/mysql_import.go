@@ -18,6 +18,7 @@
 package mysql
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"mime/multipart"
@@ -39,7 +40,7 @@ import (
 )
 
 // Import 导入SQL文件
-func Import(cfg *driver.DbAuth, files []string, asyncs ...bool) error {
+func Import(ctx context.Context, cfg *driver.DbAuth, files []string, asyncs ...bool) error {
 	if len(files) == 0 {
 		return nil
 	}
@@ -94,7 +95,7 @@ func Import(cfg *driver.DbAuth, files []string, asyncs ...bool) error {
 				dataFiles = append(dataFiles, sqlFile)
 			}
 		case `.zip`:
-			dir := filepath.Join(os.TempDir(), fmt.Sprintf("upload-"+nowTime+"-%d", index))
+			dir := filepath.Join(TempDir(`import`), fmt.Sprintf("upload-"+nowTime+"-%d", index))
 			err := archiver.Zip.Open(sqlFile, dir)
 			if err != nil {
 				loga.Error(err)
@@ -133,7 +134,7 @@ func Import(cfg *driver.DbAuth, files []string, asyncs ...bool) error {
 		lastIndex := len(args) - 1
 		args[lastIndex] = fmt.Sprintf(sqls, sqlFile)
 		log.Println(`mysql`, strings.Join(args, ` `))
-		cmd := exec.Command("mysql", args...)
+		cmd := exec.CommandContext(ctx, "mysql", args...)
 		cmd.Stderr = rec
 		if err := cmd.Start(); err != nil {
 			return fmt.Errorf(`Failed to import: %v`, err)
@@ -168,7 +169,7 @@ func (m *mySQL) Import() error {
 		}
 		async := m.Formx(`async`).Bool()
 		var sqlFiles []string
-		saveDir := os.TempDir()
+		saveDir := TempDir(`import`)
 		err = m.SaveUploadedFiles(`file`, func(fdr *multipart.FileHeader) (string, error) {
 			extension := filepath.Ext(fdr.Filename)
 			switch strings.ToLower(extension) {
@@ -186,7 +187,7 @@ func (m *mySQL) Import() error {
 		}
 		cfg := *m.DbAuth
 		cfg.Db = m.dbName
-		err = Import(&cfg, sqlFiles, async)
+		err = Import(m, &cfg, sqlFiles, async)
 		return responseDropzone(err, m.Context)
 	}
 

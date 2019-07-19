@@ -19,7 +19,6 @@
 package collector
 
 import (
-	"context"
 	"strings"
 
 	"github.com/admpub/gopiper"
@@ -517,7 +516,6 @@ func RuleCollect(c echo.Context) error {
 			}
 			return c.JSON(data)
 		}
-		ctx := context.Background()
 		err = Go(m.Id, collected, func() {
 			var noticeSender sender.Notice
 			progress := notice.NewProgress()
@@ -557,7 +555,7 @@ func RuleCollect(c echo.Context) error {
 				progress.Complete = true
 				noticeSender(c.T(`[规则:%d] 采集完毕(%d/%d)`, id, progress.Finish, progress.Total), 1, progress)
 			}
-		}, ctx)
+		}, c)
 		if err != nil {
 			data.SetError(err)
 		}
