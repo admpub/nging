@@ -119,8 +119,12 @@
             <label for="export-output-open">{{"打开"|T|ToJS}}</label>
         </div>
         <div class="radio radio-primary radio-inline">
-            <input id="export-output-save" type="radio" name="output" value="save" checked="checked">
-            <label for="export-output-save">{{"保存"|T|ToJS}}</label>
+            <input id="export-output-down" type="radio" name="output" value="down" checked="checked">
+            <label for="export-output-down">{{"下载"|T|ToJS}}</label>
+        </div>
+        <div class="radio radio-primary radio-inline" data-toggle="tooltip" title="{{"移交后台异步处理"|T|ToJS}}">
+            <input id="export-output-compress" type="radio" name="output" value="compress" checked="checked">
+            <label for="export-output-compress">{{"打包"|T|ToJS}}</label>
         </div>
     </div>
     <div class="form-group">

@@ -30,6 +30,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/admpub/archiver"
@@ -56,9 +57,24 @@ mysqldump 参数说明：
 
 var (
 	cleanRegExp = regexp.MustCompile(` AUTO_INCREMENT=[0-9]*\s*`)
+	backgrounds = sync.Map{} //后台导入导出任务
 	// SQLTempDir sql文件缓存目录获取函数(用于导入导出SQL)
 	SQLTempDir = os.TempDir
 )
+
+type FileInfo struct {
+	Path       string
+	Size       int64
+	Compressed bool
+	Error      string
+}
+
+type ExportResult struct {
+	Start   time.Time
+	End     time.Time
+	Elapsed time.Duration
+	Files   []*FileInfo
+}
 
 func TempDir(op string) string {
 	dir := filepath.Join(SQLTempDir(), `dbmanager/cache`, op)
