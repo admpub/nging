@@ -66,7 +66,7 @@ var (
 
 const (
 	OpExport = `export`
-	OpImport = `export`
+	OpImport = `import`
 )
 
 type FileInfos []*FileInfo
@@ -284,7 +284,7 @@ func (m *mySQL) Export() error {
 		} else {
 			exports = map[string]*FileInfos{}
 		}
-		if _, ok := exports[cacheKey]; !ok {
+		if _, ok := exports[cacheKey]; ok {
 			return errors.New(m.T(`任务正在后台处理中，请稍候...`))
 		}
 
@@ -379,25 +379,13 @@ func (m *mySQL) Export() error {
 				if _, ok := exports[cacheKey]; ok {
 					delete(exports, cacheKey)
 				}
-				/*
-					fp, err := os.Open(zipFile)
-					if err != nil {
-						loga.Error(err)
-						return err
-					}
-					defer func() {
-						fp.Close()
-						os.Remove(zipFile)
-					}()
-					return m.Attachment(fp, filepath.Base(zipFile))
-				*/
 			}
 			return nil
 		}
 		if !async {
 			ctx, cancel := context.WithCancel(m.StdContext())
-			done := make(chan error)
-			clientGone := m.Response().(http.CloseNotifier).CloseNotify()
+			done := make(chan struct{})
+			clientGone := m.Response().StdResponseWriter().(http.CloseNotifier).CloseNotify()
 			go func() {
 				for {
 					select {
@@ -410,7 +398,7 @@ func (m *mySQL) Export() error {
 				}
 			}()
 			err = worker(ctx)
-			done <- err
+			done <- struct{}{}
 			return err
 		}
 		data := m.Data()

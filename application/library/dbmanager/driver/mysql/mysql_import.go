@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"log"
 	"mime/multipart"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -187,7 +188,24 @@ func (m *mySQL) Import() error {
 		}
 		cfg := *m.DbAuth
 		cfg.Db = m.dbName
-		err = Import(m, &cfg, sqlFiles, async)
+
+		ctx, cancel := context.WithCancel(m.StdContext())
+		done := make(chan struct{})
+		clientGone := m.Response().StdResponseWriter().(http.CloseNotifier).CloseNotify()
+		go func() {
+			for {
+				select {
+				case <-clientGone:
+					cancel()
+					return
+				case <-done:
+					return
+				}
+			}
+		}()
+		err = Import(ctx, &cfg, sqlFiles, async)
+		done <- struct{}{}
+
 		return responseDropzone(err, m.Context)
 	}
 

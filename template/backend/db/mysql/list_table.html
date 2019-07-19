@@ -142,6 +142,7 @@
 </script>
 <script>
 var currentDb='{{Stored.dbName}}';
+var downloadTips='{{`请稍后到“<span class="label label-primary">离线下载</span> &gt; <span class="label label-primary">文件管理</span> &gt; <span class="label label-primary">dbmanager/cache/export</span>”中下载`|T|ToHTML}}';
 function refreshList(){
     $.get(window.location.href,{'_pjax':'#tbody-content'},function(r){
         var e=$(r);
@@ -201,9 +202,18 @@ $(function(){
             }
         },'json');
     });
-
     $('#export-table-modal .btn-primary:last').removeClass('md-close').on('click',function(){
-        $('#form-export-settings').submit();
+        var form=$('#form-export-settings');
+        if(!$('#export-output-compress').prop('checked')){
+            return form.submit();
+        }
+        $.post(form.attr('action'),form.serializeArray(),function(r){
+            if(r.Code<1){
+                return App.message({title:App.i18n.SYS_INFO,text:r.Info,class_name:'danger'},false);
+            }
+            App.message({title:App.i18n.SYS_INFO,text:r.Info+'<br /><a href="'+r.URL+'" target="_blank" style="color:white">'+downloadTips+'</a>',class_name:'success'},false);
+            $('#export-table-modal').niftyModal('hide');
+        },'json');
     });
 
     $('#export-selected').on('click',function(event){
