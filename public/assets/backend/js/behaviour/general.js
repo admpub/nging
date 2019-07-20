@@ -915,7 +915,7 @@ var App = function () {
         }
         setSize(true);
         eCopy.hide();
-        table.append(eCopy);
+        table.after(eCopy);
       	$(window).on('scroll',function () {
           setSize();
           var scrollH = $(this).scrollTop();
