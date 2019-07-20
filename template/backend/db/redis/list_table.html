@@ -13,12 +13,16 @@
 				<i class="fa fa-plus"></i>
 				{{"创建"|T}}
 			</a>
+			<a href="javascript:;" id="delete-keys" class="btn btn-danger pull-right">
+				<i class="fa fa-times"></i>
+				{{"删除"|T}}
+			</a>
             <h3>Keys</h3>
           </div>
           <div class="content">
              <div class="table-responsive">
 				<table class="table no-border hover blue">
-					<thead class="no-border">
+					<thead class="no-border auto-fixed">
 						<tr>
 							<th style="width:30px"><div class="checkbox checkbox-primary no-margin-y"><input type="checkbox" id="checkedAll"><label for="checkedAll"></label></div></th>
 							<th><strong>{{"Key"|T}}</strong></th>
@@ -46,4 +50,28 @@
 
 {{Block "footer"}}
 {{Super}}
+<script>
+$(function(){
+	App.attachCheckedAll('#checkedAll','#tbody-content input[type=checkbox][name="key[]"]');
+	
+    $('#delete-keys').off().on('click',function(r){
+		var keys=[];
+		$('#tbody-content input[type=checkbox][name="key[]"]:checked').each(function(){
+			keys.push($(this).val());
+		});
+		if(keys.length<1){
+			return App.message({text:'{{"请选择要删除的Key"|T}}',time:5000,sticky:false,class_name:'error'});
+		}
+        if(!confirm('{{T "确定要删除“%s”吗？" "#"}}'.replace('#',keys.join(', ')))) return;
+        $.get('{{dbMgrURL "modifyTable" Stored.dbName}}',{key:keys,operate:'delete'},function(r){
+            if(r.Code==1){
+              window.setTimeout(function(){
+                window.location.reload();
+              },3000);
+            }
+			App.message({text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
+        },'json');
+    });
+});
+</script>
 {{/Block}}

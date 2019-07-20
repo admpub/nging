@@ -182,7 +182,7 @@
 $(function(){
     $('#delete-key').off().on('click',function(r){
         if(!confirm('{{T "确定要删除“%s”吗？" $table}}')) return;
-        $.get('{{dbMgrURL "modifyTable" Stored.dbName $table}}',{key:'{$table}',operate:'delete'},function(r){
+        $.get('{{dbMgrURL "modifyTable" Stored.dbName $table}}',{key:'{{$table}}',operate:'delete'},function(r){
             if(r.Code==1){
               window.setTimeout(function(){
                 window.location='{{dbMgrURL "info"}}';

@@ -152,6 +152,30 @@ func (r *Redis) ModifyTable() error {
 	case `delete`:
 		data := r.Data()
 		key := r.Form(`key`)
+		if len(key) == 0 {
+			keys := r.FormValues(`key[]`)
+			dels := []string{}
+			for _, key := range keys {
+				_, err = r.DeleteKey(key)
+				if err != nil {
+					var msg string
+					if len(dels) > 0 {
+						msg = r.T(`已经成功删除Key“%v”`, strings.Join(dels, `, `))
+						msg += `, ` + r.T(`但删除Key“%v”失败: %v`, key, err)
+					} else {
+						msg = r.T(`删除Key“%v”失败: %v`, key, err)
+					}
+					return r.JSON(data.SetInfo(msg), 0)
+				}
+				dels = append(dels, key)
+			}
+			if len(dels) == len(keys) {
+				data.SetInfo(r.T(`已经成功删除`), 1)
+			} else {
+				data.SetInfo(r.T(`已经成功删除Key“%v”`, strings.Join(dels, `, `)), 1)
+			}
+			return r.JSON(data)
+		}
 		_, err = r.DeleteKey(key)
 		if err != nil {
 			data.SetError(err)
