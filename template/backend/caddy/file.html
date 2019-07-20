@@ -16,15 +16,7 @@
 {{/Block}}
 
 {{Block "head"}}
-<link rel="stylesheet" href="__ASSETS__/js/dropzone/min/dropzone.min.css" />
-<!-- codemirror -->
-<link rel="stylesheet" href="__ASSETS__/js/codemirror/lib/codemirror.min.css">
-<link rel="stylesheet" href="__ASSETS__/js/codemirror/addon/display/fullscreen.css">
-<link rel="stylesheet" href="__ASSETS__/js/codemirror/theme/night.css">
-<script src="__ASSETS__/js/codemirror/lib/codemirror.min.js"></script>
-<script src="__ASSETS__/js/codemirror/addon/mode/loadmode.js"></script>
-<script src="__ASSETS__/js/codemirror/mode/meta.js"></script>
-<script src="__ASSETS__/js/codemirror/addon/display/fullscreen.js"></script>
+{{Include "caddy/file.head"}}
 {{/Block}}
 
 {{Block "main"}}
@@ -98,11 +90,20 @@
                                             <a title="{{"删除"|T}}" class="label label-danger" href="__BACKEND__/caddy/vhost_file?id={{Stored.data.Id}}&do=delete&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="return confirm('{{T "真的要删除“%v”吗？" $v.Name}}');" data-toggle="tooltip">
                                             <i class="fa fa-times"></i>
                                             </a>
-                                            {{if and (not $v.IsDir) (Editable $v.Name)}}
+                                            {{if not $v.IsDir}}
+                                            {{if Editable $v.Name}}
                                             &nbsp;
                                             <a title="{{"编辑"|T}}" class="label label-success" href="javascript:;" data-url="__BACKEND__/caddy/vhost_file?id={{Stored.data.Id}}&do=edit&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileEdit(this,'{{$v.Name}}')" data-toggle="tooltip">
                                             <i class="fa fa-pencil"></i>
                                             </a>
+                                            {{end}}
+                                            {{$mediaMime:=Playable $v.Name}}
+                                            {{if $mediaMime}}
+                                            &nbsp;
+                                            <a title="{{"播放"|T}}" class="label label-primary" href="javascript:;" playable data-mime="{{$mediaMime}}" data-name="{{$v.Name}}" data-url="__BACKEND__/caddy/vhost_file?id={{Stored.data.Id}}&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="filePlay(this)" data-toggle="tooltip">
+                                            <i class="fa fa-play"></i>
+                                            </a>
+                                            {{end}}
                                             {{end}}
                                         </td>
 									</tr>
@@ -117,25 +118,11 @@
 {{/Block}}
 
 {{Block "footer"}}
-{{Modal "__TMPL__/caddy/file.yaml"}}
-{{Modal "__TMPL__/caddy/file_zip.yaml"}}
-{{Modal "__TMPL__/caddy/file_edit.yaml"}}
-{{Modal "__TMPL__/caddy/file_rename.yaml"}}
-{{Modal "__TMPL__/caddy/file_mkdir.yaml"}}
-<script type="text/javascript" src="__ASSETS__/js/dropzone/min/dropzone.min.js"></script>
+{{Include "caddy/file.script"}}
 <script>
 function uploadURL(vhostId,currentPath){
     return '__BACKEND__/caddy/vhost_file?id='+vhostId+'&do=upload&path='+encodeURIComponent(currentPath);
 }
-function refreshList() {
-    App.loading('show');
-    $.get(window.location.href,{'_pjax':'tbody-content'},function(r){
-        var e=$(r);
-        $('#tbody-content').html(e.find('#tbody-content').html());
-        App.loading('hide');
-    },'html');
-}
-var dropzone,dropzoneZIP,editor;
 function initDropzone() {
     $('#multi-upload-dropzone').dropzone({
         url:uploadURL('{{Stored.data.Id}}','{{Stored.path}}'),
@@ -146,179 +133,7 @@ function initDropzone() {
         dictDefaultMessage:'{{"可以把文件拖到这里来进行上传哦"|T}}<p>{{"仅支持上传zip压缩包。成功解压到当前目录后，该压缩包会被自动删除"|T}}</p>',
         acceptedFiles:'application/zip,application/x-zip-compressed'
     });
-    
-    dropzone=$('#multi-upload-dropzone').get(0).dropzone;
-    dropzoneZIP=$('#multi-upload-zip-dropzone').get(0).dropzone;
 }
-function initCodeMirrorEditor() {
-    if(editor)return;
-    editor = CodeMirror.fromTextArea($("#file-edit-content")[0], {
-      lineNumbers: true,
-      theme: "night",
-      extraKeys: {
-        "F11": function(cm) {
-          cm.setOption("fullScreen", !cm.getOption("fullScreen"));
-        },
-        "Esc": function(cm) {
-          if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
-        }
-      }
-    });
-    editor.setOption('lineWrapping', true);
-    editor.setSize('auto', 'auto');
-    $('#file-edit-modal .modal-footer .btn-success').on('click',function(){
-        var url=$(this).data('url');
-        var enc=$('#use-encoding-open').val();
-        if(!enc)enc='';
-        $.post(url,{content:editor.getValue(),encoding:enc},function(r){
-            if(r.Code!=1)return App.message({title: '{{"系统消息"|T}}', text: r.Info},false);
-            return App.message({title: '{{"系统消息"|T}}', text: '{{"保存成功"|T}}'},false);
-        },'json');
-    });
-    $('#file-edit-modal .modal-body').css('padding',0);
-    $('#use-encoding-open').on('change',function(){
-        var enc=$(this).val();
-        fileReopen(enc);
-    });
-    
-}
-
-function fileReopen(encoding,url) {
-    App.loading('show');
-    if(url==null)url=$('#file-edit-modal .modal-footer .btn-success').data('url');
-    $.get(url,{encoding:encoding},function(r){
-        App.loading('hide');
-        if(r.Code!=1)return App.message({title: '{{"系统消息"|T}}', text: r.Info},false);
-        editor.setValue(r.Data);
-    },'json');
-}
-
-function fileEdit(obj,file) {
-    var url=$(obj).data('url');
-    $('#file-edit-modal .modal-footer .btn-success').data('url',url);
-    App.loading('show');
-    $.get(url,{},function(r){
-        App.loading('hide');
-        if(r.Code!=1)return App.message({title: '{{"系统消息"|T}}', text: r.Info},false);
-        $('#file-edit-modal .modal-header h3').html('{{"编辑文件"|T}}: '+file);
-        $('#file-edit-modal').niftyModal('show',{
-            afterOpen: function(modal) {
-                editor.setValue(r.Data);
-                codeMirrorChangeMode(editor,file);
-            },
-            afterClose: function(modal) {
-                $('#use-encoding-open').find('option:selected').prop('selected',false);
-            }
-        });
-    },'json');
-}
-
-function fileRename(obj,file,isDir) {
-    var url=$(obj).data('url');
-    $('#file-rename-modal .modal-footer .btn-primary:last').data('url',url);
-    $('#file-rename-modal .modal-header h3').html((isDir ? '{{"修改文件夹名"|T}}' : '{{"修改文件名"|T}}')+': '+file);
-    $('#file-rename-modal').niftyModal('show',{afterOpen:function(modal){
-        $('#file-rename-input').val(file);
-    }});
-}
-
-function fileMkdir(obj) {
-    var url=$(obj).data('url');
-    $('#file-mkdir-modal .modal-footer .btn-primary:last').data('url',url);
-    $('#file-mkdir-modal .modal-header h3').html('{{"新建文件夹"|T}}');
-    $('#file-mkdir-modal').niftyModal('show',{afterOpen:function(modal){
-        $('#file-mkdir-input').val('');
-        $('#file-mkdir-input').focus();
-    }});
-}
-
-function codeMirrorChangeMode(editor,val) {
-  var m, mode, spec;
-  if (m = /.+\.([^.]+)$/.exec(val)) {
-    var info = CodeMirror.findModeByExtension(m[1]);
-    if (info) {
-      mode = info.mode;
-      spec = info.mime;
-    }
-  } else if (/\//.test(val)) {
-    var info = CodeMirror.findModeByMIME(val);
-    if (info) {
-      mode = info.mode;
-      spec = val;
-    }
-  } else {
-    mode = spec = val;
-  }
-  if (mode) {
-    editor.setOption("mode", spec);
-    CodeMirror.autoLoadMode(editor, mode);
-  } else {
-    console.log("Could not find a mode corresponding to " + val);
-  }
-}
-Dropzone.autoDiscover=false;
-CodeMirror.modeURL = "__ASSETS__/js/codemirror/mode/%N/%N.js";
-$(function(){
-    initDropzone();
-	$('#uploadBtn').off().on('click',function(event){
-		$('#multi-upload-modal').niftyModal('show',{afterClose:function(modal){
-            dropzone.removeAllFiles();
-            refreshList();
-        }});
-	});
-    $('#uploadZipBtn').off().on('click',function(event){
-		$('#multi-upload-zip-modal').niftyModal('show',{afterClose:function(modal){
-            dropzoneZIP.removeAllFiles();
-            refreshList();
-        }});
-	});
-    $(window).off().on('resize',function(){
-        $('#file-edit-modal').css({height:$(window).height(),width:'100%','max-width':'100%',left:0,top:0,transform:'none'});
-        $('#file-edit-form').css({height:$(window).height()-150,width:'100%','max-width':'100%',overflow:'auto'});
-    });
-    $(window).trigger('resize');
-    initCodeMirrorEditor();
-    $('#file-rename-modal .modal-footer .btn-primary:last').off().on('click',function(){
-        var url=$(this).data('url');
-        App.loading('show');
-        $.post(url,{name:$('#file-rename-input').val()},function(r){
-            App.loading('hide');
-            if(r.Code!=1)return App.message({title: '{{"系统消息"|T}}', text: r.Info},false);
-            App.message({title: '{{"系统消息"|T}}', text: '{{"保存成功"|T}}'},false);
-            refreshList();
-        },'json');
-    });
-    $('#file-mkdir-modal .modal-footer .btn-primary:last').off().on('click',function(){
-        var url=$(this).data('url');
-        App.loading('show');
-        $.post(url,{name:$('#file-mkdir-input').val()},function(r){
-            App.loading('hide');
-            if(r.Code!=1)return App.message({title: '{{"系统消息"|T}}', text: r.Info},false);
-            App.message({title: '{{"系统消息"|T}}', text: '{{"创建成功"|T}}'},false);
-            refreshList();
-        },'json');
-    });
-    $('#query-current-path').on('keyup',function(event){
-        var q=$(this).val();
-        if(q==''){
-            $('#tbody-content').children('tr:not(:visible)').show();
-            return;
-        }
-        $('#tbody-content').children('tr:not([item*="'+q+'"])').hide();
-        $('#tbody-content').children('tr[item*="'+q+'"]:not(:visible)').show();
-        if(event.keyCode==13){
-            var tr=$('#tbody-content').children('tr:visible');
-            if(tr.length==1){
-                var a=tr.children('td:first').children('a:first');
-                var url=a.attr('href');
-                window.location=url;
-                return;
-            }
-        }
-    }).focus();
-    $('#btn-query-current-path').on('click',function(){
-        $('#query-current-path').trigger('keyup');
-    });
-});
 </script>
+<script type="text/javascript" src="__ASSETS__/js/behaviour/page/file.min.js"></script>
 {{/Block}}

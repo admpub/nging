@@ -33,15 +33,16 @@ import (
 	"github.com/webx-top/echo"
 )
 
+var downloadDir = func() string {
+	if len(config.DefaultConfig.Download.SavePath) == 0 {
+		return service.GetDownloadPath()
+	}
+	return config.DefaultConfig.Download.SavePath
+}
+
 func init() {
 	server := &service.DServ{}
 	server.SetTmpl(`download/index`)
-	downloadDir := func() string {
-		if len(config.DefaultConfig.Download.SavePath) == 0 {
-			return service.GetDownloadPath()
-		}
-		return config.DefaultConfig.Download.SavePath
-	}
 	server.SetSavePath(downloadDir)
 	mysql.SQLTempDir = downloadDir //将SQL文件缓存到下载目录里面方便管理
 	handler.RegisterToGroup(`/download`, func(g echo.RouteRegister) {
@@ -54,12 +55,7 @@ func File(ctx echo.Context) error {
 	var err error
 	filePath := ctx.Form(`path`)
 	do := ctx.Form(`do`)
-	var root string
-	if len(config.DefaultConfig.Download.SavePath) == 0 {
-		root = service.GetDownloadPath()
-	} else {
-		root = config.DefaultConfig.Download.SavePath
-	}
+	root := downloadDir()
 	mgr := filemanager.New(root, config.DefaultConfig.Sys.EditableFileMaxBytes, ctx)
 	absPath := root
 	var exit bool
@@ -85,11 +81,6 @@ func File(ctx echo.Context) error {
 			}
 		}
 		return ctx.JSON(data)
-	case `play`:
-		if _, ok := caddy.Playable(absPath); !ok {
-			return ctx.E(`此文件不能在线播放`)
-		}
-		return ctx.File(absPath)
 	case `rename`:
 		data := ctx.Data()
 		newName := ctx.Form(`name`)
