@@ -1,0 +1,9 @@
+Id : "file-play-modal"
+Custom : true
+HeadTitle : "播放"
+Title : ""
+Animate : "none"
+HelpText : ""
+Content : """<video-js id="file-play-video" class="vjs-default-skin" width=500 height=500 controls><source src="" type=""></video-js>"""
+Type : "success"
+ExtButtons : []

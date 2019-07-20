@@ -85,6 +85,11 @@ func File(ctx echo.Context) error {
 			}
 		}
 		return ctx.JSON(data)
+	case `play`:
+		if _, ok := caddy.Playable(absPath); !ok {
+			return ctx.E(`此文件不能在线播放`)
+		}
+		return ctx.File(absPath)
 	case `rename`:
 		data := ctx.Data()
 		newName := ctx.Form(`name`)
@@ -149,6 +154,10 @@ func File(ctx echo.Context) error {
 	ctx.SetFunc(`Editable`, func(fileName string) bool {
 		_, ok := caddy.Editable(fileName)
 		return ok
+	})
+	ctx.SetFunc(`Playable`, func(fileName string) string {
+		mime, _ := caddy.Playable(fileName)
+		return mime
 	})
 	return ctx.Render(`download/file`, err)
 }

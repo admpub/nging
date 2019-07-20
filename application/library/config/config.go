@@ -59,6 +59,7 @@ type Config struct {
 		EditableFileExtensions map[string]string `json:"editableFileExtensions"`
 		EditableFileMaxSize    string            `json:"editableFileMaxSize"`
 		EditableFileMaxBytes   int64             `json:"editableFileMaxBytes"`
+		PlayableFileExtensions map[string]string `json:"playableFileExtensions"`
 		ErrorPages             map[int]string    `json:"errorPages"`
 		CmdTimeout             string            `json:"cmdTimeout"`
 		CmdTimeoutDuration     time.Duration     `json:"-"`

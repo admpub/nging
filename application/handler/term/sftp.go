@@ -373,6 +373,10 @@ func Sftp(ctx echo.Context) error {
 		_, ok := caddy.Editable(fileName)
 		return ok
 	})
+	ctx.SetFunc(`Playable`, func(fileName string) string {
+		mime, _ := caddy.Playable(fileName)
+		return mime
+	})
 	ctx.Set(`data`, m.SshUser)
 	return ctx.Render(`term/sftp`, err)
 }

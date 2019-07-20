@@ -16,6 +16,7 @@
 
 {{Block "head"}}
 <link rel="stylesheet" href="__ASSETS__/js/dropzone/min/dropzone.min.css" />
+<link rel="stylesheet" href="__ASSETS__/js/videojs/video-js.min.css" />
 <!-- codemirror -->
 <link rel="stylesheet" href="__ASSETS__/js/codemirror/lib/codemirror.min.css">
 <link rel="stylesheet" href="__ASSETS__/js/codemirror/addon/display/fullscreen.css">
@@ -97,11 +98,20 @@
                                             <a title="{{"删除"|T}}" class="label label-danger" href="__BACKEND__/download/file?do=delete&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="return confirm('{{T "真的要删除“%v”吗？" $v.Name}}');" data-toggle="tooltip">
                                             <i class="fa fa-times"></i>
                                             </a>
-                                            {{if and (not $v.IsDir) (Editable $v.Name)}}
+                                            {{if not $v.IsDir}}
+                                            {{if Editable $v.Name}}
                                             &nbsp;
                                             <a title="{{"编辑"|T}}" class="label label-success" href="javascript:;" data-url="__BACKEND__/download/file?do=edit&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileEdit(this,'{{$v.Name}}')" data-toggle="tooltip">
                                             <i class="fa fa-pencil"></i>
                                             </a>
+                                            {{end}}
+                                            {{$mediaMime:=Playable $v.Name}}
+                                            {{if $mediaMime}}
+                                            &nbsp;
+                                            <a title="{{"播放"|T}}" class="label label-primary" href="javascript:;" playable data-mime="{{$mediaMime}}" data-name="{{$v.Name}}" data-url="__BACKEND__/download/file?do=play&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="filePlay(this)" data-toggle="tooltip">
+                                            <i class="fa fa-play"></i>
+                                            </a>
+                                            {{end}}
                                             {{end}}
                                         </td>
 									</tr>
@@ -119,10 +129,13 @@
 {{Modal "__TMPL__/caddy/file_edit.yaml"}}
 {{Modal "__TMPL__/caddy/file_rename.yaml"}}
 {{Modal "__TMPL__/caddy/file_mkdir.yaml"}}
+{{Modal "__TMPL__/caddy/file_play.yaml"}}
 {{/Block}}
 
 {{Block "footer"}}
 <script type="text/javascript" src="__ASSETS__/js/dropzone/min/dropzone.min.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/videojs/video.min.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/videojs/http-streaming.min.js"></script>
 <script>
 function uploadURL(currentPath){
     return BACKEND_URL+'/download/file?do=upload&path='+encodeURIComponent(currentPath);
@@ -231,6 +244,41 @@ function fileMkdir(obj) {
     }});
 }
 
+function filePlay(obj,playlist){
+    if(playlist==null) playlist='a[playable]';
+    var url=$(obj).data('url'),i=$(playlist).index($(obj)),
+    fileName=$(obj).data('name'),
+    mime=$(obj).data('mime'),
+    player,id='file-play-video',
+    headTitle=$('#file-play-modal .modal-header h3');
+    headTitle.html('{{"播放"|T}}: '+fileName);
+    var body=$('#file-play-modal .modal-body');
+    body.css({'padding':'0','text-align':'center'});
+    $(obj).css({'color':'yellow'});
+    $('#file-play-modal').niftyModal('show',{afterOpen:function(modal){
+        $('#file-play-video source').attr('src',url).attr('type',mime);
+        $(window).trigger('resize');
+        player = videojs(id, null, function(){
+	        this.on('ended',function(){
+	    	    i++;
+	            if(i >= $(playlist).length) i = 0;
+                var ve=$(playlist).eq(i);
+                ve.css({'color':'yellow'});
+	            this.src({type: ve.data('mime'), src: ve.data('url')});
+	            this.play();
+                headTitle.html('{{"播放"|T}}: '+ve.data('name'));
+	        });
+	    });
+        player.play();
+    },afterClose:function(){
+        if(!player) return;
+        var c=$('<video-js id="file-play-video" class="vjs-default-skin" width=500 height=500 controls><source src="" type=""></video-js>');
+        player.dispose();
+        player=null;
+        body.html(c);
+    }});
+}
+
 function codeMirrorChangeMode(editor,val) {
   var m, mode, spec;
   if (m = /.+\.([^.]+)$/.exec(val)) {
@@ -274,8 +322,8 @@ function init(){
         }});
 	});
     $(window).off().on('resize',function(){
-        $('#file-edit-modal').css({height:$(window).height(),width:'100%','max-width':'100%',left:0,top:0,transform:'none'});
-        $('#file-edit-form').css({height:$(window).height()-150,width:'100%','max-width':'100%',overflow:'auto'});
+        $('#file-edit-modal,#file-play-modal').css({height:$(window).height(),width:'100%','max-width':'100%',left:0,top:0,transform:'none'});
+        $('#file-edit-form,#file-play-video').css({height:$(window).height()-150,width:'100%','max-width':'100%',overflow:'auto'});
     });
     $(window).trigger('resize');
     $('#file-rename-modal .modal-footer .btn-primary:last').off().on('click',function(){

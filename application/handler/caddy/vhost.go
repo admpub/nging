@@ -475,13 +475,33 @@ func VhostFile(ctx echo.Context) error {
 		_, ok := Editable(fileName)
 		return ok
 	})
+	ctx.SetFunc(`Playable`, func(fileName string) string {
+		mime, _ := Playable(fileName)
+		return mime
+	})
 	ctx.Set(`activeURL`, `/caddy/vhost`)
 	return ctx.Render(`caddy/file`, err)
 }
 
 func Editable(fileName string) (string, bool) {
+	if config.DefaultConfig.Sys.EditableFileExtensions == nil {
+		return "", false
+	}
 	ext := strings.TrimPrefix(filepath.Ext(fileName), `.`)
 	ext = strings.ToLower(ext)
 	typ, ok := config.DefaultConfig.Sys.EditableFileExtensions[ext]
+	return typ, ok
+}
+
+func Playable(fileName string) (string, bool) {
+	if config.DefaultConfig.Sys.PlayableFileExtensions == nil {
+		config.DefaultConfig.Sys.PlayableFileExtensions = map[string]string{
+			`mp4`:  `video/mp4`,
+			`m3u8`: `application/x-mpegURL`,
+		}
+	}
+	ext := strings.TrimPrefix(filepath.Ext(fileName), `.`)
+	ext = strings.ToLower(ext)
+	typ, ok := config.DefaultConfig.Sys.PlayableFileExtensions[ext]
 	return typ, ok
 }
