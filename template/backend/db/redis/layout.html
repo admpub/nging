@@ -31,7 +31,7 @@
             {{if $dbList}}
             <div class="input-group">
               <span class="input-group-addon">{{"数据库"|T}}</span>
-              <select name="db" class="form-control" id=" id="dbmanager-db-list"">
+              <select name="db" class="form-control" id="dbmanager-db-list">
                 <option value="">{{"<未选择>"|}}</option>
                 {{range $k,$v:=$dbList}}
                 <option value="{{$v}}"{{if eq $dbName $v}} selected{{end}}>{{$v}}</option>

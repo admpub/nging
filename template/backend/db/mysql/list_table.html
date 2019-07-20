@@ -18,7 +18,7 @@
           <div class="content">
              <div class="table-responsive">
 				<table class="table no-border hover blue">
-					<thead class="no-border">
+					<thead class="no-border auto-fixed">
 						<tr>
 							<th style="width:30px"><div class="checkbox checkbox-primary no-margin-y"><input type="checkbox" id="checkedAll"><label for="checkedAll"></label></div></th>
 							<th><strong>{{"表"|T}}</strong></th>
@@ -170,7 +170,6 @@ function perttyCheckbox(){
     });
 }
 $(function(){
-    App.topFloatThead('table>thead',$('#head-nav').height());
     perttyCheckbox();
     App.attachCheckedAll('#checkedAll','input[type=checkbox].check-table','#selected-items-count');
     $('#move-table-modal .modal-body').html($('#tpl-move-table-form').html());

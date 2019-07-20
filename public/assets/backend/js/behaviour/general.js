@@ -345,6 +345,11 @@ var App = function () {
           $(".nscroller").nanoScroller();
         });
       }
+      App.autoFixedThead();
+    },
+    autoFixedThead:function (prefix){
+      if(prefix==null) prefix=''; 
+      App.topFloatThead(prefix+'thead.auto-fixed',$('#head-nav').height());
     },
     pageAside: function(options){
       pageAside(options);
@@ -484,6 +489,7 @@ var App = function () {
           App.bottomFloat('#'+id+' .pagination');
           App.bottomFloat('#'+id+' .form-submit-group',0,true);
           $('#'+id+' .switch:not(.has-switch)').bootstrapSwitch();
+          App.autoFixedThead('#'+id+' ');
         }
         if(option.type=='GET') $('#global-search-form').attr('action',option.url);
       });
@@ -801,6 +807,7 @@ var App = function () {
       	if ($(elems).length<1) return;
         if (top == null) top = 0;
         $(elems).not('[disabled-fixed]').each(function(){
+        $(this).attr('disabled-fixed','fixed');
         var elem=this;
       	var _offset = $(elem).height() + top;
       	var offsetY = $(elem).offset().top + _offset;
@@ -832,6 +839,7 @@ var App = function () {
       	if ($(elems).length<1) return;
         if (top == null) top = 0;
         $(elems).not('[disabled-fixed]').each(function(){
+        $(this).attr('disabled-fixed','fixed');
         var elem=this;
       	var offsetY = $(elem).offset().top;
         var w = $(elem).outerWidth(), h = $(elem).outerHeight();
@@ -863,20 +871,30 @@ var App = function () {
         if (top == null) top = 0;
         $(elems).not('[disabled-fixed]').each(function(){
         $(this).attr('disabled-fixed','fixed');
-        var elem=this;
-      	var offsetY = $(elem).offset().top, cid = $(elem).data('copy');
+        var elem=this,table=$(elem).parent('table');
+      	var offsetY = $(elem).offset().top,maxOffsetY=table.height()+offsetY-$(elem).outerHeight()*2, cid = $(elem).data('copy');
         if(cid) {
           $('#tableCopy'+cid).remove();
         }else{
           cid = Math.random();
           $(elem).data('copy',cid);
         }
-        var eCopy=$('<table class="'+$(elem).parent('table').attr('class')+' always-top" style="background-color:white" id="tableCopy'+cid+'"></table>');
+        var eCopy=$('<table class="'+table.attr('class')+' always-top" style="background-color:white" id="tableCopy'+cid+'"></table>');
         var hCopy=$(elem).clone();
         eCopy.append(hCopy);
-        eCopy.data('offset-left',$(elem).offset().left);//记录偏移左侧
         var setSize=function(init){
           if(init==null) init=false;
+          if(!init){
+            if(eCopy.data('offset-left')!=$(elem).offset().left){
+            }else if(eCopy.data('scroll-left')!=$(window).scrollLeft()){
+              eCopy.css({'left':$(elem).offset().left - $(window).scrollLeft()});
+              return;
+            }else{
+              return;
+            }
+          }
+          eCopy.data('offset-left',$(elem).offset().left);//记录左侧偏移
+          eCopy.data('scroll-left',$(window).scrollLeft());//记录左侧滚动条
           var cols=hCopy.find('td,th'),rawCols=$(elem).find('td,th');
           rawCols.each(function(index){
             var col=cols.eq(index);
@@ -891,17 +909,17 @@ var App = function () {
               });
             });
           });
-          var offsetX = $(elem).offset().left;
+          var offsetX = $(elem).offset().left - $(window).scrollLeft();
           var w = $(elem).outerWidth(), h = $(elem).outerHeight()
           eCopy.css({'top':top,'left':offsetX,'width':w,'height':h});
         }
         setSize(true);
         eCopy.hide();
-        $('body').append(eCopy);
+        table.append(eCopy);
       	$(window).on('scroll',function () {
-          if(eCopy.data('offset-left')!=$(elem).offset().left)setSize();
+          setSize();
           var scrollH = $(this).scrollTop();
-          if (scrollH <= offsetY) return eCopy.hide();
+          if (scrollH <= offsetY||scrollH>=maxOffsetY) return eCopy.hide();
       		eCopy.show();
         });
       });
