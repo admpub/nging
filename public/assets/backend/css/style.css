@@ -5758,7 +5758,7 @@ fieldset.fieldset legend{
   box-shadow: 0px 0px 5px #555;
 }
 .modal-body{
-  overflow-y:scroll
+  overflow-y:auto;
 }
 .clickable{cursor: pointer !important;}
 /* cover image */

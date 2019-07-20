@@ -987,7 +987,11 @@ var App = function () {
       }
       return (intVal).toFixed(precision) + ras;
     },
-    genTable:function(rows){
+    format:function(raw,xy,formatters){
+      if(formatters && typeof(formatters[xy.y])=='function') return formatters[xy.y](raw,xy.x);
+      return raw;
+    },
+    genTable:function(rows,formatters){
       var h='<table class="table table-bordered no-margin">';
       var th='<thead>',bd='<tbody>';
       for(var i=0;i<rows.length;i++){
@@ -996,13 +1000,19 @@ var App = function () {
           for(var k in v) th+='<th class="'+k+'"><strong>'+k+'</strong></th>';
         }
         bd+='<tr>';
-        for(var k in v) bd+='<td class="'+k+'">'+v[k]+'</td>';
+        for(var k in v) bd+='<td class="'+k+'">'+App.format(v[k],{'x':i,'y':k},formatters)+'</td>';
         bd+='</tr>';
       }
       th+='</thead>';
       bd+='</tbody>';
       h+=th+bd+'</table>';
       return h;
+    },
+    httpStatusColor:function(code){
+      if(code>=500)return 'danger';
+      if(code>=400)return 'warning';
+      if(code>=300)return 'info';
+      return 'success';
     },
     logShow:function(elem,trigger,pipe){
       if(!$('#log-show-modal').data('init')){
@@ -1044,7 +1054,9 @@ var App = function () {
                   subTitle.empty();
                 }
                 if(typeof(r.Data.list)!='undefined'){
-                  var h='<div class="table-responsive" id="log-show-content">'+App.genTable(r.Data.list)+'</div>';
+                  var h='<div class="table-responsive" id="log-show-content">'+App.genTable(r.Data.list,{'StatusCode':function(raw,index){
+                    return '<span class="label label-'+App.httpStatusColor(raw)+'">'+raw+'</span>';
+                  }})+'</div>';
                   $('#log-show-content').parent('.modal-body').css('padding',0);
                   $('#log-show-content').replaceWith(h);
                 }else{
