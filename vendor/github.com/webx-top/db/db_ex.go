@@ -88,6 +88,13 @@ func (c *Compounds) Add(compounds ...Compound) *Compounds {
 	return c
 }
 
+func (c *Compounds) From(from *Compounds) *Compounds {
+	if from.Size() == 0 {
+		return c
+	}
+	return c.Add(from.V()...)
+}
+
 func (c *Compounds) Slice() []Compound {
 	return *c
 }
@@ -96,14 +103,34 @@ func (c *Compounds) V() []Compound {
 	return c.Slice()
 }
 
+func (c *Compounds) Size() int {
+	return len(*c)
+}
+
+var EmptyCond = Cond{}
+
 func (c *Compounds) And(compounds ...Compound) Compound {
 	c.Add(compounds...)
-	return And(*c...)
+	switch c.Size() {
+	case 0:
+		return EmptyCond
+	case 1:
+		return (*c)[0]
+	default:
+		return And(*c...)
+	}
 }
 
 func (c *Compounds) Or(compounds ...Compound) Compound {
 	c.Add(compounds...)
-	return Or(*c...)
+	switch c.Size() {
+	case 0:
+		return EmptyCond
+	case 1:
+		return (*c)[0]
+	default:
+		return Or(*c...)
+	}
 }
 
 type TableName interface {

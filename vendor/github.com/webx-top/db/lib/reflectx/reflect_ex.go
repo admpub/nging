@@ -130,7 +130,15 @@ func (f StructMap) FindTableField(fieldPath string, isStructField bool, aliasOpt
 type FindResult struct {
 	RawData   interface{}
 	FieldInfo *FieldInfo
+	Parents   []*FieldInfo
 	RawPath   []string
+}
+
+func (f *FindResult) Parent(index int) *FieldInfo {
+	if index >= len(f.Parents) {
+		return nil
+	}
+	return f.Parents[index]
 }
 
 func (f StructMap) FindTableFieldByMap(fieldPaths map[string]map[string]interface{}, isStructField bool, aliasOptionNames ...string) (tableFieldPaths map[string]*FindResult, pk []string) {
@@ -158,6 +166,7 @@ func (f StructMap) FindTableFieldByMap(fieldPaths map[string]map[string]interfac
 				tableFieldPaths[parent] = &FindResult{
 					RawData:   rawData,
 					FieldInfo: parentTree,
+					Parents:   []*FieldInfo{},
 					RawPath:   []string{parentRaw, field},
 				}
 				continue
@@ -174,6 +183,7 @@ func (f StructMap) FindTableFieldByMap(fieldPaths map[string]map[string]interfac
 			tableFieldPaths[parent+`.`+field] = &FindResult{
 				RawData:   rawData,
 				FieldInfo: info,
+				Parents:   []*FieldInfo{parentTree},
 				RawPath:   []string{parentRaw, fieldRaw},
 			}
 		}
