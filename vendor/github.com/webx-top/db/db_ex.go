@@ -88,6 +88,14 @@ func (c *Compounds) Add(compounds ...Compound) *Compounds {
 	return c
 }
 
+func (c *Compounds) Slice() []Compound {
+	return *c
+}
+
+func (c *Compounds) V() []Compound {
+	return c.Slice()
+}
+
 func (c *Compounds) And(compounds ...Compound) Compound {
 	c.Add(compounds...)
 	return And(*c...)

@@ -9,12 +9,6 @@ import (
 	"github.com/webx-top/echo/param"
 )
 
-// ModelInstancer 模型实例化
-type ModelInstancer func(connID int) Model
-
-// ModelInstancers 模型实例化
-type ModelInstancers map[string]ModelInstancer
-
 // FieldInfo 字段信息
 type FieldInfo struct {
 	//以下为数据库中的信息
@@ -195,76 +189,9 @@ func (f FieldValidator) FieldLists(table string, excludeField ...string) []inter
 	return fields
 }
 
-var (
-	// Fields {table:{field:FieldInfo}}
-	Fields FieldValidator = map[string]map[string]*FieldInfo{}
-	// Models {StructName:ModelInstancer}
-	Models = ModelInstancers{}
-	// TableNamers {table:NewName}
-	TableNamers = map[string]func(obj interface{}) string{}
-	// DefaultTableNamer default
-	DefaultTableNamer = func(table string) func(obj interface{}) string {
-		return func(obj interface{}) string {
-			return table
-		}
-	}
-)
-
-// TableNamerRegister 注册表名称生成器(表名不带前缀)
-func TableNamerRegister(namers map[string]func(obj interface{}) string) {
-	for table, namer := range namers {
-		TableNamers[table] = namer
-	}
-}
-
-// TableNamerGet 获取表名称生成器(表名不带前缀)
-func TableNamerGet(table string) func(obj interface{}) string {
-	if namer, ok := TableNamers[table]; ok {
-		return namer
-	}
-	return DefaultTableNamer(table)
-}
-
-// FieldRegister 注册字段信息(表名不带前缀)
-func FieldRegister(tables map[string]map[string]*FieldInfo) {
+// Register 注册字段信息(表名不带前缀)
+func (f FieldValidator) Register(tables map[string]map[string]*FieldInfo) {
 	for table, info := range tables {
-		Fields[table] = info
+		f[table] = info
 	}
-}
-
-// FieldFind 获取字段信息(表名不带前缀)
-func FieldFind(table string, field string) (*FieldInfo, bool) {
-	return Fields.Find(table, field)
-}
-
-// ModelRegister 模型构造函数登记
-func ModelRegister(instancers map[string]ModelInstancer) {
-	for structName, instancer := range instancers {
-		Models[structName] = instancer
-	}
-}
-
-// ExistField 字段是否存在(表名不带前缀)
-func ExistField(table string, field string) bool {
-	return Fields.ExistField(table, field)
-}
-
-// ExistTable 表是否存在(表名不带前缀)
-func ExistTable(table string) bool {
-	return Fields.ExistTable(table)
-}
-
-// NewModel 模型实例化
-func NewModel(structName string, connID int) Model {
-	return Models[structName](connID)
-}
-
-// Validate 验证值是否符合数据库要求
-func Validate(table string, field string, value interface{}) error {
-	return Fields.Validate(table, field, value)
-}
-
-// BatchValidate 批量验证值是否符合数据库要求
-func BatchValidate(table string, row map[string]interface{}) error {
-	return Fields.BatchValidate(table, row)
 }

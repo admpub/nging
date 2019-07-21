@@ -173,8 +173,8 @@ func (this *CollectorExport) ListByOffset(recv interface{}, mw func(db.Result) d
 func (this *CollectorExport) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -188,8 +188,8 @@ func (this *CollectorExport) Add() (pk interface{}, err error) {
 
 func (this *CollectorExport) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -205,21 +205,21 @@ func (this *CollectorExport) SetField(mw func(db.Result) db.Result, field string
 
 func (this *CollectorExport) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	if val, ok := kvset["dest_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["dest_type"] = "dbAccountID" } }
+	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *CollectorExport) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {

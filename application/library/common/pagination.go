@@ -112,7 +112,7 @@ func Sorts(ctx echo.Context, table string, defaultSorts ...string) []interface{}
 	sorts := []interface{}{}
 	sort := ctx.Form(`sort`)
 	field := strings.TrimPrefix(sort, `-`)
-	if len(field) > 0 && factory.Fields.ExistField(table, field) {
+	if len(field) > 0 && factory.ExistField(table, field) {
 		sorts = append(sorts, sort)
 		for _, defaultSort := range defaultSorts {
 			if field != strings.TrimPrefix(defaultSort, `-`) {

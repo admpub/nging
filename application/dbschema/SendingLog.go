@@ -178,8 +178,8 @@ func (this *SendingLog) Add() (pk interface{}, err error) {
 	this.Id = 0
 	if len(this.SourceType) == 0 { this.SourceType = "user" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.Method) == 0 { this.Method = "mobile" }
 	if len(this.Status) == 0 { this.Status = "waiting" }
+	if len(this.Method) == 0 { this.Method = "mobile" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -195,8 +195,8 @@ func (this *SendingLog) Edit(mw func(db.Result) db.Result, args ...interface{}) 
 	
 	if len(this.SourceType) == 0 { this.SourceType = "user" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.Method) == 0 { this.Method = "mobile" }
 	if len(this.Status) == 0 { this.Status = "waiting" }
+	if len(this.Method) == 0 { this.Method = "mobile" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -214,8 +214,8 @@ func (this *SendingLog) SetFields(mw func(db.Result) db.Result, kvset map[string
 	
 	if val, ok := kvset["source_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["source_type"] = "user" } }
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
-	if val, ok := kvset["method"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["method"] = "mobile" } }
 	if val, ok := kvset["status"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["status"] = "waiting" } }
+	if val, ok := kvset["method"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["method"] = "mobile" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
@@ -224,15 +224,15 @@ func (this *SendingLog) Upsert(mw func(db.Result) db.Result, args ...interface{}
 		
 	if len(this.SourceType) == 0 { this.SourceType = "user" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.Method) == 0 { this.Method = "mobile" }
 	if len(this.Status) == 0 { this.Status = "waiting" }
+	if len(this.Method) == 0 { this.Method = "mobile" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.SourceType) == 0 { this.SourceType = "user" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.Method) == 0 { this.Method = "mobile" }
 	if len(this.Status) == 0 { this.Status = "waiting" }
+	if len(this.Method) == 0 { this.Method = "mobile" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {

@@ -522,6 +522,10 @@ func (p *Param) CheckCached() bool {
 	return p.T().CheckCached(p)
 }
 
+func (p *Param) SQLBuilder() sqlbuilder.SQLBuilder {
+	return p.T().SQLBuilder(p)
+}
+
 // Read ==========================
 
 // Query query SQL. sqlRows is an *sql.Rows object, so you can use Scan() on it

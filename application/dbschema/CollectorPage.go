@@ -183,8 +183,8 @@ func (this *CollectorPage) Add() (pk interface{}, err error) {
 	this.Id = 0
 	if len(this.ContentType) == 0 { this.ContentType = "html" }
 	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
-	if len(this.HasChild) == 0 { this.HasChild = "N" }
 	if len(this.Type) == 0 { this.Type = "content" }
+	if len(this.HasChild) == 0 { this.HasChild = "N" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -200,8 +200,8 @@ func (this *CollectorPage) Edit(mw func(db.Result) db.Result, args ...interface{
 	
 	if len(this.ContentType) == 0 { this.ContentType = "html" }
 	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
-	if len(this.HasChild) == 0 { this.HasChild = "N" }
 	if len(this.Type) == 0 { this.Type = "content" }
+	if len(this.HasChild) == 0 { this.HasChild = "N" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -219,8 +219,8 @@ func (this *CollectorPage) SetFields(mw func(db.Result) db.Result, kvset map[str
 	
 	if val, ok := kvset["content_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["content_type"] = "html" } }
 	if val, ok := kvset["duplicate_rule"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["duplicate_rule"] = "none" } }
-	if val, ok := kvset["has_child"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["has_child"] = "N" } }
 	if val, ok := kvset["type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["type"] = "content" } }
+	if val, ok := kvset["has_child"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["has_child"] = "N" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
@@ -229,15 +229,15 @@ func (this *CollectorPage) Upsert(mw func(db.Result) db.Result, args ...interfac
 		
 	if len(this.ContentType) == 0 { this.ContentType = "html" }
 	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
-	if len(this.HasChild) == 0 { this.HasChild = "N" }
 	if len(this.Type) == 0 { this.Type = "content" }
+	if len(this.HasChild) == 0 { this.HasChild = "N" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.ContentType) == 0 { this.ContentType = "html" }
 	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
-	if len(this.HasChild) == 0 { this.HasChild = "N" }
 	if len(this.Type) == 0 { this.Type = "content" }
+	if len(this.HasChild) == 0 { this.HasChild = "N" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
