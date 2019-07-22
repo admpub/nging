@@ -70,7 +70,7 @@ function onselectColumns(obj){
                   <label class="input-group-addon no-padding-bottom no-padding-top">(
                   <select name="columns[col][]" onchange="onselectColumns(this)">
 					  <option value=""></option>
-                      {{range $k, $colName := Stored.fields}}
+                      {{range $k, $colName := Stored.sortFields}}
                       <option value="{{$colName}}"{{if eq $col $colName}} selected{{end}}>{{$colName}}</option>
                       {{end}}
                   </select>
@@ -88,7 +88,7 @@ function onselectColumns(obj){
               <div class="input-group">
                   <select name="where[col][]" class="form-control" onchange="onselectWhere(this)">
                       <option value="">({{"任意位置"|T}})</option>
-                      {{range $k, $colName := Stored.fields}}
+                      {{range $k, $colName := Stored.sortFields}}
 					  <option value="{{$colName}}"{{if eq $col $colName}} selected{{end}}>{{$colName}}</option>
                       {{end}}
                   </select>
@@ -109,7 +109,7 @@ function onselectColumns(obj){
               <div class="input-group">
                   <select name="order[]" class="form-control" onchange="onselectOrder(this)">
 					  <option value=""></option>
-                      {{range $k, $colName := Stored.fields}}
+                      {{range $k, $colName := Stored.sortFields}}
 					  <option value="{{$colName}}"{{if eq $val $colName}} selected{{end}}>{{$colName}}</option>
                       {{end}}
                   </select>
@@ -180,7 +180,8 @@ function onselectColumns(obj){
                                 <a href="{{dbMgrURL "createData" Stored.dbName Stored.table}}{{uniqueIdf $v}}" title="{{"编辑"|T}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil"></i></a>
                             </td>
                             {{range $k, $colName := Stored.columns}}
-                            <td>{{(index $v $colName).String}}</td>
+                            {{$field := index Stored.fields $colName}}
+                            <td>{{$field.Format (index $v $colName).String}}</td>
                             {{end}}
 						</tr>
                         {{end}}

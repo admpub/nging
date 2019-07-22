@@ -18,18 +18,18 @@
 					<tbody class="no-border-x" id="tbody-content">
                         {{range $k,$column := Stored.columns}}
                         {{$field := index Stored.fields $column}}
+                        {{$value := index Stored.values $column}}
                         <tr>
                             <th>{{$column}}</th>
                             <td>
                                 {{$functions := functions $field}}
                                 <select name="function[{{$column}}]" class="form-control"{{if le (len $functions) 0}} style="display:none"{{end}} onchange="onselectFunction(this)">
                                 {{range $k,$v := $functions}}
-                                <option value="{{$v}}">{{$v}}</option>
+                                <option value="{{$v}}"{{if and (not $v) $value}} selected="selected"{{end}}>{{$v}}</option>
                                 {{end}}
                                 </select>
                             </td>
                             <td>
-                                {{$value := index Stored.values $column}}
                                 {{if isBlob $field.Type}}
                                 <input type="file" name="value[{{$column}}]">
                                 {{else if or (isText $field.Type) (Contains $value.String "\n")}}
@@ -62,7 +62,7 @@
                                 {{else if isNumber $field.Type}}
                                 <input data-type="number" type="number" name="value[{{$column}}]" class="form-control" value="{{$value.String}}"{{if $field.Unsigned}} min="0"{{end}}>
                                 {{else}}
-                                <input type="text" name="value[{{$column}}]" class="form-control" value="{{$value.String}}">
+                                <input type="{{$field.InputType}}" name="value[{{$column}}]" class="form-control" value="{{$field.Format $value.String}}">
                                 {{end}}
                             </td>
                         </tr>

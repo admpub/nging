@@ -475,6 +475,38 @@ type Field struct {
 	Original string
 }
 
+func (f *Field) Format(value string) string {
+	switch f.Type {
+	case `timestamp`, `datetime`:
+		return com.RestoreTime(value).Format(`2006-01-02 15:04:05`)
+	case `date`:
+		return com.RestoreTime(value).Format(`2006-01-02`)
+	case `time`:
+		return com.RestoreTime(value).Format(`15:04:05`)
+	case `year`:
+		return com.RestoreTime(value).Format(`2006`)
+	default:
+		return value
+	}
+}
+
+func (f *Field) InputType() string {
+	switch f.Type {
+	case `timestamp`:
+		return `datetime`
+	case `datetime`:
+		return f.Type
+	case `date`:
+		return f.Type
+	case `time`:
+		return f.Type
+	case `year`:
+		return f.Type
+	default:
+		return `text`
+	}
+}
+
 type Enum struct {
 	Int    int
 	String string

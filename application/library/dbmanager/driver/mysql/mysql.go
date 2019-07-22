@@ -1195,7 +1195,8 @@ func (m *mySQL) ListData() error {
 		return err
 	})
 	m.AddResults(r)
-	m.Set(`fields`, sortFields)
+	m.Set(`sortFields`, sortFields)
+	m.Set(`fields`, fields)
 	m.Set(`columns`, columns)
 	m.Set(`values`, values)
 	m.Set(`functions`, functions)

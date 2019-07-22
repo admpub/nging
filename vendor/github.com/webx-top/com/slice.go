@@ -20,6 +20,20 @@ import (
 	"time"
 )
 
+func WithPrefix(strs []string, prefix string) []string {
+	for k, v := range strs {
+		strs[k] = prefix + v
+	}
+	return strs
+}
+
+func WithSuffix(strs []string, suffix string) []string {
+	for k, v := range strs {
+		strs[k] = v + suffix
+	}
+	return strs
+}
+
 // AppendStr appends string to slice with no duplicates.
 func AppendStr(strs []string, str string) []string {
 	for _, s := range strs {

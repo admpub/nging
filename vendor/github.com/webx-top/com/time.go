@@ -99,6 +99,8 @@ var datePatterns = []string{
 	// RFC 2822
 	"r", time.RFC1123Z,
 }
+
+// DateFormatReplacer .
 var DateFormatReplacer = strings.NewReplacer(datePatterns...)
 
 //DateParse Parse Date use PHP time format.
@@ -150,6 +152,17 @@ func StrToTime(str string, args ...string) (unixtime int) {
 		fmt.Println(err, str)
 	}
 	return
+}
+
+// RestoreTime 从字符串还原时间
+// RestoreTime(`2001-01-01T00:00:03Z`).Format(`2006-01-02 15:04:05`) => 2001-01-01 00:00:03
+func RestoreTime(str string, args ...string) time.Time {
+	layout := time.RFC3339
+	if len(args) > 0 {
+		layout = args[0]
+	}
+	t, _ := time.Parse(layout, str)
+	return t
 }
 
 //FormatByte 格式化字节。 FormatByte(字节整数，保留小数位数)
