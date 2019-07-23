@@ -1366,6 +1366,17 @@ func (m *mySQL) CreateData() error {
 		return enumValues(field)
 	})
 	m.SetFunc(`functions`, m.editFunctions)
+	m.SetFunc(`isSelectedFunc`, func(function string,value *sql.NullString)bool{
+		if len(function)==0 {
+			if len(value.String)>0 {
+				return true
+			}
+			if value.Valid {
+				return true
+			}
+		}
+		return false
+	})
 	return m.Render(`db/mysql/edit_data`, m.checkErr(err))
 }
 func (m *mySQL) Indexes() error {
