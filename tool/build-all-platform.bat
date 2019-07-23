@@ -1,7 +1,5 @@
 rem 本脚本在编译非windows下的程序时，将忽略sqlite
 rem 如要支持sqlite，请在linux系统内执行build-all-platform.sh
-go get github.com/jteeuwen/go-bindata/...
-go get github.com/admpub/go-bindata-assetfs/...
 call install-archiver.bat
 cd ..
 go generate
