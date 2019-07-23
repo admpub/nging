@@ -13,8 +13,10 @@ import (
 type BuilderChainFunc func(Selector) Selector
 
 const (
-	ForeignKeyIndex = 0 //外键名下标
-	PrimaryKeyIndex = 1 //主键名下标
+	// RelationKeyIndex 关联键名下标
+	RelationKeyIndex = 0
+	// ForeignKeyIndex 外键名下标
+	ForeignKeyIndex = 1
 )
 
 func (b *sqlBuilder) Relation(name string, fn BuilderChainFunc) SQLBuilder {
@@ -42,15 +44,15 @@ func eachField(t reflect.Type, fn func(field reflect.StructField, relations []st
 	}
 	for _, fieldInfo := range options {
 		//fmt.Println(`==>`, fieldInfo.Name, fieldInfo.Embedded, com.Dump(fieldInfo.Options, false))
-		// `db:"-,relation=ForeignKey:PrimaryKey"`
-		// `db:"-,relation=外键名:主键名"`
+		// `db:"-,relation=ForeignKey:RelationKey"`
+		// `db:"-,relation=外键名:关联键名"`
 		rel, ok := fieldInfo.Options[`relation`]
 		if !ok || len(rel) == 0 || rel == `-` {
 			continue
 		}
 		relations := strings.SplitN(rel, `:`, 2)
 		if len(relations) != 2 {
-			return fmt.Errorf("Wrong relation option, length must 2, but get %v. Reference format: `db:\"-,relation=ForeignKey:PrimaryKey\"`", relations)
+			return fmt.Errorf("Wrong relation option, length must 2, but get %v. Reference format: `db:\"-,relation=ForeignKey:RelationKey\"`", relations)
 		}
 		err := fn(fieldInfo.Field, relations)
 		if err != nil {
@@ -126,7 +128,7 @@ func RelationOne(builder SQLBuilder, data interface{}) error {
 			// batch get field values
 			// Since the structure is slice, there is no need to new Value
 			sel := builder.SelectFrom(table).Where(db.Cond{
-				relations[PrimaryKeyIndex]: mapper.FieldByName(refVal, relations[ForeignKeyIndex]).Interface(),
+				relations[RelationKeyIndex]: mapper.FieldByName(refVal, relations[ForeignKeyIndex]).Interface(),
 			})
 			if chains := builder.RelationMap(); chains != nil {
 				if chainFn, ok := chains[name]; ok {
@@ -155,7 +157,7 @@ func RelationOne(builder SQLBuilder, data interface{}) error {
 				return err
 			}
 			sel := builder.SelectFrom(table).Where(db.Cond{
-				relations[PrimaryKeyIndex]: mapper.FieldByName(refVal, relations[ForeignKeyIndex]).Interface(),
+				relations[RelationKeyIndex]: mapper.FieldByName(refVal, relations[ForeignKeyIndex]).Interface(),
 			})
 			if chains := builder.RelationMap(); chains != nil {
 				if chainFn, ok := chains[name]; ok {
@@ -216,7 +218,7 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 			// batch get field values
 			// Since the structure is slice, there is no need to new Value
 			sel := builder.SelectFrom(table).Where(db.Cond{
-				relations[PrimaryKeyIndex]: db.In(relVals),
+				relations[RelationKeyIndex]: db.In(relVals),
 			})
 			if chains := builder.RelationMap(); chains != nil {
 				if chainFn, ok := chains[name]; ok {
@@ -236,7 +238,7 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 			mlen := reflect.Indirect(foreignModel).Len()
 			for n := 0; n < mlen; n++ {
 				val := reflect.Indirect(foreignModel).Index(n)
-				fid := mapper.FieldByName(val, relations[PrimaryKeyIndex])
+				fid := mapper.FieldByName(val, relations[RelationKeyIndex])
 				fv := fid.Interface()
 				if _, has := fmap[fv]; !has {
 					fmap[fv] = reflect.New(reflect.SliceOf(field.Type.Elem())).Elem()
@@ -269,7 +271,7 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 				return err
 			}
 			sel := builder.SelectFrom(table).Where(db.Cond{
-				relations[PrimaryKeyIndex]: db.In(relVals),
+				relations[RelationKeyIndex]: db.In(relVals),
 			})
 			if chains := builder.RelationMap(); chains != nil {
 				if chainFn, ok := chains[name]; ok {
@@ -287,7 +289,7 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 			mlen := fval.Len()
 			for n := 0; n < mlen; n++ {
 				val := fval.Index(n)
-				fid := mapper.FieldByName(val, relations[PrimaryKeyIndex])
+				fid := mapper.FieldByName(val, relations[RelationKeyIndex])
 				fmap[fid.Interface()] = val
 			}
 
