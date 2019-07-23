@@ -476,6 +476,9 @@ type Field struct {
 }
 
 func (f *Field) Format(value string) string {
+	if len(value) == 0 {
+		return value
+	}
 	switch f.Type {
 	case `timestamp`, `datetime`:
 		return com.RestoreTime(value).Format(`2006-01-02 15:04:05`)
