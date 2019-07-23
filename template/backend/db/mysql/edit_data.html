@@ -25,7 +25,7 @@
                                 {{$functions := functions $field}}
                                 <select name="function[{{$column}}]" class="form-control"{{if le (len $functions) 0}} style="display:none"{{end}} onchange="onselectFunction(this)">
                                 {{range $k,$v := $functions}}
-                                <option value="{{$v}}"{{if and (not $v) $value}} selected="selected"{{end}}>{{$v}}</option>
+                                <option value="{{$v}}"{{if and (not $v) (not $value.Valid)}} selected="selected"{{end}}>{{$v}}</option>
                                 {{end}}
                                 </select>
                             </td>
