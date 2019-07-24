@@ -1,7 +1,5 @@
-rem 锟斤拷锟脚憋拷锟节憋拷锟斤拷锟絯indows锟铰的筹拷锟斤拷时锟斤拷锟斤拷锟斤拷锟斤拷sqlite
-rem 锟斤拷要支锟斤拷sqlite锟斤拷锟斤拷锟斤拷linux系统锟斤拷执锟斤拷build-all-platform.sh
-go get github.com/jteeuwen/go-bindata/...
-go get github.com/admpub/go-bindata-assetfs/...
+rem 本脚本在编译非windows下的程序时，将忽略sqlite
+rem 如要支持sqlite，请在linux系统内执行build-all-platform.sh
 call install-archiver.bat
 cd ..
 go generate

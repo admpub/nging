@@ -1,6 +1,4 @@
 go get github.com/karalabe/xgo
-go get github.com/jteeuwen/go-bindata/...
-go get github.com/admpub/go-bindata-assetfs/...
 source ${PWD}/install-archiver.sh
 cd ..
 go generate
