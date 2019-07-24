@@ -1,5 +1,5 @@
-rem 本脚本在编译非windows下的程序时，将忽略sqlite
-rem 如要支持sqlite，请在linux系统内执行build-all-platform.sh
+rem 锟斤拷锟脚憋拷锟节憋拷锟斤拷锟絯indows锟铰的筹拷锟斤拷时锟斤拷锟斤拷锟斤拷锟斤拷sqlite
+rem 锟斤拷要支锟斤拷sqlite锟斤拷锟斤拷锟斤拷linux系统锟斤拷执锟斤拷build-all-platform.sh
 go get github.com/jteeuwen/go-bindata/...
 go get github.com/admpub/go-bindata-assetfs/...
 call install-archiver.bat
@@ -11,7 +11,7 @@ cd tool
 set time_hh=%time:~0,2%
 if /i %time_hh% LSS 10 (set time_hh=0%time:~1,1%)
 
-set NGING_VERSION="2.0.0"
+set NGING_VERSION="2.0.1"
 set NGING_BUILD=%date:~,4%%date:~5,2%%date:~8,2%%time_hh%%time:~3,2%%time:~6,2%
 set NGING_COMMIT=
 for /F %%i in ('git rev-parse HEAD') do ( set NGING_COMMIT=%%i)
