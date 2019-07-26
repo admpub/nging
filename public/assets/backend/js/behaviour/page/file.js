@@ -148,7 +148,7 @@ function codeMirrorChangeMode(editor,val) {
   }
 }
 Dropzone.autoDiscover=false;
-CodeMirror.modeURL = "__ASSETS__/js/codemirror/mode/%N/%N.js";
+CodeMirror.modeURL = ASSETS_URL+"/js/codemirror/mode/%N/%N.js";
 $(function(){
     initDropzone();
     dropzone=$('#multi-upload-dropzone').get(0).dropzone;
