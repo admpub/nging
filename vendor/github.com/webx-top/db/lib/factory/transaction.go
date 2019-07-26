@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/webx-top/db"
-	"github.com/webx-top/db/internal/sqladapter"
 	"github.com/webx-top/db/lib/sqlbuilder"
 )
 
@@ -23,9 +22,10 @@ func (t *Transaction) Database(param *Param) db.Database {
 		param.cluster = t.Cluster
 	}
 	if t.Tx != nil {
-		if tx, ok := t.Tx.(sqladapter.BaseTx); ok && !tx.Committed() {
+		if _, ok := t.Tx.Driver().(*sql.Tx); ok {
 			return t.Tx
 		}
+		t.Tx = nil
 	}
 	if param.ReadOnly {
 		return param.cluster.Slave()
@@ -411,6 +411,15 @@ func (t *Transaction) Update(param *Param) error {
 	return res.Update(param.SaveData)
 }
 
+func (t *Transaction) Updatex(param *Param) (affected int64, err error) {
+	param.ReadOnly = false
+	res, err := t.SQLBuilder(param).Update(param.TableName()).Set(param.SaveData).Where(param.Args...).ExecContext(param.Context())
+	if err != nil {
+		return 0, err
+	}
+	return res.RowsAffected()
+}
+
 func (t *Transaction) Upsert(param *Param, beforeUpsert ...func()) (interface{}, error) {
 	param.ReadOnly = false
 	res := t.Result(param)
@@ -436,7 +445,7 @@ func (t *Transaction) Upsert(param *Param, beforeUpsert ...func()) (interface{},
 	if len(beforeUpsert) > 0 && beforeUpsert[0] != nil {
 		beforeUpsert[0]()
 	}
-	return nil, res.Update(param.SaveData)
+	return nil, t.Update(param)
 }
 
 func (t *Transaction) Delete(param *Param) error {
@@ -446,4 +455,13 @@ func (t *Transaction) Delete(param *Param) error {
 		res = param.Middleware(res)
 	}
 	return res.Delete()
+}
+
+func (t *Transaction) Deletex(param *Param) (affected int64, err error) {
+	param.ReadOnly = false
+	res, err := t.SQLBuilder(param).DeleteFrom(param.TableName()).Where(param.Args...).ExecContext(param.Context())
+	if err != nil {
+		return 0, err
+	}
+	return res.RowsAffected()
 }

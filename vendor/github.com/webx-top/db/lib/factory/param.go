@@ -615,10 +615,18 @@ func (p *Param) Update() error {
 	return p.T().Update(p)
 }
 
+func (p *Param) Updatex() (int64, error) {
+	return p.T().Updatex(p)
+}
+
 func (p *Param) Upsert(beforeUpsert ...func()) (interface{}, error) {
 	return p.T().Upsert(p, beforeUpsert...)
 }
 
 func (p *Param) Delete() error {
 	return p.T().Delete(p)
+}
+
+func (p *Param) Deletex() (int64, error) {
+	return p.T().Deletex(p)
 }

@@ -54,7 +54,7 @@ type database struct {
 
 var (
 	_ = sqlbuilder.Database(&database{})
-	_ = sqlbuilder.Database(&database{})
+	_ = sqladapter.Database(&database{})
 )
 
 // newDatabase creates a new *database session for internal use.

@@ -172,8 +172,6 @@ type database struct {
 	cachedCollections *cache.Cache
 
 	template *exql.Template
-
-	cloned bool // [SWH|+] Whether the object was created with NewClone
 }
 
 var (
@@ -329,10 +327,6 @@ func (d *database) NewClone(p PartialDatabase, checkConn bool) (BaseDatabase, er
 	nd.name = d.name
 	nd.sess = d.sess
 
-	// [SWH|+] Use the previous cache
-	nd.cachedCollections = d.cachedCollections
-	nd.cachedStatements = d.cachedStatements
-	nd.cloned = true
 	if checkConn {
 		if err := nd.Ping(); err != nil {
 			// Retry once if ping fails.
@@ -361,11 +355,9 @@ func (d *database) Close() error {
 			cleaner.CleanUp()
 		}
 
-		// [SWH|+] Clears the cache when it is not created by NewClone
-		if !d.cloned {
-			d.cachedCollections.Clear()
-			d.cachedStatements.Clear() // Closes prepared statements as well.
-		}
+		d.cachedCollections.Clear()
+		d.cachedStatements.Clear() // Closes prepared statements as well.
+
 		tx := d.Transaction()
 		if tx == nil {
 			// Not within a transaction.
