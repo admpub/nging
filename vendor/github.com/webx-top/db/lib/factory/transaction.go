@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/webx-top/db"
+	"github.com/webx-top/db/internal/sqladapter"
 	"github.com/webx-top/db/lib/sqlbuilder"
 )
 
@@ -22,7 +23,9 @@ func (t *Transaction) Database(param *Param) db.Database {
 		param.cluster = t.Cluster
 	}
 	if t.Tx != nil {
-		return t.Tx
+		if tx, ok := t.Tx.(sqladapter.BaseTx); ok && !tx.Committed() {
+			return t.Tx
+		}
 	}
 	if param.ReadOnly {
 		return param.cluster.Slave()
