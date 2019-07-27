@@ -445,7 +445,7 @@ func (t *Transaction) Upsert(param *Param, beforeUpsert ...func()) (interface{},
 	if len(beforeUpsert) > 0 && beforeUpsert[0] != nil {
 		beforeUpsert[0]()
 	}
-	return nil, t.Update(param)
+	return nil, res.Update(param.SaveData)
 }
 
 func (t *Transaction) Delete(param *Param) error {
