@@ -65,81 +65,84 @@ var (
 	Charsets = []string{"armscii8", "ascii", "big5", "binary", "cp1250", "cp1251", "cp1256", "cp1257", "cp850", "cp852", "cp866", "cp932", "dec8", "eucjpms", "euckr", "gb18030", "gb2312", "gbk", "geostd8", "greek", "hebrew", "hp8", "keybcs2", "koi8r", "koi8u", "latin1", "latin2", "latin5", "latin7", "macce", "macroman", "sjis", "swe7", "tis620", "ucs2", "ujis", "utf16", "utf16le", "utf32", "utf8", "utf8mb4"}
 	// UnsignedTags 无符号标签
 	UnsignedTags = []string{"unsigned", "zerofill", "unsigned zerofill"}
-	// EnumLength .
-	EnumLength = "'(?:''|[^'\\\\]|\\\\.)*'"
-	OnActions  = "RESTRICT|NO ACTION|CASCADE|SET NULL|SET DEFAULT" ///< @var string used in foreignKeys()
+	// EnumLength 枚举选项
+	EnumLength           = "'(?:''|[^'\\\\]|\\\\.)*'"
+	reEnumLength         = regexp.MustCompile(EnumLength)
+	reContainsEnumLength = regexp.MustCompile("^\\s*\\(?\\s*" + EnumLength + "(?:\\s*,\\s*" + EnumLength + ")*\\s*\\)?\\s*$")
+	// OnActions used in foreignKeys()
+	OnActions = "RESTRICT|NO ACTION|CASCADE|SET NULL|SET DEFAULT"
 	// PartitionTypes 分区类型
 	PartitionTypes = []string{`HASH`, `LINEAR HASH`, `KEY`, `LINEAR KEY`, `RANGE`, `LIST`}
 
 	typeGroups = []*FieldTypeGroup{
 		&FieldTypeGroup{
 			Types: []*FieldType{
-				&FieldType{"tinyint", 3},
-				&FieldType{"smallint", 5},
-				&FieldType{"mediumint", 8},
-				&FieldType{"int", 10},
-				&FieldType{"bigint", 20},
-				&FieldType{"decimal", 66},
-				&FieldType{"float", 12},
-				&FieldType{"double", 21},
+				{"tinyint", 3},
+				{"smallint", 5},
+				{"mediumint", 8},
+				{"int", 10},
+				{"bigint", 20},
+				{"decimal", 66},
+				{"float", 12},
+				{"double", 21},
 			},
 			Label: "数字",
 			Type:  "Number",
 		},
 		&FieldTypeGroup{
 			Types: []*FieldType{
-				&FieldType{"date", 10},
-				&FieldType{"datetime", 19},
-				&FieldType{"timestamp", 19},
-				&FieldType{"time", 10},
-				&FieldType{"year", 4},
+				{"date", 10},
+				{"datetime", 19},
+				{"timestamp", 19},
+				{"time", 10},
+				{"year", 4},
 			},
 			Label: "日期和时间",
 			Type:  "Datetime",
 		},
 		&FieldTypeGroup{
 			Types: []*FieldType{
-				&FieldType{"char", 255},
-				&FieldType{"varchar", 65535},
-				&FieldType{"tinytext", 255},
-				&FieldType{"text", 65535},
-				&FieldType{"mediumtext", 16777215},
-				&FieldType{"longtext", 4294967295},
+				{"char", 255},
+				{"varchar", 65535},
+				{"tinytext", 255},
+				{"text", 65535},
+				{"mediumtext", 16777215},
+				{"longtext", 4294967295},
 			},
 			Label: "字符串",
 			Type:  "String",
 		},
 		&FieldTypeGroup{
 			Types: []*FieldType{
-				&FieldType{"enum", 65535},
-				&FieldType{"set", 64},
+				{"enum", 65535},
+				{"set", 64},
 			},
 			Label: "列表",
 			Type:  "List",
 		},
 		&FieldTypeGroup{
 			Types: []*FieldType{
-				&FieldType{"bit", 20},
-				&FieldType{"binary", 255},
-				&FieldType{"varbinary", 65535},
-				&FieldType{"tinyblob", 255},
-				&FieldType{"blob", 65535},
-				&FieldType{"mediumblob", 16777215},
-				&FieldType{"longblob", 4294967295},
+				{"bit", 20},
+				{"binary", 255},
+				{"varbinary", 65535},
+				{"tinyblob", 255},
+				{"blob", 65535},
+				{"mediumblob", 16777215},
+				{"longblob", 4294967295},
 			},
 			Label: "二进制",
 			Type:  "Binary",
 		},
 		&FieldTypeGroup{
 			Types: []*FieldType{
-				&FieldType{"geometry", 0},
-				&FieldType{"point", 0},
-				&FieldType{"linestring", 0},
-				&FieldType{"polygon", 0},
-				&FieldType{"multipoint", 0},
-				&FieldType{"multilinestring", 0},
-				&FieldType{"multipolygon", 0},
-				&FieldType{"geometrycollection", 0},
+				{"geometry", 0},
+				{"point", 0},
+				{"linestring", 0},
+				{"polygon", 0},
+				{"multipoint", 0},
+				{"multilinestring", 0},
+				{"multipolygon", 0},
+				{"geometrycollection", 0},
 			},
 			Label: "几何图形",
 			Type:  "Geometry",
@@ -150,7 +153,8 @@ var (
 	operators     = []string{"=", "<", ">", "<=", ">=", "!=", "LIKE", "LIKE %%", "REGEXP", "IN", "IS NULL", "NOT LIKE", "NOT REGEXP", "NOT IN", "IS NOT NULL", "SQL"} ///< @var array operators used in select
 	functions     = []string{"char_length", "date", "from_unixtime", "lower", "round", "sec_to_time", "time_to_sec", "upper"}                                         ///< @var array functions used in select
 	grouping      = []string{"avg", "count", "count distinct", "group_concat", "max", "min", "sum"}                                                                   ///< @var array grouping functions used in select
-	editFunctions = []map[string]string{                                                                                                                              ///< @var array of array("$type|$type2" => "$function/$function2") functions used in editing, [0] - edit and insert, [1] - edit only
+	editFunctions = []map[string]string{
+		///< @var array of array("$type|$type2" => "$function/$function2") functions used in editing, [0] - edit and insert, [1] - edit only
 		map[string]string{
 			"char":      "md5/sha1/password/encrypt/uuid", //! JavaScript for disabling maxlength
 			"binary":    "md5/sha1",

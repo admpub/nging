@@ -557,19 +557,18 @@ func (m *mySQL) referencablePrimary(tableName string) (map[string]*Field, []stri
 }
 
 func (m *mySQL) processLength(length string) (string, error) {
-	r := ``
-	re, err := regexp.Compile("^\\s*\\(?\\s*" + EnumLength + "(?:\\s*,\\s*" + EnumLength + ")*\\s*\\)?\\s*$")
-	if err != nil {
-		return r, err
-	}
-	if re.MatchString(length) {
-		re, err := regexp.Compile(EnumLength)
-		if err != nil {
-			return r, err
-		}
-		matches := re.FindAllStringSubmatch(length, -1)
+	var r string
+	if reContainsEnumLength.MatchString(length) {
+		matches := reEnumLength.FindAllStringSubmatch(length, -1)
 		if len(matches) > 0 {
-			r = "(" + strings.Join(matches[0], ",") + ")"
+			var s string
+			for index, values := range matches {
+				if index > 0 {
+					s += `,`
+				}
+				s += values[0]
+			}
+			r = "(" + s + ")"
 			return r, nil
 		}
 	}
@@ -709,7 +708,7 @@ func (m *mySQL) formatForeignKey(foreignKey *ForeignKeyParam) (string, error) {
 		target[k] = quoteCol(v)
 	}
 	r := " FOREIGN KEY (" + strings.Join(source, ", ") + ") REFERENCES " + quoteCol(foreignKey.Table)
-	r += " (" + strings.Join(target, ", ") + ")" //! reuse $name - check in older MySQL versions
+	r += " (" + strings.Join(target, ", ") + ")"
 	re, err := regexp.Compile(`^(` + OnActions + `)$`)
 	if err != nil {
 		return ``, err
