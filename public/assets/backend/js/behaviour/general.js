@@ -866,7 +866,67 @@ var App = function () {
         });//end-each
         $(window).trigger('scroll');
       },
-      topFloatThead:function (elems, top) {
+      topFloatRawThead:function (elems, top) {
+      	if ($(elems).length<1) return;
+        if (top == null) top = 0;
+        $(elems).not('[disabled-fixed]').each(function(){
+        $(this).attr('disabled-fixed','fixed');
+        var elem=this,table=$(elem).parent('table');
+        var offsetY = $(elem).offset().top,maxOffsetY=table.height()+offsetY-$(elem).outerHeight()*2;
+        $(elem).css({'background-color':'white'});
+        var setSize=function(init){
+          if(init==null) init=false;
+          var width=$(elem).outerWidth(),ratio=1;
+          if(!init){
+            if(Math.abs(table.data('width')-width)>1){//避免抖动
+              ratio=width/table.data('width');
+            }
+            if(table.data('offset-left')!=$(table).offset().left){
+            }else if(table.data('scroll-left')!=$(window).scrollLeft()){
+              $(elem).css({'left':table.offset().left - $(window).scrollLeft()});
+              if(ratio==1) return;
+            }
+          }
+          table.data('width',width);//记录宽度
+          table.data('offset-left',$(table).offset().left);//记录左侧偏移
+          table.data('scroll-left',$(window).scrollLeft());//记录左侧滚动条
+          var cols=table.children('col'),tds=$(elem).find('td,th');
+          if(cols.length<1){
+            var html='';
+            tds.each(function(){
+              var w=$(this).outerWidth()*ratio;
+              html+='<col style="min-width:'+w+'px;max-width:auto" />';
+              $(this).css({'min-width':w,'max-width':'auto'});
+            });
+            table.prepend(html);
+            return;
+          }
+          tds.each(function(index){
+            var col=cols.eq(index);
+            var w=$(this).outerWidth()*ratio;
+            col.css({'width':w});
+            $(this).css({'width':w});
+          });
+        }
+        setSize(true);
+      	$(window).on('scroll resize',function () {
+          setSize();
+          var scrollH = $(this).scrollTop();
+          if (scrollH <= offsetY||scrollH>=maxOffsetY) {
+      			if ($(elem).hasClass('always-top')) {
+              $(elem).removeClass('always-top');
+      			}
+      			return;
+          }
+      		if (!$(elem).hasClass('always-top')) {
+      			$(elem).addClass('always-top').css('top',top);
+      		}
+        });
+      });
+      $(window).trigger('scroll');
+      },
+      topFloatThead:function (elems, top, clone) {
+        if (!clone) return App.topFloatRawThead(elems,top);
       	if ($(elems).length<1) return;
         if (top == null) top = 0;
         $(elems).not('[disabled-fixed]').each(function(){
@@ -898,7 +958,7 @@ var App = function () {
           var cols=hCopy.find('td,th'),rawCols=$(elem).find('td,th');
           rawCols.each(function(index){
             var col=cols.eq(index);
-            col.css('width',$(this).innerWidth());
+            col.css('width',$(this).outerWidth());
             if(!init)return;
             var chk=col.find('input:checkbox');
             if(chk.length<1)return;
