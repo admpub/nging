@@ -898,7 +898,7 @@ var App = function () {
           var cols=hCopy.find('td,th'),rawCols=$(elem).find('td,th');
           rawCols.each(function(index){
             var col=cols.eq(index);
-            col.css('width',$(this).width());
+            col.css('width',$(this).innerWidth());
             if(!init)return;
             var chk=col.find('input:checkbox');
             if(chk.length<1)return;
@@ -963,8 +963,7 @@ var App = function () {
     },
     formatBytes:function(cellValue,precision) {
       if(precision==null) precision=1
-      var intVal = parseInt(cellValue);
-      var ras = " B"
+      var intVal = parseInt(cellValue),ras = " B";
       if (intVal > 1024) {
           intVal /= 1024
           ras = " KB"
