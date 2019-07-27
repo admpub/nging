@@ -868,11 +868,11 @@ var App = function () {
       },
       topFloatRawThead:function (elems, top) {
       	if ($(elems).length<1) return;
-        if (top == null) top = 0;
+        if (top==null) top = 0;
         $(elems).not('[disabled-fixed]').each(function(){
         $(this).attr('disabled-fixed','fixed');
         var elem=this,table=$(elem).parent('table');
-        var offsetY = $(elem).offset().top,maxOffsetY=table.height()+offsetY-$(elem).outerHeight()*2;
+        var offsetY=$(elem).offset().top,maxOffsetY=table.height()+offsetY-$(elem).outerHeight()*2;
         $(elem).css({'background-color':'white'});
         var setSize=function(init){
           if(init==null) init=false;
@@ -911,14 +911,14 @@ var App = function () {
         setSize(true);
       	$(window).on('scroll resize',function () {
           setSize();
-          var scrollH = $(this).scrollTop();
-          if (scrollH <= offsetY||scrollH>=maxOffsetY) {
+          var scrollH=$(this).scrollTop();
+          if (scrollH<=offsetY || scrollH>=maxOffsetY) {
       			if ($(elem).hasClass('always-top')) {
               $(elem).removeClass('always-top');
       			}
       			return;
           }
-      		if (!$(elem).hasClass('always-top')) {
+      		if (table.height()>$(window).height() && !$(elem).hasClass('always-top')) {
       			$(elem).addClass('always-top').css('top',top);
       		}
         });
