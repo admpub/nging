@@ -1,6 +1,8 @@
 package file
 
 import (
+	"os"
+
 	"github.com/admpub/sessions"
 	ss "github.com/webx-top/echo/middleware/session/engine"
 )
@@ -36,6 +38,15 @@ type FileOptions struct {
 //
 // See NewCookieStore() for a description of the other parameters.
 func NewFilesystemStore(path string, keyPairs ...[]byte) sessions.Store {
+	if len(path) > 0 {
+		fi, err := os.Stat(path)
+		if os.IsNotExist(err) || !fi.IsDir() {
+			err = os.MkdirAll(path, os.ModePerm)
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
 	return &filesystemStore{sessions.NewFilesystemStore(path, keyPairs...)}
 }
 

@@ -164,9 +164,15 @@ func (c *xContext) SSEvent(event string, data chan interface{}) (err error) {
 	return
 }
 
-func (c *xContext) Attachment(r io.ReadSeeker, name string) (err error) {
+func (c *xContext) Attachment(r io.Reader, name string, inline ...bool) (err error) {
+	var typ string
+	if len(inline) > 0 && inline[0] {
+		typ = `inline`
+	} else {
+		typ = `attachment`
+	}
 	c.response.Header().Set(HeaderContentType, ContentTypeByExtension(name))
-	c.response.Header().Set(HeaderContentDisposition, "attachment; filename="+name)
+	c.response.Header().Set(HeaderContentDisposition, typ+"; filename="+name)
 	c.response.WriteHeader(http.StatusOK)
 	c.response.KeepBody(false)
 	_, err = io.Copy(c.response, r)

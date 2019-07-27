@@ -18,10 +18,8 @@
 package config
 
 import (
-	"os"
 	"path/filepath"
 
-	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/session/engine/cookie"
 	"github.com/webx-top/echo/middleware/session/engine/file"
@@ -59,15 +57,8 @@ func InitSessionOptions(c *Config) {
 	cookie.RegWithOptions(CookieOptions)
 
 	//2. 注册文件引擎：file
-	saveDir := filepath.Join(echo.Wd(), `data`, `cache`, `sessions`)
-	if !com.IsDir(saveDir) {
-		err := os.MkdirAll(saveDir, os.ModePerm)
-		if err != nil {
-			panic(err)
-		}
-	}
 	file.RegWithOptions(&file.FileOptions{
-		SavePath: saveDir,
+		SavePath: filepath.Join(echo.Wd(), `data`, `cache`, `sessions`),
 		KeyPairs: CookieOptions.KeyPairs,
 	})
 }

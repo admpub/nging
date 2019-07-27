@@ -117,7 +117,7 @@ type Context interface {
 	Stream(func(io.Writer) bool)
 	SSEvent(string, chan interface{}) error
 	File(string, ...http.FileSystem) error
-	Attachment(io.ReadSeeker, string) error
+	Attachment(io.Reader, string, ...bool) error
 	NoContent(...int) error
 	Redirect(string, ...int) error
 	Error(err error)
