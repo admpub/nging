@@ -18,7 +18,12 @@
 
 package common
 
-import "github.com/webx-top/db"
+import (
+	clientPagination "github.com/admpub/nging/application/library/common/client/pagination"
+	"github.com/webx-top/db"
+)
+
+var _ clientPagination.ListParameter = &ListParam{}
 
 // NewListParam 列表参数
 func NewListParam(recv interface{}, mw func(db.Result) db.Result, args ...interface{}) *ListParam {
@@ -57,9 +62,24 @@ func (f *ListParam) AddMiddleware(mw ...func(db.Result) db.Result) {
 	}
 }
 
+// Middleware 获取中间件
+func (f *ListParam) Middleware() func(db.Result) db.Result {
+	return f.mw
+}
+
 // AddCond 添加条件
 func (f *ListParam) AddCond(args ...interface{}) {
 	f.args = append(f.args, args...)
+}
+
+// SetConds 设置条件
+func (f *ListParam) SetConds(args []interface{}) {
+	f.args = args
+}
+
+// Conds 获取条件
+func (f *ListParam) Conds() []interface{} {
+	return f.args
 }
 
 // Model 模型实例

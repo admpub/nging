@@ -19,6 +19,7 @@
 package common
 
 import (
+	clientPagination "github.com/admpub/nging/application/library/common/client/pagination"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
@@ -85,37 +86,10 @@ func (f *OffsetList) ChunkList(eachPageCallback func() error, size int, offset i
 
 // DataTable 分页信息
 func (f *OffsetList) DataTable(ctx echo.Context, args ...string) (map[string]interface{}, error) {
-	pageRowsKey := `length`
-	totalRowsKey := `totalrows`
-	offsetKey := `start`
-	switch len(args) {
-	case 3:
-		pageRowsKey = args[2]
-		fallthrough
-	case 2:
-		totalRowsKey = args[1]
-		fallthrough
-	case 1:
-		offsetKey = args[0]
-	}
-	size := ctx.Formx(pageRowsKey).Int()
-	offset := ctx.Formx(offsetKey).Int()
-	if size < 1 || size > 1000 {
-		size = 10
-	}
-	if offset < 0 {
-		offset = 0
-	}
-	totalRows := ctx.Formx(totalRowsKey).Int()
-	cnt, err := f.ListByOffset(nil, nil, offset, size)
-	if totalRows < 1 {
-		totalRows = int(cnt())
-	}
-	data := map[string]interface{}{
-		"draw":            ctx.Form(`draw`),
-		"recordsTotal":    totalRows,
-		"recordsFiltered": totalRows,
-		"list":            f.recv,
-	}
-	return data, err
+	return clientPagination.DataTable(ctx, f, args...)
+}
+
+// DataGrid 分页信息
+func (f *OffsetList) DataGrid(ctx echo.Context, searchField string, args ...string) (map[string]interface{}, error) {
+	return clientPagination.DataGrid(ctx, f, searchField, args...)
 }

@@ -19,16 +19,20 @@
 package common
 
 import (
-	"strings"
-
+	clientPagination "github.com/admpub/nging/application/library/common/client/pagination"
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/pagination"
 )
 
-// PageMaxSize 每页最大数据量
-var PageMaxSize = 1000
+var (
+	// PageMaxSize 每页最大数据量
+	PageMaxSize = 1000
+
+	// Sorts 获取数据查询时的排序方式
+	Sorts = clientPagination.Sorts
+)
 
 // Paging 获取当前页码和每页数据量
 func Paging(ctx echo.Context) (page int, size int) {
@@ -105,24 +109,4 @@ func PagingWithSelectList(ctx echo.Context, param *factory.Param, varSuffix ...s
 		ctx.Set(`pagination`, p)
 	}
 	return p, err
-}
-
-// Sorts 获取数据查询时的排序方式
-func Sorts(ctx echo.Context, table string, defaultSorts ...string) []interface{} {
-	sorts := []interface{}{}
-	sort := ctx.Form(`sort`)
-	field := strings.TrimPrefix(sort, `-`)
-	if len(field) > 0 && factory.ExistField(table, field) {
-		sorts = append(sorts, sort)
-		for _, defaultSort := range defaultSorts {
-			if field != strings.TrimPrefix(defaultSort, `-`) {
-				sorts = append(sorts, defaultSort)
-			}
-		}
-	} else {
-		for _, defaultSort := range defaultSorts {
-			sorts = append(sorts, defaultSort)
-		}
-	}
-	return sorts
 }

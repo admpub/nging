@@ -33,7 +33,7 @@ type StructMap struct {
 	Index   []*FieldInfo
 	Paths   map[string]*FieldInfo
 	Names   map[string]*FieldInfo
-	Options map[string][]*FieldInfo
+	Options map[string][]*FieldInfo //[SWH|+]
 }
 
 // GetByPath returns a *FieldInfo for a given string path.
@@ -301,7 +301,10 @@ func apnd(is []int, i int) []int {
 func getMapping(t reflect.Type, tagName string, mapFunc, tagMapFunc func(string) string) *StructMap {
 	m := []*FieldInfo{}
 
-	root := &FieldInfo{}
+	root := &FieldInfo{
+		Name: t.Name(),
+		Zero: reflect.New(t).Elem(),
+	}
 	queue := []typeQueue{}
 	queue = append(queue, typeQueue{Deref(t), root, ""})
 	options := map[string][]*FieldInfo{} //[SWH|+]
@@ -422,7 +425,7 @@ QueueLoop:
 	flds := &StructMap{Index: m, Tree: root, Paths: map[string]*FieldInfo{}, Names: map[string]*FieldInfo{}, Options: options}
 	for _, fi := range flds.Index {
 		flds.Paths[fi.Path] = fi
-		if fi.Name != "" && !fi.Embedded {
+		if len(fi.Name) > 0 && !fi.Embedded {
 			flds.Names[fi.Path] = fi
 		}
 	}
