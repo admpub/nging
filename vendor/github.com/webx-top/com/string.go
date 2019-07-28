@@ -510,7 +510,7 @@ func LeftPadZero(input string, padLength int) string {
 var (
 	reSpaceLine     = regexp.MustCompile("([\\t\\s\r]*\n){2,}")
 	BreakLine       = []byte("\n")
-	BreakLineString = "\n"
+	BreakLineString = StrLF
 )
 
 func CleanSpaceLine(b []byte) []byte {

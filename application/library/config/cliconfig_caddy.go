@@ -23,6 +23,7 @@ import (
 	"os"
 
 	"github.com/admpub/log"
+	"github.com/admpub/nging/application/library/caddy"
 	"github.com/webx-top/com"
 )
 
@@ -39,8 +40,12 @@ func (c *CLIConfig) CaddyStart(writer ...io.Writer) (err error) {
 		log.Error(err.Error())
 	}
 	params := []string{os.Args[0], `--config`, c.Conf, `--type`, `webserver`}
-	c.caddyCh = com.NewCmdChanReader()
-	c.cmds["caddy"] = com.RunCmdWithReaderWriter(params, c.caddyCh, writer...)
+	if caddy.EnableReload {
+		c.caddyCh = com.NewCmdChanReader()
+		c.cmds["caddy"] = com.RunCmdWithReaderWriter(params, c.caddyCh, writer...)
+	} else {
+		c.cmds["caddy"] = com.RunCmdWithWriter(params, writer...)
+	}
 	return nil
 }
 
@@ -54,14 +59,13 @@ func (c *CLIConfig) CaddyStop() error {
 	return c.CmdStop("caddy")
 }
 
-var eol = []byte("\n")
-
 func (c *CLIConfig) CaddyReload() error {
 	if c.caddyCh == nil || com.IsWindows { //windows不支持重载，需要重启
 		return c.CaddyRestart()
 	}
-	c.caddyCh.Send(eol)
+	c.caddyCh.Send(com.BreakLine)
 	return nil
+	//c.CmdSendSignal("caddy", os.Interrupt)
 }
 
 func (c *CLIConfig) CaddyRestart(writer ...io.Writer) error {

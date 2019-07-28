@@ -213,7 +213,11 @@ func (c *CLIConfig) CmdSendSignal(typeName string, sig os.Signal) error {
 	if cmd.Process == nil {
 		return nil
 	}
-	return cmd.Process.Signal(sig)
+	err := cmd.Process.Signal(sig)
+	if err != nil && (cmd.ProcessState == nil || cmd.ProcessState.Exited()) {
+		err = nil
+	}
+	return err
 }
 
 func (c *CLIConfig) Kill(cmd *exec.Cmd) error {

@@ -172,12 +172,18 @@ func (this CmdResultCapturer) WriteString(p string) (n int, err error) {
 	return
 }
 
-func NewCmdChanReader() *CmdChanReader {
-	return &CmdChanReader{ch: make(chan io.Reader)}
+func NewCmdChanReader(timeouts ...time.Duration) *CmdChanReader {
+	timeout := time.Second
+	if len(timeouts) > 0 {
+		timeout = timeouts[0]
+	}
+	return &CmdChanReader{ch: make(chan io.Reader), timeout: timeout}
 }
 
 type CmdChanReader struct {
-	ch chan io.Reader
+	ch      chan io.Reader
+	timeout time.Duration
+	debug   bool
 }
 
 func (c *CmdChanReader) Read(p []byte) (n int, err error) {
@@ -191,18 +197,48 @@ func (c *CmdChanReader) Read(p []byte) (n int, err error) {
 	return r.Read(p)
 }
 
+func (c *CmdChanReader) Debug(on bool) *CmdChanReader {
+	c.debug = on
+	return c
+}
+
 func (c *CmdChanReader) Close() {
+	if c.ch == nil {
+		return
+	}
 	close(c.ch)
 	c.ch = nil
 }
 
 func (c *CmdChanReader) Send(b []byte) *CmdChanReader {
-	c.ch <- bytes.NewReader(b)
+	c.sendWithTimeout(bytes.NewReader(b))
 	return c
 }
 
+func (c *CmdChanReader) sendWithTimeout(r io.Reader) {
+	go func() {
+		t := time.NewTicker(c.timeout)
+		defer t.Stop()
+		for {
+			select {
+			case c.ch <- r:
+				if c.debug {
+					println(`CmdChanReader Chan has been sent`)
+				}
+				return
+			case <-t.C:
+				if c.debug {
+					println(`CmdChanReader Chan has timed out`)
+				}
+				c.Close()
+				return
+			}
+		}
+	}()
+}
+
 func (c *CmdChanReader) SendString(s string) *CmdChanReader {
-	c.ch <- strings.NewReader(s)
+	c.sendWithTimeout(strings.NewReader(s))
 	return c
 }
 

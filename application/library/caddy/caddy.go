@@ -20,6 +20,7 @@ package caddy
 
 import (
 	"bufio"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -54,6 +55,7 @@ var (
 		PidFile:                 `./caddy.pid`,
 	}
 	DefaultVersion = `2.0.0`
+	EnableReload   = true
 )
 
 func TrapSignals() {
@@ -97,6 +99,7 @@ func Fixed(c *Config) {
 	c.appName = `nging`
 	c.appVersion = echo.String(`VERSION`, DefaultVersion)
 	c.Agreed = true
+	c.ctx, c.cancel = context.WithCancel(context.Background())
 }
 
 type Config struct {
@@ -124,6 +127,12 @@ type Config struct {
 	appName    string
 	instance   *caddy.Instance
 	stopped    bool
+	ctx        context.Context
+	cancel     context.CancelFunc
+}
+
+func now() string {
+	return time.Now().Format(`2006-01-02 15:04:05`)
 }
 
 func (c *Config) Start() error {
@@ -140,36 +149,58 @@ func (c *Config) Start() error {
 	if err != nil {
 		return err
 	}
+
+	if EnableReload {
+		c.watchingSignal()
+	}
+
 	// Start your engines
 	c.instance, err = caddy.Start(caddyfile)
 	if err != nil {
 		return err
 	}
 
-	// Execute instantiation events
-	caddy.EmitEvent(caddy.InstanceStartupEvent, c.instance)
-
-	// Listen to keypress of "return" and restart the app automatically
-	go func() {
-		in := bufio.NewReader(os.Stdin)
-		for {
-			input, _ := in.ReadString('\n')
-			if input == "\n" || input == "\r\n" {
-				c.Restart()
-			}
-			if c.stopped {
-				break
-			}
-		}
-	}()
+	msgbox.Success(`Caddy`, `Server has been successfully started at `+now())
 
 	// Twiddle your thumbs
 	c.instance.Wait()
 	return nil
 }
 
+// Listen to keypress of "return" and restart the app automatically
+func (c *Config) watchingSignal() {
+	debug := false
+	go func() {
+		if debug {
+			msgbox.Info(`Caddy`, `listen return ==> `+now())
+		}
+		in := bufio.NewReader(os.Stdin)
+		for {
+			select {
+			case <-c.ctx.Done():
+				return
+			default:
+				if debug {
+					msgbox.Info(`Caddy`, `reading ==> `+now())
+				}
+				input, _ := in.ReadString(com.LF)
+				if input == com.StrLF || input == com.StrCRLF {
+					if debug {
+						msgbox.Info(`Caddy`, `restart ==> `+now())
+					}
+					c.Restart()
+				} else {
+					if debug {
+						msgbox.Info(`Caddy`, `waiting ==> `+now())
+					}
+				}
+			}
+		}
+	}()
+}
+
 func (c *Config) Restart() error {
-	msgbox.Info(`Information`, `Caddy Server has been successfully reloaded at `+time.Now().Format(`2006-01-02 15:04:05`))
+	defer msgbox.Success(`Caddy`, `Server has been successfully reloaded at `+now())
 	if c.instance == nil {
 		return nil
 	}
@@ -187,6 +218,10 @@ func (c *Config) Restart() error {
 
 func (c *Config) Stop() error {
 	c.stopped = true
+	defer func() {
+		c.cancel()
+		msgbox.Success(`Caddy`, `Server has been successfully stopped at `+now())
+	}()
 	if c.instance == nil {
 		return nil
 	}

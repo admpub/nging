@@ -20,9 +20,11 @@ package msgbox
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"strings"
 
+	isatty "github.com/admpub/go-isatty"
 	"github.com/admpub/go-pretty/table"
 	"github.com/admpub/go-pretty/text"
 )
@@ -47,14 +49,34 @@ func Debug(title, content string, args ...interface{}) {
 	Render(title, content, `debug`, args...)
 }
 
+func Colorable(w io.Writer) bool {
+	file, ok := w.(*os.File)
+	if !ok {
+		return false
+	}
+	if isatty.IsTerminal(file.Fd()) {
+		return true
+	}
+	if isatty.IsCygwinTerminal(file.Fd()) {
+		return true
+	}
+	return false
+}
+
+var StdoutColorable = Colorable(os.Stdout)
+
 func Render(title, content, typ string, args ...interface{}) {
+	if len(args) > 0 {
+		content = fmt.Sprintf(content, args...)
+	}
+	if !StdoutColorable {
+		os.Stdout.WriteString(`[` + strings.ToUpper(typ) + `][` + title + `] ` + content + "\n")
+		return
+	}
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{title})
 	t.AppendRow([]interface{}{""})
-	if len(args) > 0 {
-		content = fmt.Sprintf(content, args...)
-	}
 	for _, row := range strings.Split(content, "\n") {
 		t.AppendRow([]interface{}{row})
 	}

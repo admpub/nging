@@ -333,6 +333,12 @@
 			"revisionTime": "2018-06-19T03:18:29Z"
 		},
 		{
+			"checksumSHA1": "BqYzEsFXlvPUtDV0f6I9AIkyCmI=",
+			"path": "github.com/admpub/go-isatty",
+			"revision": "da60ac76bf7019a8b005f8dd1ad9d1a0e6434155",
+			"revisionTime": "2019-07-08T05:43:38Z"
+		},
+		{
 			"checksumSHA1": "ldUoX2UET664gw2oAUp9YR98XZc=",
 			"path": "github.com/admpub/go-phantomjs-fetcher",
 			"revision": "2bf2a2c3df3e910762af7d6471420651b9275bad",
@@ -345,16 +351,16 @@
 			"revisionTime": "2019-05-09T15:24:50Z"
 		},
 		{
-			"checksumSHA1": "52G0QF6gbJ/Dp+PuHFy5+GyxRho=",
+			"checksumSHA1": "VP3anyh0taq6wgbX0WIVdbwUmqI=",
 			"path": "github.com/admpub/go-pretty/table",
-			"revision": "b096cc397c2e7490dfdc34f2b553501b30018203",
-			"revisionTime": "2019-05-09T15:24:50Z"
+			"revision": "566e5c19f609cbeb3b7aa381a005e7cb2effc698",
+			"revisionTime": "2019-07-28T12:40:51Z"
 		},
 		{
-			"checksumSHA1": "3rmgAn73P/hom9/lDYRgvByJ0Xg=",
+			"checksumSHA1": "hD81Wx//ad6kBXu/bIFTJpg0tqI=",
 			"path": "github.com/admpub/go-pretty/text",
-			"revision": "b096cc397c2e7490dfdc34f2b553501b30018203",
-			"revisionTime": "2019-05-09T15:24:50Z"
+			"revision": "566e5c19f609cbeb3b7aa381a005e7cb2effc698",
+			"revisionTime": "2019-07-28T12:40:51Z"
 		},
 		{
 			"checksumSHA1": "HNy5ugQBnIvfpSEFaQsWvLUb458=",
@@ -1031,226 +1037,226 @@
 			"revisionTime": "2019-07-04T15:46:56Z"
 		},
 		{
-			"checksumSHA1": "22kX0V02PDzzmd8Oorn5JYvaqWI=",
+			"checksumSHA1": "CQaqa+UaPx3UfVOisPQhXQIWra4=",
 			"path": "github.com/caddyserver/caddy",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "JRu12Cm5DJgJL7x6yc9YxhhJ7S0=",
 			"path": "github.com/caddyserver/caddy/caddyfile",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "z9FSU4cwmjD5Paxu8CeMm93SkIA=",
 			"path": "github.com/caddyserver/caddy/caddyhttp",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
-			"checksumSHA1": "ha4zu7vW2c5hhscDduiBPoMOFOw=",
+			"checksumSHA1": "adVmCdmMOSNrMp9lqSEvQCStVMU=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/basicauth",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "uKL96RZedgwnIKEoNevlr/UQ2Yw=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/bind",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
-			"checksumSHA1": "3HeTqZcdcahlVNBz7hFQscay85s=",
+			"checksumSHA1": "2ZOclDppH73oDtYBnhtB/rFEbRI=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/browse",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "yMo4b0HYfj6JujZnSb02nS1j4B4=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/errors",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "1e55nmhjN/w102nW4UXQjaTpjJ0=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/expvar",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "1qGffsCD90Enr/9nmTprncS7QAs=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/extensions",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "+kKhMI3Ui/0OCKyYf0TiMVTingw=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/fastcgi",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "gd946M4niEZyKBi8D3zwaMVBmA8=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/gzip",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "P5mDkTXaKR0wWhgpqFodpZ8KzPY=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/header",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
-			"checksumSHA1": "FnLzmwkRBZkk2BJuHu1vgFgg+sY=",
+			"checksumSHA1": "gWxmeIRjT2hmtUDG+Sc0Z0yUNlE=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/httpserver",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "OfHVq4lIEplow0mLYSgBXQrV6r0=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/index",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "L0UhdqzaONFy0B0qdSYbRRLtYuU=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/internalsrv",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "v394rodBOuGUrOfClRFHWLf75ek=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/limits",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "aVDRr9GXjpSx45iHLoiMBohafEQ=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/log",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "Qu4mqU2xer1OC9bTPoHdkz5O/lA=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/markdown",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "MiZ4KHhEgnfkOeX3zJzwCFt6+Wo=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/markdown/metadata",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "Kn2QODSsOjlJf+DyjgX7lQ3Y5ww=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/markdown/summary",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "R3Hb4xmg/K0/i9qkPRYE548imw8=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/mime",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "Q+eqpCqbHUOGrpuBC8+jRtSjEgc=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/pprof",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
-			"checksumSHA1": "cLx3ybhMVCeg/CjEIRJtIrWJhi4=",
+			"checksumSHA1": "ua6VaC29DxACStaHvyM3bswAi4U=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/proxy",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "kAf43ogpRLXFew3f6HJgDLbgaKo=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/push",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "Rscre/9cxlz+h/e/3a9L7LK9kLw=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/redirect",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
-			"checksumSHA1": "wWD4nlR0f7kUFo3U6rRCoAg8rSQ=",
+			"checksumSHA1": "atMHY4lefdd7OecOgyM5XhIUG8s=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/requestid",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "azjk35HygzAfVHu2IHPchnQPVas=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/rewrite",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "aKxlRuYFQxuYrIIjigpgKeYaciw=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/root",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
-			"checksumSHA1": "cJxPV1YikxJbzzzymX4KhNvpOVo=",
+			"checksumSHA1": "0qlkLHNRx7++sHBnlP2nx61dS+8=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/staticfiles",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "0vHCkaTeFgl4EayTuZLU6+07ims=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/status",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "ChbtRLys7t8BFRq4jKn68t/QMOU=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/templates",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "HxmQFT9f4EGTexkMH/FD6JgCwTI=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/timeouts",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
-			"checksumSHA1": "RViv1CYv/0CRBy046PqGIQI3ADY=",
+			"checksumSHA1": "KbKQsFPXRWCv+HQCss2poYvrktI=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/websocket",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
-			"checksumSHA1": "7RSLB2qzgm4EKhLmuWpOs2Tdqfk=",
+			"checksumSHA1": "7VNTdXvFeA9XZMh8AT9QqeaCch0=",
 			"path": "github.com/caddyserver/caddy/caddytls",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
-			"checksumSHA1": "yh+7itHbtyrkK9yrsm/Yn8Ct62o=",
+			"checksumSHA1": "Cp2GiTdU2VW8Oe588aol7Q7CZAE=",
 			"path": "github.com/caddyserver/caddy/onevent",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "R8GXjgav0IIB2ETk0hL/yxkxqzI=",
 			"path": "github.com/caddyserver/caddy/onevent/hook",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "8ufPrU8ju1XUcCFTJJ0aMy8DCfg=",
 			"path": "github.com/caddyserver/caddy/telemetry",
-			"revision": "f6ee100bae9c0de566a2f7ae531113be0a9a0b83",
-			"revisionTime": "2019-07-02T19:08:31Z"
+			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
+			"revisionTime": "2019-07-19T19:29:49Z"
 		},
 		{
 			"checksumSHA1": "xhz5SprqgVRCF8BazSJkYBPdXYA=",
@@ -1258,12 +1264,6 @@
 			"path": "github.com/cenkalti/backoff",
 			"revision": "b9bafc582ce3ef7263217fdfe22e2a3e59f0d216",
 			"revisionTime": "2019-05-09T11:58:24Z"
-		},
-		{
-			"checksumSHA1": "PYXuf7wvcj492uWhjvmXlyyQUYc=",
-			"path": "github.com/cheekybits/genny/generic",
-			"revision": "df3d48aa411e8e28498e452e42cc1e40498a9e58",
-			"revisionTime": "2019-06-11T08:46:15Z"
 		},
 		{
 			"checksumSHA1": "AKfVkkAyUy2805EQl4cfiKetlmc=",
@@ -2351,48 +2351,6 @@
 			"revisionTime": "2016-11-27T12:35:54Z"
 		},
 		{
-			"checksumSHA1": "tyBJkJQ8R/T3er4LHDuxMqE3D+o=",
-			"path": "github.com/lucas-clemente/quic-go/internal/ackhandler",
-			"revision": "3dcbaee89e97ce15e4b9f1167e88a4184bb21e2d",
-			"revisionTime": "2019-07-01T07:44:43Z"
-		},
-		{
-			"checksumSHA1": "56X0wvNj7vc3TNmknwUkO5U8Vi4=",
-			"path": "github.com/lucas-clemente/quic-go/internal/congestion",
-			"revision": "3dcbaee89e97ce15e4b9f1167e88a4184bb21e2d",
-			"revisionTime": "2019-07-01T07:44:43Z"
-		},
-		{
-			"checksumSHA1": "HDkX616FVT7b8nZ0H5poD3xzD2I=",
-			"path": "github.com/lucas-clemente/quic-go/internal/flowcontrol",
-			"revision": "3dcbaee89e97ce15e4b9f1167e88a4184bb21e2d",
-			"revisionTime": "2019-07-01T07:44:43Z"
-		},
-		{
-			"checksumSHA1": "hABDVsjoiiEqbGmnjhO5GsHBzSY=",
-			"path": "github.com/lucas-clemente/quic-go/internal/handshake",
-			"revision": "3dcbaee89e97ce15e4b9f1167e88a4184bb21e2d",
-			"revisionTime": "2019-07-01T07:44:43Z"
-		},
-		{
-			"checksumSHA1": "o+eY4M2c2qXFhuNzWl/fpzT6gog=",
-			"path": "github.com/lucas-clemente/quic-go/internal/protocol",
-			"revision": "3dcbaee89e97ce15e4b9f1167e88a4184bb21e2d",
-			"revisionTime": "2019-07-01T07:44:43Z"
-		},
-		{
-			"checksumSHA1": "eOBm9o3NgesqqCvlzbmtxlPtJf0=",
-			"path": "github.com/lucas-clemente/quic-go/internal/qerr",
-			"revision": "3dcbaee89e97ce15e4b9f1167e88a4184bb21e2d",
-			"revisionTime": "2019-07-01T07:44:43Z"
-		},
-		{
-			"checksumSHA1": "1+6PeuB5gWGUP1G2PjLkN09XaOk=",
-			"path": "github.com/lucas-clemente/quic-go/internal/wire",
-			"revision": "3dcbaee89e97ce15e4b9f1167e88a4184bb21e2d",
-			"revisionTime": "2019-07-01T07:44:43Z"
-		},
-		{
 			"checksumSHA1": "/6mNcj1JQ1KnGH98BBbp1LyQydg=",
 			"origin": "github.com/mholt/caddy/vendor/github.com/lucas-clemente/quic-go/protocol",
 			"path": "github.com/lucas-clemente/quic-go/protocol",
@@ -2405,18 +2363,6 @@
 			"path": "github.com/lucas-clemente/quic-go/qerr",
 			"revision": "e2917784d0fb41e3b84847f84302a287a2988f7a",
 			"revisionTime": "2016-11-27T12:35:54Z"
-		},
-		{
-			"checksumSHA1": "QIwVxQPQYFoXXGDdHk7yCKSe22U=",
-			"path": "github.com/lucas-clemente/quic-go/quictrace",
-			"revision": "3dcbaee89e97ce15e4b9f1167e88a4184bb21e2d",
-			"revisionTime": "2019-07-01T07:44:43Z"
-		},
-		{
-			"checksumSHA1": "BEmwZjenZ5kQw704NYtyHqaW8NQ=",
-			"path": "github.com/lucas-clemente/quic-go/quictrace/pb",
-			"revision": "3dcbaee89e97ce15e4b9f1167e88a4184bb21e2d",
-			"revisionTime": "2019-07-01T07:44:43Z"
 		},
 		{
 			"checksumSHA1": "g8EyPzqekr2jmCUsEwIIZSyttgQ=",
@@ -2622,12 +2568,6 @@
 			"path": "github.com/markbates/goth/providers/yammer",
 			"revision": "39d29b2c1a1ad66dddd33063b8389f4e25ddcef5",
 			"revisionTime": "2019-04-03T18:46:37Z"
-		},
-		{
-			"checksumSHA1": "fV/dWDjobpxleSwnZ4lR1/8hDu4=",
-			"path": "github.com/marten-seemann/qtls",
-			"revision": "65ca381cd298d7e0aef0de8ba523a870ec5a96fe",
-			"revisionTime": "2019-03-29T07:59:07Z"
 		},
 		{
 			"checksumSHA1": "17pyIRa4+1+bbKXX92qPB7znaPI=",
@@ -3001,13 +2941,6 @@
 			"revisionTime": "2018-10-05T14:02:18Z"
 		},
 		{
-			"checksumSHA1": "Kmjs49lbjGmlgUPx3pks0tVDed0=",
-			"origin": "github.com/nats-io/nats-streaming-server/vendor/github.com/prometheus/procfs/internal/fs",
-			"path": "github.com/prometheus/procfs/internal/fs",
-			"revision": "502d27d6cb364ae4517675687c7d85625099c523",
-			"revisionTime": "2019-07-09T18:21:20Z"
-		},
-		{
 			"checksumSHA1": "8E1IbrgtLBee7J404VKPyoI+qsk=",
 			"path": "github.com/prometheus/procfs/internal/util",
 			"revision": "185b4288413d2a0dd0806f78c90dde719829e5ae",
@@ -3375,10 +3308,10 @@
 			"revisionTime": "2018-07-27T14:15:59Z"
 		},
 		{
-			"checksumSHA1": "6Fyr+CF4oKPdATmMzNuCxjauyik=",
+			"checksumSHA1": "HZSUUVlrks7E82ZrA/oFEYbPe5o=",
 			"path": "github.com/webx-top/com",
-			"revision": "35b72a2f09167d084b4a6aea2309b0a8b3840ea7",
-			"revisionTime": "2019-07-28T09:02:33Z"
+			"revision": "d513d413914611f235e1c35a6a1f496636b51fa4",
+			"revisionTime": "2019-07-28T12:28:30Z"
 		},
 		{
 			"checksumSHA1": "g9Su7l1p/0yOFZMZiK4rL9Y9Zso=",
@@ -3751,18 +3684,6 @@
 			"revisionTime": "2019-07-01T08:59:26Z"
 		},
 		{
-			"checksumSHA1": "1ezNasqd516o9HG59beqc5s+2Ro=",
-			"path": "golang.org/x/crypto/cryptobyte",
-			"revision": "4def268fd1a49955bfb3dda92fe3db4f924f2285",
-			"revisionTime": "2019-07-01T08:59:26Z"
-		},
-		{
-			"checksumSHA1": "YEoV2AiZZPDuF7pMVzDt7buS9gc=",
-			"path": "golang.org/x/crypto/cryptobyte/asn1",
-			"revision": "4def268fd1a49955bfb3dda92fe3db4f924f2285",
-			"revisionTime": "2019-07-01T08:59:26Z"
-		},
-		{
 			"checksumSHA1": "VhYw+/2jaraoUukY6CBcCUQbLtU=",
 			"origin": "github.com/mholt/caddy/vendor/golang.org/x/crypto/curve25519",
 			"path": "golang.org/x/crypto/curve25519",
@@ -3983,12 +3904,6 @@
 			"revisionTime": "2018-10-01T16:28:04Z"
 		},
 		{
-			"checksumSHA1": "pCY4YtdNKVBYRbNvODjx8hj0hIs=",
-			"path": "golang.org/x/net/http/httpguts",
-			"revision": "3b0461eec859c4b73bb64fdc8285971fd33e3938",
-			"revisionTime": "2019-06-20T19:42:36Z"
-		},
-		{
 			"checksumSHA1": "FI29wkykYDjZYqVbRrYQSzNqf70=",
 			"origin": "github.com/mholt/caddy/vendor/golang.org/x/net/http2",
 			"path": "golang.org/x/net/http2",
@@ -4035,13 +3950,6 @@
 			"path": "golang.org/x/net/ipv4",
 			"revision": "f6c265d783d6c18c57cc4844e8db5a348ebff0a2",
 			"revisionTime": "2018-07-29T04:33:30Z"
-		},
-		{
-			"checksumSHA1": "hDszlYGI8m9puPsEIDr59ccTiF8=",
-			"origin": "github.com/go-acme/lego/vendor/golang.org/x/net/ipv6",
-			"path": "golang.org/x/net/ipv6",
-			"revision": "6647ce7b1de3dd120968ffcd2d03181b4000d3c3",
-			"revisionTime": "2019-06-27T17:30:10Z"
 		},
 		{
 			"checksumSHA1": "M67VbeXMkCwHoiKOrKN7gd4TOFg=",
