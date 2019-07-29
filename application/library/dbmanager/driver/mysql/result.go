@@ -15,14 +15,14 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 package mysql
 
 import (
 	"database/sql"
 	"encoding/gob"
-	"time"
-
 	"strings"
+	"time"
 
 	"github.com/admpub/nging/application/library/dbmanager/result"
 	"github.com/webx-top/db/lib/factory"

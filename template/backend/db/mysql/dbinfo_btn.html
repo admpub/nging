@@ -1,6 +1,8 @@
 {{$op := Form "operation"}}
 {{$tp := Form "type"}}
         <div class="block-flat md-margin-bottom">
+        <span class="btn-group">
+            <button type="button" class="btn btn-default btn-flat" disabled="disabled">{{"数据库"|T}}:</button>
             {{if or (eq $op "listDb") (eq $op "")}}
             <a href="javascript:;" class="btn btn-success" id="create-db" data-pjax="#pcont" data-keepjs="true">
                 <i class="fa fa-plus"></i>
@@ -28,6 +30,18 @@
                 <i class="fa fa-list"></i>
                 {{"状态"|T}}
             </a>
+        </span>
+            <span class="btn-group">
+            <button type="button" class="btn btn-default btn-flat" disabled="disabled">{{"后台任务"|T}}:</button>
+            <a href="{{dbMgrURL "import"}}&process=1" class="btn btn-{{if eq $op "import"}}primary{{else}}default{{end}}" id="importing-process" data-pjax="#pcont" data-keepjs="true">
+                <i class="fa fa-cloud-upload"></i>
+                {{"导入SQL"|T}}
+            </a>
+            <a href="{{dbMgrURL "export"}}&process=1" class="btn btn-{{if eq $op "export"}}primary{{else}}default{{end}}" id="exporting-process" data-pjax="#pcont" data-keepjs="true">
+                <i class="fa fa-cloud-download"></i>
+                {{"导出SQL"|T}}
+            </a>
+            </span>
         </div>
 
 {{Include "db/mysql/results"}}

@@ -18,136 +18,19 @@
 package mysql
 
 import (
-	"context"
-	"fmt"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
 
-	"github.com/admpub/archiver"
 	"github.com/admpub/errors"
-	loga "github.com/admpub/log"
 	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/cron"
-	"github.com/admpub/nging/application/library/dbmanager/driver"
+	"github.com/admpub/nging/application/library/dbmanager/driver/mysql/utils"
 	"github.com/admpub/nging/application/library/notice"
-	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
-
-// Import 导入SQL文件
-func Import(ctx context.Context, cfg *driver.DbAuth, files []string, asyncs ...bool) error {
-	if len(files) == 0 {
-		return nil
-	}
-	log.Println(`Starting import:`, files)
-	var (
-		port, host string
-		async      bool
-	)
-	if len(asyncs) > 0 {
-		async = asyncs[0]
-	}
-	if p := strings.LastIndex(cfg.Host, `:`); p > 0 {
-		host = cfg.Host[0:p]
-		port = cfg.Host[p+1:]
-	} else {
-		host = cfg.Host
-	}
-	if len(port) == 0 {
-		port = `3306`
-	}
-	args := []string{
-		"-h" + host,
-		"-P" + port,
-		"-u" + cfg.Username,
-		"-p" + cfg.Password,
-		cfg.Db,
-		"-e",
-		``,
-	}
-	sqls := `SET FOREIGN_KEY_CHECKS=0;SET UNIQUE_CHECKS=0;source %s;SET FOREIGN_KEY_CHECKS=1;SET UNIQUE_CHECKS=1;`
-	var delDirs []string
-	sqlFiles := []string{}
-	defer func() {
-		for _, delDir := range delDirs {
-			os.RemoveAll(delDir)
-		}
-		for _, sqlFile := range sqlFiles {
-			if !com.FileExists(sqlFile) {
-				continue
-			}
-			os.Remove(sqlFile)
-		}
-	}()
-	nowTime := com.String(time.Now().Unix())
-	dataFiles := []string{}
-	for index, sqlFile := range files {
-		switch strings.ToLower(filepath.Ext(sqlFile)) {
-		case `.sql`:
-			if strings.Contains(filepath.Base(sqlFile), `struct`) {
-				sqlFiles = append(sqlFiles, sqlFile)
-			} else {
-				dataFiles = append(dataFiles, sqlFile)
-			}
-		case `.zip`:
-			dir := filepath.Join(TempDir(`import`), fmt.Sprintf("upload-"+nowTime+"-%d", index))
-			err := archiver.Zip.Open(sqlFile, dir)
-			if err != nil {
-				loga.Error(err)
-				continue
-			}
-			delDirs = append(delDirs, dir)
-			err = os.Remove(sqlFile)
-			if err != nil {
-				loga.Error(err)
-			}
-			ifiles := []string{}
-			err = filepath.Walk(dir, func(fpath string, info os.FileInfo, err error) error {
-				if err != nil || info.IsDir() {
-					return err
-				}
-				if strings.ToLower(filepath.Ext(fpath)) != `.sql` {
-					return nil
-				}
-				if strings.Contains(info.Name(), `struct`) {
-					sqlFiles = append(sqlFiles, fpath)
-					return nil
-				}
-				ifiles = append(ifiles, fpath)
-				return nil
-			})
-			sqlFiles = append(sqlFiles, ifiles...)
-		}
-	}
-	sqlFiles = append(sqlFiles, dataFiles...)
-	rec := cron.NewCmdRec(1000)
-	for _, sqlFile := range sqlFiles {
-		if len(sqlFile) == 0 {
-			continue
-		}
-		sqlFile = filepath.ToSlash(sqlFile)
-		lastIndex := len(args) - 1
-		args[lastIndex] = fmt.Sprintf(sqls, sqlFile)
-		log.Println(`mysql`, strings.Join(args, ` `))
-		cmd := exec.CommandContext(ctx, "mysql", args...)
-		cmd.Stderr = rec
-		if err := cmd.Start(); err != nil {
-			return fmt.Errorf(`Failed to import: %v`, err)
-		}
-		if !async {
-			if err := cmd.Wait(); err != nil {
-				return errors.New(err.Error() + `: ` + rec.String())
-			}
-		}
-	}
-	return nil
-}
 
 func responseDropzone(err error, ctx echo.Context) error {
 	if err != nil {
@@ -161,7 +44,15 @@ func responseDropzone(err error, ctx echo.Context) error {
 	return ctx.String(`OK`)
 }
 
+func (m *mySQL) importing() error {
+	return m.bgExecManage(utils.OpImport)
+}
+
 func (m *mySQL) Import() error {
+	process := m.Queryx(`process`).Bool()
+	if process {
+		return m.importing()
+	}
 	var err error
 	if m.IsPost() {
 		if len(m.dbName) == 0 {
@@ -189,21 +80,36 @@ func (m *mySQL) Import() error {
 		cfg := *m.DbAuth
 		cfg.Db = m.dbName
 
-		ctx, cancel := context.WithCancel(m.StdContext())
+		imports := utils.Exec{}
+		bgExec := utils.NewGBExec(nil, echo.H{
+			`database`: m.dbName,
+			`sqlFiles`: sqlFiles,
+			`async`:    async,
+		})
+		for _, sqlFile := range sqlFiles {
+			fi, _ := os.Stat(sqlFile)
+			bgExec.AddFileInfo(&utils.FileInfo{
+				Start: time.Now(),
+				Path:  sqlFile,
+				Size:  fi.Size(),
+			})
+		}
+		cacheKey := bgExec.Started.Format(`20060102150405`)
+		imports.Add(utils.OpImport, cacheKey, bgExec)
 		done := make(chan struct{})
 		clientGone := m.Response().StdResponseWriter().(http.CloseNotifier).CloseNotify()
 		go func() {
 			for {
 				select {
 				case <-clientGone:
-					cancel()
+					bgExec.Cancel()()
 					return
 				case <-done:
 					return
 				}
 			}
 		}()
-		err = Import(ctx, &cfg, sqlFiles, async)
+		err = utils.Import(bgExec.Context(), &cfg, TempDir(`import`), sqlFiles, async)
 		done <- struct{}{}
 
 		return responseDropzone(err, m.Context)

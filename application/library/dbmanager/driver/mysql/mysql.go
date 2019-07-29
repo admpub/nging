@@ -135,7 +135,7 @@ func (m *mySQL) ProcessList() error {
 	r, e := m.processList()
 	ret = common.Err(m.Context, e)
 	m.Set(`processList`, r)
-	return m.Render(`db/mysql/proccess_list`, ret)
+	return m.Render(`db/mysql/process_list`, ret)
 }
 
 func (m *mySQL) returnTo(rets ...string) error {

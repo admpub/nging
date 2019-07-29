@@ -21,11 +21,9 @@ import (
 	"bytes"
 	"database/sql"
 	"math"
-	"strings"
-
 	"regexp"
-
 	"strconv"
+	"strings"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
@@ -234,7 +232,7 @@ func (m *mySQL) processInputFieldValue(field *Field) (string, bool) {
 		buf := new(bytes.Buffer)
 		_, e := m.SaveUploadedFileToWriter("value["+idf+"]", buf)
 		if e != nil {
-			return ``, false //! report errors
+			return ``, false
 		}
 		return quoteVal(buf.String()), true
 	}
