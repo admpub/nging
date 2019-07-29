@@ -1253,7 +1253,6 @@ func (m *mySQL) ListData() error {
 	q.Del(`rows`)
 	q.Del(`_pjax`)
 	m.Set(`pagination`, pagination.New(m.Context).SetURL(`/db?`+q.Encode()+`&page={page}&rows={rows}`).SetPage(page).SetRows(totalRows))
-
 	return m.Render(`db/mysql/list_data`, m.checkErr(err))
 }
 func (m *mySQL) CreateData() error {
