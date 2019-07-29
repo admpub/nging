@@ -1115,7 +1115,7 @@ func (m *mySQL) ListData() error {
 		if index >= descNum {
 			continue
 		}
-		order := ``
+		var order string
 		if reSQLValue.MatchString(colName) {
 			order = colName
 		} else {
@@ -1251,6 +1251,7 @@ func (m *mySQL) ListData() error {
 	q := m.Request().URL().Query()
 	q.Del(`page`)
 	q.Del(`rows`)
+	q.Del(`_pjax`)
 	m.Set(`pagination`, pagination.New(m.Context).SetURL(`/db?`+q.Encode()+`&page={page}&rows={rows}`).SetPage(page).SetRows(totalRows))
 
 	return m.Render(`db/mysql/list_data`, m.checkErr(err))
@@ -1366,9 +1367,9 @@ func (m *mySQL) CreateData() error {
 		return enumValues(field)
 	})
 	m.SetFunc(`functions`, m.editFunctions)
-	m.SetFunc(`isSelectedFunc`, func(function string,value *sql.NullString)bool{
-		if len(function)==0 {
-			if len(value.String)>0 {
+	m.SetFunc(`isSelectedFunc`, func(function string, value *sql.NullString) bool {
+		if len(function) == 0 {
+			if len(value.String) > 0 {
 				return true
 			}
 			if value.Valid {

@@ -132,6 +132,7 @@ func (a *Value) CursorPaging(vkeys ...string) *pagination.Pagination {
 	q := a.context.Request().URL().Query()
 	q.Del(currOffsetKey)
 	q.Del(prevOffsetKey)
+	q.Del(`_pjax`)
 	a.paging.SetURL(`/db?`+q.Encode()+`&`+currOffsetKey+`={curr}&`+prevOffsetKey+`={prev}`).SetPosition(prevOffset, a.NextOffset, a.NextOffset)
 	return a.paging
 }
