@@ -9,11 +9,11 @@ cd tool
 set time_hh=%time:~0,2%
 if /i %time_hh% LSS 10 (set time_hh=0%time:~1,1%)
 
-set NGING_VERSION="2.0.2"
+set NGING_VERSION="2.0.3"
 set NGING_BUILD=%date:~,4%%date:~5,2%%date:~8,2%%time_hh%%time:~3,2%%time:~6,2%
 set NGING_COMMIT=
 for /F %%i in ('git rev-parse HEAD') do ( set NGING_COMMIT=%%i)
-set NGING_LABEL="beta2"
+set NGING_LABEL="stable"
 
 set NGINGEX=
 set BUILDTAGS= windll
