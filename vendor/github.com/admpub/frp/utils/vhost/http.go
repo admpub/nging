@@ -23,7 +23,6 @@ import (
 	"net"
 	"net/http"
 	"strings"
-	"sync"
 	"time"
 
 	frpLog "github.com/admpub/frp/utils/log"
@@ -31,8 +30,7 @@ import (
 )
 
 var (
-	ErrRouterConfigConflict = errors.New("router config conflict")
-	ErrNoDomain             = errors.New("no such domain")
+	ErrNoDomain = errors.New("no such domain")
 )
 
 func getHostFromAddr(addr string) (host string) {
@@ -50,21 +48,19 @@ type HttpReverseProxyOptions struct {
 }
 
 type HttpReverseProxy struct {
-	proxy *ReverseProxy
-
+	proxy       *ReverseProxy
 	vhostRouter *VhostRouters
 
 	responseHeaderTimeout time.Duration
-	cfgMu                 sync.RWMutex
 }
 
-func NewHttpReverseProxy(option HttpReverseProxyOptions) *HttpReverseProxy {
+func NewHttpReverseProxy(option HttpReverseProxyOptions, vhostRouter *VhostRouters) *HttpReverseProxy {
 	if option.ResponseHeaderTimeoutS <= 0 {
 		option.ResponseHeaderTimeoutS = 60
 	}
 	rp := &HttpReverseProxy{
 		responseHeaderTimeout: time.Duration(option.ResponseHeaderTimeoutS) * time.Second,
-		vhostRouter:           NewVhostRouters(),
+		vhostRouter:           vhostRouter,
 	}
 	proxy := &ReverseProxy{
 		Director: func(req *http.Request) {
@@ -105,21 +101,18 @@ func NewHttpReverseProxy(option HttpReverseProxyOptions) *HttpReverseProxy {
 	return rp
 }
 
+// Register register the route config to reverse proxy
+// reverse proxy will use CreateConnFn from routeCfg to create a connection to the remote service
 func (rp *HttpReverseProxy) Register(routeCfg VhostRouteConfig) error {
-	rp.cfgMu.Lock()
-	defer rp.cfgMu.Unlock()
-	_, ok := rp.vhostRouter.Exist(routeCfg.Domain, routeCfg.Location)
-	if ok {
-		return ErrRouterConfigConflict
-	} else {
-		rp.vhostRouter.Add(routeCfg.Domain, routeCfg.Location, &routeCfg)
+	err := rp.vhostRouter.Add(routeCfg.Domain, routeCfg.Location, &routeCfg)
+	if err != nil {
+		return err
 	}
 	return nil
 }
 
+// UnRegister unregister route config by domain and location
 func (rp *HttpReverseProxy) UnRegister(domain string, location string) {
-	rp.cfgMu.Lock()
-	defer rp.cfgMu.Unlock()
 	rp.vhostRouter.Del(domain, location)
 }
 
@@ -139,6 +132,7 @@ func (rp *HttpReverseProxy) GetHeaders(domain string, location string) (headers 
 	return
 }
 
+// CreateConnection create a new connection by route config
 func (rp *HttpReverseProxy) CreateConnection(domain string, location string, remoteAddr string) (net.Conn, error) {
 	vr, ok := rp.getVhost(domain, location)
 	if ok {
@@ -162,10 +156,8 @@ func (rp *HttpReverseProxy) CheckAuth(domain, location, user, passwd string) boo
 	return true
 }
 
+// getVhost get vhost router by domain and location
 func (rp *HttpReverseProxy) getVhost(domain string, location string) (vr *VhostRouter, ok bool) {
-	rp.cfgMu.RLock()
-	defer rp.cfgMu.RUnlock()
-
 	// first we check the full hostname
 	// if not exist, then check the wildcard_domain such as *.example.com
 	vr, ok = rp.vhostRouter.Get(domain, location)
