@@ -149,10 +149,18 @@ function codeMirrorChangeMode(editor,val) {
 }
 Dropzone.autoDiscover=false;
 CodeMirror.modeURL = ASSETS_URL+"/js/codemirror/mode/%N/%N.js";
+function dropzoneResizeHeight(isZip){
+  return function(){
+    var el=isZip?'#multi-upload-zip-modal':'#multi-upload-modal';
+    App.resizeModalHeight(el);
+  }
+}
 $(function(){
     initDropzone();
     dropzone=$('#multi-upload-dropzone').get(0).dropzone;
     dropzoneZIP=$('#multi-upload-zip-dropzone').length>0?$('#multi-upload-zip-dropzone').get(0).dropzone:null;
+    dropzone.on('addedfiles',dropzoneResizeHeight(false));
+    if(dropzoneZIP)dropzoneZIP.on('addedfiles',dropzoneResizeHeight(true));
     initCodeMirrorEditor();
 	$('#uploadBtn').off().on('click',function(event){
 		$('#multi-upload-modal').niftyModal('show',{afterClose:function(modal){
@@ -171,6 +179,8 @@ $(function(){
     $(window).off().on('resize',function(){
         $('#file-edit-modal,#file-play-modal').css({height:$(window).height(),width:'100%','max-width':'100%',left:0,top:0,transform:'none'});
         $('#file-edit-form,#file-play-video').css({height:$(window).height()-150,width:'100%','max-width':'100%',overflow:'auto'});
+        dropzoneResizeHeight(false)();
+        if(dropzoneZIP)dropzoneResizeHeight(true)();
     });
     $(window).trigger('resize');
     $('#file-rename-modal .modal-footer .btn-primary:last').off().on('click',function(){

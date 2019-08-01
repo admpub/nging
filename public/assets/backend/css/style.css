@@ -5811,3 +5811,6 @@ ul.timeline li > .fa.comment-avatar{height:50px;width:50px;padding:0;border-widt
 .margin-left-10{margin-left:10px}
 .margin-bottom-10{margin-bottom:10px}
 .modal-body .dropzone .dz-preview{margin:6px}
+@media (max-width: 697px){
+  .modal-body .dropzone{padding:5px}
+}

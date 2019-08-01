@@ -1181,6 +1181,14 @@ var App = function () {
          }
        });
       });
+    },
+    resizeModalHeight:function(el){
+      var h=$(window).height()-200,t=($(window).height()-$(el).height())/2;
+      if(t<0)t=0;
+      if(h<200)h=200;
+      var bh=h-150;
+      $(el).css({"max-height":h+'px',"top":t+'px'});
+      $(el).find('.modal-body').css({"max-height":bh+'px'});
     }
   };
  

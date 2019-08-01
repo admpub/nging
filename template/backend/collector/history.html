@@ -121,8 +121,9 @@ function showContentModal(ident){
 }
 $(function(){
     $(window).off().on('resize',function(){
-        $('#collected-content-modal').css({height:$(window).height(),width:'100%','max-width':'100%',left:0,top:0,transform:'none'});
-        $('#collected-content-modal').find('.modal-body').css({height:$(window).height()-150,width:'100%','max-width':'100%',overflow:'auto'});
+        var m=$('#collected-content-modal');
+        m.css({height:$(window).height(),width:'100%','max-width':'100%',left:0,top:0,transform:'none'});
+        m.find('.modal-body').css({height:$(window).height()-150,width:'100%','max-width':'100%',overflow:'auto'});
     });
     $(window).trigger('resize');
 });
