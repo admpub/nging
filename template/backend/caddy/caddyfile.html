@@ -2,7 +2,7 @@
 {{$v.Get "domain"}} {
     {{$root := $v.Get "root"}}
     {{if $root}}
-    root {{$root|ToHTML}}
+    root "{{$root|ToHTML}}"
     {{end}}
 
     {{if eq ($v.Get "basicauth") "1"}}
