@@ -83,6 +83,8 @@ func (c *ConfigInDB) SetDebug(on bool) {
 	subdomains.Default.SetDebug(on)
 }
 
+var actGroups = []string{`base`, `email`, `log`}
+
 func (c *ConfigInDB) Init() {
 	defaults := settings.ConfigDefaultsAsStore()
 	var configs = defaults
@@ -92,7 +94,7 @@ func (c *ConfigInDB) Init() {
 		}
 	}
 	echo.Set(`NgingConfig`, configs)
-	for _, group := range []string{`base`, `email`, `log`} {
+	for _, group := range actGroups {
 		c.SetConfig(group, configs, defaults)
 	}
 }
@@ -105,15 +107,10 @@ func (c *ConfigInDB) GetConfig() echo.H {
 func (c *ConfigInDB) SetConfigs(groups ...string) {
 	ngingConfig := c.GetConfig()
 	configs := settings.ConfigAsStore(groups...)
-	for _, group := range []string{`base`, `email`, `log`} {
-		conf, ok := configs[group]
-		if !ok {
-			continue
-		}
+	for group, conf := range configs {
 		ngingConfig.Set(group, conf)
 		c.SetConfig(group, ngingConfig, nil)
 	}
-	echo.Set(`NgingConfig`, ngingConfig)
 }
 
 func (c *ConfigInDB) SetConfig(group string, ngingConfig echo.H, defaults echo.H) {
