@@ -1101,6 +1101,7 @@ var App = function () {
 	    	var lastLines=$(a).data('last-lines');
         if(lastLines==null) lastLines=100;
         $('#log-show-last-lines').data('target',$(a));
+        var contentID='log-show-content',contentE='#'+contentID;
         $('#log-show-modal').niftyModal('show',{
           afterOpen: function(modal) {
 	    			$.get(url,{lastLines:lastLines,pipe:pipe},function(r){
@@ -1113,19 +1114,22 @@ var App = function () {
                   subTitle.empty();
                 }
                 if(typeof(r.Data.list)!='undefined'){
-                  var h='<div class="table-responsive" id="log-show-content">'+App.genTable(r.Data.list,{'StatusCode':function(raw,index){
+                  var h='<div class="table-responsive" id="'+contentID+'">'+App.genTable(r.Data.list,{'StatusCode':function(raw,index){
                     return '<span class="label label-'+App.httpStatusColor(raw)+'">'+raw+'</span>';
                   }})+'</div>';
-                  $('#log-show-content').parent('.modal-body').css('padding',0);
-                  $('#log-show-content').replaceWith(h);
+                  $(contentE).parent('.modal-body').css('padding',0);
+                  $(contentE).replaceWith(h);
                 }else{
-                  $('#log-show-content').text(r.Data.content);
+                  if($(contentE)[0].tagName.toUpperCase()!='TEXTAREA'){
+                    $(contentE).replaceWith("<textarea name='content' class='form-control' id='"+contentID+"'></textarea>");
+                  }
+                  $(contentE).text(r.Data.content);
                 }
                 $(window).trigger('resize');
-	    				  var textarea=$('#log-show-content')[0];
+	    				  var textarea=$(contentE)[0];
 	    				  textarea.scrollTop = textarea.scrollHeight;
 	    				}else{
-	    					$('#log-show-content').text(r.Info);
+	    					$(contentE).text(r.Info);
 	    				}
 	    			},'json');
           },
