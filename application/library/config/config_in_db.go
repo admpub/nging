@@ -113,6 +113,7 @@ func (c *ConfigInDB) SetConfigs(groups ...string) {
 		ngingConfig.Set(group, conf)
 		c.SetConfig(group, ngingConfig, nil)
 	}
+	echo.Set(`NgingConfig`, ngingConfig)
 }
 
 func (c *ConfigInDB) SetConfig(group string, ngingConfig echo.H, defaults echo.H) {
