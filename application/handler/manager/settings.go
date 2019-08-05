@@ -53,7 +53,7 @@ func Settings(ctx echo.Context) error {
 				config.DefaultConfig.ConfigInDB.Init()
 			}
 			handler.SendOk(ctx, ctx.T(`操作成功`))
-			return ctx.Redirect(handler.URLFor(`/manager/settings`))
+			return ctx.Redirect(handler.URLFor(`/manager/settings?group=` + group))
 		}
 	}
 	if _err := configGet(ctx, groups...); _err != nil {

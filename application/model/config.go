@@ -20,8 +20,8 @@ package model
 
 import (
 	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/registry/settings"
 	"github.com/admpub/nging/application/model/base"
+	"github.com/admpub/nging/application/registry/settings"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )

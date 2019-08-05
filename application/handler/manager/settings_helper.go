@@ -122,15 +122,19 @@ func configPost(c echo.Context, groups ...string) error {
 
 func configGet(c echo.Context, groups ...string) error {
 	m := model.NewConfig(c)
-	cond := db.NewCompounds()
 	if len(groups) > 0 {
-		if len(groups) > 1 {
-			cond.Add(db.Cond{`group`: db.In(groups)})
-		} else {
-			cond.Add(db.Cond{`group`: groups[0]})
+		for _, group := range groups {
+			cfg, err := m.ListMapByGroup(group)
+			if err != nil {
+				return err
+			}
+			c.Set(group, cfg) //Stored.base.siteName
 		}
+		return nil
 	}
-	_, err := m.ListByOffset(nil, nil, 0, -1, cond.And())
+	_, err := m.ListByOffset(nil, func(r db.Result) db.Result {
+		return r.Group(`group`)
+	}, 0, -1)
 	if err != nil {
 		return err
 	}
