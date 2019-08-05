@@ -12,18 +12,23 @@
 {{Block "main"}}
 {{Strip}}
 {{$config := Stored.config}}
+{{$group := Stored.group}}
 <div class="row">
     <div class="col-md-12">
         <div class="tab-container">
             <ul class="nav nav-tabs">
             {{range $k,$v := Stored.settings}}
-              <li{{if eq $k 0}} class="active"{{end}}><a href="#{{$v.Group}}" data-toggle="tab">{{$v.Short|T}}</a></li>
+              <li{{if eq $group $v.Group}} class="active"{{end}}>
+                <a href="?group={{$v.Group}}">{{$v.Short|T}}</a>
+                <!-- <a href="?group={{$v.Group}}" data-toggle="tab">{{$v.Short|T}}</a> -->
+              </li>
             {{end}}
             </ul>
             <form class="form-horizontal group-border-dashed" method="POST" action="">
             <div class="tab-content">
             {{range $k,$v := Stored.settings}}
-              <div class="tab-pane cont{{if eq $k 0}} active{{end}}" id="{{$v.Group}}">
+            {{if eq $group $v.Group}}
+              <div class="tab-pane cont{{if eq $group $v.Group}} active{{end}}" id="{{$v.Group}}">
                     <h3 class="hthin">{{$v.Label|T}}</h3>
                     {{- range $i,$t := $v.Tmpl -}}
                     {{- if $t -}}
@@ -31,6 +36,7 @@
                     {{- end -}}
                     {{- end -}}
               </div>
+            {{end}}
             {{end}}
               <div class="form-group form-submit-group">
                   <div class="col-sm-9 col-sm-offset-2">
@@ -56,7 +62,6 @@
 <script src="__ASSETS__/js/bootstrap.summernote/summernote.min.js?t={{BuildTime}}"></script>
 <script src="__ASSETS__/js/bootstrap.summernote/lang/summernote-zh-CN.js?t={{BuildTime}}"></script>
 <script src="__ASSETS__/js/behaviour/page/summernote.min.js?t={{BuildTime}}"></script>
-{{$unixtime:=UnixTime}}
 <script type="text/javascript">
 $(function(){
 summernoteEditor('.summernote');

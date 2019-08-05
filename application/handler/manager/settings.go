@@ -22,36 +22,49 @@ import (
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/registry/settings"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
 
 func Settings(ctx echo.Context) error {
 	//panic(echo.Dump(settings.ConfigAsStore(), false))
 	var err error
+	group := ctx.Form(`group`, `base`)
+	var groups []string
+	if len(group) > 0 {
+		groups = append(groups, group)
+	}
 	if ctx.IsPost() {
-		err = configPost(ctx)
+		err = configPost(ctx, groups...)
 		if err != nil {
 			return err
 		}
-		err = settings.RunHookPost(ctx)
+		err = settings.RunHookPost(ctx, groups...)
 		if err != nil {
 			return err
 		}
 		if err == nil {
-			config.DefaultConfig.SetDebug(ctx.Formx(`base[debug][value]`).Bool())
-			config.DefaultConfig.ConfigInDB.Init()
+			if len(groups) > 0 {
+				if com.InSlice(`base`, groups) {
+					config.DefaultConfig.SetDebug(ctx.Formx(`base[debug][value]`).Bool())
+				}
+				config.DefaultConfig.ConfigInDB.SetConfigs(groups...)
+			} else {
+				config.DefaultConfig.ConfigInDB.Init()
+			}
 			handler.SendOk(ctx, ctx.T(`操作成功`))
 			return ctx.Redirect(handler.URLFor(`/manager/settings`))
 		}
 	}
-	if _err := configGet(ctx); _err != nil {
+	if _err := configGet(ctx, groups...); _err != nil {
 		return _err
 	}
-	if _err := settings.RunHookGet(ctx); _err != nil {
+	if _err := settings.RunHookGet(ctx, groups...); _err != nil {
 		return _err
 	}
 	ret := handler.Err(ctx, err)
 	ctx.Set(`config`, config.DefaultConfig)
 	ctx.Set(`settings`, settings.Settings())
+	ctx.Set(`group`, group)
 	return ctx.Render(`/manager/settings`, ret)
 }

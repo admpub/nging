@@ -264,10 +264,19 @@ func Init() error {
 }
 
 // ConfigAsStore {Group:{Key:ValueObject}}
-func ConfigAsStore() echo.H {
+func ConfigAsStore(groups ...string) echo.H {
 	r := echo.H{}
 	m := &dbschema.Config{}
-	m.ListByOffset(nil, nil, 0, -1, db.Cond{`disabled`: `N`})
+	cond := db.NewCompounds()
+	cond.Add(db.Cond{`disabled`: `N`})
+	if len(groups) > 0 {
+		if len(groups) > 1 {
+			cond.Add(db.Cond{`group`: db.In(groups)})
+		} else {
+			cond.Add(db.Cond{`group`: groups[0]})
+		}
+	}
+	m.ListByOffset(nil, nil, 0, -1, cond.And())
 	for _, row := range m.Objects() {
 		decoder := GetDecoder(row.Group)
 		res, err := DecodeConfigValue(row, decoder)

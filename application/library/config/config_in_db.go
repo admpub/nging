@@ -58,7 +58,7 @@ type ConfigInDB struct {
 }
 
 func (c *ConfigInDB) SetBy(r echo.H, defaults echo.H) *ConfigInDB {
-	if !r.Has(`base`) {
+	if !r.Has(`base`) && defaults != nil {
 		r.Set(`base`, defaults.Store(`base`))
 	}
 	c.Base = r.Store(`base`)
@@ -92,13 +92,37 @@ func (c *ConfigInDB) Init() {
 		}
 	}
 	echo.Set(`NgingConfig`, configs)
-	c.SetBy(configs, defaults)
-	c.SetDebug(c.Debug)
-	c.Email.SetBy(configs, defaults).Init()
-	c.Log.SetBy(configs, defaults).Init()
+	for _, group := range []string{`base`, `email`, `log`} {
+		c.SetConfig(group, configs, defaults)
+	}
 }
 
 func (c *ConfigInDB) GetConfig() echo.H {
 	r, _ := echo.Get(`NgingConfig`).(echo.H)
 	return r
+}
+
+func (c *ConfigInDB) SetConfigs(groups ...string) {
+	ngingConfig := c.GetConfig()
+	configs := settings.ConfigAsStore(groups...)
+	for _, group := range []string{`base`, `email`, `log`} {
+		conf, ok := configs[group]
+		if !ok {
+			continue
+		}
+		ngingConfig.Set(group, conf)
+		c.SetConfig(group, ngingConfig, nil)
+	}
+}
+
+func (c *ConfigInDB) SetConfig(group string, ngingConfig echo.H, defaults echo.H) {
+	switch group {
+	case `base`:
+		c.SetBy(ngingConfig, defaults)
+		c.SetDebug(c.Debug)
+	case `email`:
+		c.Email.SetBy(ngingConfig, defaults).Init()
+	case `log`:
+		c.Log.SetBy(ngingConfig, defaults).Init()
+	}
 }

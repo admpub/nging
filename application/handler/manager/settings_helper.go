@@ -19,17 +19,32 @@
 package manager
 
 import (
-	"github.com/admpub/nging/application/registry/settings"
+	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/application/registry/settings"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
 
-func configPost(c echo.Context) error {
+func configPost(c echo.Context, groups ...string) error {
 	m := model.NewConfig(c)
 	formValues := c.Forms()
 	mapx := echo.NewMapx(formValues)
-	for group, configs := range settings.ConfigDefaults() {
+	var configList map[string]map[string]*dbschema.Config
+	if len(groups) > 0 {
+		configList = map[string]map[string]*dbschema.Config{}
+		defaults := settings.ConfigDefaults()
+		for _, group := range groups {
+			conf, ok := defaults[group]
+			if !ok {
+				continue
+			}
+			configList[group] = conf
+		}
+	} else {
+		configList = settings.ConfigDefaults()
+	}
+	for group, configs := range configList {
 		_, err := m.ListByGroup(group)
 		if err != nil {
 			if err == db.ErrNoMoreRows {
@@ -105,9 +120,17 @@ func configPost(c echo.Context) error {
 	return nil
 }
 
-func configGet(c echo.Context) error {
+func configGet(c echo.Context, groups ...string) error {
 	m := model.NewConfig(c)
-	_, err := m.ListByOffset(nil, nil, 0, -1)
+	cond := db.NewCompounds()
+	if len(groups) > 0 {
+		if len(groups) > 1 {
+			cond.Add(db.Cond{`group`: db.In(groups)})
+		} else {
+			cond.Add(db.Cond{`group`: groups[0]})
+		}
+	}
+	_, err := m.ListByOffset(nil, nil, 0, -1, cond.And())
 	if err != nil {
 		return err
 	}

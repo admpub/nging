@@ -53,7 +53,7 @@ func (c *Log) Show(ctx echo.Context) error {
 }
 
 func (c *Log) SetBy(r echo.H, defaults echo.H) *Log {
-	if !r.Has(`log`) {
+	if !r.Has(`log`) && defaults != nil {
 		r.Set(`log`, defaults.Store(`log`))
 	}
 	loge := r.Store(`log`)

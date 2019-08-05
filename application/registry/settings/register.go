@@ -18,7 +18,10 @@
 
 package settings
 
-import "github.com/webx-top/echo"
+import (
+	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
+)
 
 type SettingForm struct {
 	Short    string                     //简短标签
@@ -108,21 +111,41 @@ func Get(group string) (int, *SettingForm) {
 	return -1, nil
 }
 
-func RunHookPost(ctx echo.Context) error {
+func RunHookPost(ctx echo.Context, groups ...string) error {
+	n := len(groups)
+	var i int
 	for _, setting := range settings {
-		err := setting.RunHookPost(ctx)
-		if err != nil {
-			return err
+		if n < 1 || com.InSlice(setting.Group, groups) {
+			err := setting.RunHookPost(ctx)
+			if err != nil {
+				return err
+			}
+			if n > 0 {
+				i++
+				if i >= n {
+					break
+				}
+			}
 		}
 	}
 	return nil
 }
 
-func RunHookGet(ctx echo.Context) error {
+func RunHookGet(ctx echo.Context, groups ...string) error {
+	n := len(groups)
+	var i int
 	for _, setting := range settings {
-		err := setting.RunHookGet(ctx)
-		if err != nil {
-			return err
+		if n < 1 || com.InSlice(setting.Group, groups) {
+			err := setting.RunHookGet(ctx)
+			if err != nil {
+				return err
+			}
+			if n > 0 {
+				i++
+				if i >= n {
+					break
+				}
+			}
 		}
 	}
 	return nil

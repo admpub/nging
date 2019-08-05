@@ -34,7 +34,7 @@ type Email struct {
 }
 
 func (c *Email) SetBy(r echo.H, defaults echo.H) *Email {
-	if !r.Has(`smtp`) {
+	if !r.Has(`smtp`) && defaults != nil {
 		r.Set(`smtp`, defaults.Store(`smtp`))
 	}
 	smtp := r.Store(`smtp`)
