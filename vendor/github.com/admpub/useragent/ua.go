@@ -19,6 +19,11 @@ type UserAgent struct {
 	Bot       bool
 	URL       string
 	String    string
+	tokens    properties
+}
+
+func (ua UserAgent) Tokens() properties {
+	return ua.tokens
 }
 
 var ignore = map[string]struct{}{
@@ -48,6 +53,10 @@ const (
 	Edge             = "Edge"
 	Vivaldi          = "Vivaldi"
 
+	WxWork         = "wxwork"         //企业微信浏览器
+	MicroMessenger = "MicroMessenger" //微信浏览器
+	AlipayClient   = "AlipayClient"   //支付宝客户端
+
 	Googlebot           = "Googlebot"
 	Twitterbot          = "Twitterbot"
 	FacebookExternalHit = "facebookexternalhit"
@@ -60,6 +69,7 @@ const (
 	Sogoubot            = "Sogou web spider"
 	Yodaobot            = "YodaoBot"
 	MSNbot              = "msnbot"
+	SemrushBot          = "SemrushBot"
 )
 
 // Parse user agent string returning UserAgent struct
@@ -137,10 +147,35 @@ func Parse(userAgent string) UserAgent {
 		ua.Bot = true
 		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
+	case tokens["AlipayClient"] != "":
+		ua.Name = AlipayClient
+		ua.Version = tokens[AlipayClient]
+		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+
+	case tokens["wxwork"] != "":
+		ua.Name = WxWork
+		ua.Version = tokens[WxWork]
+		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+
+	case tokens["MicroMessenger"] != "":
+		ua.Name = MicroMessenger
+		ua.Version = tokens[MicroMessenger]
+		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
+
 	case tokens["Opera Mini"] != "":
 		ua.Name = OperaMini
 		ua.Version = tokens[OperaMini]
 		ua.Mobile = true
+
+	case tokens["Opera Touch"] != "":
+		ua.Name = OperaTouch
+		ua.Version = tokens[OperaTouch]
+		ua.Tablet = true
+
+	case tokens["Opera"] != "":
+		ua.Name = Opera
+		ua.Version = tokens[Opera]
+		ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 
 	case tokens["OPR"] != "":
 		ua.Name = Opera
@@ -241,7 +276,8 @@ func Parse(userAgent string) UserAgent {
 			} else {
 				ua.Name = ua.String
 			}
-			ua.Bot = strings.Contains(strings.ToLower(ua.Name), "bot")
+			name := strings.ToLower(ua.Name)
+			ua.Bot = strings.Contains(name, "bot") || strings.Contains(name, "spider")
 			ua.Mobile = tokens.existsAny("Mobile", "Mobile Safari")
 		}
 	}
@@ -258,11 +294,12 @@ func Parse(userAgent string) UserAgent {
 
 	if !ua.Bot {
 		switch ua.Name {
-		case Twitterbot, FacebookExternalHit, Bingbot, Baidubot, Sobot, Yahoobot, Sososbot, IAskbot, Sogoubot, Yodaobot, MSNbot:
+		case FacebookExternalHit, Yahoobot:
 			ua.Bot = true
 		}
 	}
 
+	ua.tokens = tokens
 	return ua
 }
 
@@ -401,7 +438,7 @@ func (p properties) findBestMatch(withVerOnly bool) string {
 	for i := 0; i < n; i++ {
 		for k, v := range p {
 			switch k {
-			case Chrome, Firefox, Safari, "Version", "Mobile", "Mobile Safari", "Mozilla", "AppleWebKit", "Windows NT", "Windows Phone OS", Android, "Macintosh", Linux, "GSA":
+			case Chrome, Firefox, Safari, Opera, Edge, "Version", "Mobile", "Mobile Safari", "Mozilla", "AppleWebKit", "Windows NT", "Windows Phone OS", Android, "Macintosh", Linux, "GSA":
 			default:
 				if i == 0 {
 					if v != "" { // in first check, only return  keys with value

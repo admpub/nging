@@ -73,6 +73,9 @@ func init() {
 			res.OS += ` (` + infoUA.OSVersion + `)`
 		}
 		res.Brower = logM.BrowerName
+		if len(res.Brower) == 0 {
+			res.Brower = infoUA.Name
+		}
 		if len(infoUA.Version) > 0 {
 			res.Brower += ` (` + infoUA.Version + `)`
 		}
