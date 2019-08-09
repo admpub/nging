@@ -1,3 +1,5 @@
+// +build !windows
+
 /*
    Nging is a toolbox for webmasters
    Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
@@ -18,42 +20,11 @@
 
 package hosts
 
-import (
-	"database/sql"
-	"io/ioutil"
-	"os"
-
-	"github.com/webx-top/com"
-)
-
-var hostsPath sql.NullString
-
-func init() {
-	Init()
-}
-
-func Path() string {
-	if len(hostsPath.String) == 0 && !hostsPath.Valid {
-		Init()
+func Init() {
+	paths := []string{
+		`/etc/hosts`,
+		`/private/etc/hosts`,
+		`/system/etc/hosts`, //Android
 	}
-	return hostsPath.String
-}
-
-func detectFile(paths []string) {
-	hostsPath.Valid = true
-	for _, hpath := range paths {
-		if !com.FileExists(hpath) {
-			continue
-		}
-		hostsPath.String = hpath
-		break
-	}
-}
-
-func ReadFile() ([]byte, error) {
-	return ioutil.ReadFile(Path())
-}
-
-func WriteFile(content []byte) error {
-	return ioutil.WriteFile(Path(), content, os.ModePerm)
+	detectFile(paths)
 }
