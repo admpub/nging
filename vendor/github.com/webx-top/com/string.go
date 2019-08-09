@@ -331,9 +331,8 @@ func TitleCase(name string) string {
 		case upNextChar:
 			upNextChar = false
 			chr = ToASCIIUpper(chr)
-		case chr == '_':
+		case chr == '_', chr == ' ':
 			upNextChar = true
-			continue
 		}
 		s = append(s, chr)
 	}
@@ -357,7 +356,7 @@ func SnakeCase(name string) string {
 
 // CamelCase : webx_top => webxTop
 func CamelCase(s string) string {
-	n := ""
+	var n string
 	var capNext bool
 	for _, v := range s {
 		if v >= 'a' && v <= 'z' {
@@ -381,7 +380,7 @@ func CamelCase(s string) string {
 
 // PascalCase : webx_top => WebxTop
 func PascalCase(s string) string {
-	n := ""
+	var n string
 	capNext := true
 	for _, v := range s {
 		if v >= 'a' && v <= 'z' {
