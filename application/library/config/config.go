@@ -117,6 +117,10 @@ func (c *Config) connectDB() error {
 	return nil
 }
 
+func (c *Config) APIKey() string {
+	return c.ConfigInDB.APIKey
+}
+
 func (c *Config) SetDebug(on bool) *Config {
 	c.ConfigInDB.SetDebug(on)
 	return c

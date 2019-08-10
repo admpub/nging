@@ -22,7 +22,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/admpub/nging/application/middleware"
 	"github.com/webx-top/echo"
 )
 
@@ -35,7 +34,7 @@ var DefaultChecker = func(ctx echo.Context) (subdir string, name string, err err
 	refid := ctx.Formx(`refid`).Uint64()
 	timestamp := ctx.Formx(`time`).Int64()
 	// 验证签名（避免上传接口被滥用）
-	if ctx.Form(`token`) != middleware.Token(`refid`, refid, `time`, timestamp) {
+	if ctx.Form(`token`) != Token(`refid`, refid, `time`, timestamp) {
 		err = ctx.E(`令牌错误`)
 		return
 	}
@@ -53,7 +52,7 @@ var checkers = map[string]Checker{
 		customerID := ctx.Formx(`customerId`).Uint64()
 		timestamp := ctx.Formx(`time`).Int64()
 		// 验证签名（避免上传接口被滥用）
-		if ctx.Form(`token`) != middleware.Token(`customerId`, customerID, `time`, timestamp) {
+		if ctx.Form(`token`) != Token(`customerId`, customerID, `time`, timestamp) {
 			err = ctx.E(`令牌错误`)
 			return
 		}
@@ -71,7 +70,7 @@ var checkers = map[string]Checker{
 		userID := ctx.Formx(`userId`).Uint64()
 		timestamp := ctx.Formx(`time`).Int64()
 		// 验证签名（避免上传接口被滥用）
-		if ctx.Form(`token`) != middleware.Token(`userId`, userID, `time`, timestamp) {
+		if ctx.Form(`token`) != Token(`userId`, userID, `time`, timestamp) {
 			err = ctx.E(`令牌错误`)
 			return
 		}

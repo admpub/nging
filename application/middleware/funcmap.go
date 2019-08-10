@@ -24,19 +24,17 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/admpub/nging/application/registry/dashboard"
-
-	"github.com/webx-top/com"
-	"github.com/webx-top/echo/middleware/tplfunc"
-
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/license"
 	"github.com/admpub/nging/application/library/modal"
 	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/application/registry/dashboard"
 	"github.com/admpub/nging/application/registry/navigate"
+	"github.com/admpub/nging/application/registry/upload"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/middleware/tplfunc"
 	"github.com/webx-top/echo/subdomains"
 )
 
@@ -84,7 +82,7 @@ func FuncMap() echo.MiddlewareFunc {
 			c.SetFunc(`UnixTime`, time.Now().Local().Unix)
 			c.SetFunc(`HasString`, hasString)
 			c.SetFunc(`Date`, date)
-			c.SetFunc(`Token`, Token)
+			c.SetFunc(`Token`, upload.Token)
 			c.SetFunc(`Modal`, func(data interface{}) template.HTML {
 				return modal.Render(c, data)
 			})
@@ -202,9 +200,4 @@ func date(timestamp interface{}) time.Time {
 	}
 	v, _ := strconv.ParseInt(fmt.Sprint(timestamp), 10, 64)
 	return time.Unix(v, 0)
-}
-
-func Token(values ...interface{}) string {
-	urlValues := tplfunc.URLValues(values)
-	return com.SafeBase64Encode(com.Token(config.DefaultConfig.APIKey, com.Str2bytes(urlValues.Encode())))
 }
