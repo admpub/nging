@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// Task 任务
 type Task struct {
 	param   *factory.Param
 	trans	*factory.Transaction

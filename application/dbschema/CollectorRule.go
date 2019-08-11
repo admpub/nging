@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// CollectorRule 页面中的元素采集规则
 type CollectorRule struct {
 	param   *factory.Param
 	trans	*factory.Transaction

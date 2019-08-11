@@ -1,16 +1,18 @@
 package factory
 
-func NewMI(short string, make func(connID int) Model) *ModelInstancer {
+func NewMI(short string, make func(connID int) Model, comment string) *ModelInstancer {
 	return &ModelInstancer{
-		Short: short,
-		Make:  make,
+		Short:   short,
+		Make:    make,
+		Comment: comment,
 	}
 }
 
 // ModelInstancer 模型实例化
 type ModelInstancer struct {
-	Short string //表名称(不含前缀)
-	Make  func(connID int) Model
+	Short   string //表名称(不含前缀)
+	Make    func(connID int) Model
+	Comment string //注释
 }
 
 // ModelInstancers 模型实例化

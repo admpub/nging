@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// CollectorHistory 采集历史
 type CollectorHistory struct {
 	param   *factory.Param
 	trans	*factory.Transaction

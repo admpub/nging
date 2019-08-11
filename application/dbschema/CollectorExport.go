@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// CollectorExport 导出规则
 type CollectorExport struct {
 	param   *factory.Param
 	trans	*factory.Transaction

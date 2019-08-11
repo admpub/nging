@@ -54,3 +54,11 @@ func (d *DBI) TableName(structName string) string {
 	}
 	return ``
 }
+
+func (d *DBI) TableComment(structName string) string {
+	m, ok := d.Models[structName]
+	if ok {
+		return m.Comment
+	}
+	return ``
+}

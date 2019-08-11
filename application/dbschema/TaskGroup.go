@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// TaskGroup 任务组
 type TaskGroup struct {
 	param   *factory.Param
 	trans	*factory.Transaction

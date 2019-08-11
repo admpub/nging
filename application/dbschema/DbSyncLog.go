@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// DbSyncLog 数据表同步日志
 type DbSyncLog struct {
 	param   *factory.Param
 	trans	*factory.Transaction

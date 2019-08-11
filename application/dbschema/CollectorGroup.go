@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// CollectorGroup 采集规则组
 type CollectorGroup struct {
 	param   *factory.Param
 	trans	*factory.Transaction

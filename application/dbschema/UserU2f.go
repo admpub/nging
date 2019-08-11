@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// UserU2f 两步验证
 type UserU2f struct {
 	param   *factory.Param
 	trans	*factory.Transaction

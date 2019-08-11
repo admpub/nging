@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// UserRole 用户角色
 type UserRole struct {
 	param   *factory.Param
 	trans	*factory.Transaction

@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// VhostGroup 虚拟主机组
 type VhostGroup struct {
 	param   *factory.Param
 	trans	*factory.Transaction

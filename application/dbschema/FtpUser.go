@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// FtpUser FTP用户
 type FtpUser struct {
 	param   *factory.Param
 	trans	*factory.Transaction

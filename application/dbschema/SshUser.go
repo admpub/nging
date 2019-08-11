@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// SshUser 数据库账号
 type SshUser struct {
 	param   *factory.Param
 	trans	*factory.Transaction
@@ -177,8 +178,8 @@ func (this *SshUser) ListByOffset(recv interface{}, mw func(db.Result) db.Result
 func (this *SshUser) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Host) == 0 { this.Host = "localhost" }
 	if len(this.Username) == 0 { this.Username = "root" }
+	if len(this.Host) == 0 { this.Host = "localhost" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -192,8 +193,8 @@ func (this *SshUser) Add() (pk interface{}, err error) {
 
 func (this *SshUser) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
-	if len(this.Host) == 0 { this.Host = "localhost" }
 	if len(this.Username) == 0 { this.Username = "root" }
+	if len(this.Host) == 0 { this.Host = "localhost" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -209,21 +210,21 @@ func (this *SshUser) SetField(mw func(db.Result) db.Result, field string, value 
 
 func (this *SshUser) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["host"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["host"] = "localhost" } }
 	if val, ok := kvset["username"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["username"] = "root" } }
+	if val, ok := kvset["host"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["host"] = "localhost" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *SshUser) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
-	if len(this.Host) == 0 { this.Host = "localhost" }
 	if len(this.Username) == 0 { this.Username = "root" }
+	if len(this.Host) == 0 { this.Host = "localhost" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Host) == 0 { this.Host = "localhost" }
 	if len(this.Username) == 0 { this.Username = "root" }
+	if len(this.Host) == 0 { this.Host = "localhost" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {

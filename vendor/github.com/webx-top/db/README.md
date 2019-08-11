@@ -13,6 +13,9 @@ Forked from upper/db
 
 [原始文档](http://www.admpub.com:8080/upper-db-manual/en/)
 
+## Cases
+- [Nging](https://github.com/admpub/nging)
+
 <p align="center">
   <img src="https://upper.io/db.v3/images/gopher.svg" width="256" />
 </p>

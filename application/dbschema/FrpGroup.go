@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// FrpGroup FRP服务组
 type FrpGroup struct {
 	param   *factory.Param
 	trans	*factory.Transaction

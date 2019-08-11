@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// TaskLog 任务日志
 type TaskLog struct {
 	param   *factory.Param
 	trans	*factory.Transaction

@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// CollectorExportLog 导出日志
 type CollectorExportLog struct {
 	param   *factory.Param
 	trans	*factory.Transaction

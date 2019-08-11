@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// AccessLog 
 type AccessLog struct {
 	param   *factory.Param
 	trans	*factory.Transaction

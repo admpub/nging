@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// SshUserGroup SSH账号组
 type SshUserGroup struct {
 	param   *factory.Param
 	trans	*factory.Transaction

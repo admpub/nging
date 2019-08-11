@@ -1,7 +1,9 @@
 package factory
 
 import (
+	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/admpub/errors"
@@ -28,6 +30,42 @@ type FieldInfo struct {
 	//以下为Golang中的信息
 	GoType string `json:"goType" xml:"goType" bson:"goType"` //Golang数据类型
 	GoName string `json:"goName" xml:"goName" bson:"goName"` //Golang字段名
+}
+
+func (f *FieldInfo) HTMLAttrBuilder(required bool) HTMLAttrs {
+	attrs := HTMLAttrs{}
+	if required {
+		attrs.Add(`required`)
+	}
+	if f.MaxSize > 0 {
+		attrs.Add(`maxlength`, strconv.Itoa(f.MaxSize))
+	}
+	if f.Max > 0 {
+		attrs.Add(`max`, fmt.Sprint(f.Max))
+		attrs.Add(`min`, fmt.Sprint(f.Min))
+	} else {
+		if f.Min > 0 {
+			attrs.Add(`min`, fmt.Sprint(f.Min))
+		}
+	}
+	return attrs
+}
+
+var (
+	integerTypes = []string{`int`, `uint`, `int64`, `uint64`}
+	decimalTypes = []string{`float64`, `float32`}
+)
+
+func isNumeric(goType string) bool {
+	return isInteger(goType) || isDecimal(goType)
+}
+
+func isInteger(goType string) bool {
+	return com.InSlice(goType, integerTypes)
+}
+
+func isDecimal(goType string) bool {
+	return com.InSlice(goType, decimalTypes)
 }
 
 // Validate 验证值是否符合数据库要求

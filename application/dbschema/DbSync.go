@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// DbSync 数据表同步方案
 type DbSync struct {
 	param   *factory.Param
 	trans	*factory.Transaction

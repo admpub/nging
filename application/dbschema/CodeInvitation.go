@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// CodeInvitation 邀请码
 type CodeInvitation struct {
 	param   *factory.Param
 	trans	*factory.Transaction
