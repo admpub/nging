@@ -31,7 +31,12 @@
                 <label class="col-sm-2 control-label">{{"hosts内容"|T}}</label>
                 <div class="col-sm-8">
                     <textarea class="form-control" id="hosts" name="hosts" placeholder="{{`输入hosts内容`|T}}">{{Form "hosts"}}</textarea>
-                    <div class="help-block">{{"hosts文件路径"}}: <code>{{Stored.path}}</code> ({{Stored.perm}})</div>
+                    <div class="help-block">
+                        {{"hosts文件路径"}}: 
+                        <code>{{Stored.path}}</code>
+                        {{- $perm := Stored.perm -}}
+                        {{- if $perm}} ({{$perm}}){{end -}}
+                    </div>
                 </div>
               </div>
               <div class="form-group form-submit-group">
