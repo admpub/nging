@@ -32,6 +32,7 @@ func init() {
 		g.Route("GET", `/process/:pid`, ProcessInfo)
 		g.Route("GET", `/procskill/:pid`, ProcessKill)
 		g.Route(`GET,POST`, `/service`, Service)
+		g.Route(`GET,POST`, `/hosts`, Hosts)
 		g.Route(`GET,POST`, `/daemon_index`, DaemonIndex)
 		g.Route(`GET,POST`, `/daemon_add`, DaemonAdd)
 		g.Route(`GET,POST`, `/daemon_edit`, DaemonEdit)

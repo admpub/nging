@@ -181,6 +181,11 @@ var LeftNavigate = &navigate.List{
 				Action:        `service`,
 			},
 			{
+				DisplayOnMenu: true,
+				Name:          `hosts文件`,
+				Action:        `hosts`,
+			},
+			{
 				DisplayOnMenu: false,
 				Name:          `查看Nging日志`,
 				Action:        `log`,
