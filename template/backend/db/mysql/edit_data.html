@@ -61,6 +61,8 @@
                                 {{end}}
                                 {{else if isNumber $field.Type}}
                                 <input data-type="number" type="number" name="value[{{$column}}]" class="form-control" value="{{$value.String}}"{{if $field.Unsigned}} min="0"{{end}}>
+                                {{else if eq $field.InputType "text"}}
+                                <textarea name="value[{{$column}}]" rows="1" class="form-control">{{$field.Format $value.String}}</textarea>
                                 {{else}}
                                 <input type="{{$field.InputType}}" name="value[{{$column}}]" class="form-control" value="{{$field.Format $value.String}}">
                                 {{end}}
@@ -68,7 +70,7 @@
                         </tr>
                         {{end}}
 					</tbody>
-				</table>		
+				</table>
 			    </div>
                 <fieldset>
                      <button type="submit" name="save" value="1" class="btn btn-primary">
