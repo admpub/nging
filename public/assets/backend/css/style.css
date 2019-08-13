@@ -616,7 +616,10 @@ body.modal-open,
   border-right: 1px solid #E9E9E9;
 }
 .page-aside > div {
-  width: 280px;
+  width: 100%;
+}
+.page-aside div.nano{
+  height: 100%;
 }
 .page-aside div.fixed {
   position: fixed;
