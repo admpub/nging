@@ -33,7 +33,7 @@
                                 {{if isBlob $field.Type}}
                                 <input type="file" name="value[{{$column}}]">
                                 {{else if or (isText $field.Type) (Contains $value.String "\n")}}
-                                <textarea name="value[{{$column}}]" cols="30" rows="10" class="form-control">{{$value.String}}</textarea>
+                                <textarea name="value[{{$column}}]" cols="30" rows="10" class="form-control" style="resize:vertical">{{$value.String}}</textarea>
                                 {{else if eq $field.Type "enum"}}
                                 {{if $field.Null}}
                                 <div class="radio radio-primary radio-inline"> 
@@ -62,7 +62,7 @@
                                 {{else if isNumber $field.Type}}
                                 <input data-type="number" type="number" name="value[{{$column}}]" class="form-control" value="{{$value.String}}"{{if $field.Unsigned}} min="0"{{end}}>
                                 {{else if eq $field.InputType "textarea"}}
-                                <textarea name="value[{{$column}}]" rows="1" class="form-control">{{$field.Format $value.String}}</textarea>
+                                <textarea name="value[{{$column}}]" rows="1" class="form-control" style="resize:vertical">{{$field.Format $value.String}}</textarea>
                                 {{else}}
                                 <input type="{{$field.InputType}}" name="value[{{$column}}]" class="form-control" value="{{$field.Format $value.String}}">
                                 {{end}}
