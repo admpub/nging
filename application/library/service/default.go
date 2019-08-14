@@ -56,7 +56,12 @@ func Run(action string) error {
 	if err != nil {
 		return err
 	}
-	defer w.Close()
+	conf.OnExited = func() error {
+		if w != nil {
+			return w.Close()
+		}
+		return nil
+	}
 	stdLog.SetOutput(w)
 	stdLog.SetFlags(stdLog.LstdFlags)
 	conf.logger = newLogger(w)

@@ -221,17 +221,7 @@ func (c *CLIConfig) CmdSendSignal(typeName string, sig os.Signal) error {
 }
 
 func (c *CLIConfig) Kill(cmd *exec.Cmd) error {
-	if cmd == nil {
-		return nil
-	}
-	if cmd.Process == nil {
-		return nil
-	}
-	err := cmd.Process.Kill()
-	if cmd.ProcessState == nil || cmd.ProcessState.Exited() {
-		return nil
-	}
-	return err
+	return com.CloseProcessFromCmd(cmd)
 }
 
 var ErrCmdNotRunning = errors.New(`command is not running`)

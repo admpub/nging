@@ -41,6 +41,7 @@ import (
 	"github.com/webx-top/db/mysql"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/bytes"
+	"github.com/webx-top/com"
 )
 
 var reNumeric = regexp.MustCompile(`^[0-9]+$`)
@@ -267,9 +268,7 @@ func MustOK(err error) {
 	}
 }
 
-func CmdIsRunning(cmd *exec.Cmd) bool {
-	return cmd != nil && cmd.ProcessState == nil
-}
+var CmdIsRunning = com.CmdIsRunning
 
 func Table(table string) string {
 	return DefaultConfig.DB.Table(table)

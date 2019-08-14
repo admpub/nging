@@ -34,5 +34,6 @@ type Config struct {
 	Args []string
 	Env  []string
 
-	Stderr, Stdout io.Writer `json:"-"`
+   OnExited       func() error `json:"-"`
+	Stderr, Stdout io.Writer    `json:"-"`
 }

@@ -34,6 +34,8 @@ import (
 	"github.com/admpub/log"
 )
 
+var ErrCmdNotRunning = errors.New(`command is not running`)
+
 // ElapsedMemory 内存占用
 func ElapsedMemory() (ret string) {
 	memStat := new(runtime.MemStats)
@@ -427,4 +429,22 @@ func CloseProcessFromPid(pid int) (err error) {
 		return procs.Kill()
 	}
 	return
+}
+
+func CloseProcessFromCmd(cmd *exec.Cmd) error {
+	if cmd == nil {
+		return nil
+	}
+	if cmd.Process == nil {
+		return nil
+	}
+	err := cmd.Process.Kill()
+	if cmd.ProcessState == nil || cmd.ProcessState.Exited() {
+		return nil
+	}
+	return err
+}
+
+func CmdIsRunning(cmd *exec.Cmd) bool {
+	return cmd != nil && cmd.ProcessState == nil
 }

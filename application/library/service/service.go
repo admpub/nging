@@ -160,12 +160,11 @@ func (p *program) Stop(s service.Service) error {
 }
 
 func (p *program) killCmd() {
-	if p.cmd != nil && p.cmd.ProcessState != nil {
-		if p.cmd.ProcessState.Exited() == false && p.cmd.Process != nil {
-			p.cmd.Process.Kill()
-		}
+	err := com.CloseProcessFromCmd(p.cmd)
+	if err != nil {
+		p.logger.Error(err)
 	}
-	err := com.CloseProcessFromPidFile(p.pidFile)
+	err = com.CloseProcessFromPidFile(p.pidFile)
 	if err != nil {
 		p.logger.Error(p.pidFile+`:`, err)
 	}
@@ -175,6 +174,12 @@ func (p *program) killCmd() {
 			p.logger.Error(pidFile+`:`, err)
 		}
 	}
+	if p.Config.OnExited != nil {
+		err = p.Config.OnExited()
+		if err != nil {
+			p.logger.Error(err)
+		}
+	}
 }
 
 func (p *program) close() {
@@ -182,6 +187,7 @@ func (p *program) close() {
 		p.Stop(p.service)
 	} else {
 		p.service.Stop()
+		p.killCmd()
 	}
 }
 
