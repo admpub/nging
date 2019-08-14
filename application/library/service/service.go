@@ -174,12 +174,6 @@ func (p *program) killCmd() {
 			p.logger.Error(pidFile+`:`, err)
 		}
 	}
-	if p.Config.OnExited != nil {
-		err = p.Config.OnExited()
-		if err != nil {
-			p.logger.Error(err)
-		}
-	}
 }
 
 func (p *program) close() {
@@ -188,6 +182,12 @@ func (p *program) close() {
 	} else {
 		p.service.Stop()
 		p.killCmd()
+	}
+	if p.Config.OnExited != nil {
+		err := p.Config.OnExited()
+		if err != nil {
+			p.logger.Error(err)
+		}
 	}
 }
 
@@ -205,5 +205,4 @@ func (p *program) run() {
 	if err != nil {
 		p.logger.Error("Error running:", err)
 	}
-	p.killCmd()
 }
