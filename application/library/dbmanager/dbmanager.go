@@ -102,6 +102,6 @@ func (d *dbManager) Run(typeName string, operation string) error {
 	case `analysis`:
 		return drv.Analysis()
 	default:
-		return errors.New(d.T(`很抱歉，不支持此项操作`))
+		return d.E(`很抱歉，不支持此项操作`)
 	}
 }
