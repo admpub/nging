@@ -15,6 +15,7 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 package service
 
 import (
@@ -28,7 +29,6 @@ import (
 
 	"github.com/admpub/service"
 	"github.com/webx-top/com"
-	"github.com/webx-top/echo"
 )
 
 func ValidServiceAction(action string) error {
@@ -67,7 +67,7 @@ func New(cfg *Config, action string) error {
 
 func getPidFiles() []string {
 	pidFile := []string{}
-	pidFilePath := filepath.Join(echo.Wd(), `data/pid`)
+	pidFilePath := filepath.Join(com.SelfDir(), `data/pid`)
 	err := filepath.Walk(pidFilePath, func(pidPath string, info os.FileInfo, err error) error {
 		if err != nil || info.IsDir() {
 			return err
@@ -84,7 +84,7 @@ func getPidFiles() []string {
 }
 
 func NewProgram(cfg *Config) *program {
-	pidFile := filepath.Join(echo.Wd(), `data/pid`)
+	pidFile := filepath.Join(com.SelfDir(), `data/pid`)
 	if !com.IsDir(pidFile) {
 		err := os.MkdirAll(pidFile, os.ModePerm)
 		if err != nil {
