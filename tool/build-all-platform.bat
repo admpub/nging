@@ -28,14 +28,12 @@ set GOOS=darwin
 set GOARCH=amd64
 call inc-build.bat
 
+set NGINGEX=.exe
+set BUILDTAGS=
 
 set GOOS=windows
 set GOARCH=386
 call inc-build.bat
-
-
-set NGINGEX=.exe
-set BUILDTAGS=
 
 set GOOS=windows
 set GOARCH=amd64
