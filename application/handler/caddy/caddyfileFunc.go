@@ -21,7 +21,6 @@ import (
 	"net/url"
 
 	"github.com/webx-top/com"
-
 	"github.com/webx-top/echo"
 )
 
@@ -110,4 +109,7 @@ func iteratorKV(ctx echo.Context, v url.Values) {
 func SetCaddyfileFunc(ctx echo.Context, v url.Values) {
 	addonAttr(ctx, v)
 	iteratorKV(ctx, v)
+	ctx.SetFunc(`AddSlashes`, func(v string) string {
+		return com.AddSlashes(v, '"')
+	})
 }

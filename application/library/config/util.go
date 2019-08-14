@@ -21,7 +21,6 @@ import (
 	"io/ioutil"
 	stdLog "log"
 	"os"
-	"os/exec"
 	"path"
 	"path/filepath"
 	"regexp"
@@ -35,13 +34,13 @@ import (
 	"github.com/admpub/nging/application/library/caddy"
 	"github.com/admpub/nging/application/library/cron"
 	"github.com/admpub/nging/application/library/ftp"
+	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/db/lib/sqlbuilder"
 	"github.com/webx-top/db/mongo"
 	"github.com/webx-top/db/mysql"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/bytes"
-	"github.com/webx-top/com"
 )
 
 var reNumeric = regexp.MustCompile(`^[0-9]+$`)

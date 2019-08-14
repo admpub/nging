@@ -2,12 +2,12 @@
 {{$v.Get "domain"}} {
     {{$root := $v.Get "root"}}
     {{if $root}}
-    root "{{$root|ToHTML}}"
+    root "{{$root|AddSlashes|ToHTML}}"
     {{end}}
 
     {{if eq ($v.Get "basicauth") "1"}}
-    basicauth "{{Get "basicauth" "username"}}" "{{Get "basicauth" "password"}}" {
-        realm "{{Get "basicauth" "realm" "Restricted"}}"
+    basicauth "{{Get "basicauth" "username"|AddSlashes}}" "{{Get "basicauth" "password"|AddSlashes}}" {
+        realm "{{Get "basicauth" "realm" "Restricted"|AddSlashes}}"
         {{Iterator "basicauth" "resources" "        "}}
     }
     {{end}}
@@ -69,7 +69,7 @@
 
 
     {{if eq ($v.Get "nobots") "1"}}
-    nobots "{{Get "nobots" "bomb" "bomb.gz"}}" {
+    nobots "{{Get "nobots" "bomb" "bomb.gz"|AddSlashes}}" {
         {{Iterator "nobots" "userAgent" "        " true}}
         {{Iterator "nobots" "userAgentRegexp" "        regexp " true}}
         {{Iterator "nobots" "publicPathRegexp" "        public " true}}
