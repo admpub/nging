@@ -18,32 +18,55 @@
 package dbmanager
 
 import (
-	"errors"
-
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/webx-top/echo"
 )
 
-func New(ctx echo.Context, auth *driver.DbAuth) *dbManager {
+type Manager interface {
+	Driver(typeName string) (driver.Driver, error)
+	Run(typeName string, operation string) error
+	Context() echo.Context
+	Account() *driver.DbAuth
+	GenURL() func(string, ...string) string
+	SetURLGenerator(fn func(string, ...string) string)
+}
+
+func New(ctx echo.Context, auth *driver.DbAuth) Manager {
 	return &dbManager{
-		Context: ctx,
-		DbAuth:  auth,
+		context: ctx,
+		dbAuth:  auth,
 	}
 }
 
 type dbManager struct {
-	echo.Context
-	*driver.DbAuth
-	GenURL func(string, ...string) string
+	context echo.Context
+	dbAuth  *driver.DbAuth
+	genURL  func(string, ...string) string
+}
+
+func (d *dbManager) Context() echo.Context {
+	return d.context
+}
+
+func (d *dbManager) GenURL() func(string, ...string) string {
+	return d.genURL
+}
+
+func (d *dbManager) SetURLGenerator(fn func(string, ...string) string) {
+	d.genURL = fn
+}
+
+func (d *dbManager) Account() *driver.DbAuth {
+	return d.dbAuth
 }
 
 func (d *dbManager) Driver(typeName string) (driver.Driver, error) {
 	dv, ok := driver.Get(typeName)
 	if ok {
-		dv.Init(d.Context, d.DbAuth)
+		dv.Init(d.context, d.dbAuth)
 		return dv, nil
 	}
-	return nil, errors.New(d.T(`很抱歉，暂时不支持%v`, typeName))
+	return nil, d.context.E(`很抱歉，暂时不支持%v`, typeName)
 }
 
 func (d *dbManager) Run(typeName string, operation string) error {
@@ -52,12 +75,12 @@ func (d *dbManager) Run(typeName string, operation string) error {
 		return err
 	}
 	if !drv.IsSupported(operation) {
-		return errors.New(d.T(`很抱歉，不支持此项操作`))
+		return d.context.E(`很抱歉，不支持此项操作`)
 	}
 	defer drv.SaveResults()
-	drv.SetURLGenerator(d.GenURL)
-	d.Set(`dbType`, drv.Name())
-	d.SetFunc(`Results`, drv.SavedResults)
+	drv.SetURLGenerator(d.genURL)
+	d.context.Set(`dbType`, drv.Name())
+	d.context.SetFunc(`Results`, drv.SavedResults)
 	switch operation {
 	case `login`:
 		return drv.Login()
@@ -102,6 +125,6 @@ func (d *dbManager) Run(typeName string, operation string) error {
 	case `analysis`:
 		return drv.Analysis()
 	default:
-		return d.E(`很抱歉，不支持此项操作`)
+		return d.context.E(`很抱歉，不支持此项操作`)
 	}
 }

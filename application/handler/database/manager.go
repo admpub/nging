@@ -26,10 +26,13 @@ import (
 	"github.com/admpub/nging/application/library/dbmanager/driver/mysql"   //mysql
 	_ "github.com/admpub/nging/application/library/dbmanager/driver/redis" //redis
 	"github.com/admpub/nging/application/model"
-	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
+
+var defaultGenURL = func(_ string, _ ...string) string {
+	return ``
+}
 
 func Manager(ctx echo.Context) error {
 	user := handler.User(ctx)
@@ -53,74 +56,27 @@ func Manager(ctx echo.Context) error {
 			accountID = m.Id
 		}
 	}
-	var genURL func(string, ...string) string
+	genURL := defaultGenURL
 	switch operation {
 	case `login`:
-		if ctx.IsPost() {
-			data := &driver.DbAuth{}
-			ctx.Bind(data)
-			if len(data.Username) == 0 {
-				data.Username = `root`
-			}
-			if len(data.Host) == 0 {
-				data.Host = `127.0.0.1`
-			}
-			auth.CopyFrom(data)
-			if ctx.Form(`remember`) == `1` {
-				m.Title = auth.Driver + `://` + auth.Username + `@` + auth.Host + `/` + auth.Db
-				m.Engine = auth.Driver
-				m.Host = auth.Host
-				m.User = auth.Username
-				m.Password = auth.Password
-				m.Name = auth.Db
-				err = m.SetOptions()
-				if err != nil {
-					return err
-				}
-				if accountID < 1 || err == db.ErrNoMoreRows {
-					m.Uid = user.Id
-					_, err = m.Add()
-				} else {
-					err = m.Edit(accountID, nil, db.Cond{`id`: accountID})
-				}
-			}
-			ctx.Session().Set(`dbAuth`, auth)
+		if err = login(mgr, accountID, m, user); err != nil {
+			return err
 		}
 
 	case `logout`:
 		//pass
 
 	default:
-		if accountID > 0 {
-			auth.Driver = m.Engine
-			auth.Username = m.User
-			auth.Password = m.Password
-			auth.Host = m.Host
-			auth.Db = m.Name
-			if len(m.Options) > 0 {
-				options := echo.H{}
-				com.JSONDecode(com.Str2bytes(m.Options), &options)
-				auth.Charset = options.String(`charset`)
-			}
-			if len(auth.Charset) == 0 {
-				auth.Charset = `utf8mb4`
-			}
-			ctx.Session().Set(`dbAuth`, auth)
-			err = mgr.Run(auth.Driver, `login`)
-		} else {
-			if data, exists := ctx.Session().Get(`dbAuth`).(*driver.DbAuth); exists {
-				auth.CopyFrom(data)
-				err = mgr.Run(auth.Driver, `login`)
-			}
-		}
-		if err == nil {
+		var signedIn bool
+		err, signedIn = authentication(mgr, accountID, m)
+		ctx.Set(`signedIn`, signedIn)
+		ctx.Set(`dbUsername`, auth.Username)
+		ctx.Set(`dbHost`, auth.Host)
+		if signedIn {
 			driverName = auth.Driver
 			if len(operation) == 0 {
 				operation = `listDb`
 			}
-			ctx.Set(`signedIn`, true)
-			ctx.Set(`dbUsername`, auth.Username)
-			ctx.Set(`dbHost`, auth.Host)
 			genURL = func(op string, args ...string) string {
 				if len(op) == 0 {
 					op = operation
@@ -144,12 +100,7 @@ func Manager(ctx echo.Context) error {
 			driverName = ``
 		}
 	}
-	if genURL == nil {
-		genURL = func(_ string, _ ...string) string {
-			return ``
-		}
-	}
-	mgr.GenURL = genURL
+	mgr.SetURLGenerator(genURL)
 	ctx.SetFunc(`dbMgrURL`, genURL)
 	ctx.Set(`operation`, operation)
 	if len(driverName) > 0 {

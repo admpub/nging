@@ -648,7 +648,10 @@ func (m *mySQL) processField(oldTable string, field *Field, typeField *Field, au
 	}
 	var defaultValue string
 	if field.Default.Valid {
-		var isRaw bool
+		var (
+			isRaw              bool
+			defaultValueSuffix string
+		)
 		typeN := strings.ToLower(field.Type)
 		switch typeN {
 		case `bit`:
@@ -658,6 +661,9 @@ func (m *mySQL) processField(oldTable string, field *Field, typeField *Field, au
 		default:
 			if !strings.Contains(typeN, `time`) {
 				break
+			}
+			if len(field.On_update) > 0 {
+				defaultValueSuffix = ` ON UPDATE ` + field.On_update
 			}
 			switch strings.ToUpper(field.Default.String) {
 			case `CURRENT_TIMESTAMP`:
@@ -672,9 +678,9 @@ func (m *mySQL) processField(oldTable string, field *Field, typeField *Field, au
 			}
 		}
 		if isRaw {
-			defaultValue = ` DEFAULT ` + field.Default.String
+			defaultValue = ` DEFAULT ` + field.Default.String + defaultValueSuffix
 		} else {
-			defaultValue = ` DEFAULT ` + quoteVal(field.Default.String)
+			defaultValue = ` DEFAULT ` + quoteVal(field.Default.String) + defaultValueSuffix
 		}
 	}
 	r = append(r, defaultValue)
