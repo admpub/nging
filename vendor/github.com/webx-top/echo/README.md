@@ -393,6 +393,9 @@ Oauth2      |github.com/webx-top/echo/handler/oauth2 | [Example](https://github.
 Pprof      |github.com/webx-top/echo/handler/pprof | -
 MVC      |github.com/webx-top/echo/handler/mvc | [Example](https://github.com/webx-top/echo/blob/master/handler/mvc/test/main.go)
 
+## Cases
+- [Nging](https://github.com/admpub/nging)
+
 ## Credits
 - [Vishal Rana](https://github.com/vishr) - Author
 - [Hank Shen](https://github.com/admpub) - Author

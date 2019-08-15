@@ -24,6 +24,7 @@ tower-app-*
 *.test
 *.prof
 *.log
+*.log.*
 *.pid
 /installed.lock
 /dist/config

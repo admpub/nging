@@ -19,10 +19,8 @@
 package echo
 
 var (
-	e       = &Echo{}
-	g       = &Group{}
-	_ ICore = e
-	_ ICore = g
+	_ ICore = &Echo{}
+	_ ICore = &Group{}
 )
 
 type RouteRegister interface {

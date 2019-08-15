@@ -5,36 +5,28 @@ import (
 	"fmt"
 	"html/template"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/webx-top/echo/param"
 )
 
 var (
-	mutex      sync.RWMutex
 	emptyStore = Store{}
 )
 
 type Store map[string]interface{}
 
 func (s Store) Set(key string, value interface{}) Store {
-	mutex.Lock()
 	s[key] = value
-	mutex.Unlock()
 	return s
 }
 
 func (s Store) Has(key string) bool {
-	mutex.RLock()
-	defer mutex.RUnlock()
 	_, y := s[key]
 	return y
 }
 
 func (s Store) Get(key string, defaults ...interface{}) interface{} {
-	mutex.RLock()
-	defer mutex.RUnlock()
 	if v, y := s[key]; y {
 		if v == nil && len(defaults) > 0 {
 			return defaults[0]
@@ -160,13 +152,11 @@ func (s Store) Store(key string, defaults ...interface{}) Store {
 }
 
 func (s Store) Delete(keys ...string) {
-	mutex.Lock()
 	for _, key := range keys {
 		if _, y := s[key]; y {
 			delete(s, key)
 		}
 	}
-	mutex.Unlock()
 }
 
 // MarshalXML allows type Store to be used with xml.Marshal
@@ -192,6 +182,7 @@ func (s Store) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 // ToData conversion to *RawData
 func (s Store) ToData() *RawData {
 	var info, zone, data interface{}
+	var url string
 	if v, y := s["Data"]; y {
 		data = v
 	}
@@ -200,6 +191,9 @@ func (s Store) ToData() *RawData {
 	}
 	if v, y := s["Info"]; y {
 		info = v
+	}
+	if v, y := s["URL"]; y {
+		url, _ = v.(string)
 	}
 	var code State
 	if v, y := s["Code"]; y {
@@ -220,6 +214,7 @@ func (s Store) ToData() *RawData {
 	return &RawData{
 		Code: code,
 		Info: info,
+		URL:  url,
 		Zone: zone,
 		Data: data,
 	}
