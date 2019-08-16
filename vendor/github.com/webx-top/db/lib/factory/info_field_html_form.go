@@ -12,8 +12,8 @@ import (
 	"github.com/webx-top/echo"
 )
 
-// HTML 表单输入框
-func (f *FieldInfo) HTML(value interface{}, options echo.H) template.HTML {
+// FormInput 表单输入框
+func (f *FieldInfo) FormInput(value interface{}, options echo.H) template.HTML {
 	var input string
 	name := com.LowerCaseFirst(f.GoName)
 	val := fmt.Sprint(value)
@@ -253,7 +253,7 @@ func (f *FieldInfo) FormGroup(value interface{}, options echo.H, inputAndLabelCo
 		`inputCols`:   inputCols,
 		`label`:       f.Comment,
 		`labelSuffix`: star,
-		`input`:       f.HTML(value, options),
+		`input`:       f.FormInput(value, options),
 	}
 	data.DeepMerge(options)
 	return template.HTML(DefaultHTMLTmpl.ToGroup(data))

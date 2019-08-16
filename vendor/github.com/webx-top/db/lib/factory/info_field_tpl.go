@@ -20,7 +20,12 @@ var DefaultHTMLTmpl = &HTMLTmpl{
 		<input type="checkbox" value="{{.value}}" name="{{.name}}" id="{{.id}}"{{range $k,$v:= .attrs}} {{$v.K}}="{{$v.V}}"{{end}}> <label for="{{.id}}">{{.label}}</label>
 	</div>`,
 		`text`:     `<input type="{{.type}}" class="form-control" name="{{.name}}" value="{{.value}}"{{range $k,$v:= .attrs}} {{$v.K}}="{{$v.V}}"{{end}} />`,
-		`textarea`: `<textarea class="form-control" name="{{.name}}" {{range $k,$v:= .attrs}} {{$v.K}}="{{$v.V}}"{{end}}>{{.value}}</textarea>`,
+		`textarea`: `<textarea class="form-control" name="{{.name}}"{{range $k,$v:= .attrs}} {{$v.K}}="{{$v.V}}"{{end}}>{{.value}}</textarea>`,
+	},
+	ListCols: map[string]string{
+		`switch`: `<div class="checkbox checkbox-success no-margin-y"{{range $k,$v:= .attrs}} {{$v.K}}="{{$v.V}}"{{end}}>
+			<input id="checkbox-{{.field}}-{{.index}}" class="styled switch-{{.field}}" type="checkbox" data-name="{{.label}}" data-{{.field}}="{{.value}}"{{if eq .checked}} checked="checked"{{end}} value="{{.openValue}}" /><label for="checkbox-{{.field}}-{{.index}}">&nbsp;</label>
+		</div>`,
 	},
 }
 
@@ -42,16 +47,19 @@ func (a *HTMLAttrs) Add(k string, v ...string) {
 }
 
 type HTMLTmpl struct {
+	ListCols map[string]string
 	Inputs   map[string]string
 	Group    string
 	groupT   *template.Template
 	inputT   sync.Map
+	listColT sync.Map
 	Required string
 }
 
 func (f *HTMLTmpl) Clear() {
 	f.groupT = nil
 	f.inputT = sync.Map{}
+	f.listColT = sync.Map{}
 }
 
 func (f *HTMLTmpl) ToGroup(data interface{}) string {
@@ -80,6 +88,28 @@ func (f *HTMLTmpl) ToInput(typ string, data interface{}) string {
 		if err != nil {
 			return err.Error()
 		}
+		f.inputT.Store(typ, t)
+	} else {
+		t = v.(*template.Template)
+	}
+	buf := bytes.NewBuffer(nil)
+	err := t.Execute(buf, data)
+	if err != nil {
+		return err.Error()
+	}
+	return buf.String()
+}
+
+func (f *HTMLTmpl) ToListCol(typ string, data interface{}) string {
+	v, y := f.listColT.Load(typ)
+	var t *template.Template
+	if !y {
+		t = template.New(typ)
+		_, err := t.Parse(f.ListCols[typ])
+		if err != nil {
+			return err.Error()
+		}
+		f.listColT.Store(typ, t)
 	} else {
 		t = v.(*template.Template)
 	}
