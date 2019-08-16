@@ -617,7 +617,7 @@ func (m *mySQL) ModifyTable() error {
 						Valid:  f.Value(ii, `has_default`) == `1`,
 					}
 					field.AutoIncrement = sql.NullString{
-						Valid: aiIndexInt == i,
+						Valid: len(aiIndexStr)>0 && aiIndexInt == i,
 					}
 					if field.AutoIncrement.Valid {
 						field.AutoIncrement.String = autoIncrementStartValue
