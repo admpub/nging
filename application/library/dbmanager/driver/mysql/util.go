@@ -208,12 +208,12 @@ func (m *mySQL) processInputFieldValue(field *Field) (string, bool) {
 		if i == -1 {
 			return ``, false
 		}
-		if value == "" {
+		if len(value) == 0 {
 			return "NULL", true
 		}
 		return strconv.Itoa(i), true
 	}
-	if field.AutoIncrement.Valid && value == "" {
+	if field.AutoIncrement.Valid && len(value) == 0 {
 		return ``, false
 	}
 	if function == "orig" {
