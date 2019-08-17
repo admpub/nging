@@ -1208,12 +1208,15 @@ var App = function () {
 	    	App.message({title:App.i18n.SYS_INFO,text:r.Info,time:5000,sticky:false,   class_name:r.Code==1?'success':'error'});
 	    },'json');
     },
-    bindSwitch:function(elem,eventName,editURL){
+    bindSwitch:function(elem,eventName,editURL,type){
       if(eventName==null)eventName='click';
       var re = new RegExp('switch-([\\w\\d]+)');
 	    $(elem).on(eventName,function(){
-        var matches=String($(this).attr('class')).match(re);
-        App.switchStatus(this,matches[1],editURL);
+        if(type==null){
+          var matches=String($(this).attr('class')).match(re);
+          type=matches[1];
+        }
+        App.switchStatus(this,type,editURL);
       });
     }
   };
