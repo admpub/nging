@@ -113,19 +113,7 @@
 {{Modal "__TMPL__/server/log_show.yaml"}}
 <script>
 $(function(){
-	$('input.switch-disabled').on('click',function(r){
-		var that=$(this),disabled=that.data('disabled')=='Y'?'N':'Y';
-		$.get(BACKEND_URL+'/caddy/vhost_edit',{
-			disabled:disabled,
-			id:that.data('id')
-		},function(r){
-			if(r.Code==1){
-				that.data('disabled',disabled);
-				that.prop('checked',disabled=='N');
-			}
-			App.message({title:'{{"系统消息"|T}}',text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
-		},'json');
-	});
+	App.bindSwitch('input.switch-disabled','click','caddy/vhost_edit');
 	App.logShow('#caddy-log-show');
 });
 </script>

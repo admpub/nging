@@ -1193,7 +1193,9 @@ var App = function () {
       $(el).css({"max-height":h+'px'});
       $(el).find('.modal-body').css({"max-height":bh+'px'});
     },
-    switchStatus:function (a,type,editURL){
+    switchStatus:function(a,type,editURL){
+      if(type==null)type=$(a).data('type');
+      if(editURL==null)editURL=$(a).data('url');
       var that=$(a),status=that.data(type)=='Y'?'N':'Y',data={id:that.data('id')};
       var v=that.val();
       data[type]=status;
@@ -1205,6 +1207,14 @@ var App = function () {
 	    	}
 	    	App.message({title:App.i18n.SYS_INFO,text:r.Info,time:5000,sticky:false,   class_name:r.Code==1?'success':'error'});
 	    },'json');
+    },
+    bindSwitch:function(elem,eventName,editURL){
+      if(eventName==null)eventName='click';
+      var re = new RegExp('switch-([\\w\\d]+)');
+	    $(elem).on(eventName,function(){
+        var matches=String($(this).attr('class')).match(re);
+        App.switchStatus(this,matches[1],editURL);
+      });
     }
   };
  

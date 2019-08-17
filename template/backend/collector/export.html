@@ -80,19 +80,7 @@
 {{Block "footer"}}
 <script>
 $(function(){
-	$('input.switch-disabled').on('click',function(r){
-		var that=$(this),disabled=that.data('disabled')=='Y'?'N':'Y';
-		$.get(BACKEND_URL+'/collector/export_edit_status',{
-			disabled:disabled,
-			id:that.data('id')
-		},function(r){
-			if(r.Code==1){
-				that.data('disabled',disabled);
-				that.prop('checked',disabled=='N');
-			}
-			App.message({title:'{{"系统消息"|T}}',text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
-		},'json');
-	});
+	App.bindSwitch('input.switch-disabled','click','collector/export_edit_status');
 });
 </script>
 {{/Block}}

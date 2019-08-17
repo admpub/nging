@@ -112,20 +112,7 @@ function statusHTML(status){
 	return '<span class="status-run fa fa-time text-default"> {{"空闲"|T}}</span>';
 }
 $(function(){
-	$('input.switch-disabled').on('click',function(r){
-		var that=$(this),disabled=that.data('disabled')=='Y'?'N':'Y';
-		$.get(BACKEND_URL+'/server/daemon_edit',{
-			disabled:disabled,
-			id:that.data('id')
-		},function(r){
-			if(r.Code==1){
-				that.data('disabled',disabled);
-				that.prop('checked',disabled=='N');
-				that.parents('td').prev('td').html(statusHTML(r.Data));
-			}
-			App.message({title:'{{"系统消息"|T}}',text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
-		},'json');
-	});
+	App.bindSwitch('input.switch-disabled','click','server/daemon_edit');
 });
 </script>
 {{/Block}}
