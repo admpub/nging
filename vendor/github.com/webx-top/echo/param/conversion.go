@@ -8,11 +8,18 @@ import (
 	"time"
 )
 
-var (
-	emptyHTML     = template.HTML(``)
-	emptyJS       = template.JS(``)
-	emptyCSS      = template.CSS(``)
-	emptyHTMLAttr = template.HTMLAttr(``)
+const (
+	EmptyHTML      = template.HTML(``)
+	EmptyJS        = template.JS(``)
+	EmptyCSS       = template.CSS(``)
+	EmptyHTMLAttr  = template.HTMLAttr(``)
+	DateTimeLayout = `2006-01-02 15:04:05`
+	DateTimeShort  = `2006-01-02 15:04`
+	DateLayout     = `2006-01-02`
+	TimeLayout     = `15:04:05`
+	DateMd         = `01-02`
+	DateShort      = `06-01-02`
+	TimeShort      = `15:04`
 )
 
 func AsString(val interface{}) string {
@@ -48,7 +55,7 @@ func AsHTML(val interface{}) template.HTML {
 	case string:
 		return template.HTML(v)
 	case nil:
-		return emptyHTML
+		return EmptyHTML
 	default:
 		return template.HTML(fmt.Sprint(v))
 	}
@@ -61,7 +68,7 @@ func AsHTMLAttr(val interface{}) template.HTMLAttr {
 	case string:
 		return template.HTMLAttr(v)
 	case nil:
-		return emptyHTMLAttr
+		return EmptyHTMLAttr
 	default:
 		return template.HTMLAttr(fmt.Sprint(v))
 	}
@@ -74,7 +81,7 @@ func AsJS(val interface{}) template.JS {
 	case string:
 		return template.JS(v)
 	case nil:
-		return emptyJS
+		return EmptyJS
 	default:
 		return template.JS(fmt.Sprint(v))
 	}
@@ -87,7 +94,7 @@ func AsCSS(val interface{}) template.CSS {
 	case string:
 		return template.CSS(v)
 	case nil:
-		return emptyCSS
+		return EmptyCSS
 	default:
 		return template.CSS(fmt.Sprint(v))
 	}
@@ -366,7 +373,7 @@ func AsTimestamp(val interface{}) time.Time {
 func AsDateTime(val interface{}, layouts ...string) time.Time {
 	p := AsString(val)
 	if len(p) > 0 {
-		layout := `2006-01-02 15:04:05`
+		layout := DateTimeLayout
 		if len(layouts) > 0 {
 			layout = layouts[0]
 		}

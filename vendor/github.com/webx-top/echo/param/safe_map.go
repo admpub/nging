@@ -38,14 +38,6 @@ func (s *SafeMap) Has(key interface{}) bool {
 	return ok
 }
 
-func (s *SafeMap) Delete(key interface{}) {
-	s.Delete(key)
-}
-
-func (s *SafeMap) Range(f func(key, value interface{}) bool) {
-	s.Range(f)
-}
-
 func (s *SafeMap) GetOrSet(key, value interface{}) (actual interface{}, loaded bool) {
 	return s.LoadOrStore(key, value)
 }
