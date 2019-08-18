@@ -125,7 +125,7 @@ var App = function () {
       var cachedLang=null;
   return {
     clientID: {},
-    i18n: {SYS_INFO:'System Information',UPLOAD_ERR:'Upload Error'},
+    i18n: {SYS_INFO:'System Information',UPLOAD_ERR:'Upload Error',PLEASE_SELECT_FOR_REMOVE:'Please select the item you want to delete',CONFIRM_REMOVE:'Are you sure you want to delete them?'},
     lang: 'en',
     langInfo: function(){
       if(cachedLang!=null) return cachedLang;
@@ -1218,6 +1218,27 @@ var App = function () {
         }
         App.switchStatus(this,type,editURL);
       });
+    },
+    removeSelected:function(elem,postField,removeURL,callback){
+      if(removeURL==null) removeURL=window.location.href;
+      if(postField==null) postField='id';
+      var data=[];
+      if($(elem).length<1){
+        App.message({title:App.i18n.SYS_INFO, text:App.i18n.PLEASE_SELECT_FOR_REMOVE, type:'warning'});
+        return false;
+      }
+      if(!confirm(App.i18n.CONFIRM_REMOVE)) return false;
+      $(elem).each(function(){
+        data.push({name:postField,value:$(this).val()});
+      });
+      $.get(removeURL,data,function(r){
+        if(callback && $.isFunction(callback)) return callback();
+        App.message({title:App.i18n.SYS_INFO, text:r.Info, type:r.Code==1?'success':'error'});
+        window.setTimeout(function(){
+          window.location.reload();
+        },2000);
+      },'json');
+      return true;
     }
   };
  
