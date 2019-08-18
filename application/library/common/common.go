@@ -51,11 +51,19 @@ func Err(ctx echo.Context, err error) (ret interface{}) {
 
 // SendOk 记录成功信息
 func SendOk(ctx echo.Context, msg string) {
+	if ctx.IsAjax() || ctx.Format() != `html` {
+		ctx.Data().SetInfo(msg, 1)
+		return
+	}
 	ctx.Session().AddFlash(Ok(msg))
 }
 
 // SendFail 记录失败信息
 func SendFail(ctx echo.Context, msg string) {
+	if ctx.IsAjax() || ctx.Format() != `html` {
+		ctx.Data().SetInfo(msg, 0)
+		return
+	}
 	ctx.Session().AddFlash(msg)
 }
 
