@@ -16,7 +16,7 @@ type ModelInstancer struct {
 }
 
 // ModelInstancers 模型实例化
-type ModelInstancers map[string]*ModelInstancer
+type ModelInstancers map[string]*ModelInstancer // structName => *ModelInstancer
 
 // Register 模型构造函数登记
 func (m ModelInstancers) Register(instancers map[string]*ModelInstancer) {

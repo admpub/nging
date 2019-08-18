@@ -32,6 +32,7 @@ func DBIExists(key string) bool {
 func NewDBI() *DBI {
 	return &DBI{
 		Fields:      map[string]map[string]*FieldInfo{},
+		Columns:     map[string][]string{},
 		Models:      ModelInstancers{},
 		TableNamers: map[string]func(obj interface{}) string{},
 	}
@@ -41,6 +42,8 @@ func NewDBI() *DBI {
 type DBI struct {
 	// Fields {table:{field:FieldInfo}}
 	Fields FieldValidator
+	// Columns {table:[field1,field2]}
+	Columns map[string][]string
 	// Models {StructName:ModelInstancer}
 	Models ModelInstancers
 	// TableNamers {table:NewName}
@@ -61,4 +64,12 @@ func (d *DBI) TableComment(structName string) string {
 		return m.Comment
 	}
 	return ``
+}
+
+func (d *DBI) TableColumns(tableName string) []string {
+	cols, ok := d.Columns[tableName]
+	if ok {
+		return cols
+	}
+	return nil
 }

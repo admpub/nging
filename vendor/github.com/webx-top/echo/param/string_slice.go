@@ -29,6 +29,16 @@ func (p StringSlice) String() []string {
 	return []string(p)
 }
 
+func (p StringSlice) HasValue(v interface{}) bool {
+	expected := AsString(v)
+	for _, val := range p {
+		if val == expected {
+			return true
+		}
+	}
+	return false
+}
+
 func (p StringSlice) Join(sep string) string {
 	return strings.Join([]string(p), sep)
 }
