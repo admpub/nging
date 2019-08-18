@@ -1199,7 +1199,7 @@ var App = function () {
       var that=$(a),status=that.data(type)=='Y'?'N':'Y',data={id:that.data('id')};
       var v=that.val();
       data[type]=status;
-      if(editURL.charAt(0)!='/') editURL=BACKEND_URL+'/'+editURL;
+      if(String(editURL).charAt(0)!='/') editURL=BACKEND_URL+'/'+editURL;
 	    $.get(editURL,data,function(r){
 	    	if(r.Code==1){
 	    		that.data(type,status);
@@ -1220,7 +1220,11 @@ var App = function () {
       });
     },
     removeSelected:function(elem,postField,removeURL,callback){
-      if(removeURL==null) removeURL=window.location.href;
+      if(removeURL==null){
+        removeURL=window.location.href;
+      }else if(String(removeURL).charAt(0)!='/'){
+        removeURL=BACKEND_URL+'/'+removeURL;
+      }
       if(postField==null) postField='id';
       var data=[];
       if($(elem).length<1){
