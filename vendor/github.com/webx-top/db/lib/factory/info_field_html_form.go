@@ -288,6 +288,15 @@ func (f *FieldInfo) FormInput(value interface{}, options echo.H) template.HTML {
 
 // FormGroup 表单组，带标签(label)
 func (f *FieldInfo) FormGroup(value interface{}, options echo.H, inputAndLabelCols ...int) template.HTML {
+	makeMode := options.Bool(`maker`)
+	if f.Name == `id` {
+		name := com.LowerCaseFirst(f.GoName)
+		val := fmt.Sprint(value)
+		if makeMode {
+			val = "{{Form `" + name + "`}}"
+		}
+		return template.HTML(`<input type="hidden" name="` + name + `" value="` + val + `">`)
+	}
 	labelCols := 2
 	inputCols := 8
 	switch len(inputAndLabelCols) {
@@ -310,7 +319,6 @@ func (f *FieldInfo) FormGroup(value interface{}, options echo.H, inputAndLabelCo
 		`labelSuffix`: star,
 		`input`:       f.FormInput(value, options),
 	}
-	makeMode := options.Bool(`maker`)
 	if makeMode {
 		data[`label`] = template.HTML("{{`" + f.Comment + "`|T}}")
 	}
