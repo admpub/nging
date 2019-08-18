@@ -14,16 +14,16 @@ var DefaultHTMLTmpl = &HTMLTmpl{
 	Required: ` <span class="text-danger star-required">*</span>`,
 	Inputs: map[string]string{
 		`radio`: `<div class="radio radio-{{if .theme}}{{.theme}}{{else}}primary{{end}}{{if .inline}} radio-inline{{end}}">
-		<input type="radio" value="{{.value}}" name="{{.name}}" id="{{.id}}"{{range $k,$v:= .attrs}} {{$v.K}}="{{$v.V}}"{{end}}> <label for="{{.id}}">{{.label}}</label>
+		<input type="radio" value="{{.value}}" name="{{.name}}" id="{{.id}}"{{range $k,$v:= .attrs}} {{$v.K}}{{if $v.IsNotNil}}="{{$v.V}}"{{end}}{{end}}> <label for="{{.id}}">{{.label}}</label>
 	</div>`,
 		`checkbox`: `<div class="checkbox checkbox-{{if .theme}}{{.theme}}{{else}}primary{{end}}{{if .inline}} checkbox-inline{{end}}">
-		<input type="checkbox" value="{{.value}}" name="{{.name}}" id="{{.id}}"{{range $k,$v:= .attrs}} {{$v.K}}="{{$v.V}}"{{end}}> <label for="{{.id}}">{{.label}}</label>
+		<input type="checkbox" value="{{.value}}" name="{{.name}}" id="{{.id}}"{{range $k,$v:= .attrs}} {{$v.K}}{{if $v.IsNotNil}}="{{$v.V}}"{{end}}{{end}}> <label for="{{.id}}">{{.label}}</label>
 	</div>`,
-		`text`:     `<input type="{{.type}}" class="form-control" name="{{.name}}" value="{{.value}}"{{range $k,$v:= .attrs}} {{$v.K}}="{{$v.V}}"{{end}} />`,
-		`textarea`: `<textarea class="form-control" name="{{.name}}"{{range $k,$v:= .attrs}} {{$v.K}}="{{$v.V}}"{{end}}>{{.value}}</textarea>`,
+		`text`:     `<input type="{{.type}}" class="form-control" name="{{.name}}" value="{{.value}}"{{range $k,$v:= .attrs}} {{$v.K}}{{if $v.IsNotNil}}="{{$v.V}}"{{end}}{{end}} />`,
+		`textarea`: `<textarea class="form-control" name="{{.name}}"{{range $k,$v:= .attrs}} {{$v.K}}{{if $v.IsNotNil}}="{{$v.V}}"{{end}}{{end}}>{{.value}}</textarea>`,
 	},
 	ListCols: map[string]string{
-		`switch`: `<div class="checkbox checkbox-success no-margin-y"{{range $k,$v:= .attrs}} {{$v.K}}="{{$v.V}}"{{end}}>
+		`switch`: `<div class="checkbox checkbox-success no-margin-y"{{range $k,$v:= .attrs}} {{$v.K}}{{if $v.IsNotNil}}="{{$v.V}}"{{end}}{{end}}>
 			<input id="checkbox-{{.field}}-{{.index}}" class="styled switch-{{.field}}" type="checkbox" data-name="{{.label}}" data-{{.field}}="{{.value}}"{{if eq .checked}} checked="checked"{{end}} value="{{.openValue}}" /><label for="checkbox-{{.field}}-{{.index}}">&nbsp;</label>
 		</div>`,
 	},
@@ -33,17 +33,23 @@ type HTMLAttrs []*HTMLAttr
 
 type HTMLAttr struct {
 	K template.HTMLAttr
-	V template.HTML
+	V interface{}
+}
+
+func (a *HTMLAttr) IsNil() bool {
+	return a.V == nil
+}
+
+func (a *HTMLAttr) IsNotNil() bool {
+	return a.V != nil
 }
 
 func (a *HTMLAttrs) Add(k string, v ...string) {
-	var value string
+	var value interface{}
 	if len(v) > 0 {
-		value = v[0]
-	} else {
-		value = k
+		value = template.HTML(v[0])
 	}
-	*a = append(*a, &HTMLAttr{template.HTMLAttr(k), template.HTML(value)})
+	*a = append(*a, &HTMLAttr{template.HTMLAttr(k), value})
 }
 
 type HTMLTmpl struct {

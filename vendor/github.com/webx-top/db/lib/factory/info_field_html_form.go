@@ -31,7 +31,7 @@ func (f *FieldInfo) FormInput(value interface{}, options echo.H) template.HTML {
 		for index, option := range f.Options {
 			attrs := HTMLAttrs{}
 			if makeMode {
-				attrs.Add(`{{- if eq $v "`+option+`"}} checked`, `checked{{end}}`)
+				attrs.Add(`{{- if eq $v "` + option + `"}} checked="checked"{{end}}`)
 			} else {
 				if (len(val) == 0 && index == 0) || option == val {
 					attrs.Add(`checked`, `checked`)
@@ -77,7 +77,7 @@ func (f *FieldInfo) FormInput(value interface{}, options echo.H) template.HTML {
 		for index, option := range f.Options {
 			attrs := HTMLAttrs{}
 			if makeMode {
-				attrs.Add(`{{- if $vals.HasValue "`+option+`"}} checked`, `checked{{end}}`)
+				attrs.Add(`{{- if $vals.HasValue "` + option + `"}} checked="checked"{{end}}`)
 			} else {
 				if com.InSlice(option, vals) {
 					attrs.Add(`checked`)
@@ -227,7 +227,7 @@ func (f *FieldInfo) FormInput(value interface{}, options echo.H) template.HTML {
 			for index, option := range []string{`1`, `0`} {
 				attrs := HTMLAttrs{}
 				if makeMode {
-					attrs.Add(`{{- if eq $v "`+option+`"}} checked`, `checked{{end}}`)
+					attrs.Add(`{{- if eq $v "` + option + `"}} checked="checked"{{end}}`)
 				} else {
 					if (len(val) == 0 && index == 0) || option == val {
 						attrs.Add(`checked`, `checked`)
