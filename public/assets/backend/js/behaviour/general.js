@@ -1233,7 +1233,15 @@ var App = function () {
       });
       $.get(removeURL,data,function(r){
         if(callback && $.isFunction(callback)) return callback();
-        App.message({title:App.i18n.SYS_INFO, text:r.Info, type:r.Code==1?'success':'error'});
+        var msg={title:App.i18n.SYS_INFO, text:'', type:''};
+        if(r.Code==1){
+          msg.type='success';
+          if(!r.Info) msg.text='操作成功';
+        }else{
+          msg.type='error';
+          if(!r.Info) msg.text='操作失败';
+        }
+        App.message(msg);
         window.setTimeout(function(){
           window.location.reload();
         },2000);
