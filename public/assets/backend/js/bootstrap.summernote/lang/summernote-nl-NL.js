@@ -11,7 +11,7 @@
         strikethrough: 'Doorhalen',
         subscript: 'Subscript',
         superscript: 'Superscript',
-        size: 'Tekstgrootte'
+        size: 'Tekstgrootte',
       },
       image: {
         image: 'Afbeelding',
@@ -33,14 +33,14 @@
         maximumFileSizeError: 'Maximum file size exceeded.',
         url: 'URL van de afbeelding',
         remove: 'Verwijder afbeelding',
-        original: 'Original'
+        original: 'Original',
       },
       video: {
         video: 'Video',
         videoLink: 'Video link',
         insert: 'Video invoegen',
         url: 'URL van de video',
-        providers: '(YouTube, Vimeo, Vine, Instagram, DailyMotion of Youku)'
+        providers: '(YouTube, Vimeo, Vine, Instagram, DailyMotion of Youku)',
       },
       link: {
         link: 'Link',
@@ -49,20 +49,20 @@
         edit: 'Wijzigen',
         textToDisplay: 'Tekst van link',
         url: 'Naar welke URL moet deze link verwijzen?',
-        openInNewWindow: 'Open in nieuw venster'
+        openInNewWindow: 'Open in nieuw venster',
       },
       table: {
         table: 'Tabel',
-        addRowAbove: 'Add row above',
-        addRowBelow: 'Add row below',
-        addColLeft: 'Add column left',
-        addColRight: 'Add column right',
-        delRow: 'Delete row',
-        delCol: 'Delete column',
-        delTable: 'Delete table'
+        addRowAbove: 'Rij hierboven invoegen',
+        addRowBelow: 'Rij hieronder invoegen',
+        addColLeft: 'Kolom links toevoegen',
+        addColRight: 'Kolom rechts toevoegen',
+        delRow: 'Verwijder rij',
+        delCol: 'Verwijder kolom',
+        delTable: 'Verwijder tabel',
       },
       hr: {
-        insert: 'Horizontale lijn invoegen'
+        insert: 'Horizontale lijn invoegen',
       },
       style: {
         style: 'Stijl',
@@ -74,16 +74,16 @@
         h3: 'Kop 3',
         h4: 'Kop 4',
         h5: 'Kop 5',
-        h6: 'Kop 6'
+        h6: 'Kop 6',
       },
       lists: {
         unordered: 'Ongeordende lijst',
-        ordered: 'Geordende lijst'
+        ordered: 'Geordende lijst',
       },
       options: {
         help: 'Help',
         fullscreen: 'Volledig scherm',
-        codeview: 'Bekijk Code'
+        codeview: 'Bekijk Code',
       },
       paragraph: {
         paragraph: 'Paragraaf',
@@ -92,7 +92,7 @@
         left: 'Links uitlijnen',
         center: 'Centreren',
         right: 'Rechts uitlijnen',
-        justify: 'Uitvullen'
+        justify: 'Uitvullen',
       },
       color: {
         recent: 'Recente kleur',
@@ -102,7 +102,7 @@
         transparent: 'Transparant',
         setTransparent: 'Transparant',
         reset: 'Standaard',
-        resetToDefault: 'Standaard kleur'
+        resetToDefault: 'Standaard kleur',
       },
       shortcut: {
         shortcuts: 'Toetsencombinaties',
@@ -111,45 +111,45 @@
         action: 'Acties',
         paragraphFormatting: 'Paragraafstijlen',
         documentStyle: 'Documentstijlen',
-        extraKeys: 'Extra keys'
+        extraKeys: 'Extra keys',
       },
       help: {
-        'insertParagraph': 'Insert Paragraph',
-        'undo': 'Undoes the last command',
-        'redo': 'Redoes the last command',
+        'insertParagraph': 'Alinea invoegen',
+        'undo': 'Laatste handeling ongedaan maken',
+        'redo': 'Laatste handeling opnieuw uitvoeren',
         'tab': 'Tab',
-        'untab': 'Untab',
-        'bold': 'Set a bold style',
-        'italic': 'Set a italic style',
-        'underline': 'Set a underline style',
-        'strikethrough': 'Set a strikethrough style',
-        'removeFormat': 'Clean a style',
-        'justifyLeft': 'Set left align',
+        'untab': 'Herstel tab',
+        'bold': 'Stel stijl in als vet',
+        'italic': 'Stel stijl in als cursief',
+        'underline': 'Stel stijl in als onderstreept',
+        'strikethrough': 'Stel stijl in als doorgestreept',
+        'removeFormat': 'Verwijder stijl',
+        'justifyLeft': 'Lijn links uit',
         'justifyCenter': 'Set center align',
-        'justifyRight': 'Set right align',
-        'justifyFull': 'Set full align',
-        'insertUnorderedList': 'Toggle unordered list',
-        'insertOrderedList': 'Toggle ordered list',
-        'outdent': 'Outdent on current paragraph',
-        'indent': 'Indent on current paragraph',
-        'formatPara': 'Change current block\'s format as a paragraph(P tag)',
-        'formatH1': 'Change current block\'s format as H1',
-        'formatH2': 'Change current block\'s format as H2',
-        'formatH3': 'Change current block\'s format as H3',
-        'formatH4': 'Change current block\'s format as H4',
-        'formatH5': 'Change current block\'s format as H5',
-        'formatH6': 'Change current block\'s format as H6',
-        'insertHorizontalRule': 'Insert horizontal rule',
-        'linkDialog.show': 'Show Link Dialog'
+        'justifyRight': 'Lijn rechts uit',
+        'justifyFull': 'Lijn uit op volledige breedte',
+        'insertUnorderedList': 'Zet ongeordende lijstweergave aan',
+        'insertOrderedList': 'Zet geordende lijstweergave aan',
+        'outdent': 'Verwijder inspringing huidige alinea',
+        'indent': 'Inspringen op huidige alinea',
+        'formatPara': 'Wijzig formattering huidig blok in alinea(P tag)',
+        'formatH1': 'Formatteer huidig blok als H1',
+        'formatH2': 'Formatteer huidig blok als H2',
+        'formatH3': 'Formatteer huidig blok als H3',
+        'formatH4': 'Formatteer huidig blok als H4',
+        'formatH5': 'Formatteer huidig blok als H5',
+        'formatH6': 'Formatteer huidig blok als H6',
+        'insertHorizontalRule': 'Invoegen horizontale lijn',
+        'linkDialog.show': 'Toon Link Dialoogvenster',
       },
       history: {
         undo: 'Ongedaan maken',
-        redo: 'Opnieuw doorvoeren'
+        redo: 'Opnieuw doorvoeren',
       },
       specialChar: {
-        specialChar: 'SPECIAL CHARACTERS',
-        select: 'Select Special characters'
-      }
-    }
+        specialChar: 'SPECIALE TEKENS',
+        select: 'Selecteer Speciale Tekens',
+      },
+    },
   });
 })(jQuery);

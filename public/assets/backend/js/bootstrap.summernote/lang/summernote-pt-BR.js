@@ -9,38 +9,38 @@
         height: 'Altura da linha',
         name: 'Fonte',
         strikethrough: 'Riscado',
-        subscript: 'Subscript',
-        superscript: 'Superscript',
-        size: 'Tamanho da fonte'
+        subscript: 'Subscrito',
+        superscript: 'Sobrescrito',
+        size: 'Tamanho da fonte',
       },
       image: {
         image: 'Imagem',
         insert: 'Inserir imagem',
         resizeFull: 'Redimensionar Completamente',
         resizeHalf: 'Redimensionar pela Metade',
-        resizeQuarter: 'Redimensionar um Quarto',
+        resizeQuarter: 'Redimensionar a um Quarto',
         floatLeft: 'Flutuar para Esquerda',
-        floatRight: 'Flutuar para Direira',
+        floatRight: 'Flutuar para Direita',
         floatNone: 'Não Flutuar',
-        shapeRounded: 'Shape: Rounded',
-        shapeCircle: 'Shape: Circle',
-        shapeThumbnail: 'Shape: Thumbnail',
-        shapeNone: 'Shape: None',
-        dragImageHere: 'Arraste uma imagem para cá',
-        dropImage: 'Drop image or Text',
+        shapeRounded: 'Forma: Arredondado',
+        shapeCircle: 'Forma: Círculo',
+        shapeThumbnail: 'Forma: Miniatura',
+        shapeNone: 'Forma: Nenhum',
+        dragImageHere: 'Arraste Imagem ou Texto para cá',
+        dropImage: 'Solte Imagem ou Texto',
         selectFromFiles: 'Selecione a partir dos arquivos',
-        maximumFileSize: 'Maximum file size',
-        maximumFileSizeError: 'Maximum file size exceeded.',
+        maximumFileSize: 'Tamanho máximo do arquivo',
+        maximumFileSizeError: 'Tamanho máximo do arquivo excedido.',
         url: 'URL da imagem',
-        remove: 'Remove Image',
-        original: 'Original'
+        remove: 'Remover Imagem',
+        original: 'Original',
       },
       video: {
         video: 'Vídeo',
         videoLink: 'Link para vídeo',
         insert: 'Inserir vídeo',
         url: 'URL do vídeo?',
-        providers: '(YouTube, Vimeo, Vine, Instagram, DailyMotion ou Youku)'
+        providers: '(YouTube, Vimeo, Vine, Instagram, DailyMotion ou Youku)',
       },
       link: {
         link: 'Link',
@@ -48,25 +48,25 @@
         unlink: 'Remover link',
         edit: 'Editar',
         textToDisplay: 'Texto para exibir',
-        url: 'Para qual URL esse link leva?',
-        openInNewWindow: 'Abrir em uma nova janela'
+        url: 'Para qual URL este link leva?',
+        openInNewWindow: 'Abrir em uma nova janela',
       },
       table: {
         table: 'Tabela',
         addRowAbove: 'Adicionar linha acima',
         addRowBelow: 'Adicionar linha abaixo',
-        addColLeft: 'Adicionar coluna a esquerda',
-        addColRight: 'Adicionar coluna a direita',
+        addColLeft: 'Adicionar coluna à esquerda',
+        addColRight: 'Adicionar coluna à direita',
         delRow: 'Excluir linha',
         delCol: 'Excluir coluna',
-        delTable: 'Delete table'
+        delTable: 'Excluir tabela',
       },
       hr: {
-        insert: 'Inserir linha horizontal'
+        insert: 'Linha horizontal',
       },
       style: {
         style: 'Estilo',
-        normal: 'Normal',
+        p: 'Normal',
         blockquote: 'Citação',
         pre: 'Código',
         h1: 'Título 1',
@@ -74,16 +74,16 @@
         h3: 'Título 3',
         h4: 'Título 4',
         h5: 'Título 5',
-        h6: 'Título 6'
+        h6: 'Título 6',
       },
       lists: {
         unordered: 'Lista com marcadores',
-        ordered: 'Lista numerada'
+        ordered: 'Lista numerada',
       },
       options: {
         help: 'Ajuda',
         fullscreen: 'Tela cheia',
-        codeview: 'Ver código-fonte'
+        codeview: 'Ver código-fonte',
       },
       paragraph: {
         paragraph: 'Parágrafo',
@@ -92,7 +92,7 @@
         left: 'Alinhar à esquerda',
         center: 'Alinhar ao centro',
         right: 'Alinha à direita',
-        justify: 'Justificado'
+        justify: 'Justificado',
       },
       color: {
         recent: 'Cor recente',
@@ -102,7 +102,8 @@
         transparent: 'Transparente',
         setTransparent: 'Fundo transparente',
         reset: 'Restaurar',
-        resetToDefault: 'Restaurar padrão'
+        resetToDefault: 'Restaurar padrão',
+        cpSelect: 'Selecionar',
       },
       shortcut: {
         shortcuts: 'Atalhos do teclado',
@@ -111,7 +112,7 @@
         action: 'Ação',
         paragraphFormatting: 'Formatação de parágrafo',
         documentStyle: 'Estilo de documento',
-        extraKeys: 'Extra keys'
+        extraKeys: 'Extra keys',
       },
       help: {
         'insertParagraph': 'Inserir Parágrafo',
@@ -139,17 +140,17 @@
         'formatH4': 'Alterar formato do bloco para H4',
         'formatH5': 'Alterar formato do bloco para H5',
         'formatH6': 'Alterar formato do bloco para H6',
-        'insertHorizontalRule': 'Inserir régua horizontal',
-        'linkDialog.show': 'Inserir um Hiperlink'
+        'insertHorizontalRule': 'Inserir Régua horizontal',
+        'linkDialog.show': 'Inserir um Hiperlink',
       },
       history: {
         undo: 'Desfazer',
-        redo: 'Refazer'
+        redo: 'Refazer',
       },
       specialChar: {
-        specialChar: 'SPECIAL CHARACTERS',
-        select: 'Select Special characters'
-      }
-    }
+        specialChar: 'CARACTERES ESPECIAIS',
+        select: 'Selecionar Caracteres Especiais',
+      },
+    },
   });
 })(jQuery);
