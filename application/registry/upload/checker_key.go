@@ -42,10 +42,10 @@ func Token(values ...interface{}) string {
 		case url.Values:
 			urlValues = t
 		default:
-			urlValues = tplfunc.URLValues(values)
+			urlValues = tplfunc.URLValues(values...)
 		}
 	} else {
-		urlValues = tplfunc.URLValues(values)
+		urlValues = tplfunc.URLValues(values...)
 	}
 	var apiKey string
 	if cfg, ok := echo.Get(`DefaultConfig`).(APIKey); ok {
@@ -62,10 +62,10 @@ func URLParam(subdir string, values ...interface{}) string {
 		case url.Values:
 			urlValues = t
 		default:
-			urlValues = tplfunc.URLValues(values)
+			urlValues = tplfunc.URLValues(values...)
 		}
 	} else {
-		urlValues = tplfunc.URLValues(values)
+		urlValues = tplfunc.URLValues(values...)
 	}
 	unixtime := fmt.Sprint(time.Now().Unix())
 	urlValues.Set(`time`, unixtime)
