@@ -83,6 +83,8 @@ func FuncMap() echo.MiddlewareFunc {
 			c.SetFunc(`HasString`, hasString)
 			c.SetFunc(`Date`, date)
 			c.SetFunc(`Token`, upload.Token)
+			c.SetFunc(`BackendUploadURL`, upload.BackendUploadURL)
+			c.SetFunc(`FrontendUploadURL`, upload.FrontendUploadURL)
 			c.SetFunc(`Modal`, func(data interface{}) template.HTML {
 				return modal.Render(c, data)
 			})

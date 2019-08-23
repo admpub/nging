@@ -19,20 +19,86 @@
 package upload
 
 import (
+	"fmt"
+	"net/url"
+	"time"
+
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
+	"github.com/webx-top/echo/subdomains"
 )
 
+// APIKey API Key
 type APIKey interface {
 	APIKey() string
 }
 
+// Token 生成签名
 func Token(values ...interface{}) string {
-	urlValues := tplfunc.URLValues(values)
+	var urlValues url.Values
+	if len(values) == 1 {
+		switch t := values[0].(type) {
+		case url.Values:
+			urlValues = t
+		default:
+			urlValues = tplfunc.URLValues(values)
+		}
+	} else {
+		urlValues = tplfunc.URLValues(values)
+	}
 	var apiKey string
 	if cfg, ok := echo.Get(`DefaultConfig`).(APIKey); ok {
 		apiKey = cfg.APIKey()
 	}
 	return com.SafeBase64Encode(com.Token(apiKey, com.Str2bytes(urlValues.Encode())))
+}
+
+// URLParam URLParam(`news`,`refid`,123)
+func URLParam(subdir string, values ...interface{}) string {
+	var urlValues url.Values
+	if len(values) == 1 {
+		switch t := values[0].(type) {
+		case url.Values:
+			urlValues = t
+		default:
+			urlValues = tplfunc.URLValues(values)
+		}
+	} else {
+		urlValues = tplfunc.URLValues(values)
+	}
+	unixtime := fmt.Sprint(time.Now().Unix())
+	urlValues.Set(`time`, unixtime)
+	urlValues.Del(`token`)
+	urlValues.Set(`token`, Token(values))
+	return subdir + `?` + urlValues.Encode()
+}
+
+var (
+	//BackendUploadPath 后台上传网址路径
+	BackendUploadPath = `/manager/upload`
+	//FrontendUploadPath 前台上传网址路径
+	FrontendUploadPath = `/user/upload`
+)
+
+// BackendUploadURL 构建后台上传网址
+func BackendUploadURL(subdir string, values ...interface{}) string {
+	return BackendURL() + BackendUploadPath + `/` + URLParam(subdir, values...)
+}
+
+// FrontendUploadURL 构建前台上传网址
+func FrontendUploadURL(subdir string, values ...interface{}) string {
+	return FrontendURL() + FrontendUploadPath + `/` + URLParam(subdir, values...)
+}
+
+// BackendURL 后台网址
+func BackendURL() string {
+	prefix, _ := echo.Get(`BackendPrefix`).(string)
+	return subdomains.Default.URL(prefix, `backend`)
+}
+
+// FrontendURL 前台网址
+func FrontendURL() string {
+	prefix, _ := echo.Get(`FrontendPrefix`).(string)
+	return subdomains.Default.URL(prefix, `frontend`)
 }
