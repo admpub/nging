@@ -70,7 +70,7 @@ func URLParam(subdir string, values ...interface{}) string {
 	unixtime := fmt.Sprint(time.Now().Unix())
 	urlValues.Set(`time`, unixtime)
 	urlValues.Del(`token`)
-	urlValues.Set(`token`, Token(values))
+	urlValues.Set(`token`, Token(urlValues))
 	return subdir + `?` + urlValues.Encode()
 }
 
