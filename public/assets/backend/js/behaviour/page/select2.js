@@ -24,12 +24,14 @@ App.select2 = {
         if (ajax) {
             switch (typeof (ajax)) {
                 case 'string':
-                    options.query = App.select2.buildQueryFunction(ajax, {});
+                    var listKey = $(element).data('listkey') || 'list';
+                    options.query = App.select2.buildQueryFunction(ajax, {}, listKey);
                     break;
 
                 default:
                     if ($.isArray(ajax)) {
-                        options.query = App.select2.buildQueryFunction(ajax[0], ajax[1]);
+                        var listKey = ajax.length > 2 ? ajax[2] : ($(element).data('listkey') || 'list');
+                        options.query = App.select2.buildQueryFunction(ajax[0], ajax[1], listKey);
                         break;
                     }
                     options.ajax = ajax;
@@ -91,7 +93,8 @@ App.select2 = {
     readonly: function (element, readonly) {
         $(element).prop('disabled', readonly);
     },
-    buildQueryFunction: function (url, params) {
+    buildQueryFunction: function (url, params, listKey) {
+        if (listKey == null) listKey = 'list';
         return function (query) {
             params.query = query.term;
             $.get(url, params, function (r) {
@@ -106,12 +109,13 @@ App.select2 = {
                 //r.Data:[{id:1,text:'coscms',locked:true,disabled:true}] 
                 //locked元素不是必须的，如果为true代表不可删除(用于tags)
                 //disabled元素不是必须的，如果为true代表不可选择(用于select)
-                var data = { results: r.Data.list };
+                var data = { results: r.Data[listKey] };
                 query.callback(data);
             }, 'json');
         };
     },
-    buildAjaxOptions: function (options) {
+    buildAjaxOptions: function (options, listKey) {
+        if (listKey == null) listKey = 'list';
         var defaults = {
             url: "",
             dataType: 'json',
@@ -134,7 +138,7 @@ App.select2 = {
                 var data = res.Data;
                 var more = page < data.pagination.pages; // more变量用于通知select2可以加载更多数据
                 return {
-                    results: data.list,
+                    results: data[listKey],
                     more: more
                 };
             }
