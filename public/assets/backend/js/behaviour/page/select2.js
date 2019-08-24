@@ -96,7 +96,7 @@ App.select2 = {
     buildQueryFunction: function (url, params, listKey) {
         if (listKey == null) listKey = 'list';
         return function (query) {
-            params.query = query.term;
+            params.q = query.term;
             $.get(url, params, function (r) {
                 if (r.Code != 1) {
                     App.message({
