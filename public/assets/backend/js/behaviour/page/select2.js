@@ -11,14 +11,14 @@ App.select2 = {
         if (sortable == null) sortable = $(element).data('sortable') || false;
         if (onlySelect == null) onlySelect = $(element).data('onlyselect') || false;
         var single = $(element).data('single') || false;
-        if(single) single = App.parseBool(single);
+        if (single) single = App.parseBool(single);
         var options = { multiple: !single, width: '100%' };
-        if (onlySelect) {
+        if (onlySelect) {//仅仅可选择，不可新增选项
             options.minimumInputLength = 1
             options.placeholder = App.select2.i18n.TAG_SELECT;
             options.data = tagsArray;
             options.tags = true;
-        } else {
+        } else {//支持新增选项(注意：ajax方式获取数据时，将不支持新增选项)
             options.placeholder = App.select2.i18n.TAG_INPUT;
             options.tags = tagsArray;
             options.tokenSeparators = [',', ' '];
@@ -33,7 +33,7 @@ App.select2 = {
                 default:
                     if ($.isArray(ajax)) {
                         var listKey = ajax.length > 2 ? ajax[2] : ($(element).data('listkey') || 'list');
-                        options.query = App.select2.buildQueryFunction(ajax[0], ajax[1], listKey);
+                        options.query = App.select2.buildQueryFunction(ajax[0], ajax.length>1?ajax[1]:{}, listKey);
                         break;
                     }
                     options.ajax = ajax;
@@ -117,18 +117,18 @@ App.select2 = {
             }, 'json');
         };
     },
-    buildAjaxOptions: function (options, listKey) {
+    buildAjaxOptions: function (options, params, listKey) {
         if (listKey == null) listKey = 'list';
         var defaults = {
             url: "",
             dataType: 'json',
             quietMillis: 250,
             data: function (term, page) { // 基于页码构建查询数据
-                return {
+                return $.extend({}, {
                     q: term, //搜索词
                     page: page, //页码
                     select2: 1,
-                };
+                }, params || {});
             },
             results: function (res, page) { // 重新组织ajax响应数据后供selec2使用
                 if (res.Code != 1) {
