@@ -18,7 +18,7 @@ App.select2 = {
             options.placeholder = App.select2.i18n.TAG_SELECT;
             options.data = tagsArray;
             options.tags = true;
-        } else {//支持新增选项(注意：ajax方式获取数据时，将不支持新增选项)
+        } else {//支持新增选项(注意：采用select2中的ajax方式获取数据时，将不支持新增选项)
             options.placeholder = App.select2.i18n.TAG_INPUT;
             options.tags = tagsArray;
             options.tokenSeparators = [',', ' '];
@@ -40,6 +40,36 @@ App.select2 = {
                     break;
             }
         }
+
+        if (!onlySelect) {//支持新增选项。ajax方式获取数据时，需要预先加载数据并取消对select2的ajax设置
+            if (typeof(options.query)!='undefined'){
+                options.query({term:"",callback:function(data){
+                    options.tags=[];
+                    for(var i=0;i<data.results.length;i++){
+                        var text=data.results[i].text;
+                        options.tags.push({id:text,text:text});
+                    }
+                }});
+                delete options.query;
+            }
+            if (typeof(options.ajax)!='undefined'){
+                var page=1;
+                $.ajax(options.ajax.url, {
+                    dataType: options.ajax.dataType||"json",
+                    data: options.ajax.data("",page),
+                    async: false
+                }).done(function(data) {
+                    data=options.ajax.results(data,page);
+                    options.tags=[];
+                    for(var i=0;i<data.results.length;i++){
+                        var text=data.results[i].text;
+                        options.tags.push({id:text,text:text});
+                    }
+                });
+                delete options.ajax;
+            }
+        }
+
         var sel = $(element).select2(options);
         $(element).data('select2', sel);
         var initSelected = $(element).data('init');
@@ -100,7 +130,11 @@ App.select2 = {
         return function (query) {
             params.q = query.term;
             params.select2 = 1;
-            $.get(url, params, function (r) {
+            $.ajax(url, {
+                dataType: "json", 
+                data: params,
+                async: false
+            }).done(function (r) {
                 if (r.Code != 1) {
                     App.message({
                         title: App.i18n.SYS_INFO,
@@ -114,7 +148,7 @@ App.select2 = {
                 //disabled元素不是必须的，如果为true代表不可选择(用于select)
                 var data = { results: r.Data[listKey] };
                 query.callback(data);
-            }, 'json');
+            });
         };
     },
     buildAjaxOptions: function (options, params, listKey) {
