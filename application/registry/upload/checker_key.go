@@ -67,6 +67,12 @@ func URLParam(subdir string, values ...interface{}) string {
 	} else {
 		urlValues = tplfunc.URLValues(values...)
 	}
+	if len(urlValues.Get(`refid`)) == 0 {
+		urlValues.Set(`refid`, `0`)
+	}
+	if SetURLParamDefaultValue != nil {
+		SetURLParamDefaultValue(&urlValues)
+	}
 	unixtime := fmt.Sprint(time.Now().Unix())
 	urlValues.Set(`time`, unixtime)
 	urlValues.Del(`token`)
@@ -79,6 +85,8 @@ var (
 	BackendUploadPath = `/manager/upload`
 	//FrontendUploadPath 前台上传网址路径
 	FrontendUploadPath = `/user/upload`
+	//SetURLParamDefaultValue 设置参数默认值
+	SetURLParamDefaultValue func(*url.Values)
 )
 
 // BackendUploadURL 构建后台上传网址
