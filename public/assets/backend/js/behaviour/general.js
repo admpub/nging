@@ -1251,6 +1251,20 @@ var App = function () {
         },2000);
       },'json');
       return true;
+    },
+    parseBool:function(b){
+      switch(String(b).toLowerCase()){
+          case '0':
+          case 'false':
+          case 'n':
+          case 'no':
+          case 'off':
+          case 'null':
+          return false;
+  
+          default:
+          return true;
+      }
     }
   };
  

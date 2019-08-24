@@ -10,7 +10,9 @@ App.select2 = {
         if (ajax == null) ajax = $(element).data('url');
         if (sortable == null) sortable = $(element).data('sortable') || false;
         if (onlySelect == null) onlySelect = $(element).data('onlyselect') || false;
-        var options = { multiple: true, width: '100%' };
+        var single = $(element).data('single') || false;
+        if(single) single = App.parseBool(single);
+        var options = { multiple: !single, width: '100%' };
         if (onlySelect) {
             options.minimumInputLength = 1
             options.placeholder = App.select2.i18n.TAG_SELECT;
