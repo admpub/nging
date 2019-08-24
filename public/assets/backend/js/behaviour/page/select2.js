@@ -97,6 +97,7 @@ App.select2 = {
         if (listKey == null) listKey = 'list';
         return function (query) {
             params.q = query.term;
+            params.select2 = 1;
             $.get(url, params, function (r) {
                 if (r.Code != 1) {
                     App.message({
@@ -123,7 +124,8 @@ App.select2 = {
             data: function (term, page) { // 基于页码构建查询数据
                 return {
                     q: term, //搜索词
-                    page: page //页码
+                    page: page, //页码
+                    select2: 1,
                 };
             },
             results: function (res, page) { // 重新组织ajax响应数据后供selec2使用
