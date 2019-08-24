@@ -19,4 +19,5 @@ func TestUploadURL(t *testing.T) {
 	token := values.Get(`token`)
 	values.Del(`token`)
 	test.Eq(t, token, Token(values))
+	test.Eq(t, token, Token(`refid`, values.Get(`refid`), `time`, values.Get(`time`)))
 }
