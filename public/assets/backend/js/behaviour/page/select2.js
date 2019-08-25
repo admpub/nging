@@ -4,13 +4,14 @@ App.select2 = {
         TAG_SELECT: '请输入关键词后从搜索列表中选择',
         SELECT: '请选择'
     },
-    tags: function (element, tagsArray, ajax, sortable, onlySelect) {
+    tags: function (element, tagsArray, ajax, sortable, onlySelect, extOpts) {
         //tagsArray:[{id:1,text:'coscms',locked:true}] locked元素不是必须的，如果为true代表不可删除
         if (tagsArray == null) tagsArray = $(element).data('tags') || [];
         if (ajax == null) ajax = $(element).data('url');
         if (sortable == null) sortable = $(element).data('sortable') || false;
         if (onlySelect == null) onlySelect = $(element).data('onlyselect') || false;
         var single = $(element).data('single') || false;
+        var mapField = $(element).data('map'); //{ "id": "id", "text": "text", "locked": "locked", "disabled": "disabled" }
         if (single) single = App.parseBool(single);
         var options = { multiple: !single, width: '100%' };
         if (onlySelect) {//仅仅可选择，不可新增选项
@@ -27,13 +28,13 @@ App.select2 = {
             switch (typeof (ajax)) {
                 case 'string':
                     var listKey = $(element).data('listkey') || 'list';
-                    options.query = App.select2.buildQueryFunction(ajax, {}, listKey);
+                    options.query = App.select2.buildQueryFunction(ajax, {}, listKey, mapField);
                     break;
 
                 default:
                     if ($.isArray(ajax)) {
                         var listKey = ajax.length > 2 ? ajax[2] : ($(element).data('listkey') || 'list');
-                        options.query = App.select2.buildQueryFunction(ajax[0], ajax.length>1?ajax[1]:{}, listKey);
+                        options.query = App.select2.buildQueryFunction(ajax[0], ajax.length > 1 ? ajax[1] : {}, listKey, mapField);
                         break;
                     }
                     options.ajax = ajax;
@@ -42,34 +43,27 @@ App.select2 = {
         }
 
         if (!onlySelect) {//支持新增选项。ajax方式获取数据时，需要预先加载数据并取消对select2的ajax设置
-            if (typeof(options.query)!='undefined'){
-                options.query({term:"",callback:function(data){
-                    options.tags=[];
-                    for(var i=0;i<data.results.length;i++){
-                        var text=data.results[i].text;
-                        options.tags.push({id:text,text:text});
-                    }
-                }});
+            var callback = function (data) {
+                options.tags = data.results;
+            };
+            if (typeof (options.query) != 'undefined') {
+                options.query({ term: "", callback: callback });
                 delete options.query;
             }
-            if (typeof(options.ajax)!='undefined'){
-                var page=1;
+            if (typeof (options.ajax) != 'undefined') {
+                var page = 1;
                 $.ajax(options.ajax.url, {
-                    dataType: options.ajax.dataType||"json",
-                    data: options.ajax.data("",page),
+                    dataType: options.ajax.dataType || "json",
+                    data: options.ajax.data("", page),
                     async: false
-                }).done(function(data) {
-                    data=options.ajax.results(data,page);
-                    options.tags=[];
-                    for(var i=0;i<data.results.length;i++){
-                        var text=data.results[i].text;
-                        options.tags.push({id:text,text:text});
-                    }
+                }).done(function (data) {
+                    data = options.ajax.results(data, page);
+                    callback(data);
                 });
                 delete options.ajax;
             }
         }
-
+        if(extOpts) options=$.extend(options,extOpts);
         var sel = $(element).select2(options);
         $(element).data('select2', sel);
         var initSelected = $(element).data('init');
@@ -125,13 +119,13 @@ App.select2 = {
     readonly: function (element, readonly) {
         $(element).prop('disabled', readonly);
     },
-    buildQueryFunction: function (url, params, listKey) {
+    buildQueryFunction: function (url, params, listKey, mapField) {
         if (listKey == null) listKey = 'list';
         return function (query) {
             params.q = query.term;
             params.select2 = 1;
             $.ajax(url, {
-                dataType: "json", 
+                dataType: "json",
                 data: params,
                 async: false
             }).done(function (r) {
@@ -146,12 +140,23 @@ App.select2 = {
                 //r.Data:[{id:1,text:'coscms',locked:true,disabled:true}] 
                 //locked元素不是必须的，如果为true代表不可删除(用于tags)
                 //disabled元素不是必须的，如果为true代表不可选择(用于select)
-                var data = { results: r.Data[listKey] };
+                var data = { results: [] };
+                if (mapField) {
+                    for (var i = 0; i < r.Data[listKey].length; i++) {
+                        var v = r.Data[listKey][i], u = {};
+                        for (var k in mapField) {
+                            u[k] = v[mapField[k]];
+                        }
+                        data.results.push(u);
+                    }
+                } else {
+                    data.results = r.Data[listKey];
+                }
                 query.callback(data);
             });
         };
     },
-    buildAjaxOptions: function (options, params, listKey) {
+    buildAjaxOptions: function (options, params, listKey, mapField) {
         if (listKey == null) listKey = 'list';
         var defaults = {
             url: "",
@@ -164,8 +169,8 @@ App.select2 = {
                     select2: 1,
                 }, params || {});
             },
-            results: function (res, page) { // 重新组织ajax响应数据后供selec2使用
-                if (res.Code != 1) {
+            results: function (r, page) { // 重新组织ajax响应数据后供selec2使用
+                if (r.Code != 1) {
                     App.message({
                         title: App.i18n.SYS_INFO,
                         text: res.Info,
@@ -173,12 +178,20 @@ App.select2 = {
                     }, false);
                     return { results: [], more: false };
                 }
-                var data = res.Data;
-                var more = page < data.pagination.pages; // more变量用于通知select2可以加载更多数据
-                return {
-                    results: data[listKey],
-                    more: more
-                };
+                var more = page < r.Data.pagination.pages; // more变量用于通知select2可以加载更多数据
+                var data = { results: [], more: more };
+                if (mapField) {
+                    for (var i = 0; i < r.Data[listKey].length; i++) {
+                        var v = r.Data[listKey][i], u = {};
+                        for (var k in mapField) {
+                            u[k] = v[mapField[k]];
+                        }
+                        data.results.push(u);
+                    }
+                } else {
+                    data.results = r.Data[listKey];
+                }
+                return data;
             }
         }
         return $.extend({}, defaults, options || {});
