@@ -24,4 +24,6 @@ App.datetimepicker=function(startTimeElem,endTimeElem,options){
  endTime.on('changeDate', function (e) {
    startTime.datetimepicker("setEndDate", e.date);
  });
+ if($(startTimeElem).val()) endTime.datetimepicker('setStartDate',$(startTimeElem).val());
+ if($(endTimeElem).val()) startTime.datetimepicker('setEndDate',$(endTimeElem).val());
 };
