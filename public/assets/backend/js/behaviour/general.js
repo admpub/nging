@@ -1023,26 +1023,26 @@ var App = function () {
     },
     formatBytes:function(cellValue,precision) {
       if(precision==null) precision=1
-      var intVal = parseInt(cellValue),ras = " B";
+      var intVal = parseInt(cellValue),ras = "B";
       if (intVal > 1024) {
           intVal /= 1024
-          ras = " KB"
+          ras = "KB"
       }
       if (intVal > 1024) {
           intVal /= 1024
-          ras = " MB"
+          ras = "MB"
       }
       if (intVal > 1024) {
           intVal /= 1024
-          ras = " GB"
+          ras = "GB"
       }
       if (intVal > 1024) {
           intVal /= 1024
-          ras = " TB"
+          ras = "TB"
       }
       if (intVal > 1024) {
           intVal /= 1024
-          ras = " PB"
+          ras = "PB"
       }
       return (intVal).toFixed(precision) + ras;
     },
