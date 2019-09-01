@@ -643,7 +643,12 @@ var App = function () {
       },BACKEND_URL+'/user/notice');
     },
     text2html:function(text){
-      return String(text).replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br />').replace(/  /g,'&nbsp; ').replace(/\t/g,'&nbsp; &nbsp; ')
+      return String(text).replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br />').replace(/  /g,'&nbsp; ').replace(/\t/g,'&nbsp; &nbsp; ');
+    },
+    ifTextNl2br:function(text){
+      text=String(text);
+      if(/<[^>]+>/.test(text)) return text;
+      return text.replace(/\n/g,'<br />').replace(/  /g,'&nbsp; ').replace(/\t/g,'&nbsp; &nbsp; ');
     },
     checkedAll:function(ctrl,target){
       return $(target).prop('checked',$(ctrl).prop('checked'));
