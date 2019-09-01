@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 	
 	"time"
 )
@@ -182,8 +183,8 @@ func (this *Task) ListByOffset(recv interface{}, mw func(db.Result) db.Result, o
 func (this *Task) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -197,8 +198,8 @@ func (this *Task) Add() (pk interface{}, err error) {
 
 func (this *Task) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
-	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -214,21 +215,21 @@ func (this *Task) SetField(mw func(db.Result) db.Result, field string, value int
 
 func (this *Task) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["closed_log"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["closed_log"] = "N" } }
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
+	if val, ok := kvset["closed_log"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["closed_log"] = "N" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *Task) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
-	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -274,6 +275,72 @@ func (this *Task) Reset() *Task {
 }
 
 func (this *Task) AsMap() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["Id"] = this.Id
+	r["Uid"] = this.Uid
+	r["GroupId"] = this.GroupId
+	r["Name"] = this.Name
+	r["Type"] = this.Type
+	r["Description"] = this.Description
+	r["CronSpec"] = this.CronSpec
+	r["Concurrent"] = this.Concurrent
+	r["Command"] = this.Command
+	r["WorkDirectory"] = this.WorkDirectory
+	r["Env"] = this.Env
+	r["Disabled"] = this.Disabled
+	r["EnableNotify"] = this.EnableNotify
+	r["NotifyEmail"] = this.NotifyEmail
+	r["Timeout"] = this.Timeout
+	r["ExecuteTimes"] = this.ExecuteTimes
+	r["PrevTime"] = this.PrevTime
+	r["Created"] = this.Created
+	r["Updated"] = this.Updated
+	r["ClosedLog"] = this.ClosedLog
+	return r
+}
+
+func (this *Task) Set(key interface{}, value ...interface{}) factory.Model {
+	switch k := key.(type) {
+		case map[string]interface{}:
+			for kk, vv := range k {
+				this.Set(kk, vv)
+			}
+		default:
+			var (
+				kk string
+				vv interface{}
+			)
+			if k, y := key.(string); y {
+				kk = k
+			} else {
+				kk = fmt.Sprint(key)
+			}
+			if len(value) > 0 {
+				vv = value[0]
+			}
+			switch kk {
+				case "Id": this.Id = param.AsUint(vv)
+				case "Uid": this.Uid = param.AsUint(vv)
+				case "GroupId": this.GroupId = param.AsUint(vv)
+				case "Name": this.Name = param.AsString(vv)
+				case "Type": this.Type = param.AsInt(vv)
+				case "Description": this.Description = param.AsString(vv)
+				case "CronSpec": this.CronSpec = param.AsString(vv)
+				case "Concurrent": this.Concurrent = param.AsUint(vv)
+				case "Command": this.Command = param.AsString(vv)
+				case "WorkDirectory": this.WorkDirectory = param.AsString(vv)
+				case "Env": this.Env = param.AsString(vv)
+				case "Disabled": this.Disabled = param.AsString(vv)
+				case "EnableNotify": this.EnableNotify = param.AsUint(vv)
+				case "NotifyEmail": this.NotifyEmail = param.AsString(vv)
+				case "Timeout": this.Timeout = param.AsUint64(vv)
+				case "ExecuteTimes": this.ExecuteTimes = param.AsUint(vv)
+				case "PrevTime": this.PrevTime = param.AsUint(vv)
+				case "Created": this.Created = param.AsUint(vv)
+				case "Updated": this.Updated = param.AsUint(vv)
+				case "ClosedLog": this.ClosedLog = param.AsString(vv)
+			}
+	}
 	r := map[string]interface{}{}
 	r["Id"] = this.Id
 	r["Uid"] = this.Uid

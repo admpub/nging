@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 	
 	"time"
 )
@@ -257,6 +258,60 @@ func (this *CollectorHistory) Reset() *CollectorHistory {
 }
 
 func (this *CollectorHistory) AsMap() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["Id"] = this.Id
+	r["ParentId"] = this.ParentId
+	r["PageId"] = this.PageId
+	r["PageParentId"] = this.PageParentId
+	r["PageRootId"] = this.PageRootId
+	r["HasChild"] = this.HasChild
+	r["Url"] = this.Url
+	r["UrlMd5"] = this.UrlMd5
+	r["Title"] = this.Title
+	r["Content"] = this.Content
+	r["RuleMd5"] = this.RuleMd5
+	r["Data"] = this.Data
+	r["Created"] = this.Created
+	r["Exported"] = this.Exported
+	return r
+}
+
+func (this *CollectorHistory) Set(key interface{}, value ...interface{}) factory.Model {
+	switch k := key.(type) {
+		case map[string]interface{}:
+			for kk, vv := range k {
+				this.Set(kk, vv)
+			}
+		default:
+			var (
+				kk string
+				vv interface{}
+			)
+			if k, y := key.(string); y {
+				kk = k
+			} else {
+				kk = fmt.Sprint(key)
+			}
+			if len(value) > 0 {
+				vv = value[0]
+			}
+			switch kk {
+				case "Id": this.Id = param.AsUint64(vv)
+				case "ParentId": this.ParentId = param.AsUint64(vv)
+				case "PageId": this.PageId = param.AsUint(vv)
+				case "PageParentId": this.PageParentId = param.AsUint(vv)
+				case "PageRootId": this.PageRootId = param.AsUint(vv)
+				case "HasChild": this.HasChild = param.AsString(vv)
+				case "Url": this.Url = param.AsString(vv)
+				case "UrlMd5": this.UrlMd5 = param.AsString(vv)
+				case "Title": this.Title = param.AsString(vv)
+				case "Content": this.Content = param.AsString(vv)
+				case "RuleMd5": this.RuleMd5 = param.AsString(vv)
+				case "Data": this.Data = param.AsString(vv)
+				case "Created": this.Created = param.AsUint(vv)
+				case "Exported": this.Exported = param.AsUint(vv)
+			}
+	}
 	r := map[string]interface{}{}
 	r["Id"] = this.Id
 	r["ParentId"] = this.ParentId

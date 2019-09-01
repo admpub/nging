@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 	
 	"time"
 )
@@ -173,9 +174,9 @@ func (this *DbAccount) ListByOffset(recv interface{}, mw func(db.Result) db.Resu
 func (this *DbAccount) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.Engine) == 0 { this.Engine = "mysql" }
 	if len(this.Host) == 0 { this.Host = "localhost:3306" }
 	if len(this.User) == 0 { this.User = "root" }
-	if len(this.Engine) == 0 { this.Engine = "mysql" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -189,9 +190,9 @@ func (this *DbAccount) Add() (pk interface{}, err error) {
 
 func (this *DbAccount) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
+	if len(this.Engine) == 0 { this.Engine = "mysql" }
 	if len(this.Host) == 0 { this.Host = "localhost:3306" }
 	if len(this.User) == 0 { this.User = "root" }
-	if len(this.Engine) == 0 { this.Engine = "mysql" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -207,24 +208,24 @@ func (this *DbAccount) SetField(mw func(db.Result) db.Result, field string, valu
 
 func (this *DbAccount) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
+	if val, ok := kvset["engine"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["engine"] = "mysql" } }
 	if val, ok := kvset["host"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["host"] = "localhost:3306" } }
 	if val, ok := kvset["user"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["user"] = "root" } }
-	if val, ok := kvset["engine"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["engine"] = "mysql" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *DbAccount) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
+	if len(this.Engine) == 0 { this.Engine = "mysql" }
 	if len(this.Host) == 0 { this.Host = "localhost:3306" }
 	if len(this.User) == 0 { this.User = "root" }
-	if len(this.Engine) == 0 { this.Engine = "mysql" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.Engine) == 0 { this.Engine = "mysql" }
 	if len(this.Host) == 0 { this.Host = "localhost:3306" }
 	if len(this.User) == 0 { this.User = "root" }
-	if len(this.Engine) == 0 { this.Engine = "mysql" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -261,6 +262,54 @@ func (this *DbAccount) Reset() *DbAccount {
 }
 
 func (this *DbAccount) AsMap() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["Id"] = this.Id
+	r["Title"] = this.Title
+	r["Uid"] = this.Uid
+	r["Engine"] = this.Engine
+	r["Host"] = this.Host
+	r["User"] = this.User
+	r["Password"] = this.Password
+	r["Name"] = this.Name
+	r["Options"] = this.Options
+	r["Created"] = this.Created
+	r["Updated"] = this.Updated
+	return r
+}
+
+func (this *DbAccount) Set(key interface{}, value ...interface{}) factory.Model {
+	switch k := key.(type) {
+		case map[string]interface{}:
+			for kk, vv := range k {
+				this.Set(kk, vv)
+			}
+		default:
+			var (
+				kk string
+				vv interface{}
+			)
+			if k, y := key.(string); y {
+				kk = k
+			} else {
+				kk = fmt.Sprint(key)
+			}
+			if len(value) > 0 {
+				vv = value[0]
+			}
+			switch kk {
+				case "Id": this.Id = param.AsUint(vv)
+				case "Title": this.Title = param.AsString(vv)
+				case "Uid": this.Uid = param.AsUint(vv)
+				case "Engine": this.Engine = param.AsString(vv)
+				case "Host": this.Host = param.AsString(vv)
+				case "User": this.User = param.AsString(vv)
+				case "Password": this.Password = param.AsString(vv)
+				case "Name": this.Name = param.AsString(vv)
+				case "Options": this.Options = param.AsString(vv)
+				case "Created": this.Created = param.AsUint(vv)
+				case "Updated": this.Updated = param.AsUint(vv)
+			}
+	}
 	r := map[string]interface{}{}
 	r["Id"] = this.Id
 	r["Title"] = this.Title

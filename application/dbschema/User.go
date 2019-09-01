@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 	
 	"time"
 )
@@ -178,9 +179,9 @@ func (this *User) ListByOffset(recv interface{}, mw func(db.Result) db.Result, o
 func (this *User) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Gender) == 0 { this.Gender = "secret" }
-	if len(this.Online) == 0 { this.Online = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Online) == 0 { this.Online = "N" }
+	if len(this.Gender) == 0 { this.Gender = "secret" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -194,9 +195,9 @@ func (this *User) Add() (pk interface{}, err error) {
 
 func (this *User) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
-	if len(this.Gender) == 0 { this.Gender = "secret" }
-	if len(this.Online) == 0 { this.Online = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Online) == 0 { this.Online = "N" }
+	if len(this.Gender) == 0 { this.Gender = "secret" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -212,24 +213,24 @@ func (this *User) SetField(mw func(db.Result) db.Result, field string, value int
 
 func (this *User) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["gender"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["gender"] = "secret" } }
-	if val, ok := kvset["online"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["online"] = "N" } }
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
+	if val, ok := kvset["online"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["online"] = "N" } }
+	if val, ok := kvset["gender"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["gender"] = "secret" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *User) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
-	if len(this.Gender) == 0 { this.Gender = "secret" }
-	if len(this.Online) == 0 { this.Online = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Online) == 0 { this.Online = "N" }
+	if len(this.Gender) == 0 { this.Gender = "secret" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Gender) == 0 { this.Gender = "secret" }
-	if len(this.Online) == 0 { this.Online = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Online) == 0 { this.Online = "N" }
+	if len(this.Gender) == 0 { this.Gender = "secret" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -271,6 +272,64 @@ func (this *User) Reset() *User {
 }
 
 func (this *User) AsMap() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["Id"] = this.Id
+	r["Username"] = this.Username
+	r["Email"] = this.Email
+	r["Mobile"] = this.Mobile
+	r["Password"] = this.Password
+	r["Salt"] = this.Salt
+	r["SafePwd"] = this.SafePwd
+	r["Avatar"] = this.Avatar
+	r["Gender"] = this.Gender
+	r["LastLogin"] = this.LastLogin
+	r["LastIp"] = this.LastIp
+	r["Disabled"] = this.Disabled
+	r["Online"] = this.Online
+	r["RoleIds"] = this.RoleIds
+	r["Created"] = this.Created
+	r["Updated"] = this.Updated
+	return r
+}
+
+func (this *User) Set(key interface{}, value ...interface{}) factory.Model {
+	switch k := key.(type) {
+		case map[string]interface{}:
+			for kk, vv := range k {
+				this.Set(kk, vv)
+			}
+		default:
+			var (
+				kk string
+				vv interface{}
+			)
+			if k, y := key.(string); y {
+				kk = k
+			} else {
+				kk = fmt.Sprint(key)
+			}
+			if len(value) > 0 {
+				vv = value[0]
+			}
+			switch kk {
+				case "Id": this.Id = param.AsUint(vv)
+				case "Username": this.Username = param.AsString(vv)
+				case "Email": this.Email = param.AsString(vv)
+				case "Mobile": this.Mobile = param.AsString(vv)
+				case "Password": this.Password = param.AsString(vv)
+				case "Salt": this.Salt = param.AsString(vv)
+				case "SafePwd": this.SafePwd = param.AsString(vv)
+				case "Avatar": this.Avatar = param.AsString(vv)
+				case "Gender": this.Gender = param.AsString(vv)
+				case "LastLogin": this.LastLogin = param.AsUint(vv)
+				case "LastIp": this.LastIp = param.AsString(vv)
+				case "Disabled": this.Disabled = param.AsString(vv)
+				case "Online": this.Online = param.AsString(vv)
+				case "RoleIds": this.RoleIds = param.AsString(vv)
+				case "Created": this.Created = param.AsUint(vv)
+				case "Updated": this.Updated = param.AsUint(vv)
+			}
+	}
 	r := map[string]interface{}{}
 	r["Id"] = this.Id
 	r["Username"] = this.Username

@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 	
 )
 
@@ -242,6 +243,50 @@ func (this *Config) Reset() *Config {
 }
 
 func (this *Config) AsMap() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["Key"] = this.Key
+	r["Label"] = this.Label
+	r["Description"] = this.Description
+	r["Value"] = this.Value
+	r["Group"] = this.Group
+	r["Type"] = this.Type
+	r["Sort"] = this.Sort
+	r["Disabled"] = this.Disabled
+	r["Encrypted"] = this.Encrypted
+	return r
+}
+
+func (this *Config) Set(key interface{}, value ...interface{}) factory.Model {
+	switch k := key.(type) {
+		case map[string]interface{}:
+			for kk, vv := range k {
+				this.Set(kk, vv)
+			}
+		default:
+			var (
+				kk string
+				vv interface{}
+			)
+			if k, y := key.(string); y {
+				kk = k
+			} else {
+				kk = fmt.Sprint(key)
+			}
+			if len(value) > 0 {
+				vv = value[0]
+			}
+			switch kk {
+				case "Key": this.Key = param.AsString(vv)
+				case "Label": this.Label = param.AsString(vv)
+				case "Description": this.Description = param.AsString(vv)
+				case "Value": this.Value = param.AsString(vv)
+				case "Group": this.Group = param.AsString(vv)
+				case "Type": this.Type = param.AsString(vv)
+				case "Sort": this.Sort = param.AsInt(vv)
+				case "Disabled": this.Disabled = param.AsString(vv)
+				case "Encrypted": this.Encrypted = param.AsString(vv)
+			}
+	}
 	r := map[string]interface{}{}
 	r["Key"] = this.Key
 	r["Label"] = this.Label

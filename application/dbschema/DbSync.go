@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 	
 	"time"
 )
@@ -244,6 +245,52 @@ func (this *DbSync) Reset() *DbSync {
 }
 
 func (this *DbSync) AsMap() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["Id"] = this.Id
+	r["DsnSource"] = this.DsnSource
+	r["DsnDestination"] = this.DsnDestination
+	r["Tables"] = this.Tables
+	r["SkipTables"] = this.SkipTables
+	r["AlterIgnore"] = this.AlterIgnore
+	r["Drop"] = this.Drop
+	r["MailTo"] = this.MailTo
+	r["Created"] = this.Created
+	r["Updated"] = this.Updated
+	return r
+}
+
+func (this *DbSync) Set(key interface{}, value ...interface{}) factory.Model {
+	switch k := key.(type) {
+		case map[string]interface{}:
+			for kk, vv := range k {
+				this.Set(kk, vv)
+			}
+		default:
+			var (
+				kk string
+				vv interface{}
+			)
+			if k, y := key.(string); y {
+				kk = k
+			} else {
+				kk = fmt.Sprint(key)
+			}
+			if len(value) > 0 {
+				vv = value[0]
+			}
+			switch kk {
+				case "Id": this.Id = param.AsUint(vv)
+				case "DsnSource": this.DsnSource = param.AsString(vv)
+				case "DsnDestination": this.DsnDestination = param.AsString(vv)
+				case "Tables": this.Tables = param.AsString(vv)
+				case "SkipTables": this.SkipTables = param.AsString(vv)
+				case "AlterIgnore": this.AlterIgnore = param.AsString(vv)
+				case "Drop": this.Drop = param.AsUint(vv)
+				case "MailTo": this.MailTo = param.AsString(vv)
+				case "Created": this.Created = param.AsUint(vv)
+				case "Updated": this.Updated = param.AsInt(vv)
+			}
+	}
 	r := map[string]interface{}{}
 	r["Id"] = this.Id
 	r["DsnSource"] = this.DsnSource

@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 	
 	"time"
 )
@@ -245,6 +246,48 @@ func (this *CollectorRule) Reset() *CollectorRule {
 }
 
 func (this *CollectorRule) AsMap() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["Id"] = this.Id
+	r["PageId"] = this.PageId
+	r["Name"] = this.Name
+	r["Rule"] = this.Rule
+	r["Type"] = this.Type
+	r["Filter"] = this.Filter
+	r["Created"] = this.Created
+	r["Sort"] = this.Sort
+	return r
+}
+
+func (this *CollectorRule) Set(key interface{}, value ...interface{}) factory.Model {
+	switch k := key.(type) {
+		case map[string]interface{}:
+			for kk, vv := range k {
+				this.Set(kk, vv)
+			}
+		default:
+			var (
+				kk string
+				vv interface{}
+			)
+			if k, y := key.(string); y {
+				kk = k
+			} else {
+				kk = fmt.Sprint(key)
+			}
+			if len(value) > 0 {
+				vv = value[0]
+			}
+			switch kk {
+				case "Id": this.Id = param.AsUint(vv)
+				case "PageId": this.PageId = param.AsUint(vv)
+				case "Name": this.Name = param.AsString(vv)
+				case "Rule": this.Rule = param.AsString(vv)
+				case "Type": this.Type = param.AsString(vv)
+				case "Filter": this.Filter = param.AsString(vv)
+				case "Created": this.Created = param.AsUint(vv)
+				case "Sort": this.Sort = param.AsInt(vv)
+			}
+	}
 	r := map[string]interface{}{}
 	r["Id"] = this.Id
 	r["PageId"] = this.PageId

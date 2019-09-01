@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 	
 	"time"
 )
@@ -249,6 +250,52 @@ func (this *CodeInvitation) Reset() *CodeInvitation {
 }
 
 func (this *CodeInvitation) AsMap() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["Id"] = this.Id
+	r["Uid"] = this.Uid
+	r["RecvUid"] = this.RecvUid
+	r["Code"] = this.Code
+	r["Created"] = this.Created
+	r["Used"] = this.Used
+	r["Start"] = this.Start
+	r["End"] = this.End
+	r["Disabled"] = this.Disabled
+	r["RoleIds"] = this.RoleIds
+	return r
+}
+
+func (this *CodeInvitation) Set(key interface{}, value ...interface{}) factory.Model {
+	switch k := key.(type) {
+		case map[string]interface{}:
+			for kk, vv := range k {
+				this.Set(kk, vv)
+			}
+		default:
+			var (
+				kk string
+				vv interface{}
+			)
+			if k, y := key.(string); y {
+				kk = k
+			} else {
+				kk = fmt.Sprint(key)
+			}
+			if len(value) > 0 {
+				vv = value[0]
+			}
+			switch kk {
+				case "Id": this.Id = param.AsUint(vv)
+				case "Uid": this.Uid = param.AsUint(vv)
+				case "RecvUid": this.RecvUid = param.AsUint(vv)
+				case "Code": this.Code = param.AsString(vv)
+				case "Created": this.Created = param.AsUint(vv)
+				case "Used": this.Used = param.AsUint(vv)
+				case "Start": this.Start = param.AsUint(vv)
+				case "End": this.End = param.AsUint(vv)
+				case "Disabled": this.Disabled = param.AsString(vv)
+				case "RoleIds": this.RoleIds = param.AsString(vv)
+			}
+	}
 	r := map[string]interface{}{}
 	r["Id"] = this.Id
 	r["Uid"] = this.Uid

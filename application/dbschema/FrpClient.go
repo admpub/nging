@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 	
 	"time"
 )
@@ -192,15 +193,15 @@ func (this *FrpClient) ListByOffset(recv interface{}, mw func(db.Result) db.Resu
 func (this *FrpClient) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
-	if len(this.Type) == 0 { this.Type = "web" }
-	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
 	if len(this.LogFile) == 0 { this.LogFile = "console" }
-	if len(this.LogWay) == 0 { this.LogWay = "console" }
-	if len(this.LoginFailExit) == 0 { this.LoginFailExit = "Y" }
-	if len(this.ServerAddr) == 0 { this.ServerAddr = "0.0.0.0" }
+	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Protocol) == 0 { this.Protocol = "tcp" }
+	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
+	if len(this.LoginFailExit) == 0 { this.LoginFailExit = "Y" }
+	if len(this.LogWay) == 0 { this.LogWay = "console" }
+	if len(this.Type) == 0 { this.Type = "web" }
+	if len(this.ServerAddr) == 0 { this.ServerAddr = "0.0.0.0" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -214,15 +215,15 @@ func (this *FrpClient) Add() (pk interface{}, err error) {
 
 func (this *FrpClient) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
-	if len(this.Type) == 0 { this.Type = "web" }
-	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
 	if len(this.LogFile) == 0 { this.LogFile = "console" }
-	if len(this.LogWay) == 0 { this.LogWay = "console" }
-	if len(this.LoginFailExit) == 0 { this.LoginFailExit = "Y" }
-	if len(this.ServerAddr) == 0 { this.ServerAddr = "0.0.0.0" }
+	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Protocol) == 0 { this.Protocol = "tcp" }
+	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
+	if len(this.LoginFailExit) == 0 { this.LoginFailExit = "Y" }
+	if len(this.LogWay) == 0 { this.LogWay = "console" }
+	if len(this.Type) == 0 { this.Type = "web" }
+	if len(this.ServerAddr) == 0 { this.ServerAddr = "0.0.0.0" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -238,42 +239,42 @@ func (this *FrpClient) SetField(mw func(db.Result) db.Result, field string, valu
 
 func (this *FrpClient) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
-	if val, ok := kvset["tcp_mux"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["tcp_mux"] = "Y" } }
-	if val, ok := kvset["type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["type"] = "web" } }
-	if val, ok := kvset["log_level"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["log_level"] = "info" } }
 	if val, ok := kvset["log_file"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["log_file"] = "console" } }
-	if val, ok := kvset["log_way"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["log_way"] = "console" } }
-	if val, ok := kvset["login_fail_exit"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["login_fail_exit"] = "Y" } }
-	if val, ok := kvset["server_addr"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["server_addr"] = "0.0.0.0" } }
+	if val, ok := kvset["tcp_mux"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["tcp_mux"] = "Y" } }
+	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	if val, ok := kvset["protocol"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["protocol"] = "tcp" } }
+	if val, ok := kvset["log_level"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["log_level"] = "info" } }
+	if val, ok := kvset["login_fail_exit"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["login_fail_exit"] = "Y" } }
+	if val, ok := kvset["log_way"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["log_way"] = "console" } }
+	if val, ok := kvset["type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["type"] = "web" } }
+	if val, ok := kvset["server_addr"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["server_addr"] = "0.0.0.0" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *FrpClient) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
-	if len(this.Type) == 0 { this.Type = "web" }
-	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
 	if len(this.LogFile) == 0 { this.LogFile = "console" }
-	if len(this.LogWay) == 0 { this.LogWay = "console" }
-	if len(this.LoginFailExit) == 0 { this.LoginFailExit = "Y" }
-	if len(this.ServerAddr) == 0 { this.ServerAddr = "0.0.0.0" }
+	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Protocol) == 0 { this.Protocol = "tcp" }
+	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
+	if len(this.LoginFailExit) == 0 { this.LoginFailExit = "Y" }
+	if len(this.LogWay) == 0 { this.LogWay = "console" }
+	if len(this.Type) == 0 { this.Type = "web" }
+	if len(this.ServerAddr) == 0 { this.ServerAddr = "0.0.0.0" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
-	if len(this.Type) == 0 { this.Type = "web" }
-	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
 	if len(this.LogFile) == 0 { this.LogFile = "console" }
-	if len(this.LogWay) == 0 { this.LogWay = "console" }
-	if len(this.LoginFailExit) == 0 { this.LoginFailExit = "Y" }
-	if len(this.ServerAddr) == 0 { this.ServerAddr = "0.0.0.0" }
+	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Protocol) == 0 { this.Protocol = "tcp" }
+	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
+	if len(this.LoginFailExit) == 0 { this.LoginFailExit = "Y" }
+	if len(this.LogWay) == 0 { this.LogWay = "console" }
+	if len(this.Type) == 0 { this.Type = "web" }
+	if len(this.ServerAddr) == 0 { this.ServerAddr = "0.0.0.0" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -329,6 +330,92 @@ func (this *FrpClient) Reset() *FrpClient {
 }
 
 func (this *FrpClient) AsMap() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["Id"] = this.Id
+	r["Name"] = this.Name
+	r["Disabled"] = this.Disabled
+	r["ServerAddr"] = this.ServerAddr
+	r["ServerPort"] = this.ServerPort
+	r["HttpProxy"] = this.HttpProxy
+	r["PoolCount"] = this.PoolCount
+	r["TcpMux"] = this.TcpMux
+	r["User"] = this.User
+	r["DnsServer"] = this.DnsServer
+	r["LoginFailExit"] = this.LoginFailExit
+	r["Protocol"] = this.Protocol
+	r["HeartbeatInterval"] = this.HeartbeatInterval
+	r["HeartbeatTimeout"] = this.HeartbeatTimeout
+	r["LogFile"] = this.LogFile
+	r["LogWay"] = this.LogWay
+	r["LogLevel"] = this.LogLevel
+	r["LogMaxDays"] = this.LogMaxDays
+	r["Token"] = this.Token
+	r["AdminAddr"] = this.AdminAddr
+	r["AdminPort"] = this.AdminPort
+	r["AdminUser"] = this.AdminUser
+	r["AdminPwd"] = this.AdminPwd
+	r["Start"] = this.Start
+	r["Extra"] = this.Extra
+	r["Uid"] = this.Uid
+	r["GroupId"] = this.GroupId
+	r["Type"] = this.Type
+	r["Created"] = this.Created
+	r["Updated"] = this.Updated
+	return r
+}
+
+func (this *FrpClient) Set(key interface{}, value ...interface{}) factory.Model {
+	switch k := key.(type) {
+		case map[string]interface{}:
+			for kk, vv := range k {
+				this.Set(kk, vv)
+			}
+		default:
+			var (
+				kk string
+				vv interface{}
+			)
+			if k, y := key.(string); y {
+				kk = k
+			} else {
+				kk = fmt.Sprint(key)
+			}
+			if len(value) > 0 {
+				vv = value[0]
+			}
+			switch kk {
+				case "Id": this.Id = param.AsUint(vv)
+				case "Name": this.Name = param.AsString(vv)
+				case "Disabled": this.Disabled = param.AsString(vv)
+				case "ServerAddr": this.ServerAddr = param.AsString(vv)
+				case "ServerPort": this.ServerPort = param.AsUint(vv)
+				case "HttpProxy": this.HttpProxy = param.AsString(vv)
+				case "PoolCount": this.PoolCount = param.AsUint(vv)
+				case "TcpMux": this.TcpMux = param.AsString(vv)
+				case "User": this.User = param.AsString(vv)
+				case "DnsServer": this.DnsServer = param.AsString(vv)
+				case "LoginFailExit": this.LoginFailExit = param.AsString(vv)
+				case "Protocol": this.Protocol = param.AsString(vv)
+				case "HeartbeatInterval": this.HeartbeatInterval = param.AsInt64(vv)
+				case "HeartbeatTimeout": this.HeartbeatTimeout = param.AsInt64(vv)
+				case "LogFile": this.LogFile = param.AsString(vv)
+				case "LogWay": this.LogWay = param.AsString(vv)
+				case "LogLevel": this.LogLevel = param.AsString(vv)
+				case "LogMaxDays": this.LogMaxDays = param.AsUint(vv)
+				case "Token": this.Token = param.AsString(vv)
+				case "AdminAddr": this.AdminAddr = param.AsString(vv)
+				case "AdminPort": this.AdminPort = param.AsUint(vv)
+				case "AdminUser": this.AdminUser = param.AsString(vv)
+				case "AdminPwd": this.AdminPwd = param.AsString(vv)
+				case "Start": this.Start = param.AsString(vv)
+				case "Extra": this.Extra = param.AsString(vv)
+				case "Uid": this.Uid = param.AsUint(vv)
+				case "GroupId": this.GroupId = param.AsUint(vv)
+				case "Type": this.Type = param.AsString(vv)
+				case "Created": this.Created = param.AsUint(vv)
+				case "Updated": this.Updated = param.AsUint(vv)
+			}
+	}
 	r := map[string]interface{}{}
 	r["Id"] = this.Id
 	r["Name"] = this.Name

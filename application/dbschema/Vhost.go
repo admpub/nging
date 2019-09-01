@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 	
 	"time"
 )
@@ -247,6 +248,50 @@ func (this *Vhost) Reset() *Vhost {
 }
 
 func (this *Vhost) AsMap() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["Id"] = this.Id
+	r["Name"] = this.Name
+	r["GroupId"] = this.GroupId
+	r["Domain"] = this.Domain
+	r["Root"] = this.Root
+	r["Created"] = this.Created
+	r["Updated"] = this.Updated
+	r["Setting"] = this.Setting
+	r["Disabled"] = this.Disabled
+	return r
+}
+
+func (this *Vhost) Set(key interface{}, value ...interface{}) factory.Model {
+	switch k := key.(type) {
+		case map[string]interface{}:
+			for kk, vv := range k {
+				this.Set(kk, vv)
+			}
+		default:
+			var (
+				kk string
+				vv interface{}
+			)
+			if k, y := key.(string); y {
+				kk = k
+			} else {
+				kk = fmt.Sprint(key)
+			}
+			if len(value) > 0 {
+				vv = value[0]
+			}
+			switch kk {
+				case "Id": this.Id = param.AsUint(vv)
+				case "Name": this.Name = param.AsString(vv)
+				case "GroupId": this.GroupId = param.AsUint(vv)
+				case "Domain": this.Domain = param.AsString(vv)
+				case "Root": this.Root = param.AsString(vv)
+				case "Created": this.Created = param.AsUint(vv)
+				case "Updated": this.Updated = param.AsUint(vv)
+				case "Setting": this.Setting = param.AsString(vv)
+				case "Disabled": this.Disabled = param.AsString(vv)
+			}
+	}
 	r := map[string]interface{}{}
 	r["Id"] = this.Id
 	r["Name"] = this.Name

@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 	
 	"time"
 )
@@ -236,6 +237,44 @@ func (this *FrpGroup) Reset() *FrpGroup {
 }
 
 func (this *FrpGroup) AsMap() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["Id"] = this.Id
+	r["Uid"] = this.Uid
+	r["Name"] = this.Name
+	r["Description"] = this.Description
+	r["Created"] = this.Created
+	r["Updated"] = this.Updated
+	return r
+}
+
+func (this *FrpGroup) Set(key interface{}, value ...interface{}) factory.Model {
+	switch k := key.(type) {
+		case map[string]interface{}:
+			for kk, vv := range k {
+				this.Set(kk, vv)
+			}
+		default:
+			var (
+				kk string
+				vv interface{}
+			)
+			if k, y := key.(string); y {
+				kk = k
+			} else {
+				kk = fmt.Sprint(key)
+			}
+			if len(value) > 0 {
+				vv = value[0]
+			}
+			switch kk {
+				case "Id": this.Id = param.AsUint(vv)
+				case "Uid": this.Uid = param.AsUint(vv)
+				case "Name": this.Name = param.AsString(vv)
+				case "Description": this.Description = param.AsString(vv)
+				case "Created": this.Created = param.AsUint(vv)
+				case "Updated": this.Updated = param.AsUint(vv)
+			}
+	}
 	r := map[string]interface{}{}
 	r["Id"] = this.Id
 	r["Uid"] = this.Uid

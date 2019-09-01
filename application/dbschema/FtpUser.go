@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 	
 	"time"
 )
@@ -249,6 +250,52 @@ func (this *FtpUser) Reset() *FtpUser {
 }
 
 func (this *FtpUser) AsMap() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["Id"] = this.Id
+	r["Username"] = this.Username
+	r["Password"] = this.Password
+	r["Banned"] = this.Banned
+	r["Directory"] = this.Directory
+	r["IpWhitelist"] = this.IpWhitelist
+	r["IpBlacklist"] = this.IpBlacklist
+	r["Created"] = this.Created
+	r["Updated"] = this.Updated
+	r["GroupId"] = this.GroupId
+	return r
+}
+
+func (this *FtpUser) Set(key interface{}, value ...interface{}) factory.Model {
+	switch k := key.(type) {
+		case map[string]interface{}:
+			for kk, vv := range k {
+				this.Set(kk, vv)
+			}
+		default:
+			var (
+				kk string
+				vv interface{}
+			)
+			if k, y := key.(string); y {
+				kk = k
+			} else {
+				kk = fmt.Sprint(key)
+			}
+			if len(value) > 0 {
+				vv = value[0]
+			}
+			switch kk {
+				case "Id": this.Id = param.AsUint(vv)
+				case "Username": this.Username = param.AsString(vv)
+				case "Password": this.Password = param.AsString(vv)
+				case "Banned": this.Banned = param.AsString(vv)
+				case "Directory": this.Directory = param.AsString(vv)
+				case "IpWhitelist": this.IpWhitelist = param.AsString(vv)
+				case "IpBlacklist": this.IpBlacklist = param.AsString(vv)
+				case "Created": this.Created = param.AsUint(vv)
+				case "Updated": this.Updated = param.AsUint(vv)
+				case "GroupId": this.GroupId = param.AsUint(vv)
+			}
+	}
 	r := map[string]interface{}{}
 	r["Id"] = this.Id
 	r["Username"] = this.Username

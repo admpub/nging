@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 	
 	"time"
 )
@@ -275,6 +276,78 @@ func (this *AccessLog) Reset() *AccessLog {
 }
 
 func (this *AccessLog) AsMap() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["Id"] = this.Id
+	r["VhostId"] = this.VhostId
+	r["RemoteAddr"] = this.RemoteAddr
+	r["XRealIp"] = this.XRealIp
+	r["XForwardFor"] = this.XForwardFor
+	r["LocalAddr"] = this.LocalAddr
+	r["Elapsed"] = this.Elapsed
+	r["Host"] = this.Host
+	r["User"] = this.User
+	r["TimeLocal"] = this.TimeLocal
+	r["Minute"] = this.Minute
+	r["Method"] = this.Method
+	r["Uri"] = this.Uri
+	r["Version"] = this.Version
+	r["StatusCode"] = this.StatusCode
+	r["BodyBytes"] = this.BodyBytes
+	r["Referer"] = this.Referer
+	r["UserAgent"] = this.UserAgent
+	r["HitStatus"] = this.HitStatus
+	r["Scheme"] = this.Scheme
+	r["BrowerName"] = this.BrowerName
+	r["BrowerType"] = this.BrowerType
+	r["Created"] = this.Created
+	return r
+}
+
+func (this *AccessLog) Set(key interface{}, value ...interface{}) factory.Model {
+	switch k := key.(type) {
+		case map[string]interface{}:
+			for kk, vv := range k {
+				this.Set(kk, vv)
+			}
+		default:
+			var (
+				kk string
+				vv interface{}
+			)
+			if k, y := key.(string); y {
+				kk = k
+			} else {
+				kk = fmt.Sprint(key)
+			}
+			if len(value) > 0 {
+				vv = value[0]
+			}
+			switch kk {
+				case "Id": this.Id = param.AsUint64(vv)
+				case "VhostId": this.VhostId = param.AsUint(vv)
+				case "RemoteAddr": this.RemoteAddr = param.AsString(vv)
+				case "XRealIp": this.XRealIp = param.AsString(vv)
+				case "XForwardFor": this.XForwardFor = param.AsString(vv)
+				case "LocalAddr": this.LocalAddr = param.AsString(vv)
+				case "Elapsed": this.Elapsed = param.AsFloat64(vv)
+				case "Host": this.Host = param.AsString(vv)
+				case "User": this.User = param.AsString(vv)
+				case "TimeLocal": this.TimeLocal = param.AsString(vv)
+				case "Minute": this.Minute = param.AsString(vv)
+				case "Method": this.Method = param.AsString(vv)
+				case "Uri": this.Uri = param.AsString(vv)
+				case "Version": this.Version = param.AsString(vv)
+				case "StatusCode": this.StatusCode = param.AsUint(vv)
+				case "BodyBytes": this.BodyBytes = param.AsUint64(vv)
+				case "Referer": this.Referer = param.AsString(vv)
+				case "UserAgent": this.UserAgent = param.AsString(vv)
+				case "HitStatus": this.HitStatus = param.AsUint(vv)
+				case "Scheme": this.Scheme = param.AsString(vv)
+				case "BrowerName": this.BrowerName = param.AsString(vv)
+				case "BrowerType": this.BrowerType = param.AsString(vv)
+				case "Created": this.Created = param.AsUint(vv)
+			}
+	}
 	r := map[string]interface{}{}
 	r["Id"] = this.Id
 	r["VhostId"] = this.VhostId

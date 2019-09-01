@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 	
 	"time"
 )
@@ -258,6 +259,56 @@ func (this *CollectorExport) Reset() *CollectorExport {
 }
 
 func (this *CollectorExport) AsMap() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["Id"] = this.Id
+	r["PageRoot"] = this.PageRoot
+	r["PageId"] = this.PageId
+	r["GroupId"] = this.GroupId
+	r["Mapping"] = this.Mapping
+	r["Dest"] = this.Dest
+	r["DestType"] = this.DestType
+	r["Name"] = this.Name
+	r["Description"] = this.Description
+	r["Created"] = this.Created
+	r["Exported"] = this.Exported
+	r["Disabled"] = this.Disabled
+	return r
+}
+
+func (this *CollectorExport) Set(key interface{}, value ...interface{}) factory.Model {
+	switch k := key.(type) {
+		case map[string]interface{}:
+			for kk, vv := range k {
+				this.Set(kk, vv)
+			}
+		default:
+			var (
+				kk string
+				vv interface{}
+			)
+			if k, y := key.(string); y {
+				kk = k
+			} else {
+				kk = fmt.Sprint(key)
+			}
+			if len(value) > 0 {
+				vv = value[0]
+			}
+			switch kk {
+				case "Id": this.Id = param.AsUint(vv)
+				case "PageRoot": this.PageRoot = param.AsUint(vv)
+				case "PageId": this.PageId = param.AsUint(vv)
+				case "GroupId": this.GroupId = param.AsUint(vv)
+				case "Mapping": this.Mapping = param.AsString(vv)
+				case "Dest": this.Dest = param.AsString(vv)
+				case "DestType": this.DestType = param.AsString(vv)
+				case "Name": this.Name = param.AsString(vv)
+				case "Description": this.Description = param.AsString(vv)
+				case "Created": this.Created = param.AsUint(vv)
+				case "Exported": this.Exported = param.AsUint(vv)
+				case "Disabled": this.Disabled = param.AsString(vv)
+			}
+	}
 	r := map[string]interface{}{}
 	r["Id"] = this.Id
 	r["PageRoot"] = this.PageRoot

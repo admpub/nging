@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 	
 	"time"
 )
@@ -178,8 +179,8 @@ func (this *SshUser) ListByOffset(recv interface{}, mw func(db.Result) db.Result
 func (this *SshUser) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Host) == 0 { this.Host = "localhost" }
 	if len(this.Username) == 0 { this.Username = "root" }
+	if len(this.Host) == 0 { this.Host = "localhost" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -193,8 +194,8 @@ func (this *SshUser) Add() (pk interface{}, err error) {
 
 func (this *SshUser) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
-	if len(this.Host) == 0 { this.Host = "localhost" }
 	if len(this.Username) == 0 { this.Username = "root" }
+	if len(this.Host) == 0 { this.Host = "localhost" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -210,21 +211,21 @@ func (this *SshUser) SetField(mw func(db.Result) db.Result, field string, value 
 
 func (this *SshUser) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["host"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["host"] = "localhost" } }
 	if val, ok := kvset["username"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["username"] = "root" } }
+	if val, ok := kvset["host"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["host"] = "localhost" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *SshUser) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
-	if len(this.Host) == 0 { this.Host = "localhost" }
 	if len(this.Username) == 0 { this.Username = "root" }
+	if len(this.Host) == 0 { this.Host = "localhost" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Host) == 0 { this.Host = "localhost" }
 	if len(this.Username) == 0 { this.Username = "root" }
+	if len(this.Host) == 0 { this.Host = "localhost" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -266,6 +267,64 @@ func (this *SshUser) Reset() *SshUser {
 }
 
 func (this *SshUser) AsMap() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["Id"] = this.Id
+	r["Uid"] = this.Uid
+	r["Host"] = this.Host
+	r["Port"] = this.Port
+	r["Charset"] = this.Charset
+	r["Username"] = this.Username
+	r["Password"] = this.Password
+	r["Name"] = this.Name
+	r["Options"] = this.Options
+	r["PrivateKey"] = this.PrivateKey
+	r["Passphrase"] = this.Passphrase
+	r["Protocol"] = this.Protocol
+	r["Description"] = this.Description
+	r["GroupId"] = this.GroupId
+	r["Created"] = this.Created
+	r["Updated"] = this.Updated
+	return r
+}
+
+func (this *SshUser) Set(key interface{}, value ...interface{}) factory.Model {
+	switch k := key.(type) {
+		case map[string]interface{}:
+			for kk, vv := range k {
+				this.Set(kk, vv)
+			}
+		default:
+			var (
+				kk string
+				vv interface{}
+			)
+			if k, y := key.(string); y {
+				kk = k
+			} else {
+				kk = fmt.Sprint(key)
+			}
+			if len(value) > 0 {
+				vv = value[0]
+			}
+			switch kk {
+				case "Id": this.Id = param.AsUint(vv)
+				case "Uid": this.Uid = param.AsUint(vv)
+				case "Host": this.Host = param.AsString(vv)
+				case "Port": this.Port = param.AsInt(vv)
+				case "Charset": this.Charset = param.AsString(vv)
+				case "Username": this.Username = param.AsString(vv)
+				case "Password": this.Password = param.AsString(vv)
+				case "Name": this.Name = param.AsString(vv)
+				case "Options": this.Options = param.AsString(vv)
+				case "PrivateKey": this.PrivateKey = param.AsString(vv)
+				case "Passphrase": this.Passphrase = param.AsString(vv)
+				case "Protocol": this.Protocol = param.AsString(vv)
+				case "Description": this.Description = param.AsString(vv)
+				case "GroupId": this.GroupId = param.AsUint(vv)
+				case "Created": this.Created = param.AsUint(vv)
+				case "Updated": this.Updated = param.AsUint(vv)
+			}
+	}
 	r := map[string]interface{}{}
 	r["Id"] = this.Id
 	r["Uid"] = this.Uid

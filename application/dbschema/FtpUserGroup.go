@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 	
 	"time"
 )
@@ -171,8 +172,8 @@ func (this *FtpUserGroup) ListByOffset(recv interface{}, mw func(db.Result) db.R
 func (this *FtpUserGroup) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Banned) == 0 { this.Banned = "N" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -186,8 +187,8 @@ func (this *FtpUserGroup) Add() (pk interface{}, err error) {
 
 func (this *FtpUserGroup) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Banned) == 0 { this.Banned = "N" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -203,21 +204,21 @@ func (this *FtpUserGroup) SetField(mw func(db.Result) db.Result, field string, v
 
 func (this *FtpUserGroup) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	if val, ok := kvset["banned"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["banned"] = "N" } }
+	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *FtpUserGroup) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Banned) == 0 { this.Banned = "N" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Banned) == 0 { this.Banned = "N" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -252,6 +253,50 @@ func (this *FtpUserGroup) Reset() *FtpUserGroup {
 }
 
 func (this *FtpUserGroup) AsMap() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["Id"] = this.Id
+	r["Name"] = this.Name
+	r["Created"] = this.Created
+	r["Updated"] = this.Updated
+	r["Disabled"] = this.Disabled
+	r["Banned"] = this.Banned
+	r["Directory"] = this.Directory
+	r["IpWhitelist"] = this.IpWhitelist
+	r["IpBlacklist"] = this.IpBlacklist
+	return r
+}
+
+func (this *FtpUserGroup) Set(key interface{}, value ...interface{}) factory.Model {
+	switch k := key.(type) {
+		case map[string]interface{}:
+			for kk, vv := range k {
+				this.Set(kk, vv)
+			}
+		default:
+			var (
+				kk string
+				vv interface{}
+			)
+			if k, y := key.(string); y {
+				kk = k
+			} else {
+				kk = fmt.Sprint(key)
+			}
+			if len(value) > 0 {
+				vv = value[0]
+			}
+			switch kk {
+				case "Id": this.Id = param.AsUint(vv)
+				case "Name": this.Name = param.AsString(vv)
+				case "Created": this.Created = param.AsUint(vv)
+				case "Updated": this.Updated = param.AsUint(vv)
+				case "Disabled": this.Disabled = param.AsString(vv)
+				case "Banned": this.Banned = param.AsString(vv)
+				case "Directory": this.Directory = param.AsString(vv)
+				case "IpWhitelist": this.IpWhitelist = param.AsString(vv)
+				case "IpBlacklist": this.IpBlacklist = param.AsString(vv)
+			}
+	}
 	r := map[string]interface{}{}
 	r["Id"] = this.Id
 	r["Name"] = this.Name

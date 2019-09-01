@@ -1,6 +1,8 @@
 package factory
 
-import "github.com/webx-top/db"
+import (
+	"github.com/webx-top/db"
+)
 
 type Model interface {
 	Trans() *Transaction
@@ -26,6 +28,7 @@ type Model interface {
 	SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error
 	AsMap() map[string]interface{}
 	AsRow() map[string]interface{}
+	Set(key interface{}, value ...interface{}) Model
 	BatchValidate(kvset map[string]interface{}) error
 	Validate(field string, value interface{}) error
 }

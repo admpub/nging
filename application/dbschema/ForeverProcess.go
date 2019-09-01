@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 	
 	"time"
 )
@@ -187,8 +188,8 @@ func (this *ForeverProcess) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.Status) == 0 { this.Status = "idle" }
 	if len(this.Debug) == 0 { this.Debug = "N" }
+	if len(this.Status) == 0 { this.Status = "idle" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -203,8 +204,8 @@ func (this *ForeverProcess) Add() (pk interface{}, err error) {
 func (this *ForeverProcess) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.Status) == 0 { this.Status = "idle" }
 	if len(this.Debug) == 0 { this.Debug = "N" }
+	if len(this.Status) == 0 { this.Status = "idle" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -221,8 +222,8 @@ func (this *ForeverProcess) SetField(mw func(db.Result) db.Result, field string,
 func (this *ForeverProcess) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
-	if val, ok := kvset["status"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["status"] = "idle" } }
 	if val, ok := kvset["debug"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["debug"] = "N" } }
+	if val, ok := kvset["status"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["status"] = "idle" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
@@ -230,14 +231,14 @@ func (this *ForeverProcess) Upsert(mw func(db.Result) db.Result, args ...interfa
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.Status) == 0 { this.Status = "idle" }
 	if len(this.Debug) == 0 { this.Debug = "N" }
+	if len(this.Status) == 0 { this.Status = "idle" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.Status) == 0 { this.Status = "idle" }
 	if len(this.Debug) == 0 { this.Debug = "N" }
+	if len(this.Status) == 0 { this.Status = "idle" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -287,6 +288,80 @@ func (this *ForeverProcess) Reset() *ForeverProcess {
 }
 
 func (this *ForeverProcess) AsMap() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["Id"] = this.Id
+	r["Uid"] = this.Uid
+	r["Name"] = this.Name
+	r["Command"] = this.Command
+	r["Workdir"] = this.Workdir
+	r["Env"] = this.Env
+	r["Args"] = this.Args
+	r["Pidfile"] = this.Pidfile
+	r["Logfile"] = this.Logfile
+	r["Errfile"] = this.Errfile
+	r["Respawn"] = this.Respawn
+	r["Delay"] = this.Delay
+	r["Ping"] = this.Ping
+	r["Pid"] = this.Pid
+	r["Status"] = this.Status
+	r["Debug"] = this.Debug
+	r["Disabled"] = this.Disabled
+	r["Created"] = this.Created
+	r["Updated"] = this.Updated
+	r["Error"] = this.Error
+	r["Lastrun"] = this.Lastrun
+	r["Description"] = this.Description
+	r["EnableNotify"] = this.EnableNotify
+	r["NotifyEmail"] = this.NotifyEmail
+	return r
+}
+
+func (this *ForeverProcess) Set(key interface{}, value ...interface{}) factory.Model {
+	switch k := key.(type) {
+		case map[string]interface{}:
+			for kk, vv := range k {
+				this.Set(kk, vv)
+			}
+		default:
+			var (
+				kk string
+				vv interface{}
+			)
+			if k, y := key.(string); y {
+				kk = k
+			} else {
+				kk = fmt.Sprint(key)
+			}
+			if len(value) > 0 {
+				vv = value[0]
+			}
+			switch kk {
+				case "Id": this.Id = param.AsUint(vv)
+				case "Uid": this.Uid = param.AsUint(vv)
+				case "Name": this.Name = param.AsString(vv)
+				case "Command": this.Command = param.AsString(vv)
+				case "Workdir": this.Workdir = param.AsString(vv)
+				case "Env": this.Env = param.AsString(vv)
+				case "Args": this.Args = param.AsString(vv)
+				case "Pidfile": this.Pidfile = param.AsString(vv)
+				case "Logfile": this.Logfile = param.AsString(vv)
+				case "Errfile": this.Errfile = param.AsString(vv)
+				case "Respawn": this.Respawn = param.AsUint(vv)
+				case "Delay": this.Delay = param.AsString(vv)
+				case "Ping": this.Ping = param.AsString(vv)
+				case "Pid": this.Pid = param.AsInt(vv)
+				case "Status": this.Status = param.AsString(vv)
+				case "Debug": this.Debug = param.AsString(vv)
+				case "Disabled": this.Disabled = param.AsString(vv)
+				case "Created": this.Created = param.AsUint(vv)
+				case "Updated": this.Updated = param.AsUint(vv)
+				case "Error": this.Error = param.AsString(vv)
+				case "Lastrun": this.Lastrun = param.AsUint(vv)
+				case "Description": this.Description = param.AsString(vv)
+				case "EnableNotify": this.EnableNotify = param.AsUint(vv)
+				case "NotifyEmail": this.NotifyEmail = param.AsString(vv)
+			}
+	}
 	r := map[string]interface{}{}
 	r["Id"] = this.Id
 	r["Uid"] = this.Uid

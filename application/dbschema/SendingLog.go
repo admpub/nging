@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 	
 	"time"
 )
@@ -177,10 +178,10 @@ func (this *SendingLog) ListByOffset(recv interface{}, mw func(db.Result) db.Res
 func (this *SendingLog) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.SourceType) == 0 { this.SourceType = "user" }
 	if len(this.Method) == 0 { this.Method = "mobile" }
 	if len(this.Status) == 0 { this.Status = "waiting" }
-	if len(this.SourceType) == 0 { this.SourceType = "user" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -194,10 +195,10 @@ func (this *SendingLog) Add() (pk interface{}, err error) {
 
 func (this *SendingLog) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.SourceType) == 0 { this.SourceType = "user" }
 	if len(this.Method) == 0 { this.Method = "mobile" }
 	if len(this.Status) == 0 { this.Status = "waiting" }
-	if len(this.SourceType) == 0 { this.SourceType = "user" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -213,27 +214,27 @@ func (this *SendingLog) SetField(mw func(db.Result) db.Result, field string, val
 
 func (this *SendingLog) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
+	if val, ok := kvset["source_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["source_type"] = "user" } }
 	if val, ok := kvset["method"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["method"] = "mobile" } }
 	if val, ok := kvset["status"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["status"] = "waiting" } }
-	if val, ok := kvset["source_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["source_type"] = "user" } }
+	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *SendingLog) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.SourceType) == 0 { this.SourceType = "user" }
 	if len(this.Method) == 0 { this.Method = "mobile" }
 	if len(this.Status) == 0 { this.Status = "waiting" }
-	if len(this.SourceType) == 0 { this.SourceType = "user" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.SourceType) == 0 { this.SourceType = "user" }
 	if len(this.Method) == 0 { this.Method = "mobile" }
 	if len(this.Status) == 0 { this.Status = "waiting" }
-	if len(this.SourceType) == 0 { this.SourceType = "user" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -274,6 +275,62 @@ func (this *SendingLog) Reset() *SendingLog {
 }
 
 func (this *SendingLog) AsMap() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["Id"] = this.Id
+	r["Created"] = this.Created
+	r["SentAt"] = this.SentAt
+	r["SourceId"] = this.SourceId
+	r["SourceType"] = this.SourceType
+	r["Disabled"] = this.Disabled
+	r["Method"] = this.Method
+	r["To"] = this.To
+	r["Provider"] = this.Provider
+	r["Result"] = this.Result
+	r["Status"] = this.Status
+	r["Retries"] = this.Retries
+	r["Content"] = this.Content
+	r["Params"] = this.Params
+	r["AppointmentTime"] = this.AppointmentTime
+	return r
+}
+
+func (this *SendingLog) Set(key interface{}, value ...interface{}) factory.Model {
+	switch k := key.(type) {
+		case map[string]interface{}:
+			for kk, vv := range k {
+				this.Set(kk, vv)
+			}
+		default:
+			var (
+				kk string
+				vv interface{}
+			)
+			if k, y := key.(string); y {
+				kk = k
+			} else {
+				kk = fmt.Sprint(key)
+			}
+			if len(value) > 0 {
+				vv = value[0]
+			}
+			switch kk {
+				case "Id": this.Id = param.AsUint64(vv)
+				case "Created": this.Created = param.AsUint(vv)
+				case "SentAt": this.SentAt = param.AsUint(vv)
+				case "SourceId": this.SourceId = param.AsUint64(vv)
+				case "SourceType": this.SourceType = param.AsString(vv)
+				case "Disabled": this.Disabled = param.AsString(vv)
+				case "Method": this.Method = param.AsString(vv)
+				case "To": this.To = param.AsString(vv)
+				case "Provider": this.Provider = param.AsString(vv)
+				case "Result": this.Result = param.AsString(vv)
+				case "Status": this.Status = param.AsString(vv)
+				case "Retries": this.Retries = param.AsUint(vv)
+				case "Content": this.Content = param.AsString(vv)
+				case "Params": this.Params = param.AsString(vv)
+				case "AppointmentTime": this.AppointmentTime = param.AsUint(vv)
+			}
+	}
 	r := map[string]interface{}{}
 	r["Id"] = this.Id
 	r["Created"] = this.Created

@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 	
 	"time"
 )
@@ -263,6 +264,56 @@ func (this *CodeVerification) Reset() *CodeVerification {
 }
 
 func (this *CodeVerification) AsMap() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["Id"] = this.Id
+	r["Code"] = this.Code
+	r["Created"] = this.Created
+	r["OwnerId"] = this.OwnerId
+	r["OwnerType"] = this.OwnerType
+	r["Used"] = this.Used
+	r["Purpose"] = this.Purpose
+	r["Start"] = this.Start
+	r["End"] = this.End
+	r["Disabled"] = this.Disabled
+	r["SendMethod"] = this.SendMethod
+	r["SendTo"] = this.SendTo
+	return r
+}
+
+func (this *CodeVerification) Set(key interface{}, value ...interface{}) factory.Model {
+	switch k := key.(type) {
+		case map[string]interface{}:
+			for kk, vv := range k {
+				this.Set(kk, vv)
+			}
+		default:
+			var (
+				kk string
+				vv interface{}
+			)
+			if k, y := key.(string); y {
+				kk = k
+			} else {
+				kk = fmt.Sprint(key)
+			}
+			if len(value) > 0 {
+				vv = value[0]
+			}
+			switch kk {
+				case "Id": this.Id = param.AsUint64(vv)
+				case "Code": this.Code = param.AsString(vv)
+				case "Created": this.Created = param.AsUint(vv)
+				case "OwnerId": this.OwnerId = param.AsUint64(vv)
+				case "OwnerType": this.OwnerType = param.AsString(vv)
+				case "Used": this.Used = param.AsUint(vv)
+				case "Purpose": this.Purpose = param.AsString(vv)
+				case "Start": this.Start = param.AsUint(vv)
+				case "End": this.End = param.AsUint(vv)
+				case "Disabled": this.Disabled = param.AsString(vv)
+				case "SendMethod": this.SendMethod = param.AsString(vv)
+				case "SendTo": this.SendTo = param.AsString(vv)
+			}
+	}
 	r := map[string]interface{}{}
 	r["Id"] = this.Id
 	r["Code"] = this.Code

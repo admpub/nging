@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 	
 	"time"
 )
@@ -243,6 +244,46 @@ func (this *TaskLog) Reset() *TaskLog {
 }
 
 func (this *TaskLog) AsMap() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["Id"] = this.Id
+	r["TaskId"] = this.TaskId
+	r["Output"] = this.Output
+	r["Error"] = this.Error
+	r["Status"] = this.Status
+	r["Elapsed"] = this.Elapsed
+	r["Created"] = this.Created
+	return r
+}
+
+func (this *TaskLog) Set(key interface{}, value ...interface{}) factory.Model {
+	switch k := key.(type) {
+		case map[string]interface{}:
+			for kk, vv := range k {
+				this.Set(kk, vv)
+			}
+		default:
+			var (
+				kk string
+				vv interface{}
+			)
+			if k, y := key.(string); y {
+				kk = k
+			} else {
+				kk = fmt.Sprint(key)
+			}
+			if len(value) > 0 {
+				vv = value[0]
+			}
+			switch kk {
+				case "Id": this.Id = param.AsUint64(vv)
+				case "TaskId": this.TaskId = param.AsUint(vv)
+				case "Output": this.Output = param.AsString(vv)
+				case "Error": this.Error = param.AsString(vv)
+				case "Status": this.Status = param.AsString(vv)
+				case "Elapsed": this.Elapsed = param.AsUint(vv)
+				case "Created": this.Created = param.AsUint(vv)
+			}
+	}
 	r := map[string]interface{}{}
 	r["Id"] = this.Id
 	r["TaskId"] = this.TaskId

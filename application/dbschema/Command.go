@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 	
 	"time"
 )
@@ -256,6 +257,54 @@ func (this *Command) Reset() *Command {
 }
 
 func (this *Command) AsMap() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["Id"] = this.Id
+	r["Name"] = this.Name
+	r["Description"] = this.Description
+	r["Command"] = this.Command
+	r["WorkDirectory"] = this.WorkDirectory
+	r["Env"] = this.Env
+	r["Created"] = this.Created
+	r["Updated"] = this.Updated
+	r["Disabled"] = this.Disabled
+	r["Remote"] = this.Remote
+	r["SshAccountId"] = this.SshAccountId
+	return r
+}
+
+func (this *Command) Set(key interface{}, value ...interface{}) factory.Model {
+	switch k := key.(type) {
+		case map[string]interface{}:
+			for kk, vv := range k {
+				this.Set(kk, vv)
+			}
+		default:
+			var (
+				kk string
+				vv interface{}
+			)
+			if k, y := key.(string); y {
+				kk = k
+			} else {
+				kk = fmt.Sprint(key)
+			}
+			if len(value) > 0 {
+				vv = value[0]
+			}
+			switch kk {
+				case "Id": this.Id = param.AsUint(vv)
+				case "Name": this.Name = param.AsString(vv)
+				case "Description": this.Description = param.AsString(vv)
+				case "Command": this.Command = param.AsString(vv)
+				case "WorkDirectory": this.WorkDirectory = param.AsString(vv)
+				case "Env": this.Env = param.AsString(vv)
+				case "Created": this.Created = param.AsUint(vv)
+				case "Updated": this.Updated = param.AsUint(vv)
+				case "Disabled": this.Disabled = param.AsString(vv)
+				case "Remote": this.Remote = param.AsString(vv)
+				case "SshAccountId": this.SshAccountId = param.AsUint(vv)
+			}
+	}
 	r := map[string]interface{}{}
 	r["Id"] = this.Id
 	r["Name"] = this.Name

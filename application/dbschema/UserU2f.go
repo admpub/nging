@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo/param"
 	
 	"time"
 )
@@ -236,6 +237,44 @@ func (this *UserU2f) Reset() *UserU2f {
 }
 
 func (this *UserU2f) AsMap() map[string]interface{} {
+	r := map[string]interface{}{}
+	r["Id"] = this.Id
+	r["Uid"] = this.Uid
+	r["Token"] = this.Token
+	r["Type"] = this.Type
+	r["Extra"] = this.Extra
+	r["Created"] = this.Created
+	return r
+}
+
+func (this *UserU2f) Set(key interface{}, value ...interface{}) factory.Model {
+	switch k := key.(type) {
+		case map[string]interface{}:
+			for kk, vv := range k {
+				this.Set(kk, vv)
+			}
+		default:
+			var (
+				kk string
+				vv interface{}
+			)
+			if k, y := key.(string); y {
+				kk = k
+			} else {
+				kk = fmt.Sprint(key)
+			}
+			if len(value) > 0 {
+				vv = value[0]
+			}
+			switch kk {
+				case "Id": this.Id = param.AsUint64(vv)
+				case "Uid": this.Uid = param.AsUint(vv)
+				case "Token": this.Token = param.AsString(vv)
+				case "Type": this.Type = param.AsString(vv)
+				case "Extra": this.Extra = param.AsString(vv)
+				case "Created": this.Created = param.AsUint(vv)
+			}
+	}
 	r := map[string]interface{}{}
 	r["Id"] = this.Id
 	r["Uid"] = this.Uid
