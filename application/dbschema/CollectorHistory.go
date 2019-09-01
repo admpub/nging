@@ -276,7 +276,7 @@ func (this *CollectorHistory) AsMap() map[string]interface{} {
 	return r
 }
 
-func (this *CollectorHistory) Set(key interface{}, value ...interface{}) factory.Model {
+func (this *CollectorHistory) Set(key interface{}, value ...interface{}) {
 	switch k := key.(type) {
 		case map[string]interface{}:
 			for kk, vv := range k {
@@ -312,7 +312,6 @@ func (this *CollectorHistory) Set(key interface{}, value ...interface{}) factory
 				case "Exported": this.Exported = param.AsUint(vv)
 			}
 	}
-	return this
 }
 
 func (this *CollectorHistory) AsRow() map[string]interface{} {

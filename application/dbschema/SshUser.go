@@ -287,7 +287,7 @@ func (this *SshUser) AsMap() map[string]interface{} {
 	return r
 }
 
-func (this *SshUser) Set(key interface{}, value ...interface{}) factory.Model {
+func (this *SshUser) Set(key interface{}, value ...interface{}) {
 	switch k := key.(type) {
 		case map[string]interface{}:
 			for kk, vv := range k {
@@ -325,7 +325,6 @@ func (this *SshUser) Set(key interface{}, value ...interface{}) factory.Model {
 				case "Updated": this.Updated = param.AsUint(vv)
 			}
 	}
-	return this
 }
 
 func (this *SshUser) AsRow() map[string]interface{} {

@@ -247,7 +247,7 @@ func (this *FrpGroup) AsMap() map[string]interface{} {
 	return r
 }
 
-func (this *FrpGroup) Set(key interface{}, value ...interface{}) factory.Model {
+func (this *FrpGroup) Set(key interface{}, value ...interface{}) {
 	switch k := key.(type) {
 		case map[string]interface{}:
 			for kk, vv := range k {
@@ -275,7 +275,6 @@ func (this *FrpGroup) Set(key interface{}, value ...interface{}) factory.Model {
 				case "Updated": this.Updated = param.AsUint(vv)
 			}
 	}
-	return this
 }
 
 func (this *FrpGroup) AsRow() map[string]interface{} {

@@ -247,7 +247,7 @@ func (this *SshUserGroup) AsMap() map[string]interface{} {
 	return r
 }
 
-func (this *SshUserGroup) Set(key interface{}, value ...interface{}) factory.Model {
+func (this *SshUserGroup) Set(key interface{}, value ...interface{}) {
 	switch k := key.(type) {
 		case map[string]interface{}:
 			for kk, vv := range k {
@@ -275,7 +275,6 @@ func (this *SshUserGroup) Set(key interface{}, value ...interface{}) factory.Mod
 				case "Updated": this.Updated = param.AsUint(vv)
 			}
 	}
-	return this
 }
 
 func (this *SshUserGroup) AsRow() map[string]interface{} {

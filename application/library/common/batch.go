@@ -26,7 +26,7 @@ import (
 
 // Adder interface
 type Adder interface {
-	Set(interface{}, ...interface{}) error
+	Set(interface{}, ...interface{})
 	Add() (interface{}, error)
 }
 

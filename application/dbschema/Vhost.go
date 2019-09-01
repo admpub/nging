@@ -261,7 +261,7 @@ func (this *Vhost) AsMap() map[string]interface{} {
 	return r
 }
 
-func (this *Vhost) Set(key interface{}, value ...interface{}) factory.Model {
+func (this *Vhost) Set(key interface{}, value ...interface{}) {
 	switch k := key.(type) {
 		case map[string]interface{}:
 			for kk, vv := range k {
@@ -292,7 +292,6 @@ func (this *Vhost) Set(key interface{}, value ...interface{}) factory.Model {
 				case "Disabled": this.Disabled = param.AsString(vv)
 			}
 	}
-	return this
 }
 
 func (this *Vhost) AsRow() map[string]interface{} {

@@ -253,7 +253,7 @@ func (this *DbSyncLog) AsMap() map[string]interface{} {
 	return r
 }
 
-func (this *DbSyncLog) Set(key interface{}, value ...interface{}) factory.Model {
+func (this *DbSyncLog) Set(key interface{}, value ...interface{}) {
 	switch k := key.(type) {
 		case map[string]interface{}:
 			for kk, vv := range k {
@@ -283,7 +283,6 @@ func (this *DbSyncLog) Set(key interface{}, value ...interface{}) factory.Model 
 				case "Failed": this.Failed = param.AsUint(vv)
 			}
 	}
-	return this
 }
 
 func (this *DbSyncLog) AsRow() map[string]interface{} {

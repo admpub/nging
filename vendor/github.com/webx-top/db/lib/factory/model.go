@@ -28,7 +28,7 @@ type Model interface {
 	SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error
 	AsMap() map[string]interface{}
 	AsRow() map[string]interface{}
-	Set(key interface{}, value ...interface{}) Model
+	Set(key interface{}, value ...interface{})
 	BatchValidate(kvset map[string]interface{}) error
 	Validate(field string, value interface{}) error
 }

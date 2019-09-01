@@ -266,7 +266,7 @@ func (this *FtpUserGroup) AsMap() map[string]interface{} {
 	return r
 }
 
-func (this *FtpUserGroup) Set(key interface{}, value ...interface{}) factory.Model {
+func (this *FtpUserGroup) Set(key interface{}, value ...interface{}) {
 	switch k := key.(type) {
 		case map[string]interface{}:
 			for kk, vv := range k {
@@ -297,7 +297,6 @@ func (this *FtpUserGroup) Set(key interface{}, value ...interface{}) factory.Mod
 				case "IpBlacklist": this.IpBlacklist = param.AsString(vv)
 			}
 	}
-	return this
 }
 
 func (this *FtpUserGroup) AsRow() map[string]interface{} {

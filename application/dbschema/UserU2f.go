@@ -247,7 +247,7 @@ func (this *UserU2f) AsMap() map[string]interface{} {
 	return r
 }
 
-func (this *UserU2f) Set(key interface{}, value ...interface{}) factory.Model {
+func (this *UserU2f) Set(key interface{}, value ...interface{}) {
 	switch k := key.(type) {
 		case map[string]interface{}:
 			for kk, vv := range k {
@@ -275,7 +275,6 @@ func (this *UserU2f) Set(key interface{}, value ...interface{}) factory.Model {
 				case "Created": this.Created = param.AsUint(vv)
 			}
 	}
-	return this
 }
 
 func (this *UserU2f) AsRow() map[string]interface{} {

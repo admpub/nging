@@ -316,7 +316,7 @@ func (this *ForeverProcess) AsMap() map[string]interface{} {
 	return r
 }
 
-func (this *ForeverProcess) Set(key interface{}, value ...interface{}) factory.Model {
+func (this *ForeverProcess) Set(key interface{}, value ...interface{}) {
 	switch k := key.(type) {
 		case map[string]interface{}:
 			for kk, vv := range k {
@@ -362,7 +362,6 @@ func (this *ForeverProcess) Set(key interface{}, value ...interface{}) factory.M
 				case "NotifyEmail": this.NotifyEmail = param.AsString(vv)
 			}
 	}
-	return this
 }
 
 func (this *ForeverProcess) AsRow() map[string]interface{} {

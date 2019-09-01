@@ -309,7 +309,7 @@ func (this *CollectorPage) AsMap() map[string]interface{} {
 	return r
 }
 
-func (this *CollectorPage) Set(key interface{}, value ...interface{}) factory.Model {
+func (this *CollectorPage) Set(key interface{}, value ...interface{}) {
 	switch k := key.(type) {
 		case map[string]interface{}:
 			for kk, vv := range k {
@@ -351,7 +351,6 @@ func (this *CollectorPage) Set(key interface{}, value ...interface{}) factory.Mo
 				case "Proxy": this.Proxy = param.AsString(vv)
 			}
 	}
-	return this
 }
 
 func (this *CollectorPage) AsRow() map[string]interface{} {

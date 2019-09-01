@@ -244,7 +244,7 @@ func (this *VhostGroup) AsMap() map[string]interface{} {
 	return r
 }
 
-func (this *VhostGroup) Set(key interface{}, value ...interface{}) factory.Model {
+func (this *VhostGroup) Set(key interface{}, value ...interface{}) {
 	switch k := key.(type) {
 		case map[string]interface{}:
 			for kk, vv := range k {
@@ -271,7 +271,6 @@ func (this *VhostGroup) Set(key interface{}, value ...interface{}) factory.Model
 				case "Created": this.Created = param.AsUint(vv)
 			}
 	}
-	return this
 }
 
 func (this *VhostGroup) AsRow() map[string]interface{} {

@@ -261,7 +261,7 @@ func (this *UserRole) AsMap() map[string]interface{} {
 	return r
 }
 
-func (this *UserRole) Set(key interface{}, value ...interface{}) factory.Model {
+func (this *UserRole) Set(key interface{}, value ...interface{}) {
 	switch k := key.(type) {
 		case map[string]interface{}:
 			for kk, vv := range k {
@@ -292,7 +292,6 @@ func (this *UserRole) Set(key interface{}, value ...interface{}) factory.Model {
 				case "PermAction": this.PermAction = param.AsString(vv)
 			}
 	}
-	return this
 }
 
 func (this *UserRole) AsRow() map[string]interface{} {

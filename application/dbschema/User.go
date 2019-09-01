@@ -179,8 +179,8 @@ func (this *User) ListByOffset(recv interface{}, mw func(db.Result) db.Result, o
 func (this *User) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Online) == 0 { this.Online = "N" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Gender) == 0 { this.Gender = "secret" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
@@ -195,8 +195,8 @@ func (this *User) Add() (pk interface{}, err error) {
 
 func (this *User) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Online) == 0 { this.Online = "N" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Gender) == 0 { this.Gender = "secret" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
@@ -213,8 +213,8 @@ func (this *User) SetField(mw func(db.Result) db.Result, field string, value int
 
 func (this *User) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	if val, ok := kvset["online"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["online"] = "N" } }
+	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	if val, ok := kvset["gender"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["gender"] = "secret" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
@@ -222,14 +222,14 @@ func (this *User) SetFields(mw func(db.Result) db.Result, kvset map[string]inter
 func (this *User) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Online) == 0 { this.Online = "N" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Gender) == 0 { this.Gender = "secret" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Online) == 0 { this.Online = "N" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Gender) == 0 { this.Gender = "secret" }
 	})
 	if err == nil && pk != nil {
@@ -292,7 +292,7 @@ func (this *User) AsMap() map[string]interface{} {
 	return r
 }
 
-func (this *User) Set(key interface{}, value ...interface{}) factory.Model {
+func (this *User) Set(key interface{}, value ...interface{}) {
 	switch k := key.(type) {
 		case map[string]interface{}:
 			for kk, vv := range k {
@@ -330,7 +330,6 @@ func (this *User) Set(key interface{}, value ...interface{}) factory.Model {
 				case "Updated": this.Updated = param.AsUint(vv)
 			}
 	}
-	return this
 }
 
 func (this *User) AsRow() map[string]interface{} {

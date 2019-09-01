@@ -253,7 +253,7 @@ func (this *TaskGroup) AsMap() map[string]interface{} {
 	return r
 }
 
-func (this *TaskGroup) Set(key interface{}, value ...interface{}) factory.Model {
+func (this *TaskGroup) Set(key interface{}, value ...interface{}) {
 	switch k := key.(type) {
 		case map[string]interface{}:
 			for kk, vv := range k {
@@ -283,7 +283,6 @@ func (this *TaskGroup) Set(key interface{}, value ...interface{}) factory.Model 
 				case "CmdSuffix": this.CmdSuffix = param.AsString(vv)
 			}
 	}
-	return this
 }
 
 func (this *TaskGroup) AsRow() map[string]interface{} {

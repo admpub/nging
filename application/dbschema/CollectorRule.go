@@ -258,7 +258,7 @@ func (this *CollectorRule) AsMap() map[string]interface{} {
 	return r
 }
 
-func (this *CollectorRule) Set(key interface{}, value ...interface{}) factory.Model {
+func (this *CollectorRule) Set(key interface{}, value ...interface{}) {
 	switch k := key.(type) {
 		case map[string]interface{}:
 			for kk, vv := range k {
@@ -288,7 +288,6 @@ func (this *CollectorRule) Set(key interface{}, value ...interface{}) factory.Mo
 				case "Sort": this.Sort = param.AsInt(vv)
 			}
 	}
-	return this
 }
 
 func (this *CollectorRule) AsRow() map[string]interface{} {
