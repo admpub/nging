@@ -5817,3 +5817,4 @@ ul.timeline li > .fa.comment-avatar{height:50px;width:50px;padding:0;border-widt
 .resize{resize:both}
 .resize-y{resize:vertical}
 .resize-x{resize:horizontal}
+.btn.no-padding > img.scale{object-fit:scale-down;object-position:center;max-width:100px;height:32px;}

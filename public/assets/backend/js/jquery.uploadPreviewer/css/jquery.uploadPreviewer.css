@@ -41,14 +41,24 @@
   object-position: center;
 }
 
+.file-preview-table .filethumb{
+  width:70px;
+}
+
 .file-preview-table .filename {
   word-wrap: break-word;
-  text-align: center;
+  text-align: left;
 }
 
 .file-preview-table td {
   padding: 4px 6px;
 }
+
+.file-preview-table .filesize{
+  width:100px;
+}
+
+.file-preview-table td.remove-file{width:60px}
 
 .no-show {
   display: none;

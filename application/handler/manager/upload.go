@@ -72,7 +72,7 @@ func Upload(ctx echo.Context) error {
 		return err
 	}
 	if !upload.SubdirIsAllowed(typ) {
-		err = errors.New(ctx.T(`参数“%s”未被登记`, typ))
+		err = ctx.E(`参数“%s”未被登记`, typ)
 		datax, embed := ResponseDataForUpload(ctx, field, err, files)
 		if !embed {
 			return ctx.JSON(datax)
