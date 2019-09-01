@@ -21,6 +21,7 @@ package common
 import (
 	"encoding/gob"
 	"errors"
+	"strings"
 )
 
 func init() {
@@ -47,6 +48,21 @@ var (
 
 // DefaultNopMessage 默认空消息
 var DefaultNopMessage Messager = &NopMessage{}
+
+// Errors 多个错误信息
+type Errors []error
+
+func (e Errors) Error() string {
+	s := make([]string, len(e))
+	for k, v := range e {
+		s[k] = v.Error()
+	}
+	return strings.Join(s, "\n")
+}
+
+func (e Errors) String() string {
+	return e.Error()
+}
 
 // NopMessage 空消息
 type NopMessage struct {
