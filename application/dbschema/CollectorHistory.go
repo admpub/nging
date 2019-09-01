@@ -312,21 +312,6 @@ func (this *CollectorHistory) Set(key interface{}, value ...interface{}) factory
 				case "Exported": this.Exported = param.AsUint(vv)
 			}
 	}
-	r := map[string]interface{}{}
-	r["Id"] = this.Id
-	r["ParentId"] = this.ParentId
-	r["PageId"] = this.PageId
-	r["PageParentId"] = this.PageParentId
-	r["PageRootId"] = this.PageRootId
-	r["HasChild"] = this.HasChild
-	r["Url"] = this.Url
-	r["UrlMd5"] = this.UrlMd5
-	r["Title"] = this.Title
-	r["Content"] = this.Content
-	r["RuleMd5"] = this.RuleMd5
-	r["Data"] = this.Data
-	r["Created"] = this.Created
-	r["Exported"] = this.Exported
 	return r
 }
 

@@ -296,17 +296,6 @@ func (this *FtpUser) Set(key interface{}, value ...interface{}) factory.Model {
 				case "GroupId": this.GroupId = param.AsUint(vv)
 			}
 	}
-	r := map[string]interface{}{}
-	r["Id"] = this.Id
-	r["Username"] = this.Username
-	r["Password"] = this.Password
-	r["Banned"] = this.Banned
-	r["Directory"] = this.Directory
-	r["IpWhitelist"] = this.IpWhitelist
-	r["IpBlacklist"] = this.IpBlacklist
-	r["Created"] = this.Created
-	r["Updated"] = this.Updated
-	r["GroupId"] = this.GroupId
 	return r
 }
 

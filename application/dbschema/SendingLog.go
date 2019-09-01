@@ -331,22 +331,6 @@ func (this *SendingLog) Set(key interface{}, value ...interface{}) factory.Model
 				case "AppointmentTime": this.AppointmentTime = param.AsUint(vv)
 			}
 	}
-	r := map[string]interface{}{}
-	r["Id"] = this.Id
-	r["Created"] = this.Created
-	r["SentAt"] = this.SentAt
-	r["SourceId"] = this.SourceId
-	r["SourceType"] = this.SourceType
-	r["Disabled"] = this.Disabled
-	r["Method"] = this.Method
-	r["To"] = this.To
-	r["Provider"] = this.Provider
-	r["Result"] = this.Result
-	r["Status"] = this.Status
-	r["Retries"] = this.Retries
-	r["Content"] = this.Content
-	r["Params"] = this.Params
-	r["AppointmentTime"] = this.AppointmentTime
 	return r
 }
 

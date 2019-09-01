@@ -291,17 +291,6 @@ func (this *DbSync) Set(key interface{}, value ...interface{}) factory.Model {
 				case "Updated": this.Updated = param.AsInt(vv)
 			}
 	}
-	r := map[string]interface{}{}
-	r["Id"] = this.Id
-	r["DsnSource"] = this.DsnSource
-	r["DsnDestination"] = this.DsnDestination
-	r["Tables"] = this.Tables
-	r["SkipTables"] = this.SkipTables
-	r["AlterIgnore"] = this.AlterIgnore
-	r["Drop"] = this.Drop
-	r["MailTo"] = this.MailTo
-	r["Created"] = this.Created
-	r["Updated"] = this.Updated
 	return r
 }
 

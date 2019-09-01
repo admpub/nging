@@ -280,13 +280,6 @@ func (this *CollectorGroup) Set(key interface{}, value ...interface{}) factory.M
 				case "Created": this.Created = param.AsUint(vv)
 			}
 	}
-	r := map[string]interface{}{}
-	r["Id"] = this.Id
-	r["Uid"] = this.Uid
-	r["Name"] = this.Name
-	r["Type"] = this.Type
-	r["Description"] = this.Description
-	r["Created"] = this.Created
 	return r
 }
 

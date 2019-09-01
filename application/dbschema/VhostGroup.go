@@ -271,12 +271,6 @@ func (this *VhostGroup) Set(key interface{}, value ...interface{}) factory.Model
 				case "Created": this.Created = param.AsUint(vv)
 			}
 	}
-	r := map[string]interface{}{}
-	r["Id"] = this.Id
-	r["Uid"] = this.Uid
-	r["Name"] = this.Name
-	r["Description"] = this.Description
-	r["Created"] = this.Created
 	return r
 }
 

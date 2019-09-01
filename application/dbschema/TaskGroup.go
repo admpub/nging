@@ -283,15 +283,6 @@ func (this *TaskGroup) Set(key interface{}, value ...interface{}) factory.Model 
 				case "CmdSuffix": this.CmdSuffix = param.AsString(vv)
 			}
 	}
-	r := map[string]interface{}{}
-	r["Id"] = this.Id
-	r["Uid"] = this.Uid
-	r["Name"] = this.Name
-	r["Description"] = this.Description
-	r["Created"] = this.Created
-	r["Updated"] = this.Updated
-	r["CmdPrefix"] = this.CmdPrefix
-	r["CmdSuffix"] = this.CmdSuffix
 	return r
 }
 

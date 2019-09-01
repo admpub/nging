@@ -292,16 +292,6 @@ func (this *Vhost) Set(key interface{}, value ...interface{}) factory.Model {
 				case "Disabled": this.Disabled = param.AsString(vv)
 			}
 	}
-	r := map[string]interface{}{}
-	r["Id"] = this.Id
-	r["Name"] = this.Name
-	r["GroupId"] = this.GroupId
-	r["Domain"] = this.Domain
-	r["Root"] = this.Root
-	r["Created"] = this.Created
-	r["Updated"] = this.Updated
-	r["Setting"] = this.Setting
-	r["Disabled"] = this.Disabled
 	return r
 }
 

@@ -275,13 +275,6 @@ func (this *UserU2f) Set(key interface{}, value ...interface{}) factory.Model {
 				case "Created": this.Created = param.AsUint(vv)
 			}
 	}
-	r := map[string]interface{}{}
-	r["Id"] = this.Id
-	r["Uid"] = this.Uid
-	r["Token"] = this.Token
-	r["Type"] = this.Type
-	r["Extra"] = this.Extra
-	r["Created"] = this.Created
 	return r
 }
 

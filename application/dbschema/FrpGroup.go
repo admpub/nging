@@ -275,13 +275,6 @@ func (this *FrpGroup) Set(key interface{}, value ...interface{}) factory.Model {
 				case "Updated": this.Updated = param.AsUint(vv)
 			}
 	}
-	r := map[string]interface{}{}
-	r["Id"] = this.Id
-	r["Uid"] = this.Uid
-	r["Name"] = this.Name
-	r["Description"] = this.Description
-	r["Created"] = this.Created
-	r["Updated"] = this.Updated
 	return r
 }
 

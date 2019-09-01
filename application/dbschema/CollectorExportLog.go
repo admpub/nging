@@ -280,13 +280,6 @@ func (this *CollectorExportLog) Set(key interface{}, value ...interface{}) facto
 				case "Created": this.Created = param.AsUint(vv)
 			}
 	}
-	r := map[string]interface{}{}
-	r["Id"] = this.Id
-	r["PageId"] = this.PageId
-	r["ExportId"] = this.ExportId
-	r["Result"] = this.Result
-	r["Status"] = this.Status
-	r["Created"] = this.Created
 	return r
 }
 

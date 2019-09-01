@@ -287,16 +287,6 @@ func (this *Config) Set(key interface{}, value ...interface{}) factory.Model {
 				case "Encrypted": this.Encrypted = param.AsString(vv)
 			}
 	}
-	r := map[string]interface{}{}
-	r["Key"] = this.Key
-	r["Label"] = this.Label
-	r["Description"] = this.Description
-	r["Value"] = this.Value
-	r["Group"] = this.Group
-	r["Type"] = this.Type
-	r["Sort"] = this.Sort
-	r["Disabled"] = this.Disabled
-	r["Encrypted"] = this.Encrypted
 	return r
 }
 

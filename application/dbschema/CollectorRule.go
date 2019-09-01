@@ -288,15 +288,6 @@ func (this *CollectorRule) Set(key interface{}, value ...interface{}) factory.Mo
 				case "Sort": this.Sort = param.AsInt(vv)
 			}
 	}
-	r := map[string]interface{}{}
-	r["Id"] = this.Id
-	r["PageId"] = this.PageId
-	r["Name"] = this.Name
-	r["Rule"] = this.Rule
-	r["Type"] = this.Type
-	r["Filter"] = this.Filter
-	r["Created"] = this.Created
-	r["Sort"] = this.Sort
 	return r
 }
 

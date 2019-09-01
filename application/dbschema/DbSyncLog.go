@@ -283,15 +283,6 @@ func (this *DbSyncLog) Set(key interface{}, value ...interface{}) factory.Model 
 				case "Failed": this.Failed = param.AsUint(vv)
 			}
 	}
-	r := map[string]interface{}{}
-	r["Id"] = this.Id
-	r["SyncId"] = this.SyncId
-	r["Created"] = this.Created
-	r["Result"] = this.Result
-	r["ChangeTables"] = this.ChangeTables
-	r["ChangeTableNum"] = this.ChangeTableNum
-	r["Elapsed"] = this.Elapsed
-	r["Failed"] = this.Failed
 	return r
 }
 

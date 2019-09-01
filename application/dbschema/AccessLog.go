@@ -348,30 +348,6 @@ func (this *AccessLog) Set(key interface{}, value ...interface{}) factory.Model 
 				case "Created": this.Created = param.AsUint(vv)
 			}
 	}
-	r := map[string]interface{}{}
-	r["Id"] = this.Id
-	r["VhostId"] = this.VhostId
-	r["RemoteAddr"] = this.RemoteAddr
-	r["XRealIp"] = this.XRealIp
-	r["XForwardFor"] = this.XForwardFor
-	r["LocalAddr"] = this.LocalAddr
-	r["Elapsed"] = this.Elapsed
-	r["Host"] = this.Host
-	r["User"] = this.User
-	r["TimeLocal"] = this.TimeLocal
-	r["Minute"] = this.Minute
-	r["Method"] = this.Method
-	r["Uri"] = this.Uri
-	r["Version"] = this.Version
-	r["StatusCode"] = this.StatusCode
-	r["BodyBytes"] = this.BodyBytes
-	r["Referer"] = this.Referer
-	r["UserAgent"] = this.UserAgent
-	r["HitStatus"] = this.HitStatus
-	r["Scheme"] = this.Scheme
-	r["BrowerName"] = this.BrowerName
-	r["BrowerType"] = this.BrowerType
-	r["Created"] = this.Created
 	return r
 }
 

@@ -341,27 +341,6 @@ func (this *Task) Set(key interface{}, value ...interface{}) factory.Model {
 				case "ClosedLog": this.ClosedLog = param.AsString(vv)
 			}
 	}
-	r := map[string]interface{}{}
-	r["Id"] = this.Id
-	r["Uid"] = this.Uid
-	r["GroupId"] = this.GroupId
-	r["Name"] = this.Name
-	r["Type"] = this.Type
-	r["Description"] = this.Description
-	r["CronSpec"] = this.CronSpec
-	r["Concurrent"] = this.Concurrent
-	r["Command"] = this.Command
-	r["WorkDirectory"] = this.WorkDirectory
-	r["Env"] = this.Env
-	r["Disabled"] = this.Disabled
-	r["EnableNotify"] = this.EnableNotify
-	r["NotifyEmail"] = this.NotifyEmail
-	r["Timeout"] = this.Timeout
-	r["ExecuteTimes"] = this.ExecuteTimes
-	r["PrevTime"] = this.PrevTime
-	r["Created"] = this.Created
-	r["Updated"] = this.Updated
-	r["ClosedLog"] = this.ClosedLog
 	return r
 }
 

@@ -292,16 +292,6 @@ func (this *UserRole) Set(key interface{}, value ...interface{}) factory.Model {
 				case "PermAction": this.PermAction = param.AsString(vv)
 			}
 	}
-	r := map[string]interface{}{}
-	r["Id"] = this.Id
-	r["Name"] = this.Name
-	r["Description"] = this.Description
-	r["Created"] = this.Created
-	r["Updated"] = this.Updated
-	r["Disabled"] = this.Disabled
-	r["ParentId"] = this.ParentId
-	r["PermCmd"] = this.PermCmd
-	r["PermAction"] = this.PermAction
 	return r
 }
 

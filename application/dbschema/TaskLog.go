@@ -284,14 +284,6 @@ func (this *TaskLog) Set(key interface{}, value ...interface{}) factory.Model {
 				case "Created": this.Created = param.AsUint(vv)
 			}
 	}
-	r := map[string]interface{}{}
-	r["Id"] = this.Id
-	r["TaskId"] = this.TaskId
-	r["Output"] = this.Output
-	r["Error"] = this.Error
-	r["Status"] = this.Status
-	r["Elapsed"] = this.Elapsed
-	r["Created"] = this.Created
 	return r
 }
 

@@ -309,19 +309,6 @@ func (this *CollectorExport) Set(key interface{}, value ...interface{}) factory.
 				case "Disabled": this.Disabled = param.AsString(vv)
 			}
 	}
-	r := map[string]interface{}{}
-	r["Id"] = this.Id
-	r["PageRoot"] = this.PageRoot
-	r["PageId"] = this.PageId
-	r["GroupId"] = this.GroupId
-	r["Mapping"] = this.Mapping
-	r["Dest"] = this.Dest
-	r["DestType"] = this.DestType
-	r["Name"] = this.Name
-	r["Description"] = this.Description
-	r["Created"] = this.Created
-	r["Exported"] = this.Exported
-	r["Disabled"] = this.Disabled
 	return r
 }
 

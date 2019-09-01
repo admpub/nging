@@ -183,10 +183,10 @@ func (this *CollectorPage) ListByOffset(recv interface{}, mw func(db.Result) db.
 func (this *CollectorPage) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Type) == 0 { this.Type = "content" }
 	if len(this.HasChild) == 0 { this.HasChild = "N" }
 	if len(this.ContentType) == 0 { this.ContentType = "html" }
 	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
+	if len(this.Type) == 0 { this.Type = "content" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -200,10 +200,10 @@ func (this *CollectorPage) Add() (pk interface{}, err error) {
 
 func (this *CollectorPage) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	
-	if len(this.Type) == 0 { this.Type = "content" }
 	if len(this.HasChild) == 0 { this.HasChild = "N" }
 	if len(this.ContentType) == 0 { this.ContentType = "html" }
 	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
+	if len(this.Type) == 0 { this.Type = "content" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -219,27 +219,27 @@ func (this *CollectorPage) SetField(mw func(db.Result) db.Result, field string, 
 
 func (this *CollectorPage) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["type"] = "content" } }
 	if val, ok := kvset["has_child"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["has_child"] = "N" } }
 	if val, ok := kvset["content_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["content_type"] = "html" } }
 	if val, ok := kvset["duplicate_rule"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["duplicate_rule"] = "none" } }
+	if val, ok := kvset["type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["type"] = "content" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *CollectorPage) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		
-	if len(this.Type) == 0 { this.Type = "content" }
 	if len(this.HasChild) == 0 { this.HasChild = "N" }
 	if len(this.ContentType) == 0 { this.ContentType = "html" }
 	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
+	if len(this.Type) == 0 { this.Type = "content" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Type) == 0 { this.Type = "content" }
 	if len(this.HasChild) == 0 { this.HasChild = "N" }
 	if len(this.ContentType) == 0 { this.ContentType = "html" }
 	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
+	if len(this.Type) == 0 { this.Type = "content" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -351,27 +351,6 @@ func (this *CollectorPage) Set(key interface{}, value ...interface{}) factory.Mo
 				case "Proxy": this.Proxy = param.AsString(vv)
 			}
 	}
-	r := map[string]interface{}{}
-	r["Id"] = this.Id
-	r["ParentId"] = this.ParentId
-	r["RootId"] = this.RootId
-	r["HasChild"] = this.HasChild
-	r["Uid"] = this.Uid
-	r["GroupId"] = this.GroupId
-	r["Name"] = this.Name
-	r["Description"] = this.Description
-	r["EnterUrl"] = this.EnterUrl
-	r["Sort"] = this.Sort
-	r["Created"] = this.Created
-	r["Browser"] = this.Browser
-	r["Type"] = this.Type
-	r["ScopeRule"] = this.ScopeRule
-	r["DuplicateRule"] = this.DuplicateRule
-	r["ContentType"] = this.ContentType
-	r["Charset"] = this.Charset
-	r["Timeout"] = this.Timeout
-	r["Waits"] = this.Waits
-	r["Proxy"] = this.Proxy
 	return r
 }
 

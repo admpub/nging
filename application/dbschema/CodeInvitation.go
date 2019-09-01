@@ -296,17 +296,6 @@ func (this *CodeInvitation) Set(key interface{}, value ...interface{}) factory.M
 				case "RoleIds": this.RoleIds = param.AsString(vv)
 			}
 	}
-	r := map[string]interface{}{}
-	r["Id"] = this.Id
-	r["Uid"] = this.Uid
-	r["RecvUid"] = this.RecvUid
-	r["Code"] = this.Code
-	r["Created"] = this.Created
-	r["Used"] = this.Used
-	r["Start"] = this.Start
-	r["End"] = this.End
-	r["Disabled"] = this.Disabled
-	r["RoleIds"] = this.RoleIds
 	return r
 }
 
