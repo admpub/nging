@@ -10,6 +10,7 @@
 		loadingCss: "file-preview-loading",
 		previewTableContainer: "",
 		ajaxDataType: "json",
+		previewTableShow: true,
 		tableTemplate: function () {
 			return "<table class='table table-striped file-preview-table' id='file-preview-table'>" +
 				"<tbody></tbody>" +
@@ -99,89 +100,104 @@
 			buttonText = this.parent("." + config.shadowClass);
 			buttonText.prepend("<span>" + config.buttonText + "</span>");
 			buttonText.wrap("<span class='" + config.buttonClass + "'></span>");
-
-			previewTableIdentifier = config.previewTable;
-			if (!previewTableIdentifier) {
-				previewTableIdentifier = "table." + config.tableCss;
-				if (config.previewTableContainer) {
-					$(config.previewTableContainer).html(config.tableTemplate());
-					var id = $(config.previewTableContainer).attr('id');
-					if(id) previewTableIdentifier = "#"+id+" "+previewTableIdentifier;
-				} else {
-					$("span." + config.buttonClass).after(config.tableTemplate());
-				}
-			}
-
-			previewTable = $(previewTableIdentifier);
-			previewTable.addClass(config.tableCss);
-			previewTableBody = previewTable.find("tbody");
-
-			previewRowTemplate = config.previewRowTemplate || config.rowTemplate;
-
-			previewTable.after(config.loadingTemplate());
-
-			previewTable.on("click", ".remove-file", function () {
-				var parentRow = $(this).parent("tr");
-				var filename = parentRow.find(".filename").text();
-				for (var i = 0; i < currentFileList.length; i++) {
-					if (currentFileList[i].name == filename) {
-						currentFileList.splice(i, 1);
-						break;
+			if (config.previewTableShow) {
+				previewTableIdentifier = config.previewTable;
+				if (!previewTableIdentifier) {
+					previewTableIdentifier = "table." + config.tableCss;
+					if (config.previewTableContainer) {
+						$(config.previewTableContainer).html(config.tableTemplate());
+						var id = $(config.previewTableContainer).attr('id');
+						if (id) previewTableIdentifier = "#" + id + " " + previewTableIdentifier;
+					} else {
+						$("span." + config.buttonClass).after(config.tableTemplate());
 					}
 				}
-				parentRow.remove();
-				$.event.trigger({ type: 'file-preview:removed', filename: filename });
-				//$.event.trigger({ type: 'file-preview:changed', files: currentFileList });
-			});
 
-			this.on('change', function (e) {
-				var loadingSpinner = $("#" + config.loadingCss);
-				loadingSpinner.show();
+				previewTable = $(previewTableIdentifier);
+				previewTable.addClass(config.tableCss);
+				previewTableBody = previewTable.find("tbody");
 
-				var reader;
-				var filesCount = e.currentTarget.files.length;
-				if(!multiple && filesCount>0){
-					currentFileList=[];
-					previewTableBody.empty();
-				}
-				$.each(e.currentTarget.files, function (index, file) {
-					currentFileList.push(file);
+				previewRowTemplate = config.previewRowTemplate || config.rowTemplate;
 
-					reader = new FileReader();
-					reader.onload = function (fileReaderEvent) {
-						var filesize, filetype, imagePreviewRow, placeholderCssClass, source;
-						if (previewTableBody) {
-							filetype = file.type;
-							if (/image/.test(filetype)) {
-								source = fileReaderEvent.target.result;
-								placeholderCssClass = config.placeholderClass + " image";
-							} else {
-								source = "";
-								placeholderCssClass = getFileTypeCssClass(filetype);
-							}
-							filesize = getFileSize(file.size);
-							imagePreviewRow = previewRowTemplate({
-								src: source,
-								name: file.name,
-								placeholderCssClass: placeholderCssClass,
-								size: filesize
-							});
+				previewTable.after(config.loadingTemplate());
 
-							previewTableBody.append(imagePreviewRow);
-
-							if (index == filesCount - 1) {
-								loadingSpinner.hide();
-							}
+				previewTable.on("click", ".remove-file", function () {
+					var parentRow = $(this).parent("tr");
+					var filename = parentRow.find(".filename").text();
+					for (var i = 0; i < currentFileList.length; i++) {
+						if (currentFileList[i].name == filename) {
+							currentFileList.splice(i, 1);
+							break;
 						}
-						if (callback) {
-							callback(fileReaderEvent);
-						}
-					};
-					reader.readAsDataURL(file);
+					}
+					parentRow.remove();
+					$.event.trigger({ type: 'file-preview:removed', filename: filename });
+					//$.event.trigger({ type: 'file-preview:changed', files: currentFileList });
 				});
 
-				$.event.trigger({ type: 'file-preview:changed', files: currentFileList });
-			});
+				this.on('change', function (e) {
+					var loadingSpinner = $("#" + config.loadingCss);
+					loadingSpinner.show();
+
+					var reader;
+					var filesCount = e.currentTarget.files.length;
+					if (!multiple && filesCount > 0) {
+						currentFileList = [];
+						previewTableBody.empty();
+					}
+					$.each(e.currentTarget.files, function (index, file) {
+						currentFileList.push(file);
+
+						reader = new FileReader();
+						reader.onload = function (fileReaderEvent) {
+							var filesize, filetype, imagePreviewRow, placeholderCssClass, source;
+							if (previewTableBody) {
+								filetype = file.type;
+								if (/image/.test(filetype)) {
+									source = fileReaderEvent.target.result;
+									placeholderCssClass = config.placeholderClass + " image";
+								} else {
+									source = "";
+									placeholderCssClass = getFileTypeCssClass(filetype);
+								}
+								filesize = getFileSize(file.size);
+								imagePreviewRow = previewRowTemplate({
+									src: source,
+									name: file.name,
+									placeholderCssClass: placeholderCssClass,
+									size: filesize
+								});
+
+								previewTableBody.append(imagePreviewRow);
+
+								if (index == filesCount - 1) {
+									loadingSpinner.hide();
+								}
+							}
+							if (callback) {
+								callback(fileReaderEvent);
+							}
+						};
+						reader.readAsDataURL(file);
+					});
+
+					$.event.trigger({ type: 'file-preview:changed', files: currentFileList });
+				});
+			} else {
+				this.on('change', function (e) {
+					var loadingSpinner = $("#" + config.loadingCss);
+					loadingSpinner.show();
+					var filesCount = e.currentTarget.files.length;
+					if (!multiple && filesCount > 0) {
+						currentFileList = [];
+					}
+					$.each(e.currentTarget.files, function (index, file) {
+						currentFileList.push(file);
+					});
+					loadingSpinner.hide();
+					$.event.trigger({ type: 'file-preview:changed', files: currentFileList });
+				});
+			}
 
 			this.fileList = function () {
 				return currentFileList;
