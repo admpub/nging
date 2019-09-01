@@ -309,7 +309,7 @@ func (this *CollectorExport) Set(key interface{}, value ...interface{}) factory.
 				case "Disabled": this.Disabled = param.AsString(vv)
 			}
 	}
-	return r
+	return this
 }
 
 func (this *CollectorExport) AsRow() map[string]interface{} {

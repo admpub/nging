@@ -283,7 +283,7 @@ func (this *DbSyncLog) Set(key interface{}, value ...interface{}) factory.Model 
 				case "Failed": this.Failed = param.AsUint(vv)
 			}
 	}
-	return r
+	return this
 }
 
 func (this *DbSyncLog) AsRow() map[string]interface{} {

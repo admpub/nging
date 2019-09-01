@@ -196,16 +196,16 @@ func (this *FrpServer) ListByOffset(recv interface{}, mw func(db.Result) db.Resu
 func (this *FrpServer) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.LogWay) == 0 { this.LogWay = "console" }
-	if len(this.ProxyAddr) == 0 { this.ProxyAddr = "0.0.0.0" }
+	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
 	if len(this.LogFile) == 0 { this.LogFile = "console" }
-	if len(this.Addr) == 0 { this.Addr = "0.0.0.0" }
-	if len(this.DashboardAddr) == 0 { this.DashboardAddr = "0.0.0.0" }
+	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
 	if len(this.DashboardUser) == 0 { this.DashboardUser = "admin" }
 	if len(this.DashboardPwd) == 0 { this.DashboardPwd = "admin" }
-	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
+	if len(this.Addr) == 0 { this.Addr = "0.0.0.0" }
+	if len(this.ProxyAddr) == 0 { this.ProxyAddr = "0.0.0.0" }
+	if len(this.DashboardAddr) == 0 { this.DashboardAddr = "0.0.0.0" }
+	if len(this.LogWay) == 0 { this.LogWay = "console" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -219,16 +219,16 @@ func (this *FrpServer) Add() (pk interface{}, err error) {
 
 func (this *FrpServer) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
-	if len(this.LogWay) == 0 { this.LogWay = "console" }
-	if len(this.ProxyAddr) == 0 { this.ProxyAddr = "0.0.0.0" }
+	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
 	if len(this.LogFile) == 0 { this.LogFile = "console" }
-	if len(this.Addr) == 0 { this.Addr = "0.0.0.0" }
-	if len(this.DashboardAddr) == 0 { this.DashboardAddr = "0.0.0.0" }
+	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
 	if len(this.DashboardUser) == 0 { this.DashboardUser = "admin" }
 	if len(this.DashboardPwd) == 0 { this.DashboardPwd = "admin" }
-	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
+	if len(this.Addr) == 0 { this.Addr = "0.0.0.0" }
+	if len(this.ProxyAddr) == 0 { this.ProxyAddr = "0.0.0.0" }
+	if len(this.DashboardAddr) == 0 { this.DashboardAddr = "0.0.0.0" }
+	if len(this.LogWay) == 0 { this.LogWay = "console" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -244,45 +244,45 @@ func (this *FrpServer) SetField(mw func(db.Result) db.Result, field string, valu
 
 func (this *FrpServer) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["log_way"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["log_way"] = "console" } }
-	if val, ok := kvset["proxy_addr"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["proxy_addr"] = "0.0.0.0" } }
+	if val, ok := kvset["tcp_mux"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["tcp_mux"] = "Y" } }
 	if val, ok := kvset["log_file"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["log_file"] = "console" } }
-	if val, ok := kvset["addr"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["addr"] = "0.0.0.0" } }
-	if val, ok := kvset["dashboard_addr"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["dashboard_addr"] = "0.0.0.0" } }
+	if val, ok := kvset["log_level"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["log_level"] = "info" } }
 	if val, ok := kvset["dashboard_user"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["dashboard_user"] = "admin" } }
 	if val, ok := kvset["dashboard_pwd"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["dashboard_pwd"] = "admin" } }
-	if val, ok := kvset["tcp_mux"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["tcp_mux"] = "Y" } }
+	if val, ok := kvset["addr"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["addr"] = "0.0.0.0" } }
+	if val, ok := kvset["proxy_addr"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["proxy_addr"] = "0.0.0.0" } }
+	if val, ok := kvset["dashboard_addr"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["dashboard_addr"] = "0.0.0.0" } }
+	if val, ok := kvset["log_way"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["log_way"] = "console" } }
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
-	if val, ok := kvset["log_level"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["log_level"] = "info" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *FrpServer) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
-	if len(this.LogWay) == 0 { this.LogWay = "console" }
-	if len(this.ProxyAddr) == 0 { this.ProxyAddr = "0.0.0.0" }
+	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
 	if len(this.LogFile) == 0 { this.LogFile = "console" }
-	if len(this.Addr) == 0 { this.Addr = "0.0.0.0" }
-	if len(this.DashboardAddr) == 0 { this.DashboardAddr = "0.0.0.0" }
+	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
 	if len(this.DashboardUser) == 0 { this.DashboardUser = "admin" }
 	if len(this.DashboardPwd) == 0 { this.DashboardPwd = "admin" }
-	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
+	if len(this.Addr) == 0 { this.Addr = "0.0.0.0" }
+	if len(this.ProxyAddr) == 0 { this.ProxyAddr = "0.0.0.0" }
+	if len(this.DashboardAddr) == 0 { this.DashboardAddr = "0.0.0.0" }
+	if len(this.LogWay) == 0 { this.LogWay = "console" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.LogWay) == 0 { this.LogWay = "console" }
-	if len(this.ProxyAddr) == 0 { this.ProxyAddr = "0.0.0.0" }
+	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
 	if len(this.LogFile) == 0 { this.LogFile = "console" }
-	if len(this.Addr) == 0 { this.Addr = "0.0.0.0" }
-	if len(this.DashboardAddr) == 0 { this.DashboardAddr = "0.0.0.0" }
+	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
 	if len(this.DashboardUser) == 0 { this.DashboardUser = "admin" }
 	if len(this.DashboardPwd) == 0 { this.DashboardPwd = "admin" }
-	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
+	if len(this.Addr) == 0 { this.Addr = "0.0.0.0" }
+	if len(this.ProxyAddr) == 0 { this.ProxyAddr = "0.0.0.0" }
+	if len(this.DashboardAddr) == 0 { this.DashboardAddr = "0.0.0.0" }
+	if len(this.LogWay) == 0 { this.LogWay = "console" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -433,7 +433,7 @@ func (this *FrpServer) Set(key interface{}, value ...interface{}) factory.Model 
 				case "Updated": this.Updated = param.AsUint(vv)
 			}
 	}
-	return r
+	return this
 }
 
 func (this *FrpServer) AsRow() map[string]interface{} {

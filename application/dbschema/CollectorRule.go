@@ -288,7 +288,7 @@ func (this *CollectorRule) Set(key interface{}, value ...interface{}) factory.Mo
 				case "Sort": this.Sort = param.AsInt(vv)
 			}
 	}
-	return r
+	return this
 }
 
 func (this *CollectorRule) AsRow() map[string]interface{} {

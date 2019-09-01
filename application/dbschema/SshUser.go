@@ -325,7 +325,7 @@ func (this *SshUser) Set(key interface{}, value ...interface{}) factory.Model {
 				case "Updated": this.Updated = param.AsUint(vv)
 			}
 	}
-	return r
+	return this
 }
 
 func (this *SshUser) AsRow() map[string]interface{} {

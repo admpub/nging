@@ -296,7 +296,7 @@ func (this *FtpUser) Set(key interface{}, value ...interface{}) factory.Model {
 				case "GroupId": this.GroupId = param.AsUint(vv)
 			}
 	}
-	return r
+	return this
 }
 
 func (this *FtpUser) AsRow() map[string]interface{} {

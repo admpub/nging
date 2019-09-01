@@ -297,7 +297,7 @@ func (this *FtpUserGroup) Set(key interface{}, value ...interface{}) factory.Mod
 				case "IpBlacklist": this.IpBlacklist = param.AsString(vv)
 			}
 	}
-	return r
+	return this
 }
 
 func (this *FtpUserGroup) AsRow() map[string]interface{} {

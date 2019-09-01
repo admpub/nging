@@ -312,7 +312,7 @@ func (this *CollectorHistory) Set(key interface{}, value ...interface{}) factory
 				case "Exported": this.Exported = param.AsUint(vv)
 			}
 	}
-	return r
+	return this
 }
 
 func (this *CollectorHistory) AsRow() map[string]interface{} {

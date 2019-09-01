@@ -292,7 +292,7 @@ func (this *Vhost) Set(key interface{}, value ...interface{}) factory.Model {
 				case "Disabled": this.Disabled = param.AsString(vv)
 			}
 	}
-	return r
+	return this
 }
 
 func (this *Vhost) AsRow() map[string]interface{} {

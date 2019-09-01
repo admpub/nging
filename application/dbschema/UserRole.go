@@ -292,7 +292,7 @@ func (this *UserRole) Set(key interface{}, value ...interface{}) factory.Model {
 				case "PermAction": this.PermAction = param.AsString(vv)
 			}
 	}
-	return r
+	return this
 }
 
 func (this *UserRole) AsRow() map[string]interface{} {

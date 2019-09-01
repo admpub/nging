@@ -283,7 +283,7 @@ func (this *TaskGroup) Set(key interface{}, value ...interface{}) factory.Model 
 				case "CmdSuffix": this.CmdSuffix = param.AsString(vv)
 			}
 	}
-	return r
+	return this
 }
 
 func (this *TaskGroup) AsRow() map[string]interface{} {

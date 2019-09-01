@@ -275,7 +275,7 @@ func (this *FrpGroup) Set(key interface{}, value ...interface{}) factory.Model {
 				case "Updated": this.Updated = param.AsUint(vv)
 			}
 	}
-	return r
+	return this
 }
 
 func (this *FrpGroup) AsRow() map[string]interface{} {

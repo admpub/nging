@@ -275,7 +275,7 @@ func (this *UserU2f) Set(key interface{}, value ...interface{}) factory.Model {
 				case "Created": this.Created = param.AsUint(vv)
 			}
 	}
-	return r
+	return this
 }
 
 func (this *UserU2f) AsRow() map[string]interface{} {

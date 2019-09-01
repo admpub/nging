@@ -280,7 +280,7 @@ func (this *CollectorGroup) Set(key interface{}, value ...interface{}) factory.M
 				case "Created": this.Created = param.AsUint(vv)
 			}
 	}
-	return r
+	return this
 }
 
 func (this *CollectorGroup) AsRow() map[string]interface{} {

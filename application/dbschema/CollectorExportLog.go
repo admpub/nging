@@ -280,7 +280,7 @@ func (this *CollectorExportLog) Set(key interface{}, value ...interface{}) facto
 				case "Created": this.Created = param.AsUint(vv)
 			}
 	}
-	return r
+	return this
 }
 
 func (this *CollectorExportLog) AsRow() map[string]interface{} {

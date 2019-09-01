@@ -275,7 +275,7 @@ func (this *SshUserGroup) Set(key interface{}, value ...interface{}) factory.Mod
 				case "Updated": this.Updated = param.AsUint(vv)
 			}
 	}
-	return r
+	return this
 }
 
 func (this *SshUserGroup) AsRow() map[string]interface{} {

@@ -291,7 +291,7 @@ func (this *DbSync) Set(key interface{}, value ...interface{}) factory.Model {
 				case "Updated": this.Updated = param.AsInt(vv)
 			}
 	}
-	return r
+	return this
 }
 
 func (this *DbSync) AsRow() map[string]interface{} {

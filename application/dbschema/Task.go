@@ -341,7 +341,7 @@ func (this *Task) Set(key interface{}, value ...interface{}) factory.Model {
 				case "ClosedLog": this.ClosedLog = param.AsString(vv)
 			}
 	}
-	return r
+	return this
 }
 
 func (this *Task) AsRow() map[string]interface{} {

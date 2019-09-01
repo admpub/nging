@@ -296,7 +296,7 @@ func (this *CodeInvitation) Set(key interface{}, value ...interface{}) factory.M
 				case "RoleIds": this.RoleIds = param.AsString(vv)
 			}
 	}
-	return r
+	return this
 }
 
 func (this *CodeInvitation) AsRow() map[string]interface{} {
