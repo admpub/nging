@@ -1,0 +1,77 @@
+.file-preview-button {
+  margin-top: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.file-preview-button input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  opacity: 0;
+  -ms-filter: 'alpha(opacity=0)';
+  cursor: pointer;
+}
+
+.file-preview-table {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.file-preview-table tr {
+  border-top: 1px solid #eee;
+}
+
+.file-preview-table .file-preview-placeholder {
+  width: 47px;
+  height: 53px;
+}
+.file-preview-table .file-preview-placeholder.video            { background-image: url('../img/video.png');       }
+.file-preview-table .file-preview-placeholder.audio            { background-image: url('../img/audio.png');       }
+.file-preview-table .file-preview-placeholder.pdf              { background-image: url('../img/pdf.png');         }
+.file-preview-table .file-preview-placeholder.spreadsheet      { background-image: url('../img/spreadsheet.png'); }
+.file-preview-table .file-preview-placeholder.powerpoint       { background-image: url('../img/powerpoint.png');  }
+.file-preview-table .file-preview-placeholder.document         { background-image: url('../img/document.png');    }
+.file-preview-table .file-preview-placeholder.zip              { background-image: url('../img/zip.png');         }
+.file-preview-table .file-preview-placeholder.rar              { background-image: url('../img/rar.png');         }
+.file-preview-table .file-preview-placeholder.default-filetype { background-image: url('../img/default.png');     }
+.file-preview-table .file-preview-placeholder.image            {
+  object-fit: scale-down;
+  object-position: center;
+}
+
+.file-preview-table .filename {
+  word-wrap: break-word;
+  text-align: center;
+}
+
+.file-preview-table td {
+  padding: 4px 6px;
+}
+
+.no-show {
+  display: none;
+}
+
+#file-preview-loading {
+  width: 34px; /* width = 30px (outer div) + 2*2px (border) */
+  height: 34px;
+  margin: 0 auto;
+}
+
+.ball-clip-rotate-pulse > div:first-child {
+  background: #337ab7;
+  /* override bootstrap */
+  -webkit-box-sizing: initial;
+  -moz-box-sizing: initial;
+  box-sizing: initial;
+}
+
+.ball-clip-rotate-pulse > div:last-child {
+  border-color: #337ab7 transparent;
+  /* override bootstrap */
+  -webkit-box-sizing: initial;
+  -moz-box-sizing: initial;
+  box-sizing: initial;
+}
