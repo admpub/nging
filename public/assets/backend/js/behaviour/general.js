@@ -1270,6 +1270,18 @@ var App = function () {
           default:
           return true;
       }
+    },
+    progressMonitor:function (getCurrentFn,totalProgress){
+      NProgress.start();
+      var interval=window.setInterval(function(){
+        var current=getCurrentFn()/totalProgress;
+        if(current>=1){
+          NProgress.set(1);
+          window.clearInterval(interval);
+        }else{
+          NProgress.set(current);
+        }
+      },50);
     }
   };
  
