@@ -14,5 +14,10 @@ function cssMinifier(flieIn, fileOut) {
    fs.writeFileSync(fileOut, finalCode, 'utf8');
 }
 var arguments = process.argv.splice(2); //node ./minifyCSS.js src.js min.js
+if (arguments.length == 1) {
+   var srcFile = arguments[0];
+   var pos = srcFile.lastIndexOf('.');
+   arguments.push(srcFile.substring(0, pos)+'.min'+srcFile.substring(pos))
+}
 cssMinifier(arguments[0], arguments[1]);  //单个文件压缩
 //cssMinifier(['./file-src/index_20120913.css','./file-src/indexw_20120913.css'], './file-smin/index.css');
