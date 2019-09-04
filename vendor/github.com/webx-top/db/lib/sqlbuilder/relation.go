@@ -36,7 +36,7 @@ func (sel *selector) Relation(name string, fn BuilderChainFunc) Selector {
 	return sel
 }
 
-func eachField(t reflect.Type, fn func(field reflect.StructField, relations []string) error) error {
+func eachField(t reflect.Type, fn func(field reflect.StructField, relations []string, pipes []Pipe) error) error {
 	typeMap := mapper.TypeMap(t)
 	options, ok := typeMap.Options[`relation`]
 	if !ok {
@@ -54,7 +54,19 @@ func eachField(t reflect.Type, fn func(field reflect.StructField, relations []st
 		if len(relations) != 2 {
 			return fmt.Errorf("Wrong relation option, length must 2, but get %v. Reference format: `db:\"-,relation=ForeignKey:RelationKey\"`", relations)
 		}
-		err := fn(fieldInfo.Field, relations)
+		rels := strings.Split(relations[1], `|`)
+		var pipes []Pipe
+		if len(rels) > 1 {
+			relations[1] = rels[0]
+			for _, pipeName := range rels[1:] {
+				pipe, ok := PipeList[pipeName]
+				if !ok {
+					continue
+				}
+				pipes = append(pipes, pipe)
+			}
+		}
+		err := fn(fieldInfo.Field, relations, pipes)
 		if err != nil {
 			return err
 		}
@@ -66,9 +78,30 @@ type Name_ interface {
 	Name_() string
 }
 
+type Pipe func(interface{}) interface{}
+type Pipes map[string]Pipe
+
+func (pipes *Pipes) Add(name string, pipe Pipe) {
+	(*pipes)[name] = pipe
+}
+
 var (
 	ErrUnableDetermineTableName = errors.New(`Unable to determine table name`)
 	TableName                   = DefaultTableName
+	PipeList                    = Pipes{
+		`split`: func(v interface{}) interface{} {
+			items := strings.Split(v.(string), `,`)
+			result := []interface{}{}
+			for _, item := range items {
+				item = strings.TrimSpace(item)
+				if len(item) == 0 {
+					continue
+				}
+				result = append(result, item)
+			}
+			return result
+		},
+	}
 )
 
 func DefaultTableName(data interface{}, retry ...bool) (string, error) {
@@ -109,12 +142,31 @@ func DefaultTableName(data interface{}, retry ...bool) (string, error) {
 	return name, err
 }
 
+func buildCond(refVal reflect.Value, relations []string, pipes []Pipe) interface{} {
+	fieldName := relations[RelationKeyIndex]
+	fieldValue := mapper.FieldByName(refVal, relations[ForeignKeyIndex]).Interface()
+	for _, pipe := range pipes {
+		fieldValue = pipe(fieldValue)
+	}
+	var cond interface{}
+	if v, y := fieldValue.([]interface{}); y {
+		cond = db.Cond{
+			fieldName: db.In(v),
+		}
+	} else {
+		cond = db.Cond{
+			fieldName: fieldValue,
+		}
+	}
+	return cond
+}
+
 // RelationOne is get the associated relational data for a single piece of data
 func RelationOne(builder SQLBuilder, data interface{}) error {
 	refVal := reflect.Indirect(reflect.ValueOf(data))
 	t := refVal.Type()
 
-	return eachField(t, func(field reflect.StructField, relations []string) error {
+	return eachField(t, func(field reflect.StructField, relations []string, pipes []Pipe) error {
 		name := field.Name
 		var foreignModel reflect.Value
 		// if field type is slice then one-to-many ,eg: []*Struct
@@ -127,9 +179,8 @@ func RelationOne(builder SQLBuilder, data interface{}) error {
 			}
 			// batch get field values
 			// Since the structure is slice, there is no need to new Value
-			sel := builder.SelectFrom(table).Where(db.Cond{
-				relations[RelationKeyIndex]: mapper.FieldByName(refVal, relations[ForeignKeyIndex]).Interface(),
-			})
+			cond := buildCond(refVal, relations, pipes)
+			sel := builder.SelectFrom(table).Where(cond)
 			if chains := builder.RelationMap(); chains != nil {
 				if chainFn, ok := chains[name]; ok {
 					sel = chainFn(sel)
@@ -156,9 +207,8 @@ func RelationOne(builder SQLBuilder, data interface{}) error {
 			if err != nil {
 				return err
 			}
-			sel := builder.SelectFrom(table).Where(db.Cond{
-				relations[RelationKeyIndex]: mapper.FieldByName(refVal, relations[ForeignKeyIndex]).Interface(),
-			})
+			cond := buildCond(refVal, relations, pipes)
+			sel := builder.SelectFrom(table).Where(cond)
 			if chains := builder.RelationMap(); chains != nil {
 				if chainFn, ok := chains[name]; ok {
 					sel = chainFn(sel)
@@ -191,7 +241,7 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 	// get the struct field in slice
 	t := reflect.Indirect(refVal.Index(0)).Type()
 
-	return eachField(t, func(field reflect.StructField, relations []string) error {
+	return eachField(t, func(field reflect.StructField, relations []string, pipes []Pipe) error {
 		name := field.Name
 		relVals := make([]interface{}, 0)
 		relValsMap := make(map[interface{}]interface{}, 0)
@@ -199,6 +249,15 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 		// get relation field values and unique
 		for j := 0; j < l; j++ {
 			v := mapper.FieldByName(refVal.Index(j), relations[ForeignKeyIndex]).Interface()
+			for _, pipe := range pipes {
+				v = pipe(v)
+			}
+			if vs, ok := v.([]interface{}); ok {
+				for _, vv := range vs {
+					relValsMap[vv] = nil
+				}
+				continue
+			}
 			relValsMap[v] = nil
 		}
 
