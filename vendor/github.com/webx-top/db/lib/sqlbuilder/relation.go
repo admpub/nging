@@ -13,10 +13,10 @@ import (
 type BuilderChainFunc func(Selector) Selector
 
 const (
-	// RelationKeyIndex 关联键名下标
-	RelationKeyIndex = 0
 	// ForeignKeyIndex 外键名下标
-	ForeignKeyIndex = 1
+	ForeignKeyIndex = 0
+	// RelationKeyIndex 关联键名下标
+	RelationKeyIndex = 1
 )
 
 func (b *sqlBuilder) Relation(name string, fn BuilderChainFunc) SQLBuilder {
@@ -143,8 +143,14 @@ func DefaultTableName(data interface{}, retry ...bool) (string, error) {
 }
 
 func buildCond(refVal reflect.Value, relations []string, pipes []Pipe) interface{} {
-	fieldName := relations[RelationKeyIndex]
-	fieldValue := mapper.FieldByName(refVal, relations[ForeignKeyIndex]).Interface()
+	fieldName := relations[ForeignKeyIndex]
+	rFieldName := relations[RelationKeyIndex]
+	fieldValue := mapper.FieldByName(refVal, rFieldName).Interface()
+	if len(pipes) == 0 {
+		return db.Cond{
+			fieldName: fieldValue,
+		}
+	}
 	for _, pipe := range pipes {
 		fieldValue = pipe(fieldValue)
 	}
@@ -245,20 +251,28 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 		name := field.Name
 		relVals := make([]interface{}, 0)
 		relValsMap := make(map[interface{}]interface{}, 0)
-
+		fieldName := relations[ForeignKeyIndex]
+		rFieldName := relations[RelationKeyIndex]
 		// get relation field values and unique
-		for j := 0; j < l; j++ {
-			v := mapper.FieldByName(refVal.Index(j), relations[ForeignKeyIndex]).Interface()
-			for _, pipe := range pipes {
-				v = pipe(v)
+		if len(pipes) == 0 {
+			for j := 0; j < l; j++ {
+				v := mapper.FieldByName(refVal.Index(j), rFieldName).Interface()
+				relValsMap[v] = nil
 			}
-			if vs, ok := v.([]interface{}); ok {
-				for _, vv := range vs {
-					relValsMap[vv] = nil
+		} else {
+			for j := 0; j < l; j++ {
+				v := mapper.FieldByName(refVal.Index(j), rFieldName).Interface()
+				for _, pipe := range pipes {
+					v = pipe(v)
 				}
-				continue
+				if vs, ok := v.([]interface{}); ok {
+					for _, vv := range vs {
+						relValsMap[vv] = nil
+					}
+					continue
+				}
+				relValsMap[v] = nil
 			}
-			relValsMap[v] = nil
 		}
 
 		for k := range relValsMap {
@@ -277,7 +291,7 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 			// batch get field values
 			// Since the structure is slice, there is no need to new Value
 			sel := builder.SelectFrom(table).Where(db.Cond{
-				relations[RelationKeyIndex]: db.In(relVals),
+				fieldName: db.In(relVals),
 			})
 			if chains := builder.RelationMap(); chains != nil {
 				if chainFn, ok := chains[name]; ok {
@@ -297,7 +311,7 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 			mlen := reflect.Indirect(foreignModel).Len()
 			for n := 0; n < mlen; n++ {
 				val := reflect.Indirect(foreignModel).Index(n)
-				fid := mapper.FieldByName(val, relations[RelationKeyIndex])
+				fid := mapper.FieldByName(val, fieldName)
 				fv := fid.Interface()
 				if _, has := fmap[fv]; !has {
 					fmap[fv] = reflect.New(reflect.SliceOf(field.Type.Elem())).Elem()
@@ -308,7 +322,7 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 			// Set the result to the model
 			for j := 0; j < l; j++ {
 				v := refVal.Index(j)
-				fid := mapper.FieldByName(v, relations[ForeignKeyIndex])
+				fid := mapper.FieldByName(v, rFieldName)
 				if value, has := fmap[fid.Interface()]; has {
 					reflect.Indirect(v).FieldByName(name).Set(value)
 				} else {
@@ -330,7 +344,7 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 				return err
 			}
 			sel := builder.SelectFrom(table).Where(db.Cond{
-				relations[RelationKeyIndex]: db.In(relVals),
+				fieldName: db.In(relVals),
 			})
 			if chains := builder.RelationMap(); chains != nil {
 				if chainFn, ok := chains[name]; ok {
@@ -348,14 +362,14 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 			mlen := fval.Len()
 			for n := 0; n < mlen; n++ {
 				val := fval.Index(n)
-				fid := mapper.FieldByName(val, relations[RelationKeyIndex])
+				fid := mapper.FieldByName(val, fieldName)
 				fmap[fid.Interface()] = val
 			}
 
 			// Set the result to the model
 			for j := 0; j < l; j++ {
 				v := refVal.Index(j)
-				fid := mapper.FieldByName(v, relations[ForeignKeyIndex])
+				fid := mapper.FieldByName(v, rFieldName)
 				if value, has := fmap[fid.Interface()]; has {
 					reflect.Indirect(v).FieldByName(name).Set(value)
 				}
