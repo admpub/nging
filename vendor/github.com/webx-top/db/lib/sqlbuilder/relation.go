@@ -8,6 +8,7 @@ import (
 	"github.com/admpub/errors"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
+	"github.com/webx-top/echo/param"
 )
 
 type BuilderChainFunc func(Selector) Selector
@@ -250,14 +251,15 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 	return eachField(t, func(field reflect.StructField, relations []string, pipes []Pipe) error {
 		name := field.Name
 		relVals := make([]interface{}, 0)
-		relValsMap := make(map[interface{}]interface{}, 0)
+		relValsMap := make(map[interface{}]struct{}, 0)
+		relValsMapx := make(map[int][]interface{}, 0)
 		fieldName := relations[ForeignKeyIndex]
 		rFieldName := relations[RelationKeyIndex]
 		// get relation field values and unique
 		if len(pipes) == 0 {
 			for j := 0; j < l; j++ {
 				v := mapper.FieldByName(refVal.Index(j), rFieldName).Interface()
-				relValsMap[v] = nil
+				relValsMap[v] = struct{}{}
 			}
 		} else {
 			for j := 0; j < l; j++ {
@@ -266,12 +268,16 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 					v = pipe(v)
 				}
 				if vs, ok := v.([]interface{}); ok {
+					if _, ok := relValsMapx[j]; !ok {
+						relValsMapx[j] = []interface{}{}
+					}
 					for _, vv := range vs {
-						relValsMap[vv] = nil
+						relValsMap[vv] = struct{}{}
+						relValsMapx[j] = append(relValsMapx[j], vv)
 					}
 					continue
 				}
-				relValsMap[v] = nil
+				relValsMap[v] = struct{}{}
 			}
 		}
 
@@ -308,10 +314,12 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 			// Combine relation data as a one-to-many relation
 			// For example, if there are multiple images under an article
 			// we use the article ID to associate the images, map[1][]*Images
+			var ft reflect.Kind
 			mlen := reflect.Indirect(foreignModel).Len()
 			for n := 0; n < mlen; n++ {
 				val := reflect.Indirect(foreignModel).Index(n)
 				fid := mapper.FieldByName(val, fieldName)
+				ft = fid.Kind()
 				fv := fid.Interface()
 				if _, has := fmap[fv]; !has {
 					fmap[fv] = reflect.New(reflect.SliceOf(field.Type.Elem())).Elem()
@@ -326,6 +334,17 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 				if value, has := fmap[fid.Interface()]; has {
 					reflect.Indirect(v).FieldByName(name).Set(value)
 				} else {
+					if idxList, ok := relValsMapx[j]; ok {
+						slicev := reflect.New(reflect.SliceOf(field.Type.Elem())).Elem()
+						for _, _v := range idxList {
+							_v = param.AsType(ft.String(), _v)
+							if value, has := fmap[_v]; has {
+								slicev = reflect.AppendSlice(slicev, value)
+							}
+						}
+						reflect.Indirect(v).FieldByName(name).Set(slicev)
+						continue
+					}
 					// If relation data is empty, must set empty slice
 					// Otherwise, the JSON result will be null instead of []
 					reflect.Indirect(v).FieldByName(name).Set(reflect.MakeSlice(field.Type, 0, 0))
@@ -365,7 +384,6 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 				fid := mapper.FieldByName(val, fieldName)
 				fmap[fid.Interface()] = val
 			}
-
 			// Set the result to the model
 			for j := 0; j < l; j++ {
 				v := refVal.Index(j)
