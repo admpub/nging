@@ -391,7 +391,7 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 			mlen := fval.Len()
 			var ft reflect.Kind
 			if mlen > 0 {
-				ft = mapper.FieldByName(reflect.Indirect(foreignModel).Index(0), fieldName).Kind()
+				ft = mapper.FieldByName(fval.Index(0), fieldName).Kind()
 			}
 			for n := 0; n < mlen; n++ {
 				val := fval.Index(n)
