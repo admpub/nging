@@ -255,6 +255,10 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 		relValsMapx := make(map[int][]interface{}, 0)
 		fieldName := relations[ForeignKeyIndex]
 		rFieldName := relations[RelationKeyIndex]
+		var rt reflect.Kind
+		if l > 0 {
+			rt = mapper.FieldByName(refVal.Index(0), rFieldName).Kind()
+		}
 		// get relation field values and unique
 		if len(pipes) == 0 {
 			for j := 0; j < l; j++ {
@@ -314,24 +318,30 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 			// Combine relation data as a one-to-many relation
 			// For example, if there are multiple images under an article
 			// we use the article ID to associate the images, map[1][]*Images
-			var ft reflect.Kind
 			mlen := reflect.Indirect(foreignModel).Len()
+			var ft reflect.Kind
+			if mlen > 0 {
+				ft = mapper.FieldByName(reflect.Indirect(foreignModel).Index(0), fieldName).Kind()
+			}
 			for n := 0; n < mlen; n++ {
 				val := reflect.Indirect(foreignModel).Index(n)
 				fid := mapper.FieldByName(val, fieldName)
-				ft = fid.Kind()
 				fv := fid.Interface()
 				if _, has := fmap[fv]; !has {
 					fmap[fv] = reflect.New(reflect.SliceOf(field.Type.Elem())).Elem()
 				}
 				fmap[fv] = reflect.Append(fmap[fv], val)
 			}
-
+			needConversion := rt != ft && ft != reflect.Invalid
 			// Set the result to the model
 			for j := 0; j < l; j++ {
 				v := refVal.Index(j)
 				fid := mapper.FieldByName(v, rFieldName)
-				if value, has := fmap[fid.Interface()]; has {
+				val := fid.Interface()
+				if needConversion {
+					val = param.AsType(ft.String(), val)
+				}
+				if value, has := fmap[val]; has {
 					reflect.Indirect(v).FieldByName(name).Set(value)
 				} else {
 					if idxList, ok := relValsMapx[j]; ok {
@@ -379,16 +389,25 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 			fmap := make(map[interface{}]reflect.Value)
 			fval := reflect.Indirect(fi)
 			mlen := fval.Len()
+			var ft reflect.Kind
+			if mlen > 0 {
+				ft = mapper.FieldByName(reflect.Indirect(foreignModel).Index(0), fieldName).Kind()
+			}
 			for n := 0; n < mlen; n++ {
 				val := fval.Index(n)
 				fid := mapper.FieldByName(val, fieldName)
 				fmap[fid.Interface()] = val
 			}
+			needConversion := rt != ft && ft != reflect.Invalid
 			// Set the result to the model
 			for j := 0; j < l; j++ {
 				v := refVal.Index(j)
 				fid := mapper.FieldByName(v, rFieldName)
-				if value, has := fmap[fid.Interface()]; has {
+				val := fid.Interface()
+				if needConversion {
+					val = param.AsType(ft.String(), val)
+				}
+				if value, has := fmap[val]; has {
 					reflect.Indirect(v).FieldByName(name).Set(value)
 				}
 			}
