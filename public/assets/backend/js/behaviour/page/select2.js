@@ -1,6 +1,6 @@
 App.select2 = {
     i18n: {
-        TAG_INPUT: '请输入或选择标签，如有多个用空格隔开',
+        TAG_INPUT: '请输入或选择，如有多个用逗号隔开',
         TAG_SELECT: '请输入关键词后从搜索列表中选择',
         SELECT: '请选择'
     },
