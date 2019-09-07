@@ -22,99 +22,103 @@
 {{Block "main"}}
 {{$path := Stored.Get "path"}}
 <div class="row">
-				<div class="col-md-12">
-					<div class="block-flat">
-						<div class="header">
-							<div class="btn-group">
-								<button type="button" id="mkdirBtn" class="btn btn-success" data-url="__BACKEND__/caddy/vhost_file?id={{Stored.data.Id}}&do=mkdir&path={{if $path}}{{$path}}/{{end}}" onclick="fileMkdir(this)">
-                                    <i class="fa fa-plus"></i>
-                                    {{"新建文件夹"|T}}
-                                </button>
-								<button type="button" id="uploadBtn" class="btn btn-primary">
-                                    <i class="fa fa-upload"></i>
-                                    {{"上传文件到当前目录"|T}}
-                                </button>
-								<button type="button" id="uploadZipBtn" class="btn btn-warning" data-popover="popover" data-original-title="" data-content="{{"仅支持上传zip压缩包。成功解压到当前目录后，该压缩包会被自动删除"|T}}" data-placement="top" data-trigger="hover">
-                                    <i class="fa fa-upload"></i>
-                                    {{"打包上传到当前目录"|T}}
-                                </button>
-                                <span class="input-group" style="padding-left:10px">
-                                    <input type="text" id="query-current-path" name="query" class="form-control typeahead" required="required" value="{{Form "query"}}" data-provide="typeahead">
-                                    <span class="input-group-btn"><button class="btn btn-default" type="button" id="btn-query-current-path"><i class="fa fa-search"></i></button></span>
-                                </span>
-							</div>
-						</div>
-						<div class="content">
-							<div class="table-responsive">
-							<table class="table no-border hover">
-								<thead class="no-border">
-									<tr>
-										<th><strong>{{"名称"|T}}</strong></th>
-										<th style="width:130px"><strong>{{"修改日期"|T}}</strong></th>
-										<th style="width:80px"><strong>{{"类型"|T}}</strong></th>
-										<th style="width:80px"><strong>{{"大小"|T}}</strong></th>
-										<th style="width:80px" class="text-center"><strong>{{"操作"|T}}</strong></th>
-									</tr>
-								</thead>
-								<tbody class="no-border-y" id="tbody-content">
-                                    {{if $path}}
-                                    <tr>
-										<td>
-                                            <i class="fa fa-folder-o"></i>
-                                            <a title="{{"点击回到上一级"|T}}" href="__BACKEND__/caddy/vhost_file?id={{Stored.data.Id}}&path={{$path}}/.." style="font-size:18px;font-weight:bold" data-toggle="tooltip">..</a>
-                                        </td>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td class="text-center"></td>
-									</tr>
-                                    {{end}}
-                                    {{range $k,$v := Stored.dirs}}
-									<tr item='{{$v.Name}}'>
-										<td>
-                                            {{if $v.IsDir}}
-                                            <i class="fa fa-folder-o"></i>
-                                            {{else}}
-                                            <i class="fa fa-file-o"></i>
-                                            {{end}}
-                                            <a href="__BACKEND__/caddy/vhost_file?id={{Stored.data.Id}}&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">{{$v.Name}}</a>
-                                            &nbsp;
-                                            <a href="javascript:;" title="{{"重命名"|T}}" data-url="__BACKEND__/caddy/vhost_file?id={{Stored.data.Id}}&do=rename&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileRename(this,'{{$v.Name}}',{{if $v.IsDir}}true{{else}}false{{end}})" data-toggle="tooltip">
-                                            <i class="fa fa-pencil"></i>
-                                            </a>
-                                        </td>
-										<td>{{$v.ModTime.Format "2006-01-02 15:04:05"}}</td>
-										<td>{{if $v.IsDir}}{{"文件夹"|T}}{{else}}{{"文件"|T}}{{end}}</td>
-										<td>{{if $v.IsDir}}-{{else}}{{$v.Size|FormatByte}}{{end}}</td>
-										<td>
-                                            <a title="{{"删除"|T}}" class="label label-danger" href="__BACKEND__/caddy/vhost_file?id={{Stored.data.Id}}&do=delete&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="return confirm('{{T "真的要删除“%v”吗？" $v.Name}}');" data-toggle="tooltip">
-                                            <i class="fa fa-times"></i>
-                                            </a>
-                                            {{if not $v.IsDir}}
-                                            {{if Editable $v.Name}}
-                                            &nbsp;
-                                            <a title="{{"编辑"|T}}" class="label label-success" href="javascript:;" data-url="__BACKEND__/caddy/vhost_file?id={{Stored.data.Id}}&do=edit&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileEdit(this,'{{$v.Name}}')" data-toggle="tooltip">
-                                            <i class="fa fa-pencil"></i>
-                                            </a>
-                                            {{end}}
-                                            {{$mediaMime:=Playable $v.Name}}
-                                            {{if $mediaMime}}
-                                            &nbsp;
-                                            <a title="{{"播放"|T}}" class="label label-primary" href="javascript:;" playable data-mime="{{$mediaMime}}" data-name="{{$v.Name}}" data-url="__BACKEND__/caddy/vhost_file?id={{Stored.data.Id}}&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="filePlay(this)" data-toggle="tooltip">
-                                            <i class="fa fa-play"></i>
-                                            </a>
-                                            {{end}}
-                                            {{end}}
-                                        </td>
-									</tr>
-                                    {{end}}
-								</tbody>
-							</table>		
-							</div>
-						</div>
-					</div>				
+	<div class="col-md-12">
+		<div class="block-flat">
+			<div class="header">
+				<div class="btn-group">
+					<button type="button" id="mkdirBtn" class="btn btn-success" data-url="__BACKEND__/caddy/vhost_file?id={{Stored.data.Id}}&do=mkdir&path={{if $path}}{{$path}}/{{end}}" onclick="fileMkdir(this)">
+                        <i class="fa fa-plus"></i>
+                        {{"新建文件夹"|T}}
+                    </button>
+					<button type="button" id="uploadBtn" class="btn btn-primary">
+                        <i class="fa fa-upload"></i>
+                        {{"上传文件到当前目录"|T}}
+                    </button>
+					<button type="button" id="uploadZipBtn" class="btn btn-warning" data-popover="popover" data-original-title="" data-content="{{"仅支持上传zip压缩包。成功解压到当前目录后，该压缩包会被自动删除"|T}}" data-placement="top" data-trigger="hover">
+                        <i class="fa fa-upload"></i>
+                        {{"打包上传到当前目录"|T}}
+                    </button>
+                    <span class="input-group" style="padding-left:10px">
+                        <input type="text" id="query-current-path" name="query" class="form-control typeahead" required="required" value="{{Form "query"}}" data-provide="typeahead">
+                        <span class="input-group-btn"><button class="btn btn-default" type="button" id="btn-query-current-path"><i class="fa fa-search"></i></button></span>
+                    </span>
 				</div>
 			</div>
+			<div class="content">
+				<div class="table-responsive">
+				<table class="table no-border hover">
+					<thead class="no-border">
+						<tr>
+							<th><strong>{{"名称"|T}}</strong></th>
+							<th style="width:130px"><strong>{{"修改日期"|T}}</strong></th>
+							<th style="width:80px"><strong>{{"类型"|T}}</strong></th>
+							<th style="width:80px"><strong>{{"大小"|T}}</strong></th>
+							<th style="width:80px" class="text-center"><strong>{{"操作"|T}}</strong></th>
+						</tr>
+					</thead>
+					<tbody class="no-border-y" id="tbody-content">
+                        {{if $path}}
+                        <tr>
+							<td>
+                                <i class="fa fa-folder-o"></i>
+                                <a title="{{"点击回到上一级"|T}}" href="__BACKEND__/caddy/vhost_file?id={{Stored.data.Id}}&path={{$path}}/.." style="font-size:18px;font-weight:bold" data-toggle="tooltip">..</a>
+                            </td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td class="text-center"></td>
+						</tr>
+                        {{end}}
+                        {{range $k,$v := Stored.dirs}}
+						<tr item='{{$v.Name}}'>
+							<td>
+                                {{if $v.IsDir}}
+                                <i class="fa fa-folder-o"></i>
+                                {{else}}
+                                {{$fileType := FileTypeByName $v.Name}}
+                                <i class="fa fa-{{FileTypeIcon $fileType}}"></i>
+                                {{if eq $fileType `image`}}
+                                <a class="pull-right" href="__BACKEND__/caddy/vhost_file?id={{Stored.data.Id}}&inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" target="_blank"><img src="__BACKEND__/caddy/vhost_file?id={{Stored.data.Id}}&inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" style="max-width:100px;max-height:30px;" /></a>
+                                {{end}}
+                                {{end}}
+                                <a href="__BACKEND__/caddy/vhost_file?id={{Stored.data.Id}}&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">{{$v.Name}}</a>
+                                &nbsp;
+                                <a href="javascript:;" title="{{"重命名"|T}}" data-url="__BACKEND__/caddy/vhost_file?id={{Stored.data.Id}}&do=rename&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileRename(this,'{{$v.Name}}',{{if $v.IsDir}}true{{else}}false{{end}})" data-toggle="tooltip">
+                                <i class="fa fa-pencil"></i>
+                                </a>
+                            </td>
+							<td>{{$v.ModTime.Format "2006-01-02 15:04:05"}}</td>
+							<td>{{if $v.IsDir}}{{"文件夹"|T}}{{else}}{{"文件"|T}}{{end}}</td>
+							<td>{{if $v.IsDir}}-{{else}}{{$v.Size|FormatByte}}{{end}}</td>
+							<td>
+                                <a title="{{"删除"|T}}" class="label label-danger" href="__BACKEND__/caddy/vhost_file?id={{Stored.data.Id}}&do=delete&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="return confirm('{{T "真的要删除“%v”吗？" $v.Name}}');" data-toggle="tooltip">
+                                <i class="fa fa-times"></i>
+                                </a>
+                                {{if not $v.IsDir}}
+                                {{if Editable $v.Name}}
+                                &nbsp;
+                                <a title="{{"编辑"|T}}" class="label label-success" href="javascript:;" data-url="__BACKEND__/caddy/vhost_file?id={{Stored.data.Id}}&do=edit&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileEdit(this,'{{$v.Name}}')" data-toggle="tooltip">
+                                <i class="fa fa-pencil"></i>
+                                </a>
+                                {{end}}
+                                {{$mediaMime:=Playable $v.Name}}
+                                {{if $mediaMime}}
+                                &nbsp;
+                                <a title="{{"播放"|T}}" class="label label-primary" href="javascript:;" playable data-mime="{{$mediaMime}}" data-name="{{$v.Name}}" data-url="__BACKEND__/caddy/vhost_file?id={{Stored.data.Id}}&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="filePlay(this)" data-toggle="tooltip">
+                                <i class="fa fa-play"></i>
+                                </a>
+                                {{end}}
+                                {{end}}
+                            </td>
+						</tr>
+                        {{end}}
+					</tbody>
+				</table>		
+				</div>
+			</div>
+		</div>				
+	</div>
+</div>
 {{/Block}}
 
 {{Block "footer"}}

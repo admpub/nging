@@ -48,11 +48,11 @@
 					<thead class="no-border">
 						<tr>
 							<th><strong>{{"名称"|T}}</strong></th>
-							<th style="width:15%;"><strong>{{"修改日期"|T}}</strong></th>
-							<th style="width:15%;"><strong>{{"类型"|T}}</strong></th>
-							<th style="width:15%;"><strong>{{"大小"|T}}</strong></th>
-							<th style="width:15%;"><strong>{{"权限"|T}}</strong></th>
-							<th style="width:120px" class="text-center"><strong>{{"操作"|T}}</strong></th>
+							<th style="width:130px"><strong>{{"修改日期"|T}}</strong></th>
+							<th style="width:60px"><strong>{{"类型"|T}}</strong></th>
+							<th style="width:50px"><strong>{{"大小"|T}}</strong></th>
+							<th style="width:60px"><strong>{{"权限"|T}}</strong></th>
+							<th style="width:120px"><strong>{{"操作"|T}}</strong></th>
 						</tr>
 					</thead>
 					<tbody class="no-border-y" id="tbody-content">
@@ -74,7 +74,11 @@
                                 {{if $v.IsDir}}
                                 <i class="fa fa-folder-o"></i>
                                 {{else}}
-                                <i class="fa fa-file-o"></i>
+                                {{$fileType := FileTypeByName $v.Name}}
+                                <i class="fa fa-{{FileTypeIcon $fileType}}"></i>
+                                {{if eq $fileType `image`}}
+                                <a class="pull-right" href="__BACKEND__/term/sftp?id={{$id}}&inline=1&path={{$pathPrefix}}{{$v.Name}}" target="_blank"><img src="__BACKEND__/term/sftp?id={{$id}}&inline=1&path={{$pathPrefix}}{{$v.Name}}" style="max-width:100px;max-height:30px;" /></a>
+                                {{end}}
                                 {{end}}
                                 <a href="__BACKEND__/term/sftp?id={{$id}}&path={{$pathPrefix}}{{$v.Name}}">{{$v.Name}}</a>
                                 &nbsp;

@@ -332,7 +332,8 @@ func Sftp(ctx echo.Context) error {
 		fi, err := d.Stat()
 		if !fi.IsDir() {
 			fileName := path.Base(ppath)
-			return ctx.Attachment(d, fileName)
+			inline := ctx.Formx(`inline`).Bool()
+			return ctx.Attachment(d, fileName, inline)
 		}
 
 		dirs, err := mgr.ReadDir(ppath)

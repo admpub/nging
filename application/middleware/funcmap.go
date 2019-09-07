@@ -33,6 +33,7 @@ import (
 	"github.com/admpub/nging/application/registry/dashboard"
 	"github.com/admpub/nging/application/registry/navigate"
 	"github.com/admpub/nging/application/registry/upload"
+	"github.com/admpub/nging/application/registry/upload/helper"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
 	"github.com/webx-top/echo/subdomains"
@@ -113,6 +114,8 @@ func FuncMap() echo.MiddlewareFunc {
 				}
 				return DefaultAvatarURL
 			})
+			c.SetFunc(`FileTypeByName`, helper.FileTypeByName)
+			c.SetFunc(`FileTypeIcon`, helper.FileTypeIcon)
 			c.SetFunc(`Project`, func(ident string) *navigate.ProjectItem {
 				return navigate.ProjectGet(ident)
 			})

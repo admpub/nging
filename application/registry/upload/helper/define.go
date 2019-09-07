@@ -19,6 +19,7 @@
 package helper
 
 import (
+	"mime"
 	"regexp"
 	"strings"
 
@@ -41,7 +42,109 @@ var (
 	AllowedUploadFileExtensions = []string{
 		`.jpeg`, `.jpg`, `.gif`, `.png`,
 	}
+
+	FileTypeByExtensions = map[string]string{
+		// image
+		`.jpeg`: `image`,
+		`.jpg`:  `image`,
+		`.gif`:  `image`,
+		`.png`:  `image`,
+
+		// video
+		`.mp4`:  `video`,
+		`.mpeg`: `video`,
+		`.rmvb`: `video`,
+		`.rm`:   `video`,
+		`.avi`:  `video`,
+		`.mkv`:  `video`,
+
+		// audio
+		`.mp3`: `audio`,
+		`.mid`: `audio`,
+
+		// archive
+		`.rar`:  `archive`,
+		`.zip`:  `archive`,
+		`.gz`:   `archive`,
+		`.bz`:   `archive`,
+		`.gzip`: `archive`,
+		`.7z`:   `archive`,
+
+		// pdf
+		`.pdf`: `pdf`,
+
+		// xls
+		`.xls`:  `xls`,
+		`.xlsx`: `xls`,
+		`.csv`:  `xls`,
+
+		// ppt
+		`.ppt`: `ppt`,
+
+		// doc
+		`.txt`:  `doc`,
+		`.doc`:  `doc`,
+		`.docx`: `doc`,
+	}
+
+	FileTypes = map[string][]string{
+		`image`:   []string{`image`},
+		`video`:   []string{`video`},
+		`audio`:   []string{`audio`},
+		`archive`: []string{`compressed`},
+		`pdf`:     []string{`pdf`},
+		`xls`:     []string{`csv`, `excel`},
+		`ppt`:     []string{`powerpoint`},
+		`doc`:     []string{`msword`, `text`},
+	}
+
+	FileTypeIcons = map[string]string{
+		`image`:   `picture-o`,
+		`video`:   `film`,
+		`audio`:   `music`,
+		`archive`: `archive`,
+		`pdf`:     `file-o`,
+		`xls`:     `file-o`,
+		`ppt`:     `file-o`,
+		`doc`:     `file-text-o`,
+	}
 )
+
+func FileTypeByName(filename string) string {
+	p := strings.LastIndex(filename, `.`)
+	if p < 0 {
+		return ``
+	}
+	ext := filename[p:]
+	return DetectFileType(ext)
+}
+
+func FileTypeIcon(typ string) string {
+	icon, ok := FileTypeIcons[typ]
+	if ok {
+		return icon
+	}
+	return `file-o`
+}
+
+func DetectFileType(ext string) string {
+	ext = strings.ToLower(ext)
+	typ, ok := FileTypeByExtensions[ext]
+	if ok {
+		return typ
+	}
+
+	mimeType := mime.TypeByExtension(ext)
+	mimeType = strings.SplitN(ext, ";", 2)[0]
+	for typeK, keywords := range FileTypes {
+		for _, words := range keywords {
+			if strings.Contains(mimeType, words) {
+				return typeK
+			}
+		}
+	}
+	return `file`
+}
 
 func ExtensionRegister(extensions ...string) {
 	AllowedUploadFileExtensions = append(AllowedUploadFileExtensions, extensions...)
