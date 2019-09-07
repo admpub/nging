@@ -1277,9 +1277,11 @@ var App = function () {
         }
       },50);
     },
-    float:function (n, m, a, p) {
-      if (!m) m = 'ajax'; if (!a) a = 'src'; if (!p) p = '5-7';
-      $(n).powerFloat({ 'targetMode': m, 'targetAttr': a, 'position': p });
+    float:function (elem, mode, attr, position) {
+      if (!mode) mode = 'ajax'; 
+      if (!attr) attr = 'src'; 
+      if (!position) position = '5-7';
+      $(elem).powerFloat({ 'targetMode': mode, 'targetAttr': attr, 'position': position });
     }
   };
  
