@@ -4,7 +4,7 @@
  * @param {int} timestamp 要格式化的时间 默认为当前时间 
  * @return {string}   格式化的时间字符串 
  */
-webx.date=function(format, timestamp){ 
+App.date=function(format, timestamp){ 
  var jsdate=((timestamp) ? new Date(timestamp*1000) : new Date()); 
  var pad = function(n, c){ 
    if((n = n + "").length < c) return new Array(++c - n.length).join("0") + n;
@@ -124,7 +124,7 @@ webx.date=function(format, timestamp){
  * 字符串转时间戳
  * @param dateString 格式化后的时间 (如：2016-09-01 09:30:00)
  */
-webx.strToTime=function(dateString){
+App.strToTime=function(dateString){
     var date = new Date(dateString),timestamp = date.getTime();
     if(!isNaN(timestamp))return timestamp;
     var s = dateString.replace(/[^\d-]+/g,'-'),arr = s.split('-');
@@ -146,7 +146,7 @@ webx.strToTime=function(dateString){
  * @param cTime 当前时间
  * @return {string}
  */
-webx.friendlyDate=function(sTime, cTime) {
+App.friendlyDate=function(sTime, cTime) {
     var formatTime = function (num) {
         return (num < 10) ? '0' + num : num;
     };
@@ -158,27 +158,11 @@ webx.friendlyDate=function(sTime, cTime) {
     var dMonth = parseInt(cDate.getMonth() + 1) - parseInt(sDate.getMonth() + 1);
     var dYear = parseInt(cDate.getFullYear()) - parseInt(sDate.getFullYear());
     if (dTime < 60) {
-        if (dTime < 10) return webx.t('刚刚');
-        return parseInt(Math.floor(dTime / 10) * 10) + webx.t('秒前');
+        if (dTime < 10) return App.t('刚刚');
+        return parseInt(Math.floor(dTime / 10) * 10) + App.t('秒前');
     } 
-    if (dTime < 3600) return parseInt(Math.floor(dTime / 60)) + webx.t('分钟前');
-    if (dYear === 0 && dMonth === 0 && dDay === 0) return webx.t('今天') + formatTime(sDate.getHours()) + ':' + formatTime(sDate.getMinutes());
-    if (dYear === 0) return formatTime(sDate.getMonth() + 1) + webx.t('月') + formatTime(sDate.getDate()) + webx.t('日') + ' ' + formatTime(sDate.getHours()) + ':' + formatTime(sDate.getMinutes());
+    if (dTime < 3600) return parseInt(Math.floor(dTime / 60)) + App.t('分钟前');
+    if (dYear === 0 && dMonth === 0 && dDay === 0) return App.t('今天') + formatTime(sDate.getHours()) + ':' + formatTime(sDate.getMinutes());
+    if (dYear === 0) return formatTime(sDate.getMonth() + 1) + App.t('月') + formatTime(sDate.getDate()) + App.t('日') + ' ' + formatTime(sDate.getHours()) + ':' + formatTime(sDate.getMinutes());
     return sDate.getFullYear() + '-' + formatTime(sDate.getMonth() + 1) + '-' + formatTime(sDate.getDate()) + ' ' + formatTime(sDate.getHours()) + ':' + formatTime(sDate.getMinutes());
-};
-
-/**
- * 友好大小
- * @param bytes 字节
- * @param precision 保留小数位数
- * @return {string}
- */
-webx.friendlyByte=function(bytes,precision) {
-  if(precision==null)precision=2;
-  var units = ["YB", "ZB", "EB", "PB", "TB", "GB", "MB", "KB", "B"];
-  var total=units.length;
-  for(total--; total > 0 && bytes > 1024.0; total--) {
-    bytes /= 1024.0
-  }
-  return bytes.toFixed(precision)+units[total]
 };

@@ -127,6 +127,16 @@ var App = function () {
     clientID: {},
     i18n: {SYS_INFO:'System Information',UPLOAD_ERR:'Upload Error',PLEASE_SELECT_FOR_REMOVE:'Please select the item you want to delete',CONFIRM_REMOVE:'Are you sure you want to delete them?'},
     lang: 'en',
+    sprintf:sprintfWrapper.init,
+    t: function(key) {
+      if(typeof(App.i18n[key])=='undefined'){
+        if(arguments.length < 2) return key;
+        return App.sprintf.apply(this,arguments);
+      }
+      if(arguments.length < 2) return App.i18n[key];
+      arguments[0]=App.i18n[key];
+      return App.sprintf.apply(this,arguments);
+    },
     langInfo: function(){
       if(cachedLang!=null) return cachedLang;
       var _lang=App.lang.split('-',2);
