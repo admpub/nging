@@ -38,7 +38,10 @@ App.daterangepicker = function (rangeElem, options) {
 		autoClose: true,
 		format: 'YYYY-MM-DD',
 		separator: ' - ',
-		singleDate: false
+		singleDate: false,
+		language:'cn',
+		monthSelect: true,
+    	yearSelect: true //[1900, moment().get('year')]
 	};
 	config = $.extend(config, options || {});
 	$(rangeElem).dateRangePicker(config);
@@ -47,5 +50,8 @@ App.daterangepicker = function (rangeElem, options) {
 App.datepicker = function (elem, options) {
 	if (!options) options = {};
 	options.singleDate = true;
+	options.singleMonth = true;
+	options.showShortcuts = false;
+	options.showTopbar = false;
 	App.daterangepicker(elem, options);
 };
