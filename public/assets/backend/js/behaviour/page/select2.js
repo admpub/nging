@@ -22,7 +22,7 @@ App.select2 = {
         } else {//支持新增选项(注意：采用select2中的ajax方式获取数据时，将不支持新增选项)
             options.placeholder = App.select2.i18n.TAG_INPUT;
             options.tags = tagsArray;
-            options.tokenSeparators = [',', ' '];
+            options.tokenSeparators = [',','，'];
         }
         if (ajax) {
             switch (typeof (ajax)) {
