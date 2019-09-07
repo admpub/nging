@@ -77,7 +77,7 @@
                                 {{$fileType := FileTypeByName $v.Name}}
                                 <i class="fa fa-{{FileTypeIcon $fileType}}"></i>
                                 {{if eq $fileType `image`}}
-                                <a class="pull-right" href="__BACKEND__/term/sftp?id={{$id}}&inline=1&path={{$pathPrefix}}{{$v.Name}}" target="_blank"><img src="__BACKEND__/term/sftp?id={{$id}}&inline=1&path={{$pathPrefix}}{{$v.Name}}" style="max-width:100px;max-height:30px;" /></a>
+                                <a class="pull-right" href="__BACKEND__/term/sftp?id={{$id}}&inline=1&path={{$pathPrefix}}{{$v.Name}}" target="_blank"><img src="__BACKEND__/term/sftp?id={{$id}}&inline=1&path={{$pathPrefix}}{{$v.Name}}" style="max-width:100px;max-height:30px;" class="previewable" /></a>
                                 {{end}}
                                 {{end}}
                                 <a href="__BACKEND__/term/sftp?id={{$id}}&path={{$pathPrefix}}{{$v.Name}}">{{$v.Name}}</a>

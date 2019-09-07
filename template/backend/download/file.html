@@ -77,7 +77,7 @@
                                 {{$fileType := FileTypeByName $v.Name}}
                                 <i class="fa fa-{{FileTypeIcon $fileType}}"></i>
                                 {{if eq $fileType `image`}}
-                                <a class="pull-right" href="__BACKEND__/download/file?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" target="_blank"><img src="__BACKEND__/download/file?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" style="max-width:100px;max-height:30px;" /></a>
+                                <a class="pull-right" href="__BACKEND__/download/file?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" target="_blank"><img src="__BACKEND__/download/file?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" style="max-width:100px;max-height:30px;" class="previewable" /></a>
                                 {{end}}
                                 {{end}}
                                 <a href="__BACKEND__/download/file?path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">{{$v.Name}}</a>

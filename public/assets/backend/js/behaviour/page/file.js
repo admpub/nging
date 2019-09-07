@@ -8,6 +8,7 @@ function refreshList() {
     $.get(window.location.href,{'_pjax':'tbody-content'},function(r){
         var e=$(r);
         $('#tbody-content').html(e.find('#tbody-content').html());
+        App.float('#tbody-content img.previewable');
         App.loading('hide');
         $('#tbody-content').trigger('refresh');
     },'html');
@@ -229,4 +230,5 @@ $(function(){
     $('#btn-query-current-path').on('click',function(){
         $('#query-current-path').trigger('keyup');
     });
+    App.float('#tbody-content img.previewable');
 });
