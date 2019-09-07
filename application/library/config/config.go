@@ -15,6 +15,7 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 package config
 
 import (
@@ -22,7 +23,6 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
-	"time"
 
 	"github.com/admpub/confl"
 	"github.com/admpub/log"
@@ -47,24 +47,7 @@ func NewConfig() *Config {
 type Config struct {
 	DB DB `json:"db"`
 
-	Sys struct {
-		VhostsfileDir          string            `json:"vhostsfileDir"`
-		AllowIP                []string          `json:"allowIP"`
-		SSLAuto                bool              `json:"sslAuto"`
-		SSLEmail               string            `json:"sslEmail"`
-		SSLHosts               []string          `json:"sslHosts"`
-		SSLCacheDir            string            `json:"sslCacheDir"`
-		SSLKeyFile             string            `json:"sslKeyFile"`
-		SSLCertFile            string            `json:"sslCertFile"`
-		EditableFileExtensions map[string]string `json:"editableFileExtensions"`
-		EditableFileMaxSize    string            `json:"editableFileMaxSize"`
-		EditableFileMaxBytes   int64             `json:"editableFileMaxBytes"`
-		PlayableFileExtensions map[string]string `json:"playableFileExtensions"`
-		ErrorPages             map[int]string    `json:"errorPages"`
-		CmdTimeout             string            `json:"cmdTimeout"`
-		CmdTimeoutDuration     time.Duration     `json:"-"`
-		ShowExpirationTime     int64             `json:"showExpirationTime"` //显示过期时间：0为始终显示；大于0为距离剩余到期时间多少秒的时候显示；小于0为不显示
-	} `json:"sys"`
+	Sys System `json:"sys"`
 
 	Cron struct {
 		PoolSize int    `json:"poolSize"`

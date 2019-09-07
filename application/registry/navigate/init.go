@@ -121,6 +121,11 @@ var TopNavigate = &List{
 				Name:          `上传图片`,
 				Action:        `upload/:type`,
 			},
+			{
+				DisplayOnMenu: true,
+				Name:          `附件管理`,
+				Action:        `uploaded_file`,
+			},
 		},
 	},
 	{

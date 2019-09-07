@@ -16,7 +16,7 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package caddy
+package manager
 
 import (
 	"fmt"
@@ -24,30 +24,29 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/admpub/nging/application/registry/upload/helper"
+
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/filemanager"
 	"github.com/admpub/nging/application/library/notice"
-	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/com"
-	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
 
-func VhostFile(ctx echo.Context) error {
+func UploadedFile(ctx echo.Context) error {
 	var err error
 	id := ctx.Formx(`id`).Uint()
 	filePath := ctx.Form(`path`)
 	do := ctx.Form(`do`)
-	m := model.NewVhost(ctx)
-	err = m.Get(nil, db.Cond{`id`: id})
-	mgr := filemanager.New(m.Root, config.DefaultConfig.Sys.EditableFileMaxBytes, ctx)
-	absPath := m.Root
-	if err == nil && len(m.Root) > 0 {
+	root := helper.UploadDir
+	mgr := filemanager.New(root, config.DefaultConfig.Sys.EditableFileMaxBytes, ctx)
+	absPath := root
+	if err == nil && len(root) > 0 {
 
 		if len(filePath) > 0 {
 			filePath = filepath.Clean(filePath)
-			absPath = filepath.Join(m.Root, filePath)
+			absPath = filepath.Join(root, filePath)
 		}
 
 		switch do {
@@ -113,21 +112,20 @@ func VhostFile(ctx echo.Context) error {
 			ctx.Set(`dirs`, dirs)
 		}
 	}
-	ctx.Set(`data`, m)
 	if filePath == `.` {
 		filePath = ``
 	}
 	pathSlice := strings.Split(strings.Trim(filePath, echo.FilePathSeparator), echo.FilePathSeparator)
 	pathLinks := make(echo.KVList, len(pathSlice))
 	encodedSep := filemanager.EncodedSepa
-	urlPrefix := fmt.Sprintf(`/caddy/vhost_file?id=%d&path=`, id) + encodedSep
+	urlPrefix := fmt.Sprintf(`/manager/uploaded_file?id=%d&path=`, id) + encodedSep
 	for k, v := range pathSlice {
 		urlPrefix += com.URLEncode(v)
 		pathLinks[k] = &echo.KV{K: v, V: urlPrefix}
 		urlPrefix += encodedSep
 	}
 	ctx.Set(`pathLinks`, pathLinks)
-	ctx.Set(`rootPath`, strings.TrimSuffix(m.Root, echo.FilePathSeparator))
+	ctx.Set(`rootPath`, strings.TrimSuffix(root, echo.FilePathSeparator))
 	ctx.Set(`path`, filePath)
 	ctx.Set(`absPath`, absPath)
 	ctx.SetFunc(`Editable`, func(fileName string) bool {
@@ -138,8 +136,7 @@ func VhostFile(ctx echo.Context) error {
 		mime, _ := Playable(fileName)
 		return mime
 	})
-	ctx.Set(`activeURL`, `/caddy/vhost`)
-	return ctx.Render(`caddy/file`, err)
+	return ctx.Render(`manager/uploaded_file`, err)
 }
 
 func Editable(fileName string) (string, bool) {

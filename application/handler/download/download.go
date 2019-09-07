@@ -15,6 +15,7 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 package download
 
 import (
@@ -58,7 +59,6 @@ func File(ctx echo.Context) error {
 	root := downloadDir()
 	mgr := filemanager.New(root, config.DefaultConfig.Sys.EditableFileMaxBytes, ctx)
 	absPath := root
-	var exit bool
 
 	if len(filePath) > 0 {
 		filePath = filepath.Clean(filePath)
@@ -120,11 +120,12 @@ func File(ctx echo.Context) error {
 		return ctx.String(`OK`)
 	default:
 		var dirs []os.FileInfo
+		var exit bool
 		err, exit, dirs = mgr.List(absPath)
+		if exit {
+			return err
+		}
 		ctx.Set(`dirs`, dirs)
-	}
-	if exit {
-		return err
 	}
 	if filePath == `.` {
 		filePath = ``

@@ -45,5 +45,6 @@ func init() {
 		g.Route(`GET,POST`, `/settings`, Settings)
 		g.Route(`POST`, `/upload/:type`, Upload) //文件上传
 		g.Route(`GET,POST`, `/crop`, Crop)       //裁剪图片
+		g.Route(`GET,POST`, `/uploaded_file`, UploadedFile)
 	})
 }

@@ -43,12 +43,14 @@ var (
 		`.jpeg`, `.jpg`, `.gif`, `.png`,
 	}
 
+	// FileTypeByExtensions 扩展名对应类型
 	FileTypeByExtensions = map[string]string{
 		// image
 		`.jpeg`: `image`,
 		`.jpg`:  `image`,
 		`.gif`:  `image`,
 		`.png`:  `image`,
+		`.svg`:  `image`,
 
 		// video
 		`.mp4`:  `video`,
@@ -87,6 +89,7 @@ var (
 		`.docx`: `doc`,
 	}
 
+	// FileTypes 文件类型对应mime关键词
 	FileTypes = map[string][]string{
 		`image`:   []string{`image`},
 		`video`:   []string{`video`},
@@ -98,6 +101,7 @@ var (
 		`doc`:     []string{`msword`, `text`},
 	}
 
+	// FileTypeIcons 文件类型对应icon(不含“fa-”前缀)
 	FileTypeIcons = map[string]string{
 		`image`:   `picture-o`,
 		`video`:   `film`,
@@ -110,6 +114,7 @@ var (
 	}
 )
 
+// FileTypeByName 根据文件名判断文件类型
 func FileTypeByName(filename string) string {
 	p := strings.LastIndex(filename, `.`)
 	if p < 0 {
@@ -119,6 +124,7 @@ func FileTypeByName(filename string) string {
 	return DetectFileType(ext)
 }
 
+// FileTypeIcon 文件类型icon
 func FileTypeIcon(typ string) string {
 	icon, ok := FileTypeIcons[typ]
 	if ok {
@@ -127,6 +133,7 @@ func FileTypeIcon(typ string) string {
 	return `file-o`
 }
 
+// DetectFileType 根据文件扩展名判断文件类型
 func DetectFileType(ext string) string {
 	ext = strings.ToLower(ext)
 	typ, ok := FileTypeByExtensions[ext]

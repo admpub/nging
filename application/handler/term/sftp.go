@@ -19,22 +19,18 @@
 package term
 
 import (
-	"bytes"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"os"
 	"path"
-	"sort"
 	"strings"
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/handler/caddy"
-	"github.com/admpub/nging/application/library/charset"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/filemanager"
 	"github.com/admpub/nging/application/library/notice"
+	"github.com/admpub/nging/application/library/sftpmanager"
 	"github.com/admpub/nging/application/model"
 	"github.com/admpub/web-terminal/library/ssh"
 	"github.com/pkg/sftp"
@@ -71,53 +67,17 @@ func SftpSearch(ctx echo.Context, id uint) error {
 	if err != nil {
 		return err
 	}
-	mgr, err := sftpConnect(m.SshUser)
+	client, err := sftpConnect(m.SshUser)
 	if err != nil {
 		return err
 	}
-	defer mgr.Close()
-	var (
-		paths  []string
-		prefix string
-		ppath  string
-	)
+	defer client.Close()
 	query := ctx.Form(`query`)
-	if strings.HasSuffix(query, `/`) {
-		ppath = query
-	} else {
-		prefix = path.Base(query)
-		ppath = path.Dir(query)
-	}
 	num := ctx.Formx(`size`, `10`).Int()
 	if num <= 0 {
 		num = 10
 	}
-	if len(ppath) == 0 {
-		ppath = `/`
-	}
-	var onlyDir bool
-	switch ctx.Form(`type`) {
-	case `dir`:
-		onlyDir = true
-	case `file`:
-		onlyDir = false
-	default:
-		onlyDir = true
-	}
-	dirs, _ := mgr.ReadDir(ppath)
-	for _, d := range dirs {
-		if onlyDir && d.IsDir() == false {
-			continue
-		}
-		if len(paths) >= num {
-			break
-		}
-		name := d.Name()
-		if len(prefix) == 0 || strings.HasPrefix(name, prefix) {
-			paths = append(paths, path.Join(ppath, name)+`/`)
-			continue
-		}
-	}
+	paths := sftpmanager.Search(client, query, ctx.Form(`type`), num)
 	data := ctx.Data().SetData(paths)
 	return ctx.JSON(data)
 }
@@ -130,11 +90,14 @@ func Sftp(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	mgr, err := sftpConnect(m.SshUser)
+	client, err := sftpConnect(m.SshUser)
 	if err != nil {
 		return err
 	}
-	defer mgr.Close()
+	defer client.Close()
+
+	mgr := sftpmanager.New(client, config.DefaultConfig.Sys.EditableFileMaxBytes, ctx)
+
 	ppath := ctx.Form(`path`)
 	do := ctx.Form(`do`)
 	parentPath := ppath
@@ -151,55 +114,14 @@ func Sftp(ctx echo.Context) error {
 		} else {
 			content := ctx.Form(`content`)
 			encoding := ctx.Form(`encoding`)
-
-			f, err := mgr.Open(ppath)
-			if err != nil {
-				return ctx.JSON(data.SetError(err))
-			}
-			defer f.Close()
-			fi, err := f.Stat()
-			if err != nil {
-				return ctx.JSON(data.SetError(err))
-			}
-			if fi.IsDir() {
-				return ctx.JSON(data.SetInfo(ctx.T(`不能编辑文件夹`), 0))
-			}
-			if config.DefaultConfig.Sys.EditableFileMaxBytes > 0 && fi.Size() > config.DefaultConfig.Sys.EditableFileMaxBytes {
-				return ctx.JSON(data.SetInfo(ctx.T(`很抱歉，不支持编辑超过%v的文件`, com.FormatByte(config.DefaultConfig.Sys.EditableFileMaxBytes), 0)))
-			}
-			encoding = strings.ToLower(encoding)
-			isUTF8 := len(encoding) == 0 || encoding == `utf-8`
-			if ctx.IsPost() {
-				b := []byte(content)
-				if !isUTF8 {
-					b, err = charset.Convert(`utf-8`, encoding, b)
-					if err != nil {
-						return ctx.JSON(data.SetError(err))
-					}
-				}
-				f.Close()
-				r := bytes.NewReader(b)
-				f, err = mgr.OpenFile(ppath, os.O_CREATE|os.O_RDWR|os.O_TRUNC)
-				if err != nil {
-					return ctx.JSON(data.SetError(err))
-				}
-				_, err = io.Copy(f, r)
-				if err != nil {
-					data.SetInfo(ppath+`:`+err.Error(), 0)
-				} else {
-					data.SetInfo(ctx.T(`保存成功`), 1)
-				}
-				return ctx.JSON(data)
-			}
-
-			dat, err := ioutil.ReadAll(f)
-			if err == nil && !isUTF8 {
-				dat, err = charset.Convert(encoding, `utf-8`, dat)
-			}
+			dat, err := mgr.Edit(ppath, content, encoding)
 			if err != nil {
 				data.SetInfo(err.Error(), 0)
 			} else {
-				data.SetData(string(dat), 1)
+				if ctx.IsPost() {
+					data.SetInfo(ctx.T(`保存成功`), 1)
+				}
+				data.SetData(dat, 1)
 			}
 		}
 		return ctx.JSON(data)
@@ -209,22 +131,9 @@ func Sftp(ctx echo.Context) error {
 		if len(newName) == 0 {
 			data.SetInfo(ctx.T(`请输入文件夹名`), 0)
 		} else {
-			dirPath := path.Join(ppath, newName)
-			if f, err := mgr.Open(dirPath); err == nil {
-				if finfo, err := f.Stat(); err != nil {
-					data.SetError(err)
-				} else if finfo.IsDir() {
-					data.SetInfo(ctx.T(`已经存在相同名称的文件夹`), 0)
-				} else {
-					data.SetInfo(ctx.T(`已经存在相同名称的文件`), 0)
-				}
-			} else if !os.IsNotExist(err) {
+			err = mgr.Mkdir(ppath, newName)
+			if err != nil {
 				data.SetError(err)
-			} else {
-				err = mgr.Mkdir(dirPath)
-				if err != nil {
-					data.SetError(err)
-				}
 			}
 			if data.GetCode() == 1 {
 				data.SetInfo(ctx.T(`创建成功`))
@@ -263,23 +172,12 @@ func Sftp(ctx echo.Context) error {
 		}
 		return ctx.JSON(data)
 	case `search`:
-		var paths []string
 		prefix := ctx.Form(`query`)
 		num := ctx.Formx(`size`, `10`).Int()
 		if num <= 0 {
 			num = 10
 		}
-		dirs, _ := mgr.ReadDir(ppath)
-		for _, d := range dirs {
-			if len(paths) >= num {
-				break
-			}
-			name := d.Name()
-			if strings.HasPrefix(name, prefix) {
-				paths = append(paths, name)
-				continue
-			}
-		}
+		paths := mgr.Search(ppath, prefix, num)
 		data := ctx.Data().SetData(paths)
 		return ctx.JSON(data)
 	case `delete`:
@@ -289,31 +187,7 @@ func Sftp(ctx echo.Context) error {
 		}
 		return ctx.Redirect(ctx.Referer())
 	case `upload`:
-		d, err := mgr.Open(ppath)
-		if err != nil {
-			return err
-		}
-		defer d.Close()
-		fi, err := d.Stat()
-		if !fi.IsDir() {
-			return ctx.E(`路径不正确`)
-		}
-		fileSrc, fileHdr, err := ctx.Request().FormFile(`file`)
-		if err != nil {
-			return err
-		}
-		defer fileSrc.Close()
-
-		// Destination
-		fileName := fileHdr.Filename
-		fileDst, err := mgr.Create(path.Join(ppath, fileName))
-		if err != nil {
-			return err
-		}
-		defer fileDst.Close()
-
-		// Copy
-		_, err = io.Copy(fileDst, fileSrc)
+		err = mgr.Upload(ppath)
 		if err != nil {
 			user := handler.User(ctx)
 			if user != nil {
@@ -324,32 +198,11 @@ func Sftp(ctx echo.Context) error {
 		}
 		return ctx.String(`OK`)
 	default:
-		d, err := mgr.Open(ppath)
-		if err != nil {
+		var dirs []os.FileInfo
+		var exit bool
+		err, exit, dirs = mgr.List(ppath)
+		if exit {
 			return err
-		}
-		defer d.Close()
-		fi, err := d.Stat()
-		if !fi.IsDir() {
-			fileName := path.Base(ppath)
-			inline := ctx.Formx(`inline`).Bool()
-			return ctx.Attachment(d, fileName, inline)
-		}
-
-		dirs, err := mgr.ReadDir(ppath)
-		sortBy := ctx.Form(`sortBy`)
-		switch sortBy {
-		case `time`:
-			sort.Sort(filemanager.SortByModTime(dirs))
-		case `-time`:
-			sort.Sort(filemanager.SortByModTimeDesc(dirs))
-		case `name`:
-		case `-name`:
-			sort.Sort(filemanager.SortByNameDesc(dirs))
-		case `type`:
-			fallthrough
-		default:
-			sort.Sort(filemanager.SortByFileType(dirs))
 		}
 		ctx.Set(`dirs`, dirs)
 	}

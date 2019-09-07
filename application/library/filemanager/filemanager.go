@@ -203,5 +203,34 @@ func (f *fileManager) List(absPath string, sortBy ...string) (err error, exit bo
 	} else {
 		sort.Sort(SortByFileType(dirs))
 	}
+	if f.Format() == "json" {
+		dirList, fileList := f.ListTransfer(dirs)
+		data := f.Data()
+		data.SetData(echo.H{
+			`dirList`:  dirList,
+			`fileList`: fileList,
+		})
+		return f.JSON(data), true, nil
+	}
+	return
+}
+
+func (f *fileManager) ListTransfer(dirs []os.FileInfo) (dirList []echo.H, fileList []echo.H) {
+	dirList = []echo.H{}
+	fileList = []echo.H{}
+	for _, d := range dirs {
+		item := echo.H{
+			`name`:  d.Name(),
+			`size`:  d.Size(),
+			`mode`:  d.Mode().String(),
+			`mtime`: d.ModTime().Format(`2006-01-02 15:04:05`),
+			//`sys`:   d.Sys(),
+		}
+		if d.IsDir() {
+			dirList = append(dirList, item)
+			continue
+		}
+		fileList = append(fileList, item)
+	}
 	return
 }
