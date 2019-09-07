@@ -1026,30 +1026,14 @@ var App = function () {
       child.prototype = new obj();
       child.prototype.constructor = child;
     },
-    formatBytes:function(cellValue,precision) {
-      if(precision==null) precision=1
-      var intVal = parseInt(cellValue),ras = "B";
-      if (intVal > 1024) {
-          intVal /= 1024
-          ras = "KB"
+    formatBytes:function(bytes,precision) {
+      if(precision==null)precision=2;
+      var units = ["YB", "ZB", "EB", "PB", "TB", "GB", "MB", "KB", "B"];
+      var total=units.length;
+      for(total--; total > 0 && bytes > 1024.0; total--) {
+        bytes /= 1024.0;
       }
-      if (intVal > 1024) {
-          intVal /= 1024
-          ras = "MB"
-      }
-      if (intVal > 1024) {
-          intVal /= 1024
-          ras = "GB"
-      }
-      if (intVal > 1024) {
-          intVal /= 1024
-          ras = "TB"
-      }
-      if (intVal > 1024) {
-          intVal /= 1024
-          ras = "PB"
-      }
-      return (intVal).toFixed(precision) + ras;
+      return bytes.toFixed(precision)+units[total];
     },
     format:function(raw,xy,formatters){
       if(formatters && typeof(formatters[xy.y])=='function') return formatters[xy.y](raw,xy.x);
@@ -1282,6 +1266,10 @@ var App = function () {
           NProgress.set(current);
         }
       },50);
+    },
+    float:function (n, m, a, p) {
+      if (!m) m = 'ajax'; if (!a) a = 'src'; if (!p) p = '5-7';
+      $(n).powerFloat({ 'targetMode': m, 'targetAttr': a, 'position': p });
     }
   };
  
