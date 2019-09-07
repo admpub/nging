@@ -39,6 +39,10 @@
                         <i class="fa fa-upload"></i>
                         {{"打包上传到当前目录"|T}}
                     </button>
+                    <a class="btn btn-default" href="__BACKEND__/manager/uploaded_file?gallery=1&path={{$path}}">
+                        <i class="fa fa-picture-o"></i>
+                        {{"相册浏览模式"|T}}
+                    </a>
                     <span class="input-group" style="padding-left:10px">
                         <input type="text" id="query-current-path" name="query" class="form-control typeahead" required="required" value="{{Form "query"}}" data-provide="typeahead">
                         <span class="input-group-btn"><button class="btn btn-default" type="button" id="btn-query-current-path"><i class="fa fa-search"></i></button></span>

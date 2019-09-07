@@ -1,10 +1,15 @@
 var dropzone,dropzoneZIP,editor;
 function refreshList() {
+    if($('#tbody-content').length<1){
+        window.location.reload();
+        return;
+    }
     App.loading('show');
     $.get(window.location.href,{'_pjax':'tbody-content'},function(r){
         var e=$(r);
         $('#tbody-content').html(e.find('#tbody-content').html());
         App.loading('hide');
+        $('#tbody-content').trigger('refresh');
     },'html');
 }
 function initCodeMirrorEditor() {

@@ -1423,6 +1423,12 @@ body.texture {
 .gallery-cont .img {
   position: relative;
 }
+.gallery-cont .photo > .icon {
+  text-align: center;background-color:white;padding:10px 0 30px 0;
+}
+.gallery-cont .photo > .icon > a{
+  font-size:150px
+}
 .gallery-cont .img .over .func {
   margin-top: -80px;
   position: relative;
@@ -1460,6 +1466,8 @@ body.texture {
 .gallery-cont .item .head h4 {
   margin: 0;
   font-size: 17px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .gallery-cont .item .head span {
   color: #BDBDBD;
@@ -2776,6 +2784,9 @@ div.dataTables_length label select {
   display: inline-block;
   text-align: center;
   width: 28px;
+}
+.bg-white {
+  background-color: white;
 }
 .bg-darkgray {
   background-color: #888e97;

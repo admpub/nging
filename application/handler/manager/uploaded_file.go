@@ -115,10 +115,15 @@ func UploadedFile(ctx echo.Context) error {
 	if filePath == `.` {
 		filePath = ``
 	}
+	gallery := ctx.Formx(`gallery`).Bool()
+	var urlParam string
+	if gallery {
+		urlParam += `&gallery=1`
+	}
 	pathSlice := strings.Split(strings.Trim(filePath, echo.FilePathSeparator), echo.FilePathSeparator)
 	pathLinks := make(echo.KVList, len(pathSlice))
 	encodedSep := filemanager.EncodedSepa
-	urlPrefix := fmt.Sprintf(`/manager/uploaded_file?id=%d&path=`, id) + encodedSep
+	urlPrefix := fmt.Sprintf(`/manager/uploaded_file?id=%d`+urlParam+`&path=`, id) + encodedSep
 	for k, v := range pathSlice {
 		urlPrefix += com.URLEncode(v)
 		pathLinks[k] = &echo.KV{K: v, V: urlPrefix}
@@ -136,6 +141,9 @@ func UploadedFile(ctx echo.Context) error {
 		mime, _ := Playable(fileName)
 		return mime
 	})
+	if gallery {
+		return ctx.Render(`manager/uploaded_photo`, err)
+	}
 	return ctx.Render(`manager/uploaded_file`, err)
 }
 

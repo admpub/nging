@@ -1,0 +1,157 @@
+{{Extend "layout"}}
+{{/*Block "bodyNav"}}
+{{Include "caddy/file.dirnav"}}
+{{/Block*/}}
+{{Block "title"}}{{"附件管理"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li>{{"附件管理"|T}}</li>
+<li class="active">{{"文件管理"|T}}: {{/* Stored.Get "absPath" */}}
+  <a href="__BACKEND__/manager/uploaded_file?gallery=1">
+    <span class="badge badge-primary">{{Stored.rootPath}}</span>
+  </a>
+  {{- range $k,$v := Stored.pathLinks -}}
+  /<a href="{{$v.V}}">{{$v.K}}</a>
+  {{- end -}}
+</li>
+{{/Block}}
+
+{{Block "head"}}
+{{Include "caddy/file.head"}}
+<link rel="stylesheet" href="__ASSETS__/js/magnific-popup/magnific-popup.min.css?t={{BuildTime}}" type="text/css">
+{{/Block}}
+
+{{Block "main"}}
+{{$path := Stored.Get "path"}}
+<div class="row">
+  <div class="col-md-12">
+      <div class="btn-group">
+        <button type="button" id="mkdirBtn" class="btn btn-success" class="btn btn-success" data-url="__BACKEND__/manager/uploaded_file?do=mkdir&path={{if $path}}{{$path}}/{{end}}" onclick="fileMkdir(this)">
+          <i class="fa fa-plus"></i>
+          {{"新建文件夹"|T}}
+        </button>
+        <button type="button" id="uploadBtn" class="btn btn-primary">
+          <i class="fa fa-upload"></i>
+          {{"上传文件到当前目录"|T}}
+        </button>
+        <button type="button" id="uploadZipBtn" class="btn btn-warning" data-popover="popover" data-original-title=""
+          data-content="{{"仅支持上传zip压缩包。成功解压到当前目录后，该压缩包会被自动删除"|T}}" data-placement="top" data-trigger="hover">
+          <i class="fa fa-upload"></i>
+          {{"打包上传到当前目录"|T}}
+        </button>
+        {{if $path}}
+        <a title="{{"点击回到上一级"|T}}" class="btn btn-default" href="__BACKEND__/manager/uploaded_file?gallery=1&path={{$path}}/..">
+          <i class="fa fa-reply"></i>
+          {{"返回上一级"|T}}
+        </a>
+        {{end}}
+      </div>
+    </div>
+</div>
+
+
+
+<div class="row">
+  <div class="col-md-12" id="tbody-content">
+    <div class="gallery-cont">
+      {{range $k,$v := Stored.dirs}}
+      <div class="item">
+        <div class="photo">
+          <div class="head">
+            <!-- <span class="pull-right"> <i class="fa fa-heart"></i> </span> -->
+            <h4 data-toggle="tooltip" title="{{$v.Name}}">{{$v.Name}}</h4>
+            <span class="desc">{{$v.ModTime.Format "2006-01-02 15:04:05"}}</span>
+          </div>
+          {{$fileType := FileTypeByName $v.Name}}
+          {{if $v.IsDir}}
+          <div class="icon">
+          <a href="__BACKEND__/manager/uploaded_file?gallery=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">
+            <i class="fa fa-folder"></i>
+          </a>
+          </div>
+          {{else if eq $fileType `image`}}
+          <div class="img">
+            <img src="__BACKEND__/manager/uploaded_file?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" />
+            <div class="over">
+              <div class="func">
+                <a href="__BACKEND__/manager/uploaded_file?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" target="_blank">
+                  <i class="fa fa-link"></i>
+                </a>
+                <a class="image-zoom" href="__BACKEND__/manager/uploaded_file?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" title="{{$v.Name}}">
+                  <i class="fa fa-search"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+          {{else}}
+          <div class="icon">
+          <a href="__BACKEND__/manager/uploaded_file?gallery=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">
+            <i class="fa fa-{{FileTypeIcon $fileType}}"></i>
+          </a>
+          </div>
+          {{end}}
+        </div>
+      </div>
+      {{end}}
+    </div>
+
+  </div>
+</div>
+
+{{/Block}}
+
+{{Block "footer"}}
+<script type="text/javascript" src="__ASSETS__/js/masonry/masonry.min.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/magnific-popup/jquery.magnific-popup.min.js"></script>
+{{Include "caddy/file.script"}}
+<script>
+  function uploadURL(currentPath) {
+    return BACKEND_URL + '/manager/uploaded_file?do=upload&path=' + encodeURIComponent(currentPath);
+  }
+  function initDropzone() {
+    $('#multi-upload-dropzone').dropzone({
+      url: uploadURL('{{Stored.path}}'),
+      dictDefaultMessage: '{{"可以把文件拖到这里来进行上传哦"|T}}'
+    });
+    $('#multi-upload-zip-dropzone').dropzone({
+      url: uploadURL('{{Stored.path}}') + '&pipe=unzip',
+      dictDefaultMessage: '{{"可以把文件拖到这里来进行上传哦"|T}}<p>{{"仅支持上传zip压缩包。成功解压到当前目录后，该压缩包会被自动删除"|T}}</p>',
+      acceptedFiles: 'application/zip,application/x-zip-compressed'
+    });
+  }
+$(function () {
+  $('#tbody-content').off().on('refresh',function(){
+    //Initialize Mansory
+    var $container = $('.gallery-cont');
+    // initialize
+    $container.masonry({
+      columnWidth: 0,
+      itemSelector: '.item'
+    });
+
+    //Resizes gallery items on sidebar collapse
+    $("#sidebar-collapse").click(function () {
+      $container.masonry();
+    });
+
+    //MagnificPopup for images zoom
+    $('.image-zoom').magnificPopup({
+      type: 'image',
+      mainClass: 'mfp-with-zoom', // this class is for CSS animation below
+      zoom: {
+        enabled: true, // By default it's false, so don't forget to enable it
+        duration: 300, // duration of the effect, in milliseconds
+        easing: 'ease-in-out', // CSS transition easing function
+        opener: function (openerElement) {
+          var parent = $(openerElement).parents("div.img");
+          return parent;
+        }
+      },
+      gallery: { enabled: true }
+    });
+    $(window).trigger('resize');
+  }).trigger('refresh');
+});
+</script>
+<script type="text/javascript" src="__ASSETS__/js/behaviour/page/file.min.js"></script>
+{{/Block}}
