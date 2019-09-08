@@ -32,7 +32,11 @@ func BatchUpload(
 	dstNamer func(*multipart.FileHeader) (dst string, err error),
 	storer Storer,
 ) ([]string, error) {
-	m := ctx.Request().MultipartForm()
+	req := ctx.Request()
+	if req == nil {
+		return nil, ctx.E(`Invalid upload content`)
+	}
+	m := req.MultipartForm()
 	files, ok := m.File[fieldName]
 	if !ok {
 		return nil, echo.ErrNotFoundFileInput
