@@ -3302,40 +3302,40 @@
 			"revisionTime": "2018-09-30T19:44:53Z"
 		},
 		{
-			"checksumSHA1": "rBqZIJeX2ayXNmBcUajRB/NcjDo=",
+			"checksumSHA1": "14grVcMjauOP5YAyrInlX7EVkmU=",
 			"path": "github.com/webx-top/client/upload",
-			"revision": "7307fb45e22c32df17aaa43e469b0851e925bd66",
-			"revisionTime": "2019-09-08T14:19:46Z"
+			"revision": "5ba2ea7174f0ee3abd39c320d8483c18c36c3370",
+			"revisionTime": "2019-09-08T14:31:38Z"
 		},
 		{
 			"checksumSHA1": "K3MSyusucwxldAdCPhkqTM9b+nI=",
 			"path": "github.com/webx-top/client/upload/driver",
-			"revision": "7307fb45e22c32df17aaa43e469b0851e925bd66",
-			"revisionTime": "2019-09-08T14:19:46Z"
+			"revision": "5ba2ea7174f0ee3abd39c320d8483c18c36c3370",
+			"revisionTime": "2019-09-08T14:31:38Z"
 		},
 		{
 			"checksumSHA1": "GX24BJIF54EJHcGbD6YWfiB2AqQ=",
 			"path": "github.com/webx-top/client/upload/driver/markdown",
-			"revision": "7307fb45e22c32df17aaa43e469b0851e925bd66",
-			"revisionTime": "2019-09-08T14:19:46Z"
+			"revision": "5ba2ea7174f0ee3abd39c320d8483c18c36c3370",
+			"revisionTime": "2019-09-08T14:31:38Z"
 		},
 		{
 			"checksumSHA1": "YmY9vqi+gOcz2/m5b1FqCxOE/Zs=",
 			"path": "github.com/webx-top/client/upload/driver/simple",
-			"revision": "7307fb45e22c32df17aaa43e469b0851e925bd66",
-			"revisionTime": "2019-09-08T14:19:46Z"
+			"revision": "5ba2ea7174f0ee3abd39c320d8483c18c36c3370",
+			"revisionTime": "2019-09-08T14:31:38Z"
 		},
 		{
 			"checksumSHA1": "AyO+br/EoqDWs0lcyoA4OHs9nAM=",
 			"path": "github.com/webx-top/client/upload/driver/webuploader",
-			"revision": "7307fb45e22c32df17aaa43e469b0851e925bd66",
-			"revisionTime": "2019-09-08T14:19:46Z"
+			"revision": "5ba2ea7174f0ee3abd39c320d8483c18c36c3370",
+			"revisionTime": "2019-09-08T14:31:38Z"
 		},
 		{
 			"checksumSHA1": "1mnpIPaZ6z8RKRYzy7NY+zS9H84=",
 			"path": "github.com/webx-top/client/upload/driver/xheditor",
-			"revision": "7307fb45e22c32df17aaa43e469b0851e925bd66",
-			"revisionTime": "2019-09-08T14:19:46Z"
+			"revision": "5ba2ea7174f0ee3abd39c320d8483c18c36c3370",
+			"revisionTime": "2019-09-08T14:31:38Z"
 		},
 		{
 			"checksumSHA1": "MdYsL52yjntnU9ghZq5IhgtoyZA=",

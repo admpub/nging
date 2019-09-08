@@ -37,6 +37,9 @@ func BatchUpload(
 		return nil, ctx.E(`Invalid upload content`)
 	}
 	m := req.MultipartForm()
+	if m == nil {
+		return nil, ctx.E(`Invalid upload content`)
+	}
 	files, ok := m.File[fieldName]
 	if !ok {
 		return nil, echo.ErrNotFoundFileInput

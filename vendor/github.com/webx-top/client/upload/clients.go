@@ -68,6 +68,9 @@ func Upload(ctx echo.Context, clientName string, result *Result, storer Storer) 
 	if err != nil {
 		return client.Response(err.Error())
 	}
-	result.FileURL, err = storer.Put(dstFile, body, body.(Sizer).Size())
-	return client.Response(err.Error())
+	result.FileURL, err = storer.Put(dstFile, body, body.Size())
+	if err != nil {
+		return client.Response(err.Error())
+	}
+	return client.Response(``)
 }
