@@ -1,4 +1,3 @@
-
 $(function(){
 	App.init();
 	App.initLeftNavAjax(window.activeURL,null);

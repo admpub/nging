@@ -154,7 +154,7 @@ function codeMirrorChangeMode(editor,val) {
   }
 }
 Dropzone.autoDiscover=false;
-CodeMirror.modeURL = ASSETS_URL+"/js/codemirror/mode/%N/%N.js";
+CodeMirror.modeURL = ASSETS_URL+"/js/editor/markdown/lib/codemirror/mode/%N/%N.js";
 function dropzoneResizeHeight(isZip){
   return function(){
     var el=isZip?'#multi-upload-zip-modal':'#multi-upload-modal';

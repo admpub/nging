@@ -6,10 +6,10 @@
 {{/Block}}
 {{Block "head"}}
 <!-- codemirror -->
-<link rel="stylesheet" href="__ASSETS__/js/codemirror/lib/codemirror.min.css">
-<link rel="stylesheet" href="__ASSETS__/js/codemirror/theme/night.css">
-<script src="__ASSETS__/js/codemirror/lib/codemirror.min.js"></script>
-<script src="__ASSETS__/js/codemirror/addon/mode/loadmode.js"></script>
+<link rel="stylesheet" href="__ASSETS__/js/editor/markdown/lib/codemirror/codemirror.min.css">
+<link rel="stylesheet" href="__ASSETS__/js/editor/markdown/lib/codemirror/theme/night.css">
+<script src="__ASSETS__/js/editor/markdown/lib/codemirror/codemirror.min.js"></script>
+<script src="__ASSETS__/js/editor/markdown/lib/codemirror/addon/mode/loadmode.js"></script>
 <style>
 .CodeMirror {
     border: 1px solid #ccc;
@@ -54,7 +54,7 @@
 {{Block "footer"}}
 <script type="text/javascript">
 var editor;
-CodeMirror.modeURL = "__ASSETS__/js/codemirror/mode/%N/%N.js";
+CodeMirror.modeURL = "__ASSETS__/js/editor/markdown/lib/codemirror/mode/%N/%N.js";
 function initCodeMirrorEditor() {
     //if(editor)return;
     editor = CodeMirror.fromTextArea($("#hosts")[0], {
