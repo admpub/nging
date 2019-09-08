@@ -37,7 +37,38 @@ type Sizer interface {
 	Size() int64
 }
 
-func Receive(name string, ctx echo.Context) (f io.ReadCloser, fileName string, err error) {
+type ReadCloserWithSize interface {
+	Sizer
+	io.ReadCloser
+}
+
+func WrapSizer(sizer Sizer, readCloser io.ReadCloser) ReadCloserWithSize {
+	return &wrapSizer{sizer: sizer, ReadCloser: readCloser}
+}
+
+func WrapSize(size int64, readCloser io.ReadCloser) ReadCloserWithSize {
+	return &wrapSize{size: size, ReadCloser: readCloser}
+}
+
+type wrapSizer struct {
+	sizer Sizer
+	io.ReadCloser
+}
+
+func (w *wrapSizer) Size() int64 {
+	return w.sizer.Size()
+}
+
+type wrapSize struct {
+	size int64
+	io.ReadCloser
+}
+
+func (w *wrapSize) Size() int64 {
+	return w.size
+}
+
+func Receive(name string, ctx echo.Context) (f ReadCloserWithSize, fileName string, err error) {
 	switch ctx.ResolveContentType() {
 	case "application/octet-stream":
 		val := ctx.Request().Header().Get("Content-Disposition")
@@ -55,16 +86,18 @@ func Receive(name string, ctx echo.Context) (f io.ReadCloser, fileName string, e
 		if err != nil {
 			return
 		}
-		f = ctx.Request().Body()
+		f = WrapSizer(ctx.Request(), ctx.Request().Body())
 		return
 
 	default:
 		var header *multipart.FileHeader
-		f, header, err = ctx.Request().FormFile(name)
+		var file multipart.File
+		file, header, err = ctx.Request().FormFile(name)
 		if err != nil {
 			return
 		}
 		fileName = header.Filename
+		f = WrapSize(header.Size, file)
 		return
 	}
 }

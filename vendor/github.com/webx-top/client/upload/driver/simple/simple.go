@@ -19,8 +19,6 @@
 package simple
 
 import (
-	"io"
-
 	uploadClient "github.com/webx-top/client/upload"
 )
 
@@ -44,7 +42,7 @@ func (a *Simple) Name() string {
 	return "filedata"
 }
 
-func (a *Simple) Body() (file io.ReadCloser, err error) {
+func (a *Simple) Body() (file uploadClient.ReadCloserWithSize, err error) {
 	file, a.Data.FileName, err = uploadClient.Receive(a.Name(), a.Context)
 	if err != nil {
 		return

@@ -19,8 +19,6 @@
 package webuploader
 
 import (
-	"io"
-
 	uploadClient "github.com/webx-top/client/upload"
 )
 
@@ -44,7 +42,7 @@ func (a *Webuploader) Name() string {
 	return "file"
 }
 
-func (a *Webuploader) Body() (file io.ReadCloser, err error) {
+func (a *Webuploader) Body() (file uploadClient.ReadCloserWithSize, err error) {
 	file, a.Data.FileName, err = uploadClient.Receive(a.Name(), a.Context)
 	if err != nil {
 		return

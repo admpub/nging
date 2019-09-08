@@ -19,8 +19,6 @@
 package markdown
 
 import (
-	"io"
-
 	"net/url"
 	"time"
 
@@ -47,7 +45,7 @@ func (a *Markdown) Name() string {
 	return "editormd-image-file"
 }
 
-func (a *Markdown) Body() (file io.ReadCloser, err error) {
+func (a *Markdown) Body() (file uploadClient.ReadCloserWithSize, err error) {
 	file, a.Data.FileName, err = uploadClient.Receive(a.Name(), a.Context)
 	if err != nil {
 		return

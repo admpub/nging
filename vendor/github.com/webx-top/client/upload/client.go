@@ -20,7 +20,6 @@ package upload
 
 import (
 	"fmt"
-	"io"
 	"path/filepath"
 	"time"
 
@@ -72,7 +71,7 @@ func (a *BaseClient) Name() string {
 	return "filedata"
 }
 
-func (a *BaseClient) Body() (file io.ReadCloser, err error) {
+func (a *BaseClient) Body() (file ReadCloserWithSize, err error) {
 	file, a.Data.FileName, err = Receive(a.Name(), a.Context)
 	if err != nil {
 		return
@@ -107,7 +106,7 @@ type Client interface {
 	Name() string
 
 	//文件内容
-	Body() (io.ReadCloser, error)
+	Body() (ReadCloserWithSize, error)
 
 	//返回结果
 	Result(string) string

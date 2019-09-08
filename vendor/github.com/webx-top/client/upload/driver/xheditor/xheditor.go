@@ -19,7 +19,6 @@
 package xheditor
 
 import (
-	"io"
 	"net/url"
 
 	uploadClient "github.com/webx-top/client/upload"
@@ -45,7 +44,7 @@ func (a *XhEditor) Name() string {
 	return "filedata"
 }
 
-func (a *XhEditor) Body() (file io.ReadCloser, err error) {
+func (a *XhEditor) Body() (file uploadClient.ReadCloserWithSize, err error) {
 	file, a.Data.FileName, err = uploadClient.Receive(a.Name(), a.Context)
 	if err != nil {
 		return
