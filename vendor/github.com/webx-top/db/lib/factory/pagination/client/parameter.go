@@ -16,31 +16,27 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package pagination
+package client
 
-import (
-	"strings"
+import "github.com/webx-top/db"
 
-	"github.com/webx-top/db/lib/factory"
-	"github.com/webx-top/echo"
-)
+type ListParameter interface {
+	AddMiddleware(mw ...func(db.Result) db.Result)
+	Middleware() func(db.Result) db.Result
+	AddCond(args ...interface{})
+	SetConds(args []interface{})
+	Conds() []interface{}
+	Model() interface{}
+}
 
-// Sorts 获取数据查询时的排序方式
-func Sorts(ctx echo.Context, table string, defaultSorts ...string) []interface{} {
-	sorts := []interface{}{}
-	sort := ctx.Form(`sort`)
-	field := strings.TrimPrefix(sort, `-`)
-	if len(field) > 0 && factory.ExistField(table, field) {
-		sorts = append(sorts, sort)
-		for _, defaultSort := range defaultSorts {
-			if field != strings.TrimPrefix(defaultSort, `-`) {
-				sorts = append(sorts, defaultSort)
-			}
-		}
-	} else {
-		for _, defaultSort := range defaultSorts {
-			sorts = append(sorts, defaultSort)
-		}
-	}
-	return sorts
+type Lister interface {
+	ListParameter
+
+	List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error)
+}
+
+type OffsetLister interface {
+	ListParameter
+
+	ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error)
 }

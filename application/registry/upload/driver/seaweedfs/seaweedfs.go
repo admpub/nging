@@ -32,10 +32,10 @@ import (
 
 const Name = `seaweedfs`
 
-var _ upload.Uploader = &Seaweedfs{}
+var _ upload.Storer = &Seaweedfs{}
 
 func init() {
-	upload.UploaderRegister(Name, func(typ string) upload.Uploader {
+	upload.StorerRegister(Name, func(typ string) upload.Storer {
 		return NewSeaweedfs(typ)
 	})
 }
@@ -60,7 +60,7 @@ func (s *Seaweedfs) Engine() string {
 }
 
 func (s *Seaweedfs) filepath(fname string) string {
-	return path.Join(s.UploadPath, fname)
+	return path.Join(s.UploadDir, fname)
 }
 
 func (s *Seaweedfs) xPut(dstFile string, src io.Reader, size int64) (string, error) {

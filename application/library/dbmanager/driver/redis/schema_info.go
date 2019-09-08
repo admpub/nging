@@ -23,7 +23,7 @@ import (
 	"strings"
 
 	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/common"
+	dbPagination "github.com/webx-top/db/lib/factory/pagination"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/pagination"
 )
@@ -93,7 +93,7 @@ func (a *Value) Paging(vkeys ...string) *pagination.Pagination {
 	if page < 1 {
 		page = 1
 	}
-	if size < 1 || size > common.PageMaxSize {
+	if size < 1 || size > dbPagination.PageMaxSize {
 		size = 50
 	}
 	delKeys := []string{}

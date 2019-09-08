@@ -30,7 +30,7 @@ func BatchUpload(
 	ctx echo.Context,
 	fieldName string,
 	dstNamer func(*multipart.FileHeader) (dst string, err error),
-	uploader Uploader,
+	storer Storer,
 ) ([]string, error) {
 	m := ctx.Request().MultipartForm()
 	files, ok := m.File[fieldName]
@@ -56,7 +56,7 @@ func BatchUpload(
 			file.Close()
 			continue
 		}
-		viewURL, err := uploader.Put(dstFile, file, fileHdr.Size)
+		viewURL, err := storer.Put(dstFile, file, fileHdr.Size)
 		if err != nil {
 			file.Close()
 			return viewURLs, err
@@ -71,7 +71,7 @@ type Sizer interface {
 	Size() int64
 }
 
-type Uploader interface {
+type Storer interface {
 	Engine() string
 	Put(dst string, src io.Reader, size int64) (string, error)
 	Get(file string) (io.ReadCloser, error)
@@ -82,24 +82,24 @@ type Uploader interface {
 	FixURLWithParams(content string, values url.Values, embedded ...bool) string
 }
 
-type Constructor func(typ string) Uploader
+type Constructor func(typ string) Storer
 
-var uploaders = map[string]Constructor{}
+var storers = map[string]Constructor{}
 
 var DefaultConstructor Constructor
 
-func UploaderRegister(engine string, constructor Constructor) {
-	uploaders[engine] = constructor
+func StorerRegister(engine string, constructor Constructor) {
+	storers[engine] = constructor
 }
 
-func UploaderGet(engine string) Constructor {
-	constructor, ok := uploaders[engine]
+func StorerGet(engine string) Constructor {
+	constructor, ok := storers[engine]
 	if !ok {
 		return DefaultConstructor
 	}
 	return constructor
 }
 
-func UploaderAll(engine string) map[string]Constructor {
-	return uploaders
+func StorerAll(engine string) map[string]Constructor {
+	return storers
 }

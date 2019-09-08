@@ -16,11 +16,11 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package common
+package pagination
 
 import (
-	clientPagination "github.com/admpub/nging/application/library/common/client/pagination"
 	"github.com/webx-top/db"
+	clientPagination "github.com/webx-top/db/lib/factory/pagination/client"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/pagination"
 )

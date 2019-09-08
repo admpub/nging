@@ -40,6 +40,9 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
+
+	uploadClient "github.com/webx-top/client/upload"
+	_ "github.com/webx-top/client/upload/driver"
 )
 
 // ResponseDataForUpload 根据不同的上传方式响应不同的数据格式
@@ -47,13 +50,27 @@ func ResponseDataForUpload(ctx echo.Context, field string, err error, imageURLs 
 	return upload.ResponserGet(field)(ctx, field, err, imageURLs)
 }
 
-var UploaderEngine = filesystem.Name
+var StorerEngine = filesystem.Name
 
 func File(ctx echo.Context) error {
 	typ := ctx.Param(`type`)
 	file := ctx.Param(`*`)
 	file = filepath.Join(helper.UploadDir, typ, file)
 	return ctx.File(file)
+}
+
+func SaveFilename(subdir, name, postFilename string) (string, error) {
+	ext := filepath.Ext(postFilename)
+	fname := name
+	if len(fname) == 0 {
+		var err error
+		fname, err = exec.UniqueID()
+		if err != nil {
+			return ``, err
+		}
+	}
+	fname += ext
+	return subdir + fname, nil
 }
 
 // Upload 上传文件
@@ -80,33 +97,32 @@ func Upload(ctx echo.Context) error {
 		return err
 	}
 	//echo.Dump(ctx.Forms())
-	up := upload.UploaderGet(UploaderEngine)
-	if up == nil {
-		err := errors.New(ctx.T(`存储引擎“%s”未被登记`, UploaderEngine))
+	newStore := upload.StorerGet(StorerEngine)
+	if newStore == nil {
+		err := errors.New(ctx.T(`存储引擎“%s”未被登记`, StorerEngine))
 		datax, embed := ResponseDataForUpload(ctx, field, err, files)
 		if !embed {
 			return ctx.JSON(datax)
 		}
 		return err
 	}
-	uploader := up(typ)
+	storer := newStore(typ)
 	var subdir, name string
 	subdir, name, err = upload.CheckerGet(typ)(ctx)
 	if err != nil {
 		return err
 	}
+	clientName := ctx.Form(`client`)
+	if len(clientName) > 0 {
+		result := &uploadClient.Result{}
+		result.SetDistFileGenerator(func(filename string) (string, error) {
+			return SaveFilename(subdir, name, filename)
+		})
+		return uploadClient.Upload(ctx, clientName, result, storer)
+	}
 	files, err = upload.BatchUpload(ctx, `files[]`, func(hd *multipart.FileHeader) (string, error) {
-		ext := filepath.Ext(hd.Filename)
-		fname := name
-		if len(fname) == 0 {
-			fname, err = exec.UniqueID()
-			if err != nil {
-				return ``, err
-			}
-		}
-		fname += ext
-		return subdir + fname, nil
-	}, uploader)
+		return SaveFilename(subdir, name, hd.Filename)
+	}, storer)
 	datax, embed := ResponseDataForUpload(ctx, field, err, files)
 	if err != nil {
 		if !embed {
@@ -117,7 +133,7 @@ func Upload(ctx echo.Context) error {
 
 	if pipe == `deqr` { //解析二维码
 		if len(files) > 0 {
-			reader, err := uploader.Get(files[0])
+			reader, err := storer.Get(files[0])
 			if reader != nil {
 				defer reader.Close()
 			}
@@ -144,13 +160,13 @@ func Upload(ctx echo.Context) error {
 }
 
 func Crop(ctx echo.Context) error {
-	up := upload.UploaderGet(UploaderEngine)
-	if up == nil {
-		return ctx.E(`存储引擎“%s”未被登记`, UploaderEngine)
+	newStore := upload.StorerGet(StorerEngine)
+	if newStore == nil {
+		return ctx.E(`存储引擎“%s”未被登记`, StorerEngine)
 	}
 	typ := ctx.Param(`type`)
-	uploader := up(typ)
-	_ = uploader //TODO: WIP
+	storer := newStore(typ)
+	_ = storer //TODO: WIP
 	src := ctx.Form(`src`)
 	src, _ = com.URLDecode(src)
 	if err := common.IsRightUploadFile(ctx, src); err != nil {

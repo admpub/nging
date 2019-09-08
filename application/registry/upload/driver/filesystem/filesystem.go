@@ -31,10 +31,10 @@ import (
 
 const Name = `filesystem`
 
-var _ upload.Uploader = &Filesystem{}
+var _ upload.Storer = &Filesystem{}
 
 func init() {
-	upload.UploaderRegister(Name, func(typ string) upload.Uploader {
+	upload.StorerRegister(Name, func(typ string) upload.Storer {
 		return NewFilesystem(typ)
 	})
 }
