@@ -26,21 +26,9 @@
 <div class="row">
   <div class="col-md-12">
       <div class="btn-group">
-        <button type="button" id="mkdirBtn" class="btn btn-success" class="btn btn-success" data-url="__BACKEND__/manager/uploaded_file?do=mkdir&path={{if $path}}{{$path}}/{{end}}" onclick="fileMkdir(this)">
-          <i class="fa fa-plus"></i>
-          {{"新建文件夹"|T}}
-        </button>
-        <button type="button" id="uploadBtn" class="btn btn-primary">
-          <i class="fa fa-upload"></i>
-          {{"上传文件到当前目录"|T}}
-        </button>
-        <button type="button" id="uploadZipBtn" class="btn btn-warning" data-popover="popover" data-original-title=""
-          data-content="{{"仅支持上传zip压缩包。成功解压到当前目录后，该压缩包会被自动删除"|T}}" data-placement="top" data-trigger="hover">
-          <i class="fa fa-upload"></i>
-          {{"打包上传到当前目录"|T}}
-        </button>
+        {{Include "manager/uploaded_file_btn"}}
         {{if $path}}
-        <a title="{{"点击回到上一级"|T}}" class="btn btn-default" href="__BACKEND__/manager/uploaded_file?gallery=1&path={{$path}}/..">
+        <a title="{{"点击回到上一级"|T}}" class="btn btn-default" href="__BACKEND__/manager/uploaded_file?gallery=1&path={{$path}}/.." style="margin-left:10px">
           <i class="fa fa-reply"></i>
           {{"返回上一级"|T}}
         </a>

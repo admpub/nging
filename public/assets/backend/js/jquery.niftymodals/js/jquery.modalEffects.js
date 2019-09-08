@@ -38,7 +38,7 @@
       		$(modal).addClass($this.o.classAddAfterOpen);
       		/* overlay.removeEventListener( 'click', removeModalHandler );
       		overlay.addEventListener( 'click', removeModalHandler ); */
-          $(overlay).on('click', function () {
+          $(overlay).off('click').on('click', function () {
              removeModalHandler();
              $this.afterClose(el, modal);
              $(overlay).off('click');
@@ -67,7 +67,8 @@
         	}
         
         	function removeModalHandler() {
-        		removeModal($(el).hasClass($this.o.perspectiveSetClass)); 
+            removeModal($(el).hasClass($this.o.perspectiveSetClass));
+            $(overlay).off('click');
         	}
         
         	$(close).on( 'click', function( ev ) {
@@ -170,6 +171,7 @@
             mod.removeClass(config.classAddAfterOpen);
             mod.css({'perspective':'1300px'});
             mod.trigger('hide');
+            $(config.overlaySelector).off('click');
           },
           
           showModal: function(mod){
@@ -182,7 +184,7 @@
             mod.addClass(config.classAddAfterOpen);
             
             //Overlay Click Event
-            overlay.on('click', function () {
+            overlay.off('click').on('click', function () {
                helpers.removeModal(mod);
                config.afterClose(mod);
                overlay.off('click');
