@@ -7,7 +7,6 @@
 {{Block "head"}}
 <link rel="stylesheet" type="text/css" href="__ASSETS__/js/selectpage/selectpage.css?t={{BuildTime}}" />
 <link rel="stylesheet" href="__ASSETS__/js/jquery.crop/css/jquery.Jcrop.min.css?t={{BuildTime}}" type="text/css" />
-<link rel="stylesheet" href="__ASSETS__/js/bootstrap.summernote/summernote.css?t={{BuildTime}}" type="text/css" />
 {{/Block}}
 {{Block "main"}}
 {{Strip}}
@@ -59,12 +58,11 @@
 <script src="__ASSETS__/js/jquery.upload/js/jquery.iframe-transport.js?t={{BuildTime}}"></script>
 <!-- The basic File Upload plugin -->
 <script src="__ASSETS__/js/jquery.upload/js/jquery.fileupload.js?t={{BuildTime}}"></script>
-<script src="__ASSETS__/js/bootstrap.summernote/summernote.min.js?t={{BuildTime}}"></script>
-<script src="__ASSETS__/js/bootstrap.summernote/lang/summernote-zh-CN.js?t={{BuildTime}}"></script>
-<script src="__ASSETS__/js/behaviour/page/summernote.min.js?t={{BuildTime}}"></script>
+<script src="__ASSETS__/js/behaviour/page/loader.js?t={{BuildTime}}"></script>
+<script src="__ASSETS__/js/editor/editor.js?t={{BuildTime}}"></script>
 <script type="text/javascript">
 $(function(){
-summernoteEditor('.summernote');
+  App.editor.initXH('.summernote');
 });
 </script>
 {{/Block}}

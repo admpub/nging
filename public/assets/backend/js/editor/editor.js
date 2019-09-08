@@ -38,6 +38,7 @@ App.editor.parseMarkdown2HTML = function (viewZoneId, markdownData, options) {
 /* 初始化UEditor编辑器 */
 App.editor.initUE = function (editorElement, uploadUrl, options) {
 	if($(editorElement).hasClass('form-control')) $(editorElement).removeClass('form-control');
+	if(!uploadUrl) uploadUrl = $(editorElement).attr('action');
 	if(uploadUrl.substr(0,1)=='!') uploadUrl=uploadUrl.substr(1);
 	if(options==null) options = {};
 	App.loader.defined(typeof (window.UE), 'ueditor');
@@ -59,6 +60,7 @@ App.editor.initUE = function (editorElement, uploadUrl, options) {
 /* 初始化Markdown编辑器 */
 App.editor.initMarkdown = function (editorElement, uploadUrl, options) {
 	var isManager=false;
+	if(!uploadUrl) uploadUrl = $(editorElement).attr('action');
 	if(uploadUrl.substr(0,1)=='!') {
 		uploadUrl=uploadUrl.substr(1);
 		isManager=true;
@@ -167,6 +169,7 @@ App.editor.initMarkdown = function (editorElement, uploadUrl, options) {
 /* 初始化xheditor */
 App.editor.initXH = function (editorElement, uploadUrl, settings) {
 	App.loader.defined(typeof ($.fn.xheditor), 'xheditor');
+	if(!uploadUrl) uploadUrl = $(editorElement).attr('action');
 	var editor, editorRoot = BACKEND_URL + '/public/assets/backend/js/editor/xheditor/';
 	if (!uploadUrl) { editor = $(editorElement).xheditor({ 'editorRoot': editorRoot }); } else {
 		if (uploadUrl.indexOf('?') >= 0) {
@@ -257,7 +260,7 @@ App.editor.initXH = function (editorElement, uploadUrl, settings) {
 
 //例如：App.editor.switch($('textarea'))
 App.editor.switch = function (texta, cancelFn, tips) {
-	var upurl = texta.data("upload-url")||'!'+App.editor.browsingFileURL+'?pagerows=12&multiple=1',
+	var upurl = texta.attr('action')||texta.data("upload-url")||'!'+App.editor.browsingFileURL+'?pagerows=12&multiple=1',
 	etype = texta.data("editor"),
 	ename = texta.data("editor-name"),
 	eobject = texta.data("editor-object"),
