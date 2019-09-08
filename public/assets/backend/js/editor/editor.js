@@ -52,7 +52,12 @@ App.editor.initUE = function (editorElement, uploadUrl, options) {
 		uploadUrl += 'client=webuploader';
     	options.serverUrl = uploadUrl;
 	}
-	var editor=UE.getEditor(editorElement,options);
+	var idv=$(editorElement).attr('id');
+	if(!idv){
+		idv='ueditor-instance-'+Math.random();
+		$(editorElement).attr('id',idv);
+	}
+	var editor=UE.getEditor(idv,options);
 	$(editorElement).data('editor-name','ueditor');
 	$(editorElement).data('editor-object',editor);
 };

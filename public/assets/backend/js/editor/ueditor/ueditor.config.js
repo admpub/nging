@@ -19,6 +19,8 @@
         ]]
         ,emotionLocalization:true
         ,listiconpath : URL+'themes/ueditor-list/'
+        ,codeMirrorJsUrl:URL+"third-party/codemirror/codemirror.js"
+        ,codeMirrorCssUrl:URL+"third-party/codemirror/codemirror.css"
 		,xssFilterRules: true
 		,inputXssFilter: true
 		,outputXssFilter: true
