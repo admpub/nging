@@ -314,14 +314,14 @@ App.editor.xheditor = function (editorElement, uploadUrl, settings) {
 // summernote
 // =================================================================
 
-App.editor.summernotes = function (elem, minHeight) {
+App.editor.summernotes = function (elem, minHeight, bs4) {
 	$(editorElement).each(function () {
-		App.editor.summernote(this, minHeight);
+		App.editor.summernote(this, minHeight, bs4);
 	});
 };
-App.editor.summernote = function (elem, minHeight) {
+App.editor.summernote = function (elem, minHeight, bs4) {
 	if (minHeight == null) minHeight = 400;
-	App.loader.defined(typeof ($.fn.summernote), 'summernote');
+	App.loader.defined(typeof ($.fn.summernote), 'summernote' + (bs4?'_bs4':'') );
 	$(elem).summernote({
 		lang: App.langTag(),
 		minHeight: minHeight,
