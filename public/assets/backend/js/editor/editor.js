@@ -35,6 +35,15 @@ App.editor.parseMarkdown2HTML = function (viewZoneId, markdownData, options) {
 	return EditormdView;
 };
 
+// =================================================================
+// UEditor
+// =================================================================
+
+App.editor.initUEs = function (editorElement, uploadUrl, options) {
+	$(editorElement).each(function(){
+		App.editor.initUE(this, uploadUrl, options);
+	});
+};
 /* 初始化UEditor编辑器 */
 App.editor.initUE = function (editorElement, uploadUrl, options) {
 	if($(editorElement).hasClass('form-control')) $(editorElement).removeClass('form-control');
@@ -62,6 +71,15 @@ App.editor.initUE = function (editorElement, uploadUrl, options) {
 	$(editorElement).data('editor-object',editor);
 };
 
+// =================================================================
+// editormd
+// =================================================================
+
+App.editor.initMDs = function (editorElement, uploadUrl, options) {
+	$(editorElement).each(function(){
+		App.editor.initMarkdown(this, uploadUrl, options);
+	});
+};
 /* 初始化Markdown编辑器 */
 App.editor.initMarkdown = function (editorElement, uploadUrl, options) {
 	var isManager=false;
@@ -170,7 +188,17 @@ App.editor.initMarkdown = function (editorElement, uploadUrl, options) {
 	$(editorElement).data('editor-object',editor);
 	return editor;
 };
+App.editor.initMD = App.editor.initMarkdown;
 
+// =================================================================
+// XHEditor
+// =================================================================
+
+App.editor.initXHs = function (editorElement, uploadUrl, options) {
+	$(editorElement).each(function(){
+		App.editor.initXH(this, uploadUrl, options);
+	});
+};
 /* 初始化xheditor */
 App.editor.initXH = function (editorElement, uploadUrl, settings) {
 	App.loader.defined(typeof ($.fn.xheditor), 'xheditor');
