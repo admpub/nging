@@ -350,7 +350,7 @@ App.editor.markdownItToHTML = function markdownParse(box, isContainer) {
 	App.loader.defined(typeof (window.markdownit), 'markdownit');
 	App.loader.defined(typeof (window.prettyPrint), 'codehighlight');
 	if (isContainer != false) box = box.find('.markdown-code');
-	var md = markdownItInstance();
+	var md = App.editor.markdownItInstance();
 	box.each(function () {
 		$(this).html(md.render($.trim($(this).html())));
 		$(this).find("pre > code").each(function () {
