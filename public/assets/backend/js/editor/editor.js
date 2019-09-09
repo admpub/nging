@@ -4,8 +4,11 @@ App.loader.libs.flowChart = ['#editor/markdown/lib/flowchart.min.js', '#editor/m
 App.loader.libs.sequenceDiagram = ['#editor/markdown/lib/sequence-diagram.min.js'];
 App.loader.libs.xheditor = ['#editor/xheditor/xheditor.min.js', '#editor/xheditor/xheditor_lang/' + App.lang + '.js'];
 App.loader.libs.ueditor = ['#editor/ueditor/ueditor.config.js', '#editor/ueditor/ueditor.all.min.js'];
+App.loader.libs.summernote = ['#editor/summernote/summernote.css','#editor/summernote/summernote.min.js', '#editor/summernote/lang/summernote-'+App.langTag()+'.js'];
+App.loader.libs.summernote_bs4 = ['#editor/summernote/summernote-bs4.css','#editor/summernote/summernote-bs4.min.js', '#editor/summernote/lang/summernote-'+App.langTag()+'.js'];
 App.loader.libs.codehighlight = ['#markdown/it/plugins/highlight/loader/run_prettify.js?skin=sons-of-obsidian'];
 window.UEDITOR_HOME_URL = ASSETS_URL + '/js/editor/ueditor/';
+
 
 App.editor={
 	browsingFileURL:App.loader.siteURL+'/manager/select_file'
@@ -36,16 +39,16 @@ App.editor.parseMarkdown2HTML = function (viewZoneId, markdownData, options) {
 };
 
 // =================================================================
-// UEditor
+// ueditor
 // =================================================================
 
-App.editor.initUEs = function (editorElement, uploadUrl, options) {
+App.editor.ueditors = function (editorElement, uploadUrl, options) {
 	$(editorElement).each(function(){
 		App.editor.initUE(this, uploadUrl, options);
 	});
 };
 /* 初始化UEditor编辑器 */
-App.editor.initUE = function (editorElement, uploadUrl, options) {
+App.editor.ueditor = function (editorElement, uploadUrl, options) {
 	if($(editorElement).hasClass('form-control')) $(editorElement).removeClass('form-control');
 	if(!uploadUrl) uploadUrl = $(editorElement).attr('action');
 	if(uploadUrl.substr(0,1)=='!') uploadUrl=uploadUrl.substr(1);
@@ -75,13 +78,13 @@ App.editor.initUE = function (editorElement, uploadUrl, options) {
 // editormd
 // =================================================================
 
-App.editor.initMDs = function (editorElement, uploadUrl, options) {
+App.editor.markdowns = function (editorElement, uploadUrl, options) {
 	$(editorElement).each(function(){
 		App.editor.initMarkdown(this, uploadUrl, options);
 	});
 };
 /* 初始化Markdown编辑器 */
-App.editor.initMarkdown = function (editorElement, uploadUrl, options) {
+App.editor.markdown = function (editorElement, uploadUrl, options) {
 	var isManager=false;
 	if(!uploadUrl) uploadUrl = $(editorElement).attr('action');
 	if(uploadUrl.substr(0,1)=='!') {
@@ -188,19 +191,19 @@ App.editor.initMarkdown = function (editorElement, uploadUrl, options) {
 	$(editorElement).data('editor-object',editor);
 	return editor;
 };
-App.editor.initMD = App.editor.initMarkdown;
+App.editor.md = App.editor.markdown;
 
 // =================================================================
 // XHEditor
 // =================================================================
 
-App.editor.initXHs = function (editorElement, uploadUrl, options) {
+App.editor.xheditors = function (editorElement, uploadUrl, options) {
 	$(editorElement).each(function(){
 		App.editor.initXH(this, uploadUrl, options);
 	});
 };
 /* 初始化xheditor */
-App.editor.initXH = function (editorElement, uploadUrl, settings) {
+App.editor.xheditor = function (editorElement, uploadUrl, settings) {
 	App.loader.defined(typeof ($.fn.xheditor), 'xheditor');
 	if(!uploadUrl) uploadUrl = $(editorElement).attr('action');
 	var editor, editorRoot = BACKEND_URL + '/public/assets/backend/js/editor/xheditor/';
@@ -289,6 +292,52 @@ App.editor.initXH = function (editorElement, uploadUrl, settings) {
 	$(editorElement).data('editor-name','xheditor');
 	$(editorElement).data('editor-object',editor);
 	return editor;
+};
+
+// =================================================================
+// summernote
+// =================================================================
+App.editor.summernotes = function (elem,minHeight){
+	$(editorElement).each(function(){
+		App.editor.initSummernote(this, minHeight);
+	});
+};
+App.editor.summernote = function (elem,minHeight){
+  if(minHeight==null) minHeight=400;
+  App.loader.defined(typeof ($.fn.summernote), 'summernote');
+  $(elem).summernote({lang:App.langTag(),
+    minHeight:minHeight,
+    callbacks:{
+      onImageUpload:function(files, editor, $editable) {
+        var $files = $(files);
+        $files.each(function() {
+        var file = this;
+        var formdata = new FormData();  
+        formdata.append("files[]", file);  
+        $.ajax({  
+            data : formdata,  
+            type : "POST",  
+            url : $(elem).attr('action'),
+            cache : false,  
+            contentType : false,  
+            processData : false,  
+            dataType : "json",  
+            success: function(r) {
+              if(r.Code!=1){
+                return App.message({title:App.i18n.SYS_INFO,text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
+              }
+              $.each(r.Data.files, function (index, file) {
+                $(elem).summernote('insertImage', file, function($image) {});
+              });
+            },
+            error:function(){  
+              alert(App.i18n.UPLOAD_ERR);  
+            }  
+        });
+       });
+      }
+    }
+  });
 };
 
 //例如：App.editor.switch($('textarea'))
