@@ -365,7 +365,7 @@
             
             var _this            = this;
             var classPrefix      = this.classPrefix  = editormd.classPrefix; 
-            var settings         = this.settings     = $.extend(true, editormd.defaults, options);
+            var settings         = this.settings     = $.extend(true, {}, editormd.defaults, options);
             
             id                   = (typeof id === "object") ? settings.id : id;
             
@@ -1965,14 +1965,15 @@
         
         save : function() {
             
-            if (timer === null)
+            var _this            = this;
+            var state            = this.state;
+            var settings         = this.settings;
+
+            if (timer === null && !(!settings.watch && state.preview))
             {
                 return this;
             }
             
-            var _this            = this;
-            var state            = this.state;
-            var settings         = this.settings;
             var cm               = this.cm;            
             var cmValue          = cm.getValue();
             var previewContainer = this.previewContainer;
@@ -3364,7 +3365,7 @@
 
     // Emoji graphics files url path
     editormd.emoji     = {
-        path  : "http://www.emoji-cheat-sheet.com/graphics/emojis/",
+        path  : "https://www.webpagefx.com/tools/emoji-cheat-sheet/graphics/emojis/",
         ext   : ".png"
     };
 

@@ -16,11 +16,17 @@ App.editor = {
 
 /* 解析markdown为html */
 App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
+	if(typeof(viewZoneId)=='object'){
+		viewZoneId=viewZoneId.attr('id');
+	}else if(viewZoneId.substr(0, 1)=='#'){
+		viewZoneId=viewZoneId.substr(1);
+	}
+	App.loader.defined(typeof (marked), 'editormdPreview');
 	var defaults = {
 		markdown: markdownData,
-		//htmlDecode    : true,  // 开启HTML标签解析，为了安全性，默认不开启
-		htmlDecode: "style,script,iframe",  // you can filter tags decode
-		//toc           : false,
+		//htmlDecode: true,  // 开启HTML标签解析，为了安全性，默认不开启
+		//htmlDecode: "style,script,iframe",  // you can filter tags decode
+		toc: true,
 		tocm: true,  // Using [TOCM]
 		//gfm           : false,
 		//tocDropdown   : true,
@@ -28,18 +34,18 @@ App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
 		taskList: true,
 		tex: true,  // 默认不解析
 		flowChart: true,  // 默认不解析
-		sequenceDiagram: true,  // 默认不解析
+		sequenceDiagram: true  // 默认不解析
 	};
 	var params = $.extend({}, defaults, options || {});
 	if (params.flowChart) App.loader.defined(typeof ($.fn.flowChart), 'flowChart');
 	if (params.sequenceDiagram) App.loader.defined(typeof ($.fn.sequenceDiagram), 'sequenceDiagram');
-	App.loader.defined(typeof (editormd), 'editormdPreview');
-
+	
 	if (typeof(markdownData)=='boolean') {
 		var isContainer = markdownData, box = $('#'+viewZoneId);
 		if (isContainer != false) box = $('#'+viewZoneId).find('.markdown-code');
 		box.each(function () {
 			params.markdown=$(this).html();
+			$(this).empty();
 			var idv=$(this).attr('id');
 			if(!idv){
 				idv = 'markdown-data-' + Math.random();
@@ -50,8 +56,8 @@ App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
 		return;
 	}
 
-	var EditormdView = editormd.markdownToHTML(viewZoneId, params);
-	return EditormdView;
+	var viewer = editormd.markdownToHTML(viewZoneId, params);
+	return viewer;
 };
 
 // =================================================================
