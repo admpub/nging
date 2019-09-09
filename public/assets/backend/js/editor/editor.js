@@ -4,14 +4,14 @@ App.loader.libs.flowChart = ['#editor/markdown/lib/flowchart.min.js', '#editor/m
 App.loader.libs.sequenceDiagram = ['#editor/markdown/lib/sequence-diagram.min.js'];
 App.loader.libs.xheditor = ['#editor/xheditor/xheditor.min.js', '#editor/xheditor/xheditor_lang/' + App.lang + '.js'];
 App.loader.libs.ueditor = ['#editor/ueditor/ueditor.config.js', '#editor/ueditor/ueditor.all.min.js'];
-App.loader.libs.summernote = ['#editor/summernote/summernote.css','#editor/summernote/summernote.min.js', '#editor/summernote/lang/summernote-'+App.langTag()+'.js'];
-App.loader.libs.summernote_bs4 = ['#editor/summernote/summernote-bs4.css','#editor/summernote/summernote-bs4.min.js', '#editor/summernote/lang/summernote-'+App.langTag()+'.js'];
-
-App.loader.libs.codehighlight = ['#markdown/it/plugins/highlight/loader/run_prettify.js?skin=sons-of-obsidian'];
+App.loader.libs.summernote = ['#editor/summernote/summernote.css', '#editor/summernote/summernote.min.js', '#editor/summernote/lang/summernote-' + App.langTag() + '.js'];
+App.loader.libs.summernote_bs4 = ['#editor/summernote/summernote-bs4.css', '#editor/summernote/summernote-bs4.min.js', '#editor/summernote/lang/summernote-' + App.langTag() + '.js'];
+App.loader.libs.markdownit = ['#markdown/it/markdown-it.min.js', '#markdown/it/plugins/emoji/markdown-it-emoji.min.js'];
+App.loader.libs.codehighlight = ['#markdown/it/plugins/highlight/loader/prettify.js', '#markdown/it/plugins/highlight/loader/run_prettify.js?skin=sons-of-obsidian'];
 window.UEDITOR_HOME_URL = ASSETS_URL + '/js/editor/ueditor/';
 
-App.editor={
-	browsingFileURL:App.loader.siteURL+'/manager/select_file'
+App.editor = {
+	browsingFileURL: App.loader.siteURL + '/manager/select_file'
 };
 
 /* 解析markdown为html */
@@ -43,16 +43,16 @@ App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
 // =================================================================
 
 App.editor.ueditors = function (editorElement, uploadUrl, options) {
-	$(editorElement).each(function(){
+	$(editorElement).each(function () {
 		App.editor.ueditor(this, uploadUrl, options);
 	});
 };
 /* 初始化UEditor编辑器 */
 App.editor.ueditor = function (editorElement, uploadUrl, options) {
-	if($(editorElement).hasClass('form-control')) $(editorElement).removeClass('form-control');
-	if(!uploadUrl) uploadUrl = $(editorElement).attr('action');
-	if(uploadUrl.substr(0,1)=='!') uploadUrl=uploadUrl.substr(1);
-	if(options==null) options = {};
+	if ($(editorElement).hasClass('form-control')) $(editorElement).removeClass('form-control');
+	if (!uploadUrl) uploadUrl = $(editorElement).attr('action');
+	if (uploadUrl.substr(0, 1) == '!') uploadUrl = uploadUrl.substr(1);
+	if (options == null) options = {};
 	App.loader.defined(typeof (window.UE), 'ueditor');
 	if (uploadUrl != null) {
 		if (uploadUrl.indexOf('?') >= 0) {
@@ -62,16 +62,16 @@ App.editor.ueditor = function (editorElement, uploadUrl, options) {
 		}
 		uploadUrl += 'format=json&';
 		uploadUrl += 'client=webuploader';
-    	options.serverUrl = uploadUrl;
+		options.serverUrl = uploadUrl;
 	}
-	var idv=$(editorElement).attr('id');
-	if(!idv){
-		idv='ueditor-instance-'+Math.random();
-		$(editorElement).attr('id',idv);
+	var idv = $(editorElement).attr('id');
+	if (!idv) {
+		idv = 'ueditor-instance-' + Math.random();
+		$(editorElement).attr('id', idv);
 	}
-	var editor=UE.getEditor(idv,options);
-	$(editorElement).data('editor-name','ueditor');
-	$(editorElement).data('editor-object',editor);
+	var editor = UE.getEditor(idv, options);
+	$(editorElement).data('editor-name', 'ueditor');
+	$(editorElement).data('editor-object', editor);
 };
 
 // =================================================================
@@ -79,17 +79,17 @@ App.editor.ueditor = function (editorElement, uploadUrl, options) {
 // =================================================================
 
 App.editor.markdowns = function (editorElement, uploadUrl, options) {
-	$(editorElement).each(function(){
+	$(editorElement).each(function () {
 		App.editor.markdown(this, uploadUrl, options);
 	});
 };
 /* 初始化Markdown编辑器 */
 App.editor.markdown = function (editorElement, uploadUrl, options) {
-	var isManager=false;
-	if(!uploadUrl) uploadUrl = $(editorElement).attr('action');
-	if(uploadUrl.substr(0,1)=='!') {
-		uploadUrl=uploadUrl.substr(1);
-		isManager=true;
+	var isManager = false;
+	if (!uploadUrl) uploadUrl = $(editorElement).attr('action');
+	if (uploadUrl.substr(0, 1) == '!') {
+		uploadUrl = uploadUrl.substr(1);
+		isManager = true;
 	}
 	App.loader.defined(typeof (editormd), 'editormd');
 	if (uploadUrl != null) {
@@ -98,13 +98,13 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 		} else {
 			uploadUrl += '?';
 		}
-		if(!isManager) uploadUrl += 'format=json&';
+		if (!isManager) uploadUrl += 'format=json&';
 		uploadUrl += 'filetype=image&client=markdown';
 	}
 	var container = $(editorElement).parent(),
-	containerId = container.attr('id');
+		containerId = container.attr('id');
 	if (containerId === undefined) {
-		containerId = 'webx-md-' + window.location.href.replace(/[^\w]+/g,'-');
+		containerId = 'webx-md-' + window.location.href.replace(/[^\w]+/g, '-');
 		container.attr('id', containerId);
 	};
 	var path = BACKEND_URL + '/public/assets/backend/js/editor/markdown/';
@@ -128,67 +128,67 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 		imageFormats: ["jpg", "jpeg", "gif", "png", "bmp"],
 		imageUploadURL: uploadUrl,
 		crossDomainUpload: true,
-		uploadCallbackURL: path+'plugins/image-dialog/upload_callback.htm',
+		uploadCallbackURL: path + 'plugins/image-dialog/upload_callback.htm',
 		onload: function () { }
 	};
 	var params = $.extend({}, defaults, options || {});
 	if (isManager) {
-        params.toolbarIcons = function() {
-            // Or return editormd.toolbarModes[name]; // full, simple, mini
-            return [
-            "undo", "redo", "|", 
-            "bold", "del", "italic", "quote", "ucwords", "uppercase", "lowercase", "|", 
-            "h1", "h2", "h3", "h4", "h5", "h6", "|", 
-            "list-ul", "list-ol", "hr", "|",
-            "link", "reference-link", "browsing-image", "code", "preformatted-text", "code-block", "table", "datetime", "emoji", "html-entities", "pagebreak", "|",
-            "goto-line", "watch", "preview", "fullscreen", "clear", "search", "|",
-            "help", "info"
-        	];
-        };
-        params.toolbarIconsClass = {
-            'browsing-image' : "fa-image"
-        };
-        params.toolbarIconTexts = {
-            'browsing-image' : App.loader.t('选择图片')
-        };
-        params.toolbarHandlers = {
-            'browsing-image' : function(cm, icon, cursor, selection) {
-			Coscms.Dialog.Modal(App.editor.browsingFileURL+'?pagerows=12&filetype=image&multiple=1', {
-				title: App.loader.t('选择图片'),
-				width: '600px',
-				submit: function (dialog) {
-					var ck = dialog.find('input[type=checkbox][name="id[]"]:checked');
-					if (ck.length <= 0) {
-						App.loader.noty({ type: 'error', text: T('没有选择任何选项！') });
-					} else {
-						var urls=[];
-						ck.each(function(){
-							var v=$(this).data('raw');
-							urls.push('!['+v.Name+']('+v.ViewUrl+')');
-						});
-						//var linenum=urls.length>0?urls.length-1:0;
-						urls=urls.join('\n')+'\n';
-						cm.replaceSelection(urls);
-                		//if(selection === "") cm.setCursor(cm.line+linenum, cm.ch+1);
-						dialog.modal('hide');
+		params.toolbarIcons = function () {
+			// Or return editormd.toolbarModes[name]; // full, simple, mini
+			return [
+				"undo", "redo", "|",
+				"bold", "del", "italic", "quote", "ucwords", "uppercase", "lowercase", "|",
+				"h1", "h2", "h3", "h4", "h5", "h6", "|",
+				"list-ul", "list-ol", "hr", "|",
+				"link", "reference-link", "browsing-image", "code", "preformatted-text", "code-block", "table", "datetime", "emoji", "html-entities", "pagebreak", "|",
+				"goto-line", "watch", "preview", "fullscreen", "clear", "search", "|",
+				"help", "info"
+			];
+		};
+		params.toolbarIconsClass = {
+			'browsing-image': "fa-image"
+		};
+		params.toolbarIconTexts = {
+			'browsing-image': App.loader.t('选择图片')
+		};
+		params.toolbarHandlers = {
+			'browsing-image': function (cm, icon, cursor, selection) {
+				Coscms.Dialog.Modal(App.editor.browsingFileURL + '?pagerows=12&filetype=image&multiple=1', {
+					title: App.loader.t('选择图片'),
+					width: '600px',
+					submit: function (dialog) {
+						var ck = dialog.find('input[type=checkbox][name="id[]"]:checked');
+						if (ck.length <= 0) {
+							App.loader.noty({ type: 'error', text: T('没有选择任何选项！') });
+						} else {
+							var urls = [];
+							ck.each(function () {
+								var v = $(this).data('raw');
+								urls.push('![' + v.Name + '](' + v.ViewUrl + ')');
+							});
+							//var linenum=urls.length>0?urls.length-1:0;
+							urls = urls.join('\n') + '\n';
+							cm.replaceSelection(urls);
+							//if(selection === "") cm.setCursor(cm.line+linenum, cm.ch+1);
+							dialog.modal('hide');
+						}
+					},
+					cancel: function (dialog) {
 					}
-				},
-				cancel: function (dialog) {
-				}
-			}, null).css('z-index',20030902);
+				}, null).css('z-index', 20030902);
 
-            }
-        };
+			}
+		};
 		params.lang = {
-            toolbar : {
-                'browsing-image' : App.loader.t("从服务器选择图片")
-            }
-        };
+			toolbar: {
+				'browsing-image': App.loader.t("从服务器选择图片")
+			}
+		};
 	}
 	if (!uploadUrl) params.imageUpload = false;
 	var editor = editormd(containerId, params);
-	$(editorElement).data('editor-name','markdown');
-	$(editorElement).data('editor-object',editor);
+	$(editorElement).data('editor-name', 'markdown');
+	$(editorElement).data('editor-object', editor);
 	return editor;
 };
 App.editor.md = App.editor.markdown;
@@ -198,14 +198,14 @@ App.editor.md = App.editor.markdown;
 // =================================================================
 
 App.editor.xheditors = function (editorElement, uploadUrl, options) {
-	$(editorElement).each(function(){
+	$(editorElement).each(function () {
 		App.editor.xheditor(this, uploadUrl, options);
 	});
 };
 /* 初始化xheditor */
 App.editor.xheditor = function (editorElement, uploadUrl, settings) {
 	App.loader.defined(typeof ($.fn.xheditor), 'xheditor');
-	if(!uploadUrl) uploadUrl = $(editorElement).attr('action');
+	if (!uploadUrl) uploadUrl = $(editorElement).attr('action');
 	var editor, editorRoot = BACKEND_URL + '/public/assets/backend/js/editor/xheditor/';
 	if (!uploadUrl) { editor = $(editorElement).xheditor({ 'editorRoot': editorRoot }); } else {
 		if (uploadUrl.indexOf('?') >= 0) {
@@ -213,13 +213,13 @@ App.editor.xheditor = function (editorElement, uploadUrl, settings) {
 		} else {
 			uploadUrl += '?';
 		}
-		if(uploadUrl.substr(0,1)=='!'){
+		if (uploadUrl.substr(0, 1) == '!') {
 			settings = $.extend({
-				'modalWidth':620,
-				'modalHeight':635,
-				'upBtnText':App.loader.t('浏览')
-			},settings||{});
-		}else{
+				'modalWidth': 620,
+				'modalHeight': 635,
+				'upBtnText': App.loader.t('浏览')
+			}, settings || {});
+		} else {
 			uploadUrl += 'format=json&';
 		}
 
@@ -266,7 +266,7 @@ App.editor.xheditor = function (editorElement, uploadUrl, settings) {
 			'upMediaExt': "avi,wmv,wma,mp3,mp4,mpeg,mkv,rm,rmv,mid",
 			'editorRoot': editorRoot
 		};
-		option = $.extend(option,settings||{});
+		option = $.extend(option, settings || {});
 		/* IE10以下不支持HTML5中input:file域的mutiple属性，采用iframe加载swfupload实现批量选择上传 */
 		if ($.browser.msie && parseFloat($.browser.version) < 10.0) {
 			uploadUrl = '!{editorRoot}xheditor_plugins/multiupload/multiupload.html?uploadurl=' + encodeURIComponent(uploadUrl);
@@ -289,64 +289,92 @@ App.editor.xheditor = function (editorElement, uploadUrl, settings) {
 		}
 		editor = $(editorElement).xheditor(option);
 	}
-	$(editorElement).data('editor-name','xheditor');
-	$(editorElement).data('editor-object',editor);
+	$(editorElement).data('editor-name', 'xheditor');
+	$(editorElement).data('editor-object', editor);
 	return editor;
 };
 
 // =================================================================
 // summernote
 // =================================================================
-App.editor.summernotes = function (elem,minHeight){
-	$(editorElement).each(function(){
+
+App.editor.summernotes = function (elem, minHeight) {
+	$(editorElement).each(function () {
 		App.editor.summernote(this, minHeight);
 	});
 };
-App.editor.summernote = function (elem,minHeight){
-  if(minHeight==null) minHeight=400;
-  App.loader.defined(typeof ($.fn.summernote), 'summernote');
-  $(elem).summernote({lang:App.langTag(),
-    minHeight:minHeight,
-    callbacks:{
-      onImageUpload:function(files, editor, $editable) {
-        var $files = $(files);
-        $files.each(function() {
-        var file = this;
-        var formdata = new FormData();  
-        formdata.append("files[]", file);  
-        $.ajax({  
-            data : formdata,  
-            type : "POST",  
-            url : $(elem).attr('action'),
-            cache : false,  
-            contentType : false,  
-            processData : false,  
-            dataType : "json",  
-            success: function(r) {
-              if(r.Code!=1){
-                return App.message({title:App.i18n.SYS_INFO,text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
-              }
-              $.each(r.Data.files, function (index, file) {
-                $(elem).summernote('insertImage', file, function($image) {});
-              });
-            },
-            error:function(){  
-              alert(App.i18n.UPLOAD_ERR);  
-            }  
-        });
-       });
-      }
-    }
-  });
+App.editor.summernote = function (elem, minHeight) {
+	if (minHeight == null) minHeight = 400;
+	App.loader.defined(typeof ($.fn.summernote), 'summernote');
+	$(elem).summernote({
+		lang: App.langTag(),
+		minHeight: minHeight,
+		callbacks: {
+			onImageUpload: function (files, editor, $editable) {
+				var $files = $(files);
+				$files.each(function () {
+					var file = this;
+					var formdata = new FormData();
+					formdata.append("files[]", file);
+					$.ajax({
+						data: formdata,
+						type: "POST",
+						url: $(elem).attr('action'),
+						cache: false,
+						contentType: false,
+						processData: false,
+						dataType: "json",
+						success: function (r) {
+							if (r.Code != 1) {
+								return App.message({ title: App.i18n.SYS_INFO, text: r.Info, time: 5000, sticky: false, class_name: r.Code == 1 ? 'success' : 'error' });
+							}
+							$.each(r.Data.files, function (index, file) {
+								$(elem).summernote('insertImage', file, function ($image) { });
+							});
+						},
+						error: function () {
+							alert(App.i18n.UPLOAD_ERR);
+						}
+					});
+				});
+			}
+		}
+	});
 };
+
+// =================================================================
+// markdownit
+// =================================================================
+
+App.editor.markdownItToHTML = function markdownParse(box, isContainer) {
+	App.loader.defined(typeof (window.markdownit), 'markdownit');
+	App.loader.defined(typeof (window.prettyPrint), 'codehighlight');
+	if (isContainer != false) box = box.find('.markdown-code');
+	var md = markdownItInstance();
+	box.each(function () {
+		$(this).html(md.render($.trim($(this).html())));
+		$(this).find("pre > code").each(function () {
+			$(this).parent("pre").addClass("prettyprint linenums");
+		});
+
+		if (typeof (prettyPrint) !== "undefined") prettyPrint();
+	});
+};
+App.editor.markdownItInstance = function () {
+	App.loader.defined(typeof (window.markdownit), 'markdownit');
+	var md = window.markdownit();
+	if (typeof (window.markdownitEmoji) != 'undefined') md.use(window.markdownitEmoji);
+	return md;
+};
+
 
 //例如：App.editor.switch($('textarea'))
 App.editor.switch = function (texta, cancelFn, tips) {
-	var upurl = texta.attr('action')||texta.data("upload-url")||'!'+App.editor.browsingFileURL+'?pagerows=12&multiple=1',
-	etype = texta.data("editor"),
-	ename = texta.data("editor-name"),
-	eobject = texta.data("editor-object"),
-	ctype = texta.data("current-editor");
+	var upurl = texta.attr('action') || texta.data("upload-url") || '!' + App.editor.browsingFileURL + '?pagerows=12&multiple=1',
+		etype = texta.data("editor"),
+		ename = texta.data("editor-name"),
+		eobject = texta.data("editor-object"),
+		ctype = texta.data("current-editor");
 	if (ctype == etype) return;
 	var className = texta.data("class");
 	if (className === undefined) {
@@ -368,21 +396,21 @@ App.editor.switch = function (texta, cancelFn, tips) {
 					}
 				}
 			}
-			switch(ename){
+			switch (ename) {
 				case 'xheditor':
 					if (typeof (texta.xheditor) != 'undefined') {
 						texta.xheditor(false);
 					}
-				break;
+					break;
 				case 'ueditor':
 					eobject.destroy();
-				break;
+					break;
 			}
 			if (cElem && $(cElem).length > 0) {
 				texta.text($(cElem).val());
 				texta.val($(cElem).val());
 			}
-			
+
 			App.editor.markdown(obj, upurl);
 			texta.data("current-editor", etype);
 			break;
