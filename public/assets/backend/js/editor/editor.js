@@ -133,7 +133,7 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 		saveHTMLToTextarea: true,			// 保存HTML到Textarea
 		searchReplace: true,
 		watch: true,						// 关闭实时预览
-		htmlDecode: "style,script,iframe",	// 开启HTML标签解析，为了安全性，默认不开启
+		//htmlDecode: "style,script,iframe",	// 开启HTML标签解析，为了安全性，默认不开启
 		emoji: true,
 		taskList: true,
 		tocm: true,					 // Using [TOCM]
