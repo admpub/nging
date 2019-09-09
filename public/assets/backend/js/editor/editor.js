@@ -6,16 +6,16 @@ App.loader.libs.xheditor = ['#editor/xheditor/xheditor.min.js', '#editor/xhedito
 App.loader.libs.ueditor = ['#editor/ueditor/ueditor.config.js', '#editor/ueditor/ueditor.all.min.js'];
 App.loader.libs.summernote = ['#editor/summernote/summernote.css','#editor/summernote/summernote.min.js', '#editor/summernote/lang/summernote-'+App.langTag()+'.js'];
 App.loader.libs.summernote_bs4 = ['#editor/summernote/summernote-bs4.css','#editor/summernote/summernote-bs4.min.js', '#editor/summernote/lang/summernote-'+App.langTag()+'.js'];
+
 App.loader.libs.codehighlight = ['#markdown/it/plugins/highlight/loader/run_prettify.js?skin=sons-of-obsidian'];
 window.UEDITOR_HOME_URL = ASSETS_URL + '/js/editor/ueditor/';
-
 
 App.editor={
 	browsingFileURL:App.loader.siteURL+'/manager/select_file'
 };
 
 /* 解析markdown为html */
-App.editor.parseMarkdown2HTML = function (viewZoneId, markdownData, options) {
+App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
 	var defaults = {
 		markdown: markdownData,
 		//htmlDecode    : true,  // 开启HTML标签解析，为了安全性，默认不开启
