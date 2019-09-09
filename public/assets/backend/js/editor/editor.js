@@ -44,7 +44,7 @@ App.editor.parseMarkdown2HTML = function (viewZoneId, markdownData, options) {
 
 App.editor.ueditors = function (editorElement, uploadUrl, options) {
 	$(editorElement).each(function(){
-		App.editor.initUE(this, uploadUrl, options);
+		App.editor.ueditor(this, uploadUrl, options);
 	});
 };
 /* 初始化UEditor编辑器 */
@@ -80,7 +80,7 @@ App.editor.ueditor = function (editorElement, uploadUrl, options) {
 
 App.editor.markdowns = function (editorElement, uploadUrl, options) {
 	$(editorElement).each(function(){
-		App.editor.initMarkdown(this, uploadUrl, options);
+		App.editor.markdown(this, uploadUrl, options);
 	});
 };
 /* 初始化Markdown编辑器 */
@@ -199,7 +199,7 @@ App.editor.md = App.editor.markdown;
 
 App.editor.xheditors = function (editorElement, uploadUrl, options) {
 	$(editorElement).each(function(){
-		App.editor.initXH(this, uploadUrl, options);
+		App.editor.xheditor(this, uploadUrl, options);
 	});
 };
 /* 初始化xheditor */
@@ -299,7 +299,7 @@ App.editor.xheditor = function (editorElement, uploadUrl, settings) {
 // =================================================================
 App.editor.summernotes = function (elem,minHeight){
 	$(editorElement).each(function(){
-		App.editor.initSummernote(this, minHeight);
+		App.editor.summernote(this, minHeight);
 	});
 };
 App.editor.summernote = function (elem,minHeight){
@@ -383,7 +383,7 @@ App.editor.switch = function (texta, cancelFn, tips) {
 				texta.val($(cElem).val());
 			}
 			
-			App.editor.initMarkdown(obj, upurl);
+			App.editor.markdown(obj, upurl);
 			texta.data("current-editor", etype);
 			break;
 		default:
@@ -402,7 +402,7 @@ App.editor.switch = function (texta, cancelFn, tips) {
 			}
 			texta.parent().removeAttr('class');
 			texta.attr('class', className).siblings().remove();
-			App.editor.initXH(obj, upurl);
+			App.editor.xheditor(obj, upurl);
 			//App.editor.initUE(obj, upurl);
 			texta.data("current-editor", "html");
 	};
