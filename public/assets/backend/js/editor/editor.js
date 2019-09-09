@@ -34,6 +34,22 @@ App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
 	if (params.flowChart) App.loader.defined(typeof ($.fn.flowChart), 'flowChart');
 	if (params.sequenceDiagram) App.loader.defined(typeof ($.fn.sequenceDiagram), 'sequenceDiagram');
 	App.loader.defined(typeof (editormd), 'editormdPreview');
+
+	if (typeof(markdownData)=='boolean') {
+		var isContainer = markdownData, box = $('#'+viewZoneId);
+		if (isContainer != false) box = $('#'+viewZoneId).find('.markdown-code');
+		box.each(function () {
+			params.markdown=$(this).html();
+			var idv=$(this).attr('id');
+			if(!idv){
+				idv = 'markdown-data-' + Math.random();
+				$(this).attr('id', idv);
+			}
+			editormd.markdownToHTML(idv, params);
+		});
+		return;
+	}
+
 	var EditormdView = editormd.markdownToHTML(viewZoneId, params);
 	return EditormdView;
 };
