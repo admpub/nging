@@ -19,17 +19,15 @@
 package manager
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"mime/multipart"
 	"path"
 	"path/filepath"
 	"strings"
 
-	imageproxy "git.webx.top/coscms/app/base/lib/image/proxy"
+	imageproxy "github.com/admpub/imageproxy"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/library/collector/exec"
 	"github.com/admpub/nging/application/library/common"
@@ -179,14 +177,11 @@ func Crop(ctx echo.Context) error {
 
 	//{"x":528,"y":108,"height":864,"width":864,"rotate":0}
 	//fmt.Println(avatard)
-	option := &imageproxy.CropOptions{
-		X:      x, //裁剪X轴起始位置
-		Y:      y, //裁剪Y轴起始位置
-		Width:  w, //裁剪宽度
-		Height: h, //裁剪高度
-	}
 	opt := imageproxy.Options{
-		CropOptions:    option,
+		CropX:      x, //裁剪X轴起始位置
+		CropY:      y, //裁剪Y轴起始位置
+		CropWidth:  w, //裁剪宽度
+		CropHeight: h, //裁剪高度
 		Width:          200, //缩略图宽度
 		Height:         200, //缩略图高度
 		Fit:            false,
@@ -243,7 +238,7 @@ END:
 	if err != nil {
 		return err
 	}
-	thumb, err := Resize(bytes.NewReader(b), opt)
+	thumb, err := imageproxy.Transform(b, opt)
 	if err != nil {
 		return err
 	}
@@ -260,6 +255,3 @@ END:
 	return ctx.File(absFile)
 }
 
-func Resize(r io.Reader, opt imageproxy.Options) (b []byte, err error) {
-	return imageproxy.TransformFromReader(r, opt)
-}
