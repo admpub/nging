@@ -29,6 +29,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/admpub/events/emitter"
 	"github.com/admpub/mysql-schema-sync/sync"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -43,6 +44,7 @@ var (
 	DefaultCLIConfig      = NewCLIConfig()
 	OAuthUserSessionKey   = `oauthUser`
 	ErrUnknowDatabaseType = errors.New(`unkown database type`)
+	Emitter               = emitter.DefaultCondEmitter
 )
 
 func SetInstalled(lockFile string) error {

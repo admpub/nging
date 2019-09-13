@@ -36,6 +36,8 @@ type User struct {
 	RoleIds   	string  	`db:"role_ids" bson:"role_ids" comment:"角色ID(多个用“,”分隔开)" json:"role_ids" xml:"role_ids"`
 	Created   	uint    	`db:"created" bson:"created" comment:"创建时间" json:"created" xml:"created"`
 	Updated   	uint    	`db:"updated" bson:"updated" comment:"更新时间" json:"updated" xml:"updated"`
+	FileSize  	uint64  	`db:"file_size" bson:"file_size" comment:"上传文件总大小" json:"file_size" xml:"file_size"`
+	FileNum   	uint64  	`db:"file_num" bson:"file_num" comment:"上传文件数量" json:"file_num" xml:"file_num"`
 }
 
 func (this *User) Trans() *factory.Transaction {
@@ -179,8 +181,8 @@ func (this *User) ListByOffset(recv interface{}, mw func(db.Result) db.Result, o
 func (this *User) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Online) == 0 { this.Online = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Online) == 0 { this.Online = "N" }
 	if len(this.Gender) == 0 { this.Gender = "secret" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
@@ -195,8 +197,8 @@ func (this *User) Add() (pk interface{}, err error) {
 
 func (this *User) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
-	if len(this.Online) == 0 { this.Online = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Online) == 0 { this.Online = "N" }
 	if len(this.Gender) == 0 { this.Gender = "secret" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
@@ -213,8 +215,8 @@ func (this *User) SetField(mw func(db.Result) db.Result, field string, value int
 
 func (this *User) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["online"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["online"] = "N" } }
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
+	if val, ok := kvset["online"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["online"] = "N" } }
 	if val, ok := kvset["gender"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["gender"] = "secret" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
@@ -222,14 +224,14 @@ func (this *User) SetFields(mw func(db.Result) db.Result, kvset map[string]inter
 func (this *User) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
-	if len(this.Online) == 0 { this.Online = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Online) == 0 { this.Online = "N" }
 	if len(this.Gender) == 0 { this.Gender = "secret" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Online) == 0 { this.Online = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Online) == 0 { this.Online = "N" }
 	if len(this.Gender) == 0 { this.Gender = "secret" }
 	})
 	if err == nil && pk != nil {
@@ -268,6 +270,8 @@ func (this *User) Reset() *User {
 	this.RoleIds = ``
 	this.Created = 0
 	this.Updated = 0
+	this.FileSize = 0
+	this.FileNum = 0
 	return this
 }
 
@@ -289,6 +293,8 @@ func (this *User) AsMap() map[string]interface{} {
 	r["RoleIds"] = this.RoleIds
 	r["Created"] = this.Created
 	r["Updated"] = this.Updated
+	r["FileSize"] = this.FileSize
+	r["FileNum"] = this.FileNum
 	return r
 }
 
@@ -328,6 +334,8 @@ func (this *User) Set(key interface{}, value ...interface{}) {
 				case "RoleIds": this.RoleIds = param.AsString(vv)
 				case "Created": this.Created = param.AsUint(vv)
 				case "Updated": this.Updated = param.AsUint(vv)
+				case "FileSize": this.FileSize = param.AsUint64(vv)
+				case "FileNum": this.FileNum = param.AsUint64(vv)
 			}
 	}
 }
@@ -350,6 +358,8 @@ func (this *User) AsRow() map[string]interface{} {
 	r["role_ids"] = this.RoleIds
 	r["created"] = this.Created
 	r["updated"] = this.Updated
+	r["file_size"] = this.FileSize
+	r["file_num"] = this.FileNum
 	return r
 }
 

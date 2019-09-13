@@ -356,6 +356,91 @@ CREATE TABLE `db_sync_log` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `file`
+--
+
+DROP TABLE IF EXISTS `file`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `file` (
+  `id` bigint(25) unsigned NOT NULL AUTO_INCREMENT COMMENT '文件ID',
+  `owner_type` enum('user','customer') NOT NULL DEFAULT 'user' COMMENT '用户类型',
+  `owner_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
+  `name` varchar(150) NOT NULL DEFAULT '' COMMENT '原始文件名',
+  `save_name` varchar(100) NOT NULL DEFAULT '' COMMENT '保存名称',
+  `save_path` varchar(200) NOT NULL DEFAULT '' COMMENT '文件保存路径',
+  `view_url` varchar(200) NOT NULL DEFAULT '' COMMENT '查看链接',
+  `ext` varchar(5) NOT NULL DEFAULT '' COMMENT '文件后缀',
+  `mime` varchar(40) NOT NULL DEFAULT '' COMMENT '文件mime类型',
+  `type` enum('image','media','flash','archive','file','office','bt','other') NOT NULL DEFAULT 'image' COMMENT '文件类型',
+  `size` bigint(25) unsigned NOT NULL DEFAULT '0' COMMENT '文件大小',
+  `width` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '宽度(像素)',
+  `height` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '高度(像素)',
+  `dpi` int(5) unsigned NOT NULL DEFAULT '0' COMMENT '分辨率',
+  `md5` varchar(32) NOT NULL DEFAULT '' COMMENT '文件md5',
+  `storer_name` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'local' COMMENT '文件保存位置',
+  `storer_id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '位置ID',
+  `created` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '上传时间',
+  `updated` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
+  `project` varchar(50) NOT NULL COMMENT '项目名称',
+  `table_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '关联表数据id',
+  `table_name` varchar(50) NOT NULL DEFAULT '' COMMENT '关联表名称',
+  `field_name` varchar(50) NOT NULL DEFAULT '' COMMENT '关联表字段名',
+  `sort` bigint(22) NOT NULL DEFAULT '0' COMMENT '排序',
+  `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态(1-已审核/0-未审核)',
+  `category_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '分类ID',
+  `used_times` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '被使用的次数',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `md5` (`md5`),
+  KEY `module_uid_from_type_from_id` (`project`,`owner_type`,`owner_id`,`table_name`,`table_id`),
+  KEY `category_id` (`category_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文件表';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `file_embedded`
+--
+
+DROP TABLE IF EXISTS `file_embedded`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `file_embedded` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `project` varchar(50) NOT NULL COMMENT '项目名',
+  `table_id` bigint(20) unsigned NOT NULL COMMENT '表主键',
+  `table_name` varchar(30) NOT NULL COMMENT '表名称',
+  `field_name` varchar(20) NOT NULL COMMENT '字段名',
+  `file_ids` varchar(1000) NOT NULL COMMENT '文件id列表',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `tid_field_name_table_name` (`table_id`,`field_name`,`table_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='嵌入文件';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `file_thumb`
+--
+
+DROP TABLE IF EXISTS `file_thumb`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `file_thumb` (
+  `id` bigint(30) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `file_id` bigint(25) unsigned NOT NULL COMMENT '文件ID',
+  `size` bigint(25) unsigned NOT NULL COMMENT '文件大小',
+  `width` int(10) unsigned NOT NULL COMMENT '宽度(像素)',
+  `height` int(10) unsigned NOT NULL COMMENT '高度(像素)',
+  `dpi` int(5) unsigned NOT NULL DEFAULT '0' COMMENT '分辨率',
+  `save_name` varchar(100) NOT NULL COMMENT '保存名称',
+  `save_path` varchar(200) NOT NULL COMMENT '保存路径',
+  `view_url` varchar(200) NOT NULL COMMENT '访问网址',
+  `used_times` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '被使用的次数',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `file_id_size_flag` (`file_id`,`size`),
+  UNIQUE KEY `save_path` (`save_path`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='图片文件缩略图';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `forever_process`
 --
 
@@ -715,6 +800,8 @@ CREATE TABLE `user` (
   `role_ids` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '角色ID(多个用“,”分隔开)',
   `created` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   `updated` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `file_size` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '上传文件总大小',
+  `file_num` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '上传文件数量',
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户';
@@ -808,4 +895,4 @@ CREATE TABLE `vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-09-01 15:08:21
+-- Dump completed on 2019-09-13 11:53:41

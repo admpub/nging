@@ -22,6 +22,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 func init() {
@@ -82,6 +83,7 @@ type Data interface {
 	String() string
 	Set(code int, args ...interface{}) Data
 	Reset() Data
+	SetByMap(Store) Data
 	SetError(err error, args ...int) Data
 	SetCode(code int) Data
 	SetURL(url string, args ...int) Data
@@ -187,6 +189,40 @@ func (d *RawData) SetInfo(info interface{}, args ...int) Data {
 	if len(args) > 0 {
 		d.SetCode(args[0])
 	}
+	return d
+}
+
+//SetByMap 批量设置属性
+func (d *RawData) SetByMap(s Store) Data {
+	if v, y := s["Data"]; y {
+		d.Data = v
+	}
+	if v, y := s["Zone"]; y {
+		d.Zone = v
+	}
+	if v, y := s["Info"]; y {
+		d.Info = v
+	}
+	if v, y := s["URL"]; y {
+		d.URL, _ = v.(string)
+	}
+	var code State
+	if v, y := s["Code"]; y {
+		switch c := v.(type) {
+		case State:
+			code = c
+		case int:
+			code = State(c)
+		case string:
+			i, _ := strconv.Atoi(c)
+			code = State(i)
+		default:
+			s := fmt.Sprint(c)
+			i, _ := strconv.Atoi(s)
+			code = State(i)
+		}
+	}
+	d.Code = code
 	return d
 }
 

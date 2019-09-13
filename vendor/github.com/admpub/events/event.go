@@ -3,7 +3,7 @@ package events
 import (
 	"fmt"
 
-	"github.com/admpub/events/meta"
+	"github.com/webx-top/echo/param"
 )
 
 const (
@@ -20,7 +20,7 @@ const (
 type Emitter interface {
 	On(string, ...Listener) Emitter //AddEventListener
 	Off(string) Emitter             //RemoveEventListeners
-	Fire(interface{}, int, ...meta.Map) error
+	Fire(interface{}, int, ...param.Store) error
 	Events() map[string]Dispatcher
 	HasEvent(string) bool
 }
@@ -52,13 +52,13 @@ func (callback Callback) Handle(event Event) error {
 func New(name string) Event {
 	return Event{
 		Key:     name,
-		Context: meta.Map{},
+		Context: param.Store{},
 	}
 }
 
 type Event struct {
 	Key     string
-	Context meta.Map
+	Context param.Store
 	aborted bool
 }
 
@@ -75,8 +75,8 @@ func (event *Event) Aborted() bool {
 	return event.aborted
 }
 
-func ToMap(key string, value interface{}, args ...interface{}) meta.Map {
-	context := meta.Map{key: value}
+func ToMap(key string, value interface{}, args ...interface{}) param.Store {
+	context := param.Store{key: value}
 	for i, j := 0, len(args); i < j; i++ {
 		if i%2 == 0 {
 			key = fmt.Sprint(args[i])

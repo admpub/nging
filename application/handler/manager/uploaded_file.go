@@ -24,12 +24,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/admpub/nging/application/registry/upload/helper"
-
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/filemanager"
 	"github.com/admpub/nging/application/library/notice"
+	"github.com/admpub/nging/application/registry/upload/helper"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
