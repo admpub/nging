@@ -42,10 +42,12 @@ func (a *Simple) Name() string {
 	return "filedata"
 }
 
-func (a *Simple) Result(errMsg string) (r string) {
+func (a *Simple) Result() (r string) {
 	status := "1"
-	if len(errMsg) > 0 {
+	var errMsg string
+	if a.GetError() != nil {
 		status = "0"
+		errMsg = a.Error()
 	}
 	r = `{"Status":` + status + `,"Message":"` + errMsg + `","Data":{"Url":"` + a.Data.FileURL + `","Id":"` + a.Data.FileIdString() + `"}}`
 	return

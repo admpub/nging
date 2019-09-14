@@ -28,9 +28,15 @@ import (
 // UploadLinkLifeTime 上传链接生存时间
 var UploadLinkLifeTime int64 = 86400
 
-type Checker func(echo.Context) (subdir string, name string, err error)
+type TableInfoStorer interface {
+	SetTableID(uint64) TableInfoStorer
+	SetTableName(string) TableInfoStorer
+	SetFieldName(string) TableInfoStorer
+}
 
-var DefaultChecker = func(ctx echo.Context) (subdir string, name string, err error) {
+type Checker func(echo.Context, TableInfoStorer) (subdir string, name string, err error)
+
+var DefaultChecker = func(ctx echo.Context, tis TableInfoStorer) (subdir string, name string, err error) {
 	refid := ctx.Formx(`refid`).Uint64()
 	timestamp := ctx.Formx(`time`).Int64()
 	// 验证签名（避免上传接口被滥用）
@@ -44,11 +50,12 @@ var DefaultChecker = func(ctx echo.Context) (subdir string, name string, err err
 	}
 	subdir = fmt.Sprint(refid) + `/`
 	//subdir = time.Now().Format(`2006/01/02/`)
+	tis.SetTableID(refid)
 	return
 }
 
 var checkers = map[string]Checker{
-	`customer-avatar`: func(ctx echo.Context) (subdir string, name string, err error) {
+	`customer-avatar`: func(ctx echo.Context, tis TableInfoStorer) (subdir string, name string, err error) {
 		customerID := ctx.Formx(`customerId`).Uint64()
 		timestamp := ctx.Formx(`time`).Int64()
 		// 验证签名（避免上传接口被滥用）
@@ -64,9 +71,10 @@ var checkers = map[string]Checker{
 			name = `avatar`
 		}
 		subdir = fmt.Sprint(customerID) + `/`
+		tis.SetTableID(customerID)
 		return
 	},
-	`user-avatar`: func(ctx echo.Context) (subdir string, name string, err error) {
+	`user-avatar`: func(ctx echo.Context, tis TableInfoStorer) (subdir string, name string, err error) {
 		userID := ctx.Formx(`userId`).Uint64()
 		timestamp := ctx.Formx(`time`).Int64()
 		// 验证签名（避免上传接口被滥用）
@@ -82,6 +90,7 @@ var checkers = map[string]Checker{
 			name = `avatar`
 		}
 		subdir = fmt.Sprint(userID) + `/`
+		tis.SetTableID(userID)
 		return
 	},
 }

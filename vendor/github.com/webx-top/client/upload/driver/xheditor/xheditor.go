@@ -44,7 +44,7 @@ func (a *XhEditor) Name() string {
 	return "filedata"
 }
 
-func (a *XhEditor) Result(errMsg string) (r string) {
+func (a *XhEditor) Result() (r string) {
 	var msg, publicURL string
 	if a.Form("immediate") == "1" {
 		publicURL = "!" + a.Data.FileURL
@@ -63,6 +63,10 @@ func (a *XhEditor) Result(errMsg string) (r string) {
 	}
 	if len(msg) == 0 {
 		msg = "{}"
+	}
+	var errMsg string
+	if a.GetError() != nil {
+		errMsg = a.Error()
 	}
 	r = `{"err":"` + errMsg + `","msg":` + msg + `}`
 	return

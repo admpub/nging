@@ -21,12 +21,15 @@ package file
 import (
 	"io"
 	"mime"
+	"path/filepath"
 	"strings"
 
 	"github.com/admpub/events"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
+	"github.com/admpub/nging/application/registry/upload"
 	"github.com/coscms/go-imgparse/imgparse"
+	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
@@ -42,6 +45,43 @@ func NewFile(ctx echo.Context) *File {
 type File struct {
 	*dbschema.File
 	base *base.Base
+}
+
+func (f *File) SetTableID(tableID uint64) upload.TableInfoStorer {
+	f.File.TableId = tableID
+	return f
+}
+
+func (f *File) SetTableName(table string) upload.TableInfoStorer {
+	f.File.TableName = table
+	return f
+}
+
+func (f *File) SetFieldName(field string) upload.TableInfoStorer {
+	f.File.FieldName = field
+	return f
+}
+
+func (f *File) SetByUploadResult(result *uploadClient.Result) *File {
+	f.Name = result.FileName
+	f.SavePath = result.SavePath
+	f.SaveName = filepath.Base(f.SavePath)
+	f.Ext = filepath.Ext(f.SavePath)
+	f.ViewUrl = result.FileURL
+	f.Type = result.FileType.String()
+	f.Size = uint64(result.FileSize)
+	return f
+}
+
+func (f *File) SetByInfo(postFileName string, typ string, savePath string, viewURL string, size int64) *File {
+	f.Name = postFileName
+	f.SavePath = savePath
+	f.SaveName = filepath.Base(f.SavePath)
+	f.Ext = filepath.Ext(f.SavePath)
+	f.ViewUrl = viewURL
+	f.Type = typ
+	f.Size = uint64(size)
+	return f
 }
 
 func (f *File) Add(reader io.Reader) error {

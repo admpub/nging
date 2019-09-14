@@ -45,19 +45,19 @@ func (a *Markdown) Name() string {
 	return "editormd-image-file"
 }
 
-func (a *Markdown) Result(errMsg string) (r string) {
+func (a *Markdown) Result() (r string) {
 	succed := "0" // 0 表示上传失败，1 表示上传成功
-	if len(errMsg) > 0 {
+	if a.GetError() != nil {
 		succed = "1"
 	}
 	callback := a.Form(`callback`)
 	dialogID := a.Form(`dialog_id`)
 	if len(callback) > 0 && len(dialogID) > 0 {
 		//跨域上传返回操作
-		nextURL := callback + "?dialog_id=" + dialogID + "&temp=" + time.Now().String() + "&success=" + succed + "&message=" + url.QueryEscape(errMsg) + "&url=" + a.Data.FileURL
+		nextURL := callback + "?dialog_id=" + dialogID + "&temp=" + time.Now().String() + "&success=" + succed + "&message=" + url.QueryEscape(a.Error()) + "&url=" + a.Data.FileURL
 		a.Redirect(nextURL)
 	} else {
-		r = `{"success":` + succed + `,"message":"` + errMsg + `","url":"` + a.Data.FileURL + `","id":"` + a.Data.FileIdString() + `"}`
+		r = `{"success":` + succed + `,"message":"` + a.Error() + `","url":"` + a.Data.FileURL + `","id":"` + a.Data.FileIdString() + `"}`
 	}
 	return
 }

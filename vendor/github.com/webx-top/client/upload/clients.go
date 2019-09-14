@@ -53,24 +53,24 @@ func Delete(name string) {
 }
 
 type Storer interface {
-	Put(dstFile string, body io.Reader, size int64) (fileURL string, err error)
+	Put(dstFile string, body io.Reader, size int64) (savePath string, fileURL string, err error)
 }
 
-func Upload(ctx echo.Context, clientName string, result *Result, storer Storer) error {
+func Upload(ctx echo.Context, clientName string, result *Result, storer Storer) Client {
 	client := Get(clientName)
 	client.Init(ctx, result)
 	body, err := client.Body()
 	if err != nil {
-		return client.Response(err.Error())
+		return client.SetError(err)
 	}
 	defer body.Close()
 	dstFile, err := result.DistFile()
 	if err != nil {
-		return client.Response(err.Error())
+		return client.SetError(err)
 	}
-	result.FileURL, err = storer.Put(dstFile, body, body.Size())
+	result.SavePath, result.FileURL, err = storer.Put(dstFile, body, body.Size())
 	if err != nil {
-		return client.Response(err.Error())
+		return client.SetError(err)
 	}
-	return client.Response(``)
+	return client
 }

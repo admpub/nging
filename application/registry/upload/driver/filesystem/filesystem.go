@@ -61,25 +61,24 @@ func (f *Filesystem) filepath(fname string) string {
 	return filepath.Join(f.UploadDir, fname)
 }
 
-func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (string, error) {
-	file := f.filepath(dstFile)
-	saveDir := filepath.Dir(file)
-	err := os.MkdirAll(saveDir, os.ModePerm)
+func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (savePath string, viewURL string, err error) {
+	savePath = f.filepath(dstFile)
+	saveDir := filepath.Dir(savePath)
+	err = os.MkdirAll(saveDir, os.ModePerm)
 	if err != nil {
-		return "", err
+		return
 	}
-	view := f.UploadURLPath + `/` + dstFile
+	viewURL = f.UploadURLPath + `/` + dstFile
 	//create destination file making sure the path is writeable.
-	dst, err := os.Create(file)
+	var dst *os.File
+	dst, err = os.Create(savePath)
 	if err != nil {
-		return view, err
+		return
 	}
 	defer dst.Close()
 	//copy the uploaded file to the destination file
-	if _, err := io.Copy(dst, src); err != nil {
-		return view, err
-	}
-	return view, nil
+	_, err = io.Copy(dst, src)
+	return
 }
 
 func (f *Filesystem) PublicURL(dstFile string) string {

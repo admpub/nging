@@ -21,6 +21,7 @@ package manager
 import (
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"mime/multipart"
 	"path"
@@ -86,14 +87,16 @@ func Upload(ctx echo.Context) error {
 
 // UploadByOwner 上传文件
 func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
-	var err error
 	typ := ctx.Param(`type`)
 	field := ctx.Query(`field`)
 	pipe := ctx.Form(`pipe`)
-	var files []string
+	var (
+		err      error
+		fileURLs []string
+	)
 	if len(typ) == 0 {
 		err = ctx.E(`请提供参数“%s”`, ctx.Path())
-		datax, embed := ResponseDataForUpload(ctx, field, err, files)
+		datax, embed := ResponseDataForUpload(ctx, field, err, fileURLs)
 		if !embed {
 			return ctx.JSON(datax)
 		}
@@ -101,7 +104,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	}
 	if !upload.SubdirIsAllowed(typ) {
 		err = ctx.E(`参数“%s”未被登记`, typ)
-		datax, embed := ResponseDataForUpload(ctx, field, err, files)
+		datax, embed := ResponseDataForUpload(ctx, field, err, fileURLs)
 		if !embed {
 			return ctx.JSON(datax)
 		}
@@ -111,22 +114,25 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	newStore := upload.StorerGet(StorerEngine)
 	if newStore == nil {
 		err := errors.New(ctx.T(`存储引擎“%s”未被登记`, StorerEngine))
-		datax, embed := ResponseDataForUpload(ctx, field, err, files)
+		datax, embed := ResponseDataForUpload(ctx, field, err, fileURLs)
 		if !embed {
 			return ctx.JSON(datax)
 		}
 		return err
 	}
+
+	fileM := modelFile.NewFile(ctx)
+	fileM.StorerName = StorerEngine
+	fileM.TableId = 0
+	fileM.TableName = typ
+	fileM.FieldName = ``
+
 	storer := newStore(typ)
 	var subdir, name string
-	subdir, name, err = upload.CheckerGet(typ)(ctx)
+	subdir, name, err = upload.CheckerGet(typ)(ctx, fileM)
 	if err != nil {
 		return err
 	}
-
-	fileM := modelFile.NewFile(ctx)
-	fileM.Name = name
-	fileM.SaveName = filepath.Base(name)
 
 	clientName := ctx.Form(`client`)
 	if len(clientName) > 0 {
@@ -135,23 +141,44 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 			return SaveFilename(subdir, name, filename)
 		})
 
-		err = uploadClient.Upload(ctx, clientName, result, storer)
-		if err != nil {
-			return err
+		client := uploadClient.Upload(ctx, clientName, result, storer)
+		if client.GetError() != nil {
+			return client.Response()
 		}
 
-		fileM.Name = result.FileName
-		fileM.SaveName = path.Base(result.FileURL)
-		fileM.ViewUrl = result.FileURL
-		fileM.Type = result.FileType.String()
-		fileM.Size = uint64(result.FileSize)
+		fileM.SetByUploadResult(result)
 
-		return nil
+		var reader io.ReadCloser
+		reader, err = storer.Get(result.SavePath)
+		if reader != nil {
+			defer reader.Close()
+		}
+		if err != nil {
+			return client.SetError(err).Response()
+		}
+		err = fileM.Add(reader)
+		return client.SetError(err).Response()
 	}
-	files, err = upload.BatchUpload(ctx, `files[]`, func(hd *multipart.FileHeader) (string, error) {
-		return SaveFilename(subdir, name, hd.Filename)
-	}, storer)
-	datax, embed := ResponseDataForUpload(ctx, field, err, files)
+	var results uploadClient.Results
+	results, err = upload.BatchUpload(
+		ctx,
+		`files[]`,
+		func(hd *multipart.FileHeader) (string, error) {
+			return SaveFilename(subdir, name, hd.Filename)
+		},
+		storer,
+		func(result *uploadClient.Result, file multipart.File) error {
+			fileM.Id = 0
+			fileM.SetByUploadResult(result)
+			reader, err := storer.Get(result.SavePath)
+			if err != nil {
+				return err
+			}
+			err = fileM.Add(reader)
+			return err
+		},
+	)
+	datax, embed := ResponseDataForUpload(ctx, field, err, results.FileURLs())
 	if err != nil {
 		if !embed {
 			return ctx.JSON(datax)
@@ -160,8 +187,8 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	}
 
 	if pipe == `deqr` { //解析二维码
-		if len(files) > 0 {
-			reader, err := storer.Get(files[0])
+		if len(results) > 0 {
+			reader, err := storer.Get(results[0].SavePath)
 			if reader != nil {
 				defer reader.Close()
 			}
@@ -172,7 +199,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 				}
 				return err
 			}
-			raw, err := qrcode.Decode(reader, strings.TrimPrefix(path.Ext(files[0]), `.`))
+			raw, err := qrcode.Decode(reader, strings.TrimPrefix(path.Ext(results[0].SavePath), `.`))
 			if err != nil {
 				raw = err.Error()
 			}

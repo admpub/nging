@@ -27,6 +27,7 @@ import (
 	"github.com/admpub/nging/application/registry/upload/helper"
 
 	"github.com/admpub/goseaweedfs"
+	modelSeaweedfs "github.com/admpub/goseaweedfs/model"
 	"github.com/admpub/nging/application/registry/upload"
 )
 
@@ -63,11 +64,12 @@ func (s *Seaweedfs) filepath(fname string) string {
 	return path.Join(s.UploadDir, fname)
 }
 
-func (s *Seaweedfs) xPut(dstFile string, src io.Reader, size int64) (string, error) {
-	file := s.filepath(dstFile)
-	rs, err := s.instance.Filers[0].Upload(src, size, file, s.Type, s.config.TTL)
+func (s *Seaweedfs) xPut(dstFile string, src io.Reader, size int64) (savePath string, viewURL string, err error) {
+	savePath = s.filepath(dstFile)
+	var rs *modelSeaweedfs.FilerUploadResult
+	rs, err = s.instance.Filers[0].Upload(src, size, savePath, s.Type, s.config.TTL)
 	if err != nil {
-		return "", err
+		return
 	}
 	//com.Dump(rs)
 	// {
@@ -77,8 +79,9 @@ func (s *Seaweedfs) xPut(dstFile string, src io.Reader, size int64) (string, err
 	//   "size": 1734
 	// }
 
-	return rs.FileID, nil //TODO: fileID VS filePath
-	//return s.instance.Filers[0]+file, nil
+	viewURL = rs.FileID //TODO: fileID VS filePath
+	//viewURL = s.instance.Filers[0]+savePath
+	return
 }
 
 func (s *Seaweedfs) xGet(dstFile string) (io.ReadCloser, error) {
@@ -118,16 +121,13 @@ func (s *Seaweedfs) xDeleteDir(dstDir string) error {
 	return s.instance.Filers[0].Delete(dstDir, true)
 }
 
-func (s *Seaweedfs) apiPut(dstFile string, src io.Reader, size int64) (string, error) {
-	_, fID, err := s.instance.Upload(src, dstFile, size, s.Type, s.config.TTL)
+func (s *Seaweedfs) apiPut(dstFile string, src io.Reader, size int64) (fID string, viewURL string, err error) {
+	_, fID, err = s.instance.Upload(src, dstFile, size, s.Type, s.config.TTL)
 	if err != nil {
-		return "", err
+		return
 	}
-	view, err := s.instance.LookupFileID(fID, url.Values{}, true)
-	if err != nil {
-		return view, err
-	}
-	return view, nil
+	viewURL, err = s.instance.LookupFileID(fID, url.Values{}, true)
+	return
 }
 
 func (s *Seaweedfs) apiGet(fileID string) (io.ReadCloser, error) {

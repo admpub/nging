@@ -23,6 +23,7 @@ import (
 	"mime/multipart"
 	"net/url"
 
+	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/echo"
 )
 
@@ -31,47 +32,61 @@ func BatchUpload(
 	fieldName string,
 	dstNamer func(*multipart.FileHeader) (dst string, err error),
 	storer Storer,
-) ([]string, error) {
+	callback func(*uploadClient.Result, multipart.File) error,
+) (results uploadClient.Results, err error) {
 	req := ctx.Request()
 	if req == nil {
-		return nil, ctx.E(`Invalid upload content`)
+		err = ctx.E(`Invalid upload content`)
+		return
 	}
 	m := req.MultipartForm()
 	if m == nil {
-		return nil, ctx.E(`Invalid upload content`)
+		err = ctx.E(`Invalid upload content`)
+		return
 	}
 	files, ok := m.File[fieldName]
 	if !ok {
-		return nil, echo.ErrNotFoundFileInput
+		err = echo.ErrNotFoundFileInput
+		return
 	}
 	var dstFile string
-	var viewURLs []string
 	for _, fileHdr := range files {
 		//for each fileheader, get a handle to the actual file
-		file, err := fileHdr.Open()
+		var file multipart.File
+		file, err = fileHdr.Open()
 		if err != nil {
-			file.Close()
-			return viewURLs, err
+			if file != nil {
+				file.Close()
+			}
+			return
 		}
 
 		dstFile, err = dstNamer(fileHdr)
 		if err != nil {
 			file.Close()
-			return viewURLs, err
+			return
 		}
 		if len(dstFile) == 0 {
 			file.Close()
 			continue
 		}
-		viewURL, err := storer.Put(dstFile, file, fileHdr.Size)
+		result := &uploadClient.Result{
+			FileName: fileHdr.Filename,
+			FileSize: fileHdr.Size,
+		}
+		result.SavePath, result.FileURL, err = storer.Put(dstFile, file, fileHdr.Size)
 		if err != nil {
 			file.Close()
-			return viewURLs, err
+			return
+		}
+		if err = callback(result, file); err != nil {
+			file.Close()
+			return
 		}
 		file.Close()
-		viewURLs = append(viewURLs, viewURL)
+		results.Add(result)
 	}
-	return viewURLs, nil
+	return
 }
 
 type Sizer interface {
@@ -80,7 +95,7 @@ type Sizer interface {
 
 type Storer interface {
 	Engine() string
-	Put(dst string, src io.Reader, size int64) (string, error)
+	Put(dst string, src io.Reader, size int64) (savePath string, viewURL string, err error)
 	Get(file string) (io.ReadCloser, error)
 	Delete(file string) error
 	DeleteDir(dir string) error
