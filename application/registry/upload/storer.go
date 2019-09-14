@@ -40,7 +40,7 @@ func BatchUpload(
 		return
 	}
 	m := req.MultipartForm()
-	if m == nil {
+	if m == nil || m.File == nil {
 		err = ctx.E(`Invalid upload content`)
 		return
 	}
