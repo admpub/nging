@@ -32,6 +32,7 @@ type Result struct {
 	FileName          string
 	FileURL           string
 	FileType          FileType
+	FileSize          int64
 	Addon             interface{}
 	distFileGenerator func(string) (string, error)
 }
@@ -76,6 +77,7 @@ func (a *BaseClient) Body() (file ReadCloserWithSize, err error) {
 	if err != nil {
 		return
 	}
+	a.Data.FileSize = file.Size()
 	return
 }
 

@@ -44,14 +44,6 @@ func (a *XhEditor) Name() string {
 	return "filedata"
 }
 
-func (a *XhEditor) Body() (file uploadClient.ReadCloserWithSize, err error) {
-	file, a.Data.FileName, err = uploadClient.Receive(a.Name(), a.Context)
-	if err != nil {
-		return
-	}
-	return
-}
-
 func (a *XhEditor) Result(errMsg string) (r string) {
 	var msg, publicURL string
 	if a.Form("immediate") == "1" {

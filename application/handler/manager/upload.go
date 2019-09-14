@@ -29,8 +29,10 @@ import (
 
 	imageproxy "github.com/admpub/imageproxy"
 	"github.com/admpub/log"
+	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/collector/exec"
 	"github.com/admpub/nging/application/library/common"
+	modelFile "github.com/admpub/nging/application/model/file"
 	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/driver/filesystem"
 	"github.com/admpub/nging/application/registry/upload/helper"
@@ -73,6 +75,17 @@ func SaveFilename(subdir, name, postFilename string) (string, error) {
 
 // Upload 上传文件
 func Upload(ctx echo.Context) error {
+	ownerType := `user`
+	user := handler.User(ctx)
+	var ownerID uint64
+	if user != nil {
+		ownerID = uint64(user.Id)
+	}
+	return UploadByOwner(ctx, ownerType, ownerID)
+}
+
+// UploadByOwner 上传文件
+func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	var err error
 	typ := ctx.Param(`type`)
 	field := ctx.Query(`field`)
@@ -110,13 +123,30 @@ func Upload(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
+
+	fileM := modelFile.NewFile(ctx)
+	fileM.Name = name
+	fileM.SaveName = filepath.Base(name)
+
 	clientName := ctx.Form(`client`)
 	if len(clientName) > 0 {
 		result := &uploadClient.Result{}
 		result.SetDistFileGenerator(func(filename string) (string, error) {
 			return SaveFilename(subdir, name, filename)
 		})
-		return uploadClient.Upload(ctx, clientName, result, storer)
+
+		err = uploadClient.Upload(ctx, clientName, result, storer)
+		if err != nil {
+			return err
+		}
+
+		fileM.Name = result.FileName
+		fileM.SaveName = path.Base(result.FileURL)
+		fileM.ViewUrl = result.FileURL
+		fileM.Type = result.FileType.String()
+		fileM.Size = uint64(result.FileSize)
+
+		return nil
 	}
 	files, err = upload.BatchUpload(ctx, `files[]`, func(hd *multipart.FileHeader) (string, error) {
 		return SaveFilename(subdir, name, hd.Filename)
@@ -178,10 +208,10 @@ func Crop(ctx echo.Context) error {
 	//{"x":528,"y":108,"height":864,"width":864,"rotate":0}
 	//fmt.Println(avatard)
 	opt := imageproxy.Options{
-		CropX:      x, //裁剪X轴起始位置
-		CropY:      y, //裁剪Y轴起始位置
-		CropWidth:  w, //裁剪宽度
-		CropHeight: h, //裁剪高度
+		CropX:          x,   //裁剪X轴起始位置
+		CropY:          y,   //裁剪Y轴起始位置
+		CropWidth:      w,   //裁剪宽度
+		CropHeight:     h,   //裁剪高度
 		Width:          200, //缩略图宽度
 		Height:         200, //缩略图高度
 		Fit:            false,
@@ -254,4 +284,3 @@ END:
 	}
 	return ctx.File(absFile)
 }
-

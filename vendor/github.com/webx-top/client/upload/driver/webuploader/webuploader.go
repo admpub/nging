@@ -42,14 +42,6 @@ func (a *Webuploader) Name() string {
 	return "file"
 }
 
-func (a *Webuploader) Body() (file uploadClient.ReadCloserWithSize, err error) {
-	file, a.Data.FileName, err = uploadClient.Receive(a.Name(), a.Context)
-	if err != nil {
-		return
-	}
-	return
-}
-
 func (a *Webuploader) Result(errMsg string) (r string) {
 	cid := a.Form("id")
 	if len(cid) == 0 {

@@ -45,14 +45,6 @@ func (a *Markdown) Name() string {
 	return "editormd-image-file"
 }
 
-func (a *Markdown) Body() (file uploadClient.ReadCloserWithSize, err error) {
-	file, a.Data.FileName, err = uploadClient.Receive(a.Name(), a.Context)
-	if err != nil {
-		return
-	}
-	return
-}
-
 func (a *Markdown) Result(errMsg string) (r string) {
 	succed := "0" // 0 表示上传失败，1 表示上传成功
 	if len(errMsg) > 0 {

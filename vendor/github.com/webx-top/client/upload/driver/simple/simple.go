@@ -42,14 +42,6 @@ func (a *Simple) Name() string {
 	return "filedata"
 }
 
-func (a *Simple) Body() (file uploadClient.ReadCloserWithSize, err error) {
-	file, a.Data.FileName, err = uploadClient.Receive(a.Name(), a.Context)
-	if err != nil {
-		return
-	}
-	return
-}
-
 func (a *Simple) Result(errMsg string) (r string) {
 	status := "1"
 	if len(errMsg) > 0 {

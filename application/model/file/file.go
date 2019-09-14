@@ -23,12 +23,12 @@ import (
 	"mime"
 	"strings"
 
-	"github.com/admpub/db"
 	"github.com/admpub/events"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
 	"github.com/coscms/go-imgparse/imgparse"
 	"github.com/webx-top/com"
+	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
 
@@ -57,21 +57,21 @@ func (f *File) Add(reader io.Reader) error {
 		if typ == `jpg` {
 			typ = `jpeg`
 		}
-		var width, height int
-		width, height, err = imgparse.ParseRes(reader, typ)
+		width, height, err := imgparse.ParseRes(reader, typ)
 		if err != nil {
-			return sysFile, err
+			return err
 		}
 		f.Width = uint(width)
 		f.Height = uint(height)
 		f.Dpi = 0
 	}
-	return f.Add()
+	_, err := f.File.Add()
+	return err
 }
 
 func (f *File) fireDelete() error {
 	files := []string{f.SavePath}
-	thumbM := NewThumb(f.Context)
+	thumbM := NewThumb(f.base.Context)
 	cnt, err := thumbM.ListByOffset(nil, nil, 0, -1, db.Cond{`file_id`: f.Id})
 	if err != nil {
 		return err
@@ -87,7 +87,7 @@ func (f *File) fireDelete() error {
 		}
 	}
 	err = f.base.Fire(f.OwnerType+`-file-deleted`, events.ModeSync, map[string]interface{}{
-		`ctx`:     f.Context,
+		`ctx`:     f.base.Context,
 		`data`:    f.File,
 		`ownerID`: f.OwnerId,
 	})
@@ -95,7 +95,7 @@ func (f *File) fireDelete() error {
 		return err
 	}
 	err = f.base.Fire(`file-deleted`, events.ModeSync, map[string]interface{}{
-		`ctx`:   f.Context,
+		`ctx`:   f.base.Context,
 		`data`:  f.File,
 		`files`: files,
 	})
@@ -143,16 +143,16 @@ func (f *File) UpdateAvatar(project string, ownerType string, ownerID uint64) er
 	if err != nil {
 		return err
 	}
-	err = f.RemoveUnusedAvatar(f.Id)
+	err = f.RemoveUnusedAvatar(ownerType, f.Id)
 	return err
 }
 
-func (f *File) RemoveUnusedAvatar(ownerType string, excludeId uint64) error {
+func (f *File) RemoveUnusedAvatar(ownerType string, excludeID uint64) error {
 	return f.DeleteBy(db.And(
-		db.Cond{`table_name`, ownerType},
-		db.Cond{`field_name`, `avatar`},
-		db.Cond{`table_id`, 0},
-		db.Cond{`id`, db.NotEq(excludeID)},
+		db.Cond{`table_name`: ownerType},
+		db.Cond{`field_name`: `avatar`},
+		db.Cond{`table_id`: 0},
+		db.Cond{`id`: db.NotEq(excludeID)},
 	))
 }
 
@@ -174,10 +174,10 @@ func (f *File) DeleteBy(cond db.Compound) error {
 	return err
 }
 
-func (f *File) RemoveAvatar(ownerType string, uid int64) error {
+func (f *File) RemoveAvatar(ownerType string, ownerID int64) error {
 	return f.DeleteBy(db.And(
-		db.Cond{`table_name`, ownerType},
-		db.Cond{`field_name`, `avatar`},
-		db.Cond{`table_id`, uid},
+		db.Cond{`table_name`: ownerType},
+		db.Cond{`field_name`: `avatar`},
+		db.Cond{`table_id`: ownerID},
 	))
 }

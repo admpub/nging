@@ -3289,40 +3289,40 @@
 			"revisionTime": "2018-09-30T19:44:53Z"
 		},
 		{
-			"checksumSHA1": "14grVcMjauOP5YAyrInlX7EVkmU=",
+			"checksumSHA1": "EHVs7mU2p/Bl/0ZxVwDHokMF0Zc=",
 			"path": "github.com/webx-top/client/upload",
-			"revision": "5ba2ea7174f0ee3abd39c320d8483c18c36c3370",
-			"revisionTime": "2019-09-08T14:31:38Z"
+			"revision": "62baeee47978a0d01f65b22ebb1d0d3c8cf49a49",
+			"revisionTime": "2019-09-14T05:43:07Z"
 		},
 		{
 			"checksumSHA1": "K3MSyusucwxldAdCPhkqTM9b+nI=",
 			"path": "github.com/webx-top/client/upload/driver",
-			"revision": "5ba2ea7174f0ee3abd39c320d8483c18c36c3370",
-			"revisionTime": "2019-09-08T14:31:38Z"
+			"revision": "62baeee47978a0d01f65b22ebb1d0d3c8cf49a49",
+			"revisionTime": "2019-09-14T05:43:07Z"
 		},
 		{
-			"checksumSHA1": "GX24BJIF54EJHcGbD6YWfiB2AqQ=",
+			"checksumSHA1": "02vZilthnikMy5w06rwEIW8PgwE=",
 			"path": "github.com/webx-top/client/upload/driver/markdown",
-			"revision": "5ba2ea7174f0ee3abd39c320d8483c18c36c3370",
-			"revisionTime": "2019-09-08T14:31:38Z"
+			"revision": "62baeee47978a0d01f65b22ebb1d0d3c8cf49a49",
+			"revisionTime": "2019-09-14T05:43:07Z"
 		},
 		{
-			"checksumSHA1": "YmY9vqi+gOcz2/m5b1FqCxOE/Zs=",
+			"checksumSHA1": "juh6nWA0lH+YGPgFeTWWG3hZN3M=",
 			"path": "github.com/webx-top/client/upload/driver/simple",
-			"revision": "5ba2ea7174f0ee3abd39c320d8483c18c36c3370",
-			"revisionTime": "2019-09-08T14:31:38Z"
+			"revision": "62baeee47978a0d01f65b22ebb1d0d3c8cf49a49",
+			"revisionTime": "2019-09-14T05:43:07Z"
 		},
 		{
-			"checksumSHA1": "AyO+br/EoqDWs0lcyoA4OHs9nAM=",
+			"checksumSHA1": "QinSYuzbN+PKgYzMyZNmLuqVRik=",
 			"path": "github.com/webx-top/client/upload/driver/webuploader",
-			"revision": "5ba2ea7174f0ee3abd39c320d8483c18c36c3370",
-			"revisionTime": "2019-09-08T14:31:38Z"
+			"revision": "62baeee47978a0d01f65b22ebb1d0d3c8cf49a49",
+			"revisionTime": "2019-09-14T05:43:07Z"
 		},
 		{
-			"checksumSHA1": "1mnpIPaZ6z8RKRYzy7NY+zS9H84=",
+			"checksumSHA1": "K1BuKgElPRj0RC3vAVV60hvWUpM=",
 			"path": "github.com/webx-top/client/upload/driver/xheditor",
-			"revision": "5ba2ea7174f0ee3abd39c320d8483c18c36c3370",
-			"revisionTime": "2019-09-08T14:31:38Z"
+			"revision": "62baeee47978a0d01f65b22ebb1d0d3c8cf49a49",
+			"revisionTime": "2019-09-14T05:43:07Z"
 		},
 		{
 			"checksumSHA1": "MdYsL52yjntnU9ghZq5IhgtoyZA=",

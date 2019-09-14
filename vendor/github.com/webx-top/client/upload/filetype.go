@@ -58,6 +58,10 @@ func (f FileType) ExtNames() (r []string) {
 	return
 }
 
+func (f FileType) String() string {
+	return string(f)
+}
+
 const (
 	TypeImage     FileType = `image`
 	TypeFlash     FileType = `flash`
