@@ -3289,40 +3289,40 @@
 			"revisionTime": "2018-09-30T19:44:53Z"
 		},
 		{
-			"checksumSHA1": "a0Q+rozRS//5tzBdhmUaiwi//vE=",
+			"checksumSHA1": "Yf6+j99fVsbWE2fjkYzAzDStOm4=",
 			"path": "github.com/webx-top/client/upload",
-			"revision": "c0c9436ad621a3e8ad8121ee66d24cc8c9cfcb2c",
-			"revisionTime": "2019-09-15T07:38:53Z"
+			"revision": "8e711913237d901430dd1b21d9a537a2ff5a859e",
+			"revisionTime": "2019-09-15T10:09:57Z"
 		},
 		{
 			"checksumSHA1": "K3MSyusucwxldAdCPhkqTM9b+nI=",
 			"path": "github.com/webx-top/client/upload/driver",
-			"revision": "c0c9436ad621a3e8ad8121ee66d24cc8c9cfcb2c",
-			"revisionTime": "2019-09-15T07:38:53Z"
+			"revision": "8e711913237d901430dd1b21d9a537a2ff5a859e",
+			"revisionTime": "2019-09-15T10:09:57Z"
 		},
 		{
 			"checksumSHA1": "7PGKttkHoOirHzJ9dGtUsw7QTU8=",
 			"path": "github.com/webx-top/client/upload/driver/markdown",
-			"revision": "c0c9436ad621a3e8ad8121ee66d24cc8c9cfcb2c",
-			"revisionTime": "2019-09-15T07:38:53Z"
+			"revision": "8e711913237d901430dd1b21d9a537a2ff5a859e",
+			"revisionTime": "2019-09-15T10:09:57Z"
 		},
 		{
 			"checksumSHA1": "q/Vnvvo9FLvKngY+TxfPe/6fpxo=",
 			"path": "github.com/webx-top/client/upload/driver/simple",
-			"revision": "c0c9436ad621a3e8ad8121ee66d24cc8c9cfcb2c",
-			"revisionTime": "2019-09-15T07:38:53Z"
+			"revision": "8e711913237d901430dd1b21d9a537a2ff5a859e",
+			"revisionTime": "2019-09-15T10:09:57Z"
 		},
 		{
 			"checksumSHA1": "mgYLztuI62glG36ww/wwdh98/9U=",
 			"path": "github.com/webx-top/client/upload/driver/webuploader",
-			"revision": "c0c9436ad621a3e8ad8121ee66d24cc8c9cfcb2c",
-			"revisionTime": "2019-09-15T07:38:53Z"
+			"revision": "8e711913237d901430dd1b21d9a537a2ff5a859e",
+			"revisionTime": "2019-09-15T10:09:57Z"
 		},
 		{
 			"checksumSHA1": "hlYqoKWgIFVcEhVV9Squk/1T+Hc=",
 			"path": "github.com/webx-top/client/upload/driver/xheditor",
-			"revision": "c0c9436ad621a3e8ad8121ee66d24cc8c9cfcb2c",
-			"revisionTime": "2019-09-15T07:38:53Z"
+			"revision": "8e711913237d901430dd1b21d9a537a2ff5a859e",
+			"revisionTime": "2019-09-15T10:09:57Z"
 		},
 		{
 			"checksumSHA1": "MdYsL52yjntnU9ghZq5IhgtoyZA=",
@@ -3429,194 +3429,194 @@
 		{
 			"checksumSHA1": "Z7479maYUDkJmUdl6u70Qg7faWY=",
 			"path": "github.com/webx-top/echo",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "vO62X8j41YzXZMHH8K2s2I0vuIk=",
 			"path": "github.com/webx-top/echo/defaults",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "Y5lG2twdz+L9OnK1VnL4kW9Qtkw=",
 			"path": "github.com/webx-top/echo/encoding/json",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "2wHc6eHOEEv7I4JuFkmF1T9YVQE=",
 			"path": "github.com/webx-top/echo/engine",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "/5fbO++QBQxSoYH9s2j/sjsXQ/E=",
 			"path": "github.com/webx-top/echo/engine/fasthttp",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
-			"checksumSHA1": "ZfdD7BOraXGTOyYOgOusuuRvRog=",
+			"checksumSHA1": "Aw5NJKEjnQ0dGxqKgdbq3KcVX5g=",
 			"path": "github.com/webx-top/echo/engine/standard",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "D87qnT/6rpCcD+opC/Fhu7+hCD0=",
 			"path": "github.com/webx-top/echo/handler/captcha",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "Qj2lX9e197XqHzXjJQ7rUJbxvB4=",
 			"path": "github.com/webx-top/echo/handler/mvc/static/minify",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "xHuP6p4p23Y44BgR5d17qjp+1uQ=",
 			"path": "github.com/webx-top/echo/handler/mvc/static/resource",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "Eb4Y42J9uezLKWaSUkBhzLvTqC8=",
 			"path": "github.com/webx-top/echo/handler/oauth2",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "6yAW1usBPD9uv4ph6iCDdw6fIiQ=",
 			"path": "github.com/webx-top/echo/handler/pprof",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "A5INXYunm/EJQQDwYl05X8yjZPo=",
 			"path": "github.com/webx-top/echo/handler/sockjs",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "Z0tDRujKaeDRMbjTIUAkhx2mm4U=",
 			"path": "github.com/webx-top/echo/handler/websocket",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "3BOUtSkVjh0/s7+V38xv8bkLhp0=",
 			"path": "github.com/webx-top/echo/logger",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "nBE9N4Fe2JEyq8IM+EeGAP+I/g0=",
 			"path": "github.com/webx-top/echo/middleware",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "bB1QPZ03NtKyKIhrF37NUplsEKU=",
 			"path": "github.com/webx-top/echo/middleware/bindata",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "W4b9oFwnp0PiYwsupBd97BJQGiY=",
 			"path": "github.com/webx-top/echo/middleware/bytes",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "MJKSa8lrIGOCHxz4+wHOaRJ7JGY=",
 			"path": "github.com/webx-top/echo/middleware/language",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "yptIJch8YmBZKH9a8Uqmd5nowc8=",
 			"path": "github.com/webx-top/echo/middleware/random",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "pn9fdwBAObGmlx9GuNo7uu3Laos=",
 			"path": "github.com/webx-top/echo/middleware/render",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "GgapBDx1tUp0dtSmRrchYpxG3Oc=",
 			"path": "github.com/webx-top/echo/middleware/render/driver",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "1jwiaunRuMCrmlQbZ8FnYeXteRI=",
 			"path": "github.com/webx-top/echo/middleware/render/manager",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "cQBYqZn3N6cO/gOrAbzH5PQUKto=",
 			"path": "github.com/webx-top/echo/middleware/render/standard",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "fUvLRBGp85Hbi/ub4YHoSB54RDo=",
 			"path": "github.com/webx-top/echo/middleware/session",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "0gBUPb7jn+CtEhCbrJSHGWtTIxc=",
 			"path": "github.com/webx-top/echo/middleware/session/engine",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "AOpNyOr6IkcMMFQH3yFRKYHokIY=",
 			"path": "github.com/webx-top/echo/middleware/session/engine/cookie",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "5zuw7zhPp31he1xkc07ETBypbBQ=",
 			"path": "github.com/webx-top/echo/middleware/session/engine/file",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "9pyl4Y/Fwgp7Tj2AeY0+1+VnIZ4=",
 			"path": "github.com/webx-top/echo/middleware/tplfunc",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "jPkoH6/4THBPeEfUOOXazMpcYaU=",
 			"path": "github.com/webx-top/echo/param",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "4zT14hKDPxwF7sP7CiVvrMOtMeM=",
 			"path": "github.com/webx-top/echo/subdomains",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "WBCD8Zk90W2rdqmEC3QsR3SGzAg=",
 			"path": "github.com/webx-top/echo/testing",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "NvYcTewCbgmyLkOhnKfbq1U+vis=",
 			"path": "github.com/webx-top/echo/testing/test",
-			"revision": "98e593af52ab63300d8f9340ef9d1bb9ca76d745",
-			"revisionTime": "2019-09-13T04:53:25Z"
+			"revision": "ed5ad18d575ea92e78b867155daaeb6e6e67378f",
+			"revisionTime": "2019-09-15T10:01:13Z"
 		},
 		{
 			"checksumSHA1": "MG40i74aXYRpRCPQjhuJlkmyo1Y=",

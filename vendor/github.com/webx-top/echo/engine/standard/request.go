@@ -102,7 +102,11 @@ func (r *Request) Body() io.ReadCloser {
 
 // SetBody implements `engine.Request#SetBody` function.
 func (r *Request) SetBody(reader io.Reader) {
-	r.request.Body = ioutil.NopCloser(reader)
+	if readCloser, ok := reader.(io.ReadCloser); ok {
+		r.request.Body = readCloser
+	} else {
+		r.request.Body = ioutil.NopCloser(reader)
+	}
 }
 
 func (r *Request) FormValue(name string) string {

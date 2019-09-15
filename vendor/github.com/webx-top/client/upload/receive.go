@@ -19,13 +19,17 @@
 package upload
 
 import (
+	"bytes"
 	"errors"
 	"io"
+	"io/ioutil"
 	"mime/multipart"
 	"net/url"
 	"strings"
 
+	"github.com/admpub/checksum"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/engine"
 )
 
 var (
@@ -37,35 +41,65 @@ type Sizer interface {
 	Size() int64
 }
 
+type SetReadCloser interface {
+	SetReadCloser(rc io.ReadCloser)
+}
+
 type ReadCloserWithSize interface {
 	Sizer
 	io.ReadCloser
+	Md5() (string, error)
 }
 
-func WrapSizer(sizer Sizer, readCloser io.ReadCloser) ReadCloserWithSize {
-	return &wrapSizer{sizer: sizer, ReadCloser: readCloser}
+func WrapBodyWithSize(req engine.Request) ReadCloserWithSize {
+	return &wrapBodyWithSize{Request: req}
 }
 
-func WrapSize(size int64, readCloser io.ReadCloser) ReadCloserWithSize {
-	return &wrapSize{size: size, ReadCloser: readCloser}
+func WrapFileWithSize(size int64, file multipart.File) ReadCloserWithSize {
+	return &wrapFileWithSize{size: size, File: file}
 }
 
-type wrapSizer struct {
-	sizer Sizer
-	io.ReadCloser
+type wrapBodyWithSize struct {
+	engine.Request
 }
 
-func (w *wrapSizer) Size() int64 {
-	return w.sizer.Size()
+func (w *wrapBodyWithSize) Read(p []byte) (n int, err error) {
+	return w.Body().Read(p)
 }
 
-type wrapSize struct {
+func (w *wrapBodyWithSize) Close() error {
+	return w.Body().Close()
+}
+
+func (w *wrapBodyWithSize) Md5() (md5 string, err error) {
+	var b []byte
+	b, err = ioutil.ReadAll(w.Body())
+	if err != nil {
+		return
+	}
+	defer func() {
+		w.SetBody(bytes.NewReader(b))
+	}()
+	md5, err = checksum.MD5sumReader(bytes.NewReader(b))
+	return
+}
+
+type wrapFileWithSize struct {
 	size int64
-	io.ReadCloser
+	multipart.File
 }
 
-func (w *wrapSize) Size() int64 {
+func (w *wrapFileWithSize) Size() int64 {
 	return w.size
+}
+
+func (w *wrapFileWithSize) Md5() (md5 string, err error) {
+	md5, err = checksum.MD5sumReader(w)
+	if err != nil {
+		return
+	}
+	_, err = w.Seek(0, 0)
+	return
 }
 
 func Receive(name string, ctx echo.Context) (f ReadCloserWithSize, fileName string, err error) {
@@ -86,7 +120,7 @@ func Receive(name string, ctx echo.Context) (f ReadCloserWithSize, fileName stri
 		if err != nil {
 			return
 		}
-		f = WrapSizer(ctx.Request(), ctx.Request().Body())
+		f = WrapBodyWithSize(ctx.Request())
 		return
 
 	default:
@@ -97,7 +131,7 @@ func Receive(name string, ctx echo.Context) (f ReadCloserWithSize, fileName stri
 			return
 		}
 		fileName = header.Filename
-		f = WrapSize(header.Size, file)
+		f = WrapFileWithSize(header.Size, file)
 		return
 	}
 }

@@ -20,11 +20,9 @@ package upload
 
 import (
 	"fmt"
-	"io"
 	"path/filepath"
 	"time"
 
-	"github.com/admpub/checksum"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
 )
@@ -113,10 +111,7 @@ func (a *BaseClient) Body() (file ReadCloserWithSize, err error) {
 		return
 	}
 	a.Data.FileSize = file.Size()
-	a.Data.Md5, err = checksum.MD5sumReader(file)
-	if v, y := file.(io.ReadSeeker); y {
-		v.Seek(0, 0)
-	}
+	a.Data.Md5, err = file.Md5()
 	return
 }
 
