@@ -372,13 +372,13 @@ CREATE TABLE `file` (
   `view_url` varchar(200) NOT NULL DEFAULT '' COMMENT '查看链接',
   `ext` varchar(5) NOT NULL DEFAULT '' COMMENT '文件后缀',
   `mime` varchar(40) NOT NULL DEFAULT '' COMMENT '文件mime类型',
-  `type` enum('image','media','flash','archive','file','office','bt','other') NOT NULL DEFAULT 'image' COMMENT '文件类型',
+  `type` enum('image','media','video','audio','flash','archive','file','office','bt','other') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'image' COMMENT '文件类型',
   `size` bigint(25) unsigned NOT NULL DEFAULT '0' COMMENT '文件大小',
   `width` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '宽度(像素)',
   `height` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '高度(像素)',
   `dpi` int(5) unsigned NOT NULL DEFAULT '0' COMMENT '分辨率',
   `md5` varchar(32) NOT NULL DEFAULT '' COMMENT '文件md5',
-  `storer_name` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'local' COMMENT '文件保存位置',
+  `storer_name` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '文件保存位置',
   `storer_id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '位置ID',
   `created` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '上传时间',
   `updated` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
@@ -895,4 +895,4 @@ CREATE TABLE `vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-09-13 11:53:41
+-- Dump completed on 2019-09-15 12:04:27

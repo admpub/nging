@@ -192,7 +192,6 @@ func (this *File) Add() (pk interface{}, err error) {
 	this.Id = 0
 	if len(this.Type) == 0 { this.Type = "image" }
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
-	if len(this.StorerName) == 0 { this.StorerName = "local" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -208,7 +207,6 @@ func (this *File) Edit(mw func(db.Result) db.Result, args ...interface{}) error 
 	this.Updated = uint(time.Now().Unix())
 	if len(this.Type) == 0 { this.Type = "image" }
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
-	if len(this.StorerName) == 0 { this.StorerName = "local" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -226,7 +224,6 @@ func (this *File) SetFields(mw func(db.Result) db.Result, kvset map[string]inter
 	
 	if val, ok := kvset["type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["type"] = "image" } }
 	if val, ok := kvset["owner_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["owner_type"] = "user" } }
-	if val, ok := kvset["storer_name"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["storer_name"] = "local" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
@@ -235,13 +232,11 @@ func (this *File) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk 
 		this.Updated = uint(time.Now().Unix())
 	if len(this.Type) == 0 { this.Type = "image" }
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
-	if len(this.StorerName) == 0 { this.StorerName = "local" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.Type) == 0 { this.Type = "image" }
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
-	if len(this.StorerName) == 0 { this.StorerName = "local" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {

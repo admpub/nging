@@ -73,17 +73,6 @@ func (f *File) SetByUploadResult(result *uploadClient.Result) *File {
 	return f
 }
 
-func (f *File) SetByInfo(postFileName string, typ string, savePath string, viewURL string, size int64) *File {
-	f.Name = postFileName
-	f.SavePath = savePath
-	f.SaveName = filepath.Base(f.SavePath)
-	f.Ext = filepath.Ext(f.SavePath)
-	f.ViewUrl = viewURL
-	f.Type = typ
-	f.Size = uint64(size)
-	return f
-}
-
 func (f *File) Add(reader io.Reader) error {
 	if len(f.Mime) == 0 {
 		f.Mime = mime.TypeByExtension(f.Ext)
