@@ -30,9 +30,6 @@ import (
 	"strings"
 
 	"github.com/admpub/checksum"
-
-	"github.com/webx-top/echo/param"
-
 	imageproxy "github.com/admpub/imageproxy"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/handler"
@@ -46,6 +43,7 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
+	"github.com/webx-top/echo/param"
 
 	uploadClient "github.com/webx-top/client/upload"
 	_ "github.com/webx-top/client/upload/driver"
