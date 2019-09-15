@@ -29,6 +29,7 @@ type FileThumb struct {
 	SavePath  	string  	`db:"save_path" bson:"save_path" comment:"保存路径" json:"save_path" xml:"save_path"`
 	ViewUrl   	string  	`db:"view_url" bson:"view_url" comment:"访问网址" json:"view_url" xml:"view_url"`
 	UsedTimes 	uint    	`db:"used_times" bson:"used_times" comment:"被使用的次数" json:"used_times" xml:"used_times"`
+	Md5       	string  	`db:"md5" bson:"md5" comment:"缩略图文件MD5值" json:"md5" xml:"md5"`
 }
 
 func (this *FileThumb) Trans() *factory.Transaction {
@@ -238,6 +239,7 @@ func (this *FileThumb) Reset() *FileThumb {
 	this.SavePath = ``
 	this.ViewUrl = ``
 	this.UsedTimes = 0
+	this.Md5 = ``
 	return this
 }
 
@@ -253,6 +255,7 @@ func (this *FileThumb) AsMap() map[string]interface{} {
 	r["SavePath"] = this.SavePath
 	r["ViewUrl"] = this.ViewUrl
 	r["UsedTimes"] = this.UsedTimes
+	r["Md5"] = this.Md5
 	return r
 }
 
@@ -286,6 +289,7 @@ func (this *FileThumb) Set(key interface{}, value ...interface{}) {
 				case "SavePath": this.SavePath = param.AsString(vv)
 				case "ViewUrl": this.ViewUrl = param.AsString(vv)
 				case "UsedTimes": this.UsedTimes = param.AsUint(vv)
+				case "Md5": this.Md5 = param.AsString(vv)
 			}
 	}
 }
@@ -302,6 +306,7 @@ func (this *FileThumb) AsRow() map[string]interface{} {
 	r["save_path"] = this.SavePath
 	r["view_url"] = this.ViewUrl
 	r["used_times"] = this.UsedTimes
+	r["md5"] = this.Md5
 	return r
 }
 

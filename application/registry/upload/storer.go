@@ -22,7 +22,9 @@ import (
 	"io"
 	"mime/multipart"
 	"net/url"
+	"os"
 
+	"github.com/admpub/checksum"
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/echo"
 )
@@ -79,6 +81,13 @@ func BatchUpload(
 			file.Close()
 			return
 		}
+		file.Seek(0, 0)
+		result.Md5, err = checksum.MD5sumReader(file)
+		if err != nil {
+			file.Close()
+			return
+		}
+		file.Seek(0, 0)
 		if err = callback(result, file); err != nil {
 			file.Close()
 			return
@@ -97,9 +106,13 @@ type Storer interface {
 	Engine() string
 	Put(dst string, src io.Reader, size int64) (savePath string, viewURL string, err error)
 	Get(file string) (io.ReadCloser, error)
+	Exists(file string) (bool, error)
+	FileInfo(file string) (os.FileInfo, error)
+	SendFile(ctx echo.Context, file string) error
 	Delete(file string) error
 	DeleteDir(dir string) error
 	PublicURL(dst string) string
+	URLToDstFile(viewURL string) string
 	FixURL(content string, embedded ...bool) string
 	FixURLWithParams(content string, values url.Values, embedded ...bool) string
 }

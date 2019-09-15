@@ -21,6 +21,7 @@ package file
 import (
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
+	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
 
@@ -34,4 +35,33 @@ func NewThumb(ctx echo.Context) *Thumb {
 type Thumb struct {
 	*dbschema.FileThumb
 	base *base.Base
+}
+
+func (t *Thumb) SetByFile(file *dbschema.File) *Thumb {
+	t.FileId = file.Id
+	t.Dpi = file.Dpi
+	return t
+}
+
+func (t *Thumb) Save() (err error) {
+	m := &dbschema.FileThumb{}
+	err = m.Get(nil, db.And(
+		db.Cond{`save_path`: t.SavePath},
+	))
+	if err != nil {
+		if err != db.ErrNoMoreRows {
+			return
+		}
+		_, err = t.FileThumb.Add()
+		return
+	}
+	t.FileThumb = m
+	err = t.SetFields(nil, echo.H{
+		`view_url`: t.ViewUrl,
+		`size`:     t.Size,
+		`width`:    t.Width,
+		`height`:   t.Height,
+		`dpi`:      t.Dpi,
+	}, db.Cond{`id`: m.Id})
+	return
 }

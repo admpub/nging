@@ -434,6 +434,7 @@ CREATE TABLE `file_thumb` (
   `save_path` varchar(200) NOT NULL COMMENT '保存路径',
   `view_url` varchar(200) NOT NULL COMMENT '访问网址',
   `used_times` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '被使用的次数',
+  `md5` char(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '缩略图文件MD5值',
   PRIMARY KEY (`id`),
   UNIQUE KEY `file_id_size_flag` (`file_id`,`size`),
   UNIQUE KEY `save_path` (`save_path`)
@@ -895,4 +896,4 @@ CREATE TABLE `vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-09-15 12:04:27
+-- Dump completed on 2019-09-15 12:59:00

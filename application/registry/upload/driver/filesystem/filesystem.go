@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/helper"
@@ -61,6 +62,22 @@ func (f *Filesystem) filepath(fname string) string {
 	return filepath.Join(f.UploadDir, fname)
 }
 
+func (f *Filesystem) Exists(file string) (bool, error) {
+	_, err := os.Stat(file)
+	if err != nil && os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
+}
+
+func (f *Filesystem) FileInfo(file string) (os.FileInfo, error) {
+	return os.Stat(file)
+}
+
+func (f *Filesystem) SendFile(ctx echo.Context, file string) error {
+	return ctx.File(file)
+}
+
 func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (savePath string, viewURL string, err error) {
 	savePath = f.filepath(dstFile)
 	saveDir := filepath.Dir(savePath)
@@ -82,6 +99,11 @@ func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (savePath st
 }
 
 func (f *Filesystem) PublicURL(dstFile string) string {
+	return dstFile
+}
+
+func (f *Filesystem) URLToDstFile(publicURL string) string {
+	dstFile := strings.TrimPrefix(publicURL, strings.TrimRight(f.UploadURLPath, `/`)+`/`)
 	return dstFile
 }
 

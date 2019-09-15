@@ -19,6 +19,7 @@
 package manager
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -27,6 +28,10 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/admpub/checksum"
+
+	"github.com/webx-top/echo/param"
 
 	imageproxy "github.com/admpub/imageproxy"
 	"github.com/admpub/log"
@@ -137,7 +142,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	clientName := ctx.Form(`client`)
 	if len(clientName) > 0 {
 		result := &uploadClient.Result{}
-		result.SetDistFileGenerator(func(filename string) (string, error) {
+		result.SetFileNameGenerator(func(filename string) (string, error) {
 			return SaveFilename(subdir, name, filename)
 		})
 
@@ -215,18 +220,28 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 }
 
 func Crop(ctx echo.Context) error {
+	var err error
 	newStore := upload.StorerGet(StorerEngine)
 	if newStore == nil {
 		return ctx.E(`存储引擎“%s”未被登记`, StorerEngine)
 	}
 	typ := ctx.Param(`type`)
 	storer := newStore(typ)
-	_ = storer //TODO: WIP
-	src := ctx.Form(`src`)
-	src, _ = com.URLDecode(src)
-	if err := common.IsRightUploadFile(ctx, src); err != nil {
+	srcURL := ctx.Form(`src`)
+	srcURL, err = com.URLDecode(srcURL)
+	if err != nil {
 		return err
 	}
+	if err = common.IsRightUploadFile(ctx, srcURL); err != nil {
+		return err
+	}
+	thumbM := modelFile.NewThumb(ctx)
+	fileM := modelFile.NewFile(ctx)
+	err = fileM.GetByViewURL(StorerEngine, srcURL)
+	if err != nil {
+		return err
+	}
+
 	x := ctx.Formx(`x`).Float64()
 	y := ctx.Formx(`y`).Float64()
 	w := ctx.Formx(`w`).Float64()
@@ -249,36 +264,79 @@ func Crop(ctx echo.Context) error {
 		Signature:      "",
 		ScaleUp:        true,
 	}
-	absSrcFile := filepath.Join(echo.Wd(), src)
-	dstFile := tplfunc.AddSuffix(src, fmt.Sprintf(`_%v_%v`, opt.Width, opt.Height))
-	absFile := filepath.Join(echo.Wd(), dstFile)
-	cropped := com.FileExists(absFile)
-	name := path.Base(src)
-	var onSuccess func()
+	thumbURL := tplfunc.AddSuffix(srcURL, fmt.Sprintf(`_%v_%v`, opt.Width, opt.Height))
+	var cropped bool
+	cropped, err = storer.Exists(thumbURL)
+	if err != nil {
+		return err
+	}
+	name := path.Base(srcURL)
+	var onSuccess func() string
 
 	//对于头像图片，可以根据原图文件的md5值来判断是否需要重新生成缩略图
 	if len(name) > 7 && name[0:7] == `avatar.` {
-		md5file := filepath.Join(filepath.Dir(absFile), `avatar.md5`)
-		onSuccess = func() {
-			originMd5 := com.Md5file(absSrcFile)
-			err := ioutil.WriteFile(md5file, []byte(originMd5), 0666)
+		md5file := path.Join(path.Dir(srcURL), `avatar.md5`)
+		putFile := storer.URLToDstFile(md5file)
+		onSuccess = func() string {
+			reader, err := storer.Get(srcURL)
+			if reader != nil {
+				defer reader.Close()
+			}
+			if err != nil {
+				log.Error(err)
+				return ``
+			}
+			originMd5, err := checksum.MD5sumReader(reader)
+			if err != nil {
+				log.Error(err)
+				return ``
+			}
+			size := len(originMd5)
+			_, _, err = storer.Put(putFile, bytes.NewBufferString(originMd5), int64(size))
 			if err != nil {
 				log.Error(err)
 			}
+			return originMd5
 		}
-		cropped = cropped && com.FileExists(md5file)
+
 		if cropped {
-			b, _ := ioutil.ReadFile(md5file)
-			originMd5 := com.Md5file(absSrcFile)
+			cropped, err = storer.Exists(md5file)
+			if err != nil {
+				return err
+			}
+		}
+
+		if cropped {
+			md5reader, err := storer.Get(md5file)
+			if md5reader != nil {
+				defer md5reader.Close()
+			}
+			if err != nil {
+				return err
+			}
+			b, err := ioutil.ReadAll(md5reader)
+			if err != nil {
+				return err
+			}
+			reader, err := storer.Get(srcURL)
+			if reader != nil {
+				defer reader.Close()
+			}
+			originMd5, err := checksum.MD5sumReader(reader)
+			if err != nil {
+				return err
+			}
 			if string(b) == originMd5 {
 				goto END
 			}
 			cropped = false
-			onSuccess = func() { //直接使用上面读到的md5
-				err := ioutil.WriteFile(md5file, []byte(originMd5), 0666)
+			onSuccess = func() string { //直接使用上面读到的md5
+				size := len(originMd5)
+				_, _, err = storer.Put(putFile, bytes.NewBufferString(originMd5), int64(size))
 				if err != nil {
 					log.Error(err)
 				}
+				return originMd5
 			}
 		}
 	}
@@ -286,12 +344,21 @@ func Crop(ctx echo.Context) error {
 END:
 	if cropped {
 		if ctx.Format() == `json` {
-			return ctx.JSON(ctx.Data().SetData(dstFile))
+			return ctx.JSON(ctx.Data().SetInfo(`skipped`).SetData(thumbURL))
 		}
-		return ctx.File(absFile)
+		return storer.SendFile(ctx, thumbURL)
 	}
 
-	b, err := ioutil.ReadFile(absSrcFile)
+	var reader io.ReadCloser
+	reader, err = storer.Get(srcURL)
+	if reader != nil {
+		defer reader.Close()
+	}
+	if err != nil {
+		return err
+	}
+
+	b, err := ioutil.ReadAll(reader)
 	if err != nil {
 		return err
 	}
@@ -299,15 +366,34 @@ END:
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(absFile, thumb, 0666) //r-4;w-2;x-1
+	byteReader := bytes.NewReader(thumb)
+	thumbM.SavePath, thumbM.ViewUrl, err = storer.Put(storer.URLToDstFile(thumbURL), byteReader, byteReader.Size()) //r-4;w-2;x-1
 	if err != nil {
 		return err
 	}
+	var fileMd5 string
 	if onSuccess != nil {
-		onSuccess()
+		fileMd5 = onSuccess()
+	} else {
+		fileMd5, err = checksum.MD5sumReader(reader)
+		if err != nil {
+			return err
+		}
 	}
+	size := len(thumb)
+	thumbM.Size = uint64(size)
+	thumbM.Width = param.AsUint(opt.Width)
+	thumbM.Height = param.AsUint(opt.Height)
+	thumbM.SaveName = path.Base(thumbM.SavePath)
+	thumbM.UsedTimes = 0
+	thumbM.Md5 = fileMd5
+	err = thumbM.SetByFile(fileM.File).Save()
+	if err != nil {
+		return err
+	}
+
 	if ctx.Format() == `json` {
-		return ctx.JSON(ctx.Data().SetData(dstFile))
+		return ctx.JSON(ctx.Data().SetInfo(`cropped`).SetData(thumbURL))
 	}
-	return ctx.File(absFile)
+	return storer.SendFile(ctx, thumbURL)
 }

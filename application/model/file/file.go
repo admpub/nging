@@ -30,7 +30,6 @@ import (
 	"github.com/admpub/nging/application/registry/upload"
 	"github.com/coscms/go-imgparse/imgparse"
 	uploadClient "github.com/webx-top/client/upload"
-	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
@@ -70,6 +69,7 @@ func (f *File) SetByUploadResult(result *uploadClient.Result) *File {
 	f.ViewUrl = result.FileURL
 	f.Type = result.FileType.String()
 	f.Size = uint64(result.FileSize)
+	f.Md5 = result.Md5
 	return f
 }
 
@@ -80,7 +80,6 @@ func (f *File) Add(reader io.Reader) error {
 			f.Mime = echo.MIMEOctetStream
 		}
 	}
-	f.Md5 = com.Md5(f.ViewUrl)
 	if f.Type == `image` {
 		typ := strings.TrimPrefix(f.Ext, `.`)
 		if typ == `jpg` {
@@ -144,6 +143,22 @@ func (f *File) DeleteByID(id uint64) (err error) {
 		return err
 	}
 	return f.fireDelete()
+}
+
+func (f *File) GetBySavePath(storerName string, savePath string) (err error) {
+	err = f.Get(nil, db.And(
+		db.Cond{`storer_name`: storerName},
+		db.Cond{`save_path`: savePath},
+	))
+	return
+}
+
+func (f *File) GetByViewURL(storerName string, viewURL string) (err error) {
+	err = f.Get(nil, db.And(
+		db.Cond{`storer_name`: storerName},
+		db.Cond{`view_url`: viewURL},
+	))
+	return
 }
 
 func (f *File) DeleteBySavePath(savePath string) (err error) {

@@ -56,7 +56,7 @@ type Storer interface {
 	Put(dstFile string, body io.Reader, size int64) (savePath string, fileURL string, err error)
 }
 
-func Upload(ctx echo.Context, clientName string, result *Result, storer Storer) Client {
+func Upload(ctx echo.Context, clientName string, result *Result, storer Storer, checkers ...func(*Result) error) Client {
 	client := Get(clientName)
 	client.Init(ctx, result)
 	body, err := client.Body()
@@ -64,7 +64,13 @@ func Upload(ctx echo.Context, clientName string, result *Result, storer Storer) 
 		return client.SetError(err)
 	}
 	defer body.Close()
-	dstFile, err := result.DistFile()
+	if len(checkers) > 0 {
+		err = checkers[0](result)
+		if err != nil {
+			return client.SetError(err)
+		}
+	}
+	dstFile, err := result.GenFileName()
 	if err != nil {
 		return client.SetError(err)
 	}
