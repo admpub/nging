@@ -3289,40 +3289,40 @@
 			"revisionTime": "2018-09-30T19:44:53Z"
 		},
 		{
-			"checksumSHA1": "Yf6+j99fVsbWE2fjkYzAzDStOm4=",
+			"checksumSHA1": "Lo0wpEMjrO+ujj6eYmkLZNidmp0=",
 			"path": "github.com/webx-top/client/upload",
-			"revision": "8e711913237d901430dd1b21d9a537a2ff5a859e",
-			"revisionTime": "2019-09-15T10:09:57Z"
+			"revision": "5b12d6f113a3ae3a34e62bedf0631885f970897a",
+			"revisionTime": "2019-09-15T14:10:23Z"
 		},
 		{
 			"checksumSHA1": "K3MSyusucwxldAdCPhkqTM9b+nI=",
 			"path": "github.com/webx-top/client/upload/driver",
-			"revision": "8e711913237d901430dd1b21d9a537a2ff5a859e",
-			"revisionTime": "2019-09-15T10:09:57Z"
+			"revision": "5b12d6f113a3ae3a34e62bedf0631885f970897a",
+			"revisionTime": "2019-09-15T14:10:23Z"
 		},
 		{
 			"checksumSHA1": "7PGKttkHoOirHzJ9dGtUsw7QTU8=",
 			"path": "github.com/webx-top/client/upload/driver/markdown",
-			"revision": "8e711913237d901430dd1b21d9a537a2ff5a859e",
-			"revisionTime": "2019-09-15T10:09:57Z"
+			"revision": "5b12d6f113a3ae3a34e62bedf0631885f970897a",
+			"revisionTime": "2019-09-15T14:10:23Z"
 		},
 		{
 			"checksumSHA1": "q/Vnvvo9FLvKngY+TxfPe/6fpxo=",
 			"path": "github.com/webx-top/client/upload/driver/simple",
-			"revision": "8e711913237d901430dd1b21d9a537a2ff5a859e",
-			"revisionTime": "2019-09-15T10:09:57Z"
+			"revision": "5b12d6f113a3ae3a34e62bedf0631885f970897a",
+			"revisionTime": "2019-09-15T14:10:23Z"
 		},
 		{
 			"checksumSHA1": "mgYLztuI62glG36ww/wwdh98/9U=",
 			"path": "github.com/webx-top/client/upload/driver/webuploader",
-			"revision": "8e711913237d901430dd1b21d9a537a2ff5a859e",
-			"revisionTime": "2019-09-15T10:09:57Z"
+			"revision": "5b12d6f113a3ae3a34e62bedf0631885f970897a",
+			"revisionTime": "2019-09-15T14:10:23Z"
 		},
 		{
 			"checksumSHA1": "hlYqoKWgIFVcEhVV9Squk/1T+Hc=",
 			"path": "github.com/webx-top/client/upload/driver/xheditor",
-			"revision": "8e711913237d901430dd1b21d9a537a2ff5a859e",
-			"revisionTime": "2019-09-15T10:09:57Z"
+			"revision": "5b12d6f113a3ae3a34e62bedf0631885f970897a",
+			"revisionTime": "2019-09-15T14:10:23Z"
 		},
 		{
 			"checksumSHA1": "MdYsL52yjntnU9ghZq5IhgtoyZA=",

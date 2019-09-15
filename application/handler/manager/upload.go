@@ -129,6 +129,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	fileM.TableId = 0
 	fileM.TableName = typ
 	fileM.FieldName = ``
+	fileM.Type = ctx.Form(`filetype`, `image`)
 
 	storer := newStore(typ)
 	var subdir, name string

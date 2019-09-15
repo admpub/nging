@@ -18,41 +18,12 @@
 
 package upload
 
-var FileTypeExts = map[string][]string{
-	`image`:     []string{`jpeg`, `jpg`, `gif`, `png`},
-	`flash`:     []string{`swf`},
-	`audio`:     []string{`mp3`, `mid`},
-	`video`:     []string{`mp4`, `mp5`, `flv`, `mpg`, `mkv`, `rmvb`, `avi`, `rm`, `asf`, `divx`, `mpeg`, `mpe`, `wmv`, `mkv`, `vob`, `3gp`, `mov`},
-	`archive`:   []string{`zip`, `7z`, `rar`, `tar`, `gz`},
-	`office`:    []string{`xls`, `doc`, `docx`, `ppt`, `pptx`, `et`, `wps`, `rtf`, `dps`},
-	`bt`:        []string{`torrent`},
-	`photoshop`: []string{`psd`},
-}
-
-var fileTypes = map[string]string{}
-
-func InitFileTypes() {
-	for typ, exts := range FileTypeExts {
-		for _, ext := range exts {
-			fileTypes[ext] = typ
-		}
-	}
-}
-
-func GetType(extName string) string {
-	if len(extName) > 0 && extName[0] == '.' {
-		extName = extName[1:]
-	}
-	if v, ok := fileTypes[extName]; ok {
-		return v
-	}
-	return `file`
-}
+import "strings"
 
 type FileType string
 
-func (f FileType) ExtNames() (r []string) {
-	if v, ok := FileTypeExts[string(f)]; ok {
+func (f FileType) Extensions() (r []string) {
+	if v, ok := FileTypeExts[f]; ok {
 		r = v
 	}
 	return
@@ -72,6 +43,48 @@ const (
 	TypeBT        FileType = `bt`
 	TypePhotoshop FileType = `photoshop`
 )
+
+var FileTypeExts = map[FileType][]string{
+	TypeImage:     []string{`jpeg`, `jpg`, `gif`, `png`},
+	TypeFlash:     []string{`swf`},
+	TypeAudio:     []string{`mp3`, `mid`},
+	TypeVideo:     []string{`mp4`, `mp5`, `flv`, `mpg`, `mkv`, `rmvb`, `avi`, `rm`, `asf`, `divx`, `mpeg`, `mpe`, `wmv`, `mkv`, `vob`, `3gp`, `mov`},
+	TypeArchive:   []string{`zip`, `7z`, `rar`, `tar`, `gz`},
+	TypeOffice:    []string{`xls`, `doc`, `docx`, `ppt`, `pptx`, `et`, `wps`, `rtf`, `dps`},
+	TypeBT:        []string{`torrent`},
+	TypePhotoshop: []string{`psd`},
+}
+
+func AddFileType(fileType FileType, extensions ...string) {
+	if _, y := FileTypeExts[fileType]; !y {
+		FileTypeExts[fileType] = []string{}
+	}
+	FileTypeExts[fileType] = append(FileTypeExts[fileType], extensions...)
+	for _, extension := range extensions {
+		fileTypes[extension] = fileType
+	}
+}
+
+var fileTypes = map[string]FileType{}
+
+func InitFileTypes() {
+	for fileType, extensions := range FileTypeExts {
+		for _, extension := range extensions {
+			fileTypes[extension] = fileType
+		}
+	}
+}
+
+func DetectType(extension string) string {
+	if len(extension) > 0 && extension[0] == '.' {
+		extension = extension[1:]
+	}
+	extension = strings.ToLower(extension)
+	if v, ok := fileTypes[extension]; ok {
+		return v.String()
+	}
+	return `file`
+}
 
 func init() {
 	InitFileTypes()
