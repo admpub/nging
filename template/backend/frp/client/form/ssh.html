@@ -43,7 +43,7 @@
       <div class="col-sm-9">
             {{$v := Val . "use_encryption"}}
             <div class="checkbox checkbox-primary checkbox-inline"> 
-              <input type="checkbox" value="1" id="sh-{{Key . "use_encryption"}}-1" name="{{Key . "use_encryption"}}"{{if eq $v "1"}} checked{{end}}><label for="ssh-{{Key . "use_encryption"}}-1">{{"加密"|T}}</label> 
+              <input type="checkbox" value="1" id="ssh-{{Key . "use_encryption"}}-1" name="{{Key . "use_encryption"}}"{{if eq $v "1"}} checked{{end}}><label for="ssh-{{Key . "use_encryption"}}-1">{{"加密"|T}}</label> 
             </div>
             {{$v := Val . "use_compression"}}
             <div class="checkbox checkbox-primary checkbox-inline"> 
