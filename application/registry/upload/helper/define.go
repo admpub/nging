@@ -48,6 +48,9 @@ var (
 
 	// DetectFileType 根据文件扩展名判断文件类型
 	DetectFileType = upload.DetectType
+
+	// TypeRegister 注册文件扩展名
+	TypeRegister = upload.TypeRegister
 )
 
 // FileTypeByName 根据文件名判断文件类型
