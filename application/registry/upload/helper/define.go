@@ -19,10 +19,10 @@
 package helper
 
 import (
-	"mime"
 	"regexp"
 	"strings"
 
+	"github.com/webx-top/client/upload"
 	"github.com/webx-top/com"
 )
 
@@ -43,75 +43,11 @@ var (
 		`.jpeg`, `.jpg`, `.gif`, `.png`,
 	}
 
-	// FileTypeByExtensions 扩展名对应类型
-	FileTypeByExtensions = map[string]string{
-		// image
-		`.jpeg`: `image`,
-		`.jpg`:  `image`,
-		`.gif`:  `image`,
-		`.png`:  `image`,
-		`.svg`:  `image`,
+	// FileTypeIcon 文件类型icon
+	FileTypeIcon = upload.FileTypeIcons
 
-		// video
-		`.mp4`:  `video`,
-		`.mpeg`: `video`,
-		`.rmvb`: `video`,
-		`.rm`:   `video`,
-		`.avi`:  `video`,
-		`.mkv`:  `video`,
-
-		// audio
-		`.mp3`: `audio`,
-		`.mid`: `audio`,
-
-		// archive
-		`.rar`:  `archive`,
-		`.zip`:  `archive`,
-		`.gz`:   `archive`,
-		`.bz`:   `archive`,
-		`.gzip`: `archive`,
-		`.7z`:   `archive`,
-
-		// pdf
-		`.pdf`: `pdf`,
-
-		// xls
-		`.xls`:  `xls`,
-		`.xlsx`: `xls`,
-		`.csv`:  `xls`,
-
-		// ppt
-		`.ppt`: `ppt`,
-
-		// doc
-		`.txt`:  `doc`,
-		`.doc`:  `doc`,
-		`.docx`: `doc`,
-	}
-
-	// FileTypes 文件类型对应mime关键词
-	FileTypes = map[string][]string{
-		`image`:   []string{`image`},
-		`video`:   []string{`video`},
-		`audio`:   []string{`audio`},
-		`archive`: []string{`compressed`},
-		`pdf`:     []string{`pdf`},
-		`xls`:     []string{`csv`, `excel`},
-		`ppt`:     []string{`powerpoint`},
-		`doc`:     []string{`msword`, `text`},
-	}
-
-	// FileTypeIcons 文件类型对应icon(不含“fa-”前缀)
-	FileTypeIcons = map[string]string{
-		`image`:   `picture-o`,
-		`video`:   `film`,
-		`audio`:   `music`,
-		`archive`: `archive`,
-		`pdf`:     `file-o`,
-		`xls`:     `file-o`,
-		`ppt`:     `file-o`,
-		`doc`:     `file-text-o`,
-	}
+	// DetectFileType 根据文件扩展名判断文件类型
+	DetectFileType = upload.DetectType
 )
 
 // FileTypeByName 根据文件名判断文件类型
@@ -122,35 +58,6 @@ func FileTypeByName(filename string) string {
 	}
 	ext := filename[p:]
 	return DetectFileType(ext)
-}
-
-// FileTypeIcon 文件类型icon
-func FileTypeIcon(typ string) string {
-	icon, ok := FileTypeIcons[typ]
-	if ok {
-		return icon
-	}
-	return `file-o`
-}
-
-// DetectFileType 根据文件扩展名判断文件类型
-func DetectFileType(ext string) string {
-	ext = strings.ToLower(ext)
-	typ, ok := FileTypeByExtensions[ext]
-	if ok {
-		return typ
-	}
-
-	mimeType := mime.TypeByExtension(ext)
-	mimeType = strings.SplitN(ext, ";", 2)[0]
-	for typeK, keywords := range FileTypes {
-		for _, words := range keywords {
-			if strings.Contains(mimeType, words) {
-				return typeK
-			}
-		}
-	}
-	return `file`
 }
 
 func ExtensionRegister(extensions ...string) {
