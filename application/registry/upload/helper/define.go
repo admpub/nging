@@ -44,7 +44,7 @@ var (
 	}
 
 	// FileTypeIcon 文件类型icon
-	FileTypeIcon = upload.FileTypeIcons
+	FileTypeIcon = upload.FileTypeIcon
 
 	// DetectFileType 根据文件扩展名判断文件类型
 	DetectFileType = upload.DetectType
