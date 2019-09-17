@@ -112,7 +112,7 @@ type Storer interface {
 	Delete(file string) error
 	DeleteDir(dir string) error
 	PublicURL(dst string) string
-	URLToDstFile(viewURL string) string
+	URLToFile(viewURL string) string
 	FixURL(content string, embedded ...bool) string
 	FixURLWithParams(content string, values url.Values, embedded ...bool) string
 }

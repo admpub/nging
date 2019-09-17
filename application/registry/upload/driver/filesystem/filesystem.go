@@ -102,7 +102,7 @@ func (f *Filesystem) PublicURL(dstFile string) string {
 	return dstFile
 }
 
-func (f *Filesystem) URLToDstFile(publicURL string) string {
+func (f *Filesystem) URLToFile(publicURL string) string {
 	dstFile := strings.TrimPrefix(publicURL, strings.TrimRight(f.UploadURLPath, `/`)+`/`)
 	return dstFile
 }

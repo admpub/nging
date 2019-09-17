@@ -275,7 +275,7 @@ func Crop(ctx echo.Context) error {
 	//对于头像图片，可以根据原图文件的md5值来判断是否需要重新生成缩略图
 	if len(name) > 7 && name[0:7] == `avatar.` {
 		md5file := path.Join(path.Dir(srcURL), `avatar.md5`)
-		putFile := storer.URLToDstFile(md5file)
+		putFile := storer.URLToFile(md5file)
 		onSuccess = func() string {
 			reader, err := storer.Get(srcURL)
 			if reader != nil {
