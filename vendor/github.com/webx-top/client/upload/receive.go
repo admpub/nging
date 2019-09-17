@@ -77,6 +77,7 @@ func (w *wrapBodyWithSize) Md5() (md5 string, err error) {
 	if err != nil {
 		return
 	}
+	w.Body().Close()
 	defer func() {
 		w.SetBody(bytes.NewReader(b))
 	}()

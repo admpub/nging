@@ -366,7 +366,7 @@ END:
 		return err
 	}
 	byteReader := bytes.NewReader(thumb)
-	thumbM.SavePath, thumbM.ViewUrl, err = storer.Put(storer.URLToDstFile(thumbURL), byteReader, byteReader.Size()) //r-4;w-2;x-1
+	thumbM.SavePath, thumbM.ViewUrl, err = storer.Put(storer.URLToFile(thumbURL), byteReader, byteReader.Size()) //r-4;w-2;x-1
 	if err != nil {
 		return err
 	}
