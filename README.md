@@ -33,7 +33,7 @@ import (
 
 * [最新版下载地址](http://dl.eget.io/nging/latest/)
 
-* [最新版备用地址](http://dl.eget.io/nging/latest/)
+* [最新版备用地址](http://dl2.eget.io/nging/latest/)
 
 ## 安装
 
