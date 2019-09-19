@@ -29,9 +29,11 @@ import (
 )
 ```
 
-## 下载
+## 可执行文件下载
 
-[下载2.0.0可执行文件](http://dl.eget.io/nging/)
+* [最新版下载地址](http://dl.eget.io/nging/latest/)
+
+* [最新版备用地址](http://dl.eget.io/nging/latest/)
 
 ## 安装
 
