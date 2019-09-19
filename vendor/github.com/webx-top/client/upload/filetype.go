@@ -51,10 +51,13 @@ const (
 	TypeAudio     FileType = `audio`
 	TypeVideo     FileType = `video`
 	TypeArchive   FileType = `archive`
-	TypeOffice    FileType = `office`
+	TypeDOC       FileType = `doc`
+	TypeXLS       FileType = `xls`
+	TypePPT       FileType = `ppt`
 	TypeBT        FileType = `bt`
 	TypePhotoshop FileType = `photoshop`
 	TypePDF       FileType = `pdf`
+	TypeFile      FileType = `file`
 )
 
 var (
@@ -89,11 +92,15 @@ var (
 		TypeAudio:   []string{`mp3`, `mid`},
 		TypeVideo:   []string{`mp4`, `mp5`, `flv`, `mpg`, `mkv`, `rmvb`, `avi`, `rm`, `asf`, `divx`, `mpeg`, `mpe`, `wmv`, `mkv`, `vob`, `3gp`, `mov`},
 		TypeArchive: []string{`zip`, `7z`, `rar`, `tar`, `gz`, `bz`, `gzip`},
-		TypeOffice: []string{
-			`xls`, `xlsx`, `csv`, //xls
-			`doc`, `docx`, //doc
-			`ppt`, `pptx`, //ppt
-			`et`, `wps`, `rtf`, `dps`,
+		TypeXLS: []string{
+			`et`, `xls`, `xlsx`, `csv`, //xls
+		},
+		TypeDOC: []string{
+			`wps`, `doc`, `docx`, //doc
+			`rtf`,
+		},
+		TypePPT: []string{
+			`dps`, `ppt`, `pptx`, //ppt
 		},
 		TypeBT:        []string{`torrent`},
 		TypePhotoshop: []string{`psd`},
