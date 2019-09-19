@@ -19,6 +19,7 @@
 package upload
 
 import (
+	"errors"
 	"io"
 	"mime/multipart"
 	"net/url"
@@ -29,10 +30,14 @@ import (
 	"github.com/webx-top/echo"
 )
 
+var (
+	ErrExistsFile = errors.New("exists file")
+)
+
 func BatchUpload(
 	ctx echo.Context,
 	fieldName string,
-	dstNamer func(*multipart.FileHeader) (dst string, err error),
+	dstNamer func(*uploadClient.Result) (dst string, err error),
 	storer Storer,
 	callback func(*uploadClient.Result, multipart.File) error,
 ) (results uploadClient.Results, err error) {
@@ -62,27 +67,37 @@ func BatchUpload(
 			}
 			return
 		}
-
-		dstFile, err = dstNamer(fileHdr)
+		result := &uploadClient.Result{
+			FileName: fileHdr.Filename,
+			FileSize: fileHdr.Size,
+		}
+		result.Md5, err = checksum.MD5sumReader(file)
 		if err != nil {
 			file.Close()
+			return
+		}
+
+		dstFile, err = dstNamer(result)
+		if err != nil {
+			file.Close()
+			if err == ErrExistsFile {
+				results.Add(result)
+				err = nil
+				continue
+			}
 			return
 		}
 		if len(dstFile) == 0 {
 			file.Close()
 			continue
 		}
-		result := &uploadClient.Result{
-			FileName: fileHdr.Filename,
-			FileSize: fileHdr.Size,
-		}
-		result.SavePath, result.FileURL, err = storer.Put(dstFile, file, fileHdr.Size)
-		if err != nil {
+		if len(result.SavePath) > 0 {
 			file.Close()
-			return
+			results.Add(result)
+			continue
 		}
 		file.Seek(0, 0)
-		result.Md5, err = checksum.MD5sumReader(file)
+		result.SavePath, result.FileURL, err = storer.Put(dstFile, file, fileHdr.Size)
 		if err != nil {
 			file.Close()
 			return

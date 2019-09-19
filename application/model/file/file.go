@@ -161,6 +161,23 @@ func (f *File) GetByViewURL(storerName string, viewURL string) (err error) {
 	return
 }
 
+func (f *File) FnGetByMd5() func(r *uploadClient.Result) error {
+	fileD := &dbschema.File{}
+	return func(r *uploadClient.Result) error {
+		fileD.Reset()
+		err := fileD.Get(nil, db.Cond{`md5`: r.Md5})
+		if err != nil {
+			if err == db.ErrNoMoreRows {
+				return nil
+			}
+			return err
+		}
+		r.SavePath = fileD.SavePath
+		r.FileURL = fileD.ViewUrl
+		return upload.ErrExistsFile
+	}
+}
+
 func (f *File) DeleteBySavePath(savePath string) (err error) {
 	err = f.Get(nil, db.Cond{`save_path`: savePath})
 	if err != nil {

@@ -54,7 +54,9 @@ func ResponseDataForUpload(ctx echo.Context, field string, err error, imageURLs 
 	return upload.ResponserGet(field)(ctx, field, err, imageURLs)
 }
 
-var StorerEngine = filesystem.Name
+var (
+	StorerEngine = filesystem.Name
+)
 
 func File(ctx echo.Context) error {
 	typ := ctx.Param(`type`)
@@ -137,6 +139,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	if err != nil {
 		return err
 	}
+	checker := fileM.FnGetByMd5()
 
 	clientName := ctx.Form(`client`)
 	if len(clientName) > 0 {
@@ -145,8 +148,11 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 			return SaveFilename(subdir, name, filename)
 		})
 
-		client := uploadClient.Upload(ctx, clientName, result, storer)
+		client := uploadClient.Upload(ctx, clientName, result, storer, checker)
 		if client.GetError() != nil {
+			if client.GetError() == upload.ErrExistsFile {
+				client.SetError(nil)
+			}
 			return client.Response()
 		}
 
@@ -167,18 +173,24 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	results, err = upload.BatchUpload(
 		ctx,
 		`files[]`,
-		func(hd *multipart.FileHeader) (string, error) {
-			return SaveFilename(subdir, name, hd.Filename)
+		func(r *uploadClient.Result) (string, error) {
+			if err := checker(r); err != nil {
+				return ``, err
+			}
+			return SaveFilename(subdir, name, r.FileName)
 		},
 		storer,
 		func(result *uploadClient.Result, file multipart.File) error {
 			fileM.Id = 0
 			fileM.SetByUploadResult(result)
-			reader, err := storer.Get(result.SavePath)
-			if err != nil {
-				return err
-			}
-			err = fileM.Add(reader)
+			/*
+				reader, err := storer.Get(result.SavePath)
+				if err != nil {
+					return err
+				}
+				err = fileM.Add(reader)
+			*/
+			err = fileM.Add(file)
 			return err
 		},
 	)
