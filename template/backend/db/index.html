@@ -20,7 +20,7 @@
               <span class="fa fa-chevron-down"></span>
             </button>
             <a class="label label-primary collapse-button"><i class="fa fa-angle-double-left"></i></a>
-            <h2 class="page-title" title="{{Stored.Get "dbHost"}}">{{Stored.Get "dbHost"}}</h2>
+            <h2 class="page-title" data-toggle="tooltip" data-placement="bottom" title="{{Stored.Get "dbHost"}}">{{Stored.Get "dbHost"}}</h2>
             <p class="description">
             <span class="label label-default" title="{{Stored.Get "driver"}} {{Stored.Get "dbVersion"}}">
                {{Stored.Get "driver"}} {{Stored.Get "dbVersion"}}
@@ -41,8 +41,17 @@
             {{end}}
           </div> 
         <div class="app-nav collapse sm-line-height no-margin-top">
-          <p class="title">{{"数据表"|T}}</p>
           {{if $dbName}}
+          <div class="compose no-padding">
+            <div class="btn-group">
+            <a href="{{dbMgrURL "runCommand" $dbName}}" class="btn btn-flat btn-xs btn-info" data-pjax="#pcont" data-keepjs="true">{{"SQL命令"|T}}</a>
+            <a href="{{dbMgrURL "createTable" $dbName}}" class="btn btn-flat btn-xs btn-primary" data-pjax="#pcont" data-keepjs="true">{{"创建表"|T}}</a>
+            <a href="{{dbMgrURL "modifyDb" $dbName}}" class="btn btn-flat btn-xs btn-success" data-pjax="#pcont" data-keepjs="true">{{"修改库"|T}}</a>
+            <a href="{{dbMgrURL "import" $dbName}}" class="btn btn-flat btn-xs btn-warning" data-pjax="#pcont" data-keepjs="true">{{"导入"|T}}</a>
+            <a href="{{dbMgrURL "export" $dbName}}" class="btn btn-flat btn-xs btn-danger" data-pjax="#pcont" data-keepjs="true">{{"导出"|T}}</a>
+            </div>
+          </div>
+          <p class="title">{{"数据表"|T}}</p>
           <ul class="nav nav-pills nav-stacked" id="dbmanager-table-list">
               {{$tableList := Stored.Get "tableList"}}
               {{if $tableList}}

@@ -142,7 +142,7 @@ function onselectColumns(obj){
 				<i class="fa fa-list"></i>
 				{{"查看结构"|T}}
 			</a>
-			<a href="{{dbMgrURL "modifyTable" Stored.dbName Stored.table}}" class="btn btn-default" data-pjax="#pcont" data-keepjs="true">
+			<a href="{{dbMgrURL "modifyTable" Stored.dbName Stored.table}}" class="btn btn-primary" data-pjax="#pcont" data-keepjs="true">
 				<i class="fa fa-pencil"></i>
 				{{"修改表"|T}}
 			</a>
@@ -155,18 +155,18 @@ function onselectColumns(obj){
           </div>
           <div class="content">
             <div class="table-responsive overflow">
-             <form method="POST" action="">
+             <form method="POST" action="" id="form-list-data">
 				<table class="table no-border hover blue">
-					<thead class="no-border auto-fixed">
+					<thead class="no-border auto-fixed" sort-current="{{Form `sort`}}">
                         <tr>
-                            <th style="width:50px">
+                            <th style="width:30px">
                                 <div class="checkbox checkbox-primary no-margin-y"><input type="checkbox" name="checkedAll" value="1" id="checkedAll"><label for="checkedAll"></label></div>
                             </th>
                             <th style="width:50px">
                                 <a href="{{dbMgrURL "listData" Stored.dbName Stored.table}}&modify=1" title="{{"编辑"|T}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil"></i></a>
                             </th>
                             {{range $k, $colName := Stored.columns}}
-							<th><strong>{{$colName}}</strong></th>
+							<th sort="-{{$colName}}"><strong>{{$colName}}</strong></th>
                             {{end}}
 						</tr>
 					</thead>
@@ -188,10 +188,22 @@ function onselectColumns(obj){
 					</tbody>
 				</table>
                 <fieldset class="sm-margin-top">
-                     <legend class="sm-padding-bottom sm-margin-bottom xs-padding-left">{{"已选中"|T}} (<span id="selected-items-count">0</span>) {{T "共有%d项" Stored.total}}</legend>
-                     <!--<button type="submit" class="btn btn-default" name="save" value="edit">{{"编辑"|T}}</button>
-                     <button type="submit" class="btn btn-default" name="save" value="copy">{{"复制"|T}}</button>-->
-                     <button type="submit" class="btn btn-danger" name="save" value="delete">{{"删除"|T}}</button>
+                    <legend class="sm-padding-bottom sm-margin-bottom xs-padding-left">{{"已选中"|T}} (<span id="selected-items-count">0</span>) {{T "共有%d项" Stored.total}}</legend>
+                    <div class="btn-group">
+                    {{$editURL := dbMgrURL `createData` Stored.dbName Stored.table}}
+                    <button type="submit" class="btn btn-primary" name="save" value="edit" onclick="$('#form-list-data').attr('action','{{$editURL}}');return true;">
+                        <i class="fa fa-pencil"></i>
+                        {{"编辑"|T}}
+                    </button>
+                    <button type="submit" class="btn btn-success" name="save" value="copy" onclick="$('#form-list-data').attr('action','{{$editURL}}');return true;">
+                        <i class="fa fa-copy"></i>
+                        {{"复制"|T}}
+                    </button>
+                    <button type="submit" class="btn btn-danger" name="save" value="delete">
+                        <i class="fa fa-times"></i>
+                        {{"删除"|T}}
+                    </button>
+                    </div>
                 </fieldset>
              </form>
             </div><!-- .table-responsive -->
@@ -262,6 +274,7 @@ function perttyCheckbox(){
     });
 }
 $(function(){
+    App.tableSorting();
     perttyCheckbox();
     App.attachCheckedAll('#checkedAll','input[type=checkbox][name=\'check[]\']','#selected-items-count');
     $('#move-table-modal .modal-body').html($('#tpl-move-table-form').html());

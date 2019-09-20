@@ -441,7 +441,7 @@ func (m *mySQL) CreateTable() error {
 					Valid:  f.Value(ii, `has_default`) == `1`,
 				}
 				field.AutoIncrement = sql.NullString{
-					Valid: len(aiIndexStr)>0 && aiIndexInt == i,
+					Valid: len(aiIndexStr) > 0 && aiIndexInt == i,
 				}
 				if field.AutoIncrement.Valid {
 					field.AutoIncrement.String = autoIncrementStartValue
@@ -617,7 +617,7 @@ func (m *mySQL) ModifyTable() error {
 						Valid:  f.Value(ii, `has_default`) == `1`,
 					}
 					field.AutoIncrement = sql.NullString{
-						Valid: len(aiIndexStr)>0 && aiIndexInt == i,
+						Valid: len(aiIndexStr) > 0 && aiIndexInt == i,
 					}
 					if field.AutoIncrement.Valid {
 						field.AutoIncrement.String = autoIncrementStartValue
@@ -985,6 +985,15 @@ func (m *mySQL) ListData() error {
 	}
 
 	descs := m.FormValues(`desc[]`)
+	if sort := m.Form(`sort`); len(sort) > 0 {
+		if sort[0] == '-' {
+			orderFields = []string{sort[1:]}
+			descs = []string{`1`}
+		} else {
+			orderFields = []string{sort}
+			descs = []string{`0`}
+		}
+	}
 	descNum := len(descs)
 	var (
 		wheres  []string
@@ -1066,42 +1075,15 @@ func (m *mySQL) ListData() error {
 		}
 	}
 	if m.IsPost() {
-		conds := m.FormValues(`check[]`)
-		datas := []string{}
-		for _, cond := range conds {
-			cond = strings.TrimLeft(cond, `&`)
-			cond, err = url.QueryUnescape(cond)
-			if err != nil {
-				return err
-			}
-			values, err := url.ParseQuery(cond)
-			if err != nil {
-				return err
-			}
-			mpx := echo.NewMapx(values)
-			where := mpx.Get(`where`)
-			null := mpx.Get(`null`)
-			if where == nil && null == nil {
-				continue
-			}
-			cond = m.whereByMapx(where, null, fields)
-			if len(cond) < 1 {
-				continue
-			}
-			datas = append(datas, cond)
+		condition, err := m.genCheckedCond(fields, wheres, true)
+		if err != nil {
+			return err
 		}
-		var condition string
-		if len(datas) > 0 {
-			condition = `(` + strings.Join(datas, `) OR (`) + `)`
-			if len(wheres) > 0 {
-				condition = `(` + strings.Join(wheres, ` AND `) + `) AND (` + condition + `)`
-			}
+		if len(condition) > 0 {
 			condition = ` WHERE ` + condition
 			switch m.Form(`save`) {
 			case `delete`:
 				err = m.delete(table, condition, 0)
-			case `copy`:
-			case `edit`:
 			}
 			if err == nil {
 				return m.returnTo()
@@ -1255,30 +1237,74 @@ func (m *mySQL) ListData() error {
 	m.Set(`pagination`, pagination.New(m.Context).SetURL(`/db?`+q.Encode()+`&page={page}&rows={rows}`).SetPage(page).SetRows(totalRows))
 	return m.Render(`db/mysql/list_data`, m.checkErr(err))
 }
+func (m *mySQL) genCheckedCond(fields map[string]*Field, wheres []string, multiSelection bool) (condition string, err error) {
+	var conds []string
+	if multiSelection {
+		conds = m.FormValues(`check[]`)
+	} else {
+		conds = []string{m.Form(`check[]`)}
+	}
+	datas := []string{}
+	for _, cond := range conds {
+		cond = strings.TrimLeft(cond, `&`)
+		cond, err = url.QueryUnescape(cond)
+		if err != nil {
+			return
+		}
+		values, err := url.ParseQuery(cond)
+		if err != nil {
+			return ``, err
+		}
+		mpx := echo.NewMapx(values)
+		where := mpx.Get(`where`)
+		null := mpx.Get(`null`)
+		if where == nil && null == nil {
+			continue
+		}
+		cond = m.whereByMapx(where, null, fields)
+		if len(cond) < 1 {
+			continue
+		}
+		datas = append(datas, cond)
+	}
+	if len(datas) > 0 {
+		condition = `(` + strings.Join(datas, `) OR (`) + `)`
+		if len(wheres) > 0 {
+			condition = `(` + strings.Join(wheres, ` AND `) + `) AND (` + condition + `)`
+		}
+	}
+	return
+}
 func (m *mySQL) CreateData() error {
 	var err error
 	table := m.Form(`table`)
-	mapx := echo.NewMapx(m.Forms())
-	where := mapx.Get(`where`)
-	null := mapx.Get(`null`)
 	fields, sortFields, err := m.tableFields(table)
 	if err != nil {
 		return err
 	}
-	var cond string
-	if where != nil || null != nil {
-		cond = m.whereByMapx(where, null, fields)
+
+	condition, err := m.genCheckedCond(fields, nil, false)
+	if err != nil {
+		return err
+	}
+	var where *echo.Mapx
+	if len(condition) == 0 {
+		mapx := echo.NewMapx(m.Forms())
+		where = mapx.Get(`where`)
+		null := mapx.Get(`null`)
+		if where != nil || null != nil {
+			condition = m.whereByMapx(where, null, fields)
+		}
 	}
 	var columns []string
 	values := map[string]*sql.NullString{}
 	sqlStr := `SELECT * FROM ` + quoteCol(table)
 	var whereStr string
-	var edit bool
-	if len(cond) > 0 {
-		whereStr = ` WHERE ` + cond
-		edit = true
+	if len(condition) > 0 {
+		whereStr = ` WHERE ` + condition
 	}
-	if m.IsPost() {
+	saveType := m.Form(`save`)
+	if m.IsPost() && (saveType == `save` || saveType == `saveAndContinue` || saveType == `delete`) {
 		indexes, _, err := m.tableIndexes(table)
 		if err != nil {
 			return err
@@ -1296,7 +1322,6 @@ func (m *mySQL) CreateData() error {
 		if len(uniqueArr) > 0 {
 			limit = 1
 		}
-		saveType := m.Form(`save`)
 		if saveType == `delete` {
 			err = m.delete(table, whereStr, limit)
 		} else {
@@ -1312,17 +1337,17 @@ func (m *mySQL) CreateData() error {
 				}
 				set[col] = v
 			}
-			if edit {
+			if len(whereStr) > 0 {
 				err = m.update(table, set, whereStr, limit)
 			} else {
 				err = m.insert(table, set)
 			}
 		}
-		if err == nil && (saveType == `1` || saveType == `delete`) {
+		if err == nil && (saveType == `save` || saveType == `delete`) {
 			return m.returnTo(m.GenURL(`listData`, m.dbName, table))
 		}
 	}
-	if edit {
+	if len(whereStr) > 0 {
 		rows, err := m.newParam().SetCollection(sqlStr + whereStr).Query()
 		if err != nil {
 			return err
@@ -1352,7 +1377,7 @@ func (m *mySQL) CreateData() error {
 	m.Set(`columns`, columns)
 	m.Set(`values`, values)
 	m.Set(`fields`, fields)
-	m.Set(`edit`, edit)
+	m.Set(`saveType`, saveType)
 	m.SetFunc(`isNumber`, func(typ string) bool {
 		return reFieldTypeNumber.MatchString(typ)
 	})

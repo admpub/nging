@@ -73,12 +73,15 @@
 				</table>
 			    </div>
                 <fieldset>
-                     <button type="submit" name="save" value="1" class="btn btn-primary">
+                     <button type="submit" name="save" value="save" class="btn btn-primary">
                          <i class="fa fa-save"></i>
                          {{"保存"|T}}
                     </button>
-                    {{if Stored.edit}}
-                     <button type="submit" name="save" value="2" class="btn btn-info">
+                    <input type="hidden" name="clone" value="{{if eq (Form `save`) `copy`}}1{{end}}">
+                    <input type="hidden" name="all" value="">
+                    <input type="hidden" name="check[]" value="{{Form `check[]`}}">
+                    {{if eq Stored.saveType `edit`}}
+                     <button type="submit" name="save" value="saveAndContinue" class="btn btn-info">
                          <i class="fa fa-save"></i>
                          {{"保存并继续编辑"|T}}
                     </button>
@@ -87,7 +90,7 @@
                          {{"删除"|T}}
                     </button>
                     {{else}}
-                     <button type="submit" name="save" value="2" class="btn btn-info">
+                     <button type="submit" name="save" value="saveAndContinue" class="btn btn-info">
                          <i class="fa fa-save"></i>
                          {{"保存并插入下一个"|T}}
                     </button>

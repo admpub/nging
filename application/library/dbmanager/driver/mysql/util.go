@@ -414,13 +414,15 @@ func (m *mySQL) where(wheres map[string]*echo.Mapx, nulls map[string]*echo.Mapx,
 		if (m.DbAuth.Driver == `mssql`) || (m.supportSQL && reOnlyFloatOrEmpty.MatchString(val)) {
 			r = append(r, column+" LIKE "+quoteVal(val, '%', '_'))
 		} else {
-			r = append(r, column+" = "+unconvertField(field, quoteVal(val)))
+			r = append(r, column+"="+unconvertField(field, quoteVal(val)))
 		}
-		if m.supportSQL &&
-			(strings.Contains(field.Type, `char`) || strings.Contains(field.Type, `text`)) &&
-			reNotSpaceOrDashOrAt.MatchString(val) {
-			r = append(r, column+" = "+quoteVal(val)+" COLLATE "+getCharset(m.getVersion())+"_bin")
-		}
+		/*
+			if m.supportSQL &&
+				(strings.Contains(field.Type, `char`) || strings.Contains(field.Type, `text`)) &&
+				reNotSpaceOrDashOrAt.MatchString(val) {
+				r = append(r, column+"="+quoteVal(val)+" COLLATE "+getCharset(m.getVersion())+"_bin")
+			}
+		*/
 	}
 	for key, mapx := range nulls {
 		if mapx == nil {

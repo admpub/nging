@@ -5832,3 +5832,4 @@ ul.timeline li > .fa.comment-avatar{height:50px;width:50px;padding:0;border-widt
 .date-picker-wrapper table .caption .next, .date-picker-wrapper table .caption .prev{
   line-height:30px;
 }
+th[sort] .fa{position:absolute;line-height:18px}
