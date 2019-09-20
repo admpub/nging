@@ -8,13 +8,39 @@ import (
 	"github.com/webx-top/db"
 )
 
+func addAuth(mgr dbmanager.Manager, auth *driver.DbAuth, key ...string) {
+	ctx := mgr.Context()
+	accounts, ok := ctx.Session().Get(`dbAccounts`).(driver.AuthAccounts)
+	if !ok {
+		accounts = driver.AuthAccounts{}
+	}
+	accounts.Add(auth, key...)
+	ctx.Session().Set(`dbAccounts`, accounts)
+}
+
+func deleteAuth(mgr dbmanager.Manager, auth *driver.DbAuth) {
+	ctx := mgr.Context()
+	accounts, ok := ctx.Session().Get(`dbAccounts`).(driver.AuthAccounts)
+	if !ok {
+		accounts = driver.AuthAccounts{}
+	}
+	var key string
+	if auth.AccountID > 0 {
+		key = driver.GenKey(``, ``, ``, ``, auth.AccountID)
+	} else {
+		key = auth.GenKey()
+	}
+	accounts.Delete(key)
+	ctx.Session().Set(`dbAccounts`, accounts)
+}
+
 func login(mgr dbmanager.Manager, accountID uint, m *model.DbAccount, user *dbschema.User) (err error) {
 	ctx := mgr.Context()
 	if !ctx.IsPost() {
 		return nil
 	}
 	auth := mgr.Account()
-	data := &driver.DbAuth{}
+	data := &driver.DbAuth{AccountID: accountID}
 	ctx.Bind(data)
 	if len(data.Username) == 0 {
 		data.Username = `root`
@@ -41,6 +67,6 @@ func login(mgr dbmanager.Manager, accountID uint, m *model.DbAccount, user *dbsc
 			err = m.Edit(accountID, nil, db.Cond{`id`: accountID})
 		}
 	}
-	ctx.Session().Set(`dbAuth`, auth)
+	addAuth(mgr, auth)
 	return nil
 }

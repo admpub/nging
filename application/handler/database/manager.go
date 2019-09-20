@@ -19,6 +19,9 @@
 package database
 
 import (
+	"fmt"
+	"net/url"
+
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/dbmanager"
@@ -89,7 +92,10 @@ func Manager(ctx echo.Context) error {
 				case 1:
 					p += `&db=` + args[0]
 				}
-				return `/db?driver=` + driverName + `&username=` + auth.Username + `&operation=` + op + p
+				if accountID > 0 {
+					return `/db?accountId=` + fmt.Sprint(accountID) + `&operation=` + op + p
+				}
+				return `/db?driver=` + driverName + `&host=` + url.QueryEscape(auth.Host) + `&username=` + url.QueryEscape(auth.Username) + `&operation=` + op + p
 			}
 			defer mgr.Run(auth.Driver, `logout`)
 		} else {
@@ -115,7 +121,7 @@ func Manager(ctx echo.Context) error {
 				return ctx.Redirect(handler.URLFor(`/db`))
 			case `logout`:
 				mgr.Run(auth.Driver, `logout`)
-				ctx.Session().Delete(`dbAuth`)
+				deleteAuth(mgr, auth)
 			default:
 				return err
 			}

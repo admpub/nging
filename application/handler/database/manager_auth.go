@@ -17,6 +17,7 @@ func authentication(mgr dbmanager.Manager, accountID uint, m *model.DbAccount) (
 		auth.Password = m.Password
 		auth.Host = m.Host
 		auth.Db = m.Name
+		auth.AccountID = m.Id
 		if len(m.Options) > 0 {
 			options := echo.H{}
 			com.JSONDecode(com.Str2bytes(m.Options), &options)
@@ -25,12 +26,18 @@ func authentication(mgr dbmanager.Manager, accountID uint, m *model.DbAccount) (
 		if len(auth.Charset) == 0 {
 			auth.Charset = `utf8mb4`
 		}
-		ctx.Session().Set(`dbAuth`, auth)
+		key := driver.GenKey(``, ``, ``, ``, auth.AccountID)
+		addAuth(mgr, auth, key)
 		err = mgr.Run(auth.Driver, `login`)
 		succeed = err == nil
 		return
 	}
-	if data, exists := ctx.Session().Get(`dbAuth`).(*driver.DbAuth); exists {
+	if accounts, exists := ctx.Session().Get(`dbAccounts`).(driver.AuthAccounts); exists {
+		key := driver.GenKey(auth.Driver, auth.Username, auth.Host, auth.Db, accountID)
+		data := accounts.Get(key)
+		if data == nil {
+			return
+		}
 		auth.CopyFrom(data)
 		err = mgr.Run(auth.Driver, `login`)
 		succeed = err == nil

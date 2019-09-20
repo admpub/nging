@@ -15,17 +15,39 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 package driver
 
-import "encoding/gob"
+import (
+	"encoding/gob"
+	"fmt"
+	"net/url"
+)
 
 type DbAuth struct {
-	Driver   string
-	Username string
-	Password string
-	Host     string
-	Db       string
-	Charset  string
+	Driver    string
+	Username  string
+	Password  string
+	Host      string
+	Db        string
+	Charset   string
+	AccountID uint
+}
+
+func (d *DbAuth) GenKey() string {
+	return GenKey(d.Driver, d.Username, d.Host, d.Db, d.AccountID)
+}
+
+func GenKey(driver string, username string, host string, database string, accountID uint) string {
+	key := fmt.Sprintf(
+		"%s://%s:@%s/%s?%d",
+		driver,
+		url.QueryEscape(username),
+		host,
+		host,
+		accountID,
+	)
+	return key
 }
 
 func (d *DbAuth) CopyFrom(auth *DbAuth) *DbAuth {
@@ -35,9 +57,37 @@ func (d *DbAuth) CopyFrom(auth *DbAuth) *DbAuth {
 	d.Host = auth.Host
 	d.Db = auth.Db
 	d.Charset = auth.Charset
+	d.AccountID = auth.AccountID
 	return d
+}
+
+type AuthAccounts map[string]*DbAuth
+
+func (a *AuthAccounts) Add(account *DbAuth, keys ...string) *AuthAccounts {
+	var key string
+	if len(keys) > 0 {
+		key = keys[0]
+	} else {
+		key = account.GenKey()
+	}
+	(*a)[key] = account
+	return a
+}
+
+func (a AuthAccounts) Get(key string) *DbAuth {
+	if v, y := a[key]; y {
+		return v
+	}
+	return nil
+}
+
+func (a *AuthAccounts) Delete(key string) {
+	if _, y := (*a)[key]; y {
+		delete(*a, key)
+	}
 }
 
 func init() {
 	gob.Register(&DbAuth{})
+	gob.Register(AuthAccounts{})
 }
