@@ -61,7 +61,8 @@ func init() {
 		if newStore == nil {
 			return ctx.E(`存储引擎“%s”未被登记`, data.StorerName)
 		}
-		storer := newStore(``)
+		storer := newStore(ctx, ``)
+		defer storer.Close()
 		var errs common.Errors
 		for _, file := range files {
 			if err := storer.Delete(file); err != nil {
