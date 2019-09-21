@@ -26,6 +26,9 @@ func (s Store) Has(key string) bool {
 func (s Store) Get(key string, defaults ...interface{}) interface{} {
 	if v, y := s[key]; y {
 		if v == nil && len(defaults) > 0 {
+			if fallback, ok := defaults[0].(func() interface{}); ok {
+				return fallback()
+			}
 			return defaults[0]
 		}
 		return v

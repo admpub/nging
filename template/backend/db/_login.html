@@ -1,3 +1,4 @@
+{{Strip}}
 <div class="row">
     <div class="col-md-12">
         <div class="block-flat">
@@ -5,8 +6,30 @@
             <h3>{{"连接数据库"|T}} <span style="font-size:15px">{{"或"|T}} <a href="__BACKEND__/db/account">{{"从已保存的数据库账号中选择"|T}}</a></span></h3>
           </div>
           <div class="content">
-              <form class="form-horizontal group-border-dashed" method="POST" action="">
-                  
+            <div class="row">{{$hasLoginedAccount := gt (len Stored.accounts) 0}}
+            {{if $hasLoginedAccount}}
+            <div class="col-md-4">
+                <ul class="nav nav-pills nav-stacked margin-bottom">
+                  {{range $k, $account := Stored.accounts}}
+                  <li>
+                    <a href="{{dbMgrURLByAccount $account}}">
+                    <span class="label label-{{colorByDriver $account.Driver}} label-sm">{{$account.Driver}}</span>
+                    {{if $account.Username -}}
+                    {{- $account.Username -}}@
+                    {{- end -}}
+                    {{- $account.Host -}}
+                    </a>
+                  </li>
+                  {{end}}
+                </ul>
+                <a class="btn btn-danger sm-margin-top" href="__BACKEND__/db?operation=logoutAll">
+                  <i class="fa fa-sign-out"></i>
+                  {{"全部退出"|T}}
+                </a>
+            </div>
+            {{end}}
+            <div class="col-md-{{if $hasLoginedAccount}}8{{else}}12{{end}}">
+              <form class="form-horizontal group-border-dashed" method="POST" action="__BACKEND__/db">    
               <div class="form-group">
                 <label class="col-sm-3 control-label">{{"系统"|T}}</label>
                 <div class="col-sm-6">
@@ -72,7 +95,9 @@
 				        </div>
 			        </div>
             </form>
+          </div></div>
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
     </div>
 </div>
+{{/Strip}}

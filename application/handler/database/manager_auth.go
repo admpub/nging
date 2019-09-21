@@ -26,13 +26,12 @@ func authentication(mgr dbmanager.Manager, accountID uint, m *model.DbAccount) (
 		if len(auth.Charset) == 0 {
 			auth.Charset = `utf8mb4`
 		}
-		key := driver.GenKey(``, ``, ``, ``, auth.AccountID)
-		addAuth(mgr, auth, key)
 		err = mgr.Run(auth.Driver, `login`)
 		succeed = err == nil
 		return
 	}
 	if accounts, exists := ctx.Session().Get(`dbAccounts`).(driver.AuthAccounts); exists {
+		ctx.Internal().Set(`dbAccounts`,&accounts)
 		key := driver.GenKey(auth.Driver, auth.Username, auth.Host, auth.Db, accountID)
 		data := accounts.Get(key)
 		if data == nil {

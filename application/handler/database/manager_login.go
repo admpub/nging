@@ -6,35 +6,43 @@ import (
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
 )
 
-func addAuth(mgr dbmanager.Manager, auth *driver.DbAuth, key ...string) {
-	ctx := mgr.Context()
-	accounts, ok := ctx.Session().Get(`dbAccounts`).(driver.AuthAccounts)
-	if !ok {
-		accounts = driver.AuthAccounts{}
-	}
-	accounts.Add(auth, key...)
+func addAuth(ctx echo.Context, auth *driver.DbAuth) {
+	accounts := getAccounts(ctx)
+	accounts.Add(auth)
 	ctx.Session().Set(`dbAccounts`, accounts)
 }
 
-func deleteAuth(mgr dbmanager.Manager, auth *driver.DbAuth) {
-	ctx := mgr.Context()
+func getAccounts(ctx echo.Context) driver.AuthAccounts {
+	if accounts, ok := ctx.Internal().Get(`dbAccounts`).(*driver.AuthAccounts); ok {
+		return *accounts
+	}
 	accounts, ok := ctx.Session().Get(`dbAccounts`).(driver.AuthAccounts)
 	if !ok {
 		accounts = driver.AuthAccounts{}
-	}
-	var key string
-	if auth.AccountID > 0 {
-		key = driver.GenKey(``, ``, ``, ``, auth.AccountID)
 	} else {
-		key = auth.GenKey()
+		ctx.Internal().Set(`dbAccounts`,&accounts)
 	}
-	accounts.Delete(key)
+	return accounts
+}
+
+func deleteAuth(ctx echo.Context, auth *driver.DbAuth) {
+	accounts := getAccounts(ctx)
+	accounts.Delete(auth)
 	ctx.Session().Set(`dbAccounts`, accounts)
 }
 
-func login(mgr dbmanager.Manager, accountID uint, m *model.DbAccount, user *dbschema.User) (err error) {
+func clearAuth(ctx echo.Context) {
+	accounts := getAccounts(ctx)
+	for key := range accounts {
+		accounts.DeleteByKey(key)
+	} 
+	ctx.Session().Delete(`dbAccounts`)
+}
+
+func getLoginInfo(mgr dbmanager.Manager, accountID uint, m *model.DbAccount, user *dbschema.User) (err error) {
 	ctx := mgr.Context()
 	if !ctx.IsPost() {
 		return nil
@@ -67,6 +75,5 @@ func login(mgr dbmanager.Manager, accountID uint, m *model.DbAccount, user *dbsc
 			err = m.Edit(accountID, nil, db.Cond{`id`: accountID})
 		}
 	}
-	addAuth(mgr, auth)
 	return nil
 }

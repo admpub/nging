@@ -5,7 +5,6 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
-	"sync"
 	"time"
 
 	"github.com/admpub/events"
@@ -92,7 +91,7 @@ type Context interface {
 	Get(string, ...interface{}) interface{}
 	Delete(...string)
 	Stored() Store
-	Internal() *sync.Map
+	Internal() *param.SafeMap
 
 	//----------------
 	// Bind

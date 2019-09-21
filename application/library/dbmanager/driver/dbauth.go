@@ -35,6 +35,9 @@ type DbAuth struct {
 }
 
 func (d *DbAuth) GenKey() string {
+	if d.AccountID > 0 {
+		return GenKey(``, ``, ``, ``, d.AccountID)
+	} 
 	return GenKey(d.Driver, d.Username, d.Host, d.Db, d.AccountID)
 }
 
@@ -44,7 +47,7 @@ func GenKey(driver string, username string, host string, database string, accoun
 		driver,
 		url.QueryEscape(username),
 		host,
-		host,
+		database,
 		accountID,
 	)
 	return key
@@ -63,13 +66,8 @@ func (d *DbAuth) CopyFrom(auth *DbAuth) *DbAuth {
 
 type AuthAccounts map[string]*DbAuth
 
-func (a *AuthAccounts) Add(account *DbAuth, keys ...string) *AuthAccounts {
-	var key string
-	if len(keys) > 0 {
-		key = keys[0]
-	} else {
-		key = account.GenKey()
-	}
+func (a *AuthAccounts) Add(account *DbAuth) *AuthAccounts {
+	key := account.GenKey()
 	(*a)[key] = account
 	return a
 }
@@ -81,7 +79,12 @@ func (a AuthAccounts) Get(key string) *DbAuth {
 	return nil
 }
 
-func (a *AuthAccounts) Delete(key string) {
+func (a *AuthAccounts) Delete(account *DbAuth) {
+	key := account.GenKey()
+	a.DeleteByKey(key)
+}
+
+func (a *AuthAccounts) DeleteByKey(key string) {
 	if _, y := (*a)[key]; y {
 		delete(*a, key)
 	}

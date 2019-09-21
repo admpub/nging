@@ -409,3 +409,7 @@ func (r *Redis) Close() error {
 	}
 	return r.conn.Close()
 }
+
+func (r *Redis) Logout() error {
+	return r.Close()
+}

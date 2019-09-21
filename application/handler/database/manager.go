@@ -33,18 +33,36 @@ import (
 	"github.com/webx-top/echo"
 )
 
-var defaultGenURL = func(_ string, _ ...string) string {
-	return ``
-}
+var (
+	defaultGenURL = func(_ string, _ ...string) string {
+		return ``
+	}
+	defaultGenBaseURL = func(auth *driver.DbAuth) string{
+		baseURL := handler.URLFor(`/db`)
+		if auth.AccountID > 0 {
+			return baseURL + `?accountId=` + fmt.Sprint(auth.AccountID)
+		}
+		return baseURL + `?driver=` + auth.Driver + `&host=` + url.QueryEscape(auth.Host) + `&username=` + url.QueryEscape(auth.Username)
+	}
+	driverColors = map[string]string{
+		`mysql`: `primary`,
+		`redis`: `info`,
+	}
+)
 
 func Manager(ctx echo.Context) error {
 	user := handler.User(ctx)
 	m := model.NewDbAccount(ctx)
 	var err error
-	auth := &driver.DbAuth{}
-	mgr := dbmanager.New(ctx, auth)
 	driverName := ctx.Form(`driver`)
 	operation := ctx.Form(`operation`)
+	auth := &driver.DbAuth{
+		Driver:		driverName,
+		Username:	ctx.Form(`username`),
+		Host:		ctx.Form(`host`),
+		Db:			ctx.Form(`db`),
+	}
+	mgr := dbmanager.New(ctx, auth)
 	var accountID uint
 	if user != nil {
 		accountID = ctx.Formx(`accountId`).Uint()
@@ -57,20 +75,32 @@ func Manager(ctx echo.Context) error {
 				log.Error(err)
 			}
 			accountID = m.Id
+			driverName = m.Engine
 		}
 	}
+	var signedIn bool
 	genURL := defaultGenURL
 	switch operation {
 	case `login`:
-		if err = login(mgr, accountID, m, user); err != nil {
+		if accountID > 0 {
+			err, signedIn = authentication(mgr, accountID, m)
+			if err != nil {
+				deleteAuth(ctx, auth)
+				handler.SendFail(ctx, err.Error())
+				err = nil
+			}
+		} else if err = getLoginInfo(mgr, accountID, m, user); err != nil {
+			deleteAuth(ctx, auth)
 			return err
 		}
 
 	case `logout`:
-		//pass
+		_, signedIn = authentication(mgr, accountID, m)
+	
+	case `logoutAll`:
+		clearAuth(ctx)
 
 	default:
-		var signedIn bool
 		err, signedIn = authentication(mgr, accountID, m)
 		ctx.Set(`signedIn`, signedIn)
 		ctx.Set(`dbUsername`, auth.Username)
@@ -92,14 +122,12 @@ func Manager(ctx echo.Context) error {
 				case 1:
 					p += `&db=` + args[0]
 				}
-				if accountID > 0 {
-					return `/db?accountId=` + fmt.Sprint(accountID) + `&operation=` + op + p
-				}
-				return `/db?driver=` + driverName + `&host=` + url.QueryEscape(auth.Host) + `&username=` + url.QueryEscape(auth.Username) + `&operation=` + op + p
+				return defaultGenBaseURL(auth) + `&operation=` + op + p
 			}
 			defer mgr.Run(auth.Driver, `logout`)
 		} else {
-			if err != nil {
+			if err != nil { //登录失败
+				deleteAuth(ctx, auth)
 				handler.SendFail(ctx, err.Error())
 				err = nil
 			}
@@ -116,12 +144,12 @@ func Manager(ctx echo.Context) error {
 		}
 		if err == nil {
 			switch operation {
-			case `login`:
+			case `login`://登录成功
+				addAuth(ctx, auth)
 				mgr.Run(auth.Driver, `logout`)
-				return ctx.Redirect(handler.URLFor(`/db`))
-			case `logout`:
-				mgr.Run(auth.Driver, `logout`)
-				deleteAuth(mgr, auth)
+				return ctx.Redirect(defaultGenBaseURL(auth))
+			case `logout`://退出登录
+				deleteAuth(ctx, auth)
 			default:
 				return err
 			}
@@ -130,7 +158,6 @@ func Manager(ctx echo.Context) error {
 				return err
 			}
 		}
-
 	}
 	ret := handler.Err(ctx, err)
 	driverList := map[string]string{}
@@ -149,5 +176,13 @@ func Manager(ctx echo.Context) error {
 	ctx.Set(`driverList`, driverList)
 	ctx.Set(`dbType`, ctx.T(`数据库`))
 	ctx.Set(`charsetList`, mysql.Charsets)
+	ctx.Set(`accounts`, getAccounts(ctx))
+	ctx.SetFunc(`dbMgrURLByAccount`,defaultGenBaseURL)
+	ctx.SetFunc(`colorByDriver`,func(driver string) string {
+		if color, ok := driverColors[driver]; ok {
+			return color
+		}
+		return `default`
+	})
 	return ctx.Render(`db/index`, ret)
 }

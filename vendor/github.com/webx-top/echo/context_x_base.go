@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/admpub/events"
@@ -28,7 +27,7 @@ type xContext struct {
 	pnames              []string
 	pvalues             []string
 	store               Store
-	internal            *sync.Map
+	internal            *param.SafeMap
 	handler             Handler
 	route               *Route
 	rid                 int
@@ -57,7 +56,7 @@ func NewContext(req engine.Request, res engine.Response, e *Echo) Context {
 		response:    res,
 		echo:        e,
 		pvalues:     make([]string, *e.maxParam),
-		internal:    &sync.Map{},
+		internal:    param.NewMap(),
 		store:       make(Store),
 		handler:     NotFoundHandler,
 		funcs:       make(map[string]interface{}),
@@ -72,7 +71,7 @@ func (c *xContext) StdContext() context.Context {
 	return c.context
 }
 
-func (c *xContext) Internal() *sync.Map {
+func (c *xContext) Internal() *param.SafeMap {
 	return c.internal
 }
 
@@ -154,7 +153,7 @@ func (c *xContext) Reset(req engine.Request, res engine.Response) {
 	c.context = context.Background()
 	c.request = req
 	c.response = res
-	c.internal = &sync.Map{}
+	c.internal = param.NewMap()
 	c.store = make(Store)
 	c.path = ""
 	c.pnames = nil
