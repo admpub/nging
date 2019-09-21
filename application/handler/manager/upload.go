@@ -133,7 +133,8 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	fileM.FieldName = ``
 	fileM.Type = ctx.Form(`filetype`, `image`)
 
-	storer := newStore(typ)
+	storer := newStore(ctx, typ)
+	defer storer.Close()
 	var subdir, name string
 	subdir, name, err = upload.CheckerGet(typ)(ctx, fileM)
 	if err != nil {
@@ -237,7 +238,8 @@ func Crop(ctx echo.Context) error {
 		return ctx.E(`存储引擎“%s”未被登记`, StorerEngine)
 	}
 	typ := ctx.Param(`type`)
-	storer := newStore(typ)
+	storer := newStore(ctx, typ)
+	defer storer.Close()
 	srcURL := ctx.Form(`src`)
 	srcURL, err = com.URLDecode(srcURL)
 	if err != nil {

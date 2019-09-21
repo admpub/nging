@@ -22,6 +22,7 @@ import (
 	"io"
 	"net/url"
 	"path"
+	"context"
 
 	"github.com/admpub/nging/application/registry/upload/driver/filesystem"
 	"github.com/admpub/nging/application/registry/upload/helper"
@@ -36,17 +37,17 @@ const Name = `seaweedfs`
 var _ upload.Storer = &Seaweedfs{}
 
 func init() {
-	upload.StorerRegister(Name, func(typ string) upload.Storer {
-		return NewSeaweedfs(typ)
+	upload.StorerRegister(Name, func(ctx context.Context, typ string) upload.Storer {
+		return NewSeaweedfs(ctx, typ)
 	})
 }
 
-func NewSeaweedfs(typ string) *Seaweedfs {
+func NewSeaweedfs(ctx context.Context, typ string) *Seaweedfs {
 	a := DefaultConfig.New()
 	return &Seaweedfs{
 		config:     DefaultConfig,
 		instance:   a,
-		Filesystem: filesystem.NewFilesystem(typ),
+		Filesystem: filesystem.NewFilesystem(ctx, typ),
 	}
 }
 

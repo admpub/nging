@@ -24,6 +24,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"context"
 
 	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/helper"
@@ -35,13 +36,14 @@ const Name = `filesystem`
 var _ upload.Storer = &Filesystem{}
 
 func init() {
-	upload.StorerRegister(Name, func(typ string) upload.Storer {
-		return NewFilesystem(typ)
+	upload.StorerRegister(Name, func(ctx context.Context, typ string) upload.Storer {
+		return NewFilesystem(ctx, typ)
 	})
 }
 
-func NewFilesystem(typ string) *Filesystem {
+func NewFilesystem(ctx context.Context, typ string) *Filesystem {
 	return &Filesystem{
+		Context:	   ctx,
 		Type:          typ,
 		UploadURLPath: helper.UploadURLPath + typ,
 		UploadDir:     filepath.Join(helper.UploadDir, typ),
@@ -49,6 +51,7 @@ func NewFilesystem(typ string) *Filesystem {
 }
 
 type Filesystem struct {
+	context.Context
 	Type          string
 	UploadURLPath string
 	UploadDir     string
@@ -99,7 +102,7 @@ func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (savePath st
 }
 
 func (f *Filesystem) PublicURL(dstFile string) string {
-	return dstFile
+	return f.UploadURLPath + `/` + dstFile
 }
 
 func (f *Filesystem) URLToFile(publicURL string) string {
@@ -150,4 +153,8 @@ func (f *Filesystem) Delete(dstFile string) error {
 func (f *Filesystem) DeleteDir(dstDir string) error {
 	dir := filepath.Join(echo.Wd(), dstDir)
 	return os.RemoveAll(dir)
+}
+
+func (f *Filesystem) Close() error {
+	return nil
 }

@@ -24,6 +24,7 @@ import (
 	"mime/multipart"
 	"net/url"
 	"os"
+	"context"
 
 	"github.com/admpub/checksum"
 	uploadClient "github.com/webx-top/client/upload"
@@ -130,9 +131,10 @@ type Storer interface {
 	URLToFile(viewURL string) string
 	FixURL(content string, embedded ...bool) string
 	FixURLWithParams(content string, values url.Values, embedded ...bool) string
+	Close() error
 }
 
-type Constructor func(typ string) Storer
+type Constructor func(ctx context.Context, typ string) Storer
 
 var storers = map[string]Constructor{}
 
