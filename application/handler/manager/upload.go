@@ -56,6 +56,9 @@ func ResponseDataForUpload(ctx echo.Context, field string, err error, imageURLs 
 
 var (
 	StorerEngine = filesystem.Name
+	DefaultChecker = func(r *uploadClient.Result) error{
+		return nil
+	}
 )
 
 func File(ctx echo.Context) error {
@@ -131,6 +134,8 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	fileM.TableId = 0
 	fileM.TableName = typ
 	fileM.FieldName = ``
+	fileM.OwnerId = ownerID
+	fileM.OwnerType = ownerType
 	fileM.Type = ctx.Form(`filetype`, `image`)
 
 	storer := newStore(ctx, typ)
@@ -140,7 +145,8 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	if err != nil {
 		return err
 	}
-	checker := fileM.FnGetByMd5()
+	dbsaver := upload.DBSaverGet(typ)
+	checker := DefaultChecker //fileM.FnGetByMd5()
 
 	clientName := ctx.Form(`client`)
 	if len(clientName) > 0 {
@@ -167,7 +173,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		if err != nil {
 			return client.SetError(err).Response()
 		}
-		err = fileM.Add(reader)
+		err = dbsaver(fileM, result, reader)
 		return client.SetError(err).Response()
 	}
 	var results uploadClient.Results
@@ -184,15 +190,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		func(result *uploadClient.Result, file multipart.File) error {
 			fileM.Id = 0
 			fileM.SetByUploadResult(result)
-			/*
-				reader, err := storer.Get(result.SavePath)
-				if err != nil {
-					return err
-				}
-				err = fileM.Add(reader)
-			*/
-			err = fileM.Add(file)
-			return err
+			return dbsaver(fileM,result,file)
 		},
 	)
 	datax, embed := ResponseDataForUpload(ctx, field, err, results.FileURLs())

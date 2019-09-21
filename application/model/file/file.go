@@ -27,7 +27,7 @@ import (
 	"github.com/admpub/events"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
-	"github.com/admpub/nging/application/registry/upload"
+	"github.com/admpub/nging/application/registry/upload/table"
 	"github.com/coscms/go-imgparse/imgparse"
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/db"
@@ -46,17 +46,24 @@ type File struct {
 	base *base.Base
 }
 
-func (f *File) SetTableID(tableID uint64) upload.TableInfoStorer {
+func (f *File) NewFile(m *dbschema.File) *File {
+	return &File{
+		File: m,
+		base: f.base,
+	}
+}
+
+func (f *File) SetTableID(tableID uint64) table.TableInfoStorer {
 	f.File.TableId = tableID
 	return f
 }
 
-func (f *File) SetTableName(table string) upload.TableInfoStorer {
+func (f *File) SetTableName(table string) table.TableInfoStorer {
 	f.File.TableName = table
 	return f
 }
 
-func (f *File) SetFieldName(field string) upload.TableInfoStorer {
+func (f *File) SetFieldName(field string) table.TableInfoStorer {
 	f.File.FieldName = field
 	return f
 }
@@ -73,15 +80,21 @@ func (f *File) SetByUploadResult(result *uploadClient.Result) *File {
 	return f
 }
 
-func (f *File) Add(reader io.Reader) error {
-	if len(f.Mime) == 0 {
-		f.Mime = mime.TypeByExtension(f.Ext)
+func (f *File) FillData(reader io.Reader, forceReset bool, schemas ...*dbschema.File) error {
+	var m *dbschema.File
+	if len(schemas) > 0 {
+		m = schemas[0]
+	}else{
+		m = f.File
+	}
+	if forceReset || len(m.Mime) == 0 {
+		m.Mime = mime.TypeByExtension(m.Ext)
 		if len(f.Mime) == 0 {
 			f.Mime = echo.MIMEOctetStream
 		}
 	}
-	if f.Type == `image` {
-		typ := strings.TrimPrefix(f.Ext, `.`)
+	if m.Type == `image` {
+		typ := strings.TrimPrefix(m.Ext, `.`)
 		if typ == `jpg` {
 			typ = `jpeg`
 		}
@@ -89,9 +102,16 @@ func (f *File) Add(reader io.Reader) error {
 		if err != nil {
 			return err
 		}
-		f.Width = uint(width)
-		f.Height = uint(height)
-		f.Dpi = 0
+		m.Width = uint(width)
+		m.Height = uint(height)
+		m.Dpi = 0
+	}
+	return nil
+}
+
+func (f *File) Add(reader io.Reader) error {
+	if err := f.FillData(reader, false); err != nil {
+		return err
 	}
 	_, err := f.File.Add()
 	return err
@@ -174,7 +194,7 @@ func (f *File) FnGetByMd5() func(r *uploadClient.Result) error {
 		}
 		r.SavePath = fileD.SavePath
 		r.FileURL = fileD.ViewUrl
-		return upload.ErrExistsFile
+		return table.ErrExistsFile
 	}
 }
 

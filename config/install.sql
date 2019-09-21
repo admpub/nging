@@ -391,7 +391,6 @@ CREATE TABLE `file` (
   `category_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '分类ID',
   `used_times` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '被使用的次数',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `md5` (`md5`),
   KEY `module_uid_from_type_from_id` (`project`,`owner_type`,`owner_id`,`table_name`,`table_id`),
   KEY `category_id` (`category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文件表';
@@ -437,8 +436,7 @@ CREATE TABLE `file_thumb` (
   `md5` char(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '缩略图文件MD5值',
   PRIMARY KEY (`id`),
   UNIQUE KEY `file_id_size_flag` (`file_id`,`size`),
-  UNIQUE KEY `save_path` (`save_path`),
-  UNIQUE KEY `md5` (`md5`)
+  UNIQUE KEY `save_path` (`save_path`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='图片文件缩略图';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -897,4 +895,4 @@ CREATE TABLE `vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-09-19 20:41:15
+-- Dump completed on 2019-09-21 21:29:49

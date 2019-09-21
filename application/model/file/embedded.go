@@ -60,7 +60,7 @@ func (f *Embedded) DeleteByTableID(project string, table string, tableID uint64)
 	}
 	var ids []uint64
 	for _, row := range f.Objects() {
-		err = f.SetField(nil, `used_times`, db.Raw(`used_times-1`), db.And(
+		err = f.File.SetField(nil, `used_times`, db.Raw(`used_times-1`), db.And(
 			db.Cond{`used_times`: db.Gt(0)},
 			db.Cond{`id`: db.In(strings.Split(row.FileIds, `,`))},
 		))

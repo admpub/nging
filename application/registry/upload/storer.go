@@ -19,7 +19,6 @@
 package upload
 
 import (
-	"errors"
 	"io"
 	"mime/multipart"
 	"net/url"
@@ -29,10 +28,11 @@ import (
 	"github.com/admpub/checksum"
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/echo"
+	"github.com/admpub/nging/application/registry/upload/table"
 )
 
 var (
-	ErrExistsFile = errors.New("exists file")
+	ErrExistsFile = table.ErrExistsFile
 )
 
 func BatchUpload(
