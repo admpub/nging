@@ -54,13 +54,13 @@ var App = function () {
         aside.addClass('collapsed');
         store.set(pageKey + '.page-aside-' + index, 'collapsed');
         aside.trigger('collapsed');
-        tableReponsive(0);
+        tableReponsive();
       });
       $(this).children('.collapsed-button').on('click', function () {
         aside.removeClass('collapsed');
         store.set(pageKey + '.page-aside-' + index, '');
         aside.trigger('expanded');
-        tableReponsive(280);
+        tableReponsive();
       });
       if (store.get(pageKey + '.page-aside-' + index) == 'collapsed') {
         $(this).trigger('click');
@@ -76,19 +76,29 @@ var App = function () {
       aside.find('.header > .collapse-button').trigger('click');
       return;
     }
-    tableReponsive(asideWidth);
+    tableReponsive();
   }
 
-  function tableReponsive(asideWidth) {
-    var sidebarWidth = $('#cl-wrapper > .cl-sidebar').width();
-    var windowWidth = $(window).width();
-    var bodyWidth = windowWidth - sidebarWidth - asideWidth;
-    bodyWidth -= 80;
-    $('#cl-wrapper > .cl-body .table-responsive').each(function () {
-      if ($(this).children('table').width() > bodyWidth) {
+  function firstChildrenTable(jqObj){
+    var table=jqObj.children();
+    switch(table[0].tagName.toUpperCase()){
+      case 'TABLE':return table;
+      default:return firstChildrenTable(table)
+    }
+  }
+
+  function tableReponsive(elem) {
+    if(elem==null) elem='#cl-wrapper > .cl-body .table-responsive';
+    var jqObj=(elem instanceof jQuery)?elem:$(elem);
+    var pcontLeft=$('#pcont').offset().left, contWidth=$(window).width()-pcontLeft;
+    jqObj.each(function () {
+      var marginWidth=$(this).offset().left-pcontLeft;
+      var bodyWidth=contWidth-marginWidth*2;
+      var table=firstChildrenTable($(this));
+      if (table.outerWidth() > bodyWidth) {
         $(this).addClass('overflow').css('max-width', bodyWidth);
       } else {
-        $(this).removeClass('overflow');
+        $(this).removeClass('overflow').css('max-width', 'auto');
       }
     });
   }
@@ -894,11 +904,18 @@ var App = function () {
       if (top == null) top = 0;
       $(elems).not('[disabled-fixed]').each(function () {
         $(this).attr('disabled-fixed', 'fixed');
-        var elem = this, table = $(elem).parent('table');
+        var elem = this, table = $(elem).parent('table'), reponsive = table.parents('.table-responsive');
+        var scrollable = reponsive.length>0;
         var offsetY = $(elem).offset().top, maxOffsetY = table.height() + offsetY - $(elem).outerHeight() * 2;
         $(elem).css({ 'background-color': 'white' });
         var setSize = function (init) {
-          if (init == null) init = false;
+          if(init == null) init = false;
+          if(scrollable){
+            tableReponsive(reponsive);
+            if(!reponsive.hasClass('overflow')){
+              $(elem).css({'width':'auto','overflow-x':'unset'});
+            }
+          }
           var width = $(elem).outerWidth(), ratio = 1;
           if (!init) {
             if (Math.abs(table.data('width') - width) > 1) {//避免抖动
@@ -939,14 +956,35 @@ var App = function () {
             if ($(elem).hasClass('always-top')) {
               $(elem).removeClass('always-top');
             }
+            if(scrollable){
+              $(elem).off('scroll').data('scroll-reponsive',false);
+              reponsive.off('scroll').data('scroll-thead',false);
+            }
             return;
           }
-          if (table.height() > $(window).height() && !$(elem).hasClass('always-top')) {
-            $(elem).addClass('always-top').css('top', top);
+          if (table.height() > $(window).height()) {
+            if(!$(elem).hasClass('always-top'))$(elem).addClass('always-top');
+            var cssOpts={'top':top};
+            if(scrollable){
+              cssOpts['width']=reponsive.outerWidth();
+              if(reponsive.hasClass('overflow')) cssOpts['overflow-x']='auto';
+              
+              if(!$(elem).data('scroll-reponsive')){
+                $(elem).on('scroll',function(){
+                  reponsive.scrollLeft($(this).scrollLeft());
+                }).data('scroll-reponsive',true);
+              }
+              if(!reponsive.data('scroll-thead')){
+                reponsive.on('scroll',function(){
+                  $(elem).scrollLeft($(this).scrollLeft());
+                }).data('scroll-thead',true);
+              }
+            }
+            $(elem).css(cssOpts);
           }
         });
       });
-      //$(window).trigger('scroll');
+      $(window).trigger('scroll');
     },
     topFloatThead: function (elems, top, clone) {
       if (!clone) return App.topFloatRawThead(elems, top);
@@ -1155,9 +1193,10 @@ var App = function () {
       $(table + '[sort-current!=""]').each(function () {//<thead sort-current="created">
         var current = $(this).attr('sort-current');
         var sortObj = $(this).find('[sort="' + current + '"]');//<th sort="-created">
-        var newCls = 'fa-arrow-down', oldCls = 'fa-arrow-up';
+        var newCls = 'fa-arrow-down', oldCls = 'fa-arrow-up', sortBy = 'down';
         if (sortObj.length < 1) {
           newCls = 'fa-arrow-up';
+          sortBy = 'up';
           oldCls = 'fa-arrow-down';
           sortObj = $(this).find('[sort="-' + current + '"]');
         }
@@ -1168,6 +1207,8 @@ var App = function () {
           } else {
             icon.removeClass(oldCls).addClass(newCls);
           }
+          sortObj.addClass('sort-active sort-'+sortBy);
+          sortObj.siblings('.sort-active').removeClass('sort-active').removeClass('sort-up').removeClass('sort-down');
         }
         $(table + '[sort-current] [sort]').css('cursor', 'pointer').on('click', function (e) {
           var thead = $(this).parents('[sort-current]');
