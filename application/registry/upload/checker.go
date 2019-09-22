@@ -50,25 +50,6 @@ var DefaultChecker = func(ctx echo.Context, tis table.TableInfoStorer) (subdir s
 }
 
 var checkers = map[string]Checker{
-	`customer-avatar`: func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
-		customerID := ctx.Formx(`customerId`).Uint64()
-		timestamp := ctx.Formx(`time`).Int64()
-		// 验证签名（避免上传接口被滥用）
-		if ctx.Form(`token`) != Token(`customerId`, customerID, `time`, timestamp) {
-			err = ctx.E(`令牌错误`)
-			return
-		}
-		if time.Now().Local().Unix()-timestamp > UploadLinkLifeTime {
-			err = ctx.E(`上传网址已过期`)
-			return
-		}
-		if customerID > 0 {
-			name = `avatar`
-		}
-		subdir = fmt.Sprint(customerID) + `/`
-		tis.SetTableID(customerID)
-		return
-	},
 	`user-avatar`: func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
 		userID := ctx.Formx(`userId`).Uint64()
 		timestamp := ctx.Formx(`time`).Int64()

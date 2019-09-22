@@ -84,7 +84,7 @@ func (f *File) FillData(reader io.Reader, forceReset bool, schemas ...*dbschema.
 	var m *dbschema.File
 	if len(schemas) > 0 {
 		m = schemas[0]
-	}else{
+	} else {
 		m = f.File
 	}
 	if forceReset || len(m.Mime) == 0 {
@@ -238,18 +238,29 @@ func (f *File) RemoveUnusedAvatar(ownerType string, excludeID uint64) error {
 }
 
 func (f *File) DeleteBy(cond db.Compound) error {
-	_, err := f.ListByOffset(nil, nil, 0, -1, cond)
+	size := 500
+	cnt, err := f.ListByOffset(nil, nil, 0, size, cond)
 	if err != nil {
 		return err
 	}
-	for _, fm := range f.Objects() {
-		err = f.Delete(nil, db.Cond{`id`: fm.Id})
-		if err != nil {
-			return err
+	totalRows := cnt()
+	var start int64
+	for ; start < totalRows; start += int64(size) {
+		if start > 0 {
+			cnt, err = f.ListByOffset(nil, nil, 0, size, cond)
+			if err != nil {
+				return err
+			}
 		}
-		err = f.fireDelete()
-		if err != nil {
-			return err
+		for _, fm := range f.Objects() {
+			err = f.Delete(nil, db.Cond{`id`: fm.Id})
+			if err != nil {
+				return err
+			}
+			err = f.fireDelete()
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return err

@@ -7,24 +7,31 @@ import (
 	"github.com/webx-top/echo/param"
 )
 
+const (
+	fileCSPattern    = `(?:[^"'#\(\)]+)`
+	fileStartPattern = `["'\(]`
+	fileEndPattern   = `["'\)]`
+)
+
 var (
-	//defaultResString = `["'\(]([^"'#\(\)]+)#FileID-(\d+)["'\)]`
-	defaultResString = `["'\(]([^"'#\(\)]+)["'\)]`
-	regexResRule     = regexp.MustCompile(defaultResString)
+	//defaultFilePattern = `["'\(]([^"'#\(\)]+)#FileID-(\d+)["'\)]`
+	filePattern = fileStartPattern + `(` + fileCSPattern + `\.(?:[\w]+)` + fileCSPattern + `?)` + fileEndPattern
+	fileRGX     = regexp.MustCompile(filePattern)
 )
 
 // ReplaceEmbeddedRes 替换正文中的资源网址
-func ReplaceEmbeddedRes(v string, reses map[string]interface{}) (r string) {
+func ReplaceEmbeddedRes(v string, reses map[uint64]string) (r string) {
 	for fid, rurl := range reses {
-		re := regexp.MustCompile(`["'\(][^"'#\(\)]+#FileID-` + fid + `["'\)]`)
-		v = re.ReplaceAllString(v, `"`+fmt.Sprint(rurl)+`"`)
+		re := regexp.MustCompile(`(` + fileStartPattern + `)` + fileCSPattern + `#FileID-` + fmt.Sprint(fid) + `(` + fileEndPattern + `)`)
+		fmt.Println(`(` + fileStartPattern + `)` + fileCSPattern + `#FileID-` + fmt.Sprint(fid) + `(` + fileEndPattern + `)`)
+		v = re.ReplaceAllString(v, `${1}`+rurl+`${2}`)
 	}
 	return v
 }
 
 // EmbeddedRes 获取正文中的资源
 func EmbeddedRes(v string, fn func(string, int64)) [][]string {
-	list := regexResRule.FindAllStringSubmatch(v, -1)
+	list := fileRGX.FindAllStringSubmatch(v, -1)
 	if fn == nil {
 		return list
 	}

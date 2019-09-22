@@ -29,21 +29,21 @@ func TestParseFileName(t *testing.T) {
 		"/public/upload/test/0/1232aawdwwd.jpg",
 		"/public/upload/test/0/1232aawdwwe.jpg",
 	}
-	r := ParseTemporaryFileName(`AAA` + UploadDir + `test/0/1232aawdwwd.jpgBBB` + UploadDir + `test/0/1232aawdwwe.jpgCCC`)
+	r := ParseTemporaryFileName(`AAA` + UploadURLPath + `test/0/1232aawdwwd.jpgBBB` + UploadURLPath + `test/0/1232aawdwwe.jpgCCC`)
 	assert.Equal(t, excepted, r)
 
 	excepted = []string{
 		"/public/upload/test/200/1232aawdwwd.jpg",
 		"/public/upload/test/300/1232aawdwwe.jpg",
 	}
-	r = ParsePersistentFileName(`AAA` + UploadDir + `test/200/1232aawdwwd.jpgBBB` + UploadDir + `test/300/1232aawdwwe.jpgCCC`)
+	r = ParsePersistentFileName(`AAA` + UploadURLPath + `test/200/1232aawdwwd.jpgBBB` + UploadURLPath + `test/300/1232aawdwwe.jpgCCC`)
 	assert.Equal(t, excepted, r)
 
-	r = ParseAnyFileName(`AAA` + UploadDir + `test/200/1232aawdwwd.jpgBBB` + UploadDir + `test/300/1232aawdwwe.jpgCCC`)
+	r = ParseAnyFileName(`AAA` + UploadURLPath + `test/200/1232aawdwwd.jpgBBB` + UploadURLPath + `test/300/1232aawdwwe.jpgCCC`)
 	assert.Equal(t, excepted, r)
 
-	content := ReplaceAnyFileName(`AAA`+UploadDir+`test/200/1232aawdwwd.jpgBBB`+UploadDir+`test/300/1232aawdwwe.jpgCCC`, func(s string) string {
+	content := ReplaceAnyFileName(`AAA`+UploadURLPath+`test/200/1232aawdwwd.jpgBBB`+UploadURLPath+`test/300/1232aawdwwe.jpgCCC`, func(s string) string {
 		return `http://coscms.com` + s
 	})
-	assert.Equal(t, `AAAhttp://coscms.com`+UploadDir+`test/200/1232aawdwwd.jpgBBBhttp://coscms.com`+UploadDir+`test/300/1232aawdwwe.jpgCCC`, content)
+	assert.Equal(t, `AAAhttp://coscms.com`+UploadURLPath+`test/200/1232aawdwwd.jpgBBBhttp://coscms.com`+UploadURLPath+`test/300/1232aawdwwe.jpgCCC`, content)
 }
