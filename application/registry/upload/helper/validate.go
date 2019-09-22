@@ -22,6 +22,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
 
@@ -29,17 +30,8 @@ import (
 var IsRightUploadFile = func(ctx echo.Context, src string) error {
 	src = path.Clean(src)
 	ext := strings.ToLower(path.Ext(src))
-	var ok bool
-	var invalidExt string
-	for _, ex := range AllowedUploadFileExtensions {
-		if ext == ex {
-			ok = true
-			invalidExt = ext
-			break
-		}
-	}
-	if !ok {
-		return ctx.E(`不支持的文件扩展名: %s`, invalidExt)
+	if !com.InSlice(ext, AllowedUploadFileExtensions) {
+		return ctx.E(`不支持的文件扩展名: %s`, ext)
 	}
 	if !strings.Contains(src, UploadURLPath) {
 		return ctx.E(`路径不合法`)
