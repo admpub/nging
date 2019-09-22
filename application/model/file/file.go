@@ -259,7 +259,8 @@ func (f *File) DeleteBy(cond db.Compound) error {
 				return err
 			}
 		}
-		for _, fm := range f.Objects() {
+                rows := f.Objects()
+		for _, fm := range rows {
 			err = f.Delete(nil, db.Cond{`id`: fm.Id})
 			if err != nil {
 				return err
@@ -269,6 +270,9 @@ func (f *File) DeleteBy(cond db.Compound) error {
 				return err
 			}
 		}
+                if len(rows) < size {
+                    break
+                }
 	}
 	return err
 }
