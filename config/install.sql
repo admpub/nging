@@ -391,8 +391,9 @@ CREATE TABLE `file` (
   `category_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '分类ID',
   `used_times` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '被使用的次数',
   PRIMARY KEY (`id`),
-  KEY `module_uid_from_type_from_id` (`project`,`owner_type`,`owner_id`,`table_name`,`table_id`),
-  KEY `category_id` (`category_id`)
+  KEY `category_id` (`category_id`),
+  KEY `owner_id_owner_type` (`owner_id`,`owner_type`),
+  KEY `table_id_table_name` (`table_id`,`table_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文件表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -895,4 +896,4 @@ CREATE TABLE `vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-09-21 21:29:49
+-- Dump completed on 2019-09-22 19:14:30

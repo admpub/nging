@@ -157,7 +157,7 @@ func (u *User) UpdateField(uid uint, set map[string]interface{}) (err error) {
 	}
 	err = u.Param().SetSend(set).SetArgs(`id`, uid).Update()
 	if err == nil && len(u.Avatar) == 0 {
-		err = common.RemoveAvatar(`user-avatar`, uint64(uid))
+		err = common.RemoveAvatar(u.Context, `user-avatar`, uint64(uid))
 	}
 	return
 }

@@ -51,9 +51,9 @@ type Embedded struct {
 // DeleteByTableID 删除嵌入文件
 func (f *Embedded) DeleteByTableID(project string, table string, tableID uint64) error {
 	_, err := f.ListByOffset(nil, nil, 0, -1, db.And(
-		db.Cond{`project`: project},
 		db.Cond{`table_id`: tableID},
 		db.Cond{`table_name`: table},
+		db.Cond{`project`: project},
 	))
 	if err != nil {
 		return err
@@ -87,8 +87,8 @@ func (f *Embedded) UpdateByFileID(project string, table string, field string, ta
 	m := &dbschema.FileEmbedded{}
 	err = m.Get(nil, db.And(
 		db.Cond{`table_id`: tableID},
-		db.Cond{`field_name`: field},
 		db.Cond{`table_name`: table},
+		db.Cond{`field_name`: field},
 	))
 	if err != nil {
 		if err != db.ErrNoMoreRows {
@@ -115,8 +115,8 @@ func (f *Embedded) UpdateEmbedded(project string, table string, field string, ta
 	m := &dbschema.FileEmbedded{}
 	err = m.Get(nil, db.And(
 		db.Cond{`table_id`: tableID},
-		db.Cond{`field_name`: field},
 		db.Cond{`table_name`: table},
+		db.Cond{`field_name`: field},
 	))
 	if err != nil {
 		if err != db.ErrNoMoreRows {

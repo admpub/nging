@@ -29,10 +29,10 @@ func (f *File) UpdateUnrelation(project string, table string, field string, tabl
 		return nil
 	}
 	err = f.SetFields(nil, echo.H{
-		`project`:    project,
+		`table_id`:   tableID,
 		`table_name`: table,
 		`field_name`: field,
-		`table_id`:   tableID,
+		`project`:    project,
 	}, db.And(
 		db.Cond{`table_id`: 0},
 		db.Cond{`id`: db.In(fileIds)},

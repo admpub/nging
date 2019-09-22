@@ -1,4 +1,4 @@
 #!/bin/sh
-sudo launchctl limit maxfiles 65535
-ulimit -n 65535
+sudo launchctl limit maxfiles 655350
+ulimit -n 655350
 tower

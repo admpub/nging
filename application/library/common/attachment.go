@@ -37,12 +37,16 @@ func IsRightUploadFile(ctx echo.Context, src string) error {
 }
 
 // RemoveAvatar 删除头像
-func RemoveAvatar(typ string, id uint64) error {
+func RemoveAvatar(ctx echo.Context, typ string, id uint64) error {
 	userDir := filepath.Join(helper.UploadDir, typ, fmt.Sprint(id))
 	if !com.IsDir(userDir) {
 		return nil
 	}
-	return os.RemoveAll(userDir)
+	err := os.RemoveAll(userDir)
+	if err != nil {
+		return err
+	}
+	return OnRemoveOwnerFile(ctx, typ, id, userDir)
 }
 
 // MoveAvatarToUserDir 移动临时文件夹中的头像到用户目录
@@ -85,7 +89,7 @@ func MoveAvatarToUserDir(ctx echo.Context, src string, typ string, id uint64) (s
 			}
 		}
 	}
-	return newPath, err
+	return newPath, OnUpdateOwnerFilePath(ctx, src, typ, id, userFile, newPath)
 }
 
 // DirSharding 文件夹分组(暂不使用)
@@ -94,12 +98,28 @@ func DirSharding(id uint64) uint64 {
 }
 
 // RemoveUploadedFile 删除被上传的文件
-func RemoveUploadedFile(typ string, id uint64) error {
+func RemoveUploadedFile(ctx echo.Context, typ string, id uint64) error {
 	sdir := filepath.Join(helper.UploadDir, typ, fmt.Sprint(id))
 	if !com.IsDir(sdir) {
 		return nil
 	}
-	return os.RemoveAll(sdir)
+	err := os.RemoveAll(sdir)
+	if err != nil {
+		return err
+	}
+	return OnRemoveOwnerFile(ctx, typ, id, sdir)
+}
+
+// OnUpdateOwnerFilePath 当更新文件路径时的通用操作
+var OnUpdateOwnerFilePath = func(ctx echo.Context,
+	src string, typ string, id uint64,
+	newSavePath string, newViewURL string) error {
+	return nil
+}
+
+// OnRemoveOwnerFile 当删除文件时的通用操作
+var OnRemoveOwnerFile = func(ctx echo.Context, typ string, id uint64, ownerDir string) error {
+	return nil
 }
 
 // MoveUploadedFileToOwnerDir 移动上传的文件到所有者目录
@@ -137,7 +157,7 @@ func MoveUploadedFileToOwnerDir(ctx echo.Context, src string, typ string, id uin
 			}
 		}
 	}
-	return newPath, err
+	return newPath, OnUpdateOwnerFilePath(ctx, src, typ, id, ownedFile, newPath)
 }
 
 // ModifyAsThumbnailName 将指向临时文件夹的缩略图路径改为新位置上的缩略图路径

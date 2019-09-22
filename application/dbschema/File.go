@@ -190,8 +190,8 @@ func (this *File) ListByOffset(recv interface{}, mw func(db.Result) db.Result, o
 func (this *File) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	if len(this.Type) == 0 { this.Type = "image" }
+	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -205,8 +205,8 @@ func (this *File) Add() (pk interface{}, err error) {
 
 func (this *File) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	this.Updated = uint(time.Now().Unix())
-	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	if len(this.Type) == 0 { this.Type = "image" }
+	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -222,21 +222,21 @@ func (this *File) SetField(mw func(db.Result) db.Result, field string, value int
 
 func (this *File) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
-	if val, ok := kvset["owner_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["owner_type"] = "user" } }
 	if val, ok := kvset["type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["type"] = "image" } }
+	if val, ok := kvset["owner_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["owner_type"] = "user" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *File) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		this.Updated = uint(time.Now().Unix())
-	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	if len(this.Type) == 0 { this.Type = "image" }
+	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	},func(){
 		this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	if len(this.Type) == 0 { this.Type = "image" }
+	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {

@@ -215,10 +215,10 @@ func (f *File) DeleteBySavePath(savePath string) (err error) {
 
 func (f *File) UpdateAvatar(project string, ownerType string, ownerID uint64) error {
 	err := f.SetFields(nil, echo.H{
-		`project`:    project,
 		`table_id`:   ownerID,
 		`table_name`: ownerType,
 		`field_name`: `avatar`,
+		`project`:    project,
 		`used_times`: 1,
 	}, db.Cond{`id`: f.Id})
 	if err != nil {
@@ -230,11 +230,18 @@ func (f *File) UpdateAvatar(project string, ownerType string, ownerID uint64) er
 
 func (f *File) RemoveUnusedAvatar(ownerType string, excludeID uint64) error {
 	return f.DeleteBy(db.And(
+		db.Cond{`table_id`: 0},
 		db.Cond{`table_name`: ownerType},
 		db.Cond{`field_name`: `avatar`},
-		db.Cond{`table_id`: 0},
 		db.Cond{`id`: db.NotEq(excludeID)},
 	))
+}
+
+func (f *File) CondByOwner(ownerType string, ownerID uint64) db.Compound {
+	return db.And(
+		db.Cond{`owner_id`: ownerID},
+		db.Cond{`owner_type`: ownerType},
+	)
 }
 
 func (f *File) DeleteBy(cond db.Compound) error {
@@ -268,8 +275,8 @@ func (f *File) DeleteBy(cond db.Compound) error {
 
 func (f *File) RemoveAvatar(ownerType string, ownerID int64) error {
 	return f.DeleteBy(db.And(
+		db.Cond{`table_id`: ownerID},
 		db.Cond{`table_name`: ownerType},
 		db.Cond{`field_name`: `avatar`},
-		db.Cond{`table_id`: ownerID},
 	))
 }
