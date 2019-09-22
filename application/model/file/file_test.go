@@ -14,7 +14,7 @@ func TestEmbedded(t *testing.T) {
 	.test2{background-image:url("/test/bg2.png")}
 	.test3{background-image:url(/test/bg3.png)}
 	</style>`
-	excepted := []string{
+	expected := []string{
 		`http://www.admpub.com/test/1.jpg`,
 		`/test/abc.gif`,
 		`/test/bg.png?1`,
@@ -26,7 +26,7 @@ func TestEmbedded(t *testing.T) {
 		capture = append(capture, file)
 	})
 	com.Dump(results)
-	test.Eq(t, excepted, capture)
+	test.Eq(t, expected, capture)
 }
 
 func TestReplaceEmbedded(t *testing.T) {
@@ -35,7 +35,7 @@ func TestReplaceEmbedded(t *testing.T) {
 	.test2{background-image:url("/test/bg2.png#FileID-4")}
 	.test3{background-image:url(/test/bg3.png#FileID-5)}
 	</style>`
-	excepted := `<img src="http://img.admpub.com/test/1.jpg">[example](http://img.admpub.com/test/abc.gif)<style type="text/css">
+	expected := `<img src="http://img.admpub.com/test/1.jpg">[example](http://img.admpub.com/test/abc.gif)<style type="text/css">
 	.test{background-image:url('http://img.admpub.com/test/bg.png?1')}
 	.test2{background-image:url("http://img.admpub.com/test/bg2.png")}
 	.test3{background-image:url(http://img.admpub.com/test/bg3.png)}
@@ -48,5 +48,5 @@ func TestReplaceEmbedded(t *testing.T) {
 		5: `http://img.admpub.com/test/bg3.png`,
 	})
 	fmt.Println(result)
-	test.Eq(t, excepted, result)
+	test.Eq(t, expected, result)
 }

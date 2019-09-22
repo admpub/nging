@@ -25,22 +25,22 @@ import (
 )
 
 func TestParseFileName(t *testing.T) {
-	excepted := []string{
+	expected := []string{
 		"/public/upload/test/0/1232aawdwwd.jpg",
 		"/public/upload/test/0/1232aawdwwe.jpg",
 	}
 	r := ParseTemporaryFileName(`AAA` + UploadURLPath + `test/0/1232aawdwwd.jpgBBB` + UploadURLPath + `test/0/1232aawdwwe.jpgCCC`)
-	assert.Equal(t, excepted, r)
+	assert.Equal(t, expected, r)
 
-	excepted = []string{
+	expected = []string{
 		"/public/upload/test/200/1232aawdwwd.jpg",
 		"/public/upload/test/300/1232aawdwwe.jpg",
 	}
 	r = ParsePersistentFileName(`AAA` + UploadURLPath + `test/200/1232aawdwwd.jpgBBB` + UploadURLPath + `test/300/1232aawdwwe.jpgCCC`)
-	assert.Equal(t, excepted, r)
+	assert.Equal(t, expected, r)
 
 	r = ParseAnyFileName(`AAA` + UploadURLPath + `test/200/1232aawdwwd.jpgBBB` + UploadURLPath + `test/300/1232aawdwwe.jpgCCC`)
-	assert.Equal(t, excepted, r)
+	assert.Equal(t, expected, r)
 
 	content := ReplaceAnyFileName(`AAA`+UploadURLPath+`test/200/1232aawdwwd.jpgBBB`+UploadURLPath+`test/300/1232aawdwwe.jpgCCC`, func(s string) string {
 		return `http://coscms.com` + s
