@@ -20,7 +20,7 @@ func (s *SafeMap) Set(key, value interface{}) {
 
 func (s *SafeMap) Get(key interface{}, defaults ...interface{}) interface{} {
 	value, ok := s.Load(key)
-	if !ok && len(defaults) > 0 {
+	if (!ok || value == nil) && len(defaults) > 0 {
 		if fallback, ok := defaults[0].(func() interface{}); ok {
 			return fallback()
 		}
