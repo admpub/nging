@@ -28,6 +28,12 @@ import (
 	"github.com/webx-top/echo"
 )
 
+type DbSyncWithAccount struct {
+	*dbschema.DbSync
+	SrcAccount *dbschema.DbAccount `db:"-,relation=id:source_account_id"`
+	DstAccount *dbschema.DbAccount `db:"-,relation=id:destination_account_id"`
+}
+
 func NewDbSync(ctx echo.Context) *DbSync {
 	return &DbSync{
 		DbSync: &dbschema.DbSync{},
@@ -38,6 +44,10 @@ func NewDbSync(ctx echo.Context) *DbSync {
 type DbSync struct {
 	*dbschema.DbSync
 	*base.Base
+}
+
+func (a *DbSync) ToDSNFromAccount(acc *dbschema.DbAccount) string {
+	return a.ToDSN(acc.User, acc.Password, acc.Host, acc.Name)
 }
 
 func (a *DbSync) ToDSN(user, pwd, host, db string) string {

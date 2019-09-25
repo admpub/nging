@@ -321,8 +321,11 @@ DROP TABLE IF EXISTS `db_sync`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `db_sync` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `name` varchar(120) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '方案名',
+  `source_account_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '源数据库账号ID',
   `dsn_source` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '同步源',
+  `destination_account_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '目标数据库账号ID',
   `dsn_destination` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '目标数据库',
   `tables` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '要同步的表',
   `skip_tables` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '要跳过的表',
@@ -896,4 +899,4 @@ CREATE TABLE `vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-09-22 19:14:30
+-- Dump completed on 2019-09-25 20:24:48

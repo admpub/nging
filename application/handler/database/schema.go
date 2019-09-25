@@ -24,6 +24,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/admpub/errors"
 	"github.com/admpub/mysql-schema-sync/sync"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
@@ -76,7 +77,8 @@ func SchemaSyncJob(id string) cron.Runner {
 func SchemaSync(ctx echo.Context) error {
 	m := model.NewDbSync(ctx)
 	page, size, totalRows, p := handler.PagingWithPagination(ctx)
-	cnt, err := m.List(nil, func(r db.Result) db.Result {
+	listData := []*model.DbSyncWithAccount{}
+	cnt, err := m.List(&listData, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
 	}, page, size)
 	if totalRows <= 0 {
@@ -85,15 +87,39 @@ func SchemaSync(ctx echo.Context) error {
 	}
 	ret := handler.Err(ctx, err)
 	ctx.Set(`pagination`, p)
-	listData := m.Objects()
 	for k, v := range listData {
-		v.DsnSource = m.HidePassword(v.DsnSource)
-		v.DsnDestination = m.HidePassword(v.DsnDestination)
+		if len(v.DsnSource) > 0 {
+			v.DsnSource = m.HidePassword(v.DsnSource)
+		}
+		if len(v.DsnDestination) > 0 {
+			v.DsnDestination = m.HidePassword(v.DsnDestination)
+		}
 		listData[k] = v
 	}
 	ctx.Set(`listData`, listData)
 	ctx.Set(`activeURL`, `/db/schema_sync`)
 	return ctx.Render(`db/schema_sync`, ret)
+}
+
+func postAccount(ctx echo.Context, m *model.DbSync) {
+	if m.DbSync.SourceAccountId == 0 {
+		user := m.Formx(`dsn_source_user`).String()
+		passwd := m.Formx(`dsn_source_passwd`).String()
+		host := m.Formx(`dsn_source_host`).String()
+		dbName := m.Formx(`dsn_source_database`).String()
+		m.DsnSource = m.ToDSN(user, passwd, host, dbName)
+	} else {
+		m.DsnSource = ``
+	}
+	if m.DbSync.DestinationAccountId == 0 {
+		user := m.Formx(`dsn_destination_user`).String()
+		passwd := m.Formx(`dsn_destination_passwd`).String()
+		host := m.Formx(`dsn_destination_host`).String()
+		dbName := m.Formx(`dsn_destination_database`).String()
+		m.DsnDestination = m.ToDSN(user, passwd, host, dbName)
+	} else {
+		m.DsnDestination = ``
+	}
 }
 
 //SchemaSyncAdd 添加表结构同步方案
@@ -103,16 +129,7 @@ func SchemaSyncAdd(ctx echo.Context) error {
 		m := model.NewDbSync(ctx)
 		err = ctx.MustBind(m.DbSync)
 		if err == nil {
-			user := m.Form(`dsn_source_user`)
-			passwd := m.Form(`dsn_source_passwd`)
-			host := m.Form(`dsn_source_host`)
-			dbName := m.Form(`dsn_source_database`)
-			m.DsnSource = m.ToDSN(user, passwd, host, dbName)
-			user = m.Form(`dsn_destination_user`)
-			passwd = m.Form(`dsn_destination_passwd`)
-			host = m.Form(`dsn_destination_host`)
-			dbName = m.Form(`dsn_destination_database`)
-			m.DsnDestination = m.ToDSN(user, passwd, host, dbName)
+			postAccount(ctx, m)
 			_, err = m.Add()
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))
@@ -131,6 +148,9 @@ func SchemaSyncAdd(ctx echo.Context) error {
 		}
 	}
 	ctx.Set(`activeURL`, `/db/schema_sync`)
+	accountM := model.NewDbAccount(ctx)
+	accountM.ListByOffset(nil, nil, 0, -1, db.Cond{`engine`: `mysql`})
+	ctx.Set(`accounts`, accountM.Objects())
 	return ctx.Render(`db/schema_sync_edit`, handler.Err(ctx, err))
 }
 
@@ -158,16 +178,7 @@ func SchemaSyncEdit(ctx echo.Context) error {
 	if ctx.IsPost() {
 		err = ctx.MustBind(m.DbSync, echo.ExcludeFieldName(`created`))
 		if err == nil {
-			user := m.Form(`dsn_source_user`)
-			passwd := m.Form(`dsn_source_passwd`)
-			host := m.Form(`dsn_source_host`)
-			dbName := m.Form(`dsn_source_database`)
-			m.DsnSource = m.ToDSN(user, passwd, host, dbName)
-			user = m.Form(`dsn_destination_user`)
-			passwd = m.Form(`dsn_destination_passwd`)
-			host = m.Form(`dsn_destination_host`)
-			dbName = m.Form(`dsn_destination_database`)
-			m.DsnDestination = m.ToDSN(user, passwd, host, dbName)
+			postAccount(ctx, m)
 			err = m.Edit(nil, cond)
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))
@@ -178,6 +189,9 @@ func SchemaSyncEdit(ctx echo.Context) error {
 		setFormData(ctx, m)
 	}
 	ctx.Set(`activeURL`, `/db/schema_sync`)
+	accountM := model.NewDbAccount(ctx)
+	accountM.ListByOffset(nil, nil, 0, -1, db.Cond{`engine`: `mysql`})
+	ctx.Set(`accounts`, accountM.Objects())
 	return ctx.Render(`db/schema_sync_edit`, handler.Err(ctx, err))
 }
 
@@ -212,6 +226,22 @@ func execSync(a *model.DbSync, preview bool) (*dbschema.DbSyncLog, error) {
 	}
 	logM := model.NewDbSyncLog(a.Base.Context)
 	logM.SyncId = a.Id
+	if a.DbSync.SourceAccountId > 0 {
+		accountM := &dbschema.DbAccount{}
+		err := accountM.Get(nil, db.Cond{`id`: a.DbSync.SourceAccountId})
+		if err != nil {
+			return nil, errors.Wrapf(err, "Cannot find source account ID")
+		}
+		a.DbSync.DsnSource = a.ToDSNFromAccount(accountM)
+	}
+	if a.DbSync.DestinationAccountId > 0 {
+		accountM := &dbschema.DbAccount{}
+		err := accountM.Get(nil, db.Cond{`id`: a.DbSync.DestinationAccountId})
+		if err != nil {
+			return nil, errors.Wrapf(err, "Cannot find destination account ID")
+		}
+		a.DbSync.DsnDestination = a.ToDSNFromAccount(accountM)
+	}
 	r, err := sync.Sync(&sync.Config{
 		Sync:        preview == false,
 		Drop:        a.DbSync.Drop > 0,

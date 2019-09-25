@@ -94,11 +94,14 @@ var App = function () {
     jqObj.each(function () {
       var marginWidth=$(this).offset().left-pcontLeft;
       var bodyWidth=contWidth-marginWidth*2;
+      var oldWidth=$(this).data('width');
+      if(oldWidth && oldWidth==bodyWidth) return;
+      $(this).data('width',bodyWidth);
       var table=firstChildrenTable($(this));
       if (table.outerWidth() > bodyWidth) {
         $(this).addClass('overflow').css('max-width', bodyWidth);
       } else {
-        $(this).removeClass('overflow').css('max-width', 'auto');
+        $(this).removeClass('overflow').css('max-width', bodyWidth);
       }
     });
   }

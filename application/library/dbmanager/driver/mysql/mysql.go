@@ -863,6 +863,14 @@ func (m *mySQL) ListTable() error {
 func (m *mySQL) ViewTable() error {
 	var err error
 	oldTable := m.Form(`table`)
+	if m.Formx(`ddl`).Bool() {
+		data := m.Data()
+		ddl, err := m.tableDDL(oldTable)
+		if err != nil {
+			return m.JSON(data.SetError(err))
+		}
+		return m.JSON(data.SetData(echo.H{`ddl`: ddl}))
+	}
 	foreignKeys, sortForeignKeys, err := m.tableForeignKeys(oldTable)
 	if err != nil {
 		return err

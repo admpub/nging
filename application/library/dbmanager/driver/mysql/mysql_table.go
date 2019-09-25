@@ -461,6 +461,33 @@ func (m *mySQL) tableIndexes(table string) (map[string]*Indexes, []string, error
 	return ret, sorts, nil
 }
 
+func (m *mySQL) tableDDL(table string) (string, error) {
+	sqlStr := `SHOW CREATE TABLE ` + quoteCol(table)
+	rows, err := m.newParam().SetCollection(sqlStr).Query()
+	if err != nil {
+		return ``, fmt.Errorf(`%v: %v`, sqlStr, err)
+	}
+	cols, err := rows.Columns()
+	if err != nil {
+		return ``, fmt.Errorf(`%v: %v`, sqlStr, err)
+	}
+	ret := make([]*sql.NullString, len(cols))
+	recv := make([]interface{}, len(cols))
+	for i, v := range ret {
+		v = &sql.NullString{}
+		ret[i] = v
+		recv[i] = v
+	}
+	if rows.Next() {
+		err = rows.Scan(recv...)
+		if err != nil {
+			return ``, fmt.Errorf(`%v: %v`, sqlStr, err)
+		}
+		return ret[len(ret)-1].String, err
+	}
+	return ``, nil
+}
+
 func (m *mySQL) tableForeignKeys(table string) (map[string]*ForeignKeyParam, []string, error) {
 	sorts := []string{}
 	result := map[string]*ForeignKeyParam{}

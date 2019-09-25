@@ -20,16 +20,19 @@ type DbSync struct {
 	namer   func(string) string
 	connID  int
 	
-	Id             	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"" json:"id" xml:"id"`
-	DsnSource      	string  	`db:"dsn_source" bson:"dsn_source" comment:"同步源" json:"dsn_source" xml:"dsn_source"`
-	DsnDestination 	string  	`db:"dsn_destination" bson:"dsn_destination" comment:"目标数据库" json:"dsn_destination" xml:"dsn_destination"`
-	Tables         	string  	`db:"tables" bson:"tables" comment:"要同步的表" json:"tables" xml:"tables"`
-	SkipTables     	string  	`db:"skip_tables" bson:"skip_tables" comment:"要跳过的表" json:"skip_tables" xml:"skip_tables"`
-	AlterIgnore    	string  	`db:"alter_ignore" bson:"alter_ignore" comment:"要忽略的列、索引、外键" json:"alter_ignore" xml:"alter_ignore"`
-	Drop           	uint    	`db:"drop" bson:"drop" comment:"删除待同步数据库中多余的字段、索引、外键 " json:"drop" xml:"drop"`
-	MailTo         	string  	`db:"mail_to" bson:"mail_to" comment:"发送邮件" json:"mail_to" xml:"mail_to"`
-	Created        	uint    	`db:"created" bson:"created" comment:"创建时间" json:"created" xml:"created"`
-	Updated        	int     	`db:"updated" bson:"updated" comment:"更新时间" json:"updated" xml:"updated"`
+	Id                    	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
+	Name                  	string  	`db:"name" bson:"name" comment:"方案名" json:"name" xml:"name"`
+	SourceAccountId       	uint    	`db:"source_account_id" bson:"source_account_id" comment:"源数据库账号ID" json:"source_account_id" xml:"source_account_id"`
+	DsnSource             	string  	`db:"dsn_source" bson:"dsn_source" comment:"同步源" json:"dsn_source" xml:"dsn_source"`
+	DestinationAccountId  	uint    	`db:"destination_account_id" bson:"destination_account_id" comment:"目标数据库账号ID" json:"destination_account_id" xml:"destination_account_id"`
+	DsnDestination        	string  	`db:"dsn_destination" bson:"dsn_destination" comment:"目标数据库" json:"dsn_destination" xml:"dsn_destination"`
+	Tables                	string  	`db:"tables" bson:"tables" comment:"要同步的表" json:"tables" xml:"tables"`
+	SkipTables            	string  	`db:"skip_tables" bson:"skip_tables" comment:"要跳过的表" json:"skip_tables" xml:"skip_tables"`
+	AlterIgnore           	string  	`db:"alter_ignore" bson:"alter_ignore" comment:"要忽略的列、索引、外键" json:"alter_ignore" xml:"alter_ignore"`
+	Drop                  	uint    	`db:"drop" bson:"drop" comment:"删除待同步数据库中多余的字段、索引、外键 " json:"drop" xml:"drop"`
+	MailTo                	string  	`db:"mail_to" bson:"mail_to" comment:"发送邮件" json:"mail_to" xml:"mail_to"`
+	Created               	uint    	`db:"created" bson:"created" comment:"创建时间" json:"created" xml:"created"`
+	Updated               	int     	`db:"updated" bson:"updated" comment:"更新时间" json:"updated" xml:"updated"`
 }
 
 func (this *DbSync) Trans() *factory.Transaction {
@@ -232,7 +235,10 @@ func (this *DbSync) Count(mw func(db.Result) db.Result, args ...interface{}) (in
 
 func (this *DbSync) Reset() *DbSync {
 	this.Id = 0
+	this.Name = ``
+	this.SourceAccountId = 0
 	this.DsnSource = ``
+	this.DestinationAccountId = 0
 	this.DsnDestination = ``
 	this.Tables = ``
 	this.SkipTables = ``
@@ -247,7 +253,10 @@ func (this *DbSync) Reset() *DbSync {
 func (this *DbSync) AsMap() map[string]interface{} {
 	r := map[string]interface{}{}
 	r["Id"] = this.Id
+	r["Name"] = this.Name
+	r["SourceAccountId"] = this.SourceAccountId
 	r["DsnSource"] = this.DsnSource
+	r["DestinationAccountId"] = this.DestinationAccountId
 	r["DsnDestination"] = this.DsnDestination
 	r["Tables"] = this.Tables
 	r["SkipTables"] = this.SkipTables
@@ -280,7 +289,10 @@ func (this *DbSync) Set(key interface{}, value ...interface{}) {
 			}
 			switch kk {
 				case "Id": this.Id = param.AsUint(vv)
+				case "Name": this.Name = param.AsString(vv)
+				case "SourceAccountId": this.SourceAccountId = param.AsUint(vv)
 				case "DsnSource": this.DsnSource = param.AsString(vv)
+				case "DestinationAccountId": this.DestinationAccountId = param.AsUint(vv)
 				case "DsnDestination": this.DsnDestination = param.AsString(vv)
 				case "Tables": this.Tables = param.AsString(vv)
 				case "SkipTables": this.SkipTables = param.AsString(vv)
@@ -296,7 +308,10 @@ func (this *DbSync) Set(key interface{}, value ...interface{}) {
 func (this *DbSync) AsRow() map[string]interface{} {
 	r := map[string]interface{}{}
 	r["id"] = this.Id
+	r["name"] = this.Name
+	r["source_account_id"] = this.SourceAccountId
 	r["dsn_source"] = this.DsnSource
+	r["destination_account_id"] = this.DestinationAccountId
 	r["dsn_destination"] = this.DsnDestination
 	r["tables"] = this.Tables
 	r["skip_tables"] = this.SkipTables

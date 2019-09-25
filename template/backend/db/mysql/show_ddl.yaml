@@ -1,0 +1,10 @@
+Id : "show-ddl-modal"
+Custom : true
+HeadTitle : "DDL"
+Title : ""
+Content : "<pre></pre>"
+HelpText : ""
+Animate : ""
+Type : ""
+ContentType : ""
+ExtButtons : []

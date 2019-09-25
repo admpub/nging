@@ -1,4 +1,4 @@
-{{Extend "layout"}}
+{{Strip}}{{Extend "layout"}}
 {{Block "title"}}{{"表结构同步方案"|T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
@@ -21,6 +21,7 @@
 					<thead class="no-border">
 						<tr>
 							<th style="width:55px"><strong>ID</strong></th>
+							<th><strong>{{"方案名"|T}}</strong></th>
 							<th><strong>{{"数据库"|T}}</strong></th>
 							<th><strong>{{"数据表"|T}}</strong></th>
 							<th><strong>{{"可删"|T}}</strong></th>
@@ -32,7 +33,21 @@
                         {{range $k,$v := Stored.listData}}
 						<tr>
 							<td>{{$v.Id}}</td>
-							<td>{{$v.DsnSource}}<br /><i class="fa fa-arrow-right"></i> {{$v.DsnDestination}}</td>
+							<td>{{$v.Name}}</td>
+							<td>
+								{{- if $v.SrcAccount -}}
+								{{- $v.SrcAccount.Title -}}
+								{{- else -}}
+								{{- $v.DsnSource -}}
+								{{- end -}}
+								<br />
+								<i class="fa fa-arrow-right"></i> 
+								{{- if $v.DstAccount -}}
+								{{- $v.DstAccount.Title -}}
+								{{- else -}}
+								{{- $v.DsnDestination -}}
+								{{- end -}}
+							</td>
 							<td>
                                 {{if $v.Tables}}{{"同步"|T}}: {{$v.Tables}}{{else if not $v.SkipTables}}{{"全部"|T}}{{end}}
                                 {{if $v.SkipTables}}<br />{{"跳过"|T}}: {{$v.SkipTables}}{{end}}
@@ -60,3 +75,4 @@
 	</div>
 </div>
 {{/Block}}
+{{/Strip}}

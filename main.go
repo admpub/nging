@@ -44,10 +44,10 @@ var (
 	CLOUD_GOX  string
 	COMMIT     string
 	LABEL      = `dev` //beta/alpha/stable
-	VERSION    = `2.0.2`
+	VERSION    = `2.0.5`
 
 	version   string
-	schemaVer = 2.2 //数据表结构版本
+	schemaVer = 2.3 //数据表结构版本
 )
 
 func main() {
