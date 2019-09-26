@@ -1213,30 +1213,30 @@ var App = function () {
           sortObj.addClass('sort-active sort-'+sortBy);
           sortObj.siblings('.sort-active').removeClass('sort-active').removeClass('sort-up').removeClass('sort-down');
         }
-        $(table + '[sort-current] [sort]').css('cursor', 'pointer').on('click', function (e) {
-          var thead = $(this).parents('[sort-current]');
-          var current = thead.attr('sort-current');
-          var url = thead.attr('sort-url') || window.location.href;
-          var trigger = thead.attr('sort-trigger');
-          var sort = $(this).attr('sort');
-          if (current && (current == sort || current == '-' + sort)) {
-            var reg = /^\-/;
-            current = reg.test(current) ? current.replace(reg, '') : '-' + current;
+      });
+      $(table + '[sort-current] [sort]').css('cursor', 'pointer').on('click', function (e) {
+        var thead = $(this).parents('[sort-current]');
+        var current = thead.attr('sort-current');
+        var url = thead.attr('sort-url') || window.location.href;
+        var trigger = thead.attr('sort-trigger');
+        var sort = $(this).attr('sort');
+        if (current && (current == sort || current == '-' + sort)) {
+          var reg = /^\-/;
+          current = reg.test(current) ? current.replace(reg, '') : '-' + current;
+        } else {
+          current = sort;
+        }
+        url = App.replaceURLParam('sort', current, url);
+        if (trigger) {
+          thead.trigger('sort');
+        } else {
+          var setto = thead.attr('sort-setto');
+          if (setto) {
+            $(setto).load(url);
           } else {
-            current = sort;
+            window.location = url;
           }
-          url = App.replaceURLParam('sort', current, url);
-          if (trigger) {
-            thead.trigger('sort');
-          } else {
-            var setto = thead.attr('sort-setto');
-            if (setto) {
-              $(setto).load(url);
-            } else {
-              window.location = url;
-            }
-          }
-        });
+        }
       });
     },
     resizeModalHeight: function (el) {
