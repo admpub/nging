@@ -205,6 +205,7 @@
           height:$(window).height(),
           width:'100%','max-width':'100%',left:0,top:0,transform:'none'
         });
+        $('#show-ddl-modal .modal-body').css({height:$(window).height()-150,width:'100%','max-width':'100%',overflow:'auto',padding:'0 8px'});
     });
     $(window).trigger('resize');
     $('[data-modal-url]').on('click', function () {
