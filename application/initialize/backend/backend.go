@@ -27,10 +27,8 @@ import (
 	"github.com/admpub/events/emitter"
 	"github.com/admpub/nging/application/cmd/event"
 	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
 	ngingMW "github.com/admpub/nging/application/middleware"
-	modelFile "github.com/admpub/nging/application/model/file"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/handler/pprof"
 	"github.com/webx-top/echo/middleware"
@@ -61,8 +59,6 @@ func init() {
 	echo.Set(`BackendPrefix`, handler.BackendPrefix)
 	echo.Set(`GlobalPrefix`, handler.GlobalPrefix)
 	event.OnStart(0, func() {
-		common.OnUpdateOwnerFilePath = modelFile.OnUpdateOwnerFilePath
-		common.OnRemoveOwnerFile = modelFile.OnRemoveOwnerFile
 		handler.GlobalPrefix = echo.String(`GlobalPrefix`)
 		handler.BackendPrefix = echo.String(`BackendPrefix`)
 		handler.FrontendPrefix = echo.String(`FrontendPrefix`)

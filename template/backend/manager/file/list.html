@@ -1,0 +1,111 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"用户管理"|T}}{{/Block}}
+{{Block "head"}}
+<link type="text/css" rel="stylesheet" href="__ASSETS__/js/daterangepicker/daterangepicker.min.css">
+{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"用户管理"|T}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+	<div class="col-md-12">
+		<div class="block-flat">
+			<div class="header">
+				<div class="pull-right" style="margin-left:10px">
+					<form class="form-horizontal" action="" id="search-form" method="GET">
+						<div class="input-group">
+							<span class="input-group-addon">{{"上传时间"|T}}</span>
+							<input type="text" id="timerange" class="form-control" name="timerange" value="{{Form `timerange`}}">
+							<span class="input-group-addon">{{"内容类型"|T}}</span>
+							<select name="table" class="form-control" id="table" onchange="$('#search-form').submit()">
+								<option value=""> - {{"不限"|T}} - </option>
+								{{$table := Form "table"}} 
+								{{range $k, $v := Stored.tableNames}}
+								<option value="{{$k}}" {{if eq $table $k}} selected{{end}}>{{$k}}</option>
+								{{end}}
+							</select>
+							<span class="input-group-addon">{{"文件类型"|T}}</span>
+							<select name="type" class="form-control" id="type" onchange="$('#search-form').submit()">
+								<option value=""> - {{"不限"|T}} - </option>
+								{{$type := Form "type"}} 
+								{{range $k, $v := Stored.fileTypes}}
+								<option value="{{$k.String}}" {{if eq $type $k.String}} selected{{end}}>{{$k.String}}</option>
+								{{end}}
+							</select>
+						</div>
+					</form>
+				</div>
+				<a href="__BACKEND__/manager/user_add" class="btn btn-success pull-right">
+					<i class="fa fa-plus"></i>
+					{{"添加用户"|T}}
+				</a>
+				<h3>{{"用户管理"|T}}</h3>
+			</div>
+			<div class="content">
+				<div class="table-responsive">
+				<table class="table no-border hover">
+					<thead class="no-border">
+						<tr>
+							<th style="width:80px"><strong>ID</strong></th>
+							<th style="width:50px"><strong>{{"图片"|T}}</strong></th>
+							<th><strong>{{"原始名称"|T}}</strong></th>
+							<th><strong>{{"保存位置"|T}}</strong></th>
+							<th style="width:80px"><strong>{{"文件类型"|T}}</strong></th>
+							<th style="width:80px"><strong>{{"内容类型"|T}}</strong></th>
+							<th style="width:60px"><strong>{{"大小"|T}}</strong></th>
+							<th style="width:60px"><strong>{{"尺寸"|T}}</strong></th>
+							<th style="width:60px"><strong>{{"时间"|T}}</strong></th>
+							<th style="width:120px" class="text-center"><strong>{{"操作"|T}}</strong></th>
+						</tr>
+					</thead>
+					<tbody class="no-border-y">
+                        {{range $k,$v := Stored.listData}}
+						<tr>
+							<td>{{$v.Id}}</td>
+							<td class="no-padding"><img style="width:50px;height:50px" src="{{if $v.ViewUrl}}{{$v.ViewUrl}}{{else}}__ASSETS__/images/user_128.png{{end}}" onerror="this.src='__ASSETS__/images/user_128.png';" /></td>
+							<td>
+								{{$v.Name}}
+							</td>
+							<td>{{$v.SavePath}}</td>
+							<td>{{$v.Type}}</td>
+							<td>{{$v.TableName}}</td>
+							<td>{{$v.Size|FormatByte}}</td>
+							<td>{{$v.Width}}&times;{{$v.Height}}</td>
+							<td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}</td>
+							<td class="text-center">
+							<a class="label label-danger" href="__BACKEND__/manager/file/delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
+							</td>
+						</tr>
+                        {{end}}
+					</tbody>
+				</table>		
+				</div>
+				{{Stored.pagination.Render}}
+			</div>
+		</div>				
+	</div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script src="__ASSETS__/js/daterangepicker/moment.min.js?t={{BuildTime}}" type="text/javascript" charset="utf-8"></script>
+<script src="__ASSETS__/js/daterangepicker/jquery.daterangepicker.min.js?t={{BuildTime}}" type="text/javascript" charset="utf-8"></script>
+<script src="__ASSETS__/js/behaviour/page/datetime.min.js?t={{BuildTime}}" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+$(function(){
+	var change = false;
+	App.daterangepicker('#timerange',{
+		showShortcuts: true,
+		shortcuts: {
+			'prev-days': [1,3,5,7],
+			'next-days': [3,5,7],
+			'prev' : ['week','month'],
+			'next' : ['week','month']
+		}
+	});
+	$('#timerange').on('change',function(event,obj){
+		$('#search-form').submit();
+	});
+});
+</script>
+{{/Block}}

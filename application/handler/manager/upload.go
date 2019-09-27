@@ -55,8 +55,8 @@ func ResponseDataForUpload(ctx echo.Context, field string, err error, imageURLs 
 }
 
 var (
-	StorerEngine = filesystem.Name
-	DefaultChecker = func(r *uploadClient.Result) error{
+	StorerEngine   = filesystem.Name
+	DefaultChecker = func(r *uploadClient.Result) error {
 		return nil
 	}
 )
@@ -190,7 +190,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		func(result *uploadClient.Result, file multipart.File) error {
 			fileM.Id = 0
 			fileM.SetByUploadResult(result)
-			return dbsaver(fileM,result,file)
+			return dbsaver(fileM, result, file)
 		},
 	)
 	datax, embed := ResponseDataForUpload(ctx, field, err, results.FileURLs())

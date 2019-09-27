@@ -1081,15 +1081,15 @@
             if (opt.singleDate)
                 defaultTopText = translate('default-single');
             else if (opt.minDays && opt.maxDays)
-                defaultTopText = translate('default-range');
+                defaultTopText = translate('default-range').replace(/\%d/, opt.minDays).replace(/\%d/, opt.maxDays);
             else if (opt.minDays)
-                defaultTopText = translate('default-more');
+                defaultTopText = translate('default-more').replace(/\%d/, opt.minDays);
             else if (opt.maxDays)
-                defaultTopText = translate('default-less');
+                defaultTopText = translate('default-less').replace(/\%d/, opt.maxDays);
             else
                 defaultTopText = translate('default-default');
 
-            box.find('.default-top').html(defaultTopText.replace(/\%d/, opt.minDays).replace(/\%d/, opt.maxDays));
+            box.find('.default-top').html(defaultTopText);
             if (opt.singleMonth) {
                 box.addClass('single-month');
             } else {

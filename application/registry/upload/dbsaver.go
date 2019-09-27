@@ -3,10 +3,8 @@ package upload
 import (
 	"io"
 
-	uploadClient "github.com/webx-top/client/upload"
 	modelFile "github.com/admpub/nging/application/model/file"
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/webx-top/db"
+	uploadClient "github.com/webx-top/client/upload"
 )
 
 type (
@@ -14,37 +12,13 @@ type (
 )
 
 var (
-	dbSavers = map[string]DBSaver{
-		`user-avatar`: func(fileM *modelFile.File, result *uploadClient.Result, reader io.Reader) error {
-			if fileM.OwnerId <= 0 {
-				return fileM.Add(reader)
-			}
-			fileM.UsedTimes = 1
-			m := &dbschema.File{}
-			err := m.Get(nil, db.And(
-				db.Cond{`table_name`:`user-avatar`},
-				db.Cond{`table_id`:fileM.OwnerId},
-			))
-			if err != nil {
-				if err != db.ErrNoMoreRows {
-					return err
-				}
-				// 不存在
-				return fileM.Add(reader)
-			}
-			// 已存在
-			fileM.Id = m.Id
-			fileM.Created = m.Created
-			fileM.FillData(reader, true)
-			return fileM.Edit(nil, db.Cond{`id`: m.Id})
-		},
-	}
+	dbSavers       = map[string]DBSaver{}
 	DefaultDBSaver = func(fileM *modelFile.File, result *uploadClient.Result, reader io.Reader) error {
-		return fileM.Add(reader)
+		return nil
 	}
 )
 
-func DBSaverRegister(key string,dbsaver DBSaver){
+func DBSaverRegister(key string, dbsaver DBSaver) {
 	dbSavers[key] = dbsaver
 }
 
