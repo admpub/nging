@@ -5751,8 +5751,11 @@ ul.no-list-style{
 .form-control.inline{
   display:inline;width:auto;vertical-align:middle;
 }
+.no-border{
+  border:0 !important;
+}
 .form-control.no-border{
-  border:0;box-shadow:none;
+  box-shadow:none;
 }
 .normal{font-weight:normal;}
 .CodeMirror{font-family:"monospace,'Courier New'";}
@@ -5832,6 +5835,7 @@ ul.timeline li > .fa.comment-avatar{height:50px;width:50px;padding:0;border-widt
 .date-picker-wrapper table .caption .next, .date-picker-wrapper table .caption .prev{
   line-height:30px;
 }
+th[sort]{color:#4d90fd}
 th[sort] .fa{position:absolute;line-height:18px}
 th[sort].sort-active{font-size:0.9em}
 th[sort].sort-active.sort-up{transform:rotate(0deg);color:rgb(255, 81, 0)}

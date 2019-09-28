@@ -20,6 +20,7 @@ package echo
 
 import (
 	"context"
+	"fmt"
 	"sync/atomic"
 )
 
@@ -31,8 +32,9 @@ type Transaction interface {
 }
 
 var (
-	_                     Transaction = NewTransaction(nil)
-	DefaultNopTransaction Transaction = &NopTransaction{}
+	_                       Transaction = NewTransaction(nil)
+	DefaultNopTransaction   Transaction = &NopTransaction{}
+	DefaultDebugTransaction Transaction = &DebugTransaction{}
 )
 
 type NopTransaction struct {
@@ -57,6 +59,31 @@ func (b *NopTransaction) End(ctx context.Context, succeed bool) error {
 	return b.Rollback(ctx)
 }
 
+type DebugTransaction struct {
+}
+
+func (b *DebugTransaction) Begin(ctx context.Context) error {
+	fmt.Println(`DebugTransaction: Begin`)
+	return nil
+}
+
+func (b *DebugTransaction) Rollback(ctx context.Context) error {
+	fmt.Println(`DebugTransaction: Rollback`)
+	return nil
+}
+
+func (b *DebugTransaction) Commit(ctx context.Context) error {
+	fmt.Println(`DebugTransaction: Commit`)
+	return nil
+}
+
+func (b *DebugTransaction) End(ctx context.Context, succeed bool) error {
+	if succeed {
+		return b.Commit(ctx)
+	}
+	return b.Rollback(ctx)
+}
+
 func NewTransaction(trans Transaction) *BaseTransaction {
 	return &BaseTransaction{Transaction: trans}
 }
@@ -67,16 +94,19 @@ type BaseTransaction struct {
 }
 
 func (b *BaseTransaction) Begin(ctx context.Context) error {
-	atomic.AddUint64(&b.i, 1)
+	newValue := atomic.LoadUint64(&b.i) + 1
+	atomic.SwapUint64(&b.i, newValue)
+	if newValue > 1 {
+		return nil
+	}
 	return b.Transaction.Begin(ctx)
 }
 
 func (b *BaseTransaction) Rollback(ctx context.Context) error {
-	newValue := atomic.LoadUint64(&b.i) - 1
-	atomic.SwapUint64(&b.i, newValue)
-	if newValue > 0 {
+	if atomic.LoadUint64(&b.i) == 0 {
 		return nil
 	}
+	atomic.SwapUint64(&b.i, 0)
 	return b.Transaction.Rollback(ctx)
 }
 

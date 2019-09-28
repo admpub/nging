@@ -1,71 +1,95 @@
 {{Extend "layout"}}
-{{Block "title"}}{{"用户管理"|T}}{{/Block}}
+{{Block "title"}}{{"附件管理"|T}}{{/Block}}
 {{Block "head"}}
 <link type="text/css" rel="stylesheet" href="__ASSETS__/js/daterangepicker/daterangepicker.min.css">
+<link rel="stylesheet" href="__ASSETS__/js/float/powerFloat.min.css?t={{BuildTime}}" charset="utf-8" />
+<link rel="stylesheet" href="__ASSETS__/js/jquery.uploadPreviewer/css/jquery.uploadPreviewer.min.css?t={{BuildTime}}" type="text/css" />
 {{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li class="active">{{"用户管理"|T}}</li>
+<li class="active">{{"附件管理"|T}}</li>
 {{/Block}}
 {{Block "main"}}
 <div class="row">
 	<div class="col-md-12">
+		<div class="block-flat sm-margin-bottom">
+			<form class="form-horizontal" action="" id="search-form" method="GET">
+				<div class="input-group no-margin-bottom">
+					<span class="input-group-addon">{{"上传时间"|T}}</span>
+					<input type="text" id="timerange" class="form-control" name="timerange" value="{{Form `timerange`}}">
+					<span class="input-group-addon no-padding no-border"><select name="ownerType" class="form-control" id="ownerType" onchange="ownerTypeChange(this)" style="width:100px">
+						<option value="">-{{"用户类型"|T}}-</option>
+						{{$ownerType := Form "ownerType"}}
+						<option value="user" {{if eq $ownerType `user`}} selected{{end}}>{{`后台用户`|T}}</option>
+						<option value="customer" {{if eq $ownerType `customer`}} selected{{end}}>{{`前台客户`|T}}</option>
+					</select></span>
+					<input name="ownerId" class="form-control" id="ownerId" onchange="$('#search-form').submit()" placeholder="{{`用户ID`|T}}">
+					<span class="input-group-addon">{{"内容类型"|T}}</span>
+					<select name="table" class="form-control" id="table" onchange="$('#search-form').submit()">
+						<option value="">-{{"不限"|T}}-</option>
+						{{$table := Form "table"}} 
+						{{range $k, $v := Stored.tableNames}}
+						<option value="{{$k}}" {{if eq $table $k}} selected{{end}}>{{$k}}</option>
+						{{end}}
+					</select>
+					<span class="input-group-addon">{{"文件类型"|T}}</span>
+					<select name="type" class="form-control" id="type" onchange="$('#search-form').submit()">
+						<option value="">-{{"不限"|T}}-</option>
+						{{$type := Form "type"}} 
+						{{range $k, $v := Stored.fileTypes}}
+						<option value="{{$k.String}}" {{if eq $type $k.String}} selected{{end}}>{{$k.String}}</option>
+						{{end}}
+					</select>
+					<span class="input-group-addon">{{"使用状态"|T}}</span>
+					<select name="used" class="form-control" id="used" onchange="$('#search-form').submit()">
+						<option value="">-{{"不限"|T}}-</option>
+						{{$used := Form "used"}} 
+						<option value="0" {{if eq $used `0`}} selected{{end}}>{{`未使用`|T}}</option>
+						<option value="1" {{if eq $used `1`}} selected{{end}}>{{`已使用`|T}}</option>
+					</select>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
 		<div class="block-flat">
 			<div class="header">
-				<div class="pull-right" style="margin-left:10px">
-					<form class="form-horizontal" action="" id="search-form" method="GET">
-						<div class="input-group">
-							<span class="input-group-addon">{{"上传时间"|T}}</span>
-							<input type="text" id="timerange" class="form-control" name="timerange" value="{{Form `timerange`}}">
-							<span class="input-group-addon">{{"内容类型"|T}}</span>
-							<select name="table" class="form-control" id="table" onchange="$('#search-form').submit()">
-								<option value=""> - {{"不限"|T}} - </option>
-								{{$table := Form "table"}} 
-								{{range $k, $v := Stored.tableNames}}
-								<option value="{{$k}}" {{if eq $table $k}} selected{{end}}>{{$k}}</option>
-								{{end}}
-							</select>
-							<span class="input-group-addon">{{"文件类型"|T}}</span>
-							<select name="type" class="form-control" id="type" onchange="$('#search-form').submit()">
-								<option value=""> - {{"不限"|T}} - </option>
-								{{$type := Form "type"}} 
-								{{range $k, $v := Stored.fileTypes}}
-								<option value="{{$k.String}}" {{if eq $type $k.String}} selected{{end}}>{{$k.String}}</option>
-								{{end}}
-							</select>
-						</div>
-					</form>
-				</div>
-				<a href="__BACKEND__/manager/user_add" class="btn btn-success pull-right">
-					<i class="fa fa-plus"></i>
-					{{"添加用户"|T}}
-				</a>
-				<h3>{{"用户管理"|T}}</h3>
+				<span class="pull-right">
+					<input type="file" multiple="true" id="input-file-upload" />
+				</span>
+				<h3>{{"附件管理"|T}}</h3>
 			</div>
 			<div class="content">
+				<div class="table-responsive" id="previewTableContainer"></div>
+				
 				<div class="table-responsive">
 				<table class="table no-border hover">
-					<thead class="no-border">
+					<thead class="no-border auto-fixed" sort-current="{{Form `sort` `-id`}}">
 						<tr>
-							<th style="width:80px"><strong>ID</strong></th>
+							<th style="width:60px" sort="-id"><strong>ID</strong></th>
 							<th style="width:50px"><strong>{{"图片"|T}}</strong></th>
 							<th><strong>{{"原始名称"|T}}</strong></th>
 							<th><strong>{{"保存位置"|T}}</strong></th>
-							<th style="width:80px"><strong>{{"文件类型"|T}}</strong></th>
-							<th style="width:80px"><strong>{{"内容类型"|T}}</strong></th>
-							<th style="width:60px"><strong>{{"大小"|T}}</strong></th>
-							<th style="width:60px"><strong>{{"尺寸"|T}}</strong></th>
-							<th style="width:60px"><strong>{{"时间"|T}}</strong></th>
+							<th style="width:80px" sort="-type"><strong>{{"文件类型"|T}}</strong></th>
+							<th style="width:80px" sort="table_name"><strong>{{"内容类型"|T}}</strong></th>
+							<th style="width:60px" sort="-size"><strong>{{"大小"|T}}</strong></th>
+							<th style="width:80px" sort="-width"><strong>{{"尺寸"|T}}</strong></th>
+							<th style="width:85px" sort="-created"><strong>{{"时间"|T}}</strong></th>
 							<th style="width:120px" class="text-center"><strong>{{"操作"|T}}</strong></th>
 						</tr>
 					</thead>
-					<tbody class="no-border-y">
+					<tbody class="no-border-y" id="tbody-content">
                         {{range $k,$v := Stored.listData}}
 						<tr>
 							<td>{{$v.Id}}</td>
-							<td class="no-padding"><img style="width:50px;height:50px" src="{{if $v.ViewUrl}}{{$v.ViewUrl}}{{else}}__ASSETS__/images/user_128.png{{end}}" onerror="this.src='__ASSETS__/images/user_128.png';" /></td>
+							<td class="no-padding"><a href="{{$v.ViewUrl}}" target="_blank"><img style="width:50px;height:50px" class="previewable" src="{{if $v.ViewUrl}}{{$v.ViewUrl}}{{else}}__ASSETS__/images/user_128.png{{end}}" onerror="this.src='__ASSETS__/images/user_128.png';" /></a></td>
 							<td>
 								{{$v.Name}}
+								<div class="x-block">
+									<span class="label label-{{if gt $v.UsedTimes 0}}primary{{else}}default{{end}} label-xs">{{if gt $v.UsedTimes 0}}{{T `使用%d次` $v.UsedTimes}}{{else}}{{`未使用`|T}}{{end}}</span>
+								</div>
 							</td>
 							<td>{{$v.SavePath}}</td>
 							<td>{{$v.Type}}</td>
@@ -74,7 +98,7 @@
 							<td>{{$v.Width}}&times;{{$v.Height}}</td>
 							<td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}</td>
 							<td class="text-center">
-							<a class="label label-danger" href="__BACKEND__/manager/file/delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
+							<a class="label label-danger" href="__BACKEND__/manager/file/delete/{{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
 							</td>
 						</tr>
                         {{end}}
@@ -88,9 +112,11 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
+<script type="text/javascript" src="__ASSETS__/js/float/powerFloat.min.js?t={{BuildTime}}" charset="utf-8"></script>
 <script src="__ASSETS__/js/daterangepicker/moment.min.js?t={{BuildTime}}" type="text/javascript" charset="utf-8"></script>
 <script src="__ASSETS__/js/daterangepicker/jquery.daterangepicker.min.js?t={{BuildTime}}" type="text/javascript" charset="utf-8"></script>
 <script src="__ASSETS__/js/behaviour/page/datetime.min.js?t={{BuildTime}}" type="text/javascript" charset="utf-8"></script>
+<script src="__ASSETS__/js/jquery.uploadPreviewer/jquery.uploadPreviewer.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript">
 $(function(){
 	var change = false;
@@ -106,6 +132,25 @@ $(function(){
 	$('#timerange').on('change',function(event,obj){
 		$('#search-form').submit();
 	});
+	App.float('#tbody-content img.previewable');
+	
+	var myUploadInput = $("#input-file-upload").uploadPreviewer({
+		"buttonText":'<i class="fa fa-cloud-upload"></i> {{"上传附件"|T}}',
+		"previewTableContainer":'#previewTableContainer',
+		"url":'{{BackendUploadURL `user`}}',
+		"previewTableShow":false
+	});
+  	$(document).on("file-preview:changed", function(e) {
+		myUploadInput.submit(function(r){
+			if(r.Code==1){
+				App.message({text:'{{"上传成功"|T}}',type:'success'});
+				window.setTimeout(function(){window.location.reload();},2000);
+			}else{
+				App.message({text:r.Info,type:'error'});
+			}
+		});
+	  });
+	  App.tableSorting();
 });
 </script>
 {{/Block}}

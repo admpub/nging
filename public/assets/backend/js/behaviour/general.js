@@ -1194,14 +1194,22 @@ var App = function () {
     tableSorting: function (table) {
       table = table == null ? '' : table + ' ';
       $(table + '[sort-current!=""]').each(function () {//<thead sort-current="created">
-        var current = $(this).attr('sort-current');
+        var current = String($(this).attr('sort-current'));
+        var isDesc = current.substring(0,1) == '-';
+        if (isDesc) current=current.substring(1);
         var sortObj = $(this).find('[sort="' + current + '"]');//<th sort="-created">
-        var newCls = 'fa-arrow-down', oldCls = 'fa-arrow-up', sortBy = 'down';
-        if (sortObj.length < 1) {
+        var newCls, oldCls, sortBy;
+        if (sortObj.length < 1 && current) {
+          sortObj = $(this).find('[sort="-' + current + '"]');
+        }
+        if (!isDesc) {
           newCls = 'fa-arrow-up';
           sortBy = 'up';
           oldCls = 'fa-arrow-down';
-          sortObj = $(this).find('[sort="-' + current + '"]');
+        } else {
+          newCls = 'fa-arrow-down';
+          sortBy = 'down';
+          oldCls = 'fa-arrow-up';
         }
         if (sortObj.length > 0) {
           var icon = sortObj.children('.fa');

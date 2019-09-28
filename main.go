@@ -37,6 +37,7 @@ import (
 	_ "github.com/admpub/nging/application"
 	_ "github.com/admpub/nging/application/initialize/manager"
 	_ "github.com/admpub/nging/application/library/sqlite"
+	_ "github.com/admpub/nging/application/model/file/initialize"
 )
 
 var (

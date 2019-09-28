@@ -22,8 +22,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/webx-top/echo"
 	"github.com/admpub/nging/application/registry/upload/table"
+	"github.com/webx-top/echo"
 )
 
 // UploadLinkLifeTime 上传链接生存时间

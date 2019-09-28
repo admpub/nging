@@ -21,13 +21,15 @@ package upload
 import "strings"
 
 var subdirs = map[string]bool{
-	`comment`:          true,
-	`customer-avatar`:  true,
-	`user-avatar`:      true,
-	`pay-product`:      true,
-	`product-version`:  true,
-	`siteAnnouncement`: true,
-	`news`:             true,
+	`user`:              true, //后台用户个人文件
+	`customer`:          true, //前台客户个人文件
+	`comment`:           true, //评论附件
+	`customer-avatar`:   true, //前台客户头像
+	`user-avatar`:       true, //后台用户头像
+	`pay-product`:       true, //产品图片
+	`product-version`:   true, //产品版本文件
+	`site-announcement`: true, //站点公告图片
+	`news`:              true, //新闻图片
 }
 
 func SubdirRegister(subdir string, allow bool) {

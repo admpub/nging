@@ -41,12 +41,15 @@ func Token(values ...interface{}) string {
 		switch t := values[0].(type) {
 		case url.Values:
 			urlValues = t
+		case map[string][]string:
+			urlValues = url.Values(t)
 		default:
 			urlValues = tplfunc.URLValues(values...)
 		}
 	} else {
 		urlValues = tplfunc.URLValues(values...)
 	}
+	urlValues.Del(`token`)
 	var apiKey string
 	if cfg, ok := echo.Get(`DefaultConfig`).(APIKey); ok {
 		apiKey = cfg.APIKey()
@@ -61,6 +64,8 @@ func URLParam(subdir string, values ...interface{}) string {
 		switch t := values[0].(type) {
 		case url.Values:
 			urlValues = t
+		case map[string][]string:
+			urlValues = url.Values(t)
 		default:
 			urlValues = tplfunc.URLValues(values...)
 		}

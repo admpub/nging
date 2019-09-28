@@ -19,6 +19,7 @@
 package manager
 
 import (
+	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/model/file"
 	"github.com/admpub/nging/application/registry/upload"
@@ -35,6 +36,15 @@ func FileList(ctx echo.Context) error {
 	if len(table) > 0 {
 		cond.AddKV(`table_name`, table)
 	}
+	used := ctx.Formx("used").String()
+	if len(used) > 0 {
+		switch used {
+		case `0`:
+			cond.AddKV(`used_times`, 0)
+		case `1`:
+			cond.AddKV(`used_times`, db.Gt(0))
+		}
+	}
 	typ := ctx.Formx("type").String()
 	if len(typ) > 0 {
 		cond.AddKV(`type`, typ)
@@ -43,8 +53,9 @@ func FileList(ctx echo.Context) error {
 	if len(timerange) > 0 {
 		cond.Add(mysql.GenDateRange(`created`, timerange).V()...)
 	}
+	sorts := common.Sorts(ctx, `file`, `-id`)
 	_, err := common.NewLister(fileM.File, nil, func(r db.Result) db.Result {
-		return r.OrderBy(`-id`)
+		return r.OrderBy(sorts...)
 	}, cond.And()).Paging(ctx)
 	if err != nil {
 		return err
@@ -53,4 +64,14 @@ func FileList(ctx echo.Context) error {
 	ctx.Set(`fileTypes`, uploadClient.FileTypeExts)
 	ctx.Set(`tableNames`, upload.SubdirAll())
 	return ctx.Render(`manager/file/list`, err)
+}
+
+func FileDelete(ctx echo.Context) error {
+	id := ctx.Paramx("id").Uint64()
+	fileM := file.NewFile(ctx)
+	err := fileM.DeleteByID(id)
+	if err != nil {
+		return err
+	}
+	return ctx.Redirect(handler.URLFor(`/manager/file/list`))
 }

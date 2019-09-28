@@ -124,8 +124,13 @@ func (f *File) fireDelete() error {
 	if err != nil {
 		return err
 	}
+	f.base.Begin()
+	defer func() {
+		f.base.End(err == nil)
+	}()
 	thumbNum := cnt()
 	if thumbNum > 0 {
+		thumbM.Use(f.base.Tx())
 		err = thumbM.Delete(nil, db.Cond{`file_id`: f.Id})
 		if err != nil {
 			return err
@@ -151,6 +156,11 @@ func (f *File) fireDelete() error {
 }
 
 func (f *File) DeleteByID(id uint64) (err error) {
+	f.base.Begin()
+	defer func() {
+		f.base.End(err == nil)
+	}()
+	f.Use(f.base.Tx())
 	err = f.Get(nil, db.Cond{`id`: id})
 	if err != nil {
 		if err != db.ErrNoMoreRows {
@@ -199,6 +209,11 @@ func (f *File) FnGetByMd5() func(r *uploadClient.Result) error {
 }
 
 func (f *File) DeleteBySavePath(savePath string) (err error) {
+	f.base.Begin()
+	defer func() {
+		f.base.End(err == nil)
+	}()
+	f.Use(f.base.Tx())
 	err = f.Get(nil, db.Cond{`save_path`: savePath})
 	if err != nil {
 		if err != db.ErrNoMoreRows {
@@ -214,6 +229,8 @@ func (f *File) DeleteBySavePath(savePath string) (err error) {
 }
 
 func (f *File) UpdateAvatar(project string, ownerType string, ownerID uint64) error {
+	f.base.Begin()
+	f.Use(f.base.Tx())
 	err := f.SetFields(nil, echo.H{
 		`table_id`:   ownerID,
 		`table_name`: ownerType,
@@ -221,6 +238,9 @@ func (f *File) UpdateAvatar(project string, ownerType string, ownerID uint64) er
 		`project`:    project,
 		`used_times`: 1,
 	}, db.Cond{`id`: f.Id})
+	defer func() {
+		f.base.End(err == nil)
+	}()
 	if err != nil {
 		return err
 	}
@@ -261,11 +281,15 @@ func (f *File) DeleteBy(cond db.Compound) error {
 		}
 		rows := f.Objects()
 		for _, fm := range rows {
+			f.base.Begin()
+			f.Use(f.base.Tx())
 			err = f.Delete(nil, db.Cond{`id`: fm.Id})
 			if err != nil {
+				f.base.Rollback()
 				return err
 			}
 			err = f.fireDelete()
+			f.base.End(err == nil)
 			if err != nil {
 				return err
 			}

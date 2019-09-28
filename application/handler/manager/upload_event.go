@@ -2,6 +2,7 @@ package manager
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/admpub/events"
 	"github.com/admpub/nging/application/dbschema"
@@ -56,7 +57,7 @@ func init() {
 	config.Emitter.On(`file-deleted`, events.Callback(func(e events.Event) error {
 		ctx := e.Context.Get(`ctx`).(echo.Context)
 		files := e.Context.Get(`files`).([]string)
-		data := e.Context.Get("data").(*dbschema.File)
+		data := e.Context.Get(`data`).(*dbschema.File)
 		newStore := upload.StorerGet(data.StorerName)
 		if newStore == nil {
 			return ctx.E(`存储引擎“%s”未被登记`, data.StorerName)
@@ -65,9 +66,12 @@ func init() {
 		defer storer.Close()
 		var errs common.Errors
 		for _, file := range files {
-			if err := storer.Delete(file); err != nil {
+			if err := storer.Delete(file); err != nil && !os.IsNotExist(err) {
 				errs = append(errs, err)
 			}
+		}
+		if len(errs) == 0 {
+			return nil
 		}
 		return errs
 	}))
