@@ -19,13 +19,8 @@
 package manager
 
 import (
-	"fmt"
-	"time"
-
 	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/helper"
-	"github.com/admpub/nging/application/registry/upload/table"
 	"github.com/webx-top/echo"
 )
 
@@ -51,32 +46,6 @@ func init() {
 		g.Route(`POST`, `/upload/:type`, Upload) //文件上传
 		g.Route(`GET,POST`, `/crop`, Crop)       //裁剪图片
 		g.Route(`GET,POST`, `/uploaded_file`, UploadedFile)
-
-		group := g.Group(`/file`)
-		group.Route(`GET,POST`, `/list`, FileList)
-		group.Route(`GET,POST`, `/delete/:id`, FileDelete)
 	})
 
-	upload.CheckerRegister(`user`, func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
-		user := handler.User(ctx)
-		if user == nil {
-			err = ctx.E(`登录信息获取失败，请重新登录`)
-			return
-		}
-		userID := uint64(user.Id)
-		timestamp := ctx.Formx(`time`).Int64()
-		// 验证签名（避免上传接口被滥用）
-		if ctx.Form(`token`) != upload.Token(ctx.Queries()) {
-			err = ctx.E(`令牌错误`)
-			return
-		}
-		if time.Now().Local().Unix()-timestamp > upload.UploadLinkLifeTime {
-			err = ctx.E(`上传网址已过期`)
-			return
-		}
-		subdir = fmt.Sprint(userID) + `/`
-		subdir += time.Now().Format(`2006/01/02/`)
-		tis.SetTableID(userID)
-		return
-	})
 }

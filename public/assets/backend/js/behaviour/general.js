@@ -1288,14 +1288,14 @@ var App = function () {
       }
       if (postField == null) postField = 'id';
       var data = [];
-      if ($(elem).length < 1) {
+      $(elem).each(function () {
+        if($(this).is(':checked')) data.push({ name: postField, value: $(this).val() });
+      });
+      if (data.length < 1) {
         App.message({ title: App.i18n.SYS_INFO, text: App.i18n.PLEASE_SELECT_FOR_REMOVE, type: 'warning' });
         return false;
       }
       if (!confirm(App.i18n.CONFIRM_REMOVE)) return false;
-      $(elem).each(function () {
-        data.push({ name: postField, value: $(this).val() });
-      });
       $.get(removeURL, data, function (r) {
         if (callback && $.isFunction(callback)) return callback();
         var msg = { title: App.i18n.SYS_INFO, text: '', type: '' };

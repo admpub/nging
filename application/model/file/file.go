@@ -124,13 +124,9 @@ func (f *File) fireDelete() error {
 	if err != nil {
 		return err
 	}
-	f.base.Begin()
-	defer func() {
-		f.base.End(err == nil)
-	}()
 	thumbNum := cnt()
 	if thumbNum > 0 {
-		thumbM.Use(f.base.Tx())
+		thumbM.Use(f.Trans())
 		err = thumbM.Delete(nil, db.Cond{`file_id`: f.Id})
 		if err != nil {
 			return err
@@ -155,7 +151,7 @@ func (f *File) fireDelete() error {
 	return err
 }
 
-func (f *File) DeleteByID(id uint64) (err error) {
+func (f *File) DeleteByID(id uint64, ownerType string, ownerID uint64) (err error) {
 	f.base.Begin()
 	defer func() {
 		f.base.End(err == nil)
@@ -167,6 +163,9 @@ func (f *File) DeleteByID(id uint64) (err error) {
 			return err
 		}
 		return nil
+	}
+	if f.UsedTimes > 0 && (ownerType != `user` || ownerID != 1) {
+		return f.base.E(`文件正在使用中，不能删除(只有创始人才能强制删除)`)
 	}
 	err = f.Delete(nil, db.Cond{`id`: id})
 	if err != nil {

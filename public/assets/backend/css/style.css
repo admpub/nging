@@ -5840,3 +5840,5 @@ th[sort] .fa{position:absolute;line-height:18px}
 th[sort].sort-active{font-size:0.9em}
 th[sort].sort-active.sort-up{transform:rotate(0deg);color:rgb(255, 81, 0)}
 th[sort].sort-active.sort-down{transform:rotate(0deg);color:green}
+.btn > input[type="file"]{line-height:34px;margin-top:-10px}
+

@@ -57,8 +57,12 @@
 		<div class="block-flat">
 			<div class="header">
 				<span class="pull-right">
-					<input type="file" multiple="true" id="input-file-upload" />
+					<input type="file" multiple="true" id="input-file-upload" style="width:95px" />
 				</span>
+				<a href="javascript:;" class="btn btn-danger pull-right" onclick="App.removeSelected('input:checkbox[name=\'id[]\']','id','__BACKEND__/manager/file/delete/0');">
+					<i class="fa fa-trash-o"></i>
+					{{"删除选中"|T}}
+				</a>
 				<h3>{{"附件管理"|T}}</h3>
 			</div>
 			<div class="content">
@@ -68,6 +72,7 @@
 				<table class="table no-border hover">
 					<thead class="no-border auto-fixed" sort-current="{{Form `sort` `-id`}}">
 						<tr>
+							<th style="width:30px"><div class="checkbox checkbox-primary no-margin-y"><input type="checkbox" id="checkedAll"><label for="checkedAll"></label></div></th>
 							<th style="width:60px" sort="-id"><strong>ID</strong></th>
 							<th style="width:50px"><strong>{{"图片"|T}}</strong></th>
 							<th><strong>{{"原始名称"|T}}</strong></th>
@@ -83,6 +88,9 @@
 					<tbody class="no-border-y" id="tbody-content">
                         {{range $k,$v := Stored.listData}}
 						<tr>
+							<td>
+								<div class="checkbox checkbox-primary no-margin-y"><input id="checkbox-{{$k}}" class="check-table" type="checkbox" name="id[]" value="{{$v.Id}}"><label for="checkbox-{{$k}}"></label></div>
+							</td>
 							<td>{{$v.Id}}</td>
 							<td class="no-padding"><a href="{{$v.ViewUrl}}" target="_blank"><img style="width:50px;height:50px" class="previewable" src="{{if $v.ViewUrl}}{{$v.ViewUrl}}{{else}}__ASSETS__/images/user_128.png{{end}}" onerror="this.src='__ASSETS__/images/user_128.png';" /></a></td>
 							<td>
@@ -149,8 +157,9 @@ $(function(){
 				App.message({text:r.Info,type:'error'});
 			}
 		});
-	  });
-	  App.tableSorting();
+	});
+	App.tableSorting();
+	App.attachCheckedAll('#checkedAll','input[type=checkbox][name="id[]"]');
 });
 </script>
 {{/Block}}

@@ -23,6 +23,7 @@ import (
 	"github.com/admpub/events/emitter"
 )
 
+// EmptyList 空菜单列表
 var EmptyList = List{}
 
 //TopNavigate 顶部导航菜单
@@ -123,7 +124,7 @@ var TopNavigate = &List{
 			},
 			{
 				DisplayOnMenu: true,
-				Name:          `附件管理`,
+				Name:          `本地附件`,
 				Action:        `uploaded_file`,
 			},
 		},

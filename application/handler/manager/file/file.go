@@ -16,7 +16,8 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package manager
+// Package file 上传文件管理
+package file
 
 import (
 	"github.com/admpub/nging/application/handler"
@@ -66,12 +67,26 @@ func FileList(ctx echo.Context) error {
 	return ctx.Render(`manager/file/list`, err)
 }
 
-func FileDelete(ctx echo.Context) error {
+func FileDelete(ctx echo.Context) (err error) {
+	user := handler.User(ctx)
 	id := ctx.Paramx("id").Uint64()
 	fileM := file.NewFile(ctx)
-	err := fileM.DeleteByID(id)
+	ownerID := uint64(user.Id)
+	if id == 0 {
+		ids := ctx.FormxValues(`id`).Uint64()
+		for _, id := range ids {
+			err = fileM.DeleteByID(id, `user`, ownerID)
+			if err != nil {
+				return err
+			}
+		}
+		goto END
+	}
+	err = fileM.DeleteByID(id, `user`, ownerID)
 	if err != nil {
 		return err
 	}
+
+END:
 	return ctx.Redirect(handler.URLFor(`/manager/file/list`))
 }
