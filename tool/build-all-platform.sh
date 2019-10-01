@@ -8,7 +8,7 @@ export NGING_COMMIT=`git rev-parse HEAD`
 export NGING_LABEL="stable"
 
 export NGINGEX=
-export BUILDTAGS=" official"
+export BUILDTAGS=
 
 export GOOS=linux
 export GOARCH=amd64
@@ -60,7 +60,7 @@ source ${PWD}/inc-build.sh
 
 # windows 放到最后
 export NGINGEX=.exe
-export BUILDTAGS=" official windll"
+export BUILDTAGS=" windll"
 
 export GOOS=windows
 export GOARCH=386

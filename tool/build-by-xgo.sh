@@ -9,7 +9,7 @@ export NGING_COMMIT=`git rev-parse HEAD`
 export NGING_LABEL="stable"
 
 export NGINGEX=
-export BUILDTAGS=" official zbar"
+export BUILDTAGS=
 
 export GOOS=linux
 export GOARCH=amd64
