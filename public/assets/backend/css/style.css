@@ -5835,6 +5835,11 @@ ul.timeline li > .fa.comment-avatar{height:50px;width:50px;padding:0;border-widt
 .date-picker-wrapper table .caption .next, .date-picker-wrapper table .caption .prev{
   line-height:30px;
 }
+.date-picker-wrapper table .caption{height:auto}
+.date-picker-wrapper .month-wrapper table .day{margin-bottom:0}
+.date-picker-wrapper .month-wrapper table .day.checked{background-color:#69b8f8;color:white !important;}
+.date-picker-wrapper .first-date-selected, 
+.date-picker-wrapper .last-date-selected{background-color:#36a3ff}
 th[sort]{color:#4d90fd}
 th[sort] .fa{position:absolute;line-height:18px}
 th[sort].sort-active{font-size:0.9em}
