@@ -124,6 +124,11 @@ func (f *File) fireDelete() error {
 	if err != nil {
 		return err
 	}
+	f.base.Begin()
+	defer func() {
+		f.base.End(err == nil)
+	}()
+	f.Use(f.base.Tx())
 	thumbNum := cnt()
 	if thumbNum > 0 {
 		thumbM.Use(f.Trans())

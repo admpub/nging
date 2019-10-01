@@ -111,9 +111,13 @@ func (b *BaseTransaction) Rollback(ctx context.Context) error {
 }
 
 func (b *BaseTransaction) Commit(ctx context.Context) error {
-	newValue := atomic.LoadUint64(&b.i) - 1
-	atomic.SwapUint64(&b.i, newValue)
-	if newValue > 0 {
+	value := atomic.LoadUint64(&b.i)
+	if value < 1 {
+		panic(`transaction has already been committed or rolled back`)
+	}
+	value--
+	atomic.SwapUint64(&b.i, value)
+	if value > 0 {
 		return nil
 	}
 	return b.Transaction.Commit(ctx)

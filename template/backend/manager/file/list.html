@@ -89,7 +89,7 @@
                         {{range $k,$v := Stored.listData}}
 						<tr>
 							<td>
-								<div class="checkbox checkbox-primary no-margin-y"><input id="checkbox-{{$k}}" class="check-table" type="checkbox" name="id[]" value="{{$v.Id}}"><label for="checkbox-{{$k}}"></label></div>
+								<div class="checkbox checkbox-primary no-margin-y"><input id="checkbox-{{$k}}" class="check-table" type="checkbox" name="id[]" value="{{$v.Id}}"{{if gt $v.UsedTimes 0}} disabled{{end}}><label for="checkbox-{{$k}}"></label></div>
 							</td>
 							<td>{{$v.Id}}</td>
 							<td class="no-padding"><a href="{{$v.ViewUrl}}" target="_blank"><img style="width:50px;height:50px" class="previewable" src="{{if $v.ViewUrl}}{{$v.ViewUrl}}{{else}}__ASSETS__/images/user_128.png{{end}}" onerror="this.src='__ASSETS__/images/user_128.png';" /></a></td>
@@ -159,6 +159,7 @@ $(function(){
 		});
 	});
 	App.tableSorting();
+	$('#checkedAll,input[type=checkbox][name="id[]"]:checked').prop('checked',false);
 	App.attachCheckedAll('#checkedAll','input[type=checkbox][name="id[]"]');
 });
 </script>

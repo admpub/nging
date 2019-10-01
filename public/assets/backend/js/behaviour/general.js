@@ -680,7 +680,7 @@ var App = function () {
       return text.replace(/\n/g, '<br />').replace(/  /g, '&nbsp; ').replace(/\t/g, '&nbsp; &nbsp; ');
     },
     checkedAll: function (ctrl, target) {
-      return $(target).prop('checked', $(ctrl).prop('checked'));
+      return $(target).not(':disabled').prop('checked', $(ctrl).prop('checked'));
     },
     attachCheckedAll: function (ctrl, target, showNumElem) {
       $(ctrl).on('ifChecked ifUnchecked click', function () {
