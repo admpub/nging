@@ -49,40 +49,34 @@ var DefaultChecker = func(ctx echo.Context, tis table.TableInfoStorer) (subdir s
 	return
 }
 
-var checkers = map[string]Checker{
-	`user-avatar`: func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
-		userID := ctx.Formx(`userId`).Uint64()
-		timestamp := ctx.Formx(`time`).Int64()
-		// 验证签名（避免上传接口被滥用）
-		if ctx.Form(`token`) != Token(`userId`, userID, `time`, timestamp) {
-			err = ctx.E(`令牌错误`)
-			return
-		}
-		if time.Now().Local().Unix()-timestamp > UploadLinkLifeTime {
-			err = ctx.E(`上传网址已过期`)
-			return
-		}
-		if userID > 0 {
-			name = `avatar`
-		}
-		subdir = fmt.Sprint(userID) + `/`
-		tis.SetTableID(userID)
+func UserAvatarChecker(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
+	userID := ctx.Formx(`userId`).Uint64()
+	timestamp := ctx.Formx(`time`).Int64()
+	// 验证签名（避免上传接口被滥用）
+	if ctx.Form(`token`) != Token(`userId`, userID, `time`, timestamp) {
+		err = ctx.E(`令牌错误`)
 		return
-	},
+	}
+	if time.Now().Local().Unix()-timestamp > UploadLinkLifeTime {
+		err = ctx.E(`上传网址已过期`)
+		return
+	}
+	if userID > 0 {
+		name = `avatar`
+	}
+	subdir = fmt.Sprint(userID) + `/`
+	tis.SetTableID(userID)
+	return
 }
 
 func CheckerRegister(typ string, checker Checker) {
-	checkers[typ] = checker
-}
-
-func CheckerAll() map[string]Checker {
-	return checkers
+	SubdirGet(typ).SetChecker(checker)
 }
 
 func CheckerGet(typ string) Checker {
-	checker, ok := checkers[typ]
-	if !ok {
+	s := SubdirGet(typ)
+	if s == nil || s.Checker == nil {
 		return DefaultChecker
 	}
-	return checker
+	return s.Checker
 }
