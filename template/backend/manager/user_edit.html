@@ -24,7 +24,7 @@
                     <div class="avatar-upload">
                       <a class="label label-danger pull-right avatar-remove" href="javascript:;" title="{{"删除图片"|T}}"><i class="fa fa-times"></i></a>
                       {{$avatar := Form "avatar"}}
-                      <img src="{{if $avatar}}{{AddSuffix $avatar "_200_200"}}{{else}}__ASSETS__/images/user_128.png{{end}}" class="profile-avatar img-thumbnail" onerror="this.src='__ASSETS__/images/user_128.png';" />
+                      <img src="{{if $avatar}}{{AddSuffix $avatar "_200_200"}}{{else}}__ASSETS__/images/user_128.png{{end}}" class="profile-avatar img-thumbnail" onerror="this.onerror=null;this.src='__ASSETS__/images/user_128.png';" />
                       <input id="fileupload" type="file" name="files[]">
                       <input type="hidden" id="avatar-image" name="avatar-small" value="{{if $avatar}}{{AddSuffix $avatar "_200_200"}}{{end}}" />
                       <input type="hidden" id="avatar-image-original" name="avatar" value="{{$avatar}}" />
