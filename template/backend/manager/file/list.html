@@ -82,7 +82,7 @@
 							<th style="width:60px" sort="-size"><strong>{{"大小"|T}}</strong></th>
 							<th style="width:80px" sort="-width"><strong>{{"尺寸"|T}}</strong></th>
 							<th style="width:85px" sort="-created"><strong>{{"时间"|T}}</strong></th>
-							<th style="width:120px" class="text-center"><strong>{{"操作"|T}}</strong></th>
+							<th style="width:60px" class="text-center"><strong>{{"操作"|T}}</strong></th>
 						</tr>
 					</thead>
 					<tbody class="no-border-y" id="tbody-content">
@@ -92,7 +92,15 @@
 								<div class="checkbox checkbox-primary no-margin-y"><input id="checkbox-{{$k}}" class="check-table" type="checkbox" name="id[]" value="{{$v.Id}}"{{if gt $v.UsedTimes 0}} disabled{{end}}><label for="checkbox-{{$k}}"></label></div>
 							</td>
 							<td>{{$v.Id}}</td>
-							<td class="no-padding"><a href="{{$v.ViewUrl}}" target="_blank"><img style="width:50px;height:50px" class="previewable" src="{{if $v.ViewUrl}}{{$v.ViewUrl}}{{else}}__ASSETS__/images/user_128.png{{end}}" onerror="this.src='__ASSETS__/images/user_128.png';" /></a></td>
+							<td class="no-padding">
+								<a href="{{$v.ViewUrl}}" target="_blank">
+								{{if eq $v.Type `image`}}
+								<img style="width:50px;height:50px" class="previewable" src="{{if $v.ViewUrl}}{{$v.ViewUrl}}{{else}}__ASSETS__/images/nopreview.jpg{{end}}" onerror="this.src='__ASSETS__/images/nopreview.jpg';" />
+								{{else}}
+								<img style="width:50px;height:50px" src="__ASSETS__/images/nopreview.jpg" />
+								{{end}}
+								</a>
+							</td>
 							<td>
 								{{$v.Name}}
 								<div class="x-block">
