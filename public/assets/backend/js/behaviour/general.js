@@ -1296,7 +1296,9 @@ var App = function () {
         return false;
       }
       if (!confirm(App.i18n.CONFIRM_REMOVE)) return false;
+      App.loading('show');
       $.get(removeURL, data, function (r) {
+        App.loading('hide');
         if (callback && $.isFunction(callback)) return callback();
         var msg = { title: App.i18n.SYS_INFO, text: '', type: '' };
         if (r.Code == 1) {
