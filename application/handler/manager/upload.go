@@ -149,12 +149,12 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	dbsaver := upload.DBSaverGet(typ)
 	checker := func(r *uploadClient.Result) error {
 		extension := path.Ext(r.FileName)
-		if len(fileType) > 0 {
+		if len(r.FileType) > 0 {
 			if !uploadClient.CheckTypeExtension(fileType, extension) {
 				return ctx.E(`不支持将扩展名为“%v”的文件作为“%v”类型的文件来进行上传`, extension, fileType)
 			}
 		} else {
-			fileM.Type = uploadClient.DetectType(extension)
+			r.FileType = uploadClient.FileType(uploadClient.DetectType(extension))
 		}
 		return DefaultChecker(r) //fileM.FnGetByMd5()
 	}
