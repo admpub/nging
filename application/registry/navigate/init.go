@@ -45,7 +45,7 @@ var TopNavigate = &List{
 				Action:        `user`,
 			},
 			{
-				DisplayOnMenu: true,
+				DisplayOnMenu: false,
 				Name:          `添加用户`,
 				Action:        `user_add`,
 				Icon:          `plus`,
@@ -56,7 +56,7 @@ var TopNavigate = &List{
 				Action:        `role`,
 			},
 			{
-				DisplayOnMenu: true,
+				DisplayOnMenu: false,
 				Name:          `添加角色`,
 				Action:        `role_add`,
 				Icon:          `plus`,
@@ -70,12 +70,6 @@ var TopNavigate = &List{
 				DisplayOnMenu: true,
 				Name:          `验证码`,
 				Action:        `verification`,
-			},
-			{
-				DisplayOnMenu: true,
-				Name:          `清理缓存`,
-				Action:        `clear_cache`,
-				Target:        `ajax`,
 			},
 			{
 				DisplayOnMenu: false,

@@ -125,3 +125,25 @@ func (a *List) Add(index int, list ...*Item) *List {
 	*a = append(*a, list...)
 	return a
 }
+
+//Get 添加列表项
+func (a *List) Get(index int) *Item {
+	if len(*a) > index {
+		return (*a)[index]
+	}
+	return nil
+}
+
+//Size 子项数量
+func (a *List) Size() int {
+	return len(*a)
+}
+
+//ChildrenBy 添加列表项
+func (a *List) ChildrenBy(index int) *List {
+	ls := a.Get(index)
+	if ls == nil {
+		return nil
+	}
+	return ls.Children
+}
