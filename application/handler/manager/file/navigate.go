@@ -36,5 +36,5 @@ var topNavigate = navigate.List{
 }
 
 func init() {
-	(*navigate.TopNavigate)[0].Children.Add(-1, topNavigate...)
+	navigate.TopNavigate.ChildrenBy(0).Add(-1, topNavigate...)
 }
