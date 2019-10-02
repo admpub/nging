@@ -23,6 +23,7 @@ import (
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/model/file"
+	fileListModel "github.com/admpub/nging/application/model/file/list"
 	"github.com/admpub/nging/application/registry/upload"
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/db"
@@ -62,7 +63,7 @@ func FileList(ctx echo.Context) error {
 		return err
 	}
 	list := fileM.Objects()
-	listData := file.FileList(list)
+	listData := fileListModel.FileList(list)
 	ctx.Set(`listData`, listData)
 	ctx.Set(`fileTypes`, uploadClient.FileTypeExts)
 	ctx.Set(`tableNames`, upload.SubdirAll())
