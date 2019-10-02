@@ -8,6 +8,8 @@ import (
 	"io"
 )
 
+const bufferSize = 65536
+
 // MD5sumReader returns MD5 checksum of filename
 func MD5sumReader(reader io.Reader) (string, error) {
 	return SumReader(md5.New(), reader)
@@ -21,16 +23,14 @@ func SHA256sumReader(reader io.Reader) (string, error) {
 // SumReader calculates the hash based on a provided hash provider
 func SumReader(hashAlgorithm hash.Hash, reader io.Reader) (string, error) {
 	buf := make([]byte, bufferSize)
-here:
 	for {
 		switch n, err := reader.Read(buf); err {
 		case nil:
 			hashAlgorithm.Write(buf[:n])
 		case io.EOF:
-			break here
+			return fmt.Sprintf("%x", hashAlgorithm.Sum(nil)), nil
 		default:
 			return "", err
 		}
 	}
-	return fmt.Sprintf("%x", hashAlgorithm.Sum(nil)), nil
 }

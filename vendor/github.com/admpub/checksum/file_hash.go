@@ -9,8 +9,6 @@ import (
 	"os"
 )
 
-const bufferSize = 65536
-
 // MD5sum returns MD5 checksum of filename
 func MD5sum(filename string) (string, error) {
 	return Sum(md5.New(), filename)

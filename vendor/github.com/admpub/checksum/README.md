@@ -12,7 +12,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/codingsince1985/checksum"
+	"github.com/admpub/checksum"
 )
 
 func main() {
