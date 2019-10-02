@@ -29,7 +29,7 @@
 						<option value="">-{{"不限"|T}}-</option>
 						{{$table := Form "table"}} 
 						{{range $k, $v := Stored.tableNames}}
-						<option value="{{$k}}" {{if eq $table $k}} selected{{end}}>{{$k}}</option>
+						<option value="{{$k}}" {{if eq $table $k}} selected{{end}}>{{$v.String}}</option>
 						{{end}}
 					</select>
 					<span class="input-group-addon">{{"文件类型"|T}}</span>
@@ -101,7 +101,7 @@
 							</td>
 							<td>{{$v.SavePath}}</td>
 							<td>{{$v.Type}}</td>
-							<td>{{$v.TableName}}</td>
+							<td>{{if $v.SubdirInfo}}{{$v.SubdirInfo.String}}{{else}}-{{end}}</td>
 							<td>{{$v.Size|FormatByte}}</td>
 							<td>{{$v.Width}}&times;{{$v.Height}}</td>
 							<td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}</td>

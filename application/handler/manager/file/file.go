@@ -61,7 +61,9 @@ func FileList(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	ctx.Set(`listData`, fileM.Objects())
+	list := fileM.Objects()
+	listData := file.FileList(list)
+	ctx.Set(`listData`, listData)
 	ctx.Set(`fileTypes`, uploadClient.FileTypeExts)
 	ctx.Set(`tableNames`, upload.SubdirAll())
 	return ctx.Render(`manager/file/list`, err)

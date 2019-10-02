@@ -27,6 +27,7 @@ import (
 	"github.com/admpub/events"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
+	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/table"
 	"github.com/coscms/go-imgparse/imgparse"
 	uploadClient "github.com/webx-top/client/upload"
@@ -39,6 +40,22 @@ func NewFile(ctx echo.Context) *File {
 		File: &dbschema.File{},
 		base: base.New(ctx),
 	}
+}
+
+type FileInfo struct {
+	*dbschema.File
+	SubdirInfo *upload.SubdirInfo `db:"-"`
+}
+
+func FileList(list []*dbschema.File) interface{} {
+	listData := make([]*FileInfo, len(list))
+	for k, v := range list {
+		listData[k] = &FileInfo{
+			File:       v,
+			SubdirInfo: upload.SubdirGet(v.TableName),
+		}
+	}
+	return listData
 }
 
 type File struct {
