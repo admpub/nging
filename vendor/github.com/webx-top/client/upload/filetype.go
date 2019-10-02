@@ -141,6 +141,19 @@ func InitFileTypes() {
 	}
 }
 
+// TypeExtensions 文件类型文件扩展名
+func TypeExtensions(typ string) []string {
+	return FileType(typ).Extensions()
+}
+
+// CheckTypeExtension 检查类型扩展名
+func CheckTypeExtension(typ string, extension string) bool {
+	if len(extension) > 0 && extension[0] == '.' {
+		extension = extension[1:]
+	}
+	return com.InSlice(extension, TypeExtensions(typ))
+}
+
 // DetectType 根据扩展名判断类型
 func DetectType(extension string) string {
 	if len(extension) > 0 && extension[0] == '.' {

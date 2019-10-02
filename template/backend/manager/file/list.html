@@ -1,4 +1,4 @@
-{{Extend "layout"}}
+{{Strip}}{{Extend "layout"}}
 {{Block "title"}}{{"附件管理"|T}}{{/Block}}
 {{Block "head"}}
 <link type="text/css" rel="stylesheet" href="__ASSETS__/js/daterangepicker/daterangepicker.min.css">
@@ -133,6 +133,7 @@
 <script src="__ASSETS__/js/daterangepicker/jquery.daterangepicker.min.js?t={{BuildTime}}" type="text/javascript" charset="utf-8"></script>
 <script src="__ASSETS__/js/behaviour/page/datetime.min.js?t={{BuildTime}}" type="text/javascript" charset="utf-8"></script>
 <script src="__ASSETS__/js/jquery.uploadPreviewer/jquery.uploadPreviewer.min.js?t={{BuildTime}}"></script>
+<script src="__ASSETS__/js/loadingoverlay/loadingoverlay.min.js?t={{BuildTime}}" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">
 $(function(){
 	var change = false;
@@ -154,10 +155,23 @@ $(function(){
 		"buttonText":'<i class="fa fa-cloud-upload"></i> {{"上传附件"|T}}',
 		"previewTableContainer":'#previewTableContainer',
 		"url":'{{BackendUploadURL `user`}}',
-		"previewTableShow":false
+		"previewTableShow":false/*,
+		"uploadProgress":function(progress){
+			var count=progress*100;
+			if(count>100){
+				$.LoadingOverlay("hide");
+				return;
+			}
+			$.LoadingOverlay("progress", count);
+		}*/
 	});
   	$(document).on("file-preview:changed", function(e) {
+		$.LoadingOverlay("show", {
+    		image : "__ASSETS__/images/nging-gear.png",//progress : true, image: "",//fontawesome : "fa fa-cog fa-spin",
+			text  : "{{`文件上传中，请稍候...`|T}}"
+		});
 		myUploadInput.submit(function(r){
+			$.LoadingOverlay("hide");
 			if(r.Code==1){
 				App.message({text:'{{"上传成功"|T}}',type:'success'});
 				window.setTimeout(function(){window.location.reload();},2000);
@@ -172,3 +186,4 @@ $(function(){
 });
 </script>
 {{/Block}}
+{{/Strip}}
