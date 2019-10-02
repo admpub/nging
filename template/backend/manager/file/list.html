@@ -174,7 +174,7 @@ $(function(){
 			$.LoadingOverlay("hide");
 			if(r.Code==1){
 				App.message({text:'{{"上传成功"|T}}',type:'success'});
-				window.setTimeout(function(){window.location.reload();},2000);
+				window.setTimeout(function(){window.location='__BACKEND__/manager/file/list';},2000);
 			}else{
 				App.message({text:r.Info,type:'error'});
 			}
