@@ -97,7 +97,7 @@
 								{{if eq $v.Type `image`}}
 								<img style="width:50px;height:50px" class="previewable" src="{{if $v.ViewUrl}}{{$v.ViewUrl}}{{else}}__ASSETS__/images/nopreview.jpg{{end}}" onerror="this.onerror=null;this.src='__ASSETS__/images/nopreview.jpg';" />
 								{{else}}
-								<img style="width:50px;height:50px" src="__ASSETS__/images/nopreview.jpg" />
+								<img style="width:50px;height:50px" class="previewable" src="__ASSETS__/images/nopreview.jpg" />
 								{{end}}
 								</a>
 							</td>
