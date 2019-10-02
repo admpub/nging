@@ -92,9 +92,12 @@ func MoveAvatarToUserDir(ctx echo.Context, src string, typ string, id uint64) (s
 	return newPath, OnUpdateOwnerFilePath(ctx, src, typ, id, userFile, newPath)
 }
 
+// DirShardingNum 文件夹分组基数
+const DirShardingNum = float64(50000)
+
 // DirSharding 文件夹分组(暂不使用)
 func DirSharding(id uint64) uint64 {
-	return uint64(math.Ceil(float64(id) / float64(50000)))
+	return uint64(math.Ceil(float64(id) / DirShardingNum))
 }
 
 // RemoveUploadedFile 删除被上传的文件
