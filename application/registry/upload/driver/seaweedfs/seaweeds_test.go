@@ -42,9 +42,15 @@ import (
 // http://localhost:8989/3/01637037d6.jpg?height=200&width=200&mode=fit
 // http://localhost:8989/3/01637037d6.jpg?height=200&width=200&mode=fill
 
+// 其它fuse方案：
+// https://github.com/kahing/goofys
+// https://github.com/ncw/rclone :
+// 1. rclone配置。执行 rclone config 开始配置Rclone
+// 2. rclone挂载网盘。命令示例：rclone mount config2:image-dir /root/image-dir --allow-non-empty，此命令会把本地目录/root/image-dir ，挂载到网盘（config2配置文件名）目录image-dir 下。如果你的目标目录中有文件，可以使用参数：--allow-non-empty，但是注意它会清空原目录中的文件。使用rclone mount 命令后，如果不守护进程的话，会话结束后rclone mount 进程就会终止。我们可以用screen来让rclone保持在后台运行。在执行Rclone挂载命令前，选择执行：screen –S config2，挂载完成后再用快捷键CTRL-a d 来暂时断开当前会话。最后用screen -r <screen_pid>重新连接上。
+
 func TestSeaweedfs(t *testing.T) {
 	return
-	r := NewSeaweedfs(`test`)
+	r := NewSeaweedfs(nil, `test`)
 	f, err := os.Open(`./config.go`)
 	if err != nil {
 		t.Fatal(err)
@@ -54,7 +60,7 @@ func TestSeaweedfs(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	purl, err := r.Put(`/config.go`, f, fi.Size())
+	_, purl, err := r.Put(`/config.go`, f, fi.Size())
 	if err != nil {
 		t.Fatal(err)
 	}
