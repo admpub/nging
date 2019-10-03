@@ -25,6 +25,7 @@ type FileEmbedded struct {
 	TableName 	string  	`db:"table_name" bson:"table_name" comment:"表名称" json:"table_name" xml:"table_name"`
 	FieldName 	string  	`db:"field_name" bson:"field_name" comment:"字段名" json:"field_name" xml:"field_name"`
 	FileIds   	string  	`db:"file_ids" bson:"file_ids" comment:"文件id列表" json:"file_ids" xml:"file_ids"`
+	Embedded  	string  	`db:"embedded" bson:"embedded" comment:"是否(Y/N)为内嵌文件" json:"embedded" xml:"embedded"`
 }
 
 func (this *FileEmbedded) Trans() *factory.Transaction {
@@ -167,6 +168,7 @@ func (this *FileEmbedded) ListByOffset(recv interface{}, mw func(db.Result) db.R
 
 func (this *FileEmbedded) Add() (pk interface{}, err error) {
 	this.Id = 0
+	if len(this.Embedded) == 0 { this.Embedded = "Y" }
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -180,6 +182,7 @@ func (this *FileEmbedded) Add() (pk interface{}, err error) {
 
 func (this *FileEmbedded) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
 	
+	if len(this.Embedded) == 0 { this.Embedded = "Y" }
 	return this.Setter(mw, args...).SetSend(this).Update()
 }
 
@@ -195,14 +198,17 @@ func (this *FileEmbedded) SetField(mw func(db.Result) db.Result, field string, v
 
 func (this *FileEmbedded) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
 	
+	if val, ok := kvset["embedded"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["embedded"] = "Y" } }
 	return this.Setter(mw, args...).SetSend(kvset).Update()
 }
 
 func (this *FileEmbedded) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
 		
+	if len(this.Embedded) == 0 { this.Embedded = "Y" }
 	},func(){
 		this.Id = 0
+	if len(this.Embedded) == 0 { this.Embedded = "Y" }
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -230,6 +236,7 @@ func (this *FileEmbedded) Reset() *FileEmbedded {
 	this.TableName = ``
 	this.FieldName = ``
 	this.FileIds = ``
+	this.Embedded = ``
 	return this
 }
 
@@ -241,6 +248,7 @@ func (this *FileEmbedded) AsMap() map[string]interface{} {
 	r["TableName"] = this.TableName
 	r["FieldName"] = this.FieldName
 	r["FileIds"] = this.FileIds
+	r["Embedded"] = this.Embedded
 	return r
 }
 
@@ -270,6 +278,7 @@ func (this *FileEmbedded) Set(key interface{}, value ...interface{}) {
 				case "TableName": this.TableName = param.AsString(vv)
 				case "FieldName": this.FieldName = param.AsString(vv)
 				case "FileIds": this.FileIds = param.AsString(vv)
+				case "Embedded": this.Embedded = param.AsString(vv)
 			}
 	}
 }
@@ -282,6 +291,7 @@ func (this *FileEmbedded) AsRow() map[string]interface{} {
 	r["table_name"] = this.TableName
 	r["field_name"] = this.FieldName
 	r["file_ids"] = this.FileIds
+	r["embedded"] = this.Embedded
 	return r
 }
 

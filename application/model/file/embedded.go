@@ -23,7 +23,9 @@ import (
 	"strings"
 
 	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/library/fileupdater"
 	"github.com/admpub/nging/application/model/base"
+	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
@@ -44,8 +46,16 @@ func NewEmbedded(ctx echo.Context, fileMdls ...*File) *Embedded {
 
 type Embedded struct {
 	*dbschema.FileEmbedded
-	base *base.Base
-	File *File
+	base    *base.Base
+	File    *File
+	updater *fileupdater.FileUpdater
+}
+
+func (f *Embedded) Updater() *fileupdater.FileUpdater {
+	if f.updater == nil {
+		f.updater = fileupdater.New(f.base.Context, f)
+	}
+	return f.updater
 }
 
 // DeleteByTableID 删除嵌入文件
@@ -105,7 +115,7 @@ func (f *Embedded) UpdateByFileID(project string, table string, field string, ta
 	return err
 }
 
-func (f *Embedded) UpdateEmbedded(project string, table string, field string, tableID uint64, fileIds ...interface{}) error {
+func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, field string, tableID uint64, fileIds ...interface{}) error {
 
 	err := f.File.UpdateUnrelation(project, table, field, tableID, fileIds...)
 	if err != nil {
@@ -125,11 +135,17 @@ func (f *Embedded) UpdateEmbedded(project string, table string, field string, ta
 		if len(fileIds) < 1 {
 			return nil
 		}
+		// 不存在时，添加
 		m.Reset()
 		m.FieldName = field
 		m.TableName = table
 		m.Project = project
 		m.TableId = tableID
+		if embedded {
+			m.Embedded = `Y`
+		} else {
+			m.Embedded = `N`
+		}
 		m.FileIds = ""
 		err = f.File.Incr(fileIds...)
 		if err != nil {
@@ -142,15 +158,18 @@ func (f *Embedded) UpdateEmbedded(project string, table string, field string, ta
 		_, err = m.Add()
 		return err
 	}
-	if len(fileIds) < 1 {
-		err = f.File.Delete(nil, `id`, m.Id)
+	if len(fileIds) < 1 { // 删除关联记录
+		err = f.Delete(nil, `id`, m.Id)
 		if err != nil {
 			return err
 		}
 	}
 	var fidsString string
-	for _, v := range fileIds {
-		fidsString += fmt.Sprintf("%v,", v)
+	fidList := make([]string, len(fileIds))
+	for k, v := range fileIds {
+		s := fmt.Sprint(v)
+		fidList[k] = s
+		fidsString += s + `,`
 	}
 	fidsString = strings.TrimSuffix(fidsString, ",")
 	if m.FileIds == fidsString {
@@ -163,26 +182,14 @@ func (f *Embedded) UpdateEmbedded(project string, table string, field string, ta
 	)
 	//已删除引用
 	for _, v := range ids {
-		var has bool
-		for _, v2 := range fileIds {
-			if fmt.Sprint(v2) == v {
-				has = true
-			}
-		}
-		if has == false {
+		if !com.InSlice(v, fidList) {
 			delIds = append(delIds, v)
 		}
 	}
 	//新增引用
-	for _, v2 := range fileIds {
-		var has bool
-		for _, v := range ids {
-			if fmt.Sprint(v2) == v {
-				has = true
-			}
-		}
-		if has == false {
-			newIds = append(newIds, v2)
+	for _, v := range fidList {
+		if !com.InSlice(v, ids) {
+			newIds = append(newIds, v)
 		}
 	}
 	if len(delIds) > 0 {
@@ -210,7 +217,7 @@ func (f *Embedded) UpdateEmbedded(project string, table string, field string, ta
 	return err
 }
 
-// RelationFiles 关联嵌入的文件
+// RelationEmbeddedFiles 关联嵌入的文件
 // @param project 项目名称
 // @param table 表名称
 // @param field 被嵌入的字段名
@@ -218,38 +225,56 @@ func (f *Embedded) UpdateEmbedded(project string, table string, field string, ta
 // @param v 内容
 // @return
 // @author AdamShen <swh@admpub.com>
-func (f *Embedded) RelationFiles(project string, table string, field string, tableID uint64, v string) error {
+func (f *Embedded) RelationEmbeddedFiles(project string, table string, field string, tableID uint64, v string) error {
 	var (
 		files []interface{}
-		fids  []interface{}
+		fids  []interface{} //旧文件ID
 	)
 	EmbeddedRes(v, func(file string, fid int64) {
 		var exists bool
 		if fid > 0 {
-			for _, id := range fids {
-				if fid == id {
-					exists = true
-					break
-				}
-			}
+			exists = com.InSliceIface(fid, fids)
 		} else {
-			for _, rfile := range files {
-				if rfile == file {
-					exists = true
-					break
-				}
-			}
+			exists = com.InSliceIface(file, files)
 		}
-		if exists == false {
-			files = append(files, file)
-			if fid > 0 {
-				fids = append(fids, fid)
-			}
+		if exists {
+			return
+		}
+		files = append(files, file)
+		if fid > 0 {
+			fids = append(fids, fid)
 		}
 	})
 	if len(fids) < 1 && len(files) > 0 {
 		fids = f.File.GetIDByViewURLs(files)
 	}
-	err := f.UpdateEmbedded(project, table, field, tableID, fids...)
+	err := f.UpdateEmbedded(true, project, table, field, tableID, fids...)
+	return err
+}
+
+func (f *Embedded) RelationFiles(project string, table string, field string, tableID uint64, v string, seperator ...string) error {
+	var (
+		files []interface{}
+		fids  []interface{} //旧文件ID
+	)
+	RelatedRes(v, func(file string, fid int64) {
+		var exists bool
+		if fid > 0 {
+			exists = com.InSliceIface(fid, fids)
+		} else {
+			exists = com.InSliceIface(file, files)
+		}
+		if exists {
+			return
+		}
+		files = append(files, file)
+		if fid > 0 {
+			fids = append(fids, fid)
+		}
+	})
+	if len(fids) < 1 && len(files) > 0 {
+		fids = f.File.GetIDByViewURLs(files)
+	}
+	err := f.UpdateEmbedded(false, project, table, field, tableID, fids...)
 	return err
 }

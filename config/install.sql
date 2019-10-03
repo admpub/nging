@@ -414,6 +414,7 @@ CREATE TABLE `file_embedded` (
   `table_name` varchar(30) NOT NULL COMMENT '表名称',
   `field_name` varchar(20) NOT NULL COMMENT '字段名',
   `file_ids` varchar(1000) NOT NULL COMMENT '文件id列表',
+  `embedded` enum('Y','N') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'Y' COMMENT '是否(Y/N)为内嵌文件',
   PRIMARY KEY (`id`),
   UNIQUE KEY `tid_field_name_table_name` (`table_id`,`field_name`,`table_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='嵌入文件';
@@ -899,4 +900,4 @@ CREATE TABLE `vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-09-25 20:24:48
+-- Dump completed on 2019-10-03 16:17:42

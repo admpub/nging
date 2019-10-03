@@ -21,64 +21,12 @@ package file
 
 import (
 	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/model/file"
-	fileListModel "github.com/admpub/nging/application/model/file/list"
-	"github.com/admpub/nging/application/registry/upload"
-	uploadClient "github.com/webx-top/client/upload"
-	"github.com/webx-top/db"
-	"github.com/webx-top/db/lib/factory/mysql"
 	"github.com/webx-top/echo"
 )
 
 func FileList(ctx echo.Context) error {
-	fileM := file.NewFile(ctx)
-	cond := db.NewCompounds()
-	table := ctx.Formx("table").String()
-	if len(table) > 0 {
-		cond.AddKV(`table_name`, table)
-	}
-	used := ctx.Formx("used").String()
-	if len(used) > 0 {
-		switch used {
-		case `0`:
-			cond.AddKV(`used_times`, 0)
-		case `1`:
-			cond.AddKV(`used_times`, db.Gt(0))
-		}
-	}
-	typ := ctx.Formx("type").String()
-	if len(typ) > 0 {
-		cond.AddKV(`type`, typ)
-	}
-	timerange := ctx.Formx("timerange").String()
-	if len(timerange) > 0 {
-		cond.Add(mysql.GenDateRange(`created`, timerange).V()...)
-	}
-	if len(ctx.Formx(`searchValue`).String()) > 0 {
-		cond.AddKV(`id`, ctx.Formx(`searchValue`).Uint64())
-	}
-	q := ctx.Formx(`q`).String()
-	if len(q) > 0 {
-		cond.Add(
-			db.Or(
-				db.Cond{`save_name`: db.Like(q + `%`)},
-				db.Cond{`name`: db.Like(`%` + q + `%`)},
-			),
-		)
-	}
-	sorts := common.Sorts(ctx, `file`, `-id`)
-	_, err := common.NewLister(fileM.File, nil, func(r db.Result) db.Result {
-		return r.OrderBy(sorts...)
-	}, cond.And()).Paging(ctx)
-	if err != nil {
-		return err
-	}
-	list := fileM.Objects()
-	listData := fileListModel.FileList(list)
-	ctx.Set(`listData`, listData)
-	ctx.Set(`fileTypes`, uploadClient.FileTypeExts)
-	ctx.Set(`tableNames`, upload.SubdirAll())
+	err := List(ctx, ``, 0)
 	return ctx.Render(`manager/file/list`, err)
 }
 

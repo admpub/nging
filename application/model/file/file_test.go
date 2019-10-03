@@ -50,3 +50,28 @@ func TestReplaceEmbedded(t *testing.T) {
 	fmt.Println(result)
 	test.Eq(t, expected, result)
 }
+
+func TestRelated(t *testing.T) {
+	var files []string
+	var fids []int64
+	RelatedRes(`http://www.admpub.com/test/1.jpg#FileID-1`, func(file string, fid int64) {
+		files = append(files, file)
+		fids = append(fids, fid)
+	})
+
+	fmt.Println(files)
+	test.Eq(t, []string{`http://www.admpub.com/test/1.jpg`}, files)
+	test.Eq(t, []int64{1}, fids)
+}
+
+func TestRelated2(t *testing.T) {
+	var files []string
+	var fids []int64
+	RelatedRes(`http://www.admpub.com/test/1.jpg,http://www.admpub.com/test/2.jpg`, func(file string, fid int64) {
+		files = append(files, file)
+		fids = append(fids, fid)
+	}, `,`)
+
+	fmt.Println(files)
+	test.Eq(t, []string{`http://www.admpub.com/test/1.jpg`, `http://www.admpub.com/test/2.jpg`}, files)
+}
