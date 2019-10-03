@@ -12,6 +12,26 @@ import (
 	"time"
 )
 
+type Slice_SshUser []*SshUser
+
+func (s Slice_SshUser) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_SshUser) RangeRaw(fn func(m *SshUser) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // SshUser 数据库账号
 type SshUser struct {
 	param   *factory.Param
@@ -66,7 +86,11 @@ func (this *SshUser) Objects() []*SshUser {
 	return this.objects[:]
 }
 
-func (this *SshUser) NewObjects() *[]*SshUser {
+func (this *SshUser) NewObjects() factory.Ranger {
+	return &Slice_SshUser{}
+}
+
+func (this *SshUser) InitObjects() *[]*SshUser {
 	this.objects = []*SshUser{}
 	return &this.objects
 }
@@ -113,7 +137,7 @@ func (this *SshUser) Get(mw func(db.Result) db.Result, args ...interface{}) erro
 
 func (this *SshUser) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -171,7 +195,7 @@ func (this *SshUser) AsKV(keyField string, valueField string, inputRows ...[]*Ss
 
 func (this *SshUser) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -181,6 +205,10 @@ func (this *SshUser) Add() (pk interface{}, err error) {
 	this.Id = 0
 	if len(this.Host) == 0 { this.Host = "localhost" }
 	if len(this.Username) == 0 { this.Username = "root" }
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -189,43 +217,60 @@ func (this *SshUser) Add() (pk interface{}, err error) {
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *SshUser) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *SshUser) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	this.Updated = uint(time.Now().Unix())
 	if len(this.Host) == 0 { this.Host = "localhost" }
 	if len(this.Username) == 0 { this.Username = "root" }
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *SshUser) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *SshUser) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *SshUser) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *SshUser) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *SshUser) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	
 	if val, ok := kvset["host"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["host"] = "localhost" } }
 	if val, ok := kvset["username"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["username"] = "root" } }
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *SshUser) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		this.Updated = uint(time.Now().Unix())
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { this.Updated = uint(time.Now().Unix())
 	if len(this.Host) == 0 { this.Host = "localhost" }
 	if len(this.Username) == 0 { this.Username = "root" }
-	},func(){
-		this.Created = uint(time.Now().Unix())
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.Host) == 0 { this.Host = "localhost" }
 	if len(this.Username) == 0 { this.Username = "root" }
+		return DBI.EventFire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -234,12 +279,25 @@ func (this *SshUser) Upsert(mw func(db.Result) db.Result, args ...interface{}) (
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *SshUser) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *SshUser) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *SshUser) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -285,6 +343,29 @@ func (this *SshUser) AsMap() map[string]interface{} {
 	r["Created"] = this.Created
 	r["Updated"] = this.Updated
 	return r
+}
+
+func (this *SshUser) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "id": this.Id = param.AsUint(value)
+			case "uid": this.Uid = param.AsUint(value)
+			case "host": this.Host = param.AsString(value)
+			case "port": this.Port = param.AsInt(value)
+			case "charset": this.Charset = param.AsString(value)
+			case "username": this.Username = param.AsString(value)
+			case "password": this.Password = param.AsString(value)
+			case "name": this.Name = param.AsString(value)
+			case "options": this.Options = param.AsString(value)
+			case "private_key": this.PrivateKey = param.AsString(value)
+			case "passphrase": this.Passphrase = param.AsString(value)
+			case "protocol": this.Protocol = param.AsString(value)
+			case "description": this.Description = param.AsString(value)
+			case "group_id": this.GroupId = param.AsUint(value)
+			case "created": this.Created = param.AsUint(value)
+			case "updated": this.Updated = param.AsUint(value)
+		}
+	}
 }
 
 func (this *SshUser) Set(key interface{}, value ...interface{}) {

@@ -12,6 +12,26 @@ import (
 	"time"
 )
 
+type Slice_VhostGroup []*VhostGroup
+
+func (s Slice_VhostGroup) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_VhostGroup) RangeRaw(fn func(m *VhostGroup) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // VhostGroup 虚拟主机组
 type VhostGroup struct {
 	param   *factory.Param
@@ -55,7 +75,11 @@ func (this *VhostGroup) Objects() []*VhostGroup {
 	return this.objects[:]
 }
 
-func (this *VhostGroup) NewObjects() *[]*VhostGroup {
+func (this *VhostGroup) NewObjects() factory.Ranger {
+	return &Slice_VhostGroup{}
+}
+
+func (this *VhostGroup) InitObjects() *[]*VhostGroup {
 	this.objects = []*VhostGroup{}
 	return &this.objects
 }
@@ -102,7 +126,7 @@ func (this *VhostGroup) Get(mw func(db.Result) db.Result, args ...interface{}) e
 
 func (this *VhostGroup) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -160,7 +184,7 @@ func (this *VhostGroup) AsKV(keyField string, valueField string, inputRows ...[]
 
 func (this *VhostGroup) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -168,6 +192,10 @@ func (this *VhostGroup) ListByOffset(recv interface{}, mw func(db.Result) db.Res
 func (this *VhostGroup) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -176,35 +204,52 @@ func (this *VhostGroup) Add() (pk interface{}, err error) {
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *VhostGroup) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *VhostGroup) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *VhostGroup) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *VhostGroup) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *VhostGroup) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *VhostGroup) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *VhostGroup) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *VhostGroup) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		
-	},func(){
-		this.Created = uint(time.Now().Unix())
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { 
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
+		return DBI.EventFire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -213,12 +258,25 @@ func (this *VhostGroup) Upsert(mw func(db.Result) db.Result, args ...interface{}
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *VhostGroup) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *VhostGroup) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *VhostGroup) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -242,6 +300,18 @@ func (this *VhostGroup) AsMap() map[string]interface{} {
 	r["Description"] = this.Description
 	r["Created"] = this.Created
 	return r
+}
+
+func (this *VhostGroup) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "id": this.Id = param.AsUint(value)
+			case "uid": this.Uid = param.AsUint(value)
+			case "name": this.Name = param.AsString(value)
+			case "description": this.Description = param.AsString(value)
+			case "created": this.Created = param.AsUint(value)
+		}
+	}
 }
 
 func (this *VhostGroup) Set(key interface{}, value ...interface{}) {

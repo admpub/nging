@@ -12,6 +12,26 @@ import (
 	"time"
 )
 
+type Slice_CollectorRule []*CollectorRule
+
+func (s Slice_CollectorRule) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_CollectorRule) RangeRaw(fn func(m *CollectorRule) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // CollectorRule 页面中的元素采集规则
 type CollectorRule struct {
 	param   *factory.Param
@@ -58,7 +78,11 @@ func (this *CollectorRule) Objects() []*CollectorRule {
 	return this.objects[:]
 }
 
-func (this *CollectorRule) NewObjects() *[]*CollectorRule {
+func (this *CollectorRule) NewObjects() factory.Ranger {
+	return &Slice_CollectorRule{}
+}
+
+func (this *CollectorRule) InitObjects() *[]*CollectorRule {
 	this.objects = []*CollectorRule{}
 	return &this.objects
 }
@@ -105,7 +129,7 @@ func (this *CollectorRule) Get(mw func(db.Result) db.Result, args ...interface{}
 
 func (this *CollectorRule) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -163,7 +187,7 @@ func (this *CollectorRule) AsKV(keyField string, valueField string, inputRows ..
 
 func (this *CollectorRule) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -172,6 +196,10 @@ func (this *CollectorRule) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.Type) == 0 { this.Type = "string" }
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -180,39 +208,56 @@ func (this *CollectorRule) Add() (pk interface{}, err error) {
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *CollectorRule) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *CollectorRule) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	
 	if len(this.Type) == 0 { this.Type = "string" }
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *CollectorRule) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *CollectorRule) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *CollectorRule) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *CollectorRule) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *CollectorRule) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	
 	if val, ok := kvset["type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["type"] = "string" } }
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *CollectorRule) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { 
 	if len(this.Type) == 0 { this.Type = "string" }
-	},func(){
-		this.Created = uint(time.Now().Unix())
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.Type) == 0 { this.Type = "string" }
+		return DBI.EventFire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -221,12 +266,25 @@ func (this *CollectorRule) Upsert(mw func(db.Result) db.Result, args ...interfac
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *CollectorRule) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *CollectorRule) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *CollectorRule) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -256,6 +314,21 @@ func (this *CollectorRule) AsMap() map[string]interface{} {
 	r["Created"] = this.Created
 	r["Sort"] = this.Sort
 	return r
+}
+
+func (this *CollectorRule) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "id": this.Id = param.AsUint(value)
+			case "page_id": this.PageId = param.AsUint(value)
+			case "name": this.Name = param.AsString(value)
+			case "rule": this.Rule = param.AsString(value)
+			case "type": this.Type = param.AsString(value)
+			case "filter": this.Filter = param.AsString(value)
+			case "created": this.Created = param.AsUint(value)
+			case "sort": this.Sort = param.AsInt(value)
+		}
+	}
 }
 
 func (this *CollectorRule) Set(key interface{}, value ...interface{}) {

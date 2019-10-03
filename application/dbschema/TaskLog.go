@@ -12,6 +12,26 @@ import (
 	"time"
 )
 
+type Slice_TaskLog []*TaskLog
+
+func (s Slice_TaskLog) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_TaskLog) RangeRaw(fn func(m *TaskLog) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // TaskLog 任务日志
 type TaskLog struct {
 	param   *factory.Param
@@ -57,7 +77,11 @@ func (this *TaskLog) Objects() []*TaskLog {
 	return this.objects[:]
 }
 
-func (this *TaskLog) NewObjects() *[]*TaskLog {
+func (this *TaskLog) NewObjects() factory.Ranger {
+	return &Slice_TaskLog{}
+}
+
+func (this *TaskLog) InitObjects() *[]*TaskLog {
 	this.objects = []*TaskLog{}
 	return &this.objects
 }
@@ -104,7 +128,7 @@ func (this *TaskLog) Get(mw func(db.Result) db.Result, args ...interface{}) erro
 
 func (this *TaskLog) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -162,7 +186,7 @@ func (this *TaskLog) AsKV(keyField string, valueField string, inputRows ...[]*Ta
 
 func (this *TaskLog) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -171,6 +195,10 @@ func (this *TaskLog) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.Status) == 0 { this.Status = "success" }
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -179,39 +207,56 @@ func (this *TaskLog) Add() (pk interface{}, err error) {
 			this.Id = uint64(v)
 		}
 	}
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *TaskLog) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *TaskLog) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	
 	if len(this.Status) == 0 { this.Status = "success" }
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *TaskLog) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *TaskLog) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *TaskLog) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *TaskLog) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *TaskLog) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	
 	if val, ok := kvset["status"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["status"] = "success" } }
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *TaskLog) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { 
 	if len(this.Status) == 0 { this.Status = "success" }
-	},func(){
-		this.Created = uint(time.Now().Unix())
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.Status) == 0 { this.Status = "success" }
+		return DBI.EventFire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -220,12 +265,25 @@ func (this *TaskLog) Upsert(mw func(db.Result) db.Result, args ...interface{}) (
 			this.Id = uint64(v)
 		}
 	}
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *TaskLog) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *TaskLog) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *TaskLog) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -253,6 +311,20 @@ func (this *TaskLog) AsMap() map[string]interface{} {
 	r["Elapsed"] = this.Elapsed
 	r["Created"] = this.Created
 	return r
+}
+
+func (this *TaskLog) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "id": this.Id = param.AsUint64(value)
+			case "task_id": this.TaskId = param.AsUint(value)
+			case "output": this.Output = param.AsString(value)
+			case "error": this.Error = param.AsString(value)
+			case "status": this.Status = param.AsString(value)
+			case "elapsed": this.Elapsed = param.AsUint(value)
+			case "created": this.Created = param.AsUint(value)
+		}
+	}
 }
 
 func (this *TaskLog) Set(key interface{}, value ...interface{}) {

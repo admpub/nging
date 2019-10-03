@@ -12,6 +12,26 @@ import (
 	"time"
 )
 
+type Slice_DbSync []*DbSync
+
+func (s Slice_DbSync) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_DbSync) RangeRaw(fn func(m *DbSync) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // DbSync 数据表同步方案
 type DbSync struct {
 	param   *factory.Param
@@ -63,7 +83,11 @@ func (this *DbSync) Objects() []*DbSync {
 	return this.objects[:]
 }
 
-func (this *DbSync) NewObjects() *[]*DbSync {
+func (this *DbSync) NewObjects() factory.Ranger {
+	return &Slice_DbSync{}
+}
+
+func (this *DbSync) InitObjects() *[]*DbSync {
 	this.objects = []*DbSync{}
 	return &this.objects
 }
@@ -110,7 +134,7 @@ func (this *DbSync) Get(mw func(db.Result) db.Result, args ...interface{}) error
 
 func (this *DbSync) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -168,7 +192,7 @@ func (this *DbSync) AsKV(keyField string, valueField string, inputRows ...[]*DbS
 
 func (this *DbSync) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -176,6 +200,10 @@ func (this *DbSync) ListByOffset(recv interface{}, mw func(db.Result) db.Result,
 func (this *DbSync) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -184,35 +212,52 @@ func (this *DbSync) Add() (pk interface{}, err error) {
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *DbSync) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *DbSync) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	this.Updated = int(time.Now().Unix())
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *DbSync) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *DbSync) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *DbSync) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *DbSync) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *DbSync) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	kvset["updated"] = int(time.Now().Unix())
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *DbSync) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		this.Updated = int(time.Now().Unix())
-	},func(){
-		this.Created = uint(time.Now().Unix())
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { this.Updated = int(time.Now().Unix())
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
+		return DBI.EventFire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -221,12 +266,25 @@ func (this *DbSync) Upsert(mw func(db.Result) db.Result, args ...interface{}) (p
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *DbSync) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *DbSync) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *DbSync) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -266,6 +324,26 @@ func (this *DbSync) AsMap() map[string]interface{} {
 	r["Created"] = this.Created
 	r["Updated"] = this.Updated
 	return r
+}
+
+func (this *DbSync) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "id": this.Id = param.AsUint(value)
+			case "name": this.Name = param.AsString(value)
+			case "source_account_id": this.SourceAccountId = param.AsUint(value)
+			case "dsn_source": this.DsnSource = param.AsString(value)
+			case "destination_account_id": this.DestinationAccountId = param.AsUint(value)
+			case "dsn_destination": this.DsnDestination = param.AsString(value)
+			case "tables": this.Tables = param.AsString(value)
+			case "skip_tables": this.SkipTables = param.AsString(value)
+			case "alter_ignore": this.AlterIgnore = param.AsString(value)
+			case "drop": this.Drop = param.AsUint(value)
+			case "mail_to": this.MailTo = param.AsString(value)
+			case "created": this.Created = param.AsUint(value)
+			case "updated": this.Updated = param.AsInt(value)
+		}
+	}
 }
 
 func (this *DbSync) Set(key interface{}, value ...interface{}) {

@@ -11,6 +11,26 @@ import (
 	
 )
 
+type Slice_FileEmbedded []*FileEmbedded
+
+func (s Slice_FileEmbedded) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_FileEmbedded) RangeRaw(fn func(m *FileEmbedded) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // FileEmbedded 嵌入文件
 type FileEmbedded struct {
 	param   *factory.Param
@@ -56,7 +76,11 @@ func (this *FileEmbedded) Objects() []*FileEmbedded {
 	return this.objects[:]
 }
 
-func (this *FileEmbedded) NewObjects() *[]*FileEmbedded {
+func (this *FileEmbedded) NewObjects() factory.Ranger {
+	return &Slice_FileEmbedded{}
+}
+
+func (this *FileEmbedded) InitObjects() *[]*FileEmbedded {
 	this.objects = []*FileEmbedded{}
 	return &this.objects
 }
@@ -103,7 +127,7 @@ func (this *FileEmbedded) Get(mw func(db.Result) db.Result, args ...interface{})
 
 func (this *FileEmbedded) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -161,7 +185,7 @@ func (this *FileEmbedded) AsKV(keyField string, valueField string, inputRows ...
 
 func (this *FileEmbedded) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -169,6 +193,10 @@ func (this *FileEmbedded) ListByOffset(recv interface{}, mw func(db.Result) db.R
 func (this *FileEmbedded) Add() (pk interface{}, err error) {
 	this.Id = 0
 	if len(this.Embedded) == 0 { this.Embedded = "Y" }
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -177,38 +205,55 @@ func (this *FileEmbedded) Add() (pk interface{}, err error) {
 			this.Id = uint64(v)
 		}
 	}
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *FileEmbedded) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *FileEmbedded) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	
 	if len(this.Embedded) == 0 { this.Embedded = "Y" }
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *FileEmbedded) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *FileEmbedded) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *FileEmbedded) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *FileEmbedded) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *FileEmbedded) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	
 	if val, ok := kvset["embedded"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["embedded"] = "Y" } }
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *FileEmbedded) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { 
 	if len(this.Embedded) == 0 { this.Embedded = "Y" }
-	},func(){
-		this.Id = 0
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { this.Id = 0
 	if len(this.Embedded) == 0 { this.Embedded = "Y" }
+		return DBI.EventFire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -217,12 +262,25 @@ func (this *FileEmbedded) Upsert(mw func(db.Result) db.Result, args ...interface
 			this.Id = uint64(v)
 		}
 	}
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *FileEmbedded) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *FileEmbedded) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *FileEmbedded) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -250,6 +308,20 @@ func (this *FileEmbedded) AsMap() map[string]interface{} {
 	r["FileIds"] = this.FileIds
 	r["Embedded"] = this.Embedded
 	return r
+}
+
+func (this *FileEmbedded) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "id": this.Id = param.AsUint64(value)
+			case "project": this.Project = param.AsString(value)
+			case "table_id": this.TableId = param.AsUint64(value)
+			case "table_name": this.TableName = param.AsString(value)
+			case "field_name": this.FieldName = param.AsString(value)
+			case "file_ids": this.FileIds = param.AsString(value)
+			case "embedded": this.Embedded = param.AsString(value)
+		}
+	}
 }
 
 func (this *FileEmbedded) Set(key interface{}, value ...interface{}) {

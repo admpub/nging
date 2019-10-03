@@ -12,6 +12,26 @@ import (
 	"time"
 )
 
+type Slice_Command []*Command
+
+func (s Slice_Command) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_Command) RangeRaw(fn func(m *Command) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // Command 指令集
 type Command struct {
 	param   *factory.Param
@@ -61,7 +81,11 @@ func (this *Command) Objects() []*Command {
 	return this.objects[:]
 }
 
-func (this *Command) NewObjects() *[]*Command {
+func (this *Command) NewObjects() factory.Ranger {
+	return &Slice_Command{}
+}
+
+func (this *Command) InitObjects() *[]*Command {
 	this.objects = []*Command{}
 	return &this.objects
 }
@@ -108,7 +132,7 @@ func (this *Command) Get(mw func(db.Result) db.Result, args ...interface{}) erro
 
 func (this *Command) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -166,7 +190,7 @@ func (this *Command) AsKV(keyField string, valueField string, inputRows ...[]*Co
 
 func (this *Command) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -176,6 +200,10 @@ func (this *Command) Add() (pk interface{}, err error) {
 	this.Id = 0
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Remote) == 0 { this.Remote = "N" }
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -184,43 +212,60 @@ func (this *Command) Add() (pk interface{}, err error) {
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *Command) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *Command) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	this.Updated = uint(time.Now().Unix())
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Remote) == 0 { this.Remote = "N" }
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *Command) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *Command) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *Command) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *Command) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *Command) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	if val, ok := kvset["remote"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["remote"] = "N" } }
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *Command) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		this.Updated = uint(time.Now().Unix())
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { this.Updated = uint(time.Now().Unix())
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Remote) == 0 { this.Remote = "N" }
-	},func(){
-		this.Created = uint(time.Now().Unix())
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Remote) == 0 { this.Remote = "N" }
+		return DBI.EventFire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -229,12 +274,25 @@ func (this *Command) Upsert(mw func(db.Result) db.Result, args ...interface{}) (
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *Command) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *Command) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *Command) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -270,6 +328,24 @@ func (this *Command) AsMap() map[string]interface{} {
 	r["Remote"] = this.Remote
 	r["SshAccountId"] = this.SshAccountId
 	return r
+}
+
+func (this *Command) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "id": this.Id = param.AsUint(value)
+			case "name": this.Name = param.AsString(value)
+			case "description": this.Description = param.AsString(value)
+			case "command": this.Command = param.AsString(value)
+			case "work_directory": this.WorkDirectory = param.AsString(value)
+			case "env": this.Env = param.AsString(value)
+			case "created": this.Created = param.AsUint(value)
+			case "updated": this.Updated = param.AsUint(value)
+			case "disabled": this.Disabled = param.AsString(value)
+			case "remote": this.Remote = param.AsString(value)
+			case "ssh_account_id": this.SshAccountId = param.AsUint(value)
+		}
+	}
 }
 
 func (this *Command) Set(key interface{}, value ...interface{}) {

@@ -619,7 +619,7 @@ func (p *Param) Updatex() (int64, error) {
 	return p.T().Updatex(p)
 }
 
-func (p *Param) Upsert(beforeUpsert ...func()) (interface{}, error) {
+func (p *Param) Upsert(beforeUpsert ...func() error) (interface{}, error) {
 	return p.T().Upsert(p, beforeUpsert...)
 }
 

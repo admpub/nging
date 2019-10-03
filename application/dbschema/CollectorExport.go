@@ -12,6 +12,26 @@ import (
 	"time"
 )
 
+type Slice_CollectorExport []*CollectorExport
+
+func (s Slice_CollectorExport) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_CollectorExport) RangeRaw(fn func(m *CollectorExport) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // CollectorExport 导出规则
 type CollectorExport struct {
 	param   *factory.Param
@@ -62,7 +82,11 @@ func (this *CollectorExport) Objects() []*CollectorExport {
 	return this.objects[:]
 }
 
-func (this *CollectorExport) NewObjects() *[]*CollectorExport {
+func (this *CollectorExport) NewObjects() factory.Ranger {
+	return &Slice_CollectorExport{}
+}
+
+func (this *CollectorExport) InitObjects() *[]*CollectorExport {
 	this.objects = []*CollectorExport{}
 	return &this.objects
 }
@@ -109,7 +133,7 @@ func (this *CollectorExport) Get(mw func(db.Result) db.Result, args ...interface
 
 func (this *CollectorExport) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -167,7 +191,7 @@ func (this *CollectorExport) AsKV(keyField string, valueField string, inputRows 
 
 func (this *CollectorExport) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -177,6 +201,10 @@ func (this *CollectorExport) Add() (pk interface{}, err error) {
 	this.Id = 0
 	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -185,43 +213,60 @@ func (this *CollectorExport) Add() (pk interface{}, err error) {
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *CollectorExport) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *CollectorExport) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	
 	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *CollectorExport) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *CollectorExport) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *CollectorExport) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *CollectorExport) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *CollectorExport) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	
 	if val, ok := kvset["dest_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["dest_type"] = "dbAccountID" } }
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *CollectorExport) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { 
 	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	},func(){
-		this.Created = uint(time.Now().Unix())
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.DestType) == 0 { this.DestType = "dbAccountID" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+		return DBI.EventFire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -230,12 +275,25 @@ func (this *CollectorExport) Upsert(mw func(db.Result) db.Result, args ...interf
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *CollectorExport) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *CollectorExport) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *CollectorExport) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -273,6 +331,25 @@ func (this *CollectorExport) AsMap() map[string]interface{} {
 	r["Exported"] = this.Exported
 	r["Disabled"] = this.Disabled
 	return r
+}
+
+func (this *CollectorExport) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "id": this.Id = param.AsUint(value)
+			case "page_root": this.PageRoot = param.AsUint(value)
+			case "page_id": this.PageId = param.AsUint(value)
+			case "group_id": this.GroupId = param.AsUint(value)
+			case "mapping": this.Mapping = param.AsString(value)
+			case "dest": this.Dest = param.AsString(value)
+			case "dest_type": this.DestType = param.AsString(value)
+			case "name": this.Name = param.AsString(value)
+			case "description": this.Description = param.AsString(value)
+			case "created": this.Created = param.AsUint(value)
+			case "exported": this.Exported = param.AsUint(value)
+			case "disabled": this.Disabled = param.AsString(value)
+		}
+	}
 }
 
 func (this *CollectorExport) Set(key interface{}, value ...interface{}) {

@@ -12,6 +12,26 @@ import (
 	"time"
 )
 
+type Slice_FrpClient []*FrpClient
+
+func (s Slice_FrpClient) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_FrpClient) RangeRaw(fn func(m *FrpClient) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // FrpClient FRP客户端设置
 type FrpClient struct {
 	param   *factory.Param
@@ -80,7 +100,11 @@ func (this *FrpClient) Objects() []*FrpClient {
 	return this.objects[:]
 }
 
-func (this *FrpClient) NewObjects() *[]*FrpClient {
+func (this *FrpClient) NewObjects() factory.Ranger {
+	return &Slice_FrpClient{}
+}
+
+func (this *FrpClient) InitObjects() *[]*FrpClient {
 	this.objects = []*FrpClient{}
 	return &this.objects
 }
@@ -127,7 +151,7 @@ func (this *FrpClient) Get(mw func(db.Result) db.Result, args ...interface{}) er
 
 func (this *FrpClient) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -185,7 +209,7 @@ func (this *FrpClient) AsKV(keyField string, valueField string, inputRows ...[]*
 
 func (this *FrpClient) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -193,15 +217,19 @@ func (this *FrpClient) ListByOffset(recv interface{}, mw func(db.Result) db.Resu
 func (this *FrpClient) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.LoginFailExit) == 0 { this.LoginFailExit = "Y" }
-	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
-	if len(this.Type) == 0 { this.Type = "web" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.Protocol) == 0 { this.Protocol = "tcp" }
-	if len(this.LogWay) == 0 { this.LogWay = "console" }
-	if len(this.LogFile) == 0 { this.LogFile = "console" }
 	if len(this.ServerAddr) == 0 { this.ServerAddr = "0.0.0.0" }
 	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
+	if len(this.LoginFailExit) == 0 { this.LoginFailExit = "Y" }
+	if len(this.Protocol) == 0 { this.Protocol = "tcp" }
+	if len(this.LogFile) == 0 { this.LogFile = "console" }
+	if len(this.LogWay) == 0 { this.LogWay = "console" }
+	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
+	if len(this.Type) == 0 { this.Type = "web" }
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -210,71 +238,88 @@ func (this *FrpClient) Add() (pk interface{}, err error) {
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *FrpClient) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *FrpClient) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	this.Updated = uint(time.Now().Unix())
-	if len(this.LoginFailExit) == 0 { this.LoginFailExit = "Y" }
-	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
-	if len(this.Type) == 0 { this.Type = "web" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.Protocol) == 0 { this.Protocol = "tcp" }
-	if len(this.LogWay) == 0 { this.LogWay = "console" }
-	if len(this.LogFile) == 0 { this.LogFile = "console" }
 	if len(this.ServerAddr) == 0 { this.ServerAddr = "0.0.0.0" }
 	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if len(this.LoginFailExit) == 0 { this.LoginFailExit = "Y" }
+	if len(this.Protocol) == 0 { this.Protocol = "tcp" }
+	if len(this.LogFile) == 0 { this.LogFile = "console" }
+	if len(this.LogWay) == 0 { this.LogWay = "console" }
+	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
+	if len(this.Type) == 0 { this.Type = "web" }
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *FrpClient) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *FrpClient) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *FrpClient) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *FrpClient) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *FrpClient) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	
-	if val, ok := kvset["login_fail_exit"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["login_fail_exit"] = "Y" } }
-	if val, ok := kvset["log_level"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["log_level"] = "info" } }
-	if val, ok := kvset["type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["type"] = "web" } }
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
-	if val, ok := kvset["protocol"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["protocol"] = "tcp" } }
-	if val, ok := kvset["log_way"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["log_way"] = "console" } }
-	if val, ok := kvset["log_file"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["log_file"] = "console" } }
 	if val, ok := kvset["server_addr"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["server_addr"] = "0.0.0.0" } }
 	if val, ok := kvset["tcp_mux"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["tcp_mux"] = "Y" } }
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	if val, ok := kvset["login_fail_exit"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["login_fail_exit"] = "Y" } }
+	if val, ok := kvset["protocol"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["protocol"] = "tcp" } }
+	if val, ok := kvset["log_file"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["log_file"] = "console" } }
+	if val, ok := kvset["log_way"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["log_way"] = "console" } }
+	if val, ok := kvset["log_level"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["log_level"] = "info" } }
+	if val, ok := kvset["type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["type"] = "web" } }
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *FrpClient) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		this.Updated = uint(time.Now().Unix())
-	if len(this.LoginFailExit) == 0 { this.LoginFailExit = "Y" }
-	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
-	if len(this.Type) == 0 { this.Type = "web" }
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { this.Updated = uint(time.Now().Unix())
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.Protocol) == 0 { this.Protocol = "tcp" }
-	if len(this.LogWay) == 0 { this.LogWay = "console" }
-	if len(this.LogFile) == 0 { this.LogFile = "console" }
 	if len(this.ServerAddr) == 0 { this.ServerAddr = "0.0.0.0" }
 	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
-	},func(){
-		this.Created = uint(time.Now().Unix())
+	if len(this.LoginFailExit) == 0 { this.LoginFailExit = "Y" }
+	if len(this.Protocol) == 0 { this.Protocol = "tcp" }
+	if len(this.LogFile) == 0 { this.LogFile = "console" }
+	if len(this.LogWay) == 0 { this.LogWay = "console" }
+	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
+	if len(this.Type) == 0 { this.Type = "web" }
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.LoginFailExit) == 0 { this.LoginFailExit = "Y" }
-	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
-	if len(this.Type) == 0 { this.Type = "web" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.Protocol) == 0 { this.Protocol = "tcp" }
-	if len(this.LogWay) == 0 { this.LogWay = "console" }
-	if len(this.LogFile) == 0 { this.LogFile = "console" }
 	if len(this.ServerAddr) == 0 { this.ServerAddr = "0.0.0.0" }
 	if len(this.TcpMux) == 0 { this.TcpMux = "Y" }
+	if len(this.LoginFailExit) == 0 { this.LoginFailExit = "Y" }
+	if len(this.Protocol) == 0 { this.Protocol = "tcp" }
+	if len(this.LogFile) == 0 { this.LogFile = "console" }
+	if len(this.LogWay) == 0 { this.LogWay = "console" }
+	if len(this.LogLevel) == 0 { this.LogLevel = "info" }
+	if len(this.Type) == 0 { this.Type = "web" }
+		return DBI.EventFire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -283,12 +328,25 @@ func (this *FrpClient) Upsert(mw func(db.Result) db.Result, args ...interface{})
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *FrpClient) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *FrpClient) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *FrpClient) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -362,6 +420,43 @@ func (this *FrpClient) AsMap() map[string]interface{} {
 	r["Created"] = this.Created
 	r["Updated"] = this.Updated
 	return r
+}
+
+func (this *FrpClient) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "id": this.Id = param.AsUint(value)
+			case "name": this.Name = param.AsString(value)
+			case "disabled": this.Disabled = param.AsString(value)
+			case "server_addr": this.ServerAddr = param.AsString(value)
+			case "server_port": this.ServerPort = param.AsUint(value)
+			case "http_proxy": this.HttpProxy = param.AsString(value)
+			case "pool_count": this.PoolCount = param.AsUint(value)
+			case "tcp_mux": this.TcpMux = param.AsString(value)
+			case "user": this.User = param.AsString(value)
+			case "dns_server": this.DnsServer = param.AsString(value)
+			case "login_fail_exit": this.LoginFailExit = param.AsString(value)
+			case "protocol": this.Protocol = param.AsString(value)
+			case "heartbeat_interval": this.HeartbeatInterval = param.AsInt64(value)
+			case "heartbeat_timeout": this.HeartbeatTimeout = param.AsInt64(value)
+			case "log_file": this.LogFile = param.AsString(value)
+			case "log_way": this.LogWay = param.AsString(value)
+			case "log_level": this.LogLevel = param.AsString(value)
+			case "log_max_days": this.LogMaxDays = param.AsUint(value)
+			case "token": this.Token = param.AsString(value)
+			case "admin_addr": this.AdminAddr = param.AsString(value)
+			case "admin_port": this.AdminPort = param.AsUint(value)
+			case "admin_user": this.AdminUser = param.AsString(value)
+			case "admin_pwd": this.AdminPwd = param.AsString(value)
+			case "start": this.Start = param.AsString(value)
+			case "extra": this.Extra = param.AsString(value)
+			case "uid": this.Uid = param.AsUint(value)
+			case "group_id": this.GroupId = param.AsUint(value)
+			case "type": this.Type = param.AsString(value)
+			case "created": this.Created = param.AsUint(value)
+			case "updated": this.Updated = param.AsUint(value)
+		}
+	}
 }
 
 func (this *FrpClient) Set(key interface{}, value ...interface{}) {

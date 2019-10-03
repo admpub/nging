@@ -11,6 +11,26 @@ import (
 	
 )
 
+type Slice_Config []*Config
+
+func (s Slice_Config) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_Config) RangeRaw(fn func(m *Config) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // Config 配置
 type Config struct {
 	param   *factory.Param
@@ -58,7 +78,11 @@ func (this *Config) Objects() []*Config {
 	return this.objects[:]
 }
 
-func (this *Config) NewObjects() *[]*Config {
+func (this *Config) NewObjects() factory.Ranger {
+	return &Slice_Config{}
+}
+
+func (this *Config) InitObjects() *[]*Config {
 	this.objects = []*Config{}
 	return &this.objects
 }
@@ -105,7 +129,7 @@ func (this *Config) Get(mw func(db.Result) db.Result, args ...interface{}) error
 
 func (this *Config) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -163,66 +187,100 @@ func (this *Config) AsKV(keyField string, valueField string, inputRows ...[]*Con
 
 func (this *Config) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
 
 func (this *Config) Add() (pk interface{}, err error) {
 	
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Type) == 0 { this.Type = "text" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Encrypted) == 0 { this.Encrypted = "N" }
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *Config) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *Config) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Type) == 0 { this.Type = "text" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Encrypted) == 0 { this.Encrypted = "N" }
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *Config) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *Config) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *Config) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *Config) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *Config) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	
-	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	if val, ok := kvset["type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["type"] = "text" } }
+	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	if val, ok := kvset["encrypted"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["encrypted"] = "N" } }
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *Config) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { 
 	if len(this.Type) == 0 { this.Type = "text" }
-	if len(this.Encrypted) == 0 { this.Encrypted = "N" }
-	},func(){
-		
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.Type) == 0 { this.Type = "text" }
 	if len(this.Encrypted) == 0 { this.Encrypted = "N" }
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { 
+	if len(this.Type) == 0 { this.Type = "text" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Encrypted) == 0 { this.Encrypted = "N" }
+		return DBI.EventFire("creating", this, nil)
 	})
 	
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *Config) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *Config) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *Config) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -254,6 +312,22 @@ func (this *Config) AsMap() map[string]interface{} {
 	r["Disabled"] = this.Disabled
 	r["Encrypted"] = this.Encrypted
 	return r
+}
+
+func (this *Config) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "key": this.Key = param.AsString(value)
+			case "label": this.Label = param.AsString(value)
+			case "description": this.Description = param.AsString(value)
+			case "value": this.Value = param.AsString(value)
+			case "group": this.Group = param.AsString(value)
+			case "type": this.Type = param.AsString(value)
+			case "sort": this.Sort = param.AsInt(value)
+			case "disabled": this.Disabled = param.AsString(value)
+			case "encrypted": this.Encrypted = param.AsString(value)
+		}
+	}
 }
 
 func (this *Config) Set(key interface{}, value ...interface{}) {

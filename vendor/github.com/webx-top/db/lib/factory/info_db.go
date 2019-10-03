@@ -1,5 +1,7 @@
 package factory
 
+import "github.com/webx-top/db"
+
 var (
 	databases = map[string]*DBI{
 		DefaultDBKey: DefaultDBI,
@@ -35,6 +37,7 @@ func NewDBI() *DBI {
 		Columns:     map[string][]string{},
 		Models:      ModelInstancers{},
 		TableNamers: map[string]func(obj interface{}) string{},
+		Events:      NewEvents(),
 	}
 }
 
@@ -48,6 +51,7 @@ type DBI struct {
 	Models ModelInstancers
 	// TableNamers {table:NewName}
 	TableNamers TableNamers
+	Events      Events
 }
 
 func (d *DBI) TableName(structName string) string {
@@ -72,4 +76,12 @@ func (d *DBI) TableColumns(tableName string) []string {
 		return cols
 	}
 	return nil
+}
+
+func (d *DBI) EventFire(event string, model Model, mw func(db.Result) db.Result, args ...interface{}) error {
+	return d.Events.Call(event, model, mw, args...)
+}
+
+func (d *DBI) EventOn(event string, h EventHandler, table string) {
+	d.Events.Add(event, h, table)
 }

@@ -12,6 +12,26 @@ import (
 	"time"
 )
 
+type Slice_ForeverProcess []*ForeverProcess
+
+func (s Slice_ForeverProcess) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_ForeverProcess) RangeRaw(fn func(m *ForeverProcess) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // ForeverProcess 持久进程
 type ForeverProcess struct {
 	param   *factory.Param
@@ -74,7 +94,11 @@ func (this *ForeverProcess) Objects() []*ForeverProcess {
 	return this.objects[:]
 }
 
-func (this *ForeverProcess) NewObjects() *[]*ForeverProcess {
+func (this *ForeverProcess) NewObjects() factory.Ranger {
+	return &Slice_ForeverProcess{}
+}
+
+func (this *ForeverProcess) InitObjects() *[]*ForeverProcess {
 	this.objects = []*ForeverProcess{}
 	return &this.objects
 }
@@ -121,7 +145,7 @@ func (this *ForeverProcess) Get(mw func(db.Result) db.Result, args ...interface{
 
 func (this *ForeverProcess) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -179,7 +203,7 @@ func (this *ForeverProcess) AsKV(keyField string, valueField string, inputRows .
 
 func (this *ForeverProcess) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -187,9 +211,13 @@ func (this *ForeverProcess) ListByOffset(recv interface{}, mw func(db.Result) db
 func (this *ForeverProcess) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Status) == 0 { this.Status = "idle" }
 	if len(this.Debug) == 0 { this.Debug = "N" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -198,47 +226,64 @@ func (this *ForeverProcess) Add() (pk interface{}, err error) {
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *ForeverProcess) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *ForeverProcess) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	this.Updated = uint(time.Now().Unix())
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Status) == 0 { this.Status = "idle" }
 	if len(this.Debug) == 0 { this.Debug = "N" }
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *ForeverProcess) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *ForeverProcess) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *ForeverProcess) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *ForeverProcess) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *ForeverProcess) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	
-	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	if val, ok := kvset["status"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["status"] = "idle" } }
 	if val, ok := kvset["debug"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["debug"] = "N" } }
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *ForeverProcess) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		this.Updated = uint(time.Now().Unix())
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { this.Updated = uint(time.Now().Unix())
 	if len(this.Status) == 0 { this.Status = "idle" }
 	if len(this.Debug) == 0 { this.Debug = "N" }
-	},func(){
-		this.Created = uint(time.Now().Unix())
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Status) == 0 { this.Status = "idle" }
 	if len(this.Debug) == 0 { this.Debug = "N" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
+		return DBI.EventFire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -247,12 +292,25 @@ func (this *ForeverProcess) Upsert(mw func(db.Result) db.Result, args ...interfa
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *ForeverProcess) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *ForeverProcess) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *ForeverProcess) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -314,6 +372,37 @@ func (this *ForeverProcess) AsMap() map[string]interface{} {
 	r["EnableNotify"] = this.EnableNotify
 	r["NotifyEmail"] = this.NotifyEmail
 	return r
+}
+
+func (this *ForeverProcess) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "id": this.Id = param.AsUint(value)
+			case "uid": this.Uid = param.AsUint(value)
+			case "name": this.Name = param.AsString(value)
+			case "command": this.Command = param.AsString(value)
+			case "workdir": this.Workdir = param.AsString(value)
+			case "env": this.Env = param.AsString(value)
+			case "args": this.Args = param.AsString(value)
+			case "pidfile": this.Pidfile = param.AsString(value)
+			case "logfile": this.Logfile = param.AsString(value)
+			case "errfile": this.Errfile = param.AsString(value)
+			case "respawn": this.Respawn = param.AsUint(value)
+			case "delay": this.Delay = param.AsString(value)
+			case "ping": this.Ping = param.AsString(value)
+			case "pid": this.Pid = param.AsInt(value)
+			case "status": this.Status = param.AsString(value)
+			case "debug": this.Debug = param.AsString(value)
+			case "disabled": this.Disabled = param.AsString(value)
+			case "created": this.Created = param.AsUint(value)
+			case "updated": this.Updated = param.AsUint(value)
+			case "error": this.Error = param.AsString(value)
+			case "lastrun": this.Lastrun = param.AsUint(value)
+			case "description": this.Description = param.AsString(value)
+			case "enable_notify": this.EnableNotify = param.AsUint(value)
+			case "notify_email": this.NotifyEmail = param.AsString(value)
+		}
+	}
 }
 
 func (this *ForeverProcess) Set(key interface{}, value ...interface{}) {

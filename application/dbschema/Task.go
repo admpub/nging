@@ -12,6 +12,26 @@ import (
 	"time"
 )
 
+type Slice_Task []*Task
+
+func (s Slice_Task) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_Task) RangeRaw(fn func(m *Task) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // Task 任务
 type Task struct {
 	param   *factory.Param
@@ -70,7 +90,11 @@ func (this *Task) Objects() []*Task {
 	return this.objects[:]
 }
 
-func (this *Task) NewObjects() *[]*Task {
+func (this *Task) NewObjects() factory.Ranger {
+	return &Slice_Task{}
+}
+
+func (this *Task) InitObjects() *[]*Task {
 	this.objects = []*Task{}
 	return &this.objects
 }
@@ -117,7 +141,7 @@ func (this *Task) Get(mw func(db.Result) db.Result, args ...interface{}) error {
 
 func (this *Task) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -175,7 +199,7 @@ func (this *Task) AsKV(keyField string, valueField string, inputRows ...[]*Task)
 
 func (this *Task) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -183,8 +207,12 @@ func (this *Task) ListByOffset(recv interface{}, mw func(db.Result) db.Result, o
 func (this *Task) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -193,43 +221,60 @@ func (this *Task) Add() (pk interface{}, err error) {
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *Task) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *Task) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	this.Updated = uint(time.Now().Unix())
-	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *Task) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *Task) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *Task) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *Task) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *Task) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	
-	if val, ok := kvset["closed_log"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["closed_log"] = "N" } }
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	if val, ok := kvset["closed_log"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["closed_log"] = "N" } }
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *Task) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		this.Updated = uint(time.Now().Unix())
-	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { this.Updated = uint(time.Now().Unix())
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	},func(){
-		this.Created = uint(time.Now().Unix())
+	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.ClosedLog) == 0 { this.ClosedLog = "N" }
+		return DBI.EventFire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -238,12 +283,25 @@ func (this *Task) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk 
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *Task) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *Task) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *Task) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -297,6 +355,33 @@ func (this *Task) AsMap() map[string]interface{} {
 	r["Updated"] = this.Updated
 	r["ClosedLog"] = this.ClosedLog
 	return r
+}
+
+func (this *Task) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "id": this.Id = param.AsUint(value)
+			case "uid": this.Uid = param.AsUint(value)
+			case "group_id": this.GroupId = param.AsUint(value)
+			case "name": this.Name = param.AsString(value)
+			case "type": this.Type = param.AsInt(value)
+			case "description": this.Description = param.AsString(value)
+			case "cron_spec": this.CronSpec = param.AsString(value)
+			case "concurrent": this.Concurrent = param.AsUint(value)
+			case "command": this.Command = param.AsString(value)
+			case "work_directory": this.WorkDirectory = param.AsString(value)
+			case "env": this.Env = param.AsString(value)
+			case "disabled": this.Disabled = param.AsString(value)
+			case "enable_notify": this.EnableNotify = param.AsUint(value)
+			case "notify_email": this.NotifyEmail = param.AsString(value)
+			case "timeout": this.Timeout = param.AsUint64(value)
+			case "execute_times": this.ExecuteTimes = param.AsUint(value)
+			case "prev_time": this.PrevTime = param.AsUint(value)
+			case "created": this.Created = param.AsUint(value)
+			case "updated": this.Updated = param.AsUint(value)
+			case "closed_log": this.ClosedLog = param.AsString(value)
+		}
+	}
 }
 
 func (this *Task) Set(key interface{}, value ...interface{}) {

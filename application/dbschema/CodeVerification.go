@@ -12,6 +12,26 @@ import (
 	"time"
 )
 
+type Slice_CodeVerification []*CodeVerification
+
+func (s Slice_CodeVerification) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_CodeVerification) RangeRaw(fn func(m *CodeVerification) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // CodeVerification 验证码
 type CodeVerification struct {
 	param   *factory.Param
@@ -62,7 +82,11 @@ func (this *CodeVerification) Objects() []*CodeVerification {
 	return this.objects[:]
 }
 
-func (this *CodeVerification) NewObjects() *[]*CodeVerification {
+func (this *CodeVerification) NewObjects() factory.Ranger {
+	return &Slice_CodeVerification{}
+}
+
+func (this *CodeVerification) InitObjects() *[]*CodeVerification {
 	this.objects = []*CodeVerification{}
 	return &this.objects
 }
@@ -109,7 +133,7 @@ func (this *CodeVerification) Get(mw func(db.Result) db.Result, args ...interfac
 
 func (this *CodeVerification) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -167,7 +191,7 @@ func (this *CodeVerification) AsKV(keyField string, valueField string, inputRows
 
 func (this *CodeVerification) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -178,6 +202,10 @@ func (this *CodeVerification) Add() (pk interface{}, err error) {
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.SendMethod) == 0 { this.SendMethod = "mobile" }
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -186,47 +214,64 @@ func (this *CodeVerification) Add() (pk interface{}, err error) {
 			this.Id = uint64(v)
 		}
 	}
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *CodeVerification) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *CodeVerification) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.SendMethod) == 0 { this.SendMethod = "mobile" }
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *CodeVerification) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *CodeVerification) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *CodeVerification) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *CodeVerification) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *CodeVerification) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	
 	if val, ok := kvset["owner_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["owner_type"] = "user" } }
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	if val, ok := kvset["send_method"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["send_method"] = "mobile" } }
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *CodeVerification) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { 
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.SendMethod) == 0 { this.SendMethod = "mobile" }
-	},func(){
-		this.Created = uint(time.Now().Unix())
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.SendMethod) == 0 { this.SendMethod = "mobile" }
+		return DBI.EventFire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -235,12 +280,25 @@ func (this *CodeVerification) Upsert(mw func(db.Result) db.Result, args ...inter
 			this.Id = uint64(v)
 		}
 	}
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *CodeVerification) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *CodeVerification) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *CodeVerification) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -278,6 +336,25 @@ func (this *CodeVerification) AsMap() map[string]interface{} {
 	r["SendMethod"] = this.SendMethod
 	r["SendTo"] = this.SendTo
 	return r
+}
+
+func (this *CodeVerification) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "id": this.Id = param.AsUint64(value)
+			case "code": this.Code = param.AsString(value)
+			case "created": this.Created = param.AsUint(value)
+			case "owner_id": this.OwnerId = param.AsUint64(value)
+			case "owner_type": this.OwnerType = param.AsString(value)
+			case "used": this.Used = param.AsUint(value)
+			case "purpose": this.Purpose = param.AsString(value)
+			case "start": this.Start = param.AsUint(value)
+			case "end": this.End = param.AsUint(value)
+			case "disabled": this.Disabled = param.AsString(value)
+			case "send_method": this.SendMethod = param.AsString(value)
+			case "send_to": this.SendTo = param.AsString(value)
+		}
+	}
 }
 
 func (this *CodeVerification) Set(key interface{}, value ...interface{}) {

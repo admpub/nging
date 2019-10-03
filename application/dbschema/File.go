@@ -12,6 +12,26 @@ import (
 	"time"
 )
 
+type Slice_File []*File
+
+func (s Slice_File) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_File) RangeRaw(fn func(m *File) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // File 文件表
 type File struct {
 	param   *factory.Param
@@ -77,7 +97,11 @@ func (this *File) Objects() []*File {
 	return this.objects[:]
 }
 
-func (this *File) NewObjects() *[]*File {
+func (this *File) NewObjects() factory.Ranger {
+	return &Slice_File{}
+}
+
+func (this *File) InitObjects() *[]*File {
 	this.objects = []*File{}
 	return &this.objects
 }
@@ -124,7 +148,7 @@ func (this *File) Get(mw func(db.Result) db.Result, args ...interface{}) error {
 
 func (this *File) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -182,7 +206,7 @@ func (this *File) AsKV(keyField string, valueField string, inputRows ...[]*File)
 
 func (this *File) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -192,6 +216,10 @@ func (this *File) Add() (pk interface{}, err error) {
 	this.Id = 0
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	if len(this.Type) == 0 { this.Type = "image" }
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -200,43 +228,60 @@ func (this *File) Add() (pk interface{}, err error) {
 			this.Id = uint64(v)
 		}
 	}
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *File) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *File) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	this.Updated = uint(time.Now().Unix())
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	if len(this.Type) == 0 { this.Type = "image" }
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *File) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *File) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *File) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *File) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *File) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	
 	if val, ok := kvset["owner_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["owner_type"] = "user" } }
 	if val, ok := kvset["type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["type"] = "image" } }
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *File) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		this.Updated = uint(time.Now().Unix())
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { this.Updated = uint(time.Now().Unix())
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	if len(this.Type) == 0 { this.Type = "image" }
-	},func(){
-		this.Created = uint(time.Now().Unix())
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	if len(this.Type) == 0 { this.Type = "image" }
+		return DBI.EventFire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -245,12 +290,25 @@ func (this *File) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk 
 			this.Id = uint64(v)
 		}
 	}
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *File) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *File) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *File) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -318,6 +376,40 @@ func (this *File) AsMap() map[string]interface{} {
 	r["CategoryId"] = this.CategoryId
 	r["UsedTimes"] = this.UsedTimes
 	return r
+}
+
+func (this *File) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "id": this.Id = param.AsUint64(value)
+			case "owner_type": this.OwnerType = param.AsString(value)
+			case "owner_id": this.OwnerId = param.AsUint64(value)
+			case "name": this.Name = param.AsString(value)
+			case "save_name": this.SaveName = param.AsString(value)
+			case "save_path": this.SavePath = param.AsString(value)
+			case "view_url": this.ViewUrl = param.AsString(value)
+			case "ext": this.Ext = param.AsString(value)
+			case "mime": this.Mime = param.AsString(value)
+			case "type": this.Type = param.AsString(value)
+			case "size": this.Size = param.AsUint64(value)
+			case "width": this.Width = param.AsUint(value)
+			case "height": this.Height = param.AsUint(value)
+			case "dpi": this.Dpi = param.AsUint(value)
+			case "md5": this.Md5 = param.AsString(value)
+			case "storer_name": this.StorerName = param.AsString(value)
+			case "storer_id": this.StorerId = param.AsString(value)
+			case "created": this.Created = param.AsUint(value)
+			case "updated": this.Updated = param.AsUint(value)
+			case "project": this.Project = param.AsString(value)
+			case "table_id": this.TableId = param.AsUint64(value)
+			case "table_name": this.TableName = param.AsString(value)
+			case "field_name": this.FieldName = param.AsString(value)
+			case "sort": this.Sort = param.AsInt64(value)
+			case "status": this.Status = param.AsInt(value)
+			case "category_id": this.CategoryId = param.AsUint(value)
+			case "used_times": this.UsedTimes = param.AsUint(value)
+		}
+	}
 }
 
 func (this *File) Set(key interface{}, value ...interface{}) {

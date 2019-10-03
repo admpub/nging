@@ -12,6 +12,26 @@ import (
 	"time"
 )
 
+type Slice_TaskGroup []*TaskGroup
+
+func (s Slice_TaskGroup) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_TaskGroup) RangeRaw(fn func(m *TaskGroup) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // TaskGroup 任务组
 type TaskGroup struct {
 	param   *factory.Param
@@ -58,7 +78,11 @@ func (this *TaskGroup) Objects() []*TaskGroup {
 	return this.objects[:]
 }
 
-func (this *TaskGroup) NewObjects() *[]*TaskGroup {
+func (this *TaskGroup) NewObjects() factory.Ranger {
+	return &Slice_TaskGroup{}
+}
+
+func (this *TaskGroup) InitObjects() *[]*TaskGroup {
 	this.objects = []*TaskGroup{}
 	return &this.objects
 }
@@ -105,7 +129,7 @@ func (this *TaskGroup) Get(mw func(db.Result) db.Result, args ...interface{}) er
 
 func (this *TaskGroup) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -163,7 +187,7 @@ func (this *TaskGroup) AsKV(keyField string, valueField string, inputRows ...[]*
 
 func (this *TaskGroup) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -171,6 +195,10 @@ func (this *TaskGroup) ListByOffset(recv interface{}, mw func(db.Result) db.Resu
 func (this *TaskGroup) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -179,35 +207,52 @@ func (this *TaskGroup) Add() (pk interface{}, err error) {
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *TaskGroup) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *TaskGroup) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	this.Updated = uint(time.Now().Unix())
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *TaskGroup) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *TaskGroup) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *TaskGroup) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *TaskGroup) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *TaskGroup) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	kvset["updated"] = uint(time.Now().Unix())
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *TaskGroup) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		this.Updated = uint(time.Now().Unix())
-	},func(){
-		this.Created = uint(time.Now().Unix())
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { this.Updated = uint(time.Now().Unix())
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
+		return DBI.EventFire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -216,12 +261,25 @@ func (this *TaskGroup) Upsert(mw func(db.Result) db.Result, args ...interface{})
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *TaskGroup) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *TaskGroup) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *TaskGroup) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -251,6 +309,21 @@ func (this *TaskGroup) AsMap() map[string]interface{} {
 	r["CmdPrefix"] = this.CmdPrefix
 	r["CmdSuffix"] = this.CmdSuffix
 	return r
+}
+
+func (this *TaskGroup) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "id": this.Id = param.AsUint(value)
+			case "uid": this.Uid = param.AsUint(value)
+			case "name": this.Name = param.AsString(value)
+			case "description": this.Description = param.AsString(value)
+			case "created": this.Created = param.AsUint(value)
+			case "updated": this.Updated = param.AsUint(value)
+			case "cmd_prefix": this.CmdPrefix = param.AsString(value)
+			case "cmd_suffix": this.CmdSuffix = param.AsString(value)
+		}
+	}
 }
 
 func (this *TaskGroup) Set(key interface{}, value ...interface{}) {

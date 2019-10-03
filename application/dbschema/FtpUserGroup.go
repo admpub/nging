@@ -12,6 +12,26 @@ import (
 	"time"
 )
 
+type Slice_FtpUserGroup []*FtpUserGroup
+
+func (s Slice_FtpUserGroup) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_FtpUserGroup) RangeRaw(fn func(m *FtpUserGroup) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // FtpUserGroup FTP用户组
 type FtpUserGroup struct {
 	param   *factory.Param
@@ -59,7 +79,11 @@ func (this *FtpUserGroup) Objects() []*FtpUserGroup {
 	return this.objects[:]
 }
 
-func (this *FtpUserGroup) NewObjects() *[]*FtpUserGroup {
+func (this *FtpUserGroup) NewObjects() factory.Ranger {
+	return &Slice_FtpUserGroup{}
+}
+
+func (this *FtpUserGroup) InitObjects() *[]*FtpUserGroup {
 	this.objects = []*FtpUserGroup{}
 	return &this.objects
 }
@@ -106,7 +130,7 @@ func (this *FtpUserGroup) Get(mw func(db.Result) db.Result, args ...interface{})
 
 func (this *FtpUserGroup) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -164,7 +188,7 @@ func (this *FtpUserGroup) AsKV(keyField string, valueField string, inputRows ...
 
 func (this *FtpUserGroup) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -174,6 +198,10 @@ func (this *FtpUserGroup) Add() (pk interface{}, err error) {
 	this.Id = 0
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Banned) == 0 { this.Banned = "N" }
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -182,43 +210,60 @@ func (this *FtpUserGroup) Add() (pk interface{}, err error) {
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *FtpUserGroup) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *FtpUserGroup) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	this.Updated = uint(time.Now().Unix())
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Banned) == 0 { this.Banned = "N" }
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *FtpUserGroup) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *FtpUserGroup) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *FtpUserGroup) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *FtpUserGroup) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *FtpUserGroup) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	if val, ok := kvset["banned"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["banned"] = "N" } }
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *FtpUserGroup) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		this.Updated = uint(time.Now().Unix())
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { this.Updated = uint(time.Now().Unix())
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Banned) == 0 { this.Banned = "N" }
-	},func(){
-		this.Created = uint(time.Now().Unix())
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Banned) == 0 { this.Banned = "N" }
+		return DBI.EventFire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -227,12 +272,25 @@ func (this *FtpUserGroup) Upsert(mw func(db.Result) db.Result, args ...interface
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *FtpUserGroup) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *FtpUserGroup) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *FtpUserGroup) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -264,6 +322,22 @@ func (this *FtpUserGroup) AsMap() map[string]interface{} {
 	r["IpWhitelist"] = this.IpWhitelist
 	r["IpBlacklist"] = this.IpBlacklist
 	return r
+}
+
+func (this *FtpUserGroup) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "id": this.Id = param.AsUint(value)
+			case "name": this.Name = param.AsString(value)
+			case "created": this.Created = param.AsUint(value)
+			case "updated": this.Updated = param.AsUint(value)
+			case "disabled": this.Disabled = param.AsString(value)
+			case "banned": this.Banned = param.AsString(value)
+			case "directory": this.Directory = param.AsString(value)
+			case "ip_whitelist": this.IpWhitelist = param.AsString(value)
+			case "ip_blacklist": this.IpBlacklist = param.AsString(value)
+		}
+	}
 }
 
 func (this *FtpUserGroup) Set(key interface{}, value ...interface{}) {

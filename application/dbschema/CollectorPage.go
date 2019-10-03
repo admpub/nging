@@ -12,6 +12,26 @@ import (
 	"time"
 )
 
+type Slice_CollectorPage []*CollectorPage
+
+func (s Slice_CollectorPage) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_CollectorPage) RangeRaw(fn func(m *CollectorPage) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // CollectorPage 采集页面
 type CollectorPage struct {
 	param   *factory.Param
@@ -70,7 +90,11 @@ func (this *CollectorPage) Objects() []*CollectorPage {
 	return this.objects[:]
 }
 
-func (this *CollectorPage) NewObjects() *[]*CollectorPage {
+func (this *CollectorPage) NewObjects() factory.Ranger {
+	return &Slice_CollectorPage{}
+}
+
+func (this *CollectorPage) InitObjects() *[]*CollectorPage {
 	this.objects = []*CollectorPage{}
 	return &this.objects
 }
@@ -117,7 +141,7 @@ func (this *CollectorPage) Get(mw func(db.Result) db.Result, args ...interface{}
 
 func (this *CollectorPage) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -175,7 +199,7 @@ func (this *CollectorPage) AsKV(keyField string, valueField string, inputRows ..
 
 func (this *CollectorPage) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -183,10 +207,14 @@ func (this *CollectorPage) ListByOffset(recv interface{}, mw func(db.Result) db.
 func (this *CollectorPage) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Type) == 0 { this.Type = "content" }
 	if len(this.HasChild) == 0 { this.HasChild = "N" }
+	if len(this.Type) == 0 { this.Type = "content" }
 	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
 	if len(this.ContentType) == 0 { this.ContentType = "html" }
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -195,51 +223,68 @@ func (this *CollectorPage) Add() (pk interface{}, err error) {
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *CollectorPage) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *CollectorPage) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	
-	if len(this.Type) == 0 { this.Type = "content" }
 	if len(this.HasChild) == 0 { this.HasChild = "N" }
+	if len(this.Type) == 0 { this.Type = "content" }
 	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
 	if len(this.ContentType) == 0 { this.ContentType = "html" }
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *CollectorPage) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *CollectorPage) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *CollectorPage) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *CollectorPage) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *CollectorPage) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	
-	if val, ok := kvset["type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["type"] = "content" } }
 	if val, ok := kvset["has_child"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["has_child"] = "N" } }
+	if val, ok := kvset["type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["type"] = "content" } }
 	if val, ok := kvset["duplicate_rule"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["duplicate_rule"] = "none" } }
 	if val, ok := kvset["content_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["content_type"] = "html" } }
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *CollectorPage) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		
-	if len(this.Type) == 0 { this.Type = "content" }
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { 
 	if len(this.HasChild) == 0 { this.HasChild = "N" }
+	if len(this.Type) == 0 { this.Type = "content" }
 	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
 	if len(this.ContentType) == 0 { this.ContentType = "html" }
-	},func(){
-		this.Created = uint(time.Now().Unix())
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Type) == 0 { this.Type = "content" }
 	if len(this.HasChild) == 0 { this.HasChild = "N" }
+	if len(this.Type) == 0 { this.Type = "content" }
 	if len(this.DuplicateRule) == 0 { this.DuplicateRule = "none" }
 	if len(this.ContentType) == 0 { this.ContentType = "html" }
+		return DBI.EventFire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -248,12 +293,25 @@ func (this *CollectorPage) Upsert(mw func(db.Result) db.Result, args ...interfac
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *CollectorPage) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *CollectorPage) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *CollectorPage) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -307,6 +365,33 @@ func (this *CollectorPage) AsMap() map[string]interface{} {
 	r["Waits"] = this.Waits
 	r["Proxy"] = this.Proxy
 	return r
+}
+
+func (this *CollectorPage) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "id": this.Id = param.AsUint(value)
+			case "parent_id": this.ParentId = param.AsUint(value)
+			case "root_id": this.RootId = param.AsUint(value)
+			case "has_child": this.HasChild = param.AsString(value)
+			case "uid": this.Uid = param.AsUint(value)
+			case "group_id": this.GroupId = param.AsUint(value)
+			case "name": this.Name = param.AsString(value)
+			case "description": this.Description = param.AsString(value)
+			case "enter_url": this.EnterUrl = param.AsString(value)
+			case "sort": this.Sort = param.AsInt(value)
+			case "created": this.Created = param.AsUint(value)
+			case "browser": this.Browser = param.AsString(value)
+			case "type": this.Type = param.AsString(value)
+			case "scope_rule": this.ScopeRule = param.AsString(value)
+			case "duplicate_rule": this.DuplicateRule = param.AsString(value)
+			case "content_type": this.ContentType = param.AsString(value)
+			case "charset": this.Charset = param.AsString(value)
+			case "timeout": this.Timeout = param.AsUint(value)
+			case "waits": this.Waits = param.AsString(value)
+			case "proxy": this.Proxy = param.AsString(value)
+		}
+	}
 }
 
 func (this *CollectorPage) Set(key interface{}, value ...interface{}) {

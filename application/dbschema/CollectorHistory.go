@@ -12,6 +12,26 @@ import (
 	"time"
 )
 
+type Slice_CollectorHistory []*CollectorHistory
+
+func (s Slice_CollectorHistory) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_CollectorHistory) RangeRaw(fn func(m *CollectorHistory) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // CollectorHistory 采集历史
 type CollectorHistory struct {
 	param   *factory.Param
@@ -64,7 +84,11 @@ func (this *CollectorHistory) Objects() []*CollectorHistory {
 	return this.objects[:]
 }
 
-func (this *CollectorHistory) NewObjects() *[]*CollectorHistory {
+func (this *CollectorHistory) NewObjects() factory.Ranger {
+	return &Slice_CollectorHistory{}
+}
+
+func (this *CollectorHistory) InitObjects() *[]*CollectorHistory {
 	this.objects = []*CollectorHistory{}
 	return &this.objects
 }
@@ -111,7 +135,7 @@ func (this *CollectorHistory) Get(mw func(db.Result) db.Result, args ...interfac
 
 func (this *CollectorHistory) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -169,7 +193,7 @@ func (this *CollectorHistory) AsKV(keyField string, valueField string, inputRows
 
 func (this *CollectorHistory) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -178,6 +202,10 @@ func (this *CollectorHistory) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.HasChild) == 0 { this.HasChild = "N" }
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -186,39 +214,56 @@ func (this *CollectorHistory) Add() (pk interface{}, err error) {
 			this.Id = uint64(v)
 		}
 	}
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *CollectorHistory) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *CollectorHistory) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	
 	if len(this.HasChild) == 0 { this.HasChild = "N" }
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *CollectorHistory) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *CollectorHistory) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *CollectorHistory) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *CollectorHistory) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *CollectorHistory) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	
 	if val, ok := kvset["has_child"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["has_child"] = "N" } }
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *CollectorHistory) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { 
 	if len(this.HasChild) == 0 { this.HasChild = "N" }
-	},func(){
-		this.Created = uint(time.Now().Unix())
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.HasChild) == 0 { this.HasChild = "N" }
+		return DBI.EventFire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -227,12 +272,25 @@ func (this *CollectorHistory) Upsert(mw func(db.Result) db.Result, args ...inter
 			this.Id = uint64(v)
 		}
 	}
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *CollectorHistory) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *CollectorHistory) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *CollectorHistory) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -274,6 +332,27 @@ func (this *CollectorHistory) AsMap() map[string]interface{} {
 	r["Created"] = this.Created
 	r["Exported"] = this.Exported
 	return r
+}
+
+func (this *CollectorHistory) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "id": this.Id = param.AsUint64(value)
+			case "parent_id": this.ParentId = param.AsUint64(value)
+			case "page_id": this.PageId = param.AsUint(value)
+			case "page_parent_id": this.PageParentId = param.AsUint(value)
+			case "page_root_id": this.PageRootId = param.AsUint(value)
+			case "has_child": this.HasChild = param.AsString(value)
+			case "url": this.Url = param.AsString(value)
+			case "url_md5": this.UrlMd5 = param.AsString(value)
+			case "title": this.Title = param.AsString(value)
+			case "content": this.Content = param.AsString(value)
+			case "rule_md5": this.RuleMd5 = param.AsString(value)
+			case "data": this.Data = param.AsString(value)
+			case "created": this.Created = param.AsUint(value)
+			case "exported": this.Exported = param.AsUint(value)
+		}
+	}
 }
 
 func (this *CollectorHistory) Set(key interface{}, value ...interface{}) {

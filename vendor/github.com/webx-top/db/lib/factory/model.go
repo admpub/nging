@@ -16,6 +16,7 @@ type Model interface {
 	NewParam() *Param
 	SetParam(param *Param) Model
 	Param() *Param
+	NewObjects() Ranger
 	Get(mw func(db.Result) db.Result, args ...interface{}) error
 	List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error)
 	ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error)

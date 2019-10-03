@@ -12,6 +12,26 @@ import (
 	"time"
 )
 
+type Slice_SendingLog []*SendingLog
+
+func (s Slice_SendingLog) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_SendingLog) RangeRaw(fn func(m *SendingLog) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // SendingLog 邮件短信等发送日志
 type SendingLog struct {
 	param   *factory.Param
@@ -65,7 +85,11 @@ func (this *SendingLog) Objects() []*SendingLog {
 	return this.objects[:]
 }
 
-func (this *SendingLog) NewObjects() *[]*SendingLog {
+func (this *SendingLog) NewObjects() factory.Ranger {
+	return &Slice_SendingLog{}
+}
+
+func (this *SendingLog) InitObjects() *[]*SendingLog {
 	this.objects = []*SendingLog{}
 	return &this.objects
 }
@@ -112,7 +136,7 @@ func (this *SendingLog) Get(mw func(db.Result) db.Result, args ...interface{}) e
 
 func (this *SendingLog) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -170,7 +194,7 @@ func (this *SendingLog) AsKV(keyField string, valueField string, inputRows ...[]
 
 func (this *SendingLog) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -178,10 +202,14 @@ func (this *SendingLog) ListByOffset(recv interface{}, mw func(db.Result) db.Res
 func (this *SendingLog) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.SourceType) == 0 { this.SourceType = "user" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Method) == 0 { this.Method = "mobile" }
 	if len(this.Status) == 0 { this.Status = "waiting" }
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.SourceType) == 0 { this.SourceType = "user" }
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -190,51 +218,68 @@ func (this *SendingLog) Add() (pk interface{}, err error) {
 			this.Id = uint64(v)
 		}
 	}
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *SendingLog) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *SendingLog) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	
+	if len(this.SourceType) == 0 { this.SourceType = "user" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Method) == 0 { this.Method = "mobile" }
 	if len(this.Status) == 0 { this.Status = "waiting" }
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.SourceType) == 0 { this.SourceType = "user" }
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *SendingLog) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *SendingLog) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *SendingLog) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *SendingLog) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *SendingLog) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	
+	if val, ok := kvset["source_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["source_type"] = "user" } }
+	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
 	if val, ok := kvset["method"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["method"] = "mobile" } }
 	if val, ok := kvset["status"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["status"] = "waiting" } }
-	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
-	if val, ok := kvset["source_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["source_type"] = "user" } }
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *SendingLog) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { 
+	if len(this.SourceType) == 0 { this.SourceType = "user" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Method) == 0 { this.Method = "mobile" }
 	if len(this.Status) == 0 { this.Status = "waiting" }
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.SourceType) == 0 { this.SourceType = "user" }
-	},func(){
-		this.Created = uint(time.Now().Unix())
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	if len(this.SourceType) == 0 { this.SourceType = "user" }
+	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.Method) == 0 { this.Method = "mobile" }
 	if len(this.Status) == 0 { this.Status = "waiting" }
-	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	if len(this.SourceType) == 0 { this.SourceType = "user" }
+		return DBI.EventFire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -243,12 +288,25 @@ func (this *SendingLog) Upsert(mw func(db.Result) db.Result, args ...interface{}
 			this.Id = uint64(v)
 		}
 	}
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *SendingLog) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *SendingLog) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *SendingLog) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -292,6 +350,28 @@ func (this *SendingLog) AsMap() map[string]interface{} {
 	r["Params"] = this.Params
 	r["AppointmentTime"] = this.AppointmentTime
 	return r
+}
+
+func (this *SendingLog) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "id": this.Id = param.AsUint64(value)
+			case "created": this.Created = param.AsUint(value)
+			case "sent_at": this.SentAt = param.AsUint(value)
+			case "source_id": this.SourceId = param.AsUint64(value)
+			case "source_type": this.SourceType = param.AsString(value)
+			case "disabled": this.Disabled = param.AsString(value)
+			case "method": this.Method = param.AsString(value)
+			case "to": this.To = param.AsString(value)
+			case "provider": this.Provider = param.AsString(value)
+			case "result": this.Result = param.AsString(value)
+			case "status": this.Status = param.AsString(value)
+			case "retries": this.Retries = param.AsUint(value)
+			case "content": this.Content = param.AsString(value)
+			case "params": this.Params = param.AsString(value)
+			case "appointment_time": this.AppointmentTime = param.AsUint(value)
+		}
+	}
 }
 
 func (this *SendingLog) Set(key interface{}, value ...interface{}) {

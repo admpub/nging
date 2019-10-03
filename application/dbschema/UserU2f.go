@@ -12,6 +12,26 @@ import (
 	"time"
 )
 
+type Slice_UserU2f []*UserU2f
+
+func (s Slice_UserU2f) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_UserU2f) RangeRaw(fn func(m *UserU2f) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // UserU2f 两步验证
 type UserU2f struct {
 	param   *factory.Param
@@ -56,7 +76,11 @@ func (this *UserU2f) Objects() []*UserU2f {
 	return this.objects[:]
 }
 
-func (this *UserU2f) NewObjects() *[]*UserU2f {
+func (this *UserU2f) NewObjects() factory.Ranger {
+	return &Slice_UserU2f{}
+}
+
+func (this *UserU2f) InitObjects() *[]*UserU2f {
 	this.objects = []*UserU2f{}
 	return &this.objects
 }
@@ -103,7 +127,7 @@ func (this *UserU2f) Get(mw func(db.Result) db.Result, args ...interface{}) erro
 
 func (this *UserU2f) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -161,7 +185,7 @@ func (this *UserU2f) AsKV(keyField string, valueField string, inputRows ...[]*Us
 
 func (this *UserU2f) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -169,6 +193,10 @@ func (this *UserU2f) ListByOffset(recv interface{}, mw func(db.Result) db.Result
 func (this *UserU2f) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -177,35 +205,52 @@ func (this *UserU2f) Add() (pk interface{}, err error) {
 			this.Id = uint64(v)
 		}
 	}
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *UserU2f) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *UserU2f) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *UserU2f) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *UserU2f) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *UserU2f) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *UserU2f) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *UserU2f) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *UserU2f) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		
-	},func(){
-		this.Created = uint(time.Now().Unix())
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { 
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
+		return DBI.EventFire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -214,12 +259,25 @@ func (this *UserU2f) Upsert(mw func(db.Result) db.Result, args ...interface{}) (
 			this.Id = uint64(v)
 		}
 	}
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *UserU2f) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *UserU2f) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *UserU2f) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -245,6 +303,19 @@ func (this *UserU2f) AsMap() map[string]interface{} {
 	r["Extra"] = this.Extra
 	r["Created"] = this.Created
 	return r
+}
+
+func (this *UserU2f) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "id": this.Id = param.AsUint64(value)
+			case "uid": this.Uid = param.AsUint(value)
+			case "token": this.Token = param.AsString(value)
+			case "type": this.Type = param.AsString(value)
+			case "extra": this.Extra = param.AsString(value)
+			case "created": this.Created = param.AsUint(value)
+		}
+	}
 }
 
 func (this *UserU2f) Set(key interface{}, value ...interface{}) {

@@ -420,7 +420,7 @@ func (t *Transaction) Updatex(param *Param) (affected int64, err error) {
 	return res.RowsAffected()
 }
 
-func (t *Transaction) Upsert(param *Param, beforeUpsert ...func()) (interface{}, error) {
+func (t *Transaction) Upsert(param *Param, beforeUpsert ...func() error) (interface{}, error) {
 	param.ReadOnly = false
 	res := t.Result(param)
 	if param.Middleware != nil {
@@ -430,7 +430,9 @@ func (t *Transaction) Upsert(param *Param, beforeUpsert ...func()) (interface{},
 	if err != nil {
 		if err == db.ErrNoMoreRows {
 			if len(beforeUpsert) > 1 && beforeUpsert[1] != nil {
-				beforeUpsert[1]()
+				if err = beforeUpsert[1](); err != nil {
+					return nil, err
+				}
 			}
 			return t.C(param).Insert(param.SaveData)
 		}
@@ -438,12 +440,16 @@ func (t *Transaction) Upsert(param *Param, beforeUpsert ...func()) (interface{},
 	}
 	if cnt < 1 {
 		if len(beforeUpsert) > 1 && beforeUpsert[1] != nil {
-			beforeUpsert[1]()
+			if err = beforeUpsert[1](); err != nil {
+				return nil, err
+			}
 		}
 		return t.C(param).Insert(param.SaveData)
 	}
 	if len(beforeUpsert) > 0 && beforeUpsert[0] != nil {
-		beforeUpsert[0]()
+		if err = beforeUpsert[0](); err != nil {
+			return nil, err
+		}
 	}
 	return nil, res.Update(param.SaveData)
 }

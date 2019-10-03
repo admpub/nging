@@ -12,6 +12,26 @@ import (
 	"time"
 )
 
+type Slice_AccessLog []*AccessLog
+
+func (s Slice_AccessLog) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_AccessLog) RangeRaw(fn func(m *AccessLog) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // AccessLog 
 type AccessLog struct {
 	param   *factory.Param
@@ -73,7 +93,11 @@ func (this *AccessLog) Objects() []*AccessLog {
 	return this.objects[:]
 }
 
-func (this *AccessLog) NewObjects() *[]*AccessLog {
+func (this *AccessLog) NewObjects() factory.Ranger {
+	return &Slice_AccessLog{}
+}
+
+func (this *AccessLog) InitObjects() *[]*AccessLog {
 	this.objects = []*AccessLog{}
 	return &this.objects
 }
@@ -120,7 +144,7 @@ func (this *AccessLog) Get(mw func(db.Result) db.Result, args ...interface{}) er
 
 func (this *AccessLog) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -178,7 +202,7 @@ func (this *AccessLog) AsKV(keyField string, valueField string, inputRows ...[]*
 
 func (this *AccessLog) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -187,6 +211,10 @@ func (this *AccessLog) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.TimeLocal) == 0 { this.TimeLocal = "1970-01-01 00:00:00" }
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -195,39 +223,56 @@ func (this *AccessLog) Add() (pk interface{}, err error) {
 			this.Id = uint64(v)
 		}
 	}
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *AccessLog) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *AccessLog) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	
 	if len(this.TimeLocal) == 0 { this.TimeLocal = "1970-01-01 00:00:00" }
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *AccessLog) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *AccessLog) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *AccessLog) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *AccessLog) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *AccessLog) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	
 	if val, ok := kvset["time_local"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["time_local"] = "1970-01-01 00:00:00" } }
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *AccessLog) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { 
 	if len(this.TimeLocal) == 0 { this.TimeLocal = "1970-01-01 00:00:00" }
-	},func(){
-		this.Created = uint(time.Now().Unix())
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.TimeLocal) == 0 { this.TimeLocal = "1970-01-01 00:00:00" }
+		return DBI.EventFire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -236,12 +281,25 @@ func (this *AccessLog) Upsert(mw func(db.Result) db.Result, args ...interface{})
 			this.Id = uint64(v)
 		}
 	}
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *AccessLog) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *AccessLog) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *AccessLog) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -301,6 +359,36 @@ func (this *AccessLog) AsMap() map[string]interface{} {
 	r["BrowerType"] = this.BrowerType
 	r["Created"] = this.Created
 	return r
+}
+
+func (this *AccessLog) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "id": this.Id = param.AsUint64(value)
+			case "vhost_id": this.VhostId = param.AsUint(value)
+			case "remote_addr": this.RemoteAddr = param.AsString(value)
+			case "x_real_ip": this.XRealIp = param.AsString(value)
+			case "x_forward_for": this.XForwardFor = param.AsString(value)
+			case "local_addr": this.LocalAddr = param.AsString(value)
+			case "elapsed": this.Elapsed = param.AsFloat64(value)
+			case "host": this.Host = param.AsString(value)
+			case "user": this.User = param.AsString(value)
+			case "time_local": this.TimeLocal = param.AsString(value)
+			case "minute": this.Minute = param.AsString(value)
+			case "method": this.Method = param.AsString(value)
+			case "uri": this.Uri = param.AsString(value)
+			case "version": this.Version = param.AsString(value)
+			case "status_code": this.StatusCode = param.AsUint(value)
+			case "body_bytes": this.BodyBytes = param.AsUint64(value)
+			case "referer": this.Referer = param.AsString(value)
+			case "user_agent": this.UserAgent = param.AsString(value)
+			case "hit_status": this.HitStatus = param.AsUint(value)
+			case "scheme": this.Scheme = param.AsString(value)
+			case "brower_name": this.BrowerName = param.AsString(value)
+			case "brower_type": this.BrowerType = param.AsString(value)
+			case "created": this.Created = param.AsUint(value)
+		}
+	}
 }
 
 func (this *AccessLog) Set(key interface{}, value ...interface{}) {

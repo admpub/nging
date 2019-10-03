@@ -12,6 +12,26 @@ import (
 	"time"
 )
 
+type Slice_User []*User
+
+func (s Slice_User) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_User) RangeRaw(fn func(m *User) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // User 用户
 type User struct {
 	param   *factory.Param
@@ -68,7 +88,11 @@ func (this *User) Objects() []*User {
 	return this.objects[:]
 }
 
-func (this *User) NewObjects() *[]*User {
+func (this *User) NewObjects() factory.Ranger {
+	return &Slice_User{}
+}
+
+func (this *User) InitObjects() *[]*User {
 	this.objects = []*User{}
 	return &this.objects
 }
@@ -115,7 +139,7 @@ func (this *User) Get(mw func(db.Result) db.Result, args ...interface{}) error {
 
 func (this *User) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -173,7 +197,7 @@ func (this *User) AsKV(keyField string, valueField string, inputRows ...[]*User)
 
 func (this *User) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -181,9 +205,13 @@ func (this *User) ListByOffset(recv interface{}, mw func(db.Result) db.Result, o
 func (this *User) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Online) == 0 { this.Online = "N" }
 	if len(this.Gender) == 0 { this.Gender = "secret" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Online) == 0 { this.Online = "N" }
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -192,47 +220,64 @@ func (this *User) Add() (pk interface{}, err error) {
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *User) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *User) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	this.Updated = uint(time.Now().Unix())
-	if len(this.Online) == 0 { this.Online = "N" }
 	if len(this.Gender) == 0 { this.Gender = "secret" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if len(this.Online) == 0 { this.Online = "N" }
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *User) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *User) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *User) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *User) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *User) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	
-	if val, ok := kvset["online"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["online"] = "N" } }
 	if val, ok := kvset["gender"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["gender"] = "secret" } }
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	if val, ok := kvset["online"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["online"] = "N" } }
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *User) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		this.Updated = uint(time.Now().Unix())
-	if len(this.Online) == 0 { this.Online = "N" }
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { this.Updated = uint(time.Now().Unix())
 	if len(this.Gender) == 0 { this.Gender = "secret" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	},func(){
-		this.Created = uint(time.Now().Unix())
+	if len(this.Online) == 0 { this.Online = "N" }
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	if len(this.Online) == 0 { this.Online = "N" }
 	if len(this.Gender) == 0 { this.Gender = "secret" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	if len(this.Online) == 0 { this.Online = "N" }
+		return DBI.EventFire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -241,12 +286,25 @@ func (this *User) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk 
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *User) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *User) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *User) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -296,6 +354,31 @@ func (this *User) AsMap() map[string]interface{} {
 	r["FileSize"] = this.FileSize
 	r["FileNum"] = this.FileNum
 	return r
+}
+
+func (this *User) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "id": this.Id = param.AsUint(value)
+			case "username": this.Username = param.AsString(value)
+			case "email": this.Email = param.AsString(value)
+			case "mobile": this.Mobile = param.AsString(value)
+			case "password": this.Password = param.AsString(value)
+			case "salt": this.Salt = param.AsString(value)
+			case "safe_pwd": this.SafePwd = param.AsString(value)
+			case "avatar": this.Avatar = param.AsString(value)
+			case "gender": this.Gender = param.AsString(value)
+			case "last_login": this.LastLogin = param.AsUint(value)
+			case "last_ip": this.LastIp = param.AsString(value)
+			case "disabled": this.Disabled = param.AsString(value)
+			case "online": this.Online = param.AsString(value)
+			case "role_ids": this.RoleIds = param.AsString(value)
+			case "created": this.Created = param.AsUint(value)
+			case "updated": this.Updated = param.AsUint(value)
+			case "file_size": this.FileSize = param.AsUint64(value)
+			case "file_num": this.FileNum = param.AsUint64(value)
+		}
+	}
 }
 
 func (this *User) Set(key interface{}, value ...interface{}) {

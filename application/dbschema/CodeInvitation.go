@@ -12,6 +12,26 @@ import (
 	"time"
 )
 
+type Slice_CodeInvitation []*CodeInvitation
+
+func (s Slice_CodeInvitation) Range(fn func(m factory.Model) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Slice_CodeInvitation) RangeRaw(fn func(m *CodeInvitation) error ) error {
+	for _, v := range s {
+		if err := fn(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // CodeInvitation 邀请码
 type CodeInvitation struct {
 	param   *factory.Param
@@ -60,7 +80,11 @@ func (this *CodeInvitation) Objects() []*CodeInvitation {
 	return this.objects[:]
 }
 
-func (this *CodeInvitation) NewObjects() *[]*CodeInvitation {
+func (this *CodeInvitation) NewObjects() factory.Ranger {
+	return &Slice_CodeInvitation{}
+}
+
+func (this *CodeInvitation) InitObjects() *[]*CodeInvitation {
 	this.objects = []*CodeInvitation{}
 	return &this.objects
 }
@@ -107,7 +131,7 @@ func (this *CodeInvitation) Get(mw func(db.Result) db.Result, args ...interface{
 
 func (this *CodeInvitation) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -165,7 +189,7 @@ func (this *CodeInvitation) AsKV(keyField string, valueField string, inputRows .
 
 func (this *CodeInvitation) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
-		recv = this.NewObjects()
+		recv = this.InitObjects()
 	}
 	return this.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
 }
@@ -174,6 +198,10 @@ func (this *CodeInvitation) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+	err = DBI.EventFire("creating", this, nil)
+	if err != nil {
+		return
+	}
 	pk, err = this.Param().SetSend(this).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -182,39 +210,56 @@ func (this *CodeInvitation) Add() (pk interface{}, err error) {
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		err = DBI.EventFire("created", this, nil)
+	}
 	return
 }
 
-func (this *CodeInvitation) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *CodeInvitation) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	return this.Setter(mw, args...).SetSend(this).Update()
+	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", this, mw, args...)
 }
 
 func (this *CodeInvitation) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	return this.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
-func (this *CodeInvitation) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error {
+func (this *CodeInvitation) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
 	return this.SetFields(mw, map[string]interface{}{
 		field: value,
 	}, args...)
 }
 
-func (this *CodeInvitation) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error {
+func (this *CodeInvitation) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	
 	if val, ok := kvset["disabled"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["disabled"] = "N" } }
-	return this.Setter(mw, args...).SetSend(kvset).Update()
+	m := *this
+	m.FromMap(kvset)
+	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+		return
+	}
+	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+		return
+	}
+	return DBI.EventFire("updated", &m, mw, args...)
 }
 
 func (this *CodeInvitation) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func(){
-		
+	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { 
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
-	},func(){
-		this.Created = uint(time.Now().Unix())
+		return DBI.EventFire("updating", this, mw, args...)
+	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
+		return DBI.EventFire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -223,12 +268,25 @@ func (this *CodeInvitation) Upsert(mw func(db.Result) db.Result, args ...interfa
 			this.Id = uint(v)
 		}
 	}
+	if err == nil {
+		if pk == nil {
+			err = DBI.EventFire("updated", this, mw, args...)
+		} else {
+			err = DBI.EventFire("created", this, nil)
+		}
+	} 
 	return 
 }
 
-func (this *CodeInvitation) Delete(mw func(db.Result) db.Result, args ...interface{}) error {
+func (this *CodeInvitation) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	return this.Param().SetArgs(args...).SetMiddleware(mw).Delete()
+	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+		return
+	}
+	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+		return
+	}
+	return DBI.EventFire("deleted", this, mw, args...)
 }
 
 func (this *CodeInvitation) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
@@ -262,6 +320,23 @@ func (this *CodeInvitation) AsMap() map[string]interface{} {
 	r["Disabled"] = this.Disabled
 	r["RoleIds"] = this.RoleIds
 	return r
+}
+
+func (this *CodeInvitation) FromMap(rows map[string]interface{}) {
+	for key, value := range rows {
+		switch key {
+			case "id": this.Id = param.AsUint(value)
+			case "uid": this.Uid = param.AsUint(value)
+			case "recv_uid": this.RecvUid = param.AsUint(value)
+			case "code": this.Code = param.AsString(value)
+			case "created": this.Created = param.AsUint(value)
+			case "used": this.Used = param.AsUint(value)
+			case "start": this.Start = param.AsUint(value)
+			case "end": this.End = param.AsUint(value)
+			case "disabled": this.Disabled = param.AsString(value)
+			case "role_ids": this.RoleIds = param.AsString(value)
+		}
+	}
 }
 
 func (this *CodeInvitation) Set(key interface{}, value ...interface{}) {

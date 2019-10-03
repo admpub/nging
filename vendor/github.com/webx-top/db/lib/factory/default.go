@@ -163,7 +163,7 @@ func Update(param *Param) error {
 	return DefaultFactory.Update(param)
 }
 
-func Upsert(param *Param, beforeUpsert ...func()) (interface{}, error) {
+func Upsert(param *Param, beforeUpsert ...func() error) (interface{}, error) {
 	return DefaultFactory.Upsert(param, beforeUpsert...)
 }
 
