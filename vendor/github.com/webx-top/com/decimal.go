@@ -31,6 +31,14 @@ func NumberTrim(number string, precision int, separator ...string) string {
 	return numberWithSeparator(s, separator...)
 }
 
+func NumberTrimZero(number string) string {
+	p := strings.LastIndex(number, `.`)
+	if p < 0 {
+		return number
+	}
+	return number[0:p] + `.` + strings.TrimRight(number[p+1:], `0`)
+}
+
 func numberWithSeparator(r string, separator ...string) string {
 	d := `,`
 	if len(separator) > 0 {

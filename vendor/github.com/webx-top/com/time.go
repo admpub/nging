@@ -165,12 +165,18 @@ func RestoreTime(str string, args ...string) time.Time {
 	return t
 }
 
-//FormatByte 兼容以前的版本，FormatBytes别名
+// FormatByte 兼容以前的版本，FormatBytes别名
+// @param float64 size
+// @param int precision
+// @param bool trimRightZero
 func FormatByte(args ...interface{}) string {
 	return FormatBytes(args...)
 }
 
-//FormatBytes 格式化字节。 FormatBytes(字节整数，保留小数位数)
+// FormatBytes 格式化字节。 FormatBytes(字节整数，保留小数位数)
+// @param float64 size
+// @param int precision
+// @param bool trimRightZero
 func FormatBytes(args ...interface{}) string {
 	sizes := [...]string{"YB", "ZB", "EB", "PB", "TB", "GB", "MB", "KB", "B"}
 	var (
@@ -194,7 +200,7 @@ func FormatBytes(args ...interface{}) string {
 	}
 	r := fmt.Sprintf("%.*f", precision, size)
 	if trimRightZero {
-		r = NumberTrim(r, precision, ``)
+		r = NumberTrimZero(r)
 	}
 	return r + sizes[total]
 }
@@ -230,7 +236,12 @@ func FormatPastTime(timestamp interface{}, args ...string) string {
 	return FriendlyTime(duration)
 }
 
-//FriendlyTime 对人类友好的经历时间格式
+// FriendlyTime 对人类友好的经历时间格式
+// @param time.Duration d
+// @param string suffix
+// @param int precision
+// @param bool trimRightZero
+// @param string language
 func FriendlyTime(d time.Duration, args ...interface{}) (r string) {
 	var suffix string
 	var trimRightZero bool
@@ -288,7 +299,7 @@ func FriendlyTime(d time.Duration, args ...interface{}) (r string) {
 	if divisor > 0 {
 		r = fmt.Sprintf("%.*f", precision, float64(u)/divisor)
 		if trimRightZero {
-			r = NumberTrim(r, precision, ``)
+			r = NumberTrimZero(r)
 		}
 	} else {
 		r = `0`
