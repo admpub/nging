@@ -36,7 +36,11 @@ func NumberTrimZero(number string) string {
 	if p < 0 {
 		return number
 	}
-	return number[0:p] + `.` + strings.TrimRight(number[p+1:], `0`)
+	d := strings.TrimRight(number[p+1:], `0`)
+	if len(d) == 0 {
+		return number[0:p]
+	}
+	return number[0:p] + `.` + d
 }
 
 func numberWithSeparator(r string, separator ...string) string {
