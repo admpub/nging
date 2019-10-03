@@ -165,62 +165,38 @@ func RestoreTime(str string, args ...string) time.Time {
 	return t
 }
 
-//FormatByte 格式化字节。 FormatByte(字节整数，保留小数位数)
+//FormatByte 兼容以前的版本，FormatBytes别名
 func FormatByte(args ...interface{}) string {
+	return FormatBytes(args...)
+}
+
+//FormatBytes 格式化字节。 FormatBytes(字节整数，保留小数位数)
+func FormatBytes(args ...interface{}) string {
 	sizes := [...]string{"YB", "ZB", "EB", "PB", "TB", "GB", "MB", "KB", "B"}
 	var (
-		total     = len(sizes)
-		size      float64
-		precision int
+		total         = len(sizes)
+		size          float64
+		precision     int
+		trimRightZero bool
 	)
-	ln := len(args)
-	if ln > 0 {
-		switch v := args[0].(type) {
-		case float64:
-			size = v
-		case float32:
-			size = float64(v)
-		case int64:
-			size = float64(v)
-		case int32:
-			size = float64(v)
-		case int:
-			size = float64(v)
-		case uint64:
-			size = float64(v)
-		case uint32:
-			size = float64(v)
-		case uint:
-			size = float64(v)
-		case string:
-			i, _ := strconv.Atoi(v)
-			size = float64(i)
-		default:
-			fmt.Printf("FormatByte error: first param (%#v) invalid.\n", args[0])
-		}
-	}
-	if ln > 1 {
-		switch v := args[1].(type) {
-		case int:
-			precision = v
-		case int64:
-			precision = int(v)
-		case int32:
-			precision = int(v)
-		case uint:
-			precision = int(v)
-		case uint64:
-			precision = int(v)
-		case uint32:
-			precision = int(v)
-		default:
-			fmt.Printf("FormatByte error: second param (%#v) invalid.\n", args[1])
-		}
+	switch len(args) {
+	case 3:
+		trimRightZero = Bool(args[2])
+		fallthrough
+	case 2:
+		precision = Int(args[1])
+		fallthrough
+	case 1:
+		size = Float64(args[0])
 	}
 	for total--; total > 0 && size > 1024.0; total-- {
 		size /= 1024.0
 	}
-	return fmt.Sprintf("%.*f%s", precision, size, sizes[total])
+	r := fmt.Sprintf("%.*f", precision, size)
+	if trimRightZero {
+		r = NumberTrim(r, precision, ``)
+	}
+	return r + sizes[total]
 }
 
 //DateFormatShort 格式化耗时
@@ -255,39 +231,77 @@ func FormatPastTime(timestamp interface{}, args ...string) string {
 }
 
 //FriendlyTime 对人类友好的经历时间格式
-func FriendlyTime(d time.Duration, args ...string) (r string) {
+func FriendlyTime(d time.Duration, args ...interface{}) (r string) {
 	var suffix string
+	var trimRightZero bool
+	var language string
+	precision := 2
 	switch len(args) {
+	case 4:
+		language = String(args[3])
+		fallthrough
+	case 3:
+		trimRightZero = Bool(args[2])
+		fallthrough
+	case 2:
+		precision = Int(args[1])
+		fallthrough
 	case 1:
-		suffix = args[0]
+		suffix = String(args[0])
 	}
+	var unit string
+	var divisor float64
 	u := uint64(d)
 	if u < uint64(time.Second) {
 		switch {
 		case u == 0:
-			r = `0s`
+			unit = `s`
 		case u < uint64(time.Microsecond):
-			r = fmt.Sprintf("%.2f%s", float64(u), `ns`) //纳秒
+			unit = `ns` //纳秒
+			divisor = 1
 		case u < uint64(time.Millisecond):
-			r = fmt.Sprintf("%.2f%s", float64(u)/1000, `us`) //微秒
+			unit = `us` //微秒
+			divisor = 1000
 		default:
-			r = fmt.Sprintf("%.2f%s", float64(u)/1000/1000, `ms`) //毫秒
+			unit = `ms` //毫秒
+			divisor = 1000 * 1000
 		}
 	} else {
+		divisor = 1000 * 1000 * 1000
 		switch {
 		case u < uint64(time.Minute):
-			r = fmt.Sprintf("%.2f%s", float64(u)/1000/1000/1000, `s`) //秒
+			unit = `s` //秒
 		case u < uint64(time.Hour):
-			r = fmt.Sprintf("%.2f%s", float64(u)/1000/1000/1000/60, `m`) //分钟
+			unit = `m` //分钟
+			divisor *= 60
 		case u < uint64(time.Hour)*24:
-			r = fmt.Sprintf("%.2f%s", float64(u)/1000/1000/1000/60/60, `h`) //小时
+			unit = `h` //小时
+			divisor *= 60 * 60
 		case u < uint64(time.Hour)*24*7:
-			r = fmt.Sprintf("%.2f%s", float64(u)/1000/1000/1000/60/60/24, `d`) //天
+			unit = `d` //天
+			divisor *= 60 * 60 * 24
 		default:
-			r = fmt.Sprintf("%.2f%s", float64(u)/1000/1000/1000/60/60/24/7, `w`) //周
+			unit = `w` //周
+			divisor *= 60 * 60 * 24 * 7
 		}
 	}
-	r += suffix
+	if divisor > 0 {
+		r = fmt.Sprintf("%.*f", precision, float64(u)/divisor)
+		if trimRightZero {
+			r = NumberTrim(r, precision, ``)
+		}
+	} else {
+		r = `0`
+	}
+	if len(language) > 0 {
+		units, ok := TimeShortUnits[language]
+		if ok {
+			if ut, ok := units[unit]; ok {
+				unit = ut
+			}
+		}
+	}
+	r += unit + suffix
 	return
 }
 
@@ -300,9 +314,15 @@ func TotalRunTime() string {
 }
 
 var (
-	units     = []string{"years", "weeks", "days", "hours", "minutes", "seconds", "milliseconds"}
-	unitsZhCN = map[string]string{"years": "年", "weeks": "周", "days": "天", "hours": "小时", "minutes": "分", "seconds": "秒", "milliseconds": "毫秒"}
-	TimeUnits = map[string]map[string]string{`zh-cn`: unitsZhCN}
+	timeUnits     = []string{"years", "weeks", "days", "hours", "minutes", "seconds", "milliseconds"}
+	timeUnitsZhCN = map[string]string{"years": "年", "weeks": "周", "days": "天", "hours": "小时", "minutes": "分", "seconds": "秒", "milliseconds": "毫秒"}
+	// TimeUnits 多语言时间单位
+	TimeUnits = map[string]map[string]string{`zh-cn`: timeUnitsZhCN}
+
+	// TimeShortUnits 时间单位(简写)
+	TimeShortUnits = map[string]map[string]string{
+		`zh-cn`: {`s`: `秒`, `ns`: `纳秒`, `us`: `微秒`, `ms`: `毫秒`, `m`: `分钟`, `h`: `小时`, `d`: `天`, `w`: `周`},
+	}
 )
 
 // Durafmt holds the parsed duration and the original input duration.
@@ -326,7 +346,7 @@ func getDurationUnits(args []interface{}) map[string]string {
 			}
 			switch strings.ToLower(v) {
 			case `zh_cn`, `zh-cn`:
-				units = unitsZhCN
+				units = timeUnitsZhCN
 			}
 		}
 	}
@@ -389,7 +409,7 @@ func (d *Durafmt) String() string {
 	}
 
 	// Construct duration string.
-	for _, u := range units {
+	for _, u := range timeUnits {
 		v := durationMap[u]
 		if customLable, ok := d.units[u]; ok {
 			u = customLable
