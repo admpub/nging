@@ -53,7 +53,7 @@ type Embedded struct {
 
 func (f *Embedded) Updater() *fileupdater.FileUpdater {
 	if f.updater == nil {
-		f.updater = fileupdater.New(f.base.Context, f)
+		f.updater = fileupdater.New(f)
 	}
 	return f.updater
 }

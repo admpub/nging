@@ -20,19 +20,13 @@
 // 用法：fileupdater.New(ctx,fileModel.NewEmbedded(ctx)).Set(`表名称`,`字段名称`,主键ID).Add(`/test/image.jpg`,false)
 package fileupdater
 
-import (
-	"github.com/webx-top/echo"
-)
-
-func New(ctx echo.Context, reler Reler) *FileUpdater {
+func New(reler Reler) *FileUpdater {
 	return &FileUpdater{
-		ctx: ctx,
 		rel: reler,
 	}
 }
 
 type FileUpdater struct {
-	ctx     echo.Context
 	rel     Reler
 	project string
 	table   string
