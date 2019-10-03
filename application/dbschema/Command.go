@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 	
 	"time"
@@ -39,6 +40,7 @@ type Command struct {
 	objects []*Command
 	namer   func(string) string
 	connID  int
+	context echo.Context
 	
 	Id            	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	Name          	string  	`db:"name" bson:"name" comment:"名称" json:"name" xml:"name"`
@@ -60,6 +62,15 @@ func (this *Command) Trans() *factory.Transaction {
 func (this *Command) Use(trans *factory.Transaction) factory.Model {
 	this.trans = trans
 	return this
+}
+
+func (this *Command) SetContext(ctx echo.Context) factory.Model {
+	this.context = ctx
+	return this
+}
+
+func (this *Command) Context() echo.Context {
+	return this.context
 }
 
 func (this *Command) SetConnID(connID int) factory.Model {

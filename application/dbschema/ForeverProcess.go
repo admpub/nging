@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 	
 	"time"
@@ -39,6 +40,7 @@ type ForeverProcess struct {
 	objects []*ForeverProcess
 	namer   func(string) string
 	connID  int
+	context echo.Context
 	
 	Id           	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	Uid          	uint    	`db:"uid" bson:"uid" comment:"添加人ID" json:"uid" xml:"uid"`
@@ -73,6 +75,15 @@ func (this *ForeverProcess) Trans() *factory.Transaction {
 func (this *ForeverProcess) Use(trans *factory.Transaction) factory.Model {
 	this.trans = trans
 	return this
+}
+
+func (this *ForeverProcess) SetContext(ctx echo.Context) factory.Model {
+	this.context = ctx
+	return this
+}
+
+func (this *ForeverProcess) Context() echo.Context {
+	return this.context
 }
 
 func (this *ForeverProcess) SetConnID(connID int) factory.Model {

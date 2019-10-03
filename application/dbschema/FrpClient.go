@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 	
 	"time"
@@ -39,6 +40,7 @@ type FrpClient struct {
 	objects []*FrpClient
 	namer   func(string) string
 	connID  int
+	context echo.Context
 	
 	Id                	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	Name              	string  	`db:"name" bson:"name" comment:"名称" json:"name" xml:"name"`
@@ -79,6 +81,15 @@ func (this *FrpClient) Trans() *factory.Transaction {
 func (this *FrpClient) Use(trans *factory.Transaction) factory.Model {
 	this.trans = trans
 	return this
+}
+
+func (this *FrpClient) SetContext(ctx echo.Context) factory.Model {
+	this.context = ctx
+	return this
+}
+
+func (this *FrpClient) Context() echo.Context {
+	return this.context
 }
 
 func (this *FrpClient) SetConnID(connID int) factory.Model {

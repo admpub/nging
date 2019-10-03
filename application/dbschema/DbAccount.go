@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 	
 	"time"
@@ -39,6 +40,7 @@ type DbAccount struct {
 	objects []*DbAccount
 	namer   func(string) string
 	connID  int
+	context echo.Context
 	
 	Id      	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	Title   	string  	`db:"title" bson:"title" comment:"标题" json:"title" xml:"title"`
@@ -60,6 +62,15 @@ func (this *DbAccount) Trans() *factory.Transaction {
 func (this *DbAccount) Use(trans *factory.Transaction) factory.Model {
 	this.trans = trans
 	return this
+}
+
+func (this *DbAccount) SetContext(ctx echo.Context) factory.Model {
+	this.context = ctx
+	return this
+}
+
+func (this *DbAccount) Context() echo.Context {
+	return this.context
 }
 
 func (this *DbAccount) SetConnID(connID int) factory.Model {

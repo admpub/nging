@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 	
 	"time"
@@ -39,6 +40,7 @@ type FtpUser struct {
 	objects []*FtpUser
 	namer   func(string) string
 	connID  int
+	context echo.Context
 	
 	Id          	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"" json:"id" xml:"id"`
 	Username    	string  	`db:"username" bson:"username" comment:"用户名" json:"username" xml:"username"`
@@ -59,6 +61,15 @@ func (this *FtpUser) Trans() *factory.Transaction {
 func (this *FtpUser) Use(trans *factory.Transaction) factory.Model {
 	this.trans = trans
 	return this
+}
+
+func (this *FtpUser) SetContext(ctx echo.Context) factory.Model {
+	this.context = ctx
+	return this
+}
+
+func (this *FtpUser) Context() echo.Context {
+	return this.context
 }
 
 func (this *FtpUser) SetConnID(connID int) factory.Model {

@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 	
 )
@@ -38,6 +39,7 @@ type FileEmbedded struct {
 	objects []*FileEmbedded
 	namer   func(string) string
 	connID  int
+	context echo.Context
 	
 	Id        	uint64  	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"主键" json:"id" xml:"id"`
 	Project   	string  	`db:"project" bson:"project" comment:"项目名" json:"project" xml:"project"`
@@ -55,6 +57,15 @@ func (this *FileEmbedded) Trans() *factory.Transaction {
 func (this *FileEmbedded) Use(trans *factory.Transaction) factory.Model {
 	this.trans = trans
 	return this
+}
+
+func (this *FileEmbedded) SetContext(ctx echo.Context) factory.Model {
+	this.context = ctx
+	return this
+}
+
+func (this *FileEmbedded) Context() echo.Context {
+	return this.context
 }
 
 func (this *FileEmbedded) SetConnID(connID int) factory.Model {

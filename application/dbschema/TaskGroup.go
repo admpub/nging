@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 	
 	"time"
@@ -39,6 +40,7 @@ type TaskGroup struct {
 	objects []*TaskGroup
 	namer   func(string) string
 	connID  int
+	context echo.Context
 	
 	Id         	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"" json:"id" xml:"id"`
 	Uid        	uint    	`db:"uid" bson:"uid" comment:"用户ID" json:"uid" xml:"uid"`
@@ -57,6 +59,15 @@ func (this *TaskGroup) Trans() *factory.Transaction {
 func (this *TaskGroup) Use(trans *factory.Transaction) factory.Model {
 	this.trans = trans
 	return this
+}
+
+func (this *TaskGroup) SetContext(ctx echo.Context) factory.Model {
+	this.context = ctx
+	return this
+}
+
+func (this *TaskGroup) Context() echo.Context {
+	return this.context
 }
 
 func (this *TaskGroup) SetConnID(connID int) factory.Model {

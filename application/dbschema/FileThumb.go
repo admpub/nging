@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 	
 )
@@ -38,6 +39,7 @@ type FileThumb struct {
 	objects []*FileThumb
 	namer   func(string) string
 	connID  int
+	context echo.Context
 	
 	Id        	uint64  	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"主键" json:"id" xml:"id"`
 	FileId    	uint64  	`db:"file_id" bson:"file_id" comment:"文件ID" json:"file_id" xml:"file_id"`
@@ -59,6 +61,15 @@ func (this *FileThumb) Trans() *factory.Transaction {
 func (this *FileThumb) Use(trans *factory.Transaction) factory.Model {
 	this.trans = trans
 	return this
+}
+
+func (this *FileThumb) SetContext(ctx echo.Context) factory.Model {
+	this.context = ctx
+	return this
+}
+
+func (this *FileThumb) Context() echo.Context {
+	return this.context
 }
 
 func (this *FileThumb) SetConnID(connID int) factory.Model {

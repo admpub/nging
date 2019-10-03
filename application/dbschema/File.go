@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 	
 	"time"
@@ -39,6 +40,7 @@ type File struct {
 	objects []*File
 	namer   func(string) string
 	connID  int
+	context echo.Context
 	
 	Id         	uint64  	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"文件ID" json:"id" xml:"id"`
 	OwnerType  	string  	`db:"owner_type" bson:"owner_type" comment:"用户类型" json:"owner_type" xml:"owner_type"`
@@ -76,6 +78,15 @@ func (this *File) Trans() *factory.Transaction {
 func (this *File) Use(trans *factory.Transaction) factory.Model {
 	this.trans = trans
 	return this
+}
+
+func (this *File) SetContext(ctx echo.Context) factory.Model {
+	this.context = ctx
+	return this
+}
+
+func (this *File) Context() echo.Context {
+	return this.context
 }
 
 func (this *File) SetConnID(connID int) factory.Model {

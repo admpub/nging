@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 	
 	"time"
@@ -39,6 +40,7 @@ type UserU2f struct {
 	objects []*UserU2f
 	namer   func(string) string
 	connID  int
+	context echo.Context
 	
 	Id     	uint64  	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"" json:"id" xml:"id"`
 	Uid    	uint    	`db:"uid" bson:"uid" comment:"用户ID" json:"uid" xml:"uid"`
@@ -55,6 +57,15 @@ func (this *UserU2f) Trans() *factory.Transaction {
 func (this *UserU2f) Use(trans *factory.Transaction) factory.Model {
 	this.trans = trans
 	return this
+}
+
+func (this *UserU2f) SetContext(ctx echo.Context) factory.Model {
+	this.context = ctx
+	return this
+}
+
+func (this *UserU2f) Context() echo.Context {
+	return this.context
 }
 
 func (this *UserU2f) SetConnID(connID int) factory.Model {

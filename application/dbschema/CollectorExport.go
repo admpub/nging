@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 	
 	"time"
@@ -39,6 +40,7 @@ type CollectorExport struct {
 	objects []*CollectorExport
 	namer   func(string) string
 	connID  int
+	context echo.Context
 	
 	Id         	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	PageRoot   	uint    	`db:"page_root" bson:"page_root" comment:"根页面ID" json:"page_root" xml:"page_root"`
@@ -61,6 +63,15 @@ func (this *CollectorExport) Trans() *factory.Transaction {
 func (this *CollectorExport) Use(trans *factory.Transaction) factory.Model {
 	this.trans = trans
 	return this
+}
+
+func (this *CollectorExport) SetContext(ctx echo.Context) factory.Model {
+	this.context = ctx
+	return this
+}
+
+func (this *CollectorExport) Context() echo.Context {
+	return this.context
 }
 
 func (this *CollectorExport) SetConnID(connID int) factory.Model {

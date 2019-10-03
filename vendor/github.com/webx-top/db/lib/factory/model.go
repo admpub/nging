@@ -2,11 +2,14 @@ package factory
 
 import (
 	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
 )
 
 type Model interface {
 	Trans() *Transaction
 	Use(trans *Transaction) Model
+	SetContext(ctx echo.Context) Model
+	Context() echo.Context
 	SetNamer(func(string) string) Model
 	Name_() string
 	Short_() string

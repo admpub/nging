@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 	
 )
@@ -38,6 +39,7 @@ type Config struct {
 	objects []*Config
 	namer   func(string) string
 	connID  int
+	context echo.Context
 	
 	Key        	string  	`db:"key,pk" bson:"key" comment:"键" json:"key" xml:"key"`
 	Label      	string  	`db:"label" bson:"label" comment:"选项名称" json:"label" xml:"label"`
@@ -57,6 +59,15 @@ func (this *Config) Trans() *factory.Transaction {
 func (this *Config) Use(trans *factory.Transaction) factory.Model {
 	this.trans = trans
 	return this
+}
+
+func (this *Config) SetContext(ctx echo.Context) factory.Model {
+	this.context = ctx
+	return this
+}
+
+func (this *Config) Context() echo.Context {
+	return this.context
 }
 
 func (this *Config) SetConnID(connID int) factory.Model {

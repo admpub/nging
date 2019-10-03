@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 	
 	"time"
@@ -39,6 +40,7 @@ type DbSyncLog struct {
 	objects []*DbSyncLog
 	namer   func(string) string
 	connID  int
+	context echo.Context
 	
 	Id              	uint64  	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"" json:"id" xml:"id"`
 	SyncId          	uint    	`db:"sync_id" bson:"sync_id" comment:"同步方案ID" json:"sync_id" xml:"sync_id"`
@@ -57,6 +59,15 @@ func (this *DbSyncLog) Trans() *factory.Transaction {
 func (this *DbSyncLog) Use(trans *factory.Transaction) factory.Model {
 	this.trans = trans
 	return this
+}
+
+func (this *DbSyncLog) SetContext(ctx echo.Context) factory.Model {
+	this.context = ctx
+	return this
+}
+
+func (this *DbSyncLog) Context() echo.Context {
+	return this.context
 }
 
 func (this *DbSyncLog) SetConnID(connID int) factory.Model {

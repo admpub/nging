@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 	
 	"time"
@@ -39,6 +40,7 @@ type CodeVerification struct {
 	objects []*CodeVerification
 	namer   func(string) string
 	connID  int
+	context echo.Context
 	
 	Id         	uint64  	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	Code       	string  	`db:"code" bson:"code" comment:"验证码" json:"code" xml:"code"`
@@ -61,6 +63,15 @@ func (this *CodeVerification) Trans() *factory.Transaction {
 func (this *CodeVerification) Use(trans *factory.Transaction) factory.Model {
 	this.trans = trans
 	return this
+}
+
+func (this *CodeVerification) SetContext(ctx echo.Context) factory.Model {
+	this.context = ctx
+	return this
+}
+
+func (this *CodeVerification) Context() echo.Context {
+	return this.context
 }
 
 func (this *CodeVerification) SetConnID(connID int) factory.Model {

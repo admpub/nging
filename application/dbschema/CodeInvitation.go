@@ -7,6 +7,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 	
 	"time"
@@ -39,6 +40,7 @@ type CodeInvitation struct {
 	objects []*CodeInvitation
 	namer   func(string) string
 	connID  int
+	context echo.Context
 	
 	Id      	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	Uid     	uint    	`db:"uid" bson:"uid" comment:"创建者" json:"uid" xml:"uid"`
@@ -59,6 +61,15 @@ func (this *CodeInvitation) Trans() *factory.Transaction {
 func (this *CodeInvitation) Use(trans *factory.Transaction) factory.Model {
 	this.trans = trans
 	return this
+}
+
+func (this *CodeInvitation) SetContext(ctx echo.Context) factory.Model {
+	this.context = ctx
+	return this
+}
+
+func (this *CodeInvitation) Context() echo.Context {
+	return this.context
 }
 
 func (this *CodeInvitation) SetConnID(connID int) factory.Model {

@@ -38,13 +38,13 @@ func init() {
 func NewUser(ctx echo.Context) *User {
 	return &User{
 		User: &dbschema.User{},
-		Base: base.New(ctx),
+		base: base.New(ctx),
 	}
 }
 
 type User struct {
 	*dbschema.User
-	*base.Base
+	base *base.Base
 }
 
 func (u *User) Exists(username string) (bool, error) {
@@ -70,17 +70,17 @@ func (u *User) CheckPasswd(username string, password string) (exists bool, err e
 		return
 	}
 	if u.User.Disabled == `Y` {
-		err = errors.New(u.T(`该用户已被禁用`))
+		err = errors.New(u.base.T(`该用户已被禁用`))
 		return
 	}
 	if u.User.Password != com.MakePassword(password, u.User.Salt) {
-		err = errors.New(u.T(`密码不正确`))
+		err = errors.New(u.base.T(`密码不正确`))
 	}
 	return
 }
 
 func (u *User) check(editMode bool) (err error) {
-	ctx := u.Base.Context
+	ctx := u.base.Context
 	if len(u.Username) == 0 {
 		return ctx.E(`用户名不能为空`)
 	}
@@ -136,7 +136,7 @@ func (u *User) Add() (err error) {
 	if err == nil {
 		if len(u.Avatar) > 0 {
 			var newPath string
-			newPath, err = common.MoveAvatarToUserDir(u.Base.Context, u.Avatar, `user-avatar`, uint64(u.Id))
+			newPath, err = common.MoveAvatarToUserDir(u.base.Context, u.Avatar, `user-avatar`, uint64(u.Id))
 			if err == nil && newPath != u.Avatar {
 				err = u.SetField(nil, `avatar`, newPath, db.Cond{`id`: u.Id})
 			}
@@ -150,14 +150,14 @@ func (u *User) UpdateField(uid uint, set map[string]interface{}) (err error) {
 	if err != nil {
 		return
 	}
-	ctx := u.Base.Context
+	ctx := u.base.Context
 	if ctx.Form(`modifyPwd`) == `1` {
 		u.Password = com.MakePassword(u.Password, u.Salt)
 		set[`password`] = u.Password
 	}
-	err = u.Param().SetSend(set).SetArgs(`id`, uid).Update()
+	err = u.SetFields(nil, set, `id`, uid)
 	if err == nil && len(u.Avatar) == 0 {
-		err = common.RemoveAvatar(u.Context, `user-avatar`, uint64(uid))
+		err = common.RemoveAvatar(ctx, `user-avatar`, uint64(uid))
 	}
 	return
 }
@@ -195,7 +195,7 @@ func (u *User) Register(user, pass, email string) error {
 
 func (u *User) SetSession(users ...*dbschema.User) {
 	userCopy := u.ClearPasswordData(users...)
-	u.Context.Session().Set(`user`, &userCopy)
+	u.base.Session().Set(`user`, &userCopy)
 }
 
 func (u *User) ClearPasswordData(users ...*dbschema.User) dbschema.User {
@@ -212,7 +212,7 @@ func (u *User) ClearPasswordData(users ...*dbschema.User) dbschema.User {
 }
 
 func (u *User) UnsetSession() {
-	u.Context.Session().Delete(`user`)
+	u.base.Session().Delete(`user`)
 }
 
 func (u *User) VerifySession(users ...*dbschema.User) error {
@@ -220,7 +220,7 @@ func (u *User) VerifySession(users ...*dbschema.User) error {
 	if len(users) > 0 {
 		user = users[0]
 	} else {
-		user, _ = u.Context.Session().Get(`user`).(*dbschema.User)
+		user, _ = u.base.Session().Get(`user`).(*dbschema.User)
 	}
 	if user == nil {
 		return common.ErrUserNotLoggedIn
@@ -235,7 +235,7 @@ func (u *User) VerifySession(users ...*dbschema.User) error {
 	}
 	if u.User.Updated != user.Updated {
 		u.SetSession()
-		u.Context.Set(`user`, user)
+		u.base.Set(`user`, user)
 	}
 	return nil
 }

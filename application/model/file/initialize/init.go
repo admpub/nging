@@ -3,12 +3,13 @@ package initialize
 import (
 	"io"
 
+	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/common"
 	modelFile "github.com/admpub/nging/application/model/file"
 	"github.com/admpub/nging/application/registry/upload"
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/db"
-	"github.com/admpub/nging/application/dbschema"
+	"github.com/webx-top/db/lib/factory"
 )
 
 func init() {
@@ -40,4 +41,15 @@ func init() {
 		fileM.FillData(reader, true)
 		return fileM.Edit(nil, db.Cond{`id`: m.Id})
 	})
+
+	dbschema.DBI.EventOn(`created`, func(m factory.Model) error {
+		fileM := modelFile.NewEmbedded(m.Context())
+		userM := m.(*dbschema.User)
+		return fileM.Updater().Add(userM.Avatar, false)
+	}, `user`)
+	dbschema.DBI.EventOn(`updating`, func(m factory.Model) error {
+		fileM := modelFile.NewEmbedded(m.Context())
+		userM := m.(*dbschema.User)
+		return fileM.Updater().Edit(userM.Avatar, false)
+	}, `user`)
 }
