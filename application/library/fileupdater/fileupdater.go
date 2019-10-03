@@ -17,7 +17,7 @@
 */
 
 // Package fileupdater 编辑内容时更新相关引用文件的关联关系
-// 用法：fileupdater.New(ctx,fileModel.NewEmbedded(ctx)).Set(`表名称`,`字段名称`,主键ID).Add(`/test/image.jpg`,false)
+// 用法：fileupdater.New(fileModel.NewEmbedded(ctx)).Set(`表名称`,`字段名称`,主键ID).Add(`/test/image.jpg`,false)
 package fileupdater
 
 func New(reler Reler) *FileUpdater {
