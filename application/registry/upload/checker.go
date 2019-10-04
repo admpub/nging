@@ -74,9 +74,10 @@ func UserAvatarChecker(ctx echo.Context, tis table.TableInfoStorer) (subdir stri
 func ConfigChecker(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
 	group := ctx.Form(`group`)
 	key := ctx.Form(`key`)
+	refid := ctx.Formx(`refid`).Uint64()
 	timestamp := ctx.Formx(`time`).Int64()
 	// 验证签名（避免上传接口被滥用）
-	if ctx.Form(`token`) != Token(`key`, key, `time`, timestamp) {
+	if ctx.Form(`token`) != Token(`group`, group, `key`, key, `refid`, refid, `time`, timestamp) {
 		err = ctx.E(`令牌错误`)
 		return
 	}
