@@ -42,14 +42,19 @@ func init() {
 		return fileM.Edit(nil, db.Cond{`id`: m.Id})
 	})
 
-	dbschema.DBI.On(`created`, func(m factory.Model) error {
+	dbschema.DBI.On(`user:created`, func(m factory.Model) error {
 		fileM := modelFile.NewEmbedded(m.Context())
 		userM := m.(*dbschema.User)
-		return fileM.Updater().Add(userM.Avatar, false)
-	}, `user`)
-	dbschema.DBI.On(`updating`, func(m factory.Model) error {
+		return fileM.Updater(`user`, `avatar`, uint64(userM.Id)).Add(userM.Avatar, false)
+	})
+	dbschema.DBI.On(`user:updating`, func(m factory.Model) error {
 		fileM := modelFile.NewEmbedded(m.Context())
 		userM := m.(*dbschema.User)
-		return fileM.Updater().Edit(userM.Avatar, false)
-	}, `user`)
+		return fileM.Updater(`user`, `avatar`, uint64(userM.Id)).Edit(userM.Avatar, false)
+	})
+	dbschema.DBI.On(`user:deleted`, func(m factory.Model) error {
+		fileM := modelFile.NewEmbedded(m.Context())
+		userM := m.(*dbschema.User)
+		return fileM.Updater(`user`, `avatar`, uint64(userM.Id)).Delete()
+	})
 }

@@ -53,10 +53,11 @@ type Embedded struct {
 	updater *fileupdater.FileUpdater
 }
 
-func (f *Embedded) Updater() *fileupdater.FileUpdater {
+func (f *Embedded) Updater(table string, field string, tableID uint64) *fileupdater.FileUpdater {
 	if f.updater == nil {
 		f.updater = fileupdater.New(f)
 	}
+	f.updater.Set(table, field, tableID)
 	return f.updater
 }
 

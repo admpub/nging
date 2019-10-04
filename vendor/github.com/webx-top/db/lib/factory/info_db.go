@@ -1,6 +1,10 @@
 package factory
 
-import "github.com/webx-top/db"
+import (
+	"strings"
+
+	"github.com/webx-top/db"
+)
 
 var (
 	databases = map[string]*DBI{
@@ -82,10 +86,36 @@ func (d *DBI) Fire(event string, model Model, mw func(db.Result) db.Result, args
 	return d.Events.Call(event, model, mw, args...)
 }
 
-func (d *DBI) On(event string, h EventHandler, table string) {
+func (d *DBI) On(event string, h EventHandler, tableName ...string) {
+	var table string
+	if len(tableName) > 0 {
+		table = tableName[0]
+	} else {
+		set := strings.SplitN(event, ":", 2)
+		switch len(set) {
+		case 2:
+			event = set[1]
+			fallthrough
+		case 1:
+			table = set[0]
+		}
+	}
 	d.Events.On(event, h, table)
 }
 
-func (d *DBI) OnAsync(event string, h EventHandler, table string) {
+func (d *DBI) OnAsync(event string, h EventHandler, tableName ...string) {
+	var table string
+	if len(tableName) > 0 {
+		table = tableName[0]
+	} else {
+		set := strings.SplitN(event, ":", 2)
+		switch len(set) {
+		case 2:
+			event = set[1]
+			fallthrough
+		case 1:
+			table = set[0]
+		}
+	}
 	d.Events.On(event, h, table, true)
 }
