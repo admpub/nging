@@ -102,6 +102,10 @@ func configPost(c echo.Context, groups ...string) error {
 			} else if _v.IsSlice() {
 				set[`type`] = `list`
 			} else {
+				cfg, ok := configs[v.Key]
+				if ok && cfg != nil {
+					set[`type`] = cfg.Type
+				}
 				//set[`type`] = `text`
 			}
 			if len(disabled) > 0 {
