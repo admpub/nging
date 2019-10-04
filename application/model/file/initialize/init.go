@@ -1,6 +1,7 @@
 package initialize
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/admpub/nging/application/dbschema"
@@ -58,7 +59,7 @@ func init() {
 	dbschema.DBI.On(`user:created`, func(m factory.Model, _ ...string) error {
 		fileM := modelFile.NewEmbedded(m.Context())
 		userM := m.(*dbschema.User)
-		return fileM.Updater(`user`, `avatar`, uint64(userM.Id)).Add(userM.Avatar, false)
+		return fileM.Updater(`user`, `avatar`, fmt.Sprint(userM.Id)).Add(userM.Avatar, false)
 	})
 	dbschema.DBI.On(`user:updating`, func(m factory.Model, editColumns ...string) error {
 		if len(editColumns) > 0 && !com.InSlice(`avatar`, editColumns) {
@@ -66,19 +67,19 @@ func init() {
 		}
 		fileM := modelFile.NewEmbedded(m.Context())
 		userM := m.(*dbschema.User)
-		return fileM.Updater(`user`, `avatar`, uint64(userM.Id)).Edit(userM.Avatar, false)
+		return fileM.Updater(`user`, `avatar`, fmt.Sprint(userM.Id)).Edit(userM.Avatar, false)
 	})
 	dbschema.DBI.On(`user:deleted`, func(m factory.Model, _ ...string) error {
 		fileM := modelFile.NewEmbedded(m.Context())
 		userM := m.(*dbschema.User)
-		return fileM.Updater(`user`, `avatar`, uint64(userM.Id)).Delete()
+		return fileM.Updater(`user`, `avatar`, fmt.Sprint(userM.Id)).Delete()
 	})
 
 	// - config
 	dbschema.DBI.On(`config:created`, func(m factory.Model, _ ...string) error {
 		fileM := modelFile.NewEmbedded(m.Context())
 		confM := m.(*dbschema.Config)
-		return fileM.Updater(`config`, confM.Group+`.`+confM.Key, 0).Add(confM.Value, true)
+		return fileM.Updater(`config`, `value`, confM.Group+`.`+confM.Key).Add(confM.Value, true)
 	})
 	dbschema.DBI.On(`config:updating`, func(m factory.Model, editColumns ...string) error {
 		if len(editColumns) > 0 && !com.InSlice(`value`, editColumns) {
@@ -86,11 +87,11 @@ func init() {
 		}
 		fileM := modelFile.NewEmbedded(m.Context())
 		confM := m.(*dbschema.Config)
-		return fileM.Updater(`config`, confM.Group+`.`+confM.Key, 0).Edit(confM.Value, true)
+		return fileM.Updater(`config`, `value`, confM.Group+`.`+confM.Key).Edit(confM.Value, true)
 	})
 	dbschema.DBI.On(`config:deleted`, func(m factory.Model, _ ...string) error {
 		fileM := modelFile.NewEmbedded(m.Context())
 		confM := m.(*dbschema.Config)
-		return fileM.Updater(`config`, confM.Group+`.`+confM.Key, 0).Delete()
+		return fileM.Updater(`config`, `value`, confM.Group+`.`+confM.Key).Delete()
 	})
 }

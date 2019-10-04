@@ -24,7 +24,7 @@ import (
 )
 
 //UpdateUnrelation 更新未关联的附件
-func (f *File) UpdateUnrelation(project string, table string, field string, tableID uint64, fileIds ...interface{}) (err error) {
+func (f *File) UpdateUnrelation(project string, table string, field string, tableID string, fileIds ...interface{}) (err error) {
 	if len(fileIds) < 1 {
 		return nil
 	}

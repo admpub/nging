@@ -131,7 +131,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 
 	fileM := modelFile.NewFile(ctx)
 	fileM.StorerName = StorerEngine
-	fileM.TableId = 0
+	fileM.TableId = ``
 	fileM.TableName = typ
 	fileM.FieldName = ``
 	fileM.OwnerId = ownerID

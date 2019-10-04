@@ -1,8 +1,7 @@
 package table
 
-
 type TableInfoStorer interface {
-	SetTableID(uint64) TableInfoStorer
+	SetTableID(string) TableInfoStorer
 	SetTableName(string) TableInfoStorer
 	SetFieldName(string) TableInfoStorer
 }

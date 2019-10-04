@@ -19,7 +19,7 @@
 package fileupdater
 
 type Reler interface {
-	RelationFiles(project string, table string, field string, tableID uint64, content string, seperator ...string) error
-	RelationEmbeddedFiles(project string, table string, field string, tableID uint64, content string) error
-	DeleteByTableID(project string, table string, tableID uint64) error
+	RelationFiles(project string, table string, field string, tableID string, content string, seperator ...string) error
+	RelationEmbeddedFiles(project string, table string, field string, tableID string, content string) error
+	DeleteByTableID(project string, table string, tableID string) error
 }

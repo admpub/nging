@@ -31,7 +31,7 @@ type FileUpdater struct {
 	project string
 	table   string
 	field   string
-	tableID uint64
+	tableID string
 }
 
 func (f *FileUpdater) Add(content string, embedded bool) (err error) {

@@ -23,7 +23,7 @@ func (f *FileUpdater) SetProject(project string) *FileUpdater {
 	return f
 }
 
-func (f *FileUpdater) Set(table string, field string, tableID uint64) *FileUpdater {
+func (f *FileUpdater) Set(table string, field string, tableID string) *FileUpdater {
 	f.table = table
 	f.field = field
 	f.tableID = tableID
@@ -40,7 +40,7 @@ func (f *FileUpdater) SetField(field string) *FileUpdater {
 	return f
 }
 
-func (f *FileUpdater) SetTableID(tableID uint64) *FileUpdater {
+func (f *FileUpdater) SetTableID(tableID string) *FileUpdater {
 	f.tableID = tableID
 	return f
 }

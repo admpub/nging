@@ -62,7 +62,7 @@ type File struct {
 	Created    	uint    	`db:"created" bson:"created" comment:"上传时间" json:"created" xml:"created"`
 	Updated    	uint    	`db:"updated" bson:"updated" comment:"修改时间" json:"updated" xml:"updated"`
 	Project    	string  	`db:"project" bson:"project" comment:"项目名称" json:"project" xml:"project"`
-	TableId    	uint64  	`db:"table_id" bson:"table_id" comment:"关联表数据id" json:"table_id" xml:"table_id"`
+	TableId    	string  	`db:"table_id" bson:"table_id" comment:"关联表数据id" json:"table_id" xml:"table_id"`
 	TableName  	string  	`db:"table_name" bson:"table_name" comment:"关联表名称" json:"table_name" xml:"table_name"`
 	FieldName  	string  	`db:"field_name" bson:"field_name" comment:"关联表字段名" json:"field_name" xml:"field_name"`
 	Sort       	int64   	`db:"sort" bson:"sort" comment:"排序" json:"sort" xml:"sort"`
@@ -238,6 +238,7 @@ func (this *File) Add() (pk interface{}, err error) {
 	this.Id = 0
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	if len(this.Type) == 0 { this.Type = "image" }
+	if len(this.TableId) == 0 { this.TableId = "0" }
 	err = DBI.Fire("creating", this, nil)
 	if err != nil {
 		return
@@ -260,6 +261,7 @@ func (this *File) Edit(mw func(db.Result) db.Result, args ...interface{}) (err e
 	this.Updated = uint(time.Now().Unix())
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	if len(this.Type) == 0 { this.Type = "image" }
+	if len(this.TableId) == 0 { this.TableId = "0" }
 	if err = DBI.Fire("updating", this, mw, args...); err != nil {
 		return
 	}
@@ -283,6 +285,7 @@ func (this *File) SetFields(mw func(db.Result) db.Result, kvset map[string]inter
 	
 	if val, ok := kvset["owner_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["owner_type"] = "user" } }
 	if val, ok := kvset["type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["type"] = "image" } }
+	if val, ok := kvset["table_id"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["table_id"] = "0" } }
 	m := *this
 	m.FromRow(kvset)
 	var editColumns []string
@@ -302,11 +305,13 @@ func (this *File) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk 
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { this.Updated = uint(time.Now().Unix())
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	if len(this.Type) == 0 { this.Type = "image" }
+	if len(this.TableId) == 0 { this.TableId = "0" }
 		return DBI.Fire("updating", this, mw, args...)
 	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	if len(this.Type) == 0 { this.Type = "image" }
+	if len(this.TableId) == 0 { this.TableId = "0" }
 		return DBI.Fire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
@@ -362,7 +367,7 @@ func (this *File) Reset() *File {
 	this.Created = 0
 	this.Updated = 0
 	this.Project = ``
-	this.TableId = 0
+	this.TableId = ``
 	this.TableName = ``
 	this.FieldName = ``
 	this.Sort = 0
@@ -427,7 +432,7 @@ func (this *File) FromRow(row map[string]interface{}) {
 			case "created": this.Created = param.AsUint(value)
 			case "updated": this.Updated = param.AsUint(value)
 			case "project": this.Project = param.AsString(value)
-			case "table_id": this.TableId = param.AsUint64(value)
+			case "table_id": this.TableId = param.AsString(value)
 			case "table_name": this.TableName = param.AsString(value)
 			case "field_name": this.FieldName = param.AsString(value)
 			case "sort": this.Sort = param.AsInt64(value)
@@ -478,7 +483,7 @@ func (this *File) Set(key interface{}, value ...interface{}) {
 				case "Created": this.Created = param.AsUint(vv)
 				case "Updated": this.Updated = param.AsUint(vv)
 				case "Project": this.Project = param.AsString(vv)
-				case "TableId": this.TableId = param.AsUint64(vv)
+				case "TableId": this.TableId = param.AsString(vv)
 				case "TableName": this.TableName = param.AsString(vv)
 				case "FieldName": this.FieldName = param.AsString(vv)
 				case "Sort": this.Sort = param.AsInt64(vv)

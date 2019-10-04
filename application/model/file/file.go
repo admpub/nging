@@ -56,7 +56,7 @@ func (f *File) NewFile(m *dbschema.File) *File {
 	}
 }
 
-func (f *File) SetTableID(tableID uint64) table.TableInfoStorer {
+func (f *File) SetTableID(tableID string) table.TableInfoStorer {
 	f.File.TableId = tableID
 	return f
 }

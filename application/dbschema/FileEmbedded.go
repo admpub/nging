@@ -43,7 +43,7 @@ type FileEmbedded struct {
 	
 	Id        	uint64  	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"主键" json:"id" xml:"id"`
 	Project   	string  	`db:"project" bson:"project" comment:"项目名" json:"project" xml:"project"`
-	TableId   	uint64  	`db:"table_id" bson:"table_id" comment:"表主键" json:"table_id" xml:"table_id"`
+	TableId   	string  	`db:"table_id" bson:"table_id" comment:"表主键" json:"table_id" xml:"table_id"`
 	TableName 	string  	`db:"table_name" bson:"table_name" comment:"表名称" json:"table_name" xml:"table_name"`
 	FieldName 	string  	`db:"field_name" bson:"field_name" comment:"字段名" json:"field_name" xml:"field_name"`
 	FileIds   	string  	`db:"file_ids" bson:"file_ids" comment:"文件id列表" json:"file_ids" xml:"file_ids"`
@@ -214,6 +214,7 @@ func (this *FileEmbedded) ListByOffset(recv interface{}, mw func(db.Result) db.R
 
 func (this *FileEmbedded) Add() (pk interface{}, err error) {
 	this.Id = 0
+	if len(this.TableId) == 0 { this.TableId = "0" }
 	if len(this.Embedded) == 0 { this.Embedded = "Y" }
 	err = DBI.Fire("creating", this, nil)
 	if err != nil {
@@ -235,6 +236,7 @@ func (this *FileEmbedded) Add() (pk interface{}, err error) {
 
 func (this *FileEmbedded) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	
+	if len(this.TableId) == 0 { this.TableId = "0" }
 	if len(this.Embedded) == 0 { this.Embedded = "Y" }
 	if err = DBI.Fire("updating", this, mw, args...); err != nil {
 		return
@@ -257,6 +259,7 @@ func (this *FileEmbedded) SetField(mw func(db.Result) db.Result, field string, v
 
 func (this *FileEmbedded) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	
+	if val, ok := kvset["table_id"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["table_id"] = "0" } }
 	if val, ok := kvset["embedded"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["embedded"] = "Y" } }
 	m := *this
 	m.FromRow(kvset)
@@ -275,9 +278,11 @@ func (this *FileEmbedded) SetFields(mw func(db.Result) db.Result, kvset map[stri
 
 func (this *FileEmbedded) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { 
+	if len(this.TableId) == 0 { this.TableId = "0" }
 	if len(this.Embedded) == 0 { this.Embedded = "Y" }
 		return DBI.Fire("updating", this, mw, args...)
 	}, func() error { this.Id = 0
+	if len(this.TableId) == 0 { this.TableId = "0" }
 	if len(this.Embedded) == 0 { this.Embedded = "Y" }
 		return DBI.Fire("creating", this, nil)
 	})
@@ -316,7 +321,7 @@ func (this *FileEmbedded) Count(mw func(db.Result) db.Result, args ...interface{
 func (this *FileEmbedded) Reset() *FileEmbedded {
 	this.Id = 0
 	this.Project = ``
-	this.TableId = 0
+	this.TableId = ``
 	this.TableName = ``
 	this.FieldName = ``
 	this.FileIds = ``
@@ -341,7 +346,7 @@ func (this *FileEmbedded) FromRow(row map[string]interface{}) {
 		switch key {
 			case "id": this.Id = param.AsUint64(value)
 			case "project": this.Project = param.AsString(value)
-			case "table_id": this.TableId = param.AsUint64(value)
+			case "table_id": this.TableId = param.AsString(value)
 			case "table_name": this.TableName = param.AsString(value)
 			case "field_name": this.FieldName = param.AsString(value)
 			case "file_ids": this.FileIds = param.AsString(value)
@@ -372,7 +377,7 @@ func (this *FileEmbedded) Set(key interface{}, value ...interface{}) {
 			switch kk {
 				case "Id": this.Id = param.AsUint64(vv)
 				case "Project": this.Project = param.AsString(vv)
-				case "TableId": this.TableId = param.AsUint64(vv)
+				case "TableId": this.TableId = param.AsString(vv)
 				case "TableName": this.TableName = param.AsString(vv)
 				case "FieldName": this.FieldName = param.AsString(vv)
 				case "FileIds": this.FileIds = param.AsString(vv)

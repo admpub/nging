@@ -32,7 +32,7 @@ var UploadLinkLifeTime int64 = 86400
 type Checker func(echo.Context, table.TableInfoStorer) (subdir string, name string, err error)
 
 var DefaultChecker = func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
-	refid := ctx.Formx(`refid`).Uint64()
+	refid := ctx.Formx(`refid`).String()
 	timestamp := ctx.Formx(`time`).Int64()
 	// 验证签名（避免上传接口被滥用）
 	if ctx.Form(`token`) != Token(`refid`, refid, `time`, timestamp) {
@@ -65,7 +65,7 @@ func UserAvatarChecker(ctx echo.Context, tis table.TableInfoStorer) (subdir stri
 		name = `avatar`
 	}
 	subdir = fmt.Sprint(userID) + `/`
-	tis.SetTableID(userID)
+	tis.SetTableID(fmt.Sprint(userID))
 	tis.SetTableName(`user`)
 	tis.SetFieldName(`avatar`)
 	return
@@ -74,10 +74,9 @@ func UserAvatarChecker(ctx echo.Context, tis table.TableInfoStorer) (subdir stri
 func ConfigChecker(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
 	group := ctx.Form(`group`)
 	key := ctx.Form(`key`)
-	refid := ctx.Formx(`refid`).Uint64()
 	timestamp := ctx.Formx(`time`).Int64()
 	// 验证签名（避免上传接口被滥用）
-	if ctx.Form(`token`) != Token(`group`, group, `key`, key, `refid`, refid, `time`, timestamp) {
+	if ctx.Form(`token`) != Token(`group`, group, `key`, key, `refid`, `0`, `time`, timestamp) {
 		err = ctx.E(`令牌错误`)
 		return
 	}
@@ -86,9 +85,9 @@ func ConfigChecker(ctx echo.Context, tis table.TableInfoStorer) (subdir string, 
 		return
 	}
 	subdir = key + `/`
-	tis.SetTableID(0)
+	tis.SetTableID(group + `.` + key)
 	tis.SetTableName(`config`)
-	tis.SetFieldName(group + `.` + key)
+	tis.SetFieldName(`value`)
 	return
 }
 

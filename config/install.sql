@@ -385,8 +385,8 @@ CREATE TABLE `file` (
   `storer_id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '位置ID',
   `created` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '上传时间',
   `updated` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
-  `project` varchar(50) NOT NULL COMMENT '项目名称',
-  `table_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '关联表数据id',
+  `project` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '项目名称',
+  `table_id` varchar(60) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '0' COMMENT '关联表数据id',
   `table_name` varchar(50) NOT NULL DEFAULT '' COMMENT '关联表名称',
   `field_name` varchar(50) NOT NULL DEFAULT '' COMMENT '关联表字段名',
   `sort` bigint(22) NOT NULL DEFAULT '0' COMMENT '排序',
@@ -410,7 +410,7 @@ DROP TABLE IF EXISTS `file_embedded`;
 CREATE TABLE `file_embedded` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
   `project` varchar(50) NOT NULL COMMENT '项目名',
-  `table_id` bigint(20) unsigned NOT NULL COMMENT '表主键',
+  `table_id` varchar(60) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '0' COMMENT '表主键',
   `table_name` varchar(30) NOT NULL COMMENT '表名称',
   `field_name` varchar(20) NOT NULL COMMENT '字段名',
   `file_ids` varchar(1000) NOT NULL COMMENT '文件id列表',
@@ -900,4 +900,4 @@ CREATE TABLE `vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-10-04 17:01:02
+-- Dump completed on 2019-10-04 19:27:54

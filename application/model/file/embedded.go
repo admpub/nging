@@ -56,7 +56,7 @@ type Embedded struct {
 	updater *fileupdater.FileUpdater
 }
 
-func (f *Embedded) Updater(table string, field string, tableID uint64) *fileupdater.FileUpdater {
+func (f *Embedded) Updater(table string, field string, tableID string) *fileupdater.FileUpdater {
 	if f.updater == nil {
 		f.updater = fileupdater.New(f)
 	}
@@ -65,7 +65,7 @@ func (f *Embedded) Updater(table string, field string, tableID uint64) *fileupda
 }
 
 // DeleteByTableID 删除嵌入文件
-func (f *Embedded) DeleteByTableID(project string, table string, tableID uint64) error {
+func (f *Embedded) DeleteByTableID(project string, table string, tableID string) error {
 	_, err := f.ListByOffset(nil, nil, 0, -1, db.And(
 		db.Cond{`table_id`: tableID},
 		db.Cond{`table_name`: table},
@@ -91,7 +91,7 @@ func (f *Embedded) DeleteByTableID(project string, table string, tableID uint64)
 	return err
 }
 
-func (f *Embedded) UpdateByFileID(project string, table string, field string, tableID uint64, fileID uint64) error {
+func (f *Embedded) UpdateByFileID(project string, table string, field string, tableID string, fileID uint64) error {
 	err := f.File.UpdateUnrelation(project, table, field, tableID, fileID)
 	if err != nil {
 		return err
@@ -121,7 +121,7 @@ func (f *Embedded) UpdateByFileID(project string, table string, field string, ta
 	return err
 }
 
-func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, field string, tableID uint64, fileIds ...interface{}) (err error) {
+func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, field string, tableID string, fileIds ...interface{}) (err error) {
 	f.base.Begin()
 	defer func() {
 		f.base.End(err == nil)
@@ -237,7 +237,7 @@ func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, f
 // @param v 内容
 // @return
 // @author AdamShen <swh@admpub.com>
-func (f *Embedded) RelationEmbeddedFiles(project string, table string, field string, tableID uint64, v string) error {
+func (f *Embedded) RelationEmbeddedFiles(project string, table string, field string, tableID string, v string) error {
 	var (
 		files []interface{}
 		fids  []interface{} //旧文件ID
@@ -264,7 +264,7 @@ func (f *Embedded) RelationEmbeddedFiles(project string, table string, field str
 	return err
 }
 
-func (f *Embedded) RelationFiles(project string, table string, field string, tableID uint64, v string, seperator ...string) error {
+func (f *Embedded) RelationFiles(project string, table string, field string, tableID string, v string, seperator ...string) error {
 	var (
 		files []interface{}
 		fids  []interface{} //旧文件ID
