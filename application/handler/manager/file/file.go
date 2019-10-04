@@ -20,6 +20,8 @@
 package file
 
 import (
+	"time"
+
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/model/file"
 	"github.com/webx-top/echo"
@@ -51,5 +53,25 @@ func FileDelete(ctx echo.Context) (err error) {
 	}
 
 END:
+	return ctx.Redirect(handler.URLFor(`/manager/file/list`))
+}
+
+// FileClean 删除未使用文件
+func FileClean(ctx echo.Context) (err error) {
+	fileM := file.NewFile(ctx)
+	ago := ctx.Form(`ago`)
+	var seconds int64 = 86400 * 365
+	if len(ago) > 0 {
+		t, e := time.ParseDuration(ago)
+		if e != nil {
+			return e
+		}
+		seconds = int64(t.Seconds())
+	}
+	err = fileM.RemoveUnused(seconds, ``, 0)
+	if err != nil {
+		return err
+	}
+
 	return ctx.Redirect(handler.URLFor(`/manager/file/list`))
 }

@@ -23,6 +23,7 @@ import (
 	"mime"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/admpub/events"
 	"github.com/admpub/nging/application/dbschema"
@@ -256,6 +257,20 @@ func (f *File) RemoveUnusedAvatar(ownerType string, excludeID uint64) error {
 		db.Cond{`field_name`: `avatar`},
 		db.Cond{`id`: db.NotEq(excludeID)},
 	))
+}
+
+func (f *File) RemoveUnused(ago int64, ownerType string, ownerID uint64) error {
+	cond := db.NewCompounds()
+	cond.Add(
+		db.Cond{`table_id`: 0},
+		db.Cond{`used_times`: 0},
+	)
+	if len(ownerType) > 0 {
+		cond.AddKV(`owner_id`, ownerID)
+		cond.AddKV(`owner_type`, ownerType)
+	}
+	cond.AddKV(`created`, db.Lt(time.Now().Unix()-ago))
+	return f.DeleteBy(cond.And())
 }
 
 func (f *File) CondByOwner(ownerType string, ownerID uint64) db.Compound {
