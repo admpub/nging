@@ -125,6 +125,17 @@ func (this *DbAccount) Name_() string {
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
 }
 
+func (this *DbAccount) Namer() func(string) string {
+	return this.namer
+}
+
+func (this *DbAccount) CPAFrom(source factory.Model) factory.Model {
+	this.SetContext(source.Context())
+	this.Use(source.Trans())
+	this.SetNamer(source.Namer())
+	return this
+}
+
 func (this *DbAccount) SetParam(param *factory.Param) factory.Model {
 	this.param = param
 	return this
@@ -260,14 +271,18 @@ func (this *DbAccount) SetFields(mw func(db.Result) db.Result, kvset map[string]
 	if val, ok := kvset["host"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["host"] = "localhost:3306" } }
 	if val, ok := kvset["user"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["user"] = "root" } }
 	m := *this
-	m.FromMap(kvset)
-	if err = DBI.Fire("updating", &m, mw, args...); err != nil {
+	m.FromRow(kvset)
+	var editColumns []string
+	for column := range kvset {
+		editColumns = append(editColumns, column)
+	}
+	if err = DBI.FireUpdate("updating", &m, editColumns, mw, args...); err != nil {
 		return
 	}
 	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
 		return
 	}
-	return DBI.Fire("updated", &m, mw, args...)
+	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
 }
 
 func (this *DbAccount) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
@@ -346,8 +361,8 @@ func (this *DbAccount) AsMap() map[string]interface{} {
 	return r
 }
 
-func (this *DbAccount) FromMap(rows map[string]interface{}) {
-	for key, value := range rows {
+func (this *DbAccount) FromRow(row map[string]interface{}) {
+	for key, value := range row {
 		switch key {
 			case "id": this.Id = param.AsUint(value)
 			case "title": this.Title = param.AsString(value)

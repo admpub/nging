@@ -19,16 +19,16 @@
 package upload
 
 import (
+	"context"
 	"io"
 	"mime/multipart"
 	"net/url"
 	"os"
-	"context"
 
 	"github.com/admpub/checksum"
+	"github.com/admpub/nging/application/registry/upload/table"
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/echo"
-	"github.com/admpub/nging/application/registry/upload/table"
 )
 
 var (
@@ -119,18 +119,49 @@ type Sizer interface {
 }
 
 type Storer interface {
-	Engine() string
+	// 引擎名
+	Name() string
+
+	// FileDir 文件夹物理路径
+	FileDir(subpath string) string
+
+	// URLDir 文件夹网址路径
+	URLDir(subpath string) string
+
+	// Put 保存文件
 	Put(dst string, src io.Reader, size int64) (savePath string, viewURL string, err error)
+
+	// Get 获取文件
 	Get(file string) (io.ReadCloser, error)
+
+	// Exists 文件是否存在
 	Exists(file string) (bool, error)
+
+	// FileInfo 文件信息
 	FileInfo(file string) (os.FileInfo, error)
+
+	// SendFile 输出文件到浏览器
 	SendFile(ctx echo.Context, file string) error
+
+	// Delete 删除文件
 	Delete(file string) error
+
+	// DeleteDir 删除目录
 	DeleteDir(dir string) error
+
+	// PublicURL 文件网址
 	PublicURL(dst string) string
+
+	// URLToFile 网址转文件物理路径
 	URLToFile(viewURL string) string
+
+	// FixURL 修正网址
 	FixURL(content string, embedded ...bool) string
+
+	// FixURLWithParams 修正网址并增加网址参数
 	FixURLWithParams(content string, values url.Values, embedded ...bool) string
+
+	// Close 关闭连接
 	Close() error
 }
 

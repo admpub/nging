@@ -11,6 +11,8 @@ type Model interface {
 	SetContext(ctx echo.Context) Model
 	Context() echo.Context
 	SetNamer(func(string) string) Model
+	Namer() func(string) string
+	CPAFrom(source Model) Model //CopyAttrFrom
 	Name_() string
 	Short_() string
 	Struct_() string
@@ -32,6 +34,7 @@ type Model interface {
 	SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error
 	AsMap() map[string]interface{}
 	AsRow() map[string]interface{}
+	FromRow(row map[string]interface{})
 	Set(key interface{}, value ...interface{})
 	BatchValidate(kvset map[string]interface{}) error
 	Validate(field string, value interface{}) error

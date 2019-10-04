@@ -83,7 +83,7 @@ func Edit(ctx echo.Context) error {
 			if modifyPass {
 				set[`password`] = com.MakePassword(newPass, m.User.Salt)
 			}
-			err = m.Param().SetSend(set).SetArgs(`id`, user.Id).Update()
+			err = m.SetFields(nil, set, `id`, user.Id)
 		}
 		if err == nil {
 			handler.SendOk(ctx, ctx.T(`修改成功`))

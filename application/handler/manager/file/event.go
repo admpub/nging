@@ -32,6 +32,7 @@ import (
 )
 
 func init() {
+	// 当用户文件被删除
 	config.Emitter.On(`user-file-deleted`, events.Callback(func(e events.Event) error {
 		data := e.Context.Get(`data`).(*dbschema.File)
 		ownerID := e.Context.Uint64(`ownerID`)
@@ -72,6 +73,7 @@ func init() {
 		}
 		return err
 	}))
+	// 当文件被删除
 	config.Emitter.On(`file-deleted`, events.Callback(func(e events.Event) error {
 		ctx := e.Context.Get(`ctx`).(echo.Context)
 		files := e.Context.Get(`files`).([]string)
@@ -92,5 +94,9 @@ func init() {
 			return nil
 		}
 		return errs
+	}))
+	// 当文件被移动
+	config.Emitter.On(`file-moved`, events.Callback(func(e events.Event) error {
+		return nil
 	}))
 }

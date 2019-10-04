@@ -50,9 +50,10 @@ func (f *File) Incr(fileIds ...interface{}) (err error) {
 
 // Decr 减少使用次数
 func (f *File) Decr(fileIds ...interface{}) (err error) {
-	err = f.SetField(nil, `used_times`, db.Raw(`used_times-1`), db.Cond{
-		`id`: db.In(fileIds),
-	})
+	err = f.SetField(nil, `used_times`, db.Raw(`used_times-1`), db.And(
+		db.Cond{`id`: db.In(fileIds)},
+		db.Cond{`used_times`: db.NotEq(0)},
+	))
 	return
 }
 

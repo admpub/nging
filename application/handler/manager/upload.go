@@ -96,7 +96,7 @@ func Upload(ctx echo.Context) error {
 // UploadByOwner 上传文件
 func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	typ := ctx.Param(`type`)
-	field := ctx.Query(`field`)
+	field := ctx.Query(`field`) // 上传表单file输入框名称
 	pipe := ctx.Form(`pipe`)
 	var (
 		err      error

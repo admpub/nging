@@ -19,12 +19,13 @@
 package filesystem
 
 import (
+	"context"
 	"io"
 	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
-	"context"
 
 	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/helper"
@@ -43,26 +44,29 @@ func init() {
 
 func NewFilesystem(ctx context.Context, typ string) *Filesystem {
 	return &Filesystem{
-		Context:	   ctx,
-		Type:          typ,
-		UploadURLPath: helper.UploadURLPath + typ,
-		UploadDir:     filepath.Join(helper.UploadDir, typ),
+		Context: ctx,
+		Type:    typ,
 	}
 }
 
 type Filesystem struct {
 	context.Context
-	Type          string
-	UploadURLPath string
-	UploadDir     string
+	Type string
 }
 
-func (f *Filesystem) Engine() string {
+// Name 引擎名
+func (f *Filesystem) Name() string {
 	return Name
 }
 
-func (f *Filesystem) filepath(fname string) string {
-	return filepath.Join(f.UploadDir, fname)
+// FileDir 物理路径文件夹
+func (f *Filesystem) FileDir(subpath string) string {
+	return filepath.Join(helper.UploadDir, f.Type, subpath)
+}
+
+// URLDir 网址路径文件夹
+func (f *Filesystem) URLDir(subpath string) string {
+	return path.Join(helper.UploadURLPath, f.Type, subpath)
 }
 
 func (f *Filesystem) Exists(file string) (bool, error) {
@@ -82,13 +86,13 @@ func (f *Filesystem) SendFile(ctx echo.Context, file string) error {
 }
 
 func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (savePath string, viewURL string, err error) {
-	savePath = f.filepath(dstFile)
+	savePath = f.FileDir(dstFile)
 	saveDir := filepath.Dir(savePath)
 	err = os.MkdirAll(saveDir, os.ModePerm)
 	if err != nil {
 		return
 	}
-	viewURL = f.UploadURLPath + `/` + dstFile
+	viewURL = f.URLDir(dstFile)
 	//create destination file making sure the path is writeable.
 	var dst *os.File
 	dst, err = os.Create(savePath)
@@ -102,11 +106,11 @@ func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (savePath st
 }
 
 func (f *Filesystem) PublicURL(dstFile string) string {
-	return f.UploadURLPath + `/` + dstFile
+	return f.URLDir(dstFile)
 }
 
 func (f *Filesystem) URLToFile(publicURL string) string {
-	dstFile := strings.TrimPrefix(publicURL, strings.TrimRight(f.UploadURLPath, `/`)+`/`)
+	dstFile := strings.TrimPrefix(publicURL, strings.TrimRight(f.URLDir(``), `/`)+`/`)
 	return dstFile
 }
 
@@ -153,6 +157,10 @@ func (f *Filesystem) Delete(dstFile string) error {
 func (f *Filesystem) DeleteDir(dstDir string) error {
 	dir := filepath.Join(echo.Wd(), dstDir)
 	return os.RemoveAll(dir)
+}
+
+func (f *Filesystem) Move(src, dst string) error {
+	return os.Rename(src, dst)
 }
 
 func (f *Filesystem) Close() error {

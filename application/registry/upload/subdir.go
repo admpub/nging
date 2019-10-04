@@ -18,56 +18,10 @@
 
 package upload
 
-import "strings"
-
-// SubdirInfo 子目录信息
-type SubdirInfo struct {
-	Allowed     bool
-	Key         string
-	Name        string
-	NameEN      string
-	Description string
-	Checker     Checker `json:"checker" xml:"-"`
-}
-
-func (i *SubdirInfo) String() string {
-	if len(i.Name) > 0 {
-		return i.Name
-	}
-	return i.Key
-}
-
-func (i *SubdirInfo) GetNameEN() string {
-	if len(i.NameEN) > 0 {
-		return i.NameEN
-	}
-	return i.Name
-}
-
-func (i *SubdirInfo) SetChecker(checker Checker) *SubdirInfo {
-	i.Checker = checker
-	return i
-}
-
-func (i *SubdirInfo) SetAllowed(allowed bool) *SubdirInfo {
-	i.Allowed = allowed
-	return i
-}
-
-func (i *SubdirInfo) SetName(name string) *SubdirInfo {
-	i.Name = name
-	return i
-}
-
-func (i *SubdirInfo) SetNameEN(nameEN string) *SubdirInfo {
-	i.NameEN = nameEN
-	return i
-}
-
-func (i *SubdirInfo) SetDescription(description string) *SubdirInfo {
-	i.Description = description
-	return i
-}
+import (
+	"fmt"
+	"strings"
+)
 
 var subdirs = map[string]*SubdirInfo{
 	`user`: &SubdirInfo{
@@ -76,58 +30,33 @@ var subdirs = map[string]*SubdirInfo{
 		Name:        "后台用户个人文件",
 		Description: "",
 	}, //后台用户个人文件
-	`customer`: &SubdirInfo{
-		Allowed:     true,
-		Key:         "customer",
-		Name:        "前台客户个人文件",
-		Description: "",
-	}, //前台客户个人文件
-	`comment`: &SubdirInfo{
-		Allowed:     true,
-		Key:         "comment",
-		Name:        "评论附件",
-		Description: "",
-	}, //评论附件
-	`customer-avatar`: &SubdirInfo{
-		Allowed:     true,
-		Key:         "customer-avatar",
-		Name:        "前台客户头像",
-		Description: "",
-	}, //前台客户头像
 	`user-avatar`: &SubdirInfo{
 		Allowed:     true,
 		Key:         "user-avatar",
 		Name:        "后台用户头像",
 		Description: "",
-		Checker:     UserAvatarChecker,
+		checker:     UserAvatarChecker,
 	}, //后台用户头像
-	`pay-product`: &SubdirInfo{
+	`config`: &SubdirInfo{
 		Allowed:     true,
-		Key:         "pay-product",
-		Name:        "产品图片",
-		Description: "",
-	}, //产品图片
-	`product-version`: &SubdirInfo{
-		Allowed:     true,
-		Key:         "product-version",
-		Name:        "产品版本文件",
-		Description: "",
-	}, //产品版本文件
-	`site-announcement`: &SubdirInfo{
-		Allowed:     true,
-		Key:         "site-announcement",
+		Key:         "config",
 		Name:        "站点公告图片",
 		Description: "",
-	}, //站点公告图片
-	`news`: &SubdirInfo{
-		Allowed:     true,
-		Key:         "news",
-		Name:        "新闻图片",
-		Description: "",
-	}, //新闻图片
+	}, //后台系统设置中的图片
 }
 
-func SubdirRegister(subdir string, allow bool, nameAndDescription ...string) *SubdirInfo {
+func SubdirRegister(subdir string, allow interface{}, nameAndDescription ...string) *SubdirInfo {
+	var isAllow bool
+	switch v := allow.(type) {
+	case bool:
+		isAllow = v
+	case *SubdirInfo:
+		return SubdirRegisterObject(subdir, v)
+	case SubdirInfo:
+		return SubdirRegisterObject(subdir, &v)
+	default:
+		panic(fmt.Sprintf(`Unsupported type: %T`, v))
+	}
 	var name, nameEN, description string
 	switch len(nameAndDescription) {
 	case 3:
@@ -140,12 +69,26 @@ func SubdirRegister(subdir string, allow bool, nameAndDescription ...string) *Su
 		name = nameAndDescription[0]
 	}
 	info := &SubdirInfo{
-		Allowed:     true,
+		Allowed:     isAllow,
 		Key:         subdir,
 		Name:        name,
 		NameEN:      nameEN,
 		Description: description,
 	}
+
+	r := strings.SplitN(info.Key, `-`, 2)
+	switch len(r) {
+	case 2:
+		info.fieldName = r[1]
+		fallthrough
+	case 1:
+		info.tableName = r[0]
+	}
+	SubdirRegisterObject(subdir, info)
+	return info
+}
+
+func SubdirRegisterObject(subdir string, info *SubdirInfo) *SubdirInfo {
 	subdirs[subdir] = info
 	return info
 }

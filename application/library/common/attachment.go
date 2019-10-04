@@ -51,45 +51,7 @@ func RemoveAvatar(ctx echo.Context, typ string, id uint64) error {
 
 // MoveAvatarToUserDir 移动临时文件夹中的头像到用户目录
 func MoveAvatarToUserDir(ctx echo.Context, src string, typ string, id uint64) (string, error) {
-	if strings.Contains(src, `://`) {
-		return src, nil
-	}
-	var newPath string
-	if err := helper.IsRightUploadFile(ctx, src); err != nil {
-		return newPath, err
-	}
-	name := path.Base(src)
-	guestFile := filepath.Join(helper.UploadDir, typ, `0`, name)
-	if !com.FileExists(guestFile) {
-		return src, nil
-	}
-	userDir := filepath.Join(helper.UploadDir, typ, fmt.Sprint(id))
-	os.MkdirAll(userDir, os.ModePerm)
-	ext := path.Ext(src)
-	userFile := userDir + echo.FilePathSeparator + `avatar` + ext
-	err := os.Rename(guestFile, userFile)
-	if err != nil {
-		return newPath, err
-	}
-	newPath = helper.UploadURLPath + typ + `/` + fmt.Sprint(id) + `/` + name
-	p := strings.LastIndex(guestFile, `.`)
-	if p > 0 {
-		filePrefix := guestFile[0:p] + `_`
-		guestFiles, err := filepath.Glob(filePrefix + `*` + guestFile[p:])
-		if err != nil {
-			return newPath, err
-		}
-		for _, file := range guestFiles {
-			name := filepath.Base(file)
-			name = strings.TrimPrefix(name, filePrefix)
-			userFile := userDir + echo.FilePathSeparator + `avatar_` + name
-			err := os.Rename(file, userFile)
-			if err != nil {
-				return newPath, err
-			}
-		}
-	}
-	return newPath, OnUpdateOwnerFilePath(ctx, src, typ, id, userFile, newPath)
+	return MoveUploadedFileToOwnerDirCommon(ctx, src, typ, id, true)
 }
 
 // DirShardingNum 文件夹分组基数
@@ -127,6 +89,11 @@ var OnRemoveOwnerFile = func(ctx echo.Context, typ string, id uint64, ownerDir s
 
 // MoveUploadedFileToOwnerDir 移动上传的文件到所有者目录
 func MoveUploadedFileToOwnerDir(ctx echo.Context, src string, typ string, id uint64) (string, error) {
+	return MoveUploadedFileToOwnerDirCommon(ctx, src, typ, id, false)
+}
+
+// MoveUploadedFileToOwnerDirCommon 移动上传的文件到所有者目录
+func MoveUploadedFileToOwnerDirCommon(ctx echo.Context, src string, typ string, id uint64, isAvatar bool) (string, error) {
 	var newPath string
 	if err := helper.IsRightUploadFile(ctx, src); err != nil {
 		return newPath, err
@@ -139,6 +106,10 @@ func MoveUploadedFileToOwnerDir(ctx echo.Context, src string, typ string, id uin
 	sdir := filepath.Join(helper.UploadDir, typ, fmt.Sprint(id))
 	os.MkdirAll(sdir, os.ModePerm)
 	ownedFile := sdir + echo.FilePathSeparator + name
+	if isAvatar {
+		ext := path.Ext(src)
+		ownedFile = sdir + echo.FilePathSeparator + `avatar` + ext
+	}
 	err := os.Rename(unownedFile, ownedFile)
 	if err != nil {
 		return newPath, err
@@ -154,6 +125,10 @@ func MoveUploadedFileToOwnerDir(ctx echo.Context, src string, typ string, id uin
 		for _, file := range unownedFiles {
 			name := filepath.Base(file)
 			userFile := sdir + echo.FilePathSeparator + name
+			if isAvatar {
+				name = strings.TrimPrefix(name, filePrefix)
+				userFile = sdir + echo.FilePathSeparator + `avatar_` + name
+			}
 			err := os.Rename(file, userFile)
 			if err != nil {
 				return newPath, err

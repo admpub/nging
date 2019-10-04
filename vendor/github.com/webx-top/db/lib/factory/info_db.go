@@ -83,7 +83,11 @@ func (d *DBI) TableColumns(tableName string) []string {
 }
 
 func (d *DBI) Fire(event string, model Model, mw func(db.Result) db.Result, args ...interface{}) error {
-	return d.Events.Call(event, model, mw, args...)
+	return d.Events.Call(event, model, nil, mw, args...)
+}
+
+func (d *DBI) FireUpdate(event string, model Model, editColumns []string, mw func(db.Result) db.Result, args ...interface{}) error {
+	return d.Events.Call(event, model, editColumns, mw, args...)
 }
 
 func (d *DBI) On(event string, h EventHandler, tableName ...string) {

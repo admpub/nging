@@ -36,10 +36,12 @@ func init() {
 }
 
 func NewUser(ctx echo.Context) *User {
-	return &User{
+	m := &User{
 		User: &dbschema.User{},
 		base: base.New(ctx),
 	}
+	m.User.SetContext(ctx)
+	return m
 }
 
 type User struct {

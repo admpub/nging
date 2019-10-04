@@ -19,10 +19,9 @@
 package seaweedfs
 
 import (
+	"context"
 	"io"
 	"net/url"
-	"path"
-	"context"
 
 	"github.com/admpub/nging/application/registry/upload/driver/filesystem"
 	"github.com/admpub/nging/application/registry/upload/helper"
@@ -57,12 +56,12 @@ type Seaweedfs struct {
 	*filesystem.Filesystem
 }
 
-func (s *Seaweedfs) Engine() string {
+func (s *Seaweedfs) Name() string {
 	return Name
 }
 
 func (s *Seaweedfs) filepath(fname string) string {
-	return path.Join(s.UploadDir, fname)
+	return s.URLDir(fname)
 }
 
 func (s *Seaweedfs) xPut(dstFile string, src io.Reader, size int64) (savePath string, viewURL string, err error) {

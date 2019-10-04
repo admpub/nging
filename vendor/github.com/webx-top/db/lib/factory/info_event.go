@@ -43,23 +43,23 @@ func (e *Event) Exists(event string) bool {
 	return false
 }
 
-func (e *Event) Call(event string, model Model) error {
+func (e *Event) Call(event string, model Model, editColumns ...string) error {
 	if !e.Exists(event) {
 		return nil
 	}
 	switch event {
 	case `creating`:
-		return e.Creating.Exec(model)
+		return e.Creating.Exec(model, editColumns...)
 	case `created`:
-		return e.Created.Exec(model)
+		return e.Created.Exec(model, editColumns...)
 	case `updating`:
-		return e.Updating.Exec(model)
+		return e.Updating.Exec(model, editColumns...)
 	case `updated`:
-		return e.Updated.Exec(model)
+		return e.Updated.Exec(model, editColumns...)
 	case `deleting`:
-		return e.Deleting.Exec(model)
+		return e.Deleting.Exec(model, editColumns...)
 	case `deleted`:
-		return e.Deleted.Exec(model)
+		return e.Deleted.Exec(model, editColumns...)
 	}
 	return nil
 }
@@ -78,8 +78,9 @@ func (e *Event) On(event string, h EventHandler, async ...bool) *Event {
 		return e.AddDeleting(h, async...)
 	case `deleted`:
 		return e.AddDeleted(h, async...)
+	default:
+		panic(`Unsupported event: ` + event)
 	}
-	return e
 }
 
 func (e *Event) AddCreating(h EventHandler, async ...bool) *Event {

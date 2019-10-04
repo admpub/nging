@@ -134,6 +134,17 @@ func (this *CollectorPage) Name_() string {
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
 }
 
+func (this *CollectorPage) Namer() func(string) string {
+	return this.namer
+}
+
+func (this *CollectorPage) CPAFrom(source factory.Model) factory.Model {
+	this.SetContext(source.Context())
+	this.Use(source.Trans())
+	this.SetNamer(source.Namer())
+	return this
+}
+
 func (this *CollectorPage) SetParam(param *factory.Param) factory.Model {
 	this.param = param
 	return this
@@ -272,14 +283,18 @@ func (this *CollectorPage) SetFields(mw func(db.Result) db.Result, kvset map[str
 	if val, ok := kvset["duplicate_rule"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["duplicate_rule"] = "none" } }
 	if val, ok := kvset["content_type"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["content_type"] = "html" } }
 	m := *this
-	m.FromMap(kvset)
-	if err = DBI.Fire("updating", &m, mw, args...); err != nil {
+	m.FromRow(kvset)
+	var editColumns []string
+	for column := range kvset {
+		editColumns = append(editColumns, column)
+	}
+	if err = DBI.FireUpdate("updating", &m, editColumns, mw, args...); err != nil {
 		return
 	}
 	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
 		return
 	}
-	return DBI.Fire("updated", &m, mw, args...)
+	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
 }
 
 func (this *CollectorPage) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
@@ -378,8 +393,8 @@ func (this *CollectorPage) AsMap() map[string]interface{} {
 	return r
 }
 
-func (this *CollectorPage) FromMap(rows map[string]interface{}) {
-	for key, value := range rows {
+func (this *CollectorPage) FromRow(row map[string]interface{}) {
+	for key, value := range row {
 		switch key {
 			case "id": this.Id = param.AsUint(value)
 			case "parent_id": this.ParentId = param.AsUint(value)

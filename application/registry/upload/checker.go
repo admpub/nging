@@ -66,6 +66,8 @@ func UserAvatarChecker(ctx echo.Context, tis table.TableInfoStorer) (subdir stri
 	}
 	subdir = fmt.Sprint(userID) + `/`
 	tis.SetTableID(userID)
+	tis.SetTableName(`user`)
+	tis.SetFieldName(`avatar`)
 	return
 }
 
@@ -75,8 +77,8 @@ func CheckerRegister(typ string, checker Checker) {
 
 func CheckerGet(typ string) Checker {
 	s := SubdirGet(typ)
-	if s == nil || s.Checker == nil {
+	if s == nil || s.checker == nil {
 		return DefaultChecker
 	}
-	return s.Checker
+	return s.Checker()
 }

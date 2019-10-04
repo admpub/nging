@@ -19,8 +19,6 @@
 package cloud
 
 import (
-	"net/url"
-	"time"
 	"context"
 
 	"gocloud.dev/blob"
@@ -30,14 +28,14 @@ var DefaultConfig = &Config{}
 
 type Config struct {
 	CloudServerURL string
-	PublicBaseURL string
+	PublicBaseURL  string
 }
 
-func (c *Config) New(ctx context.Context) (b *blob.Bucket,err error) {
+func (c *Config) New(ctx context.Context) (b *blob.Bucket, err error) {
 	// Connect to a bucket using a URL, using the "prefix" query parameter to
 	// target a subfolder in the bucket.
 	// The prefix should end with "/", so that the resulting bucket operates
 	// in a subfolder.
 	b, err = blob.OpenBucket(ctx, c.CloudServerURL)
-	return 
+	return
 }

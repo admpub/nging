@@ -31,6 +31,9 @@ import (
 )
 
 func NewEmbedded(ctx echo.Context, fileMdls ...*File) *Embedded {
+	if ctx == nil {
+		panic(`ctx is nil`)
+	}
 	var fileM *File
 	if len(fileMdls) > 0 {
 		fileM = fileMdls[0]
@@ -118,15 +121,21 @@ func (f *Embedded) UpdateByFileID(project string, table string, field string, ta
 	return err
 }
 
-func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, field string, tableID uint64, fileIds ...interface{}) error {
+func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, field string, tableID uint64, fileIds ...interface{}) (err error) {
+	f.base.Begin()
+	defer func() {
+		f.base.End(err == nil)
+	}()
+	f.Use(f.base.Tx())
+	f.File.Use(f.Trans())
 
-	err := f.File.UpdateUnrelation(project, table, field, tableID, fileIds...)
+	err = f.File.UpdateUnrelation(project, table, field, tableID, fileIds...)
 	if err != nil {
 		return err
 	}
 
 	m := &dbschema.FileEmbedded{}
-	err = m.Get(nil, db.And(
+	err = m.Use(f.Trans()).Get(nil, db.And(
 		db.Cond{`table_id`: tableID},
 		db.Cond{`table_name`: table},
 		db.Cond{`field_name`: field},
@@ -278,6 +287,7 @@ func (f *Embedded) RelationFiles(project string, table string, field string, tab
 	if len(fids) < 1 && len(files) > 0 {
 		fids = f.File.GetIDByViewURLs(files)
 	}
+	println(`------------------------------`, echo.Dump(fids))
 	err := f.UpdateEmbedded(false, project, table, field, tableID, fids...)
 	return err
 }

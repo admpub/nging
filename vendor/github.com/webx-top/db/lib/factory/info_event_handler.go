@@ -1,6 +1,6 @@
 package factory
 
-type EventHandler func(model Model) error
+type EventHandler func(model Model, editColumns ...string) error
 
 func NewEventHandlers() *EventHandlers {
 	return &EventHandlers{}
@@ -11,12 +11,12 @@ type EventHandlers struct {
 	Sync  []EventHandler
 }
 
-func (e *EventHandlers) Exec(model Model) error {
+func (e *EventHandlers) Exec(model Model, editColumns ...string) error {
 	for _, handler := range e.Async {
-		go handler(model)
+		go handler(model, editColumns...)
 	}
 	for _, handler := range e.Sync {
-		if err := handler(model); err != nil {
+		if err := handler(model, editColumns...); err != nil {
 			return err
 		}
 	}

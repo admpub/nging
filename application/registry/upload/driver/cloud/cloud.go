@@ -19,14 +19,15 @@
 package cloud
 
 import (
+	"context"
 	"io"
 	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
-	"context"
 
 	"github.com/admpub/nging/application/registry/upload"
+	"github.com/admpub/nging/application/registry/upload/driver/filesystem"
 	"github.com/admpub/nging/application/registry/upload/helper"
 	"github.com/webx-top/echo"
 	"gocloud.dev/blob"
@@ -52,23 +53,23 @@ func NewCloud(ctx context.Context, typ string) *Cloud {
 	}
 	return &Cloud{
 		config:     DefaultConfig,
-		bucket:		bucket,
+		bucket:     bucket,
 		Filesystem: filesystem.NewFilesystem(ctx, typ),
 	}
 }
 
 type Cloud struct {
-	config   *Config
+	config *Config
 	bucket *blob.Bucket
 	*filesystem.Filesystem
 }
 
-func (f *Cloud) Engine() string {
+func (f *Cloud) Name() string {
 	return Name
 }
 
 func (f *Cloud) filepath(fname string) string {
-	return path.Join(f.UploadDir, fname)
+	return f.URLDir(fname)
 }
 
 func (f *Cloud) Exists(file string) (bool, error) {
@@ -78,10 +79,10 @@ func (f *Cloud) Exists(file string) (bool, error) {
 func (f *Cloud) FileInfo(file string) (os.FileInfo, error) {
 	r, err := f.bucket.NewReader(f.Context, file, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer r.Close()
-	
+
 	// Access storage.Reader via sr here.
 	var sr *storage.Reader
 	if r.As(&sr) {
@@ -111,11 +112,11 @@ func (f *Cloud) Put(dstFile string, src io.Reader, size int64) (savePath string,
 }
 
 func (f *Cloud) PublicURL(dstFile string) string {
-	return f.config.PublicBaseURL + f.UploadURLPath + `/` + dstFile
+	return f.config.PublicBaseURL + f.URLDir(dstFile)
 }
 
 func (f *Cloud) URLToFile(publicURL string) string {
-	dstFile := strings.TrimPrefix(publicURL, strings.TrimRight(f.config.PublicBaseURL + f.UploadURLPath, `/`)+`/`)
+	dstFile := strings.TrimPrefix(publicURL, strings.TrimRight(f.PublicURL(``), `/`)+`/`)
 	return dstFile
 }
 
