@@ -35,12 +35,8 @@ func (s Slice_DbSync) RangeRaw(fn func(m *DbSync) error ) error {
 
 // DbSync 数据表同步方案
 type DbSync struct {
-	param   *factory.Param
-	trans	*factory.Transaction
+	base    factory.Base
 	objects []*DbSync
-	namer   func(string) string
-	connID  int
-	context echo.Context
 	
 	Id                    	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	Name                  	string  	`db:"name" bson:"name" comment:"方案名" json:"name" xml:"name"`
@@ -57,38 +53,63 @@ type DbSync struct {
 	Updated               	int     	`db:"updated" bson:"updated" comment:"更新时间" json:"updated" xml:"updated"`
 }
 
+// - base function
+
 func (this *DbSync) Trans() *factory.Transaction {
-	return this.trans
+	return this.base.Trans()
 }
 
 func (this *DbSync) Use(trans *factory.Transaction) factory.Model {
-	this.trans = trans
+	this.base.Use(trans)
 	return this
 }
 
 func (this *DbSync) SetContext(ctx echo.Context) factory.Model {
-	this.context = ctx
+	this.base.SetContext(ctx)
 	return this
 }
 
 func (this *DbSync) Context() echo.Context {
-	return this.context
+	return this.base.Context()
 }
 
 func (this *DbSync) SetConnID(connID int) factory.Model {
-	this.connID = connID
+	this.base.SetConnID(connID)
 	return this
 }
+
+func (this *DbSync) SetNamer(namer func (string) string) factory.Model {
+	this.base.SetNamer(namer)
+	return this
+}
+
+func (this *DbSync) Namer() func(string) string {
+	return this.base.Namer()
+}
+
+func (this *DbSync) SetParam(param *factory.Param) factory.Model {
+	this.base.SetParam(param)
+	return this
+}
+
+func (this *DbSync) Param() *factory.Param {
+	if this.base.Param() == nil {
+		return this.NewParam()
+	}
+	return this.base.Param()
+}
+
+// - current function
 
 func (this *DbSync) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
 		return factory.NewModel(structName,connID[0]).Use(this.trans)
 	}
-	return factory.NewModel(structName,this.connID).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
 }
 
 func (this *DbSync) Objects() []*DbSync {
-	if this.objects == nil {
+	if this.bjects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -107,11 +128,6 @@ func (this *DbSync) NewParam() *factory.Param {
 	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
 }
 
-func (this *DbSync) SetNamer(namer func (string) string) factory.Model {
-	this.namer = namer
-	return this
-}
-
 func (this *DbSync) Short_() string {
 	return "db_sync"
 }
@@ -121,14 +137,10 @@ func (this *DbSync) Struct_() string {
 }
 
 func (this *DbSync) Name_() string {
-	if this.namer != nil {
-		return WithPrefix(this.namer(this.Short_()))
+	if this.base.Namer() != nil {
+		return WithPrefix(this.base.Namer()(this.Short_()))
 	}
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
-}
-
-func (this *DbSync) Namer() func(string) string {
-	return this.namer
 }
 
 func (this *DbSync) CPAFrom(source factory.Model) factory.Model {
@@ -138,20 +150,11 @@ func (this *DbSync) CPAFrom(source factory.Model) factory.Model {
 	return this
 }
 
-func (this *DbSync) SetParam(param *factory.Param) factory.Model {
-	this.param = param
-	return this
-}
-
-func (this *DbSync) Param() *factory.Param {
-	if this.param == nil {
-		return this.NewParam()
-	}
-	return this.param
-}
-
 func (this *DbSync) Get(mw func(db.Result) db.Result, args ...interface{}) error {
-	return this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	base := this.base
+	err := this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	this.base = base
+	return err
 }
 
 func (this *DbSync) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {

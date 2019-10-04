@@ -35,12 +35,8 @@ func (s Slice_CodeInvitation) RangeRaw(fn func(m *CodeInvitation) error ) error 
 
 // CodeInvitation 邀请码
 type CodeInvitation struct {
-	param   *factory.Param
-	trans	*factory.Transaction
+	base    factory.Base
 	objects []*CodeInvitation
-	namer   func(string) string
-	connID  int
-	context echo.Context
 	
 	Id      	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	Uid     	uint    	`db:"uid" bson:"uid" comment:"创建者" json:"uid" xml:"uid"`
@@ -54,38 +50,63 @@ type CodeInvitation struct {
 	RoleIds 	string  	`db:"role_ids" bson:"role_ids" comment:"注册为角色(多个用“,”分隔开)" json:"role_ids" xml:"role_ids"`
 }
 
+// - base function
+
 func (this *CodeInvitation) Trans() *factory.Transaction {
-	return this.trans
+	return this.base.Trans()
 }
 
 func (this *CodeInvitation) Use(trans *factory.Transaction) factory.Model {
-	this.trans = trans
+	this.base.Use(trans)
 	return this
 }
 
 func (this *CodeInvitation) SetContext(ctx echo.Context) factory.Model {
-	this.context = ctx
+	this.base.SetContext(ctx)
 	return this
 }
 
 func (this *CodeInvitation) Context() echo.Context {
-	return this.context
+	return this.base.Context()
 }
 
 func (this *CodeInvitation) SetConnID(connID int) factory.Model {
-	this.connID = connID
+	this.base.SetConnID(connID)
 	return this
 }
+
+func (this *CodeInvitation) SetNamer(namer func (string) string) factory.Model {
+	this.base.SetNamer(namer)
+	return this
+}
+
+func (this *CodeInvitation) Namer() func(string) string {
+	return this.base.Namer()
+}
+
+func (this *CodeInvitation) SetParam(param *factory.Param) factory.Model {
+	this.base.SetParam(param)
+	return this
+}
+
+func (this *CodeInvitation) Param() *factory.Param {
+	if this.base.Param() == nil {
+		return this.NewParam()
+	}
+	return this.base.Param()
+}
+
+// - current function
 
 func (this *CodeInvitation) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
 		return factory.NewModel(structName,connID[0]).Use(this.trans)
 	}
-	return factory.NewModel(structName,this.connID).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
 }
 
 func (this *CodeInvitation) Objects() []*CodeInvitation {
-	if this.objects == nil {
+	if this.bjects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -104,11 +125,6 @@ func (this *CodeInvitation) NewParam() *factory.Param {
 	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
 }
 
-func (this *CodeInvitation) SetNamer(namer func (string) string) factory.Model {
-	this.namer = namer
-	return this
-}
-
 func (this *CodeInvitation) Short_() string {
 	return "code_invitation"
 }
@@ -118,14 +134,10 @@ func (this *CodeInvitation) Struct_() string {
 }
 
 func (this *CodeInvitation) Name_() string {
-	if this.namer != nil {
-		return WithPrefix(this.namer(this.Short_()))
+	if this.base.Namer() != nil {
+		return WithPrefix(this.base.Namer()(this.Short_()))
 	}
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
-}
-
-func (this *CodeInvitation) Namer() func(string) string {
-	return this.namer
 }
 
 func (this *CodeInvitation) CPAFrom(source factory.Model) factory.Model {
@@ -135,20 +147,11 @@ func (this *CodeInvitation) CPAFrom(source factory.Model) factory.Model {
 	return this
 }
 
-func (this *CodeInvitation) SetParam(param *factory.Param) factory.Model {
-	this.param = param
-	return this
-}
-
-func (this *CodeInvitation) Param() *factory.Param {
-	if this.param == nil {
-		return this.NewParam()
-	}
-	return this.param
-}
-
 func (this *CodeInvitation) Get(mw func(db.Result) db.Result, args ...interface{}) error {
-	return this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	base := this.base
+	err := this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	this.base = base
+	return err
 }
 
 func (this *CodeInvitation) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {

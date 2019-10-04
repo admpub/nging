@@ -35,12 +35,8 @@ func (s Slice_ForeverProcess) RangeRaw(fn func(m *ForeverProcess) error ) error 
 
 // ForeverProcess 持久进程
 type ForeverProcess struct {
-	param   *factory.Param
-	trans	*factory.Transaction
+	base    factory.Base
 	objects []*ForeverProcess
-	namer   func(string) string
-	connID  int
-	context echo.Context
 	
 	Id           	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	Uid          	uint    	`db:"uid" bson:"uid" comment:"添加人ID" json:"uid" xml:"uid"`
@@ -68,38 +64,63 @@ type ForeverProcess struct {
 	NotifyEmail  	string  	`db:"notify_email" bson:"notify_email" comment:"通知人列表" json:"notify_email" xml:"notify_email"`
 }
 
+// - base function
+
 func (this *ForeverProcess) Trans() *factory.Transaction {
-	return this.trans
+	return this.base.Trans()
 }
 
 func (this *ForeverProcess) Use(trans *factory.Transaction) factory.Model {
-	this.trans = trans
+	this.base.Use(trans)
 	return this
 }
 
 func (this *ForeverProcess) SetContext(ctx echo.Context) factory.Model {
-	this.context = ctx
+	this.base.SetContext(ctx)
 	return this
 }
 
 func (this *ForeverProcess) Context() echo.Context {
-	return this.context
+	return this.base.Context()
 }
 
 func (this *ForeverProcess) SetConnID(connID int) factory.Model {
-	this.connID = connID
+	this.base.SetConnID(connID)
 	return this
 }
+
+func (this *ForeverProcess) SetNamer(namer func (string) string) factory.Model {
+	this.base.SetNamer(namer)
+	return this
+}
+
+func (this *ForeverProcess) Namer() func(string) string {
+	return this.base.Namer()
+}
+
+func (this *ForeverProcess) SetParam(param *factory.Param) factory.Model {
+	this.base.SetParam(param)
+	return this
+}
+
+func (this *ForeverProcess) Param() *factory.Param {
+	if this.base.Param() == nil {
+		return this.NewParam()
+	}
+	return this.base.Param()
+}
+
+// - current function
 
 func (this *ForeverProcess) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
 		return factory.NewModel(structName,connID[0]).Use(this.trans)
 	}
-	return factory.NewModel(structName,this.connID).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
 }
 
 func (this *ForeverProcess) Objects() []*ForeverProcess {
-	if this.objects == nil {
+	if this.bjects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -118,11 +139,6 @@ func (this *ForeverProcess) NewParam() *factory.Param {
 	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
 }
 
-func (this *ForeverProcess) SetNamer(namer func (string) string) factory.Model {
-	this.namer = namer
-	return this
-}
-
 func (this *ForeverProcess) Short_() string {
 	return "forever_process"
 }
@@ -132,14 +148,10 @@ func (this *ForeverProcess) Struct_() string {
 }
 
 func (this *ForeverProcess) Name_() string {
-	if this.namer != nil {
-		return WithPrefix(this.namer(this.Short_()))
+	if this.base.Namer() != nil {
+		return WithPrefix(this.base.Namer()(this.Short_()))
 	}
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
-}
-
-func (this *ForeverProcess) Namer() func(string) string {
-	return this.namer
 }
 
 func (this *ForeverProcess) CPAFrom(source factory.Model) factory.Model {
@@ -149,20 +161,11 @@ func (this *ForeverProcess) CPAFrom(source factory.Model) factory.Model {
 	return this
 }
 
-func (this *ForeverProcess) SetParam(param *factory.Param) factory.Model {
-	this.param = param
-	return this
-}
-
-func (this *ForeverProcess) Param() *factory.Param {
-	if this.param == nil {
-		return this.NewParam()
-	}
-	return this.param
-}
-
 func (this *ForeverProcess) Get(mw func(db.Result) db.Result, args ...interface{}) error {
-	return this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	base := this.base
+	err := this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	this.base = base
+	return err
 }
 
 func (this *ForeverProcess) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {

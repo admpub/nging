@@ -35,12 +35,8 @@ func (s Slice_CollectorRule) RangeRaw(fn func(m *CollectorRule) error ) error {
 
 // CollectorRule 页面中的元素采集规则
 type CollectorRule struct {
-	param   *factory.Param
-	trans	*factory.Transaction
+	base    factory.Base
 	objects []*CollectorRule
-	namer   func(string) string
-	connID  int
-	context echo.Context
 	
 	Id     	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	PageId 	uint    	`db:"page_id" bson:"page_id" comment:"页面ID" json:"page_id" xml:"page_id"`
@@ -52,38 +48,63 @@ type CollectorRule struct {
 	Sort   	int     	`db:"sort" bson:"sort" comment:"排序" json:"sort" xml:"sort"`
 }
 
+// - base function
+
 func (this *CollectorRule) Trans() *factory.Transaction {
-	return this.trans
+	return this.base.Trans()
 }
 
 func (this *CollectorRule) Use(trans *factory.Transaction) factory.Model {
-	this.trans = trans
+	this.base.Use(trans)
 	return this
 }
 
 func (this *CollectorRule) SetContext(ctx echo.Context) factory.Model {
-	this.context = ctx
+	this.base.SetContext(ctx)
 	return this
 }
 
 func (this *CollectorRule) Context() echo.Context {
-	return this.context
+	return this.base.Context()
 }
 
 func (this *CollectorRule) SetConnID(connID int) factory.Model {
-	this.connID = connID
+	this.base.SetConnID(connID)
 	return this
 }
+
+func (this *CollectorRule) SetNamer(namer func (string) string) factory.Model {
+	this.base.SetNamer(namer)
+	return this
+}
+
+func (this *CollectorRule) Namer() func(string) string {
+	return this.base.Namer()
+}
+
+func (this *CollectorRule) SetParam(param *factory.Param) factory.Model {
+	this.base.SetParam(param)
+	return this
+}
+
+func (this *CollectorRule) Param() *factory.Param {
+	if this.base.Param() == nil {
+		return this.NewParam()
+	}
+	return this.base.Param()
+}
+
+// - current function
 
 func (this *CollectorRule) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
 		return factory.NewModel(structName,connID[0]).Use(this.trans)
 	}
-	return factory.NewModel(structName,this.connID).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
 }
 
 func (this *CollectorRule) Objects() []*CollectorRule {
-	if this.objects == nil {
+	if this.bjects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -102,11 +123,6 @@ func (this *CollectorRule) NewParam() *factory.Param {
 	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
 }
 
-func (this *CollectorRule) SetNamer(namer func (string) string) factory.Model {
-	this.namer = namer
-	return this
-}
-
 func (this *CollectorRule) Short_() string {
 	return "collector_rule"
 }
@@ -116,14 +132,10 @@ func (this *CollectorRule) Struct_() string {
 }
 
 func (this *CollectorRule) Name_() string {
-	if this.namer != nil {
-		return WithPrefix(this.namer(this.Short_()))
+	if this.base.Namer() != nil {
+		return WithPrefix(this.base.Namer()(this.Short_()))
 	}
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
-}
-
-func (this *CollectorRule) Namer() func(string) string {
-	return this.namer
 }
 
 func (this *CollectorRule) CPAFrom(source factory.Model) factory.Model {
@@ -133,20 +145,11 @@ func (this *CollectorRule) CPAFrom(source factory.Model) factory.Model {
 	return this
 }
 
-func (this *CollectorRule) SetParam(param *factory.Param) factory.Model {
-	this.param = param
-	return this
-}
-
-func (this *CollectorRule) Param() *factory.Param {
-	if this.param == nil {
-		return this.NewParam()
-	}
-	return this.param
-}
-
 func (this *CollectorRule) Get(mw func(db.Result) db.Result, args ...interface{}) error {
-	return this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	base := this.base
+	err := this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	this.base = base
+	return err
 }
 
 func (this *CollectorRule) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {

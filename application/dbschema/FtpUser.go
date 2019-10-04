@@ -35,12 +35,8 @@ func (s Slice_FtpUser) RangeRaw(fn func(m *FtpUser) error ) error {
 
 // FtpUser FTP用户
 type FtpUser struct {
-	param   *factory.Param
-	trans	*factory.Transaction
+	base    factory.Base
 	objects []*FtpUser
-	namer   func(string) string
-	connID  int
-	context echo.Context
 	
 	Id          	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"" json:"id" xml:"id"`
 	Username    	string  	`db:"username" bson:"username" comment:"用户名" json:"username" xml:"username"`
@@ -54,38 +50,63 @@ type FtpUser struct {
 	GroupId     	uint    	`db:"group_id" bson:"group_id" comment:"用户组" json:"group_id" xml:"group_id"`
 }
 
+// - base function
+
 func (this *FtpUser) Trans() *factory.Transaction {
-	return this.trans
+	return this.base.Trans()
 }
 
 func (this *FtpUser) Use(trans *factory.Transaction) factory.Model {
-	this.trans = trans
+	this.base.Use(trans)
 	return this
 }
 
 func (this *FtpUser) SetContext(ctx echo.Context) factory.Model {
-	this.context = ctx
+	this.base.SetContext(ctx)
 	return this
 }
 
 func (this *FtpUser) Context() echo.Context {
-	return this.context
+	return this.base.Context()
 }
 
 func (this *FtpUser) SetConnID(connID int) factory.Model {
-	this.connID = connID
+	this.base.SetConnID(connID)
 	return this
 }
+
+func (this *FtpUser) SetNamer(namer func (string) string) factory.Model {
+	this.base.SetNamer(namer)
+	return this
+}
+
+func (this *FtpUser) Namer() func(string) string {
+	return this.base.Namer()
+}
+
+func (this *FtpUser) SetParam(param *factory.Param) factory.Model {
+	this.base.SetParam(param)
+	return this
+}
+
+func (this *FtpUser) Param() *factory.Param {
+	if this.base.Param() == nil {
+		return this.NewParam()
+	}
+	return this.base.Param()
+}
+
+// - current function
 
 func (this *FtpUser) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
 		return factory.NewModel(structName,connID[0]).Use(this.trans)
 	}
-	return factory.NewModel(structName,this.connID).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
 }
 
 func (this *FtpUser) Objects() []*FtpUser {
-	if this.objects == nil {
+	if this.bjects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -104,11 +125,6 @@ func (this *FtpUser) NewParam() *factory.Param {
 	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
 }
 
-func (this *FtpUser) SetNamer(namer func (string) string) factory.Model {
-	this.namer = namer
-	return this
-}
-
 func (this *FtpUser) Short_() string {
 	return "ftp_user"
 }
@@ -118,14 +134,10 @@ func (this *FtpUser) Struct_() string {
 }
 
 func (this *FtpUser) Name_() string {
-	if this.namer != nil {
-		return WithPrefix(this.namer(this.Short_()))
+	if this.base.Namer() != nil {
+		return WithPrefix(this.base.Namer()(this.Short_()))
 	}
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
-}
-
-func (this *FtpUser) Namer() func(string) string {
-	return this.namer
 }
 
 func (this *FtpUser) CPAFrom(source factory.Model) factory.Model {
@@ -135,20 +147,11 @@ func (this *FtpUser) CPAFrom(source factory.Model) factory.Model {
 	return this
 }
 
-func (this *FtpUser) SetParam(param *factory.Param) factory.Model {
-	this.param = param
-	return this
-}
-
-func (this *FtpUser) Param() *factory.Param {
-	if this.param == nil {
-		return this.NewParam()
-	}
-	return this.param
-}
-
 func (this *FtpUser) Get(mw func(db.Result) db.Result, args ...interface{}) error {
-	return this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	base := this.base
+	err := this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	this.base = base
+	return err
 }
 
 func (this *FtpUser) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {

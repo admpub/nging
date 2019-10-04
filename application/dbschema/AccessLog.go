@@ -35,12 +35,8 @@ func (s Slice_AccessLog) RangeRaw(fn func(m *AccessLog) error ) error {
 
 // AccessLog 
 type AccessLog struct {
-	param   *factory.Param
-	trans	*factory.Transaction
+	base    factory.Base
 	objects []*AccessLog
-	namer   func(string) string
-	connID  int
-	context echo.Context
 	
 	Id           	uint64  	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	VhostId      	uint    	`db:"vhost_id" bson:"vhost_id" comment:"虚拟主机ID" json:"vhost_id" xml:"vhost_id"`
@@ -67,38 +63,63 @@ type AccessLog struct {
 	Created      	uint    	`db:"created" bson:"created" comment:"创建时间" json:"created" xml:"created"`
 }
 
+// - base function
+
 func (this *AccessLog) Trans() *factory.Transaction {
-	return this.trans
+	return this.base.Trans()
 }
 
 func (this *AccessLog) Use(trans *factory.Transaction) factory.Model {
-	this.trans = trans
+	this.base.Use(trans)
 	return this
 }
 
 func (this *AccessLog) SetContext(ctx echo.Context) factory.Model {
-	this.context = ctx
+	this.base.SetContext(ctx)
 	return this
 }
 
 func (this *AccessLog) Context() echo.Context {
-	return this.context
+	return this.base.Context()
 }
 
 func (this *AccessLog) SetConnID(connID int) factory.Model {
-	this.connID = connID
+	this.base.SetConnID(connID)
 	return this
 }
+
+func (this *AccessLog) SetNamer(namer func (string) string) factory.Model {
+	this.base.SetNamer(namer)
+	return this
+}
+
+func (this *AccessLog) Namer() func(string) string {
+	return this.base.Namer()
+}
+
+func (this *AccessLog) SetParam(param *factory.Param) factory.Model {
+	this.base.SetParam(param)
+	return this
+}
+
+func (this *AccessLog) Param() *factory.Param {
+	if this.base.Param() == nil {
+		return this.NewParam()
+	}
+	return this.base.Param()
+}
+
+// - current function
 
 func (this *AccessLog) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
 		return factory.NewModel(structName,connID[0]).Use(this.trans)
 	}
-	return factory.NewModel(structName,this.connID).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
 }
 
 func (this *AccessLog) Objects() []*AccessLog {
-	if this.objects == nil {
+	if this.bjects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -117,11 +138,6 @@ func (this *AccessLog) NewParam() *factory.Param {
 	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
 }
 
-func (this *AccessLog) SetNamer(namer func (string) string) factory.Model {
-	this.namer = namer
-	return this
-}
-
 func (this *AccessLog) Short_() string {
 	return "access_log"
 }
@@ -131,14 +147,10 @@ func (this *AccessLog) Struct_() string {
 }
 
 func (this *AccessLog) Name_() string {
-	if this.namer != nil {
-		return WithPrefix(this.namer(this.Short_()))
+	if this.base.Namer() != nil {
+		return WithPrefix(this.base.Namer()(this.Short_()))
 	}
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
-}
-
-func (this *AccessLog) Namer() func(string) string {
-	return this.namer
 }
 
 func (this *AccessLog) CPAFrom(source factory.Model) factory.Model {
@@ -148,20 +160,11 @@ func (this *AccessLog) CPAFrom(source factory.Model) factory.Model {
 	return this
 }
 
-func (this *AccessLog) SetParam(param *factory.Param) factory.Model {
-	this.param = param
-	return this
-}
-
-func (this *AccessLog) Param() *factory.Param {
-	if this.param == nil {
-		return this.NewParam()
-	}
-	return this.param
-}
-
 func (this *AccessLog) Get(mw func(db.Result) db.Result, args ...interface{}) error {
-	return this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	base := this.base
+	err := this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	this.base = base
+	return err
 }
 
 func (this *AccessLog) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {

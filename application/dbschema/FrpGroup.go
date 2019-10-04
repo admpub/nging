@@ -35,12 +35,8 @@ func (s Slice_FrpGroup) RangeRaw(fn func(m *FrpGroup) error ) error {
 
 // FrpGroup FRP服务组
 type FrpGroup struct {
-	param   *factory.Param
-	trans	*factory.Transaction
+	base    factory.Base
 	objects []*FrpGroup
-	namer   func(string) string
-	connID  int
-	context echo.Context
 	
 	Id         	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"" json:"id" xml:"id"`
 	Uid        	uint    	`db:"uid" bson:"uid" comment:"用户ID" json:"uid" xml:"uid"`
@@ -50,38 +46,63 @@ type FrpGroup struct {
 	Updated    	uint    	`db:"updated" bson:"updated" comment:"修改时间" json:"updated" xml:"updated"`
 }
 
+// - base function
+
 func (this *FrpGroup) Trans() *factory.Transaction {
-	return this.trans
+	return this.base.Trans()
 }
 
 func (this *FrpGroup) Use(trans *factory.Transaction) factory.Model {
-	this.trans = trans
+	this.base.Use(trans)
 	return this
 }
 
 func (this *FrpGroup) SetContext(ctx echo.Context) factory.Model {
-	this.context = ctx
+	this.base.SetContext(ctx)
 	return this
 }
 
 func (this *FrpGroup) Context() echo.Context {
-	return this.context
+	return this.base.Context()
 }
 
 func (this *FrpGroup) SetConnID(connID int) factory.Model {
-	this.connID = connID
+	this.base.SetConnID(connID)
 	return this
 }
+
+func (this *FrpGroup) SetNamer(namer func (string) string) factory.Model {
+	this.base.SetNamer(namer)
+	return this
+}
+
+func (this *FrpGroup) Namer() func(string) string {
+	return this.base.Namer()
+}
+
+func (this *FrpGroup) SetParam(param *factory.Param) factory.Model {
+	this.base.SetParam(param)
+	return this
+}
+
+func (this *FrpGroup) Param() *factory.Param {
+	if this.base.Param() == nil {
+		return this.NewParam()
+	}
+	return this.base.Param()
+}
+
+// - current function
 
 func (this *FrpGroup) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
 		return factory.NewModel(structName,connID[0]).Use(this.trans)
 	}
-	return factory.NewModel(structName,this.connID).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
 }
 
 func (this *FrpGroup) Objects() []*FrpGroup {
-	if this.objects == nil {
+	if this.bjects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -100,11 +121,6 @@ func (this *FrpGroup) NewParam() *factory.Param {
 	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
 }
 
-func (this *FrpGroup) SetNamer(namer func (string) string) factory.Model {
-	this.namer = namer
-	return this
-}
-
 func (this *FrpGroup) Short_() string {
 	return "frp_group"
 }
@@ -114,14 +130,10 @@ func (this *FrpGroup) Struct_() string {
 }
 
 func (this *FrpGroup) Name_() string {
-	if this.namer != nil {
-		return WithPrefix(this.namer(this.Short_()))
+	if this.base.Namer() != nil {
+		return WithPrefix(this.base.Namer()(this.Short_()))
 	}
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
-}
-
-func (this *FrpGroup) Namer() func(string) string {
-	return this.namer
 }
 
 func (this *FrpGroup) CPAFrom(source factory.Model) factory.Model {
@@ -131,20 +143,11 @@ func (this *FrpGroup) CPAFrom(source factory.Model) factory.Model {
 	return this
 }
 
-func (this *FrpGroup) SetParam(param *factory.Param) factory.Model {
-	this.param = param
-	return this
-}
-
-func (this *FrpGroup) Param() *factory.Param {
-	if this.param == nil {
-		return this.NewParam()
-	}
-	return this.param
-}
-
 func (this *FrpGroup) Get(mw func(db.Result) db.Result, args ...interface{}) error {
-	return this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	base := this.base
+	err := this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	this.base = base
+	return err
 }
 
 func (this *FrpGroup) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {

@@ -34,12 +34,8 @@ func (s Slice_Config) RangeRaw(fn func(m *Config) error ) error {
 
 // Config 配置
 type Config struct {
-	param   *factory.Param
-	trans	*factory.Transaction
+	base    factory.Base
 	objects []*Config
-	namer   func(string) string
-	connID  int
-	context echo.Context
 	
 	Key        	string  	`db:"key,pk" bson:"key" comment:"键" json:"key" xml:"key"`
 	Label      	string  	`db:"label" bson:"label" comment:"选项名称" json:"label" xml:"label"`
@@ -52,38 +48,63 @@ type Config struct {
 	Encrypted  	string  	`db:"encrypted" bson:"encrypted" comment:"是否加密" json:"encrypted" xml:"encrypted"`
 }
 
+// - base function
+
 func (this *Config) Trans() *factory.Transaction {
-	return this.trans
+	return this.base.Trans()
 }
 
 func (this *Config) Use(trans *factory.Transaction) factory.Model {
-	this.trans = trans
+	this.base.Use(trans)
 	return this
 }
 
 func (this *Config) SetContext(ctx echo.Context) factory.Model {
-	this.context = ctx
+	this.base.SetContext(ctx)
 	return this
 }
 
 func (this *Config) Context() echo.Context {
-	return this.context
+	return this.base.Context()
 }
 
 func (this *Config) SetConnID(connID int) factory.Model {
-	this.connID = connID
+	this.base.SetConnID(connID)
 	return this
 }
+
+func (this *Config) SetNamer(namer func (string) string) factory.Model {
+	this.base.SetNamer(namer)
+	return this
+}
+
+func (this *Config) Namer() func(string) string {
+	return this.base.Namer()
+}
+
+func (this *Config) SetParam(param *factory.Param) factory.Model {
+	this.base.SetParam(param)
+	return this
+}
+
+func (this *Config) Param() *factory.Param {
+	if this.base.Param() == nil {
+		return this.NewParam()
+	}
+	return this.base.Param()
+}
+
+// - current function
 
 func (this *Config) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
 		return factory.NewModel(structName,connID[0]).Use(this.trans)
 	}
-	return factory.NewModel(structName,this.connID).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
 }
 
 func (this *Config) Objects() []*Config {
-	if this.objects == nil {
+	if this.bjects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -102,11 +123,6 @@ func (this *Config) NewParam() *factory.Param {
 	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
 }
 
-func (this *Config) SetNamer(namer func (string) string) factory.Model {
-	this.namer = namer
-	return this
-}
-
 func (this *Config) Short_() string {
 	return "config"
 }
@@ -116,14 +132,10 @@ func (this *Config) Struct_() string {
 }
 
 func (this *Config) Name_() string {
-	if this.namer != nil {
-		return WithPrefix(this.namer(this.Short_()))
+	if this.base.Namer() != nil {
+		return WithPrefix(this.base.Namer()(this.Short_()))
 	}
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
-}
-
-func (this *Config) Namer() func(string) string {
-	return this.namer
 }
 
 func (this *Config) CPAFrom(source factory.Model) factory.Model {
@@ -133,20 +145,11 @@ func (this *Config) CPAFrom(source factory.Model) factory.Model {
 	return this
 }
 
-func (this *Config) SetParam(param *factory.Param) factory.Model {
-	this.param = param
-	return this
-}
-
-func (this *Config) Param() *factory.Param {
-	if this.param == nil {
-		return this.NewParam()
-	}
-	return this.param
-}
-
 func (this *Config) Get(mw func(db.Result) db.Result, args ...interface{}) error {
-	return this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	base := this.base
+	err := this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	this.base = base
+	return err
 }
 
 func (this *Config) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {

@@ -35,12 +35,8 @@ func (s Slice_CollectorHistory) RangeRaw(fn func(m *CollectorHistory) error ) er
 
 // CollectorHistory 采集历史
 type CollectorHistory struct {
-	param   *factory.Param
-	trans	*factory.Transaction
+	base    factory.Base
 	objects []*CollectorHistory
-	namer   func(string) string
-	connID  int
-	context echo.Context
 	
 	Id            	uint64  	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	ParentId      	uint64  	`db:"parent_id" bson:"parent_id" comment:"父ID" json:"parent_id" xml:"parent_id"`
@@ -58,38 +54,63 @@ type CollectorHistory struct {
 	Exported      	uint    	`db:"exported" bson:"exported" comment:"最近导出时间" json:"exported" xml:"exported"`
 }
 
+// - base function
+
 func (this *CollectorHistory) Trans() *factory.Transaction {
-	return this.trans
+	return this.base.Trans()
 }
 
 func (this *CollectorHistory) Use(trans *factory.Transaction) factory.Model {
-	this.trans = trans
+	this.base.Use(trans)
 	return this
 }
 
 func (this *CollectorHistory) SetContext(ctx echo.Context) factory.Model {
-	this.context = ctx
+	this.base.SetContext(ctx)
 	return this
 }
 
 func (this *CollectorHistory) Context() echo.Context {
-	return this.context
+	return this.base.Context()
 }
 
 func (this *CollectorHistory) SetConnID(connID int) factory.Model {
-	this.connID = connID
+	this.base.SetConnID(connID)
 	return this
 }
+
+func (this *CollectorHistory) SetNamer(namer func (string) string) factory.Model {
+	this.base.SetNamer(namer)
+	return this
+}
+
+func (this *CollectorHistory) Namer() func(string) string {
+	return this.base.Namer()
+}
+
+func (this *CollectorHistory) SetParam(param *factory.Param) factory.Model {
+	this.base.SetParam(param)
+	return this
+}
+
+func (this *CollectorHistory) Param() *factory.Param {
+	if this.base.Param() == nil {
+		return this.NewParam()
+	}
+	return this.base.Param()
+}
+
+// - current function
 
 func (this *CollectorHistory) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
 		return factory.NewModel(structName,connID[0]).Use(this.trans)
 	}
-	return factory.NewModel(structName,this.connID).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
 }
 
 func (this *CollectorHistory) Objects() []*CollectorHistory {
-	if this.objects == nil {
+	if this.bjects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -108,11 +129,6 @@ func (this *CollectorHistory) NewParam() *factory.Param {
 	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
 }
 
-func (this *CollectorHistory) SetNamer(namer func (string) string) factory.Model {
-	this.namer = namer
-	return this
-}
-
 func (this *CollectorHistory) Short_() string {
 	return "collector_history"
 }
@@ -122,14 +138,10 @@ func (this *CollectorHistory) Struct_() string {
 }
 
 func (this *CollectorHistory) Name_() string {
-	if this.namer != nil {
-		return WithPrefix(this.namer(this.Short_()))
+	if this.base.Namer() != nil {
+		return WithPrefix(this.base.Namer()(this.Short_()))
 	}
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
-}
-
-func (this *CollectorHistory) Namer() func(string) string {
-	return this.namer
 }
 
 func (this *CollectorHistory) CPAFrom(source factory.Model) factory.Model {
@@ -139,20 +151,11 @@ func (this *CollectorHistory) CPAFrom(source factory.Model) factory.Model {
 	return this
 }
 
-func (this *CollectorHistory) SetParam(param *factory.Param) factory.Model {
-	this.param = param
-	return this
-}
-
-func (this *CollectorHistory) Param() *factory.Param {
-	if this.param == nil {
-		return this.NewParam()
-	}
-	return this.param
-}
-
 func (this *CollectorHistory) Get(mw func(db.Result) db.Result, args ...interface{}) error {
-	return this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	base := this.base
+	err := this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	this.base = base
+	return err
 }
 
 func (this *CollectorHistory) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {

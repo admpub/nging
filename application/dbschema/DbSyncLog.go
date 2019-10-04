@@ -35,12 +35,8 @@ func (s Slice_DbSyncLog) RangeRaw(fn func(m *DbSyncLog) error ) error {
 
 // DbSyncLog 数据表同步日志
 type DbSyncLog struct {
-	param   *factory.Param
-	trans	*factory.Transaction
+	base    factory.Base
 	objects []*DbSyncLog
-	namer   func(string) string
-	connID  int
-	context echo.Context
 	
 	Id              	uint64  	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"" json:"id" xml:"id"`
 	SyncId          	uint    	`db:"sync_id" bson:"sync_id" comment:"同步方案ID" json:"sync_id" xml:"sync_id"`
@@ -52,38 +48,63 @@ type DbSyncLog struct {
 	Failed          	uint    	`db:"failed" bson:"failed" comment:"失败次数" json:"failed" xml:"failed"`
 }
 
+// - base function
+
 func (this *DbSyncLog) Trans() *factory.Transaction {
-	return this.trans
+	return this.base.Trans()
 }
 
 func (this *DbSyncLog) Use(trans *factory.Transaction) factory.Model {
-	this.trans = trans
+	this.base.Use(trans)
 	return this
 }
 
 func (this *DbSyncLog) SetContext(ctx echo.Context) factory.Model {
-	this.context = ctx
+	this.base.SetContext(ctx)
 	return this
 }
 
 func (this *DbSyncLog) Context() echo.Context {
-	return this.context
+	return this.base.Context()
 }
 
 func (this *DbSyncLog) SetConnID(connID int) factory.Model {
-	this.connID = connID
+	this.base.SetConnID(connID)
 	return this
 }
+
+func (this *DbSyncLog) SetNamer(namer func (string) string) factory.Model {
+	this.base.SetNamer(namer)
+	return this
+}
+
+func (this *DbSyncLog) Namer() func(string) string {
+	return this.base.Namer()
+}
+
+func (this *DbSyncLog) SetParam(param *factory.Param) factory.Model {
+	this.base.SetParam(param)
+	return this
+}
+
+func (this *DbSyncLog) Param() *factory.Param {
+	if this.base.Param() == nil {
+		return this.NewParam()
+	}
+	return this.base.Param()
+}
+
+// - current function
 
 func (this *DbSyncLog) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
 		return factory.NewModel(structName,connID[0]).Use(this.trans)
 	}
-	return factory.NewModel(structName,this.connID).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
 }
 
 func (this *DbSyncLog) Objects() []*DbSyncLog {
-	if this.objects == nil {
+	if this.bjects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -102,11 +123,6 @@ func (this *DbSyncLog) NewParam() *factory.Param {
 	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
 }
 
-func (this *DbSyncLog) SetNamer(namer func (string) string) factory.Model {
-	this.namer = namer
-	return this
-}
-
 func (this *DbSyncLog) Short_() string {
 	return "db_sync_log"
 }
@@ -116,14 +132,10 @@ func (this *DbSyncLog) Struct_() string {
 }
 
 func (this *DbSyncLog) Name_() string {
-	if this.namer != nil {
-		return WithPrefix(this.namer(this.Short_()))
+	if this.base.Namer() != nil {
+		return WithPrefix(this.base.Namer()(this.Short_()))
 	}
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
-}
-
-func (this *DbSyncLog) Namer() func(string) string {
-	return this.namer
 }
 
 func (this *DbSyncLog) CPAFrom(source factory.Model) factory.Model {
@@ -133,20 +145,11 @@ func (this *DbSyncLog) CPAFrom(source factory.Model) factory.Model {
 	return this
 }
 
-func (this *DbSyncLog) SetParam(param *factory.Param) factory.Model {
-	this.param = param
-	return this
-}
-
-func (this *DbSyncLog) Param() *factory.Param {
-	if this.param == nil {
-		return this.NewParam()
-	}
-	return this.param
-}
-
 func (this *DbSyncLog) Get(mw func(db.Result) db.Result, args ...interface{}) error {
-	return this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	base := this.base
+	err := this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	this.base = base
+	return err
 }
 
 func (this *DbSyncLog) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {

@@ -35,12 +35,8 @@ func (s Slice_FtpUserGroup) RangeRaw(fn func(m *FtpUserGroup) error ) error {
 
 // FtpUserGroup FTP用户组
 type FtpUserGroup struct {
-	param   *factory.Param
-	trans	*factory.Transaction
+	base    factory.Base
 	objects []*FtpUserGroup
-	namer   func(string) string
-	connID  int
-	context echo.Context
 	
 	Id          	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"" json:"id" xml:"id"`
 	Name        	string  	`db:"name" bson:"name" comment:"组名称" json:"name" xml:"name"`
@@ -53,38 +49,63 @@ type FtpUserGroup struct {
 	IpBlacklist 	string  	`db:"ip_blacklist" bson:"ip_blacklist" comment:"IP黑名单(一行一个)" json:"ip_blacklist" xml:"ip_blacklist"`
 }
 
+// - base function
+
 func (this *FtpUserGroup) Trans() *factory.Transaction {
-	return this.trans
+	return this.base.Trans()
 }
 
 func (this *FtpUserGroup) Use(trans *factory.Transaction) factory.Model {
-	this.trans = trans
+	this.base.Use(trans)
 	return this
 }
 
 func (this *FtpUserGroup) SetContext(ctx echo.Context) factory.Model {
-	this.context = ctx
+	this.base.SetContext(ctx)
 	return this
 }
 
 func (this *FtpUserGroup) Context() echo.Context {
-	return this.context
+	return this.base.Context()
 }
 
 func (this *FtpUserGroup) SetConnID(connID int) factory.Model {
-	this.connID = connID
+	this.base.SetConnID(connID)
 	return this
 }
+
+func (this *FtpUserGroup) SetNamer(namer func (string) string) factory.Model {
+	this.base.SetNamer(namer)
+	return this
+}
+
+func (this *FtpUserGroup) Namer() func(string) string {
+	return this.base.Namer()
+}
+
+func (this *FtpUserGroup) SetParam(param *factory.Param) factory.Model {
+	this.base.SetParam(param)
+	return this
+}
+
+func (this *FtpUserGroup) Param() *factory.Param {
+	if this.base.Param() == nil {
+		return this.NewParam()
+	}
+	return this.base.Param()
+}
+
+// - current function
 
 func (this *FtpUserGroup) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
 		return factory.NewModel(structName,connID[0]).Use(this.trans)
 	}
-	return factory.NewModel(structName,this.connID).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
 }
 
 func (this *FtpUserGroup) Objects() []*FtpUserGroup {
-	if this.objects == nil {
+	if this.bjects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -103,11 +124,6 @@ func (this *FtpUserGroup) NewParam() *factory.Param {
 	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
 }
 
-func (this *FtpUserGroup) SetNamer(namer func (string) string) factory.Model {
-	this.namer = namer
-	return this
-}
-
 func (this *FtpUserGroup) Short_() string {
 	return "ftp_user_group"
 }
@@ -117,14 +133,10 @@ func (this *FtpUserGroup) Struct_() string {
 }
 
 func (this *FtpUserGroup) Name_() string {
-	if this.namer != nil {
-		return WithPrefix(this.namer(this.Short_()))
+	if this.base.Namer() != nil {
+		return WithPrefix(this.base.Namer()(this.Short_()))
 	}
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
-}
-
-func (this *FtpUserGroup) Namer() func(string) string {
-	return this.namer
 }
 
 func (this *FtpUserGroup) CPAFrom(source factory.Model) factory.Model {
@@ -134,20 +146,11 @@ func (this *FtpUserGroup) CPAFrom(source factory.Model) factory.Model {
 	return this
 }
 
-func (this *FtpUserGroup) SetParam(param *factory.Param) factory.Model {
-	this.param = param
-	return this
-}
-
-func (this *FtpUserGroup) Param() *factory.Param {
-	if this.param == nil {
-		return this.NewParam()
-	}
-	return this.param
-}
-
 func (this *FtpUserGroup) Get(mw func(db.Result) db.Result, args ...interface{}) error {
-	return this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	base := this.base
+	err := this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	this.base = base
+	return err
 }
 
 func (this *FtpUserGroup) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {

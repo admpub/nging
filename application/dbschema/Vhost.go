@@ -35,12 +35,8 @@ func (s Slice_Vhost) RangeRaw(fn func(m *Vhost) error ) error {
 
 // Vhost 虚拟主机
 type Vhost struct {
-	param   *factory.Param
-	trans	*factory.Transaction
+	base    factory.Base
 	objects []*Vhost
-	namer   func(string) string
-	connID  int
-	context echo.Context
 	
 	Id      	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	Name    	string  	`db:"name" bson:"name" comment:"网站名称" json:"name" xml:"name"`
@@ -53,38 +49,63 @@ type Vhost struct {
 	Disabled	string  	`db:"disabled" bson:"disabled" comment:"是否停用" json:"disabled" xml:"disabled"`
 }
 
+// - base function
+
 func (this *Vhost) Trans() *factory.Transaction {
-	return this.trans
+	return this.base.Trans()
 }
 
 func (this *Vhost) Use(trans *factory.Transaction) factory.Model {
-	this.trans = trans
+	this.base.Use(trans)
 	return this
 }
 
 func (this *Vhost) SetContext(ctx echo.Context) factory.Model {
-	this.context = ctx
+	this.base.SetContext(ctx)
 	return this
 }
 
 func (this *Vhost) Context() echo.Context {
-	return this.context
+	return this.base.Context()
 }
 
 func (this *Vhost) SetConnID(connID int) factory.Model {
-	this.connID = connID
+	this.base.SetConnID(connID)
 	return this
 }
+
+func (this *Vhost) SetNamer(namer func (string) string) factory.Model {
+	this.base.SetNamer(namer)
+	return this
+}
+
+func (this *Vhost) Namer() func(string) string {
+	return this.base.Namer()
+}
+
+func (this *Vhost) SetParam(param *factory.Param) factory.Model {
+	this.base.SetParam(param)
+	return this
+}
+
+func (this *Vhost) Param() *factory.Param {
+	if this.base.Param() == nil {
+		return this.NewParam()
+	}
+	return this.base.Param()
+}
+
+// - current function
 
 func (this *Vhost) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
 		return factory.NewModel(structName,connID[0]).Use(this.trans)
 	}
-	return factory.NewModel(structName,this.connID).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
 }
 
 func (this *Vhost) Objects() []*Vhost {
-	if this.objects == nil {
+	if this.bjects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -103,11 +124,6 @@ func (this *Vhost) NewParam() *factory.Param {
 	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
 }
 
-func (this *Vhost) SetNamer(namer func (string) string) factory.Model {
-	this.namer = namer
-	return this
-}
-
 func (this *Vhost) Short_() string {
 	return "vhost"
 }
@@ -117,14 +133,10 @@ func (this *Vhost) Struct_() string {
 }
 
 func (this *Vhost) Name_() string {
-	if this.namer != nil {
-		return WithPrefix(this.namer(this.Short_()))
+	if this.base.Namer() != nil {
+		return WithPrefix(this.base.Namer()(this.Short_()))
 	}
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
-}
-
-func (this *Vhost) Namer() func(string) string {
-	return this.namer
 }
 
 func (this *Vhost) CPAFrom(source factory.Model) factory.Model {
@@ -134,20 +146,11 @@ func (this *Vhost) CPAFrom(source factory.Model) factory.Model {
 	return this
 }
 
-func (this *Vhost) SetParam(param *factory.Param) factory.Model {
-	this.param = param
-	return this
-}
-
-func (this *Vhost) Param() *factory.Param {
-	if this.param == nil {
-		return this.NewParam()
-	}
-	return this.param
-}
-
 func (this *Vhost) Get(mw func(db.Result) db.Result, args ...interface{}) error {
-	return this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	base := this.base
+	err := this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	this.base = base
+	return err
 }
 
 func (this *Vhost) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {

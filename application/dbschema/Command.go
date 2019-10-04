@@ -35,12 +35,8 @@ func (s Slice_Command) RangeRaw(fn func(m *Command) error ) error {
 
 // Command 指令集
 type Command struct {
-	param   *factory.Param
-	trans	*factory.Transaction
+	base    factory.Base
 	objects []*Command
-	namer   func(string) string
-	connID  int
-	context echo.Context
 	
 	Id            	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	Name          	string  	`db:"name" bson:"name" comment:"名称" json:"name" xml:"name"`
@@ -55,38 +51,63 @@ type Command struct {
 	SshAccountId  	uint    	`db:"ssh_account_id" bson:"ssh_account_id" comment:"SSH账号ID" json:"ssh_account_id" xml:"ssh_account_id"`
 }
 
+// - base function
+
 func (this *Command) Trans() *factory.Transaction {
-	return this.trans
+	return this.base.Trans()
 }
 
 func (this *Command) Use(trans *factory.Transaction) factory.Model {
-	this.trans = trans
+	this.base.Use(trans)
 	return this
 }
 
 func (this *Command) SetContext(ctx echo.Context) factory.Model {
-	this.context = ctx
+	this.base.SetContext(ctx)
 	return this
 }
 
 func (this *Command) Context() echo.Context {
-	return this.context
+	return this.base.Context()
 }
 
 func (this *Command) SetConnID(connID int) factory.Model {
-	this.connID = connID
+	this.base.SetConnID(connID)
 	return this
 }
+
+func (this *Command) SetNamer(namer func (string) string) factory.Model {
+	this.base.SetNamer(namer)
+	return this
+}
+
+func (this *Command) Namer() func(string) string {
+	return this.base.Namer()
+}
+
+func (this *Command) SetParam(param *factory.Param) factory.Model {
+	this.base.SetParam(param)
+	return this
+}
+
+func (this *Command) Param() *factory.Param {
+	if this.base.Param() == nil {
+		return this.NewParam()
+	}
+	return this.base.Param()
+}
+
+// - current function
 
 func (this *Command) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
 		return factory.NewModel(structName,connID[0]).Use(this.trans)
 	}
-	return factory.NewModel(structName,this.connID).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
 }
 
 func (this *Command) Objects() []*Command {
-	if this.objects == nil {
+	if this.bjects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -105,11 +126,6 @@ func (this *Command) NewParam() *factory.Param {
 	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
 }
 
-func (this *Command) SetNamer(namer func (string) string) factory.Model {
-	this.namer = namer
-	return this
-}
-
 func (this *Command) Short_() string {
 	return "command"
 }
@@ -119,14 +135,10 @@ func (this *Command) Struct_() string {
 }
 
 func (this *Command) Name_() string {
-	if this.namer != nil {
-		return WithPrefix(this.namer(this.Short_()))
+	if this.base.Namer() != nil {
+		return WithPrefix(this.base.Namer()(this.Short_()))
 	}
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
-}
-
-func (this *Command) Namer() func(string) string {
-	return this.namer
 }
 
 func (this *Command) CPAFrom(source factory.Model) factory.Model {
@@ -136,20 +148,11 @@ func (this *Command) CPAFrom(source factory.Model) factory.Model {
 	return this
 }
 
-func (this *Command) SetParam(param *factory.Param) factory.Model {
-	this.param = param
-	return this
-}
-
-func (this *Command) Param() *factory.Param {
-	if this.param == nil {
-		return this.NewParam()
-	}
-	return this.param
-}
-
 func (this *Command) Get(mw func(db.Result) db.Result, args ...interface{}) error {
-	return this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	base := this.base
+	err := this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	this.base = base
+	return err
 }
 
 func (this *Command) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {

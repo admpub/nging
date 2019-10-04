@@ -35,12 +35,8 @@ func (s Slice_FrpClient) RangeRaw(fn func(m *FrpClient) error ) error {
 
 // FrpClient FRP客户端设置
 type FrpClient struct {
-	param   *factory.Param
-	trans	*factory.Transaction
+	base    factory.Base
 	objects []*FrpClient
-	namer   func(string) string
-	connID  int
-	context echo.Context
 	
 	Id                	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	Name              	string  	`db:"name" bson:"name" comment:"名称" json:"name" xml:"name"`
@@ -74,38 +70,63 @@ type FrpClient struct {
 	Updated           	uint    	`db:"updated" bson:"updated" comment:"" json:"updated" xml:"updated"`
 }
 
+// - base function
+
 func (this *FrpClient) Trans() *factory.Transaction {
-	return this.trans
+	return this.base.Trans()
 }
 
 func (this *FrpClient) Use(trans *factory.Transaction) factory.Model {
-	this.trans = trans
+	this.base.Use(trans)
 	return this
 }
 
 func (this *FrpClient) SetContext(ctx echo.Context) factory.Model {
-	this.context = ctx
+	this.base.SetContext(ctx)
 	return this
 }
 
 func (this *FrpClient) Context() echo.Context {
-	return this.context
+	return this.base.Context()
 }
 
 func (this *FrpClient) SetConnID(connID int) factory.Model {
-	this.connID = connID
+	this.base.SetConnID(connID)
 	return this
 }
+
+func (this *FrpClient) SetNamer(namer func (string) string) factory.Model {
+	this.base.SetNamer(namer)
+	return this
+}
+
+func (this *FrpClient) Namer() func(string) string {
+	return this.base.Namer()
+}
+
+func (this *FrpClient) SetParam(param *factory.Param) factory.Model {
+	this.base.SetParam(param)
+	return this
+}
+
+func (this *FrpClient) Param() *factory.Param {
+	if this.base.Param() == nil {
+		return this.NewParam()
+	}
+	return this.base.Param()
+}
+
+// - current function
 
 func (this *FrpClient) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
 		return factory.NewModel(structName,connID[0]).Use(this.trans)
 	}
-	return factory.NewModel(structName,this.connID).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
 }
 
 func (this *FrpClient) Objects() []*FrpClient {
-	if this.objects == nil {
+	if this.bjects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -124,11 +145,6 @@ func (this *FrpClient) NewParam() *factory.Param {
 	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
 }
 
-func (this *FrpClient) SetNamer(namer func (string) string) factory.Model {
-	this.namer = namer
-	return this
-}
-
 func (this *FrpClient) Short_() string {
 	return "frp_client"
 }
@@ -138,14 +154,10 @@ func (this *FrpClient) Struct_() string {
 }
 
 func (this *FrpClient) Name_() string {
-	if this.namer != nil {
-		return WithPrefix(this.namer(this.Short_()))
+	if this.base.Namer() != nil {
+		return WithPrefix(this.base.Namer()(this.Short_()))
 	}
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
-}
-
-func (this *FrpClient) Namer() func(string) string {
-	return this.namer
 }
 
 func (this *FrpClient) CPAFrom(source factory.Model) factory.Model {
@@ -155,20 +167,11 @@ func (this *FrpClient) CPAFrom(source factory.Model) factory.Model {
 	return this
 }
 
-func (this *FrpClient) SetParam(param *factory.Param) factory.Model {
-	this.param = param
-	return this
-}
-
-func (this *FrpClient) Param() *factory.Param {
-	if this.param == nil {
-		return this.NewParam()
-	}
-	return this.param
-}
-
 func (this *FrpClient) Get(mw func(db.Result) db.Result, args ...interface{}) error {
-	return this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	base := this.base
+	err := this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	this.base = base
+	return err
 }
 
 func (this *FrpClient) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {

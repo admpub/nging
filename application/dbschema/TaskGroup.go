@@ -35,12 +35,8 @@ func (s Slice_TaskGroup) RangeRaw(fn func(m *TaskGroup) error ) error {
 
 // TaskGroup 任务组
 type TaskGroup struct {
-	param   *factory.Param
-	trans	*factory.Transaction
+	base    factory.Base
 	objects []*TaskGroup
-	namer   func(string) string
-	connID  int
-	context echo.Context
 	
 	Id         	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"" json:"id" xml:"id"`
 	Uid        	uint    	`db:"uid" bson:"uid" comment:"用户ID" json:"uid" xml:"uid"`
@@ -52,38 +48,63 @@ type TaskGroup struct {
 	CmdSuffix  	string  	`db:"cmd_suffix" bson:"cmd_suffix" comment:"命令后缀" json:"cmd_suffix" xml:"cmd_suffix"`
 }
 
+// - base function
+
 func (this *TaskGroup) Trans() *factory.Transaction {
-	return this.trans
+	return this.base.Trans()
 }
 
 func (this *TaskGroup) Use(trans *factory.Transaction) factory.Model {
-	this.trans = trans
+	this.base.Use(trans)
 	return this
 }
 
 func (this *TaskGroup) SetContext(ctx echo.Context) factory.Model {
-	this.context = ctx
+	this.base.SetContext(ctx)
 	return this
 }
 
 func (this *TaskGroup) Context() echo.Context {
-	return this.context
+	return this.base.Context()
 }
 
 func (this *TaskGroup) SetConnID(connID int) factory.Model {
-	this.connID = connID
+	this.base.SetConnID(connID)
 	return this
 }
+
+func (this *TaskGroup) SetNamer(namer func (string) string) factory.Model {
+	this.base.SetNamer(namer)
+	return this
+}
+
+func (this *TaskGroup) Namer() func(string) string {
+	return this.base.Namer()
+}
+
+func (this *TaskGroup) SetParam(param *factory.Param) factory.Model {
+	this.base.SetParam(param)
+	return this
+}
+
+func (this *TaskGroup) Param() *factory.Param {
+	if this.base.Param() == nil {
+		return this.NewParam()
+	}
+	return this.base.Param()
+}
+
+// - current function
 
 func (this *TaskGroup) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
 		return factory.NewModel(structName,connID[0]).Use(this.trans)
 	}
-	return factory.NewModel(structName,this.connID).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
 }
 
 func (this *TaskGroup) Objects() []*TaskGroup {
-	if this.objects == nil {
+	if this.bjects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -102,11 +123,6 @@ func (this *TaskGroup) NewParam() *factory.Param {
 	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
 }
 
-func (this *TaskGroup) SetNamer(namer func (string) string) factory.Model {
-	this.namer = namer
-	return this
-}
-
 func (this *TaskGroup) Short_() string {
 	return "task_group"
 }
@@ -116,14 +132,10 @@ func (this *TaskGroup) Struct_() string {
 }
 
 func (this *TaskGroup) Name_() string {
-	if this.namer != nil {
-		return WithPrefix(this.namer(this.Short_()))
+	if this.base.Namer() != nil {
+		return WithPrefix(this.base.Namer()(this.Short_()))
 	}
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
-}
-
-func (this *TaskGroup) Namer() func(string) string {
-	return this.namer
 }
 
 func (this *TaskGroup) CPAFrom(source factory.Model) factory.Model {
@@ -133,20 +145,11 @@ func (this *TaskGroup) CPAFrom(source factory.Model) factory.Model {
 	return this
 }
 
-func (this *TaskGroup) SetParam(param *factory.Param) factory.Model {
-	this.param = param
-	return this
-}
-
-func (this *TaskGroup) Param() *factory.Param {
-	if this.param == nil {
-		return this.NewParam()
-	}
-	return this.param
-}
-
 func (this *TaskGroup) Get(mw func(db.Result) db.Result, args ...interface{}) error {
-	return this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	base := this.base
+	err := this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	this.base = base
+	return err
 }
 
 func (this *TaskGroup) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {

@@ -34,12 +34,8 @@ func (s Slice_FileThumb) RangeRaw(fn func(m *FileThumb) error ) error {
 
 // FileThumb 图片文件缩略图
 type FileThumb struct {
-	param   *factory.Param
-	trans	*factory.Transaction
+	base    factory.Base
 	objects []*FileThumb
-	namer   func(string) string
-	connID  int
-	context echo.Context
 	
 	Id        	uint64  	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"主键" json:"id" xml:"id"`
 	FileId    	uint64  	`db:"file_id" bson:"file_id" comment:"文件ID" json:"file_id" xml:"file_id"`
@@ -54,38 +50,63 @@ type FileThumb struct {
 	Md5       	string  	`db:"md5" bson:"md5" comment:"缩略图文件MD5值" json:"md5" xml:"md5"`
 }
 
+// - base function
+
 func (this *FileThumb) Trans() *factory.Transaction {
-	return this.trans
+	return this.base.Trans()
 }
 
 func (this *FileThumb) Use(trans *factory.Transaction) factory.Model {
-	this.trans = trans
+	this.base.Use(trans)
 	return this
 }
 
 func (this *FileThumb) SetContext(ctx echo.Context) factory.Model {
-	this.context = ctx
+	this.base.SetContext(ctx)
 	return this
 }
 
 func (this *FileThumb) Context() echo.Context {
-	return this.context
+	return this.base.Context()
 }
 
 func (this *FileThumb) SetConnID(connID int) factory.Model {
-	this.connID = connID
+	this.base.SetConnID(connID)
 	return this
 }
+
+func (this *FileThumb) SetNamer(namer func (string) string) factory.Model {
+	this.base.SetNamer(namer)
+	return this
+}
+
+func (this *FileThumb) Namer() func(string) string {
+	return this.base.Namer()
+}
+
+func (this *FileThumb) SetParam(param *factory.Param) factory.Model {
+	this.base.SetParam(param)
+	return this
+}
+
+func (this *FileThumb) Param() *factory.Param {
+	if this.base.Param() == nil {
+		return this.NewParam()
+	}
+	return this.base.Param()
+}
+
+// - current function
 
 func (this *FileThumb) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
 		return factory.NewModel(structName,connID[0]).Use(this.trans)
 	}
-	return factory.NewModel(structName,this.connID).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
 }
 
 func (this *FileThumb) Objects() []*FileThumb {
-	if this.objects == nil {
+	if this.bjects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -104,11 +125,6 @@ func (this *FileThumb) NewParam() *factory.Param {
 	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
 }
 
-func (this *FileThumb) SetNamer(namer func (string) string) factory.Model {
-	this.namer = namer
-	return this
-}
-
 func (this *FileThumb) Short_() string {
 	return "file_thumb"
 }
@@ -118,14 +134,10 @@ func (this *FileThumb) Struct_() string {
 }
 
 func (this *FileThumb) Name_() string {
-	if this.namer != nil {
-		return WithPrefix(this.namer(this.Short_()))
+	if this.base.Namer() != nil {
+		return WithPrefix(this.base.Namer()(this.Short_()))
 	}
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
-}
-
-func (this *FileThumb) Namer() func(string) string {
-	return this.namer
 }
 
 func (this *FileThumb) CPAFrom(source factory.Model) factory.Model {
@@ -135,20 +147,11 @@ func (this *FileThumb) CPAFrom(source factory.Model) factory.Model {
 	return this
 }
 
-func (this *FileThumb) SetParam(param *factory.Param) factory.Model {
-	this.param = param
-	return this
-}
-
-func (this *FileThumb) Param() *factory.Param {
-	if this.param == nil {
-		return this.NewParam()
-	}
-	return this.param
-}
-
 func (this *FileThumb) Get(mw func(db.Result) db.Result, args ...interface{}) error {
-	return this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	base := this.base
+	err := this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	this.base = base
+	return err
 }
 
 func (this *FileThumb) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {

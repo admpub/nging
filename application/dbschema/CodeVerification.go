@@ -35,12 +35,8 @@ func (s Slice_CodeVerification) RangeRaw(fn func(m *CodeVerification) error ) er
 
 // CodeVerification 验证码
 type CodeVerification struct {
-	param   *factory.Param
-	trans	*factory.Transaction
+	base    factory.Base
 	objects []*CodeVerification
-	namer   func(string) string
-	connID  int
-	context echo.Context
 	
 	Id         	uint64  	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	Code       	string  	`db:"code" bson:"code" comment:"验证码" json:"code" xml:"code"`
@@ -56,38 +52,63 @@ type CodeVerification struct {
 	SendTo     	string  	`db:"send_to" bson:"send_to" comment:"发送目标" json:"send_to" xml:"send_to"`
 }
 
+// - base function
+
 func (this *CodeVerification) Trans() *factory.Transaction {
-	return this.trans
+	return this.base.Trans()
 }
 
 func (this *CodeVerification) Use(trans *factory.Transaction) factory.Model {
-	this.trans = trans
+	this.base.Use(trans)
 	return this
 }
 
 func (this *CodeVerification) SetContext(ctx echo.Context) factory.Model {
-	this.context = ctx
+	this.base.SetContext(ctx)
 	return this
 }
 
 func (this *CodeVerification) Context() echo.Context {
-	return this.context
+	return this.base.Context()
 }
 
 func (this *CodeVerification) SetConnID(connID int) factory.Model {
-	this.connID = connID
+	this.base.SetConnID(connID)
 	return this
 }
+
+func (this *CodeVerification) SetNamer(namer func (string) string) factory.Model {
+	this.base.SetNamer(namer)
+	return this
+}
+
+func (this *CodeVerification) Namer() func(string) string {
+	return this.base.Namer()
+}
+
+func (this *CodeVerification) SetParam(param *factory.Param) factory.Model {
+	this.base.SetParam(param)
+	return this
+}
+
+func (this *CodeVerification) Param() *factory.Param {
+	if this.base.Param() == nil {
+		return this.NewParam()
+	}
+	return this.base.Param()
+}
+
+// - current function
 
 func (this *CodeVerification) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
 		return factory.NewModel(structName,connID[0]).Use(this.trans)
 	}
-	return factory.NewModel(structName,this.connID).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
 }
 
 func (this *CodeVerification) Objects() []*CodeVerification {
-	if this.objects == nil {
+	if this.bjects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -106,11 +127,6 @@ func (this *CodeVerification) NewParam() *factory.Param {
 	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
 }
 
-func (this *CodeVerification) SetNamer(namer func (string) string) factory.Model {
-	this.namer = namer
-	return this
-}
-
 func (this *CodeVerification) Short_() string {
 	return "code_verification"
 }
@@ -120,14 +136,10 @@ func (this *CodeVerification) Struct_() string {
 }
 
 func (this *CodeVerification) Name_() string {
-	if this.namer != nil {
-		return WithPrefix(this.namer(this.Short_()))
+	if this.base.Namer() != nil {
+		return WithPrefix(this.base.Namer()(this.Short_()))
 	}
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
-}
-
-func (this *CodeVerification) Namer() func(string) string {
-	return this.namer
 }
 
 func (this *CodeVerification) CPAFrom(source factory.Model) factory.Model {
@@ -137,20 +149,11 @@ func (this *CodeVerification) CPAFrom(source factory.Model) factory.Model {
 	return this
 }
 
-func (this *CodeVerification) SetParam(param *factory.Param) factory.Model {
-	this.param = param
-	return this
-}
-
-func (this *CodeVerification) Param() *factory.Param {
-	if this.param == nil {
-		return this.NewParam()
-	}
-	return this.param
-}
-
 func (this *CodeVerification) Get(mw func(db.Result) db.Result, args ...interface{}) error {
-	return this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	base := this.base
+	err := this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	this.base = base
+	return err
 }
 
 func (this *CodeVerification) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {

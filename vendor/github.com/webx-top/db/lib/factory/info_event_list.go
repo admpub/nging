@@ -37,10 +37,12 @@ func (e Events) Call(event string, model Model, editColumns []string, mw func(db
 	if total < 1 {
 		return nil
 	}
-	rowM := model.AsRow()
 	kvset := map[string]interface{}{}
-	for _, key := range editColumns {
-		kvset[key] = rowM[key]
+	if len(editColumns) > 0 {
+		rowM := model.AsRow()
+		for _, key := range editColumns {
+			kvset[key] = rowM[key]
+		}
 	}
 	for i := int64(0); i < total; i += num {
 		if i > 0 {

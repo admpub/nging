@@ -35,12 +35,8 @@ func (s Slice_CollectorGroup) RangeRaw(fn func(m *CollectorGroup) error ) error 
 
 // CollectorGroup 采集规则组
 type CollectorGroup struct {
-	param   *factory.Param
-	trans	*factory.Transaction
+	base    factory.Base
 	objects []*CollectorGroup
-	namer   func(string) string
-	connID  int
-	context echo.Context
 	
 	Id         	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	Uid        	uint    	`db:"uid" bson:"uid" comment:"用户ID" json:"uid" xml:"uid"`
@@ -50,38 +46,63 @@ type CollectorGroup struct {
 	Created    	uint    	`db:"created" bson:"created" comment:"创建时间" json:"created" xml:"created"`
 }
 
+// - base function
+
 func (this *CollectorGroup) Trans() *factory.Transaction {
-	return this.trans
+	return this.base.Trans()
 }
 
 func (this *CollectorGroup) Use(trans *factory.Transaction) factory.Model {
-	this.trans = trans
+	this.base.Use(trans)
 	return this
 }
 
 func (this *CollectorGroup) SetContext(ctx echo.Context) factory.Model {
-	this.context = ctx
+	this.base.SetContext(ctx)
 	return this
 }
 
 func (this *CollectorGroup) Context() echo.Context {
-	return this.context
+	return this.base.Context()
 }
 
 func (this *CollectorGroup) SetConnID(connID int) factory.Model {
-	this.connID = connID
+	this.base.SetConnID(connID)
 	return this
 }
+
+func (this *CollectorGroup) SetNamer(namer func (string) string) factory.Model {
+	this.base.SetNamer(namer)
+	return this
+}
+
+func (this *CollectorGroup) Namer() func(string) string {
+	return this.base.Namer()
+}
+
+func (this *CollectorGroup) SetParam(param *factory.Param) factory.Model {
+	this.base.SetParam(param)
+	return this
+}
+
+func (this *CollectorGroup) Param() *factory.Param {
+	if this.base.Param() == nil {
+		return this.NewParam()
+	}
+	return this.base.Param()
+}
+
+// - current function
 
 func (this *CollectorGroup) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
 		return factory.NewModel(structName,connID[0]).Use(this.trans)
 	}
-	return factory.NewModel(structName,this.connID).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
 }
 
 func (this *CollectorGroup) Objects() []*CollectorGroup {
-	if this.objects == nil {
+	if this.bjects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -100,11 +121,6 @@ func (this *CollectorGroup) NewParam() *factory.Param {
 	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
 }
 
-func (this *CollectorGroup) SetNamer(namer func (string) string) factory.Model {
-	this.namer = namer
-	return this
-}
-
 func (this *CollectorGroup) Short_() string {
 	return "collector_group"
 }
@@ -114,14 +130,10 @@ func (this *CollectorGroup) Struct_() string {
 }
 
 func (this *CollectorGroup) Name_() string {
-	if this.namer != nil {
-		return WithPrefix(this.namer(this.Short_()))
+	if this.base.Namer() != nil {
+		return WithPrefix(this.base.Namer()(this.Short_()))
 	}
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
-}
-
-func (this *CollectorGroup) Namer() func(string) string {
-	return this.namer
 }
 
 func (this *CollectorGroup) CPAFrom(source factory.Model) factory.Model {
@@ -131,20 +143,11 @@ func (this *CollectorGroup) CPAFrom(source factory.Model) factory.Model {
 	return this
 }
 
-func (this *CollectorGroup) SetParam(param *factory.Param) factory.Model {
-	this.param = param
-	return this
-}
-
-func (this *CollectorGroup) Param() *factory.Param {
-	if this.param == nil {
-		return this.NewParam()
-	}
-	return this.param
-}
-
 func (this *CollectorGroup) Get(mw func(db.Result) db.Result, args ...interface{}) error {
-	return this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	base := this.base
+	err := this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	this.base = base
+	return err
 }
 
 func (this *CollectorGroup) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {

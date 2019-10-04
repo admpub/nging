@@ -35,12 +35,8 @@ func (s Slice_CollectorExport) RangeRaw(fn func(m *CollectorExport) error ) erro
 
 // CollectorExport 导出规则
 type CollectorExport struct {
-	param   *factory.Param
-	trans	*factory.Transaction
+	base    factory.Base
 	objects []*CollectorExport
-	namer   func(string) string
-	connID  int
-	context echo.Context
 	
 	Id         	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	PageRoot   	uint    	`db:"page_root" bson:"page_root" comment:"根页面ID" json:"page_root" xml:"page_root"`
@@ -56,38 +52,63 @@ type CollectorExport struct {
 	Disabled   	string  	`db:"disabled" bson:"disabled" comment:"是否禁用" json:"disabled" xml:"disabled"`
 }
 
+// - base function
+
 func (this *CollectorExport) Trans() *factory.Transaction {
-	return this.trans
+	return this.base.Trans()
 }
 
 func (this *CollectorExport) Use(trans *factory.Transaction) factory.Model {
-	this.trans = trans
+	this.base.Use(trans)
 	return this
 }
 
 func (this *CollectorExport) SetContext(ctx echo.Context) factory.Model {
-	this.context = ctx
+	this.base.SetContext(ctx)
 	return this
 }
 
 func (this *CollectorExport) Context() echo.Context {
-	return this.context
+	return this.base.Context()
 }
 
 func (this *CollectorExport) SetConnID(connID int) factory.Model {
-	this.connID = connID
+	this.base.SetConnID(connID)
 	return this
 }
+
+func (this *CollectorExport) SetNamer(namer func (string) string) factory.Model {
+	this.base.SetNamer(namer)
+	return this
+}
+
+func (this *CollectorExport) Namer() func(string) string {
+	return this.base.Namer()
+}
+
+func (this *CollectorExport) SetParam(param *factory.Param) factory.Model {
+	this.base.SetParam(param)
+	return this
+}
+
+func (this *CollectorExport) Param() *factory.Param {
+	if this.base.Param() == nil {
+		return this.NewParam()
+	}
+	return this.base.Param()
+}
+
+// - current function
 
 func (this *CollectorExport) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
 		return factory.NewModel(structName,connID[0]).Use(this.trans)
 	}
-	return factory.NewModel(structName,this.connID).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
 }
 
 func (this *CollectorExport) Objects() []*CollectorExport {
-	if this.objects == nil {
+	if this.bjects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -106,11 +127,6 @@ func (this *CollectorExport) NewParam() *factory.Param {
 	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
 }
 
-func (this *CollectorExport) SetNamer(namer func (string) string) factory.Model {
-	this.namer = namer
-	return this
-}
-
 func (this *CollectorExport) Short_() string {
 	return "collector_export"
 }
@@ -120,14 +136,10 @@ func (this *CollectorExport) Struct_() string {
 }
 
 func (this *CollectorExport) Name_() string {
-	if this.namer != nil {
-		return WithPrefix(this.namer(this.Short_()))
+	if this.base.Namer() != nil {
+		return WithPrefix(this.base.Namer()(this.Short_()))
 	}
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
-}
-
-func (this *CollectorExport) Namer() func(string) string {
-	return this.namer
 }
 
 func (this *CollectorExport) CPAFrom(source factory.Model) factory.Model {
@@ -137,20 +149,11 @@ func (this *CollectorExport) CPAFrom(source factory.Model) factory.Model {
 	return this
 }
 
-func (this *CollectorExport) SetParam(param *factory.Param) factory.Model {
-	this.param = param
-	return this
-}
-
-func (this *CollectorExport) Param() *factory.Param {
-	if this.param == nil {
-		return this.NewParam()
-	}
-	return this.param
-}
-
 func (this *CollectorExport) Get(mw func(db.Result) db.Result, args ...interface{}) error {
-	return this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	base := this.base
+	err := this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	this.base = base
+	return err
 }
 
 func (this *CollectorExport) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {

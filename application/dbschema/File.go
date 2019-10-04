@@ -35,12 +35,8 @@ func (s Slice_File) RangeRaw(fn func(m *File) error ) error {
 
 // File 文件表
 type File struct {
-	param   *factory.Param
-	trans	*factory.Transaction
+	base    factory.Base
 	objects []*File
-	namer   func(string) string
-	connID  int
-	context echo.Context
 	
 	Id         	uint64  	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"文件ID" json:"id" xml:"id"`
 	OwnerType  	string  	`db:"owner_type" bson:"owner_type" comment:"用户类型" json:"owner_type" xml:"owner_type"`
@@ -71,38 +67,63 @@ type File struct {
 	UsedTimes  	uint    	`db:"used_times" bson:"used_times" comment:"被使用的次数" json:"used_times" xml:"used_times"`
 }
 
+// - base function
+
 func (this *File) Trans() *factory.Transaction {
-	return this.trans
+	return this.base.Trans()
 }
 
 func (this *File) Use(trans *factory.Transaction) factory.Model {
-	this.trans = trans
+	this.base.Use(trans)
 	return this
 }
 
 func (this *File) SetContext(ctx echo.Context) factory.Model {
-	this.context = ctx
+	this.base.SetContext(ctx)
 	return this
 }
 
 func (this *File) Context() echo.Context {
-	return this.context
+	return this.base.Context()
 }
 
 func (this *File) SetConnID(connID int) factory.Model {
-	this.connID = connID
+	this.base.SetConnID(connID)
 	return this
 }
+
+func (this *File) SetNamer(namer func (string) string) factory.Model {
+	this.base.SetNamer(namer)
+	return this
+}
+
+func (this *File) Namer() func(string) string {
+	return this.base.Namer()
+}
+
+func (this *File) SetParam(param *factory.Param) factory.Model {
+	this.base.SetParam(param)
+	return this
+}
+
+func (this *File) Param() *factory.Param {
+	if this.base.Param() == nil {
+		return this.NewParam()
+	}
+	return this.base.Param()
+}
+
+// - current function
 
 func (this *File) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
 		return factory.NewModel(structName,connID[0]).Use(this.trans)
 	}
-	return factory.NewModel(structName,this.connID).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
 }
 
 func (this *File) Objects() []*File {
-	if this.objects == nil {
+	if this.bjects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -121,11 +142,6 @@ func (this *File) NewParam() *factory.Param {
 	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
 }
 
-func (this *File) SetNamer(namer func (string) string) factory.Model {
-	this.namer = namer
-	return this
-}
-
 func (this *File) Short_() string {
 	return "file"
 }
@@ -135,14 +151,10 @@ func (this *File) Struct_() string {
 }
 
 func (this *File) Name_() string {
-	if this.namer != nil {
-		return WithPrefix(this.namer(this.Short_()))
+	if this.base.Namer() != nil {
+		return WithPrefix(this.base.Namer()(this.Short_()))
 	}
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
-}
-
-func (this *File) Namer() func(string) string {
-	return this.namer
 }
 
 func (this *File) CPAFrom(source factory.Model) factory.Model {
@@ -152,20 +164,11 @@ func (this *File) CPAFrom(source factory.Model) factory.Model {
 	return this
 }
 
-func (this *File) SetParam(param *factory.Param) factory.Model {
-	this.param = param
-	return this
-}
-
-func (this *File) Param() *factory.Param {
-	if this.param == nil {
-		return this.NewParam()
-	}
-	return this.param
-}
-
 func (this *File) Get(mw func(db.Result) db.Result, args ...interface{}) error {
-	return this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	base := this.base
+	err := this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	this.base = base
+	return err
 }
 
 func (this *File) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {

@@ -35,12 +35,8 @@ func (s Slice_DbAccount) RangeRaw(fn func(m *DbAccount) error ) error {
 
 // DbAccount 数据库账号
 type DbAccount struct {
-	param   *factory.Param
-	trans	*factory.Transaction
+	base    factory.Base
 	objects []*DbAccount
-	namer   func(string) string
-	connID  int
-	context echo.Context
 	
 	Id      	uint    	`db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	Title   	string  	`db:"title" bson:"title" comment:"标题" json:"title" xml:"title"`
@@ -55,38 +51,63 @@ type DbAccount struct {
 	Updated 	uint    	`db:"updated" bson:"updated" comment:"修改时间" json:"updated" xml:"updated"`
 }
 
+// - base function
+
 func (this *DbAccount) Trans() *factory.Transaction {
-	return this.trans
+	return this.base.Trans()
 }
 
 func (this *DbAccount) Use(trans *factory.Transaction) factory.Model {
-	this.trans = trans
+	this.base.Use(trans)
 	return this
 }
 
 func (this *DbAccount) SetContext(ctx echo.Context) factory.Model {
-	this.context = ctx
+	this.base.SetContext(ctx)
 	return this
 }
 
 func (this *DbAccount) Context() echo.Context {
-	return this.context
+	return this.base.Context()
 }
 
 func (this *DbAccount) SetConnID(connID int) factory.Model {
-	this.connID = connID
+	this.base.SetConnID(connID)
 	return this
 }
+
+func (this *DbAccount) SetNamer(namer func (string) string) factory.Model {
+	this.base.SetNamer(namer)
+	return this
+}
+
+func (this *DbAccount) Namer() func(string) string {
+	return this.base.Namer()
+}
+
+func (this *DbAccount) SetParam(param *factory.Param) factory.Model {
+	this.base.SetParam(param)
+	return this
+}
+
+func (this *DbAccount) Param() *factory.Param {
+	if this.base.Param() == nil {
+		return this.NewParam()
+	}
+	return this.base.Param()
+}
+
+// - current function
 
 func (this *DbAccount) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
 		return factory.NewModel(structName,connID[0]).Use(this.trans)
 	}
-	return factory.NewModel(structName,this.connID).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
 }
 
 func (this *DbAccount) Objects() []*DbAccount {
-	if this.objects == nil {
+	if this.bjects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -105,11 +126,6 @@ func (this *DbAccount) NewParam() *factory.Param {
 	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
 }
 
-func (this *DbAccount) SetNamer(namer func (string) string) factory.Model {
-	this.namer = namer
-	return this
-}
-
 func (this *DbAccount) Short_() string {
 	return "db_account"
 }
@@ -119,14 +135,10 @@ func (this *DbAccount) Struct_() string {
 }
 
 func (this *DbAccount) Name_() string {
-	if this.namer != nil {
-		return WithPrefix(this.namer(this.Short_()))
+	if this.base.Namer() != nil {
+		return WithPrefix(this.base.Namer()(this.Short_()))
 	}
 	return WithPrefix(factory.TableNamerGet(this.Short_())(this))
-}
-
-func (this *DbAccount) Namer() func(string) string {
-	return this.namer
 }
 
 func (this *DbAccount) CPAFrom(source factory.Model) factory.Model {
@@ -136,20 +148,11 @@ func (this *DbAccount) CPAFrom(source factory.Model) factory.Model {
 	return this
 }
 
-func (this *DbAccount) SetParam(param *factory.Param) factory.Model {
-	this.param = param
-	return this
-}
-
-func (this *DbAccount) Param() *factory.Param {
-	if this.param == nil {
-		return this.NewParam()
-	}
-	return this.param
-}
-
 func (this *DbAccount) Get(mw func(db.Result) db.Result, args ...interface{}) error {
-	return this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	base := this.base
+	err := this.Param().SetArgs(args...).SetRecv(this).SetMiddleware(mw).One()
+	this.base = base
+	return err
 }
 
 func (this *DbAccount) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {

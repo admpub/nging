@@ -5,6 +5,54 @@ import (
 	"github.com/webx-top/echo"
 )
 
+type Base struct {
+	param   *Param
+	trans   *Transaction
+	namer   func(string) string
+	connID  int
+	context echo.Context
+}
+
+func (this *Base) SetParam(param *Param) {
+	this.param = param
+}
+
+func (this *Base) Param() *Param {
+	return this.param
+}
+
+func (this *Base) Trans() *Transaction {
+	return this.trans
+}
+
+func (this *Base) Use(trans *Transaction) {
+	this.trans = trans
+}
+
+func (this *Base) SetContext(ctx echo.Context) {
+	this.context = ctx
+}
+
+func (this *Base) Context() echo.Context {
+	return this.context
+}
+
+func (this *Base) SetConnID(connID int) {
+	this.connID = connID
+}
+
+func (this *Base) ConnID() int {
+	return this.connID
+}
+
+func (this *Base) SetNamer(namer func(string) string) {
+	this.namer = namer
+}
+
+func (this *Base) Namer() func(string) string {
+	return this.namer
+}
+
 type Model interface {
 	Trans() *Transaction
 	Use(trans *Transaction) Model
