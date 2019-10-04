@@ -103,7 +103,7 @@ func configPost(c echo.Context, groups ...string) error {
 				set[`type`] = `list`
 			} else {
 				cfg, ok := configs[v.Key]
-				if ok && cfg != nil {
+				if ok && cfg != nil && m.Type != cfg.Type {
 					set[`type`] = cfg.Type
 				}
 				//set[`type`] = `text`
