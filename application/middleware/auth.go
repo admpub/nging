@@ -33,16 +33,19 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		//检查是否已安装
 		if !config.IsInstalled() {
+			c.Data().SetError(c.E(`请先安装`))
 			return c.Redirect(handler.URLFor(`/setup`))
 		}
 
 		//验证授权文件
 		if !license.Ok(c.Host()) {
+			c.Data().SetError(c.E(`请先获取本系统授权`))
 			return c.Redirect(handler.URLFor(`/license`))
 		}
 
 		if user := handler.User(c); user != nil {
 			if jump, ok := c.Session().Get(`auth2ndURL`).(string); ok && len(jump) > 0 {
+				c.Data().SetError(c.E(`请先进行第二步验证`))
 				return c.Redirect(jump)
 			}
 			var (
@@ -98,6 +101,7 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 			})
 			return h.Handle(c)
 		}
+		c.Data().SetError(c.E(`请先登录`))
 		return c.Redirect(handler.URLFor(`/login`))
 	}
 }
