@@ -98,9 +98,13 @@ func configPost(c echo.Context, groups ...string) error {
 				`value`: value,
 			}
 			if _v.IsMap() {
-				set[`type`] = `json`
+				if m.Type != `json` {
+					set[`type`] = `json`
+				}
 			} else if _v.IsSlice() {
-				set[`type`] = `list`
+				if m.Type != `list` {
+					set[`type`] = `list`
+				}
 			} else {
 				cfg, ok := configs[v.Key]
 				if ok && cfg != nil && m.Type != cfg.Type {
