@@ -42,6 +42,7 @@ var subdirs = map[string]*SubdirInfo{
 		Key:         "config",
 		Name:        "站点公告图片",
 		Description: "",
+		checker:     ConfigChecker,
 	}, //后台系统设置中的图片
 }
 

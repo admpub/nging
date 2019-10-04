@@ -71,6 +71,26 @@ func UserAvatarChecker(ctx echo.Context, tis table.TableInfoStorer) (subdir stri
 	return
 }
 
+func ConfigChecker(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
+	group := ctx.Form(`group`)
+	key := ctx.Form(`key`)
+	timestamp := ctx.Formx(`time`).Int64()
+	// 验证签名（避免上传接口被滥用）
+	if ctx.Form(`token`) != Token(`key`, key, `time`, timestamp) {
+		err = ctx.E(`令牌错误`)
+		return
+	}
+	if time.Now().Local().Unix()-timestamp > UploadLinkLifeTime {
+		err = ctx.E(`上传网址已过期`)
+		return
+	}
+	subdir = key + `/`
+	tis.SetTableID(0)
+	tis.SetTableName(`config`)
+	tis.SetFieldName(group + `.` + key)
+	return
+}
+
 func CheckerRegister(typ string, checker Checker) {
 	SubdirGet(typ).SetChecker(checker)
 }
