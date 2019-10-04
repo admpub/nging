@@ -89,7 +89,7 @@ func configPost(c echo.Context, groups ...string) error {
 				return err
 			}
 			if n < 1 {
-				err = settings.InsertBy(configs, v.Key, value, disabled)
+				err = settings.InsertBy(c, configs, v.Key, value, disabled)
 				if err != nil {
 					return err
 				}
@@ -107,12 +107,12 @@ func configPost(c echo.Context, groups ...string) error {
 			if len(disabled) > 0 {
 				set[`disabled`] = disabled
 			}
-			err = m.NewParam().SetArgs(condition).SetSend(set).Update()
+			err = m.SetFields(nil, set, condition)
 			if err != nil {
 				return err
 			}
 		}
-		err = settings.InsertMissing(gm, added, configs, encoder)
+		err = settings.InsertMissing(c, gm, added, configs, encoder)
 		if err != nil {
 			return err
 		}

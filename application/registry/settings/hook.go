@@ -23,20 +23,21 @@ import (
 	"github.com/webx-top/echo"
 )
 
-func InsertDefaultConfig(group, key string, values ...string) error {
+func InsertDefaultConfig(ctx echo.Context, group, key string, values ...string) error {
 	gs, ok := configDefaults[group]
 	if !ok {
 		return nil
 	}
-	return InsertBy(gs, key, values...)
+	return InsertBy(ctx, gs, key, values...)
 }
 
-func InsertBy(configs map[string]*dbschema.Config, key string, values ...string) error {
+func InsertBy(ctx echo.Context, configs map[string]*dbschema.Config, key string, values ...string) error {
 	cfg, ok := configs[key]
 	if !ok {
 		return nil
 	}
 	cfgCopy := *cfg
+	cfgCopy.SetContext(ctx)
 	switch len(values) {
 	case 2:
 		cfgCopy.Disabled = values[1]
@@ -54,13 +55,14 @@ func InsertBy(configs map[string]*dbschema.Config, key string, values ...string)
 	return err
 }
 
-func InsertMissing(gm *echo.Mapx, added map[string]int, configs map[string]*dbschema.Config, encoder Encoder) error {
+func InsertMissing(ctx echo.Context, gm *echo.Mapx, added map[string]int, configs map[string]*dbschema.Config, encoder Encoder) error {
 	for key, cfg := range configs {
 		_, ok := added[key]
 		if ok {
 			continue
 		}
 		cfgCopy := *cfg
+		cfgCopy.SetContext(ctx)
 		setting := gm.Get(key)
 		if setting != nil {
 			_v := setting.Get(`value`)
@@ -90,11 +92,13 @@ func InsertMissing(gm *echo.Mapx, added map[string]int, configs map[string]*dbsc
 	return nil
 }
 
-func InsertMissingDefaultConfig(added map[string]map[string]struct{}) error {
+func InsertMissingDefaultConfig(ctx echo.Context, added map[string]map[string]struct{}) error {
 	for group, configs := range configDefaults {
 		addedConfig, y := added[group]
 		if !y { //整个组都没有的时候，添加整组
-			for _, cfg := range configs {
+			for _, _cfg := range configs {
+				cfg := *_cfg
+				cfg.SetContext(ctx)
 				if len(cfg.Disabled) == 0 {
 					cfg.Disabled = `N`
 				}
@@ -108,10 +112,12 @@ func InsertMissingDefaultConfig(added map[string]map[string]struct{}) error {
 			}
 			continue
 		}
-		for key, cfg := range configs {
+		for key, _cfg := range configs {
 			if _, y := addedConfig[key]; y {
 				continue
 			}
+			cfg := *_cfg
+			cfg.SetContext(ctx)
 			if len(cfg.Disabled) == 0 {
 				cfg.Disabled = `N`
 			}

@@ -27,10 +27,12 @@ import (
 )
 
 func NewConfig(ctx echo.Context) *Config {
-	return &Config{
+	m := &Config{
 		Config: &dbschema.Config{},
 		base:   base.New(ctx),
 	}
+	m.SetContext(ctx)
+	return m
 }
 
 type Config struct {
