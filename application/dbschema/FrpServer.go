@@ -241,7 +241,7 @@ func (this *FrpServer) Add() (pk interface{}, err error) {
 	if len(this.DashboardAddr) == 0 { this.DashboardAddr = "0.0.0.0" }
 	if len(this.DashboardUser) == 0 { this.DashboardUser = "admin" }
 	if len(this.DashboardPwd) == 0 { this.DashboardPwd = "admin" }
-	err = DBI.EventFire("creating", this, nil)
+	err = DBI.Fire("creating", this, nil)
 	if err != nil {
 		return
 	}
@@ -254,7 +254,7 @@ func (this *FrpServer) Add() (pk interface{}, err error) {
 		}
 	}
 	if err == nil {
-		err = DBI.EventFire("created", this, nil)
+		err = DBI.Fire("created", this, nil)
 	}
 	return
 }
@@ -271,13 +271,13 @@ func (this *FrpServer) Edit(mw func(db.Result) db.Result, args ...interface{}) (
 	if len(this.DashboardAddr) == 0 { this.DashboardAddr = "0.0.0.0" }
 	if len(this.DashboardUser) == 0 { this.DashboardUser = "admin" }
 	if len(this.DashboardPwd) == 0 { this.DashboardPwd = "admin" }
-	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+	if err = DBI.Fire("updating", this, mw, args...); err != nil {
 		return
 	}
 	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
 		return
 	}
-	return DBI.EventFire("updated", this, mw, args...)
+	return DBI.Fire("updated", this, mw, args...)
 }
 
 func (this *FrpServer) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
@@ -304,13 +304,13 @@ func (this *FrpServer) SetFields(mw func(db.Result) db.Result, kvset map[string]
 	if val, ok := kvset["dashboard_pwd"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["dashboard_pwd"] = "admin" } }
 	m := *this
 	m.FromMap(kvset)
-	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+	if err = DBI.Fire("updating", &m, mw, args...); err != nil {
 		return
 	}
 	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
 		return
 	}
-	return DBI.EventFire("updated", &m, mw, args...)
+	return DBI.Fire("updated", &m, mw, args...)
 }
 
 func (this *FrpServer) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
@@ -325,7 +325,7 @@ func (this *FrpServer) Upsert(mw func(db.Result) db.Result, args ...interface{})
 	if len(this.DashboardAddr) == 0 { this.DashboardAddr = "0.0.0.0" }
 	if len(this.DashboardUser) == 0 { this.DashboardUser = "admin" }
 	if len(this.DashboardPwd) == 0 { this.DashboardPwd = "admin" }
-		return DBI.EventFire("updating", this, mw, args...)
+		return DBI.Fire("updating", this, mw, args...)
 	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
@@ -338,7 +338,7 @@ func (this *FrpServer) Upsert(mw func(db.Result) db.Result, args ...interface{})
 	if len(this.DashboardAddr) == 0 { this.DashboardAddr = "0.0.0.0" }
 	if len(this.DashboardUser) == 0 { this.DashboardUser = "admin" }
 	if len(this.DashboardPwd) == 0 { this.DashboardPwd = "admin" }
-		return DBI.EventFire("creating", this, nil)
+		return DBI.Fire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -349,9 +349,9 @@ func (this *FrpServer) Upsert(mw func(db.Result) db.Result, args ...interface{})
 	}
 	if err == nil {
 		if pk == nil {
-			err = DBI.EventFire("updated", this, mw, args...)
+			err = DBI.Fire("updated", this, mw, args...)
 		} else {
-			err = DBI.EventFire("created", this, nil)
+			err = DBI.Fire("created", this, nil)
 		}
 	} 
 	return 
@@ -359,13 +359,13 @@ func (this *FrpServer) Upsert(mw func(db.Result) db.Result, args ...interface{})
 
 func (this *FrpServer) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+	if err = DBI.Fire("deleting", this, mw, args...); err != nil {
 		return
 	}
 	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
 		return
 	}
-	return DBI.EventFire("deleted", this, mw, args...)
+	return DBI.Fire("deleted", this, mw, args...)
 }
 
 func (this *FrpServer) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {

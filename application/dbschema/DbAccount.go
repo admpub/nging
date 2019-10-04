@@ -212,7 +212,7 @@ func (this *DbAccount) Add() (pk interface{}, err error) {
 	if len(this.Engine) == 0 { this.Engine = "mysql" }
 	if len(this.Host) == 0 { this.Host = "localhost:3306" }
 	if len(this.User) == 0 { this.User = "root" }
-	err = DBI.EventFire("creating", this, nil)
+	err = DBI.Fire("creating", this, nil)
 	if err != nil {
 		return
 	}
@@ -225,7 +225,7 @@ func (this *DbAccount) Add() (pk interface{}, err error) {
 		}
 	}
 	if err == nil {
-		err = DBI.EventFire("created", this, nil)
+		err = DBI.Fire("created", this, nil)
 	}
 	return
 }
@@ -235,13 +235,13 @@ func (this *DbAccount) Edit(mw func(db.Result) db.Result, args ...interface{}) (
 	if len(this.Engine) == 0 { this.Engine = "mysql" }
 	if len(this.Host) == 0 { this.Host = "localhost:3306" }
 	if len(this.User) == 0 { this.User = "root" }
-	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+	if err = DBI.Fire("updating", this, mw, args...); err != nil {
 		return
 	}
 	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
 		return
 	}
-	return DBI.EventFire("updated", this, mw, args...)
+	return DBI.Fire("updated", this, mw, args...)
 }
 
 func (this *DbAccount) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
@@ -261,13 +261,13 @@ func (this *DbAccount) SetFields(mw func(db.Result) db.Result, kvset map[string]
 	if val, ok := kvset["user"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["user"] = "root" } }
 	m := *this
 	m.FromMap(kvset)
-	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+	if err = DBI.Fire("updating", &m, mw, args...); err != nil {
 		return
 	}
 	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
 		return
 	}
-	return DBI.EventFire("updated", &m, mw, args...)
+	return DBI.Fire("updated", &m, mw, args...)
 }
 
 func (this *DbAccount) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
@@ -275,13 +275,13 @@ func (this *DbAccount) Upsert(mw func(db.Result) db.Result, args ...interface{})
 	if len(this.Engine) == 0 { this.Engine = "mysql" }
 	if len(this.Host) == 0 { this.Host = "localhost:3306" }
 	if len(this.User) == 0 { this.User = "root" }
-		return DBI.EventFire("updating", this, mw, args...)
+		return DBI.Fire("updating", this, mw, args...)
 	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.Engine) == 0 { this.Engine = "mysql" }
 	if len(this.Host) == 0 { this.Host = "localhost:3306" }
 	if len(this.User) == 0 { this.User = "root" }
-		return DBI.EventFire("creating", this, nil)
+		return DBI.Fire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -292,9 +292,9 @@ func (this *DbAccount) Upsert(mw func(db.Result) db.Result, args ...interface{})
 	}
 	if err == nil {
 		if pk == nil {
-			err = DBI.EventFire("updated", this, mw, args...)
+			err = DBI.Fire("updated", this, mw, args...)
 		} else {
-			err = DBI.EventFire("created", this, nil)
+			err = DBI.Fire("created", this, nil)
 		}
 	} 
 	return 
@@ -302,13 +302,13 @@ func (this *DbAccount) Upsert(mw func(db.Result) db.Result, args ...interface{})
 
 func (this *DbAccount) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+	if err = DBI.Fire("deleting", this, mw, args...); err != nil {
 		return
 	}
 	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
 		return
 	}
-	return DBI.EventFire("deleted", this, mw, args...)
+	return DBI.Fire("deleted", this, mw, args...)
 }
 
 func (this *DbAccount) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {

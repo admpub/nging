@@ -1,7 +1,5 @@
 package factory
 
-import "github.com/webx-top/db"
-
 type Ranger interface {
 	Range(func(model Model) error) error
 }
@@ -10,184 +8,148 @@ func NewEvent() *Event {
 	return &Event{}
 }
 
-func NewEvents() Events {
-	return Events{}
-}
-
-type Events map[string]*Event
-
-func (e Events) Call(event string, model Model, mw func(db.Result) db.Result, args ...interface{}) error {
-	if len(args) > 0 {
-		table := model.Short_()
-		events := []*Event{}
-		if evt, ok := e[table]; ok {
-			events = append(events, evt)
-		}
-		if evt, ok := e[`*`]; ok {
-			events = append(events, evt)
-		}
-		if len(events) == 0 {
-			return nil
-		}
-		rows := model.NewObjects()
-		num := int64(1000)
-		cnt, err := model.ListByOffset(&rows, mw, 0, int(num), args...)
-		if err != nil {
-			return err
-		}
-		total := cnt()
-		if total < 1 {
-			return nil
-		}
-		for i := int64(0); i < total; i += num {
-			if i > 0 {
-				rows = model.NewObjects()
-				_, err := model.ListByOffset(&rows, mw, int(i), int(num), args...)
-				if err != nil {
-					return err
-				}
-			}
-			return rows.Range(func(m Model) error {
-				for _, evt := range events {
-					if err := evt.Call(event, m); err != nil {
-						return err
-					}
-				}
-				return nil
-			})
-		}
-	}
-	return e.call(event, model)
-}
-
-func (e Events) call(event string, model Model) error {
-	table := model.Short_()
-	if evt, ok := e[table]; ok {
-		err := evt.Call(event, model)
-		if err != nil {
-			return err
-		}
-	}
-	if evt, ok := e[`*`]; ok {
-		return evt.Call(event, model)
-	}
-	return nil
-}
-
-func (e *Events) Add(event string, h EventHandler, table string) {
-	evt, ok := (*e)[table]
-	if !ok {
-		evt = NewEvent()
-		(*e)[table] = evt
-	}
-	evt.Add(event, h)
-}
-
-type EventHandler func(model Model) error
-
 type Event struct {
 	// Creating 创建之前
-	Creating []EventHandler
+	Creating *EventHandlers
 	// Created 创建之后
-	Created []EventHandler
+	Created *EventHandlers
 
 	// Updating 更新之前
-	Updating []EventHandler
+	Updating *EventHandlers
 	// Updated 更新之后
-	Updated []EventHandler
+	Updated *EventHandlers
 
 	// Deleting 删除之前
-	Deleting []EventHandler
+	Deleting *EventHandlers
 	// Deleted 删除之后
-	Deleted []EventHandler
+	Deleted *EventHandlers
+}
+
+func (e *Event) Exists(event string) bool {
+	switch event {
+	case `creating`:
+		return e.Creating != nil
+	case `created`:
+		return e.Created != nil
+	case `updating`:
+		return e.Updating != nil
+	case `updated`:
+		return e.Updated != nil
+	case `deleting`:
+		return e.Deleting != nil
+	case `deleted`:
+		return e.Deleted != nil
+	}
+	return false
 }
 
 func (e *Event) Call(event string, model Model) error {
+	if !e.Exists(event) {
+		return nil
+	}
 	switch event {
 	case `creating`:
-		for _, handler := range e.Creating {
-			if err := handler(model); err != nil {
-				return err
-			}
-		}
+		return e.Creating.Exec(model)
 	case `created`:
-		for _, handler := range e.Created {
-			if err := handler(model); err != nil {
-				return err
-			}
-		}
+		return e.Created.Exec(model)
 	case `updating`:
-		for _, handler := range e.Updating {
-			if err := handler(model); err != nil {
-				return err
-			}
-		}
+		return e.Updating.Exec(model)
 	case `updated`:
-		for _, handler := range e.Updated {
-			if err := handler(model); err != nil {
-				return err
-			}
-		}
+		return e.Updated.Exec(model)
 	case `deleting`:
-		for _, handler := range e.Deleting {
-			if err := handler(model); err != nil {
-				return err
-			}
-		}
+		return e.Deleting.Exec(model)
 	case `deleted`:
-		for _, handler := range e.Deleted {
-			if err := handler(model); err != nil {
-				return err
-			}
-		}
+		return e.Deleted.Exec(model)
 	}
 	return nil
 }
 
-func (e *Event) Add(event string, h EventHandler) *Event {
+func (e *Event) On(event string, h EventHandler, async ...bool) *Event {
 	switch event {
 	case `creating`:
-		return e.AddCreating(h)
+		return e.AddCreating(h, async...)
 	case `created`:
-		return e.AddCreated(h)
+		return e.AddCreated(h, async...)
 	case `updating`:
-		return e.AddUpdating(h)
+		return e.AddUpdating(h, async...)
 	case `updated`:
-		return e.AddUpdated(h)
+		return e.AddUpdated(h, async...)
 	case `deleting`:
-		return e.AddDeleting(h)
+		return e.AddDeleting(h, async...)
 	case `deleted`:
-		return e.AddDeleted(h)
+		return e.AddDeleted(h, async...)
 	}
 	return e
 }
 
-func (e *Event) AddCreating(h EventHandler) *Event {
-	e.Creating = append(e.Creating, h)
+func (e *Event) AddCreating(h EventHandler, async ...bool) *Event {
+	if e.Creating == nil {
+		e.Creating = NewEventHandlers()
+	}
+	if len(async) > 0 && async[0] {
+		e.Creating.Async = append(e.Creating.Async, h)
+	} else {
+		e.Creating.Sync = append(e.Creating.Sync, h)
+	}
 	return e
 }
 
-func (e *Event) AddCreated(h EventHandler) *Event {
-	e.Created = append(e.Created, h)
+func (e *Event) AddCreated(h EventHandler, async ...bool) *Event {
+	if e.Created == nil {
+		e.Created = NewEventHandlers()
+	}
+	if len(async) > 0 && async[0] {
+		e.Created.Async = append(e.Created.Async, h)
+	} else {
+		e.Created.Sync = append(e.Created.Sync, h)
+	}
 	return e
 }
 
-func (e *Event) AddUpdating(h EventHandler) *Event {
-	e.Updating = append(e.Updating, h)
+func (e *Event) AddUpdating(h EventHandler, async ...bool) *Event {
+	if e.Updating == nil {
+		e.Updating = NewEventHandlers()
+	}
+	if len(async) > 0 && async[0] {
+		e.Updating.Async = append(e.Updating.Async, h)
+	} else {
+		e.Updating.Sync = append(e.Updating.Sync, h)
+	}
 	return e
 }
 
-func (e *Event) AddUpdated(h EventHandler) *Event {
-	e.Updated = append(e.Updated, h)
+func (e *Event) AddUpdated(h EventHandler, async ...bool) *Event {
+	if e.Updated == nil {
+		e.Updated = NewEventHandlers()
+	}
+	if len(async) > 0 && async[0] {
+		e.Updated.Async = append(e.Updated.Async, h)
+	} else {
+		e.Updated.Sync = append(e.Updated.Sync, h)
+	}
 	return e
 }
 
-func (e *Event) AddDeleting(h EventHandler) *Event {
-	e.Deleting = append(e.Deleting, h)
+func (e *Event) AddDeleting(h EventHandler, async ...bool) *Event {
+	if e.Deleting == nil {
+		e.Deleting = NewEventHandlers()
+	}
+	if len(async) > 0 && async[0] {
+		e.Deleting.Async = append(e.Deleting.Async, h)
+	} else {
+		e.Deleting.Sync = append(e.Deleting.Sync, h)
+	}
 	return e
 }
 
-func (e *Event) AddDeleted(h EventHandler) *Event {
-	e.Deleted = append(e.Deleted, h)
+func (e *Event) AddDeleted(h EventHandler, async ...bool) *Event {
+	if e.Deleted == nil {
+		e.Deleted = NewEventHandlers()
+	}
+	if len(async) > 0 && async[0] {
+		e.Deleted.Async = append(e.Deleted.Async, h)
+	} else {
+		e.Deleted.Sync = append(e.Deleted.Sync, h)
+	}
 	return e
 }

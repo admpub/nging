@@ -78,10 +78,14 @@ func (d *DBI) TableColumns(tableName string) []string {
 	return nil
 }
 
-func (d *DBI) EventFire(event string, model Model, mw func(db.Result) db.Result, args ...interface{}) error {
+func (d *DBI) Fire(event string, model Model, mw func(db.Result) db.Result, args ...interface{}) error {
 	return d.Events.Call(event, model, mw, args...)
 }
 
-func (d *DBI) EventOn(event string, h EventHandler, table string) {
-	d.Events.Add(event, h, table)
+func (d *DBI) On(event string, h EventHandler, table string) {
+	d.Events.On(event, h, table)
+}
+
+func (d *DBI) OnAsync(event string, h EventHandler, table string) {
+	d.Events.On(event, h, table, true)
 }

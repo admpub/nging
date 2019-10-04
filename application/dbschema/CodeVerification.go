@@ -213,7 +213,7 @@ func (this *CodeVerification) Add() (pk interface{}, err error) {
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.SendMethod) == 0 { this.SendMethod = "mobile" }
-	err = DBI.EventFire("creating", this, nil)
+	err = DBI.Fire("creating", this, nil)
 	if err != nil {
 		return
 	}
@@ -226,7 +226,7 @@ func (this *CodeVerification) Add() (pk interface{}, err error) {
 		}
 	}
 	if err == nil {
-		err = DBI.EventFire("created", this, nil)
+		err = DBI.Fire("created", this, nil)
 	}
 	return
 }
@@ -236,13 +236,13 @@ func (this *CodeVerification) Edit(mw func(db.Result) db.Result, args ...interfa
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.SendMethod) == 0 { this.SendMethod = "mobile" }
-	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+	if err = DBI.Fire("updating", this, mw, args...); err != nil {
 		return
 	}
 	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
 		return
 	}
-	return DBI.EventFire("updated", this, mw, args...)
+	return DBI.Fire("updated", this, mw, args...)
 }
 
 func (this *CodeVerification) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
@@ -262,13 +262,13 @@ func (this *CodeVerification) SetFields(mw func(db.Result) db.Result, kvset map[
 	if val, ok := kvset["send_method"]; ok && val != nil { if v, ok := val.(string); ok && len(v) == 0 { kvset["send_method"] = "mobile" } }
 	m := *this
 	m.FromMap(kvset)
-	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+	if err = DBI.Fire("updating", &m, mw, args...); err != nil {
 		return
 	}
 	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
 		return
 	}
-	return DBI.EventFire("updated", &m, mw, args...)
+	return DBI.Fire("updated", &m, mw, args...)
 }
 
 func (this *CodeVerification) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
@@ -276,13 +276,13 @@ func (this *CodeVerification) Upsert(mw func(db.Result) db.Result, args ...inter
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.SendMethod) == 0 { this.SendMethod = "mobile" }
-		return DBI.EventFire("updating", this, mw, args...)
+		return DBI.Fire("updating", this, mw, args...)
 	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
 	if len(this.OwnerType) == 0 { this.OwnerType = "user" }
 	if len(this.Disabled) == 0 { this.Disabled = "N" }
 	if len(this.SendMethod) == 0 { this.SendMethod = "mobile" }
-		return DBI.EventFire("creating", this, nil)
+		return DBI.Fire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
@@ -293,9 +293,9 @@ func (this *CodeVerification) Upsert(mw func(db.Result) db.Result, args ...inter
 	}
 	if err == nil {
 		if pk == nil {
-			err = DBI.EventFire("updated", this, mw, args...)
+			err = DBI.Fire("updated", this, mw, args...)
 		} else {
-			err = DBI.EventFire("created", this, nil)
+			err = DBI.Fire("created", this, nil)
 		}
 	} 
 	return 
@@ -303,13 +303,13 @@ func (this *CodeVerification) Upsert(mw func(db.Result) db.Result, args ...inter
 
 func (this *CodeVerification) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+	if err = DBI.Fire("deleting", this, mw, args...); err != nil {
 		return
 	}
 	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
 		return
 	}
-	return DBI.EventFire("deleted", this, mw, args...)
+	return DBI.Fire("deleted", this, mw, args...)
 }
 
 func (this *CodeVerification) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {

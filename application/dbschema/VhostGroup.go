@@ -203,7 +203,7 @@ func (this *VhostGroup) ListByOffset(recv interface{}, mw func(db.Result) db.Res
 func (this *VhostGroup) Add() (pk interface{}, err error) {
 	this.Created = uint(time.Now().Unix())
 	this.Id = 0
-	err = DBI.EventFire("creating", this, nil)
+	err = DBI.Fire("creating", this, nil)
 	if err != nil {
 		return
 	}
@@ -216,20 +216,20 @@ func (this *VhostGroup) Add() (pk interface{}, err error) {
 		}
 	}
 	if err == nil {
-		err = DBI.EventFire("created", this, nil)
+		err = DBI.Fire("created", this, nil)
 	}
 	return
 }
 
 func (this *VhostGroup) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	
-	if err = DBI.EventFire("updating", this, mw, args...); err != nil {
+	if err = DBI.Fire("updating", this, mw, args...); err != nil {
 		return
 	}
 	if err = this.Setter(mw, args...).SetSend(this).Update(); err != nil {
 		return
 	}
-	return DBI.EventFire("updated", this, mw, args...)
+	return DBI.Fire("updated", this, mw, args...)
 }
 
 func (this *VhostGroup) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
@@ -246,21 +246,21 @@ func (this *VhostGroup) SetFields(mw func(db.Result) db.Result, kvset map[string
 	
 	m := *this
 	m.FromMap(kvset)
-	if err = DBI.EventFire("updating", &m, mw, args...); err != nil {
+	if err = DBI.Fire("updating", &m, mw, args...); err != nil {
 		return
 	}
 	if err = this.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
 		return
 	}
-	return DBI.EventFire("updated", &m, mw, args...)
+	return DBI.Fire("updated", &m, mw, args...)
 }
 
 func (this *VhostGroup) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = this.Param().SetArgs(args...).SetSend(this).SetMiddleware(mw).Upsert(func() error { 
-		return DBI.EventFire("updating", this, mw, args...)
+		return DBI.Fire("updating", this, mw, args...)
 	}, func() error { this.Created = uint(time.Now().Unix())
 	this.Id = 0
-		return DBI.EventFire("creating", this, nil)
+		return DBI.Fire("creating", this, nil)
 	})
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
@@ -271,9 +271,9 @@ func (this *VhostGroup) Upsert(mw func(db.Result) db.Result, args ...interface{}
 	}
 	if err == nil {
 		if pk == nil {
-			err = DBI.EventFire("updated", this, mw, args...)
+			err = DBI.Fire("updated", this, mw, args...)
 		} else {
-			err = DBI.EventFire("created", this, nil)
+			err = DBI.Fire("created", this, nil)
 		}
 	} 
 	return 
@@ -281,13 +281,13 @@ func (this *VhostGroup) Upsert(mw func(db.Result) db.Result, args ...interface{}
 
 func (this *VhostGroup) Delete(mw func(db.Result) db.Result, args ...interface{})  (err error) {
 	
-	if err = DBI.EventFire("deleting", this, mw, args...); err != nil {
+	if err = DBI.Fire("deleting", this, mw, args...); err != nil {
 		return
 	}
 	if err = this.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
 		return
 	}
-	return DBI.EventFire("deleted", this, mw, args...)
+	return DBI.Fire("deleted", this, mw, args...)
 }
 
 func (this *VhostGroup) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
