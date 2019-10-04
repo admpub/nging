@@ -35,6 +35,9 @@ var DefaultChecker = func(ctx echo.Context, tis table.TableInfoStorer) (subdir s
 	refid := ctx.Formx(`refid`).String()
 	timestamp := ctx.Formx(`time`).Int64()
 	// 验证签名（避免上传接口被滥用）
+	if len(refid) == 0 {
+		refid = `0`
+	}
 	if ctx.Form(`token`) != Token(`refid`, refid, `time`, timestamp) {
 		err = ctx.E(`令牌错误`)
 		return

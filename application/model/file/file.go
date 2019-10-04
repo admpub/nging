@@ -57,6 +57,9 @@ func (f *File) NewFile(m *dbschema.File) *File {
 }
 
 func (f *File) SetTableID(tableID string) table.TableInfoStorer {
+	if len(tableID) == 0 {
+		tableID = `0`
+	}
 	f.File.TableId = tableID
 	return f
 }
