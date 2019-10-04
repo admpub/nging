@@ -79,7 +79,11 @@ func init() {
 	dbschema.DBI.On(`config:created`, func(m factory.Model, _ ...string) error {
 		fileM := modelFile.NewEmbedded(m.Context())
 		confM := m.(*dbschema.Config)
-		return fileM.Updater(`config`, `value`, confM.Group+`.`+confM.Key).Add(confM.Value, true)
+		embedded, seperator, exit := getConfigEventAttrs(confM)
+		if exit {
+			return nil
+		}
+		return fileM.Updater(`config`, `value`, confM.Group+`.`+confM.Key).SetSeperator(seperator).Add(confM.Value, embedded)
 	})
 	dbschema.DBI.On(`config:updating`, func(m factory.Model, editColumns ...string) error {
 		if len(editColumns) > 0 && !com.InSlice(`value`, editColumns) {
@@ -87,11 +91,28 @@ func init() {
 		}
 		fileM := modelFile.NewEmbedded(m.Context())
 		confM := m.(*dbschema.Config)
-		return fileM.Updater(`config`, `value`, confM.Group+`.`+confM.Key).Edit(confM.Value, true)
+		embedded, seperator, exit := getConfigEventAttrs(confM)
+		if exit {
+			return nil
+		}
+		return fileM.Updater(`config`, `value`, confM.Group+`.`+confM.Key).SetSeperator(seperator).Edit(confM.Value, embedded)
 	})
 	dbschema.DBI.On(`config:deleted`, func(m factory.Model, _ ...string) error {
 		fileM := modelFile.NewEmbedded(m.Context())
 		confM := m.(*dbschema.Config)
 		return fileM.Updater(`config`, `value`, confM.Group+`.`+confM.Key).Delete()
 	})
+}
+
+func getConfigEventAttrs(confM *dbschema.Config) (embedded bool, seperator string, exit bool) {
+	switch confM.Type {
+	case `html`:
+		embedded = true
+	case `image`, `video`, `audio`, `file`:
+	case `list`:
+		seperator = `,`
+	default:
+		exit = true
+	}
+	return
 }

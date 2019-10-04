@@ -18,6 +18,11 @@
 
 package fileupdater
 
+func (f *FileUpdater) SetSeperator(seperator string) *FileUpdater {
+	f.seperator = seperator
+	return f
+}
+
 func (f *FileUpdater) SetProject(project string) *FileUpdater {
 	f.project = project
 	return f

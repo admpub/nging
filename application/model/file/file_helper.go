@@ -59,6 +59,9 @@ func ReplaceRelatedRes(v string, reses map[uint64]string, seperator ...string) (
 
 // EmbeddedRes 获取正文中的资源
 func EmbeddedRes(v string, fn func(string, int64)) [][]string {
+	if len(v) == 0 {
+		return nil
+	}
 	list := fileRGX.FindAllStringSubmatch(v, -1)
 	if fn == nil {
 		return list
@@ -76,31 +79,32 @@ func EmbeddedRes(v string, fn func(string, int64)) [][]string {
 
 // RelatedRes 获取字段中关联的资源
 func RelatedRes(v string, fn func(string, int64), seperator ...string) {
-	if len(v) > 0 {
-		var fileList []string
-		if len(seperator) > 0 && len(seperator[0]) > 0 {
-			fileList = strings.Split(v, seperator[0])
-		} else {
-			fileList = append(fileList, v)
+	if len(v) == 0 {
+		return
+	}
+	var fileList []string
+	if len(seperator) > 0 && len(seperator[0]) > 0 {
+		fileList = strings.Split(v, seperator[0])
+	} else {
+		fileList = append(fileList, v)
+	}
+	for _, file := range fileList {
+		file = strings.TrimSpace(file)
+		if len(file) == 0 {
+			fn(file, 0)
+			continue
 		}
-		for _, file := range fileList {
-			file = strings.TrimSpace(file)
-			if len(file) == 0 {
-				fn(file, 0)
-				continue
-			}
-			p := strings.LastIndex(file, `#FileID-`)
-			if p < 0 {
-				fn(file, 0)
-				continue
-			}
-			var fid int64
-			fileID := file[p+8:]
-			if len(fileID) > 0 {
-				fid = com.Int64(fileID)
-			}
-			file = file[0:p]
-			fn(file, fid)
+		p := strings.LastIndex(file, `#FileID-`)
+		if p < 0 {
+			fn(file, 0)
+			continue
 		}
+		var fid int64
+		fileID := file[p+8:]
+		if len(fileID) > 0 {
+			fid = com.Int64(fileID)
+		}
+		file = file[0:p]
+		fn(file, fid)
 	}
 }

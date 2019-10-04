@@ -27,11 +27,12 @@ func New(reler Reler) *FileUpdater {
 }
 
 type FileUpdater struct {
-	rel     Reler
-	project string
-	table   string
-	field   string
-	tableID string
+	rel       Reler
+	project   string
+	table     string
+	field     string
+	tableID   string
+	seperator string
 }
 
 func (f *FileUpdater) Add(content string, embedded bool) (err error) {
@@ -44,7 +45,7 @@ func (f *FileUpdater) Add(content string, embedded bool) (err error) {
 
 func (f *FileUpdater) Edit(content string, embedded bool) (err error) {
 	if !embedded {
-		err = f.rel.RelationFiles(f.project, f.table, f.field, f.tableID, content)
+		err = f.rel.RelationFiles(f.project, f.table, f.field, f.tableID, content, f.seperator)
 		return
 	}
 	err = f.rel.RelationEmbeddedFiles(f.project, f.table, f.field, f.tableID, content)

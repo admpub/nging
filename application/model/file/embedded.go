@@ -283,11 +283,10 @@ func (f *Embedded) RelationFiles(project string, table string, field string, tab
 		if fid > 0 {
 			fids = append(fids, fid)
 		}
-	})
+	}, seperator...)
 	if len(fids) < 1 && len(files) > 0 {
 		fids = f.File.GetIDByViewURLs(files)
 	}
-	println(`------------------------------`, echo.Dump(fids))
 	err := f.UpdateEmbedded(false, project, table, field, tableID, fids...)
 	return err
 }
