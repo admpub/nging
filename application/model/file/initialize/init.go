@@ -54,6 +54,7 @@ func init() {
 		return fileM.Edit(nil, db.Cond{`id`: m.Id})
 	})
 
+	// - user
 	dbschema.DBI.On(`user:created`, func(m factory.Model, _ ...string) error {
 		fileM := modelFile.NewEmbedded(m.Context())
 		userM := m.(*dbschema.User)
@@ -71,5 +72,25 @@ func init() {
 		fileM := modelFile.NewEmbedded(m.Context())
 		userM := m.(*dbschema.User)
 		return fileM.Updater(`user`, `avatar`, uint64(userM.Id)).Delete()
+	})
+
+	// - config
+	dbschema.DBI.On(`config:created`, func(m factory.Model, _ ...string) error {
+		fileM := modelFile.NewEmbedded(m.Context())
+		confM := m.(*dbschema.Config)
+		return fileM.Updater(`config`, confM.Group+`.`+confM.Key, 0).Add(confM.Value, true)
+	})
+	dbschema.DBI.On(`config:updating`, func(m factory.Model, editColumns ...string) error {
+		if len(editColumns) > 0 && !com.InSlice(`value`, editColumns) {
+			return nil
+		}
+		fileM := modelFile.NewEmbedded(m.Context())
+		confM := m.(*dbschema.Config)
+		return fileM.Updater(`config`, confM.Group+`.`+confM.Key, 0).Edit(confM.Value, true)
+	})
+	dbschema.DBI.On(`config:deleted`, func(m factory.Model, _ ...string) error {
+		fileM := modelFile.NewEmbedded(m.Context())
+		confM := m.(*dbschema.Config)
+		return fileM.Updater(`config`, confM.Group+`.`+confM.Key, 0).Delete()
 	})
 }
