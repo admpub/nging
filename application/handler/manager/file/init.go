@@ -53,9 +53,12 @@ func init() {
 			err = ctx.E(`上传网址已过期`)
 			return
 		}
-		subdir = fmt.Sprint(userID) + `/`
+		uid := fmt.Sprint(userID)
+		subdir = uid + `/`
 		subdir += time.Now().Format(`2006/01/02/`)
-		tis.SetTableID(userID)
+		tis.SetTableID(uid)
+		tis.SetTableName(`user`)
+		tis.SetFieldName(`avatar`)
 		return
 	})
 }
