@@ -100,13 +100,13 @@ func (this *FtpUser) Param() *factory.Param {
 
 func (this *FtpUser) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
-		return factory.NewModel(structName,connID[0]).Use(this.trans)
+		return factory.NewModel(structName,connID[0]).Use(this.base.Trans())
 	}
-	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.base.Trans())
 }
 
 func (this *FtpUser) Objects() []*FtpUser {
-	if this.bjects == nil {
+	if this.objects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -122,7 +122,7 @@ func (this *FtpUser) InitObjects() *[]*FtpUser {
 }
 
 func (this *FtpUser) NewParam() *factory.Param {
-	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
+	return factory.NewParam(factory.DefaultFactory).SetIndex(this.base.ConnID()).SetTrans(this.base.Trans()).SetCollection(this.Name_()).SetModel(this)
 }
 
 func (this *FtpUser) Short_() string {

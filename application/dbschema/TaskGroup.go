@@ -98,13 +98,13 @@ func (this *TaskGroup) Param() *factory.Param {
 
 func (this *TaskGroup) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
-		return factory.NewModel(structName,connID[0]).Use(this.trans)
+		return factory.NewModel(structName,connID[0]).Use(this.base.Trans())
 	}
-	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.base.Trans())
 }
 
 func (this *TaskGroup) Objects() []*TaskGroup {
-	if this.bjects == nil {
+	if this.objects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -120,7 +120,7 @@ func (this *TaskGroup) InitObjects() *[]*TaskGroup {
 }
 
 func (this *TaskGroup) NewParam() *factory.Param {
-	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
+	return factory.NewParam(factory.DefaultFactory).SetIndex(this.base.ConnID()).SetTrans(this.base.Trans()).SetCollection(this.Name_()).SetModel(this)
 }
 
 func (this *TaskGroup) Short_() string {

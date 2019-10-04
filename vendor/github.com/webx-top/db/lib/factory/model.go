@@ -13,8 +13,9 @@ type Base struct {
 	context echo.Context
 }
 
-func (this *Base) SetParam(param *Param) {
+func (this *Base) SetParam(param *Param) *Base {
 	this.param = param
+	return this
 }
 
 func (this *Base) Param() *Param {
@@ -29,24 +30,27 @@ func (this *Base) Use(trans *Transaction) {
 	this.trans = trans
 }
 
-func (this *Base) SetContext(ctx echo.Context) {
+func (this *Base) SetContext(ctx echo.Context) *Base {
 	this.context = ctx
+	return this
 }
 
 func (this *Base) Context() echo.Context {
 	return this.context
 }
 
-func (this *Base) SetConnID(connID int) {
+func (this *Base) SetConnID(connID int) *Base {
 	this.connID = connID
+	return this
 }
 
 func (this *Base) ConnID() int {
 	return this.connID
 }
 
-func (this *Base) SetNamer(namer func(string) string) {
+func (this *Base) SetNamer(namer func(string) string) *Base {
 	this.namer = namer
+	return this
 }
 
 func (this *Base) Namer() func(string) string {

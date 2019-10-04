@@ -96,13 +96,13 @@ func (this *UserU2f) Param() *factory.Param {
 
 func (this *UserU2f) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
-		return factory.NewModel(structName,connID[0]).Use(this.trans)
+		return factory.NewModel(structName,connID[0]).Use(this.base.Trans())
 	}
-	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.base.Trans())
 }
 
 func (this *UserU2f) Objects() []*UserU2f {
-	if this.bjects == nil {
+	if this.objects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -118,7 +118,7 @@ func (this *UserU2f) InitObjects() *[]*UserU2f {
 }
 
 func (this *UserU2f) NewParam() *factory.Param {
-	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
+	return factory.NewParam(factory.DefaultFactory).SetIndex(this.base.ConnID()).SetTrans(this.base.Trans()).SetCollection(this.Name_()).SetModel(this)
 }
 
 func (this *UserU2f) Short_() string {

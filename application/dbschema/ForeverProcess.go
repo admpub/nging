@@ -114,13 +114,13 @@ func (this *ForeverProcess) Param() *factory.Param {
 
 func (this *ForeverProcess) New(structName string, connID ...int) factory.Model {
 	if len(connID) > 0 {
-		return factory.NewModel(structName,connID[0]).Use(this.trans)
+		return factory.NewModel(structName,connID[0]).Use(this.base.Trans())
 	}
-	return factory.NewModel(structName,this.base.ConnID()).Use(this.trans)
+	return factory.NewModel(structName,this.base.ConnID()).Use(this.base.Trans())
 }
 
 func (this *ForeverProcess) Objects() []*ForeverProcess {
-	if this.bjects == nil {
+	if this.objects == nil {
 		return nil
 	}
 	return this.objects[:]
@@ -136,7 +136,7 @@ func (this *ForeverProcess) InitObjects() *[]*ForeverProcess {
 }
 
 func (this *ForeverProcess) NewParam() *factory.Param {
-	return factory.NewParam(factory.DefaultFactory).SetIndex(this.connID).SetTrans(this.trans).SetCollection(this.Name_()).SetModel(this)
+	return factory.NewParam(factory.DefaultFactory).SetIndex(this.base.ConnID()).SetTrans(this.base.Trans()).SetCollection(this.Name_()).SetModel(this)
 }
 
 func (this *ForeverProcess) Short_() string {
