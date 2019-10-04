@@ -35,10 +35,12 @@ import (
 )
 
 func NewFile(ctx echo.Context) *File {
-	return &File{
+	m := &File{
 		File: &dbschema.File{},
 		base: base.New(ctx),
 	}
+	m.File.SetContext(ctx)
+	return m
 }
 
 type File struct {

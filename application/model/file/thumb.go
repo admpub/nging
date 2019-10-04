@@ -26,10 +26,12 @@ import (
 )
 
 func NewThumb(ctx echo.Context) *Thumb {
-	return &Thumb{
+	m := &Thumb{
 		FileThumb: &dbschema.FileThumb{},
 		base:      base.New(ctx),
 	}
+	m.FileThumb.SetContext(ctx)
+	return m
 }
 
 type Thumb struct {

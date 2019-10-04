@@ -37,11 +37,13 @@ func NewEmbedded(ctx echo.Context, fileMdls ...*File) *Embedded {
 	} else {
 		fileM = NewFile(ctx)
 	}
-	return &Embedded{
+	m := &Embedded{
 		FileEmbedded: &dbschema.FileEmbedded{},
 		base:         base.New(ctx),
 		File:         fileM,
 	}
+	m.FileEmbedded.SetContext(ctx)
+	return m
 }
 
 type Embedded struct {
