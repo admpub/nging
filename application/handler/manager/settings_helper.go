@@ -94,8 +94,9 @@ func configPost(c echo.Context, groups ...string) error {
 					return err
 				}
 			}
-			set := echo.H{
-				`value`: value,
+			set := echo.H{}
+			if value != m.Value {
+				set[`value`] = value
 			}
 			if _v.IsMap() {
 				if m.Type != `json` {
@@ -112,12 +113,14 @@ func configPost(c echo.Context, groups ...string) error {
 				}
 				//set[`type`] = `text`
 			}
-			if len(disabled) > 0 {
+			if len(disabled) > 0 && m.Disabled != disabled {
 				set[`disabled`] = disabled
 			}
-			err = m.SetFields(nil, set, condition)
-			if err != nil {
-				return err
+			if len(set) > 0 {
+				err = m.SetFields(nil, set, condition)
+				if err != nil {
+					return err
+				}
 			}
 		}
 		err = settings.InsertMissing(c, gm, added, configs, encoder)
