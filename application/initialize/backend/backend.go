@@ -53,6 +53,14 @@ var (
 	RendererDo       = func(driver.Driver) {}
 	ParseStrings     = map[string]string{}
 	ParseStringFuncs = map[string]func() string{}
+	SkippedGzipPaths = map[string]bool{}
+	GzipSkipper      = func(skippedPaths map[string]bool) func(c echo.Context) bool {
+		return func(c echo.Context) bool {
+			upath := c.Request().URL().Path()
+			skipped, _ := skippedPaths[upath]
+			return skipped
+		}
+	}
 )
 
 func init() {
@@ -88,12 +96,11 @@ func init() {
 			e.Prefix() + `/debug/pprof/threadcreate`: true,
 			e.Prefix() + `/debug/pprof/trace`:        true,
 		}
+		for k, v := range skippedGzipPaths {
+			SkippedGzipPaths[k] = v
+		}
 		e.Use(middleware.Gzip(&middleware.GzipConfig{
-			Skipper: func(c echo.Context) bool {
-				upath := c.Request().URL().Path()
-				skipped, _ := skippedGzipPaths[upath]
-				return skipped
-			},
+			Skipper: GzipSkipper(SkippedGzipPaths),
 		}))
 		e.Use(func(h echo.Handler) echo.HandlerFunc {
 			return func(c echo.Context) error {
