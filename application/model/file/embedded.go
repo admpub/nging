@@ -170,11 +170,9 @@ func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, f
 		_, err = m.Add()
 		return err
 	}
-	if len(fileIds) < 1 { // 删除关联记录
-		err = f.Delete(nil, `id`, m.Id)
-		if err != nil {
-			return err
-		}
+	isEmpty := len(fileIds) < 1
+	if isEmpty { // 删除关联记录
+		return f.DeleteByInstance(m)
 	}
 	var fidsString string
 	fidList := make([]string, len(fileIds))
@@ -188,41 +186,15 @@ func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, f
 		return nil
 	}
 	ids := strings.Split(m.FileIds, ",")
-	var (
-		delIds []interface{}
-		newIds []interface{}
-	)
 	//已删除引用
-	for _, v := range ids {
-		if !com.InSlice(v, fidList) {
-			delIds = append(delIds, v)
-		}
+	err = f.DeleteFileByIds(ids, fidList...)
+	if err != nil {
+		return err
 	}
 	//新增引用
-	for _, v := range fidList {
-		if !com.InSlice(v, ids) {
-			newIds = append(newIds, v)
-		}
-	}
-	if len(delIds) > 0 {
-		err := f.File.Decr(delIds...)
-		if err != nil {
-			return err
-		}
-		err = f.File.SetFields(nil, echo.H{
-			`table_id`:   0,
-			`table_name`: ``,
-			`field_name`: ``,
-		}, db.Cond{`used_times`: 0})
-		if err != nil {
-			return err
-		}
-	}
-	if len(newIds) > 0 {
-		err := f.File.Incr(newIds...)
-		if err != nil {
-			return err
-		}
+	err = f.AddFileByIds(fidList, ids...)
+	if err != nil {
+		return err
 	}
 	m.FileIds = fidsString
 	err = f.SetField(nil, `file_ids`, m.FileIds, db.Cond{`id`: m.Id})
