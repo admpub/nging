@@ -97,7 +97,7 @@ func init() {
 		}))
 		e.Use(func(h echo.Handler) echo.HandlerFunc {
 			return func(c echo.Context) error {
-				c.Response().Header().Set(`Server`, `nging/`+config.Version.Number)
+				c.Response().Header().Set(`Server`, event.SofewareName+`/`+config.Version.Number)
 				return h.Handle(c)
 			}
 		})

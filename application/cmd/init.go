@@ -55,6 +55,7 @@ func Init() {
 	config.Version.CommitID = echo.String(`COMMIT`)
 	config.Version.DBSchema = echo.Float64(`SCHEMA_VER`)
 	rootCmd.Short = event.Short
+	rootCmd.Long = event.Long
 }
 
 func Add(cmds ...*cobra.Command) {
