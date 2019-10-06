@@ -5,14 +5,19 @@
 		<div class="block-flat sm-margin-bottom">
 			<form class="form-horizontal" action="" id="search-form" method="GET">
 				{{- if Stored.dialog -}}
-				<input type="hidden" name="dialog" value="1" />
 				<input type="hidden" name="multiple" value="{{if $multiple}}1{{else}}0{{end}}" />
 				<input type="hidden" name="from" value="{{Form `from`}}" />
 				<input type="hidden" name="callback" value="{{Form `callback`}}" />
 				{{- end -}}
+			<div class="row no-margin">
+				<div class="form-group col-sm-3 no-margin xs-margin-top no-padding">
 				<div class="input-group no-margin-bottom">
 					<span class="input-group-addon">{{"上传时间"|T}}</span>
 					<input type="text" id="timerange" class="form-control" name="timerange" value="{{Form `timerange`}}">
+				</div>
+				</div>
+				<div class="form-group col-sm-3 no-margin xs-margin-top no-padding">
+				<div class="input-group no-margin-bottom">
 					<span class="input-group-addon no-padding no-border"><select name="ownerType" class="form-control" id="ownerType" onchange="ownerTypeChange(this)" style="width:100px">
 						<option value="">-{{"用户类型"|T}}-</option>
 						{{$ownerType := Form "ownerType"}}
@@ -20,6 +25,10 @@
 						<option value="customer" {{if eq $ownerType `customer`}} selected{{end}}>{{`前台客户`|T}}</option>
 					</select></span>
 					<input name="ownerId" class="form-control" id="ownerId" onchange="$('#search-form').submit()" placeholder="{{`用户ID`|T}}" value="{{Form `ownerId`}}">
+				</div>
+				</div>
+				<div class="form-group col-sm-2 no-margin xs-margin-top no-padding">
+				<div class="input-group no-margin-bottom">
 					<span class="input-group-addon">{{"内容类型"|T}}</span>
 					<select name="table" class="form-control" id="table" onchange="$('#search-form').submit()">
 						<option value="">-{{"不限"|T}}-</option>
@@ -28,6 +37,11 @@
 						<option value="{{$k}}" {{if eq $table $k}} selected{{end}}>{{$v.String}}</option>
 						{{end}}
 					</select>
+				</div>
+				</div>
+					{{if not $dialog}}
+				<div class="form-group col-sm-2 no-margin xs-margin-top no-padding">
+				<div class="input-group no-margin-bottom">
 					<span class="input-group-addon">{{"文件类型"|T}}</span>
 					<select name="type" class="form-control" id="type" onchange="$('#search-form').submit()">
 						<option value="">-{{"不限"|T}}-</option>
@@ -36,6 +50,11 @@
 						<option value="{{$k.String}}" {{if eq $type $k.String}} selected{{end}}>{{$k.String}}</option>
 						{{end}}
 					</select>
+				</div>
+				</div>
+					{{end}}
+				<div class="form-group col-sm-2 no-margin xs-margin-top no-padding">
+				<div class="input-group no-margin-bottom">
 					<span class="input-group-addon">{{"使用状态"|T}}</span>
 					<select name="used" class="form-control" id="used" onchange="$('#search-form').submit()">
 						<option value="">-{{"不限"|T}}-</option>
@@ -44,6 +63,8 @@
 						<option value="1" {{if eq $used `1`}} selected{{end}}>{{`已使用`|T}}</option>
 					</select>
 				</div>
+				</div>
+			</div><!-- .row -->
 			</form>
 		</div>
 	</div>
@@ -70,7 +91,7 @@
 				{{- end -}}
 			</div>
 			<div class="content">
-				<div class="table-responsive" id="previewTableContainer"></div>
+				<!-- <div class="table-responsive" id="previewTableContainer"></div> -->
 				
 				<div class="table-responsive">
 				<table class="table no-border hover">

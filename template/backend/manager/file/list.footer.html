@@ -9,12 +9,12 @@ App.i18n.UPLOADING="{{`文件上传中，请稍候...`|T}}";
 App.i18n.UPLOAD_SUCCEED='{{"上传成功"|T}}';
 App.i18n.BUTTON_UPLOAD="{{`上传附件`|T}}";
 var uploadURL='{{BackendUploadURL `user`}}';
-var listURL='__BACKEND__/manager/file/list{{if Stored.dialog}}?dialog=1{{end}}';
+var listURL='__BACKEND__{{URL.Path}}{{if Form `filetype`}}?filetype={{Stored.fileType}}{{end}}';
 var target=window;
 App.i18n.NO_CALLBACK_NAME='{{"请在网址参数callback变量中指定您所定义的回调函数名"|T}}';
 App.i18n.PLEASE_SELECT='{{"请选择要使用的文件"|T}}';
 {{- $from := Form "from" -}}
-var callback='{{- Form "callback" -}}';
+var callback='{{Form "callback"}}',client='{{Form `client`}}';
 {{- if eq $from "parent" -}}
 target=window.parent;
 {{- else if eq $from "opener" -}}

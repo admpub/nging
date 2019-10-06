@@ -1,21 +1,28 @@
 function ownerTypeChange(a){}
 function applySelected(){
+	if(client=='xheditor'&&window.callback){
+		window.callback('!'+getSelectedFiles().join(' '));
+		return false;
+	}
 	if(!callback){
         App.message({title:App.i18n.SYS_INFO,text:App.i18n.NO_CALLBACK_NAME,type:'error'});
         return false;
     }
 	if(typeof(target[callback])=='function'){
-		var files=[];
-		$("input.check-table:checked").each(function(){
-			files.push($(this).data('file-url'));
-        });
-        if(files.length<1){
-            App.message({title:App.i18n.SYS_INFO,text:App.i18n.PLEASE_SELECT,type:'error'});
-            return false;
-        }
-		target[callback](files);
+		target[callback](getSelectedFiles());
     }
     return false;
+}
+function getSelectedFiles(){
+	var files=[];
+	$("input.check-table:checked").each(function(){
+		files.push($(this).data('file-url'));
+	});
+	if(files.length<1){
+		App.message({title:App.i18n.SYS_INFO,text:App.i18n.PLEASE_SELECT,type:'error'});
+		return false;
+	}
+	return files;
 }
 $(function(){
 	App.daterangepicker('#timerange',{
