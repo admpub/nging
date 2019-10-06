@@ -19,7 +19,7 @@
 	<link rel="stylesheet" href="__ASSETS__/fonts/font-awesome/css/font-awesome.min.css?t={{BuildTime}}">
 	<link rel="stylesheet" href="__ASSETS__/js/jquery.gritter/css/jquery.gritter.min.css?t={{BuildTime}}" />
 	<link rel="stylesheet" href="__ASSETS__/js/jquery.gritter/css/custom.min.css?t={{BuildTime}}" />
-	<script>var BACKEND_URL='__BACKEND__',FRONTEND_URL='__FRONTEND__';</script>
+	<script>var BACKEND_URL='__BACKEND__',FRONTEND_URL='__FRONTEND__',ASSETS_URL='__ASSETS__';</script>
 	{{Block "head"}}{{/Block}}
 	<!-- Custom styles for this template -->
 	<link href="__ASSETS__/css/style.min.css?t={{BuildTime}}" rel="stylesheet" />	
@@ -41,8 +41,8 @@
 <script src="__ASSETS__/js/jquery.js?t={{BuildTime}}" type="text/javascript"></script>
 <script src="__ASSETS__/js/jquery.gritter/js/jquery.gritter.min.js?t={{BuildTime}}" type="text/javascript"></script>
 <script src="__ASSETS__/js/bootstrap/dist/js/bootstrap.min.js?t={{BuildTime}}" type="text/javascript"></script>
-{{Block "footer"}}{{/Block}}
 {{Include "init_js"}}
+{{Block "footer"}}{{/Block}}
 {{Block "tracker"}}
 <script type="text/javascript" async src="{{TrackerURL}}"></script>
 {{/Block}}

@@ -22,14 +22,24 @@ package file
 import (
 	"time"
 
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/model/file"
-	"github.com/webx-top/echo"
 )
 
 func FileList(ctx echo.Context) error {
 	err := List(ctx, ``, 0)
-	return ctx.Render(`manager/file/list`, err)
+	dialog := ctx.Formx(`dialog`).Bool()
+	var suffix string
+	if dialog {
+		suffix = `_dialog`
+	}
+
+	multiple := ctx.Formx(`multiple`).Bool()
+	ctx.Set(`dialog`, dialog)
+	ctx.Set(`multiple`, multiple)
+	return ctx.Render(`manager/file/list`+suffix, err)
 }
 
 func FileDelete(ctx echo.Context) (err error) {
