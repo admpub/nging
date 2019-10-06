@@ -247,3 +247,7 @@ func Engine() engine.Engine {
 func Stop() error {
 	return Default.Stop()
 }
+
+func NewContext(req engine.Request, resp engine.Response) echo.Context {
+	return Default.NewContext(req, resp)
+}

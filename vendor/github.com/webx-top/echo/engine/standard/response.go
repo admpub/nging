@@ -52,6 +52,12 @@ func (r *Response) KeepBody(on bool) {
 }
 
 func (r *Response) Write(b []byte) (n int, err error) {
+	if !r.committed {
+		if r.status == 0 {
+			r.status = http.StatusOK
+		}
+		r.WriteHeader(r.status)
+	}
 	if r.keepBody {
 		r.body = append(r.body, b...)
 	}

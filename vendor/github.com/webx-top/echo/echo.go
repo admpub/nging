@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	"github.com/admpub/log"
+
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/logger"
 )
@@ -45,6 +46,8 @@ type (
 		Handle(Handler) Handler
 	}
 
+	AsMiddleware func(Context) error
+
 	MiddlewareFunc func(Handler) Handler
 
 	MiddlewareFuncd func(Handler) HandlerFunc
@@ -71,6 +74,27 @@ type (
 		Render(w io.Writer, name string, data interface{}, c Context) error
 	}
 )
+
+func (m MiddlewareFunc) Handle(h Handler) Handler {
+	return m(h)
+}
+
+func (m MiddlewareFuncd) Handle(h Handler) Handler {
+	return m(h)
+}
+
+func (m AsMiddleware) Handle(h Handler) Handler {
+	return HandlerFunc(func(c Context) error {
+		if err := m(c); err != nil {
+			return err
+		}
+		return h.Handle(c)
+	})
+}
+
+func (h HandlerFunc) Handle(c Context) error {
+	return h(c)
+}
 
 // New creates an instance of Echo.
 func New() (e *Echo) {
@@ -133,18 +157,6 @@ func NewWithContext(fn func(*Echo) Context) (e *Echo) {
 		return c.String(fmt.Sprint(data))
 	}
 	return
-}
-
-func (m MiddlewareFunc) Handle(h Handler) Handler {
-	return m(h)
-}
-
-func (m MiddlewareFuncd) Handle(h Handler) Handler {
-	return m(h)
-}
-
-func (h HandlerFunc) Handle(c Context) error {
-	return h(c)
 }
 
 func (e *Echo) ParseHeaderAccept(on bool) *Echo {
@@ -682,4 +694,8 @@ func (e *Echo) Stop() error {
 		return nil
 	}
 	return e.engine.Stop()
+}
+
+func (e *Echo) NewContext(req engine.Request, resp engine.Response) Context {
+	return NewContext(req, resp, e)
 }

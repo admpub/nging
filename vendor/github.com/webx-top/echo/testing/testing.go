@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 
+	"github.com/admpub/log"
+
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/engine/standard"
 )
@@ -16,7 +18,15 @@ func Request(method, path string, handler engine.Handler, reqRewrite ...func(*ht
 	}
 	rec := httptest.NewRecorder()
 
-	handler.ServeHTTP(standard.NewRequest(req), standard.NewResponse(rec, req, nil))
+	handler.ServeHTTP(WrapRequest(req), WrapResponse(req, rec))
 	//rec.Code, rec.Body.String(),rec.Header
 	return rec
+}
+
+func WrapRequest(req *http.Request) engine.Request {
+	return standard.NewRequest(req)
+}
+
+func WrapResponse(req *http.Request, rw http.ResponseWriter) engine.Response {
+	return standard.NewResponse(rw, req, log.New().Sync())
 }

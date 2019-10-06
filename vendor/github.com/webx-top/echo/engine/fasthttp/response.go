@@ -12,6 +12,7 @@ import (
 
 	"github.com/admpub/fasthttp"
 	"github.com/admpub/log"
+
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/logger"
 )
@@ -60,6 +61,12 @@ func (r *Response) KeepBody(_ bool) {
 }
 
 func (r *Response) Write(b []byte) (n int, err error) {
+	if !r.committed {
+		if r.status == 0 {
+			r.status = http.StatusOK
+		}
+		r.WriteHeader(r.status)
+	}
 	n, err = r.writer.Write(b)
 	r.size += int64(n)
 	return
