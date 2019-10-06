@@ -18,28 +18,33 @@
         </div>
       </div>
     </div>
-    <!-- <div class="form-group">
+    <div class="form-group">
       <label class="col-sm-2 control-label">{{"日志格式"|T}}</label>
       <div class="col-sm-10">
-         <input type="text" class="form-control" name="log_format" value="{{Form "log_format" "{combined}"}}" id="log_format">
+         <input type="text" class="form-control" name="log_format" value="{{Form "log_format" "{combined} {latency}"}}" id="log_format">
          <div class="help-block">
              {{(T "日志内容格式，支持%s占位符%s。除此之外，还支持以下预定义组合占位符" "<a href='javascript:;' onclick=\"showRequestPlaceholders('#log_format')\">" "</a>")|ToHTML}}
              <ul>
                  <li>
                      <strong>{common}</strong>
-                    ({{"默认"|T}})<br />
+                    ({{"默认。其包含以下项目"|T}})<br />
                     <code>{remote} - {user} [{when}] "{method} {uri} {proto}" {status} {size}</code>
                 </li>
                  <li>
                      <strong>{combined}</strong>
-                     ({{"在{common}的基础上追加以下占位符"|T}})<br />
+                     ({{"即在{common}的基础上追加了以下项目"|T}})<br />
                      <code>"{&gt;Referer}" "{&gt;User-Agent}"</code>
                 </li>
+                <li>
+                    <strong>{{`自定义`|T}}</strong>
+                    ({{"即自定义设置每一个项目"|T}})<br />
+                    <pre class="no-margin"><code>{remote} - {user} [{when}] "{method} {scheme} {host} {uri} {proto}" {status} {size} "{&gt;Referer}" "{&gt;User-Agent}" {latency}</code></pre>
+               </li>
                 {{/* nginx: {remote} | [{when}] | {host} | "{method} {uri} {proto}" | {status} | {size} | "{&gt;Referer}" | "{&gt;User-Agent}" */}}
              </ul>
         </div>
       </div>
-    </div> -->
+    </div>
     <div class="form-group">
       <label class="col-sm-2 control-label">{{"日志文件轮转"|T}}</label>
       <div class="col-sm-10">
