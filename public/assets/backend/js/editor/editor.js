@@ -171,12 +171,12 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 			'browsing-image': "fa-image"
 		};
 		params.toolbarIconTexts = {
-			'browsing-image': App.loader.t('选择图片')
+			'browsing-image': App.t('选择图片')
 		};
 		params.toolbarHandlers = {
 			'browsing-image': function (cm, icon, cursor, selection) {
 				Coscms.Dialog.Modal(App.editor.browsingFileURL + '?pagerows=12&filetype=image&multiple=1', {
-					title: App.loader.t('选择图片'),
+					title: App.t('选择图片'),
 					width: '600px',
 					submit: function (dialog) {
 						var ck = dialog.find('input[type=checkbox][name="id[]"]:checked');
@@ -203,7 +203,7 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 		};
 		params.lang = {
 			toolbar: {
-				'browsing-image': App.loader.t("从服务器选择图片")
+				'browsing-image': App.t("从服务器选择图片")
 			}
 		};
 	}
@@ -239,7 +239,7 @@ App.editor.xheditor = function (editorElement, uploadUrl, settings) {
 			settings = $.extend({
 				'modalWidth': 620,
 				'modalHeight': 635,
-				'upBtnText': App.loader.t('浏览')
+				'upBtnText': App.t('浏览')
 			}, settings || {});
 		} else {
 			uploadUrl += 'format=json&';
