@@ -22,11 +22,12 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/handler"
 	_ "github.com/admpub/nging/application/model/file/initialize"
 	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/table"
-	"github.com/webx-top/echo"
 )
 
 func init() {
@@ -34,6 +35,9 @@ func init() {
 		r := g.Group(`/file`)
 		r.Route(`GET,POST`, `/list`, FileList)
 		r.Route(`GET,POST`, `/delete/:id`, FileDelete)
+	})
+	handler.Register(func(r echo.RouteRegister) {
+		r.Route(`GET,POST`, `/finder`, Finder)
 	})
 
 	upload.CheckerRegister(`user`, func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {

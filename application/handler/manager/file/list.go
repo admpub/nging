@@ -19,14 +19,15 @@
 package file
 
 import (
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/model/file"
-	fileListModel "github.com/admpub/nging/application/model/file/list"
-	"github.com/admpub/nging/application/registry/upload"
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory/mysql"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/application/model/file"
+	fileListModel "github.com/admpub/nging/application/model/file/list"
+	"github.com/admpub/nging/application/registry/upload"
 )
 
 func List(ctx echo.Context, ownerType string, ownerID uint64) error {
@@ -49,11 +50,14 @@ func List(ctx echo.Context, ownerType string, ownerID uint64) error {
 			cond.AddKV(`used_times`, db.Gt(0))
 		}
 	}
-	typ := ctx.Formx("type").String()
+	typ := ctx.Formx(`type`).String()
+	if len(typ) == 0 {
+		typ = ctx.Formx(`filetype`).String()
+	}
 	if len(typ) > 0 {
 		cond.AddKV(`type`, typ)
 	}
-	timerange := ctx.Formx("timerange").String()
+	timerange := ctx.Formx(`timerange`).String()
 	if len(timerange) > 0 {
 		cond.Add(mysql.GenDateRange(`created`, timerange).V()...)
 	}

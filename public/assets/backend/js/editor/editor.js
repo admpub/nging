@@ -11,7 +11,7 @@ App.loader.libs.codehighlight = ['#markdown/it/plugins/highlight/loader/prettify
 window.UEDITOR_HOME_URL = ASSETS_URL + '/js/editor/ueditor/';
 
 App.editor = {
-	browsingFileURL: App.loader.siteURL + '/manager/select_file'
+	browsingFileURL: App.loader.siteURL + '/finder'
 };
 
 /* 解析markdown为html */
@@ -175,7 +175,7 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 		};
 		params.toolbarHandlers = {
 			'browsing-image': function (cm, icon, cursor, selection) {
-				Coscms.Dialog.Modal(App.editor.browsingFileURL + '?pagerows=12&filetype=image&multiple=1', {
+				Coscms.Dialog.Modal(App.editor.browsingFileURL + '?size=12&filetype=image&multiple=1', {
 					title: App.t('选择图片'),
 					width: '600px',
 					submit: function (dialog) {
@@ -392,7 +392,7 @@ App.editor.markdownItInstance = function () {
 
 //例如：App.editor.switch($('textarea'))
 App.editor.switch = function (texta, cancelFn, tips) {
-	var upurl = texta.attr('action') || texta.data("upload-url") || '!' + App.editor.browsingFileURL + '?pagerows=12&multiple=1',
+	var upurl = texta.attr('action') || texta.data("upload-url") || '!' + App.editor.browsingFileURL + '?size=12&multiple=1',
 		etype = texta.data("editor"),
 		ename = texta.data("editor-name"),
 		eobject = texta.data("editor-object"),

@@ -30,16 +30,9 @@ import (
 
 func FileList(ctx echo.Context) error {
 	err := List(ctx, ``, 0)
-	dialog := ctx.Formx(`dialog`).Bool()
-	var suffix string
-	if dialog {
-		suffix = `_dialog`
-	}
-
-	multiple := ctx.Formx(`multiple`).Bool()
-	ctx.Set(`dialog`, dialog)
-	ctx.Set(`multiple`, multiple)
-	return ctx.Render(`manager/file/list`+suffix, err)
+	ctx.Set(`dialog`, false)
+	ctx.Set(`multiple`, true)
+	return ctx.Render(`manager/file/list`, err)
 }
 
 func FileDelete(ctx echo.Context) (err error) {
