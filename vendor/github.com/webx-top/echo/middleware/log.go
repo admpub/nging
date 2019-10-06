@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/admpub/log"
+
 	"github.com/webx-top/echo"
 )
 
@@ -12,6 +13,8 @@ type VisitorInfo struct {
 	RealIP       string
 	Time         time.Time
 	Elapsed      time.Duration
+	Scheme       string
+	Host         string
 	URI          string
 	Method       string
 	UserAgent    string
@@ -38,7 +41,7 @@ func Log(recv ...func(*VisitorInfo)) echo.MiddlewareFunc {
 			case v.ResponseCode >= 300:
 				icon = "▲"
 			}
-			logger.Info(" " + icon + " " + fmt.Sprint(v.ResponseCode) + " " + v.RealIP + " " + v.Method + " " + v.URI + " " + v.Elapsed.String() + " " + fmt.Sprint(v.ResponseSize))
+			logger.Info(" " + icon + " " + fmt.Sprint(v.ResponseCode) + " " + v.RealIP + " " + v.Method + " " + v.Scheme + " " + v.Host + " " + v.URI + " " + v.Elapsed.String() + " " + fmt.Sprint(v.ResponseSize))
 		}
 	}
 	return func(h echo.Handler) echo.Handler {
@@ -55,6 +58,8 @@ func Log(recv ...func(*VisitorInfo)) echo.MiddlewareFunc {
 			info.RequestSize = req.Size()
 			info.Elapsed = time.Now().Sub(info.Time)
 			info.Method = req.Method()
+			info.Host = req.Host()
+			info.Scheme = req.Scheme()
 			info.URI = req.URI()
 			info.ResponseSize = res.Size()
 			info.ResponseCode = res.Status()
