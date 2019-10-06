@@ -31,7 +31,7 @@
 					<span class="input-group-addon">{{"文件类型"|T}}</span>
 					<select name="type" class="form-control" id="type" onchange="$('#search-form').submit()">
 						<option value="">-{{"不限"|T}}-</option>
-						{{$type := Form "type"}} 
+						{{$type := Stored.fileType}} 
 						{{range $k, $v := Stored.fileTypes}}
 						<option value="{{$k.String}}" {{if eq $type $k.String}} selected{{end}}>{{$k.String}}</option>
 						{{end}}

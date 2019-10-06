@@ -84,6 +84,7 @@ func List(ctx echo.Context, ownerType string, ownerID uint64) error {
 	listData := fileListModel.FileList(list)
 	ctx.Set(`listData`, listData)
 	ctx.Set(`fileTypes`, uploadClient.FileTypeExts)
+	ctx.Set(`fileType`, typ)
 	ctx.Set(`tableNames`, upload.SubdirAll())
 	return err
 }
