@@ -118,10 +118,19 @@ func (l *AccessLog) parseCaddyHardCode(line string) error {
 	}
 	pos = strings.Index(line, `"`)
 	if pos > -1 { // {method} {uri} {proto}
-		urlInfo := strings.SplitN(line[0:pos], " ", 3)
-		l.Method = urlInfo[0]
-		l.Uri = urlInfo[1]
-		l.Version = urlInfo[2]
+		urlInfo := strings.Split(line[0:pos], " ")
+		switch len(urlInfo) {
+		case 3: // {method} {uri} {proto}
+			l.Method = urlInfo[0]
+			l.Uri = urlInfo[1]
+			l.Version = urlInfo[2]
+		case 5: // {method} {scheme} {host} {uri} {proto}
+			l.Method = urlInfo[0]
+			l.Scheme = urlInfo[1]
+			l.Host = urlInfo[2]
+			l.Uri = urlInfo[3]
+			l.Version = urlInfo[4]
+		}
 		line = line[pos+1:]
 	}
 	pos = strings.Index(line, `"`)
@@ -166,6 +175,10 @@ func (l *AccessLog) parseCaddy(line string, layout string) error {
 	if len(layout) == 0 || layout == `{common}` || layout == `{combined}` || layout == `{combined} {latency}` || layout == `{remote} - {user} [{when}] "{method} {uri} {proto}" {status} {size} "{>Referer}" "{>User-Agent}" {latency}` {
 		return l.parseCaddyHardCode(line)
 	}
+	if layout == `{remote} - {user} [{when}] "{method} {scheme} {host} {uri} {proto}" {status} {size} "{>Referer}" "{>User-Agent}" {latency}` {
+		return l.parseCaddyHardCode(line)
+	}
+
 	var re *regexp.Regexp
 	cc, ok := CaddyLogRegexpList.Load(layout)
 	if !ok {

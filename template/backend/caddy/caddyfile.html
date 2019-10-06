@@ -91,7 +91,7 @@
     {{end}}
 
     {{if eq ($v.Get "log") "1"}}
-    log / {{$v.Get "log_file"}} "{{$v.Get "log_format"|Default "{combined} {latency}"|ToHTML}}" {
+    log / "{{$v.Get "log_file"|AddSlashes|ToHTML}}" "{{$v.Get "log_format"|Default "{combined} {latency}"|AddSlashes|ToHTML}}" {
         {{AddonAttr "log" "rotate_size"}}
         {{AddonAttr "log" "rotate_age"}}
         {{AddonAttr "log" "rotate_keep"}}
@@ -117,7 +117,7 @@
 
     {{if eq ($v.Get "tls") "1"}}
         {{if and ($v.Get "tls_cert") ($v.Get "tls_key")}}
-    tls {{$v.Get "tls_cert"|ToHTML}} {{$v.Get "tls_key"|ToHTML}}
+    tls "{{$v.Get "tls_cert"|AddSlashes|ToHTML}}" "{{$v.Get "tls_key"|AddSlashes|ToHTML}}"
         {{else if $v.Get "tls_email"|ToHTML}}
     tls {{$v.Get "tls_email"|ToHTML}}
         {{end}}

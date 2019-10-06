@@ -5818,9 +5818,9 @@ fieldset.fieldset legend{
 .navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus{
   color:#fff;
 }
-.always-top{z-index:9999;position:fixed;top:0;_position:absolute;_bottom:auto;_top:expression(eval(document.documentElement.scrollTop));}
-.always-bottom{z-index:9999;position:fixed;bottom:0;_position:absolute;_bottom:auto;_top:expression(eval(document.documentElement.scrollTop+document.documentElement.clientHeight-this.offsetHeight-(parseInt(this.currentStyle.marginTop,10)||0)-(parseInt(this.currentStyle.marginBottom,10)||0)));}
-
+.always-top{z-index:1800;position:fixed;top:0;_position:absolute;_bottom:auto;_top:expression(eval(document.documentElement.scrollTop));}
+.always-bottom{z-index:1800;position:fixed;bottom:0;_position:absolute;_bottom:auto;_top:expression(eval(document.documentElement.scrollTop+document.documentElement.clientHeight-this.offsetHeight-(parseInt(this.currentStyle.marginTop,10)||0)-(parseInt(this.currentStyle.marginBottom,10)||0)));}
+.md-modal .always-top,.md-modal .always-bottom{z-index:2100}
 ul.timeline li > .fa.comment-avatar{height:50px;width:50px;padding:0;border-width:1px;z-index:auto}
 .margin-left-10{margin-left:10px}
 .margin-bottom-10{margin-bottom:10px}

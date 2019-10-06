@@ -19,12 +19,14 @@
 package navigate
 
 import (
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestConfigDefaultsAsStore(t *testing.T) {
+	assert.Equal(t, `"23434\"343434"`, strconv.Quote(`23434"343434`))
 	v := List{
 		{
 			Name: `0`,

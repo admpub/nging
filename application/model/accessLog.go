@@ -22,9 +22,10 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
-	"github.com/webx-top/echo"
 )
 
 func NewAccessLog(ctx echo.Context) *AccessLog {
@@ -79,6 +80,7 @@ func (m *AccessLog) ToLite() *AccessLogLite {
 		User:    m.User,
 		Method:  m.Method,
 		Scheme:  m.Scheme,
+		Host:    m.Host,
 		URI:     m.Uri,
 
 		Referer: m.Referer,
@@ -105,6 +107,7 @@ func (m *AccessLog) ToMap() echo.Store {
 	data.Set(`Path`, m.Uri)
 	data.Set(`Method`, m.Method)
 	data.Set(`Scheme`, m.Scheme)
+	data.Set(`Host`, m.Host)
 	data.Set(`BrowerName`, m.BrowerName)
 	data.Set(`BrowerType`, m.BrowerType)
 	data.Set(`BytesSent`, m.BodyBytes)

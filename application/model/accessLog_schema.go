@@ -11,6 +11,7 @@ type AccessLogLite struct {
 	User    string
 	Method  string
 	Scheme  string
+	Host    string
 	URI     string
 
 	Referer string
