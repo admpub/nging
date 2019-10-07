@@ -23,6 +23,7 @@ import (
 	_ "github.com/caddy-plugins/caddy-locale"
 	_ "github.com/caddy-plugins/caddy-prometheus"
 	_ "github.com/caddy-plugins/caddy-rate-limit"
+	_ "github.com/caddy-plugins/caddy-s3browser"
 	_ "github.com/caddy-plugins/cors/caddy"
 	_ "github.com/caddy-plugins/ipfilter"
 	_ "github.com/caddy-plugins/nobots"

@@ -999,6 +999,12 @@
 			"revisionTime": "2019-07-04T15:46:21Z"
 		},
 		{
+			"checksumSHA1": "daVrCG4Qg9RF0BmNJZ5T0LtoFmo=",
+			"path": "github.com/caddy-plugins/caddy-s3browser",
+			"revision": "fcef403f8f201678a5a13983453d3e6ef67e8cdb",
+			"revisionTime": "2019-10-07T03:31:44Z"
+		},
+		{
 			"checksumSHA1": "WG7YZHdtdCT5E7VCZEyfcvn23VM=",
 			"path": "github.com/caddy-plugins/cors",
 			"revision": "3c98079f1197471764a7247ecf11859e06be4715",
