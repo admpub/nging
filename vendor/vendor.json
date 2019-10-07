@@ -2608,6 +2608,18 @@
 			"revisionTime": "2016-11-22T06:12:14Z"
 		},
 		{
+			"checksumSHA1": "F0XUjzP5eROenJC8JOmxCmFWN8c=",
+			"path": "github.com/minio/minio-go",
+			"revision": "bb93a2c4f0cb3f2357e0dbfcf9d196bbf20c7fcb",
+			"revisionTime": "2019-10-04T17:36:09Z"
+		},
+		{
+			"checksumSHA1": "bc4H+6KKPRabvHMBae/Xn0oy49I=",
+			"path": "github.com/minio/sha256-simd",
+			"revision": "f675151bb5e19dc10d7430bd9d4ef5e7d1b5521f",
+			"revisionTime": "2019-09-17T23:37:21Z"
+		},
+		{
 			"checksumSHA1": "V/quM7+em2ByJbWBLOsEwnY3j/Q=",
 			"path": "github.com/mitchellh/go-homedir",
 			"revision": "ae18d6b8b3205b561c79e8e5f69bff09736185f4",
@@ -4031,6 +4043,12 @@
 			"path": "golang.org/x/net/html/charset",
 			"revision": "f5e5bdd778241bfefa8627f7124c39cd6ad8d74f",
 			"revisionTime": "2018-10-01T16:28:04Z"
+		},
+		{
+			"checksumSHA1": "pCY4YtdNKVBYRbNvODjx8hj0hIs=",
+			"path": "golang.org/x/net/http/httpguts",
+			"revision": "a7b16738d86b947dd0fadb08ca2c2342b51958b6",
+			"revisionTime": "2019-09-08T16:12:21Z"
 		},
 		{
 			"checksumSHA1": "FI29wkykYDjZYqVbRrYQSzNqf70=",
