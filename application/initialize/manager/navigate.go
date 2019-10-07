@@ -21,6 +21,7 @@ package manager
 import (
 	"github.com/admpub/nging/application/cmd/event"
 	_ "github.com/admpub/nging/application/handler/caddy"
+	_ "github.com/admpub/nging/application/handler/cloud"
 	_ "github.com/admpub/nging/application/handler/collector"
 	_ "github.com/admpub/nging/application/handler/database"
 	_ "github.com/admpub/nging/application/handler/download"
@@ -580,6 +581,40 @@ var LeftNavigate = &navigate.List{
 				DisplayOnMenu: false,
 				Name:          `单个文件进度信息`,
 				Action:        `progress/*`,
+			},
+		},
+	},
+	{
+		DisplayOnMenu: true,
+		Name:          `云服务`,
+		Action:        `cloud`,
+		Icon:          `cloud`,
+		Children: &navigate.List{
+			{
+				DisplayOnMenu: true,
+				Name:          `云存储账号`,
+				Action:        `storage`,
+			},
+			{
+				DisplayOnMenu: true,
+				Name:          `添加账号`,
+				Action:        `storage_add`,
+				Icon:          `plus`,
+			},
+			{
+				DisplayOnMenu: false,
+				Name:          `修改账号`,
+				Action:        `storage_edit`,
+			},
+			{
+				DisplayOnMenu: false,
+				Name:          `删除账号`,
+				Action:        `storage_delete`,
+			},
+			{
+				DisplayOnMenu: false,
+				Name:          `云存储文件管理`,
+				Action:        `storage_file`,
 			},
 		},
 	},

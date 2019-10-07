@@ -26,15 +26,16 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/webx-top/com"
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/middleware/tplfunc"
+
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/model"
-	"github.com/webx-top/com"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/middleware/tplfunc"
 )
 
 func VhostIndex(ctx echo.Context) error {
@@ -199,6 +200,8 @@ func VhostAdd(ctx echo.Context) error {
 	g := &dbschema.VhostGroup{}
 	g.ListByOffset(nil, nil, 0, -1)
 	ctx.Set(`groupList`, g.Objects())
+	ctx.Set(`isAdd`, true)
+	ctx.Set(`title`, ctx.T(`添加网站`))
 	return ctx.Render(`caddy/vhost_edit`, err)
 }
 
@@ -370,5 +373,7 @@ func VhostEdit(ctx echo.Context) error {
 	g := &dbschema.VhostGroup{}
 	g.ListByOffset(nil, nil, 0, -1)
 	ctx.Set(`groupList`, g.Objects())
+	ctx.Set(`isAdd`, false)
+	ctx.Set(`title`, ctx.T(`修改网站`))
 	return ctx.Render(`caddy/vhost_edit`, err)
 }

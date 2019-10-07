@@ -1,0 +1,85 @@
+{{Extend "layout"}}
+{{Block "title"}}{{Stored.title}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="__BACKEND__/cloud/storage">{{"云存储账号"|T}}</a></li>
+<li class="active">{{Stored.title}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+  <div class="col-md-12">
+    <div class="block-flat">
+      <div class="header">
+        <h3>{{Stored.title}}</h3>
+      </div>
+      <div class="content">
+        <form class="form-horizontal group-border-dashed" id="account-add-form" method="POST" action="">
+          <div class="form-group">
+            <label class="col-sm-3 control-label">{{"名称"|T}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" name="name" placeholder="{{"名称"|T}}" value="{{Form "name"}}" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">{{"类型"|T}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" name="type" value="{{Form "type"}}" placeholder="aws" required="required">
+              <div class="help-block">
+                {{`例如`|T}}：<code>aws</code>(Amazon) <code>oss</code>(阿里云) <code>cos</code>(腾讯云)<br />
+                {{`支持所有与Amazon S3 API兼容的云存储服务`|T}}
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">{{"key"|T}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" name="key" value="{{Form "key"}}" placeholder="" required="required">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">{{"secret"|T}}</label>
+            <div class="col-sm-6">
+              <input type="password" class="form-control" name="secret" value="{{Form "secret"}}" placeholder="" required="required">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">{{"bucket"|T}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" name="bucket" value="{{Form "bucket"}}" placeholder="" required="required">
+              <div class="help-block">{{`存储桶`|T}}</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">{{"endpoint"|T}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" name="endpoint" value="{{Form "endpoint"}}" placeholder="" required="required">
+              <div class="help-block">{{`地域节点`|T}}</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">{{"HTTPS"|T}}</label>
+            <div class="col-sm-6">{{$v := Form "secure"}}
+              <div class="radio radio-primary radio-inline">
+                <input type="radio" value="Y" id="secure-enable" name="secure"{{if or (eq $v "Y") (eq $v "")}} checked{{end}}><label for="secure-enable">{{"启用"|T}}</label>
+              </div>
+              <div class="radio radio-danger radio-inline">
+                <input type="radio" value="N" id="secure-disable" name="secure"{{if eq $v "N"}} checked{{end}}><label for="secure-disable">{{"禁用"|T}}</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group form-submit-group">
+            <div class="col-sm-8 col-sm-offset-3">
+              <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+              <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+            </div>
+          </div>
+        </form>
+      </div><!-- /.content -->
+    </div><!-- /.block-flat -->
+  </div>
+</div>
+{{/Block}}
+{{Block "footer"}}
+<script type="text/javascript">
+</script>
+{{/Block}}

@@ -16,35 +16,44 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package caddy
+package s3manager
 
 import (
-	"net/http"
-	"regexp"
+	"os"
+	"strings"
+	"time"
 
-	"github.com/webx-top/echo"
+	minio "github.com/minio/minio-go"
 )
 
-var validAddonName = regexp.MustCompile(`^[a-z0-9_]+$`)
-
-func ValidAddonName(addon string) bool {
-	return validAddonName.MatchString(addon)
+func NewFileInfo(objectInfo minio.ObjectInfo) os.FileInfo {
+	return &fileInfo{objectInfo: objectInfo}
 }
 
-func AddonIndex(ctx echo.Context) error {
-	return ctx.Render(`caddy/addon/index`, nil)
+type fileInfo struct {
+	objectInfo minio.ObjectInfo
 }
 
-func AddonForm(ctx echo.Context) error {
-	addon := ctx.Query(`addon`)
-	if len(addon) == 0 {
-		return echo.NewHTTPError(http.StatusBadRequest, ctx.T("参数 addon 的值不能为空"))
-	}
-	if !ValidAddonName(addon) {
-		return echo.NewHTTPError(http.StatusBadRequest, ctx.T("参数 addon 的值包含非法字符"))
-	}
-	ctx.SetFunc(`Val`, func(name, defaultValue string) string {
-		return defaultValue
-	})
-	return ctx.Render(`caddy/addon/form/`+addon, nil)
+func (f *fileInfo) Name() string {
+	return f.objectInfo.Key
+}
+
+func (f *fileInfo) Size() int64 {
+	return f.objectInfo.Size
+}
+
+func (f *fileInfo) Mode() os.FileMode {
+	return 0
+}
+
+func (f *fileInfo) ModTime() time.Time {
+	return f.objectInfo.LastModified
+}
+
+func (f *fileInfo) IsDir() bool {
+	return strings.HasSuffix(f.Name(), "/")
+}
+
+func (f *fileInfo) Sys() interface{} {
+	return f.objectInfo
 }

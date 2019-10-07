@@ -1029,226 +1029,226 @@
 			"revisionTime": "2019-07-04T15:46:56Z"
 		},
 		{
-			"checksumSHA1": "CQaqa+UaPx3UfVOisPQhXQIWra4=",
+			"checksumSHA1": "u83Y24OEhrxTwKprfmbUPHJM8CM=",
 			"path": "github.com/caddyserver/caddy",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "JRu12Cm5DJgJL7x6yc9YxhhJ7S0=",
 			"path": "github.com/caddyserver/caddy/caddyfile",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "z9FSU4cwmjD5Paxu8CeMm93SkIA=",
 			"path": "github.com/caddyserver/caddy/caddyhttp",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "adVmCdmMOSNrMp9lqSEvQCStVMU=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/basicauth",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "uKL96RZedgwnIKEoNevlr/UQ2Yw=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/bind",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "2ZOclDppH73oDtYBnhtB/rFEbRI=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/browse",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "yMo4b0HYfj6JujZnSb02nS1j4B4=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/errors",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "1e55nmhjN/w102nW4UXQjaTpjJ0=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/expvar",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "1qGffsCD90Enr/9nmTprncS7QAs=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/extensions",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "+kKhMI3Ui/0OCKyYf0TiMVTingw=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/fastcgi",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "gd946M4niEZyKBi8D3zwaMVBmA8=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/gzip",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "P5mDkTXaKR0wWhgpqFodpZ8KzPY=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/header",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
-			"checksumSHA1": "gWxmeIRjT2hmtUDG+Sc0Z0yUNlE=",
+			"checksumSHA1": "R7/icC5C2vfLUUolp+Zdvtki5UQ=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/httpserver",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "OfHVq4lIEplow0mLYSgBXQrV6r0=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/index",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "L0UhdqzaONFy0B0qdSYbRRLtYuU=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/internalsrv",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "v394rodBOuGUrOfClRFHWLf75ek=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/limits",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "aVDRr9GXjpSx45iHLoiMBohafEQ=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/log",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "Qu4mqU2xer1OC9bTPoHdkz5O/lA=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/markdown",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "MiZ4KHhEgnfkOeX3zJzwCFt6+Wo=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/markdown/metadata",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "Kn2QODSsOjlJf+DyjgX7lQ3Y5ww=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/markdown/summary",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "R3Hb4xmg/K0/i9qkPRYE548imw8=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/mime",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "Q+eqpCqbHUOGrpuBC8+jRtSjEgc=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/pprof",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "ua6VaC29DxACStaHvyM3bswAi4U=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/proxy",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "kAf43ogpRLXFew3f6HJgDLbgaKo=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/push",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "Rscre/9cxlz+h/e/3a9L7LK9kLw=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/redirect",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "atMHY4lefdd7OecOgyM5XhIUG8s=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/requestid",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "azjk35HygzAfVHu2IHPchnQPVas=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/rewrite",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "aKxlRuYFQxuYrIIjigpgKeYaciw=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/root",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "0qlkLHNRx7++sHBnlP2nx61dS+8=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/staticfiles",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "0vHCkaTeFgl4EayTuZLU6+07ims=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/status",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "ChbtRLys7t8BFRq4jKn68t/QMOU=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/templates",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "HxmQFT9f4EGTexkMH/FD6JgCwTI=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/timeouts",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "KbKQsFPXRWCv+HQCss2poYvrktI=",
 			"path": "github.com/caddyserver/caddy/caddyhttp/websocket",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
-			"checksumSHA1": "7VNTdXvFeA9XZMh8AT9QqeaCch0=",
+			"checksumSHA1": "0UXb0LsPdG4vojjm9nc4D0hGsDk=",
 			"path": "github.com/caddyserver/caddy/caddytls",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "Cp2GiTdU2VW8Oe588aol7Q7CZAE=",
 			"path": "github.com/caddyserver/caddy/onevent",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "R8GXjgav0IIB2ETk0hL/yxkxqzI=",
 			"path": "github.com/caddyserver/caddy/onevent/hook",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "8ufPrU8ju1XUcCFTJJ0aMy8DCfg=",
 			"path": "github.com/caddyserver/caddy/telemetry",
-			"revision": "0ba427a6f44edb5169e022e3cbc23f7b6de35a81",
-			"revisionTime": "2019-07-19T19:29:49Z"
+			"revision": "1de4a99ec33dacc712d687c757a9e15af4498ecd",
+			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
 			"checksumSHA1": "xhz5SprqgVRCF8BazSJkYBPdXYA=",

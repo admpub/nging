@@ -1,15 +1,15 @@
 {{Extend "layout"}}
-{{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加网站"|T}}{{else}}{{"修改网站"|T}}{{end}}{{/Block}}
+{{Block "title"}}{{Stored.title}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加网站"|T}}{{else}}{{"修改网站"|T}}{{end}}</li>
+<li class="active">{{Stored.title}}</li>
 {{/Block}}
 {{Block "main"}}
 <div class="row">
     <div class="col-md-12">
         <div class="block-flat">
           <div class="header">							
-            <h3>{{if HasSuffix URL.Path "_add"}}{{"添加网站"|T}}{{else}}{{"修改网站"|T}}{{end}}</h3>
+            <h3>{{Stored.title}}</h3>
           </div>
           <div class="content">
               <form class="form-horizontal group-border-dashed" method="POST" action="">
@@ -398,6 +398,22 @@ redir [code] {
                   <div class="fieldset bg-fc hide" id="prometheus-settings">
                     {{if eq $v "1"}}{{Include "caddy/addon/form/prometheus"}}{{end}}
                   </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"S3Browser"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "s3browser"}}
+                  <div class="radio radio-primary radio-inline"> 
+                    <input type="radio" value="1" id="s3browser-enable" name="s3browser" data-slide-settings="show"{{if eq $v "1"}} checked{{end}}><label for="s3browser-enable">{{"启用"|T}}</label> 
+                  </div>
+                  <div class="radio radio-danger radio-inline"> 
+                    <input type="radio" value="0" id="s3browser-disable" name="s3browser" data-slide-settings="hide"{{if or (eq $v "0") (eq $v "")}} checked{{end}}><label for="s3browser-disable">{{"禁用"|T}}</label> 
+                  </div>
+                  <div class="fieldset bg-fc hide" id="s3browser-settings">
+                    {{if eq $v "1"}}{{Include "caddy/addon/form/s3browser"}}{{end}}
+                  </div>
+                  <div class="help-block">{{"浏览 Amazon S3(或其它与S3兼容的对象存储引擎) 对象目录"|T}}</div>
                 </div>
               </div>
               <div class="form-group">

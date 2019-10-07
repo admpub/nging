@@ -188,4 +188,23 @@
     {{end}}
 
     {{$v.Get "rewrite_rule"|ToHTML}}
+
+    {{if eq ($v.Get "s3browser") "1"}}
+    {{$secure := eq ($v.Get "s3browser_secure") "1"}}
+	s3browser {
+		{{AddonAttr "s3browser" "key"}}
+		{{AddonAttr "s3browser" "secret"}}
+		{{AddonAttr "s3browser" "bucket"}}
+		{{AddonAttr "s3browser" "endpoint"}}
+		secure {{if $secure}}true{{else}}false{{end}}
+		{{AddonAttr "s3browser" "refresh"}}
+		debug {{if eq ($v.Get "s3browser_debug") "1"}}true{{else}}false{{end}}
+    }
+    {{$proxypath := $v.Get "s3browser_proxypath"}}
+    {{if $proxypath}}
+	proxy {{$proxypath}} http{{if $secure}}s{{end}}://{{$v.Get "s3browser_bucket"}}.{{$v.Get "s3browser_endpoint"}} {
+		header_upstream Host {{$v.Get "s3browser_bucket"}}.{{$v.Get "s3browser_endpoint"}}
+    }
+    {{end}}
+    {{end}}
 }

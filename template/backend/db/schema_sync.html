@@ -53,7 +53,7 @@
                                 {{if $v.SkipTables}}<br />{{"跳过"|T}}: {{$v.SkipTables}}{{end}}
                             </td>
 							<td>{{if gt $v.Drop 0}}{{"开启"|T}}{{else}}{{"关闭"|T}}{{end}}</td>
-							<td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}<br />{{if gt $v.Updated 0}}{{(Date $v.Updated).Format "2006-01-02 15:04:05"}}{{else}}Non{{end}}</td>
+							<td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}<br />{{if gt $v.Updated 0}}{{(Date $v.Updated).Format "2006-01-02 15:04:05"}}{{else}}None{{end}}</td>
 							<td>
 							<div style="margin-bottom:7px">
 							<a class="label label-default" data-toggle="tooltip" href="__BACKEND__/db/schema_sync_add?copyId={{$v.Id}}" title="{{"复制"|T}}"><i class="fa fa-copy"></i></a>	

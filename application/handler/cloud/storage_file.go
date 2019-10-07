@@ -16,101 +16,75 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package term
+package cloud
 
 import (
+	"crypto/tls"
 	"fmt"
+	"net/http"
 	"os"
 	"path"
 	"strings"
 
-	"github.com/pkg/sftp"
+	minio "github.com/minio/minio-go"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/handler/caddy"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/filemanager"
 	"github.com/admpub/nging/application/library/notice"
-	"github.com/admpub/nging/application/library/sftpmanager"
+	"github.com/admpub/nging/application/library/s3manager"
 	"github.com/admpub/nging/application/model"
-	"github.com/admpub/web-terminal/library/ssh"
 )
 
-func sftpConnect(m *dbschema.SshUser) (*sftp.Client, error) {
-	account := &ssh.AccountConfig{
-		User:     m.Username,
-		Password: config.DefaultConfig.Decode(m.Password),
-	}
-	if len(m.PrivateKey) > 0 {
-		account.PrivateKey = []byte(m.PrivateKey)
-	}
-	if len(m.Passphrase) > 0 {
-		account.Passphrase = []byte(config.DefaultConfig.Decode(m.Passphrase))
-	}
-	config, err := ssh.NewSSHConfig(nil, nil, account)
+func storageConnect(m *dbschema.CloudStorage) (*minio.Client, error) {
+	client, err := minio.New(m.Endpoint, m.Key, m.Secret, m.Secure == `Y`)
 	if err != nil {
-		return nil, err
+		return client, err
 	}
-	sshClient := ssh.New(config)
-	err = sshClient.Connect(m.Host, m.Port)
-	if err != nil {
-		return nil, err
+	if m.Secure != `Y` {
+		tr := &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+		client.SetCustomTransport(tr)
 	}
-	return sftp.NewClient(sshClient.Client)
+	return client, nil
 }
 
-func SftpSearch(ctx echo.Context, id uint) error {
-	m := model.NewSshUser(ctx)
-	err := m.Get(nil, `id`, id)
-	if err != nil {
-		return err
-	}
-	client, err := sftpConnect(m.SshUser)
-	if err != nil {
-		return err
-	}
-	defer client.Close()
-	query := ctx.Form(`query`)
-	num := ctx.Formx(`size`, `10`).Int()
-	if num <= 0 {
-		num = 10
-	}
-	paths := sftpmanager.Search(client, query, ctx.Form(`type`), num)
-	data := ctx.Data().SetData(paths)
-	return ctx.JSON(data)
-}
-
-func Sftp(ctx echo.Context) error {
-	ctx.Set(`activeURL`, `/term/account`)
+func StorageFile(ctx echo.Context) error {
+	ctx.Set(`activeURL`, `/cloud/storage`)
 	id := ctx.Formx(`id`).Uint()
-	m := model.NewSshUser(ctx)
+	m := model.NewCloudStorage(ctx)
 	err := m.Get(nil, `id`, id)
 	if err != nil {
 		return err
 	}
-	client, err := sftpConnect(m.SshUser)
+	client, err := storageConnect(m.CloudStorage)
 	if err != nil {
 		return err
 	}
-	defer client.Close()
 
-	mgr := sftpmanager.New(client, config.DefaultConfig.Sys.EditableFileMaxBytes, ctx)
+	mgr := s3manager.New(client, m.Bucket, config.DefaultConfig.Sys.EditableFileMaxBytes, ctx)
 
 	ppath := ctx.Form(`path`)
 	do := ctx.Form(`do`)
-	parentPath := ppath
+	var parentPath string
 	if len(ppath) == 0 {
 		ppath = `/`
-	} else {
-		parentPath = path.Dir(ppath)
+	}
+	if ppath != `/` {
+		parentPath = strings.TrimSuffix(ppath, `/`)
+		parentPath = path.Dir(parentPath)
+	}
+	if len(parentPath) > 0 && parentPath != `/` {
+		parentPath += `/`
 	}
 	switch do {
 	case `edit`:
 		data := ctx.Data()
-		if _, ok := caddy.Editable(ppath); !ok {
+		if _, ok := config.DefaultConfig.Sys.Editable(ppath); !ok {
 			data.SetInfo(ctx.T(`此文件不能在线编辑`), 0)
 		} else {
 			content := ctx.Form(`content`)
@@ -151,27 +125,6 @@ func Sftp(ctx echo.Context) error {
 			data.SetInfo(ctx.T(`重命名成功`), 1)
 		}
 		return ctx.JSON(data)
-	case `chown`:
-		data := ctx.Data()
-		uid := ctx.Formx(`uid`).Int()
-		gid := ctx.Formx(`gid`).Int()
-		err = mgr.Chown(ppath, uid, gid)
-		if err != nil {
-			data.SetInfo(err.Error(), 0)
-		} else {
-			data.SetInfo(ctx.T(`操作成功`), 1)
-		}
-		return ctx.JSON(data)
-	case `chmod`:
-		data := ctx.Data()
-		mode := ctx.Formx(`mode`).Uint32() //0777 etc...
-		err = mgr.Chmod(ppath, os.FileMode(mode))
-		if err != nil {
-			data.SetInfo(err.Error(), 0)
-		} else {
-			data.SetInfo(ctx.T(`操作成功`), 1)
-		}
-		return ctx.JSON(data)
 	case `search`:
 		prefix := ctx.Form(`query`)
 		num := ctx.Formx(`size`, `10`).Int()
@@ -198,6 +151,8 @@ func Sftp(ctx echo.Context) error {
 			return ctx.JSON(echo.H{`error`: err.Error()}, 500)
 		}
 		return ctx.String(`OK`)
+	case `download`:
+		return mgr.Download(ppath)
 	default:
 		var dirs []os.FileInfo
 		var exit bool
@@ -209,29 +164,30 @@ func Sftp(ctx echo.Context) error {
 	}
 	ctx.Set(`parentPath`, parentPath)
 	ctx.Set(`path`, ppath)
-	pathPrefix := ppath
-	if ppath != `/` {
-		pathPrefix = ppath + `/`
-	}
+	var pathPrefix string
+	pathPrefix = ppath
 	pathSlice := strings.Split(strings.Trim(pathPrefix, `/`), `/`)
 	pathLinks := make(echo.KVList, len(pathSlice))
 	encodedSep := filemanager.EncodedSep
 	urlPrefix := ctx.Request().URL().Path() + fmt.Sprintf(`?id=%d&path=`, id) + encodedSep
 	for k, v := range pathSlice {
 		urlPrefix += com.URLEncode(v)
-		pathLinks[k] = &echo.KV{K: v, V: urlPrefix}
+		pathLinks[k] = &echo.KV{K: v, V: urlPrefix + `/`}
 		urlPrefix += encodedSep
+	}
+	if !strings.HasSuffix(pathPrefix, `/`) {
+		pathPrefix += `/`
 	}
 	ctx.Set(`pathLinks`, pathLinks)
 	ctx.Set(`pathPrefix`, pathPrefix)
 	ctx.SetFunc(`Editable`, func(fileName string) bool {
-		_, ok := caddy.Editable(fileName)
+		_, ok := config.DefaultConfig.Sys.Editable(fileName)
 		return ok
 	})
 	ctx.SetFunc(`Playable`, func(fileName string) string {
-		mime, _ := caddy.Playable(fileName)
+		mime, _ := config.DefaultConfig.Sys.Playable(fileName)
 		return mime
 	})
-	ctx.Set(`data`, m.SshUser)
-	return ctx.Render(`term/sftp`, err)
+	ctx.Set(`data`, m.CloudStorage)
+	return ctx.Render(`cloud/storage_file`, handler.Err(ctx, err))
 }

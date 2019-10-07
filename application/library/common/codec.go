@@ -16,35 +16,13 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package caddy
+package common
 
 import (
-	"net/http"
-	"regexp"
-
+	"github.com/admpub/nging/application/library/codec"
 	"github.com/webx-top/echo"
 )
 
-var validAddonName = regexp.MustCompile(`^[a-z0-9_]+$`)
-
-func ValidAddonName(addon string) bool {
-	return validAddonName.MatchString(addon)
-}
-
-func AddonIndex(ctx echo.Context) error {
-	return ctx.Render(`caddy/addon/index`, nil)
-}
-
-func AddonForm(ctx echo.Context) error {
-	addon := ctx.Query(`addon`)
-	if len(addon) == 0 {
-		return echo.NewHTTPError(http.StatusBadRequest, ctx.T("参数 addon 的值不能为空"))
-	}
-	if !ValidAddonName(addon) {
-		return echo.NewHTTPError(http.StatusBadRequest, ctx.T("参数 addon 的值包含非法字符"))
-	}
-	ctx.SetFunc(`Val`, func(name, defaultValue string) string {
-		return defaultValue
-	})
-	return ctx.Render(`caddy/addon/form/`+addon, nil)
+func Crypto() codec.Codec{
+	return echo.Get(`DefaultConfig`).(codec.Codec)
 }

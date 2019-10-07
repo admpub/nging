@@ -16,35 +16,19 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package caddy
+package cloud
 
 import (
-	"net/http"
-	"regexp"
-
+	"github.com/admpub/nging/application/handler"
 	"github.com/webx-top/echo"
 )
 
-var validAddonName = regexp.MustCompile(`^[a-z0-9_]+$`)
-
-func ValidAddonName(addon string) bool {
-	return validAddonName.MatchString(addon)
-}
-
-func AddonIndex(ctx echo.Context) error {
-	return ctx.Render(`caddy/addon/index`, nil)
-}
-
-func AddonForm(ctx echo.Context) error {
-	addon := ctx.Query(`addon`)
-	if len(addon) == 0 {
-		return echo.NewHTTPError(http.StatusBadRequest, ctx.T("参数 addon 的值不能为空"))
-	}
-	if !ValidAddonName(addon) {
-		return echo.NewHTTPError(http.StatusBadRequest, ctx.T("参数 addon 的值包含非法字符"))
-	}
-	ctx.SetFunc(`Val`, func(name, defaultValue string) string {
-		return defaultValue
+func init() {
+	handler.RegisterToGroup(`/cloud`, func(g echo.RouteRegister) {
+		g.Route(`GET,POST`, `/storage`, StorageIndex)
+		g.Route(`GET,POST`, `/storage_add`, StorageAdd)
+		g.Route(`GET,POST`, `/storage_edit`, StorageEdit)
+		g.Route(`GET,POST`, `/storage_delete`, StorageDelete)
+		g.Route(`GET,POST`, `/storage_file`, StorageFile)
 	})
-	return ctx.Render(`caddy/addon/form/`+addon, nil)
 }

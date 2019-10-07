@@ -51,6 +51,29 @@ CREATE TABLE `access_log` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `cloud_storage`
+--
+
+DROP TABLE IF EXISTS `cloud_storage`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `cloud_storage` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `name` varchar(200) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '名称',
+  `type` varchar(30) COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'aws' COMMENT '存储类型(aws,oss,cos)',
+  `key` varchar(128) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'key',
+  `secret` varchar(200) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '密钥(加密处理)',
+  `bucket` varchar(200) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '存储桶',
+  `endpoint` varchar(200) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '地域节点',
+  `secure` enum('Y','N') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Y' COMMENT '是否(Y/N)HTTPS',
+  `baseurl` varchar(200) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '资源基础网址',
+  `created` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `updated` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='云存储账号';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `code_invitation`
 --
 
@@ -900,4 +923,4 @@ CREATE TABLE `vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-10-04 22:41:12
+-- Dump completed on 2019-10-07 15:56:54

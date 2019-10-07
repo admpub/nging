@@ -24,14 +24,15 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/webx-top/com"
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/filemanager"
 	"github.com/admpub/nging/application/library/notice"
 	"github.com/admpub/nging/application/model"
-	"github.com/webx-top/com"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 func VhostFile(ctx echo.Context) error {
@@ -120,7 +121,7 @@ func VhostFile(ctx echo.Context) error {
 	pathSlice := strings.Split(strings.Trim(filePath, echo.FilePathSeparator), echo.FilePathSeparator)
 	pathLinks := make(echo.KVList, len(pathSlice))
 	encodedSep := filemanager.EncodedSepa
-	urlPrefix := fmt.Sprintf(`/caddy/vhost_file?id=%d&path=`, id) + encodedSep
+	urlPrefix := ctx.Request().URL().Path() + fmt.Sprintf(`?id=%d&path=`, id) + encodedSep
 	for k, v := range pathSlice {
 		urlPrefix += com.URLEncode(v)
 		pathLinks[k] = &echo.KV{K: v, V: urlPrefix}

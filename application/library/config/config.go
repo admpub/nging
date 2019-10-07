@@ -24,18 +24,16 @@ import (
 	"path/filepath"
 	"reflect"
 
-	"github.com/admpub/confl"
-	"github.com/admpub/log"
-
-	//"github.com/admpub/license_gen/lib"
-
-	"github.com/admpub/nging/application/library/caddy"
-	"github.com/admpub/nging/application/library/ftp"
-	"github.com/admpub/securecookie"
 	"github.com/webx-top/codec"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/language"
+
+	"github.com/admpub/confl"
+	"github.com/admpub/log"
+	"github.com/admpub/nging/application/library/caddy"
+	"github.com/admpub/nging/application/library/ftp"
+	"github.com/admpub/securecookie"
 )
 
 func NewConfig() *Config {
