@@ -29,11 +29,12 @@ package main
 //go:generate go-bindata -fs -o bindata_assetfs.go -ignore "\\.(git|svn|DS_Store|less|scss)$" -minify "\\.(js|css)$" -tags bindata public/assets/... template/... config/i18n/...
 
 import (
-	"github.com/admpub/log"
-	"github.com/admpub/nging/application/cmd"
+	//register
+
 	"github.com/webx-top/echo"
 
-	//register
+	"github.com/admpub/log"
+	"github.com/admpub/nging/application/cmd"
 	_ "github.com/admpub/nging/application"
 	_ "github.com/admpub/nging/application/initialize/manager"
 	_ "github.com/admpub/nging/application/library/sqlite"
@@ -48,7 +49,7 @@ var (
 	VERSION    = `2.0.5`
 
 	version   string
-	schemaVer = 2.4 //数据表结构版本
+	schemaVer = 2.5 //数据表结构版本
 )
 
 func main() {
