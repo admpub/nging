@@ -187,9 +187,16 @@ func (s *s3Manager) List(ppath string, sortBy ...string) (err error, exit bool, 
 	doneCh := make(chan struct{})
 	defer close(doneCh)
 	objectPrefix := strings.TrimPrefix(ppath, `/`)
-	forceDir := strings.HasSuffix(objectPrefix, "/")
-	if !forceDir && len(objectPrefix) > 0 {
-		objectPrefix += `/`
+	words := len(objectPrefix)
+	var forceDir bool
+	if words == 0 {
+		forceDir = true
+	} else {
+		if strings.HasSuffix(objectPrefix, `/`) {
+			forceDir = true
+		} else {
+			objectPrefix += `/`
+		}
 	}
 	objectCh := s.client.ListObjectsV2(s.bucketName, objectPrefix, false, doneCh)
 	for object := range objectCh {
