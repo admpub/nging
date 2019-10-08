@@ -28,6 +28,7 @@ import (
 	_ "github.com/admpub/nging/application/model/file/initialize"
 	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/table"
+	"github.com/admpub/nging/application/middleware"
 )
 
 func init() {
@@ -37,7 +38,7 @@ func init() {
 		r.Route(`GET,POST`, `/delete/:id`, FileDelete)
 	})
 	handler.Register(func(r echo.RouteRegister) {
-		r.Route(`GET,POST`, `/finder`, Finder)
+		r.Route(`GET,POST`, `/finder`, Finder, middleware.AuthCheck)
 	})
 
 	upload.CheckerRegister(`user`, func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
