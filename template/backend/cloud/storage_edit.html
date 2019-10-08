@@ -45,15 +45,25 @@
           <div class="form-group">
             <label class="col-sm-3 control-label">{{"bucket"|T}}</label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" name="bucket" value="{{Form "bucket"}}" placeholder="" required="required">
+              <input type="text" class="form-control" id="bucket" name="bucket" value="{{Form "bucket"}}" placeholder="" required="required">
               <div class="help-block">{{`存储桶`|T}}</div>
             </div>
           </div>
           <div class="form-group">
             <label class="col-sm-3 control-label">{{"endpoint"|T}}</label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" name="endpoint" value="{{Form "endpoint"}}" placeholder="" required="required">
+              <input type="text" class="form-control" id="endpoint" name="endpoint" value="{{Form "endpoint"}}" placeholder="" required="required">
               <div class="help-block">{{`地域节点`|T}}</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">{{"base URL"|T}}</label>
+            <div class="col-sm-6">{{$baseURL := Form "baseurl"}}
+              <span class="input-group no-margin-bottom">
+              <input type="url" id="baseurl" class="form-control" name="baseurl" value="{{$baseURL}}" placeholder=""{{if not $baseURL}} disabled="disabled"{{end}}>
+              <span class="input-group-btn"><a class="btn btn-default" data-edit-label="{{`编辑`|T}}" data-cancel-label="{{`取消`|T}}" id="edit-baseurl" href="javascript:;">{{`编辑`|T}}</a></span>
+              </span>
+              <div class="help-block">{{`文件根网址`|T}}</div>
             </div>
           </div>
           <div class="form-group">
@@ -81,5 +91,31 @@
 {{/Block}}
 {{Block "footer"}}
 <script type="text/javascript">
+$(function(){
+  $('#endpoint,#bucket').on('keyup change',function(){
+    if($('#baseurl').prop('disabled'))
+    $('#baseurl').val('https://'+$('#bucket').val()+'.'+$('#endpoint').val()+'/');
+  });
+  $('#endpoint').trigger('change');
+  $('#edit-baseurl').on('click',function(){
+    if($('#baseurl').prop('disabled')){
+      $(this).text($(this).data('cancel-label'));
+      $('#baseurl').prop('disabled',false);
+    }else{
+      $(this).text($(this).data('edit-label'));
+      $('#baseurl').prop('disabled',true);
+      var v=$('#baseurl').val();
+      v = $.trim(v);
+      if(v=='' || /^https?:\/\/[\/]*$/.test(v)){
+        $('#endpoint').trigger('change');
+      }
+    }
+  });
+  if(!$('#baseurl').prop('disabled')){
+    $('#edit-baseurl').text($('#edit-baseurl').data('cancel-label'));
+  }else{
+    $('#edit-baseurl').text($('#edit-baseurl').data('edit-label'));
+  }
+});
 </script>
 {{/Block}}

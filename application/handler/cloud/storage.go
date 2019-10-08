@@ -48,6 +48,7 @@ func StorageAdd(ctx echo.Context) error {
 	if ctx.IsPost() {
 		err = ctx.MustBind(m.CloudStorage)
 		if err == nil {
+			m.Baseurl = ctx.Formx(`baseurl`).String()
 			_, err = m.Add()
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))
@@ -80,6 +81,7 @@ func StorageEdit(ctx echo.Context) error {
 		err = ctx.MustBind(m.CloudStorage, echo.ExcludeFieldName(`created`))
 		if err == nil {
 			m.Id = id
+			m.Baseurl = ctx.Formx(`baseurl`).String()
 			err = m.Edit(nil, db.Cond{`id`: id})
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))

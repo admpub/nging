@@ -46,6 +46,11 @@ type CloudStorage struct {
 func (s *CloudStorage) check() error {
 	s.Bucket = strings.TrimSpace(s.Bucket)
 	s.Endpoint = strings.TrimSpace(s.Endpoint)
+	if len(s.Baseurl) > 0 {
+		if !strings.HasSuffix(s.Baseurl, `/`) {
+			s.Baseurl += `/`
+		}
+	}
 	s.Secret = strings.TrimSpace(s.Secret)
 	s.Secret = common.Crypto().Encode(s.Secret)
 	return nil
@@ -53,6 +58,13 @@ func (s *CloudStorage) check() error {
 
 func (s *CloudStorage) RawSecret() string {
 	return common.Crypto().Decode(s.Secret)
+}
+
+func (s *CloudStorage) BaseURL() string {
+	if len(s.Baseurl) > 0 {
+		return s.Baseurl
+	}
+	return `https://` + s.Bucket + `.` + s.Endpoint + `/`
 }
 
 func (s *CloudStorage) Get(mw func(db.Result) db.Result, args ...interface{}) error {
