@@ -148,7 +148,7 @@ $(function(){
       $('#btn-search-key').trigger('click');
   });
   $('#btn-search-key').on('click',function(event){
-      window.location='{{dbMgrURL "listTable"}}&db='+$('#db').val()+'&searchkey='+encodeURIComponent($('#ipt-search-key').val());
+      window.location='{{dbMgrURL "listTable"}}&db='+$('#dbmanager-db-list').val()+'&searchkey='+encodeURIComponent($('#ipt-search-key').val());
   });
   $('#sidebar-collapse').trigger('click');
   App.pageAside();
