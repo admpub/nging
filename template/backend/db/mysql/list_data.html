@@ -42,10 +42,14 @@ function onselectColumns(obj){
 <div class="row">
     <div class="col-md-12">
         <div class="block-flat row no-margin-top">
-            <form action="" method="get">
+            <form action="" method="get">{{$accountId := (Formx "accountId").Uint64}}
+              {{- if gt $accountId 0 -}}
               <input type="hidden" name="accountId" value="{{Form "accountId"}}">
+              {{- else -}}
               <input type="hidden" name="driver" value="{{Form "driver"}}">
+              <input type="hidden" name="host" value="{{Form "host"}}">
               <input type="hidden" name="username" value="{{Form "username"}}">
+              {{- end -}}
               <input type="hidden" name="operation" value="{{Form "operation"}}">
               <input type="hidden" name="table" value="{{Stored.table}}">
               <input type="hidden" name="db" value="{{Stored.dbName}}">
