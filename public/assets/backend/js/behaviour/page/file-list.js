@@ -53,7 +53,11 @@ $(function(){
 				}
 				$.LoadingOverlay("progress", count);
 			}*/
-		})
+		});
+
+		App.tableSorting();
+		$('#checkedAll,input[type=checkbox][name="id[]"]:checked').prop('checked',false);
+		App.attachCheckedAll('#checkedAll','input[type=checkbox][name="id[]"]');
 	}
 	initUploadButton();
   	$(document).on("file-preview:changed", function(e) {
@@ -66,15 +70,11 @@ $(function(){
 			if(r.Code==1){
 				App.message({text:App.i18n.UPLOAD_SUCCEED,type:'success'});
 				$.get(listURL,{partial:1},function(r){
-					$('#file-list-box').html(r);
-					initUploadButton();
+					$('#table-container').html(r);
 				},'html');
 			}else{
 				App.message({text:r.Info,type:'error'});
 			}
 		});
 	});
-	App.tableSorting();
-	$('#checkedAll,input[type=checkbox][name="id[]"]:checked').prop('checked',false);
-	App.attachCheckedAll('#checkedAll','input[type=checkbox][name="id[]"]');
 });
