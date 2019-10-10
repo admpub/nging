@@ -38,20 +38,24 @@ $(function(){
 		$('#search-form').submit();
 	});
 	App.float('#tbody-content img.previewable');
-	var myUploadInput = $("#input-file-upload").uploadPreviewer({
-		"buttonText":'<i class="fa fa-cloud-upload"></i> '+App.i18n.BUTTON_UPLOAD,
-		"previewTableContainer":'#previewTableContainer',
-		"url":uploadURL,
-		"previewTableShow":false/*,
-		"uploadProgress":function(progress){
-			var count=progress*100;
-			if(count>100){
-				$.LoadingOverlay("hide");
-				return;
-			}
-			$.LoadingOverlay("progress", count);
-		}*/
-	});
+	var myUploadInput;
+	function initUploadButton(){
+		myUploadInput = $("#input-file-upload").uploadPreviewer({
+			"buttonText":'<i class="fa fa-cloud-upload"></i> '+App.i18n.BUTTON_UPLOAD,
+			"previewTableContainer":'#previewTableContainer',
+			"url":uploadURL,
+			"previewTableShow":false/*,
+			"uploadProgress":function(progress){
+				var count=progress*100;
+				if(count>100){
+					$.LoadingOverlay("hide");
+					return;
+				}
+				$.LoadingOverlay("progress", count);
+			}*/
+		})
+	}
+	initUploadButton();
   	$(document).on("file-preview:changed", function(e) {
 		$.LoadingOverlay("show", {
     		image : ASSETS_URL+"/images/nging-gear.png",//progress : true, image: "",//fontawesome : "fa fa-cog fa-spin",
@@ -63,6 +67,7 @@ $(function(){
 				App.message({text:App.i18n.UPLOAD_SUCCEED,type:'success'});
 				$.get(listURL,{partial:1},function(r){
 					$('#file-list-box').html(r);
+					initUploadButton();
 				},'html');
 			}else{
 				App.message({text:r.Info,type:'error'});
