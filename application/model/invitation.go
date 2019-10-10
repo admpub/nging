@@ -18,10 +18,11 @@
 package model
 
 import (
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/model/base"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/model/base"
 )
 
 func NewInvitation(ctx echo.Context) *Invitation {
@@ -37,12 +38,12 @@ type Invitation struct {
 }
 
 func (u *Invitation) Exists(code string) (bool, error) {
-	n, e := u.Param().SetArgs(db.Cond{`code`: code}).Count()
+	n, e := u.Param(nil, db.Cond{`code`: code}).Count()
 	return n > 0, e
 }
 
 func (u *Invitation) Exists2(code string, excludeID uint) (bool, error) {
-	n, e := u.Param().SetArgs(db.And(
+	n, e := u.Param(nil, db.And(
 		db.Cond{`code`: code},
 		db.Cond{`id`: db.NotEq(excludeID)},
 	)).Count()

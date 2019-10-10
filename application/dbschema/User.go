@@ -5,12 +5,12 @@ package dbschema
 import (
 	"fmt"
 
+	"time"
+
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
-
-	"time"
 )
 
 type Slice_User []*User
@@ -97,11 +97,11 @@ func (a *User) SetParam(param *factory.Param) factory.Model {
 	return a
 }
 
-func (a *User) Param() *factory.Param {
+func (a *User) Param(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	if a.base.Param() == nil {
-		return a.NewParam()
+		return a.NewParam().SetMiddleware(mw).SetArgs(args...)
 	}
-	return a.base.Param()
+	return a.base.Param().SetMiddleware(mw).SetArgs(args...)
 }
 
 // - current function
@@ -157,7 +157,7 @@ func (a *User) CPAFrom(source factory.Model) factory.Model {
 
 func (a *User) Get(mw func(db.Result) db.Result, args ...interface{}) error {
 	base := a.base
-	err := a.Param().SetArgs(args...).SetRecv(a).SetMiddleware(mw).One()
+	err := a.Param(mw, args...).SetRecv(a).One()
 	a.base = base
 	return err
 }
@@ -166,7 +166,7 @@ func (a *User) List(recv interface{}, mw func(db.Result) db.Result, page, size i
 	if recv == nil {
 		recv = a.InitObjects()
 	}
-	return a.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
+	return a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv).List()
 }
 
 func (a *User) GroupBy(keyField string, inputRows ...[]*User) map[string][]*User {
@@ -224,7 +224,7 @@ func (a *User) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offs
 	if recv == nil {
 		recv = a.InitObjects()
 	}
-	return a.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
+	return a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv).List()
 }
 
 func (a *User) Add() (pk interface{}, err error) {
@@ -243,7 +243,7 @@ func (a *User) Add() (pk interface{}, err error) {
 	if err != nil {
 		return
 	}
-	pk, err = a.Param().SetSend(a).Insert()
+	pk, err = a.Param(nil).SetSend(a).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
 			a.Id = v
@@ -271,14 +271,10 @@ func (a *User) Edit(mw func(db.Result) db.Result, args ...interface{}) (err erro
 	if err = DBI.Fire("updating", a, mw, args...); err != nil {
 		return
 	}
-	if err = a.Setter(mw, args...).SetSend(a).Update(); err != nil {
+	if err = a.Param(mw, args...).SetSend(a).Update(); err != nil {
 		return
 	}
 	return DBI.Fire("updated", a, mw, args...)
-}
-
-func (a *User) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
-	return a.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
 func (a *User) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
@@ -313,14 +309,14 @@ func (a *User) SetFields(mw func(db.Result) db.Result, kvset map[string]interfac
 	if err = DBI.FireUpdate("updating", &m, editColumns, mw, args...); err != nil {
 		return
 	}
-	if err = a.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+	if err = a.Param(mw, args...).SetSend(kvset).Update(); err != nil {
 		return
 	}
 	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
 }
 
 func (a *User) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = a.Param().SetArgs(args...).SetSend(a).SetMiddleware(mw).Upsert(func() error {
+	pk, err = a.Param(mw, args...).SetSend(a).Upsert(func() error {
 		a.Updated = uint(time.Now().Unix())
 		if len(a.Gender) == 0 {
 			a.Gender = "secret"
@@ -368,14 +364,14 @@ func (a *User) Delete(mw func(db.Result) db.Result, args ...interface{}) (err er
 	if err = DBI.Fire("deleting", a, mw, args...); err != nil {
 		return
 	}
-	if err = a.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+	if err = a.Param(mw, args...).Delete(); err != nil {
 		return
 	}
 	return DBI.Fire("deleted", a, mw, args...)
 }
 
 func (a *User) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
-	return a.Param().SetArgs(args...).SetMiddleware(mw).Count()
+	return a.Param(mw, args...).Count()
 }
 
 func (a *User) Reset() *User {

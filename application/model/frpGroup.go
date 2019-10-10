@@ -19,10 +19,11 @@
 package model
 
 import (
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/model/base"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/model/base"
 )
 
 func NewFrpGroup(ctx echo.Context) *FrpGroup {
@@ -38,11 +39,11 @@ type FrpGroup struct {
 }
 
 func (f *FrpGroup) Exists(name string) (bool, error) {
-	n, e := f.Param().SetArgs(db.Cond{`name`: name}).Count()
+	n, e := f.Param(nil, db.Cond{`name`: name}).Count()
 	return n > 0, e
 }
 
 func (f *FrpGroup) ExistsOther(name string, id uint) (bool, error) {
-	n, e := f.Param().SetArgs(db.Cond{`name`: name, `id <>`: id}).Count()
+	n, e := f.Param(nil, db.Cond{`name`: name, `id <>`: id}).Count()
 	return n > 0, e
 }

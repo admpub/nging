@@ -21,12 +21,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/license"
 	"github.com/admpub/nging/application/model"
 	"github.com/admpub/nging/application/registry/perm"
-	"github.com/webx-top/echo"
 )
 
 func AuthCheck(h echo.Handler) echo.HandlerFunc {
@@ -124,10 +125,10 @@ func Auth(c echo.Context, saveSession bool) error {
 		}
 		m.User.LastLogin = uint(time.Now().Unix())
 		m.User.LastIp = c.RealIP()
-		m.User.Param().SetSend(map[string]interface{}{
+		m.User.SetFields(nil, map[string]interface{}{
 			`last_login`: m.User.LastLogin,
 			`last_ip`:    m.User.LastIp,
-		}).SetArgs(`id`, m.User.Id).Update()
+		}, `id`, m.User.Id)
 	}
 	return err
 }

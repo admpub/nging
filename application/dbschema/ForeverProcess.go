@@ -5,12 +5,12 @@ package dbschema
 import (
 	"fmt"
 
+	"time"
+
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
-
-	"time"
 )
 
 type Slice_ForeverProcess []*ForeverProcess
@@ -103,11 +103,11 @@ func (a *ForeverProcess) SetParam(param *factory.Param) factory.Model {
 	return a
 }
 
-func (a *ForeverProcess) Param() *factory.Param {
+func (a *ForeverProcess) Param(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	if a.base.Param() == nil {
-		return a.NewParam()
+		return a.NewParam().SetMiddleware(mw).SetArgs(args...)
 	}
-	return a.base.Param()
+	return a.base.Param().SetMiddleware(mw).SetArgs(args...)
 }
 
 // - current function
@@ -163,7 +163,7 @@ func (a *ForeverProcess) CPAFrom(source factory.Model) factory.Model {
 
 func (a *ForeverProcess) Get(mw func(db.Result) db.Result, args ...interface{}) error {
 	base := a.base
-	err := a.Param().SetArgs(args...).SetRecv(a).SetMiddleware(mw).One()
+	err := a.Param(mw, args...).SetRecv(a).One()
 	a.base = base
 	return err
 }
@@ -172,7 +172,7 @@ func (a *ForeverProcess) List(recv interface{}, mw func(db.Result) db.Result, pa
 	if recv == nil {
 		recv = a.InitObjects()
 	}
-	return a.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
+	return a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv).List()
 }
 
 func (a *ForeverProcess) GroupBy(keyField string, inputRows ...[]*ForeverProcess) map[string][]*ForeverProcess {
@@ -230,7 +230,7 @@ func (a *ForeverProcess) ListByOffset(recv interface{}, mw func(db.Result) db.Re
 	if recv == nil {
 		recv = a.InitObjects()
 	}
-	return a.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
+	return a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv).List()
 }
 
 func (a *ForeverProcess) Add() (pk interface{}, err error) {
@@ -249,7 +249,7 @@ func (a *ForeverProcess) Add() (pk interface{}, err error) {
 	if err != nil {
 		return
 	}
-	pk, err = a.Param().SetSend(a).Insert()
+	pk, err = a.Param(nil).SetSend(a).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
 			a.Id = v
@@ -277,14 +277,10 @@ func (a *ForeverProcess) Edit(mw func(db.Result) db.Result, args ...interface{})
 	if err = DBI.Fire("updating", a, mw, args...); err != nil {
 		return
 	}
-	if err = a.Setter(mw, args...).SetSend(a).Update(); err != nil {
+	if err = a.Param(mw, args...).SetSend(a).Update(); err != nil {
 		return
 	}
 	return DBI.Fire("updated", a, mw, args...)
-}
-
-func (a *ForeverProcess) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
-	return a.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
 func (a *ForeverProcess) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
@@ -319,14 +315,14 @@ func (a *ForeverProcess) SetFields(mw func(db.Result) db.Result, kvset map[strin
 	if err = DBI.FireUpdate("updating", &m, editColumns, mw, args...); err != nil {
 		return
 	}
-	if err = a.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+	if err = a.Param(mw, args...).SetSend(kvset).Update(); err != nil {
 		return
 	}
 	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
 }
 
 func (a *ForeverProcess) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = a.Param().SetArgs(args...).SetSend(a).SetMiddleware(mw).Upsert(func() error {
+	pk, err = a.Param(mw, args...).SetSend(a).Upsert(func() error {
 		a.Updated = uint(time.Now().Unix())
 		if len(a.Status) == 0 {
 			a.Status = "idle"
@@ -374,14 +370,14 @@ func (a *ForeverProcess) Delete(mw func(db.Result) db.Result, args ...interface{
 	if err = DBI.Fire("deleting", a, mw, args...); err != nil {
 		return
 	}
-	if err = a.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+	if err = a.Param(mw, args...).Delete(); err != nil {
 		return
 	}
 	return DBI.Fire("deleted", a, mw, args...)
 }
 
 func (a *ForeverProcess) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
-	return a.Param().SetArgs(args...).SetMiddleware(mw).Count()
+	return a.Param(mw, args...).Count()
 }
 
 func (a *ForeverProcess) Reset() *ForeverProcess {

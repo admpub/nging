@@ -5,12 +5,12 @@ package dbschema
 import (
 	"fmt"
 
+	"time"
+
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
-
-	"time"
 )
 
 type Slice_CollectorExportLog []*CollectorExportLog
@@ -85,11 +85,11 @@ func (a *CollectorExportLog) SetParam(param *factory.Param) factory.Model {
 	return a
 }
 
-func (a *CollectorExportLog) Param() *factory.Param {
+func (a *CollectorExportLog) Param(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	if a.base.Param() == nil {
-		return a.NewParam()
+		return a.NewParam().SetMiddleware(mw).SetArgs(args...)
 	}
-	return a.base.Param()
+	return a.base.Param().SetMiddleware(mw).SetArgs(args...)
 }
 
 // - current function
@@ -145,7 +145,7 @@ func (a *CollectorExportLog) CPAFrom(source factory.Model) factory.Model {
 
 func (a *CollectorExportLog) Get(mw func(db.Result) db.Result, args ...interface{}) error {
 	base := a.base
-	err := a.Param().SetArgs(args...).SetRecv(a).SetMiddleware(mw).One()
+	err := a.Param(mw, args...).SetRecv(a).One()
 	a.base = base
 	return err
 }
@@ -154,7 +154,7 @@ func (a *CollectorExportLog) List(recv interface{}, mw func(db.Result) db.Result
 	if recv == nil {
 		recv = a.InitObjects()
 	}
-	return a.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
+	return a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv).List()
 }
 
 func (a *CollectorExportLog) GroupBy(keyField string, inputRows ...[]*CollectorExportLog) map[string][]*CollectorExportLog {
@@ -212,7 +212,7 @@ func (a *CollectorExportLog) ListByOffset(recv interface{}, mw func(db.Result) d
 	if recv == nil {
 		recv = a.InitObjects()
 	}
-	return a.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
+	return a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv).List()
 }
 
 func (a *CollectorExportLog) Add() (pk interface{}, err error) {
@@ -225,7 +225,7 @@ func (a *CollectorExportLog) Add() (pk interface{}, err error) {
 	if err != nil {
 		return
 	}
-	pk, err = a.Param().SetSend(a).Insert()
+	pk, err = a.Param(nil).SetSend(a).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint64); y {
 			a.Id = v
@@ -247,14 +247,10 @@ func (a *CollectorExportLog) Edit(mw func(db.Result) db.Result, args ...interfac
 	if err = DBI.Fire("updating", a, mw, args...); err != nil {
 		return
 	}
-	if err = a.Setter(mw, args...).SetSend(a).Update(); err != nil {
+	if err = a.Param(mw, args...).SetSend(a).Update(); err != nil {
 		return
 	}
 	return DBI.Fire("updated", a, mw, args...)
-}
-
-func (a *CollectorExportLog) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
-	return a.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
 func (a *CollectorExportLog) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
@@ -279,14 +275,14 @@ func (a *CollectorExportLog) SetFields(mw func(db.Result) db.Result, kvset map[s
 	if err = DBI.FireUpdate("updating", &m, editColumns, mw, args...); err != nil {
 		return
 	}
-	if err = a.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+	if err = a.Param(mw, args...).SetSend(kvset).Update(); err != nil {
 		return
 	}
 	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
 }
 
 func (a *CollectorExportLog) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = a.Param().SetArgs(args...).SetSend(a).SetMiddleware(mw).Upsert(func() error {
+	pk, err = a.Param(mw, args...).SetSend(a).Upsert(func() error {
 		if len(a.Status) == 0 {
 			a.Status = "idle"
 		}
@@ -321,14 +317,14 @@ func (a *CollectorExportLog) Delete(mw func(db.Result) db.Result, args ...interf
 	if err = DBI.Fire("deleting", a, mw, args...); err != nil {
 		return
 	}
-	if err = a.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+	if err = a.Param(mw, args...).Delete(); err != nil {
 		return
 	}
 	return DBI.Fire("deleted", a, mw, args...)
 }
 
 func (a *CollectorExportLog) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
-	return a.Param().SetArgs(args...).SetMiddleware(mw).Count()
+	return a.Param(mw, args...).Count()
 }
 
 func (a *CollectorExportLog) Reset() *CollectorExportLog {

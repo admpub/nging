@@ -51,7 +51,6 @@ type Param struct {
 	SelectorMiddleware     func(sqlbuilder.Selector) sqlbuilder.Selector
 	SelectorMiddlewareName string
 	TxMiddleware           func(*Transaction) error
-	CountFunc              func() int64
 	ResultData             interface{}   //查询后保存的结果
 	Args                   []interface{} //Find方法的条件参数
 	Cols                   []interface{} //使用Selector要查询的列

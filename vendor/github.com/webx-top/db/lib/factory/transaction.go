@@ -51,10 +51,18 @@ func (t *Transaction) SQLBuilder(param *Param) sqlbuilder.SQLBuilder {
 	panic(db.ErrUnsupported)
 }
 
-func (t *Transaction) Result(param *Param) db.Result {
+func (t *Transaction) result(param *Param) db.Result {
 	res := t.C(param).Find(param.Args...)
 	if len(param.Cols) > 0 {
 		res = res.Select(param.Cols...)
+	}
+	return res
+}
+
+func (t *Transaction) Result(param *Param) db.Result {
+	res := t.result(param)
+	if param.Middleware != nil {
+		res = param.Middleware(res)
 	}
 	return res
 }
@@ -293,9 +301,6 @@ func (t *Transaction) All(param *Param) error {
 	if param.Size > 0 {
 		res = res.Limit(param.Size).Offset(param.GetOffset())
 	}
-	if param.Middleware != nil {
-		res = param.Middleware(res)
-	}
 	return res.All(param.ResultData)
 }
 
@@ -308,6 +313,9 @@ func (t *Transaction) List(param *Param) (func() int64, error) {
 				param = v
 				param.factory = t.Factory
 				return func() int64 {
+					if param.Total <= 0 {
+						param.Total, _ = t.count(param)
+					}
 					return param.Total
 				}, nil
 			}
@@ -316,36 +324,18 @@ func (t *Transaction) List(param *Param) (func() int64, error) {
 	}
 
 	var res db.Result
-	if param.Middleware == nil {
-		param.CountFunc = func() int64 {
-			if param.Total <= 0 {
-				res := t.Result(param)
-				count, _ := res.Count()
-				param.Total = int64(count)
-			}
-			return param.Total
+	cnt := func() int64 {
+		if param.Total <= 0 {
+			param.Total, _ = t.count(param)
 		}
-		if param.Size >= 0 {
-			res = t.Result(param).Limit(param.Size).Offset(param.GetOffset())
-		} else {
-			res = t.Result(param).Offset(param.GetOffset())
-		}
-	} else {
-		param.CountFunc = func() int64 {
-			if param.Total <= 0 {
-				res := param.Middleware(t.Result(param)).OrderBy()
-				count, _ := res.Count()
-				param.Total = int64(count)
-			}
-			return param.Total
-		}
-		if param.Size >= 0 {
-			res = param.Middleware(t.Result(param).Limit(param.Size).Offset(param.GetOffset()))
-		} else {
-			res = param.Middleware(t.Result(param).Offset(param.GetOffset()))
-		}
+		return param.Total
 	}
-	return param.CountFunc, res.All(param.ResultData)
+	if param.Size >= 0 {
+		res = t.Result(param).Limit(param.Size).Offset(param.GetOffset())
+	} else {
+		res = t.Result(param).Offset(param.GetOffset())
+	}
+	return cnt, res.All(param.ResultData)
 }
 
 func (t *Transaction) One(param *Param) error {
@@ -363,10 +353,13 @@ func (t *Transaction) One(param *Param) error {
 	}
 
 	res := t.Result(param)
-	if param.Middleware != nil {
-		res = param.Middleware(res)
-	}
 	return res.One(param.ResultData)
+}
+
+func (t *Transaction) count(param *Param) (int64, error) {
+	res := t.Result(param).OrderBy()
+	cnt, err := res.Count()
+	return int64(cnt), err
 }
 
 func (t *Transaction) Count(param *Param) (int64, error) {
@@ -383,15 +376,8 @@ func (t *Transaction) Count(param *Param) (int64, error) {
 		defer t.Factory.cacher.Put(param.CachedKey(), param, param.MaxAge)
 	}
 
-	var cnt uint64
 	var err error
-
-	res := t.Result(param)
-	if param.Middleware != nil {
-		res = param.Middleware(res)
-	}
-	cnt, err = res.Count()
-	param.Total = int64(cnt)
+	param.Total, err = t.count(param)
 	return param.Total, err
 }
 
@@ -405,9 +391,6 @@ func (t *Transaction) Insert(param *Param) (interface{}, error) {
 func (t *Transaction) Update(param *Param) error {
 	param.ReadOnly = false
 	res := t.Result(param)
-	if param.Middleware != nil {
-		res = param.Middleware(res)
-	}
 	return res.Update(param.SaveData)
 }
 
@@ -423,9 +406,6 @@ func (t *Transaction) Updatex(param *Param) (affected int64, err error) {
 func (t *Transaction) Upsert(param *Param, beforeUpsert ...func() error) (interface{}, error) {
 	param.ReadOnly = false
 	res := t.Result(param)
-	if param.Middleware != nil {
-		res = param.Middleware(res)
-	}
 	cnt, err := res.Count()
 	if err != nil {
 		if err == db.ErrNoMoreRows {
@@ -457,9 +437,6 @@ func (t *Transaction) Upsert(param *Param, beforeUpsert ...func() error) (interf
 func (t *Transaction) Delete(param *Param) error {
 	param.ReadOnly = false
 	res := t.Result(param)
-	if param.Middleware != nil {
-		res = param.Middleware(res)
-	}
 	return res.Delete()
 }
 

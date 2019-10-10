@@ -19,10 +19,11 @@
 package model
 
 import (
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/model/base"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/model/base"
 )
 
 type FrpClientAndGroup struct {
@@ -48,6 +49,6 @@ func (f *FrpClient) Exists(name string, excludeIds ...uint) (bool, error) {
 	if len(excludeIds) > 0 {
 		cond[`id`] = db.NotEq(excludeIds[0])
 	}
-	n, e := f.Param().SetArgs(cond).Count()
+	n, e := f.Param(nil, cond).Count()
 	return n > 0, e
 }

@@ -31,12 +31,13 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/webx-top/com"
+	"github.com/webx-top/echo/engine"
+
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/charset"
 	"github.com/admpub/nging/application/library/email"
-	"github.com/webx-top/com"
-	"github.com/webx-top/echo/engine"
 )
 
 var (
@@ -370,10 +371,10 @@ func (j *Job) Run() {
 	// 更新上次执行时间
 	j.task.PrevTime = uint(t.Unix())
 	j.task.ExecuteTimes++
-	setErr := j.task.Param().SetArgs(`id`, j.task.Id).SetSend(map[string]interface{}{
+	setErr := j.task.SetFields(nil, map[string]interface{}{
 		`prev_time`:     j.task.PrevTime,
 		`execute_times`: j.task.ExecuteTimes,
-	}).Update()
+	}, `id`, j.task.Id)
 	if setErr != nil {
 		log.Error(setErr)
 	}

@@ -18,10 +18,11 @@
 package model
 
 import (
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/model/base"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/model/base"
 )
 
 func NewSshUserGroup(ctx echo.Context) *SshUserGroup {
@@ -37,11 +38,11 @@ type SshUserGroup struct {
 }
 
 func (f *SshUserGroup) Exists(name string) (bool, error) {
-	n, e := f.Param().SetArgs(db.Cond{`name`: name}).Count()
+	n, e := f.Param(nil, db.Cond{`name`: name}).Count()
 	return n > 0, e
 }
 
 func (f *SshUserGroup) ExistsOther(name string, id uint) (bool, error) {
-	n, e := f.Param().SetArgs(db.Cond{`name`: name, `id <>`: id}).Count()
+	n, e := f.Param(nil, db.Cond{`name`: name, `id <>`: id}).Count()
 	return n > 0, e
 }

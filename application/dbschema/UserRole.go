@@ -5,12 +5,12 @@ package dbschema
 import (
 	"fmt"
 
+	"time"
+
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
-
-	"time"
 )
 
 type Slice_UserRole []*UserRole
@@ -88,11 +88,11 @@ func (a *UserRole) SetParam(param *factory.Param) factory.Model {
 	return a
 }
 
-func (a *UserRole) Param() *factory.Param {
+func (a *UserRole) Param(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
 	if a.base.Param() == nil {
-		return a.NewParam()
+		return a.NewParam().SetMiddleware(mw).SetArgs(args...)
 	}
-	return a.base.Param()
+	return a.base.Param().SetMiddleware(mw).SetArgs(args...)
 }
 
 // - current function
@@ -148,7 +148,7 @@ func (a *UserRole) CPAFrom(source factory.Model) factory.Model {
 
 func (a *UserRole) Get(mw func(db.Result) db.Result, args ...interface{}) error {
 	base := a.base
-	err := a.Param().SetArgs(args...).SetRecv(a).SetMiddleware(mw).One()
+	err := a.Param(mw, args...).SetRecv(a).One()
 	a.base = base
 	return err
 }
@@ -157,7 +157,7 @@ func (a *UserRole) List(recv interface{}, mw func(db.Result) db.Result, page, si
 	if recv == nil {
 		recv = a.InitObjects()
 	}
-	return a.Param().SetArgs(args...).SetPage(page).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
+	return a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv).List()
 }
 
 func (a *UserRole) GroupBy(keyField string, inputRows ...[]*UserRole) map[string][]*UserRole {
@@ -215,7 +215,7 @@ func (a *UserRole) ListByOffset(recv interface{}, mw func(db.Result) db.Result, 
 	if recv == nil {
 		recv = a.InitObjects()
 	}
-	return a.Param().SetArgs(args...).SetOffset(offset).SetSize(size).SetRecv(recv).SetMiddleware(mw).List()
+	return a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv).List()
 }
 
 func (a *UserRole) Add() (pk interface{}, err error) {
@@ -228,7 +228,7 @@ func (a *UserRole) Add() (pk interface{}, err error) {
 	if err != nil {
 		return
 	}
-	pk, err = a.Param().SetSend(a).Insert()
+	pk, err = a.Param(nil).SetSend(a).Insert()
 	if err == nil && pk != nil {
 		if v, y := pk.(uint); y {
 			a.Id = v
@@ -250,14 +250,10 @@ func (a *UserRole) Edit(mw func(db.Result) db.Result, args ...interface{}) (err 
 	if err = DBI.Fire("updating", a, mw, args...); err != nil {
 		return
 	}
-	if err = a.Setter(mw, args...).SetSend(a).Update(); err != nil {
+	if err = a.Param(mw, args...).SetSend(a).Update(); err != nil {
 		return
 	}
 	return DBI.Fire("updated", a, mw, args...)
-}
-
-func (a *UserRole) Setter(mw func(db.Result) db.Result, args ...interface{}) *factory.Param {
-	return a.Param().SetArgs(args...).SetMiddleware(mw)
 }
 
 func (a *UserRole) SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) (err error) {
@@ -282,14 +278,14 @@ func (a *UserRole) SetFields(mw func(db.Result) db.Result, kvset map[string]inte
 	if err = DBI.FireUpdate("updating", &m, editColumns, mw, args...); err != nil {
 		return
 	}
-	if err = a.Setter(mw, args...).SetSend(kvset).Update(); err != nil {
+	if err = a.Param(mw, args...).SetSend(kvset).Update(); err != nil {
 		return
 	}
 	return DBI.FireUpdate("updated", &m, editColumns, mw, args...)
 }
 
 func (a *UserRole) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
-	pk, err = a.Param().SetArgs(args...).SetSend(a).SetMiddleware(mw).Upsert(func() error {
+	pk, err = a.Param(mw, args...).SetSend(a).Upsert(func() error {
 		a.Updated = uint(time.Now().Unix())
 		if len(a.Disabled) == 0 {
 			a.Disabled = "N"
@@ -325,14 +321,14 @@ func (a *UserRole) Delete(mw func(db.Result) db.Result, args ...interface{}) (er
 	if err = DBI.Fire("deleting", a, mw, args...); err != nil {
 		return
 	}
-	if err = a.Param().SetArgs(args...).SetMiddleware(mw).Delete(); err != nil {
+	if err = a.Param(mw, args...).Delete(); err != nil {
 		return
 	}
 	return DBI.Fire("deleted", a, mw, args...)
 }
 
 func (a *UserRole) Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error) {
-	return a.Param().SetArgs(args...).SetMiddleware(mw).Count()
+	return a.Param(mw, args...).Count()
 }
 
 func (a *UserRole) Reset() *UserRole {

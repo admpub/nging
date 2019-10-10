@@ -21,11 +21,12 @@ package model
 import (
 	"errors"
 
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/model/base"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/model/base"
 )
 
 type FtpUserAndGroup struct {
@@ -48,12 +49,15 @@ type FtpUser struct {
 }
 
 func (f *FtpUser) Exists(username string) (bool, error) {
-	n, e := f.Param().SetArgs(db.Cond{`username`: username}).Count()
+	n, e := f.Param(nil, db.Cond{`username`: username}).Count()
 	return n > 0, e
 }
 
 func (f *FtpUser) CheckPasswd(username string, password string) (bool, error) {
-	n, e := f.Param().SetArgs(db.Cond{`username`: username, `password`: com.MakePassword(password, DefaultSalt)}).Count()
+	n, e := f.Param(nil, db.Cond{
+		`username`: username,
+		`password`: com.MakePassword(password, DefaultSalt),
+	}).Count()
 	y := n > 0
 	if y {
 		_, e = f.RootPath(username)

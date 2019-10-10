@@ -22,10 +22,11 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/model/base"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/model/base"
 )
 
 func NewCommand(ctx echo.Context) *Command {
@@ -41,12 +42,12 @@ type Command struct {
 }
 
 func (u *Command) Exists(name string) (bool, error) {
-	n, e := u.Param().SetArgs(db.Cond{`name`: name}).Count()
+	n, e := u.Param(nil, db.Cond{`name`: name}).Count()
 	return n > 0, e
 }
 
 func (u *Command) Exists2(name string, excludeID uint) (bool, error) {
-	n, e := u.Param().SetArgs(db.And(
+	n, e := u.Param(nil, db.And(
 		db.Cond{`name`: name},
 		db.Cond{`id`: db.NotEq(excludeID)},
 	)).Count()

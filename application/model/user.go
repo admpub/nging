@@ -20,15 +20,15 @@ package model
 
 import (
 	"errors"
-
 	"encoding/gob"
+
+	"github.com/webx-top/com"
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/model/base"
-	"github.com/webx-top/com"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 func init() {
@@ -50,12 +50,12 @@ type User struct {
 }
 
 func (u *User) Exists(username string) (bool, error) {
-	n, e := u.Param().SetArgs(db.Cond{`username`: username}).Count()
+	n, e := u.Param(nil, db.Cond{`username`: username}).Count()
 	return n > 0, e
 }
 
 func (u *User) Exists2(username string, excludeUID uint) (bool, error) {
-	n, e := u.Param().SetArgs(db.And(
+	n, e := u.Param(nil, db.And(
 		db.Cond{`username`: username},
 		db.Cond{`id`: db.NotEq(excludeUID)},
 	)).Count()

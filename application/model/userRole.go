@@ -20,12 +20,13 @@ package model
 import (
 	"strings"
 
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/perm"
 	"github.com/admpub/nging/application/model/base"
 	"github.com/admpub/nging/application/registry/navigate"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 func NewUserRole(ctx echo.Context) *UserRole {
@@ -43,7 +44,7 @@ type UserRole struct {
 }
 
 func (u *UserRole) Exists(name string) (bool, error) {
-	n, e := u.Param().SetArgs(db.Cond{`name`: name}).Count()
+	n, e := u.Param(nil, db.Cond{`name`: name}).Count()
 	return n > 0, e
 }
 
@@ -72,7 +73,7 @@ func (u *UserRole) CheckPerm2(roleList []*dbschema.UserRole, perm string) (hasPe
 }
 
 func (u *UserRole) Exists2(name string, excludeID uint) (bool, error) {
-	n, e := u.Param().SetArgs(db.And(
+	n, e := u.Param(nil, db.And(
 		db.Cond{`name`: name},
 		db.Cond{`id`: db.NotEq(excludeID)},
 	)).Count()
