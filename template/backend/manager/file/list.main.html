@@ -101,17 +101,19 @@
 							<th style="width:60px" sort="-id"><strong>ID</strong></th>
 							<th style="width:50px"><strong>{{"图片"|T}}</strong></th>
 							<th><strong>{{"原始名称"|T}}</strong></th>
-							{{if not $dialog}}
+							{{- if not $dialog -}}
 							<th><strong>{{"保存位置"|T}}</strong></th>
-							{{end}}
+							{{- end -}}
 							<th style="width:80px" sort="-type"><strong>{{"文件类型"|T}}</strong></th>
 							<th style="width:80px" sort="table_name"><strong>{{"内容类型"|T}}</strong></th>
+							{{- if not $dialog -}}
 							<th style="width:60px" sort="-size"><strong>{{"大小"|T}}</strong></th>
 							<th style="width:80px" sort="-width"><strong>{{"尺寸"|T}}</strong></th>
+							{{- end -}}
 							<th style="width:85px" sort="-created"><strong>{{"时间"|T}}</strong></th>
-							{{if not $dialog}}
+							{{- if not $dialog -}}
 							<th style="width:60px" class="text-center"><strong>{{"操作"|T}}</strong></th>
-							{{end}}
+							{{- end -}}
 						</tr>
 					</thead>
 					<tbody class="no-border-y" id="tbody-content">
@@ -140,6 +142,10 @@
 								{{$v.Name}}
 								<div class="x-block">
 									<span class="label label-{{if gt $v.UsedTimes 0}}primary{{else}}default{{end}} label-xs">{{if gt $v.UsedTimes 0}}{{T `使用%d次` $v.UsedTimes}}{{else}}{{`未使用`|T}}{{end}}</span>
+									{{- if $dialog}}
+									<span class="label label-success label-xs">{{FormatBytes $v.Size 2 true}}</span>
+									<span class="label label-info label-xs">{{$v.Width}}&times;{{$v.Height}}</span>
+									{{- end -}}
 								</div>
 							</td>
 							{{- if not $dialog -}}
@@ -147,8 +153,10 @@
 							{{- end -}}
 							<td>{{$v.Type}}</td>
 							<td>{{if $v.SubdirInfo}}{{$v.SubdirInfo.String}}{{else}}-{{end}}</td>
+							{{- if not $dialog -}}
 							<td>{{FormatBytes $v.Size 2 true}}</td>
 							<td>{{$v.Width}}&times;{{$v.Height}}</td>
+							{{- end -}}
 							<td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}</td>
 							{{- if not $dialog -}}
 							<td class="text-center">
