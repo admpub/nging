@@ -61,7 +61,9 @@ $(function(){
 			$.LoadingOverlay("hide");
 			if(r.Code==1){
 				App.message({text:App.i18n.UPLOAD_SUCCEED,type:'success'});
-				window.setTimeout(function(){window.location=listURL;},2000);
+				$.get(listURL,{partial:1},function(r){
+					$('#file-list-box').html(r);
+				},'html');
 			}else{
 				App.message({text:r.Info,type:'error'});
 			}

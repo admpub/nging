@@ -32,6 +32,11 @@ func FileList(ctx echo.Context) error {
 	err := List(ctx, ``, 0)
 	ctx.Set(`dialog`, false)
 	ctx.Set(`multiple`, true)
+	partial := ctx.Formx(`partial`).Bool()
+	if partial {
+		ctx.Request().Form().Set(`_pjax`, `#file-list-box`)
+		return ctx.Render(`manager/file/list.main`, err)
+	}
 	return ctx.Render(`manager/file/list`, err)
 }
 
