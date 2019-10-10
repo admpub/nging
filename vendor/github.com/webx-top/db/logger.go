@@ -23,18 +23,21 @@ package db
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/webx-top/com"
 )
 
 const (
 	fmtLogSessID       = `Session ID:     %05d`
 	fmtLogTxID         = `Transaction ID: %05d`
 	fmtLogQuery        = `Query:          %s`
-	fmtLogArgs         = `Arguments:      %#v`
+	fmtLogArgs         = `Arguments:      %v`
 	fmtLogRowsAffected = `Rows affected:  %d`
 	fmtLogLastInsertID = `Last insert ID: %d`
 	fmtLogError        = `Error:          %v`
@@ -78,14 +81,24 @@ func (q *QueryStatus) String() string {
 		lines = append(lines, fmt.Sprintf(fmtLogTxID, q.TxID))
 	}
 
-	if query := q.Query; query != "" {
+	if query := q.Query; len(query) > 0 {
 		query = reInvisibleChars.ReplaceAllString(query, ` `)
 		query = strings.TrimSpace(query)
+		if len(q.Args) > 0 {
+			args := make([]interface{}, len(q.Args))
+			for k, v := range q.Args {
+				s := fmt.Sprint(v)
+				s = com.AddSlashes(s)
+				args[k] = s
+			}
+			query = fmt.Sprintf(strings.Replace(query, `?`, `'%v'`, -1), args...)
+		}
 		lines = append(lines, fmt.Sprintf(fmtLogQuery, query))
 	}
 
 	if len(q.Args) > 0 {
-		lines = append(lines, fmt.Sprintf(fmtLogArgs, q.Args))
+		b, _ := json.Marshal(q.Args)
+		lines = append(lines, fmt.Sprintf(fmtLogArgs, string(b)))
 	}
 
 	if q.RowsAffected != nil {
