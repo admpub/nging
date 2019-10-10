@@ -1193,15 +1193,8 @@ var App = function () {
     },
     tableSorting: function (table) {
       table = table == null ? '' : table + ' ';
-      $(table + '[sort-current!=""]').each(function () {//<thead sort-current="created">
-        var current = String($(this).attr('sort-current'));
-        var isDesc = current.substring(0,1) == '-';
-        if (isDesc) current=current.substring(1);
-        var sortObj = $(this).find('[sort="' + current + '"]');//<th sort="-created">
+      function sortAction(sortObj,isDesc){
         var newCls, oldCls, sortBy;
-        if (sortObj.length < 1 && current) {
-          sortObj = $(this).find('[sort="-' + current + '"]');
-        }
         if (!isDesc) {
           newCls = 'fa-arrow-up';
           sortBy = 'up';
@@ -1219,14 +1212,24 @@ var App = function () {
             icon.removeClass(oldCls).addClass(newCls);
           }
           sortObj.addClass('sort-active sort-'+sortBy);
-          sortObj.siblings('.sort-active').removeClass('sort-active').removeClass('sort-up').removeClass('sort-down');
+          sortObj.siblings('.sort-active').removeClass('sort-active').removeClass('sort-up').removeClass('sort-down').find('.fa').remove();
         }
+      }
+      $(table + '[sort-current!=""]').each(function () {//<thead sort-current="created">
+        var current = String($(this).attr('sort-current'));
+        var isDesc = current.substring(0,1) == '-';
+        if (isDesc) current=current.substring(1);
+        var sortObj = $(this).find('[sort="' + current + '"]');//<th sort="-created">
+        if (sortObj.length < 1 && current) {
+          sortObj = $(this).find('[sort="-' + current + '"]');
+        }
+        sortAction(sortObj,isDesc);
       });
       $(table + '[sort-current] [sort]').css('cursor', 'pointer').on('click', function (e) {
         var thead = $(this).parents('[sort-current]');
         var current = thead.attr('sort-current');
         var url = thead.attr('sort-url') || window.location.href;
-        var trigger = thead.attr('sort-trigger');
+        var trigger = thead.attr('sort-trigger') || thead.data('sort-trigger');
         var sort = $(this).attr('sort');
         if (current && (current == sort || current == '-' + sort)) {
           var reg = /^\-/;
@@ -1234,9 +1237,13 @@ var App = function () {
         } else {
           current = sort;
         }
+        thead.attr('sort-current',current);
         url = App.replaceURLParam('sort', current, url);
         if (trigger) {
-          thead.trigger('sort');
+          thead.data('sort-url',url);
+          var isDesc = current.substring(0,1) == '-';
+          sortAction($(this),isDesc);
+          window.setTimeout(trigger,0);
         } else {
           var setto = thead.attr('sort-setto');
           if (setto) {

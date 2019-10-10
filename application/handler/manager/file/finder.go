@@ -9,7 +9,6 @@ func Finder(ctx echo.Context) error {
 	ctx.Set(`multiple`, multiple)
 	partial := ctx.Formx(`partial`).Bool()
 	if partial {
-		ctx.Request().Form().Set(`_pjax`, `#table-container`)
 		return ctx.Render(`manager/file/list.main.content`, err)
 	}
 	return ctx.Render(`manager/file/finder`, err)

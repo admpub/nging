@@ -3,12 +3,18 @@
 <div class="row">
 	<div class="col-md-12">
 		<div class="block-flat sm-margin-bottom">
-			<form class="form-horizontal" action="" id="search-form" method="GET">
+			<form class="form-horizontal" action="__BACKEND__{{URL.Path}}" id="search-form" method="GET">
 				{{- if Stored.dialog -}}
 				<input type="hidden" name="multiple" value="{{if $multiple}}1{{else}}0{{end}}" />
 				<input type="hidden" name="from" value="{{Form `from`}}" />
 				<input type="hidden" name="callback" value="{{Form `callback`}}" />
 				{{- end -}}
+				{{- if Form `filetype` -}}
+				<input type="hidden" name="filetype" value="{{Stored.fileType}}" />
+				{{end}}
+				{{- if Form `multiple` -}}
+				<input type="hidden" name="multiple" value="1" />
+				{{end}}
 			<div class="row no-margin">
 				<div class="form-group col-sm-3 no-margin xs-margin-top no-padding">
 				<div class="input-group no-margin-bottom">
@@ -24,13 +30,13 @@
 						<option value="user" {{if eq $ownerType `user`}} selected{{end}}>{{`后台用户`|T}}</option>
 						<option value="customer" {{if eq $ownerType `customer`}} selected{{end}}>{{`前台客户`|T}}</option>
 					</select></span>
-					<input name="ownerId" class="form-control" id="ownerId" onchange="$('#search-form').submit()" placeholder="{{`用户ID`|T}}" value="{{Form `ownerId`}}">
+					<input name="ownerId" class="form-control" id="ownerId" placeholder="{{`用户ID`|T}}" value="{{Form `ownerId`}}">
 				</div>
 				</div>
 				<div class="form-group col-sm-2 no-margin xs-margin-top no-padding">
 				<div class="input-group no-margin-bottom">
 					<span class="input-group-addon">{{"内容类型"|T}}</span>
-					<select name="table" class="form-control" id="table" onchange="$('#search-form').submit()">
+					<select name="table" class="form-control" id="table">
 						<option value="">-{{"不限"|T}}-</option>
 						{{$table := Form "table"}} 
 						{{range $k, $v := Stored.tableNames}}
@@ -43,7 +49,7 @@
 				<div class="form-group col-sm-2 no-margin xs-margin-top no-padding">
 				<div class="input-group no-margin-bottom">
 					<span class="input-group-addon">{{"文件类型"|T}}</span>
-					<select name="type" class="form-control" id="type" onchange="$('#search-form').submit()">
+					<select name="type" class="form-control" id="type">
 						<option value="">-{{"不限"|T}}-</option>
 						{{$type := Stored.fileType}} 
 						{{range $k, $v := Stored.fileTypes}}
@@ -56,7 +62,7 @@
 				<div class="form-group col-sm-2 no-margin xs-margin-top no-padding">
 				<div class="input-group no-margin-bottom">
 					<span class="input-group-addon">{{"使用状态"|T}}</span>
-					<select name="used" class="form-control" id="used" onchange="$('#search-form').submit()">
+					<select name="used" class="form-control" id="used">
 						<option value="">-{{"不限"|T}}-</option>
 						{{$used := Form "used"}} 
 						<option value="0" {{if eq $used `0`}} selected{{end}}>{{`未使用`|T}}</option>
