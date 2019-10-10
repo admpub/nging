@@ -20,5 +20,6 @@ target=window.parent;
 {{- else if eq $from "opener" -}}
 target=window.opener;
 {{- end -}}
+var dialogMode={{- Stored.dialog -}};
 </script>
 <script src="__ASSETS__/js/behaviour/page/file-list.min.js?t={{BuildTime}}" type="text/javascript" charset="utf-8"></script>

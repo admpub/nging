@@ -39,10 +39,15 @@ $(function(){
 		var data=$('#search-form').serializeArray();
 		data.push({name:'partial',value:1});
 		loadList($('#search-form').attr('action'),data);
-		//$('#search-form').submit();
 	}
-	$('#timerange,#type,#table,#ownerId,#used').on('change', submitSearch);
-	$('#search-form').on('submit',submitSearch);
+	if(dialogMode) {
+		$('#search-form').on('submit',submitSearch);
+		$('#timerange,#type,#table,#ownerId,#used').on('change', submitSearch);
+	}else{
+		$('#timerange,#type,#table,#ownerId,#used').on('change', function(){
+			$('#search-form').submit();
+		});
+	}
 	var myUploadInput;
 	function initUploadButton(){
 		myUploadInput = $("#input-file-upload").uploadPreviewer({
