@@ -100,13 +100,15 @@ func MoveUploadedFileToOwnerDirCommon(ctx echo.Context, src string, typ string, 
 		return newPath, err
 	}
 	name := path.Base(src)
-	//unownedFile := filepath.Join(helper.UploadDir, typ, `0`, name)
+	// unownedFile := filepath.Join(helper.UploadDir, typ, `0`, name)
+	// 无主文件
 	unownedFile := helper.URLToFile(src)
 	if !com.FileExists(unownedFile) {
 		return src, nil
 	}
 	sdir := filepath.Join(helper.UploadDir, typ, fmt.Sprint(id))
 	os.MkdirAll(sdir, os.ModePerm)
+	// 迁移目的地
 	ownedFile := sdir + echo.FilePathSeparator + name
 	if isAvatar {
 		ext := path.Ext(src)
@@ -116,6 +118,7 @@ func MoveUploadedFileToOwnerDirCommon(ctx echo.Context, src string, typ string, 
 	if err != nil {
 		return newPath, err
 	}
+	// 迁移后文件的访问网址
 	newPath = helper.UploadURLPath + typ + `/` + fmt.Sprint(id) + `/` + name
 	p := strings.LastIndex(unownedFile, `.`)
 	if p > 0 {
