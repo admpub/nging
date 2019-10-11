@@ -1,3 +1,21 @@
+/*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
+
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 package listener
 
 import (
@@ -21,7 +39,13 @@ func New(cb Callback, embedded bool, seperators ...string) *FileRelation {
 	return &FileRelation{Embedded: embedded, Seperator: seperator, callback: cb}
 }
 
-type Callback func(m factory.Model) (tableID string, content string)
+type Callback func(m factory.Model) (tableID string, content string, property *Property)
+
+type Property struct {
+	Embedded  bool   // 是否为嵌入图片
+	Seperator string // 文件字段中多个文件路径之间的分隔符，空字符串代表为单个文件
+	Exit      bool
+}
 
 // FileRelation 文件关联数据监听
 // FileRelation.SetTable(`table`,`field`).ListenDefault()
@@ -76,14 +100,32 @@ func (f *FileRelation) Listen(events ...string) {
 					return nil
 				}
 				fileM := modelFile.NewEmbedded(m.Context())
-				tableID, content := f.callback(m)
-				return fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(f.Seperator).Add(content, f.Embedded)
+				tableID, content, property := f.callback(m)
+				seperator := f.Seperator
+				embedded := f.Embedded
+				if property != nil {
+					if property.Exit {
+						return nil
+					}
+					seperator = property.Seperator
+					embedded = property.Embedded
+				}
+				return fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(seperator).Add(content, embedded)
 			}, f.TableName)
 		default:
 			dbi.On(event, func(m factory.Model, _ ...string) error {
 				fileM := modelFile.NewEmbedded(m.Context())
-				tableID, content := f.callback(m)
-				return fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(f.Seperator).Add(content, f.Embedded)
+				tableID, content, property := f.callback(m)
+				seperator := f.Seperator
+				embedded := f.Embedded
+				if property != nil {
+					if property.Exit {
+						return nil
+					}
+					seperator = property.Seperator
+					embedded = property.Embedded
+				}
+				return fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(seperator).Add(content, embedded)
 			}, f.TableName)
 		}
 	}

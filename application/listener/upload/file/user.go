@@ -24,13 +24,13 @@ import (
 	"time"
 
 	uploadClient "github.com/webx-top/client/upload"
-	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/library/fileupdater/listener"
 	modelFile "github.com/admpub/nging/application/model/file"
 	_ "github.com/admpub/nging/application/model/file/initialize"
 	"github.com/admpub/nging/application/registry/upload"
@@ -109,63 +109,33 @@ func init() {
 	// - 监听数据表事件
 
 	// - user 表事件
-	dbschema.DBI.On(`user:created`, func(m factory.Model, _ ...string) error {
-		fileM := modelFile.NewEmbedded(m.Context())
+	listener.New(func(m factory.Model) (tableID string, content string, property *listener.Property) {
 		userM := m.(*dbschema.User)
-		return fileM.Updater(`user`, `avatar`, fmt.Sprint(userM.Id)).Add(userM.Avatar, false)
-	})
-	dbschema.DBI.On(`user:updating`, func(m factory.Model, editColumns ...string) error {
-		if len(editColumns) > 0 && !com.InSlice(`avatar`, editColumns) {
-			return nil
-		}
-		fileM := modelFile.NewEmbedded(m.Context())
-		userM := m.(*dbschema.User)
-		return fileM.Updater(`user`, `avatar`, fmt.Sprint(userM.Id)).Edit(userM.Avatar, false)
-	})
-	dbschema.DBI.On(`user:deleted`, func(m factory.Model, _ ...string) error {
-		fileM := modelFile.NewEmbedded(m.Context())
-		userM := m.(*dbschema.User)
-		return fileM.Updater(`user`, `avatar`, fmt.Sprint(userM.Id)).Delete()
-	})
+		tableID = fmt.Sprint(userM.Id)
+		content = userM.Avatar
+		return
+	}, false).SetTable(`user`, `avatar`).ListenDefault()
 
 	// - config 表事件
-	dbschema.DBI.On(`config:created`, func(m factory.Model, _ ...string) error {
-		fileM := modelFile.NewEmbedded(m.Context())
+	listener.New(func(m factory.Model) (tableID string, content string, property *listener.Property) {
 		confM := m.(*dbschema.Config)
-		embedded, seperator, exit := getConfigEventAttrs(confM)
-		if exit {
-			return nil
-		}
-		return fileM.Updater(`config`, `value`, confM.Group+`.`+confM.Key).SetSeperator(seperator).Add(confM.Value, embedded)
-	})
-	dbschema.DBI.On(`config:updating`, func(m factory.Model, editColumns ...string) error {
-		if len(editColumns) > 0 && !com.InSlice(`value`, editColumns) {
-			return nil
-		}
-		fileM := modelFile.NewEmbedded(m.Context())
-		confM := m.(*dbschema.Config)
-		embedded, seperator, exit := getConfigEventAttrs(confM)
-		if exit {
-			return nil
-		}
-		return fileM.Updater(`config`, `value`, confM.Group+`.`+confM.Key).SetSeperator(seperator).Edit(confM.Value, embedded)
-	})
-	dbschema.DBI.On(`config:deleted`, func(m factory.Model, _ ...string) error {
-		fileM := modelFile.NewEmbedded(m.Context())
-		confM := m.(*dbschema.Config)
-		return fileM.Updater(`config`, `value`, confM.Group+`.`+confM.Key).Delete()
-	})
+		tableID = confM.Group + `.` + confM.Key
+		content = confM.Value
+		property = getConfigEventAttrs(confM)
+		return
+	}, false).SetTable(`config`, `value`).ListenDefault()
 }
 
-func getConfigEventAttrs(confM *dbschema.Config) (embedded bool, seperator string, exit bool) {
+func getConfigEventAttrs(confM *dbschema.Config) *listener.Property {
+	property := &listener.Property{}
 	switch confM.Type {
 	case `html`:
-		embedded = true
+		property.Embedded = true
 	case `image`, `video`, `audio`, `file`:
 	case `list`:
-		seperator = `,`
+		property.Seperator = `,`
 	default:
-		exit = true
+		property.Exit = true
 	}
-	return
+	return property
 }
