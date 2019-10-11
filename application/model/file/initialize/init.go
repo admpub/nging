@@ -4,14 +4,15 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/common"
-	modelFile "github.com/admpub/nging/application/model/file"
-	"github.com/admpub/nging/application/registry/upload"
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+
+	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/library/common"
+	modelFile "github.com/admpub/nging/application/model/file"
+	"github.com/admpub/nging/application/registry/upload"
 )
 
 func init() {
@@ -21,16 +22,16 @@ func init() {
 		return fileM.Add(reader)
 	}
 	upload.DBSaverRegister(`user-avatar`, func(fileM *modelFile.File, result *uploadClient.Result, reader io.Reader) (err error) {
-		if fileM.OwnerId <= 0 {
+		if len(fileM.TableId) == 0 {
 			return fileM.Add(reader)
 		}
 		fileM.UsedTimes = 0
 		m := &dbschema.File{}
 		m.CPAFrom(fileM.File)
 		err = m.Get(nil, db.And(
-			db.Cond{`table_id`: fileM.OwnerId},
-			db.Cond{`table_name`: `user`},
-			db.Cond{`field_name`: `avatar`},
+			db.Cond{`table_id`: fileM.TableId},
+			db.Cond{`table_name`: fileM.TableName},
+			db.Cond{`field_name`: fileM.FieldName},
 		))
 		defer func() {
 			if err != nil {

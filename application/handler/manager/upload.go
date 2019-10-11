@@ -90,6 +90,10 @@ func Upload(ctx echo.Context) error {
 	if user != nil {
 		ownerID = uint64(user.Id)
 	}
+	if ownerID<1 {
+		ctx.Data().SetError(ctx.E(`请先登录`))
+		return ctx.Redirect(handler.URLFor(`/login`))
+	}
 	return UploadByOwner(ctx, ownerType, ownerID)
 }
 
