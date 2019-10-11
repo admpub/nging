@@ -29,6 +29,13 @@ import (
 	"path/filepath"
 	"strings"
 
+	uploadClient "github.com/webx-top/client/upload"
+	_ "github.com/webx-top/client/upload/driver"
+	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/middleware/tplfunc"
+	"github.com/webx-top/echo/param"
+
 	"github.com/admpub/checksum"
 	imageproxy "github.com/admpub/imageproxy"
 	"github.com/admpub/log"
@@ -40,13 +47,6 @@ import (
 	"github.com/admpub/nging/application/registry/upload/driver/filesystem"
 	"github.com/admpub/nging/application/registry/upload/helper"
 	"github.com/admpub/qrcode"
-	"github.com/webx-top/com"
-	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/middleware/tplfunc"
-	"github.com/webx-top/echo/param"
-
-	uploadClient "github.com/webx-top/client/upload"
-	_ "github.com/webx-top/client/upload/driver"
 )
 
 // ResponseDataForUpload 根据不同的上传方式响应不同的数据格式
@@ -90,7 +90,7 @@ func Upload(ctx echo.Context) error {
 	if user != nil {
 		ownerID = uint64(user.Id)
 	}
-	if ownerID<1 {
+	if ownerID < 1 {
 		ctx.Data().SetError(ctx.E(`请先登录`))
 		return ctx.Redirect(handler.URLFor(`/login`))
 	}
@@ -263,9 +263,11 @@ func Crop(ctx echo.Context) error {
 	}
 	thumbM := modelFile.NewThumb(ctx)
 	fileM := modelFile.NewFile(ctx)
-	err = fileM.GetByViewURL(StorerEngine, srcURL)
-	if err != nil {
-		return err
+	if modelFile.Enable {
+		err = fileM.GetByViewURL(StorerEngine, srcURL)
+		if err != nil {
+			return err
+		}
 	}
 
 	x := ctx.Formx(`x`).Float64()
@@ -406,18 +408,19 @@ END:
 			return err
 		}
 	}
-	size := len(thumb)
-	thumbM.Size = uint64(size)
-	thumbM.Width = param.AsUint(opt.Width)
-	thumbM.Height = param.AsUint(opt.Height)
-	thumbM.SaveName = path.Base(thumbM.SavePath)
-	thumbM.UsedTimes = 0
-	thumbM.Md5 = fileMd5
-	err = thumbM.SetByFile(fileM.File).Save()
-	if err != nil {
-		return err
+	if modelFile.Enable {
+		size := len(thumb)
+		thumbM.Size = uint64(size)
+		thumbM.Width = param.AsUint(opt.Width)
+		thumbM.Height = param.AsUint(opt.Height)
+		thumbM.SaveName = path.Base(thumbM.SavePath)
+		thumbM.UsedTimes = 0
+		thumbM.Md5 = fileMd5
+		err = thumbM.SetByFile(fileM.File).Save()
+		if err != nil {
+			return err
+		}
 	}
-
 	if ctx.Format() == `json` {
 		return ctx.JSON(ctx.Data().SetInfo(`cropped`).SetData(thumbURL))
 	}

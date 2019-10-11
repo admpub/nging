@@ -25,14 +25,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/admpub/events"
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/model/base"
-	"github.com/admpub/nging/application/registry/upload/table"
 	"github.com/coscms/go-imgparse/imgparse"
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/events"
+	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/model/base"
+	"github.com/admpub/nging/application/registry/upload/table"
 )
 
 func NewFile(ctx echo.Context) *File {
@@ -43,6 +44,8 @@ func NewFile(ctx echo.Context) *File {
 	m.File.SetContext(ctx)
 	return m
 }
+
+var Enable bool
 
 type File struct {
 	*dbschema.File

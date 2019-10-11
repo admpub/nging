@@ -16,6 +16,7 @@ import (
 )
 
 func init() {
+	modelFile.Enable = true
 	common.OnUpdateOwnerFilePath = OnUpdateOwnerFilePath
 	common.OnRemoveOwnerFile = OnRemoveOwnerFile
 	upload.DefaultDBSaver = func(fileM *modelFile.File, result *uploadClient.Result, reader io.Reader) error {
