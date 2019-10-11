@@ -64,7 +64,7 @@ func init() {
 		subdir += time.Now().Format(`2006/01/02/`)
 		tis.SetTableID(uid)
 		tis.SetTableName(`user`)
-		tis.SetFieldName(`avatar`)
+		tis.SetFieldName(``)
 		return
 	})
 }
