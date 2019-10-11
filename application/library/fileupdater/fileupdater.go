@@ -35,6 +35,19 @@ type FileUpdater struct {
 	seperator string
 }
 
+func (f *FileUpdater) Handle(event string, content string, embedded bool) error {
+	switch event {
+	case `creating`, `created`:
+		return f.Add(content, embedded)
+	case `updating`, `updated`:
+		return f.Edit(content, embedded)
+	case `deleting`, `deleted`:
+		return f.Delete()
+	default:
+		return nil
+	}
+}
+
 func (f *FileUpdater) Add(content string, embedded bool) (err error) {
 	if len(content) == 0 {
 		return
