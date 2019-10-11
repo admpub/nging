@@ -53,6 +53,13 @@ var (
 	TypeRegister = upload.TypeRegister
 )
 
+// URLToFile 文件网址转为存储路径
+func URLToFile(fileURL string) string {
+	filePath := strings.TrimPrefix(fileURL, UploadURLPath)
+	filePath = strings.TrimSuffix(UploadDir, `/`) + `/` + strings.TrimPrefix(filePath, `/`)
+	return filePath
+}
+
 // FileTypeByName 根据文件名判断文件类型
 func FileTypeByName(filename string) string {
 	p := strings.LastIndex(filename, `.`)

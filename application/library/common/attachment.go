@@ -26,9 +26,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/admpub/nging/application/registry/upload/helper"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/registry/upload/helper"
 )
 
 // IsRightUploadFile 是否是正确的上传文件
@@ -99,7 +100,8 @@ func MoveUploadedFileToOwnerDirCommon(ctx echo.Context, src string, typ string, 
 		return newPath, err
 	}
 	name := path.Base(src)
-	unownedFile := filepath.Join(helper.UploadDir, typ, `0`, name)
+	//unownedFile := filepath.Join(helper.UploadDir, typ, `0`, name)
+	unownedFile := helper.URLToFile(src)
 	if !com.FileExists(unownedFile) {
 		return src, nil
 	}

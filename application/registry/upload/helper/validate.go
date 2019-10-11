@@ -24,6 +24,13 @@ import (
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/errors"
+)
+
+var (
+	ErrUnsupportedExtension = errors.New("不支持的文件扩展名")
+	ErrIncorrectPath        = errors.New("路径不合法")
 )
 
 // IsRightUploadFile 是否是正确的上传文件
@@ -31,10 +38,10 @@ var IsRightUploadFile = func(ctx echo.Context, src string) error {
 	src = path.Clean(src)
 	ext := strings.ToLower(path.Ext(src))
 	if !com.InSlice(ext, AllowedUploadFileExtensions) {
-		return ctx.E(`不支持的文件扩展名: %s`, ext)
+		return errors.WithMessage(ErrIncorrectPath, ext)
 	}
-	if !strings.Contains(src, UploadURLPath) {
-		return ctx.E(`路径不合法`)
+	if !strings.HasPrefix(src, UploadURLPath) {
+		return ErrIncorrectPath
 	}
 	return nil
 }
