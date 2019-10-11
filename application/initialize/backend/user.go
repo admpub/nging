@@ -16,7 +16,7 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package file
+package backend
 
 import (
 	"fmt"
@@ -26,32 +26,26 @@ import (
 
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/middleware"
-	_ "github.com/admpub/nging/application/model/file/initialize"
 	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/table"
 )
 
 func init() {
-	handler.RegisterToGroup(`/manager`, func(g echo.RouteRegister) {
-		r := g.Group(`/file`)
-		r.Route(`GET,POST`, `/list`, FileList)
-		r.Route(`GET,POST`, `/delete/:id`, FileDelete)
-	})
-	handler.Register(func(r echo.RouteRegister) {
-		r.Route(`GET,POST`, `/finder`, Finder, middleware.AuthCheck)
-	})
-
-	// 用户上传个人文件时的文件命名方式
-	upload.CheckerRegister(`user`, func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
-		user := handler.User(ctx)
-		if user == nil {
-			err = ctx.E(`登录信息获取失败，请重新登录`)
+	// 后台用户头像上传
+	upload.CheckerRegister(`user-avatar`, func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
+		userID := ctx.Formx(`userId`).Uint64()
+		if user := handler.User(ctx); user != nil {
+			err = middleware.CheckAnyPerm(ctx, `manager/user_add`, `manager/user_edit`)
+			if err != nil {
+				return
+			}
+		} else {
+			err = ctx.E(`请先登录`)
 			return
 		}
-		userID := uint64(user.Id)
 		timestamp := ctx.Formx(`time`).Int64()
 		// 验证签名（避免上传接口被滥用）
-		if ctx.Form(`token`) != upload.Token(ctx.Queries()) {
+		if ctx.Form(`token`) != upload.Token(`userId`, userID, `time`, timestamp) {
 			err = ctx.E(`令牌错误`)
 			return
 		}
@@ -59,10 +53,11 @@ func init() {
 			err = ctx.E(`上传网址已过期`)
 			return
 		}
-		uid := fmt.Sprint(userID)
-		subdir = uid + `/`
-		subdir += time.Now().Format(`2006/01/02/`)
-		tis.SetTableID(uid)
+		if userID > 0 {
+			name = `avatar`
+		}
+		subdir = fmt.Sprint(userID) + `/`
+		tis.SetTableID(fmt.Sprint(userID))
 		tis.SetTableName(`user`)
 		tis.SetFieldName(`avatar`)
 		return

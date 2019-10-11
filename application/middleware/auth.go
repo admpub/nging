@@ -107,6 +107,28 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 	}
 }
 
+// CheckAnyPerm 检查是否匹配任意给定路径权限
+func CheckAnyPerm(c echo.Context, ppaths ...string) (err error) {
+	check := c.GetFunc(`CheckPerm`).(func(string) error)
+	for _, ppath := range ppaths {
+		if err = check(ppath); err == nil {
+			return nil
+		}
+	}
+	return err
+}
+
+// CheckAllPerm 检查是否匹配所有给定路径权限
+func CheckAllPerm(c echo.Context, ppaths ...string) (err error) {
+	check := c.GetFunc(`CheckPerm`).(func(string) error)
+	for _, ppath := range ppaths {
+		if err = check(ppath); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func Auth(c echo.Context, saveSession bool) error {
 	user := c.Form(`user`)
 	pass := c.Form(`pass`)

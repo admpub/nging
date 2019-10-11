@@ -22,8 +22,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/admpub/nging/application/registry/upload/table"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/registry/upload/table"
 )
 
 // UploadLinkLifeTime 上传链接生存时间
@@ -52,28 +53,7 @@ var DefaultChecker = func(ctx echo.Context, tis table.TableInfoStorer) (subdir s
 	return
 }
 
-func UserAvatarChecker(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
-	userID := ctx.Formx(`userId`).Uint64()
-	timestamp := ctx.Formx(`time`).Int64()
-	// 验证签名（避免上传接口被滥用）
-	if ctx.Form(`token`) != Token(`userId`, userID, `time`, timestamp) {
-		err = ctx.E(`令牌错误`)
-		return
-	}
-	if time.Now().Local().Unix()-timestamp > UploadLinkLifeTime {
-		err = ctx.E(`上传网址已过期`)
-		return
-	}
-	if userID > 0 {
-		name = `avatar`
-	}
-	subdir = fmt.Sprint(userID) + `/`
-	tis.SetTableID(fmt.Sprint(userID))
-	tis.SetTableName(`user`)
-	tis.SetFieldName(`avatar`)
-	return
-}
-
+// ConfigChecker 系统配置文件上传
 func ConfigChecker(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
 	group := ctx.Form(`group`)
 	key := ctx.Form(`key`)

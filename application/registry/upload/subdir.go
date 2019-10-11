@@ -35,7 +35,6 @@ var subdirs = map[string]*SubdirInfo{
 		Key:         "user-avatar",
 		Name:        "后台用户头像",
 		Description: "",
-		checker:     UserAvatarChecker,
 	}, //后台用户头像
 	`config`: &SubdirInfo{
 		Allowed:     true,
