@@ -4,7 +4,7 @@
 <div class="row sm-margin-top">
 	<div class="col-md-12">
 		<div class="block-flat sm-margin-bottom">
-			<form class="form-horizontal" action="__BACKEND__{{URL.Path}}" id="search-form" method="GET">
+			<form class="form-horizontal" action="{{URL.Path}}" id="search-form" method="GET">
 				{{- if Stored.dialog -}}
 				<input type="hidden" name="multiple" value="{{if $multiple}}1{{else}}0{{end}}" />
 				<input type="hidden" name="from" value="{{Form `from`}}" />
