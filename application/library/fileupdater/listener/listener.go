@@ -31,6 +31,7 @@ type FileRelation struct {
 	Embedded  bool     // 是否为嵌入图片
 	Seperator string   // 文件字段中多个文件路径之间的分隔符，空字符串代表为单个文件
 	callback  Callback //根据模型获取表行ID和内容
+	dbi       *factory.DBI
 }
 
 func (f *FileRelation) SetSeperator(seperator string) *FileRelation {
@@ -48,6 +49,11 @@ func (f *FileRelation) SetTable(table string, field string) *FileRelation {
 	return f
 }
 
+func (f *FileRelation) SetDBI(dbi *factory.DBI) *FileRelation {
+	f.dbi = dbi
+	return f
+}
+
 func (f *FileRelation) SetEmedded(embedded bool) *FileRelation {
 	f.Embedded = embedded
 	return f
@@ -58,10 +64,14 @@ func (f *FileRelation) ListenDefault() {
 }
 
 func (f *FileRelation) Listen(events ...string) {
+	dbi := f.dbi
+	if dbi == nil {
+		dbi = DBI()
+	}
 	for _, event := range events {
 		switch event {
 		case `updating`, `updated`:
-			DBI().On(event, func(m factory.Model, editColumns ...string) error {
+			dbi.On(event, func(m factory.Model, editColumns ...string) error {
 				if len(editColumns) > 0 && !com.InSlice(f.FieldName, editColumns) {
 					return nil
 				}
@@ -70,7 +80,7 @@ func (f *FileRelation) Listen(events ...string) {
 				return fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(f.Seperator).Add(content, f.Embedded)
 			}, f.TableName)
 		default:
-			DBI().On(event, func(m factory.Model, _ ...string) error {
+			dbi.On(event, func(m factory.Model, _ ...string) error {
 				fileM := modelFile.NewEmbedded(m.Context())
 				tableID, content := f.callback(m)
 				return fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(f.Seperator).Add(content, f.Embedded)
