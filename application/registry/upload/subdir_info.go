@@ -20,6 +20,10 @@ package upload
 
 import (
 	"strings"
+
+	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/registry/upload/table"
 )
 
 // SubdirInfo 子目录信息
@@ -32,7 +36,7 @@ type SubdirInfo struct {
 
 	tableName string
 	fieldName string
-	checker   Checker `json:"checker" xml:"-"`
+	checker   Checker
 }
 
 func (i *SubdirInfo) String() string {
@@ -84,6 +88,18 @@ func (i *SubdirInfo) SetChecker(checker Checker) *SubdirInfo {
 
 func (i *SubdirInfo) Checker() Checker {
 	return i.checker
+}
+
+func (i *SubdirInfo) MustChecker() Checker {
+	if i.checker != nil {
+		return i.checker
+	}
+	return func(ctx echo.Context, tab table.TableInfoStorer) (subdir string, name string, err error) {
+		subdir, name, err = DefaultChecker(ctx, tab)
+		tab.SetTableName(i.TableName())
+		tab.SetFieldName(i.FieldName())
+		return
+	}
 }
 
 func (i *SubdirInfo) SetAllowed(allowed bool) *SubdirInfo {

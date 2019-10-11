@@ -80,8 +80,8 @@ func CheckerRegister(typ string, checker Checker) {
 
 func CheckerGet(typ string) Checker {
 	s := SubdirGet(typ)
-	if s == nil || s.checker == nil {
+	if s == nil {
 		return DefaultChecker
 	}
-	return s.Checker()
+	return s.MustChecker()
 }
