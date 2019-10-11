@@ -22,12 +22,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/fileupdater"
-	"github.com/admpub/nging/application/model/base"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/library/fileupdater"
+	"github.com/admpub/nging/application/model/base"
 )
 
 func NewEmbedded(ctx echo.Context, fileMdls ...*File) *Embedded {
@@ -186,13 +187,13 @@ func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, f
 		return nil
 	}
 	ids := strings.Split(m.FileIds, ",")
-	//已删除引用
-	err = f.DeleteFileByIds(ids, fidList...)
+	//新增引用
+	err = f.AddFileByIds(fidList, ids...)
 	if err != nil {
 		return err
 	}
-	//新增引用
-	err = f.AddFileByIds(fidList, ids...)
+	//已删除引用
+	err = f.DeleteFileByIds(ids, fidList...)
 	if err != nil {
 		return err
 	}
