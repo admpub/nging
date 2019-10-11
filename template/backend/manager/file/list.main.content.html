@@ -67,7 +67,7 @@
                         <span class="label label-{{if gt $v.UsedTimes 0}}primary{{else}}default{{end}} label-xs">{{if gt $v.UsedTimes 0}}{{T `使用%d次` $v.UsedTimes}}{{else}}{{`未使用`|T}}{{end}}</span>
                         {{- if $dialog}}
                         <span class="label label-success label-xs">{{FormatBytes $v.Size 2 true}}</span>
-                        <span class="label label-info label-xs">{{$v.Width}}&times;{{$v.Height}}</span>
+                        {{if gt $v.Width 0}}<span class="label label-info label-xs">{{$v.Width}}&times;{{$v.Height}}</span>{{end}}
                         {{- end -}}
                     </div>
                 </td>
@@ -78,7 +78,7 @@
                 <td>{{if $v.SubdirInfo}}{{$v.SubdirInfo.String}}{{else}}-{{end}}</td>
                 {{- if not $dialog -}}
                 <td>{{FormatBytes $v.Size 2 true}}</td>
-                <td>{{$v.Width}}&times;{{$v.Height}}</td>
+                <td>{{if gt $v.Width 0}}{{$v.Width}}&times;{{$v.Height}}{{else}}-{{end}}</td>
                 {{- end -}}
                 <td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}</td>
                 {{- if not $dialog -}}
