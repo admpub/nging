@@ -1,6 +1,7 @@
 {{Strip}}{{$dialog := Stored.dialog}}
 {{$multiple := Stored.multiple}}
-<div class="row">
+<div id="search-form-box" class="hide">
+<div class="row sm-margin-top">
 	<div class="col-md-12">
 		<div class="block-flat sm-margin-bottom">
 			<form class="form-horizontal" action="__BACKEND__{{URL.Path}}" id="search-form" method="GET">
@@ -72,10 +73,15 @@
 		</div>
 	</div>
 </div>
-<div class="row">
+</div>
+<div class="row sm-margin-top">
 	<div class="col-md-12">
 		<div class="block-flat">
 			<div class="header">
+				<a href="javascript:;" class="btn btn-default pull-right" onclick="$('#search-form-box').toggleClass('hide');">
+					<i class="fa fa-search"></i>
+					{{"搜索文件"|T}}
+				</a>
 				<span class="pull-right">
 					<input type="file" multiple="true" id="input-file-upload" style="width:95px" />
 				</span>

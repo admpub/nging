@@ -25,14 +25,18 @@ function getSelectedFiles(){
 	return files;
 }
 $(function(){
-	App.daterangepicker('#timerange',{
-		showShortcuts: true,
-		shortcuts: {
-			'prev-days': [1,3,5,7],
-			'next-days': [3,5,7],
-			'prev' : ['week','month'],
-			'next' : ['week','month']
-		}
+	$('#timerange').on('focus',function(){
+		if($(this).data('attached')) return false;
+		$(this).data('attached',true);
+		App.daterangepicker('#timerange',{
+			showShortcuts: true,
+			shortcuts: {
+				'prev-days': [1,3,5,7],
+				'next-days': [3,5,7],
+				'prev' : ['week','month'],
+				'next' : ['week','month']
+			}
+		});
 	});
 	function submitSearch(e){
 		e.preventDefault();

@@ -23,10 +23,12 @@
 	{{Block "head"}}{{/Block}}
 	<!-- Custom styles for this template -->
 	<link href="__ASSETS__/css/style.min.css?t={{BuildTime}}" rel="stylesheet" />	
-
 </head>
  
 <body{{Block "bodyAttr"}}{{/Block}}>
+{{if hasAnyBlock "languageSwitcher"}}
+{{Block "languageSwitcher"}}{{/Block}}
+{{else}}
 <div class="dropdown" style="position:fixed;z-index:99;" id="switch-language">
 	<a href="javascript:;" class="dropdown-toggle" style="color:white" data-toggle="dropdown">{{"Languages"|T}} <b class="caret"></b></a>
 	<ul class="dropdown-menu">
@@ -37,6 +39,7 @@
 		{{end}}
 	</ul>
 </div>
+{{end}}
 {{Block "main"}}{{/Block}}
 <script src="__ASSETS__/js/jquery.js?t={{BuildTime}}" type="text/javascript"></script>
 <script src="__ASSETS__/js/jquery.gritter/js/jquery.gritter.min.js?t={{BuildTime}}" type="text/javascript"></script>
