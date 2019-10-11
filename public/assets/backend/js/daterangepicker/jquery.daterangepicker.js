@@ -1379,7 +1379,7 @@
             var w1 = box.find('.month1').outerWidth();
             var w2 = box.find('.gap').outerWidth() + (gapMargin ? gapMargin * 2 : 0);
             var w3 = box.find('.month2').outerWidth();
-            box.find('.month-wrapper').width(w1 + w2 + w3);
+            box.find('.month-wrapper').css('min-width',w1 + w2 + w3);
         }
 
         function renderTime(name, date) {
