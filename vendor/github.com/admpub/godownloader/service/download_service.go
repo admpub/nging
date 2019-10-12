@@ -11,11 +11,12 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/admpub/godownloader/httpclient"
-	"github.com/admpub/sockjs-go/sockjs"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
 	sockjsHandler "github.com/webx-top/echo/handler/sockjs"
+
+	"github.com/admpub/godownloader/httpclient"
+	"github.com/admpub/sockjs-go/sockjs"
 )
 
 var savePath string
@@ -50,6 +51,7 @@ type NewJob struct {
 	Url       string
 	PartCount int64
 	FilePath  string
+	Pipes     []string
 }
 
 type DServ struct {
@@ -122,9 +124,9 @@ func (srv *DServ) LoadSettings(sf string) error {
 		log.Println("error: when try load settings", err)
 		return err
 	}
-	log.Println(ss)
+	log.Println(`settings:`, ss)
 	for _, r := range ss.Ds {
-		dl, err := httpclient.RestoreDownloader(r.FI.Url, r.FI.FileName, r.Dp, srv.SavePath())
+		dl, err := httpclient.RestoreDownloader(r.FI.Url, r.FI.FileName, r.Dp, srv.SavePath(), PipeGetList(r.FI.Pipes...)...)
 		if err != nil {
 			return err
 		}
@@ -134,6 +136,7 @@ func (srv *DServ) LoadSettings(sf string) error {
 }
 
 func (srv *DServ) index(ctx echo.Context) error {
+	ctx.Set(`pipes`, PipeList())
 	return ctx.Render(srv.tmpl, nil)
 }
 
@@ -148,7 +151,7 @@ func (srv *DServ) addTask(ctx echo.Context) error {
 	nj.FilePath = strings.Replace(nj.FilePath, `..`, ``, -1)
 	nj.FilePath = strings.TrimLeft(nj.FilePath, `/`)
 	nj.FilePath = strings.TrimLeft(nj.FilePath, `\`)
-	dl, err := httpclient.CreateDownloader(nj.Url, nj.FilePath, nj.PartCount, srv.SavePath())
+	dl, err := httpclient.CreateDownloader(nj.Url, nj.FilePath, nj.PartCount, srv.SavePath(), PipeGetList(nj.Pipes...)...)
 	if err != nil {
 		return ctx.JSON(data.SetError(err))
 	}
@@ -256,18 +259,26 @@ func (srv *DServ) progressJson(ctx echo.Context) error {
 func (srv *DServ) Progress() []DJob {
 	jbs := make([]DJob, 0, len(srv.dls))
 	for ind, i := range srv.dls {
-		prs := i.GetProgress()
-		var d int64
-		var s int64
-		for _, p := range prs {
-			d = d + (p.Pos - p.From)
-			s += p.Speed
+		var d int64        // 已下载字节
+		var s int64        // 速度
+		var total int64    // 总尺寸
+		var progress int64 // 进度
+		if i.ProgressGetter() != nil {
+			d, total, progress, s = i.ProgressGetter()()
+		} else {
+			prs := i.GetProgress()
+			for _, p := range prs {
+				d = d + (p.Pos - p.From)
+				s += p.Speed
+			}
+			total = i.Fi.Size
+			progress = (d * 100 / total)
 		}
 		j := DJob{
 			Id:         ind,
 			FileName:   i.Fi.FileName,
-			Size:       i.Fi.Size,
-			Progress:   (d * 100 / i.Fi.Size),
+			Size:       total,
+			Progress:   progress,
 			Downloaded: d,
 			Speed:      s,
 			State:      i.State().String(),

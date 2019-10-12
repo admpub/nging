@@ -118,6 +118,12 @@
 						<option>8</option>
 						<option>16</option>
 					</select>
+					<div id="select-pipes" style="display:none">
+					<label class="control-label">{{"Pipes"|T}}:</label>
+					<div id="select-option-pipes">
+					<!-- <label><input type="checkbox" name="pipes[]" value=""> </label> -->
+					</div>
+					</div>
 					<div class="modal-footer">
 						<a class="btn btn-primary" onclick="AddDownload()" data-dismiss="modal">
 							<i class="glyphicon glyphicon-plus"></i>
@@ -135,6 +141,7 @@
 <script type="text/javascript">
 var tableHead={fileName:'{{"File Name"|T}}',size:'{{"Size"|T}}',downloaded:'{{"Downloaded"|T}}',speed:'{{"Speed"|T}}',progress:'{{"Progress"|T}}'};
 var states={Completed:'{{"Completed"|T}}',Running:'{{"Running"|T}}',Stopped:'{{"Stopped"|T}}',Failed:'{{"Failed"|T}}'};
+var pipes={{Stored.pipes|JSONEncode|ToJS}};
 </script>
 <script type="text/javascript" src="__ASSETS__/js/sockjs.min.js"></script>
 <script type="text/javascript" src="__ASSETS__/js/behaviour/download.min.js"></script>

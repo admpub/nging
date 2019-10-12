@@ -3,7 +3,7 @@ function FormatProgressBar(cellValue) {
     var cellHtml = '<div class="progress"><div class="progress-bar" style="width: ' + intVal + '%"></div></div>'
     return cellHtml;
 }
-function FormatByte(cellValue) {
+function FormatBytes(cellValue) {
     App.formatBytes(cellValue);
 }
 function StateIcon(state) {
@@ -28,8 +28,8 @@ function StateIcon(state) {
     t=states[state];
     return '<span class="glyphicon glyphicon-'+c+'" title="'+t+'"></span>';
 }
-function FormatSpeedByte(cellValue) {
-    return FormatByte(cellValue)+'/s';
+function FormatSpeedBytes(cellValue) {
+    return FormatBytes(cellValue)+'/s';
 }
 var downloadWS,downloadWSInterval,downloadAPIPrefix=BACKEND_URL+'/download';
 function connectSockJS(onopen,onmessage){
@@ -67,7 +67,6 @@ function sockJSConnect(){
     },function(r){
         var rows=JSON.parse(r);
         var total = 100*rows.length, finished = 0;
-        var content = '';
         var checkedAll = $('#fileTable .allCheck').prop('checked');
         for (var i = 0; i < rows.length; i++){
             var v = rows[i];
@@ -77,9 +76,9 @@ function sockJSConnect(){
                 finished+=v.Progress;
             }
             if($('#id-'+v.Id).length>0){
-                $('#downed-'+v.Id).text(FormatByte(v.Downloaded));
+                $('#downed-'+v.Id).text(FormatBytes(v.Downloaded));
                 $('#percent-'+v.Id).text(v.Progress);
-                $('#speed-'+v.Id).text(FormatSpeedByte(v.Speed));
+                $('#speed-'+v.Id).text(FormatSpeedBytes(v.Speed));
                 $('#progress-'+v.Id).html(FormatProgressBar(v.Progress));
                 $('#state-'+v.Id).html(StateIcon(v.State));
                 continue;
@@ -90,13 +89,13 @@ function sockJSConnect(){
                 var vl=v[j];
                 switch(j){
                     case 'Downloaded':
-                    vl=FormatByte(vl);
+                    vl=FormatBytes(vl);
                     break;
                     case 'Size':
-                    vl=FormatByte(vl);
+                    vl=vl=='-1'?'unknown':FormatBytes(vl);
                     break;
                     case 'Speed':
-                    vl=FormatSpeedByte(vl);
+                    vl=FormatSpeedBytes(vl);
                     break;
                     case 'FileName':
                     vl='<span id="state-'+v.Id+'">'+StateIcon(v.State)+'</span> '+vl;
@@ -148,7 +147,7 @@ function reqJSON(url,data,callback) {
     if(data) opt.data = JSON.stringify(data);
     $.ajax(opt).error(function(jsonData) {
         loading(true);
-        alert(jsonData);
+        console.dir(jsonData);
     }).success(function(jsonData){
         loading(true);
         if(jsonData.Code!=1) {
@@ -188,6 +187,10 @@ function AddDownload() {
         FilePath: $("#save_path_id").val(),
         Url: $("#url_id").val()
     };
+    req.Pipes=[];
+    $('#select-option-pipes input[name="pipes[]"]:checked').each(function(){
+        req.Pipes.push($(this).val());
+    });
     reqJSON("/add_task",req);
 }
 function checkedIds(){
@@ -220,8 +223,33 @@ function StopAllDownload() {
     reqJSON("/stop_all_task");
 }
 function OnChangeUrl() {
-    var filename = $("#url_id").val().split('/').pop()
-    $("#save_path_id").val(filename)
+    var filename = $("#url_id").val().split('/').pop();
+    $("#save_path_id").val(filename);
+
+    var ext = filename.split('.').pop();
+    if(!ext) {
+        $('#select-option-pipes').empty();
+        $('#select-pipes').hide();
+        return;
+    }
+    ext='.'+ext.toLowerCase();
+    var options = '';
+    for(var ident in pipes){
+        var pipe=pipes[ident];
+        for (var i=0; i<pipe.Extensions.length; i++){
+            var v=pipe.Extensions[i];
+            if(v==ext){
+                options+='<label><input type="checkbox" name="pipes[]" value="'+ident+'"> '+pipe.Label+'</label>';
+            }
+        }
+    }
+    if(options.length > 0){
+        $('#select-option-pipes').html(options);
+        $('#select-pipes').show();
+    }else{
+        $('#select-option-pipes').empty();
+        $('#select-pipes').hide();
+    }
 }
 function loading(close){
     App.loading(close?'hide':'show');
@@ -232,4 +260,5 @@ $(function(){
     $('body').on('click','#fileTable .allCheck',function(){
         $('#fileTable .idCheck').prop('checked',$(this).prop('checked'));
     });
+    OnChangeUrl();
 });

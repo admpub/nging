@@ -77,20 +77,17 @@ func (mw *MonitoredWorker) wgoroute() {
 				return
 			}
 		default:
-			{
-				isdone, err := mw.Itw.DoWork()
-				if err != nil {
-					log.Println("error: guid", mw.guid, " work failed", err)
-					mw.state = Failed
-					return
-				}
-				if isdone {
-					mw.state = Completed
-					log.Println("info: work done")
-					return
-				}
+			isdone, err := mw.Itw.DoWork()
+			if err != nil {
+				log.Println("error: guid", mw.guid, " work failed", err)
+				mw.state = Failed
+				return
 			}
-
+			if isdone {
+				mw.state = Completed
+				log.Println("info: work done")
+				return
+			}
 		}
 	}
 }
