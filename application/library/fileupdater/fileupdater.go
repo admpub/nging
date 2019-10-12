@@ -44,7 +44,7 @@ func (f *FileUpdater) Handle(event string, content string, embedded bool) error 
 	case `deleting`, `deleted`:
 		return f.Delete()
 	default:
-		return nil
+		panic(`Unsupported event: ` + event)
 	}
 }
 

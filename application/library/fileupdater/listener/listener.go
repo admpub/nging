@@ -110,7 +110,7 @@ func (f *FileRelation) Listen(events ...string) {
 					seperator = property.Seperator
 					embedded = property.Embedded
 				}
-				return fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(seperator).Add(content, embedded)
+				return fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(seperator).Handle(event, content, embedded)
 			}, f.TableName)
 		default:
 			dbi.On(event, func(m factory.Model, _ ...string) error {
@@ -125,7 +125,7 @@ func (f *FileRelation) Listen(events ...string) {
 					seperator = property.Seperator
 					embedded = property.Embedded
 				}
-				return fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(seperator).Add(content, embedded)
+				return fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(seperator).Handle(event, content, embedded)
 			}, f.TableName)
 		}
 	}
