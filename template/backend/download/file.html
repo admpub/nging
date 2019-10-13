@@ -23,9 +23,13 @@
 <div class="row">
 	<div class="col-md-12">
 		<div class="block-flat">
-			<div class="header">							
+			<div class="header">
+				<a href="javascript:;" class="btn btn-danger pull-right" onclick="App.removeSelected('input:checkbox[name=\'path[]\']','path','download/file?do=delete');">
+					<i class="fa fa-trash-o"></i>
+					{{"删除选中"|T}}
+				</a>
 				<div class="btn-group">
-					<button type="button" id="mkdirBtn" class="btn btn-success" class="btn btn-success" data-url="__BACKEND__/download/file?do=mkdir&path={{if $path}}{{$path}}/{{end}}" onclick="fileMkdir(this)">
+					<button type="button" id="mkdirBtn" class="btn btn-success" data-url="__BACKEND__/download/file?do=mkdir&path={{if $path}}{{$path}}/{{end}}" onclick="fileMkdir(this)">
                         <i class="fa fa-plus"></i>
                         {{"新建文件夹"|T}}
                     </button>
@@ -48,6 +52,7 @@
 				<table class="table no-border hover">
 					<thead class="no-border">
 						<tr>
+							<th style="width:30px"><div class="checkbox checkbox-primary no-margin-y"><input type="checkbox" id="checkedAll"><label for="checkedAll"></label></div></th>
 							<th><strong>{{"名称"|T}}</strong></th>
 							<th style="width:130px"><strong>{{"修改日期"|T}}</strong></th>
 							<th style="width:80px"><strong>{{"类型"|T}}</strong></th>
@@ -58,6 +63,7 @@
 					<tbody class="no-border-y" id="tbody-content">
                         {{if $path}}
                         <tr>
+                            <td></td>
 							<td>
                                 <i class="fa fa-folder-o"></i>
                                 <a title="{{"点击回到上一级"|T}}" href="__BACKEND__/download/file?path={{$path}}/.." style="font-size:18px;font-weight:bold" data-toggle="tooltip">..</a>
@@ -70,6 +76,9 @@
                         {{end}}
                         {{range $k,$v := Stored.dirs}}
 						<tr item='{{$v.Name}}'>
+							<td>
+                                <div class="checkbox checkbox-primary no-margin-y"><input id="checkbox-{{$k}}" class="check-table" type="checkbox" name="path[]" value="{{if $path}}{{$path}}/{{end}}{{$v.Name}}"><label for="checkbox-{{$k}}"></label></div>
+							</td>
 							<td>
                                 {{if $v.IsDir}}
                                 <i class="fa fa-folder-o"></i>

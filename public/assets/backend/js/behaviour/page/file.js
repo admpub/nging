@@ -1,4 +1,8 @@
 var dropzone,dropzoneZIP,editor;
+function resetCheckedbox() {
+    $('#checkedAll:checked').prop('checked', false);
+    $('#tbody-content input[type=checkbox][name="path[]"]:checked').prop('checked', false);
+}
 function refreshList() {
     if($('#tbody-content').length<1){
         window.location.reload();
@@ -11,6 +15,7 @@ function refreshList() {
         App.float('#tbody-content img.previewable');
         App.loading('hide');
         $('#tbody-content').trigger('refresh');
+        resetCheckedbox();
     },'html');
 }
 function initCodeMirrorEditor() {
@@ -220,10 +225,15 @@ $(function(){
         var q=$(this).val();
         if(q==''){
             $('#tbody-content').children('tr:not(:visible)').show();
+            var disabledBoxies=$('#tbody-content input[type=checkbox][name="path[]"]:disabled');
+            if(disabledBoxies.length>0)$('#checkedAll').prop('checked',false);
+            disabledBoxies.prop('disabled',false);
             return;
         }
-        $('#tbody-content').children('tr:not([item*="'+q+'"])').hide();
-        $('#tbody-content').children('tr[item*="'+q+'"]:not(:visible)').show();
+        $('#tbody-content').children('tr:not([item*="'+q+'"])').hide().find('input[type=checkbox][name="path[]"]').prop('disabled',true);
+        $('#tbody-content').children('tr[item*="'+q+'"]:not(:visible)').show().find('input[type=checkbox][name="path[]"]:disabled').prop('disabled',false);
+        $('#tbody-content input[type=checkbox][name="path[]"]:disabled:checked').prop('checked',false);
+        $('#checkedAll').prop('checked',$('#tbody-content tr[item]:visible input[type=checkbox][name="path[]"]:checked').length==$('#tbody-content tr[item]:visible input[type=checkbox][name="path[]"]'));
         if(event.keyCode==13){
             var tr=$('#tbody-content').children('tr:visible');
             if(tr.length==1){
@@ -238,4 +248,6 @@ $(function(){
         $('#query-current-path').trigger('keyup');
     });
     App.float('#tbody-content img.previewable');
+    resetCheckedbox();
+    App.attachCheckedAll('#checkedAll','#tbody-content input[type=checkbox][name="path[]"]');
 });

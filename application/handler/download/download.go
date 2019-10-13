@@ -23,6 +23,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
+	mw "github.com/webx-top/echo/middleware"
+
 	"github.com/admpub/godownloader/service"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/handler/caddy"
@@ -30,9 +34,6 @@ import (
 	"github.com/admpub/nging/application/library/dbmanager/driver/mysql"
 	"github.com/admpub/nging/application/library/filemanager"
 	"github.com/admpub/nging/application/library/notice"
-	"github.com/webx-top/com"
-	"github.com/webx-top/echo"
-	mw "github.com/webx-top/echo/middleware"
 )
 
 var downloadDir = func() string {
@@ -103,9 +104,19 @@ func File(ctx echo.Context) error {
 		}
 		return ctx.JSON(data)
 	case `delete`:
-		err = mgr.Remove(absPath)
-		if err != nil {
-			handler.SendFail(ctx, err.Error())
+		paths := ctx.FormValues(`path`)
+		for _, filePath := range paths {
+			filePath = strings.TrimSpace(filePath)
+			if len(filePath) == 0 {
+				continue
+			}
+			filePath = filepath.Clean(filePath)
+			absPath = filepath.Join(root, filePath)
+			err = mgr.Remove(absPath)
+			if err != nil {
+				handler.SendFail(ctx, err.Error())
+				return ctx.Redirect(ctx.Referer())
+			}
 		}
 		return ctx.Redirect(ctx.Referer())
 	case `upload`:

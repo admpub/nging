@@ -7,7 +7,7 @@
 <a class="btn btn-default{{if eq $gallery `1`}} active{{end}}" href="__BACKEND__/manager/uploaded_file?gallery=1&path={{$path}}" data-container="body" data-toggle="tooltip" title="{{`相册模式`|T}}" style="margin-right:10px">
     <i class="fa fa-th-large"></i>
 </a>
-<button type="button" id="mkdirBtn" class="btn btn-success" class="btn btn-success" data-url="__BACKEND__/manager/uploaded_file?do=mkdir&path={{if $path}}{{$path}}/{{end}}" onclick="fileMkdir(this)">
+<button type="button" id="mkdirBtn" class="btn btn-success" data-url="__BACKEND__/manager/uploaded_file?do=mkdir&path={{if $path}}{{$path}}/{{end}}" onclick="fileMkdir(this)">
     <i class="fa fa-plus"></i>
     {{"新建文件夹"|T}}
 </button>
