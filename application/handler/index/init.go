@@ -11,7 +11,7 @@ func init() {
 	handler.Register(func(e echo.RouteRegister) {
 		e.Route("GET", ``, Index)
 		e.Route("GET", `/`, Index)
-		e.Route("GET", `/ts2m3u8`, TS2M3U8)
+		//e.Route("GET", `/ts2m3u8`, TS2M3U8, mw.CORS())
 		e.Route("GET", `/project/:ident`, Project)
 		e.Route("GET", `/index`, Index)
 		e.Route("GET,POST", `/login`, Login)

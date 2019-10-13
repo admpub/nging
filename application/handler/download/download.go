@@ -32,6 +32,7 @@ import (
 	"github.com/admpub/nging/application/library/notice"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	mw "github.com/webx-top/echo/middleware"
 )
 
 var downloadDir = func() string {
@@ -48,7 +49,7 @@ func init() {
 	mysql.SQLTempDir = downloadDir //将SQL文件缓存到下载目录里面方便管理
 	handler.RegisterToGroup(`/download`, func(g echo.RouteRegister) {
 		server.Register(g, true)
-		g.Route(`GET,POST`, `/file`, File)
+		g.Route(`GET,POST`, `/file`, File, mw.CORS())
 	})
 }
 

@@ -1,6 +1,5 @@
 function transferTS(tsURL,videoWrapper){
     if(!videoWrapper) videoWrapper='#video-wrapper';
-    var $ = document.querySelector.bind(document);
     var vjsParsed,
         video, 
         mediaSource;
@@ -75,13 +74,18 @@ function transferTS(tsURL,videoWrapper){
 
     function prepareSourceBuffer (combined, outputType, bytes) {
       var buffer;
-      video = document.createElement('video');
+      var _video=$(videoWrapper).children('video');
+      if(_video.length>0){
+        video = _video[0];
+      }else{
+        video = document.createElement('video');
+      }
       video.controls = true;
       // MediaSource Web API: https://developer.mozilla.org/zh-CN/docs/Web/API/MediaSource
       mediaSource = new MediaSource(); 
       video.src = URL.createObjectURL(mediaSource);
     
-      $(videoWrapper).appendChild(video); // 将H5 video元素添加到对应DOM节点下
+      $(videoWrapper).html(video); // 将H5 video元素添加到对应DOM节点下
     
       // 转换后mp4的音频格式 视频格式
       var codecsArray = ["avc1.64001f", "mp4a.40.5"];
