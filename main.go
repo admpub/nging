@@ -34,8 +34,8 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/cmd"
 	_ "github.com/admpub/nging/application"
+	"github.com/admpub/nging/application/cmd"
 	_ "github.com/admpub/nging/application/initialize/manager"
 	_ "github.com/admpub/nging/application/library/sqlite"
 	//_ "github.com/admpub/nging/application/handler/manager/file"
@@ -46,7 +46,7 @@ var (
 	CLOUD_GOX  string
 	COMMIT     string
 	LABEL      = `dev` //beta/alpha/stable
-	VERSION    = `2.0.5`
+	VERSION    = `2.0.6`
 
 	version   string
 	schemaVer = 2.5 //数据表结构版本
