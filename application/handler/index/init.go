@@ -1,15 +1,17 @@
 package index
 
 import (
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/middleware"
-	"github.com/webx-top/echo"
 )
 
 func init() {
 	handler.Register(func(e echo.RouteRegister) {
 		e.Route("GET", ``, Index)
 		e.Route("GET", `/`, Index)
+		e.Route("GET", `/ts2m3u8`, TS2M3U8)
 		e.Route("GET", `/project/:ident`, Project)
 		e.Route("GET", `/index`, Index)
 		e.Route("GET,POST", `/login`, Login)

@@ -58,6 +58,7 @@ func (sys *System) Playable(fileName string) (string, bool) {
 		sys.PlayableFileExtensions = map[string]string{
 			`mp4`:  `video/mp4`,
 			`m3u8`: `application/x-mpegURL`,
+			`ts`:   `video/MP2T`,
 		}
 	}
 	ext := strings.TrimPrefix(filepath.Ext(fileName), `.`)

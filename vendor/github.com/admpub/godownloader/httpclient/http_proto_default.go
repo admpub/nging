@@ -1,6 +1,7 @@
 package httpclient
 
 import (
+	"context"
 	"io"
 	"log"
 	"net/http"
@@ -10,11 +11,13 @@ import (
 )
 
 type DefaultDownloader struct {
-	dp     DownloadProgress
-	client http.Client
-	req    http.Response
-	url    string
-	file   *iotools.SafeFile
+	dp         DownloadProgress
+	client     http.Client
+	req        http.Response
+	url        string
+	file       *iotools.SafeFile
+	context    context.Context
+	cancelFunc context.CancelFunc
 }
 
 func CreateDefaultDownloader(url string, file *iotools.SafeFile) *DefaultDownloader {
@@ -24,6 +27,7 @@ func CreateDefaultDownloader(url string, file *iotools.SafeFile) *DefaultDownloa
 	pd.dp.From = 0
 	pd.dp.To = 1
 	pd.dp.Pos = 0
+	pd.context, pd.cancelFunc = context.WithCancel(context.Background())
 	return &pd
 }
 
@@ -36,13 +40,14 @@ func (pd *DefaultDownloader) BeforeRun() error {
 }
 
 func (pd *DefaultDownloader) AfterStop() error {
+	pd.cancelFunc()
 	return nil
 }
 
 func (pd *DefaultDownloader) DoWork() (bool, error) {
 	start := time.Now()
 	//create new req
-	r, err := http.NewRequest("GET", pd.url, nil)
+	r, err := http.NewRequestWithContext(pd.context, "GET", pd.url, nil)
 	if err != nil {
 		return false, err
 	}

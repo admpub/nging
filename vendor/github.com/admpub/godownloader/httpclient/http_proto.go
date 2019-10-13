@@ -23,10 +23,16 @@ func CheckMultipart(urls string) (bool, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 206 {
-		return false, errors.New("error: file not found or moved status: " + resp.Status)
+		if resp.StatusCode != 200 {
+			err = errors.New("error: file not found or moved status: " + resp.Status)
+		} else {
+			log.Println("info: multipart download is unsupport")
+		}
+
+		return false, nil
 	}
 	if resp.ContentLength == 1 {
-		log.Printf("info: multipart download support \n")
+		log.Println("info: multipart download support")
 		return true, nil
 	}
 	return false, nil

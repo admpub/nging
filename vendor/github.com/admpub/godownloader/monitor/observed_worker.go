@@ -59,7 +59,7 @@ type MonitoredWorker struct {
 func (mw *MonitoredWorker) wgoroute() {
 	log.Println("info: work start", mw.GetId())
 	defer func() {
-		log.Print("info: release work guid ", mw.GetId())
+		log.Println("info: release work guid", mw.GetId())
 		mw.wgrun.Done()
 		if mw.ondone != nil && mw.state == Completed {
 			mw.ondone()

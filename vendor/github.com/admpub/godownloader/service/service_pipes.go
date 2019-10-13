@@ -33,15 +33,21 @@ func init() {
 			}
 
 			return int64(prog.FinishedSize),
-				int64(prog.TotalSize),
+				-1, //int64(prog.TotalSize),//unknown total size
 				percentProgress,
 				int64(prog.SpeedInSecond)
 		})
 		var err error
 		var done = make(chan struct{})
-		ctx, _ := context.WithCancel(context.Background())
+		ctx, cancelFunc := context.WithCancel(context.Background())
 		go func() {
-			err = cfg.Get(ctx)
+			err = d.SafeFile().ReOpen()
+			if err == nil {
+				err = cfg.Get(ctx, d.SafeFile().File)
+				d.SafeFile().Close()
+			} else {
+				log.Println(d.SafeFile().FilePath(), `reopen file failed:`, err)
+			}
 			done <- struct{}{}
 		}()
 		t := time.NewTicker(time.Second * 1)
@@ -53,12 +59,15 @@ func init() {
 			select {
 			case <-done:
 				d.Fi.Size = cfg.Progress().FinishedSize
+				cancelFunc()
+				return err
+			case <-ctx.Done():
+				log.Println(`m3u8 download canceled:`, cfg.OutputFile)
 				return err
 			case <-t.C:
 				d.Fi.Size = cfg.Progress().FinishedSize
 			}
 		}
-		return err
 	}, `.m3u8`))
 }
 

@@ -62,23 +62,24 @@ func (dl *Downloader) State() monitor.State {
 }
 
 func CreateDownloader(url string, fp string, seg int64, getDown func() string, pipes ...func(*Downloader) error) (dl *Downloader, err error) {
-	support, _ := CheckMultipart(url)
-	c, err := GetSize(url)
+	support, err := CheckMultipart(url)
 	if err != nil {
-		//can't get file size
+		return nil, err
+	}
+	var c int64
+	c, err = GetSize(url)
+	if err != nil { //can't get file size
 		return nil, err
 	}
 	dfs := getDown() + fp
 	dfs = filepath.Clean(dfs)
 	sf, err := iotools.CreateSafeFile(dfs)
-	if err != nil {
-		//can't create file on path
+	if err != nil { //can't create file on path
 		return nil, err
 	}
 	defer sf.Close()
 	if c > 0 {
-		if err := sf.Truncate(c); err != nil {
-			//can't truncate file
+		if err := sf.Truncate(c); err != nil { //can't truncate file
 			return nil, err
 		}
 	}
@@ -112,10 +113,14 @@ func CreateDownloader(url string, fp string, seg int64, getDown func() string, p
 }
 
 func RestoreDownloader(url string, fp string, dp []DownloadProgress, getDown func() string, pipes ...func(*Downloader) error) (dl *Downloader, err error) {
-	dfs := getDown() + fp
-	sf, err := iotools.OpenSafeFile(dfs)
+	support, err := CheckMultipart(url)
 	if err != nil {
-		//can't create file on path
+		return nil, err
+	}
+	dfs := getDown() + fp
+	var sf *iotools.SafeFile
+	sf, err = iotools.OpenSafeFile(dfs)
+	if err != nil { //can't create file on path
 		return nil, err
 	}
 	defer sf.Close()
@@ -125,7 +130,12 @@ func RestoreDownloader(url string, fp string, dp []DownloadProgress, getDown fun
 	}
 	wp := new(monitor.WorkerPool)
 	for _, r := range dp {
-		dow := CreatePartialDownloader(url, sf, r.From, r.Pos, r.To)
+		var dow monitor.DiscretWork
+		if support {
+			dow = CreatePartialDownloader(url, sf, r.From, r.Pos, r.To)
+		} else {
+			dow = CreateDefaultDownloader(url, sf)
+		}
 		mv := monitor.MonitoredWorker{Itw: dow}
 
 		//add to worker pool

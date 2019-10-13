@@ -106,6 +106,11 @@ function filePlay(obj,playlist){
     body.css({'padding':'0','text-align':'center'});
     $(obj).css({'color':'yellow'});
     $('#file-play-modal').niftyModal('show',{afterOpen:function(modal){
+        if(String(url.split('.').pop()).toLowerCase()=='ts'){
+            //transferTS(url,'#file-play-video');
+            url=BACKEND_URL+'/ts2m3u8?ts='+url;
+            mime='application/x-mpegURL';
+        }
         $('#file-play-video source').attr('src',url).attr('type',mime);
         $(window).trigger('resize');
         player = videojs(id, null, function(){
@@ -118,7 +123,7 @@ function filePlay(obj,playlist){
 	            this.play();
                 headTitle.html(App.i18n.PLAY+': '+ve.data('name'));
 	        });
-	    });
+        });
         player.play();
     },afterClose:function(){
         if(!player) return;

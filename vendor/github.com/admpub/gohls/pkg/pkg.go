@@ -6,6 +6,7 @@ import (
 	"crypto/cipher"
 	"encoding/binary"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -175,20 +176,41 @@ func ParseURI(root *url.URL, uri string) (string, error) {
 	return msURI, err
 }
 
-func GetPlaylist(urlStr string, recTime time.Duration, useLocalTime bool, dlc chan *Download, prog *Progress) error {
-	startTime := time.Now()
-	var recDuration time.Duration
-	cache := lru.New(1024)
+type Context struct {
+	playlistURL *url.URL
+	startTime   time.Time
+	recDuration time.Duration
+	cache       *lru.Cache
+}
+
+func (c *Context) Close() error {
+	c.cache.Clear()
+	return nil
+}
+
+func NewContext(urlStr string, bufferSize int) (*Context, error) {
+	playlistURL, err := url.Parse(urlStr)
+	if err != nil {
+		return nil, err
+	}
+	return &Context{
+		playlistURL: playlistURL,
+		startTime:   time.Now(),
+		cache:       lru.New(bufferSize),
+	}, nil
+}
+
+func (cfg *Config) GetPlaylist(urlStr string, dlc chan *Download) error {
+	c, err := NewContext(urlStr, 1024)
+	if err != nil {
+		return err
+	}
 	defer func() {
 		if e := recover(); e != nil {
 			log.Println(e)
 		}
-		cache.Clear()
+		c.Close()
 	}()
-	playlistURL, err := url.Parse(urlStr)
-	if err != nil {
-		return err
-	}
 	for {
 		req, err := http.NewRequest("GET", urlStr, nil)
 		if err != nil {
@@ -200,66 +222,80 @@ func GetPlaylist(urlStr string, recTime time.Duration, useLocalTime bool, dlc ch
 			time.Sleep(time.Duration(3) * time.Second)
 		}
 
-		playlist, listType, err := m3u8.DecodeFrom(resp.Body, true)
+		err = cfg.GetPlaylistFromReader(c, resp.Body, dlc)
 		if err != nil {
-			resp.Body.Close()
-			return err
-		}
-		resp.Body.Close()
-
-		if listType != m3u8.MEDIA {
-			if listType == m3u8.MASTER {
-				mpl := playlist.(*m3u8.MasterPlaylist)
-				for _, v := range mpl.Variants {
-					if v == nil {
-						continue
-					}
-					msURI, err := ParseURI(playlistURL, v.URI)
-					if err != nil {
-						log.Println(err)
-						continue
-					}
-					return GetPlaylist(msURI, recTime, useLocalTime, dlc, prog)
-				}
-				return ErrInvalidMasterPlaylist
-			}
-			return ErrInvalidMediaPlaylist
-		}
-		mpl := playlist.(*m3u8.MediaPlaylist)
-		prog.TotalNum = len(mpl.Segments)
-		for segmentIndex, v := range mpl.Segments {
-			if v == nil {
-				continue
-			}
-			msURI, err := ParseURI(playlistURL, v.URI)
-			if err != nil {
-				log.Println(err)
-				continue
-			}
-			_, hit := cache.Get(msURI)
-			if !hit {
-				cache.Add(msURI, nil)
-				if useLocalTime {
-					recDuration = time.Now().Sub(startTime)
-				} else {
-					recDuration += time.Duration(int64(v.Duration * 1000000000))
-				}
-				dlc <- &Download{
-					URI:           msURI,
-					ExtXKey:       mpl.Key,
-					SeqNo:         uint64(segmentIndex) + mpl.SeqNo,
-					totalDuration: recDuration,
-				}
-			}
-			if recTime != 0 && recDuration != 0 && recDuration >= recTime {
-				close(dlc)
+			if err == ErrExit {
 				return nil
 			}
+			return err
 		}
-		if mpl.Closed {
-			close(dlc)
-			return nil
-		}
-		time.Sleep(time.Duration(int64(mpl.TargetDuration * 1000000000)))
 	}
+}
+
+func (cfg *Config) GetPlaylistFromReader(c *Context, reader io.Reader, dlc chan *Download) error {
+	prog := cfg.progress
+	recTime := cfg.Duration
+	playlist, listType, err := m3u8.DecodeFrom(reader, true)
+	if err != nil {
+		return err
+	}
+
+	if listType != m3u8.MEDIA {
+		if listType == m3u8.MASTER {
+			mpl := playlist.(*m3u8.MasterPlaylist)
+			for _, v := range mpl.Variants {
+				if v == nil {
+					continue
+				}
+				msURI, err := ParseURI(c.playlistURL, v.URI)
+				if err != nil {
+					log.Println(err)
+					continue
+				}
+				return cfg.GetPlaylist(msURI, dlc)
+			}
+			return ErrInvalidMasterPlaylist
+		}
+		return ErrInvalidMediaPlaylist
+	}
+	mpl := playlist.(*m3u8.MediaPlaylist)
+	prog.TotalNum = len(mpl.Segments)
+	for segmentIndex, v := range mpl.Segments {
+		if v == nil {
+			prog.TotalNum--
+			continue
+		}
+		msURI, err := ParseURI(c.playlistURL, v.URI)
+		if err != nil {
+			log.Println(err)
+			prog.TotalNum--
+			continue
+		}
+		_, hit := c.cache.Get(msURI)
+		if !hit {
+			c.cache.Add(msURI, nil)
+			if cfg.UseLocalTime {
+				c.recDuration = time.Now().Sub(c.startTime)
+			} else {
+				c.recDuration += time.Duration(int64(v.Duration * 1000000000))
+			}
+			dlc <- &Download{
+				URI:           msURI,
+				ExtXKey:       mpl.Key,
+				SeqNo:         uint64(segmentIndex) + mpl.SeqNo,
+				totalDuration: c.recDuration,
+			}
+		}
+		if recTime != 0 && c.recDuration != 0 && c.recDuration >= recTime {
+			close(dlc)
+			return ErrExit
+		}
+	}
+	if mpl.Closed {
+		close(dlc)
+		return ErrExit
+	}
+
+	time.Sleep(time.Duration(int64(mpl.TargetDuration * 1000000000)))
+	return nil
 }
