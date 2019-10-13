@@ -366,32 +366,50 @@
 		{
 			"checksumSHA1": "6JrSUSPWDACMdoPSIqqwOMyFans=",
 			"path": "github.com/admpub/godownloader/httpclient",
-			"revision": "6c45497b48ed3bc0c8f2b7062bf8e8dd06010e65",
-			"revisionTime": "2019-10-13T01:58:23Z"
+			"revision": "5785546a2a90c3159388c281a717418f90220753",
+			"revisionTime": "2019-10-13T07:48:12Z"
 		},
 		{
-			"checksumSHA1": "OOrH+A0IyZLiMkrX1C8/G9m5Ubg=",
+			"checksumSHA1": "dxHxZLF2FpATBLS+APlT1Qy3zX0=",
 			"path": "github.com/admpub/godownloader/iotools",
-			"revision": "6c45497b48ed3bc0c8f2b7062bf8e8dd06010e65",
-			"revisionTime": "2019-10-13T01:58:23Z"
+			"revision": "5785546a2a90c3159388c281a717418f90220753",
+			"revisionTime": "2019-10-13T07:48:12Z"
 		},
 		{
 			"checksumSHA1": "p6/+Y5FFdqNs0+CmZ58DTuL7GWU=",
 			"path": "github.com/admpub/godownloader/monitor",
-			"revision": "6c45497b48ed3bc0c8f2b7062bf8e8dd06010e65",
-			"revisionTime": "2019-10-13T01:58:23Z"
+			"revision": "5785546a2a90c3159388c281a717418f90220753",
+			"revisionTime": "2019-10-13T07:48:12Z"
 		},
 		{
-			"checksumSHA1": "zN9Or1mWvK6WW15YyFyZOAuCKfo=",
+			"checksumSHA1": "zPBfhkvDsN6gpjqJY71B8mpmrZI=",
 			"path": "github.com/admpub/godownloader/service",
-			"revision": "6c45497b48ed3bc0c8f2b7062bf8e8dd06010e65",
-			"revisionTime": "2019-10-13T01:58:23Z"
+			"revision": "5785546a2a90c3159388c281a717418f90220753",
+			"revisionTime": "2019-10-13T07:48:12Z"
 		},
 		{
 			"checksumSHA1": "ljls+sXUz2elcE/xJE5g9RzrURw=",
 			"path": "github.com/admpub/goforever",
 			"revision": "16dc5fd1570b4019e9071f83ae2ff28cefc81ef5",
 			"revisionTime": "2019-06-15T03:31:04Z"
+		},
+		{
+			"checksumSHA1": "wjVc0+F/m0/3f29dM+Q2P5E/MYg=",
+			"path": "github.com/admpub/gohls-server/internal/fileindex",
+			"revision": "e79ddd7408c3a86d3c3d95315679d7bba968b7b3",
+			"revisionTime": "2019-10-13T07:44:31Z"
+		},
+		{
+			"checksumSHA1": "or/d/a7FkqHlpSeNPCRbl3xbGeg=",
+			"path": "github.com/admpub/gohls-server/internal/hls",
+			"revision": "e79ddd7408c3a86d3c3d95315679d7bba968b7b3",
+			"revisionTime": "2019-10-13T07:44:31Z"
+		},
+		{
+			"checksumSHA1": "QCEyX9Po7pS00Eg/rzbSP+IX5JM=",
+			"path": "github.com/admpub/gohls-server/utils",
+			"revision": "e79ddd7408c3a86d3c3d95315679d7bba968b7b3",
+			"revisionTime": "2019-10-13T07:44:31Z"
 		},
 		{
 			"checksumSHA1": "nE+Z7qufXzoGWJSfmz95KZtlibI=",

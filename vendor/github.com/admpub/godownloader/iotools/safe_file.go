@@ -19,6 +19,11 @@ func (sf *SafeFile) FilePath() string {
 	return sf.filePath
 }
 
+func (sf *SafeFile) SetFilePath(filePath string) *SafeFile {
+	sf.filePath = filePath
+	return sf
+}
+
 func (sf *SafeFile) WriteAt(b []byte, off int64) (n int, err error) {
 	sf.lock.Lock()
 	defer sf.lock.Unlock()

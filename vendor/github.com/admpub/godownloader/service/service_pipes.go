@@ -3,17 +3,20 @@ package service
 import (
 	"context"
 	"log"
+	"os"
 	"path"
 	"strings"
 	"time"
 
 	"github.com/admpub/godownloader/httpclient"
+	"github.com/admpub/gohls-server/utils"
 	"github.com/admpub/gohls/pkg"
 )
 
 func init() {
 	PipeRegister(NewPipe(`dlhls`, `下载HLS视频`, func(d *httpclient.Downloader) error {
-		if strings.ToLower(path.Ext(d.Fi.Url)) != `.m3u8` {
+		ext := path.Ext(d.Fi.Url)
+		if strings.ToLower(ext) != `.m3u8` {
 			return nil
 		}
 		cfg := &pkg.Config{
@@ -44,7 +47,25 @@ func init() {
 			err = d.SafeFile().ReOpen()
 			if err == nil {
 				err = cfg.Get(ctx, d.SafeFile().File)
-				d.SafeFile().Close()
+				if err2 := d.SafeFile().Close(); err2 != nil {
+					log.Println(err2)
+				}
+				if err == nil {
+					tsFile := cfg.OutputFile
+					mp4File := strings.TrimSuffix(tsFile, ext) + `.mp4`
+					if err := utils.ConvertToMP4(tsFile, mp4File); err != nil {
+						if !utils.IsUnsupported(err) {
+							log.Println(`Conversion to mp4 file failed:`, err)
+						}
+					} else {
+						if err := os.Remove(tsFile); err != nil {
+							log.Println(`Deleting file "`+tsFile+`" failed:`, err)
+						} else {
+							d.SafeFile().SetFilePath(mp4File)
+							cfg.OutputFile = mp4File
+						}
+					}
+				}
 			} else {
 				log.Println(d.SafeFile().FilePath(), `reopen file failed:`, err)
 			}
