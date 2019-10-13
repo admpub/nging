@@ -514,16 +514,16 @@
 			"revisionTime": "2019-07-17T15:31:10Z"
 		},
 		{
-			"checksumSHA1": "1TDFyRFBzKD9bqmDQxySmfqNSLg=",
+			"checksumSHA1": "wLv+njTCE7xpGf0EmM5tXqjI6f0=",
 			"path": "github.com/admpub/logcool/input/collectd",
-			"revision": "e2da547ebc80c503803314ffff90814f51c74f79",
-			"revisionTime": "2018-11-11T11:31:54Z"
+			"revision": "f92afb733b955da73521b656eb1d9770560d79ee",
+			"revisionTime": "2019-10-13T08:50:14Z"
 		},
 		{
-			"checksumSHA1": "fUy2rARNfzjs4wo/9oeYBOLXQRY=",
+			"checksumSHA1": "YSlxAStT66h57D9mIRKIWcGmtNI=",
 			"path": "github.com/admpub/logcool/utils",
-			"revision": "e2da547ebc80c503803314ffff90814f51c74f79",
-			"revisionTime": "2018-11-11T11:31:54Z"
+			"revision": "f92afb733b955da73521b656eb1d9770560d79ee",
+			"revisionTime": "2019-10-13T08:50:14Z"
 		},
 		{
 			"checksumSHA1": "DsMRWJ9DFi6AjGCEsusvwjJ2RC4=",

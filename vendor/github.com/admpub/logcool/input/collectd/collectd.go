@@ -9,13 +9,13 @@ import (
 
 	"github.com/webx-top/com"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/mem"
 	"github.com/shirou/gopsutil/net"
 	"github.com/shirou/gopsutil/process"
+	"github.com/sirupsen/logrus"
 
 	"github.com/admpub/logcool/utils"
 )
