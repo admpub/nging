@@ -4,7 +4,8 @@ function FormatProgressBar(cellValue) {
     return cellHtml;
 }
 function FormatBytes(cellValue) {
-    App.formatBytes(cellValue);
+    var bytes = parseInt(cellValue);
+    return App.formatBytes(bytes);
 }
 function StateIcon(state) {
     var c,t;
@@ -239,7 +240,7 @@ function OnChangeUrl() {
         for (var i=0; i<pipe.Extensions.length; i++){
             var v=pipe.Extensions[i];
             if(v==ext){
-                options+='<label><input type="checkbox" name="pipes[]" value="'+ident+'"> '+pipe.Label+'</label>';
+                options+='<div class="checkbox checkbox-primary checkbox-inline"><input type="checkbox" name="pipes[]" value="'+ident+'" id="opt-pipes-'+ident+'"><label for="opt-pipes-'+ident+'">'+pipe.Label+'</label></div>';
             }
         }
     }

@@ -102,15 +102,15 @@
 			</div>
 			<div class="modal-body">
 				<div class="form-group">
-					<label class="control-label">{{"Url"|T}}:</label>
+					<label class="control-label sm-margin-top">{{"Url"|T}}:</label>
 					<div class="controls">
 						<input type="text" onchange="OnChangeUrl()" id="url_id" class="form-control" value="https://sciter.com/sdk/sciter-sdk.zip">
 					</div>
-					<label class="control-label">{{"Save path"|T}}:</label>
+					<label class="control-label sm-margin-top">{{"Save path"|T}}:</label>
 					<div class="controls">
 						<input type="text" id="save_path_id" class="form-control typeahead" data-provide="typeahead" value="sciter-sdk.zip">
 					</div>
-					<label class="control-label">{{"Parts count"|T}}:</label>
+					<label class="control-label sm-margin-top">{{"Parts count"|T}}:</label>
 					<select class="form-control" id="part_count_id">
 						<option>1</option>
 						<option>2</option>
@@ -119,18 +119,16 @@
 						<option>16</option>
 					</select>
 					<div id="select-pipes" style="display:none">
-					<label class="control-label">{{"Pipes"|T}}:</label>
-					<div id="select-option-pipes">
-					<!-- <label><input type="checkbox" name="pipes[]" value=""> </label> -->
-					</div>
-					</div>
-					<div class="modal-footer">
-						<a class="btn btn-primary" onclick="AddDownload()" data-dismiss="modal">
-							<i class="glyphicon glyphicon-plus"></i>
-							{{"Add"|T}}
-						</a>
+					<label class="control-label sm-margin-top">{{"Pipes"|T}}:</label>
+					<div id="select-option-pipes"></div>
 					</div>
 				</div>
+			</div>
+			<div class="modal-footer">
+				<a class="btn btn-primary" onclick="AddDownload()" data-dismiss="modal">
+					<i class="glyphicon glyphicon-plus"></i>
+					{{"Add"|T}}
+				</a>
 			</div>
 		</div>
 	</div>
