@@ -24,10 +24,11 @@ func init() {
 			OutputFile:  d.SafeFile().FilePath(),
 		}
 		p := strings.LastIndex(cfg.OutputFile, `.`)
+		tsExt := `.ts`
 		if p < 0 {
-			cfg.OutputFile += `.ts`
+			cfg.OutputFile += tsExt
 		} else {
-			cfg.OutputFile = cfg.OutputFile[0:p] + `.ts`
+			cfg.OutputFile = cfg.OutputFile[0:p] + tsExt
 		}
 		d.SetProgressGetter(func() (downloaded int64, total int64, percentProgress int64, speed int64) {
 			prog := cfg.Progress()
@@ -52,7 +53,7 @@ func init() {
 				}
 				if err == nil {
 					tsFile := cfg.OutputFile
-					mp4File := strings.TrimSuffix(tsFile, ext) + `.mp4`
+					mp4File := strings.TrimSuffix(tsFile, tsExt) + `.mp4`
 					if err := utils.ConvertToMP4(tsFile, mp4File); err != nil {
 						if !utils.IsUnsupported(err) {
 							log.Println(`Conversion to mp4 file failed:`, err)
