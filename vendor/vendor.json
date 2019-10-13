@@ -366,26 +366,26 @@
 		{
 			"checksumSHA1": "6JrSUSPWDACMdoPSIqqwOMyFans=",
 			"path": "github.com/admpub/godownloader/httpclient",
-			"revision": "192bcfabe09c58e6d5932b4c24e8112a00bb7ce0",
-			"revisionTime": "2019-10-13T07:58:05Z"
+			"revision": "d509172649e4b18c220761670e905cdec3de7f58",
+			"revisionTime": "2019-10-13T09:08:31Z"
 		},
 		{
 			"checksumSHA1": "dxHxZLF2FpATBLS+APlT1Qy3zX0=",
 			"path": "github.com/admpub/godownloader/iotools",
-			"revision": "192bcfabe09c58e6d5932b4c24e8112a00bb7ce0",
-			"revisionTime": "2019-10-13T07:58:05Z"
+			"revision": "d509172649e4b18c220761670e905cdec3de7f58",
+			"revisionTime": "2019-10-13T09:08:31Z"
 		},
 		{
 			"checksumSHA1": "p6/+Y5FFdqNs0+CmZ58DTuL7GWU=",
 			"path": "github.com/admpub/godownloader/monitor",
-			"revision": "192bcfabe09c58e6d5932b4c24e8112a00bb7ce0",
-			"revisionTime": "2019-10-13T07:58:05Z"
+			"revision": "d509172649e4b18c220761670e905cdec3de7f58",
+			"revisionTime": "2019-10-13T09:08:31Z"
 		},
 		{
-			"checksumSHA1": "9B9zhPm91oYQjPyGrqTpVJAuyOc=",
+			"checksumSHA1": "oXCcyRZttzU3D8eQR9rFuFTca4U=",
 			"path": "github.com/admpub/godownloader/service",
-			"revision": "192bcfabe09c58e6d5932b4c24e8112a00bb7ce0",
-			"revisionTime": "2019-10-13T07:58:05Z"
+			"revision": "d509172649e4b18c220761670e905cdec3de7f58",
+			"revisionTime": "2019-10-13T09:08:31Z"
 		},
 		{
 			"checksumSHA1": "ljls+sXUz2elcE/xJE5g9RzrURw=",

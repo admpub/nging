@@ -14,7 +14,11 @@ import (
 )
 
 func init() {
-	PipeRegister(NewPipe(`dlhls`, `下载HLS视频`, func(d *httpclient.Downloader) error {
+	label := `下载HLS视频`
+	if utils.IsSupportedFFMPEG() {
+		label += `(转换为mp4)`
+	}
+	PipeRegister(NewPipe(`dlhls`, label, func(d *httpclient.Downloader) error {
 		ext := path.Ext(d.Fi.Url)
 		if strings.ToLower(ext) != `.m3u8` {
 			return nil
