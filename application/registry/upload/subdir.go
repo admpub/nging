@@ -24,25 +24,19 @@ import (
 )
 
 var subdirs = map[string]*SubdirInfo{
-	`user`: &SubdirInfo{
+	`user`: (&SubdirInfo{
 		Allowed:     true,
 		Key:         "user",
-		Name:        "后台用户个人文件",
+		Name:        "后台用户",
 		Description: "",
-	}, //后台用户个人文件
-	`user-avatar`: &SubdirInfo{
-		Allowed:     true,
-		Key:         "user-avatar",
-		Name:        "后台用户头像",
-		Description: "",
-	}, //后台用户头像
-	`config`: &SubdirInfo{
+	}).SetTableName("user").SetFieldName(`:个人文件`, `avatar:头像`), //后台用户文件
+	`config`: (&SubdirInfo{
 		Allowed:     true,
 		Key:         "config",
 		Name:        "站点公告图片",
 		Description: "",
 		checker:     ConfigChecker,
-	}, //后台系统设置中的图片
+	}).SetTableName("config"), //后台系统设置中的图片
 }
 
 func SubdirRegister(subdir string, allow interface{}, nameAndDescription ...string) *SubdirInfo {
@@ -89,6 +83,10 @@ func SubdirRegister(subdir string, allow interface{}, nameAndDescription ...stri
 }
 
 func SubdirRegisterObject(subdir string, info *SubdirInfo) *SubdirInfo {
+	in, ok := subdirs[subdir]
+	if ok {
+		return in.CopyFrom(info)
+	}
 	subdirs[subdir] = info
 	return info
 }

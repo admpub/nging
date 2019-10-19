@@ -41,6 +41,54 @@ type SubdirInfo struct {
 	checker    Checker
 }
 
+func (i *SubdirInfo) CopyFrom(other *SubdirInfo) *SubdirInfo {
+	i.Allowed = other.Allowed
+	if len(other.Key) > 0 {
+		i.Key = other.Key
+	}
+	if len(other.Name) > 0 {
+		i.Name = other.Name
+	}
+	if len(other.NameEN) > 0 {
+		i.NameEN = other.NameEN
+	}
+	if len(other.Description) > 0 {
+		i.Description = other.Description
+	}
+	if len(other.tableName) > 0 {
+		i.tableName = other.tableName
+	}
+	if other.checker != nil {
+		if i.checker != nil {
+			oldChecker := i.checker
+			i.checker = func(ctx echo.Context, tbl table.TableInfoStorer) (subdir string, name string, err error) {
+				subdir, name, err = oldChecker(ctx, tbl)
+				if err != nil {
+					return
+				}
+				subdir2, name2, err2 := other.checker(ctx, tbl)
+				if err2 != nil {
+					err = err2
+				}
+				if len(subdir2) > 0 {
+					subdir = subdir2
+				}
+				if len(name2) > 0 {
+					name = name2
+				}
+				return
+			}
+		} else {
+			i.checker = other.checker
+		}
+	}
+	if len(other.fieldNames) > 0 {
+		i.fieldNames = append(i.fieldNames, other.fieldNames...)
+		i.fieldDescs = append(i.fieldDescs, other.fieldDescs...)
+	}
+	return i
+}
+
 func (i *SubdirInfo) String() string {
 	if len(i.Name) > 0 {
 		return i.Name
@@ -147,7 +195,7 @@ func (i *SubdirInfo) MustChecker() Checker {
 			return
 		}
 		tab.SetTableName(i.TableName())
-		if len(tab.FieldName()) > 0 && !i.ValidFieldName(tab.FieldName()) {
+		if !i.ValidFieldName(tab.FieldName()) {
 			err = table.ErrInvalidFieldName
 		}
 		return
