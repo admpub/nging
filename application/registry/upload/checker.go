@@ -74,8 +74,14 @@ func ConfigChecker(ctx echo.Context, tis table.TableInfoStorer) (subdir string, 
 	return
 }
 
-func CheckerRegister(typ string, checker Checker) {
-	SubdirGet(typ).SetChecker(checker)
+func CheckerRegister(typ string, checker Checker, fieldNames ...string) {
+	if len(fieldNames) > 0 {
+		SubdirGet(typ).SetChecker(checker, fieldNames...)
+		return
+	}
+	tableName, fieldName, _ := GetTableInfo(typ)
+	info := SubdirGet(tableName)
+	info.SetChecker(checker, fieldName)
 }
 
 func CheckerGet(typ string, defaults ...string) Checker {

@@ -23,6 +23,20 @@ func Request(method, path string, handler engine.Handler, reqRewrite ...func(*ht
 	return rec
 }
 
+func NewStdRequest(method, path string) *http.Request {
+	req, _ := http.NewRequest(method, path, nil)
+	return req
+}
+
+func NewStdResponse() http.ResponseWriter {
+	return httptest.NewRecorder()
+}
+
+func NewRequestAndResponse(method, path string) (engine.Request, engine.Response) {
+	req := NewStdRequest(method, path)
+	return WrapRequest(req), WrapResponse(req, NewStdResponse())
+}
+
 func WrapRequest(req *http.Request) engine.Request {
 	return standard.NewRequest(req)
 }

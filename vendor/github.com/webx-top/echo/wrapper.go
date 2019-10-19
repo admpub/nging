@@ -16,10 +16,12 @@
 
 */
 
-
 package echo
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 // WrapHandler wrap `interface{}` into `echo.Handler`.
 func WrapHandler(h interface{}) Handler {
@@ -49,7 +51,7 @@ func WrapHandler(h interface{}) Handler {
 			return v(ctx.Response().StdResponseWriter(), ctx.Request().StdRequest())
 		})
 	}
-	panic(`unknown handler`)
+	panic(fmt.Sprintf(`unknown handler: %T`, h))
 }
 
 // WrapMiddleware wrap `interface{}` into `echo.Middleware`.
@@ -101,7 +103,7 @@ func WrapMiddleware(m interface{}) Middleware {
 	if v, ok := m.(func(http.ResponseWriter, *http.Request) error); ok {
 		return WrapMiddlewareFromStdHandleFuncd(v)
 	}
-	panic(`unknown middleware`)
+	panic(fmt.Sprintf(`unknown middleware: %T`, m))
 }
 
 // WrapMiddlewareFromHandler wrap `echo.HandlerFunc` into `echo.Middleware`.

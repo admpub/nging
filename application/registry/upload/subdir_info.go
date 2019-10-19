@@ -19,13 +19,48 @@
 package upload
 
 import (
+	"sort"
 	"strings"
 
-	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/registry/upload/table"
 )
+
+type FieldInfo struct {
+	Key     string
+	Name    string
+	checker Checker
+}
+
+func (info *FieldInfo) AddChecker(checker Checker) *FieldInfo {
+	if checker == nil {
+		return info
+	}
+	if info.checker == nil {
+		info.checker = checker
+		return info
+	}
+	oldChecker := info.checker
+	info.checker = func(ctx echo.Context, tbl table.TableInfoStorer) (subdir string, name string, err error) {
+		subdir, name, err = oldChecker(ctx, tbl)
+		if err != nil {
+			return
+		}
+		subdir2, name2, err2 := checker(ctx, tbl)
+		if err2 != nil {
+			err = err2
+		}
+		if len(subdir2) > 0 {
+			subdir = subdir2
+		}
+		if len(name2) > 0 {
+			name = name2
+		}
+		return
+	}
+	return info
+}
 
 // SubdirInfo 子目录信息
 type SubdirInfo struct {
@@ -36,9 +71,21 @@ type SubdirInfo struct {
 	Description string
 
 	tableName  string
-	fieldNames []string
-	fieldDescs []string
+	fieldInfos map[string]*FieldInfo
 	checker    Checker
+}
+
+func NewSubdirInfo(key, name string, checkers ...Checker) *SubdirInfo {
+	var checker Checker
+	if len(checkers) > 0 {
+		checker = checkers[0]
+	}
+	return &SubdirInfo{
+		Allowed: true,
+		Key:     key,
+		Name:    name,
+		checker: checker,
+	}
 }
 
 func (i *SubdirInfo) CopyFrom(other *SubdirInfo) *SubdirInfo {
@@ -82,9 +129,13 @@ func (i *SubdirInfo) CopyFrom(other *SubdirInfo) *SubdirInfo {
 			i.checker = other.checker
 		}
 	}
-	if len(other.fieldNames) > 0 {
-		i.fieldNames = append(i.fieldNames, other.fieldNames...)
-		i.fieldDescs = append(i.fieldDescs, other.fieldDescs...)
+	if len(other.fieldInfos) > 0 {
+		if i.fieldInfos == nil {
+			i.fieldInfos = make(map[string]*FieldInfo)
+		}
+		for k, in := range other.fieldInfos {
+			i.fieldInfos[k] = in
+		}
 	}
 	return i
 }
@@ -111,17 +162,33 @@ func (i *SubdirInfo) TableName() string {
 }
 
 func (i *SubdirInfo) ValidFieldName(fieldName string) bool {
-	return com.InSlice(fieldName, i.fieldNames)
+	if i.fieldInfos == nil {
+		return false
+	}
+	_, ok := i.fieldInfos[fieldName]
+	return ok
 }
 
 func (i *SubdirInfo) FieldNames() []string {
-	return i.fieldNames
+	fieldNames := make([]string, len(i.fieldInfos))
+	if i.fieldInfos == nil {
+		return fieldNames
+	}
+	var index int
+	for fieldName := range i.fieldInfos {
+		fieldNames[index] = fieldName
+		index++
+	}
+	sort.Strings(fieldNames)
+	return fieldNames
 }
 
 func (i *SubdirInfo) FieldInfos() []echo.KV {
-	r := make([]echo.KV, len(i.fieldNames))
-	for index, fieldName := range i.fieldNames {
-		r[index] = echo.KV{K: fieldName, V: i.fieldDescs[index]}
+	fieldNames := i.FieldNames()
+	r := make([]echo.KV, len(fieldNames))
+	for index, fieldName := range fieldNames {
+		info := i.fieldInfos[fieldName]
+		r[index] = echo.KV{K: fieldName, V: info.Name}
 	}
 	return r
 }
@@ -140,7 +207,7 @@ func (i *SubdirInfo) SetTable(tableName string, fieldNames ...string) *SubdirInf
 }
 
 func (i *SubdirInfo) SetFieldName(fieldNames ...string) *SubdirInfo {
-	i.fieldNames = []string{}
+	i.fieldInfos = map[string]*FieldInfo{}
 	for _, fieldName := range fieldNames {
 		i.AddFieldName(fieldName)
 	}
@@ -159,12 +226,27 @@ func (i *SubdirInfo) parseFieldInfo(field string) (fieldName string, fieldText s
 	return
 }
 
-func (i *SubdirInfo) AddFieldName(fieldName string) *SubdirInfo {
-	if !com.InSlice(fieldName, i.fieldNames) {
-		var fieldText string
-		fieldName, fieldText = i.parseFieldInfo(fieldName)
-		i.fieldNames = append(i.fieldNames, fieldName)
-		i.fieldDescs = append(i.fieldDescs, fieldText)
+func (i *SubdirInfo) AddFieldName(fieldName string, checkers ...Checker) *SubdirInfo {
+	var (
+		fieldText string
+		checker   Checker
+	)
+	if len(checkers) > 0 {
+		checker = checkers[0]
+	}
+	fieldName, fieldText = i.parseFieldInfo(fieldName)
+	info, ok := i.fieldInfos[fieldName]
+	if !ok {
+		i.fieldInfos[fieldName] = &FieldInfo{
+			Key:     fieldName,
+			Name:    fieldText,
+			checker: checker,
+		}
+	} else {
+		if len(fieldText) > 0 {
+			info.Name = fieldText
+		}
+		info.AddChecker(checker)
 	}
 	return i
 }
@@ -176,7 +258,14 @@ func (i *SubdirInfo) GetNameEN() string {
 	return i.Name
 }
 
-func (i *SubdirInfo) SetChecker(checker Checker) *SubdirInfo {
+func (i *SubdirInfo) SetChecker(checker Checker, fieldNames ...string) *SubdirInfo {
+	if len(fieldNames) > 0 {
+		if i.fieldInfos == nil {
+			i.fieldInfos = make(map[string]*FieldInfo)
+		}
+		i.fieldInfos[fieldNames[0]].AddChecker(checker)
+		return i
+	}
 	i.checker = checker
 	return i
 }
@@ -190,14 +279,15 @@ func (i *SubdirInfo) MustChecker() Checker {
 		return i.checker
 	}
 	return func(ctx echo.Context, tab table.TableInfoStorer) (subdir string, name string, err error) {
-		subdir, name, err = DefaultChecker(ctx, tab)
-		if err != nil {
-			return
-		}
 		tab.SetTableName(i.TableName())
 		if !i.ValidFieldName(tab.FieldName()) {
 			err = table.ErrInvalidFieldName
 		}
+		checker := i.fieldInfos[tab.FieldName()].checker
+		if checker == nil {
+			checker = DefaultChecker
+		}
+		subdir, name, err = checker(ctx, tab)
 		return
 	}
 }

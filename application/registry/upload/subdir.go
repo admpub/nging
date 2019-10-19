@@ -39,15 +39,15 @@ var subdirs = map[string]*SubdirInfo{
 	}).SetTableName("config"), //后台系统设置中的图片
 }
 
-func SubdirRegister(subdir string, allow interface{}, nameAndDescription ...string) *SubdirInfo {
-	var isAllow bool
-	switch v := allow.(type) {
-	case bool:
-		isAllow = v
+func SubdirRegister(subdir interface{}, nameAndDescription ...string) *SubdirInfo {
+	var key string
+	switch v := subdir.(type) {
+	case string:
+		key = v
 	case *SubdirInfo:
-		return SubdirRegisterObject(subdir, v)
+		return SubdirRegisterObject(v)
 	case SubdirInfo:
-		return SubdirRegisterObject(subdir, &v)
+		return SubdirRegisterObject(&v)
 	default:
 		panic(fmt.Sprintf(`Unsupported type: %T`, v))
 	}
@@ -63,8 +63,8 @@ func SubdirRegister(subdir string, allow interface{}, nameAndDescription ...stri
 		name = nameAndDescription[0]
 	}
 	info := &SubdirInfo{
-		Allowed:     isAllow,
-		Key:         subdir,
+		Allowed:     true,
+		Key:         key,
 		Name:        name,
 		NameEN:      nameEN,
 		Description: description,
@@ -78,16 +78,16 @@ func SubdirRegister(subdir string, allow interface{}, nameAndDescription ...stri
 	case 1:
 		info.tableName = r[0]
 	}
-	SubdirRegisterObject(subdir, info)
+	SubdirRegisterObject(info)
 	return info
 }
 
-func SubdirRegisterObject(subdir string, info *SubdirInfo) *SubdirInfo {
-	in, ok := subdirs[subdir]
+func SubdirRegisterObject(info *SubdirInfo) *SubdirInfo {
+	in, ok := subdirs[info.Key]
 	if ok {
 		return in.CopyFrom(info)
 	}
-	subdirs[subdir] = info
+	subdirs[info.Key] = info
 	return info
 }
 

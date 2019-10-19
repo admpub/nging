@@ -63,7 +63,7 @@ func init() {
 		tis.SetTableName(`user`)
 		tis.SetFieldName(``)
 		return
-	})
+	}, ``)
 
 	// 文件信息默认保存方式
 	upload.DefaultDBSaver = func(fileM *modelFile.File, result *uploadClient.Result, reader io.Reader) error {
@@ -79,9 +79,9 @@ func init() {
 		m := &dbschema.File{}
 		m.CPAFrom(fileM.File)
 		err = m.Get(nil, db.And(
-			db.Cond{`table_id`: fileM.TableId},
-			db.Cond{`table_name`: fileM.TableName},
-			db.Cond{`field_name`: fileM.FieldName},
+			db.Cond{`table_id`: fileM.TableID()},
+			db.Cond{`table_name`: fileM.TableName()},
+			db.Cond{`field_name`: fileM.FieldName()},
 		))
 		defer func() {
 			if err != nil {
