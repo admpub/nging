@@ -69,6 +69,12 @@ func (i *SubdirInfo) SetTableName(tableName string) *SubdirInfo {
 	return i
 }
 
+func (i *SubdirInfo) SetTable(tableName string, fieldName string) *SubdirInfo {
+	i.tableName = tableName
+	i.fieldName = fieldName
+	return i
+}
+
 func (i *SubdirInfo) SetFieldName(fieldName string) *SubdirInfo {
 	i.fieldName = fieldName
 	return i
