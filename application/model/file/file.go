@@ -53,10 +53,12 @@ type File struct {
 }
 
 func (f *File) NewFile(m *dbschema.File) *File {
-	return &File{
+	r := &File{
 		File: m,
 		base: f.base,
 	}
+	r.SetContext(f.base.Context)
+	return r
 }
 
 func (f *File) SetTableID(tableID string) table.TableInfoStorer {
