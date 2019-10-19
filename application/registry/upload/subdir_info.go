@@ -265,7 +265,7 @@ func (i *SubdirInfo) SetChecker(checker Checker, fieldNames ...string) *SubdirIn
 		}
 		info, ok := i.fieldInfos[fieldNames[0]]
 		if !ok {
-			panic(`not found:` + fieldNames[0])
+			panic(`not found: ` + i.Key + `.` + fieldNames[0])
 		}
 		info.AddChecker(checker)
 		return i
