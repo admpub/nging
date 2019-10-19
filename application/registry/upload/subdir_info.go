@@ -263,7 +263,11 @@ func (i *SubdirInfo) SetChecker(checker Checker, fieldNames ...string) *SubdirIn
 		if i.fieldInfos == nil {
 			i.fieldInfos = make(map[string]*FieldInfo)
 		}
-		i.fieldInfos[fieldNames[0]].AddChecker(checker)
+		info, ok := i.fieldInfos[fieldNames[0]]
+		if !ok {
+			panic(`not found:` + fieldNames[0])
+		}
+		info.AddChecker(checker)
 		return i
 	}
 	i.checker = checker
