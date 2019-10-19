@@ -62,7 +62,8 @@ var (
 )
 
 func File(ctx echo.Context) error {
-	typ := ctx.Param(`type`)
+	uploadType := ctx.Param(`type`)
+	typ, _, _ := getTableInfo(uploadType)
 	file := ctx.Param(`*`)
 	file = filepath.Join(helper.UploadDir, typ, file)
 	return ctx.File(file)
@@ -99,14 +100,14 @@ func Upload(ctx echo.Context) error {
 
 // UploadByOwner 上传文件
 func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
-	typ := ctx.Param(`type`)
+	uploadType := ctx.Param(`type`)
 	field := ctx.Query(`field`) // 上传表单file输入框名称
 	pipe := ctx.Form(`pipe`)
 	var (
 		err      error
 		fileURLs []string
 	)
-	if len(typ) == 0 {
+	if len(uploadType) == 0 {
 		err = ctx.E(`请提供参数“%s”`, ctx.Path())
 		datax, embed := ResponseDataForUpload(ctx, field, err, fileURLs)
 		if !embed {
@@ -114,8 +115,9 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		}
 		return err
 	}
-	if !upload.SubdirIsAllowed(typ) {
-		err = ctx.E(`参数“%s”未被登记`, typ)
+	tableName, fieldName, defaults := getTableInfo(uploadType)
+	if !upload.SubdirIsAllowed(uploadType, defaults...) {
+		err = ctx.E(`参数“%s”未被登记`, uploadType)
 		datax, embed := ResponseDataForUpload(ctx, field, err, fileURLs)
 		if !embed {
 			return ctx.JSON(datax)
@@ -136,17 +138,9 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	fileM := modelFile.NewFile(ctx)
 	fileM.StorerName = StorerEngine
 	fileM.TableId = ``
-	fileM.SetTableName(typ)
-	fileM.SetFieldName(``)
-	r := strings.SplitN(typ, `-`, 2)
-	switch len(r) {
-	case 2:
-		fileM.SetFieldName(r[1])
-		fallthrough
-	case 1:
-		fileM.SetTableName(r[0])
-		typ = r[0]
-	}
+	fileM.SetFieldName(fieldName)
+	fileM.SetTableName(tableName)
+	typ := tableName
 	fileM.OwnerId = ownerID
 	fileM.OwnerType = ownerType
 	fileType := ctx.Form(`filetype`)
@@ -155,11 +149,11 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	storer := newStore(ctx, typ)
 	defer storer.Close()
 	var subdir, name string
-	subdir, name, err = upload.CheckerGet(typ)(ctx, fileM)
+	subdir, name, err = upload.CheckerGet(uploadType, defaults...)(ctx, fileM)
 	if err != nil {
 		return err
 	}
-	dbsaver := upload.DBSaverGet(typ)
+	dbsaver := upload.DBSaverGet(uploadType, defaults...)
 	checker := func(r *uploadClient.Result) error {
 		extension := path.Ext(r.FileName)
 		if len(r.FileType) > 0 {
@@ -253,13 +247,18 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	return ctx.JSON(data)
 }
 
+func getTableInfo(uploadType string) (tableName string, fieldName string, defaults []string) {
+	return upload.GetTableInfo(uploadType)
+}
+
 func Crop(ctx echo.Context) error {
 	var err error
 	newStore := upload.StorerGet(StorerEngine)
 	if newStore == nil {
 		return ctx.E(`存储引擎“%s”未被登记`, StorerEngine)
 	}
-	typ := ctx.Param(`type`)
+	uploadType := ctx.Param(`type`)
+	typ, _, _ := getTableInfo(uploadType)
 	storer := newStore(ctx, typ)
 	defer storer.Close()
 	srcURL := ctx.Form(`src`)

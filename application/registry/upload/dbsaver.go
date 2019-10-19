@@ -32,9 +32,12 @@ func DBSaverUnregister(keys ...string) {
 	}
 }
 
-func DBSaverGet(key string) DBSaver {
+func DBSaverGet(key string, defaults ...string) DBSaver {
 	if dbsaver, ok := dbSavers[key]; ok {
 		return dbsaver
+	}
+	if len(defaults) > 0 {
+		return DBSaverGet(defaults[0])
 	}
 	return DefaultDBSaver
 }

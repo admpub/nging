@@ -106,9 +106,12 @@ func SubdirAll() map[string]*SubdirInfo {
 	return subdirs
 }
 
-func SubdirIsAllowed(subdir string) bool {
+func SubdirIsAllowed(subdir string, defaults ...string) bool {
 	info, ok := subdirs[subdir]
 	if !ok || info == nil {
+		if len(defaults) > 0 {
+			return SubdirIsAllowed(defaults[0])
+		}
 		return false
 	}
 	return info.Allowed

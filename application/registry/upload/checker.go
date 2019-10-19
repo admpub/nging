@@ -78,10 +78,13 @@ func CheckerRegister(typ string, checker Checker) {
 	SubdirGet(typ).SetChecker(checker)
 }
 
-func CheckerGet(typ string) Checker {
+func CheckerGet(typ string, defaults ...string) Checker {
 	s := SubdirGet(typ)
-	if s == nil {
+	if s != nil {
+		return s.MustChecker()
+	}
+	if len(defaults) == 0 {
 		return DefaultChecker
 	}
-	return s.MustChecker()
+	return CheckerGet(defaults[0])
 }

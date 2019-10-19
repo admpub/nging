@@ -37,6 +37,7 @@ type SubdirInfo struct {
 
 	tableName  string
 	fieldNames []string
+	fieldDescs []string
 	checker    Checker
 }
 
@@ -69,6 +70,14 @@ func (i *SubdirInfo) FieldNames() []string {
 	return i.fieldNames
 }
 
+func (i *SubdirInfo) FieldInfos() []echo.KV {
+	r := make([]echo.KV, len(i.fieldNames))
+	for index, fieldName := range i.fieldNames {
+		r[index] = echo.KV{K: fieldName, V: i.fieldDescs[index]}
+	}
+	return r
+}
+
 func (i *SubdirInfo) SetTableName(tableName string) *SubdirInfo {
 	i.tableName = tableName
 	return i
@@ -76,18 +85,38 @@ func (i *SubdirInfo) SetTableName(tableName string) *SubdirInfo {
 
 func (i *SubdirInfo) SetTable(tableName string, fieldNames ...string) *SubdirInfo {
 	i.tableName = tableName
-	i.fieldNames = fieldNames
+	if len(fieldNames) > 0 {
+		i.SetFieldName(fieldNames...)
+	}
 	return i
 }
 
 func (i *SubdirInfo) SetFieldName(fieldNames ...string) *SubdirInfo {
-	i.fieldNames = fieldNames
+	i.fieldNames = []string{}
+	for _, fieldName := range fieldNames {
+		i.AddFieldName(fieldName)
+	}
 	return i
+}
+
+func (i *SubdirInfo) parseFieldInfo(field string) (fieldName string, fieldText string) {
+	r := strings.SplitN(field, ":", 2)
+	switch len(r) {
+	case 2:
+		fieldText = r[1]
+		fallthrough
+	case 1:
+		fieldName = r[0]
+	}
+	return
 }
 
 func (i *SubdirInfo) AddFieldName(fieldName string) *SubdirInfo {
 	if !com.InSlice(fieldName, i.fieldNames) {
+		var fieldText string
+		fieldName, fieldText = i.parseFieldInfo(fieldName)
 		i.fieldNames = append(i.fieldNames, fieldName)
+		i.fieldDescs = append(i.fieldDescs, fieldText)
 	}
 	return i
 }
@@ -118,7 +147,7 @@ func (i *SubdirInfo) MustChecker() Checker {
 			return
 		}
 		tab.SetTableName(i.TableName())
-		if !i.ValidFieldName(tab.FieldName()) {
+		if len(tab.FieldName()) > 0 && !i.ValidFieldName(tab.FieldName()) {
 			err = table.ErrInvalidFieldName
 		}
 		return

@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	fileModel "github.com/admpub/nging/application/model/file"
 	"github.com/admpub/nging/application/registry/upload"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 func OnRemoveOwnerFile(ctx echo.Context, typ string, id uint64, ownerDir string) error {
@@ -25,12 +26,16 @@ func OnUpdateOwnerFilePath(ctx echo.Context,
 	newSavePath string, newViewURL string) error {
 	fileM := &dbschema.File{}
 	//embedM := &dbschema.FileEmbedded{}
+	_, fieldName, defaults := upload.GetTableInfo(typ)
 	info := upload.SubdirGet(typ)
+	if info == nil && len(defaults) > 0 {
+		info = upload.SubdirGet(defaults[0])
+	}
 	thumbM := &dbschema.FileThumb{}
 	cond := db.NewCompounds()
 	cond.Add(db.Cond{`table_id`: id})
 	cond.Add(db.Cond{`table_name`: info.TableName()})
-	cond.Add(db.Cond{`field_name`: info.FieldName()})
+	cond.Add(db.Cond{`field_name`: fieldName})
 	cond.Add(db.Cond{`view_url`: src})
 	_, err := fileM.ListByOffset(nil, nil, 0, -1, cond.And())
 	if err != nil {
