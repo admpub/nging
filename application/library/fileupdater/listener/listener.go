@@ -84,7 +84,45 @@ func (f *FileRelation) SetEmbedded(embedded bool) *FileRelation {
 }
 
 func (f *FileRelation) ListenDefault() {
-	f.Listen(`created`, `updating`, `deleted`)
+	f.Listen(`created`, `updated`, `deleted`)
+}
+
+func (f *FileRelation) attachUpdateEvent(event string) func(m factory.Model, editColumns ...string) error {
+	return func(m factory.Model, editColumns ...string) error {
+		if len(editColumns) > 0 && !com.InSlice(f.FieldName, editColumns) {
+			return nil
+		}
+		fileM := modelFile.NewEmbedded(m.Context())
+		tableID, content, property := f.callback(m)
+		seperator := f.Seperator
+		embedded := f.Embedded
+		if property != nil {
+			if property.Exit {
+				return nil
+			}
+			seperator = property.Seperator
+			embedded = property.Embedded
+		}
+		//println(event+`=========`, f.TableName, f.FieldName, tableID, content)
+		return fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(seperator).Handle(event, content, embedded)
+	}
+}
+
+func (f *FileRelation) attachEvent(event string) func(m factory.Model, editColumns ...string) error {
+	return func(m factory.Model, _ ...string) error {
+		fileM := modelFile.NewEmbedded(m.Context())
+		tableID, content, property := f.callback(m)
+		seperator := f.Seperator
+		embedded := f.Embedded
+		if property != nil {
+			if property.Exit {
+				return nil
+			}
+			seperator = property.Seperator
+			embedded = property.Embedded
+		}
+		return fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(seperator).Handle(event, content, embedded)
+	}
 }
 
 func (f *FileRelation) Listen(events ...string) {
@@ -95,38 +133,9 @@ func (f *FileRelation) Listen(events ...string) {
 	for _, event := range events {
 		switch event {
 		case `updating`, `updated`:
-			dbi.On(event, func(m factory.Model, editColumns ...string) error {
-				if len(editColumns) > 0 && !com.InSlice(f.FieldName, editColumns) {
-					return nil
-				}
-				fileM := modelFile.NewEmbedded(m.Context())
-				tableID, content, property := f.callback(m)
-				seperator := f.Seperator
-				embedded := f.Embedded
-				if property != nil {
-					if property.Exit {
-						return nil
-					}
-					seperator = property.Seperator
-					embedded = property.Embedded
-				}
-				return fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(seperator).Handle(event, content, embedded)
-			}, f.TableName)
+			dbi.On(event, f.attachUpdateEvent(event), f.TableName)
 		default:
-			dbi.On(event, func(m factory.Model, _ ...string) error {
-				fileM := modelFile.NewEmbedded(m.Context())
-				tableID, content, property := f.callback(m)
-				seperator := f.Seperator
-				embedded := f.Embedded
-				if property != nil {
-					if property.Exit {
-						return nil
-					}
-					seperator = property.Seperator
-					embedded = property.Embedded
-				}
-				return fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(seperator).Handle(event, content, embedded)
-			}, f.TableName)
+			dbi.On(event, f.attachEvent(event), f.TableName)
 		}
 	}
 }

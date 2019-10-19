@@ -242,6 +242,7 @@ func (f *Embedded) RelationFiles(project string, table string, field string, tab
 		files []interface{}
 		fids  []interface{} //旧文件ID
 	)
+	//println(`RelationFiles:`, v)
 	RelatedRes(v, func(file string, fid int64) {
 		var exists bool
 		if fid > 0 {
