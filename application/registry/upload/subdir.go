@@ -79,7 +79,7 @@ func SubdirRegister(subdir string, allow interface{}, nameAndDescription ...stri
 	r := strings.SplitN(info.Key, `-`, 2)
 	switch len(r) {
 	case 2:
-		info.fieldName = r[1]
+		info.SetFieldName(r[1])
 		fallthrough
 	case 1:
 		info.tableName = r[0]

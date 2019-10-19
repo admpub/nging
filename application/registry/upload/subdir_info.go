@@ -21,6 +21,7 @@ package upload
 import (
 	"strings"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/registry/upload/table"
@@ -34,9 +35,9 @@ type SubdirInfo struct {
 	NameEN      string
 	Description string
 
-	tableName string
-	fieldName string
-	checker   Checker
+	tableName  string
+	fieldNames []string
+	checker    Checker
 }
 
 func (i *SubdirInfo) String() string {
@@ -51,7 +52,7 @@ func (i *SubdirInfo) TableName() string {
 		r := strings.SplitN(i.Key, `-`, 2)
 		switch len(r) {
 		case 2:
-			i.fieldName = r[1]
+			i.SetFieldName(r[1])
 			fallthrough
 		case 1:
 			i.tableName = r[0]
@@ -60,8 +61,12 @@ func (i *SubdirInfo) TableName() string {
 	return i.tableName
 }
 
-func (i *SubdirInfo) FieldName() string {
-	return i.fieldName
+func (i *SubdirInfo) ValidFieldName(fieldName string) bool {
+	return com.InSlice(fieldName, i.fieldNames)
+}
+
+func (i *SubdirInfo) FieldNames() []string {
+	return i.fieldNames
 }
 
 func (i *SubdirInfo) SetTableName(tableName string) *SubdirInfo {
@@ -69,14 +74,21 @@ func (i *SubdirInfo) SetTableName(tableName string) *SubdirInfo {
 	return i
 }
 
-func (i *SubdirInfo) SetTable(tableName string, fieldName string) *SubdirInfo {
+func (i *SubdirInfo) SetTable(tableName string, fieldNames ...string) *SubdirInfo {
 	i.tableName = tableName
-	i.fieldName = fieldName
+	i.fieldNames = fieldNames
 	return i
 }
 
-func (i *SubdirInfo) SetFieldName(fieldName string) *SubdirInfo {
-	i.fieldName = fieldName
+func (i *SubdirInfo) SetFieldName(fieldNames ...string) *SubdirInfo {
+	i.fieldNames = fieldNames
+	return i
+}
+
+func (i *SubdirInfo) AddFieldName(fieldName string) *SubdirInfo {
+	if !com.InSlice(fieldName, i.fieldNames) {
+		i.fieldNames = append(i.fieldNames, fieldName)
+	}
 	return i
 }
 
@@ -102,8 +114,13 @@ func (i *SubdirInfo) MustChecker() Checker {
 	}
 	return func(ctx echo.Context, tab table.TableInfoStorer) (subdir string, name string, err error) {
 		subdir, name, err = DefaultChecker(ctx, tab)
+		if err != nil {
+			return
+		}
 		tab.SetTableName(i.TableName())
-		tab.SetFieldName(i.FieldName())
+		if !i.ValidFieldName(tab.FieldName()) {
+			err = table.ErrInvalidFieldName
+		}
 		return
 	}
 }

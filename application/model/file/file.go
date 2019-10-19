@@ -77,6 +77,18 @@ func (f *File) SetFieldName(field string) table.TableInfoStorer {
 	return f
 }
 
+func (f *File) TableID() string {
+	return f.File.TableId
+}
+
+func (f *File) TableName() string {
+	return f.File.TableName
+}
+
+func (f *File) FieldName() string {
+	return f.File.FieldName
+}
+
 func (f *File) SetByUploadResult(result *uploadClient.Result) *File {
 	f.Name = result.FileName
 	f.SavePath = result.SavePath

@@ -136,8 +136,17 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	fileM := modelFile.NewFile(ctx)
 	fileM.StorerName = StorerEngine
 	fileM.TableId = ``
-	fileM.TableName = typ
-	fileM.FieldName = ``
+	fileM.SetTableName(typ)
+	fileM.SetFieldName(``)
+	r := strings.SplitN(typ, `-`, 2)
+	switch len(r) {
+	case 2:
+		fileM.SetFieldName(r[1])
+		fallthrough
+	case 1:
+		fileM.SetTableName(r[0])
+		typ = r[0]
+	}
 	fileM.OwnerId = ownerID
 	fileM.OwnerType = ownerType
 	fileType := ctx.Form(`filetype`)

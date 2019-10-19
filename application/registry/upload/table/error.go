@@ -5,5 +5,6 @@ import (
 )
 
 var (
-	ErrExistsFile = errors.New("exists file")
+	ErrExistsFile       = errors.New("exists file")
+	ErrInvalidFieldName = errors.New("Invalid field name")
 )
