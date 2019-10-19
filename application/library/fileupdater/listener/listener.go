@@ -78,7 +78,7 @@ func (f *FileRelation) SetDBI(dbi *factory.DBI) *FileRelation {
 	return f
 }
 
-func (f *FileRelation) SetEmedded(embedded bool) *FileRelation {
+func (f *FileRelation) SetEmbedded(embedded bool) *FileRelation {
 	f.Embedded = embedded
 	return f
 }
