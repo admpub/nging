@@ -23,12 +23,13 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/spf13/cobra"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/cmd/event"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/license"
-	"github.com/spf13/cobra"
-	"github.com/webx-top/echo"
 )
 
 func Init() {
@@ -49,6 +50,7 @@ func Init() {
 	}
 	config.Version.BuildTime = buildTime
 	stdLog.SetOutput(log.Writer(log.LevelInfo))
+	stdLog.SetFlags(stdLog.Lshortfile)
 	event.Licensed = license.Ok(``)
 	event.MustLicensed = echo.Bool(`MUST_LICENSED`)
 	config.Version.Licensed = event.Licensed

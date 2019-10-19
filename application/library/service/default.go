@@ -24,8 +24,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/admpub/log"
 	"github.com/webx-top/com"
+
+	"github.com/admpub/log"
 )
 
 func Run(action string) error {
@@ -63,7 +64,7 @@ func Run(action string) error {
 		return nil
 	}
 	stdLog.SetOutput(w)
-	stdLog.SetFlags(stdLog.LstdFlags)
+	stdLog.SetFlags(stdLog.Lshortfile)
 	conf.logger = newLogger(w)
 	return New(conf, action)
 }
