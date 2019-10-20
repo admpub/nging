@@ -41,7 +41,10 @@ var (
 	reFieldDefault        = regexp.MustCompile("char|set")
 	reFieldPrivilegeDelim = regexp.MustCompile(", *")
 
-	reFieldTypeNumber    = regexp.MustCompile("(^|[^o])int|float|double|decimal")
+	reFriendlyName = regexp.MustCompile("(?i)[^a-z0-9_]")
+	//((?<!o)int(?!er)|numeric|real|float|double|decimal|money)
+	reFieldTypeNumber    = regexp.MustCompile("(^|[^o])int(?:er)?|numeric|real|float|double|decimal|money")
+	reCSVText            = regexp.MustCompile("[\"\n,;\t]")
 	reFieldTypeText      = regexp.MustCompile("char|text|enum|set")
 	reFieldTypeBit       = regexp.MustCompile("^([0-9]+|b'[0-1]+')$")
 	reFieldTypeBlob      = regexp.MustCompile("blob|bytea|raw|file")

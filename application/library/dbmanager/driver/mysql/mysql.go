@@ -28,14 +28,15 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/admpub/errors"
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/db/mysql"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/pagination"
+
+	"github.com/admpub/errors"
+	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/application/library/dbmanager/driver"
 )
 
 func init() {
@@ -971,7 +972,6 @@ func (m *mySQL) ListData() error {
 	if len(selectFuncs) == 0 {
 		m.Request().Form().Set(`columns[fun][]`, ``)
 	}
-	funcNum := len(selectFuncs)
 	selectCols := m.FormValues(`columns[col][]`)
 
 	whereCols := m.FormValues(`where[col][]`)
@@ -1002,13 +1002,7 @@ func (m *mySQL) ListData() error {
 			descs = []string{`0`}
 		}
 	}
-	descNum := len(descs)
-	var (
-		wheres  []string
-		groups  []string
-		selects []string
-		orders  []string
-	)
+	var wheres []string
 	fields, sortFields, err := m.tableFields(table)
 	if err != nil {
 		return err
@@ -1088,103 +1082,23 @@ func (m *mySQL) ListData() error {
 			return err
 		}
 		if len(condition) > 0 {
-			condition = ` WHERE ` + condition
 			switch m.Form(`save`) {
 			case `delete`:
+				condition = ` WHERE ` + condition
 				err = m.delete(table, condition, 0)
+			case `export`:
+				return m.exportData(fields, table, selectFuncs, selectCols, []string{condition}, orderFields, descs, page, limit, totalRows, textLength)
 			}
 			if err == nil {
 				return m.returnTo()
 			}
 		}
 	}
-	for index, colName := range orderFields {
-		if len(colName) == 0 {
-			continue
-		}
-		if index >= descNum {
-			continue
-		}
-		var order string
-		if reSQLValue.MatchString(colName) {
-			order = colName
-		} else {
-			order = quoteCol(colName)
-		}
-		if descs[index] == `1` {
-			order += ` DESC`
-		}
-		orders = append(orders, order)
-	}
-	for index, colName := range selectCols {
-		var (
-			fn         string
-			isGrouping bool
-			sel        string
-		)
-		if index < funcNum {
-			for _, f := range functions {
-				if f == selectFuncs[index] {
-					fn = f
-					break
-				}
-			}
-			for _, f := range grouping {
-				if f == selectFuncs[index] {
-					fn = f
-					isGrouping = true
-					break
-				}
-			}
-		}
-		if len(fn) == 0 && len(colName) == 0 {
-			continue
-		}
-		if len(colName) == 0 {
-			colName = `*`
-		}
-		sel = applySQLFunction(fn, quoteCol(colName))
-		if !isGrouping {
-			groups = append(groups, sel)
-		}
-		selects = append(selects, sel)
-	}
-	var fieldStr string
-	if len(selects) > 0 {
-		fieldStr = strings.Join(selects, `, `)
-	} else {
-		fieldStr = `*`
-	}
-	r := &Result{}
-	var whereStr string
-	if len(wheres) > 0 {
-		whereStr += "\nWHERE " + strings.Join(wheres, ` AND `)
-	}
-	isGroup := len(groups) > 0 && len(groups) < len(selects)
-	if isGroup {
-		whereStr += "\nGROUP BY " + strings.Join(groups, `, `)
-	}
-	if len(orders) > 0 {
-		whereStr += "\nORDER BY " + strings.Join(orders, `, `)
-	}
-	r.SQL = `SELECT` + withLimit(fieldStr+` FROM `+quoteCol(table), whereStr, limit, (page-1)*limit, "\n")
-	if totalRows < 1 {
-		countSQL := m.countRows(table, wheres, isGroup, groups)
-		row := m.newParam().SetCollection(countSQL).QueryRow()
-		err := row.Scan(&totalRows)
-		if err != nil {
-			return err
-		}
-	}
 	var (
 		columns []string
 		values  []map[string]*sql.NullString
 	)
-	r.Query(m.newParam(), func(rows *sql.Rows) error {
-		columns, values, err = m.selectTable(rows, limit, textLength)
-		return err
-	})
-	m.AddResults(r)
+	columns, values, err = m.listData(nil, table, selectFuncs, selectCols, wheres, orderFields, descs, page, limit, totalRows, textLength)
 	m.Set(`sortFields`, sortFields)
 	m.Set(`fields`, fields)
 	m.Set(`columns`, columns)

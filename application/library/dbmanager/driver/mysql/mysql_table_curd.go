@@ -26,9 +26,119 @@ import (
 	"github.com/webx-top/com"
 )
 
+func (m *mySQL) listData(
+	callback func(columns []string, row map[string]*sql.NullString) error,
+	table string, selectFuncs []string, selectCols []string,
+	wheres []string, orderFields []string, descs []string,
+	page int, limit int, totalRows int, textLength ...int) (columns []string, values []map[string]*sql.NullString, err error) {
+	var (
+		groups  []string
+		selects []string
+		orders  []string
+	)
+	descNum := len(descs)
+	funcNum := len(selectFuncs)
+	for index, colName := range orderFields {
+		if len(colName) == 0 {
+			continue
+		}
+		if index >= descNum {
+			continue
+		}
+		var order string
+		if reSQLValue.MatchString(colName) {
+			order = colName
+		} else {
+			order = quoteCol(colName)
+		}
+		if descs[index] == `1` {
+			order += ` DESC`
+		}
+		orders = append(orders, order)
+	}
+	for index, colName := range selectCols {
+		var (
+			fn         string
+			isGrouping bool
+			sel        string
+		)
+		if index < funcNum {
+			for _, f := range functions {
+				if f == selectFuncs[index] {
+					fn = f
+					break
+				}
+			}
+			for _, f := range grouping {
+				if f == selectFuncs[index] {
+					fn = f
+					isGrouping = true
+					break
+				}
+			}
+		}
+		if len(fn) == 0 && len(colName) == 0 {
+			continue
+		}
+		if len(colName) == 0 {
+			colName = `*`
+		}
+		sel = applySQLFunction(fn, quoteCol(colName))
+		if !isGrouping {
+			groups = append(groups, sel)
+		}
+		selects = append(selects, sel)
+	}
+	var fieldStr string
+	if len(selects) > 0 {
+		fieldStr = strings.Join(selects, `, `)
+	} else {
+		fieldStr = `*`
+	}
+	r := &Result{}
+	var whereStr string
+	if len(wheres) > 0 {
+		whereStr += "\nWHERE " + strings.Join(wheres, ` AND `)
+	}
+	isGroup := len(groups) > 0 && len(groups) < len(selects)
+	if isGroup {
+		whereStr += "\nGROUP BY " + strings.Join(groups, `, `)
+	}
+	if len(orders) > 0 {
+		whereStr += "\nORDER BY " + strings.Join(orders, `, `)
+	}
+	r.SQL = `SELECT` + withLimit(fieldStr+` FROM `+quoteCol(table), whereStr, limit, (page-1)*limit, "\n")
+	if totalRows < 1 {
+		countSQL := m.countRows(table, wheres, isGroup, groups)
+		row := m.newParam().SetCollection(countSQL).QueryRow()
+		err = row.Scan(&totalRows)
+		if err != nil {
+			return
+		}
+	}
+	r.Query(m.newParam(), func(rows *sql.Rows) error {
+		if callback == nil {
+			columns, values, err = m.selectTable(rows, limit, textLength...)
+		} else {
+			columns, err = m.selectNext(rows, callback, limit, textLength...)
+		}
+		return err
+	})
+	m.AddResults(r)
+	return
+}
+
 func (m *mySQL) selectTable(rows *sql.Rows, limit int, textLength ...int) (columns []string, r []map[string]*sql.NullString, err error) {
-	columns, err = rows.Columns()
 	r = []map[string]*sql.NullString{}
+	columns, err = m.selectNext(rows, func(_ []string, row map[string]*sql.NullString) error {
+		r = append(r, row)
+		return nil
+	}, limit, textLength...)
+	return
+}
+
+func (m *mySQL) selectNext(rows *sql.Rows, callback func(columns []string, row map[string]*sql.NullString) error, limit int, textLength ...int) (columns []string, err error) {
+	columns, err = rows.Columns()
 	if err != nil {
 		return
 	}
@@ -53,7 +163,10 @@ func (m *mySQL) selectTable(rows *sql.Rows, limit int, textLength ...int) (colum
 				val[colName].String = com.Substr(val[colName].String, ` ...`, maxLen)
 			}
 		}
-		r = append(r, val)
+		err = callback(columns, val)
+		if err != nil {
+			return
+		}
 	}
 	return
 }
@@ -111,6 +224,113 @@ func (m *mySQL) delete(table, queryWhere string, limit int) error {
 	r.Exec(m.newParam())
 	m.AddResults(r)
 	return r.err
+}
+
+func (m *mySQL) dumpHeaders(exportFormat string, multiTable bool) string {
+	output := m.Form(`output`)
+	var ext string
+	if strings.Contains(exportFormat, `sql`) {
+		ext = "sql"
+	} else if multiTable {
+		ext = "tar"
+	} else {
+		ext = "csv"
+	}
+	// multiple CSV packed to TAR
+	var contentType string
+	if output == `gz` {
+		contentType = "application/x-gzip"
+	} else if ext == `tar` {
+		contentType = "application/x-tar"
+	} else if ext == "sql" || output != `file` {
+		contentType = "text/plain"
+	} else {
+		contentType = "text/csv"
+	}
+	m.Response().Header().Set("Content-Type", contentType+"; charset=utf-8")
+	return ext
+}
+
+func (m *mySQL) exportData(fields map[string]*Field, table string, selectFuncs []string, selectCols []string, wheres []string, orderFields []string, descs []string, page int, limit int, totalRows int, textLength ...int) error {
+	exportFormat := m.Form(`exportFormat`)
+	exportStyle := m.Form(`exportStyle`)
+	if exportFormat == `sql` {
+		if exportStyle == `TRUNCATE+INSERT` {
+			m.Response().Write(com.Str2bytes("TRUNCATE " + quoteCol(table) + ";\n"))
+		}
+	}
+	var insert string
+	var buffer string
+	var suffix string
+	var maxPacket int
+	if m.Driver != `sqlite` {
+		maxPacket = 1048576 // default, minimum is 1024
+	}
+	//m.Response().Header().Set("Content-Disposition", "attachment; filename="+friendlyURL(talbe+`-`))
+	ext := m.dumpHeaders(exportFormat, false)
+	_ = ext
+	_, _, err := m.listData(func(cols []string, row map[string]*sql.NullString) error {
+		if exportFormat != `sql` {
+			if exportStyle == `table` {
+				dumpCSV(true, cols, row, exportFormat, m.Response())
+				exportStyle = `insert`
+			}
+			dumpCSV(false, cols, row, exportFormat, m.Response())
+			return nil
+		}
+		if len(insert) == 0 {
+			keys := make([]string, len(cols))
+			vals := make([]string, len(cols))
+			for idx, col := range cols {
+				keys[idx] = quoteVal(col)
+				key := quoteCol(col)
+				vals[idx] = key + " = VALUES(" + key + ")"
+			}
+			if exportStyle == `INSERT+UPDATE` {
+				suffix = "\nON DUPLICATE KEY UPDATE " + strings.Join(vals, ", ")
+			}
+			suffix += ";\n"
+			insert = "INSERT INTO " + quoteCol(table) + " (" + strings.Join(keys, `, `) + ") VALUES"
+		}
+		var values, sep string
+		for _, col := range cols {
+			val := row[col]
+			if !val.Valid {
+				values += sep + `NULL`
+			} else {
+				field := fields[col]
+				var v string
+				if reFieldTypeNumber.MatchString(field.Type) && len(val.String) > 0 && !strings.HasPrefix(field.Full_type, `[`) {
+					v = val.String
+				} else {
+					v = quoteVal(val.String)
+				}
+				values += sep + unconvertField(field, v)
+			}
+			sep = `, `
+		}
+		var s string
+		if maxPacket > 0 {
+			s = "\n"
+		} else {
+			s = " "
+		}
+		s += "(" + values + ")"
+		if len(buffer) == 0 {
+			buffer = insert + s
+		} else if len(buffer)+4+len(s)+len(suffix) < maxPacket { // 4 - length specification
+			buffer += "," + s
+		} else {
+			m.Response().Write(com.Str2bytes(buffer + suffix))
+			buffer = insert + s
+		}
+		return nil
+	}, table, selectFuncs, selectCols, wheres, orderFields, descs, page, limit, totalRows, textLength...)
+
+	if len(buffer) > 0 {
+		m.Response().Write(com.Str2bytes(buffer + suffix))
+	}
+	return err
 }
 
 /** Update data in table

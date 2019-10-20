@@ -20,6 +20,7 @@ package mysql
 import (
 	"bytes"
 	"database/sql"
+	"io"
 	"math"
 	"regexp"
 	"strconv"
@@ -454,4 +455,44 @@ func enumValues(field *Field) []*Enum {
 
 func enumNumber(i int) int {
 	return 1 << uint64(math.Abs(float64(i)))
+}
+
+/** Print CSV row
+* @param array
+* @return null
+ */
+func dumpCSV(isHeader bool, cols []string, row map[string]*sql.NullString, format string, writer io.Writer) {
+	var sep string
+	switch format {
+	case `csv`:
+		sep = `,`
+	case `tsv`:
+		sep = "\t"
+	default:
+		sep = ";"
+	}
+	vals := make([]string, len(cols))
+	if isHeader {
+		for idx, col := range cols {
+			if len(col) == 0 || reCSVText.MatchString(col) {
+				vals[idx] = `"` + strings.Replace(col, `"`, `""`, -1) + `"`
+			} else {
+				vals[idx] = col
+			}
+		}
+	} else {
+		for idx, col := range cols {
+			val := row[col]
+			if len(val.String) == 0 || reCSVText.MatchString(val.String) {
+				vals[idx] = `"` + strings.Replace(val.String, `"`, `""`, -1) + `"`
+			} else {
+				vals[idx] = val.String
+			}
+		}
+	}
+	writer.Write(com.Str2bytes(strings.Join(vals, sep) + "\r\n"))
+}
+
+func friendlyURL(v string) string {
+	return reFriendlyName.ReplaceAllString(v, `-`)
 }
