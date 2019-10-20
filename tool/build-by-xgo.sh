@@ -6,6 +6,8 @@ cd tool
 
 source ${PWD}/inc-version.sh
 
+export TMPDIR=
+
 export NGINGEX=
 export BUILDTAGS=
 
