@@ -25,19 +25,20 @@ import (
 )
 
 type DbAuth struct {
-	Driver    string
-	Username  string
-	Password  string
-	Host      string
-	Db        string
-	Charset   string
-	AccountID uint
+	Driver       string
+	Username     string
+	Password     string
+	Host         string
+	Db           string
+	Charset      string
+	AccountID    uint
+	AccountTitle string
 }
 
 func (d *DbAuth) GenKey() string {
 	if d.AccountID > 0 {
 		return GenKey(``, ``, ``, ``, d.AccountID)
-	} 
+	}
 	return GenKey(d.Driver, d.Username, d.Host, d.Db, d.AccountID)
 }
 
@@ -61,6 +62,7 @@ func (d *DbAuth) CopyFrom(auth *DbAuth) *DbAuth {
 	d.Db = auth.Db
 	d.Charset = auth.Charset
 	d.AccountID = auth.AccountID
+	d.AccountTitle = auth.AccountTitle
 	return d
 }
 

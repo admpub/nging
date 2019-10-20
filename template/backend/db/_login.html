@@ -14,10 +14,14 @@
                   <li>
                     <a href="{{dbMgrURLByAccount $account}}">
                     <span class="label label-{{colorByDriver $account.Driver}} label-sm">{{$account.Driver}}</span>
+                    {{if $account.AccountTitle -}}
+                    <span data-toggle="tooltip" data-placement="right" title="{{if $account.Username -}}{{- $account.Username -}}@{{- end -}}{{- $account.Host -}}">{{- $account.AccountTitle -}}</span>
+                    {{else}}
                     {{if $account.Username -}}
                     {{- $account.Username -}}@
                     {{- end -}}
                     {{- $account.Host -}}
+                    {{- end -}}
                     </a>
                   </li>
                   {{end}}

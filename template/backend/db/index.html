@@ -19,8 +19,15 @@
             <button class="navbar-toggle" data-target=".app-nav" data-toggle="collapse" type="button">
               <span class="fa fa-chevron-down"></span>
             </button>
-            <a class="label label-primary collapse-button"><i class="fa fa-angle-double-left"></i></a>
-            <h2 class="page-title" data-toggle="tooltip" data-placement="bottom" title="{{Stored.Get "dbHost"}}">{{Stored.Get "dbHost"}}</h2>
+            <a class="label label-primary collapse-button"><i class="fa fa-angle-double-left"></i></a>{{$accountTitle := Stored.accountTitle}}
+            <h2 class="page-title">
+              {{- if $accountTitle -}}
+              <span class="clickable" onclick="$('#db-information').toggleClass('hide');">{{- $accountTitle -}}</span>
+              <pre id="db-information" class="hide">{{- Stored.Get "dbHost" -}}</pre>
+              {{- else -}}
+              <span data-toggle="tooltip" data-placement="bottom" title="{{Stored.Get `dbHost`}}">{{- Stored.Get "dbHost" -}}</span>
+              {{- end -}}
+            </h2>
             <p class="description">
             <span class="label label-default" title="{{Stored.Get "driver"}} {{Stored.Get "dbVersion"}}">
                {{Stored.Get "driver"}} {{Stored.Get "dbVersion"}}

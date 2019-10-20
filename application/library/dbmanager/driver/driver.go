@@ -19,9 +19,10 @@
 package driver
 
 import (
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/dbmanager/result"
-	"github.com/webx-top/echo"
 )
 
 var (
@@ -36,6 +37,8 @@ type Driver interface {
 	Results() []result.Resulter
 	AddResults(...result.Resulter) Driver
 	SetResults(...result.Resulter) Driver
+	EnableFlashSession(on ...bool) Driver
+	FlashSession() bool
 	SaveResults() Driver
 	SavedResults() interface{}
 	IsSupported(string) bool
@@ -72,11 +75,25 @@ type BaseDriver struct {
 	*DbAuth
 	results      []result.Resulter
 	urlGenerator func(string, ...string) string
+	flashSession bool
 }
 
 func (m *BaseDriver) SetURLGenerator(fn func(string, ...string) string) Driver {
 	m.urlGenerator = fn
 	return m
+}
+
+func (m *BaseDriver) EnableFlashSession(on ...bool) Driver {
+	if len(on) == 0 || on[0] {
+		m.flashSession = true
+	} else {
+		m.flashSession = false
+	}
+	return m
+}
+
+func (m *BaseDriver) FlashSession() bool {
+	return m.flashSession
 }
 
 func (m *BaseDriver) GenURL(op string, args ...string) string {
@@ -104,18 +121,22 @@ func (m *BaseDriver) SaveResults() Driver {
 	if m.results == nil {
 		return m
 	}
-	/*
-		if v, y := m.Flash(`dbMgrResults`).([]result.Resulter); y {
-			m.results = append(v, m.results...)
-		}
-	*/
-	m.Session().AddFlash(m.results, `dbMgrResults`)
+	if m.flashSession {
+		/*
+			if v, y := m.Flash(`dbMgrResults`).([]result.Resulter); y {
+				m.results = append(v, m.results...)
+			}
+		*/
+		m.Session().AddFlash(m.results, `dbMgrResults`)
+	}
 	return m
 }
 
 func (m *BaseDriver) SavedResults() interface{} {
-	if v := m.Flash(`dbMgrResults`); v != nil {
-		return v
+	if m.flashSession {
+		if v := m.Flash(`dbMgrResults`); v != nil {
+			return v
+		}
 	}
 	return m.results
 }

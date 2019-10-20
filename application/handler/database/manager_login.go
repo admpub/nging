@@ -1,12 +1,13 @@
 package database
 
 import (
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/dbmanager"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/admpub/nging/application/model"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 func addAuth(ctx echo.Context, auth *driver.DbAuth) {
@@ -23,7 +24,7 @@ func getAccounts(ctx echo.Context) driver.AuthAccounts {
 	if !ok {
 		accounts = driver.AuthAccounts{}
 	} else {
-		ctx.Internal().Set(`dbAccounts`,&accounts)
+		ctx.Internal().Set(`dbAccounts`, &accounts)
 	}
 	return accounts
 }
@@ -38,7 +39,7 @@ func clearAuth(ctx echo.Context) {
 	accounts := getAccounts(ctx)
 	for key := range accounts {
 		accounts.DeleteByKey(key)
-	} 
+	}
 	ctx.Session().Delete(`dbAccounts`)
 }
 
@@ -48,7 +49,7 @@ func getLoginInfo(mgr dbmanager.Manager, accountID uint, m *model.DbAccount, use
 		return nil
 	}
 	auth := mgr.Account()
-	data := &driver.DbAuth{AccountID: accountID}
+	data := &driver.DbAuth{AccountID: accountID, AccountTitle: m.Title}
 	ctx.Bind(data)
 	if len(data.Username) == 0 {
 		data.Username = `root`
@@ -58,7 +59,9 @@ func getLoginInfo(mgr dbmanager.Manager, accountID uint, m *model.DbAccount, use
 	}
 	auth.CopyFrom(data)
 	if ctx.Form(`remember`) == `1` {
-		m.Title = auth.Driver + `://` + auth.Username + `@` + auth.Host + `/` + auth.Db
+		if len(m.Title) == 0 {
+			m.Title = auth.Driver + `://` + auth.Username + `@` + auth.Host + `/` + auth.Db
+		}
 		m.Engine = auth.Driver
 		m.Host = auth.Host
 		m.User = auth.Username
@@ -68,12 +71,12 @@ func getLoginInfo(mgr dbmanager.Manager, accountID uint, m *model.DbAccount, use
 		if err != nil {
 			return err
 		}
-		if accountID < 1 || err == db.ErrNoMoreRows {
+		if accountID < 1 || m.Id < 1 {
 			m.Uid = user.Id
 			_, err = m.Add()
 		} else {
 			err = m.Edit(accountID, nil, db.Cond{`id`: accountID})
 		}
 	}
-	return nil
+	return
 }

@@ -22,6 +22,9 @@ import (
 	"fmt"
 	"net/url"
 
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/dbmanager"
@@ -29,15 +32,13 @@ import (
 	"github.com/admpub/nging/application/library/dbmanager/driver/mysql"   //mysql
 	_ "github.com/admpub/nging/application/library/dbmanager/driver/redis" //redis
 	"github.com/admpub/nging/application/model"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 var (
 	defaultGenURL = func(_ string, _ ...string) string {
 		return ``
 	}
-	defaultGenBaseURL = func(auth *driver.DbAuth) string{
+	defaultGenBaseURL = func(auth *driver.DbAuth) string {
 		baseURL := handler.URLFor(`/db`)
 		if auth.AccountID > 0 {
 			return baseURL + `?accountId=` + fmt.Sprint(auth.AccountID)
@@ -57,10 +58,10 @@ func Manager(ctx echo.Context) error {
 	driverName := ctx.Form(`driver`)
 	operation := ctx.Form(`operation`)
 	auth := &driver.DbAuth{
-		Driver:		driverName,
-		Username:	ctx.Form(`username`),
-		Host:		ctx.Form(`host`),
-		Db:			ctx.Form(`db`),
+		Driver:   driverName,
+		Username: ctx.Form(`username`),
+		Host:     ctx.Form(`host`),
+		Db:       ctx.Form(`db`),
 	}
 	mgr := dbmanager.New(ctx, auth)
 	var accountID uint
@@ -96,7 +97,7 @@ func Manager(ctx echo.Context) error {
 
 	case `logout`:
 		_, signedIn = authentication(mgr, accountID, m)
-	
+
 	case `logoutAll`:
 		clearAuth(ctx)
 
@@ -105,6 +106,7 @@ func Manager(ctx echo.Context) error {
 		ctx.Set(`signedIn`, signedIn)
 		ctx.Set(`dbUsername`, auth.Username)
 		ctx.Set(`dbHost`, auth.Host)
+		ctx.Set(`accountTitle`, auth.AccountTitle)
 		if signedIn {
 			driverName = auth.Driver
 			if len(operation) == 0 {
@@ -144,11 +146,11 @@ func Manager(ctx echo.Context) error {
 		}
 		if err == nil {
 			switch operation {
-			case `login`://登录成功
+			case `login`: //登录成功
 				addAuth(ctx, auth)
 				mgr.Run(auth.Driver, `logout`)
 				return ctx.Redirect(defaultGenBaseURL(auth))
-			case `logout`://退出登录
+			case `logout`: //退出登录
 				deleteAuth(ctx, auth)
 			default:
 				return err
@@ -177,8 +179,8 @@ func Manager(ctx echo.Context) error {
 	ctx.Set(`dbType`, ctx.T(`数据库`))
 	ctx.Set(`charsetList`, mysql.Charsets)
 	ctx.Set(`accounts`, getAccounts(ctx))
-	ctx.SetFunc(`dbMgrURLByAccount`,defaultGenBaseURL)
-	ctx.SetFunc(`colorByDriver`,func(driver string) string {
+	ctx.SetFunc(`dbMgrURLByAccount`, defaultGenBaseURL)
+	ctx.SetFunc(`colorByDriver`, func(driver string) string {
 		if color, ok := driverColors[driver]; ok {
 			return color
 		}
