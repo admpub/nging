@@ -1,0 +1,67 @@
+/*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2018-present  Wenhui Shen <swh@admpub.com>
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
+
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+package listeners
+
+import (
+	"strings"
+
+	"github.com/webx-top/com"
+	"github.com/webx-top/db/lib/factory"
+
+	"github.com/admpub/nging/application/library/fileupdater/listener"
+)
+
+func New() *Listeners {
+	return &Listeners{}
+}
+
+type Listeners map[string]func(m factory.Model) (tableID string, content string, property *listener.Property)
+
+func (a *Listeners) Listen(tableName string, embedded bool, seperator ...string) *Listeners {
+	for _field, _listener := range *a {
+		listener.New(_listener, embedded, seperator...).SetTable(tableName, _field).ListenDefault()
+		delete(*a, _field)
+	}
+	return a
+}
+
+func (a *Listeners) ListenByField(fieldNames string, tableName string, embedded bool, seperator ...string) *Listeners {
+	_fieldNames := strings.Split(fieldNames, `,`)
+	for _field, _listener := range *a {
+		if com.InSlice(_field, _fieldNames) {
+			listener.New(_listener, embedded, seperator...).SetTable(tableName, _field).ListenDefault()
+			delete(*a, _field)
+		}
+	}
+	return a
+}
+
+func (a *Listeners) Add(fieldName string, callback func(m factory.Model) (tableID string, content string, property *listener.Property)) *Listeners {
+	(*a)[fieldName] = callback
+	return a
+}
+
+func (a *Listeners) Delete(fieldNames ...string) *Listeners {
+	for _, fieldName := range fieldNames {
+		if _, ok := (*a)[fieldName]; ok {
+			delete(*a, fieldName)
+		}
+	}
+	return a
+}

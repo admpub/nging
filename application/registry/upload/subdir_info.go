@@ -24,6 +24,7 @@ import (
 
 	"github.com/webx-top/echo"
 
+	pkgListeners "github.com/admpub/nging/application/library/fileupdater/listeners"
 	"github.com/admpub/nging/application/registry/upload/table"
 )
 
@@ -313,5 +314,10 @@ func (i *SubdirInfo) SetNameEN(nameEN string) *SubdirInfo {
 
 func (i *SubdirInfo) SetDescription(description string) *SubdirInfo {
 	i.Description = description
+	return i
+}
+
+func (i *SubdirInfo) Listen(listeners *pkgListeners.Listeners, embedded bool, seperator ...string) *SubdirInfo {
+	listeners.Listen(i.TableName(), embedded, seperator...)
 	return i
 }
