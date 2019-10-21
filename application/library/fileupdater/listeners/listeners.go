@@ -21,7 +21,6 @@ package listeners
 import (
 	"strings"
 
-	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
 
 	"github.com/admpub/nging/application/library/fileupdater/listener"
@@ -42,11 +41,10 @@ func (a *Listeners) Listen(tableName string, embedded bool, seperator ...string)
 }
 
 func (a *Listeners) ListenByField(fieldNames string, tableName string, embedded bool, seperator ...string) *Listeners {
-	_fieldNames := strings.Split(fieldNames, `,`)
-	for _field, _listener := range *a {
-		if com.InSlice(_field, _fieldNames) {
-			listener.New(_listener, embedded, seperator...).SetTable(tableName, _field).ListenDefault()
-			delete(*a, _field)
+	for _, fieldName := range strings.Split(fieldNames, `,`) {
+		if _listener, ok := (*a)[fieldName]; ok {
+			listener.New(_listener, embedded, seperator...).SetTable(tableName, fieldName).ListenDefault()
+			delete(*a, fieldName)
 		}
 	}
 	return a
