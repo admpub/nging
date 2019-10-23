@@ -24,6 +24,8 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/webx-top/echo/param"
 )
 
 // 获取数据表列表
@@ -389,11 +391,12 @@ func (m *mySQL) tableFields(table string) (map[string]*Field, []string, error) {
 			privileges[v] = k
 		}
 		sorts = append(sorts, v.Field.String)
-		ret[v.Field.String] = &Field{
+		field := &Field{
 			Field:         v.Field.String,
 			Full_type:     v.Type.String,
 			Type:          match[1],
 			Length:        match[2],
+			Precision:     0,
 			Unsigned:      strings.TrimLeft(match[3]+match[4], ` `),
 			Default:       v.Default,
 			Null:          v.Null.String == `YES`,
@@ -404,6 +407,18 @@ func (m *mySQL) tableFields(table string) (map[string]*Field, []string, error) {
 			Comment:       v.Comment.String,
 			Primary:       v.Key.String == "PRI",
 		}
+		switch field.Type {
+		case `decimal`, `float`, `double`:
+			sizeInfo := strings.SplitN(match[2], `,`, 2)
+			switch len(sizeInfo) {
+			case 2:
+				field.Precision = param.AsInt(sizeInfo[1])
+				fallthrough
+			case 1:
+				field.Length = sizeInfo[0]
+			}
+		}
+		ret[v.Field.String] = field
 	}
 	return ret, sorts, nil
 }

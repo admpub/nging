@@ -463,6 +463,7 @@ type Field struct {
 	Full_type     string
 	Type          string
 	Length        string
+	Precision     int
 	length        sql.NullInt64
 	Unsigned      string
 	Default       sql.NullString

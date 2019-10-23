@@ -133,10 +133,8 @@ func (m *BaseDriver) SaveResults() Driver {
 }
 
 func (m *BaseDriver) SavedResults() interface{} {
-	if m.flashSession {
-		if v := m.Flash(`dbMgrResults`); v != nil {
-			return v
-		}
+	if v := m.Flash(`dbMgrResults`); v != nil {
+		return v
 	}
 	return m.results
 }

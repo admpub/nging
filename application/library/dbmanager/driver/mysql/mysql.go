@@ -140,6 +140,7 @@ func (m *mySQL) ProcessList() error {
 }
 
 func (m *mySQL) returnTo(rets ...string) error {
+	m.EnableFlashSession()
 	return m.ReturnTo(rets...)
 }
 
@@ -1302,6 +1303,12 @@ func (m *mySQL) CreateData() error {
 	m.Set(`saveType`, saveType)
 	m.SetFunc(`isNumber`, func(typ string) bool {
 		return reFieldTypeNumber.MatchString(typ)
+	})
+	m.SetFunc(`mumberStep`, func(field *Field) string {
+		if field.Precision < 1 {
+			return `1`
+		}
+		return fmt.Sprintf(`0.%0*d`, field.Precision, 1)
 	})
 	m.SetFunc(`isBlob`, func(typ string) bool {
 		return reFieldTypeBlob.MatchString(typ)

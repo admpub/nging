@@ -60,7 +60,7 @@
                                 &nbsp;
                                 {{end}}
                                 {{else if isNumber $field.Type}}
-                                <input data-type="number" type="number" name="value[{{$column}}]" class="form-control" value="{{$value.String}}"{{if $field.Unsigned}} min="0"{{end}}>
+                                <input data-type="number" type="number" name="value[{{$column}}]" class="form-control" value="{{$value.String}}"{{if $field.Unsigned}} min="0"{{end}} step="{{mumberStep $field}}">
                                 {{else if eq $field.InputType "textarea"}}
                                 <textarea name="value[{{$column}}]" rows="1" class="form-control" style="resize:vertical">{{$field.Format $value.String}}</textarea>
                                 {{else}}
