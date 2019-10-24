@@ -30,12 +30,13 @@ func (m *mySQL) listData(
 	callback func(columns []string, row map[string]*sql.NullString) error,
 	table string, selectFuncs []string, selectCols []string,
 	wheres []string, orderFields []string, descs []string,
-	page int, limit int, totalRows int, textLength ...int) (columns []string, values []map[string]*sql.NullString, err error) {
+	page int, limit int, totalRows int, textLength ...int) (columns []string, values []map[string]*sql.NullString, total int, err error) {
 	var (
 		groups  []string
 		selects []string
 		orders  []string
 	)
+	total = totalRows
 	descNum := len(descs)
 	funcNum := len(selectFuncs)
 	for index, colName := range orderFields {
@@ -115,6 +116,7 @@ func (m *mySQL) listData(
 		if err != nil {
 			return
 		}
+		total = totalRows
 	}
 	r.Query(m.newParam(), func(rows *sql.Rows) error {
 		if callback == nil {
@@ -269,7 +271,7 @@ func (m *mySQL) exportData(fields map[string]*Field, table string, selectFuncs [
 	//m.Response().Header().Set("Content-Disposition", "attachment; filename="+friendlyURL(talbe+`-`))
 	ext := m.dumpHeaders(exportFormat, false)
 	_ = ext
-	_, _, err := m.listData(func(cols []string, row map[string]*sql.NullString) error {
+	_, _, _, err := m.listData(func(cols []string, row map[string]*sql.NullString) error {
 		if exportFormat != `sql` {
 			if exportStyle == `table` {
 				dumpCSV(true, cols, row, exportFormat, m.Response())

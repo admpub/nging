@@ -194,6 +194,7 @@ function onselectColumns(obj){
 				</table>
                 <fieldset class="sm-margin-top">
                     <legend class="sm-padding-bottom sm-margin-bottom xs-padding-left">{{"已选中"|T}} (<span id="selected-items-count">0</span>) {{T "共有%d项" Stored.total}}</legend>
+                    <div class="col-md-3 no-padding">
                     <div class="btn-group">
                     {{$editURL := dbMgrURL `createData` Stored.dbName Stored.table}}
                     <button type="submit" class="btn btn-primary" name="save" value="edit" onclick="$('#form-list-data').attr('action','{{$editURL}}');return true;">
@@ -209,6 +210,28 @@ function onselectColumns(obj){
                         {{"删除"|T}}
                     </button>
                     </div>
+                    </div><!-- /.col-md-3 -->
+                    <div class="col-md-3">
+                    <span class="input-group no-margin">
+                    <!-- <select class="form-control" name="output">
+                        <option value="text">{{`打开`|T}}</option>
+                        <option value="file">{{`保存`|T}}</option>
+                        <option value="gz">gzip</option>
+                    </select>
+                    <span class="input-group-btn"></span> -->
+                    <select class="form-control" name="exportFormat">
+                        <option value="sql">sql</option>
+                        <option value="csv">csv,</option>
+                        <option value="csv;">csv;</option>
+                        <option value="tsv">tsv</option>
+                    </select>
+                    <span class="input-group-btn">
+                    <button type="submit" class="btn btn-info" name="save" value="export">
+                        <i class="glyphicon glyphicon-export"></i>
+                        {{"导出"|T}}
+                    </button></span>
+                    </span><!-- /.input-group -->
+                    </div><!-- /.col-md-3 -->
                 </fieldset>
              </form>
             </div><!-- .table-responsive -->

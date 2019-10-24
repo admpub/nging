@@ -1099,7 +1099,7 @@ func (m *mySQL) ListData() error {
 		columns []string
 		values  []map[string]*sql.NullString
 	)
-	columns, values, err = m.listData(nil, table, selectFuncs, selectCols, wheres, orderFields, descs, page, limit, totalRows, textLength)
+	columns, values, totalRows, err = m.listData(nil, table, selectFuncs, selectCols, wheres, orderFields, descs, page, limit, totalRows, textLength)
 	m.Set(`sortFields`, sortFields)
 	m.Set(`fields`, fields)
 	m.Set(`columns`, columns)
