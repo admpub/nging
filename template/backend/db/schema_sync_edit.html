@@ -147,7 +147,7 @@ function selectAccountId(a){
       $('#destinationAccountId').find('option:disabled').prop('disabled',false);
       return;
     }
-    $('#destinationAccountId').find('option[value="'+$(a).val()+'"]').prop('disabled',true).prop('checked',false);
+    $('#destinationAccountId').find('option[value="'+$(a).val()+'"]').prop('disabled',true).prop('checked',false).siblings('option:disabled').prop('disabled',false);
     $('#custom-source').hide();
     return;
   }
@@ -156,7 +156,7 @@ function selectAccountId(a){
     $('#sourceAccountId').find('option:disabled').prop('disabled',false);
     return;
   }
-  $('#sourceAccountId').find('option[value="'+$(a).val()+'"]').prop('disabled',true).prop('checked',false);
+  $('#sourceAccountId').find('option[value="'+$(a).val()+'"]').prop('disabled',true).prop('checked',false).siblings('option:disabled').prop('disabled',false);
   $('#custom-destination').hide();
 }
 selectAccountId($('#sourceAccountId')[0]);
