@@ -39,7 +39,7 @@
                       <input type="text" class="form-control" name="host" placeholder="127.0.0.1:3306" value="{{Form "host"}}">
                   </div>
                 </div>
-              <div class="form-group">
+              <div class="form-group" id="user-container">
                 <label class="col-sm-3 control-label">{{"账户名"|T}}</label>
                 <div class="col-sm-6">
                     <input type="text" class="form-control" name="user" placeholder="root" value="{{Form "user"}}">
@@ -51,7 +51,7 @@
                     <input type="password" class="form-control" name="password" placeholder="" value="{{Form "password"}}" autocomplete="off">
                 </div>
               </div>
-              <div class="form-group">
+              <div class="form-group" id="dbname-container">
                 <label class="col-sm-3 control-label">{{"数据库名称"|T}}</label>
                 <div class="col-sm-6">
                   <input type="text" class="form-control" name="name" value="{{Form "name"}}">
@@ -83,8 +83,16 @@
 <script type="text/javascript">
 $(function(){
   $('#sel-engine').on('change',function(){
-    var v=$(this).val(),cs=$('#charset-container');
-    v=='mysql'?cs.show():cs.hide();
+    var v=$(this).val(),cs=$('#charset-container'),un=$('#user-container'),db=$('#dbname-container');
+    if(v=='mysql'){
+      cs.show();
+      un.show();
+      db.show();
+    }else{
+      cs.hide();
+      un.hide();
+      db.hide();
+    }
   }).trigger('change');
 });
 if(window.opener && window.opener.dbAccountAdded){
