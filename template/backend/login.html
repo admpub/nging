@@ -12,7 +12,7 @@
 				<h3 class="text-center"><img class="logo-img logo-img-sm" src="__ASSETS__/images/logo.png" alt="logo"/>{{"账号登录"|T}}</h3>
 			</div> 
 			<div>
-				<form style="margin-bottom: 0px !important;" class="form-horizontal" action="__BACKEND__/login" method="POST">
+				<form style="margin-bottom: 0px !important;" class="form-horizontal" data-secret="{{Stored.passwordSecrect}}" id="login-form" action="__BACKEND__/login" method="POST">
 					<div class="content">
 						<div class="form-group">
 							<div class="col-sm-12">
@@ -26,7 +26,7 @@
 							<div class="col-sm-12">
 								<div class="input-group">
 									<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-									<input type="password" placeholder="{{"密码"|T}}" value="{{Form "pass"}}" name="pass" required="required" data-toggle="tooltip" title="{{"密码"|T}}" class="form-control">
+									<input type="password" id="password" placeholder="{{"密码"|T}}" value="{{Form "pass"}}" name="pass" required="required" data-toggle="tooltip" title="{{"密码"|T}}" class="form-control">
 								</div>
 							</div>
 						</div>
@@ -59,12 +59,25 @@
 {{Block "footer"}}
 <script type="text/javascript" src="__ASSETS__/js/behaviour/sprintf.min.js"></script>
 <script type="text/javascript" src="__ASSETS__/js/behaviour/general.min.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/crypto/crypto-js.min.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/crypto/helper.js"></script>
 <script type="text/javascript">
 $(function(){
 {{- if . -}}
 App.message({title: '{{"系统消息"|T}}', text: "{{.}}"});
 {{- end -}}
 $('[data-toggle="tooltip"]').tooltip();
+$('#login-form').on('submit',function(e){
+	e.preventDefault();
+	var data=EncryptFormPassword(this);
+	$.post($(this).attr('action'),data,function(r){
+		if(r.Code==1){
+			window.location=r.URL;
+		}else{
+			App.message({title:'{{"出错了"|T}}',text:r.Info,class_name:'danger'});
+		}
+	},'json');
+});
 });
 </script>
 {{/Block}}

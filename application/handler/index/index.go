@@ -21,15 +21,16 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/middleware/tplfunc"
+
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/license"
 	"github.com/admpub/nging/application/middleware"
 	"github.com/admpub/nging/application/model"
 	"github.com/admpub/nging/application/registry/dashboard"
-	"github.com/webx-top/com"
-	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/middleware/tplfunc"
 )
 
 func Index(ctx echo.Context) error {
@@ -78,6 +79,9 @@ func Login(ctx echo.Context) error {
 		}
 	}
 
+	secret := com.RandomAlphanumeric(32)
+	ctx.Session().Set(`loginPasswordSecrect`, secret)
+	ctx.Set(`passwordSecrect`, secret)
 	return ctx.Render(`login`, handler.Err(ctx, err))
 }
 
