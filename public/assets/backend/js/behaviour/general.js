@@ -161,7 +161,7 @@ var App = function () {
   var cachedLang = null;
   return {
     clientID: {},
-    i18n: { SYS_INFO: 'System Information', UPLOAD_ERR: 'Upload Error', PLEASE_SELECT_FOR_REMOVE: 'Please select the item you want to delete', CONFIRM_REMOVE: 'Are you sure you want to delete them?', SELECTED_ITEMS: 'You have selected %d items' },
+    i18n: { SYS_INFO: 'System Information', UPLOAD_ERR: 'Upload Error', PLEASE_SELECT_FOR_REMOVE: 'Please select the item you want to delete', CONFIRM_REMOVE: 'Are you sure you want to delete them?', SELECTED_ITEMS: 'You have selected %d items', SUCCESS: 'The operation was successful', FAILURE: 'Operation failed' },
     lang: 'en',
     sprintf: sprintfWrapper.init,
     t: function (key) {

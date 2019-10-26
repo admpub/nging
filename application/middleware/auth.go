@@ -15,16 +15,17 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 package middleware
 
 import (
 	"strings"
 	"time"
 
-	"github.com/webx-top/codec"
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/license"
 	"github.com/admpub/nging/application/model"
@@ -133,11 +134,7 @@ func CheckAllPerm(c echo.Context, ppaths ...string) (err error) {
 func Auth(c echo.Context, saveSession bool) error {
 	user := c.Form(`user`)
 	pass := c.Form(`pass`)
-	secret := c.Session().Get(`loginPasswordSecrect`)
-	if secret != nil {
-		crypto := codec.NewDesECBCrypto()
-		pass = crypto.Decode(pass, secret.(string))
-	}
+	common.DecryptedByRandomSecret(c, `loginPassword`, &pass)
 	m := model.NewUser(c)
 	exists, err := m.CheckPasswd(user, pass)
 	if !exists {
@@ -156,7 +153,7 @@ func Auth(c echo.Context, saveSession bool) error {
 			`last_login`: m.User.LastLogin,
 			`last_ip`:    m.User.LastIp,
 		}, `id`, m.User.Id)
-		c.Session().Delete(`loginPasswordSecrect`)
+		common.DeleteRandomSecret(c, `loginPassword`)
 	}
 	return err
 }

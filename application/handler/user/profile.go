@@ -15,17 +15,20 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 package user
 
 import (
 	"strings"
 
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/handler/term"
-	"github.com/admpub/nging/application/library/filemanager"
-	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/handler/term"
+	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/application/library/filemanager"
+	"github.com/admpub/nging/application/model"
 )
 
 func Edit(ctx echo.Context) error {
@@ -51,6 +54,12 @@ func Edit(ctx echo.Context) error {
 
 		//旧密码
 		passwd := strings.TrimSpace(ctx.Form(`pass`))
+
+		if modifyPass {
+			common.DecryptedByRandomSecret(ctx, `modifyProfile`, &passwd, &newPass, &confirmPass)
+		} else {
+			common.DecryptedByRandomSecret(ctx, `modifyProfile`, &passwd)
+		}
 
 		gender := strings.TrimSpace(ctx.Form(`gender`))
 
@@ -89,10 +98,12 @@ func Edit(ctx echo.Context) error {
 			handler.SendOk(ctx, ctx.T(`修改成功`))
 			m.Get(nil, `id`, user.Id)
 			m.SetSession()
+			common.DeleteRandomSecret(ctx, `modifyProfile`)
 			return ctx.Redirect(handler.URLFor(`/user/edit`))
 		}
 	}
 	ctx.Set(`needCheckU2F`, needCheckU2F)
+	common.SetRandomSecret(ctx, `modifyProfile`, `passwordSecrect`)
 	return ctx.Render(`user/edit`, handler.Err(ctx, err))
 }
 

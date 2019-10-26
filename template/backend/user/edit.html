@@ -16,7 +16,7 @@
             <h3>{{"修改个人资料"|T}}</h3>
           </div>
           <div class="content">
-              <form class="form-horizontal group-border-dashed" parsley-validate novalidate method="POST" action="">
+              <form class="form-horizontal group-border-dashed" parsley-validate novalidate method="POST" id="profile-form" data-secret="{{Stored.passwordSecrect}}" action="">
               <div class="form-group">
                   <label class="col-sm-2 control-label">{{"头像"|T}}</label>
                   <div class="col-sm-8">
@@ -124,6 +124,8 @@
 <script src="__ASSETS__/js/jquery.upload/js/jquery.iframe-transport.js?t={{BuildTime}}"></script>
 <!-- The basic File Upload plugin -->
 <script src="__ASSETS__/js/jquery.upload/js/jquery.fileupload.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="__ASSETS__/js/crypto/crypto-js.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="__ASSETS__/js/crypto/helper.js?t={{BuildTime}}"></script>
 <script type="text/javascript">
 $(function(){
   $('input[name="modifyPass"]').on('click',function(){
@@ -138,8 +140,8 @@ $(function(){
   }else{
       $('.new-password').hide();
   }
-  {{$unixtime:=Now.Unix}}
-  cropImage(BACKEND_URL+'/manager/upload/user-avatar?userId={{Stored.user.Id}}&time={{$unixtime}}&token={{Token "userId" Stored.user.Id "time" $unixtime}}',"#avatar-image",'#avatar-image-original');
+  cropImage('{{BackendUploadURL "user-avatar" "refid" Stored.user.Id}}',"#avatar-image",'#avatar-image-original');
+  submitEncryptedData('#profile-form');
 });
 </script>
 {{/Block}}

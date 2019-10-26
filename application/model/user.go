@@ -19,8 +19,8 @@
 package model
 
 import (
-	"errors"
 	"encoding/gob"
+	"errors"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
@@ -101,9 +101,6 @@ func (u *User) check(editMode bool) (err error) {
 	if !editMode || ctx.Form(`modifyPwd`) == `1` {
 		if len(u.Password) < 8 {
 			return ctx.E(`密码不能少于8个字符`)
-		}
-		if ctx.Form(`confirmPwd`) != u.Password {
-			return ctx.E(`密码与确认密码不一致`)
 		}
 	}
 	if len(u.Disabled) == 0 {

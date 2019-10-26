@@ -33,7 +33,7 @@ import (
 func init() {
 	// 后台用户头像上传
 	upload.CheckerRegister(`user-avatar`, func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
-		userID := ctx.Formx(`userId`).Uint64()
+		userID := ctx.Formx(`refid`).Uint64()
 		if user := handler.User(ctx); user != nil {
 			err = middleware.CheckAnyPerm(ctx, `manager/user_add`, `manager/user_edit`)
 			if err != nil {
@@ -45,7 +45,7 @@ func init() {
 		}
 		timestamp := ctx.Formx(`time`).Int64()
 		// 验证签名（避免上传接口被滥用）
-		if ctx.Form(`token`) != upload.Token(`userId`, userID, `time`, timestamp) {
+		if ctx.Form(`token`) != upload.Token(`refid`, userID, `time`, timestamp) {
 			err = ctx.E(`令牌错误`)
 			return
 		}

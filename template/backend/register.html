@@ -11,7 +11,7 @@
 				<h3 class="text-center"><img class="logo-img logo-img-sm" src="__ASSETS__/images/logo.png" alt="logo"/> {{"账号注册"|T}}</h3>
 			</div>
 			<div>
-				<form style="margin-bottom: 0px !important;" class="form-horizontal" action="" parsley-validate novalidate method="POST">
+				<form style="margin-bottom: 0px !important;" data-secret="{{Stored.passwordSecrect}}" id="register-form" class="form-horizontal" action="" parsley-validate novalidate method="POST">
 					<div class="content">
 							<div class="form-group">
 								<div class="col-sm-12">
@@ -32,15 +32,6 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<div class="col-sm-12">
-									<div class="input-group">
-										<span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-										<input type="email" name="email" parsley-trigger="change" parsley-error-container="#email-error" required data-toggle="tooltip" title="E-mail" placeholder="E-mail" class="form-control" autocomplete="off" value="{{Form "email"}}">
-									</div>
-                                    <div id="email-error"></div>
-								</div>
-							</div>
-							<div class="form-group">
 								<div class="col-sm-6 col-xs-6">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-lock"></i></span>
@@ -54,6 +45,15 @@
 										<input parsley-equalto="#pass1" type="password" parsley-error-container="#confirmation-error" name="confirmationPassword" required data-toggle="tooltip" title="{{"确认密码"|T}}" placeholder="{{"确认密码"|T}}" class="form-control" autocomplete="off" value="{{Form "confirmationPassword"}}">
 									</div>
                                     <div id="confirmation-error"></div>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-12">
+									<div class="input-group">
+										<span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+										<input type="email" name="email" parsley-trigger="change" parsley-error-container="#email-error" required data-toggle="tooltip" title="E-mail" placeholder="E-mail" class="form-control" autocomplete="off" value="{{Form "email"}}">
+									</div>
+									<div id="email-error"></div>
 								</div>
 							</div>
              <!--<p class="spacer">By creating an account, you agree with the <a href="#">Terms</a> and <a href="#">Conditions</a>.</p>-->
@@ -70,16 +70,19 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
-<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/i18n/messages.{{(Replace Lang "-" "_" -1)|ToLower}}.js" charset="utf-8"></script>
-<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/dist/parsley.min.js"></script>
-<script type="text/javascript" src="__ASSETS__/js/behaviour/sprintf.min.js"></script>
-<script type="text/javascript" src="__ASSETS__/js/behaviour/general.min.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/i18n/messages.{{(Replace Lang "-" "_" -1)|ToLower}}.js?t={{BuildTime}}" charset="utf-8"></script>
+<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/dist/parsley.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="__ASSETS__/js/behaviour/sprintf.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="__ASSETS__/js/behaviour/general.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="__ASSETS__/js/crypto/crypto-js.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="__ASSETS__/js/crypto/helper.js?t={{BuildTime}}"></script>
 <script type="text/javascript">
 $(function(){
 {{- if . -}}
 App.message({title: '{{"系统消息"|T}}', text: "{{.}}"});
 {{- end -}}
 $('[data-toggle="tooltip"]').tooltip();
+submitEncryptedData('#register-form');
 });
 </script>
 {{/Block}}

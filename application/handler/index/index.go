@@ -15,6 +15,7 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 package index
 
 import (
@@ -26,6 +27,7 @@ import (
 	"github.com/webx-top/echo/middleware/tplfunc"
 
 	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/license"
 	"github.com/admpub/nging/application/middleware"
@@ -79,9 +81,7 @@ func Login(ctx echo.Context) error {
 		}
 	}
 
-	secret := com.RandomAlphanumeric(32)
-	ctx.Session().Set(`loginPasswordSecrect`, secret)
-	ctx.Set(`passwordSecrect`, secret)
+	common.SetRandomSecret(ctx, `loginPassword`, `passwordSecrect`)
 	return ctx.Render(`login`, handler.Err(ctx, err))
 }
 
@@ -95,6 +95,7 @@ func Register(ctx echo.Context) error {
 		email := ctx.Form(`email`)
 		passwd := ctx.Form(`password`)
 		repwd := ctx.Form(`confirmationPassword`)
+		common.DecryptedByRandomSecret(ctx, `registerPassword`, &passwd, &repwd)
 		if len(code) == 0 {
 			err = ctx.E(`邀请码不能为空`)
 		} else if len(user) == 0 {
@@ -126,6 +127,7 @@ func Register(ctx echo.Context) error {
 			err = m.Register(user, passwd, email)
 			if err == nil {
 				c.UseInvitationCode(c.Invitation, m.User.Id)
+				common.DeleteRandomSecret(ctx, `registerPassword`)
 			}
 		}
 		if err == nil {
@@ -137,6 +139,7 @@ func Register(ctx echo.Context) error {
 			return ctx.Redirect(returnTo)
 		}
 	}
+	common.SetRandomSecret(ctx, `registerPassword`, `passwordSecrect`)
 	return ctx.Render(`register`, handler.Err(ctx, err))
 }
 

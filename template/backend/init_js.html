@@ -2,7 +2,7 @@
 window.activeURL={{if Stored.Get "activeURL"}}'__BACKEND__{{Stored.Get "activeURL"}}'{{else}}null{{end}};
 window.errorMSG=null;
 window.successMSG=null;
-App.i18n={"SYS_INFO":'{{"系统消息"|T}}',"UPLOAD_ERR":'{{"上传失败"|T}}',"PLEASE_SELECT_FOR_REMOVE":'{{"请选择要删除的项"|T}}',"CONFIRM_REMOVE":'{{"确定删除吗？"|T}}'};
+$.extend(App.i18n,{"SYS_INFO":'{{"系统消息"|T}}',"UPLOAD_ERR":'{{"上传失败"|T}}',"PLEASE_SELECT_FOR_REMOVE":'{{"请选择要删除的项"|T}}',"CONFIRM_REMOVE":'{{"确定删除吗？"|T}}',"SUCCESS":'{{"操作成功"|T}}',"FAILURE":'{{"操作失败"|T}}'});
 App.lang='{{Lang}}';
 {{if .}}
 	{{- if IsError . -}}

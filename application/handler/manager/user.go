@@ -21,13 +21,14 @@ package manager
 import (
 	"strings"
 
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
+
+	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/application/model"
 )
 
 func User(ctx echo.Context) error {
@@ -62,12 +63,19 @@ func UserAdd(ctx echo.Context) error {
 		m.Email = strings.TrimSpace(ctx.Form(`email`))
 		m.Mobile = strings.TrimSpace(ctx.Form(`mobile`))
 		m.Password = strings.TrimSpace(ctx.Form(`password`))
+		confirmPwd := strings.TrimSpace(ctx.Form(`confirmPwd`))
+		common.DecryptedByRandomSecret(ctx, `userAdd`, &m.Password, &confirmPwd)
+		if m.Password != confirmPwd {
+			err = ctx.E(`密码与确认密码不一致`)
+			goto END
+		}
 		m.Avatar = strings.TrimSpace(ctx.Form(`avatar`))
 		m.Gender = strings.TrimSpace(ctx.Form(`gender`))
 		m.RoleIds = strings.Join(ctx.FormValues(`roleIds`), `,`)
 		err = m.Add()
 		if err == nil {
 			handler.SendOk(ctx, ctx.T(`操作成功`))
+			common.DeleteRandomSecret(ctx, `userAdd`)
 			return ctx.Redirect(handler.URLFor(`/manager/user`))
 		}
 	} else {
@@ -80,6 +88,10 @@ func UserAdd(ctx echo.Context) error {
 			}
 		}
 	}
+
+	common.SetRandomSecret(ctx, `userAdd`, `passwordSecrect`)
+
+END:
 	ctx.Set(`activeURL`, `/manager/user`)
 	roleM := model.NewUserRole(ctx)
 	roleM.ListByOffset(nil, func(r db.Result) db.Result {
@@ -101,6 +113,17 @@ func UserEdit(ctx echo.Context) error {
 		return ctx.Redirect(handler.URLFor(`/manager/user`))
 	}
 	if ctx.IsPost() {
+		modifyPwd := ctx.Form(`modifyPwd`) == `1`
+		newPass := strings.TrimSpace(ctx.Form(`newPass`))
+		confirmPwd := strings.TrimSpace(ctx.Form(`confirmPwd`))
+		if modifyPwd {
+			common.DecryptedByRandomSecret(ctx, `userEdit`, &newPass, &confirmPwd)
+			if newPass != confirmPwd {
+				err = ctx.E(`密码与确认密码不一致`)
+				goto END
+			}
+			m.Password = newPass
+		}
 		m.Username = strings.TrimSpace(ctx.Form(`username`))
 		m.Email = strings.TrimSpace(ctx.Form(`email`))
 		m.Mobile = strings.TrimSpace(ctx.Form(`mobile`))
@@ -121,11 +144,15 @@ func UserEdit(ctx echo.Context) error {
 		}
 		if err == nil {
 			handler.SendOk(ctx, ctx.T(`修改成功`))
+			common.DeleteRandomSecret(ctx, `userEdit`)
 			return ctx.Redirect(handler.URLFor(`/manager/user`))
 		}
 	}
 
 	setFormData(ctx, m)
+	common.SetRandomSecret(ctx, `userEdit`, `passwordSecrect`)
+
+END:
 	ctx.Set(`activeURL`, `/manager/user`)
 	roleM := model.NewUserRole(ctx)
 	roleM.ListByOffset(nil, func(r db.Result) db.Result {

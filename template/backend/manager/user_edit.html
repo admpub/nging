@@ -17,7 +17,7 @@
             <h3>{{if HasSuffix URL.Path "_add"}}{{"添加用户"|T}}{{else}}{{"修改用户"|T}}{{end}}</h3>
           </div>
           <div class="content">
-              <form class="form-horizontal group-border-dashed" parsley-validate novalidate method="POST" action="">
+              <form class="form-horizontal group-border-dashed" parsley-validate novalidate method="POST" id="profile-form" data-secret="{{Stored.passwordSecrect}}" action="">
               <div class="form-group">
                   <label class="col-sm-2 control-label">{{"头像"|T}}</label>
                   <div class="col-sm-8">
@@ -143,6 +143,8 @@
 <script src="__ASSETS__/js/jquery.upload/js/jquery.iframe-transport.js?t={{BuildTime}}"></script>
 <!-- The basic File Upload plugin -->
 <script src="__ASSETS__/js/jquery.upload/js/jquery.fileupload.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="__ASSETS__/js/crypto/crypto-js.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="__ASSETS__/js/crypto/helper.js?t={{BuildTime}}"></script>
 <script type="text/javascript">
 $(function(){
 //{{if HasSuffix URL.Path "_edit"}}
@@ -160,8 +162,8 @@ $(function(){
   }
 //{{end}}
   $('#select2roles').select2({width:'100%'});
-  {{$unixtime:=Now.Unix}}
-  cropImage(BACKEND_URL+'/manager/upload/user-avatar?userId={{Form "id"}}&time={{$unixtime}}&token={{Token "userId" ((Formx "id").Uint64) "time" $unixtime}}',"#avatar-image",'#avatar-image-original');
+  cropImage('{{BackendUploadURL "user-avatar" "refid" (Form "id")}}',"#avatar-image",'#avatar-image-original');
+  submitEncryptedData('#profile-form');
 });
 </script>
 {{/Block}}

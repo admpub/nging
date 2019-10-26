@@ -57,27 +57,17 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
-<script type="text/javascript" src="__ASSETS__/js/behaviour/sprintf.min.js"></script>
-<script type="text/javascript" src="__ASSETS__/js/behaviour/general.min.js"></script>
-<script type="text/javascript" src="__ASSETS__/js/crypto/crypto-js.min.js"></script>
-<script type="text/javascript" src="__ASSETS__/js/crypto/helper.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/behaviour/sprintf.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="__ASSETS__/js/behaviour/general.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="__ASSETS__/js/crypto/crypto-js.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="__ASSETS__/js/crypto/helper.js?t={{BuildTime}}"></script>
 <script type="text/javascript">
 $(function(){
 {{- if . -}}
 App.message({title: '{{"系统消息"|T}}', text: "{{.}}"});
 {{- end -}}
 $('[data-toggle="tooltip"]').tooltip();
-$('#login-form').on('submit',function(e){
-	e.preventDefault();
-	var data=EncryptFormPassword(this);
-	$.post($(this).attr('action'),data,function(r){
-		if(r.Code==1){
-			window.location=r.URL;
-		}else{
-			App.message({title:'{{"出错了"|T}}',text:r.Info,class_name:'danger'});
-		}
-	},'json');
-});
+submitEncryptedData('#login-form');
 });
 </script>
 {{/Block}}

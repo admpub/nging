@@ -30,8 +30,10 @@ import (
 // UploadLinkLifeTime 上传链接生存时间
 var UploadLinkLifeTime int64 = 86400
 
+// Checker 验证并生成子文件夹名称和文件名称
 type Checker func(echo.Context, table.TableInfoStorer) (subdir string, name string, err error)
 
+// DefaultChecker 默认Checker
 var DefaultChecker = func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
 	refid := ctx.Formx(`refid`).String()
 	timestamp := ctx.Formx(`time`).Int64()
@@ -39,6 +41,7 @@ var DefaultChecker = func(ctx echo.Context, tis table.TableInfoStorer) (subdir s
 	if len(refid) == 0 {
 		refid = `0`
 	}
+	// Token(ctx.Queries())
 	if ctx.Form(`token`) != Token(`refid`, refid, `time`, timestamp) {
 		err = ctx.E(`令牌错误`)
 		return
