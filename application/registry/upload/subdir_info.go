@@ -280,9 +280,6 @@ func (i *SubdirInfo) Checker() Checker {
 }
 
 func (i *SubdirInfo) MustChecker() Checker {
-	if i.checker != nil {
-		return i.checker
-	}
 	return func(ctx echo.Context, tab table.TableInfoStorer) (subdir string, name string, err error) {
 		tab.SetTableName(i.TableName())
 		if !i.ValidFieldName(tab.FieldName()) {
@@ -290,7 +287,11 @@ func (i *SubdirInfo) MustChecker() Checker {
 		}
 		checker := i.fieldInfos[tab.FieldName()].checker
 		if checker == nil {
-			checker = DefaultChecker
+			if i.checker != nil {
+				checker = i.checker
+			} else {
+				checker = DefaultChecker
+			}
 		}
 		subdir, name, err = checker(ctx, tab)
 		return

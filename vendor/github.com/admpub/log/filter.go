@@ -13,9 +13,9 @@ type Filter struct {
 	catNames    map[string]bool
 	catPrefixes []string
 
-	MaxLevel   Level          // the maximum severity level that is allowed
-	Levels     map[Level]bool // 此属性被设置时，MaxLevel 无效
-	Categories []string       // the allowed message categories. Categories can use "*" as a suffix for wildcard matching.
+	MaxLevel   Leveler          // the maximum severity level that is allowed
+	Levels     map[Leveler]bool // 此属性被设置时，MaxLevel 无效
+	Categories []string         // the allowed message categories. Categories can use "*" as a suffix for wildcard matching.
 }
 
 // Init initializes the filter.
@@ -31,7 +31,7 @@ func (t *Filter) Init() {
 		}
 	}
 	if t.Levels != nil {
-		t.MaxLevel = -1
+		t.MaxLevel = Level(-1)
 	}
 }
 
@@ -40,8 +40,8 @@ func (t *Filter) Allow(e *Entry) bool {
 	if e == nil {
 		return true
 	}
-	if t.MaxLevel > -1 {
-		if e.Level > t.MaxLevel {
+	if t.MaxLevel.Int() > -1 {
+		if e.Level.Int() > t.MaxLevel.Int() {
 			return false
 		}
 	} else {
@@ -65,13 +65,13 @@ func (t *Filter) SetLevel(level interface{}) {
 		if le, ok := GetLevel(name); ok {
 			t.MaxLevel = le
 		}
-	} else if id, ok := level.(Level); ok {
+	} else if id, ok := level.(Leveler); ok {
 		t.MaxLevel = id
 	}
 }
 
-func (t *Filter) SetLevels(levels ...Level) {
-	t.Levels = map[Level]bool{}
+func (t *Filter) SetLevels(levels ...Leveler) {
+	t.Levels = map[Leveler]bool{}
 	for _, level := range levels {
 		t.Levels[level] = true
 	}

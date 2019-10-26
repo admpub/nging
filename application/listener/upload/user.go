@@ -16,7 +16,7 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package backend
+package upload
 
 import (
 	"fmt"
@@ -28,6 +28,7 @@ import (
 	"github.com/admpub/nging/application/middleware"
 	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/table"
+	_ "github.com/admpub/nging/application/listener/upload/file"
 )
 
 func init() {

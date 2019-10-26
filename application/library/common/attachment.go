@@ -24,13 +24,17 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
+	"github.com/admpub/errors"
 	"github.com/admpub/nging/application/registry/upload/helper"
 )
+
+// @deprecated 本文件作废
 
 // IsRightUploadFile 是否是正确的上传文件
 func IsRightUploadFile(ctx echo.Context, src string) error {
@@ -58,14 +62,32 @@ func MoveAvatarToUserDir(ctx echo.Context, src string, typ string, id uint64) (s
 // DirShardingNum 文件夹分组基数
 const DirShardingNum = float64(50000)
 
+var (
+	reNumberOrWord = regexp.MustCompile(`^[0-9a-zA-Z_-]+$`)
+	// ErrIncorrectFileOwnerID .
+	ErrIncorrectFileOwnerID = errors.New("Incorrect File Owner ID")
+)
+
+// ValidFileOwnerID 验证文件宿主ID
+func ValidFileOwnerID(id string) error {
+	if reNumberOrWord.MatchString(id) {
+		return nil
+	}
+	return ErrIncorrectFileOwnerID
+}
+
 // DirSharding 文件夹分组(暂不使用)
 func DirSharding(id uint64) uint64 {
 	return uint64(math.Ceil(float64(id) / DirShardingNum))
 }
 
 // RemoveUploadedFile 删除被上传的文件
-func RemoveUploadedFile(ctx echo.Context, typ string, id uint64) error {
-	sdir := filepath.Join(helper.UploadDir, typ, fmt.Sprint(id))
+func RemoveUploadedFile(ctx echo.Context, typ string, id interface{}) error {
+	idv := fmt.Sprint(id)
+	if err := ValidFileOwnerID(idv); err != nil {
+		return err
+	}
+	sdir := filepath.Join(helper.UploadDir, typ, idv)
 	if !com.IsDir(sdir) {
 		return nil
 	}
@@ -78,23 +100,23 @@ func RemoveUploadedFile(ctx echo.Context, typ string, id uint64) error {
 
 // OnUpdateOwnerFilePath 当更新文件路径时的通用操作
 var OnUpdateOwnerFilePath = func(ctx echo.Context,
-	src string, typ string, id uint64,
+	src string, typ string, id interface{},
 	newSavePath string, newViewURL string) error {
 	return nil
 }
 
 // OnRemoveOwnerFile 当删除文件时的通用操作
-var OnRemoveOwnerFile = func(ctx echo.Context, typ string, id uint64, ownerDir string) error {
+var OnRemoveOwnerFile = func(ctx echo.Context, typ string, id interface{}, ownerDir string) error {
 	return nil
 }
 
 // MoveUploadedFileToOwnerDir 移动上传的文件到所有者目录
-func MoveUploadedFileToOwnerDir(ctx echo.Context, src string, typ string, id uint64) (string, error) {
+func MoveUploadedFileToOwnerDir(ctx echo.Context, src string, typ string, id interface{}) (string, error) {
 	return MoveUploadedFileToOwnerDirCommon(ctx, src, typ, id, false)
 }
 
 // MoveUploadedFileToOwnerDirCommon 移动上传的文件到所有者目录
-func MoveUploadedFileToOwnerDirCommon(ctx echo.Context, src string, typ string, id uint64, isAvatar bool) (string, error) {
+func MoveUploadedFileToOwnerDirCommon(ctx echo.Context, src string, typ string, id interface{}, isAvatar bool) (string, error) {
 	var newPath string
 	if err := helper.IsRightUploadFile(ctx, src); err != nil {
 		return newPath, err
@@ -106,7 +128,11 @@ func MoveUploadedFileToOwnerDirCommon(ctx echo.Context, src string, typ string, 
 	if !com.FileExists(unownedFile) {
 		return src, nil
 	}
-	sdir := filepath.Join(helper.UploadDir, typ, fmt.Sprint(id))
+	idv := fmt.Sprint(id)
+	if err := ValidFileOwnerID(idv); err != nil {
+		return newPath, err
+	}
+	sdir := filepath.Join(helper.UploadDir, typ, idv)
 	os.MkdirAll(sdir, os.ModePerm)
 	// 迁移目的地
 	ownedFile := sdir + echo.FilePathSeparator + name
@@ -119,7 +145,7 @@ func MoveUploadedFileToOwnerDirCommon(ctx echo.Context, src string, typ string, 
 		return newPath, err
 	}
 	// 迁移后文件的访问网址
-	newPath = helper.UploadURLPath + typ + `/` + fmt.Sprint(id) + `/` + name
+	newPath = helper.UploadURLPath + typ + `/` + idv + `/` + name
 	p := strings.LastIndex(unownedFile, `.`)
 	if p > 0 {
 		filePrefix := unownedFile[0:p] + `_`
@@ -168,7 +194,7 @@ func Replacex(s string, oldAndNew map[string]string) string {
 }
 
 // MoveEmbedTemporaryFiles 转移被嵌入到文本内容中临时文件
-func MoveEmbedTemporaryFiles(ctx echo.Context, content string, typ string, id uint64) (int, string, error) {
+func MoveEmbedTemporaryFiles(ctx echo.Context, content string, typ string, id interface{}) (int, string, error) {
 	files := helper.ParseTemporaryFileName(content)
 	oldAndNew := map[string]string{}
 	for _, fileN := range files {

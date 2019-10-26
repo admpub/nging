@@ -1,4 +1,4 @@
-package initialize
+package helper
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 	"github.com/admpub/nging/application/registry/upload"
 )
 
-func OnRemoveOwnerFile(ctx echo.Context, typ string, id uint64, ownerDir string) error {
+func OnRemoveOwnerFile(ctx echo.Context, typ string, id interface{}, ownerDir string) error {
 	fileM := fileModel.NewFile(ctx)
 	err := fileM.DeleteBy(db.And(
 		db.Cond{`table_id`: id},
@@ -22,7 +22,7 @@ func OnRemoveOwnerFile(ctx echo.Context, typ string, id uint64, ownerDir string)
 }
 
 func OnUpdateOwnerFilePath(ctx echo.Context,
-	src string, typ string, id uint64,
+	src string, typ string, id interface{},
 	newSavePath string, newViewURL string) error {
 	fileM := &dbschema.File{}
 	//embedM := &dbschema.FileEmbedded{}

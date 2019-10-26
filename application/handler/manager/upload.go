@@ -49,6 +49,9 @@ import (
 	"github.com/admpub/qrcode"
 )
 
+// 文件上传保存路径规则：
+// 表名称/表行ID/文件名
+
 // ResponseDataForUpload 根据不同的上传方式响应不同的数据格式
 func ResponseDataForUpload(ctx echo.Context, field string, err error, imageURLs []string) (result echo.H, embed bool) {
 	return upload.ResponserGet(field)(ctx, field, err, imageURLs)
@@ -140,13 +143,12 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	fileM.TableId = ``
 	fileM.SetFieldName(fieldName)
 	fileM.SetTableName(tableName)
-	typ := tableName
 	fileM.OwnerId = ownerID
 	fileM.OwnerType = ownerType
 	fileType := ctx.Form(`filetype`)
 	fileM.Type = fileType
 
-	storer := newStore(ctx, typ)
+	storer := newStore(ctx, tableName) // 使用表名称作为文件夹名
 	defer storer.Close()
 	var subdir, name string
 	subdir, name, err = upload.CheckerGet(uploadType, defaults...)(ctx, fileM)

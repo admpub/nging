@@ -53,6 +53,17 @@ func (f *FileUpdater) Add(content string, embedded bool) (err error) {
 		return
 	}
 	err = f.Edit(content, embedded)
+	if err != nil {
+		return
+	}
+	if len(f.tableID) == 0 || f.tableID == `0` {
+		return
+	}
+	fileIDs := f.rel.FileIDs()
+	if len(fileIDs) == 0 {
+		return
+	}
+	err = f.rel.MoveFileToOwner(fileIDs, f.tableID)
 	return
 }
 

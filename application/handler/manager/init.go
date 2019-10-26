@@ -19,9 +19,11 @@
 package manager
 
 import (
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/registry/upload/helper"
-	"github.com/webx-top/echo"
+	_ "github.com/admpub/nging/application/handler/manager/file"
 )
 
 func init() {

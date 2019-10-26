@@ -27,9 +27,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/helper"
-	"github.com/webx-top/echo"
 )
 
 const Name = `filesystem`
@@ -49,6 +50,7 @@ func NewFilesystem(ctx context.Context, typ string) *Filesystem {
 	}
 }
 
+// Filesystem 文件系统存储引擎
 type Filesystem struct {
 	context.Context
 	Type string
@@ -69,6 +71,7 @@ func (f *Filesystem) URLDir(subpath string) string {
 	return path.Join(helper.UploadURLPath, f.Type, subpath)
 }
 
+// Exists 判断文件是否存在
 func (f *Filesystem) Exists(file string) (bool, error) {
 	_, err := os.Stat(file)
 	if err != nil && os.IsNotExist(err) {
@@ -77,14 +80,17 @@ func (f *Filesystem) Exists(file string) (bool, error) {
 	return false, err
 }
 
+// FileInfo 获取文件信息
 func (f *Filesystem) FileInfo(file string) (os.FileInfo, error) {
 	return os.Stat(file)
 }
 
+// SendFile 下载文件
 func (f *Filesystem) SendFile(ctx echo.Context, file string) error {
 	return ctx.File(file)
 }
 
+// Put 上传文件
 func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (savePath string, viewURL string, err error) {
 	savePath = f.FileDir(dstFile)
 	saveDir := filepath.Dir(savePath)
@@ -105,19 +111,23 @@ func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (savePath st
 	return
 }
 
+// PublicURL 文件物理路径转为文件网址
 func (f *Filesystem) PublicURL(dstFile string) string {
 	return f.URLDir(dstFile)
 }
 
+// URLToFile 文件网址转为文件物理路径
 func (f *Filesystem) URLToFile(publicURL string) string {
 	dstFile := strings.TrimPrefix(publicURL, strings.TrimRight(f.URLDir(``), `/`)+`/`)
 	return dstFile
 }
 
+// FixURL 改写文件网址
 func (f *Filesystem) FixURL(content string, embedded ...bool) string {
 	return content
 }
 
+// FixURLWithParams 替换文件网址为带参数的网址
 func (f *Filesystem) FixURLWithParams(content string, values url.Values, embedded ...bool) string {
 	if len(embedded) > 0 && embedded[0] {
 		return helper.ReplaceAnyFileName(content, func(r string) string {
@@ -127,6 +137,7 @@ func (f *Filesystem) FixURLWithParams(content string, values url.Values, embedde
 	return f.URLWithParams(f.PublicURL(content), values)
 }
 
+// URLWithParams 文件网址增加参数
 func (f *Filesystem) URLWithParams(rawURL string, values url.Values) string {
 	if values == nil {
 		return rawURL
@@ -139,6 +150,7 @@ func (f *Filesystem) URLWithParams(rawURL string, values url.Values) string {
 	return rawURL
 }
 
+// Get 获取文件读取接口
 func (f *Filesystem) Get(dstFile string) (io.ReadCloser, error) {
 	return f.openFile(dstFile)
 }
@@ -149,20 +161,28 @@ func (f *Filesystem) openFile(dstFile string) (*os.File, error) {
 	return os.Open(file)
 }
 
+// Delete 删除文件
 func (f *Filesystem) Delete(dstFile string) error {
 	file := filepath.Join(echo.Wd(), dstFile)
 	return os.Remove(file)
 }
 
+// DeleteDir 删除文件夹及其内部文件
 func (f *Filesystem) DeleteDir(dstDir string) error {
 	dir := filepath.Join(echo.Wd(), dstDir)
 	return os.RemoveAll(dir)
 }
 
+// Move 移动文件
 func (f *Filesystem) Move(src, dst string) error {
+	sdir := filepath.Dir(dst)
+	if _, err := os.Stat(sdir); os.IsNotExist(err) {
+		os.MkdirAll(sdir, os.ModePerm)
+	}
 	return os.Rename(src, dst)
 }
 
+// Close 关闭连接
 func (f *Filesystem) Close() error {
 	return nil
 }

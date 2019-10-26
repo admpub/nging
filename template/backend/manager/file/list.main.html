@@ -1,10 +1,12 @@
 {{Strip}}{{$dialog := Stored.dialog}}
 {{$multiple := Stored.multiple}}
-<div id="search-form-box" class="hide">
+{{$showFilter := Form `showFilter`}}
+<div id="search-form-box"{{if not $showFilter}} class="hide"{{end}}>
 <div class="row sm-margin-top">
 	<div class="col-md-12">
 		<div class="block-flat sm-margin-bottom">
 			<form class="form-horizontal" action="{{URL.Path}}" id="search-form" method="GET">
+				<input type="hidden" name="showFilter" value="1" />
 				{{- if Stored.dialog -}}
 				<input type="hidden" name="multiple" value="{{if $multiple}}1{{else}}0{{end}}" />
 				<input type="hidden" name="from" value="{{Form `from`}}" />

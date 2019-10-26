@@ -7,6 +7,7 @@ import (
 	myTesting "github.com/webx-top/echo/testing"
 	"github.com/webx-top/echo/testing/test"
 
+	_ "github.com/admpub/nging/application/listener/upload"
 	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/table"
 )
@@ -63,6 +64,23 @@ func TestChecker2(t *testing.T) {
 	test.Eq(t, `test-user-id2`, tbl.TableID())
 	test.Eq(t, `test-user2`, tbl.TableName())
 	test.Eq(t, `test2`, tbl.FieldName())
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestChecker3(t *testing.T) {
+	tbl := &table.TableInfo{}
+	checker := upload.CheckerGet(`user-avatar`)
+	req, resp := myTesting.NewRequestAndResponse(`GET`, `/`+upload.URLParam(`user-avatar`, `refid`, `0`))
+	e := echo.New()
+	ctx := e.NewContext(req, resp)
+	subdir, name, err := checker(ctx, tbl)
+	println(subdir)
+	println(name)
+	test.Eq(t, `0`, tbl.TableID())
+	test.Eq(t, `user`, tbl.TableName())
+	test.Eq(t, `avatar`, tbl.FieldName())
 	if err != nil {
 		t.Fatal(err)
 	}

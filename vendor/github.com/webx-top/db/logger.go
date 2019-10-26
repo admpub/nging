@@ -115,7 +115,11 @@ func (q *QueryStatus) String() string {
 	lines = append(lines, fmt.Sprintf(fmtLogTimeTaken, float64(q.End.UnixNano()-q.Start.UnixNano())/float64(1e9)))
 
 	if q.Context != nil {
-		lines = append(lines, fmt.Sprintf(fmtLogContext, q.Context))
+		if cx, ok := q.Context.(StdContext); ok {
+			lines = append(lines, fmt.Sprintf(fmtLogContext, cx.StdContext()))
+		} else {
+			lines = append(lines, fmt.Sprintf(fmtLogContext, q.Context))
+		}
 	}
 
 	return strings.Join(lines, "\n")

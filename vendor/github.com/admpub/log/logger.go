@@ -21,64 +21,14 @@ import (
 	"time"
 )
 
-// RFC5424 log message levels.
-const (
-	LevelFatal Level = iota
-	LevelError
-	LevelWarn
-	LevelInfo
-	LevelDebug
-)
-
 const (
 	ActionNothing Action = iota
 	ActionPanic
 	ActionExit
 )
 
-type (
-	// Level describes the level of a log message.
-	Level  int
-	Action int
-)
-
-var (
-	// LevelNames maps log levels to names
-	LevelNames = map[Level]string{
-		LevelDebug: "Debug",
-		LevelInfo:  "Info",
-		LevelWarn:  "Warn",
-		LevelError: "Error",
-		LevelFatal: "Fatal",
-	}
-
-	Levels = map[string]Level{
-		"Debug": LevelDebug,
-		"Info":  LevelInfo,
-		"Warn":  LevelWarn,
-		"Error": LevelError,
-		"Fatal": LevelFatal,
-	}
-
-	DefaultCallDepth = 4
-)
-
-func GetLevel(level string) (Level, bool) {
-	level = strings.Title(level)
-	l, y := Levels[level]
-	return l, y
-}
-
-// String returns the string representation of the log level
-func (l Level) String() string {
-	if name, ok := LevelNames[l]; ok {
-		return name
-	}
-	return "Unknown"
-}
-
 type LoggerWriter struct {
-	Level Level
+	Level Leveler
 	*Logger
 }
 
@@ -95,9 +45,13 @@ func (l *LoggerWriter) Write(p []byte) (n int, err error) {
 	return
 }
 
-func (l *LoggerWriter) detectLevel(s string) (Level, string) {
+func (l *LoggerWriter) detectLevel(s string) (Leveler, string) {
 	level := l.Level
-	if len(s) > 6 && s[0] == '>' { // stdLog.Println(`>Debug:message`)
+	if len(s) <= 6 {
+		return level, s
+	}
+	switch s[0] {
+	case '>': // stdLog.Println(`>Debug:message`)
 		pos := strings.Index(s, `:`)
 		if pos >= 0 {
 			levelText := s[1:pos]
@@ -105,6 +59,17 @@ func (l *LoggerWriter) detectLevel(s string) (Level, string) {
 				level = lv
 				s = s[pos+1:]
 			}
+		}
+	case ':': // stdLog.Println(`:200:message`)
+		s2 := s[1:]
+		pos := strings.Index(s2, `:`)
+		if pos >= 0 {
+			httpCode := s2[0:pos]
+			code, err := strconv.Atoi(httpCode)
+			if err != nil {
+				return level, s
+			}
+			level = NewHttpLevel(code, l.Level)
 		}
 	}
 	return level, s
@@ -115,9 +80,17 @@ func (l *LoggerWriter) Printf(format string, v ...interface{}) {
 	l.Logger.Logf(level, format, v...)
 }
 
+func (l *LoggerWriter) Println(v ...interface{}) {
+	level := l.Level
+	if len(v) > 0 {
+		level, v[0] = l.detectLevel(fmt.Sprint(v[0]))
+	}
+	l.Logger.Log(level, v...)
+}
+
 // Entry represents a log entry.
 type Entry struct {
-	Level     Level
+	Level     Leveler
 	Category  string
 	Message   string
 	Time      time.Time
@@ -145,7 +118,7 @@ type Target interface {
 	// a chance to flush the logged messages to their destination storage.
 	Close()
 	SetLevel(interface{})
-	SetLevels(...Level)
+	SetLevels(...Leveler)
 }
 
 // coreLogger maintains the log messages in a channel and sends them to various targets.
@@ -161,8 +134,8 @@ type coreLogger struct {
 
 	ErrorWriter   io.Writer // the writer used to write errors caused by log targets
 	BufferSize    int       // the size of the channel storing log entries
-	CallStack     map[Level]*CallStack
-	MaxLevel      Level    // the maximum level of messages to be logged
+	CallStack     map[Leveler]*CallStack
+	MaxLevel      Leveler  // the maximum level of messages to be logged
 	Targets       []Target // targets for sending log messages to
 	MaxGoroutines int32    // Max Goroutine
 	AddSpace      bool     // Add a space between two arguments.
@@ -199,7 +172,7 @@ func NewWithCallDepth(callDepth int, args ...string) *Logger {
 		ErrorWriter: os.Stderr,
 		BufferSize:  1024,
 		MaxLevel:    LevelDebug,
-		CallStack:   make(map[Level]*CallStack),
+		CallStack:   make(map[Leveler]*CallStack),
 		Targets:     make([]Target, 0),
 		waiting:     &sync.Once{},
 	}
@@ -338,8 +311,8 @@ func (l *Logger) Debugf(format string, a ...interface{}) {
 }
 
 // Logf logs a message of a specified severity level.
-func (l *Logger) Logf(level Level, format string, a ...interface{}) {
-	if level > l.MaxLevel || !l.open {
+func (l *Logger) Logf(level Leveler, format string, a ...interface{}) {
+	if level.Int() > l.MaxLevel.Int() || !l.open {
 		return
 	}
 	message := format
@@ -387,10 +360,10 @@ func (l *Logger) Debug(a ...interface{}) {
 }
 
 // Log logs a message of a specified severity level.
-func (l *Logger) Log(level Level, a ...interface{}) {
+func (l *Logger) Log(level Leveler, a ...interface{}) {
 	l.lock.RLock()
 	defer l.lock.RUnlock()
-	if level > l.MaxLevel || !l.open {
+	if level.Int() > l.MaxLevel.Int() || !l.open {
 		return
 	}
 	var message string
@@ -404,7 +377,7 @@ func (l *Logger) Log(level Level, a ...interface{}) {
 }
 
 // Log logs a message of a specified severity level.
-func (l *Logger) newEntry(level Level, message string) {
+func (l *Logger) newEntry(level Leveler, message string) {
 	entry := &Entry{
 		Category: l.Category,
 		Level:    level,

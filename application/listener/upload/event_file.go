@@ -16,19 +16,21 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package file
+// Package upload 监听上传文件事件
+package upload
 
 import (
 	"fmt"
 	"os"
+
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
 
 	"github.com/admpub/events"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/registry/upload"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 func init() {

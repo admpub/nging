@@ -20,15 +20,19 @@ package file
 
 import (
 	"fmt"
+	"os"
+	"path"
 	"strings"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/fileupdater"
 	"github.com/admpub/nging/application/model/base"
+	uploadStorer "github.com/admpub/nging/application/registry/upload/driver"
 )
 
 func NewEmbedded(ctx echo.Context, fileMdls ...*File) *Embedded {
@@ -63,6 +67,104 @@ func (f *Embedded) Updater(table string, field string, tableID string) *fileupda
 	}
 	f.updater.Set(table, field, tableID)
 	return f.updater
+}
+
+func (f *Embedded) FileIDs() []uint64 {
+	fileIDs := []uint64{}
+	if len(f.FileIds) == 0 {
+		return fileIDs
+	}
+	for _, fileID := range strings.Split(f.FileIds, `,`) {
+		fileIDs = append(fileIDs, param.AsUint64(fileID))
+	}
+	return fileIDs
+}
+
+func (f *Embedded) MoveFileToOwner(fileIDs []uint64, ownerID string) error {
+	if len(fileIDs) == 0 {
+		return nil
+	}
+	_, err := f.File.ListByOffset(nil, nil, 0, -1, db.Cond{`id`: db.In(fileIDs)})
+	if err != nil {
+		return err
+	}
+	replaceFrom := `/0/`
+	replaceTo := `/` + ownerID + `/`
+	storers := map[string]uploadStorer.Storer{}
+	defer func() {
+		for _, storer := range storers {
+			storer.Close()
+		}
+	}()
+	for _, file := range f.File.Objects() {
+		if !strings.Contains(file.SavePath, replaceFrom) {
+			continue
+		}
+		storer, ok := storers[file.StorerName]
+		if !ok {
+			newStore := uploadStorer.Get(file.StorerName)
+			if newStore == nil {
+				return f.base.E(`存储引擎“%s”未被登记`, file.StorerName)
+			}
+			storer = newStore(f.base.Context, ``)
+			storers[file.StorerName] = storer
+		}
+		var newSavePath, newViewURL, prefix string
+		if file.FieldName == `avatar` {
+			tmp := strings.SplitN(file.ViewUrl, replaceFrom, 2)
+			ext := path.Ext(tmp[1])
+			prefix = strings.TrimSuffix(path.Base(tmp[1]), ext)
+			newViewURL = tmp[0] + replaceTo + `avatar` + ext
+			tmp = strings.SplitN(file.SavePath, replaceFrom, 2)
+			newSavePath = tmp[0] + replaceTo + `avatar` + ext
+		} else {
+			newSavePath = strings.Replace(file.SavePath, replaceFrom, replaceTo, 1)
+			newViewURL = strings.Replace(file.ViewUrl, replaceFrom, replaceTo, 1)
+		}
+		if errMv := storer.Move(file.SavePath, newSavePath); errMv != nil && !os.IsNotExist(errMv) {
+			return errMv
+		}
+		err = file.SetFields(nil, echo.H{
+			`save_path`:  newSavePath,
+			`view_url`:   newViewURL,
+			`used_times`: 1,
+		}, db.Cond{`id`: file.Id})
+		if err != nil {
+			return err
+		}
+		thumbM := &dbschema.FileThumb{}
+		_, err = thumbM.ListByOffset(nil, nil, 0, -1, db.Cond{`file_id`: file.Id})
+		if err != nil {
+			return err
+		}
+		for _, thumb := range thumbM.Objects() {
+			if !strings.Contains(thumb.SavePath, replaceFrom) {
+				continue
+			}
+			var newSavePath, newViewURL string
+			if file.FieldName == `avatar` {
+				tmp := strings.SplitN(thumb.ViewUrl, replaceFrom, 2)
+				suffix := strings.TrimPrefix(path.Base(tmp[1]), prefix)
+				newViewURL = tmp[0] + replaceTo + `avatar` + suffix
+				tmp = strings.SplitN(file.SavePath, replaceFrom, 2)
+				newSavePath = tmp[0] + replaceTo + `avatar` + suffix
+			} else {
+				newSavePath = strings.Replace(thumb.SavePath, replaceFrom, replaceTo, 1)
+				newViewURL = strings.Replace(thumb.ViewUrl, replaceFrom, replaceTo, 1)
+			}
+			if errMv := storer.Move(thumb.SavePath, newSavePath); errMv != nil && !os.IsNotExist(errMv) {
+				return errMv
+			}
+			err = thumb.SetFields(nil, echo.H{
+				`save_path`: newSavePath,
+				`view_url`:  newViewURL,
+			}, db.Cond{`id`: thumb.Id})
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return err
 }
 
 // DeleteByTableID 删除嵌入文件

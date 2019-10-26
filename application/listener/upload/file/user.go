@@ -16,6 +16,7 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+// Package file 监听文件更改，并记录到file表
 package file
 
 import (

@@ -21,14 +21,6 @@ package backend
 import (
 	"net/http"
 
-	"github.com/admpub/events"
-	"github.com/admpub/log"
-
-	"github.com/admpub/events/emitter"
-	"github.com/admpub/nging/application/cmd/event"
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/config"
-	ngingMW "github.com/admpub/nging/application/middleware"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/handler/pprof"
 	"github.com/webx-top/echo/middleware"
@@ -37,6 +29,14 @@ import (
 	"github.com/webx-top/echo/middleware/render/driver"
 	"github.com/webx-top/echo/middleware/session"
 	"github.com/webx-top/echo/subdomains"
+
+	"github.com/admpub/events"
+	"github.com/admpub/events/emitter"
+	"github.com/admpub/log"
+	"github.com/admpub/nging/application/cmd/event"
+	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/library/config"
+	ngingMW "github.com/admpub/nging/application/middleware"
 )
 
 const (

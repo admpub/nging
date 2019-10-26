@@ -10,20 +10,15 @@ import (
 	"io"
 	"os"
 
-	ct "github.com/admpub/go-colortext"
+	"github.com/admpub/color"
 )
 
-type colorSetting struct {
-	Color  ct.Color
-	Bright bool
-}
-
-var colorBrushes = map[Level]colorSetting{
-	LevelDebug: colorSetting{ct.Cyan, true},    // cyan
-	LevelInfo:  colorSetting{ct.Green, true},   // green
-	LevelWarn:  colorSetting{ct.Yellow, true},  // yellow
-	LevelError: colorSetting{ct.Red, true},     // red
-	LevelFatal: colorSetting{ct.Magenta, true}, // magenta
+var colorBrushes = map[Leveler]*color.Color{
+	LevelDebug: color.New(color.FgHiCyan),    // cyan
+	LevelInfo:  color.New(color.FgHiGreen),   // green
+	LevelWarn:  color.New(color.FgHiYellow),  // yellow
+	LevelError: color.New(color.FgHiRed),     // red
+	LevelFatal: color.New(color.FgHiMagenta), // magenta
 }
 
 const (
@@ -64,14 +59,11 @@ func (t *ConsoleTarget) Open(io.Writer) error {
 		switch t.ColorType {
 		case ColorFlag:
 			t.outputFunc = func(t *ConsoleTarget, e *Entry) {
-				t.ColorizeFlag(e.Level)
-				fmt.Fprintln(t.Writer, e.String())
+				fmt.Fprintln(t.Writer, t.ColorizeFlag(e))
 			}
 		default:
 			t.outputFunc = func(t *ConsoleTarget, e *Entry) {
-				t.ColorizeRow(e.Level)
-				fmt.Fprintln(t.Writer, e.String())
-				ct.ResetColor()
+				fmt.Fprintln(t.Writer, t.ColorizeRow(e))
 			}
 		}
 	} else {
@@ -94,22 +86,21 @@ func (t *ConsoleTarget) Process(e *Entry) {
 	t.outputFunc(t, e)
 }
 
-func (t *ConsoleTarget) ColorizeFlag(level Level) bool {
-	cs, ok := colorBrushes[level]
+func (t *ConsoleTarget) ColorizeFlag(e *Entry) string {
+	s := e.Level.Tag()
+	cs, ok := colorBrushes[e.Level.ColorLevel()]
 	if ok {
-		ct.Foreground(cs.Color, cs.Bright)
-		fmt.Fprint(t.Writer, `[`+level.String()[0:1]+`]`)
-		ct.ResetColor()
+		return cs.SprintFunc()(s) + e.String()
 	}
-	return ok
+	return s + e.String()
 }
 
-func (t *ConsoleTarget) ColorizeRow(level Level) bool {
-	cs, ok := colorBrushes[level]
+func (t *ConsoleTarget) ColorizeRow(e *Entry) string {
+	cs, ok := colorBrushes[e.Level.ColorLevel()]
 	if ok {
-		ct.Foreground(cs.Color, cs.Bright)
+		return cs.SprintFunc()(e.String())
 	}
-	return ok
+	return e.String()
 }
 
 // Close closes the console target.

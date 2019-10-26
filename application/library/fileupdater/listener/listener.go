@@ -83,19 +83,20 @@ func (f *FileRelation) SetEmbedded(embedded bool) *FileRelation {
 	return f
 }
 
-func (f *FileRelation) ListenDefault() {
-	f.Listen(`created`, `updated`, `deleted`)
+func (f *FileRelation) ListenDefault() *FileRelation {
+	return f.Listen(`created`, `updated`, `deleted`)
 }
 
 func (f *FileRelation) attachUpdateEvent(event string) func(m factory.Model, editColumns ...string) error {
+	seperator := f.Seperator
+	embedded := f.Embedded
+	callback := f.callback
 	return func(m factory.Model, editColumns ...string) error {
 		if len(editColumns) > 0 && !com.InSlice(f.FieldName, editColumns) {
 			return nil
 		}
 		fileM := modelFile.NewEmbedded(m.Context())
-		tableID, content, property := f.callback(m)
-		seperator := f.Seperator
-		embedded := f.Embedded
+		tableID, content, property := callback(m)
 		if property != nil {
 			if property.Exit {
 				return nil
@@ -109,11 +110,12 @@ func (f *FileRelation) attachUpdateEvent(event string) func(m factory.Model, edi
 }
 
 func (f *FileRelation) attachEvent(event string) func(m factory.Model, editColumns ...string) error {
+	seperator := f.Seperator
+	embedded := f.Embedded
+	callback := f.callback
 	return func(m factory.Model, _ ...string) error {
 		fileM := modelFile.NewEmbedded(m.Context())
-		tableID, content, property := f.callback(m)
-		seperator := f.Seperator
-		embedded := f.Embedded
+		tableID, content, property := callback(m)
 		if property != nil {
 			if property.Exit {
 				return nil
@@ -125,11 +127,16 @@ func (f *FileRelation) attachEvent(event string) func(m factory.Model, editColum
 	}
 }
 
-func (f *FileRelation) Listen(events ...string) {
+func (f *FileRelation) DBI() *factory.DBI {
 	dbi := f.dbi
 	if dbi == nil {
 		dbi = DBI()
 	}
+	return dbi
+}
+
+func (f *FileRelation) Listen(events ...string) *FileRelation {
+	dbi := f.DBI()
 	for _, event := range events {
 		switch event {
 		case `updating`, `updated`:
@@ -138,4 +145,10 @@ func (f *FileRelation) Listen(events ...string) {
 			dbi.On(event, f.attachEvent(event), f.TableName)
 		}
 	}
+	return f
+}
+
+func (f *FileRelation) On(event string, h factory.EventHandler) *FileRelation {
+	f.DBI().On(event, h, f.TableName)
+	return f
 }

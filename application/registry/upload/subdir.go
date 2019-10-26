@@ -21,6 +21,9 @@ package upload
 import (
 	"fmt"
 	"strings"
+
+	"github.com/admpub/color"
+	"github.com/admpub/log"
 )
 
 var subdirs = map[string]*SubdirInfo{
@@ -51,6 +54,7 @@ func SubdirRegister(subdir interface{}, nameAndDescription ...string) *SubdirInf
 	default:
 		panic(fmt.Sprintf(`Unsupported type: %T`, v))
 	}
+	log.Info(color.MagentaString(`subdir.register:`), key)
 	var name, nameEN, description string
 	switch len(nameAndDescription) {
 	case 3:

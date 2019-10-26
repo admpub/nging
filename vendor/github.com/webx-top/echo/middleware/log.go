@@ -2,9 +2,9 @@ package middleware
 
 import (
 	"fmt"
+	"io"
+	std "log"
 	"time"
-
-	"github.com/admpub/log"
 
 	"github.com/webx-top/echo"
 )
@@ -24,24 +24,20 @@ type VisitorInfo struct {
 	ResponseCode int
 }
 
+var LogWriter io.Writer
+
 func Log(recv ...func(*VisitorInfo)) echo.MiddlewareFunc {
 	var logging func(*VisitorInfo)
 	if len(recv) > 0 {
 		logging = recv[0]
 	}
+	if LogWriter == nil {
+		LogWriter = std.Writer()
+	}
+	logger := std.New(LogWriter, ``, 0)
 	if logging == nil {
-		logger := log.GetLogger(`HTTP`)
 		logging = func(v *VisitorInfo) {
-			icon := "●"
-			switch {
-			case v.ResponseCode >= 500:
-				icon = "▣"
-			case v.ResponseCode >= 400:
-				icon = "■"
-			case v.ResponseCode >= 300:
-				icon = "▲"
-			}
-			logger.Info(" " + icon + " " + fmt.Sprint(v.ResponseCode) + " " + v.RealIP + " " + v.Method + " " + v.Scheme + " " + v.Host + " " + v.URI + " " + v.Elapsed.String() + " " + fmt.Sprint(v.ResponseSize))
+			logger.Println(":" + fmt.Sprint(v.ResponseCode) + ": " + v.RealIP + " " + v.Method + " " + v.Scheme + " " + v.Host + " " + v.URI + " " + v.Elapsed.String() + " " + fmt.Sprint(v.ResponseSize))
 		}
 	}
 	return func(h echo.Handler) echo.Handler {

@@ -3,6 +3,7 @@
 package db
 
 import (
+	"context"
 	"fmt"
 )
 
@@ -145,4 +146,8 @@ func (t tableNameString) TableName() string {
 
 func Table(tableName string) TableName {
 	return tableNameString(tableName)
+}
+
+type StdContext interface {
+	StdContext() context.Context
 }

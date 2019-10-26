@@ -19,170 +19,34 @@
 package upload
 
 import (
-	"context"
-	"io"
-	"mime/multipart"
-	"net/url"
-	"os"
-
-	"github.com/admpub/checksum"
+	"github.com/admpub/nging/application/registry/upload/driver"
 	"github.com/admpub/nging/application/registry/upload/table"
-	uploadClient "github.com/webx-top/client/upload"
-	"github.com/webx-top/echo"
 )
 
 var (
+	// ErrExistsFile 文件不存在
 	ErrExistsFile = table.ErrExistsFile
+
+	// BatchUpload 批量上传
+	BatchUpload = driver.BatchUpload
+
+	// StorerRegister 存储引擎注册
+	StorerRegister = driver.Register
+
+	// StorerGet 获取存储引擎构造器
+	StorerGet = driver.Get
+
+	// StorerAll 存储引擎集合
+	StorerAll = driver.All
 )
 
-func BatchUpload(
-	ctx echo.Context,
-	fieldName string,
-	dstNamer func(*uploadClient.Result) (dst string, err error),
-	storer Storer,
-	callback func(*uploadClient.Result, multipart.File) error,
-) (results uploadClient.Results, err error) {
-	req := ctx.Request()
-	if req == nil {
-		err = ctx.E(`Invalid upload content`)
-		return
-	}
-	m := req.MultipartForm()
-	if m == nil || m.File == nil {
-		err = ctx.E(`Invalid upload content`)
-		return
-	}
-	files, ok := m.File[fieldName]
-	if !ok {
-		err = echo.ErrNotFoundFileInput
-		return
-	}
-	var dstFile string
-	for _, fileHdr := range files {
-		//for each fileheader, get a handle to the actual file
-		var file multipart.File
-		file, err = fileHdr.Open()
-		if err != nil {
-			if file != nil {
-				file.Close()
-			}
-			return
-		}
-		result := &uploadClient.Result{
-			FileName: fileHdr.Filename,
-			FileSize: fileHdr.Size,
-		}
-		result.Md5, err = checksum.MD5sumReader(file)
-		if err != nil {
-			file.Close()
-			return
-		}
+type (
+	// Sizer 尺寸接口
+	Sizer = driver.Sizer
 
-		dstFile, err = dstNamer(result)
-		if err != nil {
-			file.Close()
-			if err == ErrExistsFile {
-				results.Add(result)
-				err = nil
-				continue
-			}
-			return
-		}
-		if len(dstFile) == 0 {
-			file.Close()
-			continue
-		}
-		if len(result.SavePath) > 0 {
-			file.Close()
-			results.Add(result)
-			continue
-		}
-		file.Seek(0, 0)
-		result.SavePath, result.FileURL, err = storer.Put(dstFile, file, fileHdr.Size)
-		if err != nil {
-			file.Close()
-			return
-		}
-		file.Seek(0, 0)
-		if err = callback(result, file); err != nil {
-			file.Close()
-			return
-		}
-		file.Close()
-		results.Add(result)
-	}
-	return
-}
+	// Storer 文件存储引擎接口
+	Storer = driver.Storer
 
-type Sizer interface {
-	Size() int64
-}
-
-type Storer interface {
-	// 引擎名
-	Name() string
-
-	// FileDir 文件夹物理路径
-	FileDir(subpath string) string
-
-	// URLDir 文件夹网址路径
-	URLDir(subpath string) string
-
-	// Put 保存文件
-	Put(dst string, src io.Reader, size int64) (savePath string, viewURL string, err error)
-
-	// Get 获取文件
-	Get(file string) (io.ReadCloser, error)
-
-	// Exists 文件是否存在
-	Exists(file string) (bool, error)
-
-	// FileInfo 文件信息
-	FileInfo(file string) (os.FileInfo, error)
-
-	// SendFile 输出文件到浏览器
-	SendFile(ctx echo.Context, file string) error
-
-	// Delete 删除文件
-	Delete(file string) error
-
-	// DeleteDir 删除目录
-	DeleteDir(dir string) error
-
-	// PublicURL 文件网址
-	PublicURL(dst string) string
-
-	// URLToFile 网址转文件物理路径
-	URLToFile(viewURL string) string
-
-	// FixURL 修正网址
-	FixURL(content string, embedded ...bool) string
-
-	// FixURLWithParams 修正网址并增加网址参数
-	FixURLWithParams(content string, values url.Values, embedded ...bool) string
-
-	// Close 关闭连接
-	Close() error
-}
-
-type Constructor func(ctx context.Context, typ string) Storer
-
-var storers = map[string]Constructor{}
-
-var DefaultConstructor Constructor
-
-func StorerRegister(engine string, constructor Constructor) {
-	storers[engine] = constructor
-}
-
-func StorerGet(engine string) Constructor {
-	constructor, ok := storers[engine]
-	if !ok {
-		return DefaultConstructor
-	}
-	return constructor
-}
-
-func StorerAll(engine string) map[string]Constructor {
-	return storers
-}
+	// Constructor 存储引擎构造函数
+	Constructor = driver.Constructor
+)

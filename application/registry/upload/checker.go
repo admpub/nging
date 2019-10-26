@@ -20,10 +20,13 @@ package upload
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/webx-top/echo"
 
+	"github.com/admpub/color"
+	"github.com/admpub/log"
 	"github.com/admpub/nging/application/registry/upload/table"
 )
 
@@ -34,14 +37,14 @@ var UploadLinkLifeTime int64 = 86400
 type Checker func(echo.Context, table.TableInfoStorer) (subdir string, name string, err error)
 
 // DefaultChecker 默认Checker
-var DefaultChecker = func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
+var DefaultChecker = func(ctx echo.Context, t table.TableInfoStorer) (subdir string, name string, err error) {
 	refid := ctx.Formx(`refid`).String()
 	timestamp := ctx.Formx(`time`).Int64()
-	// 验证签名（避免上传接口被滥用）
 	if len(refid) == 0 {
 		refid = `0`
 	}
 	// Token(ctx.Queries())
+	// 验证签名（避免上传接口被滥用）
 	if ctx.Form(`token`) != Token(`refid`, refid, `time`, timestamp) {
 		err = ctx.E(`令牌错误`)
 		return
@@ -52,12 +55,12 @@ var DefaultChecker = func(ctx echo.Context, tis table.TableInfoStorer) (subdir s
 	}
 	subdir = fmt.Sprint(refid) + `/`
 	//subdir = time.Now().Format(`2006/01/02/`)
-	tis.SetTableID(refid)
+	t.SetTableID(refid)
 	return
 }
 
 // ConfigChecker 系统配置文件上传
-func ConfigChecker(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
+func ConfigChecker(ctx echo.Context, t table.TableInfoStorer) (subdir string, name string, err error) {
 	group := ctx.Form(`group`)
 	key := ctx.Form(`key`)
 	timestamp := ctx.Formx(`time`).Int64()
@@ -71,13 +74,14 @@ func ConfigChecker(ctx echo.Context, tis table.TableInfoStorer) (subdir string, 
 		return
 	}
 	subdir = key + `/`
-	tis.SetTableID(group + `.` + key)
-	tis.SetTableName(`config`)
-	tis.SetFieldName(`value`)
+	t.SetTableID(group + `.` + key)
+	t.SetTableName(`config`)
+	t.SetFieldName(`value`)
 	return
 }
 
 func CheckerRegister(typ string, checker Checker, fieldNames ...string) {
+	log.Info(color.GreenString(`checker.register:`), typ)
 	if len(fieldNames) > 0 {
 		SubdirGet(typ).SetChecker(checker, fieldNames...)
 		return
@@ -93,6 +97,10 @@ func CheckerGet(typ string, defaults ...string) Checker {
 		return s.MustChecker()
 	}
 	if len(defaults) == 0 {
+		tmp := strings.SplitN(typ, `-`, 2)
+		if len(tmp) == 2 {
+			return CheckerGet(tmp[0])
+		}
 		return DefaultChecker
 	}
 	return CheckerGet(defaults[0])

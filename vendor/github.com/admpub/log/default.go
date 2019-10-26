@@ -94,21 +94,21 @@ func UseCommonTargets(levelName string, targetNames ...string) *Logger {
 
 		case "file":
 			//输出到文件
-			if DefaultLog.MaxLevel >= LevelInfo {
+			if DefaultLog.MaxLevel.Int() >= LevelInfo.Int() {
 				fileTarget := NewFileTarget()
 				fileTarget.FileName = `logs/{date:20060102}_info.log`
-				fileTarget.Filter.Levels = map[Level]bool{LevelInfo: true}
+				fileTarget.Filter.Levels = map[Leveler]bool{LevelInfo: true}
 				fileTarget.MaxBytes = 10 * 1024 * 1024
 				targets = append(targets, fileTarget)
 			}
-			if DefaultLog.MaxLevel >= LevelWarn {
+			if DefaultLog.MaxLevel.Int() >= LevelWarn.Int() {
 				fileTarget := NewFileTarget()
 				fileTarget.FileName = `logs/{date:20060102}_warn.log` //按天分割日志
-				fileTarget.Filter.Levels = map[Level]bool{LevelWarn: true}
+				fileTarget.Filter.Levels = map[Leveler]bool{LevelWarn: true}
 				fileTarget.MaxBytes = 10 * 1024 * 1024
 				targets = append(targets, fileTarget)
 			}
-			if DefaultLog.MaxLevel >= LevelError {
+			if DefaultLog.MaxLevel.Int() >= LevelError.Int() {
 				fileTarget := NewFileTarget()
 				fileTarget.FileName = `logs/{date:20060102}_error.log` //按天分割日志
 				fileTarget.Filter.MaxLevel = LevelError
@@ -118,7 +118,7 @@ func UseCommonTargets(levelName string, targetNames ...string) *Logger {
 			if DefaultLog.MaxLevel == LevelDebug {
 				fileTarget := NewFileTarget()
 				fileTarget.FileName = `logs/{date:20060102}_debug.log`
-				fileTarget.Filter.Levels = map[Level]bool{LevelDebug: true}
+				fileTarget.Filter.Levels = map[Leveler]bool{LevelDebug: true}
 				fileTarget.MaxBytes = 10 * 1024 * 1024
 				targets = append(targets, fileTarget)
 			}
