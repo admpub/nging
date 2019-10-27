@@ -111,21 +111,21 @@ func init() {
 
 	// - user 表事件
 	listener.New(func(m factory.Model) (tableID string, content string, property *listener.Property) {
-		userM := m.(*dbschema.User)
-		tableID = fmt.Sprint(userM.Id)
-		content = userM.Avatar
-		property = listener.NewProUP(userM, db.Cond{`id`: userM.Id})
+		fm := m.(*dbschema.User)
+		tableID = fmt.Sprint(fm.Id)
+		content = fm.Avatar
+		property = listener.NewProUP(fm, db.Cond{`id`: fm.Id})
 		return
 	}, false).SetTable(`user`, `avatar`).ListenDefault()
 
 	// - config 表事件
 	listener.New(func(m factory.Model) (tableID string, content string, property *listener.Property) {
-		confM := m.(*dbschema.Config)
-		tableID = confM.Group + `.` + confM.Key
-		content = confM.Value
-		property = getConfigEventAttrs(confM).GenUpdater(confM, db.And(
-			db.Cond{`key`: confM.Key},
-			db.Cond{`group`: confM.Group},
+		fm := m.(*dbschema.Config)
+		tableID = fm.Group + `.` + fm.Key
+		content = fm.Value
+		property = getConfigEventAttrs(fm).GenUpdater(fm, db.And(
+			db.Cond{`key`: fm.Key},
+			db.Cond{`group`: fm.Group},
 		))
 		return
 	}, false).SetTable(`config`, `value`).ListenDefault()
