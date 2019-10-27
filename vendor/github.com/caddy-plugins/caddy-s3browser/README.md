@@ -8,6 +8,7 @@ dl.example.com {
 		secret ADDSECRETHERE
 		bucket ADDBUCKETHERE
 		endpoint nyc3.digitaloceanspaces.com
+		region us-west-2
 		secure true
 		refresh 5m
 		debug false

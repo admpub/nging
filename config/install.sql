@@ -65,6 +65,7 @@ CREATE TABLE `cloud_storage` (
   `secret` varchar(200) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '密钥(加密处理)',
   `bucket` varchar(200) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '存储桶',
   `endpoint` varchar(200) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '地域节点',
+  `region` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '地区',
   `secure` enum('Y','N') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'Y' COMMENT '是否(Y/N)HTTPS',
   `baseurl` varchar(200) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '资源基础网址',
   `created` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
@@ -923,4 +924,4 @@ CREATE TABLE `vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-10-10 22:00:06
+-- Dump completed on 2019-10-27 13:07:46

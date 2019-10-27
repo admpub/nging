@@ -39,8 +39,13 @@ import (
 	"github.com/admpub/nging/application/model"
 )
 
-func storageConnect(m *dbschema.CloudStorage) (*minio.Client, error) {
-	client, err := minio.New(m.Endpoint, m.Key, m.Secret, m.Secure == `Y`)
+func storageConnect(m *dbschema.CloudStorage) (client *minio.Client, err error) {
+	isSecure := m.Secure == `Y`
+	if len(m.Region) == 0 {
+		client, err = minio.New(m.Endpoint, m.Key, m.Secret, isSecure)
+	} else {
+		client, err = minio.NewWithRegion(m.Endpoint, m.Key, m.Secret, isSecure, m.Region)
+	}
 	if err != nil {
 		return client, err
 	}

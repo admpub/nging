@@ -1,10 +1,11 @@
 package s3browser
 
 import (
-	"github.com/dustin/go-humanize"
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/dustin/go-humanize"
 )
 
 type Directory struct {
@@ -28,6 +29,7 @@ type Config struct {
 	Key      string
 	Bucket   string
 	Secret   string
+	Region   string
 	Endpoint string
 	Secure   bool
 	Refresh  string

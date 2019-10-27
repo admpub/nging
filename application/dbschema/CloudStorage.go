@@ -45,6 +45,7 @@ type CloudStorage struct {
 	Secret   string `db:"secret" bson:"secret" comment:"密钥(加密处理)" json:"secret" xml:"secret"`
 	Bucket   string `db:"bucket" bson:"bucket" comment:"存储桶" json:"bucket" xml:"bucket"`
 	Endpoint string `db:"endpoint" bson:"endpoint" comment:"地域节点" json:"endpoint" xml:"endpoint"`
+	Region   string `db:"region" bson:"region" comment:"地区" json:"region" xml:"region"`
 	Secure   string `db:"secure" bson:"secure" comment:"是否(Y/N)HTTPS" json:"secure" xml:"secure"`
 	Baseurl  string `db:"baseurl" bson:"baseurl" comment:"资源基础网址" json:"baseurl" xml:"baseurl"`
 	Created  uint   `db:"created" bson:"created" comment:"创建时间" json:"created" xml:"created"`
@@ -358,6 +359,7 @@ func (a *CloudStorage) Reset() *CloudStorage {
 	a.Secret = ``
 	a.Bucket = ``
 	a.Endpoint = ``
+	a.Region = ``
 	a.Secure = ``
 	a.Baseurl = ``
 	a.Created = 0
@@ -374,6 +376,7 @@ func (a *CloudStorage) AsMap() map[string]interface{} {
 	r["Secret"] = a.Secret
 	r["Bucket"] = a.Bucket
 	r["Endpoint"] = a.Endpoint
+	r["Region"] = a.Region
 	r["Secure"] = a.Secure
 	r["Baseurl"] = a.Baseurl
 	r["Created"] = a.Created
@@ -398,6 +401,8 @@ func (a *CloudStorage) FromRow(row map[string]interface{}) {
 			a.Bucket = param.AsString(value)
 		case "endpoint":
 			a.Endpoint = param.AsString(value)
+		case "region":
+			a.Region = param.AsString(value)
 		case "secure":
 			a.Secure = param.AsString(value)
 		case "baseurl":
@@ -444,6 +449,8 @@ func (a *CloudStorage) Set(key interface{}, value ...interface{}) {
 			a.Bucket = param.AsString(vv)
 		case "Endpoint":
 			a.Endpoint = param.AsString(vv)
+		case "Region":
+			a.Region = param.AsString(vv)
 		case "Secure":
 			a.Secure = param.AsString(vv)
 		case "Baseurl":
@@ -465,6 +472,7 @@ func (a *CloudStorage) AsRow() map[string]interface{} {
 	r["secret"] = a.Secret
 	r["bucket"] = a.Bucket
 	r["endpoint"] = a.Endpoint
+	r["region"] = a.Region
 	r["secure"] = a.Secure
 	r["baseurl"] = a.Baseurl
 	r["created"] = a.Created

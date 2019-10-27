@@ -50,6 +50,13 @@
             </div>
           </div>
           <div class="form-group">
+            <label class="col-sm-3 control-label">{{"region"|T}}</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="region" name="region" value="{{Form "region"}}" placeholder="">
+              <div class="help-block">{{`地区`|T}}</div>
+            </div>
+          </div>
+          <div class="form-group">
             <label class="col-sm-3 control-label">{{"endpoint"|T}}</label>
             <div class="col-sm-6">
               <input type="text" class="form-control" id="endpoint" name="endpoint" value="{{Form "endpoint"}}" placeholder="" required="required">
@@ -93,8 +100,9 @@
 <script type="text/javascript">
 $(function(){
   $('#endpoint,#bucket').on('keyup change',function(){
-    if($('#baseurl').prop('disabled'))
-    $('#baseurl').val('https://'+$('#bucket').val()+'.'+$('#endpoint').val()+'/');
+    if($('#baseurl').prop('disabled')){
+      $('#baseurl').val('https://'+$('#bucket').val()+'.'+$('#endpoint').val()+'/');
+    }
   });
   $('#endpoint').trigger('change');
   $('#edit-baseurl').on('click',function(){

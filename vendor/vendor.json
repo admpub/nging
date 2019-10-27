@@ -1023,10 +1023,10 @@
 			"revisionTime": "2019-07-04T15:46:21Z"
 		},
 		{
-			"checksumSHA1": "daVrCG4Qg9RF0BmNJZ5T0LtoFmo=",
+			"checksumSHA1": "7E8srqycCsTN3DlWfsb9HDUrIgo=",
 			"path": "github.com/caddy-plugins/caddy-s3browser",
-			"revision": "fcef403f8f201678a5a13983453d3e6ef67e8cdb",
-			"revisionTime": "2019-10-07T03:31:44Z"
+			"revision": "807c94afb561293a8cfc70b98680629cbd7cf1e6",
+			"revisionTime": "2019-10-27T05:25:39Z"
 		},
 		{
 			"checksumSHA1": "WG7YZHdtdCT5E7VCZEyfcvn23VM=",

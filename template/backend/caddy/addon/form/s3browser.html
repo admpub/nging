@@ -15,6 +15,7 @@
                     <li><code>{{"key"|T}}</code> 输入SecretId值 <a href="https://console.cloud.tencent.com/cam/capi">{{`查看`}}</a></li>
                     <li><code>{{"secret"|T}}</code> 输入SecretKey值</li>
                     <li><code>{{"bucket"|T}}</code> 输入具有“公共读”权限的“存储桶”名称</li>
+                    <li><code>{{"region"|T}}</code> 输入地区名称(例如:ap-chengdu)</li>
                     <li><code>{{"endpoint"|T}}</code> 在存储桶信息中的“基础配置”中找到“访问域名”这一项，输入您自己账号中的红色部分的值 例如：https://&lt;存储桶名称&gt;.<code>cos.ap-chengdu.myqcloud.com</code></li>
                 </ol>
             </div>
@@ -34,6 +35,7 @@
                     <li><code>{{"key"|T}}</code> 输入 AccessKey ID 值 <a href="https://usercenter.console.aliyun.com/#/manage/ak">{{`查看`}}</a></li>
                     <li><code>{{"secret"|T}}</code> 输入 AccessKey Secret 值</li>
                     <li><code>{{"bucket"|T}}</code> 输入具有“公共读”权限的“存储桶”名称</li>
+                    <li><code>{{"region"|T}}</code> 输入地区名称(例如:cn-hongkong)</li>
                     <li><code>{{"endpoint"|T}}</code> 输入“EndPoint（地域节点）”值。例如：oss-cn-hongkong.aliyuncs.com</li>
                 </ol>
             </div>
@@ -58,6 +60,13 @@
     <div class="col-sm-9">
         <input type="text" class="form-control" name="s3browser_bucket" value="{{Form "s3browser_bucket"}}" placeholder="" required="required">
         <div class="help-block">{{`存储桶`|T}}</div>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{"region"|T}}</label>
+    <div class="col-sm-9">
+        <input type="text" class="form-control" name="s3browser_region" value="{{Form "s3browser_region"}}" placeholder="">
+        <div class="help-block">{{`地区`|T}}</div>
     </div>
 </div>
 <div class="form-group">

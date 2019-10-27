@@ -3,15 +3,16 @@ package s3browser
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/caddyserver/caddy"
-	"github.com/caddyserver/caddy/caddyhttp/httpserver"
-	"github.com/minio/minio-go/v6"
 	"html/template"
 	"net/http"
 	"path"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/caddyserver/caddy"
+	"github.com/caddyserver/caddy/caddyhttp/httpserver"
+	"github.com/minio/minio-go/v6"
 )
 
 var (
@@ -96,7 +97,15 @@ func getFiles(b *Browse) (map[string]Directory, error) {
 	fs["/"] = Directory{
 		Path: "/",
 	}
-	minioClient, err := minio.New(b.Config.Endpoint, b.Config.Key, b.Config.Secret, b.Config.Secure)
+	var (
+		minioClient *minio.Client
+		err         error
+	)
+	if len(b.Config.Region) == 0 {
+		minioClient, err = minio.New(b.Config.Endpoint, b.Config.Key, b.Config.Secret, b.Config.Secure)
+	} else {
+		minioClient, err = minio.NewWithRegion(b.Config.Endpoint, b.Config.Key, b.Config.Secret, b.Config.Secure, b.Config.Region)
+	}
 	if err != nil {
 		return fs, err
 	}
@@ -217,6 +226,8 @@ func parse(b *Browse, c *caddy.Controller) (err error) {
 			b.Config.Endpoint, err = StringArg(c)
 		case "bucket":
 			b.Config.Bucket, err = StringArg(c)
+		case "region":
+			b.Config.Region, err = StringArg(c)
 		case "secure":
 			b.Config.Secure, err = BoolArg(c)
 		case "refresh":
@@ -233,7 +244,7 @@ func parse(b *Browse, c *caddy.Controller) (err error) {
 	return nil
 }
 
-// Assert only one arg and return it
+// StringArg Assert only one arg and return it
 func StringArg(c *caddy.Controller) (string, error) {
 	args := c.RemainingArgs()
 	if len(args) != 1 {
@@ -301,7 +312,7 @@ const defaultTemplate = `<!DOCTYPE html>
 				</div>
 
 				<div class="navbar-text navbar-right hidden-xs credits">
-					Powered by <a href="https://caddyserver.com">Caddy</a>
+					Powered by <a href="https://github.com/admpub/nging">Nging</a>
 				</div>
 			</div>
 		</nav>
