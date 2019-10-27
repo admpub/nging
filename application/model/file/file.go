@@ -293,11 +293,26 @@ func (f *File) RemoveUnused(ago int64, ownerType string, ownerID uint64) error {
 	return f.DeleteBy(cond.And())
 }
 
+// CondByOwner 所有者条件
 func (f *File) CondByOwner(ownerType string, ownerID uint64) db.Compound {
 	return db.And(
 		db.Cond{`owner_id`: ownerID},
 		db.Cond{`owner_type`: ownerType},
 	)
+}
+
+// CondByNoTarget 无宿主条件
+func (f *File) CondByNoTarget() db.Compound {
+	return db.Cond{`table_id`: 0}
+}
+
+// UnbindTargetData 解除宿主时的设置值
+func (f *File) UnbindTargetData() echo.H {
+	return echo.H{
+		`table_id`:   0,
+		`table_name`: ``,
+		`field_name`: ``,
+	}
 }
 
 func (f *File) DeleteBy(cond db.Compound) error {
@@ -343,4 +358,21 @@ func (f *File) RemoveAvatar(ownerType string, ownerID int64) error {
 		db.Cond{`table_name`: ownerType},
 		db.Cond{`field_name`: `avatar`},
 	))
+}
+
+func (f *File) GetAvatar() (*dbschema.File, error) {
+	m := &dbschema.File{}
+	m.CPAFrom(f.File)
+	err := m.Get(nil, db.Or(
+		db.And(
+			db.Cond{`table_id`: f.TableID()},
+			db.Cond{`table_name`: f.TableName()},
+			db.Cond{`field_name`: f.FieldName()},
+		),
+		db.And(
+			f.CondByNoTarget(),
+			db.Cond{`view_url`: f.ViewUrl},
+		),
+	))
+	return m, err
 }

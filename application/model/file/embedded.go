@@ -33,6 +33,7 @@ import (
 	"github.com/admpub/nging/application/library/fileupdater"
 	"github.com/admpub/nging/application/model/base"
 	uploadStorer "github.com/admpub/nging/application/registry/upload/driver"
+	uploadHelper "github.com/admpub/nging/application/registry/upload/helper"
 )
 
 func NewEmbedded(ctx echo.Context, fileMdls ...*File) *Embedded {
@@ -80,13 +81,14 @@ func (f *Embedded) FileIDs() []uint64 {
 	return fileIDs
 }
 
-func (f *Embedded) MoveFileToOwner(fileIDs []uint64, ownerID string) error {
+func (f *Embedded) MoveFileToOwner(fileIDs []uint64, ownerID string) (map[string]string, error) {
+	replaces := make(map[string]string)
 	if len(fileIDs) == 0 {
-		return nil
+		return replaces, nil
 	}
 	_, err := f.File.ListByOffset(nil, nil, 0, -1, db.Cond{`id`: db.In(fileIDs)})
 	if err != nil {
-		return err
+		return replaces, err
 	}
 	replaceFrom := `/0/`
 	replaceTo := `/` + ownerID + `/`
@@ -104,7 +106,7 @@ func (f *Embedded) MoveFileToOwner(fileIDs []uint64, ownerID string) error {
 		if !ok {
 			newStore := uploadStorer.Get(file.StorerName)
 			if newStore == nil {
-				return f.base.E(`存储引擎“%s”未被登记`, file.StorerName)
+				return replaces, f.base.E(`存储引擎“%s”未被登记`, file.StorerName)
 			}
 			storer = newStore(f.base.Context, ``)
 			storers[file.StorerName] = storer
@@ -122,20 +124,22 @@ func (f *Embedded) MoveFileToOwner(fileIDs []uint64, ownerID string) error {
 			newViewURL = strings.Replace(file.ViewUrl, replaceFrom, replaceTo, 1)
 		}
 		if errMv := storer.Move(file.SavePath, newSavePath); errMv != nil && !os.IsNotExist(errMv) {
-			return errMv
+			return replaces, errMv
 		}
+		replaces[file.ViewUrl] = newViewURL
 		err = file.SetFields(nil, echo.H{
 			`save_path`:  newSavePath,
 			`view_url`:   newViewURL,
+			`save_name`:  path.Base(newViewURL),
 			`used_times`: 1,
 		}, db.Cond{`id`: file.Id})
 		if err != nil {
-			return err
+			return replaces, err
 		}
 		thumbM := &dbschema.FileThumb{}
 		_, err = thumbM.ListByOffset(nil, nil, 0, -1, db.Cond{`file_id`: file.Id})
 		if err != nil {
-			return err
+			return replaces, err
 		}
 		for _, thumb := range thumbM.Objects() {
 			if !strings.Contains(thumb.SavePath, replaceFrom) {
@@ -153,18 +157,20 @@ func (f *Embedded) MoveFileToOwner(fileIDs []uint64, ownerID string) error {
 				newViewURL = strings.Replace(thumb.ViewUrl, replaceFrom, replaceTo, 1)
 			}
 			if errMv := storer.Move(thumb.SavePath, newSavePath); errMv != nil && !os.IsNotExist(errMv) {
-				return errMv
+				return replaces, errMv
 			}
+			replaces[thumb.ViewUrl] = newViewURL
 			err = thumb.SetFields(nil, echo.H{
 				`save_path`: newSavePath,
 				`view_url`:  newViewURL,
+				`save_name`: path.Base(newViewURL),
 			}, db.Cond{`id`: thumb.Id})
 			if err != nil {
-				return err
+				return replaces, err
 			}
 		}
 	}
-	return err
+	return replaces, err
 }
 
 // DeleteByTableID 删除嵌入文件
@@ -270,6 +276,7 @@ func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, f
 			m.FileIds += fmt.Sprintf("%v,", v)
 		}
 		m.FileIds = strings.TrimSuffix(m.FileIds, ",")
+		f.FileIds = m.FileIds // 供FileIDs()使用
 		_, err = m.Add()
 		return err
 	}
@@ -300,6 +307,7 @@ func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, f
 		return err
 	}
 	m.FileIds = fidsString
+	f.FileIds = m.FileIds // 供FileIDs()使用
 	err = f.SetField(nil, `file_ids`, m.FileIds, db.Cond{`id`: m.Id})
 	return err
 }
@@ -317,7 +325,7 @@ func (f *Embedded) RelationEmbeddedFiles(project string, table string, field str
 		files []interface{}
 		fids  []interface{} //旧文件ID
 	)
-	EmbeddedRes(v, func(file string, fid int64) {
+	uploadHelper.EmbeddedRes(v, func(file string, fid int64) {
 		var exists bool
 		if fid > 0 {
 			exists = com.InSliceIface(fid, fids)
@@ -345,7 +353,7 @@ func (f *Embedded) RelationFiles(project string, table string, field string, tab
 		fids  []interface{} //旧文件ID
 	)
 	//println(`RelationFiles:`, v)
-	RelatedRes(v, func(file string, fid int64) {
+	uploadHelper.RelatedRes(v, func(file string, fid int64) {
 		var exists bool
 		if fid > 0 {
 			exists = com.InSliceIface(fid, fids)

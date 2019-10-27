@@ -20,7 +20,9 @@ import (
 	modelFile "github.com/admpub/nging/application/model/file"
 )
 
+// TestUpdateEmbedded 测试图片修改
 func TestUpdateEmbedded(t *testing.T) {
+	ownerID := uint64(1)
 	log.Sync()
 	config.DefaultCLIConfig.Conf = filepath.Join(os.Getenv("GOPATH"), `src`, `github.com/admpub/nging/config/config.yaml`)
 	if err := config.ParseConfig(); err != nil {
@@ -41,24 +43,24 @@ func TestUpdateEmbedded(t *testing.T) {
 	test.Contains(t, tables, `user`)
 	userM := &dbschema.User{}
 	userM.SetContext(ctx)
-	userM.Get(nil, `id`, 1)
+	userM.Get(nil, `id`, ownerID)
 	if len(userM.Avatar) > 0 {
 		userM.Avatar = ``
 	} else {
-		userM.Avatar = `/public/upload/user/1/avatar.jpg`
+		userM.Avatar = `/public/upload/user/` + fmt.Sprint(ownerID) + `/avatar.jpg`
 	}
-	if err := userM.Edit(nil, `id`, 1); err != nil {
+	if err := userM.Edit(nil, `id`, ownerID); err != nil {
 		panic(err)
 	}
 	m := modelFile.NewFile(ctx)
 	m.Get(nil, db.And(
-		db.Cond{`table_id`: 1},
+		db.Cond{`table_id`: ownerID},
 		db.Cond{`table_name`: `user`},
 		db.Cond{`field_name`: `avatar`},
 	))
 	em := modelFile.NewEmbedded(ctx, m)
 	num, err := em.Count(nil, db.And(
-		db.Cond{`table_id`: 1},
+		db.Cond{`table_id`: ownerID},
 		db.Cond{`table_name`: `user`},
 		db.Cond{`field_name`: `avatar`},
 	))

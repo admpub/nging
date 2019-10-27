@@ -20,6 +20,7 @@ package listener
 
 import (
 	"github.com/webx-top/com"
+	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
 
 	"github.com/admpub/nging/application/dbschema"
@@ -48,15 +49,33 @@ type Property struct {
 	Exit      bool
 }
 
+func NewProperty() *Property {
+	return &Property{}
+}
+
+func NewProUP(m factory.Model, cond db.Compound) *Property {
+	return NewProperty().GenUpdater(m, cond)
+}
+
+func (pro *Property) GenUpdater(m factory.Model, cond db.Compound) *Property {
+	pro.Update = func(field string, content string) error {
+		err := m.EventOFF().SetField(nil, field, content, cond)
+		m.EventON()
+		return err
+	}
+	return pro
+}
+
 // FileRelation 文件关联数据监听
 // FileRelation.SetTable(`table`,`field`).ListenDefault()
 type FileRelation struct {
-	TableName string   // 数据表名称
-	FieldName string   // 数据表字段名
-	Embedded  bool     // 是否为嵌入图片
-	Seperator string   // 文件字段中多个文件路径之间的分隔符，空字符串代表为单个文件
-	callback  Callback //根据模型获取表行ID和内容
-	dbi       *factory.DBI
+	TableName  string      // 数据表名称
+	FieldName  string      // 数据表字段名
+	UpdateCond interface{} // 主键字段名称/或
+	Embedded   bool        // 是否为嵌入图片
+	Seperator  string      // 文件字段中多个文件路径之间的分隔符，空字符串代表为单个文件
+	callback   Callback    //根据模型获取表行ID和内容
+	dbi        *factory.DBI
 }
 
 func (f *FileRelation) SetSeperator(seperator string) *FileRelation {
@@ -117,7 +136,7 @@ func (f *FileRelation) attachUpdateEvent(event string) func(m factory.Model, edi
 			return err
 		}
 		if rawContent != content {
-			err = update(event, content)
+			err = update(f.FieldName, content)
 		}
 		return err
 	}
@@ -148,9 +167,27 @@ func (f *FileRelation) attachEvent(event string) func(m factory.Model, editColum
 			return err
 		}
 		if rawContent != content {
-			err = update(event, content)
+			err = update(f.FieldName, content)
 		}
 		return err
+	}
+}
+
+func (f *FileRelation) attachDeleteEvent(event string) func(m factory.Model, editColumns ...string) error {
+	seperator := f.Seperator
+	embedded := f.Embedded
+	callback := f.callback
+	return func(m factory.Model, _ ...string) error {
+		fileM := modelFile.NewEmbedded(m.Context())
+		tableID, content, property := callback(m)
+		if property != nil {
+			if property.Exit {
+				return nil
+			}
+			seperator = property.Seperator
+			embedded = property.Embedded
+		}
+		return fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(seperator).Handle(event, &content, embedded)
 	}
 }
 
@@ -168,6 +205,8 @@ func (f *FileRelation) Listen(events ...string) *FileRelation {
 		switch event {
 		case `updating`, `updated`:
 			dbi.On(event, f.attachUpdateEvent(event), f.TableName)
+		case `deleting`, `deleted`:
+			dbi.On(event, f.attachDeleteEvent(event), f.TableName)
 		default:
 			dbi.On(event, f.attachEvent(event), f.TableName)
 		}

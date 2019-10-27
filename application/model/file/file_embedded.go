@@ -34,7 +34,7 @@ func (f *File) UpdateUnrelation(project string, table string, field string, tabl
 		`field_name`: field,
 		`project`:    project,
 	}, db.And(
-		db.Cond{`table_id`: 0},
+		f.CondByNoTarget(),
 		db.Cond{`id`: db.In(fileIds)},
 	))
 	return

@@ -132,15 +132,6 @@ func (u *User) Add() (err error) {
 	u.Salt = com.Salt()
 	u.Password = com.MakePassword(u.Password, u.Salt)
 	_, err = u.User.Add()
-	if err == nil {
-		if len(u.Avatar) > 0 {
-			var newPath string
-			newPath, err = common.MoveAvatarToUserDir(u.base.Context, u.Avatar, `user-avatar`, uint64(u.Id))
-			if err == nil && newPath != u.Avatar {
-				err = u.SetField(nil, `avatar`, newPath, db.Cond{`id`: u.Id})
-			}
-		}
-	}
 	return
 }
 
@@ -155,9 +146,6 @@ func (u *User) UpdateField(uid uint, set map[string]interface{}) (err error) {
 		set[`password`] = u.Password
 	}
 	err = u.SetFields(nil, set, `id`, uid)
-	if err == nil && len(u.Avatar) == 0 {
-		err = common.RemoveAvatar(ctx, `user-avatar`, uint64(uid))
-	}
 	return
 }
 

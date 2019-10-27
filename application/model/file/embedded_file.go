@@ -3,10 +3,10 @@ package file
 import (
 	"strings"
 
-	"github.com/admpub/nging/application/dbschema"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/dbschema"
 )
 
 func (f *Embedded) DeleteByInstance(m *dbschema.FileEmbedded) error {
@@ -60,10 +60,6 @@ func (f *Embedded) DeleteFileByIds(fileIds []string, excludeFileIds ...string) e
 	if err != nil {
 		return err
 	}
-	err = f.File.SetFields(nil, echo.H{
-		`table_id`:   0,
-		`table_name`: ``,
-		`field_name`: ``,
-	}, db.Cond{`used_times`: 0})
+	err = f.File.SetFields(nil, f.File.UnbindTargetData(), db.Cond{`used_times`: 0})
 	return err
 }

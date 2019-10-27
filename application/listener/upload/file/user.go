@@ -28,6 +28,7 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
@@ -77,20 +78,19 @@ func init() {
 			return fileM.Add(reader)
 		}
 		fileM.UsedTimes = 0
-		m := &dbschema.File{}
-		m.CPAFrom(fileM.File)
-		err = m.Get(nil, db.And(
-			db.Cond{`table_id`: fileM.TableID()},
-			db.Cond{`table_name`: fileM.TableName()},
-			db.Cond{`field_name`: fileM.FieldName()},
-		))
+		var m *dbschema.File
+		m, err = fileM.GetAvatar()
 		defer func() {
 			if err != nil {
 				return
 			}
+			userID := param.AsUint64(fileM.TableId)
+			if userID == 0 { // 新增用户时
+				return
+			}
 			userM := &dbschema.User{}
 			userM.CPAFrom(fileM.File)
-			err = userM.SetField(nil, `avatar`, fileM.ViewUrl, db.Cond{`id`: fileM.OwnerId})
+			err = userM.SetField(nil, `avatar`, fileM.ViewUrl, db.Cond{`id`: userID})
 		}()
 		if err != nil {
 			if err != db.ErrNoMoreRows {
@@ -114,6 +114,7 @@ func init() {
 		userM := m.(*dbschema.User)
 		tableID = fmt.Sprint(userM.Id)
 		content = userM.Avatar
+		property = listener.NewProUP(userM, db.Cond{`id`: userM.Id})
 		return
 	}, false).SetTable(`user`, `avatar`).ListenDefault()
 
@@ -122,7 +123,10 @@ func init() {
 		confM := m.(*dbschema.Config)
 		tableID = confM.Group + `.` + confM.Key
 		content = confM.Value
-		property = getConfigEventAttrs(confM)
+		property = getConfigEventAttrs(confM).GenUpdater(confM, db.And(
+			db.Cond{`key`: confM.Key},
+			db.Cond{`group`: confM.Group},
+		))
 		return
 	}, false).SetTable(`config`, `value`).ListenDefault()
 }

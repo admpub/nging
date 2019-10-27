@@ -25,20 +25,23 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/handler"
+	_ "github.com/admpub/nging/application/listener/upload/file"
 	"github.com/admpub/nging/application/middleware"
 	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/table"
-	_ "github.com/admpub/nging/application/listener/upload/file"
 )
 
 func init() {
 	// 后台用户头像上传
 	upload.CheckerRegister(`user-avatar`, func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
-		userID := ctx.Formx(`refid`).Uint64()
-		if user := handler.User(ctx); user != nil {
-			err = middleware.CheckAnyPerm(ctx, `manager/user_add`, `manager/user_edit`)
-			if err != nil {
-				return
+		userID := ctx.Formx(`refid`).Uint64() //为0代表新增用户
+		user := handler.User(ctx)
+		if user != nil {
+			if userID != uint64(user.Id) { //编辑别人的头像
+				err = middleware.CheckAnyPerm(ctx, `manager/user_add`, `manager/user_edit`)
+				if err != nil {
+					return
+				}
 			}
 		} else {
 			err = ctx.E(`请先登录`)
@@ -57,8 +60,9 @@ func init() {
 		if userID > 0 {
 			name = `avatar`
 		}
-		subdir = fmt.Sprint(userID) + `/`
-		tis.SetTableID(fmt.Sprint(userID))
+		uid := fmt.Sprint(userID)
+		subdir = uid + `/`
+		tis.SetTableID(uid)
 		tis.SetTableName(`user`)
 		tis.SetFieldName(`avatar`)
 		return
