@@ -73,24 +73,26 @@ func New(args ...string) *Logger {
 func (l *Logger) GetLogger(category string, formatter ...Formatter) *Logger {
 	l.lock.Lock()
 	defer l.lock.Unlock()
+
 	logger, ok := l.categories[category]
 	if !ok {
-		logger = &Logger{
-			coreLogger: l.coreLogger,
-			Category:   category,
-			categories: make(map[string]*Logger),
-			CallDepth:  l.CallDepth,
-		}
-		if len(formatter) > 0 {
-			logger.Formatter = formatter[0]
-		} else {
-			logger.Formatter = l.Formatter
-		}
+		logger = l.clone()
+		logger.Category = category
 		l.categories[category] = logger
-	} else {
-		if len(formatter) > 0 {
-			logger.Formatter = formatter[0]
-		}
+	}
+	if len(formatter) > 0 {
+		logger.Formatter = formatter[0]
+	}
+	return logger
+}
+
+func (l *Logger) clone() *Logger {
+	logger := &Logger{
+		coreLogger: l.coreLogger,
+		Category:   l.Category,
+		categories: make(map[string]*Logger),
+		CallDepth:  l.CallDepth,
+		Formatter:  l.Formatter,
 	}
 	return logger
 }
