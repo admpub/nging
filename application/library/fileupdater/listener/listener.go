@@ -44,6 +44,7 @@ type Callback func(m factory.Model) (tableID string, content string, property *P
 type Property struct {
 	Embedded  bool   // 是否为嵌入图片
 	Seperator string // 文件字段中多个文件路径之间的分隔符，空字符串代表为单个文件
+	Update    func(event string, content string) error
 	Exit      bool
 }
 
@@ -97,15 +98,28 @@ func (f *FileRelation) attachUpdateEvent(event string) func(m factory.Model, edi
 		}
 		fileM := modelFile.NewEmbedded(m.Context())
 		tableID, content, property := callback(m)
+		var update func(string, string) error
 		if property != nil {
 			if property.Exit {
 				return nil
 			}
 			seperator = property.Seperator
 			embedded = property.Embedded
+			update = property.Update
 		}
 		//println(event+`=========`, f.TableName, f.FieldName, tableID, content)
-		return fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(seperator).Handle(event, content, embedded)
+		if update == nil {
+			return fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(seperator).Handle(event, &content, embedded)
+		}
+		rawContent := content
+		err := fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(seperator).Handle(event, &content, embedded)
+		if err != nil {
+			return err
+		}
+		if rawContent != content {
+			err = update(event, content)
+		}
+		return err
 	}
 }
 
@@ -116,14 +130,27 @@ func (f *FileRelation) attachEvent(event string) func(m factory.Model, editColum
 	return func(m factory.Model, _ ...string) error {
 		fileM := modelFile.NewEmbedded(m.Context())
 		tableID, content, property := callback(m)
+		var update func(string, string) error
 		if property != nil {
 			if property.Exit {
 				return nil
 			}
 			seperator = property.Seperator
 			embedded = property.Embedded
+			update = property.Update
 		}
-		return fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(seperator).Handle(event, content, embedded)
+		if update == nil {
+			return fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(seperator).Handle(event, &content, embedded)
+		}
+		rawContent := content
+		err := fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(seperator).Handle(event, &content, embedded)
+		if err != nil {
+			return err
+		}
+		if rawContent != content {
+			err = update(event, content)
+		}
+		return err
 	}
 }
 

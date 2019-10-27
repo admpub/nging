@@ -6,11 +6,34 @@ import (
 )
 
 type Base struct {
-	param   *Param
-	trans   *Transaction
-	namer   func(string) string
-	connID  int
-	context echo.Context
+	param    *Param
+	trans    *Transaction
+	namer    func(string) string
+	connID   int
+	context  echo.Context
+	eventOff bool
+}
+
+func (this *Base) EventOFF(off ...bool) *Base {
+	if len(off) == 0 {
+		this.eventOff = true
+	} else {
+		this.eventOff = off[0]
+	}
+	return this
+}
+
+func (this *Base) Eventable() bool {
+	return !this.eventOff
+}
+
+func (this *Base) EventON(on ...bool) *Base {
+	if len(on) == 0 {
+		this.eventOff = false
+	} else {
+		this.eventOff = !on[0]
+	}
+	return this
 }
 
 func (this *Base) SetParam(param *Param) *Base {
@@ -90,4 +113,6 @@ type Model interface {
 	Set(key interface{}, value ...interface{})
 	BatchValidate(kvset map[string]interface{}) error
 	Validate(field string, value interface{}) error
+	EventON(on ...bool) Model
+	EventOFF(off ...bool) Model
 }

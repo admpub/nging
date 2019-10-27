@@ -20,6 +20,11 @@
 // 用法：fileupdater.New(fileModel.NewEmbedded(ctx)).Set(`表名称`,`字段名称`,主键ID).Add(`/test/image.jpg`,false)
 package fileupdater
 
+import (
+	"github.com/admpub/log"
+	uploadHelper "github.com/admpub/nging/application/registry/upload/helper"
+)
+
 func New(reler Reler) *FileUpdater {
 	return &FileUpdater{
 		rel: reler,
@@ -35,7 +40,7 @@ type FileUpdater struct {
 	seperator string
 }
 
-func (f *FileUpdater) Handle(event string, content string, embedded bool) error {
+func (f *FileUpdater) Handle(event string, content *string, embedded bool) error {
 	switch event {
 	case `creating`, `created`:
 		return f.Add(content, embedded)
@@ -48,8 +53,8 @@ func (f *FileUpdater) Handle(event string, content string, embedded bool) error 
 	}
 }
 
-func (f *FileUpdater) Add(content string, embedded bool) (err error) {
-	if len(content) == 0 {
+func (f *FileUpdater) Add(content *string, embedded bool) (err error) {
+	if len(*content) == 0 {
 		return
 	}
 	err = f.Edit(content, embedded)
@@ -57,22 +62,33 @@ func (f *FileUpdater) Add(content string, embedded bool) (err error) {
 		return
 	}
 	if len(f.tableID) == 0 || f.tableID == `0` {
+		log.Error(`FileUpdater.Add: tableID is empty`)
 		return
 	}
 	fileIDs := f.rel.FileIDs()
 	if len(fileIDs) == 0 {
+		//println(`fileIDs is empty`)
 		return
 	}
-	err = f.rel.MoveFileToOwner(fileIDs, f.tableID)
+	var replaces map[string]string
+	replaces, err = f.rel.MoveFileToOwner(fileIDs, f.tableID)
+	if err != nil {
+		return
+	}
+	if embedded {
+		*content = uploadHelper.ReplaceEmbeddedRes(*content, replaces)
+	} else {
+		*content = uploadHelper.ReplaceRelatedRes(*content, replaces, f.seperator)
+	}
 	return
 }
 
-func (f *FileUpdater) Edit(content string, embedded bool) (err error) {
+func (f *FileUpdater) Edit(content *string, embedded bool) (err error) {
 	if !embedded {
-		err = f.rel.RelationFiles(f.project, f.table, f.field, f.tableID, content, f.seperator)
+		err = f.rel.RelationFiles(f.project, f.table, f.field, f.tableID, *content, f.seperator)
 		return
 	}
-	err = f.rel.RelationEmbeddedFiles(f.project, f.table, f.field, f.tableID, content)
+	err = f.rel.RelationEmbeddedFiles(f.project, f.table, f.field, f.tableID, *content)
 	return
 }
 

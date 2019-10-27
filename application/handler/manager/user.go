@@ -189,9 +189,6 @@ func UserDelete(ctx echo.Context) error {
 	}
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
-		err = common.RemoveUploadedFile(ctx, `user-avatar`, id)
-	}
-	if err == nil {
 		handler.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
 		handler.SendFail(ctx, err.Error())

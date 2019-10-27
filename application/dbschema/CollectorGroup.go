@@ -62,6 +62,16 @@ func (a *CollectorGroup) SetContext(ctx echo.Context) factory.Model {
 	return a
 }
 
+func (a *CollectorGroup) EventON(on ...bool) factory.Model {
+	a.base.EventON(on...)
+	return a
+}
+
+func (a *CollectorGroup) EventOFF(off ...bool) factory.Model {
+	a.base.EventOFF(off...)
+	return a
+}
+
 func (a *CollectorGroup) Context() echo.Context {
 	return a.base.Context()
 }
@@ -221,9 +231,11 @@ func (a *CollectorGroup) Add() (pk interface{}, err error) {
 	if len(a.Type) == 0 {
 		a.Type = "page"
 	}
-	err = DBI.Fire("creating", a, nil)
-	if err != nil {
-		return
+	if a.base.Eventable() {
+		err = DBI.Fire("creating", a, nil)
+		if err != nil {
+			return
+		}
 	}
 	pk, err = a.Param(nil).SetSend(a).Insert()
 	if err == nil && pk != nil {
@@ -233,7 +245,7 @@ func (a *CollectorGroup) Add() (pk interface{}, err error) {
 			a.Id = uint(v)
 		}
 	}
-	if err == nil {
+	if err == nil && a.base.Eventable() {
 		err = DBI.Fire("created", a, nil)
 	}
 	return
@@ -243,6 +255,9 @@ func (a *CollectorGroup) Edit(mw func(db.Result) db.Result, args ...interface{})
 
 	if len(a.Type) == 0 {
 		a.Type = "page"
+	}
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(a).Update()
 	}
 	if err = DBI.Fire("updating", a, mw, args...); err != nil {
 		return
@@ -266,6 +281,9 @@ func (a *CollectorGroup) SetFields(mw func(db.Result) db.Result, kvset map[strin
 			kvset["type"] = "page"
 		}
 	}
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(kvset).Update()
+	}
 	m := *a
 	m.FromRow(kvset)
 	var editColumns []string
@@ -286,12 +304,18 @@ func (a *CollectorGroup) Upsert(mw func(db.Result) db.Result, args ...interface{
 		if len(a.Type) == 0 {
 			a.Type = "page"
 		}
+		if !a.base.Eventable() {
+			return nil
+		}
 		return DBI.Fire("updating", a, mw, args...)
 	}, func() error {
 		a.Created = uint(time.Now().Unix())
 		a.Id = 0
 		if len(a.Type) == 0 {
 			a.Type = "page"
+		}
+		if !a.base.Eventable() {
+			return nil
 		}
 		return DBI.Fire("creating", a, nil)
 	})
@@ -302,7 +326,7 @@ func (a *CollectorGroup) Upsert(mw func(db.Result) db.Result, args ...interface{
 			a.Id = uint(v)
 		}
 	}
-	if err == nil {
+	if err == nil && a.base.Eventable() {
 		if pk == nil {
 			err = DBI.Fire("updated", a, mw, args...)
 		} else {
@@ -314,6 +338,9 @@ func (a *CollectorGroup) Upsert(mw func(db.Result) db.Result, args ...interface{
 
 func (a *CollectorGroup) Delete(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).Delete()
+	}
 	if err = DBI.Fire("deleting", a, mw, args...); err != nil {
 		return
 	}

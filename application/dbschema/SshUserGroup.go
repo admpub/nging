@@ -62,6 +62,16 @@ func (a *SshUserGroup) SetContext(ctx echo.Context) factory.Model {
 	return a
 }
 
+func (a *SshUserGroup) EventON(on ...bool) factory.Model {
+	a.base.EventON(on...)
+	return a
+}
+
+func (a *SshUserGroup) EventOFF(off ...bool) factory.Model {
+	a.base.EventOFF(off...)
+	return a
+}
+
 func (a *SshUserGroup) Context() echo.Context {
 	return a.base.Context()
 }
@@ -218,9 +228,11 @@ func (a *SshUserGroup) ListByOffset(recv interface{}, mw func(db.Result) db.Resu
 func (a *SshUserGroup) Add() (pk interface{}, err error) {
 	a.Created = uint(time.Now().Unix())
 	a.Id = 0
-	err = DBI.Fire("creating", a, nil)
-	if err != nil {
-		return
+	if a.base.Eventable() {
+		err = DBI.Fire("creating", a, nil)
+		if err != nil {
+			return
+		}
 	}
 	pk, err = a.Param(nil).SetSend(a).Insert()
 	if err == nil && pk != nil {
@@ -230,7 +242,7 @@ func (a *SshUserGroup) Add() (pk interface{}, err error) {
 			a.Id = uint(v)
 		}
 	}
-	if err == nil {
+	if err == nil && a.base.Eventable() {
 		err = DBI.Fire("created", a, nil)
 	}
 	return
@@ -238,6 +250,9 @@ func (a *SshUserGroup) Add() (pk interface{}, err error) {
 
 func (a *SshUserGroup) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	a.Updated = uint(time.Now().Unix())
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(a).Update()
+	}
 	if err = DBI.Fire("updating", a, mw, args...); err != nil {
 		return
 	}
@@ -255,6 +270,9 @@ func (a *SshUserGroup) SetField(mw func(db.Result) db.Result, field string, valu
 
 func (a *SshUserGroup) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 	kvset["updated"] = uint(time.Now().Unix())
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(kvset).Update()
+	}
 	m := *a
 	m.FromRow(kvset)
 	var editColumns []string
@@ -273,10 +291,16 @@ func (a *SshUserGroup) SetFields(mw func(db.Result) db.Result, kvset map[string]
 func (a *SshUserGroup) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = a.Param(mw, args...).SetSend(a).Upsert(func() error {
 		a.Updated = uint(time.Now().Unix())
+		if !a.base.Eventable() {
+			return nil
+		}
 		return DBI.Fire("updating", a, mw, args...)
 	}, func() error {
 		a.Created = uint(time.Now().Unix())
 		a.Id = 0
+		if !a.base.Eventable() {
+			return nil
+		}
 		return DBI.Fire("creating", a, nil)
 	})
 	if err == nil && pk != nil {
@@ -286,7 +310,7 @@ func (a *SshUserGroup) Upsert(mw func(db.Result) db.Result, args ...interface{})
 			a.Id = uint(v)
 		}
 	}
-	if err == nil {
+	if err == nil && a.base.Eventable() {
 		if pk == nil {
 			err = DBI.Fire("updated", a, mw, args...)
 		} else {
@@ -298,6 +322,9 @@ func (a *SshUserGroup) Upsert(mw func(db.Result) db.Result, args ...interface{})
 
 func (a *SshUserGroup) Delete(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).Delete()
+	}
 	if err = DBI.Fire("deleting", a, mw, args...); err != nil {
 		return
 	}

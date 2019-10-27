@@ -61,6 +61,16 @@ func (a *VhostGroup) SetContext(ctx echo.Context) factory.Model {
 	return a
 }
 
+func (a *VhostGroup) EventON(on ...bool) factory.Model {
+	a.base.EventON(on...)
+	return a
+}
+
+func (a *VhostGroup) EventOFF(off ...bool) factory.Model {
+	a.base.EventOFF(off...)
+	return a
+}
+
 func (a *VhostGroup) Context() echo.Context {
 	return a.base.Context()
 }
@@ -217,9 +227,11 @@ func (a *VhostGroup) ListByOffset(recv interface{}, mw func(db.Result) db.Result
 func (a *VhostGroup) Add() (pk interface{}, err error) {
 	a.Created = uint(time.Now().Unix())
 	a.Id = 0
-	err = DBI.Fire("creating", a, nil)
-	if err != nil {
-		return
+	if a.base.Eventable() {
+		err = DBI.Fire("creating", a, nil)
+		if err != nil {
+			return
+		}
 	}
 	pk, err = a.Param(nil).SetSend(a).Insert()
 	if err == nil && pk != nil {
@@ -229,7 +241,7 @@ func (a *VhostGroup) Add() (pk interface{}, err error) {
 			a.Id = uint(v)
 		}
 	}
-	if err == nil {
+	if err == nil && a.base.Eventable() {
 		err = DBI.Fire("created", a, nil)
 	}
 	return
@@ -237,6 +249,9 @@ func (a *VhostGroup) Add() (pk interface{}, err error) {
 
 func (a *VhostGroup) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(a).Update()
+	}
 	if err = DBI.Fire("updating", a, mw, args...); err != nil {
 		return
 	}
@@ -254,6 +269,9 @@ func (a *VhostGroup) SetField(mw func(db.Result) db.Result, field string, value 
 
 func (a *VhostGroup) SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) (err error) {
 
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetSend(kvset).Update()
+	}
 	m := *a
 	m.FromRow(kvset)
 	var editColumns []string
@@ -271,10 +289,16 @@ func (a *VhostGroup) SetFields(mw func(db.Result) db.Result, kvset map[string]in
 
 func (a *VhostGroup) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = a.Param(mw, args...).SetSend(a).Upsert(func() error {
+		if !a.base.Eventable() {
+			return nil
+		}
 		return DBI.Fire("updating", a, mw, args...)
 	}, func() error {
 		a.Created = uint(time.Now().Unix())
 		a.Id = 0
+		if !a.base.Eventable() {
+			return nil
+		}
 		return DBI.Fire("creating", a, nil)
 	})
 	if err == nil && pk != nil {
@@ -284,7 +308,7 @@ func (a *VhostGroup) Upsert(mw func(db.Result) db.Result, args ...interface{}) (
 			a.Id = uint(v)
 		}
 	}
-	if err == nil {
+	if err == nil && a.base.Eventable() {
 		if pk == nil {
 			err = DBI.Fire("updated", a, mw, args...)
 		} else {
@@ -296,6 +320,9 @@ func (a *VhostGroup) Upsert(mw func(db.Result) db.Result, args ...interface{}) (
 
 func (a *VhostGroup) Delete(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).Delete()
+	}
 	if err = DBI.Fire("deleting", a, mw, args...); err != nil {
 		return
 	}
