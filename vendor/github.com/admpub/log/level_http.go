@@ -1,6 +1,10 @@
 package log
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/admpub/color"
+)
 
 func NewHttpLevel(code int, level Leveler) *httpLevel {
 	lvName := HTTPStatusLevelName(code)
@@ -25,6 +29,6 @@ func (h httpLevel) Tag() string {
 	return `[ ` + fmt.Sprint(h.Code) + ` ]`
 }
 
-func (l httpLevel) ColorLevel() Leveler {
-	return l.colorLevel
+func (l httpLevel) Color() *color.Color {
+	return colorBrushes[l.Leveler]
 }

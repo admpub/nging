@@ -3,6 +3,8 @@ package log
 import (
 	"fmt"
 	"strings"
+
+	"github.com/admpub/color"
 )
 
 // RFC5424 log message levels.
@@ -22,7 +24,7 @@ type (
 		fmt.Stringer
 		Int() int
 		Tag() string
-		ColorLevel() Leveler
+		Color() *color.Color
 	}
 )
 
@@ -93,7 +95,7 @@ func (l Level) Tag() string {
 	return `[` + LevelUppers[l.String()] + `]`
 }
 
-// ColorLevel 颜色等级
-func (l Level) ColorLevel() Leveler {
-	return l
+// Color 颜色
+func (l Level) Color() *color.Color {
+	return colorBrushes[l]
 }

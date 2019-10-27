@@ -3,9 +3,10 @@
 package middleware
 
 import (
+	"io"
 	"log"
 )
 
-func init() {
-	DefaultLogWriter = log.Writer()
+func GetDefaultLogWriter() io.Writer {
+	return log.Writer()
 }

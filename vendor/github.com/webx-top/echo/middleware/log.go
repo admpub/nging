@@ -24,7 +24,7 @@ type VisitorInfo struct {
 	ResponseCode int
 }
 
-var DefaultLogWriter io.Writer
+var DefaultLogWriter = GetDefaultLogWriter()
 
 func Log(recv ...func(*VisitorInfo)) echo.MiddlewareFunc {
 	return LogWithWriter(nil, recv...)

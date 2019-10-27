@@ -25,6 +25,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/middleware"
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/cmd/event"
@@ -49,7 +50,9 @@ func Init() {
 		echo.Set(`BUILD_TIME`, buildTime)
 	}
 	config.Version.BuildTime = buildTime
-	stdLog.SetOutput(log.Writer(log.LevelInfo))
+	stdLogWriter := log.Writer(log.LevelInfo)
+	middleware.DefaultLogWriter = stdLogWriter
+	stdLog.SetOutput(stdLogWriter)
 	stdLog.SetFlags(stdLog.Lshortfile)
 	event.Licensed = license.Ok(``)
 	event.MustLicensed = echo.Bool(`MUST_LICENSED`)

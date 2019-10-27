@@ -3,9 +3,11 @@
 package middleware
 
 import (
+	"io"
+
 	"github.com/admpub/log"
 )
 
-func init() {
-	DefaultLogWriter = log.Writer(log.LevelInfo)
+func GetDefaultLogWriter() io.Writer {
+	return log.Writer(log.LevelInfo)
 }
