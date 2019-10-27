@@ -69,13 +69,12 @@ func (pro *Property) GenUpdater(m factory.Model, cond db.Compound) *Property {
 // FileRelation 文件关联数据监听
 // FileRelation.SetTable(`table`,`field`).ListenDefault()
 type FileRelation struct {
-	TableName  string      // 数据表名称
-	FieldName  string      // 数据表字段名
-	UpdateCond interface{} // 主键字段名称/或
-	Embedded   bool        // 是否为嵌入图片
-	Seperator  string      // 文件字段中多个文件路径之间的分隔符，空字符串代表为单个文件
-	callback   Callback    //根据模型获取表行ID和内容
-	dbi        *factory.DBI
+	TableName string   // 数据表名称
+	FieldName string   // 数据表字段名
+	Embedded  bool     // 是否为嵌入图片
+	Seperator string   // 文件字段中多个文件路径之间的分隔符，空字符串代表为单个文件
+	callback  Callback //根据模型获取表行ID和内容
+	dbi       *factory.DBI
 }
 
 func (f *FileRelation) SetSeperator(seperator string) *FileRelation {
