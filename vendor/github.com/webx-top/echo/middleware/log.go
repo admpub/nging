@@ -24,17 +24,21 @@ type VisitorInfo struct {
 	ResponseCode int
 }
 
-var LogWriter io.Writer
+var DefaultLogWriter io.Writer
 
 func Log(recv ...func(*VisitorInfo)) echo.MiddlewareFunc {
+	return LogWithWriter(nil, recv...)
+}
+
+func LogWithWriter(writer io.Writer, recv ...func(*VisitorInfo)) echo.MiddlewareFunc {
 	var logging func(*VisitorInfo)
 	if len(recv) > 0 {
 		logging = recv[0]
 	}
-	if LogWriter == nil {
-		LogWriter = std.Writer()
+	if writer == nil {
+		writer = DefaultLogWriter
 	}
-	logger := std.New(LogWriter, ``, 0)
+	logger := std.New(writer, ``, 0)
 	if logging == nil {
 		logging = func(v *VisitorInfo) {
 			logger.Println(":" + fmt.Sprint(v.ResponseCode) + ": " + v.RealIP + " " + v.Method + " " + v.Scheme + " " + v.Host + " " + v.URI + " " + v.Elapsed.String() + " " + fmt.Sprint(v.ResponseSize))
