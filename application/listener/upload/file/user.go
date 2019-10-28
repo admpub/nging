@@ -135,12 +135,12 @@ func getConfigEventAttrs(confM *dbschema.Config) *listener.Property {
 	property := &listener.Property{}
 	switch confM.Type {
 	case `html`:
-		property.Embedded = true
+		property.SetEmbedded(true)
 	case `image`, `video`, `audio`, `file`:
 	case `list`:
-		property.Seperator = `,`
+		property.SetSeperator(`,`)
 	default:
-		property.Exit = true
+		property.SetExit(true)
 	}
 	return property
 }

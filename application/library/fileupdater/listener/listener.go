@@ -20,7 +20,6 @@ package listener
 
 import (
 	"github.com/webx-top/com"
-	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
 
 	"github.com/admpub/nging/application/dbschema"
@@ -41,30 +40,6 @@ func New(cb Callback, embedded bool, seperators ...string) *FileRelation {
 }
 
 type Callback func(m factory.Model) (tableID string, content string, property *Property)
-
-type Property struct {
-	Embedded  bool   // 是否为嵌入图片
-	Seperator string // 文件字段中多个文件路径之间的分隔符，空字符串代表为单个文件
-	Update    func(event string, content string) error
-	Exit      bool
-}
-
-func NewProperty() *Property {
-	return &Property{}
-}
-
-func NewProUP(m factory.Model, cond db.Compound) *Property {
-	return NewProperty().GenUpdater(m, cond)
-}
-
-func (pro *Property) GenUpdater(m factory.Model, cond db.Compound) *Property {
-	pro.Update = func(field string, content string) error {
-		err := m.EventOFF().SetField(nil, field, content, cond)
-		m.EventON()
-		return err
-	}
-	return pro
-}
 
 // FileRelation 文件关联数据监听
 // FileRelation.SetTable(`table`,`field`).ListenDefault()
@@ -116,17 +91,21 @@ func (f *FileRelation) attachUpdateEvent(event string) func(m factory.Model, edi
 		}
 		fileM := modelFile.NewEmbedded(m.Context())
 		tableID, content, property := callback(m)
-		var update func(string, string) error
+		var updater func(string, string) error
 		if property != nil {
-			if property.Exit {
+			if property.exit {
 				return nil
 			}
-			seperator = property.Seperator
-			embedded = property.Embedded
-			update = property.Update
+			if property.seperator.Valid {
+				seperator = property.seperator.String
+			}
+			if property.embedded.Valid {
+				embedded = property.embedded.Bool
+			}
+			updater = property.updater
 		}
 		//println(event+`=========`, f.TableName, f.FieldName, tableID, content)
-		if update == nil {
+		if updater == nil {
 			return fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(seperator).Handle(event, &content, embedded)
 		}
 		rawContent := content
@@ -135,7 +114,7 @@ func (f *FileRelation) attachUpdateEvent(event string) func(m factory.Model, edi
 			return err
 		}
 		if rawContent != content {
-			err = update(f.FieldName, content)
+			err = updater(f.FieldName, content)
 		}
 		return err
 	}
@@ -148,16 +127,20 @@ func (f *FileRelation) attachEvent(event string) func(m factory.Model, editColum
 	return func(m factory.Model, _ ...string) error {
 		fileM := modelFile.NewEmbedded(m.Context())
 		tableID, content, property := callback(m)
-		var update func(string, string) error
+		var updater func(string, string) error
 		if property != nil {
-			if property.Exit {
+			if property.exit {
 				return nil
 			}
-			seperator = property.Seperator
-			embedded = property.Embedded
-			update = property.Update
+			if property.seperator.Valid {
+				seperator = property.seperator.String
+			}
+			if property.embedded.Valid {
+				embedded = property.embedded.Bool
+			}
+			updater = property.updater
 		}
-		if update == nil {
+		if updater == nil {
 			return fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(seperator).Handle(event, &content, embedded)
 		}
 		rawContent := content
@@ -166,7 +149,7 @@ func (f *FileRelation) attachEvent(event string) func(m factory.Model, editColum
 			return err
 		}
 		if rawContent != content {
-			err = update(f.FieldName, content)
+			err = updater(f.FieldName, content)
 		}
 		return err
 	}
@@ -180,11 +163,15 @@ func (f *FileRelation) attachDeleteEvent(event string) func(m factory.Model, edi
 		fileM := modelFile.NewEmbedded(m.Context())
 		tableID, content, property := callback(m)
 		if property != nil {
-			if property.Exit {
+			if property.exit {
 				return nil
 			}
-			seperator = property.Seperator
-			embedded = property.Embedded
+			if property.seperator.Valid {
+				seperator = property.seperator.String
+			}
+			if property.embedded.Valid {
+				embedded = property.embedded.Bool
+			}
 		}
 		return fileM.Updater(f.TableName, f.FieldName, tableID).SetSeperator(seperator).Handle(event, &content, embedded)
 	}
