@@ -97,14 +97,14 @@
                     <label class="col-sm-2 control-label">{{"启动延时"|T}}</label>
                     <div class="col-sm-8">
                       <input class="form-control" type="text" name="delay" value="{{Form "delay"}}" />
-                      <div class="help-block">{{"程序异常退出后，等待多长时间后再启动。格式为数字和字母的组合，例如：1y、2m、3d、4h、5i、6s 分别表示 1年、2个月、3天、4小时、5分钟、6秒"|T}}</div>
+                      <div class="help-block">{{`程序异常退出后，等待多长时间后再启动。格式为数字和单位字母的组合，有效的单位有："ns", "us" (or "µs"), "ms", "s", "m", "h" 分别表示 "纳秒", "微秒", "毫秒", "秒", "分钟", "小时"`|T}}</div>
                     </div>
                   </div>
                   <div class="form-group">
                     <label class="col-sm-2 control-label">{{"心跳检测间隔"|T}}</label>
                     <div class="col-sm-8">
                       <input class="form-control" type="text" name="ping" value="{{Form "ping"}}" />
-                      <div class="help-block">{{"默认1m，即1分钟。格式为数字和字母的组合，例如：1y、2m、3d、4h、5i、6s 分别表示 1年、2个月、3天、4小时、5分钟、6秒"|T}}</div>
+                      <div class="help-block">{{`默认1m，即1分钟。格式为数字和单位字母的组合，有效的单位有："ns", "us" (or "µs"), "ms", "s", "m", "h" 分别表示 "纳秒", "微秒", "毫秒", "秒", "分钟", "小时"`|T}}</div>
                     </div>
                   </div>
                   <div class="form-group">
