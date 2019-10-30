@@ -23,5 +23,5 @@ type Reler interface {
 	RelationEmbeddedFiles(project string, table string, field string, tableID string, content string) error
 	DeleteByTableID(project string, table string, tableID string) error
 	FileIDs() []uint64
-	MoveFileToOwner(fileIDs []uint64, ownerID string) (replaces map[string]string, err error)
+	MoveFileToOwner(table string, fileIDs []uint64, ownerID string) (replaces map[string]string, err error)
 }

@@ -71,7 +71,7 @@ func (f *FileUpdater) Add(content *string, embedded bool) (err error) {
 		return
 	}
 	var replaces map[string]string
-	replaces, err = f.rel.MoveFileToOwner(fileIDs, f.tableID)
+	replaces, err = f.rel.MoveFileToOwner(f.table, fileIDs, f.tableID)
 	if err != nil {
 		return
 	}
