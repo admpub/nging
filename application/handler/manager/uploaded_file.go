@@ -24,15 +24,17 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/filemanager"
 	"github.com/admpub/nging/application/library/notice"
 	"github.com/admpub/nging/application/registry/upload/helper"
-	"github.com/webx-top/com"
-	"github.com/webx-top/echo"
 )
 
+// UploadedFile 本地附件文件管理
 func UploadedFile(ctx echo.Context) error {
 	var err error
 	id := ctx.Formx(`id`).Uint()

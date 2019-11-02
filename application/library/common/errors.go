@@ -44,6 +44,11 @@ var (
 
 	// ErrIgnoreConfigChange 忽略配置文件更改
 	ErrIgnoreConfigChange = errors.New(`Ingore file`)
+
+	// - Checker
+
+	// ErrNext 需要继续向下检查
+	ErrNext = errors.New("Next")
 )
 
 // DefaultNopMessage 默认空消息
