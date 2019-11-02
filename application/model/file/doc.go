@@ -1,4 +1,4 @@
-package initialize
+package file
 
 // 共分两步：
 // 一. 上传文件：上传时往file表记录无主数据

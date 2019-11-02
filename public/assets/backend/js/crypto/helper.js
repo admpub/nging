@@ -69,7 +69,7 @@ function SHA1(data) {
 function encryptFormPassword(formElem) {
     var data = $(formElem).serializeArray();
     var pwdn = $(formElem).find('input[type="password"]').length;
-    var pwdi = 0, secret = $(formElem).data('secret');
+    var pwdi = 0, secret = $(formElem).attr('data-secret');
     if (!secret) return data;
     for (var i = 0; i < data.length; i++) {
         var v = data[i];

@@ -45,8 +45,6 @@ func NewFile(ctx echo.Context) *File {
 	return m
 }
 
-var Enable bool
-
 type File struct {
 	*dbschema.File
 	base *base.Base

@@ -34,7 +34,6 @@ import (
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/fileupdater/listener"
 	modelFile "github.com/admpub/nging/application/model/file"
-	_ "github.com/admpub/nging/application/model/file/initialize"
 	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/table"
 )

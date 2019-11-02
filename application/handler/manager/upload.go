@@ -42,6 +42,7 @@ import (
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/collector/exec"
 	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/application/middleware"
 	modelFile "github.com/admpub/nging/application/model/file"
 	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/driver/filesystem"
@@ -253,7 +254,32 @@ func getTableInfo(uploadType string) (tableName string, fieldName string, defaul
 	return upload.GetTableInfo(uploadType)
 }
 
+// Crop 图片裁剪
 func Crop(ctx echo.Context) error {
+	ownerType := `user`
+	user := handler.User(ctx)
+	var ownerID uint64
+	if user != nil {
+		ownerID = uint64(user.Id)
+	}
+	if ownerID < 1 {
+		ctx.Data().SetError(ctx.E(`请先登录`))
+		return ctx.Redirect(handler.URLFor(`/login`))
+	}
+	return CropByOwner(ctx, ownerType, ownerID, func(f *modelFile.File) error {
+		if f.FieldName() == `avatar` && f.OwnerType == `user` {
+			err := middleware.CheckAnyPerm(ctx, `manager/user_add`, `manager/user_edit`)
+			if err != nil {
+				return err
+			}
+			return nil
+		}
+		return common.ErrUserNoPerm
+	})
+}
+
+// CropByOwner 图片裁剪
+func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64, permChecker func(*modelFile.File) error) error {
 	var err error
 	newStore := upload.StorerGet(StorerEngine)
 	if newStore == nil {
@@ -273,11 +299,23 @@ func Crop(ctx echo.Context) error {
 	}
 	thumbM := modelFile.NewThumb(ctx)
 	fileM := modelFile.NewFile(ctx)
-	if modelFile.Enable {
-		err = fileM.GetByViewURL(StorerEngine, srcURL)
-		if err != nil {
-			return err
-		}
+	err = fileM.GetByViewURL(StorerEngine, srcURL)
+	if err != nil {
+		return err
+	}
+	var editable bool
+	if ownerType == `user` && ownerID == 1 { //管理员可编辑
+		editable = true
+	} else if fileM.OwnerType == ownerType &&
+		fileM.OwnerId == ownerID { //上传者可编辑
+		editable = true
+	} else if err = permChecker(fileM); err != nil { //其它验证方式
+		return err
+	} else {
+		editable = true
+	}
+	if !editable {
+		return common.ErrUserNoPerm
 	}
 
 	x := ctx.Formx(`x`).Float64()
@@ -418,18 +456,16 @@ END:
 			return err
 		}
 	}
-	if modelFile.Enable {
-		size := len(thumb)
-		thumbM.Size = uint64(size)
-		thumbM.Width = param.AsUint(opt.Width)
-		thumbM.Height = param.AsUint(opt.Height)
-		thumbM.SaveName = path.Base(thumbM.SavePath)
-		thumbM.UsedTimes = 0
-		thumbM.Md5 = fileMd5
-		err = thumbM.SetByFile(fileM.File).Save()
-		if err != nil {
-			return err
-		}
+	size := len(thumb)
+	thumbM.Size = uint64(size)
+	thumbM.Width = param.AsUint(opt.Width)
+	thumbM.Height = param.AsUint(opt.Height)
+	thumbM.SaveName = path.Base(thumbM.SavePath)
+	thumbM.UsedTimes = 0
+	thumbM.Md5 = fileMd5
+	err = thumbM.SetByFile(fileM.File).Save()
+	if err != nil {
+		return err
 	}
 	if ctx.Format() == `json` {
 		return ctx.JSON(ctx.Data().SetInfo(`cropped`).SetData(thumbURL))
