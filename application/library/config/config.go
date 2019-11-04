@@ -102,6 +102,10 @@ func (c *Config) APIKey() string {
 	return c.ConfigInDB.APIKey
 }
 
+func (c *Config) ConfigFromDB() echo.H {
+	return c.ConfigInDB.GetConfig()
+}
+
 func (c *Config) SetDebug(on bool) *Config {
 	c.ConfigInDB.SetDebug(on)
 	return c
