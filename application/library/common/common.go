@@ -119,3 +119,7 @@ func CaptchaInfo(hostAlias string, captchaName string, args ...string) echo.H {
 		`captchaURL`:   subdomains.Default.URL(`/captcha/`+captchaID+`.png`, hostAlias),
 	}
 }
+
+type ConfigFromDB interface {
+	ConfigFromDB() echo.H
+}
