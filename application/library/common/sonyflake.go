@@ -20,7 +20,6 @@ package common
 
 import (
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/admpub/sonyflake"
@@ -28,36 +27,41 @@ import (
 
 var sonyFlake *sonyflake.Sonyflake
 
-func NewSonyflake(startDate string, machineID ...uint16) (*sonyflake.Sonyflake, error) { // 19位
+func NewSonyflake(startDate string, machineIDs ...uint16) (*sonyflake.Sonyflake, error) { // 19位
 	startTime, err := time.ParseInLocation(`2006-01-02 15:04:05`, startDate, time.Local)
 	if err != nil {
 		return nil, err
 	}
-	if len(machineID) == 0 {
-		month, err := strconv.ParseUint(time.Now().Format(`200601`), 10, 16)
-		if err != nil {
-			return nil, err
-		}
-		machineID = []uint16{uint16(month)}
+	var machineID uint16
+	if len(machineIDs) > 0 {
+		machineID = machineIDs[0]
 	}
 	st := sonyflake.Settings{
 		StartTime: startTime,
 		MachineID: func() (uint16, error) {
-			return machineID[0], nil
+			return machineID, nil
 		},
 		CheckMachineID: func(id uint16) bool {
-			return machineID[0] == id
+			return machineID == id
 		},
 	}
 	return sonyflake.NewSonyflake(st), err
 }
 
 func init() {
-	SetSonyflake(`2018-09-01 08:08:08`)
+	Init()
 }
 
-func SetSonyflake(startDate string, machineID ...uint16) {
-	sonyFlake, _ = NewSonyflake(startDate, machineID...)
+func Init() {
+	err := SetSonyflake(`2018-09-01 08:08:08`)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func SetSonyflake(startDate string, machineID ...uint16) (err error) {
+	sonyFlake, err = NewSonyflake(startDate, machineID...)
+	return err
 }
 
 func UniqueID() (string, error) {
@@ -69,5 +73,8 @@ func UniqueID() (string, error) {
 }
 
 func NextID() (uint64, error) {
+	if sonyFlake == nil {
+		Init()
+	}
 	return sonyFlake.NextID()
 }
