@@ -16,7 +16,7 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package exec
+package common
 
 import (
 	"fmt"
@@ -26,29 +26,48 @@ import (
 	"github.com/admpub/sonyflake"
 )
 
-var SonyFlake *sonyflake.Sonyflake
+var sonyFlake *sonyflake.Sonyflake
 
-func init() {
-	// 19位
-	startTime, _ := time.ParseInLocation(`2006-01-02 15:04:05`, `2018-09-01 08:08:08`, time.Local)
-	month, _ := strconv.ParseUint(time.Now().Format(`200601`), 10, 16)
-	monthID := uint16(month)
+func NewSonyflake(startDate string, machineID ...uint16) (*sonyflake.Sonyflake, error) { // 19位
+	startTime, err := time.ParseInLocation(`2006-01-02 15:04:05`, startDate, time.Local)
+	if err != nil {
+		return nil, err
+	}
+	if len(machineID) == 0 {
+		month, err := strconv.ParseUint(time.Now().Format(`200601`), 10, 16)
+		if err != nil {
+			return nil, err
+		}
+		machineID = []uint16{uint16(month)}
+	}
 	st := sonyflake.Settings{
 		StartTime: startTime,
 		MachineID: func() (uint16, error) {
-			return monthID, nil
+			return machineID[0], nil
 		},
 		CheckMachineID: func(id uint16) bool {
-			return monthID == id
+			return machineID[0] == id
 		},
 	}
-	SonyFlake = sonyflake.NewSonyflake(st)
+	return sonyflake.NewSonyflake(st), err
+}
+
+func init() {
+	SetSonyflake(`2018-09-01 08:08:08`)
+}
+
+func SetSonyflake(startDate string, machineID ...uint16) {
+	sonyFlake, _ = NewSonyflake(startDate, machineID...)
 }
 
 func UniqueID() (string, error) {
-	id, err := SonyFlake.NextID()
+	id, err := NextID()
 	if err != nil {
 		return ``, err
 	}
 	return fmt.Sprintf(`%d`, id), nil
+}
+
+func NextID() (uint64, error) {
+	return sonyFlake.NextID()
 }

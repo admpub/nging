@@ -24,11 +24,13 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/color"
 	"github.com/admpub/marmot/miner"
 	"github.com/admpub/nging/application/dbschema"
-	"github.com/webx-top/com"
-	"github.com/webx-top/echo"
+	"github.com/admpub/nging/application/library/common"
 )
 
 func init() {
@@ -155,5 +157,5 @@ func (c *Recv) Parents(lasts ...int) *Recv {
 }
 
 func (_ *Recv) UniqueID() (string, error) {
-	return UniqueID()
+	return common.UniqueID()
 }

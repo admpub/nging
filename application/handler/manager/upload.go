@@ -31,7 +31,7 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/collector/exec"
+	"github.com/admpub/nging/application/library/common"
 	modelFile "github.com/admpub/nging/application/model/file"
 	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/driver/filesystem"
@@ -67,7 +67,7 @@ func SaveFilename(subdir, name, postFilename string) (string, error) {
 	fname := name
 	if len(fname) == 0 {
 		var err error
-		fname, err = exec.UniqueID()
+		fname, err = common.UniqueID()
 		if err != nil {
 			return ``, err
 		}

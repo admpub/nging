@@ -171,7 +171,9 @@ function onselectColumns(obj){
                                 <a href="{{dbMgrURL "listData" Stored.dbName Stored.table}}&modify=1" title="{{"编辑"|T}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil"></i></a>
                             </th>
                             {{range $k, $colName := Stored.columns}}
-							<th sort="-{{$colName}}"><strong>{{$colName}}</strong></th>
+                            {{$field := index Stored.fields $colName}}
+                            <th sort="-{{$colName}}"><strong title="{{`类型`|T}}: {{$field.Full_type}}
+{{`注释`|T}}: {{$field.Comment}}">{{$colName}}</strong></th>
                             {{end}}
 						</tr>
 					</thead>
