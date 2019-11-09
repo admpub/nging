@@ -15,6 +15,7 @@
    limitations under the License.
 
 */
+
 package manager
 
 import (
@@ -27,6 +28,7 @@ import (
 
 	"github.com/admpub/fsnotify"
 	"github.com/admpub/log"
+
 	"github.com/webx-top/echo/logger"
 	"github.com/webx-top/echo/middleware/render/driver"
 )

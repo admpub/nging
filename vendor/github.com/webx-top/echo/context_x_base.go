@@ -8,6 +8,7 @@ import (
 
 	"github.com/admpub/events"
 	"github.com/admpub/events/emitter"
+
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/logger"
 	"github.com/webx-top/echo/param"
@@ -26,6 +27,8 @@ type xContext struct {
 	path                string
 	pnames              []string
 	pvalues             []string
+	hnames              []string
+	hvalues             []string
 	store               Store
 	internal            *param.SafeMap
 	handler             Handler
@@ -157,6 +160,8 @@ func (c *xContext) Reset(req engine.Request, res engine.Response) {
 	c.store = make(Store)
 	c.path = ""
 	c.pnames = nil
+	c.hnames = nil
+	c.hvalues = nil
 	c.funcs = make(map[string]interface{})
 	c.renderer = nil
 	c.handler = NotFoundHandler

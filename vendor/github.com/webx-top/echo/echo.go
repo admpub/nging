@@ -16,11 +16,18 @@ import (
 )
 
 type (
+	Host struct {
+		head   Handler
+		group  *Group
+		groups map[string]*Group
+		Router *Router
+	}
 	Echo struct {
 		engine            engine.Engine
 		prefix            string
 		middleware        []interface{}
 		head              Handler
+		hosts             map[string]*Host
 		maxParam          *int
 		notFoundHandler   HandlerFunc
 		httpErrorHandler  HTTPErrorHandler
@@ -114,6 +121,7 @@ func NewWithContext(fn func(*Echo) Context) (e *Echo) {
 	}
 	e.router = NewRouter(e)
 	e.groups = make(map[string]*Group)
+	e.hosts = make(map[string]*Host)
 
 	//----------
 	// Defaults
@@ -196,6 +204,11 @@ func (e *Echo) RemoveFormatRenderer(formats ...string) *Echo {
 // Router returns router.
 func (e *Echo) Router() *Router {
 	return e.router
+}
+
+// Hosts returns the map of host => Host.
+func (e *Echo) Hosts() map[string]*Host {
+	return e.hosts
 }
 
 // SetLogger sets the logger instance.
@@ -335,66 +348,70 @@ func (e *Echo) Clear(middleware ...interface{}) {
 }
 
 // Connect adds a CONNECT route > handler to the router.
-func (e *Echo) Connect(path string, h interface{}, m ...interface{}) {
-	e.add(CONNECT, "", path, h, m...)
+func (e *Echo) Connect(path string, h interface{}, m ...interface{}) IRouter {
+	return e.Add(CONNECT, path, h, m...)
 }
 
 // Delete adds a DELETE route > handler to the router.
-func (e *Echo) Delete(path string, h interface{}, m ...interface{}) {
-	e.add(DELETE, "", path, h, m...)
+func (e *Echo) Delete(path string, h interface{}, m ...interface{}) IRouter {
+	return e.Add(DELETE, path, h, m...)
 }
 
 // Get adds a GET route > handler to the router.
-func (e *Echo) Get(path string, h interface{}, m ...interface{}) {
-	e.add(GET, "", path, h, m...)
+func (e *Echo) Get(path string, h interface{}, m ...interface{}) IRouter {
+	return e.Add(GET, path, h, m...)
 }
 
 // Head adds a HEAD route > handler to the router.
-func (e *Echo) Head(path string, h interface{}, m ...interface{}) {
-	e.add(HEAD, "", path, h, m...)
+func (e *Echo) Head(path string, h interface{}, m ...interface{}) IRouter {
+	return e.Add(HEAD, path, h, m...)
 }
 
 // Options adds an OPTIONS route > handler to the router.
-func (e *Echo) Options(path string, h interface{}, m ...interface{}) {
-	e.add(OPTIONS, "", path, h, m...)
+func (e *Echo) Options(path string, h interface{}, m ...interface{}) IRouter {
+	return e.Add(OPTIONS, path, h, m...)
 }
 
 // Patch adds a PATCH route > handler to the router.
-func (e *Echo) Patch(path string, h interface{}, m ...interface{}) {
-	e.add(PATCH, "", path, h, m...)
+func (e *Echo) Patch(path string, h interface{}, m ...interface{}) IRouter {
+	return e.Add(PATCH, path, h, m...)
 }
 
 // Post adds a POST route > handler to the router.
-func (e *Echo) Post(path string, h interface{}, m ...interface{}) {
-	e.add(POST, "", path, h, m...)
+func (e *Echo) Post(path string, h interface{}, m ...interface{}) IRouter {
+	return e.Add(POST, path, h, m...)
 }
 
 // Put adds a PUT route > handler to the router.
-func (e *Echo) Put(path string, h interface{}, m ...interface{}) {
-	e.add(PUT, "", path, h, m...)
+func (e *Echo) Put(path string, h interface{}, m ...interface{}) IRouter {
+	return e.Add(PUT, path, h, m...)
 }
 
 // Trace adds a TRACE route > handler to the router.
-func (e *Echo) Trace(path string, h interface{}, m ...interface{}) {
-	e.add(TRACE, "", path, h, m...)
+func (e *Echo) Trace(path string, h interface{}, m ...interface{}) IRouter {
+	return e.Add(TRACE, path, h, m...)
 }
 
 // Any adds a route > handler to the router for all HTTP methods.
-func (e *Echo) Any(path string, h interface{}, middleware ...interface{}) {
+func (e *Echo) Any(path string, h interface{}, middleware ...interface{}) IRouter {
+	routes := Routes{}
 	for _, m := range methods {
-		e.add(m, "", path, h, middleware...)
+		routes = append(routes, e.Add(m, path, h, middleware...))
 	}
+	return routes
 }
 
-func (e *Echo) Route(methods string, path string, h interface{}, middleware ...interface{}) {
-	e.Match(splitHTTPMethod.Split(methods, -1), path, h, middleware...)
+func (e *Echo) Route(methods string, path string, h interface{}, middleware ...interface{}) IRouter {
+	return e.Match(splitHTTPMethod.Split(methods, -1), path, h, middleware...)
 }
 
 // Match adds a route > handler to the router for multiple HTTP methods provided.
-func (e *Echo) Match(methods []string, path string, h interface{}, middleware ...interface{}) {
+func (e *Echo) Match(methods []string, path string, h interface{}, middleware ...interface{}) IRouter {
+	routes := Routes{}
 	for _, m := range methods {
-		e.add(m, "", path, h, middleware...)
+		routes = append(routes, e.Add(m, path, h, middleware...))
 	}
+	return routes
 }
 
 // Static registers a new route with path prefix to serve static files from the
@@ -471,26 +488,27 @@ func (e *Echo) SetPrefix(prefix string) *Echo {
 	return e
 }
 
-func (e *Echo) add(method, prefix string, path string, h interface{}, middleware ...interface{}) {
+func (e *Echo) add(host, method, prefix string, path string, h interface{}, middleware ...interface{}) *Route {
 	r := &Route{
+		Host:       host,
 		Method:     method,
 		Path:       e.prefix + path,
 		Prefix:     prefix,
 		handler:    h,
 		middleware: middleware,
 	}
-	r.apply(e)
-	rid := len(e.router.routes)
-	e.router.Add(r, rid)
-	if e.RouteDebug {
-		e.logger.Debugf(`Route: %7v %-30v -> %v`, method, r.Format, r.HandlerName)
-	}
-	if _, ok := e.router.nroute[r.HandlerName]; !ok {
-		e.router.nroute[r.HandlerName] = []int{rid}
-	} else {
-		e.router.nroute[r.HandlerName] = append(e.router.nroute[r.HandlerName], rid)
-	}
 	e.router.routes = append(e.router.routes, r)
+	return r
+}
+
+func (e *Echo) buildRouter() *Echo {
+	return e.RebuildRouter()
+}
+
+// Add registers a new route for an HTTP method and path with matching handler
+// in the router with optional route-level middleware.
+func (e *Echo) Add(method, path string, handler interface{}, middleware ...interface{}) *Route {
+	return e.add("", method, "", path, handler, middleware...)
 }
 
 // MetaHandler Add meta information about endpoint
@@ -499,41 +517,71 @@ func (e *Echo) MetaHandler(m H, handler interface{}) Handler {
 }
 
 // RebuildRouter rebuild router
-func (e *Echo) RebuildRouter(args ...[]*Route) {
+func (e *Echo) RebuildRouter(args ...[]*Route) *Echo {
 	routes := e.router.routes
 	if len(args) > 0 {
 		routes = args[0]
 	}
 	e.router = NewRouter(e)
 	for i, r := range routes {
-		//e.logger.Debugf(`%p rebuild: %#v`, e, *r)
+		router, _, _, _ := e.findRouter(r.Host)
 		r.apply(e)
-		e.router.Add(r, i)
+		router.Add(r, i)
+		if e.RouteDebug {
+			e.logger.Debugf(`Route: %7v %-30v -> %v`, r.Method, r.Host+r.Format, r.Name)
+		}
 
-		if _, ok := e.router.nroute[r.HandlerName]; !ok {
-			e.router.nroute[r.HandlerName] = []int{i}
+		if _, ok := e.router.nroute[r.Name]; !ok {
+			e.router.nroute[r.Name] = []int{i}
 		} else {
-			e.router.nroute[r.HandlerName] = append(e.router.nroute[r.HandlerName], i)
+			e.router.nroute[r.Name] = append(e.router.nroute[r.Name], i)
 		}
 	}
 	e.router.routes = routes
 	e.head = nil
+	return e
 }
 
 // AppendRouter append router
-func (e *Echo) AppendRouter(routes []*Route) {
+func (e *Echo) AppendRouter(routes []*Route) *Echo {
 	for i, r := range routes {
+		router, _, _, _ := e.findRouter(r.Host)
 		i = len(e.router.routes)
 		r.apply(e)
-		e.router.Add(r, i)
-		if _, ok := e.router.nroute[r.HandlerName]; !ok {
-			e.router.nroute[r.HandlerName] = []int{i}
+		router.Add(r, i)
+		if _, ok := e.router.nroute[r.Name]; !ok {
+			e.router.nroute[r.Name] = []int{i}
 		} else {
-			e.router.nroute[r.HandlerName] = append(e.router.nroute[r.HandlerName], i)
+			e.router.nroute[r.Name] = append(e.router.nroute[r.Name], i)
 		}
 		e.router.routes = append(e.router.routes, r)
 	}
 	e.head = nil
+	return e
+}
+
+func parseHostConfig(name string) *host {
+	vhost := &host{
+		name: name,
+	}
+	return vhost.Parse()
+}
+
+// Host creates a new router group for the provided host and optional host-level middleware.
+func (e *Echo) Host(name string, m ...interface{}) *Group {
+	h, y := e.hosts[name]
+	if !y {
+		h = &Host{
+			group:  &Group{host: parseHostConfig(name), echo: e},
+			groups: map[string]*Group{},
+			Router: NewRouter(e),
+		}
+		e.hosts[name] = h
+	}
+	if len(m) > 0 {
+		h.group.Use(m...)
+	}
+	return h.group
 }
 
 // Group creates a new sub-router with prefix.
@@ -552,15 +600,16 @@ func (e *Echo) Group(prefix string, m ...interface{}) *Group {
 // URI generates a URI from handler.
 func (e *Echo) URI(handler interface{}, params ...interface{}) string {
 	var uri, name string
-	if h, ok := handler.(Handler); ok {
+	switch h := handler.(type) {
+	case Handler:
 		if hn, ok := h.(Name); ok {
 			name = hn.Name()
 		} else {
 			name = HandlerName(h)
 		}
-	} else if h, ok := handler.(string); ok {
+	case string:
 		name = h
-	} else {
+	default:
 		return uri
 	}
 	if indexes, ok := e.router.nroute[name]; ok && len(indexes) > 0 {
@@ -634,23 +683,48 @@ func (e *Echo) NamedRoutes() map[string][]int {
 }
 
 // Chain middleware
-func (e *Echo) chainMiddleware() {
+func (e *Echo) chainMiddleware() Handler {
 	if e.head != nil {
-		return
+		return e.head
 	}
 	e.head = e.router.Handle(nil)
-	for i := len(e.middleware) - 1; i >= 0; i-- {
-		e.head = e.ValidMiddleware(e.middleware[i]).Handle(e.head)
+	e.head = e.applyMiddleware(e.head, e.middleware...)
+	return e.head
+}
+
+func (e *Echo) chainMiddlewareByHost(host string, router *Router) Handler {
+	h, ok := e.hosts[host]
+	if !ok {
+		e.hosts[host] = &Host{}
+	} else if h.head != nil {
+		return h.head
 	}
+	handler := router.Handle(nil)
+	e.hosts[host].head = e.applyMiddleware(router.Handle(nil), e.middleware...)
+	return handler
+}
+
+func (e *Echo) applyMiddleware(h Handler, middleware ...interface{}) Handler {
+	for i := len(middleware) - 1; i >= 0; i-- {
+		h = e.ValidMiddleware(middleware[i]).Handle(h)
+	}
+	return h
 }
 
 func (e *Echo) ServeHTTP(req engine.Request, res engine.Response) {
 	c := e.pool.Get().(Context)
 	c.Reset(req, res)
-
-	e.chainMiddleware()
-
-	if err := e.head.Handle(c); err != nil {
+	host := req.Host()
+	var handler Handler
+	if router, names, values, exist := e.findRouter(host); exist {
+		if len(names) > 0 {
+			c.setHostParamValues(names, values)
+		}
+		handler = e.chainMiddlewareByHost(host, router)
+	} else {
+		handler = e.chainMiddleware()
+	}
+	if err := handler.Handle(c); err != nil {
 		c.Error(err)
 	}
 
@@ -659,11 +733,16 @@ func (e *Echo) ServeHTTP(req engine.Request, res engine.Response) {
 
 // Run starts the HTTP engine.
 func (e *Echo) Run(eng engine.Engine, handler ...engine.Handler) error {
-	err := e.setEngine(eng).start(handler...)
+	err := e.buildRouter().setEngine(eng).start(handler...)
 	if err != nil {
 		fmt.Println(err)
 	}
 	return err
+}
+
+func (e *Echo) Commit() *Echo {
+	e.buildRouter()
+	return e
 }
 
 func (e *Echo) start(handler ...engine.Handler) error {
@@ -694,6 +773,37 @@ func (e *Echo) Stop() error {
 		return nil
 	}
 	return e.engine.Stop()
+}
+
+func (e *Echo) findRouter(host string) (*Router, []string, []string, bool) {
+	if len(e.hosts) == 0 {
+		return e.router, nil, nil, false
+	}
+	if r, ok := e.hosts[host]; ok {
+		return r.Router, nil, nil, true
+	}
+	l := len(host)
+	for h, r := range e.hosts {
+		if r.group != nil && r.group.host != nil {
+			values, hasExpr := r.group.host.Match(host)
+			if hasExpr {
+				if len(values) > 0 {
+					return r.Router, r.group.host.names, values, true
+				}
+				continue
+			}
+		}
+		if l <= len(h) {
+			continue
+		}
+		if h[0] == '.' && strings.HasSuffix(host, h) { //.host(xxx.host)
+			return r.Router, nil, nil, true
+		}
+		if h[len(h)-1] == '.' && strings.HasPrefix(host, h) { //host.(host.xxx)
+			return r.Router, nil, nil, true
+		}
+	}
+	return e.router, nil, nil, false
 }
 
 func (e *Echo) NewContext(req engine.Request, resp engine.Response) Context {

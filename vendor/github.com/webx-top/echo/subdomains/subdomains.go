@@ -192,6 +192,12 @@ func (s *Subdomains) Run(args ...interface{}) {
 			break
 		}
 	}
+	for _, info := range s.Alias {
+		if e == info {
+			continue
+		}
+		info.Commit()
+	}
 	e.Logger().Info(`Server has been launched.`)
 	e.Run(eng, s)
 	e.Logger().Info(`Server has been closed.`)

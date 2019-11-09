@@ -70,6 +70,52 @@ func (c *xContext) SetParamValues(values ...string) {
 	c.pvalues = values
 }
 
+func (c *xContext) AddHostParam(name string, value string) {
+	c.hnames = append(c.hnames, name)
+	c.hvalues = append(c.hvalues, value)
+}
+
+func (c *xContext) setHostParamValues(names []string, values []string) {
+	c.hnames = names
+	c.hvalues = values
+}
+
+func (c *xContext) HostNames() []string {
+	return c.hnames
+}
+
+func (c *xContext) HostValues() []string {
+	return c.hvalues
+}
+
+// HostP returns host parameter by index.
+func (c *xContext) HostP(i int, defaults ...string) (value string) {
+	l := len(c.hnames)
+	if i < l {
+		value = c.hvalues[i]
+	}
+	if len(value) == 0 && len(defaults) > 0 {
+		return defaults[0]
+	}
+	return
+}
+
+// HostParam returns host parameter by name.
+func (c *xContext) HostParam(name string, defaults ...string) (value string) {
+	l := len(c.hnames)
+	for i, n := range c.hnames {
+		if n == name && i < l {
+			value = c.hvalues[i]
+			break
+		}
+	}
+
+	if len(value) == 0 && len(defaults) > 0 {
+		return defaults[0]
+	}
+	return
+}
+
 // Query returns query parameter by name.
 func (c *xContext) Query(name string, defaults ...string) (value string) {
 	value = c.request.URL().QueryValue(name)

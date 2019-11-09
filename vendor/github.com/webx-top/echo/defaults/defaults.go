@@ -113,62 +113,62 @@ func Clear(middleware ...interface{}) {
 }
 
 // Connect adds a CONNECT route > handler to the router.
-func Connect(path string, h interface{}, m ...interface{}) {
-	Default.Connect(path, h, m...)
+func Connect(path string, h interface{}, m ...interface{}) echo.IRouter {
+	return Default.Connect(path, h, m...)
 }
 
 // Delete adds a DELETE route > handler to the router.
-func Delete(path string, h interface{}, m ...interface{}) {
-	Default.Delete(path, h, m...)
+func Delete(path string, h interface{}, m ...interface{}) echo.IRouter {
+	return Default.Delete(path, h, m...)
 }
 
 // Get adds a GET route > handler to the router.
-func Get(path string, h interface{}, m ...interface{}) {
-	Default.Get(path, h, m...)
+func Get(path string, h interface{}, m ...interface{}) echo.IRouter {
+	return Default.Get(path, h, m...)
 }
 
 // Head adds a HEAD route > handler to the router.
-func Head(path string, h interface{}, m ...interface{}) {
-	Default.Head(path, h, m...)
+func Head(path string, h interface{}, m ...interface{}) echo.IRouter {
+	return Default.Head(path, h, m...)
 }
 
 // Options adds an OPTIONS route > handler to the router.
-func Options(path string, h interface{}, m ...interface{}) {
-	Default.Options(path, h, m...)
+func Options(path string, h interface{}, m ...interface{}) echo.IRouter {
+	return Default.Options(path, h, m...)
 }
 
 // Patch adds a PATCH route > handler to the router.
-func Patch(path string, h interface{}, m ...interface{}) {
-	Default.Patch(path, h, m...)
+func Patch(path string, h interface{}, m ...interface{}) echo.IRouter {
+	return Default.Patch(path, h, m...)
 }
 
 // Post adds a POST route > handler to the router.
-func Post(path string, h interface{}, m ...interface{}) {
-	Default.Post(path, h, m...)
+func Post(path string, h interface{}, m ...interface{}) echo.IRouter {
+	return Default.Post(path, h, m...)
 }
 
 // Put adds a PUT route > handler to the router.
-func Put(path string, h interface{}, m ...interface{}) {
-	Default.Put(path, h, m...)
+func Put(path string, h interface{}, m ...interface{}) echo.IRouter {
+	return Default.Put(path, h, m...)
 }
 
 // Trace adds a TRACE route > handler to the router.
-func Trace(path string, h interface{}, m ...interface{}) {
-	Default.Trace(path, h, m...)
+func Trace(path string, h interface{}, m ...interface{}) echo.IRouter {
+	return Default.Trace(path, h, m...)
 }
 
 // Any adds a route > handler to the router for all HTTP methods.
-func Any(path string, h interface{}, m ...interface{}) {
-	Default.Any(path, h, m...)
+func Any(path string, h interface{}, m ...interface{}) echo.IRouter {
+	return Default.Any(path, h, m...)
 }
 
-func Route(methods string, path string, h interface{}, m ...interface{}) {
-	Default.Route(methods, path, h, m...)
+func Route(methods string, path string, h interface{}, m ...interface{}) echo.IRouter {
+	return Default.Route(methods, path, h, m...)
 }
 
 // Match adds a route > handler to the router for multiple HTTP methods provided.
-func Match(methods []string, path string, h interface{}, m ...interface{}) {
-	Default.Match(methods, path, h, m...)
+func Match(methods []string, path string, h interface{}, m ...interface{}) echo.IRouter {
+	return Default.Match(methods, path, h, m...)
 }
 
 func SetHandlerWrapper(funcs ...func(interface{}) echo.Handler) {
@@ -201,8 +201,8 @@ func MetaHandler(m echo.H, handler interface{}) interface{} {
 }
 
 // RebuildRouter rebuild router
-func RebuildRouter(args ...[]*echo.Route) {
-	Default.RebuildRouter(args...)
+func RebuildRouter(args ...[]*echo.Route) *echo.Echo {
+	return Default.RebuildRouter(args...)
 }
 
 // Group creates a new sub-router with prefix.
@@ -232,6 +232,10 @@ func NamedRoutes() map[string][]int {
 
 func ServeHTTP(req engine.Request, res engine.Response) {
 	Default.ServeHTTP(req, res)
+}
+
+func Commit() *echo.Echo {
+	return Default.Commit()
 }
 
 // Run starts the HTTP engine.

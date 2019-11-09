@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/admpub/events"
+
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/logger"
 	"github.com/webx-top/echo/param"
@@ -56,6 +57,12 @@ type Context interface {
 	ParamNames() []string
 	ParamValues() []string
 	SetParamValues(values ...string)
+	// Host
+	HostNames() []string
+	HostValues() []string
+	HostParam(string, ...string) string
+	HostP(int, ...string) string
+	setHostParamValues([]string, []string)
 
 	// Queries returns the query parameters as map. It is an alias for `engine.URL#Query()`.
 	Queries() map[string][]string

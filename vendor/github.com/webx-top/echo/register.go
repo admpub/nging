@@ -25,18 +25,18 @@ var (
 
 type RouteRegister interface {
 	Group(prefix string, middleware ...interface{}) *Group
-	Any(path string, h interface{}, middleware ...interface{})
-	Route(methods string, path string, h interface{}, middleware ...interface{})
-	Match(methods []string, path string, h interface{}, middleware ...interface{})
-	Connect(path string, h interface{}, m ...interface{})
-	Delete(path string, h interface{}, m ...interface{})
-	Get(path string, h interface{}, m ...interface{})
-	Head(path string, h interface{}, m ...interface{})
-	Options(path string, h interface{}, m ...interface{})
-	Patch(path string, h interface{}, m ...interface{})
-	Post(path string, h interface{}, m ...interface{})
-	Put(path string, h interface{}, m ...interface{})
-	Trace(path string, h interface{}, m ...interface{})
+	Any(path string, h interface{}, middleware ...interface{}) IRouter
+	Route(methods string, path string, h interface{}, middleware ...interface{}) IRouter
+	Match(methods []string, path string, h interface{}, middleware ...interface{}) IRouter
+	Connect(path string, h interface{}, m ...interface{}) IRouter
+	Delete(path string, h interface{}, m ...interface{}) IRouter
+	Get(path string, h interface{}, m ...interface{}) IRouter
+	Head(path string, h interface{}, m ...interface{}) IRouter
+	Options(path string, h interface{}, m ...interface{}) IRouter
+	Patch(path string, h interface{}, m ...interface{}) IRouter
+	Post(path string, h interface{}, m ...interface{}) IRouter
+	Put(path string, h interface{}, m ...interface{}) IRouter
+	Trace(path string, h interface{}, m ...interface{}) IRouter
 	Static(prefix, root string)
 	File(path, file string)
 }
@@ -64,6 +64,10 @@ type ICore interface {
 	URLBuilder
 	RendererRegister
 	Prefixer
+}
+
+type IRouter interface {
+	SetName(string) IRouter
 }
 
 type Closer interface {
