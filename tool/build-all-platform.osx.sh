@@ -13,14 +13,16 @@ export CC_32=/usr/local/gcc-4.8.1-for-linux32/bin/i586-pc-linux-gcc
 export CC_64=/usr/local/gcc-4.8.1-for-linux64/bin/x86_64-pc-linux-gcc
 export CC_DEFAULT=clang
 
-export CC=$CC_64
-export GOOS=linux
-export GOARCH=amd64
-source ${PWD}/inc-build.sh
-
 export CC=$CC_32
 export GOOS=linux
 export GOARCH=386
+source ${PWD}/inc-build.sh
+
+exit 0;
+
+export CC=$CC_64
+export GOOS=linux
+export GOARCH=amd64
 source ${PWD}/inc-build.sh
 
 #exit 0;
