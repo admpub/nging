@@ -22,9 +22,10 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/admpub/nging/application/dbschema"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/dbschema"
 )
 
 type Encoder func(v *dbschema.Config, r echo.H) ([]byte, error)
@@ -85,6 +86,27 @@ func EncodeConfigValue(_v *echo.Mapx, v *dbschema.Config, encoder Encoder) (valu
 		value = strings.Join(items, `,`)
 	} else {
 		value = _v.Value() //c.Form(group + `[` + v.Key + `]`)
+	}
+	switch v.Type {
+	case `html`, `markdown`:
+		value = com.RemoveXSS(value)
+
+	case `url`, `image`, `video`, `audio`, `file`:
+		value = com.StripTags(value)
+		value = com.RemoveEOL(value)
+
+	case `newsid`, `prodid`, `text`:
+		value = com.StripTags(value)
+
+	case `json`:
+		// pass
+
+	case `list`:
+		value = strings.TrimSpace(value)
+		value = strings.Trim(value, `,`)
+
+	default:
+		value = com.StripTags(value)
 	}
 	if v.Encrypted == `Y` {
 		value = echo.Get(`DefaultConfig`).(Codec).Encode(value)

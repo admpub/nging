@@ -3,6 +3,7 @@ package com
 import (
 	"fmt"
 	"regexp"
+	"strings"
 )
 
 var (
@@ -22,8 +23,10 @@ var (
 
 // RemoveXSS 删除XSS代码
 func RemoveXSS(v string) (r string) {
+	r = strings.Replace(v, `<!---->`, ``, -1)
+
 	//过滤HTML标签
-	r = removeXSSForTag.ReplaceAllString(v, `${1}k_$2$3`)
+	r = removeXSSForTag.ReplaceAllString(r, `${1}k_$2$3`)
 
 	//过滤事件属性
 	r = removeXSSForEvent.ReplaceAllString(r, `${1}k_on$2$3`)
