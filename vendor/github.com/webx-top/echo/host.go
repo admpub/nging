@@ -66,7 +66,6 @@ func (h *host) Parse() *host {
 		return h
 	}
 	var format string
-	var hasExpr bool
 	var regExpr string
 	var lastPosition int
 	for _, matchIndex := range matches {
@@ -80,7 +79,6 @@ func (h *host) Parse() *host {
 		name := h.name[matchIndex[2]:matchIndex[3]]
 		if matchIndex[4] > 0 {
 			regExpr += `(` + h.name[matchIndex[4]:matchIndex[5]] + `)`
-			hasExpr = true
 		} else {
 			regExpr += `([^.]+)`
 		}
@@ -94,8 +92,6 @@ func (h *host) Parse() *host {
 		}
 	}
 	h.format = format
-	if hasExpr {
-		h.regExp = regexp.MustCompile(`^` + regExpr + `$`)
-	}
+	h.regExp = regexp.MustCompile(`^` + regExpr + `$`)
 	return h
 }
