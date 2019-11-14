@@ -1,9 +1,15 @@
 {{Extend "layout"}}
 {{Block "title"}}{{"数据库管理"|T}}{{/Block}}
 {{Block "breadcrumb"}}
+{{$accountTitle := Stored.accountTitle}}
 {{Include "db/logout_button"}}
 {{Super}}
 <li><a href="__BACKEND__/db">{{T "%s管理" Stored.dbType}}</a></li>
+{{- if $accountTitle -}}
+<li><a href="{{dbMgrURL `listDb`}}">{{$accountTitle}}</a></li>
+{{- else -}}
+<li><a href="{{dbMgrURL `listDb`}}">{{Stored.Get "dbHost"}}</a></li>
+{{- end -}}
 {{/Block}}
 {{Block "head"}}
 <link rel="stylesheet" type="text/css" href="__ASSETS__/js/jquery.nanoscroller/nanoscroller.css" />
