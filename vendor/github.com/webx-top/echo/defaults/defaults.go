@@ -102,11 +102,6 @@ func Pre(middleware ...interface{}) {
 	Default.Pre(middleware...)
 }
 
-// PreUse adds handler to the middleware chain.
-func PreUse(middleware ...interface{}) {
-	Default.PreUse(middleware...)
-}
-
 // Clear middleware
 func Clear(middleware ...interface{}) {
 	Default.Clear(middleware...)
@@ -203,6 +198,14 @@ func MetaHandler(m echo.H, handler interface{}) interface{} {
 // RebuildRouter rebuild router
 func RebuildRouter(args ...[]*echo.Route) *echo.Echo {
 	return Default.RebuildRouter(args...)
+}
+
+func Host(name string, m ...interface{}) *echo.Group {
+	return Default.Host(name, m...)
+}
+
+func TypeHost(alias string, args ...interface{}) echo.TypeHost {
+	return Default.TypeHost(alias, args...)
 }
 
 // Group creates a new sub-router with prefix.

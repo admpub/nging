@@ -22,12 +22,18 @@ type (
 		groups map[string]*Group
 		Router *Router
 	}
+	TypeHost struct {
+		prefix string
+		router *Router
+		echo   *Echo
+	}
 	Echo struct {
 		engine            engine.Engine
 		prefix            string
 		middleware        []interface{}
 		head              Handler
 		hosts             map[string]*Host
+		hostAlias         map[string]string
 		maxParam          *int
 		notFoundHandler   HandlerFunc
 		httpErrorHandler  HTTPErrorHandler
@@ -103,6 +109,34 @@ func (h HandlerFunc) Handle(c Context) error {
 	return h(c)
 }
 
+func (t TypeHost) URI(handler interface{}, params ...interface{}) string {
+	if t.router == nil {
+		return ``
+	}
+	return t.prefix + t.echo.URI(handler, params...)
+}
+
+func (h *Host) Host(args ...interface{}) (r TypeHost) {
+	if h.group == nil || h.group.host == nil {
+		return
+	}
+	r.echo = h.group.echo
+	r.router = h.Router
+	if len(args) != 1 {
+		r.prefix = h.group.host.Format(args...)
+		return
+	}
+	switch v := args[0].(type) {
+	case map[string]interface{}:
+		r.prefix = h.group.host.FormatMap(v)
+	case H:
+		r.prefix = h.group.host.FormatMap(v)
+	default:
+		r.prefix = h.group.host.Format(args...)
+	}
+	return
+}
+
 // New creates an instance of Echo.
 func New() (e *Echo) {
 	return NewWithContext(func(e *Echo) Context {
@@ -122,6 +156,7 @@ func NewWithContext(fn func(*Echo) Context) (e *Echo) {
 	e.router = NewRouter(e)
 	e.groups = make(map[string]*Group)
 	e.hosts = make(map[string]*Host)
+	e.hostAlias = make(map[string]string)
 
 	//----------
 	// Defaults
@@ -304,13 +339,8 @@ func (e *Echo) Use(middleware ...interface{}) {
 	}
 }
 
-// Pre is an alias for `PreUse` function.
+// Pre adds handler to the middleware chain.
 func (e *Echo) Pre(middleware ...interface{}) {
-	e.PreUse(middleware...)
-}
-
-// PreUse adds handler to the middleware chain.
-func (e *Echo) PreUse(middleware ...interface{}) {
 	var middlewares []interface{}
 	for _, m := range middleware {
 		e.ValidMiddleware(m)
@@ -582,6 +612,18 @@ func (e *Echo) Host(name string, m ...interface{}) *Group {
 		h.group.Use(m...)
 	}
 	return h.group
+}
+
+// TypeHost TypeHost(`blog`).URI(`login`)
+func (e *Echo) TypeHost(alias string, args ...interface{}) (r TypeHost) {
+	if name, ok := e.hostAlias[alias]; ok {
+		hs, ok := e.hosts[name]
+		if !ok || hs == nil {
+			return
+		}
+		r = hs.Host(args...)
+	}
+	return
 }
 
 // Group creates a new sub-router with prefix.

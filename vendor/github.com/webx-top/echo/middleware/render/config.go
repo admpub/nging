@@ -122,30 +122,51 @@ func (t *Config) SetFuncSetter(set ...echo.HandlerFunc) *Config {
 	return t
 }
 
-func (t *Config) ApplyTo(e *echo.Echo, manager ...driver.Manager) *Config {
-	if t.renderer != nil {
-		t.renderer.Close()
-	}
+func (t *Config) HTTPErrorHandler() echo.HTTPErrorHandler {
 	opt := &Options{
 		ErrorPages:           t.ErrorPages,
 		DefaultHTTPErrorCode: t.DefaultHTTPErrorCode,
 	}
 	opt.SetFuncSetter(t.errorPageFuncSetter...)
-	e.SetHTTPErrorHandler(HTTPErrorHandler(opt))
+	return HTTPErrorHandler(opt)
+}
+
+func (t *Config) FuncMapMiddleware() interface{} {
 	var funcMapSkipper echo.Skipper
 	if t.FuncMapSkipper != nil {
 		funcMapSkipper = t.FuncMapSkipper
 	} else {
 		funcMapSkipper = DefaultFuncMapSkipper
 	}
-	e.Use(middleware.FuncMap(tplfunc.New(), funcMapSkipper))
-	renderer := t.NewRenderer(manager...)
+	return middleware.FuncMap(tplfunc.New(), funcMapSkipper)
+}
+
+func (t *Config) StaticMiddleware() interface{} {
 	if t.StaticOptions != nil {
-		e.Use(middleware.Static(t.StaticOptions))
+		return middleware.Static(t.StaticOptions)
 	}
+	return nil
+}
+
+func (t *Config) ApplyTo(e *echo.Echo, manager ...driver.Manager) *Config {
+	if t.renderer != nil {
+		t.renderer.Close()
+	}
+	e.SetHTTPErrorHandler(t.HTTPErrorHandler())
+	e.Use(t.FuncMapMiddleware())
+	staticMW := t.StaticMiddleware()
+	if staticMW != nil {
+		e.Use(staticMW)
+	}
+	renderer := t.MakeRenderer(manager...)
 	e.SetRenderer(renderer)
-	t.renderer = renderer
 	return t
+}
+
+func (t *Config) MakeRenderer(manager ...driver.Manager) driver.Driver{
+	renderer := t.NewRenderer(manager...)
+	t.renderer = renderer
+	return renderer
 }
 
 func (t *Config) Renderer() driver.Driver {

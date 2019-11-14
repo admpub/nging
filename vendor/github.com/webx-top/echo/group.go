@@ -11,6 +11,32 @@ func (g *Group) URL(h interface{}, params ...interface{}) string {
 	return g.echo.URL(h, params...)
 }
 
+func (g *Group) SetAlias(alias string) *Group {
+	if g.host != nil {
+		g.host.alias = alias
+		for a, v := range g.echo.hostAlias {
+			if v == g.host.name {
+				delete(g.echo.hostAlias, a)
+			}
+		}
+		if len(alias) > 0 {
+			g.echo.hostAlias[alias] = g.host.name
+		}
+	}
+	return g
+}
+
+func (g *Group) Alias(alias string) Hoster {
+	if name, ok := g.echo.hostAlias[alias]; ok {
+		hs, ok := g.echo.hosts[name]
+		if !ok || hs == nil || hs.group == nil {
+			return nil
+		}
+		return hs.group.host
+	}
+	return nil
+}
+
 func (g *Group) SetRenderer(r Renderer) {
 	g.echo.renderer = r
 }
@@ -25,12 +51,8 @@ func (g *Group) Use(middleware ...interface{}) {
 	}
 }
 
-// Pre is an alias for `PreUse` function.
+// Pre adds handler to the middleware chain.
 func (g *Group) Pre(middleware ...interface{}) {
-	g.PreUse(middleware...)
-}
-
-func (g *Group) PreUse(middleware ...interface{}) {
 	var middlewares []interface{}
 	for _, m := range middleware {
 		g.echo.ValidMiddleware(m)

@@ -5,8 +5,18 @@ import (
 	"regexp"
 )
 
+type Hoster interface {
+	Name() string
+	Alias() string
+	Format(args ...interface{}) string
+	FormatMap(params H) string
+	RegExp() *regexp.Regexp
+	Match(host string) (r []string, hasExpr bool)
+}
+
 type host struct {
 	name   string
+	alias  string
 	format string
 	regExp *regexp.Regexp
 	names  []string
@@ -14,6 +24,10 @@ type host struct {
 
 func (h *host) Name() string {
 	return h.name
+}
+
+func (h *host) Alias() string {
+	return h.alias
 }
 
 func (h *host) Format(args ...interface{}) string {
