@@ -91,7 +91,9 @@ $(function(){
     }else{
       cs.hide();
       un.hide();
+      un.find('input[name="user"]').val('');
       db.hide();
+      db.find('input[name="name"]').val('');
     }
   }).trigger('change');
 });
