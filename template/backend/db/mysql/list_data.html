@@ -140,7 +140,12 @@ function onselectColumns(obj){
             </form>
         </div><!-- /.block-flat -->
         {{Include "db/mysql/results"}}
-        <div class="block-flat row">
+    </div>
+</div>
+
+<div class="row no-margin-top" id="block-data-list" style="position:absolute;min-width:99%;">
+    <div class="col-md-12">
+        <div class="block-flat row no-margin-top">
           <div class="header">
             <div class="btn-group pull-right">
 			<a href="{{dbMgrURL "viewTable" Stored.dbName Stored.table}}" class="btn btn-default" data-pjax="#pcont" data-keepjs="true">
@@ -158,8 +163,8 @@ function onselectColumns(obj){
             </div>
             <h3>{{"数据"|T}}</h3>
           </div>
-          <div class="content">
-            <div class="table-responsive overflow">
+          <div class="content bg-white">
+            <!-- <div class="table-responsive overflow2"> -->
              <form method="POST" action="" id="form-list-data">
 				<table class="table no-border hover blue">
 					<thead class="no-border auto-fixed" sort-current="{{Form `sort`}}">
@@ -236,7 +241,7 @@ function onselectColumns(obj){
                     </div><!-- /.col-md-3 -->
                 </fieldset>
              </form>
-            </div><!-- .table-responsive -->
+            <!-- </div>.table-responsive -->
              {{Stored.pagination.Render}}
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
@@ -304,6 +309,7 @@ function perttyCheckbox(){
     });
 }
 $(function(){
+    $('#pcont').css('padding-bottom',$('#block-data-list').outerHeight());
     App.tableSorting();
     perttyCheckbox();
     App.attachCheckedAll('#checkedAll','input[type=checkbox][name=\'check[]\']','#selected-items-count');

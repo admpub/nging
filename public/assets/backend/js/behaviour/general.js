@@ -47,23 +47,24 @@ var App = function () {
   }
 
   function pageAside() {
-    var pageKey = window.location.pathname.replace(/^\//, '').replace(/[^\w]/g, '-') + '-' + window.location.search.replace(/[^\w]/g, '_');
+    var pageKey = window.location.pathname.replace(/^\//, '').replace(/[^\w]/g, '-');// + '-' + window.location.search.replace(/[^\w]/g, '_');
     $('.page-aside').each(function (index) {
-      var aside = $(this);
+      var pKey = $(this).attr('page-key')||pageKey;
+      var aside = $(this), key = pKey + '.page-aside-' + index;
       $(this).find('.header > .collapse-button').on('click', function () {
         aside.addClass('collapsed');
-        store.set(pageKey + '.page-aside-' + index, 'collapsed');
+        store.set(key, 'collapsed');
         aside.trigger('collapsed');
         tableReponsive();
       });
       $(this).children('.collapsed-button').on('click', function () {
         aside.removeClass('collapsed');
-        store.set(pageKey + '.page-aside-' + index, '');
+        store.set(key, '');
         aside.trigger('expanded');
         tableReponsive();
       });
-      if (store.get(pageKey + '.page-aside-' + index) == 'collapsed') {
-        $(this).trigger('click');
+      if (store.get(key) == 'collapsed') {
+        $(this).find('.header > .collapse-button').trigger('click');
       }
     });
   }

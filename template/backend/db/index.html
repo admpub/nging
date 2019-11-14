@@ -1,4 +1,4 @@
-{{Extend "layout"}}
+{{Extend "db/layout"}}
 {{Block "title"}}{{"数据库管理"|T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Include "db/logout_button"}}
@@ -107,7 +107,7 @@ $(function(){
       $(window).on('resize',function(){
           var fixedDiv=$(".page-aside div.fixed");
           if(!fixedDiv.find(".content > .header > .navbar-toggle").is(":visible")){
-            fixedDiv.css({bottom:0,height:$(window).height()-50});
+            fixedDiv.css({bottom:0,height:$(window).height()});
           }else{
             fixedDiv.css({height:'100%'});
           }

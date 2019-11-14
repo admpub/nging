@@ -20,7 +20,7 @@
                         {{$field := index Stored.fields $column}}
                         {{$value := index Stored.values $column}}
                         <tr>
-                            <th>{{$column}}<br /><em class="text-normal">{{$field.Comment}}</em></th>
+                            <th>{{$column}}<br /><em class="text-normal grey">{{$field.Comment}}</em></th>
                             <td>
                                 {{$functions := functions $field}}
                                 <select name="function[{{$column}}]" class="form-control"{{if le (len $functions) 0}} style="display:none"{{end}} onchange="onselectFunction(this)">
