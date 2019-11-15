@@ -17,6 +17,10 @@
 					<i class="fa fa-plus"></i>
 					{{"添加配置"|T}}
 				</a>
+				<a href="javascript:;" data-ajax-accept="json" data-ajax-url="__BACKEND__/server/daemon_restart" class="btn btn-warning pull-right">
+					<i class="fa fa-refresh"></i>
+					{{"全部重启"|T}}
+				</a>
 				<h3>{{"配置列表"|T}}</h3>
 			</div>
 			<div class="content">
@@ -27,6 +31,10 @@
 								<th style="width:60px">
 									<strong>ID</strong>
 								</th>
+								<th style="width:80px;">
+									<strong>{{"启用状态"|T}}</strong>
+								</th>
+								<th style="width:80px"><strong>{{"运行状态"|T}}</strong></th>
 								<th>
 									<strong>{{"名称"|T}}</strong>
 								</th>
@@ -39,10 +47,6 @@
 								<th style="width:130px">
 									<strong>{{"编辑时间"|T}}</strong>
 								</th>
-								<th style="width:80px"><strong>{{"运行状态"|T}}</strong></th>
-								<th style="width:80px;">
-									<strong>{{"启用状态"|T}}</strong>
-								</th>
 								<th style="width:80px"><strong>{{"日志"|T}}</strong></th>
 								<th style="width:105px" class="text-center">
 									<strong>{{"操作"|T}}</strong>
@@ -53,11 +57,12 @@
 							{{- range $k,$v := Stored.listData}}
 							<tr>
 								<td>{{$v.Id}}</td>
-								<td>{{$v.Name}}</td>
-								<td>{{$v.Command}}</td>
-								<td>{{$v.Workdir}}</td>
-								<td>{{if gt $v.Updated 0}}{{(Date $v.Updated).Format "2006-01-02 15:04:05"}}{{else}}{{(Date $v.Created).Format "2006-01-02 15:04:05"}}{{end}}</td>
 								<td>
+									<div class="checkbox checkbox-success no-margin-y">
+										<input id="checkbox-{{$k}}" class="styled switch-disabled" type="checkbox" data-id="{{$v.Id}}" data-disabled="{{$v.Disabled}}"{{if eq $v.Disabled "N"}} checked="checked"{{end}} value="N" /><label for="checkbox-{{$k}}">{{"启用"|T}}</label>
+									</div>
+								</td>
+								<td id="process-status-{{$v.Id}}">
 									{{- if eq $v.Status "running" -}}
 									<span class="status-run fa fa-play text-success"> {{"运行中"|T}}</span>
 									{{- else if eq $v.Status "started" -}}
@@ -74,11 +79,10 @@
 									<span class="status-run fa fa-time text-default"> {{"空闲"|T}}</span>
 									{{- end -}}
 								</td>
-								<td>
-									<div class="checkbox checkbox-success no-margin-y">
-										<input id="checkbox-{{$k}}" class="styled switch-disabled" type="checkbox" data-id="{{$v.Id}}" data-disabled="{{$v.Disabled}}"{{if eq $v.Disabled "N"}} checked="checked"{{end}} value="N" /><label for="checkbox-{{$k}}">{{"启用"|T}}</label>
-									</div>
-								</td>
+								<td>{{$v.Name}}</td>
+								<td>{{$v.Command}}</td>
+								<td>{{$v.Workdir}}</td>
+								<td>{{if gt $v.Updated 0}}{{(Date $v.Updated).Format "2006-01-02 15:04:05"}}{{else}}{{(Date $v.Created).Format "2006-01-02 15:04:05"}}{{end}}</td>
 								<td>
 									<a href="javascript:;" data-url="__BACKEND__/server/daemon_log?id={{$v.Id}}" title="{{"信息日志"|T}}" data-toggle="tooltip" class="text-info" onclick="App.logShow(this,true);">{{"信息日志"|T}}</a><br />
 									<a href="javascript:;" data-url="__BACKEND__/server/daemon_log?type=error&id={{$v.Id}}" title="{{"错误日志"|T}}" data-toggle="tooltip" class="text-danger" onclick="App.logShow(this,true);">{{"错误日志"|T}}</a>
@@ -112,7 +116,10 @@ function statusHTML(status){
 	return '<span class="status-run fa fa-time text-default"> {{"空闲"|T}}</span>';
 }
 $(function(){
-	App.bindSwitch('input.switch-disabled','click','server/daemon_edit');
+	App.bindSwitch('input.switch-disabled','click','server/daemon_edit',null,function(r){
+		var id = $(this).data('id');
+		$('#process-status-'+id).html(statusHTML(r.Data));
+	});
 });
 </script>
 {{/Block}}

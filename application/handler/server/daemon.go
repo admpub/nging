@@ -21,13 +21,14 @@ package server
 import (
 	"fmt"
 
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/goforever"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/model"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 func DaemonIndex(ctx echo.Context) error {
@@ -193,6 +194,13 @@ func DaemonDelete(ctx echo.Context) error {
 	}
 
 	return ctx.Redirect(handler.URLFor(`/server/daemon_index`))
+}
+
+func DaemonRestart(ctx echo.Context) error {
+	config.RestartDaemon()
+	data := ctx.Data()
+	data.SetInfo(ctx.T(`操作成功`))
+	return ctx.JSON(data)
 }
 
 func DaemonLog(ctx echo.Context) error {

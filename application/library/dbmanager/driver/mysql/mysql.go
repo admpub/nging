@@ -1200,17 +1200,19 @@ func (m *mySQL) genCheckedCond(fields map[string]*Field, wheres []string, multiS
 }
 func (m *mySQL) CreateData() error {
 	var err error
+	saveType := m.Form(`save`)
+	clone := m.Formx(`clone`).Bool()
 	table := m.Form(`table`)
 	fields, sortFields, err := m.tableFields(table)
 	if err != nil {
 		return err
 	}
-
-	condition, err := m.genCheckedCond(fields, nil, false)
+	var condition string
+	var where *echo.Mapx
+	condition, err = m.genCheckedCond(fields, nil, false)
 	if err != nil {
 		return err
 	}
-	var where *echo.Mapx
 	if len(condition) == 0 {
 		mapx := echo.NewMapx(m.Forms())
 		where = mapx.Get(`where`)
@@ -1226,7 +1228,6 @@ func (m *mySQL) CreateData() error {
 	if len(condition) > 0 {
 		whereStr = ` WHERE ` + condition
 	}
-	saveType := m.Form(`save`)
 	if m.IsPost() && (saveType == `save` || saveType == `saveAndContinue` || saveType == `delete`) {
 		indexes, _, err := m.tableIndexes(table)
 		if err != nil {
@@ -1260,7 +1261,7 @@ func (m *mySQL) CreateData() error {
 				}
 				set[col] = v
 			}
-			if len(whereStr) > 0 {
+			if len(whereStr) > 0 && !clone {
 				err = m.update(table, set, whereStr, limit)
 			} else {
 				err = m.insert(table, set)
@@ -1300,7 +1301,11 @@ func (m *mySQL) CreateData() error {
 	m.Set(`columns`, columns)
 	m.Set(`values`, values)
 	m.Set(`fields`, fields)
-	m.Set(`saveType`, saveType)
+	if clone {
+		m.Set(`saveType`, `copy`)
+	} else {
+		m.Set(`saveType`, saveType)
+	}
 	m.SetFunc(`isNumber`, func(typ string) bool {
 		return reFieldTypeNumber.MatchString(typ)
 	})

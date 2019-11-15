@@ -25,12 +25,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/goforever"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/cron"
-	"github.com/webx-top/com"
-	"github.com/webx-top/echo"
 )
 
 var (
@@ -50,7 +51,7 @@ func DaemonCommonHook(p *goforever.Process) {
 		}
 	*/
 	processM := &dbschema.ForeverProcess{}
-	err := processM.Get(nil, nil, `id`, p.Name)
+	err := processM.Get(nil, `id`, p.Name)
 	if err != nil {
 		log.Errorf(`Not found ForeverProcess: %v (%v)`, p.Name, err)
 		return
@@ -78,6 +79,12 @@ func DaemonCommonHook(p *goforever.Process) {
 	if err != nil {
 		log.Errorf(`Update ForeverProcess: %v (%v)`, p.Name, err)
 	}
+}
+
+// RestartDaemon 重启所有已登记的进程
+func RestartDaemon() {
+	Daemon.Stop()
+	Daemon.Run()
 }
 
 // RunDaemon 运行值守程序

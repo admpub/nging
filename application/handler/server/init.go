@@ -15,14 +15,16 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 package server
 
 import (
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/config"
 	"github.com/webx-top/echo"
 	sockjsHandler "github.com/webx-top/echo/handler/sockjs"
 	ws "github.com/webx-top/echo/handler/websocket"
+
+	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/library/config"
 )
 
 func init() {
@@ -37,6 +39,7 @@ func init() {
 		g.Route(`GET,POST`, `/daemon_add`, DaemonAdd)
 		g.Route(`GET,POST`, `/daemon_edit`, DaemonEdit)
 		g.Route(`GET,POST`, `/daemon_delete`, DaemonDelete)
+		g.Route(`GET,POST`, `/daemon_restart`, DaemonRestart)
 		g.Route("GET", `/cmd`, Cmd)
 		g.Route(`GET,POST`, `/command`, Command)
 		g.Route(`GET,POST`, `/command_add`, CommandAdd)

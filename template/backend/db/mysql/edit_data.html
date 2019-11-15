@@ -15,6 +15,11 @@
              <form action="" method="POST" enctype="multipart/form-data">
              <div class="table-responsive">
 				<table class="table blue">
+                    <colgroup>
+                    <col style="width:30%" />
+                    <col style="width:150px" />
+                    <col />
+                    </colgroup>
 					<tbody class="no-border-x" id="tbody-content">
                         {{range $k,$column := Stored.columns}}
                         {{$field := index Stored.fields $column}}
@@ -71,16 +76,17 @@
                         {{end}}
 					</tbody>
 				</table>
-			    </div>
+                </div>
+                {{$saveType := Stored.saveType}}
                 <fieldset>
                      <button type="submit" name="save" value="save" class="btn btn-primary">
                          <i class="fa fa-save"></i>
                          {{"保存"|T}}
                     </button>
-                    <input type="hidden" name="clone" value="{{if eq (Form `save`) `copy`}}1{{end}}">
+                    <input type="hidden" name="clone" value="{{if eq $saveType `copy`}}1{{end}}">
                     <input type="hidden" name="all" value="">
                     <input type="hidden" name="check[]" value="{{Form `check[]`}}">
-                    {{if eq Stored.saveType `edit`}}
+                    {{if eq $saveType `edit`}}
                      <button type="submit" name="save" value="saveAndContinue" class="btn btn-info">
                          <i class="fa fa-save"></i>
                          {{"保存并继续编辑"|T}}

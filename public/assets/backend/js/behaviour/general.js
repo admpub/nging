@@ -479,11 +479,15 @@ var App = function () {
     attachAjaxURL: function (elem) {
       if (elem == null) elem = document;
       $(elem).on('click', '[data-ajax-url]', function () {
-        var url = $(this).data('ajax-url'), title = $(this).attr('title');
+        var url = $(this).data('ajax-url'), title = $(this).attr('title'), accept = $(this).data('ajax-accept')||'html';
         if (!title) title = $(this).text();
         $.get(url, {}, function (r) {
+          if(accept=='json'){
+            App.message({ title: title, text: r.Info, type: r.Code==1?'success':'error', time: 5000, sticky: false });
+            return;
+          }
           App.message({ title: title, text: r, time: 5000, sticky: false });
-        }, 'html');
+        }, accept);
       });
     },
     attachPjax: function (elem, callbacks, timeout) {
@@ -1262,7 +1266,7 @@ var App = function () {
       $(el).css({ "max-height": h + 'px' });
       $(el).find('.modal-body').css({ "max-height": bh + 'px' });
     },
-    switchStatus: function (a, type, editURL) {
+    switchStatus: function (a, type, editURL, callback) {
       if (type == null) type = $(a).data('type');
       if (editURL == null) editURL = $(a).data('url');
       var that = $(a), status = that.data(type) == 'Y' ? 'N' : 'Y', data = { id: that.data('id') };
@@ -1275,9 +1279,10 @@ var App = function () {
           that.prop('checked', status == v);
         }
         App.message({ title: App.i18n.SYS_INFO, text: r.Info, time: 5000, sticky: false, class_name: r.Code == 1 ? 'success' : 'error' });
+        if(callback) callback.call(a,r);
       }, 'json');
     },
-    bindSwitch: function (elem, eventName, editURL, type) {
+    bindSwitch: function (elem, eventName, editURL, type, callback) {
       if (eventName == null) eventName = 'click';
       var re = new RegExp('switch-([\\w\\d]+)');
       $(elem).on(eventName, function () {
@@ -1285,7 +1290,7 @@ var App = function () {
           var matches = String($(this).attr('class')).match(re);
           type = matches[1];
         }
-        App.switchStatus(this, type, editURL);
+        App.switchStatus(this, type, editURL, callback);
       });
     },
     removeSelected: function (elem, postField, removeURL, callback) {

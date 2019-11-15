@@ -13,8 +13,9 @@ import (
 	"path/filepath"
 	"time"
 
-	ps "github.com/admpub/go-ps"
 	"github.com/webx-top/com"
+
+	ps "github.com/admpub/go-ps"
 )
 
 var ping = "1m"
@@ -23,8 +24,7 @@ var ping = "1m"
 func RunProcess(name string, p *Process) chan *Process {
 	ch := make(chan *Process)
 	go func() {
-		proc, msg, err := p.Find()
-		_, _ = msg, err
+		proc, _, _ := p.Find()
 		// proc, err := ps.FindProcess(p.Pid)
 		if proc == nil {
 			p.Start(name)
@@ -381,6 +381,7 @@ func (p *Process) Child(name string) *Process {
 }
 
 func (p *Process) Add(name string, procs *Process, run ...bool) *Process {
+	p.StopChild(name)
 	p.Children[name] = procs
 	if len(run) > 0 && run[0] {
 		RunProcess(name, procs)
