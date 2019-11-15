@@ -147,7 +147,8 @@ function onselectColumns(obj){
     <div class="col-md-12">
         <div class="block-flat row no-margin-top">
           <div class="header">
-            <div class="btn-group pull-right">
+            <h3 class="pull-left">{{"数据"|T}}</h3>
+            <div class="btn-group pull-left" style="margin-left:10px">
 			<a href="{{dbMgrURL "viewTable" Stored.dbName Stored.table}}" class="btn btn-default" data-pjax="#pcont" data-keepjs="true">
 				<i class="fa fa-list"></i>
 				{{"查看结构"|T}}
@@ -161,7 +162,7 @@ function onselectColumns(obj){
 				{{"新建数据"|T}}
 			</a>
             </div>
-            <h3>{{"数据"|T}}</h3>
+            <div class="clearfix"></div>
           </div>
           <div class="content bg-white">
             <!-- <div class="table-responsive overflow2"> -->
@@ -201,7 +202,8 @@ function onselectColumns(obj){
 				</table>
                 <fieldset class="sm-margin-top">
                     <legend class="sm-padding-bottom sm-margin-bottom xs-padding-left">{{"已选中"|T}} (<span id="selected-items-count">0</span>) {{T "共有%d项" Stored.total}}</legend>
-                    <div class="col-md-3 no-padding">
+                    <div class="row no-margin" style="width:400px">
+                    <div class="col-md-7 no-padding">
                     <div class="btn-group">
                     {{$editURL := dbMgrURL `createData` Stored.dbName Stored.table}}
                     <button type="submit" class="btn btn-primary" name="save" value="edit" onclick="$('#form-list-data').attr('action','{{$editURL}}');return true;">
@@ -217,8 +219,8 @@ function onselectColumns(obj){
                         {{"删除"|T}}
                     </button>
                     </div>
-                    </div><!-- /.col-md-3 -->
-                    <div class="col-md-3">
+                    </div><!-- /.col-md-7 -->
+                    <div class="col-md-5">
                     <span class="input-group no-margin">
                     <!-- <select class="form-control" name="output">
                         <option value="text">{{`打开`|T}}</option>
@@ -238,7 +240,8 @@ function onselectColumns(obj){
                         {{"导出"|T}}
                     </button></span>
                     </span><!-- /.input-group -->
-                    </div><!-- /.col-md-3 -->
+                    </div><!-- /.col-md-5 -->
+                    </div>
                 </fieldset>
              </form>
             <!-- </div>.table-responsive -->
