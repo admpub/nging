@@ -55,6 +55,12 @@ func ClearHTMLAttr(src string) string {
 	return src
 }
 
+// TextLine Single line of text
+func TextLine(src string) string {
+	src = StripTags(src)
+	return RemoveEOL(src)
+}
+
 // StripTags strip tags in html string
 func StripTags(src string) string {
 	//将HTML标签全转换成小写

@@ -33,6 +33,7 @@ import (
 	"time"
 
 	"github.com/admpub/decimal"
+
 	"github.com/webx-top/captcha"
 	"github.com/webx-top/com"
 )
@@ -99,6 +100,10 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	"Uint64":         com.Uint64,
 	"Float32":        com.Float32,
 	"Float64":        com.Float64,
+	"Float2int":      com.Float2int,
+	"Float2uint":     com.Float2uint,
+	"Float2int64":    com.Float2int64,
+	"Float2uint64":   com.Float2uint64,
 	"ToFloat64":      ToFloat64,
 	"ToFixed":        ToFixed,
 	"ToDecimal":      ToDecimal,

@@ -6,6 +6,30 @@ import (
 	"strings"
 )
 
+func Float2int(v interface{}) int {
+	s := fmt.Sprintf("%v", v)
+	i := strings.SplitN(s, `.`, 2)[0]
+	return Int(i)
+}
+
+func Float2uint(v interface{}) uint {
+	s := fmt.Sprintf("%v", v)
+	i := strings.SplitN(s, `.`, 2)[0]
+	return Uint(i)
+}
+
+func Float2int64(v interface{}) int64 {
+	s := fmt.Sprintf("%v", v)
+	i := strings.SplitN(s, `.`, 2)[0]
+	return Int64(i)
+}
+
+func Float2uint64(v interface{}) uint64 {
+	s := fmt.Sprintf("%v", v)
+	i := strings.SplitN(s, `.`, 2)[0]
+	return Uint64(i)
+}
+
 func NumberTrim(number string, precision int, separator ...string) string {
 	s := number
 	if len(s) == 0 {
