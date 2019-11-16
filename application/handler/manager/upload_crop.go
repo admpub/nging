@@ -24,6 +24,7 @@ import (
 	"io"
 	"io/ioutil"
 	"path"
+	"strings"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -92,10 +93,23 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		return ctx.E(`“%s”未被登记`, uploadType)
 	}
 	thumbSizes := subdirInfo.ThumbSize(fieldName)
+	var thumbWidth, thumbHeight float64
+	cropSizeArr := strings.SplitN(cropSize, `x`, 2)
+	switch len(cropSizeArr) {
+	case 2:
+		cropSizeArr[1] = strings.TrimSpace(cropSizeArr[1])
+		thumbHeight = param.AsFloat64(cropSizeArr[1])
+		cropSizeArr[0] = strings.TrimSpace(cropSizeArr[0])
+		thumbWidth = param.AsFloat64(cropSizeArr[0])
+	case 1:
+		cropSizeArr[0] = strings.TrimSpace(cropSizeArr[0])
+		thumbWidth = param.AsFloat64(cropSizeArr[0])
+		thumbHeight = thumbWidth
+	}
 	var thumbSize *upload.ThumbSize
 	if len(thumbSizes) > 0 {
 		for _, ts := range thumbSizes {
-			if ts.String() == cropSize {
+			if ts.Width == thumbWidth && ts.Height == thumbHeight {
 				thumbSize = &ts
 				break
 			}
