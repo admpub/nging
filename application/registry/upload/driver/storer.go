@@ -3,16 +3,19 @@ package driver
 import (
 	"context"
 	"io"
+	"io/ioutil"
 	"mime/multipart"
 	"net/url"
 	"os"
+	"path"
 
 	uploadClient "github.com/webx-top/client/upload"
+	"github.com/webx-top/client/upload/watermark"
 	"github.com/webx-top/echo"
 
+	"github.com/admpub/checksum"
 	"github.com/admpub/color"
 	"github.com/admpub/log"
-	"github.com/admpub/checksum"
 	"github.com/admpub/nging/application/registry/upload/table"
 )
 
@@ -28,6 +31,7 @@ func BatchUpload(
 	dstNamer func(*uploadClient.Result) (dst string, err error),
 	storer Storer,
 	callback func(*uploadClient.Result, multipart.File) error,
+	markFile string,
 ) (results uploadClient.Results, err error) {
 	req := ctx.Request()
 	if req == nil {
@@ -85,7 +89,23 @@ func BatchUpload(
 			continue
 		}
 		file.Seek(0, 0)
-		result.SavePath, result.FileURL, err = storer.Put(dstFile, file, fileHdr.Size)
+		if len(markFile) > 0 && result.FileType.String() == `image` {
+			var b []byte
+			b, err = ioutil.ReadAll(file)
+			if err != nil {
+				file.Close()
+				return
+			}
+			b, err = watermark.Bytes(b, path.Ext(result.FileName), markFile)
+			if err != nil {
+				file.Close()
+				return
+			}
+			file = watermark.Bytes2file(b)
+			result.SavePath, result.FileURL, err = storer.Put(dstFile, file, int64(len(b)))
+		} else {
+			result.SavePath, result.FileURL, err = storer.Put(dstFile, file, fileHdr.Size)
+		}
 		if err != nil {
 			file.Close()
 			return

@@ -24,6 +24,7 @@ import (
 	"io"
 	"io/ioutil"
 	"path"
+	"path/filepath"
 	"strings"
 
 	"github.com/webx-top/com"
@@ -32,6 +33,7 @@ import (
 	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/checksum"
+	"github.com/admpub/errors"
 	imageproxy "github.com/admpub/imageproxy"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/handler"
@@ -39,6 +41,7 @@ import (
 	"github.com/admpub/nging/application/middleware"
 	modelFile "github.com/admpub/nging/application/model/file"
 	"github.com/admpub/nging/application/registry/upload"
+	"github.com/webx-top/client/upload/watermark"
 )
 
 // cropPermCheckers 裁剪权限检查
@@ -54,6 +57,8 @@ var cropPermCheckers = []func(ctx echo.Context, f *modelFile.File) error{
 		return common.ErrNext
 	},
 }
+
+var watermarkFile = filepath.Join(echo.Wd(), `public/assets/backend/images/nging-gear.png`)
 
 // CropPermCheckerAdd 添加裁剪权限检查逻辑
 func CropPermCheckerAdd(checker func(ctx echo.Context, f *modelFile.File) error) {
@@ -287,10 +292,18 @@ END:
 	if err != nil {
 		return err
 	}
-	byteReader := bytes.NewReader(thumb)
+	if len(watermarkFile) > 0 {
+		b, err = watermark.Bytes(thumb, path.Ext(thumbURL), watermarkFile)
+		if err != nil {
+			return err
+		}
+	} else {
+		b = thumb
+	}
+	byteReader := bytes.NewReader(b)
 	thumbM.SavePath, thumbM.ViewUrl, err = storer.Put(storer.URLToFile(thumbURL), byteReader, byteReader.Size()) //r-4;w-2;x-1
 	if err != nil {
-		return err
+		return errors.WithMessage(err, `Put`)
 	}
 	var fileMd5 string
 	if onSuccess != nil {
@@ -301,8 +314,7 @@ END:
 			return err
 		}
 	}
-	size := len(thumb)
-	thumbM.Size = uint64(size)
+	thumbM.Size = uint64(len(b))
 	thumbM.Width = param.AsUint(opt.Width)
 	thumbM.Height = param.AsUint(opt.Height)
 	thumbM.SaveName = path.Base(thumbM.SavePath)

@@ -165,7 +165,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 			return SaveFilename(subdir, name, filename)
 		})
 
-		client := uploadClient.Upload(ctx, clientName, result, storer, checker)
+		client := uploadClient.Upload(ctx, clientName, result, storer, watermarkFile, checker)
 		if client.GetError() != nil {
 			if client.GetError() == upload.ErrExistsFile {
 				client.SetError(nil)
@@ -202,6 +202,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 			fileM.SetByUploadResult(result)
 			return dbsaver(fileM, result, file)
 		},
+		watermarkFile,
 	)
 	datax, embed := ResponseDataForUpload(ctx, field, err, results.FileURLs())
 	if err != nil {
