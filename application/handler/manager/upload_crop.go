@@ -31,6 +31,7 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
 	"github.com/webx-top/echo/param"
+	"github.com/webx-top/client/upload/watermark"
 
 	"github.com/admpub/checksum"
 	"github.com/admpub/errors"
@@ -41,7 +42,6 @@ import (
 	"github.com/admpub/nging/application/middleware"
 	modelFile "github.com/admpub/nging/application/model/file"
 	"github.com/admpub/nging/application/registry/upload"
-	"github.com/webx-top/client/upload/watermark"
 )
 
 // cropPermCheckers 裁剪权限检查
@@ -59,6 +59,14 @@ var cropPermCheckers = []func(ctx echo.Context, f *modelFile.File) error{
 }
 
 var watermarkFile = filepath.Join(echo.Wd(), `public/assets/backend/images/nging-gear.png`)
+
+func SetWatermark(markfile string) {
+	watermarkFile = markfile
+}
+
+func WatermarkFile() string {
+	return watermarkFile
+}
 
 // CropPermCheckerAdd 添加裁剪权限检查逻辑
 func CropPermCheckerAdd(checker func(ctx echo.Context, f *modelFile.File) error) {
