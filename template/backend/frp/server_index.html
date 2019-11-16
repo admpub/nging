@@ -53,6 +53,8 @@
 								<th style="width:55px">
 									<strong>ID</strong>
 								</th>
+								<th style="width:80px;"><strong>{{"启用状态"|T}}</strong></th>
+								<th style="width:80px"><strong>{{"运行状态"|T}}</strong></th>
 								<th>
 									<strong>{{"名称"|T}}</strong>
 								</th>
@@ -71,8 +73,6 @@
 								<th style="width:130px">
 									<strong>{{"编辑时间"|T}}</strong>
 								</th>
-								<th style="width:80px"><strong>{{"运行状态"|T}}</strong></th>
-								<th style="width:80px;"><strong>{{"启用状态"|T}}</strong></th>
 								<th style="width:50px"><strong>{{"日志"|T}}</strong></th>
 								<th style="width:105px" class="text-center">
 									<strong>{{"操作"|T}}</strong>
@@ -83,6 +83,18 @@
 							{{range $k,$v := Stored.listData}}
 							<tr>
 								<td>{{$v.Id}}</td>
+								<td>
+								<div class="checkbox checkbox-primary no-margin-y">
+									<input type="checkbox" id="checkbox-disabled-{{$k}}" value="N" class="switch-disabled" data-id="{{$v.Id}}" data-disabled="{{$v.Disabled}}"{{if eq $v.Disabled "N"}} checked="checked"{{end}} /> <label for="checkbox-disabled-{{$k}}">{{"启用"|T}}</label>
+								</div>
+								</td>
+								<td>
+									{{if $v.Running}}
+									<span class="status-run fa fa-play text-success"> {{"运行中"|T}}</span>
+									{{else}}
+									<span class="status-run fa fa-stop text-danger"> {{"已停止"|T}}</span>
+									{{end}}
+								</td>
 								<td>{{$v.Name}}</td>
 								<td>{{$v.Addr}}:{{$v.Port}}</td>
 								<td>
@@ -99,18 +111,6 @@
 								<td>{{$v.LogWay}}</td>
 								<td>{{if $v.Group}}{{$v.Group.Name}}{{else}}{{"无"|T}}{{end}}</td>
 								<td>{{if gt $v.Updated 0}}{{(Date $v.Updated).Format "2006-01-02 15:04:05"}}{{else}}{{(Date $v.Created).Format "2006-01-02 15:04:05"}}{{end}}</td>
-								<td>
-									{{if $v.Running}}
-									<span class="status-run fa fa-play text-success"> {{"运行中"|T}}</span>
-									{{else}}
-									<span class="status-run fa fa-stop text-danger"> {{"已停止"|T}}</span>
-									{{end}}
-								</td>
-								<td>
-								<div class="checkbox checkbox-primary no-margin-y">
-									<input type="checkbox" id="checkbox-disabled-{{$k}}" value="N" class="switch-disabled" data-id="{{$v.Id}}" data-disabled="{{$v.Disabled}}"{{if eq $v.Disabled "N"}} checked="checked"{{end}} /> <label for="checkbox-disabled-{{$k}}">{{"启用"|T}}</label>
-								</div>
-								</td>
 								<td>
 									<a href="javascript:;" data-url="__BACKEND__/frp/server_log?id={{$v.Id}}" title="{{"日志"|T}}" data-toggle="tooltip" onclick="App.logShow(this,true);">{{"日志"|T}}</a>
 								</td>

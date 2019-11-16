@@ -43,11 +43,11 @@
 					<thead class="no-border">
 						<tr>
 							<th style="width:50px"><strong>ID</strong></th>
+							<th style="width:60px"><strong>{{"状态"|T}}</strong></th>
 							<th style="width:150px"><strong>{{"网站名称"|T}}</strong></th>
 							<th><strong>{{"地址"|T}}</strong></th>
 							<th style="width:100px"><strong>{{"分组"|T}}</strong></th>
 							<th style="width:170px"><strong>{{"时间"|T}}</strong></th>
-							<th style="width:60px"><strong>{{"状态"|T}}</strong></th>
 							<th style="width:50px"><strong>{{"日志"|T}}</strong></th>
 							<th style="width:145px" class="text-center"><strong>{{"操作"|T}}</strong></th>
 						</tr>
@@ -56,6 +56,11 @@
                         {{- range $k,$v := Stored.listData}}
 						<tr>
 							<td>{{$v.Id}}</td>
+							<td>
+								<div class="checkbox checkbox-success no-margin-y">
+									<input id="checkbox-{{$k}}" class="styled switch-disabled" type="checkbox" data-id="{{$v.Id}}" data-disabled="{{$v.Disabled}}"{{if eq $v.Disabled "N"}} checked="checked"{{end}} value="N" /><label for="checkbox-{{$k}}">{{"启用"|T}}</label>
+								</div>
+							</td>
 							<td>{{- $vhostName := $v.Name|Default (T "未设置") -}}
 								{{- $domainList := Split $v.Domain " " -}}
 								{{- $domian := index $domainList 0 -}}
@@ -82,14 +87,9 @@
 								{{- "更新"|T}}: {{if gt $v.Updated 0}}{{(Date $v.Updated).Format "2006-01-02 15:04:05"}}{{end -}}
 							</td>
 							<td>
-								<div class="checkbox checkbox-success no-margin-y">
-									<input id="checkbox-{{$k}}" class="styled switch-disabled" type="checkbox" data-id="{{$v.Id}}" data-disabled="{{$v.Disabled}}"{{if eq $v.Disabled "N"}} checked="checked"{{end}} value="N" /><label for="checkbox-{{$k}}">{{"启用"|T}}</label>
-								</div>
-							</td>
-							<td>
 								<a href="javascript:;" data-url="__BACKEND__/caddy/vhost_log?id={{$v.Id}}" title="{{"日志"|T}}" data-toggle="tooltip" onclick="App.logShow(this,true,'access');">{{"日志"|T}}</a>
 							</td>
-							<td class="text-center">
+							<td>
 								<a class="label label-default" href="__BACKEND__/caddy/vhost_add?copyId={{$v.Id}}" title="{{"复制"|T}}" data-toggle="tooltip"><i class="fa fa-copy"></i></a>
 								<a class="label label-success" href="__BACKEND__/caddy/vhost_edit?id={{$v.Id}}" title="{{"编辑"|T}}" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
 								<a class="label label-danger" href="__BACKEND__/caddy/vhost_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" title="{{"删除"|T}}" data-toggle="tooltip"><i class="fa fa-times"></i></a>
