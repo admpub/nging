@@ -86,13 +86,15 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	if len(uploadType) == 0 {
 		uploadType = ctx.Form(`type`)
 	}
-	cropSize := ctx.Form(`size`, `200x200`)
 	typ, fieldName, _ := getTableInfo(uploadType)
 	subdirInfo := upload.SubdirGet(typ)
 	if subdirInfo == nil {
 		return ctx.E(`“%s”未被登记`, uploadType)
 	}
+
+	// 获取缩略图尺寸
 	thumbSizes := subdirInfo.ThumbSize(fieldName)
+	cropSize := ctx.Form(`size`, `200x200`)
 	var thumbWidth, thumbHeight float64
 	cropSizeArr := strings.SplitN(cropSize, `x`, 2)
 	switch len(cropSizeArr) {
@@ -118,6 +120,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 			return ctx.E(`“%s”不支持裁剪图片`, uploadType)
 		}
 	}
+
 	storer := newStore(ctx, typ)
 	defer storer.Close()
 	srcURL := ctx.Form(`src`)
