@@ -484,6 +484,12 @@
 			"revisionTime": "2017-04-17T10:39:33Z"
 		},
 		{
+			"checksumSHA1": "Wxinzn+XgcFZpSqGY7HwRzISoQ4=",
+			"path": "github.com/admpub/identicon",
+			"revision": "82739563029f5bab325b6053a89249ffae1763a8",
+			"revisionTime": "2019-09-06T12:42:15Z"
+		},
+		{
 			"checksumSHA1": "8cUF7aMOusNY5c6NoVb8fr3ceQw=",
 			"path": "github.com/admpub/imageproxy",
 			"revision": "a1b99f19dd782e6babf45180e893af52ad1329d0",
