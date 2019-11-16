@@ -24,6 +24,10 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/middleware/tplfunc"
+	"github.com/webx-top/echo/subdomains"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
@@ -34,9 +38,6 @@ import (
 	"github.com/admpub/nging/application/registry/navigate"
 	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/helper"
-	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/middleware/tplfunc"
-	"github.com/webx-top/echo/subdomains"
 )
 
 var DefaultAvatarURL = `/public/assets/backend/images/user_128.png`
@@ -45,6 +46,7 @@ func ErrorPageFunc(c echo.Context) error {
 	c.SetFunc(`URLFor`, subdomains.Default.URL)
 	c.SetFunc(`IsMessage`, common.IsMessage)
 	c.SetFunc(`Stored`, c.Stored)
+	c.SetFunc(`ToHTML`, tplfunc.ToHTML)
 	c.SetFunc(`Languages`, func() []string {
 		return config.DefaultConfig.Language.AllList
 	})
