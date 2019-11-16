@@ -285,7 +285,12 @@ func (i *SubdirInfo) MustChecker() Checker {
 		if !i.ValidFieldName(tab.FieldName()) {
 			err = table.ErrInvalidFieldName
 		}
-		checker := i.fieldInfos[tab.FieldName()].checker
+		//echo.Dump(echo.H{`field`: tab.FieldName(), `fields`: i.fieldInfos})
+		var checker Checker
+		info, ok := i.fieldInfos[tab.FieldName()]
+		if ok {
+			checker = info.checker
+		}
 		if checker == nil {
 			if i.checker != nil {
 				checker = i.checker
