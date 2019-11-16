@@ -82,7 +82,28 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		return ctx.E(`存储引擎“%s”未被登记`, StorerEngine)
 	}
 	uploadType := ctx.Param(`type`)
-	typ, _, _ := getTableInfo(uploadType)
+	if len(uploadType) == 0 {
+		uploadType = ctx.Form(`type`)
+	}
+	cropSize := ctx.Form(`size`, `200x200`)
+	typ, fieldName, _ := getTableInfo(uploadType)
+	subdirInfo := upload.SubdirGet(typ)
+	if subdirInfo == nil {
+		return ctx.E(`“%s”未被登记`, uploadType)
+	}
+	thumbSizes := subdirInfo.ThumbSize(fieldName)
+	var thumbSize *upload.ThumbSize
+	if len(thumbSizes) > 0 {
+		for _, ts := range thumbSizes {
+			if ts.String() == cropSize {
+				thumbSize = &ts
+				break
+			}
+		}
+		if thumbSize == nil {
+			return ctx.E(`“%s”不支持裁剪图片`, uploadType)
+		}
+	}
 	storer := newStore(ctx, typ)
 	defer storer.Close()
 	srcURL := ctx.Form(`src`)
@@ -142,6 +163,10 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		Quality:        100,
 		Signature:      "",
 		ScaleUp:        true,
+	}
+	if thumbSize != nil {
+		opt.Width = thumbSize.Width
+		opt.Height = thumbSize.Height
 	}
 	thumbURL := tplfunc.AddSuffix(srcURL, fmt.Sprintf(`_%v_%v`, opt.Width, opt.Height))
 	var cropped bool

@@ -3,8 +3,14 @@ if(typeof(window.CropServerURL)=='undefined'){
 }else{
   window.CropServerURL=window.CropServerURL||BACKEND_URL+'/manager/crop';
 }
-function cropImage(uploadURL,thumbsnailElem,originalElem){
+function cropImage(uploadURL,thumbsnailElem,originalElem,type,width,height){
   var jcrop=null;
+  if(!type) {
+    type=uploadURL.split('?',2)[0];
+    type=type.substring(type.lastIndexOf('/')+1);
+  }
+  if(width==null) width=200;
+  if(height==null) height=width;
   $('#fileupload').fileupload({
       url: uploadURL,
       dataType: 'json',
@@ -26,7 +32,11 @@ function cropImage(uploadURL,thumbsnailElem,originalElem){
           $("#save-image").data('image-file',file);
           //Crop Image
           var img=$(".crop-image img");
-          img.Jcrop({aspectRatio:1},function(){
+          img.Jcrop({
+            aspectRatio:width/height,
+            minSize:[width,height],
+            setSelect:[0,0,width,height]
+          },function(){
             jcrop=this;
           });
         });
@@ -54,7 +64,15 @@ function cropImage(uploadURL,thumbsnailElem,originalElem){
     if( c.w != 0 ){
       var ratio=natural.w/img.width();
       var timg=self.data('image-file');
-      $.get(window.CropServerURL+'?src=' + timg + '&x=' + c.x*ratio + '&y=' + c.y*ratio + '&w=' + c.w*ratio + '&h=' + c.h*ratio,{},function(r){
+      $.get(window.CropServerURL,{
+        src:timg,
+        x:c.x*ratio,
+        y:c.y*ratio,
+        w:c.w*ratio,
+        h:c.h*ratio,
+        type:type,
+        size:width+'x'+height
+      },function(r){
         if(r.Code!=1){
           return App.message({title:App.i18n.SYS_INFO,text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
         }

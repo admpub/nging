@@ -19,18 +19,30 @@
 package upload
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/param"
 
 	pkgListeners "github.com/admpub/nging/application/library/fileupdater/listeners"
 	"github.com/admpub/nging/application/registry/upload/table"
 )
 
+type ThumbSize struct {
+	Width  float64
+	Height float64
+}
+
+func (t ThumbSize) String() string {
+	return fmt.Sprintf("%fx%f", t.Width, t.Height)
+}
+
 type FieldInfo struct {
 	Key     string
 	Name    string
+	Thumb   []ThumbSize
 	checker Checker
 }
 
@@ -170,6 +182,26 @@ func (i *SubdirInfo) ValidFieldName(fieldName string) bool {
 	return ok
 }
 
+func (i *SubdirInfo) ThumbSize(fieldNames ...string) []ThumbSize {
+	if i.fieldInfos == nil {
+		return nil
+	}
+	if len(fieldNames) > 0 {
+		info, ok := i.fieldInfos[fieldNames[0]]
+		if ok {
+			return info.Thumb
+		}
+	}
+	for _, info := range i.fieldInfos {
+		for _, thumbSize := range info.Thumb {
+			if thumbSize.Width > 0 && thumbSize.Height > 0 {
+				return info.Thumb
+			}
+		}
+	}
+	return nil
+}
+
 func (i *SubdirInfo) FieldNames() []string {
 	fieldNames := make([]string, len(i.fieldInfos))
 	if i.fieldInfos == nil {
@@ -215,13 +247,42 @@ func (i *SubdirInfo) SetFieldName(fieldNames ...string) *SubdirInfo {
 	return i
 }
 
-func (i *SubdirInfo) parseFieldInfo(field string) (fieldName string, fieldText string) {
-	r := strings.SplitN(field, ":", 2)
+// parseFieldInfo fieldName:fieldDescription:thumbWidth x thumbHeight,thumbWidth x thumbHeight
+// example parseFieldInfo(`user:用户:200x200,300x600`)
+func (i *SubdirInfo) parseFieldInfo(field string) (fieldName string, fieldText string, thumbSize []ThumbSize) {
+	r := strings.SplitN(field, ":", 3)
 	switch len(r) {
+	case 3:
+		r[2] = strings.TrimSpace(r[2])
+		for _, size := range strings.Split(r[2], `,`) {
+			size := strings.TrimSpace(size)
+			if len(size) == 0 {
+				continue
+			}
+			sz := strings.SplitN(size, `x`, 2)
+			ts := ThumbSize{}
+			switch len(sz) {
+			case 2:
+				sz[1] = strings.TrimSpace(sz[1])
+				sz[0] = strings.TrimSpace(sz[0])
+				ts.Height = param.AsFloat64(sz[1])
+				ts.Width = param.AsFloat64(sz[0])
+			case 1:
+				sz[0] = strings.TrimSpace(sz[0])
+				ts.Width = param.AsFloat64(sz[0])
+				ts.Height = ts.Width
+			}
+			if ts.Width > 0 && ts.Height > 0 {
+				thumbSize = append(thumbSize, ts)
+			}
+		}
+		fallthrough
 	case 2:
+		r[1] = strings.TrimSpace(r[1])
 		fieldText = r[1]
 		fallthrough
 	case 1:
+		r[0] = strings.TrimSpace(r[0])
 		fieldName = r[0]
 	}
 	return
@@ -231,16 +292,18 @@ func (i *SubdirInfo) AddFieldName(fieldName string, checkers ...Checker) *Subdir
 	var (
 		fieldText string
 		checker   Checker
+		thumbSize []ThumbSize
 	)
 	if len(checkers) > 0 {
 		checker = checkers[0]
 	}
-	fieldName, fieldText = i.parseFieldInfo(fieldName)
+	fieldName, fieldText, thumbSize = i.parseFieldInfo(fieldName)
 	info, ok := i.fieldInfos[fieldName]
 	if !ok {
 		i.fieldInfos[fieldName] = &FieldInfo{
 			Key:     fieldName,
 			Name:    fieldText,
+			Thumb:   thumbSize,
 			checker: checker,
 		}
 	} else {
@@ -248,6 +311,9 @@ func (i *SubdirInfo) AddFieldName(fieldName string, checkers ...Checker) *Subdir
 			info.Name = fieldText
 		}
 		info.AddChecker(checker)
+		if len(thumbSize) > 0 {
+			info.Thumb = append(info.Thumb, thumbSize...)
+		}
 	}
 	return i
 }
