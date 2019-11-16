@@ -46,7 +46,6 @@ func ErrorPageFunc(c echo.Context) error {
 	c.SetFunc(`URLFor`, subdomains.Default.URL)
 	c.SetFunc(`IsMessage`, common.IsMessage)
 	c.SetFunc(`Stored`, c.Stored)
-	c.SetFunc(`ToHTML`, tplfunc.ToHTML)
 	c.SetFunc(`Languages`, func() []string {
 		return config.DefaultConfig.Language.AllList
 	})
