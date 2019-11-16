@@ -32,12 +32,21 @@ function cropImage(uploadURL,thumbsnailElem,originalElem,type,width,height){
           $("#save-image").data('image-file',file);
           //Crop Image
           var img=$(".crop-image img");
-          img.Jcrop({
-            aspectRatio:width/height,
-            minSize:[width,height],
-            setSelect:[0,0,width,height]
-          },function(){
-            jcrop=this;
+          img.off().on('load',function(){
+            App.getImgNaturalDimensions(img[0],function(natural){
+              var ratio=1;
+              if(natural.w>0){
+                ratio=img.width()/natural.w;
+              }
+              var w=width*ratio,h=height*ratio;
+              img.Jcrop({
+                aspectRatio:width/height,
+                minSize:[w,h],
+                setSelect:[0,0,w,h],
+              },function(){
+                jcrop=this;
+              });
+            });
           });
         });
         if(typeof($.fn.niftyModal)!='undefined'){
@@ -57,9 +66,8 @@ function cropImage(uploadURL,thumbsnailElem,originalElem,type,width,height){
   }).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
 
   $("#save-image").on('click',function(){
-    var self=$(this);
-    App.getImgNaturalDimensions($(".crop-image img")[0],function(natural){
-    var img=$(".crop-image img");
+    var self=$(this),img=$(".crop-image img");
+    App.getImgNaturalDimensions(img[0],function(natural){
     var c = jcrop.tellSelect();
     if( c.w != 0 ){
       var ratio=natural.w/img.width();
