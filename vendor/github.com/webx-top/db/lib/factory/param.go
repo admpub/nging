@@ -579,6 +579,11 @@ func (p *Param) Count() (int64, error) {
 	return p.T().Count(p)
 }
 
+// Stat Stat(`max`,`score`)
+func (p *Param) Stat(fn string, field string) (float64, error) {
+	return p.T().Stat(p, fn, field)
+}
+
 // Write ==========================
 
 // Exec execute SQL

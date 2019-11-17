@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/admpub/errors"
+
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo/param"
 )
@@ -29,6 +30,7 @@ type FieldInfo struct {
 
 	//以下为Golang中的信息
 	GoType string `json:"goType" xml:"goType" bson:"goType"` //Golang数据类型
+	MyType string `json:"myType" xml:"myType" bson:"myType"` //自定义数据类型
 	GoName string `json:"goName" xml:"goName" bson:"goName"` //Golang字段名
 }
 

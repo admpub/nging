@@ -448,3 +448,23 @@ func (t *Transaction) Deletex(param *Param) (affected int64, err error) {
 	}
 	return res.RowsAffected()
 }
+
+// Stat Stat(param,`max`,`score`)
+func (t *Transaction) Stat(param *Param, fn string, field string) (float64, error) {
+	counter := struct {
+		Stat float64 `db:"_t"`
+	}{}
+	selector := t.SQLBuilder(param).Select(db.Raw(fn + "(" + field + ") AS _t")).From(param.TableName()).Where(param.Args...)
+	selector = t.joinSelect(param, selector)
+	if param.SelectorMiddleware != nil {
+		selector = param.SelectorMiddleware(selector)
+	}
+	selector = selector.Offset(0).Limit(1).OrderBy()
+	if err := selector.IteratorContext(param.Context()).One(&counter); err != nil {
+		if err == db.ErrNoMoreRows {
+			return 0, nil
+		}
+		return 0, err
+	}
+	return counter.Stat, nil
+}
