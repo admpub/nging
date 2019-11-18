@@ -278,7 +278,9 @@ func RelationAll(builder SQLBuilder, data interface{}) error {
 				relValsMap[v] = struct{}{}
 			}
 		}
-
+		if len(relValsMap) == 0 {
+			return nil
+		}
 		for k := range relValsMap {
 			relVals = append(relVals, k)
 		}
