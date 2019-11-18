@@ -493,13 +493,29 @@ func (f *Field) Format(value string) string {
 	}
 	switch f.Type {
 	case `timestamp`, `datetime`:
-		return com.RestoreTime(value).Format(`2006-01-02 15:04:05`)
+		t := com.RestoreTime(value)
+		if t.IsZero() {
+			return `0000-00-00 00:00:00`
+		}
+		return t.Format(`2006-01-02 15:04:05`)
 	case `date`:
-		return com.RestoreTime(value).Format(`2006-01-02`)
+		t := com.RestoreTime(value)
+		if t.IsZero() {
+			return `0000-00-00`
+		}
+		return t.Format(`2006-01-02`)
 	case `time`:
-		return com.RestoreTime(value).Format(`15:04:05`)
+		t := com.RestoreTime(value)
+		if t.IsZero() {
+			return `00:00:00`
+		}
+		return t.Format(`15:04:05`)
 	case `year`:
-		return com.RestoreTime(value).Format(`2006`)
+		t := com.RestoreTime(value)
+		if t.IsZero() {
+			return `0000`
+		}
+		return t.Format(`2006`)
 	default:
 		return value
 	}
