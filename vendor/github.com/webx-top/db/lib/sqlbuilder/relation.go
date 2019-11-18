@@ -139,6 +139,9 @@ func buildCond(refVal reflect.Value, relations []string, pipes []Pipe) interface
 	}
 	var cond interface{}
 	if v, y := fieldValue.([]interface{}); y {
+		if len(v) == 0 {
+			return nil
+		}
 		cond = db.Cond{
 			fieldName: db.In(v),
 		}
