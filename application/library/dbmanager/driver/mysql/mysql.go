@@ -1088,7 +1088,7 @@ func (m *mySQL) ListData() error {
 				condition = ` WHERE ` + condition
 				err = m.delete(table, condition, 0)
 			case `export`:
-				return m.exportData(fields, table, selectFuncs, selectCols, []string{condition}, orderFields, descs, page, limit, totalRows, textLength)
+				return m.exportData(fields, table, selectFuncs, selectCols, []string{condition}, orderFields, descs, 1, limit, totalRows, 0)
 			}
 			if err == nil {
 				return m.returnTo()
