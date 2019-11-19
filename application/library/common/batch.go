@@ -31,11 +31,40 @@ type Adder interface {
 }
 
 // BatchAdd 批量添加(常用于批量添加分类)
-func BatchAdd(ctx echo.Context, field string, adder Adder, before func(string) error) (added []string, err error) {
-	values := strings.Split(ctx.Formx(field).String(), "\n")
+// BatchAdd(ctx, `ident,>name`, adder, before, `=`)
+// 可以通过在字段名称前面添加“>”前缀来指定表单字段名称，如果不指定则默认使用第一个作为表单字段名
+func BatchAdd(ctx echo.Context, field string, adder Adder, before func(string) error, seperators ...string) (added []string, err error) {
 	added = []string{}
 	errs := []string{}
-	statucField := strings.Title(field)
+	field = strings.TrimSpace(field)
+	var structFields []string
+	var seperator string
+	if len(seperators) > 0 {
+		seperator = seperators[0]
+	}
+	var formField string
+	var firstField string
+	for _, v := range strings.Split(field, ",") {
+		v = strings.TrimSpace(v)
+		if len(v) == 0 {
+			continue
+		}
+		if strings.HasPrefix(v, `>`) {
+			formField = strings.TrimPrefix(v, `>`)
+			v = formField
+		}
+		if len(firstField) == 0 {
+			firstField = v
+		}
+		structFields = append(structFields, strings.Title(v))
+	}
+	if len(structFields) < 1 {
+		return
+	}
+	if len(formField) == 0 {
+		formField = firstField
+	}
+	values := strings.Split(ctx.Formx(formField).String(), "\n")
 	for _, value := range values {
 		value = strings.TrimSpace(value)
 		if len(value) == 0 {
@@ -47,7 +76,18 @@ func BatchAdd(ctx echo.Context, field string, adder Adder, before func(string) e
 				continue
 			}
 		}
-		adder.Set(statucField, value)
+		if len(seperator) > 0 {
+			arr := strings.SplitN(value, seperator, len(structFields))
+			for k, v := range arr {
+				if k < len(structFields) {
+					adder.Set(structFields[k], v)
+				} else {
+					break
+				}
+			}
+		} else {
+			adder.Set(structFields[0], value)
+		}
 		_, err = adder.Add()
 		if err != nil {
 			errs = append(errs, err.Error())
@@ -58,5 +98,5 @@ func BatchAdd(ctx echo.Context, field string, adder Adder, before func(string) e
 	if len(errs) > 0 {
 		err = ctx.E(strings.Join(errs, "\n"))
 	}
-	return added, err
+	return
 }
