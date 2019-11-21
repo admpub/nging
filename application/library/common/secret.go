@@ -44,13 +44,29 @@ func DeleteRandomSecret(ctx echo.Context, sessionKey string) {
 func DecryptedByRandomSecret(ctx echo.Context, sessionKey string, datas ...*string) {
 	secret := ctx.Session().Get(`secrect_` + sessionKey)
 	if secret != nil {
-		crypto := codec.NewDesECBCrypto()
 		secrets, _ := secret.(string)
-		for _, data := range datas {
-			if len(*data) == 0 {
-				continue
-			}
-			*data = crypto.Decode(*data, secrets)
+		Decrypt(secrets, datas...)
+	}
+}
+
+// Decrypt 数据解密
+func Decrypt(secret string, datas ...*string) {
+	crypto := codec.NewDesECBCrypto()
+	for _, data := range datas {
+		if len(*data) == 0 {
+			continue
 		}
+		*data = crypto.Decode(*data, secret)
+	}
+}
+
+// Encrypt 数据加密
+func Encrypt(secret string, datas ...*string) {
+	crypto := codec.NewDesECBCrypto()
+	for _, data := range datas {
+		if len(*data) == 0 {
+			continue
+		}
+		*data = crypto.Encode(*data, secret)
 	}
 }
