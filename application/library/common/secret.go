@@ -70,3 +70,16 @@ func Encrypt(secret string, datas ...*string) {
 		*data = crypto.Encode(*data, secret)
 	}
 }
+
+// GenSecret 生成随机密钥
+func GenSecret(sizes ...int) string {
+	var size int
+	if len(sizes) > 0 {
+		size = sizes[0]
+	}
+	if size < 1 {
+		size = 32
+	}
+	secret := com.RandomAlphanumeric(32)
+	return secret
+}
