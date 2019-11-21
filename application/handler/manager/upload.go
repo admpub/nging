@@ -62,6 +62,7 @@ func File(ctx echo.Context) error {
 	return ctx.File(file)
 }
 
+// SaveFilename SaveFilename(`0/`,``,`img.jpg`)
 func SaveFilename(subdir, name, postFilename string) (string, error) {
 	ext := filepath.Ext(postFilename)
 	fname := name
