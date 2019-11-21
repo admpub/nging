@@ -26,7 +26,7 @@ import (
 
 // SetRandomSecret 设置随机密码
 func SetRandomSecret(ctx echo.Context, sessionKey string, storeKey ...string) {
-	secret := com.RandomAlphanumeric(32)
+	secret := GenSecret(32)
 	ctx.Session().Set(`secrect_`+sessionKey, secret)
 	if len(storeKey) > 0 {
 		ctx.Set(storeKey[0], secret)
