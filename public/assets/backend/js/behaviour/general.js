@@ -1269,13 +1269,13 @@ var App = function () {
     switchStatus: function (a, type, editURL, callback) {
       if (type == null) type = $(a).data('type');
       if (editURL == null) editURL = $(a).data('url');
-      var that = $(a), status = that.data(type) == 'Y' ? 'N' : 'Y', data = { id: that.data('id') };
+      var that = $(a), status = that.attr('data-'+type) == 'Y' ? 'N' : 'Y', data = { id: that.data('id') };
       var v = that.val();
       data[type] = status;
       if (String(editURL).charAt(0) != '/') editURL = BACKEND_URL + '/' + editURL;
       $.get(editURL, data, function (r) {
         if (r.Code == 1) {
-          that.data(type, status);
+          that.attr('data-'+type, status);
           that.prop('checked', status == v);
         }
         App.message({ title: App.i18n.SYS_INFO, text: r.Info, time: 5000, sticky: false, class_name: r.Code == 1 ? 'success' : 'error' });
