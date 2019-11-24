@@ -151,12 +151,14 @@ func (u *User) UpdateField(uid uint, set map[string]interface{}) (err error) {
 
 func (u *User) NeedCheckU2F(uid uint) bool {
 	u2f := &dbschema.UserU2f{}
+	u2f.SetContext(u.base.Context)
 	n, _ := u2f.Count(nil, `uid`, uid)
 	return n > 0
 }
 
 func (u *User) GetUserAllU2F(uid uint) ([]*dbschema.UserU2f, error) {
 	u2f := &dbschema.UserU2f{}
+	u2f.SetContext(u.base.Context)
 	all := []*dbschema.UserU2f{}
 	_, err := u2f.ListByOffset(&all, nil, 0, -1, `uid`, uid)
 	return all, err
@@ -164,18 +166,20 @@ func (u *User) GetUserAllU2F(uid uint) ([]*dbschema.UserU2f, error) {
 
 func (u *User) U2F(uid uint, typ string) (u2f *dbschema.UserU2f, err error) {
 	u2f = &dbschema.UserU2f{}
+	u2f.SetContext(u.base.Context)
 	err = u2f.Get(nil, db.And(db.Cond{`uid`: uid}, db.Cond{`type`: typ}))
 	return
 }
 
 func (u *User) Register(user, pass, email string) error {
 	userSchema := &dbschema.User{}
+	userSchema.SetContext(u.base.Context)
 	userSchema.Username = user
 	userSchema.Email = email
 	userSchema.Salt = com.Salt()
 	userSchema.Password = com.MakePassword(pass, userSchema.Salt)
 	userSchema.Disabled = `N`
-	_, err := userSchema.Add()
+	_, err := userSchema.EventOFF().Add()
 	u.User = userSchema
 	return err
 }

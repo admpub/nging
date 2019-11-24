@@ -168,25 +168,29 @@ func (c *Config) AsDefault() {
 
 func (c *Config) SaveToFile() error {
 	b, err := confl.Marshal(c)
-	if err == nil {
-		err = os.MkdirAll(filepath.Dir(DefaultCLIConfig.Conf), os.ModePerm)
-		if err == nil {
-			/*
-				_, e := os.Stat(DefaultCLIConfig.Conf + `.sample`)
-				if e != nil {
-					if os.IsNotExist(e) {
-						old, err := ioutil.ReadFile(DefaultCLIConfig.Conf)
-						if err == nil {
-							err = ioutil.WriteFile(DefaultCLIConfig.Conf+`.sample`, old, os.ModePerm)
-						}
-						if err != nil {
-							return err
-						}
-					}
-				}
-			*/
-			err = ioutil.WriteFile(DefaultCLIConfig.Conf, b, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	dir := filepath.Dir(DefaultCLIConfig.Conf)
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		err = os.MkdirAll(dir, os.ModePerm)
+		if err != nil {
+			return err
 		}
 	}
+	/*
+		_, e := os.Stat(DefaultCLIConfig.Conf + `.sample`)
+		if os.IsNotExist(e) {
+				old, err := ioutil.ReadFile(DefaultCLIConfig.Conf)
+				if err == nil {
+					err = ioutil.WriteFile(DefaultCLIConfig.Conf+`.sample`, old, os.ModePerm)
+				}
+				if err != nil {
+					return err
+				}
+			}
+		}
+	*/
+	err = ioutil.WriteFile(DefaultCLIConfig.Conf, b, os.ModePerm)
 	return err
 }

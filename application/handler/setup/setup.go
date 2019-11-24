@@ -80,7 +80,7 @@ func Progress(ctx echo.Context) error {
 	return ctx.JSON(data)
 }
 
-func install(ctx echo.Context, sqlFile string) (err error) {
+func install(ctx echo.Context, sqlFile string, installer func(string) error) (err error) {
 	installProgress = &ProgressInfo{
 		Timestamp: time.Now().Local().Unix(),
 	}
@@ -89,39 +89,7 @@ func install(ctx echo.Context, sqlFile string) (err error) {
 			installProgress = nil
 		}
 	}()
-	var (
-		sqlStr    string
-		installer func(string) error
-		ok        bool
-	)
-	err = ctx.MustBind(&config.DefaultConfig.DB)
-	config.DefaultConfig.DB.Database = strings.Replace(config.DefaultConfig.DB.Database, "'", "", -1)
-	config.DefaultConfig.DB.Database = strings.Replace(config.DefaultConfig.DB.Database, "`", "", -1)
-	if config.DefaultConfig.DB.Type == `sqlite` {
-		config.DefaultConfig.DB.User = ``
-		config.DefaultConfig.DB.Password = ``
-		config.DefaultConfig.DB.Host = ``
-		if strings.HasSuffix(config.DefaultConfig.DB.Database, `.db`) == false {
-			config.DefaultConfig.DB.Database += `.db`
-		}
-	}
-	if err != nil {
-		return
-	}
-	//连接数据库
-	err = config.ConnectDB(config.DefaultConfig)
-	if err != nil {
-		err = createDatabase(err)
-	}
-	if err != nil {
-		return
-	}
-	//创建数据库数据
-	installer, ok = config.DBInstallers[config.DefaultConfig.DB.Type]
-	if !ok {
-		err = ctx.E(`不支持安装到%s`, config.DefaultConfig.DB.Type)
-		return
-	}
+	var sqlStr string
 	installProgress.TotalSize, err = com.FileSize(sqlFile)
 	if err != nil {
 		return
@@ -178,6 +146,36 @@ func Setup(ctx echo.Context) error {
 		return ctx.String(msg)
 	}
 	if ctx.IsPost() && installProgress == nil {
+
+		err = ctx.MustBind(&config.DefaultConfig.DB)
+		if err != nil {
+			return err
+		}
+		config.DefaultConfig.DB.Database = strings.Replace(config.DefaultConfig.DB.Database, "'", "", -1)
+		config.DefaultConfig.DB.Database = strings.Replace(config.DefaultConfig.DB.Database, "`", "", -1)
+		if config.DefaultConfig.DB.Type == `sqlite` {
+			config.DefaultConfig.DB.User = ``
+			config.DefaultConfig.DB.Password = ``
+			config.DefaultConfig.DB.Host = ``
+			if strings.HasSuffix(config.DefaultConfig.DB.Database, `.db`) == false {
+				config.DefaultConfig.DB.Database += `.db`
+			}
+		}
+		//连接数据库
+		err = config.ConnectDB(config.DefaultConfig)
+		if err != nil {
+			err = createDatabase(err)
+		}
+		if err != nil {
+			return err
+		}
+		//创建数据库数据
+		installer, ok := config.DBInstallers[config.DefaultConfig.DB.Type]
+		if !ok {
+			err = ctx.E(`不支持安装到%s`, config.DefaultConfig.DB.Type)
+			return err
+		}
+
 		adminUser := ctx.Form(`adminUser`)
 		adminPass := ctx.Form(`adminPass`)
 		adminEmail := ctx.Form(`adminEmail`)
@@ -203,27 +201,33 @@ func Setup(ctx echo.Context) error {
 		}
 		data := ctx.Data()
 		for _, sqlFile := range sqlFiles {
-			err = install(ctx, sqlFile)
+			err = install(ctx, sqlFile, installer)
 			if err != nil {
 				break
 			}
 		}
-		defer func() {
+		err = config.ConnectDB(config.DefaultConfig)
+		if err != nil {
+			return err
+		}
+		m := model.NewUser(ctx)
+		err = m.Register(adminUser, adminPass, adminEmail)
+		if err != nil {
+			return err
+		}
+		defer func(cfg *config.Config) {
 			if err == nil {
 				time.Sleep(1 * time.Second)
 				config.DefaultCLIConfig.RunStartup()
 				if err := Upgrade(); err != nil {
 					log.Error(err)
 				}
-				m := model.NewUser(ctx)
-				err = m.Register(adminUser, adminPass, adminEmail)
-				if err != nil {
-					return
-				}
-				config.DefaultConfig.InitSecretKey()
+
+				// 保存配置
+				cfg.InitSecretKey()
 
 				//保存数据库账号到配置文件
-				err = config.DefaultConfig.SaveToFile()
+				err = cfg.SaveToFile()
 				if err != nil {
 					return
 				}
@@ -234,7 +238,7 @@ func Setup(ctx echo.Context) error {
 					err = OnInstalled(ctx)
 				}
 			}
-		}()
+		}(config.DefaultConfig)
 		if ctx.IsAjax() {
 			if err != nil {
 				data.SetError(err)
