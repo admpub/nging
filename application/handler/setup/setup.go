@@ -19,18 +19,20 @@
 package setup
 
 import (
+	"context"
 	"errors"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/model"
-	"github.com/webx-top/com"
-	"github.com/webx-top/echo"
 )
 
 type ProgressInfo struct {
@@ -50,6 +52,8 @@ var (
 		Finished:  0,
 		TotalSize: 1,
 	}
+
+	OnInstalled func(ctx context.Context) error
 )
 
 func init() {
@@ -191,6 +195,9 @@ func install(ctx echo.Context, sqlFile string, lockFile string) (err error) {
 
 	//生成锁文件
 	err = config.SetInstalled(lockFile)
+	if err == nil && OnInstalled != nil {
+		err = OnInstalled(ctx)
+	}
 	return
 }
 
