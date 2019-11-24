@@ -19,7 +19,6 @@
 package setup
 
 import (
-	"context"
 	"os"
 	"path/filepath"
 	"strings"
@@ -52,7 +51,7 @@ var (
 		TotalSize: 1,
 	}
 
-	OnInstalled func(ctx context.Context) error
+	OnInstalled func(ctx echo.Context) error
 )
 
 func init() {
