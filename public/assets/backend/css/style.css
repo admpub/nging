@@ -88,6 +88,27 @@ pre {
 .text-baseline{
   vertical-align: baseline !important;
 }
+.text-orange{
+  color:rgb(255, 111, 0);
+}
+.text-red{
+  color:red;
+}
+.text-pink{
+  color:rgb(248, 125, 146);
+}
+.text-purple{
+  color:purple;
+}
+.text-black{
+  color:black;
+}
+.text-grey{
+  color:grey;
+}
+.text-white{
+  color:white;
+}
 .jumbotron {
   margin-top: 20px;
 }
