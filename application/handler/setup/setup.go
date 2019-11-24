@@ -20,7 +20,6 @@ package setup
 
 import (
 	"context"
-	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -81,7 +80,7 @@ func Progress(ctx echo.Context) error {
 	return ctx.JSON(data)
 }
 
-func install(ctx echo.Context, sqlFile string, lockFile string) (err error) {
+func install(ctx echo.Context, sqlFile string) (err error) {
 	installProgress = &ProgressInfo{
 		Timestamp: time.Now().Local().Unix(),
 	}
@@ -90,35 +89,11 @@ func install(ctx echo.Context, sqlFile string, lockFile string) (err error) {
 			installProgress = nil
 		}
 	}()
-	m := model.NewUser(ctx)
 	var (
 		sqlStr    string
 		installer func(string) error
 		ok        bool
 	)
-	adminUser := ctx.Form(`adminUser`)
-	adminPass := ctx.Form(`adminPass`)
-	adminEmail := ctx.Form(`adminEmail`)
-	if len(adminUser) == 0 {
-		err = ctx.E(`管理员用户名不能为空`)
-		return
-	}
-	if !com.IsUsername(adminUser) {
-		err = errors.New(ctx.T(`管理员名不能包含特殊字符(只能由字母、数字、下划线和汉字组成)`))
-		return
-	}
-	if len(adminPass) < 8 {
-		err = ctx.E(`管理员密码不能少于8个字符`)
-		return
-	}
-	if len(adminEmail) == 0 {
-		err = ctx.E(`管理员邮箱不能为空`)
-		return
-	}
-	if !ctx.Validate(`adminEmail`, adminEmail, `email`).Ok() {
-		err = ctx.E(`管理员邮箱格式不正确`)
-		return
-	}
 	err = ctx.MustBind(&config.DefaultConfig.DB)
 	config.DefaultConfig.DB.Database = strings.Replace(config.DefaultConfig.DB.Database, "'", "", -1)
 	config.DefaultConfig.DB.Database = strings.Replace(config.DefaultConfig.DB.Database, "`", "", -1)
@@ -181,23 +156,6 @@ func install(ctx echo.Context, sqlFile string, lockFile string) (err error) {
 			return
 		}
 	}
-	err = m.Register(adminUser, adminPass, adminEmail)
-	if err != nil {
-		return
-	}
-	config.DefaultConfig.InitSecretKey()
-
-	//保存数据库账号到配置文件
-	err = config.DefaultConfig.SaveToFile()
-	if err != nil {
-		return
-	}
-
-	//生成锁文件
-	err = config.SetInstalled(lockFile)
-	if err == nil && OnInstalled != nil {
-		err = OnInstalled(ctx)
-	}
 	return
 }
 
@@ -220,9 +178,32 @@ func Setup(ctx echo.Context) error {
 		return ctx.String(msg)
 	}
 	if ctx.IsPost() && installProgress == nil {
+		adminUser := ctx.Form(`adminUser`)
+		adminPass := ctx.Form(`adminPass`)
+		adminEmail := ctx.Form(`adminEmail`)
+		if len(adminUser) == 0 {
+			err = ctx.E(`管理员用户名不能为空`)
+			return err
+		}
+		if !com.IsUsername(adminUser) {
+			err = ctx.E(`管理员名不能包含特殊字符(只能由字母、数字、下划线和汉字组成)`)
+			return err
+		}
+		if len(adminPass) < 8 {
+			err = ctx.E(`管理员密码不能少于8个字符`)
+			return err
+		}
+		if len(adminEmail) == 0 {
+			err = ctx.E(`管理员邮箱不能为空`)
+			return err
+		}
+		if !ctx.Validate(`adminEmail`, adminEmail, `email`).Ok() {
+			err = ctx.E(`管理员邮箱格式不正确`)
+			return err
+		}
 		data := ctx.Data()
 		for _, sqlFile := range sqlFiles {
-			err = install(ctx, sqlFile, lockFile)
+			err = install(ctx, sqlFile)
 			if err != nil {
 				break
 			}
@@ -234,6 +215,24 @@ func Setup(ctx echo.Context) error {
 				if err := Upgrade(); err != nil {
 					log.Error(err)
 				}
+				m := model.NewUser(ctx)
+				err = m.Register(adminUser, adminPass, adminEmail)
+				if err != nil {
+					return
+				}
+				config.DefaultConfig.InitSecretKey()
+
+				//保存数据库账号到配置文件
+				err = config.DefaultConfig.SaveToFile()
+				if err != nil {
+					return
+				}
+
+				//生成锁文件
+				err = config.SetInstalled(lockFile)
+				if err == nil && OnInstalled != nil {
+					err = OnInstalled(ctx)
+				}
 			}
 		}()
 		if ctx.IsAjax() {
@@ -243,10 +242,9 @@ func Setup(ctx echo.Context) error {
 				data.SetInfo(ctx.T(`安装成功`)).SetData(installProgress)
 			}
 			return ctx.JSON(data)
-		} else {
-			if err != nil {
-				goto DIE
-			}
+		}
+		if err != nil {
+			goto DIE
 		}
 		handler.SendOk(ctx, ctx.T(`安装成功`))
 		return ctx.Redirect(handler.URLFor(`/`))
