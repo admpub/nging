@@ -209,7 +209,7 @@ func Setup(ctx echo.Context) error {
 		for _, sqlFile := range sqlFiles {
 			err = install(ctx, sqlFile, installer)
 			if err != nil {
-				break
+				return err
 			}
 		}
 
