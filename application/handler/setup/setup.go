@@ -51,8 +51,15 @@ var (
 		TotalSize: 1,
 	}
 
-	OnInstalled func(ctx echo.Context) error
+	onInstalled []func(ctx echo.Context) error
 )
+
+func OnInstalled(cb func(ctx echo.Context) error) {
+	if cb == nil {
+		return
+	}
+	onInstalled = append(onInstalled, cb)
+}
 
 func init() {
 	handler.Register(func(e echo.RouteRegister) {
@@ -205,39 +212,51 @@ func Setup(ctx echo.Context) error {
 				break
 			}
 		}
+
+		// 重新连接数据库
 		err = config.ConnectDB(config.DefaultConfig)
 		if err != nil {
 			return err
 		}
+
+		// 添加创始人
 		m := model.NewUser(ctx)
 		err = m.Register(adminUser, adminPass, adminEmail)
 		if err != nil {
 			return err
 		}
-		defer func(cfg *config.Config) {
-			if err == nil {
-				time.Sleep(1 * time.Second)
-				config.DefaultCLIConfig.RunStartup()
-				if err := Upgrade(); err != nil {
-					log.Error(err)
-				}
 
-				// 保存配置
-				cfg.InitSecretKey()
+		// 生成安全密钥
+		config.DefaultConfig.InitSecretKey()
 
-				//保存数据库账号到配置文件
-				err = cfg.SaveToFile()
-				if err != nil {
-					return
-				}
+		// 保存数据库账号到配置文件
+		err = config.DefaultConfig.SaveToFile()
+		if err != nil {
+			return err
+		}
 
-				//生成锁文件
-				err = config.SetInstalled(lockFile)
-				if err == nil && OnInstalled != nil {
-					err = OnInstalled(ctx)
-				}
+		for _, cb := range onInstalled {
+			if err = cb(ctx); err != nil {
+				return err
 			}
-		}(config.DefaultConfig)
+		}
+
+		// 生成锁文件
+		err = config.SetInstalled(lockFile)
+		if err != nil {
+			return err
+		}
+
+		time.Sleep(1 * time.Second) // 等1秒
+
+		// 启动
+		config.DefaultCLIConfig.RunStartup()
+
+		// 升级
+		if err := Upgrade(); err != nil {
+			log.Error(err)
+		}
+
 		if ctx.IsAjax() {
 			if err != nil {
 				data.SetError(err)
