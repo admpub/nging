@@ -3,12 +3,6 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "BgO+h1WwBGtx/zXTJxJL02d3ih4=",
-			"path": "git.webx.top/coscms/app/base/lib/image/identicon",
-			"revision": "44e63aad9720bc6e91fe42ced30baf0f97551070",
-			"revisionTime": "2019-09-10T13:03:24Z"
-		},
-		{
 			"checksumSHA1": "l1dgFJfzGLG/2AEPyt6ADsnVLPQ=",
 			"path": "github.com/PuerkitoBio/goquery",
 			"revision": "dc2ec5c7ca4d9aae063b79b9f581dd3ea6afd2b2",
@@ -307,12 +301,6 @@
 			"path": "github.com/admpub/go-bindata-assetfs",
 			"revision": "36eaa4c19588a86637ecdc12032fdbaef302327a",
 			"revisionTime": "2017-04-28T09:02:53Z"
-		},
-		{
-			"checksumSHA1": "4eJMUqpIZvRiBbExL2PiLEUmM0U=",
-			"path": "github.com/admpub/go-colortext",
-			"revision": "511bcaf42ccd42c38aba7427b6673277bf19e2a1",
-			"revisionTime": "2016-05-07T01:00:35Z"
 		},
 		{
 			"checksumSHA1": "uwBz9MpQzc+qspUOTo7X8olvwBg=",
@@ -4057,12 +4045,6 @@
 			"revisionTime": "2018-07-06T05:06:37Z"
 		},
 		{
-			"checksumSHA1": "aqRR92xWU3cH3J8OLAlefTNc2rQ=",
-			"path": "golang.org/x/image/ccitt",
-			"revision": "69e4b8554b2a817a1f0015867f0858d02801f0f5",
-			"revisionTime": "2019-09-09T22:43:31Z"
-		},
-		{
 			"checksumSHA1": "6r4wlD2ccsItjIKBhqZc1mch3IQ=",
 			"path": "golang.org/x/image/draw",
 			"revision": "3fc05d484e9f77dd51816890e05f2602e4ca4d65",
@@ -4338,12 +4320,6 @@
 			"path": "golang.org/x/text/encoding/japanese",
 			"revision": "905a57155faa8230500121607930ebb9dd8e139c",
 			"revisionTime": "2018-09-08T17:02:15Z"
-		},
-		{
-			"checksumSHA1": "qHQ79q9peY8ZkCMC8kJAb52BAWg=",
-			"path": "golang.org/x/text/encoding/korean",
-			"revision": "342b2e1fbaa52c93f31447ad2c6abc048c63e475",
-			"revisionTime": "2018-12-15T17:52:45Z"
 		},
 		{
 			"checksumSHA1": "55UdScb+EMOCPr7OW0hCwDsVxpg=",
