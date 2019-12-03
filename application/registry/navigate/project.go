@@ -24,10 +24,10 @@ import (
 
 var projects = NewProjects()
 
-func ProjectAddNavList(name string, ident string, navList *List) {
+func ProjectAddNavList(name string, ident string, url string, navList *List) {
 	proj := ProjectGet(ident)
 	if proj == nil {
-		ProjectAdd(-1, NewProject(name, ident, navList))
+		ProjectAdd(-1, NewProject(name, ident, url, navList))
 		return
 	}
 	proj.NavList.Add(-1, *navList...)
