@@ -12,12 +12,12 @@ $(function(){
 		var li=$(this).parent('li');
 		var active=function(){
 			if(!li.hasClass('active')){
-				li.siblings('li.active').removeClass('active');
 				li.addClass('active');
 			}
+			li.siblings('li.active').removeClass('active');
 		};
-		if(ident==$('#leftnav').data('project')) return active();
-		$('#leftnav').data('project',ident);
+		if(ident==$('#topnav').attr('data-project')) return active();
+		$('#topnav').attr('data-project',ident);
 		$.get(window.BACKEND_URL+'/project/'+ident,{partial:1},function(r){
 			if(r.Code!=1){
 				App.message({title:App.i18n.SYS_INFO,text:r.Info,type:'error'});

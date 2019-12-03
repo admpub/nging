@@ -80,10 +80,11 @@ func NewProjects() *Projects {
 	}
 }
 
-func NewProject(name string, ident string, navList *List) *ProjectItem {
+func NewProject(name string, ident string, url string, navList *List) *ProjectItem {
 	return &ProjectItem{
 		Name:    name,
 		Ident:   ident,
+		URL:     url,
 		NavList: navList,
 	}
 }
@@ -163,6 +164,7 @@ type ProjectList []*ProjectItem
 type ProjectItem struct {
 	Name    string
 	Ident   string
+	URL     string
 	NavList *List
 }
 
@@ -176,6 +178,10 @@ func (a *ProjectItem) GetName() string {
 
 func (a *ProjectItem) GetIdent() string {
 	return a.Ident
+}
+
+func (a *ProjectItem) GetURL() string {
+	return a.URL
 }
 
 //Remove 删除元素

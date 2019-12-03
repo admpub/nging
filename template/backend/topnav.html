@@ -1,9 +1,9 @@
  {{Strip}}
-        <ul class="nav navbar-nav" id="topnav">
-          {{$ident := ProjectIdent}}
+        {{$ident := ProjectIdent}}
+        <ul class="nav navbar-nav" id="topnav" data-project="{{$ident}}">
           {{range $key,$project := Projects}}
           {{if $project}}
-          <li{{if $project.Is $ident}} class="active"{{end}}><a href="__BACKEND__/" data-project="{{$project.GetIdent}}"><i class="fa fa-dashboard"></i> {{$project.GetName}}</a></li>
+          <li{{if not $ident}}{{if eq $key 0}} class="active"{{end}}{{else if $project.Is $ident}} class="active"{{end}}><a href="__BACKEND__{{$project.GetURL}}" data-project="{{$project.GetIdent}}"><i class="fa fa-dashboard"></i> {{$project.GetName}}</a></li>
           {{end}}
           {{end}}
           <!-- 

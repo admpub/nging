@@ -874,7 +874,7 @@ var LeftNavigate = &navigate.List{
 	},
 }
 
-var Project = navigate.NewProject(`Nging`, `nging`, navigate.LeftNavigate)
+var Project = navigate.NewProject(`Nging`, `nging`, `/`, navigate.LeftNavigate)
 
 func init() {
 	event.SupportManager = true
