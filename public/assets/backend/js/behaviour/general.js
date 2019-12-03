@@ -398,7 +398,7 @@ var App = function () {
     markNavByURL: function (url) {
       if (url == null) url = window.location.pathname;
       App.markNav($('#leftnav a[href="' + url + '"]'), 'left');
-      App.markNav($('#topnav a[href="' + url + '"]'), 'top');
+      App.markNav($('#topnav a[href="' + url + '"]:first'), 'top');
     },
     markNav: function (curNavA, position) {
       if (curNavA.length > 0) {
