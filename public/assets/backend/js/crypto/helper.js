@@ -1,3 +1,9 @@
+function Base64Encode(v){
+    return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(v));
+}
+function Base64Decode(v){
+    return CryptoJS.enc.Base64.parse(v).toString(CryptoJS.enc.Utf8);
+}
 function AESEncrypt(data, key, iv) {//加密
     var key = CryptoJS.enc.Utf8.parse(key);
     var iv = CryptoJS.enc.Utf8.parse(iv);
