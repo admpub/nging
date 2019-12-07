@@ -44,13 +44,15 @@ func IPInfo(ip string) (info ip2region.IpInfo, err error) {
 }
 
 func IP2Region(c echo.Context) error {
-	ip := c.Form(`ip`, c.RealIP())
+	ip := c.Form(`ip`)
 	if len(ip) > 0 {
 		info, err := IPInfo(ip)
 		if err != nil {
 			return err
 		}
 		c.Data().SetData(info)
+	} else {
+		c.Request().Form().Set(`ip`, c.RealIP())
 	}
 	return c.Render(`/tool/ip`, nil)
 }
