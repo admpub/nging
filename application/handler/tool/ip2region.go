@@ -19,8 +19,9 @@
 package tool
 
 import (
-	"github.com/admpub/ip2region/binding/golang/ip2region"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/ip2region/binding/golang/ip2region"
 )
 
 var (
@@ -43,7 +44,7 @@ func IPInfo(ip string) (info ip2region.IpInfo, err error) {
 }
 
 func IP2Region(c echo.Context) error {
-	ip := c.Form(`ip`)
+	ip := c.Form(`ip`, c.RealIP())
 	if len(ip) > 0 {
 		info, err := IPInfo(ip)
 		if err != nil {
