@@ -24,6 +24,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
 	"github.com/webx-top/echo/subdomains"
@@ -80,8 +81,11 @@ func ErrorPageFunc(c echo.Context) error {
 func FuncMap() echo.MiddlewareFunc {
 	return func(h echo.Handler) echo.Handler {
 		return echo.HandlerFunc(func(c echo.Context) error {
-			c.SetFunc(`Now`, time.Now)
-			c.SetFunc(`UnixTime`, time.Now().Local().Unix)
+			now := com.NewTime(time.Now())
+			c.SetFunc(`Now`, func() *com.Time {
+				return now
+			})
+			c.SetFunc(`UnixTime`, now.Local().Unix)
 			c.SetFunc(`HasString`, hasString)
 			c.SetFunc(`Date`, date)
 			c.SetFunc(`Token`, upload.Token)

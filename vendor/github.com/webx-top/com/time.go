@@ -468,3 +468,60 @@ func (d *Durafmt) String() string {
 func NowStr() string {
 	return time.Now().Format(`2006-01-02 15:04:05`)
 }
+
+func NewTime(t time.Time) *Time {
+	return &Time{Time: t}
+}
+
+type Time struct {
+	time.Time
+}
+
+func (t Time) ParseTimestamp(timestamp interface{}) time.Time {
+	return time.Unix(Int64(timestamp), 0)
+}
+
+func (t Time) SubTimestamp(timestamp interface{}) time.Duration {
+	return t.Sub(t.ParseTimestamp(timestamp))
+}
+
+func (t Time) IsToday(timestamp interface{}) bool {
+	st := t.ParseTimestamp(timestamp)
+	return st.Day() == t.Day() && st.Month() == t.Month() && st.Year() == t.Year()
+}
+
+func (t Time) IsThisMonth(timestamp interface{}) bool {
+	st := t.ParseTimestamp(timestamp)
+	return st.Month() == t.Month() && st.Year() == t.Year()
+}
+
+func (t Time) IsThisYear(timestamp interface{}) bool {
+	st := t.ParseTimestamp(timestamp)
+	return st.Year() == t.Year()
+}
+
+func (t Time) IsAgo(timestamp interface{}, days int, units ...int) bool {
+	unit := 86400
+	if len(units) > 0 {
+		unit = units[0]
+	}
+	return t.SubTimestamp(timestamp) > time.Second*time.Duration(days*unit)
+}
+
+func (t Time) IsFuture(timestamp interface{}, days int, units ...int) bool {
+	unit := 86400
+	if len(units) > 0 {
+		unit = units[0]
+	}
+	st := t.ParseTimestamp(timestamp)
+	return t.Unix()+int64(days*unit) <= st.Unix()
+}
+
+func (t Time) IsAfter(timestamp interface{}, agoDays int, units ...int) bool {
+	unit := 86400
+	if len(units) > 0 {
+		unit = units[0]
+	}
+	st := t.ParseTimestamp(timestamp)
+	return t.Unix()-int64(agoDays*unit) <= st.Unix()
+}
