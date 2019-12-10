@@ -178,8 +178,8 @@ function onselectColumns(obj){
                             </th>
                             {{range $k, $colName := Stored.columns}}
                             {{$field := index Stored.fields $colName}}
-                            <th sort="-{{$colName}}"><strong title="{{`类型`|T}}: {{$field.Full_type}}
-{{`注释`|T}}: {{$field.Comment}}">{{$colName}}</strong></th>
+                            <th sort="-{{$colName}}"><strong title="{{if $field}}{{`类型`|T}}: {{$field.Full_type}}
+{{`注释`|T}}: {{$field.Comment}}{{end}}">{{$colName}}</strong></th>
                             {{end}}
 						</tr>
 					</thead>
@@ -194,7 +194,13 @@ function onselectColumns(obj){
                             </td>
                             {{range $k, $colName := Stored.columns}}
                             {{$field := index Stored.fields $colName}}
-                            <td>{{$field.Format (index $v $colName).String}}</td>
+                            <td>
+                                {{- if $field -}}
+                                {{- $field.Format (index $v $colName).String -}}
+                                {{- else -}}
+                                {{- (index $v $colName).String -}}
+                                {{- end -}}
+                            </td>
                             {{end}}
 						</tr>
                         {{end}}
