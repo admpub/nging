@@ -462,6 +462,7 @@ type Field struct {
 	Field         string
 	Full_type     string
 	Type          string
+	Options       []string
 	Length        string
 	Precision     int
 	length        sql.NullInt64

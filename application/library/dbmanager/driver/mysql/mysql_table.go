@@ -25,6 +25,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo/param"
 )
 
@@ -416,6 +417,13 @@ func (m *mySQL) tableFields(table string) (map[string]*Field, []string, error) {
 				fallthrough
 			case 1:
 				field.Length = sizeInfo[0]
+			}
+		case `enum`, `set`:
+			field.Options = strings.Split(strings.Trim(field.Length, `'`), `','`)
+			if field.Default.Valid {
+				if len(field.Default.String) == 0 && !com.InSlice(``, field.Options) {
+					field.Options = append(field.Options, ``)
+				}
 			}
 		}
 		ret[v.Field.String] = field

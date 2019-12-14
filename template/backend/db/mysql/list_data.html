@@ -6,6 +6,13 @@
 <li><a href="{{dbMgrURL "viewTable" Stored.dbName Stored.table}}" data-pjax="#pcont" data-keepjs="true">{{"表"|T}}: {{Stored.table}}</a></li>
 <li class="active">{{"数据"|T}}</li>
 {{/Block}}
+{{Block "head"}}
+{{Super}}
+<link rel="stylesheet" href="__ASSETS__/js/bootstrap.editable/css/bootstrap-editable.min.css">
+<style>
+.editable-click, a.editable-click, a.editable-click:hover{border:0 !important}
+</style>
+{{/Block}}
 {{Block "main"}}
 <script>
 function onselectOrder(obj){
@@ -176,9 +183,9 @@ function onselectColumns(obj){
                             <th style="width:50px">
                                 <a href="{{dbMgrURL "listData" Stored.dbName Stored.table}}&modify=1" title="{{"编辑"|T}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil"></i></a>
                             </th>
-                            {{range $k, $colName := Stored.columns}}
+                            {{range $colIndex, $colName := Stored.columns}}
                             {{$field := index Stored.fields $colName}}
-                            <th sort="-{{$colName}}"><strong title="{{if $field}}{{`类型`|T}}: {{$field.Full_type}}
+                            <th sort="-{{$colName}}" data-index="{{$colIndex}}" data-options='{{if $field}}{{$field.Options|JSONEncode}}{{end}}' data-type='{{if $field}}{{$field.Type}}{{end}}'><strong title="{{if $field}}{{`类型`|T}}: {{$field.Full_type}}
 {{`注释`|T}}: {{$field.Comment}}{{end}}">{{$colName}}</strong></th>
                             {{end}}
 						</tr>
@@ -192,14 +199,17 @@ function onselectColumns(obj){
                             <td>
                                 <a href="{{dbMgrURL "createData" Stored.dbName Stored.table}}{{uniqueIdf $v}}" title="{{"编辑"|T}}" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil"></i></a>
                             </td>
-                            {{range $k, $colName := Stored.columns}}
+                            {{range $colIndex, $colName := Stored.columns}}
                             {{$field := index Stored.fields $colName}}
-                            <td>
+                            <td class="editable" data-index="{{$colIndex}}" data-rowno="{{$k}}">
+                                {{- $value := (index $v $colName).String -}}
+                                <div{{if and $field (eq $field.Type `set`)}} data-value="{{$value}}"{{end}}>
                                 {{- if $field -}}
-                                {{- $field.Format (index $v $colName).String -}}
+                                {{- $field.Format $value -}}
                                 {{- else -}}
-                                {{- (index $v $colName).String -}}
+                                {{- $value -}}
                                 {{- end -}}
+                                </div>
                             </td>
                             {{end}}
 						</tr>
@@ -260,7 +270,7 @@ function onselectColumns(obj){
 
 {{Block "footer"}}
 {{Super}}
-
+<script src="__ASSETS__/js/bootstrap.editable/js/bootstrap-editable.min.js"></script></script>
 {{Modal "__TMPL__/db/mysql/copy_table.yaml"}}
 {{Modal "__TMPL__/db/mysql/move_table.yaml"}}
 <script type="text/template" id="tpl-move-table-form">
@@ -322,6 +332,45 @@ $(function(){
     App.tableSorting();
     perttyCheckbox();
     App.attachCheckedAll('#checkedAll','input[type=checkbox][name=\'check[]\']','#selected-items-count');
+    $('#form-list-data > table td.editable').each(function(){
+        var index=$(this).data('index');
+        var rowno=$(this).data('rowno');
+        var thead=$('#form-list-data > table > thead');
+        var th=thead.find('th[data-index="'+index+'"]');
+        var field=th.children('strong').text();
+        var options=th.data('options');
+        var inputType='text';
+        var type=th.data('type');
+        var source=[];
+        if(options){
+            for(var i=0;i<options.length;i++){
+                source.push({value: options[i], text: options[i]!==''?options[i]:'<{{`空`|T}}>'});
+            }
+        }
+        switch(type){
+            case 'enum':
+                if(options.length>0) inputType='select';
+                break;
+            case 'set':
+                if(options.length>0) inputType='checklist';
+                break;
+            case 'tinytext':
+            case 'mediumtext':
+            case 'longtext':
+            case 'text':
+            case 'json':
+                inputType='textarea';
+                break;
+        }
+        $(this).children('div').editable({
+           url: '{{URI}}&save=set',
+           type: inputType,
+           source: source,
+           pk: $('#check-'+rowno).val(),
+           name: field,
+           title: 'Enter '+field
+        });
+    });
     $('#move-table-modal .modal-body').html($('#tpl-move-table-form').html());
     $('#copy-table-modal .modal-body').html($('#tpl-copy-table-form').html());
     $('#move-table-modal .btn-primary:last').removeClass('md-close').on('click',function(){

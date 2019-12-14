@@ -1078,17 +1078,40 @@ func (m *mySQL) ListData() error {
 		}
 	}
 	if m.IsPost() {
-		condition, err := m.genCheckedCond(fields, wheres, true)
+		save := m.Form(`save`)
+		inputName := `check[]`
+		multiSelection := true
+		if save == `set` {
+			inputName = `pk`
+			multiSelection = false
+		}
+		condition, err := m.genCheckedCond(fields, wheres, multiSelection, inputName)
 		if err != nil {
 			return err
 		}
 		if len(condition) > 0 {
-			switch m.Form(`save`) {
+			switch save {
 			case `delete`:
 				condition = ` WHERE ` + condition
 				err = m.delete(table, condition, 0)
 			case `export`:
 				return m.exportData(fields, table, selectFuncs, selectCols, []string{condition}, orderFields, descs, 1, limit, totalRows, 0)
+			case `set`:
+				condition = ` WHERE ` + condition
+				key := m.Form(`name`)
+				values := m.FormValues(`value[]`)
+				value := m.Form(`value`)
+				if len(values) > 0 {
+					value = strings.Join(values, ",")
+				}
+				err = m.set(table, condition, key, value, 1)
+				data := m.Data()
+				if err != nil {
+					data.SetError(err)
+				} else {
+					data.SetInfo(`修改成功`)
+				}
+				return m.JSON(data)
 			}
 			if err == nil {
 				return m.returnTo()
@@ -1160,12 +1183,22 @@ func (m *mySQL) ListData() error {
 	m.Set(`pagination`, pagination.New(m.Context).SetURL(`/db?`+q.Encode()+`&page={page}&rows={rows}`).SetPage(page).SetRows(totalRows))
 	return m.Render(`db/mysql/list_data`, m.checkErr(err))
 }
-func (m *mySQL) genCheckedCond(fields map[string]*Field, wheres []string, multiSelection bool) (condition string, err error) {
+func (m *mySQL) genCheckedCond(fields map[string]*Field, wheres []string, multiSelection bool, inputNames ...string) (condition string, err error) {
 	var conds []string
+	var inputName string
+	for _, inName := range inputNames {
+		if len(inName) > 0 {
+			inputName = inName
+			break
+		}
+	}
+	if len(inputName) == 0 {
+		inputName = `check[]`
+	}
 	if multiSelection {
-		conds = m.FormValues(`check[]`)
+		conds = m.FormValues(inputName)
 	} else {
-		conds = []string{m.Form(`check[]`)}
+		conds = []string{m.Form(inputName)}
 	}
 	datas := []string{}
 	for _, cond := range conds {
