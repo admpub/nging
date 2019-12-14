@@ -203,7 +203,7 @@ function onselectColumns(obj){
                             {{$field := index Stored.fields $colName}}
                             <td class="editable" data-index="{{$colIndex}}" data-rowno="{{$k}}">
                                 {{- $value := (index $v $colName).String -}}
-                                <div{{if and $field (eq $field.Type `set`)}} data-value="{{$value}}"{{end}}>
+                                <div{{if and $field (or (eq $field.Type `set`) (eq $field.Type `enum`))}} data-value="{{$value}}"{{end}}>
                                 {{- if $field -}}
                                 {{- $field.Format $value -}}
                                 {{- else -}}
