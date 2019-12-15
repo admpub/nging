@@ -21,10 +21,11 @@ package settings
 import (
 	"strings"
 
-	"github.com/admpub/log"
-	"github.com/admpub/nging/application/dbschema"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/log"
+	"github.com/admpub/nging/application/dbschema"
 )
 
 var configDefaults = map[string]map[string]*dbschema.Config{
@@ -254,7 +255,7 @@ func Init() error {
 			continue
 		}
 		for _, conf := range gs {
-			_, err = conf.Add()
+			_, err = conf.EventOFF().Add()
 			if err != nil {
 				return err
 			}
