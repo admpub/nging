@@ -19,11 +19,12 @@
 package manager
 
 import (
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model"
 	"github.com/admpub/nging/application/registry/settings"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 func configPost(c echo.Context, groups ...string) error {
@@ -65,6 +66,7 @@ func configPost(c echo.Context, groups ...string) error {
 		}
 		added := map[string]int{}
 		for k, v := range m.Objects() {
+			v.CPAFrom(m.Config)
 			added[v.Key] = k
 			setting := gm.Get(v.Key)
 			if setting == nil {
