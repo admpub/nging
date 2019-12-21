@@ -31,6 +31,8 @@ function bindEvent(elem,selectedIds,url){
       var n=$(this).attr('name');
       var c=$(this).attr('class');
       var p=Number($(this).attr('pos')||0);
+      var target=$(this).data('target');
+      if(target) $(target).val(v);
       if(v==''||v=='0'){
         while($(elem).next('select').length>0) $(elem).next('select').remove();
         return;
@@ -40,6 +42,7 @@ function bindEvent(elem,selectedIds,url){
         var props = ' pos="'+index+'"';
         if(n) props+=' name="'+n+'"';
         if(c) props+=' class="'+c+'"';
+        if(target) props+=' data-target="'+target+'"';
         $(this).after('<select'+props+'></select>');
       }
       var selectedId='';
