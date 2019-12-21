@@ -32,11 +32,12 @@ function bindEvent(elem,selectedIds,url){
       var c=$(this).attr('class');
       var p=Number($(this).attr('pos')||0);
       var target=$(this).data('target');
-      if(target) $(target).val(v);
       if(v==''||v=='0'){
+        if(p==0 && target) $(target).val(v);
         while($(elem).next('select').length>0) $(elem).next('select').remove();
         return;
       }
+      if(target) $(target).val(v);
       var index=p+1;
       if($(this).next('select').length<1){
         var props = ' pos="'+index+'"';
