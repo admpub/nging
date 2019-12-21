@@ -11,10 +11,12 @@ function fetchOptions(elem,pid,selectedId,selectedIds,url){
         $(elem).remove();
         return;
       }
+      var exclude = $(elem).data('exclude');
       var h = '<option value=""> - '+(App.i18n.PLEASE_SELECT?App.i18n.PLEASE_SELECT:'请选择')+' - </option>';
       for(var i=0;i<r.Data.listData.length;i++){
         var v=r.Data.listData[i];
         var s=selectedId==v.id?' selected':'';
+        if(exclude==v.id) s+=' disabled';
         h+='<option value="'+v.id+'"'+s+'>'+v.name+'</option>';
       }
       $(elem).html(h);
@@ -32,6 +34,7 @@ function bindEvent(elem,selectedIds,url){
       var c=$(this).attr('class');
       var p=Number($(this).attr('pos')||0);
       var target=$(this).data('target');
+      var exclude=$(this).data('exclude');
       if(v==''||v=='0'){
         if(p==0 && target) $(target).val(v);
         while($(elem).next('select').length>0) $(elem).next('select').remove();
@@ -44,6 +47,7 @@ function bindEvent(elem,selectedIds,url){
         if(n) props+=' name="'+n+'"';
         if(c) props+=' class="'+c+'"';
         if(target) props+=' data-target="'+target+'"';
+        if(exclude) props+=' data-exclude="'+exclude+'"';
         $(this).after('<select'+props+'></select>');
       }
       var selectedId='';
