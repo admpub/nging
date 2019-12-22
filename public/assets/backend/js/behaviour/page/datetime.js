@@ -41,15 +41,19 @@ App.daterangepicker = function (rangeElem, options) {
 		customArrowPrevSymbol: '<i class="fa fa-arrow-left"></i>',
 		customArrowNextSymbol: '<i class="fa fa-arrow-right"></i>',
 		autoClose: true,
-		format: 'YYYY-MM-DD',
+		format: 'YYYY-MM-DD',//YYYY-MM-DD HH:mm:ss
 		separator: ' - ',
 		singleDate: false,
 		language:'cn',
 		monthSelect: true,
 		maxDays: 30,
-    	yearSelect: true //[1900, moment().get('year')]
+		yearSelect: true, //[1900, moment().get('year')]
+		time: {
+			enabled: false
+		}
 	};
 	config = $.extend(config, options || {});
+	if(!config.time.enabled && config.format.indexOf('H')!=-1) config.time.enabled = true;
 	$(rangeElem).on('focus click touch',function(){
 		$(this).select();
 	});
@@ -60,6 +64,19 @@ App.daterangepicker = function (rangeElem, options) {
 		change = true;
 	});
 	//$(rangeElem).data('dateRangePicker').setDateRange('2013-11-20','2013-11-25');
+};
+App.daterangepickerx = function(container,startElement,endElement,options){
+	var defaults = {
+		getValue: function(){
+		  if ($(startElement).val() && $(endElement).val() ) return $(startElement).val() + ' - ' + $(endElement).val();
+		  return '';
+		},
+		setValue: function(s,s1,s2){
+		  $(startElement).val(s1);
+		  $(endElement).val(s2);
+		},
+	};
+	App.daterangepicker(container,$.extend(defaults,options||{}));
 };
 App.datepicker = function (elem, options) {
 	if (!options) options = {};
