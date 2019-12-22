@@ -119,9 +119,13 @@ App.select2 = {
     readonly: function (element, readonly) {
         $(element).prop('disabled', readonly);
     },
+    clear: function (element) {
+        $(element).val(null).trigger("change");
+    },
     buildQueryFunction: function (url, params, listKey, mapField) {
         if (listKey == null) listKey = 'list';
         return function (query) {
+            if($.isFunction(params)) params=params.call(this,arguments);
             params.q = query.term;
             params.select2 = 1;
             $.ajax(url, {
@@ -163,6 +167,7 @@ App.select2 = {
             dataType: 'json',
             quietMillis: 250,
             data: function (term, page) { // 基于页码构建查询数据
+                if($.isFunction(params)) params=params.call(this,arguments);
                 return $.extend({}, {
                     q: term, //搜索词
                     page: page, //页码

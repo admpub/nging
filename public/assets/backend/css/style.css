@@ -646,6 +646,7 @@ body.modal-open,
 .page-aside div.content {
   padding: 20px 20px;
 }
+.sp_results > li{width:100%}
 @media (max-width: 767px) {
   .page-aside {
     width: 100%;
