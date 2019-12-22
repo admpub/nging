@@ -163,7 +163,7 @@ func (t *Config) ApplyTo(e *echo.Echo, manager ...driver.Manager) *Config {
 	return t
 }
 
-func (t *Config) MakeRenderer(manager ...driver.Manager) driver.Driver{
+func (t *Config) MakeRenderer(manager ...driver.Manager) driver.Driver {
 	renderer := t.NewRenderer(manager...)
 	t.renderer = renderer
 	return renderer

@@ -23,15 +23,17 @@ package bindata
 import (
 	"path/filepath"
 
-	"github.com/admpub/nging/application/cmd/event"
-	"github.com/admpub/nging/application/initialize/backend"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware"
+
+	"github.com/admpub/nging/application/cmd/event"
+	"github.com/admpub/nging/application/initialize/backend"
 )
 
 var StaticOptions = &middleware.StaticOptions{
-	Root: "",
-	Path: "/public/assets/",
+	Root:     "",
+	Path:     "/public/assets/",
+	Fallback: []string{},
 }
 
 func Initialize() {

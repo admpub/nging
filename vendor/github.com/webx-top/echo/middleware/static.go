@@ -6,9 +6,9 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"strings"
 
 	"github.com/admpub/log"
+
 	"github.com/webx-top/echo"
 )
 
@@ -37,11 +37,15 @@ type (
 
 		Path     string          `json:"path"` //UrlPath
 		Root     string          `json:"root"`
+		Fallback []string        `json:"fallback"`
 		Index    string          `json:"index"`
 		Browse   bool            `json:"browse"`
 		Template string          `json:"template"`
 		Debug    bool            `json:"debug"`
 		FS       http.FileSystem `json:"-"`
+
+		open   func(string) (http.File, error)
+		render func(echo.Context, interface{}) error
 	}
 )
 
@@ -51,156 +55,143 @@ func Static(options ...*StaticOptions) echo.MiddlewareFunc {
 	if len(options) > 0 {
 		opts = options[0]
 	}
-	hasIndex := len(opts.Index) > 0
-	if opts.Skipper == nil {
-		opts.Skipper = echo.DefaultSkipper
+	return opts.Init().Middleware()
+}
+
+func (s *StaticOptions) Init() *StaticOptions {
+	if s.Skipper == nil {
+		s.Skipper = echo.DefaultSkipper
 	}
-	opts.Root, _ = filepath.Abs(opts.Root)
-	if len(opts.Path) > 0 && opts.Path[0] != '/' {
-		opts.Path = `/` + opts.Path
+	s.Root, _ = filepath.Abs(s.Root)
+	for index, fallback := range s.Fallback {
+		s.Fallback[index], _ = filepath.Abs(fallback)
 	}
-	var render func(echo.Context, interface{}) error
-	if opts.Browse {
-		if len(opts.Template) > 0 {
-			render = func(c echo.Context, data interface{}) error {
-				return c.Render(opts.Template, data)
-			}
-		} else {
-			t := template.New(opts.Template)
-			_, e := t.Parse(ListDirTemplate)
-			if e != nil {
-				panic(e)
-			}
-			render = func(c echo.Context, data interface{}) error {
-				w := c.Response()
-				w.Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
-				return t.Execute(w, data)
-			}
+	if len(s.Path) > 0 && s.Path[0] != '/' {
+		s.Path = `/` + s.Path
+	}
+	if s.Debug {
+		log.GetLogger("echo").Debugf("Static: %v\t-> %v", s.Path, s.Root)
+	}
+	return s
+}
+
+func (s *StaticOptions) getOpener() func(file string) (http.File, error) {
+	if s.open != nil {
+		return s.open
+	}
+	if s.FS != nil {
+		s.open = s.FS.Open
+	} else {
+		s.open = func(name string) (http.File, error) {
+			fp, err := os.Open(name)
+			return fp, err
 		}
 	}
-
-	if opts.Debug {
-		log.GetLogger("echo").Debugf("Static: %v\t-> %v", opts.Path, opts.Root)
-	}
-	if opts.FS != nil {
-		return customFS(opts, hasIndex, render)
-	}
-	return defaultFS(opts, hasIndex, render)
+	return s.open
 }
 
-func defaultFS(opts *StaticOptions, hasIndex bool, render func(echo.Context, interface{}) error) echo.MiddlewareFunc {
+func (s *StaticOptions) getRender() func(c echo.Context, data interface{}) error {
+	if s.render != nil {
+		return s.render
+	}
+	if !s.Browse {
+		return nil
+	}
+	if len(s.Template) > 0 {
+		s.render = func(c echo.Context, data interface{}) error {
+			return c.Render(s.Template, data)
+		}
+	} else {
+		t := template.New(s.Template)
+		_, e := t.Parse(ListDirTemplate)
+		if e != nil {
+			panic(e)
+		}
+		s.render = func(c echo.Context, data interface{}) error {
+			w := c.Response()
+			w.Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
+			return t.Execute(w, data)
+		}
+	}
+	return s.render
+}
+
+func (s *StaticOptions) findFile(c echo.Context, root string, hasIndex bool, file string, render func(echo.Context, interface{}) error, opener func(string) (http.File, error)) error {
+	absFile := filepath.Join(root, file)
+	fp, err := opener(absFile)
+	if err != nil {
+		return echo.ErrNotFound
+	}
+	defer fp.Close()
+	fi, err := fp.Stat()
+	if err != nil {
+		return echo.ErrNotFound
+	}
+	if fi.IsDir() {
+		if hasIndex {
+			fp.Close()
+			// Index file
+			indexFile := filepath.Join(absFile, s.Index)
+			fp, err = opener(indexFile)
+			if err != nil {
+				return echo.ErrNotFound
+			}
+			fi, err = fp.Stat()
+			if err != nil || fi.IsDir() {
+				if s.Browse {
+					return listDirByCustomFS(absFile, file, c, render, opener)
+				}
+				return echo.ErrNotFound
+			}
+			absFile = indexFile
+		} else {
+			if s.Browse {
+				return listDirByCustomFS(absFile, file, c, render, opener)
+			}
+			return echo.ErrNotFound
+		}
+	}
+	return c.ServeContent(fp, fi.Name(), fi.ModTime())
+}
+
+func (s *StaticOptions) Middleware() echo.MiddlewareFunc {
+	render := s.getRender()
+	opener := s.getOpener()
+	hasIndex := len(s.Index) > 0
 	return func(next echo.Handler) echo.Handler {
 		return echo.HandlerFunc(func(c echo.Context) error {
-			if opts.Skipper(c) {
+			if s.Skipper(c) {
 				return next.Handle(c)
 			}
 			file := c.Request().URL().Path()
-			length := len(opts.Path)
-			if len(file) < length || file[0:length] != opts.Path {
+			length := len(s.Path)
+			if len(file) < length || file[0:length] != s.Path {
 				return next.Handle(c)
 			}
 			file = file[length:]
 			file = path.Clean(file)
-			absFile := filepath.Join(opts.Root, file)
-			if !strings.HasPrefix(absFile, opts.Root) {
-				return next.Handle(c)
+			err := s.findFile(c, s.Root, hasIndex, file, render, opener)
+			if err == nil {
+				return err
 			}
-			fp, err := os.Open(absFile)
-			if err != nil {
-				return echo.ErrNotFound
-			}
-			defer fp.Close()
-			fi, err := fp.Stat()
-			if err != nil {
-				return echo.ErrNotFound
-			}
-			if fi.IsDir() {
-				if hasIndex {
-					// Index file
-					indexFile := filepath.Join(absFile, opts.Index)
-					fi, err = os.Stat(indexFile)
-					if err != nil || fi.IsDir() {
-						if opts.Browse {
-							return listDir(absFile, file, c, render)
-						}
-						return echo.ErrNotFound
+			if err == echo.ErrNotFound {
+				if len(s.Fallback) == 0 {
+					return err
+				}
+				for _, fallback := range s.Fallback {
+					err = s.findFile(c, fallback, hasIndex, file, render, opener)
+					if err == nil {
+						return err
 					}
-					absFile = indexFile
-				} else {
-					if opts.Browse {
-						return listDir(absFile, file, c, render)
-					}
-					return echo.ErrNotFound
 				}
 			}
-			return c.ServeContent(fp, fi.Name(), fi.ModTime())
+			return err
 		})
 	}
 }
 
-func customFS(opts *StaticOptions, hasIndex bool, render func(echo.Context, interface{}) error) echo.MiddlewareFunc {
-	return func(next echo.Handler) echo.Handler {
-		return echo.HandlerFunc(func(c echo.Context) error {
-			if opts.Skipper(c) {
-				return next.Handle(c)
-			}
-			file := c.Request().URL().Path()
-			length := len(opts.Path)
-			if len(file) < length || file[0:length] != opts.Path {
-				return next.Handle(c)
-			}
-			file = file[length:]
-			file = path.Clean(file)
-			absFile := filepath.Join(opts.Root, file)
-			if !strings.HasPrefix(absFile, opts.Root) {
-				return next.Handle(c)
-			}
-			fp, err := opts.FS.Open(file)
-			if err != nil {
-				return echo.ErrNotFound
-			}
-			fi, err := fp.Stat()
-			if err != nil {
-				fp.Close()
-				return echo.ErrNotFound
-			}
-			if fi.IsDir() {
-				fp.Close()
-				if hasIndex {
-					// Index file
-					indexFile := filepath.Join(file, opts.Index)
-					fp, err = opts.FS.Open(indexFile)
-					if err != nil {
-						return echo.ErrNotFound
-					}
-					fi, err = fp.Stat()
-					if err != nil || fi.IsDir() {
-						fp.Close()
-						if opts.Browse {
-							return listDirByCustomFS(absFile, file, c, render, opts.FS)
-						}
-						return echo.ErrNotFound
-					}
-				} else {
-					if opts.Browse {
-						return listDirByCustomFS(absFile, file, c, render, opts.FS)
-					}
-					return echo.ErrNotFound
-				}
-			}
-			defer fp.Close()
-			return c.ServeContent(fp, fi.Name(), fi.ModTime())
-		})
-	}
-}
-
-func listDir(absFile string, file string, c echo.Context, render func(echo.Context, interface{}) error) error {
-	fs := http.Dir(filepath.Dir(absFile))
-	return listDirByCustomFS(absFile, filepath.Base(absFile), c, render, fs)
-}
-
-func listDirByCustomFS(absFile string, file string, c echo.Context, render func(echo.Context, interface{}) error, fs http.FileSystem) error {
-	d, err := fs.Open(file)
+func listDirByCustomFS(absFile string, file string, c echo.Context, render func(echo.Context, interface{}) error, opener func(string) (http.File, error)) error {
+	d, err := opener(file)
 	if err != nil {
 		return echo.ErrNotFound
 	}
