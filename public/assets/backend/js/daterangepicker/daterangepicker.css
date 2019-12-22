@@ -371,6 +371,7 @@
   padding: 0;
   margin: 0;
   height: 20px;
+  display: inline-block;
 }
 
 .date-picker-wrapper .time1 {
