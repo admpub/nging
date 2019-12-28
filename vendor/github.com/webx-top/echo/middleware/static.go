@@ -63,7 +63,7 @@ func (s *StaticOptions) Init() *StaticOptions {
 		s.Skipper = echo.DefaultSkipper
 	}
 	var err error
-	s.Root, _ = filepath.Abs(s.Root)
+	s.Root, err = filepath.Abs(s.Root)
 	if err != nil {
 		panic(err)
 	}
