@@ -479,8 +479,8 @@ var App = function () {
     attachAjaxURL: function (elem) {
       if (elem == null) elem = document;
       $(elem).on('click', '[data-ajax-url]', function () {
-        var url = $(this).data('ajax-url'), method = $(this).data('ajax-method')||'get', params = $(this).data('ajax-params')||{}, title = $(this).attr('title'), accept = $(this).data('ajax-accept')||'html', target = $(this).data('ajax-target'), callback = $(this).data('ajax-callback');
-        if (!title) title = $(this).text();
+        var a = $(this), url = a.data('ajax-url'), method = a.data('ajax-method')||'get', params = a.data('ajax-params')||{}, title = a.attr('title'), accept = a.data('ajax-accept')||'html', target = a.data('ajax-target'), callback = a.data('ajax-callback');
+        if (!title) title = a.text();
         if ($.isFunction(params)) params = params.call(this,arguments);
         $[method](url, params||{}, function (r) {
           if(callback) return callback.call(this,arguments);
@@ -495,6 +495,7 @@ var App = function () {
               data=r;
             }
             $(target).html(data);
+            a.trigger('partial.loaded',arguments);
             return;
           }
           if(accept=='json'){
