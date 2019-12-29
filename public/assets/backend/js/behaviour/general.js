@@ -497,6 +497,7 @@ var App = function () {
             }
             $(target).html(data);
             a.trigger('partial.loaded',arguments);
+            $(target).trigger('partial.loaded',arguments);
             App.loading('hide');
             return;
           }
