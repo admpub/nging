@@ -79,6 +79,24 @@ pre {
 .text-middle{
   vertical-align: middle !important;
 }
+.text-xs-minus{
+  font-size: 0.8em !important;
+}
+.text-xs{
+  font-size: 1em !important;
+}
+.text-sm{
+  font-size: 1.2em !important;
+}
+.text-md{
+  font-size: 1.5em !important;
+}
+.text-lg{
+  font-size: 2em !important;
+}
+.text-lg-plus{
+  font-size: 3em !important;
+}
 .text-top{
   vertical-align: top !important;
 }
