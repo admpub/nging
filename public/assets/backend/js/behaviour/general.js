@@ -481,6 +481,7 @@ var App = function () {
       $(elem).on('click', '[data-ajax-url]', function () {
         var a = $(this), url = a.data('ajax-url'), method = a.data('ajax-method')||'get', params = a.data('ajax-params')||{}, title = a.attr('title'), accept = a.data('ajax-accept')||'html', target = a.data('ajax-target'), callback = a.data('ajax-callback');
         if (!title) title = a.text();
+        if (target) App.loading('show');
         if ($.isFunction(params)) params = params.call(this,arguments);
         $[method](url, params||{}, function (r) {
           if(callback) return callback.call(this,arguments);
@@ -496,6 +497,7 @@ var App = function () {
             }
             $(target).html(data);
             a.trigger('partial.loaded',arguments);
+            App.loading('hide');
             return;
           }
           if(accept=='json'){
