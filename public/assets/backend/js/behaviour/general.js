@@ -479,12 +479,26 @@ var App = function () {
     attachAjaxURL: function (elem) {
       if (elem == null) elem = document;
       $(elem).on('click', '[data-ajax-url]', function () {
-        var url = $(this).data('ajax-url'), title = $(this).attr('title'), accept = $(this).data('ajax-accept')||'html';
+        var url = $(this).data('ajax-url'), method = $(this).data('ajax-method')||'get', params = $(this).data('ajax-params')||{}, title = $(this).attr('title'), accept = $(this).data('ajax-accept')||'html', target = $(this).data('ajax-target'), callback = $(this).data('ajax-callback');
         if (!title) title = $(this).text();
-        $.get(url, {}, function (r) {
-          if(accept=='json'){
-            App.message({ title: title, text: r.Info, type: r.Code==1?'success':'error', time: 5000, sticky: false });
+        if ($.isFunction(params)) params = params.call(this,arguments);
+        $[method](url, params||{}, function (r) {
+          if(callback) return callback.call(this,arguments);
+          if(target) {
+            var data;
+            if(accept=='json'){
+              if(r.Code!=1){
+                return App.message({ title: title, text: r.Info, type: 'error', time: 5000, sticky: false });
+              }
+              data=r.Data;
+            }else{
+              data=r;
+            }
+            $(target).html(data);
             return;
+          }
+          if(accept=='json'){
+            return App.message({ title: title, text: r.Info, type: r.Code==1?'success':'error', time: 5000, sticky: false });
           }
           App.message({ title: title, text: r, time: 5000, sticky: false });
         }, accept);
