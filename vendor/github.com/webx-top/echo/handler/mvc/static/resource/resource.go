@@ -15,6 +15,7 @@
    limitations under the License.
 
 */
+
 package resource
 
 import (
@@ -31,6 +32,7 @@ import (
 	"time"
 
 	"github.com/admpub/log"
+
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/handler/mvc/static/minify"
@@ -38,16 +40,16 @@ import (
 )
 
 var (
-	regexCssUrlAttr      = regexp.MustCompile(`url\(['"]?([^\)'"]+)['"]?\)`)
-	regexCssImport       = regexp.MustCompile(`@import[\s]+["']([^"']+)["'][\s]*;`)
-	regexCssCleanSpace   = regexp.MustCompile(`(?s)\s*(\{|\}|;|:)\s*`)
-	regexCssCleanSpace2  = regexp.MustCompile(`(?s)\s{2,}`)
-	regexCssCleanComment = regexp.MustCompile(`(?s)[\s]*/\*(.*?)\*/[\s]*`)
+	regexCSSURLAttr      = regexp.MustCompile(`url\(['"]?([^\)'"]+)['"]?\)`)
+	regexCSSImport       = regexp.MustCompile(`@import[\s]+["']([^"']+)["'][\s]*;`)
+	regexCSSCleanSpace   = regexp.MustCompile(`(?s)\s*(\{|\}|;|:)\s*`)
+	regexCSSCleanSpace2  = regexp.MustCompile(`(?s)\s{2,}`)
+	regexCSSCleanComment = regexp.MustCompile(`(?s)[\s]*/\*(.*?)\*/[\s]*`)
 )
 
-type urlMapInfo struct {
-	AbsPath string
-	Md5     string
+type urlMap struct {
+	Abs string //绝对路径
+	Md5 string //网址MD5
 }
 
 func NewStatic(staticPath, rootPath string) *Static {
@@ -59,12 +61,12 @@ func NewStatic(staticPath, rootPath string) *Static {
 			Path: staticPath,
 			Root: rootPath,
 		},
-		CombineJs:       true,
-		CombineCss:      true,
+		CombineJS:       true,
+		CombineCSS:      true,
 		CombineSavePath: `combine`,
 		Combined:        make(map[string][]string),
 		Combines:        make(map[string]bool),
-		urlMap:          make(map[string]*urlMapInfo),
+		urlMap:          make(map[string]*urlMap),
 		mutex:           &sync.Mutex{},
 		logger:          log.GetLogger(`echo`),
 	}
@@ -72,12 +74,12 @@ func NewStatic(staticPath, rootPath string) *Static {
 
 type Static struct {
 	*mw.StaticOptions
-	CombineJs       bool
-	CombineCss      bool
+	CombineJS       bool
+	CombineCSS      bool
 	CombineSavePath string //合并文件保存路径，首尾均不带斜杠
 	Combined        map[string][]string
 	Combines        map[string]bool
-	urlMap          map[string]*urlMapInfo
+	urlMap          map[string]*urlMap
 	mutex           *sync.Mutex
 	Public          *Static
 	logger          *log.Logger
@@ -111,17 +113,17 @@ func (s *Static) StaticURL(staticFile string) (r string) {
 	return
 }
 
-func (s *Static) JsURL(staticFile string) (r string) {
+func (s *Static) JSURL(staticFile string) (r string) {
 	r = s.StaticURL("js/" + staticFile)
 	return
 }
 
-func (s *Static) CssURL(staticFile string) (r string) {
+func (s *Static) CSSURL(staticFile string) (r string) {
 	r = s.StaticURL("css/" + staticFile)
 	return r
 }
 
-func (s *Static) ImgURL(staticFile string) (r string) {
+func (s *Static) IMGURL(staticFile string) (r string) {
 	r = s.StaticURL("img/" + staticFile)
 	return r
 }
@@ -129,24 +131,24 @@ func (s *Static) ImgURL(staticFile string) (r string) {
 func (s *Static) cachedURLInfo(key string, ext string) (absPath string, fileName string) {
 	if v, ok := s.urlMap[key]; ok {
 		fileName = v.Md5 + "." + ext
-		absPath = v.AbsPath
+		absPath = v.Abs
 	} else {
 		md5 := com.Md5(key)
 		fileName = md5 + "." + ext
 		absPath = filepath.Join(s.Root, s.CombineSavePath, fileName)
-		s.urlMap[key] = &urlMapInfo{
-			AbsPath: absPath,
-			Md5:     md5,
+		s.urlMap[key] = &urlMap{
+			Abs: absPath,
+			Md5: md5,
 		}
 	}
 	return
 }
 
-func (s *Static) JsTag(staticFiles ...string) template.HTML {
+func (s *Static) JST(staticFiles ...string) template.HTML {
 	var r string
-	if len(staticFiles) == 1 || !s.CombineJs {
+	if len(staticFiles) == 1 || !s.CombineJS {
 		for _, staticFile := range staticFiles {
-			r += `<script type="text/javascript" src="` + s.JsURL(staticFile) + `" charset="utf-8"></script>`
+			r += `<script type="text/javascript" src="` + s.JSURL(staticFile) + `" charset="utf-8"></script>`
 		}
 		return template.HTML(r)
 	}
@@ -169,11 +171,11 @@ func (s *Static) JsTag(staticFiles ...string) template.HTML {
 	return template.HTML(r)
 }
 
-func (s *Static) CssTag(staticFiles ...string) template.HTML {
+func (s *Static) CSST(staticFiles ...string) template.HTML {
 	var r string
-	if len(staticFiles) == 1 || !s.CombineCss {
+	if len(staticFiles) == 1 || !s.CombineCSS {
 		for _, staticFile := range staticFiles {
-			r += `<link rel="stylesheet" type="text/css" href="` + s.CssURL(staticFile) + `" charset="utf-8" />`
+			r += `<link rel="stylesheet" type="text/css" href="` + s.CSSURL(staticFile) + `" charset="utf-8" />`
 		}
 		return template.HTML(r)
 	}
@@ -200,7 +202,7 @@ func (s *Static) CssTag(staticFiles ...string) template.HTML {
 	return template.HTML(r)
 }
 
-func (s *Static) ImgTag(staticFile string, attrs ...string) template.HTML {
+func (s *Static) IMGT(staticFile string, attrs ...string) template.HTML {
 	var attr string
 	for i, l := 0, len(attrs)-1; i < l; i++ {
 		var k, v string
@@ -209,7 +211,7 @@ func (s *Static) ImgTag(staticFile string, attrs ...string) template.HTML {
 		v = attrs[i]
 		attr += ` ` + k + `="` + v + `"`
 	}
-	r := `<img src="` + s.ImgURL(staticFile) + `"` + attr + ` />`
+	r := `<img src="` + s.IMGURL(staticFile) + `"` + attr + ` />`
 	return template.HTML(r)
 }
 
@@ -218,12 +220,12 @@ func (s *Static) Register(funcMap map[string]interface{}) map[string]interface{}
 		funcMap = map[string]interface{}{}
 	}
 	funcMap["StaticURL"] = s.StaticURL
-	funcMap["JsURL"] = s.JsURL
-	funcMap["CssURL"] = s.CssURL
-	funcMap["ImgURL"] = s.ImgURL
-	funcMap["JsTag"] = s.JsTag
-	funcMap["CssTag"] = s.CssTag
-	funcMap["ImgTag"] = s.ImgTag
+	funcMap["JSURL"] = s.JSURL
+	funcMap["CSSURL"] = s.CSSURL
+	funcMap["IMGURL"] = s.IMGURL
+	funcMap["JST"] = s.JST
+	funcMap["CSST"] = s.CSST
+	funcMap["IMGT"] = s.IMGT
 	return funcMap
 }
 
@@ -280,12 +282,12 @@ func (s *Static) IsCombined(combineUrl string) (ok bool) {
 }
 
 func (s *Static) ClearCache() {
-	for f, _ := range s.Combines {
+	for f := range s.Combines {
 		os.Remove(f)
 	}
 	s.Combined = make(map[string][]string)
 	s.Combines = make(map[string]bool)
-	s.urlMap = make(map[string]*urlMapInfo)
+	s.urlMap = make(map[string]*urlMap)
 }
 
 func (s *Static) OnUpdate() func(string) {
@@ -312,7 +314,7 @@ func (s *Static) genCombinedJS(absPath, urlPath string) (content string, err err
 			log.Warn(err)
 		}
 		con = string(b)
-		//con = regexCssCleanComment.ReplaceAllString(con, ``)
+		//con = regexCSSCleanComment.ReplaceAllString(con, ``)
 	}
 	content += con
 	return
@@ -323,8 +325,8 @@ func (s *Static) genCombinedCSS(absPath, urlPath string, onImportFn func(string)
 	if err != nil {
 		return ``, err
 	}
-	all := regexCssUrlAttr.FindAllStringSubmatch(con, -1)
-	dir := path.Dir(s.CssURL(urlPath))
+	all := regexCSSURLAttr.FindAllStringSubmatch(con, -1)
+	dir := path.Dir(s.CSSURL(urlPath))
 	for _, v := range all {
 		res := dir
 		val := v[1]
@@ -334,7 +336,7 @@ func (s *Static) genCombinedCSS(absPath, urlPath string, onImportFn func(string)
 		}
 		con = strings.Replace(con, v[0], "url('"+res+"/"+strings.TrimLeft(val, "/")+"')", 1)
 	}
-	all = regexCssImport.FindAllStringSubmatch(con, -1)
+	all = regexCSSImport.FindAllStringSubmatch(con, -1)
 	absDir := filepath.Dir(absPath)
 	for _, v := range all {
 		val := v[1]
@@ -358,9 +360,9 @@ func (s *Static) genCombinedCSS(absPath, urlPath string, onImportFn func(string)
 	}
 	content += "\n/* <from: " + urlPath + "> */\n"
 	/*
-		con = regexCssCleanComment.ReplaceAllString(con, ``)
-		con = regexCssCleanSpace.ReplaceAllString(con, `$1`)
-		con = regexCssCleanSpace2.ReplaceAllString(con, ` `)
+		con = regexCSSCleanComment.ReplaceAllString(con, ``)
+		con = regexCSSCleanSpace.ReplaceAllString(con, `$1`)
+		con = regexCSSCleanSpace2.ReplaceAllString(con, ` `)
 	*/
 	b, err := minify.MinifyCSS2([]byte(con))
 	if err != nil {

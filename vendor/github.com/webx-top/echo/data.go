@@ -337,8 +337,19 @@ func NewData(ctx Context) *RawData {
 
 //KV 键值对
 type KV struct {
-	K string
-	V string
+	K  string
+	V  string
+	X  interface{} `json:",omitempty" xml:",omitempty"`
+	fn func() interface{}
+}
+
+func (a *KV) SetFn(fn func() interface{}) *KV {
+	a.fn = fn
+	return a
+}
+
+func (a *KV) Fn() func() interface{} {
+	return a.fn
 }
 
 type KVList []*KV
@@ -347,7 +358,11 @@ func (list *KVList) Add(k, v string) {
 	*list = append(*list, &KV{K: k, V: v})
 }
 
-func (list *KVList) Del(i int) {
+func (list *KVList) AddItem(item *KV) {
+	*list = append(*list, item)
+}
+
+func (list *KVList) Delete(i int) {
 	n := len(*list)
 	if i+1 < n {
 		*list = append((*list)[0:i], (*list)[i+1:]...)
@@ -407,10 +422,25 @@ func (a *KVData) Add(k, v string) *KVData {
 	return a
 }
 
+func (a *KVData) AddItem(item *KV) *KVData {
+	if _, y := a.index[item.K]; !y {
+		a.index[item.K] = []int{}
+	}
+	a.index[item.K] = append(a.index[item.K], len(a.slice))
+	a.slice = append(a.slice, item)
+	return a
+}
+
 //Set 设置首个键值
 func (a *KVData) Set(k, v string) *KVData {
 	a.index[k] = []int{0}
 	a.slice = []*KV{&KV{K: k, V: v}}
+	return a
+}
+
+func (a *KVData) SetItem(item *KV) *KVData {
+	a.index[item.K] = []int{0}
+	a.slice = []*KV{item}
 	return a
 }
 
@@ -421,6 +451,15 @@ func (a *KVData) Get(k string) string {
 		}
 	}
 	return ``
+}
+
+func (a *KVData) GetItem(k string) *KV {
+	if indexes, ok := a.index[k]; ok {
+		if len(indexes) > 0 {
+			return a.slice[indexes[0]]
+		}
+	}
+	return nil
 }
 
 func (a *KVData) Has(k string) bool {
