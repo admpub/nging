@@ -65,27 +65,43 @@ func (a *DbSync) ToDSN(user, pwd, host, db string) string {
 }
 
 func (a *DbSync) ParseDSN(dsn string) (user string, pwd string, host string, dbName string) {
+	if len(dsn) == 0 {
+		return
+	}
 	idx := strings.Index(dsn, `:`)
-	user, _ = url.QueryUnescape(dsn[0:idx])
+	if idx > 0 {
+		user, _ = url.QueryUnescape(dsn[0:idx])
+	}
 
 	dsn = dsn[idx+1:]
 	idx = strings.Index(dsn, `@`)
-	pwd, _ = url.QueryUnescape(dsn[0:idx])
+	if idx > 0 {
+		pwd, _ = url.QueryUnescape(dsn[0:idx])
+	}
 
 	dsn = dsn[idx+1:]
 	idx = strings.Index(dsn, `/`)
-	host = dsn[0:idx]
+	if idx > 0 {
+		host = dsn[0:idx]
+	}
 
 	host = strings.TrimPrefix(host, `(`)
 	host = strings.TrimSuffix(host, `)`)
-
-	dbName = dsn[idx+1:]
+	if len(dsn) > idx+1 {
+		dbName = dsn[idx+1:]
+	}
 	return
 }
 
 func (a *DbSync) HidePassword(dsn string) string {
+	if len(dsn) == 0 {
+		return dsn
+	}
 	idx := strings.Index(dsn, `:`)
-	user, _ := url.QueryUnescape(dsn[0:idx])
+	var user string
+	if idx > 0 {
+		user, _ = url.QueryUnescape(dsn[0:idx])
+	}
 
 	dsn = dsn[idx+1:]
 	idx = strings.Index(dsn, `@`)
