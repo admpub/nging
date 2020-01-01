@@ -1312,9 +1312,9 @@ var App = function () {
       });
     },
     removeSelected: function (elem, postField, removeURL, callback) {
-      return App.opSelected(elem, postField, removeURL, callback, App.i18n.PLEASE_SELECT_FOR_REMOVE, App.i18n.CONFIRM_REMOVE);
+      return App.opSelected(elem, postField, removeURL, callback, App.i18n.CONFIRM_REMOVE, App.i18n.PLEASE_SELECT_FOR_REMOVE);
     },
-    opSelected: function (elem, postField, removeURL, callback, unselectedMsg, confirmMsg) {
+    opSelected: function (elem, postField, removeURL, callback, confirmMsg, unselectedMsg) {
       if (removeURL == null) {
         removeURL = window.location.href;
       } else if (String(removeURL).charAt(0) != '/') {
