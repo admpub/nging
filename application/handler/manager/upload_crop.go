@@ -95,7 +95,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	if len(uploadType) == 0 {
 		uploadType = ctx.Form(`type`)
 	}
-	prepareData, err := upload.Prepare(ctx, uploadType, ownerID, ownerType, ``, StorerEngine)
+	prepareData, err := upload.Prepare(ctx, uploadType, ``, StorerEngine)
 	if err != nil {
 		return err
 	}

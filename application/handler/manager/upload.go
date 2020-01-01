@@ -106,7 +106,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		return err
 	}
 	fileType := ctx.Form(`filetype`)
-	prepareData, err := upload.Prepare(ctx, uploadType, ownerID, ownerType, fileType, StorerEngine)
+	prepareData, err := upload.Prepare(ctx, uploadType, fileType, StorerEngine)
 	if err != nil {
 		datax, embed := ResponseDataForUpload(ctx, field, err, fileURLs)
 		if !embed {

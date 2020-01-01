@@ -12,13 +12,14 @@ var NopChecker uploadClient.Checker = func(r *uploadClient.Result) error {
 }
 
 type PrepareData struct {
-	newStorer Constructor
-	storer    Storer
-	DBSaver   DBSaver
-	Checker   uploadClient.Checker
-	Checkin   Checker
-	TableName string
-	FieldName string
+	newStorer    Constructor
+	storer       Storer
+	StorerEngine string
+	DBSaver      DBSaver
+	Checker      uploadClient.Checker
+	Checkin      Checker
+	TableName    string
+	FieldName    string
 }
 
 func (p *PrepareData) Storer(ctx echo.Context) Storer {
@@ -36,7 +37,7 @@ func (p *PrepareData) Close() error {
 }
 
 // Prepare 上传前的环境准备
-func Prepare(ctx echo.Context, uploadType string, ownerID uint64, ownerType string, fileType string, storerEngine string) (*PrepareData, error) {
+func Prepare(ctx echo.Context, uploadType string, fileType string, storerEngine string) (*PrepareData, error) {
 	if len(uploadType) == 0 {
 		return nil, ctx.E(`请提供参数“%s”`, ctx.Path())
 	}
@@ -62,12 +63,13 @@ func Prepare(ctx echo.Context, uploadType string, ownerID uint64, ownerType stri
 		return NopChecker(r)
 	}
 	data := &PrepareData{
-		newStorer: newStore,
-		DBSaver:   dbsaver,
-		Checker:   checker,
-		Checkin:   CheckerGet(uploadType, defaults...),
-		TableName: tableName,
-		FieldName: fieldName,
+		newStorer:    newStore,
+		StorerEngine: storerEngine,
+		DBSaver:      dbsaver,
+		Checker:      checker,
+		Checkin:      CheckerGet(uploadType, defaults...),
+		TableName:    tableName,
+		FieldName:    fieldName,
 	}
 	return data, nil
 }
