@@ -162,7 +162,7 @@ var App = function () {
   var cachedLang = null;
   return {
     clientID: {},
-    i18n: { SYS_INFO: 'System Information', UPLOAD_ERR: 'Upload Error', PLEASE_SELECT_FOR_REMOVE: 'Please select the item you want to delete', CONFIRM_REMOVE: 'Are you sure you want to delete them?', SELECTED_ITEMS: 'You have selected %d items', SUCCESS: 'The operation was successful', FAILURE: 'Operation failed' },
+    i18n: { SYS_INFO: 'System Information', UPLOAD_ERR: 'Upload Error', PLEASE_SELECT_FOR_OPERATE: 'Please select the item you want to operate', PLEASE_SELECT_FOR_REMOVE: 'Please select the item you want to delete', CONFIRM_REMOVE: 'Are you sure you want to delete them?', SELECTED_ITEMS: 'You have selected %d items', SUCCESS: 'The operation was successful', FAILURE: 'Operation failed' },
     lang: 'en',
     sprintf: sprintfWrapper.init,
     t: function (key) {
@@ -1312,6 +1312,9 @@ var App = function () {
       });
     },
     removeSelected: function (elem, postField, removeURL, callback) {
+      return App.opSelected(elem, postField, removeURL, callback, App.i18n.PLEASE_SELECT_FOR_REMOVE, App.i18n.CONFIRM_REMOVE);
+    },
+    opSelected: function (elem, postField, removeURL, callback, unselectedMsg, confirmMsg) {
       if (removeURL == null) {
         removeURL = window.location.href;
       } else if (String(removeURL).charAt(0) != '/') {
@@ -1323,11 +1326,15 @@ var App = function () {
         if( $(this).is(':checked') && !$(this).prop('disabled') ) data.push({ name: postField, value: $(this).val() });
       });
       if (data.length < 1) {
-        App.message({ title: App.i18n.SYS_INFO, text: App.i18n.PLEASE_SELECT_FOR_REMOVE, type: 'warning' });
+        App.message({ title: App.i18n.SYS_INFO, text: unselectedMsg||$(elem).data('unselected')||App.i18n.PLEASE_SELECT_FOR_OPERATE, type: 'warning' });
         return false;
       }
-      var answer = App.i18n.CONFIRM_REMOVE+"\n"+App.sprintf(App.i18n.SELECTED_ITEMS,data.length);
-      if (!confirm(answer)) return false;
+      
+      var answer = confirmMsg||$(elem).data('answer');
+      if (answer){
+        answer+="\n"+App.sprintf(App.i18n.SELECTED_ITEMS,data.length);
+        if (!confirm(answer)) return false;
+      }
       App.loading('show');
       $.get(removeURL, data, function (r) {
         App.loading('hide');
