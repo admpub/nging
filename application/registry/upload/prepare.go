@@ -20,6 +20,7 @@ type PrepareData struct {
 	Checkin      Checker
 	TableName    string
 	FieldName    string
+	FileType     string
 }
 
 func (p *PrepareData) Storer(ctx echo.Context) Storer {
@@ -70,6 +71,7 @@ func Prepare(ctx echo.Context, uploadType string, fileType string, storerEngine 
 		Checkin:      CheckerGet(uploadType, defaults...),
 		TableName:    tableName,
 		FieldName:    fieldName,
+		FileType:     fileType,
 	}
 	return data, nil
 }
