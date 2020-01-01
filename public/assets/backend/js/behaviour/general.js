@@ -1326,11 +1326,11 @@ var App = function () {
         if( $(this).is(':checked') && !$(this).prop('disabled') ) data.push({ name: postField, value: $(this).val() });
       });
       if (data.length < 1) {
-        App.message({ title: App.i18n.SYS_INFO, text: unselectedMsg||$(elem).data('unselected')||App.i18n.PLEASE_SELECT_FOR_OPERATE, type: 'warning' });
+        App.message({ title: App.i18n.SYS_INFO, text: unselectedMsg||App.i18n.PLEASE_SELECT_FOR_OPERATE, type: 'warning' });
         return false;
       }
       
-      var answer = confirmMsg||$(elem).data('answer');
+      var answer = confirmMsg;
       if (answer){
         answer+="\n"+App.sprintf(App.i18n.SELECTED_ITEMS,data.length);
         if (!confirm(answer)) return false;
