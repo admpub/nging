@@ -28,6 +28,7 @@ import (
 )
 
 type Results []*Result
+type Checker func(r *Result) error
 
 func (r Results) FileURLs() (rs []string) {
 	rs = make([]string, len(r))

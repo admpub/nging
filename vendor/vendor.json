@@ -3397,46 +3397,46 @@
 			"revisionTime": "2018-09-30T19:44:53Z"
 		},
 		{
-			"checksumSHA1": "OJnsuhMM9IBZqSvqHN46RV5j8Ik=",
+			"checksumSHA1": "Jyku+IRZA07vjllMqB09E3jMIsM=",
 			"path": "github.com/webx-top/client/upload",
-			"revision": "5e59cc130355cfe6c05480dd0bce35c7bfbb6cc9",
-			"revisionTime": "2019-11-16T13:34:30Z"
+			"revision": "9dea384b41382511a3407a9497d44c4baef4d63b",
+			"revisionTime": "2020-01-01T02:51:53Z"
 		},
 		{
 			"checksumSHA1": "K3MSyusucwxldAdCPhkqTM9b+nI=",
 			"path": "github.com/webx-top/client/upload/driver",
-			"revision": "5e59cc130355cfe6c05480dd0bce35c7bfbb6cc9",
-			"revisionTime": "2019-11-16T13:34:30Z"
+			"revision": "9dea384b41382511a3407a9497d44c4baef4d63b",
+			"revisionTime": "2020-01-01T02:51:53Z"
 		},
 		{
 			"checksumSHA1": "7PGKttkHoOirHzJ9dGtUsw7QTU8=",
 			"path": "github.com/webx-top/client/upload/driver/markdown",
-			"revision": "5e59cc130355cfe6c05480dd0bce35c7bfbb6cc9",
-			"revisionTime": "2019-11-16T13:34:30Z"
+			"revision": "9dea384b41382511a3407a9497d44c4baef4d63b",
+			"revisionTime": "2020-01-01T02:51:53Z"
 		},
 		{
 			"checksumSHA1": "q/Vnvvo9FLvKngY+TxfPe/6fpxo=",
 			"path": "github.com/webx-top/client/upload/driver/simple",
-			"revision": "5e59cc130355cfe6c05480dd0bce35c7bfbb6cc9",
-			"revisionTime": "2019-11-16T13:34:30Z"
+			"revision": "9dea384b41382511a3407a9497d44c4baef4d63b",
+			"revisionTime": "2020-01-01T02:51:53Z"
 		},
 		{
 			"checksumSHA1": "mgYLztuI62glG36ww/wwdh98/9U=",
 			"path": "github.com/webx-top/client/upload/driver/webuploader",
-			"revision": "5e59cc130355cfe6c05480dd0bce35c7bfbb6cc9",
-			"revisionTime": "2019-11-16T13:34:30Z"
+			"revision": "9dea384b41382511a3407a9497d44c4baef4d63b",
+			"revisionTime": "2020-01-01T02:51:53Z"
 		},
 		{
 			"checksumSHA1": "hlYqoKWgIFVcEhVV9Squk/1T+Hc=",
 			"path": "github.com/webx-top/client/upload/driver/xheditor",
-			"revision": "5e59cc130355cfe6c05480dd0bce35c7bfbb6cc9",
-			"revisionTime": "2019-11-16T13:34:30Z"
+			"revision": "9dea384b41382511a3407a9497d44c4baef4d63b",
+			"revisionTime": "2020-01-01T02:51:53Z"
 		},
 		{
 			"checksumSHA1": "uIxu/zEYMVYJxaa8hxMauHDRuHs=",
 			"path": "github.com/webx-top/client/upload/watermark",
-			"revision": "5e59cc130355cfe6c05480dd0bce35c7bfbb6cc9",
-			"revisionTime": "2019-11-16T13:34:30Z"
+			"revision": "9dea384b41382511a3407a9497d44c4baef4d63b",
+			"revisionTime": "2020-01-01T02:51:53Z"
 		},
 		{
 			"checksumSHA1": "VAtcif0KItDYL6j76JBKn86cYlw=",

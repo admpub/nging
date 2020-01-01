@@ -19,7 +19,6 @@
 package manager
 
 import (
-	"errors"
 	"io"
 	"mime/multipart"
 	"path"
@@ -48,10 +47,7 @@ func ResponseDataForUpload(ctx echo.Context, field string, err error, imageURLs 
 }
 
 var (
-	StorerEngine   = filesystem.Name
-	DefaultChecker = func(r *uploadClient.Result) error {
-		return nil
-	}
+	StorerEngine = filesystem.Name
 )
 
 func File(ctx echo.Context) error {
@@ -109,54 +105,32 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		}
 		return err
 	}
-	tableName, fieldName, defaults := getTableInfo(uploadType)
-	if !upload.SubdirIsAllowed(uploadType, defaults...) {
-		err = ctx.E(`参数“%s”未被登记`, uploadType)
+	fileType := ctx.Form(`filetype`)
+	prepareData, err := upload.Prepare(ctx, uploadType, ownerID, ownerType, fileType, StorerEngine)
+	if err != nil {
 		datax, embed := ResponseDataForUpload(ctx, field, err, fileURLs)
 		if !embed {
 			return ctx.JSON(datax)
 		}
-		return err
 	}
-	//echo.Dump(ctx.Forms())
-	newStore := upload.StorerGet(StorerEngine)
-	if newStore == nil {
-		err := errors.New(ctx.T(`存储引擎“%s”未被登记`, StorerEngine))
-		datax, embed := ResponseDataForUpload(ctx, field, err, fileURLs)
-		if !embed {
-			return ctx.JSON(datax)
-		}
-		return err
-	}
-
+	storer := prepareData.Storer(ctx)
+	defer prepareData.Close()
 	fileM := modelFile.NewFile(ctx)
 	fileM.StorerName = StorerEngine
 	fileM.TableId = ``
-	fileM.SetFieldName(fieldName)
-	fileM.SetTableName(tableName)
+	fileM.SetFieldName(prepareData.FieldName)
+	fileM.SetTableName(prepareData.TableName)
 	fileM.OwnerId = ownerID
 	fileM.OwnerType = ownerType
-	fileType := ctx.Form(`filetype`)
 	fileM.Type = fileType
 
-	storer := newStore(ctx, tableName) // 使用表名称作为文件夹名
-	defer storer.Close()
-	var subdir, name string
-	subdir, name, err = upload.CheckerGet(uploadType, defaults...)(ctx, fileM)
+	subdir, name, err := prepareData.Checkin(ctx, fileM)
 	if err != nil {
-		return err
-	}
-	dbsaver := upload.DBSaverGet(uploadType, defaults...)
-	checker := func(r *uploadClient.Result) error {
-		extension := path.Ext(r.FileName)
-		if len(r.FileType) > 0 {
-			if !uploadClient.CheckTypeExtension(fileType, extension) {
-				return ctx.E(`不支持将扩展名为“%v”的文件作为“%v”类型的文件来进行上传`, extension, fileType)
-			}
-		} else {
-			r.FileType = uploadClient.FileType(uploadClient.DetectType(extension))
+		datax, embed := ResponseDataForUpload(ctx, field, err, fileURLs)
+		if !embed {
+			return ctx.JSON(datax)
 		}
-		return DefaultChecker(r) //fileM.FnGetByMd5()
+		return err
 	}
 
 	clientName := ctx.Form(`client`)
@@ -166,7 +140,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 			return SaveFilename(subdir, name, filename)
 		})
 
-		client := uploadClient.Upload(ctx, clientName, result, storer, watermarkFile, checker)
+		client := uploadClient.Upload(ctx, clientName, result, storer, watermarkFile, prepareData.Checker)
 		if client.GetError() != nil {
 			if client.GetError() == upload.ErrExistsFile {
 				client.SetError(nil)
@@ -184,7 +158,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		if err != nil {
 			return client.SetError(err).Response()
 		}
-		err = dbsaver(fileM, result, reader)
+		err = prepareData.DBSaver(fileM, result, reader)
 		return client.SetError(err).Response()
 	}
 	var results uploadClient.Results
@@ -192,7 +166,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		ctx,
 		`files[]`,
 		func(r *uploadClient.Result) (string, error) {
-			if err := checker(r); err != nil {
+			if err := prepareData.Checker(r); err != nil {
 				return ``, err
 			}
 			return SaveFilename(subdir, name, r.FileName)
@@ -201,7 +175,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		func(result *uploadClient.Result, file multipart.File) error {
 			fileM.Id = 0
 			fileM.SetByUploadResult(result)
-			return dbsaver(fileM, result, file)
+			return prepareData.DBSaver(fileM, result, file)
 		},
 		watermarkFile,
 	)

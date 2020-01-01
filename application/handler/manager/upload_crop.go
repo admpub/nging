@@ -27,11 +27,11 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/webx-top/client/upload/watermark"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
 	"github.com/webx-top/echo/param"
-	"github.com/webx-top/client/upload/watermark"
 
 	"github.com/admpub/checksum"
 	"github.com/admpub/errors"
@@ -91,22 +91,22 @@ func Crop(ctx echo.Context) error {
 // CropByOwner 图片裁剪
 func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	var err error
-	newStore := upload.StorerGet(StorerEngine)
-	if newStore == nil {
-		return ctx.E(`存储引擎“%s”未被登记`, StorerEngine)
-	}
 	uploadType := ctx.Param(`type`)
 	if len(uploadType) == 0 {
 		uploadType = ctx.Form(`type`)
 	}
-	typ, fieldName, _ := getTableInfo(uploadType)
-	subdirInfo := upload.SubdirGet(typ)
+	prepareData, err := upload.Prepare(ctx, uploadType, ownerID, ownerType, ``, StorerEngine)
+	if err != nil {
+		return err
+	}
+	defer prepareData.Close()
+	subdirInfo := upload.SubdirGet(prepareData.TableName)
 	if subdirInfo == nil {
 		return ctx.E(`“%s”未被登记`, uploadType)
 	}
 
 	// 获取缩略图尺寸
-	thumbSizes := subdirInfo.ThumbSize(fieldName)
+	thumbSizes := subdirInfo.ThumbSize(prepareData.FieldName)
 	cropSize := ctx.Form(`size`, `200x200`)
 	var thumbWidth, thumbHeight float64
 	cropSizeArr := strings.SplitN(cropSize, `x`, 2)
@@ -134,8 +134,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		}
 	}
 
-	storer := newStore(ctx, typ)
-	defer storer.Close()
+	storer := prepareData.Storer(ctx)
 	srcURL := ctx.Form(`src`)
 	srcURL, err = com.URLDecode(srcURL)
 	if err != nil {
