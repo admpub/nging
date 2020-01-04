@@ -3453,98 +3453,98 @@
 		{
 			"checksumSHA1": "3B2BbWY6hERBMbHFjsbVFvnxmYA=",
 			"path": "github.com/webx-top/db",
-			"revision": "1abe8de1757dd74408f4262becb02f1fe40e2d92",
-			"revisionTime": "2019-11-18T14:00:10Z"
+			"revision": "c4f727b8265acfa652a679650fe9b2ed30dabe3d",
+			"revisionTime": "2020-01-04T12:51:50Z"
 		},
 		{
 			"checksumSHA1": "y7b9USNO6/tOCuF4KElMCQTbYrU=",
 			"path": "github.com/webx-top/db/internal/cache",
-			"revision": "1abe8de1757dd74408f4262becb02f1fe40e2d92",
-			"revisionTime": "2019-11-18T14:00:10Z"
+			"revision": "c4f727b8265acfa652a679650fe9b2ed30dabe3d",
+			"revisionTime": "2020-01-04T12:51:50Z"
 		},
 		{
 			"checksumSHA1": "mk/w7cQcAAqhPyJmCFGGEp29Bag=",
 			"path": "github.com/webx-top/db/internal/cache/hashstructure",
-			"revision": "1abe8de1757dd74408f4262becb02f1fe40e2d92",
-			"revisionTime": "2019-11-18T14:00:10Z"
+			"revision": "c4f727b8265acfa652a679650fe9b2ed30dabe3d",
+			"revisionTime": "2020-01-04T12:51:50Z"
 		},
 		{
 			"checksumSHA1": "lGDQ5JHbr7saSRN1SVzVJzfzd4s=",
 			"path": "github.com/webx-top/db/internal/immutable",
-			"revision": "1abe8de1757dd74408f4262becb02f1fe40e2d92",
-			"revisionTime": "2019-11-18T14:00:10Z"
+			"revision": "c4f727b8265acfa652a679650fe9b2ed30dabe3d",
+			"revisionTime": "2020-01-04T12:51:50Z"
 		},
 		{
 			"checksumSHA1": "02PFFzZka/ojykCMCeylet8qt3k=",
 			"path": "github.com/webx-top/db/internal/sqladapter",
-			"revision": "1abe8de1757dd74408f4262becb02f1fe40e2d92",
-			"revisionTime": "2019-11-18T14:00:10Z"
+			"revision": "c4f727b8265acfa652a679650fe9b2ed30dabe3d",
+			"revisionTime": "2020-01-04T12:51:50Z"
 		},
 		{
 			"checksumSHA1": "eKZkRWmJl2R4uhmEpdhVXW5uEDQ=",
 			"path": "github.com/webx-top/db/internal/sqladapter/compat",
-			"revision": "1abe8de1757dd74408f4262becb02f1fe40e2d92",
-			"revisionTime": "2019-11-18T14:00:10Z"
+			"revision": "c4f727b8265acfa652a679650fe9b2ed30dabe3d",
+			"revisionTime": "2020-01-04T12:51:50Z"
 		},
 		{
 			"checksumSHA1": "um0yNhUNQcJNOOH0U2z+tq9Devk=",
 			"path": "github.com/webx-top/db/internal/sqladapter/exql",
-			"revision": "1abe8de1757dd74408f4262becb02f1fe40e2d92",
-			"revisionTime": "2019-11-18T14:00:10Z"
+			"revision": "c4f727b8265acfa652a679650fe9b2ed30dabe3d",
+			"revisionTime": "2020-01-04T12:51:50Z"
 		},
 		{
 			"checksumSHA1": "ZY9O2WJf/N2A8fHBdzWRZJKayDM=",
 			"path": "github.com/webx-top/db/lib/factory",
-			"revision": "1abe8de1757dd74408f4262becb02f1fe40e2d92",
-			"revisionTime": "2019-11-18T14:00:10Z"
+			"revision": "c4f727b8265acfa652a679650fe9b2ed30dabe3d",
+			"revisionTime": "2020-01-04T12:51:50Z"
 		},
 		{
-			"checksumSHA1": "etNE4c2om9JgH9Uci6HzaB5oZMM=",
+			"checksumSHA1": "dtPPqSuW4ST3goAfS5It9xqVNzc=",
 			"path": "github.com/webx-top/db/lib/factory/mysql",
-			"revision": "1abe8de1757dd74408f4262becb02f1fe40e2d92",
-			"revisionTime": "2019-11-18T14:00:10Z"
+			"revision": "c4f727b8265acfa652a679650fe9b2ed30dabe3d",
+			"revisionTime": "2020-01-04T12:51:50Z"
 		},
 		{
 			"checksumSHA1": "Uo727i5zfLGcowe2W0O/ZVjDPOE=",
 			"path": "github.com/webx-top/db/lib/factory/pagination",
-			"revision": "1abe8de1757dd74408f4262becb02f1fe40e2d92",
-			"revisionTime": "2019-11-18T14:00:10Z"
+			"revision": "c4f727b8265acfa652a679650fe9b2ed30dabe3d",
+			"revisionTime": "2020-01-04T12:51:50Z"
 		},
 		{
-			"checksumSHA1": "4x6h3ndyx5PkQ1/Ofeky6Nu3Fw8=",
+			"checksumSHA1": "gxbXsyEBS5FnqKSa3bDqGrpnSEA=",
 			"path": "github.com/webx-top/db/lib/factory/pagination/client",
-			"revision": "1abe8de1757dd74408f4262becb02f1fe40e2d92",
-			"revisionTime": "2019-11-18T14:00:10Z"
+			"revision": "c4f727b8265acfa652a679650fe9b2ed30dabe3d",
+			"revisionTime": "2020-01-04T12:51:50Z"
 		},
 		{
 			"checksumSHA1": "4zQKmZWpss1zkxKHsPG4HaIY25Y=",
 			"path": "github.com/webx-top/db/lib/reflectx",
-			"revision": "1abe8de1757dd74408f4262becb02f1fe40e2d92",
-			"revisionTime": "2019-11-18T14:00:10Z"
+			"revision": "c4f727b8265acfa652a679650fe9b2ed30dabe3d",
+			"revisionTime": "2020-01-04T12:51:50Z"
 		},
 		{
 			"checksumSHA1": "T5tBfeTxOjPiFLZG5SRph0WIWPw=",
 			"path": "github.com/webx-top/db/lib/sqlbuilder",
-			"revision": "1abe8de1757dd74408f4262becb02f1fe40e2d92",
-			"revisionTime": "2019-11-18T14:00:10Z"
+			"revision": "c4f727b8265acfa652a679650fe9b2ed30dabe3d",
+			"revisionTime": "2020-01-04T12:51:50Z"
 		},
 		{
 			"checksumSHA1": "YMOQGZA61UM7Wj5DW7jxFaoH0Yo=",
 			"path": "github.com/webx-top/db/mongo",
-			"revision": "1abe8de1757dd74408f4262becb02f1fe40e2d92",
-			"revisionTime": "2019-11-18T14:00:10Z"
+			"revision": "c4f727b8265acfa652a679650fe9b2ed30dabe3d",
+			"revisionTime": "2020-01-04T12:51:50Z"
 		},
 		{
 			"checksumSHA1": "pEgYnKwopW+7IjsFQ3k4RmYEGHo=",
 			"path": "github.com/webx-top/db/mysql",
-			"revision": "1abe8de1757dd74408f4262becb02f1fe40e2d92",
-			"revisionTime": "2019-11-18T14:00:10Z"
+			"revision": "c4f727b8265acfa652a679650fe9b2ed30dabe3d",
+			"revisionTime": "2020-01-04T12:51:50Z"
 		},
 		{
 			"checksumSHA1": "yNvozaeel5dcIBwFR6i73d4ptLY=",
 			"path": "github.com/webx-top/db/sqlite",
-			"revision": "1abe8de1757dd74408f4262becb02f1fe40e2d92",
-			"revisionTime": "2019-11-18T14:00:10Z"
+			"revision": "c4f727b8265acfa652a679650fe9b2ed30dabe3d",
+			"revisionTime": "2020-01-04T12:51:50Z"
 		},
 		{
 			"checksumSHA1": "+vtT4FUXzh1BQ02BiimfSdaDu/I=",

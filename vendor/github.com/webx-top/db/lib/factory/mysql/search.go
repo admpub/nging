@@ -18,7 +18,7 @@ var (
 
 func CompareField(idField string, keywords string) db.Compound {
 	if len(keywords) == 0 || len(idField) == 0 {
-		return db.Cond{}
+		return db.EmptyCond
 	}
 	var op string
 	if keywords[1] == '=' {
@@ -97,9 +97,18 @@ func SearchFields(fields []string, keywords string, idFields ...string) *db.Comp
 		}
 		_cond := db.NewCompounds()
 		for _, f := range fields {
+			var isEq bool
+			if len(f) > 1 && f[0] == '=' {
+				isEq = true
+				f = f[1:]
+			}
 			c := db.NewCompounds()
 			for _, val := range values {
-				c.AddKV(f, db.Like(val))
+				if isEq {
+					c.AddKV(f, val)
+				} else {
+					c.AddKV(f, db.Like(`%`+val+`%`))
+				}
 			}
 			_cond.Add(c.Or())
 		}
@@ -158,15 +167,29 @@ func SearchField(field string, keywords string, idFields ...string) *db.Compound
 			}
 			_cond := db.NewCompounds()
 			for _, f := range fs {
+				var isEq bool
+				if len(f) > 1 && f[0] == '=' {
+					isEq = true
+					f = f[1:]
+				}
 				c := db.NewCompounds()
 				for _, val := range values {
-					c.AddKV(f, db.Like(val))
+					if isEq {
+						c.AddKV(f, val)
+					} else {
+						c.AddKV(f, db.Like(`%`+val+`%`))
+					}
 				}
 				_cond.Add(c.Or())
 			}
 			cd.From(_cond)
 		}
 		return cd
+	}
+	var isEq bool
+	if len(field) > 1 && field[0] == '=' {
+		isEq = true
+		field = field[1:]
 	}
 	for _, v := range kws {
 		v = strings.TrimSpace(v)
@@ -177,14 +200,22 @@ func SearchField(field string, keywords string, idFields ...string) *db.Compound
 			vals := strings.Split(v, "||")
 			cond := db.NewCompounds()
 			for _, val := range vals {
-				val = com.AddSlashes(val, '_', '%')
-				cond.AddKV(field, db.Like(val))
+				if isEq {
+					cd.AddKV(field, v)
+				} else {
+					val = com.AddSlashes(val, '_', '%')
+					cond.AddKV(field, db.Like(`%`+val+`%`))
+				}
 			}
 			cd.Add(cond.Or())
 			continue
 		}
-		v = com.AddSlashes(v, '_', '%')
-		cd.AddKV(field, v)
+		if isEq {
+			cd.AddKV(field, v)
+		} else {
+			v = com.AddSlashes(v, '_', '%')
+			cd.AddKV(field, db.Like(`%`+v+`%`))
+		}
 	}
 	return cd
 }
@@ -240,13 +271,19 @@ func EqField(field string, keywords string) db.Compound {
 // 生成日期范围条件
 // @param field 字段名。支持搜索多个字段，各个字段之间用半角逗号“,”隔开
 // @param keywords 关键词
-func GenDateRange(field string, keywords string) *db.Compounds {
+func GenDateRange(field string, keywords string, seperators ...string) *db.Compounds {
 	cond := db.NewCompounds()
 	if len(keywords) == 0 || len(field) == 0 {
 		return cond
 	}
-	var skwd, skwdExt string
-	dataRange := strings.Split(keywords, ` - `)
+	var skwd, skwdExt, seperator string
+	if len(seperators) > 0 {
+		seperator = seperators[0]
+	}
+	if len(seperator) == 0 {
+		seperator = ` - `
+	}
+	dataRange := strings.Split(keywords, seperator)
 	skwd = dataRange[0]
 	if len(dataRange) > 1 {
 		skwdExt = dataRange[1]
