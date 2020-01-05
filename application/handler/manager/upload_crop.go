@@ -27,14 +27,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/webx-top/client/upload/watermark"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
 	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/checksum"
-	"github.com/admpub/errors"
 	imageproxy "github.com/admpub/imageproxy"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/handler"
@@ -178,7 +176,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 
 	//{"x":528,"y":108,"height":864,"width":864,"rotate":0}
 	//fmt.Println(avatard)
-	opt := imageproxy.Options{
+	opt := &imageproxy.Options{
 		CropX:          x,   //裁剪X轴起始位置
 		CropY:          y,   //裁剪Y轴起始位置
 		CropWidth:      w,   //裁剪宽度
@@ -291,43 +289,20 @@ END:
 		return err
 	}
 
-	b, err := ioutil.ReadAll(reader)
-	if err != nil {
-		return err
-	}
-	thumb, err := imageproxy.Transform(b, opt)
-	if err != nil {
-		return err
-	}
-	if len(watermarkFile) > 0 {
-		b, err = watermark.Bytes(thumb, path.Ext(thumbURL), watermarkFile)
-		if err != nil {
-			return err
-		}
-	} else {
-		b = thumb
-	}
-	byteReader := bytes.NewReader(b)
-	thumbM.SavePath, thumbM.ViewUrl, err = storer.Put(storer.URLToFile(thumbURL), byteReader, byteReader.Size()) //r-4;w-2;x-1
-	if err != nil {
-		return errors.WithMessage(err, `Put`)
-	}
 	var fileMd5 string
 	if onSuccess != nil {
 		fileMd5 = onSuccess()
-	} else {
-		fileMd5, err = checksum.MD5sumReader(reader)
-		if err != nil {
-			return err
-		}
 	}
-	thumbM.Size = uint64(len(b))
-	thumbM.Width = param.AsUint(opt.Width)
-	thumbM.Height = param.AsUint(opt.Height)
-	thumbM.SaveName = path.Base(thumbM.SavePath)
-	thumbM.UsedTimes = 0
-	thumbM.Md5 = fileMd5
-	err = thumbM.SetByFile(fileM.File).Save()
+	cropOpt := &modelFile.CropOptions{
+		Options:       opt,
+		File:          fileM.File,
+		SrcReader:     reader,
+		Storer:        storer,
+		DestFile:      storer.URLToFile(thumbURL),
+		FileMD5:       fileMd5,
+		WatermarkFile: watermarkFile,
+	}
+	err = thumbM.Crop(cropOpt)
 	if err != nil {
 		return err
 	}
