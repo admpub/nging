@@ -137,7 +137,12 @@ func (r *Redis) ViewValuePro(key string, typ string, encoding string, size int, 
 			return
 		}
 		v.List, err = redis.Strings(r.conn.Do("LRANGE", key, offset, size))
-		v.NextOffset = fmt.Sprint(offset + int64(size))
+		nextOffset := offset + int64(size)
+		if nextOffset > int64(v.TotalRows) {
+			v.NextOffset = `0`
+		} else {
+			v.NextOffset = fmt.Sprint(nextOffset)
+		}
 	case `set`:
 		v.TotalRows, err = redis.Int(r.conn.Do("SCARD", key))
 		if err != nil {
