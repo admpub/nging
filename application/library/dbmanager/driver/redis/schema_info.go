@@ -22,17 +22,17 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/admpub/nging/application/handler"
 	dbPagination "github.com/webx-top/db/lib/factory/pagination"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/pagination"
+
+	"github.com/admpub/nging/application/handler"
 )
 
 func NewValue(c echo.Context) *Value {
 	return &Value{
 		TotalRows:  -1,
-		List:       []string{},
-		Keys:       []string{},
+		List:       []echo.KV{},
 		NextOffset: `0`,
 		context:    c,
 	}
@@ -40,8 +40,7 @@ func NewValue(c echo.Context) *Value {
 
 type Value struct {
 	TotalRows  int
-	List       []string
-	Keys       []string
+	List       []echo.KV
 	NextOffset string
 	context    echo.Context
 	paging     *pagination.Pagination
@@ -49,16 +48,8 @@ type Value struct {
 }
 
 func (a *Value) Add(key, value string) *Value {
-	a.Keys = append(a.Keys, key)
-	a.List = append(a.List, value)
+	a.List = append(a.List, echo.KV{K: key, V: value})
 	return a
-}
-
-func (a *Value) Value(index int) string {
-	if len(a.List) < index {
-		return `[not-found]`
-	}
-	return a.List[index]
 }
 
 func (a *Value) String() string {

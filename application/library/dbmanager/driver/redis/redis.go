@@ -22,11 +22,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/gomodule/redigo/redis"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/application/library/dbmanager/driver"
 )
 
 func init() {
@@ -310,14 +311,14 @@ func (r *Redis) postEditValue() (err error) {
 		}
 	case `set`:
 		if value != oldValue {
-			_, err = redis.Int(r.conn.Do("SREM", key, value))
+			_, err = redis.Int(r.conn.Do("SREM", key, oldValue))
 			if err != nil {
 				return
 			}
 			_, err = redis.Int(r.conn.Do("SADD", key, value))
 		}
 	case `zset`:
-		_, err = redis.Int(r.conn.Do("ZREM", key, value))
+		_, err = redis.Int(r.conn.Do("ZREM", key, oldValue))
 		if err != nil {
 			return
 		}

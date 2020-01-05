@@ -136,8 +136,16 @@ func (r *Redis) ViewValuePro(key string, typ string, encoding string, size int, 
 		if err != nil {
 			return
 		}
-		v.List, err = redis.Strings(r.conn.Do("LRANGE", key, offset, size))
-		nextOffset := offset + int64(size)
+		end := offset + int64(size) - 1
+		var values []string
+		values, err = redis.Strings(r.conn.Do("LRANGE", key, offset, end))
+		if err != nil {
+			return
+		}
+		for index, value := range values {
+			v.Add(fmt.Sprint(offset+int64(index)), value)
+		}
+		nextOffset := end + 1
 		if nextOffset > int64(v.TotalRows) {
 			v.NextOffset = `0`
 		} else {
@@ -155,7 +163,14 @@ func (r *Redis) ViewValuePro(key string, typ string, encoding string, size int, 
 			reply, err = r.conn.Do("SSCAN", key, offset, "COUNT", size)
 		}
 		rows := reply.([]interface{})
-		v.List, err = redis.Strings(rows[1], err)
+		var values []string
+		values, err = redis.Strings(rows[1], err)
+		if err != nil {
+			return
+		}
+		for index, value := range values {
+			v.Add(fmt.Sprint(index), value)
+		}
 		v.NextOffset = string(rows[0].([]byte))
 	case `zset`:
 		v.TotalRows, err = redis.Int(r.conn.Do("ZCARD", key))
