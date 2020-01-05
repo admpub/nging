@@ -87,3 +87,11 @@ func TestChecker3(t *testing.T) {
 		t.Log(err)
 	}
 }
+
+func TestThumbSize(t *testing.T) {
+	c := upload.ThumbSize{
+		Width:  400,
+		Height: 650,
+	}
+	test.Eq(t, `400x650`, c.String())
+}

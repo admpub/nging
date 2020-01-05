@@ -36,7 +36,7 @@ type ThumbSize struct {
 }
 
 func (t ThumbSize) String() string {
-	return fmt.Sprintf("%fx%f", t.Width, t.Height)
+	return fmt.Sprintf("%vx%v", t.Width, t.Height)
 }
 
 type FieldInfo struct {
