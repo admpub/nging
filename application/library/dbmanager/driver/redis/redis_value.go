@@ -18,7 +18,11 @@
 
 package redis
 
-import "github.com/gomodule/redigo/redis"
+import (
+	"fmt"
+
+	"github.com/gomodule/redigo/redis"
+)
 
 // TTL 获取数据有效期
 func (r *Redis) TTL(key string) (int64, error) {
@@ -133,6 +137,7 @@ func (r *Redis) ViewValuePro(key string, typ string, encoding string, size int, 
 			return
 		}
 		v.List, err = redis.Strings(r.conn.Do("LRANGE", key, offset, size))
+		v.NextOffset = fmt.Sprint(offset + int64(size))
 	case `set`:
 		v.TotalRows, err = redis.Int(r.conn.Do("SCARD", key))
 		if err != nil {
