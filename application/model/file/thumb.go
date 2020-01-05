@@ -19,19 +19,9 @@
 package file
 
 import (
-	"bytes"
-	"io/ioutil"
-	"path"
-	"strings"
-
-	"github.com/webx-top/client/upload/watermark"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/param"
 
-	"github.com/admpub/checksum"
-	"github.com/admpub/errors"
-	imageproxy "github.com/admpub/imageproxy"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
 )
@@ -77,46 +67,4 @@ func (t *Thumb) Save() (err error) {
 		`dpi`:      t.Dpi,
 	}, db.Cond{`id`: m.Id})
 	return
-}
-
-// Crop 裁剪图片
-func (t *Thumb) Crop(opt *CropOptions) error {
-	b, err := ioutil.ReadAll(opt.SrcReader)
-	if err != nil {
-		return err
-	}
-	thumb, err := imageproxy.Transform(b, *opt.Options)
-	if err != nil {
-		return err
-	}
-	if len(opt.WatermarkFile) > 0 {
-		var extension string
-		if pos := strings.LastIndex(opt.DestFile, `.`); pos > -1 {
-			extension = opt.DestFile[pos:]
-		}
-		b, err = watermark.Bytes(thumb, extension, opt.WatermarkFile)
-		if err != nil {
-			return err
-		}
-	} else {
-		b = thumb
-	}
-	byteReader := bytes.NewReader(b)
-	t.SavePath, t.ViewUrl, err = opt.Storer.Put(opt.DestFile, byteReader, byteReader.Size()) //r-4;w-2;x-1
-	if err != nil {
-		return errors.WithMessage(err, `Put`)
-	}
-	t.Size = uint64(len(b))
-	t.Width = param.AsUint(opt.Options.Width)
-	t.Height = param.AsUint(opt.Options.Height)
-	t.SaveName = path.Base(t.SavePath)
-	t.UsedTimes = 0
-	if len(opt.FileMD5) == 0 {
-		opt.FileMD5, err = checksum.MD5sumReader(opt.SrcReader)
-		if err != nil {
-			return err
-		}
-	}
-	t.Md5 = opt.FileMD5 //原图Md5
-	return t.SetByFile(opt.File).Save()
 }
