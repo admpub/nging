@@ -24,4 +24,5 @@ var (
 	ErrUserNotOnline     = errors.New(`通知错误：用户不在线`)
 	ErrMsgTypeNotAccept  = errors.New(`通知错误：不接受这种消息类型`)
 	ErrClientIDNotOnline = errors.New(`通知错误：ClientID不在线`)
+	ErrForcedExit        = errors.New(`Forced exit`)
 )
