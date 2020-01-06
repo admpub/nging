@@ -51,6 +51,19 @@ type Progress struct {
 	control  IsExited
 }
 
+type Control struct {
+	exited bool
+}
+
+func (c *Control) IsExited() bool {
+	return c.exited
+}
+
+func (c *Control) Exited() *Control {
+	c.exited = true
+	return c
+}
+
 type IsExited interface {
 	IsExited() bool
 }
