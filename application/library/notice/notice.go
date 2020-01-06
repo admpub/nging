@@ -47,6 +47,23 @@ type Progress struct {
 	Finish   int64   `json:"finish" xml:"finish"`
 	Percent  float64 `json:"percent" xml:"percent"`
 	Complete bool    `json:"complete" xml:"complete"`
+	control  IsExited
+}
+
+type IsExited interface {
+	IsExited() bool
+}
+
+func (p *Progress) IsExited() bool {
+	if p.control == nil {
+		return false
+	}
+	return p.control.IsExited()
+}
+
+func (p *Progress) SetControl(control IsExited) *Progress {
+	p.control = control
+	return p
 }
 
 type Message struct {
