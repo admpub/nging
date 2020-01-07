@@ -19,11 +19,12 @@
 package config
 
 import (
+	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/subdomains"
+
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/library/notice"
 	"github.com/admpub/nging/application/registry/settings"
-	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/subdomains"
 )
 
 func InDB(group ...string) echo.H {
@@ -83,7 +84,23 @@ func (c *ConfigInDB) SetDebug(on bool) {
 	subdomains.Default.SetDebug(on)
 }
 
-var actGroups = []string{`base`, `email`, `log`}
+var (
+	actGroups      = []string{`base`, `email`, `log`}
+	onInitSettings []func(echo.H) error
+)
+
+func OnInitSettings(fn func(echo.H) error) {
+	onInitSettings = append(onInitSettings, fn)
+}
+
+func FireInitSettings(cfg echo.H) error {
+	for _, fn := range onInitSettings {
+		if err := fn(cfg); err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
 func (c *ConfigInDB) Init() {
 	defaults := settings.ConfigDefaultsAsStore()
@@ -96,6 +113,10 @@ func (c *ConfigInDB) Init() {
 	echo.Set(`NgingConfig`, configs)
 	for _, group := range actGroups {
 		c.SetConfig(group, configs, defaults)
+	}
+	err := FireInitSettings(configs)
+	if err != nil {
+		log.Error(err)
 	}
 }
 
