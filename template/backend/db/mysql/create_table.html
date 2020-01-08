@@ -101,7 +101,7 @@
                                 </optgroup>
                                 {{end}}
                             </select></td>
-							<td><input type="text" name="fields[{{$index}}][length]" value="{{$field.Length}}{{if gt $field.Precision 0}},{{$field.Precision}}{{end}}" class="form-control"></td>
+							<td><input type="text" name="fields[{{$index}}][length]" value="{{$field.Length}}" class="form-control"></td>
                             <td><select name="fields[{{$index}}][collation]" class="form-control select-collation"{{if and $field.Type (isString $field.Type)}}{{else}} style="display:none"{{end}} rel="{{$field.Collation}}">
                                 <option value="" readonly="readonly">loading...</option>
                             </select>

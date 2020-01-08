@@ -185,7 +185,7 @@ function onselectColumns(obj){
                             </th>
                             {{range $colIndex, $colName := Stored.columns}}
                             {{$field := index Stored.fields $colName}}
-                            <th sort="-{{$colName}}" data-index="{{$colIndex}}" data-options='{{if $field}}{{$field.Options|JSONEncode}}{{end}}' data-type='{{if $field}}{{$field.Type}}{{end}}' data-length='{{if $field}}{{$field.Length}}{{else}}0{{end}}'><strong title="{{if $field}}{{`类型`|T}}: {{$field.Full_type}}
+                            <th sort="-{{$colName}}" data-index="{{$colIndex}}" data-options='{{if $field}}{{$field.Options|JSONEncode}}{{end}}' data-type='{{if $field}}{{$field.Type}}{{end}}' data-length='{{if $field}}{{$field.LengthN}}{{else}}0{{end}}'><strong title="{{if $field}}{{`类型`|T}}: {{$field.Full_type}}
 {{`注释`|T}}: {{$field.Comment}}{{end}}">{{$colName}}</strong></th>
                             {{end}}
 						</tr>

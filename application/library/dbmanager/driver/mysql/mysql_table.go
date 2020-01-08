@@ -416,7 +416,7 @@ func (m *mySQL) tableFields(table string) (map[string]*Field, []string, error) {
 				field.Precision = param.AsInt(sizeInfo[1])
 				fallthrough
 			case 1:
-				field.Length = sizeInfo[0]
+				field.LengthN = param.AsInt(sizeInfo[0])
 			}
 		case `enum`, `set`:
 			field.Options = strings.Split(strings.Trim(field.Length, `'`), `','`)

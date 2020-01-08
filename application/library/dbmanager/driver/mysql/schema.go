@@ -24,7 +24,6 @@ import (
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/param"
 )
 
 type KV struct {
@@ -464,8 +463,8 @@ type Field struct {
 	Type          string
 	Options       []string
 	Length        string
+	LengthN       int
 	Precision     int
-	length        sql.NullInt64
 	Unsigned      string
 	Default       sql.NullString
 	Null          bool
@@ -480,12 +479,8 @@ type Field struct {
 	Original string
 }
 
-func (f *Field) MaxSize() int64 {
-	if !f.length.Valid {
-		f.length.Int64 = param.String(f.Length).Int64()
-		f.length.Valid = true
-	}
-	return f.length.Int64
+func (f *Field) MaxSize() int {
+	return f.LengthN
 }
 
 func (f *Field) Format(value string) string {
