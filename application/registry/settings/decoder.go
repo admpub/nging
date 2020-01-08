@@ -21,9 +21,10 @@ package settings
 import (
 	"strings"
 
-	"github.com/admpub/nging/application/dbschema"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/dbschema"
 )
 
 type Decoder func(v *dbschema.Config, r echo.H) error
@@ -57,32 +58,44 @@ func DecodeConfigValue(v *dbschema.Config, decoder Decoder) (echo.H, error) {
 		v.Value = echo.Get(`DefaultConfig`).(Codec).Decode(v.Value)
 	}
 	r := echo.H(v.AsMap())
+	var err error
 	if decoder != nil {
-		err := decoder(v, r)
+		err = decoder(v, r)
 		if err != nil {
 			return nil, err
 		}
 		if subDecoder := GetDecoder(v.Group + `.` + v.Key); subDecoder != nil {
-			err := subDecoder(v, r)
-			if err != nil {
-				return nil, err
-			}
+			err = subDecoder(v, r)
 		}
 	} else if subDecoder := GetDecoder(v.Group + `.` + v.Key); subDecoder != nil {
-		err := subDecoder(v, r)
-		if err != nil {
-			return nil, err
-		}
-	} else if v.Type == `json` {
+		err = subDecoder(v, r)
+	} else {
+		err = DefaultDecoder(v, r)
+	}
+	return r, err
+}
+
+func DecodeConfig(v *dbschema.Config, cfg echo.H, decoder Decoder) (echo.H, error) {
+	r, e := DecodeConfigValue(v, decoder)
+	if e != nil {
+		return cfg, e
+	}
+	cfg.Set(v.Key, r)
+	return cfg, nil
+}
+
+func DefaultDecoder(v *dbschema.Config, r echo.H) error {
+	switch v.Type {
+	case `json`:
 		jsonData := echo.H{}
 		if len(v.Value) > 0 {
 			err := com.JSONDecode([]byte(v.Value), &jsonData)
 			if err != nil {
-				return nil, err
+				return err
 			}
 		}
 		r[`ValueObject`] = jsonData
-	} else if v.Type == `list` {
+	case `list`:
 		jsonData := echo.H{}
 		if len(v.Value) > 0 {
 			com.JSONDecode([]byte(v.Value), &jsonData)
@@ -93,17 +106,8 @@ func DecodeConfigValue(v *dbschema.Config, decoder Decoder) (echo.H, error) {
 		} else {
 			r[`ValueObject`] = []string{}
 		}
-	} else {
+	default:
 		r[`ValueObject`] = nil
 	}
-	return r, nil
-}
-
-func DecodeConfig(v *dbschema.Config, cfg echo.H, decoder Decoder) (echo.H, error) {
-	r, e := DecodeConfigValue(v, decoder)
-	if e != nil {
-		return cfg, e
-	}
-	cfg.Set(v.Key, r)
-	return cfg, nil
+	return nil
 }

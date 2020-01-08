@@ -87,6 +87,11 @@ func EncodeConfigValue(_v *echo.Mapx, v *dbschema.Config, encoder Encoder) (valu
 	} else {
 		value = _v.Value() //c.Form(group + `[` + v.Key + `]`)
 	}
+	value = DefaultEncoder(v, value)
+	return
+}
+
+func DefaultEncoder(v *dbschema.Config, value string) string {
 	switch v.Type {
 	case `html`, `markdown`:
 		value = com.RemoveXSS(value)
@@ -111,5 +116,5 @@ func EncodeConfigValue(_v *echo.Mapx, v *dbschema.Config, encoder Encoder) (valu
 	if v.Encrypted == `Y` {
 		value = echo.Get(`DefaultConfig`).(Codec).Encode(value)
 	}
-	return
+	return value
 }
