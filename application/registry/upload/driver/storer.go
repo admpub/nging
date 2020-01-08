@@ -201,6 +201,6 @@ func Get(engine string) Constructor {
 }
 
 // All 存储引擎集合
-func All(engine string) map[string]Constructor {
+func All() map[string]Constructor {
 	return storers
 }

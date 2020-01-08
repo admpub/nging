@@ -162,8 +162,8 @@ func (c *Config) Reload(newConfig *Config) error {
 
 func (c *Config) AsDefault() {
 	echo.Set(`DefaultConfig`, c)
-	c.ConfigInDB.Init()
 	DefaultConfig = c
+	c.ConfigInDB.Init()
 }
 
 func (c *Config) SaveToFile() error {
