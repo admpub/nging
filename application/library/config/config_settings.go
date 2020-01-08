@@ -27,10 +27,10 @@ import (
 	"github.com/admpub/nging/application/registry/settings"
 )
 
-func InDB(group ...string) echo.H {
+func Setting(group ...string) echo.H {
 	sz := len(group)
 	if sz > 0 {
-		cfg := DefaultConfig.ConfigInDB.GetConfig().Store(group[0])
+		cfg := DefaultConfig.Settings.GetConfig().Store(group[0])
 		if sz == 1 {
 			return cfg
 		}
@@ -39,17 +39,17 @@ func InDB(group ...string) echo.H {
 		}
 		return cfg
 	}
-	return DefaultConfig.ConfigInDB.GetConfig()
+	return DefaultConfig.Settings.GetConfig()
 }
 
-func NewConfigInDB(config *Config) *ConfigInDB {
-	c := &ConfigInDB{
+func NewSettings(config *Config) *Settings {
+	c := &Settings{
 		config: config,
 	}
 	return c
 }
 
-type ConfigInDB struct {
+type Settings struct {
 	Email  Email  `json:"email"`
 	Log    Log    `json:"log"`
 	APIKey string `json:"-"` //API密钥
@@ -58,7 +58,7 @@ type ConfigInDB struct {
 	config *Config
 }
 
-func (c *ConfigInDB) SetBy(r echo.H, defaults echo.H) *ConfigInDB {
+func (c *Settings) SetBy(r echo.H, defaults echo.H) *Settings {
 	if !r.Has(`base`) && defaults != nil {
 		r.Set(`base`, defaults.Store(`base`))
 	}
@@ -68,7 +68,7 @@ func (c *ConfigInDB) SetBy(r echo.H, defaults echo.H) *ConfigInDB {
 	return c
 }
 
-func (c *ConfigInDB) SetDebug(on bool) {
+func (c *Settings) SetDebug(on bool) {
 	c.Log.Debug = on
 	c.Debug = on
 
@@ -102,7 +102,7 @@ func FireInitSettings(cfg echo.H) error {
 	return nil
 }
 
-func (c *ConfigInDB) Init() {
+func (c *Settings) Init() {
 	defaults := settings.ConfigDefaultsAsStore()
 	var configs = defaults
 	if IsInstalled() {
@@ -120,12 +120,12 @@ func (c *ConfigInDB) Init() {
 	}
 }
 
-func (c *ConfigInDB) GetConfig() echo.H {
+func (c *Settings) GetConfig() echo.H {
 	r, _ := echo.Get(`NgingConfig`).(echo.H)
 	return r
 }
 
-func (c *ConfigInDB) SetConfigs(groups ...string) {
+func (c *Settings) SetConfigs(groups ...string) {
 	ngingConfig := c.GetConfig()
 	configs := settings.ConfigAsStore(groups...)
 	for group, conf := range configs {
@@ -134,7 +134,7 @@ func (c *ConfigInDB) SetConfigs(groups ...string) {
 	}
 }
 
-func (c *ConfigInDB) SetConfig(group string, ngingConfig echo.H, defaults echo.H) {
+func (c *Settings) SetConfig(group string, ngingConfig echo.H, defaults echo.H) {
 	switch group {
 	case `base`:
 		c.SetBy(ngingConfig, defaults)

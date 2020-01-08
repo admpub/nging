@@ -38,7 +38,7 @@ import (
 
 func NewConfig() *Config {
 	c := &Config{}
-	c.ConfigInDB = NewConfigInDB(c)
+	c.Settings = NewSettings(c)
 	return c
 }
 
@@ -69,7 +69,7 @@ type Config struct {
 	} `json:"download"`
 	//License lib.LicenseData `json:"license,omitempty"`
 
-	*ConfigInDB `json:"-"`
+	*Settings `json:"-"`
 
 	connectedDB bool
 }
@@ -99,15 +99,15 @@ func (c *Config) connectDB() error {
 }
 
 func (c *Config) APIKey() string {
-	return c.ConfigInDB.APIKey
+	return c.Settings.APIKey
 }
 
 func (c *Config) ConfigFromDB() echo.H {
-	return c.ConfigInDB.GetConfig()
+	return c.Settings.GetConfig()
 }
 
 func (c *Config) SetDebug(on bool) *Config {
-	c.ConfigInDB.SetDebug(on)
+	c.Settings.SetDebug(on)
 	return c
 }
 
@@ -163,7 +163,7 @@ func (c *Config) Reload(newConfig *Config) error {
 func (c *Config) AsDefault() {
 	echo.Set(`DefaultConfig`, c)
 	DefaultConfig = c
-	c.ConfigInDB.Init()
+	c.Settings.Init()
 }
 
 func (c *Config) SaveToFile() error {

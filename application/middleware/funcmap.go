@@ -71,7 +71,7 @@ func ErrorPageFunc(c echo.Context) error {
 	})
 	c.SetFunc(`Path`, c.Path)
 	c.SetFunc(`Queries`, c.Queries)
-	configs := config.InDB()
+	configs := config.Setting()
 	c.SetFunc(`Config`, func() echo.H {
 		return configs
 	})
