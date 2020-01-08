@@ -87,7 +87,7 @@ type (
 		// FormFile returns the multipart form file for the provided name.
 		FormFile(string) (multipart.File, *multipart.FileHeader, error)
 
-		// ContentLength returns the size of request's body.
+		// Size returns the size of request's body.
 		Size() int64
 
 		BasicAuth() (string, string, bool)
