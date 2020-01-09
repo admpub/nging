@@ -26,6 +26,7 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/library/common"
 )
 
 type Encoder func(v *dbschema.Config, r echo.H) ([]byte, error)
@@ -94,7 +95,7 @@ func EncodeConfigValue(_v *echo.Mapx, v *dbschema.Config, encoder Encoder) (valu
 func DefaultEncoder(v *dbschema.Config, value string) string {
 	switch v.Type {
 	case `html`, `markdown`:
-		value = com.RemoveXSS(value)
+		value = common.RemoveXSS(value)
 
 	case `url`, `image`, `video`, `audio`, `file`:
 		value = com.StripTags(value)

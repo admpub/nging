@@ -1294,6 +1294,18 @@
 			"revisionTime": "2019-05-09T11:58:24Z"
 		},
 		{
+			"checksumSHA1": "ulHAt7P7SYMC2g3ThlXNzVN9Z/k=",
+			"path": "github.com/chris-ramon/douceur/css",
+			"revision": "f3463056cd52886eda904655e1940157bf323bd7",
+			"revisionTime": "2016-06-03T23:54:19Z"
+		},
+		{
+			"checksumSHA1": "jWIgyVGWXtHIKfRy40IUlMZyvUY=",
+			"path": "github.com/chris-ramon/douceur/parser",
+			"revision": "f3463056cd52886eda904655e1940157bf323bd7",
+			"revisionTime": "2016-06-03T23:54:19Z"
+		},
+		{
 			"checksumSHA1": "AKfVkkAyUy2805EQl4cfiKetlmc=",
 			"path": "github.com/chromedp/cdproto",
 			"revision": "9c1995867b7f6d7a6ef3e420cadb2ed583b7fb2d",
@@ -2001,6 +2013,12 @@
 			"revisionTime": "2018-07-29T04:33:30Z"
 		},
 		{
+			"checksumSHA1": "Ttr0ESMQ/w/LYWdvGUPErQtQgsY=",
+			"path": "github.com/gorilla/css/scanner",
+			"revision": "4940b8d7810384b58c15dbf1103a148fdf0761f2",
+			"revisionTime": "2019-06-27T04:11:19Z"
+		},
+		{
 			"checksumSHA1": "EYsOd7cI3KDZR35oA4njdyzaeDA=",
 			"origin": "github.com/admpub/frp/vendor/github.com/gorilla/mux",
 			"path": "github.com/gorilla/mux",
@@ -2678,6 +2696,12 @@
 			"path": "github.com/mholt/certmagic",
 			"revision": "6a42ef9fe8c2ba8af5d2918a838ec6dbaf3a8edb",
 			"revisionTime": "2019-06-24T17:51:58Z"
+		},
+		{
+			"checksumSHA1": "D96OiGLD4Sdiz2ae3CashRSkv+M=",
+			"path": "github.com/microcosm-cc/bluemonday",
+			"revision": "0a75d7616912ab9beb9cc6f7283ec1917c61b135",
+			"revisionTime": "2019-11-19T13:03:33Z"
 		},
 		{
 			"checksumSHA1": "VZrdtf1OtAeYaHwL1opfi08HwnM=",
@@ -4045,6 +4069,12 @@
 			"revisionTime": "2018-07-06T05:06:37Z"
 		},
 		{
+			"checksumSHA1": "aqRR92xWU3cH3J8OLAlefTNc2rQ=",
+			"path": "golang.org/x/image/ccitt",
+			"revision": "69e4b8554b2a817a1f0015867f0858d02801f0f5",
+			"revisionTime": "2019-09-09T22:43:31Z"
+		},
+		{
 			"checksumSHA1": "6r4wlD2ccsItjIKBhqZc1mch3IQ=",
 			"path": "golang.org/x/image/draw",
 			"revision": "3fc05d484e9f77dd51816890e05f2602e4ca4d65",
@@ -4320,6 +4350,12 @@
 			"path": "golang.org/x/text/encoding/japanese",
 			"revision": "905a57155faa8230500121607930ebb9dd8e139c",
 			"revisionTime": "2018-09-08T17:02:15Z"
+		},
+		{
+			"checksumSHA1": "qHQ79q9peY8ZkCMC8kJAb52BAWg=",
+			"path": "golang.org/x/text/encoding/korean",
+			"revision": "3d0f7978add91030e5e8976ff65ccdd828286cba",
+			"revisionTime": "2019-08-29T15:11:34Z"
 		},
 		{
 			"checksumSHA1": "55UdScb+EMOCPr7OW0hCwDsVxpg=",
