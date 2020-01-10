@@ -98,8 +98,7 @@ func DefaultEncoder(v *dbschema.Config, value string) string {
 		value = common.RemoveXSS(value)
 
 	case `url`, `image`, `video`, `audio`, `file`:
-		value = com.StripTags(value)
-		value = com.RemoveEOL(value)
+		value = common.MyCleanText(value)
 
 	case `newsid`, `prodid`, `text`:
 		value = com.StripTags(value)

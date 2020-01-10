@@ -83,6 +83,8 @@ function onselectType(obj){
     if($(obj).val()=='')return;
     var currentTR=$(obj).parent().parent();
     var nextTR=currentTR.next('tr');
+    var index=$(obj).attr('name').replace(/indexes\[([\d]+)\]\[type\]/,'$1');
+    index=Number(index)+1;
     if(nextTR.length<1){
         var clone=currentTR.clone();
         var first=clone.find('.columm-info:first');
@@ -90,6 +92,11 @@ function onselectType(obj){
         first.find('input[name*="[lengths]"]').val('');
         first.siblings('.columm-info').remove();
         currentTR.after(clone);
+        var re=/^indexes\[[\d]+\]/;
+        clone.find('[name^="indexes["]').each(function(){
+            var name=$(this).attr('name').replace(re,'indexes['+index+']');
+            $(this).attr('name',name);
+        });
     }
 }
 function onselectColumn(obj){
