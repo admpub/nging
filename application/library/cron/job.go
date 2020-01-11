@@ -24,7 +24,6 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
-	"io"
 	"os"
 	"os/exec"
 	"runtime/debug"
@@ -196,7 +195,7 @@ func NewJobFromTask(ctx context.Context, task *dbschema.Task) (*Job, error) {
 	return job, nil
 }
 
-func NewOutputWriter(sizes ...uint64) io.Writer {
+func NewOutputWriter(sizes ...uint64) OutputWriter {
 	var size uint64
 	if len(sizes) > 0 {
 		size = sizes[0]

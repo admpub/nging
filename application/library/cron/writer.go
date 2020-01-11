@@ -20,6 +20,7 @@ package cron
 
 import (
 	"bytes"
+	"io"
 	"strings"
 )
 
@@ -27,6 +28,12 @@ var (
 	dot6str   = "\n" + `......` + "\n"
 	dot6bytes = []byte(dot6str)
 )
+
+type OutputWriter struct {
+	io.Writer
+	String() string
+	Bytes() []byte
+}
 
 func NewCmdRec(max uint64) *cmdRec {
 	return &cmdRec{
