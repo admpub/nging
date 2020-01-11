@@ -30,7 +30,7 @@ import (
 
 var Default Notice = func(message interface{}, statusCode int, progs ...*notice.Progress) error {
 	if len(progs) > 0 && progs[0] != nil {
-		message = `[ ` + tplfunc.NumberFormat(progs[0].Percent, 2) + `% ] ` + fmt.Sprint(message)
+		message = `[ ` + tplfunc.NumberFormat(progs[0].CalcPercent().Percent, 2) + `% ] ` + fmt.Sprint(message)
 	}
 	if statusCode > 0 {
 		log.Info(message)
@@ -43,7 +43,7 @@ var Default Notice = func(message interface{}, statusCode int, progs ...*notice.
 var CustomOutput func(wOut io.Writer, wErr io.Writer) Notice = func(wOut io.Writer, wErr io.Writer) Notice {
 	return func(message interface{}, statusCode int, progs ...*notice.Progress) error {
 		if len(progs) > 0 && progs[0] != nil {
-			message = `[ ` + tplfunc.NumberFormat(progs[0].Percent, 2) + `% ] ` + fmt.Sprint(message)
+			message = `[ ` + tplfunc.NumberFormat(progs[0].CalcPercent().Percent, 2) + `% ] ` + fmt.Sprint(message)
 		}
 		if statusCode > 0 {
 			fmt.Fprintln(wOut, message)

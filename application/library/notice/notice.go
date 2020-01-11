@@ -80,6 +80,17 @@ func (p *Progress) SetControl(control IsExited) *Progress {
 	return p
 }
 
+func (p *Progress) CalcPercent() *Progress {
+	if p.Total > 0 {
+		p.Percent = (float64(p.Finish) / float64(p.Total)) * 100
+	} else if p.Total == 0 {
+		p.Percent = 100
+	} else {
+		p.Percent = 0
+	}
+	return p
+}
+
 type Message struct {
 	ClientID uint        `json:"client_id" xml:"client_id"`
 	ID       interface{} `json:"id" xml:"id"`
@@ -145,13 +156,7 @@ func (m *Message) SetProgressValue(finish int64, total int64) *Message {
 }
 
 func (m *Message) CalcPercent() *Message {
-	if m.Progress.Total > 0 {
-		m.Progress.Percent = (float64(m.Progress.Finish) / float64(m.Progress.Total)) * 100
-	} else if m.Progress.Total == 0 {
-		m.Progress.Percent = 100
-	} else {
-		m.Progress.Percent = 0
-	}
+	m.Progress.CalcPercent()
 	return m
 }
 
