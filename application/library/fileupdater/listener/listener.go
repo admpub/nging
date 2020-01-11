@@ -78,7 +78,7 @@ func (f *FileRelation) SetEmbedded(embedded bool) *FileRelation {
 }
 
 func (f *FileRelation) ListenDefault() *FileRelation {
-	return f.Listen(`created`, `updated`, `deleted`)
+	return f.Listen(`created`, `updated`, `deleting`)
 }
 
 func (f *FileRelation) attachUpdateEvent(event string) func(m factory.Model, editColumns ...string) error {

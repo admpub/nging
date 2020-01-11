@@ -1,5 +1,9 @@
 package factory
 
+import (
+	"github.com/webx-top/com"
+)
+
 type EventHandler func(model Model, editColumns ...string) error
 
 func NewEventHandlers() *EventHandlers {
@@ -21,4 +25,9 @@ func (e *EventHandlers) Exec(model Model, editColumns ...string) error {
 		}
 	}
 	return nil
+}
+
+// MarshalJSON allows type Pagination to be used with json.Marshal
+func (e EventHandler) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + com.FuncName(e) + `"`), nil
 }
