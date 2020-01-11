@@ -24,6 +24,7 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"io"
 	"os"
 	"os/exec"
 	"runtime/debug"
@@ -193,6 +194,17 @@ func NewJobFromTask(ctx context.Context, task *dbschema.Task) (*Job, error) {
 	job.task = task
 	job.Concurrent = task.Concurrent == 1
 	return job, nil
+}
+
+func NewOutputWriter(sizes ...uint64) io.Writer {
+	var size uint64
+	if len(sizes) > 0 {
+		size = sizes[0]
+	}
+	if size == 0 {
+		size = defaultOuputSize
+	}
+	return NewCmdRec(size)
 }
 
 func NewCommandJob(ctx context.Context, id uint, name string, command string, dir string, env ...string) *Job {

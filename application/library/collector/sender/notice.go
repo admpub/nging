@@ -19,10 +19,14 @@
 package sender
 
 import (
-	"github.com/admpub/log"
-	"github.com/admpub/nging/application/library/notice"
+	"fmt"
+	"io"
+
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
+
+	"github.com/admpub/log"
+	"github.com/admpub/nging/application/library/notice"
 )
 
 var Default Notice = func(message interface{}, statusCode int, progs ...*notice.Progress) error {
@@ -35,6 +39,20 @@ var Default Notice = func(message interface{}, statusCode int, progs ...*notice.
 		log.Error(message)
 	}
 	return nil
+}
+
+var CustomOutput func(wOut io.Writer, wErr io.Writer) Notice = func(wOut io.Writer, wErr io.Writer) Notice {
+	return func(message interface{}, statusCode int, progs ...*notice.Progress) error {
+		if len(progs) > 0 && progs[0] != nil {
+			message = `[ ` + tplfunc.NumberFormat(progs[0].Percent, 2) + `% ] ` + echo.Dump(message, false)
+		}
+		if statusCode > 0 {
+			fmt.Fprintln(wOut, message)
+		} else {
+			fmt.Fprintln(wErr, message)
+		}
+		return nil
+	}
 }
 
 type Notice func(message interface{}, statusCode int, progress ...*notice.Progress) error
