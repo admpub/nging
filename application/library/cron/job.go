@@ -351,7 +351,7 @@ func (j *Job) Run() {
 	}()
 
 	if !j.Concurrent && atomic.LoadInt64(&j.status) > 0 {
-		log.Debugf("任务[ %d. %s ]上一次执行尚未结束，本次被忽略。", j.id, j.name)
+		tl.Output = fmt.Sprintf("任务[ %d. %s ]上一次执行尚未结束，本次被忽略。", j.id, j.name)
 		return
 	}
 
