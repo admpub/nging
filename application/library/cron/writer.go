@@ -29,7 +29,7 @@ var (
 	dot6bytes = []byte(dot6str)
 )
 
-type OutputWriter struct {
+type OutputWriter interface {
 	io.Writer
 	String() string
 	Bytes() []byte
