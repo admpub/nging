@@ -319,16 +319,41 @@ func (j *Job) sendEmail(elapsed float64, t time.Time, err error, cmdOut string, 
 }
 
 func (j *Job) Run() {
+	var (
+		cmdOut    string
+		cmdErr    string
+		err       error
+		isTimeout bool
+	)
+	t := time.Now()
+	tl := new(dbschema.TaskLog)
+	tl.TaskId = j.id
+	tl.Created = uint(t.Unix())
+
+	j.taskLog = tl
+
+	defer func() {
+		if e := recover(); e != nil {
+			panicErr := fmt.Errorf(`%v`, e)
+			if len(tl.Error) > 0 {
+				tl.Error += `; ` + panicErr.Error()
+			} else {
+				tl.Error = panicErr.Error()
+			}
+			log.Error(e, "\n", string(debug.Stack()))
+		}
+		tl.Output = cmdOut
+		tl.Error = cmdErr
+		if j.task.ClosedLog == `N` && !strings.HasPrefix(cmdOut, NotRecordPrefixFlag) && !strings.HasPrefix(cmdErr, NotRecordPrefixFlag) {
+			j.addAndReturningLog()
+		}
+
+	}()
+
 	if !j.Concurrent && atomic.LoadInt64(&j.status) > 0 {
 		log.Debugf("任务[ %d. %s ]上一次执行尚未结束，本次被忽略。", j.id, j.name)
 		return
 	}
-
-	defer func() {
-		if err := recover(); err != nil {
-			log.Error(err, "\n", string(debug.Stack()))
-		}
-	}()
 
 	if workPool != nil {
 		workPool <- true
@@ -347,36 +372,22 @@ func (j *Job) Run() {
 		atomic.StoreInt64(&j.status, atomic.LoadInt64(&j.status)-1)
 	}()
 
-	t := time.Now()
 	timeout := time.Duration(time.Hour * 24)
 	if j.task.Timeout > 0 {
 		timeout = time.Second * time.Duration(j.task.Timeout)
 	}
 
-	cmdOut, cmdErr, err, isTimeout := j.runner(timeout)
-
+	cmdOut, cmdErr, err, isTimeout = j.runner(timeout)
 	elapsed := time.Now().Sub(t).Seconds()
-
-	tl := new(dbschema.TaskLog)
-	tl.TaskId = j.id
-	tl.Output = cmdOut
-	tl.Error = cmdErr
-	tl.Created = uint(t.Unix())
 	tl.Elapsed = uint(elapsed)
 	if isTimeout {
 		tl.Status = `timeout`
-		tl.Error = fmt.Sprintf("任务执行超过 %d 秒\n----------------------\n%s\n", int(timeout/time.Second), tl.Error)
+		tl.Error = fmt.Sprintf("任务执行超过 %d 秒\n----------------------\n", int64(timeout/time.Second))
 	} else if err != nil {
 		tl.Status = `failure`
-		tl.Error = err.Error() + ":" + tl.Error
+		tl.Error = err.Error()
 	} else {
 		tl.Status = `success`
-	}
-
-	j.taskLog = tl
-
-	if j.task.ClosedLog == `N` && !strings.HasPrefix(cmdOut, NotRecordPrefixFlag) && !strings.HasPrefix(cmdErr, NotRecordPrefixFlag) {
-		j.addAndReturningLog()
 	}
 
 	// 更新上次执行时间
