@@ -36,11 +36,11 @@ import (
 func (t *Thumb) Crop(opt *CropOptions) error {
 	b, err := ioutil.ReadAll(opt.SrcReader)
 	if err != nil {
-		return err
+		return errors.WithMessage(err, `Thumb.Crop.ReadAll`)
 	}
 	thumb, err := imageproxy.Transform(b, *opt.Options)
 	if err != nil {
-		return err
+		return errors.WithMessage(err, `Thumb.Crop.Transform`)
 	}
 	if len(opt.WatermarkFile) > 0 {
 		var extension string
@@ -49,7 +49,7 @@ func (t *Thumb) Crop(opt *CropOptions) error {
 		}
 		b, err = watermark.Bytes(thumb, extension, opt.WatermarkFile)
 		if err != nil {
-			return err
+			return errors.WithMessage(err, `Thumb.Crop.Bytes`)
 		}
 	} else {
 		b = thumb
@@ -57,7 +57,7 @@ func (t *Thumb) Crop(opt *CropOptions) error {
 	byteReader := bytes.NewReader(b)
 	t.SavePath, t.ViewUrl, err = opt.Storer.Put(opt.DestFile, byteReader, byteReader.Size()) //r-4;w-2;x-1
 	if err != nil {
-		return errors.WithMessage(err, `Put`)
+		return errors.WithMessage(err, `Thumb.Crop.Put`)
 	}
 	opt.SetThumbData(byteReader)
 	t.Size = uint64(len(b))
@@ -68,7 +68,7 @@ func (t *Thumb) Crop(opt *CropOptions) error {
 	if len(opt.FileMD5) == 0 {
 		opt.FileMD5, err = checksum.MD5sumReader(opt.SrcReader)
 		if err != nil {
-			return err
+			return errors.WithMessage(err, `Thumb.Crop.MD5`)
 		}
 	}
 	t.Md5 = opt.FileMD5 //原图Md5
