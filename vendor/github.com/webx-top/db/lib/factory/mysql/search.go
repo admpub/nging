@@ -53,6 +53,11 @@ func IsRangeField(keywords string) bool {
 	return len(searchIDRule.FindString(keywords)) > 0
 }
 
+// SearchFields 搜索某个字段(多个字段任一匹配)
+// @param fields 字段名
+// @param keywords 关键词
+// @param idFields 如要搜索id字段需要提供id字段名
+// @author swh <swh@admpub.com>
 func SearchFields(fields []string, keywords string, idFields ...string) *db.Compounds {
 	cd := db.NewCompounds()
 	if len(keywords) == 0 || len(fields) == 0 {
@@ -117,7 +122,7 @@ func SearchFields(fields []string, keywords string, idFields ...string) *db.Comp
 	return cd.Add(cond.Or())
 }
 
-// SearchField 搜索某个字段
+// SearchField 搜索某个字段(多个字段同时匹配)
 // @param field 字段名。支持搜索多个字段，各个字段之间用半角逗号“,”隔开
 // @param keywords 关键词
 // @param idFields 如要搜索id字段需要提供id字段名
@@ -220,6 +225,7 @@ func SearchField(field string, keywords string, idFields ...string) *db.Compound
 	return cd
 }
 
+// RangeField 字段范围查询
 func RangeField(idField string, keywords string) *db.Compounds {
 	cd := db.NewCompounds()
 	if len(keywords) == 0 || len(idField) == 0 {
@@ -259,9 +265,10 @@ func RangeField(idField string, keywords string) *db.Compounds {
 	return cd.Add(cond.Or())
 }
 
+// EqField 单字段相等查询
 func EqField(field string, keywords string) db.Compound {
 	if len(keywords) == 0 || len(field) == 0 {
-		return db.Cond{}
+		return db.EmptyCond
 	}
 	keywords = strings.TrimSpace(keywords)
 	return db.Cond{field: keywords}
