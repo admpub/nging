@@ -208,7 +208,13 @@ func (c *xContext) File(file string, fs ...http.FileSystem) (err error) {
 	return c.ServeContent(f, fi.Name(), fi.ModTime())
 }
 
-func (c *xContext) ServeContent(content io.ReadSeeker, name string, modtime time.Time) error {
+func (c *xContext) ServeContent(content io.Reader, name string, modtime time.Time) error {
+	return c.ServeCallbackContent(func(_ Context) (io.Reader, error) {
+		return content, nil
+	}, name, modtime)
+}
+
+func (c *xContext) ServeCallbackContent(callback func(Context) (io.Reader, error), name string, modtime time.Time) error {
 	rq := c.Request()
 	rs := c.Response()
 
@@ -217,12 +223,15 @@ func (c *xContext) ServeContent(content io.ReadSeeker, name string, modtime time
 		rs.Header().Del(HeaderContentLength)
 		return c.NoContent(http.StatusNotModified)
 	}
-
+	content, err := callback(c)
+	if err != nil {
+		return err
+	}
 	rs.Header().Set(HeaderContentType, ContentTypeByExtension(name))
 	rs.Header().Set(HeaderLastModified, modtime.UTC().Format(http.TimeFormat))
 	rs.WriteHeader(http.StatusOK)
 	rs.KeepBody(false)
-	_, err := io.Copy(rs, content)
+	_, err = io.Copy(rs, content)
 	return err
 }
 

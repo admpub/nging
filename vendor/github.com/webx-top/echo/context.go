@@ -135,7 +135,8 @@ type Context interface {
 	// ServeContent sends static content from `io.Reader` and handles caching
 	// via `If-Modified-Since` request header. It automatically sets `Content-Type`
 	// and `Last-Modified` response headers.
-	ServeContent(io.ReadSeeker, string, time.Time) error
+	ServeContent(io.Reader, string, time.Time) error
+	ServeCallbackContent(func(Context) (io.Reader, error), string, time.Time) error
 
 	//----------------
 	// FuncMap
