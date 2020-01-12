@@ -41,7 +41,7 @@ function cropImage(uploadURL,thumbsnailElem,originalElem,type,width,height){
               var w=width*ratio,h=height*ratio;
               img.Jcrop({
                 aspectRatio:width/height,
-                minSize:[w,h],
+                //minSize:[w,h],
                 setSelect:[0,0,w,h],
               },function(){
                 jcrop=this;
