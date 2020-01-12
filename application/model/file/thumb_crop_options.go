@@ -19,6 +19,7 @@
 package file
 
 import (
+	"bytes"
 	"io"
 
 	imageproxy "github.com/admpub/imageproxy"
@@ -35,4 +36,14 @@ type CropOptions struct {
 	DestFile      string              //保存文件路径
 	FileMD5       string              //原图MD5
 	WatermarkFile string              //水印图片文件
+	thumbData     *bytes.Reader
+}
+
+func (c *CropOptions) ThumbData() *bytes.Reader {
+	return c.thumbData
+}
+
+func (c *CropOptions) SetThumbData(thumbData *bytes.Reader) *CropOptions {
+	c.thumbData = thumbData
+	return c
 }

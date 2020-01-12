@@ -59,6 +59,7 @@ func (t *Thumb) Crop(opt *CropOptions) error {
 	if err != nil {
 		return errors.WithMessage(err, `Put`)
 	}
+	opt.SetThumbData(byteReader)
 	t.Size = uint64(len(b))
 	t.Width = param.AsUint(opt.Options.Width)
 	t.Height = param.AsUint(opt.Options.Height)
