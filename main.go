@@ -45,7 +45,7 @@ var (
 	CLOUD_GOX  string
 	COMMIT     string
 	LABEL      = `dev` //beta/alpha/stable
-	VERSION    = `2.1.0`
+	VERSION    = `2.1.2`
 
 	version   string
 	schemaVer = 2.6 //数据表结构版本
