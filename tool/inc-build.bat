@@ -9,7 +9,6 @@ xcopy ..\data\ip2region ..\dist\nging_%GOOS%_%GOARCH%\data\ip2region /E /Q /H /I
 mkdir ..\dist\nging_%GOOS%_%GOARCH%\config
 mkdir ..\dist\nging_%GOOS%_%GOARCH%\config\vhosts
 
-xcopy ..\config\config.yaml ..\dist\nging_%GOOS%_%GOARCH%\config\ /E /Q /H /I /Y
 xcopy ..\config\config.yaml.sample ..\dist\nging_%GOOS%_%GOARCH%\config\ /E /Q /H /I /Y
 xcopy ..\config\install.sql ..\dist\nging_%GOOS%_%GOARCH%\config\ /E /Q /H /I /Y
 xcopy ..\config\ua.txt ..\dist\nging_%GOOS%_%GOARCH%\config\ /E /Q /H /I /Y
