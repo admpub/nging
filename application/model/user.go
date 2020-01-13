@@ -171,7 +171,29 @@ func (u *User) U2F(uid uint, typ string) (u2f *dbschema.UserU2f, err error) {
 	return
 }
 
-func (u *User) Register(user, pass, email string) error {
+func (u *User) Register(user, pass, email, roleIds string) error {
+	if len(user) == 0 {
+		return u.base.E(`用户名不能为空`)
+	}
+	if len(email) == 0 {
+		return u.base.E(`Email不能为空`)
+	}
+	if len(pass) < 8 {
+		return u.base.E(`密码不能少于8个字符`)
+	}
+	if !com.IsUsername(user) {
+		return u.base.E(`用户名不能包含特殊字符(只能由字母、数字、下划线和汉字组成)`)
+	}
+	if !u.base.Validate(`email`, email, `email`).Ok() {
+		return u.base.E(`Email地址格式不正确`)
+	}
+	exists, err := u.Exists(user)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return u.base.E(`用户名已经存在`)
+	}
 	userSchema := &dbschema.User{}
 	userSchema.SetContext(u.base.Context)
 	userSchema.Username = user
@@ -179,7 +201,8 @@ func (u *User) Register(user, pass, email string) error {
 	userSchema.Salt = com.Salt()
 	userSchema.Password = com.MakePassword(pass, userSchema.Salt)
 	userSchema.Disabled = `N`
-	_, err := userSchema.EventOFF().Add()
+	userSchema.RoleIds = roleIds
+	_, err = userSchema.EventOFF().Add()
 	u.User = userSchema
 	return err
 }

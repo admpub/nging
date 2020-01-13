@@ -19,10 +19,8 @@
 package index
 
 import (
-	"errors"
 	"strings"
 
-	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
 
@@ -98,47 +96,31 @@ func Register(ctx echo.Context) error {
 		common.DecryptedByRandomSecret(ctx, `registerPassword`, &passwd, &repwd)
 		if len(code) == 0 {
 			err = ctx.E(`邀请码不能为空`)
-		} else if len(user) == 0 {
-			err = ctx.E(`用户名不能为空`)
-		} else if len(email) == 0 {
-			err = ctx.E(`Email不能为空`)
-		} else if len(passwd) < 8 {
-			err = ctx.E(`密码不能少于8个字符`)
-		} else if repwd != passwd {
+			goto END
+		}
+		if repwd != passwd {
 			err = ctx.E(`密码与确认密码不一致`)
-		} else if !com.IsUsername(user) {
-			err = errors.New(ctx.T(`用户名不能包含特殊字符(只能由字母、数字、下划线和汉字组成)`))
-		} else if !ctx.Validate(`email`, email, `email`).Ok() {
-			err = ctx.E(`Email地址格式不正确`)
-		} else {
-			var exists bool
-			exists, err = m.Exists(user)
-			if exists {
-				err = ctx.E(`用户名已经存在`)
-			}
-			if err == nil {
-				err = c.VerfyInvitationCode(code)
-			}
-			if err == nil && !ctx.Validate(`email`, email, `email`).Ok() {
-				err = ctx.E(`Email地址格式不正确`)
-			}
+			goto END
 		}
-		if err == nil {
-			err = m.Register(user, passwd, email)
-			if err == nil {
-				c.UseInvitationCode(c.Invitation, m.User.Id)
-				common.DeleteRandomSecret(ctx, `registerPassword`)
-			}
+		err = c.VerfyInvitationCode(code)
+		if err != nil {
+			goto END
 		}
-		if err == nil {
-			m.SetSession()
-			returnTo := ctx.Query(`return_to`)
-			if len(returnTo) == 0 {
-				returnTo = handler.URLFor(`/index`)
-			}
-			return ctx.Redirect(returnTo)
+		err = m.Register(user, passwd, email, c.Invitation.RoleIds)
+		if err != nil {
+			goto END
 		}
+		c.UseInvitationCode(c.Invitation, m.User.Id)
+		common.DeleteRandomSecret(ctx, `registerPassword`)
+		m.SetSession()
+		returnTo := ctx.Query(`return_to`)
+		if len(returnTo) == 0 {
+			returnTo = handler.URLFor(`/index`)
+		}
+		return ctx.Redirect(returnTo)
 	}
+
+END:
 	common.SetRandomSecret(ctx, `registerPassword`, `passwordSecrect`)
 	return ctx.Render(`register`, handler.Err(ctx, err))
 }

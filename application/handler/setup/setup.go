@@ -221,7 +221,7 @@ func Setup(ctx echo.Context) error {
 
 		// 添加创始人
 		m := model.NewUser(ctx)
-		err = m.Register(adminUser, adminPass, adminEmail)
+		err = m.Register(adminUser, adminPass, adminEmail, ``)
 		if err != nil {
 			return err
 		}

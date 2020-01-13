@@ -114,15 +114,15 @@ func UserEdit(ctx echo.Context) error {
 	}
 	if ctx.IsPost() {
 		modifyPwd := ctx.Form(`modifyPwd`) == `1`
-		newPass := strings.TrimSpace(ctx.Form(`newPass`))
+		password := strings.TrimSpace(ctx.Form(`password`))
 		confirmPwd := strings.TrimSpace(ctx.Form(`confirmPwd`))
 		if modifyPwd {
-			common.DecryptedByRandomSecret(ctx, `userEdit`, &newPass, &confirmPwd)
-			if newPass != confirmPwd {
+			common.DecryptedByRandomSecret(ctx, `userEdit`, &password, &confirmPwd)
+			if password != confirmPwd {
 				err = ctx.E(`密码与确认密码不一致`)
 				goto END
 			}
-			m.Password = newPass
+			m.Password = password
 		}
 		m.Username = strings.TrimSpace(ctx.Form(`username`))
 		m.Email = strings.TrimSpace(ctx.Form(`email`))
@@ -130,6 +130,7 @@ func UserEdit(ctx echo.Context) error {
 		m.Avatar = strings.TrimSpace(ctx.Form(`avatar`))
 		m.Gender = strings.TrimSpace(ctx.Form(`gender`))
 		m.RoleIds = strings.Join(ctx.FormValues(`roleIds`), `,`)
+		m.Disabled = strings.TrimSpace(ctx.Form(`disabled`))
 		if err == nil {
 			m.Id = id
 			set := map[string]interface{}{
@@ -139,6 +140,7 @@ func UserEdit(ctx echo.Context) error {
 				`role_ids`: m.RoleIds,
 				`avatar`:   m.Avatar,
 				`gender`:   m.Gender,
+				`disabled`: m.Disabled,
 			}
 			err = m.UpdateField(id, set)
 		}
@@ -149,10 +151,9 @@ func UserEdit(ctx echo.Context) error {
 		}
 	}
 
+END:
 	setFormData(ctx, m)
 	common.SetRandomSecret(ctx, `userEdit`, `passwordSecrect`)
-
-END:
 	ctx.Set(`activeURL`, `/manager/user`)
 	roleM := model.NewUserRole(ctx)
 	roleM.ListByOffset(nil, func(r db.Result) db.Result {

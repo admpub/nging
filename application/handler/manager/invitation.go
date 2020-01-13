@@ -22,20 +22,31 @@ import (
 	"strings"
 	"time"
 
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
+
+	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/model"
 )
 
 func dateString2UnixString(k string, v []string) (string, []string) {
 	switch strings.Title(k) {
 	case `Start`:
-		fallthrough
+		if len(v) > 0 && len(v[0]) > 0 {
+			if !strings.Contains(v[0], `:`) {
+				v[0] += v[0] + ` 00:00:00`
+			}
+		}
+		return echo.DateToTimestamp(`2006-01-02 15:04:05`)(k, v)
 	case `End`:
-		return echo.DateToTimestamp()(k, v)
+		if len(v) > 0 && len(v[0]) > 0 {
+			if !strings.Contains(v[0], `:`) {
+				v[0] += v[0] + ` 23:59:59`
+			}
+		}
+		return echo.DateToTimestamp(`2006-01-02 15:04:05`)(k, v)
 	case `RoleIds`:
 		return k, []string{strings.Join(v, `,`)}
 	}
