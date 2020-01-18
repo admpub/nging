@@ -87,15 +87,29 @@ func (c *Settings) SetDebug(on bool) {
 var (
 	actGroups      = []string{`base`, `email`, `log`}
 	onInitSettings []func(echo.H) error
+	onSetSettings  []func(group string, globalCfg echo.H) error
 )
 
 func OnInitSettings(fn func(echo.H) error) {
 	onInitSettings = append(onInitSettings, fn)
 }
 
+func OnSetSettings(fn func(string, echo.H) error) {
+	onSetSettings = append(onSetSettings, fn)
+}
+
 func FireInitSettings(cfg echo.H) error {
 	for _, fn := range onInitSettings {
 		if err := fn(cfg); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func FireSetSettings(group string, globalCfg echo.H) error {
+	for _, fn := range onSetSettings {
+		if err := fn(group, globalCfg); err != nil {
 			return err
 		}
 	}
@@ -129,6 +143,7 @@ func (c *Settings) SetConfigs(groups ...string) {
 	ngingConfig := c.GetConfig()
 	configs := settings.ConfigAsStore(groups...)
 	for group, conf := range configs {
+		FireSetSettings(group, ngingConfig)
 		ngingConfig.Set(group, conf)
 		c.SetConfig(group, ngingConfig, nil)
 	}
