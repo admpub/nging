@@ -33,6 +33,47 @@ func (s Slice_SshUser) RangeRaw(fn func(m *SshUser) error) error {
 	return nil
 }
 
+func (s Slice_SshUser) GroupBy(keyField string) map[string][]*SshUser {
+	r := map[string][]*SshUser{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*SshUser{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_SshUser) KeyBy(keyField string) map[string]*SshUser {
+	r := map[string]*SshUser{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_SshUser) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_SshUser) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // SshUser 数据库账号
 type SshUser struct {
 	base    factory.Base
@@ -128,6 +169,10 @@ func (a *SshUser) Objects() []*SshUser {
 	return a.objects[:]
 }
 
+func (a *SshUser) XObjects() Slice_SshUser {
+	return Slice_SshUser(a.Objects())
+}
+
 func (a *SshUser) NewObjects() factory.Ranger {
 	return &Slice_SshUser{}
 }
@@ -178,54 +223,33 @@ func (a *SshUser) List(recv interface{}, mw func(db.Result) db.Result, page, siz
 }
 
 func (a *SshUser) GroupBy(keyField string, inputRows ...[]*SshUser) map[string][]*SshUser {
-	var rows []*SshUser
+	var rows Slice_SshUser
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_SshUser(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_SshUser(a.Objects())
 	}
-	r := map[string][]*SshUser{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*SshUser{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *SshUser) KeyBy(keyField string, inputRows ...[]*SshUser) map[string]*SshUser {
-	var rows []*SshUser
+	var rows Slice_SshUser
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_SshUser(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_SshUser(a.Objects())
 	}
-	r := map[string]*SshUser{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *SshUser) AsKV(keyField string, valueField string, inputRows ...[]*SshUser) map[string]interface{} {
-	var rows []*SshUser
+func (a *SshUser) AsKV(keyField string, valueField string, inputRows ...[]*SshUser) param.Store {
+	var rows Slice_SshUser
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_SshUser(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_SshUser(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *SshUser) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -402,8 +426,8 @@ func (a *SshUser) Reset() *SshUser {
 	return a
 }
 
-func (a *SshUser) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *SshUser) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["Uid"] = a.Uid
 	r["Host"] = a.Host
@@ -518,8 +542,8 @@ func (a *SshUser) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *SshUser) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *SshUser) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["uid"] = a.Uid
 	r["host"] = a.Host

@@ -33,6 +33,47 @@ func (s Slice_SendingLog) RangeRaw(fn func(m *SendingLog) error) error {
 	return nil
 }
 
+func (s Slice_SendingLog) GroupBy(keyField string) map[string][]*SendingLog {
+	r := map[string][]*SendingLog{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*SendingLog{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_SendingLog) KeyBy(keyField string) map[string]*SendingLog {
+	r := map[string]*SendingLog{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_SendingLog) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_SendingLog) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // SendingLog 邮件短信等发送日志
 type SendingLog struct {
 	base    factory.Base
@@ -127,6 +168,10 @@ func (a *SendingLog) Objects() []*SendingLog {
 	return a.objects[:]
 }
 
+func (a *SendingLog) XObjects() Slice_SendingLog {
+	return Slice_SendingLog(a.Objects())
+}
+
 func (a *SendingLog) NewObjects() factory.Ranger {
 	return &Slice_SendingLog{}
 }
@@ -177,54 +222,33 @@ func (a *SendingLog) List(recv interface{}, mw func(db.Result) db.Result, page, 
 }
 
 func (a *SendingLog) GroupBy(keyField string, inputRows ...[]*SendingLog) map[string][]*SendingLog {
-	var rows []*SendingLog
+	var rows Slice_SendingLog
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_SendingLog(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_SendingLog(a.Objects())
 	}
-	r := map[string][]*SendingLog{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*SendingLog{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *SendingLog) KeyBy(keyField string, inputRows ...[]*SendingLog) map[string]*SendingLog {
-	var rows []*SendingLog
+	var rows Slice_SendingLog
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_SendingLog(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_SendingLog(a.Objects())
 	}
-	r := map[string]*SendingLog{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *SendingLog) AsKV(keyField string, valueField string, inputRows ...[]*SendingLog) map[string]interface{} {
-	var rows []*SendingLog
+func (a *SendingLog) AsKV(keyField string, valueField string, inputRows ...[]*SendingLog) param.Store {
+	var rows Slice_SendingLog
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_SendingLog(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_SendingLog(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *SendingLog) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -433,8 +457,8 @@ func (a *SendingLog) Reset() *SendingLog {
 	return a
 }
 
-func (a *SendingLog) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *SendingLog) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["Created"] = a.Created
 	r["SentAt"] = a.SentAt
@@ -544,8 +568,8 @@ func (a *SendingLog) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *SendingLog) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *SendingLog) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["created"] = a.Created
 	r["sent_at"] = a.SentAt

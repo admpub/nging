@@ -33,6 +33,47 @@ func (s Slice_UserRole) RangeRaw(fn func(m *UserRole) error) error {
 	return nil
 }
 
+func (s Slice_UserRole) GroupBy(keyField string) map[string][]*UserRole {
+	r := map[string][]*UserRole{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*UserRole{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_UserRole) KeyBy(keyField string) map[string]*UserRole {
+	r := map[string]*UserRole{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_UserRole) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_UserRole) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // UserRole 用户角色
 type UserRole struct {
 	base    factory.Base
@@ -121,6 +162,10 @@ func (a *UserRole) Objects() []*UserRole {
 	return a.objects[:]
 }
 
+func (a *UserRole) XObjects() Slice_UserRole {
+	return Slice_UserRole(a.Objects())
+}
+
 func (a *UserRole) NewObjects() factory.Ranger {
 	return &Slice_UserRole{}
 }
@@ -171,54 +216,33 @@ func (a *UserRole) List(recv interface{}, mw func(db.Result) db.Result, page, si
 }
 
 func (a *UserRole) GroupBy(keyField string, inputRows ...[]*UserRole) map[string][]*UserRole {
-	var rows []*UserRole
+	var rows Slice_UserRole
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_UserRole(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_UserRole(a.Objects())
 	}
-	r := map[string][]*UserRole{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*UserRole{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *UserRole) KeyBy(keyField string, inputRows ...[]*UserRole) map[string]*UserRole {
-	var rows []*UserRole
+	var rows Slice_UserRole
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_UserRole(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_UserRole(a.Objects())
 	}
-	r := map[string]*UserRole{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *UserRole) AsKV(keyField string, valueField string, inputRows ...[]*UserRole) map[string]interface{} {
-	var rows []*UserRole
+func (a *UserRole) AsKV(keyField string, valueField string, inputRows ...[]*UserRole) param.Store {
+	var rows Slice_UserRole
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_UserRole(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_UserRole(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *UserRole) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -371,8 +395,8 @@ func (a *UserRole) Reset() *UserRole {
 	return a
 }
 
-func (a *UserRole) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *UserRole) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["Name"] = a.Name
 	r["Description"] = a.Description
@@ -452,8 +476,8 @@ func (a *UserRole) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *UserRole) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *UserRole) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["name"] = a.Name
 	r["description"] = a.Description

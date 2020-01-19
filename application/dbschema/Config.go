@@ -31,16 +31,57 @@ func (s Slice_Config) RangeRaw(fn func(m *Config) error) error {
 	return nil
 }
 
+func (s Slice_Config) GroupBy(keyField string) map[string][]*Config {
+	r := map[string][]*Config{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*Config{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_Config) KeyBy(keyField string) map[string]*Config {
+	r := map[string]*Config{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_Config) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_Config) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // Config 配置
 type Config struct {
 	base    factory.Base
 	objects []*Config
 
 	Key         string `db:"key,pk" bson:"key" comment:"键" json:"key" xml:"key"`
-	Label       string `db:"label" bson:"label" comment:"选项名称" json:"label" xml:"label"`
-	Description string `db:"description" bson:"description" comment:"简介" json:"description" xml:"description"`
-	Value       string `db:"value" bson:"value" comment:"值" json:"value" xml:"value"`
 	Group       string `db:"group,pk" bson:"group" comment:"组" json:"group" xml:"group"`
+	Label       string `db:"label" bson:"label" comment:"选项名称" json:"label" xml:"label"`
+	Value       string `db:"value" bson:"value" comment:"值" json:"value" xml:"value"`
+	Description string `db:"description" bson:"description" comment:"简介" json:"description" xml:"description"`
 	Type        string `db:"type" bson:"type" comment:"值类型(list-以半角逗号分隔的值列表)" json:"type" xml:"type"`
 	Sort        int    `db:"sort" bson:"sort" comment:"排序" json:"sort" xml:"sort"`
 	Disabled    string `db:"disabled" bson:"disabled" comment:"是否禁用" json:"disabled" xml:"disabled"`
@@ -119,6 +160,10 @@ func (a *Config) Objects() []*Config {
 	return a.objects[:]
 }
 
+func (a *Config) XObjects() Slice_Config {
+	return Slice_Config(a.Objects())
+}
+
 func (a *Config) NewObjects() factory.Ranger {
 	return &Slice_Config{}
 }
@@ -169,54 +214,33 @@ func (a *Config) List(recv interface{}, mw func(db.Result) db.Result, page, size
 }
 
 func (a *Config) GroupBy(keyField string, inputRows ...[]*Config) map[string][]*Config {
-	var rows []*Config
+	var rows Slice_Config
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_Config(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_Config(a.Objects())
 	}
-	r := map[string][]*Config{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*Config{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *Config) KeyBy(keyField string, inputRows ...[]*Config) map[string]*Config {
-	var rows []*Config
+	var rows Slice_Config
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_Config(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_Config(a.Objects())
 	}
-	r := map[string]*Config{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *Config) AsKV(keyField string, valueField string, inputRows ...[]*Config) map[string]interface{} {
-	var rows []*Config
+func (a *Config) AsKV(keyField string, valueField string, inputRows ...[]*Config) param.Store {
+	var rows Slice_Config
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_Config(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_Config(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *Config) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -376,10 +400,10 @@ func (a *Config) Count(mw func(db.Result) db.Result, args ...interface{}) (int64
 
 func (a *Config) Reset() *Config {
 	a.Key = ``
-	a.Label = ``
-	a.Description = ``
-	a.Value = ``
 	a.Group = ``
+	a.Label = ``
+	a.Value = ``
+	a.Description = ``
 	a.Type = ``
 	a.Sort = 0
 	a.Disabled = ``
@@ -387,13 +411,13 @@ func (a *Config) Reset() *Config {
 	return a
 }
 
-func (a *Config) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *Config) AsMap() param.Store {
+	r := param.Store{}
 	r["Key"] = a.Key
-	r["Label"] = a.Label
-	r["Description"] = a.Description
-	r["Value"] = a.Value
 	r["Group"] = a.Group
+	r["Label"] = a.Label
+	r["Value"] = a.Value
+	r["Description"] = a.Description
 	r["Type"] = a.Type
 	r["Sort"] = a.Sort
 	r["Disabled"] = a.Disabled
@@ -406,14 +430,14 @@ func (a *Config) FromRow(row map[string]interface{}) {
 		switch key {
 		case "key":
 			a.Key = param.AsString(value)
-		case "label":
-			a.Label = param.AsString(value)
-		case "description":
-			a.Description = param.AsString(value)
-		case "value":
-			a.Value = param.AsString(value)
 		case "group":
 			a.Group = param.AsString(value)
+		case "label":
+			a.Label = param.AsString(value)
+		case "value":
+			a.Value = param.AsString(value)
+		case "description":
+			a.Description = param.AsString(value)
 		case "type":
 			a.Type = param.AsString(value)
 		case "sort":
@@ -448,14 +472,14 @@ func (a *Config) Set(key interface{}, value ...interface{}) {
 		switch kk {
 		case "Key":
 			a.Key = param.AsString(vv)
-		case "Label":
-			a.Label = param.AsString(vv)
-		case "Description":
-			a.Description = param.AsString(vv)
-		case "Value":
-			a.Value = param.AsString(vv)
 		case "Group":
 			a.Group = param.AsString(vv)
+		case "Label":
+			a.Label = param.AsString(vv)
+		case "Value":
+			a.Value = param.AsString(vv)
+		case "Description":
+			a.Description = param.AsString(vv)
 		case "Type":
 			a.Type = param.AsString(vv)
 		case "Sort":
@@ -468,13 +492,13 @@ func (a *Config) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *Config) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *Config) AsRow() param.Store {
+	r := param.Store{}
 	r["key"] = a.Key
-	r["label"] = a.Label
-	r["description"] = a.Description
-	r["value"] = a.Value
 	r["group"] = a.Group
+	r["label"] = a.Label
+	r["value"] = a.Value
+	r["description"] = a.Description
 	r["type"] = a.Type
 	r["sort"] = a.Sort
 	r["disabled"] = a.Disabled

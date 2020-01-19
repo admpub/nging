@@ -33,6 +33,47 @@ func (s Slice_CollectorRule) RangeRaw(fn func(m *CollectorRule) error) error {
 	return nil
 }
 
+func (s Slice_CollectorRule) GroupBy(keyField string) map[string][]*CollectorRule {
+	r := map[string][]*CollectorRule{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*CollectorRule{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_CollectorRule) KeyBy(keyField string) map[string]*CollectorRule {
+	r := map[string]*CollectorRule{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_CollectorRule) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_CollectorRule) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // CollectorRule 页面中的元素采集规则
 type CollectorRule struct {
 	base    factory.Base
@@ -120,6 +161,10 @@ func (a *CollectorRule) Objects() []*CollectorRule {
 	return a.objects[:]
 }
 
+func (a *CollectorRule) XObjects() Slice_CollectorRule {
+	return Slice_CollectorRule(a.Objects())
+}
+
 func (a *CollectorRule) NewObjects() factory.Ranger {
 	return &Slice_CollectorRule{}
 }
@@ -170,54 +215,33 @@ func (a *CollectorRule) List(recv interface{}, mw func(db.Result) db.Result, pag
 }
 
 func (a *CollectorRule) GroupBy(keyField string, inputRows ...[]*CollectorRule) map[string][]*CollectorRule {
-	var rows []*CollectorRule
+	var rows Slice_CollectorRule
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CollectorRule(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CollectorRule(a.Objects())
 	}
-	r := map[string][]*CollectorRule{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*CollectorRule{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *CollectorRule) KeyBy(keyField string, inputRows ...[]*CollectorRule) map[string]*CollectorRule {
-	var rows []*CollectorRule
+	var rows Slice_CollectorRule
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CollectorRule(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CollectorRule(a.Objects())
 	}
-	r := map[string]*CollectorRule{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *CollectorRule) AsKV(keyField string, valueField string, inputRows ...[]*CollectorRule) map[string]interface{} {
-	var rows []*CollectorRule
+func (a *CollectorRule) AsKV(keyField string, valueField string, inputRows ...[]*CollectorRule) param.Store {
+	var rows Slice_CollectorRule
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CollectorRule(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CollectorRule(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *CollectorRule) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -368,8 +392,8 @@ func (a *CollectorRule) Reset() *CollectorRule {
 	return a
 }
 
-func (a *CollectorRule) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *CollectorRule) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["PageId"] = a.PageId
 	r["Name"] = a.Name
@@ -444,8 +468,8 @@ func (a *CollectorRule) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *CollectorRule) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *CollectorRule) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["page_id"] = a.PageId
 	r["name"] = a.Name

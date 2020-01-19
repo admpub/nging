@@ -33,6 +33,47 @@ func (s Slice_AccessLog) RangeRaw(fn func(m *AccessLog) error) error {
 	return nil
 }
 
+func (s Slice_AccessLog) GroupBy(keyField string) map[string][]*AccessLog {
+	r := map[string][]*AccessLog{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*AccessLog{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_AccessLog) KeyBy(keyField string) map[string]*AccessLog {
+	r := map[string]*AccessLog{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_AccessLog) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_AccessLog) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // AccessLog
 type AccessLog struct {
 	base    factory.Base
@@ -135,6 +176,10 @@ func (a *AccessLog) Objects() []*AccessLog {
 	return a.objects[:]
 }
 
+func (a *AccessLog) XObjects() Slice_AccessLog {
+	return Slice_AccessLog(a.Objects())
+}
+
 func (a *AccessLog) NewObjects() factory.Ranger {
 	return &Slice_AccessLog{}
 }
@@ -185,54 +230,33 @@ func (a *AccessLog) List(recv interface{}, mw func(db.Result) db.Result, page, s
 }
 
 func (a *AccessLog) GroupBy(keyField string, inputRows ...[]*AccessLog) map[string][]*AccessLog {
-	var rows []*AccessLog
+	var rows Slice_AccessLog
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_AccessLog(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_AccessLog(a.Objects())
 	}
-	r := map[string][]*AccessLog{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*AccessLog{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *AccessLog) KeyBy(keyField string, inputRows ...[]*AccessLog) map[string]*AccessLog {
-	var rows []*AccessLog
+	var rows Slice_AccessLog
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_AccessLog(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_AccessLog(a.Objects())
 	}
-	r := map[string]*AccessLog{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *AccessLog) AsKV(keyField string, valueField string, inputRows ...[]*AccessLog) map[string]interface{} {
-	var rows []*AccessLog
+func (a *AccessLog) AsKV(keyField string, valueField string, inputRows ...[]*AccessLog) param.Store {
+	var rows Slice_AccessLog
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_AccessLog(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_AccessLog(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *AccessLog) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -398,8 +422,8 @@ func (a *AccessLog) Reset() *AccessLog {
 	return a
 }
 
-func (a *AccessLog) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *AccessLog) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["VhostId"] = a.VhostId
 	r["RemoteAddr"] = a.RemoteAddr
@@ -549,8 +573,8 @@ func (a *AccessLog) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *AccessLog) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *AccessLog) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["vhost_id"] = a.VhostId
 	r["remote_addr"] = a.RemoteAddr

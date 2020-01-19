@@ -33,6 +33,47 @@ func (s Slice_User) RangeRaw(fn func(m *User) error) error {
 	return nil
 }
 
+func (s Slice_User) GroupBy(keyField string) map[string][]*User {
+	r := map[string][]*User{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*User{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_User) KeyBy(keyField string) map[string]*User {
+	r := map[string]*User{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_User) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_User) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // User 用户
 type User struct {
 	base    factory.Base
@@ -130,6 +171,10 @@ func (a *User) Objects() []*User {
 	return a.objects[:]
 }
 
+func (a *User) XObjects() Slice_User {
+	return Slice_User(a.Objects())
+}
+
 func (a *User) NewObjects() factory.Ranger {
 	return &Slice_User{}
 }
@@ -180,54 +225,33 @@ func (a *User) List(recv interface{}, mw func(db.Result) db.Result, page, size i
 }
 
 func (a *User) GroupBy(keyField string, inputRows ...[]*User) map[string][]*User {
-	var rows []*User
+	var rows Slice_User
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_User(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_User(a.Objects())
 	}
-	r := map[string][]*User{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*User{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *User) KeyBy(keyField string, inputRows ...[]*User) map[string]*User {
-	var rows []*User
+	var rows Slice_User
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_User(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_User(a.Objects())
 	}
-	r := map[string]*User{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *User) AsKV(keyField string, valueField string, inputRows ...[]*User) map[string]interface{} {
-	var rows []*User
+func (a *User) AsKV(keyField string, valueField string, inputRows ...[]*User) param.Store {
+	var rows Slice_User
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_User(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_User(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *User) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -423,8 +447,8 @@ func (a *User) Reset() *User {
 	return a
 }
 
-func (a *User) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *User) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["Username"] = a.Username
 	r["Email"] = a.Email
@@ -549,8 +573,8 @@ func (a *User) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *User) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *User) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["username"] = a.Username
 	r["email"] = a.Email

@@ -33,6 +33,47 @@ func (s Slice_FtpUserGroup) RangeRaw(fn func(m *FtpUserGroup) error) error {
 	return nil
 }
 
+func (s Slice_FtpUserGroup) GroupBy(keyField string) map[string][]*FtpUserGroup {
+	r := map[string][]*FtpUserGroup{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*FtpUserGroup{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_FtpUserGroup) KeyBy(keyField string) map[string]*FtpUserGroup {
+	r := map[string]*FtpUserGroup{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_FtpUserGroup) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_FtpUserGroup) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // FtpUserGroup FTP用户组
 type FtpUserGroup struct {
 	base    factory.Base
@@ -121,6 +162,10 @@ func (a *FtpUserGroup) Objects() []*FtpUserGroup {
 	return a.objects[:]
 }
 
+func (a *FtpUserGroup) XObjects() Slice_FtpUserGroup {
+	return Slice_FtpUserGroup(a.Objects())
+}
+
 func (a *FtpUserGroup) NewObjects() factory.Ranger {
 	return &Slice_FtpUserGroup{}
 }
@@ -171,54 +216,33 @@ func (a *FtpUserGroup) List(recv interface{}, mw func(db.Result) db.Result, page
 }
 
 func (a *FtpUserGroup) GroupBy(keyField string, inputRows ...[]*FtpUserGroup) map[string][]*FtpUserGroup {
-	var rows []*FtpUserGroup
+	var rows Slice_FtpUserGroup
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_FtpUserGroup(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_FtpUserGroup(a.Objects())
 	}
-	r := map[string][]*FtpUserGroup{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*FtpUserGroup{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *FtpUserGroup) KeyBy(keyField string, inputRows ...[]*FtpUserGroup) map[string]*FtpUserGroup {
-	var rows []*FtpUserGroup
+	var rows Slice_FtpUserGroup
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_FtpUserGroup(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_FtpUserGroup(a.Objects())
 	}
-	r := map[string]*FtpUserGroup{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *FtpUserGroup) AsKV(keyField string, valueField string, inputRows ...[]*FtpUserGroup) map[string]interface{} {
-	var rows []*FtpUserGroup
+func (a *FtpUserGroup) AsKV(keyField string, valueField string, inputRows ...[]*FtpUserGroup) param.Store {
+	var rows Slice_FtpUserGroup
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_FtpUserGroup(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_FtpUserGroup(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *FtpUserGroup) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -388,8 +412,8 @@ func (a *FtpUserGroup) Reset() *FtpUserGroup {
 	return a
 }
 
-func (a *FtpUserGroup) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *FtpUserGroup) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["Name"] = a.Name
 	r["Created"] = a.Created
@@ -469,8 +493,8 @@ func (a *FtpUserGroup) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *FtpUserGroup) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *FtpUserGroup) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["name"] = a.Name
 	r["created"] = a.Created

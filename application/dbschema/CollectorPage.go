@@ -33,6 +33,47 @@ func (s Slice_CollectorPage) RangeRaw(fn func(m *CollectorPage) error) error {
 	return nil
 }
 
+func (s Slice_CollectorPage) GroupBy(keyField string) map[string][]*CollectorPage {
+	r := map[string][]*CollectorPage{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*CollectorPage{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_CollectorPage) KeyBy(keyField string) map[string]*CollectorPage {
+	r := map[string]*CollectorPage{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_CollectorPage) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_CollectorPage) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // CollectorPage 采集页面
 type CollectorPage struct {
 	base    factory.Base
@@ -132,6 +173,10 @@ func (a *CollectorPage) Objects() []*CollectorPage {
 	return a.objects[:]
 }
 
+func (a *CollectorPage) XObjects() Slice_CollectorPage {
+	return Slice_CollectorPage(a.Objects())
+}
+
 func (a *CollectorPage) NewObjects() factory.Ranger {
 	return &Slice_CollectorPage{}
 }
@@ -182,54 +227,33 @@ func (a *CollectorPage) List(recv interface{}, mw func(db.Result) db.Result, pag
 }
 
 func (a *CollectorPage) GroupBy(keyField string, inputRows ...[]*CollectorPage) map[string][]*CollectorPage {
-	var rows []*CollectorPage
+	var rows Slice_CollectorPage
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CollectorPage(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CollectorPage(a.Objects())
 	}
-	r := map[string][]*CollectorPage{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*CollectorPage{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *CollectorPage) KeyBy(keyField string, inputRows ...[]*CollectorPage) map[string]*CollectorPage {
-	var rows []*CollectorPage
+	var rows Slice_CollectorPage
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CollectorPage(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CollectorPage(a.Objects())
 	}
-	r := map[string]*CollectorPage{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *CollectorPage) AsKV(keyField string, valueField string, inputRows ...[]*CollectorPage) map[string]interface{} {
-	var rows []*CollectorPage
+func (a *CollectorPage) AsKV(keyField string, valueField string, inputRows ...[]*CollectorPage) param.Store {
+	var rows Slice_CollectorPage
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CollectorPage(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CollectorPage(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *CollectorPage) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -443,8 +467,8 @@ func (a *CollectorPage) Reset() *CollectorPage {
 	return a
 }
 
-func (a *CollectorPage) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *CollectorPage) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["ParentId"] = a.ParentId
 	r["RootId"] = a.RootId
@@ -579,8 +603,8 @@ func (a *CollectorPage) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *CollectorPage) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *CollectorPage) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["parent_id"] = a.ParentId
 	r["root_id"] = a.RootId

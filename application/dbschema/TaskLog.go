@@ -33,6 +33,47 @@ func (s Slice_TaskLog) RangeRaw(fn func(m *TaskLog) error) error {
 	return nil
 }
 
+func (s Slice_TaskLog) GroupBy(keyField string) map[string][]*TaskLog {
+	r := map[string][]*TaskLog{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*TaskLog{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_TaskLog) KeyBy(keyField string) map[string]*TaskLog {
+	r := map[string]*TaskLog{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_TaskLog) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_TaskLog) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // TaskLog 任务日志
 type TaskLog struct {
 	base    factory.Base
@@ -119,6 +160,10 @@ func (a *TaskLog) Objects() []*TaskLog {
 	return a.objects[:]
 }
 
+func (a *TaskLog) XObjects() Slice_TaskLog {
+	return Slice_TaskLog(a.Objects())
+}
+
 func (a *TaskLog) NewObjects() factory.Ranger {
 	return &Slice_TaskLog{}
 }
@@ -169,54 +214,33 @@ func (a *TaskLog) List(recv interface{}, mw func(db.Result) db.Result, page, siz
 }
 
 func (a *TaskLog) GroupBy(keyField string, inputRows ...[]*TaskLog) map[string][]*TaskLog {
-	var rows []*TaskLog
+	var rows Slice_TaskLog
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_TaskLog(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_TaskLog(a.Objects())
 	}
-	r := map[string][]*TaskLog{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*TaskLog{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *TaskLog) KeyBy(keyField string, inputRows ...[]*TaskLog) map[string]*TaskLog {
-	var rows []*TaskLog
+	var rows Slice_TaskLog
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_TaskLog(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_TaskLog(a.Objects())
 	}
-	r := map[string]*TaskLog{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *TaskLog) AsKV(keyField string, valueField string, inputRows ...[]*TaskLog) map[string]interface{} {
-	var rows []*TaskLog
+func (a *TaskLog) AsKV(keyField string, valueField string, inputRows ...[]*TaskLog) param.Store {
+	var rows Slice_TaskLog
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_TaskLog(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_TaskLog(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *TaskLog) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -366,8 +390,8 @@ func (a *TaskLog) Reset() *TaskLog {
 	return a
 }
 
-func (a *TaskLog) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *TaskLog) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["TaskId"] = a.TaskId
 	r["Output"] = a.Output
@@ -437,8 +461,8 @@ func (a *TaskLog) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *TaskLog) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *TaskLog) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["task_id"] = a.TaskId
 	r["output"] = a.Output

@@ -33,6 +33,47 @@ func (s Slice_CollectorExport) RangeRaw(fn func(m *CollectorExport) error) error
 	return nil
 }
 
+func (s Slice_CollectorExport) GroupBy(keyField string) map[string][]*CollectorExport {
+	r := map[string][]*CollectorExport{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*CollectorExport{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_CollectorExport) KeyBy(keyField string) map[string]*CollectorExport {
+	r := map[string]*CollectorExport{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_CollectorExport) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_CollectorExport) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // CollectorExport 导出规则
 type CollectorExport struct {
 	base    factory.Base
@@ -124,6 +165,10 @@ func (a *CollectorExport) Objects() []*CollectorExport {
 	return a.objects[:]
 }
 
+func (a *CollectorExport) XObjects() Slice_CollectorExport {
+	return Slice_CollectorExport(a.Objects())
+}
+
 func (a *CollectorExport) NewObjects() factory.Ranger {
 	return &Slice_CollectorExport{}
 }
@@ -174,54 +219,33 @@ func (a *CollectorExport) List(recv interface{}, mw func(db.Result) db.Result, p
 }
 
 func (a *CollectorExport) GroupBy(keyField string, inputRows ...[]*CollectorExport) map[string][]*CollectorExport {
-	var rows []*CollectorExport
+	var rows Slice_CollectorExport
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CollectorExport(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CollectorExport(a.Objects())
 	}
-	r := map[string][]*CollectorExport{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*CollectorExport{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *CollectorExport) KeyBy(keyField string, inputRows ...[]*CollectorExport) map[string]*CollectorExport {
-	var rows []*CollectorExport
+	var rows Slice_CollectorExport
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CollectorExport(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CollectorExport(a.Objects())
 	}
-	r := map[string]*CollectorExport{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *CollectorExport) AsKV(keyField string, valueField string, inputRows ...[]*CollectorExport) map[string]interface{} {
-	var rows []*CollectorExport
+func (a *CollectorExport) AsKV(keyField string, valueField string, inputRows ...[]*CollectorExport) param.Store {
+	var rows Slice_CollectorExport
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CollectorExport(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CollectorExport(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *CollectorExport) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -393,8 +417,8 @@ func (a *CollectorExport) Reset() *CollectorExport {
 	return a
 }
 
-func (a *CollectorExport) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *CollectorExport) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["PageRoot"] = a.PageRoot
 	r["PageId"] = a.PageId
@@ -489,8 +513,8 @@ func (a *CollectorExport) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *CollectorExport) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *CollectorExport) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["page_root"] = a.PageRoot
 	r["page_id"] = a.PageId

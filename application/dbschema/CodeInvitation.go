@@ -33,6 +33,47 @@ func (s Slice_CodeInvitation) RangeRaw(fn func(m *CodeInvitation) error) error {
 	return nil
 }
 
+func (s Slice_CodeInvitation) GroupBy(keyField string) map[string][]*CodeInvitation {
+	r := map[string][]*CodeInvitation{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*CodeInvitation{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_CodeInvitation) KeyBy(keyField string) map[string]*CodeInvitation {
+	r := map[string]*CodeInvitation{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_CodeInvitation) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_CodeInvitation) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // CodeInvitation 邀请码
 type CodeInvitation struct {
 	base    factory.Base
@@ -122,6 +163,10 @@ func (a *CodeInvitation) Objects() []*CodeInvitation {
 	return a.objects[:]
 }
 
+func (a *CodeInvitation) XObjects() Slice_CodeInvitation {
+	return Slice_CodeInvitation(a.Objects())
+}
+
 func (a *CodeInvitation) NewObjects() factory.Ranger {
 	return &Slice_CodeInvitation{}
 }
@@ -172,54 +217,33 @@ func (a *CodeInvitation) List(recv interface{}, mw func(db.Result) db.Result, pa
 }
 
 func (a *CodeInvitation) GroupBy(keyField string, inputRows ...[]*CodeInvitation) map[string][]*CodeInvitation {
-	var rows []*CodeInvitation
+	var rows Slice_CodeInvitation
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CodeInvitation(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CodeInvitation(a.Objects())
 	}
-	r := map[string][]*CodeInvitation{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*CodeInvitation{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *CodeInvitation) KeyBy(keyField string, inputRows ...[]*CodeInvitation) map[string]*CodeInvitation {
-	var rows []*CodeInvitation
+	var rows Slice_CodeInvitation
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CodeInvitation(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CodeInvitation(a.Objects())
 	}
-	r := map[string]*CodeInvitation{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *CodeInvitation) AsKV(keyField string, valueField string, inputRows ...[]*CodeInvitation) map[string]interface{} {
-	var rows []*CodeInvitation
+func (a *CodeInvitation) AsKV(keyField string, valueField string, inputRows ...[]*CodeInvitation) param.Store {
+	var rows Slice_CodeInvitation
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CodeInvitation(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CodeInvitation(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *CodeInvitation) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -372,8 +396,8 @@ func (a *CodeInvitation) Reset() *CodeInvitation {
 	return a
 }
 
-func (a *CodeInvitation) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *CodeInvitation) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["Uid"] = a.Uid
 	r["RecvUid"] = a.RecvUid
@@ -458,8 +482,8 @@ func (a *CodeInvitation) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *CodeInvitation) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *CodeInvitation) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["uid"] = a.Uid
 	r["recv_uid"] = a.RecvUid

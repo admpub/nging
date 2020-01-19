@@ -33,6 +33,47 @@ func (s Slice_ForeverProcess) RangeRaw(fn func(m *ForeverProcess) error) error {
 	return nil
 }
 
+func (s Slice_ForeverProcess) GroupBy(keyField string) map[string][]*ForeverProcess {
+	r := map[string][]*ForeverProcess{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*ForeverProcess{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_ForeverProcess) KeyBy(keyField string) map[string]*ForeverProcess {
+	r := map[string]*ForeverProcess{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_ForeverProcess) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_ForeverProcess) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // ForeverProcess 持久进程
 type ForeverProcess struct {
 	base    factory.Base
@@ -136,6 +177,10 @@ func (a *ForeverProcess) Objects() []*ForeverProcess {
 	return a.objects[:]
 }
 
+func (a *ForeverProcess) XObjects() Slice_ForeverProcess {
+	return Slice_ForeverProcess(a.Objects())
+}
+
 func (a *ForeverProcess) NewObjects() factory.Ranger {
 	return &Slice_ForeverProcess{}
 }
@@ -186,54 +231,33 @@ func (a *ForeverProcess) List(recv interface{}, mw func(db.Result) db.Result, pa
 }
 
 func (a *ForeverProcess) GroupBy(keyField string, inputRows ...[]*ForeverProcess) map[string][]*ForeverProcess {
-	var rows []*ForeverProcess
+	var rows Slice_ForeverProcess
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_ForeverProcess(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_ForeverProcess(a.Objects())
 	}
-	r := map[string][]*ForeverProcess{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*ForeverProcess{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *ForeverProcess) KeyBy(keyField string, inputRows ...[]*ForeverProcess) map[string]*ForeverProcess {
-	var rows []*ForeverProcess
+	var rows Slice_ForeverProcess
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_ForeverProcess(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_ForeverProcess(a.Objects())
 	}
-	r := map[string]*ForeverProcess{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *ForeverProcess) AsKV(keyField string, valueField string, inputRows ...[]*ForeverProcess) map[string]interface{} {
-	var rows []*ForeverProcess
+func (a *ForeverProcess) AsKV(keyField string, valueField string, inputRows ...[]*ForeverProcess) param.Store {
+	var rows Slice_ForeverProcess
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_ForeverProcess(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_ForeverProcess(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *ForeverProcess) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -435,8 +459,8 @@ func (a *ForeverProcess) Reset() *ForeverProcess {
 	return a
 }
 
-func (a *ForeverProcess) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *ForeverProcess) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["Uid"] = a.Uid
 	r["Name"] = a.Name
@@ -591,8 +615,8 @@ func (a *ForeverProcess) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *ForeverProcess) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *ForeverProcess) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["uid"] = a.Uid
 	r["name"] = a.Name

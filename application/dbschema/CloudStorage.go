@@ -33,6 +33,47 @@ func (s Slice_CloudStorage) RangeRaw(fn func(m *CloudStorage) error) error {
 	return nil
 }
 
+func (s Slice_CloudStorage) GroupBy(keyField string) map[string][]*CloudStorage {
+	r := map[string][]*CloudStorage{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*CloudStorage{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_CloudStorage) KeyBy(keyField string) map[string]*CloudStorage {
+	r := map[string]*CloudStorage{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_CloudStorage) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_CloudStorage) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // CloudStorage 云存储账号
 type CloudStorage struct {
 	base    factory.Base
@@ -124,6 +165,10 @@ func (a *CloudStorage) Objects() []*CloudStorage {
 	return a.objects[:]
 }
 
+func (a *CloudStorage) XObjects() Slice_CloudStorage {
+	return Slice_CloudStorage(a.Objects())
+}
+
 func (a *CloudStorage) NewObjects() factory.Ranger {
 	return &Slice_CloudStorage{}
 }
@@ -174,54 +219,33 @@ func (a *CloudStorage) List(recv interface{}, mw func(db.Result) db.Result, page
 }
 
 func (a *CloudStorage) GroupBy(keyField string, inputRows ...[]*CloudStorage) map[string][]*CloudStorage {
-	var rows []*CloudStorage
+	var rows Slice_CloudStorage
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CloudStorage(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CloudStorage(a.Objects())
 	}
-	r := map[string][]*CloudStorage{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*CloudStorage{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *CloudStorage) KeyBy(keyField string, inputRows ...[]*CloudStorage) map[string]*CloudStorage {
-	var rows []*CloudStorage
+	var rows Slice_CloudStorage
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CloudStorage(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CloudStorage(a.Objects())
 	}
-	r := map[string]*CloudStorage{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *CloudStorage) AsKV(keyField string, valueField string, inputRows ...[]*CloudStorage) map[string]interface{} {
-	var rows []*CloudStorage
+func (a *CloudStorage) AsKV(keyField string, valueField string, inputRows ...[]*CloudStorage) param.Store {
+	var rows Slice_CloudStorage
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CloudStorage(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CloudStorage(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *CloudStorage) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -394,8 +418,8 @@ func (a *CloudStorage) Reset() *CloudStorage {
 	return a
 }
 
-func (a *CloudStorage) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *CloudStorage) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["Name"] = a.Name
 	r["Type"] = a.Type
@@ -490,8 +514,8 @@ func (a *CloudStorage) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *CloudStorage) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *CloudStorage) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["name"] = a.Name
 	r["type"] = a.Type

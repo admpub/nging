@@ -33,6 +33,47 @@ func (s Slice_FrpServer) RangeRaw(fn func(m *FrpServer) error) error {
 	return nil
 }
 
+func (s Slice_FrpServer) GroupBy(keyField string) map[string][]*FrpServer {
+	r := map[string][]*FrpServer{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*FrpServer{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_FrpServer) KeyBy(keyField string) map[string]*FrpServer {
+	r := map[string]*FrpServer{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_FrpServer) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_FrpServer) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // FrpServer FRP服务器设置
 type FrpServer struct {
 	base    factory.Base
@@ -145,6 +186,10 @@ func (a *FrpServer) Objects() []*FrpServer {
 	return a.objects[:]
 }
 
+func (a *FrpServer) XObjects() Slice_FrpServer {
+	return Slice_FrpServer(a.Objects())
+}
+
 func (a *FrpServer) NewObjects() factory.Ranger {
 	return &Slice_FrpServer{}
 }
@@ -195,54 +240,33 @@ func (a *FrpServer) List(recv interface{}, mw func(db.Result) db.Result, page, s
 }
 
 func (a *FrpServer) GroupBy(keyField string, inputRows ...[]*FrpServer) map[string][]*FrpServer {
-	var rows []*FrpServer
+	var rows Slice_FrpServer
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_FrpServer(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_FrpServer(a.Objects())
 	}
-	r := map[string][]*FrpServer{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*FrpServer{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *FrpServer) KeyBy(keyField string, inputRows ...[]*FrpServer) map[string]*FrpServer {
-	var rows []*FrpServer
+	var rows Slice_FrpServer
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_FrpServer(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_FrpServer(a.Objects())
 	}
-	r := map[string]*FrpServer{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *FrpServer) AsKV(keyField string, valueField string, inputRows ...[]*FrpServer) map[string]interface{} {
-	var rows []*FrpServer
+func (a *FrpServer) AsKV(keyField string, valueField string, inputRows ...[]*FrpServer) param.Store {
+	var rows Slice_FrpServer
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_FrpServer(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_FrpServer(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *FrpServer) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -572,8 +596,8 @@ func (a *FrpServer) Reset() *FrpServer {
 	return a
 }
 
-func (a *FrpServer) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *FrpServer) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["Name"] = a.Name
 	r["Disabled"] = a.Disabled
@@ -773,8 +797,8 @@ func (a *FrpServer) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *FrpServer) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *FrpServer) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["name"] = a.Name
 	r["disabled"] = a.Disabled

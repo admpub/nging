@@ -33,6 +33,47 @@ func (s Slice_CodeVerification) RangeRaw(fn func(m *CodeVerification) error) err
 	return nil
 }
 
+func (s Slice_CodeVerification) GroupBy(keyField string) map[string][]*CodeVerification {
+	r := map[string][]*CodeVerification{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*CodeVerification{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_CodeVerification) KeyBy(keyField string) map[string]*CodeVerification {
+	r := map[string]*CodeVerification{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_CodeVerification) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_CodeVerification) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // CodeVerification 验证码
 type CodeVerification struct {
 	base    factory.Base
@@ -124,6 +165,10 @@ func (a *CodeVerification) Objects() []*CodeVerification {
 	return a.objects[:]
 }
 
+func (a *CodeVerification) XObjects() Slice_CodeVerification {
+	return Slice_CodeVerification(a.Objects())
+}
+
 func (a *CodeVerification) NewObjects() factory.Ranger {
 	return &Slice_CodeVerification{}
 }
@@ -174,54 +219,33 @@ func (a *CodeVerification) List(recv interface{}, mw func(db.Result) db.Result, 
 }
 
 func (a *CodeVerification) GroupBy(keyField string, inputRows ...[]*CodeVerification) map[string][]*CodeVerification {
-	var rows []*CodeVerification
+	var rows Slice_CodeVerification
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CodeVerification(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CodeVerification(a.Objects())
 	}
-	r := map[string][]*CodeVerification{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*CodeVerification{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *CodeVerification) KeyBy(keyField string, inputRows ...[]*CodeVerification) map[string]*CodeVerification {
-	var rows []*CodeVerification
+	var rows Slice_CodeVerification
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CodeVerification(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CodeVerification(a.Objects())
 	}
-	r := map[string]*CodeVerification{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *CodeVerification) AsKV(keyField string, valueField string, inputRows ...[]*CodeVerification) map[string]interface{} {
-	var rows []*CodeVerification
+func (a *CodeVerification) AsKV(keyField string, valueField string, inputRows ...[]*CodeVerification) param.Store {
+	var rows Slice_CodeVerification
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CodeVerification(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CodeVerification(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *CodeVerification) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -410,8 +434,8 @@ func (a *CodeVerification) Reset() *CodeVerification {
 	return a
 }
 
-func (a *CodeVerification) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *CodeVerification) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["Code"] = a.Code
 	r["Created"] = a.Created
@@ -506,8 +530,8 @@ func (a *CodeVerification) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *CodeVerification) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *CodeVerification) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["code"] = a.Code
 	r["created"] = a.Created

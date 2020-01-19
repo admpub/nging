@@ -3,6 +3,7 @@ package factory
 import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/param"
 )
 
 type Base struct {
@@ -107,8 +108,8 @@ type Model interface {
 	Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error)
 	SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error
 	SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error
-	AsMap() map[string]interface{}
-	AsRow() map[string]interface{}
+	AsMap() param.Store
+	AsRow() param.Store
 	FromRow(row map[string]interface{})
 	Set(key interface{}, value ...interface{})
 	BatchValidate(kvset map[string]interface{}) error

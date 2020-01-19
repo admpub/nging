@@ -33,6 +33,47 @@ func (s Slice_CollectorHistory) RangeRaw(fn func(m *CollectorHistory) error) err
 	return nil
 }
 
+func (s Slice_CollectorHistory) GroupBy(keyField string) map[string][]*CollectorHistory {
+	r := map[string][]*CollectorHistory{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*CollectorHistory{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_CollectorHistory) KeyBy(keyField string) map[string]*CollectorHistory {
+	r := map[string]*CollectorHistory{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_CollectorHistory) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_CollectorHistory) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // CollectorHistory 采集历史
 type CollectorHistory struct {
 	base    factory.Base
@@ -126,6 +167,10 @@ func (a *CollectorHistory) Objects() []*CollectorHistory {
 	return a.objects[:]
 }
 
+func (a *CollectorHistory) XObjects() Slice_CollectorHistory {
+	return Slice_CollectorHistory(a.Objects())
+}
+
 func (a *CollectorHistory) NewObjects() factory.Ranger {
 	return &Slice_CollectorHistory{}
 }
@@ -176,54 +221,33 @@ func (a *CollectorHistory) List(recv interface{}, mw func(db.Result) db.Result, 
 }
 
 func (a *CollectorHistory) GroupBy(keyField string, inputRows ...[]*CollectorHistory) map[string][]*CollectorHistory {
-	var rows []*CollectorHistory
+	var rows Slice_CollectorHistory
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CollectorHistory(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CollectorHistory(a.Objects())
 	}
-	r := map[string][]*CollectorHistory{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*CollectorHistory{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *CollectorHistory) KeyBy(keyField string, inputRows ...[]*CollectorHistory) map[string]*CollectorHistory {
-	var rows []*CollectorHistory
+	var rows Slice_CollectorHistory
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CollectorHistory(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CollectorHistory(a.Objects())
 	}
-	r := map[string]*CollectorHistory{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *CollectorHistory) AsKV(keyField string, valueField string, inputRows ...[]*CollectorHistory) map[string]interface{} {
-	var rows []*CollectorHistory
+func (a *CollectorHistory) AsKV(keyField string, valueField string, inputRows ...[]*CollectorHistory) param.Store {
+	var rows Slice_CollectorHistory
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CollectorHistory(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CollectorHistory(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *CollectorHistory) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -380,8 +404,8 @@ func (a *CollectorHistory) Reset() *CollectorHistory {
 	return a
 }
 
-func (a *CollectorHistory) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *CollectorHistory) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["ParentId"] = a.ParentId
 	r["PageId"] = a.PageId
@@ -486,8 +510,8 @@ func (a *CollectorHistory) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *CollectorHistory) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *CollectorHistory) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["parent_id"] = a.ParentId
 	r["page_id"] = a.PageId

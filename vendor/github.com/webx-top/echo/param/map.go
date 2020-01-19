@@ -212,3 +212,23 @@ func (s Store) Clone() Store {
 	}
 	return r
 }
+
+func (s Store) Transform(transfers map[string]Transfer) Store {
+	rmap := Store{}
+	for key, value := range s {
+		transfer, ok := transfers[key]
+		if !ok {
+			continue
+		}
+		if transfer == nil {
+			rmap[key] = value
+			continue
+		}
+		newKey := transfer.Destination()
+		if len(newKey) == 0 {
+			newKey = key
+		}
+		rmap[newKey] = transfer.Transform(value)
+	}
+	return rmap
+}

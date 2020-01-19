@@ -33,6 +33,47 @@ func (s Slice_SshUserGroup) RangeRaw(fn func(m *SshUserGroup) error) error {
 	return nil
 }
 
+func (s Slice_SshUserGroup) GroupBy(keyField string) map[string][]*SshUserGroup {
+	r := map[string][]*SshUserGroup{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*SshUserGroup{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_SshUserGroup) KeyBy(keyField string) map[string]*SshUserGroup {
+	r := map[string]*SshUserGroup{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_SshUserGroup) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_SshUserGroup) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // SshUserGroup SSH账号组
 type SshUserGroup struct {
 	base    factory.Base
@@ -118,6 +159,10 @@ func (a *SshUserGroup) Objects() []*SshUserGroup {
 	return a.objects[:]
 }
 
+func (a *SshUserGroup) XObjects() Slice_SshUserGroup {
+	return Slice_SshUserGroup(a.Objects())
+}
+
 func (a *SshUserGroup) NewObjects() factory.Ranger {
 	return &Slice_SshUserGroup{}
 }
@@ -168,54 +213,33 @@ func (a *SshUserGroup) List(recv interface{}, mw func(db.Result) db.Result, page
 }
 
 func (a *SshUserGroup) GroupBy(keyField string, inputRows ...[]*SshUserGroup) map[string][]*SshUserGroup {
-	var rows []*SshUserGroup
+	var rows Slice_SshUserGroup
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_SshUserGroup(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_SshUserGroup(a.Objects())
 	}
-	r := map[string][]*SshUserGroup{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*SshUserGroup{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *SshUserGroup) KeyBy(keyField string, inputRows ...[]*SshUserGroup) map[string]*SshUserGroup {
-	var rows []*SshUserGroup
+	var rows Slice_SshUserGroup
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_SshUserGroup(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_SshUserGroup(a.Objects())
 	}
-	r := map[string]*SshUserGroup{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *SshUserGroup) AsKV(keyField string, valueField string, inputRows ...[]*SshUserGroup) map[string]interface{} {
-	var rows []*SshUserGroup
+func (a *SshUserGroup) AsKV(keyField string, valueField string, inputRows ...[]*SshUserGroup) param.Store {
+	var rows Slice_SshUserGroup
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_SshUserGroup(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_SshUserGroup(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *SshUserGroup) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -348,8 +372,8 @@ func (a *SshUserGroup) Reset() *SshUserGroup {
 	return a
 }
 
-func (a *SshUserGroup) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *SshUserGroup) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["Uid"] = a.Uid
 	r["Name"] = a.Name
@@ -414,8 +438,8 @@ func (a *SshUserGroup) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *SshUserGroup) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *SshUserGroup) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["uid"] = a.Uid
 	r["name"] = a.Name

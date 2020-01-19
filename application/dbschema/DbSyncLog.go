@@ -33,6 +33,47 @@ func (s Slice_DbSyncLog) RangeRaw(fn func(m *DbSyncLog) error) error {
 	return nil
 }
 
+func (s Slice_DbSyncLog) GroupBy(keyField string) map[string][]*DbSyncLog {
+	r := map[string][]*DbSyncLog{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*DbSyncLog{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_DbSyncLog) KeyBy(keyField string) map[string]*DbSyncLog {
+	r := map[string]*DbSyncLog{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_DbSyncLog) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_DbSyncLog) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // DbSyncLog 数据表同步日志
 type DbSyncLog struct {
 	base    factory.Base
@@ -120,6 +161,10 @@ func (a *DbSyncLog) Objects() []*DbSyncLog {
 	return a.objects[:]
 }
 
+func (a *DbSyncLog) XObjects() Slice_DbSyncLog {
+	return Slice_DbSyncLog(a.Objects())
+}
+
 func (a *DbSyncLog) NewObjects() factory.Ranger {
 	return &Slice_DbSyncLog{}
 }
@@ -170,54 +215,33 @@ func (a *DbSyncLog) List(recv interface{}, mw func(db.Result) db.Result, page, s
 }
 
 func (a *DbSyncLog) GroupBy(keyField string, inputRows ...[]*DbSyncLog) map[string][]*DbSyncLog {
-	var rows []*DbSyncLog
+	var rows Slice_DbSyncLog
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_DbSyncLog(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_DbSyncLog(a.Objects())
 	}
-	r := map[string][]*DbSyncLog{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*DbSyncLog{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *DbSyncLog) KeyBy(keyField string, inputRows ...[]*DbSyncLog) map[string]*DbSyncLog {
-	var rows []*DbSyncLog
+	var rows Slice_DbSyncLog
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_DbSyncLog(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_DbSyncLog(a.Objects())
 	}
-	r := map[string]*DbSyncLog{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *DbSyncLog) AsKV(keyField string, valueField string, inputRows ...[]*DbSyncLog) map[string]interface{} {
-	var rows []*DbSyncLog
+func (a *DbSyncLog) AsKV(keyField string, valueField string, inputRows ...[]*DbSyncLog) param.Store {
+	var rows Slice_DbSyncLog
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_DbSyncLog(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_DbSyncLog(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *DbSyncLog) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -351,8 +375,8 @@ func (a *DbSyncLog) Reset() *DbSyncLog {
 	return a
 }
 
-func (a *DbSyncLog) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *DbSyncLog) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["SyncId"] = a.SyncId
 	r["Created"] = a.Created
@@ -427,8 +451,8 @@ func (a *DbSyncLog) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *DbSyncLog) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *DbSyncLog) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["sync_id"] = a.SyncId
 	r["created"] = a.Created

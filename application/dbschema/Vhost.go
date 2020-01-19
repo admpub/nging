@@ -33,6 +33,47 @@ func (s Slice_Vhost) RangeRaw(fn func(m *Vhost) error) error {
 	return nil
 }
 
+func (s Slice_Vhost) GroupBy(keyField string) map[string][]*Vhost {
+	r := map[string][]*Vhost{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*Vhost{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_Vhost) KeyBy(keyField string) map[string]*Vhost {
+	r := map[string]*Vhost{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_Vhost) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_Vhost) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // Vhost 虚拟主机
 type Vhost struct {
 	base    factory.Base
@@ -121,6 +162,10 @@ func (a *Vhost) Objects() []*Vhost {
 	return a.objects[:]
 }
 
+func (a *Vhost) XObjects() Slice_Vhost {
+	return Slice_Vhost(a.Objects())
+}
+
 func (a *Vhost) NewObjects() factory.Ranger {
 	return &Slice_Vhost{}
 }
@@ -171,54 +216,33 @@ func (a *Vhost) List(recv interface{}, mw func(db.Result) db.Result, page, size 
 }
 
 func (a *Vhost) GroupBy(keyField string, inputRows ...[]*Vhost) map[string][]*Vhost {
-	var rows []*Vhost
+	var rows Slice_Vhost
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_Vhost(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_Vhost(a.Objects())
 	}
-	r := map[string][]*Vhost{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*Vhost{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *Vhost) KeyBy(keyField string, inputRows ...[]*Vhost) map[string]*Vhost {
-	var rows []*Vhost
+	var rows Slice_Vhost
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_Vhost(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_Vhost(a.Objects())
 	}
-	r := map[string]*Vhost{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *Vhost) AsKV(keyField string, valueField string, inputRows ...[]*Vhost) map[string]interface{} {
-	var rows []*Vhost
+func (a *Vhost) AsKV(keyField string, valueField string, inputRows ...[]*Vhost) param.Store {
+	var rows Slice_Vhost
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_Vhost(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_Vhost(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *Vhost) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -371,8 +395,8 @@ func (a *Vhost) Reset() *Vhost {
 	return a
 }
 
-func (a *Vhost) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *Vhost) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["Name"] = a.Name
 	r["GroupId"] = a.GroupId
@@ -452,8 +476,8 @@ func (a *Vhost) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *Vhost) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *Vhost) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["name"] = a.Name
 	r["group_id"] = a.GroupId

@@ -33,6 +33,47 @@ func (s Slice_Command) RangeRaw(fn func(m *Command) error) error {
 	return nil
 }
 
+func (s Slice_Command) GroupBy(keyField string) map[string][]*Command {
+	r := map[string][]*Command{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*Command{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_Command) KeyBy(keyField string) map[string]*Command {
+	r := map[string]*Command{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_Command) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_Command) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // Command 指令集
 type Command struct {
 	base    factory.Base
@@ -123,6 +164,10 @@ func (a *Command) Objects() []*Command {
 	return a.objects[:]
 }
 
+func (a *Command) XObjects() Slice_Command {
+	return Slice_Command(a.Objects())
+}
+
 func (a *Command) NewObjects() factory.Ranger {
 	return &Slice_Command{}
 }
@@ -173,54 +218,33 @@ func (a *Command) List(recv interface{}, mw func(db.Result) db.Result, page, siz
 }
 
 func (a *Command) GroupBy(keyField string, inputRows ...[]*Command) map[string][]*Command {
-	var rows []*Command
+	var rows Slice_Command
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_Command(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_Command(a.Objects())
 	}
-	r := map[string][]*Command{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*Command{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *Command) KeyBy(keyField string, inputRows ...[]*Command) map[string]*Command {
-	var rows []*Command
+	var rows Slice_Command
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_Command(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_Command(a.Objects())
 	}
-	r := map[string]*Command{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *Command) AsKV(keyField string, valueField string, inputRows ...[]*Command) map[string]interface{} {
-	var rows []*Command
+func (a *Command) AsKV(keyField string, valueField string, inputRows ...[]*Command) param.Store {
+	var rows Slice_Command
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_Command(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_Command(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *Command) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -392,8 +416,8 @@ func (a *Command) Reset() *Command {
 	return a
 }
 
-func (a *Command) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *Command) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["Name"] = a.Name
 	r["Description"] = a.Description
@@ -483,8 +507,8 @@ func (a *Command) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *Command) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *Command) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["name"] = a.Name
 	r["description"] = a.Description

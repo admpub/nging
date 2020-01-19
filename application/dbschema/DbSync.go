@@ -33,6 +33,47 @@ func (s Slice_DbSync) RangeRaw(fn func(m *DbSync) error) error {
 	return nil
 }
 
+func (s Slice_DbSync) GroupBy(keyField string) map[string][]*DbSync {
+	r := map[string][]*DbSync{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*DbSync{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_DbSync) KeyBy(keyField string) map[string]*DbSync {
+	r := map[string]*DbSync{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_DbSync) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_DbSync) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // DbSync 数据表同步方案
 type DbSync struct {
 	base    factory.Base
@@ -125,6 +166,10 @@ func (a *DbSync) Objects() []*DbSync {
 	return a.objects[:]
 }
 
+func (a *DbSync) XObjects() Slice_DbSync {
+	return Slice_DbSync(a.Objects())
+}
+
 func (a *DbSync) NewObjects() factory.Ranger {
 	return &Slice_DbSync{}
 }
@@ -175,54 +220,33 @@ func (a *DbSync) List(recv interface{}, mw func(db.Result) db.Result, page, size
 }
 
 func (a *DbSync) GroupBy(keyField string, inputRows ...[]*DbSync) map[string][]*DbSync {
-	var rows []*DbSync
+	var rows Slice_DbSync
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_DbSync(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_DbSync(a.Objects())
 	}
-	r := map[string][]*DbSync{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*DbSync{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *DbSync) KeyBy(keyField string, inputRows ...[]*DbSync) map[string]*DbSync {
-	var rows []*DbSync
+	var rows Slice_DbSync
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_DbSync(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_DbSync(a.Objects())
 	}
-	r := map[string]*DbSync{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *DbSync) AsKV(keyField string, valueField string, inputRows ...[]*DbSync) map[string]interface{} {
-	var rows []*DbSync
+func (a *DbSync) AsKV(keyField string, valueField string, inputRows ...[]*DbSync) param.Store {
+	var rows Slice_DbSync
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_DbSync(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_DbSync(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *DbSync) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -362,8 +386,8 @@ func (a *DbSync) Reset() *DbSync {
 	return a
 }
 
-func (a *DbSync) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *DbSync) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["Name"] = a.Name
 	r["SourceAccountId"] = a.SourceAccountId
@@ -463,8 +487,8 @@ func (a *DbSync) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *DbSync) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *DbSync) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["name"] = a.Name
 	r["source_account_id"] = a.SourceAccountId

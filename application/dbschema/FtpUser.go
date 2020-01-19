@@ -33,6 +33,47 @@ func (s Slice_FtpUser) RangeRaw(fn func(m *FtpUser) error) error {
 	return nil
 }
 
+func (s Slice_FtpUser) GroupBy(keyField string) map[string][]*FtpUser {
+	r := map[string][]*FtpUser{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*FtpUser{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_FtpUser) KeyBy(keyField string) map[string]*FtpUser {
+	r := map[string]*FtpUser{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_FtpUser) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_FtpUser) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // FtpUser FTP用户
 type FtpUser struct {
 	base    factory.Base
@@ -122,6 +163,10 @@ func (a *FtpUser) Objects() []*FtpUser {
 	return a.objects[:]
 }
 
+func (a *FtpUser) XObjects() Slice_FtpUser {
+	return Slice_FtpUser(a.Objects())
+}
+
 func (a *FtpUser) NewObjects() factory.Ranger {
 	return &Slice_FtpUser{}
 }
@@ -172,54 +217,33 @@ func (a *FtpUser) List(recv interface{}, mw func(db.Result) db.Result, page, siz
 }
 
 func (a *FtpUser) GroupBy(keyField string, inputRows ...[]*FtpUser) map[string][]*FtpUser {
-	var rows []*FtpUser
+	var rows Slice_FtpUser
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_FtpUser(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_FtpUser(a.Objects())
 	}
-	r := map[string][]*FtpUser{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*FtpUser{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *FtpUser) KeyBy(keyField string, inputRows ...[]*FtpUser) map[string]*FtpUser {
-	var rows []*FtpUser
+	var rows Slice_FtpUser
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_FtpUser(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_FtpUser(a.Objects())
 	}
-	r := map[string]*FtpUser{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *FtpUser) AsKV(keyField string, valueField string, inputRows ...[]*FtpUser) map[string]interface{} {
-	var rows []*FtpUser
+func (a *FtpUser) AsKV(keyField string, valueField string, inputRows ...[]*FtpUser) param.Store {
+	var rows Slice_FtpUser
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_FtpUser(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_FtpUser(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *FtpUser) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -373,8 +397,8 @@ func (a *FtpUser) Reset() *FtpUser {
 	return a
 }
 
-func (a *FtpUser) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *FtpUser) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["Username"] = a.Username
 	r["Password"] = a.Password
@@ -459,8 +483,8 @@ func (a *FtpUser) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *FtpUser) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *FtpUser) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["username"] = a.Username
 	r["password"] = a.Password

@@ -33,6 +33,47 @@ func (s Slice_TaskGroup) RangeRaw(fn func(m *TaskGroup) error) error {
 	return nil
 }
 
+func (s Slice_TaskGroup) GroupBy(keyField string) map[string][]*TaskGroup {
+	r := map[string][]*TaskGroup{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*TaskGroup{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_TaskGroup) KeyBy(keyField string) map[string]*TaskGroup {
+	r := map[string]*TaskGroup{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_TaskGroup) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_TaskGroup) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // TaskGroup 任务组
 type TaskGroup struct {
 	base    factory.Base
@@ -120,6 +161,10 @@ func (a *TaskGroup) Objects() []*TaskGroup {
 	return a.objects[:]
 }
 
+func (a *TaskGroup) XObjects() Slice_TaskGroup {
+	return Slice_TaskGroup(a.Objects())
+}
+
 func (a *TaskGroup) NewObjects() factory.Ranger {
 	return &Slice_TaskGroup{}
 }
@@ -170,54 +215,33 @@ func (a *TaskGroup) List(recv interface{}, mw func(db.Result) db.Result, page, s
 }
 
 func (a *TaskGroup) GroupBy(keyField string, inputRows ...[]*TaskGroup) map[string][]*TaskGroup {
-	var rows []*TaskGroup
+	var rows Slice_TaskGroup
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_TaskGroup(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_TaskGroup(a.Objects())
 	}
-	r := map[string][]*TaskGroup{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*TaskGroup{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *TaskGroup) KeyBy(keyField string, inputRows ...[]*TaskGroup) map[string]*TaskGroup {
-	var rows []*TaskGroup
+	var rows Slice_TaskGroup
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_TaskGroup(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_TaskGroup(a.Objects())
 	}
-	r := map[string]*TaskGroup{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *TaskGroup) AsKV(keyField string, valueField string, inputRows ...[]*TaskGroup) map[string]interface{} {
-	var rows []*TaskGroup
+func (a *TaskGroup) AsKV(keyField string, valueField string, inputRows ...[]*TaskGroup) param.Store {
+	var rows Slice_TaskGroup
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_TaskGroup(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_TaskGroup(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *TaskGroup) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -352,8 +376,8 @@ func (a *TaskGroup) Reset() *TaskGroup {
 	return a
 }
 
-func (a *TaskGroup) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *TaskGroup) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["Uid"] = a.Uid
 	r["Name"] = a.Name
@@ -428,8 +452,8 @@ func (a *TaskGroup) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *TaskGroup) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *TaskGroup) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["uid"] = a.Uid
 	r["name"] = a.Name

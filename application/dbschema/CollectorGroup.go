@@ -33,6 +33,47 @@ func (s Slice_CollectorGroup) RangeRaw(fn func(m *CollectorGroup) error) error {
 	return nil
 }
 
+func (s Slice_CollectorGroup) GroupBy(keyField string) map[string][]*CollectorGroup {
+	r := map[string][]*CollectorGroup{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*CollectorGroup{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_CollectorGroup) KeyBy(keyField string) map[string]*CollectorGroup {
+	r := map[string]*CollectorGroup{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_CollectorGroup) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_CollectorGroup) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // CollectorGroup 采集规则组
 type CollectorGroup struct {
 	base    factory.Base
@@ -118,6 +159,10 @@ func (a *CollectorGroup) Objects() []*CollectorGroup {
 	return a.objects[:]
 }
 
+func (a *CollectorGroup) XObjects() Slice_CollectorGroup {
+	return Slice_CollectorGroup(a.Objects())
+}
+
 func (a *CollectorGroup) NewObjects() factory.Ranger {
 	return &Slice_CollectorGroup{}
 }
@@ -168,54 +213,33 @@ func (a *CollectorGroup) List(recv interface{}, mw func(db.Result) db.Result, pa
 }
 
 func (a *CollectorGroup) GroupBy(keyField string, inputRows ...[]*CollectorGroup) map[string][]*CollectorGroup {
-	var rows []*CollectorGroup
+	var rows Slice_CollectorGroup
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CollectorGroup(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CollectorGroup(a.Objects())
 	}
-	r := map[string][]*CollectorGroup{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*CollectorGroup{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *CollectorGroup) KeyBy(keyField string, inputRows ...[]*CollectorGroup) map[string]*CollectorGroup {
-	var rows []*CollectorGroup
+	var rows Slice_CollectorGroup
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CollectorGroup(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CollectorGroup(a.Objects())
 	}
-	r := map[string]*CollectorGroup{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *CollectorGroup) AsKV(keyField string, valueField string, inputRows ...[]*CollectorGroup) map[string]interface{} {
-	var rows []*CollectorGroup
+func (a *CollectorGroup) AsKV(keyField string, valueField string, inputRows ...[]*CollectorGroup) param.Store {
+	var rows Slice_CollectorGroup
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CollectorGroup(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CollectorGroup(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *CollectorGroup) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -364,8 +388,8 @@ func (a *CollectorGroup) Reset() *CollectorGroup {
 	return a
 }
 
-func (a *CollectorGroup) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *CollectorGroup) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["Uid"] = a.Uid
 	r["Name"] = a.Name
@@ -430,8 +454,8 @@ func (a *CollectorGroup) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *CollectorGroup) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *CollectorGroup) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["uid"] = a.Uid
 	r["name"] = a.Name

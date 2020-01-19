@@ -33,6 +33,47 @@ func (s Slice_DbAccount) RangeRaw(fn func(m *DbAccount) error) error {
 	return nil
 }
 
+func (s Slice_DbAccount) GroupBy(keyField string) map[string][]*DbAccount {
+	r := map[string][]*DbAccount{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*DbAccount{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_DbAccount) KeyBy(keyField string) map[string]*DbAccount {
+	r := map[string]*DbAccount{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_DbAccount) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_DbAccount) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // DbAccount 数据库账号
 type DbAccount struct {
 	base    factory.Base
@@ -123,6 +164,10 @@ func (a *DbAccount) Objects() []*DbAccount {
 	return a.objects[:]
 }
 
+func (a *DbAccount) XObjects() Slice_DbAccount {
+	return Slice_DbAccount(a.Objects())
+}
+
 func (a *DbAccount) NewObjects() factory.Ranger {
 	return &Slice_DbAccount{}
 }
@@ -173,54 +218,33 @@ func (a *DbAccount) List(recv interface{}, mw func(db.Result) db.Result, page, s
 }
 
 func (a *DbAccount) GroupBy(keyField string, inputRows ...[]*DbAccount) map[string][]*DbAccount {
-	var rows []*DbAccount
+	var rows Slice_DbAccount
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_DbAccount(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_DbAccount(a.Objects())
 	}
-	r := map[string][]*DbAccount{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*DbAccount{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *DbAccount) KeyBy(keyField string, inputRows ...[]*DbAccount) map[string]*DbAccount {
-	var rows []*DbAccount
+	var rows Slice_DbAccount
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_DbAccount(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_DbAccount(a.Objects())
 	}
-	r := map[string]*DbAccount{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *DbAccount) AsKV(keyField string, valueField string, inputRows ...[]*DbAccount) map[string]interface{} {
-	var rows []*DbAccount
+func (a *DbAccount) AsKV(keyField string, valueField string, inputRows ...[]*DbAccount) param.Store {
+	var rows Slice_DbAccount
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_DbAccount(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_DbAccount(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *DbAccount) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -409,8 +433,8 @@ func (a *DbAccount) Reset() *DbAccount {
 	return a
 }
 
-func (a *DbAccount) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *DbAccount) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["Title"] = a.Title
 	r["Uid"] = a.Uid
@@ -500,8 +524,8 @@ func (a *DbAccount) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *DbAccount) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *DbAccount) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["title"] = a.Title
 	r["uid"] = a.Uid

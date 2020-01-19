@@ -31,6 +31,47 @@ func (s Slice_FileEmbedded) RangeRaw(fn func(m *FileEmbedded) error) error {
 	return nil
 }
 
+func (s Slice_FileEmbedded) GroupBy(keyField string) map[string][]*FileEmbedded {
+	r := map[string][]*FileEmbedded{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*FileEmbedded{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_FileEmbedded) KeyBy(keyField string) map[string]*FileEmbedded {
+	r := map[string]*FileEmbedded{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_FileEmbedded) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_FileEmbedded) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // FileEmbedded 嵌入文件
 type FileEmbedded struct {
 	base    factory.Base
@@ -117,6 +158,10 @@ func (a *FileEmbedded) Objects() []*FileEmbedded {
 	return a.objects[:]
 }
 
+func (a *FileEmbedded) XObjects() Slice_FileEmbedded {
+	return Slice_FileEmbedded(a.Objects())
+}
+
 func (a *FileEmbedded) NewObjects() factory.Ranger {
 	return &Slice_FileEmbedded{}
 }
@@ -167,54 +212,33 @@ func (a *FileEmbedded) List(recv interface{}, mw func(db.Result) db.Result, page
 }
 
 func (a *FileEmbedded) GroupBy(keyField string, inputRows ...[]*FileEmbedded) map[string][]*FileEmbedded {
-	var rows []*FileEmbedded
+	var rows Slice_FileEmbedded
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_FileEmbedded(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_FileEmbedded(a.Objects())
 	}
-	r := map[string][]*FileEmbedded{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*FileEmbedded{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *FileEmbedded) KeyBy(keyField string, inputRows ...[]*FileEmbedded) map[string]*FileEmbedded {
-	var rows []*FileEmbedded
+	var rows Slice_FileEmbedded
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_FileEmbedded(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_FileEmbedded(a.Objects())
 	}
-	r := map[string]*FileEmbedded{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *FileEmbedded) AsKV(keyField string, valueField string, inputRows ...[]*FileEmbedded) map[string]interface{} {
-	var rows []*FileEmbedded
+func (a *FileEmbedded) AsKV(keyField string, valueField string, inputRows ...[]*FileEmbedded) param.Store {
+	var rows Slice_FileEmbedded
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_FileEmbedded(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_FileEmbedded(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *FileEmbedded) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -379,8 +403,8 @@ func (a *FileEmbedded) Reset() *FileEmbedded {
 	return a
 }
 
-func (a *FileEmbedded) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *FileEmbedded) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["Project"] = a.Project
 	r["TableId"] = a.TableId
@@ -450,8 +474,8 @@ func (a *FileEmbedded) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *FileEmbedded) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *FileEmbedded) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["project"] = a.Project
 	r["table_id"] = a.TableId

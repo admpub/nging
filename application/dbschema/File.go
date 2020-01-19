@@ -33,6 +33,47 @@ func (s Slice_File) RangeRaw(fn func(m *File) error) error {
 	return nil
 }
 
+func (s Slice_File) GroupBy(keyField string) map[string][]*File {
+	r := map[string][]*File{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*File{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_File) KeyBy(keyField string) map[string]*File {
+	r := map[string]*File{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_File) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_File) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // File 文件表
 type File struct {
 	base    factory.Base
@@ -139,6 +180,10 @@ func (a *File) Objects() []*File {
 	return a.objects[:]
 }
 
+func (a *File) XObjects() Slice_File {
+	return Slice_File(a.Objects())
+}
+
 func (a *File) NewObjects() factory.Ranger {
 	return &Slice_File{}
 }
@@ -189,54 +234,33 @@ func (a *File) List(recv interface{}, mw func(db.Result) db.Result, page, size i
 }
 
 func (a *File) GroupBy(keyField string, inputRows ...[]*File) map[string][]*File {
-	var rows []*File
+	var rows Slice_File
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_File(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_File(a.Objects())
 	}
-	r := map[string][]*File{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*File{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *File) KeyBy(keyField string, inputRows ...[]*File) map[string]*File {
-	var rows []*File
+	var rows Slice_File
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_File(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_File(a.Objects())
 	}
-	r := map[string]*File{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *File) AsKV(keyField string, valueField string, inputRows ...[]*File) map[string]interface{} {
-	var rows []*File
+func (a *File) AsKV(keyField string, valueField string, inputRows ...[]*File) param.Store {
+	var rows Slice_File
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_File(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_File(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *File) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -441,8 +465,8 @@ func (a *File) Reset() *File {
 	return a
 }
 
-func (a *File) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *File) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["OwnerType"] = a.OwnerType
 	r["OwnerId"] = a.OwnerId
@@ -612,8 +636,8 @@ func (a *File) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *File) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *File) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["owner_type"] = a.OwnerType
 	r["owner_id"] = a.OwnerId

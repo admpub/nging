@@ -33,6 +33,47 @@ func (s Slice_UserU2f) RangeRaw(fn func(m *UserU2f) error) error {
 	return nil
 }
 
+func (s Slice_UserU2f) GroupBy(keyField string) map[string][]*UserU2f {
+	r := map[string][]*UserU2f{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*UserU2f{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_UserU2f) KeyBy(keyField string) map[string]*UserU2f {
+	r := map[string]*UserU2f{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_UserU2f) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_UserU2f) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // UserU2f 两步验证
 type UserU2f struct {
 	base    factory.Base
@@ -118,6 +159,10 @@ func (a *UserU2f) Objects() []*UserU2f {
 	return a.objects[:]
 }
 
+func (a *UserU2f) XObjects() Slice_UserU2f {
+	return Slice_UserU2f(a.Objects())
+}
+
 func (a *UserU2f) NewObjects() factory.Ranger {
 	return &Slice_UserU2f{}
 }
@@ -168,54 +213,33 @@ func (a *UserU2f) List(recv interface{}, mw func(db.Result) db.Result, page, siz
 }
 
 func (a *UserU2f) GroupBy(keyField string, inputRows ...[]*UserU2f) map[string][]*UserU2f {
-	var rows []*UserU2f
+	var rows Slice_UserU2f
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_UserU2f(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_UserU2f(a.Objects())
 	}
-	r := map[string][]*UserU2f{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*UserU2f{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *UserU2f) KeyBy(keyField string, inputRows ...[]*UserU2f) map[string]*UserU2f {
-	var rows []*UserU2f
+	var rows Slice_UserU2f
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_UserU2f(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_UserU2f(a.Objects())
 	}
-	r := map[string]*UserU2f{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *UserU2f) AsKV(keyField string, valueField string, inputRows ...[]*UserU2f) map[string]interface{} {
-	var rows []*UserU2f
+func (a *UserU2f) AsKV(keyField string, valueField string, inputRows ...[]*UserU2f) param.Store {
+	var rows Slice_UserU2f
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_UserU2f(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_UserU2f(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *UserU2f) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -347,8 +371,8 @@ func (a *UserU2f) Reset() *UserU2f {
 	return a
 }
 
-func (a *UserU2f) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *UserU2f) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["Uid"] = a.Uid
 	r["Token"] = a.Token
@@ -413,8 +437,8 @@ func (a *UserU2f) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *UserU2f) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *UserU2f) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["uid"] = a.Uid
 	r["token"] = a.Token

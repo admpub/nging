@@ -31,6 +31,47 @@ func (s Slice_FileThumb) RangeRaw(fn func(m *FileThumb) error) error {
 	return nil
 }
 
+func (s Slice_FileThumb) GroupBy(keyField string) map[string][]*FileThumb {
+	r := map[string][]*FileThumb{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*FileThumb{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_FileThumb) KeyBy(keyField string) map[string]*FileThumb {
+	r := map[string]*FileThumb{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_FileThumb) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_FileThumb) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // FileThumb 图片文件缩略图
 type FileThumb struct {
 	base    factory.Base
@@ -121,6 +162,10 @@ func (a *FileThumb) Objects() []*FileThumb {
 	return a.objects[:]
 }
 
+func (a *FileThumb) XObjects() Slice_FileThumb {
+	return Slice_FileThumb(a.Objects())
+}
+
 func (a *FileThumb) NewObjects() factory.Ranger {
 	return &Slice_FileThumb{}
 }
@@ -171,54 +216,33 @@ func (a *FileThumb) List(recv interface{}, mw func(db.Result) db.Result, page, s
 }
 
 func (a *FileThumb) GroupBy(keyField string, inputRows ...[]*FileThumb) map[string][]*FileThumb {
-	var rows []*FileThumb
+	var rows Slice_FileThumb
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_FileThumb(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_FileThumb(a.Objects())
 	}
-	r := map[string][]*FileThumb{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*FileThumb{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *FileThumb) KeyBy(keyField string, inputRows ...[]*FileThumb) map[string]*FileThumb {
-	var rows []*FileThumb
+	var rows Slice_FileThumb
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_FileThumb(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_FileThumb(a.Objects())
 	}
-	r := map[string]*FileThumb{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *FileThumb) AsKV(keyField string, valueField string, inputRows ...[]*FileThumb) map[string]interface{} {
-	var rows []*FileThumb
+func (a *FileThumb) AsKV(keyField string, valueField string, inputRows ...[]*FileThumb) param.Store {
+	var rows Slice_FileThumb
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_FileThumb(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_FileThumb(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *FileThumb) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -353,8 +377,8 @@ func (a *FileThumb) Reset() *FileThumb {
 	return a
 }
 
-func (a *FileThumb) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *FileThumb) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["FileId"] = a.FileId
 	r["Size"] = a.Size
@@ -444,8 +468,8 @@ func (a *FileThumb) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *FileThumb) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *FileThumb) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["file_id"] = a.FileId
 	r["size"] = a.Size

@@ -33,6 +33,47 @@ func (s Slice_CollectorExportLog) RangeRaw(fn func(m *CollectorExportLog) error)
 	return nil
 }
 
+func (s Slice_CollectorExportLog) GroupBy(keyField string) map[string][]*CollectorExportLog {
+	r := map[string][]*CollectorExportLog{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		if _, y := r[vkey]; !y {
+			r[vkey] = []*CollectorExportLog{}
+		}
+		r[vkey] = append(r[vkey], row)
+	}
+	return r
+}
+
+func (s Slice_CollectorExportLog) KeyBy(keyField string) map[string]*CollectorExportLog {
+	r := map[string]*CollectorExportLog{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = row
+	}
+	return r
+}
+
+func (s Slice_CollectorExportLog) AsKV(keyField string, valueField string) param.Store {
+	r := param.Store{}
+	for _, row := range s {
+		dmap := row.AsMap()
+		vkey := fmt.Sprint(dmap[keyField])
+		r[vkey] = dmap[valueField]
+	}
+	return r
+}
+
+func (s Slice_CollectorExportLog) Transform(transfers map[string]param.Transfer) []param.Store {
+	r := make([]param.Store, len(s))
+	for idx, row := range s {
+		r[idx] = row.AsMap().Transform(transfers)
+	}
+	return r
+}
+
 // CollectorExportLog 导出日志
 type CollectorExportLog struct {
 	base    factory.Base
@@ -118,6 +159,10 @@ func (a *CollectorExportLog) Objects() []*CollectorExportLog {
 	return a.objects[:]
 }
 
+func (a *CollectorExportLog) XObjects() Slice_CollectorExportLog {
+	return Slice_CollectorExportLog(a.Objects())
+}
+
 func (a *CollectorExportLog) NewObjects() factory.Ranger {
 	return &Slice_CollectorExportLog{}
 }
@@ -168,54 +213,33 @@ func (a *CollectorExportLog) List(recv interface{}, mw func(db.Result) db.Result
 }
 
 func (a *CollectorExportLog) GroupBy(keyField string, inputRows ...[]*CollectorExportLog) map[string][]*CollectorExportLog {
-	var rows []*CollectorExportLog
+	var rows Slice_CollectorExportLog
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CollectorExportLog(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CollectorExportLog(a.Objects())
 	}
-	r := map[string][]*CollectorExportLog{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		if _, y := r[vkey]; !y {
-			r[vkey] = []*CollectorExportLog{}
-		}
-		r[vkey] = append(r[vkey], row)
-	}
-	return r
+	return rows.GroupBy(keyField)
 }
 
 func (a *CollectorExportLog) KeyBy(keyField string, inputRows ...[]*CollectorExportLog) map[string]*CollectorExportLog {
-	var rows []*CollectorExportLog
+	var rows Slice_CollectorExportLog
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CollectorExportLog(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CollectorExportLog(a.Objects())
 	}
-	r := map[string]*CollectorExportLog{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = row
-	}
-	return r
+	return rows.KeyBy(keyField)
 }
 
-func (a *CollectorExportLog) AsKV(keyField string, valueField string, inputRows ...[]*CollectorExportLog) map[string]interface{} {
-	var rows []*CollectorExportLog
+func (a *CollectorExportLog) AsKV(keyField string, valueField string, inputRows ...[]*CollectorExportLog) param.Store {
+	var rows Slice_CollectorExportLog
 	if len(inputRows) > 0 {
-		rows = inputRows[0]
+		rows = Slice_CollectorExportLog(inputRows[0])
 	} else {
-		rows = a.Objects()
+		rows = Slice_CollectorExportLog(a.Objects())
 	}
-	r := map[string]interface{}{}
-	for _, row := range rows {
-		dmap := row.AsMap()
-		vkey := fmt.Sprint(dmap[keyField])
-		r[vkey] = dmap[valueField]
-	}
-	return r
+	return rows.AsKV(keyField, valueField)
 }
 
 func (a *CollectorExportLog) ListByOffset(recv interface{}, mw func(db.Result) db.Result, offset, size int, args ...interface{}) (func() int64, error) {
@@ -364,8 +388,8 @@ func (a *CollectorExportLog) Reset() *CollectorExportLog {
 	return a
 }
 
-func (a *CollectorExportLog) AsMap() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *CollectorExportLog) AsMap() param.Store {
+	r := param.Store{}
 	r["Id"] = a.Id
 	r["PageId"] = a.PageId
 	r["ExportId"] = a.ExportId
@@ -430,8 +454,8 @@ func (a *CollectorExportLog) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *CollectorExportLog) AsRow() map[string]interface{} {
-	r := map[string]interface{}{}
+func (a *CollectorExportLog) AsRow() param.Store {
+	r := param.Store{}
 	r["id"] = a.Id
 	r["page_id"] = a.PageId
 	r["export_id"] = a.ExportId
