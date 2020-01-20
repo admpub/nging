@@ -16,17 +16,6 @@ import (
 )
 
 type (
-	Host struct {
-		head   Handler
-		group  *Group
-		groups map[string]*Group
-		Router *Router
-	}
-	TypeHost struct {
-		prefix string
-		router *Router
-		echo   *Echo
-	}
 	Echo struct {
 		engine            engine.Engine
 		prefix            string
@@ -109,34 +98,6 @@ func (h HandlerFunc) Handle(c Context) error {
 	return h(c)
 }
 
-func (t TypeHost) URI(handler interface{}, params ...interface{}) string {
-	if t.router == nil {
-		return ``
-	}
-	return t.prefix + t.echo.URI(handler, params...)
-}
-
-func (h *Host) Host(args ...interface{}) (r TypeHost) {
-	if h.group == nil || h.group.host == nil {
-		return
-	}
-	r.echo = h.group.echo
-	r.router = h.Router
-	if len(args) != 1 {
-		r.prefix = h.group.host.Format(args...)
-		return
-	}
-	switch v := args[0].(type) {
-	case map[string]interface{}:
-		r.prefix = h.group.host.FormatMap(v)
-	case H:
-		r.prefix = h.group.host.FormatMap(v)
-	default:
-		r.prefix = h.group.host.Format(args...)
-	}
-	return
-}
-
 // New creates an instance of Echo.
 func New() (e *Echo) {
 	return NewWithContext(func(e *Echo) Context {
@@ -145,61 +106,39 @@ func New() (e *Echo) {
 }
 
 func NewWithContext(fn func(*Echo) Context) (e *Echo) {
-	e = &Echo{
-		maxParam:        new(int),
-		JSONPVarName:    `callback`,
-		formatRenderers: make(map[string]func(ctx Context, data interface{}) error),
-	}
+	e = &Echo{}
 	e.pool.New = func() interface{} {
 		return fn(e)
 	}
-	e.router = NewRouter(e)
-	e.groups = make(map[string]*Group)
+	return e.Reset()
+}
+
+func (e *Echo) Reset() *Echo {
+	e.engine = nil
+	e.prefix = ``
+	e.middleware = []interface{}{}
+	e.head = nil
 	e.hosts = make(map[string]*Host)
 	e.hostAlias = make(map[string]string)
-
-	//----------
-	// Defaults
-	//----------
+	e.maxParam = new(int)
 	e.SetHTTPErrorHandler(e.DefaultHTTPErrorHandler)
 	e.SetBinder(NewBinder(e))
-
-	// Logger
+	e.notFoundHandler = nil
+	e.renderer = nil
+	e.debug = false
+	e.router = NewRouter(e)
 	e.logger = log.GetLogger("echo")
-	e.acceptFormats = map[string]string{
-		//json
-		`application/json`:       `json`,
-		`text/javascript`:        `json`,
-		`application/javascript`: `json`,
-
-		//xml
-		`application/xml`: `xml`,
-		`text/xml`:        `xml`,
-
-		//text
-		`text/plain`: `text`,
-
-		//html
-		`*/*`:               `html`,
-		`application/xhtml`: `html`,
-		`text/html`:         `html`,
-
-		//default
-		`*`: `html`,
-	}
-	e.formatRenderers[`json`] = func(c Context, data interface{}) error {
-		return c.JSON(c.Data())
-	}
-	e.formatRenderers[`jsonp`] = func(c Context, data interface{}) error {
-		return c.JSONP(c.Query(e.JSONPVarName), c.Data())
-	}
-	e.formatRenderers[`xml`] = func(c Context, data interface{}) error {
-		return c.XML(c.Data())
-	}
-	e.formatRenderers[`text`] = func(c Context, data interface{}) error {
-		return c.String(fmt.Sprint(data))
-	}
-	return
+	e.groups = make(map[string]*Group)
+	e.handlerWrapper = []func(interface{}) Handler{}
+	e.middlewareWrapper = []func(interface{}) Middleware{}
+	e.acceptFormats = DefaultAcceptFormats
+	e.formatRenderers = DefaultFormatRenderers
+	e.FuncMap = make(map[string]interface{})
+	e.RouteDebug = false
+	e.MiddlewareDebug = false
+	e.JSONPVarName = `callback`
+	e.parseHeaderAccept = false
+	return e
 }
 
 func (e *Echo) ParseHeaderAccept(on bool) *Echo {

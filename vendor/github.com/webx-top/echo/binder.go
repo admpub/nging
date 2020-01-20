@@ -1,10 +1,8 @@
 package echo
 
 import (
-	"encoding/xml"
 	"errors"
 	"fmt"
-	"net/http"
 	"reflect"
 	"strconv"
 	"strings"
@@ -12,17 +10,12 @@ import (
 	"unicode"
 
 	"github.com/admpub/log"
-	"github.com/webx-top/echo/encoding/json"
+
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/param"
 	"github.com/webx-top/tagfast"
 	"github.com/webx-top/validation"
 )
-
-// DefaultHTMLFilter html filter (`form_filter:"html"`)
-var DefaultHTMLFilter = func(v string) (r string) {
-	return v
-}
 
 type (
 	// Binder is the interface that wraps the Bind method.
@@ -38,41 +31,8 @@ type (
 
 func NewBinder(e *Echo) Binder {
 	return &binder{
-		Echo: e,
-		decoders: map[string]func(interface{}, Context, ...FormDataFilter) error{
-			MIMEApplicationJSON: func(i interface{}, ctx Context, filter ...FormDataFilter) error {
-				body := ctx.Request().Body()
-				if body == nil {
-					return NewHTTPError(http.StatusBadRequest, "Request body can't be nil")
-				}
-				defer body.Close()
-				return json.NewDecoder(body).Decode(i)
-			},
-			MIMEApplicationXML: func(i interface{}, ctx Context, filter ...FormDataFilter) error {
-				body := ctx.Request().Body()
-				if body == nil {
-					return NewHTTPError(http.StatusBadRequest, "Request body can't be nil")
-				}
-				defer body.Close()
-				return xml.NewDecoder(body).Decode(i)
-			},
-			MIMEApplicationForm: func(i interface{}, ctx Context, filter ...FormDataFilter) error {
-				body := ctx.Request().Body()
-				if body == nil {
-					return NewHTTPError(http.StatusBadRequest, "Request body can't be nil")
-				}
-				defer body.Close()
-				return NamedStructMap(ctx.Echo(), i, ctx.Request().PostForm().All(), ``, filter...)
-			},
-			MIMEMultipartForm: func(i interface{}, ctx Context, filter ...FormDataFilter) error {
-				body := ctx.Request().Body()
-				if body == nil {
-					return NewHTTPError(http.StatusBadRequest, "Request body can't be nil")
-				}
-				defer body.Close()
-				return NamedStructMap(ctx.Echo(), i, ctx.Request().Form().All(), ``, filter...)
-			},
-		},
+		Echo:     e,
+		decoders: DefaultBinderDecoders,
 	}
 }
 
