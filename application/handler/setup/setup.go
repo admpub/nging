@@ -24,9 +24,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/fatih/color"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
+	"github.com/admpub/errors"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
@@ -207,6 +209,7 @@ func Setup(ctx echo.Context) error {
 		}
 		data := ctx.Data()
 		for _, sqlFile := range sqlFiles {
+			log.Info(color.GreenString(`[installer]`), `Execute SQL file: `, sqlFile)
 			err = install(ctx, sqlFile, installer)
 			if err != nil {
 				return err
@@ -214,6 +217,7 @@ func Setup(ctx echo.Context) error {
 		}
 
 		// 重新连接数据库
+		log.Info(color.GreenString(`[installer]`), `Reconnect the database`)
 		err = config.ConnectDB(config.DefaultConfig)
 		if err != nil {
 			return err
@@ -221,27 +225,32 @@ func Setup(ctx echo.Context) error {
 
 		// 添加创始人
 		m := model.NewUser(ctx)
+		log.Info(color.GreenString(`[installer]`), `Create Administrator`)
 		err = m.Register(adminUser, adminPass, adminEmail, ``)
 		if err != nil {
-			return err
+			return errors.WithMessage(err, `Create Administrator`)
 		}
 
 		// 生成安全密钥
+		log.Info(color.GreenString(`[installer]`), `Generate a security key`)
 		config.DefaultConfig.InitSecretKey()
 
 		// 保存数据库账号到配置文件
+		log.Info(color.GreenString(`[installer]`), `Save the configuration file`)
 		err = config.DefaultConfig.SaveToFile()
 		if err != nil {
 			return err
 		}
 
 		for _, cb := range onInstalled {
+			log.Info(color.GreenString(`[installer]`), `Execute Hook: `, com.FuncName(cb))
 			if err = cb(ctx); err != nil {
 				return err
 			}
 		}
 
 		// 生成锁文件
+		log.Info(color.GreenString(`[installer]`), `Generated file: `, lockFile)
 		err = config.SetInstalled(lockFile)
 		if err != nil {
 			return err
@@ -250,6 +259,7 @@ func Setup(ctx echo.Context) error {
 		time.Sleep(1 * time.Second) // 等1秒
 
 		// 启动
+		log.Info(color.GreenString(`[installer]`), `Start up`)
 		config.DefaultCLIConfig.RunStartup()
 
 		// 升级

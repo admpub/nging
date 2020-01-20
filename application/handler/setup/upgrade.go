@@ -25,8 +25,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/admpub/nging/application/library/config"
+	"github.com/fatih/color"
 	"github.com/webx-top/com"
+
+	"github.com/admpub/log"
+	"github.com/admpub/nging/application/library/config"
 )
 
 // Upgrade 通过自动执行配置文件目录下的upgrade.sql来进行升级
@@ -36,6 +39,7 @@ func Upgrade() error {
 	if !com.FileExists(sqlFile) {
 		return os.ErrNotExist
 	}
+	log.Info(color.GreenString(`[upgrader]`), `Execute SQL file: `, sqlFile)
 	//创建数据表
 	var sqlStr string
 	installer, ok := config.DBInstallers[config.DefaultConfig.DB.Type]

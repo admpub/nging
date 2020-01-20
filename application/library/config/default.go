@@ -29,10 +29,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/admpub/events/emitter"
-	"github.com/admpub/mysql-schema-sync/sync"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/events/emitter"
+	"github.com/admpub/mysql-schema-sync/sync"
 )
 
 var (
@@ -103,11 +104,11 @@ func GetSQLInstallFiles() ([]string, error) {
 		return nil, os.ErrNotExist
 	}
 	sqlFiles := []string{sqlFile}
-	matches, _ := filepath.Glob(confDIR + echo.FilePathSeparator + `install.*.sql`)
+	matches, err := filepath.Glob(confDIR + echo.FilePathSeparator + `install.*.sql`)
 	if len(matches) > 0 {
 		sqlFiles = append(sqlFiles, matches...)
 	}
-	return sqlFiles, nil
+	return sqlFiles, err
 }
 
 //自动升级数据表
