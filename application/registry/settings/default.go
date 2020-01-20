@@ -24,6 +24,7 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
+	"github.com/admpub/errors"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/dbschema"
 )
@@ -257,7 +258,7 @@ func Init() error {
 		for _, conf := range gs {
 			_, err = conf.EventOFF().Add()
 			if err != nil {
-				return err
+				return errors.WithMessage(err, `Add configuration data`)
 			}
 		}
 	}
@@ -282,7 +283,7 @@ func ConfigAsStore(groups ...string) echo.H {
 		decoder := GetDecoder(row.Group)
 		res, err := DecodeConfigValue(row, decoder)
 		if err != nil {
-			log.Error(err)
+			log.Error(`Parsing system settings "`+row.Group+`.`+row.Key, `": `, err)
 			continue
 		}
 		value := res.Get(`ValueObject`, row.Value)
@@ -307,7 +308,7 @@ func configAsStore(configList map[string]map[string]*dbschema.Config) echo.H {
 			}
 			res, err := DecodeConfigValue(row, decoder)
 			if err != nil {
-				log.Error(err)
+				log.Error(`Parsing system settings "`+group+`.`+key, `": `, err)
 				continue
 			}
 			value := res.Get(`ValueObject`, row.Value)
