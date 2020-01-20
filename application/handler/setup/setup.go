@@ -33,6 +33,7 @@ import (
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/application/registry/settings"
 )
 
 type ProgressInfo struct {
@@ -257,6 +258,7 @@ func Setup(ctx echo.Context) error {
 		}
 
 		time.Sleep(1 * time.Second) // 等1秒
+		settings.Init()
 
 		// 启动
 		log.Info(color.GreenString(`[installer]`), `Start up`)
