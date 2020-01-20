@@ -215,11 +215,8 @@ func (s Store) Clone() Store {
 
 func (s Store) Transform(transfers map[string]Transfer) Store {
 	rmap := Store{}
-	for key, value := range s {
-		transfer, ok := transfers[key]
-		if !ok {
-			continue
-		}
+	for key, transfer := range transfers {
+		value, _ := s[key]
 		if transfer == nil {
 			rmap[key] = value
 			continue
@@ -228,7 +225,7 @@ func (s Store) Transform(transfers map[string]Transfer) Store {
 		if len(newKey) == 0 {
 			newKey = key
 		}
-		rmap[newKey] = transfer.Transform(value)
+		rmap[newKey] = transfer.Transform(value, s)
 	}
 	return rmap
 }
