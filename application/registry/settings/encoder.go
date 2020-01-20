@@ -59,13 +59,12 @@ func EncodeConfigValue(_v *echo.Mapx, v *dbschema.Config, encoder Encoder) (valu
 		store := _v.AsStore()
 		if encoder != nil {
 			b, e = encoder(v, store)
-			if e == nil {
-				subEncoder := GetEncoder(v.Group + `.` + v.Key)
-				if subEncoder != nil {
-					b, e = subEncoder(v, store)
-				}
+			if e != nil {
+				err = e
+				return
 			}
-		} else if subEncoder := GetEncoder(v.Group + `.` + v.Key); subEncoder != nil {
+		}
+		if subEncoder := GetEncoder(v.Group + `.` + v.Key); subEncoder != nil {
 			b, e = subEncoder(v, store)
 		} else {
 			b, e = com.JSONEncode(store)

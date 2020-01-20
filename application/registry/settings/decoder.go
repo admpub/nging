@@ -64,10 +64,8 @@ func DecodeConfigValue(v *dbschema.Config, decoder Decoder) (echo.H, error) {
 		if err != nil {
 			return nil, err
 		}
-		if subDecoder := GetDecoder(v.Group + `.` + v.Key); subDecoder != nil {
-			err = subDecoder(v, r)
-		}
-	} else if subDecoder := GetDecoder(v.Group + `.` + v.Key); subDecoder != nil {
+	}
+	if subDecoder := GetDecoder(v.Group + `.` + v.Key); subDecoder != nil {
 		err = subDecoder(v, r)
 	} else {
 		err = DefaultDecoder(v, r)
