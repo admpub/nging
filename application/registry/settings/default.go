@@ -239,7 +239,8 @@ func Init() error {
 		return r.Group(`group`)
 	}, 0, -1)
 	if err != nil {
-		return err
+		err = errors.WithMessage(err, `Find configuration data`)
+		log.Error(err)
 	}
 	existsList := m.Objects()
 	existsIndex := map[string]int{}
@@ -258,7 +259,8 @@ func Init() error {
 		for _, conf := range gs {
 			_, err = conf.EventOFF().Add()
 			if err != nil {
-				return errors.WithMessage(err, `Add configuration data`)
+				err = errors.WithMessage(err, `Add configuration data`)
+				log.Error(err)
 			}
 		}
 	}
