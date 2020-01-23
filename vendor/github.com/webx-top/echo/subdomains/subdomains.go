@@ -23,8 +23,9 @@ func New() *Subdomains {
 }
 
 type Info struct {
-	Name string
-	Host string
+	Protocol string
+	Name     string
+	Host     string
 	*echo.Echo
 }
 
@@ -65,7 +66,21 @@ func (s *Subdomains) Add(name string, e *echo.Echo) *Subdomains {
 	for _, host := range hosts {
 		s.Hosts[host] = name
 	}
-	s.Alias[name] = &Info{Name: name, Host: hosts[0], Echo: e}
+	info := &Info{
+		Protocol: `http`,
+		Name:     name,
+		Host:     hosts[0],
+		Echo:     e,
+	}
+	info2 := strings.SplitN(info.Host, `://`, 2)
+	if len(info2) == 2 {
+		info.Protocol = info2[0]
+		info.Host = info2[1]
+		if len(info.Protocol) == 0 {
+			info.Protocol = "http"
+		}
+	}
+	s.Alias[name] = info
 	return s
 }
 
@@ -96,16 +111,20 @@ func (s *Subdomains) URL(purl string, args ...string) string {
 	if info == nil {
 		return purl
 	}
-	if len(info.Host) < 1 {
+	if len(info.Host) == 0 {
 		if s.Default == info.Name {
 			return info.Prefix() + purl
 		}
 		return info.Prefix() + `/` + info.Name + purl
 	}
-	if len(s.Protocol) < 1 {
-		return `http://` + info.Host + info.Prefix() + purl
+	protocol := info.Protocol
+	if len(protocol) == 0 {
+		protocol = s.Protocol
+		if len(protocol) == 0 {
+			protocol = `http`
+		}
 	}
-	return s.Protocol + `://` + info.Host + info.Prefix() + purl
+	return protocol + `://` + info.Host + info.Prefix() + purl
 }
 
 func (s *Subdomains) FindByDomain(host string) (*echo.Echo, bool) {
