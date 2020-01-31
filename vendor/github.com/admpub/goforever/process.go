@@ -75,6 +75,14 @@ type Process struct {
 	err      error
 }
 
+func (p *Process) Reset() error {
+	log.Println(p.Stop())
+	p.hooks = make(map[string][]func(procs *Process), 0)
+	p.x = nil
+	p.respawns = 0
+	return p.err
+}
+
 func (p *Process) Error() error {
 	return p.err
 }
@@ -261,8 +269,10 @@ func (p *Process) ping(duration string, f func(t time.Duration, p *Process)) {
 		t, _ = time.ParseDuration(ping)
 	}
 	go func() {
+		ticker := time.NewTicker(t)
+		defer ticker.Stop()
 		select {
-		case <-time.After(t):
+		case <-ticker.C:
 			f(t, p)
 		}
 	}()

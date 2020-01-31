@@ -83,8 +83,8 @@ func DaemonCommonHook(p *goforever.Process) {
 
 // RestartDaemon 重启所有已登记的进程
 func RestartDaemon() {
-	Daemon.Stop()
-	Daemon.Run()
+	Daemon.Reset()
+	RunDaemon()
 }
 
 // RunDaemon 运行值守程序
