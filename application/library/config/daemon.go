@@ -86,7 +86,6 @@ func DaemonCommonHook(p *goforever.Process) {
 
 // RestartDaemon 重启所有已登记的进程
 func RestartDaemon() {
-	Daemon.Reset()
 	RunDaemon()
 }
 
@@ -95,6 +94,7 @@ func RunDaemon() {
 	if !IsInstalled() {
 		return
 	}
+	Daemon.Reset()
 	Daemon.SetHook(goforever.StatusStarted, DaemonDefaultHook)
 	Daemon.SetHook(goforever.StatusStopped, DaemonDefaultHook)
 	Daemon.SetHook(goforever.StatusRunning, DaemonDefaultHook)

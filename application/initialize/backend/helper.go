@@ -22,13 +22,14 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/webx-top/echo/handler/captcha"
+	"github.com/webx-top/echo/handler/mvc/static/resource"
+	"github.com/webx-top/echo/middleware/render"
+
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/middleware"
-	"github.com/webx-top/echo/handler/captcha"
-	"github.com/webx-top/echo/handler/mvc/static/resource"
-	"github.com/webx-top/echo/middleware/render"
 )
 
 func Initialize() {
