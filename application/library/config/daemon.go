@@ -45,6 +45,9 @@ func init() {
 }
 
 func DaemonCommonHook(p *goforever.Process) {
+	if p == Daemon {
+		return
+	}
 	/*
 		if p.Status == goforever.StatusRestarted {
 			return
