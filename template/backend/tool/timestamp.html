@@ -46,6 +46,19 @@
                   <p><pre id="search-result">{{if .}}{{.}}{{else}}{{"无结果"|T}}{{end}}</pre></p>
               </div>
             </div>
+            <div class="form-group">
+              <label class="col-sm-2 control-label">{{"当前时间"|T}}</label>
+              <div class="col-sm-8">
+                <span class="input-group">
+                  <span class="input-group-addon">UTC</span>
+                  <input type="text" class="form-control" readonly="readonly" value="{{Stored.timeUTC.Format `2006-01-02 15:04:05`}}">
+                  <span class="input-group-addon">CST</span>
+                  <input type="text" class="form-control" readonly="readonly" value="{{Stored.timeCST.Format `2006-01-02 15:04:05`}}">
+                  <span class="input-group-addon">Local</span>
+                  <input type="text" class="form-control" readonly="readonly" value="{{Stored.timeLocal.Format `2006-01-02 15:04:05`}}">
+                </span>
+              </div>
+            </div>
             </form>
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
