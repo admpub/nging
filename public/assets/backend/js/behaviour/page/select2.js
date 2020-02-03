@@ -13,55 +13,62 @@ App.select2 = {
         var single = $(element).data('single') || false;
         var mapField = $(element).data('map'); //{ "id": "id", "text": "text", "locked": "locked", "disabled": "disabled" }
         if (single) single = App.parseBool(single);
-        var options = { multiple: !single, width: '100%' };
+        var options = { multiple: !single, width: '100%', minimumInputLength: 1, tokenSeparators: [',','，'] };
         if (onlySelect) {//仅仅可选择，不可新增选项
-            options.minimumInputLength = 1
             options.placeholder = App.select2.i18n.TAG_SELECT;
             options.data = tagsArray;
             options.tags = true;
         } else {//支持新增选项(注意：采用select2中的ajax方式获取数据时，将不支持新增选项)
             options.placeholder = App.select2.i18n.TAG_INPUT;
             options.tags = tagsArray;
-            options.tokenSeparators = [',','，'];
         }
+        var queryFunc = null,ajaxObj = null;
         if (ajax) {
             switch (typeof (ajax)) {
                 case 'string':
                     var listKey = $(element).data('listkey') || 'list';
-                    options.query = App.select2.buildQueryFunction(ajax, {}, listKey, mapField);
+                    queryFunc = App.select2.buildQueryFunction(ajax, {}, listKey, mapField);
                     break;
 
                 default:
                     if ($.isArray(ajax)) {
                         var listKey = ajax.length > 2 ? ajax[2] : ($(element).data('listkey') || 'list');
-                        options.query = App.select2.buildQueryFunction(ajax[0], ajax.length > 1 ? ajax[1] : {}, listKey, mapField);
+                        queryFunc = App.select2.buildQueryFunction(ajax[0], ajax.length > 1 ? ajax[1] : {}, listKey, mapField);
                         break;
                     }
-                    options.ajax = ajax;
+                    ajaxObj = ajax;
                     break;
             }
         }
-
         if (!onlySelect) {//支持新增选项。ajax方式获取数据时，需要预先加载数据并取消对select2的ajax设置
-            var callback = function (data) {
-                options.tags = data.results;
+            options.tags = function(query){
+                var keywords = '', value = '';
+                if(query){
+                    keywords = query.term;
+                }else{
+                    value = $(element).val();
+                }
+                var callback = function (data) {
+                    tagsArray = data.results;
+                };
+                if (queryFunc) {
+                    queryFunc({ term: keywords, callback: callback, value: value });
+                } else if (ajaxObj) {
+                    var page = 1;
+                    $.ajax(ajaxObj.url, {
+                        dataType: ajaxObj.dataType || "json",
+                        data: ajaxObj.data(keywords, page),
+                        async: false
+                    }).done(function (data) {
+                        data = ajaxObj.results(data, page);
+                        callback(data);
+                    });
+                }
+                return tagsArray;
             };
-            if (typeof (options.query) != 'undefined') {
-                options.query({ term: "", callback: callback });
-                delete options.query;
-            }
-            if (typeof (options.ajax) != 'undefined') {
-                var page = 1;
-                $.ajax(options.ajax.url, {
-                    dataType: options.ajax.dataType || "json",
-                    data: options.ajax.data("", page),
-                    async: false
-                }).done(function (data) {
-                    data = options.ajax.results(data, page);
-                    callback(data);
-                });
-                delete options.ajax;
-            }
+        } else {
+            if(queryFunc) options.query = queryFunc;
+            else if(ajaxObj) options.ajax = ajaxObj;
         }
         if(extOpts) options=$.extend(options,extOpts);
         var sel = $(element).select2(options);
@@ -127,6 +134,7 @@ App.select2 = {
         return function (query) {
             if($.isFunction(params)) params=params.call(this,arguments);
             params.q = query.term;
+            params.value = query.value;
             params.select2 = 1;
             $.ajax(url, {
                 dataType: "json",
