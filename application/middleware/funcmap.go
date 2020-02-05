@@ -72,7 +72,10 @@ func ErrorPageFunc(c echo.Context) error {
 	c.SetFunc(`Path`, c.Path)
 	c.SetFunc(`Queries`, c.Queries)
 	configs := config.Setting()
-	c.SetFunc(`Config`, func() echo.H {
+	c.SetFunc(`Config`, func(args ...string) echo.H {
+		if len(args) > 0 {
+			return config.Setting(args...)
+		}
 		return configs
 	})
 	return nil
