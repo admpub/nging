@@ -21,12 +21,19 @@ package common
 const (
 	// StatusCaptchaError 验证码错误
 	StatusCaptchaError = -9
+
+	// StatusBalanceNoEnough 余额不足
+	StatusBalanceNoEnough = -8
+
 	// StatusNonPrivileged 无权限
 	StatusNonPrivileged = -2
+
 	// StatusNotLoggedIn 未登录
 	StatusNotLoggedIn = -1
+
 	// StatusFailure 操作失败
 	StatusFailure = 0
+
 	// StatusSuccess 操作成功
 	StatusSuccess = 1
 )

@@ -39,6 +39,8 @@ var (
 	ErrUserNoPerm = errors.New(`User has no permission`)
 	//ErrUserDisabled 用户已被禁用
 	ErrUserDisabled = errors.New(`User has been disabled`)
+	//ErrBalanceNoEnough 余额不足
+	ErrBalanceNoEnough = errors.New(`Balance is not enough`)
 
 	// - Watcher
 
