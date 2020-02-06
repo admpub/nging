@@ -19,6 +19,9 @@
 package common
 
 const (
+	// StatusRepeatOperation 重复操作
+	StatusRepeatOperation = -11
+
 	// StatusCaptchaError 验证码错误
 	StatusCaptchaError = -9
 
@@ -37,6 +40,25 @@ const (
 	// StatusSuccess 操作成功
 	StatusSuccess = 1
 )
+
+// States 所有状态名称
+var States = map[int]string{
+	StatusRepeatOperation: `重复操作`,
+	StatusCaptchaError:    `验证码错误`,
+	StatusBalanceNoEnough: `余额不足`,
+	StatusNonPrivileged:   `无权限`,
+	StatusNotLoggedIn:     `未登录`,
+	StatusFailure:         `操作失败`,
+	StatusSuccess:         `操作成功`,
+}
+
+// StateName 状态名称
+func StateName(state int) string {
+	if name, ok := States[state]; ok {
+		return name
+	}
+	return "Unknown"
+}
 
 // IsUserNotLoggedIn 用户是否未登录
 func IsUserNotLoggedIn(err error) bool {

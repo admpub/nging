@@ -42,10 +42,30 @@ var (
 	//ErrBalanceNoEnough 余额不足
 	ErrBalanceNoEnough = errors.New(`Balance is not enough`)
 
+	// - Operation
+
+	//ErrRepeatOperation 重复操作
+	ErrRepeatOperation = errors.New(`Repeat operation`)
+	//ErrUnsupported 不支持
+	ErrUnsupported = errors.New(`Unsupported`)
+	//ErrOperationTimeout 操作超时
+	ErrOperationTimeout = errors.New(`Operation timeout`)
+	//ErrOperationFail 操作失败
+	ErrOperationFail = errors.New(`Operation fail`)
+
+	// - HTTP
+
+	//ErrResponseFormatError 响应格式错误
+	ErrResponseFormatError = errors.New(`Response format error`)
+	//ErrRequestTimeout 提交超时
+	ErrRequestTimeout = errors.New(`Request timeout`)
+	//ErrRequestFail 提交失败
+	ErrRequestFail = errors.New(`Request fail`)
+
 	// - Watcher
 
 	// ErrIgnoreConfigChange 忽略配置文件更改
-	ErrIgnoreConfigChange = errors.New(`Ingore file`)
+	ErrIgnoreConfigChange = errors.New(`Ignore configuration file changes`)
 
 	// - Checker
 
