@@ -54,7 +54,6 @@ func SubdirRegister(subdir interface{}, nameAndDescription ...string) *SubdirInf
 	default:
 		panic(fmt.Sprintf(`Unsupported type: %T`, v))
 	}
-	log.Info(color.MagentaString(`subdir.register:`), key)
 	var name, nameEN, description string
 	switch len(nameAndDescription) {
 	case 3:
@@ -92,6 +91,7 @@ func SubdirRegisterObject(info *SubdirInfo) *SubdirInfo {
 		return in.CopyFrom(info)
 	}
 	subdirs[info.Key] = info
+	log.Info(color.MagentaString(`subdir.register:`), info.Key)
 	return info
 }
 

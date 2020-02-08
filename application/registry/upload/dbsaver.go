@@ -5,6 +5,8 @@ import (
 
 	uploadClient "github.com/webx-top/client/upload"
 
+	"github.com/admpub/color"
+	"github.com/admpub/log"
 	modelFile "github.com/admpub/nging/application/model/file"
 )
 
@@ -21,6 +23,7 @@ var (
 
 func DBSaverRegister(key string, dbsaver DBSaver) {
 	dbSavers[key] = dbsaver
+	log.Info(color.GreenString(`dbsaver.register:`), key)
 }
 
 func DBSaverUnregister(keys ...string) {
