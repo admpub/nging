@@ -83,6 +83,9 @@ func DecodeConfig(v *dbschema.Config, cfg echo.H, decoder Decoder) (echo.H, erro
 }
 
 func DefaultDecoder(v *dbschema.Config, r echo.H) error {
+	if r.Has(`ValueObject`) {
+		return nil
+	}
 	switch v.Type {
 	case `json`:
 		jsonData := echo.H{}
