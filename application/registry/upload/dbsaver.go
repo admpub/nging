@@ -23,7 +23,7 @@ var (
 
 func DBSaverRegister(key string, dbsaver DBSaver) {
 	dbSavers[key] = dbsaver
-	log.Info(color.GreenString(`dbsaver.register:`), key)
+	log.Info(color.YellowString(`dbsaver.register:`), key)
 }
 
 func DBSaverUnregister(keys ...string) {
