@@ -20,14 +20,22 @@ package common
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/admpub/sonyflake"
 )
 
-var sonyFlake *sonyflake.Sonyflake
+var (
+	sonyFlakes         = map[uint16]*sonyflake.Sonyflake{}
+	SonyflakeStartDate = `2018-09-01 08:08:08`
+)
 
-func NewSonyflake(startDate string, machineIDs ...uint16) (*sonyflake.Sonyflake, error) { // 19位
+//NewSonyflake 19位
+func NewSonyflake(startDate string, machineIDs ...uint16) (*sonyflake.Sonyflake, error) {
+	if !strings.Contains(startDate, ` `) {
+		startDate += ` 00:00:00`
+	}
 	startTime, err := time.ParseInLocation(`2006-01-02 15:04:05`, startDate, time.Local)
 	if err != nil {
 		return nil, err
@@ -49,32 +57,45 @@ func NewSonyflake(startDate string, machineIDs ...uint16) (*sonyflake.Sonyflake,
 }
 
 func init() {
-	Init()
+	SonyflakeInit(0)
 }
 
-func Init() {
-	err := SetSonyflake(`2018-09-01 08:08:08`)
+func SonyflakeInit(machineIDs ...uint16) {
+	err := SetSonyflake(SonyflakeStartDate)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func SetSonyflake(startDate string, machineID ...uint16) (err error) {
-	sonyFlake, err = NewSonyflake(startDate, machineID...)
+func SetSonyflake(startDate string, machineIDs ...uint16) (err error) {
+	sonyFlake, err := NewSonyflake(startDate, machineIDs...)
+	if err != nil {
+		return err
+	}
+	var machineID uint16
+	if len(machineIDs) > 0 {
+		machineID = machineIDs[0]
+	}
+	sonyFlakes[machineID] = sonyFlake
 	return err
 }
 
-func UniqueID() (string, error) {
-	id, err := NextID()
+func UniqueID(machineIDs ...uint16) (string, error) {
+	id, err := NextID(machineIDs...)
 	if err != nil {
 		return ``, err
 	}
 	return fmt.Sprintf(`%d`, id), nil
 }
 
-func NextID() (uint64, error) {
-	if sonyFlake == nil {
-		Init()
+func NextID(machineIDs ...uint16) (uint64, error) {
+	var machineID uint16
+	if len(machineIDs) > 0 {
+		machineID = machineIDs[0]
+	}
+	sonyFlake, ok := sonyFlakes[machineID]
+	if !ok || sonyFlake == nil {
+		SonyflakeInit(machineID)
 	}
 	return sonyFlake.NextID()
 }
