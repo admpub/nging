@@ -1534,6 +1534,7 @@ body.texture {
   transition: opacity 300ms ease;
   -webkit-transition: opacity 300ms ease;
 }
+.stat-card-item h1 > .label{font-size:12px;font-weight:normal;position:absolute}
 @media (max-width: 767px) {
   .gallery-cont .item {
     width: 50%;

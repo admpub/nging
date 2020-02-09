@@ -1,11 +1,11 @@
 {{Extend "layout"}}
 {{Block "title"}}{{"管理中心首页"|T}}{{/Block}}
 {{Block "main"}}
-<div class="row">
+<div class="row stat-card-items">
     {{- $cardSize := len Stored.cards -}}
     {{- range $k,$card := Stored.cards -}}
     {{- if $card -}}
-    <div class="col-md-{{if lt $cardSize 4}}4{{else}}3{{end}}">
+    <div class="col-md-{{if lt $cardSize 4}}4{{else}}3{{end}} stat-card-item">
         <div class="block-flat">
             <div class="content no-padding">
                 <div class="overflow-hidden">
@@ -13,7 +13,7 @@
                     <h3 class="no-margin">{{$card.Short}}</h3>
                     <p class="color-primary">{{$card.Name}}</p>
                 </div>
-                <h1 class="no-margin big-text">{{$card.Content}}</h1>
+                <h1 class="no-margin">{{$card.Content}}</h1>
             </div>
         </div>
     </div>
