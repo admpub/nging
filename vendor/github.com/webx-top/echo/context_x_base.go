@@ -18,7 +18,7 @@ type xContext struct {
 	Validator
 	Translator
 	events.Emitter
-	transaction         Transaction
+	transaction         *BaseTransaction
 	sessioner           Sessioner
 	cookier             Cookier
 	context             context.Context

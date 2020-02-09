@@ -32,32 +32,9 @@ type Transaction interface {
 }
 
 var (
-	_                       Transaction = NewTransaction(nil)
-	DefaultNopTransaction   Transaction = &NopTransaction{}
+	DefaultNopTransaction               = NewTransaction(nil)
 	DefaultDebugTransaction Transaction = &DebugTransaction{}
 )
-
-type NopTransaction struct {
-}
-
-func (b *NopTransaction) Begin(ctx context.Context) error {
-	return nil
-}
-
-func (b *NopTransaction) Rollback(ctx context.Context) error {
-	return nil
-}
-
-func (b *NopTransaction) Commit(ctx context.Context) error {
-	return nil
-}
-
-func (b *NopTransaction) End(ctx context.Context, succeed bool) error {
-	if succeed {
-		return b.Commit(ctx)
-	}
-	return b.Rollback(ctx)
-}
 
 type DebugTransaction struct {
 }
@@ -94,6 +71,9 @@ type BaseTransaction struct {
 }
 
 func (b *BaseTransaction) Begin(ctx context.Context) error {
+	if b.Transaction == nil {
+		return nil
+	}
 	newValue := atomic.LoadUint64(&b.i) + 1
 	atomic.SwapUint64(&b.i, newValue)
 	if newValue > 1 {
@@ -103,6 +83,9 @@ func (b *BaseTransaction) Begin(ctx context.Context) error {
 }
 
 func (b *BaseTransaction) Rollback(ctx context.Context) error {
+	if b.Transaction == nil {
+		return nil
+	}
 	if atomic.LoadUint64(&b.i) == 0 {
 		return nil
 	}
@@ -111,6 +94,9 @@ func (b *BaseTransaction) Rollback(ctx context.Context) error {
 }
 
 func (b *BaseTransaction) Commit(ctx context.Context) error {
+	if b.Transaction == nil {
+		return nil
+	}
 	value := atomic.LoadUint64(&b.i)
 	if value < 1 {
 		panic(`transaction has already been committed or rolled back`)

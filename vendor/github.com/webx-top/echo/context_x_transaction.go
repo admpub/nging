@@ -1,25 +1,25 @@
 package echo
 
 func (c *xContext) SetTransaction(t Transaction) {
-	c.transaction = t
+	c.transaction = NewTransaction(t)
 }
 
 func (c *xContext) Transaction() Transaction {
-	return c.transaction
+	return c.transaction.Transaction
 }
 
 func (c *xContext) Begin() error {
-	return c.Transaction().Begin(c)
+	return c.transaction.Begin(c)
 }
 
 func (c *xContext) Rollback() error {
-	return c.Transaction().Rollback(c)
+	return c.transaction.Rollback(c)
 }
 
 func (c *xContext) Commit() error {
-	return c.Transaction().Commit(c)
+	return c.transaction.Commit(c)
 }
 
 func (c *xContext) End(succeed bool) error {
-	return c.Transaction().End(c, succeed)
+	return c.transaction.End(c, succeed)
 }
