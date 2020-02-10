@@ -89,21 +89,8 @@ func Progress(ctx echo.Context) error {
 	return ctx.JSON(data)
 }
 
-func install(ctx echo.Context, sqlFile string, installer func(string) error) (err error) {
-	installProgress = &ProgressInfo{
-		Timestamp: time.Now().Local().Unix(),
-	}
-	defer func() {
-		if err != nil {
-			installProgress = nil
-		}
-	}()
+func install(ctx echo.Context, sqlFile string, isFile bool, installer func(string) error) (err error) {
 	var sqlStr string
-	installProgress.TotalSize, err = com.FileSize(sqlFile)
-	if err != nil {
-		return
-	}
-	installProgress.TotalSize += int64(len(handler.OfficialSQL))
 	installFunction := func(line string) (rErr error) {
 		installProgress.Finished += int64(len(line)) + 1
 		if strings.HasPrefix(line, `--`) {
@@ -123,17 +110,17 @@ func install(ctx echo.Context, sqlFile string, installer func(string) error) (er
 		}
 		return nil
 	}
-	err = com.SeekFileLines(sqlFile, installFunction)
-	if err != nil {
-		return
+	if isFile {
+		return com.SeekFileLines(sqlFile, installFunction)
 	}
-	for _, line := range strings.Split(handler.OfficialSQL, "\n") {
+	sqlContent := sqlFile
+	for _, line := range strings.Split(sqlContent, "\n") {
 		err = installFunction(line)
 		if err != nil {
-			return
+			return err
 		}
 	}
-	return
+	return err
 }
 
 func Setup(ctx echo.Context) error {
@@ -154,8 +141,33 @@ func Setup(ctx echo.Context) error {
 		}
 		return ctx.String(msg)
 	}
-	if ctx.IsPost() && installProgress == nil {
+	insertSQLFiles, err := config.GetSQLInsertFiles()
+	if err != nil {
+		log.Error(err)
+	} else if len(insertSQLFiles) > 0 {
+		sqlFiles = append(sqlFiles, insertSQLFiles...)
+	}
 
+	if ctx.IsPost() && installProgress == nil {
+		installProgress = &ProgressInfo{
+			Timestamp: time.Now().Local().Unix(),
+		}
+		defer func() {
+			if err != nil {
+				installProgress = nil
+			}
+		}()
+		var totalSize int64
+		for _, sqlFile := range sqlFiles {
+			var fileSize int64
+			fileSize, err = com.FileSize(sqlFile)
+			if err != nil {
+				return errors.WithMessage(err, sqlFile)
+			}
+			totalSize += fileSize
+		}
+		installProgress.TotalSize = totalSize
+		installProgress.TotalSize += int64(len(handler.OfficialSQL))
 		err = ctx.MustBind(&config.DefaultConfig.DB)
 		if err != nil {
 			return err
@@ -174,9 +186,9 @@ func Setup(ctx echo.Context) error {
 		err = config.ConnectDB(config.DefaultConfig)
 		if err != nil {
 			err = createDatabase(err)
-		}
-		if err != nil {
-			return err
+			if err != nil {
+				return err
+			}
 		}
 		//创建数据库数据
 		installer, ok := config.DBInstallers[config.DefaultConfig.DB.Type]
@@ -211,7 +223,13 @@ func Setup(ctx echo.Context) error {
 		data := ctx.Data()
 		for _, sqlFile := range sqlFiles {
 			log.Info(color.GreenString(`[installer]`), `Execute SQL file: `, sqlFile)
-			err = install(ctx, sqlFile, installer)
+			err = install(ctx, sqlFile, true, installer)
+			if err != nil {
+				return err
+			}
+		}
+		if len(handler.OfficialSQL) > 0 {
+			err = install(ctx, handler.OfficialSQL, false, installer)
 			if err != nil {
 				return err
 			}
@@ -270,21 +288,13 @@ func Setup(ctx echo.Context) error {
 		}
 
 		if ctx.IsAjax() {
-			if err != nil {
-				data.SetError(err)
-			} else {
-				data.SetInfo(ctx.T(`安装成功`)).SetData(installProgress)
-			}
+			data.SetInfo(ctx.T(`安装成功`)).SetData(installProgress)
 			return ctx.JSON(data)
-		}
-		if err != nil {
-			goto DIE
 		}
 		handler.SendOk(ctx, ctx.T(`安装成功`))
 		return ctx.Redirect(handler.URLFor(`/`))
 	}
 
-DIE:
 	ctx.Set(`dbEngines`, config.DBEngines.Slice())
 	return ctx.Render(`setup`, handler.Err(ctx, err))
 }

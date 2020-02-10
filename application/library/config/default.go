@@ -111,6 +111,20 @@ func GetSQLInstallFiles() ([]string, error) {
 	return sqlFiles, err
 }
 
+func GetSQLInsertFiles() ([]string, error) {
+	confDIR := filepath.Dir(DefaultCLIConfig.Conf)
+	sqlFile := confDIR + echo.FilePathSeparator + `insert.sql`
+	sqlFiles := []string{}
+	if com.FileExists(sqlFile) {
+		sqlFiles = append(sqlFiles, sqlFile)
+	}
+	matches, err := filepath.Glob(confDIR + echo.FilePathSeparator + `insert.*.sql`)
+	if len(matches) > 0 {
+		sqlFiles = append(sqlFiles, matches...)
+	}
+	return sqlFiles, err
+}
+
 //自动升级数据表
 func autoUpgradeDatabase() {
 	sqlFiles, err := GetSQLInstallFiles()
