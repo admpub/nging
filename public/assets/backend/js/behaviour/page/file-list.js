@@ -54,6 +54,7 @@ $(function(){
 	}
 	var myUploadInput;
 	function initUploadButton(){
+		if($("#input-file-upload").parent('.file-preview-shadow').length<1)
 		myUploadInput = $("#input-file-upload").uploadPreviewer({
 			"buttonText":'<i class="fa fa-cloud-upload"></i> '+App.i18n.BUTTON_UPLOAD,
 			"previewTableContainer":'#previewTableContainer',

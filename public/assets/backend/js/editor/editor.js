@@ -413,7 +413,7 @@ App.editor.finderDialog = function(remoteURL,callback) {
 		message: function(dialog) {
 			window["finderDialogCallback"]=function(files){
 				callback(files);
-				dialog.close();
+				if(files && files.length>0) dialog.close();
 			}
 			return $('<iframe src="'+remoteURL+'&callback=finderDialogCallback" style="width:620px;height:635px;border:0;padding:0;margin:0"></iframe>');
 			/*
@@ -443,6 +443,7 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 		uploadUrl = uploadUrl.substr(1);
 		isManager = true;
 	}
+	uploadUrl = uploadUrl.replace(/[\?&]multiple=1/,'');
 	if (uploadUrl.indexOf('?') >= 0) {
 		uploadUrl += '&';
 	} else {

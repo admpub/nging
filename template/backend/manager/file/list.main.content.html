@@ -1,8 +1,5 @@
 {{- $dialog := Stored.dialog -}}
 {{- $multiple := Stored.multiple -}}
-{{if Stored.partial}}
-{{Include "manager/file/list.head"}}
-{{end}}
 <div class="table-responsive">
     <table class="table no-border hover">
         <thead class="no-border auto-fixed" sort-current="{{Form `sort` `-id`}}">
@@ -95,6 +92,3 @@
     </table>
 </div>
 {{Stored.pagination.Render}}
-{{if Stored.partial}}
-{{Include "manager/file/list.footer"}}
-{{end}}
