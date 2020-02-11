@@ -46,7 +46,7 @@
                     </div>
                     {{- else -}}
                     <div class="radio radio-primary no-margin-y">
-                        <input id="radio-{{$k}}" class="check-table" type="radio" name="id" value="{{$v.Id}}" data-file-url="{{$v.ViewUrl}}">
+                        <input id="radio-{{$k}}" class="check-table" type="radio" name="id" value="{{$v.Id}}" data-file-url="{{$v.ViewUrl}}" onclick="applySelected();">
                         <label for="radio-{{$k}}"></label>
                     </div>
                     {{- end -}}

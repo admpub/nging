@@ -17,6 +17,7 @@ func ClearHTML(title string) string {
 // RemoveXSS 清除不安全的HTML标签和属性，一般用于处理文章内容
 func RemoveXSS(content string) string {
 	p := bluemonday.UGCPolicy()
+	p.AllowDataURIImages()
 	return p.Sanitize(content)
 }
 

@@ -409,6 +409,7 @@ App.editor.tinymces = function (elem, uploadUrl, options, useSimpleToolbar) {
 App.editor.finderDialog = function(remoteURL,callback) {
 	App.loader.defined(typeof (BootstrapDialog), 'dialog');
 	var dialog=BootstrapDialog.show({
+		title: App.t('选择文件'),
 		//animate: false,
 		message: function(dialog) {
 			window["finderDialogCallback"]=function(files){
@@ -451,8 +452,8 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 	}
 	if (!isManager) uploadUrl += 'format=json&';
 	uploadUrl += 'from=parent&client=tinymce&filetype=';
-	var simpleToolbar='undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat';
-	var fullToolbar='undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl';
+	var simpleToolbar='undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | customDateButton';
+	var fullToolbar='undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl | customDateButton';
 	var defaults={
         height: 500,
 		menubar: true,
@@ -471,7 +472,11 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 		file_picker_callback: function (callback, value, meta) {
 			switch (meta.filetype) {
 				case 'file': /* Provide file and text for the link dialog */
-				callback('https://www.google.com/logos/google.jpg', { text: 'My text' });
+				App.editor.finderDialog(uploadUrl+meta.filetype,function(files){
+					if(files && files.length>0)
+					callback(files[0], { text: 'My text' });
+				});
+				//callback('https://www.google.com/logos/google.jpg', { text: 'My text' });
 				break;
 
 				case 'image': /* Provide image and alt text for the image dialog */
@@ -483,7 +488,11 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 				break;
 
 				case 'media': /* Provide alternative source and posted for the media dialog */
-				callback('movie.mp4', { source2: 'alt.ogg', poster: 'https://www.google.com/logos/google.jpg' });
+				App.editor.finderDialog(uploadUrl+meta.filetype,function(files){
+					if(files && files.length>0)
+					callback(files[0], {});
+				});
+				//callback('movie.mp4', { source2: 'alt.ogg', poster: 'https://www.google.com/logos/google.jpg' });
 				break;
 
 				default:
@@ -494,10 +503,37 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 			{ title: 'New Table', description: 'creates a new table', content: '<div class="mceTmpl"><table width="98%%" border="0" cellspacing="0" cellpadding="0"><tr><th scope="col"> </th><th scope="col"> </th></tr><tr><td> </td><td> </td></tr></table></div>' }
 		],
 		image_caption: true,
+		relative_urls: false,
+		image_title: true,
 		quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
 		noneditable_noneditable_class: "mceNonEditable",
 		toolbar_drawer: 'sliding',
-		contextmenu: "link image imagetools table"
+		contextmenu: "link image imagetools table",
+		setup: function (editor) {
+			var toTimeHtml = function (date) {
+			  return '<time datetime="' + date.toString() + '">' + date.toLocaleString() + '</time>';
+			};
+		
+			editor.ui.registry.addButton('customDateButton', {
+			  icon: 'insert-time',
+			  tooltip: 'Insert Current Date',
+			  disabled: true,
+			  onAction: function (_) {
+				editor.insertContent(toTimeHtml(new Date()));
+			  },
+			  onSetup: function (buttonApi) {
+				var editorEventCallback = function (eventApi) {
+				  buttonApi.setDisabled(eventApi.element.nodeName.toLowerCase() === 'time');
+				};
+				editor.on('NodeChange', editorEventCallback);
+		
+				/* onSetup should always return the unbind handlers */
+				return function (buttonApi) {
+				  editor.off('NodeChange', editorEventCallback);
+				};
+			  }
+			});
+		}
 	};
 	//see document: https://www.tiny.cloud/docs/integrations/jquery/
 	$(elem).tinymce($.extend({},defaults, options|{}));
