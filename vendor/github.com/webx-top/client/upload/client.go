@@ -118,10 +118,12 @@ func (a *BaseClient) Body() (file ReadCloserWithSize, err error) {
 
 func (a *BaseClient) Result() (r string) {
 	status := "1"
+	var info string
 	if a.err != nil {
 		status = "0"
+		info = a.err.Error()
 	}
-	r = `{"Code":` + status + `,"Info":"` + a.err.Error() + `","Data":{"Url":"` + a.Data.FileURL + `","Id":"` + a.Data.FileIdString() + `"}}`
+	r = `{"Code":` + status + `,"Info":"` + info + `","Data":{"Url":"` + a.Data.FileURL + `","Id":"` + a.Data.FileIdString() + `"}}`
 	return
 }
 

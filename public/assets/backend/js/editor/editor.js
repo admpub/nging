@@ -439,21 +439,91 @@ App.editor.finderDialog = function(remoteURL,callback) {
 App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 	App.loader.defined(typeof ($.fn.tinymce), 'tinymce');
 	if (!uploadUrl) uploadUrl = $(elem).attr('action');
-	var isManager = false;
+	var managerUrl = '';
 	if (uploadUrl.substr(0, 1) == '!') {
-		uploadUrl = uploadUrl.substr(1);
-		isManager = true;
+		managerUrl = uploadUrl.substr(1);
+		uploadUrl = $(elem).data('upload-url');
 	}
-	uploadUrl = uploadUrl.replace(/[\?&]multiple=1/,'');
-	if (uploadUrl.indexOf('?') >= 0) {
-		uploadUrl += '&';
-	} else {
-		uploadUrl += '?';
+	if (uploadUrl) {
+		if (uploadUrl.indexOf('?') >= 0) {
+			uploadUrl += '&';
+		} else {
+			uploadUrl += '?';
+		}
+		uploadUrl += 'format=json&client=tinymce&filetype=';
 	}
-	if (!isManager) uploadUrl += 'format=json&';
-	uploadUrl += 'from=parent&client=tinymce&filetype=';
+	if (managerUrl) {
+		managerUrl = managerUrl.replace(/[\?&]multiple=1/,'');
+		if (managerUrl.indexOf('?') >= 0) {
+			managerUrl += '&';
+		} else {
+			managerUrl += '?';
+		}
+		managerUrl += 'from=parent&client=tinymce&filetype=';
+	}
 	var simpleToolbar='undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | customDateButton';
 	var fullToolbar='undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl | customDateButton';
+	var filePickerCallback=function (callback, value, meta) {
+		switch (meta.filetype) {
+			case 'file': //Provide file and text for the link dialog
+			App.editor.finderDialog(managerUrl+meta.filetype,function(files){
+				if(files && files.length>0)
+				callback(files[0], { text: 'My text' });
+			});
+			//callback('https://www.google.com/logos/google.jpg', { text: 'My text' });
+			break;
+
+			case 'image': //Provide image and alt text for the image dialog
+			App.editor.finderDialog(managerUrl+meta.filetype,function(files){
+				if(files && files.length>0)
+				callback(files[0], { alt: '' });
+			});
+			//callback('https://www.google.com/logos/google.jpg', { alt: 'My alt text' });
+			break;
+
+			case 'media': //Provide alternative source and posted for the media dialog
+			App.editor.finderDialog(managerUrl+meta.filetype,function(files){
+				if(files && files.length>0)
+				callback(files[0], {});
+			});
+			//callback('movie.mp4', { source2: 'alt.ogg', poster: 'https://www.google.com/logos/google.jpg' });
+			break;
+
+			default:
+			alert('Unsupported file type');
+		}
+	};
+	var imagesUploadHandler = function (blobInfo, success, failure) {
+		var xhr, formData;
+		xhr = new XMLHttpRequest();
+		xhr.withCredentials = false;
+		xhr.open('POST', uploadUrl);
+		xhr.onload = function() {
+		  var json;
+
+		  if (xhr.status != 200) {
+			failure('HTTP Error: ' + xhr.status);
+			return;
+		  }
+	
+		  json = JSON.parse(xhr.responseText);
+		  //{"Code":1,"Info":"","Data":{"Url":"a.jpg","Id":"1"}}
+		  if (!json || typeof json.Code == 'undefined') {
+			failure('Invalid JSON: ' + xhr.responseText);
+			return;
+		  }
+		  if (json.Code != 1) {
+			failure(json.Info);
+			return;
+		  }
+	
+		  success(json.Data.Url);
+		};
+	
+		formData = new FormData();
+		formData.append('filedata', blobInfo.blob(), blobInfo.filename());
+		xhr.send(formData);
+	};
 	var defaults={
         height: 500,
 		menubar: true,
@@ -469,36 +539,6 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 		autosave_restore_when_empty: false,
 		autosave_retention: "2m",
 		image_advtab: true,
-		file_picker_callback: function (callback, value, meta) {
-			switch (meta.filetype) {
-				case 'file': /* Provide file and text for the link dialog */
-				App.editor.finderDialog(uploadUrl+meta.filetype,function(files){
-					if(files && files.length>0)
-					callback(files[0], { text: 'My text' });
-				});
-				//callback('https://www.google.com/logos/google.jpg', { text: 'My text' });
-				break;
-
-				case 'image': /* Provide image and alt text for the image dialog */
-				App.editor.finderDialog(uploadUrl+meta.filetype,function(files){
-					if(files && files.length>0)
-					callback(files[0], { alt: '' });
-				});
-				//callback('https://www.google.com/logos/google.jpg', { alt: 'My alt text' });
-				break;
-
-				case 'media': /* Provide alternative source and posted for the media dialog */
-				App.editor.finderDialog(uploadUrl+meta.filetype,function(files){
-					if(files && files.length>0)
-					callback(files[0], {});
-				});
-				//callback('movie.mp4', { source2: 'alt.ogg', poster: 'https://www.google.com/logos/google.jpg' });
-				break;
-
-				default:
-				alert('Unsupported file type');
-			}
-		},
 		templates: [
 			{ title: 'New Table', description: 'creates a new table', content: '<div class="mceTmpl"><table width="98%%" border="0" cellspacing="0" cellpadding="0"><tr><th scope="col"> </th><th scope="col"> </th></tr><tr><td> </td><td> </td></tr></table></div>' }
 		],
@@ -535,6 +575,8 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 			});
 		}
 	};
+	if(managerUrl) defaults.file_picker_callback = filePickerCallback;
+	if(uploadUrl) defaults.images_upload_handler = imagesUploadHandler;
 	//see document: https://www.tiny.cloud/docs/integrations/jquery/
 	$(elem).tinymce($.extend({},defaults, options|{}));
 };
