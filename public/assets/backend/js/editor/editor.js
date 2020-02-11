@@ -406,26 +406,34 @@ App.editor.tinymces = function (elem, uploadUrl, options, useSimpleToolbar) {
 		App.editor.tinymce(this, uploadUrl, options, useSimpleToolbar);
 	});
 };
-App.editor.finderDialog = function(remoteURL) {
+App.editor.finderDialog = function(remoteURL,callback) {
 	App.loader.defined(typeof (BootstrapDialog), 'dialog');
-	BootstrapDialog.show({
+	var dialog=BootstrapDialog.show({
 		//animate: false,
 		message: function(dialog) {
+			window["finderDialogCallback"]=function(files){
+				callback(files);
+				dialog.close();
+			}
+			return $('<iframe src="'+remoteURL+'&callback=finderDialogCallback" style="width:620px;height:635px;border:0;padding:0;margin:0"></iframe>');
+			/*
 			var $message = $('<div></div>');
 			var pageToLoad = dialog.getData('pageToLoad');
 			$message.load(pageToLoad);
 	
 			return $message;
+			*/
 		},
         onshown: function(d){
 			d.$modal.css('zIndex',2000);
 			d.$modalBody.css('padding',0);
-			console.dir(d);
+			//console.dir(d);
         },
 		data: {
 			'pageToLoad': remoteURL
 		}
 	});
+	return dialog;
 };
 App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 	App.loader.defined(typeof ($.fn.tinymce), 'tinymce');
@@ -441,7 +449,7 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 		uploadUrl += '?';
 	}
 	if (!isManager) uploadUrl += 'format=json&';
-	uploadUrl += 'partial=1&client=tinymce&filetype=';
+	uploadUrl += 'from=parent&client=tinymce&filetype=';
 	var simpleToolbar='undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat';
 	var fullToolbar='undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl';
 	var defaults={
@@ -466,7 +474,10 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 				break;
 
 				case 'image': /* Provide image and alt text for the image dialog */
-				App.editor.finderDialog(uploadUrl+meta.filetype);
+				App.editor.finderDialog(uploadUrl+meta.filetype,function(files){
+					if(files && files.length>0)
+					callback(files[0], { alt: '' });
+				});
 				//callback('https://www.google.com/logos/google.jpg', { alt: 'My alt text' });
 				break;
 
