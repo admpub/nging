@@ -8,6 +8,7 @@ func Finder(ctx echo.Context) error {
 	ctx.Set(`dialog`, true)
 	ctx.Set(`multiple`, multiple)
 	partial := ctx.Formx(`partial`).Bool()
+	ctx.Set(`partial`, partial)
 	if partial {
 		return ctx.Render(`manager/file/list.main.content`, err)
 	}

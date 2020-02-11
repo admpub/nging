@@ -181,9 +181,14 @@ var App = function () {
       if (_lang.length > 1) cachedLang.country = _lang[1].toUpperCase();
       return cachedLang;
     },
-    langTag: function () {
+    langTag: function (seperator) {
       var l = App.langInfo();
-      if (l.country) return l.encoding + '-' + l.country;
+      if (l.country) {
+        if(seperator==null){
+          seperator = '-';
+        }
+        return l.encoding + seperator + l.country;
+      }
       return l.encoding;
     },
     initTool: function () {
