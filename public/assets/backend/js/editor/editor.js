@@ -6,6 +6,8 @@ App.loader.libs.xheditor = ['#editor/xheditor/xheditor.min.js', '#editor/xhedito
 App.loader.libs.ueditor = ['#editor/ueditor/ueditor.config.js', '#editor/ueditor/ueditor.all.min.js'];
 App.loader.libs.summernote = ['#editor/summernote/summernote.css', '#editor/summernote/summernote.min.js', '#editor/summernote/lang/summernote-' + App.langTag() + '.min.js'];
 App.loader.libs.summernote_bs4 = ['#editor/summernote/summernote-bs4.css', '#editor/summernote/summernote-bs4.min.js', '#editor/summernote/lang/summernote-' + App.langTag() + '.min.js'];
+App.loader.libs.tinymce = ['#editor/tinymce/tinymce.min.js', '#editor/tinymce/jquery.tinymce.min.js', '#editor/tinymce/langs/' + App.langTag('_') + '.js'];
+App.loader.libs.dialog = ['#dialog/bootstrap-dialog.min.css', '#dialog/bootstrap-dialog.min.js'];
 App.loader.libs.markdownit = ['#markdown/it/markdown-it.min.js', '#markdown/it/plugins/emoji/markdown-it-emoji.min.js'];
 App.loader.libs.codehighlight = ['#markdown/it/plugins/highlight/loader/prettify.js', '#markdown/it/plugins/highlight/loader/run_prettify.js?skin=sons-of-obsidian'];
 window.UEDITOR_HOME_URL = ASSETS_URL + '/js/editor/ueditor/';
@@ -73,10 +75,10 @@ App.editor.ueditors = function (editorElement, uploadUrl, options) {
 App.editor.ueditor = function (editorElement, uploadUrl, options) {
 	if ($(editorElement).hasClass('form-control')) $(editorElement).removeClass('form-control');
 	if (!uploadUrl) uploadUrl = $(editorElement).attr('action');
-	if (uploadUrl.substr(0, 1) == '!') uploadUrl = uploadUrl.substr(1);
 	if (options == null) options = {};
 	App.loader.defined(typeof (window.UE), 'ueditor');
-	if (uploadUrl != null) {
+	if (uploadUrl) {
+		if (uploadUrl.substr(0, 1) == '!') uploadUrl = uploadUrl.substr(1);
 		if (uploadUrl.indexOf('?') >= 0) {
 			uploadUrl += '&';
 		} else {
@@ -109,12 +111,12 @@ App.editor.markdowns = function (editorElement, uploadUrl, options) {
 App.editor.markdown = function (editorElement, uploadUrl, options) {
 	var isManager = false;
 	if (!uploadUrl) uploadUrl = $(editorElement).attr('action');
-	if (uploadUrl.substr(0, 1) == '!') {
-		uploadUrl = uploadUrl.substr(1);
-		isManager = true;
-	}
 	App.loader.defined(typeof (editormd), 'editormd');
-	if (uploadUrl != null) {
+	if (uploadUrl) {
+		if (uploadUrl.substr(0, 1) == '!') {
+			uploadUrl = uploadUrl.substr(1);
+			isManager = true;
+		}
 		if (uploadUrl.indexOf('?') >= 0) {
 			uploadUrl += '&';
 		} else {
@@ -321,13 +323,19 @@ App.editor.xheditor = function (editorElement, uploadUrl, settings) {
 // =================================================================
 
 App.editor.summernotes = function (elem, minHeight, bs4) {
-	$(editorElement).each(function () {
+	$(elem).each(function () {
 		App.editor.summernote(this, minHeight, bs4);
 	});
 };
 App.editor.summernote = function (elem, minHeight, bs4) {
 	if (minHeight == null) minHeight = 400;
 	App.loader.defined(typeof ($.fn.summernote), 'summernote' + (bs4?'_bs4':'') );
+	var uploadUrl = $(elem).attr('action');
+	if(uploadUrl){
+		if (uploadUrl.substr(0, 1) == '!') {
+			uploadUrl = uploadUrl.substr(1);
+		}
+	}
 	$(elem).summernote({
 		lang: App.langTag(),
 		minHeight: minHeight,
@@ -341,7 +349,7 @@ App.editor.summernote = function (elem, minHeight, bs4) {
 					$.ajax({
 						data: formdata,
 						type: "POST",
-						url: $(elem).attr('action'),
+						url: uploadUrl,
 						cache: false,
 						contentType: false,
 						processData: false,
@@ -387,6 +395,100 @@ App.editor.markdownItInstance = function () {
 	var md = window.markdownit();
 	if (typeof (window.markdownitEmoji) != 'undefined') md.use(window.markdownitEmoji);
 	return md;
+};
+
+// =================================================================
+// tinymce
+// =================================================================
+
+App.editor.tinymces = function (elem, uploadUrl, options, useSimpleToolbar) {
+	$(elem).each(function () {
+		App.editor.tinymce(this, uploadUrl, options, useSimpleToolbar);
+	});
+};
+App.editor.finderDialog = function(remoteURL) {
+	App.loader.defined(typeof (BootstrapDialog), 'dialog');
+	BootstrapDialog.show({
+		//animate: false,
+		message: function(dialog) {
+			var $message = $('<div></div>');
+			var pageToLoad = dialog.getData('pageToLoad');
+			$message.load(pageToLoad);
+	
+			return $message;
+		},
+        onshown: function(d){
+			d.$modal.css('zIndex',2000);
+			d.$modalBody.css('padding',0);
+			console.dir(d);
+        },
+		data: {
+			'pageToLoad': remoteURL
+		}
+	});
+};
+App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
+	App.loader.defined(typeof ($.fn.tinymce), 'tinymce');
+	if (!uploadUrl) uploadUrl = $(elem).attr('action');
+	var isManager = false;
+	if (uploadUrl.substr(0, 1) == '!') {
+		uploadUrl = uploadUrl.substr(1);
+		isManager = true;
+	}
+	if (uploadUrl.indexOf('?') >= 0) {
+		uploadUrl += '&';
+	} else {
+		uploadUrl += '?';
+	}
+	if (!isManager) uploadUrl += 'format=json&';
+	uploadUrl += 'partial=1&client=tinymce&filetype=';
+	var simpleToolbar='undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat';
+	var fullToolbar='undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl';
+	var defaults={
+        height: 500,
+		menubar: true,
+		language: App.langTag('_'),
+        plugins: [
+          'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable charmap quickbars emoticons'
+        ],
+		toolbar: useSimpleToolbar?simpleToolbar:fullToolbar,
+		toolbar_sticky: true,
+		autosave_ask_before_unload: true,
+		autosave_interval: "30s",
+		autosave_prefix: "{path}{query}-{id}-",
+		autosave_restore_when_empty: false,
+		autosave_retention: "2m",
+		image_advtab: true,
+		file_picker_callback: function (callback, value, meta) {
+			switch (meta.filetype) {
+				case 'file': /* Provide file and text for the link dialog */
+				callback('https://www.google.com/logos/google.jpg', { text: 'My text' });
+				break;
+
+				case 'image': /* Provide image and alt text for the image dialog */
+				App.editor.finderDialog(uploadUrl+meta.filetype);
+				//callback('https://www.google.com/logos/google.jpg', { alt: 'My alt text' });
+				break;
+
+				case 'media': /* Provide alternative source and posted for the media dialog */
+				callback('movie.mp4', { source2: 'alt.ogg', poster: 'https://www.google.com/logos/google.jpg' });
+				break;
+
+				default:
+				alert('Unsupported file type');
+			}
+		},
+		templates: [
+			{ title: 'New Table', description: 'creates a new table', content: '<div class="mceTmpl"><table width="98%%" border="0" cellspacing="0" cellpadding="0"><tr><th scope="col"> </th><th scope="col"> </th></tr><tr><td> </td><td> </td></tr></table></div>' }
+		],
+		image_caption: true,
+		quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+		noneditable_noneditable_class: "mceNonEditable",
+		toolbar_drawer: 'sliding',
+		contextmenu: "link image imagetools table"
+	};
+	//see document: https://www.tiny.cloud/docs/integrations/jquery/
+	$(elem).tinymce($.extend({},defaults, options|{}));
 };
 
 
