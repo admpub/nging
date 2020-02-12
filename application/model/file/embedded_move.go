@@ -112,8 +112,10 @@ func (f *Embedded) MoveFileToOwner(tableName string, fileIDs []uint64, ownerID s
 		}
 		savePathSep := f.getSeperator(file.SavePath)
 		newSavePath, newViewURL, prefix := f.renameFile(tableName, file.FieldName, file.SavePath, file.ViewUrl, replaceFrom, replaceTo, savePathSep)
-		if errMv := storer.Move(file.SavePath, newSavePath); errMv != nil && !os.IsNotExist(errMv) {
-			return replaces, errMv
+		if newSavePath != file.SavePath {
+			if errMv := storer.Move(file.SavePath, newSavePath); errMv != nil && !os.IsNotExist(errMv) {
+				return replaces, errMv
+			}
 		}
 		replaces[file.ViewUrl] = newViewURL
 		err = file.SetFields(nil, echo.H{
@@ -135,8 +137,10 @@ func (f *Embedded) MoveFileToOwner(tableName string, fileIDs []uint64, ownerID s
 				continue
 			}
 			newSavePath, newViewURL, _ := f.renameFile(tableName, file.FieldName, thumb.SavePath, thumb.ViewUrl, replaceFrom, replaceTo, savePathSep, prefix)
-			if errMv := storer.Move(thumb.SavePath, newSavePath); errMv != nil && !os.IsNotExist(errMv) {
-				return replaces, errMv
+			if newSavePath != thumb.SavePath {
+				if errMv := storer.Move(thumb.SavePath, newSavePath); errMv != nil && !os.IsNotExist(errMv) {
+					return replaces, errMv
+				}
 			}
 			replaces[thumb.ViewUrl] = newViewURL
 			err = thumb.SetFields(nil, echo.H{
