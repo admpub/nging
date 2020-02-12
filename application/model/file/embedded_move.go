@@ -49,6 +49,11 @@ func (f *Embedded) renameFile(
 	savePathSep string, prefixes ...string) (newSavePath string, newViewURL string, prefix string) {
 	viewURLSep := `/`
 	viewURLTmp := strings.SplitN(viewURL, viewURLSep+replaceFrom+viewURLSep, 2)
+	if len(viewURLTmp) != 2 {
+		newViewURL = viewURL
+		newSavePath = savePath
+		return
+	}
 	pos := strings.LastIndex(viewURLTmp[0], viewURLSep)
 	if viewURLTmp[0][pos+1:] != tableName {
 		viewURLTmp[0] = viewURLTmp[0][0:pos] + viewURLSep + tableName
