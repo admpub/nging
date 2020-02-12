@@ -44,9 +44,9 @@
                         {{end}}
 						{{if or (not Stored.isSysUser) $dbName}}
 						<tr>
-							<td><input name='user' autocapitalize='off'></td>
-							<td><input name='host' value='localhost' autocapitalize='off'></td>
-							<td><input type='submit' value='{{"编辑"|T}}'></td>
+							<td><input name='user' class='form-control' autocapitalize='off'></td>
+							<td><input name='host' class='form-control' value='localhost' autocapitalize='off'></td>
+							<td><input type='submit' class='btn btn-sm btn-primary' value='{{"编辑"|T}}'></td>
 						</tr>
 						{{end}}
 					</tbody>

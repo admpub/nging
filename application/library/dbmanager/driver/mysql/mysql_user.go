@@ -346,11 +346,14 @@ func (m *mySQL) getUserGrants(host, user string) (string, map[string]map[string]
 		m.Request().Form().Set(`host`, v.String)
 	}
 	var key string
-	if len(m.dbName) == 0 || (r != nil && len(r) > 0) {
+	if len(m.dbName) == 0 || len(r) > 0 {
+		sortNumber = append(sortNumber, key)
+		r[key] = map[string]bool{}
 	} else {
+		key = m.dbName + ".*"
+		sortNumber = append(sortNumber, key)
 		key = com.AddCSlashes(m.dbName, '%', '_', '\\') + ".*"
+		r[key] = map[string]bool{}
 	}
-	r[key] = map[string]bool{}
-	sortNumber = append(sortNumber, key)
 	return oldPass, r, sortNumber, err
 }
