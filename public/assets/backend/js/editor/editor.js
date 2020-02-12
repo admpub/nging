@@ -524,7 +524,7 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 		xhr.send(formData);
 	};
 	var defaults={
-        height: 500,
+        height: useSimpleToolbar?200:500,
 		menubar: true,
 		language: App.langTag('_'),
         plugins: [
