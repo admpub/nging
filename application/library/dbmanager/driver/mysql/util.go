@@ -79,16 +79,17 @@ func (m *mySQL) getScopeGrant(object string) *Grant {
 		g.Scope = `proxy`
 		return g
 	}
-	strs := strings.SplitN(object, `.`, 2)
+	strs := strings.SplitN(object, `.`, 2) // dbName.* / dbName.tableName / `dbName`.`tableName`
 	for i, v := range strs {
-		v = strings.Trim(v, "`")
+		v = strings.Trim(v, "`") // dbName.*
 		switch i {
 		case 0:
+			v = strings.Replace(v, `\`, ``, -1)
 			g.Database = v
 		case 1:
-			if v == `*` {
+			if v == `*` { // dbName.*
 				g.Scope = `database`
-			} else if strings.HasSuffix(v, `)`) {
+			} else if strings.HasSuffix(v, `)`) { // `dbName`.`tableName`(`colName`,`colName`)
 				vs := strings.SplitN(v, `(`, 2)
 				switch len(vs) {
 				case 2:
@@ -97,7 +98,7 @@ func (m *mySQL) getScopeGrant(object string) *Grant {
 					g.Columns = strings.TrimSuffix(vs[1], `)`)
 					g.Scope = `column`
 				}
-			} else {
+			} else { // `dbName`.`tableName`
 				g.Table = strings.TrimSpace(v)
 				g.Table = strings.TrimSuffix(g.Table, "`")
 				g.Scope = `table`
