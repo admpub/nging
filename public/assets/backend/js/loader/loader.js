@@ -1,5 +1,5 @@
 (function(App){
-    Loader={
+    var Loader={
         data:{},
         libs:{},
         staticURL:'',

@@ -13,7 +13,7 @@ App.loader.libs.codehighlight = ['#markdown/it/plugins/highlight/loader/prettify
 window.UEDITOR_HOME_URL = ASSETS_URL + '/js/editor/ueditor/';
 
 App.editor = {
-	browsingFileURL: App.loader.siteURL + '/finder'
+	browsingFileURL: App.loader.siteURL + (typeof(window.IS_BACKEND)!=='undefined'&&window.IS_BACKEND?'':'/user') + '/finder'
 };
 
 /* 解析markdown为html */
@@ -439,7 +439,7 @@ App.editor.finderDialog = function(remoteURL,callback) {
 App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 	App.loader.defined(typeof ($.fn.tinymce), 'tinymce');
 	if (!uploadUrl) uploadUrl = $(elem).attr('action');
-	var managerUrl = '';
+	var managerUrl = App.editor.browsingFileURL;
 	if (uploadUrl.substr(0, 1) == '!') {
 		managerUrl = uploadUrl.substr(1);
 		uploadUrl = $(elem).data('upload-url');
