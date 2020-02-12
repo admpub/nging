@@ -435,7 +435,17 @@ App.editor.finderDialog = function(remoteURL,callback) {
 	});
 	return dialog;
 };
+App.editor.tinymceOnceFix = false;
 App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
+	if(!App.editor.tinymceOnceFix){
+		App.editor.tinymceOnceFix = true;
+		// Prevent Bootstrap dialog from blocking focusin
+		$(document).on('focusin', function(e) {
+			if ($(e.target).closest(".tox-tinymce-aux, .moxman-window, .tam-assetmanager-root").length) {
+	  			e.stopImmediatePropagation();
+			}
+  		});
+	}
 	App.loader.defined(typeof ($.fn.tinymce), 'tinymce');
 	if (!uploadUrl) uploadUrl = $(elem).attr('action');
 	var managerUrl = App.editor.browsingFileURL;
