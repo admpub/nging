@@ -577,7 +577,7 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 	if(managerUrl) defaults.file_picker_callback = filePickerCallback;
 	if(uploadUrl) defaults.images_upload_handler = imagesUploadHandler;
 	//see document: https://www.tiny.cloud/docs/integrations/jquery/
-	$(elem).tinymce($.extend({},defaults, options|{}));
+	$(elem).tinymce($.extend({}, defaults, options||{}));
 };
 
 
