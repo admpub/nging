@@ -430,10 +430,8 @@ App.editor.finderDialog = function(remoteURL,callback) {
 			d.$modal.css('zIndex',2000);
 			d.$modalBody.css('padding',0);
 			//console.dir(d);
-        },
-		data: {
-			'pageToLoad': remoteURL
-		}
+        }
+		//,data: {'pageToLoad': remoteURL}
 	});
 	return dialog;
 };
