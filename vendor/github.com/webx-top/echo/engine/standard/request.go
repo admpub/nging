@@ -124,7 +124,7 @@ func (r *Request) PostForm() engine.URLValuer {
 func (r *Request) MultipartForm() *multipart.Form {
 	if r.request.MultipartForm == nil {
 		maxMemory := defaultMaxRequestBodySize
-		if r.config.MaxRequestBodySize != 0 {
+		if r.config != nil && r.config.MaxRequestBodySize != 0 {
 			maxMemory = int64(r.config.MaxRequestBodySize)
 		}
 		r.request.ParseMultipartForm(maxMemory)

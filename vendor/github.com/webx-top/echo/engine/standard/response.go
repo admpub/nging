@@ -27,7 +27,7 @@ func NewResponse(w http.ResponseWriter, r *http.Request, l logger.Logger) *Respo
 	return &Response{
 		response: w,
 		request:  r,
-		header:   &Header{header: w.Header()},
+		header:   &Header{Header: w.Header()},
 		writer:   w,
 		logger:   l,
 	}
