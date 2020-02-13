@@ -21,6 +21,7 @@ package middleware
 import (
 	"fmt"
 	"html/template"
+	"net/url"
 	"strconv"
 	"time"
 
@@ -81,6 +82,17 @@ func ErrorPageFunc(c echo.Context) error {
 			return config.Setting(args...)
 		}
 		return configs
+	})
+	var siteURI *url.URL
+	siteURL := configs.Store(`base`).String(`siteURL`)
+	if len(siteURL) > 0 {
+		siteURI, _ = url.Parse(siteURL)
+	}
+	c.SetFunc(`SiteURI`, func() url.URL {
+		if siteURI == nil {
+			return url.URL{}
+		}
+		return *siteURI
 	})
 	return nil
 }
