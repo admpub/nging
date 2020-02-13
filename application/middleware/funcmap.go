@@ -88,6 +88,7 @@ func ErrorPageFunc(c echo.Context) error {
 	if len(siteURL) > 0 {
 		siteURI, _ = url.Parse(siteURL)
 	}
+	c.Internal().Set(`siteURI`, siteURI)
 	c.SetFunc(`SiteURI`, func() url.URL {
 		if siteURI == nil {
 			return url.URL{}
