@@ -1775,16 +1775,40 @@ func (m *mySQL) RunCommand() error {
 			}
 
 			if !regexp.MustCompile(`(?i)^(` + space + `|\()*(SELECT|SHOW|EXPLAIN)\b`).MatchString(query) {
-				r := &Result{
-					SQL: query,
+				var sqlStr string
+				execute := func(line string) (rErr error) {
+					if strings.HasPrefix(line, `--`) {
+						return nil
+					}
+					if strings.HasPrefix(line, `/*`) && strings.HasSuffix(line, `*/;`) {
+						return nil
+					}
+					line = strings.TrimSpace(line)
+					sqlStr += line
+					if strings.HasSuffix(line, `;`) && len(sqlStr) > 0 {
+						defer func() {
+							sqlStr = ``
+						}()
+						r := &Result{
+							SQL: sqlStr,
+						}
+						r.Exec(m.newParam())
+						m.AddResults(r)
+						return r.Error()
+					}
+					return nil
 				}
-				r.Exec(m.newParam())
-				m.AddResults(r)
-				err = r.Error()
-				if err != nil {
-					m.Logger().Error(err, query)
-					if onlyErrors {
-						return err
+				for _, line := range strings.Split(query, "\n") {
+					line = strings.TrimSpace(line)
+					if len(line) == 0 {
+						continue
+					}
+					err = execute(line)
+					if err != nil {
+						m.Logger().Error(err, line)
+						if onlyErrors {
+							return err
+						}
 					}
 				}
 				continue
