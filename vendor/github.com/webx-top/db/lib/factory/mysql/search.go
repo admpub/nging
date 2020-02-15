@@ -16,6 +16,37 @@ var (
 	searchParagraphRule = regexp.MustCompile(`"[^"]+"`)                      //段落
 )
 
+func CleanFulltextOperator(v string) string {
+	if com.StrIsAlphaNumeric(v) {
+		return v
+	}
+	v = strings.ReplaceAll(v, `'`, ``)
+	v = strings.ReplaceAll(v, `+`, ``)
+	v = strings.ReplaceAll(v, `-`, ``)
+	v = strings.ReplaceAll(v, `*`, ``)
+	v = strings.ReplaceAll(v, `"`, ``)
+	v = strings.ReplaceAll(v, `\`, ``)
+	return v
+}
+
+func FindInSet(key string, value string, useFulltextIndex ...bool) db.Compound {
+	key = strings.Replace(key, "`", "``", -1)
+	if len(useFulltextIndex) > 0 && useFulltextIndex[0] {
+		v := CleanFulltextOperator(value)
+		return db.Raw("MATCH(`" + key + "`) AGAINST ('\"" + v + ",\" \"," + v + ",\" \"," + v + "\"' IN BOOLEAN MODE)")
+	}
+	return db.Raw("FIND_IN_SET(?,`"+key+"`)", value)
+}
+
+func Match(value string, keys ...string) db.Compound {
+	for idx, key := range keys {
+		key = strings.ReplaceAll(key, "`", "``")
+		keys[idx] = "`" + key + "`"
+	}
+	v := CleanFulltextOperator(value)
+	return db.Raw("MATCH(" + strings.Join(keys, ",") + ") AGAINST ('" + v + "')")
+}
+
 func CompareField(idField string, keywords string) db.Compound {
 	if len(keywords) == 0 || len(idField) == 0 {
 		return db.EmptyCond

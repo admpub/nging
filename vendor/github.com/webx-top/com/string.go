@@ -272,6 +272,10 @@ func IsASCIIUpper(r rune) bool {
 	return 'A' <= r && r <= 'Z'
 }
 
+func IsUpperLetter(r rune) bool {
+	return IsASCIIUpper(r)
+}
+
 func ToASCIIUpper(r rune) rune {
 	if 'a' <= r && r <= 'z' {
 		r -= ('a' - 'A')
@@ -279,9 +283,45 @@ func ToASCIIUpper(r rune) rune {
 	return r
 }
 
+func ToUpperLetter(r rune) rune {
+	return ToASCIIUpper(r)
+}
+
+func StrIsASCIIUpper(s string) bool {
+	if len(s) == 0 {
+		return false
+	}
+	for _, r := range s {
+		if !IsASCIIUpper(r) {
+			return false
+		}
+	}
+	return true
+}
+
+func StrIsUpperLetter(s string) bool {
+	return StrIsASCIIUpper(s)
+}
+
 func IsAlpha(r rune) bool {
 	if ('Z' < r || r < 'A') && ('z' < r || r < 'a') {
 		return false
+	}
+	return true
+}
+
+func StrIsLetter(s string) bool {
+	return StrIsAlpha(s)
+}
+
+func StrIsAlpha(s string) bool {
+	if len(s) == 0 {
+		return false
+	}
+	for _, r := range s {
+		if !IsAlpha(r) {
+			return false
+		}
 	}
 	return true
 }
@@ -293,9 +333,33 @@ func IsAlphaNumeric(r rune) bool {
 	return true
 }
 
+func StrIsAlphaNumeric(s string) bool {
+	if len(s) == 0 {
+		return false
+	}
+	for _, r := range s {
+		if !IsAlphaNumeric(r) {
+			return false
+		}
+	}
+	return true
+}
+
 func IsNumeric(r rune) bool {
 	if '9' < r || r < '0' {
 		return false
+	}
+	return true
+}
+
+func StrIsNumeric(s string) bool {
+	if len(s) == 0 {
+		return false
+	}
+	for _, r := range s {
+		if !IsNumeric(r) {
+			return false
+		}
 	}
 	return true
 }
@@ -442,6 +506,25 @@ func AddCSlashes(s string, b ...rune) string {
 					break
 				}
 			}
+		}
+		r = append(r, v)
+	}
+	s = string(r)
+	return s
+}
+
+func StripSlashes(s string) string {
+	r := []rune{}
+	var found bool
+	for _, v := range []rune(s) {
+		if v == '\\' {
+			if !found {
+				found = true
+			} else {
+				r = append(r, v)
+				found = false
+			}
+			continue
 		}
 		r = append(r, v)
 	}
