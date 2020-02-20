@@ -83,7 +83,7 @@ func (m *mySQL) IsSupported(operation string) bool {
 }
 
 func (m *mySQL) Login() error {
-	m.db = factory.New()
+	factoryDB := factory.New()
 	settings := mysql.ConnectionURL{
 		User:     m.DbAuth.Username,
 		Password: m.DbAuth.Password,
@@ -105,8 +105,13 @@ func (m *mySQL) Login() error {
 		settings.Password = strings.Repeat(`*`, len(settings.Password))
 		return errors.Wrap(err, m.T(`连接数据库出错`)+`: `+echo.Dump(settings, false))
 	}
+	err = db.Ping()
+	if err != nil {
+		return errors.Wrap(err, m.T(`连接数据库出错`))
+	}
 	cluster := factory.NewCluster().AddMaster(db)
-	m.db.SetCluster(0, cluster)
+	factoryDB.SetCluster(0, cluster)
+	m.db = factoryDB
 	m.Set(`dbName`, m.dbName)
 	m.Set(`table`, m.Form(`table`))
 	if len(settings.Database) > 0 {
