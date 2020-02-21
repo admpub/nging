@@ -713,7 +713,11 @@ func (m *mySQL) ModifyTable() error {
 				partitioning)
 		}
 		if err == nil {
-			return m.returnTo()
+			returnURLs := []string{}
+			if oldTable != table {
+				returnURLs = append(returnURLs, m.GenURL(`listDb`))
+			}
+			return m.returnTo(returnURLs...)
 		}
 	} else {
 		postFields = make([]*Field, len(sortFields))
