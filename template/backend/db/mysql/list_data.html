@@ -2,8 +2,10 @@
 {{Block "title"}}{{"数据"|T}}: {{Stored.table}} - {{Super}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="{{dbMgrURL "listTable" Stored.dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|T}}: {{Stored.dbName}}</a></li>
-<li><a href="{{dbMgrURL "viewTable" Stored.dbName Stored.table}}" data-pjax="#pcont" data-keepjs="true">{{"表"|T}}: {{Stored.table}}</a></li>
+{{- $dbName := Stored.String `dbName` -}}
+{{- $table := Stored.String `table` -}}
+<li><a href="{{dbMgrURL `listTable` $dbName}}" data-pjax="#pcont" data-keepjs="true">{{"数据库"|T}}: {{$dbName}}</a></li>
+<li><a href="{{dbMgrURL `viewTable` $dbName $table}}" data-pjax="#pcont" data-keepjs="true">{{"表"|T}}: {{$table}}</a></li>
 <li class="active">{{"数据"|T}}</li>
 {{/Block}}
 {{Block "head"}}
