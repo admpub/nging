@@ -31,9 +31,9 @@ func configPost(c echo.Context, groups ...string) error {
 	m := model.NewConfig(c)
 	formValues := c.Forms()
 	mapx := echo.NewMapx(formValues)
-	var configList map[string]map[string]*dbschema.Config
+	var configList map[string]map[string]*dbschema.NgingConfig
 	if len(groups) > 0 {
-		configList = map[string]map[string]*dbschema.Config{}
+		configList = map[string]map[string]*dbschema.NgingConfig{}
 		defaults := settings.ConfigDefaults()
 		for _, group := range groups {
 			conf, ok := defaults[group]
@@ -66,7 +66,7 @@ func configPost(c echo.Context, groups ...string) error {
 		}
 		added := map[string]int{}
 		for k, v := range m.Objects() {
-			v.CPAFrom(m.Config)
+			v.CPAFrom(m.NgingConfig)
 			added[v.Key] = k
 			setting := gm.Get(v.Key)
 			if setting == nil {

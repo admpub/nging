@@ -46,7 +46,7 @@ var emptyPipeItem = &gopiper.PipeItem{}
 // Export 导出到数据库
 // result - 结果
 // data - 采集结果
-func (m *Mappings) Export(result *exec.Recv, data echo.Store, config *dbschema.CollectorExport, noticeSender sender.Notice) error {
+func (m *Mappings) Export(result *exec.Recv, data echo.Store, config *dbschema.NgingCollectorExport, noticeSender sender.Notice) error {
 	switch config.DestType {
 	case `API`:
 		return m.Export2API(result, data, config, noticeSender)
@@ -60,13 +60,13 @@ func (m *Mappings) Export(result *exec.Recv, data echo.Store, config *dbschema.C
 // Export2DB 导出到数据库
 // result - 结果
 // data - 本次采集结果
-func (m *Mappings) Export2DB(result *exec.Recv, data echo.Store, config *dbschema.CollectorExport, noticeSender sender.Notice) error {
+func (m *Mappings) Export2DB(result *exec.Recv, data echo.Store, config *dbschema.NgingCollectorExport, noticeSender sender.Notice) error {
 	var (
 		dbs sqlbuilder.Database
 		err error
 	)
 	if config.DestType == `dbAccountID` {
-		accountM := &dbschema.DbAccount{}
+		accountM := &dbschema.NgingDbAccount{}
 		err = accountM.Get(nil, db.Cond{`id`: config.Dest})
 		if err != nil {
 			return err
@@ -110,7 +110,7 @@ func (m *Mappings) Export2DB(result *exec.Recv, data echo.Store, config *dbschem
 		if err != nil {
 			return err
 		}
-		logM := &dbschema.CollectorExportLog{
+		logM := &dbschema.NgingCollectorExportLog{
 			PageId:   config.PageId,
 			ExportId: config.Id,
 			Result:   ``,
@@ -136,7 +136,7 @@ func (m *Mappings) Export2DB(result *exec.Recv, data echo.Store, config *dbschem
 	return nil
 }
 
-func postAPIByWorker(data echo.Store, config *dbschema.CollectorExport, logM *dbschema.CollectorExportLog, noticeSender sender.Notice) error {
+func postAPIByWorker(data echo.Store, config *dbschema.NgingCollectorExport, logM *dbschema.NgingCollectorExportLog, noticeSender sender.Notice) error {
 	body, err := com.JSONEncode(data)
 	if err != nil {
 		return err
@@ -169,7 +169,7 @@ func postAPIByWorker(data echo.Store, config *dbschema.CollectorExport, logM *db
 	return nil
 }
 
-func postAPIByHTTP(data echo.Store, config *dbschema.CollectorExport, logM *dbschema.CollectorExportLog, noticeSender sender.Notice) error {
+func postAPIByHTTP(data echo.Store, config *dbschema.NgingCollectorExport, logM *dbschema.NgingCollectorExportLog, noticeSender sender.Notice) error {
 	body, err := com.JSONEncode(data)
 	if err != nil {
 		return err
@@ -212,7 +212,7 @@ func postAPIByHTTP(data echo.Store, config *dbschema.CollectorExport, logM *dbsc
 // Export2API 导出到WebAPI
 // result - 结果
 // data - 本次采集结果
-func (m *Mappings) Export2API(result *exec.Recv, data echo.Store, config *dbschema.CollectorExport, noticeSender sender.Notice) error {
+func (m *Mappings) Export2API(result *exec.Recv, data echo.Store, config *dbschema.NgingCollectorExport, noticeSender sender.Notice) error {
 	row := make(echo.Store)
 	for _, mapping := range m.Slice {
 		newData, ok, err := m.get(result, data, mapping)
@@ -224,7 +224,7 @@ func (m *Mappings) Export2API(result *exec.Recv, data echo.Store, config *dbsche
 		}
 		row.Set(mapping.ToField, newData)
 	}
-	logM := &dbschema.CollectorExportLog{
+	logM := &dbschema.NgingCollectorExportLog{
 		PageId:   config.PageId,
 		ExportId: config.Id,
 		Result:   ``,

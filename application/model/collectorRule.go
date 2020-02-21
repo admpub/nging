@@ -19,19 +19,20 @@
 package model
 
 import (
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
-	"github.com/webx-top/echo"
 )
 
 func NewCollectorRule(ctx echo.Context) *CollectorRule {
 	return &CollectorRule{
-		CollectorRule: &dbschema.CollectorRule{},
-		Base:          base.New(ctx),
+		NgingCollectorRule: &dbschema.NgingCollectorRule{},
+		Base:               base.New(ctx),
 	}
 }
 
 type CollectorRule struct {
-	*dbschema.CollectorRule
+	*dbschema.NgingCollectorRule
 	*base.Base
 }

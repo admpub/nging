@@ -31,13 +31,13 @@ import (
 
 func NewUserRole(ctx echo.Context) *UserRole {
 	return &UserRole{
-		UserRole: &dbschema.UserRole{},
-		Base:     base.New(ctx),
+		NgingUserRole: &dbschema.NgingUserRole{},
+		Base:          base.New(ctx),
 	}
 }
 
 type UserRole struct {
-	*dbschema.UserRole
+	*dbschema.NgingUserRole
 	*base.Base
 	permActions *perm.Map
 	permCmds    *perm.Map
@@ -48,7 +48,7 @@ func (u *UserRole) Exists(name string) (bool, error) {
 	return n > 0, e
 }
 
-func (u *UserRole) ListByUser(user *dbschema.User) (roleList []*dbschema.UserRole) {
+func (u *UserRole) ListByUser(user *dbschema.NgingUser) (roleList []*dbschema.NgingUserRole) {
 	if len(user.RoleIds) > 0 {
 		u.ListByOffset(nil, nil, 0, -1, db.And(
 			db.Cond{`disabled`: `N`},
@@ -59,11 +59,11 @@ func (u *UserRole) ListByUser(user *dbschema.User) (roleList []*dbschema.UserRol
 	return
 }
 
-func (u *UserRole) CheckPerm2(roleList []*dbschema.UserRole, perm string) (hasPerm bool) {
+func (u *UserRole) CheckPerm2(roleList []*dbschema.NgingUserRole, perm string) (hasPerm bool) {
 	perm = strings.TrimPrefix(perm, `/`)
 	for _, role := range roleList {
 		r := NewUserRole(nil)
-		r.UserRole = role
+		r.NgingUserRole = role
 		if r.CheckPerm(perm) {
 			hasPerm = true
 			break
@@ -100,10 +100,10 @@ func (u *UserRole) CheckPerm(permPath string) bool {
 	return u.permActions.Check(permPath)
 }
 
-func (u *UserRole) CheckCmdPerm2(roleList []*dbschema.UserRole, perm string) (hasPerm bool) {
+func (u *UserRole) CheckCmdPerm2(roleList []*dbschema.NgingUserRole, perm string) (hasPerm bool) {
 	for _, role := range roleList {
 		r := NewUserRole(nil)
-		r.UserRole = role
+		r.NgingUserRole = role
 		if r.CheckCmdPerm(perm) {
 			hasPerm = true
 			break
@@ -147,7 +147,7 @@ func (u *UserRole) CheckCmdPerm(permPath string) bool {
 }
 
 //FilterNavigate 过滤导航菜单，只显示有权限的菜单
-func (u *UserRole) FilterNavigate(roleList []*dbschema.UserRole, navList *navigate.List) navigate.List {
+func (u *UserRole) FilterNavigate(roleList []*dbschema.NgingUserRole, navList *navigate.List) navigate.List {
 	var result navigate.List
 	if navList == nil {
 		return result

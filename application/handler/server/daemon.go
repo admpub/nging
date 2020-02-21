@@ -65,14 +65,14 @@ func DaemonAdd(ctx echo.Context) error {
 		} else if y {
 			err = ctx.E(`名称已经存在`)
 		} else {
-			err = ctx.MustBind(m.ForeverProcess)
+			err = ctx.MustBind(m.NgingForeverProcess)
 		}
 		if err == nil {
 			m.Uid = user.Id
 			_, err = m.Add()
 			if err == nil {
 				if m.Disabled == `N` {
-					config.AddDaemon(m.ForeverProcess, true)
+					config.AddDaemon(m.NgingForeverProcess, true)
 				}
 			}
 			if err == nil {
@@ -85,7 +85,7 @@ func DaemonAdd(ctx echo.Context) error {
 		if id > 0 {
 			err = m.Get(nil, `id`, id)
 			if err == nil {
-				echo.StructToForm(ctx, m.ForeverProcess, ``, func(topName, fieldName string) string {
+				echo.StructToForm(ctx, m.NgingForeverProcess, ``, func(topName, fieldName string) string {
 					return echo.LowerCaseFirstLetter(topName, fieldName)
 				})
 				ctx.Request().Form().Set(`id`, `0`)
@@ -112,7 +112,7 @@ func DaemonEdit(ctx echo.Context) error {
 		} else if y {
 			err = ctx.E(`名称已经存在`)
 		} else {
-			err = ctx.MustBind(m.ForeverProcess, echo.ExcludeFieldName(`created`, `uid`, `lastrun`))
+			err = ctx.MustBind(m.NgingForeverProcess, echo.ExcludeFieldName(`created`, `uid`, `lastrun`))
 		}
 		if err == nil {
 			m.Id = id
@@ -120,10 +120,10 @@ func DaemonEdit(ctx echo.Context) error {
 			if err == nil {
 				if oldName != m.Name {
 					config.Daemon.StopChild(m.Name)
-					config.AddDaemon(m.ForeverProcess, true)
+					config.AddDaemon(m.NgingForeverProcess, true)
 				} else if disabled != m.Disabled {
 					if m.Disabled == `N` {
-						config.AddDaemon(m.ForeverProcess, true)
+						config.AddDaemon(m.NgingForeverProcess, true)
 					} else {
 						config.Daemon.StopChild(fmt.Sprint(m.Id))
 					}
@@ -147,7 +147,7 @@ func DaemonEdit(ctx echo.Context) error {
 			procsName := fmt.Sprint(m.Id)
 			if disabled != m.Disabled {
 				if m.Disabled == `N` {
-					procs := config.AddDaemon(m.ForeverProcess)
+					procs := config.AddDaemon(m.NgingForeverProcess)
 					<-goforever.RunProcess(procsName, procs)
 					err = procs.Error()
 					if err != nil {
@@ -168,7 +168,7 @@ func DaemonEdit(ctx echo.Context) error {
 		}
 	}
 	if err == nil {
-		echo.StructToForm(ctx, m.ForeverProcess, ``, func(topName, fieldName string) string {
+		echo.StructToForm(ctx, m.NgingForeverProcess, ``, func(topName, fieldName string) string {
 			return echo.LowerCaseFirstLetter(topName, fieldName)
 		})
 	}

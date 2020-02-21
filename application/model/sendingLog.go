@@ -18,20 +18,21 @@
 package model
 
 import (
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
-	"github.com/webx-top/echo"
 )
 
 func NewSendingLog(ctx echo.Context) *SendingLog {
 	return &SendingLog{
-		SendingLog: &dbschema.SendingLog{},
-		Base:       base.New(ctx),
+		NgingSendingLog: &dbschema.NgingSendingLog{},
+		Base:            base.New(ctx),
 	}
 }
 
 type SendingLog struct {
-	*dbschema.SendingLog
+	*dbschema.NgingSendingLog
 	*base.Base
 }
 
@@ -39,5 +40,5 @@ func (c *SendingLog) Add() (interface{}, error) {
 	if len(c.Status) == 0 {
 		c.Status = `failure`
 	}
-	return c.SendingLog.Add()
+	return c.NgingSendingLog.Add()
 }

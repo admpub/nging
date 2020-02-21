@@ -22,31 +22,32 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/model/base"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/model/base"
 )
 
 type DbSyncWithAccount struct {
-	*dbschema.DbSync
-	SrcAccount *dbschema.DbAccount `db:"-,relation=id:source_account_id"`
-	DstAccount *dbschema.DbAccount `db:"-,relation=id:destination_account_id"`
+	*dbschema.NgingDbSync
+	SrcAccount *dbschema.NgingDbAccount `db:"-,relation=id:source_account_id"`
+	DstAccount *dbschema.NgingDbAccount `db:"-,relation=id:destination_account_id"`
 }
 
 func NewDbSync(ctx echo.Context) *DbSync {
 	return &DbSync{
-		DbSync: &dbschema.DbSync{},
-		Base:   base.New(ctx),
+		NgingDbSync: &dbschema.NgingDbSync{},
+		Base:        base.New(ctx),
 	}
 }
 
 type DbSync struct {
-	*dbschema.DbSync
+	*dbschema.NgingDbSync
 	*base.Base
 }
 
-func (a *DbSync) ToDSNFromAccount(acc *dbschema.DbAccount) string {
+func (a *DbSync) ToDSNFromAccount(acc *dbschema.NgingDbAccount) string {
 	return a.ToDSN(acc.User, acc.Password, acc.Host, acc.Name)
 }
 
@@ -109,9 +110,9 @@ func (a *DbSync) HidePassword(dsn string) string {
 }
 
 func (a *DbSync) Add() (interface{}, error) {
-	return a.DbSync.Add()
+	return a.NgingDbSync.Add()
 }
 
 func (a *DbSync) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
-	return a.DbSync.Edit(mw, args...)
+	return a.NgingDbSync.Edit(mw, args...)
 }

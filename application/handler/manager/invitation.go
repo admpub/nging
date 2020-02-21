@@ -72,7 +72,7 @@ func InvitationAdd(ctx echo.Context) error {
 	var err error
 	if ctx.IsPost() {
 		m := model.NewInvitation(ctx)
-		err = ctx.MustBind(m.CodeInvitation, dateString2UnixString)
+		err = ctx.MustBind(m.NgingCodeInvitation, dateString2UnixString)
 		if err == nil {
 			if len(m.Code) == 0 {
 				err = ctx.E(`邀请码不能为空`)
@@ -110,7 +110,7 @@ func InvitationEdit(ctx echo.Context) error {
 		return ctx.Redirect(handler.URLFor(`/manager/invitation`))
 	}
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.CodeInvitation, dateString2UnixString)
+		err = ctx.MustBind(m.NgingCodeInvitation, dateString2UnixString)
 		if err == nil {
 			m.Id = id
 			if len(m.Code) == 0 {
@@ -128,14 +128,14 @@ func InvitationEdit(ctx echo.Context) error {
 			return ctx.Redirect(handler.URLFor(`/manager/invitation`))
 		}
 	} else {
-		echo.StructToForm(ctx, m.CodeInvitation, ``, echo.LowerCaseFirstLetter)
+		echo.StructToForm(ctx, m.NgingCodeInvitation, ``, echo.LowerCaseFirstLetter)
 		var startDate, endDate string
-		if m.CodeInvitation.Start > 0 {
-			startDate = time.Unix(int64(m.CodeInvitation.Start), 0).Format(`2006-01-02`)
+		if m.NgingCodeInvitation.Start > 0 {
+			startDate = time.Unix(int64(m.NgingCodeInvitation.Start), 0).Format(`2006-01-02`)
 		}
 		ctx.Request().Form().Set(`start`, startDate)
-		if m.CodeInvitation.End > 0 {
-			endDate = time.Unix(int64(m.CodeInvitation.End), 0).Format(`2006-01-02`)
+		if m.NgingCodeInvitation.End > 0 {
+			endDate = time.Unix(int64(m.NgingCodeInvitation.End), 0).Format(`2006-01-02`)
 		}
 		ctx.Request().Form().Set(`end`, endDate)
 	}

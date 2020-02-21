@@ -30,21 +30,21 @@ import (
 )
 
 type FtpUserAndGroup struct {
-	*dbschema.FtpUser
-	Group *dbschema.FtpUserGroup
+	*dbschema.NgingFtpUser
+	Group *dbschema.NgingFtpUserGroup
 }
 
 var DefaultSalt = ``
 
 func NewFtpUser(ctx echo.Context) *FtpUser {
 	return &FtpUser{
-		FtpUser: &dbschema.FtpUser{},
-		Base:    base.New(ctx),
+		NgingFtpUser: &dbschema.NgingFtpUser{},
+		Base:         base.New(ctx),
 	}
 }
 
 type FtpUser struct {
-	*dbschema.FtpUser
+	*dbschema.NgingFtpUser
 	*base.Base
 }
 
@@ -78,24 +78,24 @@ func (f *FtpUser) RootPath(username string) (basePath string, err error) {
 	if err != nil {
 		return
 	}
-	if f.FtpUser.GroupId > 0 {
+	if f.NgingFtpUser.GroupId > 0 {
 		m := NewFtpUserGroup(f.Base.Context)
-		err = m.Get(nil, db.Cond{`id`: f.FtpUser.GroupId})
+		err = m.Get(nil, db.Cond{`id`: f.NgingFtpUser.GroupId})
 		if err != nil {
 			return
 		}
-		if m.FtpUserGroup.Banned == `Y` {
+		if m.NgingFtpUserGroup.Banned == `Y` {
 			err = ErrBannedFtpUser
 			return
 		}
-		basePath = m.FtpUserGroup.Directory
+		basePath = m.NgingFtpUserGroup.Directory
 	}
-	if f.FtpUser.Banned == `Y` {
+	if f.NgingFtpUser.Banned == `Y` {
 		err = ErrBannedFtpUser
 		return
 	}
-	if len(f.FtpUser.Directory) > 0 {
-		basePath = f.FtpUser.Directory
+	if len(f.NgingFtpUser.Directory) > 0 {
+		basePath = f.NgingFtpUser.Directory
 		return
 	}
 	if len(basePath) < 1 {

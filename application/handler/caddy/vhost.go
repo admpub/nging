@@ -58,7 +58,7 @@ func VhostIndex(ctx echo.Context) error {
 	rowAndGroup := make([]*model.VhostAndGroup, len(rows))
 	for k, u := range rows {
 		rowAndGroup[k] = &model.VhostAndGroup{
-			Vhost: u,
+			NgingVhost: u,
 		}
 		if u.GroupId < 1 {
 			continue
@@ -68,8 +68,8 @@ func VhostIndex(ctx echo.Context) error {
 		}
 	}
 
-	mg := &dbschema.VhostGroup{}
-	var groupList []*dbschema.VhostGroup
+	mg := &dbschema.NgingVhostGroup{}
+	var groupList []*dbschema.NgingVhostGroup
 	if len(gIds) > 0 {
 		_, err = mg.List(&groupList, nil, 1, 1000, db.Cond{`id IN`: gIds})
 		if err != nil {
@@ -167,7 +167,7 @@ func VhostAdd(ctx echo.Context) error {
 			}
 			fallthrough
 		case 0 == 1:
-			err = saveVhostData(ctx, m.Vhost, ctx.Forms(), false)
+			err = saveVhostData(ctx, m.NgingVhost, ctx.Forms(), false)
 		}
 		if err == nil {
 			handler.SendOk(ctx, ctx.T(`操作成功`))
@@ -197,7 +197,7 @@ func VhostAdd(ctx echo.Context) error {
 	ctx.SetFunc(`Val`, func(name, defaultValue string) string {
 		return ctx.Form(name, defaultValue)
 	})
-	g := &dbschema.VhostGroup{}
+	g := &dbschema.NgingVhostGroup{}
 	g.ListByOffset(nil, nil, 0, -1)
 	ctx.Set(`groupList`, g.Objects())
 	ctx.Set(`isAdd`, true)
@@ -232,7 +232,7 @@ func saveVhostConf(ctx echo.Context, saveFile string, values url.Values) error {
 	return err
 }
 
-func saveVhostData(ctx echo.Context, m *dbschema.Vhost, values url.Values, restart bool) (err error) {
+func saveVhostData(ctx echo.Context, m *dbschema.NgingVhost, values url.Values, restart bool) (err error) {
 	var saveFile string
 	saveFile, err = getSaveDir()
 	if err != nil {
@@ -317,7 +317,7 @@ func VhostEdit(ctx echo.Context) error {
 			}
 			fallthrough
 		case 0 == 1:
-			err = saveVhostData(ctx, m.Vhost, ctx.Forms(), len(ctx.Form(`restart`)) > 0)
+			err = saveVhostData(ctx, m.NgingVhost, ctx.Forms(), len(ctx.Form(`restart`)) > 0)
 		}
 		if err == nil {
 			handler.SendOk(ctx, ctx.T(`操作成功`))
@@ -342,7 +342,7 @@ func VhostEdit(ctx echo.Context) error {
 					for name, fun := range tplfunc.TplFuncMap {
 						ctx.SetFunc(name, fun)
 					}
-					err = saveVhostData(ctx, m.Vhost, formData, true)
+					err = saveVhostData(ctx, m.NgingVhost, formData, true)
 				}
 			}
 			if err != nil {
@@ -370,7 +370,7 @@ func VhostEdit(ctx echo.Context) error {
 		return ctx.Form(name, defaultValue)
 	})
 	ctx.Set(`activeURL`, `/caddy/vhost`)
-	g := &dbschema.VhostGroup{}
+	g := &dbschema.NgingVhostGroup{}
 	g.ListByOffset(nil, nil, 0, -1)
 	ctx.Set(`groupList`, g.Objects())
 	ctx.Set(`isAdd`, false)

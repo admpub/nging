@@ -26,19 +26,20 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/model"
 	termConfig "github.com/admpub/web-terminal/config"
 	termHandler "github.com/admpub/web-terminal/handler"
-	"github.com/webx-top/com"
-	"github.com/webx-top/echo"
 )
 
 type TerminalParam struct {
 	Query url.Values
-	User  *dbschema.SshUser
+	User  *dbschema.NgingSshUser
 }
 
 type key string
@@ -77,7 +78,7 @@ func init() {
 					m := model.NewSshUser(nil)
 					err := m.Get(nil, `id`, id)
 					if err == nil {
-						param.User = m.SshUser
+						param.User = m.NgingSshUser
 					}
 				}
 				ctx.Data.Store(contextKey, param)

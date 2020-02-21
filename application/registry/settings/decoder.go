@@ -27,7 +27,7 @@ import (
 	"github.com/admpub/nging/application/dbschema"
 )
 
-type Decoder func(v *dbschema.Config, r echo.H) error
+type Decoder func(v *dbschema.NgingConfig, r echo.H) error
 
 var decoders = map[string]Decoder{}
 
@@ -53,7 +53,7 @@ func RegisterDecoder(group string, decoder Decoder) {
 	decoders[group] = decoder
 }
 
-func DecodeConfigValue(v *dbschema.Config, decoder Decoder) (echo.H, error) {
+func DecodeConfigValue(v *dbschema.NgingConfig, decoder Decoder) (echo.H, error) {
 	if v.Encrypted == `Y` {
 		v.Value = echo.Get(`DefaultConfig`).(Codec).Decode(v.Value)
 	}
@@ -73,7 +73,7 @@ func DecodeConfigValue(v *dbschema.Config, decoder Decoder) (echo.H, error) {
 	return r, err
 }
 
-func DecodeConfig(v *dbschema.Config, cfg echo.H, decoder Decoder) (echo.H, error) {
+func DecodeConfig(v *dbschema.NgingConfig, cfg echo.H, decoder Decoder) (echo.H, error) {
 	r, e := DecodeConfigValue(v, decoder)
 	if e != nil {
 		return cfg, e
@@ -82,7 +82,7 @@ func DecodeConfig(v *dbschema.Config, cfg echo.H, decoder Decoder) (echo.H, erro
 	return cfg, nil
 }
 
-func DefaultDecoder(v *dbschema.Config, r echo.H) error {
+func DefaultDecoder(v *dbschema.NgingConfig, r echo.H) error {
 	if r.Has(`ValueObject`) {
 		return nil
 	}

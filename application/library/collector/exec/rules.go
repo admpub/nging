@@ -22,11 +22,12 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/collector"
 	"github.com/admpub/nging/application/library/collector/sender"
 	"github.com/admpub/nging/application/library/notice"
-	"github.com/webx-top/echo"
 )
 
 var ErrForcedExit = errors.New(`Forced exit`)
@@ -42,8 +43,8 @@ type Rules struct {
 func NewRules() *Rules {
 	return &Rules{
 		Rule: &Rule{
-			CollectorPage: &dbschema.CollectorPage{},
-			RuleList:      []*dbschema.CollectorRule{},
+			NgingCollectorPage: &dbschema.NgingCollectorPage{},
+			RuleList:           []*dbschema.NgingCollectorRule{},
 		},
 		Extra: []*Rule{},
 	}
@@ -61,8 +62,8 @@ func (c *Rules) SetExitedFn(exitedFn func() bool) *Rules {
 
 func (c *Rules) Collect(debug bool, noticeSender sender.Notice, progress *notice.Progress) ([]Result, error) {
 	var fetch Fether
-	timeout := int(c.Rule.CollectorPage.Timeout)
-	engine := c.Rule.CollectorPage.Browser
+	timeout := int(c.Rule.NgingCollectorPage.Timeout)
+	engine := c.Rule.NgingCollectorPage.Browser
 	if len(engine) == 0 || engine == `default` {
 		engine = `standard`
 	}
@@ -77,8 +78,8 @@ func (c *Rules) Collect(debug bool, noticeSender sender.Notice, progress *notice
 		}
 		if err := browser.Start(echo.Store{
 			`timeout`: timeout,
-			`proxy`:   c.Rule.CollectorPage.Proxy,
-			`delay`:   c.Rule.CollectorPage.Waits,
+			`proxy`:   c.Rule.NgingCollectorPage.Proxy,
+			`delay`:   c.Rule.NgingCollectorPage.Waits,
 		}); err != nil {
 			return nil, err
 		}
@@ -106,7 +107,7 @@ func (c *Rules) Collect(debug bool, noticeSender sender.Notice, progress *notice
 		noticeSender = sender.Default
 	}
 	return c.Rule.Collect(
-		uint64(c.CollectorPage.ParentId),
+		uint64(c.NgingCollectorPage.ParentId),
 		fetch,
 		index,
 		c.Extra,

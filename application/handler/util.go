@@ -89,13 +89,13 @@ func init() {
 	})
 }
 
-func User(ctx echo.Context) *dbschema.User {
-	user, _ := ctx.Get(`user`).(*dbschema.User)
+func User(ctx echo.Context) *dbschema.NgingUser {
+	user, _ := ctx.Get(`user`).(*dbschema.NgingUser)
 	return user
 }
 
-func RoleList(ctx echo.Context) []*dbschema.UserRole {
-	roleList, _ := ctx.Get(`roleList`).([]*dbschema.UserRole)
+func RoleList(ctx echo.Context) []*dbschema.NgingUserRole {
+	roleList, _ := ctx.Get(`roleList`).([]*dbschema.NgingUserRole)
 	return roleList
 }
 

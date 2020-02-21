@@ -77,7 +77,7 @@ func init() {
 			return fileM.Add(reader)
 		}
 		fileM.UsedTimes = 0
-		var m *dbschema.File
+		var m *dbschema.NgingFile
 		m, err = fileM.GetAvatar()
 		defer func() {
 			if err != nil {
@@ -87,8 +87,8 @@ func init() {
 			if userID == 0 { // 新增用户时
 				return
 			}
-			userM := &dbschema.User{}
-			userM.CPAFrom(fileM.File)
+			userM := &dbschema.NgingUser{}
+			userM.CPAFrom(fileM.NgingFile)
 			err = userM.SetField(nil, `avatar`, fileM.ViewUrl, db.Cond{`id`: userID})
 		}()
 		if err != nil {
@@ -110,7 +110,7 @@ func init() {
 
 	// - user 表事件
 	listener.New(func(m factory.Model) (tableID string, content string, property *listener.Property) {
-		fm := m.(*dbschema.User)
+		fm := m.(*dbschema.NgingUser)
 		tableID = fmt.Sprint(fm.Id)
 		content = fm.Avatar
 		property = listener.NewProUP(fm, db.Cond{`id`: fm.Id})
@@ -119,7 +119,7 @@ func init() {
 
 	// - config 表事件
 	listener.New(func(m factory.Model) (tableID string, content string, property *listener.Property) {
-		fm := m.(*dbschema.Config)
+		fm := m.(*dbschema.NgingConfig)
 		tableID = fm.Group + `.` + fm.Key
 		content = fm.Value
 		property = getConfigEventAttrs(fm).GenUpdater(fm, db.And(
@@ -130,7 +130,7 @@ func init() {
 	}, false).SetTable(`config`, `value`).ListenDefault()
 }
 
-func getConfigEventAttrs(confM *dbschema.Config) *listener.Property {
+func getConfigEventAttrs(confM *dbschema.NgingConfig) *listener.Property {
 	property := &listener.Property{}
 	switch confM.Type {
 	case `html`:

@@ -71,7 +71,7 @@ func DBConn(dsn interface{}) (db sqlbuilder.Database, err error) {
 
 func Export(pageID uint, result *exec.Recv, collected echo.Store, noticeSender sender.Notice) error {
 	// 导出数据
-	exportM := &dbschema.CollectorExport{}
+	exportM := &dbschema.NgingCollectorExport{}
 	_cnt, _err := exportM.ListByOffset(nil, nil, 0, -1, db.And(
 		db.Cond{`page_id`: pageID},
 		db.Cond{`disabled`: `N`},

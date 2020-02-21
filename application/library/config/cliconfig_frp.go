@@ -29,13 +29,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/webx-top/com"
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/confl"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/frp"
-	"github.com/webx-top/com"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 var (
@@ -85,19 +86,19 @@ func (c *CLIConfig) rebuildFRPConfigFile(data interface{}, must bool, configFile
 		configFile = configFiles[0]
 	}
 	switch v := data.(type) {
-	case *dbschema.FrpClient:
+	case *dbschema.NgingFrpClient:
 		if len(configFile) == 0 {
 			configFile = c.FRPConfigFile(v.Id, false)
 		}
 		cfg := frp.NewClientConfig()
-		cfg.FrpClient = v
+		cfg.NgingFrpClient = v
 		cfg.Extra, err = frp.Table2Config(v)
 		if err != nil {
 			return
 		}
-		cfg.FrpClient.Extra = ``
+		cfg.NgingFrpClient.Extra = ``
 		m = cfg
-	case *dbschema.FrpServer:
+	case *dbschema.NgingFrpServer:
 		if len(configFile) == 0 {
 			configFile = c.FRPConfigFile(v.Id, true)
 		}
@@ -105,7 +106,7 @@ func (c *CLIConfig) rebuildFRPConfigFile(data interface{}, must bool, configFile
 	case string:
 		switch v {
 		case `frpserver`:
-			md := &dbschema.FrpServer{}
+			md := &dbschema.NgingFrpServer{}
 			_, err = md.ListByOffset(nil, nil, 0, -1, `disabled`, `N`)
 			if err != nil {
 				return
@@ -118,7 +119,7 @@ func (c *CLIConfig) rebuildFRPConfigFile(data interface{}, must bool, configFile
 			}
 			return
 		case `frpclient`:
-			md := &dbschema.FrpClient{}
+			md := &dbschema.NgingFrpClient{}
 			_, err = md.ListByOffset(nil, nil, 0, -1, `disabled`, `N`)
 			if err != nil {
 				return
@@ -212,7 +213,7 @@ func (c *CLIConfig) FRPPidFile(id string, isServer bool) string {
 func (c *CLIConfig) FRPSaveConfigFile(data interface{}) (err error) {
 	var configFile string
 	switch v := data.(type) {
-	case *dbschema.FrpServer:
+	case *dbschema.NgingFrpServer:
 		configFile = c.FRPConfigFile(v.Id, true)
 		if v.Disabled == `Y` {
 			if !com.FileExists(configFile) {
@@ -220,7 +221,7 @@ func (c *CLIConfig) FRPSaveConfigFile(data interface{}) (err error) {
 			}
 			return os.Remove(configFile)
 		}
-	case *dbschema.FrpClient:
+	case *dbschema.NgingFrpClient:
 		configFile = c.FRPConfigFile(v.Id, false)
 		if v.Disabled == `Y` {
 			if !com.FileExists(configFile) {
@@ -229,12 +230,12 @@ func (c *CLIConfig) FRPSaveConfigFile(data interface{}) (err error) {
 			return os.Remove(configFile)
 		}
 		cfg := frp.NewClientConfig()
-		cfg.FrpClient = v
+		cfg.NgingFrpClient = v
 		cfg.Extra, err = frp.Table2Config(v)
 		if err != nil {
 			return
 		}
-		cfg.FrpClient.Extra = ``
+		cfg.NgingFrpClient.Extra = ``
 		data = cfg
 	default:
 		return fmt.Errorf(`unsupport save config: %T`, v)
@@ -264,7 +265,7 @@ func (c *CLIConfig) FRPStart(writer ...io.Writer) (err error) {
 	if err != nil {
 		log.Error(err.Error())
 	}
-	md := &dbschema.FrpServer{}
+	md := &dbschema.NgingFrpServer{}
 	cd := db.And(
 		db.Cond{`disabled`: `N`},
 	)

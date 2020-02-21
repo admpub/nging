@@ -46,7 +46,7 @@ func StorageAdd(ctx echo.Context) error {
 	var err error
 	m := model.NewCloudStorage(ctx)
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.CloudStorage)
+		err = ctx.MustBind(m.NgingCloudStorage)
 		if err == nil {
 			m.Baseurl = ctx.Formx(`baseurl`).String()
 			_, err = m.Add()
@@ -60,7 +60,7 @@ func StorageAdd(ctx echo.Context) error {
 		if id > 0 {
 			err = m.Get(nil, `id`, id)
 			if err == nil {
-				echo.StructToForm(ctx, m.CloudStorage, ``, func(topName, fieldName string) string {
+				echo.StructToForm(ctx, m.NgingCloudStorage, ``, func(topName, fieldName string) string {
 					return echo.LowerCaseFirstLetter(topName, fieldName)
 				})
 				ctx.Request().Form().Set(`id`, `0`)
@@ -78,7 +78,7 @@ func StorageEdit(ctx echo.Context) error {
 	m := model.NewCloudStorage(ctx)
 	err = m.Get(nil, db.Cond{`id`: id})
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.CloudStorage, echo.ExcludeFieldName(`created`))
+		err = ctx.MustBind(m.NgingCloudStorage, echo.ExcludeFieldName(`created`))
 		if err == nil {
 			m.Id = id
 			m.Baseurl = ctx.Formx(`baseurl`).String()
@@ -90,7 +90,7 @@ func StorageEdit(ctx echo.Context) error {
 		}
 	}
 	if err == nil {
-		echo.StructToForm(ctx, m.CloudStorage, ``, func(topName, fieldName string) string {
+		echo.StructToForm(ctx, m.NgingCloudStorage, ``, func(topName, fieldName string) string {
 			return echo.LowerCaseFirstLetter(topName, fieldName)
 		})
 	}

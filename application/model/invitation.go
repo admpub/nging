@@ -27,13 +27,13 @@ import (
 
 func NewInvitation(ctx echo.Context) *Invitation {
 	return &Invitation{
-		CodeInvitation: &dbschema.CodeInvitation{},
-		Base:           base.New(ctx),
+		NgingCodeInvitation: &dbschema.NgingCodeInvitation{},
+		Base:                base.New(ctx),
 	}
 }
 
 type Invitation struct {
-	*dbschema.CodeInvitation
+	*dbschema.NgingCodeInvitation
 	*base.Base
 }
 

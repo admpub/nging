@@ -74,7 +74,7 @@ func List(ctx echo.Context, ownerType string, ownerID uint64) error {
 		)
 	}
 	sorts := common.Sorts(ctx, `file`, `-id`)
-	_, err := common.NewLister(fileM.File, nil, func(r db.Result) db.Result {
+	_, err := common.NewLister(fileM.NgingFile, nil, func(r db.Result) db.Result {
 		return r.OrderBy(sorts...)
 	}, cond.And()).Paging(ctx)
 	if err != nil {

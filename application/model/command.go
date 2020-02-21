@@ -31,13 +31,13 @@ import (
 
 func NewCommand(ctx echo.Context) *Command {
 	return &Command{
-		Command: &dbschema.Command{},
-		Base:    base.New(ctx),
+		NgingCommand: &dbschema.NgingCommand{},
+		Base:         base.New(ctx),
 	}
 }
 
 type Command struct {
-	*dbschema.Command
+	*dbschema.NgingCommand
 	*base.Base
 }
 
@@ -65,7 +65,7 @@ func (u *Command) CreateCmd() *exec.Cmd {
 			}
 		}
 	}
-	cmd := exec.Command(u.Command.Command)
+	cmd := exec.Command(u.NgingCommand.Command)
 	cmd.Dir = u.WorkDirectory
 	cmd.Env = append(os.Environ(), env...)
 	//cmd.Stdout = bufOut

@@ -30,7 +30,7 @@ import (
 // CropOptions 图片裁剪选项
 type CropOptions struct {
 	Options       *imageproxy.Options //裁剪方式设置
-	File          *dbschema.File      //原图信息
+	File          *dbschema.NgingFile //原图信息
 	SrcReader     io.Reader           //原图reader
 	Storer        driver.Storer       //存储器
 	DestFile      string              //保存文件路径

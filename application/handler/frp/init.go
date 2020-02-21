@@ -64,7 +64,7 @@ func init() {
 	})
 	handler.RegisterToGroup(`/frp/dashboard`, func(g echo.RouteRegister) {
 		g.Get(``, func(c echo.Context) error {
-			m := &dbschema.FrpServer{}
+			m := &dbschema.NgingFrpServer{}
 			err := m.Get(nil, `disabled`, `N`)
 			if err != nil && err != db.ErrNoMoreRows {
 				return err

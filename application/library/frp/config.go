@@ -33,7 +33,7 @@ import (
 	"github.com/webx-top/echo/param"
 )
 
-func Table2Config(cc *dbschema.FrpClient) (hash echo.H, err error) {
+func Table2Config(cc *dbschema.NgingFrpClient) (hash echo.H, err error) {
 	if len(cc.Extra) == 0 {
 		return
 	}

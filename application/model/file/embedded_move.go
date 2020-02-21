@@ -127,7 +127,7 @@ func (f *Embedded) MoveFileToOwner(tableName string, fileIDs []uint64, ownerID s
 		if err != nil {
 			return replaces, err
 		}
-		thumbM := &dbschema.FileThumb{}
+		thumbM := &dbschema.NgingFileThumb{}
 		_, err = thumbM.ListByOffset(nil, nil, 0, -1, db.Cond{`file_id`: file.Id})
 		if err != nil {
 			return replaces, err

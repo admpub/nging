@@ -28,13 +28,13 @@ import (
 
 func NewFrpGroup(ctx echo.Context) *FrpGroup {
 	return &FrpGroup{
-		FrpGroup: &dbschema.FrpGroup{},
-		Base:     base.New(ctx),
+		NgingFrpGroup: &dbschema.NgingFrpGroup{},
+		Base:          base.New(ctx),
 	}
 }
 
 type FrpGroup struct {
-	*dbschema.FrpGroup
+	*dbschema.NgingFrpGroup
 	*base.Base
 }
 

@@ -30,7 +30,7 @@ import (
 var historyJobsRunning bool
 
 func InitJobs(ctx context.Context) error {
-	m := new(dbschema.Task)
+	m := new(dbschema.NgingTask)
 	limit := 1000
 	cnt, err := m.ListByOffset(nil, nil, 0, limit, "disabled", `N`)
 	if err != nil {

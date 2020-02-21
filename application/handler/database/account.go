@@ -18,13 +18,14 @@
 package database
 
 import (
+	"github.com/webx-top/com"
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/admpub/nging/application/library/dbmanager/driver/mysql"
 	"github.com/admpub/nging/application/model"
-	"github.com/webx-top/com"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 func init() {
@@ -77,7 +78,7 @@ func AccountAdd(ctx echo.Context) error {
 	var err error
 	if ctx.IsPost() {
 		m := model.NewDbAccount(ctx)
-		err = ctx.MustBind(m.DbAccount)
+		err = ctx.MustBind(m.NgingDbAccount)
 		if err == nil {
 			err = setOptions(ctx, m)
 		}
@@ -86,7 +87,7 @@ func AccountAdd(ctx echo.Context) error {
 			_, err = m.Add()
 			if err == nil {
 				if ctx.IsAjax() {
-					data := ctx.Data().SetInfo(ctx.T(`数据库账号成功`)).SetData(m.DbAccount)
+					data := ctx.Data().SetInfo(ctx.T(`数据库账号成功`)).SetData(m.NgingDbAccount)
 					return ctx.JSON(data)
 				}
 				handler.SendOk(ctx, ctx.T(`操作成功`))
@@ -116,7 +117,7 @@ func AccountEdit(ctx echo.Context) error {
 	cond := db.And(db.Cond{`id`: id}, db.Cond{`uid`: user.Id})
 	err = m.Get(nil, cond)
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.DbAccount, echo.ExcludeFieldName(`created`, `uid`))
+		err = ctx.MustBind(m.NgingDbAccount, echo.ExcludeFieldName(`created`, `uid`))
 		if err == nil {
 			err = setOptions(ctx, m)
 		}
@@ -129,11 +130,11 @@ func AccountEdit(ctx echo.Context) error {
 			}
 		}
 	} else if err == nil {
-		echo.StructToForm(ctx, m.DbAccount, ``, echo.LowerCaseFirstLetter)
+		echo.StructToForm(ctx, m.NgingDbAccount, ``, echo.LowerCaseFirstLetter)
 		var charset string
-		if len(m.DbAccount.Options) > 0 {
+		if len(m.NgingDbAccount.Options) > 0 {
 			options := echo.H{}
-			com.JSONDecode(com.Str2bytes(m.DbAccount.Options), &options)
+			com.JSONDecode(com.Str2bytes(m.NgingDbAccount.Options), &options)
 			charset = options.String(`charset`)
 		}
 		if len(charset) == 0 {

@@ -121,9 +121,9 @@ func FuncMap() echo.MiddlewareFunc {
 				return h.Handle(c)
 			}
 			//用户相关函数
-			user, _ := c.Session().Get(`user`).(*dbschema.User)
+			user, _ := c.Session().Get(`user`).(*dbschema.NgingUser)
 			roleM := model.NewUserRole(c)
-			var roleList []*dbschema.UserRole
+			var roleList []*dbschema.NgingUserRole
 			if user != nil {
 				c.Set(`user`, user)
 				c.SetFunc(`Username`, func() string { return user.Username })

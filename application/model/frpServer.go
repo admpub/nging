@@ -27,20 +27,20 @@ import (
 )
 
 type FrpServerAndGroup struct {
-	*dbschema.FrpServer
-	Group   *dbschema.FrpGroup
+	*dbschema.NgingFrpServer
+	Group   *dbschema.NgingFrpGroup
 	Running bool
 }
 
 func NewFrpServer(ctx echo.Context) *FrpServer {
 	return &FrpServer{
-		FrpServer: &dbschema.FrpServer{},
-		Base:      base.New(ctx),
+		NgingFrpServer: &dbschema.NgingFrpServer{},
+		Base:           base.New(ctx),
 	}
 }
 
 type FrpServer struct {
-	*dbschema.FrpServer
+	*dbschema.NgingFrpServer
 	*base.Base
 }
 

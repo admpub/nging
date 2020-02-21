@@ -27,20 +27,20 @@ import (
 )
 
 type FrpClientAndGroup struct {
-	*dbschema.FrpClient
-	Group   *dbschema.FrpGroup
+	*dbschema.NgingFrpClient
+	Group   *dbschema.NgingFrpGroup
 	Running bool
 }
 
 func NewFrpClient(ctx echo.Context) *FrpClient {
 	return &FrpClient{
-		FrpClient: &dbschema.FrpClient{},
-		Base:      base.New(ctx),
+		NgingFrpClient: &dbschema.NgingFrpClient{},
+		Base:           base.New(ctx),
 	}
 }
 
 type FrpClient struct {
-	*dbschema.FrpClient
+	*dbschema.NgingFrpClient
 	*base.Base
 }
 

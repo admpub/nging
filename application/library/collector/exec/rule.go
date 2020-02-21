@@ -31,6 +31,13 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	// import collector browser driver
+
+	"github.com/webx-top/com"
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/engine"
+	"github.com/webx-top/echo/middleware/tplfunc"
 
 	download "github.com/admpub/go-download"
 	"github.com/admpub/gopiper"
@@ -39,17 +46,9 @@ import (
 	"github.com/admpub/nging/application/library/charset"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/notice"
-	"github.com/webx-top/com"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/engine"
-	"github.com/webx-top/echo/middleware/tplfunc"
-
-	// import collector browser driver
 	_ "github.com/admpub/nging/application/library/collector/driver/chrome"
 	_ "github.com/admpub/nging/application/library/collector/driver/webdriver"
 	"github.com/admpub/nging/application/library/collector/sender"
-
 	//_ "github.com/admpub/nging/application/library/collector/driver/phantomjs" //高CPU占用
 	//_ "github.com/admpub/nging/application/library/collector/driver/phantomjsfetcher" //高CPU占用
 	_ "github.com/admpub/nging/application/library/collector/driver/standard"
@@ -59,8 +58,8 @@ var RegexpTitle = regexp.MustCompile(`(?i)<title[\s]*>([^<]+)</title[\s]*>`)
 
 // Rule 页面规则
 type Rule struct {
-	*dbschema.CollectorPage
-	RuleList []*dbschema.CollectorRule
+	*dbschema.NgingCollectorPage
+	RuleList []*dbschema.NgingCollectorRule
 	debug    bool
 	exportFn func(pageID uint, result *Recv, collected echo.Store, noticeSender sender.Notice) error
 	isExited func() bool
@@ -103,7 +102,7 @@ func (c *Rule) Collect(parentID uint64,
 	if c.IsExited() {
 		return nil, ErrForcedExit
 	}
-	enterURL, err := c.ParseTmplContent(c.CollectorPage.EnterUrl)
+	enterURL, err := c.ParseTmplContent(c.NgingCollectorPage.EnterUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +150,7 @@ func (c *Rule) Collect(parentID uint64,
 	}
 	// collection 的类型有两种可能：[]interface{} / map[string]interface{}
 	var collection interface{}
-	historyMdl := &dbschema.CollectorHistory{}
+	historyMdl := &dbschema.NgingCollectorHistory{}
 	for pageKey, pageURL := range urlList {
 		if c.IsExited() {
 			return result, ErrForcedExit
@@ -175,7 +174,7 @@ func (c *Rule) Collect(parentID uint64,
 				}
 				//不存在记录
 			} else if historyMdl.Id > 0 {
-				if c.CollectorPage.DuplicateRule == `url` {
+				if c.NgingCollectorPage.DuplicateRule == `url` {
 					continue
 				}
 				historyID = historyMdl.Id
@@ -185,7 +184,7 @@ func (c *Rule) Collect(parentID uint64,
 				return nil, err
 			}
 			ruleMd5 = com.ByteMd5(encoded)
-			if historyID > 0 && historyMdl.RuleMd5 == ruleMd5 && c.CollectorPage.DuplicateRule == `rule` { //规则没有更改过的情况下，如果已经采集过则跳过
+			if historyID > 0 && historyMdl.RuleMd5 == ruleMd5 && c.NgingCollectorPage.DuplicateRule == `rule` { //规则没有更改过的情况下，如果已经采集过则跳过
 				continue
 			}
 		}
@@ -193,7 +192,7 @@ func (c *Rule) Collect(parentID uint64,
 			return nil, sendErr
 		}
 		startTime := time.Now()
-		content, transcoded, err = fetch(pageURL, c.CollectorPage.Charset)
+		content, transcoded, err = fetch(pageURL, c.NgingCollectorPage.Charset)
 		if err != nil {
 			if err == io.EOF {
 				log.Error(err)
@@ -203,7 +202,7 @@ func (c *Rule) Collect(parentID uint64,
 		}
 		if !c.debug { //非测试模式才保存到数据库
 			contentMd5 = com.ByteMd5(content)
-			if historyID > 0 && historyMdl.Content == contentMd5 && c.CollectorPage.DuplicateRule == `content` { //规则没有更改过的情况下，如果已经采集过则跳过
+			if historyID > 0 && historyMdl.Content == contentMd5 && c.NgingCollectorPage.DuplicateRule == `content` { //规则没有更改过的情况下，如果已经采集过则跳过
 				continue
 			}
 			historyMdl.Reset()
@@ -211,20 +210,20 @@ func (c *Rule) Collect(parentID uint64,
 			historyMdl.Created = uint(time.Now().Unix())
 			historyMdl.Url = pageURL
 			historyMdl.UrlMd5 = urlMD5
-			historyMdl.PageId = c.CollectorPage.Id
-			historyMdl.PageParentId = c.CollectorPage.ParentId
-			historyMdl.PageRootId = c.CollectorPage.RootId
+			historyMdl.PageId = c.NgingCollectorPage.Id
+			historyMdl.PageParentId = c.NgingCollectorPage.ParentId
+			historyMdl.PageRootId = c.NgingCollectorPage.RootId
 			historyMdl.ParentId = parentID
-			historyMdl.HasChild = c.CollectorPage.HasChild
+			historyMdl.HasChild = c.NgingCollectorPage.HasChild
 			historyMdl.Content = contentMd5
 		}
 		if !transcoded {
-			if len(c.CollectorPage.Charset) < 1 {
-				c.CollectorPage.Charset = `utf-8`
+			if len(c.NgingCollectorPage.Charset) < 1 {
+				c.NgingCollectorPage.Charset = `utf-8`
 			}
 			// 字符集转码
-			if strings.ToLower(c.CollectorPage.Charset) != `utf-8` {
-				content, err = charset.Convert(c.CollectorPage.Charset, `utf-8`, content)
+			if strings.ToLower(c.NgingCollectorPage.Charset) != `utf-8` {
+				content, err = charset.Convert(c.NgingCollectorPage.Charset, `utf-8`, content)
 				if err != nil {
 					return nil, err
 				}
@@ -249,14 +248,14 @@ func (c *Rule) Collect(parentID uint64,
 			subItems = append(subItems, subItem)
 		}
 		var pipe gopiper.PipeItem
-		if c.CollectorPage.Type == `list` {
+		if c.NgingCollectorPage.Type == `list` {
 			child := gopiper.PipeItem{
 				Type:    `map`,
 				SubItem: subItems,
 			}
 			pipe = gopiper.PipeItem{
 				Type:     `array`,
-				Selector: c.CollectorPage.ScopeRule,
+				Selector: c.NgingCollectorPage.ScopeRule,
 				SubItem:  []gopiper.PipeItem{child},
 			}
 			pipe.Filter, err = c.ParseTmplContent(pipe.Filter)
@@ -275,14 +274,14 @@ func (c *Rule) Collect(parentID uint64,
 		}
 		pipe.SetFetcher(func(pURL string) (body []byte, err error) {
 			pURL = com.AbsURL(pageURL, pURL)
-			body, transcoded, err := fetch(pURL, c.CollectorPage.Charset)
+			body, transcoded, err := fetch(pURL, c.NgingCollectorPage.Charset)
 			if !transcoded {
-				if len(c.CollectorPage.Charset) < 1 {
-					c.CollectorPage.Charset = `utf-8`
+				if len(c.NgingCollectorPage.Charset) < 1 {
+					c.NgingCollectorPage.Charset = `utf-8`
 				}
 				// 字符集转码
-				if strings.ToLower(c.CollectorPage.Charset) != `utf-8` {
-					body, err = charset.Convert(c.CollectorPage.Charset, `utf-8`, body)
+				if strings.ToLower(c.NgingCollectorPage.Charset) != `utf-8` {
+					body, err = charset.Convert(c.NgingCollectorPage.Charset, `utf-8`, body)
 					if err != nil {
 						return
 					}
@@ -318,7 +317,7 @@ func (c *Rule) Collect(parentID uint64,
 			_, err = download.Download(fileURL, saveTo, nil)
 			return
 		})
-		collection, err = pipe.PipeBytes(content, c.CollectorPage.ContentType)
+		collection, err = pipe.PipeBytes(content, c.NgingCollectorPage.ContentType)
 		if err != nil {
 			if err != gopiper.ErrInvalidContent { //跳过无效内容
 				if sendErr := noticeSender(err.Error(), 0, progress); sendErr != nil {
@@ -337,7 +336,7 @@ func (c *Rule) Collect(parentID uint64,
 
 		// 自动获取页面标题
 		var pageTitle string
-		switch c.CollectorPage.ContentType {
+		switch c.NgingCollectorPage.ContentType {
 		case `html`:
 			find := RegexpTitle.FindAllStringSubmatch(engine.Bytes2str(content), 1)
 			if len(find) > 0 && len(find[0]) > 1 {
@@ -414,8 +413,8 @@ func (c *Rule) Collect(parentID uint64,
 				pageRuleForm.debug = c.debug
 				pageRuleForm.exportFn = c.exportFn
 				pageRuleForm.isExited = c.isExited
-				if len(pageRuleForm.CollectorPage.Charset) < 1 {
-					pageRuleForm.CollectorPage.Charset = c.CollectorPage.Charset
+				if len(pageRuleForm.NgingCollectorPage.Charset) < 1 {
+					pageRuleForm.NgingCollectorPage.Charset = c.NgingCollectorPage.Charset
 				}
 				var extraResult []Result
 				extraResult, err = pageRuleForm.Collect(
@@ -434,11 +433,11 @@ func (c *Rule) Collect(parentID uint64,
 			}
 		}
 
-		if c.CollectorPage.HasChild == `N` { //这是最底层
+		if c.NgingCollectorPage.HasChild == `N` { //这是最底层
 			if c.exportFn != nil {
 				switch collected := collection.(type) {
 				case map[string]interface{}:
-					c.exportFn(c.CollectorPage.Id, c.result, collected, noticeSender)
+					c.exportFn(c.NgingCollectorPage.Id, c.result, collected, noticeSender)
 				case []interface{}:
 					for _, item := range collected {
 						collectedMap, ok := item.(map[string]interface{})
@@ -448,7 +447,7 @@ func (c *Rule) Collect(parentID uint64,
 							}
 							continue
 						}
-						c.exportFn(c.CollectorPage.Id, c.result, collectedMap, noticeSender)
+						c.exportFn(c.NgingCollectorPage.Id, c.result, collectedMap, noticeSender)
 					}
 				default:
 					if sendErr := noticeSender(fmt.Sprintf(`Unsupport export type: %T`, collection), 0); sendErr != nil {

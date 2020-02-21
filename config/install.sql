@@ -16,13 +16,13 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `access_log`
+-- Table structure for table `nging_access_log`
 --
 
-DROP TABLE IF EXISTS `access_log`;
+DROP TABLE IF EXISTS `nging_access_log`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `access_log` (
+CREATE TABLE `nging_access_log` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `vhost_id` int(10) unsigned NOT NULL COMMENT '虚拟主机ID',
   `remote_addr` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'IP地址',
@@ -51,13 +51,13 @@ CREATE TABLE `access_log` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `cloud_storage`
+-- Table structure for table `nging_cloud_storage`
 --
 
-DROP TABLE IF EXISTS `cloud_storage`;
+DROP TABLE IF EXISTS `nging_cloud_storage`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `cloud_storage` (
+CREATE TABLE `nging_cloud_storage` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `name` varchar(200) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '名称',
   `type` varchar(30) COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'aws' COMMENT '存储类型(aws,oss,cos)',
@@ -75,13 +75,13 @@ CREATE TABLE `cloud_storage` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `code_invitation`
+-- Table structure for table `nging_code_invitation`
 --
 
-DROP TABLE IF EXISTS `code_invitation`;
+DROP TABLE IF EXISTS `nging_code_invitation`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `code_invitation` (
+CREATE TABLE `nging_code_invitation` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建者',
   `recv_uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '使用者',
@@ -98,13 +98,13 @@ CREATE TABLE `code_invitation` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `code_verification`
+-- Table structure for table `nging_code_verification`
 --
 
-DROP TABLE IF EXISTS `code_verification`;
+DROP TABLE IF EXISTS `nging_code_verification`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `code_verification` (
+CREATE TABLE `nging_code_verification` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `code` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '验证码',
   `created` int(11) unsigned NOT NULL COMMENT '创建时间',
@@ -122,13 +122,13 @@ CREATE TABLE `code_verification` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `collector_export`
+-- Table structure for table `nging_collector_export`
 --
 
-DROP TABLE IF EXISTS `collector_export`;
+DROP TABLE IF EXISTS `nging_collector_export`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `collector_export` (
+CREATE TABLE `nging_collector_export` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `page_root` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '根页面ID',
   `page_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '页面ID',
@@ -147,13 +147,13 @@ CREATE TABLE `collector_export` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `collector_export_log`
+-- Table structure for table `nging_collector_export_log`
 --
 
-DROP TABLE IF EXISTS `collector_export_log`;
+DROP TABLE IF EXISTS `nging_collector_export_log`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `collector_export_log` (
+CREATE TABLE `nging_collector_export_log` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `page_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '页面规则ID',
   `export_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '导出方案ID',
@@ -166,13 +166,13 @@ CREATE TABLE `collector_export_log` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `collector_group`
+-- Table structure for table `nging_collector_group`
 --
 
-DROP TABLE IF EXISTS `collector_group`;
+DROP TABLE IF EXISTS `nging_collector_group`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `collector_group` (
+CREATE TABLE `nging_collector_group` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
   `name` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '组名',
@@ -185,13 +185,13 @@ CREATE TABLE `collector_group` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `collector_history`
+-- Table structure for table `nging_collector_history`
 --
 
-DROP TABLE IF EXISTS `collector_history`;
+DROP TABLE IF EXISTS `nging_collector_history`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `collector_history` (
+CREATE TABLE `nging_collector_history` (
   `id` bigint(30) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `parent_id` bigint(30) unsigned NOT NULL DEFAULT '0' COMMENT '父ID',
   `page_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '页面ID',
@@ -213,13 +213,13 @@ CREATE TABLE `collector_history` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `collector_page`
+-- Table structure for table `nging_collector_page`
 --
 
-DROP TABLE IF EXISTS `collector_page`;
+DROP TABLE IF EXISTS `nging_collector_page`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `collector_page` (
+CREATE TABLE `nging_collector_page` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `parent_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '父级规则',
   `root_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '根页面ID',
@@ -249,13 +249,13 @@ CREATE TABLE `collector_page` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `collector_rule`
+-- Table structure for table `nging_collector_rule`
 --
 
-DROP TABLE IF EXISTS `collector_rule`;
+DROP TABLE IF EXISTS `nging_collector_rule`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `collector_rule` (
+CREATE TABLE `nging_collector_rule` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `page_id` int(11) unsigned NOT NULL COMMENT '页面ID',
   `name` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '保存匹配结果的变量名',
@@ -270,13 +270,13 @@ CREATE TABLE `collector_rule` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `command`
+-- Table structure for table `nging_command`
 --
 
-DROP TABLE IF EXISTS `command`;
+DROP TABLE IF EXISTS `nging_command`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `command` (
+CREATE TABLE `nging_command` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `name` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '名称',
   `description` tinytext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '说明',
@@ -293,13 +293,13 @@ CREATE TABLE `command` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `config`
+-- Table structure for table `nging_config`
 --
 
-DROP TABLE IF EXISTS `config`;
+DROP TABLE IF EXISTS `nging_config`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `config` (
+CREATE TABLE `nging_config` (
   `key` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '键',
   `group` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '组',
   `label` varchar(90) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '选项名称',
@@ -315,13 +315,13 @@ CREATE TABLE `config` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `db_account`
+-- Table structure for table `nging_db_account`
 --
 
-DROP TABLE IF EXISTS `db_account`;
+DROP TABLE IF EXISTS `nging_db_account`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `db_account` (
+CREATE TABLE `nging_db_account` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `title` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '标题',
   `uid` int(11) unsigned NOT NULL COMMENT 'UID',
@@ -338,13 +338,13 @@ CREATE TABLE `db_account` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `db_sync`
+-- Table structure for table `nging_db_sync`
 --
 
-DROP TABLE IF EXISTS `db_sync`;
+DROP TABLE IF EXISTS `nging_db_sync`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `db_sync` (
+CREATE TABLE `nging_db_sync` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `name` varchar(120) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '方案名',
   `source_account_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '源数据库账号ID',
@@ -363,13 +363,13 @@ CREATE TABLE `db_sync` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `db_sync_log`
+-- Table structure for table `nging_db_sync_log`
 --
 
-DROP TABLE IF EXISTS `db_sync_log`;
+DROP TABLE IF EXISTS `nging_db_sync_log`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `db_sync_log` (
+CREATE TABLE `nging_db_sync_log` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `sync_id` int(10) unsigned NOT NULL COMMENT '同步方案ID',
   `created` int(11) unsigned NOT NULL COMMENT '创建时间',
@@ -383,13 +383,13 @@ CREATE TABLE `db_sync_log` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `file`
+-- Table structure for table `nging_file`
 --
 
-DROP TABLE IF EXISTS `file`;
+DROP TABLE IF EXISTS `nging_file`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `file` (
+CREATE TABLE `nging_file` (
   `id` bigint(25) unsigned NOT NULL AUTO_INCREMENT COMMENT '文件ID',
   `owner_type` enum('user','customer') CHARACTER SET utf8 NOT NULL DEFAULT 'user' COMMENT '用户类型',
   `owner_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
@@ -425,13 +425,13 @@ CREATE TABLE `file` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `file_embedded`
+-- Table structure for table `nging_file_embedded`
 --
 
-DROP TABLE IF EXISTS `file_embedded`;
+DROP TABLE IF EXISTS `nging_file_embedded`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `file_embedded` (
+CREATE TABLE `nging_file_embedded` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
   `project` varchar(50) CHARACTER SET utf8 NOT NULL COMMENT '项目名',
   `table_id` varchar(60) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '0' COMMENT '表主键',
@@ -445,13 +445,13 @@ CREATE TABLE `file_embedded` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `file_thumb`
+-- Table structure for table `nging_file_thumb`
 --
 
-DROP TABLE IF EXISTS `file_thumb`;
+DROP TABLE IF EXISTS `nging_file_thumb`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `file_thumb` (
+CREATE TABLE `nging_file_thumb` (
   `id` bigint(30) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
   `file_id` bigint(25) unsigned NOT NULL COMMENT '文件ID',
   `size` bigint(25) unsigned NOT NULL COMMENT '文件大小',
@@ -470,13 +470,13 @@ CREATE TABLE `file_thumb` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `forever_process`
+-- Table structure for table `nging_forever_process`
 --
 
-DROP TABLE IF EXISTS `forever_process`;
+DROP TABLE IF EXISTS `nging_forever_process`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `forever_process` (
+CREATE TABLE `nging_forever_process` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '添加人ID',
   `name` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '名称',
@@ -507,13 +507,13 @@ CREATE TABLE `forever_process` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `frp_client`
+-- Table structure for table `nging_frp_client`
 --
 
-DROP TABLE IF EXISTS `frp_client`;
+DROP TABLE IF EXISTS `nging_frp_client`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `frp_client` (
+CREATE TABLE `nging_frp_client` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `name` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '名称',
   `disabled` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否禁用',
@@ -549,13 +549,13 @@ CREATE TABLE `frp_client` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `frp_group`
+-- Table structure for table `nging_frp_group`
 --
 
-DROP TABLE IF EXISTS `frp_group`;
+DROP TABLE IF EXISTS `nging_frp_group`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `frp_group` (
+CREATE TABLE `nging_frp_group` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
   `name` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '组名',
@@ -568,13 +568,13 @@ CREATE TABLE `frp_group` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `frp_server`
+-- Table structure for table `nging_frp_server`
 --
 
-DROP TABLE IF EXISTS `frp_server`;
+DROP TABLE IF EXISTS `nging_frp_server`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `frp_server` (
+CREATE TABLE `nging_frp_server` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `name` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '名称',
   `disabled` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否禁用',
@@ -613,13 +613,13 @@ CREATE TABLE `frp_server` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `ftp_user`
+-- Table structure for table `nging_ftp_user`
 --
 
-DROP TABLE IF EXISTS `ftp_user`;
+DROP TABLE IF EXISTS `nging_ftp_user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `ftp_user` (
+CREATE TABLE `nging_ftp_user` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户名',
   `password` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '密码',
@@ -636,13 +636,13 @@ CREATE TABLE `ftp_user` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `ftp_user_group`
+-- Table structure for table `nging_ftp_user_group`
 --
 
-DROP TABLE IF EXISTS `ftp_user_group`;
+DROP TABLE IF EXISTS `nging_ftp_user_group`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `ftp_user_group` (
+CREATE TABLE `nging_ftp_user_group` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '组名称',
   `created` int(10) unsigned NOT NULL COMMENT '创建时间',
@@ -657,13 +657,13 @@ CREATE TABLE `ftp_user_group` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `sending_log`
+-- Table structure for table `nging_sending_log`
 --
 
-DROP TABLE IF EXISTS `sending_log`;
+DROP TABLE IF EXISTS `nging_sending_log`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `sending_log` (
+CREATE TABLE `nging_sending_log` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `created` int(11) unsigned NOT NULL COMMENT '创建时间',
   `sent_at` int(11) unsigned NOT NULL COMMENT '发送时间',
@@ -684,13 +684,13 @@ CREATE TABLE `sending_log` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `ssh_user`
+-- Table structure for table `nging_ssh_user`
 --
 
-DROP TABLE IF EXISTS `ssh_user`;
+DROP TABLE IF EXISTS `nging_ssh_user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `ssh_user` (
+CREATE TABLE `nging_ssh_user` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `uid` int(11) unsigned NOT NULL COMMENT 'UID',
   `host` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'localhost' COMMENT '主机名',
@@ -712,13 +712,13 @@ CREATE TABLE `ssh_user` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `ssh_user_group`
+-- Table structure for table `nging_ssh_user_group`
 --
 
-DROP TABLE IF EXISTS `ssh_user_group`;
+DROP TABLE IF EXISTS `nging_ssh_user_group`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `ssh_user_group` (
+CREATE TABLE `nging_ssh_user_group` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
   `name` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '组名',
@@ -731,13 +731,13 @@ CREATE TABLE `ssh_user_group` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `task`
+-- Table structure for table `nging_task`
 --
 
-DROP TABLE IF EXISTS `task`;
+DROP TABLE IF EXISTS `nging_task`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `task` (
+CREATE TABLE `nging_task` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
   `group_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '分组ID',
@@ -765,13 +765,13 @@ CREATE TABLE `task` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `task_group`
+-- Table structure for table `nging_task_group`
 --
 
-DROP TABLE IF EXISTS `task_group`;
+DROP TABLE IF EXISTS `nging_task_group`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `task_group` (
+CREATE TABLE `nging_task_group` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
   `name` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '组名',
@@ -786,13 +786,13 @@ CREATE TABLE `task_group` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `task_log`
+-- Table structure for table `nging_task_log`
 --
 
-DROP TABLE IF EXISTS `task_log`;
+DROP TABLE IF EXISTS `nging_task_log`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `task_log` (
+CREATE TABLE `nging_task_log` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `task_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '任务ID',
   `output` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '任务输出',
@@ -806,13 +806,13 @@ CREATE TABLE `task_log` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `user`
+-- Table structure for table `nging_user`
 --
 
-DROP TABLE IF EXISTS `user`;
+DROP TABLE IF EXISTS `nging_user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `user` (
+CREATE TABLE `nging_user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '用户名',
   `email` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '邮箱',
@@ -837,13 +837,13 @@ CREATE TABLE `user` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `user_role`
+-- Table structure for table `nging_user_role`
 --
 
-DROP TABLE IF EXISTS `user_role`;
+DROP TABLE IF EXISTS `nging_user_role`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `user_role` (
+CREATE TABLE `nging_user_role` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `name` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '名称',
   `description` tinytext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '说明',
@@ -858,13 +858,13 @@ CREATE TABLE `user_role` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `user_u2f`
+-- Table structure for table `nging_user_u2f`
 --
 
-DROP TABLE IF EXISTS `user_u2f`;
+DROP TABLE IF EXISTS `nging_user_u2f`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `user_u2f` (
+CREATE TABLE `nging_user_u2f` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `uid` int(11) unsigned NOT NULL COMMENT '用户ID',
   `token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '签名',
@@ -877,13 +877,13 @@ CREATE TABLE `user_u2f` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `vhost`
+-- Table structure for table `nging_vhost`
 --
 
-DROP TABLE IF EXISTS `vhost`;
+DROP TABLE IF EXISTS `nging_vhost`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `vhost` (
+CREATE TABLE `nging_vhost` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '网站名称',
   `group_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '组',
@@ -898,13 +898,13 @@ CREATE TABLE `vhost` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `vhost_group`
+-- Table structure for table `nging_vhost_group`
 --
 
-DROP TABLE IF EXISTS `vhost_group`;
+DROP TABLE IF EXISTS `nging_vhost_group`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
-CREATE TABLE `vhost_group` (
+CREATE TABLE `nging_vhost_group` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `uid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
   `name` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '组名',
@@ -924,4 +924,4 @@ CREATE TABLE `vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-01-29 20:09:49
+-- Dump completed on 2020-02-21 10:29:19

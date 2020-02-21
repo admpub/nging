@@ -19,10 +19,11 @@
 package collector
 
 import (
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/model"
 )
 
 func Group(ctx echo.Context) error {
@@ -43,7 +44,7 @@ func GroupAdd(ctx echo.Context) error {
 	var err error
 	if ctx.IsPost() {
 		m := model.NewCollectorGroup(ctx)
-		err = ctx.MustBind(m.CollectorGroup)
+		err = ctx.MustBind(m.NgingCollectorGroup)
 		if err == nil {
 			if len(m.Name) == 0 {
 				err = ctx.E(`分组名称不能为空`)
@@ -76,7 +77,7 @@ func GroupEdit(ctx echo.Context) error {
 		return ctx.Redirect(handler.URLFor(`/collector/group`))
 	}
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.CollectorGroup)
+		err = ctx.MustBind(m.NgingCollectorGroup)
 		if err == nil {
 			m.Id = id
 			if len(m.Name) == 0 {
@@ -91,7 +92,7 @@ func GroupEdit(ctx echo.Context) error {
 			return ctx.Redirect(handler.URLFor(`/collector/group`))
 		}
 	}
-	echo.StructToForm(ctx, m.CollectorGroup, ``, echo.LowerCaseFirstLetter)
+	echo.StructToForm(ctx, m.NgingCollectorGroup, ``, echo.LowerCaseFirstLetter)
 	ctx.Set(`activeURL`, `/collector/group`)
 	return ctx.Render(`collector/group_edit`, handler.Err(ctx, err))
 }

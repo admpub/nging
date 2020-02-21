@@ -15,6 +15,7 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 package config
 
 import (
@@ -22,7 +23,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
+	stdLog "log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -32,8 +33,11 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
+	"github.com/admpub/color"
 	"github.com/admpub/events/emitter"
+	"github.com/admpub/log"
 	"github.com/admpub/mysql-schema-sync/sync"
+	"github.com/admpub/nging/application/library/common"
 )
 
 var (
@@ -84,10 +88,11 @@ func IsInstalled() bool {
 	if Installed.Bool && Version.DBSchema > installedSchemaVer && DefaultConfig != nil {
 		var upgraded bool
 		if DefaultConfig.DB.Type == `mysql` {
+			executePreupgrade()
 			autoUpgradeDatabase()
 			upgraded = true
 		} else {
-			log.Panicln(`数据库表结构需要升级！`)
+			stdLog.Panicln(`数据库表结构需要升级！`)
 		}
 		if upgraded {
 			installedSchemaVer = Version.DBSchema
@@ -111,18 +116,58 @@ func GetSQLInstallFiles() ([]string, error) {
 	return sqlFiles, err
 }
 
-func GetSQLInsertFiles() ([]string, error) {
+func GetPreupgradeSQLFiles() []string {
+	confDIR := filepath.Dir(DefaultCLIConfig.Conf)
+	sqlFiles := []string{}
+	matches, _ := filepath.Glob(confDIR + echo.FilePathSeparator + `preupgrade.*.sql`)
+	if len(matches) > 0 {
+		sqlFiles = append(sqlFiles, matches...)
+	}
+	return sqlFiles
+}
+
+func GetSQLInsertFiles() []string {
 	confDIR := filepath.Dir(DefaultCLIConfig.Conf)
 	sqlFile := confDIR + echo.FilePathSeparator + `insert.sql`
 	sqlFiles := []string{}
 	if com.FileExists(sqlFile) {
 		sqlFiles = append(sqlFiles, sqlFile)
 	}
-	matches, err := filepath.Glob(confDIR + echo.FilePathSeparator + `insert.*.sql`)
+	matches, _ := filepath.Glob(confDIR + echo.FilePathSeparator + `insert.*.sql`)
 	if len(matches) > 0 {
 		sqlFiles = append(sqlFiles, matches...)
 	}
-	return sqlFiles, err
+	return sqlFiles
+}
+
+//处理自动升级前要执行的sql
+func executePreupgrade() {
+	preupgradeSQLFiles := GetPreupgradeSQLFiles()
+	if len(preupgradeSQLFiles) < 1 {
+		return
+	}
+	installer, ok := DBInstallers[DefaultConfig.DB.Type]
+	if !ok {
+		stdLog.Panicf(`不支持安装到%s`, DefaultConfig.DB.Type)
+	}
+	for _, sqlFile := range preupgradeSQLFiles {
+		//sqlFile = /your/path/preupgrade.3_0.sql
+		versionStr := strings.TrimPrefix(filepath.Base(sqlFile), `preupgrade.`)
+		versionStr = strings.TrimSuffix(versionStr, `.sql`)
+		versionStr = strings.ReplaceAll(versionStr, `_`, `.`)
+		versionNum, err := strconv.ParseFloat(versionStr, 64)
+		if err != nil {
+			stdLog.Panicln(versionStr + `: ` + err.Error())
+		}
+		if versionNum <= installedSchemaVer {
+			continue
+		}
+		log.Info(color.GreenString(`[preupgrade]`), `Execute SQL file: `, sqlFile)
+		err = common.ParseSQL(sqlFile, true, installer)
+		if err != nil {
+			stdLog.Panicln(err.Error())
+		}
+	}
 }
 
 //自动升级数据表

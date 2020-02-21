@@ -38,22 +38,22 @@ import (
 
 func NewFile(ctx echo.Context) *File {
 	m := &File{
-		File: &dbschema.File{},
-		base: base.New(ctx),
+		NgingFile: &dbschema.NgingFile{},
+		base:      base.New(ctx),
 	}
-	m.File.SetContext(ctx)
+	m.NgingFile.SetContext(ctx)
 	return m
 }
 
 type File struct {
-	*dbschema.File
+	*dbschema.NgingFile
 	base *base.Base
 }
 
-func (f *File) NewFile(m *dbschema.File) *File {
+func (f *File) NewFile(m *dbschema.NgingFile) *File {
 	r := &File{
-		File: m,
-		base: f.base,
+		NgingFile: m,
+		base:      f.base,
 	}
 	r.SetContext(f.base.Context)
 	return r
@@ -63,30 +63,30 @@ func (f *File) SetTableID(tableID string) table.TableInfoStorer {
 	if len(tableID) == 0 {
 		tableID = `0`
 	}
-	f.File.TableId = tableID
+	f.NgingFile.TableId = tableID
 	return f
 }
 
 func (f *File) SetTableName(table string) table.TableInfoStorer {
-	f.File.TableName = table
+	f.NgingFile.TableName = table
 	return f
 }
 
 func (f *File) SetFieldName(field string) table.TableInfoStorer {
-	f.File.FieldName = field
+	f.NgingFile.FieldName = field
 	return f
 }
 
 func (f *File) TableID() string {
-	return f.File.TableId
+	return f.NgingFile.TableId
 }
 
 func (f *File) TableName() string {
-	return f.File.TableName
+	return f.NgingFile.TableName
 }
 
 func (f *File) FieldName() string {
-	return f.File.FieldName
+	return f.NgingFile.FieldName
 }
 
 func (f *File) SetByUploadResult(result *uploadClient.Result) *File {
@@ -101,12 +101,12 @@ func (f *File) SetByUploadResult(result *uploadClient.Result) *File {
 	return f
 }
 
-func (f *File) FillData(reader io.Reader, forceReset bool, schemas ...*dbschema.File) error {
-	var m *dbschema.File
+func (f *File) FillData(reader io.Reader, forceReset bool, schemas ...*dbschema.NgingFile) error {
+	var m *dbschema.NgingFile
 	if len(schemas) > 0 {
 		m = schemas[0]
 	} else {
-		m = f.File
+		m = f.NgingFile
 	}
 	if forceReset || len(m.Mime) == 0 {
 		m.Mime = mime.TypeByExtension(m.Ext)
@@ -134,7 +134,7 @@ func (f *File) Add(reader io.Reader) error {
 	if err := f.FillData(reader, false); err != nil {
 		return err
 	}
-	_, err := f.File.Add()
+	_, err := f.NgingFile.Add()
 	return err
 }
 
@@ -158,7 +158,7 @@ func (f *File) fireDelete() error {
 	}
 	err = f.base.Fire(f.OwnerType+`-file-deleted`, events.ModeSync, map[string]interface{}{
 		`ctx`:     f.base.Context,
-		`data`:    f.File,
+		`data`:    f.NgingFile,
 		`ownerID`: f.OwnerId,
 	})
 	if err != nil {
@@ -166,7 +166,7 @@ func (f *File) fireDelete() error {
 	}
 	err = f.base.Fire(`file-deleted`, events.ModeSync, map[string]interface{}{
 		`ctx`:   f.base.Context,
-		`data`:  f.File,
+		`data`:  f.NgingFile,
 		`files`: files,
 	})
 	return err
@@ -212,7 +212,7 @@ func (f *File) GetByViewURL(storerName string, viewURL string) (err error) {
 }
 
 func (f *File) FnGetByMd5() func(r *uploadClient.Result) error {
-	fileD := &dbschema.File{}
+	fileD := &dbschema.NgingFile{}
 	return func(r *uploadClient.Result) error {
 		fileD.Reset()
 		err := fileD.Get(nil, db.Cond{`md5`: r.Md5})
@@ -358,9 +358,9 @@ func (f *File) RemoveAvatar(ownerType string, ownerID int64) error {
 	))
 }
 
-func (f *File) GetAvatar() (*dbschema.File, error) {
-	m := &dbschema.File{}
-	m.CPAFrom(f.File)
+func (f *File) GetAvatar() (*dbschema.NgingFile, error) {
+	m := &dbschema.NgingFile{}
+	m.CPAFrom(f.NgingFile)
 	err := m.Get(nil, db.Or(
 		db.And(
 			db.Cond{`table_id`: f.TableID()},

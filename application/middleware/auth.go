@@ -144,15 +144,15 @@ func Auth(c echo.Context, saveSession bool) error {
 		if saveSession {
 			m.SetSession()
 		}
-		if m.NeedCheckU2F(m.User.Id) {
+		if m.NeedCheckU2F(m.NgingUser.Id) {
 			c.Session().Set(`auth2ndURL`, handler.URLFor(`/gauth_check`))
 		}
-		m.User.LastLogin = uint(time.Now().Unix())
-		m.User.LastIp = c.RealIP()
-		m.User.SetFields(nil, map[string]interface{}{
-			`last_login`: m.User.LastLogin,
-			`last_ip`:    m.User.LastIp,
-		}, `id`, m.User.Id)
+		m.NgingUser.LastLogin = uint(time.Now().Unix())
+		m.NgingUser.LastIp = c.RealIP()
+		m.NgingUser.SetFields(nil, map[string]interface{}{
+			`last_login`: m.NgingUser.LastLogin,
+			`last_ip`:    m.NgingUser.LastIp,
+		}, `id`, m.NgingUser.Id)
 		common.DeleteRandomSecret(c, `loginPassword`)
 	}
 	return err

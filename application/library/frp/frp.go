@@ -30,6 +30,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/confl"
 	"github.com/admpub/frp/client"
 	"github.com/admpub/frp/g"
@@ -40,14 +43,11 @@ import (
 	"github.com/admpub/frp/utils/util"
 	"github.com/admpub/ini"
 	"github.com/admpub/nging/application/dbschema"
-	"github.com/webx-top/com"
-	"github.com/webx-top/echo"
-
 	_ "github.com/admpub/frp/assets/frpc/statik"
 	_ "github.com/admpub/frp/assets/frps/statik"
 )
 
-func SetClientConfigFromDB(conf *dbschema.FrpClient) *g.ClientCfg {
+func SetClientConfigFromDB(conf *dbschema.NgingFrpClient) *g.ClientCfg {
 	g.GlbClientCfg.ServerAddr = conf.ServerAddr
 	g.GlbClientCfg.ServerPort = int(conf.ServerPort)
 	g.GlbClientCfg.User = conf.User
@@ -80,7 +80,7 @@ func SetClientConfigFromDB(conf *dbschema.FrpClient) *g.ClientCfg {
 	return g.GlbClientCfg
 }
 
-func SetServerConfigFromDB(conf *dbschema.FrpServer) *g.ServerCfg {
+func SetServerConfigFromDB(conf *dbschema.NgingFrpServer) *g.ServerCfg {
 	g.GlbServerCfg.BindAddr = conf.Addr
 	g.GlbServerCfg.BindPort = int(conf.Port)
 	g.GlbServerCfg.BindUdpPort = int(conf.UdpPort)
@@ -125,7 +125,7 @@ func StartServerByConfigFile(filePath string, pidFile string) error {
 	}
 	switch strings.ToLower(ext) {
 	case `.json`:
-		r := &dbschema.FrpServer{}
+		r := &dbschema.NgingFrpServer{}
 		err = json.Unmarshal(b, r)
 		if err != nil {
 			return err
@@ -133,7 +133,7 @@ func StartServerByConfigFile(filePath string, pidFile string) error {
 		SetServerConfigFromDB(r)
 		return StartServer(pidFile)
 	case `.yaml`:
-		r := &dbschema.FrpServer{}
+		r := &dbschema.NgingFrpServer{}
 		err = confl.Unmarshal(b, r)
 		if err != nil {
 			return err
@@ -310,7 +310,7 @@ func StartClientByConfigFile(filePath string, pidFile string) error {
 		if err != nil {
 			return err
 		}
-		SetClientConfigFromDB(r.FrpClient)
+		SetClientConfigFromDB(r.NgingFrpClient)
 		if len(r.Extra) > 0 {
 			pxyCfgs, visitorCfgs = parseProxyConfig(r.Extra)
 		}
@@ -320,7 +320,7 @@ func StartClientByConfigFile(filePath string, pidFile string) error {
 		if err != nil {
 			return err
 		}
-		SetClientConfigFromDB(r.FrpClient)
+		SetClientConfigFromDB(r.NgingFrpClient)
 		if len(r.Extra) > 0 {
 			pxyCfgs, visitorCfgs = parseProxyConfig(r.Extra)
 		}

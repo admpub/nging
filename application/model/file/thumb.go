@@ -28,26 +28,26 @@ import (
 
 func NewThumb(ctx echo.Context) *Thumb {
 	m := &Thumb{
-		FileThumb: &dbschema.FileThumb{},
-		base:      base.New(ctx),
+		NgingFileThumb: &dbschema.NgingFileThumb{},
+		base:           base.New(ctx),
 	}
-	m.FileThumb.SetContext(ctx)
+	m.NgingFileThumb.SetContext(ctx)
 	return m
 }
 
 type Thumb struct {
-	*dbschema.FileThumb
+	*dbschema.NgingFileThumb
 	base *base.Base
 }
 
-func (t *Thumb) SetByFile(file *dbschema.File) *Thumb {
+func (t *Thumb) SetByFile(file *dbschema.NgingFile) *Thumb {
 	t.FileId = file.Id
 	t.Dpi = file.Dpi
 	return t
 }
 
 func (t *Thumb) Save() (err error) {
-	m := &dbschema.FileThumb{}
+	m := &dbschema.NgingFileThumb{}
 	err = m.Get(nil, db.And(
 		db.Cond{`save_path`: t.SavePath},
 	))
@@ -55,10 +55,10 @@ func (t *Thumb) Save() (err error) {
 		if err != db.ErrNoMoreRows {
 			return
 		}
-		_, err = t.FileThumb.Add()
+		_, err = t.NgingFileThumb.Add()
 		return
 	}
-	t.FileThumb = m
+	t.NgingFileThumb = m
 	err = t.SetFields(nil, echo.H{
 		`view_url`: t.ViewUrl,
 		`size`:     t.Size,

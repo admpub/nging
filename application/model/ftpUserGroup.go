@@ -28,13 +28,13 @@ import (
 
 func NewFtpUserGroup(ctx echo.Context) *FtpUserGroup {
 	return &FtpUserGroup{
-		FtpUserGroup: &dbschema.FtpUserGroup{},
-		Base:         base.New(ctx),
+		NgingFtpUserGroup: &dbschema.NgingFtpUserGroup{},
+		Base:              base.New(ctx),
 	}
 }
 
 type FtpUserGroup struct {
-	*dbschema.FtpUserGroup
+	*dbschema.NgingFtpUserGroup
 	*base.Base
 }
 
@@ -48,7 +48,7 @@ func (f *FtpUserGroup) ExistsOther(name string, id uint) (bool, error) {
 	return n > 0, e
 }
 
-func (f *FtpUserGroup) ListByActive(page int, size int) (func() int64, []*dbschema.FtpUserGroup, error) {
+func (f *FtpUserGroup) ListByActive(page int, size int) (func() int64, []*dbschema.NgingFtpUserGroup, error) {
 	count, err := f.List(nil, nil, page, size, db.Cond{`disabled`: `N`})
 	if err == nil {
 		return count, f.Objects(), err

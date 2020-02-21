@@ -27,13 +27,13 @@ import (
 
 func NewSshUserGroup(ctx echo.Context) *SshUserGroup {
 	return &SshUserGroup{
-		SshUserGroup: &dbschema.SshUserGroup{},
-		Base:         base.New(ctx),
+		NgingSshUserGroup: &dbschema.NgingSshUserGroup{},
+		Base:              base.New(ctx),
 	}
 }
 
 type SshUserGroup struct {
-	*dbschema.SshUserGroup
+	*dbschema.NgingSshUserGroup
 	*base.Base
 }
 

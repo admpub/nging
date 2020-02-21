@@ -21,6 +21,10 @@ package collector
 import (
 	"strings"
 
+	"github.com/webx-top/com"
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/gopiper"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
@@ -31,9 +35,6 @@ import (
 	"github.com/admpub/nging/application/library/cron"
 	"github.com/admpub/nging/application/library/notice"
 	"github.com/admpub/nging/application/model"
-	"github.com/webx-top/com"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 func init() {
@@ -89,7 +90,7 @@ func Rule(c echo.Context) error {
 	rowAndGroup := make([]*model.CollectorPageAndGroup, len(rows))
 	for k, u := range rows {
 		rowAndGroup[k] = &model.CollectorPageAndGroup{
-			CollectorPage: u,
+			NgingCollectorPage: u,
 		}
 		if u.GroupId < 1 {
 			continue
@@ -100,7 +101,7 @@ func Rule(c echo.Context) error {
 	}
 
 	mg := model.NewCollectorGroup(c)
-	var groupList []*dbschema.CollectorGroup
+	var groupList []*dbschema.NgingCollectorGroup
 	if len(gIds) > 0 {
 		_, err = mg.List(&groupList, nil, 1, 1000, db.And(
 			db.Cond{`id IN`: gIds},
@@ -135,7 +136,7 @@ func RuleAdd(c echo.Context) error {
 	pageM := model.NewCollectorPage(c)
 	if c.IsPost() {
 		result := c.Data()
-		err = c.MustBind(pageM.CollectorPage, func(key string, values []string) (string, []string) {
+		err = c.MustBind(pageM.NgingCollectorPage, func(key string, values []string) (string, []string) {
 			if strings.HasPrefix(key, `rule[`) {
 				return ``, nil
 			}
@@ -147,10 +148,10 @@ func RuleAdd(c echo.Context) error {
 		if err != nil {
 			return c.JSON(result.SetError(err))
 		}
-		pageM.CollectorPage.Uid = user.Id
+		pageM.NgingCollectorPage.Uid = user.Id
 		c.Begin()
-		pageM.CollectorPage.Id = 0
-		_, err = parseFormToDb(c, pageM.CollectorPage, `rule`, false)
+		pageM.NgingCollectorPage.Id = 0
+		_, err = parseFormToDb(c, pageM.NgingCollectorPage, `rule`, false)
 		if err != nil {
 			c.Rollback()
 			return c.JSON(result.SetError(err))
@@ -169,13 +170,13 @@ func RuleAdd(c echo.Context) error {
 		charsets := c.FormValues(`extra[charset][]`)
 		charsetCount := len(charsets)
 		parentID := pageM.Id
-		err = pageM.CollectorPage.SetField(nil, `root_id`, pageM.Id, `id`, pageM.Id)
+		err = pageM.NgingCollectorPage.SetField(nil, `root_id`, pageM.Id, `id`, pageM.Id)
 		if err != nil {
 			c.Rollback()
 			return c.JSON(result.SetError(err))
 		}
 		for key, index := range pages {
-			pageData := &dbschema.CollectorPage{
+			pageData := &dbschema.NgingCollectorPage{
 				Uid:      user.Id,
 				ParentId: parentID,
 				RootId:   pageM.Id,
@@ -216,7 +217,7 @@ func RuleAdd(c echo.Context) error {
 			//extra[rule][{=idx=}]
 			_, err = parseFormToDb(c, pageData, `extra[rule][`+index+`]`, false)
 			if err == nil {
-				err = pageM.CollectorPage.SetField(nil, `has_child`, `Y`, `id`, pageData.ParentId)
+				err = pageM.NgingCollectorPage.SetField(nil, `has_child`, `Y`, `id`, pageData.ParentId)
 			}
 			if err != nil {
 				c.Rollback()
@@ -265,7 +266,7 @@ func RuleEdit(c echo.Context) error {
 		if err != nil {
 			return c.JSON(result.SetError(err))
 		}
-		err = c.MustBind(pageM.CollectorPage, func(key string, values []string) (string, []string) {
+		err = c.MustBind(pageM.NgingCollectorPage, func(key string, values []string) (string, []string) {
 			if strings.HasPrefix(key, `rule[`) {
 				return ``, nil
 			}
@@ -277,12 +278,12 @@ func RuleEdit(c echo.Context) error {
 		if err != nil {
 			return c.JSON(result.SetError(err))
 		}
-		pageM.CollectorPage.Uid = user.Id
-		pageM.CollectorPage.Id = id
+		pageM.NgingCollectorPage.Uid = user.Id
+		pageM.NgingCollectorPage.Id = id
 		c.Begin()
-		var rules []*dbschema.CollectorRule
+		var rules []*dbschema.NgingCollectorRule
 		//保存页面配置和规则
-		rules, err = parseFormToDb(c, pageM.CollectorPage, `rule`, true)
+		rules, err = parseFormToDb(c, pageM.NgingCollectorPage, `rule`, true)
 		if err != nil {
 			c.Rollback()
 			return c.JSON(result.SetError(err))
@@ -322,7 +323,7 @@ func RuleEdit(c echo.Context) error {
 		parentID := pageM.Id
 		postPageIds := []uint{}
 		for key, index := range pages {
-			pageData := &dbschema.CollectorPage{
+			pageData := &dbschema.NgingCollectorPage{
 				Uid:      user.Id,
 				ParentId: parentID,
 				RootId:   pageM.Id,
@@ -369,7 +370,7 @@ func RuleEdit(c echo.Context) error {
 			//保存页面配置和规则
 			rules, err = parseFormToDb(c, pageData, `extra[rule][`+index+`]`, true)
 			if err == nil {
-				err = pageM.CollectorPage.SetField(nil, `has_child`, `Y`, `id`, pageData.ParentId)
+				err = pageM.NgingCollectorPage.SetField(nil, `has_child`, `Y`, `id`, pageData.ParentId)
 			}
 			if err != nil {
 				c.Rollback()

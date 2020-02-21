@@ -19,29 +19,30 @@
 package model
 
 import (
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
 	"github.com/admpub/nging/application/registry/settings"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 func NewConfig(ctx echo.Context) *Config {
 	m := &Config{
-		Config: &dbschema.Config{},
-		base:   base.New(ctx),
+		NgingConfig: &dbschema.NgingConfig{},
+		base:        base.New(ctx),
 	}
 	m.SetContext(ctx)
 	return m
 }
 
 type Config struct {
-	*dbschema.Config
+	*dbschema.NgingConfig
 	base *base.Base
 }
 
 func (f *Config) Upsert() (pk interface{}, err error) {
-	m := &dbschema.Config{}
+	m := &dbschema.NgingConfig{}
 	condition := db.And(
 		db.Cond{`key`: f.Key},
 		db.Cond{`group`: f.Group},
@@ -53,9 +54,9 @@ func (f *Config) Upsert() (pk interface{}, err error) {
 		}
 	}
 	if n == 0 {
-		return f.Config.Add()
+		return f.NgingConfig.Add()
 	}
-	err = f.Config.Edit(nil, condition)
+	err = f.NgingConfig.Edit(nil, condition)
 	return
 }
 
@@ -72,7 +73,7 @@ func (f *Config) ValueByKey(group, key string) string {
 }
 
 func (f *Config) Add() (pk interface{}, err error) {
-	return f.Config.Add()
+	return f.NgingConfig.Add()
 }
 
 func (f *Config) EditByPK(mw func(db.Result) db.Result, group string, key string) error {
@@ -80,15 +81,15 @@ func (f *Config) EditByPK(mw func(db.Result) db.Result, group string, key string
 		db.Cond{`key`: key},
 		db.Cond{`group`: group},
 	)
-	return f.Config.Edit(mw, condition)
+	return f.NgingConfig.Edit(mw, condition)
 }
 
 func (f *Config) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
-	return f.Config.Edit(mw, args...)
+	return f.NgingConfig.Edit(mw, args...)
 }
 
 func (f *Config) ListByGroup(group string) (func() int64, error) {
-	return f.Config.ListByOffset(nil, func(r db.Result) db.Result {
+	return f.NgingConfig.ListByOffset(nil, func(r db.Result) db.Result {
 		return r.OrderBy(`sort`)
 	}, 0, -1, `group`, group)
 }
@@ -110,7 +111,7 @@ func (f *Config) ListMapByGroup(group string) (echo.H, error) {
 }
 
 func (f *Config) ListAllMapByGroup() (echo.H, error) {
-	_, err := f.Config.ListByOffset(nil, func(r db.Result) db.Result {
+	_, err := f.NgingConfig.ListByOffset(nil, func(r db.Result) db.Result {
 		return r.OrderBy(`sort`)
 	}, 0, -1)
 	if err != nil {

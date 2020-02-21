@@ -4,7 +4,7 @@ import "github.com/admpub/nging/application/dbschema"
 
 type Config struct {
 	Group   string
-	Items   map[string]*dbschema.Config
+	Items   map[string]*dbschema.NgingConfig
 	Forms   []*SettingForm
 	Encoder Encoder
 	Decoder Decoder

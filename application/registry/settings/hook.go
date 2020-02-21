@@ -31,7 +31,7 @@ func InsertDefaultConfig(ctx echo.Context, group, key string, values ...string) 
 	return InsertBy(ctx, gs, key, values...)
 }
 
-func InsertBy(ctx echo.Context, configs map[string]*dbschema.Config, key string, values ...string) error {
+func InsertBy(ctx echo.Context, configs map[string]*dbschema.NgingConfig, key string, values ...string) error {
 	cfg, ok := configs[key]
 	if !ok {
 		return nil
@@ -55,7 +55,7 @@ func InsertBy(ctx echo.Context, configs map[string]*dbschema.Config, key string,
 	return err
 }
 
-func InsertMissing(ctx echo.Context, gm *echo.Mapx, added map[string]int, configs map[string]*dbschema.Config, encoder Encoder) error {
+func InsertMissing(ctx echo.Context, gm *echo.Mapx, added map[string]int, configs map[string]*dbschema.NgingConfig, encoder Encoder) error {
 	for key, cfg := range configs {
 		_, ok := added[key]
 		if ok {

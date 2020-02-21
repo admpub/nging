@@ -19,8 +19,9 @@
 package frp
 
 import (
-	"github.com/admpub/nging/application/dbschema"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/dbschema"
 )
 
 func NewProxyConfig() *ProxyConfg {
@@ -37,12 +38,12 @@ type ProxyConfg struct {
 
 func NewClientConfig() *ClientConfig {
 	return &ClientConfig{
-		Extra:     echo.H{},
-		FrpClient: &dbschema.FrpClient{},
+		Extra:          echo.H{},
+		NgingFrpClient: &dbschema.NgingFrpClient{},
 	}
 }
 
 type ClientConfig struct {
 	Extra echo.H
-	*dbschema.FrpClient
+	*dbschema.NgingFrpClient
 }

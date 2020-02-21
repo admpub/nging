@@ -19,39 +19,40 @@
 package model
 
 import (
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/model/base"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 func NewCollectorHistory(ctx echo.Context) *CollectorHistory {
 	return &CollectorHistory{
-		CollectorHistory: &dbschema.CollectorHistory{},
-		Base:             base.New(ctx),
+		NgingCollectorHistory: &dbschema.NgingCollectorHistory{},
+		Base:                  base.New(ctx),
 	}
 }
 
 type CollectorHistory struct {
-	*dbschema.CollectorHistory
+	*dbschema.NgingCollectorHistory
 	*base.Base
 }
 
 func (c *CollectorHistory) Reset() *CollectorHistory {
-	c.CollectorHistory.Created = 0
-	c.CollectorHistory.Data = ``
-	c.CollectorHistory.Content = ``
-	c.CollectorHistory.ParentId = 0
-	c.CollectorHistory.Exported = 0
-	c.CollectorHistory.Id = 0
-	c.CollectorHistory.PageId = 0
-	c.CollectorHistory.PageParentId = 0
-	c.CollectorHistory.PageRootId = 0
-	c.CollectorHistory.Url = ``
-	c.CollectorHistory.UrlMd5 = ``
-	c.CollectorHistory.HasChild = ``
-	c.CollectorHistory.RuleMd5 = ``
+	c.NgingCollectorHistory.Created = 0
+	c.NgingCollectorHistory.Data = ``
+	c.NgingCollectorHistory.Content = ``
+	c.NgingCollectorHistory.ParentId = 0
+	c.NgingCollectorHistory.Exported = 0
+	c.NgingCollectorHistory.Id = 0
+	c.NgingCollectorHistory.PageId = 0
+	c.NgingCollectorHistory.PageParentId = 0
+	c.NgingCollectorHistory.PageRootId = 0
+	c.NgingCollectorHistory.Url = ``
+	c.NgingCollectorHistory.UrlMd5 = ``
+	c.NgingCollectorHistory.HasChild = ``
+	c.NgingCollectorHistory.RuleMd5 = ``
 	return c
 }
 
@@ -64,5 +65,5 @@ func (this *CollectorHistory) Delete(mw func(db.Result) db.Result, args ...inter
 	if err != nil {
 		return err
 	}
-	return this.CollectorHistory.Delete(mw, args...)
+	return this.NgingCollectorHistory.Delete(mw, args...)
 }

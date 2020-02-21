@@ -24,14 +24,15 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/webx-top/com"
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/model"
-	"github.com/webx-top/com"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 func ClientIndex(ctx echo.Context) error {
@@ -54,8 +55,8 @@ func ClientIndex(ctx echo.Context) error {
 	clientAndGroup := make([]*model.FrpClientAndGroup, len(clients))
 	for k, u := range clients {
 		clientAndGroup[k] = &model.FrpClientAndGroup{
-			FrpClient: u,
-			Running:   config.DefaultCLIConfig.IsRunning(`frpclient.` + fmt.Sprint(u.Id)),
+			NgingFrpClient: u,
+			Running:        config.DefaultCLIConfig.IsRunning(`frpclient.` + fmt.Sprint(u.Id)),
 		}
 		if u.GroupId < 1 {
 			continue
@@ -66,7 +67,7 @@ func ClientIndex(ctx echo.Context) error {
 	}
 
 	mg := model.NewFrpGroup(ctx)
-	var groupList []*dbschema.FrpGroup
+	var groupList []*dbschema.NgingFrpGroup
 	if len(gIds) > 0 {
 		_, err = mg.List(&groupList, nil, 1, -1, db.Cond{`id IN`: gIds})
 		if err != nil {
@@ -104,15 +105,15 @@ func ClientAdd(ctx echo.Context) error {
 		} else if y {
 			err = ctx.E(`名称已经存在`)
 		} else {
-			err = ctx.MustBind(m.FrpClient)
+			err = ctx.MustBind(m.NgingFrpClient)
 		}
 		if err == nil {
-			m.FrpClient.Extra, err = form2ExtraStr(ctx)
+			m.NgingFrpClient.Extra, err = form2ExtraStr(ctx)
 		}
 		if err == nil {
 			_, err = m.Add()
 			if err == nil {
-				err = config.DefaultCLIConfig.FRPSaveConfigFile(m.FrpClient)
+				err = config.DefaultCLIConfig.FRPSaveConfigFile(m.NgingFrpClient)
 			}
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))
@@ -124,10 +125,10 @@ func ClientAdd(ctx echo.Context) error {
 		if id > 0 {
 			err = m.Get(nil, `id`, id)
 			if err == nil {
-				echo.StructToForm(ctx, m.FrpClient, ``, func(topName, fieldName string) string {
+				echo.StructToForm(ctx, m.NgingFrpClient, ``, func(topName, fieldName string) string {
 					return echo.LowerCaseFirstLetter(topName, fieldName)
 				})
-				err = copyClientExtra2Form(ctx, m.FrpClient)
+				err = copyClientExtra2Form(ctx, m.NgingFrpClient)
 				ctx.Request().Form().Set(`id`, `0`)
 			}
 		}
@@ -157,16 +158,16 @@ func ClientEdit(ctx echo.Context) error {
 		} else if y {
 			err = ctx.E(`名称已经存在`)
 		} else {
-			err = ctx.MustBind(m.FrpClient, echo.ExcludeFieldName(`created`))
+			err = ctx.MustBind(m.NgingFrpClient, echo.ExcludeFieldName(`created`))
 		}
 		if err == nil {
-			m.FrpClient.Extra, err = form2ExtraStr(ctx)
+			m.NgingFrpClient.Extra, err = form2ExtraStr(ctx)
 		}
 		if err == nil {
 			m.Id = id
 			err = m.Edit(nil, db.Cond{`id`: id})
 			if err == nil {
-				err = config.DefaultCLIConfig.FRPSaveConfigFile(m.FrpClient)
+				err = config.DefaultCLIConfig.FRPSaveConfigFile(m.NgingFrpClient)
 			}
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))
@@ -183,7 +184,7 @@ func ClientEdit(ctx echo.Context) error {
 				data.SetError(err)
 				return ctx.JSON(data)
 			}
-			err = config.DefaultCLIConfig.FRPSaveConfigFile(m.FrpClient)
+			err = config.DefaultCLIConfig.FRPSaveConfigFile(m.NgingFrpClient)
 			if err != nil {
 				data.SetError(err)
 				return ctx.JSON(data)
@@ -193,10 +194,10 @@ func ClientEdit(ctx echo.Context) error {
 		}
 	}
 	if err == nil {
-		echo.StructToForm(ctx, m.FrpClient, ``, func(topName, fieldName string) string {
+		echo.StructToForm(ctx, m.NgingFrpClient, ``, func(topName, fieldName string) string {
 			return echo.LowerCaseFirstLetter(topName, fieldName)
 		})
-		err = copyClientExtra2Form(ctx, m.FrpClient)
+		err = copyClientExtra2Form(ctx, m.NgingFrpClient)
 	}
 
 	mg := model.NewFrpGroup(ctx)
@@ -227,7 +228,7 @@ func form2ExtraStr(ctx echo.Context) (extraStr string, err error) {
 	return
 }
 
-func copyClientExtra2Form(ctx echo.Context, cfg *dbschema.FrpClient) (err error) {
+func copyClientExtra2Form(ctx echo.Context, cfg *dbschema.NgingFrpClient) (err error) {
 	if len(cfg.Extra) == 0 {
 		return nil
 	}
@@ -263,7 +264,7 @@ func ClientDelete(ctx echo.Context) error {
 	m := model.NewFrpClient(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
-		err = config.DefaultCLIConfig.FRPSaveConfigFile(&dbschema.FrpClient{Disabled: `Y`, Id: id})
+		err = config.DefaultCLIConfig.FRPSaveConfigFile(&dbschema.NgingFrpClient{Disabled: `Y`, Id: id})
 	}
 	if err == nil {
 		handler.SendOk(ctx, ctx.T(`操作成功`))

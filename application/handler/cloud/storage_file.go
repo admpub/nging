@@ -39,7 +39,7 @@ import (
 	"github.com/admpub/nging/application/model"
 )
 
-func storageConnect(m *dbschema.CloudStorage) (client *minio.Client, err error) {
+func storageConnect(m *dbschema.NgingCloudStorage) (client *minio.Client, err error) {
 	isSecure := m.Secure == `Y`
 	if len(m.Region) == 0 {
 		client, err = minio.New(m.Endpoint, m.Key, m.Secret, isSecure)
@@ -66,7 +66,7 @@ func StorageFile(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	client, err := storageConnect(m.CloudStorage)
+	client, err := storageConnect(m.NgingCloudStorage)
 	if err != nil {
 		return err
 	}
@@ -193,6 +193,6 @@ func StorageFile(ctx echo.Context) error {
 		mime, _ := config.DefaultConfig.Sys.Playable(fileName)
 		return mime
 	})
-	ctx.Set(`data`, m.CloudStorage)
+	ctx.Set(`data`, m.NgingCloudStorage)
 	return ctx.Render(`cloud/storage_file`, handler.Err(ctx, err))
 }

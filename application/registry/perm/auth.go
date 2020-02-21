@@ -28,9 +28,9 @@ type AuthChecker func(
 	h echo.Handler,
 	c echo.Context,
 	rpath string,
-	user *dbschema.User,
+	user *dbschema.NgingUser,
 	roleM *model.UserRole,
-	roleList []*dbschema.UserRole,
+	roleList []*dbschema.NgingUserRole,
 ) (err error, ppath string, returning bool)
 
 var SpecialAuths = map[string]AuthChecker{
@@ -38,9 +38,9 @@ var SpecialAuths = map[string]AuthChecker{
 		h echo.Handler,
 		c echo.Context,
 		rpath string,
-		user *dbschema.User,
+		user *dbschema.NgingUser,
 		roleM *model.UserRole,
-		roleList []*dbschema.UserRole,
+		roleList []*dbschema.NgingUserRole,
 	) (err error, ppath string, returning bool) {
 		returning = true
 		c.SetFunc(`CheckPerm`, func(id string) error {
@@ -65,9 +65,9 @@ var SpecialAuths = map[string]AuthChecker{
 		h echo.Handler,
 		c echo.Context,
 		rpath string,
-		user *dbschema.User,
+		user *dbschema.NgingUser,
 		roleM *model.UserRole,
-		roleList []*dbschema.UserRole,
+		roleList []*dbschema.NgingUserRole,
 	) (err error, ppath string, returning bool) {
 		ppath = `server/sysinfo`
 		return
@@ -76,9 +76,9 @@ var SpecialAuths = map[string]AuthChecker{
 		h echo.Handler,
 		c echo.Context,
 		rpath string,
-		user *dbschema.User,
+		user *dbschema.NgingUser,
 		roleM *model.UserRole,
-		roleList []*dbschema.UserRole,
+		roleList []*dbschema.NgingUserRole,
 	) (err error, ppath string, returning bool) {
 		id := c.Form(`id`)
 		if len(id) > 0 {
@@ -97,9 +97,9 @@ var SpecialAuths = map[string]AuthChecker{
 		h echo.Handler,
 		c echo.Context,
 		rpath string,
-		user *dbschema.User,
+		user *dbschema.NgingUser,
 		roleM *model.UserRole,
-		roleList []*dbschema.UserRole,
+		roleList []*dbschema.NgingUserRole,
 	) (err error, ppath string, returning bool) {
 		ppath = `/manager/upload/:type`
 		return

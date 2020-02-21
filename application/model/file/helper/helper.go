@@ -24,14 +24,14 @@ func OnRemoveOwnerFile(ctx echo.Context, typ string, id interface{}, ownerDir st
 func OnUpdateOwnerFilePath(ctx echo.Context,
 	src string, typ string, id interface{},
 	newSavePath string, newViewURL string) error {
-	fileM := &dbschema.File{}
-	//embedM := &dbschema.FileEmbedded{}
+	fileM := &dbschema.NgingFile{}
+	//embedM := &dbschema.NgingFileEmbedded{}
 	_, fieldName, defaults := upload.GetTableInfo(typ)
 	info := upload.SubdirGet(typ)
 	if info == nil && len(defaults) > 0 {
 		info = upload.SubdirGet(defaults[0])
 	}
-	thumbM := &dbschema.FileThumb{}
+	thumbM := &dbschema.NgingFileThumb{}
 	cond := db.NewCompounds()
 	cond.Add(db.Cond{`table_id`: id})
 	cond.Add(db.Cond{`table_name`: info.TableName()})

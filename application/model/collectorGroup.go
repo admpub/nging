@@ -19,29 +19,30 @@
 package model
 
 import (
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
-	"github.com/webx-top/echo"
 )
 
 func NewCollectorGroup(ctx echo.Context) *CollectorGroup {
 	return &CollectorGroup{
-		CollectorGroup: &dbschema.CollectorGroup{},
-		Base:           base.New(ctx),
+		NgingCollectorGroup: &dbschema.NgingCollectorGroup{},
+		Base:                base.New(ctx),
 	}
 }
 
 type CollectorPageAndGroup struct {
-	*dbschema.CollectorPage
-	Group *dbschema.CollectorGroup
+	*dbschema.NgingCollectorPage
+	Group *dbschema.NgingCollectorGroup
 }
 
 type CollectorExportAndGroup struct {
-	*dbschema.CollectorExport
-	Group *dbschema.CollectorGroup
+	*dbschema.NgingCollectorExport
+	Group *dbschema.NgingCollectorGroup
 }
 
 type CollectorGroup struct {
-	*dbschema.CollectorGroup
+	*dbschema.NgingCollectorGroup
 	*base.Base
 }

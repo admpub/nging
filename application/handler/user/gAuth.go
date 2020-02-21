@@ -74,7 +74,7 @@ func GAuthBind(ctx echo.Context) error {
 	}
 	var (
 		binded bool
-		u2f    *dbschema.UserU2f
+		u2f    *dbschema.NgingUserU2f
 		typ    = `google`
 	)
 	m := model.NewUser(ctx)
@@ -106,7 +106,7 @@ func GAuthBind(ctx echo.Context) error {
 
 func GAuthCheck(ctx echo.Context) error {
 	//直接从session中读取
-	user, _ := ctx.Session().Get(`user`).(*dbschema.User)
+	user, _ := ctx.Session().Get(`user`).(*dbschema.NgingUser)
 	if user == nil {
 		return ctx.Redirect(handler.URLFor(`/login`))
 	}
@@ -161,7 +161,7 @@ func GAuthVerify(ctx echo.Context, fieldName string, test ...bool) error {
 		return err
 	}
 	if testAndBind {
-		u2f := &dbschema.UserU2f{}
+		u2f := &dbschema.NgingUserU2f{}
 		u2f.Uid = user.Id
 		u2f.Token = keyData.Original
 		u2f.Extra = keyData.Encoded

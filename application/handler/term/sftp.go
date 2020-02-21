@@ -39,7 +39,7 @@ import (
 	"github.com/admpub/web-terminal/library/ssh"
 )
 
-func sftpConnect(m *dbschema.SshUser) (*sftp.Client, error) {
+func sftpConnect(m *dbschema.NgingSshUser) (*sftp.Client, error) {
 	account := &ssh.AccountConfig{
 		User:     m.Username,
 		Password: config.DefaultConfig.Decode(m.Password),
@@ -68,7 +68,7 @@ func SftpSearch(ctx echo.Context, id uint) error {
 	if err != nil {
 		return err
 	}
-	client, err := sftpConnect(m.SshUser)
+	client, err := sftpConnect(m.NgingSshUser)
 	if err != nil {
 		return err
 	}
@@ -91,7 +91,7 @@ func Sftp(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	client, err := sftpConnect(m.SshUser)
+	client, err := sftpConnect(m.NgingSshUser)
 	if err != nil {
 		return err
 	}
@@ -232,6 +232,6 @@ func Sftp(ctx echo.Context) error {
 		mime, _ := caddy.Playable(fileName)
 		return mime
 	})
-	ctx.Set(`data`, m.SshUser)
+	ctx.Set(`data`, m.NgingSshUser)
 	return ctx.Render(`term/sftp`, err)
 }

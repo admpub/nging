@@ -53,7 +53,7 @@ func DaemonCommonHook(p *goforever.Process) {
 			return
 		}
 	*/
-	processM := &dbschema.ForeverProcess{}
+	processM := &dbschema.NgingForeverProcess{}
 	err := processM.Get(nil, `id`, p.Name)
 	if err != nil {
 		log.Errorf(`Not found ForeverProcess: %v (%v)`, p.Name, err)
@@ -101,7 +101,7 @@ func RunDaemon() {
 	Daemon.SetHook(goforever.StatusRestarted, DaemonDefaultHook)
 	Daemon.SetHook(goforever.StatusExited, DaemonDefaultHook)
 	Daemon.SetHook(goforever.StatusKilled, DaemonDefaultHook)
-	processM := &dbschema.ForeverProcess{}
+	processM := &dbschema.NgingForeverProcess{}
 	_, err := processM.ListByOffset(nil, nil, 0, -1, `disabled`, `N`)
 	if err != nil {
 		log.Error(err)
@@ -113,7 +113,7 @@ func RunDaemon() {
 	Daemon.Run()
 }
 
-func AddDaemon(p *dbschema.ForeverProcess, run ...bool) *goforever.Process {
+func AddDaemon(p *dbschema.NgingForeverProcess, run ...bool) *goforever.Process {
 	name := fmt.Sprint(p.Id)
 	procs := goforever.NewProcess(name, p.Command, ParseArgsSlice(p.Args)...)
 	procs.Debug = p.Debug == `Y`
@@ -169,12 +169,12 @@ func ParseArgsSlice(a string) []string {
 }
 
 // OnExitedDaemon 当值守程序达到最大重试次数退出时
-func OnExitedDaemon(processM *dbschema.ForeverProcess) {
+func OnExitedDaemon(processM *dbschema.NgingForeverProcess) {
 	// 发送邮件通知
 	if processM.EnableNotify == 0 {
 		return
 	}
-	user := new(dbschema.User)
+	user := new(dbschema.NgingUser)
 	if processM.Uid > 0 {
 		user.Get(nil, `id`, processM.Uid)
 	}

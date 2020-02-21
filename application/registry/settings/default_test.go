@@ -33,7 +33,7 @@ var expect = `{
 }`
 
 func TestConfigDefaultsAsStore(t *testing.T) {
-	actual := echo.Dump(configAsStore(map[string]map[string]*dbschema.Config{
+	actual := echo.Dump(configAsStore(map[string]map[string]*dbschema.NgingConfig{
 		`base`: {
 			`debug`: {
 				Key:         `debug`,

@@ -19,28 +19,29 @@
 package model
 
 import (
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/model/base"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/model/base"
 )
 
 func NewDbSyncLog(ctx echo.Context) *DbSyncLog {
 	return &DbSyncLog{
-		DbSyncLog: &dbschema.DbSyncLog{},
-		Base:      base.New(ctx),
+		NgingDbSyncLog: &dbschema.NgingDbSyncLog{},
+		Base:           base.New(ctx),
 	}
 }
 
 type DbSyncLog struct {
-	*dbschema.DbSyncLog
+	*dbschema.NgingDbSyncLog
 	*base.Base
 }
 
 func (a *DbSyncLog) Add() (interface{}, error) {
-	return a.DbSyncLog.Add()
+	return a.NgingDbSyncLog.Add()
 }
 
 func (a *DbSyncLog) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
-	return a.DbSyncLog.Edit(mw, args...)
+	return a.NgingDbSyncLog.Edit(mw, args...)
 }

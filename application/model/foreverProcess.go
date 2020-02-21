@@ -29,13 +29,13 @@ import (
 
 func NewForeverProcess(ctx echo.Context) *ForeverProcess {
 	return &ForeverProcess{
-		ForeverProcess: &dbschema.ForeverProcess{},
-		Base:           base.New(ctx),
+		NgingForeverProcess: &dbschema.NgingForeverProcess{},
+		Base:                base.New(ctx),
 	}
 }
 
 type ForeverProcess struct {
-	*dbschema.ForeverProcess
+	*dbschema.NgingForeverProcess
 	*base.Base
 }
 
@@ -46,11 +46,11 @@ func (u *ForeverProcess) Exists(name string) (bool, error) {
 
 func (u *ForeverProcess) Add() (pk interface{}, err error) {
 	u.Status = `idle`
-	return u.ForeverProcess.Add()
+	return u.NgingForeverProcess.Add()
 }
 
 func (u *ForeverProcess) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
-	return u.ForeverProcess.Edit(mw, args...)
+	return u.NgingForeverProcess.Edit(mw, args...)
 }
 
 func (u *ForeverProcess) Exists2(name string, excludeID uint) (bool, error) {

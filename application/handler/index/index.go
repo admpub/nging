@@ -110,7 +110,7 @@ func Register(ctx echo.Context) error {
 		if err != nil {
 			goto END
 		}
-		c.UseInvitationCode(c.Invitation, m.User.Id)
+		c.UseInvitationCode(c.Invitation, m.NgingUser.Id)
 		common.DeleteRandomSecret(ctx, `registerPassword`)
 		m.SetSession()
 		returnTo := ctx.Query(`return_to`)

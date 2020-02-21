@@ -19,28 +19,29 @@
 package model
 
 import (
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/collector/exec"
 	"github.com/admpub/nging/application/model/base"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 func NewCollectorPage(ctx echo.Context) *CollectorPage {
 	return &CollectorPage{
-		CollectorPage: &dbschema.CollectorPage{},
-		Base:          base.New(ctx),
+		NgingCollectorPage: &dbschema.NgingCollectorPage{},
+		Base:               base.New(ctx),
 	}
 }
 
 type CollectorPage struct {
-	*dbschema.CollectorPage
+	*dbschema.NgingCollectorPage
 	*base.Base
 }
 
 func (c *CollectorPage) FullData() (*exec.Rules, error) {
 	data := exec.NewRules()
-	data.CollectorPage = c.CollectorPage
+	data.NgingCollectorPage = c.NgingCollectorPage
 	ruleM := NewCollectorRule(c.Base.Context)
 	id := c.Id
 	_, err := ruleM.ListByOffset(nil, func(r db.Result) db.Result {
@@ -60,7 +61,7 @@ func (c *CollectorPage) FullData() (*exec.Rules, error) {
 		return data, err
 	}
 	for _, pageRow := range c.Objects() {
-		pageForm := &exec.Rule{CollectorPage: pageRow}
+		pageForm := &exec.Rule{NgingCollectorPage: pageRow}
 
 		_, err = ruleM.ListByOffset(nil, func(r db.Result) db.Result {
 			return r.OrderBy(`sort`, `id`)

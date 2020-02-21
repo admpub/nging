@@ -73,7 +73,7 @@ func Edit(ctx echo.Context) error {
 			err = ctx.E(`Email地址"%s"格式不正确`, email)
 		} else if len(mobile) > 0 && !ctx.Validate(`mobile`, mobile, `mobile`).Ok() {
 			err = ctx.E(`手机号"%s"格式不正确`, mobile)
-		} else if m.User.Password != com.MakePassword(passwd, m.User.Salt) {
+		} else if m.NgingUser.Password != com.MakePassword(passwd, m.NgingUser.Salt) {
 			err = ctx.E(`旧密码输入不正确`)
 		} else if needCheckU2F {
 			//两步验证码
@@ -90,7 +90,7 @@ func Edit(ctx echo.Context) error {
 				`gender`: gender,
 			}
 			if modifyPass {
-				set[`password`] = com.MakePassword(newPass, m.User.Salt)
+				set[`password`] = com.MakePassword(newPass, m.NgingUser.Salt)
 			}
 			err = m.SetFields(nil, set, `id`, user.Id)
 		}

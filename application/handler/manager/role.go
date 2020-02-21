@@ -21,11 +21,12 @@ package manager
 import (
 	"strings"
 
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/model"
 	"github.com/admpub/nging/application/registry/navigate"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 func Role(ctx echo.Context) error {
@@ -40,7 +41,7 @@ func RoleAdd(ctx echo.Context) error {
 	var err error
 	m := model.NewUserRole(ctx)
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.UserRole)
+		err = ctx.MustBind(m.NgingUserRole)
 		if err == nil {
 			if len(m.Name) == 0 {
 				err = ctx.E(`角色名不能为空`)
@@ -63,7 +64,7 @@ func RoleAdd(ctx echo.Context) error {
 		if id > 0 {
 			err = m.Get(nil, `id`, id)
 			if err == nil {
-				echo.StructToForm(ctx, m.UserRole, ``, echo.LowerCaseFirstLetter)
+				echo.StructToForm(ctx, m.NgingUserRole, ``, echo.LowerCaseFirstLetter)
 				ctx.Request().Form().Set(`id`, `0`)
 			}
 		}
@@ -86,7 +87,7 @@ func RoleEdit(ctx echo.Context) error {
 		return ctx.Redirect(handler.URLFor(`/manager/role`))
 	}
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.UserRole)
+		err = ctx.MustBind(m.NgingUserRole)
 		if err == nil {
 			m.Id = id
 			if len(m.Name) == 0 {
@@ -107,7 +108,7 @@ func RoleEdit(ctx echo.Context) error {
 		}
 	}
 
-	echo.StructToForm(ctx, m.UserRole, ``, echo.LowerCaseFirstLetter)
+	echo.StructToForm(ctx, m.NgingUserRole, ``, echo.LowerCaseFirstLetter)
 	ctx.Set(`activeURL`, `/manager/role`)
 	ctx.Set(`topNavigate`, navigate.TopNavigate)
 	cmdM := model.NewCommand(ctx)

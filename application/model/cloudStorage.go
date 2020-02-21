@@ -31,15 +31,15 @@ import (
 
 func NewCloudStorage(ctx echo.Context) *CloudStorage {
 	m := &CloudStorage{
-		CloudStorage: &dbschema.CloudStorage{},
-		base:         base.New(ctx),
+		NgingCloudStorage: &dbschema.NgingCloudStorage{},
+		base:              base.New(ctx),
 	}
 	m.SetContext(ctx)
 	return m
 }
 
 type CloudStorage struct {
-	*dbschema.CloudStorage
+	*dbschema.NgingCloudStorage
 	base *base.Base
 }
 
@@ -68,7 +68,7 @@ func (s *CloudStorage) BaseURL() string {
 }
 
 func (s *CloudStorage) Get(mw func(db.Result) db.Result, args ...interface{}) error {
-	err := s.CloudStorage.Get(mw, args...)
+	err := s.NgingCloudStorage.Get(mw, args...)
 	if err != nil {
 		return err
 	}
@@ -80,12 +80,12 @@ func (s *CloudStorage) Add() (pk interface{}, err error) {
 	if err = s.check(); err != nil {
 		return nil, err
 	}
-	return s.CloudStorage.Add()
+	return s.NgingCloudStorage.Add()
 }
 
 func (s *CloudStorage) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	if err = s.check(); err != nil {
 		return err
 	}
-	return s.CloudStorage.Edit(mw, args...)
+	return s.NgingCloudStorage.Edit(mw, args...)
 }

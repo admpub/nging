@@ -31,14 +31,14 @@ import (
 
 func init() {
 	notice.OnOpen(func(user string) {
-		userM := &dbschema.User{}
+		userM := &dbschema.NgingUser{}
 		err := userM.SetField(nil, `online`, `Y`, `username`, user)
 		if err != nil {
 			log.Error(err)
 		}
 	})
 	notice.OnClose(func(user string) {
-		userM := &dbschema.User{}
+		userM := &dbschema.NgingUser{}
 		err := userM.SetField(nil, `online`, `N`, `username`, user)
 		if err != nil {
 			log.Error(err)

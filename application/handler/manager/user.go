@@ -166,7 +166,7 @@ END:
 func setFormData(ctx echo.Context, m *model.User) {
 	m.Password = ``
 	m.Salt = ``
-	echo.StructToForm(ctx, m.User, ``, echo.LowerCaseFirstLetter)
+	echo.StructToForm(ctx, m.NgingUser, ``, echo.LowerCaseFirstLetter)
 	var roleIds []uint
 	if len(m.RoleIds) > 0 {
 		roleIds = param.StringSlice(strings.Split(m.RoleIds, `,`)).Uint()

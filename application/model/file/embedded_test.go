@@ -41,7 +41,7 @@ func TestUpdateEmbedded(t *testing.T) {
 	}
 	echo.Dump(tables)
 	test.Contains(t, tables, `user`)
-	userM := &dbschema.User{}
+	userM := &dbschema.NgingUser{}
 	userM.SetContext(ctx)
 	userM.Get(nil, `id`, ownerID)
 	if len(userM.Avatar) > 0 {

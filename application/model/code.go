@@ -37,15 +37,15 @@ var (
 
 func NewCode(ctx echo.Context) *Code {
 	return &Code{
-		Verification: &dbschema.CodeVerification{},
-		Invitation:   &dbschema.CodeInvitation{},
+		Verification: &dbschema.NgingCodeVerification{},
+		Invitation:   &dbschema.NgingCodeInvitation{},
 		Base:         base.New(ctx),
 	}
 }
 
 type Code struct {
-	Verification *dbschema.CodeVerification
-	Invitation   *dbschema.CodeInvitation
+	Verification *dbschema.NgingCodeVerification
+	Invitation   *dbschema.NgingCodeInvitation
 	*base.Base
 }
 
@@ -56,7 +56,7 @@ func (c *Code) AddVerificationCode() (interface{}, error) {
 	return c.Verification.Add()
 }
 
-func (c *Code) UseVerificationCode(m *dbschema.CodeVerification) (err error) {
+func (c *Code) UseVerificationCode(m *dbschema.NgingCodeVerification) (err error) {
 	m.Used = uint(time.Now().Unix())
 	err = m.SetField(nil, `used`, m.Used, `id`, m.Id)
 	return
@@ -178,7 +178,7 @@ func (c *Code) VerfyInvitationCode(code string) (err error) {
 	return
 }
 
-func (c *Code) UseInvitationCode(m *dbschema.CodeInvitation, usedUid uint) (err error) {
+func (c *Code) UseInvitationCode(m *dbschema.NgingCodeInvitation, usedUid uint) (err error) {
 	m.Used = uint(time.Now().Unix())
 	m.RecvUid = usedUid
 	err = m.Edit(nil, `id`, m.Id)

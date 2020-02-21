@@ -22,14 +22,15 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/webx-top/com"
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/model"
 	"github.com/admpub/web-terminal/library/utils"
-	"github.com/webx-top/com"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 func AccountIndex(ctx echo.Context) error {
@@ -52,7 +53,7 @@ func AccountIndex(ctx echo.Context) error {
 	userAndGroup := make([]*model.SshUserAndGroup, len(users))
 	for k, u := range users {
 		userAndGroup[k] = &model.SshUserAndGroup{
-			SshUser: u,
+			NgingSshUser: u,
 		}
 		if u.GroupId < 1 {
 			continue
@@ -63,7 +64,7 @@ func AccountIndex(ctx echo.Context) error {
 	}
 
 	mg := model.NewSshUserGroup(ctx)
-	var groupList []*dbschema.SshUserGroup
+	var groupList []*dbschema.NgingSshUserGroup
 	if len(gIds) > 0 {
 		_, err = mg.List(&groupList, nil, 1, 1000, db.Cond{`id IN`: gIds})
 		if err != nil {
@@ -92,7 +93,7 @@ func AccountAdd(ctx echo.Context) error {
 	var err error
 	m := model.NewSshUser(ctx)
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.SshUser, func(k string, v []string) (string, []string) {
+		err = ctx.MustBind(m.NgingSshUser, func(k string, v []string) (string, []string) {
 			switch strings.ToLower(k) {
 			case `password`, `passphrase`:
 				if len(v) > 0 && len(v[0]) > 0 {
@@ -106,7 +107,7 @@ func AccountAdd(ctx echo.Context) error {
 			_, err = m.Add()
 			if err == nil {
 				if ctx.IsAjax() {
-					data := ctx.Data().SetInfo(ctx.T(`SSH账号添加成功`)).SetData(m.SshUser)
+					data := ctx.Data().SetInfo(ctx.T(`SSH账号添加成功`)).SetData(m.NgingSshUser)
 					return ctx.JSON(data)
 				}
 				handler.SendOk(ctx, ctx.T(`操作成功`))
@@ -121,7 +122,7 @@ func AccountAdd(ctx echo.Context) error {
 		if id > 0 {
 			err = m.Get(nil, `id`, id)
 			if err == nil {
-				echo.StructToForm(ctx, m.SshUser, ``, func(topName, fieldName string) string {
+				echo.StructToForm(ctx, m.NgingSshUser, ``, func(topName, fieldName string) string {
 					return echo.LowerCaseFirstLetter(topName, fieldName)
 				})
 				ctx.Request().Form().Set(`id`, `0`)
@@ -144,7 +145,7 @@ func AccountEdit(ctx echo.Context) error {
 	m := model.NewSshUser(ctx)
 	err = m.Get(nil, db.Cond{`id`: id})
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.SshUser, func(k string, v []string) (string, []string) {
+		err = ctx.MustBind(m.NgingSshUser, func(k string, v []string) (string, []string) {
 			switch strings.ToLower(k) {
 			case `created`: //禁止修改创建时间和用户名
 				return ``, v
@@ -166,13 +167,13 @@ func AccountEdit(ctx echo.Context) error {
 			}
 		}
 	} else if err == nil {
-		if len(m.SshUser.Password) > 0 {
-			m.SshUser.Password = config.DefaultConfig.Decode(m.SshUser.Password)
+		if len(m.NgingSshUser.Password) > 0 {
+			m.NgingSshUser.Password = config.DefaultConfig.Decode(m.NgingSshUser.Password)
 		}
-		if len(m.SshUser.Passphrase) > 0 {
-			m.SshUser.Passphrase = config.DefaultConfig.Decode(m.SshUser.Passphrase)
+		if len(m.NgingSshUser.Passphrase) > 0 {
+			m.NgingSshUser.Passphrase = config.DefaultConfig.Decode(m.NgingSshUser.Passphrase)
 		}
-		echo.StructToForm(ctx, m.SshUser, ``, func(topName, fieldName string) string {
+		echo.StructToForm(ctx, m.NgingSshUser, ``, func(topName, fieldName string) string {
 			return echo.LowerCaseFirstLetter(topName, fieldName)
 		})
 	}
@@ -223,7 +224,7 @@ func GroupAdd(ctx echo.Context) error {
 		} else if y {
 			err = ctx.E(`组名称已经存在`)
 		} else {
-			err = ctx.MustBind(m.SshUserGroup)
+			err = ctx.MustBind(m.NgingSshUserGroup)
 		}
 		if err == nil {
 			_, err = m.Add()
@@ -237,7 +238,7 @@ func GroupAdd(ctx echo.Context) error {
 		if id > 0 {
 			err = m.Get(nil, `id`, id)
 			if err == nil {
-				echo.StructToForm(ctx, m.SshUserGroup, ``, echo.LowerCaseFirstLetter)
+				echo.StructToForm(ctx, m.NgingSshUserGroup, ``, echo.LowerCaseFirstLetter)
 				ctx.Request().Form().Set(`id`, `0`)
 			}
 		}
@@ -260,7 +261,7 @@ func GroupEdit(ctx echo.Context) error {
 		} else if y {
 			err = ctx.E(`组名称已经存在`)
 		} else {
-			err = ctx.MustBind(m.SshUserGroup, echo.ExcludeFieldName(`created`))
+			err = ctx.MustBind(m.NgingSshUserGroup, echo.ExcludeFieldName(`created`))
 		}
 
 		if err == nil {
@@ -272,7 +273,7 @@ func GroupEdit(ctx echo.Context) error {
 			}
 		}
 	} else if err == nil {
-		echo.StructToForm(ctx, m.SshUserGroup, ``, echo.LowerCaseFirstLetter)
+		echo.StructToForm(ctx, m.NgingSshUserGroup, ``, echo.LowerCaseFirstLetter)
 	}
 
 	ctx.Set(`activeURL`, `/term/group`)

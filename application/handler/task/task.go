@@ -23,13 +23,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/webx-top/com"
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/cron"
 	"github.com/admpub/nging/application/model"
-	"github.com/webx-top/com"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 type extra struct {
@@ -63,7 +64,7 @@ func Index(ctx echo.Context) error {
 	extraList := make([]*extra, len(tasks))
 	for k, u := range tasks {
 		tg[k] = &model.TaskAndGroup{
-			Task: u,
+			NgingTask: u,
 		}
 		ex := &extra{}
 		entry := cron.GetEntryById(u.Id)
@@ -84,7 +85,7 @@ func Index(ctx echo.Context) error {
 	}
 
 	mg := model.NewTaskGroup(ctx)
-	var groupList []*dbschema.TaskGroup
+	var groupList []*dbschema.NgingTaskGroup
 	if len(gIds) > 0 {
 		_, err = mg.ListByOffset(&groupList, nil, 0, -1, db.Cond{`id IN`: gIds})
 		if err != nil {
@@ -123,7 +124,7 @@ func getCronSpec(ctx echo.Context) string {
 	return seconds + ` ` + minutes + ` ` + hours + ` ` + dayOfMonth + ` ` + month + ` ` + dayOfWeek
 }
 
-func checkTaskData(ctx echo.Context, m *dbschema.Task) error {
+func checkTaskData(ctx echo.Context, m *dbschema.NgingTask) error {
 	var err error
 	if len(m.Name) == 0 {
 		err = ctx.E(`任务名不能为空`)
@@ -145,14 +146,14 @@ func Add(ctx echo.Context) error {
 	var err error
 	m := model.NewTask(ctx)
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.Task)
+		err = ctx.MustBind(m.NgingTask)
 		if err == nil {
 			m.NotifyEmail = strings.TrimSpace(m.NotifyEmail)
 			m.Command = strings.TrimSpace(m.Command)
 			m.CronSpec = getCronSpec(ctx)
 			m.Disabled = `Y`
 			m.Uid = handler.User(ctx).Id
-			err = checkTaskData(ctx, m.Task)
+			err = checkTaskData(ctx, m.NgingTask)
 			if err == nil {
 				_, err = m.Add()
 			}
@@ -201,7 +202,7 @@ func setFormData(ctx echo.Context, m *model.Task) {
 	case 1:
 		ctx.Request().Form().Set(`seconds`, specs[0])
 	}
-	echo.StructToForm(ctx, m.Task, ``, echo.LowerCaseFirstLetter)
+	echo.StructToForm(ctx, m.NgingTask, ``, echo.LowerCaseFirstLetter)
 }
 
 func Edit(ctx echo.Context) error {
@@ -213,13 +214,13 @@ func Edit(ctx echo.Context) error {
 		return ctx.Redirect(handler.URLFor(`/task/index`))
 	}
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.Task, echo.ExcludeFieldName(`disabled`))
+		err = ctx.MustBind(m.NgingTask, echo.ExcludeFieldName(`disabled`))
 		if err == nil {
 			m.Id = id
 			m.NotifyEmail = strings.TrimSpace(m.NotifyEmail)
 			m.Command = strings.TrimSpace(m.Command)
 			m.CronSpec = getCronSpec(ctx)
-			err = checkTaskData(ctx, m.Task)
+			err = checkTaskData(ctx, m.NgingTask)
 			if err == nil {
 				err = m.Edit(nil, `id`, id)
 			}
@@ -274,7 +275,7 @@ func Start(ctx echo.Context) error {
 		return err
 	}
 
-	job, err := cron.NewJobFromTask(context.Background(), m.Task)
+	job, err := cron.NewJobFromTask(context.Background(), m.NgingTask)
 	if err != nil {
 		return err
 	}
@@ -353,7 +354,7 @@ func Run(ctx echo.Context) error {
 		return err
 	}
 
-	job, err := cron.NewJobFromTask(ctx.Request().StdRequest().Context(), m.Task)
+	job, err := cron.NewJobFromTask(ctx.Request().StdRequest().Context(), m.NgingTask)
 	if err != nil {
 		return err
 	}

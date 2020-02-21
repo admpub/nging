@@ -21,23 +21,24 @@ package model
 import (
 	"errors"
 
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/dbmanager/driver/mysql"
-	"github.com/admpub/nging/application/model/base"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/library/dbmanager/driver/mysql"
+	"github.com/admpub/nging/application/model/base"
 )
 
 func NewDbAccount(ctx echo.Context) *DbAccount {
 	return &DbAccount{
-		DbAccount: &dbschema.DbAccount{},
-		Base:      base.New(ctx),
+		NgingDbAccount: &dbschema.NgingDbAccount{},
+		Base:           base.New(ctx),
 	}
 }
 
 type DbAccount struct {
-	*dbschema.DbAccount
+	*dbschema.NgingDbAccount
 	*base.Base
 }
 
@@ -56,29 +57,29 @@ func (a *DbAccount) SetOptions() error {
 }
 
 func (a *DbAccount) setDefaultValue() {
-	if len(a.DbAccount.Engine) == 0 {
-		a.DbAccount.Engine = `mysql`
+	if len(a.NgingDbAccount.Engine) == 0 {
+		a.NgingDbAccount.Engine = `mysql`
 	}
-	switch a.DbAccount.Engine {
+	switch a.NgingDbAccount.Engine {
 	case `mysql`:
-		if len(a.DbAccount.Host) == 0 {
-			a.DbAccount.Host = `127.0.0.1:3306`
+		if len(a.NgingDbAccount.Host) == 0 {
+			a.NgingDbAccount.Host = `127.0.0.1:3306`
 		}
-		if len(a.DbAccount.User) == 0 {
-			a.DbAccount.User = `root`
+		if len(a.NgingDbAccount.User) == 0 {
+			a.NgingDbAccount.User = `root`
 		}
 	case `redis`:
-		if len(a.DbAccount.Host) == 0 {
-			a.DbAccount.Host = `127.0.0.1:6379`
+		if len(a.NgingDbAccount.Host) == 0 {
+			a.NgingDbAccount.Host = `127.0.0.1:6379`
 		}
-		if len(a.DbAccount.Name) == 0 {
-			a.DbAccount.Name = `0`
+		if len(a.NgingDbAccount.Name) == 0 {
+			a.NgingDbAccount.Name = `0`
 		}
 	}
 }
 
 func (a *DbAccount) Add() (interface{}, error) {
-	if len(a.DbAccount.Title) == 0 {
+	if len(a.NgingDbAccount.Title) == 0 {
 		return nil, errors.New(a.T(`请输入标题`))
 	}
 	num, err := a.Count(nil, db.And(db.Cond{`uid`: a.Uid}, db.Cond{`title`: a.Title}))
@@ -89,11 +90,11 @@ func (a *DbAccount) Add() (interface{}, error) {
 		return nil, errors.New(a.T(`标题已存在，请设置为一个从未使用过的标题`))
 	}
 	a.setDefaultValue()
-	return a.DbAccount.Add()
+	return a.NgingDbAccount.Add()
 }
 
 func (a *DbAccount) Edit(id uint, mw func(db.Result) db.Result, args ...interface{}) error {
-	if len(a.DbAccount.Title) == 0 {
+	if len(a.NgingDbAccount.Title) == 0 {
 		return errors.New(a.T(`请输入标题`))
 	}
 	num, err := a.Count(nil, db.And(
@@ -108,5 +109,5 @@ func (a *DbAccount) Edit(id uint, mw func(db.Result) db.Result, args ...interfac
 		return errors.New(a.T(`标题已存在，请设置为一个从未使用过的标题`))
 	}
 	a.setDefaultValue()
-	return a.DbAccount.Edit(mw, args...)
+	return a.NgingDbAccount.Edit(mw, args...)
 }

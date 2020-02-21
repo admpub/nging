@@ -43,7 +43,7 @@ func clearAuth(ctx echo.Context) {
 	ctx.Session().Delete(`dbAccounts`)
 }
 
-func getLoginInfo(mgr dbmanager.Manager, accountID uint, m *model.DbAccount, user *dbschema.User) (err error) {
+func getLoginInfo(mgr dbmanager.Manager, accountID uint, m *model.DbAccount, user *dbschema.NgingUser) (err error) {
 	ctx := mgr.Context()
 	if !ctx.IsPost() {
 		return nil

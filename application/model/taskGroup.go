@@ -18,19 +18,20 @@
 package model
 
 import (
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
-	"github.com/webx-top/echo"
 )
 
 func NewTaskGroup(ctx echo.Context) *TaskGroup {
 	return &TaskGroup{
-		TaskGroup: &dbschema.TaskGroup{},
-		Base:      base.New(ctx),
+		NgingTaskGroup: &dbschema.NgingTaskGroup{},
+		Base:           base.New(ctx),
 	}
 }
 
 type TaskGroup struct {
-	*dbschema.TaskGroup
+	*dbschema.NgingTaskGroup
 	*base.Base
 }

@@ -21,13 +21,14 @@ package collector
 import (
 	"strings"
 
+	"github.com/webx-top/com"
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/collector/export"
 	"github.com/admpub/nging/application/model"
-	"github.com/webx-top/com"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 var destTypeInputField = map[string]string{
@@ -56,7 +57,7 @@ func Export(c echo.Context) error {
 	rowAndGroup := make([]*model.CollectorExportAndGroup, len(rows))
 	for k, u := range rows {
 		rowAndGroup[k] = &model.CollectorExportAndGroup{
-			CollectorExport: u,
+			NgingCollectorExport: u,
 		}
 		if u.GroupId < 1 {
 			continue
@@ -67,7 +68,7 @@ func Export(c echo.Context) error {
 	}
 
 	mg := model.NewCollectorGroup(c)
-	var groupList []*dbschema.CollectorGroup
+	var groupList []*dbschema.NgingCollectorGroup
 	if len(gIds) > 0 {
 		_, err = mg.List(&groupList, nil, 1, 1000, db.And(
 			db.Cond{`id IN`: gIds},
@@ -95,7 +96,7 @@ func Export(c echo.Context) error {
 	return c.Render(`collector/export`, ret)
 }
 
-func setDest(ctx echo.Context, m *dbschema.CollectorExport) error {
+func setDest(ctx echo.Context, m *dbschema.NgingCollectorExport) error {
 	if inputName, ok := destTypeInputField[m.DestType]; ok {
 		m.Dest = ctx.Form(inputName)
 	}
@@ -200,9 +201,9 @@ func ExportAdd(ctx echo.Context) error {
 	var err error
 	m := model.NewCollectorExport(ctx)
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.CollectorExport)
+		err = ctx.MustBind(m.NgingCollectorExport)
 		if err == nil {
-			err = setDest(ctx, m.CollectorExport)
+			err = setDest(ctx, m.NgingCollectorExport)
 		}
 		if err == nil {
 			_, err = m.Add()
@@ -216,11 +217,11 @@ func ExportAdd(ctx echo.Context) error {
 		if id > 0 {
 			err = m.Get(nil, `id`, id)
 			if err == nil {
-				echo.StructToForm(ctx, m.CollectorExport, ``, func(topName, fieldName string) string {
+				echo.StructToForm(ctx, m.NgingCollectorExport, ``, func(topName, fieldName string) string {
 					return echo.LowerCaseFirstLetter(topName, fieldName)
 				})
 				if inputName, ok := destTypeInputField[m.DestType]; ok {
-					ctx.Request().Form().Set(inputName, m.CollectorExport.Dest)
+					ctx.Request().Form().Set(inputName, m.NgingCollectorExport.Dest)
 				}
 				ctx.Request().Form().Set(`id`, `0`)
 			}
@@ -232,7 +233,7 @@ func ExportAdd(ctx echo.Context) error {
 		err = e
 	}
 	ctx.Set(`groupList`, mg.Objects())
-	ctx.Set(`data`, &dbschema.CollectorExport{})
+	ctx.Set(`data`, &dbschema.NgingCollectorExport{})
 	mappings := export.NewMappings()
 	if len(m.Mapping) > 0 {
 		err = com.JSONDecode([]byte(m.Mapping), mappings)
@@ -256,9 +257,9 @@ func ExportEdit(ctx echo.Context) error {
 		return ctx.Redirect(handler.URLFor(`/collector/export`))
 	}
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.CollectorExport)
+		err = ctx.MustBind(m.NgingCollectorExport)
 		if err == nil {
-			err = setDest(ctx, m.CollectorExport)
+			err = setDest(ctx, m.NgingCollectorExport)
 		}
 		if err == nil {
 			m.Id = id
@@ -271,9 +272,9 @@ func ExportEdit(ctx echo.Context) error {
 	} else if ctx.IsAjax() {
 		return ExportEditStatus(ctx)
 	}
-	echo.StructToForm(ctx, m.CollectorExport, ``, echo.LowerCaseFirstLetter)
+	echo.StructToForm(ctx, m.NgingCollectorExport, ``, echo.LowerCaseFirstLetter)
 	if inputName, ok := destTypeInputField[m.DestType]; ok {
-		ctx.Request().Form().Set(inputName, m.CollectorExport.Dest)
+		ctx.Request().Form().Set(inputName, m.NgingCollectorExport.Dest)
 	}
 	mappings := export.NewMappings()
 	if len(m.Mapping) > 0 {
@@ -285,9 +286,9 @@ func ExportEdit(ctx echo.Context) error {
 	if _, e := mg.ListByOffset(nil, nil, 0, -1, db.Cond{`type`: `export`}); e != nil {
 		err = e
 	}
-	var childrenPageList []*dbschema.CollectorPage
+	var childrenPageList []*dbschema.NgingCollectorPage
 	if m.PageRoot > 0 {
-		childM := &dbschema.CollectorPage{}
+		childM := &dbschema.NgingCollectorPage{}
 		cond := []db.Compound{
 			db.Cond{`parent_id`: m.PageRoot},
 		}
@@ -306,7 +307,7 @@ func ExportEdit(ctx echo.Context) error {
 func ExportEditStatus(ctx echo.Context) error {
 	disabled := ctx.Form(`disabled`)
 	id := ctx.Formx(`id`).Uint()
-	m := &dbschema.CollectorExport{}
+	m := &dbschema.NgingCollectorExport{}
 	err := m.SetField(nil, `disabled`, disabled, db.Cond{`id`: id})
 	if err != nil {
 		return ctx.JSON(ctx.Data().SetError(err))

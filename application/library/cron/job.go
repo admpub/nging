@@ -127,18 +127,18 @@ func MailTpl() *template.Template {
 }
 
 type Job struct {
-	id         uint              // 任务ID
-	logID      uint64            // 日志记录ID
-	name       string            // 任务名称
-	task       *dbschema.Task    // 任务对象
-	taskLog    *dbschema.TaskLog // 结果日志
-	runner     Runner            // 执行函数
-	isSYS      bool              // 是否是系统内部功能
-	status     int64             // 任务状态，大于0表示正在执行中
-	Concurrent bool              // 同一个任务是否允许并行执行
+	id         uint                   // 任务ID
+	logID      uint64                 // 日志记录ID
+	name       string                 // 任务名称
+	task       *dbschema.NgingTask    // 任务对象
+	taskLog    *dbschema.NgingTaskLog // 结果日志
+	runner     Runner                 // 执行函数
+	isSYS      bool                   // 是否是系统内部功能
+	status     int64                  // 任务状态，大于0表示正在执行中
+	Concurrent bool                   // 同一个任务是否允许并行执行
 }
 
-func NewJobFromTask(ctx context.Context, task *dbschema.Task) (*Job, error) {
+func NewJobFromTask(ctx context.Context, task *dbschema.NgingTask) (*Job, error) {
 	if task.Id < 1 {
 		return nil, fmt.Errorf("Job: missing task.Id")
 	}
@@ -177,7 +177,7 @@ func NewJobFromTask(ctx context.Context, task *dbschema.Task) (*Job, error) {
 		}
 	}
 	if task.GroupId > 0 {
-		group := &dbschema.TaskGroup{}
+		group := &dbschema.NgingTaskGroup{}
 		err := group.Get(nil, `id`, task.GroupId)
 		if err != nil {
 			return nil, err
@@ -258,7 +258,7 @@ func (j *Job) LogID() uint64 {
 	return j.logID
 }
 
-func (j *Job) LogData() *dbschema.TaskLog {
+func (j *Job) LogData() *dbschema.NgingTaskLog {
 	return j.taskLog
 }
 
@@ -273,7 +273,7 @@ func (j *Job) addAndReturningLog() *Job {
 }
 
 func (j *Job) sendEmail(elapsed float64, t time.Time, err error, cmdOut string, isTimeout bool, timeout time.Duration) {
-	user := new(dbschema.User)
+	user := new(dbschema.NgingUser)
 	uerr := user.Get(nil, `id`, j.task.Uid)
 	if uerr != nil {
 		return
@@ -326,7 +326,7 @@ func (j *Job) Run() {
 		isTimeout bool
 	)
 	t := time.Now()
-	tl := new(dbschema.TaskLog)
+	tl := new(dbschema.NgingTaskLog)
 	tl.TaskId = j.id
 	tl.Created = uint(t.Unix())
 

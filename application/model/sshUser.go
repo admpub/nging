@@ -21,12 +21,13 @@ import (
 	"io"
 	"strings"
 
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/model/base"
-	"github.com/admpub/web-terminal/library/ssh"
 	colorable "github.com/mattn/go-colorable"
 	"github.com/webx-top/echo"
 	stdSSH "golang.org/x/crypto/ssh"
+
+	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/model/base"
+	"github.com/admpub/web-terminal/library/ssh"
 )
 
 var (
@@ -35,19 +36,19 @@ var (
 )
 
 type SshUserAndGroup struct {
-	*dbschema.SshUser
-	Group *dbschema.SshUserGroup
+	*dbschema.NgingSshUser
+	Group *dbschema.NgingSshUserGroup
 }
 
 func NewSshUser(ctx echo.Context) *SshUser {
 	return &SshUser{
-		SshUser: &dbschema.SshUser{},
-		Base:    base.New(ctx),
+		NgingSshUser: &dbschema.NgingSshUser{},
+		Base:         base.New(ctx),
 	}
 }
 
 type SshUser struct {
-	*dbschema.SshUser
+	*dbschema.NgingSshUser
 	*base.Base
 }
 

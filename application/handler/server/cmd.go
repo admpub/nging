@@ -26,6 +26,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/webx-top/com"
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/param"
+
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
@@ -35,10 +40,6 @@ import (
 	"github.com/admpub/nging/application/model"
 	"github.com/admpub/sockjs-go/sockjs"
 	"github.com/admpub/websocket"
-	"github.com/webx-top/com"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/param"
 )
 
 func Cmd(ctx echo.Context) error {
@@ -335,28 +336,28 @@ func CmdSendByWebsocket(c *websocket.Conn, ctx echo.Context) error {
 	return nil
 }
 
-func ExecCommand(id uint) (*dbschema.Command, string, error) {
+func ExecCommand(id uint) (*dbschema.NgingCommand, string, error) {
 	m := model.NewCommand(nil)
 	err := m.Get(nil, `id`, id)
 	if err != nil {
-		return m.Command, "", err
+		return m.NgingCommand, "", err
 	}
-	if m.Command.Disabled == `Y` {
-		return m.Command, "", errors.New(echo.T(`该命令已禁用`))
+	if m.NgingCommand.Disabled == `Y` {
+		return m.NgingCommand, "", errors.New(echo.T(`该命令已禁用`))
 	}
-	//m.Command.Remote = `Y`
-	//m.Command.SshAccountId = 4
-	if m.Command.Remote == `Y` {
-		if m.Command.SshAccountId < 1 {
-			return m.Command, "", errors.New("Error, you did not choose ssh account")
+	//m.NgingCommand.Remote = `Y`
+	//m.NgingCommand.SshAccountId = 4
+	if m.NgingCommand.Remote == `Y` {
+		if m.NgingCommand.SshAccountId < 1 {
+			return m.NgingCommand, "", errors.New("Error, you did not choose ssh account")
 		}
 		sshUser := model.NewSshUser(nil)
-		err = sshUser.Get(nil, `id`, m.Command.SshAccountId)
+		err = sshUser.Get(nil, `id`, m.NgingCommand.SshAccountId)
 		if err != nil {
 			if err == db.ErrNoMoreRows {
-				return m.Command, "", errors.New("The specified ssh account does not exist")
+				return m.NgingCommand, "", errors.New("The specified ssh account does not exist")
 			}
-			return m.Command, "", err
+			return m.NgingCommand, "", err
 		}
 		sshUser.Passphrase = config.DefaultConfig.Decode(sshUser.Passphrase)
 		sshUser.Password = config.DefaultConfig.Decode(sshUser.Password)
@@ -373,14 +374,14 @@ func ExecCommand(id uint) (*dbschema.Command, string, error) {
 				cmdList = append(cmdList, `export `+env)
 			}
 		}
-		cmdList = append(cmdList, m.Command.Command)
+		cmdList = append(cmdList, m.NgingCommand.Command)
 		w := cron.NewCmdRec(1000)
 		err = sshUser.ExecMultiCMD(w, cmdList...)
 		if err != nil {
-			return m.Command, "", err
+			return m.NgingCommand, "", err
 		}
 		//panic(echo.Dump(w.String(), false))
-		return m.Command, w.String(), nil
+		return m.NgingCommand, w.String(), nil
 	}
-	return m.Command, "", err
+	return m.NgingCommand, "", err
 }

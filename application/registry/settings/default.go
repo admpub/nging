@@ -29,7 +29,7 @@ import (
 	"github.com/admpub/nging/application/dbschema"
 )
 
-var configDefaults = map[string]map[string]*dbschema.Config{
+var configDefaults = map[string]map[string]*dbschema.NgingConfig{
 	`base`: {
 		`apiKey`: {
 			Key:         `apiKey`,
@@ -199,12 +199,12 @@ var configDefaults = map[string]map[string]*dbschema.Config{
 	},
 }
 
-func AddDefaultConfig(group string, configs map[string]*dbschema.Config) {
+func AddDefaultConfig(group string, configs map[string]*dbschema.NgingConfig) {
 	if strings.Contains(group, `.`) {
 		panic(`Group name is not allowed to contain ".": ` + group)
 	}
 	if _, y := configDefaults[group]; !y {
-		configDefaults[group] = map[string]*dbschema.Config{}
+		configDefaults[group] = map[string]*dbschema.NgingConfig{}
 	}
 	for key, conf := range configs {
 		if conf.Group != group {
@@ -214,12 +214,12 @@ func AddDefaultConfig(group string, configs map[string]*dbschema.Config) {
 	}
 }
 
-func GetDefaultConfig(group string) map[string]*dbschema.Config {
+func GetDefaultConfig(group string) map[string]*dbschema.NgingConfig {
 	r, _ := configDefaults[group]
 	return r
 }
 
-func GetDefaultConfigOk(group string) (map[string]*dbschema.Config, bool) {
+func GetDefaultConfigOk(group string) (map[string]*dbschema.NgingConfig, bool) {
 	r, y := configDefaults[group]
 	return r, y
 }
@@ -228,13 +228,13 @@ func ConfigDefaultsAsStore() echo.H {
 	return configAsStore(configDefaults)
 }
 
-func ConfigDefaults() map[string]map[string]*dbschema.Config {
+func ConfigDefaults() map[string]map[string]*dbschema.NgingConfig {
 	return configDefaults
 }
 
 func Init() error {
 	log.Debug(`Initialize the configuration data in the database table`)
-	m := &dbschema.Config{}
+	m := &dbschema.NgingConfig{}
 	_, err := m.ListByOffset(nil, func(r db.Result) db.Result {
 		return r.Group(`group`)
 	}, 0, -1)
@@ -270,7 +270,7 @@ func Init() error {
 // ConfigAsStore {Group:{Key:ValueObject}}
 func ConfigAsStore(groups ...string) echo.H {
 	r := echo.H{}
-	m := &dbschema.Config{}
+	m := &dbschema.NgingConfig{}
 	cond := db.NewCompounds()
 	cond.Add(db.Cond{`disabled`: `N`})
 	if len(groups) > 0 {
@@ -299,7 +299,7 @@ func ConfigAsStore(groups ...string) echo.H {
 }
 
 // {Group:{Key:ValueObject}}
-func configAsStore(configList map[string]map[string]*dbschema.Config) echo.H {
+func configAsStore(configList map[string]map[string]*dbschema.NgingConfig) echo.H {
 	r := echo.H{}
 	for group, configs := range configList {
 		v := echo.H{}

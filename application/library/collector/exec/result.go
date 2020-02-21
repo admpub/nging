@@ -34,7 +34,7 @@ import (
 )
 
 func init() {
-	gob.Register([]*dbschema.CollectorRule{})
+	gob.Register([]*dbschema.NgingCollectorRule{})
 	_ = color.Red
 	miner.UserAgentf = http.Dir(filepath.Join(echo.Wd(), `config`))
 }

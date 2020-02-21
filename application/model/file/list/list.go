@@ -24,15 +24,15 @@ import (
 )
 
 type FileInfo struct {
-	*dbschema.File
+	*dbschema.NgingFile
 	SubdirInfo *upload.SubdirInfo `db:"-"`
 }
 
-var FileList = func(list []*dbschema.File) interface{} {
+var FileList = func(list []*dbschema.NgingFile) interface{} {
 	listData := make([]*FileInfo, len(list))
 	for k, v := range list {
 		listData[k] = &FileInfo{
-			File:       v,
+			NgingFile:  v,
 			SubdirInfo: upload.SubdirGet(v.TableName),
 		}
 	}

@@ -19,10 +19,11 @@
 package frp
 
 import (
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/model"
 )
 
 func GroupIndex(ctx echo.Context) error {
@@ -45,7 +46,7 @@ func GroupAdd(ctx echo.Context) error {
 		} else if y {
 			err = ctx.E(`用户组名称已经存在`)
 		} else {
-			err = ctx.MustBind(m.FrpGroup)
+			err = ctx.MustBind(m.NgingFrpGroup)
 		}
 		if err == nil {
 			_, err = m.Add()
@@ -59,7 +60,7 @@ func GroupAdd(ctx echo.Context) error {
 		if id > 0 {
 			err = m.Get(nil, `id`, id)
 			if err == nil {
-				echo.StructToForm(ctx, m.FrpGroup, ``, echo.LowerCaseFirstLetter)
+				echo.StructToForm(ctx, m.NgingFrpGroup, ``, echo.LowerCaseFirstLetter)
 				ctx.Request().Form().Set(`id`, `0`)
 			}
 		}
@@ -83,7 +84,7 @@ func GroupEdit(ctx echo.Context) error {
 		} else if y {
 			err = ctx.E(`用户组名称已经存在`)
 		} else {
-			err = ctx.MustBind(m.FrpGroup, echo.ExcludeFieldName(`created`))
+			err = ctx.MustBind(m.NgingFrpGroup, echo.ExcludeFieldName(`created`))
 		}
 
 		if err == nil {
@@ -95,7 +96,7 @@ func GroupEdit(ctx echo.Context) error {
 			}
 		}
 	} else if err == nil {
-		echo.StructToForm(ctx, m.FrpGroup, ``, echo.LowerCaseFirstLetter)
+		echo.StructToForm(ctx, m.NgingFrpGroup, ``, echo.LowerCaseFirstLetter)
 	}
 
 	ctx.Set(`activeURL`, `/frp/group_index`)

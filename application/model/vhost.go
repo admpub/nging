@@ -18,24 +18,25 @@
 package model
 
 import (
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
-	"github.com/webx-top/echo"
 )
 
 func NewVhost(ctx echo.Context) *Vhost {
 	return &Vhost{
-		Vhost: &dbschema.Vhost{},
-		Base:  base.New(ctx),
+		NgingVhost: &dbschema.NgingVhost{},
+		Base:       base.New(ctx),
 	}
 }
 
 type VhostAndGroup struct {
-	*dbschema.Vhost
-	Group *dbschema.VhostGroup
+	*dbschema.NgingVhost
+	Group *dbschema.NgingVhostGroup
 }
 
 type Vhost struct {
-	*dbschema.Vhost
+	*dbschema.NgingVhost
 	*base.Base
 }

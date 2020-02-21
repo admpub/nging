@@ -21,14 +21,15 @@ package frp
 import (
 	"fmt"
 
+	"github.com/webx-top/com"
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/model"
-	"github.com/webx-top/com"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 func ServerIndex(ctx echo.Context) error {
@@ -51,8 +52,8 @@ func ServerIndex(ctx echo.Context) error {
 	serverAndGroup := make([]*model.FrpServerAndGroup, len(servers))
 	for k, u := range servers {
 		serverAndGroup[k] = &model.FrpServerAndGroup{
-			FrpServer: u,
-			Running:   config.DefaultCLIConfig.IsRunning(`frpserver.` + fmt.Sprint(u.Id)),
+			NgingFrpServer: u,
+			Running:        config.DefaultCLIConfig.IsRunning(`frpserver.` + fmt.Sprint(u.Id)),
 		}
 		if u.GroupId < 1 {
 			continue
@@ -63,7 +64,7 @@ func ServerIndex(ctx echo.Context) error {
 	}
 
 	mg := model.NewFrpGroup(ctx)
-	var groupList []*dbschema.FrpGroup
+	var groupList []*dbschema.NgingFrpGroup
 	if len(gIds) > 0 {
 		_, err = mg.List(&groupList, nil, 1, 1000, db.Cond{`id IN`: gIds})
 		if err != nil {
@@ -101,13 +102,13 @@ func ServerAdd(ctx echo.Context) error {
 		} else if y {
 			err = ctx.E(`名称已经存在`)
 		} else {
-			err = ctx.MustBind(m.FrpServer)
+			err = ctx.MustBind(m.NgingFrpServer)
 		}
 
 		if err == nil {
 			_, err = m.Add()
 			if err == nil {
-				err = config.DefaultCLIConfig.FRPSaveConfigFile(m.FrpServer)
+				err = config.DefaultCLIConfig.FRPSaveConfigFile(m.NgingFrpServer)
 			}
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))
@@ -119,7 +120,7 @@ func ServerAdd(ctx echo.Context) error {
 		if id > 0 {
 			err = m.Get(nil, `id`, id)
 			if err == nil {
-				echo.StructToForm(ctx, m.FrpServer, ``, func(topName, fieldName string) string {
+				echo.StructToForm(ctx, m.NgingFrpServer, ``, func(topName, fieldName string) string {
 					return echo.LowerCaseFirstLetter(topName, fieldName)
 				})
 				ctx.Request().Form().Set(`id`, `0`)
@@ -150,14 +151,14 @@ func ServerEdit(ctx echo.Context) error {
 		} else if y {
 			err = ctx.E(`名称已经存在`)
 		} else {
-			err = ctx.MustBind(m.FrpServer, echo.ExcludeFieldName(`created`))
+			err = ctx.MustBind(m.NgingFrpServer, echo.ExcludeFieldName(`created`))
 		}
 
 		if err == nil {
 			m.Id = id
 			err = m.Edit(nil, db.Cond{`id`: id})
 			if err == nil {
-				err = config.DefaultCLIConfig.FRPSaveConfigFile(m.FrpServer)
+				err = config.DefaultCLIConfig.FRPSaveConfigFile(m.NgingFrpServer)
 			}
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))
@@ -174,7 +175,7 @@ func ServerEdit(ctx echo.Context) error {
 				data.SetError(err)
 				return ctx.JSON(data)
 			}
-			err = config.DefaultCLIConfig.FRPSaveConfigFile(m.FrpServer)
+			err = config.DefaultCLIConfig.FRPSaveConfigFile(m.NgingFrpServer)
 			if err != nil {
 				data.SetError(err)
 				return ctx.JSON(data)
@@ -184,7 +185,7 @@ func ServerEdit(ctx echo.Context) error {
 		}
 	}
 	if err == nil {
-		echo.StructToForm(ctx, m.FrpServer, ``, func(topName, fieldName string) string {
+		echo.StructToForm(ctx, m.NgingFrpServer, ``, func(topName, fieldName string) string {
 			return echo.LowerCaseFirstLetter(topName, fieldName)
 		})
 	}
@@ -204,7 +205,7 @@ func ServerDelete(ctx echo.Context) error {
 	m := model.NewFrpServer(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
-		err = config.DefaultCLIConfig.FRPSaveConfigFile(&dbschema.FrpServer{Disabled: `Y`, Id: id})
+		err = config.DefaultCLIConfig.FRPSaveConfigFile(&dbschema.NgingFrpServer{Disabled: `Y`, Id: id})
 	}
 	if err == nil {
 		handler.SendOk(ctx, ctx.T(`操作成功`))

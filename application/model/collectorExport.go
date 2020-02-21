@@ -21,24 +21,25 @@ package model
 import (
 	"errors"
 
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/collector/export"
-	"github.com/admpub/nging/application/model/base"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
+
+	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/library/collector/export"
+	"github.com/admpub/nging/application/model/base"
 )
 
 func NewCollectorExport(ctx echo.Context) *CollectorExport {
 	return &CollectorExport{
-		CollectorExport: &dbschema.CollectorExport{},
-		Base:            base.New(ctx),
+		NgingCollectorExport: &dbschema.NgingCollectorExport{},
+		Base:                 base.New(ctx),
 	}
 }
 
 type CollectorExport struct {
-	*dbschema.CollectorExport
+	*dbschema.NgingCollectorExport
 	*base.Base
 }
 
@@ -47,7 +48,7 @@ func (c *CollectorExport) Add() (pk interface{}, err error) {
 	if err != nil {
 		return
 	}
-	return c.CollectorExport.Add()
+	return c.NgingCollectorExport.Add()
 }
 
 func (c *CollectorExport) check() error {
@@ -67,11 +68,11 @@ func (c *CollectorExport) Edit(mw func(db.Result) db.Result, args ...interface{}
 	if err != nil {
 		return err
 	}
-	return c.CollectorExport.Edit(mw, args...)
+	return c.NgingCollectorExport.Edit(mw, args...)
 }
 
 func (c *CollectorExport) Export() (int64, error) {
-	rows := []*dbschema.CollectorExport{}
+	rows := []*dbschema.NgingCollectorExport{}
 	cnt, err := c.ListByOffset(&rows, nil, 0, -1, db.Cond{`disabled`: `N`})
 	if err != nil {
 		return 0, err

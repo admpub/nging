@@ -33,13 +33,13 @@ import (
 func ExportLog(ctx echo.Context) error {
 	exportID := ctx.Formx(`exportId`).Uint()
 	totalRows := ctx.Formx(`rows`).Int()
-	m := &dbschema.CollectorExportLog{}
+	m := &dbschema.NgingCollectorExportLog{}
 	page, size, totalRows, p := handler.PagingWithPagination(ctx)
 	cond := db.Cond{}
-	var export *dbschema.CollectorExport
+	var export *dbschema.NgingCollectorExport
 	var err error
 	if exportID > 0 {
-		export = &dbschema.CollectorExport{}
+		export = &dbschema.NgingCollectorExport{}
 		err = export.Get(nil, `id`, exportID)
 		cond[`export_id`] = exportID
 	}
@@ -56,7 +56,7 @@ func ExportLog(ctx echo.Context) error {
 	ctx.Set(`listData`, m.Objects())
 	ctx.Set(`pagination`, p)
 	if export == nil {
-		export = &dbschema.CollectorExport{}
+		export = &dbschema.NgingCollectorExport{}
 	}
 	ctx.Set(`export`, export)
 	ret := handler.Err(ctx, err)
@@ -64,12 +64,12 @@ func ExportLog(ctx echo.Context) error {
 	return ctx.Render(`collector/export_log`, ret)
 }
 
-func renderLogViewData(ctx echo.Context, m *dbschema.CollectorExportLog, err error) error {
+func renderLogViewData(ctx echo.Context, m *dbschema.NgingCollectorExportLog, err error) error {
 	ctx.Set(`data`, m)
 	ctx.Set(`activeURL`, `/collector/export`)
-	var export *dbschema.CollectorExport
+	var export *dbschema.NgingCollectorExport
 	if m.ExportId > 0 {
-		export = &dbschema.CollectorExport{}
+		export = &dbschema.NgingCollectorExport{}
 		err = export.Get(nil, `id`, m.ExportId)
 	}
 	ctx.Set(`export`, export)
@@ -78,7 +78,7 @@ func renderLogViewData(ctx echo.Context, m *dbschema.CollectorExportLog, err err
 
 func ExportLogView(ctx echo.Context) error {
 	id := ctx.Paramx(`id`).Uint()
-	m := &dbschema.CollectorExportLog{}
+	m := &dbschema.NgingCollectorExportLog{}
 	err := m.Get(nil, `id`, id)
 	if err != nil {
 		handler.SendFail(ctx, err.Error())
@@ -90,7 +90,7 @@ func ExportLogView(ctx echo.Context) error {
 func ExportLogDelete(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
 	exportId := ctx.Formx(`exportId`).Uint()
-	m := &dbschema.CollectorExportLog{}
+	m := &dbschema.NgingCollectorExportLog{}
 	var (
 		cond db.Cond
 		err  error

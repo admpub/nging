@@ -34,9 +34,9 @@ import (
 func init() {
 	// 当用户文件被删除
 	config.Emitter.On(`user-file-deleted`, events.Callback(func(e events.Event) error {
-		data := e.Context.Get(`data`).(*dbschema.File)
+		data := e.Context.Get(`data`).(*dbschema.NgingFile)
 		ownerID := e.Context.Uint64(`ownerID`)
-		userM := &dbschema.User{}
+		userM := &dbschema.NgingUser{}
 		err := userM.Get(nil, db.Cond{`id`: ownerID})
 		if err != nil {
 			if err == db.ErrNoMoreRows {
@@ -53,7 +53,7 @@ func init() {
 			db.Cond{`file_num`: db.Gt(0)},
 		))
 		if err != nil {
-			fileM := &dbschema.File{}
+			fileM := &dbschema.NgingFile{}
 			recv := echo.H{}
 			err = fileM.NewParam().SetMW(func(r db.Result) db.Result {
 				return r.Select(db.Raw(`SUM(size) AS c`), db.Raw(`COUNT(1) AS n`))
@@ -77,7 +77,7 @@ func init() {
 	config.Emitter.On(`file-deleted`, events.Callback(func(e events.Event) error {
 		ctx := e.Context.Get(`ctx`).(echo.Context)
 		files := e.Context.Get(`files`).([]string)
-		data := e.Context.Get(`data`).(*dbschema.File)
+		data := e.Context.Get(`data`).(*dbschema.NgingFile)
 		newStore := upload.StorerGet(data.StorerName)
 		if newStore == nil {
 			return ctx.E(`存储引擎“%s”未被登记`, data.StorerName)

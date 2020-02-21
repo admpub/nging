@@ -18,19 +18,20 @@
 package model
 
 import (
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
-	"github.com/webx-top/echo"
 )
 
 func NewVerification(ctx echo.Context) *Verification {
 	return &Verification{
-		CodeVerification: &dbschema.CodeVerification{},
-		Base:             base.New(ctx),
+		NgingCodeVerification: &dbschema.NgingCodeVerification{},
+		Base:                  base.New(ctx),
 	}
 }
 
 type Verification struct {
-	*dbschema.CodeVerification
+	*dbschema.NgingCodeVerification
 	*base.Base
 }

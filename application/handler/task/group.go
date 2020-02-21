@@ -18,10 +18,11 @@
 package task
 
 import (
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/model"
 )
 
 func Group(ctx echo.Context) error {
@@ -36,7 +37,7 @@ func GroupAdd(ctx echo.Context) error {
 	var err error
 	if ctx.IsPost() {
 		m := model.NewTaskGroup(ctx)
-		err = ctx.MustBind(m.TaskGroup)
+		err = ctx.MustBind(m.NgingTaskGroup)
 		if err == nil {
 			if len(m.Name) == 0 {
 				err = ctx.E(`分组名称不能为空`)
@@ -62,7 +63,7 @@ func GroupEdit(ctx echo.Context) error {
 		return ctx.Redirect(handler.URLFor(`/task/group`))
 	}
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.TaskGroup)
+		err = ctx.MustBind(m.NgingTaskGroup)
 		if err == nil {
 			m.Id = id
 			if len(m.Name) == 0 {
@@ -76,7 +77,7 @@ func GroupEdit(ctx echo.Context) error {
 			return ctx.Redirect(handler.URLFor(`/task/group`))
 		}
 	}
-	echo.StructToForm(ctx, m.TaskGroup, ``, echo.LowerCaseFirstLetter)
+	echo.StructToForm(ctx, m.NgingTaskGroup, ``, echo.LowerCaseFirstLetter)
 	ctx.Set(`activeURL`, `/task/group`)
 	return ctx.Render(`task/group_edit`, handler.Err(ctx, err))
 }

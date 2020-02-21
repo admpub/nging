@@ -29,7 +29,7 @@ import (
 	"github.com/admpub/nging/application/library/common"
 )
 
-type Encoder func(v *dbschema.Config, r echo.H) ([]byte, error)
+type Encoder func(v *dbschema.NgingConfig, r echo.H) ([]byte, error)
 
 var encoders = map[string]Encoder{}
 
@@ -52,7 +52,7 @@ func RegisterEncoder(group string, encoder Encoder) {
 
 var ErrNotExists = errors.New(`Not exists`)
 
-func EncodeConfigValue(_v *echo.Mapx, v *dbschema.Config, encoder Encoder) (value string, err error) {
+func EncodeConfigValue(_v *echo.Mapx, v *dbschema.NgingConfig, encoder Encoder) (value string, err error) {
 	if _v.IsMap() {
 		var b []byte
 		var e error
@@ -91,7 +91,7 @@ func EncodeConfigValue(_v *echo.Mapx, v *dbschema.Config, encoder Encoder) (valu
 	return
 }
 
-func DefaultEncoder(v *dbschema.Config, value string) string {
+func DefaultEncoder(v *dbschema.NgingConfig, value string) string {
 	switch v.Type {
 	case `html`, `markdown`:
 		value = common.RemoveXSS(value)

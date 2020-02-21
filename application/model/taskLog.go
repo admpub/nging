@@ -18,19 +18,20 @@
 package model
 
 import (
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
-	"github.com/webx-top/echo"
 )
 
 func NewTaskLog(ctx echo.Context) *TaskLog {
 	return &TaskLog{
-		TaskLog: &dbschema.TaskLog{},
-		Base:    base.New(ctx),
+		NgingTaskLog: &dbschema.NgingTaskLog{},
+		Base:         base.New(ctx),
 	}
 }
 
 type TaskLog struct {
-	*dbschema.TaskLog
+	*dbschema.NgingTaskLog
 	*base.Base
 }

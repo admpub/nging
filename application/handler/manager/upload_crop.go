@@ -295,7 +295,7 @@ END:
 	}
 	cropOpt := &modelFile.CropOptions{
 		Options:       opt,
-		File:          fileM.File,
+		File:          fileM.NgingFile,
 		SrcReader:     reader,
 		Storer:        storer,
 		DestFile:      storer.URLToFile(thumbURL),

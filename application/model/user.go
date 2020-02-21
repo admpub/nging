@@ -32,20 +32,20 @@ import (
 )
 
 func init() {
-	gob.Register(&dbschema.User{})
+	gob.Register(&dbschema.NgingUser{})
 }
 
 func NewUser(ctx echo.Context) *User {
 	m := &User{
-		User: &dbschema.User{},
-		base: base.New(ctx),
+		NgingUser: &dbschema.NgingUser{},
+		base:      base.New(ctx),
 	}
-	m.User.SetContext(ctx)
+	m.NgingUser.SetContext(ctx)
 	return m
 }
 
 type User struct {
-	*dbschema.User
+	*dbschema.NgingUser
 	base *base.Base
 }
 
@@ -71,11 +71,11 @@ func (u *User) CheckPasswd(username string, password string) (exists bool, err e
 		}
 		return
 	}
-	if u.User.Disabled == `Y` {
+	if u.NgingUser.Disabled == `Y` {
 		err = errors.New(u.base.T(`该用户已被禁用`))
 		return
 	}
-	if u.User.Password != com.MakePassword(password, u.User.Salt) {
+	if u.NgingUser.Password != com.MakePassword(password, u.NgingUser.Salt) {
 		err = errors.New(u.base.T(`密码不正确`))
 	}
 	return
@@ -131,7 +131,7 @@ func (u *User) Add() (err error) {
 	}
 	u.Salt = com.Salt()
 	u.Password = com.MakePassword(u.Password, u.Salt)
-	_, err = u.User.Add()
+	_, err = u.NgingUser.Add()
 	return
 }
 
@@ -150,22 +150,22 @@ func (u *User) UpdateField(uid uint, set map[string]interface{}) (err error) {
 }
 
 func (u *User) NeedCheckU2F(uid uint) bool {
-	u2f := &dbschema.UserU2f{}
+	u2f := &dbschema.NgingUserU2f{}
 	u2f.SetContext(u.base.Context)
 	n, _ := u2f.Count(nil, `uid`, uid)
 	return n > 0
 }
 
-func (u *User) GetUserAllU2F(uid uint) ([]*dbschema.UserU2f, error) {
-	u2f := &dbschema.UserU2f{}
+func (u *User) GetUserAllU2F(uid uint) ([]*dbschema.NgingUserU2f, error) {
+	u2f := &dbschema.NgingUserU2f{}
 	u2f.SetContext(u.base.Context)
-	all := []*dbschema.UserU2f{}
+	all := []*dbschema.NgingUserU2f{}
 	_, err := u2f.ListByOffset(&all, nil, 0, -1, `uid`, uid)
 	return all, err
 }
 
-func (u *User) U2F(uid uint, typ string) (u2f *dbschema.UserU2f, err error) {
-	u2f = &dbschema.UserU2f{}
+func (u *User) U2F(uid uint, typ string) (u2f *dbschema.NgingUserU2f, err error) {
+	u2f = &dbschema.NgingUserU2f{}
 	u2f.SetContext(u.base.Context)
 	err = u2f.Get(nil, db.And(db.Cond{`uid`: uid}, db.Cond{`type`: typ}))
 	return
@@ -194,7 +194,7 @@ func (u *User) Register(user, pass, email, roleIds string) error {
 	if exists {
 		return u.base.E(`用户名已经存在`)
 	}
-	userSchema := &dbschema.User{}
+	userSchema := &dbschema.NgingUser{}
 	userSchema.SetContext(u.base.Context)
 	userSchema.Username = user
 	userSchema.Email = email
@@ -203,21 +203,21 @@ func (u *User) Register(user, pass, email, roleIds string) error {
 	userSchema.Disabled = `N`
 	userSchema.RoleIds = roleIds
 	_, err = userSchema.EventOFF().Add()
-	u.User = userSchema
+	u.NgingUser = userSchema
 	return err
 }
 
-func (u *User) SetSession(users ...*dbschema.User) {
+func (u *User) SetSession(users ...*dbschema.NgingUser) {
 	userCopy := u.ClearPasswordData(users...)
 	u.base.Session().Set(`user`, &userCopy)
 }
 
-func (u *User) ClearPasswordData(users ...*dbschema.User) dbschema.User {
-	var user dbschema.User
+func (u *User) ClearPasswordData(users ...*dbschema.NgingUser) dbschema.NgingUser {
+	var user dbschema.NgingUser
 	if len(users) > 0 {
 		user = *(users[0])
 	} else {
-		user = *(u.User)
+		user = *(u.NgingUser)
 	}
 	user.Password = ``
 	user.Salt = ``
@@ -229,12 +229,12 @@ func (u *User) UnsetSession() {
 	u.base.Session().Delete(`user`)
 }
 
-func (u *User) VerifySession(users ...*dbschema.User) error {
-	var user *dbschema.User
+func (u *User) VerifySession(users ...*dbschema.NgingUser) error {
+	var user *dbschema.NgingUser
 	if len(users) > 0 {
 		user = users[0]
 	} else {
-		user, _ = u.base.Session().Get(`user`).(*dbschema.User)
+		user, _ = u.base.Session().Get(`user`).(*dbschema.NgingUser)
 	}
 	if user == nil {
 		return common.ErrUserNotLoggedIn
@@ -247,7 +247,7 @@ func (u *User) VerifySession(users ...*dbschema.User) error {
 		u.UnsetSession()
 		return common.ErrUserNotFound
 	}
-	if u.User.Updated != user.Updated {
+	if u.NgingUser.Updated != user.Updated {
 		u.SetSession()
 		u.base.Set(`user`, user)
 	}

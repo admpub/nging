@@ -30,13 +30,13 @@ import (
 
 func NewAccessLog(ctx echo.Context) *AccessLog {
 	return &AccessLog{
-		AccessLog: &dbschema.AccessLog{},
-		base:      base.New(ctx),
+		NgingAccessLog: &dbschema.NgingAccessLog{},
+		base:           base.New(ctx),
 	}
 }
 
 type AccessLog struct {
-	*dbschema.AccessLog
+	*dbschema.NgingAccessLog
 	base *base.Base
 }
 

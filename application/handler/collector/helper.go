@@ -24,7 +24,7 @@ import (
 	"github.com/webx-top/echo"
 )
 
-func parseFormToDb(c echo.Context, pageM *dbschema.CollectorPage, formPrefix string, update bool) (rules []*dbschema.CollectorRule, err error) {
+func parseFormToDb(c echo.Context, pageM *dbschema.NgingCollectorPage, formPrefix string, update bool) (rules []*dbschema.NgingCollectorRule, err error) {
 	if pageM.Id > 0 {
 		err = pageM.Edit(nil, `id`, pageM.Id)
 	} else {
@@ -51,7 +51,7 @@ func parseFormToDb(c echo.Context, pageM *dbschema.CollectorPage, formPrefix str
 	filters := c.FormValues(formPrefix + `[filter][]`)
 	filterCount := len(filters)
 	for i := 0; i < varCount; i++ {
-		rule := dbschema.CollectorRule{
+		rule := dbschema.NgingCollectorRule{
 			PageId: pageM.Id,
 			Name:   vars[i],
 			Type:   ``,

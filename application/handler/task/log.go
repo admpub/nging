@@ -23,12 +23,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/cron"
 	"github.com/admpub/nging/application/model"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 )
 
 func Log(ctx echo.Context) error {
@@ -66,7 +67,7 @@ func Log(ctx echo.Context) error {
 	return ctx.Render(`task/log`, ret)
 }
 
-func renderLogViewData(ctx echo.Context, m *dbschema.TaskLog, err error) error {
+func renderLogViewData(ctx echo.Context, m *dbschema.NgingTaskLog, err error) error {
 	ctx.Set(`data`, m)
 	ctx.Set(`activeURL`, `/task/index`)
 	var task *model.Task
@@ -96,7 +97,7 @@ func LogView(ctx echo.Context) error {
 		handler.SendFail(ctx, err.Error())
 		return ctx.Redirect(handler.URLFor(`/task/log`))
 	}
-	return renderLogViewData(ctx, m.TaskLog, err)
+	return renderLogViewData(ctx, m.NgingTaskLog, err)
 }
 
 func LogDelete(ctx echo.Context) error {

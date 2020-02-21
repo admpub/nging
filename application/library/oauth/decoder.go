@@ -26,7 +26,7 @@ import (
 )
 
 func init() {
-	settings.RegisterDecoder(`oauth`, func(v *dbschema.Config, r echo.H) error {
+	settings.RegisterDecoder(`oauth`, func(v *dbschema.NgingConfig, r echo.H) error {
 		jsonData := NewConfig()
 		if len(v.Value) > 0 {
 			com.JSONDecode([]byte(v.Value), jsonData)
@@ -35,7 +35,7 @@ func init() {
 		r[`ValueObject`] = jsonData
 		return nil
 	})
-	settings.RegisterEncoder(`oauth`, func(v *dbschema.Config, r echo.H) ([]byte, error) {
+	settings.RegisterEncoder(`oauth`, func(v *dbschema.NgingConfig, r echo.H) ([]byte, error) {
 		oauthConfig := NewConfig().FromStore(v.Key, r)
 		return com.JSONEncode(oauthConfig)
 	})

@@ -20,12 +20,13 @@ package ftp
 import (
 	"strings"
 
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/model"
 )
 
 func AccountIndex(ctx echo.Context) error {
@@ -44,7 +45,7 @@ func AccountIndex(ctx echo.Context) error {
 	userAndGroup := make([]*model.FtpUserAndGroup, len(users))
 	for k, u := range users {
 		userAndGroup[k] = &model.FtpUserAndGroup{
-			FtpUser: u,
+			NgingFtpUser: u,
 		}
 		if u.GroupId < 1 {
 			continue
@@ -55,7 +56,7 @@ func AccountIndex(ctx echo.Context) error {
 	}
 
 	mg := model.NewFtpUserGroup(ctx)
-	var groupList []*dbschema.FtpUserGroup
+	var groupList []*dbschema.NgingFtpUserGroup
 	if len(gIds) > 0 {
 		_, err = mg.List(&groupList, nil, 1, 1000, db.Cond{`id IN`: gIds})
 		if err != nil {
@@ -96,7 +97,7 @@ func AccountAdd(ctx echo.Context) error {
 		} else if y {
 			err = ctx.E(`账户名已经存在`)
 		} else {
-			err = ctx.MustBind(m.FtpUser)
+			err = ctx.MustBind(m.NgingFtpUser)
 		}
 
 		if err == nil {
@@ -112,7 +113,7 @@ func AccountAdd(ctx echo.Context) error {
 		if id > 0 {
 			err = m.Get(nil, `id`, id)
 			if err == nil {
-				echo.StructToForm(ctx, m.FtpUser, ``, func(topName, fieldName string) string {
+				echo.StructToForm(ctx, m.NgingFtpUser, ``, func(topName, fieldName string) string {
 					if topName == `` && fieldName == `Password` {
 						return ``
 					}
@@ -144,7 +145,7 @@ func AccountEdit(ctx echo.Context) error {
 		} else if length > 0 && length < 6 {
 			err = ctx.E(`密码不能少于6个字符`)
 		} else {
-			err = ctx.MustBind(m.FtpUser, func(k string, v []string) (string, []string) {
+			err = ctx.MustBind(m.NgingFtpUser, func(k string, v []string) (string, []string) {
 				switch strings.ToLower(k) {
 				case `password`:
 					if len(v) < 1 || v[0] == `` {
@@ -168,7 +169,7 @@ func AccountEdit(ctx echo.Context) error {
 			}
 		}
 	} else if err == nil {
-		echo.StructToForm(ctx, m.FtpUser, ``, func(topName, fieldName string) string {
+		echo.StructToForm(ctx, m.NgingFtpUser, ``, func(topName, fieldName string) string {
 			if topName == `` && fieldName == `Password` {
 				return ``
 			}
@@ -219,7 +220,7 @@ func GroupAdd(ctx echo.Context) error {
 		} else if y {
 			err = ctx.E(`用户组名称已经存在`)
 		} else {
-			err = ctx.MustBind(m.FtpUserGroup)
+			err = ctx.MustBind(m.NgingFtpUserGroup)
 		}
 		if err == nil {
 			_, err = m.Add()
@@ -233,7 +234,7 @@ func GroupAdd(ctx echo.Context) error {
 		if id > 0 {
 			err = m.Get(nil, `id`, id)
 			if err == nil {
-				echo.StructToForm(ctx, m.FtpUserGroup, ``, echo.LowerCaseFirstLetter)
+				echo.StructToForm(ctx, m.NgingFtpUserGroup, ``, echo.LowerCaseFirstLetter)
 				ctx.Request().Form().Set(`id`, `0`)
 			}
 		}
@@ -256,7 +257,7 @@ func GroupEdit(ctx echo.Context) error {
 		} else if y {
 			err = ctx.E(`用户组名称已经存在`)
 		} else {
-			err = ctx.MustBind(m.FtpUserGroup, echo.ExcludeFieldName(`created`))
+			err = ctx.MustBind(m.NgingFtpUserGroup, echo.ExcludeFieldName(`created`))
 		}
 
 		if err == nil {
@@ -268,7 +269,7 @@ func GroupEdit(ctx echo.Context) error {
 			}
 		}
 	} else if err == nil {
-		echo.StructToForm(ctx, m.FtpUserGroup, ``, echo.LowerCaseFirstLetter)
+		echo.StructToForm(ctx, m.NgingFtpUserGroup, ``, echo.LowerCaseFirstLetter)
 	}
 
 	ctx.Set(`activeURL`, `/ftp/group`)

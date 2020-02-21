@@ -9,7 +9,7 @@ import (
 	"github.com/admpub/nging/application/dbschema"
 )
 
-func (f *Embedded) DeleteByInstance(m *dbschema.FileEmbedded) error {
+func (f *Embedded) DeleteByInstance(m *dbschema.NgingFileEmbedded) error {
 	err := f.Delete(nil, `id`, m.Id)
 	if err != nil {
 		return err

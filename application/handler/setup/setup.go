@@ -141,10 +141,8 @@ func Setup(ctx echo.Context) error {
 		}
 		return ctx.String(msg)
 	}
-	insertSQLFiles, err := config.GetSQLInsertFiles()
-	if err != nil {
-		log.Error(err)
-	} else if len(insertSQLFiles) > 0 {
+	insertSQLFiles := config.GetSQLInsertFiles()
+	if len(insertSQLFiles) > 0 {
 		sqlFiles = append(sqlFiles, insertSQLFiles...)
 	}
 
