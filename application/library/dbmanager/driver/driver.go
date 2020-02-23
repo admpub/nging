@@ -222,11 +222,11 @@ func (m *BaseDriver) CheckErr(err error) interface{} {
 }
 
 func (m *BaseDriver) SetOk(msg string) {
-	m.Session().AddFlash(common.Ok(msg))
+	common.SendOk(m.Context, msg)
 }
 
 func (m *BaseDriver) SetFail(msg string) {
-	m.Session().AddFlash(msg)
+	common.SendFail(m.Context, msg)
 }
 
 func (m *BaseDriver) ReturnTo(rets ...string) error {

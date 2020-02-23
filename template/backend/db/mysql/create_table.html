@@ -19,7 +19,7 @@
             </h3>
           </div>
           <div class="content">
-              <form class="form-horizontal group-border-dashed" method="POST" action="">
+              <form class="form-horizontal group-border-dashed" method="POST" id="form-table-struct-edit" action="">
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"表名"|T}}</label>
                 <div class="col-sm-9">
@@ -393,6 +393,24 @@ $(function(){
     {{if Stored.supportPartitioning}}
     onselectPartition('select[name="partition_method"]');
     {{end}}
+    $('#form-table-struct-edit').off().on('submit', function(e){
+        e.preventDefault();
+        var url = $(this).attr('action');
+        if(!url) url = window.location.href;
+        var data = $(this).serializeArray();
+        $.post(url,data,function(r){
+            App.message({text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
+            if(r.Code==1){
+                window.setTimeout(function(){
+                    if(r.URL){
+                        window.location = r.URL;
+                    }else{
+                        wondow.location.reload();
+                    }
+                },2000);
+            }
+        },'json');
+    });
 });
 </script>
 {{/Block}}

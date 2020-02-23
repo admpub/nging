@@ -490,7 +490,8 @@ func (m *mySQL) CreateTable() error {
 			autoIncrementStart,
 			partitioning)
 		if err == nil {
-			return m.returnTo()
+			m.ok(m.T(`添加成功`))
+			return m.returnTo(m.GenURL(`listDb`))
 		}
 	}
 	engines, err := m.getEngines()
@@ -533,7 +534,7 @@ func (m *mySQL) ModifyTable() error {
 	oldTable := m.Form(`table`)
 	if len(oldTable) < 1 {
 		m.fail(m.T(`table参数不能为空`))
-		return m.returnTo(`listDb`)
+		return m.returnTo(m.GenURL(`listDb`))
 	}
 
 	referencablePrimary, _, err := m.referencablePrimary(``)
@@ -717,6 +718,7 @@ func (m *mySQL) ModifyTable() error {
 			if oldTable != table {
 				returnURLs = append(returnURLs, m.GenURL(`listDb`))
 			}
+			m.ok(m.T(`修改成功`))
 			return m.returnTo(returnURLs...)
 		}
 	} else {
