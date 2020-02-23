@@ -24,13 +24,13 @@ import (
 
 //Item 操作
 type Item struct {
-	DisplayOnMenu bool   //是否在菜单三显示
-	Name          string //名称
-	Action        string //操作(一般为网址)
-	Icon          string //图标
-	Target        string //打开方式
-	Unlimited     bool   //是否不限制权限
-	Children      *List
+	DisplayOnMenu bool   `json:",omitempty" xml:",omitempty"` //是否在菜单三显示
+	Name          string `json:",omitempty" xml:",omitempty"` //名称
+	Action        string `json:",omitempty" xml:",omitempty"` //操作(一般为网址)
+	Icon          string `json:",omitempty" xml:",omitempty"` //图标
+	Target        string `json:",omitempty" xml:",omitempty"` //打开方式
+	Unlimited     bool   `json:",omitempty" xml:",omitempty"` //是否不限制权限
+	Children      *List  `json:",omitempty" xml:",omitempty"`
 }
 
 func (a *Item) FullPath(parentPath string) string {

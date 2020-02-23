@@ -17,8 +17,10 @@ const (
 	// SQLColumnComment 查询列注释的SQL
 	SQLColumnComment = "SELECT COLUMN_NAME as `field`, column_comment as `description`, DATA_TYPE as `type`, CHARACTER_MAXIMUM_LENGTH as `max_length`, CHARACTER_OCTET_LENGTH as `octet_length`, NUMERIC_PRECISION as `precision` FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema=? AND table_name=?"
 	// SQLShowCreate 查询建表语句的SQL
-	SQLShowCreate  = "SHOW CREATE TABLE "
+	SQLShowCreate = "SHOW CREATE TABLE "
+	// SQLTableExists 查询表是否存在的SQL
 	SQLTableExists = "SELECT COUNT(1) AS count FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA=? AND TABLE_NAME=?"
+	// SQLFieldExists 查询字段是否存在的SQL
 	SQLFieldExists = "SELECT COUNT(1) AS count FROM information_schema.columns WHERE table_name=? AND column_name=?"
 )
 
@@ -41,6 +43,25 @@ func CreateTableSQL(linkID int, dbName string, tableName string) (string, error)
 		return ``, fmt.Errorf(`CreateTableSQL.Scan: %v`, err)
 	}
 	return recvCreateTableSQL.String, err
+}
+
+// GetTables 获取数据表列表
+func GetTables(linkID int) ([]string, error) {
+	rows, err := factory.NewParam().SetIndex(linkID).SetCollection(`SHOW TABLES`).Query()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	ret := []string{}
+	for rows.Next() {
+		var v sql.NullString
+		err := rows.Scan(&v)
+		if err != nil {
+			return nil, err
+		}
+		ret = append(ret, v.String)
+	}
+	return ret, nil
 }
 
 // TableComment 查询表注释
