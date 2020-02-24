@@ -44,8 +44,10 @@ func ListenRealTimeStatus() {
 	ctx, cancel := context.WithCancel(context.Background())
 	go realTimeStatus.Listen(ctx)
 	CancelRealTimeStatusCollection = func() {
-		cancel()
-		realTimeStatus = nil
+		if RealTimeStatusIsListening() {
+			realTimeStatus = nil
+			cancel()
+		}
 	}
 }
 
