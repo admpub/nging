@@ -33,8 +33,12 @@ var (
 	CancelRealTimeStatusCollection func()
 )
 
+func RealTimeStatusIsListening() bool {
+	return realTimeStatus != nil
+}
+
 func ListenRealTimeStatus() {
-	if realTimeStatus == nil {
+	if !RealTimeStatusIsListening() {
 		realTimeStatus = NewRealTimeStatus(time.Second*2, 80)
 	}
 	ctx, cancel := context.WithCancel(context.Background())
