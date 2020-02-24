@@ -410,7 +410,7 @@ func (m *mySQL) tableFields(table string) (map[string]*Field, []string, error) {
 		}
 		switch field.Type {
 		case `decimal`, `float`, `double`:
-			sizeInfo := strings.SplitN(match[2], `,`, 2)
+			sizeInfo := strings.SplitN(field.Length, `,`, 2)
 			switch len(sizeInfo) {
 			case 2:
 				field.Precision = param.AsInt(sizeInfo[1])
@@ -418,6 +418,7 @@ func (m *mySQL) tableFields(table string) (map[string]*Field, []string, error) {
 			case 1:
 				field.LengthN = param.AsInt(sizeInfo[0])
 			}
+
 		case `enum`, `set`:
 			field.Options = strings.Split(strings.Trim(field.Length, `'`), `','`)
 			if field.Default.Valid {
@@ -425,7 +426,13 @@ func (m *mySQL) tableFields(table string) (map[string]*Field, []string, error) {
 					field.Options = append(field.Options, ``)
 				}
 			}
+
+		default:
+			if len(field.Length) > 0 && com.StrIsNumeric(field.Length) {
+				field.LengthN = param.AsInt(field.Length)
+			}
 		}
+
 		ret[v.Field.String] = field
 	}
 	return ret, sorts, nil
