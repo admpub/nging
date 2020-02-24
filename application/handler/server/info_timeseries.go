@@ -23,13 +23,14 @@ import (
 	"math"
 	"time"
 
-	"github.com/admpub/log"
 	"github.com/shirou/gopsutil/net"
+
+	"github.com/admpub/log"
 )
 
 var (
 	realTimeStatus                 *RealTimeStatus
-	CancelRealTimeStatusCollection context.CancelFunc
+	CancelRealTimeStatusCollection func()
 )
 
 func ListenRealTimeStatus() {
@@ -38,7 +39,10 @@ func ListenRealTimeStatus() {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	go realTimeStatus.Listen(ctx)
-	CancelRealTimeStatusCollection = cancel
+	CancelRealTimeStatusCollection = func() {
+		cancel()
+		realTimeStatus = nil
+	}
 }
 
 func NewRealTimeStatus(interval time.Duration, maxSize int) *RealTimeStatus {
