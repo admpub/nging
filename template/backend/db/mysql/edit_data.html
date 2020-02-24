@@ -12,7 +12,7 @@
         {{Include "db/mysql/results"}}
         <div class="block-flat">
           <div class="content">
-             <form action="" method="POST" enctype="multipart/form-data">
+             <form action="" id="form-table-data-edit" method="POST" enctype="multipart/form-data">
              <div class="table-responsive">
 				<table class="table blue">
                     <colgroup>
@@ -67,7 +67,7 @@
                                 {{else if isNumber $field.Type}}
                                 <input data-type="number" type="number" name="value[{{$column}}]" class="form-control" value="{{$value.String}}"{{if $field.Unsigned}} min="0"{{end}} step="{{mumberStep $field}}">
                                 {{else if eq $field.InputType "textarea"}}
-                                <textarea name="value[{{$column}}]" rows="1" class="form-control" style="resize:vertical">{{$field.Format $value.String}}</textarea>
+                                <textarea name="value[{{$column}}]" rows="3" class="form-control" style="resize:vertical">{{$field.Format $value.String}}</textarea>
                                 {{else}}
                                 <input type="{{$field.InputType}}" name="value[{{$column}}]" class="form-control" value="{{$field.Format $value.String}}">
                                 {{end}}
@@ -115,7 +115,7 @@
 
 {{Block "footer"}}
 {{Super}}
-
+<script type="text/javascript" src="__ASSETS__/js/textarea/autosize.min.js"></script>
 <script>
 function onselectFunction(obj){
     var v=$(obj).val();
@@ -125,5 +125,8 @@ function onselectFunction(obj){
         valElem.attr('type',v?'text':valElem.data('type'));
     }
 }
+$(function() {
+    $('#form-table-data-edit textarea').autosize();
+});
 </script>
 {{/Block}}
