@@ -24,6 +24,12 @@ import (
 	"github.com/admpub/service"
 )
 
+type Options struct {
+	Name        string // Required name of the service. No spaces suggested.
+	DisplayName string // Display name, spaces allowed.
+	Description string // Long description of service.
+}
+
 // Config is the runner app config structure.
 type Config struct {
 	service.Config
@@ -34,6 +40,13 @@ type Config struct {
 	Args []string
 	Env  []string
 
-   OnExited       func() error `json:"-"`
+	OnExited       func() error `json:"-"`
 	Stderr, Stdout io.Writer    `json:"-"`
+}
+
+func (c *Config) CopyFromOptions(options *Options) *Config {
+	c.Name = options.Name
+	c.DisplayName = options.DisplayName
+	c.Description = options.Description
+	return c
 }

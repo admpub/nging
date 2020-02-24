@@ -29,11 +29,9 @@ import (
 	"github.com/admpub/log"
 )
 
-func Run(action string) error {
+func Run(options *Options, action string) error {
 	conf := &Config{}
-	conf.Name = `Nging`
-	conf.DisplayName = `Nging`
-	conf.Description = `Nging Server Manager`
+	conf.CopyFromOptions(options)
 	conf.Dir = com.SelfDir()
 	conf.Exec = os.Args[0]
 	if len(os.Args) > 3 {

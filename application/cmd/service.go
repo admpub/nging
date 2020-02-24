@@ -22,12 +22,21 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/spf13/cobra"
+
+	"github.com/admpub/nging/application/cmd/event"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/service"
-	"github.com/spf13/cobra"
 )
 
 // 将Nging安装为系统服务的工具
+
+// ServiceOptions 服务选项
+var ServiceOptions = &service.Options{
+	Name:        ``,
+	DisplayName: ``,
+	Description: ``,
+}
 
 var serviceCmd = &cobra.Command{
 	Use:     "service",
@@ -44,7 +53,16 @@ func serviceRunE(cmd *cobra.Command, args []string) error {
 	if len(args) < 1 {
 		return cmd.Usage()
 	}
-	return service.Run(args[0])
+	if len(ServiceOptions.Name) == 0 {
+		ServiceOptions.Name = event.SofewareName
+	}
+	if len(ServiceOptions.DisplayName) == 0 {
+		ServiceOptions.DisplayName = ServiceOptions.Name
+	}
+	if len(ServiceOptions.Name) == 0 {
+		ServiceOptions.Description = ServiceOptions.DisplayName + ` Service`
+	}
+	return service.Run(ServiceOptions, args[0])
 }
 
 func init() {
