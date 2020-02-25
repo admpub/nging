@@ -159,7 +159,7 @@ func init() {
 		}
 		renderOptions.AddFuncSetter(ngingMW.ErrorPageFunc)
 		renderOptions.ApplyTo(e, event.BackendTmplMgr)
-		RendererDo(renderOptions.Renderer())
+		//RendererDo(renderOptions.Renderer())
 		emitter.DefaultCondEmitter.On(`clearCache`, events.Callback(func(_ events.Event) error {
 			log.Debug(`clear: Backend Template Object Cache`)
 			renderOptions.Renderer().ClearCache()
