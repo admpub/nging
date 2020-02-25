@@ -41,7 +41,11 @@ func InitSessionOptions(c *Config) {
 	if len(c.Cookie.Path) == 0 {
 		c.Cookie.Path = `/`
 	}
-	SessionOptions = echo.NewSessionOptions(SessionEngine, SessionName, &echo.CookieOptions{
+	sessionName := c.Sys.SessionName
+	if len(sessionName) == 0 {
+		sessionName = SessionName
+	}
+	SessionOptions = echo.NewSessionOptions(SessionEngine, sessionName, &echo.CookieOptions{
 		Domain:   c.Cookie.Domain,
 		Path:     c.Cookie.Path,
 		MaxAge:   c.Cookie.MaxAge,
