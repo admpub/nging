@@ -23,14 +23,15 @@ import (
 	"os"
 	"strings"
 
+	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/subdomains"
+
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/notice"
 	"github.com/admpub/nging/application/registry/route"
-	"github.com/webx-top/com"
-	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/subdomains"
 )
 
 var (
@@ -62,6 +63,7 @@ var (
 	Register     = func(fn func(echo.RouteRegister)) {
 		route.RegisterToGroup(`@`, fn)
 	}
+	// Use “@”符号代表后台网址前缀
 	Use = func(groupName string, middlewares ...interface{}) {
 		if groupName != `*` {
 			groupName = `@` + groupName
@@ -71,6 +73,7 @@ var (
 	RegisterToGroup = func(groupName string, fn func(echo.RouteRegister), middlewares ...interface{}) {
 		route.RegisterToGroup(`@`+groupName, fn, middlewares...)
 	}
+	Host = route.Host
 )
 
 func init() {

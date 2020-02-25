@@ -19,38 +19,32 @@
 package route
 
 import (
-	"strings"
-
 	"github.com/webx-top/echo"
 )
 
 func NewRegister(e *echo.Echo, groupNamers ...func(string) string) *Register {
 	return &Register{
-		Echo:              e,
-		Handlers:          []func(echo.RouteRegister){},
-		GroupHandlers:     map[string][]func(echo.RouteRegister){},
-		GroupMiddlewares:  map[string][]interface{}{},
-		PrefixMiddlewares: map[string][]interface{}{},
-		GroupNamers:       groupNamers,
+		Echo:     e,
+		Handlers: []func(echo.RouteRegister){},
+		Group:    NewGroup(groupNamers...),
+		Hosts:    make(map[string]*Host),
 	}
 }
 
 type Register struct {
-	Echo              *echo.Echo
-	RootGroup         string
-	Handlers          []func(echo.RouteRegister)
-	GroupHandlers     map[string][]func(echo.RouteRegister)
-	GroupNamers       []func(string) string
-	GroupMiddlewares  map[string][]interface{}
-	PrefixMiddlewares map[string][]interface{}
+	Echo      *echo.Echo
+	RootGroup string
+	Handlers  []func(echo.RouteRegister)
+	Group     *Group
+	Hosts     map[string]*Host
 }
 
 func (r *Register) AddGroupNamer(namers ...func(string) string) {
-	r.GroupNamers = append(r.GroupNamers, namers...)
+	r.Group.AddNamer(namers...)
 }
 
 func (r *Register) SetGroupNamer(namers ...func(string) string) {
-	r.GroupNamers = namers
+	r.Group.SetNamer(namers...)
 }
 
 func (r *Register) Apply() {
@@ -58,47 +52,15 @@ func (r *Register) Apply() {
 	for _, register := range r.Handlers {
 		register(e)
 	}
-	var groupDefaultMiddlewares []interface{}
-	middlewares, ok := r.GroupMiddlewares[`*`]
-	if ok {
-		groupDefaultMiddlewares = append(groupDefaultMiddlewares, middlewares...)
-	}
-	for group, handlers := range r.GroupHandlers {
-		for _, namer := range r.GroupNamers {
-			group = namer(group)
-		}
-		g := e.Group(group)
-		if group != r.RootGroup { // 组名为空时，为顶层组
-			g.Use(groupDefaultMiddlewares...)
-		}
-		for prefix, middlewares := range r.PrefixMiddlewares {
-			if strings.HasPrefix(group, prefix) {
-				g.Use(middlewares...)
-			}
-		}
-		middlewares, ok := r.GroupMiddlewares[group]
-		if ok {
-			g.Use(middlewares...)
-		}
-		for _, register := range handlers {
-			register(g)
-		}
+	r.Group.Apply(e, r.RootGroup)
+	for _, host := range r.Hosts {
+		hst := e.Host(host.Name, host.Middlewares...)
+		host.Group.Apply(hst, r.RootGroup)
 	}
 }
 
 func (r *Register) Use(groupName string, middlewares ...interface{}) {
-	if groupName != `*` && strings.HasSuffix(groupName, `*`) {
-		groupName = strings.TrimRight(groupName, `*`)
-		if _, ok := r.PrefixMiddlewares[groupName]; !ok {
-			r.PrefixMiddlewares[groupName] = []interface{}{}
-		}
-		r.PrefixMiddlewares[groupName] = append(r.PrefixMiddlewares[groupName], middlewares...)
-		return
-	}
-	if _, ok := r.GroupMiddlewares[groupName]; !ok {
-		r.GroupMiddlewares[groupName] = []interface{}{}
-	}
-	r.GroupMiddlewares[groupName] = append(r.GroupMiddlewares[groupName], middlewares...)
+	r.Group.Use(groupName, middlewares...)
 }
 
 func (r *Register) Register(fn func(echo.RouteRegister)) {
@@ -106,16 +68,18 @@ func (r *Register) Register(fn func(echo.RouteRegister)) {
 }
 
 func (r *Register) RegisterToGroup(groupName string, fn func(echo.RouteRegister), middlewares ...interface{}) {
-	_, ok := r.GroupHandlers[groupName]
+	r.Group.Register(groupName, fn, middlewares...)
+}
+
+func (r *Register) Host(hostName string, middlewares ...interface{}) *Host {
+	host, ok := r.Hosts[hostName]
 	if !ok {
-		r.GroupHandlers[groupName] = []func(echo.RouteRegister){}
-	}
-	if len(middlewares) > 0 {
-		_, ok = r.GroupMiddlewares[groupName]
-		if !ok {
-			r.GroupMiddlewares[groupName] = []interface{}{}
+		host = &Host{
+			Name:  hostName,
+			Group: NewGroup(),
 		}
-		r.GroupMiddlewares[groupName] = append(r.GroupMiddlewares[groupName], middlewares...)
+		r.Hosts[hostName] = host
 	}
-	r.GroupHandlers[groupName] = append(r.GroupHandlers[groupName], fn)
+	host.Use(middlewares...)
+	return host
 }

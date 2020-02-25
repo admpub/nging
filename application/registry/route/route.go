@@ -19,9 +19,10 @@
 package route
 
 import (
-	"github.com/admpub/nging/application/library/route"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/defaults"
+
+	"github.com/admpub/nging/application/library/route"
 )
 
 var (
@@ -46,6 +47,10 @@ func Use(groupName string, middlewares ...interface{}) {
 
 func SetRootGroup(groupName string) {
 	routeRegister.RootGroup = groupName
+}
+
+func Host(hostName string, middlewares ...interface{}) *route.Host {
+	return routeRegister.Host(hostName, middlewares...)
 }
 
 func Apply() {
