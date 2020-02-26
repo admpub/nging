@@ -33,8 +33,8 @@
 								<li title="{{`清空会话内容`|T}}" data-toggle="tooltip" onclick="clearScreen()"><i class="fa fa-eraser"></i></li>
 								{{- if eq Stored.id 0 -}}
 								{{if or Stored.isLinux Stored.isMac}}
-								<li title="{{`查看内存占用前五的进程`|T}}" data-toggle="tooltip" onclick="sendCmd('ps auxw | head -1;ps auxw|sort -rn -k4|head -5')"><i class="fa fa-flag on fa-circle"></i></li>
-								<li title="{{`查看CPU占用前五的进程`|T}}" data-toggle="tooltip" onclick="sendCmd('ps auxw|head -1;ps auxw|sort -rn -k3|head -5')"><i class="fa fa-heart-o on fa-circle"></i></li>
+								<li title="{{`查看内存占用前五的进程`|T}}" data-toggle="tooltip" onclick="sendCmd('ps auxw | head -1;ps auxw|sort -rn -k4|head -5')"><i class="fa fa-flag"></i></li>
+								<li title="{{`查看CPU占用前五的进程`|T}}" data-toggle="tooltip" onclick="sendCmd('ps auxw|head -1;ps auxw|sort -rn -k3|head -5')"><i class="fa fa-heart"></i></li>
 								{{end}}
 								{{- end -}}
 							</ul>
