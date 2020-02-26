@@ -29,14 +29,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
+
 	"github.com/admpub/archiver"
 	"github.com/admpub/errors"
 	loga "github.com/admpub/log"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/admpub/nging/application/library/dbmanager/driver/mysql/utils"
-	"github.com/webx-top/com"
-	"github.com/webx-top/echo"
 )
 
 // SQLTempDir sql文件缓存目录获取函数(用于导入导出SQL)
@@ -44,11 +45,9 @@ var SQLTempDir = os.TempDir
 
 func TempDir(op string) string {
 	dir := filepath.Join(SQLTempDir(), `dbmanager/cache`, op)
-	if !com.IsDir(dir) {
-		err := os.MkdirAll(dir, os.ModePerm)
-		if err != nil {
-			loga.Error(err)
-		}
+	err := os.MkdirAll(dir, os.ModePerm)
+	if err != nil {
+		loga.Error(err)
 	}
 	return dir
 }

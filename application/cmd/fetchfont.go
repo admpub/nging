@@ -27,10 +27,11 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"github.com/admpub/marmot/miner"
 	"github.com/spf13/cobra"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/marmot/miner"
 )
 
 // 下载 googleapis css文件中的字体
@@ -72,11 +73,9 @@ func FetchFont(_cssFile string, _outputDir string, _debug bool) error {
 		fmt.Println(string(body))
 	}
 	matches := regexFontFile.FindAllStringSubmatch(string(body), -1)
-	if !com.IsDir(_outputDir) {
-		err = os.MkdirAll(_outputDir, os.ModePerm)
-		if err != nil {
-			return err
-		}
+	err = os.MkdirAll(_outputDir, os.ModePerm)
+	if err != nil {
+		return err
 	}
 	for _, match := range matches {
 		name := match[1]

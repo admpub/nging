@@ -128,11 +128,9 @@ func AddDaemon(p *dbschema.NgingForeverProcess, run ...bool) *goforever.Process 
 	procs.Logfile = p.Logfile
 
 	pidFile := filepath.Join(echo.Wd(), `data/pid/daemon`)
-	if !com.IsDir(pidFile) {
-		err := os.MkdirAll(pidFile, os.ModePerm)
-		if err != nil {
-			log.Error(err)
-		}
+	err := os.MkdirAll(pidFile, os.ModePerm)
+	if err != nil {
+		log.Error(err)
 	}
 	pidFile = filepath.Join(pidFile, fmt.Sprintf(`%d.pid`, p.Id))
 	procs.Pidfile = goforever.Pidfile(pidFile)

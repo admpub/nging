@@ -171,11 +171,9 @@ func (c *CLIConfig) FRPConfigFile(id uint, isServer bool) string {
 		configFile = `client`
 	}
 	configFile = filepath.Join(echo.Wd(), `config`, `frp`, configFile)
-	if !com.IsDir(configFile) {
-		err := os.MkdirAll(configFile, os.ModePerm)
-		if err != nil {
-			log.Error(err)
-		}
+	err := os.MkdirAll(configFile, os.ModePerm)
+	if err != nil {
+		log.Error(err)
 	}
 	return filepath.Join(configFile, fmt.Sprintf(`%d.yaml`, id))
 }
@@ -201,11 +199,9 @@ func (c *CLIConfig) FRPPidFile(id string, isServer bool) string {
 		pidFile = `client`
 	}
 	pidFile = filepath.Join(echo.Wd(), `data/pid/frp`, pidFile)
-	if !com.IsDir(pidFile) {
-		err := os.MkdirAll(pidFile, os.ModePerm)
-		if err != nil {
-			log.Error(err)
-		}
+	err := os.MkdirAll(pidFile, os.ModePerm)
+	if err != nil {
+		log.Error(err)
 	}
 	return filepath.Join(pidFile, id+`.pid`)
 }

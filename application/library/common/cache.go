@@ -29,11 +29,9 @@ import (
 // WriteCache 写缓存文件
 func WriteCache(dir string, name string, content []byte) (err error) {
 	savePath := filepath.Join(echo.Wd(), `data`, `cache`, dir)
-	if _, err = os.Stat(savePath); os.IsNotExist(err) {
-		err = os.MkdirAll(savePath, os.ModePerm)
-		if err != nil {
-			return
-		}
+	err = os.MkdirAll(savePath, os.ModePerm)
+	if err != nil {
+		return
 	}
 	err = ioutil.WriteFile(savePath+echo.FilePathSeparator+name, content, os.ModePerm)
 	return

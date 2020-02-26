@@ -172,11 +172,9 @@ func (c *Config) SaveToFile() error {
 		return err
 	}
 	dir := filepath.Dir(DefaultCLIConfig.Conf)
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		err = os.MkdirAll(dir, os.ModePerm)
-		if err != nil {
-			return err
-		}
+	err = os.MkdirAll(dir, os.ModePerm)
+	if err != nil {
+		return err
 	}
 	/*
 		_, e := os.Stat(DefaultCLIConfig.Conf + `.sample`)

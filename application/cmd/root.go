@@ -25,6 +25,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mholt/certmagic"
+	"github.com/spf13/cobra"
+	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/engine"
+	"github.com/webx-top/echo/engine/standard"
+	"github.com/webx-top/echo/middleware"
+	"github.com/webx-top/echo/subdomains"
+
 	"github.com/admpub/events/emitter"
 	figure "github.com/admpub/go-figure"
 	"github.com/admpub/log"
@@ -33,14 +41,6 @@ import (
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/license"
 	"github.com/admpub/nging/application/library/msgbox"
-	"github.com/mholt/certmagic"
-	"github.com/spf13/cobra"
-	"github.com/webx-top/com"
-	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/engine"
-	"github.com/webx-top/echo/engine/standard"
-	"github.com/webx-top/echo/middleware"
-	"github.com/webx-top/echo/subdomains"
 )
 
 // Nging 启动入口
@@ -147,10 +147,8 @@ func initCertMagic(c *engine.Config) error {
 	fileStorage := &certmagic.FileStorage{
 		Path: filepath.Join(echo.Wd(), `data`, `cache`, `certmagic`),
 	}
-	if !com.IsExist(fileStorage.Path) {
-		if err := os.MkdirAll(fileStorage.Path, 0777); err != nil {
-			return err
-		}
+	if err := os.MkdirAll(fileStorage.Path, 0777); err != nil {
+		return err
 	}
 	if event.Develop { // use the staging endpoint while we're developing
 		certmagic.Default.CA = certmagic.LetsEncryptStagingCA

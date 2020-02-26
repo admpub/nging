@@ -176,8 +176,8 @@ func (f *Filesystem) DeleteDir(dstDir string) error {
 // Move 移动文件
 func (f *Filesystem) Move(src, dst string) error {
 	sdir := filepath.Dir(dst)
-	if _, err := os.Stat(sdir); os.IsNotExist(err) {
-		os.MkdirAll(sdir, os.ModePerm)
+	if err := os.MkdirAll(sdir, os.ModePerm); err != nil {
+		return err
 	}
 	return os.Rename(src, dst)
 }

@@ -22,10 +22,11 @@ import (
 	"os"
 	"path/filepath"
 
-	ftpserver "github.com/admpub/ftpserver"
-	"github.com/admpub/log"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+
+	ftpserver "github.com/admpub/ftpserver"
+	"github.com/admpub/log"
 )
 
 var (
@@ -45,17 +46,13 @@ var (
 )
 
 func Fixed(c *Config) {
-	//if c.PidFile == `` {
 	pidFile := filepath.Join(echo.Wd(), `data/pid/ftp`)
-	if !com.IsDir(pidFile) {
-		err := os.MkdirAll(pidFile, os.ModePerm)
-		if err != nil {
-			log.Error(err)
-		}
+	err := os.MkdirAll(pidFile, os.ModePerm)
+	if err != nil {
+		log.Error(err)
 	}
 	pidFile = filepath.Join(pidFile, DefaultPidFile)
 	c.PidFile = pidFile
-	//}
 	if c.ServerOpts.Name == `` {
 		c.ServerOpts.Name = DefaultConfig.ServerOpts.Name
 	}

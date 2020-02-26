@@ -27,8 +27,9 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/admpub/service"
 	"github.com/webx-top/com"
+
+	"github.com/admpub/service"
 )
 
 func ValidServiceAction(action string) error {
@@ -85,11 +86,9 @@ func getPidFiles() []string {
 
 func NewProgram(cfg *Config) *program {
 	pidFile := filepath.Join(com.SelfDir(), `data/pid`)
-	if !com.IsDir(pidFile) {
-		err := os.MkdirAll(pidFile, os.ModePerm)
-		if err != nil {
-			log.Println(err)
-		}
+	err := os.MkdirAll(pidFile, os.ModePerm)
+	if err != nil {
+		log.Println(err)
 	}
 	pidFile = filepath.Join(pidFile, `nging.pid`)
 	p := &program{

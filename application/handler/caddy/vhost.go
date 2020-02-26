@@ -210,12 +210,7 @@ func getSaveDir() (saveFile string, err error) {
 	if err != nil {
 		return
 	}
-	if fi, er := os.Stat(saveFile); er != nil || !fi.IsDir() {
-		err = os.MkdirAll(saveFile, 0666)
-		if err != nil {
-			return
-		}
-	}
+	err = os.MkdirAll(saveFile, 0666)
 	return
 }
 

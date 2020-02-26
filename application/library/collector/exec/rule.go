@@ -44,11 +44,11 @@ import (
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/charset"
-	"github.com/admpub/nging/application/library/common"
-	"github.com/admpub/nging/application/library/notice"
 	_ "github.com/admpub/nging/application/library/collector/driver/chrome"
 	_ "github.com/admpub/nging/application/library/collector/driver/webdriver"
 	"github.com/admpub/nging/application/library/collector/sender"
+	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/application/library/notice"
 	//_ "github.com/admpub/nging/application/library/collector/driver/phantomjs" //高CPU占用
 	//_ "github.com/admpub/nging/application/library/collector/driver/phantomjsfetcher" //高CPU占用
 	_ "github.com/admpub/nging/application/library/collector/driver/standard"
@@ -300,11 +300,9 @@ func (c *Rule) Collect(parentID uint64,
 			}
 			saveTo := filepath.Join(echo.Wd(), newPath)
 			saveDir := filepath.Dir(saveTo)
-			if !com.IsDir(saveDir) {
-				err = os.MkdirAll(saveDir, 0777)
-				if err != nil {
-					return newPath, err
-				}
+			err = os.MkdirAll(saveDir, 0777)
+			if err != nil {
+				return newPath, err
 			}
 			if sendErr := noticeSender(`download file: `+fileURL+` => `+saveTo, 1, progress); sendErr != nil {
 				return newPath, sendErr

@@ -33,7 +33,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/admpub/nging/application/library/msgbox"
 	"github.com/caddyserver/caddy"
 	_ "github.com/caddyserver/caddy/caddyhttp"
 	"github.com/caddyserver/caddy/caddytls"
@@ -41,6 +40,8 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
+
+	"github.com/admpub/nging/application/library/msgbox"
 )
 
 var (
@@ -75,26 +76,25 @@ func Fixed(c *Config) {
 	if len(c.CPU) == 0 {
 		c.CPU = DefaultConfig.CPU
 	}
-	//if len(c.PidFile) == 0 {
 	pidFile := filepath.Join(echo.Wd(), `data/pid`)
-	if !com.IsDir(pidFile) {
-		err := os.MkdirAll(pidFile, os.ModePerm)
-		if err != nil {
-			log.Println(err)
-		}
+	err := os.MkdirAll(pidFile, os.ModePerm)
+	if err != nil {
+		log.Println(err)
 	}
 	pidFile = filepath.Join(pidFile, `caddy.pid`)
 	c.PidFile = pidFile
-	//}
 	if len(c.LogFile) == 0 {
 		logFile := filepath.Join(echo.Wd(), `data/logs`)
-		if !com.IsDir(logFile) {
-			err := os.MkdirAll(logFile, os.ModePerm)
-			if err != nil {
-				log.Println(err)
-			}
+		err := os.MkdirAll(logFile, os.ModePerm)
+		if err != nil {
+			log.Println(err)
 		}
 		c.LogFile = filepath.Join(logFile, `caddy.log`)
+	} else {
+		err := os.MkdirAll(filepath.Dir(c.LogFile), os.ModePerm)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 	c.appName = `nging`
 	c.appVersion = echo.String(`VERSION`, DefaultVersion)

@@ -38,11 +38,9 @@ func Run(options *Options, action string) error {
 		conf.Args = os.Args[3:]
 	}
 	logDir := filepath.Join(com.SelfDir(), `data`, `logs`)
-	if info, err := os.Stat(logDir); err != nil || !info.IsDir() {
-		err = os.MkdirAll(logDir, os.ModePerm)
-		if err != nil {
-			return err
-		}
+	err := os.MkdirAll(logDir, os.ModePerm)
+	if err != nil {
+		return err
 	}
 	fileTarget := log.NewFileTarget()
 	fileTarget.FileName = filepath.Join(logDir, `app_{date:20060102}.log`) //按天分割日志

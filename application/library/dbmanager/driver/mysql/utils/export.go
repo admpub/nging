@@ -30,11 +30,12 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/webx-top/com"
+	"github.com/webx-top/db"
+
 	"github.com/admpub/errors"
 	"github.com/admpub/nging/application/library/cron"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
-	"github.com/webx-top/com"
-	"github.com/webx-top/db"
 )
 
 /*
@@ -131,11 +132,9 @@ func Export(ctx context.Context, cfg *driver.DbAuth, tables []string, structWrit
 			w = v
 		case string:
 			dir := filepath.Dir(v)
-			if _, err := os.Stat(dir); os.IsNotExist(err) {
-				err = os.MkdirAll(dir, os.ModePerm)
-				if err != nil {
-					return fmt.Errorf(`Failed to backup: %v`, err)
-				}
+			err = os.MkdirAll(dir, os.ModePerm)
+			if err != nil {
+				return fmt.Errorf(`Failed to backup: %v`, err)
 			}
 			w, err = os.Create(v)
 			if err != nil {
