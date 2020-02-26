@@ -190,5 +190,5 @@ func ResetAutoIncrement(sqlStructFile string) error {
 		return err
 	}
 	b = cleanRegExp.ReplaceAll(b, []byte(` `))
-	return ioutil.WriteFile(sqlStructFile, b, 0666)
+	return ioutil.WriteFile(sqlStructFile, b, os.ModePerm)
 }
