@@ -80,7 +80,14 @@ func NewProjects() *Projects {
 	}
 }
 
-func NewProject(name string, ident string, url string, navList *List) *ProjectItem {
+func NewProject(name string, ident string, url string, navLists ...*List) *ProjectItem {
+	var navList *List
+	if len(navLists) > 0 {
+		navList = navLists[0]
+	}
+	if navList == nil {
+		navList = &List{}
+	}
 	return &ProjectItem{
 		Name:    name,
 		Ident:   ident,
