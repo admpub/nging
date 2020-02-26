@@ -55,6 +55,9 @@ func Cmd(ctx echo.Context) error {
 	}
 	ctx.Set(`id`, id)
 	ctx.Set(`cmd`, m.Command)
+	ctx.Set(`isWindows`, com.IsWindows)
+	ctx.Set(`isLinux`, com.IsLinux)
+	ctx.Set(`isMac`, com.IsMac)
 	return ctx.Render(`server/cmd`, err)
 }
 
