@@ -10,7 +10,8 @@ mkdir ../dist/nging_${GOOS}_${GOARCH}/config/vhosts
 
 #cp -R ../config/config.yaml ../dist/nging_${GOOS}_${GOARCH}/config/config.yaml
 cp -R ../config/config.yaml.sample ../dist/nging_${GOOS}_${GOARCH}/config/config.yaml.sample
-cp -R ../config/install.sql ../dist/nging_${GOOS}_${GOARCH}/config/install.sql
+cp -R ../config/install.* ../dist/nging_${GOOS}_${GOARCH}/config/
+cp -R ../config/preupgrade.* ../dist/nging_${GOOS}_${GOARCH}/config/
 cp -R ../config/ua.txt ../dist/nging_${GOOS}_${GOARCH}/config/ua.txt
 
 export archiver_extension=zip
