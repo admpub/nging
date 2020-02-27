@@ -122,7 +122,7 @@ func SubdirIsAllowed(subdir string, defaults ...string) bool {
 func SubdirGet(subdir string) *SubdirInfo {
 	info, ok := subdirs[subdir]
 	if !ok {
-		return nil
+		return SubdirRegisterObject(NewSubdirInfo(subdir, ``))
 	}
 	return info
 }
