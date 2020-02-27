@@ -151,10 +151,10 @@ func executePreupgrade() {
 		stdLog.Panicf(`不支持安装到%s`, DefaultConfig.DB.Type)
 	}
 	for _, sqlFile := range preupgradeSQLFiles {
-		//sqlFile = /your/path/preupgrade.3_0.sql
+		//sqlFile = /your/path/preupgrade.3_0.nging.sql
 		versionStr := strings.TrimPrefix(filepath.Base(sqlFile), `preupgrade.`)
 		versionStr = strings.TrimSuffix(versionStr, `.sql`)
-		versionStr = strings.ReplaceAll(versionStr, `_`, `.`)
+		versionStr = strings.ReplaceAll(strings.SplitN(versionStr, `.`, 2)[0], `_`, `.`)
 		versionNum, err := strconv.ParseFloat(versionStr, 64)
 		if err != nil {
 			stdLog.Panicln(versionStr + `: ` + err.Error())
