@@ -65,10 +65,10 @@ func configPost(c echo.Context, groups ...string) error {
 			continue
 		}
 		added := map[string]int{}
-		for k, v := range m.Objects() {
-			v.CPAFrom(m.NgingConfig)
-			added[v.Key] = k
-			setting := gm.Get(v.Key)
+		for key, conf := range m.Objects() {
+			conf.CPAFrom(m.NgingConfig)
+			added[conf.Key] = key
+			setting := gm.Get(conf.Key)
 			if setting == nil {
 				continue
 			}
@@ -77,13 +77,13 @@ func configPost(c echo.Context, groups ...string) error {
 			if _v == nil {
 				continue
 			}
-			value, err := settings.EncodeConfigValue(_v, v, encoder)
+			value, err := settings.EncodeConfigValue(_v, conf, encoder)
 			if err != nil {
 				return err
 			}
 			var n int64
 			condition := db.And(
-				db.Cond{`key`: v.Key},
+				db.Cond{`key`: conf.Key},
 				db.Cond{`group`: group},
 			)
 			n, err = m.Count(nil, condition)
@@ -91,31 +91,31 @@ func configPost(c echo.Context, groups ...string) error {
 				return err
 			}
 			if n < 1 {
-				err = settings.InsertBy(c, configs, v.Key, value, disabled)
+				err = settings.InsertBy(c, configs, conf.Key, value, disabled)
 				if err != nil {
 					return err
 				}
 			}
 			set := echo.H{}
-			if value != m.Value {
+			if value != conf.Value {
 				set[`value`] = value
 			}
 			if _v.IsMap() {
-				if m.Type != `json` {
+				if conf.Type != `json` {
 					set[`type`] = `json`
 				}
 			} else if _v.IsSlice() {
-				if m.Type != `list` {
+				if conf.Type != `list` {
 					set[`type`] = `list`
 				}
 			} else {
-				cfg, ok := configs[v.Key]
-				if ok && cfg != nil && m.Type != cfg.Type {
+				cfg, ok := configs[conf.Key]
+				if ok && cfg != nil && conf.Type != cfg.Type {
 					set[`type`] = cfg.Type
 				}
 				//set[`type`] = `text`
 			}
-			if len(disabled) > 0 && m.Disabled != disabled {
+			if len(disabled) > 0 && conf.Disabled != disabled {
 				set[`disabled`] = disabled
 			}
 			if len(set) > 0 {
