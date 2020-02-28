@@ -16,7 +16,7 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package server
+package system
 
 import (
 	"github.com/shirou/gopsutil/cpu"

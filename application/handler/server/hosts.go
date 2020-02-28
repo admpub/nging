@@ -15,15 +15,17 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 package server
 
 import (
 	"os"
 
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/hosts"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/library/hosts"
 )
 
 func Hosts(ctx echo.Context) error {

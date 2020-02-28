@@ -21,11 +21,13 @@ package manager
 import (
 	"strings"
 
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/model"
-	"github.com/admpub/nging/application/registry/dashboard"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/library/system"
+	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/application/registry/dashboard"
 )
 
 func init() {
@@ -56,10 +58,13 @@ func init() {
 		}),
 	)
 
-	dashboard.BlockRegister(&dashboard.Block{
+	dashboard.BlockRegister((&dashboard.Block{
 		Tmpl:   `server/chart/cpu`,
 		Footer: `server/chart/cpu.js`,
-	})
+	}).SetContentGenerator(func(ctx echo.Context) error {
+		ctx.Set(`systemRealtimeStatusIsListening`, system.RealTimeStatusIsListening())
+		return nil
+	}))
 	dashboard.BlockRegister((&dashboard.Block{
 		Tmpl: `server/dashbord/cmd_list`,
 	}).SetContentGenerator(func(ctx echo.Context) error {

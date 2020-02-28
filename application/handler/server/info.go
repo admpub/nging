@@ -22,8 +22,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/admpub/log"
-	collectd "github.com/admpub/logcool/input/collectd"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/host"
@@ -32,6 +30,10 @@ import (
 	"github.com/shirou/gopsutil/process"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/log"
+	collectd "github.com/admpub/logcool/input/collectd"
+	"github.com/admpub/nging/application/library/system"
 )
 
 var _ = collectd.SystemInfo
@@ -81,14 +83,14 @@ func Info(ctx echo.Context) error {
 	if err != nil {
 		log.Error(err)
 	}
-	info := &SystemInformation{
+	info := &system.SystemInformation{
 		CPU:        cpuInfo,
 		CPUPercent: cpuPercent,
 		Partitions: partitions,
 		//DiskIO:         ioCounter,
 		Host: hostInfo,
 		//Load:       avgLoad,
-		Memory: &MemoryInformation{Virtual: virtualMem, Swap: swapMem},
+		Memory: &system.MemoryInformation{Virtual: virtualMem, Swap: swapMem},
 		NetIO:  netIOCounter,
 	}
 	info.DiskUsages = make([]*disk.UsageStat, len(info.Partitions))

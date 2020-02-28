@@ -19,11 +19,13 @@
 package server
 
 import (
-	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/sockjs-go/sockjs"
-	"github.com/admpub/websocket"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/library/system"
+	"github.com/admpub/sockjs-go/sockjs"
+	"github.com/admpub/websocket"
 )
 
 func InfoBySockJS(c sockjs.Session) error {
@@ -52,9 +54,9 @@ func InfoBySockJS(c sockjs.Session) error {
 			}
 			switch message {
 			case `ping`: // Net/Memory/CPU
-				send <- realTimeStatus
+				send <- system.RealTimeStatusObject()
 			case `pingAll`:
-				info := &DynamicInformation{}
+				info := &system.DynamicInformation{}
 				send <- info.Init()
 			}
 		}
@@ -88,9 +90,9 @@ func InfoByWebsocket(c *websocket.Conn, ctx echo.Context) error {
 			}
 			switch com.Bytes2str(message) {
 			case `ping`: // Net/Memory/CPU
-				send <- realTimeStatus
+				send <- system.RealTimeStatusObject()
 			case `pingAll`:
-				info := &DynamicInformation{}
+				info := &system.DynamicInformation{}
 				send <- info.Init()
 			}
 		}

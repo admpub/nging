@@ -16,11 +16,13 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package server
+package system
 
 import (
 	"context"
 	"math"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/shirou/gopsutil/net"
@@ -29,35 +31,65 @@ import (
 )
 
 var (
+	mutext                         sync.Mutex
 	realTimeStatus                 *RealTimeStatus
-	CancelRealTimeStatusCollection func()
+	CancelRealTimeStatusCollection = func() {}
 )
 
-func RealTimeStatusIsListening() bool {
-	return realTimeStatus != nil
+func RealTimeStatusObject() *RealTimeStatus {
+	return realTimeStatus
 }
 
-func ListenRealTimeStatus() {
-	if !RealTimeStatusIsListening() {
-		realTimeStatus = NewRealTimeStatus(time.Second*2, 80)
+func RealTimeStatusIsListening() bool {
+	return realTimeStatus != nil && realTimeStatus.status == `started`
+}
+
+func ListenRealTimeStatus(cfg *Settings) {
+	mutext.Lock()
+	defer mutext.Unlock()
+	interval := time.Second * 2
+	max := 80
+	if RealTimeStatusIsListening() {
+		CancelRealTimeStatusCollection()
+		realTimeStatus.Settings = cfg
+		realTimeStatus.interval = interval
+		realTimeStatus.max = max
+	} else {
+		realTimeStatus = NewRealTimeStatus(cfg, interval, max)
 	}
+
+	log.Info(`Starting collect server status`)
+
 	ctx, cancel := context.WithCancel(context.Background())
 	go realTimeStatus.Listen(ctx)
 	CancelRealTimeStatusCollection = func() {
 		if RealTimeStatusIsListening() {
-			realTimeStatus = nil
 			cancel()
 		}
 	}
 }
 
-func NewRealTimeStatus(interval time.Duration, maxSize int) *RealTimeStatus {
+func NewRealTimeStatus(cfg *Settings, interval time.Duration, maxSize int) *RealTimeStatus {
+	var reportEmail []string
+	if cfg != nil {
+		if len(cfg.ReportEmail) > 0 {
+			for _, email := range strings.Split(cfg.ReportEmail, "\n") {
+				email = strings.TrimSpace(email)
+				if len(email) == 0 {
+					continue
+				}
+				reportEmail = append(reportEmail, email)
+			}
+		}
+	}
 	return &RealTimeStatus{
-		max:      maxSize,
-		interval: interval,
-		CPU:      TimeSeries{},
-		Mem:      TimeSeries{},
-		Net:      NewNetIOTimeSeries(),
+		max:         maxSize,
+		interval:    interval,
+		CPU:         TimeSeries{},
+		Mem:         TimeSeries{},
+		Net:         NewNetIOTimeSeries(),
+		Settings:    cfg,
+		reportEmail: reportEmail,
 	}
 }
 
@@ -92,14 +124,19 @@ type NetIOTimeSeries struct {
 }
 
 type RealTimeStatus struct {
-	max      int
-	interval time.Duration
-	CPU      TimeSeries
-	Mem      TimeSeries
-	Net      NetIOTimeSeries
+	max         int
+	interval    time.Duration
+	CPU         TimeSeries
+	Mem         TimeSeries
+	Net         NetIOTimeSeries
+	Settings    *Settings
+	reportEmail []string
+	reportTime  time.Time
+	status      string
 }
 
 func (r *RealTimeStatus) Listen(ctx context.Context) *RealTimeStatus {
+	r.status = `started`
 	info := &DynamicInformation{}
 	t := time.NewTicker(r.interval)
 	defer t.Stop()
@@ -107,6 +144,7 @@ func (r *RealTimeStatus) Listen(ctx context.Context) *RealTimeStatus {
 		select {
 		case <-ctx.Done():
 			log.Info(`Exit server real-time status collection`)
+			r.status = `stoped`
 			return r
 		case <-t.C:
 			info.NetMemoryCPU()
@@ -125,10 +163,30 @@ func (r *RealTimeStatus) Listen(ctx context.Context) *RealTimeStatus {
 	return r
 }
 
+func checkAndSendAlarm(cfg *Settings, value float64, typ string) {
+	if cfg == nil {
+		return
+	}
+	if !cfg.AlarmOn {
+		return
+	}
+	switch typ {
+	case `CPU`:
+		if cfg.AlarmThreshold.CPU > 0 && cfg.AlarmThreshold.CPU < value {
+			//TODO:
+		}
+	case `Mem`:
+		if cfg.AlarmThreshold.Memory > 0 && cfg.AlarmThreshold.Memory < value {
+			//TODO:
+		}
+	}
+}
+
 func (r *RealTimeStatus) CPUAdd(y float64) *RealTimeStatus {
 	if r.max <= 0 {
 		return r
 	}
+	checkAndSendAlarm(r.Settings, y, `CPU`)
 	l := len(r.CPU)
 	if l >= r.max {
 		r.CPU = r.CPU[1+l-r.max:]
@@ -141,6 +199,7 @@ func (r *RealTimeStatus) MemAdd(y float64) *RealTimeStatus {
 	if r.max <= 0 {
 		return r
 	}
+	checkAndSendAlarm(r.Settings, y, `Mem`)
 	l := len(r.Mem)
 	if l >= r.max {
 		r.Mem = r.Mem[1+l-r.max:]

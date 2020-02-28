@@ -143,8 +143,8 @@ func (c *Settings) SetConfigs(groups ...string) {
 	ngingConfig := c.GetConfig()
 	configs := settings.ConfigAsStore(groups...)
 	for group, conf := range configs {
-		FireSetSettings(group, ngingConfig)
 		ngingConfig.Set(group, conf)
+		FireSetSettings(group, ngingConfig)
 		c.SetConfig(group, ngingConfig, nil)
 	}
 }
