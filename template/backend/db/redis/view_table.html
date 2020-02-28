@@ -50,7 +50,7 @@
                         </tr>
                         <tr>
                             <td><strong>Size</strong></td>
-                            <td>{{Stored.result.TotalRows}}</td>
+                            <td>{{if Stored.result}}{{Stored.result.TotalRows}}{{else}}0{{end}}</td>
                         </tr>
                         <tr>
                             <td colspan="2">
