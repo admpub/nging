@@ -168,7 +168,7 @@ func checkAndSendAlarm(cfg *Settings, value float64, typ string) {
 }
 
 func (r *RealTimeStatus) SetSettings(c *Settings, interval time.Duration, max int) *RealTimeStatus {
-	realTimeStatus.Settings = c
+	r.Settings = c
 	var reportEmail []string
 	if c != nil {
 		if len(c.ReportEmail) > 0 {
@@ -181,9 +181,9 @@ func (r *RealTimeStatus) SetSettings(c *Settings, interval time.Duration, max in
 			}
 		}
 	}
-	realTimeStatus.reportEmail = reportEmail
-	realTimeStatus.interval = interval
-	realTimeStatus.max = max
+	r.reportEmail = reportEmail
+	r.interval = interval
+	r.max = max
 	return r
 }
 

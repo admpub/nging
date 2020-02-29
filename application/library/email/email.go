@@ -49,15 +49,22 @@ func (q *queueItem) send1() error {
 
 func (q *queueItem) send2() error {
 	log.Info(`<SendMail> Using: send2`)
-	return mail.SendMail(q.Config.Subject, string(q.Config.Content), q.Config.ToAddress, q.Config.From,
-		q.Config.CcAddress, q.Config.SMTP, nil)
+	return mail.SendMail(
+		q.Config.Subject,
+		string(q.Config.Content),
+		q.Config.ToAddress,
+		q.Config.From,
+		q.Config.CcAddress,
+		q.Config.SMTP,
+		nil,
+	)
 }
 
 func (q *queueItem) Send() (err error) {
-	if q.Email == nil {
-		return q.send2()
-	}
 	if q.Config.Timeout <= 0 {
+		if q.Email == nil {
+			return q.send2()
+		}
 		return q.send1()
 	}
 	done := make(chan bool)
@@ -65,10 +72,12 @@ func (q *queueItem) Send() (err error) {
 		err = q.send1()
 		done <- true
 	}()
+	t := time.NewTicker(time.Second * time.Duration(q.Config.Timeout))
+	defer t.Stop()
 	select {
 	case <-done:
 		return
-	case <-time.After(time.Second * time.Duration(q.Config.Timeout)):
+	case <-t.C:
 		log.Error("发送邮件超时，采用备用方案发送")
 		close(done)
 	}
@@ -102,7 +111,10 @@ var (
 	ErrRecipientNoSet     = errors.New(`The recipient address is not set`)
 	ErrSendChannelTimeout = errors.New(`SendMail: The sending channel timed out`)
 	smtpClient            *mail.SMTPClient
-	QueueSize             = 50
+	//QueueSize 每批容量
+	QueueSize = 50
+	//QueueWait 队列等待时间
+	QueueWait = time.Second * 30
 )
 
 func SMTPClient(conf *mail.SMTPConfig) *mail.SMTPClient {
@@ -184,10 +196,12 @@ func SendMail(conf *Config) error {
 		}
 	}
 	item := &queueItem{Email: mail, Config: *conf}
+	t := time.NewTicker(QueueWait)
+	defer t.Stop()
 	select {
 	case sendCh <- item:
 		return nil
-	case <-time.After(time.Second * 3):
+	case <-t.C:
 		return ErrSendChannelTimeout
 	}
 }
