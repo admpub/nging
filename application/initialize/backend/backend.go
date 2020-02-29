@@ -73,10 +73,11 @@ func MakeSubdomains(domain string, appends []string) string {
 	var prefix string
 	if pos := strings.Index(domain, `://`); pos > 0 {
 		pos += 3
-		prefix = domain[:pos]
-		if pos+1 <= len(domain) {
-			domain = domain[pos+1:]
+		if pos < len(domain) {
+			prefix = domain[:pos]
+			domain = domain[pos:]
 		} else {
+			prefix = domain
 			domain = ``
 		}
 	}
