@@ -70,6 +70,8 @@ var (
 )
 
 func MakeSubdomains(domain string, appends []string) string {
+	domainList := strings.Split(domain, `,`)
+	domain = domainList[0]
 	var prefix string
 	if pos := strings.Index(domain, `://`); pos > 0 {
 		pos += 3
@@ -84,23 +86,32 @@ func MakeSubdomains(domain string, appends []string) string {
 	var myPort string
 	domain, myPort = com.SplitHost(domain)
 	port := fmt.Sprintf("%d", config.DefaultCLIConfig.Port)
-	newDomain := prefix + domain + `,` + domain + `:` + port
+	newDomainList := []string{domain}
+	if !com.InSlice(domain+`:`+port, domainList) {
+		newDomainList = append(newDomainList, domain+`:`+port)
+	}
 	if myPort == port {
 		myPort = ``
 	}
 	if len(myPort) > 0 {
-		newDomain += `,` + domain + `:` + myPort
+		if !com.InSlice(domain+`:`+myPort, domainList) {
+			newDomainList = append(newDomainList, domain+`:`+myPort)
+		}
 	}
 	for _, hostName := range appends {
 		if hostName == domain {
 			continue
 		}
-		newDomain += `,` + hostName + `:` + port
+		if !com.InSlice(hostName+`:`+port, domainList) {
+			newDomainList = append(newDomainList, hostName+`:`+port)
+		}
 		if len(myPort) > 0 {
-			newDomain += `,` + hostName + `:` + myPort
+			if !com.InSlice(hostName+`:`+myPort, domainList) {
+				newDomainList = append(newDomainList, hostName+`:`+myPort)
+			}
 		}
 	}
-	return newDomain
+	return prefix + strings.Join(newDomainList, `,`)
 }
 
 func init() {
