@@ -38,6 +38,7 @@ type Subdomains struct {
 	Alias      map[string]*Info
 	Default    string //default name
 	Protocol   string //http/https
+	Boot       string
 	dispatcher Dispatcher
 }
 
@@ -207,7 +208,7 @@ func (s *Subdomains) Run(args ...interface{}) {
 			eng = fasthttp.New(`:80`)
 		}
 	}
-	e := s.Get()
+	e := s.Get(s.Boot)
 	if e == nil {
 		for _, info := range s.Alias {
 			e = info

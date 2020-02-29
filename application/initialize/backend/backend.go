@@ -129,6 +129,7 @@ func init() {
 		e.SetPrefix(handler.GlobalPrefix)
 		handler.SetRootGroup(handler.BackendPrefix)
 		subdomains.Default.Default = `backend`
+		subdomains.Default.Boot = `backend`
 		domainName := subdomains.Default.Default
 		backendDomain := config.DefaultCLIConfig.BackendDomain
 		if len(backendDomain) > 0 {
