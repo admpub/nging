@@ -28,18 +28,25 @@ import (
 )
 
 func Setting(group ...string) echo.H {
+	st, ok := echo.Get(`NgingConfig`).(echo.H)
+	if !ok {
+		if st == nil {
+			st = echo.H{}
+		}
+		return st
+	}
 	sz := len(group)
-	if sz > 0 {
-		cfg := DefaultConfig.Settings.GetConfig().Store(group[0])
-		if sz == 1 {
-			return cfg
-		}
-		for _, key := range group[1:] {
-			cfg = cfg.Store(key)
-		}
+	if sz <= 0 {
+		return st
+	}
+	cfg := st.Store(group[0])
+	if sz == 1 {
 		return cfg
 	}
-	return DefaultConfig.Settings.GetConfig()
+	for _, key := range group[1:] {
+		cfg = cfg.Store(key)
+	}
+	return cfg
 }
 
 func NewSettings(config *Config) *Settings {
