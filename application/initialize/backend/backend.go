@@ -19,8 +19,10 @@
 package backend
 
 import (
+	"fmt"
 	"net/http"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/handler/pprof"
 	"github.com/webx-top/echo/middleware"
@@ -61,6 +63,9 @@ var (
 			return skipped
 		}
 	}
+	DefaultLocalHostNames = []string{
+		`127.0.0.1`, `localhost`,
+	}
 )
 
 func init() {
@@ -76,8 +81,18 @@ func init() {
 		handler.SetRootGroup(handler.BackendPrefix)
 		subdomains.Default.Default = `backend`
 		domainName := subdomains.Default.Default
-		if len(config.DefaultCLIConfig.BackendDomain) > 0 {
-			domainName += `@` + config.DefaultCLIConfig.BackendDomain
+		backendDomain := config.DefaultCLIConfig.BackendDomain
+		if len(backendDomain) > 0 {
+			domain, _ := com.SplitHost(backendDomain)
+			port := fmt.Sprintf("%d", config.DefaultCLIConfig.Port)
+			backendDomain = domain + `,` + domain + `:` + port
+			for _, hostName := range DefaultLocalHostNames {
+				if hostName == domain {
+					continue
+				}
+				backendDomain += `,` + hostName + `:` + port
+			}
+			domainName += `@` + backendDomain
 		}
 		subdomains.Default.Add(domainName, e)
 
