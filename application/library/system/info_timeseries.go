@@ -27,7 +27,7 @@ import (
 
 	"github.com/shirou/gopsutil/net"
 
-	"github.com/admpub/log"
+	"github.com/admpub/nging/application/library/msgbox"
 )
 
 var (
@@ -51,14 +51,12 @@ func ListenRealTimeStatus(cfg *Settings) {
 	max := 80
 	if RealTimeStatusIsListening() {
 		CancelRealTimeStatusCollection()
-		realTimeStatus.Settings = cfg
-		realTimeStatus.interval = interval
-		realTimeStatus.max = max
+		realTimeStatus.SetSettings(cfg, interval, max)
 	} else {
 		realTimeStatus = NewRealTimeStatus(cfg, interval, max)
 	}
 
-	log.Info(`Starting collect server status`)
+	msgbox.Info(`System Monitor`, `Starting collect server status`)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	go realTimeStatus.Listen(ctx)
@@ -70,27 +68,14 @@ func ListenRealTimeStatus(cfg *Settings) {
 }
 
 func NewRealTimeStatus(cfg *Settings, interval time.Duration, maxSize int) *RealTimeStatus {
-	var reportEmail []string
-	if cfg != nil {
-		if len(cfg.ReportEmail) > 0 {
-			for _, email := range strings.Split(cfg.ReportEmail, "\n") {
-				email = strings.TrimSpace(email)
-				if len(email) == 0 {
-					continue
-				}
-				reportEmail = append(reportEmail, email)
-			}
-		}
+	r := &RealTimeStatus{
+		max:      maxSize,
+		interval: interval,
+		CPU:      TimeSeries{},
+		Mem:      TimeSeries{},
+		Net:      NewNetIOTimeSeries(),
 	}
-	return &RealTimeStatus{
-		max:         maxSize,
-		interval:    interval,
-		CPU:         TimeSeries{},
-		Mem:         TimeSeries{},
-		Net:         NewNetIOTimeSeries(),
-		Settings:    cfg,
-		reportEmail: reportEmail,
-	}
+	return r.SetSettings(cfg, interval, maxSize)
 }
 
 func NewNetIOTimeSeries() NetIOTimeSeries {
@@ -143,7 +128,7 @@ func (r *RealTimeStatus) Listen(ctx context.Context) *RealTimeStatus {
 	for {
 		select {
 		case <-ctx.Done():
-			log.Info(`Exit server real-time status collection`)
+			msgbox.Warn(`System Monitor`, `Exit server real-time status collection`)
 			r.status = `stoped`
 			return r
 		case <-t.C:
@@ -180,6 +165,26 @@ func checkAndSendAlarm(cfg *Settings, value float64, typ string) {
 			//TODO:
 		}
 	}
+}
+
+func (r *RealTimeStatus) SetSettings(c *Settings, interval time.Duration, max int) *RealTimeStatus {
+	realTimeStatus.Settings = c
+	var reportEmail []string
+	if c != nil {
+		if len(c.ReportEmail) > 0 {
+			for _, email := range strings.Split(c.ReportEmail, "\n") {
+				email = strings.TrimSpace(email)
+				if len(email) == 0 {
+					continue
+				}
+				reportEmail = append(reportEmail, email)
+			}
+		}
+	}
+	realTimeStatus.reportEmail = reportEmail
+	realTimeStatus.interval = interval
+	realTimeStatus.max = max
+	return r
 }
 
 func (r *RealTimeStatus) CPUAdd(y float64) *RealTimeStatus {
