@@ -82,7 +82,7 @@ func MakeSubdomains(domain string, appends []string) string {
 	}
 	var myPort string
 	domain, myPort = com.SplitHost(domain)
-	if len(myPort) == 0 && len(domainList) > 0 {
+	if len(myPort) == 0 && len(domainList) > 1 {
 		_, myPort = com.SplitHost(domainList[1])
 	}
 	port := fmt.Sprintf("%d", config.DefaultCLIConfig.Port)
