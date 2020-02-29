@@ -68,11 +68,11 @@ var (
 	}
 )
 
-func MakeSubdomains(domain string) string {
+func MakeSubdomains(domain string, appends []string) string {
 	domain, _ = com.SplitHost(domain)
 	port := fmt.Sprintf("%d", config.DefaultCLIConfig.Port)
 	newDomain := domain + `,` + domain + `:` + port
-	for _, hostName := range DefaultLocalHostNames {
+	for _, hostName := range appends {
 		if hostName == domain {
 			continue
 		}
@@ -96,7 +96,7 @@ func init() {
 		domainName := subdomains.Default.Default
 		backendDomain := config.DefaultCLIConfig.BackendDomain
 		if len(backendDomain) > 0 {
-			domainName += `@` + MakeSubdomains(backendDomain)
+			domainName += `@` + MakeSubdomains(backendDomain, DefaultLocalHostNames)
 		}
 		subdomains.Default.Add(domainName, e)
 
