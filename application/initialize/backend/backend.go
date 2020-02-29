@@ -21,6 +21,7 @@ package backend
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -69,9 +70,19 @@ var (
 )
 
 func MakeSubdomains(domain string, appends []string) string {
+	var prefix string
+	if pos := strings.Index(domain, `://`); pos > 0 {
+		pos += 3
+		prefix = domain[:pos]
+		if pos+1 <= len(domain) {
+			domain = domain[pos+1:]
+		} else {
+			domain = ``
+		}
+	}
 	domain, _ = com.SplitHost(domain)
 	port := fmt.Sprintf("%d", config.DefaultCLIConfig.Port)
-	newDomain := domain + `,` + domain + `:` + port
+	newDomain := prefix + domain + `,` + domain + `:` + port
 	for _, hostName := range appends {
 		if hostName == domain {
 			continue
