@@ -339,6 +339,7 @@ func NewData(ctx Context) *RawData {
 type KV struct {
 	K  string
 	V  string
+	H  H           `json:",omitempty" xml:",omitempty"`
 	X  interface{} `json:",omitempty" xml:",omitempty"`
 	fn func() interface{}
 }

@@ -3,6 +3,8 @@ package subdomains
 import (
 	"strings"
 
+	"github.com/admpub/log"
+
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/engine/fasthttp"
@@ -49,6 +51,7 @@ func (s *Subdomains) SetDispatcher(dispatcher Dispatcher) *Subdomains {
 // 2. 域名 ———— 可以添加多个域名，每个域名之间用半角逗号“,”分隔。这里会自动将第一个域名中的首个点号“.”前面的部分作为别名，例如“blog.webx.top,news.webx.top”会自动将“blog”作为别名
 // 3. 别名 ———— 在不指定域名的情况下将无法访问，除非“默认访问别名”（Subdomains.Default的值）与此相同
 func (s *Subdomains) Add(name string, e *echo.Echo) *Subdomains {
+	log.Debug(`[Subdomains] `, `Register subdomain: `, name)
 	r := strings.SplitN(name, `@`, 2)
 	var hosts []string
 	if len(r) > 1 { //blog@1.webx.top,2.webx.top

@@ -72,12 +72,15 @@ func (s *StaticOptions) Init() *StaticOptions {
 		if err != nil {
 			panic(err)
 		}
+		if s.Debug {
+			log.GetLogger("echo").Debug(`[middleware][static] `, `Register assets directory: `, fallback)
+		}
 	}
 	if len(s.Path) > 0 && s.Path[0] != '/' {
 		s.Path = `/` + s.Path
 	}
 	if s.Debug {
-		log.GetLogger("echo").Debugf("Static: %v\t-> %v", s.Path, s.Root)
+		log.GetLogger("echo").Debug(`[middleware][static] `, `Static: `, s.Path, "\t-> ", s.Root)
 	}
 	return s
 }
@@ -89,6 +92,9 @@ func (s *StaticOptions) AddFallback(fallback string) *StaticOptions {
 		panic(err)
 	}
 	s.Fallback = append(s.Fallback, fallback)
+	if s.Debug {
+		log.GetLogger("echo").Debug(`[middleware][static] `, `Register assets directory: `, fallback)
+	}
 	return s
 }
 
@@ -196,6 +202,9 @@ func (s *StaticOptions) Middleware() echo.MiddlewareFunc {
 					return err
 				}
 				for _, fallback := range s.Fallback {
+					if s.Debug {
+						log.GetLogger("echo").Debug(`[middleware][static] `, `fallback ->  `, filepath.Join(fallback, file))
+					}
 					err = s.findFile(c, fallback, hasIndex, file, render, opener)
 					if err == nil {
 						return err
