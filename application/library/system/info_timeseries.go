@@ -20,13 +20,18 @@ package system
 
 import (
 	"context"
+	"fmt"
 	"math"
+	"os"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/shirou/gopsutil/net"
+	"github.com/webx-top/com"
 
+	"github.com/admpub/log"
+	"github.com/admpub/nging/application/library/cron"
 	"github.com/admpub/nging/application/library/msgbox"
 )
 
@@ -148,23 +153,60 @@ func (r *RealTimeStatus) Listen(ctx context.Context) *RealTimeStatus {
 	return r
 }
 
-func checkAndSendAlarm(cfg *Settings, value float64, typ string) {
-	if cfg == nil {
+var emptyTime = time.Time{}
+
+func checkAndSendAlarm(r *RealTimeStatus, value float64, typ string) {
+	if r == nil || r.Settings == nil {
 		return
 	}
-	if !cfg.AlarmOn {
+	if !r.Settings.AlarmOn || len(r.reportEmail) == 0 {
 		return
 	}
 	switch typ {
 	case `CPU`:
-		if cfg.AlarmThreshold.CPU > 0 && cfg.AlarmThreshold.CPU < value {
-			//TODO:
+		if r.Settings.AlarmThreshold.CPU > 0 && r.Settings.AlarmThreshold.CPU < value {
+			r.sendAlarm(r.Settings.AlarmThreshold.CPU, value, typ)
+			return
 		}
 	case `Mem`:
-		if cfg.AlarmThreshold.Memory > 0 && cfg.AlarmThreshold.Memory < value {
-			//TODO:
+		if r.Settings.AlarmThreshold.Memory > 0 && r.Settings.AlarmThreshold.Memory < value {
+			r.sendAlarm(r.Settings.AlarmThreshold.Memory, value, typ)
+			return
 		}
 	}
+	if !r.reportTime.IsZero() {
+		r.reportTime = emptyTime
+		return
+	}
+}
+
+func (r *RealTimeStatus) sendAlarm(alarmThreshold, value float64, typ string) *RealTimeStatus {
+	now := time.Now()
+	if r.reportTime.IsZero() || now.Sub(r.reportTime) < time.Minute*5 { // 连续5分钟达到阀值时发邮件告警
+		return nil
+	}
+	var typeName string
+	switch typ {
+	case `CPU`:
+		typeName = `CPU`
+	case `Mem`:
+		typeName = `内存`
+	default:
+		return nil
+	}
+	hostname, _ := os.Hostname()
+	title := fmt.Sprintf(`【`+hostname+`】`+typeName+`使用率超出%v%%`, alarmThreshold)
+	content := com.Str2bytes(`<h1>` + title + `</h1><p>主机名: ` + hostname + `<br />` + typeName + `使用率: ` + fmt.Sprint(value) + `%<br />时间: ` + time.Now().Format(time.RFC3339) + `<br /></p>`)
+	var cc []string
+	if len(r.reportEmail) > 1 {
+		cc = r.reportEmail[1:]
+	}
+	err := cron.SendMail(r.reportEmail[0], `administrator`, title, content, cc...)
+	if err != nil {
+		log.Error(err)
+	}
+	r.reportTime = now
+	return r
 }
 
 func (r *RealTimeStatus) SetSettings(c *Settings, interval time.Duration, max int) *RealTimeStatus {
@@ -191,7 +233,7 @@ func (r *RealTimeStatus) CPUAdd(y float64) *RealTimeStatus {
 	if r.max <= 0 {
 		return r
 	}
-	checkAndSendAlarm(r.Settings, y, `CPU`)
+	checkAndSendAlarm(r, y, `CPU`)
 	l := len(r.CPU)
 	if l >= r.max {
 		r.CPU = r.CPU[1+l-r.max:]
@@ -204,7 +246,7 @@ func (r *RealTimeStatus) MemAdd(y float64) *RealTimeStatus {
 	if r.max <= 0 {
 		return r
 	}
-	checkAndSendAlarm(r.Settings, y, `Mem`)
+	checkAndSendAlarm(r, y, `Mem`)
 	l := len(r.Mem)
 	if l >= r.max {
 		r.Mem = r.Mem[1+l-r.max:]
