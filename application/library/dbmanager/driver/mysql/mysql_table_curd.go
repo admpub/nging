@@ -284,7 +284,7 @@ func (m *mySQL) exportData(fields map[string]*Field, table string, selectFuncs [
 			keys := make([]string, len(cols))
 			vals := make([]string, len(cols))
 			for idx, col := range cols {
-				keys[idx] = quoteVal(col)
+				keys[idx] = quoteCol(col)
 				key := quoteCol(col)
 				vals[idx] = key + " = VALUES(" + key + ")"
 			}
