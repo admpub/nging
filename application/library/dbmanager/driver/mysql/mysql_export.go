@@ -161,9 +161,11 @@ func (m *mySQL) Export() error {
 		saveDir := TempDir(`export`)
 		switch output {
 		case `down`:
+			m.Response().Header().Set(echo.HeaderContentType, echo.MIMEOctetStream)
 			m.Response().Header().Set(echo.HeaderContentDisposition, fmt.Sprintf("attachment; filename=%q", m.dbName+"-sql-"+nowTime+".sql"))
 			fallthrough
 		case `open`:
+			m.Response().Header().Set(echo.HeaderContentType, echo.MIMETextPlainCharsetUTF8)
 			if com.InSlice(`struct`, types) {
 				structWriter = m.Response()
 			}

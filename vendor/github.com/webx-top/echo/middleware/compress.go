@@ -42,11 +42,12 @@ func (w *gzipWriter) WriteHeader(code int) {
 	if code == http.StatusNoContent {
 		w.Header().Del(echo.HeaderContentEncoding)
 	}
+	w.Header().Del(echo.HeaderContentLength)
 	w.WriteHeader(code)
 }
 
 func (w *gzipWriter) Write(b []byte) (int, error) {
-	if w.Header().Get(echo.HeaderContentType) == `` {
+	if len(w.Header().Get(echo.HeaderContentType)) == 0 {
 		w.Header().Set(echo.HeaderContentType, http.DetectContentType(b))
 	}
 	return w.Writer.Write(b)
@@ -54,14 +55,27 @@ func (w *gzipWriter) Write(b []byte) (int, error) {
 
 func (w *gzipWriter) Flush() {
 	w.Writer.(*gzip.Writer).Flush()
+	if flusher, ok := w.Response.(http.Flusher); ok {
+		flusher.Flush()
+		return
+	}
+	if flusher, ok := w.StdResponseWriter().(http.Flusher); ok {
+		flusher.Flush()
+	}
 }
 
 func (w *gzipWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
-	return w.Response.(http.Hijacker).Hijack()
+	if hijacker, ok := w.Response.(http.Hijacker); ok {
+		return hijacker.Hijack()
+	}
+	return w.StdResponseWriter().(http.Hijacker).Hijack()
 }
 
 func (w *gzipWriter) CloseNotify() <-chan bool {
-	return w.Response.(http.CloseNotifier).CloseNotify()
+	if closeNotifiler, ok := w.Response.(http.CloseNotifier); ok {
+		return closeNotifiler.CloseNotify()
+	}
+	return w.StdResponseWriter().(http.CloseNotifier).CloseNotify()
 }
 
 // Gzip returns a middleware which compresses HTTP response using gzip compression
