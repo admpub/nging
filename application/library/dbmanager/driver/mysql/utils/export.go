@@ -169,10 +169,6 @@ func Export(ctx context.Context, cfg *driver.DbAuth, tables []string, structWrit
 			clean(w, stdout)
 			return errors.New(err.Error() + `: ` + rec.String())
 		}
-		if err := cmd.Wait(); err != nil {
-			clean(w, stdout)
-			return errors.New(err.Error() + `: ` + rec.String())
-		}
 		clean(w, stdout)
 		if onFinish != nil {
 			if err = onFinish(); err != nil {

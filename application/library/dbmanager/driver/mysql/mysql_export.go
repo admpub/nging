@@ -200,7 +200,7 @@ func (m *mySQL) Export() error {
 		worker := func(ctx context.Context, cfg driver.DbAuth) error {
 			defer func() {
 				if r := recover(); r != nil {
-					err = fmt.Errorf(`%v`, r)
+					err = fmt.Errorf(`RECOVER: %v`, r)
 				}
 			}()
 			err = utils.Export(ctx, &cfg, tables, structWriter, dataWriter, true)
