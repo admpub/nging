@@ -110,6 +110,7 @@ func (m *mySQL) Import() error {
 			}
 		}()
 		err = utils.Import(bgExec.Context(), &cfg, TempDir(`import`), sqlFiles, async)
+		imports.Cancel(cacheKey)
 		done <- struct{}{}
 
 		return responseDropzone(err, m.Context)
