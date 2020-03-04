@@ -1,7 +1,7 @@
-{{Extend "db/layout"}}
+{{Strip}}{{Extend "db/layout"}}
 {{Block "title"}}{{"数据库管理"|T}}{{/Block}}
 {{Block "breadcrumb"}}
-{{$accountTitle := Stored.accountTitle}}
+{{- $accountTitle := Stored.accountTitle -}}
 {{Include "db/logout_button"}}
 {{Super}}
 <li><a href="__BACKEND__/db">{{T "%s管理" Stored.dbType}}</a></li>
@@ -167,3 +167,4 @@ $(function(){
 </script>
 {{end}}<!-- ne $pjax "#pcont" -->
 {{/Block}}
+{{/Strip}}

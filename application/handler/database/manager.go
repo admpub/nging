@@ -139,6 +139,15 @@ func Manager(ctx echo.Context) error {
 	mgr.SetURLGenerator(genURL)
 	ctx.SetFunc(`dbMgrURL`, genURL)
 	ctx.Set(`operation`, operation)
+
+	if accountID > 0 {
+		ctx.Request().Form().Set(`db`, m.Name)
+		ctx.Request().Form().Set(`driver`, m.Engine)
+		ctx.Request().Form().Set(`username`, m.User)
+		ctx.Request().Form().Set(`password`, m.Password)
+		ctx.Request().Form().Set(`host`, m.Host)
+	}
+
 	if len(driverName) > 0 {
 		ctx.Set(`driver`, driverName)
 		if err == nil {
@@ -165,14 +174,6 @@ func Manager(ctx echo.Context) error {
 	driverList := map[string]string{}
 	for driverName, driver := range driver.GetAll() {
 		driverList[driverName] = driver.Name()
-	}
-
-	if accountID > 0 {
-		ctx.Request().Form().Set(`db`, m.Name)
-		ctx.Request().Form().Set(`driver`, m.Engine)
-		ctx.Request().Form().Set(`username`, m.User)
-		ctx.Request().Form().Set(`password`, m.Password)
-		ctx.Request().Form().Set(`host`, m.Host)
 	}
 
 	ctx.Set(`driverList`, driverList)

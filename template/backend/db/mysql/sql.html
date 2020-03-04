@@ -1,4 +1,4 @@
-{{Extend "db/index"}}
+{{Strip}}{{Extend "db/index"}}
 {{Block "title"}}{{"SQL命令"|T}} - {{Super}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
@@ -9,13 +9,13 @@
 <!-- codemirror -->
 <link rel="stylesheet" href="__ASSETS__/js/editor/markdown/lib/codemirror/codemirror.min.css">
 <link rel="stylesheet" href="__ASSETS__/js/editor/markdown/lib/codemirror/theme/night.css">
+<link rel="stylesheet" href="__ASSETS__/js/editor/markdown/lib/codemirror/addon/hint/show-hint.css">
 <script src="__ASSETS__/js/editor/markdown/lib/codemirror/codemirror.min.js"></script>
 <script src="__ASSETS__/js/editor/markdown/lib/codemirror/addon/mode/loadmode.js"></script>
+<script src="__ASSETS__/js/editor/markdown/lib/codemirror/addon/hint/show-hint.js"></script>
+<script src="__ASSETS__/js/editor/markdown/lib/codemirror/addon/hint/sql-hint.js"></script>
 <style>
-.CodeMirror {
-    border: 1px solid #ccc;
-    min-height:350px
-}
+.CodeMirror {border: 1px solid #ccc; min-height:350px}
 </style>
 {{/Block}}
 {{Block "main"}}
@@ -110,22 +110,31 @@
 <script>
 var editor;
 CodeMirror.modeURL = "__ASSETS__/js/editor/markdown/lib/codemirror/mode/%N/%N.js";
-function initCodeMirrorEditor() {
-    //if(editor)return;
+function initCodeMirrorEditor() { // if(editor)return;
     editor = CodeMirror.fromTextArea($("#query")[0], {
-        lineNumbers: true
+        lineNumbers: true,
+        extraKeys: {"Tab": "autocomplete"},
+        hintOptions: { // 针对sql的自定义表和字段，这样可以把自己的表和字段也放入提示里(table1: [ 'col_A', 'col_B', 'col_C'])。如果数据是异步请求获取的，可以通过editor.setOption('hintOptions', data);
+            tables: {
+              {{- $tableList := Stored.Get "tableList" -}}
+              {{- if $tableList -}}
+              {{- range $k,$v := $tableList -}}
+              "{{$v}}": [],
+              {{- end -}}
+              {{- end -}}
+            }
+        }
     });
-    editor.setOption('lineWrapping', true);
-    //editor.setSize('auto', 'auto');
-    editor.setOption("mode", "text/x-{{Form "driver"}}");
+    editor.setOption('lineWrapping', true);//editor.setSize('auto', 'auto');//editor.setOption("readOnly", true); //设置为只读
+    editor.setOption("mode", "text/x-{{Form `driver` `mysql`}}");
     CodeMirror.autoLoadMode(editor, "sql");
+    editor.on('cursorActivity', function () {editor.showHint();});
 }
 $(function(){
     initCodeMirrorEditor();
     $('#sql-analysis-modal').find('.modal-body').css({"max-height":$(window).height()-200});
     $(window).on('resize',function(){
-        $('#sql-analysis-modal').find('.modal-body').
-            css({"max-height":$(window).height()-200});
+        $('#sql-analysis-modal').find('.modal-body').css({"max-height":$(window).height()-200});
     });
     $('#btn-sql-analysis').on('click',function(){
         var query=$('#query').text();
@@ -141,3 +150,4 @@ $(function(){
 });
 </script>
 {{/Block}}
+{{/Strip}}
