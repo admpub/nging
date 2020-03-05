@@ -128,7 +128,7 @@ function initCodeMirrorEditor() { // if(editor)return;
     editor.setOption('lineWrapping', true);//editor.setSize('auto', 'auto');//editor.setOption("readOnly", true); //设置为只读
     editor.setOption("mode", "text/x-{{Form `driver` `mysql`}}");
     CodeMirror.autoLoadMode(editor, "sql");
-    editor.on('cursorActivity', function () {editor.showHint();});
+    //editor.on('cursorActivity', function () {editor.showHint();});
 }
 $(function(){
     initCodeMirrorEditor();
