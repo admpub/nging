@@ -19,6 +19,8 @@
 package output
 
 import (
+	"context"
+
 	"github.com/admpub/logcool/utils"
 	"github.com/admpub/nging/application/model"
 )
@@ -58,7 +60,7 @@ func InitHandler(confraw *utils.ConfigRaw) (retconf utils.TypeOutputConfig, err 
 }
 
 // Event Input's event,and this is the main function of output.
-func (oc *OutputConfig) Event(event utils.LogEvent) (err error) {
+func (oc *OutputConfig) Event(ctx context.Context, event utils.LogEvent) (err error) {
 	oc.event <- event
 	return
 }
