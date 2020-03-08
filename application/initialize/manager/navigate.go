@@ -879,5 +879,5 @@ var Project = navigate.NewProject(`Nging`, `nging`, `/`, navigate.LeftNavigate)
 func init() {
 	event.SupportManager = true
 	navigate.LeftNavigate.Add(0, *LeftNavigate...)
-	navigate.ProjectAdd(0, Project)
+	navigate.ProjectAdd(2, Project)
 }
