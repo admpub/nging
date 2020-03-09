@@ -35,6 +35,7 @@ import (
 	"time"
 
 	"github.com/admpub/log"
+
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/logger"
 	"github.com/webx-top/echo/middleware/render/driver"
@@ -110,7 +111,7 @@ type Standard struct {
 	SuperTag           string
 	StripTag           string
 	Ext                string
-	tmplPathFixer      func(string) string
+	tmplPathFixer      func(echo.Context, string) string
 	debug              bool
 	getFuncs           func() map[string]interface{}
 	logger             logger.Logger
@@ -207,13 +208,13 @@ func (self *Standard) Manager() driver.Manager {
 	return self.TemplateMgr
 }
 
-func (self *Standard) SetTmplPathFixer(fn func(string) string) {
+func (self *Standard) SetTmplPathFixer(fn func(echo.Context, string) string) {
 	self.tmplPathFixer = fn
 }
 
-func (self *Standard) TemplatePath(p string) string {
+func (self *Standard) TemplatePath(c echo.Context, p string) string {
 	if self.tmplPathFixer != nil {
-		return self.tmplPathFixer(p)
+		return self.tmplPathFixer(c, p)
 	}
 	p = filepath.Join(self.TemplateDir, p)
 	return p
@@ -240,16 +241,17 @@ func (self *Standard) Render(w io.Writer, tmplName string, values interface{}, c
 			c.Delete(`webx:render.locked`)
 		}()
 	}
-	tmpl, err := self.parse(tmplName, c.Funcs())
+	tmpl, err := self.parse(c, tmplName)
 	if err != nil {
 		return err
 	}
 	return tmpl.ExecuteTemplate(w, tmpl.Name(), values)
 }
 
-func (self *Standard) parse(tmplName string, funcs map[string]interface{}) (tmpl *htmlTpl.Template, err error) {
+func (self *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Template, err error) {
+	funcs := c.Funcs()
 	tmplName = tmplName + self.Ext
-	tmplName = self.TemplatePath(tmplName)
+	tmplName = self.TemplatePath(c, tmplName)
 	cachedKey := tmplName
 	var funcMap htmlTpl.FuncMap
 	if self.getFuncs != nil {
@@ -302,17 +304,17 @@ func (self *Standard) parse(tmplName string, funcs map[string]interface{}) (tmpl
 	}
 	m := self.extTagRegex.FindAllStringSubmatch(content, 1)
 	for i := 0; i < 10 && len(m) > 0; i++ {
-		self.ParseBlock(content, subcs, extcs)
+		self.ParseBlock(c, content, subcs, extcs)
 		extFile := m[0][1] + self.Ext
 		passObject := m[0][2]
-		extFile = self.TemplatePath(extFile)
+		extFile = self.TemplatePath(c, extFile)
 		b, err = self.RawContent(extFile)
 		if err != nil {
 			tmpl, _ = t.Parse(err.Error())
 			return
 		}
 		content = string(b)
-		content, m = self.ParseExtend(content, extcs, passObject, subcs)
+		content, m = self.ParseExtend(c, content, extcs, passObject, subcs)
 
 		if v, ok := self.CachedRelation[extFile]; !ok {
 			self.CachedRelation[extFile] = &CcRel{
@@ -323,7 +325,7 @@ func (self *Standard) parse(tmplName string, funcs map[string]interface{}) (tmpl
 			self.CachedRelation[extFile].Rel[cachedKey] = 0
 		}
 	}
-	content = self.ContainsSubTpl(content, subcs)
+	content = self.ContainsSubTpl(c, content, subcs)
 	content = string(self.strip([]byte(content)))
 	tmpl, err = t.Parse(content)
 	if err != nil {
@@ -381,8 +383,8 @@ func (self *Standard) parse(tmplName string, funcs map[string]interface{}) (tmpl
 	return
 }
 
-func (self *Standard) Fetch(tmplName string, data interface{}, funcMap map[string]interface{}) string {
-	content, _ := self.parse(tmplName, funcMap)
+func (self *Standard) Fetch(tmplName string, data interface{}, c echo.Context) string {
+	content, _ := self.parse(c, tmplName)
 	return self.execute(content, data)
 }
 
@@ -395,16 +397,16 @@ func (self *Standard) execute(tmpl *htmlTpl.Template, data interface{}) string {
 	return buf.String()
 }
 
-func (self *Standard) ParseBlock(content string, subcs map[string]string, extcs map[string]string) {
+func (self *Standard) ParseBlock(c echo.Context, content string, subcs map[string]string, extcs map[string]string) {
 	matches := self.blkTagRegex.FindAllStringSubmatch(content, -1)
 	for _, v := range matches {
 		blockName := v[1]
 		content := v[2]
-		extcs[blockName] = self.ContainsSubTpl(content, subcs)
+		extcs[blockName] = self.ContainsSubTpl(c, content, subcs)
 	}
 }
 
-func (self *Standard) ParseExtend(content string, extcs map[string]string, passObject string, subcs map[string]string) (string, [][]string) {
+func (self *Standard) ParseExtend(c echo.Context, content string, extcs map[string]string, passObject string, subcs map[string]string) (string, [][]string) {
 	m := self.extTagRegex.FindAllStringSubmatch(content, 1)
 	hasParent := len(m) > 0
 	if len(passObject) == 0 {
@@ -441,7 +443,7 @@ func (self *Standard) ParseExtend(content string, extcs map[string]string, passO
 					v = sv
 				}
 				if hasSuper {
-					innerStr = self.ContainsSubTpl(innerStr, subcs)
+					innerStr = self.ContainsSubTpl(c, innerStr, subcs)
 					v = strings.Replace(v, superTag, innerStr, 1)
 					if suffix == `` {
 						extcs[blockName] = v
@@ -472,14 +474,14 @@ func (self *Standard) ParseExtend(content string, extcs map[string]string, passO
 	return content, m
 }
 
-func (self *Standard) ContainsSubTpl(content string, subcs map[string]string) string {
+func (self *Standard) ContainsSubTpl(c echo.Context, content string, subcs map[string]string) string {
 	matches := self.incTagRegex.FindAllStringSubmatch(content, -1)
 	for _, v := range matches {
 		matched := v[0]
 		tmplFile := v[1]
 		passObject := v[2]
 		tmplFile += self.Ext
-		tmplFile = self.TemplatePath(tmplFile)
+		tmplFile = self.TemplatePath(c, tmplFile)
 		if _, ok := subcs[tmplFile]; !ok {
 			// if v, ok := self.CachedRelation[tmplFile]; ok && v.Tpl[1] != nil {
 			// 	subcs[tmplFile] = ""
@@ -490,7 +492,7 @@ func (self *Standard) ContainsSubTpl(content string, subcs map[string]string) st
 			}
 			str := string(b)
 			subcs[tmplFile] = "" //先登记，避免死循环
-			str = self.ContainsSubTpl(str, subcs)
+			str = self.ContainsSubTpl(c, str, subcs)
 			subcs[tmplFile] = str
 			//}
 		}
