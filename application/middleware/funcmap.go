@@ -181,7 +181,7 @@ func FuncMap() echo.MiddlewareFunc {
 						}
 					}
 					if leftNav == nil {
-						if proj := navigate.ProjectFirst(); proj != nil {
+						if proj := navigate.ProjectFirst(true); proj != nil {
 							leftNav = proj.NavList
 						}
 					}

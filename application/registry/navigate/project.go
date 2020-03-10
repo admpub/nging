@@ -69,8 +69,8 @@ func ProjectGet(ident string) *ProjectItem {
 	return projects.Get(ident)
 }
 
-func ProjectFirst() *ProjectItem {
-	return projects.First()
+func ProjectFirst(notEmptyOpts ...bool) *ProjectItem {
+	return projects.First(notEmptyOpts...)
 }
 
 func NewProjects() *Projects {
@@ -109,10 +109,20 @@ func (p *Projects) URLsIdent() map[string]string {
 	return p.InitURLsIdent().urlsIdent
 }
 
-func (p *Projects) First() *ProjectItem {
+func (p *Projects) First(notEmptyOpts ...bool) *ProjectItem {
+	var notEmpty bool
+	if len(notEmptyOpts) > 0 {
+		notEmpty = notEmptyOpts[0]
+	}
 	if p.List != nil && len(*p.List) > 0 {
-		list := *p.List
-		return list[0]
+		if !notEmpty {
+			return (*p.List)[0]
+		}
+		for _, item := range *p.List {
+			if item != nil {
+				return item
+			}
+		}
 	}
 	return nil
 }
