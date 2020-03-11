@@ -47,14 +47,14 @@ func ReadCache(dir string, name string) (content []byte, err error) {
 func RemoveCache(dir string, names ...string) (err error) {
 	savePath := filepath.Join(echo.Wd(), `data`, `cache`, dir)
 	if len(names) < 1 {
-		if _, err = os.Stat(savePath); os.IsExist(err) {
+		if _, err = os.Stat(savePath); !os.IsNotExist(err) {
 			return os.RemoveAll(savePath)
 		}
 		return
 	}
 	for _, name := range names {
 		filePath := savePath + echo.FilePathSeparator + name
-		if _, err = os.Stat(filePath); os.IsExist(err) {
+		if _, err = os.Stat(filePath); !os.IsNotExist(err) {
 			err = os.Remove(filePath)
 			if err != nil {
 				return
