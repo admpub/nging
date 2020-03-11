@@ -144,9 +144,19 @@ func FuncMap() echo.MiddlewareFunc {
 			c.SetFunc(`Project`, func(ident string) *navigate.ProjectItem {
 				return navigate.ProjectGet(ident)
 			})
-			c.SetFunc(`ProjectIdent`, func() string {
-				return navigate.ProjectIdent(c.Path())
-			})
+			var projectIdent string
+			getProjectIdent := func() string {
+				if len(projectIdent) == 0 {
+					projectIdent = navigate.ProjectIdent(c.Path())
+					if len(projectIdent) == 0 {
+						if proj := navigate.ProjectFirst(true); proj != nil {
+							projectIdent = proj.Ident
+						}
+					}
+				}
+				return projectIdent
+			}
+			c.SetFunc(`ProjectIdent`, getProjectIdent)
 			c.SetFunc(`ProjectSearchIdent`, func(ident string) int {
 				return navigate.ProjectSearchIdent(ident)
 			})
@@ -177,14 +187,9 @@ func FuncMap() echo.MiddlewareFunc {
 					fallthrough
 				default:
 					var leftNav *navigate.List
-					ident := navigate.ProjectIdent(c.Path())
+					ident := getProjectIdent()
 					if len(ident) > 0 {
 						if proj := navigate.ProjectGet(ident); proj != nil {
-							leftNav = proj.NavList
-						}
-					}
-					if leftNav == nil {
-						if proj := navigate.ProjectFirst(true); proj != nil {
 							leftNav = proj.NavList
 						}
 					}

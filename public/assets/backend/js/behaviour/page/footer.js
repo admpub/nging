@@ -23,7 +23,7 @@ $(function(){
 				App.message({title:App.i18n.SYS_INFO,text:r.Info,type:'error'});
 				return;
 			}
-			$('#leftnav').html(r.Data.list);
+			$('#leftnav').attr('data-project',ident).html(r.Data.list);
 			App.initLeftNav();
 			App.initLeftNavAjax(window.activeURL,'#leftnav');
 			active();
