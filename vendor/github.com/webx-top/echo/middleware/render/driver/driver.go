@@ -69,6 +69,8 @@ type Driver interface {
 	Close()
 }
 
+var _ Driver = &NopRenderer{}
+
 type NopRenderer struct {
 	mgr Manager
 }
@@ -103,7 +105,7 @@ func (n *NopRenderer) SetManager(mgr Manager) {
 
 func (n *NopRenderer) SetFuncMap(_ func() map[string]interface{}) {}
 
-func (n *NopRenderer) Fetch(_ string, _ interface{}, _ map[string]interface{}) string { return `` }
+func (n *NopRenderer) Fetch(_ string, _ interface{}, _ echo.Context) string { return `` }
 
 func (n *NopRenderer) RawContent(_ string) ([]byte, error) { return nil, nil }
 
