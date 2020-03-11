@@ -58,7 +58,7 @@ func ProjectRemove(index int) {
 }
 
 func ProjectSearchIdent(ident string) int {
-	return projects.SearchIdent(ident)
+	return projects.List.SearchIdent(ident)
 }
 
 func ProjectSet(index int, list ...*ProjectItem) {
