@@ -57,6 +57,10 @@ func ProjectRemove(index int) {
 	projects.Remove(index)
 }
 
+func ProjectSearchIdent(ident string) int {
+	return projects.SearchIdent(ident)
+}
+
 func ProjectSet(index int, list ...*ProjectItem) {
 	projects.Set(index, list...)
 }
@@ -199,6 +203,25 @@ func (a *ProjectItem) GetIdent() string {
 
 func (a *ProjectItem) GetURL() string {
 	return a.URL
+}
+
+func (a *ProjectList) SearchIdent(ident string) int {
+	r := -1
+	for key, item := range *a {
+		if item == nil {
+			continue
+		}
+		if r == -1 {
+			r = key
+		}
+		if len(ident) == 0 {
+			return r
+		}
+		if item.Is(ident) {
+			return key
+		}
+	}
+	return r
 }
 
 //Remove 删除元素

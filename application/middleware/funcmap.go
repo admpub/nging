@@ -147,6 +147,9 @@ func FuncMap() echo.MiddlewareFunc {
 			c.SetFunc(`ProjectIdent`, func() string {
 				return navigate.ProjectIdent(c.Path())
 			})
+			c.SetFunc(`ProjectSearchIdent`, func(ident string) string {
+				return navigate.ProjectSearchIdent(ident)
+			})
 			c.SetFunc(`Projects`, func() navigate.ProjectList {
 				return navigate.ProjectListAll()
 			})
