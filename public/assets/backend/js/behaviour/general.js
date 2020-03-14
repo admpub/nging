@@ -402,8 +402,12 @@ var App = function () {
 		},
 		markNavByURL: function (url) {
 			if (url == null) url = window.location.pathname;
-			App.markNav($('#leftnav a[href="' + url + '"]'), 'left');
-			App.markNav($('#topnav a[href="' + url + '"]:first'), 'top');
+			var leftAnchor=$('#leftnav a[href="' + BACKEND_URL+url + '"]');
+			if (leftAnchor.length<1) leftAnchor=$('#leftnav a[href$="' + url + '"]');
+			App.markNav(leftAnchor, 'left');
+			var topAnchor=$('#topnav a[href="' + BACKEND_URL+url + '"]:first');
+			if (topAnchor.length<1) topAnchor=$('#topnav a[href$="' + url + '"]:first');
+			App.markNav(topAnchor, 'top');
 		},
 		markNav: function (curNavA, position) {
 			if (curNavA.length < 1) return;
