@@ -268,16 +268,24 @@ func (m *mySQL) exportData(fields map[string]*Field, table string, selectFuncs [
 	if m.Driver != `sqlite` {
 		maxPacket = 1048576 // default, minimum is 1024
 	}
-	//m.Response().Header().Set("Content-Disposition", "attachment; filename="+friendlyURL(talbe+`-`))
+	download := m.Formx(`download`).String()
+	if len(download) > 0 {
+		switch download {
+		case `1`, `true`:
+			m.Response().Header().Set("Content-Disposition", "attachment; filename="+friendlyURL(table+`-`))
+		case `gzip`:
+			//TODO
+		}
+	}
 	ext := m.dumpHeaders(exportFormat, false)
 	_ = ext
 	_, _, _, err := m.listData(func(cols []string, row map[string]*sql.NullString) error {
 		if exportFormat != `sql` {
 			if exportStyle == `table` {
-				dumpCSV(true, cols, row, exportFormat, m.Response())
+				dumpCSV(true, fields, cols, row, exportFormat, m.Response())
 				exportStyle = `insert`
 			}
-			dumpCSV(false, cols, row, exportFormat, m.Response())
+			dumpCSV(false, fields, cols, row, exportFormat, m.Response())
 			return nil
 		}
 		if len(insert) == 0 {

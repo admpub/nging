@@ -462,7 +462,7 @@ func enumNumber(i int) int {
 * @param array
 * @return null
  */
-func dumpCSV(isHeader bool, cols []string, row map[string]*sql.NullString, format string, writer io.Writer) {
+func dumpCSV(isHeader bool, fields map[string]*Field, cols []string, row map[string]*sql.NullString, format string, writer io.Writer) {
 	var sep string
 	switch format {
 	case `csv`:
@@ -484,10 +484,12 @@ func dumpCSV(isHeader bool, cols []string, row map[string]*sql.NullString, forma
 	} else {
 		for idx, col := range cols {
 			val := row[col]
-			if len(val.String) == 0 || reCSVText.MatchString(val.String) {
-				vals[idx] = `"` + strings.Replace(val.String, `"`, `""`, -1) + `"`
+			field := fields[col]
+			v := field.Format(val.String)
+			if len(v) == 0 || reCSVText.MatchString(v) {
+				vals[idx] = `"` + strings.Replace(v, `"`, `""`, -1) + `"`
 			} else {
-				vals[idx] = val.String
+				vals[idx] = v
 			}
 		}
 	}
