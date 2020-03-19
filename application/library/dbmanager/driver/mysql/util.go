@@ -484,8 +484,11 @@ func dumpCSV(isHeader bool, fields map[string]*Field, cols []string, row map[str
 	} else {
 		for idx, col := range cols {
 			val := row[col]
-			field := fields[col]
-			v := field.Format(val.String)
+			v := val.String
+			field, ok := fields[col]
+			if ok {
+				v = field.Format(v)
+			}
 			if len(v) == 0 || reCSVText.MatchString(v) {
 				vals[idx] = `"` + strings.Replace(v, `"`, `""`, -1) + `"`
 			} else {

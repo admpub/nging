@@ -308,9 +308,9 @@ func (m *mySQL) exportData(fields map[string]*Field, table string, selectFuncs [
 			if !val.Valid {
 				values += sep + `NULL`
 			} else {
-				field := fields[col]
+				field, ok := fields[col]
 				var v string
-				if reFieldTypeNumber.MatchString(field.Type) && len(val.String) > 0 && !strings.HasPrefix(field.Full_type, `[`) {
+				if ok && reFieldTypeNumber.MatchString(field.Type) && len(val.String) > 0 && !strings.HasPrefix(field.Full_type, `[`) {
 					v = val.String
 				} else {
 					v = field.Format(val.String)
