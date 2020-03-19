@@ -283,9 +283,9 @@ func (m *mySQL) exportData(fields map[string]*Field, table string, selectFuncs [
 		if len(insert) == 0 {
 			keys := make([]string, len(cols))
 			vals := make([]string, len(cols))
-			for idx, col := range cols {
-				keys[idx] = quoteCol(col)
-				key := quoteCol(col)
+			for idx, key := range cols {
+				key = quoteCol(key)
+				keys[idx] = key
 				vals[idx] = key + " = VALUES(" + key + ")"
 			}
 			if exportStyle == `INSERT+UPDATE` {
@@ -305,7 +305,8 @@ func (m *mySQL) exportData(fields map[string]*Field, table string, selectFuncs [
 				if reFieldTypeNumber.MatchString(field.Type) && len(val.String) > 0 && !strings.HasPrefix(field.Full_type, `[`) {
 					v = val.String
 				} else {
-					v = quoteVal(val.String)
+					v = field.Format(val.String)
+					v = quoteVal(v)
 				}
 				values += sep + unconvertField(field, v)
 			}
