@@ -53,7 +53,7 @@ func CompareField(idField string, keywords string) db.Compound {
 		return db.EmptyCond
 	}
 	var op string
-	if keywords[1] == '=' {
+	if len(keywords) > 2 && keywords[1] == '=' {
 		op = keywords[0:2]
 	} else {
 		op = keywords[0:1]
