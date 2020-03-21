@@ -31,7 +31,7 @@ import (
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/registry/upload"
-	"github.com/admpub/nging/application/registry/convert"
+	"github.com/admpub/nging/application/registry/upload/convert"
 )
 
 func init() {
