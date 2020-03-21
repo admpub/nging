@@ -31,6 +31,7 @@ import (
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/registry/upload"
+	"github.com/admpub/nging/application/registry/convert"
 )
 
 func init() {
@@ -87,9 +88,15 @@ func init() {
 		storer := newStore(ctx, ``)
 		defer storer.Close()
 		var errs common.Errors
+		otherFormatExtensions := convert.Extensions()
 		for _, file := range files {
 			if err := storer.Delete(file); err != nil && !os.IsNotExist(err) {
 				errs = append(errs, err)
+			}
+			for _, extension := range otherFormatExtensions {
+				if err := storer.Delete(file + extension); err != nil && !os.IsNotExist(err) {
+					errs = append(errs, err)
+				}
 			}
 		}
 		if len(errs) == 0 {
