@@ -3,8 +3,6 @@ package convert
 import (
 	"bytes"
 	"io"
-
-	"github.com/webx-top/image/webp"
 )
 
 type Convert func(r io.Reader, quality int)(*bytes.Buffer, error)
