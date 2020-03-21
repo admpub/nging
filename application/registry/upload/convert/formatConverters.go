@@ -13,6 +13,11 @@ func Register(extension string, convert Convert) {
 	formatConverters[extension] = convert
 }
 
+func GetConverter(extension string) (Convert, bool) {
+	convert, ok := formatConverters[extension]
+	return convert, ok
+}
+
 func Unregister(extension string) {
 	if _, ok := formatConverters[extension]; ok {
 		delete(formatConverters, extension)
