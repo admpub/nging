@@ -91,7 +91,7 @@ func File(ctx echo.Context) error {
 		saveFile := storer.URLToFile(`/` + file)
 		_, _, err = storer.Put(saveFile, buf, int64(len(b)))
 		return bytes.NewBuffer(b), err
-	}, path.Base(file), time.Unix(0, 0))
+	}, path.Base(file), time.Now())
 }
 
 // SaveFilename SaveFilename(`0/`,``,`img.jpg`)
