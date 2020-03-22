@@ -28,6 +28,7 @@ import (
 
 	"github.com/admpub/nging/application/dbschema"
 	uploadStorer "github.com/admpub/nging/application/registry/upload/driver"
+	"github.com/admpub/nging/application/registry/upload/convert"
 )
 
 func (f *Embedded) getSeperator(content string) string {
@@ -97,6 +98,7 @@ func (f *Embedded) MoveFileToOwner(tableName string, fileIDs []uint64, ownerID s
 			storer.Close()
 		}
 	}()
+	otherFormatExtensions := convert.Extensions()
 	for _, file := range f.File.Objects() {
 		if !strings.Contains(file.SavePath, replaceFrom) {
 			continue
@@ -115,6 +117,11 @@ func (f *Embedded) MoveFileToOwner(tableName string, fileIDs []uint64, ownerID s
 		if newSavePath != file.SavePath {
 			if errMv := storer.Move(file.SavePath, newSavePath); errMv != nil && !os.IsNotExist(errMv) {
 				return replaces, errMv
+			}
+			for _, extension := range otherFormatExtensions {
+				if errMv := storer.Move(file.SavePath + extension, newSavePath + extension); errMv != nil && !os.IsNotExist(errMv) {
+					return replaces, errMv
+				}
 			}
 		}
 		replaces[file.ViewUrl] = newViewURL
@@ -140,6 +147,11 @@ func (f *Embedded) MoveFileToOwner(tableName string, fileIDs []uint64, ownerID s
 			if newSavePath != thumb.SavePath {
 				if errMv := storer.Move(thumb.SavePath, newSavePath); errMv != nil && !os.IsNotExist(errMv) {
 					return replaces, errMv
+				}
+				for _, extension := range otherFormatExtensions {
+					if errMv := storer.Move(thumb.SavePath + extension, newSavePath + extension); errMv != nil && !os.IsNotExist(errMv) {
+						return replaces, errMv
+					}
 				}
 			}
 			replaces[thumb.ViewUrl] = newViewURL
