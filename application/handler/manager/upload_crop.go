@@ -19,6 +19,7 @@
 package manager
 
 import (
+	"os"
 	"bytes"
 	"fmt"
 	"io"
@@ -40,6 +41,7 @@ import (
 	"github.com/admpub/nging/application/middleware"
 	modelFile "github.com/admpub/nging/application/model/file"
 	"github.com/admpub/nging/application/registry/upload"
+	"github.com/admpub/nging/application/registry/upload/convert"
 )
 
 // cropPermCheckers 裁剪权限检查
@@ -305,6 +307,12 @@ END:
 	err = thumbM.Crop(cropOpt)
 	if err != nil {
 		return err
+	}
+	otherFormatExtensions := convert.Extensions()
+	for _, extension := range otherFormatExtensions {
+		if err := storer.Delete(thumbURL + extension); err != nil && !os.IsNotExist(err) {
+			return err
+		}
 	}
 	if ctx.Format() == `json` {
 		return ctx.JSON(ctx.Data().SetInfo(`cropped`).SetData(thumbURL))
