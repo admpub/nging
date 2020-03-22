@@ -64,13 +64,7 @@ func File(ctx echo.Context) error {
 	if !ok {
 		return ctx.File(file)
 	}
-	var supported bool
-	for _, accept := range ctx.Accept().Type {
-		if accept.Mime == `image/webp` {
-			supported = true
-			break
-		}
-	}
+	supported := strings.Contains(ctx.Header(echo.HeaderAccept), "image/" + strings.TrimPrefix(extension, `.`))
 	originalFile := strings.TrimSuffix(file, extension)
 	if !supported {
 		return ctx.File(originalFile)
