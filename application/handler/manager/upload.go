@@ -58,35 +58,40 @@ func File(ctx echo.Context) error {
 	typ, _, _ := getTableInfo(uploadType)
 	file := ctx.Param(`*`)
 	file = filepath.Join(helper.UploadDir, typ, file)
-	extension := filepath.Ext(file)
-	extension = strings.ToLower(extension)
+	originalExtension := filepath.Ext(file)
+	extension := strings.ToLower(originalExtension)
 	convert, ok := convert.GetConverter(extension)
 	if !ok {
 		return ctx.File(file)
 	}
 	supported := strings.Contains(ctx.Header(echo.HeaderAccept), "image/" + strings.TrimPrefix(extension, `.`))
-	originalFile := strings.TrimSuffix(file, extension)
+	originalFile := strings.TrimSuffix(file, originalExtension)
 	if !supported {
 		return ctx.File(originalFile)
 	}
-	newStore := upload.StorerGet(StorerEngine)
-	if newStore == nil {
-		return ctx.E(`存储引擎“%s”未被登记`, StorerEngine)
-	}
-	f, err := os.Open(originalFile)
-	if err != nil {
-		return echo.ErrNotFound
-	}
-	defer f.Close()
-	buf, err := convert(f, 70)
-	if err != nil {
+	if err := ctx.File(file); err != echo.ErrNotFound {
 		return err
 	}
-	storer := newStore(ctx, typ)
-	var savePath, viewURL string
-	savePath, viewURL, err = storer.Put(storer.URLToFile(file), buf, int64(len(buf.Bytes())))
-	_, _ = savePath, viewURL
-	return ctx.ServeContent(f, path.Base(file), time.Now())
+	return ctx.ServeCallbackContent(func(_ echo.Context) (io.Reader, error) {
+		newStore := upload.StorerGet(StorerEngine)
+		if newStore == nil {
+			return nil, ctx.E(`存储引擎“%s”未被登记`, StorerEngine)
+		}
+		storer := newStore(ctx, typ)
+		f, err := storer.Get(`/` + originalFile)
+		if err != nil {
+			return nil, echo.ErrNotFound
+		}
+		defer f.Close()
+		buf, err := convert(f, 70)
+		if err != nil {
+			return nil, err
+		}
+		b := buf.Bytes()
+		saveFile := storer.URLToFile(`/` + file)
+		_, _, err = storer.Put(saveFile, buf, int64(len(b)))
+		return bytes.NewBuffer(b), err
+	}, path.Base(file), time.Now())
 }
 
 // SaveFilename SaveFilename(`0/`,``,`img.jpg`)
