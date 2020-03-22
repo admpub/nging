@@ -19,13 +19,13 @@
 package manager
 
 import (
-	"os"
 	"time"
 	"io"
 	"mime/multipart"
 	"path"
 	"path/filepath"
 	"strings"
+	"bytes"
 
 	uploadClient "github.com/webx-top/client/upload"
 	_ "github.com/webx-top/client/upload/driver"
