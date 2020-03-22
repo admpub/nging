@@ -28,7 +28,7 @@ import (
 
 func init() {
 	handler.RegisterToGroup(`/manager`, func(g echo.RouteRegister) {
-		handler.Echo().Route(`GET,HEAD`, helper.UploadURLPath+`:type/`+`*`, File) //显示上传文件夹下的静态文件
+		handler.Echo().Route(`GET,HEAD`, helper.UploadURLPath+`:type/*`, File) //显示上传文件夹下的静态文件
 		g.Route(`GET,POST`, `/user`, User)
 		g.Route(`GET,POST`, `/role`, Role)
 		g.Route(`GET,POST`, `/user_add`, UserAdd)
