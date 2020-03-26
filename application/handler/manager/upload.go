@@ -64,8 +64,13 @@ func File(ctx echo.Context) error {
 	if !ok {
 		return ctx.File(file)
 	}
-	supported := strings.Contains(ctx.Header(echo.HeaderAccept), "image/" + strings.TrimPrefix(extension, `.`))
 	originalFile := strings.TrimSuffix(file, originalExtension)
+	index := strings.LastIndex(originalFile, `.`)
+	// 单扩展名或相同扩展名的情况下不转换格式
+	if index < 0 || strings.ToLower(originalFile[index:]) == extension {
+		return ctx.File(originalFile)
+	}
+	supported := strings.Contains(ctx.Header(echo.HeaderAccept), "image/" + strings.TrimPrefix(extension, `.`))
 	if !supported {
 		return ctx.File(originalFile)
 	}
