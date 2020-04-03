@@ -90,24 +90,32 @@ func (d *DBI) FireUpdate(event string, model Model, editColumns []string, mw fun
 	return d.Events.Call(event, model, editColumns, mw, args...)
 }
 
-func (d *DBI) On(event string, h EventHandler, tableName ...string) {
-	var table string
-	if len(tableName) > 0 {
-		table = tableName[0]
-	} else {
-		set := strings.SplitN(event, ":", 2)
-		switch len(set) {
-		case 2:
-			event = set[1]
-			fallthrough
-		case 1:
-			table = set[0]
-		}
-	}
-	d.Events.On(event, h, table)
+func (d *DBI) FireReading(model Model, param *Param, rangers ...Ranger) error {
+	return d.Events.CallRead(`reading`, model, param, rangers...)
 }
 
-func (d *DBI) OnAsync(event string, h EventHandler, tableName ...string) {
+func (d *DBI) FireReaded(model Model, param *Param, rangers ...Ranger) error {
+	return d.Events.CallRead(`readed`, model, param, rangers...)
+}
+
+func (d *DBI) ParseEventNames(event string) []string {
+	switch event {
+	case `w+`:
+		return AllAfterWriteEvents
+	case `+w`:
+		return AllBeforeWriteEvents
+	case `r+`:
+		return AllAfterReadEvents
+	case `+r`:
+		return AllBeforeReadEvents
+	default:
+		return strings.Split(event, ",")
+	}
+}
+
+// - 注册写(CUD)事件
+
+func (d *DBI) On(event string, h EventHandler, tableName ...string) *DBI {
 	var table string
 	if len(tableName) > 0 {
 		table = tableName[0]
@@ -121,5 +129,70 @@ func (d *DBI) OnAsync(event string, h EventHandler, tableName ...string) {
 			table = set[0]
 		}
 	}
-	d.Events.On(event, h, table, true)
+	for _, evt := range d.ParseEventNames(event) {
+		d.Events.On(evt, h, table)
+	}
+	return d
+}
+
+func (d *DBI) OnAsync(event string, h EventHandler, tableName ...string) *DBI {
+	var table string
+	if len(tableName) > 0 {
+		table = tableName[0]
+	} else {
+		set := strings.SplitN(event, ":", 2)
+		switch len(set) {
+		case 2:
+			event = set[1]
+			fallthrough
+		case 1:
+			table = set[0]
+		}
+	}
+	for _, evt := range d.ParseEventNames(event) {
+		d.Events.On(evt, h, table, true)
+	}
+	return d
+}
+
+// - 注册读(R)事件
+
+func (d *DBI) OnRead(event string, h EventReadHandler, tableName ...string) *DBI {
+	var table string
+	if len(tableName) > 0 {
+		table = tableName[0]
+	} else {
+		set := strings.SplitN(event, ":", 2)
+		switch len(set) {
+		case 2:
+			event = set[1]
+			fallthrough
+		case 1:
+			table = set[0]
+		}
+	}
+	for _, evt := range d.ParseEventNames(event) {
+		d.Events.OnRead(evt, h, table)
+	}
+	return d
+}
+
+func (d *DBI) OnReadAsync(event string, h EventReadHandler, tableName ...string) *DBI {
+	var table string
+	if len(tableName) > 0 {
+		table = tableName[0]
+	} else {
+		set := strings.SplitN(event, ":", 2)
+		switch len(set) {
+		case 2:
+			event = set[1]
+			fallthrough
+		case 1:
+			table = set[0]
+		}
+	}
+	for _, evt := range d.ParseEventNames(event) {
+		d.Events.OnRead(evt, h, table, true)
+	}
+	return d
 }

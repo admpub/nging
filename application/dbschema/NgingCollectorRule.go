@@ -74,6 +74,21 @@ func (s Slice_NgingCollectorRule) Transform(transfers map[string]param.Transfer)
 	return r
 }
 
+func (s Slice_NgingCollectorRule) FromList(data interface{}) Slice_NgingCollectorRule {
+	values, ok := data.([]*NgingCollectorRule)
+	if !ok {
+		for _, value := range data.([]interface{}) {
+			row := &NgingCollectorRule{}
+			row.FromRow(value.(map[string]interface{}))
+			s = append(s, row)
+		}
+		return s
+	}
+	s = append(s, values...)
+
+	return s
+}
+
 // NgingCollectorRule 页面中的元素采集规则
 type NgingCollectorRule struct {
 	base    factory.Base
@@ -200,18 +215,48 @@ func (a *NgingCollectorRule) CPAFrom(source factory.Model) factory.Model {
 	return a
 }
 
-func (a *NgingCollectorRule) Get(mw func(db.Result) db.Result, args ...interface{}) error {
+func (a *NgingCollectorRule) Get(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	base := a.base
-	err := a.Param(mw, args...).SetRecv(a).One()
+	if !a.base.Eventable() {
+		err = a.Param(mw, args...).SetRecv(a).One()
+		a.base = base
+		return
+	}
+	queryParam := a.Param(mw, args...).SetRecv(a)
+	if err = DBI.FireReading(a, queryParam); err != nil {
+		return
+	}
+	err = queryParam.One()
 	a.base = base
-	return err
+	if err == nil {
+		err = DBI.FireReaded(a, queryParam)
+	}
+	return
 }
 
 func (a *NgingCollectorRule) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
 		recv = a.InitObjects()
 	}
-	return a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv).List()
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv).List()
+	}
+	queryParam := a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv)
+	if err := DBI.FireReading(a, queryParam); err != nil {
+		return nil, err
+	}
+	cnt, err := queryParam.List()
+	if err == nil {
+		switch v := recv.(type) {
+		case *[]*NgingCollectorRule:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingCollectorRule(*v))
+		case []*NgingCollectorRule:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingCollectorRule(v))
+		case factory.Ranger:
+			err = DBI.FireReaded(a, queryParam, v)
+		}
+	}
+	return cnt, err
 }
 
 func (a *NgingCollectorRule) GroupBy(keyField string, inputRows ...[]*NgingCollectorRule) map[string][]*NgingCollectorRule {
@@ -248,7 +293,25 @@ func (a *NgingCollectorRule) ListByOffset(recv interface{}, mw func(db.Result) d
 	if recv == nil {
 		recv = a.InitObjects()
 	}
-	return a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv).List()
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv).List()
+	}
+	queryParam := a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv)
+	if err := DBI.FireReading(a, queryParam); err != nil {
+		return nil, err
+	}
+	cnt, err := queryParam.List()
+	if err == nil {
+		switch v := recv.(type) {
+		case *[]*NgingCollectorRule:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingCollectorRule(*v))
+		case []*NgingCollectorRule:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingCollectorRule(v))
+		case factory.Ranger:
+			err = DBI.FireReaded(a, queryParam, v)
+		}
+	}
+	return cnt, err
 }
 
 func (a *NgingCollectorRule) Add() (pk interface{}, err error) {

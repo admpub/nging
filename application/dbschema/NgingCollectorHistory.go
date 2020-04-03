@@ -74,6 +74,21 @@ func (s Slice_NgingCollectorHistory) Transform(transfers map[string]param.Transf
 	return r
 }
 
+func (s Slice_NgingCollectorHistory) FromList(data interface{}) Slice_NgingCollectorHistory {
+	values, ok := data.([]*NgingCollectorHistory)
+	if !ok {
+		for _, value := range data.([]interface{}) {
+			row := &NgingCollectorHistory{}
+			row.FromRow(value.(map[string]interface{}))
+			s = append(s, row)
+		}
+		return s
+	}
+	s = append(s, values...)
+
+	return s
+}
+
 // NgingCollectorHistory 采集历史
 type NgingCollectorHistory struct {
 	base    factory.Base
@@ -206,18 +221,48 @@ func (a *NgingCollectorHistory) CPAFrom(source factory.Model) factory.Model {
 	return a
 }
 
-func (a *NgingCollectorHistory) Get(mw func(db.Result) db.Result, args ...interface{}) error {
+func (a *NgingCollectorHistory) Get(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	base := a.base
-	err := a.Param(mw, args...).SetRecv(a).One()
+	if !a.base.Eventable() {
+		err = a.Param(mw, args...).SetRecv(a).One()
+		a.base = base
+		return
+	}
+	queryParam := a.Param(mw, args...).SetRecv(a)
+	if err = DBI.FireReading(a, queryParam); err != nil {
+		return
+	}
+	err = queryParam.One()
 	a.base = base
-	return err
+	if err == nil {
+		err = DBI.FireReaded(a, queryParam)
+	}
+	return
 }
 
 func (a *NgingCollectorHistory) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
 		recv = a.InitObjects()
 	}
-	return a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv).List()
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv).List()
+	}
+	queryParam := a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv)
+	if err := DBI.FireReading(a, queryParam); err != nil {
+		return nil, err
+	}
+	cnt, err := queryParam.List()
+	if err == nil {
+		switch v := recv.(type) {
+		case *[]*NgingCollectorHistory:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingCollectorHistory(*v))
+		case []*NgingCollectorHistory:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingCollectorHistory(v))
+		case factory.Ranger:
+			err = DBI.FireReaded(a, queryParam, v)
+		}
+	}
+	return cnt, err
 }
 
 func (a *NgingCollectorHistory) GroupBy(keyField string, inputRows ...[]*NgingCollectorHistory) map[string][]*NgingCollectorHistory {
@@ -254,7 +299,25 @@ func (a *NgingCollectorHistory) ListByOffset(recv interface{}, mw func(db.Result
 	if recv == nil {
 		recv = a.InitObjects()
 	}
-	return a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv).List()
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv).List()
+	}
+	queryParam := a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv)
+	if err := DBI.FireReading(a, queryParam); err != nil {
+		return nil, err
+	}
+	cnt, err := queryParam.List()
+	if err == nil {
+		switch v := recv.(type) {
+		case *[]*NgingCollectorHistory:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingCollectorHistory(*v))
+		case []*NgingCollectorHistory:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingCollectorHistory(v))
+		case factory.Ranger:
+			err = DBI.FireReaded(a, queryParam, v)
+		}
+	}
+	return cnt, err
 }
 
 func (a *NgingCollectorHistory) Add() (pk interface{}, err error) {

@@ -74,6 +74,21 @@ func (s Slice_NgingCollectorExportLog) Transform(transfers map[string]param.Tran
 	return r
 }
 
+func (s Slice_NgingCollectorExportLog) FromList(data interface{}) Slice_NgingCollectorExportLog {
+	values, ok := data.([]*NgingCollectorExportLog)
+	if !ok {
+		for _, value := range data.([]interface{}) {
+			row := &NgingCollectorExportLog{}
+			row.FromRow(value.(map[string]interface{}))
+			s = append(s, row)
+		}
+		return s
+	}
+	s = append(s, values...)
+
+	return s
+}
+
 // NgingCollectorExportLog 导出日志
 type NgingCollectorExportLog struct {
 	base    factory.Base
@@ -198,18 +213,48 @@ func (a *NgingCollectorExportLog) CPAFrom(source factory.Model) factory.Model {
 	return a
 }
 
-func (a *NgingCollectorExportLog) Get(mw func(db.Result) db.Result, args ...interface{}) error {
+func (a *NgingCollectorExportLog) Get(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	base := a.base
-	err := a.Param(mw, args...).SetRecv(a).One()
+	if !a.base.Eventable() {
+		err = a.Param(mw, args...).SetRecv(a).One()
+		a.base = base
+		return
+	}
+	queryParam := a.Param(mw, args...).SetRecv(a)
+	if err = DBI.FireReading(a, queryParam); err != nil {
+		return
+	}
+	err = queryParam.One()
 	a.base = base
-	return err
+	if err == nil {
+		err = DBI.FireReaded(a, queryParam)
+	}
+	return
 }
 
 func (a *NgingCollectorExportLog) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
 		recv = a.InitObjects()
 	}
-	return a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv).List()
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv).List()
+	}
+	queryParam := a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv)
+	if err := DBI.FireReading(a, queryParam); err != nil {
+		return nil, err
+	}
+	cnt, err := queryParam.List()
+	if err == nil {
+		switch v := recv.(type) {
+		case *[]*NgingCollectorExportLog:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingCollectorExportLog(*v))
+		case []*NgingCollectorExportLog:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingCollectorExportLog(v))
+		case factory.Ranger:
+			err = DBI.FireReaded(a, queryParam, v)
+		}
+	}
+	return cnt, err
 }
 
 func (a *NgingCollectorExportLog) GroupBy(keyField string, inputRows ...[]*NgingCollectorExportLog) map[string][]*NgingCollectorExportLog {
@@ -246,7 +291,25 @@ func (a *NgingCollectorExportLog) ListByOffset(recv interface{}, mw func(db.Resu
 	if recv == nil {
 		recv = a.InitObjects()
 	}
-	return a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv).List()
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv).List()
+	}
+	queryParam := a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv)
+	if err := DBI.FireReading(a, queryParam); err != nil {
+		return nil, err
+	}
+	cnt, err := queryParam.List()
+	if err == nil {
+		switch v := recv.(type) {
+		case *[]*NgingCollectorExportLog:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingCollectorExportLog(*v))
+		case []*NgingCollectorExportLog:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingCollectorExportLog(v))
+		case factory.Ranger:
+			err = DBI.FireReaded(a, queryParam, v)
+		}
+	}
+	return cnt, err
 }
 
 func (a *NgingCollectorExportLog) Add() (pk interface{}, err error) {

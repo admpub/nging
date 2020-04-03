@@ -74,6 +74,21 @@ func (s Slice_NgingFrpServer) Transform(transfers map[string]param.Transfer) []p
 	return r
 }
 
+func (s Slice_NgingFrpServer) FromList(data interface{}) Slice_NgingFrpServer {
+	values, ok := data.([]*NgingFrpServer)
+	if !ok {
+		for _, value := range data.([]interface{}) {
+			row := &NgingFrpServer{}
+			row.FromRow(value.(map[string]interface{}))
+			s = append(s, row)
+		}
+		return s
+	}
+	s = append(s, values...)
+
+	return s
+}
+
 // NgingFrpServer FRP服务器设置
 type NgingFrpServer struct {
 	base    factory.Base
@@ -225,18 +240,48 @@ func (a *NgingFrpServer) CPAFrom(source factory.Model) factory.Model {
 	return a
 }
 
-func (a *NgingFrpServer) Get(mw func(db.Result) db.Result, args ...interface{}) error {
+func (a *NgingFrpServer) Get(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	base := a.base
-	err := a.Param(mw, args...).SetRecv(a).One()
+	if !a.base.Eventable() {
+		err = a.Param(mw, args...).SetRecv(a).One()
+		a.base = base
+		return
+	}
+	queryParam := a.Param(mw, args...).SetRecv(a)
+	if err = DBI.FireReading(a, queryParam); err != nil {
+		return
+	}
+	err = queryParam.One()
 	a.base = base
-	return err
+	if err == nil {
+		err = DBI.FireReaded(a, queryParam)
+	}
+	return
 }
 
 func (a *NgingFrpServer) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
 		recv = a.InitObjects()
 	}
-	return a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv).List()
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv).List()
+	}
+	queryParam := a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv)
+	if err := DBI.FireReading(a, queryParam); err != nil {
+		return nil, err
+	}
+	cnt, err := queryParam.List()
+	if err == nil {
+		switch v := recv.(type) {
+		case *[]*NgingFrpServer:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingFrpServer(*v))
+		case []*NgingFrpServer:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingFrpServer(v))
+		case factory.Ranger:
+			err = DBI.FireReaded(a, queryParam, v)
+		}
+	}
+	return cnt, err
 }
 
 func (a *NgingFrpServer) GroupBy(keyField string, inputRows ...[]*NgingFrpServer) map[string][]*NgingFrpServer {
@@ -273,7 +318,25 @@ func (a *NgingFrpServer) ListByOffset(recv interface{}, mw func(db.Result) db.Re
 	if recv == nil {
 		recv = a.InitObjects()
 	}
-	return a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv).List()
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv).List()
+	}
+	queryParam := a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv)
+	if err := DBI.FireReading(a, queryParam); err != nil {
+		return nil, err
+	}
+	cnt, err := queryParam.List()
+	if err == nil {
+		switch v := recv.(type) {
+		case *[]*NgingFrpServer:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingFrpServer(*v))
+		case []*NgingFrpServer:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingFrpServer(v))
+		case factory.Ranger:
+			err = DBI.FireReaded(a, queryParam, v)
+		}
+	}
+	return cnt, err
 }
 
 func (a *NgingFrpServer) Add() (pk interface{}, err error) {

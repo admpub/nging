@@ -74,6 +74,21 @@ func (s Slice_NgingVhostGroup) Transform(transfers map[string]param.Transfer) []
 	return r
 }
 
+func (s Slice_NgingVhostGroup) FromList(data interface{}) Slice_NgingVhostGroup {
+	values, ok := data.([]*NgingVhostGroup)
+	if !ok {
+		for _, value := range data.([]interface{}) {
+			row := &NgingVhostGroup{}
+			row.FromRow(value.(map[string]interface{}))
+			s = append(s, row)
+		}
+		return s
+	}
+	s = append(s, values...)
+
+	return s
+}
+
 // NgingVhostGroup 虚拟主机组
 type NgingVhostGroup struct {
 	base    factory.Base
@@ -197,18 +212,48 @@ func (a *NgingVhostGroup) CPAFrom(source factory.Model) factory.Model {
 	return a
 }
 
-func (a *NgingVhostGroup) Get(mw func(db.Result) db.Result, args ...interface{}) error {
+func (a *NgingVhostGroup) Get(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	base := a.base
-	err := a.Param(mw, args...).SetRecv(a).One()
+	if !a.base.Eventable() {
+		err = a.Param(mw, args...).SetRecv(a).One()
+		a.base = base
+		return
+	}
+	queryParam := a.Param(mw, args...).SetRecv(a)
+	if err = DBI.FireReading(a, queryParam); err != nil {
+		return
+	}
+	err = queryParam.One()
 	a.base = base
-	return err
+	if err == nil {
+		err = DBI.FireReaded(a, queryParam)
+	}
+	return
 }
 
 func (a *NgingVhostGroup) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
 		recv = a.InitObjects()
 	}
-	return a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv).List()
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv).List()
+	}
+	queryParam := a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv)
+	if err := DBI.FireReading(a, queryParam); err != nil {
+		return nil, err
+	}
+	cnt, err := queryParam.List()
+	if err == nil {
+		switch v := recv.(type) {
+		case *[]*NgingVhostGroup:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingVhostGroup(*v))
+		case []*NgingVhostGroup:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingVhostGroup(v))
+		case factory.Ranger:
+			err = DBI.FireReaded(a, queryParam, v)
+		}
+	}
+	return cnt, err
 }
 
 func (a *NgingVhostGroup) GroupBy(keyField string, inputRows ...[]*NgingVhostGroup) map[string][]*NgingVhostGroup {
@@ -245,7 +290,25 @@ func (a *NgingVhostGroup) ListByOffset(recv interface{}, mw func(db.Result) db.R
 	if recv == nil {
 		recv = a.InitObjects()
 	}
-	return a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv).List()
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv).List()
+	}
+	queryParam := a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv)
+	if err := DBI.FireReading(a, queryParam); err != nil {
+		return nil, err
+	}
+	cnt, err := queryParam.List()
+	if err == nil {
+		switch v := recv.(type) {
+		case *[]*NgingVhostGroup:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingVhostGroup(*v))
+		case []*NgingVhostGroup:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingVhostGroup(v))
+		case factory.Ranger:
+			err = DBI.FireReaded(a, queryParam, v)
+		}
+	}
+	return cnt, err
 }
 
 func (a *NgingVhostGroup) Add() (pk interface{}, err error) {

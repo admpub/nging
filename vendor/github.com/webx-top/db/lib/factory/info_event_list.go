@@ -79,6 +79,41 @@ func (e Events) call(event string, model Model, editColumns ...string) error {
 	return nil
 }
 
+func (e Events) CallRead(event string, model Model, param *Param, rangers ...Ranger) error {
+	table := model.Short_()
+	if len(rangers) < 1 { // 单行数据
+		if evt, ok := e[table]; ok {
+			err := evt.CallRead(event, model, param)
+			if err != nil {
+				return err
+			}
+		}
+		if evt, ok := e[`*`]; ok {
+			return evt.CallRead(event, model, param)
+		}
+		return nil
+	}
+	if evt, ok := e[table]; ok {
+		err := rangers[0].Range(func(m Model) error {
+			m.CPAFrom(model)
+			return evt.CallRead(event, m, param)
+		})
+		if err != nil {
+			return err
+		}
+	}
+	if evt, ok := e[`*`]; ok {
+		err := rangers[0].Range(func(m Model) error {
+			m.CPAFrom(model)
+			return evt.CallRead(event, m, param)
+		})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (e *Events) On(event string, h EventHandler, table string, async ...bool) {
 	evt, ok := (*e)[table]
 	if !ok {
@@ -86,4 +121,13 @@ func (e *Events) On(event string, h EventHandler, table string, async ...bool) {
 		(*e)[table] = evt
 	}
 	evt.On(event, h, async...)
+}
+
+func (e *Events) OnRead(event string, h EventReadHandler, table string, async ...bool) {
+	evt, ok := (*e)[table]
+	if !ok {
+		evt = NewEvent()
+		(*e)[table] = evt
+	}
+	evt.OnRead(event, h, async...)
 }

@@ -74,6 +74,21 @@ func (s Slice_NgingFile) Transform(transfers map[string]param.Transfer) []param.
 	return r
 }
 
+func (s Slice_NgingFile) FromList(data interface{}) Slice_NgingFile {
+	values, ok := data.([]*NgingFile)
+	if !ok {
+		for _, value := range data.([]interface{}) {
+			row := &NgingFile{}
+			row.FromRow(value.(map[string]interface{}))
+			s = append(s, row)
+		}
+		return s
+	}
+	s = append(s, values...)
+
+	return s
+}
+
 // NgingFile 文件表
 type NgingFile struct {
 	base    factory.Base
@@ -219,18 +234,48 @@ func (a *NgingFile) CPAFrom(source factory.Model) factory.Model {
 	return a
 }
 
-func (a *NgingFile) Get(mw func(db.Result) db.Result, args ...interface{}) error {
+func (a *NgingFile) Get(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	base := a.base
-	err := a.Param(mw, args...).SetRecv(a).One()
+	if !a.base.Eventable() {
+		err = a.Param(mw, args...).SetRecv(a).One()
+		a.base = base
+		return
+	}
+	queryParam := a.Param(mw, args...).SetRecv(a)
+	if err = DBI.FireReading(a, queryParam); err != nil {
+		return
+	}
+	err = queryParam.One()
 	a.base = base
-	return err
+	if err == nil {
+		err = DBI.FireReaded(a, queryParam)
+	}
+	return
 }
 
 func (a *NgingFile) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
 		recv = a.InitObjects()
 	}
-	return a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv).List()
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv).List()
+	}
+	queryParam := a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv)
+	if err := DBI.FireReading(a, queryParam); err != nil {
+		return nil, err
+	}
+	cnt, err := queryParam.List()
+	if err == nil {
+		switch v := recv.(type) {
+		case *[]*NgingFile:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingFile(*v))
+		case []*NgingFile:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingFile(v))
+		case factory.Ranger:
+			err = DBI.FireReaded(a, queryParam, v)
+		}
+	}
+	return cnt, err
 }
 
 func (a *NgingFile) GroupBy(keyField string, inputRows ...[]*NgingFile) map[string][]*NgingFile {
@@ -267,7 +312,25 @@ func (a *NgingFile) ListByOffset(recv interface{}, mw func(db.Result) db.Result,
 	if recv == nil {
 		recv = a.InitObjects()
 	}
-	return a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv).List()
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv).List()
+	}
+	queryParam := a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv)
+	if err := DBI.FireReading(a, queryParam); err != nil {
+		return nil, err
+	}
+	cnt, err := queryParam.List()
+	if err == nil {
+		switch v := recv.(type) {
+		case *[]*NgingFile:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingFile(*v))
+		case []*NgingFile:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingFile(v))
+		case factory.Ranger:
+			err = DBI.FireReaded(a, queryParam, v)
+		}
+	}
+	return cnt, err
 }
 
 func (a *NgingFile) Add() (pk interface{}, err error) {

@@ -74,6 +74,21 @@ func (s Slice_NgingUser) Transform(transfers map[string]param.Transfer) []param.
 	return r
 }
 
+func (s Slice_NgingUser) FromList(data interface{}) Slice_NgingUser {
+	values, ok := data.([]*NgingUser)
+	if !ok {
+		for _, value := range data.([]interface{}) {
+			row := &NgingUser{}
+			row.FromRow(value.(map[string]interface{}))
+			s = append(s, row)
+		}
+		return s
+	}
+	s = append(s, values...)
+
+	return s
+}
+
 // NgingUser 用户
 type NgingUser struct {
 	base    factory.Base
@@ -210,18 +225,48 @@ func (a *NgingUser) CPAFrom(source factory.Model) factory.Model {
 	return a
 }
 
-func (a *NgingUser) Get(mw func(db.Result) db.Result, args ...interface{}) error {
+func (a *NgingUser) Get(mw func(db.Result) db.Result, args ...interface{}) (err error) {
 	base := a.base
-	err := a.Param(mw, args...).SetRecv(a).One()
+	if !a.base.Eventable() {
+		err = a.Param(mw, args...).SetRecv(a).One()
+		a.base = base
+		return
+	}
+	queryParam := a.Param(mw, args...).SetRecv(a)
+	if err = DBI.FireReading(a, queryParam); err != nil {
+		return
+	}
+	err = queryParam.One()
 	a.base = base
-	return err
+	if err == nil {
+		err = DBI.FireReaded(a, queryParam)
+	}
+	return
 }
 
 func (a *NgingUser) List(recv interface{}, mw func(db.Result) db.Result, page, size int, args ...interface{}) (func() int64, error) {
 	if recv == nil {
 		recv = a.InitObjects()
 	}
-	return a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv).List()
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv).List()
+	}
+	queryParam := a.Param(mw, args...).SetPage(page).SetSize(size).SetRecv(recv)
+	if err := DBI.FireReading(a, queryParam); err != nil {
+		return nil, err
+	}
+	cnt, err := queryParam.List()
+	if err == nil {
+		switch v := recv.(type) {
+		case *[]*NgingUser:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingUser(*v))
+		case []*NgingUser:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingUser(v))
+		case factory.Ranger:
+			err = DBI.FireReaded(a, queryParam, v)
+		}
+	}
+	return cnt, err
 }
 
 func (a *NgingUser) GroupBy(keyField string, inputRows ...[]*NgingUser) map[string][]*NgingUser {
@@ -258,7 +303,25 @@ func (a *NgingUser) ListByOffset(recv interface{}, mw func(db.Result) db.Result,
 	if recv == nil {
 		recv = a.InitObjects()
 	}
-	return a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv).List()
+	if !a.base.Eventable() {
+		return a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv).List()
+	}
+	queryParam := a.Param(mw, args...).SetOffset(offset).SetSize(size).SetRecv(recv)
+	if err := DBI.FireReading(a, queryParam); err != nil {
+		return nil, err
+	}
+	cnt, err := queryParam.List()
+	if err == nil {
+		switch v := recv.(type) {
+		case *[]*NgingUser:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingUser(*v))
+		case []*NgingUser:
+			err = DBI.FireReaded(a, queryParam, Slice_NgingUser(v))
+		case factory.Ranger:
+			err = DBI.FireReaded(a, queryParam, v)
+		}
+	}
+	return cnt, err
 }
 
 func (a *NgingUser) Add() (pk interface{}, err error) {
