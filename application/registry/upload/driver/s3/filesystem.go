@@ -36,6 +36,7 @@ import (
 	"github.com/admpub/nging/application/library/s3manager/s3client"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/file/storer"
+	"github.com/admpub/nging/application/library/common"
 )
 
 const (
@@ -63,6 +64,7 @@ func NewFilesystem(ctx context.Context, typ string) *Filesystem {
 	if err := m.EventOFF().Get(nil, `id`, cloudAccountID); err != nil {
 		panic(err)
 	}
+	m.Secret = common.Crypto().Decode(m.Secret)
 	mgr, err := s3client.New(m, 0)
 	if err != nil {
 		panic(err)
