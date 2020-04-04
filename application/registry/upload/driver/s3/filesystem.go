@@ -55,7 +55,7 @@ func NewFilesystem(ctx context.Context, typ string) *Filesystem {
 	m := &dbschema.NgingCloudStorage{}
 	cloudAccountID := param.AsString(ctx.Value(AccountIDKey))
 	if len(cloudAccountID) == 0 || cloudAccountID == `0` {
-		storerConfig, ok := storer.Get()
+		storerConfig, ok := storer.GetOk()
 		if ok {
 			cloudAccountID = storerConfig.ID
 		}

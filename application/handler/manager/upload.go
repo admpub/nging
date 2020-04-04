@@ -39,6 +39,7 @@ import (
 	"github.com/admpub/nging/application/registry/upload/driver/local"
 	"github.com/admpub/nging/application/registry/upload/helper"
 	"github.com/admpub/qrcode"
+	"github.com/admpub/nging/application/model/file/storer"
 )
 
 // 文件上传保存路径规则：
@@ -49,9 +50,9 @@ func ResponseDataForUpload(ctx echo.Context, field string, err error, imageURLs 
 	return upload.ResponserGet(field)(ctx, field, err, imageURLs)
 }
 
-var (
-	StorerEngine = local.Name
-)
+func StorerEngine() storer.Info {
+	return storer.Get()
+}
 
 func File(ctx echo.Context) error {
 	uploadType := ctx.Param(`type`)
@@ -77,10 +78,11 @@ func File(ctx echo.Context) error {
 	if err := ctx.File(file); err != echo.ErrNotFound {
 		return err
 	}
+	storerName := local.Name
 	return ctx.ServeCallbackContent(func(_ echo.Context) (io.Reader, error) {
-		newStore := upload.StorerGet(StorerEngine)
+		newStore := upload.StorerGet(storerName)
 		if newStore == nil {
-			return nil, ctx.E(`存储引擎“%s”未被登记`, StorerEngine)
+			return nil, ctx.E(`存储引擎“%s”未被登记`, storerName)
 		}
 		storer := newStore(ctx, typ)
 		f, err := storer.Get(`/` + originalFile)
@@ -147,7 +149,8 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		return err
 	}
 	fileType := ctx.Form(`filetype`)
-	prepareData, err := upload.Prepare(ctx, uploadType, fileType, StorerEngine)
+	storerInfo := StorerEngine()
+	prepareData, err := upload.Prepare(ctx, uploadType, fileType, storerInfo)
 	if err != nil {
 		datax, embed := ResponseDataForUpload(ctx, field, err, fileURLs)
 		if !embed {
@@ -157,7 +160,8 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	storer := prepareData.Storer(ctx)
 	defer prepareData.Close()
 	fileM := modelFile.NewFile(ctx)
-	fileM.StorerName = StorerEngine
+	fileM.StorerName = storerInfo.Name
+	fileM.StorerId = storerInfo.ID
 	fileM.TableId = ``
 	fileM.SetFieldName(prepareData.FieldName)
 	fileM.SetTableName(prepareData.TableName)

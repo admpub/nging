@@ -95,7 +95,8 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	if len(uploadType) == 0 {
 		uploadType = ctx.Form(`type`)
 	}
-	prepareData, err := upload.Prepare(ctx, uploadType, ``, StorerEngine)
+	storerInfo := StorerEngine()
+	prepareData, err := upload.Prepare(ctx, uploadType, ``, storerInfo)
 	if err != nil {
 		return err
 	}
@@ -145,7 +146,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	}
 	thumbM := modelFile.NewThumb(ctx)
 	fileM := modelFile.NewFile(ctx)
-	err = fileM.GetByViewURL(StorerEngine, srcURL)
+	err = fileM.GetByViewURL(storerInfo, srcURL)
 	if err != nil {
 		return err
 	}

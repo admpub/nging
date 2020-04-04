@@ -205,7 +205,7 @@ func Get(engine string) Constructor {
 // GetBySettings 获取存储引擎构造器
 func GetBySettings() Constructor {
 	engine := `local`
-	storerConfig, ok := storer.Get()
+	storerConfig, ok := storer.GetOk()
 	if ok {
 		engine = storerConfig.Name
 	}

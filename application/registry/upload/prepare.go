@@ -4,6 +4,7 @@ import (
 	"path"
 
 	uploadClient "github.com/webx-top/client/upload"
+	"github.com/admpub/nging/application/model/file/storer"
 	"github.com/webx-top/echo"
 )
 
@@ -14,7 +15,7 @@ var NopChecker uploadClient.Checker = func(r *uploadClient.Result) error {
 type PrepareData struct {
 	newStorer    Constructor
 	storer       Storer
-	StorerEngine string
+	StorerInfo   storer.Info
 	DBSaver      DBSaver
 	Checker      uploadClient.Checker
 	Checkin      Checker
@@ -38,7 +39,7 @@ func (p *PrepareData) Close() error {
 }
 
 // Prepare 上传前的环境准备
-func Prepare(ctx echo.Context, uploadType string, fileType string, storerEngine string) (*PrepareData, error) {
+func Prepare(ctx echo.Context, uploadType string, fileType string, storerInfo storer.Info) (*PrepareData, error) {
 	if len(uploadType) == 0 {
 		return nil, ctx.E(`请提供参数“%s”`, ctx.Path())
 	}
@@ -47,9 +48,9 @@ func Prepare(ctx echo.Context, uploadType string, fileType string, storerEngine 
 		return nil, ctx.E(`参数“%s”未被登记`, uploadType)
 	}
 	//echo.Dump(ctx.Forms())
-	newStore := StorerGet(storerEngine)
+	newStore := StorerGet(storerInfo.Name)
 	if newStore == nil {
-		return nil, ctx.E(`存储引擎“%s”未被登记`, storerEngine)
+		return nil, ctx.E(`存储引擎“%s”未被登记`, storerInfo.Name)
 	}
 	dbsaver := DBSaverGet(uploadType, defaults...)
 	checker := func(r *uploadClient.Result) error {
@@ -65,7 +66,7 @@ func Prepare(ctx echo.Context, uploadType string, fileType string, storerEngine 
 	}
 	data := &PrepareData{
 		newStorer:    newStore,
-		StorerEngine: storerEngine,
+		StorerInfo:   storerInfo,
 		DBSaver:      dbsaver,
 		Checker:      checker,
 		Checkin:      CheckerGet(uploadType, defaults...),

@@ -76,7 +76,6 @@ func init() {
 		if !ok || settings == nil {
 			settings = &defaultStorer
 		}
-		StorerEngine = settings.Name
 		echo.Set(storer.StorerInfoKey, settings)
 		return nil
 	}

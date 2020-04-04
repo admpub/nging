@@ -34,6 +34,7 @@ import (
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
 	"github.com/admpub/nging/application/registry/upload/table"
+	"github.com/admpub/nging/application/model/file/storer"
 )
 
 func NewFile(ctx echo.Context) *File {
@@ -195,17 +196,19 @@ func (f *File) DeleteByID(id uint64, ownerType string, ownerID uint64) (err erro
 	return f.fireDelete()
 }
 
-func (f *File) GetBySavePath(storerName string, savePath string) (err error) {
+func (f *File) GetBySavePath(storerInfo storer.Info, savePath string) (err error) {
 	err = f.Get(nil, db.And(
-		db.Cond{`storer_name`: storerName},
+		db.Cond{`storer_name`: storerInfo.Name},
+		db.Cond{`storer_id`: storerInfo.ID},
 		db.Cond{`save_path`: savePath},
 	))
 	return
 }
 
-func (f *File) GetByViewURL(storerName string, viewURL string) (err error) {
+func (f *File) GetByViewURL(storerInfo storer.Info, viewURL string) (err error) {
 	err = f.Get(nil, db.And(
-		db.Cond{`storer_name`: storerName},
+		db.Cond{`storer_name`: storerInfo.Name},
+		db.Cond{`storer_id`: storerInfo.ID},
 		db.Cond{`view_url`: viewURL},
 	))
 	return
