@@ -27,7 +27,7 @@ import (
 	"strings"
 
 	"github.com/admpub/nging/application/registry/upload"
-	"github.com/admpub/nging/application/registry/upload/driver/filesystem"
+	"github.com/admpub/nging/application/registry/upload/driver/local"
 	"github.com/admpub/nging/application/registry/upload/helper"
 	"github.com/webx-top/echo"
 	"gocloud.dev/blob"
@@ -54,14 +54,14 @@ func NewCloud(ctx context.Context, typ string) *Cloud {
 	return &Cloud{
 		config:     DefaultConfig,
 		bucket:     bucket,
-		Filesystem: filesystem.NewFilesystem(ctx, typ),
+		Filesystem: local.NewFilesystem(ctx, typ),
 	}
 }
 
 type Cloud struct {
 	config *Config
 	bucket *blob.Bucket
-	*filesystem.Filesystem
+	*local.Filesystem
 }
 
 func (f *Cloud) Name() string {

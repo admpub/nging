@@ -23,7 +23,7 @@ import (
 	"io"
 	"net/url"
 
-	"github.com/admpub/nging/application/registry/upload/driver/filesystem"
+	"github.com/admpub/nging/application/registry/upload/driver/local"
 	"github.com/admpub/nging/application/registry/upload/helper"
 
 	"github.com/admpub/goseaweedfs"
@@ -46,14 +46,14 @@ func NewSeaweedfs(ctx context.Context, typ string) *Seaweedfs {
 	return &Seaweedfs{
 		config:     DefaultConfig,
 		instance:   a,
-		Filesystem: filesystem.NewFilesystem(ctx, typ),
+		Filesystem: local.NewFilesystem(ctx, typ),
 	}
 }
 
 type Seaweedfs struct {
 	config   *Config
 	instance *goseaweedfs.Seaweed
-	*filesystem.Filesystem
+	*local.Filesystem
 }
 
 func (s *Seaweedfs) Name() string {

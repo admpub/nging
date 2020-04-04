@@ -19,44 +19,21 @@
 package cloud
 
 import (
-	"crypto/tls"
 	"fmt"
-	"net/http"
 	"os"
 	"path"
 	"strings"
 
-	minio "github.com/minio/minio-go"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/filemanager"
 	"github.com/admpub/nging/application/library/notice"
-	"github.com/admpub/nging/application/library/s3manager"
+	"github.com/admpub/nging/application/library/s3manager/s3client"
 	"github.com/admpub/nging/application/model"
 )
-
-func storageConnect(m *dbschema.NgingCloudStorage) (client *minio.Client, err error) {
-	isSecure := m.Secure == `Y`
-	if len(m.Region) == 0 {
-		client, err = minio.New(m.Endpoint, m.Key, m.Secret, isSecure)
-	} else {
-		client, err = minio.NewWithRegion(m.Endpoint, m.Key, m.Secret, isSecure, m.Region)
-	}
-	if err != nil {
-		return client, err
-	}
-	if m.Secure != `Y` {
-		tr := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		}
-		client.SetCustomTransport(tr)
-	}
-	return client, nil
-}
 
 func StorageFile(ctx echo.Context) error {
 	ctx.Set(`activeURL`, `/cloud/storage`)
@@ -66,12 +43,10 @@ func StorageFile(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
-	client, err := storageConnect(m.NgingCloudStorage)
+	mgr, err := s3client.New(m.NgingCloudStorage, config.DefaultConfig.Sys.EditableFileMaxBytes)
 	if err != nil {
 		return err
 	}
-
-	mgr := s3manager.New(client, m.Bucket, config.DefaultConfig.Sys.EditableFileMaxBytes, ctx)
 
 	ppath := ctx.Form(`path`)
 	do := ctx.Form(`do`)
@@ -94,7 +69,7 @@ func StorageFile(ctx echo.Context) error {
 		} else {
 			content := ctx.Form(`content`)
 			encoding := ctx.Form(`encoding`)
-			dat, err := mgr.Edit(ppath, content, encoding)
+			dat, err := mgr.Edit(ctx, ppath, content, encoding)
 			if err != nil {
 				data.SetInfo(err.Error(), 0)
 			} else {
@@ -146,7 +121,7 @@ func StorageFile(ctx echo.Context) error {
 		}
 		return ctx.Redirect(ctx.Referer())
 	case `upload`:
-		err = mgr.Upload(ppath)
+		err = mgr.Upload(ctx, ppath)
 		if err != nil {
 			user := handler.User(ctx)
 			if user != nil {
@@ -157,11 +132,11 @@ func StorageFile(ctx echo.Context) error {
 		}
 		return ctx.String(`OK`)
 	case `download`:
-		return mgr.Download(ppath)
+		return mgr.Download(ctx, ppath)
 	default:
 		var dirs []os.FileInfo
 		var exit bool
-		err, exit, dirs = mgr.List(ppath)
+		err, exit, dirs = mgr.List(ctx, ppath)
 		if exit {
 			return err
 		}

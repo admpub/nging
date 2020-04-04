@@ -19,13 +19,13 @@
 package manager
 
 import (
-	"time"
+	"bytes"
 	"io"
 	"mime/multipart"
 	"path"
 	"path/filepath"
 	"strings"
-	"bytes"
+	"time"
 
 	uploadClient "github.com/webx-top/client/upload"
 	_ "github.com/webx-top/client/upload/driver"
@@ -35,9 +35,9 @@ import (
 	"github.com/admpub/nging/application/library/common"
 	modelFile "github.com/admpub/nging/application/model/file"
 	"github.com/admpub/nging/application/registry/upload"
-	"github.com/admpub/nging/application/registry/upload/driver/filesystem"
-	"github.com/admpub/nging/application/registry/upload/helper"
 	"github.com/admpub/nging/application/registry/upload/convert"
+	"github.com/admpub/nging/application/registry/upload/driver/local"
+	"github.com/admpub/nging/application/registry/upload/helper"
 	"github.com/admpub/qrcode"
 )
 
@@ -50,7 +50,7 @@ func ResponseDataForUpload(ctx echo.Context, field string, err error, imageURLs 
 }
 
 var (
-	StorerEngine = filesystem.Name
+	StorerEngine = local.Name
 )
 
 func File(ctx echo.Context) error {

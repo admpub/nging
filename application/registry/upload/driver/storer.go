@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"sort"
 
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/client/upload/watermark"
@@ -17,6 +18,7 @@ import (
 	"github.com/admpub/color"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/registry/upload/table"
+	"github.com/admpub/nging/application/model/file/storer"
 )
 
 var (
@@ -200,7 +202,27 @@ func Get(engine string) Constructor {
 	return constructor
 }
 
+// GetBySettings 获取存储引擎构造器
+func GetBySettings() Constructor {
+	engine := `local`
+	storerConfig, ok := storer.Get()
+	if ok {
+		engine = storerConfig.Name
+	}
+	return Get(engine)
+}
+
 // All 存储引擎集合
 func All() map[string]Constructor {
 	return storers
+}
+
+// AllNames 存储引擎集合
+func AllNames() []string {
+	var names []string
+	for name := range storers {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	return names
 }

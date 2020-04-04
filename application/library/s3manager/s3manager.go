@@ -21,10 +21,12 @@ package s3manager
 import (
 	"bytes"
 	"io/ioutil"
+	"io"
 	"os"
 	"path"
 	"sort"
 	"strings"
+	"net/http"
 
 	minio "github.com/minio/minio-go"
 	"github.com/pkg/errors"
@@ -35,25 +37,35 @@ import (
 	"github.com/admpub/nging/application/library/filemanager"
 )
 
-func New(client *minio.Client, bucketName string, editableMaxSize int64, ctx echo.Context) *s3Manager {
-	return &s3Manager{
-		Context:         ctx,
+func New(client *minio.Client, bucketName string, editableMaxSize int64) *S3Manager {
+	return &S3Manager{
 		client:          client,
 		bucketName:      bucketName,
 		EditableMaxSize: editableMaxSize,
 	}
 }
 
-type s3Manager struct {
-	echo.Context
+type S3Manager struct {
 	client          *minio.Client
 	bucketName      string
 	EditableMaxSize int64
 }
 
-func (s *s3Manager) Edit(ppath string, content string, encoding string) (interface{}, error) {
-	objectName := strings.TrimPrefix(ppath, `/`)
-	f, err := s.client.GetObject(s.bucketName, objectName, minio.GetObjectOptions{})
+func (s *S3Manager) Client() *minio.Client {
+	return s.client
+}
+
+func (s *S3Manager) BucketName() string {
+	return s.bucketName
+}
+
+func (s *S3Manager) SetBucketName(bucketName string) *S3Manager {
+	s.bucketName = bucketName
+	return s
+}
+
+func (s *S3Manager) Edit(ctx echo.Context, ppath string, content string, encoding string) (interface{}, error) {
+	f, err := s.Get(ppath)
 	if err != nil {
 		return nil, err
 	}
@@ -63,11 +75,11 @@ func (s *s3Manager) Edit(ppath string, content string, encoding string) (interfa
 		return nil, err
 	}
 	if s.EditableMaxSize > 0 && fi.Size > s.EditableMaxSize {
-		return nil, s.E(`很抱歉，不支持编辑超过%v的文件`, com.FormatBytes(s.EditableMaxSize))
+		return nil, ctx.E(`很抱歉，不支持编辑超过%v的文件`, com.FormatBytes(s.EditableMaxSize))
 	}
 	encoding = strings.ToLower(encoding)
 	isUTF8 := len(encoding) == 0 || encoding == `utf-8`
-	if s.IsPost() {
+	if ctx.IsPost() {
 		b := []byte(content)
 		if !isUTF8 {
 			b, err = charset.Convert(`utf-8`, encoding, b)
@@ -75,12 +87,10 @@ func (s *s3Manager) Edit(ppath string, content string, encoding string) (interfa
 				return nil, err
 			}
 		}
-		f.Close()
 		r := bytes.NewReader(b)
-		opts := minio.PutObjectOptions{ContentType: "application/octet-stream"}
-		_, err = s.client.PutObject(s.bucketName, objectName, r, int64(len(b)), opts)
+		err = s.Put(r, ppath, int64(len(b)))
 		if err != nil {
-			return nil, s.E(ppath + `:` + err.Error())
+			return nil, ctx.E(ppath + `:` + err.Error())
 		}
 		return nil, err
 	}
@@ -92,7 +102,7 @@ func (s *s3Manager) Edit(ppath string, content string, encoding string) (interfa
 	return string(dat), err
 }
 
-func (s *s3Manager) Mkbucket(bucketName string, regions ...string) error {
+func (s *S3Manager) Mkbucket(bucketName string, regions ...string) error {
 	var region string
 	if len(regions) > 0 {
 		region = regions[0]
@@ -100,7 +110,7 @@ func (s *s3Manager) Mkbucket(bucketName string, regions ...string) error {
 	return s.client.MakeBucket(bucketName, region)
 }
 
-func (s *s3Manager) Mkdir(ppath, newName string) error {
+func (s *S3Manager) Mkdir(ppath, newName string) error {
 	objectName := strings.TrimPrefix(ppath, `/`)
 	objectName = path.Join(objectName, newName)
 	if !strings.HasSuffix(objectName, `/`) {
@@ -110,7 +120,7 @@ func (s *s3Manager) Mkdir(ppath, newName string) error {
 	return err
 }
 
-func (s *s3Manager) Rename(ppath, newName string) error {
+func (s *S3Manager) Rename(ppath, newName string) error {
 	objectName := strings.TrimPrefix(ppath, `/`)
 	// Source object
 	src := minio.NewSourceInfo(s.bucketName, objectName, nil)
@@ -129,15 +139,15 @@ func (s *s3Manager) Rename(ppath, newName string) error {
 	return err
 }
 
-func (s *s3Manager) Chown(ppath string, uid, gid int) error {
+func (s *S3Manager) Chown(ppath string, uid, gid int) error {
 	return nil
 }
 
-func (s *s3Manager) Chmod(ppath string, mode os.FileMode) error {
+func (s *S3Manager) Chmod(ppath string, mode os.FileMode) error {
 	return nil
 }
 
-func (s *s3Manager) Search(ppath string, prefix string, num int) []string {
+func (s *S3Manager) Search(ppath string, prefix string, num int) []string {
 	var paths []string
 	doneCh := make(chan struct{})
 	defer close(doneCh)
@@ -153,37 +163,81 @@ func (s *s3Manager) Search(ppath string, prefix string, num int) []string {
 	return paths
 }
 
-func (s *s3Manager) Remove(ppath string) error {
+func (s *S3Manager) Remove(ppath string) error {
 	objectName := strings.TrimPrefix(ppath, `/`)
 	return s.client.RemoveObject(s.bucketName, objectName)
 }
 
-func (s *s3Manager) Upload(ppath string) error {
-	fileSrc, fileHdr, err := s.Request().FormFile(`file`)
+// Clear 清空所有数据【慎用】
+func (s *S3Manager) Clear() <-chan minio.RemoveObjectError {
+	deleted := make(chan string)
+	defer close(deleted)
+	return s.client.RemoveObjects(s.bucketName, deleted)
+}
+
+func (s *S3Manager) Upload(ctx echo.Context, ppath string) error {
+	fileSrc, fileHdr, err := ctx.Request().FormFile(`file`)
 	if err != nil {
 		return err
 	}
 	defer fileSrc.Close()
-	opts := minio.PutObjectOptions{ContentType: "application/octet-stream"}
 	objectName := path.Join(ppath, fileHdr.Filename)
-	objectName = strings.TrimPrefix(objectName, `/`)
-	_, err = s.client.PutObject(s.bucketName, objectName, fileSrc, fileHdr.Size, opts)
-	return err
+	return s.Put(fileSrc, objectName, fileHdr.Size)
 }
 
-func (s *s3Manager) Download(ppath string) error {
+// Put 提交数据
+func (s *S3Manager) Put(reader io.Reader, objectName string, size int64) (err error) {
+	opts := minio.PutObjectOptions{ContentType: "application/octet-stream"}
+	objectName = strings.TrimPrefix(objectName, `/`)
+	_, err = s.client.PutObject(s.bucketName, objectName, reader, size, opts)
+	return
+}
+
+// Get 获取数据
+func (s *S3Manager) Get(ppath string) (*minio.Object, error) {
 	objectName := strings.TrimPrefix(ppath, `/`)
 	f, err := s.client.GetObject(s.bucketName, objectName, minio.GetObjectOptions{})
 	if err != nil {
-		return errors.WithMessage(err, objectName)
+		return f, errors.WithMessage(err, objectName)
+	}
+	return f, err
+}
+
+// Stat 获取对象信息
+func (s *S3Manager) Stat(ppath string) (minio.ObjectInfo, error) {
+	objectName := strings.TrimPrefix(ppath, `/`)
+	f, err := s.client.StatObject(s.bucketName, objectName, minio.StatObjectOptions{})
+	if err != nil {
+		return f, errors.WithMessage(err, objectName)
+	}
+	return f, err
+}
+
+// Exists 对象是否存在
+func (s *S3Manager) Exists(ppath string) (bool, error) {
+	_, err := s.Stat(ppath)
+	if err != nil {
+		switch v := err.(type) {
+		case minio.ErrorResponse:
+			return v.StatusCode != http.StatusNotFound, nil
+		}
+		return false, err
+	}
+	return true, err
+}
+
+func (s *S3Manager) Download(ctx echo.Context, ppath string) error {
+	f, err := s.Get(ppath)
+	if err != nil {
+		return err
 	}
 	defer f.Close()
 	fileName := path.Base(ppath)
-	inline := s.Formx(`inline`).Bool()
-	return s.Attachment(f, fileName, inline)
+	inline := ctx.Formx(`inline`).Bool()
+	return ctx.Attachment(f, fileName, inline)
 }
 
-func (s *s3Manager) List(ppath string, sortBy ...string) (err error, exit bool, dirs []os.FileInfo) {
+func (s *S3Manager) List(ctx echo.Context, ppath string, sortBy ...string) (err error, exit bool, dirs []os.FileInfo) {
 	doneCh := make(chan struct{})
 	defer close(doneCh)
 	objectPrefix := strings.TrimPrefix(ppath, `/`)
@@ -213,7 +267,7 @@ func (s *s3Manager) List(ppath string, sortBy ...string) (err error, exit bool, 
 		dirs = append(dirs, obj)
 	}
 	if !forceDir && len(dirs) == 0 {
-		return s.Download(ppath), true, nil
+		return s.Download(ctx, ppath), true, nil
 	}
 	if len(sortBy) > 0 {
 		switch sortBy[0] {
@@ -232,19 +286,19 @@ func (s *s3Manager) List(ppath string, sortBy ...string) (err error, exit bool, 
 	} else {
 		sort.Sort(filemanager.SortByFileType(dirs))
 	}
-	if s.Format() == "json" {
+	if ctx.Format() == "json" {
 		dirList, fileList := s.ListTransfer(dirs)
-		data := s.Data()
+		data := ctx.Data()
 		data.SetData(echo.H{
 			`dirList`:  dirList,
 			`fileList`: fileList,
 		})
-		return s.JSON(data), true, nil
+		return ctx.JSON(data), true, nil
 	}
 	return
 }
 
-func (s *s3Manager) ListTransfer(dirs []os.FileInfo) (dirList []echo.H, fileList []echo.H) {
+func (s *S3Manager) ListTransfer(dirs []os.FileInfo) (dirList []echo.H, fileList []echo.H) {
 	dirList = []echo.H{}
 	fileList = []echo.H{}
 	for _, d := range dirs {

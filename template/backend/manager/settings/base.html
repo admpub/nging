@@ -17,3 +17,25 @@
         </span>
     </div>
 </div>
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{"附件存储方式"|T}}</label>
+    {{$name := $config.storer.ValueObject.name|Default "local"}}
+    <div class="col-sm-4">
+    <select class="form-control" name="base[storer][name]" onchange="if($(this).val()=='s3'){$('.s3-storage-account').removeClass('hide');}else{$('.s3-storage-account').addClass('hide');}">
+            {{- range $k, $v := Stored.storerNames -}}
+            <option value="{{$v}}"{{if eq $v $name}} selected{{end}}>{{$v}}</option>
+            {{- end -}}
+        </select>
+    </div>
+    <label class="col-sm-2 control-label s3-storage-account{{if ne $name `s3`}} hide{{end}}">{{"s3存储账号"|T}}</label>
+    {{$id := $config.storer.ValueObject.id|Default ""}}
+    <div class="col-sm-4 s3-storage-account{{if ne $name `s3`}} hide{{end}}">
+        <select class="form-control" name="base[storer][id]">
+            <option value=""{{if not $id}} selected{{end}}>{{`无 (使用本地存储)`|T}}</option>
+            {{- range $k, $v := Stored.cloudStorageAccounts -}}
+            {{- $idv := Str $v.Id -}}
+            <option value="{{$v.Id}}"{{if eq $idv $id}} selected{{end}}>{{$v.Name}} ({{$v.Type}})</option>
+            {{- end -}}
+        </select>
+    </div>
+</div>
