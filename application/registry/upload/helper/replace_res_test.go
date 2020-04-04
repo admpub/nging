@@ -8,6 +8,27 @@ import (
 	"github.com/webx-top/echo/testing/test"
 )
 
+func TestPlaceholders(t *testing.T) {
+	baseURLs := map[string]string{
+		`1`: `https://img1.admpub.com`,
+		`2`: `https://img2.admpub.com`,
+		`3`: `https://img3.admpub.com`,
+		`4`: `https://img4.admpub.com`,
+		`5`: `https://img5.admpub.com`,
+	}
+	repl := func(id string) string {
+		return baseURLs[id]
+	}
+	urlList := map[string]string{}
+	filePath := `/1232/1232/ok.jpg`
+	for k, v := range baseURLs {
+		urlList[v+filePath] = `[storage:`+k+`]`+filePath
+	}
+	for k, v := range urlList{
+		test.Eq(t, k, ReplacePlaceholder(v, repl))
+	}
+}
+
 func TestEmbedded(t *testing.T) {
 	content := `<img src="http://www.admpub.com/test/1.jpg">[example](/test/abc.gif)<style type="text/css">
 	.test{background-image:url('/test/bg.png?1')}

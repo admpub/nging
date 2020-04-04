@@ -26,6 +26,7 @@ var (
 	temporaryFileRegexp  *regexp.Regexp
 	persistentFileRegexp *regexp.Regexp
 	anyFileRegexp        *regexp.Regexp
+	placeholderRegexp = regexp.MustCompile(`\[storage:[\d]+\]`)
 )
 
 func init() {
@@ -60,4 +61,12 @@ var ParseAnyFileName = func(s string) []string {
 // ReplaceAnyFileName 从文本中替换任意上传文件名称
 var ReplaceAnyFileName = func(s string, repl func(string) string) string {
 	return anyFileRegexp.ReplaceAllStringFunc(s, repl)
+}
+
+// ReplacePlaceholder 从文本中替换占位符
+var ReplacePlaceholder = func(s string, repl func(string) string) string {
+	return placeholderRegexp.ReplaceAllStringFunc(s, func(find string) string{
+		id := find[9:len(find)-1]
+		return repl(id)
+	})
 }

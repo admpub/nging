@@ -64,7 +64,18 @@ func (s *CloudStorage) BaseURL() string {
 	if len(s.Baseurl) > 0 {
 		return s.Baseurl
 	}
-	return `https://` + s.Bucket + `.` + s.Endpoint + `/`
+	return `https://` + s.Bucket + `.` + s.Endpoint
+}
+
+func (s *CloudStorage) CachedList() map[string]*dbschema.NgingCloudStorage {
+	items, ok := s.base.Context.Internal().Get(`NgingCloudStorages`).(map[string]*dbschema.NgingCloudStorage)
+	if !ok {
+		s.ListByOffset(nil, nil, 0, -1)
+		list := s.Objects()
+		items = s.KeyBy(`Id`, list)
+		s.base.Context.Internal().Set(`NgingCloudStorages`, items)
+	}
+	return items
 }
 
 func (s *CloudStorage) Get(mw func(db.Result) db.Result, args ...interface{}) error {

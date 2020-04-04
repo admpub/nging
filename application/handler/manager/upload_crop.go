@@ -42,6 +42,7 @@ import (
 	modelFile "github.com/admpub/nging/application/model/file"
 	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/convert"
+	"github.com/admpub/nging/application/registry/upload/driver/s3"
 )
 
 // cropPermCheckers 裁剪权限检查
@@ -141,8 +142,20 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	if err != nil {
 		return err
 	}
-	if err = common.IsRightUploadFile(ctx, srcURL); err != nil {
-		return err
+	cloudStorageM := model.NewCloudStorage(ctx)
+	switch storerInfo.Name {
+	case s3.Name:
+		if err := cloudStorageM.NgingCloudStorage.Get(nil, `id`, storerInfo.ID); err != nil {
+			return err
+		}
+		srcURL = strings.TrimPrefix(srcURL, cloudStorageM.BaseURL()+`/`)
+		if err = common.IsRightUploadFile(ctx, `/`+srcURL); err != nil {
+			return err
+		}
+	default:
+		if err = common.IsRightUploadFile(ctx, srcURL); err != nil {
+			return err
+		}
 	}
 	thumbM := modelFile.NewThumb(ctx)
 	fileM := modelFile.NewFile(ctx)

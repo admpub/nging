@@ -101,7 +101,7 @@
 $(function(){
   $('#endpoint,#bucket').on('keyup change',function(){
     if($('#baseurl').prop('disabled')){
-      $('#baseurl').val('https://'+$('#bucket').val()+'.'+$('#endpoint').val()+'/');
+      $('#baseurl').val('https://'+$('#bucket').val()+'.'+$('#endpoint').val());
     }
   });
   $('#endpoint').trigger('change');
