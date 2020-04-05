@@ -23,6 +23,8 @@ import (
 	"github.com/webx-top/db/lib/factory"
 
 	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/color"
+	"github.com/admpub/log"
 	modelFile "github.com/admpub/nging/application/model/file"
 )
 
@@ -201,5 +203,6 @@ func (f *FileRelation) Listen(events ...string) *FileRelation {
 
 func (f *FileRelation) On(event string, h factory.EventHandler) *FileRelation {
 	f.DBI().On(event, h, f.TableName)
+	log.Info(color.YellowString(`[listener]`),`[`+event+`]`,f.TableName+`.`+f.FieldName)
 	return f
 }

@@ -129,6 +129,9 @@ func (d *DBI) On(event string, h EventHandler, tableName ...string) *DBI {
 			table = set[0]
 		}
 	}
+	if !d.Fields.ExistTable(table) {
+		panic(`Table does not exist: `+table)
+	}
 	for _, evt := range d.ParseEventNames(event) {
 		d.Events.On(evt, h, table)
 	}
@@ -148,6 +151,9 @@ func (d *DBI) OnAsync(event string, h EventHandler, tableName ...string) *DBI {
 		case 1:
 			table = set[0]
 		}
+	}
+	if !d.Fields.ExistTable(table) {
+		panic(`Table does not exist: `+table)
 	}
 	for _, evt := range d.ParseEventNames(event) {
 		d.Events.On(evt, h, table, true)
@@ -171,6 +177,9 @@ func (d *DBI) OnRead(event string, h EventReadHandler, tableName ...string) *DBI
 			table = set[0]
 		}
 	}
+	if !d.Fields.ExistTable(table) {
+		panic(`Table does not exist: `+table)
+	}
 	for _, evt := range d.ParseEventNames(event) {
 		d.Events.OnRead(evt, h, table)
 	}
@@ -190,6 +199,9 @@ func (d *DBI) OnReadAsync(event string, h EventReadHandler, tableName ...string)
 		case 1:
 			table = set[0]
 		}
+	}
+	if !d.Fields.ExistTable(table) {
+		panic(`Table does not exist: `+table)
 	}
 	for _, evt := range d.ParseEventNames(event) {
 		d.Events.OnRead(evt, h, table, true)

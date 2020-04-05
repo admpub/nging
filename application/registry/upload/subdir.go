@@ -27,19 +27,19 @@ import (
 )
 
 var subdirs = map[string]*SubdirInfo{
-	`user`: (&SubdirInfo{
+	`nging_user`: (&SubdirInfo{
 		Allowed:     true,
 		Key:         "user",
 		Name:        "后台用户",
 		Description: "",
-	}).SetTableName("user").SetFieldName(`:个人文件`, `avatar:头像`), //后台用户文件
-	`config`: (&SubdirInfo{
+	}).SetTableName("nging_user").SetFieldName(`:个人文件`, `avatar:头像`), //后台用户文件
+	`nging_config`: (&SubdirInfo{
 		Allowed:     true,
 		Key:         "config",
 		Name:        "站点公告图片",
 		Description: "",
 		checker:     ConfigChecker,
-	}).SetTableName("config"), //后台系统设置中的图片
+	}).SetTableName("nging_config"), //后台系统设置中的图片
 }
 
 func SubdirRegister(subdir interface{}, nameAndDescription ...string) *SubdirInfo {

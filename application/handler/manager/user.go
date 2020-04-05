@@ -48,7 +48,7 @@ func User(ctx echo.Context) error {
 	}
 	m := model.NewUser(ctx)
 	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, nil, func(r db.Result) db.Result {
-		return r.Select(factory.DBIGet().Fields.SortedFieldLists(`user`, `password`, `salt`, `safe_pwd`)...).OrderBy(`-id`)
+		return r.Select(factory.DBIGet().Fields.SortedFieldLists(`nging_user`, `password`, `salt`, `safe_pwd`)...).OrderBy(`-id`)
 	}, cond.And()))
 	ret := handler.Err(ctx, err)
 	ctx.Set(`listData`, m.Objects())

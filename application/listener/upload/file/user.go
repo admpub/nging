@@ -40,7 +40,7 @@ import (
 
 func init() {
 	// 用户上传个人文件时的文件命名方式
-	upload.CheckerRegister(`user`, func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
+	upload.CheckerRegister(`nging_user`, func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
 		user := handler.User(ctx)
 		if user == nil {
 			err = ctx.E(`登录信息获取失败，请重新登录`)
@@ -61,7 +61,7 @@ func init() {
 		subdir = uid + `/`
 		subdir += time.Now().Format(`2006/01/02/`)
 		tis.SetTableID(uid)
-		tis.SetTableName(`user`)
+		tis.SetTableName(`nging_user`)
 		tis.SetFieldName(``)
 		return
 	}, ``)
@@ -72,7 +72,7 @@ func init() {
 	}
 
 	// 后台用户头像文件信息保存方式
-	upload.DBSaverRegister(`user-avatar`, func(fileM *modelFile.File, result *uploadClient.Result, reader io.Reader) (err error) {
+	upload.DBSaverRegister(`nging_user-avatar`, func(fileM *modelFile.File, result *uploadClient.Result, reader io.Reader) (err error) {
 		if len(fileM.TableId) == 0 {
 			return fileM.Add(reader)
 		}
@@ -115,7 +115,7 @@ func init() {
 		content = fm.Avatar
 		property = listener.NewProUP(fm, db.Cond{`id`: fm.Id})
 		return
-	}, false).SetTable(`user`, `avatar`).ListenDefault()
+	}, false).SetTable(`nging_user`, `avatar`).ListenDefault()
 
 	// - config 表事件
 	listener.New(func(m factory.Model) (tableID string, content string, property *listener.Property) {
@@ -127,7 +127,7 @@ func init() {
 			db.Cond{`group`: fm.Group},
 		))
 		return
-	}, false).SetTable(`config`, `value`).ListenDefault()
+	}, false).SetTable(`nging_config`, `value`).ListenDefault()
 }
 
 func getConfigEventAttrs(confM *dbschema.NgingConfig) *listener.Property {
