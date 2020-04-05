@@ -178,7 +178,7 @@ func (s *S3Manager) RemoveDir(ppath string) error {
 	}
 	doneCh := make(chan struct{})
 	defer close(doneCh)
-	objectCh := s.client.ListObjectsV2(s.bucketName, objectName, false, doneCh)
+	objectCh := s.client.ListObjectsV2(s.bucketName, objectName, true, doneCh)
 	for object := range objectCh {
 		if object.Err != nil {
 			continue
@@ -186,7 +186,7 @@ func (s *S3Manager) RemoveDir(ppath string) error {
 		if len(object.Key) == 0 {
 			continue
 		}
-		err := s.client.RemoveObject(s.bucketName,  object.Key)
+		err := s.client.RemoveObject(s.bucketName, object.Key)
 		if err != nil {
 			return err
 		}
