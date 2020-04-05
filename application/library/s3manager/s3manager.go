@@ -217,7 +217,7 @@ func (s *S3Manager) Stat(ppath string) (minio.ObjectInfo, error) {
 func (s *S3Manager) Exists(ppath string) (bool, error) {
 	_, err := s.Stat(ppath)
 	if err != nil {
-		switch v := err.(type) {
+		switch v := errors.Cause(err).(type) {
 		case minio.ErrorResponse:
 			return v.StatusCode != http.StatusNotFound, nil
 		}

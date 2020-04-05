@@ -320,6 +320,7 @@ END:
 			return err
 		}
 	}
+	thumbURL = storer.BaseURL() + thumbURL
 	if ctx.Format() == `json` {
 		return ctx.JSON(ctx.Data().SetInfo(`cropped`).SetData(thumbURL))
 	}

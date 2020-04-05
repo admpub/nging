@@ -172,6 +172,10 @@ type Storer interface {
 	// URLToPath 网址转文件路径(完整路径)
 	URLToPath(viewURL string) string
 
+	// 根网址(末尾不含"/")
+	SetBaseURL(baseURL string) string
+	BaseURL() string
+
 	// FixURL 修正网址
 	FixURL(content string, embedded ...bool) string
 

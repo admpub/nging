@@ -81,8 +81,7 @@ func NewFilesystem(ctx context.Context, typ string) (*Filesystem, error) {
 		return nil, errors.WithMessage(err, Name)
 	}
 	return &Filesystem{
-		Filesystem: local.NewFilesystem(ctx, typ),
-		cdn: strings.TrimSuffix(m.Baseurl, `/`),
+		Filesystem: local.NewFilesystem(ctx, typ, strings.TrimSuffix(m.Baseurl, `/`)),
 		model: m,
 		mgr: mgr,
 	}, nil
@@ -91,7 +90,6 @@ func NewFilesystem(ctx context.Context, typ string) (*Filesystem, error) {
 // Filesystem 文件系统存储引擎
 type Filesystem struct {
 	*local.Filesystem
-	cdn string // CDN URL
 	model *model.CloudStorage
 	mgr *s3manager.S3Manager
 }
@@ -189,22 +187,6 @@ func (f *Filesystem) Close() error {
 	return nil
 }
 
-// PublicURL 文件物理路径转为文件网址
-func (f *Filesystem) PublicURL(dstFile string) string {
-	return f.cdn + f.URLDir(dstFile)
-}
-
-// URLToFile 文件网址转为文件物理路径
-func (f *Filesystem) URLToFile(publicURL string) string {
-	dstFile := strings.TrimPrefix(publicURL, strings.TrimRight(f.PublicURL(``), `/`)+`/`)
-	return dstFile
-}
-
-// URLToPath 文件网址转为文件路径
-func (f *Filesystem) URLToPath(publicURL string) string {
-	return strings.TrimPrefix(publicURL, f.cdn+`/`)
-}
-
 // FixURL 改写文件网址
 func (f *Filesystem) FixURL(content string, embedded ...bool) string {
 	rowsByID := f.model.CachedList()  
@@ -215,14 +197,4 @@ func (f *Filesystem) FixURL(content string, embedded ...bool) string {
 		}
 		return r.Baseurl
 	})
-}
-
-// FixURLWithParams 替换文件网址为带参数的网址
-func (f *Filesystem) FixURLWithParams(content string, values url.Values, embedded ...bool) string {
-	if len(embedded) > 0 && embedded[0] {
-		return helper.ReplaceAnyFileName(content, func(r string) string {
-			return f.URLWithParams(f.PublicURL(r), values)
-		})
-	}
-	return f.URLWithParams(f.PublicURL(content), values)
 }

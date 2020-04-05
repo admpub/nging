@@ -43,17 +43,23 @@ func init() {
 	})
 }
 
-func NewFilesystem(ctx context.Context, typ string) *Filesystem {
+func NewFilesystem(ctx context.Context, typ string, baseURLs ...string) *Filesystem {
+	var baseURL string
+	if len(baseURLs) > 0 {
+		baseURL = baseURLs[0]
+	}
 	return &Filesystem{
 		Context: ctx,
 		Type:    typ,
+		baseURL: baseURL,
 	}
 }
 
 // Filesystem 文件系统存储引擎
 type Filesystem struct {
-	context.Context
+	context.Context `json:"-" xml:"-"`
 	Type string
+	baseURL string
 }
 
 // Name 引擎名
@@ -113,18 +119,31 @@ func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (savePath st
 
 // PublicURL 文件物理路径转为文件网址
 func (f *Filesystem) PublicURL(dstFile string) string {
-	return f.URLDir(dstFile)
+	return f.baseURL + f.URLDir(dstFile)
 }
 
 // URLToFile 文件网址转为文件物理路径
 func (f *Filesystem) URLToFile(publicURL string) string {
-	dstFile := strings.TrimPrefix(publicURL, strings.TrimRight(f.URLDir(``), `/`)+`/`)
+	dstFile := strings.TrimPrefix(publicURL, strings.TrimRight(f.PublicURL(``), `/`)+`/`)
 	return dstFile
 }
 
 // URLToPath 文件网址转为文件路径
 func (f *Filesystem) URLToPath(publicURL string) string {
+	if len(f.baseURL) > 0 {
+		return `/` + strings.TrimPrefix(publicURL, f.baseURL+`/`)
+	}
 	return publicURL
+}
+
+// SetBaseURL 设置根网址
+func (f *Filesystem) SetBaseURL(baseURL string) string {
+	f.baseURL = baseURL
+}
+
+// BaseURL 根网址
+func (f *Filesystem) BaseURL() string {
+	return f.baseURL
 }
 
 // FixURL 改写文件网址
