@@ -180,8 +180,7 @@ func (s *S3Manager) RemoveDir(ppath string) error {
 		objectName += `/`
 	}
 	if objectName == `/` {
-		err := <-s.Clear()
-		return err
+		return s.Clear()
 	}
 	s.client.RemoveObject(s.bucketName, objectName)
 	doneCh := make(chan struct{})
@@ -203,10 +202,16 @@ func (s *S3Manager) RemoveDir(ppath string) error {
 }
 
 // Clear 清空所有数据【慎用】
-func (s *S3Manager) Clear() <-chan minio.RemoveObjectError {
+func (s *S3Manager) Clear() error {
 	deleted := make(chan string)
 	defer close(deleted)
-	return s.client.RemoveObjects(s.bucketName, deleted)
+	removeObjects := s.client.RemoveObjects(s.bucketName, deleted)
+	for _, removeObject := range removeObjects {
+		if removeObject.Err != nil {
+			return removeObject.Err
+		}
+	}
+	return nil
 }
 
 func (s *S3Manager) Upload(ctx echo.Context, ppath string) error {
