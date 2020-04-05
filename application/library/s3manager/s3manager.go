@@ -164,6 +164,9 @@ func (s *S3Manager) Search(ppath string, prefix string, num int) []string {
 }
 
 func (s *S3Manager) Remove(ppath string) error {
+	if len(ppath) == 0 {
+		return errors.New("path invalid")
+	}
 	if strings.HasSuffix(ppath, `/`) {
 		return s.RemoveDir(ppath)
 	}
@@ -175,6 +178,10 @@ func (s *S3Manager) RemoveDir(ppath string) error {
 	objectName := strings.TrimPrefix(ppath, `/`)
 	if !strings.HasSuffix(objectName, `/`) {
 		objectName += `/`
+	}
+	if objectName == `/` {
+		err := <-s.Clear()
+		return err
 	}
 	s.client.RemoveObject(s.bucketName, objectName)
 	doneCh := make(chan struct{})
