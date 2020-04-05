@@ -27,6 +27,8 @@ import (
 	"strings"
 
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/defaults"
+	"github.com/webx-top/echo/engine/mock"
 	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/nging/application/registry/upload"
@@ -52,8 +54,18 @@ func init() {
 }
 
 func NewFilesystem(ctx context.Context, typ string) (*Filesystem, error) {
-	m := model.NewCloudStorage(ctx.(echo.Context))
-	cloudAccountID := param.AsString(ctx.Value(AccountIDKey))
+	var cloudAccountID string
+	eCtx, ok := ctx.(echo.Context)
+	if !ok {
+		eCtx = echo.NewContext(mock.NewRequest(), mock.NewResponse(), defaults.Default)
+		eCtx.SetStdContext(ctx)
+	} else {
+		cloudAccountID = eCtx.Internal().String(AccountIDKey)
+	}
+	m := model.NewCloudStorage(eCtx)
+	if len(cloudAccountID) == 0 {
+		cloudAccountID = param.AsString(ctx.Value(AccountIDKey))
+	}
 	if len(cloudAccountID) == 0 || cloudAccountID == `0` {
 		storerConfig, ok := storer.GetOk()
 		if ok {
