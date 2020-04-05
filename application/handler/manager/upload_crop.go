@@ -136,6 +136,12 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		}
 	}
 
+	fileM := modelFile.NewFile(ctx)
+	err = fileM.GetByViewURL(storerInfo, srcURL)
+	if err != nil {
+		return err
+	}
+	ctx.Internal().Set(`storerID`, fileM.StorerId)
 	storer, err := prepareData.Storer(ctx)
 	if err != nil {
 		return err
@@ -150,11 +156,6 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		return errors.WithMessage(err, srcURL)
 	}
 	thumbM := modelFile.NewThumb(ctx)
-	fileM := modelFile.NewFile(ctx)
-	err = fileM.GetByViewURL(storerInfo, srcURL)
-	if err != nil {
-		return err
-	}
 	var editable bool
 	if ownerType == `user` && ownerID == 1 { //管理员可编辑
 		editable = true
