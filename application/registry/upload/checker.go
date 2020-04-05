@@ -75,7 +75,7 @@ func ConfigChecker(ctx echo.Context, t table.TableInfoStorer) (subdir string, na
 	}
 	subdir = key + `/`
 	t.SetTableID(group + `.` + key)
-	t.SetTableName(`config`)
+	t.SetTableName(`nging_config`)
 	t.SetFieldName(`value`)
 	return
 }
