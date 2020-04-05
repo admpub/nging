@@ -25,7 +25,7 @@ import (
 
 	"github.com/admpub/nging/application/registry/upload/driver/local"
 	"github.com/admpub/nging/application/registry/upload/helper"
-
+	"github.com/admpub/errors"
 	"github.com/admpub/goseaweedfs"
 	modelSeaweedfs "github.com/admpub/goseaweedfs/model"
 	"github.com/admpub/nging/application/registry/upload"
@@ -69,6 +69,7 @@ func (s *Seaweedfs) xPut(dstFile string, src io.Reader, size int64) (savePath st
 	var rs *modelSeaweedfs.FilerUploadResult
 	rs, err = s.instance.Filers[0].Upload(src, size, savePath, s.Type, s.config.TTL)
 	if err != nil {
+		err = errors.WithMessage(err, Name)
 		return
 	}
 	//com.Dump(rs)
@@ -87,6 +88,9 @@ func (s *Seaweedfs) xPut(dstFile string, src io.Reader, size int64) (savePath st
 func (s *Seaweedfs) xGet(dstFile string) (io.ReadCloser, error) {
 	filer := s.instance.Filers[0]
 	_, readCloser, err := filer.Download(dstFile)
+	if err != nil {
+		err = errors.WithMessage(err, Name)
+	}
 	return readCloser, err
 }
 
@@ -114,11 +118,19 @@ func (f *Seaweedfs) FixURLWithParams(content string, values url.Values, embedded
 
 func (s *Seaweedfs) xDelete(dstFile string) error {
 	filer := s.instance.Filers[0]
-	return filer.Delete(dstFile)
+	err := filer.Delete(dstFile)
+	if err != nil {
+		err = errors.WithMessage(err, Name)
+	}
+	return err
 }
 
 func (s *Seaweedfs) xDeleteDir(dstDir string) error {
-	return s.instance.Filers[0].Delete(dstDir, true)
+	err := s.instance.Filers[0].Delete(dstDir, true)
+	if err != nil {
+		err = errors.WithMessage(err, Name)
+	}
+	return err
 }
 
 func (s *Seaweedfs) apiPut(dstFile string, src io.Reader, size int64) (fID string, viewURL string, err error) {
@@ -132,9 +144,16 @@ func (s *Seaweedfs) apiPut(dstFile string, src io.Reader, size int64) (fID strin
 
 func (s *Seaweedfs) apiGet(fileID string) (io.ReadCloser, error) {
 	_, readCloser, err := s.instance.Download(fileID, nil)
+	if err != nil {
+		err = errors.WithMessage(err, Name)
+	}
 	return readCloser, err
 }
 
 func (s *Seaweedfs) apiDelete(fileID string) error {
-	return s.instance.DeleteFile(fileID, nil)
+	err := s.instance.DeleteFile(fileID, nil)
+	if err != nil {
+		err = errors.WithMessage(err, Name)
+	}
+	return err
 }

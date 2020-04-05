@@ -31,6 +31,7 @@ import (
 	"github.com/webx-top/echo/engine/mock"
 	"github.com/webx-top/echo/param"
 
+	"github.com/admpub/errors"
 	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/helper"
 	"github.com/admpub/nging/application/registry/upload/driver/local"
@@ -73,11 +74,11 @@ func NewFilesystem(ctx context.Context, typ string) (*Filesystem, error) {
 		}
 	}
 	if err := m.Get(nil, `id`, cloudAccountID); err != nil {
-		return nil, err
+		return nil, errors.WithMessage(err, Name)
 	}
 	mgr, err := s3client.New(m.NgingCloudStorage, 0)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithMessage(err, Name)
 	}
 	return &Filesystem{
 		Filesystem: local.NewFilesystem(ctx, typ),
@@ -109,21 +110,25 @@ func (f *Filesystem) Exists(file string) (bool, error) {
 func (f *Filesystem) FileInfo(file string) (os.FileInfo, error) {
 	objectInfo, err := f.mgr.Stat(file)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithMessage(err, Name)
 	}
-	return s3manager.NewFileInfo(objectInfo), err
+	return s3manager.NewFileInfo(objectInfo), nil
 }
 
 // SendFile 下载文件
 func (f *Filesystem) SendFile(ctx echo.Context, file string) error {
 	fp, err := f.mgr.Get(file)
 	if err != nil {
-		return err
+		return errors.WithMessage(err, Name)
 	}
 	defer fp.Close()
 	fileName := path.Base(file)
 	inline := true
-	return ctx.Attachment(fp, fileName, inline)
+	err = ctx.Attachment(fp, fileName, inline)
+	if err != nil {
+		err = errors.WithMessage(err, Name)
+	}
+	return err
 }
 
 // FileDir 物理路径文件夹
@@ -137,27 +142,46 @@ func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (savePath st
 	//viewURL = `[storage:`+param.AsString(f.model.Id)+`]`+f.URLDir(dstFile)
 	viewURL = f.PublicURL(dstFile)
 	err = f.mgr.Put(src, savePath, size)
+	if err != nil {
+		err = errors.WithMessage(err, Name)
+	}
 	return
 }
 
 // Get 获取文件读取接口
 func (f *Filesystem) Get(dstFile string) (io.ReadCloser, error) {
-	return f.mgr.Get(dstFile)
+	readCloser, err := f.mgr.Get(dstFile)
+	if err != nil {
+		err = errors.WithMessage(err, Name)
+	}
+	return readCloser, err
 }
 
 // Delete 删除文件
 func (f *Filesystem) Delete(dstFile string) error {
-	return f.mgr.Remove(dstFile)
+	err := f.mgr.Remove(dstFile)
+	if err != nil {
+		err = errors.WithMessage(err, Name)
+	}
+	return err
 }
 
 // DeleteDir 删除文件夹及其内部文件
 func (f *Filesystem) DeleteDir(dstDir string) error {
-	return f.mgr.Remove(dstDir)
+	err := f.mgr.Remove(dstDir)
+	if err != nil {
+		err = errors.WithMessage(err, Name)
+	}
+	return err
 }
 
 // Move 移动文件
 func (f *Filesystem) Move(src, dst string) error {
-	return f.mgr.Rename(src, dst)
+	err := f.mgr.Rename(src, dst)
+	if err != nil {
+		err = errors.WithMessage(err, Name)
+	}
+	return err
 }
 
 // Close 关闭连接
@@ -174,6 +198,11 @@ func (f *Filesystem) PublicURL(dstFile string) string {
 func (f *Filesystem) URLToFile(publicURL string) string {
 	dstFile := strings.TrimPrefix(publicURL, strings.TrimRight(f.PublicURL(``), `/`)+`/`)
 	return dstFile
+}
+
+// URLToPath 文件网址转为文件路径
+func (f *Filesystem) URLToPath(publicURL string) string {
+	return strings.TrimPrefix(publicURL, f.cdn+`/`)
 }
 
 // FixURL 改写文件网址

@@ -36,6 +36,7 @@ import (
 	"github.com/admpub/checksum"
 	imageproxy "github.com/admpub/imageproxy"
 	"github.com/admpub/log"
+	"github.com/admpub/errors"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/middleware"
@@ -146,7 +147,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	}
 	srcURL = `/` + storer.URLToFile(srcURL)
 	if err = common.IsRightUploadFile(ctx, srcURL); err != nil {
-		return err
+		return errors.WithMessage(err, srcURL)
 	}
 	thumbM := modelFile.NewThumb(ctx)
 	fileM := modelFile.NewFile(ctx)

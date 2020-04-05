@@ -122,6 +122,11 @@ func (f *Filesystem) URLToFile(publicURL string) string {
 	return dstFile
 }
 
+// URLToPath 文件网址转为文件路径
+func (f *Filesystem) URLToPath(publicURL string) string {
+	return publicURL
+}
+
 // FixURL 改写文件网址
 func (f *Filesystem) FixURL(content string, embedded ...bool) string {
 	return content

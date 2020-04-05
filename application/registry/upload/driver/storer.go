@@ -166,8 +166,11 @@ type Storer interface {
 	// PublicURL 文件物理路径转网址
 	PublicURL(dst string) string
 
-	// URLToFile 网址转文件物理路径
+	// URLToFile 网址转文件存储路径(非完整路径)
 	URLToFile(viewURL string) string
+
+	// URLToPath 网址转文件路径(完整路径)
+	URLToPath(viewURL string) string
 
 	// FixURL 修正网址
 	FixURL(content string, embedded ...bool) string
