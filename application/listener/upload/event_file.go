@@ -22,10 +22,10 @@ package upload
 import (
 	"fmt"
 	"os"
+	"context"
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
-
 	"github.com/admpub/events"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/common"
@@ -85,6 +85,8 @@ func init() {
 		if newStore == nil {
 			return ctx.E(`存储引擎“%s”未被登记`, data.StorerName)
 		}
+		key := `storerID`
+		ctx.SetStdContext(context.WithValue(ctx, key, data.StorerId))
 		storer := newStore(ctx, ``)
 		defer storer.Close()
 		var errs common.Errors

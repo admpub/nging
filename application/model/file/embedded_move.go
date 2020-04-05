@@ -40,7 +40,7 @@ func (f *Embedded) getSeperator(content string) string {
 			return `\`
 		}
 	}
-	return "/"
+	return `/`
 }
 
 func (f *Embedded) renameFile(

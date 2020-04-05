@@ -15,10 +15,10 @@ const (
 	EmptyJS        = template.JS(``)
 	EmptyCSS       = template.CSS(``)
 	EmptyHTMLAttr  = template.HTMLAttr(``)
-	DateTimeLayout = `2006-01-02 15:04:05`
+	DateTimeNormal = `2006-01-02 15:04:05`
 	DateTimeShort  = `2006-01-02 15:04`
-	DateLayout     = `2006-01-02`
-	TimeLayout     = `15:04:05`
+	DateNormal     = `2006-01-02`
+	TimeNormal     = `15:04:05`
 	DateMd         = `01-02`
 	DateShort      = `06-01-02`
 	TimeShort      = `15:04`
@@ -431,7 +431,7 @@ func AsTimestamp(val interface{}) time.Time {
 func AsDateTime(val interface{}, layouts ...string) time.Time {
 	p := AsString(val)
 	if len(p) > 0 {
-		layout := DateTimeLayout
+		layout := DateTimeNormal
 		if len(layouts) > 0 {
 			layout = layouts[0]
 		}

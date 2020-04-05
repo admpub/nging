@@ -5,9 +5,11 @@ import (
 	"database/sql"
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo/param"
+	"github.com/webx-top/com"
 )
 
 var (
@@ -29,6 +31,27 @@ func CopyTableStruct(srcLinkID int, srcDBName string, srcTableName string,
 	_, err = db.Exec(ddl)
 	return err
 }
+
+// ReplacePrefix UPDATE table_name SET `field`=REPLACE(`field`,'oldPrefix','newPrefix') WHERE `field` LIKE 'oldPrefix%';
+func ReplacePrefix(linkID int, tableName string, field string, oldPrefix string, newPrefix string) (int64, error) {
+	oldPrefix = com.AddSlashes(oldPrefix, '_', '%')
+	tableName = strings.ReplaceAll(tableName, "`", "``")
+	field = strings.ReplaceAll(field, "`", "``")
+	sqlStr := "UPDATE `"+tableName+"` SET `"+field+"`=REPLACE(`"+field+"`,?,?) WHERE `"+field+"` LIKE ?"
+	db := factory.NewParam().SetIndex(linkID).DB()
+	result, err := db.Exec(sqlStr, oldPrefix, newPrefix, oldPrefix+`%`)
+	if factory.Debug() {
+		fmt.Println(sqlStr)
+	}
+	if err != nil {
+		return 0, err
+	}
+	affected, err := result.RowsAffected()
+	return affected, err
+	//value := db.Raw("REPLACE(`"+field+"`, ?, ?)", oldPrefix, newPrefix)
+	//return m.SetField(nil, field, value, field, db.Like(oldPrefix+`%`))
+}
+	
 
 // TableExists 查询表是否存在
 func TableExists(linkID int, dbName string, tableName string) (bool, error) {

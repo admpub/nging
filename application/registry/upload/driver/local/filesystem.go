@@ -98,7 +98,7 @@ func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (savePath st
 	if err != nil {
 		return
 	}
-	viewURL = f.URLDir(dstFile)
+	viewURL = f.PublicURL(dstFile)
 	//create destination file making sure the path is writeable.
 	var dst *os.File
 	dst, err = os.Create(savePath)

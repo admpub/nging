@@ -4,6 +4,8 @@ import (
 	"strings"
 
 	"github.com/webx-top/com"
+	"github.com/webx-top/db"
+	"github.com/webx-top/db/lib/factory"
 )
 
 func ParseSQL(sqlFile string, isFile bool, installer func(string) error) (err error) {
@@ -36,4 +38,11 @@ func ParseSQL(sqlFile string, isFile bool, installer func(string) error) (err er
 		}
 	}
 	return err
+}
+
+// ReplacePrefix 替换前缀数据
+func ReplacePrefix(m factory.Model, field string, oldPrefix string, newPrefix string) error {
+	oldPrefix = com.AddSlashes(oldPrefix, '_', '%')
+	value := db.Raw("REPLACE(`"+field+"`, ?, ?)", oldPrefix, newPrefix)
+	return m.SetField(nil, field, value, field, db.Like(oldPrefix+`%`))
 }

@@ -47,9 +47,7 @@ func (s *CloudStorage) check() error {
 	s.Bucket = strings.TrimSpace(s.Bucket)
 	s.Endpoint = strings.TrimSpace(s.Endpoint)
 	if len(s.Baseurl) > 0 {
-		if !strings.HasSuffix(s.Baseurl, `/`) {
-			s.Baseurl += `/`
-		}
+		s.Baseurl = strings.TrimSuffix(s.Baseurl, `/`)
 	}
 	s.Secret = strings.TrimSpace(s.Secret)
 	s.Secret = common.Crypto().Encode(s.Secret)

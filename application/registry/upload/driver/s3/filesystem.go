@@ -34,14 +34,13 @@ import (
 	"github.com/admpub/nging/application/registry/upload/driver/local"
 	"github.com/admpub/nging/application/library/s3manager"
 	"github.com/admpub/nging/application/library/s3manager/s3client"
-	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/model"
 	"github.com/admpub/nging/application/model/file/storer"
-	"github.com/admpub/nging/application/library/common"
 )
 
 const (
 	Name = `s3`
-	AccountIDKey = `cloudStorageAccountID`
+	AccountIDKey = `storerID`
 )
 
 var _ upload.Storer = &Filesystem{}
@@ -53,7 +52,7 @@ func init() {
 }
 
 func NewFilesystem(ctx context.Context, typ string) *Filesystem {
-	m := &dbschema.NgingCloudStorage{}
+	m := model.NewCloudStorage(ctx.(echo.Context))
 	cloudAccountID := param.AsString(ctx.Value(AccountIDKey))
 	if len(cloudAccountID) == 0 || cloudAccountID == `0` {
 		storerConfig, ok := storer.GetOk()
@@ -61,17 +60,17 @@ func NewFilesystem(ctx context.Context, typ string) *Filesystem {
 			cloudAccountID = storerConfig.ID
 		}
 	}
-	if err := m.EventOFF().Get(nil, `id`, cloudAccountID); err != nil {
+	if err := m.Get(nil, `id`, cloudAccountID); err != nil {
 		panic(err)
 	}
-	m.Secret = common.Crypto().Decode(m.Secret)
-	mgr, err := s3client.New(m, 0)
+	mgr, err := s3client.New(m.NgingCloudStorage, 0)
 	if err != nil {
 		panic(err)
 	}
 	return &Filesystem{
 		Filesystem: local.NewFilesystem(ctx, typ),
 		cdn: strings.TrimSuffix(m.Baseurl, `/`),
+		model: m,
 		mgr: mgr,
 	}
 }
@@ -80,6 +79,7 @@ func NewFilesystem(ctx context.Context, typ string) *Filesystem {
 type Filesystem struct {
 	*local.Filesystem
 	cdn string // CDN URL
+	model *model.CloudStorage
 	mgr *s3manager.S3Manager
 }
 
@@ -122,6 +122,7 @@ func (f *Filesystem) FileDir(subpath string) string {
 // Put 上传文件
 func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (savePath string, viewURL string, err error) {
 	savePath = f.FileDir(dstFile)
+	//viewURL = `[storage:`+param.AsString(f.model.Id)+`]`+f.URLDir(dstFile)
 	viewURL = f.PublicURL(dstFile)
 	err = f.mgr.Put(src, savePath, size)
 	return
@@ -165,7 +166,14 @@ func (f *Filesystem) URLToFile(publicURL string) string {
 
 // FixURL 改写文件网址
 func (f *Filesystem) FixURL(content string, embedded ...bool) string {
-	return content
+	rowsByID := f.model.CachedList()  
+	return helper.ReplacePlaceholder(content, func(id string) string {
+		r, y := rowsByID[id]
+		if !y {
+			return ``
+		}
+		return r.Baseurl
+	})
 }
 
 // FixURLWithParams 替换文件网址为带参数的网址

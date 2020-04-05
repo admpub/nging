@@ -186,15 +186,14 @@ func (f *FileRelation) DBI() *factory.DBI {
 }
 
 func (f *FileRelation) Listen(events ...string) *FileRelation {
-	dbi := f.DBI()
 	for _, event := range events {
 		switch event {
 		case `updating`, `updated`:
-			dbi.On(event, f.attachUpdateEvent(event), f.TableName)
+			f.On(event, f.attachUpdateEvent(event))
 		case `deleting`, `deleted`:
-			dbi.On(event, f.attachDeleteEvent(event), f.TableName)
+			f.On(event, f.attachDeleteEvent(event))
 		default:
-			dbi.On(event, f.attachEvent(event), f.TableName)
+			f.On(event, f.attachEvent(event))
 		}
 	}
 	return f
