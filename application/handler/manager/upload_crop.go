@@ -145,7 +145,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	if err != nil {
 		return err
 	}
-	srcURL = `/` + storer.URLToFile(srcURL)
+	srcURL = `/` + storer.URLToPath(srcURL)
 	if err = common.IsRightUploadFile(ctx, srcURL); err != nil {
 		return errors.WithMessage(err, srcURL)
 	}
