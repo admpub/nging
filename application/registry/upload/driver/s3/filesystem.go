@@ -164,7 +164,7 @@ func (f *Filesystem) Delete(dstFile string) error {
 
 // DeleteDir 删除文件夹及其内部文件
 func (f *Filesystem) DeleteDir(dstDir string) error {
-	err := f.mgr.Remove(dstDir)
+	err := f.mgr.RemoveDir(dstDir)
 	if err != nil {
 		err = errors.WithMessage(err, Name)
 	}
