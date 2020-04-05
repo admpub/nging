@@ -180,7 +180,7 @@ type Storer interface {
 }
 
 // Constructor 存储引擎构造函数
-type Constructor func(ctx context.Context, typ string) Storer
+type Constructor func(ctx context.Context, typ string) (Storer, error)
 
 var storers = map[string]Constructor{}
 

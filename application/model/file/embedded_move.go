@@ -109,7 +109,10 @@ func (f *Embedded) MoveFileToOwner(tableName string, fileIDs []uint64, ownerID s
 			if newStore == nil {
 				return replaces, f.base.E(`存储引擎“%s”未被登记`, file.StorerName)
 			}
-			storer = newStore(f.base.Context, ``)
+			storer, err = newStore(f.base.Context, ``)
+			if err != nil {
+				return replaces, err
+			}
 			storers[file.StorerName] = storer
 		}
 		savePathSep := f.getSeperator(file.SavePath)

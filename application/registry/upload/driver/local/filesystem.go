@@ -38,8 +38,8 @@ const Name = `local`
 var _ upload.Storer = &Filesystem{}
 
 func init() {
-	upload.StorerRegister(Name, func(ctx context.Context, typ string) upload.Storer {
-		return NewFilesystem(ctx, typ)
+	upload.StorerRegister(Name, func(ctx context.Context, typ string) (upload.Storer, error) {
+		return NewFilesystem(ctx, typ), nil
 	})
 }
 

@@ -36,8 +36,8 @@ const Name = `seaweedfs`
 var _ upload.Storer = &Seaweedfs{}
 
 func init() {
-	upload.StorerRegister(Name, func(ctx context.Context, typ string) upload.Storer {
-		return NewSeaweedfs(ctx, typ)
+	upload.StorerRegister(Name, func(ctx context.Context, typ string) (upload.Storer, error) {
+		return NewSeaweedfs(ctx, typ), nil
 	})
 }
 

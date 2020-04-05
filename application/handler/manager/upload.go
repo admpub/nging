@@ -84,7 +84,10 @@ func File(ctx echo.Context) error {
 		if newStore == nil {
 			return nil, ctx.E(`存储引擎“%s”未被登记`, storerName)
 		}
-		storer := newStore(ctx, typ)
+		storer, err := newStore(ctx, typ)
+		if err != nil {
+			return nil, err
+		}
 		f, err := storer.Get(`/` + originalFile)
 		if err != nil {
 			return nil, echo.ErrNotFound
@@ -157,7 +160,13 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 			return ctx.JSON(datax)
 		}
 	}
-	storer := prepareData.Storer(ctx)
+	storer, err := prepareData.Storer(ctx)
+	if err != nil {
+		datax, embed := ResponseDataForUpload(ctx, field, err, fileURLs)
+		if !embed {
+			return ctx.JSON(datax)
+		}
+	}
 	defer prepareData.Close()
 	fileM := modelFile.NewFile(ctx)
 	fileM.StorerName = storerInfo.Name

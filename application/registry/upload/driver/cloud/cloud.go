@@ -41,21 +41,21 @@ const Name = `cloud`
 var _ upload.Storer = &Cloud{}
 
 func init() {
-	upload.StorerRegister(Name, func(ctx context.Context, typ string) upload.Storer {
+	upload.StorerRegister(Name, func(ctx context.Context, typ string) (upload.Storer, error) {
 		return NewCloud(ctx, typ)
 	})
 }
 
-func NewCloud(ctx context.Context, typ string) *Cloud {
+func NewCloud(ctx context.Context, typ string) (*Cloud, error) {
 	bucket, err := DefaultConfig.New(ctx)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	return &Cloud{
 		config:     DefaultConfig,
 		bucket:     bucket,
 		Filesystem: local.NewFilesystem(ctx, typ),
-	}
+	}, nil
 }
 
 type Cloud struct {

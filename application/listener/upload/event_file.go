@@ -87,7 +87,10 @@ func init() {
 		}
 		key := `storerID`
 		ctx.SetStdContext(context.WithValue(ctx, key, data.StorerId))
-		storer := newStore(ctx, ``)
+		storer, err := newStore(ctx, ``)
+		if err != nil {
+			return err
+		}
 		defer storer.Close()
 		var errs common.Errors
 		otherFormatExtensions := convert.Extensions()

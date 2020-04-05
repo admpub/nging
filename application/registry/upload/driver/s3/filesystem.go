@@ -46,12 +46,12 @@ const (
 var _ upload.Storer = &Filesystem{}
 
 func init() {
-	upload.StorerRegister(Name, func(ctx context.Context, typ string) upload.Storer {
+	upload.StorerRegister(Name, func(ctx context.Context, typ string) (upload.Storer, error) {
 		return NewFilesystem(ctx, typ)
 	})
 }
 
-func NewFilesystem(ctx context.Context, typ string) *Filesystem {
+func NewFilesystem(ctx context.Context, typ string) (*Filesystem, error) {
 	m := model.NewCloudStorage(ctx.(echo.Context))
 	cloudAccountID := param.AsString(ctx.Value(AccountIDKey))
 	if len(cloudAccountID) == 0 || cloudAccountID == `0` {
@@ -61,18 +61,18 @@ func NewFilesystem(ctx context.Context, typ string) *Filesystem {
 		}
 	}
 	if err := m.Get(nil, `id`, cloudAccountID); err != nil {
-		panic(err)
+		return nil, err
 	}
 	mgr, err := s3client.New(m.NgingCloudStorage, 0)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	return &Filesystem{
 		Filesystem: local.NewFilesystem(ctx, typ),
 		cdn: strings.TrimSuffix(m.Baseurl, `/`),
 		model: m,
 		mgr: mgr,
-	}
+	}, nil
 }
 
 // Filesystem 文件系统存储引擎

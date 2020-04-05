@@ -24,11 +24,12 @@ type PrepareData struct {
 	FileType     string
 }
 
-func (p *PrepareData) Storer(ctx echo.Context) Storer {
+func (p *PrepareData) Storer(ctx echo.Context) (Storer, error) {
+	var err error
 	if p.storer == nil {
-		p.storer = p.newStorer(ctx, p.TableName) // 使用表名称作为文件夹名
+		p.storer, err = p.newStorer(ctx, p.TableName) // 使用表名称作为文件夹名
 	}
-	return p.storer
+	return p.storer, err
 }
 
 func (p *PrepareData) Close() error {

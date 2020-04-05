@@ -135,7 +135,10 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		}
 	}
 
-	storer := prepareData.Storer(ctx)
+	storer, err := prepareData.Storer(ctx)
+	if err != nil {
+		return err
+	}
 	srcURL := ctx.Form(`src`)
 	srcURL, err = com.URLDecode(srcURL)
 	if err != nil {
