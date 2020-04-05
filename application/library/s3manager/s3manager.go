@@ -20,13 +20,13 @@ package s3manager
 
 import (
 	"bytes"
-	"io/ioutil"
 	"io"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"path"
 	"sort"
 	"strings"
-	"net/http"
 
 	minio "github.com/minio/minio-go"
 	"github.com/pkg/errors"
@@ -206,7 +206,7 @@ func (s *S3Manager) Clear() error {
 	deleted := make(chan string)
 	defer close(deleted)
 	removeObjects := s.client.RemoveObjects(s.bucketName, deleted)
-	for _, removeObject := range removeObjects {
+	for removeObject := range removeObjects {
 		if removeObject.Err != nil {
 			return removeObject.Err
 		}
