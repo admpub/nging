@@ -203,6 +203,12 @@ func (f *FileRelation) Listen(events ...string) *FileRelation {
 
 func (f *FileRelation) On(event string, h factory.EventHandler) *FileRelation {
 	f.DBI().On(event, h, f.TableName)
-	log.Info(color.YellowString(`[listener]`),`[`+event+`]`,f.TableName+`.`+f.FieldName)
+	log.Info(color.YellowString(`listener.`+event+`:`),f.TableName+`.`+f.FieldName)
+	return f
+}
+
+func (f *FileRelation) OnRead(event string, h factory.EventReadHandler) *FileRelation {
+	f.DBI().OnRead(event, h, f.TableName)
+	log.Info(color.YellowString(`listener.`+event+`:`),f.TableName+`.`+f.FieldName)
 	return f
 }

@@ -162,7 +162,7 @@ func (i *SubdirInfo) String() string {
 
 func (i *SubdirInfo) TableName() string {
 	if len(i.tableName) == 0 {
-		r := strings.SplitN(i.Key, `-`, 2)
+		r := strings.SplitN(i.Key, `.`, 2)
 		switch len(r) {
 		case 2:
 			i.SetFieldName(r[1])

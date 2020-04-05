@@ -72,7 +72,7 @@ func init() {
 	}
 
 	// 后台用户头像文件信息保存方式
-	upload.DBSaverRegister(`nging_user-avatar`, func(fileM *modelFile.File, result *uploadClient.Result, reader io.Reader) (err error) {
+	upload.DBSaverRegister(`nging_user.avatar`, func(fileM *modelFile.File, result *uploadClient.Result, reader io.Reader) (err error) {
 		if len(fileM.TableId) == 0 {
 			return fileM.Add(reader)
 		}

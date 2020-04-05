@@ -8,7 +8,7 @@
 App.i18n.UPLOADING="{{`文件上传中，请稍候...`|T}}";
 App.i18n.UPLOAD_SUCCEED='{{"上传成功"|T}}';
 App.i18n.BUTTON_UPLOAD="{{`上传附件`|T}}";
-var uploadURL='{{BackendUploadURL `user`}}';
+var uploadURL='{{BackendUploadURL `nging_user`}}';
 var listURL='{{URL.Path}}{{if Form `filetype`}}?filetype={{Stored.fileType}}{{if Form `multiple`}}&multiple=1{{end}}{{end}}';
 var target=window;
 App.i18n.NO_CALLBACK_NAME='{{"请在网址参数callback变量中指定您所定义的回调函数名"|T}}';

@@ -73,7 +73,7 @@ func SubdirRegister(subdir interface{}, nameAndDescription ...string) *SubdirInf
 		Description: description,
 	}
 
-	r := strings.SplitN(info.Key, `-`, 2)
+	r := strings.SplitN(info.Key, `.`, 2)
 	switch len(r) {
 	case 2:
 		info.SetFieldName(r[1])

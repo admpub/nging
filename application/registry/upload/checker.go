@@ -97,7 +97,7 @@ func CheckerGet(typ string, defaults ...string) Checker {
 		return s.MustChecker()
 	}
 	if len(defaults) == 0 {
-		tmp := strings.SplitN(typ, `-`, 2)
+		tmp := strings.SplitN(typ, `.`, 2)
 		if len(tmp) == 2 {
 			return CheckerGet(tmp[0])
 		}

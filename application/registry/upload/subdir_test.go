@@ -71,8 +71,8 @@ func TestChecker2(t *testing.T) {
 
 func TestChecker3(t *testing.T) {
 	tbl := &table.TableInfo{}
-	checker := upload.CheckerGet(`nging_user-avatar`)
-	req, resp := myTesting.NewRequestAndResponse(`GET`, `/`+upload.URLParam(`nging_user-avatar`, `refid`, `0`))
+	checker := upload.CheckerGet(`nging_user.avatar`)
+	req, resp := myTesting.NewRequestAndResponse(`GET`, `/`+upload.URLParam(`nging_user.avatar`, `refid`, `0`))
 	e := echo.New()
 	ctx := e.NewContext(req, resp)
 	subdir, name, err := checker(ctx, tbl)

@@ -33,7 +33,7 @@ import (
 
 func init() {
 	// 后台用户头像上传
-	upload.CheckerRegister(`nging_user-avatar`, func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
+	upload.CheckerRegister(`nging_user.avatar`, func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
 		userID := ctx.Formx(`refid`).Uint64() //为0代表新增用户
 		user := handler.User(ctx)
 		if user != nil {
