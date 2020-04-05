@@ -168,6 +168,29 @@ func (s *S3Manager) Remove(ppath string) error {
 	return s.client.RemoveObject(s.bucketName, objectName)
 }
 
+func (s *S3Manager) RemoveDir(ppath string) error {
+	objectName := strings.TrimPrefix(ppath, `/`)
+	if !strings.HasSuffix(objectName, `/`) {
+		objectName += `/`
+	}
+	doneCh := make(chan struct{})
+	defer close(doneCh)
+	objectCh := s.client.ListObjectsV2(s.bucketName, objectName, false, doneCh)
+	for object := range objectCh {
+		if object.Err != nil {
+			continue
+		}
+		if len(object.Key) == 0 {
+			continue
+		}
+		err := s.client.RemoveObject(s.bucketName,  object.Key)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // Clear 清空所有数据【慎用】
 func (s *S3Manager) Clear() <-chan minio.RemoveObjectError {
 	deleted := make(chan string)
