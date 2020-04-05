@@ -22,7 +22,6 @@ package upload
 import (
 	"fmt"
 	"os"
-	"context"
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
@@ -86,7 +85,7 @@ func init() {
 			return ctx.E(`存储引擎“%s”未被登记`, data.StorerName)
 		}
 		key := `storerID`
-		ctx.SetStdContext(context.WithValue(ctx, key, data.StorerId))
+		ctx.Internal().Set(key, data.StorerId)
 		storer, err := newStore(ctx, ``)
 		if err != nil {
 			return err
