@@ -176,6 +176,7 @@ func (s *S3Manager) RemoveDir(ppath string) error {
 	if !strings.HasSuffix(objectName, `/`) {
 		objectName += `/`
 	}
+	s.client.RemoveObject(s.bucketName, objectName)
 	doneCh := make(chan struct{})
 	defer close(doneCh)
 	objectCh := s.client.ListObjectsV2(s.bucketName, objectName, true, doneCh)
