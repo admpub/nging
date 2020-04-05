@@ -21,10 +21,8 @@ package s3
 import (
 	"context"
 	"io"
-	"net/url"
 	"os"
 	"path"
-	"strings"
 
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/defaults"
@@ -81,7 +79,7 @@ func NewFilesystem(ctx context.Context, typ string) (*Filesystem, error) {
 		return nil, errors.WithMessage(err, Name)
 	}
 	return &Filesystem{
-		Filesystem: local.NewFilesystem(ctx, typ, strings.TrimSuffix(m.Baseurl, `/`)),
+		Filesystem: local.NewFilesystem(ctx, typ, m.Baseurl),
 		model: m,
 		mgr: mgr,
 	}, nil

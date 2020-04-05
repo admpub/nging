@@ -173,7 +173,7 @@ type Storer interface {
 	URLToPath(viewURL string) string
 
 	// 根网址(末尾不含"/")
-	SetBaseURL(baseURL string) string
+	SetBaseURL(baseURL string)
 	BaseURL() string
 
 	// FixURL 修正网址

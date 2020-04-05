@@ -47,6 +47,7 @@ func NewFilesystem(ctx context.Context, typ string, baseURLs ...string) *Filesys
 	var baseURL string
 	if len(baseURLs) > 0 {
 		baseURL = baseURLs[0]
+		baseURL = strings.TrimSuffix(baseURL, `/`)
 	}
 	return &Filesystem{
 		Context: ctx,
@@ -141,7 +142,8 @@ func (f *Filesystem) URLToPath(publicURL string) string {
 }
 
 // SetBaseURL 设置根网址
-func (f *Filesystem) SetBaseURL(baseURL string) string {
+func (f *Filesystem) SetBaseURL(baseURL string) {
+	baseURL = strings.TrimSuffix(baseURL, `/`)
 	f.baseURL = baseURL
 }
 
