@@ -135,7 +135,11 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 			return ctx.E(`“%s”不支持裁剪图片`, uploadType)
 		}
 	}
-
+	srcURL := ctx.Form(`src`)
+	srcURL, err = com.URLDecode(srcURL)
+	if err != nil {
+		return err
+	}
 	fileM := modelFile.NewFile(ctx)
 	err = fileM.GetByViewURL(storerInfo, srcURL)
 	if err != nil {
@@ -143,11 +147,6 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	}
 	ctx.Internal().Set(`storerID`, fileM.StorerId)
 	storer, err := prepareData.Storer(ctx)
-	if err != nil {
-		return err
-	}
-	srcURL := ctx.Form(`src`)
-	srcURL, err = com.URLDecode(srcURL)
 	if err != nil {
 		return err
 	}
