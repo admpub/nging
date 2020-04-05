@@ -124,14 +124,18 @@ func (f *Filesystem) PublicURL(dstFile string) string {
 
 // URLToFile 文件网址转为文件物理路径
 func (f *Filesystem) URLToFile(publicURL string) string {
-	dstFile := strings.TrimPrefix(publicURL, strings.TrimRight(f.PublicURL(``), `/`)+`/`)
+	dstFile := f.URLToPath(publicURL)
+	dstFile = strings.TrimPrefix(dstFile, strings.TrimRight(f.URLDir(``), `/`)+`/`)
 	return dstFile
 }
 
 // URLToPath 文件网址转为文件路径
 func (f *Filesystem) URLToPath(publicURL string) string {
 	if len(f.baseURL) > 0 {
-		return `/` + strings.TrimPrefix(publicURL, f.baseURL+`/`)
+		publicURL = strings.TrimPrefix(publicURL, f.baseURL+`/`)
+		if !strings.HasPrefix(publicURL, `/`) {
+			publicURL = `/` + publicURL
+		}
 	}
 	return publicURL
 }
