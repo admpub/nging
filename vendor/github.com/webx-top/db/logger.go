@@ -69,6 +69,30 @@ type QueryStatus struct {
 	Context context.Context
 }
 
+// BuildSQL build sql query
+func BuildSQL(query string, args ...interface{}) string {
+	if len(query) == 0 {
+		return query
+	}
+	query = reInvisibleChars.ReplaceAllString(query, ` `)
+	query = strings.TrimSpace(query)
+	if len(args) > 0 {
+		if len(args) == 1 {
+			if v, y := args[0].([]interface{}); y {
+				args = v
+			}
+		}
+		newArgs := make([]interface{}, len(args))
+		for k, v := range args {
+			s := fmt.Sprint(v)
+			s = com.AddSlashes(s)
+			newArgs[k] = s
+		}
+		query = fmt.Sprintf(strings.Replace(query, `?`, `'%v'`, -1), newArgs...)
+	}
+	return query
+}
+
 // String returns a formatted log message.
 func (q *QueryStatus) String() string {
 	lines := make([]string, 0, 8)
@@ -82,17 +106,7 @@ func (q *QueryStatus) String() string {
 	}
 
 	if query := q.Query; len(query) > 0 {
-		query = reInvisibleChars.ReplaceAllString(query, ` `)
-		query = strings.TrimSpace(query)
-		if len(q.Args) > 0 {
-			args := make([]interface{}, len(q.Args))
-			for k, v := range q.Args {
-				s := fmt.Sprint(v)
-				s = com.AddSlashes(s)
-				args[k] = s
-			}
-			query = fmt.Sprintf(strings.Replace(query, `?`, `'%v'`, -1), args...)
-		}
+		query = BuildSQL(query, q.Args...)
 		lines = append(lines, fmt.Sprintf(fmtLogQuery, query))
 	}
 

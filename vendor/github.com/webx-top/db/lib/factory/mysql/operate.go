@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/webx-top/db/lib/factory"
+	dbPkg "github.com/webx-top/db"
 	"github.com/webx-top/echo/param"
 	"github.com/webx-top/com"
 )
@@ -33,15 +34,23 @@ func CopyTableStruct(srcLinkID int, srcDBName string, srcTableName string,
 }
 
 // ReplacePrefix UPDATE table_name SET `field`=REPLACE(`field`,'oldPrefix','newPrefix') WHERE `field` LIKE 'oldPrefix%';
-func ReplacePrefix(linkID int, tableName string, field string, oldPrefix string, newPrefix string) (int64, error) {
+func ReplacePrefix(linkID int, tableName string, field string, oldPrefix string, newPrefix string, notPrefix bool, extWheres ...string) (int64, error) {
+	var extWhere string
+	if len(extWheres) > 0 {
+		extWhere = extWheres[0] + ` AND `
+	}
 	oldPrefix = com.AddSlashes(oldPrefix, '_', '%')
 	tableName = strings.ReplaceAll(tableName, "`", "``")
 	field = strings.ReplaceAll(field, "`", "``")
-	sqlStr := "UPDATE `"+tableName+"` SET `"+field+"`=REPLACE(`"+field+"`,?,?) WHERE `"+field+"` LIKE ?"
+	sqlStr := "UPDATE `"+tableName+"` SET `"+field+"`=REPLACE(`"+field+"`,?,?) WHERE "+extWhere+"`"+field+"` LIKE ?"
 	db := factory.NewParam().SetIndex(linkID).DB()
-	result, err := db.Exec(sqlStr, oldPrefix, newPrefix, oldPrefix+`%`)
+	likeValue := oldPrefix+`%`
+	if notPrefix {
+		likeValue = `%` + likeValue
+	}
+	result, err := db.Exec(sqlStr, oldPrefix, newPrefix, likeValue)
 	if factory.Debug() {
-		fmt.Println(sqlStr)
+		fmt.Println(dbPkg.BuildSQL(sqlStr, oldPrefix, newPrefix, likeValue))
 	}
 	if err != nil {
 		return 0, err

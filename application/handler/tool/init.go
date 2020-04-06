@@ -32,5 +32,6 @@ func init() {
 		g.Route(`GET,POST`, `/base64`, Base64)
 		g.Route(`GET,POST`, `/url`, URL)
 		g.Route(`GET,POST`, `/timestamp`, Timestamp)
+		g.Route(`GET,POST`, `/replaceurl`, ReplaceURL)
 	})
 }

@@ -149,6 +149,11 @@ var TopNavigate = &List{
 				Name:          `时间戳转换`,
 				Action:        `timestamp`,
 			},
+			{
+				DisplayOnMenu: true,
+				Name:          `附件网址替换`,
+				Action:        `replaceurl`,
+			},
 		},
 	},
 }
