@@ -48,6 +48,7 @@ type Callback func(m factory.Model) (tableID string, content string, property *P
 type FileRelation struct {
 	TableName string   // 数据表名称
 	FieldName string   // 数据表字段名
+	SameFields []string   // 数据表类似字段名
 	Embedded  bool     // 是否为嵌入图片
 	Seperator string   // 文件字段中多个文件路径之间的分隔符，空字符串代表为单个文件
 	callback  Callback //根据模型获取表行ID和内容
@@ -63,9 +64,10 @@ func (f *FileRelation) Callback() Callback {
 	return f.callback
 }
 
-func (f *FileRelation) SetTable(table string, field string) *FileRelation {
+func (f *FileRelation) SetTable(table string, field string, samesFields ...string) *FileRelation {
 	f.TableName = table
 	f.FieldName = field
+	f.SameFields = samesFields
 	return f
 }
 
@@ -204,13 +206,13 @@ func (f *FileRelation) Listen(events ...string) *FileRelation {
 func (f *FileRelation) On(event string, h factory.EventHandler) *FileRelation {
 	f.DBI().On(event, h, f.TableName)
 	log.Info(color.MagentaString(`listener.`+event+`:`), f.TableName+`.`+f.FieldName)
-	RecordUpdaterInfo(``, f.TableName, f.FieldName, f.Seperator, f.Embedded)
+	RecordUpdaterInfo(``, f.TableName, f.FieldName, f.Seperator, f.Embedded, f.SameFields...)
 	return f
 }
 
 func (f *FileRelation) OnRead(event string, h factory.EventReadHandler) *FileRelation {
 	f.DBI().OnRead(event, h, f.TableName)
 	log.Info(color.MagentaString(`listener.`+event+`:`), f.TableName+`.`+f.FieldName)
-	RecordUpdaterInfo(``, f.TableName, f.FieldName, f.Seperator, f.Embedded)
+	RecordUpdaterInfo(``, f.TableName, f.FieldName, f.Seperator, f.Embedded, f.SameFields...)
 	return f
 }

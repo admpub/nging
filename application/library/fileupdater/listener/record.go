@@ -18,7 +18,7 @@ type UpdaterInfo struct {
 }
 
 // RecordUpdaterInfo 记录
-func RecordUpdaterInfo(project, table, field, seperator string, embedded bool) {
+func RecordUpdaterInfo(project, table, field, seperator string, embedded bool, sameFields ...string) {
 	if _, ok := UpdaterInfos[project]; !ok {
 		UpdaterInfos[project] = map[string]map[string]UpdaterInfo{}
 	}
@@ -29,6 +29,14 @@ func RecordUpdaterInfo(project, table, field, seperator string, embedded bool) {
 		UpdaterInfos[project][table][field] = UpdaterInfo{
 			Seperator: seperator,
 			Embedded: embedded,
+		}
+	}
+	for _, field := range sameFields {
+		if _, ok := UpdaterInfos[project][table][field]; !ok {
+			UpdaterInfos[project][table][field] = UpdaterInfo{
+				Seperator: seperator,
+				Embedded: embedded,
+			}
 		}
 	}
 }

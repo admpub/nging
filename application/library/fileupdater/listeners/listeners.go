@@ -32,18 +32,34 @@ func New() *Listeners {
 
 type Listeners map[string]func(m factory.Model) (tableID string, content string, property *listener.Property)
 
-func (a *Listeners) Listen(tableName string, embedded bool, seperator ...string) *Listeners {
+func (a *Listeners) Listen(tableName string, embedded bool, seperatorAndSameFields ...string) *Listeners {
+	var sameFields []string
+	var seperator string
+	if len(seperatorAndSameFields) > 0 {
+		seperator = seperatorAndSameFields[0]
+	}
+	if len(seperatorAndSameFields) > 1 {
+		sameFields = seperatorAndSameFields[1:]
+	}
 	for _field, _listener := range *a {
-		listener.New(_listener, embedded, seperator...).SetTable(tableName, _field).ListenDefault()
+		listener.New(_listener, embedded, seperator).SetTable(tableName, _field, sameFields...).ListenDefault()
 		delete(*a, _field)
 	}
 	return a
 }
 
-func (a *Listeners) ListenByField(fieldNames string, tableName string, embedded bool, seperator ...string) *Listeners {
+func (a *Listeners) ListenByField(fieldNames string, tableName string, embedded bool, seperatorAndSameFields ...string) *Listeners {
+	var sameFields []string
+	var seperator string
+	if len(seperatorAndSameFields) > 0 {
+		seperator = seperatorAndSameFields[0]
+	}
+	if len(seperatorAndSameFields) > 1 {
+		sameFields = seperatorAndSameFields[1:]
+	}
 	for _, fieldName := range strings.Split(fieldNames, `,`) {
 		if _listener, ok := (*a)[fieldName]; ok {
-			listener.New(_listener, embedded, seperator...).SetTable(tableName, fieldName).ListenDefault()
+			listener.New(_listener, embedded, seperator).SetTable(tableName, fieldName, sameFields...).ListenDefault()
 			delete(*a, fieldName)
 		}
 	}
