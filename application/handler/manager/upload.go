@@ -59,17 +59,32 @@ func File(ctx echo.Context) error {
 	typ, _, _ := getTableInfo(uploadType)
 	file := ctx.Param(`*`)
 	file = filepath.Join(helper.UploadDir, typ, file)
-	originalExtension := filepath.Ext(file)
-	extension := strings.ToLower(originalExtension)
-	convert, ok := convert.GetConverter(extension)
-	if !ok {
-		return ctx.File(file)
-	}
-	originalFile := strings.TrimSuffix(file, originalExtension)
-	index := strings.LastIndex(originalFile, `.`)
-	// 单扩展名或相同扩展名的情况下不转换格式
-	if index < 0 || strings.ToLower(originalFile[index:]) == extension {
-		return ctx.File(originalFile)
+	var (
+		convertFunc convert.Convert
+		ok bool
+		originalFile string
+	)
+	extension := ctx.Query(`ex`)
+	if len(extension) > 0 {
+		extension = `.` + extension
+		convertFunc, ok = convert.GetConverter(extension)
+		if !ok {
+			return ctx.File(file)
+		}
+		originalFile = file
+	} else {
+		originalExtension := filepath.Ext(file)
+		extension = strings.ToLower(originalExtension)
+		convertFunc, ok = convert.GetConverter(extension)
+		if !ok {
+			return ctx.File(file)
+		}
+		originalFile = strings.TrimSuffix(file, originalExtension)
+		index := strings.LastIndex(originalFile, `.`)
+		// 单扩展名或相同扩展名的情况下不转换格式
+		if index < 0 || strings.ToLower(originalFile[index:]) == extension {
+			return ctx.File(originalFile)
+		}
 	}
 	supported := strings.Contains(ctx.Header(echo.HeaderAccept), "image/" + strings.TrimPrefix(extension, `.`))
 	if !supported {
@@ -93,7 +108,7 @@ func File(ctx echo.Context) error {
 			return nil, echo.ErrNotFound
 		}
 		defer f.Close()
-		buf, err := convert(f, 70)
+		buf, err := convertFunc(f, 70)
 		if err != nil {
 			return nil, err
 		}
