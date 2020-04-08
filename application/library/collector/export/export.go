@@ -176,6 +176,9 @@ func postAPIByHTTP(data echo.Store, config *dbschema.NgingCollectorExport, logM 
 	}
 	client := gohttp.New()
 	resp, errs := client.Post(config.Dest).Send(string(body)).End()
+	if resp != nil && resp.Body != nil {
+		defer resp.Body.Close()
+	}
 	if len(errs) > 0 {
 		logM.Result = ``
 		for i, e := range errs {
@@ -202,9 +205,6 @@ func postAPIByHTTP(data echo.Store, config *dbschema.NgingCollectorExport, logM 
 				return sendErr
 			}
 		}
-	}
-	if resp != nil && resp.Body != nil {
-		resp.Body.Close()
 	}
 	return err
 }
