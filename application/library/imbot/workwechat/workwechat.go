@@ -8,6 +8,11 @@ import (
 
 // document https://work.weixin.qq.com/help?person_id=1&doc_id=13376
 
+var (
+	KEY = ``
+	API_URL = `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=%v`
+)
+
 // Message 企业微信消息实体 每个机器人发送的消息不能超过20条/分钟。
 type Message struct {
 	MsgType string `json:"msgtype"` //消息类型 text/markdown/image/news
@@ -15,6 +20,14 @@ type Message struct {
 	Markdown *Markdown `json:"markdown,omitempty"` // MsgType=markdown 时有效
 	Image *Image `json:"image,omitempty"` // MsgType=image 时有效
 	News *News `json:"news,omitempty"` // MsgType=news 时有效
+}
+
+func (m *Message) BuildURL(args ...string) string {
+	key := KEY
+	if len(args) > 0 {
+		key = args[0]
+	}
+	return fmt.Sprintf(API_URL, KEY)
 }
 
 func (m *Message) Reset() imbot.Messager {

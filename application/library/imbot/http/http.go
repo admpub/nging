@@ -7,7 +7,7 @@ import (
 
 func Send(url string, m interface{}) ([]byte,error) {
 	worker := miner.NewAPI()
-	worker.SetURL(url)
+	worker.SetURL(url).SetMaxRetries(3)
 	body, err := json.Marshal(m)
 	if err != nil {
 		return nil, err

@@ -2,11 +2,20 @@
 package dingding
 
 import (
+    "crypto/hmac"
+	"crypto/sha256"
+	
 	"github.com/admpub/nging/application/library/imbot/http"
 	"github.com/admpub/nging/application/library/imbot"
 )
 
 // document https://ding-doc.dingtalk.com/doc#/serverapi3/iydd5h
+
+var (
+	TOKEN = ``
+	SECRET = ``
+	API_URL = `https://oapi.dingtalk.com/robot/send?access_token=%v&timestamp=%v&sign=%v`
+)
 
 // Message 消息实体 每个机器人发送的消息不能超过20条/分钟。
 type Message struct {
@@ -17,6 +26,17 @@ type Message struct {
 	ActionCard *ActionCard `json:"actionCard,omitempty"` // MsgType=actionCard 时有效
 	FeedCard *FeedCard `json:"feedCard,omitempty"` // MsgType=feedCard 时有效
 	At *At `json:"at,omitempty"` // MsgType=text 和 MsgType=markdown  时有效
+}
+
+func (m *Message) BuildURL(args ...string) string {
+	timestamp := time.Now().UnixNano()/1e6
+	secret := SECRET
+	if len(args) > 0 {
+		secret = args[0]
+	}
+	sign := fmt.Sprintf("%v\n%v", timestamp, secret)
+	sign = HmacSHA256(sign, secret)
+	return fmt.Sprintf(API_URL, TOKEN, timestamp, sign)
 }
 
 func (m *Message) Reset() imbot.Messager {
@@ -42,6 +62,12 @@ func (m *Message) SendMarkdown(url, title, markdown string) error {
 	m.Markdown = &Markdown{Title:title,Text:markdown}
 	_, err := http.Send(url, m)
 	return err
+}
+
+func HmacSHA256(s string, secret string) string {
+    h := hmac.New(sha256.New, []byte(secret))
+    io.WriteString(h, s)
+    return fmt.Sprintf("%x", h.Sum(nil))
 }
 
 type Text struct {

@@ -550,6 +550,12 @@
 			"revisionTime": "2017-04-08T11:03:49Z"
 		},
 		{
+			"checksumSHA1": "p29dCiXcMe31F5TsbuREUv1vfyA=",
+			"path": "github.com/admpub/marmot",
+			"revision": "e4534bad2b3db5079f73bb154ea640b607feac02",
+			"revisionTime": "2020-04-11T02:54:41Z"
+		},
+		{
 			"checksumSHA1": "gyCc3dn5mK0U5ErmHa1cqC2I0qk=",
 			"path": "github.com/admpub/marmot/miner",
 			"revision": "b06e4fed79bc06f7c1266f64e0b8793be22c7c49",
