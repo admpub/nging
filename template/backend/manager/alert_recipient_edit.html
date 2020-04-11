@@ -35,6 +35,7 @@
                       <input type="radio" value="webhook" id="type-webhook" name="type"{{if eq $v "webhook"}} checked{{end}}> 
                       <label for="type-webhook">webhook</label>
                   </div>
+                  <div class="help-block">{{`选择发送的类型`|T}}</div>
                 </div>
                 <label class="col-sm-2 control-label">{{"平台"|T}}</label>
                 <div class="col-sm-4">
@@ -44,6 +45,7 @@
                       <input type="radio" value="{{$val.K}}" id="platform-{{$key}}" name="platform"{{if eq $v $val.K}} checked{{end}}> <label for="platform-{{$key}}">{{$val.V}}</label>
                   </div>
                   {{end}}
+                  <div class="help-block">{{`webhook时有效`|T}}</div>
                 </div>
               </div>
               <div class="form-group">
