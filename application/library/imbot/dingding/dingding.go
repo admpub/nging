@@ -17,7 +17,11 @@ var (
 	API_URL = `https://oapi.dingtalk.com/robot/send?access_token=%v&timestamp=%v&sign=%v`
 )
 
-// Message 消息实体 每个机器人发送的消息不能超过20条/分钟。
+func init() {
+	imbot.Register(`dingding`, `钉钉机器人`, &Message{})
+}
+
+// Message 消息实体
 type Message struct {
 	MsgType string `json:"msgtype"` //消息类型 text/markdown/link/actionCard/feedCard
 	Text *Text `json:"text,omitempty"` // MsgType=text 时有效
@@ -50,16 +54,29 @@ func (m *Message) Reset() imbot.Messager {
 	return m
 }
 
-func (m *Message) SendText(url, text string) error {
+func (m *Message) SendText(url, text string, atMobiles ...string) error {
 	m.MsgType = `text`
 	m.Text = &Text{Content:text}
+	m.at(atMobiles...)
 	_, err := http.Send(url, m)
 	return err
 }
 
-func (m *Message) SendMarkdown(url, title, markdown string) error {
+func (m *Message) at(atMobiles ...string) {
+	if len(atMobiles) > 0 {
+		m.At = &At{}
+		if len(atMobiles) == 1 && atMobiles[0] == `@all` {
+			m.At.IsAtAll = true
+		} else {
+			m.At.AtMobiles = atMobiles
+		}
+	}
+}
+
+func (m *Message) SendMarkdown(url, title, markdown string, atMobiles ...string) error {
 	m.MsgType = `markdown`
 	m.Markdown = &Markdown{Title:title,Text:markdown}
+	m.at(atMobiles...)
 	_, err := http.Send(url, m)
 	return err
 }

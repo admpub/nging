@@ -1,4 +1,4 @@
-// Package workwechat 企业微信机器人消息
+// Package workwechat 企业微信机器人
 package workwechat
 
 import (
@@ -12,6 +12,10 @@ var (
 	KEY = ``
 	API_URL = `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=%v`
 )
+
+func init() {
+	imbot.Register(`workwx`, `企业微信机器人`, &Message{})
+}
 
 // Message 企业微信消息实体 每个机器人发送的消息不能超过20条/分钟。
 type Message struct {
@@ -27,7 +31,7 @@ func (m *Message) BuildURL(args ...string) string {
 	if len(args) > 0 {
 		key = args[0]
 	}
-	return fmt.Sprintf(API_URL, KEY)
+	return fmt.Sprintf(API_URL, key)
 }
 
 func (m *Message) Reset() imbot.Messager {
@@ -39,16 +43,22 @@ func (m *Message) Reset() imbot.Messager {
 	return m
 }
 
-func (m *Message) SendText(url, text string) error {
+func (m *Message) SendText(url, text string, atMobiles ...string) error {
 	m.MsgType = `text`
 	m.Text = &Text{Content:text}
+	if len(atMobiles) > 0 {
+		m.Text.MentionedMobileList = atMobiles
+	}
 	_, err := http.Send(url, m)
 	return err
 }
 
-func (m *Message) SendMarkdown(url, title, markdown string) error {
+func (m *Message) SendMarkdown(url, title, markdown string, atMobiles ...string) error {
 	m.MsgType = `markdown`
 	m.Markdown = &Markdown{Content:markdown}
+	if len(atMobiles) > 0 {
+		m.Markdown.MentionedMobileList = atMobiles
+	}
 	_, err := http.Send(url, m)
 	return err
 }
@@ -61,6 +71,7 @@ type Text struct {
 
 type Markdown struct {
 	Content string `json:"content"` //markdown内容，最长不超过4096个字节，必须是utf8编码
+	MentionedMobileList []string `json:"mentioned_mobile_list"` //手机号列表，提醒手机号对应的群成员(@某个成员)，@all表示提醒所有人
 }
 
 type Image struct {
