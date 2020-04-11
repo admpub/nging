@@ -25,7 +25,13 @@ import (
 	"golang.org/x/net/proxy"
 )
 
-var Debugf func(format string, a ...interface{}) = log.Debugf
+var (
+	Debugf = log.Debugf
+	CheckRedirect = func(req *http.Request, via []*http.Request) error {
+		Debugf("[GoWorker] Redirect:%v", req.URL)
+		return nil
+	}
+)
 
 // NewJar Cookie record Jar
 func NewJar() *cookiejar.Jar {
@@ -37,25 +43,19 @@ func NewJar() *cookiejar.Jar {
 var (
 	// Save Cookie, No timeout!
 	Client = &http.Client{
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			Debugf("[GoWorker] Redirect:%v", req.URL)
-			return nil
-		},
+		CheckRedirect: CheckRedirect,
 		Jar: NewJar(),
 	}
 
 	// Not Save Cookie
 	NoCookieClient = &http.Client{
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			Debugf("[GoWorker] Redirect:%v", req.URL)
-			return nil
-		},
+		CheckRedirect: CheckRedirect,
 	}
 )
 
 // NewProxyClient New a Proxy client, Default save cookie, Can timeout
 // We should support some proxy way such as http(s) or socks
-func NewProxyClient(proxystring string) (*http.Client, error) {
+func NewProxyClient(proxystring string, timeouts ...time.Duration) (*http.Client, error) {
 	proxyURL, err := url.Parse(proxystring)
 	if err != nil {
 		return nil, err
@@ -86,16 +86,16 @@ func NewProxyClient(proxystring string) (*http.Client, error) {
 	// This a alone client, diff from global client.
 	client := &http.Client{
 		// Allow redirect
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			Debugf("[GoWorker] Redirect:%v", req.URL)
-			return nil
-		},
+		CheckRedirect: CheckRedirect,
 		// Allow proxy: http, https, socks5
 		Transport: httpTransport,
 		// Allow keep cookie
 		Jar: NewJar(),
 		// Allow Timeout
 		Timeout: time.Second * time.Duration(DefaultTimeOut),
+	}
+	if len(timeouts) > 0 {
+		client.Timeout = timeouts[0]
 	}
 	return client, nil
 }
@@ -104,10 +104,7 @@ func NewProxyClient(proxystring string) (*http.Client, error) {
 func NewClient(timeout ...time.Duration) (*http.Client, error) {
 	client := &http.Client{
 		// Allow redirect
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			Debugf("[GoWorker] Redirect:%v", req.URL)
-			return nil
-		},
+		CheckRedirect: CheckRedirect,
 		Jar:     NewJar(),
 		Timeout: time.Second * time.Duration(DefaultTimeOut),
 	}

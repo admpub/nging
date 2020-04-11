@@ -41,6 +41,11 @@ var TopNavigate = &List{
 			},
 			{
 				DisplayOnMenu: true,
+				Name:          `警报接收人`,
+				Action:        `alert_recipient`,
+			},
+			{
+				DisplayOnMenu: true,
 				Name:          `用户管理`,
 				Action:        `user`,
 			},

@@ -51,6 +51,28 @@ CREATE TABLE `nging_access_log` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `nging_alert_recipient`
+--
+
+DROP TABLE IF EXISTS `nging_alert_recipient`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `nging_alert_recipient` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `name` varchar(200) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '名称',
+  `account` varchar(255) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '账号',
+  `extra` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '扩展信息(JSON)',
+  `type` enum('email','webhook') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'email' COMMENT '类型',
+  `platform` varchar(30) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '平台(dingding-钉钉;workwx-企业微信)',
+  `description` varchar(500) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '说明',
+  `disabled` enum('Y','N') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否(Y/N)禁用',
+  `created` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `updated` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='报警收信人';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `nging_cloud_storage`
 --
 
@@ -924,4 +946,4 @@ CREATE TABLE `nging_vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-03 21:18:49
+-- Dump completed on 2020-04-11 11:53:08

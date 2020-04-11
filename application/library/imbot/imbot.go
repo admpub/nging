@@ -16,7 +16,7 @@ type Message struct {
 var messagers = map[string]*Message{}
 
 func Register(name string, label string, m Messager) {
-	messagers[name] = &Message{Name: name, Label: label, Message: m}
+	messagers[name] = &Message{Name: name, Label: label, Messager: m}
 }
 
 func Messagers() map[string]*Message {

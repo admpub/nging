@@ -14,8 +14,11 @@
 package miner
 
 import (
+	"context"
 	"net/http"
 	"net/url"
+
+	"github.com/admpub/pester"
 )
 
 // DefaultWorker Global Worker
@@ -97,4 +100,95 @@ func PutFile() (body []byte, e error) {
 
 func PutXML() (body []byte, e error) {
 	return DefaultWorker.PutXML()
+}
+
+func SetDetectCharset(on bool) *Worker {
+	return DefaultWorker.SetDetectCharset(on)
+}
+
+func SetHeaderParm(k, v string) *Worker {
+	return DefaultWorker.SetHeaderParm(k, v)
+}
+
+func SetMaxRetries(maxRetries int) *Worker {
+	return DefaultWorker.SetMaxRetries(maxRetries)
+}
+
+func SetPesterOptions(options ...pester.ApplyOptions) *Worker {
+	return DefaultWorker.SetPesterOptions(options...)
+}
+
+func SetResponseCharset(charset string) *Worker {
+	return DefaultWorker.SetResponseCharset(charset)
+}
+
+func SetCookie(v string) *Worker {
+	return DefaultWorker.SetCookie(v)
+}
+
+func SetCookieByFile(file string) (*Worker, error) {
+	return DefaultWorker.SetCookieByFile(file)
+}
+
+func SetUserAgent(ua string) *Worker {
+	return DefaultWorker.SetUserAgent(ua)
+}
+func SetRefer(refer string) *Worker {
+	return DefaultWorker.SetRefer(refer)
+}
+
+func SetURL(url string) *Worker {
+	return DefaultWorker.SetURL(url)
+}
+
+func SetFileInfo(fileName, fileFormName string) *Worker {
+	return DefaultWorker.SetFileInfo(fileName, fileFormName)
+}
+
+func SetMethod(method string) *Worker {
+	return DefaultWorker.SetMethod(method)
+}
+
+func SetWaitTime(num int) *Worker {
+	return DefaultWorker.SetWaitTime(num)
+}
+
+func SetBinary(data []byte) *Worker {
+	return DefaultWorker.SetBinary(data)
+}
+
+func SetForm(form url.Values) *Worker {
+	return DefaultWorker.SetForm(form)
+}
+
+func SetFormParm(k, v string) *Worker {
+	return DefaultWorker.SetFormParm(k, v)
+}
+
+func SetContext(ctx context.Context) *Worker {
+	return DefaultWorker.SetContext(ctx)
+}
+
+func SetBeforeAction(fc func(context.Context, *Worker)) *Worker {
+	return DefaultWorker.SetBeforeAction(fc)
+}
+
+func SetAfterAction(fc func(context.Context, *Worker)) *Worker {
+	return DefaultWorker.SetAfterAction(fc)
+}
+
+func Clear() *Worker {
+	return DefaultWorker.Clear()
+}
+
+func ClearAll() *Worker {
+	return DefaultWorker.ClearAll()
+}
+
+func ClearCookie() *Worker {
+	return DefaultWorker.ClearCookie()
+}
+
+func GetCookies() []*http.Cookie {
+	return DefaultWorker.GetCookies()
 }

@@ -1,0 +1,83 @@
+{{Extend "layout"}}
+{{Block "title"}}{{Stored.title}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{Stored.title}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+				<div class="col-md-12">
+					<div class="block-flat">
+						<div class="header">
+							<a href="__BACKEND__/manager/alert_recipient_add" class="btn btn-success pull-right">
+								<i class="fa fa-plus"></i>
+								{{"添加警报接收人"|T}}
+							</a>
+							<h3>{{"警报接收人列表"|T}}</h3>
+						</div>
+						<div class="content">
+							<div class="table-responsive">
+							<table class="table no-border hover">
+								<thead class="no-border">
+									<tr>
+										<th style="width:60px"><strong>ID</strong></th>
+										<th><strong>{{"名称"|T}}</strong></th>
+										<th><strong>{{"账号"|T}}</strong></th>
+										<th style="width:60px"><strong>{{"类型"|T}}</strong></th>
+										<th style="width:100px"><strong>{{"平台"|T}}</strong></th>
+										<th style="width:130px"><strong>{{"创建时间"|T}}</strong></th>
+										<th style="width:130px"><strong>{{"更新时间"|T}}</strong></th>
+										<th style="width:60px"><strong>{{"状态"|T}}</strong></th>
+										<th style="width:120px" class="text-center"><strong>{{"操作"|T}}</strong></th>
+									</tr>
+								</thead>
+								<tbody class="no-border-y">
+                                    {{range $k,$v := Stored.listData}}
+									<tr>
+										<td>{{$v.Id}}</td>
+										<td>{{$v.Name}}</td>
+										<td>{{$v.Account}}</td>
+										<td>{{$v.Type}}</td>
+										<td>{{platformName $v.Platform}}</td>
+										<td>
+											{{$v.Created|DateFormat "2006-01-02 15:04:05"}}
+										</td>
+										<td>
+											{{if gt $v.Updated 0}}
+											{{$v.Updated|DateFormat "2006-01-02 15:04:05"}}
+											{{end}}
+										</td>
+										<td>
+											<div class="checkbox checkbox-success no-margin-y">
+												<input id="checkbox-{{$k}}" class="styled switch-disabled" type="checkbox" data-id="{{$v.Id}}" data-disabled="{{$v.Disabled}}"{{if eq $v.Disabled "N"}} checked="checked"{{end}} value="N" /><label for="checkbox-{{$k}}">{{"启用"|T}}</label>
+											</div>
+										</td>
+										<td class="text-center">
+										<a class="label label-warning" href="javascript:;" data-toggle="tooltip" title="{{"测试"|T}}" onclick="sendTestAlert(this)" data-test-url="__BACKEND__/manager/alert_recipient_test?id={{$v.Id}}"><i class="fa fa-refresh"></i></a> 
+										<a class="label label-success" href="__BACKEND__/manager/alert_recipient_edit?id={{$v.Id}}" data-toggle="tooltip" title="{{"修改"|T}}"><i class="fa fa-pencil"></i></a> 
+										<a class="label label-danger" href="__BACKEND__/manager/alert_recipient_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" data-toggle="tooltip" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
+										</td>
+									</tr>
+                                    {{end}}
+								</tbody>
+							</table>		
+							</div>
+							{{Stored.pagination.Render}}
+						</div>
+					</div>				
+				</div>
+			</div>
+{{/Block}}
+{{Block "footer"}}
+<script>
+function sendTestAlert(a){
+	var url = $(a).data('test-url');
+	$.post(url, {}, function(r){
+		App.message({text: r.Info, type: (r.Code == 1 ? 'success' : 'error')})
+	}, 'json');
+}
+$(function(){
+	App.bindSwitch('input.switch-disabled','click','manager/alert_recipient_edit');
+});
+</script>
+{{/Block}}

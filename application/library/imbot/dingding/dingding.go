@@ -4,6 +4,9 @@ package dingding
 import (
     "crypto/hmac"
 	"crypto/sha256"
+	"time"
+	"fmt"
+	"io"
 	
 	"github.com/admpub/nging/application/library/imbot/http"
 	"github.com/admpub/nging/application/library/imbot"

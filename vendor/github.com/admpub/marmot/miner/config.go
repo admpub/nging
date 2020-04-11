@@ -20,6 +20,8 @@ import (
 	"net/url"
 	"strings"
 	"sync"
+
+	"github.com/admpub/pester"
 )
 
 // Worker is the main object to sent http request and return result of response
@@ -49,6 +51,7 @@ type Worker struct {
 	Ctx          context.Context
 	BeforeAction func(context.Context, *Worker)
 	AfterAction  func(context.Context, *Worker)
+	PesterOptions []pester.ApplyOptions
 
 	// ResponseCharset is the character encoding of the response body.
 	// Leave it blank to allow automatic character encoding of the response body.
@@ -57,6 +60,8 @@ type Worker struct {
 	// DetectCharset can enable character encoding detection for non-utf8 response bodies
 	// without explicit charset declaration. This feature uses https://github.com/webx-top/chardet
 	DetectCharset bool
+
+	MaxRetries  int
 
 	mux sync.RWMutex // Lock, execute concurrently please use worker Pool!
 }
@@ -77,17 +82,19 @@ func (worker *Worker) SetHeaderParm(k, v string) *Worker {
 	return worker
 }
 
-func SetHeaderParm(k, v string) *Worker {
-	return DefaultWorker.SetHeaderParm(k, v)
-}
-
 func (worker *Worker) SetDetectCharset(on bool) *Worker {
 	worker.DetectCharset = on
 	return worker
 }
 
-func SetDetectCharset(on bool) *Worker {
-	return DefaultWorker.SetDetectCharset(on)
+func (worker *Worker) SetMaxRetries(maxRetries int) *Worker {
+	worker.MaxRetries = maxRetries
+	return worker
+}
+
+func (worker *Worker) SetPesterOptions(options ...pester.ApplyOptions) *Worker {
+	worker.PesterOptions = options
+	return worker
 }
 
 func (worker *Worker) SetResponseCharset(charset string) *Worker {
@@ -95,17 +102,9 @@ func (worker *Worker) SetResponseCharset(charset string) *Worker {
 	return worker
 }
 
-func SetResponseCharset(charset string) *Worker {
-	return DefaultWorker.SetResponseCharset(charset)
-}
-
 func (worker *Worker) SetCookie(v string) *Worker {
 	worker.SetHeaderParm("Cookie", v)
 	return worker
-}
-
-func SetCookie(v string) *Worker {
-	return DefaultWorker.SetCookie(v)
 }
 
 // SetCookieByFile Set Cookie by file.
@@ -122,26 +121,15 @@ func (worker *Worker) SetCookieByFile(file string) (*Worker, error) {
 	return sconfig, nil
 }
 
-func SetCookieByFile(file string) (*Worker, error) {
-	return DefaultWorker.SetCookieByFile(file)
-}
-
 func (worker *Worker) SetUserAgent(ua string) *Worker {
 	worker.Header.Set("User-Agent", ua)
 	return worker
 }
 
-func SetUserAgent(ua string) *Worker {
-	return DefaultWorker.SetUserAgent(ua)
-}
 
 func (worker *Worker) SetRefer(refer string) *Worker {
 	worker.Header.Set("Referer", refer)
 	return worker
-}
-
-func SetRefer(refer string) *Worker {
-	return DefaultWorker.SetRefer(refer)
 }
 
 func (worker *Worker) SetHost(host string) *Worker {
@@ -160,18 +148,10 @@ func (worker *Worker) SetURL(url string) *Worker {
 	return worker
 }
 
-func SetURL(url string) *Worker {
-	return DefaultWorker.SetURL(url)
-}
-
 func (worker *Worker) SetFileInfo(fileName, fileFormName string) *Worker {
 	worker.FileName = fileName
 	worker.FileFormName = fileFormName
 	return worker
-}
-
-func SetFileInfo(fileName, fileFormName string) *Worker {
-	return DefaultWorker.SetFileInfo(fileName, fileFormName)
 }
 
 func (worker *Worker) SetMethod(method string) *Worker {
@@ -187,10 +167,6 @@ func (worker *Worker) SetMethod(method string) *Worker {
 	return worker
 }
 
-func SetMethod(method string) *Worker {
-	return DefaultWorker.SetMethod(method)
-}
-
 func (worker *Worker) SetWaitTime(num int) *Worker {
 	if num <= 0 {
 		num = 1
@@ -199,17 +175,9 @@ func (worker *Worker) SetWaitTime(num int) *Worker {
 	return worker
 }
 
-func SetWaitTime(num int) *Worker {
-	return DefaultWorker.SetWaitTime(num)
-}
-
 func (worker *Worker) SetBinary(data []byte) *Worker {
 	worker.BinaryData = data
 	return worker
-}
-
-func SetBinary(data []byte) *Worker {
-	return DefaultWorker.SetBinary(data)
 }
 
 func (worker *Worker) SetForm(form url.Values) *Worker {
@@ -217,17 +185,9 @@ func (worker *Worker) SetForm(form url.Values) *Worker {
 	return worker
 }
 
-func SetForm(form url.Values) *Worker {
-	return DefaultWorker.SetForm(form)
-}
-
 func (worker *Worker) SetFormParm(k, v string) *Worker {
 	worker.Data.Set(k, v)
 	return worker
-}
-
-func SetFormParm(k, v string) *Worker {
-	return DefaultWorker.SetFormParm(k, v)
 }
 
 // Set Context so Action can soft
@@ -236,17 +196,9 @@ func (worker *Worker) SetContext(ctx context.Context) *Worker {
 	return worker
 }
 
-func SetContext(ctx context.Context) *Worker {
-	return DefaultWorker.SetContext(ctx)
-}
-
 func (worker *Worker) SetBeforeAction(fc func(context.Context, *Worker)) *Worker {
 	worker.BeforeAction = fc
 	return worker
-}
-
-func SetBeforeAction(fc func(context.Context, *Worker)) *Worker {
-	return DefaultWorker.SetBeforeAction(fc)
 }
 
 func (worker *Worker) SetAfterAction(fc func(context.Context, *Worker)) *Worker {
@@ -254,19 +206,11 @@ func (worker *Worker) SetAfterAction(fc func(context.Context, *Worker)) *Worker 
 	return worker
 }
 
-func SetAfterAction(fc func(context.Context, *Worker)) *Worker {
-	return DefaultWorker.SetAfterAction(fc)
-}
-
 // Clear data we sent
 func (worker *Worker) Clear() *Worker {
 	worker.Data = url.Values{}
 	worker.BinaryData = []byte{}
 	return worker
-}
-
-func Clear() *Worker {
-	return DefaultWorker.Clear()
 }
 
 // All clear include header
@@ -277,18 +221,11 @@ func (worker *Worker) ClearAll() *Worker {
 	return worker
 }
 
-func ClearAll() *Worker {
-	return DefaultWorker.ClearAll()
-}
 
 // ClearCookie Clear Cookie
 func (worker *Worker) ClearCookie() *Worker {
 	worker.Header.Del("Cookie")
 	return worker
-}
-
-func ClearCookie() *Worker {
-	return DefaultWorker.ClearCookie()
 }
 
 // GetCookies Get Cookies
@@ -298,8 +235,4 @@ func (worker *Worker) GetCookies() []*http.Cookie {
 	} else {
 		return []*http.Cookie{}
 	}
-}
-
-func GetCookies() []*http.Cookie {
-	return DefaultWorker.GetCookies()
 }

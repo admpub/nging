@@ -25,6 +25,7 @@ import (
 	"time"
 
 	"github.com/admpub/log"
+	"github.com/admpub/pester"
 )
 
 // NewWorker New a worker, if ipstring is a proxy address, New a proxy client.
@@ -36,9 +37,10 @@ func NewWorker(ipstring interface{}, timeout ...time.Duration) (*Worker, error) 
 	worker.Data = url.Values{}
 	worker.BinaryData = []byte{}
 	if ipstring != nil {
-		client, err := NewProxyClient(strings.ToLower(ipstring.(string)))
+		ipStr := ipstring.(string)
+		client, err := NewProxyClient(strings.ToLower(ipStr), timeout...)
 		worker.Client = client
-		worker.Ipstring = ipstring.(string)
+		worker.Ipstring = ipStr
 		return worker, err
 	}
 	client, err := NewClient(timeout...)
@@ -58,17 +60,19 @@ func NewWorkerByClient(client *http.Client) *Worker {
 	worker.Header = http.Header{}
 	worker.Data = url.Values{}
 	worker.BinaryData = []byte{}
-
-	// API must can set timeout
-	if DefaultTimeOut != 0 && client.Timeout < 1 {
-		client.Timeout = time.Second * time.Duration(DefaultTimeOut)
-	}
 	worker.Client = client
 	return worker
 }
 
 // NewAPI New API Worker, No Cookie Keep.
-func NewAPI() *Worker {
+func NewAPI(timeout ...time.Duration) *Worker {
+	if len(timeout) > 0 {
+		NoCookieClient.Timeout = timeout[0]
+	}
+	// API must can set timeout
+	if NoCookieClient.Timeout < 1 && DefaultTimeOut != 0 {
+		NoCookieClient.Timeout = time.Second * time.Duration(DefaultTimeOut)
+	}
 	return NewWorkerByClient(NoCookieClient)
 }
 
@@ -190,9 +194,19 @@ func (worker *Worker) sent(method, contentType string, binary bool) (body []byte
 	if worker.Client == nil {
 		worker.Client = Client
 	}
-
+	var response *http.Response
 	// Do it
-	response, err := worker.Client.Do(request)
+	if worker.MaxRetries > 0 {
+        client := pester.NewExtendedClient(worker.Client)
+		client.Concurrency = 1
+        client.MaxRetries = worker.MaxRetries
+        client.Backoff = pester.ExponentialBackoff
+		client.KeepLog = true
+		client.SetOptions(worker.PesterOptions...)
+		response, err = client.Do(request)
+	} else {
+		response, err = worker.Client.Do(request)
+	}
 
 	// Close it attention response may be nil
 	if response != nil {

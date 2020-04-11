@@ -98,7 +98,7 @@ If you have already purchased a license, please place the ` + license.FileName()
 	}
 
 	// LOGO
-	fmt.Println(strings.TrimSuffix(figure.NewFigure(event.SofewareName, `big`, false).String(), "\n"), config.Version.VString()+"\n")
+	fmt.Println(strings.TrimSuffix(figure.NewFigure(event.SoftwareName, `big`, false).String(), "\n"), config.Version.VString()+"\n")
 
 	event.Start()
 

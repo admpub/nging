@@ -54,7 +54,7 @@ func serviceRunE(cmd *cobra.Command, args []string) error {
 		return cmd.Usage()
 	}
 	if len(ServiceOptions.Name) == 0 {
-		ServiceOptions.Name = event.SofewareName
+		ServiceOptions.Name = event.SoftwareName
 	}
 	if len(ServiceOptions.DisplayName) == 0 {
 		ServiceOptions.DisplayName = ServiceOptions.Name

@@ -2,6 +2,8 @@
 package workwechat
 
 import (
+	"fmt"
+	
 	"github.com/admpub/nging/application/library/imbot/http"
 	"github.com/admpub/nging/application/library/imbot"
 )

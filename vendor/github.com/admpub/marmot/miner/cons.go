@@ -16,10 +16,11 @@ package miner
 import "net/http"
 
 const (
-	// Default wait time
+	// WaitTime Default wait time
 	WaitTime = 5
 
 	// HTTP method
+
 	GET      = "GET"
 	POST     = "POST"
 	POSTJSON = "POSTJSON"
@@ -33,6 +34,7 @@ const (
 	OTHER    = "OTHER" // this stand for you can use other method this lib not own.
 
 	// HTTP content type
+
 	HTTPFORMContentType = "application/x-www-form-urlencoded"
 	HTTPJSONContentType = "application/json"
 	HTTPXMLContentType  = "text/xml"
@@ -49,16 +51,16 @@ var (
 		},
 	}
 
-	// DefaultTimeOut,http get and post No timeout
-	DefaultTimeOut = 0
+	// DefaultTimeOut http get and post No timeout
+	DefaultTimeOut = 30
 )
 
-// Set global timeout, it can only by this way!
+// SetGlobalTimeout Set global timeout, it can only by this way!
 func SetGlobalTimeout(num int) {
 	DefaultTimeOut = num
 }
 
-// Merge Cookie, not use
+// MergeCookie Merge Cookie, not use
 func MergeCookie(before []*http.Cookie, after []*http.Cookie) []*http.Cookie {
 	cs := make(map[string]*http.Cookie)
 
@@ -76,14 +78,13 @@ func MergeCookie(before []*http.Cookie, after []*http.Cookie) []*http.Cookie {
 
 	for _, q := range cs {
 		res = append(res, q)
-
 	}
 
 	return res
 
 }
 
-// Clone a header, If not exist Ua, Set our Ua!
+// CloneHeader Clone a header, If not exist Ua, Set our Ua!
 func CloneHeader(h map[string][]string) map[string][]string {
 	if h == nil || len(h) == 0 {
 		h = DefaultHeader
