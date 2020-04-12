@@ -34,6 +34,7 @@
             <div class="form-group">
               <label class="col-sm-2 control-label">{{"操作字段"|T}}</label>
               <div class="col-sm-8">
+                <div class="table-responsive">
                   <table class="table table-bordered">
                       <thead>
                           <tr>
@@ -58,7 +59,8 @@
                         {{- end -}}
                       </tbody>
                   </table>
-                  <p><pre id="search-result">{{if .}}{{JSONEncode . " "}}{{else}}{{"无结果"|T}}{{end}}</pre></p>
+                </div>
+                <p><pre id="search-result">{{if .}}{{JSONEncode . " "}}{{else}}{{"无结果"|T}}{{end}}</pre></p>
               </div>
             </div>
             </form>
