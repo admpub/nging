@@ -33,7 +33,7 @@ var FileList = func(list []*dbschema.NgingFile) interface{} {
 	for k, v := range list {
 		listData[k] = &FileInfo{
 			NgingFile:  v,
-			SubdirInfo: upload.SubdirGet(v.TableName),
+			SubdirInfo: upload.SubdirGetByTable(v.TableName),
 		}
 	}
 	return listData

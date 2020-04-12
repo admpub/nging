@@ -46,6 +46,20 @@ type FieldInfo struct {
 	checker Checker
 }
 
+func (info *FieldInfo) String() string {
+	if len(info.Name) > 0 {
+		return info.Name
+	}
+	return info.Key
+}
+
+func (info *FieldInfo) IsEmpty() bool {
+	if info == EmptyFieldInfo {
+		return true
+	}
+	return len(info.Key) == 0 && len(info.Name) == 0 && len(info.Thumb) == 0 && info.checker == nil
+}
+
 func (info *FieldInfo) AddChecker(checker Checker) *FieldInfo {
 	if checker == nil {
 		return info
@@ -101,6 +115,21 @@ func NewSubdirInfo(key, name string, checkers ...Checker) *SubdirInfo {
 	}
 }
 
+var EmptyFieldInfo = &FieldInfo{}
+
+func (i *SubdirInfo) GetField(field string) *FieldInfo {
+	if len(field) == 0 {
+		return &FieldInfo{Key: i.Key, Name: i.Name}
+	}
+	if i.fieldInfos == nil {
+		return EmptyFieldInfo
+	}
+	if info, ok := i.fieldInfos[field]; ok {
+		return info
+	}
+	return EmptyFieldInfo
+}
+
 func (i *SubdirInfo) CopyFrom(other *SubdirInfo) *SubdirInfo {
 	i.Allowed = other.Allowed
 	if len(other.Key) > 0 {
@@ -116,7 +145,7 @@ func (i *SubdirInfo) CopyFrom(other *SubdirInfo) *SubdirInfo {
 		i.Description = other.Description
 	}
 	if len(other.tableName) > 0 {
-		i.tableName = other.tableName
+		i.SetTableName(other.tableName)
 	}
 	if other.checker != nil {
 		if i.checker != nil {
@@ -168,7 +197,7 @@ func (i *SubdirInfo) TableName() string {
 			i.SetFieldName(r[1])
 			fallthrough
 		case 1:
-			i.tableName = r[0]
+			i.SetTableName(r[0])
 		}
 	}
 	return i.tableName
@@ -228,11 +257,12 @@ func (i *SubdirInfo) FieldInfos() []echo.KV {
 
 func (i *SubdirInfo) SetTableName(tableName string) *SubdirInfo {
 	i.tableName = tableName
+	table2dir[i.tableName] = i.Key
 	return i
 }
 
 func (i *SubdirInfo) SetTable(tableName string, fieldNames ...string) *SubdirInfo {
-	i.tableName = tableName
+	i.SetTableName(tableName)
 	if len(fieldNames) > 0 {
 		i.SetFieldName(fieldNames...)
 	}

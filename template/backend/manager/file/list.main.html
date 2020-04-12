@@ -40,7 +40,7 @@
 						<option value="">-{{"不限"|T}}-</option>
 						{{$table := Form "table"}} 
 						{{range $k, $v := Stored.tableNames}}
-						<option value="{{$k}}" {{if eq $table $k}} selected{{end}}>{{$v.String}}</option>
+						<option value="{{$v.TableName}}" {{if eq $table $k}} selected{{end}}>{{$v.String}}</option>
 						{{end}}
 					</select>
 				</div>

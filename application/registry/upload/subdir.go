@@ -26,20 +26,27 @@ import (
 	"github.com/admpub/log"
 )
 
-var subdirs = map[string]*SubdirInfo{
-	`nging_user`: (&SubdirInfo{
+var (
+	subdirs = map[string]*SubdirInfo{}
+	table2dir = map[string]string{}
+)
+
+func init() {
+	//后台用户文件
+	SubdirRegisterObject((&SubdirInfo{
 		Allowed:     true,
-		Key:         "user",
+		Key:         "nging_user",
 		Name:        "后台用户",
 		Description: "",
-	}).SetTableName("nging_user").SetFieldName(`:个人文件`, `avatar:头像`), //后台用户文件
-	`nging_config`: (&SubdirInfo{
+	}).SetTableName("nging_user").SetFieldName(`:个人文件`, `avatar:头像`))
+	//后台系统设置中的图片
+	SubdirRegisterObject((&SubdirInfo{
 		Allowed:     true,
-		Key:         "config",
+		Key:         "nging_config",
 		Name:        "站点公告图片",
 		Description: "",
 		checker:     ConfigChecker,
-	}).SetTableName("nging_config"), //后台系统设置中的图片
+	}).SetTableName("nging_config"))
 }
 
 func SubdirRegister(subdir interface{}, nameAndDescription ...string) *SubdirInfo {
@@ -125,6 +132,14 @@ func SubdirGet(subdir string) *SubdirInfo {
 		return SubdirRegisterObject(NewSubdirInfo(subdir, ``))
 	}
 	return info
+}
+
+func SubdirGetByTable(table string) *SubdirInfo {
+	subdir, ok := table2dir[table]
+	if !ok {
+		return nil
+	}
+	return SubdirGet(subdir)
 }
 
 // CleanTempFile 清理临时文件
