@@ -23,6 +23,7 @@ package bindata
 import (
 	"net/http"
 	"strings"
+	"os"
 
 	"github.com/admpub/nging/application/initialize/backend"
 
@@ -31,6 +32,7 @@ import (
 	"github.com/admpub/nging/application/library/modal"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/bindata"
+	"github.com/webx-top/image"
 )
 
 func NewAssetFS(prefix string) *assetfs.AssetFS {
@@ -74,6 +76,16 @@ func Initialize() {
 	modal.ReadConfigFile = func(file string) ([]byte, error) {
 		file = strings.TrimPrefix(file, backend.TemplateDir)
 		return event.BackendTmplMgr.GetTemplate(file)
+	}
+	image.WatermarkOpen = func(file string) (http.File, error) {
+		f, err := os.Open(file)
+		if err != nil {
+			if os.IsNotExist(err) && strings.HasPrefix(file, echo.Wd()) {
+				file = strings.TrimPrefix(file, echo.Wd())
+				return StaticAssetFS.Open(file)
+			}
+		}
+		return f, err
 	}
 	event.LangFSFunc = LanguageAssetFSFunc
 }

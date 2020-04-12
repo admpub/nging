@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-//Base64ToFile base64 -> file
+// Base64ToFile base64 -> file
 func Base64ToFile(base64Data string, file string) error {
 	b, err := base64.StdEncoding.DecodeString(base64Data)
 	if err != nil {
@@ -18,7 +18,7 @@ func Base64ToFile(base64Data string, file string) error {
 	return ioutil.WriteFile(file, b, 0666)
 }
 
-//Base64ToBuffer base64 -> buffer
+// Base64ToBuffer base64 -> buffer
 func Base64ToBuffer(base64Data string) (*bytes.Buffer, error) {
 	b, err := base64.StdEncoding.DecodeString(base64Data) //成图片文件并把文件写入到buffer
 	if err != nil {
@@ -27,9 +27,9 @@ func Base64ToBuffer(base64Data string) (*bytes.Buffer, error) {
 	return bytes.NewBuffer(b), nil // 必须加一个buffer 不然没有read方法就会报错
 }
 
-//转换成buffer之后里面就有Reader方法了。才能被图片API decode
+// 转换成buffer之后里面就有Reader方法了。才能被图片API decode
 
-//BufferToImageBuffer buffer-> ImageBuff（图片裁剪,代码接上面）
+// BufferToImageBuffer buffer-> ImageBuff（图片裁剪,代码接上面）
 func BufferToImageBuffer(b *bytes.Buffer, x1 int, y1 int) (*image.YCbCr, error) {
 	m, _, err := image.Decode(b) // 图片文件解码
 	if err != nil {
@@ -50,7 +50,7 @@ func ToFile(subImg *image.YCbCr, file string) error {
 	return jpeg.Encode(f, subImg, nil) //写入文件
 }
 
-//ToBase64 img -> base64(代码接上面)
+// ToBase64 img -> base64(代码接上面)
 func ToBase64(subImg *image.YCbCr) ([]byte, error) {
 	emptyBuff := bytes.NewBuffer(nil)          //开辟一个新的空buff
 	err := jpeg.Encode(emptyBuff, subImg, nil) //img写入到buff
@@ -64,7 +64,7 @@ func ToBase64(subImg *image.YCbCr) ([]byte, error) {
 	return dist, nil
 }
 
-//FileToBase64 imgFile -> base64
+// FileToBase64 imgFile -> base64
 func FileToBase64(srcFile string) ([]byte, error) {
 	ff, err := ioutil.ReadFile(srcFile)
 	if err != nil {

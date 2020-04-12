@@ -1,7 +1,7 @@
 package image
 
 import (
-	"errors"
+	"net/http"
 	"image"
 	"image/draw"
 	"image/gif"
@@ -11,9 +11,11 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/admpub/errors"
 )
 
-//Pos 水印的位置
+// Pos 水印的位置
 type Pos int
 
 // 水印的位置
@@ -39,15 +41,29 @@ type Watermark struct {
 	pos     Pos         // 水印的位置
 }
 
-var ErrUnsupportedWatermarkType = errors.New(`水印图片格式不支持`)
-var ErrInvalidPos = errors.New(`水印位置不正确`)
+var (
+	// ErrUnsupportedWatermarkType 水印图片格式不支持
+	ErrUnsupportedWatermarkType = errors.New(`水印图片格式不支持`)
+	// ErrInvalidPos 水印位置不正确
+	ErrInvalidPos = errors.New(`水印位置不正确`)
+	// DefaultHTTPSystemOpen 水印文件默认打开方式
+	DefaultHTTPSystemOpen = func(name string) (http.File, error) {
+		fp, err := os.Open(name)
+		return fp, err
+	}
+	// WatermarkOpen 水印文件打开方式
+	WatermarkOpen = DefaultHTTPSystemOpen
+)
 
-//NewWatermark 设置水印的相关参数。
+// NewWatermark 设置水印的相关参数。
 // path为水印文件的路径；
 // padding为水印在目标不图像上的留白大小；
 // pos水印的位置。
 func NewWatermark(path string, padding int, pos Pos) (*Watermark, error) {
-	f, err := os.Open(path)
+	if pos < TopLeft || pos > Center {
+		return nil, ErrInvalidPos
+	}
+	f, err := WatermarkOpen(path)
 	if err != nil {
 		return nil, err
 	}
@@ -62,14 +78,10 @@ func NewWatermark(path string, padding int, pos Pos) (*Watermark, error) {
 	case ".gif":
 		img, err = gif.Decode(f)
 	default:
-		return nil, ErrUnsupportedWatermarkType
+		return nil, errors.WithMessage(ErrUnsupportedWatermarkType, path)
 	}
 	if err != nil {
 		return nil, err
-	}
-
-	if pos < TopLeft || pos > Center {
-		return nil, ErrInvalidPos
 	}
 
 	return &Watermark{
@@ -79,7 +91,7 @@ func NewWatermark(path string, padding int, pos Pos) (*Watermark, error) {
 	}, nil
 }
 
-//IsAllowExt 该扩展名的图片是否允许使用水印
+// IsAllowExt 该扩展名的图片是否允许使用水印
 func (w *Watermark) IsAllowExt(ext string) bool {
 	for _, e := range watermarkExts {
 		if e == ext {
@@ -89,7 +101,7 @@ func (w *Watermark) IsAllowExt(ext string) bool {
 	return false
 }
 
-//MarkFile 给指定的文件打上水印
+// MarkFile 给指定的文件打上水印
 func (w *Watermark) MarkFile(path string) error {
 	file, err := os.OpenFile(path, os.O_RDWR, os.ModePerm)
 	if err != nil {
@@ -100,7 +112,7 @@ func (w *Watermark) MarkFile(path string) error {
 	return w.Mark(file, filepath.Ext(path))
 }
 
-//Mark 将水印写入src中，由ext确定当前图片的类型。
+// Mark 将水印写入src中，由ext确定当前图片的类型。
 func (w *Watermark) Mark(src io.ReadWriteSeeker, ext string) error {
 	ext = strings.ToLower(ext)
 	var srcImg image.Image
@@ -114,7 +126,7 @@ func (w *Watermark) Mark(src io.ReadWriteSeeker, ext string) error {
 	case ".gif":
 		srcImg, err = gif.Decode(src)
 	default:
-		return ErrUnsupportedWatermarkType
+		return errors.WithMessage(ErrUnsupportedWatermarkType, ext)
 	}
 	if err != nil {
 		return err
@@ -123,7 +135,7 @@ func (w *Watermark) Mark(src io.ReadWriteSeeker, ext string) error {
 	var point image.Point
 	srcw := srcImg.Bounds().Dx()
 	srch := srcImg.Bounds().Dy()
-	if srcw/w.image.Bounds().Dx()<3 || srch/w.image.Bounds().Dy()<3{
+	if srcw/w.image.Bounds().Dx() < 3 || srch/w.image.Bounds().Dy() < 3 {
 		return err
 	}
 	switch w.pos {
