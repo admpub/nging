@@ -1,6 +1,6 @@
-{{Strip}}{{$dialog := Stored.dialog}}
-{{$multiple := Stored.multiple}}
-{{$showFilter := Form `showFilter`}}
+{{Strip}}{{- $dialog := Stored.dialog -}}
+{{- $multiple := Stored.multiple -}}
+{{- $showFilter := Form `showFilter` -}}
 <div id="search-form-box"{{if not $showFilter}} class="hide"{{end}}>
 <div class="row sm-margin-top">
 	<div class="col-md-12">
@@ -26,7 +26,7 @@
 				<div class="input-group no-margin-bottom">
 					<span class="input-group-addon no-padding no-border"><select name="ownerType" class="form-control" id="ownerType" onchange="ownerTypeChange(this)" style="width:100px">
 						<option value="">-{{"用户类型"|T}}-</option>
-						{{$ownerType := Form "ownerType"}}
+						{{- $ownerType := Form "ownerType" -}}
 						<option value="user" {{if eq $ownerType `user`}} selected{{end}}>{{`后台用户`|T}}</option>
 						<option value="customer" {{if eq $ownerType `customer`}} selected{{end}}>{{`前台客户`|T}}</option>
 					</select></span>
@@ -38,10 +38,20 @@
 					<span class="input-group-addon">{{"内容类型"|T}}</span>
 					<select name="table" class="form-control" id="table">
 						<option value="">-{{"不限"|T}}-</option>
-						{{$table := Form "table"}} 
-						{{range $k, $v := Stored.tableNames}}
-						<option value="{{$v.TableName}}" {{if eq $table $k}} selected{{end}}>{{$v.String}}</option>
-						{{end}}
+						{{- $table := Form "table" -}}
+						{{- range $k, $v := Stored.tableNames -}}
+						{{- $fields := $v.FieldInfos -}}
+						{{- if gt (len $fields) 0 -}}
+						<optgroup label="{{$v}}">
+						<option value="{{$v.TableName}}" {{if eq $table $k}} selected{{end}}>{{$v}}(ALL)</option>
+						{{- range $key, $val := $fields -}}
+						<option value="{{$v.TableName}}.{{$val.K}}" {{if eq $table (printf `%v.%v` $v.TableName $val.K)}} selected{{end}}>{{$v}}:{{$val.V}}</option>
+						{{- end -}}
+						</optgroup>
+						{{- else -}}
+						<option value="{{$v.TableName}}" {{if eq $table $k}} selected{{end}}>{{$v}}</option>
+						{{- end -}}
+						{{- end -}}
 					</select>
 				</div>
 				</div>
@@ -51,10 +61,10 @@
 					<span class="input-group-addon">{{"文件类型"|T}}</span>
 					<select name="type" class="form-control" id="type">
 						<option value="">-{{"不限"|T}}-</option>
-						{{$type := Stored.fileType}} 
-						{{range $k, $v := Stored.fileTypes}}
+						{{- $type := Stored.fileType -}} 
+						{{- range $k, $v := Stored.fileTypes -}}
 						<option value="{{$k.String}}" {{if eq $type $k.String}} selected{{end}}>{{$k.String}}</option>
-						{{end}}
+						{{- end -}}
 					</select>
 				</div>
 				</div>
@@ -64,7 +74,7 @@
 					<span class="input-group-addon">{{"使用状态"|T}}</span>
 					<select name="used" class="form-control" id="used">
 						<option value="">-{{"不限"|T}}-</option>
-						{{$used := Form "used"}} 
+						{{- $used := Form "used" -}} 
 						<option value="0" {{if eq $used `0`}} selected{{end}}>{{`未使用`|T}}</option>
 						<option value="1" {{if eq $used `1`}} selected{{end}}>{{`已使用`|T}}</option>
 					</select>

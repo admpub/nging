@@ -75,7 +75,16 @@
                 <td>{{$v.SavePath}}</td>
                 {{- end -}}
                 <td>{{$v.Type}}</td>
-                <td>{{if $v.SubdirInfo}}{{$v.SubdirInfo.GetField $v.FieldName}}{{else}}-{{end}}</td>
+                <td>
+                    {{- if $v.SubdirInfo -}}
+                    {{- $v.SubdirInfo.String -}}
+                    {{- if $v.FieldName -}}:
+                    {{- $v.SubdirInfo.GetField $v.FieldName -}}
+                    {{- end -}}
+                    {{- else -}}
+                    -
+                    {{- end -}}
+                </td>
                 {{- if not $dialog -}}
                 <td>{{FormatBytes $v.Size 2 true}}</td>
                 <td>{{if gt $v.Width 0}}{{$v.Width}}&times;{{$v.Height}}{{else}}-{{end}}</td>

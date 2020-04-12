@@ -19,6 +19,8 @@
 package file
 
 import (
+	"strings"
+	
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory/mysql"
@@ -39,7 +41,11 @@ func List(ctx echo.Context, ownerType string, ownerID uint64) error {
 	}
 	table := ctx.Formx("table").String()
 	if len(table) > 0 {
-		cond.AddKV(`table_name`, table)
+		tableAndField := strings.SplitN(table, ".", 2)
+		cond.AddKV(`table_name`, tableAndField[0])
+		if len(tableAndField) > 1 {
+			cond.AddKV(`field_name`, tableAndField[1])
+		}
 	}
 	used := ctx.Formx("used").String()
 	if len(used) > 0 {
