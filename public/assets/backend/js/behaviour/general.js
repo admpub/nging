@@ -598,6 +598,10 @@ var App = function () {
 			App.websocket(function (message) {
 				//console.dir(message);
 				var m = $.parseJSON(message);
+				if (!m) {
+					App.message({text:message||'Websocket Server is disconnected',type:'error'});
+					return;
+				}
 				if (typeof (App.clientID['notify']) == 'undefined') {
 					App.clientID['notify'] = m.client_id;
 				}
