@@ -6,8 +6,8 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-	"time"
 	"sync"
+	"time"
 
 	"github.com/webx-top/echo"
 
@@ -25,8 +25,8 @@ func File(ctx echo.Context) error {
 	file := ctx.Param(`*`)
 	file = filepath.Join(helper.UploadDir, typ, file)
 	var (
-		convertFunc convert.Convert
-		ok bool
+		convertFunc  convert.Convert
+		ok           bool
 		originalFile string
 	)
 	extension := ctx.Query(`ex`)
@@ -51,18 +51,22 @@ func File(ctx echo.Context) error {
 			return ctx.File(originalFile)
 		}
 	}
-	supported := strings.Contains(ctx.Header(echo.HeaderAccept), "image/" + strings.TrimPrefix(extension, `.`))
+	supported := strings.Contains(ctx.Header(echo.HeaderAccept), "image/"+strings.TrimPrefix(extension, `.`))
 	if !supported {
 		return ctx.File(originalFile)
 	}
+
+	fileGeneratorLock.RLock()
 	if err := ctx.File(file); err != echo.ErrNotFound {
 		return err
 	}
-	storerName := local.Name
+	fileGeneratorLock.RUnlock()
+
 	fileGeneratorLock.Lock()
 	defer fileGeneratorLock.Unlock()
+
 	return ctx.ServeCallbackContent(func(_ echo.Context) (io.Reader, error) {
-		newStore := upload.StorerGet(storerName)
+		newStore := upload.StorerGet(local.Name)
 		if newStore == nil {
 			return nil, ctx.E(`存储引擎“%s”未被登记`, storerName)
 		}
