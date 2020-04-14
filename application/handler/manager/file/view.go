@@ -66,7 +66,8 @@ func File(ctx echo.Context) error {
 	defer fileGeneratorLock.Unlock()
 
 	return ctx.ServeCallbackContent(func(_ echo.Context) (io.Reader, error) {
-		newStore := upload.StorerGet(local.Name)
+		storerName := local.Name
+		newStore := upload.StorerGet(storerName)
 		if newStore == nil {
 			return nil, ctx.E(`存储引擎“%s”未被登记`, storerName)
 		}
