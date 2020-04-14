@@ -58,6 +58,7 @@ func File(ctx echo.Context) error {
 
 	fileGeneratorLock.RLock()
 	if err := ctx.File(file); err != echo.ErrNotFound {
+		fileGeneratorLock.RUnlock()
 		return err
 	}
 	fileGeneratorLock.RUnlock()
