@@ -349,6 +349,7 @@ func (self *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Temp
 			_, err = t.Parse(subc)
 			if err != nil {
 				t.Parse(fmt.Sprintf("Parse File %v err: %v", name, err))
+				return
 			}
 		}
 
@@ -373,6 +374,7 @@ func (self *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Temp
 			_, err = t.Parse(extc)
 			if err != nil {
 				t.Parse(fmt.Sprintf("Parse Block %v err: %v", name, err))
+				return
 			}
 		}
 		rel.Tpl[0].Blocks[name] = struct{}{}
