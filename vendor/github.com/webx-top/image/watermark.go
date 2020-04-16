@@ -1,18 +1,20 @@
 package image
 
 import (
-	"net/http"
 	"image"
 	"image/draw"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/admpub/errors"
+	"golang.org/x/image/bmp"
+	_ "golang.org/x/image/webp"
 )
 
 // Pos 水印的位置
@@ -26,6 +28,8 @@ const (
 	BottomRight
 	Center
 )
+
+const sniffLen = 512
 
 // 允许做水印的图片
 var watermarkExts = []string{
@@ -112,12 +116,46 @@ func (w *Watermark) MarkFile(path string) error {
 	return w.Mark(file, filepath.Ext(path))
 }
 
+func GetContentTypeByContent(buffer []byte) string {
+	// Use the net/http package's handy DetectContentType function. Always returns a valid
+	// content-type by returning "application/octet-stream" if no others seemed to match.
+	contentType := http.DetectContentType(buffer)
+	return contentType
+}
+
+func GetExtensionByContentType(contentType string) string {
+	switch {
+	case strings.Contains(contentType, "image/jpeg"):
+		return ".jpg"
+	case strings.Contains(contentType, "image/png"):
+		return ".png"
+	case strings.Contains(contentType, "image/bmp"):
+		return ".bmp"
+	case strings.Contains(contentType, "image/gif"):
+		return ".gif"
+	default:
+		return ""
+	}
+}
+
+func IsFormatError(err error) bool {
+	var isFormatError bool
+	switch err.(type) {
+	case png.FormatError, jpeg.FormatError:
+		isFormatError = true
+	default:
+		if err == bmp.ErrUnsupported || strings.Contains(err.Error(), `can't recognize format`) {
+			isFormatError = true
+		}
+	}
+	return isFormatError
+}
+
 // Mark 将水印写入src中，由ext确定当前图片的类型。
 func (w *Watermark) Mark(src io.ReadWriteSeeker, ext string) error {
 	ext = strings.ToLower(ext)
 	var srcImg image.Image
 	var err error
-
 	switch ext {
 	case ".jpg", ".jpeg":
 		srcImg, err = jpeg.Decode(src)
@@ -125,10 +163,26 @@ func (w *Watermark) Mark(src io.ReadWriteSeeker, ext string) error {
 		srcImg, err = png.Decode(src)
 	case ".gif":
 		srcImg, err = gif.Decode(src)
+	case ".bmp":
+		srcImg, err = bmp.Decode(src)
 	default:
 		return errors.WithMessage(ErrUnsupportedWatermarkType, ext)
 	}
 	if err != nil {
+		if IsFormatError(err) {
+			body := make([]byte, sniffLen)
+			src.Seek(0, 0)
+			if _, err := io.ReadFull(src, body); err != nil {
+				return err
+			}
+			contentType := GetContentTypeByContent(body)
+			newExt := GetExtensionByContentType(contentType)
+			if len(newExt) == 0 || ext == newExt {
+				return err
+			}
+			src.Seek(0, 0)
+			return w.Mark(src, newExt)
+		}
 		return err
 	}
 
@@ -178,6 +232,8 @@ func (w *Watermark) Mark(src io.ReadWriteSeeker, ext string) error {
 		err = png.Encode(src, dstImg)
 	case ".gif":
 		err = gif.Encode(src, dstImg, nil)
+	case ".bmp":
+		err = bmp.Encode(src, dstImg)
 		// default: // 由前一个Switch确保此处没有default的出现。
 	}
 	return err
