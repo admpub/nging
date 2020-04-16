@@ -592,6 +592,12 @@
 			"revisionTime": "2019-03-15T07:44:36Z"
 		},
 		{
+			"checksumSHA1": "87irmVCIAab1Ptw1ctlWBi34JuY=",
+			"path": "github.com/admpub/pester",
+			"revision": "005672a2bd489c81b5636c7db3ec8df2b2ceb3be",
+			"revisionTime": "2020-04-11T02:46:48Z"
+		},
+		{
 			"checksumSHA1": "/gZeesUqsTBrbl7pU5/ZAM25GNw=",
 			"path": "github.com/admpub/phantomjs",
 			"revision": "795d836d8f6b81f5e5c70d12234ce7a8e508cb44",
