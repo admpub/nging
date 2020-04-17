@@ -39,3 +39,80 @@
         </select>
     </div>
 </div>
+
+<div class="form-group">
+    <label class="col-sm-2 control-label">{{"图片水印"|T}}</label>
+    {{$on := $config.watermark.ValueObject.on|Default false}}
+    <div class="col-sm-8">
+        <div class="radio radio-primary radio-inline">
+            <input type="radio" name="base[watermark][value][on]" value="1"{{if $on}} checked{{end}} id="base-watermark-on-1" onclick="$('#watermark-settings').removeClass('hide')">
+            <label for="base-watermark-on-1">{{"开启"|T}}</label>
+        </div>
+        <div class="radio radio-primary radio-inline">
+            <input type="radio" name="base[watermark][value][on]" value="0"{{if not $on}} checked{{end}} id="base-watermark-on-0" onclick="$('#watermark-settings').addClass('hide')">
+            <label for="base-watermark-on-0">{{"关闭"|T}}</label>
+        </div>
+        <div class="fieldset bg-fc{{if not $on}} hide{{end}}" id="watermark-settings">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"水印图片"|T}}</label>
+                <div class="col-sm-8">
+                    {{$watermark := $config.watermark.ValueObject.watermark|Default ""}}
+                    <input type="text" class="form-control" name="base[watermark][value][watermark]" value="{{$watermark}}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"保留边距"|T}}</label>
+                <div class="col-sm-8">
+                    {{$padding := $config.watermark.ValueObject.padding|Default 0}}
+                    <input type="number" class="form-control" name="base[watermark][value][watermark]" value="{{$watermark}}" step="0.01">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{"水印位置"|T}}</label>
+                <div class="col-sm-8">
+                    {{$position := $config.watermark.ValueObject.position|Default 0}}
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="radio radio-primary radio-inline">
+                                        <input type="radio" name="base[watermark][value][position]" value="0"{{if eq 0 $position}} checked{{end}} id="base-watermark-position-0">
+                                        <label for="base-watermark-position-0">{{"左上角"|T}}</label>
+                                    </div>
+                                </td>
+                                <td class="text-right">
+                                    <div class="radio radio-primary radio-inline">
+                                        <input type="radio" name="base[watermark][value][position]" value="1"{{if eq 1 $position}} checked{{end}} id="base-watermark-position-1">
+                                        <label for="base-watermark-position-1">{{"右上角"|T}}</label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="text-center">
+                                    <div class="radio radio-primary radio-inline">
+                                        <input type="radio" name="base[watermark][value][position]" value="4"{{if eq 4 $position}} checked{{end}} id="base-watermark-position-4">
+                                        <label for="base-watermark-position-4">{{"中心"|T}}</label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="radio radio-primary radio-inline">
+                                        <input type="radio" name="base[watermark][value][position]" value="2"{{if eq 2 $position}} checked{{end}} id="base-watermark-position-2">
+                                        <label for="base-watermark-position-2">{{"左下角"|T}}</label>
+                                    </div>
+                                </td>
+                                <td class="text-right">
+                                    <div class="radio radio-primary radio-inline">
+                                        <input type="radio" name="base[watermark][value][position]" value="3"{{if eq 3 $position}} checked{{end}} id="base-watermark-position-3">
+                                        <label for="base-watermark-position-3">{{"右下角"|T}}</label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
