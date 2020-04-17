@@ -48,5 +48,5 @@ func (w *WatermarkOptions) SetOn(on bool) *WatermarkOptions {
 }
 
 func (w *WatermarkOptions) CreateInstance() (*Watermark, error) {
-	return NewWatermark(w.Watermark, w.Padding, w.position)
+	return NewWatermark(w.Watermark, w.Padding, w.Position)
 }

@@ -7,12 +7,14 @@ import (
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/nging/application/registry/settings"
-	"github.com/admpub/nging/application/model/file/storer"
 	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/application/model/file/storer"
+	"github.com/admpub/nging/application/registry/settings"
 	"github.com/admpub/nging/application/registry/upload/driver"
 	"github.com/admpub/nging/application/registry/upload/driver/local"
 	"github.com/admpub/nging/application/registry/upload/driver/s3"
+
+	"github.com/webx-top/image"
 )
 
 var configDefaults = map[string]map[string]*dbschema.NgingConfig{
@@ -23,7 +25,17 @@ var configDefaults = map[string]map[string]*dbschema.NgingConfig{
 			Description: ``,
 			Value:       `{"name": "local", "id": ""}`,
 			Group:       `base`,
-			Type:        `text`,
+			Type:        `json`,
+			Sort:        30,
+			Disabled:    `N`,
+		},
+		`watermark`: {
+			Key:         `watermark`,
+			Label:       `图片水印`,
+			Description: ``,
+			Value:       `{"watermark": "", "type": "image", "position": 0, "padding": 0, "on": true}`,
+			Group:       `base`,
+			Type:        `json`,
 			Sort:        30,
 			Disabled:    `N`,
 		},
@@ -57,6 +69,14 @@ func init() {
 		r[`ValueObject`] = jsonData
 		return nil
 	})
+	settings.RegisterDecoder(`base.watermark`, func(v *dbschema.NgingConfig, r echo.H) error {
+		jsonData := &image.WatermarkOptions{}
+		if len(v.Value) > 0 {
+			com.JSONDecode(com.Str2bytes(v.Value), jsonData)
+		}
+		r[`ValueObject`] = jsonData
+		return nil
+	})
 	settings.RegisterEncoder(`base.storer`, func(v *dbschema.NgingConfig, r echo.H) ([]byte, error) {
 		cfg := storer.NewInfo().FromStore(r)
 		if cfg.Name == local.Name {
@@ -69,6 +89,15 @@ func init() {
 				cfg.Name = local.Name
 			}
 		}
+		return com.JSONEncode(cfg)
+	})
+	settings.RegisterEncoder(`base.watermark`, func(v *dbschema.NgingConfig, r echo.H) ([]byte, error) {
+		cfg := &image.WatermarkOptions{}
+		cfg.On = r.Bool(`on`)
+		cfg.Padding = r.Int(`padding`)
+		cfg.Position = image.Pos(r.Int(`positon`))
+		cfg.Type = image.WMType(r.String(`type`))
+		cfg.Watermark = r.String(`watermark`)
 		return com.JSONEncode(cfg)
 	})
 	var updateStorer = func(cfg echo.H) error {
