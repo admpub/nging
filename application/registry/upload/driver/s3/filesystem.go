@@ -30,17 +30,17 @@ import (
 	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/errors"
-	"github.com/admpub/nging/application/registry/upload"
-	"github.com/admpub/nging/application/registry/upload/helper"
-	"github.com/admpub/nging/application/registry/upload/driver/local"
 	"github.com/admpub/nging/application/library/s3manager"
 	"github.com/admpub/nging/application/library/s3manager/s3client"
 	"github.com/admpub/nging/application/model"
 	"github.com/admpub/nging/application/model/file/storer"
+	"github.com/admpub/nging/application/registry/upload"
+	"github.com/admpub/nging/application/registry/upload/driver/local"
+	"github.com/admpub/nging/application/registry/upload/helper"
 )
 
 const (
-	Name = `s3`
+	Name         = `s3`
 	AccountIDKey = `storerID`
 )
 
@@ -80,8 +80,8 @@ func NewFilesystem(ctx context.Context, typ string) (*Filesystem, error) {
 	}
 	return &Filesystem{
 		Filesystem: local.NewFilesystem(ctx, typ, m.Baseurl),
-		model: m,
-		mgr: mgr,
+		model:      m,
+		mgr:        mgr,
 	}, nil
 }
 
@@ -89,12 +89,16 @@ func NewFilesystem(ctx context.Context, typ string) (*Filesystem, error) {
 type Filesystem struct {
 	*local.Filesystem
 	model *model.CloudStorage
-	mgr *s3manager.S3Manager
+	mgr   *s3manager.S3Manager
 }
 
 // Name 引擎名
 func (f *Filesystem) Name() string {
 	return Name
+}
+
+func (f *Filesystem) ErrIsNotExists(err error) bool {
+	return f.mgr.ErrIsNotExist(err)
 }
 
 // Exists 判断文件是否存在
@@ -187,7 +191,7 @@ func (f *Filesystem) Close() error {
 
 // FixURL 改写文件网址
 func (f *Filesystem) FixURL(content string, embedded ...bool) string {
-	rowsByID := f.model.CachedList()  
+	rowsByID := f.model.CachedList()
 	return helper.ReplacePlaceholder(content, func(id string) string {
 		r, y := rowsByID[id]
 		if !y {

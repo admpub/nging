@@ -255,14 +255,18 @@ func (s *S3Manager) Stat(ppath string) (minio.ObjectInfo, error) {
 // Exists 对象是否存在
 func (s *S3Manager) Exists(ppath string) (bool, error) {
 	_, err := s.Stat(ppath)
-	if err != nil {
-		switch v := errors.Cause(err).(type) {
-		case minio.ErrorResponse:
-			return v.StatusCode != http.StatusNotFound, nil
-		}
-		return false, err
+	return s.ErrIsNotExists(err) == false, err
+}
+
+func (s *S3Manager) ErrIsNotExists(err error) bool {
+	if err == nil {
+		return false
 	}
-	return true, err
+	switch v := errors.Cause(err).(type) {
+	case minio.ErrorResponse:
+		return v.StatusCode == http.StatusNotFound
+	}
+	return false
 }
 
 func (s *S3Manager) Download(ctx echo.Context, ppath string) error {

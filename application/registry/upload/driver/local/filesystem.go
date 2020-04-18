@@ -59,13 +59,17 @@ func NewFilesystem(ctx context.Context, typ string, baseURLs ...string) *Filesys
 // Filesystem 文件系统存储引擎
 type Filesystem struct {
 	context.Context `json:"-" xml:"-"`
-	Type string
-	baseURL string
+	Type            string
+	baseURL         string
 }
 
 // Name 引擎名
 func (f *Filesystem) Name() string {
 	return Name
+}
+
+func (f *Filesystem) ErrIsNotExists(err error) bool {
+	return os.IsNotExist(err)
 }
 
 // FileDir 物理路径文件夹
