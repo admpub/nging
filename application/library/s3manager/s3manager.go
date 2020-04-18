@@ -28,13 +28,13 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/admpub/nging/application/library/charset"
+	"github.com/admpub/nging/application/library/filemanager"
+	"github.com/aws/aws-sdk-go/service/s3"
 	minio "github.com/minio/minio-go"
 	"github.com/pkg/errors"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
-
-	"github.com/admpub/nging/application/library/charset"
-	"github.com/admpub/nging/application/library/filemanager"
 )
 
 func New(client *minio.Client, bucketName string, editableMaxSize int64) *S3Manager {
@@ -264,7 +264,12 @@ func (s *S3Manager) ErrIsNotExist(err error) bool {
 	}
 	switch v := errors.Cause(err).(type) {
 	case minio.ErrorResponse:
-		return v.StatusCode == http.StatusNotFound
+		return v.StatusCode == http.StatusNotFound || v.Code == s3.ErrCodeNoSuchKey
+	default:
+		rawErr := v.(error)
+		if strings.Contains(rawErr.Error(), ` key does not exist`) {
+			return true
+		}
 	}
 	return false
 }
