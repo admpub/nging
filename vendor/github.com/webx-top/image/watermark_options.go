@@ -17,17 +17,17 @@ func NewWatermarkOptions() *WatermarkOptions {
 
 // WatermarkOptions 水印选项
 type WatermarkOptions struct {
-	Watermark string `json:"watermark"` // 水印图片文件路径
-	Type WMType `json:"type,omitempty"` // 水印类型
-	Position Pos `json:"position"` // 水印的位置
-	Padding int `json:"padding"` // 水印留的边白
-	On bool `json:"on"` // 是否开启水印
+	Watermark string `json:"watermark"`      // 水印图片文件路径
+	Type      WMType `json:"type,omitempty"` // 水印类型
+	Position  Pos    `json:"position"`       // 水印的位置
+	Padding   int    `json:"padding"`        // 水印留的边白
+	On        bool   `json:"on"`             // 是否开启水印
 }
 
 func (w *WatermarkOptions) FromStore(r param.Store) *WatermarkOptions {
 	w.On = r.Bool(`on`)
 	w.Padding = r.Int(`padding`)
-	w.Position = Pos(r.Int(`positon`))
+	w.Position = Pos(r.Int(`position`))
 	w.Type = WMType(r.String(`type`))
 	w.Watermark = r.String(`watermark`)
 	return w

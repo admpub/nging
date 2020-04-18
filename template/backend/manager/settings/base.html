@@ -79,7 +79,7 @@
                 <label class="col-sm-2 control-label">{{"保留边距"|T}}</label>
                 <div class="col-sm-8">
                     {{$padding := $config.watermark.ValueObject.Padding|Default 0}}
-                    <input type="number" class="form-control" name="base[watermark][value][watermark]" value="{{$watermark}}" step="0.01">
+                    <input type="number" class="form-control" name="base[watermark][value][padding]" value="{{$padding}}" step="1">
                 </div>
             </div>
             <div class="form-group">

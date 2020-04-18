@@ -92,6 +92,7 @@ func init() {
 		return com.JSONEncode(cfg)
 	})
 	settings.RegisterEncoder(`base.watermark`, func(v *dbschema.NgingConfig, r echo.H) ([]byte, error) {
+		echo.Dump(r)
 		cfg := image.NewWatermarkOptions().FromStore(r)
 		return com.JSONEncode(cfg)
 	})
