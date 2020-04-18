@@ -42,7 +42,7 @@
 
 <div class="form-group">
     <label class="col-sm-2 control-label">{{"图片水印"|T}}</label>
-    {{$on := $config.watermark.ValueObject.on|Default false}}
+    {{$on := $config.watermark.ValueObject.On|Default false}}
     <div class="col-sm-8">
         <div class="radio radio-primary radio-inline">
             <input type="radio" name="base[watermark][value][on]" value="1"{{if $on}} checked{{end}} id="base-watermark-on-1" onclick="$('#watermark-settings').removeClass('hide')">
@@ -56,22 +56,37 @@
             <div class="form-group">
                 <label class="col-sm-2 control-label">{{"水印图片"|T}}</label>
                 <div class="col-sm-8">
-                    {{$watermark := $config.watermark.ValueObject.watermark|Default ""}}
-                    <input type="text" class="form-control" name="base[watermark][value][watermark]" value="{{$watermark}}">
+                    {{$watermark := $config.watermark.ValueObject.Watermark|Default ""}}
+                    <span class="input-group">
+                    <span class="input-group-btn preview-btn{{if not $watermark}} hidden{{end}}" id="watermarkImagePreviewBtn">
+                        <a class="btn btn-default no-padding" href="{{$watermark}}" target="_blank" data-toggle="tooltip" title="{{`查看图片`|T}}"><img src="{{$watermark}}" class="scale" /></a>
+                    </span>
+                    <input type="text" class="form-control" name="base[watermark][value][watermark]" value="{{$watermark}}" maxlength="200" />
+                    <label class="input-group-btn">
+                        <input type="file" id="watermarkImageFile" data-toggle="uploadPreviewer" data-preview-container="#watermarkImagePreviewTableContainer" data-upload-url="{{BackendUploadURL `nging_config` `group` `base` `key` `watermark`}}" data-preview-btn="#watermarkImagePreviewBtn" />
+                    </label>
+                    <label class="input-group-btn">
+                        <a class="btn btn-info" href="javascript:;" data-toggle="finder">
+                            <i class="fa fa-folder"></i>
+                            {{`浏览`|T}}
+                        </a>
+                    </label>
+                    </span>
+                    <div id="watermarkImagePreviewTableContainer"></div>
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-2 control-label">{{"保留边距"|T}}</label>
                 <div class="col-sm-8">
-                    {{$padding := $config.watermark.ValueObject.padding|Default 0}}
+                    {{$padding := $config.watermark.ValueObject.Padding|Default 0}}
                     <input type="number" class="form-control" name="base[watermark][value][watermark]" value="{{$watermark}}" step="0.01">
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-2 control-label">{{"水印位置"|T}}</label>
                 <div class="col-sm-8">
-                    {{$position := $config.watermark.ValueObject.position|Default 0}}
-                    <table class="table table-bordered">
+                    {{$position := $config.watermark.ValueObject.Position|Default 0}}
+                    <table class="table table-bordered" style="width:auto">
                         <tbody>
                             <tr>
                                 <td>

@@ -133,7 +133,7 @@ func init() {
 func getConfigEventAttrs(confM *dbschema.NgingConfig) *listener.Property {
 	property := &listener.Property{}
 	switch confM.Type {
-	case `html`:
+	case `html`, `json`:
 		property.SetEmbedded(true)
 	case `image`, `video`, `audio`, `file`:
 	case `list`:

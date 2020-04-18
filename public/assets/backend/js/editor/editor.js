@@ -10,18 +10,20 @@ App.loader.libs.tinymce = ['#editor/tinymce/tinymce.min.js', '#editor/tinymce/jq
 App.loader.libs.dialog = ['#dialog/bootstrap-dialog.min.css', '#dialog/bootstrap-dialog.min.js'];
 App.loader.libs.markdownit = ['#markdown/it/markdown-it.min.js', '#markdown/it/plugins/emoji/markdown-it-emoji.min.js'];
 App.loader.libs.codehighlight = ['#markdown/it/plugins/highlight/loader/prettify.js', '#markdown/it/plugins/highlight/loader/run_prettify.js?skin=sons-of-obsidian'];
+App.loader.libs.powerFloat = ['#float/powerFloat.min.css', '#float/powerFloat.min.js'];
+App.loader.libs.uploadPreviewer = ['#jquery.uploadPreviewer/css/jquery.uploadPreviewer.min.css', '#jquery.uploadPreviewer/jquery.uploadPreviewer.min.js'];
 window.UEDITOR_HOME_URL = ASSETS_URL + '/js/editor/ueditor/';
 
 App.editor = {
-	browsingFileURL: App.loader.siteURL + (typeof(window.IS_BACKEND)!=='undefined'&&window.IS_BACKEND?'':'/user') + '/finder'
+	browsingFileURL: App.loader.siteURL + (typeof (window.IS_BACKEND) !== 'undefined' && window.IS_BACKEND ? '' : '/user') + '/finder'
 };
 
 /* 解析markdown为html */
 App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
-	if(typeof(viewZoneId)=='object'){
-		viewZoneId=viewZoneId.attr('id');
-	}else if(viewZoneId.substr(0, 1)=='#'){
-		viewZoneId=viewZoneId.substr(1);
+	if (typeof (viewZoneId) == 'object') {
+		viewZoneId = viewZoneId.attr('id');
+	} else if (viewZoneId.substr(0, 1) == '#') {
+		viewZoneId = viewZoneId.substr(1);
 	}
 	App.loader.defined(typeof (marked), 'editormdPreview');
 	var defaults = {
@@ -41,15 +43,15 @@ App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
 	var params = $.extend({}, defaults, options || {});
 	if (params.flowChart) App.loader.defined(typeof ($.fn.flowChart), 'flowChart');
 	if (params.sequenceDiagram) App.loader.defined(typeof ($.fn.sequenceDiagram), 'sequenceDiagram');
-	
-	if (typeof(markdownData)=='boolean') {
-		var isContainer = markdownData, box = $('#'+viewZoneId);
-		if (isContainer != false) box = $('#'+viewZoneId).find('.markdown-code');
+
+	if (typeof (markdownData) == 'boolean') {
+		var isContainer = markdownData, box = $('#' + viewZoneId);
+		if (isContainer != false) box = $('#' + viewZoneId).find('.markdown-code');
 		box.each(function () {
-			params.markdown=$(this).html();
+			params.markdown = $(this).html();
 			$(this).empty();
-			var idv=$(this).attr('id');
-			if(!idv){
+			var idv = $(this).attr('id');
+			if (!idv) {
 				idv = 'markdown-data-' + Math.random();
 				$(this).attr('id', idv);
 			}
@@ -177,30 +179,22 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 		};
 		params.toolbarHandlers = {
 			'browsing-image': function (cm, icon, cursor, selection) {
-				Coscms.Dialog.Modal(App.editor.browsingFileURL + '?size=12&filetype=image&multiple=1', {
-					title: App.t('选择图片'),
-					width: '600px',
-					submit: function (dialog) {
-						var ck = dialog.find('input[type=checkbox][name="id[]"]:checked');
-						if (ck.length <= 0) {
-							App.loader.noty({ type: 'error', text: T('没有选择任何选项！') });
-						} else {
-							var urls = [];
-							ck.each(function () {
-								var v = $(this).data('raw');
-								urls.push('![' + v.Name + '](' + v.ViewUrl + ')');
-							});
-							//var linenum=urls.length>0?urls.length-1:0;
-							urls = urls.join('\n') + '\n';
-							cm.replaceSelection(urls);
-							//if(selection === "") cm.setCursor(cm.line+linenum, cm.ch+1);
-							dialog.modal('hide');
-						}
-					},
-					cancel: function (dialog) {
+				App.editor.finderDialog(App.editor.browsingFileURL + '?size=12&filetype=image&multiple=1', function(fileList){
+					if (fileList.length <= 0) {
+						return App.message({ type: 'error', text: App.t('没有选择任何选项！') });
+					} 
+					var urls = [];
+					for (var i = 0; i < fileList.length; i++) {
+						var v = fileList[i], r = String(v).split('/');
+						var name = r.length > 0 ? r[r.length-1] : v;
+						urls.push('![' + name + '](' + v + ')');
 					}
-				}, null).css('z-index', 20030902);
-
+					//var linenum=urls.length>0?urls.length-1:0;
+					urls = urls.join('\n') + '\n';
+					cm.replaceSelection(urls);
+					//if(selection === "") cm.setCursor(cm.line+linenum, cm.ch+1);
+					dialog.modal('hide');
+				});
 			}
 		};
 		params.lang = {
@@ -407,17 +401,18 @@ App.editor.tinymces = function (elem, uploadUrl, options, useSimpleToolbar) {
 		App.editor.tinymce(this, uploadUrl, options, useSimpleToolbar);
 	});
 };
-App.editor.finderDialog = function(remoteURL,callback) {
+App.editor.finderDialog = function (remoteURL, callback) {
 	App.loader.defined(typeof (BootstrapDialog), 'dialog');
-	var dialog=BootstrapDialog.show({
+	var dialog = BootstrapDialog.show({
 		title: App.t('选择文件'),
 		//animate: false,
-		message: function(dialog) {
-			window["finderDialogCallback"]=function(files){
+		message: function (dialog) {
+			var cb = "finderDialogCallback" + (new Date().getTime());
+			window[cb] = function (files) {
 				callback(files);
-				if(files && files.length>0) dialog.close();
+				if (files && files.length > 0) dialog.close();
 			}
-			return $('<iframe src="'+remoteURL+'&callback=finderDialogCallback" style="width:620px;height:635px;border:0;padding:0;margin:0"></iframe>');
+			return $('<iframe src="' + remoteURL + '&callback=' + cb + '" style="width:620px;height:635px;border:0;padding:0;margin:0"></iframe>');
 			/*
 			var $message = $('<div></div>');
 			var pageToLoad = dialog.getData('pageToLoad');
@@ -426,25 +421,25 @@ App.editor.finderDialog = function(remoteURL,callback) {
 			return $message;
 			*/
 		},
-        onshown: function(d){
-			d.$modal.css('zIndex',2000);
-			d.$modalBody.css('padding',0);
+		onshown: function (d) {
+			d.$modal.css('zIndex', 2000);
+			d.$modalBody.css('padding', 0);
 			//console.dir(d);
-        }
+		}
 		//,data: {'pageToLoad': remoteURL}
 	});
 	return dialog;
 };
 App.editor.tinymceOnceFix = false;
 App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
-	if(!App.editor.tinymceOnceFix){
+	if (!App.editor.tinymceOnceFix) {
 		App.editor.tinymceOnceFix = true;
 		// Prevent Bootstrap dialog from blocking focusin
-		$(document).on('focusin', function(e) {
+		$(document).on('focusin', function (e) {
 			if ($(e.target).closest(".tox-tinymce-aux, .moxman-window, .tam-assetmanager-root").length) {
-	  			e.stopImmediatePropagation();
+				e.stopImmediatePropagation();
 			}
-  		});
+		});
 	}
 	App.loader.defined(typeof ($.fn.tinymce), 'tinymce');
 	if (!uploadUrl) uploadUrl = $(elem).attr('action');
@@ -462,7 +457,7 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 		uploadUrl += 'format=json&client=tinymce&filetype=';
 	}
 	if (managerUrl) {
-		managerUrl = managerUrl.replace(/[\?&]multiple=1/,'');
+		managerUrl = managerUrl.replace(/[\?&]multiple=1/, '');
 		if (managerUrl.indexOf('?') >= 0) {
 			managerUrl += '&';
 		} else {
@@ -470,36 +465,36 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 		}
 		managerUrl += 'from=parent&client=tinymce&filetype=';
 	}
-	var simpleToolbar='undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | customDateButton';
-	var fullToolbar='undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl | customDateButton';
-	var filePickerCallback=function (callback, value, meta) {
+	var simpleToolbar = 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | customDateButton';
+	var fullToolbar = 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl | customDateButton';
+	var filePickerCallback = function (callback, value, meta) {
 		switch (meta.filetype) {
 			case 'file': //Provide file and text for the link dialog
-			App.editor.finderDialog(managerUrl+meta.filetype,function(files){
-				if(files && files.length>0)
-				callback(files[0], { text: 'My text' });
-			});
-			//callback('https://www.google.com/logos/google.jpg', { text: 'My text' });
-			break;
+				App.editor.finderDialog(managerUrl + meta.filetype, function (files) {
+					if (files && files.length > 0)
+						callback(files[0], { text: 'My text' });
+				});
+				//callback('https://www.google.com/logos/google.jpg', { text: 'My text' });
+				break;
 
 			case 'image': //Provide image and alt text for the image dialog
-			App.editor.finderDialog(managerUrl+meta.filetype,function(files){
-				if(files && files.length>0)
-				callback(files[0], { alt: '' });
-			});
-			//callback('https://www.google.com/logos/google.jpg', { alt: 'My alt text' });
-			break;
+				App.editor.finderDialog(managerUrl + meta.filetype, function (files) {
+					if (files && files.length > 0)
+						callback(files[0], { alt: '' });
+				});
+				//callback('https://www.google.com/logos/google.jpg', { alt: 'My alt text' });
+				break;
 
 			case 'media': //Provide alternative source and posted for the media dialog
-			App.editor.finderDialog(managerUrl+meta.filetype,function(files){
-				if(files && files.length>0)
-				callback(files[0], {});
-			});
-			//callback('movie.mp4', { source2: 'alt.ogg', poster: 'https://www.google.com/logos/google.jpg' });
-			break;
+				App.editor.finderDialog(managerUrl + meta.filetype, function (files) {
+					if (files && files.length > 0)
+						callback(files[0], {});
+				});
+				//callback('movie.mp4', { source2: 'alt.ogg', poster: 'https://www.google.com/logos/google.jpg' });
+				break;
 
 			default:
-			alert('Unsupported file type');
+				alert('Unsupported file type');
 		}
 	};
 	var imagesUploadHandler = function (blobInfo, success, failure) {
@@ -507,40 +502,40 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 		xhr = new XMLHttpRequest();
 		xhr.withCredentials = false;
 		xhr.open('POST', uploadUrl);
-		xhr.onload = function() {
-		  var json;
+		xhr.onload = function () {
+			var json;
 
-		  if (xhr.status != 200) {
-			failure('HTTP Error: ' + xhr.status);
-			return;
-		  }
-	
-		  json = JSON.parse(xhr.responseText);
-		  //{"Code":1,"Info":"","Data":{"Url":"a.jpg","Id":"1"}}
-		  if (!json || typeof json.Code == 'undefined') {
-			failure('Invalid JSON: ' + xhr.responseText);
-			return;
-		  }
-		  if (json.Code != 1) {
-			failure(json.Info);
-			return;
-		  }
-	
-		  success(json.Data.Url);
+			if (xhr.status != 200) {
+				failure('HTTP Error: ' + xhr.status);
+				return;
+			}
+
+			json = JSON.parse(xhr.responseText);
+			//{"Code":1,"Info":"","Data":{"Url":"a.jpg","Id":"1"}}
+			if (!json || typeof json.Code == 'undefined') {
+				failure('Invalid JSON: ' + xhr.responseText);
+				return;
+			}
+			if (json.Code != 1) {
+				failure(json.Info);
+				return;
+			}
+
+			success(json.Data.Url);
 		};
-	
+
 		formData = new FormData();
 		formData.append('filedata', blobInfo.blob(), blobInfo.filename());
 		xhr.send(formData);
 	};
-	var defaults={
-        height: useSimpleToolbar?200:500,
+	var defaults = {
+		height: useSimpleToolbar ? 200 : 500,
 		menubar: true,
 		language: App.langTag('_'),
-        plugins: [
-          'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable charmap quickbars emoticons'
-        ],
-		toolbar: useSimpleToolbar?simpleToolbar:fullToolbar,
+		plugins: [
+			'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable charmap quickbars emoticons'
+		],
+		toolbar: useSimpleToolbar ? simpleToolbar : fullToolbar,
 		toolbar_sticky: true,
 		autosave_ask_before_unload: true,
 		autosave_interval: "30s",
@@ -560,34 +555,34 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 		contextmenu: "link image imagetools table",
 		setup: function (editor) {
 			var toTimeHtml = function (date) {
-			  return '<time datetime="' + date.toString() + '">' + date.toLocaleString() + '</time>';
+				return '<time datetime="' + date.toString() + '">' + date.toLocaleString() + '</time>';
 			};
-		
+
 			editor.ui.registry.addButton('customDateButton', {
-			  icon: 'insert-time',
-			  tooltip: 'Insert Current Date',
-			  disabled: true,
-			  onAction: function (_) {
-				editor.insertContent(toTimeHtml(new Date()));
-			  },
-			  onSetup: function (buttonApi) {
-				var editorEventCallback = function (eventApi) {
-				  buttonApi.setDisabled(eventApi.element.nodeName.toLowerCase() === 'time');
-				};
-				editor.on('NodeChange', editorEventCallback);
-		
-				/* onSetup should always return the unbind handlers */
-				return function (buttonApi) {
-				  editor.off('NodeChange', editorEventCallback);
-				};
-			  }
+				icon: 'insert-time',
+				tooltip: 'Insert Current Date',
+				disabled: true,
+				onAction: function (_) {
+					editor.insertContent(toTimeHtml(new Date()));
+				},
+				onSetup: function (buttonApi) {
+					var editorEventCallback = function (eventApi) {
+						buttonApi.setDisabled(eventApi.element.nodeName.toLowerCase() === 'time');
+					};
+					editor.on('NodeChange', editorEventCallback);
+
+					/* onSetup should always return the unbind handlers */
+					return function (buttonApi) {
+						editor.off('NodeChange', editorEventCallback);
+					};
+				}
 			});
 		}
 	};
-	if(managerUrl) defaults.file_picker_callback = filePickerCallback;
-	if(uploadUrl) defaults.images_upload_handler = imagesUploadHandler;
+	if (managerUrl) defaults.file_picker_callback = filePickerCallback;
+	if (uploadUrl) defaults.images_upload_handler = imagesUploadHandler;
 	//see document: https://www.tiny.cloud/docs/integrations/jquery/
-	$(elem).tinymce($.extend({}, defaults, options||{}));
+	$(elem).tinymce($.extend({}, defaults, options || {}));
 };
 
 
@@ -658,4 +653,101 @@ App.editor.switch = function (texta, cancelFn, tips) {
 			texta.data("current-editor", "html");
 	};
 	return true;
+};
+if (typeof (App.utils) == 'undefined') App.utils = {};
+App.utils.elemToId = function(elem) {
+	if (typeof (elem) != "object") {
+		if (String(elem).substring(0,1) != '#') {
+			elem = '#' + elem;
+		}
+		return elem;
+	}
+	var id = $(elem).attr("id");
+	if (id) return '#'+id;
+	id = 'generated-id-' + Math.random();
+	$(elem).attr("id", id);
+	return '#'+id;
+};
+
+App.editor.fileInput = function (elem) {
+	if (!elem) {
+		elem = '';
+	} else {
+		elem = App.utils.elemToId(elem) + ' ';
+	}
+	App.loader.defined(typeof ($.fn.powerFloat), 'powerFloat');
+	App.loader.defined(typeof ($.fn.uploadPreviewer), 'uploadPreviewer');
+	$(elem + '[data-toggle="finder"]').each(function () {
+		$(this).on('click', function (e) {
+			var managerUrl = $(this).data('finder-url')|| App.editor.browsingFileURL;
+			if (!managerUrl) return;
+			managerUrl = managerUrl.replace(/[\?&]multiple=1/, '');
+			if (managerUrl.indexOf('?') >= 0) {
+				managerUrl += '&';
+			} else {
+				managerUrl += '?';
+			}
+			managerUrl += 'from=parent&client=fileInput&filetype=image';
+			var that = this;
+			App.editor.finderDialog(managerUrl, function(fileList){
+				var fileURL = fileList[0];
+				var dataInput = $(that).data('input');
+				if (!dataInput) {
+					dataInput = $(that).parent('.input-group-btn').siblings('input')[0];
+				}
+				if (dataInput) $(dataInput).val(fileURL);
+				var previewButton = $(that).data('preview-btn');
+				if (!previewButton) {
+					previewButton = $(that).parent('.input-group-btn').siblings('.preview-btn')[0];
+				}
+				if (previewButton) {
+					if (!$(previewButton).data('attached-float')) {
+						App.float(App.utils.elemToId(previewButton) + " a img");
+						$(previewButton).data('attached-float', true);
+					}
+					$(previewButton).removeClass('hidden').children('a').attr('href', fileURL).children('img').attr('src', fileURL);
+				}
+			});
+		});
+	});
+	$(elem + 'input[data-toggle="uploadPreviewer"]').each(function () {
+		$(this).css('width', '70px');
+		var previewContainer = $(this).data('preview-container');
+		var uploadURL = $(this).data('upload-url');
+		var previewButton = $(this).data('preview-btn');
+		var uploadInput = $(this).uploadPreviewer({
+			"buttonText": '<i class="fa fa-cloud-upload"></i> ' + App.t('上传'),
+			"previewTableContainer": previewContainer,
+			"url": uploadURL,
+			"previewTableShow": false
+		});
+		$(this).data('uploadPreviewer', uploadInput);
+		if (previewButton && !$(previewButton).data('attached-float')) {
+			App.float(App.utils.elemToId(previewButton) + " a img");
+			$(previewButton).data('attached-float', true);
+		}
+		$(this).on("file-preview:changed", function (e) {
+			$(e.target).data('uploadPreviewer').submit(function (r) {
+				if (r.Code != 1) return App.message({ text: r.Info, type: 'error' });
+				var fileURL = r.Data.files[0];
+				var dataInput = $(e.target).data('input');
+				if (!dataInput) {
+					dataInput = $(e.target).parents('.input-group-btn').prev('input')[0];
+				}
+				$(dataInput).val(fileURL);
+				var previewButton = $(e.target).data('preview-btn');
+				if (!previewButton) {
+					previewButton = $(e.target).parents('.input-group-btn').siblings('.preview-btn')[0];
+				}
+				if (previewButton) {
+					if (!$(previewButton).data('attached-float')) {
+						App.float(App.utils.elemToId(previewButton) + " a img");
+						$(previewButton).data('attached-float', true);
+					}
+					$(previewButton).removeClass('hidden').children('a').attr('href', fileURL).children('img').attr('src', fileURL);
+				}
+				App.message({ text: App.t('上传成功'), type: 'success' });
+			});
+		});
+	});
 };

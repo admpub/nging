@@ -7,6 +7,8 @@
 {{Block "head"}}
 <link rel="stylesheet" type="text/css" href="__ASSETS__/js/selectpage/selectpage.css?t={{BuildTime}}" />
 <link rel="stylesheet" href="__ASSETS__/js/jquery.crop/css/jquery.Jcrop.min.css?t={{BuildTime}}" type="text/css" />
+<link rel="stylesheet" href="__ASSETS__/js/jquery.uploadPreviewer/css/jquery.uploadPreviewer.min.css?t={{BuildTime}}" type="text/css" />
+<link rel="stylesheet" href="__ASSETS__/js/float/powerFloat.min.css?t={{BuildTime}}" charset="utf-8" />
 {{/Block}}
 {{Block "main"}}
 {{Strip}}
@@ -51,6 +53,8 @@
 {{/Strip}}
 {{/Block}}
 {{Block "footer"}}
+<script src="__ASSETS__/js/float/powerFloat.min.js?t={{BuildTime}}"></script>
+<script src="__ASSETS__/js/jquery.uploadPreviewer/jquery.uploadPreviewer.min.js?t={{BuildTime}}"></script>
 <script src="__ASSETS__/js/selectpage/selectpage.min.js?t={{BuildTime}}" type="text/javascript"></script>
 <script src="__ASSETS__/js/jquery.upload/js/vendor/jquery.ui.widget.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="__ASSETS__/js/jquery.crop/js/jquery.Jcrop.min.js?t={{BuildTime}}"></script>
@@ -64,6 +68,7 @@
 $(function(){
   App.editor.xheditors('.html-editor');
   //App.editor.tinymces('.html-editor');
+  App.editor.fileInput();
 });
 </script>
 {{/Block}}

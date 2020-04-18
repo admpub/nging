@@ -132,7 +132,7 @@
 					}
 					parentRow.remove();
 					$.event.trigger({ type: 'file-preview:removed', filename: filename });
-					//$.event.trigger({ type: 'file-preview:changed', files: currentFileList });
+					$(that).trigger('file-preview:removed', filename);
 				});
 
 				this.on('change', function (e) {
@@ -182,6 +182,7 @@
 					});
 
 					$.event.trigger({ type: 'file-preview:changed', files: currentFileList });
+					$(that).trigger('file-preview:changed', currentFileList);
 				});
 			} else {
 				this.on('change', function (e) {
@@ -196,6 +197,7 @@
 					});
 					loadingSpinner.hide();
 					$.event.trigger({ type: 'file-preview:changed', files: currentFileList });
+					$(that).trigger('file-preview:changed', currentFileList);
 				});
 			}
 
@@ -216,7 +218,8 @@
 			}
 
 			this._onComplete = function (eventData) {
-				eventData['type'] = 'file-preview:submit:complete'
+				$(that).trigger('file-preview:submit:complete', eventData);
+				eventData['type'] = 'file-preview:submit:complete';
 				$.event.trigger(eventData);
 			}
 

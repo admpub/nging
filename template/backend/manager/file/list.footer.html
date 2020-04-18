@@ -14,7 +14,7 @@ var target=window;
 App.i18n.NO_CALLBACK_NAME='{{"请在网址参数callback变量中指定您所定义的回调函数名"|T}}';
 App.i18n.PLEASE_SELECT='{{"请选择要使用的文件"|T}}';
 {{- $from := Form "from" -}}
-var callback='{{Form "callback"}}',client='{{Form `client`}}';
+var callback='{{Form "callback"}}',client='{{Form `client`}}', insertTo='{{Form "insertTo"}}';
 {{- if eq $from "parent" -}}
 target=window.parent;
 {{- else if eq $from "opener" -}}

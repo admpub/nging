@@ -4,13 +4,18 @@ function applySelected(){
 		window.callback('!'+getSelectedFiles().join(' '));
 		return false;
 	}
-	if(!callback){
+	if(callback){
+		if(typeof(target[callback])=='function'){
+			target[callback](getSelectedFiles());
+		}
+	}else{
+		if(insertTo){
+			$(insertTo).val(getSelectedFiles().join(','));
+			return false;
+		}
         App.message({title:App.i18n.SYS_INFO,text:App.i18n.NO_CALLBACK_NAME,type:'error'});
         return false;
-    }
-	if(typeof(target[callback])=='function'){
-		target[callback](getSelectedFiles());
-    }
+	}
     return false;
 }
 function getSelectedFiles(){

@@ -107,6 +107,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		if !embed {
 			return ctx.JSON(datax)
 		}
+		return err
 	}
 	storer, err := prepareData.Storer(ctx)
 	if err != nil {
@@ -114,6 +115,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		if !embed {
 			return ctx.JSON(datax)
 		}
+		return err
 	}
 	defer prepareData.Close()
 	fileM := modelFile.NewFile(ctx)
