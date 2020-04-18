@@ -78,7 +78,7 @@ func Initialize() {
 		return event.BackendTmplMgr.GetTemplate(file)
 	}
 	image.WatermarkOpen = func(file string) (http.File, error) {
-		f, err := os.Open(file)
+		f, err := image.DefaultHTTPSystemOpen(file)
 		if err != nil {
 			if os.IsNotExist(err) && strings.HasPrefix(file, echo.Wd()) {
 				file = strings.TrimPrefix(file, echo.Wd())
