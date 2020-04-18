@@ -1,10 +1,8 @@
 package watermark
 
 import (
-	"bytes"
 	"io"
 	"io/ioutil"
-	"mime/multipart"
 	"os"
 
 	"github.com/admpub/errors"
@@ -45,15 +43,4 @@ func Bytes2readWriteSeeker(b []byte) (io.ReadWriteSeeker, error) {
 	return sb, err
 }
 
-func Bytes2file(b []byte) multipart.File {
-	r := io.NewSectionReader(bytes.NewReader(b), 0, int64(len(b)))
-	return sectionReadCloser{r}
-}
-
-type sectionReadCloser struct {
-	*io.SectionReader
-}
-
-func (rc sectionReadCloser) Close() error {
-	return nil
-}
+var Bytes2file = image.Bytes2file

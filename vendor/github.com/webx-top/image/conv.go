@@ -3,9 +3,11 @@ package image
 import (
 	"bytes"
 	"encoding/base64"
+	"mime/multipart"
 	"image"
 	"image/jpeg"
 	"io/ioutil"
+	"io"
 	"os"
 )
 
@@ -74,4 +76,18 @@ func FileToBase64(srcFile string) ([]byte, error) {
 	base64.StdEncoding.Encode(dist, ff) // 文件转base64
 	//_ = ioutil.WriteFile("./output2.jpg.txt", dist, 0666) //直接写入到文件就ok完活了。
 	return dist, nil
+}
+
+// Bytes2file 直接转 multipart.File
+func Bytes2file(b []byte) multipart.File {
+	r := io.NewSectionReader(bytes.NewReader(b), 0, int64(len(b)))
+	return SectionReadCloser{r}
+}
+
+type SectionReadCloser struct {
+	*io.SectionReader
+}
+
+func (rc SectionReadCloser) Close() error {
+	return nil
 }

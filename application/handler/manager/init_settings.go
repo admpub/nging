@@ -70,7 +70,7 @@ func init() {
 		return nil
 	})
 	settings.RegisterDecoder(`base.watermark`, func(v *dbschema.NgingConfig, r echo.H) error {
-		jsonData := &image.WatermarkOptions{}
+		jsonData := image.NewWatermarkOptions()
 		if len(v.Value) > 0 {
 			com.JSONDecode(com.Str2bytes(v.Value), jsonData)
 		}
@@ -92,12 +92,7 @@ func init() {
 		return com.JSONEncode(cfg)
 	})
 	settings.RegisterEncoder(`base.watermark`, func(v *dbschema.NgingConfig, r echo.H) ([]byte, error) {
-		cfg := &image.WatermarkOptions{}
-		cfg.On = r.Bool(`on`)
-		cfg.Padding = r.Int(`padding`)
-		cfg.Position = image.Pos(r.Int(`positon`))
-		cfg.Type = image.WMType(r.String(`type`))
-		cfg.Watermark = r.String(`watermark`)
+		cfg := image.NewWatermarkOptions().FromStore(r)
 		return com.JSONEncode(cfg)
 	})
 	var updateStorer = func(cfg echo.H) error {

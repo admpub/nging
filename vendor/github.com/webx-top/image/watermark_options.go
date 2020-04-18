@@ -1,11 +1,19 @@
 package image
 
+import (
+	"github.com/webx-top/echo/param"
+)
+
 type WMType string
 
 const (
 	WM_TYPE_TEXT  WMType = `text`
 	WM_TYPE_IMAGE WMType = `image`
 )
+
+func NewWatermarkOptions() *WatermarkOptions {
+	return &WatermarkOptions{}
+}
 
 // WatermarkOptions 水印选项
 type WatermarkOptions struct {
@@ -14,6 +22,15 @@ type WatermarkOptions struct {
 	Position Pos `json:"position"` // 水印的位置
 	Padding int `json:"padding"` // 水印留的边白
 	On bool `json:"on"` // 是否开启水印
+}
+
+func (w *WatermarkOptions) FromStore(r param.Store) *WatermarkOptions {
+	w.On = r.Bool(`on`)
+	w.Padding = r.Int(`padding`)
+	w.Position = Pos(r.Int(`positon`))
+	w.Type = WMType(r.String(`type`))
+	w.Watermark = r.String(`watermark`)
+	return w
 }
 
 func (w *WatermarkOptions) SetWatermark(watermark string, typ WMType) *WatermarkOptions {
