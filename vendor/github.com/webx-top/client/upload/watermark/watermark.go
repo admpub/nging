@@ -13,8 +13,8 @@ import (
 	"github.com/webx-top/image"
 )
 
-func Write(rw io.ReadWriteSeeker, ext string, markFile string) ([]byte, error) {
-	wm, err := image.NewWatermark(markFile, 0, image.BottomRight)
+func Write(rw io.ReadWriteSeeker, ext string, opt *image.WatermarkOptions) ([]byte, error) {
+	wm, err := opt.CreateInstance()
 	if err != nil {
 		return nil, errors.WithMessage(err, `NewWatermark`)
 	}
@@ -27,12 +27,12 @@ func Write(rw io.ReadWriteSeeker, ext string, markFile string) ([]byte, error) {
 }
 
 // Bytes 添加水印到图片字节数据中
-func Bytes(b []byte, ext string, markFile string) ([]byte, error) {
+func Bytes(b []byte, ext string, opt *image.WatermarkOptions) ([]byte, error) {
 	sb, err := Bytes2readWriteSeeker(b)
 	if err != nil {
 		return nil, errors.WithMessage(err, `Bytes2readWriteSeeker`)
 	}
-	return Write(sb, ext, markFile)
+	return Write(sb, ext, opt)
 }
 
 func Bytes2readWriteSeeker(b []byte) (io.ReadWriteSeeker, error) {

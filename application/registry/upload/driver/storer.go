@@ -19,6 +19,7 @@ import (
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/registry/upload/table"
 	"github.com/admpub/nging/application/model/file/storer"
+	"github.com/webx-top/image"
 )
 
 var (
@@ -33,7 +34,7 @@ func BatchUpload(
 	dstNamer func(*uploadClient.Result) (dst string, err error),
 	storer Storer,
 	callback func(*uploadClient.Result, multipart.File) error,
-	markFile string,
+	watermarkOptions *image.WatermarkOptions,
 ) (results uploadClient.Results, err error) {
 	req := ctx.Request()
 	if req == nil {
@@ -91,14 +92,14 @@ func BatchUpload(
 			continue
 		}
 		file.Seek(0, 0)
-		if len(markFile) > 0 && result.FileType.String() == `image` {
+		if result.FileType.String() == `image` && watermarkOptions != nil && watermarkOptions.IsEnabled() {
 			var b []byte
 			b, err = ioutil.ReadAll(file)
 			if err != nil {
 				file.Close()
 				return
 			}
-			b, err = watermark.Bytes(b, path.Ext(result.FileName), markFile)
+			b, err = watermark.Bytes(b, path.Ext(result.FileName), watermarkOptions)
 			if err != nil {
 				file.Close()
 				return

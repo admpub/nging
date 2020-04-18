@@ -19,13 +19,12 @@
 package manager
 
 import (
-	"os"
 	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"os"
 	"path"
-	"path/filepath"
 	"strings"
 
 	"github.com/webx-top/com"
@@ -34,9 +33,9 @@ import (
 	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/checksum"
+	"github.com/admpub/errors"
 	imageproxy "github.com/admpub/imageproxy"
 	"github.com/admpub/log"
-	"github.com/admpub/errors"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/middleware"
@@ -57,16 +56,6 @@ var cropPermCheckers = []func(ctx echo.Context, f *modelFile.File) error{
 		}
 		return common.ErrNext
 	},
-}
-
-var watermarkFile = filepath.Join(echo.Wd(), `public/assets/backend/images/nging-gear.png`)
-
-func SetWatermark(markfile string) {
-	watermarkFile = markfile
-}
-
-func WatermarkFile() string {
-	return watermarkFile
 }
 
 // CropPermCheckerAdd 添加裁剪权限检查逻辑
@@ -302,13 +291,13 @@ END:
 		fileMd5 = onSuccess()
 	}
 	cropOpt := &modelFile.CropOptions{
-		Options:       opt,
-		File:          fileM.NgingFile,
-		SrcReader:     reader,
-		Storer:        storer,
-		DestFile:      storer.URLToFile(thumbURL),
-		FileMD5:       fileMd5,
-		WatermarkFile: watermarkFile,
+		Options:          opt,
+		File:             fileM.NgingFile,
+		SrcReader:        reader,
+		Storer:           storer,
+		DestFile:         storer.URLToFile(thumbURL),
+		FileMD5:          fileMd5,
+		WatermarkOptions: GetWatermarkOptions(),
 	}
 	err = thumbM.Crop(cropOpt)
 	if err != nil {

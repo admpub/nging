@@ -38,7 +38,10 @@ import (
 	"github.com/admpub/nging/application/handler/manager/file"
 )
 
-var File = file.File
+var (
+	File = file.File
+	GetWatermarkOptions = storer.GetWatermarkOptions
+)
 
 // 文件上传保存路径规则：
 // 表名称/表行ID/文件名
@@ -144,7 +147,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 			return SaveFilename(subdir, name, filename)
 		})
 
-		client := uploadClient.Upload(ctx, clientName, result, storer, watermarkFile, prepareData.Checker)
+		client := uploadClient.Upload(ctx, clientName, result, storer, GetWatermarkOptions(), prepareData.Checker)
 		if client.GetError() != nil {
 			if client.GetError() == upload.ErrExistsFile {
 				client.SetError(nil)
@@ -181,7 +184,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 			fileM.SetByUploadResult(result)
 			return prepareData.DBSaver(fileM, result, file)
 		},
-		watermarkFile,
+		GetWatermarkOptions(),
 	)
 	datax, embed := ResponseDataForUpload(ctx, field, err, results.FileURLs())
 	if err != nil {

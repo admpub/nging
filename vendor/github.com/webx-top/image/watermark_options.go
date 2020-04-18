@@ -37,6 +37,10 @@ func (w *WatermarkOptions) Enable() *WatermarkOptions {
 	return w
 }
 
+func (w *WatermarkOptions) IsEnabled() bool {
+	return w.On && len(w.Watermark) > 0
+}
+
 func (w *WatermarkOptions) Disable() *WatermarkOptions {
 	w.On = false
 	return w

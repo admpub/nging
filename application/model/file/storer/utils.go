@@ -1,10 +1,20 @@
 package storer
 
 import (
+	"path/filepath"
+	
 	"github.com/webx-top/echo"
+	"github.com/webx-top/image"
 )
 
-var Default = Info{Name: `local`}
+var (
+	Default = Info{Name: `local`}
+	DefaultWatermarkOptions = &image.WatermarkOptions{
+		Watermark:filepath.Join(echo.Wd(), `public/assets/backend/images/nging-gear.png`),
+		Type:"image",
+		On:true,
+	}
+)
 
 func GetOk() (*Info, bool) {
 	storerConfig, ok := echo.Get(StorerInfoKey).(*Info)
@@ -20,4 +30,12 @@ func Get() Info {
 		return Default
 	}
 	return *storerConfig
+}
+
+func GetWatermarkOptions() *image.WatermarkOptions {
+	options, ok := echo.GetStore(`NgingConfig`).Store(`base`).Get(`watermark`).(*image.WatermarkOptions)
+	if ok {
+		return options
+	}
+	return DefaultWatermarkOptions
 }

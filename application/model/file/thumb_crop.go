@@ -42,12 +42,12 @@ func (t *Thumb) Crop(opt *CropOptions) error {
 	if err != nil {
 		return errors.WithMessage(err, `Thumb.Crop.Transform`)
 	}
-	if len(opt.WatermarkFile) > 0 {
+	if opt.WatermarkOptions != nil && opt.WatermarkOptions.IsEnabled() {
 		var extension string
 		if pos := strings.LastIndex(opt.DestFile, `.`); pos > -1 {
 			extension = opt.DestFile[pos:]
 		}
-		b, err = watermark.Bytes(thumb, extension, opt.WatermarkFile)
+		b, err = watermark.Bytes(thumb, extension, opt.WatermarkOptions)
 		if err != nil {
 			return errors.WithMessage(err, `Thumb.Crop.Bytes`)
 		}
