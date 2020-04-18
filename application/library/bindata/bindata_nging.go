@@ -33,6 +33,7 @@ import (
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/bindata"
 	"github.com/webx-top/image"
+	"github.com/admpub/nging/application/registry/upload/helper"
 )
 
 func NewAssetFS(prefix string) *assetfs.AssetFS {
@@ -85,8 +86,7 @@ func Initialize() {
 					file = strings.TrimPrefix(file, echo.Wd())
 					return StaticAssetFS.Open(file)
 				}
-				if strings.HasPrefix(file, `./`) {
-					file = strings.TrimPrefix(file, `./`)
+				if strings.HasPrefix(file, helper.DefaultUploadURLPath) {
 					return StaticAssetFS.Open(file)
 				}
 			}

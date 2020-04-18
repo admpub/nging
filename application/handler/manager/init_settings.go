@@ -33,7 +33,7 @@ var configDefaults = map[string]map[string]*dbschema.NgingConfig{
 			Key:         `watermark`,
 			Label:       `图片水印`,
 			Description: ``,
-			Value:       `{"watermark": "", "type": "image", "position": 0, "padding": 0, "on": true}`,
+			Value:       `{"watermark": "/public/assets/backend/images/nging-gear.png", "type": "image", "position": 0, "padding": 0, "on": true}`,
 			Group:       `base`,
 			Type:        `json`,
 			Sort:        30,

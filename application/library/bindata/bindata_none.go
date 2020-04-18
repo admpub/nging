@@ -22,12 +22,15 @@ package bindata
 
 import (
 	"path/filepath"
+	"net/http"
 
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware"
 
 	"github.com/admpub/nging/application/cmd/event"
 	"github.com/admpub/nging/application/initialize/backend"
+	"github.com/webx-top/image"
+	"github.com/admpub/nging/application/registry/upload/helper"
 )
 
 var StaticOptions = &middleware.StaticOptions{
@@ -45,5 +48,16 @@ func Initialize() {
 	faviconPath := filepath.Join(echo.Wd(), event.FaviconPath)
 	event.FaviconHandler = func(c echo.Context) error {
 		return c.File(faviconPath)
+	}
+	image.WatermarkOpen = func(file string) (http.File, error) {
+		f, err := image.DefaultHTTPSystemOpen(file)
+		if err != nil {
+			if os.IsNotExist(err) {
+				if strings.HasPrefix(file, helper.DefaultUploadURLPath) {
+					return os.Open(filepath.Join(echo.Wd(), file))
+				}
+			}
+		}
+		return f, err
 	}
 }
