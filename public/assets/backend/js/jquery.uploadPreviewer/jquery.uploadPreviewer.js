@@ -131,7 +131,6 @@
 						}
 					}
 					parentRow.remove();
-					$.event.trigger({ type: 'file-preview:removed', filename: filename });
 					$(that).trigger('file-preview:removed', filename);
 				});
 
@@ -181,7 +180,6 @@
 						reader.readAsDataURL(file);
 					});
 
-					$.event.trigger({ type: 'file-preview:changed', files: currentFileList });
 					$(that).trigger('file-preview:changed', currentFileList);
 				});
 			} else {
@@ -196,7 +194,6 @@
 						currentFileList.push(file);
 					});
 					loadingSpinner.hide();
-					$.event.trigger({ type: 'file-preview:changed', files: currentFileList });
 					$(that).trigger('file-preview:changed', currentFileList);
 				});
 			}
@@ -219,8 +216,6 @@
 
 			this._onComplete = function (eventData) {
 				$(that).trigger('file-preview:submit:complete', eventData);
-				eventData['type'] = 'file-preview:submit:complete';
-				$.event.trigger(eventData);
 			}
 
 			this.submit = function (successCallback, errorCallback) {

@@ -57,24 +57,12 @@ $(function(){
 			$('#search-form').submit();
 		});
 	}
-	var myUploadInput;
 	function initUploadButton(){
-		if($("#input-file-upload").parent('.file-preview-shadow').length<1)
-		myUploadInput = $("#input-file-upload").uploadPreviewer({
-			"buttonText":'<i class="fa fa-cloud-upload"></i> '+App.i18n.BUTTON_UPLOAD,
-			"previewTableContainer":'#previewTableContainer',
-			"url":uploadURL,
-			"previewTableShow":false/*,
-			"uploadProgress":function(progress){
-				var count=progress*100;
-				if(count>100){
-					$.LoadingOverlay("hide");
-					return;
-				}
-				$.LoadingOverlay("progress", count);
-			}*/
+		App.uploadPreviewer("#input-file-upload", {url:uploadURL}, function(r){
+			if(r.Code==1) {
+				loadList(listURL,{partial:1});
+			}
 		});
-
 		$('#checkedAll,input[type=checkbox][name="id[]"]:checked').prop('checked',false);
 		App.attachCheckedAll('#checkedAll','input[type=checkbox][name="id[]"]');
 	}
@@ -99,20 +87,5 @@ $(function(){
 		App.float('#tbody-content img.previewable');
 	}
 	initUploadButton();
-  	$(document).on("file-preview:changed", function(e) {
-		$.LoadingOverlay("show", {
-    		image : ASSETS_URL+"/images/nging-gear.png",//progress : true, image: "",//fontawesome : "fa fa-cog fa-spin",
-			text  : App.i18n.UPLOADING
-        });
-		myUploadInput.submit(function(r){
-			$.LoadingOverlay("hide");
-			if(r.Code==1){
-				App.message({text:App.i18n.UPLOAD_SUCCEED,type:'success'});
-				loadList(listURL,{partial:1});
-			}else{
-				App.message({text:r.Info,type:'error'});
-			}
-		});
-	});
 	initTable();
 });

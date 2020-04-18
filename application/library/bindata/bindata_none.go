@@ -21,15 +21,16 @@
 package bindata
 
 import (
+	"os"
+	"strings"
 	"path/filepath"
-	"net/http"
 
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware"
+	"github.com/webx-top/image"
 
 	"github.com/admpub/nging/application/cmd/event"
 	"github.com/admpub/nging/application/initialize/backend"
-	"github.com/webx-top/image"
 	"github.com/admpub/nging/application/registry/upload/helper"
 )
 
@@ -49,11 +50,11 @@ func Initialize() {
 	event.FaviconHandler = func(c echo.Context) error {
 		return c.File(faviconPath)
 	}
-	image.WatermarkOpen = func(file string) (http.File, error) {
+	image.WatermarkOpen = func(file string) (image.FileReader, error) {
 		f, err := image.DefaultHTTPSystemOpen(file)
 		if err != nil {
 			if os.IsNotExist(err) {
-				if strings.HasPrefix(file, helper.DefaultUploadURLPath) {
+				if strings.HasPrefix(file, helper.DefaultUploadURLPath) || strings.HasPrefix(file, `/public/assets/`) {
 					return os.Open(filepath.Join(echo.Wd(), file))
 				}
 			}

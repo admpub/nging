@@ -78,7 +78,7 @@ func Initialize() {
 		file = strings.TrimPrefix(file, backend.TemplateDir)
 		return event.BackendTmplMgr.GetTemplate(file)
 	}
-	image.WatermarkOpen = func(file string) (http.File, error) {
+	image.WatermarkOpen = func(file string) (image.FileReader, error) {
 		f, err := image.DefaultHTTPSystemOpen(file)
 		if err != nil {
 			if os.IsNotExist(err) {
@@ -86,7 +86,7 @@ func Initialize() {
 					file = strings.TrimPrefix(file, echo.Wd())
 					return StaticAssetFS.Open(file)
 				}
-				if strings.HasPrefix(file, helper.DefaultUploadURLPath) {
+				if strings.HasPrefix(file, helper.DefaultUploadURLPath) || strings.HasPrefix(file, `/public/assets/`) {
 					return StaticAssetFS.Open(file)
 				}
 			}
