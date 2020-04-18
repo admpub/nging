@@ -80,9 +80,15 @@ func Initialize() {
 	image.WatermarkOpen = func(file string) (http.File, error) {
 		f, err := image.DefaultHTTPSystemOpen(file)
 		if err != nil {
-			if os.IsNotExist(err) && strings.HasPrefix(file, echo.Wd()) {
-				file = strings.TrimPrefix(file, echo.Wd())
-				return StaticAssetFS.Open(file)
+			if os.IsNotExist(err) {
+				if strings.HasPrefix(file, echo.Wd()) {
+					file = strings.TrimPrefix(file, echo.Wd())
+					return StaticAssetFS.Open(file)
+				}
+				if strings.HasPrefix(file, `./`) {
+					file = strings.TrimPrefix(file, `./`)
+					return StaticAssetFS.Open(file)
+				}
 			}
 		}
 		return f, err
