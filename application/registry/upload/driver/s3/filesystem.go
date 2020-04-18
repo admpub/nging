@@ -97,7 +97,7 @@ func (f *Filesystem) Name() string {
 	return Name
 }
 
-func (f *Filesystem) ErrIsNotExists(err error) bool {
+func (f *Filesystem) ErrIsNotExist(err error) bool {
 	return f.mgr.ErrIsNotExist(err)
 }
 

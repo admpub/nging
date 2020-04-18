@@ -133,7 +133,7 @@ type Sizer interface {
 type Storer interface {
 	// 引擎名
 	Name() string
-	ErrIsNotExists(err error) bool
+	ErrIsNotExist(err error) bool
 
 	// FileDir 文件夹物理路径
 	FileDir(subpath string) string
