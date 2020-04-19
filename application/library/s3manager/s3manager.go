@@ -266,7 +266,7 @@ func (s *S3Manager) StatIsExists(f minio.ObjectInfo, err error) (bool, error) {
 		}
 		err = f.Err
 	}
-	if s.ErrIsNotExist(err) == false {
+	if s.ErrIsNotExist(err) {
 		return false, err
 	}
 	return true, nil
