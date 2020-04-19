@@ -150,11 +150,16 @@ func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (savePath st
 
 // Get 获取文件读取接口
 func (f *Filesystem) Get(dstFile string) (io.ReadCloser, error) {
-	readCloser, err := f.mgr.Get(dstFile)
+	object, err := f.mgr.Get(dstFile)
 	if err != nil {
-		return readCloser, errors.WithMessage(err, Name)
+		return nil, errors.WithMessage(err, Name)
 	}
-	return readCloser, nil
+	info, err := object.Stat()
+	exists, err := f.mgr.StatIsExists(info, err)
+	if !exists {
+		return object, os.ErrNotExist
+	}
+	return object, nil
 }
 
 // Delete 删除文件

@@ -254,7 +254,18 @@ func (s *S3Manager) Stat(ppath string) (minio.ObjectInfo, error) {
 
 // Exists 对象是否存在
 func (s *S3Manager) Exists(ppath string) (bool, error) {
-	_, err := s.Stat(ppath)
+	f, err := s.Stat(ppath)
+	return s.StatIsExists(f, err)
+}
+
+// StatIsExists 对象是否存在
+func (s *S3Manager) StatIsExists(f minio.ObjectInfo, err error) (bool, error) {
+	if err == nil {
+		if f.Err == nil {
+			return len(f.Key) > 0, nil
+		}
+		err = f.Err
+	}
 	if s.ErrIsNotExist(err) == false {
 		return false, err
 	}
@@ -270,6 +281,9 @@ func (s *S3Manager) ErrIsNotExist(err error) bool {
 		return v.StatusCode == http.StatusNotFound || v.Code == s3.ErrCodeNoSuchKey
 	default:
 		rawErr := v.(error)
+		if os.IsNotExist(rawErr) {
+			return true
+		}
 		if strings.Contains(rawErr.Error(), ` key does not exist`) {
 			return true
 		}
