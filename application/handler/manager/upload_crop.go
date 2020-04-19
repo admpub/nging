@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"os"
 	"path"
 	"strings"
 
@@ -305,7 +304,7 @@ END:
 	}
 	otherFormatExtensions := convert.Extensions()
 	for _, extension := range otherFormatExtensions {
-		if err := storer.Delete(thumbURL + extension); err != nil && !os.IsNotExist(err) {
+		if err := storer.Delete(thumbURL + extension); err != nil && !storer.ErrIsNotExist(err) {
 			return err
 		}
 	}

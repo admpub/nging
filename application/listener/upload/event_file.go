@@ -21,16 +21,15 @@ package upload
 
 import (
 	"fmt"
-	"os"
 
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
 	"github.com/admpub/events"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/convert"
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
 )
 
 func init() {
@@ -94,11 +93,11 @@ func init() {
 		var errs common.Errors
 		otherFormatExtensions := convert.Extensions()
 		for _, file := range files {
-			if err := storer.Delete(file); err != nil && !os.IsNotExist(err) {
+			if err := storer.Delete(file); err != nil && !storer.ErrIsNotExist(err) {
 				errs = append(errs, err)
 			}
 			for _, extension := range otherFormatExtensions {
-				if err := storer.Delete(file + extension); err != nil && !os.IsNotExist(err) {
+				if err := storer.Delete(file + extension); err != nil && !storer.ErrIsNotExist(err) {
 					errs = append(errs, err)
 				}
 			}
