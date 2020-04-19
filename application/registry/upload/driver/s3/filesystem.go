@@ -152,9 +152,9 @@ func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (savePath st
 func (f *Filesystem) Get(dstFile string) (io.ReadCloser, error) {
 	readCloser, err := f.mgr.Get(dstFile)
 	if err != nil {
-		err = errors.WithMessage(err, Name)
+		return readCloser, errors.WithMessage(err, Name)
 	}
-	return readCloser, err
+	return readCloser, nil
 }
 
 // Delete 删除文件
