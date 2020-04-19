@@ -272,7 +272,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 END:
 	if cropped {
 		if ctx.Format() == `json` {
-			return ctx.JSON(ctx.Data().SetInfo(`skipped`).SetData(thumbURL))
+			return ctx.JSON(ctx.Data().SetInfo(`skipped`).SetData(storer.BaseURL() + thumbURL))
 		}
 		return storer.SendFile(ctx, thumbURL)
 	}
@@ -309,9 +309,8 @@ END:
 			return err
 		}
 	}
-	thumbURL = storer.BaseURL() + thumbURL
 	if ctx.Format() == `json` {
-		return ctx.JSON(ctx.Data().SetInfo(`cropped`).SetData(thumbURL))
+		return ctx.JSON(ctx.Data().SetInfo(`cropped`).SetData(storer.BaseURL() + thumbURL))
 	}
 	return storer.SendFile(ctx, thumbURL)
 }
