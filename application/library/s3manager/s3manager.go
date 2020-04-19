@@ -266,6 +266,7 @@ func (s *S3Manager) StatIsExists(f minio.ObjectInfo, err error) (bool, error) {
 		}
 		err = f.Err
 	}
+	//echo.Dump(echo.H{`info`:f,`err`:err,`exists`:!s.ErrIsNotExist(err)})
 	if s.ErrIsNotExist(err) {
 		return false, err
 	}
