@@ -255,7 +255,10 @@ func (s *S3Manager) Stat(ppath string) (minio.ObjectInfo, error) {
 // Exists 对象是否存在
 func (s *S3Manager) Exists(ppath string) (bool, error) {
 	_, err := s.Stat(ppath)
-	return s.ErrIsNotExist(err) == false, err
+	if s.ErrIsNotExist(err) == false {
+		return false, err
+	}
+	return true, nil
 }
 
 func (s *S3Manager) ErrIsNotExist(err error) bool {
