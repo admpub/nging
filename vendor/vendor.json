@@ -3919,10 +3919,10 @@
 			"revisionTime": "2016-10-20T04:14:35Z"
 		},
 		{
-			"checksumSHA1": "F8CRP4O947VbX2yhlljFTDDPO6k=",
+			"checksumSHA1": "YbuqClyMLwBiJjpLU0O3pwPpjmo=",
 			"path": "github.com/webx-top/validation",
-			"revision": "3d4ce1cdd0f3952722d8f23ee3e70a62ad4e4d60",
-			"revisionTime": "2018-10-08T14:51:46Z"
+			"revision": "86da7bb89191d7d35e7bf5cfa3d82d80d912bb9a",
+			"revisionTime": "2020-04-25T05:27:35Z"
 		},
 		{
 			"origin": "github.com/jesseduffield/lazygit/vendor/github.com/xanzy/ssh-agent",
