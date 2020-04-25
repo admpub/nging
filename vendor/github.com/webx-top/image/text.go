@@ -42,6 +42,7 @@ func TextToImage(textContent string, fontFile string, args ...interface{}) *imag
 		if len(pngBgImgPath) > 0 {
 			pngFile, err := os.Open(pngBgImgPath)
 			checkErr(err)
+			defer pngFile.Close()
 			img, err = png.Decode(pngFile)
 			checkErr(err)
 			width = img.Bounds().Max.X

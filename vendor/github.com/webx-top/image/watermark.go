@@ -75,7 +75,7 @@ var (
 		if strings.Contains(name, `://`) {
 			return GetRemoteWatermarkFileData(name)
 		}
-		fp, err := os.Open(name)
+		fp, err := os.Open(name) // 用完后别忘了关闭 fp.Close()
 		return fp, err
 	}
 	// WatermarkOpen 水印文件打开方式
