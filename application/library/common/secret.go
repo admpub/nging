@@ -27,7 +27,7 @@ import (
 // SetRandomSecret 设置随机密码
 func SetRandomSecret(ctx echo.Context, sessionKey string, storeKey ...string) {
 	secret := GenSecret(32)
-	ctx.Session().Set(`secrect_`+sessionKey, secret)
+	ctx.Session().Set(`secret_`+sessionKey, secret)
 	if len(storeKey) > 0 {
 		ctx.Set(storeKey[0], secret)
 	} else {
@@ -37,12 +37,12 @@ func SetRandomSecret(ctx echo.Context, sessionKey string, storeKey ...string) {
 
 // DeleteRandomSecret 删除随机密码
 func DeleteRandomSecret(ctx echo.Context, sessionKey string) {
-	ctx.Session().Delete(`secrect_` + sessionKey)
+	ctx.Session().Delete(`secret_` + sessionKey)
 }
 
 // DecryptedByRandomSecret 用上次设置的随机密码解密
 func DecryptedByRandomSecret(ctx echo.Context, sessionKey string, datas ...*string) {
-	secret := ctx.Session().Get(`secrect_` + sessionKey)
+	secret := ctx.Session().Get(`secret_` + sessionKey)
 	if secret != nil {
 		secrets, _ := secret.(string)
 		Decrypt(secrets, datas...)
