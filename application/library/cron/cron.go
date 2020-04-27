@@ -53,7 +53,7 @@ func Initial(sizes ...int) {
 	}
 	Close()
 	workPool = make(chan bool, size)
-	mainCron = cron.New()
+	mainCron = cron.New(cron.WithSeconds())
 }
 
 func Running() bool {
@@ -84,7 +84,7 @@ func MainCron(mustStart bool) *cron.Cron {
 }
 
 func Parse(spec string) error {
-	_, err := cron.Parse(spec)
+	_, err := cron.ParseStandard(spec)
 	return err
 }
 
@@ -95,7 +95,7 @@ func AddJob(spec string, job *Job) bool {
 	if GetEntryById(job.id) != nil {
 		return false
 	}
-	err := MainCron(true).AddJob(spec, job)
+	_, err := MainCron(true).AddJob(spec, job)
 	if err != nil {
 		log.Error("AddJob: ", err.Error())
 		return false
@@ -119,14 +119,14 @@ func GetEntryById(id uint) *cron.Entry {
 	for _, e := range entries {
 		if v, ok := e.Job.(*Job); ok {
 			if v.id == id {
-				return e
+				return &e
 			}
 		}
 	}
 	return nil
 }
 
-func GetEntries(size int) []*cron.Entry {
+func GetEntries(size int) []cron.Entry {
 	ret := MainCron(false).Entries()
 	if len(ret) > size {
 		return ret[:size]
