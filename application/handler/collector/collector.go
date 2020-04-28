@@ -24,6 +24,7 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/gopiper"
 	"github.com/admpub/nging/application/dbschema"
@@ -490,10 +491,11 @@ func RuleCollect(c echo.Context) error {
 	if id < 1 {
 		return c.E(`id值不正确`)
 	}
-	clientID := c.Formx(`clientID`).Uint()
-	if clientID < 0 {
+	clientIDString := c.Formx(`clientID`).String()
+	if len(clientIDString) == 0 {
 		return c.E(`clientID值不正确`)
 	}
+	clientID := param.AsUint32(clientIDString)
 	m := model.NewCollectorPage(c)
 	err = m.Get(nil, db.Cond{`id`: id})
 	if err != nil {

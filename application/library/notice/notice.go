@@ -93,7 +93,7 @@ func (p *Progress) CalcPercent() *Progress {
 }
 
 type Message struct {
-	ClientID uint32       `json:"client_id" xml:"client_id"`
+	ClientID uint32      `json:"client_id" xml:"client_id"`
 	ID       interface{} `json:"id" xml:"id"`
 	Type     string      `json:"type" xml:"type"`
 	Title    string      `json:"title" xml:"title"`
@@ -392,7 +392,7 @@ func (u *userNotices) OpenClient(user string) uint32 {
 			fn(user)
 		}
 	}
-	clientID := oUser.Clients
+	clientID := atomic.LoadUint32(&oUser.Clients)
 	oUser.Notice.Messages[clientID] = make(chan *Message)
 	atomic.AddUint32(&oUser.Clients, 1)
 	return clientID
