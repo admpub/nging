@@ -84,7 +84,7 @@ func MainCron(mustStart bool) *cron.Cron {
 }
 
 func Parse(spec string) error {
-	_, err := cron.ParseStandard(spec)
+	_, err := cron.Parse(spec)
 	return err
 }
 
