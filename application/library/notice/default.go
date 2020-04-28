@@ -46,23 +46,23 @@ func Send(user string, message *Message) error {
 	return Default().Send(user, message)
 }
 
-func Recv(user string, clientID uint) <-chan *Message {
+func Recv(user string, clientID uint32) <-chan *Message {
 	return Default().Recv(user, clientID)
 }
 
-func RecvJSON(user string, clientID uint) []byte {
+func RecvJSON(user string, clientID uint32) []byte {
 	return Default().RecvJSON(user, clientID)
 }
 
-func RecvXML(user string, clientID uint) []byte {
+func RecvXML(user string, clientID uint32) []byte {
 	return Default().RecvXML(user, clientID)
 }
 
-func CloseClient(user string, clientID uint) bool {
+func CloseClient(user string, clientID uint32) bool {
 	return Default().CloseClient(user, clientID)
 }
 
-func OpenClient(user string) uint {
+func OpenClient(user string) uint32 {
 	return Default().OpenClient(user)
 }
 

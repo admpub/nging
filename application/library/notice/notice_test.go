@@ -20,6 +20,7 @@ package notice
 
 import (
 	"testing"
+	"fmt"
 
 	"github.com/webx-top/com"
 )
@@ -33,6 +34,17 @@ func TestOpenMessage(t *testing.T) {
 	if user.Notice.Types[`testType`] != true {
 		t.Error(`Type of testType != true`)
 	}
+	
+	clientID := OpenClient(`testUser`)
+	if user.Clients != 1 {
+		t.Error(`Number of clients (`+fmt.Sprint(user.Clients)+`) != 1`)
+	}
+	
+	CloseClient(`testUser`, clientID)
+	if user.Clients != 0 {
+		t.Error(`Number of clients (`+fmt.Sprint(user.Clients)+`) != 0`)
+	}
+	
 	com.Dump(Default())
 }
 
