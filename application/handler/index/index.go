@@ -19,8 +19,6 @@
 package index
 
 import (
-	"strings"
-
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
 
@@ -130,11 +128,31 @@ func Logout(ctx echo.Context) error {
 	return ctx.Redirect(handler.URLFor(`/login`))
 }
 
+var (
+	donationAccountTypes = echo.NewKVData()
+	defaultDonationAccountType= `alipay`
+)
+
+func init() {
+	donationAccountTypes.AddItem(&echo.KV{
+		K: `alipay`, V: `支付宝付款`, X: echo.H{`qrimg`:`alipay.jpg`},
+	})
+	donationAccountTypes.AddItem(&echo.KV{
+		K: `wechat`, V: `微信支付`, X: echo.H{`qrimg`:`wechat.png`},
+	})
+	donationAccountTypes.AddItem(&echo.KV{
+		K: `btcoin`, V: `比特币支付`, X: echo.H{`qrimg`:`btcoin.jpeg`},
+	})
+}
+
 func Donation(ctx echo.Context) error {
-	var langSuffix string
-	lang := strings.ToLower(ctx.Lang())
-	if strings.HasPrefix(lang, `zh`) {
-		langSuffix = `_zh-CN`
+	typ := ctx.Param(`type`, defaultDonationAccountType)
+	item := donationAccountTypes.GetItem(typ)
+	if item == nil {
+		typ = defaultDonationAccountType
+		item = donationAccountTypes.GetItem(typ)
 	}
-	return ctx.Render(`index/donation/donation`+langSuffix, nil)
+	ctx.Set(`data`, item)
+	ctx.Set(`list`, donationAccountTypes.Slice())
+	return ctx.Render(`index/donation/donation`, nil)
 }

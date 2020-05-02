@@ -1,40 +1,40 @@
-<!DOCTYPE html>
-<html>
- <head>
-  <title>Donation</title>
-  <meta name="author" content="" />
-  <meta name="keywords" content="" />
-  <meta name="description" content="" />
-  <script type="text/javascript" src="__ASSETS__/js/jquery.js"></script>
-  <script type="text/javascript" src="https://blockchain.info/Resources/js/pay-now-button.js"></script>
- </head>
+{{Strip}}
+{{Extend "base"}}
+{{Block "description"}}{{Stored.data.V}}{{/Block}}
+{{Block "title"}}{{Stored.data.V}}{{/Block}}
+{{Block "bodyAttr"}} class="texture"{{/Block}}
+{{Block "main"}}
+<div id="cl-wrapper" class="sign-up-container">
+	<div class="middle-sign-up">
+		<div class="block-flat">
+			<div class="header">
+				<h3 class="text-center"><i class="fa fa-money"></i> {{Stored.data.V}}</h3>
+			</div>
+			<div>
+			<div class="content">
+                <img class="img-responsive" src="__ASSETS__/donation/{{Stored.data.X.qrimg}}" />
+			</div>
+			</div>
+		</div>
+		<div class="text-center out-links"><a href="https://github.com/admpub/nging" target="_blank">&copy; {{Now.Year}} {{Version}}</a></div>
+	</div>
 
- <body>
-  
-<div style="font-size:16px;margin:0 auto;width:300px" class="blockchain-btn"
-     data-address="1LHC5tEDVhZYww1YpaGtF51enHTV2u2ooo"
-     data-shared="false">
-    <div class="blockchain stage-begin">
-        <img src="https://blockchain.info/Resources/buttons/donate_64.png"/>
-    </div>
-    <div class="blockchain stage-loading" style="text-align:center">
-        <img src="https://blockchain.info/Resources/loading-large.gif"/>
-    </div>
-    <div class="blockchain stage-ready">
-         <p align="center">Please Donate To Bitcoin Address: <b>[[address]]</b></p>
-         <p align="center" class="qr-code"></p>
-    </div>
-    <div class="blockchain stage-paid">
-         Donation of <b>[[value]] BTC</b> Received. Thank You.
-    </div>
-    <div class="blockchain stage-error">
-        <font color="red">[[error]]</font>
-    </div>
 </div>
+{{/Block}}
+{{Block "footer"}}
+<script type="text/javascript" src="__ASSETS__/js/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/i18n/messages.{{(Replace Lang "-" "_" -1)|ToLower}}.js" charset="utf-8"></script>
+<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/dist/parsley.min.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/behaviour/sprintf.min.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/behaviour/general.min.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/jquery.gritter/js/jquery.gritter.min.js"></script>
 <script type="text/javascript">
 $(function(){
-    $('.stage-begin').trigger('click');
+{{- if . -}}
+App.message({title: '{{"系统消息"|T}}', text: "{{.}}"});
+{{- end -}}
+$('[data-toggle="tooltip"]').tooltip();
 });
 </script>
- </body>
-</html>
+{{/Block}}
+{{/Strip}}

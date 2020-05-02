@@ -17,7 +17,7 @@ func init() {
 		e.Route("GET,POST", `/login`, Login)
 		e.Route("GET,POST", `/register`, Register)
 		e.Route("GET", `/logout`, Logout)
-		e.Route("GET", `/donation`, Donation)
+		e.Route("GET", `/donation/:type`, Donation)
 		//e.Route(`GET,POST`, `/ping`, Ping)
 		e.Get(`/icon`, Icon, middleware.AuthCheck)
 		e.Get(`/routeList`, RouteList, middleware.AuthCheck)

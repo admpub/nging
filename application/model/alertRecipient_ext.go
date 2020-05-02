@@ -17,6 +17,15 @@ type AlertRecipientExt struct {
 	Extra echo.H
 }
 
+func SendAlert(ctx echo.Context, message string, extra ...string) error {
+	m := NewAlertRecipient(ctx)
+	var title string
+	if len(extra)>0 {
+		title = extra[0]
+	}
+	return m.Send(title,message)
+}
+
 func (a *AlertRecipientExt) Parse() *AlertRecipientExt {
 	if a.Extra != nil {
 		return a
