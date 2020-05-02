@@ -49,49 +49,17 @@ func VhostIndex(ctx echo.Context) error {
 	if len(q) > 0 {
 		cond.AddKV(`name`, db.Like(`%`+q+`%`))
 	}
-	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, nil, func(r db.Result) db.Result {
+	var rowAndGroup []*model.VhostAndGroup
+	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, &rowAndGroup, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
 	}, cond.And()))
-	ret := handler.Err(ctx, err)
-	rows := m.Objects()
-	gIds := []uint{}
-	rowAndGroup := make([]*model.VhostAndGroup, len(rows))
-	for k, u := range rows {
-		rowAndGroup[k] = &model.VhostAndGroup{
-			NgingVhost: u,
-		}
-		if u.GroupId < 1 {
-			continue
-		}
-		if !com.InUintSlice(u.GroupId, gIds) {
-			gIds = append(gIds, u.GroupId)
-		}
-	}
-
 	mg := &dbschema.NgingVhostGroup{}
 	var groupList []*dbschema.NgingVhostGroup
-	if len(gIds) > 0 {
-		_, err = mg.List(&groupList, nil, 1, 1000, db.Cond{`id IN`: gIds})
-		if err != nil {
-			if ret == nil {
-				ret = err
-			}
-		} else {
-			for k, v := range rowAndGroup {
-				for _, g := range groupList {
-					if g.Id == v.GroupId {
-						rowAndGroup[k].Group = g
-						break
-					}
-				}
-			}
-		}
-	}
-	ctx.Set(`listData`, rowAndGroup)
 	mg.ListByOffset(&groupList, nil, 0, -1)
+	ctx.Set(`listData`, rowAndGroup)
 	ctx.Set(`groupList`, groupList)
 	ctx.Set(`groupId`, groupID)
-	return ctx.Render(`caddy/vhost`, ret)
+	return ctx.Render(`caddy/vhost`, handler.Err(ctx, err))
 }
 
 func Vhostbuild(ctx echo.Context) error {

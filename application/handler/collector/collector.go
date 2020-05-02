@@ -21,7 +21,6 @@ package collector
 import (
 	"strings"
 
-	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
@@ -33,38 +32,9 @@ import (
 	"github.com/admpub/nging/application/library/collector/exec"
 	"github.com/admpub/nging/application/library/collector/export"
 	"github.com/admpub/nging/application/library/collector/sender"
-	"github.com/admpub/nging/application/library/cron"
 	"github.com/admpub/nging/application/library/notice"
 	"github.com/admpub/nging/application/model"
 )
-
-func init() {
-	handler.RegisterToGroup(`/collector`, func(g echo.RouteRegister) {
-		e := handler.Echo()
-		g.Route(`GET,POST`, `/export`, e.MetaHandler(echo.H{`name`: `导出管理`}, Export))
-		g.Route(`GET,POST`, `/export_log`, e.MetaHandler(echo.H{`name`: `日子列表`}, ExportLog))
-		g.Route(`GET,POST`, `/export_log_view/:id`, e.MetaHandler(echo.H{`name`: `日志详情`}, ExportLogView))
-		g.Route(`GET,POST`, `/export_log_delete`, e.MetaHandler(echo.H{`name`: `删除日志`}, ExportLogDelete))
-		g.Route(`GET,POST`, `/export_add`, e.MetaHandler(echo.H{`name`: `添加导出规则`}, ExportAdd))
-		g.Route(`GET,POST`, `/export_edit`, e.MetaHandler(echo.H{`name`: `修改导出规则`}, ExportEdit))
-		g.Route(`GET,POST`, `/export_edit_status`, e.MetaHandler(echo.H{`name`: `修改导出规则`}, ExportEditStatus))
-		g.Route(`GET,POST`, `/export_delete`, e.MetaHandler(echo.H{`name`: `删除导出规则`}, ExportDelete))
-		g.Route(`GET,POST`, `/history`, e.MetaHandler(echo.H{`name`: `历史记录`}, History))
-		g.Route(`GET,POST`, `/history_view`, e.MetaHandler(echo.H{`name`: `查看历史内容`}, HistoryView))
-		g.Route(`GET,POST`, `/history_delete`, e.MetaHandler(echo.H{`name`: `删除历史记录`}, HistoryDelete))
-		g.Route(`GET,POST`, `/rule`, e.MetaHandler(echo.H{`name`: `规则列表`}, Rule))
-		g.Route(`GET,POST`, `/rule_add`, e.MetaHandler(echo.H{`name`: `添加规则`}, RuleAdd))
-		g.Route(`GET,POST`, `/rule_edit`, e.MetaHandler(echo.H{`name`: `修改规则`}, RuleEdit))
-		g.Route(`GET,POST`, `/rule_delete`, e.MetaHandler(echo.H{`name`: `删除规则`}, RuleDelete))
-		g.Route(`GET,POST`, `/rule_collect`, e.MetaHandler(echo.H{`name`: `采集`}, RuleCollect))
-		g.Route(`GET,POST`, `/group`, e.MetaHandler(echo.H{`name`: `任务分组列表`}, Group))
-		g.Route(`GET,POST`, `/group_add`, e.MetaHandler(echo.H{`name`: `添加分组`}, GroupAdd))
-		g.Route(`GET,POST`, `/group_edit`, e.MetaHandler(echo.H{`name`: `修改分组`}, GroupEdit))
-		g.Route(`GET,POST`, `/group_delete`, e.MetaHandler(echo.H{`name`: `删除分组`}, GroupDelete))
-		g.Route(`GET,POST`, `/regexp_test`, e.MetaHandler(echo.H{`name`: `测试正则表达式`}, RegexpTest))
-	})
-	cron.AddSYSJob(`collect_page`, CollectPageJob, `>collect_page:1`, `网页采集`)
-}
 
 func Rule(c echo.Context) error {
 	m := model.NewCollectorPage(c)
@@ -77,8 +47,9 @@ func Rule(c echo.Context) error {
 	if len(q) > 0 {
 		cond.AddKV(`name`, db.Like(`%`+q+`%`))
 	}
+	var rowAndGroup []*model.CollectorPageAndGroup
 	page, size, totalRows, p := handler.PagingWithPagination(c)
-	cnt, err := m.List(nil, func(r db.Result) db.Result {
+	cnt, err := m.List(&rowAndGroup, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
 	}, page, size, cond.And())
 	ret := handler.Err(c, err)
@@ -86,46 +57,11 @@ func Rule(c echo.Context) error {
 		totalRows = int(cnt())
 		p.SetRows(totalRows)
 	}
-	rows := m.Objects()
-	gIds := []uint{}
-	rowAndGroup := make([]*model.CollectorPageAndGroup, len(rows))
-	for k, u := range rows {
-		rowAndGroup[k] = &model.CollectorPageAndGroup{
-			NgingCollectorPage: u,
-		}
-		if u.GroupId < 1 {
-			continue
-		}
-		if !com.InUintSlice(u.GroupId, gIds) {
-			gIds = append(gIds, u.GroupId)
-		}
-	}
-
 	mg := model.NewCollectorGroup(c)
 	var groupList []*dbschema.NgingCollectorGroup
-	if len(gIds) > 0 {
-		_, err = mg.List(&groupList, nil, 1, 1000, db.And(
-			db.Cond{`id IN`: gIds},
-			db.Cond{`type`: `page`},
-		))
-		if err != nil {
-			if ret == nil {
-				ret = err
-			}
-		} else {
-			for k, v := range rowAndGroup {
-				for _, g := range groupList {
-					if g.Id == v.GroupId {
-						rowAndGroup[k].Group = g
-						break
-					}
-				}
-			}
-		}
-	}
+	mg.ListByOffset(&groupList, nil, 0, -1, db.Cond{`type`: `page`})
 	c.Set(`pagination`, p)
 	c.Set(`listData`, rowAndGroup)
-	mg.ListByOffset(&groupList, nil, 0, -1, db.Cond{`type`: `page`})
 	c.Set(`groupList`, groupList)
 	c.Set(`groupId`, groupID)
 	return c.Render(`collector/rule`, ret)

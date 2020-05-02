@@ -26,7 +26,7 @@ import (
 
 type TaskAndGroup struct {
 	*dbschema.NgingTask
-	Group *dbschema.NgingTaskGroup
+	Group *dbschema.NgingTaskGroup `db:"-,relation=id:group_id|gtZero"`
 }
 
 func NewTask(ctx echo.Context) *Task {

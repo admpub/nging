@@ -28,7 +28,7 @@ import (
 
 type FrpClientAndGroup struct {
 	*dbschema.NgingFrpClient
-	Group   *dbschema.NgingFrpGroup
+	Group   *dbschema.NgingFrpGroup `db:"-,relation=id:group_id|gtZero"`
 	Running bool
 }
 

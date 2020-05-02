@@ -33,7 +33,7 @@ func NewVhost(ctx echo.Context) *Vhost {
 
 type VhostAndGroup struct {
 	*dbschema.NgingVhost
-	Group *dbschema.NgingVhostGroup
+	Group *dbschema.NgingVhostGroup `db:"-,relation=id:group_id|gtZero"`
 }
 
 type Vhost struct {

@@ -1,15 +1,15 @@
 package model
 
 import (
-	"strings"
 	"encoding/json"
+	"strings"
 
+	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/library/cron"
+	"github.com/admpub/nging/application/library/imbot"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
-	"github.com/webx-top/com"
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/imbot"
-	"github.com/admpub/nging/application/library/cron"
 )
 
 type AlertRecipientExt struct {
@@ -20,10 +20,10 @@ type AlertRecipientExt struct {
 func SendAlert(ctx echo.Context, message string, extra ...string) error {
 	m := NewAlertRecipient(ctx)
 	var title string
-	if len(extra)>0 {
+	if len(extra) > 0 {
 		title = extra[0]
 	}
-	return m.Send(title,message)
+	return m.Send(title, message)
 }
 
 func (a *AlertRecipientExt) Parse() *AlertRecipientExt {
@@ -53,7 +53,7 @@ func (a *AlertRecipientExt) Send(title string, message string) (err error) {
 			case `https:/`, `http://`:
 				apiURL = a.Account
 			}
-		} 
+		}
 		if len(apiURL) == 0 {
 			apiURL = mess.Messager.BuildURL(a.Account)
 		}

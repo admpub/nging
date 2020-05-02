@@ -21,7 +21,6 @@ package frp
 import (
 	"fmt"
 
-	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
@@ -43,51 +42,22 @@ func ServerIndex(ctx echo.Context) error {
 	if len(q) > 0 {
 		cond.AddKV(`name`, db.Like(`%`+q+`%`))
 	}
-	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, nil, func(r db.Result) db.Result {
+	var serverAndGroup []*model.FrpServerAndGroup
+	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, &serverAndGroup, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
 	}, cond.And()))
-	ret := handler.Err(ctx, err)
-	servers := m.Objects()
-	gIds := []uint{}
-	serverAndGroup := make([]*model.FrpServerAndGroup, len(servers))
-	for k, u := range servers {
-		serverAndGroup[k] = &model.FrpServerAndGroup{
-			NgingFrpServer: u,
-			Running:        config.DefaultCLIConfig.IsRunning(`frpserver.` + fmt.Sprint(u.Id)),
-		}
-		if u.GroupId < 1 {
-			continue
-		}
-		if !com.InUintSlice(u.GroupId, gIds) {
-			gIds = append(gIds, u.GroupId)
-		}
+	for k, u := range serverAndGroup {
+		serverAndGroup[k].Running= config.DefaultCLIConfig.IsRunning(`frpserver.` + fmt.Sprint(u.Id))
 	}
 
 	mg := model.NewFrpGroup(ctx)
 	var groupList []*dbschema.NgingFrpGroup
-	if len(gIds) > 0 {
-		_, err = mg.List(&groupList, nil, 1, 1000, db.Cond{`id IN`: gIds})
-		if err != nil {
-			if ret == nil {
-				ret = err
-			}
-		} else {
-			for k, v := range serverAndGroup {
-				for _, g := range groupList {
-					if g.Id == v.GroupId {
-						serverAndGroup[k].Group = g
-						break
-					}
-				}
-			}
-		}
-	}
-	ctx.Set(`listData`, serverAndGroup)
 	mg.ListByOffset(&groupList, nil, 0, -1)
+	ctx.Set(`listData`, serverAndGroup)
 	ctx.Set(`groupList`, groupList)
 	ctx.Set(`groupId`, groupId)
 	ctx.Set(`isRunning`, config.DefaultCLIConfig.CmdHasGroup(`frpserver`))
-	return ctx.Render(`frp/server_index`, ret)
+	return ctx.Render(`frp/server_index`, handler.Err(ctx, err))
 }
 
 func ServerAdd(ctx echo.Context) error {

@@ -31,7 +31,7 @@ import (
 
 type FtpUserAndGroup struct {
 	*dbschema.NgingFtpUser
-	Group *dbschema.NgingFtpUserGroup
+	Group *dbschema.NgingFtpUserGroup `db:"-,relation=id:group_id|gtZero"`
 }
 
 var DefaultSalt = ``

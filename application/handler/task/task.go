@@ -23,7 +23,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
@@ -54,18 +53,12 @@ func Index(ctx echo.Context) error {
 	if len(q) > 0 {
 		cond.AddKV(`name`, db.Like(`%`+q+`%`))
 	}
-	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, nil, func(r db.Result) db.Result {
+	var tasks []*model.TaskAndGroup
+	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, &tasks, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
 	}, cond.And()))
-	ret := handler.Err(ctx, err)
-	tasks := m.Objects()
-	gIds := []uint{}
-	tg := make([]*model.TaskAndGroup, len(tasks))
 	extraList := make([]*extra, len(tasks))
 	for k, u := range tasks {
-		tg[k] = &model.TaskAndGroup{
-			NgingTask: u,
-		}
 		ex := &extra{}
 		entry := cron.GetEntryById(u.Id)
 		if entry != nil {
@@ -75,43 +68,19 @@ func Index(ctx echo.Context) error {
 			ex.NextTime = time.Time{}
 		}
 		extraList[k] = ex
-
-		if u.GroupId < 1 {
-			continue
-		}
-		if !com.InUintSlice(u.GroupId, gIds) {
-			gIds = append(gIds, u.GroupId)
-		}
 	}
 
 	mg := model.NewTaskGroup(ctx)
 	var groupList []*dbschema.NgingTaskGroup
-	if len(gIds) > 0 {
-		_, err = mg.ListByOffset(&groupList, nil, 0, -1, db.Cond{`id IN`: gIds})
-		if err != nil {
-			if ret == nil {
-				ret = err
-			}
-		} else {
-			for k, v := range tg {
-				for _, g := range groupList {
-					if g.Id == v.GroupId {
-						tg[k].Group = g
-						break
-					}
-				}
-			}
-		}
-	}
-	ctx.Set(`listData`, tg)
+	mg.ListByOffset(&groupList, nil, 0, -1)
+	ctx.Set(`listData`, tasks)
 	ctx.Set(`extraList`, extraList)
 	ctx.Set(`cronRunning`, cron.Running())
 	ctx.Set(`histroyRunning`, cron.HistoryJobsRunning())
 	ctx.Set(`notRecordPrefixFlag`, cron.NotRecordPrefixFlag)
-	mg.ListByOffset(&groupList, nil, 0, -1)
 	ctx.Set(`groupList`, groupList)
 	ctx.Set(`groupId`, groupId)
-	return ctx.Render(`task/index`, ret)
+	return ctx.Render(`task/index`, handler.Err(ctx, err))
 }
 
 func getCronSpec(ctx echo.Context) string {

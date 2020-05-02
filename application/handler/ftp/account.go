@@ -36,49 +36,17 @@ func AccountIndex(ctx echo.Context) error {
 	if groupId > 0 {
 		cond[`group_id`] = groupId
 	}
-	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, nil, func(r db.Result) db.Result {
+	var userAndGroup []*model.FtpUserAndGroup
+	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, &userAndGroup, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
 	}, cond))
-	ret := handler.Err(ctx, err)
-	users := m.Objects()
-	gIds := []uint{}
-	userAndGroup := make([]*model.FtpUserAndGroup, len(users))
-	for k, u := range users {
-		userAndGroup[k] = &model.FtpUserAndGroup{
-			NgingFtpUser: u,
-		}
-		if u.GroupId < 1 {
-			continue
-		}
-		if !com.InUintSlice(u.GroupId, gIds) {
-			gIds = append(gIds, u.GroupId)
-		}
-	}
-
 	mg := model.NewFtpUserGroup(ctx)
 	var groupList []*dbschema.NgingFtpUserGroup
-	if len(gIds) > 0 {
-		_, err = mg.List(&groupList, nil, 1, 1000, db.Cond{`id IN`: gIds})
-		if err != nil {
-			if ret == nil {
-				ret = err
-			}
-		} else {
-			for k, v := range userAndGroup {
-				for _, g := range groupList {
-					if g.Id == v.GroupId {
-						userAndGroup[k].Group = g
-						break
-					}
-				}
-			}
-		}
-	}
-	ctx.Set(`listData`, userAndGroup)
 	mg.ListByOffset(&groupList, nil, 0, -1)
+	ctx.Set(`listData`, userAndGroup)
 	ctx.Set(`groupList`, groupList)
 	ctx.Set(`groupId`, groupId)
-	return ctx.Render(`ftp/account`, ret)
+	return ctx.Render(`ftp/account`, handler.Err(ctx, err))
 }
 
 func AccountAdd(ctx echo.Context) error {

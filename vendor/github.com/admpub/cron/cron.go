@@ -119,6 +119,7 @@ func New(opts ...Option) *Cron {
 		stop:      make(chan struct{}),
 		snapshot:  make(chan chan []Entry),
 		remove:    make(chan EntryID),
+		removeJob: make(chan RemoveCheckFunc), //[SWH|+]
 		running:   false,
 		runningMu: sync.Mutex{},
 		logger:    DefaultLogger,

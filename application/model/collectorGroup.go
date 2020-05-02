@@ -34,7 +34,7 @@ func NewCollectorGroup(ctx echo.Context) *CollectorGroup {
 
 type CollectorPageAndGroup struct {
 	*dbschema.NgingCollectorPage
-	Group *dbschema.NgingCollectorGroup
+	Group *dbschema.NgingCollectorGroup `db:"-,relation=id:group_id|gtZero"`
 }
 
 type CollectorExportAndGroup struct {

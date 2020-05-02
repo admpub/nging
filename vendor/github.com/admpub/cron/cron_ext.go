@@ -1,6 +1,6 @@
 package cron
 
-// 删除job的检查函数，返回true则删除
+// RemoveCheckFunc 删除job的检查函数，返回true则删除
 type RemoveCheckFunc func(e *Entry) bool
 
 func (c *Cron) removeEntryByJob(cb RemoveCheckFunc) {
