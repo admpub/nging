@@ -31,6 +31,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/admpub/nging/application/library/notice"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo/engine"
 
@@ -412,6 +413,14 @@ func SendMail(toEmail string, toUsername string, title string, content []byte, c
 }
 
 func SendMailWithID(id uint64, toEmail string, toUsername string, title string, content []byte, ccList ...string) error {
+	return SendMailWithIDAndNoticer(id, nil, toEmail, toUsername, title, content, ccList...)
+}
+
+func SendMailWithNoticer(noticer notice.Noticer, toEmail string, toUsername string, title string, content []byte, ccList ...string) error {
+	return SendMailWithIDAndNoticer(0, noticer, toEmail, toUsername, title, content, ccList...)
+}
+
+func SendMailWithIDAndNoticer(id uint64, noticer notice.Noticer, toEmail string, toUsername string, title string, content []byte, ccList ...string) error {
 	if len(toEmail) < 1 {
 		//收信人邮箱地址不正确
 		return ErrIncorrectRecipient
@@ -427,6 +436,7 @@ func SendMailWithID(id uint64, toEmail string, toUsername string, title string, 
 		Content:    content,
 		CcAddress:  ccList,
 		Timeout:    DefaultEmailConfig.Timeout,
+		Noticer:    noticer,
 	}
 	return email.SendMail(conf)
 }

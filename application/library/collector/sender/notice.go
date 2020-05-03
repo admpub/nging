@@ -19,39 +19,12 @@
 package sender
 
 import (
-	"fmt"
-	"io"
-
-	"github.com/webx-top/echo/middleware/tplfunc"
-
-	"github.com/admpub/log"
 	"github.com/admpub/nging/application/library/notice"
 )
 
-var Default Notice = func(message interface{}, statusCode int, progs ...*notice.Progress) error {
-	if len(progs) > 0 && progs[0] != nil {
-		message = `[ ` + tplfunc.NumberFormat(progs[0].CalcPercent().Percent, 2) + `% ] ` + fmt.Sprint(message)
-	}
-	if statusCode > 0 {
-		log.Info(message)
-	} else {
-		log.Error(message)
-	}
-	return nil
-}
+type Notice = notice.Noticer
 
-var CustomOutput func(wOut io.Writer, wErr io.Writer) Notice = func(wOut io.Writer, wErr io.Writer) Notice {
-	return func(message interface{}, statusCode int, progs ...*notice.Progress) error {
-		if len(progs) > 0 && progs[0] != nil {
-			message = `[ ` + tplfunc.NumberFormat(progs[0].CalcPercent().Percent, 2) + `% ] ` + fmt.Sprint(message)
-		}
-		if statusCode > 0 {
-			fmt.Fprintln(wOut, message)
-		} else {
-			fmt.Fprintln(wErr, message)
-		}
-		return nil
-	}
-}
-
-type Notice func(message interface{}, statusCode int, progress ...*notice.Progress) error
+var (
+	Default      = notice.DefaultNoticer
+	CustomOutput = notice.CustomOutputNoticer
+)

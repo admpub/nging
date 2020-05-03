@@ -19,12 +19,14 @@
 package notice
 
 import (
+	"context"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"os"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/admpub/nging/application/library/msgbox"
 )
@@ -62,6 +64,29 @@ func (c *Control) IsExited() bool {
 
 func (c *Control) Exited() *Control {
 	c.exited = true
+	return c
+}
+
+func (c *Control) ListenContextAndTimeout(ctx context.Context, timeouts ...time.Duration) *Control {
+	timeout := 24 * time.Hour
+	if len(timeouts) > 0 && timeouts[0] != 0 {
+		timeout = timeouts[0]
+	}
+	t := time.NewTicker(timeout)
+	defer t.Stop()
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				c.Exited()
+				return
+			case <-t.C:
+				c.Exited()
+				return
+			default:
+			}
+		}
+	}()
 	return c
 }
 
@@ -424,11 +449,15 @@ func (u *userNotices) OpenMessage(user string, types ...string) {
 	}
 	if len(types) > 0 {
 		for _, typ := range types {
-			oUser.Notice.Types[typ] = true
+			if opened, _ := oUser.Notice.Types[typ]; !opened {
+				oUser.Notice.Types[typ] = true
+			}
 		}
 	} else {
 		for key := range oUser.Notice.Types {
-			oUser.Notice.Types[key] = true
+			if opened, _ := oUser.Notice.Types[key]; !opened {
+				oUser.Notice.Types[key] = true
+			}
 		}
 	}
 }

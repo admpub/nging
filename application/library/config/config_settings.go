@@ -92,7 +92,7 @@ func (c *Settings) SetDebug(on bool) {
 }
 
 var (
-	actGroups      = []string{`base`, `email`, `log`}
+	actGroups      = []string{`base`, `smtp`, `log`}
 	onInitSettings []func(echo.H) error
 	onSetSettings  []func(group string, globalCfg echo.H) error
 )
@@ -152,6 +152,7 @@ func (c *Settings) SetConfigs(groups ...string) {
 	for group, conf := range configs {
 		ngingConfig.Set(group, conf)
 		FireSetSettings(group, ngingConfig)
+		//log.Debug(`Change configuration:`, group, `:`, echo.Dump(conf, false))
 		c.SetConfig(group, ngingConfig, nil)
 	}
 }
@@ -161,7 +162,7 @@ func (c *Settings) SetConfig(group string, ngingConfig echo.H, defaults echo.H) 
 	case `base`:
 		c.SetBy(ngingConfig, defaults)
 		c.SetDebug(c.Debug)
-	case `email`:
+	case `smtp`:
 		c.Email.SetBy(ngingConfig, defaults).Init()
 	case `log`:
 		c.Log.SetBy(ngingConfig, defaults).Init()

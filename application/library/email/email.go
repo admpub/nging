@@ -28,6 +28,7 @@ import (
 	"github.com/admpub/email"
 	"github.com/admpub/log"
 	"github.com/admpub/mail"
+	"github.com/admpub/nging/application/library/notice"
 )
 
 type queueItem struct {
@@ -102,6 +103,7 @@ type Config struct {
 	CcAddress  []string
 	Auth       smtp.Auth
 	Timeout    int64
+	Noticer    notice.Noticer
 }
 
 var (
@@ -144,12 +146,16 @@ func Initial(queueSizes ...int) {
 				if !ok {
 					return
 				}
-				log.Info("<SendMail> Sending: ", m.Config.ToAddress)
+				noticer := m.Config.Noticer
+				if noticer == nil {
+					noticer = notice.DefaultNoticer
+				}
+				noticer("<SendMail> Sending: "+m.Config.ToAddress, 1)
 				err := m.Send()
 				if err != nil {
-					log.Error("<SendMail> Error: ", err.Error())
+					noticer("<SendMail> Result: "+m.Config.ToAddress+" Error: "+err.Error(), 0)
 				} else {
-					log.Info("<SendMail> Result: ", m.Config.ToAddress, " [OK]")
+					noticer("<SendMail> Result: "+m.Config.ToAddress+" [OK]", 1)
 				}
 				for _, callback := range Callbacks {
 					callback(&m.Config, err)

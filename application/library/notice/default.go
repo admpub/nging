@@ -20,7 +20,7 @@ package notice
 
 var (
 	defaultUserNotices *userNotices
-	debug              bool
+	debug              bool //= true
 )
 
 func SetDebug(on bool) {
