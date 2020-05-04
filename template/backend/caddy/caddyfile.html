@@ -197,6 +197,8 @@
 		{{AddonAttr "s3browser" "bucket"}}
 		{{AddonAttr "s3browser" "region"}}
 		{{AddonAttr "s3browser" "endpoint"}}
+        {{AddonAttr "s3browser" "prefix"}}
+        {{AddonAttr "s3browser" "cdnurl"}}
 		secure {{if $secure}}true{{else}}false{{end}}
 		{{AddonAttr "s3browser" "refresh"}}
 		debug {{if eq ($v.Get "s3browser_debug") "1"}}true{{else}}false{{end}}

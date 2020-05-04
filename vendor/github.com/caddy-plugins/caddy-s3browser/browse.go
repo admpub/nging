@@ -49,7 +49,9 @@ func (b Browse) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	default:
 		if buf, err = b.formatAsHTML(b.Fs[path]); err != nil {
-			fmt.Println(err)
+			if b.Config.Debug {
+				fmt.Println(err)
+			}
 			return http.StatusInternalServerError, err
 		}
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -60,7 +62,8 @@ func (b Browse) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 }
 
 func (b Browse) formatAsJSON(listing Directory) (*bytes.Buffer, error) {
-	marsh, err := json.Marshal(listing)
+	data := TmplData{CDNURL: b.Config.CDNURL,Directory:listing}
+	marsh, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
 	}
@@ -72,6 +75,7 @@ func (b Browse) formatAsJSON(listing Directory) (*bytes.Buffer, error) {
 
 func (b Browse) formatAsHTML(listing Directory) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
-	err := b.Template.Execute(buf, listing)
+	data := TmplData{CDNURL: b.Config.CDNURL,Directory:listing}
+	err := b.Template.Execute(buf, data)
 	return buf, err
 }

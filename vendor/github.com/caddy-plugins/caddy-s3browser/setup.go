@@ -119,7 +119,7 @@ func getFiles(b *Browse) (map[string]Directory, error) {
 
 	doneCh := make(chan struct{})
 	defer close(doneCh)
-	objectCh := minioClient.ListObjects(b.Config.Bucket, "", true, doneCh)
+	objectCh := minioClient.ListObjects(b.Config.Bucket, b.Config.Prefix, true, doneCh)
 
 	for obj := range objectCh {
 		if obj.Err != nil {
@@ -134,15 +134,15 @@ func getFiles(b *Browse) (map[string]Directory, error) {
 			dir = "/" // if dir is empty, then set to root
 		}
 		// Note: dir should start & end with / now
-
-		if len(getFolders(dir)) < 3 {
+		folders := getFolders(dir)
+		if len(folders) < 3 {
 			// files are in root
 			// less than three bc "/" split becomes ["",""]
 			// Do nothing as file will get added below & root already exists
 		} else {
 			// TODO: loop through folders and ensure they are in the tree
 			// make sure to add folder to parent as well
-			foldersLen := len(getFolders(dir))
+			foldersLen := len(folders)
 			for i := 2; i < foldersLen; i++ {
 				parent := getParent(getFolders(dir), i)
 				folder := getFolder(getFolders(dir), i)
@@ -155,7 +155,7 @@ func getFiles(b *Browse) (map[string]Directory, error) {
 					// create parent
 					fs[parent] = Directory{
 						Path:    parent,
-						Folders: []Folder{Folder{Name: getFolder(getFolders(dir), i)}},
+						Folders: []Folder{Folder{Name: folder}},
 					}
 				}
 				// check if folder itself exists
@@ -165,7 +165,7 @@ func getFiles(b *Browse) (map[string]Directory, error) {
 						Path: folder,
 					}
 					tmp := fs[parent]
-					tmp.Folders = append(fs[parent].Folders, Folder{Name: getFolder(getFolders(dir), i)})
+					tmp.Folders = append(fs[parent].Folders, Folder{Name: folder})
 					fs[parent] = tmp
 				}
 			}
@@ -173,11 +173,11 @@ func getFiles(b *Browse) (map[string]Directory, error) {
 
 		// STEP Two
 		// add file to directory
-		tempFile := File{Name: file, Bytes: obj.Size, Date: obj.LastModified, Folder: joinFolders(getFolders(dir))}
-		fsCopy := fs[joinFolders(getFolders(dir))]
-		fsCopy.Path = joinFolders(getFolders(dir))
+		tempFile := File{Name: file, Bytes: obj.Size, Date: obj.LastModified, Folder: joinFolders(folders)}
+		fsCopy := fs[tempFile.Folder]
+		fsCopy.Path = tempFile.Folder
 		fsCopy.Files = append(fsCopy.Files, tempFile) // adding file list of files
-		fs[joinFolders(getFolders(dir))] = fsCopy
+		fs[tempFile.Folder] = fsCopy
 	} // end looping through all the files
 	updating = false
 	return fs, nil
@@ -228,6 +228,16 @@ func parse(b *Browse, c *caddy.Controller) (err error) {
 			b.Config.Bucket, err = StringArg(c)
 		case "region":
 			b.Config.Region, err = StringArg(c)
+		case "prefix":
+			b.Config.Prefix, err = StringArg(c)
+			if len(b.Config.Prefix) > 0 {
+				b.Config.Prefix = strings.TrimPrefix(b.Config.Prefix,`/`)
+			}
+		case "cdnurl":
+			b.Config.CDNURL, err = StringArg(c)
+			if len(b.Config.CDNURL) > 0 {
+				b.Config.CDNURL = strings.TrimSuffix(b.Config.CDNURL,`/`)
+			}
 		case "secure":
 			b.Config.Secure, err = BoolArg(c)
 		case "refresh":
@@ -265,37 +275,29 @@ const defaultTemplate = `<!DOCTYPE html>
 <html>
 	<head>
 		<title>{{ .ReadableName }} | S3 Browser</title>
-
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-
 		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
 		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/flat-ui/2.3.0/css/flat-ui.min.css">
-
 		<style>
 			body {
 				cursor: default;
 			}
-
 			.navbar {
 				margin-bottom: 20px;
 			}
-
 			.credits {
 				padding-left: 15px;
 				padding-right: 15px;
 			}
-
 			h1 {
 				font-size: 20px;
 				margin: 0;
 			}
-
 			th .glyphicon {
 				font-size: 15px;
 			}
-
 			table .icon {
 				width: 30px;
 			}
@@ -322,13 +324,13 @@ const defaultTemplate = `<!DOCTYPE html>
 				<li>
 					<a href="/"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></a>
 				</li>
-				{{ range .Breadcrumbs }}
+				{{- range .Breadcrumbs -}}
 					<li>
 						<a href="/{{ html .Link }}">
 							{{ html .ReadableName }}
 						</a>
 					</li>
-				{{ end }}
+				{{- end -}}
 			</ol>
 
 			<div class="panel panel-default">
@@ -349,7 +351,7 @@ const defaultTemplate = `<!DOCTYPE html>
 					</thead>
 
 					<tbody>
-						{{ if ne .Path "/" }}
+						{{- if ne .Path "/" -}}
 							<tr>
 								<td>
 									<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
@@ -366,15 +368,15 @@ const defaultTemplate = `<!DOCTYPE html>
 									&mdash;
 								</td>
 							</tr>
-						{{ end }}
-						{{ range .Folders }}
+						{{- end -}}
+						{{- range .Folders -}}
 							<tr>
 								<td class="icon">
 									<span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span>
 								</td>
 								<td class="name">
 									<a href="{{ html .Name }}">
-										{{ .ReadableName }}
+										{{- .ReadableName -}}
 									</a>
 								</td>
 								<td class="size">
@@ -384,27 +386,27 @@ const defaultTemplate = `<!DOCTYPE html>
 									&mdash;
 								</td>
 							</tr>
-						{{ end }}
-						{{ range .Files }}
-							{{ if ne .Name ""}}
+						{{- end -}}
+						{{- range .Files -}}
+							{{- if ne .Name "" -}}
 							<tr>
 								<td class="icon">
 									<span class="glyphicon glyphicon-file" aria-hidden="true"></span>
 								</td>
 								<td class="name">
-									<a href="./{{ html .Name }}">
-										{{ .Name }}
+									<a href="{{ $.CDNURL }}{{ .Folder }}{{ html .Name }}">
+										{{- .Name -}}
 									</a>
 								</td>
 								<td class="size">
-									{{ .HumanSize }}
+									{{- .HumanSize -}}
 								</td>
 								<td class="modified">
-									{{ .HumanModTime "01/02/2006 03:04:05 PM" }}
+									{{- .HumanModTime "01/02/2006 03:04:05 PM" -}}
 								</td>
 							</tr>
-							{{ end }}
-						{{ end }}
+							{{- end -}}
+						{{- end -}}
 					</tbody>
 				</table>
 			</div>

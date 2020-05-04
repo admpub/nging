@@ -119,3 +119,15 @@ proxy / https://{bucket}.{endpoint} {
         </div>
     </div>
 </div>
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{"对象路径"|T}}</label>
+    <div class="col-sm-9">
+        <input type="text" class="form-control" name="s3browser_prefix" value="{{Form `s3browser_prefix`}}" placeholder="">
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-3 control-label">{{"CDN网址"|T}}</label>
+    <div class="col-sm-9">
+        <input type="text" class="form-control" name="s3browser_cdnurl" value="{{Form `s3browser_cdnurl`}}" placeholder="">
+    </div>
+</div>

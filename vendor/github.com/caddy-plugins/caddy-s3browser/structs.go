@@ -8,6 +8,11 @@ import (
 	"github.com/dustin/go-humanize"
 )
 
+type TmplData struct{
+	CDNURL string
+	Directory
+}
+
 type Directory struct {
 	Path    string
 	Folders []Folder
@@ -30,6 +35,8 @@ type Config struct {
 	Bucket   string
 	Secret   string
 	Region   string
+	Prefix   string
+	CDNURL   string
 	Endpoint string
 	Secure   bool
 	Refresh  string
