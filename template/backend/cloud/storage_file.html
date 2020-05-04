@@ -87,7 +87,7 @@
                                 <i class="fa fa-pencil"></i>
                                 </a>
                             </td>
-							<td>{{$v.ModTime.Format "2006-01-02 15:04:05"}}</td>
+							<td>{{if $v.ModTime.IsZero}}&mdash;{{else}}{{$v.ModTime.Format "2006-01-02 15:04:05"}}{{end}}</td>
 							<td>
                                 {{if $v.IsDir}}
                                 {{"文件夹"|T}}
@@ -97,7 +97,7 @@
                                 {{"文件"|T}}
                                 {{end}}
                             </td>
-							<td>{{if $v.IsDir}}-{{else}}{{$v.Size|FormatByte}}{{end}}</td>
+							<td>{{if $v.IsDir}}&mdash;{{else}}{{$v.Size|FormatByte}}{{end}}</td>
 							<td>{{$mode}}</td>
 							<td>
                                 <a title="{{"删除"|T}}" class="label label-danger" href="__BACKEND__/cloud/storage_file?id={{$id}}&do=delete&path={{$pathPrefix}}{{$v.Name}}" onclick="return confirm('{{T "真的要删除“%v”吗？" $v.Name}}');" data-toggle="tooltip">
