@@ -1,6 +1,7 @@
 package standard
 
 import (
+	"context"
 	"net/http"
 	"sync"
 
@@ -112,6 +113,10 @@ func (s *Server) Stop() error {
 		return nil
 	}
 	return s.config.Listener.Close()
+}
+
+func (s *Server) Shutdown(ctx context.Context) error {
+	return s.Server.Shutdown(ctx)
 }
 
 // ServeHTTP implements `http.Handler` interface.

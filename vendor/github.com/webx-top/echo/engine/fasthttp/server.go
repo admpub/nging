@@ -3,6 +3,7 @@
 package fasthttp
 
 import (
+	"context"
 	"sync"
 
 	"github.com/admpub/fasthttp"
@@ -123,6 +124,10 @@ func (s *Server) Stop() error {
 		return nil
 	}
 	return s.config.Listener.Close()
+}
+
+func (s *Server) Shutdown(ctx context.Context) error {
+	return s.Server.Shutdown()
 }
 
 func (s *Server) ServeHTTP(c *fasthttp.RequestCtx) {

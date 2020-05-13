@@ -217,7 +217,7 @@ func (s *StaticOptions) Middleware() echo.MiddlewareFunc {
 }
 
 func listDirByCustomFS(absFile string, file string, c echo.Context, render func(echo.Context, interface{}) error, opener func(string) (http.File, error)) error {
-	d, err := opener(file)
+	d, err := opener(absFile)
 	if err != nil {
 		return echo.ErrNotFound
 	}

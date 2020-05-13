@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"context"
 	"io"
 	"mime/multipart"
 	"net"
@@ -17,6 +18,7 @@ type (
 		SetLogger(logger.Logger)
 		Start() error
 		Stop() error
+		Shutdown(ctx context.Context) error
 	}
 
 	// Request defines an interface for HTTP request.

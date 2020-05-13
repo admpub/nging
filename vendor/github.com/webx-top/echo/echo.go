@@ -1,6 +1,7 @@
 package echo
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -754,6 +755,13 @@ func (e *Echo) Stop() error {
 		return nil
 	}
 	return e.engine.Stop()
+}
+
+func (e *Echo) Shutdown(ctx context.Context) error {
+	if e.engine == nil {
+		return nil
+	}
+	return e.engine.Shutdown(ctx)
 }
 
 func (e *Echo) findRouter(host string) (*Router, []string, []string, bool) {

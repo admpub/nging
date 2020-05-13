@@ -1,6 +1,8 @@
 package defaults
 
 import (
+	"context"
+
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/logger"
@@ -253,6 +255,10 @@ func Engine() engine.Engine {
 // Stop stops the HTTP server.
 func Stop() error {
 	return Default.Stop()
+}
+
+func Shutdown(ctx context.Context) error {
+	return Default.Shutdown(ctx)
 }
 
 func NewContext(req engine.Request, resp engine.Response) echo.Context {
