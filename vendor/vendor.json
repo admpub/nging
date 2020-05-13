@@ -105,16 +105,16 @@
 			"revisionTime": "2019-09-13T05:04:00Z"
 		},
 		{
-			"checksumSHA1": "a/mRKwPc21IGJQipwMDI9mmp8JQ=",
+			"checksumSHA1": "HyHBRBCFo//UEo9Hv8kzWSZfYjc=",
 			"path": "github.com/admpub/fasthttp",
-			"revision": "6422bd0a7ede018d1f12b4d307355af4a24c6437",
-			"revisionTime": "2018-01-14T09:41:02Z"
+			"revision": "30782a96f9e2e7a873eeb47eff3cd2febfb4a01f",
+			"revisionTime": "2020-05-07T14:28:01Z"
 		},
 		{
-			"checksumSHA1": "19tRnsRJUFf00HNKFIyGmREpg9Q=",
+			"checksumSHA1": "tNSP7Shesq2OVE+1CWQad8KOR3o=",
 			"path": "github.com/admpub/fasthttp/stackless",
-			"revision": "6422bd0a7ede018d1f12b4d307355af4a24c6437",
-			"revisionTime": "2018-01-14T09:41:02Z"
+			"revision": "30782a96f9e2e7a873eeb47eff3cd2febfb4a01f",
+			"revisionTime": "2020-05-07T14:28:01Z"
 		},
 		{
 			"checksumSHA1": "WU83rmW7f02qwdERpkr0GJW7Gn8=",

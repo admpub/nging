@@ -134,7 +134,7 @@ var (
 //    * CompressHuffmanOnly
 func AppendGzipBytesLevel(dst, src []byte, level int) []byte {
 	w := &byteSliceWriter{dst}
-	WriteGzipLevel(w, src, level)
+	WriteGzipLevel(w, src, level) //nolint:errcheck
 	return w.b
 }
 
@@ -152,7 +152,6 @@ func WriteGzipLevel(w io.Writer, p []byte, level int) (int, error) {
 	switch w.(type) {
 	case *byteSliceWriter,
 		*bytes.Buffer,
-		*ByteBuffer,
 		*bytebufferpool.ByteBuffer:
 		// These writers don't block, so we can just use stacklessWriteGzip
 		ctx := &compressCtx{
@@ -231,7 +230,7 @@ func AppendGunzipBytes(dst, src []byte) ([]byte, error) {
 //    * CompressHuffmanOnly
 func AppendDeflateBytesLevel(dst, src []byte, level int) []byte {
 	w := &byteSliceWriter{dst}
-	WriteDeflateLevel(w, src, level)
+	WriteDeflateLevel(w, src, level) //nolint:errcheck
 	return w.b
 }
 
@@ -249,7 +248,6 @@ func WriteDeflateLevel(w io.Writer, p []byte, level int) (int, error) {
 	switch w.(type) {
 	case *byteSliceWriter,
 		*bytes.Buffer,
-		*ByteBuffer,
 		*bytebufferpool.ByteBuffer:
 		// These writers don't block, so we can just use stacklessWriteDeflate
 		ctx := &compressCtx{
@@ -409,7 +407,7 @@ func isFileCompressible(f *os.File, minCompressRatio float64) bool {
 	// Try compressing the first 4kb of of the file
 	// and see if it can be compressed by more than
 	// the given minCompressRatio.
-	b := AcquireByteBuffer()
+	b := bytebufferpool.Get()
 	zw := acquireStacklessGzipWriter(b, CompressDefaultCompression)
 	lr := &io.LimitedReader{
 		R: f,
@@ -417,14 +415,14 @@ func isFileCompressible(f *os.File, minCompressRatio float64) bool {
 	}
 	_, err := copyZeroAlloc(zw, lr)
 	releaseStacklessGzipWriter(zw, CompressDefaultCompression)
-	f.Seek(0, 0)
+	f.Seek(0, 0) //nolint:errcheck
 	if err != nil {
 		return false
 	}
 
 	n := 4096 - lr.N
 	zn := len(b.B)
-	ReleaseByteBuffer(b)
+	bytebufferpool.Put(b)
 	return float64(zn) < float64(n)*minCompressRatio
 }
 

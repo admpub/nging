@@ -5,7 +5,7 @@ import (
 	"io"
 	"sync"
 
-	"github.com/valyala/fasthttp/fasthttputil"
+	"github.com/admpub/fasthttp/fasthttputil"
 )
 
 // StreamWriter must write data to w.
