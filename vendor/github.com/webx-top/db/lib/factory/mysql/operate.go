@@ -113,7 +113,7 @@ func MoveToTable(linkID int, dbName string, srcTableName string, destTableName s
 			return 0, err
 		}
 	}
-	sqlStr := "INSERT INTO `" + destTableName + "`"
+	sqlStr := "INSERT IGNORE INTO `" + destTableName + "`"
 	var srcFields, destFields string
 	if len(src2DestFieldMapping) > 0 {
 		var sep string

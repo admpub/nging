@@ -41,6 +41,7 @@ import (
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/license"
 	"github.com/admpub/nging/application/library/msgbox"
+	"github.com/admpub/nging/application/library/config/startup"
 )
 
 // Nging 启动入口
@@ -101,6 +102,8 @@ If you have already purchased a license, please place the ` + license.FileName()
 	fmt.Println(strings.TrimSuffix(figure.NewFigure(event.SoftwareName, `big`, false).String(), "\n"), config.Version.VString()+"\n")
 
 	event.Start()
+	startup.FireBefore(`web`)
+	defer startup.FireAfter(`web`)
 
 	c := &engine.Config{
 		ReusePort:   true,

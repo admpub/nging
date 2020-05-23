@@ -1,4 +1,4 @@
-package initconfig
+package startup
 
 func NewEvent() *Event {
 	return &Event{

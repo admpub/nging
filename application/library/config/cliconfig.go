@@ -33,6 +33,7 @@ import (
 	"github.com/admpub/nging/application/library/caddy"
 	"github.com/admpub/nging/application/library/cron"
 	"github.com/admpub/nging/application/library/frp"
+	"github.com/admpub/nging/application/library/config/startup"
 	"github.com/spf13/pflag"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -71,27 +72,35 @@ func (c *CLIConfig) OnlyRunServer() bool {
 	case `webserver`:
 		caddy.TrapSignals()
 		c.ParseConfig()
+		startup.FireBefore(c.Type)
 		DefaultConfig.Caddy.Init().Start()
+		startup.FireAfter(c.Type)
 		return true
 	case `ftpserver`:
 		c.ParseConfig()
+		startup.FireBefore(c.Type)
 		DefaultConfig.FTP.Init().Start()
+		startup.FireAfter(c.Type)
 		return true
 	case `frpserver`:
+		startup.FireBefore(c.Type)
 		id := c.GenerateIDFromConfigFileName(c.Confx)
 		err := frp.StartServerByConfigFile(c.Confx, c.FRPPidFile(id, true))
 		if err != nil {
 			stdLog.Println(err)
 			os.Exit(1)
 		}
+		startup.FireAfter(c.Type)
 		return true
 	case `frpclient`:
+		startup.FireBefore(c.Type)
 		id := c.GenerateIDFromConfigFileName(c.Confx)
 		err := frp.StartClientByConfigFile(c.Confx, c.FRPPidFile(id, false))
 		if err != nil {
 			stdLog.Println(err)
 			os.Exit(1)
 		}
+		startup.FireAfter(c.Type)
 		return true
 	default:
 		if c.Type == `official` || !event.SupportManager {
@@ -127,32 +136,44 @@ func (c *CLIConfig) RunStartup() {
 		serverType = strings.TrimSpace(serverType)
 		switch serverType {
 		case `webserver`:
+			startup.FireBefore(serverType)
 			if err := DefaultCLIConfig.CaddyRestart(); err != nil {
 				log.Error(err)
 			}
+			startup.FireAfter(serverType)
 
 		case `ftpserver`:
+			startup.FireBefore(serverType)
 			if err := DefaultCLIConfig.FTPRestart(); err != nil {
 				log.Error(err)
 			}
+			startup.FireAfter(serverType)
 
 		case `task`, `cron`: // 继续上次任务
+			startup.FireBefore(`task`)
 			if err := cron.InitJobs(context.Background()); err != nil {
 				log.Error(err)
 			}
+			startup.FireAfter(`task`)
 
 		case `daemon`:
+			startup.FireBefore(serverType)
 			RunDaemon()
+			startup.FireAfter(serverType)
 
 		case `frpserver`:
+			startup.FireBefore(serverType)
 			if err := DefaultCLIConfig.FRPRestart(); err != nil {
 				log.Error(err)
 			}
+			startup.FireAfter(serverType)
 
 		case `frpclient`:
+			startup.FireBefore(serverType)
 			if err := DefaultCLIConfig.FRPClientRestart(); err != nil {
 				log.Error(err)
 			}
+			startup.FireAfter(serverType)
 		}
 	}
 }
