@@ -398,7 +398,9 @@ $(function(){
         var url = $(this).attr('action');
         if(!url) url = window.location.href;
         var data = $(this).serializeArray();
+        App.loading('show');
         $.post(url,data,function(r){
+            App.loading('hide');
             App.message({text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
             if(r.Code==1){
                 window.setTimeout(function(){

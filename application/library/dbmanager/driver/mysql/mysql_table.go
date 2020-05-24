@@ -479,8 +479,12 @@ func (m *mySQL) tableIndexes(table string) (map[string]*Indexes, []string, error
 			ret[v.Key_name.String].Type = `PRIMARY`
 		} else if v.Index_type.String == `FULLTEXT` {
 			ret[v.Key_name.String].Type = `FULLTEXT`
-		} else if v.Non_unique.Valid {
-			ret[v.Key_name.String].Type = `INDEX`
+		} else if v.Non_unique.Valid && param.AsBool(v.Non_unique.String) {
+			if v.Index_type.String == `SPATIAL` {
+				ret[v.Key_name.String].Type = v.Index_type.String
+			} else {
+				ret[v.Key_name.String].Type = `INDEX`
+			}
 		} else {
 			ret[v.Key_name.String].Type = `UNIQUE`
 		}

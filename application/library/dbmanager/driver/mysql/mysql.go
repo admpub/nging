@@ -1388,7 +1388,7 @@ func (m *mySQL) Indexes() error {
 }
 func (m *mySQL) modifyIndexes() error {
 	table := m.Form(`table`)
-	indexTypes := []string{"PRIMARY", "UNIQUE", "INDEX"}
+	indexTypes := []string{"PRIMARY", "UNIQUE", "INDEX", "SPATIAL"}
 	rule := `(?i)MyISAM|M?aria`
 	if com.VersionCompare(m.getVersion(), `5.6`) >= 0 {
 		rule += `|InnoDB`
