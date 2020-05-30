@@ -1,0 +1,82 @@
+{{Extend "layout"}}
+{{Block "title"}}{{Stored.title}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li><a href="__BACKEND__/manager/alert_recipient">{{"警报接收人列表"|T}}</a></li>
+<li class="active">{{Stored.title}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+    <div class="col-md-12">
+        <div class="block-flat">
+          <div class="header">							
+            <h3>{{Stored.title}}</h3>
+          </div>
+          <div class="content">
+              <form class="form-horizontal group-border-dashed" method="POST" action="">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"名称"|T}}</label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control" required id="alert_recipient-name" name="name" value="{{Form "name"}}">
+                </div>
+                <label class="col-sm-2 control-label">{{"账号"|T}}</label>
+                <div class="col-sm-4">
+                  <input class="form-control" type="text" name="account" value="{{Form "account"}}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"类型"|T}}</label>
+                <div class="col-sm-4">
+                  {{$v := Form "type"}}
+                  <div class="radio radio-primary radio-inline">
+                      <input type="radio" value="email" id="type-email" name="type"{{if or (eq $v "email") (eq $v "")}} checked{{end}}> <label for="type-email">email</label>
+                  </div>
+                  <div class="radio radio-primary radio-inline">
+                      <input type="radio" value="webhook" id="type-webhook" name="type"{{if eq $v "webhook"}} checked{{end}}> 
+                      <label for="type-webhook">webhook</label>
+                  </div>
+                  <div class="help-block">{{`选择发送的类型`|T}}</div>
+                </div>
+                <label class="col-sm-2 control-label">{{"平台"|T}}</label>
+                <div class="col-sm-4">
+                  {{$v := Form "platform"}}
+                  {{range $key,$val := Stored.platforms}}
+                  <div class="radio radio-primary radio-inline">
+                      <input type="radio" value="{{$val.K}}" id="platform-{{$key}}" name="platform"{{if eq $v $val.K}} checked{{end}}> <label for="platform-{{$key}}">{{$val.V}}</label>
+                  </div>
+                  {{end}}
+                  <div class="help-block">{{`webhook时有效`|T}}</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"扩展信息"|T}}</label>
+                <div class="col-sm-10">
+                  <textarea class="form-control" rows="5">{{Form "extra"}}</textarea>
+                  <div class="help-block">{{`JSON格式。在webhook类型，支持设置at值，例如：`|T}}<code>{"at":["132********","188********","其它手机号"]}</code></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"状态"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "disabled"}}
+                  <div class="radio radio-success radio-inline">
+                      <input type="radio" value="N" id="disabled-N" name="disabled"{{if or (eq $v "N") (eq $v "")}} checked{{end}}> <label for="disabled-N">{{"启用"|T}}</label>
+                  </div>
+                  <div class="radio radio-danger radio-inline">
+                      <input type="radio" value="Y" id="disabled-Y" name="disabled"{{if eq $v "Y"}} checked{{end}}> 
+                      <label for="disabled-Y">{{"禁用"|T}}</label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group form-submit-group">
+									<div class="col-sm-9 col-sm-offset-2">
+									  <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-save"></i> {{"保存"|T}}</button>
+									  <button type="reset" class="btn btn-default btn-lg"><i class="fa fa-refresh"></i> {{"重置"|T}}</button>
+									</div>
+							</div>
+            </form>
+          </div><!-- /.content -->
+        </div><!-- /.block-flat -->
+    </div>
+</div>
+{{/Block}}
