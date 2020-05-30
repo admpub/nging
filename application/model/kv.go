@@ -20,6 +20,7 @@ package model
 
 import (
 	"strings"
+	"time"
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
@@ -94,6 +95,7 @@ func (s *Kv) Add() (pk interface{}, err error) {
 	if err = s.check(); err != nil {
 		return nil, err
 	}
+	s.NgingKv.Updated = uint(time.Now().Unix())
 	return s.NgingKv.Add()
 }
 
@@ -102,6 +104,10 @@ func (s *Kv) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error)
 		return err
 	}
 	return s.NgingKv.Edit(mw, args...)
+}
+
+func (s *Kv) IsRootType(typ string) bool {
+	return typ == KvRootType
 }
 
 func (s *Kv) SetSingleField(id int, field string, value string) error {
@@ -115,11 +121,16 @@ func (s *Kv) SetSingleField(id int, field string, value string) error {
 	return s.SetFields(nil, set, `id`, id)
 }
 
-func (s *Kv) KvTypeList() []*dbschema.NgingKv {
+func (s *Kv) KvTypeList(excludeIDs ...uint) []*dbschema.NgingKv {
+	cond := db.NewCompounds()
+	cond.AddKV(`type`, KvRootType)
+	if len(excludeIDs) > 0 && excludeIDs[0] > 0 {
+		cond.AddKV(`id`, db.NotEq(excludeIDs[0]))
+	}
 	_, err := s.ListByOffset(nil, func(r db.Result) db.Result {
 		return r.OrderBy(`sort`)
-	}, 0, -1, `type`, KvRootType)
-	if err != nil {
+	}, 0, -1, cond.And())
+	if err == nil {
 		return s.Objects()
 	}
 	return nil

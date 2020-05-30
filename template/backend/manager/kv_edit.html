@@ -23,8 +23,8 @@
                               <option value="root">{{`根类型`}}</option>
                               </optgroup>
                               <optgroup label="{{`类型`}}">
-                              {{- range $k, $v := Stored.typeList -}}
-                              <option value="{{$v.Key}}"{{if eq $v.Key $v}} selected="selected"{{end}}>{{$v.Value}}</option>
+                              {{- range $key, $row := Stored.typeList -}}
+                              <option value="{{$row.Key}}"{{if eq $row.Key $v}} selected="selected"{{end}}>{{$row.Value}}</option>
                               {{- end -}}
                               </optgroup>
                           </select>

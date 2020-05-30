@@ -19,7 +19,9 @@
 package manager
 
 import (
+	"github.com/admpub/nging/application/dbschema"
 	"github.com/webx-top/db"
+	"github.com/webx-top/db/lib/factory/mysql"
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/handler"
@@ -29,16 +31,30 @@ import (
 func KvIndex(ctx echo.Context) error {
 	m := model.NewKv(ctx)
 	cond := db.Compounds{}
+	t := ctx.Formx(`type`).String()
+	if len(t) > 0 {
+		cond.AddKV(`type`, t)
+	}
 	q := ctx.Formx(`q`).String()
 	if len(q) > 0 {
-		cond.AddKV(`name`, q)
+		cond.AddKV(`key`, q)
+		cond.From(mysql.MatchAnyField(`value`, q))
 	}
 	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, nil, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
 	}, cond.And()))
 	ctx.Set(`listData`, m.Objects())
 	ctx.Set(`title`, ctx.E(`元数据`))
-	ctx.Set(`typeList`, m.KvTypeList())
+	typeList := m.KvTypeList()
+	ctx.Set(`typeList`, typeList)
+	ctx.SetFunc(`typeName`, func(key string) string {
+		for _, row := range typeList {
+			if row.Key == key {
+				return row.Value
+			}
+		}
+		return ``
+	})
 	return ctx.Render(`/manager/kv`, handler.Err(ctx, err))
 }
 
@@ -85,7 +101,13 @@ func KvEdit(ctx echo.Context) error {
 
 	ctx.Set(`activeURL`, `/manager/kv`)
 	ctx.Set(`title`, ctx.E(`修改元数据`))
-	ctx.Set(`typeList`, m.KvTypeList())
+	var typeList []*dbschema.NgingKv
+	if m.IsRootType(m.Type) {
+		typeList = m.KvTypeList(m.Id)
+	} else {
+		typeList = m.KvTypeList()
+	}
+	ctx.Set(`typeList`, typeList)
 	return ctx.Render(`/manager/kv_edit`, handler.Err(ctx, err))
 }
 

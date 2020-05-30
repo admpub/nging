@@ -85,6 +85,19 @@ func IsRangeField(keywords string) bool {
 	return len(searchIDRule.FindString(keywords)) > 0
 }
 
+func MatchAnyFields(fields []string, keywords string, idFields ...string) *db.Compounds {
+	return SearchFields(fields, keywords, idFields...)
+}
+
+func MatchAnyField(field string, keywords string, idFields ...string) *db.Compounds {
+	if len(field) == 0 {
+		return db.NewCompounds()
+	}
+	field = strings.Trim(field, `,`)
+	fields := strings.Split(field, `,`)
+	return SearchFields(fields, keywords, idFields...)
+}
+
 // SearchFields 搜索某个字段(多个字段任一匹配)
 // @param fields 字段名
 // @param keywords 关键词
@@ -154,12 +167,28 @@ func SearchFields(fields []string, keywords string, idFields ...string) *db.Comp
 	return cd.Add(cond.Or())
 }
 
+func MatchAllFields(fields []string, keywords string, idFields ...string) *db.Compounds {
+	return searchAllFields(fields, keywords, idFields...)
+}
+
+func MatchAllField(field string, keywords string, idFields ...string) *db.Compounds {
+	return SearchField(field, keywords, idFields...)
+}
+
 // SearchField 搜索某个字段(多个字段同时匹配)
 // @param field 字段名。支持搜索多个字段，各个字段之间用半角逗号“,”隔开
 // @param keywords 关键词
 // @param idFields 如要搜索id字段需要提供id字段名
 // @author swh <swh@admpub.com>
 func SearchField(field string, keywords string, idFields ...string) *db.Compounds {
+	if strings.Contains(field, ",") {
+		fields := strings.Split(field, ",")
+		return searchAllFields(fields, keywords, idFields...)
+	}
+	return searchAllField(field, keywords, idFields...)
+}
+
+func searchAllField(field string, keywords string, idFields ...string) *db.Compounds {
 	cd := db.NewCompounds()
 	if len(keywords) == 0 || len(field) == 0 {
 		return cd
@@ -185,44 +214,6 @@ func SearchField(field string, keywords string, idFields ...string) *db.Compound
 	})
 	kws := searchMultiKwRule.Split(keywords, -1)
 	kws = append(kws, paragraphs...)
-	if strings.Contains(field, ",") {
-		fs := strings.Split(field, ",")
-		for _, v := range kws {
-			v = strings.TrimSpace(v)
-			if len(v) == 0 {
-				continue
-			}
-			var values []string
-			if strings.Contains(v, "||") {
-				for _, val := range strings.Split(v, "||") {
-					val = com.AddSlashes(val, '_', '%')
-					values = append(values, val)
-				}
-			} else {
-				v = com.AddSlashes(v, '_', '%')
-				values = append(values, v)
-			}
-			_cond := db.NewCompounds()
-			for _, f := range fs {
-				var isEq bool
-				if len(f) > 1 && f[0] == '=' {
-					isEq = true
-					f = f[1:]
-				}
-				c := db.NewCompounds()
-				for _, val := range values {
-					if isEq {
-						c.AddKV(f, val)
-					} else {
-						c.AddKV(f, db.Like(`%`+val+`%`))
-					}
-				}
-				_cond.Add(c.Or())
-			}
-			cd.From(_cond)
-		}
-		return cd
-	}
 	var isEq bool
 	if len(field) > 1 && field[0] == '=' {
 		isEq = true
@@ -253,6 +244,69 @@ func SearchField(field string, keywords string, idFields ...string) *db.Compound
 			v = com.AddSlashes(v, '_', '%')
 			cd.AddKV(field, db.Like(`%`+v+`%`))
 		}
+	}
+	return cd
+}
+
+func searchAllFields(fields []string, keywords string, idFields ...string) *db.Compounds {
+	cd := db.NewCompounds()
+	if len(keywords) == 0 || len(fields) == 0 {
+		return cd
+	}
+	var idField string
+	if len(idFields) > 0 {
+		idField = idFields[0]
+	}
+	keywords = strings.TrimSpace(keywords)
+	if len(idField) > 0 {
+		switch {
+		case IsCompareField(keywords):
+			return cd.Add(CompareField(idField, keywords))
+		case IsRangeField(keywords):
+			return RangeField(idField, keywords)
+		}
+	}
+	var paragraphs []string
+	keywords = searchParagraphRule.ReplaceAllStringFunc(keywords, func(paragraph string) string {
+		paragraph = strings.Trim(paragraph, `"`)
+		paragraphs = append(paragraphs, paragraph)
+		return ""
+	})
+	kws := searchMultiKwRule.Split(keywords, -1)
+	kws = append(kws, paragraphs...)
+	for _, v := range kws {
+		v = strings.TrimSpace(v)
+		if len(v) == 0 {
+			continue
+		}
+		var values []string
+		if strings.Contains(v, "||") {
+			for _, val := range strings.Split(v, "||") {
+				val = com.AddSlashes(val, '_', '%')
+				values = append(values, val)
+			}
+		} else {
+			v = com.AddSlashes(v, '_', '%')
+			values = append(values, v)
+		}
+		_cond := db.NewCompounds()
+		for _, field := range fields {
+			var isEq bool
+			if len(field) > 1 && field[0] == '=' {
+				isEq = true
+				field = field[1:]
+			}
+			c := db.NewCompounds()
+			for _, val := range values {
+				if isEq {
+					c.AddKV(field, val)
+				} else {
+					c.AddKV(field, db.Like(`%`+val+`%`))
+				}
+			}
+			_cond.Add(c.Or())
+		}
+		cd.From(_cond)
 	}
 	return cd
 }
