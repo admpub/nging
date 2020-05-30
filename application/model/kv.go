@@ -136,6 +136,21 @@ func (s *Kv) KvTypeList(excludeIDs ...uint) []*dbschema.NgingKv {
 	return nil
 }
 
+func (s *Kv) ListByType(typ string, excludeIDs ...uint) []*dbschema.NgingKv {
+	cond := db.NewCompounds()
+	cond.AddKV(`type`, typ)
+	if len(excludeIDs) > 0 && excludeIDs[0] > 0 {
+		cond.AddKV(`id`, db.NotEq(excludeIDs[0]))
+	}
+	_, err := s.ListByOffset(nil, func(r db.Result) db.Result {
+		return r.OrderBy(`sort`)
+	}, 0, -1, cond.And())
+	if err == nil {
+		return s.Objects()
+	}
+	return nil
+}
+
 func (s *Kv) GetFromTypeList(typeList []*dbschema.NgingKv, key string) string {
 	if key == KvRootType {
 		return KvRootType
