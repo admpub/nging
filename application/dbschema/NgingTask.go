@@ -473,6 +473,10 @@ func (a *NgingTask) Count(mw func(db.Result) db.Result, args ...interface{}) (in
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingTask) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingTask) Reset() *NgingTask {
 	a.Id = 0
 	a.Uid = 0

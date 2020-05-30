@@ -455,6 +455,10 @@ func (a *NgingFileEmbedded) Count(mw func(db.Result) db.Result, args ...interfac
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingFileEmbedded) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingFileEmbedded) Reset() *NgingFileEmbedded {
 	a.Id = 0
 	a.Project = ``

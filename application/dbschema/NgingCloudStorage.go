@@ -465,6 +465,10 @@ func (a *NgingCloudStorage) Count(mw func(db.Result) db.Result, args ...interfac
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingCloudStorage) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingCloudStorage) Reset() *NgingCloudStorage {
 	a.Id = 0
 	a.Name = ``

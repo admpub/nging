@@ -461,6 +461,10 @@ func (a *NgingConfig) Count(mw func(db.Result) db.Result, args ...interface{}) (
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingConfig) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingConfig) Reset() *NgingConfig {
 	a.Key = ``
 	a.Group = ``

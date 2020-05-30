@@ -462,6 +462,10 @@ func (a *NgingFtpUserGroup) Count(mw func(db.Result) db.Result, args ...interfac
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingFtpUserGroup) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingFtpUserGroup) Reset() *NgingFtpUserGroup {
 	a.Id = 0
 	a.Name = ``

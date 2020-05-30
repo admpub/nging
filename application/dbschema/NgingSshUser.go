@@ -469,6 +469,10 @@ func (a *NgingSshUser) Count(mw func(db.Result) db.Result, args ...interface{}) 
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingSshUser) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingSshUser) Reset() *NgingSshUser {
 	a.Id = 0
 	a.Uid = 0

@@ -427,6 +427,10 @@ func (a *NgingTaskGroup) Count(mw func(db.Result) db.Result, args ...interface{}
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingTaskGroup) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingTaskGroup) Reset() *NgingTaskGroup {
 	a.Id = 0
 	a.Uid = 0

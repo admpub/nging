@@ -381,6 +381,10 @@ func (t *Transaction) Count(param *Param) (int64, error) {
 	return param.Total, err
 }
 
+func (t *Transaction) Exists(param *Param) (bool, error) {
+	return t.Result(param).OrderBy().Exists()
+}
+
 // Write ==========================
 
 func (t *Transaction) Insert(param *Param) (interface{}, error) {

@@ -99,7 +99,7 @@ func DefaultEncoder(v *dbschema.NgingConfig, value string) string {
 	case `url`, `image`, `video`, `audio`, `file`:
 		value = common.MyCleanText(value)
 
-	case `newsid`, `prodid`, `text`:
+	case `id`, `text`:
 		value = com.StripTags(value)
 
 	case `json`:

@@ -488,6 +488,10 @@ func (a *NgingUser) Count(mw func(db.Result) db.Result, args ...interface{}) (in
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingUser) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingUser) Reset() *NgingUser {
 	a.Id = 0
 	a.Username = ``

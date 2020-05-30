@@ -441,6 +441,10 @@ func (a *NgingCollectorGroup) Count(mw func(db.Result) db.Result, args ...interf
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingCollectorGroup) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingCollectorGroup) Reset() *NgingCollectorGroup {
 	a.Id = 0
 	a.Uid = 0

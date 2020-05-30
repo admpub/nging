@@ -22,8 +22,8 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/registry/upload/helper"
 	_ "github.com/admpub/nging/application/handler/manager/file"
+	"github.com/admpub/nging/application/registry/upload/helper"
 )
 
 func init() {
@@ -54,6 +54,10 @@ func init() {
 		g.Route(`GET,POST`, `/alert_recipient_test`, AlertRecipientTest)
 		g.Route(`GET,POST`, `/alert_recipient_edit`, AlertRecipientEdit)
 		g.Route(`GET,POST`, `/alert_recipient_delete`, AlertRecipientDelete)
+		g.Route(`GET,POST`, `/kv`, KvIndex)
+		g.Route(`GET,POST`, `/kv_add`, KvAdd)
+		g.Route(`GET,POST`, `/kv_edit`, KvEdit)
+		g.Route(`GET,POST`, `/kv_delete`, KvDelete)
 	})
 
 }

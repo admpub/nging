@@ -50,16 +50,14 @@ type User struct {
 }
 
 func (u *User) Exists(username string) (bool, error) {
-	n, e := u.Param(nil, db.Cond{`username`: username}).Count()
-	return n > 0, e
+	return u.NgingUser.Exists(nil, db.Cond{`username`: username})
 }
 
 func (u *User) Exists2(username string, excludeUID uint) (bool, error) {
-	n, e := u.Param(nil, db.And(
+	return u.NgingUser.Exists(nil, db.And(
 		db.Cond{`username`: username},
 		db.Cond{`id`: db.NotEq(excludeUID)},
-	)).Count()
-	return n > 0, e
+	))
 }
 
 func (u *User) CheckPasswd(username string, password string) (exists bool, err error) {

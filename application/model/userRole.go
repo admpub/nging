@@ -44,8 +44,7 @@ type UserRole struct {
 }
 
 func (u *UserRole) Exists(name string) (bool, error) {
-	n, e := u.Param(nil, db.Cond{`name`: name}).Count()
-	return n > 0, e
+	return u.NgingUserRole.Exists(nil, db.Cond{`name`: name})
 }
 
 func (u *UserRole) ListByUser(user *dbschema.NgingUser) (roleList []*dbschema.NgingUserRole) {
@@ -73,11 +72,10 @@ func (u *UserRole) CheckPerm2(roleList []*dbschema.NgingUserRole, perm string) (
 }
 
 func (u *UserRole) Exists2(name string, excludeID uint) (bool, error) {
-	n, e := u.Param(nil, db.And(
+	return u.NgingUserRole.Exists(nil, db.And(
 		db.Cond{`name`: name},
 		db.Cond{`id`: db.NotEq(excludeID)},
-	)).Count()
-	return n > 0, e
+	))
 }
 
 func (u *UserRole) CleanPermAction(values []string) *UserRole {

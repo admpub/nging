@@ -42,16 +42,14 @@ type Command struct {
 }
 
 func (u *Command) Exists(name string) (bool, error) {
-	n, e := u.Param(nil, db.Cond{`name`: name}).Count()
-	return n > 0, e
+	return u.NgingCommand.Exists(nil, db.Cond{`name`: name})
 }
 
 func (u *Command) Exists2(name string, excludeID uint) (bool, error) {
-	n, e := u.Param(nil, db.And(
+	return u.NgingCommand.Exists(nil, db.And(
 		db.Cond{`name`: name},
 		db.Cond{`id`: db.NotEq(excludeID)},
-	)).Count()
-	return n > 0, e
+	))
 }
 
 func (u *Command) CreateCmd() *exec.Cmd {

@@ -28,6 +28,8 @@ import (
 	"github.com/admpub/nging/application/model/base"
 )
 
+const KvRootType = `root`
+
 func NewKv(ctx echo.Context) *Kv {
 	m := &Kv{
 		NgingKv: &dbschema.NgingKv{},
@@ -54,6 +56,28 @@ func (s *Kv) check() error {
 	s.Type = strings.TrimSpace(s.Type)
 	if len(s.Type) == 0 {
 		return s.base.E(`类型不能为空`)
+	}
+	var (
+		exists bool
+		err    error
+	)
+	if s.Id > 0 { // edit
+		exists, err = s.Exists(nil, db.And(
+			db.Cond{`key`: s.Key},
+			db.Cond{`type`: s.Type},
+			db.Cond{`id`: db.NotEq(s.Id)},
+		))
+	} else {
+		exists, err = s.Exists(nil, db.And(
+			db.Cond{`key`: s.Key},
+			db.Cond{`type`: s.Type},
+		))
+	}
+	if err != nil {
+		return err
+	}
+	if exists {
+		return s.base.E(`键"%v"已经存在`, s.Key)
 	}
 	return nil
 }
@@ -89,4 +113,14 @@ func (s *Kv) SetSingleField(id int, field string, value string) error {
 		return s.base.E(`不支持修改字段: %v`, field)
 	}
 	return s.SetFields(nil, set, `id`, id)
+}
+
+func (s *Kv) KvTypeList() []*dbschema.NgingKv {
+	_, err := s.ListByOffset(nil, func(r db.Result) db.Result {
+		return r.OrderBy(`sort`)
+	}, 0, -1, `type`, KvRootType)
+	if err != nil {
+		return s.Objects()
+	}
+	return nil
 }

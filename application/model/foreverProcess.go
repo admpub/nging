@@ -40,8 +40,7 @@ type ForeverProcess struct {
 }
 
 func (u *ForeverProcess) Exists(name string) (bool, error) {
-	n, e := u.Param(nil, db.Cond{`name`: name}).Count()
-	return n > 0, e
+	return u.NgingForeverProcess.Exists(nil, db.Cond{`name`: name})
 }
 
 func (u *ForeverProcess) Add() (pk interface{}, err error) {
@@ -54,11 +53,10 @@ func (u *ForeverProcess) Edit(mw func(db.Result) db.Result, args ...interface{})
 }
 
 func (u *ForeverProcess) Exists2(name string, excludeID uint) (bool, error) {
-	n, e := u.Param(nil, db.And(
+	return u.NgingForeverProcess.Exists(nil, db.And(
 		db.Cond{`name`: name},
 		db.Cond{`id`: db.NotEq(excludeID)},
-	)).Count()
-	return n > 0, e
+	))
 }
 
 func (u *ForeverProcess) EnvSlice() []string {

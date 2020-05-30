@@ -38,14 +38,12 @@ type Invitation struct {
 }
 
 func (u *Invitation) Exists(code string) (bool, error) {
-	n, e := u.Param(nil, db.Cond{`code`: code}).Count()
-	return n > 0, e
+	return u.NgingCodeInvitation.Exists(nil, db.Cond{`code`: code})
 }
 
 func (u *Invitation) Exists2(code string, excludeID uint) (bool, error) {
-	n, e := u.Param(nil, db.And(
+	return u.NgingCodeInvitation.Exists(nil, db.And(
 		db.Cond{`code`: code},
 		db.Cond{`id`: db.NotEq(excludeID)},
-	)).Count()
-	return n > 0, e
+	))
 }

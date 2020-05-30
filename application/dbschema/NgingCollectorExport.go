@@ -464,6 +464,10 @@ func (a *NgingCollectorExport) Count(mw func(db.Result) db.Result, args ...inter
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingCollectorExport) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingCollectorExport) Reset() *NgingCollectorExport {
 	a.Id = 0
 	a.PageRoot = 0

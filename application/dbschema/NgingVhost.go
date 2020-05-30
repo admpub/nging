@@ -445,6 +445,10 @@ func (a *NgingVhost) Count(mw func(db.Result) db.Result, args ...interface{}) (i
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingVhost) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingVhost) Reset() *NgingVhost {
 	a.Id = 0
 	a.Name = ``

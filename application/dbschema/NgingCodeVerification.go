@@ -481,6 +481,10 @@ func (a *NgingCodeVerification) Count(mw func(db.Result) db.Result, args ...inte
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingCodeVerification) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingCodeVerification) Reset() *NgingCodeVerification {
 	a.Id = 0
 	a.Code = ``

@@ -426,6 +426,10 @@ func (a *NgingDbSyncLog) Count(mw func(db.Result) db.Result, args ...interface{}
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingDbSyncLog) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingDbSyncLog) Reset() *NgingDbSyncLog {
 	a.Id = 0
 	a.SyncId = 0

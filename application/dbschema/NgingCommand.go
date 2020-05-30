@@ -464,6 +464,10 @@ func (a *NgingCommand) Count(mw func(db.Result) db.Result, args ...interface{}) 
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingCommand) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingCommand) Reset() *NgingCommand {
 	a.Id = 0
 	a.Name = ``

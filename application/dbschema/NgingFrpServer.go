@@ -622,6 +622,10 @@ func (a *NgingFrpServer) Count(mw func(db.Result) db.Result, args ...interface{}
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingFrpServer) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingFrpServer) Reset() *NgingFrpServer {
 	a.Id = 0
 	a.Name = ``

@@ -49,23 +49,24 @@ type FtpUser struct {
 }
 
 func (f *FtpUser) Exists(username string) (bool, error) {
-	n, e := f.Param(nil, db.Cond{`username`: username}).Count()
-	return n > 0, e
+	return f.NgingFtpUser.Exists(nil, db.Cond{`username`: username})
 }
 
 func (f *FtpUser) CheckPasswd(username string, password string) (bool, error) {
-	n, e := f.Param(nil, db.Cond{
+	exists, err := f.NgingFtpUser.Exists(nil, db.Cond{
 		`username`: username,
 		`password`: com.MakePassword(password, DefaultSalt),
-	}).Count()
-	y := n > 0
-	if y {
-		_, e = f.RootPath(username)
-		if e != nil {
-			y = false
+	})
+	if err != nil {
+		return exists, err
+	}
+	if exists {
+		_, err = f.RootPath(username)
+		if err != nil {
+			exists = false
 		}
 	}
-	return y, e
+	return exists, err
 }
 
 var (

@@ -441,6 +441,10 @@ func (a *NgingCollectorExportLog) Count(mw func(db.Result) db.Result, args ...in
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingCollectorExportLog) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingCollectorExportLog) Reset() *NgingCollectorExportLog {
 	a.Id = 0
 	a.PageId = 0

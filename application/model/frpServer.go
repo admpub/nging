@@ -49,6 +49,5 @@ func (f *FrpServer) Exists(name string, excludeIds ...uint) (bool, error) {
 	if len(excludeIds) > 0 {
 		cond[`id`] = db.NotEq(excludeIds[0])
 	}
-	n, e := f.Param(nil, cond).Count()
-	return n > 0, e
+	return f.NgingFrpServer.Exists(nil, cond)
 }

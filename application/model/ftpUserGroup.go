@@ -39,13 +39,11 @@ type FtpUserGroup struct {
 }
 
 func (f *FtpUserGroup) Exists(name string) (bool, error) {
-	n, e := f.Param(nil, db.Cond{`name`: name}).Count()
-	return n > 0, e
+	return f.NgingFtpUserGroup.Exists(nil, db.Cond{`name`: name})
 }
 
 func (f *FtpUserGroup) ExistsOther(name string, id uint) (bool, error) {
-	n, e := f.Param(nil, db.Cond{`name`: name, `id <>`: id}).Count()
-	return n > 0, e
+	return f.NgingFtpUserGroup.Exists(nil, db.Cond{`name`: name, `id <>`: id})
 }
 
 func (f *FtpUserGroup) ListByActive(page int, size int) (func() int64, []*dbschema.NgingFtpUserGroup, error) {

@@ -506,6 +506,10 @@ func (a *NgingCollectorPage) Count(mw func(db.Result) db.Result, args ...interfa
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingCollectorPage) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingCollectorPage) Reset() *NgingCollectorPage {
 	a.Id = 0
 	a.ParentId = 0

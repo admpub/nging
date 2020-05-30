@@ -39,11 +39,49 @@ var TopNavigate = &List{
 				Name:          `系统设置`,
 				Action:        `settings`,
 			},
+			//元数据操作
+			{
+				DisplayOnMenu: true,
+				Name:          `元数据`,
+				Action:        `kv`,
+			},
+			{
+				DisplayOnMenu: false,
+				Name:          `添加元数据`,
+				Action:        `kv_add`,
+			},
+			{
+				DisplayOnMenu: false,
+				Name:          `修改元数据`,
+				Action:        `kv_edit`,
+			},
+			{
+				DisplayOnMenu: false,
+				Name:          `删除元数据`,
+				Action:        `kv_delete`,
+			},
+			//警报接收人操作
 			{
 				DisplayOnMenu: true,
 				Name:          `警报接收人`,
 				Action:        `alert_recipient`,
 			},
+			{
+				DisplayOnMenu: false,
+				Name:          `添加警报接收人`,
+				Action:        `alert_recipient_add`,
+			},
+			{
+				DisplayOnMenu: false,
+				Name:          `修改警报接收人`,
+				Action:        `alert_recipient_edit`,
+			},
+			{
+				DisplayOnMenu: false,
+				Name:          `删除警报接收人`,
+				Action:        `alert_recipient_delete`,
+			},
+			//用户管理
 			{
 				DisplayOnMenu: true,
 				Name:          `用户管理`,
@@ -56,6 +94,17 @@ var TopNavigate = &List{
 				Icon:          `plus`,
 			},
 			{
+				DisplayOnMenu: false,
+				Name:          `修改用户`,
+				Action:        `user_edit`,
+			},
+			{
+				DisplayOnMenu: false,
+				Name:          `删除用户`,
+				Action:        `user_delete`,
+			},
+			//角色管理
+			{
 				DisplayOnMenu: true,
 				Name:          `角色管理`,
 				Action:        `role`,
@@ -67,26 +116,6 @@ var TopNavigate = &List{
 				Icon:          `plus`,
 			},
 			{
-				DisplayOnMenu: true,
-				Name:          `邀请码`,
-				Action:        `invitation`,
-			},
-			{
-				DisplayOnMenu: true,
-				Name:          `验证码`,
-				Action:        `verification`,
-			},
-			{
-				DisplayOnMenu: false,
-				Name:          `修改用户`,
-				Action:        `user_edit`,
-			},
-			{
-				DisplayOnMenu: false,
-				Name:          `删除用户`,
-				Action:        `user_delete`,
-			},
-			{
 				DisplayOnMenu: false,
 				Name:          `修改角色`,
 				Action:        `role_edit`,
@@ -95,6 +124,12 @@ var TopNavigate = &List{
 				DisplayOnMenu: false,
 				Name:          `删除角色`,
 				Action:        `role_delete`,
+			},
+			//邀请码管理
+			{
+				DisplayOnMenu: true,
+				Name:          `邀请码`,
+				Action:        `invitation`,
 			},
 			{
 				DisplayOnMenu: false,
@@ -110,6 +145,12 @@ var TopNavigate = &List{
 				DisplayOnMenu: false,
 				Name:          `删除邀请码`,
 				Action:        `invitation_delete`,
+			},
+			//验证码管理
+			{
+				DisplayOnMenu: true,
+				Name:          `验证码`,
+				Action:        `verification`,
 			},
 			{
 				DisplayOnMenu: false,

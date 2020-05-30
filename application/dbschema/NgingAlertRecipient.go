@@ -463,6 +463,10 @@ func (a *NgingAlertRecipient) Count(mw func(db.Result) db.Result, args ...interf
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingAlertRecipient) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingAlertRecipient) Reset() *NgingAlertRecipient {
 	a.Id = 0
 	a.Name = ``

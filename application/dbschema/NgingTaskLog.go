@@ -442,6 +442,10 @@ func (a *NgingTaskLog) Count(mw func(db.Result) db.Result, args ...interface{}) 
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingTaskLog) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingTaskLog) Reset() *NgingTaskLog {
 	a.Id = 0
 	a.TaskId = 0

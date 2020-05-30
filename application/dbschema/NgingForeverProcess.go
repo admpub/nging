@@ -494,6 +494,10 @@ func (a *NgingForeverProcess) Count(mw func(db.Result) db.Result, args ...interf
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingForeverProcess) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingForeverProcess) Reset() *NgingForeverProcess {
 	a.Id = 0
 	a.Uid = 0

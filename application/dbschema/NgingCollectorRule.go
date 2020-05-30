@@ -443,6 +443,10 @@ func (a *NgingCollectorRule) Count(mw func(db.Result) db.Result, args ...interfa
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingCollectorRule) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingCollectorRule) Reset() *NgingCollectorRule {
 	a.Id = 0
 	a.PageId = 0

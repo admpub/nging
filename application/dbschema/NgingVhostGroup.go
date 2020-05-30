@@ -423,6 +423,10 @@ func (a *NgingVhostGroup) Count(mw func(db.Result) db.Result, args ...interface{
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingVhostGroup) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingVhostGroup) Reset() *NgingVhostGroup {
 	a.Id = 0
 	a.Uid = 0

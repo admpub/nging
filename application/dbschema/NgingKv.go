@@ -424,6 +424,10 @@ func (a *NgingKv) Count(mw func(db.Result) db.Result, args ...interface{}) (int6
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingKv) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingKv) Reset() *NgingKv {
 	a.Id = 0
 	a.Key = ``

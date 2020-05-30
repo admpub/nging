@@ -425,6 +425,10 @@ func (a *NgingFileThumb) Count(mw func(db.Result) db.Result, args ...interface{}
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingFileThumb) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingFileThumb) Reset() *NgingFileThumb {
 	a.Id = 0
 	a.FileId = 0

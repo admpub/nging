@@ -424,6 +424,10 @@ func (a *NgingUserU2f) Count(mw func(db.Result) db.Result, args ...interface{}) 
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingUserU2f) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingUserU2f) Reset() *NgingUserU2f {
 	a.Id = 0
 	a.Uid = 0

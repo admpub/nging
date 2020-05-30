@@ -501,6 +501,10 @@ func (a *NgingSendingLog) Count(mw func(db.Result) db.Result, args ...interface{
 	return a.Param(mw, args...).Count()
 }
 
+func (a *NgingSendingLog) Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error) {
+	return a.Param(mw, args...).Exists()
+}
+
 func (a *NgingSendingLog) Reset() *NgingSendingLog {
 	a.Id = 0
 	a.Created = 0
