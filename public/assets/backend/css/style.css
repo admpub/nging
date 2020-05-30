@@ -654,8 +654,15 @@ body.modal-open,
   display: table-cell;
   border-right: 1px solid #E9E9E9;
 }
+.page-aside.sm-width{
+  width: 230px;
+  min-width: 230px;
+}
 .page-aside > div {
   width: 280px;
+}
+.page-aside.sm-width > div {
+  width: 230px;
 }
 .page-aside div.fixed {
   position: fixed;
@@ -666,7 +673,7 @@ body.modal-open,
 }
 .sp_results > li{width:100%}
 @media (max-width: 767px) {
-  .page-aside {
+  .page-aside, .page-aside.sm-width {
     width: 100%;
     display: block;
     height: auto;
@@ -1604,6 +1611,10 @@ body.texture {
 .page-aside.app .app-nav.sm-line-height ul.nav li a {
   padding-top: 5px;padding-bottom: 5px;
 }
+.page-aside.email .mail-nav.md-line-height ul li a,
+.page-aside.app .app-nav.md-line-height ul.nav li a {
+  padding-top: 8px;padding-bottom: 8px;
+}
 .page-aside.email .mail-nav ul li a:hover,
 .page-aside.app .app-nav ul.nav li a:hover {
   background: rgba(0, 0, 0, 0.01);
@@ -1612,6 +1623,11 @@ body.texture {
 .page-aside.app .app-nav ul.nav li.active a {
   color: #555;
   background: rgba(0, 0, 0, 0.025);
+}
+.page-aside.email .mail-nav ul li.active-primary a,
+.page-aside.app .app-nav ul.nav li.active-primary a {
+  color: #fff;
+  background: #36a3ff !important;
 }
 .page-aside.email .mail-nav ul li a .label,
 .page-aside.app .app-nav ul.nav li a .label {

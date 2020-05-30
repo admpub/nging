@@ -135,3 +135,15 @@ func (s *Kv) KvTypeList(excludeIDs ...uint) []*dbschema.NgingKv {
 	}
 	return nil
 }
+
+func (s *Kv) GetFromTypeList(typeList []*dbschema.NgingKv, key string) string {
+	if key == KvRootType {
+		return KvRootType
+	}
+	for _, row := range typeList {
+		if row.Key == key {
+			return row.Value
+		}
+	}
+	return key
+}

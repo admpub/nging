@@ -3,13 +3,21 @@
 {{Block "breadcrumb"}}
 {{Super}}
 <li class="active">{{Stored.title}}</li>
+{{- if Stored.typeData -}}
+<li>{{Stored.typeData.Value}}</li>
+{{- end -}}
 {{/Block}}
+
+{{Block "bodyNav"}}
+{{Include "manager/kv_body_nav"}}
+{{/Block}}
+
 {{Block "main"}}
 <div class="row">
 				<div class="col-md-12">
 					<div class="block-flat">
 						<div class="header">
-							<a href="__BACKEND__/manager/kv_add" class="btn btn-success pull-right">
+							<a href="__BACKEND__/manager/kv_add?type={{- if Stored.typeData -}}{{Stored.typeData.Key}}{{- end -}}" class="btn btn-success pull-right">
 								<i class="fa fa-plus"></i>
 								{{"添加元数据"|T}}
 							</a>

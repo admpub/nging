@@ -48,17 +48,23 @@ func KvIndex(ctx echo.Context) error {
 	typeList := m.KvTypeList()
 	ctx.Set(`typeList`, typeList)
 	ctx.SetFunc(`typeName`, func(key string) string {
+		return m.GetFromTypeList(typeList, key)
+	})
+	var typeData *dbschema.NgingKv
+	if len(t) > 0 {
 		for _, row := range typeList {
-			if row.Key == key {
-				return row.Value
+			if row.Key == t {
+				typeData = row
+				break
 			}
 		}
-		return ``
-	})
+	}
+	ctx.Set(`typeData`, typeData)
 	return ctx.Render(`/manager/kv`, handler.Err(ctx, err))
 }
 
 func KvAdd(ctx echo.Context) error {
+	t := ctx.Formx(`type`).String()
 	var err error
 	m := model.NewKv(ctx)
 	if ctx.IsPost() {
@@ -74,6 +80,9 @@ func KvAdd(ctx echo.Context) error {
 	ctx.Set(`activeURL`, `/manager/kv`)
 	ctx.Set(`title`, ctx.E(`添加元数据`))
 	ctx.Set(`typeList`, m.KvTypeList())
+	if len(t) > 0 {
+		ctx.Request().Form().Set(`type`, t)
+	}
 	return ctx.Render(`/manager/kv_edit`, handler.Err(ctx, err))
 }
 

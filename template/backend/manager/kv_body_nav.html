@@ -1,0 +1,18 @@
+<div class="page-aside sm-width app codeditor tree">
+    <a class="label label-primary collapsed-button"><i class="fa fa-angle-double-right"></i></a>
+    <div class="fixed nano nscroller">
+        <div class="content">
+        	<div class="app-nav collapse md-line-height no-margin-top">
+				<p class="title">{{`元数据类型`|T}}</p>
+          		<ul class="nav nav-pills nav-stacked">
+				{{- $type := Form `type` -}}
+              	{{- range $key, $row := Stored.typeList -}}
+              		<li{{if eq $type $row.Key}} class="active-primary"{{end}}>
+                	<a href="__BACKEND__/manager/kv?type={{$row.Key}}" title="{{$row.Value}}" data-pjax="#main-container" data-keepjs="true">{{$row.Value}}</a>
+              		</li>
+              	{{- end -}}
+          		</ul>
+        	</div><!-- .app-nav -->
+        </div><!-- .content -->
+    </div>
+</div>
