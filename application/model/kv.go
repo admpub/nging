@@ -162,3 +162,11 @@ func (s *Kv) GetFromTypeList(typeList []*dbschema.NgingKv, key string) string {
 	}
 	return key
 }
+
+func (s *Kv) ListToMap(typeList []*dbschema.NgingKv) map[string]*dbschema.NgingKv {
+	r := map[string]*dbschema.NgingKv{}
+	for _, row := range typeList {
+		r[row.Key] = row
+	}
+	return r
+}

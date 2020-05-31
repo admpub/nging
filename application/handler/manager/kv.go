@@ -46,18 +46,17 @@ func KvIndex(ctx echo.Context) error {
 	ctx.Set(`listData`, m.Objects())
 	ctx.Set(`title`, ctx.E(`元数据`))
 	typeList := m.KvTypeList()
+	typeMap := m.ListToMap(typeList)
 	ctx.Set(`typeList`, typeList)
 	ctx.SetFunc(`typeName`, func(key string) string {
-		return m.GetFromTypeList(typeList, key)
+		if row, ok := typeMap[key]; ok {
+			return row.Value
+		}
+		return key
 	})
 	var typeData *dbschema.NgingKv
 	if len(t) > 0 {
-		for _, row := range typeList {
-			if row.Key == t {
-				typeData = row
-				break
-			}
-		}
+		typeData, _ = typeMap[t]
 	}
 	ctx.Set(`typeData`, typeData)
 	return ctx.Render(`/manager/kv`, handler.Err(ctx, err))
