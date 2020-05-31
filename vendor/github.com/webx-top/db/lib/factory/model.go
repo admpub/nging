@@ -106,6 +106,7 @@ type Model interface {
 	Upsert(mw func(db.Result) db.Result, args ...interface{}) (interface{}, error)
 	Delete(mw func(db.Result) db.Result, args ...interface{}) error
 	Count(mw func(db.Result) db.Result, args ...interface{}) (int64, error)
+	Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error)
 	SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error
 	SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error
 	AsMap() param.Store
