@@ -19,6 +19,7 @@ import (
 	"math"
 	"net/url"
 	"path"
+	"regexp"
 	"strings"
 )
 
@@ -96,4 +97,18 @@ func AbsURL(pageURL string, relURL string) string {
 		relURL = strings.TrimPrefix(relURL, `../`)
 	}
 	return siteURL + path.Join(urlPath, relURL)
+}
+
+var localIPRegexp = regexp.MustCompile(`^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$`)
+
+// IsLocalhost 是否是本地主机
+func IsLocalhost(host string) bool {
+	switch host {
+	case `localhost`:
+		return true
+	case `[::1]`:
+		return true
+	default:
+		return localIPRegexp.MatchString(host)
+	}
 }
