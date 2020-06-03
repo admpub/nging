@@ -36,19 +36,28 @@ func WrapHandler(h interface{}) Handler {
 	}
 	if v, ok := h.(http.Handler); ok {
 		return HandlerFunc(func(ctx Context) error {
-			v.ServeHTTP(ctx.Response().StdResponseWriter(), ctx.Request().StdRequest())
+			v.ServeHTTP(
+				ctx.Response().StdResponseWriter(),
+				ctx.Request().StdRequest().WithContext(ctx),
+			)
 			return nil
 		})
 	}
 	if v, ok := h.(func(http.ResponseWriter, *http.Request)); ok {
 		return HandlerFunc(func(ctx Context) error {
-			v(ctx.Response().StdResponseWriter(), ctx.Request().StdRequest())
+			v(
+				ctx.Response().StdResponseWriter(),
+				ctx.Request().StdRequest().WithContext(ctx),
+			)
 			return nil
 		})
 	}
 	if v, ok := h.(func(http.ResponseWriter, *http.Request) error); ok {
 		return HandlerFunc(func(ctx Context) error {
-			return v(ctx.Response().StdResponseWriter(), ctx.Request().StdRequest())
+			return v(
+				ctx.Response().StdResponseWriter(),
+				ctx.Request().StdRequest().WithContext(ctx),
+			)
 		})
 	}
 	panic(fmt.Sprintf(`unknown handler: %T`, h))
@@ -122,7 +131,10 @@ func WrapMiddlewareFromHandler(h HandlerFunc) Middleware {
 func WrapMiddlewareFromStdHandler(h http.Handler) Middleware {
 	return MiddlewareFunc(func(next Handler) Handler {
 		return HandlerFunc(func(c Context) error {
-			h.ServeHTTP(c.Response().StdResponseWriter(), c.Request().StdRequest())
+			h.ServeHTTP(
+				c.Response().StdResponseWriter(),
+				c.Request().StdRequest().WithContext(c),
+			)
 			if c.Response().Committed() {
 				return nil
 			}
@@ -135,7 +147,10 @@ func WrapMiddlewareFromStdHandler(h http.Handler) Middleware {
 func WrapMiddlewareFromStdHandleFunc(h func(http.ResponseWriter, *http.Request)) Middleware {
 	return MiddlewareFunc(func(next Handler) Handler {
 		return HandlerFunc(func(c Context) error {
-			h(c.Response().StdResponseWriter(), c.Request().StdRequest())
+			h(
+				c.Response().StdResponseWriter(),
+				c.Request().StdRequest().WithContext(c),
+			)
 			if c.Response().Committed() {
 				return nil
 			}
@@ -148,7 +163,10 @@ func WrapMiddlewareFromStdHandleFunc(h func(http.ResponseWriter, *http.Request))
 func WrapMiddlewareFromStdHandleFuncd(h func(http.ResponseWriter, *http.Request) error) Middleware {
 	return MiddlewareFunc(func(next Handler) Handler {
 		return HandlerFunc(func(c Context) error {
-			if err := h(c.Response().StdResponseWriter(), c.Request().StdRequest()); err != nil {
+			if err := h(
+				c.Response().StdResponseWriter(),
+				c.Request().StdRequest().WithContext(c),
+			); err != nil {
 				return err
 			}
 			if c.Response().Committed() {
