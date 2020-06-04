@@ -1,9 +1,6 @@
 package common
 
 import (
-	"context"
-
-	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/defaults"
 )
 
