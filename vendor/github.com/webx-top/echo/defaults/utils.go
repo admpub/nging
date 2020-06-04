@@ -7,10 +7,10 @@ import (
 	"github.com/webx-top/echo/engine/mock"
 )
 
-func MustGetContext(ctx context.Context) echo.Context {
+func MustGetContext(ctx context.Context, args ...*echo.Echo) echo.Context {
 	eCtx, ok := ctx.(echo.Context)
 	if !ok {
-		eCtx = NewMockContext()
+		eCtx = NewMockContext(args...)
 		if ctx != nil {
 			eCtx.SetStdContext(ctx)
 		}
