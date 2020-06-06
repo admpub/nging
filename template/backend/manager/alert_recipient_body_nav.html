@@ -1,3 +1,4 @@
+{{- if Stored.topicList -}}
 <div class="page-aside app tree sm-width">
 	<button class="navbar-toggle no-margin wd-100p" data-target="#body-left-navigate" data-toggle="collapse" type="button">
 	  <span class="fa fa-chevron-down"></span>
@@ -5,12 +6,12 @@
     <div class="fixed nano nscroller responsive-nav collapse" id="body-left-navigate">
         <div class="content">
         	<div class="app-nav md-line-height no-margin-top">
-				<p class="title">{{`元数据类型`|T}}</p>
+				<p class="title">{{`消息专题`|T}}</p>
           		<ul class="nav nav-pills nav-stacked">
-				{{- $type := Form `type` -}}
-              	{{- range $key, $row := Stored.typeList -}}
-              		<li class="primary-active{{if eq $type $row.Key}} active{{end}}">
-                	<a href="__BACKEND__/manager/kv?type={{$row.Key}}" title="{{$row.Value}}" data-pjax="#main-container" data-keepjs="true">{{$row.Value}}</a>
+				{{- $topic := Form `topic` -}}
+              	{{- range $key, $row := Stored.topicList -}}
+              		<li class="primary-active{{if eq $topic $row.K}} active{{end}}">
+                	<a href="__BACKEND__/manager/alert_recipient?topic={{$row.K}}" title="{{$row.V}}" data-pjax="#main-container" data-keepjs="true">{{$row.V}}</a>
               		</li>
               	{{- end -}}
           		</ul>
@@ -18,3 +19,4 @@
         </div><!-- .content -->
     </div>
 </div>
+{{- end -}}

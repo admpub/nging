@@ -5,6 +5,8 @@ package dbschema
 import (
 	"fmt"
 
+	"time"
+
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
@@ -96,6 +98,8 @@ type NgingAlertTopic struct {
 	Topic       string `db:"topic" bson:"topic" comment:"通知专题" json:"topic" xml:"topic"`
 	RecipientId uint   `db:"recipient_id" bson:"recipient_id" comment:"收信账号" json:"recipient_id" xml:"recipient_id"`
 	Disabled    string `db:"disabled" bson:"disabled" comment:"是否禁用" json:"disabled" xml:"disabled"`
+	Created     uint   `db:"created" bson:"created" comment:"创建时间" json:"created" xml:"created"`
+	Updated     uint   `db:"updated" bson:"updated" comment:"更新时间" json:"updated" xml:"updated"`
 }
 
 // - base function
@@ -309,6 +313,7 @@ func (a *NgingAlertTopic) ListByOffset(recv interface{}, mw func(db.Result) db.R
 }
 
 func (a *NgingAlertTopic) Add() (pk interface{}, err error) {
+	a.Created = uint(time.Now().Unix())
 	a.Id = 0
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
@@ -334,7 +339,7 @@ func (a *NgingAlertTopic) Add() (pk interface{}, err error) {
 }
 
 func (a *NgingAlertTopic) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
-
+	a.Updated = uint(time.Now().Unix())
 	if len(a.Disabled) == 0 {
 		a.Disabled = "N"
 	}
@@ -383,6 +388,7 @@ func (a *NgingAlertTopic) SetFields(mw func(db.Result) db.Result, kvset map[stri
 
 func (a *NgingAlertTopic) Upsert(mw func(db.Result) db.Result, args ...interface{}) (pk interface{}, err error) {
 	pk, err = a.Param(mw, args...).SetSend(a).Upsert(func() error {
+		a.Updated = uint(time.Now().Unix())
 		if len(a.Disabled) == 0 {
 			a.Disabled = "N"
 		}
@@ -391,6 +397,7 @@ func (a *NgingAlertTopic) Upsert(mw func(db.Result) db.Result, args ...interface
 		}
 		return DBI.Fire("updating", a, mw, args...)
 	}, func() error {
+		a.Created = uint(time.Now().Unix())
 		a.Id = 0
 		if len(a.Disabled) == 0 {
 			a.Disabled = "N"
@@ -444,6 +451,8 @@ func (a *NgingAlertTopic) Reset() *NgingAlertTopic {
 	a.Topic = ``
 	a.RecipientId = 0
 	a.Disabled = ``
+	a.Created = 0
+	a.Updated = 0
 	return a
 }
 
@@ -453,6 +462,8 @@ func (a *NgingAlertTopic) AsMap() param.Store {
 	r["Topic"] = a.Topic
 	r["RecipientId"] = a.RecipientId
 	r["Disabled"] = a.Disabled
+	r["Created"] = a.Created
+	r["Updated"] = a.Updated
 	return r
 }
 
@@ -467,6 +478,10 @@ func (a *NgingAlertTopic) FromRow(row map[string]interface{}) {
 			a.RecipientId = param.AsUint(value)
 		case "disabled":
 			a.Disabled = param.AsString(value)
+		case "created":
+			a.Created = param.AsUint(value)
+		case "updated":
+			a.Updated = param.AsUint(value)
 		}
 	}
 }
@@ -499,6 +514,10 @@ func (a *NgingAlertTopic) Set(key interface{}, value ...interface{}) {
 			a.RecipientId = param.AsUint(vv)
 		case "Disabled":
 			a.Disabled = param.AsString(vv)
+		case "Created":
+			a.Created = param.AsUint(vv)
+		case "Updated":
+			a.Updated = param.AsUint(vv)
 		}
 	}
 }
@@ -509,6 +528,8 @@ func (a *NgingAlertTopic) AsRow() param.Store {
 	r["topic"] = a.Topic
 	r["recipient_id"] = a.RecipientId
 	r["disabled"] = a.Disabled
+	r["created"] = a.Created
+	r["updated"] = a.Updated
 	return r
 }
 

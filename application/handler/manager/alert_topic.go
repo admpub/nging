@@ -24,30 +24,32 @@ import (
 
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/model"
-	"github.com/admpub/nging/application/cmd/event"
 )
 
-func AlertRecipient(ctx echo.Context) error {
-	m := model.NewAlertRecipient(ctx)
+func AlertTopic(ctx echo.Context) error {
+	m := model.NewAlertTopic(ctx)
 	cond := db.Compounds{}
 	q := ctx.Formx(`q`).String()
 	if len(q) > 0 {
-		cond.AddKV(`name`, q)
+		cond.AddKV(`topic`, q)
 	}
-	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, nil, func(r db.Result) db.Result {
+	list := []*model.AlertTopicExt{}
+	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, list, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
 	}, cond.And()))
-	ctx.Set(`listData`, m.Objects())
-	ctx.Set(`title`, ctx.E(`警报接收人`))
+	ctx.Set(`listData`, list)
+	ctx.Set(`title`, ctx.E(`警报专题`))
 	ctx.SetFunc(`platformName`, model.AlertRecipientPlatforms.Get)
-	return ctx.Render(`/manager/alert_recipient`, handler.Err(ctx, err))
+	ctx.Set(`topicList`, model.AlertTopics.Slice())
+	ctx.SetFunc(`topicName`, model.AlertTopics.Get)
+	return ctx.Render(`/manager/alert_topic`, handler.Err(ctx, err))
 }
 
-func AlertRecipientAdd(ctx echo.Context) error {
+func AlertTopicAdd(ctx echo.Context) error {
 	var err error
 	if ctx.IsPost() {
-		m := model.NewAlertRecipient(ctx)
-		err = ctx.MustBind(m.NgingAlertRecipient)
+		m := model.NewAlertTopic(ctx)
+		err = ctx.MustBind(m.NgingAlertTopic)
 		if err == nil {
 			_, err = m.Add()
 		}
@@ -55,30 +57,30 @@ func AlertRecipientAdd(ctx echo.Context) error {
 			handler.SendOk(ctx, ctx.T(`操作成功`))
 			return ctx.Redirect(handler.URLFor(`/manager/alert_recipient`))
 		}
-	} 
+	}
 	ctx.Set(`activeURL`, `/manager/alert_recipient`)
 	ctx.Set(`title`, ctx.E(`添加警报接收人`))
 	ctx.Set(`platforms`, model.AlertRecipientPlatforms.Slice())
-	return ctx.Render(`/manager/alert_recipient_edit`, handler.Err(ctx, err))
+	return ctx.Render(`/manager/alert_topic_edit`, handler.Err(ctx, err))
 }
 
-func AlertRecipientEdit(ctx echo.Context) error {
+func AlertTopicEdit(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
-	m := model.NewAlertRecipient(ctx)
+	m := model.NewAlertTopic(ctx)
 	err := m.Get(nil, `id`, id)
 	if err != nil {
 		handler.SendFail(ctx, err.Error())
-		return ctx.Redirect(handler.URLFor(`/manager/alert_recipient`))
+		return ctx.Redirect(handler.URLFor(`/manager/alert_topic`))
 	}
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.NgingAlertRecipient)
+		err = ctx.MustBind(m.NgingAlertTopic)
 		if err == nil {
 			m.Id = id
 			err = m.Edit(nil, `id`, id)
 		}
 		if err == nil {
 			handler.SendOk(ctx, ctx.T(`修改成功`))
-			return ctx.Redirect(handler.URLFor(`/manager/alert_recipient`))
+			return ctx.Redirect(handler.URLFor(`/manager/alert_topic`))
 		}
 	} else if ctx.IsAjax() {
 		disabled := ctx.Query(`disabled`)
@@ -94,35 +96,18 @@ func AlertRecipientEdit(ctx echo.Context) error {
 			return ctx.JSON(data)
 		}
 	} else {
-		echo.StructToForm(ctx, m.NgingAlertRecipient, ``, echo.LowerCaseFirstLetter)
+		echo.StructToForm(ctx, m.NgingAlertTopic, ``, echo.LowerCaseFirstLetter)
 	}
 
-	ctx.Set(`activeURL`, `/manager/alert_recipient`)
+	ctx.Set(`activeURL`, `/manager/alert_topic`)
 	ctx.Set(`title`, ctx.E(`修改警报接收人`))
 	ctx.Set(`platforms`, model.AlertRecipientPlatforms.Slice())
-	return ctx.Render(`/manager/alert_recipient_edit`, handler.Err(ctx, err))
+	return ctx.Render(`/manager/alert_topic_edit`, handler.Err(ctx, err))
 }
 
-func AlertRecipientTest(ctx echo.Context) error {
+func AlertTopicDelete(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
-	m := model.NewAlertRecipient(ctx)
-	row, err := m.GetWithExt(nil, `id`, id)
-	if err != nil {
-		return err
-	}
-	user := handler.User(ctx)
-	err = row.Send(ctx.T(`测试信息(%s)`, event.SoftwareName), ctx.T("您好，我是%s管理员`%s`，这是我发的测试信息，请忽略😊", event.SoftwareName, user.Username))
-	if err != nil {
-		return err
-	}
-	data := ctx.Data()
-	data.SetInfo(ctx.T(`发送成功`))
-	return ctx.JSON(data)
-}
-
-func AlertRecipientDelete(ctx echo.Context) error {
-	id := ctx.Formx(`id`).Uint()
-	m := model.NewAlertRecipient(ctx)
+	m := model.NewAlertTopic(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
 		handler.SendOk(ctx, ctx.T(`操作成功`))
@@ -130,5 +115,5 @@ func AlertRecipientDelete(ctx echo.Context) error {
 		handler.SendFail(ctx, err.Error())
 	}
 
-	return ctx.Redirect(handler.URLFor(`/manager/alert_recipient`))
+	return ctx.Redirect(handler.URLFor(`/manager/alert_topic`))
 }

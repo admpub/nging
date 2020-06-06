@@ -84,6 +84,8 @@ CREATE TABLE `nging_alert_topic` (
   `topic` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '通知专题',
   `recipient_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '收信账号',
   `disabled` enum('Y','N') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'N' COMMENT '是否禁用',
+  `created` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `updated` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `recipient_id` (`recipient_id`),
   KEY `topic` (`topic`,`disabled`)
@@ -984,4 +986,4 @@ CREATE TABLE `nging_vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-06-06 13:31:38
+-- Dump completed on 2020-06-06 19:18:25

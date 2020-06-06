@@ -40,10 +40,10 @@
                                     {{range $k,$v := Stored.listData}}
 									<tr>
 										<td>{{$v.Id}}</td>
-										<td>{{$v.Name}}</td>
-										<td>{{$v.Account}}</td>
-										<td>{{$v.Type}}</td>
-										<td>{{platformName $v.Platform}}</td>
+										<td>{{$v.Recipient.Name}}</td>
+										<td>{{$v.Recipient.Account}}</td>
+										<td>{{$v.Recipient.Type}}</td>
+										<td>{{platformName $v.Recipient.Platform}}</td>
 										<td>
 											{{$v.Created|DateFormat "2006-01-02 15:04:05"}}
 										</td>
@@ -58,8 +58,6 @@
 											</div>
 										</td>
 										<td class="text-center">
-										<a class="label label-warning" href="javascript:;" data-toggle="tooltip" title="{{"测试"|T}}" onclick="sendTestAlert(this)" data-test-url="__BACKEND__/manager/alert_recipient_test?id={{$v.Id}}"><i class="fa fa-refresh"></i></a> 
-										<a class="label label-success" href="__BACKEND__/manager/alert_recipient_edit?id={{$v.Id}}" data-toggle="tooltip" title="{{"修改"|T}}"><i class="fa fa-pencil"></i></a> 
 										<a class="label label-danger" href="__BACKEND__/manager/alert_recipient_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" data-toggle="tooltip" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
 										</td>
 									</tr>
@@ -75,12 +73,6 @@
 {{/Block}}
 {{Block "footer"}}
 <script>
-function sendTestAlert(a){
-	var url = $(a).data('test-url');
-	$.post(url, {}, function(r){
-		App.message({text: r.Info, type: (r.Code == 1 ? 'success' : 'error')})
-	}, 'json');
-}
 $(function(){
 	App.bindSwitch('input.switch-disabled','click','manager/alert_recipient_edit');
 });

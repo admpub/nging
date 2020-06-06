@@ -48,11 +48,16 @@ func init() {
 		g.Route(`POST`, `/upload/:type`, Upload) //文件上传
 		g.Route(`GET,POST`, `/crop`, Crop)       //裁剪图片
 		g.Route(`GET,POST`, `/uploaded_file`, UploadedFile)
+
+		g.Route(`GET,POST`, `/alert_topic`, AlertTopic)
+		g.Route(`GET,POST`, `/alert_topic_add`, AlertTopicAdd)
+		g.Route(`GET,POST`, `/alert_topic_edit`, AlertTopicEdit)
+		g.Route(`GET,POST`, `/alert_topic_delete`, AlertTopicDelete)
+
 		g.Route(`GET,POST`, `/alert_recipient`, AlertRecipient)
 		g.Route(`GET,POST`, `/alert_recipient_add`, AlertRecipientAdd)
 		g.Route(`GET,POST`, `/alert_recipient_edit`, AlertRecipientEdit)
 		g.Route(`GET,POST`, `/alert_recipient_test`, AlertRecipientTest)
-		g.Route(`GET,POST`, `/alert_recipient_edit`, AlertRecipientEdit)
 		g.Route(`GET,POST`, `/alert_recipient_delete`, AlertRecipientDelete)
 		g.Route(`GET,POST`, `/kv`, KvIndex)
 		g.Route(`GET,POST`, `/kv_add`, KvAdd)
