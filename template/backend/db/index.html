@@ -19,12 +19,12 @@
 {{if Stored.Get "signedIn"}}
   <div class="page-aside app codeditor tree">
       <a class="label label-primary collapsed-button"><i class="fa fa-angle-double-right"></i></a>
-      <div class="fixed nano nscroller">
+      <button class="navbar-toggle no-margin wd-100p" data-target="#body-left-navigate" data-toggle="collapse" type="button">
+        <span class="fa fa-chevron-down"></span>
+      </button>
+      <div class="fixed nano nscroller responsive-nav collapse" id="body-left-navigate">
         <div class="content">
           <div class="header xs-padding-bottom no-padding-top">
-            <button class="navbar-toggle" data-target=".app-nav" data-toggle="collapse" type="button">
-              <span class="fa fa-chevron-down"></span>
-            </button>
             <a class="label label-primary collapse-button"><i class="fa fa-angle-double-left"></i></a>{{$accountTitle := Stored.accountTitle}}
             <h2 class="page-title">
               {{- if $accountTitle -}}
@@ -53,9 +53,9 @@
             </div>
             {{end}}
           </div>
-        <div class="app-nav collapse sm-line-height no-margin-top">
+        <div class="app-nav sm-line-height no-margin-top">
           {{if $dbName}}
-          <div class="compose no-padding">
+          <div class="compose no-padding no-border">
             <div class="btn-group">
             <a href="{{dbMgrURL "runCommand" $dbName}}" class="btn btn-flat btn-xs btn-info" data-pjax="#pcont" data-keepjs="true">{{"SQL命令"|T}}</a>
             <a href="{{dbMgrURL "createTable" $dbName}}" class="btn btn-flat btn-xs btn-primary" data-pjax="#pcont" data-keepjs="true">{{"创建表"|T}}</a>
