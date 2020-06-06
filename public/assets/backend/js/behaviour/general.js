@@ -605,6 +605,9 @@ var App = function () {
 				if (typeof (App.clientID['notify']) == 'undefined') {
 					App.clientID['notify'] = m.client_id;
 				}
+				if (typeof (m.content) == 'undefined' || m.content == null) {
+					return;
+				}
 				switch (m.mode) {
 					case '-':
 						break;
