@@ -600,13 +600,13 @@ var App = function () {
 				var m = $.parseJSON(message);
 				if (!m) {
 					App.message({text:message||'Websocket Server is disconnected',type:'error'});
-					return;
+					return false;
 				}
-				if (typeof (App.clientID['notify']) == 'undefined') {
+				if (typeof(m.content) == 'undefined' || m.content == null) {
+					return false;
+				}
+				if (typeof(App.clientID['notify']) == 'undefined') {
 					App.clientID['notify'] = m.client_id;
-				}
-				if (typeof (m.content) == 'undefined' || m.content == null) {
-					return;
 				}
 				switch (m.mode) {
 					case '-':
@@ -623,7 +623,7 @@ var App = function () {
 							} else {
 								console.error(m.content);
 							}
-							return;
+							return false;
 						}
 						if (messageCount[m.mode] >= messageMax[m.mode]) {
 							c.find('li:first').remove();
@@ -650,7 +650,7 @@ var App = function () {
 							} else {
 								console.error(m.content);
 							}
-							return;
+							return false;
 						}
 						if (m.title) {
 							var badge = 'badge-danger';
@@ -705,6 +705,7 @@ var App = function () {
 						messageCount[m.mode]++;
 						break;
 				}
+				return true;
 			}, BACKEND_URL + '/user/notice');
 		},
 		text2html: function (text) {
