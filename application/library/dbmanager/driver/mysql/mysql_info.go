@@ -159,7 +159,10 @@ func (m *mySQL) getCollation(dbName string, collations *Collations) (string, err
 		}
 	}
 	sqlStr := "SHOW CREATE DATABASE " + quoteCol(dbName)
-	row := m.newParam().SetCollection(sqlStr).QueryRow()
+	row, err := m.newParam().SetCollection(sqlStr).QueryRow()
+	if err != nil {
+		return ``, err
+	}
 	var database sql.NullString
 	var createDb sql.NullString
 	err = row.Scan(&database, &createDb)
@@ -240,9 +243,12 @@ func (m *mySQL) getVersion() string {
 		return m.version
 	}
 	sqlStr := `SELECT version()`
-	row := m.newParam().SetCollection(sqlStr).QueryRow()
+	row, err := m.newParam().SetCollection(sqlStr).QueryRow()
+	if err != nil {
+		return fmt.Sprintf(`%v: %v`, sqlStr, err)
+	}
 	var v sql.NullString
-	err := row.Scan(&v)
+	err = row.Scan(&v)
 	if err != nil {
 		return fmt.Sprintf(`%v: %v`, sqlStr, err)
 	}

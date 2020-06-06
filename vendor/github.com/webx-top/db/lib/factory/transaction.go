@@ -74,13 +74,13 @@ func (t *Transaction) C(param *Param) db.Collection {
 // Exec execute SQL
 func (t *Transaction) Exec(param *Param) (sql.Result, error) {
 	param.ReadOnly = false
-	return t.DB(param).ExecContext(param.Context(), param.Collection, param.Args...)
+	return t.SQLBuilder(param).ExecContext(param.Context(), param.Collection, param.Args...)
 }
 
 // Query query SQL. sqlRows is an *sql.Rows object, so you can use Scan() on it
 // err = sqlRows.Scan(&a, &b, ...)
 func (t *Transaction) Query(param *Param) (*sql.Rows, error) {
-	return t.DB(param).QueryContext(param.Context(), param.Collection, param.Args...)
+	return t.SQLBuilder(param).QueryContext(param.Context(), param.Collection, param.Args...)
 }
 
 // QueryTo query SQL. mapping fields into a struct
@@ -97,8 +97,8 @@ func (t *Transaction) QueryTo(param *Param) (sqlbuilder.Iterator, error) {
 }
 
 // QueryRow query SQL
-func (t *Transaction) QueryRow(param *Param) *sql.Row {
-	return t.DB(param).QueryRowContext(param.Context(), param.Collection, param.Args...)
+func (t *Transaction) QueryRow(param *Param) (*sql.Row, error) {
+	return t.SQLBuilder(param).QueryRowContext(param.Context(), param.Collection, param.Args...)
 }
 
 // ================================

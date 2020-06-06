@@ -111,7 +111,11 @@ func (m *mySQL) listData(
 	r.SQL = `SELECT` + withLimit(fieldStr+` FROM `+quoteCol(table), whereStr, limit, (page-1)*limit, "\n")
 	if totalRows < 1 {
 		countSQL := m.countRows(table, wheres, isGroup, groups)
-		row := m.newParam().SetCollection(countSQL).QueryRow()
+		var row *sql.Row
+		row, err = m.newParam().SetCollection(countSQL).QueryRow()
+		if err != nil {
+			return
+		}
 		err = row.Scan(&totalRows)
 		if err != nil {
 			return

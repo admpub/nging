@@ -108,7 +108,7 @@ func QueryTo(param *Param) (sqlbuilder.Iterator, error) {
 }
 
 // QueryRow query SQL
-func QueryRow(param *Param) *sql.Row {
+func QueryRow(param *Param) (*sql.Row, error) {
 	return DefaultFactory.QueryRow(param)
 }
 

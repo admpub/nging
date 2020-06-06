@@ -539,7 +539,7 @@ func (p *Param) QueryTo() (sqlbuilder.Iterator, error) {
 }
 
 // QueryRow query SQL
-func (p *Param) QueryRow() *sql.Row {
+func (p *Param) QueryRow() (*sql.Row, error) {
 	return p.T().QueryRow(p)
 }
 
