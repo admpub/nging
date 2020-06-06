@@ -73,6 +73,24 @@ CREATE TABLE `nging_alert_recipient` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `nging_alert_topic`
+--
+
+DROP TABLE IF EXISTS `nging_alert_topic`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `nging_alert_topic` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `topic` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '通知专题',
+  `recipient_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '收信账号',
+  `disabled` enum('Y','N') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'N' COMMENT '是否禁用',
+  PRIMARY KEY (`id`),
+  KEY `recipient_id` (`recipient_id`),
+  KEY `topic` (`topic`,`disabled`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='报警收信专题关联';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `nging_cloud_storage`
 --
 
@@ -966,4 +984,4 @@ CREATE TABLE `nging_vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-05-30 15:59:29
+-- Dump completed on 2020-06-06 13:31:38

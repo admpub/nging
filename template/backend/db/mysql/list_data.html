@@ -63,11 +63,12 @@ function onselectColumns(obj){
               <input type="hidden" name="table" value="{{Stored.table}}">
               <input type="hidden" name="db" value="{{Stored.dbName}}">
               <div class="col-md-3">
-              <label class="control-label">{{"查询"|T}}</label>
+              <label class="control-label">{{"查询"|T}} <span class="normal grey">(SELECT)</span></label>
                   {{$cols := FormValues "columns[col][]"}}
                   {{range $key,$val := FormValues "columns[fun][]"}}
               <div class="input-group">
-                  <select name="columns[fun][]" class="form-control" onchange="onselectColumns(this)">
+                <label class="input-group-addon no-padding no-border">
+                  <select name="columns[fun][]" style="width:130px" class="form-control" onchange="onselectColumns(this)">
 					  <option value=""></option>
                       <optgroup label="{{"函数"|T}}">
                           {{range $k,$func := Stored.functions}}
@@ -80,20 +81,19 @@ function onselectColumns(obj){
                           {{end}}
                       </optgroup>
                   </select>
+                </label>
                   {{$col := IndexStrSlice $cols $key}}
-                  <label class="input-group-addon no-padding-bottom no-padding-top">(
-                  <select name="columns[col][]" onchange="onselectColumns(this)">
+                  <select class="form-control" name="columns[col][]" onchange="onselectColumns(this)">
 					  <option value=""></option>
                       {{range $k, $colName := Stored.sortFields}}
                       <option value="{{$colName}}"{{if eq $col $colName}} selected{{end}}>{{$colName}}</option>
                       {{end}}
                   </select>
-                  )</label>
               </div>
                   {{end}}
               </div>
               <div class="col-md-4">
-              <label class="control-label">{{"搜索"|T}}</label>
+              <label class="control-label">{{"搜索"|T}} <span class="normal grey">(WHERE)</span></label>
                   {{$cols := FormValues "where[col][]"}}
                   {{$operators := FormValues "where[op][]"}}
                   {{range $key,$val := FormValues "where[val][]"}}
@@ -106,7 +106,7 @@ function onselectColumns(obj){
 					  <option value="{{$colName}}"{{if eq $col $colName}} selected{{end}}>{{$colName}}</option>
                       {{end}}
                   </select>
-                  <span class="input-group-addon no-padding-bottom no-padding-top"><select name="where[op][]">
+                  <span class="input-group-addon no-padding no-border"><select class="form-control" style="min-width:70px" name="where[op][]">
                       {{range $k, $op := Stored.operators}}
 					  <option value="{{$op}}"{{if eq $ope $op}} selected{{end}}>{{$op}}</option>
                       {{end}}
@@ -115,8 +115,8 @@ function onselectColumns(obj){
               </div>
                   {{end}}
               </div>
-              <div class="col-md-2">
-              <label class="control-label">{{"排序"|T}}</label>
+              <div class="col-md-3">
+              <label class="control-label">{{"排序"|T}} <span class="normal grey">(ORDER BY)</span></label>
                   {{$descs := FormValues "desc[]"}}
                   {{range $key,$val := FormValues "order[]"}}
                   {{$desc := IndexStrSlice $descs $key}}
@@ -127,21 +127,21 @@ function onselectColumns(obj){
 					  <option value="{{$colName}}"{{if eq $val $colName}} selected{{end}}>{{$colName}}</option>
                       {{end}}
                   </select>
-                  <label class="input-group-addon no-padding-bottom no-padding-top"><select name="desc[]">
+                  <label class="input-group-addon no-padding no-border"><select class="form-control" style="min-width:70px" name="desc[]">
 					  <option value="0"{{if eq $desc "0"}} selected{{end}}>{{"升序"|T}}</option>
                       <option value="1"{{if eq $desc "1"}} selected{{end}}>{{"降序"|T}}</option>
                   </select></label>
               </div>
                   {{end}}
               </div>
-              <div class="col-md-3">
+              <div class="col-md-2">
               <label class="control-label">{{"其它设置"|T}}</label>
               <div class="input-group">
-                  <label for="limit" class="input-group-addon">{{"范围"|T}}</label>
+                  <label for="limit" class="input-group-addon">{{"数量限制"|T}}</label>
                   <input type="number" name="limit" id="limit" class="form-control" value="{{Form "limit"}}">
             </div>
               <div class="input-group">
-                  <label for="text_length" class="input-group-addon">{{"文本显示长度"|T}}</label>
+                  <label for="text_length" class="input-group-addon" data-toggle="tooltip" title="{{`显示长度`|T}}">{{"文本截取"|T}}</label>
                   <input type="number" name="text_length" id="text_length" class="form-control" value="{{Form "text_length"}}">
               </div>
               </div>

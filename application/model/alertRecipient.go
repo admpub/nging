@@ -25,20 +25,20 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/model/base"
 	"github.com/admpub/nging/application/library/imbot"
 	_ "github.com/admpub/nging/application/library/imbot/dingding"
 	_ "github.com/admpub/nging/application/library/imbot/workwx"
+	"github.com/admpub/nging/application/model/base"
 )
 
 var (
-	AlertRecipientTypes = echo.NewKVData()
+	AlertRecipientTypes     = echo.NewKVData()
 	AlertRecipientPlatforms = echo.NewKVData()
 )
 
 func init() {
 	AlertRecipientTypes.Add(`email`, `email`)
-	AlertRecipientTypes.Add(`webhook`,`webhook`)
+	AlertRecipientTypes.Add(`webhook`, `webhook`)
 	for name, mess := range imbot.Messagers() {
 		AlertRecipientPlatforms.Add(name, mess.Label)
 	}
@@ -102,20 +102,4 @@ func (s *AlertRecipient) Edit(mw func(db.Result) db.Result, args ...interface{})
 		return err
 	}
 	return s.NgingAlertRecipient.Edit(mw, args...)
-}
-
-func (s *AlertRecipient) Send(title string, message string) (err error) {
-	rows, ok := s.base.Context.Internal().Get(`NgingAlertRecipients`).([]*AlertRecipientExt)
-	if !ok {
-		rows = []*AlertRecipientExt{}
-		_,err = s.ListByOffset(&rows, nil, 0, -1, db.Cond{`disabled`: `N`})
-		if err != nil {
-			return
-		}
-		s.base.Context.Internal().Set(`NgingAlertRecipients`, rows)
-	}
-	for _, row := range rows {
-		row.Send(title, message)
-	}
-	return
 }

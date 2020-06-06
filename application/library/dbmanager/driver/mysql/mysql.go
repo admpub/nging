@@ -1014,6 +1014,8 @@ func (m *mySQL) ListData() error {
 			orderFields = []string{sort}
 			descs = []string{`0`}
 		}
+		m.Request().Form().Set(`order[]`, orderFields[0])
+		m.Request().Form().Set(`desc[]`, descs[0])
 	}
 	var wheres []string
 	fields, sortFields, err := m.tableFields(table)
