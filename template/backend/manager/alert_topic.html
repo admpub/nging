@@ -31,8 +31,8 @@
 									<tr>
 										<th><strong>{{"名称"|T}}</strong></th>
 										<th><strong>{{"账号"|T}}</strong></th>
-										<th style="width:60px"><strong>{{"类型"|T}}</strong></th>
-										<th style="width:100px"><strong>{{"平台"|T}}</strong></th>
+										<th style="width:100px"><strong>{{"类型"|T}}</strong> / <strong>{{"平台"|T}}</strong></th>
+										<th style="width:100px"><strong>{{"专题"|T}}</strong></th>
 										<th style="width:160px"><strong>{{"时间"|T}}</strong></th>
 										<th style="width:60px"><strong>{{"状态"|T}}</strong></th>
 										<th style="width:80px" class="text-center"><strong>{{"操作"|T}}</strong></th>
@@ -58,8 +58,14 @@
                                             <span class="label label-default label-sm" data-toggle="tooltip" title="ID: {{$v.Id}}">{{$v.Id}}</span>
                                         </td>
 										<td>{{$v.Recipient.Account}}</td>
-										<td>{{$v.Recipient.Type}}</td>
-										<td>{{platformName $v.Recipient.Platform}}</td>
+										<td>
+											<span data-toggle="tooltip" title="{{`类型`|T}}: {{$v.Recipient.Type}}">{{$v.Recipient.Type}}</span><br />
+											{{- $platformName := platformName $v.Recipient.Platform -}}
+											<span data-toggle="tooltip" title="{{`平台`|T}}: {{$platformName}}">{{$platformName}}</span>
+										</td>
+										<td>
+											<a href="__BACKEND__/manager/alert_topic?topic={{$v.Topic}}"><span class="label label-default">{{topicName $v.Topic}}</span></a>
+										</td>
 										<td>
 											{{`创建`|T}}:{{$v.Created|DateFormat "2006-01-02 15:04:05"}}<br />
 											{{`更新`|T}}:{{- if gt $v.Updated 0 -}}
