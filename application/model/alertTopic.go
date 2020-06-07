@@ -35,7 +35,7 @@ var (
 )
 
 func init() {
-	AlertTopics.Add(`test`, `测试`)
+	//AlertTopics.Add(`test`, `测试`)
 }
 
 func NewAlertTopic(ctx echo.Context) *AlertTopic {
