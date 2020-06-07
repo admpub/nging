@@ -16,9 +16,9 @@
 						<div class="header">
 							<a href="__BACKEND__/manager/alert_recipient_add" class="btn btn-success pull-right">
 								<i class="fa fa-plus"></i>
-								{{"添加警报接收人"|T}}
+								{{"添加收信账号"|T}}
 							</a>
-							<h3>{{"警报接收人列表"|T}}</h3>
+							<h3>{{"警报接收账号"|T}}</h3>
 						</div>
 						<div class="content">
 							<div class="table-responsive">
@@ -30,10 +30,9 @@
 										<th><strong>{{"账号"|T}}</strong></th>
 										<th style="width:60px"><strong>{{"类型"|T}}</strong></th>
 										<th style="width:100px"><strong>{{"平台"|T}}</strong></th>
-										<th style="width:130px"><strong>{{"创建时间"|T}}</strong></th>
-										<th style="width:130px"><strong>{{"更新时间"|T}}</strong></th>
+										<th style="width:160px"><strong>{{"时间"|T}}</strong></th>
 										<th style="width:60px"><strong>{{"状态"|T}}</strong></th>
-										<th style="width:120px" class="text-center"><strong>{{"操作"|T}}</strong></th>
+										<th style="width:135px" class="text-center"><strong>{{"操作"|T}}</strong></th>
 									</tr>
 								</thead>
 								<tbody class="no-border-y">
@@ -45,12 +44,12 @@
 										<td>{{$v.Type}}</td>
 										<td>{{platformName $v.Platform}}</td>
 										<td>
-											{{$v.Created|DateFormat "2006-01-02 15:04:05"}}
-										</td>
-										<td>
-											{{if gt $v.Updated 0}}
+											{{`创建`|T}}:{{$v.Created|DateFormat "2006-01-02 15:04:05"}}<br />
+											{{`更新`|T}}:{{- if gt $v.Updated 0 -}}
 											{{$v.Updated|DateFormat "2006-01-02 15:04:05"}}
-											{{end}}
+											{{- else -}}
+											-
+											{{- end -}}
 										</td>
 										<td>
 											<div class="checkbox checkbox-success no-margin-y">
@@ -58,6 +57,7 @@
 											</div>
 										</td>
 										<td class="text-center">
+										<a class="label label-default" data-toggle="tooltip" title="{{"复制"|T}}" href="__BACKEND__/manager/alert_recipient_add?copyId={{$v.Id}}"><i class="fa fa-copy"></i></a>
 										<a class="label label-warning" href="javascript:;" data-toggle="tooltip" title="{{"测试"|T}}" onclick="sendTestAlert(this)" data-test-url="__BACKEND__/manager/alert_recipient_test?id={{$v.Id}}"><i class="fa fa-refresh"></i></a> 
 										<a class="label label-success" href="__BACKEND__/manager/alert_recipient_edit?id={{$v.Id}}" data-toggle="tooltip" title="{{"修改"|T}}"><i class="fa fa-pencil"></i></a> 
 										<a class="label label-danger" href="__BACKEND__/manager/alert_recipient_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" data-toggle="tooltip" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>

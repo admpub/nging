@@ -60,26 +60,47 @@ var TopNavigate = &List{
 				Name:          `删除元数据`,
 				Action:        `kv_delete`,
 			},
-			//警报接收人操作
+			//警报收信账号操作
 			{
 				DisplayOnMenu: true,
-				Name:          `警报接收人`,
+				Name:          `警报收信账号`,
 				Action:        `alert_recipient`,
 			},
 			{
 				DisplayOnMenu: false,
-				Name:          `添加警报接收人`,
+				Name:          `添加警报收信账号`,
 				Action:        `alert_recipient_add`,
 			},
 			{
 				DisplayOnMenu: false,
-				Name:          `修改警报接收人`,
+				Name:          `修改警报收信账号`,
 				Action:        `alert_recipient_edit`,
 			},
 			{
 				DisplayOnMenu: false,
-				Name:          `删除警报接收人`,
+				Name:          `删除警报收信账号`,
 				Action:        `alert_recipient_delete`,
+			},
+			//警报专题
+			{
+				DisplayOnMenu: false,
+				Name:          `警报专题`,
+				Action:        `alert_topic`,
+			},
+			{
+				DisplayOnMenu: false,
+				Name:          `关联收信账号`,
+				Action:        `alert_topic_add`,
+			},
+			{
+				DisplayOnMenu: false,
+				Name:          `修改收信账号`,
+				Action:        `alert_topic_edit`,
+			},
+			{
+				DisplayOnMenu: false,
+				Name:          `取消关联收信账号`,
+				Action:        `alert_topic_delete`,
 			},
 			//用户管理
 			{

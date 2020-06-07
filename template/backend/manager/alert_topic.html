@@ -2,7 +2,15 @@
 {{Block "title"}}{{Stored.title}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li class="active">{{Stored.title}}</li>
+<li><a href="__BACKEND__/manager/alert_recipient">{{"警报收信账号"|T}}</a></li>
+<li><a href="__BACKEND__/manager/alert_topic">{{Stored.title}}</a></li>
+{{- if Stored.topic -}}
+<li class="active"><span class="label label-default label-sm">{{`专题`|T}}</span> {{topicName Stored.topic}}</li>
+{{- end -}}
+{{/Block}}
+
+{{Block "head"}}
+<link rel="stylesheet" type="text/css" href="__ASSETS__/js/selectpage/selectpage.css?t={{BuildTime}}" />
 {{/Block}}
 
 {{Block "bodyNav"}}
@@ -14,43 +22,51 @@
 				<div class="col-md-12">
 					<div class="block-flat">
 						<div class="header">
-							<a href="__BACKEND__/manager/alert_recipient_add" class="btn btn-success pull-right">
-								<i class="fa fa-plus"></i>
-								{{"添加警报接收人"|T}}
-							</a>
-							<h3>{{"警报接收人列表"|T}}</h3>
+							<h3>{{"收信账号列表"|T}}</h3>
 						</div>
 						<div class="content">
 							<div class="table-responsive">
 							<table class="table no-border hover">
 								<thead class="no-border">
 									<tr>
-										<th style="width:60px"><strong>ID</strong></th>
 										<th><strong>{{"名称"|T}}</strong></th>
 										<th><strong>{{"账号"|T}}</strong></th>
 										<th style="width:60px"><strong>{{"类型"|T}}</strong></th>
 										<th style="width:100px"><strong>{{"平台"|T}}</strong></th>
-										<th style="width:130px"><strong>{{"创建时间"|T}}</strong></th>
-										<th style="width:130px"><strong>{{"更新时间"|T}}</strong></th>
+										<th style="width:160px"><strong>{{"时间"|T}}</strong></th>
 										<th style="width:60px"><strong>{{"状态"|T}}</strong></th>
-										<th style="width:120px" class="text-center"><strong>{{"操作"|T}}</strong></th>
+										<th style="width:80px" class="text-center"><strong>{{"操作"|T}}</strong></th>
 									</tr>
 								</thead>
 								<tbody class="no-border-y">
-                                    {{range $k,$v := Stored.listData}}
+                                    {{- if Stored.topic -}}
 									<tr>
-										<td>{{$v.Id}}</td>
-										<td>{{$v.Recipient.Name}}</td>
+										<td colspan="5"><input type="text" value="" class="form-control" id="input-add-recipient" placeholder="{{`选择收信账号`}}" /></td>
+										<td>
+											<div class="checkbox checkbox-success no-margin-y">
+												<input id="checkbox-relation" class="styled" type="checkbox" checked="checked" value="N" /><label for="checkbox-relation">{{"启用"|T}}</label>
+											</div>
+										</td>
+										<td class="text-center">
+										<a class="btn btn-success btn-sm" href="javascript:;" onclick="return addAlertToTopic(this);"><i class="fa fa-plus"></i> {{`添加`|T}}</a>
+										</td>
+                                    </tr>
+                                    {{- end -}}
+                                    {{- range $k,$v := Stored.listData -}}
+									<tr>
+										<td>{{$v.Recipient.Name}}<br />
+                                            <span class="label label-default label-sm" data-toggle="tooltip" title="ID: {{$v.Id}}">{{$v.Id}}</span>
+                                        </td>
 										<td>{{$v.Recipient.Account}}</td>
 										<td>{{$v.Recipient.Type}}</td>
 										<td>{{platformName $v.Recipient.Platform}}</td>
 										<td>
-											{{$v.Created|DateFormat "2006-01-02 15:04:05"}}
-										</td>
-										<td>
-											{{if gt $v.Updated 0}}
+											{{`创建`|T}}:{{$v.Created|DateFormat "2006-01-02 15:04:05"}}<br />
+											{{`更新`|T}}:{{- if gt $v.Updated 0 -}}
 											{{$v.Updated|DateFormat "2006-01-02 15:04:05"}}
-											{{end}}
+											{{- else -}}
+											-
+											{{- end -}}
 										</td>
 										<td>
 											<div class="checkbox checkbox-success no-margin-y">
@@ -58,10 +74,10 @@
 											</div>
 										</td>
 										<td class="text-center">
-										<a class="label label-danger" href="__BACKEND__/manager/alert_recipient_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" data-toggle="tooltip" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
+										<a class="label label-danger" href="__BACKEND__/manager/alert_topic_delete?id={{$v.Id}}&topic={{Stored.topic}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" data-toggle="tooltip" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
 										</td>
 									</tr>
-                                    {{end}}
+                                    {{- end -}}
 								</tbody>
 							</table>		
 							</div>
@@ -72,9 +88,52 @@
 			</div>
 {{/Block}}
 {{Block "footer"}}
+<script src="__ASSETS__/js/selectpage/selectpage.min.js?t={{BuildTime}}" type="text/javascript"></script>
 <script>
+var topic = '{{Stored.topic}}';
+function addAlertToTopic(a){
+    var recipientIds = $('#input-add-recipient').val();
+    var disabled = $('#checkbox-relation').prop('checked') ? 'N' : 'Y';
+    var data = {
+        "recipientIds": recipientIds,
+        "disabled": disabled,
+        "topic": topic,
+    };
+    $.post(BACKEND_URL+'/manager/alert_topic_add', data, function(r){
+        if(r.Code==1){
+            $('#input-add-recipient').val('');
+            $('#input-add-recipient').selectPageClear();
+            $.get(BACKEND_URL+'/manager/alert_topic', {
+                "topic":topic,
+                "_pjax":"#main-container"
+            }, function(r){
+                $('#main-container').html(r);
+            }, 'html');
+        }
+        App.message({text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
+    }, 'json');
+}
 $(function(){
-	App.bindSwitch('input.switch-disabled','click','manager/alert_recipient_edit');
+    App.bindSwitch('input.switch-disabled','click','manager/alert_topic_edit');
+    $('#input-add-recipient').selectPage({
+        showField : 'name',
+        keyField : 'id',
+        data : BACKEND_URL+'/manager/alert_recipient',
+        params : function(){return {'excludeTopic':topic};},
+        multiple : true,
+        eAjaxSuccess : function(d){
+            var result;
+            if(d) result = {
+                "list":d.Data.listData,
+                "pageSize": d.Data.pagination.limit,
+                "pageNumber": d.Data.pagination.page,
+                "totalRow": d.Data.pagination.rows,
+                "totalPage":d.Data.pagination.pages
+            };
+            else result = undefined;
+            return result;
+        }
+    });
 });
 </script>
 {{/Block}}

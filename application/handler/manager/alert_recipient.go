@@ -34,11 +34,16 @@ func AlertRecipient(ctx echo.Context) error {
 	if len(q) > 0 {
 		cond.AddKV(`name`, q)
 	}
+	excludeTopic := ctx.Formx(`excludeTopic`).String()
+	if len(excludeTopic) > 0 {
+		topicM := model.NewAlertTopic(ctx)
+		cond.Add(db.Raw("NOT EXISTS (SELECT 1 FROM `"+topicM.Name_()+"` WHERE `topic`=? AND `recipient_id`=`"+m.Name_()+"`.`id`)", excludeTopic))
+	}
 	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, nil, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
 	}, cond.And()))
 	ctx.Set(`listData`, m.Objects())
-	ctx.Set(`title`, ctx.E(`警报接收人`))
+	ctx.Set(`title`, ctx.T(`警报收信账号`))
 	ctx.SetFunc(`platformName`, model.AlertRecipientPlatforms.Get)
 	ctx.Set(`topicList`, model.AlertTopics.Slice())
 	ctx.SetFunc(`topicName`, model.AlertTopics.Get)
@@ -47,8 +52,8 @@ func AlertRecipient(ctx echo.Context) error {
 
 func AlertRecipientAdd(ctx echo.Context) error {
 	var err error
+	m := model.NewAlertRecipient(ctx)
 	if ctx.IsPost() {
-		m := model.NewAlertRecipient(ctx)
 		err = ctx.MustBind(m.NgingAlertRecipient)
 		if err == nil {
 			_, err = m.Add()
@@ -57,9 +62,18 @@ func AlertRecipientAdd(ctx echo.Context) error {
 			handler.SendOk(ctx, ctx.T(`操作成功`))
 			return ctx.Redirect(handler.URLFor(`/manager/alert_recipient`))
 		}
+	} else {
+		id := ctx.Formx(`copyId`).Uint()
+		if id > 0 {
+			err = m.Get(nil, db.Cond{`id`: id})
+			if err == nil {
+				echo.StructToForm(ctx, m.NgingAlertRecipient, ``, echo.LowerCaseFirstLetter)
+				ctx.Request().Form().Set(`id`, `0`)
+			}
+		}
 	}
 	ctx.Set(`activeURL`, `/manager/alert_recipient`)
-	ctx.Set(`title`, ctx.E(`添加警报接收人`))
+	ctx.Set(`title`, ctx.T(`添加收信账号`))
 	ctx.Set(`platforms`, model.AlertRecipientPlatforms.Slice())
 	return ctx.Render(`/manager/alert_recipient_edit`, handler.Err(ctx, err))
 }
@@ -100,7 +114,7 @@ func AlertRecipientEdit(ctx echo.Context) error {
 	}
 
 	ctx.Set(`activeURL`, `/manager/alert_recipient`)
-	ctx.Set(`title`, ctx.E(`修改警报接收人`))
+	ctx.Set(`title`, ctx.T(`修改收信账号`))
 	ctx.Set(`platforms`, model.AlertRecipientPlatforms.Slice())
 	return ctx.Render(`/manager/alert_recipient_edit`, handler.Err(ctx, err))
 }

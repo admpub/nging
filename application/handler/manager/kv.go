@@ -44,7 +44,7 @@ func KvIndex(ctx echo.Context) error {
 		return r.OrderBy(`-id`)
 	}, cond.And()))
 	ctx.Set(`listData`, m.Objects())
-	ctx.Set(`title`, ctx.E(`元数据`))
+	ctx.Set(`title`, ctx.T(`元数据`))
 	typeList := m.KvTypeList()
 	typeMap := m.ListToMap(typeList)
 	ctx.Set(`typeList`, typeList)
@@ -77,7 +77,7 @@ func KvAdd(ctx echo.Context) error {
 		}
 	}
 	ctx.Set(`activeURL`, `/manager/kv`)
-	ctx.Set(`title`, ctx.E(`添加元数据`))
+	ctx.Set(`title`, ctx.T(`添加元数据`))
 	ctx.Set(`typeList`, m.KvTypeList())
 	if len(t) > 0 {
 		ctx.Request().Form().Set(`type`, t)
@@ -108,7 +108,7 @@ func KvEdit(ctx echo.Context) error {
 	}
 
 	ctx.Set(`activeURL`, `/manager/kv`)
-	ctx.Set(`title`, ctx.E(`修改元数据`))
+	ctx.Set(`title`, ctx.T(`修改元数据`))
 	var typeList []*dbschema.NgingKv
 	if m.IsRootType(m.Type) {
 		typeList = m.KvTypeList(m.Id)

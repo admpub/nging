@@ -34,6 +34,10 @@ var (
 	AlertTopics     = echo.NewKVData()
 )
 
+func init() {
+	AlertTopics.Add(`test`, `测试`)
+}
+
 func NewAlertTopic(ctx echo.Context) *AlertTopic {
 	m := &AlertTopic{
 		NgingAlertTopic: &dbschema.NgingAlertTopic{},
@@ -48,22 +52,22 @@ type AlertTopic struct {
 	base *base.Base
 }
 
-func (s *AlertTopic) check() error {
-	s.Topic = strings.TrimSpace(s.Topic)
-	if len(s.Topic) == 0 {
+func (s *AlertTopic) check(row *dbschema.NgingAlertTopic) error {
+	row.Topic = strings.TrimSpace(row.Topic)
+	if len(row.Topic) == 0 {
 		return s.base.E(`topic不能为空`)
 	}
-	if s.RecipientId <= 0 {
+	if row.RecipientId <= 0 {
 		return s.base.E(`收信账号ID不能为空`)
 	}
 	var (
 		exists bool
 		err error
 	)
-	if s.Id > 0 {
-		exists, err = s.ExistsOther(s.Topic, s.RecipientId, s.Id)
+	if row.Id > 0 {
+		exists, err = s.ExistsOther(row.Topic, row.RecipientId, row.Id)
 	} else {
-		exists, err = s.Exists(s.Topic, s.RecipientId)
+		exists, err = s.Exists(row.Topic, row.RecipientId)
 	}
 	if err != nil {
 		return err
@@ -74,11 +78,17 @@ func (s *AlertTopic) check() error {
 	return err
 }
 
-func (s *AlertTopic) Add() (pk interface{}, err error) {
-	if err = s.check(); err != nil {
+func (s *AlertTopic) Add(rows ...*dbschema.NgingAlertTopic) (pk interface{}, err error) {
+	var bean *dbschema.NgingAlertTopic
+	if len(rows) > 0 {
+		bean = rows[0]
+	} else {
+		bean = s.NgingAlertTopic
+	}
+	if err = s.check(bean); err != nil {
 		return nil, err
 	}
-	return s.NgingAlertTopic.Add()
+	return bean.Add()
 }
 
 func (s *AlertTopic) Exists(topic string, recipientId uint) (bool, error) {
@@ -97,7 +107,7 @@ func (s *AlertTopic) ExistsOther(topic string, recipientId uint, excludeID uint)
 }
 
 func (s *AlertTopic) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error) {
-	if err = s.check(); err != nil {
+	if err = s.check(s.NgingAlertTopic); err != nil {
 		return err
 	}
 	return s.NgingAlertTopic.Edit(mw, args...)

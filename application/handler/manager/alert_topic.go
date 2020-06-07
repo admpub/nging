@@ -19,8 +19,11 @@
 package manager
 
 import (
+	"strings"
+
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/model"
@@ -29,19 +32,25 @@ import (
 func AlertTopic(ctx echo.Context) error {
 	m := model.NewAlertTopic(ctx)
 	cond := db.Compounds{}
-	q := ctx.Formx(`q`).String()
-	if len(q) > 0 {
-		cond.AddKV(`topic`, q)
+	topic := ctx.Formx(`q`).String()
+	if len(topic) == 0 {
+		topic = ctx.Formx(`topic`).String()
+	} else {
+		ctx.Request().Form().Set(`topic`, topic)
+	}
+	if len(topic) > 0 {
+		cond.AddKV(`topic`, topic)
 	}
 	list := []*model.AlertTopicExt{}
-	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, list, func(r db.Result) db.Result {
+	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, &list, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
 	}, cond.And()))
 	ctx.Set(`listData`, list)
-	ctx.Set(`title`, ctx.E(`警报专题`))
-	ctx.SetFunc(`platformName`, model.AlertRecipientPlatforms.Get)
+	ctx.Set(`title`, ctx.T(`所有专题账号`))
+	ctx.Set(`topic`, topic)
 	ctx.Set(`topicList`, model.AlertTopics.Slice())
 	ctx.SetFunc(`topicName`, model.AlertTopics.Get)
+	ctx.SetFunc(`platformName`, model.AlertRecipientPlatforms.Get)
 	return ctx.Render(`/manager/alert_topic`, handler.Err(ctx, err))
 }
 
@@ -50,7 +59,15 @@ func AlertTopicAdd(ctx echo.Context) error {
 	if ctx.IsPost() {
 		m := model.NewAlertTopic(ctx)
 		err = ctx.MustBind(m.NgingAlertTopic)
-		if err == nil {
+		recipientIds := ctx.Formx(`recipientIds`).String()
+		if len(recipientIds) > 0 {
+			recipientIds := param.StringSlice(strings.Split(recipientIds,`,`)).Uint()
+			for _, recipientID := range recipientIds {
+				row := *m.NgingAlertTopic
+				row.RecipientId = recipientID
+				_, err = m.Add(&row)
+			}
+		} else if err == nil {
 			_, err = m.Add()
 		}
 		if err == nil {
@@ -59,7 +76,7 @@ func AlertTopicAdd(ctx echo.Context) error {
 		}
 	}
 	ctx.Set(`activeURL`, `/manager/alert_recipient`)
-	ctx.Set(`title`, ctx.E(`添加警报接收人`))
+	ctx.Set(`title`, ctx.T(`添加警报接收人`))
 	ctx.Set(`platforms`, model.AlertRecipientPlatforms.Slice())
 	return ctx.Render(`/manager/alert_topic_edit`, handler.Err(ctx, err))
 }
@@ -100,7 +117,7 @@ func AlertTopicEdit(ctx echo.Context) error {
 	}
 
 	ctx.Set(`activeURL`, `/manager/alert_topic`)
-	ctx.Set(`title`, ctx.E(`修改警报接收人`))
+	ctx.Set(`title`, ctx.T(`修改警报接收人`))
 	ctx.Set(`platforms`, model.AlertRecipientPlatforms.Slice())
 	return ctx.Render(`/manager/alert_topic_edit`, handler.Err(ctx, err))
 }
@@ -114,6 +131,6 @@ func AlertTopicDelete(ctx echo.Context) error {
 	} else {
 		handler.SendFail(ctx, err.Error())
 	}
-
-	return ctx.Redirect(handler.URLFor(`/manager/alert_topic`))
+	topic := ctx.Form("topic")
+	return ctx.Redirect(handler.URLFor(`/manager/alert_topic?topic=`+topic))
 }
