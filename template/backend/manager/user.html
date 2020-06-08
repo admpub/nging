@@ -37,6 +37,8 @@
 							<th style="width:50px"><strong>{{"头像"|T}}</strong></th>
 							<th><strong>{{"用户名"|T}}</strong></th>
 							<th><strong>{{"E-mail"|T}}</strong></th>
+							<th><strong>{{"登录时间"|T}}</strong></th>
+							<th><strong>{{"登录IP"|T}}</strong></th>
 							<th style="width:60px"><strong>{{"状态"|T}}</strong></th>
 							<th style="width:120px" class="text-center"><strong>{{"操作"|T}}</strong></th>
 						</tr>
@@ -53,6 +55,8 @@
 								{{end}}
 							</td>
 							<td>{{$v.Email}}</td>
+							<td>{{if gt $v.LastLogin 0}}{{(Date $v.LastLogin).Format "2006-01-02 15:04:05"}}{{else}}N/A{{end}}</td>
+							<td>{{$v.LastIp|Default "N/A"}}</td>
 							<td>{{if eq $v.Disabled "Y"}}{{"禁用"|T}}{{else}}{{"启用"|T}}{{end}}</td>
 							<td class="text-center">
 							<a class="label label-default" href="__BACKEND__/manager/user_add?copyId={{$v.Id}}" title="{{"复制"|T}}"><i class="fa fa-copy"></i></a>
