@@ -103,3 +103,21 @@ func (s *AlertRecipient) Edit(mw func(db.Result) db.Result, args ...interface{})
 	}
 	return s.NgingAlertRecipient.Edit(mw, args...)
 }
+
+func (s *AlertRecipient) Delete(mw func(db.Result) db.Result, args ...interface{}) (err error) {
+	m := NewAlertTopic(s.base.Context)
+	var rows []*dbschema.NgingAlertRecipient
+	s.NgingAlertRecipient.ListByOffset(&rows, nil, 0, -1, args...)
+	recipientIDs := make([]uint, len(rows))
+	for index, recipient := range rows {
+		recipientIDs[index] = recipient.Id
+	}
+	if len(recipientIDs) == 0 {
+		return
+	}
+	err = m.Delete(nil, db.Cond{`recipient_id`: db.In(recipientIDs)})
+	if err != nil {
+		return
+	}
+	return s.NgingAlertRecipient.Delete(mw, args...)
+}

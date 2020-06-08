@@ -22,6 +22,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
@@ -104,6 +105,28 @@ func (s *Kv) Edit(mw func(db.Result) db.Result, args ...interface{}) (err error)
 		return err
 	}
 	return s.NgingKv.Edit(mw, args...)
+}
+
+func (s *Kv) Delete(mw func(db.Result) db.Result, args ...interface{}) (err error) {
+	var rows []*dbschema.NgingKv
+	s.NgingKv.ListByOffset(&rows, nil, 0, -1, args...)
+	var types []string
+	for _, row := range rows {
+		if row.Type != KvRootType {
+			continue
+		}
+		if com.InSlice(row.Key, types) {
+			continue
+		}
+		types = append(types, row.Key)
+	}
+	if len(types) > 0 {
+		err = s.NgingKv.Delete(nil, db.Cond{`type`: db.In(types)})
+		if err != nil {
+			return
+		}
+	}
+	return s.NgingKv.Delete(mw, args...)
 }
 
 func (s *Kv) IsRootType(typ string) bool {
