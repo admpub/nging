@@ -23,25 +23,14 @@ import (
 
 	"github.com/admpub/cron"
 	"github.com/admpub/log"
-	"github.com/admpub/mail"
 )
 
 var (
-	mainCron           *cron.Cron
-	workPool           chan bool
-	lock               sync.Mutex
-	PoolSize           = 50                 //连接池容量
-	DefaultSMTPConfig  = &mail.SMTPConfig{} //STMP配置
-	DefaultEmailConfig = &EmailConfig{}
+	mainCron *cron.Cron
+	workPool chan bool
+	lock     sync.Mutex
+	PoolSize = 50 //连接池容量
 )
-
-type EmailConfig struct {
-	Template  string
-	Sender    string
-	Engine    string
-	Timeout   int64
-	QueueSize int
-}
 
 func Initial(sizes ...int) {
 	var size int

@@ -31,7 +31,7 @@ import (
 
 	"github.com/admpub/archiver"
 	loga "github.com/admpub/log"
-	"github.com/admpub/nging/application/library/cron"
+	writerPkg "github.com/admpub/nging/application/library/cron/writer"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/webx-top/com"
 )
@@ -122,7 +122,7 @@ func Import(ctx context.Context, cfg *driver.DbAuth, cacheDir string, files []st
 		}
 	}
 	sqlFiles = append(sqlFiles, dataFiles...)
-	rec := cron.NewCmdRec(1000)
+	rec := writerPkg.New(1000)
 	for _, sqlFile := range sqlFiles {
 		if len(sqlFile) == 0 {
 			continue

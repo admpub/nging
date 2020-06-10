@@ -27,6 +27,7 @@ import (
 
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/application/registry/alert"
 )
 
 func AlertTopic(ctx echo.Context) error {
@@ -48,9 +49,9 @@ func AlertTopic(ctx echo.Context) error {
 	ctx.Set(`listData`, list)
 	ctx.Set(`title`, ctx.T(`所有专题账号`))
 	ctx.Set(`topic`, topic)
-	ctx.Set(`topicList`, model.AlertTopics.Slice())
-	ctx.SetFunc(`topicName`, model.AlertTopics.Get)
-	ctx.SetFunc(`platformName`, model.AlertRecipientPlatforms.Get)
+	ctx.Set(`topicList`, alert.Topics.Slice())
+	ctx.SetFunc(`topicName`, alert.Topics.Get)
+	ctx.SetFunc(`platformName`, alert.RecipientPlatforms.Get)
 	return ctx.Render(`/manager/alert_topic`, handler.Err(ctx, err))
 }
 
@@ -77,7 +78,7 @@ func AlertTopicAdd(ctx echo.Context) error {
 	}
 	ctx.Set(`activeURL`, `/manager/alert_recipient`)
 	ctx.Set(`title`, ctx.T(`添加警报接收人`))
-	ctx.Set(`platforms`, model.AlertRecipientPlatforms.Slice())
+	ctx.Set(`platforms`, alert.RecipientPlatforms.Slice())
 	return ctx.Render(`/manager/alert_topic_edit`, handler.Err(ctx, err))
 }
 
@@ -118,7 +119,7 @@ func AlertTopicEdit(ctx echo.Context) error {
 
 	ctx.Set(`activeURL`, `/manager/alert_topic`)
 	ctx.Set(`title`, ctx.T(`修改警报接收人`))
-	ctx.Set(`platforms`, model.AlertRecipientPlatforms.Slice())
+	ctx.Set(`platforms`, alert.RecipientPlatforms.Slice())
 	return ctx.Render(`/manager/alert_topic_edit`, handler.Err(ctx, err))
 }
 

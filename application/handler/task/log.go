@@ -29,6 +29,7 @@ import (
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/cron"
+	cronWriter "github.com/admpub/nging/application/library/cron/writer"
 	"github.com/admpub/nging/application/model"
 )
 
@@ -63,7 +64,7 @@ func Log(ctx echo.Context) error {
 	ctx.Set(`task`, task)
 	ret := handler.Err(ctx, err)
 	ctx.Set(`activeURL`, `/task/index`)
-	ctx.Set(`notRecordPrefixFlag`, cron.NotRecordPrefixFlag)
+	ctx.Set(`notRecordPrefixFlag`, cronWriter.NotRecordPrefixFlag)
 	return ctx.Render(`task/log`, ret)
 }
 
@@ -85,7 +86,7 @@ func renderLogViewData(ctx echo.Context, m *dbschema.NgingTaskLog, err error) er
 	}
 	ctx.Set(`task`, task)
 	ctx.Set(`extra`, ex)
-	ctx.Set(`notRecordPrefixFlag`, cron.NotRecordPrefixFlag)
+	ctx.Set(`notRecordPrefixFlag`, cronWriter.NotRecordPrefixFlag)
 	return ctx.Render(`task/log_view`, handler.Err(ctx, err))
 }
 

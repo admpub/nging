@@ -34,7 +34,7 @@ import (
 	"github.com/webx-top/db"
 
 	"github.com/admpub/errors"
-	"github.com/admpub/nging/application/library/cron"
+	writerPkg "github.com/admpub/nging/application/library/cron/writer"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 )
 
@@ -111,7 +111,7 @@ func Export(ctx context.Context, cfg *driver.DbAuth, tables []string, structWrit
 	}
 	//args = append(args, `--tables`)
 	args = append(args, tables...)
-	rec := cron.NewCmdRec(1000)
+	rec := writerPkg.New(1000)
 	for index, writer := range []interface{}{structWriter, dataWriter} {
 		if writer == nil {
 			continue

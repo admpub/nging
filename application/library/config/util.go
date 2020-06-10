@@ -33,6 +33,7 @@ import (
 	"github.com/admpub/nging/application/cmd/event"
 	"github.com/admpub/nging/application/library/caddy"
 	"github.com/admpub/nging/application/library/cron"
+	cronSend "github.com/admpub/nging/application/library/cron/send"
 	"github.com/admpub/nging/application/library/ftp"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db/lib/factory"
@@ -143,7 +144,7 @@ func ParseConfig() error {
 	if conf.Cron.PoolSize > 0 {
 		cron.PoolSize = conf.Cron.PoolSize
 	}
-	cron.DefaultEmailConfig.Template = conf.Cron.Template
+	cronSend.DefaultEmailConfig.Template = conf.Cron.Template
 	if IsInstalled() {
 		err = conf.connectDB()
 		if err != nil {

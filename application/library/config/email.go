@@ -20,7 +20,7 @@ package config
 
 import (
 	"github.com/admpub/mail"
-	"github.com/admpub/nging/application/library/cron"
+	cronSend "github.com/admpub/nging/application/library/cron/send"
 	"github.com/admpub/nging/application/library/email"
 	"github.com/webx-top/echo"
 )
@@ -58,11 +58,11 @@ func (c *Email) Init() {
 	if c.SMTPConfig == nil {
 		c.SMTPConfig = &mail.SMTPConfig{}
 	}
-	cron.DefaultSMTPConfig = c.SMTPConfig
-	cron.DefaultEmailConfig.Sender = c.From
-	cron.DefaultEmailConfig.Engine = c.Engine
-	if cron.DefaultEmailConfig.Timeout > 0 {
-		cron.DefaultEmailConfig.Timeout = c.Timeout
+	cronSend.DefaultSMTPConfig = c.SMTPConfig
+	cronSend.DefaultEmailConfig.Sender = c.From
+	cronSend.DefaultEmailConfig.Engine = c.Engine
+	if cronSend.DefaultEmailConfig.Timeout > 0 {
+		cronSend.DefaultEmailConfig.Timeout = c.Timeout
 	}
 	if c.QueueSize > 0 {
 		email.QueueSize = c.QueueSize

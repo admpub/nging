@@ -29,6 +29,7 @@ import (
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/cron"
+	cronWriter "github.com/admpub/nging/application/library/cron/writer"
 	"github.com/admpub/nging/application/model"
 )
 
@@ -77,7 +78,7 @@ func Index(ctx echo.Context) error {
 	ctx.Set(`extraList`, extraList)
 	ctx.Set(`cronRunning`, cron.Running())
 	ctx.Set(`histroyRunning`, cron.HistoryJobsRunning())
-	ctx.Set(`notRecordPrefixFlag`, cron.NotRecordPrefixFlag)
+	ctx.Set(`notRecordPrefixFlag`, cronWriter.NotRecordPrefixFlag)
 	ctx.Set(`groupList`, groupList)
 	ctx.Set(`groupId`, groupId)
 	return ctx.Render(`task/index`, handler.Err(ctx, err))
@@ -206,7 +207,7 @@ func Edit(ctx echo.Context) error {
 	}
 	ctx.Set(`groupList`, mg.Objects())
 	ctx.Set(`activeURL`, `/task/index`)
-	ctx.Set(`notRecordPrefixFlag`, cron.NotRecordPrefixFlag)
+	ctx.Set(`notRecordPrefixFlag`, cronWriter.NotRecordPrefixFlag)
 	ctx.SetFunc(`buildPattern`, buidlPattern)
 	return ctx.Render(`task/edit`, handler.Err(ctx, err))
 }

@@ -25,24 +25,10 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/imbot"
 	_ "github.com/admpub/nging/application/library/imbot/dingding"
 	_ "github.com/admpub/nging/application/library/imbot/workwx"
 	"github.com/admpub/nging/application/model/base"
 )
-
-var (
-	AlertRecipientTypes     = echo.NewKVData()
-	AlertRecipientPlatforms = echo.NewKVData()
-)
-
-func init() {
-	AlertRecipientTypes.Add(`email`, `email`)
-	AlertRecipientTypes.Add(`webhook`, `webhook`)
-	for name, mess := range imbot.Messagers() {
-		AlertRecipientPlatforms.Add(name, mess.Label)
-	}
-}
 
 func NewAlertRecipient(ctx echo.Context) *AlertRecipient {
 	m := &AlertRecipient{

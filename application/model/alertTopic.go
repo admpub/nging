@@ -25,18 +25,8 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/dbschema"
-	_ "github.com/admpub/nging/application/library/imbot/dingding"
-	_ "github.com/admpub/nging/application/library/imbot/workwx"
 	"github.com/admpub/nging/application/model/base"
 )
-
-var (
-	AlertTopics     = echo.NewKVData()
-)
-
-func init() {
-	//AlertTopics.Add(`test`, `测试`)
-}
 
 func NewAlertTopic(ctx echo.Context) *AlertTopic {
 	m := &AlertTopic{
@@ -62,7 +52,7 @@ func (s *AlertTopic) check(row *dbschema.NgingAlertTopic) error {
 	}
 	var (
 		exists bool
-		err error
+		err    error
 	)
 	if row.Id > 0 {
 		exists, err = s.ExistsOther(row.Topic, row.RecipientId, row.Id)
@@ -114,7 +104,7 @@ func (s *AlertTopic) Edit(mw func(db.Result) db.Result, args ...interface{}) (er
 }
 
 func (s *AlertTopic) Send(topic string, title string, message string) (err error) {
-	skey := `NgingAlertTopics.`+topic
+	skey := `NgingAlertTopics.` + topic
 	rows, ok := s.base.Context.Internal().Get(skey).([]*AlertTopicExt)
 	if !ok {
 		rows = []*AlertTopicExt{}

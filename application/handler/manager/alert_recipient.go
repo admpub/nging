@@ -24,6 +24,7 @@ import (
 
 	"github.com/admpub/nging/application/cmd/event"
 	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/registry/alert"
 	"github.com/admpub/nging/application/model"
 )
 
@@ -44,9 +45,9 @@ func AlertRecipient(ctx echo.Context) error {
 	}, cond.And()))
 	ctx.Set(`listData`, m.Objects())
 	ctx.Set(`title`, ctx.T(`警报收信账号`))
-	ctx.SetFunc(`platformName`, model.AlertRecipientPlatforms.Get)
-	ctx.Set(`topicList`, model.AlertTopics.Slice())
-	ctx.SetFunc(`topicName`, model.AlertTopics.Get)
+	ctx.SetFunc(`platformName`, alert.RecipientPlatforms.Get)
+	ctx.Set(`topicList`, alert.Topics.Slice())
+	ctx.SetFunc(`topicName`, alert.Topics.Get)
 	return ctx.Render(`/manager/alert_recipient`, handler.Err(ctx, err))
 }
 
@@ -74,7 +75,7 @@ func AlertRecipientAdd(ctx echo.Context) error {
 	}
 	ctx.Set(`activeURL`, `/manager/alert_recipient`)
 	ctx.Set(`title`, ctx.T(`添加收信账号`))
-	ctx.Set(`platforms`, model.AlertRecipientPlatforms.Slice())
+	ctx.Set(`platforms`, alert.RecipientPlatforms.Slice())
 	return ctx.Render(`/manager/alert_recipient_edit`, handler.Err(ctx, err))
 }
 
@@ -115,7 +116,7 @@ func AlertRecipientEdit(ctx echo.Context) error {
 
 	ctx.Set(`activeURL`, `/manager/alert_recipient`)
 	ctx.Set(`title`, ctx.T(`修改收信账号`))
-	ctx.Set(`platforms`, model.AlertRecipientPlatforms.Slice())
+	ctx.Set(`platforms`, alert.RecipientPlatforms.Slice())
 	return ctx.Render(`/manager/alert_recipient_edit`, handler.Err(ctx, err))
 }
 

@@ -16,7 +16,7 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package cron
+package writer
 
 import (
 	"bytes"
@@ -27,6 +27,9 @@ import (
 var (
 	dot6str   = "\n" + `......` + "\n"
 	dot6bytes = []byte(dot6str)
+
+	//NotRecordPrefixFlag 不记录日志的前缀标识
+	NotRecordPrefixFlag = `--/ignore/--`
 )
 
 type OutputWriter interface {
@@ -35,7 +38,7 @@ type OutputWriter interface {
 	Bytes() []byte
 }
 
-func NewCmdRec(max uint64) *cmdRec {
+func New(max uint64) *cmdRec {
 	return &cmdRec{
 		buf:  new(bytes.Buffer),
 		max:  max / 2,
