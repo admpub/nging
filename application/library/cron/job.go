@@ -30,6 +30,7 @@ import (
 	"time"
 
 	cronWriter "github.com/admpub/nging/application/library/cron/writer"
+	"github.com/admpub/nging/application/library/cron/send"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/middleware/tplfunc"
@@ -274,6 +275,7 @@ func (j *Job) send(elapsed int64, t time.Time, err error, cmdOut string, isTimeo
 	}
 	data["title"] = title
 	data["status"] = status
+	data["content"] = send.NewContent()
 	return Send(data)
 }
 

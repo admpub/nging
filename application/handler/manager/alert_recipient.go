@@ -26,6 +26,7 @@ import (
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/registry/alert"
 	"github.com/admpub/nging/application/model"
+	modelAlert "github.com/admpub/nging/application/model/alert"
 )
 
 func AlertRecipient(ctx echo.Context) error {
@@ -133,6 +134,7 @@ func AlertRecipientTest(ctx echo.Context) error {
 		`email-content`: []byte(ctx.T("您好，我是%s管理员`%s`，这是我发的测试信息，请忽略😊", event.SoftwareName, user.Username)),
 	}
 	params[`markdown-content`] = params[`email-content`]
+	params[`content`] = modelAlert.DefaultTextContent
 	err = row.Send(params)
 	if err != nil {
 		return err

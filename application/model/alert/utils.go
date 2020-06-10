@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/cron"
 	"github.com/admpub/nging/application/library/cron/send"
 	"github.com/admpub/nging/application/library/imbot"
 	"github.com/webx-top/echo"
@@ -14,9 +13,13 @@ import (
 // Send 发送警报
 func Send(a *dbschema.NgingAlertRecipient, extra echo.H, params param.Store) (err error) {
 	title := params.String(`title`)
+	ct, ok := params.Get(`content`).(send.ContentType)
+	if !ok {
+		return nil
+	}
 	switch a.Type {
 	case `email`:
-		content := cron.GenEmailContent(params)
+		content := ct.EmailContent(params)
 		err = send.Mail(a.Account, strings.SplitN(a.Account, `@`, 2)[0], title, content)
 	case `webhook`:
 		mess := imbot.Open(a.Platform)
@@ -45,7 +48,7 @@ func Send(a *dbschema.NgingAlertRecipient, extra echo.H, params param.Store) (er
 				atMobiles = v
 			}
 		}
-		content := cron.GenMarkdownContent(params)
+		content := ct.MarkdownContent(params)
 		message := string(content)
 		go func(apiURL string, title string, message string, atMobiles ...string) {
 			err = mess.Messager.SendMarkdown(apiURL, title, message, atMobiles...)

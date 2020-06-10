@@ -2,14 +2,13 @@ package cron
 
 import (
 	"strings"
-	"bytes"
 
-	"github.com/admpub/nging/application/library/cron/send"
-	alertRegistry "github.com/admpub/nging/application/registry/alert"
-	"github.com/admpub/nging/application/library/cron/writer"
 	"github.com/admpub/nging/application/dbschema"
-	"github.com/webx-top/echo/param"
+	"github.com/admpub/nging/application/library/cron/send"
+	"github.com/admpub/nging/application/library/cron/writer"
+	alertRegistry "github.com/admpub/nging/application/registry/alert"
 	"github.com/webx-top/echo/defaults"
+	"github.com/webx-top/echo/param"
 )
 
 var (
@@ -23,9 +22,9 @@ var (
 
 	// SendMailWithID 发送Email(带ID参数)
 	SendMailWithID = send.MailWithID
-	 
+
 	// SendMailWithNoticer 发送Email(带Noticer参数)
- 	SendMailWithNoticer = send.MailWithNoticer
+	SendMailWithNoticer = send.MailWithNoticer
 
 	// SendMailWithIDAndNoticer 发送Email(带ID和Noticer参数)
 	SendMailWithIDAndNoticer = send.MailWithIDAndNoticer
@@ -65,36 +64,12 @@ func EmailSender(params param.Store) error {
 		}
 	}
 	params["username"] = user.Username
-	content := GenEmailContent(params)
+	ct, ok := params.Get(`content`).(send.ContentType)
+	if !ok {
+		return nil
+	}
+	content := ct.EmailContent(params)
 	return SendMail(user.Email, user.Username, params.String(`title`), content, ccList...)
-}
-
-// GenEmailContent 生成邮件内容
-func GenEmailContent(params param.Store) []byte{
-	var content []byte
-	if !params.Has(`email-content`) {
-		b := new(bytes.Buffer)
-		send.MailTpl().Execute(b, params)
-		content = b.Bytes()
-		params["email-content"] = b.Bytes()
-	} else {
-		content, _ = params.Get(`email-content`).([]byte)
-	}
-	return content
-}
-
-// GenMarkdownContent 生成Markdown内容
-func GenMarkdownContent(params param.Store) []byte{
-	var content []byte
-	if !params.Has(`markdown-content`) {
-		b := new(bytes.Buffer)
-		send.MarkdownTmpl().Execute(b, params)
-		content = b.Bytes()
-		params["markdown-content"] = b.Bytes()
-	} else {
-		content, _ = params.Get(`markdown-content`).([]byte)
-	}
-	return content
 }
 
 func init() {
