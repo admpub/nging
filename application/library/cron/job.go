@@ -42,7 +42,7 @@ import (
 )
 
 var (
-	defaultOuputSize uint64 = 1024 * 200
+	defaultOuputSize uint64 = 2000
 	cmdPreParams     []string
 
 	// SYSJobs 系统Job
@@ -365,7 +365,11 @@ func (j *Job) Run() {
 
 	// 发送邮件通知
 	if (j.task.EnableNotify == 1 && err != nil) || j.task.EnableNotify == 2 {
-		err := j.send(elapsed, t, err, cmdErr, isTimeout, timeout)
+		out := cmdErr
+		if len(out) == 0 {
+			out = cmdOut
+		}
+		err := j.send(elapsed, t, err, out, isTimeout, timeout)
 		if err != nil {
 			log.Error(err)
 		}
