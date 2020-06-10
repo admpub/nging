@@ -29,10 +29,13 @@ import (
 
 	"github.com/shirou/gopsutil/net"
 	"github.com/webx-top/com"
+	"github.com/webx-top/echo/param"
+	"github.com/webx-top/echo/defaults"
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/library/cron"
 	"github.com/admpub/nging/application/library/msgbox"
+	"github.com/admpub/nging/application/registry/alert"
 )
 
 var (
@@ -40,6 +43,10 @@ var (
 	realTimeStatus                 *RealTimeStatus
 	CancelRealTimeStatusCollection = func() {}
 )
+
+func init() {
+	alert.Topics.Add(`systemStatus`, `系统状态`)
+}
 
 func RealTimeStatusObject() *RealTimeStatus {
 	return realTimeStatus
@@ -159,7 +166,7 @@ func checkAndSendAlarm(r *RealTimeStatus, value float64, typ string) {
 	if r == nil || r.Settings == nil {
 		return
 	}
-	if !r.Settings.AlarmOn || len(r.reportEmail) == 0 {
+	if !r.Settings.AlarmOn {
 		return
 	}
 	switch typ {
@@ -180,6 +187,21 @@ func checkAndSendAlarm(r *RealTimeStatus, value float64, typ string) {
 	}
 }
 
+type alarmContent struct {
+	title string
+	hostname string
+	typeName string
+	value string
+}
+
+func (a *alarmContent) EmailContent(params param.Store) []byte {
+	return com.Str2bytes(`<h1>` + a.title + `</h1><p>主机名: ` + a.hostname + `<br />` + a.typeName + `使用率: ` + a.value + `%<br />时间: ` + time.Now().Format(time.RFC3339) + `<br /></p>`)
+}
+
+func (a *alarmContent) MarkdownContent(params param.Store) []byte {
+	return com.Str2bytes(`### ` + a.title + "\n" + `**主机名**: ` + a.hostname + "\n**" + a.typeName + `使用率**: ` + a.value + `%` + "\n" + `**时间**: ` + time.Now().Format(time.RFC3339) + "\n")
+}
+
 func (r *RealTimeStatus) sendAlarm(alarmThreshold, value float64, typ string) *RealTimeStatus {
 	now := time.Now()
 	if r.reportTime.IsZero() || now.Sub(r.reportTime) < time.Minute*5 { // 连续5分钟达到阀值时发邮件告警
@@ -196,7 +218,22 @@ func (r *RealTimeStatus) sendAlarm(alarmThreshold, value float64, typ string) *R
 	}
 	hostname, _ := os.Hostname()
 	title := fmt.Sprintf(`【`+hostname+`】`+typeName+`使用率超出%v%%`, alarmThreshold)
-	content := com.Str2bytes(`<h1>` + title + `</h1><p>主机名: ` + hostname + `<br />` + typeName + `使用率: ` + fmt.Sprint(value) + `%<br />时间: ` + time.Now().Format(time.RFC3339) + `<br /></p>`)
+	ct := alarmContent{
+		title: title,
+		hostname:  hostname,
+		typeName: typeName,
+		value: fmt.Sprint(value),
+	}
+	params := param.Store{
+		`title`: title,
+		`content`: ct,
+	}
+	ctx := defaults.NewMockContext()
+	alert.SendTopic(ctx, `systemStatus`, params)
+	if len(r.reportEmail) == 0 {
+		return r
+	}
+	content := ct.EmailContent(params)
 	var cc []string
 	if len(r.reportEmail) > 1 {
 		cc = r.reportEmail[1:]
