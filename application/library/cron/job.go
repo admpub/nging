@@ -31,8 +31,9 @@ import (
 
 	cronWriter "github.com/admpub/nging/application/library/cron/writer"
 	"github.com/webx-top/com"
-	"github.com/webx-top/echo/param"
 	"github.com/webx-top/echo/engine"
+	"github.com/webx-top/echo/middleware/tplfunc"
+	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/dbschema"
@@ -41,16 +42,16 @@ import (
 
 var (
 	defaultOuputSize uint64 = 1024 * 200
-	cmdPreParams []string
+	cmdPreParams     []string
 
 	// SYSJobs 系统Job
-	SYSJobs      = map[string]Jobx{}
+	SYSJobs = map[string]Jobx{}
 
 	// ErrFailure 报错:执行失败
-	ErrFailure   = errors.New(`Error`)
+	ErrFailure = errors.New(`Error`)
 
 	// Senders 发信程序
-	Senders = []func(param.Store)error{}
+	Senders = []func(param.Store) error{}
 )
 
 // AddSYSJob 添加系统Job
@@ -63,7 +64,7 @@ func AddSYSJob(name string, fn RunnerGetter, example string, description string)
 }
 
 // AddSender 添加发信程序
-func AddSender(sender func (params param.Store) error)  {
+func AddSender(sender func(params param.Store) error) {
 	Senders = append(Senders, sender)
 }
 
@@ -253,12 +254,12 @@ func (j *Job) addAndReturningLog() *Job {
 	return j
 }
 
-func (j *Job) send(elapsed float64, t time.Time, err error, cmdOut string, isTimeout bool, timeout time.Duration) error {
+func (j *Job) send(elapsed int64, t time.Time, err error, cmdOut string, isTimeout bool, timeout time.Duration) error {
 	data := param.Store{
-		"task": *j.task,
-		"start_time": t.Format("2006-01-02 15:04:05"),
-		"process_time": elapsed / 1000,
-		"output": cmdOut,
+		"task":         *j.task,
+		"startTime":   	t.Format("2006-01-02 15:04:05"),
+		"elapsed": 		tplfunc.NumberTrim(float64(elapsed)/1000, 6),
+		"output":       cmdOut,
 	}
 	var title, status string
 	if isTimeout {
@@ -337,7 +338,7 @@ func (j *Job) Run() {
 	}
 
 	cmdOut, cmdErr, err, isTimeout = j.runner(timeout)
-	elapsed := time.Now().Sub(t).Seconds()
+	elapsed := time.Now().Sub(t).Milliseconds()
 	tl.Elapsed = uint(elapsed)
 	if isTimeout {
 		tl.Status = `timeout`
@@ -362,7 +363,7 @@ func (j *Job) Run() {
 
 	// 发送邮件通知
 	if (j.task.EnableNotify == 1 && err != nil) || j.task.EnableNotify == 2 {
-		err := j.send(elapsed, t, err, cmdOut, isTimeout, timeout)
+		err := j.send(elapsed, t, err, cmdErr, isTimeout, timeout)
 		if err != nil {
 			log.Error(err)
 		}

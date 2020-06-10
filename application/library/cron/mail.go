@@ -65,6 +65,12 @@ func EmailSender(params param.Store) error {
 		}
 	}
 	params["username"] = user.Username
+	content := GenEmailContent(params)
+	return SendMail(user.Email, user.Username, params.String(`title`), content, ccList...)
+}
+
+// GenEmailContent 生成邮件内容
+func GenEmailContent(params param.Store) []byte{
 	var content []byte
 	if !params.Has(`email-content`) {
 		b := new(bytes.Buffer)
@@ -74,7 +80,21 @@ func EmailSender(params param.Store) error {
 	} else {
 		content, _ = params.Get(`email-content`).([]byte)
 	}
-	return SendMail(user.Email, user.Username, params.String(`title`), content, ccList...)
+	return content
+}
+
+// GenMarkdownContent 生成Markdown内容
+func GenMarkdownContent(params param.Store) []byte{
+	var content []byte
+	if !params.Has(`markdown-content`) {
+		b := new(bytes.Buffer)
+		send.MarkdownTmpl().Execute(b, params)
+		content = b.Bytes()
+		params["markdown-content"] = b.Bytes()
+	} else {
+		content, _ = params.Get(`markdown-content`).([]byte)
+	}
+	return content
 }
 
 func init() {

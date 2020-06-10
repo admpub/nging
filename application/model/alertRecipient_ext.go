@@ -6,6 +6,7 @@ import (
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/param"
 )
 
 type AlertRecipientExt struct {
@@ -24,7 +25,7 @@ func (a *AlertRecipientExt) Parse() *AlertRecipientExt {
 	return a
 }
 
-func (a *AlertRecipientExt) Send(title string, message string) (err error) {
+func (a *AlertRecipientExt) Send(params param.Store) (err error) {
 	a.Parse()
-	return alertSend(a.NgingAlertRecipient, a.Extra, title, message)
+	return alertSend(a.NgingAlertRecipient, a.Extra, params)
 }

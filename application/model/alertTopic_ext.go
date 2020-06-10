@@ -18,18 +18,14 @@ type AlertTopicExt struct {
 }
 
 func init() {
-	alertRegistry.SendTopic = func(ctx echo.Context, topic string, data param.Store) error {
-		return AlertSend(ctx, topic, data.String(`email-content`), data.String(`title`))
+	alertRegistry.SendTopic = func(ctx echo.Context, topic string, params param.Store) error {
+		return AlertSend(ctx, topic, params)
 	}
 }
 
-func AlertSend(ctx echo.Context, topic string, message string, extra ...string) error {
+func AlertSend(ctx echo.Context, topic string, params param.Store) error {
 	m := NewAlertTopic(ctx)
-	var title string
-	if len(extra) > 0 {
-		title = extra[0]
-	}
-	return m.Send(topic, title, message)
+	return m.Send(topic, params)
 }
 
 func (a *AlertTopicExt) Parse() *AlertTopicExt {
@@ -46,14 +42,14 @@ func (a *AlertTopicExt) Parse() *AlertTopicExt {
 	return a
 }
 
-func (a *AlertTopicExt) Send(title string, message string) (err error) {
+func (a *AlertTopicExt) Send(params param.Store) (err error) {
 	if a.Recipient == nil || a.Recipient.Disabled == `Y` {
 		return
 	}
 	a.Parse()
-	return alertSend(a.Recipient, a.Extra, title, message)
+	return alertSend(a.Recipient, a.Extra, params)
 }
 
-func alertSend(a *dbschema.NgingAlertRecipient, extra echo.H, title string, message string) (err error) {
-	return alert.Send(a, extra, title, message)
+func alertSend(a *dbschema.NgingAlertRecipient, extra echo.H, params param.Store) (err error) {
+	return alert.Send(a, extra, params)
 }

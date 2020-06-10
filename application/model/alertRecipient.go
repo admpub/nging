@@ -25,8 +25,6 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/dbschema"
-	_ "github.com/admpub/nging/application/library/imbot/dingding"
-	_ "github.com/admpub/nging/application/library/imbot/workwx"
 	"github.com/admpub/nging/application/model/base"
 )
 

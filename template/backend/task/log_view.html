@@ -30,7 +30,7 @@
                     <th class="text-right">{{"启动时间"|T}}</th>
                     <td>{{$v.Created|Ts2date "2006-01-02 15:04:05"}}</td>
                     <th class="text-right">{{"消耗时间"|T}}</th>
-                    <td>{{$v.Elapsed|ToDuration}}</td>
+                    <td>{{ToDuration $v.Elapsed `ms`}}</td>
                     <th class="text-right">{{"状态"|T}}</th>
                     <td>{{if eq $v.Status "success"}}
                         <span class="color-success"><span class="fa fa-check-circle"></span> {{"成功"|T}}</span>

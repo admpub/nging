@@ -6,22 +6,20 @@ import (
 
 	"github.com/admpub/nging/application/library/notice"
 
-	"github.com/admpub/nging/application/library/email"
 	"github.com/admpub/mail"
+	"github.com/admpub/nging/application/library/email"
 )
 
 var (
-	mailTpl          *template.Template
-	defaultTmpl      = `
+	htmlTpl, markdownTpl *template.Template
+	defaultHTMLTmpl      = `
 	你好 {{.username}}，<br/>
-
 <p>以下是任务执行结果：</p>
-
 <p>
-任务ID：{{.task.Id}}<br/>
+任务编号：{{.task.Id}}<br/>
 任务名称：{{.task.Name}}<br/>
-执行时间：{{.start_time}}<br />
-执行耗时：{{.process_time}}秒<br />
+执行时间：{{.startTime}}<br />
+执行耗时：{{.elapsed}}秒<br />
 执行状态：{{.status}}
 </p>
 <p>-------------以下是任务执行输出-------------</p>
@@ -32,36 +30,71 @@ var (
 如果要取消邮件通知，请登录到系统进行设置<br />
 </p>
 `
-	DefaultSMTPConfig  = &mail.SMTPConfig{} //STMP配置
-	DefaultEmailConfig = &EmailConfig{}
+	defaultMarkdownTmpl = `
+### 任务执行结果
+**任务编号**：{{.task.Id}}
+**任务名称**：{{.task.Name}}
+**执行时间**：{{.startTime}}
+**执行耗时**：{{.elapsed}}秒
+**执行状态**：<font color="warning">{{.status}}</font>
+
+### 以下是任务执行输出
+{{.output}}
+`
+	DefaultSMTPConfig     = &mail.SMTPConfig{} //STMP配置
+	DefaultEmailConfig    = &EmailConfig{}
 	ErrIncorrectRecipient = errors.New(`The recipient's email address is incorrect`)
 )
 
 type EmailConfig struct {
-	Template  string
-	Sender    string
-	Engine    string
-	Timeout   int64
-	QueueSize int
+	Template   string
+	Sender     string
+	Engine     string
+	Timeout    int64
+	QueueSize  int
+	TemplateMd string
 }
 
-func InitialMailTpl() {
+func InitialHTMLTmpl() {
 	tmpl := DefaultEmailConfig.Template
 	if len(tmpl) == 0 {
-		tmpl = defaultTmpl
+		tmpl = defaultHTMLTmpl
 	}
 	var err error
-	mailTpl, err = template.New("notifyMailTmpl").Parse(tmpl)
+	htmlTpl, err = template.New("notifyHTMLTmpl").Parse(tmpl)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func MailTpl() *template.Template {
-	if mailTpl == nil {
-		InitialMailTpl()
+func InitialMarkdownTmpl() {
+	tmpl := DefaultEmailConfig.TemplateMd
+	if len(tmpl) == 0 {
+		tmpl = defaultMarkdownTmpl
 	}
-	return mailTpl
+	var err error
+	markdownTpl, err = template.New("notifyMarkdownTmpl").Parse(tmpl)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func MarkdownTmpl() *template.Template {
+	if markdownTpl == nil {
+		InitialMarkdownTmpl()
+	}
+	return markdownTpl
+}
+
+func HTMLTmpl() *template.Template {
+	if htmlTpl == nil {
+		InitialHTMLTmpl()
+	}
+	return htmlTpl
+}
+
+func MailTpl() *template.Template {
+	return HTMLTmpl()
 }
 
 // Mail 发送Email

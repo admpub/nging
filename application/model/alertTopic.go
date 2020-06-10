@@ -23,6 +23,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
@@ -103,7 +104,7 @@ func (s *AlertTopic) Edit(mw func(db.Result) db.Result, args ...interface{}) (er
 	return s.NgingAlertTopic.Edit(mw, args...)
 }
 
-func (s *AlertTopic) Send(topic string, title string, message string) (err error) {
+func (s *AlertTopic) Send(topic string, params param.Store) (err error) {
 	skey := `NgingAlertTopics.` + topic
 	rows, ok := s.base.Context.Internal().Get(skey).([]*AlertTopicExt)
 	if !ok {
@@ -118,7 +119,7 @@ func (s *AlertTopic) Send(topic string, title string, message string) (err error
 		s.base.Context.Internal().Set(skey, rows)
 	}
 	for _, row := range rows {
-		err = row.Send(title, message)
+		err = row.Send(params)
 	}
 	return
 }

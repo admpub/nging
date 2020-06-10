@@ -3,6 +3,8 @@ package alert
 import (
 	"github.com/webx-top/echo"
 	"github.com/admpub/nging/application/library/imbot"
+	_ "github.com/admpub/nging/application/library/imbot/dingding"
+	_ "github.com/admpub/nging/application/library/imbot/workwx"
 )
 
 var (
