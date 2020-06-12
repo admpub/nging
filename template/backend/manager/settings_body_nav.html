@@ -1,0 +1,19 @@
+<div class="page-aside app tree sm-width">
+	<button class="navbar-toggle no-margin wd-100p" data-target="#body-left-navigate" data-toggle="collapse" type="button">
+	  <span class="fa fa-chevron-down"></span>
+	</button>{{$group := Stored.group}}
+    <div class="fixed nano nscroller responsive-nav collapse" id="body-left-navigate">
+        <div class="content">
+        	<div class="app-nav md-line-height no-margin-top">
+				<p class="title">{{`设置组`|T}}</p>
+          		<ul class="nav nav-pills nav-stacked">
+              	{{- range $k, $v := Stored.settings -}}
+              		<li class="primary-active{{if eq $group $v.Group}} active{{end}}">
+                	<a href="?group={{$v.Group}}" title="{{$v.Short|T}}" data-pjax="#main-container" data-keepjs="true">{{$v.Short|T}}</a>
+              		</li>
+              	{{- end -}}
+          		</ul>
+        	</div><!-- .app-nav -->
+        </div><!-- .content -->
+    </div>
+</div>
