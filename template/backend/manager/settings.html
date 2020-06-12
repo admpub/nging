@@ -4,6 +4,11 @@
 {{Super}}
 <li class="active">{{"系统设置"|T}}</li>
 {{/Block}}
+
+{{Block "bodyNav"}}
+{{Include "manager/settings_body_nav"}}
+{{/Block}}
+
 {{Block "head"}}
 <link rel="stylesheet" type="text/css" href="__ASSETS__/js/selectpage/selectpage.css?t={{BuildTime}}" />
 <link rel="stylesheet" href="__ASSETS__/js/jquery.crop/css/jquery.Jcrop.min.css?t={{BuildTime}}" type="text/css" />
@@ -17,14 +22,14 @@
 <div class="row">
     <div class="col-md-12">
         <div class="tab-container">
-            <ul class="nav nav-tabs">
-            {{range $k,$v := Stored.settings}}
+            <!-- {{/*<ul class="nav nav-tabs">
+            {{- range $k,$v := Stored.settings -}}
               <li{{if eq $group $v.Group}} class="active"{{end}}>
                 <a href="?group={{$v.Group}}">{{$v.Short|T}}</a>
-                <!-- <a href="?group={{$v.Group}}" data-toggle="tab">{{$v.Short|T}}</a> -->
+                < !-- <a href="?group={{$v.Group}}" data-toggle="tab">{{$v.Short|T}}</a> -- >
               </li>
-            {{end}}
-            </ul>
+            {{- end -}}
+            </ul>*/}} -->
             <form class="form-horizontal group-border-dashed" method="POST" action="">
             <div class="tab-content">
             {{range $k,$v := Stored.settings}}
