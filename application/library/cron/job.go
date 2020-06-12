@@ -35,8 +35,10 @@ import (
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/middleware/tplfunc"
 	"github.com/webx-top/echo/param"
+	"github.com/webx-top/echo/subdomains"
 
 	"github.com/admpub/log"
+	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/charset"
 )
@@ -280,6 +282,7 @@ func (j *Job) send(elapsed int64, t time.Time, err error, cmdOut string, isTimeo
 	data["status"] = status
 	data["statusText"] = statusText
 	data["content"] = send.NewContent()
+	data["detailURL"] = subdomains.Default.URL(handler.BackendPrefix, `backend`) + `/task/log_view/` + fmt.Sprint(j.logID)
 	return Send(data)
 }
 

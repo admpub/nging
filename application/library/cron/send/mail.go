@@ -20,7 +20,8 @@ var (
 任务名称：{{.task.Name}}<br/>
 执行时间：{{.startTime}}<br />
 执行耗时：{{.elapsed}}秒<br />
-执行状态：<span style="color:{{if eq "success" .status}}green{{else if eq "failure" .status}}red{{else}}orange{{end}}">{{.statusText}}</span>
+执行状态：<span style="color:{{if eq "success" .status}}green{{else if eq "failure" .status}}red{{else}}orange{{end}}">{{.statusText}}</span><br />
+详细信息：<a href="{{.detailURL}}" target="_blank">查看</a>
 </p>
 <p>-------------以下是任务执行输出-------------</p>
 <p><pre>{{.output}}</pre></p>
@@ -37,6 +38,7 @@ var (
 **执行时间**：{{.startTime}}
 **执行耗时**：{{.elapsed}}秒
 **执行状态**：<font color="{{if eq "success" .status}}info{{else if eq "failure" .status}}warning{{else}}warning{{end}}">{{.statusText}}</font>
+**详细信息**：[查看]({{.detailURL}})
 
 ### 以下是任务执行输出
 {{.output}}
