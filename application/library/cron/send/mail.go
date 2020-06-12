@@ -23,7 +23,7 @@ var (
 执行状态：<span style="color:{{if eq "success" .status}}green{{else if eq "failure" .status}}red{{else}}orange{{end}}">{{.statusText}}</span>
 </p>
 <p>-------------以下是任务执行输出-------------</p>
-<p>{{.output}}</p>
+<p><pre>{{.output}}</pre></p>
 <p>
 --------------------------------------------<br />
 本邮件由系统自动发出，请勿回复<br />
