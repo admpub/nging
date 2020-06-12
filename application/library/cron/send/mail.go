@@ -20,7 +20,7 @@ var (
 任务名称：{{.task.Name}}<br/>
 执行时间：{{.startTime}}<br />
 执行耗时：{{.elapsed}}秒<br />
-执行状态：{{.status}}
+执行状态：<span style="color:{{if eq "success" .status}}green{{else if eq "failure" .status}}red{{else}}orange{{end}}">{{.statusText}}</span>
 </p>
 <p>-------------以下是任务执行输出-------------</p>
 <p>{{.output}}</p>
@@ -36,7 +36,7 @@ var (
 **任务名称**：{{.task.Name}}
 **执行时间**：{{.startTime}}
 **执行耗时**：{{.elapsed}}秒
-**执行状态**：<font color="warning">{{.status}}</font>
+**执行状态**：<font color="{{if eq "success" .status}}info{{else if eq "failure" .status}}warning{{else}}warning{{end}}">{{.statusText}}</font>
 
 ### 以下是任务执行输出
 {{.output}}

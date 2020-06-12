@@ -262,19 +262,23 @@ func (j *Job) send(elapsed int64, t time.Time, err error, cmdOut string, isTimeo
 		"elapsed": 		tplfunc.NumberTrim(float64(elapsed)/1000, 6),
 		"output":       cmdOut,
 	}
-	var title, status string
+	var title, status, statusText string
 	if isTimeout {
 		title = fmt.Sprintf("任务执行结果通知 #%d: %s", j.task.Id, "超时")
-		status = fmt.Sprintf("超时（%d秒）", int(timeout/time.Second))
+		status = `timeout`
+		statusText = fmt.Sprintf("超时（%d秒）", int(timeout/time.Second))
 	} else if err != nil {
 		title = fmt.Sprintf("任务执行结果通知 #%d: %s", j.task.Id, "失败")
-		status = "失败（" + err.Error() + "）"
+		status = `failure`
+		statusText = "失败（" + err.Error() + "）"
 	} else {
 		title = fmt.Sprintf("任务执行结果通知 #%d: %s", j.task.Id, "成功")
-		status = "成功"
+		status = `success`
+		statusText = "成功"
 	}
 	data["title"] = title
 	data["status"] = status
+	data["statusText"] = statusText
 	data["content"] = send.NewContent()
 	return Send(data)
 }
