@@ -38,8 +38,7 @@ $(function(){
     $('#email-form').on('submit',function(e){
         e.preventDefault();
         var data = $(this).serializeArray();
-        console.dir(App.clientID);
-        data.push({name:'clientID',value:App.clientID['notify']})
+        data.push({name:'clientID',value:App.clientID['notify']||1})
         $.post(window.location.href,data,function(r){
             if(r.Code==1){
                 App.message({title: '{{"测试结果"|T}}', text: '{{"测试邮件已发送，请查收。"|T}}', class_name: "success"});
