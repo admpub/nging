@@ -12,6 +12,7 @@ import (
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/logger"
 	"github.com/webx-top/echo/param"
+	pkgCode "github.com/webx-top/echo/code"
 )
 
 type xContext struct {
@@ -127,7 +128,7 @@ func (c *xContext) Error(err error) {
 	c.echo.httpErrorHandler(err, c)
 }
 
-func (c *xContext) NewError(code int, msg string, args ...interface{}) *Error {
+func (c *xContext) NewError(code pkgCode.Code, msg string, args ...interface{}) *Error {
 	return NewError(c.T(msg, args...), code)
 }
 

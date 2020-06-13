@@ -31,7 +31,7 @@ func init() {
 	gob.Register(H{})
 }
 
-func AsError(code int) *Error {
+func AsError(code pkgCode.Code) *Error {
 	return NewError(pkgCode.CodeDict.Get(code).Text, code)
 }
 
@@ -131,17 +131,17 @@ func (d *RawData) GetData() interface{} {
 //SetError 设置错误
 func (d *RawData) SetError(err error, args ...int) Data {
 	if err == nil {
-		return d.SetCode(1)
+		return d.SetCode(pkgCode.Success.Int())
 	}
 	switch v := err.(type) {
 	case *Error:
-		d.SetInfo(v.Message, v.Code).SetByMap(v.Extra)
+		d.SetInfo(v.Message, v.Code.Int()).SetByMap(v.Extra)
 	case *RawData:
 		if v != d {
 			d.copyFrom(v)
 		}
 	default:
-		d.SetCode(0)
+		d.SetCode(pkgCode.Failure.Int())
 		d.Info = err.Error()
 	}
 	if len(args) > 0 {

@@ -35,35 +35,35 @@ var (
 	// - JSON
 
 	//ErrUserNotLoggedIn 用户未登录
-	ErrUserNotLoggedIn = echo.NewError(`User not logged in`, code.Unauthenticated.Int())
+	ErrUserNotLoggedIn = echo.NewError(`User not logged in`, code.Unauthenticated)
 	//ErrUserNotFound 用户不存在
-	ErrUserNotFound = echo.NewError(`User does not exist`, code.UserNotFound.Int())
+	ErrUserNotFound = echo.NewError(`User does not exist`, code.UserNotFound)
 	//ErrUserNoPerm 用户无权限
-	ErrUserNoPerm = echo.NewError(`User has no permission`, code.NonPrivileged.Int())
+	ErrUserNoPerm = echo.NewError(`User has no permission`, code.NonPrivileged)
 	//ErrUserDisabled 用户已被禁用
-	ErrUserDisabled = echo.NewError(`User has been disabled`, code.UserDisabled.Int())
+	ErrUserDisabled = echo.NewError(`User has been disabled`, code.UserDisabled)
 	//ErrBalanceNoEnough 余额不足
-	ErrBalanceNoEnough = echo.NewError(`Balance is not enough`, code.BalanceNoEnough.Int())
+	ErrBalanceNoEnough = echo.NewError(`Balance is not enough`, code.BalanceNoEnough)
 
 	// - Operation
 
 	//ErrRepeatOperation 重复操作
-	ErrRepeatOperation = echo.NewError(`Repeat operation`, code.RepeatOperation.Int())
+	ErrRepeatOperation = echo.NewError(`Repeat operation`, code.RepeatOperation)
 	//ErrUnsupported 不支持
-	ErrUnsupported = echo.NewError(`Unsupported`, code.Unsupported.Int())
+	ErrUnsupported = echo.NewError(`Unsupported`, code.Unsupported)
 	//ErrOperationTimeout 操作超时
-	ErrOperationTimeout = echo.NewError(`Operation timeout`, code.OperationTimeout.Int())
+	ErrOperationTimeout = echo.NewError(`Operation timeout`, code.OperationTimeout)
 	//ErrOperationFail 操作失败
-	ErrOperationFail = echo.NewError(`Operation fail`, code.Failure.Int())
+	ErrOperationFail = echo.NewError(`Operation fail`, code.Failure)
 
 	// - HTTP
 
 	//ErrResponseFormatError 响应格式错误
-	ErrResponseFormatError = echo.NewError(`Response format error`, code.AbnormalResponse.Int())
+	ErrResponseFormatError = echo.NewError(`Response format error`, code.AbnormalResponse)
 	//ErrRequestTimeout 提交超时
-	ErrRequestTimeout = echo.NewError(`Request timeout`, code.RequestTimeout.Int())
+	ErrRequestTimeout = echo.NewError(`Request timeout`, code.RequestTimeout)
 	//ErrRequestFail 提交失败
-	ErrRequestFail = echo.NewError(`Request fail`, code.RequestFailure.Int())
+	ErrRequestFail = echo.NewError(`Request fail`, code.RequestFailure)
 
 	// - Watcher
 

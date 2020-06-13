@@ -77,7 +77,11 @@ func (c Code) HTTPCode() int {
 	return http.StatusOK
 }
 
-func (s CodeMap) Get(code int) TextHTTPCode {
-	v, _ := s[Code(code)]
+func (s CodeMap) Get(code Code) TextHTTPCode {
+	v, _ := s[code]
 	return v
+}
+
+func (s CodeMap) GetByInt(code int) TextHTTPCode {
+	return s.Get(Code(code))
 }

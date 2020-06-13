@@ -28,6 +28,8 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+
+	pkgCode "github.com/webx-top/echo/code"
 )
 
 const (
@@ -39,8 +41,8 @@ const (
 // Error
 // ==========================================
 
-func NewError(msg string, code ...int) *Error {
-	e := &Error{Code: 0, Message: msg, Extra: H{}}
+func NewError(msg string, code ...pkgCode.Code) *Error {
+	e := &Error{Code: pkgCode.Failure, Message: msg, Extra: H{}}
 	if len(code) > 0 {
 		e.Code = code[0]
 	}
@@ -48,7 +50,7 @@ func NewError(msg string, code ...int) *Error {
 }
 
 type Error struct {
-	Code    int
+	Code    pkgCode.Code
 	Message string
 	Extra   H
 }

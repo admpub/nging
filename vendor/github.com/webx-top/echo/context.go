@@ -12,6 +12,7 @@ import (
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/logger"
 	"github.com/webx-top/echo/param"
+	pkgCode "github.com/webx-top/echo/code"
 )
 
 // Context represents context for the current request. It holds request and
@@ -127,7 +128,7 @@ type Context interface {
 	NoContent(...int) error
 	Redirect(string, ...int) error
 	Error(err error)
-	NewError(code int, msg string, args ...interface{}) *Error
+	NewError(code pkgCode.Code, msg string, args ...interface{}) *Error
 	SetCode(int)
 	Code() int
 	SetData(Data)
