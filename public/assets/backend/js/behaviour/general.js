@@ -602,11 +602,11 @@ var App = function () {
 					App.message({text:message||'Websocket Server is disconnected',type:'error'});
 					return false;
 				}
-				if (typeof(m.content) == 'undefined' || m.content == null) {
-					return false;
-				}
 				if (typeof(App.clientID['notify']) == 'undefined') {
 					App.clientID['notify'] = m.client_id;
+				}
+				if (typeof(m.content) == 'undefined' || !m.content) {
+					return false;
 				}
 				switch (m.mode) {
 					case '-':

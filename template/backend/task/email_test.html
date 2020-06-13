@@ -38,6 +38,7 @@ $(function(){
     $('#email-form').on('submit',function(e){
         e.preventDefault();
         var data = $(this).serializeArray();
+        console.dir(App.clientID);
         data.push({name:'clientID',value:App.clientID['notify']})
         $.post(window.location.href,data,function(r){
             if(r.Code==1){
