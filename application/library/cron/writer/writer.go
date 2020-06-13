@@ -22,6 +22,7 @@ import (
 	"bytes"
 	"io"
 	"strings"
+	"unicode/utf8"
 )
 
 var (
@@ -55,6 +56,16 @@ type cmdRec struct {
 	ignore bool
 }
 
+func GetRuneStartIndex(end int, p []byte) int {
+	n := len(p)
+	for ; end < n; end++ {
+		if utf8.RuneStart(p[end]) {
+			break
+		}
+	}
+	return end
+}
+
 func (c *cmdRec) Write(p []byte) (n int, err error) {
 	if c.ignore {
 		n = len(p)
@@ -71,6 +82,7 @@ func (c *cmdRec) Write(p []byte) (n int, err error) {
 		remain := c.max - c.start
 		if remain < uint64(n) {
 			end := int(remain)
+			end = GetRuneStartIndex(end, p)
 			rp := p[end:]
 			p = p[:end]
 			var actualN int
@@ -87,19 +99,23 @@ func (c *cmdRec) Write(p []byte) (n int, err error) {
 	if c.end >= c.max {
 		if c.max > size {
 			end := int(c.max-size)
+			end = GetRuneStartIndex(end, p)
 			c.last = append(c.last[0:end], p...)
 		} else if c.max == size {
 			c.last = p
 		} else {
-			start := int(size - c.max)
-			c.last = p[start:]
+			end := int(size - c.max)
+			end = GetRuneStartIndex(end, p)
+			c.last = p[end:]
 		}
 		return
 	}
 	remain := c.max - c.end
 	if remain < uint64(len(p)) {
 		end := int(remain)
-		p = p[len(p)-end:]
+		end = len(p)-end
+		end = GetRuneStartIndex(end, p)
+		p = p[end:]
 		c.end += uint64(len(p))
 	} else {
 		c.end += size
