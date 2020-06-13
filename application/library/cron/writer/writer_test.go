@@ -69,4 +69,7 @@ func TestWrite(t *testing.T) {
 	test.Eq(t, 8, bytes.Count(bz,[]byte(`世界`)))
 	test.Eq(t, true, utf8.RuneStart(bz[48]))
 	test.Eq(t, expectedCn, string(bz))
+	w.Write([]byte(`团结团结团结团结`))
+	bz = w.Bytes()
+	test.Eq(t, 4, bytes.Count(bz,[]byte(`团结`)))
 }

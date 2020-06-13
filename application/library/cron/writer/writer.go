@@ -98,8 +98,8 @@ func (c *cmdRec) Write(p []byte) (n int, err error) {
 	}
 	if c.end >= c.max {
 		if c.max > size {
-			end := int(c.max-size)
-			end = GetRuneStartIndex(end, p)
+			end := int(c.max - size)
+			end = GetRuneStartIndex(end, c.last)
 			c.last = append(c.last[0:end], p...)
 		} else if c.max == size {
 			c.last = p
@@ -111,15 +111,22 @@ func (c *cmdRec) Write(p []byte) (n int, err error) {
 		return
 	}
 	remain := c.max - c.end
-	if remain < uint64(len(p)) {
-		end := int(remain)
-		end = len(p)-end
-		end = GetRuneStartIndex(end, p)
-		p = p[end:]
-		c.end += uint64(len(p))
-	} else {
-		c.end += size
+	if remain < size {
+		if c.max > size {
+			end := int(c.max - size)
+			end = GetRuneStartIndex(end, c.last)
+			c.last = append(c.last[0:end], p...)
+		}else if c.max == size {
+			c.last = p
+		} else {
+			end := int(size - c.max)
+			end = GetRuneStartIndex(end, p)
+			c.last = p[end:]
+		}
+		c.end = uint64(len(c.last))
+		return
 	}
+	c.end += size
 	c.last = append(c.last, p...)
 	return
 }
@@ -135,7 +142,7 @@ func (c *cmdRec) String() string {
 	if len(s) > 0 && len(c.last) > 0 {
 		s += dot6str + string(c.last)
 	}
-	return string(c.Bytes())
+	return s
 }
 
 func (c *cmdRec) Bytes() []byte {
