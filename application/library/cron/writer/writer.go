@@ -61,30 +61,48 @@ func (c *cmdRec) Write(p []byte) (n int, err error) {
 	}
 	if c.start == 0 && strings.HasPrefix(string(p), NotRecordPrefixFlag) {
 		c.ignore = true
-		n, err = c.buf.Write(p)
-		c.start += uint64(n)
-		return
-	}
-	if c.start < c.max {
-		n, err = c.buf.Write(p)
-		c.start += uint64(n)
+		n = len(p)
 		return
 	}
 	n = len(p)
 	size := uint64(n)
-	if c.end > c.max {
+	if c.start < c.max {
+		remain := c.max - c.start
+		if remain < uint64(n) {
+			end := int(remain)
+			rp := p[end:]
+			p = p[:end]
+			var actualN int
+			actualN, err = c.buf.Write(p)
+			c.start += uint64(actualN)
+			p = rp
+			size = uint64(len(p))
+		} else {
+			n, err = c.buf.Write(p)
+			c.start += uint64(n)
+			return
+		}
+	}
+	if c.end >= c.max {
 		if c.max > size {
-			c.last = append(c.last[0:c.max-size], p...)
+			end := int(c.max-size)
+			c.last = append(c.last[0:end], p...)
 		} else if c.max == size {
 			c.last = p
 		} else {
-			start := size - c.max
+			start := int(size - c.max)
 			c.last = p[start:]
 		}
-		c.end = uint64(len(c.last))
 		return
 	}
-	c.end += size
+	remain := c.max - c.end
+	if remain < uint64(len(p)) {
+		end := int(remain)
+		p = p[len(p)-end:]
+		c.end += uint64(len(p))
+	} else {
+		c.end += size
+	}
 	c.last = append(c.last, p...)
 	return
 }
@@ -100,7 +118,7 @@ func (c *cmdRec) String() string {
 	if len(s) > 0 && len(c.last) > 0 {
 		s += dot6str + string(c.last)
 	}
-	return s
+	return string(c.Bytes())
 }
 
 func (c *cmdRec) Bytes() []byte {
