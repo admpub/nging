@@ -127,6 +127,7 @@ type Context interface {
 	NoContent(...int) error
 	Redirect(string, ...int) error
 	Error(err error)
+	NewError(code int, msg string, args ...interface{}) *Error
 	SetCode(int)
 	Code() int
 	SetData(Data)

@@ -1,6 +1,6 @@
 /*
 
-   Copyright 2017 Wenhui Shen <www.webx.top>
+   Copyright 2017-present Wenhui Shen <www.webx.top>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -35,6 +35,43 @@ const (
 	StackSize          = 4 << 10 // 4 KB
 )
 
+// ==========================================
+// Error
+// ==========================================
+
+func NewError(msg string, code ...int) *Error {
+	e := &Error{Code: 0, Message: msg, Extra: H{}}
+	if len(code) > 0 {
+		e.Code = code[0]
+	}
+	return e
+}
+
+type Error struct {
+	Code    int
+	Message string
+	Extra   H
+}
+
+// Error returns message.
+func (e *Error) Error() string {
+	return e.Message
+}
+
+func (e *Error) Set(key string, value interface{}) *Error {
+	e.Extra.Set(key, value)
+	return e
+}
+
+func (e *Error) Delete(keys ...string) *Error {
+	e.Extra.Delete(keys...)
+	return e
+}
+
+// ==========================================
+// HTTPError
+// ==========================================
+
 func NewHTTPError(code int, msg ...string) *HTTPError {
 	he := &HTTPError{Code: code, Message: http.StatusText(code)}
 	if len(msg) > 0 {
@@ -52,6 +89,10 @@ type HTTPError struct {
 func (e *HTTPError) Error() string {
 	return e.Message
 }
+
+// ==========================================
+// PanicError
+// ==========================================
 
 func NewPanicError(recovered interface{}, err error, debugAndDisableStackAll ...bool) *PanicError {
 	var debug, disableStackAll bool

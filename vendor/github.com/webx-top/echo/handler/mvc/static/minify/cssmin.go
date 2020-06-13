@@ -58,7 +58,7 @@ var (
 	rredsemicolons = regexp.MustCompile(`;+\}`)
 )
 
-func MinifyCSS(css []byte) (minified []byte,err error) {
+func MinifyCSS(css []byte) (minified []byte, err error) {
 	// Remove comments.
 	css = rcomments.ReplaceAll(css, []byte{})
 
@@ -138,5 +138,5 @@ func MinifyCSS(css []byte) (minified []byte,err error) {
 	// Prevent redundant semicolons.
 	css = rredsemicolons.ReplaceAll(css, []byte("}"))
 
-	return bytes.TrimSpace(css),nil
+	return bytes.TrimSpace(css), nil
 }

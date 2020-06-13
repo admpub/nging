@@ -22,6 +22,9 @@ import (
 	"encoding/gob"
 	"errors"
 	"strings"
+
+	"github.com/webx-top/echo/code"
+	"github.com/webx-top/echo"
 )
 
 func init() {
@@ -32,35 +35,35 @@ var (
 	// - JSON
 
 	//ErrUserNotLoggedIn 用户未登录
-	ErrUserNotLoggedIn = errors.New(`User not logged in`)
+	ErrUserNotLoggedIn = echo.NewError(`User not logged in`, code.Unauthenticated.Int())
 	//ErrUserNotFound 用户不存在
-	ErrUserNotFound = errors.New(`User does not exist`)
+	ErrUserNotFound = echo.NewError(`User does not exist`, code.UserNotFound.Int())
 	//ErrUserNoPerm 用户无权限
-	ErrUserNoPerm = errors.New(`User has no permission`)
+	ErrUserNoPerm = echo.NewError(`User has no permission`, code.NonPrivileged.Int())
 	//ErrUserDisabled 用户已被禁用
-	ErrUserDisabled = errors.New(`User has been disabled`)
+	ErrUserDisabled = echo.NewError(`User has been disabled`, code.UserDisabled.Int())
 	//ErrBalanceNoEnough 余额不足
-	ErrBalanceNoEnough = errors.New(`Balance is not enough`)
+	ErrBalanceNoEnough = echo.NewError(`Balance is not enough`, code.BalanceNoEnough.Int())
 
 	// - Operation
 
 	//ErrRepeatOperation 重复操作
-	ErrRepeatOperation = errors.New(`Repeat operation`)
+	ErrRepeatOperation = echo.NewError(`Repeat operation`, code.RepeatOperation.Int())
 	//ErrUnsupported 不支持
-	ErrUnsupported = errors.New(`Unsupported`)
+	ErrUnsupported = echo.NewError(`Unsupported`, code.Unsupported.Int())
 	//ErrOperationTimeout 操作超时
-	ErrOperationTimeout = errors.New(`Operation timeout`)
+	ErrOperationTimeout = echo.NewError(`Operation timeout`, code.OperationTimeout.Int())
 	//ErrOperationFail 操作失败
-	ErrOperationFail = errors.New(`Operation fail`)
+	ErrOperationFail = echo.NewError(`Operation fail`, code.Failure.Int())
 
 	// - HTTP
 
 	//ErrResponseFormatError 响应格式错误
-	ErrResponseFormatError = errors.New(`Response format error`)
+	ErrResponseFormatError = echo.NewError(`Response format error`, code.AbnormalResponse.Int())
 	//ErrRequestTimeout 提交超时
-	ErrRequestTimeout = errors.New(`Request timeout`)
+	ErrRequestTimeout = echo.NewError(`Request timeout`, code.RequestTimeout.Int())
 	//ErrRequestFail 提交失败
-	ErrRequestFail = errors.New(`Request fail`)
+	ErrRequestFail = echo.NewError(`Request fail`, code.RequestFailure.Int())
 
 	// - Watcher
 

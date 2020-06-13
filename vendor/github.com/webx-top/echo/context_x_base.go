@@ -127,6 +127,10 @@ func (c *xContext) Error(err error) {
 	c.echo.httpErrorHandler(err, c)
 }
 
+func (c *xContext) NewError(code int, msg string, args ...interface{}) *Error {
+	return NewError(c.T(msg, args...), code)
+}
+
 // Logger returns the `Logger` instance.
 func (c *xContext) Logger() logger.Logger {
 	return c.echo.logger
