@@ -57,6 +57,7 @@ type cmdRec struct {
 
 func (c *cmdRec) Write(p []byte) (n int, err error) {
 	if c.ignore {
+		n = len(p)
 		return
 	}
 	if c.start == 0 && strings.HasPrefix(string(p), NotRecordPrefixFlag) {
