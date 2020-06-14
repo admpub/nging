@@ -51,7 +51,6 @@ type cmdRec struct {
 	buf    *bytes.Buffer
 	max    uint64
 	start  uint64
-	end    uint64
 	last   []byte
 	ignore bool
 }
@@ -96,38 +95,13 @@ func (c *cmdRec) Write(p []byte) (n int, err error) {
 			return
 		}
 	}
-	if c.end >= c.max {
-		if c.max > size {
-			end := int(c.max - size)
-			end = GetRuneStartIndex(end, c.last)
-			c.last = append(c.last[0:end], p...)
-		} else if c.max == size {
-			c.last = p
-		} else {
-			end := int(size - c.max)
-			end = GetRuneStartIndex(end, p)
-			c.last = p[end:]
-		}
-		return
-	}
-	remain := c.max - c.end
-	if remain < size {
-		if c.max > size {
-			end := int(c.max - size)
-			end = GetRuneStartIndex(end, c.last)
-			c.last = append(c.last[0:end], p...)
-		}else if c.max == size {
-			c.last = p
-		} else {
-			end := int(size - c.max)
-			end = GetRuneStartIndex(end, p)
-			c.last = p[end:]
-		}
-		c.end = uint64(len(c.last))
-		return
-	}
-	c.end += size
 	c.last = append(c.last, p...)
+	size = uint64(len(c.last))
+	if size > c.max {
+		end := int(size - c.max)
+		end = GetRuneStartIndex(end, c.last)
+		c.last = c.last[end:]
+	}
 	return
 }
 
