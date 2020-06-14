@@ -82,6 +82,15 @@ func Auto() echo.MiddlewareFunc {
 	}
 }
 
+func setAndGetErrorMessage(c echo.Context, debugMessage string, prodMessage string) string {
+	if c.Echo().Debug() {
+		c.Data().SetInfo(debugMessage, 0)
+		return debugMessage
+	}
+	c.Data().SetInfo(prodMessage, 0)
+	return prodMessage
+}
+
 func HTTPErrorHandler(opt *Options) echo.HTTPErrorHandler {
 	if opt == nil {
 		opt = DefaultOptions
@@ -97,74 +106,81 @@ func HTTPErrorHandler(opt *Options) echo.HTTPErrorHandler {
 	}
 	tmplNum := len(opt.ErrorPages)
 	return func(err error, c echo.Context) {
+		if err != nil {
+			defer c.Logger().Debug(err)
+		}
+		if c.Response().Committed() {
+			return
+		}
 		code := DefaultOptions.DefaultHTTPErrorCode
-		var msg string
 		var panicErr *echo.PanicError
+		data := c.Data().Reset()
+		title := http.StatusText(code)
+		var msg string
 		switch e := err.(type) {
 		case *echo.HTTPError:
 			if e.Code > 0 {
 				code = e.Code
+				title = http.StatusText(code)
 			}
-			msg = e.Message
+			msg = setAndGetErrorMessage(c, e.Message, title)
 		case *echo.PanicError:
 			panicErr = e
-
-		}
-		title := http.StatusText(code)
-		if c.Echo().Debug() {
-			msg = err.Error()
-		} else if len(msg) == 0 {
+			msg = setAndGetErrorMessage(c, e.Error(), title)
+		case *echo.Error:
+			code = e.Code.HTTPCode()
+			data.SetError(e)
+			msg = e.Message
+		default:
 			msg = title
 		}
-		if !c.Response().Committed() {
-			switch {
-			case c.Request().Method() == echo.HEAD:
-				c.NoContent(code)
-			case tmplNum > 0:
-				t, y := opt.ErrorPages[code]
-				if !y && code != 0 {
-					t, y = opt.ErrorPages[0]
-				}
-				if y {
-					data := c.Data().Reset().SetInfo(msg, 0)
-					if c.Format() == `html` {
-						c.SetCode(code)
-						c.SetFunc(`Lang`, c.Lang)
-						if len(opt.SetFuncMap) > 0 {
-							for _, setFunc := range opt.SetFuncMap {
-								err = setFunc(c)
-								if err != nil {
-									c.String(err.Error())
-									return
-								}
-							}
-						}
-						data.SetData(echo.H{
-							"title":   title,
-							"content": msg,
-							"debug":   c.Echo().Debug(),
-							"code":    code,
-							"panic":   panicErr,
-						}, 0)
-					} else {
-						c.SetCode(opt.DefaultHTTPErrorCode)
-					}
-					if err := c.SetAuto(true).Render(t, nil); err != nil {
-						msg += "\n" + err.Error()
-						y = false
-						c.Logger().Error(err)
-					}
-				}
-				if y {
-					break
-				}
-				fallthrough
-			default:
+		if c.Request().Method() == echo.HEAD {
+			c.NoContent(code)
+			return
+		}
+		if tmplNum < 1 {
+			c.String(msg, code)
+			return
+		}
+		tmpl, ok := opt.ErrorPages[code]
+		if !ok {
+			if code != 0 {
+				tmpl, ok = opt.ErrorPages[0]
+			} else {
+				code = DefaultOptions.DefaultHTTPErrorCode
+			}
+			if !ok {
 				c.String(msg, code)
+				return
 			}
 		}
-		if err != nil {
-			c.Logger().Debug(err)
+		if c.Format() != `html` {
+			c.SetCode(opt.DefaultHTTPErrorCode)
+			goto END
+		}
+		c.SetCode(code)
+		c.SetFunc(`Lang`, c.Lang)
+		if len(opt.SetFuncMap) > 0 {
+			for _, setFunc := range opt.SetFuncMap {
+				err = setFunc(c)
+				if err != nil {
+					c.String(err.Error())
+					return
+				}
+			}
+		}
+		data.SetData(echo.H{
+			"title":   title,
+			"content": msg,
+			"debug":   c.Echo().Debug(),
+			"code":    code,
+			"panic":   panicErr,
+		}, 0)
+
+	END:
+		if renderErr := c.SetAuto(true).Render(tmpl, nil); renderErr != nil {
+			msg += "\n" + renderErr.Error()
+			c.String(msg, code)
 		}
 	}
 }
