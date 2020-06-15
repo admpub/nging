@@ -166,6 +166,7 @@ type Context interface {
 	NewCookie(string, string) *Cookie
 	Cookie() Cookier
 	GetCookie(string) string
+	// SetCookie @param:key,value,maxAge(seconds),path(/),domain,secure,httpOnly,sameSite(lax/strict/default)
 	SetCookie(string, string, ...interface{})
 
 	//----------------

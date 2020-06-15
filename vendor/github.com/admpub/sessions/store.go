@@ -189,8 +189,7 @@ func (s *FilesystemStore) New(ctx echo.Context, name string) (*Session, error) {
 }
 
 // Save adds a single session to the response.
-func (s *FilesystemStore) Save(ctx echo.Context,
-	session *Session) error {
+func (s *FilesystemStore) Save(ctx echo.Context, session *Session) error {
 	// Delete if max-age is < 0
 	if ctx.CookieOptions().MaxAge < 0 {
 		if err := s.erase(session); err != nil {

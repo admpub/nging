@@ -32,3 +32,16 @@ func (c *Cookie) SameSite(p string) *Cookie {
 	}
 	return c
 }
+
+//CopyCookieOptions copy cookie options
+func CopyCookieOptions(from *http.Cookie, to *Cookie) {
+	to.Expires(from.MaxAge)
+	if len(from.Path) == 0 {
+		from.Path = `/`
+	}
+	to.Path(from.Path)
+	to.Domain(from.Domain)
+	to.Secure(from.Secure)
+	to.HttpOnly(from.HttpOnly)
+	to.cookie.SameSite = from.SameSite
+}
