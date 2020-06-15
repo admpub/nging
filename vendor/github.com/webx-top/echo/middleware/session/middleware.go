@@ -28,13 +28,13 @@ func Sessions(options *echo.SessionOptions, store sessions.Store) echo.Middlewar
 	var newSession func(ctx echo.Context) echo.Sessioner
 	if options == nil {
 		newSession = func(ctx echo.Context) echo.Sessioner {
-			options = ctx.SessionOptions()
-			return NewMySession(store, options.Name, ctx)
+			return NewMySession(store, ctx.SessionOptions().Name, ctx)
 		}
 	} else {
 		newSession = func(ctx echo.Context) echo.Sessioner {
-			ctx.SetSessionOptions(options)
-			return NewMySession(store, options.Name, ctx)
+			sessionOptions := options.Clone()
+			ctx.SetSessionOptions(sessionOptions)
+			return NewMySession(store, sessionOptions.Name, ctx)
 		}
 	}
 	return func(h echo.Handler) echo.HandlerFunc {
