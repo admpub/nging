@@ -20,6 +20,7 @@ package common
 
 import (
 	stdErr "errors"
+	"strings"
 
 	"github.com/webx-top/captcha"
 	"github.com/webx-top/echo"
