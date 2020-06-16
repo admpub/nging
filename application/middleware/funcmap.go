@@ -95,6 +95,12 @@ func ErrorPageFunc(c echo.Context) error {
 		}
 		return *siteURI
 	})
+	c.SetFunc(`ReturnToURL`, func(varNames ...string) string {
+		return common.ReturnToURL(c, varNames...)
+	})
+	c.SetFunc(`WithReturnToURL`, func(urlStr string, varNames ...string) string {
+		return common.WithReturnToURL(c, urlStr, varNames...)
+	})
 	return nil
 }
 

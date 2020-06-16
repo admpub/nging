@@ -124,8 +124,10 @@ type ConfigFromDB interface {
 	ConfigFromDB() echo.H
 }
 
+var DefaultReturnToURLVarName = `return_to`
+
 func ReturnToURL(ctx echo.Context, varNames ...string) string {
-	varName := `return_to`
+	varName := DefaultReturnToURLVarName
 	if len(varNames) > 0 {
 		varName = varNames[0]
 	}
@@ -134,4 +136,21 @@ func ReturnToURL(ctx echo.Context, varNames ...string) string {
 		returnTo = ``
 	}
 	return returnTo
+}
+
+func WithReturnToURL(ctx echo.Context, urlStr string, varNames ...string) string {
+	varName := DefaultReturnToURLVarName
+	if len(varNames) > 0 {
+		varName = varNames[0]
+	}
+	returnTo := ReturnToURL(ctx, varName)
+	if len(returnTo) == 0 {
+		return urlStr
+	}
+	if strings.Contains(urlStr, `?`) {
+		urlStr += `&`
+	} else {
+		urlStr += `?`
+	}
+	return urlStr + varName + `=` + url.QueryEscape(returnTo)
 }
