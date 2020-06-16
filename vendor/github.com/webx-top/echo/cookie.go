@@ -22,6 +22,8 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/webx-top/echo/param"
 )
 
 var (
@@ -39,6 +41,9 @@ type CookieOptions struct {
 	// MaxAge>0 means Max-Age attribute present and given in seconds.
 	MaxAge int
 
+	// Expires
+	Expires time.Time
+
 	Path     string
 	Domain   string
 	Secure   bool
@@ -49,6 +54,12 @@ type CookieOptions struct {
 func (c *CookieOptions) Clone() *CookieOptions {
 	clone := *c
 	return &clone
+}
+
+func (c *CookieOptions) SetMaxAge(maxAge int) *CookieOptions {
+	c.MaxAge = maxAge
+	c.Expires = param.EmptyTime
+	return c
 }
 
 //Cookier interface
@@ -77,6 +88,7 @@ func newCookie(name string, value string, opt *CookieOptions) *Cookie {
 			Path:     opt.Path,
 			Domain:   opt.Domain,
 			MaxAge:   opt.MaxAge,
+			Expires:  opt.Expires,
 			Secure:   opt.Secure,
 			HttpOnly: opt.HttpOnly,
 		},
@@ -102,19 +114,30 @@ func (c *Cookie) Domain(p string) *Cookie {
 }
 
 // MaxAge 设置有效时长（秒）
+// IE6/7/8不支持
+// 如果同时设置了MaxAge和Expires，则优先使用MaxAge
+// 设置MaxAge则代表每次保存Cookie都会续期，因为MaxAge是基于保存时间来设置的
 func (c *Cookie) MaxAge(p int) *Cookie {
 	c.cookie.MaxAge = p
-	return c
-}
-
-// Expires 设置过期时间戳
-func (c *Cookie) Expires(p int) *Cookie {
-	c.MaxAge(p)
 	if p > 0 {
 		c.cookie.Expires = time.Unix(time.Now().Unix()+int64(p), 0)
 	} else if p < 0 {
 		c.cookie.Expires = time.Unix(1, 0)
+	} else {
+		c.cookie.Expires = param.EmptyTime
 	}
+	return c
+}
+
+// Expires 设置过期时间
+// 所有浏览器都支持
+// 如果仅仅设置Expires，因为过期时间是固定的，所以不会导致保存Cookie时被续期
+func (c *Cookie) Expires(expires time.Time) *Cookie {
+	if expires.IsZero() {
+		return c
+	}
+	c.cookie.MaxAge = 0
+	c.cookie.Expires = expires
 	return c
 }
 
@@ -197,7 +220,8 @@ func (c *cookie) Set(key string, val string, args ...interface{}) Cookier {
 		case *http.Cookie:
 			CopyCookieOptions(v, cookie)
 		case *CookieOptions:
-			cookie.Expires(v.MaxAge)
+			cookie.MaxAge(v.MaxAge)
+			cookie.Expires(v.Expires)
 			if len(v.Path) == 0 {
 				v.Path = `/`
 			}
@@ -207,11 +231,13 @@ func (c *cookie) Set(key string, val string, args ...interface{}) Cookier {
 			cookie.HttpOnly(v.HttpOnly)
 			cookie.SameSite(v.SameSite)
 		case int:
-			cookie.Expires(v)
+			cookie.MaxAge(v)
 		case int64:
-			cookie.Expires(int(v))
+			cookie.MaxAge(int(v))
 		case time.Duration:
-			cookie.Expires(int(v.Seconds()))
+			cookie.MaxAge(int(v.Seconds()))
+		case time.Time:
+			cookie.Expires(v)
 		}
 	}
 	if !found {

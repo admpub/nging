@@ -425,7 +425,7 @@ func AsTimestamp(val interface{}) time.Time {
 		}
 		return time.Unix(sec, nsec)
 	}
-	return emptyTime
+	return EmptyTime
 }
 
 func AsDateTime(val interface{}, layouts ...string) time.Time {
@@ -438,7 +438,7 @@ func AsDateTime(val interface{}, layouts ...string) time.Time {
 		t, _ := time.Parse(layout, p)
 		return t
 	}
-	return emptyTime
+	return EmptyTime
 }
 
 func AsStore(val interface{}) Store {

@@ -16,29 +16,29 @@ type (
 const (
 	// - 操作状态
 
-	RequestFailure   Code = -205  //提交失败
-	RequestTimeout   Code = -204  //提交超时
-	AbnormalResponse Code = -203  //响应异常
-	OperationTimeout Code = -202  //操作超时
-	Unsupported      Code = -201  //不支持的操作
-	RepeatOperation  Code = -200  //重复操作
+	RequestFailure   Code = -205 //提交失败
+	RequestTimeout   Code = -204 //提交超时
+	AbnormalResponse Code = -203 //响应异常
+	OperationTimeout Code = -202 //操作超时
+	Unsupported      Code = -201 //不支持的操作
+	RepeatOperation  Code = -200 //重复操作
 
 	// - 数据状态
 
-	DataNotFound     Code = -100  //数据未找到
+	DataNotFound Code = -100 //数据未找到
 
 	// - 用户状态
 
-	BalanceNoEnough  Code = -5  //余额不足
-	UserDisabled     Code = -4  //用户被禁用
-	UserNotFound     Code = -3  //用户未找到
-	NonPrivileged    Code = -2  //无权限
-	Unauthenticated  Code = -1  //未登录
+	BalanceNoEnough Code = -5 //余额不足
+	UserDisabled    Code = -4 //用户被禁用
+	UserNotFound    Code = -3 //用户未找到
+	NonPrivileged   Code = -2 //无权限
+	Unauthenticated Code = -1 //未登录
 
 	// - 通用
 
-	Failure          Code = 0   //操作失败
-	Success          Code = 1   //操作成功
+	Failure Code = 0 //操作失败
+	Success Code = 1 //操作成功
 )
 
 // CodeDict 状态码字典

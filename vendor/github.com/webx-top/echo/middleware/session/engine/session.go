@@ -21,6 +21,15 @@ type Session struct {
 	store   sessions.Store
 	session *sessions.Session
 	written bool
+	preSave []func(echo.Context) error
+}
+
+func (s *Session) AddPreSaveHook(hook func(echo.Context) error) {
+	s.preSave = append(s.preSave, hook)
+}
+
+func (s *Session) SetPreSaveHook(hooks ...func(echo.Context) error) {
+	s.preSave = hooks
 }
 
 func (s *Session) Get(key string) interface{} {
@@ -29,13 +38,13 @@ func (s *Session) Get(key string) interface{} {
 
 func (s *Session) Set(key string, val interface{}) echo.Sessioner {
 	s.Session().Values[key] = val
-	s.written = true
+	s.setWritten()
 	return s
 }
 
 func (s *Session) Delete(key string) echo.Sessioner {
 	delete(s.Session().Values, key)
-	s.written = true
+	s.setWritten()
 	return s
 }
 
@@ -50,17 +59,21 @@ func (s *Session) Clear() echo.Sessioner {
 
 func (s *Session) AddFlash(value interface{}, vars ...string) echo.Sessioner {
 	s.Session().AddFlash(value, vars...)
-	s.written = true
+	s.setWritten()
 	return s
 }
 
 func (s *Session) Flashes(vars ...string) []interface{} {
-	s.written = true
-	return s.Session().Flashes(vars...)
+	flashes := s.Session().Flashes(vars...)
+	if len(flashes) > 0 {
+		s.setWritten()
+	}
+	return flashes
 }
 
 func (s *Session) SetID(id string) echo.Sessioner {
 	s.Session().ID = id
+	s.setWritten()
 	return s
 }
 
@@ -69,16 +82,21 @@ func (s *Session) ID() string {
 }
 
 func (s *Session) Save() error {
-	if s.Written() {
-		e := s.Session().Save(s.context)
-		if e == nil {
-			s.written = false
-		} else {
-			log.Printf(errorFormat, e)
-		}
-		return e
+	if !s.Written() {
+		return nil
 	}
-	return nil
+	for _, hook := range s.preSave {
+		if err := hook(s.context); err != nil {
+			return err
+		}
+	}
+	err := s.Session().Save(s.context)
+	if err == nil {
+		s.written = false
+	} else {
+		log.Printf(errorFormat, err)
+	}
+	return err
 }
 
 func (s *Session) Session() *sessions.Session {
@@ -94,4 +112,9 @@ func (s *Session) Session() *sessions.Session {
 
 func (s *Session) Written() bool {
 	return s.written
+}
+
+func (s *Session) setWritten() *Session {
+	s.written = true
+	return s
 }

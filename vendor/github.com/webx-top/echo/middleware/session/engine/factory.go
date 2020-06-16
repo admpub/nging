@@ -29,7 +29,13 @@ func NewSession(ctx echo.Context) echo.Sessioner {
 }
 
 func NewMySession(store sessions.Store, name string, ctx echo.Context) echo.Sessioner {
-	return &Session{name, ctx, store, nil, false}
+	return &Session{
+		name:    name,
+		context: ctx,
+		store:   store,
+		session: nil,
+		written: false,
+	}
 }
 
 func StoreEngine(options *echo.SessionOptions) (store sessions.Store) {

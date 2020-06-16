@@ -80,6 +80,8 @@ type Sessioner interface {
 	Flashes(vars ...string) []interface{}
 	// Save saves all sessions used during the current request.
 	Save() error
+	AddPreSaveHook(func(Context) error)
+	SetPreSaveHook(...func(Context) error)
 }
 
 type NopSession struct {
@@ -123,6 +125,12 @@ func (n *NopSession) Options(_ SessionOptions) Sessioner {
 
 func (n *NopSession) Save() error {
 	return nil
+}
+
+func (n *NopSession) AddPreSaveHook(_ func(Context) error) {
+}
+
+func (n *NopSession) SetPreSaveHook(_ ...func(Context) error) {
 }
 
 type DebugSession struct {
@@ -176,4 +184,10 @@ func (n *DebugSession) Options(options SessionOptions) Sessioner {
 func (n *DebugSession) Save() error {
 	log.Println(`DebugSession.Save`)
 	return nil
+}
+
+func (n *DebugSession) AddPreSaveHook(_ func(Context) error) {
+}
+
+func (n *DebugSession) SetPreSaveHook(_ ...func(Context) error) {
 }

@@ -148,7 +148,7 @@ func CSRFWithConfig(config CSRFConfig) echo.MiddlewareFuncd {
 			if config.CookieDomain != "" {
 				cookie.Domain(config.CookieDomain)
 			}
-			cookie.Expires(config.CookieMaxAge)
+			cookie.MaxAge(config.CookieMaxAge)
 			cookie.Secure(config.CookieSecure)
 			cookie.HttpOnly(config.CookieHTTPOnly)
 			cookie.Send(c)

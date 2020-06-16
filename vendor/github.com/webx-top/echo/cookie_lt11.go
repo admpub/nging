@@ -22,7 +22,8 @@ func (c *Cookie) SameSite(_ string) *Cookie {
 }
 
 func CopyCookieOptions(from *http.Cookie, to *Cookie) {
-	to.Expires(from.MaxAge)
+	to.MaxAge(from.MaxAge)
+	to.Expires(from.Expires)
 	if len(from.Path) == 0 {
 		from.Path = `/`
 	}
