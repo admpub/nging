@@ -123,3 +123,15 @@ func CaptchaInfo(hostAlias string, captchaName string, args ...string) echo.H {
 type ConfigFromDB interface {
 	ConfigFromDB() echo.H
 }
+
+func ReturnToURL(ctx echo.Context, varNames ...string) string {
+	varName := `return_to`
+	if len(varNames) > 0 {
+		varName = varNames[0]
+	}
+	returnTo := ctx.Form(varName)
+	if returnTo == ctx.Request().URL().Path() {
+		returnTo = ``
+	}
+	return returnTo
+}
