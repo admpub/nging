@@ -21,6 +21,7 @@ package common
 import (
 	stdErr "errors"
 	"strings"
+	"net/url"
 
 	"github.com/webx-top/captcha"
 	"github.com/webx-top/echo"
