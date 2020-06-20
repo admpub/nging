@@ -24,6 +24,7 @@ var (
 )
 
 type RouteRegister interface {
+	MiddlewareRegister
 	Group(prefix string, middleware ...interface{}) *Group
 	Any(path string, h interface{}, middleware ...interface{}) IRouter
 	Route(methods string, path string, h interface{}, middleware ...interface{}) IRouter
@@ -60,7 +61,6 @@ type URLBuilder interface {
 
 type ICore interface {
 	RouteRegister
-	MiddlewareRegister
 	URLBuilder
 	RendererRegister
 	Prefixer
