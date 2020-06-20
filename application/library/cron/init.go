@@ -71,6 +71,7 @@ func runCmdWithTimeout(cmd *exec.Cmd, timeout time.Duration, ctx context.Context
 	done := make(chan error)
 	go func() {
 		done <- cmd.Wait()
+		close(done)
 	}()
 	var err error
 	kill := func() {

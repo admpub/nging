@@ -32,7 +32,9 @@ import (
 	cronWriter "github.com/admpub/nging/application/library/cron/writer"
 	"github.com/admpub/nging/application/library/cron/send"
 	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
+	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/middleware/tplfunc"
 	"github.com/webx-top/echo/param"
 	"github.com/webx-top/echo/subdomains"
@@ -125,7 +127,7 @@ type Job struct {
 
 func NewJobFromTask(ctx context.Context, task *dbschema.NgingTask) (*Job, error) {
 	if task.Id < 1 {
-		return nil, fmt.Errorf("Job: missing task.Id")
+		return nil, echo.NewError("Job: missing task.Id", code.DataNotFound)
 	}
 	var env []string
 	task.Env = strings.TrimSpace(task.Env)
@@ -148,17 +150,19 @@ func NewJobFromTask(ctx context.Context, task *dbschema.NgingTask) (*Job, error)
 			fallthrough
 		case 1:
 			fnName := cmdInfo[0]
-			if jobx, ok := SYSJobs[fnName]; ok {
-				job := &Job{
-					id:         task.Id,
-					name:       task.Name,
-					task:       task,
-					Concurrent: task.Concurrent == 1,
-					runner:     jobx.RunnerGetter(param),
-					isSYS:      true,
-				}
-				return job, nil
+			jobx, ok := SYSJobs[fnName]
+			if !ok {
+				return nil, echo.NewError(fmt.Sprintf("Job: invalid job name: %s", fnName), code.InvalidParameter)
 			}
+			job := &Job{
+				id:         task.Id,
+				name:       task.Name,
+				task:       task,
+				Concurrent: task.Concurrent == 1,
+				runner:     jobx.RunnerGetter(param),
+				isSYS:      true,
+			}
+			return job, nil
 		}
 	}
 	if task.GroupId > 0 {

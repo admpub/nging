@@ -43,13 +43,8 @@ func OtherSender(params param.Store) error {
 }
 
 func EmailSender(params param.Store) error {
-	user := new(dbschema.NgingUser)
 	task, ok := params.Get(`task`).(dbschema.NgingTask)
 	if !ok {
-		return nil
-	}
-	err := user.Get(nil, `id`, task.Uid)
-	if err != nil || len(user.Email) == 0 {
 		return nil
 	}
 	var ccList []string
@@ -63,13 +58,22 @@ func EmailSender(params param.Store) error {
 			ccList[index] = email
 		}
 	}
-	params["username"] = user.Username
+	if len(ccList) == 0 {
+		return nil
+	}
+	toEmail := ccList[0]
+	toUsername := strings.SplitN(toEmail, "@", 2)[0]
+	if len(ccList) > 1 {
+		ccList = append([]string{}, ccList[1:]...)
+	} else {
+		ccList = []string{}
+	}
 	ct, ok := params.Get(`content`).(send.ContentType)
 	if !ok {
 		return nil
 	}
 	content := ct.EmailContent(params)
-	return SendMail(user.Email, user.Username, params.String(`title`), content, ccList...)
+	return SendMail(toEmail, toUsername, params.String(`title`), content, ccList...)
 }
 
 func init() {

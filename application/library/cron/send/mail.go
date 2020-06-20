@@ -13,8 +13,7 @@ import (
 var (
 	htmlTpl, markdownTpl *template.Template
 	defaultHTMLTmpl      = `
-	你好 {{.username}}，<br/>
-<p>以下是任务执行结果：</p>
+<p>您好，以下是任务执行结果：</p>
 <p>
 任务编号：{{.task.Id}}<br/>
 任务名称：{{.task.Name}}<br/>
@@ -43,8 +42,11 @@ var (
 ### 以下是任务执行输出
 {{.output}}
 `
-	DefaultSMTPConfig     = &mail.SMTPConfig{} //STMP配置
+	// DefaultSMTPConfig 默认STMP配置
+	DefaultSMTPConfig     = &mail.SMTPConfig{}
+	// DefaultEmailConfig 默认Email配置
 	DefaultEmailConfig    = &EmailConfig{}
+	// ErrIncorrectRecipient 收信地址不正确
 	ErrIncorrectRecipient = errors.New(`The recipient's email address is incorrect`)
 )
 
