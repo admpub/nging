@@ -3,6 +3,7 @@
 {{if $pjax}}<title>{{Block "title"}}Start{{/Block}} - {{Version}}</title>
 	{{if eq $pjax "#main-container"}}
 		{{Block "head"}}{{/Block}}
+		{{Block "headEnd"}}{{/Block}}
 		{{Block "bodyNav"}}{{/Block}}
 		<div class="container-fluid" id="pcont">
 			{{if hasAnyBlock "name" "breadcrumb"}}
@@ -20,6 +21,7 @@
 		{{Block "footer"}}{{/Block}}
 	{{else if eq $pjax "#pcont"}}
 		{{Block "head"}}{{/Block}}
+		{{Block "headEnd"}}{{/Block}}
 		{{if hasAnyBlock "name" "breadcrumb"}}
 		<div class="page-head">
 			<h2>{{Block "name"}}{{/Block}}</h2>
@@ -35,6 +37,7 @@
 		{{Block "footer"}}{{/Block}}
 	{{else}}
 		{{Block "head"}}{{/Block}}
+		{{Block "headEnd"}}{{/Block}}
 		{{Block "main"}}{{/Block}}
 		{{Block "footer"}}{{/Block}}
 	{{end}}
@@ -68,6 +71,7 @@
     {{Block "head"}}{{/Block}}
 	<!-- Custom styles for this template -->
 	<link href="__ASSETS__/css/style.min.css?t={{BuildTime}}" rel="stylesheet" />
+    {{Block "headEnd"}}{{/Block}}
 </head>
  
 <body{{Block "bodyAttr"}}{{/Block}}>

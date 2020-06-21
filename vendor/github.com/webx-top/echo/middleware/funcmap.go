@@ -9,6 +9,7 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
+	"github.com/webx-top/echo/param"
 )
 
 func FuncMap(funcMap map[string]interface{}, skipper ...echo.Skipper) echo.MiddlewareFunc {
@@ -38,6 +39,7 @@ func FuncMap(funcMap map[string]interface{}, skipper ...echo.Skipper) echo.Middl
 			c.SetFunc(`FormValues`, c.FormValues)
 			c.SetFunc(`QueryValues`, c.QueryValues)
 			c.SetFunc(`FormxValues`, c.FormxValues)
+			c.SetFunc(`GetByIndex`, param.GetByIndex)
 			c.SetFunc(`QueryxValues`, c.QueryxValues)
 			c.SetFunc(`Param`, c.Param)
 			c.SetFunc(`Paramx`, c.Paramx)

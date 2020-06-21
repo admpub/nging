@@ -4,6 +4,12 @@
 {{Super}}
 <li class="active">{{Stored.title}}</li>
 {{/Block}}
+{{Block "headEnd"}}
+<style type="text/css">
+  .extra-page-remove{position:absolute;display:none;border-radius:0 0 50px 0;z-index:2;}
+  .fieldset:hover .extra-page-remove{display:block;}
+  </style>
+{{/Block}}
 {{Block "main"}}
 <div class="row">
     <div class="col-md-12">
@@ -246,6 +252,40 @@
                 </div>
               </div>
 
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{"响应内容过滤"|T}}<a href="https://caddyserver.com/docs/http.filter" target="_blank" data-toggle="tooltip" title="{{"查看文档"|T}}" class="normal">(?)</a></label>
+                <div class="col-sm-8">
+                  {{$v := Form "filter"}}
+                  <div class="radio radio-primary radio-inline"> 
+                    <input type="radio" value="1" id="filter-enable" name="filter" data-slide-settings="show"{{if eq $v "1"}} checked{{end}}><label for="filter-enable">{{"启用"|T}}</label> 
+                  </div>
+                  <div class="radio radio-danger radio-inline"> 
+                    <input type="radio" value="0" id="filter-disable" name="filter" data-slide-settings="hide"{{if or (eq $v "0") (eq $v "")}} checked{{end}}><label for="filter-disable">{{"禁用"|T}}</label> 
+                  </div>
+                  <div class="hide" id="filter-settings">
+                    <div class="fieldset bg-fc spacer-bottom-xs">
+                    <div class="form-group">
+                      <label class="col-sm-3 control-label">{{`内容尺寸上限`}}</label>
+                      <div class="col-sm-9">
+                        <span class="input-group">
+                         <input class="form-control" type="number" id="filter_max_buffer_size" name="filter_max_buffer_size" value="{{Form `filter_max_buffer_size`}}" min="0">
+                         <span class="input-group-addon">{{`字节`|T}}</span>
+                        </span>
+                         <div class="help-block">{{"超过此尺寸的内容不会替换，默认为: 10485760 (=10 MB)"|T}}</div>
+                      </div>
+                    </div>
+                    </div><!-- /.fieldset -->
+                    <div id="filter-settings-inner">
+                    {{- range $index, $value := FormxValues `filter_search_pattern` -}}
+                    {{Include "caddy/addon/form/filter" $index}}
+                    {{- else -}}
+                    {{Include "caddy/addon/form/filter" 0}}
+                    {{- end -}}
+                    </div>
+                    <a href="javascript:;" onclick="copyFormHTML('#filter-settings-inner')" class="label label-primary text-white wd-100p" style="display:block"><i class="fa fa-plus"></i></a>
+                  </div>
+                </div>
+              </div>
 <div class="form-group">
   <label class="col-sm-2 control-label">{{"网址重写"|T}}<a href="https://caddyserver.com/docs/rewrite" target="_blank" data-toggle="tooltip" title="{{"查看文档"|T}}" class="normal">(?)</a></label>
   <div class="col-sm-8">
@@ -515,6 +555,21 @@ function addKs(obj,k,v){
 function initReqPlaceholdersModal(){
   $('#request-placeholders-modal').find('.modal-body').css({"max-height":$(window).height()-200});
 }
+function copyFormHTML(boxElem){
+  var base = $(boxElem).children('.fieldset:first');
+  var copied = base.clone();
+  copied.prepend('<a href="javascript:;" class="label label-danger extra-page-remove" onclick="removeFormHTML(this);" data-toggle="tooltip" title="{{`删除`|T}}"><i class="fa fa-times"></i></a>');
+  copied.find('input[type="text"]').val('');
+  copied.find('textarea').text('');
+  if(base.next('.fieldset').length>0){
+    base.siblings('.fieldset:last').after(copied);
+  }else{
+    base.after(copied);
+  }
+}
+function removeFormHTML(obj){
+  $(obj).parent('.fieldset').remove();
+}
 $(function(){
 initReqPlaceholdersModal();
 $(window).on('resize',function(){
@@ -528,8 +583,9 @@ var requiredWWWRootPathFields=['fastcgi','browse'];//必须设置“网站位置
 $('[data-slide-settings]').on('click',function(){
   var slide=$(this).data('slide-settings'),name=$(this).attr('name');
   if(slide=="")slide=$(this).val()=='1'?'show':'hide';
-  var eid='#'+name+'-settings';
-  var history=$.trim($(eid).html());
+  var eid='#'+name+'-settings',innerid='#'+name+'-settings-inner';
+  if($(innerid).length<1) innerid=eid;
+  var history=$.trim($(innerid).html());
   for(var i=0;i<requiredWWWRootPathFields.length;i++){
     if(name==requiredWWWRootPathFields[i]){
       if(slide=='show'){
@@ -550,18 +606,19 @@ $('[data-slide-settings]').on('click',function(){
   }
   if(slide=='show'){
     if(!history){
-      if($(eid).data('history')){
-        $(eid).html($(eid).data('history'));
+      if($(innerid).data('history')){
+        $(innerid).html($(innerid).data('history'));
       }else{
         $.get(BACKEND_URL+'/caddy/addon_form',{addon:name},function(r){
-          $(eid).html(r);
+          $(innerid).html(r);
         },'html');
       }
     }
     $(eid).removeClass('hide');
   }else{
-    if(history)$(eid).data('history',history);
-    $(eid).empty().addClass('hide');
+    if(history)$(innerid).data('history',history);
+    $(innerid).empty();
+    $(eid).addClass('hide');
   }
 });
 $('[data-slide-settings="show"]:checked').trigger('click');

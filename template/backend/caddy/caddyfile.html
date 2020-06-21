@@ -187,6 +187,32 @@
     }
     {{end}}
 
+    {{if eq ($v.Get "filter") "1"}}
+    {{range $index, $searchPattern := GetSlice "filter_search_pattern"}}
+    {{$filterPath := (GetSlice "filter_path").GetByIndex $index}}
+    {{$filterContentType := (GetSlice "filter_content_type").GetByIndex $index}}
+    {{if or $filterPath $filterContentType}}
+    filter rule {
+        {{if $filterPath}}
+        path                          {{$filterPath}}
+        {{end}}
+        {{if $filterContentType}}
+        content_type                  {{$filterContentType}}
+        {{end}}
+        {{if and $filterPath $filterContentType}}
+        path_content_type_combination {{(GetSlice "filter_path_content_type_combination").GetByIndex $index}}
+        {{end}}
+        search_pattern                {{(GetSlice "filter_search_pattern").GetByIndex $index}}
+        replacement                   {{$searchPattern}}
+    }
+    {{end}}
+    {{end}}
+    {{$filterMaxBufferSize := Int ($v.Get "filter_max_buffer_size")}}
+    {{if gt $filterMaxBufferSize}}
+    filter max_buffer_size {{$filterMaxBufferSize}}
+    {{end}}
+    {{end}}
+
     {{$v.Get "rewrite_rule"|ToHTML}}
 
     {{if eq ($v.Get "s3browser") "1"}}

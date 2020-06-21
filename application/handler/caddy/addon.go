@@ -46,5 +46,6 @@ func AddonForm(ctx echo.Context) error {
 	ctx.SetFunc(`Val`, func(name, defaultValue string) string {
 		return defaultValue
 	})
-	return ctx.Render(`caddy/addon/form/`+addon, nil)
+	index := ctx.Queryx(`index`, `0`).Int()
+	return ctx.Render(`caddy/addon/form/`+addon, index)
 }

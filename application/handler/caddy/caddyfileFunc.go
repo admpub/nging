@@ -15,6 +15,7 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 package caddy
 
 import (
@@ -22,6 +23,7 @@ import (
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/param"
 )
 
 func addonAttr(ctx echo.Context, v url.Values) {
@@ -111,5 +113,9 @@ func SetCaddyfileFunc(ctx echo.Context, v url.Values) {
 	iteratorKV(ctx, v)
 	ctx.SetFunc(`AddSlashes`, func(v string) string {
 		return com.AddSlashes(v, '"')
+	})
+	ctx.SetFunc(`GetSlice`, func(key string) param.StringSlice {
+		values, _ := v[key]
+		return param.StringSlice(values)
 	})
 }
