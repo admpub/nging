@@ -37,7 +37,10 @@
 <div class="form-group">
     <label class="col-sm-2 control-label">{{"超时时间"|T}}</label>
     <div class="col-sm-4">
+        <span class="input-group">
         <input type="number" class="form-control" name="smtp[timeout][value]" value="{{$config.timeout.Value}}" min="0" placeholder="{{"秒"|T}}">
+        <span class="input-group-addon">{{`秒`|T}}</span>
+        </span>
         <div class="help-block">
             {{"超时时间(秒)，采用默认引擎(mail)发信时，此项无效"|T}}
         </div>

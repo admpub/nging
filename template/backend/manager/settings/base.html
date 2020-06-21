@@ -43,7 +43,7 @@
 <div class="form-group">
     <label class="col-sm-2 control-label">{{"图片水印"|T}}</label>
     {{$on := $config.watermark.ValueObject.On|Default false}}
-    <div class="col-sm-8">
+    <div class="col-sm-10">
         <div class="radio radio-primary radio-inline">
             <input type="radio" name="base[watermark][value][on]" value="1"{{if $on}} checked{{end}} id="base-watermark-on-1" onclick="$('#watermark-settings').removeClass('hide')">
             <label for="base-watermark-on-1">{{"开启"|T}}</label>
@@ -55,7 +55,7 @@
         <div class="fieldset bg-fc{{if not $on}} hide{{end}}" id="watermark-settings">
             <div class="form-group">
                 <label class="col-sm-2 control-label">{{"水印图片"|T}}</label>
-                <div class="col-sm-8">
+                <div class="col-sm-10">
                     {{$watermark := $config.watermark.ValueObject.Watermark|Default ""}}
                     <span class="input-group">
                     <span class="input-group-btn preview-btn{{if not $watermark}} hidden{{end}}" id="watermarkImagePreviewBtn">
@@ -77,14 +77,17 @@
             </div>
             <div class="form-group">
                 <label class="col-sm-2 control-label">{{"保留边距"|T}}</label>
-                <div class="col-sm-8">
+                <div class="col-sm-10">
                     {{$padding := $config.watermark.ValueObject.Padding|Default 0}}
+                    <span class="input-group">
                     <input type="number" class="form-control" name="base[watermark][value][padding]" value="{{$padding}}" step="1">
+                    <span class="input-group-addon">px</span>
+                    </span>
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-sm-2 control-label">{{"水印位置"|T}}</label>
-                <div class="col-sm-8">
+                <div class="col-sm-10">
                     {{$position := $config.watermark.ValueObject.Position|Default 0}}
                     <table class="table table-bordered" style="width:auto">
                         <tbody>
