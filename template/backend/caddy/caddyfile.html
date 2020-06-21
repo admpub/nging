@@ -194,21 +194,21 @@
     {{if or $filterPath $filterContentType}}
     filter rule {
         {{if $filterPath}}
-        path                          {{$filterPath}}
+        path                          {{$filterPath|ToHTML}}
         {{end}}
         {{if $filterContentType}}
-        content_type                  {{$filterContentType}}
+        content_type                  {{$filterContentType|ToHTML}}
         {{end}}
         {{if and $filterPath $filterContentType}}
-        path_content_type_combination {{(GetSlice "filter_path_content_type_combination").GetByIndex $index}}
+        path_content_type_combination {{(GetSlice "filter_path_content_type_combination").GetByIndex $index |ToHTML}}
         {{end}}
-        search_pattern                {{(GetSlice "filter_search_pattern").GetByIndex $index}}
-        replacement                   {{$searchPattern}}
+        search_pattern                {{$searchPattern |ToHTML}}
+        replacement                   {{(GetSlice "filter_replacement").GetByIndex $index |ToHTML}}
     }
     {{end}}
     {{end}}
     {{$filterMaxBufferSize := Int ($v.Get "filter_max_buffer_size")}}
-    {{if gt $filterMaxBufferSize}}
+    {{if gt $filterMaxBufferSize 0}}
     filter max_buffer_size {{$filterMaxBufferSize}}
     {{end}}
     {{end}}
