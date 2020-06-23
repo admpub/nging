@@ -132,7 +132,7 @@ func HTTPErrorHandler(opt *Options) echo.HTTPErrorHandler {
 			data.SetError(e)
 			msg = e.Message
 		default:
-			msg = title
+			msg = setAndGetErrorMessage(c, e.Error(), title)
 		}
 		if c.Request().Method() == echo.HEAD {
 			c.NoContent(code)
