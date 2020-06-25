@@ -155,7 +155,8 @@ func Setup(ctx echo.Context) error {
 			var fileSize int64
 			fileSize, err = com.FileSize(sqlFile)
 			if err != nil {
-				return errors.WithMessage(err, sqlFile)
+				err = errors.WithMessage(err, sqlFile)
+				return ctx.NewError(stdCode.Failure, err.Error())
 			}
 			totalSize += fileSize
 		}
@@ -163,7 +164,7 @@ func Setup(ctx echo.Context) error {
 		installProgress.TotalSize += int64(len(handler.OfficialSQL))
 		err = ctx.MustBind(&config.DefaultConfig.DB)
 		if err != nil {
-			return err
+			return ctx.NewError(stdCode.Failure, err.Error())
 		}
 		config.DefaultConfig.DB.Database = strings.Replace(config.DefaultConfig.DB.Database, "'", "", -1)
 		config.DefaultConfig.DB.Database = strings.Replace(config.DefaultConfig.DB.Database, "`", "", -1)
@@ -180,7 +181,7 @@ func Setup(ctx echo.Context) error {
 		if err != nil {
 			err = createDatabase(err)
 			if err != nil {
-				return err
+				return ctx.NewError(stdCode.Failure, err.Error())
 			}
 		}
 		//创建数据库数据
@@ -252,7 +253,7 @@ func Setup(ctx echo.Context) error {
 		log.Info(color.GreenString(`[installer]`), `Save the configuration file`)
 		err = config.DefaultConfig.SaveToFile()
 		if err != nil {
-			return err
+			return ctx.NewError(stdCode.Failure, err.Error())
 		}
 
 		for _, cb := range onInstalled {
