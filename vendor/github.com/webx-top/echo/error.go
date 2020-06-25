@@ -49,10 +49,22 @@ func NewError(msg string, code ...pkgCode.Code) *Error {
 	return e
 }
 
+func NewErrorWith(err error, msg string, code ...pkgCode.Code) *Error {
+	e := &Error{Code: pkgCode.Failure, Message: msg, Extra: H{}, cause: err}
+	if len(code) > 0 {
+		e.Code = code[0]
+	}
+	if len(msg) == 0 && err != nil {
+		e.Message = err.Error()
+	}
+	return e
+}
+
 type Error struct {
 	Code    pkgCode.Code
 	Message string
 	Extra   H
+	cause   error
 }
 
 // Error returns message.
@@ -69,6 +81,14 @@ func (e *Error) Delete(keys ...string) *Error {
 	e.Extra.Delete(keys...)
 	return e
 }
+
+func (e *Error) ErrorCode() int {
+	return e.Code.Int()
+}
+
+func (e *Error) Cause() error { return e.cause }
+
+func (e *Error) Unwrap() error { return e.cause }
 
 // ==========================================
 // HTTPError

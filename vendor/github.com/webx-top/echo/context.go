@@ -129,6 +129,7 @@ type Context interface {
 	Redirect(string, ...int) error
 	Error(err error)
 	NewError(code pkgCode.Code, msg string, args ...interface{}) *Error
+	NewErrorWith(err error, code pkgCode.Code, args ...interface{}) *Error
 	SetCode(int)
 	Code() int
 	SetData(Data)

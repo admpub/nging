@@ -132,6 +132,19 @@ func (c *xContext) NewError(code pkgCode.Code, msg string, args ...interface{}) 
 	return NewError(c.T(msg, args...), code)
 }
 
+func (c *xContext) NewErrorWith(err error, code pkgCode.Code, args ...interface{}) *Error {
+	var msg string
+	if len(args) > 0 {
+		msg = param.AsString(args[0])
+		if len(args) > 1 {
+			msg = c.T(msg, args[1:]...)
+		} else {
+			msg = c.T(msg)
+		}
+	}
+	return NewErrorWith(err, msg, code)
+}
+
 // Logger returns the `Logger` instance.
 func (c *xContext) Logger() logger.Logger {
 	return c.echo.logger
