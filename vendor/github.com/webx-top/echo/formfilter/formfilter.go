@@ -39,17 +39,25 @@ func Build(options ...Options) echo.FormDataFilter {
 		}
 		key := strings.Title(k)
 		filters, ok := filterMap[key]
-		if !ok {
-			filters, ok = filterMap[All]
-			if !ok {
-				return k, v
-			}
+		filtersAll, okAll := filterMap[All]
+		if !ok && !okAll {
+			return k, v
 		}
 		data := &Data{Key: k, Value: v, normalizedKey: key}
-		for _, filter := range filters {
-			filter(data)
-			if len(data.Key) == 0 {
-				break
+		if ok {
+			for _, filter := range filters {
+				filter(data)
+				if len(data.Key) == 0 {
+					return data.Key, data.Value
+				}
+			}
+		}
+		if okAll {
+			for _, filter := range filtersAll {
+				filter(data)
+				if len(data.Key) == 0 {
+					return data.Key, data.Value
+				}
 			}
 		}
 		return data.Key, data.Value
