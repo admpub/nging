@@ -25,32 +25,19 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/formfilter"
 	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/model"
 )
 
-func dateString2UnixString(k string, v []string) (string, []string) {
-	switch strings.Title(k) {
-	case `Start`:
-		if len(v) > 0 && len(v[0]) > 0 {
-			if !strings.Contains(v[0], `:`) {
-				v[0] += v[0] + ` 00:00:00`
-			}
-		}
-		return echo.DateToTimestamp(`2006-01-02 15:04:05`)(k, v)
-	case `End`:
-		if len(v) > 0 && len(v[0]) > 0 {
-			if !strings.Contains(v[0], `:`) {
-				v[0] += v[0] + ` 23:59:59`
-			}
-		}
-		return echo.DateToTimestamp(`2006-01-02 15:04:05`)(k, v)
-	case `RoleIds`:
-		return k, []string{strings.Join(v, `,`)}
-	}
-	return k, v
+func formFilter() echo.FormDataFilter {
+	return formfilter.Build(
+		formfilter.StartDateToTimestamp(`Start`),
+		formfilter.EndDateToTimestamp(`End`),
+		formfilter.JoinValues(`RoleIds`),
+	)
 }
 
 func Invitation(ctx echo.Context) error {
@@ -72,7 +59,7 @@ func InvitationAdd(ctx echo.Context) error {
 	var err error
 	if ctx.IsPost() {
 		m := model.NewInvitation(ctx)
-		err = ctx.MustBind(m.NgingCodeInvitation, dateString2UnixString)
+		err = ctx.MustBind(m.NgingCodeInvitation, formFilter())
 		if err == nil {
 			if len(m.Code) == 0 {
 				err = ctx.E(`邀请码不能为空`)
@@ -110,7 +97,7 @@ func InvitationEdit(ctx echo.Context) error {
 		return ctx.Redirect(handler.URLFor(`/manager/invitation`))
 	}
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.NgingCodeInvitation, dateString2UnixString)
+		err = ctx.MustBind(m.NgingCodeInvitation, formFilter())
 		if err == nil {
 			m.Id = id
 			if len(m.Code) == 0 {

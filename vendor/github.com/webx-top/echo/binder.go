@@ -221,7 +221,7 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32:
 				dateformat := tagfast.Value(tc, f, `form_format`)
 				if len(dateformat) > 0 {
-					t, err := time.Parse(dateformat, v)
+					t, err := time.ParseInLocation(dateformat, v, time.Local)
 					if err != nil {
 						e.Logger().Warnf(`binder: arg %v as int: %v`, v, err)
 						l = int(0)
@@ -239,7 +239,7 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 			case reflect.Int64:
 				dateformat := tagfast.Value(tc, f, `form_format`)
 				if len(dateformat) > 0 {
-					t, err := time.Parse(dateformat, v)
+					t, err := time.ParseInLocation(dateformat, v, time.Local)
 					if err != nil {
 						e.Logger().Warnf(`binder: arg %v as int64: %v`, v, err)
 						l = int64(0)
@@ -276,7 +276,7 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 					bitSize = 64
 				}
 				if len(dateformat) > 0 {
-					t, err := time.Parse(dateformat, v)
+					t, err := time.ParseInLocation(dateformat, v, time.Local)
 					if err != nil {
 						e.Logger().Warnf(`binder: arg %v as uint: %v`, v, err)
 						x = uint64(0)
@@ -309,11 +309,11 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 						e.Logger().Warnf(`binder: struct %v invoke FromString faild`, tvf)
 					}
 				} else if tv.Type().String() == `time.Time` {
-					x, err := time.Parse(`2006-01-02 15:04:05.000 -0700`, v)
+					x, err := time.ParseInLocation(`2006-01-02 15:04:05.000 -0700`, v, time.Local)
 					if err != nil {
-						x, err = time.Parse(`2006-01-02 15:04:05`, v)
+						x, err = time.ParseInLocation(`2006-01-02 15:04:05`, v, time.Local)
 						if err != nil {
-							x, err = time.Parse(`2006-01-02`, v)
+							x, err = time.ParseInLocation(`2006-01-02`, v, time.Local)
 							if err != nil {
 								e.Logger().Warnf(`binder: unsupported time format %v, %v`, v, err)
 							}
@@ -458,7 +458,7 @@ var (
 		}
 		return func(k string, v []string) (string, []string) {
 			if len(v) > 0 && len(v[0]) > 0 {
-				t, e := time.Parse(layout, v[0])
+				t, e := time.ParseInLocation(layout, v[0], time.Local)
 				if e != nil {
 					log.Error(e)
 					return k, []string{`0`}

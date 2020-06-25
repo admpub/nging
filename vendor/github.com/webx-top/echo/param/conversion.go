@@ -435,7 +435,7 @@ func AsDateTime(val interface{}, layouts ...string) time.Time {
 		if len(layouts) > 0 {
 			layout = layouts[0]
 		}
-		t, _ := time.Parse(layout, p)
+		t, _ := time.ParseInLocation(layout, p, time.Local)
 		return t
 	}
 	return EmptyTime
