@@ -434,7 +434,7 @@ function verifyRule(a){
   var reset=function(){
     if(!$(a).hasClass('parsley-error')) return;
     $(a).removeClass('parsley-error');
-    if($(a).next('ul.parsley-error-list').length>0) $(a).next('ul.parsley-error-list').remove();
+    if($(a).next('ul.parsley-errors-list').length>0) $(a).next('ul.parsley-errors-list').remove();
   };
   if(!v||v.length<9)return reset();
   if(v.substring(0,7)=='regexp:'){
@@ -450,8 +450,8 @@ function verifyRule(a){
   $.post(BACKEND_URL+'/collector/regexp_test',data,function(r){
     if(!r.Error) return reset();
     if(!$(a).hasClass('parsley-error')) $(a).addClass('parsley-error');
-    if($(a).next('ul.parsley-error-list').length<1) $(a).after('<ul class="parsley-error-list"></ul>');
-    $(a).next('ul.parsley-error-list').html('<li class="required" style="display:list-item">{{"正则表达式错误"|T}}: '+r.Error+'</li>');
+    if($(a).next('ul.parsley-errors-list').length<1) $(a).after('<ul class="parsley-errors-list"></ul>');
+    $(a).next('ul.parsley-errors-list').html('<li class="required" style="display:list-item">{{"正则表达式错误"|T}}: '+r.Error+'</li>');
     $(a).focus();
   },'json');
 }

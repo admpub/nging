@@ -5106,11 +5106,11 @@ ul.timeline > li > .date {
   }
 }
 /*Validation*/
-.parsley-error-list {
+.parsley-errors-list {
   margin-top: 4px;
   padding: 0;
 }
-.parsley-error-list li {
+.parsley-errors-list li {
   padding: 0;
   list-style: none;
   color: #cc0000;

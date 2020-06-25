@@ -52,7 +52,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"注册为角色"|T}}</label>
                 <div class="col-sm-8">
-                  <select class="select2" parsley-trigger="change" required name="roleIds" multiple="multiple">
+                  <select class="select2" data-parsley-trigger="change" required name="roleIds" multiple="multiple">
                     {{range $k, $v := Stored.roleList}}
                     <option value="{{$v.Id}}"{{if isChecked $v.Id}} selected="selected"{{end}}>{{$v.Name}}</option>
                     {{end}}

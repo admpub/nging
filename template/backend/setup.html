@@ -44,7 +44,7 @@
 								<i class="glyphicon glyphicon-arrow-right" style="margin-left:5px"></i>
 							</button>
 						</div>
-						<form class="form-horizontal" action="" parsley-validate novalidate method="POST" id="form-setup">
+						<form class="form-horizontal" action="" data-parsley-validate novalidate method="POST" id="form-setup">
 						<div class="step-content" style="padding:30px;padding-top:0">
 								<div class="step-pane active" data-step="1">
 									<div class="form-group no-padding no-margin-top">
@@ -56,7 +56,7 @@
 										<div class="col-sm-12">
 											<div class="input-group">
 												<span class="input-group-addon"><i class="fa fa-align-justify"></i></span>
-												<select name="type" id="database-type" parsley-trigger="change" parsley-error-container="#type-error" required title="{{"数据库类型"|T}}" class="form-control">
+												<select name="type" id="database-type" data-parsley-trigger="change" data-parsley-errors-container="#type-error" required title="{{"数据库类型"|T}}" class="form-control">
 													{{$type := Form "type"}}
 													{{range $k, $v := Stored.dbEngines}}
 													<option value="{{$v.K}}" {{if eq $type $v.K}} selected{{end}}>{{$v.V}}</option>
@@ -70,7 +70,7 @@
 										<div class="col-sm-12">
 											<div class="input-group">
 												<span class="input-group-addon"><i class="fa fa-globe"></i></span>
-												<input type="text" name="host" id="database-host" parsley-trigger="change" parsley-error-container="#host-error" required data-toggle="tooltip" title="{{"主机地址"|T}}" placeholder="{{"主机地址"|T}}" class="form-control" value="{{(Form "host")|Default "127.0.0.1:3306"}}">
+												<input type="text" name="host" id="database-host" data-parsley-trigger="change" data-parsley-errors-container="#host-error" required data-toggle="tooltip" title="{{"主机地址"|T}}" placeholder="{{"主机地址"|T}}" class="form-control" value="{{(Form "host")|Default "127.0.0.1:3306"}}">
 											</div>
 											<div id="host-error"></div>
 										</div>
@@ -79,7 +79,7 @@
 										<div class="col-sm-12">
 											<div class="input-group">
 												<span class="input-group-addon"><i class="fa fa-user"></i></span>
-												<input type="text" name="user" id="database-user" parsley-trigger="change" parsley-error-container="#user-error" required data-toggle="tooltip" title="{{"数据库登录名"|T}}" placeholder="{{"数据库登录名"|T}}" class="form-control" value="{{(Form "user")|Default "root"}}">
+												<input type="text" name="user" id="database-user" data-parsley-trigger="change" data-parsley-errors-container="#user-error" required data-toggle="tooltip" title="{{"数据库登录名"|T}}" placeholder="{{"数据库登录名"|T}}" class="form-control" value="{{(Form "user")|Default "root"}}">
 											</div>
 											<div id="user-error"></div>
 										</div>
@@ -88,7 +88,7 @@
 										<div class="col-sm-12">
 											<div class="input-group">
 												<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-												<input type="password" id="database-password" name="password" parsley-trigger="change" parsley-error-container="#password-error" data-toggle="tooltip" title="{{"数据库密码"|T}}" placeholder="{{"数据库密码"|T}}" class="form-control" value="{{Form "password"}}">
+												<input type="password" id="database-password" name="password" data-parsley-trigger="change" data-parsley-errors-container="#password-error" data-toggle="tooltip" title="{{"数据库密码"|T}}" placeholder="{{"数据库密码"|T}}" class="form-control" value="{{Form "password"}}">
 											</div>
 											<div id="password-error"></div>
 										</div>
@@ -97,7 +97,7 @@
 										<div class="col-sm-12">
 											<div class="input-group">
 												<span class="input-group-addon"><i class="fa fa-folder"></i></span>
-												<input type="text" name="database" id="database-name" parsley-trigger="change" parsley-error-container="#database-error" required data-toggle="tooltip" title="{{"数据库名称"|T}}" placeholder="{{"数据库名称"|T}}" class="form-control" value="{{(Form "database")|Default "nging"}}">
+												<input type="text" name="database" id="database-name" data-parsley-trigger="change" data-parsley-errors-container="#database-error" required data-toggle="tooltip" title="{{"数据库名称"|T}}" placeholder="{{"数据库名称"|T}}" class="form-control" value="{{(Form "database")|Default "nging"}}">
 											</div>
 											<div id="database-error"></div>
 										</div>
@@ -127,7 +127,7 @@
 										<div class="col-sm-12">
 											<div class="input-group">
 												<span class="input-group-addon"><i class="fa fa-user"></i></span>
-												<input type="text" name="adminUser" parsley-trigger="change"
+												<input type="text" name="adminUser" data-parsley-trigger="change"
 													parsley-error-container="#adminUser-error" required data-toggle="tooltip" title="{{"管理员用户名"|T}}" placeholder="{{"管理员用户名"|T}}" class="form-control" value="{{(Form "adminUser")|Default "admin"}}">
 											</div>
 											<div id="adminUser-error"></div>
@@ -137,7 +137,7 @@
 										<div class="col-sm-12">
 											<div class="input-group">
 												<span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-												<input type="email" name="adminEmail" parsley-trigger="change" parsley-error-container="#adminEmail-error" required data-toggle="tooltip" title="{{"管理员Email"|T}}" placeholder="{{"管理员Email"|T}}" class="form-control" value="{{Form "adminEmail"}}">
+												<input type="email" name="adminEmail" data-parsley-trigger="change" data-parsley-errors-container="#adminEmail-error" required data-toggle="tooltip" title="{{"管理员Email"|T}}" placeholder="{{"管理员Email"|T}}" class="form-control" value="{{Form "adminEmail"}}">
 											</div>
 											<div id="adminEmail-error"></div>
 										</div>
@@ -146,7 +146,7 @@
 										<div class="col-sm-12">
 											<div class="input-group">
 												<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-												<input id="pass1" type="password" name="adminPass" parsley-trigger="change" parsley-error-container="#adminPass-error" required data-toggle="tooltip" title="{{"管理员密码"|T}}" placeholder="{{"管理员密码"|T}}" class="form-control" value="{{Form "adminPass"}}">
+												<input id="pass1" type="password" name="adminPass" data-parsley-trigger="change" data-parsley-errors-container="#adminPass-error" required data-toggle="tooltip" title="{{"管理员密码"|T}}" placeholder="{{"管理员密码"|T}}" class="form-control" value="{{Form "adminPass"}}">
 											</div>
 											<div id="adminPass-error"></div>
 										</div>
@@ -155,7 +155,7 @@
 										<div class="col-sm-12">
 											<div class="input-group">
 												<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-												<input type="password" name="confirmPass" parsley-equalto="#pass1" parsley-trigger="change" parsley-error-container="#confirmPass-error" required data-toggle="tooltip" title="{{"确认管理员密码"|T}}" placeholder="{{"确认管理员密码"|T}}" class="form-control" value="{{Form "confirmPass"}}">
+												<input type="password" name="confirmPass" data-parsley-equalto="#pass1" data-parsley-trigger="change" data-parsley-errors-container="#confirmPass-error" required data-toggle="tooltip" title="{{"确认管理员密码"|T}}" placeholder="{{"确认管理员密码"|T}}" class="form-control" value="{{Form "confirmPass"}}">
 											</div>
 											<div id="confirmPass-error"></div>
 										</div>
@@ -204,8 +204,8 @@
 		</div>
 	</div>
 </script>
-<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/i18n/messages.{{(Replace Lang "-" "_" -1)|ToLower}}.js" charset="utf-8"></script>
-<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/dist/parsley.min.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/parsley.min.js"></script>
+<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/i18n/{{(Replace Lang `-` `_` -1)|ToLower}}.js" charset="utf-8"></script>
 <script type="text/javascript" src="__ASSETS__/js/fuelux/js/fuelux.min.js"></script>
 <script type="text/javascript" src="__ASSETS__/js/behaviour/sprintf.min.js"></script>
 <script type="text/javascript" src="__ASSETS__/js/behaviour/general.min.js"></script>

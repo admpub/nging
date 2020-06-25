@@ -11,13 +11,13 @@
 				<h3 class="text-center"><img class="logo-img logo-img-sm" src="__ASSETS__/images/logo.png" alt="logo"/> {{"账号注册"|T}}</h3>
 			</div>
 			<div>
-				<form style="margin-bottom: 0px !important;" data-secret="{{Stored.passwordSecrect}}" id="register-form" class="form-horizontal" action="" parsley-validate novalidate method="POST">
+				<form style="margin-bottom: 0px !important;" data-secret="{{Stored.passwordSecrect}}" id="register-form" class="form-horizontal" action="" data-parsley-validate novalidate method="POST">
 					<div class="content">
 							<div class="form-group">
 								<div class="col-sm-12">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-code"></i></span>
-										<input type="text" name="invitationCode" parsley-trigger="change" parsley-error-container="#invitationCode-error" required data-toggle="tooltip" title="{{"邀请码"|T}}" placeholder="{{"邀请码"|T}}" class="form-control" autocomplete="off" value="{{Form "invitationCode"}}">
+										<input type="text" name="invitationCode" data-parsley-trigger="change" data-parsley-errors-container="#invitationCode-error" required data-toggle="tooltip" title="{{"邀请码"|T}}" placeholder="{{"邀请码"|T}}" class="form-control" autocomplete="off" value="{{Form "invitationCode"}}">
 									</div>
                                     <div id="invitationCode-error"></div>
 								</div>
@@ -26,7 +26,7 @@
 								<div class="col-sm-12">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-user"></i></span>
-										<input type="text" name="username" parsley-trigger="change" parsley-error-container="#username-error" required data-toggle="tooltip" title="{{"用户名"|T}}" placeholder="{{"用户名"|T}}" class="form-control" autocomplete="off" value="{{Form "username"}}">
+										<input type="text" name="username" data-parsley-trigger="change" data-parsley-errors-container="#username-error" required data-toggle="tooltip" title="{{"用户名"|T}}" placeholder="{{"用户名"|T}}" class="form-control" autocomplete="off" value="{{Form "username"}}">
 									</div>
                                     <div id="username-error"></div>
 								</div>
@@ -35,14 +35,14 @@
 								<div class="col-sm-6 col-xs-6">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-										<input id="pass1" type="password" name="password" parsley-error-container="#password-error" placeholder="{{"密码"|T}}" required data-toggle="tooltip" title="{{"密码"|T}}" class="form-control" autocomplete="off" value="{{Form "password"}}">
+										<input id="pass1" type="password" name="password" data-parsley-errors-container="#password-error" placeholder="{{"密码"|T}}" required data-toggle="tooltip" title="{{"密码"|T}}" class="form-control" autocomplete="off" value="{{Form "password"}}">
 									</div>
                                     <div id="password-error"></div>
 								</div>
 								<div class="col-sm-6 col-xs-6">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-lock"></i></span>
-										<input parsley-equalto="#pass1" type="password" parsley-error-container="#confirmation-error" name="confirmationPassword" required data-toggle="tooltip" title="{{"确认密码"|T}}" placeholder="{{"确认密码"|T}}" class="form-control" autocomplete="off" value="{{Form "confirmationPassword"}}">
+										<input data-parsley-equalto="#pass1" type="password" data-parsley-errors-container="#confirmation-error" name="confirmationPassword" required data-toggle="tooltip" title="{{"确认密码"|T}}" placeholder="{{"确认密码"|T}}" class="form-control" autocomplete="off" value="{{Form "confirmationPassword"}}">
 									</div>
                                     <div id="confirmation-error"></div>
 								</div>
@@ -51,7 +51,7 @@
 								<div class="col-sm-12">
 									<div class="input-group">
 										<span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-										<input type="email" name="email" parsley-trigger="change" parsley-error-container="#email-error" required data-toggle="tooltip" title="E-mail" placeholder="E-mail" class="form-control" autocomplete="off" value="{{Form "email"}}">
+										<input type="email" name="email" data-parsley-trigger="change" data-parsley-errors-container="#email-error" required data-toggle="tooltip" title="E-mail" placeholder="E-mail" class="form-control" autocomplete="off" value="{{Form "email"}}">
 									</div>
 									<div id="email-error"></div>
 								</div>
@@ -70,8 +70,8 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
-<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/i18n/messages.{{(Replace Lang "-" "_" -1)|ToLower}}.js?t={{BuildTime}}" charset="utf-8"></script>
-<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/dist/parsley.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/parsley.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/i18n/{{(Replace Lang `-` `_` -1)|ToLower}}.js?t={{BuildTime}}" charset="utf-8"></script>
 <script type="text/javascript" src="__ASSETS__/js/behaviour/sprintf.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="__ASSETS__/js/behaviour/general.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="__ASSETS__/js/crypto/crypto-js.min.js?t={{BuildTime}}"></script>
