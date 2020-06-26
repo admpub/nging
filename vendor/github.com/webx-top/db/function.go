@@ -21,10 +21,6 @@
 
 package db
 
-import (
-	"reflect"
-)
-
 // Function interface defines methods for representing database functions.
 // This is an exported interface but it's rarely used directly, you may want to
 // use the `db.Func()` function instead.
@@ -52,15 +48,6 @@ type Function interface {
 //	// RTRIM("Hello  ")
 //	db.Func("RTRIM", "Hello  ")
 func Func(name string, args ...interface{}) Function {
-	if len(args) == 1 {
-		if reflect.TypeOf(args[0]).Kind() == reflect.Slice {
-			iargs := make([]interface{}, len(args))
-			for i := range args {
-				iargs[i] = args[i]
-			}
-			args = iargs
-		}
-	}
 	return &dbFunc{name: name, args: args}
 }
 
@@ -77,4 +64,4 @@ func (f *dbFunc) Name() string {
 	return f.name
 }
 
-var _ Function = &dbFunc{}
+var _ = Function(&dbFunc{})

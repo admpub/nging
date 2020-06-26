@@ -4,13 +4,11 @@ import (
 	"errors"
 	"reflect"
 	"strings"
-
-	"github.com/webx-top/db/internal/cache"
 )
 
 var errUnknownTemplateType = errors.New("Unknown template type")
 
-//  represents different kinds of SQL statements.
+// Statement represents different kinds of SQL statements.
 type Statement struct {
 	Type
 	Table        Fragment
@@ -40,13 +38,6 @@ func (layout *Template) doCompile(c Fragment) (string, error) {
 		return c.Compile(layout)
 	}
 	return "", nil
-}
-
-func getHash(h cache.Hashable) string {
-	if h != nil && !reflect.ValueOf(h).IsNil() {
-		return h.Hash()
-	}
-	return ""
 }
 
 // Hash returns a unique identifier for the struct.

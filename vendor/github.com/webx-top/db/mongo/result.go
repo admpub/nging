@@ -290,11 +290,10 @@ func (res *result) Err() error {
 	return res.err
 }
 
-func (res *result) setErr(err error) error {
+func (res *result) setErr(err error) {
 	res.errMu.Lock()
-	defer res.errMu.Unlock()
-
-	return err
+	res.err = err
+	res.errMu.Unlock()
 }
 
 func (res *result) Next(dst interface{}) bool {
@@ -403,7 +402,9 @@ func (res *result) build() (*resultQuery, error) {
 
 	rq := rqi.(*resultQuery)
 	if !rq.cursorCond.Empty() {
-		rq.and(rq.cursorCond)
+		if err := rq.and(rq.cursorCond); err != nil {
+			return nil, err
+		}
 	}
 
 	if rq.cursorColumn != "" {

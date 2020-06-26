@@ -60,14 +60,6 @@ type hasIsZero interface {
 	IsZero() bool
 }
 
-type hasArguments interface {
-	Arguments() []interface{}
-}
-
-type hasStatement interface {
-	statement() *exql.Statement
-}
-
 type iterator struct {
 	SQLBuilder
 	cursor *sql.Rows // This is the main query cursor. It starts as a nil value.
@@ -80,8 +72,7 @@ type fieldValue struct {
 }
 
 var (
-	reInvisibleChars       = regexp.MustCompile(`[\s\r\n\t]+`)
-	reColumnCompareExclude = regexp.MustCompile(`[^a-zA-Z0-9]`)
+	reInvisibleChars = regexp.MustCompile(`[\s\r\n\t]+`)
 )
 
 var (
@@ -392,18 +383,6 @@ func Map(item interface{}, options *MapOptions) ([]string, []interface{}, error)
 	return fv.fields, fv.values, nil
 }
 
-func extractArguments(fragments []interface{}) []interface{} {
-	args := []interface{}{}
-	l := len(fragments)
-	for i := 0; i < l; i++ {
-		switch v := fragments[i].(type) {
-		case hasArguments: // TODO: use this on other places where we want to extract arguments.
-			args = append(args, v.Arguments()...)
-		}
-	}
-	return args
-}
-
 func columnFragments(columns []interface{}) ([]exql.Fragment, []interface{}, error) {
 	l := len(columns)
 	f := make([]exql.Fragment, l)
@@ -596,10 +575,6 @@ func (fv *fieldValue) Less(i, j int) bool {
 type exprProxy struct {
 	db *sql.DB
 	t  *exql.Template
-}
-
-func newSqlgenProxy(db *sql.DB, t *exql.Template) *exprProxy {
-	return &exprProxy{db: db, t: t}
 }
 
 func (p *exprProxy) Context() context.Context {

@@ -82,10 +82,7 @@ func newBaseTx(tx *sql.Tx) BaseTx {
 
 func (b *baseTx) Committed() bool {
 	committed := b.committed.Load()
-	if committed != nil {
-		return true
-	}
-	return false
+	return committed != nil
 }
 
 func (b *baseTx) Commit() (err error) {
