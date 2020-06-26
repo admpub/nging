@@ -27,6 +27,7 @@ import (
 
 var (
 	routeRegister = route.NewRegister(defaults.Default)
+	beforeApply   = []func() error{}
 )
 
 func Echo() *echo.Echo {
