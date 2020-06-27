@@ -39,9 +39,9 @@ import (
 	"github.com/admpub/nging/application/cmd/event"
 	"github.com/admpub/nging/application/handler/setup"
 	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/nging/application/library/config/startup"
 	"github.com/admpub/nging/application/library/license"
 	"github.com/admpub/nging/application/library/msgbox"
-	"github.com/admpub/nging/application/library/config/startup"
 )
 
 // Nging 启动入口
@@ -120,9 +120,7 @@ If you have already purchased a license, please place the ` + license.FileName()
 	if c.TLSAuto || hasCert {
 		if config.DefaultCLIConfig.Port == 80 {
 			if c.TLSAuto {
-				if err := initCertMagic(c); err != nil {
-					panic(err)
-				}
+				echo.PanicIf(initCertMagic(c))
 				//c.SupportAutoTLS(nil, config.DefaultConfig.Sys.SSLHosts...)
 			} else {
 				c.Address = fmt.Sprintf(`%s:443`, config.DefaultCLIConfig.Address)

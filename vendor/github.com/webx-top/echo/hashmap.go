@@ -19,26 +19,10 @@
 package echo
 
 import (
-	"encoding/json"
-	"fmt"
 	"sort"
 	"strconv"
 	"sync"
 )
-
-// Dump 输出对象和数组的结构信息
-func Dump(m interface{}, args ...bool) (r string) {
-	v, err := json.MarshalIndent(m, "", "  ")
-	if err != nil {
-		fmt.Printf("%v\n", err)
-	}
-	r = string(v)
-	l := len(args)
-	if l < 1 || args[0] {
-		fmt.Println(r)
-	}
-	return
-}
 
 type H = Store
 

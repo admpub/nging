@@ -1,6 +1,7 @@
 package echo
 
 import (
+	"fmt"
 	"mime"
 	"os"
 	"path"
@@ -9,7 +10,9 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/admpub/log"
 	"github.com/webx-top/com"
+	"github.com/webx-top/echo/encoding/json"
 )
 
 var workDir string
@@ -132,5 +135,48 @@ func static(r RouteRegister, prefix, root string) {
 		r.Get(prefix+"*", h)
 	} else {
 		r.Get(prefix+"/*", h)
+	}
+}
+
+// Dump 输出对象和数组的结构信息
+func Dump(m interface{}, printOrNot ...bool) (r string) {
+	v, err := json.MarshalIndent(m, "", "  ")
+	if err != nil {
+		fmt.Printf("%v\n", err)
+	}
+	r = string(v)
+	l := len(printOrNot)
+	if l < 1 || printOrNot[0] {
+		fmt.Println(r)
+	}
+	return
+}
+
+func PanicIf(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+func LogIf(err error, types ...string) {
+	if err == nil {
+		return
+	}
+	var typ string
+	if len(types) > 0 {
+		typ = types[0]
+	}
+	typ = strings.Title(typ)
+	switch typ {
+	case `Fatal`:
+		log.Fatal(err)
+	case `Warn`:
+		log.Debug(err)
+	case `Debug`:
+		log.Debug(err)
+	case `Info`:
+		log.Info(err)
+	default:
+		log.Error(err)
 	}
 }
