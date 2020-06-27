@@ -1996,10 +1996,10 @@
 			"revisionTime": "2016-11-16T06:46:58Z"
 		},
 		{
-			"checksumSHA1": "aBSYu6r0ZvKsFxziggp6JmC6CTc=",
+			"checksumSHA1": "ko/QB5+41znvSqhvTLCoMwMkGAs=",
 			"path": "github.com/go-sql-driver/mysql",
-			"revision": "1fbca2aabb09915d4f1006d01b271ad7778eec4f",
-			"revisionTime": "2019-03-15T22:32:36Z"
+			"revision": "12508c83901b1a418e3dea51850f956f32506f4e",
+			"revisionTime": "2020-05-31T10:04:19Z"
 		},
 		{
 			"checksumSHA1": "+QA+yCapL80NO5GzibuyicX6g0E=",
