@@ -20,6 +20,6 @@ xcopy ..\dist\default ..\dist\%NGING_EXECUTOR%_%GOOS%_%GOARCH%\ /E /Q /H /I /Y
 set archiver_extension=zip
 rem if "%GOOS%"=="windows" (set archiver_extension=zip) else (set archiver_extension=tar.bz2)
 
-archiver make ..\dist\%NGING_EXECUTOR%_%GOOS%_%GOARCH%.%archiver_extension% ..\dist\%NGING_EXECUTOR%_%GOOS%_%GOARCH%\
+arc archive ..\dist\%NGING_EXECUTOR%_%GOOS%_%GOARCH%.%archiver_extension% ..\dist\%NGING_EXECUTOR%_%GOOS%_%GOARCH%\
 
 rd /s /Q ..\dist\%NGING_EXECUTOR%_%GOOS%_%GOARCH%
