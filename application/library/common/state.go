@@ -18,6 +18,15 @@
 
 package common
 
+import (
+	stdCode "github.com/webx-top/echo/code"
+)
+
+// IsCaptchaErrCode 是否验证码错误码
+func IsCaptchaErrCode(code stdCode.Code) bool {
+	return code == stdCode.CaptchaError
+}
+
 // IsCaptchaError 用户验证码错误
 func IsCaptchaError(err error) bool {
 	return err == ErrCaptcha
