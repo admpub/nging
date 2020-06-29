@@ -20,11 +20,12 @@ package common
 
 import (
 	stdErr "errors"
-	"strings"
 	"net/url"
+	"strings"
 
 	"github.com/webx-top/captcha"
 	"github.com/webx-top/echo"
+	stdCode "github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/middleware/tplfunc"
 	"github.com/webx-top/echo/subdomains"
 )
@@ -93,7 +94,7 @@ func VerifyCaptcha(ctx echo.Context, hostAlias string, captchaName string, args 
 	if err != nil {
 		data.SetZone(captchaName)
 		data.SetData(CaptchaInfo(hostAlias, captchaName, args...))
-		data.SetError(err, StatusCaptchaError)
+		data.SetError(ErrCaptcha)
 	}
 	return data
 }
@@ -101,7 +102,7 @@ func VerifyCaptcha(ctx echo.Context, hostAlias string, captchaName string, args 
 // VerifyAndSetCaptcha 验证码验证并设置新验证码信息
 func VerifyAndSetCaptcha(ctx echo.Context, hostAlias string, captchaName string, args ...string) echo.Data {
 	data := VerifyCaptcha(ctx, hostAlias, captchaName, args...)
-	if data.GetCode() != StatusCaptchaError {
+	if data.GetCode() != stdCode.CaptchaError {
 		data.SetData(CaptchaInfo(hostAlias, captchaName, args...))
 	}
 	return data
