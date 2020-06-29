@@ -15,7 +15,39 @@ type (
 		Value         []string
 		normalizedKey string
 	}
+	OptionsList []Options
 )
+
+func New() *OptionsList {
+	return &OptionsList{}
+}
+
+func (a *OptionsList) Add(options ...Options) *OptionsList {
+	*a = append(*a, options...)
+	return a
+}
+
+func (a *OptionsList) Slice() OptionsList {
+	return *a
+}
+
+func (a *OptionsList) AppendTo(other *OptionsList) *OptionsList {
+	other.Add(a.Slice()...)
+	return other
+}
+
+func (a *OptionsList) Reset(options ...Options) *OptionsList {
+	*a = options
+	return a
+}
+
+func (a *OptionsList) Size() int {
+	return len(*a)
+}
+
+func (a *OptionsList) Build() echo.FormDataFilter {
+	return Build(*a...)
+}
 
 const All = `*`
 

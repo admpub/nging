@@ -23,8 +23,8 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 )
 
 func init() {
@@ -44,6 +44,8 @@ var (
 	ErrUserDisabled = echo.NewError(`User has been disabled`, code.UserDisabled)
 	//ErrBalanceNoEnough 余额不足
 	ErrBalanceNoEnough = echo.NewError(`Balance is not enough`, code.BalanceNoEnough)
+	//ErrCaptcha 验证码错误
+	ErrCaptcha = echo.NewError(`Captcha is incorrect`, code.CaptchaError)
 
 	// - Operation
 

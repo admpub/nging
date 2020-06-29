@@ -35,6 +35,7 @@ const (
 	InvalidSecretKey Code = -151 //密钥不正确
 	InvalidAppID     Code = -150 //AppID不正确
 
+	DataAlreadyExists   Code = -109 //数据已经存在
 	DataFormatIncorrect Code = -108 //数据格式不正确
 	DataStatusIncorrect Code = -107 //数据状态不正确
 	DataProcessing      Code = -106 //数据未处理中状态
@@ -47,6 +48,7 @@ const (
 
 	// - 用户状态
 
+	CaptchaError    Code = -9 //验证码错误
 	BalanceNoEnough Code = -5 //余额不足
 	UserDisabled    Code = -4 //用户被禁用
 	UserNotFound    Code = -3 //用户未找到
@@ -83,6 +85,7 @@ var CodeDict = CodeMap{
 	InvalidAppID:     {"InvalidAppID", http.StatusOK},
 	InvalidSecretKey: {"InvalidSecretKey", http.StatusOK},
 
+	DataAlreadyExists:   {"DataAlreadyExists", http.StatusOK},
 	DataFormatIncorrect: {"DataFormatIncorrect", http.StatusOK},
 	DataStatusIncorrect: {"DataStatusIncorrect", http.StatusOK},
 	DataHasExpired:      {"DataHasExpired", http.StatusOK},
@@ -95,6 +98,7 @@ var CodeDict = CodeMap{
 
 	// - 用户状态
 
+	CaptchaError:    {"CaptchaError", http.StatusOK},
 	BalanceNoEnough: {"BalanceNoEnough", http.StatusOK},
 	UserDisabled:    {"UserDisabled", http.StatusOK},
 	UserNotFound:    {"UserNotFound", http.StatusOK},
