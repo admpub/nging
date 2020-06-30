@@ -23,11 +23,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/admpub/log"
 	"github.com/admpub/nging/application/library/collector/exec"
 	"github.com/admpub/nging/application/library/collector/export"
 	"github.com/admpub/nging/application/library/cron"
 	"github.com/admpub/nging/application/model"
-	"github.com/lunny/log"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 )
