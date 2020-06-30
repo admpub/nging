@@ -27,6 +27,7 @@ import (
 	"github.com/admpub/nging/application/library/collector/export"
 	"github.com/admpub/nging/application/library/cron"
 	"github.com/admpub/nging/application/model"
+	"github.com/lunny/log"
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 )
@@ -72,6 +73,12 @@ func Go(k interface{}, r *exec.Rules, f func(), ctx context.Context) (err error)
 	GoProcs.Store(k, process)
 	r.SetExitedFn(process.IsExited)
 	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				log.Error(err)
+				process.Close(k)
+			}
+		}()
 		select {
 		case <-ctx.Done():
 			process.Close(k)
