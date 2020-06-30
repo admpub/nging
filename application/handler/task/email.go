@@ -25,7 +25,6 @@ import (
 	"github.com/admpub/nging/application/library/cron"
 	"github.com/admpub/nging/application/library/notice"
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/param"
 )
 
 //EmailTest 测试邮件发送是否正常
@@ -35,11 +34,10 @@ func EmailTest(ctx echo.Context) error {
 		return common.ErrUserNotLoggedIn
 	}
 	if ctx.IsPost() {
-		clientIDString := ctx.Formx(`clientID`).String()
-		if len(clientIDString) == 0 {
+		clientID := ctx.Formx(`clientID`).String()
+		if len(clientID) == 0 {
 			return ctx.E(`clientID值不正确`)
 		}
-		clientID := param.AsUint32(clientIDString)
 		toEmail := ctx.Form(`email`)
 		toUsername := `test`
 		title := ctx.T(`恭喜！邮件发送功能正常`)

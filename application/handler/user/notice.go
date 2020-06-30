@@ -54,10 +54,11 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 	clientID := notice.OpenClient(user.Username)
 	defer notice.CloseClient(user.Username, clientID)
 	//push(writer)
-	go func() {
+	go func(user *dbschema.NgingUser, clientID string) {
 		message, err := json.Marshal(notice.NewMessage().SetMode(`-`).SetType(`clientID`).SetClientID(clientID))
 		if err != nil {
 			handler.WebSocketLogger.Error(`Push error: `, err.Error())
+			return
 		}
 		handler.WebSocketLogger.Debug(`Push message: `, string(message))
 		if err = c.WriteMessage(websocket.TextMessage, message); err != nil {
@@ -67,14 +68,21 @@ func Notice(c *websocket.Conn, ctx echo.Context) error {
 		for {
 			//message := []byte(echo.Dump(notice.NewMessageWithValue(`type`, `title`, `content:`+time.Now().Format(time.RFC1123)), false))
 			//time.Sleep(time.Second)
-			message = notice.RecvJSON(user.Username, clientID)
+			message, err = notice.RecvJSON(user.Username, clientID)
+			if err != nil {
+				handler.WebSocketLogger.Error(`Push error: `, err.Error())
+				return
+			}
+			if message == nil {
+				return
+			}
 			handler.WebSocketLogger.Debug(`Push message: `, string(message))
 			if err = c.WriteMessage(websocket.TextMessage, message); err != nil {
 				handler.WebSocketLogger.Error(`Push error: `, err.Error())
 				return
 			}
 		}
-	}()
+	}(user, clientID)
 
 	//echo
 	var execute = func(conn *websocket.Conn) error {
