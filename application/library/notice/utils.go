@@ -8,7 +8,7 @@ import (
 type HTTPNoticerConfig struct {
 	User     string
 	Type     string
-	ClientID uint32
+	ClientID string
 	ID       interface{}
 	IsExited IsExited
 	Timeout  time.Duration

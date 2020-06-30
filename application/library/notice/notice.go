@@ -25,7 +25,6 @@ import (
 	"fmt"
 	"os"
 	"sync"
-	"sync/atomic"
 	"time"
 
 	"github.com/admpub/nging/application/library/msgbox"
@@ -118,7 +117,7 @@ func (p *Progress) CalcPercent() *Progress {
 }
 
 type Message struct {
-	ClientID uint32      `json:"client_id" xml:"client_id"`
+	ClientID string      `json:"client_id" xml:"client_id"`
 	ID       interface{} `json:"id" xml:"id"`
 	Type     string      `json:"type" xml:"type"`
 	Title    string      `json:"title" xml:"title"`
@@ -143,7 +142,7 @@ func (m *Message) SetID(id interface{}) *Message {
 	return m
 }
 
-func (m *Message) SetClientID(clientID uint32) *Message {
+func (m *Message) SetClientID(clientID string) *Message {
 	m.ClientID = clientID
 	return m
 }
@@ -188,7 +187,24 @@ func (m *Message) CalcPercent() *Message {
 
 type Notice struct {
 	Types    map[string]bool
-	Messages map[uint32]chan *Message `json:"-" xml:"-"`
+	Messages map[string]chan *Message `json:"-" xml:"-"`
+}
+
+func (a *Notice) CountClient() int {
+	return len(a.Messages)
+}
+
+func (a *Notice) CloseClient(clientID string) {
+	if msg, ok := a.Messages[clientID]; ok {
+		close(msg)
+		delete(a.Messages, clientID)
+	}
+}
+
+func (a *Notice) OpenClient(clientID string) {
+	if _, ok := a.Messages[clientID]; !ok {
+		a.Messages[clientID] = make(chan *Message)
+	}
 }
 
 func NewMessageWithValue(typ string, title string, content interface{}, status ...int) *Message {
@@ -211,19 +227,17 @@ func NewMessage() *Message {
 func NewNotice() *Notice {
 	return &Notice{
 		Types:    map[string]bool{},
-		Messages: map[uint32](chan *Message){},
+		Messages: map[string](chan *Message){},
 	}
 }
 
 type OnlineUser struct {
-	Notice  *Notice
-	Clients uint32
+	*Notice
 }
 
 func NewOnlineUser() *OnlineUser {
 	return &OnlineUser{
-		Notice:  NewNotice(),
-		Clients: 0,
+		Notice: NewNotice(),
 	}
 }
 
@@ -320,7 +334,7 @@ func (u *userNotices) Send(user string, message *Message) error {
 	return ErrClientIDNotOnline
 }
 
-func (u *userNotices) Recv(user string, clientID uint32) <-chan *Message {
+func (u *userNotices) Recv(user string, clientID string) <-chan *Message {
 	//race...
 	//u.Lock.Lock()
 	//defer u.Lock.Unlock()
@@ -336,63 +350,56 @@ func (u *userNotices) Recv(user string, clientID uint32) <-chan *Message {
 	return nil
 }
 
-func (u *userNotices) RecvJSON(user string, clientID uint32) []byte {
+func (u *userNotices) RecvJSON(user string, clientID string) ([]byte, error) {
 	if u.Debug {
 		msgbox.Warn(`[NOTICE]`, `[RecvJSON][Waiting]: `+user)
 	}
 	message := <-u.Recv(user, clientID)
-	if message != nil {
-		message.ClientID = clientID
+	if message == nil {
+		return nil, nil
 	}
+	message.ClientID = clientID
 	b, err := json.Marshal(message)
 	if err != nil {
-		return []byte(err.Error())
+		return b, err
 	}
 	if u.Debug {
 		msgbox.Warn(`[NOTICE]`, `[RecvJSON][Received]: `+user)
 	}
-	return b
+	return b, err
 }
 
-func (u *userNotices) RecvXML(user string, clientID uint32) []byte {
+func (u *userNotices) RecvXML(user string, clientID string) ([]byte, error) {
 	if u.Debug {
 		msgbox.Warn(`[NOTICE]`, `[RecvXML][Waiting]: `+user)
 	}
 	message := <-u.Recv(user, clientID)
-	if message != nil {
-		message.ClientID = clientID
+	if message == nil {
+		return nil, nil
 	}
+	message.ClientID = clientID
 	b, err := xml.Marshal(message)
 	if err != nil {
-		return []byte(err.Error())
+		return b, err
 	}
 	if u.Debug {
 		msgbox.Warn(`[NOTICE]`, `[RecvXML][Received]: `+user)
 	}
-	return b
+	return b, err
 }
 
-func (u *userNotices) CloseClient(user string, clientID uint32) bool {
+func (u *userNotices) CloseClient(user string, clientID string) bool {
 	u.Lock.Lock()
 	defer u.Lock.Unlock()
 	oUser, exists := u.User[user]
 	if !exists {
 		return true
 	}
-	clients := atomic.LoadUint32(&oUser.Clients)
-	if clients > 0 {
-		clients--
-		atomic.StoreUint32(&oUser.Clients, clients)
-	}
+	oUser.CloseClient(clientID)
 	if u.Debug {
-		msgbox.Error(`[NOTICE]`, `[CloseClient][Clients]: `+fmt.Sprint(oUser.Clients))
+		msgbox.Error(`[NOTICE]`, `[CloseClient][ClientID]: `+clientID)
 	}
-	msg, ok := oUser.Notice.Messages[clientID]
-	if ok {
-		close(msg)
-		delete(oUser.Notice.Messages, clientID)
-	}
-	if atomic.LoadUint32(&oUser.Clients) <= 0 {
+	if len(oUser.Notice.Messages) < 1 {
 		for key, msg := range oUser.Notice.Messages {
 			close(msg)
 			delete(oUser.Notice.Messages, key)
@@ -406,7 +413,7 @@ func (u *userNotices) CloseClient(user string, clientID uint32) bool {
 	return false
 }
 
-func (u *userNotices) OpenClient(user string) uint32 {
+func (u *userNotices) OpenClient(user string) string {
 	u.Lock.Lock()
 	defer u.Lock.Unlock()
 	oUser, exists := u.User[user]
@@ -417,9 +424,8 @@ func (u *userNotices) OpenClient(user string) uint32 {
 			fn(user)
 		}
 	}
-	clientID := atomic.LoadUint32(&oUser.Clients)
-	oUser.Notice.Messages[clientID] = make(chan *Message)
-	atomic.AddUint32(&oUser.Clients, 1)
+	clientID := fmt.Sprint(time.Now().Local().Unix())
+	oUser.OpenClient(clientID)
 	return clientID
 }
 

@@ -19,11 +19,15 @@
 package notice
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 
 	"github.com/webx-top/com"
 )
+
+func TestMain(m *testing.M) {
+	SetDebug(true)
+}
 
 func TestOpenMessage(t *testing.T) {
 	OpenMessage(`testUser`, `testType`)
@@ -34,23 +38,27 @@ func TestOpenMessage(t *testing.T) {
 	if user.Notice.Types[`testType`] != true {
 		t.Error(`Type of testType != true`)
 	}
-	
+
 	clientID := OpenClient(`testUser`)
-	if user.Clients != 1 {
-		t.Error(`Number of clients (`+fmt.Sprint(user.Clients)+`) != 1`)
+	if user.CountClient() != 1 {
+		t.Error(`Number of clients (` + fmt.Sprint(user.CountClient()) + `) != 1`)
 	}
-	
+
 	CloseClient(`testUser`, clientID)
-	if user.Clients != 0 {
-		t.Error(`Number of clients (`+fmt.Sprint(user.Clients)+`) != 0`)
+	if user.CountClient() != 0 {
+		t.Error(`Number of clients (` + fmt.Sprint(user.CountClient()) + `) != 0`)
 	}
-	
+
 	com.Dump(Default())
 }
 
 func TestSend(t *testing.T) {
 	go func() {
-		t.Log(string(RecvJSON(`testUser`, 0)))
+		b, err := RecvJSON(`testUser`, `0`)
+		if err != nil {
+			t.Error(err)
+		}
+		t.Log(string(b))
 	}()
 	Send(`testUser`, NewMessageWithValue(`testType`, `testTitle`, `testContent`))
 	com.Dump(Default())
