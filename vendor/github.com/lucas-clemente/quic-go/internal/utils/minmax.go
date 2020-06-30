@@ -4,7 +4,7 @@ import (
 	"math"
 	"time"
 
-	"github.com/lucas-clemente/quic-go/protocol"
+	"github.com/lucas-clemente/quic-go/internal/protocol"
 )
 
 // InfDuration is a duration of infinite length
@@ -82,6 +82,14 @@ func MinByteCount(a, b protocol.ByteCount) protocol.ByteCount {
 	return b
 }
 
+// MaxByteCount returns the maximum of two ByteCounts
+func MaxByteCount(a, b protocol.ByteCount) protocol.ByteCount {
+	if a < b {
+		return b
+	}
+	return a
+}
+
 // MaxDuration returns the max duration
 func MaxDuration(a, b time.Duration) time.Duration {
 	if a > b {
@@ -98,6 +106,17 @@ func MinDuration(a, b time.Duration) time.Duration {
 	return a
 }
 
+// MinNonZeroDuration return the minimum duration that's not zero.
+func MinNonZeroDuration(a, b time.Duration) time.Duration {
+	if a == 0 {
+		return b
+	}
+	if b == 0 {
+		return a
+	}
+	return MinDuration(a, b)
+}
+
 // AbsDuration returns the absolute value of a time duration
 func AbsDuration(d time.Duration) time.Duration {
 	if d >= 0 {
@@ -112,6 +131,26 @@ func MinTime(a, b time.Time) time.Time {
 		return b
 	}
 	return a
+}
+
+// MinNonZeroTime returns the earlist time that is not time.Time{}
+// If both a and b are time.Time{}, it returns time.Time{}
+func MinNonZeroTime(a, b time.Time) time.Time {
+	if a.IsZero() {
+		return b
+	}
+	if b.IsZero() {
+		return a
+	}
+	return MinTime(a, b)
+}
+
+// MaxTime returns the later time
+func MaxTime(a, b time.Time) time.Time {
+	if a.After(b) {
+		return a
+	}
+	return b
 }
 
 // MaxPacketNumber returns the max packet number

@@ -24,7 +24,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-acme/lego/challenge/tlsalpn01"
+	"github.com/go-acme/lego/v3/challenge/tlsalpn01"
 )
 
 // GetCertificate gets a certificate to satisfy clientHello. In getting
@@ -165,13 +165,21 @@ func (cfg *Config) getCertificate(hello *tls.ClientHelloInfo) (cert Certificate,
 // selectCert uses hello to select a certificate from the
 // cache for name. If cfg.CertSelection is set, it will be
 // used to make the decision. Otherwise, the first matching
-// cert is returned.
+// unexpired cert is returned.
 func (cfg *Config) selectCert(hello *tls.ClientHelloInfo, name string) (Certificate, bool) {
 	choices := cfg.certCache.getAllMatchingCerts(name)
 	if len(choices) == 0 {
 		return Certificate{}, false
 	}
 	if cfg.CertSelection == nil {
+		// by default, choose first non-expired cert
+		now := time.Now()
+		for _, choice := range choices {
+			if now.Before(choice.NotAfter) {
+				return choice, true
+			}
+		}
+		// all matching certs are expired, oh well
 		return choices[0], true
 	}
 	cert, err := cfg.CertSelection.SelectCertificate(hello, choices)
@@ -316,7 +324,7 @@ func (cfg *Config) handshakeMaintenance(hello *tls.ClientHelloInfo, cert Certifi
 	if cert.ocsp != nil {
 		refreshTime := cert.ocsp.ThisUpdate.Add(cert.ocsp.NextUpdate.Sub(cert.ocsp.ThisUpdate) / 2)
 		if time.Now().After(refreshTime) {
-			err := stapleOCSP(cfg.Storage, &cert, nil)
+			_, err := stapleOCSP(cfg.Storage, &cert, nil)
 			if err != nil {
 				// An error with OCSP stapling is not the end of the world, and in fact, is
 				// quite common considering not all certs have issuer URLs that support it.

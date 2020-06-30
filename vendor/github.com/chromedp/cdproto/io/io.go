@@ -22,6 +22,8 @@ type CloseParams struct {
 
 // Close close the stream, discard any temporary backing storage.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/IO#method-close
+//
 // parameters:
 //   handle - Handle of the stream to close.
 func Close(handle StreamHandle) *CloseParams {
@@ -31,8 +33,8 @@ func Close(handle StreamHandle) *CloseParams {
 }
 
 // Do executes IO.close against the provided context.
-func (p *CloseParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandClose, p, nil)
+func (p *CloseParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandClose, p, nil)
 }
 
 // ReadParams read a chunk of the stream.
@@ -43,6 +45,8 @@ type ReadParams struct {
 }
 
 // Read read a chunk of the stream.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/IO#method-read
 //
 // parameters:
 //   handle - Handle of the stream to read.
@@ -79,10 +83,10 @@ type ReadReturns struct {
 // returns:
 //   data - Data that were read.
 //   eof - Set if the end-of-file condition occurred while reading.
-func (p *ReadParams) Do(ctxt context.Context, h cdp.Executor) (data string, eof bool, err error) {
+func (p *ReadParams) Do(ctx context.Context) (data string, eof bool, err error) {
 	// execute
 	var res ReadReturns
-	err = h.Execute(ctxt, CommandRead, p, &res)
+	err = cdp.Execute(ctx, CommandRead, p, &res)
 	if err != nil {
 		return "", false, err
 	}
@@ -97,6 +101,8 @@ type ResolveBlobParams struct {
 }
 
 // ResolveBlob return UUID of Blob object specified by a remote object id.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/IO#method-resolveBlob
 //
 // parameters:
 //   objectID - Object id of a Blob object wrapper.
@@ -115,10 +121,10 @@ type ResolveBlobReturns struct {
 //
 // returns:
 //   uuid - UUID of the specified Blob.
-func (p *ResolveBlobParams) Do(ctxt context.Context, h cdp.Executor) (uuid string, err error) {
+func (p *ResolveBlobParams) Do(ctx context.Context) (uuid string, err error) {
 	// execute
 	var res ResolveBlobReturns
-	err = h.Execute(ctxt, CommandResolveBlob, p, &res)
+	err = cdp.Execute(ctx, CommandResolveBlob, p, &res)
 	if err != nil {
 		return "", err
 	}

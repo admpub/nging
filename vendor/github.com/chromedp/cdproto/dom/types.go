@@ -8,9 +8,13 @@ import (
 
 // Quad an array of quad vertices, x immediately followed by y for each
 // point, points clock-wise.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-Quad
 type Quad []float64
 
 // BoxModel box model.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-BoxModel
 type BoxModel struct {
 	Content      Quad              `json:"content"`                // Content box
 	Padding      Quad              `json:"padding"`                // Padding box
@@ -22,6 +26,8 @@ type BoxModel struct {
 }
 
 // ShapeOutsideInfo CSS Shape Outside details.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-ShapeOutsideInfo
 type ShapeOutsideInfo struct {
 	Bounds      Quad                  `json:"bounds"`      // Shape bounds
 	Shape       []easyjson.RawMessage `json:"shape"`       // Shape coordinate details
@@ -29,6 +35,8 @@ type ShapeOutsideInfo struct {
 }
 
 // Rect Rectangle.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-Rect
 type Rect struct {
 	X      float64 `json:"x"`      // X coordinate
 	Y      float64 `json:"y"`      // Y coordinate

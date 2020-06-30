@@ -11,6 +11,8 @@ import (
 )
 
 // Type enum of possible storage types.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#type-StorageType
 type Type string
 
 // String returns the Type as string value.
@@ -80,6 +82,8 @@ func (t *Type) UnmarshalJSON(buf []byte) error {
 }
 
 // UsageForType usage for a storage type.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#type-UsageForType
 type UsageForType struct {
 	StorageType Type    `json:"storageType"` // Name of storage type.
 	Usage       float64 `json:"usage"`       // Storage usage (bytes).

@@ -7,6 +7,8 @@ import (
 )
 
 // EventConsoleProfileFinished [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#event-consoleProfileFinished
 type EventConsoleProfileFinished struct {
 	ID       string             `json:"id"`
 	Location *debugger.Location `json:"location"` // Location of console.profileEnd().
@@ -16,8 +18,23 @@ type EventConsoleProfileFinished struct {
 
 // EventConsoleProfileStarted sent when new profile recording is started
 // using console.profile() call.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#event-consoleProfileStarted
 type EventConsoleProfileStarted struct {
 	ID       string             `json:"id"`
 	Location *debugger.Location `json:"location"`        // Location of console.profile().
 	Title    string             `json:"title,omitempty"` // Profile title passed as an argument to console.profile().
+}
+
+// EventPreciseCoverageDeltaUpdate reports coverage delta since the last poll
+// (either from an event like this, or from takePreciseCoverage for the current
+// isolate. May only be sent if precise code coverage has been started. This
+// event can be trigged by the embedder to, for example, trigger collection of
+// coverage data immediately at a certain point in time.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#event-preciseCoverageDeltaUpdate
+type EventPreciseCoverageDeltaUpdate struct {
+	Timestamp float64           `json:"timestamp"` // Monotonically increasing time (in seconds) when the coverage update was taken in the backend.
+	Occassion string            `json:"occassion"` // Identifier for distinguishing coverage events.
+	Result    []*ScriptCoverage `json:"result"`    // Coverage data for the current isolate.
 }

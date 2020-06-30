@@ -11,12 +11,16 @@ import (
 )
 
 // ScreenshotParams encoding options for a screenshot.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/HeadlessExperimental#type-ScreenshotParams
 type ScreenshotParams struct {
 	Format  ScreenshotParamsFormat `json:"format,omitempty"`  // Image compression format (defaults to png).
 	Quality int64                  `json:"quality,omitempty"` // Compression quality from range [0..100] (jpeg only).
 }
 
 // ScreenshotParamsFormat image compression format (defaults to png).
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/HeadlessExperimental#type-ScreenshotParams
 type ScreenshotParamsFormat string
 
 // String returns the ScreenshotParamsFormat as string value.

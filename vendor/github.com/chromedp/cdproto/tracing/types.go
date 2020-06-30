@@ -12,9 +12,13 @@ import (
 
 // MemoryDumpConfig configuration for memory dump. Used only when
 // "memory-infra" category is enabled.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Tracing#type-MemoryDumpConfig
 type MemoryDumpConfig struct{}
 
 // TraceConfig [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Tracing#type-TraceConfig
 type TraceConfig struct {
 	RecordMode           RecordMode        `json:"recordMode,omitempty"`           // Controls how the trace buffer stores data.
 	EnableSampling       bool              `json:"enableSampling,omitempty"`       // Turns on JavaScript stack sampling.
@@ -26,7 +30,55 @@ type TraceConfig struct {
 	MemoryDumpConfig     *MemoryDumpConfig `json:"memoryDumpConfig,omitempty"`     // Configuration for memory dump triggers. Used only when "memory-infra" category is enabled.
 }
 
+// StreamFormat data format of a trace. Can be either the legacy JSON format
+// or the protocol buffer format. Note that the JSON format will be deprecated
+// soon.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Tracing#type-StreamFormat
+type StreamFormat string
+
+// String returns the StreamFormat as string value.
+func (t StreamFormat) String() string {
+	return string(t)
+}
+
+// StreamFormat values.
+const (
+	StreamFormatJSON  StreamFormat = "json"
+	StreamFormatProto StreamFormat = "proto"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t StreamFormat) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t StreamFormat) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *StreamFormat) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch StreamFormat(in.String()) {
+	case StreamFormatJSON:
+		*t = StreamFormatJSON
+	case StreamFormatProto:
+		*t = StreamFormatProto
+
+	default:
+		in.AddError(errors.New("unknown StreamFormat value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *StreamFormat) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
 // StreamCompression compression type to use for traces returned via streams.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Tracing#type-StreamCompression
 type StreamCompression string
 
 // String returns the StreamCompression as string value.
@@ -69,6 +121,8 @@ func (t *StreamCompression) UnmarshalJSON(buf []byte) error {
 }
 
 // RecordMode controls how the trace buffer stores data.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Tracing#type-TraceConfig
 type RecordMode string
 
 // String returns the RecordMode as string value.
@@ -118,6 +172,8 @@ func (t *RecordMode) UnmarshalJSON(buf []byte) error {
 
 // TransferMode whether to report trace events as series of dataCollected
 // events or to save trace to a stream (defaults to ReportEvents).
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Tracing#method-start
 type TransferMode string
 
 // String returns the TransferMode as string value.

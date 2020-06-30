@@ -16,17 +16,21 @@ import (
 	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/cdproto/debugger"
 	"github.com/chromedp/cdproto/dom"
+	"github.com/chromedp/cdproto/io"
 	"github.com/chromedp/cdproto/runtime"
 )
 
 // AddScriptToEvaluateOnNewDocumentParams evaluates given script in every
 // frame upon creation (before loading frame's scripts).
 type AddScriptToEvaluateOnNewDocumentParams struct {
-	Source string `json:"source"`
+	Source    string `json:"source"`
+	WorldName string `json:"worldName,omitempty"` // If specified, creates an isolated world with the given name and evaluates given script in it. This world name will be used as the ExecutionContextDescription::name when the corresponding event is emitted.
 }
 
 // AddScriptToEvaluateOnNewDocument evaluates given script in every frame
 // upon creation (before loading frame's scripts).
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-addScriptToEvaluateOnNewDocument
 //
 // parameters:
 //   source
@@ -34,6 +38,14 @@ func AddScriptToEvaluateOnNewDocument(source string) *AddScriptToEvaluateOnNewDo
 	return &AddScriptToEvaluateOnNewDocumentParams{
 		Source: source,
 	}
+}
+
+// WithWorldName if specified, creates an isolated world with the given name
+// and evaluates given script in it. This world name will be used as the
+// ExecutionContextDescription::name when the corresponding event is emitted.
+func (p AddScriptToEvaluateOnNewDocumentParams) WithWorldName(worldName string) *AddScriptToEvaluateOnNewDocumentParams {
+	p.WorldName = worldName
+	return &p
 }
 
 // AddScriptToEvaluateOnNewDocumentReturns return values.
@@ -45,10 +57,10 @@ type AddScriptToEvaluateOnNewDocumentReturns struct {
 //
 // returns:
 //   identifier - Identifier of the added script.
-func (p *AddScriptToEvaluateOnNewDocumentParams) Do(ctxt context.Context, h cdp.Executor) (identifier ScriptIdentifier, err error) {
+func (p *AddScriptToEvaluateOnNewDocumentParams) Do(ctx context.Context) (identifier ScriptIdentifier, err error) {
 	// execute
 	var res AddScriptToEvaluateOnNewDocumentReturns
-	err = h.Execute(ctxt, CommandAddScriptToEvaluateOnNewDocument, p, &res)
+	err = cdp.Execute(ctx, CommandAddScriptToEvaluateOnNewDocument, p, &res)
 	if err != nil {
 		return "", err
 	}
@@ -60,13 +72,15 @@ func (p *AddScriptToEvaluateOnNewDocumentParams) Do(ctxt context.Context, h cdp.
 type BringToFrontParams struct{}
 
 // BringToFront brings page to front (activates tab).
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-bringToFront
 func BringToFront() *BringToFrontParams {
 	return &BringToFrontParams{}
 }
 
 // Do executes Page.bringToFront against the provided context.
-func (p *BringToFrontParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandBringToFront, nil, nil)
+func (p *BringToFrontParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandBringToFront, nil, nil)
 }
 
 // CaptureScreenshotParams capture page screenshot.
@@ -78,6 +92,8 @@ type CaptureScreenshotParams struct {
 }
 
 // CaptureScreenshot capture page screenshot.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-captureScreenshot
 //
 // parameters:
 func CaptureScreenshot() *CaptureScreenshotParams {
@@ -118,10 +134,10 @@ type CaptureScreenshotReturns struct {
 //
 // returns:
 //   data - Base64-encoded image data.
-func (p *CaptureScreenshotParams) Do(ctxt context.Context, h cdp.Executor) (data []byte, err error) {
+func (p *CaptureScreenshotParams) Do(ctx context.Context) (data []byte, err error) {
 	// execute
 	var res CaptureScreenshotReturns
-	err = h.Execute(ctxt, CommandCaptureScreenshot, p, &res)
+	err = cdp.Execute(ctx, CommandCaptureScreenshot, p, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -135,6 +151,50 @@ func (p *CaptureScreenshotParams) Do(ctxt context.Context, h cdp.Executor) (data
 	return dec, nil
 }
 
+// CaptureSnapshotParams returns a snapshot of the page as a string. For
+// MHTML format, the serialization includes iframes, shadow DOM, external
+// resources, and element-inline styles.
+type CaptureSnapshotParams struct {
+	Format CaptureSnapshotFormat `json:"format,omitempty"` // Format (defaults to mhtml).
+}
+
+// CaptureSnapshot returns a snapshot of the page as a string. For MHTML
+// format, the serialization includes iframes, shadow DOM, external resources,
+// and element-inline styles.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-captureSnapshot
+//
+// parameters:
+func CaptureSnapshot() *CaptureSnapshotParams {
+	return &CaptureSnapshotParams{}
+}
+
+// WithFormat format (defaults to mhtml).
+func (p CaptureSnapshotParams) WithFormat(format CaptureSnapshotFormat) *CaptureSnapshotParams {
+	p.Format = format
+	return &p
+}
+
+// CaptureSnapshotReturns return values.
+type CaptureSnapshotReturns struct {
+	Data string `json:"data,omitempty"` // Serialized page data.
+}
+
+// Do executes Page.captureSnapshot against the provided context.
+//
+// returns:
+//   data - Serialized page data.
+func (p *CaptureSnapshotParams) Do(ctx context.Context) (data string, err error) {
+	// execute
+	var res CaptureSnapshotReturns
+	err = cdp.Execute(ctx, CommandCaptureSnapshot, p, &res)
+	if err != nil {
+		return "", err
+	}
+
+	return res.Data, nil
+}
+
 // CreateIsolatedWorldParams creates an isolated world for the given frame.
 type CreateIsolatedWorldParams struct {
 	FrameID             cdp.FrameID `json:"frameId"`                       // Id of the frame in which the isolated world should be created.
@@ -143,6 +203,8 @@ type CreateIsolatedWorldParams struct {
 }
 
 // CreateIsolatedWorld creates an isolated world for the given frame.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-createIsolatedWorld
 //
 // parameters:
 //   frameID - Id of the frame in which the isolated world should be created.
@@ -174,10 +236,10 @@ type CreateIsolatedWorldReturns struct {
 //
 // returns:
 //   executionContextID - Execution context of the isolated world.
-func (p *CreateIsolatedWorldParams) Do(ctxt context.Context, h cdp.Executor) (executionContextID runtime.ExecutionContextID, err error) {
+func (p *CreateIsolatedWorldParams) Do(ctx context.Context) (executionContextID runtime.ExecutionContextID, err error) {
 	// execute
 	var res CreateIsolatedWorldReturns
-	err = h.Execute(ctxt, CommandCreateIsolatedWorld, p, &res)
+	err = cdp.Execute(ctx, CommandCreateIsolatedWorld, p, &res)
 	if err != nil {
 		return 0, err
 	}
@@ -189,41 +251,48 @@ func (p *CreateIsolatedWorldParams) Do(ctxt context.Context, h cdp.Executor) (ex
 type DisableParams struct{}
 
 // Disable disables page domain notifications.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-disable
 func Disable() *DisableParams {
 	return &DisableParams{}
 }
 
 // Do executes Page.disable against the provided context.
-func (p *DisableParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandDisable, nil, nil)
+func (p *DisableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDisable, nil, nil)
 }
 
 // EnableParams enables page domain notifications.
 type EnableParams struct{}
 
 // Enable enables page domain notifications.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-enable
 func Enable() *EnableParams {
 	return &EnableParams{}
 }
 
 // Do executes Page.enable against the provided context.
-func (p *EnableParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandEnable, nil, nil)
+func (p *EnableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandEnable, nil, nil)
 }
 
 // GetAppManifestParams [no description].
 type GetAppManifestParams struct{}
 
 // GetAppManifest [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-getAppManifest
 func GetAppManifest() *GetAppManifestParams {
 	return &GetAppManifestParams{}
 }
 
 // GetAppManifestReturns return values.
 type GetAppManifestReturns struct {
-	URL    string              `json:"url,omitempty"` // Manifest location.
-	Errors []*AppManifestError `json:"errors,omitempty"`
-	Data   string              `json:"data,omitempty"` // Manifest content.
+	URL    string                       `json:"url,omitempty"` // Manifest location.
+	Errors []*AppManifestError          `json:"errors,omitempty"`
+	Data   string                       `json:"data,omitempty"`   // Manifest content.
+	Parsed *AppManifestParsedProperties `json:"parsed,omitempty"` // Parsed manifest properties
 }
 
 // Do executes Page.getAppManifest against the provided context.
@@ -232,21 +301,90 @@ type GetAppManifestReturns struct {
 //   url - Manifest location.
 //   errors
 //   data - Manifest content.
-func (p *GetAppManifestParams) Do(ctxt context.Context, h cdp.Executor) (url string, errors []*AppManifestError, data string, err error) {
+//   parsed - Parsed manifest properties
+func (p *GetAppManifestParams) Do(ctx context.Context) (url string, errors []*AppManifestError, data string, parsed *AppManifestParsedProperties, err error) {
 	// execute
 	var res GetAppManifestReturns
-	err = h.Execute(ctxt, CommandGetAppManifest, nil, &res)
+	err = cdp.Execute(ctx, CommandGetAppManifest, nil, &res)
 	if err != nil {
-		return "", nil, "", err
+		return "", nil, "", nil, err
 	}
 
-	return res.URL, res.Errors, res.Data, nil
+	return res.URL, res.Errors, res.Data, res.Parsed, nil
+}
+
+// GetInstallabilityErrorsParams [no description].
+type GetInstallabilityErrorsParams struct{}
+
+// GetInstallabilityErrors [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-getInstallabilityErrors
+func GetInstallabilityErrors() *GetInstallabilityErrorsParams {
+	return &GetInstallabilityErrorsParams{}
+}
+
+// GetInstallabilityErrorsReturns return values.
+type GetInstallabilityErrorsReturns struct {
+	InstallabilityErrors []*InstallabilityError `json:"installabilityErrors,omitempty"`
+}
+
+// Do executes Page.getInstallabilityErrors against the provided context.
+//
+// returns:
+//   installabilityErrors
+func (p *GetInstallabilityErrorsParams) Do(ctx context.Context) (installabilityErrors []*InstallabilityError, err error) {
+	// execute
+	var res GetInstallabilityErrorsReturns
+	err = cdp.Execute(ctx, CommandGetInstallabilityErrors, nil, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.InstallabilityErrors, nil
+}
+
+// GetManifestIconsParams [no description].
+type GetManifestIconsParams struct{}
+
+// GetManifestIcons [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-getManifestIcons
+func GetManifestIcons() *GetManifestIconsParams {
+	return &GetManifestIconsParams{}
+}
+
+// GetManifestIconsReturns return values.
+type GetManifestIconsReturns struct {
+	PrimaryIcon string `json:"primaryIcon,omitempty"`
+}
+
+// Do executes Page.getManifestIcons against the provided context.
+//
+// returns:
+//   primaryIcon
+func (p *GetManifestIconsParams) Do(ctx context.Context) (primaryIcon []byte, err error) {
+	// execute
+	var res GetManifestIconsReturns
+	err = cdp.Execute(ctx, CommandGetManifestIcons, nil, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	// decode
+	var dec []byte
+	dec, err = base64.StdEncoding.DecodeString(res.PrimaryIcon)
+	if err != nil {
+		return nil, err
+	}
+	return dec, nil
 }
 
 // GetFrameTreeParams returns present frame tree structure.
 type GetFrameTreeParams struct{}
 
 // GetFrameTree returns present frame tree structure.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-getFrameTree
 func GetFrameTree() *GetFrameTreeParams {
 	return &GetFrameTreeParams{}
 }
@@ -260,10 +398,10 @@ type GetFrameTreeReturns struct {
 //
 // returns:
 //   frameTree - Present frame tree structure.
-func (p *GetFrameTreeParams) Do(ctxt context.Context, h cdp.Executor) (frameTree *FrameTree, err error) {
+func (p *GetFrameTreeParams) Do(ctx context.Context) (frameTree *FrameTree, err error) {
 	// execute
 	var res GetFrameTreeReturns
-	err = h.Execute(ctxt, CommandGetFrameTree, nil, &res)
+	err = cdp.Execute(ctx, CommandGetFrameTree, nil, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -277,6 +415,8 @@ type GetLayoutMetricsParams struct{}
 
 // GetLayoutMetrics returns metrics relating to the layouting of the page,
 // such as viewport bounds/scale.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-getLayoutMetrics
 func GetLayoutMetrics() *GetLayoutMetricsParams {
 	return &GetLayoutMetricsParams{}
 }
@@ -294,10 +434,10 @@ type GetLayoutMetricsReturns struct {
 //   layoutViewport - Metrics relating to the layout viewport.
 //   visualViewport - Metrics relating to the visual viewport.
 //   contentSize - Size of scrollable area.
-func (p *GetLayoutMetricsParams) Do(ctxt context.Context, h cdp.Executor) (layoutViewport *LayoutViewport, visualViewport *VisualViewport, contentSize *dom.Rect, err error) {
+func (p *GetLayoutMetricsParams) Do(ctx context.Context) (layoutViewport *LayoutViewport, visualViewport *VisualViewport, contentSize *dom.Rect, err error) {
 	// execute
 	var res GetLayoutMetricsReturns
-	err = h.Execute(ctxt, CommandGetLayoutMetrics, nil, &res)
+	err = cdp.Execute(ctx, CommandGetLayoutMetrics, nil, &res)
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -310,6 +450,8 @@ func (p *GetLayoutMetricsParams) Do(ctxt context.Context, h cdp.Executor) (layou
 type GetNavigationHistoryParams struct{}
 
 // GetNavigationHistory returns navigation history for the current page.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-getNavigationHistory
 func GetNavigationHistory() *GetNavigationHistoryParams {
 	return &GetNavigationHistoryParams{}
 }
@@ -325,15 +467,31 @@ type GetNavigationHistoryReturns struct {
 // returns:
 //   currentIndex - Index of the current navigation history entry.
 //   entries - Array of navigation history entries.
-func (p *GetNavigationHistoryParams) Do(ctxt context.Context, h cdp.Executor) (currentIndex int64, entries []*NavigationEntry, err error) {
+func (p *GetNavigationHistoryParams) Do(ctx context.Context) (currentIndex int64, entries []*NavigationEntry, err error) {
 	// execute
 	var res GetNavigationHistoryReturns
-	err = h.Execute(ctxt, CommandGetNavigationHistory, nil, &res)
+	err = cdp.Execute(ctx, CommandGetNavigationHistory, nil, &res)
 	if err != nil {
 		return 0, nil, err
 	}
 
 	return res.CurrentIndex, res.Entries, nil
+}
+
+// ResetNavigationHistoryParams resets navigation history for the current
+// page.
+type ResetNavigationHistoryParams struct{}
+
+// ResetNavigationHistory resets navigation history for the current page.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-resetNavigationHistory
+func ResetNavigationHistory() *ResetNavigationHistoryParams {
+	return &ResetNavigationHistoryParams{}
+}
+
+// Do executes Page.resetNavigationHistory against the provided context.
+func (p *ResetNavigationHistoryParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandResetNavigationHistory, nil, nil)
 }
 
 // GetResourceContentParams returns content of the given resource.
@@ -343,6 +501,8 @@ type GetResourceContentParams struct {
 }
 
 // GetResourceContent returns content of the given resource.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-getResourceContent
 //
 // parameters:
 //   frameID - Frame id to get resource for.
@@ -364,10 +524,10 @@ type GetResourceContentReturns struct {
 //
 // returns:
 //   content - Resource content.
-func (p *GetResourceContentParams) Do(ctxt context.Context, h cdp.Executor) (content []byte, err error) {
+func (p *GetResourceContentParams) Do(ctx context.Context) (content []byte, err error) {
 	// execute
 	var res GetResourceContentReturns
-	err = h.Execute(ctxt, CommandGetResourceContent, p, &res)
+	err = cdp.Execute(ctx, CommandGetResourceContent, p, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -389,6 +549,8 @@ func (p *GetResourceContentParams) Do(ctxt context.Context, h cdp.Executor) (con
 type GetResourceTreeParams struct{}
 
 // GetResourceTree returns present frame / resource tree structure.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-getResourceTree
 func GetResourceTree() *GetResourceTreeParams {
 	return &GetResourceTreeParams{}
 }
@@ -402,10 +564,10 @@ type GetResourceTreeReturns struct {
 //
 // returns:
 //   frameTree - Present frame / resource tree structure.
-func (p *GetResourceTreeParams) Do(ctxt context.Context, h cdp.Executor) (frameTree *FrameResourceTree, err error) {
+func (p *GetResourceTreeParams) Do(ctx context.Context) (frameTree *FrameResourceTree, err error) {
 	// execute
 	var res GetResourceTreeReturns
-	err = h.Execute(ctxt, CommandGetResourceTree, nil, &res)
+	err = cdp.Execute(ctx, CommandGetResourceTree, nil, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -423,6 +585,8 @@ type HandleJavaScriptDialogParams struct {
 // HandleJavaScriptDialog accepts or dismisses a JavaScript initiated dialog
 // (alert, confirm, prompt, or onbeforeunload).
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-handleJavaScriptDialog
+//
 // parameters:
 //   accept - Whether to accept or dismiss the dialog.
 func HandleJavaScriptDialog(accept bool) *HandleJavaScriptDialogParams {
@@ -439,8 +603,8 @@ func (p HandleJavaScriptDialogParams) WithPromptText(promptText string) *HandleJ
 }
 
 // Do executes Page.handleJavaScriptDialog against the provided context.
-func (p *HandleJavaScriptDialogParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandHandleJavaScriptDialog, p, nil)
+func (p *HandleJavaScriptDialogParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandHandleJavaScriptDialog, p, nil)
 }
 
 // NavigateParams navigates current page to the given URL.
@@ -449,9 +613,12 @@ type NavigateParams struct {
 	Referrer       string         `json:"referrer,omitempty"`       // Referrer URL.
 	TransitionType TransitionType `json:"transitionType,omitempty"` // Intended transition type.
 	FrameID        cdp.FrameID    `json:"frameId,omitempty"`        // Frame id to navigate, if not specified navigates the top frame.
+	ReferrerPolicy ReferrerPolicy `json:"referrerPolicy,omitempty"` // Referrer-policy used for the navigation.
 }
 
 // Navigate navigates current page to the given URL.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-navigate
 //
 // parameters:
 //   url - URL to navigate the page to.
@@ -480,6 +647,12 @@ func (p NavigateParams) WithFrameID(frameID cdp.FrameID) *NavigateParams {
 	return &p
 }
 
+// WithReferrerPolicy referrer-policy used for the navigation.
+func (p NavigateParams) WithReferrerPolicy(referrerPolicy ReferrerPolicy) *NavigateParams {
+	p.ReferrerPolicy = referrerPolicy
+	return &p
+}
+
 // NavigateReturns return values.
 type NavigateReturns struct {
 	FrameID   cdp.FrameID  `json:"frameId,omitempty"`   // Frame id that has navigated (or failed to navigate)
@@ -493,10 +666,10 @@ type NavigateReturns struct {
 //   frameID - Frame id that has navigated (or failed to navigate)
 //   loaderID - Loader identifier.
 //   errorText - User friendly error message, present if and only if navigation has failed.
-func (p *NavigateParams) Do(ctxt context.Context, h cdp.Executor) (frameID cdp.FrameID, loaderID cdp.LoaderID, errorText string, err error) {
+func (p *NavigateParams) Do(ctx context.Context) (frameID cdp.FrameID, loaderID cdp.LoaderID, errorText string, err error) {
 	// execute
 	var res NavigateReturns
-	err = h.Execute(ctxt, CommandNavigate, p, &res)
+	err = cdp.Execute(ctx, CommandNavigate, p, &res)
 	if err != nil {
 		return "", "", "", err
 	}
@@ -512,6 +685,8 @@ type NavigateToHistoryEntryParams struct {
 
 // NavigateToHistoryEntry navigates current page to the given history entry.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-navigateToHistoryEntry
+//
 // parameters:
 //   entryID - Unique id of the entry to navigate to.
 func NavigateToHistoryEntry(entryID int64) *NavigateToHistoryEntryParams {
@@ -521,30 +696,33 @@ func NavigateToHistoryEntry(entryID int64) *NavigateToHistoryEntryParams {
 }
 
 // Do executes Page.navigateToHistoryEntry against the provided context.
-func (p *NavigateToHistoryEntryParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandNavigateToHistoryEntry, p, nil)
+func (p *NavigateToHistoryEntryParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandNavigateToHistoryEntry, p, nil)
 }
 
 // PrintToPDFParams print page as PDF.
 type PrintToPDFParams struct {
-	Landscape               bool    `json:"landscape,omitempty"`               // Paper orientation. Defaults to false.
-	DisplayHeaderFooter     bool    `json:"displayHeaderFooter,omitempty"`     // Display header and footer. Defaults to false.
-	PrintBackground         bool    `json:"printBackground,omitempty"`         // Print background graphics. Defaults to false.
-	Scale                   float64 `json:"scale,omitempty"`                   // Scale of the webpage rendering. Defaults to 1.
-	PaperWidth              float64 `json:"paperWidth,omitempty"`              // Paper width in inches. Defaults to 8.5 inches.
-	PaperHeight             float64 `json:"paperHeight,omitempty"`             // Paper height in inches. Defaults to 11 inches.
-	MarginTop               float64 `json:"marginTop,omitempty"`               // Top margin in inches. Defaults to 1cm (~0.4 inches).
-	MarginBottom            float64 `json:"marginBottom,omitempty"`            // Bottom margin in inches. Defaults to 1cm (~0.4 inches).
-	MarginLeft              float64 `json:"marginLeft,omitempty"`              // Left margin in inches. Defaults to 1cm (~0.4 inches).
-	MarginRight             float64 `json:"marginRight,omitempty"`             // Right margin in inches. Defaults to 1cm (~0.4 inches).
-	PageRanges              string  `json:"pageRanges,omitempty"`              // Paper ranges to print, e.g., '1-5, 8, 11-13'. Defaults to the empty string, which means print all pages.
-	IgnoreInvalidPageRanges bool    `json:"ignoreInvalidPageRanges,omitempty"` // Whether to silently ignore invalid but successfully parsed page ranges, such as '3-2'. Defaults to false.
-	HeaderTemplate          string  `json:"headerTemplate,omitempty"`          // HTML template for the print header. Should be valid HTML markup with following classes used to inject printing values into them: - date: formatted print date - title: document title - url: document location - pageNumber: current page number - totalPages: total pages in the document  For example, <span class=title></span> would generate span containing the title.
-	FooterTemplate          string  `json:"footerTemplate,omitempty"`          // HTML template for the print footer. Should use the same format as the headerTemplate.
-	PreferCSSPageSize       bool    `json:"preferCSSPageSize,omitempty"`       // Whether or not to prefer page size as defined by css. Defaults to false, in which case the content will be scaled to fit the paper size.
+	Landscape               bool                   `json:"landscape,omitempty"`               // Paper orientation. Defaults to false.
+	DisplayHeaderFooter     bool                   `json:"displayHeaderFooter,omitempty"`     // Display header and footer. Defaults to false.
+	PrintBackground         bool                   `json:"printBackground,omitempty"`         // Print background graphics. Defaults to false.
+	Scale                   float64                `json:"scale,omitempty"`                   // Scale of the webpage rendering. Defaults to 1.
+	PaperWidth              float64                `json:"paperWidth,omitempty"`              // Paper width in inches. Defaults to 8.5 inches.
+	PaperHeight             float64                `json:"paperHeight,omitempty"`             // Paper height in inches. Defaults to 11 inches.
+	MarginTop               float64                `json:"marginTop"`                         // Top margin in inches. Defaults to 1cm (~0.4 inches).
+	MarginBottom            float64                `json:"marginBottom"`                      // Bottom margin in inches. Defaults to 1cm (~0.4 inches).
+	MarginLeft              float64                `json:"marginLeft"`                        // Left margin in inches. Defaults to 1cm (~0.4 inches).
+	MarginRight             float64                `json:"marginRight"`                       // Right margin in inches. Defaults to 1cm (~0.4 inches).
+	PageRanges              string                 `json:"pageRanges,omitempty"`              // Paper ranges to print, e.g., '1-5, 8, 11-13'. Defaults to the empty string, which means print all pages.
+	IgnoreInvalidPageRanges bool                   `json:"ignoreInvalidPageRanges,omitempty"` // Whether to silently ignore invalid but successfully parsed page ranges, such as '3-2'. Defaults to false.
+	HeaderTemplate          string                 `json:"headerTemplate,omitempty"`          // HTML template for the print header. Should be valid HTML markup with following classes used to inject printing values into them: - date: formatted print date - title: document title - url: document location - pageNumber: current page number - totalPages: total pages in the document  For example, <span class=title></span> would generate span containing the title.
+	FooterTemplate          string                 `json:"footerTemplate,omitempty"`          // HTML template for the print footer. Should use the same format as the headerTemplate.
+	PreferCSSPageSize       bool                   `json:"preferCSSPageSize,omitempty"`       // Whether or not to prefer page size as defined by css. Defaults to false, in which case the content will be scaled to fit the paper size.
+	TransferMode            PrintToPDFTransferMode `json:"transferMode,omitempty"`            // return as stream
 }
 
 // PrintToPDF print page as PDF.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-printToPDF
 //
 // parameters:
 func PrintToPDF() *PrintToPDFParams {
@@ -651,30 +829,38 @@ func (p PrintToPDFParams) WithPreferCSSPageSize(preferCSSPageSize bool) *PrintTo
 	return &p
 }
 
+// WithTransferMode return as stream.
+func (p PrintToPDFParams) WithTransferMode(transferMode PrintToPDFTransferMode) *PrintToPDFParams {
+	p.TransferMode = transferMode
+	return &p
+}
+
 // PrintToPDFReturns return values.
 type PrintToPDFReturns struct {
-	Data string `json:"data,omitempty"` // Base64-encoded pdf data.
+	Data   string          `json:"data,omitempty"`   // Base64-encoded pdf data. Empty if |returnAsStream| is specified.
+	Stream io.StreamHandle `json:"stream,omitempty"` // A handle of the stream that holds resulting PDF data.
 }
 
 // Do executes Page.printToPDF against the provided context.
 //
 // returns:
-//   data - Base64-encoded pdf data.
-func (p *PrintToPDFParams) Do(ctxt context.Context, h cdp.Executor) (data []byte, err error) {
+//   data - Base64-encoded pdf data. Empty if |returnAsStream| is specified.
+//   stream - A handle of the stream that holds resulting PDF data.
+func (p *PrintToPDFParams) Do(ctx context.Context) (data []byte, stream io.StreamHandle, err error) {
 	// execute
 	var res PrintToPDFReturns
-	err = h.Execute(ctxt, CommandPrintToPDF, p, &res)
+	err = cdp.Execute(ctx, CommandPrintToPDF, p, &res)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	// decode
 	var dec []byte
 	dec, err = base64.StdEncoding.DecodeString(res.Data)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
-	return dec, nil
+	return dec, res.Stream, nil
 }
 
 // ReloadParams reloads given page optionally ignoring the cache.
@@ -684,6 +870,8 @@ type ReloadParams struct {
 }
 
 // Reload reloads given page optionally ignoring the cache.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-reload
 //
 // parameters:
 func Reload() *ReloadParams {
@@ -706,8 +894,8 @@ func (p ReloadParams) WithScriptToEvaluateOnLoad(scriptToEvaluateOnLoad string) 
 }
 
 // Do executes Page.reload against the provided context.
-func (p *ReloadParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandReload, p, nil)
+func (p *ReloadParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandReload, p, nil)
 }
 
 // RemoveScriptToEvaluateOnNewDocumentParams removes given script from the
@@ -718,6 +906,8 @@ type RemoveScriptToEvaluateOnNewDocumentParams struct {
 
 // RemoveScriptToEvaluateOnNewDocument removes given script from the list.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-removeScriptToEvaluateOnNewDocument
+//
 // parameters:
 //   identifier
 func RemoveScriptToEvaluateOnNewDocument(identifier ScriptIdentifier) *RemoveScriptToEvaluateOnNewDocumentParams {
@@ -727,21 +917,8 @@ func RemoveScriptToEvaluateOnNewDocument(identifier ScriptIdentifier) *RemoveScr
 }
 
 // Do executes Page.removeScriptToEvaluateOnNewDocument against the provided context.
-func (p *RemoveScriptToEvaluateOnNewDocumentParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandRemoveScriptToEvaluateOnNewDocument, p, nil)
-}
-
-// RequestAppBannerParams [no description].
-type RequestAppBannerParams struct{}
-
-// RequestAppBanner [no description].
-func RequestAppBanner() *RequestAppBannerParams {
-	return &RequestAppBannerParams{}
-}
-
-// Do executes Page.requestAppBanner against the provided context.
-func (p *RequestAppBannerParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandRequestAppBanner, nil, nil)
+func (p *RemoveScriptToEvaluateOnNewDocumentParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandRemoveScriptToEvaluateOnNewDocument, p, nil)
 }
 
 // ScreencastFrameAckParams acknowledges that a screencast frame has been
@@ -753,6 +930,8 @@ type ScreencastFrameAckParams struct {
 // ScreencastFrameAck acknowledges that a screencast frame has been received
 // by the frontend.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-screencastFrameAck
+//
 // parameters:
 //   sessionID - Frame number.
 func ScreencastFrameAck(sessionID int64) *ScreencastFrameAckParams {
@@ -762,8 +941,8 @@ func ScreencastFrameAck(sessionID int64) *ScreencastFrameAckParams {
 }
 
 // Do executes Page.screencastFrameAck against the provided context.
-func (p *ScreencastFrameAckParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandScreencastFrameAck, p, nil)
+func (p *ScreencastFrameAckParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandScreencastFrameAck, p, nil)
 }
 
 // SearchInResourceParams searches for given string in resource content.
@@ -776,6 +955,8 @@ type SearchInResourceParams struct {
 }
 
 // SearchInResource searches for given string in resource content.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-searchInResource
 //
 // parameters:
 //   frameID - Frame id for resource to search in.
@@ -810,10 +991,10 @@ type SearchInResourceReturns struct {
 //
 // returns:
 //   result - List of search matches.
-func (p *SearchInResourceParams) Do(ctxt context.Context, h cdp.Executor) (result []*debugger.SearchMatch, err error) {
+func (p *SearchInResourceParams) Do(ctx context.Context) (result []*debugger.SearchMatch, err error) {
 	// execute
 	var res SearchInResourceReturns
-	err = h.Execute(ctxt, CommandSearchInResource, p, &res)
+	err = cdp.Execute(ctx, CommandSearchInResource, p, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -829,6 +1010,8 @@ type SetAdBlockingEnabledParams struct {
 
 // SetAdBlockingEnabled enable Chrome's experimental ad filter on all sites.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-setAdBlockingEnabled
+//
 // parameters:
 //   enabled - Whether to block ads.
 func SetAdBlockingEnabled(enabled bool) *SetAdBlockingEnabledParams {
@@ -838,8 +1021,8 @@ func SetAdBlockingEnabled(enabled bool) *SetAdBlockingEnabledParams {
 }
 
 // Do executes Page.setAdBlockingEnabled against the provided context.
-func (p *SetAdBlockingEnabledParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetAdBlockingEnabled, p, nil)
+func (p *SetAdBlockingEnabledParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetAdBlockingEnabled, p, nil)
 }
 
 // SetBypassCSPParams enable page Content Security Policy by-passing.
@@ -848,6 +1031,8 @@ type SetBypassCSPParams struct {
 }
 
 // SetBypassCSP enable page Content Security Policy by-passing.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-setBypassCSP
 //
 // parameters:
 //   enabled - Whether to bypass page CSP.
@@ -858,8 +1043,8 @@ func SetBypassCSP(enabled bool) *SetBypassCSPParams {
 }
 
 // Do executes Page.setBypassCSP against the provided context.
-func (p *SetBypassCSPParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetBypassCSP, p, nil)
+func (p *SetBypassCSPParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetBypassCSP, p, nil)
 }
 
 // SetFontFamiliesParams set generic font families.
@@ -868,6 +1053,8 @@ type SetFontFamiliesParams struct {
 }
 
 // SetFontFamilies set generic font families.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-setFontFamilies
 //
 // parameters:
 //   fontFamilies - Specifies font families to set. If a font family is not specified, it won't be changed.
@@ -878,8 +1065,8 @@ func SetFontFamilies(fontFamilies *FontFamilies) *SetFontFamiliesParams {
 }
 
 // Do executes Page.setFontFamilies against the provided context.
-func (p *SetFontFamiliesParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetFontFamilies, p, nil)
+func (p *SetFontFamiliesParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetFontFamilies, p, nil)
 }
 
 // SetFontSizesParams set default font sizes.
@@ -888,6 +1075,8 @@ type SetFontSizesParams struct {
 }
 
 // SetFontSizes set default font sizes.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-setFontSizes
 //
 // parameters:
 //   fontSizes - Specifies font sizes to set. If a font size is not specified, it won't be changed.
@@ -898,8 +1087,8 @@ func SetFontSizes(fontSizes *FontSizes) *SetFontSizesParams {
 }
 
 // Do executes Page.setFontSizes against the provided context.
-func (p *SetFontSizesParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetFontSizes, p, nil)
+func (p *SetFontSizesParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetFontSizes, p, nil)
 }
 
 // SetDocumentContentParams sets given markup as the document's HTML.
@@ -909,6 +1098,8 @@ type SetDocumentContentParams struct {
 }
 
 // SetDocumentContent sets given markup as the document's HTML.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-setDocumentContent
 //
 // parameters:
 //   frameID - Frame id to set HTML for.
@@ -921,36 +1112,8 @@ func SetDocumentContent(frameID cdp.FrameID, html string) *SetDocumentContentPar
 }
 
 // Do executes Page.setDocumentContent against the provided context.
-func (p *SetDocumentContentParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetDocumentContent, p, nil)
-}
-
-// SetDownloadBehaviorParams set the behavior when downloading a file.
-type SetDownloadBehaviorParams struct {
-	Behavior     SetDownloadBehaviorBehavior `json:"behavior"`               // Whether to allow all or deny all download requests, or use default Chrome behavior if available (otherwise deny).
-	DownloadPath string                      `json:"downloadPath,omitempty"` // The default path to save downloaded files to. This is required if behavior is set to 'allow'
-}
-
-// SetDownloadBehavior set the behavior when downloading a file.
-//
-// parameters:
-//   behavior - Whether to allow all or deny all download requests, or use default Chrome behavior if available (otherwise deny).
-func SetDownloadBehavior(behavior SetDownloadBehaviorBehavior) *SetDownloadBehaviorParams {
-	return &SetDownloadBehaviorParams{
-		Behavior: behavior,
-	}
-}
-
-// WithDownloadPath the default path to save downloaded files to. This is
-// required if behavior is set to 'allow'.
-func (p SetDownloadBehaviorParams) WithDownloadPath(downloadPath string) *SetDownloadBehaviorParams {
-	p.DownloadPath = downloadPath
-	return &p
-}
-
-// Do executes Page.setDownloadBehavior against the provided context.
-func (p *SetDownloadBehaviorParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetDownloadBehavior, p, nil)
+func (p *SetDocumentContentParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetDocumentContent, p, nil)
 }
 
 // SetLifecycleEventsEnabledParams controls whether page will emit lifecycle
@@ -962,6 +1125,8 @@ type SetLifecycleEventsEnabledParams struct {
 // SetLifecycleEventsEnabled controls whether page will emit lifecycle
 // events.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-setLifecycleEventsEnabled
+//
 // parameters:
 //   enabled - If true, starts emitting lifecycle events.
 func SetLifecycleEventsEnabled(enabled bool) *SetLifecycleEventsEnabledParams {
@@ -971,8 +1136,8 @@ func SetLifecycleEventsEnabled(enabled bool) *SetLifecycleEventsEnabledParams {
 }
 
 // Do executes Page.setLifecycleEventsEnabled against the provided context.
-func (p *SetLifecycleEventsEnabledParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetLifecycleEventsEnabled, p, nil)
+func (p *SetLifecycleEventsEnabledParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetLifecycleEventsEnabled, p, nil)
 }
 
 // StartScreencastParams starts sending each frame using the screencastFrame
@@ -986,6 +1151,8 @@ type StartScreencastParams struct {
 }
 
 // StartScreencast starts sending each frame using the screencastFrame event.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-startScreencast
 //
 // parameters:
 func StartScreencast() *StartScreencastParams {
@@ -1023,8 +1190,8 @@ func (p StartScreencastParams) WithEveryNthFrame(everyNthFrame int64) *StartScre
 }
 
 // Do executes Page.startScreencast against the provided context.
-func (p *StartScreencastParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandStartScreencast, p, nil)
+func (p *StartScreencastParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandStartScreencast, p, nil)
 }
 
 // StopLoadingParams force the page stop all navigations and pending resource
@@ -1033,39 +1200,45 @@ type StopLoadingParams struct{}
 
 // StopLoading force the page stop all navigations and pending resource
 // fetches.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-stopLoading
 func StopLoading() *StopLoadingParams {
 	return &StopLoadingParams{}
 }
 
 // Do executes Page.stopLoading against the provided context.
-func (p *StopLoadingParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandStopLoading, nil, nil)
+func (p *StopLoadingParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandStopLoading, nil, nil)
 }
 
 // CrashParams crashes renderer on the IO thread, generates minidumps.
 type CrashParams struct{}
 
 // Crash crashes renderer on the IO thread, generates minidumps.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-crash
 func Crash() *CrashParams {
 	return &CrashParams{}
 }
 
 // Do executes Page.crash against the provided context.
-func (p *CrashParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandCrash, nil, nil)
+func (p *CrashParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandCrash, nil, nil)
 }
 
 // CloseParams tries to close page, running its beforeunload hooks, if any.
 type CloseParams struct{}
 
 // Close tries to close page, running its beforeunload hooks, if any.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-close
 func Close() *CloseParams {
 	return &CloseParams{}
 }
 
 // Do executes Page.close against the provided context.
-func (p *CloseParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandClose, nil, nil)
+func (p *CloseParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandClose, nil, nil)
 }
 
 // SetWebLifecycleStateParams tries to update the web lifecycle state of the
@@ -1079,6 +1252,8 @@ type SetWebLifecycleStateParams struct {
 // It will transition the page to the given state according to:
 // https://github.com/WICG/web-lifecycle/.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-setWebLifecycleState
+//
 // parameters:
 //   state - Target lifecycle state
 func SetWebLifecycleState(state SetWebLifecycleStateState) *SetWebLifecycleStateParams {
@@ -1088,21 +1263,23 @@ func SetWebLifecycleState(state SetWebLifecycleStateState) *SetWebLifecycleState
 }
 
 // Do executes Page.setWebLifecycleState against the provided context.
-func (p *SetWebLifecycleStateParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetWebLifecycleState, p, nil)
+func (p *SetWebLifecycleStateParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetWebLifecycleState, p, nil)
 }
 
 // StopScreencastParams stops sending each frame in the screencastFrame.
 type StopScreencastParams struct{}
 
 // StopScreencast stops sending each frame in the screencastFrame.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-stopScreencast
 func StopScreencast() *StopScreencastParams {
 	return &StopScreencastParams{}
 }
 
 // Do executes Page.stopScreencast against the provided context.
-func (p *StopScreencastParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandStopScreencast, nil, nil)
+func (p *StopScreencastParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandStopScreencast, nil, nil)
 }
 
 // SetProduceCompilationCacheParams forces compilation cache to be generated
@@ -1114,6 +1291,8 @@ type SetProduceCompilationCacheParams struct {
 // SetProduceCompilationCache forces compilation cache to be generated for
 // every subresource script.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-setProduceCompilationCache
+//
 // parameters:
 //   enabled
 func SetProduceCompilationCache(enabled bool) *SetProduceCompilationCacheParams {
@@ -1123,8 +1302,8 @@ func SetProduceCompilationCache(enabled bool) *SetProduceCompilationCacheParams 
 }
 
 // Do executes Page.setProduceCompilationCache against the provided context.
-func (p *SetProduceCompilationCacheParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetProduceCompilationCache, p, nil)
+func (p *SetProduceCompilationCacheParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetProduceCompilationCache, p, nil)
 }
 
 // AddCompilationCacheParams seeds compilation cache for given url.
@@ -1137,6 +1316,8 @@ type AddCompilationCacheParams struct {
 // AddCompilationCache seeds compilation cache for given url. Compilation
 // cache does not survive cross-process navigation.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-addCompilationCache
+//
 // parameters:
 //   url
 //   data - Base64-encoded data
@@ -1148,21 +1329,23 @@ func AddCompilationCache(url string, data string) *AddCompilationCacheParams {
 }
 
 // Do executes Page.addCompilationCache against the provided context.
-func (p *AddCompilationCacheParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandAddCompilationCache, p, nil)
+func (p *AddCompilationCacheParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandAddCompilationCache, p, nil)
 }
 
 // ClearCompilationCacheParams clears seeded compilation cache.
 type ClearCompilationCacheParams struct{}
 
 // ClearCompilationCache clears seeded compilation cache.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-clearCompilationCache
 func ClearCompilationCache() *ClearCompilationCacheParams {
 	return &ClearCompilationCacheParams{}
 }
 
 // Do executes Page.clearCompilationCache against the provided context.
-func (p *ClearCompilationCacheParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandClearCompilationCache, nil, nil)
+func (p *ClearCompilationCacheParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandClearCompilationCache, nil, nil)
 }
 
 // GenerateTestReportParams generates a report for testing.
@@ -1172,6 +1355,8 @@ type GenerateTestReportParams struct {
 }
 
 // GenerateTestReport generates a report for testing.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-generateTestReport
 //
 // parameters:
 //   message - Message to be displayed in the report.
@@ -1188,8 +1373,53 @@ func (p GenerateTestReportParams) WithGroup(group string) *GenerateTestReportPar
 }
 
 // Do executes Page.generateTestReport against the provided context.
-func (p *GenerateTestReportParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandGenerateTestReport, p, nil)
+func (p *GenerateTestReportParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandGenerateTestReport, p, nil)
+}
+
+// WaitForDebuggerParams pauses page execution. Can be resumed using generic
+// Runtime.runIfWaitingForDebugger.
+type WaitForDebuggerParams struct{}
+
+// WaitForDebugger pauses page execution. Can be resumed using generic
+// Runtime.runIfWaitingForDebugger.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-waitForDebugger
+func WaitForDebugger() *WaitForDebuggerParams {
+	return &WaitForDebuggerParams{}
+}
+
+// Do executes Page.waitForDebugger against the provided context.
+func (p *WaitForDebuggerParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandWaitForDebugger, nil, nil)
+}
+
+// SetInterceptFileChooserDialogParams intercept file chooser requests and
+// transfer control to protocol clients. When file chooser interception is
+// enabled, native file chooser dialog is not shown. Instead, a protocol event
+// Page.fileChooserOpened is emitted.
+type SetInterceptFileChooserDialogParams struct {
+	Enabled bool `json:"enabled"`
+}
+
+// SetInterceptFileChooserDialog intercept file chooser requests and transfer
+// control to protocol clients. When file chooser interception is enabled,
+// native file chooser dialog is not shown. Instead, a protocol event
+// Page.fileChooserOpened is emitted.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-setInterceptFileChooserDialog
+//
+// parameters:
+//   enabled
+func SetInterceptFileChooserDialog(enabled bool) *SetInterceptFileChooserDialogParams {
+	return &SetInterceptFileChooserDialogParams{
+		Enabled: enabled,
+	}
+}
+
+// Do executes Page.setInterceptFileChooserDialog against the provided context.
+func (p *SetInterceptFileChooserDialogParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetInterceptFileChooserDialog, p, nil)
 }
 
 // Command names.
@@ -1197,13 +1427,17 @@ const (
 	CommandAddScriptToEvaluateOnNewDocument    = "Page.addScriptToEvaluateOnNewDocument"
 	CommandBringToFront                        = "Page.bringToFront"
 	CommandCaptureScreenshot                   = "Page.captureScreenshot"
+	CommandCaptureSnapshot                     = "Page.captureSnapshot"
 	CommandCreateIsolatedWorld                 = "Page.createIsolatedWorld"
 	CommandDisable                             = "Page.disable"
 	CommandEnable                              = "Page.enable"
 	CommandGetAppManifest                      = "Page.getAppManifest"
+	CommandGetInstallabilityErrors             = "Page.getInstallabilityErrors"
+	CommandGetManifestIcons                    = "Page.getManifestIcons"
 	CommandGetFrameTree                        = "Page.getFrameTree"
 	CommandGetLayoutMetrics                    = "Page.getLayoutMetrics"
 	CommandGetNavigationHistory                = "Page.getNavigationHistory"
+	CommandResetNavigationHistory              = "Page.resetNavigationHistory"
 	CommandGetResourceContent                  = "Page.getResourceContent"
 	CommandGetResourceTree                     = "Page.getResourceTree"
 	CommandHandleJavaScriptDialog              = "Page.handleJavaScriptDialog"
@@ -1212,7 +1446,6 @@ const (
 	CommandPrintToPDF                          = "Page.printToPDF"
 	CommandReload                              = "Page.reload"
 	CommandRemoveScriptToEvaluateOnNewDocument = "Page.removeScriptToEvaluateOnNewDocument"
-	CommandRequestAppBanner                    = "Page.requestAppBanner"
 	CommandScreencastFrameAck                  = "Page.screencastFrameAck"
 	CommandSearchInResource                    = "Page.searchInResource"
 	CommandSetAdBlockingEnabled                = "Page.setAdBlockingEnabled"
@@ -1220,7 +1453,6 @@ const (
 	CommandSetFontFamilies                     = "Page.setFontFamilies"
 	CommandSetFontSizes                        = "Page.setFontSizes"
 	CommandSetDocumentContent                  = "Page.setDocumentContent"
-	CommandSetDownloadBehavior                 = "Page.setDownloadBehavior"
 	CommandSetLifecycleEventsEnabled           = "Page.setLifecycleEventsEnabled"
 	CommandStartScreencast                     = "Page.startScreencast"
 	CommandStopLoading                         = "Page.stopLoading"
@@ -1232,4 +1464,6 @@ const (
 	CommandAddCompilationCache                 = "Page.addCompilationCache"
 	CommandClearCompilationCache               = "Page.clearCompilationCache"
 	CommandGenerateTestReport                  = "Page.generateTestReport"
+	CommandWaitForDebugger                     = "Page.waitForDebugger"
+	CommandSetInterceptFileChooserDialog       = "Page.setInterceptFileChooserDialog"
 )

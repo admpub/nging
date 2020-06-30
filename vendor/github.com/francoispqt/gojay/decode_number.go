@@ -24,7 +24,7 @@ const maxInt16Length = 5
 const maxInt8Length = 3
 const invalidNumber = int8(-1)
 
-var pow10uint64 = [20]uint64{
+var pow10uint64 = [21]uint64{
 	0,
 	1,
 	10,
@@ -45,6 +45,7 @@ var pow10uint64 = [20]uint64{
 	10000000000000000,
 	100000000000000000,
 	1000000000000000000,
+	10000000000000000000,
 }
 
 var skipNumberEndCursorIncrement [256]int
@@ -60,7 +61,7 @@ func init() {
 
 	for i := 0; i < 256; i++ {
 		switch i {
-		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.':
+		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'e', 'E', '+', '-':
 			skipNumberEndCursorIncrement[i] = 1
 		}
 	}
@@ -73,7 +74,7 @@ func (dec *Decoder) skipNumber() (int, error) {
 		end += skipNumberEndCursorIncrement[dec.data[j]]
 
 		switch dec.data[j] {
-		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ' ', '\n', '\t', '\r':
+		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'e', 'E', '+', '-', ' ', '\n', '\t', '\r':
 			continue
 		case ',', '}', ']':
 			return end, nil

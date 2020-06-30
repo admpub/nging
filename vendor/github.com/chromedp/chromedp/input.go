@@ -2,102 +2,99 @@ package chromedp
 
 import (
 	"context"
-	"fmt"
-	"time"
 
 	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/cdproto/dom"
 	"github.com/chromedp/cdproto/input"
-
 	"github.com/chromedp/chromedp/kb"
 )
 
-// MouseAction is a mouse action.
-func MouseAction(typ input.MouseType, x, y int64, opts ...MouseOption) Action {
-	me := input.DispatchMouseEvent(typ, float64(x), float64(y))
+// MouseAction are mouse input event actions
+type MouseAction Action
 
+// MouseEvent is a mouse event action to dispatch the specified mouse event
+// type at coordinates x, y.
+func MouseEvent(typ input.MouseType, x, y float64, opts ...MouseOption) MouseAction {
+	p := input.DispatchMouseEvent(typ, x, y)
 	// apply opts
 	for _, o := range opts {
-		me = o(me)
+		p = o(p)
 	}
-
-	return me
+	return p
 }
 
-// MouseClickXY sends a left mouse button click (ie, mousePressed and
-// mouseReleased event) at the X, Y location.
-func MouseClickXY(x, y int64, opts ...MouseOption) Action {
-	return ActionFunc(func(ctxt context.Context, h cdp.Executor) error {
-		me := &input.DispatchMouseEventParams{
+// MouseClickXY is an action that sends a left mouse button click (ie,
+// mousePressed and mouseReleased event) to the X, Y location.
+func MouseClickXY(x, y float64, opts ...MouseOption) MouseAction {
+	return ActionFunc(func(ctx context.Context) error {
+		p := &input.DispatchMouseEventParams{
 			Type:       input.MousePressed,
-			X:          float64(x),
-			Y:          float64(y),
-			Button:     input.ButtonLeft,
+			X:          x,
+			Y:          y,
+			Button:     input.Left,
 			ClickCount: 1,
 		}
 
 		// apply opts
 		for _, o := range opts {
-			me = o(me)
+			p = o(p)
 		}
 
-		err := me.Do(ctxt, h)
-		if err != nil {
+		if err := p.Do(ctx); err != nil {
 			return err
 		}
 
-		me.Type = input.MouseReleased
-		return me.Do(ctxt, h)
+		p.Type = input.MouseReleased
+		return p.Do(ctx)
 	})
 }
 
-// MouseClickNode dispatches a mouse left button click event at the center of a
-// specified node.
+// MouseClickNode is an action that dispatches a mouse left button click event
+// at the center of a specified node.
 //
 // Note that the window will be scrolled if the node is not within the window's
 // viewport.
-func MouseClickNode(n *cdp.Node, opts ...MouseOption) Action {
-	return ActionFunc(func(ctxt context.Context, h cdp.Executor) error {
-		var err error
-
-		var pos []int
-		err = EvaluateAsDevTools(fmt.Sprintf(scrollIntoViewJS, n.FullXPath()), &pos).Do(ctxt, h)
+func MouseClickNode(n *cdp.Node, opts ...MouseOption) MouseAction {
+	return ActionFunc(func(ctx context.Context) error {
+		var pos []float64
+		err := EvaluateAsDevTools(snippet(scrollIntoViewJS, cashX(true), nil, n), &pos).Do(ctx)
 		if err != nil {
 			return err
 		}
 
-		box, err := dom.GetBoxModel().WithNodeID(n.NodeID).Do(ctxt, h)
+		boxes, err := dom.GetContentQuads().WithNodeID(n.NodeID).Do(ctx)
 		if err != nil {
 			return err
 		}
+		content := boxes[0]
 
-		c := len(box.Content)
+		c := len(content)
 		if c%2 != 0 || c < 1 {
 			return ErrInvalidDimensions
 		}
 
-		var x, y int64
+		var x, y float64
 		for i := 0; i < c; i += 2 {
-			x += int64(box.Content[i])
-			y += int64(box.Content[i+1])
+			x += content[i]
+			y += content[i+1]
 		}
-		x /= int64(c / 2)
-		y /= int64(c / 2)
+		x /= float64(c / 2)
+		y /= float64(c / 2)
 
-		return MouseClickXY(x, y, opts...).Do(ctxt, h)
+		return MouseClickXY(x, y, opts...).Do(ctx)
 	})
 }
 
 // MouseOption is a mouse action option.
-type MouseOption func(*input.DispatchMouseEventParams) *input.DispatchMouseEventParams
+type MouseOption = func(*input.DispatchMouseEventParams) *input.DispatchMouseEventParams
 
 // Button is a mouse action option to set the button to click from a string.
 func Button(btn string) MouseOption {
-	return ButtonType(input.ButtonType(btn))
+	return ButtonType(input.MouseButton(btn))
 }
 
 // ButtonType is a mouse action option to set the button to click.
-func ButtonType(button input.ButtonType) MouseOption {
+func ButtonType(button input.MouseButton) MouseOption {
 	return func(p *input.DispatchMouseEventParams) *input.DispatchMouseEventParams {
 		return p.WithButton(button)
 	}
@@ -106,25 +103,25 @@ func ButtonType(button input.ButtonType) MouseOption {
 // ButtonLeft is a mouse action option to set the button clicked as the left
 // mouse button.
 func ButtonLeft(p *input.DispatchMouseEventParams) *input.DispatchMouseEventParams {
-	return p.WithButton(input.ButtonLeft)
+	return p.WithButton(input.Left)
 }
 
 // ButtonMiddle is a mouse action option to set the button clicked as the middle
 // mouse button.
 func ButtonMiddle(p *input.DispatchMouseEventParams) *input.DispatchMouseEventParams {
-	return p.WithButton(input.ButtonMiddle)
+	return p.WithButton(input.Middle)
 }
 
 // ButtonRight is a mouse action option to set the button clicked as the right
 // mouse button.
 func ButtonRight(p *input.DispatchMouseEventParams) *input.DispatchMouseEventParams {
-	return p.WithButton(input.ButtonRight)
+	return p.WithButton(input.Right)
 }
 
 // ButtonNone is a mouse action option to set the button clicked as none (used
 // for mouse movements).
 func ButtonNone(p *input.DispatchMouseEventParams) *input.DispatchMouseEventParams {
-	return p.WithButton(input.ButtonNone)
+	return p.WithButton(input.None)
 }
 
 // ButtonModifiers is a mouse action option to add additional input modifiers
@@ -145,47 +142,50 @@ func ClickCount(n int) MouseOption {
 	}
 }
 
-// KeyAction will synthesize a keyDown, char, and keyUp event for each rune
-// contained in keys along with any supplied key options.
+// KeyAction are keyboard (key) input event actions.
+type KeyAction Action
+
+// KeyEvent is a key action that synthesizes a keyDown, char, and keyUp event
+// for each rune contained in keys along with any supplied key options.
 //
 // Only well-known, "printable" characters will have char events synthesized.
 //
-// Please see the chromedp/kb package for implementation details and the list
-// of well-known keys.
-func KeyAction(keys string, opts ...KeyOption) Action {
-	return ActionFunc(func(ctxt context.Context, h cdp.Executor) error {
-		var err error
-
+// See the SendKeys action to synthesize key events for a specific element
+// node.
+//
+// See the chromedp/kb package for implementation details and list of
+// well-known keys.
+func KeyEvent(keys string, opts ...KeyOption) KeyAction {
+	return ActionFunc(func(ctx context.Context) error {
 		for _, r := range keys {
 			for _, k := range kb.Encode(r) {
-				err = k.Do(ctxt, h)
-				if err != nil {
+				for _, o := range opts {
+					o(k)
+				}
+				if err := k.Do(ctx); err != nil {
 					return err
 				}
 			}
-
-			// TODO: move to context
-			time.Sleep(5 * time.Millisecond)
 		}
 
 		return nil
 	})
 }
 
-// KeyActionNode dispatches a key event on a node.
-func KeyActionNode(n *cdp.Node, keys string, opts ...KeyOption) Action {
-	return ActionFunc(func(ctxt context.Context, h cdp.Executor) error {
-		err := dom.Focus().WithNodeID(n.NodeID).Do(ctxt, h)
+// KeyEventNode is a key action that dispatches a key event on a element node.
+func KeyEventNode(n *cdp.Node, keys string, opts ...KeyOption) KeyAction {
+	return ActionFunc(func(ctx context.Context) error {
+		err := dom.Focus().WithNodeID(n.NodeID).Do(ctx)
 		if err != nil {
 			return err
 		}
 
-		return KeyAction(keys, opts...).Do(ctxt, h)
+		return KeyEvent(keys, opts...).Do(ctx)
 	})
 }
 
 // KeyOption is a key action option.
-type KeyOption func(*input.DispatchKeyEventParams) *input.DispatchKeyEventParams
+type KeyOption = func(*input.DispatchKeyEventParams) *input.DispatchKeyEventParams
 
 // KeyModifiers is a key action option to add additional modifiers on the key
 // press.

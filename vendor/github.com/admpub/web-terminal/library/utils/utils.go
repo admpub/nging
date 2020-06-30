@@ -15,6 +15,7 @@ import (
 	"github.com/admpub/web-terminal/config"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/japanese"
+	"golang.org/x/text/encoding/korean"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/encoding/traditionalchinese"
 	"golang.org/x/text/encoding/unicode"
@@ -30,6 +31,7 @@ var CharsetList = map[string]encoding.Encoding{
 	`EUC-JP`:        japanese.EUCJP,
 	`ISO2022JP`:     japanese.ISO2022JP,
 	`SHIFTJIS`:      japanese.ShiftJIS,
+	`EUC-KR`:        korean.EUCKR,
 	`UTF-8`:         encoding.Nop,
 	`UTF-16`:        unicode.UTF16(unicode.BigEndian, unicode.IgnoreBOM),
 	`UTF-16-BE`:     unicode.UTF16(unicode.BigEndian, unicode.IgnoreBOM),

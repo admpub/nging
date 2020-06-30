@@ -26,6 +26,8 @@ type GetEventListenersParams struct {
 
 // GetEventListeners returns event listeners of the given object.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOMDebugger#method-getEventListeners
+//
 // parameters:
 //   objectID - Identifier of the object to return listeners for.
 func GetEventListeners(objectID runtime.RemoteObjectID) *GetEventListenersParams {
@@ -59,10 +61,10 @@ type GetEventListenersReturns struct {
 //
 // returns:
 //   listeners - Array of relevant listeners.
-func (p *GetEventListenersParams) Do(ctxt context.Context, h cdp.Executor) (listeners []*EventListener, err error) {
+func (p *GetEventListenersParams) Do(ctx context.Context) (listeners []*EventListener, err error) {
 	// execute
 	var res GetEventListenersReturns
-	err = h.Execute(ctxt, CommandGetEventListeners, p, &res)
+	err = cdp.Execute(ctx, CommandGetEventListeners, p, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -80,6 +82,8 @@ type RemoveDOMBreakpointParams struct {
 // RemoveDOMBreakpoint removes DOM breakpoint that was set using
 // setDOMBreakpoint.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOMDebugger#method-removeDOMBreakpoint
+//
 // parameters:
 //   nodeID - Identifier of the node to remove breakpoint from.
 //   type - Type of the breakpoint to remove.
@@ -91,8 +95,8 @@ func RemoveDOMBreakpoint(nodeID cdp.NodeID, typeVal DOMBreakpointType) *RemoveDO
 }
 
 // Do executes DOMDebugger.removeDOMBreakpoint against the provided context.
-func (p *RemoveDOMBreakpointParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandRemoveDOMBreakpoint, p, nil)
+func (p *RemoveDOMBreakpointParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandRemoveDOMBreakpoint, p, nil)
 }
 
 // RemoveEventListenerBreakpointParams removes breakpoint on particular DOM
@@ -103,6 +107,8 @@ type RemoveEventListenerBreakpointParams struct {
 }
 
 // RemoveEventListenerBreakpoint removes breakpoint on particular DOM event.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOMDebugger#method-removeEventListenerBreakpoint
 //
 // parameters:
 //   eventName - Event name.
@@ -119,8 +125,8 @@ func (p RemoveEventListenerBreakpointParams) WithTargetName(targetName string) *
 }
 
 // Do executes DOMDebugger.removeEventListenerBreakpoint against the provided context.
-func (p *RemoveEventListenerBreakpointParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandRemoveEventListenerBreakpoint, p, nil)
+func (p *RemoveEventListenerBreakpointParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandRemoveEventListenerBreakpoint, p, nil)
 }
 
 // RemoveInstrumentationBreakpointParams removes breakpoint on particular
@@ -132,6 +138,8 @@ type RemoveInstrumentationBreakpointParams struct {
 // RemoveInstrumentationBreakpoint removes breakpoint on particular native
 // event.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOMDebugger#method-removeInstrumentationBreakpoint
+//
 // parameters:
 //   eventName - Instrumentation name to stop on.
 func RemoveInstrumentationBreakpoint(eventName string) *RemoveInstrumentationBreakpointParams {
@@ -141,8 +149,8 @@ func RemoveInstrumentationBreakpoint(eventName string) *RemoveInstrumentationBre
 }
 
 // Do executes DOMDebugger.removeInstrumentationBreakpoint against the provided context.
-func (p *RemoveInstrumentationBreakpointParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandRemoveInstrumentationBreakpoint, p, nil)
+func (p *RemoveInstrumentationBreakpointParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandRemoveInstrumentationBreakpoint, p, nil)
 }
 
 // RemoveXHRBreakpointParams removes breakpoint from XMLHttpRequest.
@@ -151,6 +159,8 @@ type RemoveXHRBreakpointParams struct {
 }
 
 // RemoveXHRBreakpoint removes breakpoint from XMLHttpRequest.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOMDebugger#method-removeXHRBreakpoint
 //
 // parameters:
 //   url - Resource URL substring.
@@ -161,8 +171,8 @@ func RemoveXHRBreakpoint(url string) *RemoveXHRBreakpointParams {
 }
 
 // Do executes DOMDebugger.removeXHRBreakpoint against the provided context.
-func (p *RemoveXHRBreakpointParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandRemoveXHRBreakpoint, p, nil)
+func (p *RemoveXHRBreakpointParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandRemoveXHRBreakpoint, p, nil)
 }
 
 // SetDOMBreakpointParams sets breakpoint on particular operation with DOM.
@@ -172,6 +182,8 @@ type SetDOMBreakpointParams struct {
 }
 
 // SetDOMBreakpoint sets breakpoint on particular operation with DOM.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOMDebugger#method-setDOMBreakpoint
 //
 // parameters:
 //   nodeID - Identifier of the node to set breakpoint on.
@@ -184,8 +196,8 @@ func SetDOMBreakpoint(nodeID cdp.NodeID, typeVal DOMBreakpointType) *SetDOMBreak
 }
 
 // Do executes DOMDebugger.setDOMBreakpoint against the provided context.
-func (p *SetDOMBreakpointParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetDOMBreakpoint, p, nil)
+func (p *SetDOMBreakpointParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetDOMBreakpoint, p, nil)
 }
 
 // SetEventListenerBreakpointParams sets breakpoint on particular DOM event.
@@ -195,6 +207,8 @@ type SetEventListenerBreakpointParams struct {
 }
 
 // SetEventListenerBreakpoint sets breakpoint on particular DOM event.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOMDebugger#method-setEventListenerBreakpoint
 //
 // parameters:
 //   eventName - DOM Event name to stop on (any DOM event will do).
@@ -212,8 +226,8 @@ func (p SetEventListenerBreakpointParams) WithTargetName(targetName string) *Set
 }
 
 // Do executes DOMDebugger.setEventListenerBreakpoint against the provided context.
-func (p *SetEventListenerBreakpointParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetEventListenerBreakpoint, p, nil)
+func (p *SetEventListenerBreakpointParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetEventListenerBreakpoint, p, nil)
 }
 
 // SetInstrumentationBreakpointParams sets breakpoint on particular native
@@ -224,6 +238,8 @@ type SetInstrumentationBreakpointParams struct {
 
 // SetInstrumentationBreakpoint sets breakpoint on particular native event.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOMDebugger#method-setInstrumentationBreakpoint
+//
 // parameters:
 //   eventName - Instrumentation name to stop on.
 func SetInstrumentationBreakpoint(eventName string) *SetInstrumentationBreakpointParams {
@@ -233,8 +249,8 @@ func SetInstrumentationBreakpoint(eventName string) *SetInstrumentationBreakpoin
 }
 
 // Do executes DOMDebugger.setInstrumentationBreakpoint against the provided context.
-func (p *SetInstrumentationBreakpointParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetInstrumentationBreakpoint, p, nil)
+func (p *SetInstrumentationBreakpointParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetInstrumentationBreakpoint, p, nil)
 }
 
 // SetXHRBreakpointParams sets breakpoint on XMLHttpRequest.
@@ -243,6 +259,8 @@ type SetXHRBreakpointParams struct {
 }
 
 // SetXHRBreakpoint sets breakpoint on XMLHttpRequest.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOMDebugger#method-setXHRBreakpoint
 //
 // parameters:
 //   url - Resource URL substring. All XHRs having this substring in the URL will get stopped upon.
@@ -253,8 +271,8 @@ func SetXHRBreakpoint(url string) *SetXHRBreakpointParams {
 }
 
 // Do executes DOMDebugger.setXHRBreakpoint against the provided context.
-func (p *SetXHRBreakpointParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetXHRBreakpoint, p, nil)
+func (p *SetXHRBreakpointParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetXHRBreakpoint, p, nil)
 }
 
 // Command names.

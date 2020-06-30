@@ -13,6 +13,8 @@ import (
 )
 
 // DOMBreakpointType DOM breakpoint type.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOMDebugger#type-DOMBreakpointType
 type DOMBreakpointType string
 
 // String returns the DOMBreakpointType as string value.
@@ -58,6 +60,8 @@ func (t *DOMBreakpointType) UnmarshalJSON(buf []byte) error {
 }
 
 // EventListener object event listener.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOMDebugger#type-EventListener
 type EventListener struct {
 	Type            string                `json:"type"`                      // EventListener's type.
 	UseCapture      bool                  `json:"useCapture"`                // EventListener's useCapture.

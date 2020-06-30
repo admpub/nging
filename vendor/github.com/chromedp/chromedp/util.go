@@ -1,18 +1,51 @@
 package chromedp
 
 import (
+	"net"
+	"net/url"
+
 	"github.com/chromedp/cdproto"
 	"github.com/chromedp/cdproto/cdp"
 )
 
-// frameOp is a frame manipulation operation.
-type frameOp func(*cdp.Frame)
-
-/*func domContentEventFired(f *cdp.Frame) {
+// forceIP tries to force the host component in urlstr to be an IP address.
+//
+// Since Chrome 66+, Chrome DevTools Protocol clients connecting to a browser
+// must send the "Host:" header as either an IP address, or "localhost".
+func forceIP(urlstr string) string {
+	u, err := url.Parse(urlstr)
+	if err != nil {
+		return urlstr
+	}
+	host, port, err := net.SplitHostPort(u.Host)
+	if err != nil {
+		return urlstr
+	}
+	addr, err := net.ResolveIPAddr("ip", host)
+	if err != nil {
+		return urlstr
+	}
+	u.Host = net.JoinHostPort(addr.IP.String(), port)
+	return u.String()
 }
 
-func loadEventFired(f *cdp.Frame) {
-}*/
+func runListeners(list []cancelableListener, ev interface{}) []cancelableListener {
+	for i := 0; i < len(list); {
+		listener := list[i]
+		select {
+		case <-listener.ctx.Done():
+			list = append(list[:i], list[i+1:]...)
+			continue
+		default:
+			listener.fn(ev)
+			i++
+		}
+	}
+	return list
+}
+
+// frameOp is a frame manipulation operation.
+type frameOp func(*cdp.Frame)
 
 func frameAttached(id cdp.FrameID) frameOp {
 	return func(f *cdp.Frame) {
@@ -20,10 +53,6 @@ func frameAttached(id cdp.FrameID) frameOp {
 		setFrameState(f, cdp.FrameAttached)
 	}
 }
-
-/*func frameNavigated(f *cdp.Frame) {
-	setFrameState(f, cdp.FrameNavigated)
-}*/
 
 func frameDetached(f *cdp.Frame) {
 	f.ParentID = cdp.EmptyFrameID
@@ -45,10 +74,6 @@ func frameScheduledNavigation(f *cdp.Frame) {
 func frameClearedScheduledNavigation(f *cdp.Frame) {
 	clearFrameState(f, cdp.FrameScheduledNavigation)
 }
-
-/*func frameResized(f *cdp.Frame) {
-	// TODO
-}*/
 
 // setFrameState sets the frame state via bitwise or (|).
 func setFrameState(f *cdp.Frame, fs cdp.FrameState) {
@@ -261,7 +286,7 @@ func insertNode(n []*cdp.Node, prevID cdp.NodeID, c *cdp.Node) []*cdp.Node {
 	}
 
 	if !found {
-		return append(n, c)
+		return append([]*cdp.Node{c}, n...)
 	}
 
 	i++

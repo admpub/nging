@@ -13,6 +13,8 @@ import (
 )
 
 // LayerID unique Layer identifier.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/LayerTree#type-LayerId
 type LayerID string
 
 // String returns the LayerID as string value.
@@ -21,6 +23,8 @@ func (t LayerID) String() string {
 }
 
 // SnapshotID unique snapshot identifier.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/LayerTree#type-SnapshotId
 type SnapshotID string
 
 // String returns the SnapshotID as string value.
@@ -29,12 +33,16 @@ func (t SnapshotID) String() string {
 }
 
 // ScrollRect rectangle where scrolling happens on the main thread.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/LayerTree#type-ScrollRect
 type ScrollRect struct {
 	Rect *dom.Rect      `json:"rect"` // Rectangle itself.
 	Type ScrollRectType `json:"type"` // Reason for rectangle to force scrolling on the main thread
 }
 
 // StickyPositionConstraint sticky position constraints.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/LayerTree#type-StickyPositionConstraint
 type StickyPositionConstraint struct {
 	StickyBoxRect                       *dom.Rect `json:"stickyBoxRect"`                                 // Layout rectangle of the sticky element before being shifted
 	ContainingBlockRect                 *dom.Rect `json:"containingBlockRect"`                           // Layout rectangle of the containing block of the sticky element
@@ -44,6 +52,8 @@ type StickyPositionConstraint struct {
 
 // PictureTile serialized fragment of layer picture along with its offset
 // within the layer.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/LayerTree#type-PictureTile
 type PictureTile struct {
 	X       float64 `json:"x"`       // Offset from owning layer left boundary
 	Y       float64 `json:"y"`       // Offset from owning layer top boundary
@@ -51,6 +61,8 @@ type PictureTile struct {
 }
 
 // Layer information about a compositing layer.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/LayerTree#type-Layer
 type Layer struct {
 	LayerID                  LayerID                   `json:"layerId"`                            // The unique id for this layer.
 	ParentLayerID            LayerID                   `json:"parentLayerId,omitempty"`            // The id of parent (not present for root).
@@ -71,9 +83,13 @@ type Layer struct {
 }
 
 // PaintProfile array of timings, one per paint step.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/LayerTree#type-PaintProfile
 type PaintProfile []float64
 
 // ScrollRectType reason for rectangle to force scrolling on the main thread.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/LayerTree#type-ScrollRect
 type ScrollRectType string
 
 // String returns the ScrollRectType as string value.

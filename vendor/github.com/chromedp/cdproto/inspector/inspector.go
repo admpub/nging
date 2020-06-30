@@ -16,26 +16,30 @@ import (
 type DisableParams struct{}
 
 // Disable disables inspector domain notifications.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Inspector#method-disable
 func Disable() *DisableParams {
 	return &DisableParams{}
 }
 
 // Do executes Inspector.disable against the provided context.
-func (p *DisableParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandDisable, nil, nil)
+func (p *DisableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDisable, nil, nil)
 }
 
 // EnableParams enables inspector domain notifications.
 type EnableParams struct{}
 
 // Enable enables inspector domain notifications.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Inspector#method-enable
 func Enable() *EnableParams {
 	return &EnableParams{}
 }
 
 // Do executes Inspector.enable against the provided context.
-func (p *EnableParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandEnable, nil, nil)
+func (p *EnableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandEnable, nil, nil)
 }
 
 // Command names.

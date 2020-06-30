@@ -35,12 +35,11 @@ package bson
 import (
 	"bytes"
 	"crypto/md5"
-	"crypto/rand"
 	"encoding/binary"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"reflect"
 	"runtime"
@@ -193,17 +192,16 @@ var objectIdCounter uint32 = readRandomUint32()
 
 // readRandomUint32 returns a random objectIdCounter.
 func readRandomUint32() uint32 {
-	var b [4]byte
-	_, err := io.ReadFull(rand.Reader, b[:])
-	if err != nil {
-		panic(fmt.Errorf("cannot read random object id: %v", err))
-	}
-	return uint32((uint32(b[0]) << 0) | (uint32(b[1]) << 8) | (uint32(b[2]) << 16) | (uint32(b[3]) << 24))
+	// We've found systems hanging in this function due to lack of entropy.
+	// The randomness of these bytes is just preventing nearby clashes, so
+	// just look at the time.
+	return uint32(time.Now().UnixNano())
 }
 
 // machineId stores machine id generated once and used in subsequent calls
 // to NewObjectId function.
 var machineId = readMachineId()
+var processId = os.Getpid()
 
 // readMachineId generates and returns a machine id.
 // If this function fails to get the hostname it will cause a runtime error.
@@ -212,10 +210,10 @@ func readMachineId() []byte {
 	id := sum[:]
 	hostname, err1 := os.Hostname()
 	if err1 != nil {
-		_, err2 := io.ReadFull(rand.Reader, id)
-		if err2 != nil {
-			panic(fmt.Errorf("cannot get hostname: %v; %v", err1, err2))
-		}
+		n := uint32(time.Now().UnixNano())
+		sum[0] = byte(n >> 0)
+		sum[1] = byte(n >> 8)
+		sum[2] = byte(n >> 16)
 		return id
 	}
 	hw := md5.New()
@@ -234,9 +232,8 @@ func NewObjectId() ObjectId {
 	b[5] = machineId[1]
 	b[6] = machineId[2]
 	// Pid, 2 bytes, specs don't specify endianness, but we use big endian.
-	pid := os.Getpid()
-	b[7] = byte(pid >> 8)
-	b[8] = byte(pid)
+	b[7] = byte(processId >> 8)
+	b[8] = byte(processId)
 	// Increment, 3 bytes, big endian
 	i := atomic.AddUint32(&objectIdCounter, 1)
 	b[9] = byte(i >> 16)
@@ -276,6 +273,22 @@ var nullBytes = []byte("null")
 
 // UnmarshalJSON turns *bson.ObjectId into a json.Unmarshaller.
 func (id *ObjectId) UnmarshalJSON(data []byte) error {
+	if len(data) > 0 && (data[0] == '{' || data[0] == 'O') {
+		var v struct {
+			Id   json.RawMessage `json:"$oid"`
+			Func struct {
+				Id json.RawMessage
+			} `json:"$oidFunc"`
+		}
+		err := jdec(data, &v)
+		if err == nil {
+			if len(v.Id) > 0 {
+				data = []byte(v.Id)
+			} else {
+				data = []byte(v.Func.Id)
+			}
+		}
+	}
 	if len(data) == 2 && data[0] == '"' && data[1] == '"' || bytes.Equal(data, nullBytes) {
 		*id = ""
 		return nil
@@ -627,7 +640,7 @@ func getStructInfo(st reflect.Type) (*structInfo, error) {
 	inlineMap := -1
 	for i := 0; i != n; i++ {
 		field := st.Field(i)
-		if field.PkgPath != "" {
+		if field.PkgPath != "" && !field.Anonymous {
 			continue // Private field
 		}
 

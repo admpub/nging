@@ -56,22 +56,12 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPerformance(out *jwriter.Writ
 	_ = first
 	{
 		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.Name))
 	}
 	{
 		const prefix string = ",\"value\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.Value))
 	}
 	out.RawByte('}')
@@ -166,12 +156,8 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPerformance1(out *jwriter.Wri
 	_ = first
 	if len(in.Metrics) != 0 {
 		const prefix string = ",\"metrics\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		first = false
+		out.RawString(prefix[1:])
 		{
 			out.RawByte('[')
 			for v2, v3 := range in.Metrics {
@@ -340,12 +326,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPerformance3(out *jwriter.Wri
 	_ = first
 	{
 		const prefix string = ",\"metrics\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		if in.Metrics == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 			out.RawString("null")
 		} else {
@@ -365,12 +346,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPerformance3(out *jwriter.Wri
 	}
 	{
 		const prefix string = ",\"title\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Title))
 	}
 	out.RawByte('}')
@@ -418,6 +394,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoPerformance4(in *jlexer.Lexer
 			continue
 		}
 		switch key {
+		case "timeDomain":
+			(out.TimeDomain).UnmarshalEasyJSON(in)
 		default:
 			in.SkipRecursive()
 		}
@@ -432,6 +410,12 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPerformance4(out *jwriter.Wri
 	out.RawByte('{')
 	first := true
 	_ = first
+	if in.TimeDomain != "" {
+		const prefix string = ",\"timeDomain\":"
+		first = false
+		out.RawString(prefix[1:])
+		(in.TimeDomain).MarshalEasyJSON(out)
+	}
 	out.RawByte('}')
 }
 

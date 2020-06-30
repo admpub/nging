@@ -85,6 +85,8 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) 
 		// but we also want to be flexible for the script we proxy to.
 
 		fpath := r.URL.Path
+		// We trim those characters because they are served as plain text if appended after .php on Windows 
+		fpath = strings.TrimRight(fpath, " .")
 
 		if idx, ok := httpserver.IndexFile(h.FileSys, fpath, rule.IndexFiles); ok {
 			fpath = idx
@@ -102,7 +104,8 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) 
 		}
 
 		// These criteria work well in this order for PHP sites
-		if !h.exists(fpath) || fpath[len(fpath)-1] == '/' || strings.HasSuffix(fpath, rule.Ext) {
+		// We lower path and Ext as on Windows, the system is case insensitive, so .PHP is served as .php
+		if !h.exists(fpath) || fpath[len(fpath)-1] == '/' || strings.HasSuffix(strings.ToLower(fpath), strings.ToLower(rule.Ext)) {
 
 			// Create environment for CGI script
 			env, err := h.buildEnv(r, rule, fpath)

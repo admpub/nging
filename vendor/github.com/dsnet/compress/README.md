@@ -62,7 +62,7 @@ Run the command:
 
 ```go get -u github.com/dsnet/compress```
 
-This library requires `Go1.7` or higher in order to build.
+This library requires `Go1.9` or higher in order to build.
 
 
 ## Packages ##

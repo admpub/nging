@@ -307,7 +307,6 @@ const (
 	modeVL2         // Vertical-Left-2
 	modeVL3         // Vertical-Left-3
 	modeExt         // Extension
-	modeEOL         // End-of-Line
 )
 
 // COPY PASTE table.go END
@@ -333,10 +332,6 @@ var modeCodes = []code{
 	{modeVL2, "000010"},
 	{modeVL3, "0000010"},
 	{modeExt, "0000001"},
-
-	// End-of-Line is not in Table 1, but we look for it at the same time that
-	// we look for other mode codes.
-	{modeEOL, "000000000001"},
 }
 
 var whiteCodes = []code{

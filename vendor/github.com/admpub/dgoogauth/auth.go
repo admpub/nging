@@ -25,16 +25,28 @@ type KeyData struct {
 	Encoded  string `json:"encoded"`
 }
 
-func QrCode(account, base32encode, qrApiURL string) string {
+func (d *KeyData) OTP(account string) string {
+	return OTPData(account, d.Encoded)
+}
+
+func (d *KeyData) Size() string {
+	return Size
+}
+
+func OTPData(account, base32encode string) string {
 	otpStr := fmt.Sprintf("otpauth://totp/%s:%s?secret=%s&issuer=%s", Issuer, account, base32encode, Issuer)
+	return otpStr
+}
+
+func QrCode(account, base32encode, qrApiURL string) string {
 	if len(qrApiURL) == 0 {
 		qrApiURL = QrApiUrl
 	}
-	return fmt.Sprintf(qrApiURL, Size, url.QueryEscape(otpStr))
+	return fmt.Sprintf(qrApiURL, Size, url.QueryEscape(OTPData(account, base32encode)))
 }
 
-//GenQrCode 生成QrCode
-func GenQrCode(account string, qrApiURL string) (*KeyData, string) {
+//GenKeyData 生成KeyData
+func GenKeyData() *KeyData {
 	ts := uint64(time.Now().Unix() / LifeTime)
 	text := counterToBytes(ts)
 	secret := randomString(100)
@@ -45,8 +57,13 @@ func GenQrCode(account string, qrApiURL string) (*KeyData, string) {
 
 	encode := base32.StdEncoding.EncodeToString([]byte(key))
 	encode = strings.TrimRight(encode, "=")
-	qrCodeUrl := QrCode(account, encode, qrApiURL)
-	return &KeyData{key, encode}, qrCodeUrl
+	return &KeyData{key, encode}
+}
+
+//GenQrCode 生成QrCode
+func GenQrCode(account string, qrApiURL string) (*KeyData, string) {
+	keyData := GenKeyData()
+	return keyData, keyData.OTP(account)
 }
 
 func VerifyFrom(keyData *KeyData, password string) (bool, error) {

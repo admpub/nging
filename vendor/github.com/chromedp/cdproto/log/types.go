@@ -13,6 +13,8 @@ import (
 )
 
 // Entry log entry.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Log#type-LogEntry
 type Entry struct {
 	Source           Source                  `json:"source"`                     // Log entry source.
 	Level            Level                   `json:"level"`                      // Log entry severity.
@@ -27,12 +29,16 @@ type Entry struct {
 }
 
 // ViolationSetting violation configuration setting.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Log#type-ViolationSetting
 type ViolationSetting struct {
 	Name      Violation `json:"name"`      // Violation type.
 	Threshold float64   `json:"threshold"` // Time threshold to trigger upon.
 }
 
 // Source log entry source.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Log#type-LogEntry
 type Source string
 
 // String returns the Source as string value.
@@ -108,6 +114,8 @@ func (t *Source) UnmarshalJSON(buf []byte) error {
 }
 
 // Level log entry severity.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Log#type-LogEntry
 type Level string
 
 // String returns the Level as string value.
@@ -156,6 +164,8 @@ func (t *Level) UnmarshalJSON(buf []byte) error {
 }
 
 // Violation violation type.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Log#type-ViolationSetting
 type Violation string
 
 // String returns the Violation as string value.

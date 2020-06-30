@@ -2,118 +2,187 @@ package quic
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
+	"time"
 
-	"github.com/lucas-clemente/quic-go/frames"
-	"github.com/lucas-clemente/quic-go/protocol"
-	"github.com/lucas-clemente/quic-go/qerr"
+	"github.com/lucas-clemente/quic-go/internal/handshake"
+	"github.com/lucas-clemente/quic-go/internal/protocol"
+	"github.com/lucas-clemente/quic-go/internal/utils"
+	"github.com/lucas-clemente/quic-go/internal/wire"
 )
 
+type headerDecryptor interface {
+	DecryptHeader(sample []byte, firstByte *byte, pnBytes []byte)
+}
+
 type unpackedPacket struct {
+	packetNumber    protocol.PacketNumber // the decoded packet number
+	hdr             *wire.ExtendedHeader
 	encryptionLevel protocol.EncryptionLevel
-	frames          []frames.Frame
+	data            []byte
 }
 
-type quicAEAD interface {
-	Open(dst, src []byte, packetNumber protocol.PacketNumber, associatedData []byte) ([]byte, protocol.EncryptionLevel, error)
-}
-
+// The packetUnpacker unpacks QUIC packets.
 type packetUnpacker struct {
+	cs handshake.CryptoSetup
+
+	largestRcvdPacketNumber protocol.PacketNumber
+
 	version protocol.VersionNumber
-	aead    quicAEAD
 }
 
-func (u *packetUnpacker) Unpack(publicHeaderBinary []byte, hdr *PublicHeader, data []byte) (*unpackedPacket, error) {
-	buf := getPacketBuffer()
-	defer putPacketBuffer(buf)
-	decrypted, encryptionLevel, err := u.aead.Open(buf, data, hdr.PacketNumber, publicHeaderBinary)
-	if err != nil {
-		// Wrap err in quicError so that public reset is sent by session
-		return nil, qerr.Error(qerr.DecryptionFailure, err.Error())
+var _ unpacker = &packetUnpacker{}
+
+func newPacketUnpacker(cs handshake.CryptoSetup, version protocol.VersionNumber) unpacker {
+	return &packetUnpacker{
+		cs:      cs,
+		version: version,
 	}
-	r := bytes.NewReader(decrypted)
+}
 
-	if r.Len() == 0 {
-		return nil, qerr.MissingPayload
-	}
-
-	fs := make([]frames.Frame, 0, 2)
-
-	// Read all frames in the packet
-	for r.Len() > 0 {
-		typeByte, _ := r.ReadByte()
-		if typeByte == 0x0 { // PADDING frame
-			continue
-		}
-		r.UnreadByte()
-
-		var frame frames.Frame
-		if typeByte&0x80 == 0x80 {
-			frame, err = frames.ParseStreamFrame(r)
-			if err != nil {
-				err = qerr.Error(qerr.InvalidStreamData, err.Error())
-			} else {
-				streamID := frame.(*frames.StreamFrame).StreamID
-				if streamID != 1 && encryptionLevel <= protocol.EncryptionUnencrypted {
-					err = qerr.Error(qerr.UnencryptedStreamData, fmt.Sprintf("received unencrypted stream data on stream %d", streamID))
-				}
-			}
-		} else if typeByte&0xc0 == 0x40 {
-			frame, err = frames.ParseAckFrame(r, u.version)
-			if err != nil {
-				err = qerr.Error(qerr.InvalidAckData, err.Error())
-			}
-		} else if typeByte&0xe0 == 0x20 {
-			err = errors.New("unimplemented: CONGESTION_FEEDBACK")
-		} else {
-			switch typeByte {
-			case 0x01:
-				frame, err = frames.ParseRstStreamFrame(r)
-				if err != nil {
-					err = qerr.Error(qerr.InvalidRstStreamData, err.Error())
-				}
-			case 0x02:
-				frame, err = frames.ParseConnectionCloseFrame(r)
-				if err != nil {
-					err = qerr.Error(qerr.InvalidConnectionCloseData, err.Error())
-				}
-			case 0x03:
-				frame, err = frames.ParseGoawayFrame(r)
-				if err != nil {
-					err = qerr.Error(qerr.InvalidGoawayData, err.Error())
-				}
-			case 0x04:
-				frame, err = frames.ParseWindowUpdateFrame(r)
-				if err != nil {
-					err = qerr.Error(qerr.InvalidWindowUpdateData, err.Error())
-				}
-			case 0x05:
-				frame, err = frames.ParseBlockedFrame(r)
-				if err != nil {
-					err = qerr.Error(qerr.InvalidBlockedData, err.Error())
-				}
-			case 0x06:
-				frame, err = frames.ParseStopWaitingFrame(r, hdr.PacketNumber, hdr.PacketNumberLen, u.version)
-				if err != nil {
-					err = qerr.Error(qerr.InvalidStopWaitingData, err.Error())
-				}
-			case 0x07:
-				frame, err = frames.ParsePingFrame(r)
-			default:
-				err = qerr.Error(qerr.InvalidFrameData, fmt.Sprintf("unknown type byte 0x%x", typeByte))
-			}
-		}
+func (u *packetUnpacker) Unpack(hdr *wire.Header, rcvTime time.Time, data []byte) (*unpackedPacket, error) {
+	var encLevel protocol.EncryptionLevel
+	var extHdr *wire.ExtendedHeader
+	var decrypted []byte
+	switch hdr.Type {
+	case protocol.PacketTypeInitial:
+		encLevel = protocol.EncryptionInitial
+		opener, err := u.cs.GetInitialOpener()
 		if err != nil {
 			return nil, err
 		}
-		if frame != nil {
-			fs = append(fs, frame)
+		extHdr, decrypted, err = u.unpackLongHeaderPacket(opener, hdr, data)
+		if err != nil {
+			return nil, err
+		}
+	case protocol.PacketTypeHandshake:
+		encLevel = protocol.EncryptionHandshake
+		opener, err := u.cs.GetHandshakeOpener()
+		if err != nil {
+			return nil, err
+		}
+		extHdr, decrypted, err = u.unpackLongHeaderPacket(opener, hdr, data)
+		if err != nil {
+			return nil, err
+		}
+	case protocol.PacketType0RTT:
+		encLevel = protocol.Encryption0RTT
+		opener, err := u.cs.Get0RTTOpener()
+		if err != nil {
+			return nil, err
+		}
+		extHdr, decrypted, err = u.unpackLongHeaderPacket(opener, hdr, data)
+		if err != nil {
+			return nil, err
+		}
+	default:
+		if hdr.IsLongHeader {
+			return nil, fmt.Errorf("unknown packet type: %s", hdr.Type)
+		}
+		encLevel = protocol.Encryption1RTT
+		opener, err := u.cs.Get1RTTOpener()
+		if err != nil {
+			return nil, err
+		}
+		extHdr, decrypted, err = u.unpackShortHeaderPacket(opener, hdr, rcvTime, data)
+		if err != nil {
+			return nil, err
 		}
 	}
 
+	// Only do this after decrypting, so we are sure the packet is not attacker-controlled
+	u.largestRcvdPacketNumber = utils.MaxPacketNumber(u.largestRcvdPacketNumber, extHdr.PacketNumber)
+
 	return &unpackedPacket{
-		encryptionLevel: encryptionLevel,
-		frames:          fs,
+		hdr:             extHdr,
+		packetNumber:    extHdr.PacketNumber,
+		encryptionLevel: encLevel,
+		data:            decrypted,
 	}, nil
+}
+
+func (u *packetUnpacker) unpackLongHeaderPacket(opener handshake.LongHeaderOpener, hdr *wire.Header, data []byte) (*wire.ExtendedHeader, []byte, error) {
+	extHdr, parseErr := u.unpackHeader(opener, hdr, data)
+	// If the reserved bits are set incorrectly, we still need to continue unpacking.
+	// This avoids a timing side-channel, which otherwise might allow an attacker
+	// to gain information about the header encryption.
+	if parseErr != nil && parseErr != wire.ErrInvalidReservedBits {
+		return nil, nil, fmt.Errorf("error parsing extended header: %s", parseErr)
+	}
+	extHdrLen := extHdr.ParsedLen()
+	decrypted, err := opener.Open(data[extHdrLen:extHdrLen], data[extHdrLen:], extHdr.PacketNumber, data[:extHdrLen])
+	if err != nil {
+		return nil, nil, err
+	}
+	if parseErr != nil {
+		return nil, nil, parseErr
+	}
+	return extHdr, decrypted, nil
+}
+
+func (u *packetUnpacker) unpackShortHeaderPacket(
+	opener handshake.ShortHeaderOpener,
+	hdr *wire.Header,
+	rcvTime time.Time,
+	data []byte,
+) (*wire.ExtendedHeader, []byte, error) {
+	extHdr, parseErr := u.unpackHeader(opener, hdr, data)
+	// If the reserved bits are set incorrectly, we still need to continue unpacking.
+	// This avoids a timing side-channel, which otherwise might allow an attacker
+	// to gain information about the header encryption.
+	if parseErr != nil && parseErr != wire.ErrInvalidReservedBits {
+		return nil, nil, parseErr
+	}
+	extHdrLen := extHdr.ParsedLen()
+	decrypted, err := opener.Open(data[extHdrLen:extHdrLen], data[extHdrLen:], rcvTime, extHdr.PacketNumber, extHdr.KeyPhase, data[:extHdrLen])
+	if err != nil {
+		return nil, nil, err
+	}
+	if parseErr != nil {
+		return nil, nil, parseErr
+	}
+	return extHdr, decrypted, nil
+}
+
+func (u *packetUnpacker) unpackHeader(hd headerDecryptor, hdr *wire.Header, data []byte) (*wire.ExtendedHeader, error) {
+	extHdr, err := unpackHeader(hd, hdr, data, u.version)
+	if err != nil && err != wire.ErrInvalidReservedBits {
+		return nil, err
+	}
+	extHdr.PacketNumber = protocol.DecodePacketNumber(
+		extHdr.PacketNumberLen,
+		u.largestRcvdPacketNumber,
+		extHdr.PacketNumber,
+	)
+	return extHdr, err
+}
+
+func unpackHeader(hd headerDecryptor, hdr *wire.Header, data []byte, version protocol.VersionNumber) (*wire.ExtendedHeader, error) {
+	r := bytes.NewReader(data)
+
+	hdrLen := hdr.ParsedLen()
+	if protocol.ByteCount(len(data)) < hdrLen+4+16 {
+		//nolint:stylecheck
+		return nil, fmt.Errorf("Packet too small. Expected at least 20 bytes after the header, got %d", protocol.ByteCount(len(data))-hdrLen)
+	}
+	// The packet number can be up to 4 bytes long, but we won't know the length until we decrypt it.
+	// 1. save a copy of the 4 bytes
+	origPNBytes := make([]byte, 4)
+	copy(origPNBytes, data[hdrLen:hdrLen+4])
+	// 2. decrypt the header, assuming a 4 byte packet number
+	hd.DecryptHeader(
+		data[hdrLen+4:hdrLen+4+16],
+		&data[0],
+		data[hdrLen:hdrLen+4],
+	)
+	// 3. parse the header (and learn the actual length of the packet number)
+	extHdr, parseErr := hdr.ParseExtended(r, version)
+	if parseErr != nil && parseErr != wire.ErrInvalidReservedBits {
+		return nil, parseErr
+	}
+	// 4. if the packet number is shorter than 4 bytes, replace the remaining bytes with the copy we saved earlier
+	if extHdr.PacketNumberLen != protocol.PacketNumberLen4 {
+		copy(data[extHdr.ParsedLen():hdrLen+4], origPNBytes[int(extHdr.PacketNumberLen):])
+	}
+	return extHdr, parseErr
 }

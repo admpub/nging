@@ -21,6 +21,8 @@ type ActivateTargetParams struct {
 
 // ActivateTarget activates (focuses) the target.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-activateTarget
+//
 // parameters:
 //   targetID
 func ActivateTarget(targetID ID) *ActivateTargetParams {
@@ -30,17 +32,19 @@ func ActivateTarget(targetID ID) *ActivateTargetParams {
 }
 
 // Do executes Target.activateTarget against the provided context.
-func (p *ActivateTargetParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandActivateTarget, p, nil)
+func (p *ActivateTargetParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandActivateTarget, p, nil)
 }
 
 // AttachToTargetParams attaches to the target with given id.
 type AttachToTargetParams struct {
 	TargetID ID   `json:"targetId"`
-	Flatten  bool `json:"flatten,omitempty"` // Enables "flat" access to the session via specifying sessionId attribute in the commands.
+	Flatten  bool `json:"flatten,omitempty"` // Enables "flat" access to the session via specifying sessionId attribute in the commands. We plan to make this the default, deprecate non-flattened mode, and eventually retire it. See crbug.com/991325.
 }
 
 // AttachToTarget attaches to the target with given id.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-attachToTarget
 //
 // parameters:
 //   targetID
@@ -51,7 +55,8 @@ func AttachToTarget(targetID ID) *AttachToTargetParams {
 }
 
 // WithFlatten enables "flat" access to the session via specifying sessionId
-// attribute in the commands.
+// attribute in the commands. We plan to make this the default, deprecate
+// non-flattened mode, and eventually retire it. See crbug.com/991325.
 func (p AttachToTargetParams) WithFlatten(flatten bool) *AttachToTargetParams {
 	p.Flatten = flatten
 	return &p
@@ -66,10 +71,10 @@ type AttachToTargetReturns struct {
 //
 // returns:
 //   sessionID - Id assigned to the session.
-func (p *AttachToTargetParams) Do(ctxt context.Context, h cdp.Executor) (sessionID SessionID, err error) {
+func (p *AttachToTargetParams) Do(ctx context.Context) (sessionID SessionID, err error) {
 	// execute
 	var res AttachToTargetReturns
-	err = h.Execute(ctxt, CommandAttachToTarget, p, &res)
+	err = cdp.Execute(ctx, CommandAttachToTarget, p, &res)
 	if err != nil {
 		return "", err
 	}
@@ -83,6 +88,8 @@ type AttachToBrowserTargetParams struct{}
 
 // AttachToBrowserTarget attaches to the browser target, only uses flat
 // sessionId mode.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-attachToBrowserTarget
 func AttachToBrowserTarget() *AttachToBrowserTargetParams {
 	return &AttachToBrowserTargetParams{}
 }
@@ -96,10 +103,10 @@ type AttachToBrowserTargetReturns struct {
 //
 // returns:
 //   sessionID - Id assigned to the session.
-func (p *AttachToBrowserTargetParams) Do(ctxt context.Context, h cdp.Executor) (sessionID SessionID, err error) {
+func (p *AttachToBrowserTargetParams) Do(ctx context.Context) (sessionID SessionID, err error) {
 	// execute
 	var res AttachToBrowserTargetReturns
-	err = h.Execute(ctxt, CommandAttachToBrowserTarget, nil, &res)
+	err = cdp.Execute(ctx, CommandAttachToBrowserTarget, nil, &res)
 	if err != nil {
 		return "", err
 	}
@@ -115,6 +122,8 @@ type CloseTargetParams struct {
 
 // CloseTarget closes the target. If the target is a page that gets closed
 // too.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-closeTarget
 //
 // parameters:
 //   targetID
@@ -133,10 +142,10 @@ type CloseTargetReturns struct {
 //
 // returns:
 //   success
-func (p *CloseTargetParams) Do(ctxt context.Context, h cdp.Executor) (success bool, err error) {
+func (p *CloseTargetParams) Do(ctx context.Context) (success bool, err error) {
 	// execute
 	var res CloseTargetReturns
-	err = h.Execute(ctxt, CommandCloseTarget, p, &res)
+	err = cdp.Execute(ctx, CommandCloseTarget, p, &res)
 	if err != nil {
 		return false, err
 	}
@@ -162,6 +171,8 @@ type ExposeDevToolsProtocolParams struct {
 // protocol - binding.onmessage = json => handleMessage(json) - a callback that
 // will be called for the protocol notifications and command responses.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-exposeDevToolsProtocol
+//
 // parameters:
 //   targetID
 func ExposeDevToolsProtocol(targetID ID) *ExposeDevToolsProtocolParams {
@@ -177,33 +188,61 @@ func (p ExposeDevToolsProtocolParams) WithBindingName(bindingName string) *Expos
 }
 
 // Do executes Target.exposeDevToolsProtocol against the provided context.
-func (p *ExposeDevToolsProtocolParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandExposeDevToolsProtocol, p, nil)
+func (p *ExposeDevToolsProtocolParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandExposeDevToolsProtocol, p, nil)
 }
 
 // CreateBrowserContextParams creates a new empty BrowserContext. Similar to
 // an incognito profile but you can have more than one.
-type CreateBrowserContextParams struct{}
+type CreateBrowserContextParams struct {
+	DisposeOnDetach bool   `json:"disposeOnDetach,omitempty"` // If specified, disposes this context when debugging session disconnects.
+	ProxyServer     string `json:"proxyServer,omitempty"`     // Proxy server, similar to the one passed to --proxy-server
+	ProxyBypassList string `json:"proxyBypassList,omitempty"` // Proxy bypass list, similar to the one passed to --proxy-bypass-list
+}
 
 // CreateBrowserContext creates a new empty BrowserContext. Similar to an
 // incognito profile but you can have more than one.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-createBrowserContext
+//
+// parameters:
 func CreateBrowserContext() *CreateBrowserContextParams {
 	return &CreateBrowserContextParams{}
 }
 
+// WithDisposeOnDetach if specified, disposes this context when debugging
+// session disconnects.
+func (p CreateBrowserContextParams) WithDisposeOnDetach(disposeOnDetach bool) *CreateBrowserContextParams {
+	p.DisposeOnDetach = disposeOnDetach
+	return &p
+}
+
+// WithProxyServer proxy server, similar to the one passed to --proxy-server.
+func (p CreateBrowserContextParams) WithProxyServer(proxyServer string) *CreateBrowserContextParams {
+	p.ProxyServer = proxyServer
+	return &p
+}
+
+// WithProxyBypassList proxy bypass list, similar to the one passed to
+// --proxy-bypass-list.
+func (p CreateBrowserContextParams) WithProxyBypassList(proxyBypassList string) *CreateBrowserContextParams {
+	p.ProxyBypassList = proxyBypassList
+	return &p
+}
+
 // CreateBrowserContextReturns return values.
 type CreateBrowserContextReturns struct {
-	BrowserContextID BrowserContextID `json:"browserContextId,omitempty"` // The id of the context created.
+	BrowserContextID cdp.BrowserContextID `json:"browserContextId,omitempty"` // The id of the context created.
 }
 
 // Do executes Target.createBrowserContext against the provided context.
 //
 // returns:
 //   browserContextID - The id of the context created.
-func (p *CreateBrowserContextParams) Do(ctxt context.Context, h cdp.Executor) (browserContextID BrowserContextID, err error) {
+func (p *CreateBrowserContextParams) Do(ctx context.Context) (browserContextID cdp.BrowserContextID, err error) {
 	// execute
 	var res CreateBrowserContextReturns
-	err = h.Execute(ctxt, CommandCreateBrowserContext, nil, &res)
+	err = cdp.Execute(ctx, CommandCreateBrowserContext, p, &res)
 	if err != nil {
 		return "", err
 	}
@@ -217,23 +256,25 @@ type GetBrowserContextsParams struct{}
 
 // GetBrowserContexts returns all browser contexts created with
 // Target.createBrowserContext method.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-getBrowserContexts
 func GetBrowserContexts() *GetBrowserContextsParams {
 	return &GetBrowserContextsParams{}
 }
 
 // GetBrowserContextsReturns return values.
 type GetBrowserContextsReturns struct {
-	BrowserContextIds []BrowserContextID `json:"browserContextIds,omitempty"` // An array of browser context ids.
+	BrowserContextIds []cdp.BrowserContextID `json:"browserContextIds,omitempty"` // An array of browser context ids.
 }
 
 // Do executes Target.getBrowserContexts against the provided context.
 //
 // returns:
 //   browserContextIds - An array of browser context ids.
-func (p *GetBrowserContextsParams) Do(ctxt context.Context, h cdp.Executor) (browserContextIds []BrowserContextID, err error) {
+func (p *GetBrowserContextsParams) Do(ctx context.Context) (browserContextIds []cdp.BrowserContextID, err error) {
 	// execute
 	var res GetBrowserContextsReturns
-	err = h.Execute(ctxt, CommandGetBrowserContexts, nil, &res)
+	err = cdp.Execute(ctx, CommandGetBrowserContexts, nil, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -243,14 +284,18 @@ func (p *GetBrowserContextsParams) Do(ctxt context.Context, h cdp.Executor) (bro
 
 // CreateTargetParams creates a new page.
 type CreateTargetParams struct {
-	URL                     string           `json:"url"`                               // The initial URL the page will be navigated to.
-	Width                   int64            `json:"width,omitempty"`                   // Frame width in DIP (headless chrome only).
-	Height                  int64            `json:"height,omitempty"`                  // Frame height in DIP (headless chrome only).
-	BrowserContextID        BrowserContextID `json:"browserContextId,omitempty"`        // The browser context to create the page in.
-	EnableBeginFrameControl bool             `json:"enableBeginFrameControl,omitempty"` // Whether BeginFrames for this target will be controlled via DevTools (headless chrome only, not supported on MacOS yet, false by default).
+	URL                     string               `json:"url"`                               // The initial URL the page will be navigated to.
+	Width                   int64                `json:"width,omitempty"`                   // Frame width in DIP (headless chrome only).
+	Height                  int64                `json:"height,omitempty"`                  // Frame height in DIP (headless chrome only).
+	BrowserContextID        cdp.BrowserContextID `json:"browserContextId,omitempty"`        // The browser context to create the page in.
+	EnableBeginFrameControl bool                 `json:"enableBeginFrameControl,omitempty"` // Whether BeginFrames for this target will be controlled via DevTools (headless chrome only, not supported on MacOS yet, false by default).
+	NewWindow               bool                 `json:"newWindow,omitempty"`               // Whether to create a new Window or Tab (chrome-only, false by default).
+	Background              bool                 `json:"background,omitempty"`              // Whether to create the target in background or foreground (chrome-only, false by default).
 }
 
 // CreateTarget creates a new page.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-createTarget
 //
 // parameters:
 //   url - The initial URL the page will be navigated to.
@@ -273,7 +318,7 @@ func (p CreateTargetParams) WithHeight(height int64) *CreateTargetParams {
 }
 
 // WithBrowserContextID the browser context to create the page in.
-func (p CreateTargetParams) WithBrowserContextID(browserContextID BrowserContextID) *CreateTargetParams {
+func (p CreateTargetParams) WithBrowserContextID(browserContextID cdp.BrowserContextID) *CreateTargetParams {
 	p.BrowserContextID = browserContextID
 	return &p
 }
@@ -286,6 +331,20 @@ func (p CreateTargetParams) WithEnableBeginFrameControl(enableBeginFrameControl 
 	return &p
 }
 
+// WithNewWindow whether to create a new Window or Tab (chrome-only, false by
+// default).
+func (p CreateTargetParams) WithNewWindow(newWindow bool) *CreateTargetParams {
+	p.NewWindow = newWindow
+	return &p
+}
+
+// WithBackground whether to create the target in background or foreground
+// (chrome-only, false by default).
+func (p CreateTargetParams) WithBackground(background bool) *CreateTargetParams {
+	p.Background = background
+	return &p
+}
+
 // CreateTargetReturns return values.
 type CreateTargetReturns struct {
 	TargetID ID `json:"targetId,omitempty"` // The id of the page opened.
@@ -295,10 +354,10 @@ type CreateTargetReturns struct {
 //
 // returns:
 //   targetID - The id of the page opened.
-func (p *CreateTargetParams) Do(ctxt context.Context, h cdp.Executor) (targetID ID, err error) {
+func (p *CreateTargetParams) Do(ctx context.Context) (targetID ID, err error) {
 	// execute
 	var res CreateTargetReturns
-	err = h.Execute(ctxt, CommandCreateTarget, p, &res)
+	err = cdp.Execute(ctx, CommandCreateTarget, p, &res)
 	if err != nil {
 		return "", err
 	}
@@ -313,6 +372,8 @@ type DetachFromTargetParams struct {
 
 // DetachFromTarget detaches session with given id.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-detachFromTarget
+//
 // parameters:
 func DetachFromTarget() *DetachFromTargetParams {
 	return &DetachFromTargetParams{}
@@ -325,30 +386,32 @@ func (p DetachFromTargetParams) WithSessionID(sessionID SessionID) *DetachFromTa
 }
 
 // Do executes Target.detachFromTarget against the provided context.
-func (p *DetachFromTargetParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandDetachFromTarget, p, nil)
+func (p *DetachFromTargetParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDetachFromTarget, p, nil)
 }
 
 // DisposeBrowserContextParams deletes a BrowserContext. All the belonging
 // pages will be closed without calling their beforeunload hooks.
 type DisposeBrowserContextParams struct {
-	BrowserContextID BrowserContextID `json:"browserContextId"`
+	BrowserContextID cdp.BrowserContextID `json:"browserContextId"`
 }
 
 // DisposeBrowserContext deletes a BrowserContext. All the belonging pages
 // will be closed without calling their beforeunload hooks.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-disposeBrowserContext
+//
 // parameters:
 //   browserContextID
-func DisposeBrowserContext(browserContextID BrowserContextID) *DisposeBrowserContextParams {
+func DisposeBrowserContext(browserContextID cdp.BrowserContextID) *DisposeBrowserContextParams {
 	return &DisposeBrowserContextParams{
 		BrowserContextID: browserContextID,
 	}
 }
 
 // Do executes Target.disposeBrowserContext against the provided context.
-func (p *DisposeBrowserContextParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandDisposeBrowserContext, p, nil)
+func (p *DisposeBrowserContextParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDisposeBrowserContext, p, nil)
 }
 
 // GetTargetInfoParams returns information about a target.
@@ -357,6 +420,8 @@ type GetTargetInfoParams struct {
 }
 
 // GetTargetInfo returns information about a target.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-getTargetInfo
 //
 // parameters:
 func GetTargetInfo() *GetTargetInfoParams {
@@ -378,10 +443,10 @@ type GetTargetInfoReturns struct {
 //
 // returns:
 //   targetInfo
-func (p *GetTargetInfoParams) Do(ctxt context.Context, h cdp.Executor) (targetInfo *Info, err error) {
+func (p *GetTargetInfoParams) Do(ctx context.Context) (targetInfo *Info, err error) {
 	// execute
 	var res GetTargetInfoReturns
-	err = h.Execute(ctxt, CommandGetTargetInfo, p, &res)
+	err = cdp.Execute(ctx, CommandGetTargetInfo, p, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -393,6 +458,8 @@ func (p *GetTargetInfoParams) Do(ctxt context.Context, h cdp.Executor) (targetIn
 type GetTargetsParams struct{}
 
 // GetTargets retrieves a list of available targets.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-getTargets
 func GetTargets() *GetTargetsParams {
 	return &GetTargetsParams{}
 }
@@ -406,43 +473,15 @@ type GetTargetsReturns struct {
 //
 // returns:
 //   targetInfos - The list of targets.
-func (p *GetTargetsParams) Do(ctxt context.Context, h cdp.Executor) (targetInfos []*Info, err error) {
+func (p *GetTargetsParams) Do(ctx context.Context) (targetInfos []*Info, err error) {
 	// execute
 	var res GetTargetsReturns
-	err = h.Execute(ctxt, CommandGetTargets, nil, &res)
+	err = cdp.Execute(ctx, CommandGetTargets, nil, &res)
 	if err != nil {
 		return nil, err
 	}
 
 	return res.TargetInfos, nil
-}
-
-// SendMessageToTargetParams sends protocol message over session with given
-// id.
-type SendMessageToTargetParams struct {
-	Message   string    `json:"message"`
-	SessionID SessionID `json:"sessionId,omitempty"` // Identifier of the session.
-}
-
-// SendMessageToTarget sends protocol message over session with given id.
-//
-// parameters:
-//   message
-func SendMessageToTarget(message string) *SendMessageToTargetParams {
-	return &SendMessageToTargetParams{
-		Message: message,
-	}
-}
-
-// WithSessionID identifier of the session.
-func (p SendMessageToTargetParams) WithSessionID(sessionID SessionID) *SendMessageToTargetParams {
-	p.SessionID = sessionID
-	return &p
-}
-
-// Do executes Target.sendMessageToTarget against the provided context.
-func (p *SendMessageToTargetParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSendMessageToTarget, p, nil)
 }
 
 // SetAutoAttachParams controls whether to automatically attach to new
@@ -452,13 +491,15 @@ func (p *SendMessageToTargetParams) Do(ctxt context.Context, h cdp.Executor) (er
 type SetAutoAttachParams struct {
 	AutoAttach             bool `json:"autoAttach"`             // Whether to auto-attach to related targets.
 	WaitForDebuggerOnStart bool `json:"waitForDebuggerOnStart"` // Whether to pause new targets when attaching to them. Use Runtime.runIfWaitingForDebugger to run paused targets.
-	Flatten                bool `json:"flatten,omitempty"`      // Enables "flat" access to the session via specifying sessionId attribute in the commands.
+	Flatten                bool `json:"flatten,omitempty"`      // Enables "flat" access to the session via specifying sessionId attribute in the commands. We plan to make this the default, deprecate non-flattened mode, and eventually retire it. See crbug.com/991325.
 }
 
 // SetAutoAttach controls whether to automatically attach to new targets
 // which are considered to be related to this one. When turned on, attaches to
 // all existing related targets as well. When turned off, automatically detaches
 // from all currently attached targets.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-setAutoAttach
 //
 // parameters:
 //   autoAttach - Whether to auto-attach to related targets.
@@ -471,15 +512,16 @@ func SetAutoAttach(autoAttach bool, waitForDebuggerOnStart bool) *SetAutoAttachP
 }
 
 // WithFlatten enables "flat" access to the session via specifying sessionId
-// attribute in the commands.
+// attribute in the commands. We plan to make this the default, deprecate
+// non-flattened mode, and eventually retire it. See crbug.com/991325.
 func (p SetAutoAttachParams) WithFlatten(flatten bool) *SetAutoAttachParams {
 	p.Flatten = flatten
 	return &p
 }
 
 // Do executes Target.setAutoAttach against the provided context.
-func (p *SetAutoAttachParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetAutoAttach, p, nil)
+func (p *SetAutoAttachParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetAutoAttach, p, nil)
 }
 
 // SetDiscoverTargetsParams controls whether to discover available targets
@@ -491,6 +533,8 @@ type SetDiscoverTargetsParams struct {
 // SetDiscoverTargets controls whether to discover available targets and
 // notify via targetCreated/targetInfoChanged/targetDestroyed events.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-setDiscoverTargets
+//
 // parameters:
 //   discover - Whether to discover available targets.
 func SetDiscoverTargets(discover bool) *SetDiscoverTargetsParams {
@@ -500,8 +544,8 @@ func SetDiscoverTargets(discover bool) *SetDiscoverTargetsParams {
 }
 
 // Do executes Target.setDiscoverTargets against the provided context.
-func (p *SetDiscoverTargetsParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetDiscoverTargets, p, nil)
+func (p *SetDiscoverTargetsParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetDiscoverTargets, p, nil)
 }
 
 // SetRemoteLocationsParams enables target discovery for the specified
@@ -513,6 +557,8 @@ type SetRemoteLocationsParams struct {
 // SetRemoteLocations enables target discovery for the specified locations,
 // when setDiscoverTargets was set to true.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Target#method-setRemoteLocations
+//
 // parameters:
 //   locations - List of remote locations.
 func SetRemoteLocations(locations []*RemoteLocation) *SetRemoteLocationsParams {
@@ -522,8 +568,8 @@ func SetRemoteLocations(locations []*RemoteLocation) *SetRemoteLocationsParams {
 }
 
 // Do executes Target.setRemoteLocations against the provided context.
-func (p *SetRemoteLocationsParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetRemoteLocations, p, nil)
+func (p *SetRemoteLocationsParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetRemoteLocations, p, nil)
 }
 
 // Command names.
@@ -540,7 +586,6 @@ const (
 	CommandDisposeBrowserContext  = "Target.disposeBrowserContext"
 	CommandGetTargetInfo          = "Target.getTargetInfo"
 	CommandGetTargets             = "Target.getTargets"
-	CommandSendMessageToTarget    = "Target.sendMessageToTarget"
 	CommandSetAutoAttach          = "Target.setAutoAttach"
 	CommandSetDiscoverTargets     = "Target.setDiscoverTargets"
 	CommandSetRemoteLocations     = "Target.setRemoteLocations"

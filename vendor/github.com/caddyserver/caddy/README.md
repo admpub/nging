@@ -51,7 +51,7 @@ Available for Windows, Mac, Linux, BSD, Solaris, and [Android](https://github.co
 - **Extensible with plugins** because a convenient web server is a helpful one
 - **Runs anywhere** with **no external dependencies** (not even libc)
 
-[See a more complete list of features built into Caddy.](https://caddyserver.com/features) On top of all those, Caddy does even more with plugins: choose which plugins you want at [download](https://caddyserver.com/download).
+[See a more complete list of features built into Caddy.](https://caddyserver.com/#features) On top of all those, Caddy does even more with plugins: choose which plugins you want at [download](https://caddyserver.com/download).
 
 Altogether, Caddy can do things other web servers simply cannot do. Its features and plugins save you time and mistakes, and will cheer you up. Your Caddy instance takes care of the details for you!
 
@@ -75,13 +75,11 @@ Caddy binaries have no dependencies and are available for every platform. Get Ca
 
 ## Build
 
-To build from source you need **[Git](https://git-scm.com/downloads)** and **[Go](https://golang.org/doc/install)** (1.12 or newer).
+To build from source you need **[Git](https://git-scm.com/downloads)** and **[Go](https://golang.org/doc/install)** (1.13 or newer).
 
 **To build Caddy without plugins:**
 
-<!-- TODO: This env variable will not be required starting with Go 1.13 -->
-1. Set the transitional environment variable for Go modules: `export GO111MODULE=on`
-2. Run `go get github.com/caddyserver/caddy/caddy`
+- Run `go get github.com/caddyserver/caddy/caddy`
 
 Caddy will be installed to your `$GOPATH/bin` folder.
 
@@ -90,10 +88,7 @@ With these instructions, the binary will not have embedded version information (
 **To build Caddy with plugins (and with version information):**
 
 There is no need to modify the Caddy code to build it with plugins. We will create a simple Go module with our own `main()` that you can use to make custom Caddy builds.
-
-<!-- TODO: This env variable will not be required starting with Go 1.13 -->
-1. Set the transitional environment variable for Go modules: `export GO111MODULE=on`
-2. Create a new folder anywhere and within create a Go file (with an extension of `.go`, such as `main.go`) with the contents below, adjusting to import the plugins you want to include:
+- Create a new folder anywhere and within create a Go file (with an extension of `.go`, such as `main.go`) with the contents below, adjusting to import the plugins you want to include:
 ```go
 package main
 
@@ -116,9 +111,7 @@ func main() {
 
 **To install Caddy's source code for development:**
 
-<!-- TODO: This env variable will not be required starting with Go 1.13 -->
-1. Set the transitional environment variable for Go modules: `export GO111MODULE=on`
-2. Run `git clone https://github.com/caddyserver/caddy.git` in any folder (doesn't have to be in GOPATH).
+- Run `git clone https://github.com/caddyserver/caddy.git` in any folder (doesn't have to be in GOPATH).
 
 You can make changes to the source code from that clone and checkout any commit or tag you wish to develop on.
 
@@ -212,7 +205,7 @@ Thanks for making Caddy -- and the Web -- better!
 - [DNSimple](https://dnsimple.link/resolving-caddy) provides DNS services for Caddy's sites.
 - [DNS Spy](https://dnsspy.io) keeps an eye on Caddy's DNS properties.
 
-We thank them for their services. **If you want to help keep Caddy free, please [become a sponsor](https://caddyserver.com/pricing)!**
+We thank them for their services. **If you want to help keep Caddy free, please [become a sponsor](https://github.com/sponsors/mholt)!**
 
 
 ## About the Project

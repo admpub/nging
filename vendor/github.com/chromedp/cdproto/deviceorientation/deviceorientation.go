@@ -17,13 +17,15 @@ import (
 type ClearDeviceOrientationOverrideParams struct{}
 
 // ClearDeviceOrientationOverride clears the overridden Device Orientation.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DeviceOrientation#method-clearDeviceOrientationOverride
 func ClearDeviceOrientationOverride() *ClearDeviceOrientationOverrideParams {
 	return &ClearDeviceOrientationOverrideParams{}
 }
 
 // Do executes DeviceOrientation.clearDeviceOrientationOverride against the provided context.
-func (p *ClearDeviceOrientationOverrideParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandClearDeviceOrientationOverride, nil, nil)
+func (p *ClearDeviceOrientationOverrideParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandClearDeviceOrientationOverride, nil, nil)
 }
 
 // SetDeviceOrientationOverrideParams overrides the Device Orientation.
@@ -34,6 +36,8 @@ type SetDeviceOrientationOverrideParams struct {
 }
 
 // SetDeviceOrientationOverride overrides the Device Orientation.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DeviceOrientation#method-setDeviceOrientationOverride
 //
 // parameters:
 //   alpha - Mock alpha
@@ -48,8 +52,8 @@ func SetDeviceOrientationOverride(alpha float64, beta float64, gamma float64) *S
 }
 
 // Do executes DeviceOrientation.setDeviceOrientationOverride against the provided context.
-func (p *SetDeviceOrientationOverrideParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetDeviceOrientationOverride, p, nil)
+func (p *SetDeviceOrientationOverrideParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetDeviceOrientationOverride, p, nil)
 }
 
 // Command names.

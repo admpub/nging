@@ -14,18 +14,20 @@ import (
 
 // DeliverPushMessageParams [no description].
 type DeliverPushMessageParams struct {
-	Origin         string `json:"origin"`
-	RegistrationID string `json:"registrationId"`
-	Data           string `json:"data"`
+	Origin         string         `json:"origin"`
+	RegistrationID RegistrationID `json:"registrationId"`
+	Data           string         `json:"data"`
 }
 
 // DeliverPushMessage [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/ServiceWorker#method-deliverPushMessage
 //
 // parameters:
 //   origin
 //   registrationID
 //   data
-func DeliverPushMessage(origin string, registrationID string, data string) *DeliverPushMessageParams {
+func DeliverPushMessage(origin string, registrationID RegistrationID, data string) *DeliverPushMessageParams {
 	return &DeliverPushMessageParams{
 		Origin:         origin,
 		RegistrationID: registrationID,
@@ -34,39 +36,43 @@ func DeliverPushMessage(origin string, registrationID string, data string) *Deli
 }
 
 // Do executes ServiceWorker.deliverPushMessage against the provided context.
-func (p *DeliverPushMessageParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandDeliverPushMessage, p, nil)
+func (p *DeliverPushMessageParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDeliverPushMessage, p, nil)
 }
 
 // DisableParams [no description].
 type DisableParams struct{}
 
 // Disable [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/ServiceWorker#method-disable
 func Disable() *DisableParams {
 	return &DisableParams{}
 }
 
 // Do executes ServiceWorker.disable against the provided context.
-func (p *DisableParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandDisable, nil, nil)
+func (p *DisableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDisable, nil, nil)
 }
 
 // DispatchSyncEventParams [no description].
 type DispatchSyncEventParams struct {
-	Origin         string `json:"origin"`
-	RegistrationID string `json:"registrationId"`
-	Tag            string `json:"tag"`
-	LastChance     bool   `json:"lastChance"`
+	Origin         string         `json:"origin"`
+	RegistrationID RegistrationID `json:"registrationId"`
+	Tag            string         `json:"tag"`
+	LastChance     bool           `json:"lastChance"`
 }
 
 // DispatchSyncEvent [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/ServiceWorker#method-dispatchSyncEvent
 //
 // parameters:
 //   origin
 //   registrationID
 //   tag
 //   lastChance
-func DispatchSyncEvent(origin string, registrationID string, tag string, lastChance bool) *DispatchSyncEventParams {
+func DispatchSyncEvent(origin string, registrationID RegistrationID, tag string, lastChance bool) *DispatchSyncEventParams {
 	return &DispatchSyncEventParams{
 		Origin:         origin,
 		RegistrationID: registrationID,
@@ -76,21 +82,51 @@ func DispatchSyncEvent(origin string, registrationID string, tag string, lastCha
 }
 
 // Do executes ServiceWorker.dispatchSyncEvent against the provided context.
-func (p *DispatchSyncEventParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandDispatchSyncEvent, p, nil)
+func (p *DispatchSyncEventParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDispatchSyncEvent, p, nil)
+}
+
+// DispatchPeriodicSyncEventParams [no description].
+type DispatchPeriodicSyncEventParams struct {
+	Origin         string         `json:"origin"`
+	RegistrationID RegistrationID `json:"registrationId"`
+	Tag            string         `json:"tag"`
+}
+
+// DispatchPeriodicSyncEvent [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/ServiceWorker#method-dispatchPeriodicSyncEvent
+//
+// parameters:
+//   origin
+//   registrationID
+//   tag
+func DispatchPeriodicSyncEvent(origin string, registrationID RegistrationID, tag string) *DispatchPeriodicSyncEventParams {
+	return &DispatchPeriodicSyncEventParams{
+		Origin:         origin,
+		RegistrationID: registrationID,
+		Tag:            tag,
+	}
+}
+
+// Do executes ServiceWorker.dispatchPeriodicSyncEvent against the provided context.
+func (p *DispatchPeriodicSyncEventParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDispatchPeriodicSyncEvent, p, nil)
 }
 
 // EnableParams [no description].
 type EnableParams struct{}
 
 // Enable [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/ServiceWorker#method-enable
 func Enable() *EnableParams {
 	return &EnableParams{}
 }
 
 // Do executes ServiceWorker.enable against the provided context.
-func (p *EnableParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandEnable, nil, nil)
+func (p *EnableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandEnable, nil, nil)
 }
 
 // InspectWorkerParams [no description].
@@ -99,6 +135,8 @@ type InspectWorkerParams struct {
 }
 
 // InspectWorker [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/ServiceWorker#method-inspectWorker
 //
 // parameters:
 //   versionID
@@ -109,8 +147,8 @@ func InspectWorker(versionID string) *InspectWorkerParams {
 }
 
 // Do executes ServiceWorker.inspectWorker against the provided context.
-func (p *InspectWorkerParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandInspectWorker, p, nil)
+func (p *InspectWorkerParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandInspectWorker, p, nil)
 }
 
 // SetForceUpdateOnPageLoadParams [no description].
@@ -119,6 +157,8 @@ type SetForceUpdateOnPageLoadParams struct {
 }
 
 // SetForceUpdateOnPageLoad [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/ServiceWorker#method-setForceUpdateOnPageLoad
 //
 // parameters:
 //   forceUpdateOnPageLoad
@@ -129,8 +169,8 @@ func SetForceUpdateOnPageLoad(forceUpdateOnPageLoad bool) *SetForceUpdateOnPageL
 }
 
 // Do executes ServiceWorker.setForceUpdateOnPageLoad against the provided context.
-func (p *SetForceUpdateOnPageLoadParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetForceUpdateOnPageLoad, p, nil)
+func (p *SetForceUpdateOnPageLoadParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetForceUpdateOnPageLoad, p, nil)
 }
 
 // SkipWaitingParams [no description].
@@ -139,6 +179,8 @@ type SkipWaitingParams struct {
 }
 
 // SkipWaiting [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/ServiceWorker#method-skipWaiting
 //
 // parameters:
 //   scopeURL
@@ -149,8 +191,8 @@ func SkipWaiting(scopeURL string) *SkipWaitingParams {
 }
 
 // Do executes ServiceWorker.skipWaiting against the provided context.
-func (p *SkipWaitingParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSkipWaiting, p, nil)
+func (p *SkipWaitingParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSkipWaiting, p, nil)
 }
 
 // StartWorkerParams [no description].
@@ -159,6 +201,8 @@ type StartWorkerParams struct {
 }
 
 // StartWorker [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/ServiceWorker#method-startWorker
 //
 // parameters:
 //   scopeURL
@@ -169,21 +213,23 @@ func StartWorker(scopeURL string) *StartWorkerParams {
 }
 
 // Do executes ServiceWorker.startWorker against the provided context.
-func (p *StartWorkerParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandStartWorker, p, nil)
+func (p *StartWorkerParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandStartWorker, p, nil)
 }
 
 // StopAllWorkersParams [no description].
 type StopAllWorkersParams struct{}
 
 // StopAllWorkers [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/ServiceWorker#method-stopAllWorkers
 func StopAllWorkers() *StopAllWorkersParams {
 	return &StopAllWorkersParams{}
 }
 
 // Do executes ServiceWorker.stopAllWorkers against the provided context.
-func (p *StopAllWorkersParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandStopAllWorkers, nil, nil)
+func (p *StopAllWorkersParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandStopAllWorkers, nil, nil)
 }
 
 // StopWorkerParams [no description].
@@ -192,6 +238,8 @@ type StopWorkerParams struct {
 }
 
 // StopWorker [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/ServiceWorker#method-stopWorker
 //
 // parameters:
 //   versionID
@@ -202,8 +250,8 @@ func StopWorker(versionID string) *StopWorkerParams {
 }
 
 // Do executes ServiceWorker.stopWorker against the provided context.
-func (p *StopWorkerParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandStopWorker, p, nil)
+func (p *StopWorkerParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandStopWorker, p, nil)
 }
 
 // UnregisterParams [no description].
@@ -212,6 +260,8 @@ type UnregisterParams struct {
 }
 
 // Unregister [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/ServiceWorker#method-unregister
 //
 // parameters:
 //   scopeURL
@@ -222,8 +272,8 @@ func Unregister(scopeURL string) *UnregisterParams {
 }
 
 // Do executes ServiceWorker.unregister against the provided context.
-func (p *UnregisterParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandUnregister, p, nil)
+func (p *UnregisterParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandUnregister, p, nil)
 }
 
 // UpdateRegistrationParams [no description].
@@ -232,6 +282,8 @@ type UpdateRegistrationParams struct {
 }
 
 // UpdateRegistration [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/ServiceWorker#method-updateRegistration
 //
 // parameters:
 //   scopeURL
@@ -242,22 +294,23 @@ func UpdateRegistration(scopeURL string) *UpdateRegistrationParams {
 }
 
 // Do executes ServiceWorker.updateRegistration against the provided context.
-func (p *UpdateRegistrationParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandUpdateRegistration, p, nil)
+func (p *UpdateRegistrationParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandUpdateRegistration, p, nil)
 }
 
 // Command names.
 const (
-	CommandDeliverPushMessage       = "ServiceWorker.deliverPushMessage"
-	CommandDisable                  = "ServiceWorker.disable"
-	CommandDispatchSyncEvent        = "ServiceWorker.dispatchSyncEvent"
-	CommandEnable                   = "ServiceWorker.enable"
-	CommandInspectWorker            = "ServiceWorker.inspectWorker"
-	CommandSetForceUpdateOnPageLoad = "ServiceWorker.setForceUpdateOnPageLoad"
-	CommandSkipWaiting              = "ServiceWorker.skipWaiting"
-	CommandStartWorker              = "ServiceWorker.startWorker"
-	CommandStopAllWorkers           = "ServiceWorker.stopAllWorkers"
-	CommandStopWorker               = "ServiceWorker.stopWorker"
-	CommandUnregister               = "ServiceWorker.unregister"
-	CommandUpdateRegistration       = "ServiceWorker.updateRegistration"
+	CommandDeliverPushMessage        = "ServiceWorker.deliverPushMessage"
+	CommandDisable                   = "ServiceWorker.disable"
+	CommandDispatchSyncEvent         = "ServiceWorker.dispatchSyncEvent"
+	CommandDispatchPeriodicSyncEvent = "ServiceWorker.dispatchPeriodicSyncEvent"
+	CommandEnable                    = "ServiceWorker.enable"
+	CommandInspectWorker             = "ServiceWorker.inspectWorker"
+	CommandSetForceUpdateOnPageLoad  = "ServiceWorker.setForceUpdateOnPageLoad"
+	CommandSkipWaiting               = "ServiceWorker.skipWaiting"
+	CommandStartWorker               = "ServiceWorker.startWorker"
+	CommandStopAllWorkers            = "ServiceWorker.stopAllWorkers"
+	CommandStopWorker                = "ServiceWorker.stopWorker"
+	CommandUnregister                = "ServiceWorker.unregister"
+	CommandUpdateRegistration        = "ServiceWorker.updateRegistration"
 )

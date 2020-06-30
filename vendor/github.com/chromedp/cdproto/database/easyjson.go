@@ -75,12 +75,8 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDatabase(out *jwriter.Writer,
 	_ = first
 	if len(in.TableNames) != 0 {
 		const prefix string = ",\"tableNames\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		first = false
+		out.RawString(prefix[1:])
 		{
 			out.RawByte('[')
 			for v2, v3 := range in.TableNames {
@@ -155,12 +151,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDatabase1(out *jwriter.Writer
 	_ = first
 	{
 		const prefix string = ",\"databaseId\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.DatabaseID))
 	}
 	out.RawByte('}')
@@ -280,12 +271,8 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDatabase2(out *jwriter.Writer
 	_ = first
 	if len(in.ColumnNames) != 0 {
 		const prefix string = ",\"columnNames\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		first = false
+		out.RawString(prefix[1:])
 		{
 			out.RawByte('[')
 			for v6, v7 := range in.ColumnNames {
@@ -391,22 +378,12 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDatabase3(out *jwriter.Writer
 	_ = first
 	{
 		const prefix string = ",\"databaseId\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.DatabaseID))
 	}
 	{
 		const prefix string = ",\"query\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Query))
 	}
 	out.RawByte('}')
@@ -480,12 +457,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDatabase4(out *jwriter.Writer
 	_ = first
 	{
 		const prefix string = ",\"database\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		if in.Database == nil {
 			out.RawString("null")
 		} else {
@@ -557,22 +529,12 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDatabase5(out *jwriter.Writer
 	_ = first
 	{
 		const prefix string = ",\"message\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.Message))
 	}
 	{
 		const prefix string = ",\"code\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int64(int64(in.Code))
 	}
 	out.RawByte('}')
@@ -762,42 +724,22 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDatabase8(out *jwriter.Writer
 	_ = first
 	{
 		const prefix string = ",\"id\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.ID))
 	}
 	{
 		const prefix string = ",\"domain\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Domain))
 	}
 	{
 		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Name))
 	}
 	{
 		const prefix string = ",\"version\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Version))
 	}
 	out.RawByte('}')

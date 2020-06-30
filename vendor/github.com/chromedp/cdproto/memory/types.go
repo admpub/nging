@@ -11,6 +11,8 @@ import (
 )
 
 // PressureLevel memory pressure level.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Memory#type-PressureLevel
 type PressureLevel string
 
 // String returns the PressureLevel as string value.
@@ -53,6 +55,8 @@ func (t *PressureLevel) UnmarshalJSON(buf []byte) error {
 }
 
 // SamplingProfileNode heap profile sample.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Memory#type-SamplingProfileNode
 type SamplingProfileNode struct {
 	Size  float64  `json:"size"`  // Size of the sampled allocation.
 	Total float64  `json:"total"` // Total bytes attributed to this sample.
@@ -60,12 +64,16 @@ type SamplingProfileNode struct {
 }
 
 // SamplingProfile array of heap profile samples.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Memory#type-SamplingProfile
 type SamplingProfile struct {
 	Samples []*SamplingProfileNode `json:"samples"`
 	Modules []*Module              `json:"modules"`
 }
 
 // Module executable module information.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Memory#type-Module
 type Module struct {
 	Name        string  `json:"name"`        // Name of the module.
 	UUID        string  `json:"uuid"`        // UUID of the module.

@@ -10,6 +10,9 @@ func (err Error) Error() string {
 
 // Error types.
 const (
+	// ErrInvalidWebsocketMessage is the invalid websocket message.
+	ErrInvalidWebsocketMessage Error = "invalid websocket message"
+
 	// ErrInvalidDimensions is the invalid dimensions error.
 	ErrInvalidDimensions Error = "invalid dimensions"
 
@@ -37,6 +40,9 @@ const (
 	// ErrChannelClosed is the channel closed error.
 	ErrChannelClosed Error = "channel closed"
 
-	// ErrInvalidHandler is the invalid handler error.
-	ErrInvalidHandler Error = "invalid handler"
+	// ErrInvalidTarget is the invalid target error.
+	ErrInvalidTarget Error = "invalid target"
+
+	// ErrInvalidContext is the invalid context error.
+	ErrInvalidContext Error = "invalid context"
 )

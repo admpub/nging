@@ -7,6 +7,8 @@ import (
 )
 
 // Resource detailed application cache resource information.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/ApplicationCache#type-ApplicationCacheResource
 type Resource struct {
 	URL  string `json:"url"`  // Resource url.
 	Size int64  `json:"size"` // Resource size.
@@ -14,6 +16,8 @@ type Resource struct {
 }
 
 // ApplicationCache detailed application cache information.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/ApplicationCache#type-ApplicationCache
 type ApplicationCache struct {
 	ManifestURL  string      `json:"manifestURL"`  // Manifest URL.
 	Size         float64     `json:"size"`         // Application cache size.
@@ -23,6 +27,8 @@ type ApplicationCache struct {
 }
 
 // FrameWithManifest frame identifier - manifest URL pair.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/ApplicationCache#type-FrameWithManifest
 type FrameWithManifest struct {
 	FrameID     cdp.FrameID `json:"frameId"`     // Frame identifier.
 	ManifestURL string      `json:"manifestURL"` // Manifest URL.

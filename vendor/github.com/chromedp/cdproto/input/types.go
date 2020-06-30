@@ -14,6 +14,8 @@ import (
 )
 
 // TouchPoint [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#type-TouchPoint
 type TouchPoint struct {
 	X             float64 `json:"x"`                       // X coordinate of the event relative to the main frame's viewport in CSS pixels.
 	Y             float64 `json:"y"`                       // Y coordinate of the event relative to the main frame's viewport in CSS pixels. 0 refers to the top of the viewport and Y increases as it proceeds towards the bottom of the viewport.
@@ -24,34 +26,36 @@ type TouchPoint struct {
 	ID            float64 `json:"id,omitempty"`            // Identifier used to track touch sources between events, must be unique within an event.
 }
 
-// GestureType [no description].
-type GestureType string
+// GestureSourceType [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#type-GestureSourceType
+type GestureSourceType string
 
-// String returns the GestureType as string value.
-func (t GestureType) String() string {
+// String returns the GestureSourceType as string value.
+func (t GestureSourceType) String() string {
 	return string(t)
 }
 
-// GestureType values.
+// GestureSourceType values.
 const (
-	GestureDefault GestureType = "default"
-	GestureTouch   GestureType = "touch"
-	GestureMouse   GestureType = "mouse"
+	GestureDefault GestureSourceType = "default"
+	GestureTouch   GestureSourceType = "touch"
+	GestureMouse   GestureSourceType = "mouse"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
-func (t GestureType) MarshalEasyJSON(out *jwriter.Writer) {
+func (t GestureSourceType) MarshalEasyJSON(out *jwriter.Writer) {
 	out.String(string(t))
 }
 
 // MarshalJSON satisfies json.Marshaler.
-func (t GestureType) MarshalJSON() ([]byte, error) {
+func (t GestureSourceType) MarshalJSON() ([]byte, error) {
 	return easyjson.Marshal(t)
 }
 
 // UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
-func (t *GestureType) UnmarshalEasyJSON(in *jlexer.Lexer) {
-	switch GestureType(in.String()) {
+func (t *GestureSourceType) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch GestureSourceType(in.String()) {
 	case GestureDefault:
 		*t = GestureDefault
 	case GestureTouch:
@@ -60,16 +64,74 @@ func (t *GestureType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = GestureMouse
 
 	default:
-		in.AddError(errors.New("unknown GestureType value"))
+		in.AddError(errors.New("unknown GestureSourceType value"))
 	}
 }
 
 // UnmarshalJSON satisfies json.Unmarshaler.
-func (t *GestureType) UnmarshalJSON(buf []byte) error {
+func (t *GestureSourceType) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// MouseButton [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#type-MouseButton
+type MouseButton string
+
+// String returns the MouseButton as string value.
+func (t MouseButton) String() string {
+	return string(t)
+}
+
+// MouseButton values.
+const (
+	None    MouseButton = "none"
+	Left    MouseButton = "left"
+	Middle  MouseButton = "middle"
+	Right   MouseButton = "right"
+	Back    MouseButton = "back"
+	Forward MouseButton = "forward"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t MouseButton) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t MouseButton) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *MouseButton) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch MouseButton(in.String()) {
+	case None:
+		*t = None
+	case Left:
+		*t = Left
+	case Middle:
+		*t = Middle
+	case Right:
+		*t = Right
+	case Back:
+		*t = Back
+	case Forward:
+		*t = Forward
+
+	default:
+		in.AddError(errors.New("unknown MouseButton value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *MouseButton) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
 // TimeSinceEpoch UTC time in seconds, counted from January 1, 1970.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#type-TimeSinceEpoch
 type TimeSinceEpoch time.Time
 
 // Time returns the TimeSinceEpoch as time.Time value.
@@ -101,6 +163,8 @@ func (t *TimeSinceEpoch) UnmarshalJSON(buf []byte) error {
 }
 
 // Modifier input key modifier type.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#method-dispatchKeyEvent
 type Modifier int64
 
 // Int64 returns the Modifier as int64 value.
@@ -173,6 +237,8 @@ func (t *Modifier) UnmarshalJSON(buf []byte) error {
 const ModifierCommand Modifier = ModifierMeta
 
 // KeyType type of the key event.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#method-dispatchKeyEvent
 type KeyType string
 
 // String returns the KeyType as string value.
@@ -221,6 +287,8 @@ func (t *KeyType) UnmarshalJSON(buf []byte) error {
 }
 
 // MouseType type of the mouse event.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#method-dispatchMouseEvent
 type MouseType string
 
 // String returns the MouseType as string value.
@@ -268,57 +336,55 @@ func (t *MouseType) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
-// ButtonType mouse button (default: "none").
-type ButtonType string
+// DispatchMouseEventPointerType pointer type (default: "mouse").
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#method-dispatchMouseEvent
+type DispatchMouseEventPointerType string
 
-// String returns the ButtonType as string value.
-func (t ButtonType) String() string {
+// String returns the DispatchMouseEventPointerType as string value.
+func (t DispatchMouseEventPointerType) String() string {
 	return string(t)
 }
 
-// ButtonType values.
+// DispatchMouseEventPointerType values.
 const (
-	ButtonNone   ButtonType = "none"
-	ButtonLeft   ButtonType = "left"
-	ButtonMiddle ButtonType = "middle"
-	ButtonRight  ButtonType = "right"
+	Mouse DispatchMouseEventPointerType = "mouse"
+	Pen   DispatchMouseEventPointerType = "pen"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
-func (t ButtonType) MarshalEasyJSON(out *jwriter.Writer) {
+func (t DispatchMouseEventPointerType) MarshalEasyJSON(out *jwriter.Writer) {
 	out.String(string(t))
 }
 
 // MarshalJSON satisfies json.Marshaler.
-func (t ButtonType) MarshalJSON() ([]byte, error) {
+func (t DispatchMouseEventPointerType) MarshalJSON() ([]byte, error) {
 	return easyjson.Marshal(t)
 }
 
 // UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
-func (t *ButtonType) UnmarshalEasyJSON(in *jlexer.Lexer) {
-	switch ButtonType(in.String()) {
-	case ButtonNone:
-		*t = ButtonNone
-	case ButtonLeft:
-		*t = ButtonLeft
-	case ButtonMiddle:
-		*t = ButtonMiddle
-	case ButtonRight:
-		*t = ButtonRight
+func (t *DispatchMouseEventPointerType) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch DispatchMouseEventPointerType(in.String()) {
+	case Mouse:
+		*t = Mouse
+	case Pen:
+		*t = Pen
 
 	default:
-		in.AddError(errors.New("unknown ButtonType value"))
+		in.AddError(errors.New("unknown DispatchMouseEventPointerType value"))
 	}
 }
 
 // UnmarshalJSON satisfies json.Unmarshaler.
-func (t *ButtonType) UnmarshalJSON(buf []byte) error {
+func (t *DispatchMouseEventPointerType) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
 // TouchType type of the touch event. TouchEnd and TouchCancel must not
 // contain any touch points, while TouchStart and TouchMove must contains at
 // least one.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#method-dispatchTouchEvent
 type TouchType string
 
 // String returns the TouchType as string value.

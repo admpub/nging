@@ -114,6 +114,13 @@ func GeckoDriver(path string) ServiceOption {
 	}
 }
 
+func ChromeDriver(path string) ServiceOption {
+	return func(s *Service) error {
+		s.chromeDriverPath = path
+		return nil
+	}
+}
+
 // JavaPath specifies the path to the JRE for a Selenium service.
 func JavaPath(path string) ServiceOption {
 	return func(s *Service) error {
@@ -133,6 +140,7 @@ type Service struct {
 	xvfb               *FrameBuffer
 
 	geckoDriverPath, javaPath string
+	chromeDriverPath          string
 
 	output io.Writer
 }
@@ -142,14 +150,10 @@ func (s Service) FrameBuffer() *FrameBuffer {
 	return s.xvfb
 }
 
-// This function is syntactically identical to `exec.Command`, but we want to be
-// able to switch it out for a different version for unit testing.
-var newExecCommand = exec.Command
-
 // NewSeleniumService starts a Selenium instance in the background.
 func NewSeleniumService(jarPath string, port int, opts ...ServiceOption) (*Service, error) {
-	cmd := newExecCommand("java", "-jar", jarPath, "-port", strconv.Itoa(port))
-	s, err := newService(cmd, port, opts...)
+	cmd := exec.Command("java", "-jar", jarPath, "-port", strconv.Itoa(port))
+	s, err := newService(cmd, "/wd/hub", port, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -158,6 +162,9 @@ func NewSeleniumService(jarPath string, port int, opts ...ServiceOption) (*Servi
 	}
 	if s.geckoDriverPath != "" {
 		s.cmd.Args = append([]string{"java", "-Dwebdriver.gecko.driver=" + s.geckoDriverPath}, cmd.Args[1:]...)
+	}
+	if s.chromeDriverPath != "" {
+		s.cmd.Args = append([]string{"java", "-Dwebdriver.chrome.driver=" + s.chromeDriverPath}, cmd.Args[1:]...)
 	}
 	if err := s.start(port); err != nil {
 		return nil, err
@@ -168,11 +175,11 @@ func NewSeleniumService(jarPath string, port int, opts ...ServiceOption) (*Servi
 // NewChromeDriverService starts a ChromeDriver instance in the background.
 func NewChromeDriverService(path string, port int, opts ...ServiceOption) (*Service, error) {
 	cmd := exec.Command(path, "--port="+strconv.Itoa(port), "--url-base=wd/hub", "--verbose")
-	s, err := newService(cmd, port, opts...)
+	s, err := newService(cmd, "/wd/hub", port, opts...)
 	if err != nil {
 		return nil, err
 	}
-	s.shutdownURLPath = "/wd/hub/shutdown"
+	s.shutdownURLPath = "/shutdown"
 	if err := s.start(port); err != nil {
 		return nil, err
 	}
@@ -182,7 +189,7 @@ func NewChromeDriverService(path string, port int, opts ...ServiceOption) (*Serv
 // NewGeckoDriverService starts a GeckoDriver instance in the background.
 func NewGeckoDriverService(path string, port int, opts ...ServiceOption) (*Service, error) {
 	cmd := exec.Command(path, "--port", strconv.Itoa(port))
-	s, err := newService(cmd, port, opts...)
+	s, err := newService(cmd, "", port, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -192,10 +199,10 @@ func NewGeckoDriverService(path string, port int, opts ...ServiceOption) (*Servi
 	return s, nil
 }
 
-func newService(cmd *exec.Cmd, port int, opts ...ServiceOption) (*Service, error) {
+func newService(cmd *exec.Cmd, urlPrefix string, port int, opts ...ServiceOption) (*Service, error) {
 	s := &Service{
 		port: port,
-		addr: fmt.Sprintf("http://localhost:%d", port),
+		addr: fmt.Sprintf("http://localhost:%d%s", port, urlPrefix),
 	}
 	for _, opt := range opts {
 		if err := opt(s); err != nil {
@@ -312,7 +319,7 @@ func NewFrameBufferWithOptions(options FrameBufferOptions) (*FrameBuffer, error)
 		}
 		arguments = append(arguments, "-screen", "0", options.ScreenSize)
 	}
-	xvfb := newExecCommand("Xvfb", arguments...)
+	xvfb := exec.Command("Xvfb", arguments...)
 	xvfb.ExtraFiles = []*os.File{w}
 
 	// TODO(minusnine): plumb a way to set xvfb.Std{err,out} conditionally.
@@ -349,7 +356,7 @@ func NewFrameBufferWithOptions(options FrameBufferOptions) (*FrameBuffer, error)
 		return nil, errors.New("timeout waiting for Xvfb")
 	}
 
-	xauth := newExecCommand("xauth", "generate", ":"+display, ".", "trusted")
+	xauth := exec.Command("xauth", "generate", ":"+display, ".", "trusted")
 	xauth.Stderr = os.Stderr
 	xauth.Stdout = os.Stdout
 	xauth.Env = append(xauth.Env, "XAUTHORITY="+authPath)

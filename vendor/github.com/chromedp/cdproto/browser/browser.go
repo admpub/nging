@@ -15,45 +15,93 @@ import (
 	"github.com/chromedp/cdproto/target"
 )
 
+// SetPermissionParams set permission settings for given origin.
+type SetPermissionParams struct {
+	Permission       *PermissionDescriptor `json:"permission"`                 // Descriptor of permission to override.
+	Setting          PermissionSetting     `json:"setting"`                    // Setting of the permission.
+	Origin           string                `json:"origin,omitempty"`           // Origin the permission applies to, all origins if not specified.
+	BrowserContextID cdp.BrowserContextID  `json:"browserContextId,omitempty"` // Context to override. When omitted, default browser context is used.
+}
+
+// SetPermission set permission settings for given origin.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-setPermission
+//
+// parameters:
+//   permission - Descriptor of permission to override.
+//   setting - Setting of the permission.
+func SetPermission(permission *PermissionDescriptor, setting PermissionSetting) *SetPermissionParams {
+	return &SetPermissionParams{
+		Permission: permission,
+		Setting:    setting,
+	}
+}
+
+// WithOrigin origin the permission applies to, all origins if not specified.
+func (p SetPermissionParams) WithOrigin(origin string) *SetPermissionParams {
+	p.Origin = origin
+	return &p
+}
+
+// WithBrowserContextID context to override. When omitted, default browser
+// context is used.
+func (p SetPermissionParams) WithBrowserContextID(browserContextID cdp.BrowserContextID) *SetPermissionParams {
+	p.BrowserContextID = browserContextID
+	return &p
+}
+
+// Do executes Browser.setPermission against the provided context.
+func (p *SetPermissionParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetPermission, p, nil)
+}
+
 // GrantPermissionsParams grant specific permissions to the given origin and
 // reject all others.
 type GrantPermissionsParams struct {
-	Origin           string                  `json:"origin"`
-	Permissions      []PermissionType        `json:"permissions"`
-	BrowserContextID target.BrowserContextID `json:"browserContextId,omitempty"` // BrowserContext to override permissions. When omitted, default browser context is used.
+	Permissions      []PermissionType     `json:"permissions"`
+	Origin           string               `json:"origin,omitempty"`           // Origin the permission applies to, all origins if not specified.
+	BrowserContextID cdp.BrowserContextID `json:"browserContextId,omitempty"` // BrowserContext to override permissions. When omitted, default browser context is used.
 }
 
 // GrantPermissions grant specific permissions to the given origin and reject
 // all others.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-grantPermissions
+//
 // parameters:
-//   origin
 //   permissions
-func GrantPermissions(origin string, permissions []PermissionType) *GrantPermissionsParams {
+func GrantPermissions(permissions []PermissionType) *GrantPermissionsParams {
 	return &GrantPermissionsParams{
-		Origin:      origin,
 		Permissions: permissions,
 	}
 }
 
+// WithOrigin origin the permission applies to, all origins if not specified.
+func (p GrantPermissionsParams) WithOrigin(origin string) *GrantPermissionsParams {
+	p.Origin = origin
+	return &p
+}
+
 // WithBrowserContextID browserContext to override permissions. When omitted,
 // default browser context is used.
-func (p GrantPermissionsParams) WithBrowserContextID(browserContextID target.BrowserContextID) *GrantPermissionsParams {
+func (p GrantPermissionsParams) WithBrowserContextID(browserContextID cdp.BrowserContextID) *GrantPermissionsParams {
 	p.BrowserContextID = browserContextID
 	return &p
 }
 
 // Do executes Browser.grantPermissions against the provided context.
-func (p *GrantPermissionsParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandGrantPermissions, p, nil)
+func (p *GrantPermissionsParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandGrantPermissions, p, nil)
 }
 
 // ResetPermissionsParams reset all permission management for all origins.
 type ResetPermissionsParams struct {
-	BrowserContextID target.BrowserContextID `json:"browserContextId,omitempty"` // BrowserContext to reset permissions. When omitted, default browser context is used.
+	BrowserContextID cdp.BrowserContextID `json:"browserContextId,omitempty"` // BrowserContext to reset permissions. When omitted, default browser context is used.
 }
 
 // ResetPermissions reset all permission management for all origins.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-resetPermissions
 //
 // parameters:
 func ResetPermissions() *ResetPermissionsParams {
@@ -62,46 +110,105 @@ func ResetPermissions() *ResetPermissionsParams {
 
 // WithBrowserContextID browserContext to reset permissions. When omitted,
 // default browser context is used.
-func (p ResetPermissionsParams) WithBrowserContextID(browserContextID target.BrowserContextID) *ResetPermissionsParams {
+func (p ResetPermissionsParams) WithBrowserContextID(browserContextID cdp.BrowserContextID) *ResetPermissionsParams {
 	p.BrowserContextID = browserContextID
 	return &p
 }
 
 // Do executes Browser.resetPermissions against the provided context.
-func (p *ResetPermissionsParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandResetPermissions, p, nil)
+func (p *ResetPermissionsParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandResetPermissions, p, nil)
+}
+
+// SetDownloadBehaviorParams set the behavior when downloading a file.
+type SetDownloadBehaviorParams struct {
+	Behavior         SetDownloadBehaviorBehavior `json:"behavior"`                   // Whether to allow all or deny all download requests, or use default Chrome behavior if available (otherwise deny). |allowAndName| allows download and names files according to their dowmload guids.
+	BrowserContextID cdp.BrowserContextID        `json:"browserContextId,omitempty"` // BrowserContext to set download behavior. When omitted, default browser context is used.
+	DownloadPath     string                      `json:"downloadPath,omitempty"`     // The default path to save downloaded files to. This is required if behavior is set to 'allow' or 'allowAndName'.
+}
+
+// SetDownloadBehavior set the behavior when downloading a file.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-setDownloadBehavior
+//
+// parameters:
+//   behavior - Whether to allow all or deny all download requests, or use default Chrome behavior if available (otherwise deny). |allowAndName| allows download and names files according to their dowmload guids.
+func SetDownloadBehavior(behavior SetDownloadBehaviorBehavior) *SetDownloadBehaviorParams {
+	return &SetDownloadBehaviorParams{
+		Behavior: behavior,
+	}
+}
+
+// WithBrowserContextID browserContext to set download behavior. When
+// omitted, default browser context is used.
+func (p SetDownloadBehaviorParams) WithBrowserContextID(browserContextID cdp.BrowserContextID) *SetDownloadBehaviorParams {
+	p.BrowserContextID = browserContextID
+	return &p
+}
+
+// WithDownloadPath the default path to save downloaded files to. This is
+// required if behavior is set to 'allow' or 'allowAndName'.
+func (p SetDownloadBehaviorParams) WithDownloadPath(downloadPath string) *SetDownloadBehaviorParams {
+	p.DownloadPath = downloadPath
+	return &p
+}
+
+// Do executes Browser.setDownloadBehavior against the provided context.
+func (p *SetDownloadBehaviorParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetDownloadBehavior, p, nil)
 }
 
 // CloseParams close browser gracefully.
 type CloseParams struct{}
 
 // Close close browser gracefully.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-close
 func Close() *CloseParams {
 	return &CloseParams{}
 }
 
 // Do executes Browser.close against the provided context.
-func (p *CloseParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandClose, nil, nil)
+func (p *CloseParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandClose, nil, nil)
 }
 
 // CrashParams crashes browser on the main thread.
 type CrashParams struct{}
 
 // Crash crashes browser on the main thread.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-crash
 func Crash() *CrashParams {
 	return &CrashParams{}
 }
 
 // Do executes Browser.crash against the provided context.
-func (p *CrashParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandCrash, nil, nil)
+func (p *CrashParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandCrash, nil, nil)
+}
+
+// CrashGpuProcessParams crashes GPU process.
+type CrashGpuProcessParams struct{}
+
+// CrashGpuProcess crashes GPU process.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-crashGpuProcess
+func CrashGpuProcess() *CrashGpuProcessParams {
+	return &CrashGpuProcessParams{}
+}
+
+// Do executes Browser.crashGpuProcess against the provided context.
+func (p *CrashGpuProcessParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandCrashGpuProcess, nil, nil)
 }
 
 // GetVersionParams returns version information.
 type GetVersionParams struct{}
 
 // GetVersion returns version information.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getVersion
 func GetVersion() *GetVersionParams {
 	return &GetVersionParams{}
 }
@@ -123,10 +230,10 @@ type GetVersionReturns struct {
 //   revision - Product revision.
 //   userAgent - User-Agent.
 //   jsVersion - V8 version.
-func (p *GetVersionParams) Do(ctxt context.Context, h cdp.Executor) (protocolVersion string, product string, revision string, userAgent string, jsVersion string, err error) {
+func (p *GetVersionParams) Do(ctx context.Context) (protocolVersion string, product string, revision string, userAgent string, jsVersion string, err error) {
 	// execute
 	var res GetVersionReturns
-	err = h.Execute(ctxt, CommandGetVersion, nil, &res)
+	err = cdp.Execute(ctx, CommandGetVersion, nil, &res)
 	if err != nil {
 		return "", "", "", "", "", err
 	}
@@ -140,6 +247,8 @@ type GetBrowserCommandLineParams struct{}
 
 // GetBrowserCommandLine returns the command line switches for the browser
 // process if, and only if --enable-automation is on the commandline.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getBrowserCommandLine
 func GetBrowserCommandLine() *GetBrowserCommandLineParams {
 	return &GetBrowserCommandLineParams{}
 }
@@ -153,10 +262,10 @@ type GetBrowserCommandLineReturns struct {
 //
 // returns:
 //   arguments - Commandline parameters
-func (p *GetBrowserCommandLineParams) Do(ctxt context.Context, h cdp.Executor) (arguments []string, err error) {
+func (p *GetBrowserCommandLineParams) Do(ctx context.Context) (arguments []string, err error) {
 	// execute
 	var res GetBrowserCommandLineReturns
-	err = h.Execute(ctxt, CommandGetBrowserCommandLine, nil, &res)
+	err = cdp.Execute(ctx, CommandGetBrowserCommandLine, nil, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -171,6 +280,8 @@ type GetHistogramsParams struct {
 }
 
 // GetHistograms get Chrome histograms.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getHistograms
 //
 // parameters:
 func GetHistograms() *GetHistogramsParams {
@@ -200,10 +311,10 @@ type GetHistogramsReturns struct {
 //
 // returns:
 //   histograms - Histograms.
-func (p *GetHistogramsParams) Do(ctxt context.Context, h cdp.Executor) (histograms []*Histogram, err error) {
+func (p *GetHistogramsParams) Do(ctx context.Context) (histograms []*Histogram, err error) {
 	// execute
 	var res GetHistogramsReturns
-	err = h.Execute(ctxt, CommandGetHistograms, p, &res)
+	err = cdp.Execute(ctx, CommandGetHistograms, p, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -218,6 +329,8 @@ type GetHistogramParams struct {
 }
 
 // GetHistogram get a Chrome histogram by name.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getHistogram
 //
 // parameters:
 //   name - Requested histogram name.
@@ -242,10 +355,10 @@ type GetHistogramReturns struct {
 //
 // returns:
 //   histogram - Histogram.
-func (p *GetHistogramParams) Do(ctxt context.Context, h cdp.Executor) (histogram *Histogram, err error) {
+func (p *GetHistogramParams) Do(ctx context.Context) (histogram *Histogram, err error) {
 	// execute
 	var res GetHistogramReturns
-	err = h.Execute(ctxt, CommandGetHistogram, p, &res)
+	err = cdp.Execute(ctx, CommandGetHistogram, p, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -259,6 +372,8 @@ type GetWindowBoundsParams struct {
 }
 
 // GetWindowBounds get position and size of the browser window.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getWindowBounds
 //
 // parameters:
 //   windowID - Browser window id.
@@ -277,10 +392,10 @@ type GetWindowBoundsReturns struct {
 //
 // returns:
 //   bounds - Bounds information of the window. When window state is 'minimized', the restored window position and size are returned.
-func (p *GetWindowBoundsParams) Do(ctxt context.Context, h cdp.Executor) (bounds *Bounds, err error) {
+func (p *GetWindowBoundsParams) Do(ctx context.Context) (bounds *Bounds, err error) {
 	// execute
 	var res GetWindowBoundsReturns
-	err = h.Execute(ctxt, CommandGetWindowBounds, p, &res)
+	err = cdp.Execute(ctx, CommandGetWindowBounds, p, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -291,18 +406,24 @@ func (p *GetWindowBoundsParams) Do(ctxt context.Context, h cdp.Executor) (bounds
 // GetWindowForTargetParams get the browser window that contains the devtools
 // target.
 type GetWindowForTargetParams struct {
-	TargetID target.ID `json:"targetId"` // Devtools agent host id.
+	TargetID target.ID `json:"targetId,omitempty"` // Devtools agent host id. If called as a part of the session, associated targetId is used.
 }
 
 // GetWindowForTarget get the browser window that contains the devtools
 // target.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-getWindowForTarget
+//
 // parameters:
-//   targetID - Devtools agent host id.
-func GetWindowForTarget(targetID target.ID) *GetWindowForTargetParams {
-	return &GetWindowForTargetParams{
-		TargetID: targetID,
-	}
+func GetWindowForTarget() *GetWindowForTargetParams {
+	return &GetWindowForTargetParams{}
+}
+
+// WithTargetID devtools agent host id. If called as a part of the session,
+// associated targetId is used.
+func (p GetWindowForTargetParams) WithTargetID(targetID target.ID) *GetWindowForTargetParams {
+	p.TargetID = targetID
+	return &p
 }
 
 // GetWindowForTargetReturns return values.
@@ -316,10 +437,10 @@ type GetWindowForTargetReturns struct {
 // returns:
 //   windowID - Browser window id.
 //   bounds - Bounds information of the window. When window state is 'minimized', the restored window position and size are returned.
-func (p *GetWindowForTargetParams) Do(ctxt context.Context, h cdp.Executor) (windowID WindowID, bounds *Bounds, err error) {
+func (p *GetWindowForTargetParams) Do(ctx context.Context) (windowID WindowID, bounds *Bounds, err error) {
 	// execute
 	var res GetWindowForTargetReturns
-	err = h.Execute(ctxt, CommandGetWindowForTarget, p, &res)
+	err = cdp.Execute(ctx, CommandGetWindowForTarget, p, &res)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -335,6 +456,8 @@ type SetWindowBoundsParams struct {
 
 // SetWindowBounds set position and/or size of the browser window.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-setWindowBounds
+//
 // parameters:
 //   windowID - Browser window id.
 //   bounds - New window bounds. The 'minimized', 'maximized' and 'fullscreen' states cannot be combined with 'left', 'top', 'width' or 'height'. Leaves unspecified fields unchanged.
@@ -346,16 +469,51 @@ func SetWindowBounds(windowID WindowID, bounds *Bounds) *SetWindowBoundsParams {
 }
 
 // Do executes Browser.setWindowBounds against the provided context.
-func (p *SetWindowBoundsParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetWindowBounds, p, nil)
+func (p *SetWindowBoundsParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetWindowBounds, p, nil)
+}
+
+// SetDockTileParams set dock tile details, platform-specific.
+type SetDockTileParams struct {
+	BadgeLabel string `json:"badgeLabel,omitempty"`
+	Image      string `json:"image,omitempty"` // Png encoded image.
+}
+
+// SetDockTile set dock tile details, platform-specific.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-setDockTile
+//
+// parameters:
+func SetDockTile() *SetDockTileParams {
+	return &SetDockTileParams{}
+}
+
+// WithBadgeLabel [no description].
+func (p SetDockTileParams) WithBadgeLabel(badgeLabel string) *SetDockTileParams {
+	p.BadgeLabel = badgeLabel
+	return &p
+}
+
+// WithImage png encoded image.
+func (p SetDockTileParams) WithImage(image string) *SetDockTileParams {
+	p.Image = image
+	return &p
+}
+
+// Do executes Browser.setDockTile against the provided context.
+func (p *SetDockTileParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetDockTile, p, nil)
 }
 
 // Command names.
 const (
+	CommandSetPermission         = "Browser.setPermission"
 	CommandGrantPermissions      = "Browser.grantPermissions"
 	CommandResetPermissions      = "Browser.resetPermissions"
+	CommandSetDownloadBehavior   = "Browser.setDownloadBehavior"
 	CommandClose                 = "Browser.close"
 	CommandCrash                 = "Browser.crash"
+	CommandCrashGpuProcess       = "Browser.crashGpuProcess"
 	CommandGetVersion            = "Browser.getVersion"
 	CommandGetBrowserCommandLine = "Browser.getBrowserCommandLine"
 	CommandGetHistograms         = "Browser.getHistograms"
@@ -363,4 +521,5 @@ const (
 	CommandGetWindowBounds       = "Browser.getWindowBounds"
 	CommandGetWindowForTarget    = "Browser.getWindowForTarget"
 	CommandSetWindowBounds       = "Browser.setWindowBounds"
+	CommandSetDockTile           = "Browser.setDockTile"
 )

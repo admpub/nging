@@ -2,12 +2,9 @@ package gojay
 
 // TODO @afiune for now we are using the standard json unmarshaling but in
 // the future it would be great to implement one here inside this repo
-import (
-	"encoding/json"
-	"log"
-)
+import "encoding/json"
 
-// DecodeInterface reads the next JSON-encoded value from its input and stores it in the value pointed to by i.
+// DecodeInterface reads the next JSON-encoded value from the decoder's input (io.Reader) and stores it in the value pointed to by i.
 //
 // i must be an interface poiter
 func (dec *Decoder) DecodeInterface(i *interface{}) error {
@@ -31,7 +28,6 @@ func (dec *Decoder) decodeInterface(i *interface{}) error {
 	}
 
 	object := dec.data[start:end]
-	log.Print(string(object))
 	if err = json.Unmarshal(object, i); err != nil {
 		return err
 	}
@@ -43,7 +39,6 @@ func (dec *Decoder) decodeInterface(i *interface{}) error {
 // @afiune Maybe return the type as well?
 func (dec *Decoder) getObject() (start int, end int, err error) {
 	// start cursor
-	log.Print(string(dec.data[dec.cursor:]))
 	for ; dec.cursor < dec.length || dec.read(); dec.cursor++ {
 		switch dec.data[dec.cursor] {
 		case ' ', '\n', '\t', '\r', ',':
@@ -115,4 +110,21 @@ func (dec *Decoder) getObject() (start int, end int, err error) {
 	}
 	err = dec.raiseInvalidJSONErr(dec.cursor)
 	return
+}
+
+// Add Values functions
+
+// AddInterface decodes the JSON value within an object or an array to a interface{}.
+func (dec *Decoder) AddInterface(v *interface{}) error {
+	return dec.Interface(v)
+}
+
+// Interface decodes the JSON value within an object or an array to an interface{}.
+func (dec *Decoder) Interface(value *interface{}) error {
+	err := dec.decodeInterface(value)
+	if err != nil {
+		return err
+	}
+	dec.called |= 1
+	return nil
 }

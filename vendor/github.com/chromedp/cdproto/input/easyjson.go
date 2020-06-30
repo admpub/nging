@@ -66,72 +66,37 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoInput(out *jwriter.Writer, in
 	_ = first
 	{
 		const prefix string = ",\"x\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.Float64(float64(in.X))
 	}
 	{
 		const prefix string = ",\"y\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.Y))
 	}
 	if in.RadiusX != 0 {
 		const prefix string = ",\"radiusX\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.RadiusX))
 	}
 	if in.RadiusY != 0 {
 		const prefix string = ",\"radiusY\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.RadiusY))
 	}
 	if in.RotationAngle != 0 {
 		const prefix string = ",\"rotationAngle\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.RotationAngle))
 	}
 	if in.Force != 0 {
 		const prefix string = ",\"force\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.Force))
 	}
 	if in.ID != 0 {
 		const prefix string = ",\"id\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.ID))
 	}
 	out.RawByte('}')
@@ -205,52 +170,27 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoInput1(out *jwriter.Writer, i
 	_ = first
 	{
 		const prefix string = ",\"x\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.Float64(float64(in.X))
 	}
 	{
 		const prefix string = ",\"y\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.Y))
 	}
 	if in.Duration != 0 {
 		const prefix string = ",\"duration\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int64(int64(in.Duration))
 	}
 	if in.TapCount != 0 {
 		const prefix string = ",\"tapCount\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int64(int64(in.TapCount))
 	}
 	if in.GestureSourceType != "" {
 		const prefix string = ",\"gestureSourceType\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		(in.GestureSourceType).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
@@ -338,122 +278,62 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoInput2(out *jwriter.Writer, i
 	_ = first
 	{
 		const prefix string = ",\"x\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.Float64(float64(in.X))
 	}
 	{
 		const prefix string = ",\"y\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.Y))
 	}
 	if in.XDistance != 0 {
 		const prefix string = ",\"xDistance\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.XDistance))
 	}
 	if in.YDistance != 0 {
 		const prefix string = ",\"yDistance\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.YDistance))
 	}
 	if in.XOverscroll != 0 {
 		const prefix string = ",\"xOverscroll\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.XOverscroll))
 	}
 	if in.YOverscroll != 0 {
 		const prefix string = ",\"yOverscroll\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.YOverscroll))
 	}
 	if in.PreventFling {
 		const prefix string = ",\"preventFling\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Bool(bool(in.PreventFling))
 	}
 	if in.Speed != 0 {
 		const prefix string = ",\"speed\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int64(int64(in.Speed))
 	}
 	if in.GestureSourceType != "" {
 		const prefix string = ",\"gestureSourceType\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		(in.GestureSourceType).MarshalEasyJSON(out)
 	}
 	if in.RepeatCount != 0 {
 		const prefix string = ",\"repeatCount\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int64(int64(in.RepeatCount))
 	}
 	if in.RepeatDelayMs != 0 {
 		const prefix string = ",\"repeatDelayMs\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int64(int64(in.RepeatDelayMs))
 	}
 	if in.InteractionMarkerName != "" {
 		const prefix string = ",\"interactionMarkerName\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.InteractionMarkerName))
 	}
 	out.RawByte('}')
@@ -527,52 +407,27 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoInput3(out *jwriter.Writer, i
 	_ = first
 	{
 		const prefix string = ",\"x\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.Float64(float64(in.X))
 	}
 	{
 		const prefix string = ",\"y\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.Y))
 	}
 	{
 		const prefix string = ",\"scaleFactor\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.ScaleFactor))
 	}
 	if in.RelativeSpeed != 0 {
 		const prefix string = ",\"relativeSpeed\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int64(int64(in.RelativeSpeed))
 	}
 	if in.GestureSourceType != "" {
 		const prefix string = ",\"gestureSourceType\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		(in.GestureSourceType).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
@@ -638,12 +493,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoInput4(out *jwriter.Writer, i
 	_ = first
 	{
 		const prefix string = ",\"ignore\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.Bool(bool(in.Ignore))
 	}
 	out.RawByte('}')
@@ -709,12 +559,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoInput5(out *jwriter.Writer, i
 	_ = first
 	{
 		const prefix string = ",\"text\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.Text))
 	}
 	out.RawByte('}')
@@ -804,92 +649,47 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoInput6(out *jwriter.Writer, i
 	_ = first
 	{
 		const prefix string = ",\"type\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		(in.Type).MarshalEasyJSON(out)
 	}
 	{
 		const prefix string = ",\"x\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int64(int64(in.X))
 	}
 	{
 		const prefix string = ",\"y\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int64(int64(in.Y))
 	}
 	{
 		const prefix string = ",\"button\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		(in.Button).MarshalEasyJSON(out)
 	}
 	if in.Timestamp != nil {
 		const prefix string = ",\"timestamp\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		(*in.Timestamp).MarshalEasyJSON(out)
 	}
 	if in.DeltaX != 0 {
 		const prefix string = ",\"deltaX\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.DeltaX))
 	}
 	if in.DeltaY != 0 {
 		const prefix string = ",\"deltaY\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.DeltaY))
 	}
 	{
 		const prefix string = ",\"modifiers\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		(in.Modifiers).MarshalEasyJSON(out)
 	}
 	if in.ClickCount != 0 {
 		const prefix string = ",\"clickCount\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int64(int64(in.ClickCount))
 	}
 	out.RawByte('}')
@@ -998,22 +798,12 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoInput7(out *jwriter.Writer, i
 	_ = first
 	{
 		const prefix string = ",\"type\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		(in.Type).MarshalEasyJSON(out)
 	}
 	{
 		const prefix string = ",\"touchPoints\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		if in.TouchPoints == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 			out.RawString("null")
 		} else {
@@ -1033,22 +823,12 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoInput7(out *jwriter.Writer, i
 	}
 	{
 		const prefix string = ",\"modifiers\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		(in.Modifiers).MarshalEasyJSON(out)
 	}
 	if in.Timestamp != nil {
 		const prefix string = ",\"timestamp\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		(*in.Timestamp).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
@@ -1116,12 +896,16 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoInput8(in *jlexer.Lexer, out 
 			}
 		case "button":
 			(out.Button).UnmarshalEasyJSON(in)
+		case "buttons":
+			out.Buttons = int64(in.Int64())
 		case "clickCount":
 			out.ClickCount = int64(in.Int64())
 		case "deltaX":
 			out.DeltaX = float64(in.Float64())
 		case "deltaY":
 			out.DeltaY = float64(in.Float64())
+		case "pointerType":
+			(out.PointerType).UnmarshalEasyJSON(in)
 		default:
 			in.SkipRecursive()
 		}
@@ -1138,93 +922,58 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoInput8(out *jwriter.Writer, i
 	_ = first
 	{
 		const prefix string = ",\"type\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		(in.Type).MarshalEasyJSON(out)
 	}
 	{
 		const prefix string = ",\"x\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.X))
 	}
 	{
 		const prefix string = ",\"y\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.Y))
 	}
 	{
 		const prefix string = ",\"modifiers\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		(in.Modifiers).MarshalEasyJSON(out)
 	}
 	if in.Timestamp != nil {
 		const prefix string = ",\"timestamp\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		(*in.Timestamp).MarshalEasyJSON(out)
 	}
 	if in.Button != "" {
 		const prefix string = ",\"button\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		(in.Button).MarshalEasyJSON(out)
+	}
+	if in.Buttons != 0 {
+		const prefix string = ",\"buttons\":"
+		out.RawString(prefix)
+		out.Int64(int64(in.Buttons))
 	}
 	if in.ClickCount != 0 {
 		const prefix string = ",\"clickCount\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int64(int64(in.ClickCount))
 	}
 	if in.DeltaX != 0 {
 		const prefix string = ",\"deltaX\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.DeltaX))
 	}
 	if in.DeltaY != 0 {
 		const prefix string = ",\"deltaY\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.DeltaY))
+	}
+	if in.PointerType != "" {
+		const prefix string = ",\"pointerType\":"
+		out.RawString(prefix)
+		(in.PointerType).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
 }
@@ -1323,142 +1072,72 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoInput9(out *jwriter.Writer, i
 	_ = first
 	{
 		const prefix string = ",\"type\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		(in.Type).MarshalEasyJSON(out)
 	}
 	{
 		const prefix string = ",\"modifiers\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		(in.Modifiers).MarshalEasyJSON(out)
 	}
 	if in.Timestamp != nil {
 		const prefix string = ",\"timestamp\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		(*in.Timestamp).MarshalEasyJSON(out)
 	}
 	if in.Text != "" {
 		const prefix string = ",\"text\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Text))
 	}
 	if in.UnmodifiedText != "" {
 		const prefix string = ",\"unmodifiedText\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.UnmodifiedText))
 	}
 	if in.KeyIdentifier != "" {
 		const prefix string = ",\"keyIdentifier\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.KeyIdentifier))
 	}
 	if in.Code != "" {
 		const prefix string = ",\"code\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Code))
 	}
 	if in.Key != "" {
 		const prefix string = ",\"key\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Key))
 	}
 	if in.WindowsVirtualKeyCode != 0 {
 		const prefix string = ",\"windowsVirtualKeyCode\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int64(int64(in.WindowsVirtualKeyCode))
 	}
 	if in.NativeVirtualKeyCode != 0 {
 		const prefix string = ",\"nativeVirtualKeyCode\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int64(int64(in.NativeVirtualKeyCode))
 	}
 	{
 		const prefix string = ",\"autoRepeat\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Bool(bool(in.AutoRepeat))
 	}
 	{
 		const prefix string = ",\"isKeypad\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Bool(bool(in.IsKeypad))
 	}
 	{
 		const prefix string = ",\"isSystemKey\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Bool(bool(in.IsSystemKey))
 	}
 	if in.Location != 0 {
 		const prefix string = ",\"location\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int64(int64(in.Location))
 	}
 	out.RawByte('}')

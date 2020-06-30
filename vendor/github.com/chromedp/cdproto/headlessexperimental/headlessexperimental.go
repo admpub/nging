@@ -34,6 +34,8 @@ type BeginFrameParams struct {
 // for use with --run-all-compositor-stages-before-draw, see also
 // https://goo.gl/3zHXhB for more background.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/HeadlessExperimental#method-beginFrame
+//
 // parameters:
 func BeginFrame() *BeginFrameParams {
 	return &BeginFrameParams{}
@@ -83,10 +85,10 @@ type BeginFrameReturns struct {
 // returns:
 //   hasDamage - Whether the BeginFrame resulted in damage and, thus, a new frame was committed to the display. Reported for diagnostic uses, may be removed in the future.
 //   screenshotData - Base64-encoded image data of the screenshot, if one was requested and successfully taken.
-func (p *BeginFrameParams) Do(ctxt context.Context, h cdp.Executor) (hasDamage bool, screenshotData []byte, err error) {
+func (p *BeginFrameParams) Do(ctx context.Context) (hasDamage bool, screenshotData []byte, err error) {
 	// execute
 	var res BeginFrameReturns
-	err = h.Execute(ctxt, CommandBeginFrame, p, &res)
+	err = cdp.Execute(ctx, CommandBeginFrame, p, &res)
 	if err != nil {
 		return false, nil, err
 	}
@@ -104,26 +106,30 @@ func (p *BeginFrameParams) Do(ctxt context.Context, h cdp.Executor) (hasDamage b
 type DisableParams struct{}
 
 // Disable disables headless events for the target.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/HeadlessExperimental#method-disable
 func Disable() *DisableParams {
 	return &DisableParams{}
 }
 
 // Do executes HeadlessExperimental.disable against the provided context.
-func (p *DisableParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandDisable, nil, nil)
+func (p *DisableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDisable, nil, nil)
 }
 
 // EnableParams enables headless events for the target.
 type EnableParams struct{}
 
 // Enable enables headless events for the target.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/HeadlessExperimental#method-enable
 func Enable() *EnableParams {
 	return &EnableParams{}
 }
 
 // Do executes HeadlessExperimental.enable against the provided context.
-func (p *EnableParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandEnable, nil, nil)
+func (p *EnableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandEnable, nil, nil)
 }
 
 // Command names.

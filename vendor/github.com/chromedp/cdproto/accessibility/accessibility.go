@@ -13,6 +13,40 @@ import (
 	"github.com/chromedp/cdproto/runtime"
 )
 
+// DisableParams disables the accessibility domain.
+type DisableParams struct{}
+
+// Disable disables the accessibility domain.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Accessibility#method-disable
+func Disable() *DisableParams {
+	return &DisableParams{}
+}
+
+// Do executes Accessibility.disable against the provided context.
+func (p *DisableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDisable, nil, nil)
+}
+
+// EnableParams enables the accessibility domain which causes AXNodeIds to
+// remain consistent between method calls. This turns on accessibility for the
+// page, which can impact performance until accessibility is disabled.
+type EnableParams struct{}
+
+// Enable enables the accessibility domain which causes AXNodeIds to remain
+// consistent between method calls. This turns on accessibility for the page,
+// which can impact performance until accessibility is disabled.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Accessibility#method-enable
+func Enable() *EnableParams {
+	return &EnableParams{}
+}
+
+// Do executes Accessibility.enable against the provided context.
+func (p *EnableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandEnable, nil, nil)
+}
+
 // GetPartialAXTreeParams fetches the accessibility node and partial
 // accessibility tree for this DOM node, if it exists.
 type GetPartialAXTreeParams struct {
@@ -24,6 +58,8 @@ type GetPartialAXTreeParams struct {
 
 // GetPartialAXTree fetches the accessibility node and partial accessibility
 // tree for this DOM node, if it exists.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Accessibility#method-getPartialAXTree
 //
 // parameters:
 func GetPartialAXTree() *GetPartialAXTreeParams {
@@ -67,10 +103,10 @@ type GetPartialAXTreeReturns struct {
 //
 // returns:
 //   nodes - The Accessibility.AXNode for this DOM node, if it exists, plus its ancestors, siblings and children, if requested.
-func (p *GetPartialAXTreeParams) Do(ctxt context.Context, h cdp.Executor) (nodes []*Node, err error) {
+func (p *GetPartialAXTreeParams) Do(ctx context.Context) (nodes []*Node, err error) {
 	// execute
 	var res GetPartialAXTreeReturns
-	err = h.Execute(ctxt, CommandGetPartialAXTree, p, &res)
+	err = cdp.Execute(ctx, CommandGetPartialAXTree, p, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -82,6 +118,8 @@ func (p *GetPartialAXTreeParams) Do(ctxt context.Context, h cdp.Executor) (nodes
 type GetFullAXTreeParams struct{}
 
 // GetFullAXTree fetches the entire accessibility tree.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Accessibility#method-getFullAXTree
 func GetFullAXTree() *GetFullAXTreeParams {
 	return &GetFullAXTreeParams{}
 }
@@ -95,10 +133,10 @@ type GetFullAXTreeReturns struct {
 //
 // returns:
 //   nodes
-func (p *GetFullAXTreeParams) Do(ctxt context.Context, h cdp.Executor) (nodes []*Node, err error) {
+func (p *GetFullAXTreeParams) Do(ctx context.Context) (nodes []*Node, err error) {
 	// execute
 	var res GetFullAXTreeReturns
-	err = h.Execute(ctxt, CommandGetFullAXTree, nil, &res)
+	err = cdp.Execute(ctx, CommandGetFullAXTree, nil, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -108,6 +146,8 @@ func (p *GetFullAXTreeParams) Do(ctxt context.Context, h cdp.Executor) (nodes []
 
 // Command names.
 const (
+	CommandDisable          = "Accessibility.disable"
+	CommandEnable           = "Accessibility.enable"
 	CommandGetPartialAXTree = "Accessibility.getPartialAXTree"
 	CommandGetFullAXTree    = "Accessibility.getFullAXTree"
 )

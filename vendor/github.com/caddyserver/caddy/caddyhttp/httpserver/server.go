@@ -35,13 +35,13 @@ import (
 	"github.com/caddyserver/caddy/caddyhttp/staticfiles"
 	"github.com/caddyserver/caddy/caddytls"
 	"github.com/caddyserver/caddy/telemetry"
-	"github.com/lucas-clemente/quic-go/h2quic"
+	"github.com/lucas-clemente/quic-go/http3"
 )
 
 // Server is the HTTP server implementation.
 type Server struct {
 	Server      *http.Server
-	quicServer  *h2quic.Server
+	quicServer  *http3.Server
 	sites       []*SiteConfig
 	connTimeout time.Duration // max time to wait for a connection before force stop
 	tlsGovChan  chan struct{} // close to stop the TLS maintenance goroutine
@@ -104,7 +104,7 @@ func NewServer(addr string, group []*SiteConfig) (*Server, error) {
 	if s.Server.TLSConfig != nil {
 		// enable QUIC if desired (requires HTTP/2)
 		if HTTP2 && QUIC {
-			s.quicServer = &h2quic.Server{Server: s.Server}
+			s.quicServer = &http3.Server{Server: s.Server}
 			s.Server.Handler = s.wrapWithSvcHeaders(s.Server.Handler)
 		}
 
@@ -442,11 +442,13 @@ func (s *Server) serveHTTP(w http.ResponseWriter, r *http.Request) (int, error) 
 		r.URL = trimPathPrefix(r.URL, pathPrefix)
 	}
 
+	// if not disabled via `insecure_disable_sni_matching`
 	// enforce strict host matching, which ensures that the SNI
 	// value (if any), matches the Host header; essential for
 	// sites that rely on TLS ClientAuth sharing a port with
 	// sites that do not - if mismatched, close the connection
-	if vhost.StrictHostMatching && r.TLS != nil &&
+	if !vhost.TLS.InsecureDisableSNIMatching && r.TLS != nil &&
+		vhost.TLS.ClientAuth != tls.NoClientCert &&
 		strings.ToLower(r.TLS.ServerName) != strings.ToLower(hostname) {
 		r.Close = true
 		log.Printf("[ERROR] %s - strict host matching: SNI (%s) and HTTP Host (%s) values differ",
@@ -554,16 +556,20 @@ type tcpKeepAliveListener struct {
 }
 
 // Accept accepts the connection with a keep-alive enabled.
-func (ln tcpKeepAliveListener) Accept() (c net.Conn, err error) {
+func (ln tcpKeepAliveListener) Accept() (net.Conn, error) {
 	tc, err := ln.AcceptTCP()
 	if err != nil {
-		return
+		return nil, err
 	}
 	if err = tc.SetKeepAlive(true); err != nil {
-		return
+		return nil, err
 	}
-	if err = tc.SetKeepAlivePeriod(3 * time.Minute); err != nil {
-		return
+	// OpenBSD has no user-settable per-socket TCP keepalive
+	// https://github.com/caddyserver/caddy/pull/2787
+	if runtime.GOOS != "openbsd" {
+		if err = tc.SetKeepAlivePeriod(3 * time.Minute); err != nil {
+			return nil, err
+		}
 	}
 	return tc, nil
 }

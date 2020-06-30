@@ -32,6 +32,8 @@ type DispatchKeyEventParams struct {
 
 // DispatchKeyEvent dispatches a key event to the page.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#method-dispatchKeyEvent
+//
 // parameters:
 //   type - Type of the key event.
 func DispatchKeyEvent(typeVal KeyType) *DispatchKeyEventParams {
@@ -130,8 +132,8 @@ func (p DispatchKeyEventParams) WithLocation(location int64) *DispatchKeyEventPa
 }
 
 // Do executes Input.dispatchKeyEvent against the provided context.
-func (p *DispatchKeyEventParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandDispatchKeyEvent, p, nil)
+func (p *DispatchKeyEventParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDispatchKeyEvent, p, nil)
 }
 
 // InsertTextParams this method emulates inserting text that doesn't come
@@ -143,6 +145,8 @@ type InsertTextParams struct {
 // InsertText this method emulates inserting text that doesn't come from a
 // key press, for example an emoji keyboard or an IME.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#method-insertText
+//
 // parameters:
 //   text - The text to insert.
 func InsertText(text string) *InsertTextParams {
@@ -152,24 +156,28 @@ func InsertText(text string) *InsertTextParams {
 }
 
 // Do executes Input.insertText against the provided context.
-func (p *InsertTextParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandInsertText, p, nil)
+func (p *InsertTextParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandInsertText, p, nil)
 }
 
 // DispatchMouseEventParams dispatches a mouse event to the page.
 type DispatchMouseEventParams struct {
-	Type       MouseType       `json:"type"`                 // Type of the mouse event.
-	X          float64         `json:"x"`                    // X coordinate of the event relative to the main frame's viewport in CSS pixels.
-	Y          float64         `json:"y"`                    // Y coordinate of the event relative to the main frame's viewport in CSS pixels. 0 refers to the top of the viewport and Y increases as it proceeds towards the bottom of the viewport.
-	Modifiers  Modifier        `json:"modifiers"`            // Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
-	Timestamp  *TimeSinceEpoch `json:"timestamp,omitempty"`  // Time at which the event occurred.
-	Button     ButtonType      `json:"button,omitempty"`     // Mouse button (default: "none").
-	ClickCount int64           `json:"clickCount,omitempty"` // Number of times the mouse button was clicked (default: 0).
-	DeltaX     float64         `json:"deltaX,omitempty"`     // X delta in CSS pixels for mouse wheel event (default: 0).
-	DeltaY     float64         `json:"deltaY,omitempty"`     // Y delta in CSS pixels for mouse wheel event (default: 0).
+	Type        MouseType                     `json:"type"`                  // Type of the mouse event.
+	X           float64                       `json:"x"`                     // X coordinate of the event relative to the main frame's viewport in CSS pixels.
+	Y           float64                       `json:"y"`                     // Y coordinate of the event relative to the main frame's viewport in CSS pixels. 0 refers to the top of the viewport and Y increases as it proceeds towards the bottom of the viewport.
+	Modifiers   Modifier                      `json:"modifiers"`             // Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
+	Timestamp   *TimeSinceEpoch               `json:"timestamp,omitempty"`   // Time at which the event occurred.
+	Button      MouseButton                   `json:"button,omitempty"`      // Mouse button (default: "none").
+	Buttons     int64                         `json:"buttons,omitempty"`     // A number indicating which buttons are pressed on the mouse when a mouse event is triggered. Left=1, Right=2, Middle=4, Back=8, Forward=16, None=0.
+	ClickCount  int64                         `json:"clickCount,omitempty"`  // Number of times the mouse button was clicked (default: 0).
+	DeltaX      float64                       `json:"deltaX,omitempty"`      // X delta in CSS pixels for mouse wheel event (default: 0).
+	DeltaY      float64                       `json:"deltaY,omitempty"`      // Y delta in CSS pixels for mouse wheel event (default: 0).
+	PointerType DispatchMouseEventPointerType `json:"pointerType,omitempty"` // Pointer type (default: "mouse").
 }
 
 // DispatchMouseEvent dispatches a mouse event to the page.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#method-dispatchMouseEvent
 //
 // parameters:
 //   type - Type of the mouse event.
@@ -197,8 +205,16 @@ func (p DispatchMouseEventParams) WithTimestamp(timestamp *TimeSinceEpoch) *Disp
 }
 
 // WithButton mouse button (default: "none").
-func (p DispatchMouseEventParams) WithButton(button ButtonType) *DispatchMouseEventParams {
+func (p DispatchMouseEventParams) WithButton(button MouseButton) *DispatchMouseEventParams {
 	p.Button = button
+	return &p
+}
+
+// WithButtons a number indicating which buttons are pressed on the mouse
+// when a mouse event is triggered. Left=1, Right=2, Middle=4, Back=8,
+// Forward=16, None=0.
+func (p DispatchMouseEventParams) WithButtons(buttons int64) *DispatchMouseEventParams {
+	p.Buttons = buttons
 	return &p
 }
 
@@ -220,9 +236,15 @@ func (p DispatchMouseEventParams) WithDeltaY(deltaY float64) *DispatchMouseEvent
 	return &p
 }
 
+// WithPointerType pointer type (default: "mouse").
+func (p DispatchMouseEventParams) WithPointerType(pointerType DispatchMouseEventPointerType) *DispatchMouseEventParams {
+	p.PointerType = pointerType
+	return &p
+}
+
 // Do executes Input.dispatchMouseEvent against the provided context.
-func (p *DispatchMouseEventParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandDispatchMouseEvent, p, nil)
+func (p *DispatchMouseEventParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDispatchMouseEvent, p, nil)
 }
 
 // DispatchTouchEventParams dispatches a touch event to the page.
@@ -234,6 +256,8 @@ type DispatchTouchEventParams struct {
 }
 
 // DispatchTouchEvent dispatches a touch event to the page.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#method-dispatchTouchEvent
 //
 // parameters:
 //   type - Type of the touch event. TouchEnd and TouchCancel must not contain any touch points, while TouchStart and TouchMove must contains at least one.
@@ -259,8 +283,8 @@ func (p DispatchTouchEventParams) WithTimestamp(timestamp *TimeSinceEpoch) *Disp
 }
 
 // Do executes Input.dispatchTouchEvent against the provided context.
-func (p *DispatchTouchEventParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandDispatchTouchEvent, p, nil)
+func (p *DispatchTouchEventParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDispatchTouchEvent, p, nil)
 }
 
 // EmulateTouchFromMouseEventParams emulates touch event from the mouse event
@@ -269,7 +293,7 @@ type EmulateTouchFromMouseEventParams struct {
 	Type       MouseType       `json:"type"`                 // Type of the mouse event.
 	X          int64           `json:"x"`                    // X coordinate of the mouse pointer in DIP.
 	Y          int64           `json:"y"`                    // Y coordinate of the mouse pointer in DIP.
-	Button     ButtonType      `json:"button"`               // Mouse button.
+	Button     MouseButton     `json:"button"`               // Mouse button. Only "none", "left", "right" are supported.
 	Timestamp  *TimeSinceEpoch `json:"timestamp,omitempty"`  // Time at which the event occurred (default: current time).
 	DeltaX     float64         `json:"deltaX,omitempty"`     // X delta in DIP for mouse wheel event (default: 0).
 	DeltaY     float64         `json:"deltaY,omitempty"`     // Y delta in DIP for mouse wheel event (default: 0).
@@ -280,12 +304,14 @@ type EmulateTouchFromMouseEventParams struct {
 // EmulateTouchFromMouseEvent emulates touch event from the mouse event
 // parameters.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#method-emulateTouchFromMouseEvent
+//
 // parameters:
 //   type - Type of the mouse event.
 //   x - X coordinate of the mouse pointer in DIP.
 //   y - Y coordinate of the mouse pointer in DIP.
-//   button - Mouse button.
-func EmulateTouchFromMouseEvent(typeVal MouseType, x int64, y int64, button ButtonType) *EmulateTouchFromMouseEventParams {
+//   button - Mouse button. Only "none", "left", "right" are supported.
+func EmulateTouchFromMouseEvent(typeVal MouseType, x int64, y int64, button MouseButton) *EmulateTouchFromMouseEventParams {
 	return &EmulateTouchFromMouseEventParams{
 		Type:   typeVal,
 		X:      x,
@@ -326,8 +352,8 @@ func (p EmulateTouchFromMouseEventParams) WithClickCount(clickCount int64) *Emul
 }
 
 // Do executes Input.emulateTouchFromMouseEvent against the provided context.
-func (p *EmulateTouchFromMouseEventParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandEmulateTouchFromMouseEvent, p, nil)
+func (p *EmulateTouchFromMouseEventParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandEmulateTouchFromMouseEvent, p, nil)
 }
 
 // SetIgnoreInputEventsParams ignores input events (useful while auditing
@@ -338,6 +364,8 @@ type SetIgnoreInputEventsParams struct {
 
 // SetIgnoreInputEvents ignores input events (useful while auditing page).
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#method-setIgnoreInputEvents
+//
 // parameters:
 //   ignore - Ignores input events processing when set to true.
 func SetIgnoreInputEvents(ignore bool) *SetIgnoreInputEventsParams {
@@ -347,22 +375,24 @@ func SetIgnoreInputEvents(ignore bool) *SetIgnoreInputEventsParams {
 }
 
 // Do executes Input.setIgnoreInputEvents against the provided context.
-func (p *SetIgnoreInputEventsParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetIgnoreInputEvents, p, nil)
+func (p *SetIgnoreInputEventsParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetIgnoreInputEvents, p, nil)
 }
 
 // SynthesizePinchGestureParams synthesizes a pinch gesture over a time
 // period by issuing appropriate touch events.
 type SynthesizePinchGestureParams struct {
-	X                 float64     `json:"x"`                           // X coordinate of the start of the gesture in CSS pixels.
-	Y                 float64     `json:"y"`                           // Y coordinate of the start of the gesture in CSS pixels.
-	ScaleFactor       float64     `json:"scaleFactor"`                 // Relative scale factor after zooming (>1.0 zooms in, <1.0 zooms out).
-	RelativeSpeed     int64       `json:"relativeSpeed,omitempty"`     // Relative pointer speed in pixels per second (default: 800).
-	GestureSourceType GestureType `json:"gestureSourceType,omitempty"` // Which type of input events to be generated (default: 'default', which queries the platform for the preferred input type).
+	X                 float64           `json:"x"`                           // X coordinate of the start of the gesture in CSS pixels.
+	Y                 float64           `json:"y"`                           // Y coordinate of the start of the gesture in CSS pixels.
+	ScaleFactor       float64           `json:"scaleFactor"`                 // Relative scale factor after zooming (>1.0 zooms in, <1.0 zooms out).
+	RelativeSpeed     int64             `json:"relativeSpeed,omitempty"`     // Relative pointer speed in pixels per second (default: 800).
+	GestureSourceType GestureSourceType `json:"gestureSourceType,omitempty"` // Which type of input events to be generated (default: 'default', which queries the platform for the preferred input type).
 }
 
 // SynthesizePinchGesture synthesizes a pinch gesture over a time period by
 // issuing appropriate touch events.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#method-synthesizePinchGesture
 //
 // parameters:
 //   x - X coordinate of the start of the gesture in CSS pixels.
@@ -385,35 +415,37 @@ func (p SynthesizePinchGestureParams) WithRelativeSpeed(relativeSpeed int64) *Sy
 
 // WithGestureSourceType which type of input events to be generated (default:
 // 'default', which queries the platform for the preferred input type).
-func (p SynthesizePinchGestureParams) WithGestureSourceType(gestureSourceType GestureType) *SynthesizePinchGestureParams {
+func (p SynthesizePinchGestureParams) WithGestureSourceType(gestureSourceType GestureSourceType) *SynthesizePinchGestureParams {
 	p.GestureSourceType = gestureSourceType
 	return &p
 }
 
 // Do executes Input.synthesizePinchGesture against the provided context.
-func (p *SynthesizePinchGestureParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSynthesizePinchGesture, p, nil)
+func (p *SynthesizePinchGestureParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSynthesizePinchGesture, p, nil)
 }
 
 // SynthesizeScrollGestureParams synthesizes a scroll gesture over a time
 // period by issuing appropriate touch events.
 type SynthesizeScrollGestureParams struct {
-	X                     float64     `json:"x"`                               // X coordinate of the start of the gesture in CSS pixels.
-	Y                     float64     `json:"y"`                               // Y coordinate of the start of the gesture in CSS pixels.
-	XDistance             float64     `json:"xDistance,omitempty"`             // The distance to scroll along the X axis (positive to scroll left).
-	YDistance             float64     `json:"yDistance,omitempty"`             // The distance to scroll along the Y axis (positive to scroll up).
-	XOverscroll           float64     `json:"xOverscroll,omitempty"`           // The number of additional pixels to scroll back along the X axis, in addition to the given distance.
-	YOverscroll           float64     `json:"yOverscroll,omitempty"`           // The number of additional pixels to scroll back along the Y axis, in addition to the given distance.
-	PreventFling          bool        `json:"preventFling,omitempty"`          // Prevent fling (default: true).
-	Speed                 int64       `json:"speed,omitempty"`                 // Swipe speed in pixels per second (default: 800).
-	GestureSourceType     GestureType `json:"gestureSourceType,omitempty"`     // Which type of input events to be generated (default: 'default', which queries the platform for the preferred input type).
-	RepeatCount           int64       `json:"repeatCount,omitempty"`           // The number of times to repeat the gesture (default: 0).
-	RepeatDelayMs         int64       `json:"repeatDelayMs,omitempty"`         // The number of milliseconds delay between each repeat. (default: 250).
-	InteractionMarkerName string      `json:"interactionMarkerName,omitempty"` // The name of the interaction markers to generate, if not empty (default: "").
+	X                     float64           `json:"x"`                               // X coordinate of the start of the gesture in CSS pixels.
+	Y                     float64           `json:"y"`                               // Y coordinate of the start of the gesture in CSS pixels.
+	XDistance             float64           `json:"xDistance,omitempty"`             // The distance to scroll along the X axis (positive to scroll left).
+	YDistance             float64           `json:"yDistance,omitempty"`             // The distance to scroll along the Y axis (positive to scroll up).
+	XOverscroll           float64           `json:"xOverscroll,omitempty"`           // The number of additional pixels to scroll back along the X axis, in addition to the given distance.
+	YOverscroll           float64           `json:"yOverscroll,omitempty"`           // The number of additional pixels to scroll back along the Y axis, in addition to the given distance.
+	PreventFling          bool              `json:"preventFling,omitempty"`          // Prevent fling (default: true).
+	Speed                 int64             `json:"speed,omitempty"`                 // Swipe speed in pixels per second (default: 800).
+	GestureSourceType     GestureSourceType `json:"gestureSourceType,omitempty"`     // Which type of input events to be generated (default: 'default', which queries the platform for the preferred input type).
+	RepeatCount           int64             `json:"repeatCount,omitempty"`           // The number of times to repeat the gesture (default: 0).
+	RepeatDelayMs         int64             `json:"repeatDelayMs,omitempty"`         // The number of milliseconds delay between each repeat. (default: 250).
+	InteractionMarkerName string            `json:"interactionMarkerName,omitempty"` // The name of the interaction markers to generate, if not empty (default: "").
 }
 
 // SynthesizeScrollGesture synthesizes a scroll gesture over a time period by
 // issuing appropriate touch events.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#method-synthesizeScrollGesture
 //
 // parameters:
 //   x - X coordinate of the start of the gesture in CSS pixels.
@@ -467,7 +499,7 @@ func (p SynthesizeScrollGestureParams) WithSpeed(speed int64) *SynthesizeScrollG
 
 // WithGestureSourceType which type of input events to be generated (default:
 // 'default', which queries the platform for the preferred input type).
-func (p SynthesizeScrollGestureParams) WithGestureSourceType(gestureSourceType GestureType) *SynthesizeScrollGestureParams {
+func (p SynthesizeScrollGestureParams) WithGestureSourceType(gestureSourceType GestureSourceType) *SynthesizeScrollGestureParams {
 	p.GestureSourceType = gestureSourceType
 	return &p
 }
@@ -493,22 +525,24 @@ func (p SynthesizeScrollGestureParams) WithInteractionMarkerName(interactionMark
 }
 
 // Do executes Input.synthesizeScrollGesture against the provided context.
-func (p *SynthesizeScrollGestureParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSynthesizeScrollGesture, p, nil)
+func (p *SynthesizeScrollGestureParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSynthesizeScrollGesture, p, nil)
 }
 
 // SynthesizeTapGestureParams synthesizes a tap gesture over a time period by
 // issuing appropriate touch events.
 type SynthesizeTapGestureParams struct {
-	X                 float64     `json:"x"`                           // X coordinate of the start of the gesture in CSS pixels.
-	Y                 float64     `json:"y"`                           // Y coordinate of the start of the gesture in CSS pixels.
-	Duration          int64       `json:"duration,omitempty"`          // Duration between touchdown and touchup events in ms (default: 50).
-	TapCount          int64       `json:"tapCount,omitempty"`          // Number of times to perform the tap (e.g. 2 for double tap, default: 1).
-	GestureSourceType GestureType `json:"gestureSourceType,omitempty"` // Which type of input events to be generated (default: 'default', which queries the platform for the preferred input type).
+	X                 float64           `json:"x"`                           // X coordinate of the start of the gesture in CSS pixels.
+	Y                 float64           `json:"y"`                           // Y coordinate of the start of the gesture in CSS pixels.
+	Duration          int64             `json:"duration,omitempty"`          // Duration between touchdown and touchup events in ms (default: 50).
+	TapCount          int64             `json:"tapCount,omitempty"`          // Number of times to perform the tap (e.g. 2 for double tap, default: 1).
+	GestureSourceType GestureSourceType `json:"gestureSourceType,omitempty"` // Which type of input events to be generated (default: 'default', which queries the platform for the preferred input type).
 }
 
 // SynthesizeTapGesture synthesizes a tap gesture over a time period by
 // issuing appropriate touch events.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#method-synthesizeTapGesture
 //
 // parameters:
 //   x - X coordinate of the start of the gesture in CSS pixels.
@@ -536,14 +570,14 @@ func (p SynthesizeTapGestureParams) WithTapCount(tapCount int64) *SynthesizeTapG
 
 // WithGestureSourceType which type of input events to be generated (default:
 // 'default', which queries the platform for the preferred input type).
-func (p SynthesizeTapGestureParams) WithGestureSourceType(gestureSourceType GestureType) *SynthesizeTapGestureParams {
+func (p SynthesizeTapGestureParams) WithGestureSourceType(gestureSourceType GestureSourceType) *SynthesizeTapGestureParams {
 	p.GestureSourceType = gestureSourceType
 	return &p
 }
 
 // Do executes Input.synthesizeTapGesture against the provided context.
-func (p *SynthesizeTapGestureParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSynthesizeTapGesture, p, nil)
+func (p *SynthesizeTapGestureParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSynthesizeTapGesture, p, nil)
 }
 
 // Command names.

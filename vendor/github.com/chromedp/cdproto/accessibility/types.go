@@ -12,6 +12,8 @@ import (
 )
 
 // NodeID unique accessibility node identifier.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Accessibility#type-AXNodeId
 type NodeID string
 
 // String returns the NodeID as string value.
@@ -20,6 +22,8 @@ func (t NodeID) String() string {
 }
 
 // ValueType enum of possible property types.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Accessibility#type-AXValueType
 type ValueType string
 
 // String returns the ValueType as string value.
@@ -107,6 +111,8 @@ func (t *ValueType) UnmarshalJSON(buf []byte) error {
 }
 
 // ValueSourceType enum of possible property sources.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Accessibility#type-AXValueSourceType
 type ValueSourceType string
 
 // String returns the ValueSourceType as string value.
@@ -162,6 +168,8 @@ func (t *ValueSourceType) UnmarshalJSON(buf []byte) error {
 
 // ValueNativeSourceType enum of possible native property sources (as a
 // subtype of a particular AXValueSourceType).
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Accessibility#type-AXValueNativeSourceType
 type ValueNativeSourceType string
 
 // String returns the ValueNativeSourceType as string value.
@@ -222,6 +230,8 @@ func (t *ValueNativeSourceType) UnmarshalJSON(buf []byte) error {
 }
 
 // ValueSource a single source for a computed AX property.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Accessibility#type-AXValueSource
 type ValueSource struct {
 	Type              ValueSourceType       `json:"type"`                        // What type of source this is.
 	Value             *Value                `json:"value,omitempty"`             // The value of this property source.
@@ -235,6 +245,8 @@ type ValueSource struct {
 }
 
 // RelatedNode [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Accessibility#type-AXRelatedNode
 type RelatedNode struct {
 	BackendDOMNodeID cdp.BackendNodeID `json:"backendDOMNodeId"` // The BackendNodeId of the related DOM node.
 	Idref            string            `json:"idref,omitempty"`  // The IDRef value provided, if any.
@@ -242,12 +254,16 @@ type RelatedNode struct {
 }
 
 // Property [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Accessibility#type-AXProperty
 type Property struct {
 	Name  PropertyName `json:"name"`  // The name of this property.
 	Value *Value       `json:"value"` // The value of this property.
 }
 
 // Value a single computed AX property.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Accessibility#type-AXValue
 type Value struct {
 	Type         ValueType           `json:"type"`                   // The type of this value.
 	Value        easyjson.RawMessage `json:"value,omitempty"`        // The computed value of this property.
@@ -255,12 +271,14 @@ type Value struct {
 	Sources      []*ValueSource      `json:"sources,omitempty"`      // The sources which contributed to the computation of this property.
 }
 
-// PropertyName values of AXProperty name: from 'busy' to 'roledescription' -
-// states which apply to every AX node, from 'live' to 'root' - attributes which
-// apply to nodes in live regions, from 'autocomplete' to 'valuetext' -
-// attributes which apply to widgets, from 'checked' to 'selected' - states
-// which apply to widgets, from 'activedescendant' to 'owns' - relationships
-// between elements other than parent/child/sibling.
+// PropertyName values of AXProperty name: - from 'busy' to
+// 'roledescription': states which apply to every AX node - from 'live' to
+// 'root': attributes which apply to nodes in live regions - from 'autocomplete'
+// to 'valuetext': attributes which apply to widgets - from 'checked' to
+// 'selected': states which apply to widgets - from 'activedescendant' to 'owns'
+// - relationships between elements other than parent/child/sibling.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Accessibility#type-AXPropertyName
 type PropertyName string
 
 // String returns the PropertyName as string value.
@@ -272,10 +290,14 @@ func (t PropertyName) String() string {
 const (
 	PropertyNameBusy             PropertyName = "busy"
 	PropertyNameDisabled         PropertyName = "disabled"
+	PropertyNameEditable         PropertyName = "editable"
+	PropertyNameFocusable        PropertyName = "focusable"
+	PropertyNameFocused          PropertyName = "focused"
 	PropertyNameHidden           PropertyName = "hidden"
 	PropertyNameHiddenRoot       PropertyName = "hiddenRoot"
 	PropertyNameInvalid          PropertyName = "invalid"
 	PropertyNameKeyshortcuts     PropertyName = "keyshortcuts"
+	PropertyNameSettable         PropertyName = "settable"
 	PropertyNameRoledescription  PropertyName = "roledescription"
 	PropertyNameLive             PropertyName = "live"
 	PropertyNameAtomic           PropertyName = "atomic"
@@ -324,6 +346,12 @@ func (t *PropertyName) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PropertyNameBusy
 	case PropertyNameDisabled:
 		*t = PropertyNameDisabled
+	case PropertyNameEditable:
+		*t = PropertyNameEditable
+	case PropertyNameFocusable:
+		*t = PropertyNameFocusable
+	case PropertyNameFocused:
+		*t = PropertyNameFocused
 	case PropertyNameHidden:
 		*t = PropertyNameHidden
 	case PropertyNameHiddenRoot:
@@ -332,6 +360,8 @@ func (t *PropertyName) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PropertyNameInvalid
 	case PropertyNameKeyshortcuts:
 		*t = PropertyNameKeyshortcuts
+	case PropertyNameSettable:
+		*t = PropertyNameSettable
 	case PropertyNameRoledescription:
 		*t = PropertyNameRoledescription
 	case PropertyNameLive:
@@ -402,6 +432,8 @@ func (t *PropertyName) UnmarshalJSON(buf []byte) error {
 }
 
 // Node a node in the accessibility tree.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Accessibility#type-AXNode
 type Node struct {
 	NodeID           NodeID            `json:"nodeId"`                     // Unique identifier for this node.
 	Ignored          bool              `json:"ignored"`                    // Whether this node is ignored for accessibility

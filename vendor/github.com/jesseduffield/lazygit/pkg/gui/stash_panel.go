@@ -8,54 +8,93 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/utils"
 )
 
+// list panel functions
+
+func (gui *Gui) getSelectedStashEntry(v *gocui.View) *commands.StashEntry {
+	selectedLine := gui.State.Panels.Stash.SelectedLine
+	if selectedLine == -1 {
+		return nil
+	}
+
+	return gui.State.StashEntries[selectedLine]
+}
+
+func (gui *Gui) handleStashEntrySelect(g *gocui.Gui, v *gocui.View) error {
+	if gui.popupPanelFocused() {
+		return nil
+	}
+
+	if _, err := gui.g.SetCurrentView(v.Name()); err != nil {
+		return err
+	}
+	stashEntry := gui.getSelectedStashEntry(v)
+	if stashEntry == nil {
+		return gui.renderString(g, "main", gui.Tr.SLocalize("NoStashEntries"))
+	}
+	if err := gui.focusPoint(0, gui.State.Panels.Stash.SelectedLine, len(gui.State.StashEntries), v); err != nil {
+		return err
+	}
+	go func() {
+		// doing this asynchronously cos it can take time
+		diff, _ := gui.GitCommand.GetStashEntryDiff(stashEntry.Index)
+		_ = gui.renderString(g, "main", diff)
+	}()
+	return nil
+}
+
 func (gui *Gui) refreshStashEntries(g *gocui.Gui) error {
 	g.Update(func(g *gocui.Gui) error {
-		v, err := g.View("stash")
-		if err != nil {
-			panic(err)
-		}
 		gui.State.StashEntries = gui.GitCommand.GetStashEntries()
 
-		v.Clear()
-		list, err := utils.RenderList(gui.State.StashEntries)
+		gui.refreshSelectedLine(&gui.State.Panels.Stash.SelectedLine, len(gui.State.StashEntries))
+
+		isFocused := gui.g.CurrentView().Name() == "stash"
+		list, err := utils.RenderList(gui.State.StashEntries, isFocused)
 		if err != nil {
 			return err
 		}
+
+		v := gui.getStashView()
+		v.Clear()
 		fmt.Fprint(v, list)
 
-		return gui.resetOrigin(v)
+		if err := gui.resetOrigin(v); err != nil {
+			return err
+		}
+		return nil
 	})
 	return nil
 }
 
-func (gui *Gui) getSelectedStashEntry(v *gocui.View) *commands.StashEntry {
-	if len(gui.State.StashEntries) == 0 {
+func (gui *Gui) handleStashNextLine(g *gocui.Gui, v *gocui.View) error {
+	if gui.popupPanelFocused() {
 		return nil
 	}
-	stashView, _ := gui.g.View("stash")
-	lineNumber := gui.getItemPosition(stashView)
-	return gui.State.StashEntries[lineNumber]
-}
 
-func (gui *Gui) renderStashOptions(g *gocui.Gui) error {
-	return gui.renderGlobalOptions(g)
-}
+	panelState := gui.State.Panels.Stash
+	gui.changeSelectedLine(&panelState.SelectedLine, len(gui.State.StashEntries), false)
 
-func (gui *Gui) handleStashEntrySelect(g *gocui.Gui, v *gocui.View) error {
-	if err := gui.renderStashOptions(g); err != nil {
+	if err := gui.resetOrigin(gui.getMainView()); err != nil {
 		return err
 	}
-	go func() {
-		stashEntry := gui.getSelectedStashEntry(v)
-		if stashEntry == nil {
-			gui.renderString(g, "main", gui.Tr.SLocalize("NoStashEntries"))
-			return
-		}
-		diff, _ := gui.GitCommand.GetStashEntryDiff(stashEntry.Index)
-		gui.renderString(g, "main", diff)
-	}()
-	return nil
+	return gui.handleStashEntrySelect(gui.g, v)
 }
+
+func (gui *Gui) handleStashPrevLine(g *gocui.Gui, v *gocui.View) error {
+	if gui.popupPanelFocused() {
+		return nil
+	}
+
+	panelState := gui.State.Panels.Stash
+	gui.changeSelectedLine(&panelState.SelectedLine, len(gui.State.StashEntries), true)
+
+	if err := gui.resetOrigin(gui.getMainView()); err != nil {
+		return err
+	}
+	return gui.handleStashEntrySelect(gui.g, v)
+}
+
+// specific functions
 
 func (gui *Gui) handleStashApply(g *gocui.Gui, v *gocui.View) error {
 	return gui.stashDo(g, v, "apply")
@@ -88,7 +127,7 @@ func (gui *Gui) stashDo(g *gocui.Gui, v *gocui.View, method string) error {
 		gui.createErrorPanel(g, err.Error())
 	}
 	gui.refreshStashEntries(g)
-	return gui.refreshFiles(g)
+	return gui.refreshFiles()
 }
 
 func (gui *Gui) handleStashSave(g *gocui.Gui, filesView *gocui.View) error {
@@ -100,7 +139,7 @@ func (gui *Gui) handleStashSave(g *gocui.Gui, filesView *gocui.View) error {
 			gui.createErrorPanel(g, err.Error())
 		}
 		gui.refreshStashEntries(g)
-		return gui.refreshFiles(g)
+		return gui.refreshFiles()
 	})
 	return nil
 }

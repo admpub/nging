@@ -12,6 +12,8 @@ import (
 )
 
 // Animation animation instance.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Animation#type-Animation
 type Animation struct {
 	ID           string  `json:"id"`               // Animation's id.
 	Name         string  `json:"name"`             // Animation's name.
@@ -26,6 +28,8 @@ type Animation struct {
 }
 
 // Effect animationEffect instance.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Animation#type-AnimationEffect
 type Effect struct {
 	Delay          float64           `json:"delay"`                   // AnimationEffect's delay.
 	EndDelay       float64           `json:"endDelay"`                // AnimationEffect's end delay.
@@ -40,18 +44,24 @@ type Effect struct {
 }
 
 // KeyframesRule keyframes Rule.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Animation#type-KeyframesRule
 type KeyframesRule struct {
 	Name      string           `json:"name,omitempty"` // CSS keyframed animation's name.
 	Keyframes []*KeyframeStyle `json:"keyframes"`      // List of animation keyframes.
 }
 
 // KeyframeStyle keyframe Style.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Animation#type-KeyframeStyle
 type KeyframeStyle struct {
 	Offset string `json:"offset"` // Keyframe's time offset.
 	Easing string `json:"easing"` // AnimationEffect's timing function.
 }
 
 // Type animation type of Animation.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Animation#type-Animation
 type Type string
 
 // String returns the Type as string value.

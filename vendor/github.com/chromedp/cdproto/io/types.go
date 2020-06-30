@@ -4,6 +4,8 @@ package io
 
 // StreamHandle this is either obtained from another method or specified as
 // blob:<uuid> where <uuid> is an UUID of a Blob.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/IO#type-StreamHandle
 type StreamHandle string
 
 // String returns the StreamHandle as string value.

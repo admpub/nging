@@ -32,6 +32,8 @@ type AddRuleParams struct {
 // AddRule inserts a new rule with the given ruleText in a stylesheet with
 // given styleSheetId, at the position specified by location.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-addRule
+//
 // parameters:
 //   styleSheetID - The css style sheet identifier where a new rule should be inserted.
 //   ruleText - The text of a new rule.
@@ -53,10 +55,10 @@ type AddRuleReturns struct {
 //
 // returns:
 //   rule - The newly created rule.
-func (p *AddRuleParams) Do(ctxt context.Context, h cdp.Executor) (rule *Rule, err error) {
+func (p *AddRuleParams) Do(ctx context.Context) (rule *Rule, err error) {
 	// execute
 	var res AddRuleReturns
-	err = h.Execute(ctxt, CommandAddRule, p, &res)
+	err = cdp.Execute(ctx, CommandAddRule, p, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -70,6 +72,8 @@ type CollectClassNamesParams struct {
 }
 
 // CollectClassNames returns all class names from specified stylesheet.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-collectClassNames
 //
 // parameters:
 //   styleSheetID
@@ -88,10 +92,10 @@ type CollectClassNamesReturns struct {
 //
 // returns:
 //   classNames - Class name list.
-func (p *CollectClassNamesParams) Do(ctxt context.Context, h cdp.Executor) (classNames []string, err error) {
+func (p *CollectClassNamesParams) Do(ctx context.Context) (classNames []string, err error) {
 	// execute
 	var res CollectClassNamesReturns
-	err = h.Execute(ctxt, CommandCollectClassNames, p, &res)
+	err = cdp.Execute(ctx, CommandCollectClassNames, p, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -107,6 +111,8 @@ type CreateStyleSheetParams struct {
 
 // CreateStyleSheet creates a new special "via-inspector" stylesheet in the
 // frame with given frameId.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-createStyleSheet
 //
 // parameters:
 //   frameID - Identifier of the frame where "via-inspector" stylesheet should be created.
@@ -125,10 +131,10 @@ type CreateStyleSheetReturns struct {
 //
 // returns:
 //   styleSheetID - Identifier of the created "via-inspector" stylesheet.
-func (p *CreateStyleSheetParams) Do(ctxt context.Context, h cdp.Executor) (styleSheetID StyleSheetID, err error) {
+func (p *CreateStyleSheetParams) Do(ctx context.Context) (styleSheetID StyleSheetID, err error) {
 	// execute
 	var res CreateStyleSheetReturns
-	err = h.Execute(ctxt, CommandCreateStyleSheet, p, &res)
+	err = cdp.Execute(ctx, CommandCreateStyleSheet, p, &res)
 	if err != nil {
 		return "", err
 	}
@@ -140,13 +146,15 @@ func (p *CreateStyleSheetParams) Do(ctxt context.Context, h cdp.Executor) (style
 type DisableParams struct{}
 
 // Disable disables the CSS agent for the given page.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-disable
 func Disable() *DisableParams {
 	return &DisableParams{}
 }
 
 // Do executes CSS.disable against the provided context.
-func (p *DisableParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandDisable, nil, nil)
+func (p *DisableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDisable, nil, nil)
 }
 
 // EnableParams enables the CSS agent for the given page. Clients should not
@@ -157,13 +165,15 @@ type EnableParams struct{}
 // Enable enables the CSS agent for the given page. Clients should not assume
 // that the CSS agent has been enabled until the result of this command is
 // received.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-enable
 func Enable() *EnableParams {
 	return &EnableParams{}
 }
 
 // Do executes CSS.enable against the provided context.
-func (p *EnableParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandEnable, nil, nil)
+func (p *EnableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandEnable, nil, nil)
 }
 
 // ForcePseudoStateParams ensures that the given node will have specified
@@ -176,6 +186,8 @@ type ForcePseudoStateParams struct {
 // ForcePseudoState ensures that the given node will have specified
 // pseudo-classes whenever its style is computed by the browser.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-forcePseudoState
+//
 // parameters:
 //   nodeID - The element id for which to force the pseudo state.
 //   forcedPseudoClasses - Element pseudo classes to force when computing the element's style.
@@ -187,8 +199,8 @@ func ForcePseudoState(nodeID cdp.NodeID, forcedPseudoClasses []string) *ForcePse
 }
 
 // Do executes CSS.forcePseudoState against the provided context.
-func (p *ForcePseudoStateParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandForcePseudoState, p, nil)
+func (p *ForcePseudoStateParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandForcePseudoState, p, nil)
 }
 
 // GetBackgroundColorsParams [no description].
@@ -197,6 +209,8 @@ type GetBackgroundColorsParams struct {
 }
 
 // GetBackgroundColors [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-getBackgroundColors
 //
 // parameters:
 //   nodeID - Id of the node to get background colors for.
@@ -208,10 +222,9 @@ func GetBackgroundColors(nodeID cdp.NodeID) *GetBackgroundColorsParams {
 
 // GetBackgroundColorsReturns return values.
 type GetBackgroundColorsReturns struct {
-	BackgroundColors     []string `json:"backgroundColors,omitempty"`     // The range of background colors behind this element, if it contains any visible text. If no visible text is present, this will be undefined. In the case of a flat background color, this will consist of simply that color. In the case of a gradient, this will consist of each of the color stops. For anything more complicated, this will be an empty array. Images will be ignored (as if the image had failed to load).
-	ComputedFontSize     string   `json:"computedFontSize,omitempty"`     // The computed font size for this node, as a CSS computed value string (e.g. '12px').
-	ComputedFontWeight   string   `json:"computedFontWeight,omitempty"`   // The computed font weight for this node, as a CSS computed value string (e.g. 'normal' or '100').
-	ComputedBodyFontSize string   `json:"computedBodyFontSize,omitempty"` // The computed font size for the document body, as a computed CSS value string (e.g. '16px').
+	BackgroundColors   []string `json:"backgroundColors,omitempty"`   // The range of background colors behind this element, if it contains any visible text. If no visible text is present, this will be undefined. In the case of a flat background color, this will consist of simply that color. In the case of a gradient, this will consist of each of the color stops. For anything more complicated, this will be an empty array. Images will be ignored (as if the image had failed to load).
+	ComputedFontSize   string   `json:"computedFontSize,omitempty"`   // The computed font size for this node, as a CSS computed value string (e.g. '12px').
+	ComputedFontWeight string   `json:"computedFontWeight,omitempty"` // The computed font weight for this node, as a CSS computed value string (e.g. 'normal' or '100').
 }
 
 // Do executes CSS.getBackgroundColors against the provided context.
@@ -220,16 +233,15 @@ type GetBackgroundColorsReturns struct {
 //   backgroundColors - The range of background colors behind this element, if it contains any visible text. If no visible text is present, this will be undefined. In the case of a flat background color, this will consist of simply that color. In the case of a gradient, this will consist of each of the color stops. For anything more complicated, this will be an empty array. Images will be ignored (as if the image had failed to load).
 //   computedFontSize - The computed font size for this node, as a CSS computed value string (e.g. '12px').
 //   computedFontWeight - The computed font weight for this node, as a CSS computed value string (e.g. 'normal' or '100').
-//   computedBodyFontSize - The computed font size for the document body, as a computed CSS value string (e.g. '16px').
-func (p *GetBackgroundColorsParams) Do(ctxt context.Context, h cdp.Executor) (backgroundColors []string, computedFontSize string, computedFontWeight string, computedBodyFontSize string, err error) {
+func (p *GetBackgroundColorsParams) Do(ctx context.Context) (backgroundColors []string, computedFontSize string, computedFontWeight string, err error) {
 	// execute
 	var res GetBackgroundColorsReturns
-	err = h.Execute(ctxt, CommandGetBackgroundColors, p, &res)
+	err = cdp.Execute(ctx, CommandGetBackgroundColors, p, &res)
 	if err != nil {
-		return nil, "", "", "", err
+		return nil, "", "", err
 	}
 
-	return res.BackgroundColors, res.ComputedFontSize, res.ComputedFontWeight, res.ComputedBodyFontSize, nil
+	return res.BackgroundColors, res.ComputedFontSize, res.ComputedFontWeight, nil
 }
 
 // GetComputedStyleForNodeParams returns the computed style for a DOM node
@@ -241,6 +253,8 @@ type GetComputedStyleForNodeParams struct {
 // GetComputedStyleForNode returns the computed style for a DOM node
 // identified by nodeId.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-getComputedStyleForNode
+//
 // parameters:
 //   nodeID
 func GetComputedStyleForNode(nodeID cdp.NodeID) *GetComputedStyleForNodeParams {
@@ -251,17 +265,17 @@ func GetComputedStyleForNode(nodeID cdp.NodeID) *GetComputedStyleForNodeParams {
 
 // GetComputedStyleForNodeReturns return values.
 type GetComputedStyleForNodeReturns struct {
-	ComputedStyle []*ComputedProperty `json:"computedStyle,omitempty"` // Computed style for the specified DOM node.
+	ComputedStyle []*ComputedStyleProperty `json:"computedStyle,omitempty"` // Computed style for the specified DOM node.
 }
 
 // Do executes CSS.getComputedStyleForNode against the provided context.
 //
 // returns:
 //   computedStyle - Computed style for the specified DOM node.
-func (p *GetComputedStyleForNodeParams) Do(ctxt context.Context, h cdp.Executor) (computedStyle []*ComputedProperty, err error) {
+func (p *GetComputedStyleForNodeParams) Do(ctx context.Context) (computedStyle []*ComputedStyleProperty, err error) {
 	// execute
 	var res GetComputedStyleForNodeReturns
-	err = h.Execute(ctxt, CommandGetComputedStyleForNode, p, &res)
+	err = cdp.Execute(ctx, CommandGetComputedStyleForNode, p, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -279,6 +293,8 @@ type GetInlineStylesForNodeParams struct {
 // GetInlineStylesForNode returns the styles defined inline (explicitly in
 // the "style" attribute and implicitly, using DOM attributes) for a DOM node
 // identified by nodeId.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-getInlineStylesForNode
 //
 // parameters:
 //   nodeID
@@ -299,10 +315,10 @@ type GetInlineStylesForNodeReturns struct {
 // returns:
 //   inlineStyle - Inline style for the specified DOM node.
 //   attributesStyle - Attribute-defined element style (e.g. resulting from "width=20 height=100%").
-func (p *GetInlineStylesForNodeParams) Do(ctxt context.Context, h cdp.Executor) (inlineStyle *Style, attributesStyle *Style, err error) {
+func (p *GetInlineStylesForNodeParams) Do(ctx context.Context) (inlineStyle *Style, attributesStyle *Style, err error) {
 	// execute
 	var res GetInlineStylesForNodeReturns
-	err = h.Execute(ctxt, CommandGetInlineStylesForNode, p, &res)
+	err = cdp.Execute(ctx, CommandGetInlineStylesForNode, p, &res)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -318,6 +334,8 @@ type GetMatchedStylesForNodeParams struct {
 
 // GetMatchedStylesForNode returns requested styles for a DOM node identified
 // by nodeId.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-getMatchedStylesForNode
 //
 // parameters:
 //   nodeID
@@ -346,10 +364,10 @@ type GetMatchedStylesForNodeReturns struct {
 //   pseudoElements - Pseudo style matches for this node.
 //   inherited - A chain of inherited styles (from the immediate node parent up to the DOM tree root).
 //   cssKeyframesRules - A list of CSS keyframed animations matching this node.
-func (p *GetMatchedStylesForNodeParams) Do(ctxt context.Context, h cdp.Executor) (inlineStyle *Style, attributesStyle *Style, matchedCSSRules []*RuleMatch, pseudoElements []*PseudoElementMatches, inherited []*InheritedStyleEntry, cssKeyframesRules []*KeyframesRule, err error) {
+func (p *GetMatchedStylesForNodeParams) Do(ctx context.Context) (inlineStyle *Style, attributesStyle *Style, matchedCSSRules []*RuleMatch, pseudoElements []*PseudoElementMatches, inherited []*InheritedStyleEntry, cssKeyframesRules []*KeyframesRule, err error) {
 	// execute
 	var res GetMatchedStylesForNodeReturns
-	err = h.Execute(ctxt, CommandGetMatchedStylesForNode, p, &res)
+	err = cdp.Execute(ctx, CommandGetMatchedStylesForNode, p, &res)
 	if err != nil {
 		return nil, nil, nil, nil, nil, nil, err
 	}
@@ -362,6 +380,8 @@ func (p *GetMatchedStylesForNodeParams) Do(ctxt context.Context, h cdp.Executor)
 type GetMediaQueriesParams struct{}
 
 // GetMediaQueries returns all media queries parsed by the rendering engine.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-getMediaQueries
 func GetMediaQueries() *GetMediaQueriesParams {
 	return &GetMediaQueriesParams{}
 }
@@ -375,10 +395,10 @@ type GetMediaQueriesReturns struct {
 //
 // returns:
 //   medias
-func (p *GetMediaQueriesParams) Do(ctxt context.Context, h cdp.Executor) (medias []*Media, err error) {
+func (p *GetMediaQueriesParams) Do(ctx context.Context) (medias []*Media, err error) {
 	// execute
 	var res GetMediaQueriesReturns
-	err = h.Execute(ctxt, CommandGetMediaQueries, nil, &res)
+	err = cdp.Execute(ctx, CommandGetMediaQueries, nil, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -394,6 +414,8 @@ type GetPlatformFontsForNodeParams struct {
 
 // GetPlatformFontsForNode requests information about platform fonts which we
 // used to render child TextNodes in the given node.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-getPlatformFontsForNode
 //
 // parameters:
 //   nodeID
@@ -412,10 +434,10 @@ type GetPlatformFontsForNodeReturns struct {
 //
 // returns:
 //   fonts - Usage statistics for every employed platform font.
-func (p *GetPlatformFontsForNodeParams) Do(ctxt context.Context, h cdp.Executor) (fonts []*PlatformFontUsage, err error) {
+func (p *GetPlatformFontsForNodeParams) Do(ctx context.Context) (fonts []*PlatformFontUsage, err error) {
 	// execute
 	var res GetPlatformFontsForNodeReturns
-	err = h.Execute(ctxt, CommandGetPlatformFontsForNode, p, &res)
+	err = cdp.Execute(ctx, CommandGetPlatformFontsForNode, p, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -430,6 +452,8 @@ type GetStyleSheetTextParams struct {
 }
 
 // GetStyleSheetText returns the current textual content for a stylesheet.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-getStyleSheetText
 //
 // parameters:
 //   styleSheetID
@@ -448,10 +472,10 @@ type GetStyleSheetTextReturns struct {
 //
 // returns:
 //   text - The stylesheet text.
-func (p *GetStyleSheetTextParams) Do(ctxt context.Context, h cdp.Executor) (text string, err error) {
+func (p *GetStyleSheetTextParams) Do(ctx context.Context) (text string, err error) {
 	// execute
 	var res GetStyleSheetTextReturns
-	err = h.Execute(ctxt, CommandGetStyleSheetText, p, &res)
+	err = cdp.Execute(ctx, CommandGetStyleSheetText, p, &res)
 	if err != nil {
 		return "", err
 	}
@@ -470,6 +494,8 @@ type SetEffectivePropertyValueForNodeParams struct {
 // SetEffectivePropertyValueForNode find a rule with the given active
 // property for the given node and set the new value for this property.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-setEffectivePropertyValueForNode
+//
 // parameters:
 //   nodeID - The element id for which to set property.
 //   propertyName
@@ -483,8 +509,8 @@ func SetEffectivePropertyValueForNode(nodeID cdp.NodeID, propertyName string, va
 }
 
 // Do executes CSS.setEffectivePropertyValueForNode against the provided context.
-func (p *SetEffectivePropertyValueForNodeParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetEffectivePropertyValueForNode, p, nil)
+func (p *SetEffectivePropertyValueForNodeParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetEffectivePropertyValueForNode, p, nil)
 }
 
 // SetKeyframeKeyParams modifies the keyframe rule key text.
@@ -495,6 +521,8 @@ type SetKeyframeKeyParams struct {
 }
 
 // SetKeyframeKey modifies the keyframe rule key text.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-setKeyframeKey
 //
 // parameters:
 //   styleSheetID
@@ -517,10 +545,10 @@ type SetKeyframeKeyReturns struct {
 //
 // returns:
 //   keyText - The resulting key text after modification.
-func (p *SetKeyframeKeyParams) Do(ctxt context.Context, h cdp.Executor) (keyText *Value, err error) {
+func (p *SetKeyframeKeyParams) Do(ctx context.Context) (keyText *Value, err error) {
 	// execute
 	var res SetKeyframeKeyReturns
-	err = h.Execute(ctxt, CommandSetKeyframeKey, p, &res)
+	err = cdp.Execute(ctx, CommandSetKeyframeKey, p, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -536,6 +564,8 @@ type SetMediaTextParams struct {
 }
 
 // SetMediaText modifies the rule selector.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-setMediaText
 //
 // parameters:
 //   styleSheetID
@@ -558,10 +588,10 @@ type SetMediaTextReturns struct {
 //
 // returns:
 //   media - The resulting CSS media rule after modification.
-func (p *SetMediaTextParams) Do(ctxt context.Context, h cdp.Executor) (media *Media, err error) {
+func (p *SetMediaTextParams) Do(ctx context.Context) (media *Media, err error) {
 	// execute
 	var res SetMediaTextReturns
-	err = h.Execute(ctxt, CommandSetMediaText, p, &res)
+	err = cdp.Execute(ctx, CommandSetMediaText, p, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -577,6 +607,8 @@ type SetRuleSelectorParams struct {
 }
 
 // SetRuleSelector modifies the rule selector.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-setRuleSelector
 //
 // parameters:
 //   styleSheetID
@@ -599,10 +631,10 @@ type SetRuleSelectorReturns struct {
 //
 // returns:
 //   selectorList - The resulting selector list after modification.
-func (p *SetRuleSelectorParams) Do(ctxt context.Context, h cdp.Executor) (selectorList *SelectorList, err error) {
+func (p *SetRuleSelectorParams) Do(ctx context.Context) (selectorList *SelectorList, err error) {
 	// execute
 	var res SetRuleSelectorReturns
-	err = h.Execute(ctxt, CommandSetRuleSelector, p, &res)
+	err = cdp.Execute(ctx, CommandSetRuleSelector, p, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -617,6 +649,8 @@ type SetStyleSheetTextParams struct {
 }
 
 // SetStyleSheetText sets the new stylesheet text.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-setStyleSheetText
 //
 // parameters:
 //   styleSheetID
@@ -637,10 +671,10 @@ type SetStyleSheetTextReturns struct {
 //
 // returns:
 //   sourceMapURL - URL of source map associated with script (if any).
-func (p *SetStyleSheetTextParams) Do(ctxt context.Context, h cdp.Executor) (sourceMapURL string, err error) {
+func (p *SetStyleSheetTextParams) Do(ctx context.Context) (sourceMapURL string, err error) {
 	// execute
 	var res SetStyleSheetTextReturns
-	err = h.Execute(ctxt, CommandSetStyleSheetText, p, &res)
+	err = cdp.Execute(ctx, CommandSetStyleSheetText, p, &res)
 	if err != nil {
 		return "", err
 	}
@@ -656,6 +690,8 @@ type SetStyleTextsParams struct {
 
 // SetStyleTexts applies specified style edits one after another in the given
 // order.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-setStyleTexts
 //
 // parameters:
 //   edits
@@ -674,10 +710,10 @@ type SetStyleTextsReturns struct {
 //
 // returns:
 //   styles - The resulting styles after modification.
-func (p *SetStyleTextsParams) Do(ctxt context.Context, h cdp.Executor) (styles []*Style, err error) {
+func (p *SetStyleTextsParams) Do(ctx context.Context) (styles []*Style, err error) {
 	// execute
 	var res SetStyleTextsReturns
-	err = h.Execute(ctxt, CommandSetStyleTexts, p, &res)
+	err = cdp.Execute(ctx, CommandSetStyleTexts, p, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -689,13 +725,15 @@ func (p *SetStyleTextsParams) Do(ctxt context.Context, h cdp.Executor) (styles [
 type StartRuleUsageTrackingParams struct{}
 
 // StartRuleUsageTracking enables the selector recording.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-startRuleUsageTracking
 func StartRuleUsageTracking() *StartRuleUsageTrackingParams {
 	return &StartRuleUsageTrackingParams{}
 }
 
 // Do executes CSS.startRuleUsageTracking against the provided context.
-func (p *StartRuleUsageTrackingParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandStartRuleUsageTracking, nil, nil)
+func (p *StartRuleUsageTrackingParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandStartRuleUsageTracking, nil, nil)
 }
 
 // StopRuleUsageTrackingParams stop tracking rule usage and return the list
@@ -706,6 +744,8 @@ type StopRuleUsageTrackingParams struct{}
 // StopRuleUsageTracking stop tracking rule usage and return the list of
 // rules that were used since last call to takeCoverageDelta (or since start of
 // coverage instrumentation).
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-stopRuleUsageTracking
 func StopRuleUsageTracking() *StopRuleUsageTrackingParams {
 	return &StopRuleUsageTrackingParams{}
 }
@@ -719,10 +759,10 @@ type StopRuleUsageTrackingReturns struct {
 //
 // returns:
 //   ruleUsage
-func (p *StopRuleUsageTrackingParams) Do(ctxt context.Context, h cdp.Executor) (ruleUsage []*RuleUsage, err error) {
+func (p *StopRuleUsageTrackingParams) Do(ctx context.Context) (ruleUsage []*RuleUsage, err error) {
 	// execute
 	var res StopRuleUsageTrackingReturns
-	err = h.Execute(ctxt, CommandStopRuleUsageTracking, nil, &res)
+	err = cdp.Execute(ctx, CommandStopRuleUsageTracking, nil, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -736,28 +776,32 @@ type TakeCoverageDeltaParams struct{}
 
 // TakeCoverageDelta obtain list of rules that became used since last call to
 // this method (or since start of coverage instrumentation).
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-takeCoverageDelta
 func TakeCoverageDelta() *TakeCoverageDeltaParams {
 	return &TakeCoverageDeltaParams{}
 }
 
 // TakeCoverageDeltaReturns return values.
 type TakeCoverageDeltaReturns struct {
-	Coverage []*RuleUsage `json:"coverage,omitempty"`
+	Coverage  []*RuleUsage `json:"coverage,omitempty"`
+	Timestamp float64      `json:"timestamp,omitempty"` // Monotonically increasing time, in seconds.
 }
 
 // Do executes CSS.takeCoverageDelta against the provided context.
 //
 // returns:
 //   coverage
-func (p *TakeCoverageDeltaParams) Do(ctxt context.Context, h cdp.Executor) (coverage []*RuleUsage, err error) {
+//   timestamp - Monotonically increasing time, in seconds.
+func (p *TakeCoverageDeltaParams) Do(ctx context.Context) (coverage []*RuleUsage, timestamp float64, err error) {
 	// execute
 	var res TakeCoverageDeltaReturns
-	err = h.Execute(ctxt, CommandTakeCoverageDelta, nil, &res)
+	err = cdp.Execute(ctx, CommandTakeCoverageDelta, nil, &res)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return res.Coverage, nil
+	return res.Coverage, res.Timestamp, nil
 }
 
 // Command names.

@@ -359,7 +359,7 @@ func (file *GridFile) assertMode(mode gfsFileMode) {
 
 // SetChunkSize sets size of saved chunks.  Once the file is written to, it
 // will be split in blocks of that size and each block saved into an
-// independent chunk document.  The default chunk size is 256kb.
+// independent chunk document.  The default chunk size is 255kb.
 //
 // It is a runtime error to call this function once the file has started
 // being written to.
@@ -657,7 +657,7 @@ func (file *GridFile) insertChunk(data []byte) {
 // an error, if any.
 func (file *GridFile) Seek(offset int64, whence int) (pos int64, err error) {
 	file.m.Lock()
-	debugf("GridFile %p: seeking for %s (whence=%d)", file, offset, whence)
+	debugf("GridFile %p: seeking for %d (whence=%d)", file, offset, whence)
 	defer file.m.Unlock()
 	switch whence {
 	case os.SEEK_SET:

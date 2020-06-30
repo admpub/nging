@@ -17,26 +17,30 @@ import (
 type DisableParams struct{}
 
 // Disable disables animation domain notifications.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Animation#method-disable
 func Disable() *DisableParams {
 	return &DisableParams{}
 }
 
 // Do executes Animation.disable against the provided context.
-func (p *DisableParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandDisable, nil, nil)
+func (p *DisableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDisable, nil, nil)
 }
 
 // EnableParams enables animation domain notifications.
 type EnableParams struct{}
 
 // Enable enables animation domain notifications.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Animation#method-enable
 func Enable() *EnableParams {
 	return &EnableParams{}
 }
 
 // Do executes Animation.enable against the provided context.
-func (p *EnableParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandEnable, nil, nil)
+func (p *EnableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandEnable, nil, nil)
 }
 
 // GetCurrentTimeParams returns the current time of the an animation.
@@ -45,6 +49,8 @@ type GetCurrentTimeParams struct {
 }
 
 // GetCurrentTime returns the current time of the an animation.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Animation#method-getCurrentTime
 //
 // parameters:
 //   id - Id of animation.
@@ -63,10 +69,10 @@ type GetCurrentTimeReturns struct {
 //
 // returns:
 //   currentTime - Current time of the page.
-func (p *GetCurrentTimeParams) Do(ctxt context.Context, h cdp.Executor) (currentTime float64, err error) {
+func (p *GetCurrentTimeParams) Do(ctx context.Context) (currentTime float64, err error) {
 	// execute
 	var res GetCurrentTimeReturns
-	err = h.Execute(ctxt, CommandGetCurrentTime, p, &res)
+	err = cdp.Execute(ctx, CommandGetCurrentTime, p, &res)
 	if err != nil {
 		return 0, err
 	}
@@ -78,6 +84,8 @@ func (p *GetCurrentTimeParams) Do(ctxt context.Context, h cdp.Executor) (current
 type GetPlaybackRateParams struct{}
 
 // GetPlaybackRate gets the playback rate of the document timeline.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Animation#method-getPlaybackRate
 func GetPlaybackRate() *GetPlaybackRateParams {
 	return &GetPlaybackRateParams{}
 }
@@ -91,10 +99,10 @@ type GetPlaybackRateReturns struct {
 //
 // returns:
 //   playbackRate - Playback rate for animations on page.
-func (p *GetPlaybackRateParams) Do(ctxt context.Context, h cdp.Executor) (playbackRate float64, err error) {
+func (p *GetPlaybackRateParams) Do(ctx context.Context) (playbackRate float64, err error) {
 	// execute
 	var res GetPlaybackRateReturns
-	err = h.Execute(ctxt, CommandGetPlaybackRate, nil, &res)
+	err = cdp.Execute(ctx, CommandGetPlaybackRate, nil, &res)
 	if err != nil {
 		return 0, err
 	}
@@ -111,6 +119,8 @@ type ReleaseAnimationsParams struct {
 // ReleaseAnimations releases a set of animations to no longer be
 // manipulated.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Animation#method-releaseAnimations
+//
 // parameters:
 //   animations - List of animation ids to seek.
 func ReleaseAnimations(animations []string) *ReleaseAnimationsParams {
@@ -120,8 +130,8 @@ func ReleaseAnimations(animations []string) *ReleaseAnimationsParams {
 }
 
 // Do executes Animation.releaseAnimations against the provided context.
-func (p *ReleaseAnimationsParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandReleaseAnimations, p, nil)
+func (p *ReleaseAnimationsParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandReleaseAnimations, p, nil)
 }
 
 // ResolveAnimationParams gets the remote object of the Animation.
@@ -130,6 +140,8 @@ type ResolveAnimationParams struct {
 }
 
 // ResolveAnimation gets the remote object of the Animation.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Animation#method-resolveAnimation
 //
 // parameters:
 //   animationID - Animation id.
@@ -148,10 +160,10 @@ type ResolveAnimationReturns struct {
 //
 // returns:
 //   remoteObject - Corresponding remote object.
-func (p *ResolveAnimationParams) Do(ctxt context.Context, h cdp.Executor) (remoteObject *runtime.RemoteObject, err error) {
+func (p *ResolveAnimationParams) Do(ctx context.Context) (remoteObject *runtime.RemoteObject, err error) {
 	// execute
 	var res ResolveAnimationReturns
-	err = h.Execute(ctxt, CommandResolveAnimation, p, &res)
+	err = cdp.Execute(ctx, CommandResolveAnimation, p, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -169,6 +181,8 @@ type SeekAnimationsParams struct {
 // SeekAnimations seek a set of animations to a particular time within each
 // animation.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Animation#method-seekAnimations
+//
 // parameters:
 //   animations - List of animation ids to seek.
 //   currentTime - Set the current time of each animation.
@@ -180,8 +194,8 @@ func SeekAnimations(animations []string, currentTime float64) *SeekAnimationsPar
 }
 
 // Do executes Animation.seekAnimations against the provided context.
-func (p *SeekAnimationsParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSeekAnimations, p, nil)
+func (p *SeekAnimationsParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSeekAnimations, p, nil)
 }
 
 // SetPausedParams sets the paused state of a set of animations.
@@ -191,6 +205,8 @@ type SetPausedParams struct {
 }
 
 // SetPaused sets the paused state of a set of animations.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Animation#method-setPaused
 //
 // parameters:
 //   animations - Animations to set the pause state of.
@@ -203,8 +219,8 @@ func SetPaused(animations []string, paused bool) *SetPausedParams {
 }
 
 // Do executes Animation.setPaused against the provided context.
-func (p *SetPausedParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetPaused, p, nil)
+func (p *SetPausedParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetPaused, p, nil)
 }
 
 // SetPlaybackRateParams sets the playback rate of the document timeline.
@@ -213,6 +229,8 @@ type SetPlaybackRateParams struct {
 }
 
 // SetPlaybackRate sets the playback rate of the document timeline.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Animation#method-setPlaybackRate
 //
 // parameters:
 //   playbackRate - Playback rate for animations on page
@@ -223,8 +241,8 @@ func SetPlaybackRate(playbackRate float64) *SetPlaybackRateParams {
 }
 
 // Do executes Animation.setPlaybackRate against the provided context.
-func (p *SetPlaybackRateParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetPlaybackRate, p, nil)
+func (p *SetPlaybackRateParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetPlaybackRate, p, nil)
 }
 
 // SetTimingParams sets the timing of an animation node.
@@ -235,6 +253,8 @@ type SetTimingParams struct {
 }
 
 // SetTiming sets the timing of an animation node.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Animation#method-setTiming
 //
 // parameters:
 //   animationID - Animation id.
@@ -249,8 +269,8 @@ func SetTiming(animationID string, duration float64, delay float64) *SetTimingPa
 }
 
 // Do executes Animation.setTiming against the provided context.
-func (p *SetTimingParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetTiming, p, nil)
+func (p *SetTimingParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetTiming, p, nil)
 }
 
 // Command names.

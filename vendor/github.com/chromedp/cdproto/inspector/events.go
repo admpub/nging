@@ -4,13 +4,19 @@ package inspector
 
 // EventDetached fired when remote debugging connection is about to be
 // terminated. Contains detach reason.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Inspector#event-detached
 type EventDetached struct {
 	Reason DetachReason `json:"reason"` // The reason why connection has been terminated.
 }
 
 // EventTargetCrashed fired when debugging target has crashed.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Inspector#event-targetCrashed
 type EventTargetCrashed struct{}
 
 // EventTargetReloadedAfterCrash fired when debugging target has reloaded
 // after crash.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Inspector#event-targetReloadedAfterCrash
 type EventTargetReloadedAfterCrash struct{}

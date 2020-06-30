@@ -1,4 +1,4 @@
-phantomjs [![godoc](https://godoc.org/github.com/benbjohnson/phantomjs?status.svg)](https://godoc.org/github.com/benbjohnson/phantomjs) ![Status](https://img.shields.io/badge/status-beta-yellow.svg)
+phantomjs [![godoc](https://godoc.org/github.com/admpub/phantomjs?status.svg)](https://godoc.org/github.com/admpub/phantomjs) ![Status](https://img.shields.io/badge/status-beta-yellow.svg)
 =========
 
 This is a Go wrapper for the [`phantomjs`][phantomjs] command line program. It
@@ -16,7 +16,7 @@ manager (such as `apt-get` or `brew`). Then install this package using the Go
 toolchain:
 
 ```sh
-$ go get -u github.com/benbjohnson/phantomjs
+$ go get -u github.com/admpub/phantomjs
 ```
 
 

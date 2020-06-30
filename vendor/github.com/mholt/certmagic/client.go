@@ -15,21 +15,24 @@
 package certmagic
 
 import (
+	"crypto/tls"
 	"fmt"
 	"log"
 	weakrand "math/rand"
 	"net"
+	"net/http"
 	"net/url"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/go-acme/lego/certificate"
-	"github.com/go-acme/lego/challenge"
-	"github.com/go-acme/lego/challenge/http01"
-	"github.com/go-acme/lego/challenge/tlsalpn01"
-	"github.com/go-acme/lego/lego"
-	"github.com/go-acme/lego/registration"
+	"github.com/go-acme/lego/v3/acme"
+	"github.com/go-acme/lego/v3/certificate"
+	"github.com/go-acme/lego/v3/challenge"
+	"github.com/go-acme/lego/v3/challenge/http01"
+	"github.com/go-acme/lego/v3/challenge/tlsalpn01"
+	"github.com/go-acme/lego/v3/lego"
+	"github.com/go-acme/lego/v3/registration"
 )
 
 func init() {
@@ -77,7 +80,14 @@ func (cfg *Config) newManager(interactive bool) (Manager, error) {
 		if err == nil {
 			break
 		}
+		if acmeErr, ok := err.(acme.ProblemDetails); ok {
+			if acmeErr.HTTPStatus == http.StatusTooManyRequests {
+				log.Printf("[ERROR] Too many requests when making new ACME client: %+v - aborting", acmeErr)
+				return nil, err
+			}
+		}
 		log.Printf("[ERROR] Making new certificate manager: %v (attempt %d/%d)", err, i+1, maxTries)
+		time.Sleep(1 * time.Second)
 	}
 	return mgr, err
 }
@@ -134,6 +144,15 @@ func (cfg *Config) newACMEClient(interactive bool) (*acmeClient, error) {
 			KeyType: keyType,
 			Timeout: certObtainTimeout,
 		}
+		if cfg.TrustedRoots != nil {
+			if ht, ok := legoCfg.HTTPClient.Transport.(*http.Transport); ok {
+				if ht.TLSClientConfig == nil {
+					ht.TLSClientConfig = new(tls.Config)
+					ht.ForceAttemptHTTP2 = true
+				}
+				ht.TLSClientConfig.RootCAs = cfg.TrustedRoots
+			}
+		}
 		client, err = lego.NewClient(legoCfg)
 		if err != nil {
 			cfg.acmeClientsMu.Unlock()
@@ -158,7 +177,7 @@ func (cfg *Config) newACMEClient(interactive bool) (*acmeClient, error) {
 
 		reg, err := client.Registration.Register(registration.RegisterOptions{TermsOfServiceAgreed: cfg.Agreed})
 		if err != nil {
-			return nil, fmt.Errorf("registration error: %v", err)
+			return nil, err
 		}
 		leUser.Registration = reg
 

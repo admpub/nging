@@ -16,32 +16,49 @@ import (
 type DisableParams struct{}
 
 // Disable disable collecting and reporting metrics.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Performance#method-disable
 func Disable() *DisableParams {
 	return &DisableParams{}
 }
 
 // Do executes Performance.disable against the provided context.
-func (p *DisableParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandDisable, nil, nil)
+func (p *DisableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDisable, nil, nil)
 }
 
 // EnableParams enable collecting and reporting metrics.
-type EnableParams struct{}
+type EnableParams struct {
+	TimeDomain EnableTimeDomain `json:"timeDomain,omitempty"` // Time domain to use for collecting and reporting duration metrics.
+}
 
 // Enable enable collecting and reporting metrics.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Performance#method-enable
+//
+// parameters:
 func Enable() *EnableParams {
 	return &EnableParams{}
 }
 
+// WithTimeDomain time domain to use for collecting and reporting duration
+// metrics.
+func (p EnableParams) WithTimeDomain(timeDomain EnableTimeDomain) *EnableParams {
+	p.TimeDomain = timeDomain
+	return &p
+}
+
 // Do executes Performance.enable against the provided context.
-func (p *EnableParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandEnable, nil, nil)
+func (p *EnableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandEnable, p, nil)
 }
 
 // GetMetricsParams retrieve current values of run-time metrics.
 type GetMetricsParams struct{}
 
 // GetMetrics retrieve current values of run-time metrics.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Performance#method-getMetrics
 func GetMetrics() *GetMetricsParams {
 	return &GetMetricsParams{}
 }
@@ -55,10 +72,10 @@ type GetMetricsReturns struct {
 //
 // returns:
 //   metrics - Current values for run-time metrics.
-func (p *GetMetricsParams) Do(ctxt context.Context, h cdp.Executor) (metrics []*Metric, err error) {
+func (p *GetMetricsParams) Do(ctx context.Context) (metrics []*Metric, err error) {
 	// execute
 	var res GetMetricsReturns
-	err = h.Execute(ctxt, CommandGetMetrics, nil, &res)
+	err = cdp.Execute(ctx, CommandGetMetrics, nil, &res)
 	if err != nil {
 		return nil, err
 	}

@@ -8,6 +8,8 @@ import (
 
 // ProfileNode profile node. Holds callsite information, execution statistics
 // and child nodes.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#type-ProfileNode
 type ProfileNode struct {
 	ID            int64               `json:"id"`                      // Unique id of the node.
 	CallFrame     *runtime.CallFrame  `json:"callFrame"`               // Function location.
@@ -18,6 +20,8 @@ type ProfileNode struct {
 }
 
 // Profile Profile.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#type-Profile
 type Profile struct {
 	Nodes      []*ProfileNode `json:"nodes"`                // The list of profile nodes. First item is the root node.
 	StartTime  float64        `json:"startTime"`            // Profiling start timestamp in microseconds.
@@ -28,12 +32,16 @@ type Profile struct {
 
 // PositionTickInfo specifies a number of samples attributed to a certain
 // source position.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#type-PositionTickInfo
 type PositionTickInfo struct {
 	Line  int64 `json:"line"`  // Source line number (1-based).
 	Ticks int64 `json:"ticks"` // Number of samples attributed to the source line.
 }
 
 // CoverageRange coverage data for a source range.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#type-CoverageRange
 type CoverageRange struct {
 	StartOffset int64 `json:"startOffset"` // JavaScript script source offset for the range start.
 	EndOffset   int64 `json:"endOffset"`   // JavaScript script source offset for the range end.
@@ -41,6 +49,8 @@ type CoverageRange struct {
 }
 
 // FunctionCoverage coverage data for a JavaScript function.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#type-FunctionCoverage
 type FunctionCoverage struct {
 	FunctionName    string           `json:"functionName"`    // JavaScript function name.
 	Ranges          []*CoverageRange `json:"ranges"`          // Source ranges inside the function with coverage data.
@@ -48,6 +58,8 @@ type FunctionCoverage struct {
 }
 
 // ScriptCoverage coverage data for a JavaScript script.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#type-ScriptCoverage
 type ScriptCoverage struct {
 	ScriptID  runtime.ScriptID    `json:"scriptId"`  // JavaScript script id.
 	URL       string              `json:"url"`       // JavaScript script name or url.
@@ -55,11 +67,15 @@ type ScriptCoverage struct {
 }
 
 // TypeObject describes a type collected during runtime.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#type-TypeObject
 type TypeObject struct {
 	Name string `json:"name"` // Name of a type collected with type profiling.
 }
 
 // TypeProfileEntry source offset and types for a parameter or return value.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#type-TypeProfileEntry
 type TypeProfileEntry struct {
 	Offset int64         `json:"offset"` // Source offset of the parameter or end of function for return values.
 	Types  []*TypeObject `json:"types"`  // The types for this parameter or return value.
@@ -67,8 +83,18 @@ type TypeProfileEntry struct {
 
 // ScriptTypeProfile type profile data collected during runtime for a
 // JavaScript script.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#type-ScriptTypeProfile
 type ScriptTypeProfile struct {
 	ScriptID runtime.ScriptID    `json:"scriptId"` // JavaScript script id.
 	URL      string              `json:"url"`      // JavaScript script name or url.
 	Entries  []*TypeProfileEntry `json:"entries"`  // Type profile entries for parameters and return values of the functions in the script.
+}
+
+// CounterInfo collected counter information.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#type-CounterInfo
+type CounterInfo struct {
+	Name  string `json:"name"`  // Counter name.
+	Value int64  `json:"value"` // Counter value.
 }

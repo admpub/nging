@@ -13,6 +13,8 @@ import (
 )
 
 // FrameResource information about the Resource on the page.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-FrameResource
 type FrameResource struct {
 	URL          string               `json:"url"`                    // Resource URL.
 	Type         network.ResourceType `json:"type"`                   // Type of this resource.
@@ -25,6 +27,8 @@ type FrameResource struct {
 
 // FrameResourceTree information about the Frame hierarchy along with their
 // cached resources.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-FrameResourceTree
 type FrameResourceTree struct {
 	Frame       *cdp.Frame           `json:"frame"`                 // Frame information for this tree item.
 	ChildFrames []*FrameResourceTree `json:"childFrames,omitempty"` // Child frames.
@@ -32,12 +36,16 @@ type FrameResourceTree struct {
 }
 
 // FrameTree information about the Frame hierarchy.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-FrameTree
 type FrameTree struct {
 	Frame       *cdp.Frame   `json:"frame"`                 // Frame information for this tree item.
 	ChildFrames []*FrameTree `json:"childFrames,omitempty"` // Child frames.
 }
 
 // ScriptIdentifier unique script identifier.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-ScriptIdentifier
 type ScriptIdentifier string
 
 // String returns the ScriptIdentifier as string value.
@@ -46,6 +54,8 @@ func (t ScriptIdentifier) String() string {
 }
 
 // TransitionType transition type.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-TransitionType
 type TransitionType string
 
 // String returns the TransitionType as string value.
@@ -121,6 +131,8 @@ func (t *TransitionType) UnmarshalJSON(buf []byte) error {
 }
 
 // NavigationEntry navigation history entry.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-NavigationEntry
 type NavigationEntry struct {
 	ID             int64          `json:"id"`             // Unique id of the navigation history entry.
 	URL            string         `json:"url"`            // URL of the navigation history entry.
@@ -130,6 +142,8 @@ type NavigationEntry struct {
 }
 
 // ScreencastFrameMetadata screencast frame metadata.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-ScreencastFrameMetadata
 type ScreencastFrameMetadata struct {
 	OffsetTop       float64             `json:"offsetTop"`           // Top offset in DIP.
 	PageScaleFactor float64             `json:"pageScaleFactor"`     // Page scale factor.
@@ -141,6 +155,8 @@ type ScreencastFrameMetadata struct {
 }
 
 // DialogType javascript dialog type.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-DialogType
 type DialogType string
 
 // String returns the DialogType as string value.
@@ -189,6 +205,8 @@ func (t *DialogType) UnmarshalJSON(buf []byte) error {
 }
 
 // AppManifestError error while paring app manifest.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-AppManifestError
 type AppManifestError struct {
 	Message  string `json:"message"`  // Error message.
 	Critical int64  `json:"critical"` // If criticial, this is a non-recoverable parse error.
@@ -196,7 +214,16 @@ type AppManifestError struct {
 	Column   int64  `json:"column"`   // Error column.
 }
 
+// AppManifestParsedProperties parsed app manifest properties.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-AppManifestParsedProperties
+type AppManifestParsedProperties struct {
+	Scope string `json:"scope"` // Computed scope value
+}
+
 // LayoutViewport layout viewport position and dimensions.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-LayoutViewport
 type LayoutViewport struct {
 	PageX        int64 `json:"pageX"`        // Horizontal offset relative to the document (CSS pixels).
 	PageY        int64 `json:"pageY"`        // Vertical offset relative to the document (CSS pixels).
@@ -205,26 +232,33 @@ type LayoutViewport struct {
 }
 
 // VisualViewport visual viewport position, dimensions, and scale.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-VisualViewport
 type VisualViewport struct {
-	OffsetX      float64 `json:"offsetX"`      // Horizontal offset relative to the layout viewport (CSS pixels).
-	OffsetY      float64 `json:"offsetY"`      // Vertical offset relative to the layout viewport (CSS pixels).
-	PageX        float64 `json:"pageX"`        // Horizontal offset relative to the document (CSS pixels).
-	PageY        float64 `json:"pageY"`        // Vertical offset relative to the document (CSS pixels).
-	ClientWidth  float64 `json:"clientWidth"`  // Width (CSS pixels), excludes scrollbar if present.
-	ClientHeight float64 `json:"clientHeight"` // Height (CSS pixels), excludes scrollbar if present.
-	Scale        float64 `json:"scale"`        // Scale relative to the ideal viewport (size at width=device-width).
+	OffsetX      float64 `json:"offsetX"`        // Horizontal offset relative to the layout viewport (CSS pixels).
+	OffsetY      float64 `json:"offsetY"`        // Vertical offset relative to the layout viewport (CSS pixels).
+	PageX        float64 `json:"pageX"`          // Horizontal offset relative to the document (CSS pixels).
+	PageY        float64 `json:"pageY"`          // Vertical offset relative to the document (CSS pixels).
+	ClientWidth  float64 `json:"clientWidth"`    // Width (CSS pixels), excludes scrollbar if present.
+	ClientHeight float64 `json:"clientHeight"`   // Height (CSS pixels), excludes scrollbar if present.
+	Scale        float64 `json:"scale"`          // Scale relative to the ideal viewport (size at width=device-width).
+	Zoom         float64 `json:"zoom,omitempty"` // Page zoom factor (CSS to device independent pixels ratio).
 }
 
 // Viewport viewport for capturing screenshot.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-Viewport
 type Viewport struct {
-	X      float64 `json:"x"`      // X offset in CSS pixels.
-	Y      float64 `json:"y"`      // Y offset in CSS pixels
-	Width  float64 `json:"width"`  // Rectangle width in CSS pixels
-	Height float64 `json:"height"` // Rectangle height in CSS pixels
+	X      float64 `json:"x"`      // X offset in device independent pixels (dip).
+	Y      float64 `json:"y"`      // Y offset in device independent pixels (dip).
+	Width  float64 `json:"width"`  // Rectangle width in device independent pixels (dip).
+	Height float64 `json:"height"` // Rectangle height in device independent pixels (dip).
 	Scale  float64 `json:"scale"`  // Page scale factor.
 }
 
 // FontFamilies generic font families collection.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-FontFamilies
 type FontFamilies struct {
 	Standard   string `json:"standard,omitempty"`   // The standard font-family.
 	Fixed      string `json:"fixed,omitempty"`      // The fixed font-family.
@@ -236,69 +270,297 @@ type FontFamilies struct {
 }
 
 // FontSizes default font sizes.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-FontSizes
 type FontSizes struct {
 	Standard int64 `json:"standard,omitempty"` // Default standard font size.
 	Fixed    int64 `json:"fixed,omitempty"`    // Default fixed font size.
 }
 
-// FrameScheduledNavigationReason the reason for the navigation.
-type FrameScheduledNavigationReason string
+// ClientNavigationReason [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-ClientNavigationReason
+type ClientNavigationReason string
 
-// String returns the FrameScheduledNavigationReason as string value.
-func (t FrameScheduledNavigationReason) String() string {
+// String returns the ClientNavigationReason as string value.
+func (t ClientNavigationReason) String() string {
 	return string(t)
 }
 
-// FrameScheduledNavigationReason values.
+// ClientNavigationReason values.
 const (
-	FrameScheduledNavigationReasonFormSubmissionGet     FrameScheduledNavigationReason = "formSubmissionGet"
-	FrameScheduledNavigationReasonFormSubmissionPost    FrameScheduledNavigationReason = "formSubmissionPost"
-	FrameScheduledNavigationReasonHTTPHeaderRefresh     FrameScheduledNavigationReason = "httpHeaderRefresh"
-	FrameScheduledNavigationReasonScriptInitiated       FrameScheduledNavigationReason = "scriptInitiated"
-	FrameScheduledNavigationReasonMetaTagRefresh        FrameScheduledNavigationReason = "metaTagRefresh"
-	FrameScheduledNavigationReasonPageBlockInterstitial FrameScheduledNavigationReason = "pageBlockInterstitial"
-	FrameScheduledNavigationReasonReload                FrameScheduledNavigationReason = "reload"
+	ClientNavigationReasonFormSubmissionGet     ClientNavigationReason = "formSubmissionGet"
+	ClientNavigationReasonFormSubmissionPost    ClientNavigationReason = "formSubmissionPost"
+	ClientNavigationReasonHTTPHeaderRefresh     ClientNavigationReason = "httpHeaderRefresh"
+	ClientNavigationReasonScriptInitiated       ClientNavigationReason = "scriptInitiated"
+	ClientNavigationReasonMetaTagRefresh        ClientNavigationReason = "metaTagRefresh"
+	ClientNavigationReasonPageBlockInterstitial ClientNavigationReason = "pageBlockInterstitial"
+	ClientNavigationReasonReload                ClientNavigationReason = "reload"
+	ClientNavigationReasonAnchorClick           ClientNavigationReason = "anchorClick"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
-func (t FrameScheduledNavigationReason) MarshalEasyJSON(out *jwriter.Writer) {
+func (t ClientNavigationReason) MarshalEasyJSON(out *jwriter.Writer) {
 	out.String(string(t))
 }
 
 // MarshalJSON satisfies json.Marshaler.
-func (t FrameScheduledNavigationReason) MarshalJSON() ([]byte, error) {
+func (t ClientNavigationReason) MarshalJSON() ([]byte, error) {
 	return easyjson.Marshal(t)
 }
 
 // UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
-func (t *FrameScheduledNavigationReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
-	switch FrameScheduledNavigationReason(in.String()) {
-	case FrameScheduledNavigationReasonFormSubmissionGet:
-		*t = FrameScheduledNavigationReasonFormSubmissionGet
-	case FrameScheduledNavigationReasonFormSubmissionPost:
-		*t = FrameScheduledNavigationReasonFormSubmissionPost
-	case FrameScheduledNavigationReasonHTTPHeaderRefresh:
-		*t = FrameScheduledNavigationReasonHTTPHeaderRefresh
-	case FrameScheduledNavigationReasonScriptInitiated:
-		*t = FrameScheduledNavigationReasonScriptInitiated
-	case FrameScheduledNavigationReasonMetaTagRefresh:
-		*t = FrameScheduledNavigationReasonMetaTagRefresh
-	case FrameScheduledNavigationReasonPageBlockInterstitial:
-		*t = FrameScheduledNavigationReasonPageBlockInterstitial
-	case FrameScheduledNavigationReasonReload:
-		*t = FrameScheduledNavigationReasonReload
+func (t *ClientNavigationReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch ClientNavigationReason(in.String()) {
+	case ClientNavigationReasonFormSubmissionGet:
+		*t = ClientNavigationReasonFormSubmissionGet
+	case ClientNavigationReasonFormSubmissionPost:
+		*t = ClientNavigationReasonFormSubmissionPost
+	case ClientNavigationReasonHTTPHeaderRefresh:
+		*t = ClientNavigationReasonHTTPHeaderRefresh
+	case ClientNavigationReasonScriptInitiated:
+		*t = ClientNavigationReasonScriptInitiated
+	case ClientNavigationReasonMetaTagRefresh:
+		*t = ClientNavigationReasonMetaTagRefresh
+	case ClientNavigationReasonPageBlockInterstitial:
+		*t = ClientNavigationReasonPageBlockInterstitial
+	case ClientNavigationReasonReload:
+		*t = ClientNavigationReasonReload
+	case ClientNavigationReasonAnchorClick:
+		*t = ClientNavigationReasonAnchorClick
 
 	default:
-		in.AddError(errors.New("unknown FrameScheduledNavigationReason value"))
+		in.AddError(errors.New("unknown ClientNavigationReason value"))
 	}
 }
 
 // UnmarshalJSON satisfies json.Unmarshaler.
-func (t *FrameScheduledNavigationReason) UnmarshalJSON(buf []byte) error {
+func (t *ClientNavigationReason) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// ClientNavigationDisposition [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-ClientNavigationDisposition
+type ClientNavigationDisposition string
+
+// String returns the ClientNavigationDisposition as string value.
+func (t ClientNavigationDisposition) String() string {
+	return string(t)
+}
+
+// ClientNavigationDisposition values.
+const (
+	ClientNavigationDispositionCurrentTab ClientNavigationDisposition = "currentTab"
+	ClientNavigationDispositionNewTab     ClientNavigationDisposition = "newTab"
+	ClientNavigationDispositionNewWindow  ClientNavigationDisposition = "newWindow"
+	ClientNavigationDispositionDownload   ClientNavigationDisposition = "download"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t ClientNavigationDisposition) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t ClientNavigationDisposition) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *ClientNavigationDisposition) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch ClientNavigationDisposition(in.String()) {
+	case ClientNavigationDispositionCurrentTab:
+		*t = ClientNavigationDispositionCurrentTab
+	case ClientNavigationDispositionNewTab:
+		*t = ClientNavigationDispositionNewTab
+	case ClientNavigationDispositionNewWindow:
+		*t = ClientNavigationDispositionNewWindow
+	case ClientNavigationDispositionDownload:
+		*t = ClientNavigationDispositionDownload
+
+	default:
+		in.AddError(errors.New("unknown ClientNavigationDisposition value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *ClientNavigationDisposition) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// InstallabilityErrorArgument [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-InstallabilityErrorArgument
+type InstallabilityErrorArgument struct {
+	Name  string `json:"name"`  // Argument name (e.g. name:'minimum-icon-size-in-pixels').
+	Value string `json:"value"` // Argument value (e.g. value:'64').
+}
+
+// InstallabilityError the installability error.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-InstallabilityError
+type InstallabilityError struct {
+	ErrorID        string                         `json:"errorId"`        // The error id (e.g. 'manifest-missing-suitable-icon').
+	ErrorArguments []*InstallabilityErrorArgument `json:"errorArguments"` // The list of error arguments (e.g. {name:'minimum-icon-size-in-pixels', value:'64'}).
+}
+
+// ReferrerPolicy the referring-policy used for the navigation.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-ReferrerPolicy
+type ReferrerPolicy string
+
+// String returns the ReferrerPolicy as string value.
+func (t ReferrerPolicy) String() string {
+	return string(t)
+}
+
+// ReferrerPolicy values.
+const (
+	ReferrerPolicyNoReferrer                  ReferrerPolicy = "noReferrer"
+	ReferrerPolicyNoReferrerWhenDowngrade     ReferrerPolicy = "noReferrerWhenDowngrade"
+	ReferrerPolicyOrigin                      ReferrerPolicy = "origin"
+	ReferrerPolicyOriginWhenCrossOrigin       ReferrerPolicy = "originWhenCrossOrigin"
+	ReferrerPolicySameOrigin                  ReferrerPolicy = "sameOrigin"
+	ReferrerPolicyStrictOrigin                ReferrerPolicy = "strictOrigin"
+	ReferrerPolicyStrictOriginWhenCrossOrigin ReferrerPolicy = "strictOriginWhenCrossOrigin"
+	ReferrerPolicyUnsafeURL                   ReferrerPolicy = "unsafeUrl"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t ReferrerPolicy) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t ReferrerPolicy) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *ReferrerPolicy) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch ReferrerPolicy(in.String()) {
+	case ReferrerPolicyNoReferrer:
+		*t = ReferrerPolicyNoReferrer
+	case ReferrerPolicyNoReferrerWhenDowngrade:
+		*t = ReferrerPolicyNoReferrerWhenDowngrade
+	case ReferrerPolicyOrigin:
+		*t = ReferrerPolicyOrigin
+	case ReferrerPolicyOriginWhenCrossOrigin:
+		*t = ReferrerPolicyOriginWhenCrossOrigin
+	case ReferrerPolicySameOrigin:
+		*t = ReferrerPolicySameOrigin
+	case ReferrerPolicyStrictOrigin:
+		*t = ReferrerPolicyStrictOrigin
+	case ReferrerPolicyStrictOriginWhenCrossOrigin:
+		*t = ReferrerPolicyStrictOriginWhenCrossOrigin
+	case ReferrerPolicyUnsafeURL:
+		*t = ReferrerPolicyUnsafeURL
+
+	default:
+		in.AddError(errors.New("unknown ReferrerPolicy value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *ReferrerPolicy) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// FileChooserOpenedMode input mode.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#event-fileChooserOpened
+type FileChooserOpenedMode string
+
+// String returns the FileChooserOpenedMode as string value.
+func (t FileChooserOpenedMode) String() string {
+	return string(t)
+}
+
+// FileChooserOpenedMode values.
+const (
+	FileChooserOpenedModeSelectSingle   FileChooserOpenedMode = "selectSingle"
+	FileChooserOpenedModeSelectMultiple FileChooserOpenedMode = "selectMultiple"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t FileChooserOpenedMode) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t FileChooserOpenedMode) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *FileChooserOpenedMode) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch FileChooserOpenedMode(in.String()) {
+	case FileChooserOpenedModeSelectSingle:
+		*t = FileChooserOpenedModeSelectSingle
+	case FileChooserOpenedModeSelectMultiple:
+		*t = FileChooserOpenedModeSelectMultiple
+
+	default:
+		in.AddError(errors.New("unknown FileChooserOpenedMode value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *FileChooserOpenedMode) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// DownloadProgressState download status.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#event-downloadProgress
+type DownloadProgressState string
+
+// String returns the DownloadProgressState as string value.
+func (t DownloadProgressState) String() string {
+	return string(t)
+}
+
+// DownloadProgressState values.
+const (
+	DownloadProgressStateInProgress DownloadProgressState = "inProgress"
+	DownloadProgressStateCompleted  DownloadProgressState = "completed"
+	DownloadProgressStateCanceled   DownloadProgressState = "canceled"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t DownloadProgressState) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t DownloadProgressState) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *DownloadProgressState) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch DownloadProgressState(in.String()) {
+	case DownloadProgressStateInProgress:
+		*t = DownloadProgressStateInProgress
+	case DownloadProgressStateCompleted:
+		*t = DownloadProgressStateCompleted
+	case DownloadProgressStateCanceled:
+		*t = DownloadProgressStateCanceled
+
+	default:
+		in.AddError(errors.New("unknown DownloadProgressState value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *DownloadProgressState) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
 // CaptureScreenshotFormat image compression format (defaults to png).
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-captureScreenshot
 type CaptureScreenshotFormat string
 
 // String returns the CaptureScreenshotFormat as string value.
@@ -340,53 +602,94 @@ func (t *CaptureScreenshotFormat) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
-// SetDownloadBehaviorBehavior whether to allow all or deny all download
-// requests, or use default Chrome behavior if available (otherwise deny).
-type SetDownloadBehaviorBehavior string
+// CaptureSnapshotFormat format (defaults to mhtml).
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-captureSnapshot
+type CaptureSnapshotFormat string
 
-// String returns the SetDownloadBehaviorBehavior as string value.
-func (t SetDownloadBehaviorBehavior) String() string {
+// String returns the CaptureSnapshotFormat as string value.
+func (t CaptureSnapshotFormat) String() string {
 	return string(t)
 }
 
-// SetDownloadBehaviorBehavior values.
+// CaptureSnapshotFormat values.
 const (
-	SetDownloadBehaviorBehaviorDeny    SetDownloadBehaviorBehavior = "deny"
-	SetDownloadBehaviorBehaviorAllow   SetDownloadBehaviorBehavior = "allow"
-	SetDownloadBehaviorBehaviorDefault SetDownloadBehaviorBehavior = "default"
+	CaptureSnapshotFormatMhtml CaptureSnapshotFormat = "mhtml"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
-func (t SetDownloadBehaviorBehavior) MarshalEasyJSON(out *jwriter.Writer) {
+func (t CaptureSnapshotFormat) MarshalEasyJSON(out *jwriter.Writer) {
 	out.String(string(t))
 }
 
 // MarshalJSON satisfies json.Marshaler.
-func (t SetDownloadBehaviorBehavior) MarshalJSON() ([]byte, error) {
+func (t CaptureSnapshotFormat) MarshalJSON() ([]byte, error) {
 	return easyjson.Marshal(t)
 }
 
 // UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
-func (t *SetDownloadBehaviorBehavior) UnmarshalEasyJSON(in *jlexer.Lexer) {
-	switch SetDownloadBehaviorBehavior(in.String()) {
-	case SetDownloadBehaviorBehaviorDeny:
-		*t = SetDownloadBehaviorBehaviorDeny
-	case SetDownloadBehaviorBehaviorAllow:
-		*t = SetDownloadBehaviorBehaviorAllow
-	case SetDownloadBehaviorBehaviorDefault:
-		*t = SetDownloadBehaviorBehaviorDefault
+func (t *CaptureSnapshotFormat) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch CaptureSnapshotFormat(in.String()) {
+	case CaptureSnapshotFormatMhtml:
+		*t = CaptureSnapshotFormatMhtml
 
 	default:
-		in.AddError(errors.New("unknown SetDownloadBehaviorBehavior value"))
+		in.AddError(errors.New("unknown CaptureSnapshotFormat value"))
 	}
 }
 
 // UnmarshalJSON satisfies json.Unmarshaler.
-func (t *SetDownloadBehaviorBehavior) UnmarshalJSON(buf []byte) error {
+func (t *CaptureSnapshotFormat) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// PrintToPDFTransferMode return as stream.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-printToPDF
+type PrintToPDFTransferMode string
+
+// String returns the PrintToPDFTransferMode as string value.
+func (t PrintToPDFTransferMode) String() string {
+	return string(t)
+}
+
+// PrintToPDFTransferMode values.
+const (
+	PrintToPDFTransferModeReturnAsBase64 PrintToPDFTransferMode = "ReturnAsBase64"
+	PrintToPDFTransferModeReturnAsStream PrintToPDFTransferMode = "ReturnAsStream"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t PrintToPDFTransferMode) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t PrintToPDFTransferMode) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *PrintToPDFTransferMode) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch PrintToPDFTransferMode(in.String()) {
+	case PrintToPDFTransferModeReturnAsBase64:
+		*t = PrintToPDFTransferModeReturnAsBase64
+	case PrintToPDFTransferModeReturnAsStream:
+		*t = PrintToPDFTransferModeReturnAsStream
+
+	default:
+		in.AddError(errors.New("unknown PrintToPDFTransferMode value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *PrintToPDFTransferMode) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
 // ScreencastFormat image compression format.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-startScreencast
 type ScreencastFormat string
 
 // String returns the ScreencastFormat as string value.
@@ -429,6 +732,8 @@ func (t *ScreencastFormat) UnmarshalJSON(buf []byte) error {
 }
 
 // SetWebLifecycleStateState target lifecycle state.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-setWebLifecycleState
 type SetWebLifecycleStateState string
 
 // String returns the SetWebLifecycleStateState as string value.

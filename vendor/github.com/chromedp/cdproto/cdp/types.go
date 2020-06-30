@@ -4,7 +4,6 @@ package cdp
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"strconv"
@@ -21,10 +20,74 @@ import (
 // Executor is the common interface for executing a command.
 type Executor interface {
 	// Execute executes the command.
-	Execute(context.Context, string, json.Marshaler, json.Unmarshaler) error
+	Execute(context.Context, string, easyjson.Marshaler, easyjson.Unmarshaler) error
+}
+
+// contextKey is the context key type.
+type contextKey int
+
+// context keys.
+const (
+	executorKey contextKey = iota
+)
+
+// WithExecutor sets the message executor for the context.
+func WithExecutor(parent context.Context, executor Executor) context.Context {
+	return context.WithValue(parent, executorKey, executor)
+}
+
+// ExecutorFromContext returns the message executor for the context.
+func ExecutorFromContext(ctx context.Context) Executor {
+	return ctx.Value(executorKey).(Executor)
+}
+
+// Execute uses the context's message executor to send a command or event
+// method marshaling the provided parameters, and unmarshaling to res.
+func Execute(ctx context.Context, method string, params easyjson.Marshaler, res easyjson.Unmarshaler) error {
+	if executor := ctx.Value(executorKey); executor != nil {
+		return executor.(Executor).Execute(ctx, method, params, res)
+	}
+	return ErrInvalidContext
+}
+
+// Error is a error.
+type Error string
+
+// Error values.
+const (
+	// ErrInvalidContext is the invalid context error.
+	ErrInvalidContext Error = "invalid context"
+
+	// ErrMsgMissingParamsOrResult is the msg missing params or result error.
+	ErrMsgMissingParamsOrResult Error = "msg missing params or result"
+)
+
+// Error satisfies the error interface.
+func (err Error) Error() string {
+	return string(err)
+}
+
+// ErrUnknownCommandOrEvent is an unknown command or event error.
+type ErrUnknownCommandOrEvent string
+
+// Error satisfies the error interface.
+func (err ErrUnknownCommandOrEvent) Error() string {
+	return fmt.Sprintf("unknown command or event %q", string(err))
+}
+
+// BrowserContextID [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Browser#type-BrowserContextID
+type BrowserContextID string
+
+// String returns the BrowserContextID as string value.
+func (t BrowserContextID) String() string {
+	return string(t)
 }
 
 // NodeID unique DOM node identifier.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-NodeId
 type NodeID int64
 
 // Int64 returns the NodeID as int64 value.
@@ -54,6 +117,8 @@ func (t *NodeID) UnmarshalJSON(buf []byte) error {
 
 // BackendNodeID unique DOM node identifier used to reference a node that may
 // not have been pushed to the front-end.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-BackendNodeId
 type BackendNodeID int64
 
 // Int64 returns the BackendNodeID as int64 value.
@@ -82,6 +147,8 @@ func (t *BackendNodeID) UnmarshalJSON(buf []byte) error {
 }
 
 // BackendNode backend node with a friendly name.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-BackendNode
 type BackendNode struct {
 	NodeType      NodeType      `json:"nodeType"` // Node's nodeType.
 	NodeName      string        `json:"nodeName"` // Node's nodeName.
@@ -89,6 +156,8 @@ type BackendNode struct {
 }
 
 // PseudoType pseudo element type.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-PseudoType
 type PseudoType string
 
 // String returns the PseudoType as string value.
@@ -102,6 +171,7 @@ const (
 	PseudoTypeFirstLetter         PseudoType = "first-letter"
 	PseudoTypeBefore              PseudoType = "before"
 	PseudoTypeAfter               PseudoType = "after"
+	PseudoTypeMarker              PseudoType = "marker"
 	PseudoTypeBackdrop            PseudoType = "backdrop"
 	PseudoTypeSelection           PseudoType = "selection"
 	PseudoTypeFirstLineInherited  PseudoType = "first-line-inherited"
@@ -136,6 +206,8 @@ func (t *PseudoType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PseudoTypeBefore
 	case PseudoTypeAfter:
 		*t = PseudoTypeAfter
+	case PseudoTypeMarker:
+		*t = PseudoTypeMarker
 	case PseudoTypeBackdrop:
 		*t = PseudoTypeBackdrop
 	case PseudoTypeSelection:
@@ -170,6 +242,8 @@ func (t *PseudoType) UnmarshalJSON(buf []byte) error {
 }
 
 // ShadowRootType shadow root type.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-ShadowRootType
 type ShadowRootType string
 
 // String returns the ShadowRootType as string value.
@@ -216,6 +290,8 @@ func (t *ShadowRootType) UnmarshalJSON(buf []byte) error {
 
 // Node DOM interaction is implemented in terms of mirror objects that
 // represent the actual DOM nodes. DOMNode is a base node mirror type.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-Node
 type Node struct {
 	NodeID           NodeID         `json:"nodeId"`                     // Node identifier that is passed into the rest of the DOM messages as the nodeId. Backend will only push node with given id once. It is aware of all requested nodes and will only fire DOM events for nodes known to the client.
 	ParentID         NodeID         `json:"parentId,omitempty"`         // The id of the parent node if any.
@@ -270,9 +346,7 @@ func (n *Node) xpath(stopAtDocument, stopAtID bool) string {
 	n.RLock()
 	defer n.RUnlock()
 
-	p := ""
-	pos := ""
-	id := n.AttributeValue("id")
+	p, pos, id := "", "", n.AttributeValue("id")
 	switch {
 	case n.Parent == nil:
 		return n.LocalName
@@ -307,7 +381,11 @@ func (n *Node) xpath(stopAtDocument, stopAtID bool) string {
 		p = n.Parent.xpath(stopAtDocument, stopAtID)
 	}
 
-	return p + "/" + n.LocalName + pos
+	localName := n.LocalName
+	if n.IsSVG {
+		localName = `*[local-name()='` + localName + `']`
+	}
+	return p + "/" + localName + pos
 }
 
 // PartialXPathByID returns the partial XPath for the node, stopping at the
@@ -332,6 +410,66 @@ func (n *Node) FullXPathByID() string {
 // document root.
 func (n *Node) FullXPath() string {
 	return n.xpath(false, false)
+}
+
+// Dump builds a printable string representation of the node and its children.
+func (n *Node) Dump(prefix, indent string, nodeIDs bool) string {
+	if n == nil {
+		return prefix + "<nil>"
+	}
+
+	n.RLock()
+	defer n.RUnlock()
+
+	s := n.LocalName
+	if s == "" {
+		s = n.NodeName
+	}
+
+	for i := 0; i < len(n.Attributes); i += 2 {
+		if strings.ToLower(n.Attributes[i]) == "id" {
+			s += "#" + n.Attributes[i+1]
+			break
+		}
+	}
+
+	if n.NodeType != NodeTypeElement && n.NodeType != NodeTypeText {
+		s += fmt.Sprintf(" <%s>", n.NodeType)
+	}
+
+	if n.NodeType == NodeTypeText {
+		v := n.NodeValue
+		if len(v) > 15 {
+			v = v[:15] + "..."
+		}
+		s += fmt.Sprintf(" %q", v)
+	}
+
+	if n.NodeType == NodeTypeElement && len(n.Attributes) > 0 {
+		attrs := ""
+		for i := 0; i < len(n.Attributes); i += 2 {
+			if strings.ToLower(n.Attributes[i]) == "id" {
+				continue
+			}
+			if attrs != "" {
+				attrs += " "
+			}
+			attrs += fmt.Sprintf("%s=%q", n.Attributes[i], n.Attributes[i+1])
+		}
+		if attrs != "" {
+			s += " [" + attrs + "]"
+		}
+	}
+
+	if nodeIDs {
+		s += fmt.Sprintf(" (%d)", n.NodeID)
+	}
+
+	for i := 0; i < len(n.Children); i++ {
+		s += "\n" + n.Children[i].Dump(prefix+indent, indent, nodeIDs)
+	}
+
+	return prefix + s
 }
 
 // NodeState is the state of a DOM node.
@@ -366,14 +504,18 @@ func (ns NodeState) String() string {
 const EmptyNodeID = NodeID(0)
 
 // RGBA a structure holding an RGBA color.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-RGBA
 type RGBA struct {
-	R int64   `json:"r"`           // The red component, in the [0-255] range.
-	G int64   `json:"g"`           // The green component, in the [0-255] range.
-	B int64   `json:"b"`           // The blue component, in the [0-255] range.
-	A float64 `json:"a,omitempty"` // The alpha component, in the [0-1] range (default: 1).
+	R int64   `json:"r"` // The red component, in the [0-255] range.
+	G int64   `json:"g"` // The green component, in the [0-255] range.
+	B int64   `json:"b"` // The blue component, in the [0-255] range.
+	A float64 `json:"a"` // The alpha component, in the [0-1] range (default: 1).
 }
 
 // NodeType node type.
+//
+// See: https://developer.mozilla.org/en/docs/Web/API/Node/nodeType
 type NodeType int64
 
 // Int64 returns the NodeType as int64 value.
@@ -478,6 +620,8 @@ func (t *NodeType) UnmarshalJSON(buf []byte) error {
 }
 
 // LoaderID unique loader identifier.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-LoaderId
 type LoaderID string
 
 // String returns the LoaderID as string value.
@@ -486,6 +630,8 @@ func (t LoaderID) String() string {
 }
 
 // TimeSinceEpoch UTC time in seconds, counted from January 1, 1970.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-TimeSinceEpoch
 type TimeSinceEpoch time.Time
 
 // Time returns the TimeSinceEpoch as time.Time value.
@@ -518,6 +664,8 @@ func (t *TimeSinceEpoch) UnmarshalJSON(buf []byte) error {
 
 // MonotonicTime monotonically increasing time in seconds since an arbitrary
 // point in the past.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-MonotonicTime
 type MonotonicTime time.Time
 
 // Time returns the MonotonicTime as time.Time value.
@@ -558,6 +706,8 @@ func (t *MonotonicTime) UnmarshalJSON(buf []byte) error {
 }
 
 // FrameID unique frame identifier.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-FrameId
 type FrameID string
 
 // String returns the FrameID as string value.
@@ -581,15 +731,18 @@ func (t *FrameID) UnmarshalJSON(buf []byte) error {
 }
 
 // Frame information about the Frame on the page.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-Frame
 type Frame struct {
 	ID             FrameID          `json:"id"`                       // Frame unique identifier.
 	ParentID       FrameID          `json:"parentId,omitempty"`       // Parent frame identifier.
 	LoaderID       LoaderID         `json:"loaderId"`                 // Identifier of the loader associated with this frame.
 	Name           string           `json:"name,omitempty"`           // Frame's name as specified in the tag.
-	URL            string           `json:"url"`                      // Frame document's URL.
+	URL            string           `json:"url"`                      // Frame document's URL without fragment.
+	URLFragment    string           `json:"urlFragment,omitempty"`    // Frame document's URL fragment including the '#'.
 	SecurityOrigin string           `json:"securityOrigin"`           // Frame document's security origin.
 	MimeType       string           `json:"mimeType"`                 // Frame document's mimeType as determined by the browser.
-	UnreachableURL string           `json:"unreachableUrl,omitempty"` // If the frame failed to load, this contains the URL that could not be loaded.
+	UnreachableURL string           `json:"unreachableUrl,omitempty"` // If the frame failed to load, this contains the URL that could not be loaded. Note that unlike url above, this URL may contain a fragment.
 	State          FrameState       `json:"-"`                        // Frame state.
 	Root           *Node            `json:"-"`                        // Frame document root.
 	Nodes          map[NodeID]*Node `json:"-"`                        // Frame nodes.

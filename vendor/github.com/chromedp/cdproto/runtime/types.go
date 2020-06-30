@@ -14,6 +14,8 @@ import (
 )
 
 // ScriptID unique script identifier.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-ScriptId
 type ScriptID string
 
 // String returns the ScriptID as string value.
@@ -22,6 +24,8 @@ func (t ScriptID) String() string {
 }
 
 // RemoteObjectID unique object identifier.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-RemoteObjectId
 type RemoteObjectID string
 
 // String returns the RemoteObjectID as string value.
@@ -31,6 +35,8 @@ func (t RemoteObjectID) String() string {
 
 // UnserializableValue primitive value which cannot be JSON-stringified.
 // Includes values -0, NaN, Infinity, -Infinity, and bigint literals.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-UnserializableValue
 type UnserializableValue string
 
 // String returns the UnserializableValue as string value.
@@ -39,9 +45,11 @@ func (t UnserializableValue) String() string {
 }
 
 // RemoteObject mirror object referencing original JavaScript object.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-RemoteObject
 type RemoteObject struct {
 	Type                Type                `json:"type"`                          // Object type.
-	Subtype             Subtype             `json:"subtype,omitempty"`             // Object subtype hint. Specified for object type values only.
+	Subtype             Subtype             `json:"subtype,omitempty"`             // Object subtype hint. Specified for object or wasm type values only.
 	ClassName           string              `json:"className,omitempty"`           // Object class (constructor) name. Specified for object type values only.
 	Value               easyjson.RawMessage `json:"value,omitempty"`               // Remote object value in case of primitive values or JSON values (if it was requested).
 	UnserializableValue UnserializableValue `json:"unserializableValue,omitempty"` // Primitive value which can not be JSON-stringified does not have value, but gets this property.
@@ -52,15 +60,16 @@ type RemoteObject struct {
 }
 
 // CustomPreview [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-CustomPreview
 type CustomPreview struct {
-	Header                     string         `json:"header"`
-	HasBody                    bool           `json:"hasBody"`
-	FormatterObjectID          RemoteObjectID `json:"formatterObjectId"`
-	BindRemoteObjectFunctionID RemoteObjectID `json:"bindRemoteObjectFunctionId"`
-	ConfigObjectID             RemoteObjectID `json:"configObjectId,omitempty"`
+	Header       string         `json:"header"`                 // The JSON-stringified result of formatter.header(object, config) call. It contains json ML array that represents RemoteObject.
+	BodyGetterID RemoteObjectID `json:"bodyGetterId,omitempty"` // If formatter returns true as a result of formatter.hasBody call then bodyGetterId will contain RemoteObjectId for the function that returns result of formatter.body(object, config) call. The result value is json ML array.
 }
 
 // ObjectPreview object containing abbreviated remote object value.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-ObjectPreview
 type ObjectPreview struct {
 	Type        Type               `json:"type"`                  // Object type.
 	Subtype     Subtype            `json:"subtype,omitempty"`     // Object subtype hint. Specified for object type values only.
@@ -71,6 +80,8 @@ type ObjectPreview struct {
 }
 
 // PropertyPreview [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-PropertyPreview
 type PropertyPreview struct {
 	Name         string         `json:"name"`                   // Property name.
 	Type         Type           `json:"type"`                   // Object type. Accessor means that the property itself is an accessor property.
@@ -80,12 +91,16 @@ type PropertyPreview struct {
 }
 
 // EntryPreview [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-EntryPreview
 type EntryPreview struct {
 	Key   *ObjectPreview `json:"key,omitempty"` // Preview of the key. Specified for map-like collection entries.
 	Value *ObjectPreview `json:"value"`         // Preview of the value.
 }
 
 // PropertyDescriptor object property descriptor.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-PropertyDescriptor
 type PropertyDescriptor struct {
 	Name         string        `json:"name"`                // Property name or symbol description.
 	Value        *RemoteObject `json:"value,omitempty"`     // The value associated with the property.
@@ -101,14 +116,28 @@ type PropertyDescriptor struct {
 
 // InternalPropertyDescriptor object internal property descriptor. This
 // property isn't normally visible in JavaScript code.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-InternalPropertyDescriptor
 type InternalPropertyDescriptor struct {
 	Name  string        `json:"name"`            // Conventional property name.
 	Value *RemoteObject `json:"value,omitempty"` // The value associated with the property.
 }
 
+// PrivatePropertyDescriptor object private field descriptor.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-PrivatePropertyDescriptor
+type PrivatePropertyDescriptor struct {
+	Name  string        `json:"name"`            // Private property name.
+	Value *RemoteObject `json:"value,omitempty"` // The value associated with the private property.
+	Get   *RemoteObject `json:"get,omitempty"`   // A function which serves as a getter for the private property, or undefined if there is no getter (accessor descriptors only).
+	Set   *RemoteObject `json:"set,omitempty"`   // A function which serves as a setter for the private property, or undefined if there is no setter (accessor descriptors only).
+}
+
 // CallArgument represents function call argument. Either remote object id
 // objectId, primitive value, unserializable primitive value or neither of (for
 // undefined) them should be specified.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-CallArgument
 type CallArgument struct {
 	Value               easyjson.RawMessage `json:"value,omitempty"`               // Primitive value or serializable javascript object.
 	UnserializableValue UnserializableValue `json:"unserializableValue,omitempty"` // Primitive value which can not be JSON-stringified.
@@ -116,6 +145,8 @@ type CallArgument struct {
 }
 
 // ExecutionContextID ID of an execution context.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-ExecutionContextId
 type ExecutionContextID int64
 
 // Int64 returns the ExecutionContextID as int64 value.
@@ -124,6 +155,8 @@ func (t ExecutionContextID) Int64() int64 {
 }
 
 // ExecutionContextDescription description of an isolated world.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-ExecutionContextDescription
 type ExecutionContextDescription struct {
 	ID      ExecutionContextID  `json:"id"`     // Unique id of the execution context. It can be used to specify in which execution context script evaluation should be performed.
 	Origin  string              `json:"origin"` // Execution context origin.
@@ -133,6 +166,8 @@ type ExecutionContextDescription struct {
 
 // ExceptionDetails detailed information about exception (or error) that was
 // thrown during script compilation or execution.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-ExceptionDetails
 type ExceptionDetails struct {
 	ExceptionID        int64              `json:"exceptionId"`                  // Exception id.
 	Text               string             `json:"text"`                         // Exception text, which should be used together with exception object when available.
@@ -153,6 +188,8 @@ func (e *ExceptionDetails) Error() string {
 }
 
 // Timestamp number of milliseconds since epoch.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-Timestamp
 type Timestamp time.Time
 
 // Time returns the Timestamp as time.Time value.
@@ -184,6 +221,8 @@ func (t *Timestamp) UnmarshalJSON(buf []byte) error {
 }
 
 // TimeDelta number of milliseconds.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-TimeDelta
 type TimeDelta float64
 
 // Float64 returns the TimeDelta as float64 value.
@@ -192,6 +231,8 @@ func (t TimeDelta) Float64() float64 {
 }
 
 // CallFrame stack entry for runtime errors and assertions.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-CallFrame
 type CallFrame struct {
 	FunctionName string   `json:"functionName"` // JavaScript function name.
 	ScriptID     ScriptID `json:"scriptId"`     // JavaScript script id.
@@ -201,6 +242,8 @@ type CallFrame struct {
 }
 
 // StackTrace call frames for assertions or error messages.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-StackTrace
 type StackTrace struct {
 	Description string        `json:"description,omitempty"` // String label of this stack trace. For async traces this may be a name of the function that initiated the async call.
 	CallFrames  []*CallFrame  `json:"callFrames"`            // JavaScript function name.
@@ -209,6 +252,8 @@ type StackTrace struct {
 }
 
 // UniqueDebuggerID unique identifier of current debugger.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-UniqueDebuggerId
 type UniqueDebuggerID string
 
 // String returns the UniqueDebuggerID as string value.
@@ -219,12 +264,16 @@ func (t UniqueDebuggerID) String() string {
 // StackTraceID if debuggerId is set stack trace comes from another debugger
 // and can be resolved there. This allows to track cross-debugger calls. See
 // Runtime.StackTrace and Debugger.paused for usages.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-StackTraceId
 type StackTraceID struct {
 	ID         string           `json:"id"`
 	DebuggerID UniqueDebuggerID `json:"debuggerId,omitempty"`
 }
 
 // Type object type.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-RemoteObject
 type Type string
 
 // String returns the Type as string value.
@@ -242,6 +291,7 @@ const (
 	TypeBoolean   Type = "boolean"
 	TypeSymbol    Type = "symbol"
 	TypeBigint    Type = "bigint"
+	TypeWasm      Type = "wasm"
 	TypeAccessor  Type = "accessor"
 )
 
@@ -274,6 +324,8 @@ func (t *Type) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = TypeSymbol
 	case TypeBigint:
 		*t = TypeBigint
+	case TypeWasm:
+		*t = TypeWasm
 	case TypeAccessor:
 		*t = TypeAccessor
 
@@ -287,7 +339,10 @@ func (t *Type) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
-// Subtype object subtype hint. Specified for object type values only.
+// Subtype object subtype hint. Specified for object or wasm type values
+// only.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-RemoteObject
 type Subtype string
 
 // String returns the Subtype as string value.
@@ -297,21 +352,29 @@ func (t Subtype) String() string {
 
 // Subtype values.
 const (
-	SubtypeArray      Subtype = "array"
-	SubtypeNull       Subtype = "null"
-	SubtypeNode       Subtype = "node"
-	SubtypeRegexp     Subtype = "regexp"
-	SubtypeDate       Subtype = "date"
-	SubtypeMap        Subtype = "map"
-	SubtypeSet        Subtype = "set"
-	SubtypeWeakmap    Subtype = "weakmap"
-	SubtypeWeakset    Subtype = "weakset"
-	SubtypeIterator   Subtype = "iterator"
-	SubtypeGenerator  Subtype = "generator"
-	SubtypeError      Subtype = "error"
-	SubtypeProxy      Subtype = "proxy"
-	SubtypePromise    Subtype = "promise"
-	SubtypeTypedarray Subtype = "typedarray"
+	SubtypeArray       Subtype = "array"
+	SubtypeNull        Subtype = "null"
+	SubtypeNode        Subtype = "node"
+	SubtypeRegexp      Subtype = "regexp"
+	SubtypeDate        Subtype = "date"
+	SubtypeMap         Subtype = "map"
+	SubtypeSet         Subtype = "set"
+	SubtypeWeakmap     Subtype = "weakmap"
+	SubtypeWeakset     Subtype = "weakset"
+	SubtypeIterator    Subtype = "iterator"
+	SubtypeGenerator   Subtype = "generator"
+	SubtypeError       Subtype = "error"
+	SubtypeProxy       Subtype = "proxy"
+	SubtypePromise     Subtype = "promise"
+	SubtypeTypedarray  Subtype = "typedarray"
+	SubtypeArraybuffer Subtype = "arraybuffer"
+	SubtypeDataview    Subtype = "dataview"
+	SubtypeI32         Subtype = "i32"
+	SubtypeI64         Subtype = "i64"
+	SubtypeF32         Subtype = "f32"
+	SubtypeF64         Subtype = "f64"
+	SubtypeV128        Subtype = "v128"
+	SubtypeAnyref      Subtype = "anyref"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -357,6 +420,22 @@ func (t *Subtype) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = SubtypePromise
 	case SubtypeTypedarray:
 		*t = SubtypeTypedarray
+	case SubtypeArraybuffer:
+		*t = SubtypeArraybuffer
+	case SubtypeDataview:
+		*t = SubtypeDataview
+	case SubtypeI32:
+		*t = SubtypeI32
+	case SubtypeI64:
+		*t = SubtypeI64
+	case SubtypeF32:
+		*t = SubtypeF32
+	case SubtypeF64:
+		*t = SubtypeF64
+	case SubtypeV128:
+		*t = SubtypeV128
+	case SubtypeAnyref:
+		*t = SubtypeAnyref
 
 	default:
 		in.AddError(errors.New("unknown Subtype value"))
@@ -369,6 +448,8 @@ func (t *Subtype) UnmarshalJSON(buf []byte) error {
 }
 
 // APIType type of the call.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#event-consoleAPICalled
 type APIType string
 
 // String returns the APIType as string value.

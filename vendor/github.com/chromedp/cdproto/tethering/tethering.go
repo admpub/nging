@@ -21,6 +21,8 @@ type BindParams struct {
 
 // Bind request browser port binding.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Tethering#method-bind
+//
 // parameters:
 //   port - Port number to bind.
 func Bind(port int64) *BindParams {
@@ -30,8 +32,8 @@ func Bind(port int64) *BindParams {
 }
 
 // Do executes Tethering.bind against the provided context.
-func (p *BindParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandBind, p, nil)
+func (p *BindParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandBind, p, nil)
 }
 
 // UnbindParams request browser port unbinding.
@@ -40,6 +42,8 @@ type UnbindParams struct {
 }
 
 // Unbind request browser port unbinding.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Tethering#method-unbind
 //
 // parameters:
 //   port - Port number to unbind.
@@ -50,8 +54,8 @@ func Unbind(port int64) *UnbindParams {
 }
 
 // Do executes Tethering.unbind against the provided context.
-func (p *UnbindParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandUnbind, p, nil)
+func (p *UnbindParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandUnbind, p, nil)
 }
 
 // Command names.

@@ -7,12 +7,16 @@ import (
 )
 
 // EventLayerPainted [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/LayerTree#event-layerPainted
 type EventLayerPainted struct {
 	LayerID LayerID   `json:"layerId"` // The id of the painted layer.
 	Clip    *dom.Rect `json:"clip"`    // Clip rectangle.
 }
 
 // EventLayerTreeDidChange [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/LayerTree#event-layerTreeDidChange
 type EventLayerTreeDidChange struct {
 	Layers []*Layer `json:"layers,omitempty"` // Layer tree, absent if not in the comspositing mode.
 }

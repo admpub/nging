@@ -56,22 +56,12 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDomstorage(out *jwriter.Write
 	_ = first
 	{
 		const prefix string = ",\"securityOrigin\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.SecurityOrigin))
 	}
 	{
 		const prefix string = ",\"isLocalStorage\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Bool(bool(in.IsLocalStorage))
 	}
 	out.RawByte('}')
@@ -149,12 +139,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDomstorage1(out *jwriter.Writ
 	_ = first
 	{
 		const prefix string = ",\"storageId\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		if in.StorageID == nil {
 			out.RawString("null")
 		} else {
@@ -163,22 +148,12 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDomstorage1(out *jwriter.Writ
 	}
 	{
 		const prefix string = ",\"key\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Key))
 	}
 	{
 		const prefix string = ",\"value\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Value))
 	}
 	out.RawByte('}')
@@ -254,12 +229,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDomstorage2(out *jwriter.Writ
 	_ = first
 	{
 		const prefix string = ",\"storageId\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		if in.StorageID == nil {
 			out.RawString("null")
 		} else {
@@ -268,12 +238,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDomstorage2(out *jwriter.Writ
 	}
 	{
 		const prefix string = ",\"key\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Key))
 	}
 	out.RawByte('}')
@@ -381,12 +346,8 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDomstorage3(out *jwriter.Writ
 	_ = first
 	if len(in.Entries) != 0 {
 		const prefix string = ",\"entries\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		first = false
+		out.RawString(prefix[1:])
 		{
 			out.RawByte('[')
 			for v3, v4 := range in.Entries {
@@ -480,12 +441,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDomstorage4(out *jwriter.Writ
 	_ = first
 	{
 		const prefix string = ",\"storageId\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		if in.StorageID == nil {
 			out.RawString("null")
 		} else {
@@ -563,12 +519,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDomstorage5(out *jwriter.Writ
 	_ = first
 	{
 		const prefix string = ",\"storageId\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		if in.StorageID == nil {
 			out.RawString("null")
 		} else {
@@ -652,12 +603,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDomstorage6(out *jwriter.Writ
 	_ = first
 	{
 		const prefix string = ",\"storageId\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		if in.StorageID == nil {
 			out.RawString("null")
 		} else {
@@ -666,32 +612,17 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDomstorage6(out *jwriter.Writ
 	}
 	{
 		const prefix string = ",\"key\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Key))
 	}
 	{
 		const prefix string = ",\"oldValue\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.OldValue))
 	}
 	{
 		const prefix string = ",\"newValue\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.NewValue))
 	}
 	out.RawByte('}')
@@ -767,12 +698,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDomstorage7(out *jwriter.Writ
 	_ = first
 	{
 		const prefix string = ",\"storageId\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		if in.StorageID == nil {
 			out.RawString("null")
 		} else {
@@ -781,12 +707,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDomstorage7(out *jwriter.Writ
 	}
 	{
 		const prefix string = ",\"key\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Key))
 	}
 	out.RawByte('}')
@@ -864,12 +785,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDomstorage8(out *jwriter.Writ
 	_ = first
 	{
 		const prefix string = ",\"storageId\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		if in.StorageID == nil {
 			out.RawString("null")
 		} else {
@@ -878,22 +794,12 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDomstorage8(out *jwriter.Writ
 	}
 	{
 		const prefix string = ",\"key\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Key))
 	}
 	{
 		const prefix string = ",\"newValue\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.NewValue))
 	}
 	out.RawByte('}')
@@ -1085,12 +991,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoDomstorage11(out *jwriter.Wri
 	_ = first
 	{
 		const prefix string = ",\"storageId\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		if in.StorageID == nil {
 			out.RawString("null")
 		} else {

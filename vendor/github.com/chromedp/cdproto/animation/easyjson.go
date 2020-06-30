@@ -59,32 +59,17 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAnimation(out *jwriter.Writer
 	_ = first
 	{
 		const prefix string = ",\"animationId\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.AnimationID))
 	}
 	{
 		const prefix string = ",\"duration\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.Duration))
 	}
 	{
 		const prefix string = ",\"delay\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.Delay))
 	}
 	out.RawByte('}')
@@ -150,12 +135,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAnimation1(out *jwriter.Write
 	_ = first
 	{
 		const prefix string = ",\"playbackRate\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.Float64(float64(in.PlaybackRate))
 	}
 	out.RawByte('}')
@@ -244,12 +224,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAnimation2(out *jwriter.Write
 	_ = first
 	{
 		const prefix string = ",\"animations\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		if in.Animations == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 			out.RawString("null")
 		} else {
@@ -265,12 +240,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAnimation2(out *jwriter.Write
 	}
 	{
 		const prefix string = ",\"paused\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Bool(bool(in.Paused))
 	}
 	out.RawByte('}')
@@ -359,12 +329,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAnimation3(out *jwriter.Write
 	_ = first
 	{
 		const prefix string = ",\"animations\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		if in.Animations == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 			out.RawString("null")
 		} else {
@@ -380,12 +345,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAnimation3(out *jwriter.Write
 	}
 	{
 		const prefix string = ",\"currentTime\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.CurrentTime))
 	}
 	out.RawByte('}')
@@ -459,12 +419,8 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAnimation4(out *jwriter.Write
 	_ = first
 	if in.RemoteObject != nil {
 		const prefix string = ",\"remoteObject\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		first = false
+		out.RawString(prefix[1:])
 		(*in.RemoteObject).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
@@ -530,12 +486,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAnimation5(out *jwriter.Write
 	_ = first
 	{
 		const prefix string = ",\"animationId\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.AnimationID))
 	}
 	out.RawByte('}')
@@ -622,12 +573,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAnimation6(out *jwriter.Write
 	_ = first
 	{
 		const prefix string = ",\"animations\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		if in.Animations == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 			out.RawString("null")
 		} else {
@@ -735,12 +681,8 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAnimation7(out *jwriter.Write
 	_ = first
 	if in.Name != "" {
 		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		first = false
+		out.RawString(prefix[1:])
 		out.String(string(in.Name))
 	}
 	{
@@ -833,22 +775,12 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAnimation8(out *jwriter.Write
 	_ = first
 	{
 		const prefix string = ",\"offset\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.Offset))
 	}
 	{
 		const prefix string = ",\"easing\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Easing))
 	}
 	out.RawByte('}')
@@ -914,12 +846,8 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAnimation9(out *jwriter.Write
 	_ = first
 	if in.PlaybackRate != 0 {
 		const prefix string = ",\"playbackRate\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		first = false
+		out.RawString(prefix[1:])
 		out.Float64(float64(in.PlaybackRate))
 	}
 	out.RawByte('}')
@@ -1044,12 +972,8 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAnimation11(out *jwriter.Writ
 	_ = first
 	if in.CurrentTime != 0 {
 		const prefix string = ",\"currentTime\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		first = false
+		out.RawString(prefix[1:])
 		out.Float64(float64(in.CurrentTime))
 	}
 	out.RawByte('}')
@@ -1115,12 +1039,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAnimation12(out *jwriter.Writ
 	_ = first
 	{
 		const prefix string = ",\"id\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.ID))
 	}
 	out.RawByte('}')
@@ -1194,12 +1113,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAnimation13(out *jwriter.Writ
 	_ = first
 	{
 		const prefix string = ",\"animation\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		if in.Animation == nil {
 			out.RawString("null")
 		} else {
@@ -1269,12 +1183,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAnimation14(out *jwriter.Writ
 	_ = first
 	{
 		const prefix string = ",\"id\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.ID))
 	}
 	out.RawByte('}')
@@ -1340,12 +1249,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAnimation15(out *jwriter.Writ
 	_ = first
 	{
 		const prefix string = ",\"id\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.ID))
 	}
 	out.RawByte('}')
@@ -1496,102 +1400,52 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAnimation17(out *jwriter.Writ
 	_ = first
 	{
 		const prefix string = ",\"delay\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.Float64(float64(in.Delay))
 	}
 	{
 		const prefix string = ",\"endDelay\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.EndDelay))
 	}
 	{
 		const prefix string = ",\"iterationStart\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.IterationStart))
 	}
 	{
 		const prefix string = ",\"iterations\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.Iterations))
 	}
 	{
 		const prefix string = ",\"duration\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.Duration))
 	}
 	{
 		const prefix string = ",\"direction\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Direction))
 	}
 	{
 		const prefix string = ",\"fill\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Fill))
 	}
 	if in.BackendNodeID != 0 {
 		const prefix string = ",\"backendNodeId\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int64(int64(in.BackendNodeID))
 	}
 	if in.KeyframesRule != nil {
 		const prefix string = ",\"keyframesRule\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		(*in.KeyframesRule).MarshalEasyJSON(out)
 	}
 	{
 		const prefix string = ",\"easing\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Easing))
 	}
 	out.RawByte('}')
@@ -1742,102 +1596,52 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAnimation19(out *jwriter.Writ
 	_ = first
 	{
 		const prefix string = ",\"id\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.ID))
 	}
 	{
 		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Name))
 	}
 	{
 		const prefix string = ",\"pausedState\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Bool(bool(in.PausedState))
 	}
 	{
 		const prefix string = ",\"playState\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.PlayState))
 	}
 	{
 		const prefix string = ",\"playbackRate\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.PlaybackRate))
 	}
 	{
 		const prefix string = ",\"startTime\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.StartTime))
 	}
 	{
 		const prefix string = ",\"currentTime\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.CurrentTime))
 	}
 	{
 		const prefix string = ",\"type\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		(in.Type).MarshalEasyJSON(out)
 	}
 	if in.Source != nil {
 		const prefix string = ",\"source\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		(*in.Source).MarshalEasyJSON(out)
 	}
 	if in.CSSID != "" {
 		const prefix string = ",\"cssId\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.CSSID))
 	}
 	out.RawByte('}')

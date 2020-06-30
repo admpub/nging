@@ -211,7 +211,7 @@ var topLeftJS = `
 		var element = document.evaluate("%s",document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null ).singleNodeValue;
 		var rect = element.getBoundingClientRect();
 		return rect.top + ":" + rect.left;
-	}    
+	}
 	(function main() {
 	   return getTopLeft();
 	})(); 

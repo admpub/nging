@@ -14,6 +14,8 @@ import (
 )
 
 // ResourceType resource type as it was perceived by the rendering engine.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-ResourceType
 type ResourceType string
 
 // String returns the ResourceType as string value.
@@ -98,6 +100,8 @@ func (t *ResourceType) UnmarshalJSON(buf []byte) error {
 }
 
 // RequestID unique request identifier.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-RequestId
 type RequestID string
 
 // String returns the RequestID as string value.
@@ -106,6 +110,8 @@ func (t RequestID) String() string {
 }
 
 // InterceptionID unique intercepted request identifier.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-InterceptionId
 type InterceptionID string
 
 // String returns the InterceptionID as string value.
@@ -114,6 +120,8 @@ func (t InterceptionID) String() string {
 }
 
 // ErrorReason network level fetch failure reason.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-ErrorReason
 type ErrorReason string
 
 // String returns the ErrorReason as string value.
@@ -192,10 +200,14 @@ func (t *ErrorReason) UnmarshalJSON(buf []byte) error {
 }
 
 // Headers request / response headers as keys / values of JSON object.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-Headers
 type Headers map[string]interface{}
 
 // ConnectionType the underlying connection technology that the browser is
 // supposedly using.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-ConnectionType
 type ConnectionType string
 
 // String returns the ConnectionType as string value.
@@ -260,6 +272,8 @@ func (t *ConnectionType) UnmarshalJSON(buf []byte) error {
 
 // CookieSameSite represents the cookie's 'SameSite' status:
 // https://tools.ietf.org/html/draft-west-first-party-cookies.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-CookieSameSite
 type CookieSameSite string
 
 // String returns the CookieSameSite as string value.
@@ -271,6 +285,7 @@ func (t CookieSameSite) String() string {
 const (
 	CookieSameSiteStrict CookieSameSite = "Strict"
 	CookieSameSiteLax    CookieSameSite = "Lax"
+	CookieSameSiteNone   CookieSameSite = "None"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -290,6 +305,8 @@ func (t *CookieSameSite) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = CookieSameSiteStrict
 	case CookieSameSiteLax:
 		*t = CookieSameSiteLax
+	case CookieSameSiteNone:
+		*t = CookieSameSiteNone
 
 	default:
 		in.AddError(errors.New("unknown CookieSameSite value"))
@@ -301,27 +318,81 @@ func (t *CookieSameSite) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
+// CookiePriority represents the cookie's 'Priority' status:
+// https://tools.ietf.org/html/draft-west-cookie-priority-00.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-CookiePriority
+type CookiePriority string
+
+// String returns the CookiePriority as string value.
+func (t CookiePriority) String() string {
+	return string(t)
+}
+
+// CookiePriority values.
+const (
+	CookiePriorityLow    CookiePriority = "Low"
+	CookiePriorityMedium CookiePriority = "Medium"
+	CookiePriorityHigh   CookiePriority = "High"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t CookiePriority) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t CookiePriority) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *CookiePriority) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch CookiePriority(in.String()) {
+	case CookiePriorityLow:
+		*t = CookiePriorityLow
+	case CookiePriorityMedium:
+		*t = CookiePriorityMedium
+	case CookiePriorityHigh:
+		*t = CookiePriorityHigh
+
+	default:
+		in.AddError(errors.New("unknown CookiePriority value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *CookiePriority) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
 // ResourceTiming timing information for the request.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-ResourceTiming
 type ResourceTiming struct {
-	RequestTime       float64 `json:"requestTime"`       // Timing's requestTime is a baseline in seconds, while the other numbers are ticks in milliseconds relatively to this requestTime.
-	ProxyStart        float64 `json:"proxyStart"`        // Started resolving proxy.
-	ProxyEnd          float64 `json:"proxyEnd"`          // Finished resolving proxy.
-	DNSStart          float64 `json:"dnsStart"`          // Started DNS address resolve.
-	DNSEnd            float64 `json:"dnsEnd"`            // Finished DNS address resolve.
-	ConnectStart      float64 `json:"connectStart"`      // Started connecting to the remote host.
-	ConnectEnd        float64 `json:"connectEnd"`        // Connected to the remote host.
-	SslStart          float64 `json:"sslStart"`          // Started SSL handshake.
-	SslEnd            float64 `json:"sslEnd"`            // Finished SSL handshake.
-	WorkerStart       float64 `json:"workerStart"`       // Started running ServiceWorker.
-	WorkerReady       float64 `json:"workerReady"`       // Finished Starting ServiceWorker.
-	SendStart         float64 `json:"sendStart"`         // Started sending request.
-	SendEnd           float64 `json:"sendEnd"`           // Finished sending request.
-	PushStart         float64 `json:"pushStart"`         // Time the server started pushing request.
-	PushEnd           float64 `json:"pushEnd"`           // Time the server finished pushing request.
-	ReceiveHeadersEnd float64 `json:"receiveHeadersEnd"` // Finished receiving response headers.
+	RequestTime              float64 `json:"requestTime"`              // Timing's requestTime is a baseline in seconds, while the other numbers are ticks in milliseconds relatively to this requestTime.
+	ProxyStart               float64 `json:"proxyStart"`               // Started resolving proxy.
+	ProxyEnd                 float64 `json:"proxyEnd"`                 // Finished resolving proxy.
+	DNSStart                 float64 `json:"dnsStart"`                 // Started DNS address resolve.
+	DNSEnd                   float64 `json:"dnsEnd"`                   // Finished DNS address resolve.
+	ConnectStart             float64 `json:"connectStart"`             // Started connecting to the remote host.
+	ConnectEnd               float64 `json:"connectEnd"`               // Connected to the remote host.
+	SslStart                 float64 `json:"sslStart"`                 // Started SSL handshake.
+	SslEnd                   float64 `json:"sslEnd"`                   // Finished SSL handshake.
+	WorkerStart              float64 `json:"workerStart"`              // Started running ServiceWorker.
+	WorkerReady              float64 `json:"workerReady"`              // Finished Starting ServiceWorker.
+	WorkerFetchStart         float64 `json:"workerFetchStart"`         // Started fetch event.
+	WorkerRespondWithSettled float64 `json:"workerRespondWithSettled"` // Settled fetch event respondWith promise.
+	SendStart                float64 `json:"sendStart"`                // Started sending request.
+	SendEnd                  float64 `json:"sendEnd"`                  // Finished sending request.
+	PushStart                float64 `json:"pushStart"`                // Time the server started pushing request.
+	PushEnd                  float64 `json:"pushEnd"`                  // Time the server finished pushing request.
+	ReceiveHeadersEnd        float64 `json:"receiveHeadersEnd"`        // Finished receiving response headers.
 }
 
 // ResourcePriority loading priority of a resource request.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-ResourcePriority
 type ResourcePriority string
 
 // String returns the ResourcePriority as string value.
@@ -373,6 +444,8 @@ func (t *ResourcePriority) UnmarshalJSON(buf []byte) error {
 }
 
 // Request HTTP request data.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-Request
 type Request struct {
 	URL              string                    `json:"url"`                        // Request URL (without fragment).
 	URLFragment      string                    `json:"urlFragment,omitempty"`      // Fragment of the requested URL starting with hash, if present.
@@ -388,6 +461,8 @@ type Request struct {
 
 // SignedCertificateTimestamp details of a signed certificate timestamp
 // (SCT).
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-SignedCertificateTimestamp
 type SignedCertificateTimestamp struct {
 	Status             string              `json:"status"`             // Validation status.
 	Origin             string              `json:"origin"`             // Origin.
@@ -400,6 +475,8 @@ type SignedCertificateTimestamp struct {
 }
 
 // SecurityDetails security details about a request.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-SecurityDetails
 type SecurityDetails struct {
 	Protocol                          string                            `json:"protocol"`                          // Protocol name (e.g. "TLS 1.2" or "QUIC").
 	KeyExchange                       string                            `json:"keyExchange"`                       // Key Exchange used by the connection, or the empty string if not applicable.
@@ -418,6 +495,8 @@ type SecurityDetails struct {
 
 // CertificateTransparencyCompliance whether the request complied with
 // Certificate Transparency policy.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-CertificateTransparencyCompliance
 type CertificateTransparencyCompliance string
 
 // String returns the CertificateTransparencyCompliance as string value.
@@ -463,6 +542,8 @@ func (t *CertificateTransparencyCompliance) UnmarshalJSON(buf []byte) error {
 }
 
 // BlockedReason the reason why request was blocked.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-BlockedReason
 type BlockedReason string
 
 // String returns the BlockedReason as string value.
@@ -472,14 +553,19 @@ func (t BlockedReason) String() string {
 
 // BlockedReason values.
 const (
-	BlockedReasonOther             BlockedReason = "other"
-	BlockedReasonCsp               BlockedReason = "csp"
-	BlockedReasonMixedContent      BlockedReason = "mixed-content"
-	BlockedReasonOrigin            BlockedReason = "origin"
-	BlockedReasonInspector         BlockedReason = "inspector"
-	BlockedReasonSubresourceFilter BlockedReason = "subresource-filter"
-	BlockedReasonContentType       BlockedReason = "content-type"
-	BlockedReasonCollapsedByClient BlockedReason = "collapsed-by-client"
+	BlockedReasonOther                                             BlockedReason = "other"
+	BlockedReasonCsp                                               BlockedReason = "csp"
+	BlockedReasonMixedContent                                      BlockedReason = "mixed-content"
+	BlockedReasonOrigin                                            BlockedReason = "origin"
+	BlockedReasonInspector                                         BlockedReason = "inspector"
+	BlockedReasonSubresourceFilter                                 BlockedReason = "subresource-filter"
+	BlockedReasonContentType                                       BlockedReason = "content-type"
+	BlockedReasonCollapsedByClient                                 BlockedReason = "collapsed-by-client"
+	BlockedReasonCoepFrameResourceNeedsCoepHeader                  BlockedReason = "coep-frame-resource-needs-coep-header"
+	BlockedReasonCoopSandboxedIframeCannotNavigateToCoopPage       BlockedReason = "coop-sandboxed-iframe-cannot-navigate-to-coop-page"
+	BlockedReasonCorpNotSameOrigin                                 BlockedReason = "corp-not-same-origin"
+	BlockedReasonCorpNotSameOriginAfterDefaultedToSameOriginByCoep BlockedReason = "corp-not-same-origin-after-defaulted-to-same-origin-by-coep"
+	BlockedReasonCorpNotSameSite                                   BlockedReason = "corp-not-same-site"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -511,6 +597,16 @@ func (t *BlockedReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = BlockedReasonContentType
 	case BlockedReasonCollapsedByClient:
 		*t = BlockedReasonCollapsedByClient
+	case BlockedReasonCoepFrameResourceNeedsCoepHeader:
+		*t = BlockedReasonCoepFrameResourceNeedsCoepHeader
+	case BlockedReasonCoopSandboxedIframeCannotNavigateToCoopPage:
+		*t = BlockedReasonCoopSandboxedIframeCannotNavigateToCoopPage
+	case BlockedReasonCorpNotSameOrigin:
+		*t = BlockedReasonCorpNotSameOrigin
+	case BlockedReasonCorpNotSameOriginAfterDefaultedToSameOriginByCoep:
+		*t = BlockedReasonCorpNotSameOriginAfterDefaultedToSameOriginByCoep
+	case BlockedReasonCorpNotSameSite:
+		*t = BlockedReasonCorpNotSameSite
 
 	default:
 		in.AddError(errors.New("unknown BlockedReason value"))
@@ -522,35 +618,95 @@ func (t *BlockedReason) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
+// ServiceWorkerResponseSource source of serviceworker response.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-ServiceWorkerResponseSource
+type ServiceWorkerResponseSource string
+
+// String returns the ServiceWorkerResponseSource as string value.
+func (t ServiceWorkerResponseSource) String() string {
+	return string(t)
+}
+
+// ServiceWorkerResponseSource values.
+const (
+	ServiceWorkerResponseSourceCacheStorage ServiceWorkerResponseSource = "cache-storage"
+	ServiceWorkerResponseSourceHTTPCache    ServiceWorkerResponseSource = "http-cache"
+	ServiceWorkerResponseSourceFallbackCode ServiceWorkerResponseSource = "fallback-code"
+	ServiceWorkerResponseSourceNetwork      ServiceWorkerResponseSource = "network"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t ServiceWorkerResponseSource) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t ServiceWorkerResponseSource) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *ServiceWorkerResponseSource) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch ServiceWorkerResponseSource(in.String()) {
+	case ServiceWorkerResponseSourceCacheStorage:
+		*t = ServiceWorkerResponseSourceCacheStorage
+	case ServiceWorkerResponseSourceHTTPCache:
+		*t = ServiceWorkerResponseSourceHTTPCache
+	case ServiceWorkerResponseSourceFallbackCode:
+		*t = ServiceWorkerResponseSourceFallbackCode
+	case ServiceWorkerResponseSourceNetwork:
+		*t = ServiceWorkerResponseSourceNetwork
+
+	default:
+		in.AddError(errors.New("unknown ServiceWorkerResponseSource value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *ServiceWorkerResponseSource) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
 // Response HTTP response data.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-Response
 type Response struct {
-	URL                string           `json:"url"`                          // Response URL. This URL can be different from CachedResource.url in case of redirect.
-	Status             int64            `json:"status"`                       // HTTP response status code.
-	StatusText         string           `json:"statusText"`                   // HTTP response status text.
-	Headers            Headers          `json:"headers"`                      // HTTP response headers.
-	HeadersText        string           `json:"headersText,omitempty"`        // HTTP response headers text.
-	MimeType           string           `json:"mimeType"`                     // Resource mimeType as determined by the browser.
-	RequestHeaders     Headers          `json:"requestHeaders,omitempty"`     // Refined HTTP request headers that were actually transmitted over the network.
-	RequestHeadersText string           `json:"requestHeadersText,omitempty"` // HTTP request headers text.
-	ConnectionReused   bool             `json:"connectionReused"`             // Specifies whether physical connection was actually reused for this request.
-	ConnectionID       float64          `json:"connectionId"`                 // Physical connection id that was actually used for this request.
-	RemoteIPAddress    string           `json:"remoteIPAddress,omitempty"`    // Remote IP address.
-	RemotePort         int64            `json:"remotePort,omitempty"`         // Remote port.
-	FromDiskCache      bool             `json:"fromDiskCache,omitempty"`      // Specifies that the request was served from the disk cache.
-	FromServiceWorker  bool             `json:"fromServiceWorker,omitempty"`  // Specifies that the request was served from the ServiceWorker.
-	EncodedDataLength  float64          `json:"encodedDataLength"`            // Total number of bytes received for this request so far.
-	Timing             *ResourceTiming  `json:"timing,omitempty"`             // Timing information for the given request.
-	Protocol           string           `json:"protocol,omitempty"`           // Protocol used to fetch this request.
-	SecurityState      security.State   `json:"securityState"`                // Security state of the request resource.
-	SecurityDetails    *SecurityDetails `json:"securityDetails,omitempty"`    // Security details for the request.
+	URL                         string                      `json:"url"`                                   // Response URL. This URL can be different from CachedResource.url in case of redirect.
+	Status                      int64                       `json:"status"`                                // HTTP response status code.
+	StatusText                  string                      `json:"statusText"`                            // HTTP response status text.
+	Headers                     Headers                     `json:"headers"`                               // HTTP response headers.
+	HeadersText                 string                      `json:"headersText,omitempty"`                 // HTTP response headers text.
+	MimeType                    string                      `json:"mimeType"`                              // Resource mimeType as determined by the browser.
+	RequestHeaders              Headers                     `json:"requestHeaders,omitempty"`              // Refined HTTP request headers that were actually transmitted over the network.
+	RequestHeadersText          string                      `json:"requestHeadersText,omitempty"`          // HTTP request headers text.
+	ConnectionReused            bool                        `json:"connectionReused"`                      // Specifies whether physical connection was actually reused for this request.
+	ConnectionID                float64                     `json:"connectionId"`                          // Physical connection id that was actually used for this request.
+	RemoteIPAddress             string                      `json:"remoteIPAddress,omitempty"`             // Remote IP address.
+	RemotePort                  int64                       `json:"remotePort,omitempty"`                  // Remote port.
+	FromDiskCache               bool                        `json:"fromDiskCache,omitempty"`               // Specifies that the request was served from the disk cache.
+	FromServiceWorker           bool                        `json:"fromServiceWorker,omitempty"`           // Specifies that the request was served from the ServiceWorker.
+	FromPrefetchCache           bool                        `json:"fromPrefetchCache,omitempty"`           // Specifies that the request was served from the prefetch cache.
+	EncodedDataLength           float64                     `json:"encodedDataLength"`                     // Total number of bytes received for this request so far.
+	Timing                      *ResourceTiming             `json:"timing,omitempty"`                      // Timing information for the given request.
+	ServiceWorkerResponseSource ServiceWorkerResponseSource `json:"serviceWorkerResponseSource,omitempty"` // Response source of response from ServiceWorker.
+	ResponseTime                *cdp.TimeSinceEpoch         `json:"responseTime,omitempty"`                // The time at which the returned response was generated.
+	CacheStorageCacheName       string                      `json:"cacheStorageCacheName,omitempty"`       // Cache Storage Cache Name.
+	Protocol                    string                      `json:"protocol,omitempty"`                    // Protocol used to fetch this request.
+	SecurityState               security.State              `json:"securityState"`                         // Security state of the request resource.
+	SecurityDetails             *SecurityDetails            `json:"securityDetails,omitempty"`             // Security details for the request.
 }
 
 // WebSocketRequest webSocket request data.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-WebSocketRequest
 type WebSocketRequest struct {
 	Headers Headers `json:"headers"` // HTTP request headers.
 }
 
 // WebSocketResponse webSocket response data.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-WebSocketResponse
 type WebSocketResponse struct {
 	Status             int64   `json:"status"`                       // HTTP response status code.
 	StatusText         string  `json:"statusText"`                   // HTTP response status text.
@@ -560,14 +716,19 @@ type WebSocketResponse struct {
 	RequestHeadersText string  `json:"requestHeadersText,omitempty"` // HTTP request headers text.
 }
 
-// WebSocketFrame webSocket frame data.
+// WebSocketFrame webSocket message data. This represents an entire WebSocket
+// message, not just a fragmented frame as the name suggests.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-WebSocketFrame
 type WebSocketFrame struct {
-	Opcode      float64 `json:"opcode"`      // WebSocket frame opcode.
-	Mask        bool    `json:"mask"`        // WebSocke frame mask.
-	PayloadData string  `json:"payloadData"` // WebSocke frame payload data.
+	Opcode      float64 `json:"opcode"`      // WebSocket message opcode.
+	Mask        bool    `json:"mask"`        // WebSocket message mask.
+	PayloadData string  `json:"payloadData"` // WebSocket message payload data. If the opcode is 1, this is a text message and payloadData is a UTF-8 string. If the opcode isn't 1, then payloadData is a base64 encoded string representing binary data.
 }
 
 // CachedResource information about the cached resource.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-CachedResource
 type CachedResource struct {
 	URL      string       `json:"url"`                // Resource URL. This is the url of the original network request.
 	Type     ResourceType `json:"type"`               // Type of this resource.
@@ -576,6 +737,8 @@ type CachedResource struct {
 }
 
 // Initiator information about the request initiator.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-Initiator
 type Initiator struct {
 	Type       InitiatorType       `json:"type"`                 // Type of this initiator.
 	Stack      *runtime.StackTrace `json:"stack,omitempty"`      // Initiator JavaScript stack trace, set for Script only.
@@ -584,6 +747,8 @@ type Initiator struct {
 }
 
 // Cookie cookie object.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-Cookie
 type Cookie struct {
 	Name     string         `json:"name"`               // Cookie name.
 	Value    string         `json:"value"`              // Cookie value.
@@ -595,9 +760,172 @@ type Cookie struct {
 	Secure   bool           `json:"secure"`             // True if cookie is secure.
 	Session  bool           `json:"session"`            // True in case of session cookie.
 	SameSite CookieSameSite `json:"sameSite,omitempty"` // Cookie SameSite type.
+	Priority CookiePriority `json:"priority"`           // Cookie Priority
+}
+
+// SetCookieBlockedReason types of reasons why a cookie may not be stored
+// from a response.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-SetCookieBlockedReason
+type SetCookieBlockedReason string
+
+// String returns the SetCookieBlockedReason as string value.
+func (t SetCookieBlockedReason) String() string {
+	return string(t)
+}
+
+// SetCookieBlockedReason values.
+const (
+	SetCookieBlockedReasonSecureOnly                      SetCookieBlockedReason = "SecureOnly"
+	SetCookieBlockedReasonSameSiteStrict                  SetCookieBlockedReason = "SameSiteStrict"
+	SetCookieBlockedReasonSameSiteLax                     SetCookieBlockedReason = "SameSiteLax"
+	SetCookieBlockedReasonSameSiteUnspecifiedTreatedAsLax SetCookieBlockedReason = "SameSiteUnspecifiedTreatedAsLax"
+	SetCookieBlockedReasonSameSiteNoneInsecure            SetCookieBlockedReason = "SameSiteNoneInsecure"
+	SetCookieBlockedReasonUserPreferences                 SetCookieBlockedReason = "UserPreferences"
+	SetCookieBlockedReasonSyntaxError                     SetCookieBlockedReason = "SyntaxError"
+	SetCookieBlockedReasonSchemeNotSupported              SetCookieBlockedReason = "SchemeNotSupported"
+	SetCookieBlockedReasonOverwriteSecure                 SetCookieBlockedReason = "OverwriteSecure"
+	SetCookieBlockedReasonInvalidDomain                   SetCookieBlockedReason = "InvalidDomain"
+	SetCookieBlockedReasonInvalidPrefix                   SetCookieBlockedReason = "InvalidPrefix"
+	SetCookieBlockedReasonUnknownError                    SetCookieBlockedReason = "UnknownError"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t SetCookieBlockedReason) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t SetCookieBlockedReason) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *SetCookieBlockedReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch SetCookieBlockedReason(in.String()) {
+	case SetCookieBlockedReasonSecureOnly:
+		*t = SetCookieBlockedReasonSecureOnly
+	case SetCookieBlockedReasonSameSiteStrict:
+		*t = SetCookieBlockedReasonSameSiteStrict
+	case SetCookieBlockedReasonSameSiteLax:
+		*t = SetCookieBlockedReasonSameSiteLax
+	case SetCookieBlockedReasonSameSiteUnspecifiedTreatedAsLax:
+		*t = SetCookieBlockedReasonSameSiteUnspecifiedTreatedAsLax
+	case SetCookieBlockedReasonSameSiteNoneInsecure:
+		*t = SetCookieBlockedReasonSameSiteNoneInsecure
+	case SetCookieBlockedReasonUserPreferences:
+		*t = SetCookieBlockedReasonUserPreferences
+	case SetCookieBlockedReasonSyntaxError:
+		*t = SetCookieBlockedReasonSyntaxError
+	case SetCookieBlockedReasonSchemeNotSupported:
+		*t = SetCookieBlockedReasonSchemeNotSupported
+	case SetCookieBlockedReasonOverwriteSecure:
+		*t = SetCookieBlockedReasonOverwriteSecure
+	case SetCookieBlockedReasonInvalidDomain:
+		*t = SetCookieBlockedReasonInvalidDomain
+	case SetCookieBlockedReasonInvalidPrefix:
+		*t = SetCookieBlockedReasonInvalidPrefix
+	case SetCookieBlockedReasonUnknownError:
+		*t = SetCookieBlockedReasonUnknownError
+
+	default:
+		in.AddError(errors.New("unknown SetCookieBlockedReason value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *SetCookieBlockedReason) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// CookieBlockedReason types of reasons why a cookie may not be sent with a
+// request.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-CookieBlockedReason
+type CookieBlockedReason string
+
+// String returns the CookieBlockedReason as string value.
+func (t CookieBlockedReason) String() string {
+	return string(t)
+}
+
+// CookieBlockedReason values.
+const (
+	CookieBlockedReasonSecureOnly                      CookieBlockedReason = "SecureOnly"
+	CookieBlockedReasonNotOnPath                       CookieBlockedReason = "NotOnPath"
+	CookieBlockedReasonDomainMismatch                  CookieBlockedReason = "DomainMismatch"
+	CookieBlockedReasonSameSiteStrict                  CookieBlockedReason = "SameSiteStrict"
+	CookieBlockedReasonSameSiteLax                     CookieBlockedReason = "SameSiteLax"
+	CookieBlockedReasonSameSiteUnspecifiedTreatedAsLax CookieBlockedReason = "SameSiteUnspecifiedTreatedAsLax"
+	CookieBlockedReasonSameSiteNoneInsecure            CookieBlockedReason = "SameSiteNoneInsecure"
+	CookieBlockedReasonUserPreferences                 CookieBlockedReason = "UserPreferences"
+	CookieBlockedReasonUnknownError                    CookieBlockedReason = "UnknownError"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t CookieBlockedReason) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t CookieBlockedReason) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *CookieBlockedReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch CookieBlockedReason(in.String()) {
+	case CookieBlockedReasonSecureOnly:
+		*t = CookieBlockedReasonSecureOnly
+	case CookieBlockedReasonNotOnPath:
+		*t = CookieBlockedReasonNotOnPath
+	case CookieBlockedReasonDomainMismatch:
+		*t = CookieBlockedReasonDomainMismatch
+	case CookieBlockedReasonSameSiteStrict:
+		*t = CookieBlockedReasonSameSiteStrict
+	case CookieBlockedReasonSameSiteLax:
+		*t = CookieBlockedReasonSameSiteLax
+	case CookieBlockedReasonSameSiteUnspecifiedTreatedAsLax:
+		*t = CookieBlockedReasonSameSiteUnspecifiedTreatedAsLax
+	case CookieBlockedReasonSameSiteNoneInsecure:
+		*t = CookieBlockedReasonSameSiteNoneInsecure
+	case CookieBlockedReasonUserPreferences:
+		*t = CookieBlockedReasonUserPreferences
+	case CookieBlockedReasonUnknownError:
+		*t = CookieBlockedReasonUnknownError
+
+	default:
+		in.AddError(errors.New("unknown CookieBlockedReason value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *CookieBlockedReason) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// BlockedSetCookieWithReason a cookie which was not stored from a response
+// with the corresponding reason.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-BlockedSetCookieWithReason
+type BlockedSetCookieWithReason struct {
+	BlockedReasons []SetCookieBlockedReason `json:"blockedReasons"`   // The reason(s) this cookie was blocked.
+	CookieLine     string                   `json:"cookieLine"`       // The string representing this individual cookie as it would appear in the header. This is not the entire "cookie" or "set-cookie" header which could have multiple cookies.
+	Cookie         *Cookie                  `json:"cookie,omitempty"` // The cookie object which represents the cookie which was not stored. It is optional because sometimes complete cookie information is not available, such as in the case of parsing errors.
+}
+
+// BlockedCookieWithReason a cookie with was not sent with a request with the
+// corresponding reason.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-BlockedCookieWithReason
+type BlockedCookieWithReason struct {
+	BlockedReasons []CookieBlockedReason `json:"blockedReasons"` // The reason(s) the cookie was blocked.
+	Cookie         *Cookie               `json:"cookie"`         // The cookie object representing the cookie which was not sent.
 }
 
 // CookieParam cookie parameter object.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-CookieParam
 type CookieParam struct {
 	Name     string              `json:"name"`               // Cookie name.
 	Value    string              `json:"value"`              // Cookie value.
@@ -608,9 +936,12 @@ type CookieParam struct {
 	HTTPOnly bool                `json:"httpOnly,omitempty"` // True if cookie is http-only.
 	SameSite CookieSameSite      `json:"sameSite,omitempty"` // Cookie SameSite type.
 	Expires  *cdp.TimeSinceEpoch `json:"expires,omitempty"`  // Cookie expiration date, session cookie if not set
+	Priority CookiePriority      `json:"priority,omitempty"` // Cookie Priority.
 }
 
 // AuthChallenge authorization challenge for HTTP status code 401 or 407.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-AuthChallenge
 type AuthChallenge struct {
 	Source AuthChallengeSource `json:"source,omitempty"` // Source of the authentication challenge.
 	Origin string              `json:"origin"`           // Origin of the challenger.
@@ -619,6 +950,8 @@ type AuthChallenge struct {
 }
 
 // AuthChallengeResponse response to an AuthChallenge.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-AuthChallengeResponse
 type AuthChallengeResponse struct {
 	Response AuthChallengeResponseResponse `json:"response"`           // The decision on what to do in response to the authorization challenge.  Default means deferring to the default behavior of the net stack, which will likely either the Cancel authentication or display a popup dialog box.
 	Username string                        `json:"username,omitempty"` // The username to provide, possibly empty. Should only be set if response is ProvideCredentials.
@@ -628,6 +961,8 @@ type AuthChallengeResponse struct {
 // InterceptionStage stages of the interception to begin intercepting.
 // Request will intercept before the request is sent. Response will intercept
 // after the response is received.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-InterceptionStage
 type InterceptionStage string
 
 // String returns the InterceptionStage as string value.
@@ -670,6 +1005,8 @@ func (t *InterceptionStage) UnmarshalJSON(buf []byte) error {
 }
 
 // RequestPattern request pattern for interception.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-RequestPattern
 type RequestPattern struct {
 	URLPattern        string            `json:"urlPattern,omitempty"`        // Wildcards ('*' -> zero or more, '?' -> exactly one) are allowed. Escape character is backslash. Omitting is equivalent to "*".
 	ResourceType      ResourceType      `json:"resourceType,omitempty"`      // If set, only requests for matching resource types will be intercepted.
@@ -678,6 +1015,8 @@ type RequestPattern struct {
 
 // SignedExchangeSignature information about a signed exchange signature.
 // https://wicg.github.io/webpackage/draft-yasskin-httpbis-origin-signed-exchanges-impl.html#rfc.section.3.1.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-SignedExchangeSignature
 type SignedExchangeSignature struct {
 	Label        string   `json:"label"`                  // Signed exchange signature label.
 	Signature    string   `json:"signature"`              // The hex string of signed exchange signature.
@@ -692,15 +1031,19 @@ type SignedExchangeSignature struct {
 
 // SignedExchangeHeader information about a signed exchange header.
 // https://wicg.github.io/webpackage/draft-yasskin-httpbis-origin-signed-exchanges-impl.html#cbor-representation.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-SignedExchangeHeader
 type SignedExchangeHeader struct {
 	RequestURL      string                     `json:"requestUrl"`      // Signed exchange request URL.
-	RequestMethod   string                     `json:"requestMethod"`   // Signed exchange request method.
 	ResponseCode    int64                      `json:"responseCode"`    // Signed exchange response code.
 	ResponseHeaders Headers                    `json:"responseHeaders"` // Signed exchange response headers.
 	Signatures      []*SignedExchangeSignature `json:"signatures"`      // Signed exchange response signature.
+	HeaderIntegrity string                     `json:"headerIntegrity"` // Signed exchange header integrity hash in the form of "sha256-<base64-hash-value>".
 }
 
 // SignedExchangeErrorField field type for a signed exchange related error.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-SignedExchangeErrorField
 type SignedExchangeErrorField string
 
 // String returns the SignedExchangeErrorField as string value.
@@ -755,6 +1098,8 @@ func (t *SignedExchangeErrorField) UnmarshalJSON(buf []byte) error {
 }
 
 // SignedExchangeError information about a signed exchange response.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-SignedExchangeError
 type SignedExchangeError struct {
 	Message        string                   `json:"message"`                  // Error message.
 	SignatureIndex int64                    `json:"signatureIndex,omitempty"` // The index of the signature which caused the error.
@@ -762,6 +1107,8 @@ type SignedExchangeError struct {
 }
 
 // SignedExchangeInfo information about a signed exchange response.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-SignedExchangeInfo
 type SignedExchangeInfo struct {
 	OuterResponse   *Response              `json:"outerResponse"`             // The outer response of signed HTTP exchange which was received from network.
 	Header          *SignedExchangeHeader  `json:"header,omitempty"`          // Information about the signed exchange header.
@@ -771,6 +1118,8 @@ type SignedExchangeInfo struct {
 
 // ReferrerPolicy the referrer policy of the request, as defined in
 // https://www.w3.org/TR/referrer-policy/.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-Request
 type ReferrerPolicy string
 
 // String returns the ReferrerPolicy as string value.
@@ -831,6 +1180,8 @@ func (t *ReferrerPolicy) UnmarshalJSON(buf []byte) error {
 }
 
 // InitiatorType type of this initiator.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-Initiator
 type InitiatorType string
 
 // String returns the InitiatorType as string value.
@@ -882,6 +1233,8 @@ func (t *InitiatorType) UnmarshalJSON(buf []byte) error {
 }
 
 // AuthChallengeSource source of the authentication challenge.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-AuthChallenge
 type AuthChallengeSource string
 
 // String returns the AuthChallengeSource as string value.
@@ -927,6 +1280,8 @@ func (t *AuthChallengeSource) UnmarshalJSON(buf []byte) error {
 // the authorization challenge. Default means deferring to the default behavior
 // of the net stack, which will likely either the Cancel authentication or
 // display a popup dialog box.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-AuthChallengeResponse
 type AuthChallengeResponseResponse string
 
 // String returns the AuthChallengeResponseResponse as string value.

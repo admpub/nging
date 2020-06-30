@@ -19,26 +19,30 @@ import (
 type DisableParams struct{}
 
 // Disable disables DOM snapshot agent for the given page.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOMSnapshot#method-disable
 func Disable() *DisableParams {
 	return &DisableParams{}
 }
 
 // Do executes DOMSnapshot.disable against the provided context.
-func (p *DisableParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandDisable, nil, nil)
+func (p *DisableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDisable, nil, nil)
 }
 
 // EnableParams enables DOM snapshot agent for the given page.
 type EnableParams struct{}
 
 // Enable enables DOM snapshot agent for the given page.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOMSnapshot#method-enable
 func Enable() *EnableParams {
 	return &EnableParams{}
 }
 
 // Do executes DOMSnapshot.enable against the provided context.
-func (p *EnableParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandEnable, nil, nil)
+func (p *EnableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandEnable, nil, nil)
 }
 
 // CaptureSnapshotParams returns a document snapshot, including the full DOM
@@ -47,7 +51,9 @@ func (p *EnableParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
 // style information for the nodes. Shadow DOM in the returned DOM tree is
 // flattened.
 type CaptureSnapshotParams struct {
-	ComputedStyles []string `json:"computedStyles"` // Whitelist of computed styles to return.
+	ComputedStyles    []string `json:"computedStyles"`              // Whitelist of computed styles to return.
+	IncludePaintOrder bool     `json:"includePaintOrder,omitempty"` // Whether to include layout object paint orders into the snapshot.
+	IncludeDOMRects   bool     `json:"includeDOMRects,omitempty"`   // Whether to include DOM rectangles (offsetRects, clientRects, scrollRects) into the snapshot
 }
 
 // CaptureSnapshot returns a document snapshot, including the full DOM tree
@@ -56,12 +62,28 @@ type CaptureSnapshotParams struct {
 // style information for the nodes. Shadow DOM in the returned DOM tree is
 // flattened.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/DOMSnapshot#method-captureSnapshot
+//
 // parameters:
 //   computedStyles - Whitelist of computed styles to return.
 func CaptureSnapshot(computedStyles []string) *CaptureSnapshotParams {
 	return &CaptureSnapshotParams{
 		ComputedStyles: computedStyles,
 	}
+}
+
+// WithIncludePaintOrder whether to include layout object paint orders into
+// the snapshot.
+func (p CaptureSnapshotParams) WithIncludePaintOrder(includePaintOrder bool) *CaptureSnapshotParams {
+	p.IncludePaintOrder = includePaintOrder
+	return &p
+}
+
+// WithIncludeDOMRects whether to include DOM rectangles (offsetRects,
+// clientRects, scrollRects) into the snapshot.
+func (p CaptureSnapshotParams) WithIncludeDOMRects(includeDOMRects bool) *CaptureSnapshotParams {
+	p.IncludeDOMRects = includeDOMRects
+	return &p
 }
 
 // CaptureSnapshotReturns return values.
@@ -75,10 +97,10 @@ type CaptureSnapshotReturns struct {
 // returns:
 //   documents - The nodes in the DOM tree. The DOMNode at index 0 corresponds to the root document.
 //   strings - Shared string table that all string properties refer to with indexes.
-func (p *CaptureSnapshotParams) Do(ctxt context.Context, h cdp.Executor) (documents []*DocumentSnapshot, strings []string, err error) {
+func (p *CaptureSnapshotParams) Do(ctx context.Context) (documents []*DocumentSnapshot, strings []string, err error) {
 	// execute
 	var res CaptureSnapshotReturns
-	err = h.Execute(ctxt, CommandCaptureSnapshot, p, &res)
+	err = cdp.Execute(ctx, CommandCaptureSnapshot, p, &res)
 	if err != nil {
 		return nil, nil, err
 	}

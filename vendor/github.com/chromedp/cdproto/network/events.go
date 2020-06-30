@@ -7,6 +7,8 @@ import (
 )
 
 // EventDataReceived fired when data chunk was received over the network.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-dataReceived
 type EventDataReceived struct {
 	RequestID         RequestID          `json:"requestId"`         // Request identifier.
 	Timestamp         *cdp.MonotonicTime `json:"timestamp"`         // Timestamp.
@@ -16,6 +18,8 @@ type EventDataReceived struct {
 
 // EventEventSourceMessageReceived fired when EventSource message is
 // received.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-eventSourceMessageReceived
 type EventEventSourceMessageReceived struct {
 	RequestID RequestID          `json:"requestId"` // Request identifier.
 	Timestamp *cdp.MonotonicTime `json:"timestamp"` // Timestamp.
@@ -25,6 +29,8 @@ type EventEventSourceMessageReceived struct {
 }
 
 // EventLoadingFailed fired when HTTP request has failed to load.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-loadingFailed
 type EventLoadingFailed struct {
 	RequestID     RequestID          `json:"requestId"`               // Request identifier.
 	Timestamp     *cdp.MonotonicTime `json:"timestamp"`               // Timestamp.
@@ -35,6 +41,8 @@ type EventLoadingFailed struct {
 }
 
 // EventLoadingFinished fired when HTTP request has finished loading.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-loadingFinished
 type EventLoadingFinished struct {
 	RequestID                RequestID          `json:"requestId"`                          // Request identifier.
 	Timestamp                *cdp.MonotonicTime `json:"timestamp"`                          // Timestamp.
@@ -42,28 +50,16 @@ type EventLoadingFinished struct {
 	ShouldReportCorbBlocking bool               `json:"shouldReportCorbBlocking,omitempty"` // Set when 1) response was blocked by Cross-Origin Read Blocking and also 2) this needs to be reported to the DevTools console.
 }
 
-// EventRequestIntercepted details of an intercepted HTTP request, which must
-// be either allowed, blocked, modified or mocked.
-type EventRequestIntercepted struct {
-	InterceptionID      InterceptionID `json:"interceptionId"` // Each request the page makes will have a unique id, however if any redirects are encountered while processing that fetch, they will be reported with the same id as the original fetch. Likewise if HTTP authentication is needed then the same fetch id will be used.
-	Request             *Request       `json:"request"`
-	FrameID             cdp.FrameID    `json:"frameId"`                       // The id of the frame that initiated the request.
-	ResourceType        ResourceType   `json:"resourceType"`                  // How the requested resource will be used.
-	IsNavigationRequest bool           `json:"isNavigationRequest"`           // Whether this is a navigation request, which can abort the navigation completely.
-	IsDownload          bool           `json:"isDownload,omitempty"`          // Set if the request is a navigation that will result in a download. Only present after response is received from the server (i.e. HeadersReceived stage).
-	RedirectURL         string         `json:"redirectUrl,omitempty"`         // Redirect location, only sent if a redirect was intercepted.
-	AuthChallenge       *AuthChallenge `json:"authChallenge,omitempty"`       // Details of the Authorization Challenge encountered. If this is set then continueInterceptedRequest must contain an authChallengeResponse.
-	ResponseErrorReason ErrorReason    `json:"responseErrorReason,omitempty"` // Response error if intercepted at response stage or if redirect occurred while intercepting request.
-	ResponseStatusCode  int64          `json:"responseStatusCode,omitempty"`  // Response code if intercepted at response stage or if redirect occurred while intercepting request or auth retry occurred.
-	ResponseHeaders     Headers        `json:"responseHeaders,omitempty"`     // Response headers if intercepted at the response stage or if redirect occurred while intercepting request or auth retry occurred.
-}
-
 // EventRequestServedFromCache fired if request ended up loading from cache.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-requestServedFromCache
 type EventRequestServedFromCache struct {
 	RequestID RequestID `json:"requestId"` // Request identifier.
 }
 
 // EventRequestWillBeSent fired when page is about to send HTTP request.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-requestWillBeSent
 type EventRequestWillBeSent struct {
 	RequestID        RequestID           `json:"requestId"`                  // Request identifier.
 	LoaderID         cdp.LoaderID        `json:"loaderId"`                   // Loader identifier. Empty string if the request is fetched from worker.
@@ -80,6 +76,8 @@ type EventRequestWillBeSent struct {
 
 // EventResourceChangedPriority fired when resource loading priority is
 // changed.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-resourceChangedPriority
 type EventResourceChangedPriority struct {
 	RequestID   RequestID          `json:"requestId"`   // Request identifier.
 	NewPriority ResourcePriority   `json:"newPriority"` // New priority
@@ -88,12 +86,16 @@ type EventResourceChangedPriority struct {
 
 // EventSignedExchangeReceived fired when a signed exchange was received over
 // the network.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-signedExchangeReceived
 type EventSignedExchangeReceived struct {
 	RequestID RequestID           `json:"requestId"` // Request identifier.
 	Info      *SignedExchangeInfo `json:"info"`      // Information about the signed exchange response.
 }
 
 // EventResponseReceived fired when HTTP response is available.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-responseReceived
 type EventResponseReceived struct {
 	RequestID RequestID          `json:"requestId"`         // Request identifier.
 	LoaderID  cdp.LoaderID       `json:"loaderId"`          // Loader identifier. Empty string if the request is fetched from worker.
@@ -104,33 +106,43 @@ type EventResponseReceived struct {
 }
 
 // EventWebSocketClosed fired when WebSocket is closed.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-webSocketClosed
 type EventWebSocketClosed struct {
 	RequestID RequestID          `json:"requestId"` // Request identifier.
 	Timestamp *cdp.MonotonicTime `json:"timestamp"` // Timestamp.
 }
 
 // EventWebSocketCreated fired upon WebSocket creation.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-webSocketCreated
 type EventWebSocketCreated struct {
 	RequestID RequestID  `json:"requestId"`           // Request identifier.
 	URL       string     `json:"url"`                 // WebSocket request URL.
 	Initiator *Initiator `json:"initiator,omitempty"` // Request initiator.
 }
 
-// EventWebSocketFrameError fired when WebSocket frame error occurs.
+// EventWebSocketFrameError fired when WebSocket message error occurs.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-webSocketFrameError
 type EventWebSocketFrameError struct {
 	RequestID    RequestID          `json:"requestId"`    // Request identifier.
 	Timestamp    *cdp.MonotonicTime `json:"timestamp"`    // Timestamp.
-	ErrorMessage string             `json:"errorMessage"` // WebSocket frame error message.
+	ErrorMessage string             `json:"errorMessage"` // WebSocket error message.
 }
 
-// EventWebSocketFrameReceived fired when WebSocket frame is received.
+// EventWebSocketFrameReceived fired when WebSocket message is received.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-webSocketFrameReceived
 type EventWebSocketFrameReceived struct {
 	RequestID RequestID          `json:"requestId"` // Request identifier.
 	Timestamp *cdp.MonotonicTime `json:"timestamp"` // Timestamp.
 	Response  *WebSocketFrame    `json:"response"`  // WebSocket response data.
 }
 
-// EventWebSocketFrameSent fired when WebSocket frame is sent.
+// EventWebSocketFrameSent fired when WebSocket message is sent.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-webSocketFrameSent
 type EventWebSocketFrameSent struct {
 	RequestID RequestID          `json:"requestId"` // Request identifier.
 	Timestamp *cdp.MonotonicTime `json:"timestamp"` // Timestamp.
@@ -139,6 +151,8 @@ type EventWebSocketFrameSent struct {
 
 // EventWebSocketHandshakeResponseReceived fired when WebSocket handshake
 // response becomes available.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-webSocketHandshakeResponseReceived
 type EventWebSocketHandshakeResponseReceived struct {
 	RequestID RequestID          `json:"requestId"` // Request identifier.
 	Timestamp *cdp.MonotonicTime `json:"timestamp"` // Timestamp.
@@ -147,9 +161,38 @@ type EventWebSocketHandshakeResponseReceived struct {
 
 // EventWebSocketWillSendHandshakeRequest fired when WebSocket is about to
 // initiate handshake.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-webSocketWillSendHandshakeRequest
 type EventWebSocketWillSendHandshakeRequest struct {
 	RequestID RequestID           `json:"requestId"` // Request identifier.
 	Timestamp *cdp.MonotonicTime  `json:"timestamp"` // Timestamp.
 	WallTime  *cdp.TimeSinceEpoch `json:"wallTime"`  // UTC Timestamp.
 	Request   *WebSocketRequest   `json:"request"`   // WebSocket request data.
+}
+
+// EventRequestWillBeSentExtraInfo fired when additional information about a
+// requestWillBeSent event is available from the network stack. Not every
+// requestWillBeSent event will have an additional requestWillBeSentExtraInfo
+// fired for it, and there is no guarantee whether requestWillBeSent or
+// requestWillBeSentExtraInfo will be fired first for the same request.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-requestWillBeSentExtraInfo
+type EventRequestWillBeSentExtraInfo struct {
+	RequestID         RequestID                  `json:"requestId"`         // Request identifier. Used to match this information to an existing requestWillBeSent event.
+	AssociatedCookies []*BlockedCookieWithReason `json:"associatedCookies"` // A list of cookies potentially associated to the requested URL. This includes both cookies sent with the request and the ones not sent; the latter are distinguished by having blockedReason field set.
+	Headers           Headers                    `json:"headers"`           // Raw request headers as they will be sent over the wire.
+}
+
+// EventResponseReceivedExtraInfo fired when additional information about a
+// responseReceived event is available from the network stack. Not every
+// responseReceived event will have an additional responseReceivedExtraInfo for
+// it, and responseReceivedExtraInfo may be fired before or after
+// responseReceived.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-responseReceivedExtraInfo
+type EventResponseReceivedExtraInfo struct {
+	RequestID      RequestID                     `json:"requestId"`             // Request identifier. Used to match this information to another responseReceived event.
+	BlockedCookies []*BlockedSetCookieWithReason `json:"blockedCookies"`        // A list of cookies which were not stored from the response along with the corresponding reasons for blocking. The cookies here may not be valid due to syntax errors, which are represented by the invalid cookie line string instead of a proper cookie.
+	Headers        Headers                       `json:"headers"`               // Raw response headers as they were received over the wire.
+	HeadersText    string                        `json:"headersText,omitempty"` // Raw response header text as it was received over the wire. The raw text may not always be available, such as in the case of HTTP/2 or QUIC.
 }

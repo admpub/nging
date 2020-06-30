@@ -22,6 +22,8 @@ type AddInspectedHeapObjectParams struct {
 // AddInspectedHeapObject enables console to refer to the node with given id
 // via $x (see Command Line API for more details $x functions).
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/HeapProfiler#method-addInspectedHeapObject
+//
 // parameters:
 //   heapObjectID - Heap snapshot object id to be accessible by means of $x command line API.
 func AddInspectedHeapObject(heapObjectID HeapSnapshotObjectID) *AddInspectedHeapObjectParams {
@@ -31,47 +33,53 @@ func AddInspectedHeapObject(heapObjectID HeapSnapshotObjectID) *AddInspectedHeap
 }
 
 // Do executes HeapProfiler.addInspectedHeapObject against the provided context.
-func (p *AddInspectedHeapObjectParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandAddInspectedHeapObject, p, nil)
+func (p *AddInspectedHeapObjectParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandAddInspectedHeapObject, p, nil)
 }
 
 // CollectGarbageParams [no description].
 type CollectGarbageParams struct{}
 
 // CollectGarbage [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/HeapProfiler#method-collectGarbage
 func CollectGarbage() *CollectGarbageParams {
 	return &CollectGarbageParams{}
 }
 
 // Do executes HeapProfiler.collectGarbage against the provided context.
-func (p *CollectGarbageParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandCollectGarbage, nil, nil)
+func (p *CollectGarbageParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandCollectGarbage, nil, nil)
 }
 
 // DisableParams [no description].
 type DisableParams struct{}
 
 // Disable [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/HeapProfiler#method-disable
 func Disable() *DisableParams {
 	return &DisableParams{}
 }
 
 // Do executes HeapProfiler.disable against the provided context.
-func (p *DisableParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandDisable, nil, nil)
+func (p *DisableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDisable, nil, nil)
 }
 
 // EnableParams [no description].
 type EnableParams struct{}
 
 // Enable [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/HeapProfiler#method-enable
 func Enable() *EnableParams {
 	return &EnableParams{}
 }
 
 // Do executes HeapProfiler.enable against the provided context.
-func (p *EnableParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandEnable, nil, nil)
+func (p *EnableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandEnable, nil, nil)
 }
 
 // GetHeapObjectIDParams [no description].
@@ -80,6 +88,8 @@ type GetHeapObjectIDParams struct {
 }
 
 // GetHeapObjectID [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/HeapProfiler#method-getHeapObjectId
 //
 // parameters:
 //   objectID - Identifier of the object to get heap object id for.
@@ -98,10 +108,10 @@ type GetHeapObjectIDReturns struct {
 //
 // returns:
 //   heapSnapshotObjectID - Id of the heap snapshot object corresponding to the passed remote object id.
-func (p *GetHeapObjectIDParams) Do(ctxt context.Context, h cdp.Executor) (heapSnapshotObjectID HeapSnapshotObjectID, err error) {
+func (p *GetHeapObjectIDParams) Do(ctx context.Context) (heapSnapshotObjectID HeapSnapshotObjectID, err error) {
 	// execute
 	var res GetHeapObjectIDReturns
-	err = h.Execute(ctxt, CommandGetHeapObjectID, p, &res)
+	err = cdp.Execute(ctx, CommandGetHeapObjectID, p, &res)
 	if err != nil {
 		return "", err
 	}
@@ -116,6 +126,8 @@ type GetObjectByHeapObjectIDParams struct {
 }
 
 // GetObjectByHeapObjectID [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/HeapProfiler#method-getObjectByHeapObjectId
 //
 // parameters:
 //   objectID
@@ -141,10 +153,10 @@ type GetObjectByHeapObjectIDReturns struct {
 //
 // returns:
 //   result - Evaluation result.
-func (p *GetObjectByHeapObjectIDParams) Do(ctxt context.Context, h cdp.Executor) (result *runtime.RemoteObject, err error) {
+func (p *GetObjectByHeapObjectIDParams) Do(ctx context.Context) (result *runtime.RemoteObject, err error) {
 	// execute
 	var res GetObjectByHeapObjectIDReturns
-	err = h.Execute(ctxt, CommandGetObjectByHeapObjectID, p, &res)
+	err = cdp.Execute(ctx, CommandGetObjectByHeapObjectID, p, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -156,6 +168,8 @@ func (p *GetObjectByHeapObjectIDParams) Do(ctxt context.Context, h cdp.Executor)
 type GetSamplingProfileParams struct{}
 
 // GetSamplingProfile [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/HeapProfiler#method-getSamplingProfile
 func GetSamplingProfile() *GetSamplingProfileParams {
 	return &GetSamplingProfileParams{}
 }
@@ -169,10 +183,10 @@ type GetSamplingProfileReturns struct {
 //
 // returns:
 //   profile - Return the sampling profile being collected.
-func (p *GetSamplingProfileParams) Do(ctxt context.Context, h cdp.Executor) (profile *SamplingHeapProfile, err error) {
+func (p *GetSamplingProfileParams) Do(ctx context.Context) (profile *SamplingHeapProfile, err error) {
 	// execute
 	var res GetSamplingProfileReturns
-	err = h.Execute(ctxt, CommandGetSamplingProfile, nil, &res)
+	err = cdp.Execute(ctx, CommandGetSamplingProfile, nil, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -187,6 +201,8 @@ type StartSamplingParams struct {
 
 // StartSampling [no description].
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/HeapProfiler#method-startSampling
+//
 // parameters:
 func StartSampling() *StartSamplingParams {
 	return &StartSamplingParams{}
@@ -200,8 +216,8 @@ func (p StartSamplingParams) WithSamplingInterval(samplingInterval float64) *Sta
 }
 
 // Do executes HeapProfiler.startSampling against the provided context.
-func (p *StartSamplingParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandStartSampling, p, nil)
+func (p *StartSamplingParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandStartSampling, p, nil)
 }
 
 // StartTrackingHeapObjectsParams [no description].
@@ -210,6 +226,8 @@ type StartTrackingHeapObjectsParams struct {
 }
 
 // StartTrackingHeapObjects [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/HeapProfiler#method-startTrackingHeapObjects
 //
 // parameters:
 func StartTrackingHeapObjects() *StartTrackingHeapObjectsParams {
@@ -223,14 +241,16 @@ func (p StartTrackingHeapObjectsParams) WithTrackAllocations(trackAllocations bo
 }
 
 // Do executes HeapProfiler.startTrackingHeapObjects against the provided context.
-func (p *StartTrackingHeapObjectsParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandStartTrackingHeapObjects, p, nil)
+func (p *StartTrackingHeapObjectsParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandStartTrackingHeapObjects, p, nil)
 }
 
 // StopSamplingParams [no description].
 type StopSamplingParams struct{}
 
 // StopSampling [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/HeapProfiler#method-stopSampling
 func StopSampling() *StopSamplingParams {
 	return &StopSamplingParams{}
 }
@@ -244,10 +264,10 @@ type StopSamplingReturns struct {
 //
 // returns:
 //   profile - Recorded sampling heap profile.
-func (p *StopSamplingParams) Do(ctxt context.Context, h cdp.Executor) (profile *SamplingHeapProfile, err error) {
+func (p *StopSamplingParams) Do(ctx context.Context) (profile *SamplingHeapProfile, err error) {
 	// execute
 	var res StopSamplingReturns
-	err = h.Execute(ctxt, CommandStopSampling, nil, &res)
+	err = cdp.Execute(ctx, CommandStopSampling, nil, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -257,10 +277,13 @@ func (p *StopSamplingParams) Do(ctxt context.Context, h cdp.Executor) (profile *
 
 // StopTrackingHeapObjectsParams [no description].
 type StopTrackingHeapObjectsParams struct {
-	ReportProgress bool `json:"reportProgress,omitempty"` // If true 'reportHeapSnapshotProgress' events will be generated while snapshot is being taken when the tracking is stopped.
+	ReportProgress            bool `json:"reportProgress,omitempty"` // If true 'reportHeapSnapshotProgress' events will be generated while snapshot is being taken when the tracking is stopped.
+	TreatGlobalObjectsAsRoots bool `json:"treatGlobalObjectsAsRoots,omitempty"`
 }
 
 // StopTrackingHeapObjects [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/HeapProfiler#method-stopTrackingHeapObjects
 //
 // parameters:
 func StopTrackingHeapObjects() *StopTrackingHeapObjectsParams {
@@ -274,17 +297,26 @@ func (p StopTrackingHeapObjectsParams) WithReportProgress(reportProgress bool) *
 	return &p
 }
 
+// WithTreatGlobalObjectsAsRoots [no description].
+func (p StopTrackingHeapObjectsParams) WithTreatGlobalObjectsAsRoots(treatGlobalObjectsAsRoots bool) *StopTrackingHeapObjectsParams {
+	p.TreatGlobalObjectsAsRoots = treatGlobalObjectsAsRoots
+	return &p
+}
+
 // Do executes HeapProfiler.stopTrackingHeapObjects against the provided context.
-func (p *StopTrackingHeapObjectsParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandStopTrackingHeapObjects, p, nil)
+func (p *StopTrackingHeapObjectsParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandStopTrackingHeapObjects, p, nil)
 }
 
 // TakeHeapSnapshotParams [no description].
 type TakeHeapSnapshotParams struct {
-	ReportProgress bool `json:"reportProgress,omitempty"` // If true 'reportHeapSnapshotProgress' events will be generated while snapshot is being taken.
+	ReportProgress            bool `json:"reportProgress,omitempty"`            // If true 'reportHeapSnapshotProgress' events will be generated while snapshot is being taken.
+	TreatGlobalObjectsAsRoots bool `json:"treatGlobalObjectsAsRoots,omitempty"` // If true, a raw snapshot without artificial roots will be generated
 }
 
 // TakeHeapSnapshot [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/HeapProfiler#method-takeHeapSnapshot
 //
 // parameters:
 func TakeHeapSnapshot() *TakeHeapSnapshotParams {
@@ -298,9 +330,16 @@ func (p TakeHeapSnapshotParams) WithReportProgress(reportProgress bool) *TakeHea
 	return &p
 }
 
+// WithTreatGlobalObjectsAsRoots if true, a raw snapshot without artificial
+// roots will be generated.
+func (p TakeHeapSnapshotParams) WithTreatGlobalObjectsAsRoots(treatGlobalObjectsAsRoots bool) *TakeHeapSnapshotParams {
+	p.TreatGlobalObjectsAsRoots = treatGlobalObjectsAsRoots
+	return &p
+}
+
 // Do executes HeapProfiler.takeHeapSnapshot against the provided context.
-func (p *TakeHeapSnapshotParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandTakeHeapSnapshot, p, nil)
+func (p *TakeHeapSnapshotParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandTakeHeapSnapshot, p, nil)
 }
 
 // Command names.

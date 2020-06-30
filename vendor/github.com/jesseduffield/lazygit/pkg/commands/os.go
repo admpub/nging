@@ -1,16 +1,18 @@
 package commands
 
 import (
-	"errors"
+	"io/ioutil"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"regexp"
 	"strings"
+
+	"github.com/go-errors/errors"
 
 	"github.com/jesseduffield/lazygit/pkg/config"
 	"github.com/jesseduffield/lazygit/pkg/utils"
-
 	"github.com/mgutz/str"
-
 	"github.com/sirupsen/logrus"
 	gitconfig "github.com/tcnksm/go-gitconfig"
 )
@@ -22,6 +24,7 @@ type Platform struct {
 	shellArg             string
 	escapedQuote         string
 	openCommand          string
+	openLinkCommand      string
 	fallbackEscapedQuote string
 }
 
@@ -47,14 +50,65 @@ func NewOSCommand(log *logrus.Entry, config config.AppConfigurer) *OSCommand {
 	}
 }
 
+// SetCommand sets the command function used by the struct.
+// To be used for testing only
+func (c *OSCommand) SetCommand(cmd func(string, ...string) *exec.Cmd) {
+	c.command = cmd
+}
+
 // RunCommandWithOutput wrapper around commands returning their output and error
 func (c *OSCommand) RunCommandWithOutput(command string) (string, error) {
 	c.Log.WithField("command", command).Info("RunCommand")
-	splitCmd := str.ToArgv(command)
+	cmd := c.ExecutableFromString(command)
+	return sanitisedCommandOutput(cmd.CombinedOutput())
+}
+
+// RunExecutableWithOutput runs an executable file and returns its output
+func (c *OSCommand) RunExecutableWithOutput(cmd *exec.Cmd) (string, error) {
+	return sanitisedCommandOutput(cmd.CombinedOutput())
+}
+
+// RunExecutable runs an executable file and returns an error if there was one
+func (c *OSCommand) RunExecutable(cmd *exec.Cmd) error {
+	_, err := c.RunExecutableWithOutput(cmd)
+	return err
+}
+
+// ExecutableFromString takes a string like `git status` and returns an executable command for it
+func (c *OSCommand) ExecutableFromString(commandStr string) *exec.Cmd {
+	splitCmd := str.ToArgv(commandStr)
 	c.Log.Info(splitCmd)
-	return sanitisedCommandOutput(
-		c.command(splitCmd[0], splitCmd[1:]...).CombinedOutput(),
-	)
+	return c.command(splitCmd[0], splitCmd[1:]...)
+}
+
+// RunCommandWithOutputLive runs RunCommandWithOutputLiveWrapper
+func (c *OSCommand) RunCommandWithOutputLive(command string, output func(string) string) error {
+	return RunCommandWithOutputLiveWrapper(c, command, output)
+}
+
+// DetectUnamePass detect a username / password question in a command
+// ask is a function that gets executen when this function detect you need to fillin a password
+// The ask argument will be "username" or "password" and expects the user's password or username back
+func (c *OSCommand) DetectUnamePass(command string, ask func(string) string) error {
+	ttyText := ""
+	errMessage := c.RunCommandWithOutputLive(command, func(word string) string {
+		ttyText = ttyText + " " + word
+
+		prompts := map[string]string{
+			"password": `Password\s*for\s*'.+':`,
+			"username": `Username\s*for\s*'.+':`,
+		}
+
+		for askFor, pattern := range prompts {
+			if match, _ := regexp.MatchString(pattern, ttyText); match {
+				ttyText = ""
+				return ask(askFor)
+			}
+		}
+
+		return ""
+	})
+	return errMessage
 }
 
 // RunCommand runs a command and just returns the error
@@ -91,7 +145,7 @@ func sanitisedCommandOutput(output []byte, err error) (string, error) {
 		// errors like 'exit status 1' are not very useful so we'll create an error
 		// from the combined output
 		if outputString == "" {
-			return "", err
+			return "", WrapError(err)
 		}
 		return outputString, errors.New(outputString)
 	}
@@ -103,6 +157,18 @@ func (c *OSCommand) OpenFile(filename string) error {
 	commandTemplate := c.Config.GetUserConfig().GetString("os.openCommand")
 	templateValues := map[string]string{
 		"filename": c.Quote(filename),
+	}
+
+	command := utils.ResolvePlaceholderString(commandTemplate, templateValues)
+	err := c.RunCommand(command)
+	return err
+}
+
+// OpenLink opens a file with the given
+func (c *OSCommand) OpenLink(link string) error {
+	commandTemplate := c.Config.GetUserConfig().GetString("os.openLinkCommand")
+	templateValues := map[string]string{
+		"link": c.Quote(link),
 	}
 
 	command := utils.ResolvePlaceholderString(commandTemplate, templateValues)
@@ -158,10 +224,80 @@ func (c *OSCommand) Unquote(message string) string {
 func (c *OSCommand) AppendLineToFile(filename, line string) error {
 	f, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
-		return err
+		return WrapError(err)
 	}
 	defer f.Close()
 
 	_, err = f.WriteString("\n" + line)
-	return err
+	if err != nil {
+		return WrapError(err)
+	}
+	return nil
+}
+
+// CreateTempFile writes a string to a new temp file and returns the file's name
+func (c *OSCommand) CreateTempFile(filename, content string) (string, error) {
+	tmpfile, err := ioutil.TempFile("", filename)
+	if err != nil {
+		c.Log.Error(err)
+		return "", WrapError(err)
+	}
+
+	if _, err := tmpfile.WriteString(content); err != nil {
+		c.Log.Error(err)
+		return "", WrapError(err)
+	}
+	if err := tmpfile.Close(); err != nil {
+		c.Log.Error(err)
+		return "", WrapError(err)
+	}
+
+	return tmpfile.Name(), nil
+}
+
+// Remove removes a file or directory at the specified path
+func (c *OSCommand) Remove(filename string) error {
+	err := os.RemoveAll(filename)
+	return WrapError(err)
+}
+
+// FileExists checks whether a file exists at the specified path
+func (c *OSCommand) FileExists(path string) (bool, error) {
+	if _, err := os.Stat(path); err != nil {
+		if os.IsNotExist(err) {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
+}
+
+// RunPreparedCommand takes a pointer to an exec.Cmd and runs it
+// this is useful if you need to give your command some environment variables
+// before running it
+func (c *OSCommand) RunPreparedCommand(cmd *exec.Cmd) error {
+	out, err := cmd.CombinedOutput()
+	outString := string(out)
+	c.Log.Info(outString)
+	if err != nil {
+		if len(outString) == 0 {
+			return err
+		}
+		return errors.New(outString)
+	}
+	return nil
+}
+
+// GetLazygitPath returns the path of the currently executed file
+func (c *OSCommand) GetLazygitPath() string {
+	ex, err := os.Executable() // get the executable path for git to use
+	if err != nil {
+		ex = os.Args[0] // fallback to the first call argument if needed
+	}
+	return filepath.ToSlash(ex)
+}
+
+// RunCustomCommand returns the pointer to a custom command
+func (c *OSCommand) RunCustomCommand(command string) *exec.Cmd {
+	return c.PrepareSubProcess(c.Platform.shell, c.Platform.shellArg, command)
 }

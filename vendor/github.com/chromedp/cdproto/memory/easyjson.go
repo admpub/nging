@@ -115,12 +115,8 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoMemory1(out *jwriter.Writer, 
 	_ = first
 	if in.SamplingInterval != 0 {
 		const prefix string = ",\"samplingInterval\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		first = false
+		out.RawString(prefix[1:])
 		out.Int64(int64(in.SamplingInterval))
 	}
 	if in.SuppressRandomness {
@@ -196,12 +192,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoMemory2(out *jwriter.Writer, 
 	_ = first
 	{
 		const prefix string = ",\"level\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		(in.Level).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
@@ -267,12 +258,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoMemory3(out *jwriter.Writer, 
 	_ = first
 	{
 		const prefix string = ",\"suppressed\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.Bool(bool(in.Suppressed))
 	}
 	out.RawByte('}')
@@ -363,32 +349,17 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoMemory4(out *jwriter.Writer, 
 	_ = first
 	{
 		const prefix string = ",\"size\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.Float64(float64(in.Size))
 	}
 	{
 		const prefix string = ",\"total\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.Total))
 	}
 	{
 		const prefix string = ",\"stack\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		if in.Stack == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 			out.RawString("null")
 		} else {
@@ -525,12 +496,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoMemory5(out *jwriter.Writer, 
 	_ = first
 	{
 		const prefix string = ",\"samples\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		if in.Samples == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 			out.RawString("null")
 		} else {
@@ -550,12 +516,7 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoMemory5(out *jwriter.Writer, 
 	}
 	{
 		const prefix string = ",\"modules\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		if in.Modules == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 			out.RawString("null")
 		} else {
@@ -701,42 +662,22 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoMemory7(out *jwriter.Writer, 
 	_ = first
 	{
 		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.Name))
 	}
 	{
 		const prefix string = ",\"uuid\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.UUID))
 	}
 	{
 		const prefix string = ",\"baseAddress\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.BaseAddress))
 	}
 	{
 		const prefix string = ",\"size\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float64(float64(in.Size))
 	}
 	out.RawByte('}')
@@ -810,12 +751,8 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoMemory8(out *jwriter.Writer, 
 	_ = first
 	if in.Profile != nil {
 		const prefix string = ",\"profile\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		first = false
+		out.RawString(prefix[1:])
 		(*in.Profile).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
@@ -944,12 +881,8 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoMemory10(out *jwriter.Writer,
 	_ = first
 	if in.Documents != 0 {
 		const prefix string = ",\"documents\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		first = false
+		out.RawString(prefix[1:])
 		out.Int64(int64(in.Documents))
 	}
 	if in.Nodes != 0 {
@@ -1102,12 +1035,8 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoMemory12(out *jwriter.Writer,
 	_ = first
 	if in.Profile != nil {
 		const prefix string = ",\"profile\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		first = false
+		out.RawString(prefix[1:])
 		(*in.Profile).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
@@ -1240,12 +1169,8 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoMemory14(out *jwriter.Writer,
 	_ = first
 	if in.Profile != nil {
 		const prefix string = ",\"profile\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		first = false
+		out.RawString(prefix[1:])
 		(*in.Profile).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
@@ -1332,4 +1257,63 @@ func (v *GetAllTimeSamplingProfileParams) UnmarshalJSON(data []byte) error {
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *GetAllTimeSamplingProfileParams) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjsonC5a4559bDecodeGithubComChromedpCdprotoMemory15(l, v)
+}
+func easyjsonC5a4559bDecodeGithubComChromedpCdprotoMemory16(in *jlexer.Lexer, out *ForciblyPurgeJavaScriptMemoryParams) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeString()
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjsonC5a4559bEncodeGithubComChromedpCdprotoMemory16(out *jwriter.Writer, in ForciblyPurgeJavaScriptMemoryParams) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	out.RawByte('}')
+}
+
+// MarshalJSON supports json.Marshaler interface
+func (v ForciblyPurgeJavaScriptMemoryParams) MarshalJSON() ([]byte, error) {
+	w := jwriter.Writer{}
+	easyjsonC5a4559bEncodeGithubComChromedpCdprotoMemory16(&w, v)
+	return w.Buffer.BuildBytes(), w.Error
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v ForciblyPurgeJavaScriptMemoryParams) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjsonC5a4559bEncodeGithubComChromedpCdprotoMemory16(w, v)
+}
+
+// UnmarshalJSON supports json.Unmarshaler interface
+func (v *ForciblyPurgeJavaScriptMemoryParams) UnmarshalJSON(data []byte) error {
+	r := jlexer.Lexer{Data: data}
+	easyjsonC5a4559bDecodeGithubComChromedpCdprotoMemory16(&r, v)
+	return r.Error()
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *ForciblyPurgeJavaScriptMemoryParams) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjsonC5a4559bDecodeGithubComChromedpCdprotoMemory16(l, v)
 }

@@ -20,6 +20,9 @@ import (
 // our safe branches, then add the remaining safe branches, ensuring uniqueness
 // along the way
 
+// if we find out we need to use one of these functions in the git.go file, we
+// can just pull them out of here and put them there and then call them from in here
+
 // BranchListBuilder returns a list of Branch objects for the current repo
 type BranchListBuilder struct {
 	Log        *logrus.Entry
@@ -35,16 +38,12 @@ func NewBranchListBuilder(log *logrus.Entry, gitCommand *commands.GitCommand) (*
 }
 
 func (b *BranchListBuilder) obtainCurrentBranch() *commands.Branch {
-	// I used go-git for this, but that breaks if you've just done a git init,
-	// even though you're on 'master'
-	branchName, err := b.GitCommand.OSCommand.RunCommandWithOutput("git symbolic-ref --short HEAD")
+	branchName, err := b.GitCommand.CurrentBranchName()
 	if err != nil {
-		branchName, err = b.GitCommand.OSCommand.RunCommandWithOutput("git rev-parse --short HEAD")
-		if err != nil {
-			panic(err.Error())
-		}
+		panic(err.Error())
 	}
-	return &commands.Branch{Name: strings.TrimSpace(branchName), Recency: "  *"}
+
+	return &commands.Branch{Name: strings.TrimSpace(branchName)}
 }
 
 func (b *BranchListBuilder) obtainReflogBranches() []*commands.Branch {
@@ -61,7 +60,7 @@ func (b *BranchListBuilder) obtainReflogBranches() []*commands.Branch {
 		branch := &commands.Branch{Name: branchName, Recency: timeNumber + timeUnit}
 		branches = append(branches, branch)
 	}
-	return branches
+	return uniqueByName(branches)
 }
 
 func (b *BranchListBuilder) obtainSafeBranches() []*commands.Branch {
@@ -103,17 +102,20 @@ func (b *BranchListBuilder) Build() []*commands.Branch {
 	branches := make([]*commands.Branch, 0)
 	head := b.obtainCurrentBranch()
 	safeBranches := b.obtainSafeBranches()
-	if len(safeBranches) == 0 {
-		return append(branches, head)
-	}
+
 	reflogBranches := b.obtainReflogBranches()
-	reflogBranches = uniqueByName(append([]*commands.Branch{head}, reflogBranches...))
 	for i, reflogBranch := range reflogBranches {
 		reflogBranches[i].Name = sanitisedReflogName(reflogBranch, safeBranches)
 	}
 
 	branches = b.appendNewBranches(branches, reflogBranches, safeBranches, true)
 	branches = b.appendNewBranches(branches, safeBranches, branches, false)
+
+	if len(branches) == 0 || branches[0].Name != head.Name {
+		branches = append([]*commands.Branch{head}, branches...)
+	}
+
+	branches[0].Recency = "  *"
 
 	return branches
 }

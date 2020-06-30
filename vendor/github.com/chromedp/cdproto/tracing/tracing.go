@@ -16,19 +16,23 @@ import (
 type EndParams struct{}
 
 // End stop trace events collection.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Tracing#method-end
 func End() *EndParams {
 	return &EndParams{}
 }
 
 // Do executes Tracing.end against the provided context.
-func (p *EndParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandEnd, nil, nil)
+func (p *EndParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandEnd, nil, nil)
 }
 
 // GetCategoriesParams gets supported tracing categories.
 type GetCategoriesParams struct{}
 
 // GetCategories gets supported tracing categories.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Tracing#method-getCategories
 func GetCategories() *GetCategoriesParams {
 	return &GetCategoriesParams{}
 }
@@ -42,10 +46,10 @@ type GetCategoriesReturns struct {
 //
 // returns:
 //   categories - A list of supported tracing categories.
-func (p *GetCategoriesParams) Do(ctxt context.Context, h cdp.Executor) (categories []string, err error) {
+func (p *GetCategoriesParams) Do(ctx context.Context) (categories []string, err error) {
 	// execute
 	var res GetCategoriesReturns
-	err = h.Execute(ctxt, CommandGetCategories, nil, &res)
+	err = cdp.Execute(ctx, CommandGetCategories, nil, &res)
 	if err != nil {
 		return nil, err
 	}
@@ -60,6 +64,8 @@ type RecordClockSyncMarkerParams struct {
 
 // RecordClockSyncMarker record a clock sync marker in the trace.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Tracing#method-recordClockSyncMarker
+//
 // parameters:
 //   syncID - The ID of this clock sync marker
 func RecordClockSyncMarker(syncID string) *RecordClockSyncMarkerParams {
@@ -69,16 +75,29 @@ func RecordClockSyncMarker(syncID string) *RecordClockSyncMarkerParams {
 }
 
 // Do executes Tracing.recordClockSyncMarker against the provided context.
-func (p *RecordClockSyncMarkerParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandRecordClockSyncMarker, p, nil)
+func (p *RecordClockSyncMarkerParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandRecordClockSyncMarker, p, nil)
 }
 
 // RequestMemoryDumpParams request a global memory dump.
-type RequestMemoryDumpParams struct{}
+type RequestMemoryDumpParams struct {
+	Deterministic bool `json:"deterministic,omitempty"` // Enables more deterministic results by forcing garbage collection
+}
 
 // RequestMemoryDump request a global memory dump.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Tracing#method-requestMemoryDump
+//
+// parameters:
 func RequestMemoryDump() *RequestMemoryDumpParams {
 	return &RequestMemoryDumpParams{}
+}
+
+// WithDeterministic enables more deterministic results by forcing garbage
+// collection.
+func (p RequestMemoryDumpParams) WithDeterministic(deterministic bool) *RequestMemoryDumpParams {
+	p.Deterministic = deterministic
+	return &p
 }
 
 // RequestMemoryDumpReturns return values.
@@ -92,10 +111,10 @@ type RequestMemoryDumpReturns struct {
 // returns:
 //   dumpGUID - GUID of the resulting global memory dump.
 //   success - True iff the global memory dump succeeded.
-func (p *RequestMemoryDumpParams) Do(ctxt context.Context, h cdp.Executor) (dumpGUID string, success bool, err error) {
+func (p *RequestMemoryDumpParams) Do(ctx context.Context) (dumpGUID string, success bool, err error) {
 	// execute
 	var res RequestMemoryDumpReturns
-	err = h.Execute(ctxt, CommandRequestMemoryDump, nil, &res)
+	err = cdp.Execute(ctx, CommandRequestMemoryDump, p, &res)
 	if err != nil {
 		return "", false, err
 	}
@@ -107,11 +126,14 @@ func (p *RequestMemoryDumpParams) Do(ctxt context.Context, h cdp.Executor) (dump
 type StartParams struct {
 	BufferUsageReportingInterval float64           `json:"bufferUsageReportingInterval,omitempty"` // If set, the agent will issue bufferUsage events at this interval, specified in milliseconds
 	TransferMode                 TransferMode      `json:"transferMode,omitempty"`                 // Whether to report trace events as series of dataCollected events or to save trace to a stream (defaults to ReportEvents).
+	StreamFormat                 StreamFormat      `json:"streamFormat,omitempty"`                 // Trace data format to use. This only applies when using ReturnAsStream transfer mode (defaults to json).
 	StreamCompression            StreamCompression `json:"streamCompression,omitempty"`            // Compression format to use. This only applies when using ReturnAsStream transfer mode (defaults to none)
 	TraceConfig                  *TraceConfig      `json:"traceConfig,omitempty"`
 }
 
 // Start start trace events collection.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Tracing#method-start
 //
 // parameters:
 func Start() *StartParams {
@@ -132,6 +154,13 @@ func (p StartParams) WithTransferMode(transferMode TransferMode) *StartParams {
 	return &p
 }
 
+// WithStreamFormat trace data format to use. This only applies when using
+// ReturnAsStream transfer mode (defaults to json).
+func (p StartParams) WithStreamFormat(streamFormat StreamFormat) *StartParams {
+	p.StreamFormat = streamFormat
+	return &p
+}
+
 // WithStreamCompression compression format to use. This only applies when
 // using ReturnAsStream transfer mode (defaults to none).
 func (p StartParams) WithStreamCompression(streamCompression StreamCompression) *StartParams {
@@ -146,8 +175,8 @@ func (p StartParams) WithTraceConfig(traceConfig *TraceConfig) *StartParams {
 }
 
 // Do executes Tracing.start against the provided context.
-func (p *StartParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandStart, p, nil)
+func (p *StartParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandStart, p, nil)
 }
 
 // Command names.

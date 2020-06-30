@@ -18,26 +18,30 @@ import (
 type DisableParams struct{}
 
 // Disable disables tracking security state changes.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Security#method-disable
 func Disable() *DisableParams {
 	return &DisableParams{}
 }
 
 // Do executes Security.disable against the provided context.
-func (p *DisableParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandDisable, nil, nil)
+func (p *DisableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDisable, nil, nil)
 }
 
 // EnableParams enables tracking security state changes.
 type EnableParams struct{}
 
 // Enable enables tracking security state changes.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Security#method-enable
 func Enable() *EnableParams {
 	return &EnableParams{}
 }
 
 // Do executes Security.enable against the provided context.
-func (p *EnableParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandEnable, nil, nil)
+func (p *EnableParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandEnable, nil, nil)
 }
 
 // SetIgnoreCertificateErrorsParams enable/disable whether all certificate
@@ -49,6 +53,8 @@ type SetIgnoreCertificateErrorsParams struct {
 // SetIgnoreCertificateErrors enable/disable whether all certificate errors
 // should be ignored.
 //
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Security#method-setIgnoreCertificateErrors
+//
 // parameters:
 //   ignore - If true, all certificate errors will be ignored.
 func SetIgnoreCertificateErrors(ignore bool) *SetIgnoreCertificateErrorsParams {
@@ -58,8 +64,8 @@ func SetIgnoreCertificateErrors(ignore bool) *SetIgnoreCertificateErrorsParams {
 }
 
 // Do executes Security.setIgnoreCertificateErrors against the provided context.
-func (p *SetIgnoreCertificateErrorsParams) Do(ctxt context.Context, h cdp.Executor) (err error) {
-	return h.Execute(ctxt, CommandSetIgnoreCertificateErrors, p, nil)
+func (p *SetIgnoreCertificateErrorsParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetIgnoreCertificateErrors, p, nil)
 }
 
 // Command names.

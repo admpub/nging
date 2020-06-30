@@ -3,6 +3,7 @@ package config
 import (
 	"bytes"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 
 	"github.com/shibukawa/configdir"
@@ -20,6 +21,7 @@ type AppConfig struct {
 	BuildSource string `long:"build-source" env:"BUILD_SOURCE" default:""`
 	UserConfig  *viper.Viper
 	AppState    *AppState
+	IsNewRepo   bool
 }
 
 // AppConfigurer interface allows individual app config structs to inherit Fields
@@ -36,13 +38,19 @@ type AppConfigurer interface {
 	WriteToUserConfig(string, string) error
 	SaveAppState() error
 	LoadAppState() error
+	SetIsNewRepo(bool)
+	GetIsNewRepo() bool
 }
 
 // NewAppConfig makes a new app config
-func NewAppConfig(name, version, commit, date string, buildSource string, debuggingFlag *bool) (*AppConfig, error) {
+func NewAppConfig(name, version, commit, date string, buildSource string, debuggingFlag bool) (*AppConfig, error) {
 	userConfig, err := LoadConfig("config", true)
 	if err != nil {
 		return nil, err
+	}
+
+	if os.Getenv("DEBUG") == "TRUE" {
+		debuggingFlag = true
 	}
 
 	appConfig := &AppConfig{
@@ -50,10 +58,11 @@ func NewAppConfig(name, version, commit, date string, buildSource string, debugg
 		Version:     version,
 		Commit:      commit,
 		BuildDate:   date,
-		Debug:       *debuggingFlag,
+		Debug:       debuggingFlag,
 		BuildSource: buildSource,
 		UserConfig:  userConfig,
 		AppState:    &AppState{},
+		IsNewRepo:   false,
 	}
 
 	if err := appConfig.LoadAppState(); err != nil {
@@ -61,6 +70,16 @@ func NewAppConfig(name, version, commit, date string, buildSource string, debugg
 	}
 
 	return appConfig, nil
+}
+
+// GetIsNewRepo returns known repo boolean
+func (c *AppConfig) GetIsNewRepo() bool {
+	return c.IsNewRepo
+}
+
+// SetIsNewRepo set if the current repo is known
+func (c *AppConfig) SetIsNewRepo(toSet bool) {
+	c.IsNewRepo = toSet
 }
 
 // GetDebug returns debug flag
@@ -153,7 +172,7 @@ func prepareConfigFile(filename string) (string, error) {
 }
 
 // LoadAndMergeFile Loads the config/state file, creating
-// the file as an empty one if it does not exist
+// the file has an empty one if it does not exist
 func LoadAndMergeFile(v *viper.Viper, filename string) error {
 	configPath, err := prepareConfigFile(filename)
 	if err != nil {
@@ -214,6 +233,8 @@ func GetDefaultConfig() []byte {
 		`gui:
   ## stuff relating to the UI
   scrollHeight: 2
+  scrollPastBottom: true
+  mouseEvents: false # will default to true when the feature is complete
   theme:
     activeBorderColor:
       - white
@@ -224,6 +245,9 @@ func GetDefaultConfig() []byte {
       - blue
   commitLength:
     show: true
+  git:
+    merging:
+      manualCommit: false
 update:
   method: prompt # can be: prompt | background | never
   days: 14 # how often a update is checked for
@@ -241,9 +265,9 @@ type AppState struct {
 
 func getDefaultAppState() []byte {
 	return []byte(`
-  lastUpdateCheck: 0
-  recentRepos: []
-`)
+    lastUpdateCheck: 0
+    recentRepos: []
+  `)
 }
 
 // // commenting this out until we use it again

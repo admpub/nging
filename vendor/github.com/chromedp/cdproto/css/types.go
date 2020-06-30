@@ -12,6 +12,8 @@ import (
 )
 
 // StyleSheetID [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-StyleSheetId
 type StyleSheetID string
 
 // String returns the StyleSheetID as string value.
@@ -23,6 +25,8 @@ func (t StyleSheetID) String() string {
 // extension, "user-agent" for user-agent stylesheets, "inspector" for
 // stylesheets created by the inspector (i.e. those holding the "via inspector"
 // rules), "regular" for regular stylesheets.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-StyleSheetOrigin
 type StyleSheetOrigin string
 
 // String returns the StyleSheetOrigin as string value.
@@ -71,18 +75,24 @@ func (t *StyleSheetOrigin) UnmarshalJSON(buf []byte) error {
 }
 
 // PseudoElementMatches CSS rule collection for a single pseudo style.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-PseudoElementMatches
 type PseudoElementMatches struct {
 	PseudoType cdp.PseudoType `json:"pseudoType"` // Pseudo element type.
 	Matches    []*RuleMatch   `json:"matches"`    // Matches of CSS rules applicable to the pseudo style.
 }
 
 // InheritedStyleEntry inherited CSS rule collection from ancestor node.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-InheritedStyleEntry
 type InheritedStyleEntry struct {
 	InlineStyle     *Style       `json:"inlineStyle,omitempty"` // The ancestor node's inline style, if any, in the style inheritance chain.
 	MatchedCSSRules []*RuleMatch `json:"matchedCSSRules"`       // Matches of CSS rules matching the ancestor node in the style inheritance chain.
 }
 
 // RuleMatch match data for a CSS rule.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-RuleMatch
 type RuleMatch struct {
 	Rule              *Rule   `json:"rule"`              // CSS rule in the match.
 	MatchingSelectors []int64 `json:"matchingSelectors"` // Matching selector indices in the rule's selectorList selectors (0-based).
@@ -90,18 +100,24 @@ type RuleMatch struct {
 
 // Value data for a simple selector (these are delimited by commas in a
 // selector list).
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-Value
 type Value struct {
 	Text  string       `json:"text"`            // Value text.
 	Range *SourceRange `json:"range,omitempty"` // Value range in the underlying resource (if available).
 }
 
 // SelectorList selector list data.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-SelectorList
 type SelectorList struct {
 	Selectors []*Value `json:"selectors"` // Selectors in the list.
 	Text      string   `json:"text"`      // Rule selector text.
 }
 
 // StyleSheetHeader CSS stylesheet metainformation.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-CSSStyleSheetHeader
 type StyleSheetHeader struct {
 	StyleSheetID StyleSheetID      `json:"styleSheetId"`           // The stylesheet identifier.
 	FrameID      cdp.FrameID       `json:"frameId"`                // Owner frame identifier.
@@ -116,9 +132,13 @@ type StyleSheetHeader struct {
 	StartLine    float64           `json:"startLine"`              // Line offset of the stylesheet within the resource (zero based).
 	StartColumn  float64           `json:"startColumn"`            // Column offset of the stylesheet within the resource (zero based).
 	Length       float64           `json:"length"`                 // Size of the content (in characters).
+	EndLine      float64           `json:"endLine"`                // Line offset of the end of the stylesheet within the resource (zero based).
+	EndColumn    float64           `json:"endColumn"`              // Column offset of the end of the stylesheet within the resource (zero based).
 }
 
 // Rule CSS rule representation.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-CSSRule
 type Rule struct {
 	StyleSheetID StyleSheetID     `json:"styleSheetId,omitempty"` // The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
 	SelectorList *SelectorList    `json:"selectorList"`           // Rule selector data.
@@ -128,6 +148,8 @@ type Rule struct {
 }
 
 // RuleUsage CSS coverage information.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-RuleUsage
 type RuleUsage struct {
 	StyleSheetID StyleSheetID `json:"styleSheetId"` // The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
 	StartOffset  float64      `json:"startOffset"`  // Offset of the start of the rule (including selector) from the beginning of the stylesheet.
@@ -136,6 +158,8 @@ type RuleUsage struct {
 }
 
 // SourceRange text range within a resource. All numbers are zero-based.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-SourceRange
 type SourceRange struct {
 	StartLine   int64 `json:"startLine"`   // Start line of range.
 	StartColumn int64 `json:"startColumn"` // Start column of range (inclusive).
@@ -144,19 +168,25 @@ type SourceRange struct {
 }
 
 // ShorthandEntry [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-ShorthandEntry
 type ShorthandEntry struct {
 	Name      string `json:"name"`                // Shorthand name.
 	Value     string `json:"value"`               // Shorthand value.
 	Important bool   `json:"important,omitempty"` // Whether the property has "!important" annotation (implies false if absent).
 }
 
-// ComputedProperty [no description].
-type ComputedProperty struct {
+// ComputedStyleProperty [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-CSSComputedStyleProperty
+type ComputedStyleProperty struct {
 	Name  string `json:"name"`  // Computed style property name.
 	Value string `json:"value"` // Computed style property value.
 }
 
 // Style CSS style representation.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-CSSStyle
 type Style struct {
 	StyleSheetID     StyleSheetID      `json:"styleSheetId,omitempty"` // The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
 	CSSProperties    []*Property       `json:"cssProperties"`          // CSS properties in the style.
@@ -166,6 +196,8 @@ type Style struct {
 }
 
 // Property CSS property declaration data.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-CSSProperty
 type Property struct {
 	Name      string       `json:"name"`                // The property name.
 	Value     string       `json:"value"`               // The property value.
@@ -178,6 +210,8 @@ type Property struct {
 }
 
 // Media CSS media rule descriptor.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-CSSMedia
 type Media struct {
 	Text         string        `json:"text"`                   // Media query text.
 	Source       MediaSource   `json:"source"`                 // Source of the media query: "mediaRule" if specified by a @media rule, "importRule" if specified by an @import rule, "linkedSheet" if specified by a "media" attribute in a linked stylesheet's LINK tag, "inlineSheet" if specified by a "media" attribute in an inline stylesheet's STYLE tag.
@@ -188,12 +222,16 @@ type Media struct {
 }
 
 // MediaQuery media query descriptor.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-MediaQuery
 type MediaQuery struct {
 	Expressions []*MediaQueryExpression `json:"expressions"` // Array of media query expressions.
 	Active      bool                    `json:"active"`      // Whether the media query condition is satisfied.
 }
 
 // MediaQueryExpression media query expression descriptor.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-MediaQueryExpression
 type MediaQueryExpression struct {
 	Value          float64      `json:"value"`                    // Media query expression value.
 	Unit           string       `json:"unit"`                     // Media query expression units.
@@ -204,6 +242,8 @@ type MediaQueryExpression struct {
 
 // PlatformFontUsage information about amount of glyphs that were rendered
 // with given font.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-PlatformFontUsage
 type PlatformFontUsage struct {
 	FamilyName   string  `json:"familyName"`   // Font's family name reported by platform.
 	IsCustomFont bool    `json:"isCustomFont"` // Indicates if the font was downloaded or resolved locally.
@@ -212,6 +252,8 @@ type PlatformFontUsage struct {
 
 // FontFace properties of a web font:
 // https://www.w3.org/TR/2008/REC-CSS2-20080411/fonts.html#font-descriptions.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-FontFace
 type FontFace struct {
 	FontFamily         string `json:"fontFamily"`         // The font-family.
 	FontStyle          string `json:"fontStyle"`          // The font-style.
@@ -224,12 +266,16 @@ type FontFace struct {
 }
 
 // KeyframesRule CSS keyframes rule representation.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-CSSKeyframesRule
 type KeyframesRule struct {
 	AnimationName *Value          `json:"animationName"` // Animation name.
 	Keyframes     []*KeyframeRule `json:"keyframes"`     // List of keyframes.
 }
 
 // KeyframeRule CSS keyframe rule representation.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-CSSKeyframeRule
 type KeyframeRule struct {
 	StyleSheetID StyleSheetID     `json:"styleSheetId,omitempty"` // The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
 	Origin       StyleSheetOrigin `json:"origin"`                 // Parent stylesheet's origin.
@@ -239,6 +285,8 @@ type KeyframeRule struct {
 
 // StyleDeclarationEdit a descriptor of operation to mutate style declaration
 // text.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-StyleDeclarationEdit
 type StyleDeclarationEdit struct {
 	StyleSheetID StyleSheetID `json:"styleSheetId"` // The css style sheet identifier.
 	Range        *SourceRange `json:"range"`        // The range of the style text in the enclosing stylesheet.
@@ -250,6 +298,8 @@ type StyleDeclarationEdit struct {
 // specified by a "media" attribute in a linked stylesheet's LINK tag,
 // "inlineSheet" if specified by a "media" attribute in an inline stylesheet's
 // STYLE tag.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#type-CSSMedia
 type MediaSource string
 
 // String returns the MediaSource as string value.

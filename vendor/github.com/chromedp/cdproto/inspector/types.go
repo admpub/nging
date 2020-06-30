@@ -11,6 +11,8 @@ import (
 )
 
 // DetachReason detach reason.
+//
+// See: ( -- none -- )
 type DetachReason string
 
 // String returns the DetachReason as string value.

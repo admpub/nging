@@ -16,16 +16,17 @@ package certmagic
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"log"
 	"sync"
 	"time"
 
-	"github.com/go-acme/lego/certcrypto"
-	"github.com/go-acme/lego/certificate"
-	"github.com/go-acme/lego/challenge"
-	"github.com/go-acme/lego/challenge/tlsalpn01"
-	"github.com/go-acme/lego/lego"
+	"github.com/go-acme/lego/v3/certcrypto"
+	"github.com/go-acme/lego/v3/certificate"
+	"github.com/go-acme/lego/v3/challenge"
+	"github.com/go-acme/lego/v3/challenge/tlsalpn01"
+	"github.com/go-acme/lego/v3/lego"
 )
 
 // Config configures a certificate manager instance.
@@ -130,6 +131,11 @@ type Config struct {
 	// If not set, the first matching certificate
 	// will be used.
 	CertSelection CertificateSelector
+
+	// TrustedRoots specifies a pool of root CA
+	// certificates to trust when communicating
+	// over a network to a peer.
+	TrustedRoots *x509.CertPool
 
 	// Pointer to the in-memory certificate cache
 	certCache *Cache
