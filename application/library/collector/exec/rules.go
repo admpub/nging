@@ -60,7 +60,13 @@ func (c *Rules) SetExitedFn(exitedFn func() bool) *Rules {
 	return c
 }
 
-func (c *Rules) Collect(debug bool, noticeSender sender.Notice, progress *notice.Progress) ([]Result, error) {
+func (c *Rules) Collect(debug bool, noticeSender sender.Notice, progress *notice.Progress) (rs []Result, err error) {
+	defer func() {
+		if panicErr := recover(); panicErr != nil {
+			err = fmt.Errorf(`%v`, panicErr)
+			return
+		}
+	}()
 	var fetch Fether
 	timeout := int(c.Rule.NgingCollectorPage.Timeout)
 	engine := c.Rule.NgingCollectorPage.Browser
