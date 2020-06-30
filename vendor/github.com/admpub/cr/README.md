@@ -1,6 +1,6 @@
 # cr
 
-Simple wrapper for [chromedp](https://github.com/knq/chromedp).
+Simple wrapper for [chromedp](https://github.com/chromedp/chromedp).
 
 Licence: BSD.
 

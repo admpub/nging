@@ -39,10 +39,10 @@
 			"revisionTime": "2019-03-31T07:20:55Z"
 		},
 		{
-			"checksumSHA1": "KPIrnKJapZc50MG/fi5jTyXuzpY=",
+			"checksumSHA1": "tc6lzRPBVYD4B1pRKhERu3/iliU=",
 			"path": "github.com/admpub/cr",
-			"revision": "792c02b601af9b137a1647d2bc676a60816660dd",
-			"revisionTime": "2018-10-15T14:17:59Z"
+			"revision": "55f4fec2c93b7b753d239581e8209ba8de151513",
+			"revisionTime": "2020-06-30T06:57:55Z"
 		},
 		{
 			"checksumSHA1": "nrFA3rA3ykxjxmM6vedAjsmgO24=",
@@ -4757,12 +4757,6 @@
 			"path": "golang.org/x/xerrors/internal",
 			"revision": "9bdfabe68543c54f90421aeb9a60ef8061b5b544",
 			"revisionTime": "2019-07-19T19:12:34Z"
-		},
-		{
-			"checksumSHA1": "h27Kg1CKOva8mNl87fWZ8pXNSZU=",
-			"path": "google.golang.org/protobuf/proto",
-			"revision": "d04d7b157bb510b1e0c10132224b616ac0e26b17",
-			"revisionTime": "2020-05-14T20:44:37Z"
 		},
 		{
 			"checksumSHA1": "8Vjxiz2qAtkg3zjJgoXiDq7AI64=",

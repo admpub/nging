@@ -93,7 +93,7 @@ func Import(ctx context.Context, cfg *driver.DbAuth, cacheDir string, files []st
 			}
 		case `.zip`:
 			dir := filepath.Join(cacheDir, fmt.Sprintf("upload-"+nowTime+"-%d", index))
-			err := archiver.Zip.Open(sqlFile, dir)
+			err := archiver.Unarchive(sqlFile, dir)
 			if err != nil {
 				loga.Error(err)
 				continue

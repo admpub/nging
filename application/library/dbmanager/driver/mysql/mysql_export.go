@@ -224,7 +224,7 @@ func (m *mySQL) Export() error {
 					Path:       zipFile,
 					Compressed: true,
 				}
-				err = archiver.Zip.Make(zipFile, sqlFiles)
+				err = archiver.Archive(sqlFiles, zipFile)
 				if err != nil {
 					loga.Error(err)
 					return err

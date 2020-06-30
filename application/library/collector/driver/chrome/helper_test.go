@@ -36,13 +36,13 @@ import (
 func getServiceList(res *string, pageURL string) chromedp.Tasks {
 	var buf []byte
 	return chromedp.Tasks{
-		chromedp.ActionFunc(func(ctx context.Context, h cdp.Executor) error {
+		chromedp.ActionFunc(func(ctx context.Context) error {
 			expr := cdp.TimeSinceEpoch(time.Now().Add(180 * 24 * time.Hour))
 			success, err := network.SetCookie("cookiename", "cookievalue").
 				WithExpires(&expr).
 				WithDomain("localhost").
 				WithHTTPOnly(true).
-				Do(ctx, h)
+				Do(ctx)
 			if err != nil {
 				return err
 			}
@@ -59,7 +59,7 @@ func getServiceList(res *string, pageURL string) chromedp.Tasks {
 		chromedp.SendKeys("comment", "www.admpub.com", chromedp.ByID),
 		chromedp.SendKeys("#commentform input[name=imgcode]", "12345", chromedp.ByQuery),
 		chromedp.Screenshot(`#commentform`, &buf, chromedp.ByQuery),
-		chromedp.ActionFunc(func(context.Context, cdp.Executor) error {
+		chromedp.ActionFunc(func(context.Context) error {
 			return ioutil.WriteFile("testimonials-submit-comment-before.png", buf, 0644)
 		}),
 		// chromedp.Submit("#commentform", chromedp.ByQuery),
@@ -79,7 +79,7 @@ func getServiceList(res *string, pageURL string) chromedp.Tasks {
 		// 获取文章标题
 		chromedp.OuterHTML("#content .post h2", res, chromedp.ByQuery),
 		chromedp.Screenshot(`#content`, &buf, chromedp.ByID),
-		chromedp.ActionFunc(func(context.Context, cdp.Executor) error {
+		chromedp.ActionFunc(func(context.Context) error {
 			return ioutil.WriteFile("testimonials.png", buf, 0644)
 		}),
 	}
@@ -89,14 +89,11 @@ func TestServiceList(t *testing.T) {
 	var html string
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	cdp, err := NewHeadless(ctx, "http://www.admpub.com")
-	//cdp, err := NewBrowser(ctx)
+	taskCtx, err := NewHeadless(ctx, "http://www.admpub.com")
 	if err != nil {
 		panic(err)
 	}
-	// cdp是chromedp实例
-	// ctx是创建cdp时使用的context.Context
-	err = cdp.Run(ctx, getServiceList(&html, "http://www.admpub.com/blog/post-255.html"))
+	err = chromedp.Run(taskCtx, getServiceList(&html, "http://www.admpub.com/blog/post-255.html"))
 	if err != nil {
 		panic(err)
 	}

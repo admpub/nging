@@ -23,62 +23,32 @@ import (
 
 	"github.com/admpub/log"
 	"github.com/chromedp/chromedp"
-
-	// runner用于配置headless chrome
-	"github.com/chromedp/chromedp/runner"
 )
 
 // NewHeadless 创建headless chrome实例
 // chromedp内部有自己的超时设置，你也可以通过ctx来设置更短的超时
-func NewHeadless(ctx context.Context, starturl string, extra ...runner.CommandLineOption) (*chromedp.CDP, error) {
+func NewHeadless(ctx context.Context, starturl string, extra ...chromedp.ExecAllocatorOption) (context.Context, error) {
 	// runner.Flag设置启动headless chrome时的命令行参数
 	// runner.URL设置启动时打开的URL
 	// Windows用户需要设置runner.Flag("disable-gpu", true)，具体信息参见文档的FAQ
-	options := []runner.CommandLineOption{
-		runner.Flag("headless", true),
-		runner.Flag("disable-gpu", true),
-		//runner.WindowSize(800, 600),
-		//runner.ProxyServer("代理服务器地址"),
-		runner.URL(starturl),
-		//runner.ExecPath(runner.LookChromeNames("设置新的Chrome浏览器启动程序路径")),
-	}
+	options := append(chromedp.DefaultExecAllocatorOptions[:],
+		chromedp.DisableGPU,
+		chromedp.Headless,
+		//chromedp.WindowSize(800, 600),
+		//chromedp.ProxyServer("代理服务器地址"),
+		//chromedp.ExecPath(runner.LookChromeNames("设置新的Chrome浏览器启动程序路径")),
+	)
 	for _, option := range extra {
 		options = append(options, option)
 	}
-	run, err := runner.New(options...)
+	allocCtx, _ := chromedp.NewExecAllocator(ctx, options...)
 
-	if err != nil {
-		return nil, err
-	}
+	// also set up a custom logger
+	taskCtx, _ := chromedp.NewContext(allocCtx, chromedp.WithLogf(log.Errorf))
 
-	// run.Start启动实例
-	err = run.Start(ctx)
-	if err != nil {
-		return nil, err
+	// ensure that the browser process is started
+	if err := chromedp.Run(taskCtx, chromedp.Navigate(starturl)); err != nil {
+		return taskCtx, err
 	}
-
-	// 默认情况chromedp会输出大量log，因为是示例所以选择屏蔽
-	// 使用runner初始化chromedp实例
-	// 实例在使用完毕后需要调用c.Shutdown()来释放资源
-	c, err := chromedp.New(ctx, chromedp.WithRunner(run), chromedp.WithErrorf(log.Errorf))
-	if err != nil {
-		return nil, err
-	}
-
-	return c, nil
-}
-
-// NewBrowser 创建chrome实例
-// chromedp内部有自己的超时设置，你也可以通过ctx来设置更短的超时
-func NewBrowser(ctx context.Context, extra ...chromedp.Option) (*chromedp.CDP, error) {
-	options := []chromedp.Option{
-		chromedp.WithErrorf(log.Errorf),
-	}
-	// 默认情况chromedp会输出大量log，因为是示例所以选择屏蔽
-	// 实例在使用完毕后需要调用c.Shutdown()来释放资源
-	c, err := chromedp.New(ctx, append(options, extra...)...)
-	if err != nil {
-		return nil, err
-	}
-	return c, nil
+	return taskCtx, nil
 }

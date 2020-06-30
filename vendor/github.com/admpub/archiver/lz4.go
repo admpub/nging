@@ -5,7 +5,7 @@ import (
 	"io"
 	"path/filepath"
 
-	"github.com/pierrec/lz4/v3"
+	"github.com/pierrec/lz4"
 )
 
 // Lz4 facilitates LZ4 compression.

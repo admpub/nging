@@ -71,7 +71,7 @@ func activateHTTPS(cctx caddy.Context) error {
 		certCache, ok := ctx.instance.Storage[caddytls.CertCacheInstStorageKey].(*certmagic.Cache)
 		ctx.instance.StorageMu.RUnlock()
 		if ok && certCache != nil {
-			err = certCache.RenewManagedCertificates()
+			err = certCache.RenewManagedCertificates(false)
 			if err != nil {
 				return err
 			}

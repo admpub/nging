@@ -19,12 +19,12 @@
 package chrome
 
 import (
+	"context"
 	"time"
 
 	"github.com/admpub/cr"
 	"github.com/admpub/nging/application/library/collector"
 	"github.com/chromedp/chromedp"
-	"github.com/chromedp/chromedp/runner"
 	"github.com/webx-top/echo"
 )
 
@@ -42,7 +42,6 @@ func New() *Chrome {
 type Chrome struct {
 	Browser *cr.Browser
 	*collector.Base
-	StartURL string
 }
 
 func (s *Chrome) Start(opt echo.Store) (err error) {
@@ -50,19 +49,16 @@ func (s *Chrome) Start(opt echo.Store) (err error) {
 		return
 	}
 	chromePath := opt.String(`chromePath`)
-	options := []runner.CommandLineOption{
-		//runner.WindowSize(800, 600),
+	options := []chromedp.ExecAllocatorOption{
+		chromedp.WindowSize(800, 600),
 	}
 	if len(chromePath) > 0 {
-		options = append(options, runner.ExecPath(runner.LookChromeNames(chromePath)))
-	}
-	if len(s.StartURL) > 0 {
-		options = append(options, runner.URL(s.StartURL))
+		options = append(options, chromedp.ExecPath(chromePath))
 	}
 	if len(s.Proxy) > 0 {
-		options = append(options, runner.ProxyServer(s.Proxy))
+		options = append(options, chromedp.ProxyServer(s.Proxy))
 	}
-	s.Browser, err = cr.New(options...)
+	s.Browser, err = cr.New(context.Background(), options...)
 	if err != nil {
 		return
 	}
