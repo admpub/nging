@@ -50,7 +50,7 @@ func (s *Chrome) Start(opt echo.Store) (err error) {
 	}
 	chromePath := opt.String(`chromePath`)
 	options := []chromedp.ExecAllocatorOption{
-		chromedp.WindowSize(800, 600),
+		//chromedp.WindowSize(800, 600),
 	}
 	if len(chromePath) > 0 {
 		options = append(options, chromedp.ExecPath(chromePath))
