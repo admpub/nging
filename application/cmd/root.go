@@ -25,7 +25,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mholt/certmagic"
+	"github.com/caddyserver/certmagic"
 	"github.com/spf13/cobra"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
@@ -152,12 +152,12 @@ func initCertMagic(c *engine.Config) error {
 		return err
 	}
 	if event.Develop { // use the staging endpoint while we're developing
-		certmagic.Default.CA = certmagic.LetsEncryptStagingCA
+		certmagic.DefaultACME.CA = certmagic.LetsEncryptStagingCA
 	} else {
-		certmagic.Default.CA = certmagic.LetsEncryptProductionCA
+		certmagic.DefaultACME.CA = certmagic.LetsEncryptProductionCA
 	}
-	certmagic.Default.Email = c.TLSEmail
-	certmagic.Default.Agreed = true
+	certmagic.DefaultACME.Email = c.TLSEmail
+	certmagic.DefaultACME.Agreed = true
 	certmagic.Default.Storage = fileStorage
 	ln, err := certmagic.Listen(c.TLSHosts)
 	if err == nil {

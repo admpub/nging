@@ -36,7 +36,7 @@ import (
 	"github.com/caddyserver/caddy"
 	_ "github.com/caddyserver/caddy/caddyhttp"
 	"github.com/caddyserver/caddy/caddytls"
-	"github.com/mholt/certmagic"
+	"github.com/caddyserver/certmagic"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	lumberjack "gopkg.in/natefinch/lumberjack.v2"
@@ -47,10 +47,10 @@ import (
 var (
 	DefaultConfig = &Config{
 		Agreed:                  true,
-		CAUrl:                   certmagic.Default.CA,
+		CAUrl:                   certmagic.DefaultACME.CA,
 		CATimeout:               int64(certmagic.HTTPTimeout),
-		DisableHTTPChallenge:    certmagic.Default.DisableHTTPChallenge,
-		DisableTLSALPNChallenge: certmagic.Default.DisableTLSALPNChallenge,
+		DisableHTTPChallenge:    certmagic.DefaultACME.DisableHTTPChallenge,
+		DisableTLSALPNChallenge: certmagic.DefaultACME.DisableTLSALPNChallenge,
 		ServerType:              `http`,
 		CPU:                     `100%`,
 		PidFile:                 `./caddy.pid`,
@@ -229,11 +229,11 @@ func (c *Config) Stop() error {
 }
 
 func (c *Config) Init() *Config {
-	certmagic.Default.Agreed = c.Agreed
-	certmagic.Default.CA = c.CAUrl
-	certmagic.Default.DisableHTTPChallenge = c.DisableHTTPChallenge
-	certmagic.Default.DisableTLSALPNChallenge = c.DisableTLSALPNChallenge
-	certmagic.Default.Email = c.CAEmail
+	certmagic.DefaultACME.Agreed = c.Agreed
+	certmagic.DefaultACME.CA = c.CAUrl
+	certmagic.DefaultACME.DisableHTTPChallenge = c.DisableHTTPChallenge
+	certmagic.DefaultACME.DisableTLSALPNChallenge = c.DisableTLSALPNChallenge
+	certmagic.DefaultACME.Email = c.CAEmail
 	certmagic.HTTPTimeout = time.Duration(c.CATimeout)
 	caddy.PidFile = c.PidFile
 	caddy.Quiet = c.Quiet

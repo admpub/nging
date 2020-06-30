@@ -1377,6 +1377,12 @@
 			"revisionTime": "2019-09-24T04:01:44Z"
 		},
 		{
+			"checksumSHA1": "qQLEKolRnzLp1+jRpGHBtJsdZJA=",
+			"path": "github.com/caddyserver/certmagic",
+			"revision": "77f91b9bbeea9a6372f9451f7c4e5928a640c081",
+			"revisionTime": "2020-06-11T21:30:56Z"
+		},
+		{
 			"checksumSHA1": "xhz5SprqgVRCF8BazSJkYBPdXYA=",
 			"origin": "github.com/go-acme/lego/vendor/github.com/cenkalti/backoff",
 			"path": "github.com/cenkalti/backoff",
@@ -3545,12 +3551,6 @@
 			"path": "github.com/valyala/bytebufferpool",
 			"revision": "cdfbe9377474227bb42120c1e22fd4433e7f69bf",
 			"revisionTime": "2018-09-05T18:22:47Z"
-		},
-		{
-			"checksumSHA1": "XUlODEeHXvPDrus/NY1Ah43Yf3I=",
-			"path": "github.com/valyala/fasthttp/fasthttputil",
-			"revision": "c88be72d77e6deede478719f77f7b83df75531e8",
-			"revisionTime": "2019-01-04T15:38:56Z"
 		},
 		{
 			"checksumSHA1": "j2z4b9z7tdkQ/TajhCrCTiKpZNw=",
