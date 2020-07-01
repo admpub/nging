@@ -1,5 +1,5 @@
 mkdir ../dist/${NGING_EXECUTOR}_${GOOS}_${GOARCH}
-xgo -go=1.13.3 -image=admpub/xgo -targets=${GOOS}/${GOARCH} -dest=../dist/${NGING_EXECUTOR}_${GOOS}_${GOARCH} -tags="bindata sqlite${BUILDTAGS}" -ldflags="-X main.BUILD_TIME=${NGING_BUILD} -X main.COMMIT=${NGING_COMMIT} -X main.VERSION=${NGING_VERSION} -X main.LABEL=${NGING_LABEL}" ../
+xgo -go=1.14.4 -image=admpub/xgo -targets=${GOOS}/${GOARCH} -dest=../dist/${NGING_EXECUTOR}_${GOOS}_${GOARCH} -tags="bindata sqlite${BUILDTAGS}" -ldflags="-X main.BUILD_TIME=${NGING_BUILD} -X main.COMMIT=${NGING_COMMIT} -X main.VERSION=${NGING_VERSION} -X main.LABEL=${NGING_LABEL}" ../
 mv ../dist/${NGING_EXECUTOR}_${GOOS}_${GOARCH}/${NGING_EXECUTOR}-${GOOS}-* ../dist/${NGING_EXECUTOR}_${GOOS}_${GOARCH}/${NGING_EXECUTOR}${NGINGEX}
 mkdir ../dist/${NGING_EXECUTOR}_${GOOS}_${GOARCH}/data
 mkdir ../dist/${NGING_EXECUTOR}_${GOOS}_${GOARCH}/data/logs
