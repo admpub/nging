@@ -154,7 +154,7 @@ func postAPIByWorker(data echo.Store, config *dbschema.NgingCollectorExport, log
 		logM.Status = `failure`
 	} else {
 		logM.Result = string(body)
-		if worker.Statuscode != http.StatusOK {
+		if worker.StatusCode != http.StatusOK {
 			logM.Status = `failure`
 			if sendErr := noticeSender(`[`+config.Name+`]导入API失败: `+logM.Result, 0); sendErr != nil {
 				return sendErr

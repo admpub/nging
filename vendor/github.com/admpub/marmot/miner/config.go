@@ -27,7 +27,7 @@ import (
 // Worker is the main object to sent http request and return result of response
 type Worker struct {
 	// In order fast chain func call I put the basic config below
-	Url          string         // Which url we want
+	URL          string         // Which url we want
 	Method       string         // Get/Post method
 	Header       http.Header    // Http header
 	Data         url.Values     // Sent by form data
@@ -41,16 +41,16 @@ type Worker struct {
 	Raw          []byte         // Raw data we get
 
 	// The name below is not so good but has already been used in many project, so bear it.
-	Preurl     string // Pre url
-	Statuscode int    // the last url response code, such as 404
-	Fetchtimes int    // Url fetch number times
-	Errortimes int    // Url fetch error times
-	Ipstring   string // worker proxy ip, just for user to record their proxy ip, default: localhost
+	PreURL     string // Pre url
+	StatusCode int    // the last url response code, such as 404
+	FetchTimes int    // Url fetch number times
+	ErrorTimes int    // Url fetch error times
+	IP         string // worker proxy ip, just for user to record their proxy ip, default: localhost
 
 	// AOP like Java
-	Ctx          context.Context
-	BeforeAction func(context.Context, *Worker)
-	AfterAction  func(context.Context, *Worker)
+	Ctx           context.Context
+	BeforeAction  func(context.Context, *Worker)
+	AfterAction   func(context.Context, *Worker)
 	PesterOptions []pester.ApplyOptions
 
 	// ResponseCharset is the character encoding of the response body.
@@ -61,7 +61,7 @@ type Worker struct {
 	// without explicit charset declaration. This feature uses https://github.com/webx-top/chardet
 	DetectCharset bool
 
-	MaxRetries  int
+	MaxRetries int
 
 	mux sync.RWMutex // Lock, execute concurrently please use worker Pool!
 }
@@ -126,7 +126,6 @@ func (worker *Worker) SetUserAgent(ua string) *Worker {
 	return worker
 }
 
-
 func (worker *Worker) SetRefer(refer string) *Worker {
 	worker.Header.Set("Referer", refer)
 	return worker
@@ -139,7 +138,7 @@ func (worker *Worker) SetHost(host string) *Worker {
 
 // SetURL at the same time SetHost
 func (worker *Worker) SetURL(url string) *Worker {
-	worker.Url = url
+	worker.URL = url
 	//https://www.zhihu.com/people/
 	temp := strings.Split(url, "//")
 	if len(temp) >= 2 {
@@ -220,7 +219,6 @@ func (worker *Worker) ClearAll() *Worker {
 	worker.BinaryData = []byte{}
 	return worker
 }
-
 
 // ClearCookie Clear Cookie
 func (worker *Worker) ClearCookie() *Worker {

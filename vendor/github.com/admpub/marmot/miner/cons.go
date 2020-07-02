@@ -69,7 +69,7 @@ func MergeCookie(before []*http.Cookie, after []*http.Cookie) []*http.Cookie {
 	}
 
 	for _, a := range after {
-		if a.Value != "" {
+		if len(a.Value) > 0 {
 			cs[a.Name] = a
 		}
 	}

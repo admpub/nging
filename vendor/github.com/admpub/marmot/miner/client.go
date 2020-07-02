@@ -22,11 +22,13 @@ import (
 	"time"
 
 	"github.com/admpub/log"
+	"github.com/webx-top/com"
+	"github.com/webx-top/com/httpClientOptions"
 	"golang.org/x/net/proxy"
 )
 
 var (
-	Debugf = log.Debugf
+	Debugf        = log.Debugf
 	CheckRedirect = func(req *http.Request, via []*http.Request) error {
 		Debugf("[GoWorker] Redirect:%v", req.URL)
 		return nil
@@ -42,15 +44,13 @@ func NewJar() *cookiejar.Jar {
 // Default Client
 var (
 	// Save Cookie, No timeout!
-	Client = &http.Client{
-		CheckRedirect: CheckRedirect,
-		Jar: NewJar(),
-	}
+	Client = NewClient()
 
 	// Not Save Cookie
-	NoCookieClient = &http.Client{
-		CheckRedirect: CheckRedirect,
-	}
+	NoCookieClient = NewHTTPClient(
+		httpClientOptions.Timeout(time.Second*time.Duration(DefaultTimeOut)),
+		httpClientOptions.CheckRedirect(CheckRedirect),
+	)
 )
 
 // NewProxyClient New a Proxy client, Default save cookie, Can timeout
@@ -83,33 +83,36 @@ func NewProxyClient(proxystring string, timeouts ...time.Duration) (*http.Client
 		return nil, errors.New("this proxy way not allow:" + prefix)
 	}
 
-	// This a alone client, diff from global client.
-	client := &http.Client{
-		// Allow redirect
-		CheckRedirect: CheckRedirect,
-		// Allow proxy: http, https, socks5
-		Transport: httpTransport,
-		// Allow keep cookie
-		Jar: NewJar(),
-		// Allow Timeout
-		Timeout: time.Second * time.Duration(DefaultTimeOut),
-	}
+	timeout := time.Second * time.Duration(DefaultTimeOut)
 	if len(timeouts) > 0 {
-		client.Timeout = timeouts[0]
+		timeout = timeouts[0]
 	}
-	return client, nil
+	return NewHTTPClient(
+		httpClientOptions.Transport(httpTransport),
+		httpClientOptions.Timeout(timeout),
+		httpClientOptions.CheckRedirect(CheckRedirect),
+		httpClientOptions.CookieJar(NewJar()),
+	), nil
 }
 
 // NewClient New a client, diff from proxy client
-func NewClient(timeout ...time.Duration) (*http.Client, error) {
-	client := &http.Client{
-		// Allow redirect
-		CheckRedirect: CheckRedirect,
-		Jar:     NewJar(),
-		Timeout: time.Second * time.Duration(DefaultTimeOut),
+func NewClient(timeouts ...time.Duration) *http.Client {
+	timeout := time.Second * time.Duration(DefaultTimeOut)
+	if len(timeouts) > 0 {
+		timeout = timeouts[0]
 	}
-	if len(timeout) > 0 {
-		client.Timeout = timeout[0]
+	return NewHTTPClient(
+		httpClientOptions.Timeout(timeout),
+		httpClientOptions.CheckRedirect(CheckRedirect),
+		httpClientOptions.CookieJar(NewJar()),
+	)
+}
+
+// NewHTTPClient New a client
+func NewHTTPClient(options ...com.HTTPClientOptions) *http.Client {
+	client := &http.Client{}
+	for _, option := range options {
+		option(client)
 	}
-	return client, nil
+	return client
 }

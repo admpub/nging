@@ -41,8 +41,8 @@ func init() {
 
 // ToString This make effect only your Worker exec serial! Attention!
 // Change Your Raw data To string
-func ToString() string {
-	return DefaultWorker.ToString()
+func String() string {
+	return DefaultWorker.String()
 }
 
 // JSONToString This make effect only your Worker exec serial! Attention!

@@ -271,7 +271,9 @@ func NewCookie(name string, value string, args ...interface{}) *http.Cookie {
 	return cookie
 }
 
-func HTTPClientWithTimeout(timeout time.Duration) *http.Client {
+type HTTPClientOptions func(c *http.Client)
+
+func HTTPClientWithTimeout(timeout time.Duration, options ...HTTPClientOptions) *http.Client {
 	client := &http.Client{
 		Transport: &http.Transport{
 			Dial: func(netw, addr string) (net.Conn, error) {
@@ -284,6 +286,9 @@ func HTTPClientWithTimeout(timeout time.Duration) *http.Client {
 			},
 			ResponseHeaderTimeout: timeout,
 		},
+	}
+	for _, opt := range options {
+		opt(client)
 	}
 	return client
 }

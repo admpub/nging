@@ -50,8 +50,8 @@ func CopyM(h http.Header) http.Header {
 	return h2
 }
 
-//TooSortSizes if a file size small than sizes(KB) ,it will be throw a error
-func TooSortSizes(data []byte, sizes float64) error {
+//TooShortSizes if a file size small than sizes(KB) ,it will be throw a error
+func TooShortSizes(data []byte, sizes float64) error {
 	if float64(len(data))/1000 < sizes {
 		return fmt.Errorf("FileSize:%d bytes,%d kb < %f kb dead too sort", len(data), len(data)/1000, sizes)
 	}
@@ -68,6 +68,9 @@ func OutputMaps(info string, args map[string][]string) {
 }
 
 func FixCharset(body []byte, extra interface{}, detectCharset bool, defaultEncoding ...string) ([]byte, error) {
+	if len(body) == 0 {
+		return body, nil
+	}
 
 	if len(defaultEncoding) > 0 && len(defaultEncoding[0]) > 0 {
 		return encodeBytes(body, "text/plain; charset="+defaultEncoding[0])
@@ -81,6 +84,15 @@ func FixCharset(body []byte, extra interface{}, detectCharset bool, defaultEncod
 	}
 
 	contentType = strings.ToLower(contentType)
+	if strings.Contains(contentType, "image/") ||
+		strings.Contains(contentType, "video/") ||
+		strings.Contains(contentType, "audio/") ||
+		strings.Contains(contentType, "font/") {
+		// These MIME types should not have textual data.
+
+		return body, nil
+	}
+
 	if !strings.Contains(contentType, "charset") {
 		if !detectCharset {
 			return body, nil

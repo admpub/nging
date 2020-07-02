@@ -40,13 +40,13 @@ func NewWorker(ipstring interface{}, timeout ...time.Duration) (*Worker, error) 
 		ipStr := ipstring.(string)
 		client, err := NewProxyClient(strings.ToLower(ipStr), timeout...)
 		worker.Client = client
-		worker.Ipstring = ipStr
+		worker.IP = ipStr
 		return worker, err
 	}
-	client, err := NewClient(timeout...)
+	client := NewClient(timeout...)
 	worker.Client = client
-	worker.Ipstring = "localhost"
-	return worker, err
+	worker.IP = "localhost"
+	return worker, nil
 }
 
 // New Alias Name for NewWorker
@@ -110,7 +110,7 @@ func (worker *Worker) GoByMethod(method string) (body []byte, e error) {
 
 // ToString This make effect only your worker exec serial! Attention!
 // Change Your Raw data To string
-func (worker *Worker) ToString() string {
+func (worker *Worker) String() string {
 	if worker.Raw == nil {
 		return ""
 	}
@@ -147,7 +147,7 @@ func (worker *Worker) sent(method, contentType string, binary bool) (body []byte
 	}
 
 	// For debug
-	Debugf("[GoWorker] %s %s", method, worker.Url)
+	Debugf("[GoWorker] %s %s", method, worker.URL)
 
 	// New a Request
 	var (
@@ -159,12 +159,12 @@ func (worker *Worker) sent(method, contentType string, binary bool) (body []byte
 	// suit for POSTJSON(), PostFile()
 	if len(worker.BinaryData) != 0 && binary {
 		contentReader := bytes.NewReader(worker.BinaryData)
-		request, err = http.NewRequest(method, worker.Url, contentReader)
+		request, err = http.NewRequest(method, worker.URL, contentReader)
 	} else if len(worker.Data) != 0 { // such POST() from table form
 		contentReader := strings.NewReader(worker.Data.Encode())
-		request, err = http.NewRequest(method, worker.Url, contentReader)
+		request, err = http.NewRequest(method, worker.URL, contentReader)
 	} else {
-		request, err = http.NewRequest(method, worker.Url, nil)
+		request, err = http.NewRequest(method, worker.URL, nil)
 	}
 	if err != nil {
 		return nil, err
@@ -197,10 +197,10 @@ func (worker *Worker) sent(method, contentType string, binary bool) (body []byte
 	var response *http.Response
 	// Do it
 	if worker.MaxRetries > 0 {
-        client := pester.NewExtendedClient(worker.Client)
+		client := pester.NewExtendedClient(worker.Client)
 		client.Concurrency = 1
-        client.MaxRetries = worker.MaxRetries
-        client.Backoff = pester.ExponentialBackoff
+		client.MaxRetries = worker.MaxRetries
+		client.Backoff = pester.ExponentialBackoff
 		client.KeepLog = true
 		client.SetOptions(worker.PesterOptions...)
 		response, err = client.Do(request)
@@ -216,7 +216,7 @@ func (worker *Worker) sent(method, contentType string, binary bool) (body []byte
 
 	if err != nil {
 		// I count Error time
-		worker.Errortimes++
+		worker.ErrorTimes++
 		return nil, err
 	}
 
@@ -234,10 +234,10 @@ func (worker *Worker) sent(method, contentType string, binary bool) (body []byte
 	}
 	worker.Raw = body
 
-	worker.Statuscode = response.StatusCode
-	worker.Preurl = worker.Url
+	worker.StatusCode = response.StatusCode
+	worker.PreURL = worker.URL
 	worker.Response = response
-	worker.Fetchtimes++
+	worker.FetchTimes++
 
 	// After action
 	if worker.AfterAction != nil {
