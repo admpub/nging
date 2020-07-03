@@ -22,38 +22,38 @@ export GOARCH=amd64
 source ${PWD}/inc-build.sh
 
 
-export GOOS=freebsd
-export GOARCH=386
-source ${PWD}/inc-build.sh
+# export GOOS=freebsd
+# export GOARCH=386
+# source ${PWD}/inc-build.sh
 
-export GOOS=freebsd
-export GOARCH=amd64
-source ${PWD}/inc-build.sh
+# export GOOS=freebsd
+# export GOARCH=amd64
+# source ${PWD}/inc-build.sh
 
-export GOOS=linux
-export GOARCH=arm
-source ${PWD}/inc-build.sh
+# export GOOS=linux
+# export GOARCH=arm
+# source ${PWD}/inc-build.sh
 
-export GOOS=linux
-export GOARCH=arm64
-source ${PWD}/inc-build.sh
+# export GOOS=linux
+# export GOARCH=arm64
+# source ${PWD}/inc-build.sh
 
-export GOOS=linux
-export GOARCH=mips
-source ${PWD}/inc-build.sh
+# export GOOS=linux
+# export GOARCH=mips
+# source ${PWD}/inc-build.sh
 
-export GOOS=linux
-export GOARCH=mips64
-source ${PWD}/inc-build.sh
+# export GOOS=linux
+# export GOARCH=mips64
+# source ${PWD}/inc-build.sh
 
 
-export GOOS=linux
-export GOARCH=mipsle
-source ${PWD}/inc-build.sh
+# export GOOS=linux
+# export GOARCH=mipsle
+# source ${PWD}/inc-build.sh
 
-export GOOS=linux
-export GOARCH=mips64le
-source ${PWD}/inc-build.sh
+# export GOOS=linux
+# export GOARCH=mips64le
+# source ${PWD}/inc-build.sh
 
 
 # windows 放到最后
