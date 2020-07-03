@@ -194,16 +194,16 @@
     {{if or $filterPath $filterContentType}}
     filter rule {
         {{if $filterPath}}
-        path                          {{$filterPath|ToHTML}}
+        path                          "{{$filterPath|AddSlashes|ToHTML}}"
         {{end}}
         {{if $filterContentType}}
-        content_type                  {{$filterContentType|ToHTML}}
+        content_type                  "{{$filterContentType|AddSlashes|ToHTML}}"
         {{end}}
         {{if and $filterPath $filterContentType}}
-        path_content_type_combination {{(GetSlice "filter_path_content_type_combination").GetByIndex $index |ToHTML}}
+        path_content_type_combination "{{(GetSlice "filter_path_content_type_combination").GetByIndex $index|ToHTML}}"
         {{end}}
-        search_pattern                {{$searchPattern |ToHTML}}
-        replacement                   {{(GetSlice "filter_replacement").GetByIndex $index |ToHTML}}
+        search_pattern                "{{$searchPattern|AddSlashes|ToHTML}}"
+        replacement                   "{{(GetSlice "filter_replacement").GetByIndex $index|AddSlashes|ToHTML}}"
     }
     {{end}}
     {{end}}
