@@ -83,7 +83,7 @@
                                 <a href="__BACKEND__/cloud/storage_file?id={{$id}}&do=download&path={{$pathPrefix}}{{$v.Name}}">{{$v.Name}}</a>
                                 {{end}}
                                 &nbsp;
-                                <a href="javascript:;" title="{{"重命名"|T}}" data-url="__BACKEND__/cloud/storage_file?id={{$id}}&do=rename&path={{$pathPrefix}}{{$v.Name}}" onclick="fileRename(this,'{{$v.Name}}',{{if $v.IsDir}}true{{else}}false{{end}})" data-toggle="tooltip">
+                                <a href="javascript:;" title="{{"重命名"|T}}" data-url="__BACKEND__/cloud/storage_file?id={{$id}}&do=rename&path={{$pathPrefix}}{{$v.Name}}" onclick="fileRename(this,'{{$pathPrefix}}{{$v.Name}}',{{if $v.IsDir}}true{{else}}false{{end}})" data-toggle="tooltip">
                                 <i class="fa fa-pencil"></i>
                                 </a>
                             </td>

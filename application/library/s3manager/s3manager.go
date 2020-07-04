@@ -120,23 +120,59 @@ func (s *S3Manager) Mkdir(ppath, newName string) error {
 	return err
 }
 
-func (s *S3Manager) Rename(ppath, newName string) error {
-	objectName := strings.TrimPrefix(ppath, `/`)
-	// Source object
-	src := minio.NewSourceInfo(s.bucketName, objectName, nil)
+func (s *S3Manager) renameDirectory(ppath, newName string) error {
+	dirName := strings.TrimPrefix(ppath, `/`)
 	newName = strings.TrimPrefix(newName, `/`)
-	dst, err := minio.NewDestinationInfo(s.bucketName, newName, nil, nil)
+	if !strings.HasSuffix(newName, `/`) {
+		newName += `/`
+	}
+	// 新建文件夹
+	_, err := s.client.PutObject(s.bucketName, newName, nil, 0, minio.PutObjectOptions{})
 	if err != nil {
 		return err
 	}
+	doneCh := make(chan struct{})
+	defer close(doneCh)
+	objectCh := s.client.ListObjectsV2(s.bucketName, dirName, true, doneCh)
+	for object := range objectCh {
+		if object.Err != nil {
+			continue
+		}
+		if len(object.Key) == 0 {
+			continue
+		}
+		dest := strings.TrimPrefix(object.Key, dirName)
+		dest = path.Join(newName, dest)
+		err = s.Rename(object.Key, dest)
+		if err != nil {
+			return err
+		}
+	}
+	return err
+}
 
-	// Initiate copy object.
-	err = s.client.CopyObject(dst, src)
+func (s *S3Manager) Rename(ppath, newName string) error {
+	if strings.HasSuffix(ppath, `/`) {
+		return s.renameDirectory(ppath, newName)
+	}
+	objectName := strings.TrimPrefix(ppath, `/`)
+	newName = strings.TrimPrefix(newName, `/`)
+	err := s.Copy(objectName, newName)
 	if err != nil {
 		return err
 	}
 	err = s.client.RemoveObject(s.bucketName, objectName)
 	return err
+}
+
+func (s *S3Manager) Copy(from, to string) error {
+	// Source object
+	src := minio.NewSourceInfo(s.bucketName, from, nil)
+	dst, err := minio.NewDestinationInfo(s.bucketName, to, nil, nil)
+	if err != nil {
+		return err
+	}
+	return s.client.CopyObject(dst, src)
 }
 
 func (s *S3Manager) Chown(ppath string, uid, gid int) error {
@@ -182,7 +218,6 @@ func (s *S3Manager) RemoveDir(ppath string) error {
 	if objectName == `/` {
 		return s.Clear()
 	}
-	s.client.RemoveObject(s.bucketName, objectName)
 	doneCh := make(chan struct{})
 	defer close(doneCh)
 	objectCh := s.client.ListObjectsV2(s.bucketName, objectName, true, doneCh)
@@ -198,7 +233,8 @@ func (s *S3Manager) RemoveDir(ppath string) error {
 			return err
 		}
 	}
-	return nil
+
+	return s.client.RemoveObject(s.bucketName, objectName)
 }
 
 // Clear 清空所有数据【慎用】
