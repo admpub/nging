@@ -144,7 +144,7 @@ func (s *S3Manager) renameDirectory(ppath, newName string) error {
 		dest := strings.TrimPrefix(object.Key, dirName)
 		dest = path.Join(newName, dest)
 		// println(object.Key, ` => `, dest)
-		err = s.Rename(object.Key, dest)
+		err = s.Move(object.Key, dest)
 		if err != nil {
 			return err
 		}
@@ -158,12 +158,15 @@ func (s *S3Manager) Rename(ppath, newName string) error {
 	}
 	objectName := strings.TrimPrefix(ppath, `/`)
 	newName = strings.TrimPrefix(newName, `/`)
-	err := s.Copy(objectName, newName)
+	return s.Move(objectName, newName)
+}
+
+func (s *S3Manager) Move(from, to string) error {
+	err := s.Copy(from, to)
 	if err != nil {
 		return err
 	}
-	err = s.client.RemoveObject(s.bucketName, objectName)
-	return err
+	return s.client.RemoveObject(s.bucketName, from)
 }
 
 func (s *S3Manager) Copy(from, to string) error {
