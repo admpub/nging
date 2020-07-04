@@ -138,18 +138,18 @@ func (s *S3Manager) renameDirectory(ppath, newName string) error {
 		if object.Err != nil {
 			continue
 		}
-		if len(object.Key) == 0 {
+		if len(object.Key) == 0 || object.Key == dirName {
 			continue
 		}
 		dest := strings.TrimPrefix(object.Key, dirName)
 		dest = path.Join(newName, dest)
-		println(object.Key, ` => `, dest)
+		// println(object.Key, ` => `, dest)
 		err = s.Rename(object.Key, dest)
 		if err != nil {
 			return err
 		}
 	}
-	return err
+	return s.client.RemoveObject(s.bucketName, dirName)
 }
 
 func (s *S3Manager) Rename(ppath, newName string) error {
