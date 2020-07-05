@@ -75,7 +75,16 @@ var (
 		}
 	}
 
-	globalVars = param.NewMap() //Custom global variable
+	//----------------
+	// Shortcut
+	//----------------
+
+	StringerMapStart = param.StringerMapStart
+	StoreStart       = param.StoreStart
+	HStart           = param.StoreStart
+
+	//Custom global variable
+	globalVars = param.NewMap()
 )
 
 func Set(key, value interface{}) {

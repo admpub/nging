@@ -63,6 +63,7 @@ func NewErrorWith(err error, msg string, code ...pkgCode.Code) *Error {
 type Error struct {
 	Code    pkgCode.Code
 	Message string
+	Zone    string
 	Extra   H
 	cause   error
 }
@@ -74,6 +75,16 @@ func (e *Error) Error() string {
 
 func (e *Error) Set(key string, value interface{}) *Error {
 	e.Extra.Set(key, value)
+	return e
+}
+
+func (e *Error) SetZone(zone string) *Error {
+	e.Zone = zone
+	return e
+}
+
+func (e *Error) SetError(err error) *Error {
+	e.cause = err
 	return e
 }
 

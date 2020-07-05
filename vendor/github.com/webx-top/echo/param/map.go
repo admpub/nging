@@ -11,6 +11,10 @@ var (
 	emptyStore = Store{}
 )
 
+func StoreStart() Store {
+	return Store{}
+}
+
 type Store map[string]interface{}
 
 func (s Store) Set(key string, value interface{}) Store {
@@ -146,12 +150,13 @@ func (s Store) Store(key string, defaults ...interface{}) Store {
 	return AsStore(s.Get(key, defaults...))
 }
 
-func (s Store) Delete(keys ...string) {
+func (s Store) Delete(keys ...string) Store {
 	for _, key := range keys {
 		if _, y := s[key]; y {
 			delete(s, key)
 		}
 	}
+	return s
 }
 
 // MarshalXML allows type Store to be used with xml.Marshal

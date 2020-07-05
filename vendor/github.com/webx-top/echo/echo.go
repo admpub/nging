@@ -218,7 +218,7 @@ func (e *Echo) DefaultHTTPErrorHandler(err error, c Context) {
 			}
 		}
 	}
-	e.logger.Debug(err)
+	e.logger.Debug(err, `: `, c.Request().URL().String())
 }
 
 // SetHTTPErrorHandler registers a custom Echo.HTTPErrorHandler.

@@ -87,6 +87,10 @@ func (c *xContext) SetEmitter(emitter events.Emitter) {
 	c.Emitter = emitter
 }
 
+func (c *xContext) Handler() Handler {
+	return c.handler
+}
+
 func (c *xContext) Deadline() (deadline time.Time, ok bool) {
 	return c.context.Deadline()
 }

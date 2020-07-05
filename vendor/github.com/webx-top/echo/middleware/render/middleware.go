@@ -107,7 +107,7 @@ func HTTPErrorHandler(opt *Options) echo.HTTPErrorHandler {
 	tmplNum := len(opt.ErrorPages)
 	return func(err error, c echo.Context) {
 		if err != nil {
-			defer c.Logger().Debug(err)
+			defer c.Logger().Debug(err, `: `, c.Request().URL().String())
 		}
 		if c.Response().Committed() {
 			return

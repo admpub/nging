@@ -135,7 +135,7 @@ func (d *RawData) SetError(err error, args ...int) Data {
 	}
 	switch v := err.(type) {
 	case *Error:
-		d.SetInfo(v.Message, v.Code.Int()).SetByMap(v.Extra)
+		d.SetInfo(v.Message, v.Code.Int()).SetByMap(v.Extra).SetZone(v.Zone)
 	case *RawData:
 		if v != d {
 			d.copyFrom(v)

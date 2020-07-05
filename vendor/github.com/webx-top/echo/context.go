@@ -21,6 +21,7 @@ type Context interface {
 	context.Context
 	events.Emitter
 	SetEmitter(events.Emitter)
+	Handler() Handler
 
 	//Transaction
 	SetTransaction(t Transaction)
