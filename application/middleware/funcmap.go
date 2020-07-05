@@ -45,6 +45,9 @@ import (
 var DefaultAvatarURL = `/public/assets/backend/images/user_128.png`
 
 func ErrorPageFunc(c echo.Context) error {
+	c.SetFunc(`Context`, func() echo.Context {
+		return c
+	})
 	c.SetFunc(`URLFor`, subdomains.Default.URL)
 	c.SetFunc(`IsMessage`, common.IsMessage)
 	c.SetFunc(`Stored`, c.Stored)
