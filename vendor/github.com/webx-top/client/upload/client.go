@@ -70,15 +70,22 @@ func (r *Result) FileIdString() string {
 	return fmt.Sprintf(`%d`, r.FileID)
 }
 
-func New(object Client) *BaseClient {
-	return &BaseClient{Object: object}
+func New(object Client, formFields ...string) *BaseClient {
+	formField := DefaultFormField
+	if len(formFields) > 0 {
+		formField = formFields[0]
+	}
+	return &BaseClient{Object: object, FormField: formField}
 }
+
+var DefaultFormField = `filedata`
 
 type BaseClient struct {
 	Data *Result
 	echo.Context
-	Object Client
-	err    error
+	Object    Client
+	FormField string // 表单文件字段名
+	err       error
 }
 
 func (a *BaseClient) Init(ctx echo.Context, res *Result) {
@@ -87,7 +94,10 @@ func (a *BaseClient) Init(ctx echo.Context, res *Result) {
 }
 
 func (a *BaseClient) Name() string {
-	return "filedata"
+	if len(a.FormField) == 0 {
+		return DefaultFormField
+	}
+	return a.FormField
 }
 
 func (a *BaseClient) SetError(err error) Client {

@@ -3570,46 +3570,46 @@
 			"revisionTime": "2018-09-30T19:44:53Z"
 		},
 		{
-			"checksumSHA1": "ZPbgLAOKSq4tAKYdPQDCVZWI6Zs=",
+			"checksumSHA1": "mp58lQ3nfpBltq5EFziuelHunKE=",
 			"path": "github.com/webx-top/client/upload",
-			"revision": "e05baa55c5d52b1a51b17f84047bc38667c2f59d",
-			"revisionTime": "2020-07-06T04:41:35Z"
+			"revision": "cc986086b9a3a91df5d15388bd1cb2464ee0025c",
+			"revisionTime": "2020-07-06T05:23:43Z"
 		},
 		{
 			"checksumSHA1": "K3MSyusucwxldAdCPhkqTM9b+nI=",
 			"path": "github.com/webx-top/client/upload/driver",
-			"revision": "e05baa55c5d52b1a51b17f84047bc38667c2f59d",
-			"revisionTime": "2020-07-06T04:41:35Z"
+			"revision": "cc986086b9a3a91df5d15388bd1cb2464ee0025c",
+			"revisionTime": "2020-07-06T05:23:43Z"
 		},
 		{
-			"checksumSHA1": "C+P7AewVOh5MrEYRCiM+EzEaGwA=",
+			"checksumSHA1": "juoF/sWQrnPu+q27CjHr2locym0=",
 			"path": "github.com/webx-top/client/upload/driver/markdown",
-			"revision": "e05baa55c5d52b1a51b17f84047bc38667c2f59d",
-			"revisionTime": "2020-07-06T04:41:35Z"
+			"revision": "cc986086b9a3a91df5d15388bd1cb2464ee0025c",
+			"revisionTime": "2020-07-06T05:23:43Z"
 		},
 		{
-			"checksumSHA1": "q/Vnvvo9FLvKngY+TxfPe/6fpxo=",
+			"checksumSHA1": "4e61W5AcUwYIDEbABjWbemHaqMo=",
 			"path": "github.com/webx-top/client/upload/driver/simple",
-			"revision": "e05baa55c5d52b1a51b17f84047bc38667c2f59d",
-			"revisionTime": "2020-07-06T04:41:35Z"
+			"revision": "cc986086b9a3a91df5d15388bd1cb2464ee0025c",
+			"revisionTime": "2020-07-06T05:23:43Z"
 		},
 		{
-			"checksumSHA1": "mgYLztuI62glG36ww/wwdh98/9U=",
+			"checksumSHA1": "yf9e+l7prRfxe+rCIZH8ucGcVxU=",
 			"path": "github.com/webx-top/client/upload/driver/webuploader",
-			"revision": "e05baa55c5d52b1a51b17f84047bc38667c2f59d",
-			"revisionTime": "2020-07-06T04:41:35Z"
+			"revision": "cc986086b9a3a91df5d15388bd1cb2464ee0025c",
+			"revisionTime": "2020-07-06T05:23:43Z"
 		},
 		{
-			"checksumSHA1": "hlYqoKWgIFVcEhVV9Squk/1T+Hc=",
+			"checksumSHA1": "6WrkXJWMrCOVKVWyiYwnXAGw+Ps=",
 			"path": "github.com/webx-top/client/upload/driver/xheditor",
-			"revision": "e05baa55c5d52b1a51b17f84047bc38667c2f59d",
-			"revisionTime": "2020-07-06T04:41:35Z"
+			"revision": "cc986086b9a3a91df5d15388bd1cb2464ee0025c",
+			"revisionTime": "2020-07-06T05:23:43Z"
 		},
 		{
 			"checksumSHA1": "+YTp3f1lAEmXIzAoFUNuCX8Rr+c=",
 			"path": "github.com/webx-top/client/upload/watermark",
-			"revision": "e05baa55c5d52b1a51b17f84047bc38667c2f59d",
-			"revisionTime": "2020-07-06T04:41:35Z"
+			"revision": "cc986086b9a3a91df5d15388bd1cb2464ee0025c",
+			"revisionTime": "2020-07-06T05:23:43Z"
 		},
 		{
 			"checksumSHA1": "VAtcif0KItDYL6j76JBKn86cYlw=",

@@ -32,18 +32,16 @@ func init() {
 	})
 }
 
+var FormField = `editormd-image-file`
+
 func New() uploadClient.Client {
 	client := &Markdown{}
-	client.BaseClient = uploadClient.New(client)
+	client.BaseClient = uploadClient.New(client, FormField)
 	return client
 }
 
 type Markdown struct {
 	*uploadClient.BaseClient
-}
-
-func (a *Markdown) Name() string {
-	return "editormd-image-file"
 }
 
 func (a *Markdown) Result() (r string) {
@@ -55,7 +53,7 @@ func (a *Markdown) Result() (r string) {
 	dialogID := a.Form(`dialog_id`)
 	if len(callback) > 0 && len(dialogID) > 0 {
 		//跨域上传返回操作
-		nextURL := callback + "?dialog_id=" + dialogID + "&temp=" + time.Now().String() + "&success=" + succed + "&message=" + url.QueryEscape(a.Error()) + "&url=" + a.Data.FileURL
+		nextURL := callback + "?dialog_id=" + dialogID + "&temp=" + time.Now().Format(`20060102150405`) + "&success=" + succed + "&message=" + url.QueryEscape(a.Error()) + "&url=" + a.Data.FileURL
 		a.Context.Response().Redirect(nextURL, http.StatusFound)
 	} else {
 		r = `{"success":` + succed + `,"message":"` + a.Error() + `","url":"` + a.Data.FileURL + `","id":"` + a.Data.FileIdString() + `"}`

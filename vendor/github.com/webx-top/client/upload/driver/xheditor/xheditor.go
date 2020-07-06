@@ -30,18 +30,16 @@ func init() {
 	})
 }
 
+var FormField = `filedata`
+
 func New() uploadClient.Client {
 	client := &XhEditor{}
-	client.BaseClient = uploadClient.New(client)
+	client.BaseClient = uploadClient.New(client, FormField)
 	return client
 }
 
 type XhEditor struct {
 	*uploadClient.BaseClient
-}
-
-func (a *XhEditor) Name() string {
-	return "filedata"
 }
 
 func (a *XhEditor) Result() (r string) {

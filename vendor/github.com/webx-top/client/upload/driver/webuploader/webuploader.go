@@ -28,18 +28,16 @@ func init() {
 	})
 }
 
+var FormField = `file`
+
 func New() uploadClient.Client {
 	client := &Webuploader{}
-	client.BaseClient = uploadClient.New(client)
+	client.BaseClient = uploadClient.New(client, FormField)
 	return client
 }
 
 type Webuploader struct {
 	*uploadClient.BaseClient
-}
-
-func (a *Webuploader) Name() string {
-	return "file"
 }
 
 func (a *Webuploader) Result() (r string) {

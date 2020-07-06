@@ -20,7 +20,6 @@ package upload
 
 import (
 	"bytes"
-	"errors"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -28,6 +27,7 @@ import (
 	"strings"
 
 	"github.com/admpub/checksum"
+	"github.com/admpub/errors"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
 )
@@ -129,6 +129,7 @@ func Receive(name string, ctx echo.Context) (f ReadCloserWithSize, fileName stri
 		var file multipart.File
 		file, header, err = ctx.Request().FormFile(name)
 		if err != nil {
+			err = errors.WithMessage(err, name)
 			return
 		}
 		fileName = header.Filename

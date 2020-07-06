@@ -28,18 +28,16 @@ func init() {
 	})
 }
 
+var FormField = `filedata`
+
 func New() uploadClient.Client {
 	client := &Simple{}
-	client.BaseClient = uploadClient.New(client)
+	client.BaseClient = uploadClient.New(client, FormField)
 	return client
 }
 
 type Simple struct {
 	*uploadClient.BaseClient
-}
-
-func (a *Simple) Name() string {
-	return "filedata"
 }
 
 func (a *Simple) Result() (r string) {
