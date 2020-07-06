@@ -581,15 +581,31 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 	};
 	if (managerUrl) defaults.file_picker_callback = filePickerCallback;
 	if (uploadUrl) defaults.images_upload_handler = imagesUploadHandler;
+	var id = App.utils.elemToId(elem).replace(/^#/,'');
 	//see document: https://www.tiny.cloud/docs/integrations/jquery/
 	$(elem).tinymce($.extend({}, defaults, options || {}));
+	$(elem).data('editor-name', 'tinymce');
+	var editor = tinymce.get(id);
+	$(elem).data("editor-object", editor);
 };
 
+App.editor.switcher = function(swicherElem, contentElem, defaultEditorName) {
+	$(swicherElem).on('click', function(){
+		if ($(this).prop('checked')) {
+			var etype=$(this).val();
+			var texta=$(contentElem);
+			var editorName=$(this).data('editor-name') || defaultEditorName;
+			texta.data("editor-type",etype);
+			return App.editor.switch(editorName, texta);
+		};
+	});
+	$(swicherElem).filter(':checked').trigger('click');
+};
 
 //例如：App.editor.switch($('textarea'))
-App.editor.switch = function (texta, cancelFn, tips) {
+App.editor.switch = function (editorName, texta, cancelFn, tips) {
 	var upurl = texta.attr('action') || texta.data("upload-url") || '!' + App.editor.browsingFileURL + '?size=12&multiple=1',
-		etype = texta.data("editor"),
+		etype = texta.data("editor-type"),
 		ename = texta.data("editor-name"),
 		eobject = texta.data("editor-object"),
 		ctype = texta.data("current-editor");
@@ -603,6 +619,36 @@ App.editor.switch = function (texta, cancelFn, tips) {
 	var content = texta.data("content-elem"), cElem = content;
 	if (content) cElem = App.loader.parseTmpl(content, { type: etype });
 	var obj = texta.get(0);
+	var removeEditor = function(){
+		switch (ename) {
+			case 'xheditor':
+				if (typeof (texta.xheditor) != 'undefined') texta.xheditor(false);
+				break;
+			case 'ueditor':
+				eobject && eobject.destroy();
+				break;
+			case 'tinymce': // doc: https://www.tiny.cloud/docs/api/tinymce/tinymce.editor/#remove
+				eobject && eobject.remove();
+				break;
+			default:
+		}
+	};
+	var createHTMLEditor = function(editorName){
+		switch (editorName) {
+			case 'ueditor':
+				App.editor.ueditor(obj, upurl);
+				break;
+			case 'tinymce':
+				App.editor.tinymce(obj, upurl);
+				texta.next('.tox-tinymce').show();
+				break;
+			default: // xheditor
+				App.editor.xheditor(obj, upurl);
+		}
+	}
+	var createMarkdownEditor = function(){
+		App.editor.markdown(obj, upurl);
+	}
 	switch (etype) {
 		case 'markdown':
 			if (tips) {
@@ -614,25 +660,25 @@ App.editor.switch = function (texta, cancelFn, tips) {
 					}
 				}
 			}
-			switch (ename) {
-				case 'xheditor':
-					if (typeof (texta.xheditor) != 'undefined') {
-						texta.xheditor(false);
-					}
-					break;
-				case 'ueditor':
-					eobject.destroy();
-					break;
-			}
+			removeEditor();
 			if (cElem && $(cElem).length > 0) {
 				texta.text($(cElem).val());
 				texta.val($(cElem).val());
 			}
-
-			App.editor.markdown(obj, upurl);
-			texta.data("current-editor", etype);
+			createMarkdownEditor();
+			texta.data("current-editor-type", etype);
 			break;
-		default:
+		case 'text':
+			removeEditor();
+			if (cElem && $(cElem).length > 0) {
+				texta.text($(cElem).val());
+				texta.val($(cElem).val());
+			}
+			texta.parent().removeAttr('class');
+			texta.attr('class', className).show().siblings().remove();
+			texta.data("current-editor-type", etype);
+			break;
+		default: // html
 			if (cElem && $(cElem).length > 0) {
 				var cc = App.loader.parseTmpl(content, { type: ctype });
 				if (cc && $(cc).length > 0) {
@@ -648,9 +694,8 @@ App.editor.switch = function (texta, cancelFn, tips) {
 			}
 			texta.parent().removeAttr('class');
 			texta.attr('class', className).siblings().remove();
-			App.editor.xheditor(obj, upurl);
-			//App.editor.initUE(obj, upurl);
-			texta.data("current-editor", "html");
+			createHTMLEditor(editorName);
+			texta.data("current-editor-type", "html");
 	};
 	return true;
 };
