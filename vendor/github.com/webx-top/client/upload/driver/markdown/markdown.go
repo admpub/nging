@@ -19,6 +19,7 @@
 package markdown
 
 import (
+	"net/http"
 	"net/url"
 	"time"
 
@@ -55,7 +56,7 @@ func (a *Markdown) Result() (r string) {
 	if len(callback) > 0 && len(dialogID) > 0 {
 		//跨域上传返回操作
 		nextURL := callback + "?dialog_id=" + dialogID + "&temp=" + time.Now().String() + "&success=" + succed + "&message=" + url.QueryEscape(a.Error()) + "&url=" + a.Data.FileURL
-		a.Redirect(nextURL)
+		a.Context.Response().Redirect(nextURL, http.StatusFound)
 	} else {
 		r = `{"success":` + succed + `,"message":"` + a.Error() + `","url":"` + a.Data.FileURL + `","id":"` + a.Data.FileIdString() + `"}`
 	}

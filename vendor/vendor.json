@@ -3572,44 +3572,44 @@
 		{
 			"checksumSHA1": "ZPbgLAOKSq4tAKYdPQDCVZWI6Zs=",
 			"path": "github.com/webx-top/client/upload",
-			"revision": "5db467b092584c99e7efc170604873b2b27daeab",
-			"revisionTime": "2020-04-18T07:17:00Z"
+			"revision": "e05baa55c5d52b1a51b17f84047bc38667c2f59d",
+			"revisionTime": "2020-07-06T04:41:35Z"
 		},
 		{
 			"checksumSHA1": "K3MSyusucwxldAdCPhkqTM9b+nI=",
 			"path": "github.com/webx-top/client/upload/driver",
-			"revision": "5db467b092584c99e7efc170604873b2b27daeab",
-			"revisionTime": "2020-04-18T07:17:00Z"
+			"revision": "e05baa55c5d52b1a51b17f84047bc38667c2f59d",
+			"revisionTime": "2020-07-06T04:41:35Z"
 		},
 		{
-			"checksumSHA1": "7PGKttkHoOirHzJ9dGtUsw7QTU8=",
+			"checksumSHA1": "C+P7AewVOh5MrEYRCiM+EzEaGwA=",
 			"path": "github.com/webx-top/client/upload/driver/markdown",
-			"revision": "5db467b092584c99e7efc170604873b2b27daeab",
-			"revisionTime": "2020-04-18T07:17:00Z"
+			"revision": "e05baa55c5d52b1a51b17f84047bc38667c2f59d",
+			"revisionTime": "2020-07-06T04:41:35Z"
 		},
 		{
 			"checksumSHA1": "q/Vnvvo9FLvKngY+TxfPe/6fpxo=",
 			"path": "github.com/webx-top/client/upload/driver/simple",
-			"revision": "5db467b092584c99e7efc170604873b2b27daeab",
-			"revisionTime": "2020-04-18T07:17:00Z"
+			"revision": "e05baa55c5d52b1a51b17f84047bc38667c2f59d",
+			"revisionTime": "2020-07-06T04:41:35Z"
 		},
 		{
 			"checksumSHA1": "mgYLztuI62glG36ww/wwdh98/9U=",
 			"path": "github.com/webx-top/client/upload/driver/webuploader",
-			"revision": "5db467b092584c99e7efc170604873b2b27daeab",
-			"revisionTime": "2020-04-18T07:17:00Z"
+			"revision": "e05baa55c5d52b1a51b17f84047bc38667c2f59d",
+			"revisionTime": "2020-07-06T04:41:35Z"
 		},
 		{
 			"checksumSHA1": "hlYqoKWgIFVcEhVV9Squk/1T+Hc=",
 			"path": "github.com/webx-top/client/upload/driver/xheditor",
-			"revision": "5db467b092584c99e7efc170604873b2b27daeab",
-			"revisionTime": "2020-04-18T07:17:00Z"
+			"revision": "e05baa55c5d52b1a51b17f84047bc38667c2f59d",
+			"revisionTime": "2020-07-06T04:41:35Z"
 		},
 		{
 			"checksumSHA1": "+YTp3f1lAEmXIzAoFUNuCX8Rr+c=",
 			"path": "github.com/webx-top/client/upload/watermark",
-			"revision": "5db467b092584c99e7efc170604873b2b27daeab",
-			"revisionTime": "2020-04-18T07:17:00Z"
+			"revision": "e05baa55c5d52b1a51b17f84047bc38667c2f59d",
+			"revisionTime": "2020-07-06T04:41:35Z"
 		},
 		{
 			"checksumSHA1": "VAtcif0KItDYL6j76JBKn86cYlw=",
