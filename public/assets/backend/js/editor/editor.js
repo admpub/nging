@@ -451,7 +451,7 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 	App.loader.defined(typeof ($.fn.tinymce), 'tinymce');
 	if (!uploadUrl) uploadUrl = $(elem).attr('action');
 	var managerUrl = App.editor.browsingFileURL;
-	if (uploadUrl.substr(0, 1) == '!') {
+	if (uploadUrl && uploadUrl.substr(0, 1) == '!') {
 		managerUrl = uploadUrl.substr(1);
 		uploadUrl = $(elem).data('upload-url');
 	}
