@@ -127,6 +127,14 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 		if (!isManager) uploadUrl += 'format=json&';
 		uploadUrl += 'filetype=image&client=markdown';
 	}
+	var browseFn = function(ed) {
+		App.editor.finderDialog(App.editor.browsingFileURL + '?from=parent&size=12&filetype=image&multiple=0', function(fileList){
+			if (fileList.length <= 0) {
+				return App.message({ type: 'error', text: App.t('没有选择任何选项！') });
+			}
+			ed.dialog.find("[data-url]").val(fileList[0]);
+		}, 100000);
+	};
 	var container = $(editorElement).parent(),
 		containerId = container.attr('id');
 	if (containerId === undefined) {
@@ -138,7 +146,7 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 		width: "100%",
 		height: container.height(),
 		path: path + 'lib/',
-		markdown: $(editorElement).text(),
+		markdown: $(editorElement).val(),
 		codeFold: true,
 		saveHTMLToTextarea: true,			// 保存HTML到Textarea
 		searchReplace: true,
@@ -153,6 +161,7 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 		imageUpload: true,
 		imageFormats: ["jpg", "jpeg", "gif", "png", "bmp"],
 		imageUploadURL: uploadUrl,
+		imageBrowseFn: browseFn,
 		crossDomainUpload: true,
 		uploadCallbackURL: path + 'plugins/image-dialog/upload_callback.htm',
 		onload: function () { }
@@ -179,7 +188,7 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 		};
 		params.toolbarHandlers = {
 			'browsing-image': function (cm, icon, cursor, selection) {
-				App.editor.finderDialog(App.editor.browsingFileURL + '?size=12&filetype=image&multiple=1', function(fileList){
+				App.editor.finderDialog(App.editor.browsingFileURL + '?from=parent&size=12&filetype=image&multiple=1', function(fileList){
 					if (fileList.length <= 0) {
 						return App.message({ type: 'error', text: App.t('没有选择任何选项！') });
 					} 
@@ -193,7 +202,6 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 					urls = urls.join('\n') + '\n';
 					cm.replaceSelection(urls);
 					//if(selection === "") cm.setCursor(cm.line+linenum, cm.ch+1);
-					dialog.modal('hide');
 				});
 			}
 		};
@@ -401,7 +409,8 @@ App.editor.tinymces = function (elem, uploadUrl, options, useSimpleToolbar) {
 		App.editor.tinymce(this, uploadUrl, options, useSimpleToolbar);
 	});
 };
-App.editor.finderDialog = function (remoteURL, callback) {
+App.editor.finderDialog = function (remoteURL, callback, zIndex) {
+	if(!zIndex) zIndex = 2000;
 	App.loader.defined(typeof (BootstrapDialog), 'dialog');
 	var dialog = BootstrapDialog.show({
 		title: App.t('选择文件'),
@@ -417,12 +426,11 @@ App.editor.finderDialog = function (remoteURL, callback) {
 			var $message = $('<div></div>');
 			var pageToLoad = dialog.getData('pageToLoad');
 			$message.load(pageToLoad);
-	
 			return $message;
 			*/
 		},
 		onshown: function (d) {
-			d.$modal.css('zIndex', 2000);
+			d.$modal.css('zIndex', zIndex);
 			d.$modalBody.css('padding', 0);
 			//console.dir(d);
 		}
@@ -619,7 +627,7 @@ App.editor.switch = function (editorName, texta, cancelFn, tips) {
 	var content = texta.data("content-elem"), cElem = content;
 	if (content) cElem = App.loader.parseTmpl(content, { type: etype });
 	var obj = texta.get(0);
-	var removeEditor = function(){
+	var removeHTMLEditor = function(){
 		switch (ename) {
 			case 'xheditor':
 				if (typeof (texta.xheditor) != 'undefined') texta.xheditor(false);
@@ -640,15 +648,37 @@ App.editor.switch = function (editorName, texta, cancelFn, tips) {
 				break;
 			case 'tinymce':
 				App.editor.tinymce(obj, upurl);
-				texta.next('.tox-tinymce').show();
+				var t = window.setInterval(function(){
+					if(texta.next('.tox-tinymce').length>0){
+						texta.next('.tox-tinymce').show();
+						window.clearInterval(t);
+					}
+				},100);
 				break;
 			default: // xheditor
 				App.editor.xheditor(obj, upurl);
 		}
-	}
+	};
 	var createMarkdownEditor = function(){
 		App.editor.markdown(obj, upurl);
-	}
+	};
+	var remoteMarkdownEditor = function(){
+		if (cElem && $(cElem).length > 0) {
+			var cc = App.loader.parseTmpl(content, { type: ctype });
+			if (cc && $(cc).length > 0) {
+				$(cc).text(texta.val());
+				var ht = $('textarea[name="' + texta.parent().attr('id') + '-html-code"]');
+				if (ht.length > 0 && ht.val() != "") {
+					$(cElem).text(ht.val());
+					$(cElem).val(ht.val());
+				}
+			};
+			texta.val($(cElem).val());
+			texta.text($(cElem).val());
+		}
+		texta.parent().removeAttr('class');
+		texta.attr('class', className).siblings().remove();
+	};
 	switch (etype) {
 		case 'markdown':
 			if (tips) {
@@ -660,40 +690,22 @@ App.editor.switch = function (editorName, texta, cancelFn, tips) {
 					}
 				}
 			}
-			removeEditor();
 			if (cElem && $(cElem).length > 0) {
 				texta.text($(cElem).val());
 				texta.val($(cElem).val());
 			}
+			removeHTMLEditor();
 			createMarkdownEditor();
 			texta.data("current-editor-type", etype);
 			break;
 		case 'text':
-			removeEditor();
-			if (cElem && $(cElem).length > 0) {
-				texta.text($(cElem).val());
-				texta.val($(cElem).val());
-			}
-			texta.parent().removeAttr('class');
-			texta.attr('class', className).show().siblings().remove();
+			removeHTMLEditor();
+			remoteMarkdownEditor();
+			texta.show();
 			texta.data("current-editor-type", etype);
 			break;
 		default: // html
-			if (cElem && $(cElem).length > 0) {
-				var cc = App.loader.parseTmpl(content, { type: ctype });
-				if (cc && $(cc).length > 0) {
-					$(cc).text(texta.val());
-					var ht = $('textarea[name="' + texta.parent().attr('id') + '-html-code"]');
-					if (ht.length > 0 && ht.val() != "") {
-						$(cElem).text(ht.val());
-						$(cElem).val(ht.val());
-					}
-				};
-				texta.val($(cElem).val());
-				texta.text($(cElem).val());
-			}
-			texta.parent().removeAttr('class');
-			texta.attr('class', className).siblings().remove();
+			remoteMarkdownEditor();
 			createHTMLEditor(editorName);
 			texta.data("current-editor-type", "html");
 	};

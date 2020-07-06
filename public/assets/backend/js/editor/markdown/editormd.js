@@ -148,6 +148,7 @@
         imageUpload          : false,
         imageFormats         : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
         imageUploadURL       : "",
+        imageBrowseFn        : null,
         crossDomainUpload    : false,
         uploadCallbackURL    : "",
         
@@ -298,6 +299,7 @@
                     link     : "图片链接",
                     alt      : "图片描述",
                     uploadButton     : "本地上传",
+                    browseButton     : "浏览",
                     imageURLEmpty    : "错误：图片地址不能为空。",
                     uploadFileEmpty  : "错误：上传的图片不能为空。",
                     formatNotAllowed : "错误：只允许上传图片文件，允许上传的图片文件格式有："

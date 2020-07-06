@@ -71,6 +71,7 @@
                     link     : "圖片鏈接",
                     alt      : "圖片描述",
                     uploadButton     : "本地上傳",
+                    browseButton     : "浏览",
                     imageURLEmpty    : "錯誤：圖片地址不能為空。",
                     uploadFileEmpty  : "錯誤：上傳的圖片不能為空！",
                     formatNotAllowed : "錯誤：只允許上傳圖片文件，允許上傳的圖片文件格式有："

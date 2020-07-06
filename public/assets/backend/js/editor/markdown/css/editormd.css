@@ -629,7 +629,9 @@
 .editormd-dialog-footer .editormd-btn + .editormd-btn {
   margin-left: 8px;
 }
-
+.editormd-file-browse {
+  position:absolute;z-index:1;right:22px;
+}
 .editormd-file-input {
   width: 75px;
   height: 32px;

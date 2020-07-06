@@ -71,6 +71,7 @@
                     link     : "Link",
                     alt      : "Title",
                     uploadButton     : "Upload",
+                    browseButton     : "Browse",
                     imageURLEmpty    : "Error: picture url address can't be empty.",
                     uploadFileEmpty  : "Error: upload pictures cannot be empty!",
                     formatNotAllowed : "Error: only allows to upload pictures file, upload allowed image file format:"
