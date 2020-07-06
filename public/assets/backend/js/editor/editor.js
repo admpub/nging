@@ -382,6 +382,9 @@ App.editor.summernote = function (elem, minHeight, bs4) {
 App.editor.markdownItToHTML = function markdownParse(box, isContainer) {
 	App.loader.defined(typeof (window.markdownit), 'markdownit');
 	App.loader.defined(typeof (window.prettyPrint), 'codehighlight');
+	if (typeof(box) != 'object') {
+		box = $(box);
+	}
 	if (isContainer != false) box = box.find('.markdown-code');
 	var md = App.editor.markdownItInstance();
 	box.each(function () {
