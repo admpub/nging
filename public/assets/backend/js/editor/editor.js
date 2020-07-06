@@ -28,6 +28,7 @@ App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
 	App.loader.defined(typeof (marked), 'editormdPreview');
 	var defaults = {
 		markdown: markdownData,
+		markdownSourceCode: true,
 		//htmlDecode: true,  // 开启HTML标签解析，为了安全性，默认不开启
 		//htmlDecode: "style,script,iframe",  // you can filter tags decode
 		toc: true,
@@ -44,18 +45,13 @@ App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
 	if (params.flowChart) App.loader.defined(typeof ($.fn.flowChart), 'flowChart');
 	if (params.sequenceDiagram) App.loader.defined(typeof ($.fn.sequenceDiagram), 'sequenceDiagram');
 
-	if (typeof (markdownData) == 'boolean') {
+	if (markdownData == null || typeof (markdownData) == 'boolean') {
 		var isContainer = markdownData, box = $('#' + viewZoneId);
 		if (isContainer != false) box = $('#' + viewZoneId).find('.markdown-code');
 		box.each(function () {
 			params.markdown = $(this).html();
 			$(this).empty();
-			var idv = $(this).attr('id');
-			if (!idv) {
-				idv = 'markdown-data-' + Math.random();
-				$(this).attr('id', idv);
-			}
-			editormd.markdownToHTML(idv, params);
+			editormd.markdownToHTML(this, params);
 		});
 		return;
 	}

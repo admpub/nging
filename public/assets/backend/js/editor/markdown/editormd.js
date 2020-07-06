@@ -3920,7 +3920,7 @@
         
         editormd.$marked  = marked;
 
-        var div           = $("#" + id);
+        var div           = typeof(id) == 'object' ? $(id) : $("#" + id);
         var settings      = div.settings = $.extend(true, defaults, options || {});
         var saveTo        = div.find("textarea");
         
@@ -3928,7 +3928,7 @@
         {
             div.append("<textarea></textarea>");
             saveTo        = div.find("textarea");
-        }        
+        }
         
         var markdownDoc   = (settings.markdown === "") ? saveTo.val() : settings.markdown; 
         var markdownToC   = [];
