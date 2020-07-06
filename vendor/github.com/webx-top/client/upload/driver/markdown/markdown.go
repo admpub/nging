@@ -45,9 +45,9 @@ type Markdown struct {
 }
 
 func (a *Markdown) Result() (r string) {
-	succed := "0" // 0 表示上传失败，1 表示上传成功
+	succed := "1" // 0 表示上传失败，1 表示上传成功
 	if a.GetError() != nil {
-		succed = "1"
+		succed = "0"
 	}
 	callback := a.Form(`callback`)
 	dialogID := a.Form(`dialog_id`)
