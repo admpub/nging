@@ -535,19 +535,24 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 		formData.append('filedata', blobInfo.blob(), blobInfo.filename());
 		xhr.send(formData);
 	};
+	var contextmenu = 'link table';
+	var selectionToobar = 'bold italic | quicklink h2 h3 blockquote quicktable';
+	var plugin = 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable charmap quickbars emoticons';
+	if (uploadUrl) {
+		contextmenu += ' image imagetools';
+		selectionToobar += ' quickimage';
+	}
 	var defaults = {
 		height: useSimpleToolbar ? 200 : 500,
 		menubar: true,
 		language: App.langTag('_'),
-		plugins: [
-			'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable charmap quickbars emoticons'
-		],
+		plugins: [plugin],
 		toolbar: useSimpleToolbar ? simpleToolbar : fullToolbar,
 		toolbar_sticky: true,
 		autosave_ask_before_unload: true,
 		autosave_interval: "30s",
 		autosave_prefix: "{path}{query}-{id}-",
-		autosave_restore_when_empty: false,
+		autosave_restore_when_empty: true,
 		autosave_retention: "2m",
 		image_advtab: true,
 		templates: [
@@ -556,10 +561,10 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 		image_caption: true,
 		relative_urls: false,
 		image_title: true,
-		quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+		quickbars_selection_toolbar: selectionToobar,
 		noneditable_noneditable_class: "mceNonEditable",
 		toolbar_drawer: 'sliding',
-		contextmenu: "link image imagetools table",
+		contextmenu: contextmenu,
 		setup: function (editor) {
 			var toTimeHtml = function (date) {
 				return '<time datetime="' + date.toString() + '">' + date.toLocaleString() + '</time>';
