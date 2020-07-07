@@ -45,6 +45,8 @@ App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
 	if (params.flowChart) App.loader.defined(typeof ($.fn.flowChart), 'flowChart');
 	if (params.sequenceDiagram) App.loader.defined(typeof ($.fn.sequenceDiagram), 'sequenceDiagram');
 
+	var path = BACKEND_URL + '/public/assets/backend/js/editor/markdown/';
+	editormd.emoji.path = path+'images/emojis/';
 	if (markdownData == null || typeof (markdownData) == 'boolean') {
 		var isContainer = markdownData, box = $('#' + viewZoneId);
 		if (isContainer != false) box = $('#' + viewZoneId).find('.markdown-code');
@@ -209,6 +211,7 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 	}
 	if (!uploadUrl) params.imageUpload = false;
 	var editor = editormd(containerId, params);
+	editormd.emoji.path = path+'images/emojis/';
 	$(editorElement).data('editor-name', 'markdown');
 	$(editorElement).data('editor-object', editor);
 	return editor;
