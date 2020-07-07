@@ -18,50 +18,6 @@ App.editor = {
 	browsingFileURL: App.loader.siteURL + (typeof (window.IS_BACKEND) !== 'undefined' && window.IS_BACKEND ? '' : '/user') + '/finder'
 };
 
-/* 解析markdown为html */
-App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
-	if (typeof (viewZoneId) == 'object') {
-		viewZoneId = viewZoneId.attr('id');
-	} else if (viewZoneId.substr(0, 1) == '#') {
-		viewZoneId = viewZoneId.substr(1);
-	}
-	App.loader.defined(typeof (marked), 'editormdPreview');
-	var defaults = {
-		markdown: markdownData,
-		markdownSourceCode: true,
-		//htmlDecode: true,  // 开启HTML标签解析，为了安全性，默认不开启
-		//htmlDecode: "style,script,iframe",  // you can filter tags decode
-		toc: true,
-		tocm: true,  // Using [TOCM]
-		//gfm           : false,
-		//tocDropdown   : true,
-		emoji: true,
-		taskList: true,
-		tex: true,  // 默认不解析
-		flowChart: true,  // 默认不解析
-		sequenceDiagram: true  // 默认不解析
-	};
-	var params = $.extend({}, defaults, options || {});
-	if (params.flowChart) App.loader.defined(typeof ($.fn.flowChart), 'flowChart');
-	if (params.sequenceDiagram) App.loader.defined(typeof ($.fn.sequenceDiagram), 'sequenceDiagram');
-
-	var path = BACKEND_URL + '/public/assets/backend/js/editor/markdown/';
-	editormd.emoji.path = path+'images/emojis/';
-	if (markdownData == null || typeof (markdownData) == 'boolean') {
-		var isContainer = markdownData, box = $('#' + viewZoneId);
-		if (isContainer != false) box = $('#' + viewZoneId).find('.markdown-code');
-		box.each(function () {
-			params.markdown = $(this).html();
-			$(this).empty();
-			editormd.markdownToHTML(this, params);
-		});
-		return;
-	}
-
-	var viewer = editormd.markdownToHTML(viewZoneId, params);
-	return viewer;
-};
-
 // =================================================================
 // ueditor
 // =================================================================
@@ -90,7 +46,7 @@ App.editor.ueditor = function (editorElement, uploadUrl, options) {
 	}
 	var idv = $(editorElement).attr('id');
 	if (!idv) {
-		idv = 'ueditor-instance-' + Math.random();
+		idv = 'ueditor-instance-' + App.utils.unixtime();
 		$(editorElement).attr('id', idv);
 	}
 	var editor = UE.getEditor(idv, options);
@@ -101,6 +57,54 @@ App.editor.ueditor = function (editorElement, uploadUrl, options) {
 // =================================================================
 // editormd
 // =================================================================
+
+/* 解析markdown为html */
+App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
+	if (typeof (viewZoneId) == 'object') {
+		viewZoneId = viewZoneId.attr('id');
+	} else if (viewZoneId.substr(0, 1) == '#') {
+		viewZoneId = viewZoneId.substr(1);
+	}
+	App.loader.defined(typeof (marked), 'editormdPreview');
+	var defaults = {
+		markdown: markdownData,
+		//markdownSourceCode: true, // 是否保留 Markdown 源码，即是否删除保存源码的 Textarea 标签
+		//htmlDecode: "style,script,iframe", // you can filter tags decode
+		toc: true,
+		tocm: true,  // Using [TOCM]
+		//gfm: true,
+		//tocDropdown: true,
+		emoji: true,
+		taskList: true,
+		tex: true,  // 默认不解析
+		flowChart: true,  // 默认不解析
+		sequenceDiagram: true  // 默认不解析
+	};
+	var params = $.extend({}, defaults, options || {});
+	if (params.flowChart) App.loader.defined(typeof ($.fn.flowChart), 'flowChart');
+	if (params.sequenceDiagram) App.loader.defined(typeof ($.fn.sequenceDiagram), 'sequenceDiagram');
+
+	var path = BACKEND_URL + '/public/assets/backend/js/editor/markdown/';
+	editormd.emoji.path = path+'images/emojis/';
+	//editormd.katexURL.css = 'katex.min';
+	//editormd.katexURL.js = 'katex.min';
+	if (markdownData == null || typeof (markdownData) == 'boolean') {
+		var isContainer = markdownData, box = $('#' + viewZoneId);
+		if (isContainer != false) box = $('#' + viewZoneId).find('.markdown-code');
+		box.each(function () {
+			if($(this).children('textarea').length>0){
+				params.markdown = $(this).children('textarea').text();
+			}else{
+				params.markdown = $(this).text();
+			}
+			editormd.markdownToHTML(this, params);
+		});
+		return;
+	}
+
+	var viewer = editormd.markdownToHTML(viewZoneId, params);
+	return viewer;
+};
 
 App.editor.markdowns = function (editorElement, uploadUrl, options) {
 	$(editorElement).each(function () {
@@ -136,7 +140,7 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 	var container = $(editorElement).parent(),
 		containerId = container.attr('id');
 	if (containerId === undefined) {
-		containerId = 'webx-md-' + Math.random();
+		containerId = 'webx-md-' + App.utils.unixtime();
 		container.attr('id', containerId);
 	};
 	var path = BACKEND_URL + '/public/assets/backend/js/editor/markdown/';
@@ -150,6 +154,7 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 		searchReplace: true,
 		watch: true,						// 关闭实时预览
 		//htmlDecode: "style,script,iframe",	// 开启HTML标签解析，为了安全性，默认不开启
+		//autoHeight : true, // 自动高度
 		emoji: true,
 		taskList: true,
 		tocm: true,					 // Using [TOCM]
@@ -388,7 +393,13 @@ App.editor.markdownItToHTML = function markdownParse(box, isContainer) {
 	if (isContainer != false) box = box.find('.markdown-code');
 	var md = App.editor.markdownItInstance();
 	box.each(function () {
-		$(this).html(md.render($.trim($(this).html())));
+		var markdown;
+		if($(this).children('textarea').length>0){
+			markdown = $(this).children('textarea').text();
+		}else{
+			markdown = $(this).text();
+		}
+		$(this).html(md.render($.trim(markdown)));
 		$(this).find("pre > code").each(function () {
 			$(this).parent("pre").addClass("prettyprint linenums");
 		});
@@ -419,7 +430,7 @@ App.editor.finderDialog = function (remoteURL, callback, zIndex) {
 		title: App.t('选择文件'),
 		//animate: false,
 		message: function (dialog) {
-			var cb = "finderDialogCallback" + (new Date().getTime());
+			var cb = "finderDialogCallback" + App.utils.unixtime();
 			window[cb] = function (files) {
 				callback(files);
 				if (files && files.length > 0) dialog.close();
@@ -664,12 +675,13 @@ App.editor.switch = function (editorName, texta, cancelFn, tips) {
 		}
 	};
 	var createHTMLEditor = function(editorName){
+		var options = texta.data(editorName+"-options") || {};
 		switch (editorName) {
 			case 'ueditor':
-				App.editor.ueditor(obj, upurl);
+				App.editor.ueditor(obj, upurl, options);
 				break;
 			case 'tinymce':
-				App.editor.tinymce(obj, upurl);
+				App.editor.tinymce(obj, upurl, options);
 				var t = window.setInterval(function(){
 					if(texta.next('.tox-tinymce').length>0){
 						texta.next('.tox-tinymce').show();
@@ -678,11 +690,12 @@ App.editor.switch = function (editorName, texta, cancelFn, tips) {
 				},100);
 				break;
 			default: // xheditor
-				App.editor.xheditor(obj, upurl);
+				App.editor.xheditor(obj, upurl, options);
 		}
 	};
 	var createMarkdownEditor = function(){
-		App.editor.markdown(obj, upurl);
+		var options = texta.data("markdown-options") || {};
+		App.editor.markdown(obj, upurl, options);
 	};
 	var remoteMarkdownEditor = function(){
 		if (cElem && $(cElem).length > 0) {
@@ -743,11 +756,13 @@ App.utils.elemToId = function(elem) {
 	}
 	var id = $(elem).attr("id");
 	if (id) return '#'+id;
-	id = 'generated-id-' + Math.random();
+	id = 'generated-id-' + App.utils.unixtime();
 	$(elem).attr("id", id);
 	return '#'+id;
 };
-
+App.utils.unixtime = function() {
+	return new Date().getTime();
+};
 App.editor.fileInput = function (elem) {
 	if (!elem) {
 		elem = '';
