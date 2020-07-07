@@ -91,27 +91,39 @@ func EncodeConfigValue(_v *echo.Mapx, v *dbschema.NgingConfig, encoder Encoder) 
 	return
 }
 
-func DefaultEncoder(v *dbschema.NgingConfig, value string) string {
-	switch v.Type {
-	case `html`, `markdown`:
-		value = common.RemoveXSS(value)
+func ContentEncode(content string, contypes ...string) string {
+	var contype string
+	if len(contypes) > 0 {
+		contype = contypes[0]
+	}
+	switch contype {
+	case `html`:
+		content = common.RemoveXSS(content)
 
 	case `url`, `image`, `video`, `audio`, `file`:
-		value = common.MyCleanText(value)
+		content = common.MyCleanText(content)
 
 	case `id`, `text`:
-		value = com.StripTags(value)
+		content = com.StripTags(content)
 
 	case `json`:
 		// pass
 
+	case `markdown`:
+		// pass
+
 	case `list`:
-		value = strings.TrimSpace(value)
-		value = strings.Trim(value, `,`)
+		content = strings.TrimSpace(content)
+		content = strings.Trim(content, `,`)
 
 	default:
-		value = com.StripTags(value)
+		content = com.StripTags(content)
 	}
+	return content
+}
+
+func DefaultEncoder(v *dbschema.NgingConfig, value string) string {
+	value = ContentEncode(value, v.Type)
 	if v.Encrypted == `Y` {
 		value = echo.Get(`DefaultConfig`).(Codec).Encode(value)
 	}
