@@ -3193,63 +3193,81 @@
 
 /*! Pretty printing styles. Used with prettify.js. */
 /* SPAN elements with the classes below are added by prettyprint. */
-.pln {
+.editormd-html-preview .pln,
+.editormd-preview-container .pln {
   color: #000;
 }
 
 /* plain text */
 @media screen {
-  .str {
+  .editormd-preview-container .str,
+  .editormd-html-preview .str {
     color: #080;
   }
 
   /* string content */
-  .kwd {
+  .editormd-preview-container .kwd,
+  .editormd-html-preview .kwd {
     color: #008;
   }
 
   /* a keyword */
-  .com {
+  .editormd-preview-container .com,
+  .editormd-html-preview .com {
     color: #800;
   }
 
   /* a comment */
-  .typ {
+  .editormd-preview-container .typ,
+  .editormd-html-preview .typ {
     color: #606;
   }
 
   /* a type name */
-  .lit {
+  .editormd-preview-container .lit,
+  .editormd-html-preview .lit {
     color: #066;
   }
 
   /* a literal value */
   /* punctuation, lisp open bracket, lisp close bracket */
-  .pun, .opn, .clo {
+  .editormd-preview-container .pun,
+  .editormd-html-preview .pun,
+  .editormd-preview-container .opn, 
+  .editormd-html-preview .opn,
+  .editormd-preview-container .clo,
+  .editormd-html-preview .clo {
     color: #660;
   }
 
-  .tag {
+  .editormd-preview-container .tag,
+  .editormd-html-preview .tag {
     color: #008;
   }
 
   /* a markup tag name */
-  .atn {
+  .editormd-preview-container .atn,
+  .editormd-html-preview .atn {
     color: #606;
   }
 
   /* a markup attribute name */
-  .atv {
+  .editormd-preview-container .atv,
+  .editormd-html-preview .atv {
     color: #080;
   }
 
   /* a markup attribute value */
-  .dec, .var {
+  .editormd-preview-container .dec, 
+  .editormd-html-preview .dec,
+  .editormd-preview-container .var,
+  .editormd-html-preview .var {
     color: #606;
   }
 
   /* a declaration; a variable name */
-  .fun {
+  .editormd-preview-container .fun,
+  .editormd-html-preview .fun {
     color: red;
   }
 
@@ -3257,76 +3275,104 @@
 }
 /* Use higher contrast and text-weight for printable form. */
 @media print, projection {
-  .str {
+  .editormd-preview-container .str,
+  .editormd-html-preview .str {
     color: #060;
   }
 
-  .kwd {
+  .editormd-preview-container .kwd,
+  .editormd-html-preview .kwd {
     color: #006;
     font-weight: bold;
   }
 
-  .com {
+  .editormd-preview-container .com,
+  .editormd-html-preview .com {
     color: #600;
     font-style: italic;
   }
 
-  .typ {
+  .editormd-preview-container .typ,
+  .editormd-html-preview .typ {
     color: #404;
     font-weight: bold;
   }
 
-  .lit {
+  .editormd-preview-container .lit,
+  .editormd-html-preview .lit {
     color: #044;
   }
 
-  .pun, .opn, .clo {
+  .editormd-preview-container .pun, 
+  .editormd-html-preview .pun,
+  .editormd-preview-container .opn, 
+  .editormd-html-preview .opn,
+  .editormd-preview-container .clo,
+  .editormd-html-preview .clo {
     color: #440;
   }
 
-  .tag {
+  .editormd-preview-container .tag,
+  .editormd-html-preview .tag {
     color: #006;
     font-weight: bold;
   }
 
-  .atn {
+  .editormd-preview-container .atn,
+  .editormd-html-preview .atn {
     color: #404;
   }
 
-  .atv {
+  .editormd-preview-container .atv,
+  .editormd-html-preview .atv {
     color: #060;
   }
 }
 /* Put a border around prettyprinted code snippets. */
-pre.prettyprint {
+.editormd-preview-container pre.prettyprint,
+.editormd-html-preview pre.prettyprint {
   padding: 2px;
   border: 1px solid #888;
 }
 
 /* Specify class=linenums on a pre to get line numbering */
-ol.linenums {
+.editormd-preview-container ol.linenums,
+.editormd-html-preview ol.linenums {
   margin-top: 0;
   margin-bottom: 0;
 }
 
 /* IE indents via margin-left */
-li.L0,
-li.L1,
-li.L2,
-li.L3,
-li.L5,
-li.L6,
-li.L7,
-li.L8 {
+.editormd-preview-container li.L0,
+.editormd-html-preview li.L0,
+.editormd-preview-container li.L1,
+.editormd-html-preview li.L1,
+.editormd-preview-container li.L2,
+.editormd-html-preview li.L2,
+.editormd-preview-container li.L3,
+.editormd-html-preview li.L3,
+.editormd-preview-container li.L5,
+.editormd-html-preview li.L5,
+.editormd-preview-container li.L6,
+.editormd-html-preview li.L6,
+.editormd-preview-container li.L7,
+.editormd-html-preview li.L7
+.editormd-preview-container li.L8,
+.editormd-html-preview li.L8 {
   list-style-type: none;
 }
 
 /* Alternate shading for lines */
-li.L1,
-li.L3,
-li.L5,
-li.L7,
-li.L9 {
+.editormd-preview-container li.L1,
+.editormd-html-preview li.L1,
+.editormd-preview-container li.L3,
+.editormd-html-preview li.L3,
+.editormd-preview-container li.L5,
+.editormd-html-preview li.L5,
+.editormd-preview-container li.L7,
+.editormd-html-preview li.L7,
+.editormd-preview-container li.L9,
+.editormd-html-preview li.L9 {
   background: #eee;
 }
 
