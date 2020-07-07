@@ -602,16 +602,30 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 };
 
 App.editor.switcher = function(swicherElem, contentElem, defaultEditorName) {
-	$(swicherElem).on('click', function(){
-		if ($(this).prop('checked')) {
-			var etype=$(this).val();
-			var texta=$(contentElem);
-			var editorName=$(this).data('editor-name') || defaultEditorName;
-			texta.data("editor-type",etype);
-			return App.editor.switch(editorName, texta);
-		};
+	if($(swicherElem).length<1) return;
+	var event, tagName = String($(swicherElem).get(0).tagName).toLowerCase();
+	switch(tagName){
+		case 'select':
+			event = 'change';
+			break;
+		default:
+			event = 'click';
+	}
+	$(swicherElem).on(event, function(){
+		var etype=$(this).val();
+		var texta=$(contentElem);
+		var editorName=$(this).data('editor-name') || defaultEditorName;
+		texta.data("editor-type",etype);
+		return App.editor.switch(editorName, texta);
 	});
-	$(swicherElem).filter(':checked').trigger('click');
+	$(contentElem).data('placeholder', $(contentElem).attr('placeholder'));
+	switch(tagName){
+		case 'input':
+			$(swicherElem).filter(':checked').first().trigger(event);
+			break;
+		default:
+			$(swicherElem).trigger(event);
+	}
 };
 
 //例如：App.editor.switch($('textarea'))
@@ -705,7 +719,7 @@ App.editor.switch = function (editorName, texta, cancelFn, tips) {
 		case 'text':
 			removeHTMLEditor();
 			remoteMarkdownEditor();
-			texta.attr('placeholder','').show().focus();
+			texta.attr('placeholder', texta.data('placeholder') || '').show().focus();
 			texta.data("current-editor-type", etype);
 			break;
 		default: // html
