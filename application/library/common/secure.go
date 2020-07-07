@@ -4,19 +4,20 @@ import (
 	"bytes"
 	"io"
 	"regexp"
+	"strings"
 
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/webx-top/com"
 )
 
 var (
-	secureStrictPolicy = bluemonday.StrictPolicy()
-	secureUGCPolicy = bluemonday.UGCPolicy()
+	secureStrictPolicy                = bluemonday.StrictPolicy()
+	secureUGCPolicy                   = bluemonday.UGCPolicy()
 	secureUGCPolicyAllowDataURIImages *bluemonday.Policy
-	secureUGCPolicyNoLink = NoLink()
+	secureUGCPolicyNoLink             = NoLink()
 )
 
-func init(){
+func init() {
 	secureUGCPolicyAllowDataURIImages = bluemonday.UGCPolicy()
 	secureUGCPolicyAllowDataURIImages.AllowDataURIImages()
 }
@@ -248,4 +249,35 @@ func MyCleanText(value string) string {
 func MyCleanTags(value string) string {
 	value = com.StripTags(value)
 	return value
+}
+
+func ContentEncode(content string, contypes ...string) string {
+	var contype string
+	if len(contypes) > 0 {
+		contype = contypes[0]
+	}
+	switch contype {
+	case `html`:
+		content = RemoveXSS(content)
+
+	case `url`, `image`, `video`, `audio`, `file`:
+		content = MyCleanText(content)
+
+	case `id`, `text`:
+		content = com.StripTags(content)
+
+	case `json`:
+		// pass
+
+	case `markdown`:
+		// pass
+
+	case `list`:
+		content = strings.TrimSpace(content)
+		content = strings.Trim(content, `,`)
+
+	default:
+		content = com.StripTags(content)
+	}
+	return content
 }
