@@ -705,7 +705,7 @@ App.editor.switch = function (editorName, texta, cancelFn, tips) {
 		case 'text':
 			removeHTMLEditor();
 			remoteMarkdownEditor();
-			texta.show();
+			texta.attr('placeholder','').show().focus();
 			texta.data("current-editor-type", etype);
 			break;
 		default: // html
