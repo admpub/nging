@@ -36,7 +36,7 @@
             </div>
             <div id="test-editormd"></div>
         </div>
-        <script src="../../jquery.min.js"></script>
+        <script src="../../jquery.js"></script>
         <script src="editormd.js"></script>
         <script type="text/javascript">
             var testEditor;
@@ -44,7 +44,7 @@
             $(function() {
 
                 $.get('test.md', function(md){
-                    testEditor = editormd("test-editormd", {
+                    testEditor = editormd("test-editormd", {dialogLockScreen:false,
                         width: "90%",
                         height: 740,
                         path : 'lib/',

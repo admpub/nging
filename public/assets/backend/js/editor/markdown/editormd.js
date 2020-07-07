@@ -1248,7 +1248,7 @@
             var classPrefix         = this.classPrefix;           
             var toolbarIcons        = this.toolbarIcons = toolbar.find("." + classPrefix + "menu > li > a");  
             var toolbarIconHandlers = this.getToolbarHandles();  
-                
+
             toolbarIcons.bind(editormd.mouseOrTouch("click", "touchend"), function(event) {
 
                 var icon                = $(this).children(".fa");
@@ -1259,7 +1259,7 @@
                 if (name === "") {
                     return ;
                 }
-                
+
                 _this.activeIcon = icon;
 
                 if (typeof toolbarIconHandlers[name] !== "undefined") 
@@ -1273,7 +1273,7 @@
                         $.proxy(settings.toolbarHandlers[name], _this)(cm, icon, cursor, selection);
                     }
                 }
-                
+
                 if (name !== "link" && name !== "reference-link" && name !== "image" && name !== "code-block" && 
                     name !== "preformatted-text" && name !== "watch" && name !== "preview" && name !== "search" && name !== "fullscreen" && name !== "info") 
                 {

@@ -136,7 +136,7 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 	var container = $(editorElement).parent(),
 		containerId = container.attr('id');
 	if (containerId === undefined) {
-		containerId = 'webx-md-' + window.location.href.replace(/[^\w]+/g, '-');
+		containerId = 'webx-md-' + Math.random();
 		container.attr('id', containerId);
 	};
 	var path = BACKEND_URL + '/public/assets/backend/js/editor/markdown/';
@@ -162,6 +162,7 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 		imageBrowseFn: browseFn,
 		crossDomainUpload: true,
 		uploadCallbackURL: path + 'plugins/image-dialog/upload_callback.htm',
+		dialogLockScreen: false,
 		onload: function () { }
 	};
 	var params = $.extend({}, defaults, options || {});
