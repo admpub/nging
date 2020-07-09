@@ -126,6 +126,21 @@ func (p *Pagination) NextPosition() string {
 	return p.nextPosition
 }
 
+func (p *Pagination) HasNext() bool {
+	if p.mode == ModePageNumber {
+		return p.Page() < p.Pages()
+	}
+	return len(p.NextPosition()) > 0 && p.NextPosition() != `0` && p.NextPosition() != p.Position()
+}
+
+func (p *Pagination) HasPrev() bool {
+	if p.mode == ModePageNumber {
+		return p.Page() > 1
+	}
+	return p.PrevPosition() != `0` && p.PrevPosition() != p.Position()
+
+}
+
 func (p *Pagination) SetPage(page int) *Pagination {
 	p.page = page
 	return p

@@ -20,7 +20,6 @@ package s3manager
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -380,25 +379,25 @@ func (s *S3Manager) listByAWS(ctx echo.Context, objectPrefix string) (err error,
 	if limit < 1 {
 		limit = 20
 	}
-	offset := ctx.Formx(`curr-offset`, `0`).Uint()
-	endIndex := offset + uint(limit)
-	prevOffset := ctx.Form(`prev-offset`, `0`)
-	nextOffset := fmt.Sprint(endIndex)
+	offset := ctx.Form(`offset`)
+	prevOffset := ctx.Form(`prev`)
+	var nextOffset string
 	q := ctx.Request().URL().Query()
-	q.Del(`curr-offset`)
-	q.Del(`prev-offset`)
+	q.Del(`offset`)
+	q.Del(`prev`)
 	q.Del(`_pjax`)
-	pagination.SetURL(ctx.Request().URL().Path() + `?` + q.Encode() + `&curr-offset={curr}&prev-offset={prev}`)
-	pagination.SetPosition(prevOffset, nextOffset, nextOffset)
-	var seekNum uint
-	err = s3client.ListObjectsPagesWithContext(ctx, &s3.ListObjectsInput{
+	pagination.SetURL(ctx.Request().URL().Path() + `?` + q.Encode() + `&offset={curr}&prev={prev}`)
+	input := &s3.ListObjectsInput{
 		Bucket:    aws.String(s.bucketName),
 		Prefix:    aws.String(objectPrefix),
 		MaxKeys:   aws.Int64(int64(limit)),
 		Delimiter: aws.String(`/`),
-	}, func(p *s3.ListObjectsOutput, lastPage bool) bool {
-		if seekNum < offset {
-			return true
+		Marker:    aws.String(offset),
+	}
+	var n int
+	err = s3client.ListObjectsPagesWithContext(ctx, input, func(p *s3.ListObjectsOutput, lastPage bool) bool {
+		if p.NextMarker != nil {
+			nextOffset = *p.NextMarker
 		}
 		for _, object := range p.CommonPrefixes {
 			if object.Prefix == nil {
@@ -428,9 +427,10 @@ func (s *S3Manager) listByAWS(ctx echo.Context, objectPrefix string) (err error,
 			obj := NewS3FileInfo(object)
 			dirs = append(dirs, obj)
 		}
-		seekNum += uint(len(dirs))
-		return seekNum <= endIndex // continue paging
+		n += len(dirs)
+		return n <= limit // continue paging
 	})
+	pagination.SetPosition(prevOffset, nextOffset, offset)
 	ctx.Set(`pagination`, pagination)
 	return
 }

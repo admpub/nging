@@ -1,6 +1,6 @@
 {{Strip}}{{- $pjax := Form "_pjax" -}}
-{{- $position := .Position -}}
+{{- $next := .NextPosition -}}
 {{- $prev := .PrevPosition -}}
-<a class="btn btn-sm btn-flat btn-default{{if eq $prev "0"}} disabled{{end}}" href="{{.URL 0}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}><i class="fa fa-angle-left"></i></a>
-<a class="btn btn-sm btn-flat btn-default{{if eq $position "0"}} disabled{{end}}" href="{{.URL $position}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}><i class="fa fa-angle-right"></i></a>
+<a class="btn btn-sm btn-flat btn-default{{if not .HasPrev}} disabled{{end}}" href="{{.URL $prev}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}><i class="fa fa-angle-left"></i></a>
+<a class="btn btn-sm btn-flat btn-default{{if not .HasNext}} disabled{{end}}" href="{{.URL $next}}"{{if $pjax}} data-pjax="{{$pjax}}" data-keepjs="true"{{end}}><i class="fa fa-angle-right"></i></a>
 {{/Strip}}
