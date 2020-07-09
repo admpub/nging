@@ -28,6 +28,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/admpub/nging-biz/application/library/common"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/charset"
 	"github.com/admpub/nging/application/library/filemanager"
@@ -374,16 +375,15 @@ func (s *S3Manager) listByAWS(ctx echo.Context, objectPrefix string) (err error,
 	if err != nil {
 		return
 	}
-	page := ctx.Formx(`page`).Uint()
-	if page == 0 {
+	page, limit, _, pagination := common.PagingWithPagination(ctx)
+	if page < 1 {
 		page = 1
 	}
-	limit := ctx.Formx(`size`).Uint()
-	if limit == 0 {
+	if limit < 1 {
 		limit = 20
 	}
-	offset := com.Offset(page, limit)
-	endIndex := offset + limit
+	offset := com.Offset(uint(page), uint(limit))
+	endIndex := offset + uint(limit)
 	var seekNum uint
 	err = s3client.ListObjectsPagesWithContext(ctx, &s3.ListObjectsInput{
 		Bucket:  aws.String(s.bucketName),
@@ -400,6 +400,7 @@ func (s *S3Manager) listByAWS(ctx echo.Context, objectPrefix string) (err error,
 		}
 		return seekNum <= endIndex // continue paging
 	})
+	ctx.Set(`pagination`, pagination)
 	return
 }
 
