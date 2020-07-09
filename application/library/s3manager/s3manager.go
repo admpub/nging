@@ -448,7 +448,7 @@ func (s *S3Manager) List(ctx echo.Context, ppath string, sortBy ...string) (err 
 			objectPrefix += `/`
 		}
 	}
-	engine := ctx.Form(`engine`, `minio`)
+	engine := ctx.Form(`engine`, `aws`)
 	switch engine {
 	case `aws`:
 		err, dirs = s.listByAWS(ctx, objectPrefix)
