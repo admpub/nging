@@ -410,7 +410,7 @@ func (s *S3Manager) List(ctx echo.Context, ppath string, sortBy ...string) (err 
 			objectPrefix += `/`
 		}
 	}
-	listType := `aws`
+	listType := ctx.Form(`listType`, `aws`)
 	switch listType {
 	case `aws`:
 		err, dirs = s.listByAWS(ctx, objectPrefix)
