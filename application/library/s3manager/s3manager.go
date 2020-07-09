@@ -375,7 +375,13 @@ func (s *S3Manager) listByAWS(ctx echo.Context, objectPrefix string) (err error,
 		return
 	}
 	page := ctx.Formx(`page`).Uint()
+	if page == 0 {
+		page = 1
+	}
 	limit := ctx.Formx(`size`).Uint()
+	if limit == 0 {
+		limit = 20
+	}
 	offset := com.Offset(page, limit)
 	endIndex := offset + limit
 	var seekNum uint
@@ -410,8 +416,8 @@ func (s *S3Manager) List(ctx echo.Context, ppath string, sortBy ...string) (err 
 			objectPrefix += `/`
 		}
 	}
-	listType := ctx.Form(`listType`, `aws`)
-	switch listType {
+	engine := ctx.Form(`engine`, `minio`)
+	switch engine {
 	case `aws`:
 		err, dirs = s.listByAWS(ctx, objectPrefix)
 	default:
