@@ -252,7 +252,11 @@ func MyCleanTags(value string) string {
 	return value
 }
 
-var q = rune('`')
+var (
+	q             = rune('`')
+	markdownLink  = regexp.MustCompile(`((?:\s|^)\[[^]]+\]\([a-zA-Z]+\://[^ \)]+ )&#34;([^"\)]+)&#34;(\)(?:\s|$))`)
+	markdownQuote = regexp.MustCompile("(?:\n|^)&gt;" + `\s`)
+)
 
 func MarkdownPickoutCodeblock(content string) (repl []string, newContent string) {
 	var (
@@ -371,6 +375,9 @@ func ContentEncode(content string, contypes ...string) string {
 		var pick []string
 		pick, content = MarkdownPickoutCodeblock(content)
 		content = RemoveXSS(content)
+		// 还原
+		content = markdownLink.ReplaceAllString(content, `${1}"${2}"${3}`)
+		content = markdownQuote.ReplaceAllString(content, "\n> ")
 		content = MarkdownRestorePickout(pick, content)
 
 	case `list`:

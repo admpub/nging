@@ -19,19 +19,28 @@ func TestPickCodeblock(t *testing.T) {
 	test.Eq(t, []string{"bbb\ncode-block\n"}, pick)
 	test.Eq(t, "aaaa\n```{codeblock(0)}```\nb", content)
 	content = MarkdownRestorePickout(pick, content)
-	test.Eq(t, "aaaa\n```\nbbb\ncode-block\n```\nb", content)
+	test.Eq(t, "aaaa\n```bbb\ncode-block\n```\nb", content)
 
 	str += "ccc\r\n```ddd\ncode-block2\n```\r\neee"
 	pick, content = MarkdownPickoutCodeblock(str)
 	test.Eq(t, []string{"bbb\ncode-block\n", "ddd\ncode-block2\n"}, pick)
 	test.Eq(t, "aaaa\n```{codeblock(0)}```\nbccc\r\n```{codeblock(1)}```\r\neee", content)
 	content = MarkdownRestorePickout(pick, content)
-	test.Eq(t, "aaaa\n```\nbbb\ncode-block\n```\nbccc\r\n```\nddd\ncode-block2\n```\r\neee", content)
+	test.Eq(t, "aaaa\n```bbb\ncode-block\n```\nbccc\r\n```ddd\ncode-block2\n```\r\neee", content)
 
 	str = "aaaa\n```bbb\ncode-block\n```b```\nk"
 	pick, content = MarkdownPickoutCodeblock(str)
 	test.Eq(t, []string{"bbb\ncode-block\n```b"}, pick)
 	test.Eq(t, "aaaa\n```{codeblock(0)}```\nk", content)
 	content = MarkdownRestorePickout(pick, content)
-	test.Eq(t, "aaaa\n```\nbbb\ncode-block\n```b\n```\nk", content)
+	test.Eq(t, "aaaa\n```bbb\ncode-block\n```b\n```\nk", content)
+
+	content = ContentEncode(`[普通链接带标题](http://localhost/ &#34;普通链接带标题&#34;)`, `markdown`)
+	test.Eq(t, `[普通链接带标题](http://localhost/ "普通链接带标题")`, content)
+
+	content = ContentEncode("\n&gt; 123", `markdown`)
+	test.Eq(t, "> 123", content)
+
+	content = ContentEncode("&gt; 123", `markdown`)
+	test.Eq(t, "> 123", content)
 }
