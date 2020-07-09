@@ -31,6 +31,14 @@ func NewFileInfo(objectInfo minio.ObjectInfo) os.FileInfo {
 	return &fileInfo{objectInfo: objectInfo}
 }
 
+func NewStrFileInfo(prefix string) os.FileInfo {
+	return &fileInfo{
+		objectInfo: minio.ObjectInfo{
+			Key: prefix,
+		},
+	}
+}
+
 func NewS3FileInfo(object *s3.Object) os.FileInfo {
 	objectInfo := minio.ObjectInfo{}
 	if object.ETag != nil {

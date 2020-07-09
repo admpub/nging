@@ -386,13 +386,25 @@ func (s *S3Manager) listByAWS(ctx echo.Context, objectPrefix string) (err error,
 	endIndex := offset + uint(limit)
 	var seekNum uint
 	err = s3client.ListObjectsPagesWithContext(ctx, &s3.ListObjectsInput{
-		Bucket:  aws.String(s.bucketName),
-		Prefix:  aws.String(objectPrefix),
-		MaxKeys: aws.Int64(int64(limit)),
-		//Delimiter: aws.String(`/`),
+		Bucket:    aws.String(s.bucketName),
+		Prefix:    aws.String(objectPrefix),
+		MaxKeys:   aws.Int64(int64(limit)),
+		Delimiter: aws.String(`/`),
 	}, func(p *s3.ListObjectsOutput, lastPage bool) bool {
 		if seekNum < offset {
 			return true
+		}
+		seekNum += uint(len(p.CommonPrefixes))
+		for _, object := range p.CommonPrefixes {
+			if object.Prefix == nil {
+				continue
+			}
+			if len(objectPrefix) > 0 {
+				key := strings.TrimPrefix(*object.Prefix, objectPrefix)
+				object.Prefix = &key
+			}
+			obj := NewStrFileInfo(*object.Prefix)
+			dirs = append(dirs, obj)
 		}
 		seekNum += uint(len(p.Contents))
 		for _, object := range p.Contents {
