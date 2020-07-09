@@ -20,6 +20,7 @@ package s3manager
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -375,15 +376,20 @@ func (s *S3Manager) listByAWS(ctx echo.Context, objectPrefix string) (err error,
 	if err != nil {
 		return
 	}
-	page, limit, _, pagination := common.PagingWithPagination(ctx)
-	if page < 1 {
-		page = 1
-	}
+	_, limit, _, pagination := common.PagingWithPagination(ctx)
 	if limit < 1 {
 		limit = 20
 	}
-	offset := com.Offset(uint(page), uint(limit))
+	offset := ctx.Formx(`curr-offset`, `0`).Uint()
 	endIndex := offset + uint(limit)
+	prevOffset := ctx.Form(`prev-offset`, `0`)
+	nextOffset := fmt.Sprint(offset)
+	q := ctx.Request().URL().Query()
+	q.Del(`curr-offset`)
+	q.Del(`prev-offset`)
+	q.Del(`_pjax`)
+	pagination.SetURL(ctx.Request().URL().Path() + `?` + q.Encode() + `&curr-offset={curr}&prev-offset={prev}`)
+	pagination.SetPosition(prevOffset, nextOffset, nextOffset)
 	var seekNum uint
 	err = s3client.ListObjectsPagesWithContext(ctx, &s3.ListObjectsInput{
 		Bucket:    aws.String(s.bucketName),

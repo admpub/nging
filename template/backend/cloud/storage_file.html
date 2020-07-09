@@ -129,8 +129,9 @@
 						</tr>
                         {{end}}
 					</tbody>
-				</table>		
+				</table>
 				</div>
+				{{if Stored.pagination}}{{Stored.pagination.Render `pagination_cursor`}}{{end}}
 			</div>
 		</div>				
 	</div>
