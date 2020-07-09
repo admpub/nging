@@ -2,12 +2,36 @@ package common
 
 import (
 	"testing"
+
 	"github.com/webx-top/echo/testing/test"
 )
 
 func TestSecure(t *testing.T) {
-	s:=`<p>test<a href="http://www.admpub.com">link</a>test</p>`
-	test.Eq(t,`<p>test<a href="http://www.admpub.com" rel="nofollow">link</a>test</p>`,RemoveXSS(s))
-	s=`<p>test<a href="http://www.admpub.com"><img src="http://www.admpub.com/test" />link</a>test</p>`
-	test.Eq(t,`<p>test<img src="http://www.admpub.com/test"/>linktest</p>`,RemoveXSS(s, true))
+	s := `<p>test<a href="http://www.admpub.com">link</a>test</p>`
+	test.Eq(t, `<p>test<a href="http://www.admpub.com" rel="nofollow">link</a>test</p>`, RemoveXSS(s))
+	s = `<p>test<a href="http://www.admpub.com"><img src="http://www.admpub.com/test" />link</a>test</p>`
+	test.Eq(t, `<p>test<img src="http://www.admpub.com/test"/>linktest</p>`, RemoveXSS(s, true))
+}
+
+func TestPickCodeblock(t *testing.T) {
+	str := "aaaa\n```bbb\ncode-block\n```\nb"
+	pick, content := MarkdownPickoutCodeblock(str)
+	test.Eq(t, []string{"bbb\ncode-block\n"}, pick)
+	test.Eq(t, "aaaa\n```{codeblock(0)}```\nb", content)
+	content = MarkdownRestorePickout(pick, content)
+	test.Eq(t, "aaaa\n```\nbbb\ncode-block\n```\nb", content)
+
+	str += "ccc\r\n```ddd\ncode-block2\n```\r\neee"
+	pick, content = MarkdownPickoutCodeblock(str)
+	test.Eq(t, []string{"bbb\ncode-block\n", "ddd\ncode-block2\n"}, pick)
+	test.Eq(t, "aaaa\n```{codeblock(0)}```\nbccc\r\n```{codeblock(1)}```\r\neee", content)
+	content = MarkdownRestorePickout(pick, content)
+	test.Eq(t, "aaaa\n```\nbbb\ncode-block\n```\nbccc\r\n```\nddd\ncode-block2\n```\r\neee", content)
+
+	str = "aaaa\n```bbb\ncode-block\n```b```\nk"
+	pick, content = MarkdownPickoutCodeblock(str)
+	test.Eq(t, []string{"bbb\ncode-block\n```b"}, pick)
+	test.Eq(t, "aaaa\n```{codeblock(0)}```\nk", content)
+	content = MarkdownRestorePickout(pick, content)
+	test.Eq(t, "aaaa\n```\nbbb\ncode-block\n```b\n```\nk", content)
 }

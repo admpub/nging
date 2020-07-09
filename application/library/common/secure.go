@@ -2,6 +2,7 @@ package common
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"regexp"
 	"strings"
@@ -251,6 +252,101 @@ func MyCleanTags(value string) string {
 	return value
 }
 
+var q = rune('`')
+
+func MarkdownPickoutCodeblock(content string) (repl []string, newContent string) {
+	var (
+		// reset
+		start bool
+		n     int
+		code  []rune
+
+		// keep
+		keep []rune
+	)
+
+	for i, b := range content {
+		if b == q {
+			if start {
+				if n == 2 { //终止标记“```”后面必须带换行
+					index := i + 1
+					if index < len(content)-1 {
+						if content[index] == '\r' {
+							index++
+							if index > len(content)-1 {
+								code = append(code, keep[len(keep)-2:]...)
+								keep = keep[0 : len(keep)-2]
+								code = append(code, b)
+								n = 0
+								continue
+							}
+						}
+						if content[index] != '\n' {
+							code = append(code, keep[len(keep)-2:]...)
+							keep = keep[0 : len(keep)-2]
+							code = append(code, b)
+							n = 0
+							continue
+						}
+					}
+				}
+			} else {
+				if n == 0 { //起始标记“```”前面必须带换行
+					if i > 0 {
+						if content[i-1] != '\n' {
+							keep = append(keep, b)
+							continue
+						}
+					}
+				}
+			}
+			n++
+			if n == 3 {
+				if start { // end
+					keep = append(keep, b)
+					repl = append(repl, string(code))
+
+					start = false
+					n = 0
+					code = nil
+					continue
+				}
+				code = nil
+				start = true
+				insert := []rune(`{codeblock(` + fmt.Sprint(len(repl)) + `)}`)
+				keep = append(keep, b)
+				keep = append(keep, insert...)
+				n = 0
+				continue
+			}
+			keep = append(keep, b)
+			continue
+		}
+		if start {
+			code = append(code, b)
+		} else {
+			keep = append(keep, b)
+		}
+	}
+	newContent = string(keep)
+	return
+}
+
+func MarkdownRestorePickout(repl []string, content string) string {
+	for i, r := range repl {
+		find := "```{codeblock(" + fmt.Sprint(i) + ")}```"
+		r = strings.TrimLeft(r, "\r")
+		if !strings.HasPrefix(r, "\n") {
+			r = "\n" + r
+		}
+		if !strings.HasSuffix(r, "\n") {
+			r += "\n"
+		}
+		content = strings.Replace(content, find, "```"+r+"```", 1)
+	}
+	return content
+}
+
 func ContentEncode(content string, contypes ...string) string {
 	var contype string
 	if len(contypes) > 0 {
@@ -260,24 +356,29 @@ func ContentEncode(content string, contypes ...string) string {
 	case `html`:
 		content = RemoveXSS(content)
 
-	case `url`, `image`, `video`, `audio`, `file`:
+	case `url`, `image`, `video`, `audio`, `file`, `id`:
 		content = MyCleanText(content)
 
-	case `id`, `text`:
+	case `text`:
 		content = com.StripTags(content)
 
 	case `json`:
 		// pass
 
 	case `markdown`:
-		// pass
+		var pick []string
+		pick, content = MarkdownPickoutCodeblock(content)
+		content = RemoveXSS(content)
+		content = MarkdownRestorePickout(pick, content)
 
 	case `list`:
+		content = MyCleanText(content)
 		content = strings.TrimSpace(content)
 		content = strings.Trim(content, `,`)
 
 	default:
 		content = com.StripTags(content)
 	}
+	content = strings.TrimSpace(content)
 	return content
 }
