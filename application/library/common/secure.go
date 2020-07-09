@@ -335,10 +335,12 @@ func MarkdownPickoutCodeblock(content string) (repl []string, newContent string)
 func MarkdownRestorePickout(repl []string, content string) string {
 	for i, r := range repl {
 		find := "```{codeblock(" + fmt.Sprint(i) + ")}```"
-		// r = strings.TrimLeft(r, "\r")
-		// if !strings.HasPrefix(r, "\n") {
-		// 	r = "\n" + r
-		// }
+		if strings.Count(r, "\n") < 2 {
+			r = strings.TrimLeft(r, "\r")
+			if !strings.HasPrefix(r, "\n") {
+				r = "\n" + r
+			}
+		}
 		if !strings.HasSuffix(r, "\n") {
 			r += "\n"
 		}
