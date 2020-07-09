@@ -1,14 +1,13 @@
 package s3client
 
 import (
-	"net/http"
 	"crypto/tls"
+	"net/http"
 
-	minio "github.com/minio/minio-go"
-	"github.com/admpub/nging/application/library/s3manager"
 	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/library/s3manager"
+	minio "github.com/minio/minio-go"
 )
-
 
 func Connect(m *dbschema.NgingCloudStorage) (client *minio.Client, err error) {
 	isSecure := m.Secure == `Y`
@@ -20,7 +19,7 @@ func Connect(m *dbschema.NgingCloudStorage) (client *minio.Client, err error) {
 	if err != nil {
 		return client, err
 	}
-	if m.Secure != `Y` {
+	if isSecure {
 		tr := &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		}
@@ -29,11 +28,11 @@ func Connect(m *dbschema.NgingCloudStorage) (client *minio.Client, err error) {
 	return client, nil
 }
 
-func New(m *dbschema.NgingCloudStorage, editableMaxSize int64) (*s3manager.S3Manager,error) {
+func New(m *dbschema.NgingCloudStorage, editableMaxSize int64) (*s3manager.S3Manager, error) {
 	client, err := Connect(m)
 	if err != nil {
 		return nil, err
 	}
-	mgr := s3manager.New(client, m.Bucket, editableMaxSize)
+	mgr := s3manager.New(client, m, editableMaxSize)
 	return mgr, err
 }

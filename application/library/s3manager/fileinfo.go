@@ -23,11 +23,42 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aws/aws-sdk-go/service/s3"
 	minio "github.com/minio/minio-go"
 )
 
 func NewFileInfo(objectInfo minio.ObjectInfo) os.FileInfo {
 	return &fileInfo{objectInfo: objectInfo}
+}
+
+func NewS3FileInfo(object *s3.Object) os.FileInfo {
+	objectInfo := minio.ObjectInfo{}
+	if object.ETag != nil {
+		objectInfo.ETag = *object.ETag
+	}
+	if object.Key != nil {
+		objectInfo.Key = *object.Key
+	}
+	if object.LastModified != nil {
+		objectInfo.LastModified = *object.LastModified
+	}
+	if object.Owner != nil {
+		if object.Owner.DisplayName != nil {
+			objectInfo.Owner.DisplayName = *object.Owner.DisplayName
+		}
+		if object.Owner.ID != nil {
+			objectInfo.Owner.ID = *object.Owner.ID
+		}
+	}
+	if object.Size != nil {
+		objectInfo.Size = *object.Size
+	}
+	if object.StorageClass != nil {
+		objectInfo.StorageClass = *object.StorageClass
+	}
+	return &fileInfo{
+		objectInfo: objectInfo,
+	}
 }
 
 type fileInfo struct {

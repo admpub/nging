@@ -28,8 +28,11 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/charset"
 	"github.com/admpub/nging/application/library/filemanager"
+	"github.com/admpub/nging/application/library/s3manager/s3client/awsclient"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
 	minio "github.com/minio/minio-go"
 	"github.com/pkg/errors"
@@ -37,16 +40,18 @@ import (
 	"github.com/webx-top/echo"
 )
 
-func New(client *minio.Client, bucketName string, editableMaxSize int64) *S3Manager {
+func New(client *minio.Client, config *dbschema.NgingCloudStorage, editableMaxSize int64) *S3Manager {
 	return &S3Manager{
 		client:          client,
-		bucketName:      bucketName,
+		config:          config,
+		bucketName:      config.Bucket,
 		EditableMaxSize: editableMaxSize,
 	}
 }
 
 type S3Manager struct {
 	client          *minio.Client
+	config          *dbschema.NgingCloudStorage
 	bucketName      string
 	EditableMaxSize int64
 }
@@ -343,21 +348,9 @@ func (s *S3Manager) Download(ctx echo.Context, ppath string) error {
 	return ctx.Attachment(f, fileName, inline)
 }
 
-func (s *S3Manager) List(ctx echo.Context, ppath string, sortBy ...string) (err error, exit bool, dirs []os.FileInfo) {
+func (s *S3Manager) listByMinio(ctx echo.Context, objectPrefix string) (err error, dirs []os.FileInfo) {
 	doneCh := make(chan struct{})
 	defer close(doneCh)
-	objectPrefix := strings.TrimPrefix(ppath, `/`)
-	words := len(objectPrefix)
-	var forceDir bool
-	if words == 0 {
-		forceDir = true
-	} else {
-		if strings.HasSuffix(objectPrefix, `/`) {
-			forceDir = true
-		} else {
-			objectPrefix += `/`
-		}
-	}
 	objectCh := s.client.ListObjectsV2(s.bucketName, objectPrefix, false, doneCh)
 	for object := range objectCh {
 		if object.Err != nil {
@@ -371,6 +364,61 @@ func (s *S3Manager) List(ctx echo.Context, ppath string, sortBy ...string) (err 
 		}
 		obj := NewFileInfo(object)
 		dirs = append(dirs, obj)
+	}
+	return
+}
+
+func (s *S3Manager) listByAWS(ctx echo.Context, objectPrefix string) (err error, dirs []os.FileInfo) {
+	var s3client *s3.S3
+	s3client, err = awsclient.Connect(s.config)
+	if err != nil {
+		return
+	}
+	page := ctx.Formx(`page`).Uint()
+	limit := ctx.Formx(`size`).Uint()
+	offset := com.Offset(page, limit)
+	endIndex := offset + limit
+	var seekNum uint
+	err = s3client.ListObjectsPagesWithContext(ctx, &s3.ListObjectsInput{
+		Bucket:  aws.String(s.bucketName),
+		Prefix:  aws.String(objectPrefix),
+		MaxKeys: aws.Int64(int64(limit)),
+	}, func(p *s3.ListObjectsOutput, lastPage bool) bool {
+		if seekNum < offset {
+			return true
+		}
+		seekNum += uint(len(p.Contents))
+		for _, object := range p.Contents {
+			obj := NewS3FileInfo(object)
+			dirs = append(dirs, obj)
+		}
+		return seekNum <= endIndex // continue paging
+	})
+	return
+}
+
+func (s *S3Manager) List(ctx echo.Context, ppath string, sortBy ...string) (err error, exit bool, dirs []os.FileInfo) {
+	objectPrefix := strings.TrimPrefix(ppath, `/`)
+	words := len(objectPrefix)
+	var forceDir bool
+	if words == 0 {
+		forceDir = true
+	} else {
+		if strings.HasSuffix(objectPrefix, `/`) {
+			forceDir = true
+		} else {
+			objectPrefix += `/`
+		}
+	}
+	listType := `aws`
+	switch listType {
+	case `aws`:
+		err, dirs = s.listByAWS(ctx, objectPrefix)
+	default:
+		err, dirs = s.listByMinio(ctx, objectPrefix)
+	}
+	if err != nil {
+		return
 	}
 	if !forceDir && len(dirs) == 0 {
 		return s.Download(ctx, ppath), true, nil
