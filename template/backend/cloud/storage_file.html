@@ -19,10 +19,11 @@
 {{/Block}}
 
 {{Block "main"}}
-{{$id := Form "id"}}
-{{$path := Stored.Get "path"}}
-{{$parentPath := Stored.Get "parentPath"}}
-{{$pathPrefix := Stored.Get "pathPrefix"}}
+{{- $id := Form "id" -}}
+{{- $path := Stored.Get "path" -}}
+{{- $parentPath := Stored.Get "parentPath" -}}
+{{- $pathPrefix := Stored.Get "pathPrefix" -}}
+{{- $engine := Form "engine" "" -}}
 <div class="row">
 	<div class="col-md-12">
 		<div class="block-flat">
@@ -59,7 +60,7 @@
                         <tr>
 							<td>
                                 <i class="fa fa-folder-o"></i>
-                                <a title="{{"点击回到上一级"|T}}" href="__BACKEND__/cloud/storage_file?id={{$id}}&path={{$parentPath}}" style="font-size:18px;font-weight:bold" data-toggle="tooltip">..</a>
+                                <a title="{{"点击回到上一级"|T}}" href="__BACKEND__/cloud/storage_file?id={{$id}}&path={{$parentPath}}&engine={{$engine}}" style="font-size:18px;font-weight:bold" data-toggle="tooltip">..</a>
                             </td>
 							<td></td>
 							<td></td>
@@ -73,17 +74,17 @@
 							<td>
                                 {{if $v.IsDir}}
                                 <i class="fa fa-folder-o"></i>
-                                <a href="__BACKEND__/cloud/storage_file?id={{$id}}&path={{$pathPrefix}}{{$v.Name}}">{{$v.Name}}</a>
+                                <a href="__BACKEND__/cloud/storage_file?id={{$id}}&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}">{{$v.Name}}</a>
                                 {{else}}
                                 {{$fileType := FileTypeByName $v.Name}}
                                 <i class="fa fa-{{FileTypeIcon $fileType}}"></i>
                                 {{if eq $fileType `image`}}
-                                <a class="pull-right" href="__BACKEND__/cloud/storage_file?id={{$id}}&do=download&inline=1&path={{$pathPrefix}}{{$v.Name}}" target="_blank"><img src="__BACKEND__/cloud/storage_file?id={{$id}}&do=download&inline=1&path={{$pathPrefix}}{{$v.Name}}" style="max-width:100px;max-height:30px;" class="previewable" /></a>
+                                <a class="pull-right" href="__BACKEND__/cloud/storage_file?id={{$id}}&do=download&inline=1&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" target="_blank"><img src="__BACKEND__/cloud/storage_file?id={{$id}}&do=download&inline=1&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" style="max-width:100px;max-height:30px;" class="previewable" /></a>
                                 {{end}}
-                                <a href="__BACKEND__/cloud/storage_file?id={{$id}}&do=download&path={{$pathPrefix}}{{$v.Name}}">{{$v.Name}}</a>
+                                <a href="__BACKEND__/cloud/storage_file?id={{$id}}&do=download&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}">{{$v.Name}}</a>
                                 {{end}}
                                 &nbsp;
-                                <a href="javascript:;" title="{{"重命名"|T}}" data-url="__BACKEND__/cloud/storage_file?id={{$id}}&do=rename&path={{$pathPrefix}}{{$v.Name}}" onclick="fileRename(this,'{{$pathPrefix}}{{$v.Name}}',{{if $v.IsDir}}true{{else}}false{{end}})" data-toggle="tooltip">
+                                <a href="javascript:;" title="{{"重命名"|T}}" data-url="__BACKEND__/cloud/storage_file?id={{$id}}&do=rename&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" onclick="fileRename(this,'{{$pathPrefix}}{{$v.Name}}',{{if $v.IsDir}}true{{else}}false{{end}})" data-toggle="tooltip">
                                 <i class="fa fa-pencil"></i>
                                 </a>
                             </td>
@@ -100,26 +101,26 @@
 							<td>{{if $v.IsDir}}&mdash;{{else}}{{$v.Size|FormatByte}}{{end}}</td>
 							<td>{{$mode}}</td>
 							<td>
-                                <a title="{{"删除"|T}}" class="label label-danger" href="__BACKEND__/cloud/storage_file?id={{$id}}&do=delete&path={{$pathPrefix}}{{$v.Name}}" onclick="return confirm('{{T "真的要删除“%v”吗？" $v.Name}}');" data-toggle="tooltip">
+                                <a title="{{"删除"|T}}" class="label label-danger" href="__BACKEND__/cloud/storage_file?id={{$id}}&do=delete&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" onclick="return confirm('{{T "真的要删除“%v”吗？" $v.Name}}');" data-toggle="tooltip">
                                 <i class="fa fa-times"></i>
                                 </a>
                                 {{if not $v.IsDir}}
                                 &nbsp;
-                                <a title="{{"下载"|T}}" class="label label-info" href="__BACKEND__/cloud/storage_file?id={{$id}}&do=download&path={{$pathPrefix}}{{$v.Name}}" data-toggle="tooltip">
+                                <a title="{{"下载"|T}}" class="label label-info" href="__BACKEND__/cloud/storage_file?id={{$id}}&do=download&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" data-toggle="tooltip">
                                 <i class="fa fa-cloud-download"></i>
                                 </a>
                                 {{end}}
                                 {{if not $v.IsDir}}
                                 {{if Editable $v.Name}}
                                 &nbsp;
-                                <a title="{{"编辑"|T}}" class="label label-success" href="javascript:;" data-url="__BACKEND__/cloud/storage_file?id={{$id}}&do=edit&path={{$pathPrefix}}{{$v.Name}}" onclick="fileEdit(this,'{{$v.Name}}')" data-toggle="tooltip">
+                                <a title="{{"编辑"|T}}" class="label label-success" href="javascript:;" data-url="__BACKEND__/cloud/storage_file?id={{$id}}&do=edit&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" onclick="fileEdit(this,'{{$v.Name}}')" data-toggle="tooltip">
                                 <i class="fa fa-pencil"></i>
                                 </a>
                                 {{end}}
                                 {{$mediaMime:=Playable $v.Name}}
                                 {{if $mediaMime}}
                                 &nbsp;
-                                <a title="{{"播放"|T}}" class="label label-primary" href="javascript:;" playable data-mime="{{$mediaMime}}" data-name="{{$v.Name}}" data-url="__BACKEND__/cloud/storage_file?id={{$id}}&do=download&inline=1&path={{$pathPrefix}}{{$v.Name}}" onclick="filePlay(this)" data-toggle="tooltip">
+                                <a title="{{"播放"|T}}" class="label label-primary" href="javascript:;" playable data-mime="{{$mediaMime}}" data-name="{{$v.Name}}" data-url="__BACKEND__/cloud/storage_file?id={{$id}}&do=download&inline=1&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" onclick="filePlay(this)" data-toggle="tooltip">
                                 <i class="fa fa-play"></i>
                                 </a>
                                 {{end}}

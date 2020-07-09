@@ -394,7 +394,6 @@ func (s *S3Manager) listByAWS(ctx echo.Context, objectPrefix string) (err error,
 		if seekNum < offset {
 			return true
 		}
-		seekNum += uint(len(p.CommonPrefixes))
 		for _, object := range p.CommonPrefixes {
 			if object.Prefix == nil {
 				continue
@@ -403,18 +402,27 @@ func (s *S3Manager) listByAWS(ctx echo.Context, objectPrefix string) (err error,
 				key := strings.TrimPrefix(*object.Prefix, objectPrefix)
 				object.Prefix = &key
 			}
+			if len(*object.Prefix) == 0 {
+				continue
+			}
 			obj := NewStrFileInfo(*object.Prefix)
 			dirs = append(dirs, obj)
 		}
-		seekNum += uint(len(p.Contents))
 		for _, object := range p.Contents {
-			if object.Key != nil && len(objectPrefix) > 0 {
+			if object.Key == nil {
+				continue
+			}
+			if len(objectPrefix) > 0 {
 				key := strings.TrimPrefix(*object.Key, objectPrefix)
 				object.Key = &key
+			}
+			if len(*object.Key) == 0 {
+				continue
 			}
 			obj := NewS3FileInfo(object)
 			dirs = append(dirs, obj)
 		}
+		seekNum += uint(len(dirs))
 		return seekNum <= endIndex // continue paging
 	})
 	ctx.Set(`pagination`, pagination)
