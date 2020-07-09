@@ -383,7 +383,7 @@ func (s *S3Manager) listByAWS(ctx echo.Context, objectPrefix string) (err error,
 	offset := ctx.Formx(`curr-offset`, `0`).Uint()
 	endIndex := offset + uint(limit)
 	prevOffset := ctx.Form(`prev-offset`, `0`)
-	nextOffset := fmt.Sprint(offset)
+	nextOffset := fmt.Sprint(endIndex)
 	q := ctx.Request().URL().Query()
 	q.Del(`curr-offset`)
 	q.Del(`prev-offset`)
