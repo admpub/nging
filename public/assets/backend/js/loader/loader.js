@@ -21,7 +21,7 @@
 			return Loader.getValue(key, data);
 		});
 	};
-    Loader.include = function(file, location,once) {
+    Loader.include = function(file,location,once) {
         if (location == null) location = "head";
         if (once == null) once = true;
         if (location == "head" && typeof(Loader.data["include"]) == "undefined") {
@@ -70,16 +70,16 @@
         }
         $.ajaxSetup({cache: false});
     };
-    Loader.defined = function(vType, key, callback) {
+    Loader.defined = function(vType, key, callback, onloadCallback) {
         if (vType != 'undefined' || key == null) {
             if (key != null && callback != null) return callback();
             return;
         }
         if (typeof(key) == 'string' && typeof(Loader.libs[key]) != 'undefined') key = Loader.libs[key];
-        Loader.includes(key);
+        Loader.includes(key, true, onloadCallback);
         if (callback != null) return callback();
     };
-    Loader.includes = function(js,once) {
+    Loader.includes = function(js,once,onloadCallback) {
         if (!js) return;
         switch (typeof(js)) {
         case 'string':
@@ -89,7 +89,7 @@
                 js=js.substring(1);
             }
             Loader.include(url + '/' + js,null,once);
-            return;
+            break;
         default:
             if (typeof(js.length) == 'undefined') return;
             var jss = [];
@@ -104,6 +104,7 @@
             }
             Loader.include(jss,null,once);
         }
+        if (onloadCallback != null) onloadCallback();
     };
     App.loader=Loader;
 })(App);

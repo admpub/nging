@@ -1,4 +1,11 @@
-App.loader.libs.editormdPreview = ['#editor/markdown/lib/marked.min.js', '#editor/markdown/lib/prettify.min.js', '#editor/markdown/lib/raphael.min.js', '#editor/markdown/lib/underscore.min.js', '#editor/markdown/css/editormd.preview.min.css', '#editor/markdown/editormd.min.js'];
+App.loader.libs.editormdPreview = [
+	'#editor/markdown/lib/marked.min.js', 
+	'#editor/markdown/lib/prettify.min.js', 
+	'#editor/markdown/lib/raphael.min.js', 
+	'#editor/markdown/lib/underscore.min.js',  
+	'#editor/markdown/css/editormd.preview.min.css',
+	'#editor/markdown/editormd.min.js'
+];
 App.loader.libs.editormd = ['#editor/markdown/css/editormd.min.css', '#editor/markdown/css/editormd.preview.min.css', '#editor/markdown/editormd.min.js'];
 App.loader.libs.flowChart = ['#editor/markdown/lib/flowchart.min.js', '#editor/markdown/lib/jquery.flowchart.min.js'];
 App.loader.libs.sequenceDiagram = ['#editor/markdown/lib/sequence-diagram.min.js'];
@@ -57,7 +64,12 @@ App.editor.ueditor = function (editorElement, uploadUrl, options) {
 // =================================================================
 // editormd
 // =================================================================
-
+App.editor.markdownReset = function() {
+	var path = BACKEND_URL + '/public/assets/backend/js/editor/markdown/';
+	editormd.emoji.path = path+'images/emojis/';
+	editormd.katexURL.css = path+'lib/katex/katex.min';
+	editormd.katexURL.js = path+'lib/katex/katex.min';
+};
 /* 解析markdown为html */
 App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
 	if (typeof (viewZoneId) == 'object') {
@@ -65,7 +77,9 @@ App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
 	} else if (viewZoneId.substr(0, 1) == '#') {
 		viewZoneId = viewZoneId.substr(1);
 	}
-	App.loader.defined(typeof (marked), 'editormdPreview');
+	App.loader.defined(typeof (marked), 'editormdPreview', null, function(){
+		App.editor.markdownReset();
+	});
 	var defaults = {
 		markdown: markdownData,
 		//markdownSourceCode: true, // 是否保留 Markdown 源码，即是否删除保存源码的 Textarea 标签
@@ -83,11 +97,6 @@ App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
 	var params = $.extend({}, defaults, options || {});
 	if (params.flowChart) App.loader.defined(typeof ($.fn.flowChart), 'flowChart');
 	if (params.sequenceDiagram) App.loader.defined(typeof ($.fn.sequenceDiagram), 'sequenceDiagram');
-
-	var path = BACKEND_URL + '/public/assets/backend/js/editor/markdown/';
-	editormd.emoji.path = path+'images/emojis/';
-	//editormd.katexURL.css = 'katex.min';
-	//editormd.katexURL.js = 'katex.min';
 	if (markdownData == null || typeof (markdownData) == 'boolean') {
 		var isContainer = markdownData, box = $('#' + viewZoneId);
 		if (isContainer != false) box = $('#' + viewZoneId).find('.markdown-code');
@@ -115,7 +124,9 @@ App.editor.markdowns = function (editorElement, uploadUrl, options) {
 App.editor.markdown = function (editorElement, uploadUrl, options) {
 	var isManager = false;
 	if (!uploadUrl) uploadUrl = $(editorElement).attr('action');
-	App.loader.defined(typeof (editormd), 'editormd');
+	App.loader.defined(typeof (editormd), 'editormd', null, function(){
+		App.editor.markdownReset();
+	});
 	if (uploadUrl) {
 		if (uploadUrl.substr(0, 1) == '!') {
 			uploadUrl = uploadUrl.substr(1);
@@ -217,7 +228,6 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 	}
 	if (!uploadUrl) params.imageUpload = false;
 	var editor = editormd(containerId, params);
-	editormd.emoji.path = path+'images/emojis/';
 	$(editorElement).data('editor-name', 'markdown');
 	$(editorElement).data('editor-object', editor);
 	return editor;
