@@ -69,7 +69,7 @@ App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
 	var defaults = {
 		markdown: markdownData,
 		//markdownSourceCode: true, // 是否保留 Markdown 源码，即是否删除保存源码的 Textarea 标签
-		//htmlDecode: "style,script,iframe", // you can filter tags decode
+		htmlDecode: "style,script,iframe|on*", // 启用html解码。这里设置需要被过滤的标签和属性。竖线“|”左边的为标签，右边的为属性(1. “*” 代表删除全部属性；2. “on*” 代表删除全部以“on”开头的属性。这两种特殊设置必须放在“|”右边第一的位置)
 		toc: true,
 		tocm: true,  // Using [TOCM]
 		//gfm: true,
@@ -153,7 +153,7 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 		saveHTMLToTextarea: true,			// 保存HTML到Textarea
 		searchReplace: true,
 		watch: true,						// 关闭实时预览
-		//htmlDecode: "style,script,iframe",	// 开启HTML标签解析，为了安全性，默认不开启
+		htmlDecode: "style,script,iframe|on*", // 启用html解码。这里设置需要被过滤的标签和属性。竖线“|”左边的为标签，右边的为属性(1. “*” 代表删除全部属性；2. “on*” 代表删除全部以“on”开头的属性。这两种特殊设置必须放在“|”右边第一的位置)
 		//autoHeight : true, // 自动高度
 		emoji: true,
 		taskList: true,

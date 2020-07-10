@@ -3519,7 +3519,7 @@
                     return "";
                 }
 
-                if (prot.indexOf("javascript:") === 0) {
+                if (prot.substring(0,11) === 'javascript:') {
                     return "";
                 }
             }
@@ -3816,12 +3816,20 @@
         }
             
         if (typeof filters !== "string") {
-            return html;
+            // return html;
+            // If no filters set use "script|on*" by default to avoid XSS
+            filters = "script|on*";
         }
 
-        var expression = filters.split("|");
+        var expression = filters.split("|"); // 过滤标签|过滤属性 
         var filterTags = expression[0].split(",");
         var attrs      = expression[1];
+
+        if(!filterTags.includes('allowScript') && !filterTags.includes('script'))
+        {
+            // Only allow script if requested specifically
+            filterTags.push('script');
+        }
 
         for (var i = 0, len = filterTags.length; i < len; i++)
         {
@@ -3831,10 +3839,26 @@
         }
         
         //return html;
+        
+        if (typeof attrs === "undefined")
+        {
+            // If no attrs set block "on*" to avoid XSS
+            attrs = "on*"
+        }
 
         if (typeof attrs !== "undefined")
         {
             var htmlTagRegex = /\<(\w+)\s*([^\>]*)\>([^\>]*)\<\/(\w+)\>/ig;
+            var base64DataRegex = /^image\/(gif|jpeg|png|webp);base64,/;
+
+            var filterAttrs = attrs.split(",");
+            var filterOn = true;
+
+            if(filterAttrs.includes('allowOn'))
+            {
+                // Only allow on* if requested specifically
+                filterOn = false;
+            }
 
             if (attrs === "*")
             {
@@ -3842,7 +3866,7 @@
                     return "<" + $2 + ">" + $4 + "</" + $5 + ">";
                 });         
             }
-            else if (attrs === "on*")
+            else if (attrs === "on*" || filterOn)
             {
                 html = html.replace(htmlTagRegex, function($1, $2, $3, $4, $5) {
                     var el = $("<" + $2 + ">" + $4 + "</" + $5 + ">");
@@ -3854,8 +3878,17 @@
                     });
                     
                     $.each($attrs, function(i) {                        
-                        if (i.indexOf("on") === 0) {
+                        if (i.substring(0,2) == "on") {
                             delete $attrs[i];
+                        }
+                        else if (i == "src") {
+                            var v = String($attrs[i]);
+                            if(v.substring(0,11) === 'javascript:'){
+                                delete $attrs[i];
+                            } 
+                            else if (v.substring(0,5) === 'data:' && !base64DataRegex.test(v.substring(5,30))) {
+                                delete $attrs[i];
+                            }
                         }
                     });
                     
@@ -3866,10 +3899,9 @@
                     return el[0].outerHTML + text;
                 });
             }
-            else
+            if(filterAttrs.length > 1 || (filterAttrs[0]!=="*" && filterAttrs[0]!=="on*"))
             {
                 html = html.replace(htmlTagRegex, function($1, $2, $3, $4) {
-                    var filterAttrs = attrs.split(",");
                     var el = $($1);
                     el.html($4);
 
