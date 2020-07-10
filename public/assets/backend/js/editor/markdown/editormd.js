@@ -3849,7 +3849,7 @@
         if (typeof attrs !== "undefined")
         {
             var htmlTagRegex = /\<(\w+)\s*([^\>]*)\>([^\>]*)\<\/(\w+)\>/ig;
-            var base64DataRegex = /^image\/(gif|jpeg|png|webp);base64,/;
+            var base64DataRegex = /^image\/(gif|jpeg|png|webp);base64,/i;
 
             var filterAttrs = attrs.split(",");
             var filterOn = true;
@@ -3883,10 +3883,10 @@
                         }
                         else if (i == "src") {
                             var v = String($attrs[i]);
-                            if(v.substring(0,11) === 'javascript:'){
+                            if(String(v.substring(0,11)).toLowerCase() === 'javascript:'){
                                 delete $attrs[i];
                             } 
-                            else if (v.substring(0,5) === 'data:' && !base64DataRegex.test(v.substring(5,30))) {
+                            else if (String(v.substring(0,5)).toLowerCase() === 'data:' && !base64DataRegex.test(v.substring(5,30))) {
                                 delete $attrs[i];
                             }
                         }
