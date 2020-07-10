@@ -77,29 +77,36 @@ App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
 	} else if (viewZoneId.substr(0, 1) == '#') {
 		viewZoneId = viewZoneId.substr(1);
 	}
-	App.loader.defined(typeof (marked), 'editormdPreview', null, function(){
-		App.editor.markdownReset();
-	});
-	var defaults = {
-		markdown: markdownData,
-		//markdownSourceCode: true, // 是否保留 Markdown 源码，即是否删除保存源码的 Textarea 标签
-		htmlDecode: "style,script,iframe|on*", // 启用html解码。这里设置需要被过滤的标签和属性。竖线“|”左边的为标签，右边的为属性(1. “*” 代表删除全部属性；2. “on*” 代表删除全部以“on”开头的属性。这两种特殊设置必须放在“|”右边第一的位置)
-		toc: true,
-		tocm: true,  // Using [TOCM]
-		//gfm: true,
-		//tocDropdown: true,
-		emoji: true,
-		taskList: true,
-		tex: true,  // 默认不解析
-		flowChart: true,  // 默认不解析
-		sequenceDiagram: true  // 默认不解析
+	var init = function(options){
+		var defaults = {
+			markdown: markdownData,
+			//markdownSourceCode: true, // 是否保留 Markdown 源码，即是否删除保存源码的 Textarea 标签
+			htmlDecode: "style,script,iframe|on*", // 启用html解码。这里设置需要被过滤的标签和属性。竖线“|”左边的为标签，右边的为属性(1. “*” 代表删除全部属性；2. “on*” 代表删除全部以“on”开头的属性。这两种特殊设置必须放在“|”右边第一的位置)
+			toc: true,
+			tocm: true,  // Using [TOCM]
+			//gfm: true,
+			//tocDropdown: true,
+			emoji: true,
+			taskList: true,
+			tex: true,  // 默认不解析
+			flowChart: true,  // 默认不解析
+			sequenceDiagram: true  // 默认不解析
+		};
+		var params = $.extend({}, defaults, options || {});
+		App.loader.defined(typeof (marked), 'editormdPreview', null, function(){
+			App.editor.markdownReset();
+		});
+		if (params.flowChart) App.loader.defined(typeof ($.fn.flowChart), 'flowChart');
+		if (params.sequenceDiagram) App.loader.defined(typeof ($.fn.sequenceDiagram), 'sequenceDiagram');
+		return params;
 	};
-	var params = $.extend({}, defaults, options || {});
-	if (params.flowChart) App.loader.defined(typeof ($.fn.flowChart), 'flowChart');
-	if (params.sequenceDiagram) App.loader.defined(typeof ($.fn.sequenceDiagram), 'sequenceDiagram');
+	var loadingId = 'markdown-render-processing-'+ App.utils.unixtime();
+	var loadingHTML = '<div id="'+loadingId+'"><i class="fa fa-spinner fa-spin fa-3x"></i></div>';
 	if (markdownData == null || typeof (markdownData) == 'boolean') {
 		var isContainer = markdownData, box = $('#' + viewZoneId);
 		if (isContainer != false) box = $('#' + viewZoneId).find('.markdown-code');
+		box.first().before(loadingHTML);
+		var params = init(options);
 		box.each(function () {
 			if($(this).children('textarea').length>0){
 				params.markdown = $(this).children('textarea').text();
@@ -108,10 +115,13 @@ App.editor.markdownToHTML = function (viewZoneId, markdownData, options) {
 			}
 			editormd.markdownToHTML(this, params);
 		});
+		$('#'+loadingId).remove();
 		return;
 	}
-
+	$('#'+viewZoneId).before(loadingHTML);
+	var params = init(options);
 	var viewer = editormd.markdownToHTML(viewZoneId, params);
+	$('#'+loadingId).remove();
 	return viewer;
 };
 
