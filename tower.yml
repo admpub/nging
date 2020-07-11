@@ -19,7 +19,7 @@ app {
   buildParams : ':~:-tags~sqlite windll'
 
   # 运行app所需的其它参数，例如：webx.exe -p 8080 -e 90 -d 100 其中的“-e 90 -d 100”就是(注意：内部用[单个]半角空格隔开)。
-  params : "--frontenddomain www.coscms.com,nging.coscms.com:8080"
+  params : "--frontend.domain www.coscms.com,nging.coscms.com:8080"
 }
 
 proxy {
