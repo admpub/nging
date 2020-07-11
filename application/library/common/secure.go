@@ -257,7 +257,7 @@ var (
 	markdownLinkWithDoubleQuote = regexp.MustCompile(`([!]?\[[^]]+\]\([^ \)]+ )&#34;([^"\)]+)&#34;(\))`)
 	markdownLinkWithSingleQuote = regexp.MustCompile(`([!]?\[[^]]+\]\([^ \)]+ )&#39;([^'\)]+)&#39;(\))`)
 	markdownLinkWithScript      = regexp.MustCompile(`(?i)([!]?\[[^]]+\]\()(javascript):([^\)]*\))`)
-	markdownQuoteTag            = regexp.MustCompile("(?:\n|^)&gt;" + `\s`)
+	markdownQuoteTag            = regexp.MustCompile("((\n|^)[ ]{0,3})&gt;")
 )
 
 func MarkdownPickoutCodeblock(content string) (repl []string, newContent string) {
@@ -392,7 +392,7 @@ func ContentEncode(content string, contypes ...string) string {
 		// 还原单引号
 		content = markdownLinkWithSingleQuote.ReplaceAllString(content, `${1}'${2}'${3}`)
 		// 还原引用标识
-		content = markdownQuoteTag.ReplaceAllString(content, "\n> ")
+		content = markdownQuoteTag.ReplaceAllString(content, `${1}>`)
 		// 还原代码块
 		content = MarkdownRestorePickout(pick, content)
 
