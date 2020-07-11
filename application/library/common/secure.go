@@ -253,9 +253,11 @@ func MyCleanTags(value string) string {
 }
 
 var (
-	q             = rune('`')
-	markdownLink  = regexp.MustCompile(`((?:\s|^)\[[^]]+\]\([a-zA-Z]+\://[^ \)]+ )&#34;([^"\)]+)&#34;(\)(?:\s|$))`)
-	markdownQuote = regexp.MustCompile("(?:\n|^)&gt;" + `\s`)
+	q                           = rune('`')
+	markdownLinkWithDoubleQuote = regexp.MustCompile(`([!]?\[[^]]+\]\([^ \)]+ )&#34;([^"\)]+)&#34;(\))`)
+	markdownLinkWithSingleQuote = regexp.MustCompile(`([!]?\[[^]]+\]\([^ \)]+ )&#39;([^'\)]+)&#39;(\))`)
+	markdownLinkWithScript      = regexp.MustCompile(`(?i)([!]?\[[^]]+\]\()(javascript):([^\)]*\))`)
+	markdownQuoteTag            = regexp.MustCompile("(?:\n|^)&gt;" + `\s`)
 )
 
 func MarkdownPickoutCodeblock(content string) (repl []string, newContent string) {
@@ -372,12 +374,26 @@ func ContentEncode(content string, contypes ...string) string {
 		// pass
 
 	case `markdown`:
+		// 提取代码块
 		var pick []string
 		pick, content = MarkdownPickoutCodeblock(content)
+
+		// - 删除XSS
+
+		// 删除HTML中的XSS代码
 		content = RemoveXSS(content)
-		// 还原
-		content = markdownLink.ReplaceAllString(content, `${1}"${2}"${3}`)
-		content = markdownQuote.ReplaceAllString(content, "\n> ")
+		// 拦截Markdown链接中的“javascript:”
+		content = markdownLinkWithScript.ReplaceAllString(content, `${1}-${2}-${3}`)
+
+		// - 还原
+
+		// 还原双引号
+		content = markdownLinkWithDoubleQuote.ReplaceAllString(content, `${1}"${2}"${3}`)
+		// 还原单引号
+		content = markdownLinkWithSingleQuote.ReplaceAllString(content, `${1}'${2}'${3}`)
+		// 还原引用标识
+		content = markdownQuoteTag.ReplaceAllString(content, "\n> ")
+		// 还原代码块
 		content = MarkdownRestorePickout(pick, content)
 
 	case `list`:

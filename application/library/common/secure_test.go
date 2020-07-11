@@ -37,6 +37,14 @@ func TestPickCodeblock(t *testing.T) {
 
 	content = ContentEncode(`[普通链接带标题](http://localhost/ &#34;普通链接带标题&#34;)`, `markdown`)
 	test.Eq(t, `[普通链接带标题](http://localhost/ "普通链接带标题")`, content)
+	content = ContentEncode(`[普通链接带标题](javascript:000 &#34;普通链接带标题&#34;) 123`, `markdown`)
+	test.Eq(t, `[普通链接带标题](-javascript-000 "普通链接带标题") 123`, content)
+	content = ContentEncode(`[普通链接带标题](Javascript:000) abc`, `markdown`)
+	test.Eq(t, `[普通链接带标题](-Javascript-000) abc`, content)
+	content = ContentEncode(`![普通链接带标题](Javascript:000) abc`, `markdown`)
+	test.Eq(t, `![普通链接带标题](-Javascript-000) abc`, content)
+	content = ContentEncode(`![普通链接带标题](Javascript:000)abc[普通链接带标题](Javascript:111)`, `markdown`)
+	test.Eq(t, `![普通链接带标题](-Javascript-000)abc[普通链接带标题](-Javascript-111)`, content)
 
 	content = ContentEncode("\n&gt; 123", `markdown`)
 	test.Eq(t, "> 123", content)
