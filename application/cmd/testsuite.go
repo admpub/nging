@@ -19,9 +19,7 @@
 package cmd
 
 import (
-	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
-	"github.com/webx-top/echo"
 
 	"github.com/spf13/cobra"
 )
@@ -34,19 +32,27 @@ var testSuiteCmd = &cobra.Command{
 	RunE:  testSuiteRunE,
 }
 
-func testSuiteRunE(cmd *cobra.Command, filenames []string) error {
+var (
+	testSuiteName *string
+	testSuites    = map[string]func(cmd *cobra.Command, args []string) error{}
+)
+
+func TestSuiteRegister(name string, fn func(cmd *cobra.Command, args []string) error) {
+	testSuites[name] = fn
+}
+
+func testSuiteRunE(cmd *cobra.Command, args []string) error {
 	err := config.ParseConfig()
 	if err != nil {
 		panic(err)
 	}
-	row, err := common.SQLQuery().GetRow("SELECT * FROM nging_user WHERE id > 0")
-	if err != nil {
-		panic(err)
+	if fn, ok := testSuites[*testSuiteName]; ok {
+		return fn(cmd, args)
 	}
-	echo.Dump(row.Timestamp(`created`).Format(`2006-01-02 15:04:05`))
 	return nil
 }
 
 func init() {
 	rootCmd.AddCommand(testSuiteCmd)
+	testSuiteName = testSuiteCmd.Flags().String("name", "", "name")
 }

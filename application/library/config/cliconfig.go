@@ -43,6 +43,8 @@ func NewCLIConfig() *CLIConfig {
 	return &CLIConfig{cmds: map[string]*exec.Cmd{}}
 }
 
+var DefaultStartup = `webserver,task,daemon,ftpserver,frpserver,frpclient`
+
 type CLIConfig struct {
 	BackendDomain  string //前台绑定域名
 	FrontendDomain string //后台绑定域名
@@ -62,7 +64,7 @@ func (c *CLIConfig) InitFlag(flagSet *pflag.FlagSet) {
 	flagSet.StringVarP(&c.Conf, `config`, `c`, filepath.Join(echo.Wd(), `config/config.yaml`), `config`)
 	flagSet.StringVarP(&c.Confx, `subconfig`, `u`, filepath.Join(echo.Wd(), `config/config.frpserver.yaml`), `submodule config`)
 	flagSet.StringVarP(&c.Type, `type`, `t`, `manager`, `operation type`)
-	flagSet.StringVarP(&c.Startup, `startup`, `s`, `webserver,task,daemon,ftpserver,frpserver,frpclient`, `startup`)
+	flagSet.StringVarP(&c.Startup, `startup`, `s`, DefaultStartup, `startup`)
 	flagSet.StringVarP(&c.FrontendDomain, `frontend.domain`, `f`, ``, `frontend domain`)
 	flagSet.StringVarP(&c.BackendDomain, `backend.domain`, `b`, ``, `backend domain`)
 }
