@@ -54,6 +54,6 @@ func (p String) Timestamp() time.Time {
 	return p.Stringx().Timestamp()
 }
 
-func (p String) DateTime() time.Time {
-	return p.Stringx().DateTime()
+func (p String) DateTime(layouts ...string) time.Time {
+	return p.Stringx().DateTime(layouts...)
 }

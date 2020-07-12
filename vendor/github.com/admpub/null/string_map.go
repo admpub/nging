@@ -116,6 +116,6 @@ func (p StringMap) Timestamp(key string) time.Time {
 	return p.Stringx(key).Timestamp()
 }
 
-func (p StringMap) DateTime(key string) time.Time {
-	return p.Stringx(key).DateTime()
+func (p StringMap) DateTime(key string, layouts ...string) time.Time {
+	return p.Stringx(key).DateTime(layouts...)
 }
