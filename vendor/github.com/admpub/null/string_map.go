@@ -7,6 +7,8 @@ import (
 	"github.com/webx-top/echo/param"
 )
 
+var EmptyString = String{}
+
 type StringMapSlice []StringMap
 
 func StringMapSliceFrom(list []echo.H) StringMapSlice {
@@ -41,7 +43,18 @@ func (p StringMap) StringMap() param.StringMap {
 }
 
 func (p StringMap) String(key string) string {
-	return p[key].String
+	return p.Get(key).String
+}
+
+func (p StringMap) IsZero(key string) bool {
+	return p.Get(key).IsZero()
+}
+
+func (p StringMap) Get(key string) String {
+	if value, ok := p[key]; ok {
+		return value
+	}
+	return EmptyString
 }
 
 func (p StringMap) MapFrom(values echo.H) StringMap {
@@ -56,11 +69,11 @@ func (p StringMap) Split(key string, sep string, limit ...int) []string {
 }
 
 func (p StringMap) Stringx(key string) param.String {
-	return param.String(p[key].String)
+	return param.String(p.Get(key).String)
 }
 
 func (p StringMap) Interface(key string) interface{} {
-	return interface{}(p[key].String)
+	return interface{}(p.Get(key).String)
 }
 
 func (p StringMap) Int(key string) int {

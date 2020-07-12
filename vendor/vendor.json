@@ -562,16 +562,16 @@
 			"revisionTime": "2018-04-07T15:11:13Z"
 		},
 		{
-			"checksumSHA1": "G8qQi/eaJf0kBhHQmlO3lhFTBus=",
+			"checksumSHA1": "VRmI0OhFS7VjMIlfdVc8tWu693k=",
 			"path": "github.com/admpub/null",
-			"revision": "f296ccaa025703f03c4e7a425d95cc27a58d65ee",
-			"revisionTime": "2019-03-26T07:15:02Z"
+			"revision": "9398a7cbc6bc540321653734d93bd0fac77c592b",
+			"revisionTime": "2020-07-12T03:07:28Z"
 		},
 		{
 			"checksumSHA1": "viJroIZCvgEUrovzFvqXG2Qydzw=",
 			"path": "github.com/admpub/null/convert",
-			"revision": "f296ccaa025703f03c4e7a425d95cc27a58d65ee",
-			"revisionTime": "2019-03-26T07:15:02Z"
+			"revision": "9398a7cbc6bc540321653734d93bd0fac77c592b",
+			"revisionTime": "2020-07-12T03:07:28Z"
 		},
 		{
 			"checksumSHA1": "87irmVCIAab1Ptw1ctlWBi34JuY=",
