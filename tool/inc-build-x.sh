@@ -17,6 +17,9 @@ cp -R ../config/ua.txt ../dist/${NGING_EXECUTOR}_${GOOS}_${GOARCH}/config/ua.txt
 export archiver_extension=zip
 
 cp -R ../dist/default/* ../dist/${NGING_EXECUTOR}_${GOOS}_${GOARCH}/
+
+rm -rf ../dist/${NGING_EXECUTOR}_${GOOS}_${GOARCH}.${archiver_extension}
+
 #${NGING_VERSION}${NGING_LABEL}
 arc archive ../dist/${NGING_EXECUTOR}_${GOOS}_${GOARCH}.${archiver_extension} ../dist/${NGING_EXECUTOR}_${GOOS}_${GOARCH}/
 
