@@ -146,6 +146,11 @@ func WithReturnToURL(ctx echo.Context, urlStr string, varNames ...string) string
 	if len(varNames) > 0 {
 		varName = varNames[0]
 	}
+	withVarName := varName
+	if len(varNames) > 1 {
+		withVarName = varNames[1]
+	}
+
 	returnTo := ReturnToURL(ctx, varName)
 	if len(returnTo) == 0 {
 		return urlStr
@@ -155,5 +160,5 @@ func WithReturnToURL(ctx echo.Context, urlStr string, varNames ...string) string
 	} else {
 		urlStr += `?`
 	}
-	return urlStr + varName + `=` + url.QueryEscape(returnTo)
+	return urlStr + withVarName + `=` + url.QueryEscape(returnTo)
 }
