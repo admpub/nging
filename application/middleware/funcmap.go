@@ -98,11 +98,14 @@ func ErrorPageFunc(c echo.Context) error {
 		}
 		return *siteURI
 	})
-	c.SetFunc(`ReturnToURL`, func(varNames ...string) string {
-		return common.ReturnToURL(c, varNames...)
+	c.SetFunc(`GetReturnURL`, func(varNames ...string) string {
+		return common.GetReturnURL(c, varNames...)
 	})
-	c.SetFunc(`WithReturnToURL`, func(urlStr string, varNames ...string) string {
-		return common.WithReturnToURL(c, urlStr, varNames...)
+	c.SetFunc(`ReturnToCurrentURL`, func(varNames ...string) string {
+		return common.ReturnToCurrentURL(c, varNames...)
+	})
+	c.SetFunc(`WithReturnURL`, func(urlStr string, varNames ...string) string {
+		return common.WithReturnURL(c, urlStr, varNames...)
 	})
 	c.SetFunc(`WithURLParams`, common.WithURLParams)
 	return nil

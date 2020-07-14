@@ -20,8 +20,6 @@ package common
 
 import (
 	stdErr "errors"
-	"net/url"
-	"strings"
 
 	"github.com/webx-top/captcha"
 	"github.com/webx-top/echo"
@@ -125,49 +123,4 @@ func CaptchaInfo(hostAlias string, captchaName string, args ...string) echo.H {
 
 type ConfigFromDB interface {
 	ConfigFromDB() echo.H
-}
-
-var DefaultReturnToURLVarName = `return_to`
-
-func ReturnToURL(ctx echo.Context, varNames ...string) string {
-	varName := DefaultReturnToURLVarName
-	if len(varNames) > 0 && len(varNames[0]) > 0 {
-		varName = varNames[0]
-	}
-	returnTo := ctx.Form(varName)
-	if returnTo == ctx.Request().URL().Path() {
-		returnTo = ``
-	}
-	return returnTo
-}
-
-func WithURLParams(urlStr string, paramStr string) string {
-	if strings.Contains(urlStr, `?`) {
-		urlStr += `&`
-	} else {
-		urlStr += `?`
-	}
-	return urlStr + paramStr
-}
-
-func WithReturnToURL(ctx echo.Context, urlStr string, varNames ...string) string {
-	varName := DefaultReturnToURLVarName
-	if len(varNames) > 0 && len(varNames[0]) > 0 {
-		varName = varNames[0]
-	}
-	withVarName := varName
-	if len(varNames) > 1 && len(varNames[1]) > 0 {
-		withVarName = varNames[1]
-	}
-
-	returnTo := ReturnToURL(ctx, varName)
-	if len(returnTo) == 0 {
-		return urlStr
-	}
-	if strings.Contains(urlStr, `?`) {
-		urlStr += `&`
-	} else {
-		urlStr += `?`
-	}
-	return urlStr + withVarName + `=` + url.QueryEscape(returnTo)
 }
