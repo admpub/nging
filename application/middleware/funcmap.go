@@ -104,6 +104,7 @@ func ErrorPageFunc(c echo.Context) error {
 	c.SetFunc(`WithReturnToURL`, func(urlStr string, varNames ...string) string {
 		return common.WithReturnToURL(c, urlStr, varNames...)
 	})
+	c.SetFunc(`WithURLParams`, common.WithURLParams)
 	return nil
 }
 

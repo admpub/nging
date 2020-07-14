@@ -141,6 +141,15 @@ func ReturnToURL(ctx echo.Context, varNames ...string) string {
 	return returnTo
 }
 
+func WithURLParams(urlStr string, paramStr string) string {
+	if strings.Contains(urlStr, `?`) {
+		urlStr += `&`
+	} else {
+		urlStr += `?`
+	}
+	return urlStr + paramStr
+}
+
 func WithReturnToURL(ctx echo.Context, urlStr string, varNames ...string) string {
 	varName := DefaultReturnToURLVarName
 	if len(varNames) > 0 && len(varNames[0]) > 0 {
