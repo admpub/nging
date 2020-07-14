@@ -131,7 +131,7 @@ var DefaultReturnToURLVarName = `return_to`
 
 func ReturnToURL(ctx echo.Context, varNames ...string) string {
 	varName := DefaultReturnToURLVarName
-	if len(varNames) > 0 {
+	if len(varNames) > 0 && len(varNames[0]) > 0 {
 		varName = varNames[0]
 	}
 	returnTo := ctx.Form(varName)
@@ -143,11 +143,11 @@ func ReturnToURL(ctx echo.Context, varNames ...string) string {
 
 func WithReturnToURL(ctx echo.Context, urlStr string, varNames ...string) string {
 	varName := DefaultReturnToURLVarName
-	if len(varNames) > 0 {
+	if len(varNames) > 0 && len(varNames[0]) > 0 {
 		varName = varNames[0]
 	}
 	withVarName := varName
-	if len(varNames) > 1 {
+	if len(varNames) > 1 && len(varNames[1]) > 0 {
 		withVarName = varNames[1]
 	}
 
