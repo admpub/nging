@@ -18,8 +18,11 @@
 
 package echo
 
+type RequestValidator func() MetaValidator
+
 type MetaHandler struct {
-	meta H
+	meta    H
+	request RequestValidator
 	Handler
 }
 
@@ -28,6 +31,26 @@ func (m *MetaHandler) Name() string {
 		return v.Name()
 	}
 	return HandlerName(m.Handler)
+}
+
+type MetaValidator interface {
+	Validate(Context) error
+	Filters(Context) []FormDataFilter
+}
+
+func (m *MetaHandler) Handle(c Context) error {
+	if m.request == nil {
+		return m.Handler.Handle(c)
+	}
+	recv := m.request()
+	if err := c.MustBind(recv, recv.Filters(c)...); err != nil {
+		return err
+	}
+	if err := recv.Validate(c); err != nil {
+		return err
+	}
+	c.Internal().Set(`validated`, recv)
+	return m.Handler.Handle(c)
 }
 
 func (m *MetaHandler) Meta() H {

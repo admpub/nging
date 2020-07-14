@@ -157,8 +157,8 @@ func (g *Group) Echo() *Echo {
 }
 
 // MetaHandler Add meta information about endpoint
-func (g *Group) MetaHandler(m H, handler interface{}) Handler {
-	return &MetaHandler{m, g.echo.ValidHandler(handler)}
+func (g *Group) MetaHandler(m H, handler interface{}, requests ...RequestValidator) Handler {
+	return g.echo.MetaHandler(m, handler, requests...)
 }
 
 func (g *Group) Add(method, path string, h interface{}, middleware ...interface{}) *Route {

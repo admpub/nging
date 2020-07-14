@@ -482,8 +482,15 @@ func (e *Echo) Add(method, path string, handler interface{}, middleware ...inter
 }
 
 // MetaHandler Add meta information about endpoint
-func (e *Echo) MetaHandler(m H, handler interface{}) Handler {
-	return &MetaHandler{m, e.ValidHandler(handler)}
+func (e *Echo) MetaHandler(m H, handler interface{}, requests ...RequestValidator) Handler {
+	h := &MetaHandler{
+		meta:    m,
+		Handler: e.ValidHandler(handler),
+	}
+	if len(requests) > 0 {
+		h.request = requests[0]
+	}
+	return h
 }
 
 // RebuildRouter rebuild router
