@@ -56,9 +56,9 @@ func Host(hostName string, middlewares ...interface{}) *route.Host {
 }
 
 func Apply() {
-	echo.PanicIf(Hook.Fire(`apply.before`))
+	echo.PanicIf(Hook.Fire(`apply.before`, nil))
 	routeRegister.Apply()
-	echo.PanicIf(Hook.Fire(`apply.after`))
+	echo.PanicIf(Hook.Fire(`apply.after`, nil))
 }
 
 func RegisterToGroup(groupName string, fn func(echo.RouteRegister), middlewares ...interface{}) {

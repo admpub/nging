@@ -1,9 +1,13 @@
 package hook
 
-import "sort"
+import (
+	"sort"
+
+	"github.com/webx-top/echo"
+)
 
 type (
-	Hook  func() error
+	Hook  func(echo.H) error
 	Hooks map[string][]Hook
 )
 
@@ -43,13 +47,13 @@ func (h Hooks) Off(ev string) {
 	delete(h, ev)
 }
 
-func (h Hooks) Fire(ev string) error {
+func (h Hooks) Fire(ev string, data echo.H) error {
 	if _, ok := h[ev]; !ok {
 		return nil
 	}
 	var err error
 	for _, hook := range h[ev] {
-		if err = hook(); err != nil {
+		if err = hook(data); err != nil {
 			return err
 		}
 	}
