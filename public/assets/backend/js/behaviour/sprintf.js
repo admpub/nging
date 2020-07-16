@@ -1,4 +1,16 @@
-var sprintfWrapper = {
+(function (factory) {
+  if (typeof define === 'function' && define.amd) {
+      // AMD. Register as an anonymous module.
+      define(['jquery'], factory);
+  } else if (typeof exports === 'object') {
+      // Node/CommonJS style for Browserify
+      module.exports = factory;
+  } else {
+      // Browser globals
+      factory(jQuery);
+  }
+}(function($){
+  window.sprintfWrapper = {
   init : function () {
     if (typeof arguments == "undefined") { return null; }
     if (arguments.length < 1) { return null; }
@@ -116,3 +128,5 @@ var sprintfWrapper = {
     }
   }
 };
+return window.sprintfWrapper;
+}));
