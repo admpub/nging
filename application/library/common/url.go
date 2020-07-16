@@ -71,3 +71,14 @@ func WithReturnURL(ctx echo.Context, urlStr string, varNames ...string) string {
 	}
 	return WithURLParams(urlStr, withVarName, returnTo)
 }
+
+func GetOtherURL(ctx echo.Context, returnTo string) string {
+	if len(returnTo) == 0 {
+		return returnTo
+	}
+	urlInfo, _ := url.Parse(returnTo)
+	if urlInfo == nil || urlInfo.Path == ctx.Request().URL().Path() {
+		returnTo = ``
+	}
+	return returnTo
+}
