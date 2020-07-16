@@ -1,8 +1,10 @@
 package factory
 
 import (
+	"fmt"
 	"strings"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 )
 
@@ -74,6 +76,52 @@ func (d *DBI) TableComment(structName string) string {
 	return ``
 }
 
+type Short interface {
+	Short_() string
+}
+
+func (d *DBI) OmitSelect(v interface{}, excludeColumns ...string) []interface{} {
+	var noPrefixTableName string
+	switch a := v.(type) {
+	case string:
+		noPrefixTableName = a
+	case Short:
+		noPrefixTableName = a.Short_()
+	default:
+		panic(fmt.Sprintf(`Unsupported type: %T`, v))
+	}
+	columns := d.TableColumns(noPrefixTableName)
+	results := []interface{}{}
+	for _, column := range columns {
+		if com.InSlice(column, excludeColumns) {
+			continue
+		}
+		results = append(results, column)
+	}
+	return results
+}
+
+func (d *DBI) OmitColumns(v interface{}, excludeColumns ...string) []string {
+	var noPrefixTableName string
+	switch a := v.(type) {
+	case string:
+		noPrefixTableName = a
+	case Short:
+		noPrefixTableName = a.Short_()
+	default:
+		panic(fmt.Sprintf(`Unsupported type: %T`, v))
+	}
+	columns := d.TableColumns(noPrefixTableName)
+	results := []string{}
+	for _, column := range columns {
+		if com.InSlice(column, excludeColumns) {
+			continue
+		}
+		results = append(results, column)
+	}
+	return results
+}
+
 func (d *DBI) TableColumns(tableName string) []string {
 	cols, ok := d.Columns[tableName]
 	if ok {
@@ -130,7 +178,7 @@ func (d *DBI) On(event string, h EventHandler, tableName ...string) *DBI {
 		}
 	}
 	if !d.Fields.ExistTable(table) {
-		panic(`Table does not exist: `+table)
+		panic(`Table does not exist: ` + table)
 	}
 	for _, evt := range d.ParseEventNames(event) {
 		d.Events.On(evt, h, table)
@@ -153,7 +201,7 @@ func (d *DBI) OnAsync(event string, h EventHandler, tableName ...string) *DBI {
 		}
 	}
 	if !d.Fields.ExistTable(table) {
-		panic(`Table does not exist: `+table)
+		panic(`Table does not exist: ` + table)
 	}
 	for _, evt := range d.ParseEventNames(event) {
 		d.Events.On(evt, h, table, true)
@@ -178,7 +226,7 @@ func (d *DBI) OnRead(event string, h EventReadHandler, tableName ...string) *DBI
 		}
 	}
 	if !d.Fields.ExistTable(table) {
-		panic(`Table does not exist: `+table)
+		panic(`Table does not exist: ` + table)
 	}
 	for _, evt := range d.ParseEventNames(event) {
 		d.Events.OnRead(evt, h, table)
@@ -201,7 +249,7 @@ func (d *DBI) OnReadAsync(event string, h EventReadHandler, tableName ...string)
 		}
 	}
 	if !d.Fields.ExistTable(table) {
-		panic(`Table does not exist: `+table)
+		panic(`Table does not exist: ` + table)
 	}
 	for _, evt := range d.ParseEventNames(event) {
 		d.Events.OnRead(evt, h, table, true)
