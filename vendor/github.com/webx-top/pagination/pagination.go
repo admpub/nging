@@ -32,8 +32,25 @@ import (
 )
 
 const (
+	// ModePageNumber 页码模式
 	ModePageNumber = iota + 1
+	// ModePosition 偏移值模式
 	ModePosition
+)
+
+var (
+	// DefaultPageVarsMap tagName=>urlVar
+	DefaultPageVarsMap = map[string]string{
+		`rows`: `rows`,
+		`page`: `page`,
+		`size`: `size`,
+	}
+	// DefaultPositionVarsMap tagName=>urlVar
+	DefaultPositionVarsMap = map[string]string{
+		`curr`: `offset`,
+		`prev`: `prev`,
+		`next`: `next`,
+	}
 )
 
 func New(ctx echo.Context) *Pagination {
@@ -61,6 +78,12 @@ type Pagination struct {
 
 }
 
+// SetAll 设置按页码分页模式所需的所有参数
+// tmpl 模板
+// rows 总行数
+// pnl[0] 当前页码
+// pnl[1] 分页链接数量
+// pnl[2] 每页数量
 func (p *Pagination) SetAll(tmpl string, rows int, pnl ...int) *Pagination {
 	switch len(pnl) {
 	case 3:
@@ -78,6 +101,10 @@ func (p *Pagination) SetAll(tmpl string, rows int, pnl ...int) *Pagination {
 	return p
 }
 
+// SetPosition 设置按偏移值分页模式所需的所有参数
+// prev 上一页偏移值
+// next 下一页偏移值
+// curr 当前页偏移值
 func (p *Pagination) SetPosition(prev string, next string, curr string) *Pagination {
 	p.prevPosition = prev
 	p.nextPosition = next
@@ -86,11 +113,13 @@ func (p *Pagination) SetPosition(prev string, next string, curr string) *Paginat
 	return p
 }
 
+// Set 设置附加数据
 func (p *Pagination) Set(key string, data interface{}) *Pagination {
 	p.data[key] = data
 	return p
 }
 
+// Sets 设置多个附加数据(参数按照key,value,key1,value1的格式)
 func (p *Pagination) Sets(args ...interface{}) *Pagination {
 	var key string
 	for i, j := 0, len(args); i < j; i++ {
@@ -103,6 +132,7 @@ func (p *Pagination) Sets(args ...interface{}) *Pagination {
 	return p
 }
 
+// Get 获取某个附加数据
 func (p *Pagination) Get(key string) interface{} {
 	if v, y := p.data[key]; y {
 		return v
@@ -110,22 +140,27 @@ func (p *Pagination) Get(key string) interface{} {
 	return nil
 }
 
+// Data 获取整个附加数据
 func (p *Pagination) Data() echo.H {
 	return p.data
 }
 
+// Position 当前偏移值
 func (p *Pagination) Position() string {
 	return p.position
 }
 
+// PrevPosition 上一页偏移值
 func (p *Pagination) PrevPosition() string {
 	return p.prevPosition
 }
 
+// NextPosition 下一页偏移值
 func (p *Pagination) NextPosition() string {
 	return p.nextPosition
 }
 
+// HasNext 是否有下一页
 func (p *Pagination) HasNext() bool {
 	if p.mode == ModePageNumber {
 		return p.Page() < p.Pages()
@@ -133,6 +168,7 @@ func (p *Pagination) HasNext() bool {
 	return len(p.NextPosition()) > 0 && p.NextPosition() != `0` && p.NextPosition() != p.Position()
 }
 
+// HasPrev 是否有上一页
 func (p *Pagination) HasPrev() bool {
 	if p.mode == ModePageNumber {
 		return p.Page() > 1
@@ -231,6 +267,12 @@ func (p *Pagination) SetURL(s interface{}, delKeys ...string) *Pagination {
 		p.urlLayout = v
 	case map[string]string:
 		p.urlLayout = p.RebuildURL(v, delKeys...)
+	case nil:
+		if p.mode == ModePageNumber {
+			p.urlLayout = p.RebuildURL(DefaultPageVarsMap, delKeys...)
+		} else {
+			p.urlLayout = p.RebuildURL(DefaultPositionVarsMap, delKeys...)
+		}
 	default:
 		panic(`Unsupported type: ` + fmt.Sprintf(`%T`, s))
 	}
