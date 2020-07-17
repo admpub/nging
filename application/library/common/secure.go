@@ -13,7 +13,7 @@ import (
 
 var (
 	secureStrictPolicy                = bluemonday.StrictPolicy()
-	secureUGCPolicy                   = bluemonday.UGCPolicy()
+	secureUGCPolicy                   = bluemonday.UGCPolicy().AllowAttrs(`class`)
 	secureUGCPolicyAllowDataURIImages *bluemonday.Policy
 	secureUGCPolicyNoLink             = NoLink()
 )
@@ -39,6 +39,7 @@ func RemoveXSS(content string, noLinks ...bool) string {
 func NoLink() *bluemonday.Policy {
 	p := HTMLFilter()
 	p.AllowStandardAttributes()
+	p.AllowAttrs(`class`)
 
 	////////////////////////////////
 	// Declarations and structure //
