@@ -1,22 +1,15 @@
 all: checks
 
-.PHONY: examples docs
-
-checks: vet test examples functional-test
-
-vet:
-	@GO111MODULE=on go vet ./...
-
-test:
-	@GO111MODULE=on SERVER_ENDPOINT=localhost:9000 ACCESS_KEY=minio SECRET_KEY=minio123 ENABLE_HTTPS=1 MINT_MODE=full go test -race -v ./...
-
-examples:
+checks:
+	@go get -t ./...
+	@go vet ./...
+	@SERVER_ENDPOINT=play.minio.io:9000 ACCESS_KEY=Q3AM3UQ867SPQQA43P2F SECRET_KEY=zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG ENABLE_HTTPS=1 MINT_MODE=full go test -race -v ./...
+	@go get github.com/dustin/go-humanize/...
+	@go get github.com/sirupsen/logrus/...
+	@SERVER_ENDPOINT=play.minio.io:9000 ACCESS_KEY=Q3AM3UQ867SPQQA43P2F SECRET_KEY=zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG ENABLE_HTTPS=1 MINT_MODE=full go run functional_tests.go
 	@mkdir -p /tmp/examples && for i in $(echo examples/s3/*); do go build -o /tmp/examples/$(basename ${i:0:-3}) ${i}; done
-
-functional-test:
-	@GO111MODULE=on SERVER_ENDPOINT=localhost:9000 ACCESS_KEY=minio SECRET_KEY=minio123 ENABLE_HTTPS=1 MINT_MODE=full go run functional_tests.go
-
-clean:
-	@echo "Cleaning up all the generated files"
-	@find . -name '*.test' | xargs rm -fv
-	@find . -name '*~' | xargs rm -fv
+	@go get -u github.com/a8m/mark/...
+	@go get -u github.com/minio/cli/...
+	@go get -u golang.org/x/tools/cmd/goimports
+	@go get -u github.com/gernest/wow/...
+	@go build docs/validator.go && ./validator -m docs/API.md -t docs/checker.go.tpl

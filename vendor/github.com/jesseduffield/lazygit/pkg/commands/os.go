@@ -1,12 +1,16 @@
 package commands
 
 import (
+	"bufio"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/go-errors/errors"
 
@@ -20,6 +24,7 @@ import (
 // Platform stores the os state
 type Platform struct {
 	os                   string
+	catCmd               string
 	shell                string
 	shellArg             string
 	escapedQuote         string
@@ -34,6 +39,7 @@ type OSCommand struct {
 	Platform           *Platform
 	Config             config.AppConfigurer
 	command            func(string, ...string) *exec.Cmd
+	beforeExecuteCmd   func(*exec.Cmd)
 	getGlobalGitConfig func(string) (string, error)
 	getenv             func(string) string
 }
@@ -45,6 +51,7 @@ func NewOSCommand(log *logrus.Entry, config config.AppConfigurer) *OSCommand {
 		Platform:           getPlatform(),
 		Config:             config,
 		command:            exec.Command,
+		beforeExecuteCmd:   func(*exec.Cmd) {},
 		getGlobalGitConfig: gitconfig.Global,
 		getenv:             os.Getenv,
 	}
@@ -56,8 +63,37 @@ func (c *OSCommand) SetCommand(cmd func(string, ...string) *exec.Cmd) {
 	c.command = cmd
 }
 
+func (c *OSCommand) SetBeforeExecuteCmd(cmd func(*exec.Cmd)) {
+	c.beforeExecuteCmd = cmd
+}
+
+type RunCommandOptions struct {
+	EnvVars []string
+}
+
+func (c *OSCommand) RunCommandWithOutputWithOptions(command string, options RunCommandOptions) (string, error) {
+	c.Log.WithField("command", command).Info("RunCommand")
+	cmd := c.ExecutableFromString(command)
+	cmd.Env = append(cmd.Env, options.EnvVars...)
+	return sanitisedCommandOutput(cmd.CombinedOutput())
+}
+
+func (c *OSCommand) RunCommandWithOptions(command string, options RunCommandOptions) error {
+	_, err := c.RunCommandWithOutputWithOptions(command, options)
+	return err
+}
+
 // RunCommandWithOutput wrapper around commands returning their output and error
-func (c *OSCommand) RunCommandWithOutput(command string) (string, error) {
+// NOTE: If you don't pass any formatArgs we'll just use the command directly,
+// however there's a bizarre compiler error/warning when you pass in a formatString
+// with a percent sign because it thinks it's supposed to be a formatString when
+// in that case it's not. To get around that error you'll need to define the string
+// in a variable and pass the variable into RunCommandWithOutput.
+func (c *OSCommand) RunCommandWithOutput(formatString string, formatArgs ...interface{}) (string, error) {
+	command := formatString
+	if formatArgs != nil {
+		command = fmt.Sprintf(formatString, formatArgs...)
+	}
 	c.Log.WithField("command", command).Info("RunCommand")
 	cmd := c.ExecutableFromString(command)
 	return sanitisedCommandOutput(cmd.CombinedOutput())
@@ -65,6 +101,7 @@ func (c *OSCommand) RunCommandWithOutput(command string) (string, error) {
 
 // RunExecutableWithOutput runs an executable file and returns its output
 func (c *OSCommand) RunExecutableWithOutput(cmd *exec.Cmd) (string, error) {
+	c.beforeExecuteCmd(cmd)
 	return sanitisedCommandOutput(cmd.CombinedOutput())
 }
 
@@ -77,8 +114,23 @@ func (c *OSCommand) RunExecutable(cmd *exec.Cmd) error {
 // ExecutableFromString takes a string like `git status` and returns an executable command for it
 func (c *OSCommand) ExecutableFromString(commandStr string) *exec.Cmd {
 	splitCmd := str.ToArgv(commandStr)
-	c.Log.Info(splitCmd)
-	return c.command(splitCmd[0], splitCmd[1:]...)
+	cmd := c.command(splitCmd[0], splitCmd[1:]...)
+	cmd.Env = append(os.Environ(), "GIT_OPTIONAL_LOCKS=0")
+	return cmd
+}
+
+// ShellCommandFromString takes a string like `git commit` and returns an executable shell command for it
+func (c *OSCommand) ShellCommandFromString(commandStr string) *exec.Cmd {
+	quotedCommand := ""
+	// Windows does not seem to like quotes around the command
+	if c.Platform.os == "windows" {
+		quotedCommand = commandStr
+	} else {
+		quotedCommand = strconv.Quote(commandStr)
+	}
+
+	shellCommand := fmt.Sprintf("%s %s %s", c.Platform.shell, c.Platform.shellArg, quotedCommand)
+	return c.ExecutableFromString(shellCommand)
 }
 
 // RunCommandWithOutputLive runs RunCommandWithOutputLiveWrapper
@@ -95,11 +147,12 @@ func (c *OSCommand) DetectUnamePass(command string, ask func(string) string) err
 		ttyText = ttyText + " " + word
 
 		prompts := map[string]string{
-			"password": `Password\s*for\s*'.+':`,
-			"username": `Username\s*for\s*'.+':`,
+			`.+'s password:`:         "password",
+			`Password\s*for\s*'.+':`: "password",
+			`Username\s*for\s*'.+':`: "username",
 		}
 
-		for askFor, pattern := range prompts {
+		for pattern, askFor := range prompts {
 			if match, _ := regexp.MatchString(pattern, ttyText); match {
 				ttyText = ""
 				return ask(askFor)
@@ -112,8 +165,8 @@ func (c *OSCommand) DetectUnamePass(command string, ask func(string) string) err
 }
 
 // RunCommand runs a command and just returns the error
-func (c *OSCommand) RunCommand(command string) error {
-	_, err := c.RunCommandWithOutput(command)
+func (c *OSCommand) RunCommand(formatString string, formatArgs ...interface{}) error {
+	_, err := c.RunCommandWithOutput(formatString, formatArgs...)
 	return err
 }
 
@@ -200,8 +253,13 @@ func (c *OSCommand) EditFile(filename string) (*exec.Cmd, error) {
 }
 
 // PrepareSubProcess iniPrepareSubProcessrocess then tells the Gui to switch to it
+// TODO: see if this needs to exist, given that ExecutableFromString does the same things
 func (c *OSCommand) PrepareSubProcess(cmdName string, commandArgs ...string) *exec.Cmd {
-	return c.command(cmdName, commandArgs...)
+	cmd := c.command(cmdName, commandArgs...)
+	if cmd != nil {
+		cmd.Env = append(os.Environ(), "GIT_OPTIONAL_LOCKS=0")
+	}
+	return cmd
 }
 
 // Quote wraps a message in platform-specific quotation marks
@@ -255,6 +313,21 @@ func (c *OSCommand) CreateTempFile(filename, content string) (string, error) {
 	return tmpfile.Name(), nil
 }
 
+// CreateFileWithContent creates a file with the given content
+func (c *OSCommand) CreateFileWithContent(path string, content string) error {
+	if err := os.MkdirAll(filepath.Dir(path), os.ModePerm); err != nil {
+		c.Log.Error(err)
+		return err
+	}
+
+	if err := ioutil.WriteFile(path, []byte(content), 0644); err != nil {
+		c.Log.Error(err)
+		return WrapError(err)
+	}
+
+	return nil
+}
+
 // Remove removes a file or directory at the specified path
 func (c *OSCommand) Remove(filename string) error {
 	err := os.RemoveAll(filename)
@@ -276,6 +349,7 @@ func (c *OSCommand) FileExists(path string) (bool, error) {
 // this is useful if you need to give your command some environment variables
 // before running it
 func (c *OSCommand) RunPreparedCommand(cmd *exec.Cmd) error {
+	c.beforeExecuteCmd(cmd)
 	out, err := cmd.CombinedOutput()
 	outString := string(out)
 	c.Log.Info(outString)
@@ -294,10 +368,117 @@ func (c *OSCommand) GetLazygitPath() string {
 	if err != nil {
 		ex = os.Args[0] // fallback to the first call argument if needed
 	}
-	return filepath.ToSlash(ex)
+	return `"` + filepath.ToSlash(ex) + `"`
 }
 
 // RunCustomCommand returns the pointer to a custom command
 func (c *OSCommand) RunCustomCommand(command string) *exec.Cmd {
 	return c.PrepareSubProcess(c.Platform.shell, c.Platform.shellArg, command)
+}
+
+// PipeCommands runs a heap of commands and pipes their inputs/outputs together like A | B | C
+func (c *OSCommand) PipeCommands(commandStrings ...string) error {
+
+	cmds := make([]*exec.Cmd, len(commandStrings))
+
+	for i, str := range commandStrings {
+		cmds[i] = c.ExecutableFromString(str)
+	}
+
+	for i := 0; i < len(cmds)-1; i++ {
+		stdout, err := cmds[i].StdoutPipe()
+		if err != nil {
+			return err
+		}
+
+		cmds[i+1].Stdin = stdout
+	}
+
+	// keeping this here in case I adapt this code for some other purpose in the future
+	// cmds[len(cmds)-1].Stdout = os.Stdout
+
+	finalErrors := []string{}
+
+	wg := sync.WaitGroup{}
+	wg.Add(len(cmds))
+
+	for _, cmd := range cmds {
+		currentCmd := cmd
+		go func() {
+			stderr, err := currentCmd.StderrPipe()
+			if err != nil {
+				c.Log.Error(err)
+			}
+
+			if err := currentCmd.Start(); err != nil {
+				c.Log.Error(err)
+			}
+
+			if b, err := ioutil.ReadAll(stderr); err == nil {
+				if len(b) > 0 {
+					finalErrors = append(finalErrors, string(b))
+				}
+			}
+
+			if err := currentCmd.Wait(); err != nil {
+				c.Log.Error(err)
+			}
+
+			wg.Done()
+		}()
+	}
+
+	wg.Wait()
+
+	if len(finalErrors) > 0 {
+		return errors.New(strings.Join(finalErrors, "\n"))
+	}
+	return nil
+}
+
+func Kill(cmd *exec.Cmd) error {
+	if cmd.Process == nil {
+		// somebody got to it before we were able to, poor bastard
+		return nil
+	}
+	return cmd.Process.Kill()
+}
+
+func RunLineOutputCmd(cmd *exec.Cmd, onLine func(line string) (bool, error)) error {
+	stdoutPipe, err := cmd.StdoutPipe()
+	if err != nil {
+		return err
+	}
+
+	scanner := bufio.NewScanner(stdoutPipe)
+	scanner.Split(bufio.ScanLines)
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		stop, err := onLine(line)
+		if err != nil {
+			return err
+		}
+		if stop {
+			cmd.Process.Kill()
+			break
+		}
+	}
+
+	cmd.Wait()
+	return nil
+}
+
+func (c *OSCommand) CopyToClipboard(str string) error {
+	commandTemplate := c.Config.GetUserConfig().GetString("os.copyToClipboardCommand")
+	templateValues := map[string]string{
+		"str": c.Quote(str),
+	}
+
+	command := utils.ResolvePlaceholderString(commandTemplate, templateValues)
+
+	return c.RunCommand(command)
 }

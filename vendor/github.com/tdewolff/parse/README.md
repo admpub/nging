@@ -6,12 +6,10 @@ The lexers are implemented using `buffer.Lexer` in https://github.com/tdewolff/p
 
 ## Buffer
 ### Reader
-Reader is a wrapper around a `[]byte` that implements the `io.Reader` interface. It is a much thinner layer than `bytes.Buffer` provides and is therefore faster.
+Reader is a wrapper around a `[]byte` that implements the `io.Reader` interface. It is comparable to `bytes.Reader` but has slightly different semantics (and a slightly smaller memory footprint).
 
 ### Writer
-Writer is a buffer that implements the `io.Writer` interface. It is a much thinner layer than `bytes.Buffer` provides and is therefore faster. It will expand the buffer when needed.
-
-The reset functionality allows for better memory reuse. After calling `Reset`, it will overwrite the current buffer and thus reduce allocations.
+Writer is a buffer that implements the `io.Writer` interface and expands the buffer as needed. The reset functionality allows for better memory reuse. After calling `Reset`, it will overwrite the current buffer and thus reduce allocations.
 
 ### Lexer
 Lexer is a read buffer specifically designed for building lexers. It keeps track of two positions: a start and end position. The start position is the beginning of the current token being parsed, the end position is being moved forward until a valid token is found. Calling `Shift` will collapse the positions to the end and return the parsed `[]byte`.

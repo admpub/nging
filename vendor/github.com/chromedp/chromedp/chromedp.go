@@ -12,7 +12,6 @@ package chromedp
 import (
 	"context"
 	"fmt"
-	"strings"
 	"sync"
 	"time"
 
@@ -22,7 +21,6 @@ import (
 	"github.com/chromedp/cdproto/dom"
 	"github.com/chromedp/cdproto/inspector"
 	"github.com/chromedp/cdproto/log"
-	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/cdproto/runtime"
 	"github.com/chromedp/cdproto/target"
@@ -185,12 +183,7 @@ func FromContext(ctx context.Context) *Context {
 // and returns any error encountered during that process.
 //
 // If the context allocated a browser, the browser will be closed gracefully by
-// Cancel. A timeout can be attached to this context to determine how long to
-// wait for the browser to close itself:
-//
-//     tctx, tcancel := context.WithTimeout(ctx, 10 * time.Second)
-//     defer tcancel()
-//     chromedp.Cancel(tctx)
+// Cancel.
 //
 // Usually a "defer cancel()" will be enough for most use cases. However, Cancel
 // is the better option if one wants to gracefully close a browser, or catch
@@ -200,9 +193,7 @@ func Cancel(ctx context.Context) error {
 	if c == nil {
 		return ErrInvalidContext
 	}
-	graceful := c.first && c.Browser != nil
-	if graceful {
-		close(c.Browser.closingGracefully)
+	if c.first && c.Browser != nil {
 		if err := c.Browser.execute(ctx, browser.CommandClose, nil, nil); err != nil {
 			return err
 		}
@@ -210,20 +201,9 @@ func Cancel(ctx context.Context) error {
 		c.cancel()
 		c.closedTarget.Wait()
 	}
-	// If we allocated, wait for the browser to stop, up to any possible
-	// deadline set in this ctx.
+	// If we allocated, wait for the browser to stop.
 	if c.allocated != nil {
-		select {
-		case <-c.allocated:
-		case <-ctx.Done():
-		}
-	}
-	// If this was a graceful close, cancel the entire context, in case any
-	// goroutines or resources are left, or if we hit the timeout above and
-	// the browser hasn't finished yet. Note that, in the non-graceful path,
-	// we already called c.cancel above.
-	if graceful {
-		c.cancel()
+		<-c.allocated
 	}
 	return c.cancelErr
 }
@@ -267,17 +247,12 @@ func (c *Context) newTarget(ctx context.Context) error {
 		// This new page might have already loaded its top-level frame
 		// already, in which case we wouldn't see the frameNavigated and
 		// documentUpdated events. Load them here.
-		// Since at the time of writing this (2020-1-27), Page.* CDP methods are
-		// not implemented in worker targets, we need to skip this step when we
-		// attach to workers.
-		if !c.Target.isWorker {
-			tree, err := page.GetFrameTree().Do(cdp.WithExecutor(ctx, c.Target))
-			if err != nil {
-				return err
-			}
-			c.Target.cur = tree.Frame
-			c.Target.documentUpdated(ctx)
+		tree, err := page.GetFrameTree().Do(cdp.WithExecutor(ctx, c.Target))
+		if err != nil {
+			return err
 		}
+		c.Target.cur = tree.Frame
+		c.Target.documentUpdated(ctx)
 		return nil
 	}
 	if !c.first {
@@ -338,36 +313,19 @@ func (c *Context) attachTarget(ctx context.Context, targetID target.ID) error {
 	c.Target.listeners = append(c.Target.listeners, c.targetListeners...)
 	go c.Target.run(ctx)
 
-	// Check if this is a worker target. We cannot use Target.getTargetInfo or
-	// Target.getTargets in a worker, so we check if "self" refers to a
-	// WorkerGlobalScope or ServiceWorkerGlobalScope.
-	if err := runtime.Enable().Do(cdp.WithExecutor(ctx, c.Target)); err != nil {
-		return err
-	}
-	res, _, err := runtime.Evaluate("self").Do(cdp.WithExecutor(ctx, c.Target))
-	if err != nil {
-		return err
-	}
-	c.Target.isWorker = strings.Contains(res.ClassName, "WorkerGlobalScope")
-
-	// Enable available domains and discover targets.
-	actions := []Action{
+	for _, action := range []Action{
+		// enable domains
 		log.Enable(),
-		network.Enable(),
-	}
-	// These actions are not available on a worker target.
-	if !c.Target.isWorker {
-		actions = append(actions, []Action{
-			inspector.Enable(),
-			page.Enable(),
-			dom.Enable(),
-			css.Enable(),
-			target.SetDiscoverTargets(true),
-			target.SetAutoAttach(true, false).WithFlatten(true),
-		}...)
-	}
+		runtime.Enable(),
+		inspector.Enable(),
+		page.Enable(),
+		dom.Enable(),
+		css.Enable(),
 
-	for _, action := range actions {
+		// enable target discovery
+		target.SetDiscoverTargets(true),
+		target.SetAutoAttach(true, false).WithFlatten(true),
+	} {
 		if err := action.Do(cdp.WithExecutor(ctx, c.Target)); err != nil {
 			return fmt.Errorf("unable to execute %T: %v", action, err)
 		}
@@ -404,99 +362,11 @@ func WithDebugf(f func(string, ...interface{})) ContextOption {
 // when NewContext is allocating a new browser.
 func WithBrowserOption(opts ...BrowserOption) ContextOption {
 	return func(c *Context) {
-		if c.Browser != nil {
+		if !c.first {
 			panic("WithBrowserOption can only be used when allocating a new browser")
 		}
 		c.browserOpts = append(c.browserOpts, opts...)
 	}
-}
-
-// RunResponse is an alternative to Run which can be used with a list of actions
-// that trigger a page navigation, such as clicking on a link or button.
-//
-// RunResponse will run the actions and block until a page loads, returning the
-// HTTP response information for its HTML document. This can be useful to wait
-// for the page to be ready, or to catch 404 status codes, for example.
-//
-// Note that if the actions trigger multiple navigations, only the first is
-// used. And if the actions trigger no navigations at all, RunResponse will
-// block until the context is cancelled.
-func RunResponse(ctx context.Context, actions ...Action) (*network.Response, error) {
-	var resp *network.Response
-	if err := Run(ctx, responseAction(&resp, actions...)); err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func responseAction(resp **network.Response, actions ...Action) Action {
-	return ActionFunc(func(ctx context.Context) error {
-		var reqID network.RequestID
-		var loadErr error
-		respReceived := false
-
-		// First, start listening for events.
-		ch := make(chan struct{})
-		lctx, cancel := context.WithCancel(ctx)
-		ListenTarget(lctx, func(ev interface{}) {
-			switch ev := ev.(type) {
-			case *network.EventRequestWillBeSent:
-				// Stop at the first request, to prevent failed
-				// iframes from interfering.
-				// TODO: what about iframes from the previous
-				// page?
-				if ev.Type == network.ResourceTypeDocument && reqID == "" {
-					reqID = ev.RequestID
-				}
-			case *network.EventLoadingFailed:
-				if ev.RequestID == reqID {
-					loadErr = fmt.Errorf("page load error %s", ev.ErrorText)
-					// If Canceled is true, we won't receive a
-					// loadEventFired at all.
-					if ev.Canceled {
-						cancel()
-						close(ch)
-					}
-				}
-			case *network.EventResponseReceived:
-				if ev.RequestID == reqID {
-					respReceived = true
-					if resp != nil {
-						*resp = ev.Response
-					}
-				}
-			case *page.EventLoadEventFired:
-				// Only stop if a load event triggers after we
-				// receive a document response. Otherwise, this
-				// might be a load event from a previous
-				// navigation.
-				if respReceived || loadErr != nil {
-					cancel()
-					close(ch)
-				}
-			}
-		})
-
-		// Second, run the actions.
-		if err := Run(ctx, actions...); err != nil {
-			return err
-		}
-
-		// Third, block until we have finished loading. If we wanted a
-		// response, check that it isn't nil.
-		select {
-		case <-ch:
-			if loadErr != nil {
-				return loadErr
-			}
-			if resp != nil && *resp == nil {
-				return fmt.Errorf("page loaded without a response")
-			}
-			return nil
-		case <-ctx.Done():
-			return ctx.Err()
-		}
-	})
 }
 
 // Targets lists all the targets in the browser attached to the given context.
@@ -563,9 +433,8 @@ type cancelableListener struct {
 }
 
 // ListenBrowser adds a function which will be called whenever a browser event
-// is received on the chromedp context. Note that this only includes browser
-// events; command responses and target events are not included. Cancelling ctx
-// stops the listener from receiving any more events.
+// is received on the chromedp context. Cancelling ctx stops the listener from
+// receiving any more events.
 //
 // Note that the function is called synchronously when handling events. The
 // function should avoid blocking at all costs. For example, any Actions must be
@@ -586,8 +455,9 @@ func ListenBrowser(ctx context.Context, fn func(ev interface{})) {
 }
 
 // ListenTarget adds a function which will be called whenever a target event is
-// received on the chromedp context. Cancelling ctx stops the listener from
-// receiving any more events.
+// received on the chromedp context. Note that this only includes browser
+// events; command responses and target events are not included. Cancelling ctx
+// stops the listener from receiving any more events.
 //
 // Note that the function is called synchronously when handling events. The
 // function should avoid blocking at all costs. For example, any Actions must be

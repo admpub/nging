@@ -1,0 +1,21 @@
+# Website
+website/public
+website/make
+website/Makefile
+website/marathon*
+.gitmodules
+
+# Node.js
+node_modules
+
+# IntelliJ
+.idea
+*.iml
+/handler/oauth2/example/*.exe
+/handler/oauth2/example/session.db
+/handler/oauth2/example/session.db.lock
+/middleware/render/sse/test/*.exe
+/*.log
+/.vscode
+/middleware/session/test/*.exe
+*.test

@@ -372,8 +372,7 @@ func clusterBlocksCommand(data []uint16, length uint, num_blocks uint, block_ids
 	histogram_symbols = nil
 }
 
-func splitByteVectorCommand(data []uint16, literals_per_histogram uint, max_histograms uint, sampling_stride_length uint, block_switch_cost float64, params *encoderParams, split *blockSplit) {
-	length := uint(len(data))
+func splitByteVectorCommand(data []uint16, length uint, literals_per_histogram uint, max_histograms uint, sampling_stride_length uint, block_switch_cost float64, params *encoderParams, split *blockSplit) {
 	var data_size uint = histogramDataSizeCommand()
 	var num_histograms uint = length/literals_per_histogram + 1
 	var histograms []histogramCommand

@@ -1056,6 +1056,29 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoInput9(in *jlexer.Lexer, out 
 			out.IsSystemKey = bool(in.Bool())
 		case "location":
 			out.Location = int64(in.Int64())
+		case "commands":
+			if in.IsNull() {
+				in.Skip()
+				out.Commands = nil
+			} else {
+				in.Delim('[')
+				if out.Commands == nil {
+					if !in.IsDelim(']') {
+						out.Commands = make([]string, 0, 4)
+					} else {
+						out.Commands = []string{}
+					}
+				} else {
+					out.Commands = (out.Commands)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v4 string
+					v4 = string(in.String())
+					out.Commands = append(out.Commands, v4)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
 		default:
 			in.SkipRecursive()
 		}
@@ -1139,6 +1162,20 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoInput9(out *jwriter.Writer, i
 		const prefix string = ",\"location\":"
 		out.RawString(prefix)
 		out.Int64(int64(in.Location))
+	}
+	if len(in.Commands) != 0 {
+		const prefix string = ",\"commands\":"
+		out.RawString(prefix)
+		{
+			out.RawByte('[')
+			for v5, v6 := range in.Commands {
+				if v5 > 0 {
+					out.RawByte(',')
+				}
+				out.String(string(v6))
+			}
+			out.RawByte(']')
+		}
 	}
 	out.RawByte('}')
 }

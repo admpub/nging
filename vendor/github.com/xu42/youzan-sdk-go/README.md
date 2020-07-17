@@ -2,7 +2,6 @@
 
 <p align="center"> Youzan Yun client for Golang ...</p>
 
-[![GoDoc](https://godoc.org/github.com/xu42/youzan-sdk-go?status.svg)](https://godoc.org/github.com/xu42/youzan-sdk-go)
 [![Build Status](https://travis-ci.org/xu42/youzan-sdk-go.svg)](https://travis-ci.org/xu42/youzan-sdk-go)
 [![release](https://img.shields.io/github/release/xu42/youzan-sdk-go.svg)](https://github.com/xu42/youzan-sdk-go/releases)
 [![GitHub license](https://img.shields.io/badge/license-GNU-blue.svg)](https://raw.githubusercontent.com/xu42/youzan-sdk-go/master/LICENSE)

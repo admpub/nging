@@ -8,7 +8,9 @@ import (
 	"bytes"
 	"io"
 	"strings"
+	"sync"
 	"time"
+	"unicode"
 
 	"github.com/go-errors/errors"
 
@@ -79,6 +81,11 @@ type View struct {
 	// If Frame is true, Title allows to configure a title for the view.
 	Title string
 
+	Tabs     []string
+	TabIndex int
+	// HighlightTabWithoutFocus allows you to show which tab is selected without the view being focused
+	HighlightSelectedTabWithoutFocus bool
+
 	// If Frame is true, Subtitle allows to configure a subtitle for the view.
 	Subtitle string
 
@@ -91,6 +98,150 @@ type View struct {
 
 	// If HasLoader is true, the message will be appended with a spinning loader animation
 	HasLoader bool
+
+	writeMutex sync.Mutex
+
+	// IgnoreCarriageReturns tells us whether to ignore '\r' characters
+	IgnoreCarriageReturns bool
+
+	// ParentView is the view which catches events bubbled up from the given view if there's no matching handler
+	ParentView *View
+
+	Context string // this is for assigning keybindings to a view only in certain contexts
+
+	searcher *searcher
+
+	// when ContainsList is true, we show the current index and total count in the view
+	ContainsList bool
+}
+
+type searcher struct {
+	searchString       string
+	searchPositions    []cellPos
+	currentSearchIndex int
+	onSelectItem       func(int, int, int) error
+}
+
+func (v *View) SetOnSelectItem(onSelectItem func(int, int, int) error) {
+	v.searcher.onSelectItem = onSelectItem
+}
+
+func (v *View) gotoNextMatch() error {
+	if len(v.searcher.searchPositions) == 0 {
+		return nil
+	}
+	if v.searcher.currentSearchIndex == len(v.searcher.searchPositions)-1 {
+		v.searcher.currentSearchIndex = 0
+	} else {
+		v.searcher.currentSearchIndex++
+	}
+	return v.SelectSearchResult(v.searcher.currentSearchIndex)
+}
+
+func (v *View) gotoPreviousMatch() error {
+	if len(v.searcher.searchPositions) == 0 {
+		return nil
+	}
+	if v.searcher.currentSearchIndex == 0 {
+		if len(v.searcher.searchPositions) > 0 {
+			v.searcher.currentSearchIndex = len(v.searcher.searchPositions) - 1
+		}
+	} else {
+		v.searcher.currentSearchIndex--
+	}
+	return v.SelectSearchResult(v.searcher.currentSearchIndex)
+}
+
+func (v *View) SelectSearchResult(index int) error {
+	y := v.searcher.searchPositions[index].y
+	v.FocusPoint(0, y)
+	if v.searcher.onSelectItem != nil {
+		return v.searcher.onSelectItem(y, index, len(v.searcher.searchPositions))
+	}
+	return nil
+}
+
+func (v *View) Search(str string) error {
+	v.writeMutex.Lock()
+	defer v.writeMutex.Unlock()
+
+	v.searcher.search(str)
+	v.updateSearchPositions()
+	if len(v.searcher.searchPositions) > 0 {
+		// get the first result past the current cursor
+		currentIndex := 0
+		adjustedY := v.oy + v.cy
+		adjustedX := v.ox + v.cx
+		for i, pos := range v.searcher.searchPositions {
+			if pos.y > adjustedY || (pos.y == adjustedY && pos.x > adjustedX) {
+				currentIndex = i
+				break
+			}
+		}
+		v.searcher.currentSearchIndex = currentIndex
+		return v.SelectSearchResult(currentIndex)
+	} else {
+		return v.searcher.onSelectItem(-1, -1, 0)
+	}
+	return nil
+}
+
+func (v *View) ClearSearch() {
+	v.searcher.clearSearch()
+}
+
+func (v *View) IsSearching() bool {
+	return v.searcher.searchString != ""
+}
+
+func (v *View) FocusPoint(cx int, cy int) {
+	lineCount := len(v.lines)
+	if cy < 0 || cy > lineCount {
+		return
+	}
+	_, height := v.Size()
+
+	ly := height - 1
+	if ly == -1 {
+		ly = 0
+	}
+
+	// if line is above origin, move origin and set cursor to zero
+	// if line is below origin + height, move origin and set cursor to max
+	// otherwise set cursor to value - origin
+	if ly > lineCount {
+		v.cx = cx
+		v.cy = cy
+		v.oy = 0
+	} else if cy < v.oy {
+		v.cx = cx
+		v.cy = 0
+		v.oy = cy
+	} else if cy > v.oy+ly {
+		v.cx = cx
+		v.cy = ly
+		v.oy = cy - ly
+	} else {
+		v.cx = cx
+		v.cy = cy - v.oy
+	}
+}
+
+func (s *searcher) search(str string) {
+	s.searchString = str
+	s.searchPositions = []cellPos{}
+	s.currentSearchIndex = 0
+}
+
+func (s *searcher) clearSearch() {
+	s.searchString = ""
+	s.searchPositions = []cellPos{}
+	s.currentSearchIndex = 0
+}
+
+type cellPos struct {
+	x int
+	y int
 }
 
 type viewLine struct {
@@ -117,15 +268,16 @@ func (l lineType) String() string {
 // newView returns a new View object.
 func newView(name string, x0, y0, x1, y1 int, mode OutputMode) *View {
 	v := &View{
-		name:    name,
-		x0:      x0,
-		y0:      y0,
-		x1:      x1,
-		y1:      y1,
-		Frame:   true,
-		Editor:  DefaultEditor,
-		tainted: true,
-		ei:      newEscapeInterpreter(mode),
+		name:     name,
+		x0:       x0,
+		y0:       y0,
+		x1:       x1,
+		y1:       y1,
+		Frame:    true,
+		Editor:   DefaultEditor,
+		tainted:  true,
+		ei:       newEscapeInterpreter(mode),
+		searcher: &searcher{},
 	}
 	return v
 }
@@ -174,6 +326,7 @@ func (v *View) setRune(x, y int, ch rune, fgColor, bgColor Attribute) error {
 		ch = v.Mask
 	} else if v.Highlight && ry == rcy {
 		fgColor = fgColor | AttrBold
+		bgColor = bgColor | v.SelBgColor
 	}
 
 	termbox.SetCell(v.x0+x+1, v.y0+y+1, ch,
@@ -187,7 +340,7 @@ func (v *View) setRune(x, y int, ch rune, fgColor, bgColor Attribute) error {
 func (v *View) SetCursor(x, y int) error {
 	maxX, maxY := v.Size()
 	if x < 0 || x >= maxX || y < 0 || y >= maxY {
-		return errors.New("invalid point")
+		return nil
 	}
 	v.cx = x
 	v.cy = y
@@ -205,9 +358,6 @@ func (v *View) Cursor() (x, y int) {
 // implement Horizontal and Vertical scrolling with just incrementing
 // or decrementing ox and oy.
 func (v *View) SetOrigin(x, y int) error {
-	if x < 0 || y < 0 {
-		return errors.New("invalid point")
-	}
 	v.ox = x
 	v.oy = y
 	return nil
@@ -224,12 +374,17 @@ func (v *View) Origin() (x, y int) {
 // be called to clear the view's buffer.
 func (v *View) Write(p []byte) (n int, err error) {
 	v.tainted = true
+	v.writeMutex.Lock()
+	defer v.writeMutex.Unlock()
 
 	for _, ch := range bytes.Runes(p) {
 		switch ch {
 		case '\n':
 			v.lines = append(v.lines, nil)
 		case '\r':
+			if v.IgnoreCarriageReturns {
+				continue
+			}
 			nl := len(v.lines)
 			if nl > 0 {
 				v.lines[nl-1] = nil
@@ -250,6 +405,7 @@ func (v *View) Write(p []byte) (n int, err error) {
 			}
 		}
 	}
+
 	return len(p), nil
 }
 
@@ -314,8 +470,55 @@ func (v *View) Rewind() {
 	v.readOffset = 0
 }
 
+func containsUpcaseChar(str string) bool {
+	for _, ch := range str {
+		if unicode.IsUpper(ch) {
+			return true
+		}
+	}
+	return false
+}
+
+func (v *View) updateSearchPositions() {
+	if v.searcher.searchString != "" {
+		var normalizeRune func(r rune) rune
+		var normalizedSearchStr string
+		// if we have any uppercase characters we'll do a case-sensitive search
+		if containsUpcaseChar(v.searcher.searchString) {
+			normalizedSearchStr = v.searcher.searchString
+			normalizeRune = func(r rune) rune { return r }
+		} else {
+			normalizedSearchStr = strings.ToLower(v.searcher.searchString)
+			normalizeRune = unicode.ToLower
+		}
+
+		v.searcher.searchPositions = []cellPos{}
+		for y, line := range v.lines {
+		lineLoop:
+			for x, _ := range line {
+				if normalizeRune(line[x].chr) == rune(normalizedSearchStr[0]) {
+					for offset := 1; offset < len(normalizedSearchStr); offset++ {
+						if len(line)-1 < x+offset {
+							continue lineLoop
+						}
+						if normalizeRune(line[x+offset].chr) != rune(normalizedSearchStr[offset]) {
+							continue lineLoop
+						}
+					}
+					v.searcher.searchPositions = append(v.searcher.searchPositions, cellPos{x: x, y: y})
+				}
+			}
+		}
+	}
+
+}
+
 // draw re-draws the view's contents.
 func (v *View) draw() error {
+	v.writeMutex.Lock()
+	defer v.writeMutex.Unlock()
+
+	v.updateSearchPositions()
 	maxX, maxY := v.Size()
 
 	if v.Wrap {
@@ -375,6 +578,13 @@ func (v *View) draw() error {
 			if bgColor == ColorDefault {
 				bgColor = v.BgColor
 			}
+			if matched, selected := v.isPatternMatchedRune(x, y); matched {
+				if selected {
+					bgColor = ColorCyan
+				} else {
+					bgColor = ColorYellow
+				}
+			}
 
 			if err := v.setRune(x, y, c.chr, fgColor, bgColor); err != nil {
 				return err
@@ -384,6 +594,18 @@ func (v *View) draw() error {
 		y++
 	}
 	return nil
+}
+
+func (v *View) isPatternMatchedRune(x, y int) (bool, bool) {
+	searchStringLength := len(v.searcher.searchString)
+	for i, pos := range v.searcher.searchPositions {
+		adjustedY := y + v.oy
+		adjustedX := x + v.ox
+		if adjustedY == pos.y && adjustedX >= pos.x && adjustedX < pos.x+searchStringLength {
+			return true, i == v.searcher.currentSearchIndex
+		}
+	}
+	return false, false
 }
 
 // realPosition returns the position in the internal buffer corresponding to the
@@ -415,7 +637,11 @@ func (v *View) realPosition(vx, vy int) (x, y int, err error) {
 
 // Clear empties the view's internal buffer.
 func (v *View) Clear() {
+	v.writeMutex.Lock()
+	defer v.writeMutex.Unlock()
+
 	v.tainted = true
+	v.ei.reset()
 
 	v.lines = nil
 	v.viewLines = nil
@@ -437,6 +663,8 @@ func (v *View) clearRunes() {
 // BufferLines returns the lines in the view's internal
 // buffer.
 func (v *View) BufferLines() []string {
+	v.writeMutex.Lock()
+	defer v.writeMutex.Unlock()
 	lines := make([]string, len(v.lines))
 	for i, l := range v.lines {
 		str := lineType(l).String()
@@ -455,6 +683,8 @@ func (v *View) Buffer() string {
 // ViewBufferLines returns the lines in the view's internal
 // buffer that is shown to the user.
 func (v *View) ViewBufferLines() []string {
+	v.writeMutex.Lock()
+	defer v.writeMutex.Unlock()
 	lines := make([]string, len(v.viewLines))
 	for i, l := range v.viewLines {
 		str := lineType(l.line).String()
@@ -464,8 +694,14 @@ func (v *View) ViewBufferLines() []string {
 	return lines
 }
 
+// LinesHeight is the count of view lines (i.e. lines excluding wrapping)
 func (v *View) LinesHeight() int {
 	return len(v.lines)
+}
+
+// ViewLinesHeight is the count of view lines (i.e. lines including wrapping)
+func (v *View) ViewLinesHeight() int {
+	return len(v.viewLines)
 }
 
 // ViewBuffer returns a string with the contents of the view's buffer that is
@@ -602,4 +838,37 @@ func Loader() cell {
 	return cell{
 		chr: chr,
 	}
+}
+
+// IsTainted tells us if the view is tainted
+func (v *View) IsTainted() bool {
+	return v.tainted
+}
+
+// GetClickedTabIndex tells us which tab was clicked
+func (v *View) GetClickedTabIndex(x int) int {
+	if len(v.Tabs) <= 1 {
+		return 0
+	}
+
+	charIndex := 0
+	for i, tab := range v.Tabs {
+		charIndex += len(tab + " - ")
+		if x < charIndex {
+			return i
+		}
+	}
+
+	return 0
+}
+
+func (v *View) SelectedLineIdx() int {
+	_, seletedLineIdx := v.SelectedPoint()
+	return seletedLineIdx
+}
+
+func (v *View) SelectedPoint() (int, int) {
+	cx, cy := v.Cursor()
+	ox, oy := v.Origin()
+	return cx + ox, cy + oy
 }

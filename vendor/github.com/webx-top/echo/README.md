@@ -1,7 +1,7 @@
 # Echo
 [![Build Status](https://travis-ci.org/webx-top/echo.svg?branch=master)](https://travis-ci.org/webx-top/echo) [![Go Report Card](https://goreportcard.com/badge/github.com/webx-top/echo)](https://goreportcard.com/report/github.com/webx-top/echo)
 #### Echo is a fast and unfancy web framework for Go (Golang). Up to 10x faster than the rest.
-This package need >= **go 1.10**
+This package need >= **go 1.13**
 
 ## Features
 

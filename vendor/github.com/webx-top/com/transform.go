@@ -36,6 +36,10 @@ func Int64(i interface{}) int64 {
 		return int64(v)
 	case uint:
 		return int64(v)
+	case float32:
+		return int64(v)
+	case float64:
+		return int64(v)
 	case string:
 		out, _ := strconv.ParseInt(v, 10, 64)
 		return out
@@ -57,8 +61,14 @@ func Int64(i interface{}) int64 {
 
 func Int(i interface{}) int {
 	switch v := i.(type) {
+	case int32:
+		return int(v)
 	case int:
 		return v
+	case float32:
+		return int(v)
+	case float64:
+		return int(v)
 	case string:
 		out, _ := strconv.Atoi(v)
 		return out
@@ -82,6 +92,10 @@ func Int32(i interface{}) int32 {
 	switch v := i.(type) {
 	case int32:
 		return v
+	case float32:
+		return int32(v)
+	case float64:
+		return int32(v)
 	case string:
 		out, _ := strconv.ParseInt(v, 10, 32)
 		return int32(out)
@@ -103,8 +117,22 @@ func Int32(i interface{}) int32 {
 
 func Uint64(i interface{}) uint64 {
 	switch v := i.(type) {
+	case uint32:
+		return uint64(v)
+	case uint:
+		return uint64(v)
 	case uint64:
 		return v
+	case float32:
+		if v > 0 {
+			return uint64(v)
+		}
+		return 0
+	case float64:
+		if v > 0 {
+			return uint64(v)
+		}
+		return 0
 	case string:
 		out, _ := strconv.ParseUint(v, 10, 64)
 		return out
@@ -126,8 +154,20 @@ func Uint64(i interface{}) uint64 {
 
 func Uint(i interface{}) uint {
 	switch v := i.(type) {
+	case uint32:
+		return uint(v)
 	case uint:
 		return v
+	case float32:
+		if v > 0 {
+			return uint(v)
+		}
+		return 0
+	case float64:
+		if v > 0 {
+			return uint(v)
+		}
+		return 0
 	case string:
 		out, _ := strconv.ParseUint(v, 10, 32)
 		return uint(out)
@@ -151,6 +191,20 @@ func Uint32(i interface{}) uint32 {
 	switch v := i.(type) {
 	case uint32:
 		return v
+	case uint:
+		return uint32(v)
+	case uint64:
+		return uint32(v)
+	case float32:
+		if v > 0 {
+			return uint32(v)
+		}
+		return 0
+	case float64:
+		if v > 0 {
+			return uint32(v)
+		}
+		return 0
 	case string:
 		out, _ := strconv.ParseUint(v, 10, 32)
 		return uint32(out)
@@ -174,9 +228,27 @@ func Float32(i interface{}) float32 {
 	switch v := i.(type) {
 	case float32:
 		return v
+	case float64:
+		return float32(v)
+	case int8:
+		return float32(v)
+	case uint8:
+		return float32(v)
+	case int16:
+		return float32(v)
+	case uint16:
+		return float32(v)
 	case int32:
 		return float32(v)
 	case uint32:
+		return float32(v)
+	case int:
+		return float32(v)
+	case uint:
+		return float32(v)
+	case int64:
+		return float32(v)
+	case uint64:
 		return float32(v)
 	case string:
 		out, _ := strconv.ParseFloat(v, 32)
@@ -199,13 +271,17 @@ func Float32(i interface{}) float32 {
 
 func Float64(i interface{}) float64 {
 	switch v := i.(type) {
+	case float32:
+		return float64(v)
 	case float64:
 		return v
-	case int64:
+	case int8:
 		return float64(v)
-	case uint64:
+	case uint8:
 		return float64(v)
-	case float32:
+	case int16:
+		return float64(v)
+	case uint16:
 		return float64(v)
 	case int32:
 		return float64(v)
@@ -214,6 +290,10 @@ func Float64(i interface{}) float64 {
 	case int:
 		return float64(v)
 	case uint:
+		return float64(v)
+	case int64:
+		return float64(v)
+	case uint64:
 		return float64(v)
 	case string:
 		out, _ := strconv.ParseFloat(v, 64)

@@ -1,6 +1,6 @@
 /*
- * MinIO Go Library for Amazon S3 Compatible Cloud Storage
- * (C) 2018 MinIO, Inc.
+ * Minio Go Library for Amazon S3 Compatible Cloud Storage
+ * (C) 2018 Minio, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/minio/minio-go/v6/pkg/encrypt"
-	"github.com/minio/minio-go/v6/pkg/s3utils"
+	"github.com/minio/minio-go/pkg/encrypt"
+	"github.com/minio/minio-go/pkg/s3utils"
 )
 
 // CSVFileHeaderInfo - is the parameter for whether to utilize headers.
@@ -90,19 +90,19 @@ type ParquetInputOptions struct{}
 type CSVInputOptions struct {
 	FileHeaderInfo       CSVFileHeaderInfo
 	RecordDelimiter      string
-	FieldDelimiter       string `xml:",omitempty"`
-	QuoteCharacter       string `xml:",omitempty"`
-	QuoteEscapeCharacter string `xml:",omitempty"`
-	Comments             string `xml:",omitempty"`
+	FieldDelimiter       string
+	QuoteCharacter       string
+	QuoteEscapeCharacter string
+	Comments             string
 }
 
 // CSVOutputOptions csv output specific options
 type CSVOutputOptions struct {
-	QuoteFields          CSVQuoteFields `xml:",omitempty"`
+	QuoteFields          CSVQuoteFields
 	RecordDelimiter      string
-	FieldDelimiter       string `xml:",omitempty"`
-	QuoteCharacter       string `xml:",omitempty"`
-	QuoteEscapeCharacter string `xml:",omitempty"`
+	FieldDelimiter       string
+	QuoteCharacter       string
+	QuoteEscapeCharacter string
 }
 
 // JSONInputOptions json input specific options
@@ -251,12 +251,6 @@ func (c Client) SelectObjectContent(ctx context.Context, bucketName, objectName 
 		return nil, err
 	}
 
-	return NewSelectResults(resp, bucketName)
-}
-
-// NewSelectResults creates a Select Result parser that parses the response
-// and returns a Reader that will return parsed and assembled select output.
-func NewSelectResults(resp *http.Response, bucketName string) (*SelectResults, error) {
 	if resp.StatusCode != http.StatusOK {
 		return nil, httpRespToErrorResponse(resp, bucketName, "")
 	}
@@ -331,7 +325,7 @@ func (s *SelectResults) start(pipeWriter *io.PipeWriter) {
 
 			switch m {
 			case errorMsg:
-				pipeWriter.CloseWithError(errors.New(headers.Get("error-code") + ":\"" + headers.Get("error-message") + "\""))
+				pipeWriter.CloseWithError(errors.New("Error Type of " + headers.Get("error-type") + " " + headers.Get("error-message")))
 				closeResponse(s.resp)
 				return
 			case commonMsg:

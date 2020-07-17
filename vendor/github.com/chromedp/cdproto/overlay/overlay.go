@@ -50,10 +50,11 @@ func (p *EnableParams) Do(ctx context.Context) (err error) {
 
 // GetHighlightObjectForTestParams for testing.
 type GetHighlightObjectForTestParams struct {
-	NodeID          cdp.NodeID  `json:"nodeId"`                    // Id of the node to get highlight object for.
-	IncludeDistance bool        `json:"includeDistance,omitempty"` // Whether to include distance info.
-	IncludeStyle    bool        `json:"includeStyle,omitempty"`    // Whether to include style info.
-	ColorFormat     ColorFormat `json:"colorFormat,omitempty"`     // The color format to get config with (default: hex)
+	NodeID                cdp.NodeID  `json:"nodeId"`                          // Id of the node to get highlight object for.
+	IncludeDistance       bool        `json:"includeDistance,omitempty"`       // Whether to include distance info.
+	IncludeStyle          bool        `json:"includeStyle,omitempty"`          // Whether to include style info.
+	ColorFormat           ColorFormat `json:"colorFormat,omitempty"`           // The color format to get config with (default: hex).
+	ShowAccessibilityInfo bool        `json:"showAccessibilityInfo,omitempty"` // Whether to show accessibility info (default: true).
 }
 
 // GetHighlightObjectForTest for testing.
@@ -83,6 +84,13 @@ func (p GetHighlightObjectForTestParams) WithIncludeStyle(includeStyle bool) *Ge
 // WithColorFormat the color format to get config with (default: hex).
 func (p GetHighlightObjectForTestParams) WithColorFormat(colorFormat ColorFormat) *GetHighlightObjectForTestParams {
 	p.ColorFormat = colorFormat
+	return &p
+}
+
+// WithShowAccessibilityInfo whether to show accessibility info (default:
+// true).
+func (p GetHighlightObjectForTestParams) WithShowAccessibilityInfo(showAccessibilityInfo bool) *GetHighlightObjectForTestParams {
+	p.ShowAccessibilityInfo = showAccessibilityInfo
 	return &p
 }
 

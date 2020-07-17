@@ -2,14 +2,16 @@
 
 package termbox
 
-import "unicode/utf8"
-import "bytes"
-import "syscall"
-import "unsafe"
-import "strings"
-import "strconv"
-import "os"
-import "io"
+import (
+	"bytes"
+	"io"
+	"os"
+	"strconv"
+	"strings"
+	"syscall"
+	"unicode/utf8"
+	"unsafe"
+)
 
 // private API
 
@@ -77,6 +79,7 @@ var (
 	sigwinch       = make(chan os.Signal, 1)
 	sigio          = make(chan os.Signal, 1)
 	quit           = make(chan int)
+	quitPolling    chan int // get set on each initialize
 	input_comm     = make(chan input_event)
 	interrupt_comm = make(chan struct{})
 	intbuf         = make([]byte, 0, 16)

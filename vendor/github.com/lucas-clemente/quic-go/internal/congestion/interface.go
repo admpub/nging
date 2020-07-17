@@ -8,8 +8,7 @@ import (
 
 // A SendAlgorithm performs congestion control
 type SendAlgorithm interface {
-	TimeUntilSend(bytesInFlight protocol.ByteCount) time.Time
-	HasPacingBudget() bool
+	TimeUntilSend(bytesInFlight protocol.ByteCount) time.Duration
 	OnPacketSent(sentTime time.Time, bytesInFlight protocol.ByteCount, packetNumber protocol.PacketNumber, bytes protocol.ByteCount, isRetransmittable bool)
 	CanSend(bytesInFlight protocol.ByteCount) bool
 	MaybeExitSlowStart()

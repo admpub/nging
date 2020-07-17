@@ -9,6 +9,7 @@ import "github.com/jesseduffield/termbox-go"
 // Keybidings are used to link a given key-press event with a handler.
 type keybinding struct {
 	viewName string
+	contexts []string
 	key      Key
 	ch       rune
 	mod      Modifier
@@ -16,9 +17,10 @@ type keybinding struct {
 }
 
 // newKeybinding returns a new Keybinding object.
-func newKeybinding(viewname string, key Key, ch rune, mod Modifier, handler func(*Gui, *View) error) (kb *keybinding) {
+func newKeybinding(viewname string, contexts []string, key Key, ch rune, mod Modifier, handler func(*Gui, *View) error) (kb *keybinding) {
 	kb = &keybinding{
 		viewName: viewname,
+		contexts: contexts,
 		key:      key,
 		ch:       ch,
 		mod:      mod,
@@ -27,18 +29,47 @@ func newKeybinding(viewname string, key Key, ch rune, mod Modifier, handler func
 	return kb
 }
 
+func eventMatchesKey(ev *termbox.Event, key interface{}) bool {
+	// assuming ModNone for now
+	if Modifier(ev.Mod) != ModNone {
+		return false
+	}
+
+	k, ch, err := getKey(key)
+	if err != nil {
+		return false
+	}
+
+	return k == Key(ev.Key) && ch == ev.Ch
+}
+
 // matchKeypress returns if the keybinding matches the keypress.
 func (kb *keybinding) matchKeypress(key Key, ch rune, mod Modifier) bool {
 	return kb.key == key && kb.ch == ch && kb.mod == mod
 }
 
-// matchView returns if the keybinding matches the current view.
+// matchView returns if the keybinding matches the current view (and the view's context)
 func (kb *keybinding) matchView(v *View) bool {
 	// if the user is typing in a field, ignore char keys
+	if v == nil {
+		return false
+	}
 	if v.Editable == true && kb.ch != 0 {
 		return false
 	}
-	return v != nil && kb.viewName == v.name
+	if kb.viewName != v.name {
+		return false
+	}
+	// if the keybinding doesn't specify contexts, it applies for all contexts
+	if len(kb.contexts) == 0 {
+		return true
+	}
+	for _, context := range kb.contexts {
+		if context == v.Context {
+			return true
+		}
+	}
+	return false
 }
 
 // Key represents special keys or keys combinations.
@@ -133,6 +164,7 @@ type Modifier termbox.Modifier
 
 // Modifiers.
 const (
-	ModNone Modifier = Modifier(0)
-	ModAlt           = Modifier(termbox.ModAlt)
+	ModNone   Modifier = Modifier(0)
+	ModAlt             = Modifier(termbox.ModAlt)
+	ModMotion          = Modifier(termbox.ModMotion)
 )

@@ -9,14 +9,11 @@ import (
 	"crypto"
 	"crypto/hmac"
 	"crypto/rsa"
-	"encoding/binary"
 	"errors"
 	"fmt"
 	"hash"
 	"sync/atomic"
 	"time"
-
-	"golang.org/x/crypto/cryptobyte"
 )
 
 type clientHandshakeStateTLS13 struct {
@@ -127,7 +124,9 @@ func (hs *clientHandshakeStateTLS13) checkServerHelloOrHRR() error {
 		return errors.New("tls: server sent an incorrect legacy version")
 	}
 
-	if hs.serverHello.ocspStapling ||
+	if hs.serverHello.nextProtoNeg ||
+		len(hs.serverHello.nextProtos) != 0 ||
+		hs.serverHello.ocspStapling ||
 		hs.serverHello.ticketSupported ||
 		hs.serverHello.secureRenegotiationSupported ||
 		len(hs.serverHello.secureRenegotiation) != 0 ||
@@ -249,11 +248,6 @@ func (hs *clientHandshakeStateTLS13) processHelloRetryRequest() error {
 			hs.hello.pskIdentities = nil
 			hs.hello.pskBinders = nil
 		}
-	}
-
-	hs.hello.earlyData = false // disable 0-RTT
-	if c.config.Rejected0RTT != nil {
-		c.config.Rejected0RTT()
 	}
 
 	hs.transcript.Write(hs.hello.marshal())
@@ -412,11 +406,6 @@ func (hs *clientHandshakeStateTLS13) readServerParameters() error {
 		}
 	}
 	c.clientProtocol = encryptedExtensions.alpnProtocol
-	// Notify the caller if 0-RTT was rejected.
-	if !encryptedExtensions.earlyData && hs.hello.earlyData && c.config.Rejected0RTT != nil {
-		c.config.Rejected0RTT()
-	}
-	c.used0RTT = encryptedExtensions.earlyData
 
 	return nil
 }
@@ -479,21 +468,23 @@ func (hs *clientHandshakeStateTLS13) readServerCertificate() error {
 	// See RFC 8446, Section 4.4.3.
 	if !isSupportedSignatureAlgorithm(certVerify.signatureAlgorithm, supportedSignatureAlgorithms) {
 		c.sendAlert(alertIllegalParameter)
-		return errors.New("tls: certificate used with invalid signature algorithm")
+		return errors.New("tls: invalid certificate signature algorithm")
 	}
-	sigType, sigHash, err := typeAndHashFromSignatureScheme(certVerify.signatureAlgorithm)
-	if err != nil {
-		return c.sendAlert(alertInternalError)
+	sigType := signatureFromSignatureScheme(certVerify.signatureAlgorithm)
+	sigHash, err := hashFromSignatureScheme(certVerify.signatureAlgorithm)
+	if sigType == 0 || err != nil {
+		c.sendAlert(alertInternalError)
+		return err
 	}
 	if sigType == signaturePKCS1v15 || sigHash == crypto.SHA1 {
 		c.sendAlert(alertIllegalParameter)
-		return errors.New("tls: certificate used with invalid signature algorithm")
+		return errors.New("tls: invalid certificate signature algorithm")
 	}
 	signed := signedMessage(sigHash, serverSignatureContext, hs.transcript)
 	if err := verifyHandshakeSignature(sigType, c.peerCertificates[0].PublicKey,
 		sigHash, signed, certVerify.signature); err != nil {
 		c.sendAlert(alertDecryptError)
-		return errors.New("tls: invalid signature by the server certificate: " + err.Error())
+		return errors.New("tls: invalid certificate signature")
 	}
 
 	hs.transcript.Write(certVerify.marshal())
@@ -558,7 +549,6 @@ func (hs *clientHandshakeStateTLS13) sendClientCertificate() error {
 	cert, err := c.getClientCertificate(&CertificateRequestInfo{
 		AcceptableCAs:    hs.certReq.certificateAuthorities,
 		SignatureSchemes: hs.certReq.supportedSignatureAlgorithms,
-		Version:          c.vers,
 	})
 	if err != nil {
 		return err
@@ -583,16 +573,29 @@ func (hs *clientHandshakeStateTLS13) sendClientCertificate() error {
 	certVerifyMsg := new(certificateVerifyMsg)
 	certVerifyMsg.hasSignatureAlgorithm = true
 
-	certVerifyMsg.signatureAlgorithm, err = selectSignatureScheme(c.vers, cert, hs.certReq.supportedSignatureAlgorithms)
-	if err != nil {
+	supportedAlgs := signatureSchemesForCertificate(c.vers, cert)
+	if supportedAlgs == nil {
+		c.sendAlert(alertInternalError)
+		return unsupportedCertificateError(cert)
+	}
+	// Pick signature scheme in server preference order, as the client
+	// preference order is not configurable.
+	for _, preferredAlg := range hs.certReq.supportedSignatureAlgorithms {
+		if isSupportedSignatureAlgorithm(preferredAlg, supportedAlgs) {
+			certVerifyMsg.signatureAlgorithm = preferredAlg
+			break
+		}
+	}
+	if certVerifyMsg.signatureAlgorithm == 0 {
 		// getClientCertificate returned a certificate incompatible with the
 		// CertificateRequestInfo supported signature algorithms.
 		c.sendAlert(alertHandshakeFailure)
-		return err
+		return errors.New("tls: server doesn't support selected certificate")
 	}
 
-	sigType, sigHash, err := typeAndHashFromSignatureScheme(certVerifyMsg.signatureAlgorithm)
-	if err != nil {
+	sigType := signatureFromSignatureScheme(certVerifyMsg.signatureAlgorithm)
+	sigHash, err := hashFromSignatureScheme(certVerifyMsg.signatureAlgorithm)
+	if sigType == 0 || err != nil {
 		return c.sendAlert(alertInternalError)
 	}
 
@@ -664,29 +667,6 @@ func (c *Conn) handleNewSessionTicket(msg *newSessionTicketMsgTLS13) error {
 		return c.sendAlert(alertInternalError)
 	}
 
-	// We need to save the max_early_data_size that the server sent us, in order
-	// to decide if we're going to try 0-RTT with this ticket.
-	// However, at the same time, the qtls.ClientSessionTicket needs to be equal to
-	// the tls.ClientSessionTicket, so we can't just add a new field to the struct.
-	// We therefore abuse the nonce field (which is a byte slice)
-	nonceWithEarlyData := make([]byte, len(msg.nonce)+4)
-	binary.BigEndian.PutUint32(nonceWithEarlyData, msg.maxEarlyData)
-	copy(nonceWithEarlyData[4:], msg.nonce)
-
-	var appData []byte
-	if c.config.GetAppDataForSessionState != nil {
-		appData = c.config.GetAppDataForSessionState()
-	}
-	var b cryptobyte.Builder
-	b.AddUint16(clientSessionStateVersion) // revision
-	b.AddUint32(msg.maxEarlyData)
-	b.AddUint16LengthPrefixed(func(b *cryptobyte.Builder) {
-		b.AddBytes(appData)
-	})
-	b.AddUint16LengthPrefixed(func(b *cryptobyte.Builder) {
-		b.AddBytes(msg.nonce)
-	})
-
 	// Save the resumption_master_secret and nonce instead of deriving the PSK
 	// to do the least amount of work on NewSessionTicket messages before we
 	// know if the ticket will be used. Forward secrecy of resumed connections
@@ -699,7 +679,7 @@ func (c *Conn) handleNewSessionTicket(msg *newSessionTicketMsgTLS13) error {
 		serverCertificates: c.peerCertificates,
 		verifiedChains:     c.verifiedChains,
 		receivedAt:         c.config.time(),
-		nonce:              b.BytesOrPanic(),
+		nonce:              msg.nonce,
 		useBy:              c.config.time().Add(lifetime),
 		ageAdd:             msg.ageAdd,
 	}

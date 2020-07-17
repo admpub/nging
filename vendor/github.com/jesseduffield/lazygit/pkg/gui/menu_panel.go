@@ -4,36 +4,30 @@ import (
 	"fmt"
 
 	"github.com/jesseduffield/gocui"
+	"github.com/jesseduffield/lazygit/pkg/theme"
 	"github.com/jesseduffield/lazygit/pkg/utils"
 )
+
+type menuItem struct {
+	displayString  string
+	displayStrings []string
+	onPress        func() error
+}
 
 // list panel functions
 
 func (gui *Gui) handleMenuSelect(g *gocui.Gui, v *gocui.View) error {
-	return gui.focusPoint(0, gui.State.Panels.Menu.SelectedLine, gui.State.MenuItemCount, v)
-}
-
-func (gui *Gui) handleMenuNextLine(g *gocui.Gui, v *gocui.View) error {
-	panelState := gui.State.Panels.Menu
-	gui.changeSelectedLine(&panelState.SelectedLine, v.LinesHeight(), false)
-
-	return gui.handleMenuSelect(g, v)
-}
-
-func (gui *Gui) handleMenuPrevLine(g *gocui.Gui, v *gocui.View) error {
-	panelState := gui.State.Panels.Menu
-	gui.changeSelectedLine(&panelState.SelectedLine, v.LinesHeight(), true)
-
-	return gui.handleMenuSelect(g, v)
+	v.FocusPoint(0, gui.State.Panels.Menu.SelectedLine)
+	return nil
 }
 
 // specific functions
 
 func (gui *Gui) renderMenuOptions() error {
 	optionsMap := map[string]string{
-		"esc/q": gui.Tr.SLocalize("close"),
-		"↑ ↓":   gui.Tr.SLocalize("navigate"),
-		"space": gui.Tr.SLocalize("execute"),
+		fmt.Sprintf("%s/%s", gui.getKeyDisplay("universal.return"), gui.getKeyDisplay("universal.quit")):       gui.Tr.SLocalize("close"),
+		fmt.Sprintf("%s %s", gui.getKeyDisplay("universal.prevItem"), gui.getKeyDisplay("universal.nextItem")): gui.Tr.SLocalize("navigate"),
+		gui.getKeyDisplay("universal.select"): gui.Tr.SLocalize("execute"),
 	}
 	return gui.renderOptionsMap(optionsMap)
 }
@@ -51,27 +45,54 @@ func (gui *Gui) handleMenuClose(g *gocui.Gui, v *gocui.View) error {
 	return gui.returnFocus(g, v)
 }
 
-func (gui *Gui) createMenu(title string, items interface{}, itemCount int, handlePress func(int) error) error {
-	isFocused := gui.g.CurrentView().Name() == "menu"
-	gui.State.MenuItemCount = itemCount
-	list, err := utils.RenderList(items, isFocused)
-	if err != nil {
-		return err
+type createMenuOptions struct {
+	showCancel bool
+}
+
+func (gui *Gui) createMenu(title string, items []*menuItem, createMenuOptions createMenuOptions) error {
+	if createMenuOptions.showCancel {
+		// this is mutative but I'm okay with that for now
+		items = append(items, &menuItem{
+			displayStrings: []string{gui.Tr.SLocalize("cancel")},
+			onPress: func() error {
+				return nil
+			},
+		})
 	}
+
+	gui.State.MenuItemCount = len(items)
+
+	stringArrays := make([][]string, len(items))
+	for i, item := range items {
+		if item.displayStrings == nil {
+			stringArrays[i] = []string{item.displayString}
+		} else {
+			stringArrays[i] = item.displayStrings
+		}
+	}
+
+	list := utils.RenderDisplayStrings(stringArrays)
 
 	x0, y0, x1, y1 := gui.getConfirmationPanelDimensions(gui.g, false, list)
 	menuView, _ := gui.g.SetView("menu", x0, y0, x1, y1, 0)
 	menuView.Title = title
-	menuView.FgColor = gocui.ColorWhite
+	menuView.FgColor = theme.GocuiDefaultTextColor
+	menuView.ContainsList = true
 	menuView.Clear()
+	menuView.SetOnSelectItem(gui.onSelectItemWrapper(func(selectedLine int) error {
+		gui.State.Panels.Menu.SelectedLine = selectedLine
+		menuView.FocusPoint(0, selectedLine)
+		return nil
+	}))
 	fmt.Fprint(menuView, list)
 	gui.State.Panels.Menu.SelectedLine = 0
 
 	wrappedHandlePress := func(g *gocui.Gui, v *gocui.View) error {
 		selectedLine := gui.State.Panels.Menu.SelectedLine
-		if err := handlePress(selectedLine); err != nil {
+		if err := items[selectedLine].onPress(); err != nil {
 			return err
 		}
+
 		if _, err := gui.g.View("menu"); err == nil {
 			if _, err := gui.g.SetViewOnBottom("menu"); err != nil {
 				return err
@@ -81,10 +102,12 @@ func (gui *Gui) createMenu(title string, items interface{}, itemCount int, handl
 		return gui.returnFocus(gui.g, menuView)
 	}
 
-	for _, key := range []gocui.Key{gocui.KeySpace, gocui.KeyEnter} {
+	gui.State.Panels.Menu.OnPress = wrappedHandlePress
+
+	for _, key := range []gocui.Key{gocui.KeySpace, gocui.KeyEnter, 'y'} {
 		_ = gui.g.DeleteKeybinding("menu", key, gocui.ModNone)
 
-		if err := gui.g.SetKeybinding("menu", key, gocui.ModNone, wrappedHandlePress); err != nil {
+		if err := gui.g.SetKeybinding("menu", nil, key, gocui.ModNone, wrappedHandlePress); err != nil {
 			return err
 		}
 	}

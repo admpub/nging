@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/heroku/rollrus"
 	"github.com/jesseduffield/lazygit/pkg/commands"
 	"github.com/jesseduffield/lazygit/pkg/config"
 	"github.com/jesseduffield/lazygit/pkg/gui"
@@ -31,6 +30,11 @@ type App struct {
 	Tr            *i18n.Localizer
 	Updater       *updates.Updater // may only need this on the Gui
 	ClientContext string
+}
+
+type errorMapping struct {
+	originalError string
+	newError      string
 }
 
 func newProductionLogger(config config.AppConfigurer) *logrus.Logger {
@@ -68,9 +72,7 @@ func newDevelopmentLogger(config config.AppConfigurer) *logrus.Logger {
 
 func newLogger(config config.AppConfigurer) *logrus.Entry {
 	var log *logrus.Logger
-	environment := "production"
 	if config.GetDebug() || os.Getenv("DEBUG") == "TRUE" {
-		environment = "development"
 		log = newDevelopmentLogger(config)
 	} else {
 		log = newProductionLogger(config)
@@ -80,11 +82,6 @@ func newLogger(config config.AppConfigurer) *logrus.Entry {
 	// https://github.com/aybabtme/humanlog
 	log.Formatter = &logrus.JSONFormatter{}
 
-	if config.GetUserConfig().GetString("reporting") == "on" {
-		// this isn't really a secret token: it only has permission to push new rollbar items
-		hook := rollrus.NewHook("23432119147a4367abf7c0de2aa99a2d", environment)
-		log.Hooks.Add(hook)
-	}
 	return log.WithFields(logrus.Fields{
 		"debug":     config.GetDebug(),
 		"version":   config.GetVersion(),
@@ -94,7 +91,7 @@ func newLogger(config config.AppConfigurer) *logrus.Entry {
 }
 
 // NewApp bootstrap a new application
-func NewApp(config config.AppConfigurer) (*App, error) {
+func NewApp(config config.AppConfigurer, filterPath string) (*App, error) {
 	app := &App{
 		closers: []io.Closer{},
 		Config:  config,
@@ -124,7 +121,7 @@ func NewApp(config config.AppConfigurer) (*App, error) {
 	if err != nil {
 		return app, err
 	}
-	app.Gui, err = gui.NewGui(app.Log, app.GitCommand, app.OSCommand, app.Tr, config, app.Updater)
+	app.Gui, err = gui.NewGui(app.Log, app.GitCommand, app.OSCommand, app.Tr, config, app.Updater, filterPath)
 	if err != nil {
 		return app, err
 	}
@@ -134,9 +131,16 @@ func NewApp(config config.AppConfigurer) (*App, error) {
 func (app *App) setupRepo() error {
 	// if we are not in a git repo, we ask if we want to `git init`
 	if err := app.OSCommand.RunCommand("git status"); err != nil {
-		if !strings.Contains(err.Error(), "Not a git repository") {
+		cwd, err := os.Getwd()
+		if err != nil {
 			return err
 		}
+		info, _ := os.Stat(filepath.Join(cwd, ".git"))
+		if info != nil && info.IsDir() {
+			return err // Current directory appears to be a git repository.
+		}
+
+		// Offer to initialize a new repository in current directory.
 		fmt.Print(app.Tr.SLocalize("CreateRepo"))
 		response, _ := bufio.NewReader(os.Stdin).ReadString('\n')
 		if strings.Trim(response, " \n") != "y" {
@@ -158,7 +162,8 @@ func (app *App) Run() error {
 		os.Exit(0)
 	}
 
-	return app.Gui.RunWithSubprocesses()
+	err := app.Gui.RunWithSubprocesses()
+	return err
 }
 
 // Rebase contains logic for when we've been run in demon mode, meaning we've
@@ -191,4 +196,23 @@ func (app *App) Close() error {
 		}
 	}
 	return nil
+}
+
+// KnownError takes an error and tells us whether it's an error that we know about where we can print a nicely formatted version of it rather than panicking with a stack trace
+func (app *App) KnownError(err error) (string, bool) {
+	errorMessage := err.Error()
+
+	mappings := []errorMapping{
+		{
+			originalError: "fatal: not a git repository (or any of the parent directories): .git",
+			newError:      app.Tr.SLocalize("notARepository"),
+		},
+	}
+
+	for _, mapping := range mappings {
+		if strings.Contains(errorMessage, mapping.originalError) {
+			return mapping.newError, true
+		}
+	}
+	return "", false
 }

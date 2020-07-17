@@ -191,11 +191,7 @@ func init() {
 // New returns a new CSS scanner for the given input.
 func New(input string) *Scanner {
 	// Normalize newlines.
-	// https://www.w3.org/TR/css-syntax-3/#input-preprocessing
 	input = strings.Replace(input, "\r\n", "\n", -1)
-	input = strings.Replace(input, "\r", "\n", -1)
-	input = strings.Replace(input, "\f", "\n", -1)
-	input = strings.Replace(input, "\u0000", "\ufffd", -1)
 	return &Scanner{
 		input: input,
 		row:   1,
@@ -236,7 +232,7 @@ func (s *Scanner) Next() *Token {
 	// shortcut before testing multiple regexps.
 	input := s.input[s.pos:]
 	switch input[0] {
-	case '\t', '\n', ' ':
+	case '\t', '\n', '\f', '\r', ' ':
 		// Whitespace.
 		return s.emitToken(TokenS, matchers[TokenS].FindString(input))
 	case '.':

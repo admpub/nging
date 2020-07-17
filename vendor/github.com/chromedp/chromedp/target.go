@@ -35,9 +35,6 @@ type Target struct {
 
 	// logging funcs
 	logf, errf func(string, ...interface{})
-
-	// Indicates if the target is a worker target.
-	isWorker bool
 }
 
 func (t *Target) run(ctx context.Context) {

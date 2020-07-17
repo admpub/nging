@@ -28,13 +28,12 @@ type QueryAction Action
 // See Query for information on building an element selector and relevant
 // options.
 type Selector struct {
-	sel      interface{}
-	fromNode *cdp.Node
-	exp      int
-	by       func(context.Context, *cdp.Node) ([]cdp.NodeID, error)
-	wait     func(context.Context, *cdp.Frame, ...cdp.NodeID) ([]*cdp.Node, error)
-	after    func(context.Context, ...*cdp.Node) error
-	raw      bool
+	sel   interface{}
+	exp   int
+	by    func(context.Context, *cdp.Node) ([]cdp.NodeID, error)
+	wait  func(context.Context, *cdp.Frame, ...cdp.NodeID) ([]*cdp.Node, error)
+	after func(context.Context, ...*cdp.Node) error
+	raw   bool
 }
 
 // Query is a query action that queries the browser for specific element
@@ -84,8 +83,8 @@ type Selector struct {
 //
 // By Options
 //
-// The BySearch (default) option enables querying for elements by plain text,
-// CSS selector or XPath query, wrapping DOM.performSearch.
+// The BySearch (default) option enables querying for elements with a CSS or
+// XPath selector, wrapping DOM.performSearch.
 //
 // The ByID option enables querying for a single element with the matching CSS
 // ID, wrapping DOM.querySelector. ByID is similar to calling
@@ -164,48 +163,29 @@ func (s *Selector) Do(ctx context.Context) error {
 			return ctx.Err()
 		case <-time.After(5 * time.Millisecond):
 		}
-
 		t.curMu.RLock()
-		frame := t.cur
+		cur := t.cur
 		t.curMu.RUnlock()
 
-		if frame == nil {
+		if cur == nil {
 			// the frame hasn't loaded yet.
 			continue
 		}
 
-		fromNode := s.fromNode
-		if fromNode == nil {
-			frame.RLock()
-			fromNode = frame.Root
-			frame.RUnlock()
+		cur.RLock()
+		root := cur.Root
+		cur.RUnlock()
 
-			if fromNode == nil {
-				// not root node yet?
-				continue
-			}
-		} else {
-			// TODO: we probably want to use the nested frame
-			// instead, butnote that util.go stores the nested
-			// frame's nodes in the root frame's Nodes map.
-			// frame = t.frames[fromNode.FrameID]
-			// if frame == nil {
-			// 	return fmt.Errorf("FromNode provided does not belong to any active frame")
-			// }
+		if root == nil {
+			// not root node yet?
+			continue
 		}
 
-		// If this is an iframe node, we want to run the query
-		// on its "content document" node instead. Otherwise,
-		// queries will return no results.
-		if doc := fromNode.ContentDocument; doc != nil {
-			fromNode = doc
-		}
-
-		ids, err := s.by(ctx, fromNode)
+		ids, err := s.by(ctx, root)
 		if err != nil || len(ids) < s.exp {
 			continue
 		}
-		nodes, err := s.wait(ctx, frame, ids...)
+		nodes, err := s.wait(ctx, cur, ids...)
 		// if nodes==nil, we're not yet ready
 		if nodes == nil || err != nil {
 			continue
@@ -279,13 +259,6 @@ func QueryAfter(sel interface{}, f func(context.Context, ...*cdp.Node) error, op
 // QueryOption is an element query action option.
 type QueryOption = func(*Selector)
 
-// FromNode is an element query action option where a query will be run. That
-// is, the query will only look at the node's element sub-tree. By default, or
-// when passed nil, the document's root element will be used.
-func FromNode(node *cdp.Node) QueryOption {
-	return func(s *Selector) { s.fromNode = node }
-}
-
 // ByFunc is an element query action option to set the func used to select elements.
 func ByFunc(f func(context.Context, *cdp.Node) ([]cdp.NodeID, error)) QueryOption {
 	return func(s *Selector) {
@@ -331,7 +304,7 @@ func ByID(s *Selector) {
 }
 
 // BySearch is an element query option to select elements by the DOM.performSearch
-// command. It matches nodes by plain text, CSS selector or XPath query.
+// command. Works with both CSS and XPath queries.
 func BySearch(s *Selector) {
 	ByFunc(func(ctx context.Context, n *cdp.Node) ([]cdp.NodeID, error) {
 		id, count, err := dom.PerformSearch(s.selAsString()).Do(ctx)

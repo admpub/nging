@@ -1,6 +1,6 @@
 /*
- * MinIO Go Library for Amazon S3 Compatible Cloud Storage
- * Copyright 2015-2017 MinIO, Inc.
+ * Minio Go Library for Amazon S3 Compatible Cloud Storage
+ * Copyright 2015-2017 Minio, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -242,20 +242,4 @@ type deleteMultiObjectsResult struct {
 	XMLName          xml.Name           `xml:"DeleteResult"`
 	DeletedObjects   []deletedObject    `xml:"Deleted"`
 	UnDeletedObjects []nonDeletedObject `xml:"Error"`
-}
-
-type tagging struct {
-	XMLName xml.Name `xml:"http://s3.amazonaws.com/doc/2006-03-01/ Tagging"`
-	TagSet  tagSet
-}
-
-type tagSet struct {
-	XMLName xml.Name `xml:"TagSet"`
-	Tags    []tag
-}
-
-type tag struct {
-	XMLName xml.Name `xml:"Tag"`
-	Key     string   `xml:"Key"`
-	Value   string   `xml:"Value"`
 }

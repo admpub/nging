@@ -6,7 +6,7 @@
 [![godoc](https://img.shields.io/badge/docs-GoDoc-green.svg)](https://godoc.org/github.com/admpub/goseaweedfs)
 [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://github.com/admpub/goseaweedfs/blob/master/LICENSE)
 
-A complete Golang client for [SeaweedFS](https://github.com/chrislusf/seaweedfs). Inspired by:
+A complete Golang client for [SeaweedFS](https://github.com/chrislusf/seaweedfs) (version 1.44+). Inspired by:
 - [tnextday/goseaweed](https://github.com/tnextday/goseaweed)
 - [ginuerzh/weedo](https://github.com/ginuerzh/weedo)
 

@@ -1,0 +1,5 @@
+*.iml
+/.idea
+/vendor
+/learning
+coverage.out

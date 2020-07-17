@@ -31,7 +31,6 @@ import (
 	"github.com/admpub/nging/application/registry/upload/helper"
 	"github.com/webx-top/echo"
 	"gocloud.dev/blob"
-	"gocloud.dev/blob/storage"
 )
 
 //! incomplete
@@ -84,7 +83,7 @@ func (f *Cloud) FileInfo(file string) (os.FileInfo, error) {
 	defer r.Close()
 
 	// Access storage.Reader via sr here.
-	var sr *storage.Reader
+	var sr *blob.Reader
 	if r.As(&sr) {
 		_ = sr.Attrs
 	}

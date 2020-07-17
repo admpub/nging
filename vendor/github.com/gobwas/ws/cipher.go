@@ -1,7 +1,6 @@
 package ws
 
 import (
-	"encoding/binary"
 	"unsafe"
 )
 
@@ -47,10 +46,8 @@ func Cipher(payload []byte, mask [4]byte, offset int) {
 	// Get number of uint64 parts remaining to process.
 	n = (n - ln - rn) >> 3
 	for i := 0; i < n; i++ {
-		idx := ln + (i << 3)
-		p := binary.LittleEndian.Uint64(payload[idx : idx+8])
-		p = p ^ m2
-		binary.LittleEndian.PutUint64(payload[idx:idx+8], p)
+		v := (*uint64)(unsafe.Pointer(&payload[ln+(i<<3)]))
+		*v = *v ^ m2
 	}
 }
 

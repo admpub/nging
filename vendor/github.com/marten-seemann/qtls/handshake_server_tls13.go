@@ -23,22 +23,21 @@ import (
 const maxClientPSKIdentities = 5
 
 type serverHandshakeStateTLS13 struct {
-	c                   *Conn
-	clientHello         *clientHelloMsg
-	hello               *serverHelloMsg
-	encryptedExtensions *encryptedExtensionsMsg
-	sentDummyCCS        bool
-	usingPSK            bool
-	suite               *cipherSuiteTLS13
-	cert                *Certificate
-	sigAlg              SignatureScheme
-	earlySecret         []byte
-	sharedKey           []byte
-	handshakeSecret     []byte
-	masterSecret        []byte
-	trafficSecret       []byte // client_application_traffic_secret_0
-	transcript          hash.Hash
-	clientFinished      []byte
+	c               *Conn
+	clientHello     *clientHelloMsg
+	hello           *serverHelloMsg
+	sentDummyCCS    bool
+	usingPSK        bool
+	suite           *cipherSuiteTLS13
+	cert            *Certificate
+	sigAlg          SignatureScheme
+	earlySecret     []byte
+	sharedKey       []byte
+	handshakeSecret []byte
+	masterSecret    []byte
+	trafficSecret   []byte // client_application_traffic_secret_0
+	transcript      hash.Hash
+	clientFinished  []byte
 }
 
 func (hs *serverHandshakeStateTLS13) handshake() error {
@@ -86,7 +85,6 @@ func (hs *serverHandshakeStateTLS13) processClientHello() error {
 	c := hs.c
 
 	hs.hello = new(serverHelloMsg)
-	hs.encryptedExtensions = new(encryptedExtensionsMsg)
 
 	// TLS 1.3 froze the ServerHello.legacy_version field, and uses
 	// supported_versions instead. See RFC 8446, sections 4.1.3 and 4.2.1.
@@ -111,7 +109,7 @@ func (hs *serverHandshakeStateTLS13) processClientHello() error {
 		if id == TLS_FALLBACK_SCSV {
 			// Use c.vers instead of max(supported_versions) because an attacker
 			// could defeat this by adding an arbitrary high version otherwise.
-			if c.vers < c.config.maxSupportedVersion() {
+			if c.vers < c.config.maxSupportedVersion(false) {
 				c.sendAlert(alertInappropriateFallback)
 				return errors.New("tls: client using inappropriate protocol fallback")
 			}
@@ -136,26 +134,27 @@ func (hs *serverHandshakeStateTLS13) processClientHello() error {
 		return errors.New("tls: initial handshake had non-empty renegotiation extension")
 	}
 
+	if hs.clientHello.earlyData {
+		// See RFC 8446, Section 4.2.10 for the complicated behavior required
+		// here. The scenario is that a different server at our address offered
+		// to accept early data in the past, which we can't handle. For now, all
+		// 0-RTT enabled session tickets need to expire before a Go server can
+		// replace a server or join a pool. That's the same requirement that
+		// applies to mixing or replacing with any TLS 1.2 server.
+		c.sendAlert(alertUnsupportedExtension)
+		return errors.New("tls: client sent unexpected early data")
+	}
+
 	hs.hello.sessionId = hs.clientHello.sessionId
 	hs.hello.compressionMethod = compressionNone
 
-	var preferenceList, supportedList, ourList []uint16
-	for _, suiteID := range c.config.CipherSuites {
-		for _, suite := range cipherSuitesTLS13 {
-			if suite.id == suiteID {
-				ourList = append(ourList, suiteID)
-			}
-		}
-	}
-	if len(ourList) == 0 {
-		ourList = defaultCipherSuitesTLS13()
-	}
+	var preferenceList, supportedList []uint16
 	if c.config.PreferServerCipherSuites {
-		preferenceList = ourList
+		preferenceList = defaultCipherSuitesTLS13()
 		supportedList = hs.clientHello.cipherSuites
 	} else {
 		preferenceList = hs.clientHello.cipherSuites
-		supportedList = ourList
+		supportedList = defaultCipherSuitesTLS13()
 	}
 	for _, suiteID := range preferenceList {
 		hs.suite = mutualCipherSuiteTLS13(supportedList, suiteID)
@@ -227,13 +226,6 @@ GroupSelection:
 		c.config.ReceivedExtensions(typeClientHello, hs.clientHello.additionalExtensions)
 	}
 
-	if len(hs.clientHello.alpnProtocols) > 0 {
-		if selectedProto, fallback := mutualProtocol(hs.clientHello.alpnProtocols, c.config.NextProtos); !fallback {
-			hs.encryptedExtensions.alpnProtocol = selectedProto
-			c.clientProtocol = selectedProto
-		}
-	}
-
 	return nil
 }
 
@@ -275,19 +267,6 @@ func (hs *serverHandshakeStateTLS13) checkForResumption() error {
 		sessionState := new(sessionStateTLS13)
 		if ok := sessionState.unmarshal(plaintext); !ok {
 			continue
-		}
-
-		if hs.clientHello.earlyData {
-			if sessionState.maxEarlyData == 0 {
-				c.sendAlert(alertUnsupportedExtension)
-				return errors.New("tls: client sent unexpected early data")
-			}
-
-			if sessionState.alpn == c.clientProtocol &&
-				c.config.Accept0RTT != nil && c.config.Accept0RTT(sessionState.appData) {
-				hs.encryptedExtensions.earlyData = true
-				c.used0RTT = true
-			}
 		}
 
 		createdAt := time.Unix(int64(sessionState.createdAt), 0)
@@ -337,17 +316,6 @@ func (hs *serverHandshakeStateTLS13) checkForResumption() error {
 			return err
 		}
 
-		h := cloneHash(hs.transcript, hs.suite.hash)
-		h.Write(hs.clientHello.marshal())
-		if sessionState.maxEarlyData > 0 && c.config.MaxEarlyData > 0 {
-			clientEarlySecret := hs.suite.deriveSecret(hs.earlySecret, "c e traffic", h)
-			c.in.exportKey(Encryption0RTT, hs.suite, clientEarlySecret)
-			if err := c.config.writeKeyLog(keyLogLabelEarlyTraffic, hs.clientHello.random, clientEarlySecret); err != nil {
-				c.sendAlert(alertInternalError)
-				return err
-			}
-		}
-
 		hs.hello.selectedIdentityPresent = true
 		hs.hello.selectedIdentity = uint16(i)
 		hs.usingPSK = true
@@ -394,26 +362,36 @@ func (hs *serverHandshakeStateTLS13) pickCertificate() error {
 		return nil
 	}
 
-	// signature_algorithms is required in TLS 1.3. See RFC 8446, Section 4.2.3.
-	if len(hs.clientHello.supportedSignatureAlgorithms) == 0 {
-		return c.sendAlert(alertMissingExtension)
-	}
-
+	// This implements a very simplistic certificate selection strategy for now:
+	// getCertificate delegates to the application Config.GetCertificate, or
+	// selects based on the server_name only. If the selected certificate's
+	// public key does not match the client signature_algorithms, the handshake
+	// is aborted. No attention is given to signature_algorithms_cert, and it is
+	// not passed to the application Config.GetCertificate. This will need to
+	// improve according to RFC 8446, sections 4.4.2.2 and 4.2.3.
 	certificate, err := c.config.getCertificate(clientHelloInfo(c, hs.clientHello))
 	if err != nil {
-		if err == errNoCertificates {
-			c.sendAlert(alertUnrecognizedName)
-		} else {
-			c.sendAlert(alertInternalError)
-		}
+		c.sendAlert(alertInternalError)
 		return err
 	}
-	hs.sigAlg, err = selectSignatureScheme(c.vers, certificate, hs.clientHello.supportedSignatureAlgorithms)
-	if err != nil {
-		// getCertificate returned a certificate that is unsupported or
-		// incompatible with the client's signature algorithms.
+	supportedAlgs := signatureSchemesForCertificate(c.vers, certificate)
+	if supportedAlgs == nil {
+		c.sendAlert(alertInternalError)
+		return unsupportedCertificateError(certificate)
+	}
+	// Pick signature scheme in client preference order, as the server
+	// preference order is not configurable.
+	for _, preferredAlg := range hs.clientHello.supportedSignatureAlgorithms {
+		if isSupportedSignatureAlgorithm(preferredAlg, supportedAlgs) {
+			hs.sigAlg = preferredAlg
+			break
+		}
+	}
+	if hs.sigAlg == 0 {
+		// getCertificate returned a certificate incompatible with the
+		// ClientHello supported signature algorithms.
 		c.sendAlert(alertHandshakeFailure)
-		return err
+		return errors.New("tls: client doesn't support selected certificate")
 	}
 	hs.cert = certificate
 
@@ -488,11 +466,6 @@ func (hs *serverHandshakeStateTLS13) doHelloRetryRequest(selectedGroup CurveID) 
 		return errors.New("tls: client illegally modified second ClientHello")
 	}
 
-	if clientHello.earlyData {
-		c.sendAlert(alertIllegalParameter)
-		return errors.New("tls: client offered 0-RTT data in second ClientHello")
-	}
-
 	hs.clientHello = clientHello
 	return nil
 }
@@ -543,6 +516,7 @@ func illegalClientHelloChange(ch, ch1 *clientHelloMsg) bool {
 		!bytes.Equal(ch.random, ch1.random) ||
 		!bytes.Equal(ch.sessionId, ch1.sessionId) ||
 		!bytes.Equal(ch.compressionMethods, ch1.compressionMethods) ||
+		ch.nextProtoNeg != ch1.nextProtoNeg ||
 		ch.serverName != ch1.serverName ||
 		ch.ocspStapling != ch1.ocspStapling ||
 		!bytes.Equal(ch.supportedPoints, ch1.supportedPoints) ||
@@ -557,11 +531,6 @@ func illegalClientHelloChange(ch, ch1 *clientHelloMsg) bool {
 
 func (hs *serverHandshakeStateTLS13) sendServerParameters() error {
 	c := hs.c
-
-	if c.config.EnforceNextProtoSelection && len(c.clientProtocol) == 0 {
-		c.sendAlert(alertNoApplicationProtocol)
-		return fmt.Errorf("ALPN negotiation failed. Client offered: %q", hs.clientHello.alpnProtocols)
-	}
 
 	hs.transcript.Write(hs.clientHello.marshal())
 	hs.transcript.Write(hs.hello.marshal())
@@ -600,12 +569,24 @@ func (hs *serverHandshakeStateTLS13) sendServerParameters() error {
 		return err
 	}
 
+	encryptedExtensions := new(encryptedExtensionsMsg)
+
+	if len(hs.clientHello.alpnProtocols) > 0 {
+		if selectedProto, fallback := mutualProtocol(hs.clientHello.alpnProtocols, c.config.NextProtos); !fallback {
+			encryptedExtensions.alpnProtocol = selectedProto
+			c.clientProtocol = selectedProto
+		}
+	}
+	if c.config.EnforceNextProtoSelection && len(c.clientProtocol) == 0 {
+		c.sendAlert(alertNoApplicationProtocol)
+		return fmt.Errorf("ALPN negotiation failed. Client offered: %q", hs.clientHello.alpnProtocols)
+	}
 	if hs.c.config.GetExtensions != nil {
-		hs.encryptedExtensions.additionalExtensions = hs.c.config.GetExtensions(typeEncryptedExtensions)
+		encryptedExtensions.additionalExtensions = hs.c.config.GetExtensions(typeEncryptedExtensions)
 	}
 
-	hs.transcript.Write(hs.encryptedExtensions.marshal())
-	if _, err := c.writeRecord(recordTypeHandshake, hs.encryptedExtensions.marshal()); err != nil {
+	hs.transcript.Write(encryptedExtensions.marshal())
+	if _, err := c.writeRecord(recordTypeHandshake, encryptedExtensions.marshal()); err != nil {
 		return err
 	}
 
@@ -655,8 +636,9 @@ func (hs *serverHandshakeStateTLS13) sendServerCertificate() error {
 	certVerifyMsg.hasSignatureAlgorithm = true
 	certVerifyMsg.signatureAlgorithm = hs.sigAlg
 
-	sigType, sigHash, err := typeAndHashFromSignatureScheme(hs.sigAlg)
-	if err != nil {
+	sigType := signatureFromSignatureScheme(hs.sigAlg)
+	sigHash, err := hashFromSignatureScheme(hs.sigAlg)
+	if sigType == 0 || err != nil {
 		return c.sendAlert(alertInternalError)
 	}
 
@@ -762,20 +744,40 @@ func (hs *serverHandshakeStateTLS13) sendSessionTickets() error {
 		return nil
 	}
 
-	c.resumptionSecret = hs.suite.deriveSecret(hs.masterSecret,
+	resumptionSecret := hs.suite.deriveSecret(hs.masterSecret,
 		resumptionLabel, hs.transcript)
 
 	// Don't send session tickets when the alternative record layer is set.
 	// Instead, save the resumption secret on the Conn.
 	// Session tickets can then be generated by calling Conn.GetSessionTicket().
 	if hs.c.config.AlternativeRecordLayer != nil {
+		c.resumptionSecret = resumptionSecret
 		return nil
 	}
 
-	m, err := hs.c.getSessionTicketMsg(nil)
+	m := new(newSessionTicketMsgTLS13)
+
+	var certsFromClient [][]byte
+	for _, cert := range c.peerCertificates {
+		certsFromClient = append(certsFromClient, cert.Raw)
+	}
+	state := sessionStateTLS13{
+		cipherSuite:      hs.suite.id,
+		createdAt:        uint64(c.config.time().Unix()),
+		resumptionSecret: resumptionSecret,
+		certificate: Certificate{
+			Certificate:                 certsFromClient,
+			OCSPStaple:                  c.ocspResponse,
+			SignedCertificateTimestamps: c.scts,
+		},
+	}
+	var err error
+	m.label, err = c.encryptTicket(state.marshal())
 	if err != nil {
 		return err
 	}
+	m.lifetime = uint32(maxSessionTicketLifetime / time.Second)
+
 	if _, err := c.writeRecord(recordTypeHandshake, m.marshal()); err != nil {
 		return err
 	}
@@ -824,21 +826,23 @@ func (hs *serverHandshakeStateTLS13) readClientCertificate() error {
 		// See RFC 8446, Section 4.4.3.
 		if !isSupportedSignatureAlgorithm(certVerify.signatureAlgorithm, supportedSignatureAlgorithms) {
 			c.sendAlert(alertIllegalParameter)
-			return errors.New("tls: client certificate used with invalid signature algorithm")
+			return errors.New("tls: invalid certificate signature algorithm")
 		}
-		sigType, sigHash, err := typeAndHashFromSignatureScheme(certVerify.signatureAlgorithm)
-		if err != nil {
-			return c.sendAlert(alertInternalError)
+		sigType := signatureFromSignatureScheme(certVerify.signatureAlgorithm)
+		sigHash, err := hashFromSignatureScheme(certVerify.signatureAlgorithm)
+		if sigType == 0 || err != nil {
+			c.sendAlert(alertInternalError)
+			return err
 		}
 		if sigType == signaturePKCS1v15 || sigHash == crypto.SHA1 {
 			c.sendAlert(alertIllegalParameter)
-			return errors.New("tls: client certificate used with invalid signature algorithm")
+			return errors.New("tls: invalid certificate signature algorithm")
 		}
 		signed := signedMessage(sigHash, clientSignatureContext, hs.transcript)
 		if err := verifyHandshakeSignature(sigType, c.peerCertificates[0].PublicKey,
 			sigHash, signed, certVerify.signature); err != nil {
 			c.sendAlert(alertDecryptError)
-			return errors.New("tls: invalid signature by the client certificate: " + err.Error())
+			return errors.New("tls: invalid certificate signature")
 		}
 
 		hs.transcript.Write(certVerify.marshal())

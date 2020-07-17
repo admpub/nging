@@ -67,9 +67,6 @@ func (w *Writer) writeChunk(p []byte, op int) (n int, err error) {
 	if w.dst == nil {
 		return 0, errWriterClosed
 	}
-	if w.err != nil {
-		return 0, w.err
-	}
 
 	for {
 		availableIn := uint(len(p))
@@ -82,8 +79,16 @@ func (w *Writer) writeChunk(p []byte, op int) (n int, err error) {
 			return n, errEncode
 		}
 
-		if len(p) == 0 || w.err != nil {
-			return n, w.err
+		outputData := encoderTakeOutput(w)
+
+		if len(outputData) > 0 {
+			_, err = w.dst.Write(outputData)
+			if err != nil {
+				return n, err
+			}
+		}
+		if len(p) == 0 {
+			return n, nil
 		}
 	}
 }

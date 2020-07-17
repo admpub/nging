@@ -2,13 +2,16 @@
 
 package termbox
 
-import "github.com/mattn/go-runewidth"
-import "fmt"
-import "os"
-import "os/signal"
-import "syscall"
-import "runtime"
-import "time"
+import (
+	"fmt"
+	"os"
+	"os/signal"
+	"runtime"
+	"syscall"
+	"time"
+
+	"github.com/mattn/go-runewidth"
+)
 
 // public API
 
@@ -22,15 +25,25 @@ import "time"
 //      }
 //      defer termbox.Close()
 func Init() error {
+	quitPolling = make(chan int)
+
 	var err error
 
-	out, err = os.OpenFile("/dev/tty", syscall.O_WRONLY, 0)
-	if err != nil {
-		return err
-	}
-	in, err = syscall.Open("/dev/tty", syscall.O_RDONLY, 0)
-	if err != nil {
-		return err
+	if runtime.GOOS == "openbsd" || runtime.GOOS == "freebsd" {
+		out, err = os.OpenFile("/dev/tty", os.O_RDWR, 0)
+		if err != nil {
+			return err
+		}
+		in = int(out.Fd())
+	} else {
+		out, err = os.OpenFile("/dev/tty", os.O_WRONLY, 0)
+		if err != nil {
+			return err
+		}
+		in, err = syscall.Open("/dev/tty", syscall.O_RDONLY, 0)
+		if err != nil {
+			return err
+		}
 	}
 
 	err = setup_term()
@@ -120,6 +133,7 @@ func Interrupt() {
 // when termbox's functionality isn't required anymore.
 func Close() {
 	quit <- 1
+	close(quitPolling)
 	out.WriteString(funcs[t_show_cursor])
 	out.WriteString(funcs[t_sgr0])
 	out.WriteString(funcs[t_clear_screen])
@@ -321,6 +335,7 @@ func PollEvent() Event {
 			event.N = len(inbuf)
 		}
 		copy(inbuf, inbuf[event.N:])
+		event.Bytes = append(event.Bytes, inbuf[:event.N]...)
 		inbuf = inbuf[:len(inbuf)-event.N]
 	}
 	if status == event_extracted {
@@ -352,6 +367,7 @@ func PollEvent() Event {
 					event.N = len(inbuf)
 				}
 				copy(inbuf, inbuf[event.N:])
+				event.Bytes = append(event.Bytes, inbuf[:event.N]...)
 				inbuf = inbuf[:len(inbuf)-event.N]
 			}
 			if status == event_extracted {
@@ -369,6 +385,7 @@ func PollEvent() Event {
 					event.N = len(inbuf)
 				}
 				copy(inbuf, inbuf[event.N:])
+				event.Bytes = append(event.Bytes, inbuf[:event.N]...)
 				inbuf = inbuf[:len(inbuf)-event.N]
 			}
 			if status == event_extracted {
@@ -382,6 +399,8 @@ func PollEvent() Event {
 			event.Type = EventResize
 			event.Width, event.Height = get_term_size(out.Fd())
 			return event
+		case <-quitPolling:
+			return Event{Type: EventStop}
 		}
 	}
 }

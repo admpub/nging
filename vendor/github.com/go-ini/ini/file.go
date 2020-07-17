@@ -45,6 +45,9 @@ type File struct {
 
 // newFile initializes File object with given data sources.
 func newFile(dataSources []dataSource, opts LoadOptions) *File {
+	if len(opts.KeyValueDelimiters) == 0 {
+		opts.KeyValueDelimiters = "=:"
+	}
 	return &File{
 		BlockMode:   true,
 		dataSources: dataSources,
@@ -65,7 +68,7 @@ func Empty() *File {
 func (f *File) NewSection(name string) (*Section, error) {
 	if len(name) == 0 {
 		return nil, errors.New("error creating new section: empty section name")
-	} else if f.options.Insensitive && name != DEFAULT_SECTION {
+	} else if f.options.Insensitive && name != DefaultSection {
 		name = strings.ToLower(name)
 	}
 
@@ -108,7 +111,7 @@ func (f *File) NewSections(names ...string) (err error) {
 // GetSection returns section by given name.
 func (f *File) GetSection(name string) (*Section, error) {
 	if len(name) == 0 {
-		name = DEFAULT_SECTION
+		name = DefaultSection
 	}
 	if f.options.Insensitive {
 		name = strings.ToLower(name)
@@ -138,7 +141,7 @@ func (f *File) Section(name string) *Section {
 	return sec
 }
 
-// Section returns list of Section.
+// Sections returns a list of Section stored in the current instance.
 func (f *File) Sections() []*Section {
 	if f.BlockMode {
 		f.lock.RLock()
@@ -172,7 +175,7 @@ func (f *File) DeleteSection(name string) {
 	}
 
 	if len(name) == 0 {
-		name = DEFAULT_SECTION
+		name = DefaultSection
 	}
 
 	for i, s := range f.sectionList {
@@ -227,7 +230,8 @@ func (f *File) Append(source interface{}, others ...interface{}) error {
 }
 
 func (f *File) writeToBuffer(indent string) (*bytes.Buffer, error) {
-	equalSign := "="
+	equalSign := DefaultFormatLeft + "=" + DefaultFormatRight
+
 	if PrettyFormat || PrettyEqual {
 		equalSign = " = "
 	}
@@ -285,7 +289,7 @@ func (f *File) writeToBuffer(indent string) (*bytes.Buffer, error) {
 			for _, kname := range sec.keyList {
 				keyLength := len(kname)
 				// First case will surround key by ` and second by """
-				if strings.ContainsAny(kname, "\"=:") {
+				if strings.Contains(kname, "\"") || strings.ContainsAny(kname, f.options.KeyValueDelimiters) {
 					keyLength += 2
 				} else if strings.Contains(kname, "`") {
 					keyLength += 6
@@ -302,7 +306,7 @@ func (f *File) writeToBuffer(indent string) (*bytes.Buffer, error) {
 		for _, kname := range sec.keyList {
 			key := sec.Key(kname)
 			if len(key.Comment) > 0 {
-				if len(indent) > 0 && sname != DEFAULT_SECTION {
+				if len(indent) > 0 && sname != DefaultSection {
 					buf.WriteString(indent)
 				}
 
@@ -310,7 +314,7 @@ func (f *File) writeToBuffer(indent string) (*bytes.Buffer, error) {
 				lines := strings.Split(key.Comment, LineBreak)
 				for i := range lines {
 					if lines[i][0] != '#' && lines[i][0] != ';' {
-						lines[i] = "; " + lines[i]
+						lines[i] = "; " + strings.TrimSpace(lines[i])
 					} else {
 						lines[i] = lines[i][:1] + " " + strings.TrimSpace(lines[i][1:])
 					}
@@ -321,14 +325,14 @@ func (f *File) writeToBuffer(indent string) (*bytes.Buffer, error) {
 				}
 			}
 
-			if len(indent) > 0 && sname != DEFAULT_SECTION {
+			if len(indent) > 0 && sname != DefaultSection {
 				buf.WriteString(indent)
 			}
 
 			switch {
 			case key.isAutoIncrement:
 				kname = "-"
-			case strings.ContainsAny(kname, "\"=:"):
+			case strings.Contains(kname, "\"") || strings.ContainsAny(kname, f.options.KeyValueDelimiters):
 				kname = "`" + kname + "`"
 			case strings.Contains(kname, "`"):
 				kname = `"""` + kname + `"""`

@@ -36,8 +36,11 @@ func addPolish(i18nObject *i18n.Bundle) error {
 			ID:    "StashTitle",
 			Other: "Schowek",
 		}, &i18n.Message{
-			ID:    "StagingMainTitle",
-			Other: `Stage Lines/Hunks`,
+			ID:    "UnstagedChanges",
+			Other: `Unstaged Changes`,
+		}, &i18n.Message{
+			ID:    "StagedChanges",
+			Other: `Staged Changes`,
 		}, &i18n.Message{
 			ID:    "MergingMainTitle",
 			Other: "Resolve merge conflicts",
@@ -84,9 +87,6 @@ func addPolish(i18nObject *i18n.Bundle) error {
 			ID:    "execute",
 			Other: "wykonaj",
 		}, &i18n.Message{
-			ID:    "stashFiles",
-			Other: "przechowaj pliki",
-		}, &i18n.Message{
 			ID:    "open",
 			Other: "otwórz",
 		}, &i18n.Message{
@@ -104,9 +104,6 @@ func addPolish(i18nObject *i18n.Bundle) error {
 		}, &i18n.Message{
 			ID:    "refresh",
 			Other: "odśwież",
-		}, &i18n.Message{
-			ID:    "addPatch",
-			Other: "dodaj łatkę",
 		}, &i18n.Message{
 			ID:    "edit",
 			Other: "edytuj",
@@ -131,9 +128,6 @@ func addPolish(i18nObject *i18n.Bundle) error {
 		}, &i18n.Message{
 			ID:    "CannotGitAdd",
 			Other: "Nie można git add --patch nieśledzonych plików",
-		}, &i18n.Message{
-			ID:    "CantIgnoreTrackFiles",
-			Other: "Nie można zignorować nieśledzonych plików",
 		}, &i18n.Message{
 			ID:    "NoStagedFilesToCommit",
 			Other: "Brak zatwierdzonych plików do commita",
@@ -333,9 +327,6 @@ func addPolish(i18nObject *i18n.Bundle) error {
 			ID:    "newFocusedViewIs",
 			Other: "nowy skupiony widok to {{.newFocusedView}}",
 		}, &i18n.Message{
-			ID:    "CantCloseConfirmationPrompt",
-			Other: "Nie można zamknąć monitu potwierdzenia: {{.error}}",
-		}, &i18n.Message{
 			ID:    "MergeAborted",
 			Other: "Scalanie anulowane",
 		}, &i18n.Message{
@@ -423,7 +414,7 @@ func addPolish(i18nObject *i18n.Bundle) error {
 			ID:    "StageLine",
 			Other: `zatwierdź linię`,
 		}, &i18n.Message{
-			ID:    "EscapeStaging",
+			ID:    "ReturnToFilesPanel",
 			Other: `wróć do panelu plików`,
 		}, &i18n.Message{
 			ID:    "CantFindHunks",
@@ -490,7 +481,7 @@ func addPolish(i18nObject *i18n.Bundle) error {
 			Other: "amend commit with staged changes",
 		}, &i18n.Message{
 			ID:    "FoundConflicts",
-			Other: "Damn, conflicts! To abort press 'esc', otherwise press 'enter'",
+			Other: "Conflicts! To abort press 'esc', otherwise press 'enter'",
 		}, &i18n.Message{
 			ID:    "FoundConflictsTitle",
 			Other: "Auto-merge failed",
@@ -548,6 +539,9 @@ func addPolish(i18nObject *i18n.Bundle) error {
 		}, &i18n.Message{
 			ID:    "CannotRebaseOntoFirstCommit",
 			Other: "You cannot interactive rebase onto the first commit",
+		}, &i18n.Message{
+			ID:    "CannotSquashOntoSecondCommit",
+			Other: "You cannot squash/fixup onto the second commit",
 		}, &i18n.Message{
 			ID:    "Donate",
 			Other: "Donate",
@@ -707,6 +701,54 @@ func addPolish(i18nObject *i18n.Bundle) error {
 		}, &i18n.Message{
 			ID:    "CustomCommand",
 			Other: "Custom Command:",
+		}, &i18n.Message{
+			ID:    "commitChangesWithoutHook",
+			Other: "commit changes without pre-commit hook",
+		}, &i18n.Message{
+			ID:    "SkipHookPrefixNotConfigured",
+			Other: "You have not configured a commit message prefix for skipping hooks. Set `git.skipHookPrefix = 'WIP'` in your config",
+		}, &i18n.Message{
+			ID:    "resetTo",
+			Other: `reset to`,
+		}, &i18n.Message{
+			ID:    "pressEnterToReturn",
+			Other: "Press enter to return to lazygit",
+		}, &i18n.Message{
+			ID:    "viewStashOptions",
+			Other: "view stash options",
+		}, &i18n.Message{
+			ID:    "stashAllChanges",
+			Other: "przechowaj pliki",
+		}, &i18n.Message{
+			ID:    "stashStagedChanges",
+			Other: "stash staged changes",
+		}, &i18n.Message{
+			ID:    "stashOptions",
+			Other: "Stash options",
+		}, &i18n.Message{
+			ID:    "notARepository",
+			Other: "Error: must be run inside a git repository",
+		}, &i18n.Message{
+			ID:    "jump",
+			Other: "jump to panel",
+		}, &i18n.Message{
+			ID:    "ExitLineByLineMode",
+			Other: `exit line-by-line mode`,
+		}, &i18n.Message{
+			ID:    "EnterUpstream",
+			Other: `Enter upstream as '<remote> <branchname>'`,
+		}, &i18n.Message{
+			ID:    "ReturnToRemotesList",
+			Other: `return to remotes list`,
+		}, &i18n.Message{
+			ID:    "IgnoreTracked",
+			Other: "Ignore tracked file",
+		}, &i18n.Message{
+			ID:    "IgnoreTrackedPrompt",
+			Other: "Are you sure you want to ignore a tracked file?",
+		}, &i18n.Message{
+			ID:    "commitPrefixPatternError",
+			Other: "Error in commitPrefix pattern",
 		},
 	)
 }

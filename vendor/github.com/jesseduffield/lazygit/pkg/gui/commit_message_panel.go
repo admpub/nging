@@ -15,7 +15,7 @@ import (
 func (gui *Gui) runSyncOrAsyncCommand(sub *exec.Cmd, err error) (bool, error) {
 	if err != nil {
 		if err != gui.Errors.ErrSubProcess {
-			return false, gui.createErrorPanel(gui.g, err.Error())
+			return false, gui.surfaceError(err)
 		}
 	}
 	if sub != nil {
@@ -28,9 +28,14 @@ func (gui *Gui) runSyncOrAsyncCommand(sub *exec.Cmd, err error) (bool, error) {
 func (gui *Gui) handleCommitConfirm(g *gocui.Gui, v *gocui.View) error {
 	message := gui.trimmedContent(v)
 	if message == "" {
-		return gui.createErrorPanel(g, gui.Tr.SLocalize("CommitWithoutMessageErr"))
+		return gui.createErrorPanel(gui.Tr.SLocalize("CommitWithoutMessageErr"))
 	}
-	ok, err := gui.runSyncOrAsyncCommand(gui.GitCommand.Commit(message))
+	flags := ""
+	skipHookPrefix := gui.Config.GetUserConfig().GetString("git.skipHookPrefix")
+	if skipHookPrefix != "" && strings.HasPrefix(message, skipHookPrefix) {
+		flags = "--no-verify"
+	}
+	ok, err := gui.runSyncOrAsyncCommand(gui.GitCommand.Commit(message, flags))
 	if err != nil {
 		return err
 	}
@@ -43,11 +48,11 @@ func (gui *Gui) handleCommitConfirm(g *gocui.Gui, v *gocui.View) error {
 	_ = v.SetOrigin(0, 0)
 	_, _ = g.SetViewOnBottom("commitMessage")
 	_ = gui.switchFocus(g, v, gui.getFilesView())
-	return gui.refreshSidePanels(g)
+	return gui.refreshSidePanels(refreshOptions{mode: ASYNC})
 }
 
 func (gui *Gui) handleCommitClose(g *gocui.Gui, v *gocui.View) error {
-	g.SetViewOnBottom("commitMessage")
+	_, _ = g.SetViewOnBottom("commitMessage")
 	return gui.switchFocus(g, v, gui.getFilesView())
 }
 
@@ -63,10 +68,26 @@ func (gui *Gui) handleCommitFocused(g *gocui.Gui, v *gocui.View) error {
 			"keyBindConfirm": "enter",
 		},
 	)
-	return gui.renderString(g, "options", message)
+	gui.renderString(g, "options", message)
+	return nil
 }
 
-func (gui *Gui) simpleEditor(v *gocui.View, key gocui.Key, ch rune, mod gocui.Modifier) {
+func (gui *Gui) getBufferLength(view *gocui.View) string {
+	return " " + strconv.Itoa(strings.Count(view.Buffer(), "")-1) + " "
+}
+
+// RenderCommitLength is a function.
+func (gui *Gui) RenderCommitLength() {
+	if !gui.Config.GetUserConfig().GetBool("gui.commitLength.show") {
+		return
+	}
+	v := gui.getCommitMessageView()
+	v.Subtitle = gui.getBufferLength(v)
+}
+
+// we've just copy+pasted the editor from gocui to here so that we can also re-
+// render the commit message length on each keypress
+func (gui *Gui) commitMessageEditor(v *gocui.View, key gocui.Key, ch rune, mod gocui.Modifier) {
 	switch {
 	case key == gocui.KeyBackspace || key == gocui.KeyBackspace2:
 		v.EditDelete(true)
@@ -86,22 +107,15 @@ func (gui *Gui) simpleEditor(v *gocui.View, key gocui.Key, ch rune, mod gocui.Mo
 		v.EditWrite(' ')
 	case key == gocui.KeyInsert:
 		v.Overwrite = !v.Overwrite
+	case key == gocui.KeyCtrlU:
+		v.EditDeleteToStartOfLine()
+	case key == gocui.KeyCtrlA:
+		v.EditGotoToStartOfLine()
+	case key == gocui.KeyCtrlE:
+		v.EditGotoToEndOfLine()
 	default:
 		v.EditWrite(ch)
 	}
 
 	gui.RenderCommitLength()
-}
-
-func (gui *Gui) getBufferLength(view *gocui.View) string {
-	return " " + strconv.Itoa(strings.Count(view.Buffer(), "")-1) + " "
-}
-
-// RenderCommitLength is a function.
-func (gui *Gui) RenderCommitLength() {
-	if !gui.Config.GetUserConfig().GetBool("gui.commitLength.show") {
-		return
-	}
-	v := gui.getCommitMessageView()
-	v.Subtitle = gui.getBufferLength(v)
 }

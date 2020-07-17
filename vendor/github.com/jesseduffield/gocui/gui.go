@@ -6,6 +6,9 @@ package gocui
 
 import (
 	standardErrors "errors"
+	"fmt"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/go-errors/errors"
@@ -38,18 +41,26 @@ const (
 	Output216 = OutputMode(termbox.Output216)
 )
 
+type tabClickHandler func(int) error
+
+type tabClickBinding struct {
+	viewName string
+	handler  tabClickHandler
+}
+
 // Gui represents the whole User Interface, including the views, layouts
 // and keybindings.
 type Gui struct {
-	tbEvents    chan termbox.Event
-	userEvents  chan userEvent
-	views       []*View
-	currentView *View
-	managers    []Manager
-	keybindings []*keybinding
-	maxX, maxY  int
-	outputMode  OutputMode
-	stop        chan struct{}
+	tbEvents         chan termbox.Event
+	userEvents       chan userEvent
+	views            []*View
+	currentView      *View
+	managers         []Manager
+	keybindings      []*keybinding
+	tabClickBindings []*tabClickBinding
+	maxX, maxY       int
+	outputMode       OutputMode
+	stop             chan struct{}
 
 	// BgColor and FgColor allow to configure the background and foreground
 	// colors of the GUI.
@@ -80,15 +91,30 @@ type Gui struct {
 	// SupportOverlaps is true when we allow for view edges to overlap with other
 	// view edges
 	SupportOverlaps bool
+
+	// tickingMutex ensures we don't have two loops ticking. The point of 'ticking'
+	// is to refresh the gui rapidly so that loader characters can be animated.
+	tickingMutex sync.Mutex
+
+	OnSearchEscape func() error
+	// these keys must either be of type Key of rune
+	SearchEscapeKey    interface{}
+	NextSearchMatchKey interface{}
+	PrevSearchMatchKey interface{}
 }
 
 // NewGui returns a new Gui object with a given output mode.
 func NewGui(mode OutputMode, supportOverlaps bool) (*Gui, error) {
-	if err := termbox.Init(); err != nil {
+	g := &Gui{}
+
+	var err error
+	if g.maxX, g.maxY, err = g.getTermWindowSize(); err != nil {
 		return nil, err
 	}
 
-	g := &Gui{}
+	if err := termbox.Init(); err != nil {
+		return nil, err
+	}
 
 	g.outputMode = mode
 	termbox.SetOutputMode(termbox.OutputMode(mode))
@@ -98,8 +124,6 @@ func NewGui(mode OutputMode, supportOverlaps bool) (*Gui, error) {
 	g.tbEvents = make(chan termbox.Event, 20)
 	g.userEvents = make(chan userEvent, 20)
 
-	g.maxX, g.maxY = termbox.Size()
-
 	g.BgColor, g.FgColor = ColorDefault, ColorDefault
 	g.SelBgColor, g.SelFgColor = ColorDefault, ColorDefault
 
@@ -107,15 +131,18 @@ func NewGui(mode OutputMode, supportOverlaps bool) (*Gui, error) {
 	// view edges
 	g.SupportOverlaps = supportOverlaps
 
+	// default keys for when searching strings in a view
+	g.SearchEscapeKey = KeyEsc
+	g.NextSearchMatchKey = 'n'
+	g.PrevSearchMatchKey = 'N'
+
 	return g, nil
 }
 
 // Close finalizes the library. It should be called after a successful
 // initialization and when gocui is not needed anymore.
 func (g *Gui) Close() {
-	go func() {
-		g.stop <- struct{}{}
-	}()
+	close(g.stop)
 	termbox.Close()
 }
 
@@ -129,7 +156,8 @@ func (g *Gui) Size() (x, y int) {
 // the given colors.
 func (g *Gui) SetRune(x, y int, ch rune, fgColor, bgColor Attribute) error {
 	if x < 0 || y < 0 || x >= g.maxX || y >= g.maxY {
-		return errors.New("invalid point")
+		// swallowing error because it's not that big of a deal
+		return nil
 	}
 	termbox.SetCell(x, y, ch, termbox.Attribute(fgColor), termbox.Attribute(bgColor))
 	return nil
@@ -151,9 +179,6 @@ func (g *Gui) Rune(x, y int) (rune, error) {
 // ErrUnknownView is returned, which allows to assert if the View must
 // be initialized. It checks if the position is valid.
 func (g *Gui) SetView(name string, x0, y0, x1, y1 int, overlaps byte) (*View, error) {
-	if x0 >= x1 || y0 >= y1 {
-		return nil, errors.New("invalid dimensions")
-	}
 	if name == "" {
 		return nil, errors.New("invalid name")
 	}
@@ -173,6 +198,17 @@ func (g *Gui) SetView(name string, x0, y0, x1, y1 int, overlaps byte) (*View, er
 	v.Overlaps = overlaps
 	g.views = append(g.views, v)
 	return v, errors.Wrap(ErrUnknownView, 0)
+}
+
+// SetViewBeneath sets a view stacked beneath another view
+func (g *Gui) SetViewBeneath(name string, aboveViewName string, height int) (*View, error) {
+	aboveView, err := g.View(aboveViewName)
+	if err != nil {
+		return nil, err
+	}
+
+	viewTop := aboveView.y1 + 1
+	return g.SetView(name, aboveView.x0, viewTop, aboveView.x1, viewTop+height-1, 0)
 }
 
 // SetViewOnTop sets the given view on top of the existing ones.
@@ -221,7 +257,11 @@ func (g *Gui) ViewByPosition(x, y int) (*View, error) {
 	// traverse views in reverse order checking top views first
 	for i := len(g.views); i > 0; i-- {
 		v := g.views[i-1]
-		if x > v.x0 && x < v.x1 && y > v.y0 && y < v.y1 {
+		frameOffset := 0
+		if v.Frame {
+			frameOffset = 1
+		}
+		if x > v.x0-frameOffset && x < v.x1+frameOffset && y > v.y0-frameOffset && y < v.y1+frameOffset {
 			return v, nil
 		}
 	}
@@ -270,14 +310,14 @@ func (g *Gui) CurrentView() *View {
 // SetKeybinding creates a new keybinding. If viewname equals to ""
 // (empty string) then the keybinding will apply to all views. key must
 // be a rune or a Key.
-func (g *Gui) SetKeybinding(viewname string, key interface{}, mod Modifier, handler func(*Gui, *View) error) error {
+func (g *Gui) SetKeybinding(viewname string, contexts []string, key interface{}, mod Modifier, handler func(*Gui, *View) error) error {
 	var kb *keybinding
 
 	k, ch, err := getKey(key)
 	if err != nil {
 		return err
 	}
-	kb = newKeybinding(viewname, k, ch, mod, handler)
+	kb = newKeybinding(viewname, contexts, k, ch, mod, handler)
 	g.keybindings = append(g.keybindings, kb)
 	return nil
 }
@@ -307,6 +347,16 @@ func (g *Gui) DeleteKeybindings(viewname string) {
 		}
 	}
 	g.keybindings = s
+}
+
+// SetTabClickBinding sets a binding for a tab click event
+func (g *Gui) SetTabClickBinding(viewName string, handler tabClickHandler) error {
+	g.tabClickBindings = append(g.tabClickBindings, &tabClickBinding{
+		viewName: viewName,
+		handler:  handler,
+	})
+
+	return nil
 }
 
 // getKey takes an empty interface with a key and returns the corresponding
@@ -360,6 +410,7 @@ func (g *Gui) SetManager(managers ...Manager) {
 	g.currentView = nil
 	g.views = nil
 	g.keybindings = nil
+	g.tabClickBindings = nil
 
 	go func() { g.tbEvents <- termbox.Event{Type: termbox.EventResize} }()
 }
@@ -373,7 +424,6 @@ func (g *Gui) SetManagerFunc(manager func(*Gui) error) {
 // MainLoop runs the main loop until an error is returned. A successful
 // finish should return ErrQuit.
 func (g *Gui) MainLoop() error {
-	g.loaderTick()
 	if err := g.flush(); err != nil {
 		return err
 	}
@@ -471,15 +521,11 @@ func (g *Gui) flush() error {
 		}
 	}
 	for _, v := range g.views {
+		if v.y1 < v.y0 {
+			continue
+		}
 		if v.Frame {
-			var fgColor, bgColor Attribute
-			if g.Highlight && v == g.currentView {
-				fgColor = g.SelFgColor
-				bgColor = g.SelBgColor
-			} else {
-				fgColor = g.FgColor
-				bgColor = g.BgColor
-			}
+			fgColor, bgColor := g.viewColors(v)
 
 			if err := g.drawFrameEdges(v, fgColor, bgColor); err != nil {
 				return err
@@ -487,13 +533,18 @@ func (g *Gui) flush() error {
 			if err := g.drawFrameCorners(v, fgColor, bgColor); err != nil {
 				return err
 			}
-			if v.Title != "" {
+			if v.Title != "" || len(v.Tabs) > 0 {
 				if err := g.drawTitle(v, fgColor, bgColor); err != nil {
 					return err
 				}
 			}
 			if v.Subtitle != "" {
 				if err := g.drawSubtitle(v, fgColor, bgColor); err != nil {
+					return err
+				}
+			}
+			if v.ContainsList {
+				if err := g.drawListFooter(v, fgColor, bgColor); err != nil {
 					return err
 				}
 			}
@@ -504,6 +555,13 @@ func (g *Gui) flush() error {
 	}
 	termbox.Flush()
 	return nil
+}
+
+func (g *Gui) viewColors(v *View) (Attribute, Attribute) {
+	if g.Highlight && v == g.currentView {
+		return g.SelFgColor, g.SelBgColor
+	}
+	return g.FgColor, g.BgColor
 }
 
 // drawFrameEdges draws the horizontal and vertical edges of a view.
@@ -557,6 +615,18 @@ func corner(v *View, directions byte) rune {
 
 // drawFrameCorners draws the corners of the view.
 func (g *Gui) drawFrameCorners(v *View, fgColor, bgColor Attribute) error {
+	if v.y0 == v.y1 {
+		if !g.SupportOverlaps && v.x0 >= 0 && v.x1 >= 0 && v.y0 >= 0 && v.x0 < g.maxX && v.x1 < g.maxX && v.y0 < g.maxY {
+			if err := g.SetRune(v.x0, v.y0, '╶', fgColor, bgColor); err != nil {
+				return err
+			}
+			if err := g.SetRune(v.x1, v.y0, '╴', fgColor, bgColor); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+
 	runeTL, runeTR, runeBL, runeBR := '┌', '┐', '└', '┘'
 	if g.SupportOverlaps {
 		runeTL = corner(v, BOTTOM|RIGHT)
@@ -589,17 +659,59 @@ func (g *Gui) drawTitle(v *View, fgColor, bgColor Attribute) error {
 		return nil
 	}
 
-	for i, ch := range v.Title {
+	tabs := v.Tabs
+	separator := " - "
+	charIndex := 0
+	currentTabStart := -1
+	currentTabEnd := -1
+	if len(tabs) == 0 {
+		tabs = []string{v.Title}
+	} else {
+		for i, tab := range tabs {
+			if i == v.TabIndex {
+				currentTabStart = charIndex
+				currentTabEnd = charIndex + len(tab)
+				break
+			}
+			charIndex += len(tab)
+			if i < len(tabs)-1 {
+				charIndex += len(separator)
+			}
+		}
+	}
+
+	str := strings.Join(tabs, separator)
+
+	for i, ch := range str {
 		x := v.x0 + i + 2
 		if x < 0 {
 			continue
 		} else if x > v.x1-2 || x >= g.maxX {
 			break
 		}
-		if err := g.SetRune(x, v.y0, ch, fgColor, bgColor); err != nil {
+
+		currentFgColor := fgColor
+		currentBgColor := bgColor
+		// if you are the current view and you have multiple tabs, de-highlight the non-selected tabs
+		if v == g.currentView && len(v.Tabs) > 0 {
+			currentFgColor = v.FgColor
+			currentBgColor = v.BgColor
+		}
+
+		if i >= currentTabStart && i <= currentTabEnd {
+			currentFgColor = v.SelFgColor
+			if v != g.currentView {
+				currentFgColor -= AttrBold
+			}
+			if v.HighlightSelectedTabWithoutFocus || v == g.CurrentView() {
+				currentBgColor = v.SelBgColor
+			}
+		}
+		if err := g.SetRune(x, v.y0, ch, currentFgColor, currentBgColor); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -610,12 +722,43 @@ func (g *Gui) drawSubtitle(v *View, fgColor, bgColor Attribute) error {
 	}
 
 	start := v.x1 - 5 - len(v.Subtitle)
+	if start < v.x0 {
+		return nil
+	}
 	for i, ch := range v.Subtitle {
 		x := start + i
 		if x >= v.x1 {
 			break
 		}
 		if err := g.SetRune(x, v.y0, ch, fgColor, bgColor); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// drawListFooter draws the footer of a list view, showing something like '1 of 10'
+func (g *Gui) drawListFooter(v *View, fgColor, bgColor Attribute) error {
+	if len(v.lines) == 0 {
+		return nil
+	}
+
+	message := fmt.Sprintf("%d of %d", v.cy+v.oy+1, len(v.lines))
+
+	if v.y1 < 0 || v.y1 >= g.maxY {
+		return nil
+	}
+
+	start := v.x1 - 1 - len(message)
+	if start < v.x0 {
+		return nil
+	}
+	for i, ch := range message {
+		x := start + i
+		if x >= v.x1 {
+			break
+		}
+		if err := g.SetRune(x, v.y1, ch, fgColor, bgColor); err != nil {
 			return err
 		}
 	}
@@ -679,6 +822,17 @@ func (g *Gui) onKey(ev *termbox.Event) error {
 		if err != nil {
 			break
 		}
+		if v.Frame && my == v.y0 {
+			if len(v.Tabs) > 0 {
+				tabIndex := v.GetClickedTabIndex(mx - v.x0)
+
+				for _, binding := range g.tabClickBindings {
+					if binding.viewName == v.Name() {
+						return binding.handler(tabIndex)
+					}
+				}
+			}
+		}
 		if err := v.SetCursor(mx-v.x0-1, my-v.y0-1); err != nil {
 			return err
 		}
@@ -694,6 +848,25 @@ func (g *Gui) onKey(ev *termbox.Event) error {
 // and event. The value of matched is true if there is a match and no errors.
 func (g *Gui) execKeybindings(v *View, ev *termbox.Event) (matched bool, err error) {
 	var globalKb *keybinding
+	var matchingParentViewKb *keybinding
+
+	// if we're searching, and we've hit n/N/Esc, we ignore the default keybinding
+	if v.IsSearching() && Modifier(ev.Mod) == ModNone {
+		if eventMatchesKey(ev, g.NextSearchMatchKey) {
+			return true, v.gotoNextMatch()
+		} else if eventMatchesKey(ev, g.PrevSearchMatchKey) {
+			return true, v.gotoPreviousMatch()
+		} else if eventMatchesKey(ev, g.SearchEscapeKey) {
+			v.searcher.clearSearch()
+			if g.OnSearchEscape != nil {
+				if err := g.OnSearchEscape(); err != nil {
+					return true, err
+				}
+			}
+			return true, nil
+		}
+	}
+
 	for _, kb := range g.keybindings {
 		if kb.handler == nil {
 			continue
@@ -704,9 +877,15 @@ func (g *Gui) execKeybindings(v *View, ev *termbox.Event) (matched bool, err err
 		if kb.matchView(v) {
 			return g.execKeybinding(v, kb)
 		}
-		if kb.viewName == "" && (!v.Editable || kb.ch == 0) {
+		if kb.matchView(v.ParentView) {
+			matchingParentViewKb = kb
+		}
+		if kb.viewName == "" && ((v != nil && !v.Editable) || (kb.ch == 0 && kb.key != KeyCtrlU && kb.key != KeyCtrlA && kb.key != KeyCtrlE)) {
 			globalKb = kb
 		}
+	}
+	if matchingParentViewKb != nil {
+		return g.execKeybinding(v.ParentView, matchingParentViewKb)
 	}
 	if globalKb != nil {
 		return g.execKeybinding(v, globalKb)
@@ -722,14 +901,25 @@ func (g *Gui) execKeybinding(v *View, kb *keybinding) (bool, error) {
 	return true, nil
 }
 
-func (g *Gui) loaderTick() {
+func (g *Gui) StartTicking() {
 	go func() {
-		for range time.Tick(time.Millisecond * 50) {
-			for _, view := range g.Views() {
-				if view.HasLoader {
-					g.userEvents <- userEvent{func(g *Gui) error { return nil }}
-					break
+		g.tickingMutex.Lock()
+		defer g.tickingMutex.Unlock()
+		ticker := time.NewTicker(time.Millisecond * 50)
+		defer ticker.Stop()
+	outer:
+		for {
+			select {
+			case <-ticker.C:
+				for _, view := range g.Views() {
+					if view.HasLoader {
+						g.userEvents <- userEvent{func(g *Gui) error { return nil }}
+						continue outer
+					}
 				}
+				return
+			case <-g.stop:
+				return
 			}
 		}
 	}()

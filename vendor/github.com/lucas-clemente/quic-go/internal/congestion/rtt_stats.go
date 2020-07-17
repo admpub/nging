@@ -18,8 +18,6 @@ const (
 
 // RTTStats provides round-trip statistics
 type RTTStats struct {
-	hasMeasurement bool
-
 	minRTT        time.Duration
 	latestRTT     time.Duration
 	smoothedRTT   time.Duration
@@ -48,19 +46,13 @@ func (r *RTTStats) SmoothedRTT() time.Duration { return r.smoothedRTT }
 // MeanDeviation gets the mean deviation
 func (r *RTTStats) MeanDeviation() time.Duration { return r.meanDeviation }
 
-// MaxAckDelay gets the max_ack_delay advertized by the peer
 func (r *RTTStats) MaxAckDelay() time.Duration { return r.maxAckDelay }
 
-// PTO gets the probe timeout duration.
-func (r *RTTStats) PTO(includeMaxAckDelay bool) time.Duration {
+func (r *RTTStats) PTO() time.Duration {
 	if r.SmoothedRTT() == 0 {
 		return 2 * defaultInitialRTT
 	}
-	pto := r.SmoothedRTT() + utils.MaxDuration(4*r.MeanDeviation(), protocol.TimerGranularity)
-	if includeMaxAckDelay {
-		pto += r.MaxAckDelay()
-	}
-	return pto
+	return r.SmoothedRTT() + utils.MaxDuration(4*r.MeanDeviation(), protocol.TimerGranularity) + r.MaxAckDelay()
 }
 
 // UpdateRTT updates the RTT based on a new sample.
@@ -86,8 +78,7 @@ func (r *RTTStats) UpdateRTT(sendDelta, ackDelay time.Duration, now time.Time) {
 	}
 	r.latestRTT = sample
 	// First time call.
-	if !r.hasMeasurement {
-		r.hasMeasurement = true
+	if r.smoothedRTT == 0 {
 		r.smoothedRTT = sample
 		r.meanDeviation = sample / 2
 	} else {
@@ -96,19 +87,8 @@ func (r *RTTStats) UpdateRTT(sendDelta, ackDelay time.Duration, now time.Time) {
 	}
 }
 
-// SetMaxAckDelay sets the max_ack_delay
 func (r *RTTStats) SetMaxAckDelay(mad time.Duration) {
 	r.maxAckDelay = mad
-}
-
-// SetInitialRTT sets the initial RTT.
-// It is used during the 0-RTT handshake when restoring the RTT stats from the session state.
-func (r *RTTStats) SetInitialRTT(t time.Duration) {
-	if r.hasMeasurement {
-		panic("initial RTT set after first measurement")
-	}
-	r.smoothedRTT = t
-	r.latestRTT = t
 }
 
 // OnConnectionMigration is called when connection migrates and rtt measurement needs to be reset.

@@ -10,7 +10,6 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"sync"
 	"time"
 )
@@ -197,12 +196,12 @@ func (a *ExecAllocator) Allocate(ctx context.Context, opts ...BrowserOption) (*B
 		a.wg.Add(1) // for the io.Copy in a separate goroutine
 	}
 	go func() {
+		<-ctx.Done()
 		// First wait for the process to be finished.
 		// TODO: do we care about this error in any scenario? if the
 		// user cancelled the context and killed chrome, this will most
 		// likely just be "signal: killed", which isn't interesting.
 		cmd.Wait()
-
 		// Then delete the temporary user data directory, if needed.
 		if removeDir {
 			if err := os.RemoveAll(dataDir); c.cancelErr == nil {
@@ -246,15 +245,8 @@ func (a *ExecAllocator) Allocate(ctx context.Context, opts ...BrowserOption) (*B
 		// If the browser loses connection, kill the entire process and
 		// handler at once. Don't use Cancel, as that will attempt to
 		// gracefully close the browser, which will hang.
-		// Don't cancel if we're in the middle of a graceful Close,
-		// since we want to let Chrome shut itself when it is fully
-		// finished.
 		<-browser.LostConnection
-		select {
-		case <-browser.closingGracefully:
-		default:
-			c.cancel()
-		}
+		c.cancel()
 	}()
 	browser.process = cmd.Process
 	browser.userDataDir = dataDir
@@ -346,7 +338,6 @@ func findExecPath() string {
 		"chrome.exe", // in case PATHEXT is misconfigured
 		`C:\Program Files (x86)\Google\Chrome\Application\chrome.exe`,
 		`C:\Program Files\Google\Chrome\Application\chrome.exe`,
-		filepath.Join(os.Getenv("USERPROFILE"), `AppData\Local\Google\Chrome\Application\chrome.exe`),
 
 		// Mac
 		"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
@@ -490,11 +481,7 @@ func (a *RemoteAllocator) Allocate(ctx context.Context, opts ...BrowserOption) (
 		// If the browser loses connection, kill the entire process and
 		// handler at once.
 		<-browser.LostConnection
-		select {
-		case <-browser.closingGracefully:
-		default:
-			Cancel(ctx)
-		}
+		Cancel(ctx)
 	}()
 	return browser, nil
 }

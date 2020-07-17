@@ -1,6 +1,8 @@
 Google API Extensions for Go
 ============================
 
+[![Build Status](https://travis-ci.org/googleapis/gax-go.svg?branch=master)](https://travis-ci.org/googleapis/gax-go)
+[![Code Coverage](https://img.shields.io/codecov/c/github/googleapis/gax-go.svg)](https://codecov.io/github/googleapis/gax-go)
 [![GoDoc](https://godoc.org/github.com/googleapis/gax-go?status.svg)](https://godoc.org/github.com/googleapis/gax-go)
 
 Google API Extensions for Go (gax-go) is a set of modules which aids the
@@ -10,7 +12,7 @@ conventions.
 To install the API extensions, use:
 
 ```
-go get -u github.com/googleapis/gax-go/v2
+go get -u github.com/googleapis/gax-go
 ```
 
 **Note:** Application code will rarely need to use this library directly,

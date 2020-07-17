@@ -22,26 +22,25 @@ func newReceivedPacketHistory() *receivedPacketHistory {
 }
 
 // ReceivedPacket registers a packet with PacketNumber p and updates the ranges
-func (h *receivedPacketHistory) ReceivedPacket(p protocol.PacketNumber) bool /* is a new packet (and not a duplicate / delayed packet) */ {
+func (h *receivedPacketHistory) ReceivedPacket(p protocol.PacketNumber) {
 	// ignore delayed packets, if we already deleted the range
 	if p < h.deletedBelow {
-		return false
+		return
 	}
-	isNew := h.addToRanges(p)
+	h.addToRanges(p)
 	h.maybeDeleteOldRanges()
-	return isNew
 }
 
-func (h *receivedPacketHistory) addToRanges(p protocol.PacketNumber) bool /* is a new packet (and not a duplicate / delayed packet) */ {
+func (h *receivedPacketHistory) addToRanges(p protocol.PacketNumber) {
 	if h.ranges.Len() == 0 {
 		h.ranges.PushBack(utils.PacketInterval{Start: p, End: p})
-		return true
+		return
 	}
 
 	for el := h.ranges.Back(); el != nil; el = el.Prev() {
 		// p already included in an existing range. Nothing to do here
 		if p >= el.Value.Start && p <= el.Value.End {
-			return false
+			return
 		}
 
 		var rangeExtended bool
@@ -59,20 +58,20 @@ func (h *receivedPacketHistory) addToRanges(p protocol.PacketNumber) bool /* is 
 			if prev != nil && prev.Value.End+1 == el.Value.Start { // merge two ranges
 				prev.Value.End = el.Value.End
 				h.ranges.Remove(el)
+				return
 			}
-			return true // if the two ranges were not merge, we're done here
+			return // if the two ranges were not merge, we're done here
 		}
 
 		// create a new range at the end
 		if p > el.Value.End {
 			h.ranges.InsertAfter(utils.PacketInterval{Start: p, End: p}, el)
-			return true
+			return
 		}
 	}
 
 	// create a new range at the beginning
 	h.ranges.InsertBefore(utils.PacketInterval{Start: p, End: p}, h.ranges.Front())
-	return true
 }
 
 // Delete old ranges, if we're tracking more than 500 of them.
@@ -128,19 +127,4 @@ func (h *receivedPacketHistory) GetHighestAckRange() wire.AckRange {
 		ackRange.Largest = r.End
 	}
 	return ackRange
-}
-
-func (h *receivedPacketHistory) IsPotentiallyDuplicate(p protocol.PacketNumber) bool {
-	if p < h.deletedBelow {
-		return true
-	}
-	for el := h.ranges.Back(); el != nil; el = el.Prev() {
-		if p > el.Value.End {
-			return false
-		}
-		if p <= el.Value.End && p >= el.Value.Start {
-			return true
-		}
-	}
-	return false
 }

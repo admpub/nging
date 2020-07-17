@@ -4,18 +4,24 @@ package salesforce
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 
-	"fmt"
 	"github.com/markbates/goth"
 	"golang.org/x/oauth2"
 )
 
-const (
-	authURL  string = "https://login.salesforce.com/services/oauth2/authorize"
-	tokenURL string = "https://login.salesforce.com/services/oauth2/token"
+// These vars define the Authentication and Token URLS for Salesforce. If
+// using Salesforce Community, you should change these values before calling New.
+//
+// Examples:
+//	salesforce.AuthURL = "https://salesforce.acme.com/services/oauth2/authorize
+//	salesforce.TokenURL = "https://salesforce.acme.com/services/oauth2/token
+var (
+	AuthURL  string = "https://login.salesforce.com/services/oauth2/authorize"
+	TokenURL string = "https://login.salesforce.com/services/oauth2/token"
 
 	//endpointProfile    string = "https://api.salesforce.com/2.0/users/me"
 )
@@ -83,6 +89,10 @@ func (p *Provider) FetchUser(session goth.Session) (goth.User, error) {
 	}
 
 	url, err := url.Parse(s.ID)
+	if err != nil {
+		return user, err
+	}
+
 	//creating dynamic url to retrieve user information
 	userURL := url.Scheme + "://" + url.Host + "/" + url.Path
 	req, err := http.NewRequest("GET", userURL, nil)
@@ -110,8 +120,8 @@ func newConfig(provider *Provider, scopes []string) *oauth2.Config {
 		ClientSecret: provider.Secret,
 		RedirectURL:  provider.CallbackURL,
 		Endpoint: oauth2.Endpoint{
-			AuthURL:  authURL,
-			TokenURL: tokenURL,
+			AuthURL:  AuthURL,
+			TokenURL: TokenURL,
 		},
 		Scopes: []string{},
 	}

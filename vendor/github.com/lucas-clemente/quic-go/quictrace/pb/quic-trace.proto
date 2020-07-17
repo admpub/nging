@@ -5,8 +5,6 @@ syntax = "proto2";
 
 package pb;
 
-option go_package = ".;pb";
-
 enum FrameType {
   UNKNOWN_FRAME = 0;
 

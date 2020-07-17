@@ -5,8 +5,8 @@
 
 # bounceback_reader, bounceback_writer
 
-An `io.ReadSeeker` and `io.WriteSeeker` that returns to the right place before 
-reading or writing. Useful when the same file resource is being reused for reads 
+An `io.ReadSeeker` and `io.WriteSeeker` that returns to the right place before
+reading or writing. Useful when the same file resource is being reused for reads
 or writes throughout that file.
 
 # list_files
@@ -19,22 +19,22 @@ A memory structure that satisfies `io.ReadWriteSeeker`.
 
 # copy_bytes_between_positions
 
-Given an `io.ReadWriteSeeker`, copy N bytes from one position to an earlier 
+Given an `io.ReadWriteSeeker`, copy N bytes from one position to an earlier
 position.
 
 # read_counter, write_counter
 
-Wrap `io.Reader` and `io.Writer` structs in order to report how many bytes were 
+Wrap `io.Reader` and `io.Writer` structs in order to report how many bytes were
 transferred.
 
 # readseekwritecloser
 
-Provides the ReadWriteSeekCloser interface that combines a RWS and a Closer. 
+Provides the ReadWriteSeekCloser interface that combines a RWS and a Closer.
 Also provides a no-op wrapper to augment a plain RWS with a closer.
 
 # bounedreadwriteseek
 
-Wraps a ReadWriteSeeker such that no seeks can be at an offset less than a 
+Wraps a ReadWriteSeeker such that no seeks can be at an offset less than a
 specific-offset.
 
 # calculateseek
@@ -43,7 +43,7 @@ Provides a reusable function with which to calculate seek offsets.
 
 # progress_wrapper
 
-Provides `io.Reader` and `io.Writer` wrappers that also trigger callbacks after 
+Provides `io.Reader` and `io.Writer` wrappers that also trigger callbacks after
 each call. The reader wrapper also invokes the callback upon EOF.
 
 # does_exist
@@ -54,3 +54,11 @@ Check whether a file/directory exists using a file-path.
 
 Do a copy but correctly handle short-writes and reads that might return a non-
 zero read count *and* EOF.
+
+# readseeker_to_readerat
+
+A wrapper that allows an `io.ReadSeeker` to be used as a `io.ReaderAt`.
+
+# simplefileinfo
+
+An implementation of `os.FileInfo` to support testing.

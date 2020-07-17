@@ -1,11 +1,6 @@
 smartcrop
 =========
 
-[![Build Status](https://travis-ci.org/muesli/smartcrop.svg?branch=master)](https://travis-ci.org/muesli/smartcrop)
-[![Coverage Status](https://coveralls.io/repos/github/muesli/smartcrop/badge.svg?branch=master)](https://coveralls.io/github/muesli/smartcrop?branch=master)
-[![Go ReportCard](http://goreportcard.com/badge/muesli/smartcrop)](http://goreportcard.com/report/muesli/smartcrop)
-[![GoDoc](https://godoc.org/github.com/golang/gddo?status.svg)](https://godoc.org/github.com/muesli/smartcrop)
-
 smartcrop finds good image crops for arbitrary sizes. It is a pure Go implementation, based on Jonas Wagner's [smartcrop.js](https://github.com/jwagner/smartcrop.js)
 
 ![Example](./examples/gopher.jpg)
@@ -16,7 +11,7 @@ Image: [https://www.flickr.com/photos/endogamia/5682480447](https://www.flickr.c
 
 ## Installation
 
-Make sure you have a working Go environment (Go 1.9 or higher is required).
+Make sure you have a working Go environment (Go 1.4 or higher is required).
 See the [install instructions](http://golang.org/doc/install.html).
 
 To install smartcrop, simply run:
@@ -61,33 +56,15 @@ func main() {
 }
 ```
 
-Also see the test cases in smartcrop_test.go and cli application in cmd/smartcrop/ for further working examples.
-
-## Simple CLI application
-
-    cd $GOPATH/src/github.com/muesli/smartcrop  
-    go install ./cmd/smartcrop
-
-
-    Usage of smartcrop:
-      -height int
-            crop height
-      -input string
-            input filename
-      -output string
-            output filename
-      -quality int
-            jpeg quality (default 85)
-      -resize
-            resize after cropping (default true)
-      -width int
-            crop width
-
-Example:
-    smartcrop -input examples/gopher.jpg -output gopher_cropped.jpg -width 300 -height 150
+Also see the test cases in smartcrop_test.go for further working examples.
 
 ## Sample Data
 You can find a bunch of test images for the algorithm [here](https://github.com/muesli/smartcrop-samples).
 
 ## Development
 Join us on IRC: irc.freenode.net/#smartcrop
+
+[![GoDoc](https://godoc.org/github.com/golang/gddo?status.svg)](https://godoc.org/github.com/muesli/smartcrop)
+[![Build Status](https://travis-ci.org/muesli/smartcrop.svg?branch=master)](https://travis-ci.org/muesli/smartcrop)
+[![Coverage Status](https://coveralls.io/repos/github/muesli/smartcrop/badge.svg?branch=master)](https://coveralls.io/github/muesli/smartcrop?branch=master)
+[![Go ReportCard](http://goreportcard.com/badge/muesli/smartcrop)](http://goreportcard.com/report/muesli/smartcrop)

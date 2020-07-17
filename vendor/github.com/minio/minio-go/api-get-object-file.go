@@ -1,6 +1,6 @@
 /*
- * MinIO Go Library for Amazon S3 Compatible Cloud Storage
- * Copyright 2015-2017 MinIO, Inc.
+ * Minio Go Library for Amazon S3 Compatible Cloud Storage
+ * Copyright 2015-2017 Minio, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/minio/minio-go/v6/pkg/s3utils"
+	"github.com/minio/minio-go/pkg/s3utils"
 )
 
 // FGetObjectWithContext - download contents of an object to a local file.
@@ -87,17 +87,6 @@ func (c Client) fGetObjectWithContext(ctx context.Context, bucketName, objectNam
 		return err
 	}
 
-	// If we return early with an error, be sure to close and delete
-	// filePart.  If we have an error along the way there is a chance
-	// that filePart is somehow damaged, and we should discard it.
-	closeAndRemove := true
-	defer func() {
-		if closeAndRemove {
-			_ = filePart.Close()
-			_ = os.Remove(filePartPath)
-		}
-	}()
-
 	// Issue Stat to get the current offset.
 	st, err = filePart.Stat()
 	if err != nil {
@@ -111,7 +100,7 @@ func (c Client) fGetObjectWithContext(ctx context.Context, bucketName, objectNam
 	}
 
 	// Seek to current position for incoming reader.
-	objectReader, objectStat, _, err := c.getObject(ctx, bucketName, objectName, opts)
+	objectReader, objectStat, err := c.getObject(ctx, bucketName, objectName, opts)
 	if err != nil {
 		return err
 	}
@@ -122,7 +111,6 @@ func (c Client) fGetObjectWithContext(ctx context.Context, bucketName, objectNam
 	}
 
 	// Close the file before rename, this is specifically needed for Windows users.
-	closeAndRemove = false
 	if err = filePart.Close(); err != nil {
 		return err
 	}

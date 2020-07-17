@@ -1,6 +1,6 @@
 /*
- * MinIO Go Library for Amazon S3 Compatible Cloud Storage
- * Copyright 2015-2017 MinIO, Inc.
+ * Minio Go Library for Amazon S3 Compatible Cloud Storage
+ * Copyright 2015-2017 Minio, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,9 @@ package minio
 // a part in a multipart upload may not be uploaded.
 const absMinPartSize = 1024 * 1024 * 5
 
-// minPartSize - minimum part size 128MiB per object after which
+// minPartSize - minimum part size 64MiB per object after which
 // putObject behaves internally as multipart.
-const minPartSize = 1024 * 1024 * 128
+const minPartSize = 1024 * 1024 * 64
 
 // maxPartsCount - maximum number of parts for a single multipart session.
 const maxPartsCount = 10000
@@ -55,22 +55,8 @@ const (
 	iso8601DateFormat = "20060102T150405Z"
 )
 
-const (
-	// Storage class header.
-	amzStorageClass = "X-Amz-Storage-Class"
+// Storage class header constant.
+const amzStorageClass = "X-Amz-Storage-Class"
 
-	// Website redirect location header
-	amzWebsiteRedirectLocation = "X-Amz-Website-Redirect-Location"
-
-	// Object Tagging headers
-	amzTaggingHeader          = "X-Amz-Tagging"
-	amzTaggingHeaderDirective = "X-Amz-Tagging-Directive"
-
-	// Object legal hold header
-	amzLegalHoldHeader = "X-Amz-Object-Lock-Legal-Hold"
-
-	// Object retention header
-	amzLockMode         = "X-Amz-Object-Lock-Mode"
-	amzLockRetainUntil  = "X-Amz-Object-Lock-Retain-Until-Date"
-	amzBypassGovernance = "X-Amz-Bypass-Governance-Retention"
-)
+// Website redirect location header constant
+const amzWebsiteRedirectLocation = "X-Amz-Website-Redirect-Location"

@@ -145,6 +145,7 @@ const (
 	CommandCSSStartRuleUsageTracking                       = css.CommandStartRuleUsageTracking
 	CommandCSSStopRuleUsageTracking                        = css.CommandStopRuleUsageTracking
 	CommandCSSTakeCoverageDelta                            = css.CommandTakeCoverageDelta
+	CommandCSSSetLocalFontsEnabled                         = css.CommandSetLocalFontsEnabled
 	EventCSSFontsUpdated                                   = "CSS.fontsUpdated"
 	EventCSSMediaQueryResultChanged                        = "CSS.mediaQueryResultChanged"
 	EventCSSStyleSheetAdded                                = "CSS.styleSheetAdded"
@@ -485,6 +486,7 @@ const (
 	CommandPageSetFontFamilies                             = page.CommandSetFontFamilies
 	CommandPageSetFontSizes                                = page.CommandSetFontSizes
 	CommandPageSetDocumentContent                          = page.CommandSetDocumentContent
+	CommandPageSetDownloadBehavior                         = page.CommandSetDownloadBehavior
 	CommandPageSetLifecycleEventsEnabled                   = page.CommandSetLifecycleEventsEnabled
 	CommandPageStartScreencast                             = page.CommandStartScreencast
 	CommandPageStopLoading                                 = page.CommandStopLoading
@@ -666,6 +668,7 @@ const (
 	CommandWebAuthnRemoveCredential                        = webauthn.CommandRemoveCredential
 	CommandWebAuthnClearCredentials                        = webauthn.CommandClearCredentials
 	CommandWebAuthnSetUserVerified                         = webauthn.CommandSetUserVerified
+	CommandWebAuthnSetAutomaticPresenceSimulation          = webauthn.CommandSetAutomaticPresenceSimulation
 )
 
 // Error error type.
@@ -907,6 +910,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case CommandCSSTakeCoverageDelta:
 		v = new(css.TakeCoverageDeltaReturns)
+
+	case CommandCSSSetLocalFontsEnabled:
+		return emptyVal, nil
 
 	case EventCSSFontsUpdated:
 		v = new(css.EventFontsUpdated)
@@ -1928,6 +1934,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandPageSetDocumentContent:
 		return emptyVal, nil
 
+	case CommandPageSetDownloadBehavior:
+		return emptyVal, nil
+
 	case CommandPageSetLifecycleEventsEnabled:
 		return emptyVal, nil
 
@@ -2469,6 +2478,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		return emptyVal, nil
 
 	case CommandWebAuthnSetUserVerified:
+		return emptyVal, nil
+
+	case CommandWebAuthnSetAutomaticPresenceSimulation:
 		return emptyVal, nil
 
 	default:

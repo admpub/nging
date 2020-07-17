@@ -19,10 +19,9 @@ type receivedPacketTracker struct {
 	maxAckDelay time.Duration
 	rttStats    *congestion.RTTStats
 
-	hasNewAck bool // true as soon as we received an ack-eliciting new packet
-	ackQueued bool // true once we received more than 2 (or later in the connection 10) ack-eliciting packets
-
+	packetsReceivedSinceLastAck             int
 	ackElicitingPacketsReceivedSinceLastAck int
+	ackQueued                               bool
 	ackAlarm                                time.Time
 	lastAck                                 *wire.AckFrame
 
@@ -56,9 +55,7 @@ func (h *receivedPacketTracker) ReceivedPacket(packetNumber protocol.PacketNumbe
 		h.largestObservedReceivedTime = rcvTime
 	}
 
-	if isNew := h.packetHistory.ReceivedPacket(packetNumber); isNew && shouldInstigateAck {
-		h.hasNewAck = true
-	}
+	h.packetHistory.ReceivedPacket(packetNumber)
 	h.maybeQueueAck(packetNumber, rcvTime, shouldInstigateAck, isMissing)
 }
 
@@ -71,7 +68,7 @@ func (h *receivedPacketTracker) IgnoreBelow(p protocol.PacketNumber) {
 	h.ignoreBelow = p
 	h.packetHistory.DeleteBelow(p)
 	if h.logger.Debug() {
-		h.logger.Debugf("\tIgnoring all packets below %d.", p)
+		h.logger.Debugf("\tIgnoring all packets below %#x.", p)
 	}
 }
 
@@ -95,11 +92,11 @@ func (h *receivedPacketTracker) hasNewMissingPackets() bool {
 // It is implemented analogously to Chrome's QuicConnection::MaybeQueueAck()
 // in ACK_DECIMATION_WITH_REORDERING mode.
 func (h *receivedPacketTracker) maybeQueueAck(packetNumber protocol.PacketNumber, rcvTime time.Time, shouldInstigateAck, wasMissing bool) {
+	h.packetsReceivedSinceLastAck++
+
 	// always ack the first packet
 	if h.lastAck == nil {
-		if !h.ackQueued {
-			h.logger.Debugf("\tQueueing ACK because the first packet should be acknowledged.")
-		}
+		h.logger.Debugf("\tQueueing ACK because the first packet should be acknowledged.")
 		h.ackQueued = true
 		return
 	}
@@ -109,7 +106,7 @@ func (h *receivedPacketTracker) maybeQueueAck(packetNumber protocol.PacketNumber
 	// missing packets we reported in the previous ack, send an ACK immediately.
 	if wasMissing {
 		if h.logger.Debug() {
-			h.logger.Debugf("\tQueueing ACK because packet %d was missing before.", packetNumber)
+			h.logger.Debugf("\tQueueing ACK because packet %#x was missing before.", packetNumber)
 		}
 		h.ackQueued = true
 	}
@@ -166,18 +163,13 @@ func (h *receivedPacketTracker) maybeQueueAck(packetNumber protocol.PacketNumber
 	}
 }
 
-func (h *receivedPacketTracker) GetAckFrame(onlyIfQueued bool) *wire.AckFrame {
-	if !h.hasNewAck {
+func (h *receivedPacketTracker) GetAckFrame() *wire.AckFrame {
+	now := time.Now()
+	if !h.ackQueued && (h.ackAlarm.IsZero() || h.ackAlarm.After(now)) {
 		return nil
 	}
-	now := time.Now()
-	if onlyIfQueued {
-		if !h.ackQueued && (h.ackAlarm.IsZero() || h.ackAlarm.After(now)) {
-			return nil
-		}
-		if h.logger.Debug() && !h.ackQueued && !h.ackAlarm.IsZero() {
-			h.logger.Debugf("Sending ACK because the ACK timer expired.")
-		}
+	if h.logger.Debug() && !h.ackQueued && !h.ackAlarm.IsZero() {
+		h.logger.Debugf("Sending ACK because the ACK timer expired.")
 	}
 
 	ack := &wire.AckFrame{
@@ -190,13 +182,9 @@ func (h *receivedPacketTracker) GetAckFrame(onlyIfQueued bool) *wire.AckFrame {
 	h.lastAck = ack
 	h.ackAlarm = time.Time{}
 	h.ackQueued = false
-	h.hasNewAck = false
+	h.packetsReceivedSinceLastAck = 0
 	h.ackElicitingPacketsReceivedSinceLastAck = 0
 	return ack
 }
 
 func (h *receivedPacketTracker) GetAlarmTimeout() time.Time { return h.ackAlarm }
-
-func (h *receivedPacketTracker) IsPotentiallyDuplicate(pn protocol.PacketNumber) bool {
-	return h.packetHistory.IsPotentiallyDuplicate(pn)
-}

@@ -252,7 +252,7 @@ func link(p *parser, out *bytes.Buffer, data []byte, offset int) int {
 		case data[i] == '\n':
 			textHasNl = true
 
-		case isBackslashEscaped(data, i):
+		case data[i-1] == '\\':
 			continue
 
 		case data[i] == '[':

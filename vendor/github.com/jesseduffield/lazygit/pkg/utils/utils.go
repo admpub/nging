@@ -6,12 +6,9 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"reflect"
 	"regexp"
 	"strings"
 	"time"
-
-	"github.com/go-errors/errors"
 
 	"github.com/fatih/color"
 )
@@ -33,16 +30,17 @@ func SplitLines(multilineString string) []string {
 
 // WithPadding pads a string as much as you want
 func WithPadding(str string, padding int) string {
-	if padding-len(str) < 0 {
+	uncoloredStr := Decolorise(str)
+	if padding < len(uncoloredStr) {
 		return str
 	}
-	return str + strings.Repeat(" ", padding-len(str))
+	return str + strings.Repeat(" ", padding-len(uncoloredStr))
 }
 
 // ColoredString takes a string and a colour attribute and returns a colored
 // string with that attribute
-func ColoredString(str string, colorAttribute color.Attribute) string {
-	colour := color.New(colorAttribute)
+func ColoredString(str string, colorAttributes ...color.Attribute) string {
+	colour := color.New(colorAttributes...)
 	return ColoredStringDirect(str, colour)
 }
 
@@ -113,51 +111,11 @@ func Min(x, y int) int {
 	return y
 }
 
-type Displayable interface {
-	GetDisplayStrings(bool) []string
-}
+func RenderDisplayStrings(displayStringsArr [][]string) string {
+	padWidths := getPadWidths(displayStringsArr)
+	paddedDisplayStrings := getPaddedDisplayStrings(displayStringsArr, padWidths)
 
-// RenderList takes a slice of items, confirms they implement the Displayable
-// interface, then generates a list of their displaystrings to write to a panel's
-// buffer
-func RenderList(slice interface{}, isFocused bool) (string, error) {
-	s := reflect.ValueOf(slice)
-	if s.Kind() != reflect.Slice {
-		return "", errors.New("RenderList given a non-slice type")
-	}
-
-	displayables := make([]Displayable, s.Len())
-
-	for i := 0; i < s.Len(); i++ {
-		value, ok := s.Index(i).Interface().(Displayable)
-		if !ok {
-			return "", errors.New("item does not implement the Displayable interface")
-		}
-		displayables[i] = value
-	}
-
-	return renderDisplayableList(displayables, isFocused)
-}
-
-// renderDisplayableList takes a list of displayable items, obtains their display
-// strings via GetDisplayStrings() and then returns a single string containing
-// each item's string representation on its own line, with appropriate horizontal
-// padding between the item's own strings
-func renderDisplayableList(items []Displayable, isFocused bool) (string, error) {
-	if len(items) == 0 {
-		return "", nil
-	}
-
-	stringArrays := getDisplayStringArrays(items, isFocused)
-
-	if !displayArraysAligned(stringArrays) {
-		return "", errors.New("Each item must return the same number of strings to display")
-	}
-
-	padWidths := getPadWidths(stringArrays)
-	paddedDisplayStrings := getPaddedDisplayStrings(stringArrays, padWidths)
-
-	return strings.Join(paddedDisplayStrings, "\n"), nil
+	return strings.Join(paddedDisplayStrings, "\n")
 }
 
 // Decolorise strips a string of color
@@ -167,10 +125,16 @@ func Decolorise(str string) string {
 }
 
 func getPadWidths(stringArrays [][]string) []int {
-	if len(stringArrays[0]) <= 1 {
+	maxWidth := 0
+	for _, stringArray := range stringArrays {
+		if len(stringArray) > maxWidth {
+			maxWidth = len(stringArray)
+		}
+	}
+	if maxWidth-1 < 0 {
 		return []int{}
 	}
-	padWidths := make([]int, len(stringArrays[0])-1)
+	padWidths := make([]int, maxWidth-1)
 	for i := range padWidths {
 		for _, strings := range stringArrays {
 			uncoloredString := Decolorise(strings[i])
@@ -189,7 +153,13 @@ func getPaddedDisplayStrings(stringArrays [][]string, padWidths []int) []string 
 			continue
 		}
 		for j, padWidth := range padWidths {
+			if len(stringArray)-1 < j {
+				continue
+			}
 			paddedDisplayStrings[i] += WithPadding(stringArray[j], padWidth) + " "
+		}
+		if len(stringArray)-1 < len(padWidths) {
+			continue
 		}
 		paddedDisplayStrings[i] += stringArray[len(padWidths)]
 	}
@@ -207,16 +177,18 @@ func displayArraysAligned(stringArrays [][]string) bool {
 	return true
 }
 
-func getDisplayStringArrays(displayables []Displayable, isFocused bool) [][]string {
-	stringArrays := make([][]string, len(displayables))
-	for i, item := range displayables {
-		stringArrays[i] = item.GetDisplayStrings(isFocused)
-	}
-	return stringArrays
-}
-
 // IncludesString if the list contains the string
 func IncludesString(list []string, a string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
+
+// IncludesInt if the list contains the Int
+func IncludesInt(list []int, a int) bool {
 	for _, b := range list {
 		if b == a {
 			return true
@@ -232,21 +204,121 @@ func NextIndex(numbers []int, currentNumber int) int {
 			return index
 		}
 	}
-	return 0
+	return len(numbers) - 1
 }
 
 // PrevIndex returns the index that comes before the given number, cycling if we reach the end
 func PrevIndex(numbers []int, currentNumber int) int {
 	end := len(numbers) - 1
-	for i := end; i >= 0; i -= 1 {
+	for i := end; i >= 0; i-- {
 		if numbers[i] < currentNumber {
 			return i
 		}
 	}
-	return end
+	return 0
 }
 
 func AsJson(i interface{}) string {
 	bytes, _ := json.MarshalIndent(i, "", "    ")
 	return string(bytes)
+}
+
+// UnionInt returns the union of two int arrays
+func UnionInt(a, b []int) []int {
+	m := make(map[int]bool)
+
+	for _, item := range a {
+		m[item] = true
+	}
+
+	for _, item := range b {
+		if _, ok := m[item]; !ok {
+			// this does not mutate the original a slice
+			// though it does mutate the backing array I believe
+			// but that doesn't matter because if you later want to append to the
+			// original a it must see that the backing array has been changed
+			// and create a new one
+			a = append(a, item)
+		}
+	}
+	return a
+}
+
+// DifferenceInt returns the difference of two int arrays
+func DifferenceInt(a, b []int) []int {
+	result := []int{}
+	m := make(map[int]bool)
+
+	for _, item := range b {
+		m[item] = true
+	}
+
+	for _, item := range a {
+		if _, ok := m[item]; !ok {
+			result = append(result, item)
+		}
+	}
+	return result
+}
+
+// used to keep a number n between 0 and max, allowing for wraparounds
+func ModuloWithWrap(n, max int) int {
+	if n >= max {
+		return n % max
+	} else if n < 0 {
+		return max + n
+	} else {
+		return n
+	}
+}
+
+// NextIntInCycle returns the next int in a slice, returning to the first index if we've reached the end
+func NextIntInCycle(sl []int, current int) int {
+	for i, val := range sl {
+		if val == current {
+			if i == len(sl)-1 {
+				return sl[0]
+			}
+			return sl[i+1]
+		}
+	}
+	return sl[0]
+}
+
+// PrevIntInCycle returns the prev int in a slice, returning to the first index if we've reached the end
+func PrevIntInCycle(sl []int, current int) int {
+	for i, val := range sl {
+		if val == current {
+			if i > 0 {
+				return sl[i-1]
+			}
+			return sl[len(sl)-1]
+		}
+	}
+	return sl[len(sl)-1]
+}
+
+// TruncateWithEllipsis returns a string, truncated to a certain length, with an ellipsis
+func TruncateWithEllipsis(str string, limit int) string {
+	if limit == 1 && len(str) > 1 {
+		return "."
+	}
+
+	if limit == 2 && len(str) > 2 {
+		return ".."
+	}
+
+	ellipsis := "..."
+	if len(str) <= limit {
+		return str
+	}
+
+	remainingLength := limit - len(ellipsis)
+	return str[0:remainingLength] + "..."
+}
+
+func FindStringSubmatch(str string, regexpStr string) (bool, []string) {
+	re := regexp.MustCompile(regexpStr)
+	match := re.FindStringSubmatch(str)
+	return len(match) > 0, match
 }

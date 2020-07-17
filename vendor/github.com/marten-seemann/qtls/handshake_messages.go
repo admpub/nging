@@ -73,6 +73,7 @@ type clientHelloMsg struct {
 	sessionId                        []byte
 	cipherSuites                     []uint16
 	compressionMethods               []uint8
+	nextProtoNeg                     bool
 	serverName                       string
 	ocspStapling                     bool
 	supportedCurves                  []CurveID
@@ -122,6 +123,11 @@ func (m *clientHelloMsg) marshal() []byte {
 		bWithoutExtensions := *b
 
 		b.AddUint16LengthPrefixed(func(b *cryptobyte.Builder) {
+			if m.nextProtoNeg {
+				// draft-agl-tls-nextprotoneg-04
+				b.AddUint16(extensionNextProtoNeg)
+				b.AddUint16(0) // empty extension_data
+			}
 			if len(m.serverName) > 0 {
 				// RFC 6066, Section 3
 				b.AddUint16(extensionServerName)
@@ -428,6 +434,9 @@ func (m *clientHelloMsg) unmarshal(data []byte) bool {
 					return false
 				}
 			}
+		case extensionNextProtoNeg:
+			// draft-agl-tls-nextprotoneg-04
+			m.nextProtoNeg = true
 		case extensionStatusRequest:
 			// RFC 4366, Section 3.6
 			var statusType uint8
@@ -603,6 +612,8 @@ type serverHelloMsg struct {
 	sessionId                    []byte
 	cipherSuite                  uint16
 	compressionMethod            uint8
+	nextProtoNeg                 bool
+	nextProtos                   []string
 	ocspStapling                 bool
 	ticketSupported              bool
 	secureRenegotiationSupported bool
@@ -613,7 +624,6 @@ type serverHelloMsg struct {
 	serverShare                  keyShare
 	selectedIdentityPresent      bool
 	selectedIdentity             uint16
-	supportedPoints              []uint8
 
 	// HelloRetryRequest extensions
 	cookie        []byte
@@ -641,6 +651,16 @@ func (m *serverHelloMsg) marshal() []byte {
 		bWithoutExtensions := *b
 
 		b.AddUint16LengthPrefixed(func(b *cryptobyte.Builder) {
+			if m.nextProtoNeg {
+				b.AddUint16(extensionNextProtoNeg)
+				b.AddUint16LengthPrefixed(func(b *cryptobyte.Builder) {
+					for _, proto := range m.nextProtos {
+						b.AddUint8LengthPrefixed(func(b *cryptobyte.Builder) {
+							b.AddBytes([]byte(proto))
+						})
+					}
+				})
+			}
 			if m.ocspStapling {
 				b.AddUint16(extensionStatusRequest)
 				b.AddUint16(0) // empty extension_data
@@ -715,14 +735,6 @@ func (m *serverHelloMsg) marshal() []byte {
 					b.AddUint16(uint16(m.selectedGroup))
 				})
 			}
-			if len(m.supportedPoints) > 0 {
-				b.AddUint16(extensionSupportedPoints)
-				b.AddUint16LengthPrefixed(func(b *cryptobyte.Builder) {
-					b.AddUint8LengthPrefixed(func(b *cryptobyte.Builder) {
-						b.AddBytes(m.supportedPoints)
-					})
-				})
-			}
 
 			extensionsPresent = len(b.BytesOrPanic()) > 2
 		})
@@ -767,6 +779,16 @@ func (m *serverHelloMsg) unmarshal(data []byte) bool {
 		}
 
 		switch extension {
+		case extensionNextProtoNeg:
+			m.nextProtoNeg = true
+			for !extData.Empty() {
+				var proto cryptobyte.String
+				if !extData.ReadUint8LengthPrefixed(&proto) ||
+					proto.Empty() {
+					return false
+				}
+				m.nextProtos = append(m.nextProtos, string(proto))
+			}
 		case extensionStatusRequest:
 			m.ocspStapling = true
 		case extensionSessionTicket:
@@ -827,12 +849,6 @@ func (m *serverHelloMsg) unmarshal(data []byte) bool {
 			if !extData.ReadUint16(&m.selectedIdentity) {
 				return false
 			}
-		case extensionSupportedPoints:
-			// RFC 4492, Section 5.1.2
-			if !readUint8LengthPrefixed(&extData, &m.supportedPoints) ||
-				len(m.supportedPoints) == 0 {
-				return false
-			}
 		default:
 			// Ignore unknown extensions.
 			continue
@@ -849,7 +865,6 @@ func (m *serverHelloMsg) unmarshal(data []byte) bool {
 type encryptedExtensionsMsg struct {
 	raw          []byte
 	alpnProtocol string
-	earlyData    bool
 
 	additionalExtensions []Extension
 }
@@ -872,11 +887,6 @@ func (m *encryptedExtensionsMsg) marshal() []byte {
 						})
 					})
 				})
-			}
-			if m.earlyData {
-				// RFC 8446, Section 4.2.10
-				b.AddUint16(extensionEarlyData)
-				b.AddUint16(0) // empty extension_data
 			}
 			for _, ext := range m.additionalExtensions {
 				b.AddUint16(ext.Type)
@@ -921,8 +931,6 @@ func (m *encryptedExtensionsMsg) unmarshal(data []byte) bool {
 				return false
 			}
 			m.alpnProtocol = string(proto)
-		case extensionEarlyData:
-			m.earlyData = true
 		default:
 			m.additionalExtensions = append(m.additionalExtensions, Extension{Type: ext, Data: extData})
 			continue
@@ -1585,6 +1593,66 @@ func (m *finishedMsg) unmarshal(data []byte) bool {
 	return s.Skip(1) &&
 		readUint24LengthPrefixed(&s, &m.verifyData) &&
 		s.Empty()
+}
+
+type nextProtoMsg struct {
+	raw   []byte
+	proto string
+}
+
+func (m *nextProtoMsg) marshal() []byte {
+	if m.raw != nil {
+		return m.raw
+	}
+	l := len(m.proto)
+	if l > 255 {
+		l = 255
+	}
+
+	padding := 32 - (l+2)%32
+	length := l + padding + 2
+	x := make([]byte, length+4)
+	x[0] = typeNextProtocol
+	x[1] = uint8(length >> 16)
+	x[2] = uint8(length >> 8)
+	x[3] = uint8(length)
+
+	y := x[4:]
+	y[0] = byte(l)
+	copy(y[1:], []byte(m.proto[0:l]))
+	y = y[1+l:]
+	y[0] = byte(padding)
+
+	m.raw = x
+
+	return x
+}
+
+func (m *nextProtoMsg) unmarshal(data []byte) bool {
+	m.raw = data
+
+	if len(data) < 5 {
+		return false
+	}
+	data = data[4:]
+	protoLen := int(data[0])
+	data = data[1:]
+	if len(data) < protoLen {
+		return false
+	}
+	m.proto = string(data[0:protoLen])
+	data = data[protoLen:]
+
+	if len(data) < 1 {
+		return false
+	}
+	paddingLen := int(data[0])
+	data = data[1:]
+	if len(data) != paddingLen {
+		return false
+	}
+
+	return true
 }
 
 type certificateRequestMsg struct {

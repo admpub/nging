@@ -24,7 +24,7 @@ func initHuffmanTree(self *huffmanTree, count uint32, left int16, right int16) {
 }
 
 /* Input size optimized Shell sort. */
-type huffmanTreeComparator func(huffmanTree, huffmanTree) bool
+type huffmanTreeComparator func(*huffmanTree, *huffmanTree) bool
 
 var sortHuffmanTreeItems_gaps = []uint{132, 57, 23, 10, 4, 1}
 
@@ -36,13 +36,14 @@ func sortHuffmanTreeItems(items []huffmanTree, n uint, comparator huffmanTreeCom
 			var tmp huffmanTree = items[i]
 			var k uint = i
 			var j uint = i - 1
-			for comparator(tmp, items[j]) {
+			for comparator(&tmp, &items[j]) {
 				items[k] = items[j]
 				k = j
-				if j == 0 {
+				tmp10 := j
+				j--
+				if tmp10 == 0 {
 					break
 				}
-				j--
 			}
 
 			items[k] = tmp
@@ -62,7 +63,7 @@ func sortHuffmanTreeItems(items []huffmanTree, n uint, comparator huffmanTreeCom
 			for i = gap; i < n; i++ {
 				var j uint = i
 				var tmp huffmanTree = items[i]
-				for ; j >= gap && comparator(tmp, items[j-gap]); j -= gap {
+				for ; j >= gap && comparator(&tmp, &items[j-gap]); j -= gap {
 					items[j] = items[j-gap]
 				}
 
@@ -104,7 +105,7 @@ func setDepth(p0 int, pool []huffmanTree, depth []byte, max_depth int) bool {
 }
 
 /* Sort the root nodes, least popular first. */
-func sortHuffmanTree(v0 huffmanTree, v1 huffmanTree) bool {
+func sortHuffmanTree(v0 *huffmanTree, v1 *huffmanTree) bool {
 	if v0.total_count_ != v1.total_count_ {
 		return v0.total_count_ < v1.total_count_
 	}

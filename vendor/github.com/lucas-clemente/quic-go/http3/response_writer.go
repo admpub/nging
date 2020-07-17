@@ -1,7 +1,6 @@
 package http3
 
 import (
-	"bufio"
 	"bytes"
 	"io"
 	"net/http"
@@ -13,7 +12,7 @@ import (
 )
 
 type responseWriter struct {
-	stream *bufio.Writer
+	stream io.Writer
 
 	header        http.Header
 	status        int // status code passed to WriteHeader
@@ -23,12 +22,11 @@ type responseWriter struct {
 }
 
 var _ http.ResponseWriter = &responseWriter{}
-var _ http.Flusher = &responseWriter{}
 
 func newResponseWriter(stream io.Writer, logger utils.Logger) *responseWriter {
 	return &responseWriter{
 		header: http.Header{},
-		stream: bufio.NewWriter(stream),
+		stream: stream,
 		logger: logger,
 	}
 }
@@ -81,11 +79,10 @@ func (w *responseWriter) Write(p []byte) (int, error) {
 	return w.stream.Write(p)
 }
 
-func (w *responseWriter) Flush() {
-	if err := w.stream.Flush(); err != nil {
-		w.logger.Errorf("could not flush to stream: %s", err.Error())
-	}
-}
+func (w *responseWriter) Flush() {}
+
+// test that we implement http.Flusher
+var _ http.Flusher = &responseWriter{}
 
 // copied from http2/http2.go
 // bodyAllowedForStatus reports whether a given response status code

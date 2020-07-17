@@ -16,16 +16,16 @@ type QuicError struct {
 
 var _ net.Error = &QuicError{}
 
-// NewError creates a new QuicError instance
-func NewError(errorCode ErrorCode, errorMessage string) *QuicError {
+// Error creates a new QuicError instance
+func Error(errorCode ErrorCode, errorMessage string) *QuicError {
 	return &QuicError{
 		ErrorCode:    errorCode,
 		ErrorMessage: errorMessage,
 	}
 }
 
-// NewErrorWithFrameType creates a new QuicError instance for a specific frame type
-func NewErrorWithFrameType(errorCode ErrorCode, frameType uint64, errorMessage string) *QuicError {
+// ErrorWithFrameType creates a new QuicError instance for a specific frame type
+func ErrorWithFrameType(errorCode ErrorCode, frameType uint64, errorMessage string) *QuicError {
 	return &QuicError{
 		ErrorCode:    errorCode,
 		FrameType:    frameType,
@@ -33,24 +33,24 @@ func NewErrorWithFrameType(errorCode ErrorCode, frameType uint64, errorMessage s
 	}
 }
 
-// NewTimeoutError creates a new QuicError instance for a timeout error
-func NewTimeoutError(errorMessage string) *QuicError {
+// TimeoutError creates a new QuicError instance for a timeout error
+func TimeoutError(errorMessage string) *QuicError {
 	return &QuicError{
 		ErrorMessage: errorMessage,
 		isTimeout:    true,
 	}
 }
 
-// NewCryptoError create a new QuicError instance for a crypto error
-func NewCryptoError(tlsAlert uint8, errorMessage string) *QuicError {
+// CryptoError create a new QuicError instance for a crypto error
+func CryptoError(tlsAlert uint8, errorMessage string) *QuicError {
 	return &QuicError{
 		ErrorCode:    0x100 + ErrorCode(tlsAlert),
 		ErrorMessage: errorMessage,
 	}
 }
 
-// NewApplicationError creates a new QuicError instance for an application error
-func NewApplicationError(errorCode ErrorCode, errorMessage string) *QuicError {
+// ApplicationError creates a new QuicError instance for an application error
+func ApplicationError(errorCode ErrorCode, errorMessage string) *QuicError {
 	return &QuicError{
 		ErrorCode:          errorCode,
 		ErrorMessage:       errorMessage,
@@ -106,7 +106,7 @@ func ToQuicError(err error) *QuicError {
 	case *QuicError:
 		return e
 	case ErrorCode:
-		return NewError(e, "")
+		return Error(e, "")
 	}
-	return NewError(InternalError, err.Error())
+	return Error(InternalError, err.Error())
 }

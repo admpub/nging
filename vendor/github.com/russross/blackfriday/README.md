@@ -86,16 +86,12 @@ Usage
 For basic usage, it is as simple as getting your input into a byte
 slice and calling:
 
-```go
-output := blackfriday.MarkdownBasic(input)
-```
+    output := blackfriday.MarkdownBasic(input)
 
 This renders it with no extensions enabled. To get a more useful
 feature set, use this instead:
 
-```go
-output := blackfriday.MarkdownCommon(input)
-```
+    output := blackfriday.MarkdownCommon(input)
 
 ### v2
 
@@ -158,7 +154,7 @@ markdown file using a standalone program.  You can also browse the
 source directly on github if you are just looking for some example
 code:
 
-* <https://github.com/russross/blackfriday-tool>
+* <http://github.com/russross/blackfriday-tool>
 
 Note that if you have not already done so, installing
 `blackfriday-tool` will be sufficient to download and install
@@ -332,7 +328,7 @@ are a few of note:
 *   [markdownfmt](https://github.com/shurcooL/markdownfmt): like gofmt,
     but for markdown.
 
-*   [LaTeX output](https://gitlab.com/ambrevar/blackfriday-latex):
+*   [LaTeX output](https://bitbucket.org/ambrevar/blackfriday-latex):
     renders output as LaTeX.
 
 *   [bfchroma](https://github.com/Depado/bfchroma/): provides convenience

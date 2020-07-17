@@ -79,8 +79,9 @@ func (s *closedLocalSession) handlePacketImpl(_ *receivedPacket) {
 	}
 }
 
-func (s *closedLocalSession) shutdown() {
+func (s *closedLocalSession) Close() error {
 	s.destroy(nil)
+	return nil
 }
 
 func (s *closedLocalSession) destroy(error) {
@@ -107,6 +108,6 @@ func newClosedRemoteSession(pers protocol.Perspective) packetHandler {
 }
 
 func (s *closedRemoteSession) handlePacket(*receivedPacket)         {}
-func (s *closedRemoteSession) shutdown()                            {}
+func (s *closedRemoteSession) Close() error                         { return nil }
 func (s *closedRemoteSession) destroy(error)                        {}
 func (s *closedRemoteSession) getPerspective() protocol.Perspective { return s.perspective }

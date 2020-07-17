@@ -42,7 +42,6 @@ var colors = []brush{
 	newBrush("1;32"), // Notice             green
 	newBrush("1;34"), // Informational      blue
 	newBrush("1;34"), // Debug              blue
-	newBrush("1;34"), // Trace              blue
 }
 
 // consoleWriter implements LoggerInterface and writes messages to terminal.
@@ -56,7 +55,7 @@ type consoleWriter struct {
 func NewConsole() Logger {
 	cw := &consoleWriter{
 		lg:       newLogWriter(os.Stdout),
-		Level:    LevelTrace,
+		Level:    LevelDebug,
 		Colorful: runtime.GOOS != "windows",
 	}
 	return cw

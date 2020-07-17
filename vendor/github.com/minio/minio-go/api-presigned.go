@@ -1,6 +1,6 @@
 /*
- * MinIO Go Library for Amazon S3 Compatible Cloud Storage
- * Copyright 2015-2017 MinIO, Inc.
+ * Minio Go Library for Amazon S3 Compatible Cloud Storage
+ * Copyright 2015-2017 Minio, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/minio/minio-go/v6/pkg/s3utils"
-	"github.com/minio/minio-go/v6/pkg/signer"
+	"github.com/minio/minio-go/pkg/s3signer"
+	"github.com/minio/minio-go/pkg/s3utils"
 )
 
 // presignURL - Returns a presigned URL for an input 'method'.
@@ -157,7 +157,7 @@ func (c Client) PresignedPostPolicy(p *PostPolicy) (u *url.URL, formData map[str
 			p.formData["AWSAccessKeyId"] = accessKeyID
 		}
 		// Sign the policy.
-		p.formData["signature"] = signer.PostPresignSignatureV2(policyBase64, secretAccessKey)
+		p.formData["signature"] = s3signer.PostPresignSignatureV2(policyBase64, secretAccessKey)
 		return u, p.formData, nil
 	}
 
@@ -180,7 +180,7 @@ func (c Client) PresignedPostPolicy(p *PostPolicy) (u *url.URL, formData map[str
 	}
 
 	// Add a credential policy.
-	credential := signer.GetCredential(accessKeyID, location, t, signer.ServiceTypeS3)
+	credential := s3signer.GetCredential(accessKeyID, location, t)
 	if err = p.addNewPolicy(policyCondition{
 		matchType: "eq",
 		condition: "$x-amz-credential",
@@ -210,6 +210,6 @@ func (c Client) PresignedPostPolicy(p *PostPolicy) (u *url.URL, formData map[str
 	if sessionToken != "" {
 		p.formData["x-amz-security-token"] = sessionToken
 	}
-	p.formData["x-amz-signature"] = signer.PostPresignSignatureV4(policyBase64, t, secretAccessKey, location)
+	p.formData["x-amz-signature"] = s3signer.PostPresignSignatureV4(policyBase64, t, secretAccessKey, location)
 	return u, p.formData, nil
 }

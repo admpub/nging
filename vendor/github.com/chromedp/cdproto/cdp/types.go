@@ -329,16 +329,22 @@ type Node struct {
 
 // AttributeValue returns the named attribute for the node.
 func (n *Node) AttributeValue(name string) string {
+	value, _ := n.Attribute(name)
+	return value
+}
+
+// Attribute returns the named attribute for the node and if it exists.
+func (n *Node) Attribute(name string) (string, bool) {
 	n.RLock()
 	defer n.RUnlock()
 
 	for i := 0; i < len(n.Attributes); i += 2 {
 		if n.Attributes[i] == name {
-			return n.Attributes[i+1]
+			return n.Attributes[i+1], true
 		}
 	}
 
-	return ""
+	return "", false
 }
 
 // xpath builds the xpath string.

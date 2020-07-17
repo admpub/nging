@@ -443,6 +443,169 @@ type BlockedByResponseIssueDetails struct {
 	Reason  BlockedByResponseReason `json:"reason"`
 }
 
+// HeavyAdResolutionStatus [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-HeavyAdResolutionStatus
+type HeavyAdResolutionStatus string
+
+// String returns the HeavyAdResolutionStatus as string value.
+func (t HeavyAdResolutionStatus) String() string {
+	return string(t)
+}
+
+// HeavyAdResolutionStatus values.
+const (
+	HeavyAdResolutionStatusHeavyAdBlocked HeavyAdResolutionStatus = "HeavyAdBlocked"
+	HeavyAdResolutionStatusHeavyAdWarning HeavyAdResolutionStatus = "HeavyAdWarning"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t HeavyAdResolutionStatus) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t HeavyAdResolutionStatus) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *HeavyAdResolutionStatus) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch HeavyAdResolutionStatus(in.String()) {
+	case HeavyAdResolutionStatusHeavyAdBlocked:
+		*t = HeavyAdResolutionStatusHeavyAdBlocked
+	case HeavyAdResolutionStatusHeavyAdWarning:
+		*t = HeavyAdResolutionStatusHeavyAdWarning
+
+	default:
+		in.AddError(errors.New("unknown HeavyAdResolutionStatus value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *HeavyAdResolutionStatus) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// HeavyAdReason [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-HeavyAdReason
+type HeavyAdReason string
+
+// String returns the HeavyAdReason as string value.
+func (t HeavyAdReason) String() string {
+	return string(t)
+}
+
+// HeavyAdReason values.
+const (
+	HeavyAdReasonNetworkTotalLimit HeavyAdReason = "NetworkTotalLimit"
+	HeavyAdReasonCPUTotalLimit     HeavyAdReason = "CpuTotalLimit"
+	HeavyAdReasonCPUPeakLimit      HeavyAdReason = "CpuPeakLimit"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t HeavyAdReason) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t HeavyAdReason) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *HeavyAdReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch HeavyAdReason(in.String()) {
+	case HeavyAdReasonNetworkTotalLimit:
+		*t = HeavyAdReasonNetworkTotalLimit
+	case HeavyAdReasonCPUTotalLimit:
+		*t = HeavyAdReasonCPUTotalLimit
+	case HeavyAdReasonCPUPeakLimit:
+		*t = HeavyAdReasonCPUPeakLimit
+
+	default:
+		in.AddError(errors.New("unknown HeavyAdReason value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *HeavyAdReason) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// HeavyAdIssueDetails [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-HeavyAdIssueDetails
+type HeavyAdIssueDetails struct {
+	Resolution HeavyAdResolutionStatus `json:"resolution"` // The resolution status, either blocking the content or warning.
+	Reason     HeavyAdReason           `json:"reason"`     // The reason the ad was blocked, total network or cpu or peak cpu.
+	Frame      *AffectedFrame          `json:"frame"`      // The frame that was blocked.
+}
+
+// ContentSecurityPolicyViolationType [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-ContentSecurityPolicyViolationType
+type ContentSecurityPolicyViolationType string
+
+// String returns the ContentSecurityPolicyViolationType as string value.
+func (t ContentSecurityPolicyViolationType) String() string {
+	return string(t)
+}
+
+// ContentSecurityPolicyViolationType values.
+const (
+	ContentSecurityPolicyViolationTypeKInlineViolation             ContentSecurityPolicyViolationType = "kInlineViolation"
+	ContentSecurityPolicyViolationTypeKEvalViolation               ContentSecurityPolicyViolationType = "kEvalViolation"
+	ContentSecurityPolicyViolationTypeKURLViolation                ContentSecurityPolicyViolationType = "kURLViolation"
+	ContentSecurityPolicyViolationTypeKTrustedTypesSinkViolation   ContentSecurityPolicyViolationType = "kTrustedTypesSinkViolation"
+	ContentSecurityPolicyViolationTypeKTrustedTypesPolicyViolation ContentSecurityPolicyViolationType = "kTrustedTypesPolicyViolation"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t ContentSecurityPolicyViolationType) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t ContentSecurityPolicyViolationType) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *ContentSecurityPolicyViolationType) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch ContentSecurityPolicyViolationType(in.String()) {
+	case ContentSecurityPolicyViolationTypeKInlineViolation:
+		*t = ContentSecurityPolicyViolationTypeKInlineViolation
+	case ContentSecurityPolicyViolationTypeKEvalViolation:
+		*t = ContentSecurityPolicyViolationTypeKEvalViolation
+	case ContentSecurityPolicyViolationTypeKURLViolation:
+		*t = ContentSecurityPolicyViolationTypeKURLViolation
+	case ContentSecurityPolicyViolationTypeKTrustedTypesSinkViolation:
+		*t = ContentSecurityPolicyViolationTypeKTrustedTypesSinkViolation
+	case ContentSecurityPolicyViolationTypeKTrustedTypesPolicyViolation:
+		*t = ContentSecurityPolicyViolationTypeKTrustedTypesPolicyViolation
+
+	default:
+		in.AddError(errors.New("unknown ContentSecurityPolicyViolationType value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *ContentSecurityPolicyViolationType) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// ContentSecurityPolicyIssueDetails [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-ContentSecurityPolicyIssueDetails
+type ContentSecurityPolicyIssueDetails struct {
+	BlockedURL                         string                             `json:"blockedURL,omitempty"` // The url not included in allowed sources.
+	ViolatedDirective                  string                             `json:"violatedDirective"`    // Specific directive that is violated, causing the CSP issue.
+	ContentSecurityPolicyViolationType ContentSecurityPolicyViolationType `json:"contentSecurityPolicyViolationType"`
+	FrameAncestor                      *AffectedFrame                     `json:"frameAncestor,omitempty"`
+}
+
 // InspectorIssueCode a unique identifier for the type of issue. Each type
 // may use one of the optional fields in InspectorIssueDetails to convey more
 // specific information about the kind of issue.
@@ -457,9 +620,11 @@ func (t InspectorIssueCode) String() string {
 
 // InspectorIssueCode values.
 const (
-	InspectorIssueCodeSameSiteCookieIssue    InspectorIssueCode = "SameSiteCookieIssue"
-	InspectorIssueCodeMixedContentIssue      InspectorIssueCode = "MixedContentIssue"
-	InspectorIssueCodeBlockedByResponseIssue InspectorIssueCode = "BlockedByResponseIssue"
+	InspectorIssueCodeSameSiteCookieIssue        InspectorIssueCode = "SameSiteCookieIssue"
+	InspectorIssueCodeMixedContentIssue          InspectorIssueCode = "MixedContentIssue"
+	InspectorIssueCodeBlockedByResponseIssue     InspectorIssueCode = "BlockedByResponseIssue"
+	InspectorIssueCodeHeavyAdIssue               InspectorIssueCode = "HeavyAdIssue"
+	InspectorIssueCodeContentSecurityPolicyIssue InspectorIssueCode = "ContentSecurityPolicyIssue"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -481,6 +646,10 @@ func (t *InspectorIssueCode) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = InspectorIssueCodeMixedContentIssue
 	case InspectorIssueCodeBlockedByResponseIssue:
 		*t = InspectorIssueCodeBlockedByResponseIssue
+	case InspectorIssueCodeHeavyAdIssue:
+		*t = InspectorIssueCodeHeavyAdIssue
+	case InspectorIssueCodeContentSecurityPolicyIssue:
+		*t = InspectorIssueCodeContentSecurityPolicyIssue
 
 	default:
 		in.AddError(errors.New("unknown InspectorIssueCode value"))
@@ -498,9 +667,11 @@ func (t *InspectorIssueCode) UnmarshalJSON(buf []byte) error {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-InspectorIssueDetails
 type InspectorIssueDetails struct {
-	SameSiteCookieIssueDetails    *SameSiteCookieIssueDetails    `json:"sameSiteCookieIssueDetails,omitempty"`
-	MixedContentIssueDetails      *MixedContentIssueDetails      `json:"mixedContentIssueDetails,omitempty"`
-	BlockedByResponseIssueDetails *BlockedByResponseIssueDetails `json:"blockedByResponseIssueDetails,omitempty"`
+	SameSiteCookieIssueDetails        *SameSiteCookieIssueDetails        `json:"sameSiteCookieIssueDetails,omitempty"`
+	MixedContentIssueDetails          *MixedContentIssueDetails          `json:"mixedContentIssueDetails,omitempty"`
+	BlockedByResponseIssueDetails     *BlockedByResponseIssueDetails     `json:"blockedByResponseIssueDetails,omitempty"`
+	HeavyAdIssueDetails               *HeavyAdIssueDetails               `json:"heavyAdIssueDetails,omitempty"`
+	ContentSecurityPolicyIssueDetails *ContentSecurityPolicyIssueDetails `json:"contentSecurityPolicyIssueDetails,omitempty"`
 }
 
 // InspectorIssue an inspector issue reported from the back-end.

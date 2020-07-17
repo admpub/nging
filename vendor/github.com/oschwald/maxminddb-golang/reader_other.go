@@ -1,4 +1,4 @@
-// +build !appengine
+// +build !appengine,!plan9
 
 package maxminddb
 
@@ -15,37 +15,37 @@ import (
 func Open(file string) (*Reader, error) {
 	mapFile, err := os.Open(file)
 	if err != nil {
+		_ = mapFile.Close()
 		return nil, err
 	}
-	defer func() {
-		if rerr := mapFile.Close(); rerr != nil {
-			err = rerr
-		}
-	}()
 
 	stats, err := mapFile.Stat()
 	if err != nil {
+		_ = mapFile.Close()
 		return nil, err
 	}
 
 	fileSize := int(stats.Size())
 	mmap, err := mmap(int(mapFile.Fd()), fileSize)
 	if err != nil {
+		_ = mapFile.Close()
+		return nil, err
+	}
+
+	if err := mapFile.Close(); err != nil {
+		_ = munmap(mmap)
 		return nil, err
 	}
 
 	reader, err := FromBytes(mmap)
 	if err != nil {
-		if err2 := munmap(mmap); err2 != nil {
-			// failing to unmap the file is probably the more severe error
-			return nil, err2
-		}
+		_ = munmap(mmap)
 		return nil, err
 	}
 
 	reader.hasMappedFile = true
 	runtime.SetFinalizer(reader, (*Reader).Close)
-	return reader, err
+	return reader, nil
 }
 
 // Close unmaps the database file from virtual memory and returns the

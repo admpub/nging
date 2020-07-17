@@ -1,0 +1,6 @@
+/*.log
+/.vscode
+testdata
+*.exe
+debug.test
+process

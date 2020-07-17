@@ -1,13 +1,25 @@
 package gui
 
 import (
+	"strings"
+
 	"github.com/jesseduffield/gocui"
-	"github.com/jesseduffield/lazygit/pkg/git"
-	"github.com/jesseduffield/lazygit/pkg/utils"
+	"github.com/jesseduffield/lazygit/pkg/commands"
 )
 
-func (gui *Gui) refreshStagingPanel() error {
-	file, err := gui.getSelectedFile(gui.g)
+func (gui *Gui) refreshStagingPanel(forceSecondaryFocused bool, selectedLineIdx int) error {
+	gui.State.SplitMainPanel = true
+
+	state := gui.State.Panels.LineByLine
+
+	// We need to force focus here because the confirmation panel for safely staging lines does not return focus automatically.
+	// This is because if we tell it to return focus it will unconditionally return it to the main panel which may not be what we want
+	// e.g. in the event that there's nothing left to stage.
+	if err := gui.switchFocus(gui.g, nil, gui.getMainView()); err != nil {
+		return err
+	}
+
+	file, err := gui.getSelectedFile()
 	if err != nil {
 		if err != gui.Errors.ErrNoFiles {
 			return err
@@ -15,207 +27,134 @@ func (gui *Gui) refreshStagingPanel() error {
 		return gui.handleStagingEscape(gui.g, nil)
 	}
 
-	if !file.HasUnstagedChanges {
+	if !file.HasUnstagedChanges && !file.HasStagedChanges {
 		return gui.handleStagingEscape(gui.g, nil)
+	}
+
+	secondaryFocused := false
+	if forceSecondaryFocused {
+		secondaryFocused = true
+	} else {
+		if state != nil {
+			secondaryFocused = state.SecondaryFocused
+		}
+	}
+
+	if (secondaryFocused && !file.HasStagedChanges) || (!secondaryFocused && !file.HasUnstagedChanges) {
+		secondaryFocused = !secondaryFocused
+	}
+
+	if secondaryFocused {
+		gui.getMainView().Title = gui.Tr.SLocalize("StagedChanges")
+		gui.getSecondaryView().Title = gui.Tr.SLocalize("UnstagedChanges")
+	} else {
+		gui.getMainView().Title = gui.Tr.SLocalize("UnstagedChanges")
+		gui.getSecondaryView().Title = gui.Tr.SLocalize("StagedChanges")
 	}
 
 	// note for custom diffs, we'll need to send a flag here saying not to use the custom diff
-	diff := gui.GitCommand.Diff(file, true)
-	colorDiff := gui.GitCommand.Diff(file, false)
+	diff := gui.GitCommand.Diff(file, true, secondaryFocused)
+	secondaryDiff := gui.GitCommand.Diff(file, true, !secondaryFocused)
 
-	if len(diff) < 2 {
-		return gui.handleStagingEscape(gui.g, nil)
-	}
-
-	// parse the diff and store the line numbers of hunks and stageable lines
-	// TODO: maybe instantiate this at application start
-	p, err := git.NewPatchParser(gui.Log)
-	if err != nil {
-		return nil
-	}
-	hunkStarts, stageableLines, err := p.ParsePatch(diff)
-	if err != nil {
-		return nil
-	}
-
-	var selectedLine int
-	if gui.State.Panels.Staging != nil {
-		end := len(stageableLines) - 1
-		if end < gui.State.Panels.Staging.SelectedLine {
-			selectedLine = end
-		} else {
-			selectedLine = gui.State.Panels.Staging.SelectedLine
+	// if we have e.g. a deleted file with nothing else to the diff will have only
+	// 4-5 lines in which case we'll swap panels
+	if len(strings.Split(diff, "\n")) < 5 {
+		if len(strings.Split(secondaryDiff, "\n")) < 5 {
+			return gui.handleStagingEscape(gui.g, nil)
 		}
-	} else {
-		selectedLine = 0
+		secondaryFocused = !secondaryFocused
+		diff, secondaryDiff = secondaryDiff, diff
 	}
 
-	gui.State.Panels.Staging = &stagingPanelState{
-		StageableLines: stageableLines,
-		HunkStarts:     hunkStarts,
-		SelectedLine:   selectedLine,
-		Diff:           diff,
-	}
-
-	if len(stageableLines) == 0 {
-		return gui.createErrorPanel(gui.g, "No lines to stage")
-	}
-
-	if err := gui.focusLineAndHunk(); err != nil {
+	empty, err := gui.refreshLineByLinePanel(diff, secondaryDiff, secondaryFocused, selectedLineIdx)
+	if err != nil {
 		return err
 	}
 
-	mainView := gui.getMainView()
-	mainView.Highlight = true
-	mainView.Wrap = false
-
-	gui.g.Update(func(*gocui.Gui) error {
-		return gui.setViewContent(gui.g, gui.getMainView(), colorDiff)
-	})
+	if empty {
+		return gui.handleStagingEscape(gui.g, nil)
+	}
 
 	return nil
 }
 
+func (gui *Gui) handleTogglePanelClick(g *gocui.Gui, v *gocui.View) error {
+	state := gui.State.Panels.LineByLine
+
+	state.SecondaryFocused = !state.SecondaryFocused
+
+	return gui.refreshStagingPanel(false, v.SelectedLineIdx())
+}
+
+func (gui *Gui) handleTogglePanel(g *gocui.Gui, v *gocui.View) error {
+	state := gui.State.Panels.LineByLine
+
+	state.SecondaryFocused = !state.SecondaryFocused
+	return gui.refreshStagingPanel(false, -1)
+}
+
 func (gui *Gui) handleStagingEscape(g *gocui.Gui, v *gocui.View) error {
-	gui.State.Panels.Staging = nil
+	gui.handleEscapeLineByLinePanel()
 
 	return gui.switchFocus(gui.g, nil, gui.getFilesView())
 }
 
-func (gui *Gui) handleStagingPrevLine(g *gocui.Gui, v *gocui.View) error {
-	return gui.handleCycleLine(true)
+func (gui *Gui) handleToggleStagedSelection(g *gocui.Gui, v *gocui.View) error {
+	state := gui.State.Panels.LineByLine
+
+	return gui.applySelection(state.SecondaryFocused)
 }
 
-func (gui *Gui) handleStagingNextLine(g *gocui.Gui, v *gocui.View) error {
-	return gui.handleCycleLine(false)
-}
+func (gui *Gui) handleResetSelection(g *gocui.Gui, v *gocui.View) error {
+	state := gui.State.Panels.LineByLine
 
-func (gui *Gui) handleStagingPrevHunk(g *gocui.Gui, v *gocui.View) error {
-	return gui.handleCycleHunk(true)
-}
+	if state.SecondaryFocused {
+		// for backwards compatibility
+		return gui.applySelection(true)
+	}
 
-func (gui *Gui) handleStagingNextHunk(g *gocui.Gui, v *gocui.View) error {
-	return gui.handleCycleHunk(false)
-}
-
-func (gui *Gui) handleCycleHunk(prev bool) error {
-	state := gui.State.Panels.Staging
-	lineNumbers := state.StageableLines
-	currentLine := lineNumbers[state.SelectedLine]
-	currentHunkIndex := utils.PrevIndex(state.HunkStarts, currentLine)
-	var newHunkIndex int
-	if prev {
-		if currentHunkIndex == 0 {
-			newHunkIndex = len(state.HunkStarts) - 1
-		} else {
-			newHunkIndex = currentHunkIndex - 1
-		}
+	if !gui.Config.GetUserConfig().GetBool("gui.skipUnstageLineWarning") {
+		return gui.createConfirmationPanel(gui.g, gui.getMainView(), false, "unstage lines", "Are you sure you want to delete the selected lines (git reset)? It is irreversible.\nTo disable this dialogue set the config key of 'gui.skipUnstageLineWarning' to true", func(*gocui.Gui, *gocui.View) error {
+			return gui.applySelection(true)
+		}, nil)
 	} else {
-		if currentHunkIndex == len(state.HunkStarts)-1 {
-			newHunkIndex = 0
-		} else {
-			newHunkIndex = currentHunkIndex + 1
-		}
+		return gui.applySelection(true)
 	}
-
-	state.SelectedLine = utils.NextIndex(lineNumbers, state.HunkStarts[newHunkIndex])
-
-	return gui.focusLineAndHunk()
 }
 
-func (gui *Gui) handleCycleLine(prev bool) error {
-	state := gui.State.Panels.Staging
-	lineNumbers := state.StageableLines
-	currentLine := lineNumbers[state.SelectedLine]
-	var newIndex int
-	if prev {
-		newIndex = utils.PrevIndex(lineNumbers, currentLine)
-	} else {
-		newIndex = utils.NextIndex(lineNumbers, currentLine)
-	}
-	state.SelectedLine = newIndex
+func (gui *Gui) applySelection(reverse bool) error {
+	state := gui.State.Panels.LineByLine
 
-	return gui.focusLineAndHunk()
-}
-
-// focusLineAndHunk works out the best focus for the staging panel given the
-// selected line and size of the hunk
-func (gui *Gui) focusLineAndHunk() error {
-	stagingView := gui.getMainView()
-	state := gui.State.Panels.Staging
-
-	lineNumber := state.StageableLines[state.SelectedLine]
-
-	// we want the bottom line of the view buffer to ideally be the bottom line
-	// of the hunk, but if the hunk is too big we'll just go three lines beyond
-	// the currently selected line so that the user can see the context
-	var bottomLine int
-	nextHunkStartIndex := utils.NextIndex(state.HunkStarts, lineNumber)
-	if nextHunkStartIndex == 0 {
-		// for now linesHeight is an efficient means of getting the number of lines
-		// in the patch. However if we introduce word wrap we'll need to update this
-		bottomLine = stagingView.LinesHeight() - 1
-	} else {
-		bottomLine = state.HunkStarts[nextHunkStartIndex] - 1
-	}
-
-	hunkStartIndex := utils.PrevIndex(state.HunkStarts, lineNumber)
-	hunkStart := state.HunkStarts[hunkStartIndex]
-	// if it's the first hunk we'll also show the diff header
-	if hunkStartIndex == 0 {
-		hunkStart = 0
-	}
-
-	_, height := stagingView.Size()
-	// if this hunk is too big, we will just ensure that the user can at least
-	// see three lines of context below the cursor
-	if bottomLine-hunkStart > height {
-		bottomLine = lineNumber + 3
-	}
-
-	return gui.generalFocusLine(lineNumber, bottomLine, stagingView)
-}
-
-func (gui *Gui) handleStageHunk(g *gocui.Gui, v *gocui.View) error {
-	return gui.handleStageLineOrHunk(true)
-}
-
-func (gui *Gui) handleStageLine(g *gocui.Gui, v *gocui.View) error {
-	return gui.handleStageLineOrHunk(false)
-}
-
-func (gui *Gui) handleStageLineOrHunk(hunk bool) error {
-	state := gui.State.Panels.Staging
-	p, err := git.NewPatchModifier(gui.Log)
+	file, err := gui.getSelectedFile()
 	if err != nil {
 		return err
 	}
 
-	currentLine := state.StageableLines[state.SelectedLine]
-	var patch string
-	if hunk {
-		patch, err = p.ModifyPatchForHunk(state.Diff, state.HunkStarts, currentLine)
-	} else {
-		patch, err = p.ModifyPatchForLine(state.Diff, currentLine)
-	}
-	if err != nil {
-		return err
-	}
+	patch := commands.ModifiedPatchForRange(gui.Log, file.Name, state.Diff, state.FirstLineIdx, state.LastLineIdx, reverse, false)
 
-	// for logging purposes
-	// ioutil.WriteFile("patch.diff", []byte(patch), 0600)
+	if patch == "" {
+		return nil
+	}
 
 	// apply the patch then refresh this panel
 	// create a new temp file with the patch, then call git apply with that patch
-	_, err = gui.GitCommand.ApplyPatch(patch)
+	applyFlags := []string{}
+	if !reverse || state.SecondaryFocused {
+		applyFlags = append(applyFlags, "cached")
+	}
+	err = gui.GitCommand.ApplyPatch(patch, applyFlags...)
 	if err != nil {
-		return err
+		return gui.surfaceError(err)
 	}
 
-	if err := gui.refreshFiles(); err != nil {
+	if state.SelectMode == RANGE {
+		state.SelectMode = LINE
+	}
+
+	if err := gui.refreshSidePanels(refreshOptions{scope: []int{FILES}}); err != nil {
 		return err
 	}
-	if err := gui.refreshStagingPanel(); err != nil {
+	if err := gui.refreshStagingPanel(false, -1); err != nil {
 		return err
 	}
 	return nil

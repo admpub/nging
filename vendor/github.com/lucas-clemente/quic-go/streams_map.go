@@ -7,6 +7,7 @@ import (
 	"net"
 
 	"github.com/lucas-clemente/quic-go/internal/flowcontrol"
+	"github.com/lucas-clemente/quic-go/internal/handshake"
 	"github.com/lucas-clemente/quic-go/internal/protocol"
 	"github.com/lucas-clemente/quic-go/internal/qerr"
 	"github.com/lucas-clemente/quic-go/internal/wire"
@@ -153,7 +154,7 @@ func (m *streamsMap) DeleteStream(id protocol.StreamID) error {
 func (m *streamsMap) GetOrOpenReceiveStream(id protocol.StreamID) (receiveStreamI, error) {
 	str, err := m.getOrOpenReceiveStream(id)
 	if err != nil {
-		return nil, qerr.NewError(qerr.StreamStateError, err.Error())
+		return nil, qerr.Error(qerr.StreamStateError, err.Error())
 	}
 	return str, nil
 }
@@ -184,7 +185,7 @@ func (m *streamsMap) getOrOpenReceiveStream(id protocol.StreamID) (receiveStream
 func (m *streamsMap) GetOrOpenSendStream(id protocol.StreamID) (sendStreamI, error) {
 	str, err := m.getOrOpenSendStream(id)
 	if err != nil {
-		return nil, qerr.NewError(qerr.StreamStateError, err.Error())
+		return nil, qerr.Error(qerr.StreamStateError, err.Error())
 	}
 	return str, nil
 }
@@ -222,7 +223,7 @@ func (m *streamsMap) HandleMaxStreamsFrame(f *wire.MaxStreamsFrame) error {
 	return nil
 }
 
-func (m *streamsMap) UpdateLimits(p *wire.TransportParameters) error {
+func (m *streamsMap) UpdateLimits(p *handshake.TransportParameters) error {
 	if p.MaxBidiStreamNum > protocol.MaxStreamCount ||
 		p.MaxUniStreamNum > protocol.MaxStreamCount {
 		return qerr.StreamLimitError

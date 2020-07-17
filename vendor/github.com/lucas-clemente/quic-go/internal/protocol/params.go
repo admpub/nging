@@ -8,11 +8,16 @@ const MaxPacketSizeIPv4 = 1252
 // MaxPacketSizeIPv6 is the maximum packet size that we use for sending IPv6 packets.
 const MaxPacketSizeIPv6 = 1232
 
-// MaxCongestionWindowPackets is the maximum congestion window in packet.
-const MaxCongestionWindowPackets = 10000
+const defaultMaxCongestionWindowPackets = 1000
+
+// DefaultMaxCongestionWindow is the default for the max congestion window
+const DefaultMaxCongestionWindow ByteCount = defaultMaxCongestionWindowPackets * DefaultTCPMSS
+
+// InitialCongestionWindow is the initial congestion window in QUIC packets
+const InitialCongestionWindow ByteCount = 32 * DefaultTCPMSS
 
 // MaxUndecryptablePackets limits the number of undecryptable packets that are queued in the session.
-const MaxUndecryptablePackets = 33
+const MaxUndecryptablePackets = 10
 
 // ConnectionFlowControlMultiplier determines how much larger the connection flow control windows needs to be relative to any stream's flow control window
 // This is the value that Chromium is using
@@ -39,11 +44,8 @@ const DefaultMaxIncomingStreams = 100
 // DefaultMaxIncomingUniStreams is the maximum number of unidirectional streams that a peer may open
 const DefaultMaxIncomingUniStreams = 100
 
-// MaxServerUnprocessedPackets is the max number of packets stored in the server that are not yet processed.
-const MaxServerUnprocessedPackets = 1024
-
 // MaxSessionUnprocessedPackets is the max number of packets stored in each session that are not yet processed.
-const MaxSessionUnprocessedPackets = 256
+const MaxSessionUnprocessedPackets = defaultMaxCongestionWindowPackets
 
 // SkipPacketAveragePeriodLength is the average period length in which one packet number is skipped to prevent an Optimistic ACK attack
 const SkipPacketAveragePeriodLength PacketNumber = 500
@@ -64,7 +66,7 @@ const RetryTokenValidity = 10 * time.Second
 // MaxOutstandingSentPackets is maximum number of packets saved for retransmission.
 // When reached, it imposes a soft limit on sending new packets:
 // Sending ACKs and retransmission is still allowed, but now new regular packets can be sent.
-const MaxOutstandingSentPackets = 2 * MaxCongestionWindowPackets
+const MaxOutstandingSentPackets = 2 * defaultMaxCongestionWindowPackets
 
 // MaxTrackedSentPackets is maximum number of sent packets saved for retransmission.
 // When reached, no more packets will be sent.
@@ -84,10 +86,6 @@ const MaxStreamFrameSorterGaps = 1000
 // very small STREAM frames to consume a lot of memory.
 const MinStreamFrameBufferSize = 128
 
-// MinCoalescedPacketSize is the minimum size of a coalesced packet that we pack.
-// If a packet has less than this number of bytes, we won't coalesce any more packets onto it.
-const MinCoalescedPacketSize = 128
-
 // MaxCryptoStreamOffset is the maximum offset allowed on any of the crypto streams.
 // This limits the size of the ClientHello and Certificates that can be received.
 const MaxCryptoStreamOffset = 16 * (1 << 10)
@@ -101,10 +99,6 @@ const DefaultIdleTimeout = 30 * time.Second
 // DefaultHandshakeTimeout is the default timeout for a connection until the crypto handshake succeeds.
 const DefaultHandshakeTimeout = 10 * time.Second
 
-// MaxKeepAliveInterval is the maximum time until we send a packet to keep a connection alive.
-// It should be shorter than the time that NATs clear their mapping.
-const MaxKeepAliveInterval = 20 * time.Second
-
 // RetiredConnectionIDDeleteTimeout is the time we keep closed sessions around in order to retransmit the CONNECTION_CLOSE.
 // after this time all information about the old connection will be deleted
 const RetiredConnectionIDDeleteTimeout = 5 * time.Second
@@ -117,7 +111,7 @@ const MinStreamFrameSize ByteCount = 128
 
 // MaxPostHandshakeCryptoFrameSize is the maximum size of CRYPTO frames
 // we send after the handshake completes.
-const MaxPostHandshakeCryptoFrameSize = 1000
+const MaxPostHandshakeCryptoFrameSize ByteCount = 1000
 
 // MaxAckFrameSize is the maximum size for an ACK frame that we write
 // Due to the varint encoding, ACK frames can grow (almost) indefinitely large.
@@ -132,8 +126,8 @@ const MaxNumAckRanges = 500
 
 // MinPacingDelay is the minimum duration that is used for packet pacing
 // If the packet packing frequency is higher, multiple packets might be sent at once.
-// Example: For a packet pacing delay of 200μs, we would send 5 packets at once, wait for 1ms, and so forth.
-const MinPacingDelay = time.Millisecond
+// Example: For a packet pacing delay of 20 microseconds, we would send 5 packets at once, wait for 100 microseconds, and so forth.
+const MinPacingDelay time.Duration = 100 * time.Microsecond
 
 // DefaultConnectionIDLength is the connection ID length that is used for multiplexed connections
 // if no other value is configured.
@@ -165,15 +159,3 @@ const MaxAckDelayInclGranularity = MaxAckDelay + TimerGranularity
 
 // KeyUpdateInterval is the maximum number of packets we send or receive before initiating a key udpate.
 const KeyUpdateInterval = 100 * 1000
-
-// Max0RTTQueueingDuration is the maximum time that we store 0-RTT packets in order to wait for the corresponding Initial to be received.
-const Max0RTTQueueingDuration = 100 * time.Millisecond
-
-// Max0RTTQueues is the maximum number of connections that we buffer 0-RTT packets for.
-const Max0RTTQueues = 32
-
-// Max0RTTQueueLen is the maximum number of 0-RTT packets that we buffer for each connection.
-// When a new session is created, all buffered packets are passed to the session immediately.
-// To avoid blocking, this value has to be smaller than MaxSessionUnprocessedPackets.
-// To avoid packets being dropped as undecryptable by the session, this value has to be smaller than MaxUndecryptablePackets.
-const Max0RTTQueueLen = 32

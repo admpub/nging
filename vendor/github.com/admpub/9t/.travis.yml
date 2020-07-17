@@ -1,0 +1,16 @@
+language: go
+go:
+  - 1.11.x
+
+branches:
+  only:
+    - master
+
+install:
+  - go get github.com/hpcloud/tail
+  - go get github.com/mattn/go-colorable
+  - go get github.com/mattn/go-runewidth
+  - go get github.com/mattn/goveralls
+
+script:
+  - $GOPATH/bin/goveralls -service=travis-ci

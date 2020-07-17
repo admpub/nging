@@ -17,35 +17,40 @@ import (
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Overlay#type-GridHighlightConfig
 type GridHighlightConfig struct {
-	ShowGridExtensionLines bool      `json:"showGridExtensionLines,omitempty"` // Whether the extension lines from grid cells to the rulers should be shown (default: false).
-	GridBorderColor        *cdp.RGBA `json:"gridBorderColor,omitempty"`        // The grid container border highlight color (default: transparent).
-	CellBorderColor        *cdp.RGBA `json:"cellBorderColor,omitempty"`        // The cell border color (default: transparent).
-	GridBorderDash         bool      `json:"gridBorderDash,omitempty"`         // Whether the grid border is dashed (default: false).
-	CellBorderDash         bool      `json:"cellBorderDash,omitempty"`         // Whether the cell border is dashed (default: false).
-	RowGapColor            *cdp.RGBA `json:"rowGapColor,omitempty"`            // The row gap highlight fill color (default: transparent).
-	RowHatchColor          *cdp.RGBA `json:"rowHatchColor,omitempty"`          // The row gap hatching fill color (default: transparent).
-	ColumnGapColor         *cdp.RGBA `json:"columnGapColor,omitempty"`         // The column gap highlight fill color (default: transparent).
-	ColumnHatchColor       *cdp.RGBA `json:"columnHatchColor,omitempty"`       // The column gap hatching fill color (default: transparent).
+	ShowGridExtensionLines  bool      `json:"showGridExtensionLines,omitempty"`  // Whether the extension lines from grid cells to the rulers should be shown (default: false).
+	ShowPositiveLineNumbers bool      `json:"showPositiveLineNumbers,omitempty"` // Show Positive line number labels (default: false).
+	ShowNegativeLineNumbers bool      `json:"showNegativeLineNumbers,omitempty"` // Show Negative line number labels (default: false).
+	ShowAreaNames           bool      `json:"showAreaNames,omitempty"`           // Show area name labels (default: false).
+	GridBorderColor         *cdp.RGBA `json:"gridBorderColor,omitempty"`         // The grid container border highlight color (default: transparent).
+	CellBorderColor         *cdp.RGBA `json:"cellBorderColor,omitempty"`         // The cell border color (default: transparent).
+	GridBorderDash          bool      `json:"gridBorderDash,omitempty"`          // Whether the grid border is dashed (default: false).
+	CellBorderDash          bool      `json:"cellBorderDash,omitempty"`          // Whether the cell border is dashed (default: false).
+	RowGapColor             *cdp.RGBA `json:"rowGapColor,omitempty"`             // The row gap highlight fill color (default: transparent).
+	RowHatchColor           *cdp.RGBA `json:"rowHatchColor,omitempty"`           // The row gap hatching fill color (default: transparent).
+	ColumnGapColor          *cdp.RGBA `json:"columnGapColor,omitempty"`          // The column gap highlight fill color (default: transparent).
+	ColumnHatchColor        *cdp.RGBA `json:"columnHatchColor,omitempty"`        // The column gap hatching fill color (default: transparent).
+	AreaBorderColor         *cdp.RGBA `json:"areaBorderColor,omitempty"`         // The named grid areas border color (Default: transparent).
 }
 
 // HighlightConfig configuration data for the highlighting of page elements.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Overlay#type-HighlightConfig
 type HighlightConfig struct {
-	ShowInfo            bool                 `json:"showInfo,omitempty"`            // Whether the node info tooltip should be shown (default: false).
-	ShowStyles          bool                 `json:"showStyles,omitempty"`          // Whether the node styles in the tooltip (default: false).
-	ShowRulers          bool                 `json:"showRulers,omitempty"`          // Whether the rulers should be shown (default: false).
-	ShowExtensionLines  bool                 `json:"showExtensionLines,omitempty"`  // Whether the extension lines from node to the rulers should be shown (default: false).
-	ContentColor        *cdp.RGBA            `json:"contentColor,omitempty"`        // The content box highlight fill color (default: transparent).
-	PaddingColor        *cdp.RGBA            `json:"paddingColor,omitempty"`        // The padding highlight fill color (default: transparent).
-	BorderColor         *cdp.RGBA            `json:"borderColor,omitempty"`         // The border highlight fill color (default: transparent).
-	MarginColor         *cdp.RGBA            `json:"marginColor,omitempty"`         // The margin highlight fill color (default: transparent).
-	EventTargetColor    *cdp.RGBA            `json:"eventTargetColor,omitempty"`    // The event target element highlight fill color (default: transparent).
-	ShapeColor          *cdp.RGBA            `json:"shapeColor,omitempty"`          // The shape outside fill color (default: transparent).
-	ShapeMarginColor    *cdp.RGBA            `json:"shapeMarginColor,omitempty"`    // The shape margin fill color (default: transparent).
-	CSSGridColor        *cdp.RGBA            `json:"cssGridColor,omitempty"`        // The grid layout color (default: transparent).
-	ColorFormat         ColorFormat          `json:"colorFormat,omitempty"`         // The color format used to format color styles (default: hex).
-	GridHighlightConfig *GridHighlightConfig `json:"gridHighlightConfig,omitempty"` // The grid layout highlight configuration (default: all transparent).
+	ShowInfo              bool                 `json:"showInfo,omitempty"`              // Whether the node info tooltip should be shown (default: false).
+	ShowStyles            bool                 `json:"showStyles,omitempty"`            // Whether the node styles in the tooltip (default: false).
+	ShowRulers            bool                 `json:"showRulers,omitempty"`            // Whether the rulers should be shown (default: false).
+	ShowAccessibilityInfo bool                 `json:"showAccessibilityInfo,omitempty"` // Whether the a11y info should be shown (default: true).
+	ShowExtensionLines    bool                 `json:"showExtensionLines,omitempty"`    // Whether the extension lines from node to the rulers should be shown (default: false).
+	ContentColor          *cdp.RGBA            `json:"contentColor,omitempty"`          // The content box highlight fill color (default: transparent).
+	PaddingColor          *cdp.RGBA            `json:"paddingColor,omitempty"`          // The padding highlight fill color (default: transparent).
+	BorderColor           *cdp.RGBA            `json:"borderColor,omitempty"`           // The border highlight fill color (default: transparent).
+	MarginColor           *cdp.RGBA            `json:"marginColor,omitempty"`           // The margin highlight fill color (default: transparent).
+	EventTargetColor      *cdp.RGBA            `json:"eventTargetColor,omitempty"`      // The event target element highlight fill color (default: transparent).
+	ShapeColor            *cdp.RGBA            `json:"shapeColor,omitempty"`            // The shape outside fill color (default: transparent).
+	ShapeMarginColor      *cdp.RGBA            `json:"shapeMarginColor,omitempty"`      // The shape margin fill color (default: transparent).
+	CSSGridColor          *cdp.RGBA            `json:"cssGridColor,omitempty"`          // The grid layout color (default: transparent).
+	ColorFormat           ColorFormat          `json:"colorFormat,omitempty"`           // The color format used to format color styles (default: hex).
+	GridHighlightConfig   *GridHighlightConfig `json:"gridHighlightConfig,omitempty"`   // The grid layout highlight configuration (default: all transparent).
 }
 
 // ColorFormat [no description].

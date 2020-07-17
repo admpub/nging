@@ -19,14 +19,16 @@
 package seaweedfs
 
 import (
-	"net/url"
 	"time"
 
 	"github.com/admpub/goseaweedfs"
-	"github.com/admpub/goseaweedfs/libs"
+	"github.com/webx-top/com"
 )
 
-var DefaultConfig = &Config{}
+var (
+	DefaultConfig = &Config{}
+	DefaultClient = com.HTTPClientWithTimeout(10 * time.Second)
+)
 
 type FilerURL struct {
 	Public  string //Readonly URL
@@ -49,7 +51,7 @@ type Config struct {
 	TTL string
 }
 
-func (c *Config) New() *goseaweedfs.Seaweed {
+func (c *Config) New() (*goseaweedfs.Seaweed, error) {
 	if len(c.Scheme) == 0 {
 		c.Scheme = "http"
 	}
@@ -74,9 +76,5 @@ func (c *Config) New() *goseaweedfs.Seaweed {
 	for index, filerURL := range c.Filers {
 		filers[index] = filerURL.Private
 	}
-	return goseaweedfs.NewSeaweed(c.Scheme, c.Master, filers, c.ChunkSize, c.Timeout)
-}
-
-func (c *Config) MakeURL(path string, args url.Values) string {
-	return libs.MakeURL(c.Scheme, c.Master, path, args)
+	return goseaweedfs.NewSeaweed(c.Master, filers, c.ChunkSize, DefaultClient)
 }

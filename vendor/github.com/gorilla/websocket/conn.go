@@ -451,8 +451,7 @@ func (c *Conn) WriteControl(messageType int, data []byte, deadline time.Time) er
 	return err
 }
 
-// beginMessage prepares a connection and message writer for a new message.
-func (c *Conn) beginMessage(mw *messageWriter, messageType int) error {
+func (c *Conn) prepWrite(messageType int) error {
 	// Close previous writer if not already closed by the application. It's
 	// probably better to return an error in this situation, but we cannot
 	// change this without breaking existing applications.
@@ -471,10 +470,6 @@ func (c *Conn) beginMessage(mw *messageWriter, messageType int) error {
 	if err != nil {
 		return err
 	}
-
-	mw.c = c
-	mw.frameType = messageType
-	mw.pos = maxFrameHeaderSize
 
 	if c.writeBuf == nil {
 		wpd, ok := c.writePool.Get().(writePoolData)
@@ -496,11 +491,16 @@ func (c *Conn) beginMessage(mw *messageWriter, messageType int) error {
 // All message types (TextMessage, BinaryMessage, CloseMessage, PingMessage and
 // PongMessage) are supported.
 func (c *Conn) NextWriter(messageType int) (io.WriteCloser, error) {
-	var mw messageWriter
-	if err := c.beginMessage(&mw, messageType); err != nil {
+	if err := c.prepWrite(messageType); err != nil {
 		return nil, err
 	}
-	c.writer = &mw
+
+	mw := &messageWriter{
+		c:         c,
+		frameType: messageType,
+		pos:       maxFrameHeaderSize,
+	}
+	c.writer = mw
 	if c.newCompressionWriter != nil && c.enableWriteCompression && isData(messageType) {
 		w := c.newCompressionWriter(c.writer, c.compressionLevel)
 		mw.compress = true
@@ -517,16 +517,10 @@ type messageWriter struct {
 	err       error
 }
 
-func (w *messageWriter) endMessage(err error) error {
+func (w *messageWriter) fatal(err error) error {
 	if w.err != nil {
-		return err
-	}
-	c := w.c
-	w.err = err
-	c.writer = nil
-	if c.writePool != nil {
-		c.writePool.Put(writePoolData{buf: c.writeBuf})
-		c.writeBuf = nil
+		w.err = err
+		w.c.writer = nil
 	}
 	return err
 }
@@ -540,7 +534,7 @@ func (w *messageWriter) flushFrame(final bool, extra []byte) error {
 	// Check for invalid control frames.
 	if isControl(w.frameType) &&
 		(!final || length > maxControlFramePayloadSize) {
-		return w.endMessage(errInvalidControlFrame)
+		return w.fatal(errInvalidControlFrame)
 	}
 
 	b0 := byte(w.frameType)
@@ -585,7 +579,7 @@ func (w *messageWriter) flushFrame(final bool, extra []byte) error {
 		copy(c.writeBuf[maxFrameHeaderSize-4:], key[:])
 		maskBytes(key, 0, c.writeBuf[maxFrameHeaderSize:w.pos])
 		if len(extra) > 0 {
-			return w.endMessage(c.writeFatal(errors.New("websocket: internal error, extra used in client mode")))
+			return c.writeFatal(errors.New("websocket: internal error, extra used in client mode"))
 		}
 	}
 
@@ -606,11 +600,15 @@ func (w *messageWriter) flushFrame(final bool, extra []byte) error {
 	c.isWriting = false
 
 	if err != nil {
-		return w.endMessage(err)
+		return w.fatal(err)
 	}
 
 	if final {
-		w.endMessage(errWriteClosed)
+		c.writer = nil
+		if c.writePool != nil {
+			c.writePool.Put(writePoolData{buf: c.writeBuf})
+			c.writeBuf = nil
+		}
 		return nil
 	}
 
@@ -708,7 +706,11 @@ func (w *messageWriter) Close() error {
 	if w.err != nil {
 		return w.err
 	}
-	return w.flushFrame(true, nil)
+	if err := w.flushFrame(true, nil); err != nil {
+		return err
+	}
+	w.err = errWriteClosed
+	return nil
 }
 
 // WritePreparedMessage writes prepared message into connection.
@@ -740,10 +742,10 @@ func (c *Conn) WriteMessage(messageType int, data []byte) error {
 	if c.isServer && (c.newCompressionWriter == nil || !c.enableWriteCompression) {
 		// Fast path with no allocations and single frame.
 
-		var mw messageWriter
-		if err := c.beginMessage(&mw, messageType); err != nil {
+		if err := c.prepWrite(messageType); err != nil {
 			return err
 		}
+		mw := messageWriter{c: c, frameType: messageType, pos: maxFrameHeaderSize}
 		n := copy(c.writeBuf[mw.pos:], data)
 		mw.pos += n
 		data = data[n:]
@@ -1039,7 +1041,7 @@ func (c *Conn) SetReadDeadline(t time.Time) error {
 	return c.conn.SetReadDeadline(t)
 }
 
-// SetReadLimit sets the maximum size in bytes for a message read from the peer. If a
+// SetReadLimit sets the maximum size for a message read from the peer. If a
 // message exceeds the limit, the connection sends a close message to the peer
 // and returns ErrReadLimit to the application.
 func (c *Conn) SetReadLimit(limit int64) {

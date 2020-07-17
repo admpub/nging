@@ -2,7 +2,6 @@ package flowcontrol
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/lucas-clemente/quic-go/internal/congestion"
 	"github.com/lucas-clemente/quic-go/internal/protocol"
@@ -50,7 +49,7 @@ func (c *connectionFlowController) IncrementHighestReceived(increment protocol.B
 
 	c.highestReceived += increment
 	if c.checkFlowControlViolation() {
-		return qerr.NewError(qerr.FlowControlError, fmt.Sprintf("Received %d bytes for the connection, allowed %d bytes", c.highestReceived, c.receiveWindow))
+		return qerr.Error(qerr.FlowControlError, fmt.Sprintf("Received %d bytes for the connection, allowed %d bytes", c.highestReceived, c.receiveWindow))
 	}
 	return nil
 }
@@ -87,7 +86,7 @@ func (c *connectionFlowController) EnsureMinimumWindowSize(inc protocol.ByteCoun
 	if inc > c.receiveWindowSize {
 		c.logger.Debugf("Increasing receive flow control window for the connection to %d kB, in response to stream flow control window increase", c.receiveWindowSize/(1<<10))
 		c.receiveWindowSize = utils.MinByteCount(inc, c.maxReceiveWindowSize)
-		c.startNewAutoTuningEpoch(time.Now())
+		c.startNewAutoTuningEpoch()
 	}
 	c.mutex.Unlock()
 }

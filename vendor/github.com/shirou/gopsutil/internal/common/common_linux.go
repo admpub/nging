@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"sync/atomic"
 	"time"
 )
 
@@ -43,17 +42,18 @@ func NumProcs() (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	return uint64(len(list)), err
+	var cnt uint64
+
+	for _, v := range list {
+		if _, err = strconv.ParseUint(v, 10, 64); err == nil {
+			cnt++
+		}
+	}
+
+	return cnt, nil
 }
 
-// cachedBootTime must be accessed via atomic.Load/StoreUint64
-var cachedBootTime uint64
-
 func BootTimeWithContext(ctx context.Context) (uint64, error) {
-	t := atomic.LoadUint64(&cachedBootTime)
-	if t != 0 {
-		return t, nil
-	}
 
 	system, role, err := Virtualization()
 	if err != nil {
@@ -86,8 +86,7 @@ func BootTimeWithContext(ctx context.Context) (uint64, error) {
 				if err != nil {
 					return 0, err
 				}
-				t = uint64(b)
-				atomic.StoreUint64(&cachedBootTime, t)
+				t := uint64(b)
 				return t, nil
 			}
 		}
@@ -100,8 +99,7 @@ func BootTimeWithContext(ctx context.Context) (uint64, error) {
 		if err != nil {
 			return 0, err
 		}
-		t = uint64(time.Now().Unix()) - uint64(b)
-		atomic.StoreUint64(&cachedBootTime, t)
+		t := uint64(time.Now().Unix()) - uint64(b)
 		return t, nil
 	}
 
@@ -193,6 +191,17 @@ func VirtualizationWithContext(ctx context.Context) (string, string, error) {
 				system = "linux-vserver"
 			}
 			// TODO: guest or host
+		}
+	}
+
+	if PathExists(filepath.Join(filename, "1", "environ")) {
+		contents, err := ReadFile(filepath.Join(filename, "1", "environ"))
+
+		if err == nil {
+			if strings.Contains(contents, "container=lxc") {
+				system = "lxc"
+				role = "guest"
+			}
 		}
 	}
 

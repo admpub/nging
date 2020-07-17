@@ -39,7 +39,7 @@ Selenium WebDriver JARs, and the Sauce Connect proxy binary. This is primarily
 intended for testing.
 
     $ cd vendor
-    $ go get -d ./...
+    $ go get -d .
     $ go run init.go --alsologtostderr
     $ cd ..
 
@@ -99,15 +99,6 @@ to only be several days to a small number of weeks.
 
 Using Geckodriver without Selenium usually has the above known issues as well.
 
-### ChromeDriver
-
-1.  Various
-    [window-related commands are failing with v62+](https://bugs.chromium.org/p/chromedriver/issues/detail?id=1918).
-2.  GetCookies can
-    [return an incorrect expiration date in v62+](https://bugs.chromium.org/p/chromedriver/issues/detail?id=1949).
-3.  DeleteCookie
-    [doesn't work in v62+](https://bugs.chromium.org/p/chromedriver/issues/detail?id=1950).
-
 ## Breaking Changes
 
 There are a number of upcoming changes that break backward compatibility in an
@@ -140,6 +131,10 @@ See [the issue tracker][issues] for features that need implementing.
 [issues]: https://github.com/tebeka/selenium/issues
 
 ### Testing Locally
+
+Install `xvfb` and Java if they is not already installed, e.g.:
+
+    sudo apt-get install xvfb openjdk-11-jre
 
 Run the tests:
 

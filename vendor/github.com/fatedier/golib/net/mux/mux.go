@@ -125,6 +125,8 @@ func (mux *Mux) copyLns() []*listener {
 
 // Serve handles connections from ln and multiplexes then across registered listeners.
 func (mux *Mux) Serve() error {
+	var tempDelay time.Duration // how long to sleep on accept failure
+
 	for {
 		// Wait for the next connection.
 		// If it returns a temporary error then simply retry.
@@ -133,6 +135,15 @@ func (mux *Mux) Serve() error {
 		if err, ok := err.(interface {
 			Temporary() bool
 		}); ok && err.Temporary() {
+			if tempDelay == 0 {
+				tempDelay = 5 * time.Millisecond
+			} else {
+				tempDelay *= 2
+			}
+			if max := 1 * time.Second; tempDelay > max {
+				tempDelay = max
+			}
+			time.Sleep(tempDelay)
 			continue
 		}
 

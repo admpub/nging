@@ -649,17 +649,14 @@ func isFenceLine(data []byte, info *string, oldmarker string, newlineOptional bo
 	}
 
 	i = skipChar(data, i, ' ')
-	if i >= len(data) {
-		if newlineOptional {
+	if i >= len(data) || data[i] != '\n' {
+		if newlineOptional && i == len(data) {
 			return i, marker
 		}
 		return 0, ""
 	}
-	if data[i] == '\n' {
-		i++ // Take newline into account
-	}
 
-	return i, marker
+	return i + 1, marker // Take newline into account.
 }
 
 // fencedCodeBlock returns the end index if data contains a fenced code block at the beginning,
@@ -1136,21 +1133,17 @@ func (p *parser) listItem(out *bytes.Buffer, data []byte, flags *int) int {
 		i++
 	}
 
-	// process the following lines
-	containsBlankLine := false
-	sublist := 0
-	codeBlockMarker := ""
-	if p.flags&EXTENSION_FENCED_CODE != 0 && i > line {
-		// determine if codeblock starts on the first line
-		_, codeBlockMarker = isFenceLine(data[line:i], nil, "", false)
-	}
-
 	// get working buffer
 	var raw bytes.Buffer
 
 	// put the first line into the working buffer
 	raw.Write(data[line:i])
 	line = i
+
+	// process the following lines
+	containsBlankLine := false
+	sublist := 0
+	codeBlockMarker := ""
 
 gatherlines:
 	for line < len(data) {
@@ -1160,6 +1153,7 @@ gatherlines:
 		for data[i-1] != '\n' {
 			i++
 		}
+
 		// if it is an empty line, guess that it is part of this item
 		// and move on to the next line
 		if p.isEmpty(data[line:i]) > 0 {

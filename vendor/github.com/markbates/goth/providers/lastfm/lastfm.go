@@ -45,7 +45,7 @@ type Provider struct {
 	providerName string
 }
 
-// Name is the name used to retrive this provider later.
+// Name is the name used to retrieve this provider later.
 func (p *Provider) Name() string {
 	return p.providerName
 }
@@ -162,6 +162,7 @@ func (p *Provider) request(sign bool, params map[string]string, result interface
 	if err != nil {
 		return err
 	}
+	defer res.Body.Close()
 
 	if res.StatusCode/100 == 5 { // only 5xx class errros
 		err = errors.New(fmt.Errorf("Request error(%v) %v", res.StatusCode, res.Status).Error())

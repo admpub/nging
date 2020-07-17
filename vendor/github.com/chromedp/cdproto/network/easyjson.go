@@ -50,11 +50,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoNetwork(in *jlexer.Lexer, out
 				in.Skip()
 			} else {
 				in.Delim('{')
-				if !in.IsDelim('}') {
-					out.Headers = make(Headers)
-				} else {
-					out.Headers = nil
-				}
+				out.Headers = make(Headers)
 				for !in.IsDelim('}') {
 					key := string(in.String())
 					in.WantColon()
@@ -237,11 +233,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoNetwork1(in *jlexer.Lexer, ou
 				in.Skip()
 			} else {
 				in.Delim('{')
-				if !in.IsDelim('}') {
-					out.Headers = make(Headers)
-				} else {
-					out.Headers = nil
-				}
+				out.Headers = make(Headers)
 				for !in.IsDelim('}') {
 					key := string(in.String())
 					in.WantColon()
@@ -875,11 +867,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoNetwork7(in *jlexer.Lexer, ou
 				in.Skip()
 			} else {
 				in.Delim('{')
-				if !in.IsDelim('}') {
-					out.ResponseHeaders = make(Headers)
-				} else {
-					out.ResponseHeaders = nil
-				}
+				out.ResponseHeaders = make(Headers)
 				for !in.IsDelim('}') {
 					key := string(in.String())
 					in.WantColon()
@@ -1262,11 +1250,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoNetwork10(in *jlexer.Lexer, o
 				in.Skip()
 			} else {
 				in.Delim('{')
-				if !in.IsDelim('}') {
-					out.Headers = make(Headers)
-				} else {
-					out.Headers = nil
-				}
+				out.Headers = make(Headers)
 				for !in.IsDelim('}') {
 					key := string(in.String())
 					in.WantColon()
@@ -2443,11 +2427,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoNetwork21(in *jlexer.Lexer, o
 				in.Skip()
 			} else {
 				in.Delim('{')
-				if !in.IsDelim('}') {
-					out.Headers = make(Headers)
-				} else {
-					out.Headers = nil
-				}
+				out.Headers = make(Headers)
 				for !in.IsDelim('}') {
 					key := string(in.String())
 					in.WantColon()
@@ -3053,11 +3033,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoNetwork24(in *jlexer.Lexer, o
 				in.Skip()
 			} else {
 				in.Delim('{')
-				if !in.IsDelim('}') {
-					out.Headers = make(Headers)
-				} else {
-					out.Headers = nil
-				}
+				out.Headers = make(Headers)
 				for !in.IsDelim('}') {
 					key := string(in.String())
 					in.WantColon()
@@ -5161,11 +5137,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoNetwork47(in *jlexer.Lexer, o
 				in.Skip()
 			} else {
 				in.Delim('{')
-				if !in.IsDelim('}') {
-					out.Headers = make(Headers)
-				} else {
-					out.Headers = nil
-				}
+				out.Headers = make(Headers)
 				for !in.IsDelim('}') {
 					key := string(in.String())
 					in.WantColon()
@@ -5555,11 +5527,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoNetwork50(in *jlexer.Lexer, o
 				in.Skip()
 			} else {
 				in.Delim('{')
-				if !in.IsDelim('}') {
-					out.Headers = make(Headers)
-				} else {
-					out.Headers = nil
-				}
+				out.Headers = make(Headers)
 				for !in.IsDelim('}') {
 					key := string(in.String())
 					in.WantColon()

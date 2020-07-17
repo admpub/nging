@@ -1,6 +1,8 @@
 package maxminddb
 
-import "net"
+import (
+	"net"
+)
 
 // Internal structure used to keep track of nodes we still need to visit.
 type netNode struct {
@@ -17,22 +19,52 @@ type Networks struct {
 	err      error
 }
 
+var allIPv4 = &net.IPNet{IP: make(net.IP, 4), Mask: net.CIDRMask(0, 32)}
+var allIPv6 = &net.IPNet{IP: make(net.IP, 16), Mask: net.CIDRMask(0, 128)}
+
 // Networks returns an iterator that can be used to traverse all networks in
 // the database.
 //
 // Please note that a MaxMind DB may map IPv4 networks into several locations
-// in in an IPv6 database. This iterator will iterate over all of these
+// in an IPv6 database. This iterator will iterate over all of these
 // locations separately.
 func (r *Reader) Networks() *Networks {
-	s := 4
+	var networks *Networks
 	if r.Metadata.IPVersion == 6 {
-		s = 16
+		networks = r.NetworksWithin(allIPv6)
+	} else {
+		networks = r.NetworksWithin(allIPv4)
 	}
+
+	return networks
+}
+
+// NetworksWithin returns an iterator that can be used to traverse all networks
+// in the database which are contained in a given network.
+//
+// Please note that a MaxMind DB may map IPv4 networks into several locations
+// in an IPv6 database. This iterator will iterate over all of these locations
+// separately.
+//
+// If the provided network is contained within a network in the database, the
+// iterator will iterate over exactly one network, the containing network.
+func (r *Reader) NetworksWithin(network *net.IPNet) *Networks {
+	ip := network.IP
+	prefixLength, _ := network.Mask.Size()
+
+	if r.Metadata.IPVersion == 6 && len(ip) == net.IPv4len {
+		ip = net.IP.To16(ip)
+		prefixLength += 96
+	}
+
+	pointer, bit := r.traverseTree(ip, 0, uint(prefixLength))
 	return &Networks{
 		reader: r,
 		nodes: []netNode{
 			{
-				ip: make(net.IP, s),
+				ip:      ip,
+				bit:     uint(bit),
+				pointer: pointer,
 			},
 		},
 	}
@@ -46,42 +78,31 @@ func (n *Networks) Next() bool {
 		node := n.nodes[len(n.nodes)-1]
 		n.nodes = n.nodes[:len(n.nodes)-1]
 
-		for {
-			if node.pointer < n.reader.Metadata.NodeCount {
-				ipRight := make(net.IP, len(node.ip))
-				copy(ipRight, node.ip)
-				if len(ipRight) <= int(node.bit>>3) {
-					n.err = newInvalidDatabaseError(
-						"invalid search tree at %v/%v", ipRight, node.bit)
-					return false
-				}
-				ipRight[node.bit>>3] |= 1 << (7 - (node.bit % 8))
-
-				rightPointer, err := n.reader.readNode(node.pointer, 1)
-				if err != nil {
-					n.err = err
-					return false
-				}
-
-				node.bit++
-				n.nodes = append(n.nodes, netNode{
-					pointer: rightPointer,
-					ip:      ipRight,
-					bit:     node.bit,
-				})
-
-				node.pointer, err = n.reader.readNode(node.pointer, 0)
-				if err != nil {
-					n.err = err
-					return false
-				}
-
-			} else if node.pointer > n.reader.Metadata.NodeCount {
+		for node.pointer != n.reader.Metadata.NodeCount {
+			if node.pointer > n.reader.Metadata.NodeCount {
 				n.lastNode = node
 				return true
-			} else {
-				break
 			}
+			ipRight := make(net.IP, len(node.ip))
+			copy(ipRight, node.ip)
+			if len(ipRight) <= int(node.bit>>3) {
+				n.err = newInvalidDatabaseError(
+					"invalid search tree at %v/%v", ipRight, node.bit)
+				return false
+			}
+			ipRight[node.bit>>3] |= 1 << (7 - (node.bit % 8))
+
+			offset := node.pointer * n.reader.nodeOffsetMult
+			rightPointer := n.reader.nodeReader.readRight(offset)
+
+			node.bit++
+			n.nodes = append(n.nodes, netNode{
+				pointer: rightPointer,
+				ip:      ipRight,
+				bit:     node.bit,
+			})
+
+			node.pointer = n.reader.nodeReader.readLeft(offset)
 		}
 	}
 

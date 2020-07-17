@@ -8,7 +8,7 @@ import (
 
 	"github.com/gorilla/css/scanner"
 
-	"github.com/chris-ramon/douceur/css"
+	"github.com/aymerick/douceur/css"
 )
 
 const (
@@ -127,6 +127,7 @@ func (parser *Parser) ParseRule() (*css.Rule, error) {
 	if parser.tokenAtKeyword() {
 		return parser.parseAtRule()
 	}
+
 	return parser.parseQualifiedRule()
 }
 
@@ -161,17 +162,11 @@ func (parser *Parser) ParseDeclarations() ([]*css.Declaration, error) {
 // ParseDeclaration parses a declaration
 func (parser *Parser) ParseDeclaration() (*css.Declaration, error) {
 	result := css.NewDeclaration()
-	var (
-		curColumn int    = 0
-		curLine   int    = 0
-		curValue  string = ""
-	)
+	curValue := ""
 
 	for parser.tokenParsable() {
 		if parser.tokenChar(":") {
 			result.Property = strings.TrimSpace(curValue)
-			result.Column = curColumn
-			result.Line = curLine
 			curValue = ""
 
 			parser.shiftToken()
@@ -194,16 +189,9 @@ func (parser *Parser) ParseDeclaration() (*css.Declaration, error) {
 
 			// finished
 			break
-		} else if !parser.tokenIgnorable() {
-			token := parser.shiftToken()
-			curValue += token.Value
-			curColumn = token.Column
-			curLine = token.Line
 		} else {
 			token := parser.shiftToken()
-			if token.Type != scanner.TokenComment {
-				curValue += token.Value
-			}
+			curValue += token.Value
 		}
 	}
 
@@ -249,7 +237,7 @@ func (parser *Parser) parseAtRule() (*css.Rule, error) {
 			break
 		} else {
 			// parse prelude
-			prelude, err, _ := parser.parsePrelude()
+			prelude, err := parser.parsePrelude()
 			if err != nil {
 				return result, err
 			}
@@ -266,7 +254,6 @@ func (parser *Parser) parseAtRule() (*css.Rule, error) {
 // Parse a Qualified Rule
 func (parser *Parser) parseQualifiedRule() (*css.Rule, error) {
 	result := css.NewRule(css.QualifiedRule)
-	preludeTokens := []scanner.Token{}
 
 	for parser.tokenParsable() {
 		if parser.tokenChar("{") {
@@ -285,60 +272,21 @@ func (parser *Parser) parseQualifiedRule() (*css.Rule, error) {
 
 			// finished
 			break
-		} else if parser.tokenChar(";") {
-			errMsg := fmt.Sprintf("Unexpected ; character: %s", parser.nextToken().String())
-			return result, errors.New(errMsg)
 		} else {
 			// parse prelude
-			prelude, err, tokens := parser.parsePrelude()
+			prelude, err := parser.parsePrelude()
 			if err != nil {
 				return result, err
 			}
 
 			result.Prelude = prelude
-			preludeTokens = tokens
 		}
 	}
 
-	selectorValue := ""
-	selectorStart := true
-	var line int
-	var col int
-
-	for _, tok := range preludeTokens {
-		switch {
-		case tok.Value == ",":
-			{
-				result.Selectors = append(result.Selectors, &css.Selector{
-					Value:  strings.TrimSpace(selectorValue),
-					Line:   line,
-					Column: col,
-				})
-				selectorStart = true
-				selectorValue = ""
-			}
-		case tok.Type != scanner.TokenS && tok.Type != scanner.TokenComment:
-			{
-				selectorValue += tok.Value
-				if selectorStart {
-					line = tok.Line
-					col = tok.Column
-					selectorStart = false
-				}
-			}
-		case tok.Type == scanner.TokenS:
-			{
-				if !selectorStart {
-					selectorValue += tok.Value
-				}
-			}
-		}
+	result.Selectors = strings.Split(result.Prelude, ",")
+	for i, sel := range result.Selectors {
+		result.Selectors[i] = strings.TrimSpace(sel)
 	}
-	result.Selectors = append(result.Selectors, &css.Selector{
-		Value:  strings.TrimSpace(selectorValue),
-		Line:   line,
-		Column: col,
-	})
 
 	// log.Printf("[parsed] Rule: %s", result.String())
 
@@ -346,21 +294,19 @@ func (parser *Parser) parseQualifiedRule() (*css.Rule, error) {
 }
 
 // Parse Rule prelude
-func (parser *Parser) parsePrelude() (string, error, []scanner.Token) {
+func (parser *Parser) parsePrelude() (string, error) {
 	result := ""
-	tokens := []scanner.Token{}
 
 	for parser.tokenParsable() && !parser.tokenEndOfPrelude() {
 		token := parser.shiftToken()
 		result += token.Value
-		tokens = append(tokens, *token)
 	}
 
 	result = strings.TrimSpace(result)
 
 	// log.Printf("[parsed] prelude: %s", result)
 
-	return result, parser.err(), tokens
+	return result, parser.err()
 }
 
 // Parse BOM

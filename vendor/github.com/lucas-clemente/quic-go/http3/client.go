@@ -2,6 +2,7 @@ package http3
 
 import (
 	"bytes"
+	"context"
 	"crypto/tls"
 	"errors"
 	"fmt"
@@ -15,10 +16,6 @@ import (
 	"github.com/marten-seemann/qpack"
 )
 
-// MethodGet0RTT allows a GET request to be sent using 0-RTT.
-// Note that 0-RTT data doesn't provide replay protection.
-const MethodGet0RTT = "GET_0RTT"
-
 const defaultUserAgent = "quic-go HTTP/3"
 const defaultMaxResponseHeaderBytes = 10 * 1 << 20 // 10 MB
 
@@ -27,7 +24,7 @@ var defaultQuicConfig = &quic.Config{
 	KeepAlive:          true,
 }
 
-var dialAddr = quic.DialAddrEarly
+var dialAddr = quic.DialAddr
 
 type roundTripperOpts struct {
 	DisableCompression bool
@@ -41,7 +38,7 @@ type client struct {
 	opts    *roundTripperOpts
 
 	dialOnce     sync.Once
-	dialer       func(network, addr string, tlsCfg *tls.Config, cfg *quic.Config) (quic.EarlySession, error)
+	dialer       func(network, addr string, tlsCfg *tls.Config, cfg *quic.Config) (quic.Session, error)
 	handshakeErr error
 
 	requestWriter *requestWriter
@@ -49,7 +46,7 @@ type client struct {
 	decoder *qpack.Decoder
 
 	hostname string
-	session  quic.EarlySession
+	session  quic.Session
 
 	logger utils.Logger
 }
@@ -59,7 +56,7 @@ func newClient(
 	tlsConf *tls.Config,
 	opts *roundTripperOpts,
 	quicConfig *quic.Config,
-	dialer func(network, addr string, tlsCfg *tls.Config, cfg *quic.Config) (quic.EarlySession, error),
+	dialer func(network, addr string, tlsCfg *tls.Config, cfg *quic.Config) (quic.Session, error),
 ) *client {
 	if tlsConf == nil {
 		tlsConf = &tls.Config{}
@@ -97,7 +94,6 @@ func (c *client) dial() error {
 		return err
 	}
 
-	// run the sesssion setup using 0-RTT data
 	go func() {
 		if err := c.setupSession(); err != nil {
 			c.logger.Debugf("Setting up session failed: %s", err)
@@ -127,10 +123,7 @@ func (c *client) setupSession() error {
 }
 
 func (c *client) Close() error {
-	if c.session == nil {
-		return nil
-	}
-	return c.session.CloseWithError(quic.ErrorCode(errorNoError), "")
+	return c.session.Close()
 }
 
 func (c *client) maxHeaderBytes() uint64 {
@@ -157,19 +150,7 @@ func (c *client) RoundTrip(req *http.Request) (*http.Response, error) {
 		return nil, c.handshakeErr
 	}
 
-	// Immediately send out this request, if this is a 0-RTT request.
-	if req.Method == MethodGet0RTT {
-		req.Method = http.MethodGet
-	} else {
-		// wait for the handshake to complete
-		select {
-		case <-c.session.HandshakeComplete().Done():
-		case <-req.Context().Done():
-			return nil, req.Context().Err()
-		}
-	}
-
-	str, err := c.session.OpenStreamSync(req.Context())
+	str, err := c.session.OpenStreamSync(context.Background())
 	if err != nil {
 		return nil, err
 	}

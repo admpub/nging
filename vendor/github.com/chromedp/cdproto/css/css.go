@@ -804,6 +804,30 @@ func (p *TakeCoverageDeltaParams) Do(ctx context.Context) (coverage []*RuleUsage
 	return res.Coverage, res.Timestamp, nil
 }
 
+// SetLocalFontsEnabledParams enables/disables rendering of local CSS fonts
+// (enabled by default).
+type SetLocalFontsEnabledParams struct {
+	Enabled bool `json:"enabled"` // Whether rendering of local fonts is enabled.
+}
+
+// SetLocalFontsEnabled enables/disables rendering of local CSS fonts
+// (enabled by default).
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/CSS#method-setLocalFontsEnabled
+//
+// parameters:
+//   enabled - Whether rendering of local fonts is enabled.
+func SetLocalFontsEnabled(enabled bool) *SetLocalFontsEnabledParams {
+	return &SetLocalFontsEnabledParams{
+		Enabled: enabled,
+	}
+}
+
+// Do executes CSS.setLocalFontsEnabled against the provided context.
+func (p *SetLocalFontsEnabledParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetLocalFontsEnabled, p, nil)
+}
+
 // Command names.
 const (
 	CommandAddRule                          = "CSS.addRule"
@@ -828,4 +852,5 @@ const (
 	CommandStartRuleUsageTracking           = "CSS.startRuleUsageTracking"
 	CommandStopRuleUsageTracking            = "CSS.stopRuleUsageTracking"
 	CommandTakeCoverageDelta                = "CSS.takeCoverageDelta"
+	CommandSetLocalFontsEnabled             = "CSS.setLocalFontsEnabled"
 )

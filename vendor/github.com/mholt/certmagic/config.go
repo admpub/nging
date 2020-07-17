@@ -15,16 +15,19 @@
 package certmagic
 
 import (
+	"context"
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
 	"log"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/go-acme/lego/v3/certcrypto"
 	"github.com/go-acme/lego/v3/certificate"
 	"github.com/go-acme/lego/v3/challenge"
+	"github.com/go-acme/lego/v3/challenge/dns01"
 	"github.com/go-acme/lego/v3/challenge/tlsalpn01"
 	"github.com/go-acme/lego/v3/lego"
 )
@@ -54,16 +57,6 @@ type Config struct {
 	// How long before expiration to renew certificates
 	RenewDurationBefore time.Duration
 
-	// How long before expiration to require a renewed
-	// certificate when in interactive mode, like when
-	// the program is first starting up (see
-	// mholt/caddy#1680). A wider window between
-	// RenewDurationBefore and this value will suppress
-	// errors under duress (bad) but hopefully this duration
-	// will give it enough time for the blockage to be
-	// relieved.
-	RenewDurationBeforeAtStartup time.Duration
-
 	// An optional event callback clients can set
 	// to subscribe to certain things happening
 	// internally by this config; invocations are
@@ -90,6 +83,11 @@ type Config struct {
 	// The DNS provider to use when solving the
 	// ACME DNS challenge
 	DNSProvider challenge.Provider
+
+	// The ChallengeOption struct to provide
+	// custom precheck or name resolution options
+	// for DNS challenge validation and execution
+	DNSChallengeOption dns01.ChallengeOption
 
 	// The type of key to use when generating
 	// certificates
@@ -242,9 +240,6 @@ func newWithCache(certCache *Cache, cfg Config) *Config {
 	if cfg.RenewDurationBefore == 0 {
 		cfg.RenewDurationBefore = Default.RenewDurationBefore
 	}
-	if cfg.RenewDurationBeforeAtStartup == 0 {
-		cfg.RenewDurationBeforeAtStartup = Default.RenewDurationBeforeAtStartup
-	}
 	if cfg.OnEvent == nil {
 		cfg.OnEvent = Default.OnEvent
 	}
@@ -259,6 +254,9 @@ func newWithCache(certCache *Cache, cfg Config) *Config {
 	}
 	if cfg.DNSProvider == nil {
 		cfg.DNSProvider = Default.DNSProvider
+	}
+	if cfg.DNSChallengeOption == nil {
+		cfg.DNSChallengeOption = Default.DNSChallengeOption
 	}
 	if cfg.KeyType == "" {
 		cfg.KeyType = Default.KeyType
@@ -297,7 +295,7 @@ func newWithCache(certCache *Cache, cfg Config) *Config {
 	return &cfg
 }
 
-// Manage causes the certificates for domainNames to be managed
+// ManageSync causes the certificates for domainNames to be managed
 // according to cfg. If cfg.OnDemand is not nil, then this simply
 // whitelists the domain names and defers the certificate operations
 // to when they are needed. Otherwise, the certificates for each
@@ -311,12 +309,50 @@ func newWithCache(certCache *Cache, cfg Config) *Config {
 // not overwrite an existing DecisionFunc, nor will it overwrite
 // its decision; i.e. the implicit whitelist is only used if no
 // DecisionFunc is set.
-func (cfg *Config) Manage(domainNames []string) error {
+//
+// This method is synchronous, meaning that certificates for all
+// domainNames must be successfully obtained (or renewed) before
+// it returns. It returns immediately on the first error for any
+// of the given domainNames. This behavior is recommended for
+// interactive use (i.e. when an administrator is present) so
+// that errors can be reported and fixed immediately.
+func (cfg *Config) ManageSync(domainNames []string) error {
+	return cfg.manageAll(nil, domainNames, false)
+}
+
+// ManageAsync is the same as ManageSync, except that ACME
+// operations are performed asynchronously (in the background).
+// This method returns before certificates are ready. It is
+// crucial that the administrator monitors the logs and is
+// notified of any errors so that corrective action can be
+// taken as soon as possible. Any errors returned from this
+// method occurred before ACME transactions started.
+//
+// As long as logs are monitored, this method is typically
+// recommended for non-interactive environments.
+//
+// If there are failures loading, obtaining, or renewing a
+// certificate, it will be retried with exponential backoff
+// for up to about 1 day, with a maximum interval of about
+// 1 hour. Cancelling ctx will cancel retries and shut down
+// any goroutines spawned by ManageAsync.
+func (cfg *Config) ManageAsync(ctx context.Context, domainNames []string) error {
+	return cfg.manageAll(ctx, domainNames, true)
+}
+
+func (cfg *Config) manageAll(ctx context.Context, domainNames []string, async bool) error {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+
+	// first, check all domains for validity
 	for _, domainName := range domainNames {
 		if !HostQualifies(domainName) {
 			return fmt.Errorf("name does not qualify for automatic certificate management: %s", domainName)
 		}
+	}
 
+	for _, domainName := range domainNames {
 		// if on-demand is configured, defer obtain and renew operations
 		if cfg.OnDemand != nil {
 			if !cfg.OnDemand.whitelistContains(domainName) {
@@ -324,32 +360,70 @@ func (cfg *Config) Manage(domainNames []string) error {
 			}
 			continue
 		}
-
-		// try loading an existing certificate; if it doesn't
-		// exist yet, obtain one and try loading it again
-		cert, err := cfg.CacheManagedCertificate(domainName)
-		if err != nil {
-			if _, ok := err.(ErrNotExist); ok {
-				// if it doesn't exist, get it, then try loading it again
-				err := cfg.ObtainCert(domainName, false)
-				if err != nil {
-					return fmt.Errorf("%s: obtaining certificate: %v", domainName, err)
+		if async {
+			go func(domainName string) {
+				var wait time.Duration
+				// the first 16 iterations ramp up the wait interval to
+				// ~24h, and the remaining iterations retry at that
+				// maximum backoff until giving up after ~14 days total.
+				const maxIter = 29
+				for i := 1; i <= maxIter; i++ {
+					select {
+					case <-ctx.Done():
+						log.Printf("[ERROR][%s] Context cancelled", domainName)
+						return
+					case <-time.After(wait):
+						err := cfg.manageOne(domainName)
+						if err == nil {
+							return
+						}
+						log.Printf("[ERROR] %s - backing off and retrying (attempt %d/%d)...", strings.TrimSpace(err.Error()), i, maxIter)
+					}
+					// retry with exponential backoff
+					if wait == 0 {
+						// this starting interval (~2.6 seconds) doubles nicely to ~24h
+						wait = 2636719 * time.Microsecond
+					} else if wait < 24*time.Hour {
+						wait *= 2
+					}
 				}
-				cert, err = cfg.CacheManagedCertificate(domainName)
-				if err != nil {
-					return fmt.Errorf("%s: caching certificate after obtaining it: %v", domainName, err)
-				}
-				continue
-			}
-			return fmt.Errorf("%s: caching certificate: %v", domainName, err)
-		}
-
-		// for existing certificates, make sure it is renewed
-		if cert.NeedsRenewal(cfg) {
-			err := cfg.RenewCert(domainName, false)
+			}(domainName)
+		} else {
+			err := cfg.manageOne(domainName)
 			if err != nil {
-				return fmt.Errorf("%s: renewing certificate: %v", domainName, err)
+				return err
 			}
+		}
+	}
+
+	return nil
+}
+
+func (cfg *Config) manageOne(domainName string) error {
+	// try loading an existing certificate; if it doesn't
+	// exist yet, obtain one and try loading it again
+	cert, err := cfg.CacheManagedCertificate(domainName)
+	if err != nil {
+		if _, ok := err.(ErrNotExist); ok {
+			// if it doesn't exist, get it, then try loading it again
+			err := cfg.ObtainCert(domainName, false)
+			if err != nil {
+				return fmt.Errorf("%s: obtaining certificate: %v", domainName, err)
+			}
+			cert, err = cfg.CacheManagedCertificate(domainName)
+			if err != nil {
+				return fmt.Errorf("%s: caching certificate after obtaining it: %v", domainName, err)
+			}
+			return nil
+		}
+		return fmt.Errorf("%s: caching certificate: %v", domainName, err)
+	}
+
+	// for existing certificates, make sure it is renewed
+	if cert.NeedsRenewal(cfg) {
+		err := cfg.RenewCert(domainName, false)
+		if err != nil {
+			return fmt.Errorf("%s: renewing certificate: %v", domainName, err)
 		}
 	}
 

@@ -1,6 +1,6 @@
 /*
- * MinIO Go Library for Amazon S3 Compatible Cloud Storage
- * Copyright 2015-2017 MinIO, Inc.
+ * Minio Go Library for Amazon S3 Compatible Cloud Storage
+ * Copyright 2015-2017 Minio, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,14 +29,11 @@ var awsS3EndpointMap = map[string]string{
 	"eu-west-3":      "s3.dualstack.eu-west-3.amazonaws.com",
 	"eu-central-1":   "s3.dualstack.eu-central-1.amazonaws.com",
 	"eu-north-1":     "s3.dualstack.eu-north-1.amazonaws.com",
-	"ap-east-1":      "s3.dualstack.ap-east-1.amazonaws.com",
 	"ap-south-1":     "s3.dualstack.ap-south-1.amazonaws.com",
 	"ap-southeast-1": "s3.dualstack.ap-southeast-1.amazonaws.com",
 	"ap-southeast-2": "s3.dualstack.ap-southeast-2.amazonaws.com",
 	"ap-northeast-1": "s3.dualstack.ap-northeast-1.amazonaws.com",
 	"ap-northeast-2": "s3.dualstack.ap-northeast-2.amazonaws.com",
-	"ap-northeast-3": "s3.dualstack.ap-northeast-3.amazonaws.com",
-	"me-south-1":     "s3.dualstack.me-south-1.amazonaws.com",
 	"sa-east-1":      "s3.dualstack.sa-east-1.amazonaws.com",
 	"us-gov-west-1":  "s3.dualstack.us-gov-west-1.amazonaws.com",
 	"us-gov-east-1":  "s3.dualstack.us-gov-east-1.amazonaws.com",

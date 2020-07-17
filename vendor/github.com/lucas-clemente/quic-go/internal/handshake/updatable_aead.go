@@ -12,7 +12,6 @@ import (
 	"github.com/lucas-clemente/quic-go/internal/congestion"
 	"github.com/lucas-clemente/quic-go/internal/qerr"
 	"github.com/lucas-clemente/quic-go/internal/utils"
-	"github.com/lucas-clemente/quic-go/qlog"
 
 	"github.com/lucas-clemente/quic-go/internal/protocol"
 	"github.com/marten-seemann/qtls"
@@ -48,7 +47,6 @@ type updatableAEAD struct {
 
 	keyPhase          protocol.KeyPhase
 	largestAcked      protocol.PacketNumber
-	firstPacketNumber protocol.PacketNumber
 	keyUpdateInterval uint64
 
 	// Time when the keys should be dropped. Keys are dropped on the next call to Open().
@@ -74,8 +72,7 @@ type updatableAEAD struct {
 
 	rttStats *congestion.RTTStats
 
-	qlogger qlog.Tracer
-	logger  utils.Logger
+	logger utils.Logger
 
 	// use a single slice to avoid allocations
 	nonceBuf []byte
@@ -84,15 +81,13 @@ type updatableAEAD struct {
 var _ ShortHeaderOpener = &updatableAEAD{}
 var _ ShortHeaderSealer = &updatableAEAD{}
 
-func newUpdatableAEAD(rttStats *congestion.RTTStats, qlogger qlog.Tracer, logger utils.Logger) *updatableAEAD {
+func newUpdatableAEAD(rttStats *congestion.RTTStats, logger utils.Logger) *updatableAEAD {
 	return &updatableAEAD{
-		firstPacketNumber:       protocol.InvalidPacketNumber,
 		largestAcked:            protocol.InvalidPacketNumber,
 		firstRcvdWithCurrentKey: protocol.InvalidPacketNumber,
 		firstSentWithCurrentKey: protocol.InvalidPacketNumber,
 		keyUpdateInterval:       keyUpdateInterval,
 		rttStats:                rttStats,
-		qlogger:                 qlogger,
 		logger:                  logger,
 	}
 }
@@ -104,7 +99,7 @@ func (a *updatableAEAD) rollKeys(now time.Time) {
 	a.numRcvdWithCurrentKey = 0
 	a.numSentWithCurrentKey = 0
 	a.prevRcvAEAD = a.rcvAEAD
-	a.prevRcvAEADExpiry = now.Add(3 * a.rttStats.PTO(true))
+	a.prevRcvAEADExpiry = now.Add(3 * a.rttStats.PTO())
 	a.rcvAEAD = a.nextRcvAEAD
 	a.sendAEAD = a.nextSendAEAD
 
@@ -115,7 +110,7 @@ func (a *updatableAEAD) rollKeys(now time.Time) {
 }
 
 func (a *updatableAEAD) getNextTrafficSecret(hash crypto.Hash, ts []byte) []byte {
-	return hkdfExpandLabel(hash, ts, []byte{}, "quic ku", hash.Size())
+	return qtls.HkdfExpandLabel(hash, ts, []byte{}, "traffic upd", hash.Size())
 }
 
 // For the client, this function is called before SetWriteKey.
@@ -160,7 +155,7 @@ func (a *updatableAEAD) Open(dst, src []byte, rcvTime time.Time, pn protocol.Pac
 				// This can only occur when the first packet received has key phase 1.
 				// This is an error, since the key phase starts at 0,
 				// and peers are only allowed to update keys after the handshake is confirmed.
-				return nil, qerr.NewError(qerr.ProtocolViolation, "wrong initial keyphase")
+				return nil, qerr.Error(qerr.ProtocolViolation, "wrong initial keyphase")
 			}
 			if a.prevRcvAEAD == nil {
 				return nil, ErrKeysDropped
@@ -179,13 +174,10 @@ func (a *updatableAEAD) Open(dst, src []byte, rcvTime time.Time, pn protocol.Pac
 		}
 		// Opening succeeded. Check if the peer was allowed to update.
 		if a.firstSentWithCurrentKey == protocol.InvalidPacketNumber {
-			return nil, qerr.NewError(qerr.ProtocolViolation, "keys updated too quickly")
+			return nil, qerr.Error(qerr.ProtocolViolation, "keys updated too quickly")
 		}
 		a.rollKeys(rcvTime)
 		a.logger.Debugf("Peer updated keys to %s", a.keyPhase)
-		if a.qlogger != nil {
-			a.qlogger.UpdatedKey(a.keyPhase, true)
-		}
 		a.firstRcvdWithCurrentKey = pn
 		return dec, err
 	}
@@ -206,9 +198,6 @@ func (a *updatableAEAD) Open(dst, src []byte, rcvTime time.Time, pn protocol.Pac
 func (a *updatableAEAD) Seal(dst, src []byte, pn protocol.PacketNumber, ad []byte) []byte {
 	if a.firstSentWithCurrentKey == protocol.InvalidPacketNumber {
 		a.firstSentWithCurrentKey = pn
-	}
-	if a.firstPacketNumber == protocol.InvalidPacketNumber {
-		a.firstPacketNumber = pn
 	}
 	a.numSentWithCurrentKey++
 	binary.BigEndian.PutUint64(a.nonceBuf[len(a.nonceBuf)-8:], uint64(pn))
@@ -244,9 +233,6 @@ func (a *updatableAEAD) shouldInitiateKeyUpdate() bool {
 
 func (a *updatableAEAD) KeyPhase() protocol.KeyPhaseBit {
 	if a.shouldInitiateKeyUpdate() {
-		if a.qlogger != nil {
-			a.qlogger.UpdatedKey(a.keyPhase, false)
-		}
 		a.rollKeys(time.Now())
 	}
 	return a.keyPhase.Bit()
@@ -262,8 +248,4 @@ func (a *updatableAEAD) EncryptHeader(sample []byte, firstByte *byte, hdrBytes [
 
 func (a *updatableAEAD) DecryptHeader(sample []byte, firstByte *byte, hdrBytes []byte) {
 	a.headerDecrypter.DecryptHeader(sample, firstByte, hdrBytes)
-}
-
-func (a *updatableAEAD) FirstPacketNumber() protocol.PacketNumber {
-	return a.firstPacketNumber
 }

@@ -37,17 +37,17 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 			ID:    "CommitsTitle",
 			Other: "Commits",
 		}, &i18n.Message{
-			ID:    "CommitsDiffTitle",
-			Other: "Commits (specific diff mode)",
-		}, &i18n.Message{
-			ID:    "CommitsDiff",
-			Other: "select commit to diff with another commit",
-		}, &i18n.Message{
 			ID:    "StashTitle",
 			Other: "Stash",
 		}, &i18n.Message{
-			ID:    "StagingMainTitle",
-			Other: `Stage Lines/Hunks`,
+			ID:    "UnstagedChanges",
+			Other: `Unstaged Changes`,
+		}, &i18n.Message{
+			ID:    "StagedChanges",
+			Other: `Staged Changes`,
+		}, &i18n.Message{
+			ID:    "PatchBuildingMainTitle",
+			Other: `Add Lines/Hunks To Patch`,
 		}, &i18n.Message{
 			ID:    "MergingMainTitle",
 			Other: "Resolve merge conflicts",
@@ -106,9 +106,6 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 			ID:    "execute",
 			Other: "execute",
 		}, &i18n.Message{
-			ID:    "stashFiles",
-			Other: "stash files",
-		}, &i18n.Message{
 			ID:    "open",
 			Other: "open",
 		}, &i18n.Message{
@@ -133,9 +130,6 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 			ID:    "pull",
 			Other: "pull",
 		}, &i18n.Message{
-			ID:    "addPatch",
-			Other: "add patch",
-		}, &i18n.Message{
 			ID:    "edit",
 			Other: "edit",
 		}, &i18n.Message{
@@ -148,6 +142,9 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 			ID:    "resolveMergeConflicts",
 			Other: "resolve merge conflicts",
 		}, &i18n.Message{
+			ID:    "MergeConflictsTitle",
+			Other: "Merge Conflicts",
+		}, &i18n.Message{
 			ID:    "checkout",
 			Other: "checkout",
 		}, &i18n.Message{
@@ -159,9 +156,6 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 		}, &i18n.Message{
 			ID:    "CannotGitAdd",
 			Other: "Cannot git add --patch untracked files",
-		}, &i18n.Message{
-			ID:    "CantIgnoreTrackFiles",
-			Other: "Cannot ignore tracked files",
 		}, &i18n.Message{
 			ID:    "NoStagedFilesToCommit",
 			Other: "There are no staged files to commit",
@@ -218,7 +212,7 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 			Other: "{{.selectedBranchName}} is not fully merged. Are you sure you want to delete it?",
 		}, &i18n.Message{
 			ID:    "rebaseBranch",
-			Other: "rebase branch",
+			Other: "rebase checked-out branch onto this branch",
 		}, &i18n.Message{
 			ID:    "CantRebaseOntoSelf",
 			Other: "You cannot rebase a branch onto itself",
@@ -361,6 +355,12 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 			ID:    "undo",
 			Other: "undo",
 		}, &i18n.Message{
+			ID:    "undoReflog",
+			Other: "undo (via reflog) (experimental)",
+		}, &i18n.Message{
+			ID:    "redoReflog",
+			Other: "redo (via reflog) (experimental)",
+		}, &i18n.Message{
 			ID:    "pop",
 			Other: "pop",
 		}, &i18n.Message{
@@ -379,6 +379,18 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 			ID:    "SureDropStashEntry",
 			Other: "Are you sure you want to drop this stash entry?",
 		}, &i18n.Message{
+			ID:    "StashPop",
+			Other: "Stash pop",
+		}, &i18n.Message{
+			ID:    "SurePopStashEntry",
+			Other: "Are you sure you want to pop this stash entry?",
+		}, &i18n.Message{
+			ID:    "StashApply",
+			Other: "Stash apply",
+		}, &i18n.Message{
+			ID:    "SureApplyStashEntry",
+			Other: "Are you sure you want to apply this stash entry?",
+		}, &i18n.Message{
 			ID:    "NoStashTo",
 			Other: "No stash to {{.method}}",
 		}, &i18n.Message{
@@ -396,9 +408,6 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 		}, &i18n.Message{
 			ID:    "newFocusedViewIs",
 			Other: "new focused view is {{.newFocusedView}}",
-		}, &i18n.Message{
-			ID:    "CantCloseConfirmationPrompt",
-			Other: "Could not close confirmation prompt: {{.error}}",
 		}, &i18n.Message{
 			ID:    "NoChangedFiles",
 			Other: "No changed files",
@@ -438,6 +447,19 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 		}, &i18n.Message{
 			ID:    "AnonymousReportingPrompt",
 			Other: "Would you like to enable anonymous reporting data to help improve lazygit? (enter/esc)",
+		}, &i18n.Message{
+			ID:    "ShamelessSelfPromotionTitle",
+			Other: "Shameless Self Promotion",
+		}, &i18n.Message{
+			ID: "ShamelessSelfPromotionMessage",
+			Other: `Thanks for using lazygit! Three things to share with you:
+
+1) lazygit now has basic mouse support!
+
+2) If you want to learn about lazygit's features, watch this vid:
+   https://youtu.be/CPLdltN7wgE
+
+3) Github are now matching any donations dollar-for-dollar for the next 12 months, so if you've been tossing up over whether to click the donate link in the bottom right corner, now is the time!`,
 		}, &i18n.Message{
 			ID:    "GitconfigParseErr",
 			Other: `Gogit failed to parse your gitconfig file due to the presence of unquoted '\' characters. Removing these should fix the issue.`,
@@ -485,15 +507,35 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 			Other: `stage individual hunks/lines`,
 		}, &i18n.Message{
 			ID:    "FileStagingRequirements",
-			Other: `Can only stage individual lines for tracked files with unstaged changes`,
+			Other: `Can only stage individual lines for tracked files`,
 		}, &i18n.Message{
-			ID:    "StageHunk",
-			Other: `stage hunk`,
+			ID:    "SelectHunk",
+			Other: `select hunk`,
 		}, &i18n.Message{
-			ID:    "StageLine",
-			Other: `stage line`,
+			ID:    "StageSelection",
+			Other: `toggle line staged / unstaged`,
 		}, &i18n.Message{
-			ID:    "EscapeStaging",
+			ID:    "ResetSelection",
+			Other: `delete change (git reset)`,
+		}, &i18n.Message{
+			ID:    "ToggleDragSelect",
+			Other: `toggle drag select`,
+		}, &i18n.Message{
+			ID:    "ToggleSelectHunk",
+			Other: `toggle select hunk`,
+		}, &i18n.Message{
+			ID:    "ToggleSelectionForPatch",
+			Other: `add/remove line(s) to patch`,
+		},
+		&i18n.Message{
+			ID:    "TogglePanel",
+			Other: `switch to other panel`,
+		},
+		&i18n.Message{
+			ID:    "CantStageStaged",
+			Other: `You can't stage an already staged change!`,
+		}, &i18n.Message{
+			ID:    "ReturnToFilesPanel",
 			Other: `return to files panel`,
 		}, &i18n.Message{
 			ID:    "CantFindHunks",
@@ -509,7 +551,7 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 			Other: "fetching and fast-forwarding {{.from}} -> {{.to}} ...",
 		}, &i18n.Message{
 			ID:    "FoundConflicts",
-			Other: "Damn, conflicts! To abort press 'esc', otherwise press 'enter'",
+			Other: "Conflicts! To abort press 'esc', otherwise press 'enter'",
 		}, &i18n.Message{
 			ID:    "FoundConflictsTitle",
 			Other: "Auto-merge failed",
@@ -537,6 +579,54 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 		}, &i18n.Message{
 			ID:    "RebaseOptionsTitle",
 			Other: "Rebase Options",
+		}, &i18n.Message{
+			ID:    "CommitMessageTitle",
+			Other: "Commit Message",
+		}, &i18n.Message{
+			ID:    "Local-BranchesTitle",
+			Other: "Branches Tab",
+		}, &i18n.Message{
+			ID:    "SearchTitle",
+			Other: "Search",
+		}, &i18n.Message{
+			ID:    "TagsTitle",
+			Other: "Tags Tab",
+		}, &i18n.Message{
+			ID:    "Branch-CommitsTitle",
+			Other: "Commits Tab",
+		}, &i18n.Message{
+			ID:    "MenuTitle",
+			Other: "Menu",
+		}, &i18n.Message{
+			ID:    "RemotesTitle",
+			Other: "Remotes Tab",
+		}, &i18n.Message{
+			ID:    "CredentialsTitle",
+			Other: "Credentials",
+		}, &i18n.Message{
+			ID:    "Remote-BranchesTitle",
+			Other: "Remote Branches (in Remotes tab)",
+		}, &i18n.Message{
+			ID:    "Patch-BuildingTitle",
+			Other: "Patch Building",
+		}, &i18n.Message{
+			ID:    "InformationTitle",
+			Other: "Information",
+		}, &i18n.Message{
+			ID:    "SecondaryTitle",
+			Other: "Secondary",
+		}, &i18n.Message{
+			ID:    "Reflog-CommitsTitle",
+			Other: "Reflog Tab",
+		}, &i18n.Message{
+			ID:    "Title",
+			Other: "Title",
+		}, &i18n.Message{
+			ID:    "GlobalTitle",
+			Other: "Global Keybindings",
+		}, &i18n.Message{
+			ID:    "MerginTitle",
+			Other: "Mergin",
 		}, &i18n.Message{
 			ID:    "ConflictsResolved",
 			Other: "all merge conflicts resolved. Continue?",
@@ -589,6 +679,9 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 			ID:    "CannotRebaseOntoFirstCommit",
 			Other: "You cannot interactive rebase onto the first commit",
 		}, &i18n.Message{
+			ID:    "CannotSquashOntoSecondCommit",
+			Other: "You cannot squash/fixup onto the second commit",
+		}, &i18n.Message{
 			ID:    "Donate",
 			Other: "Donate",
 		}, &i18n.Message{
@@ -621,6 +714,12 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 		}, &i18n.Message{
 			ID:    "ScrollUp",
 			Other: "scroll up",
+		}, &i18n.Message{
+			ID:    "scrollUpMainPanel",
+			Other: "scroll up main panel",
+		}, &i18n.Message{
+			ID:    "scrollDownMainPanel",
+			Other: "scroll down main panel",
 		}, &i18n.Message{
 			ID:    "AmendCommitTitle",
 			Other: "Amend Commit",
@@ -655,6 +754,15 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 			ID:    "CherryPickingStatus",
 			Other: "cherry-picking",
 		}, &i18n.Message{
+			ID:    "UndoingStatus",
+			Other: "undoing",
+		}, &i18n.Message{
+			ID:    "RedoingStatus",
+			Other: "redoing",
+		}, &i18n.Message{
+			ID:    "CheckingOutStatus",
+			Other: "checking out",
+		}, &i18n.Message{
 			ID:    "CommitFiles",
 			Other: "Commit files",
 		}, &i18n.Message{
@@ -662,7 +770,7 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 			Other: "view commit's files",
 		}, &i18n.Message{
 			ID:    "CommitFilesTitle",
-			Other: "Commit files",
+			Other: "Commit Files",
 		}, &i18n.Message{
 			ID:    "goBack",
 			Other: "go back",
@@ -721,6 +829,9 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 			ID:    "hardReset",
 			Other: "hard reset",
 		}, &i18n.Message{
+			ID:    "hardResetUpstream",
+			Other: "hard reset to upstream branch",
+		}, &i18n.Message{
 			ID:    "viewResetOptions",
 			Other: `view reset options`,
 		}, &i18n.Message{
@@ -747,6 +858,300 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 		}, &i18n.Message{
 			ID:    "CustomCommand",
 			Other: "Custom Command:",
+		}, &i18n.Message{
+			ID:    "commitChangesWithoutHook",
+			Other: "commit changes without pre-commit hook",
+		}, &i18n.Message{
+			ID:    "SkipHookPrefixNotConfigured",
+			Other: "You have not configured a commit message prefix for skipping hooks. Set `git.skipHookPrefix = 'WIP'` in your config",
+		}, &i18n.Message{
+			ID:    "resetTo",
+			Other: `reset to`,
+		}, &i18n.Message{
+			ID:    "pressEnterToReturn",
+			Other: "Press enter to return to lazygit",
+		}, &i18n.Message{
+			ID:    "viewStashOptions",
+			Other: "view stash options",
+		}, &i18n.Message{
+			ID:    "stashAllChanges",
+			Other: "stash changes",
+		}, &i18n.Message{
+			ID:    "stashStagedChanges",
+			Other: "stash staged changes",
+		}, &i18n.Message{
+			ID:    "stashOptions",
+			Other: "Stash options",
+		}, &i18n.Message{
+			ID:    "notARepository",
+			Other: "Error: must be run inside a git repository",
+		}, &i18n.Message{
+			ID:    "jump",
+			Other: "jump to panel",
+		}, &i18n.Message{
+			ID:    "DiscardPatch",
+			Other: "Discard Patch",
+		}, &i18n.Message{
+			ID:    "DiscardPatchConfirm",
+			Other: "You can only build a patch from one commit at a time. Discard current patch?",
+		}, &i18n.Message{
+			ID:    "CantPatchWhileRebasingError",
+			Other: "You cannot build a patch or run patch commands while in a merging or rebasing state",
+		}, &i18n.Message{
+			ID:    "toggleAddToPatch",
+			Other: "toggle file included in patch",
+		}, &i18n.Message{
+			ID:    "ViewPatchOptions",
+			Other: "view custom patch options",
+		}, &i18n.Message{
+			ID:    "PatchOptionsTitle",
+			Other: "Patch Options",
+		}, &i18n.Message{
+			ID:    "NoPatchError",
+			Other: "No patch created yet. To start building a patch, use 'space' on a commit file or enter to add specific lines",
+		}, &i18n.Message{
+			ID:    "enterFile",
+			Other: "enter file to add selected lines to the patch",
+		}, &i18n.Message{
+			ID:    "ExitLineByLineMode",
+			Other: `exit line-by-line mode`,
+		}, &i18n.Message{
+			ID:    "EnterUpstream",
+			Other: `Enter upstream as '<remote> <branchname>'`,
+		}, &i18n.Message{
+			ID:    "EnterUpstreamWithSlash",
+			Other: `Enter upstream as '<remote>/<branchname>'`,
+		}, &i18n.Message{
+			ID:    "notTrackingRemote",
+			Other: "(not tracking any remote)",
+		}, &i18n.Message{
+			ID:    "ReturnToRemotesList",
+			Other: `return to remotes list`,
+		}, &i18n.Message{
+			ID:    "addNewRemote",
+			Other: `add new remote`,
+		}, &i18n.Message{
+			ID:    "newRemoteName",
+			Other: `New remote name:`,
+		}, &i18n.Message{
+			ID:    "newRemoteUrl",
+			Other: `New remote url:`,
+		}, &i18n.Message{
+			ID:    "editRemoteName",
+			Other: `Enter updated remote name for {{ .remoteName }}:`,
+		}, &i18n.Message{
+			ID:    "editRemoteUrl",
+			Other: `Enter updated remote url for {{ .remoteName }}:`,
+		}, &i18n.Message{
+			ID:    "removeRemote",
+			Other: `remove remote`,
+		}, &i18n.Message{
+			ID:    "removeRemotePrompt",
+			Other: "Are you sure you want to remove remote",
+		}, &i18n.Message{
+			ID:    "DeleteRemoteBranch",
+			Other: "Delete Remote Branch",
+		}, &i18n.Message{
+			ID:    "DeleteRemoteBranchMessage",
+			Other: "Are you sure you want to delete remote branch",
+		}, &i18n.Message{
+			ID:    "setUpstream",
+			Other: "set as upstream of checked-out branch",
+		}, &i18n.Message{
+			ID:    "SetUpstreamTitle",
+			Other: "Set upstream branch",
+		}, &i18n.Message{
+			ID:    "SetUpstreamMessage",
+			Other: "Are you sure you want to set the upstream branch of '{{.checkedOut}}' to '{{.selected}}'",
+		}, &i18n.Message{
+			ID:    "editRemote",
+			Other: "edit remote",
+		}, &i18n.Message{
+			ID:    "tagCommit",
+			Other: "tag commit",
+		}, &i18n.Message{
+			ID:    "TagNameTitle",
+			Other: "Tag name:",
+		}, &i18n.Message{
+			ID:    "deleteTag",
+			Other: "delete tag",
+		}, &i18n.Message{
+			ID:    "DeleteTagTitle",
+			Other: "Delete tag",
+		}, &i18n.Message{
+			ID:    "DeleteTagPrompt",
+			Other: "Are you sure you want to delete tag '{{.tagName}}'?",
+		}, &i18n.Message{
+			ID:    "PushTagTitle",
+			Other: "remote to push tag '{{.tagName}}' to:",
+		}, &i18n.Message{
+			ID:    "pushTag",
+			Other: "push tag",
+		}, &i18n.Message{
+			ID:    "createTag",
+			Other: "create tag",
+		}, &i18n.Message{
+			ID:    "CreateTagTitle",
+			Other: "Tag name:",
+		}, &i18n.Message{
+			ID:    "fetchRemote",
+			Other: "fetch remote",
+		}, &i18n.Message{
+			ID:    "FetchingRemoteStatus",
+			Other: "fetching remote",
+		}, &i18n.Message{
+			ID:    "checkoutCommit",
+			Other: "checkout commit",
+		}, &i18n.Message{
+			ID:    "SureCheckoutThisCommit",
+			Other: "Are you sure you want to checkout this commit?",
+		}, &i18n.Message{
+			ID:    "gitFlowOptions",
+			Other: "show git-flow options",
+		}, &i18n.Message{
+			ID:    "NotAGitFlowBranch",
+			Other: "This does not seem to be a git flow branch",
+		}, &i18n.Message{
+			ID:    "NewBranchNamePrompt",
+			Other: "new {{.branchType}} name:",
+		}, &i18n.Message{
+			ID:    "IgnoreTracked",
+			Other: "Ignore tracked file",
+		}, &i18n.Message{
+			ID:    "IgnoreTrackedPrompt",
+			Other: "Are you sure you want to ignore a tracked file?",
+		}, &i18n.Message{
+			ID:    "viewResetToUpstreamOptions",
+			Other: "view upstream reset options",
+		}, &i18n.Message{
+			ID:    "nextScreenMode",
+			Other: "next screen mode (normal/half/fullscreen)",
+		}, &i18n.Message{
+			ID:    "prevScreenMode",
+			Other: "prev screen mode",
+		}, &i18n.Message{
+			ID:    "startSearch",
+			Other: "start search",
+		}, &i18n.Message{
+			ID:    "Panel",
+			Other: "Panel",
+		}, &i18n.Message{
+			ID:    "Keybindings",
+			Other: "Keybindings",
+		}, &i18n.Message{
+			ID:    "renameBranch",
+			Other: "rename branch",
+		}, &i18n.Message{
+			ID:    "NewBranchNamePrompt",
+			Other: "Enter new branch name for branch",
+		}, &i18n.Message{
+			ID:    "RenameBranchWarning",
+			Other: "This branch is tracking a remote. This action will only rename the local branch name, not the name of the remote branch. Continue?",
+		}, &i18n.Message{
+			ID:    "openMenu",
+			Other: "open menu",
+		}, &i18n.Message{
+			ID:    "closeMenu",
+			Other: "close menu",
+		}, &i18n.Message{
+			ID:    "resetCherryPick",
+			Other: "reset cherry-picked (copied) commits selection",
+		}, &i18n.Message{
+			ID:    "nextTab",
+			Other: "next tab",
+		}, &i18n.Message{
+			ID:    "prevTab",
+			Other: "previous tab",
+		}, &i18n.Message{
+			ID:    "cantUndoWhileRebasing",
+			Other: "Can't undo while rebasing",
+		}, &i18n.Message{
+			ID:    "cantRedoWhileRebasing",
+			Other: "Can't redo while rebasing",
+		}, &i18n.Message{
+			ID:    "MustStashWarning",
+			Other: "Pulling a patch out into the index requires stashing and unstashing your changes. If something goes wrong, you'll be able to access your files from the stash. Continue?",
+		}, &i18n.Message{
+			ID:    "MustStashTitle",
+			Other: "Must stash",
+		}, &i18n.Message{
+			ID:    "ConfirmationTitle",
+			Other: "Confirmation Panel",
+		}, &i18n.Message{
+			ID:    "prevPage",
+			Other: "previous page",
+		}, &i18n.Message{
+			ID:    "nextPage",
+			Other: "next page",
+		}, &i18n.Message{
+			ID:    "gotoTop",
+			Other: "scroll to top",
+		}, &i18n.Message{
+			ID:    "gotoBottom",
+			Other: "scroll to bottom",
+		}, &i18n.Message{
+			ID:    "filteringBy",
+			Other: "filtering by",
+		}, &i18n.Message{
+			ID:    "(reset)",
+			Other: "(reset)",
+		}, &i18n.Message{
+			ID:    "openScopingMenu",
+			Other: "view scoping options",
+		}, &i18n.Message{
+			ID:    "filterBy",
+			Other: "filter by",
+		}, &i18n.Message{
+			ID:    "exitFilterMode",
+			Other: "stop filtering by path",
+		}, &i18n.Message{
+			ID:    "filterPathOption",
+			Other: "enter path to filter by",
+		}, &i18n.Message{
+			ID:    "enterFileName",
+			Other: "enter path:",
+		}, &i18n.Message{
+			ID:    "FilteringMenuTitle",
+			Other: "Filtering",
+		}, &i18n.Message{
+			ID:    "MustExitFilterModeTitle",
+			Other: "Command not available",
+		}, &i18n.Message{
+			ID:    "MustExitFilterModePrompt",
+			Other: "Command not available in filtered mode. Exit filtered mode?",
+		}, &i18n.Message{
+			ID:    "diff",
+			Other: "diff",
+		}, &i18n.Message{
+			ID:    "enterRefToDiff",
+			Other: "enter ref to diff",
+		}, &i18n.Message{
+			ID:    "enteRefName",
+			Other: "enter ref:",
+		}, &i18n.Message{
+			ID:    "exitDiffMode",
+			Other: "exit diff mode",
+		}, &i18n.Message{
+			ID:    "DiffingMenuTitle",
+			Other: "Diffing",
+		}, &i18n.Message{
+			ID:    "swapDiff",
+			Other: "reverse diff direction",
+		}, &i18n.Message{
+			ID:    "openDiffingMenu",
+			Other: "open diff menu",
+		}, &i18n.Message{
+			ID:    "showingGitDiff",
+			Other: "showing output for:",
+		}, &i18n.Message{
+			ID:    "copyCommitShaToClipboard",
+			Other: "copy commit SHA to clipboard",
+		}, &i18n.Message{
+			ID:    "copyBranchNameToClipboard",
+			Other: "copy branch name to clipboard",
+		}, &i18n.Message{
+			ID:    "commitPrefixPatternError",
+			Other: "Error in commitPrefix pattern",
 		},
 	)
 }

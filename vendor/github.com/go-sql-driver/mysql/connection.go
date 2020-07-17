@@ -12,7 +12,6 @@ import (
 	"context"
 	"database/sql"
 	"database/sql/driver"
-	"encoding/json"
 	"io"
 	"net"
 	"strconv"
@@ -47,10 +46,9 @@ type mysqlConn struct {
 
 // Handles parameters set in DSN after the connection is established
 func (mc *mysqlConn) handleParams() (err error) {
-	var cmdSet strings.Builder
 	for param, val := range mc.cfg.Params {
 		switch param {
-		// Charset: character_set_connection, character_set_client, character_set_results
+		// Charset
 		case "charset":
 			charsets := strings.Split(val, ",")
 			for i := range charsets {
@@ -64,25 +62,12 @@ func (mc *mysqlConn) handleParams() (err error) {
 				return
 			}
 
-		// Other system vars accumulated in a single SET command
+		// System Vars
 		default:
-			if cmdSet.Len() == 0 {
-				// Heuristic: 29 chars for each other key=value to reduce reallocations
-				cmdSet.Grow(4 + len(param) + 1 + len(val) + 30*(len(mc.cfg.Params)-1))
-				cmdSet.WriteString("SET ")
-			} else {
-				cmdSet.WriteByte(',')
+			err = mc.exec("SET " + param + "=" + val + "")
+			if err != nil {
+				return
 			}
-			cmdSet.WriteString(param)
-			cmdSet.WriteByte('=')
-			cmdSet.WriteString(val)
-		}
-	}
-
-	if cmdSet.Len() > 0 {
-		err = mc.exec(cmdSet.String())
-		if err != nil {
-			return
 		}
 	}
 
@@ -286,14 +271,6 @@ func (mc *mysqlConn) interpolateParams(query string, args []driver.Value) (strin
 				}
 				buf = append(buf, '\'')
 			}
-		case json.RawMessage:
-			buf = append(buf, '\'')
-			if mc.status&statusNoBackslashEscapes == 0 {
-				buf = escapeBytesBackslash(buf, v)
-			} else {
-				buf = escapeBytesQuotes(buf, v)
-			}
-			buf = append(buf, '\'')
 		case []byte:
 			if v == nil {
 				buf = append(buf, "NULL"...)
@@ -503,10 +480,6 @@ func (mc *mysqlConn) Ping(ctx context.Context) (err error) {
 
 // BeginTx implements driver.ConnBeginTx interface
 func (mc *mysqlConn) BeginTx(ctx context.Context, opts driver.TxOptions) (driver.Tx, error) {
-	if mc.closed.IsSet() {
-		return nil, driver.ErrBadConn
-	}
-
 	if err := mc.watchCancel(ctx); err != nil {
 		return nil, err
 	}

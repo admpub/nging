@@ -7,45 +7,40 @@ import (
 	"github.com/jesseduffield/gocui"
 )
 
-type option struct {
-	value string
-}
-
-// GetDisplayStrings is a function.
-func (r *option) GetDisplayStrings(isFocused bool) []string {
-	return []string{r.value}
-}
-
 func (gui *Gui) handleCreateRebaseOptionsMenu(g *gocui.Gui, v *gocui.View) error {
-	options := []*option{
-		{value: "continue"},
-		{value: "abort"},
+	options := []string{"continue", "abort"}
+
+	if gui.GitCommand.WorkingTreeState() == "rebasing" {
+		options = append(options, "skip")
 	}
 
-	if gui.State.WorkingTreeState == "rebasing" {
-		options = append(options, &option{value: "skip"})
-	}
-
-	handleMenuPress := func(index int) error {
-		command := options[index].value
-		return gui.genericMergeCommand(command)
+	menuItems := make([]*menuItem, len(options))
+	for i, option := range options {
+		// note to self. Never, EVER, close over loop variables in a function
+		option := option
+		menuItems[i] = &menuItem{
+			displayString: option,
+			onPress: func() error {
+				return gui.genericMergeCommand(option)
+			},
+		}
 	}
 
 	var title string
-	if gui.State.WorkingTreeState == "merging" {
+	if gui.GitCommand.WorkingTreeState() == "merging" {
 		title = gui.Tr.SLocalize("MergeOptionsTitle")
 	} else {
 		title = gui.Tr.SLocalize("RebaseOptionsTitle")
 	}
 
-	return gui.createMenu(title, options, len(options), handleMenuPress)
+	return gui.createMenu(title, menuItems, createMenuOptions{showCancel: true})
 }
 
 func (gui *Gui) genericMergeCommand(command string) error {
-	status := gui.State.WorkingTreeState
+	status := gui.GitCommand.WorkingTreeState()
 
 	if status != "merging" && status != "rebasing" {
-		return gui.createErrorPanel(gui.g, gui.Tr.SLocalize("NotMergingOrRebasing"))
+		return gui.createErrorPanel(gui.Tr.SLocalize("NotMergingOrRebasing"))
 	}
 
 	commandType := strings.Replace(status, "ing", "e", 1)
@@ -68,7 +63,7 @@ func (gui *Gui) genericMergeCommand(command string) error {
 }
 
 func (gui *Gui) handleGenericMergeCommandResult(result error) error {
-	if err := gui.refreshSidePanels(gui.g); err != nil {
+	if err := gui.refreshSidePanels(refreshOptions{mode: ASYNC}); err != nil {
 		return err
 	}
 	if result == nil {
@@ -77,8 +72,13 @@ func (gui *Gui) handleGenericMergeCommandResult(result error) error {
 		return result
 	} else if strings.Contains(result.Error(), "No changes - did you forget to use") {
 		return gui.genericMergeCommand("skip")
+	} else if strings.Contains(result.Error(), "The previous cherry-pick is now empty") {
+		return gui.genericMergeCommand("continue")
+	} else if strings.Contains(result.Error(), "No rebase in progress?") {
+		// assume in this case that we're already done
+		return nil
 	} else if strings.Contains(result.Error(), "When you have resolved this problem") || strings.Contains(result.Error(), "fix conflicts") || strings.Contains(result.Error(), "Resolve all conflicts manually") {
-		return gui.createConfirmationPanel(gui.g, gui.getFilesView(), gui.Tr.SLocalize("FoundConflictsTitle"), gui.Tr.SLocalize("FoundConflicts"),
+		return gui.createConfirmationPanel(gui.g, gui.getFilesView(), true, gui.Tr.SLocalize("FoundConflictsTitle"), gui.Tr.SLocalize("FoundConflicts"),
 			func(g *gocui.Gui, v *gocui.View) error {
 				return nil
 			}, func(g *gocui.Gui, v *gocui.View) error {
@@ -86,6 +86,6 @@ func (gui *Gui) handleGenericMergeCommandResult(result error) error {
 			},
 		)
 	} else {
-		return gui.createErrorPanel(gui.g, result.Error())
+		return gui.createErrorPanel(result.Error())
 	}
 }
