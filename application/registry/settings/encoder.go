@@ -92,7 +92,12 @@ func EncodeConfigValue(_v *echo.Mapx, v *dbschema.NgingConfig, encoder Encoder) 
 }
 
 func DefaultEncoder(v *dbschema.NgingConfig, value string) string {
-	value = common.ContentEncode(value, v.Type)
+	switch v.Type {
+	case `html`, `text`:
+		// 配置数据为后台输入，不用过滤XSS
+	default:
+		value = common.ContentEncode(value, v.Type)
+	}
 	if v.Encrypted == `Y` {
 		value = echo.Get(`DefaultConfig`).(Codec).Encode(value)
 	}

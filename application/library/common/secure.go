@@ -11,15 +11,25 @@ import (
 	"github.com/webx-top/com"
 )
 
+func NewUGCPolicy() *bluemonday.Policy {
+	p := bluemonday.UGCPolicy()
+	return p
+}
+
+func NewStrictPolicy() *bluemonday.Policy {
+	p := bluemonday.StrictPolicy()
+	return p
+}
+
 var (
-	secureStrictPolicy                = bluemonday.StrictPolicy()
-	secureUGCPolicy                   = bluemonday.UGCPolicy().AllowAttrs(`class`)
+	secureStrictPolicy                = NewStrictPolicy()
+	secureUGCPolicy                   = NewUGCPolicy()
 	secureUGCPolicyAllowDataURIImages *bluemonday.Policy
 	secureUGCPolicyNoLink             = NoLink()
 )
 
 func init() {
-	secureUGCPolicyAllowDataURIImages = bluemonday.UGCPolicy()
+	secureUGCPolicyAllowDataURIImages = NewUGCPolicy()
 	secureUGCPolicyAllowDataURIImages.AllowDataURIImages()
 }
 
@@ -39,7 +49,6 @@ func RemoveXSS(content string, noLinks ...bool) string {
 func NoLink() *bluemonday.Policy {
 	p := HTMLFilter()
 	p.AllowStandardAttributes()
-	p.AllowAttrs(`class`)
 
 	////////////////////////////////
 	// Declarations and structure //
