@@ -40,7 +40,7 @@ require (
 	github.com/admpub/decimal v0.0.0-20180709203117-cd690d0c9e24 // indirect
 	github.com/admpub/dgoogauth v0.0.0-20170926052827-752650e076f2
 	github.com/admpub/email v0.0.0-20180510084211-36989e527d89
-	github.com/admpub/errors v0.8.1
+	github.com/admpub/errors v0.8.2
 	github.com/admpub/events v0.0.0-20190913050400-383beb0843c6
 	github.com/admpub/fasthttp v0.0.0-20200705060903-f0f441048f4a // indirect
 	github.com/admpub/frp v0.28.1

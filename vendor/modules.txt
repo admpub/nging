@@ -33,7 +33,7 @@ github.com/admpub/dgoogauth
 # github.com/admpub/email v0.0.0-20180510084211-36989e527d89
 ## explicit
 github.com/admpub/email
-# github.com/admpub/errors v0.8.1
+# github.com/admpub/errors v0.8.2
 ## explicit
 github.com/admpub/errors
 # github.com/admpub/events v0.0.0-20190913050400-383beb0843c6

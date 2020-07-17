@@ -140,6 +140,8 @@ github.com/admpub/email v0.0.0-20180510084211-36989e527d89 h1:i3OLCkr3L0b8yNtKz9
 github.com/admpub/email v0.0.0-20180510084211-36989e527d89/go.mod h1:qoIKEwd0d9NL1XWUTl0Zd3lrQRy/NB19HrMoJG8PbV8=
 github.com/admpub/errors v0.8.1 h1:Gsw2MufyfPFuNQpA7CDACZ5/ptDeSrOBaeGWHFg+u9w=
 github.com/admpub/errors v0.8.1/go.mod h1:QKu3XgCRS3u6Nz84MKmkldSCANMRHaQL1YYwKBFe/nw=
+github.com/admpub/errors v0.8.2 h1:u8fJumR0jYPEK1e98CLZS35PIyd8UO0IsiE/UUSniD4=
+github.com/admpub/errors v0.8.2/go.mod h1:QKu3XgCRS3u6Nz84MKmkldSCANMRHaQL1YYwKBFe/nw=
 github.com/admpub/events v0.0.0-20190913050400-383beb0843c6 h1:d/ovtzWpfY1NueaZT2UYa1I3Hu4Zy+fbfaCpECjs4fI=
 github.com/admpub/events v0.0.0-20190913050400-383beb0843c6/go.mod h1:WH16fETVlGhPtG7VzNQtZNXVVbuAMe9qqznAJaEm0IU=
 github.com/admpub/fasthttp v0.0.0-20200705060903-f0f441048f4a h1:y6w9fhu4amQL+UaR9/0oiXp9gnFmdlGD+X1qvBBKn6I=
