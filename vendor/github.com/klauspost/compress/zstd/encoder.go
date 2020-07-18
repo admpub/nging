@@ -29,28 +29,26 @@ type Encoder struct {
 
 type encoder interface {
 	Encode(blk *blockEnc, src []byte)
-	EncodeNoHist(blk *blockEnc, src []byte)
 	Block() *blockEnc
 	CRC() *xxhash.Digest
 	AppendCRC([]byte) []byte
 	WindowSize(size int) int32
 	UseBlock(*blockEnc)
-	Reset(singleBlock bool)
+	Reset()
 }
 
 type encoderState struct {
-	w                io.Writer
-	filling          []byte
-	current          []byte
-	previous         []byte
-	encoder          encoder
-	writing          *blockEnc
-	err              error
-	writeErr         error
-	nWritten         int64
-	headerWritten    bool
-	eofWritten       bool
-	fullFrameWritten bool
+	w             io.Writer
+	filling       []byte
+	current       []byte
+	previous      []byte
+	encoder       encoder
+	writing       *blockEnc
+	err           error
+	writeErr      error
+	nWritten      int64
+	headerWritten bool
+	eofWritten    bool
 
 	// This waitgroup indicates an encode is running.
 	wg sync.WaitGroup
@@ -72,26 +70,27 @@ func NewWriter(w io.Writer, opts ...EOption) (*Encoder, error) {
 	}
 	if w != nil {
 		e.Reset(w)
+	} else {
+		e.init.Do(func() {
+			e.initialize()
+		})
 	}
 	return &e, nil
 }
 
 func (e *Encoder) initialize() {
-	if e.o.concurrent == 0 {
-		e.o.setDefault()
-	}
 	e.encoders = make(chan encoder, e.o.concurrent)
 	for i := 0; i < e.o.concurrent; i++ {
-		enc := e.o.encoder()
-		// If not single block, history will be allocated on first use.
-		enc.Reset(true)
-		e.encoders <- enc
+		e.encoders <- e.o.encoder()
 	}
 }
 
 // Reset will re-initialize the writer and new writes will encode to the supplied writer
 // as a new, independent stream.
 func (e *Encoder) Reset(w io.Writer) {
+	e.init.Do(func() {
+		e.initialize()
+	})
 	s := &e.state
 	s.wg.Wait()
 	s.wWg.Wait()
@@ -115,10 +114,9 @@ func (e *Encoder) Reset(w io.Writer) {
 	s.filling = s.filling[:0]
 	s.current = s.current[:0]
 	s.previous = s.previous[:0]
-	s.encoder.Reset(false)
+	s.encoder.Reset()
 	s.headerWritten = false
 	s.eofWritten = false
-	s.fullFrameWritten = false
 	s.w = w
 	s.err = nil
 	s.nWritten = 0
@@ -157,7 +155,7 @@ func (e *Encoder) Write(p []byte) (n int, err error) {
 		if err != nil {
 			return n, err
 		}
-		if debugAsserts && len(s.filling) > 0 {
+		if debug && len(s.filling) > 0 {
 			panic(len(s.filling))
 		}
 	}
@@ -177,22 +175,6 @@ func (e *Encoder) nextBlock(final bool) error {
 		return fmt.Errorf("block > maxStoreBlockSize")
 	}
 	if !s.headerWritten {
-		// If we have a single block encode, do a sync compression.
-		if final && len(s.filling) > 0 {
-			s.current = e.EncodeAll(s.filling, s.current[:0])
-			var n2 int
-			n2, s.err = s.w.Write(s.current)
-			if s.err != nil {
-				return s.err
-			}
-			s.nWritten += int64(n2)
-			s.current = s.current[:0]
-			s.filling = s.filling[:0]
-			s.headerWritten = true
-			s.fullFrameWritten = true
-			return nil
-		}
-
 		var tmp [maxHeaderSize]byte
 		fh := frameHeader{
 			ContentSize:   0,
@@ -280,7 +262,7 @@ func (e *Encoder) nextBlock(final bool) error {
 			// If we got the exact same number of literals as input,
 			// assume the literals cannot be compressed.
 			if len(src) != len(blk.literals) || len(src) != e.o.blockSize {
-				err = blk.encode(e.o.noEntropy, !e.o.allLitEntropy)
+				err = blk.encode()
 			}
 			switch err {
 			case errIncompressible:
@@ -315,9 +297,7 @@ func (e *Encoder) ReadFrom(r io.Reader) (n int64, err error) {
 	src := e.state.filling
 	for {
 		n2, err := r.Read(src)
-		if e.o.crc {
-			_, _ = e.state.encoder.CRC().Write(src[:n2])
-		}
+		_, _ = e.state.encoder.CRC().Write(src[:n2])
 		// src is now the unfilled part...
 		src = src[n2:]
 		n += int64(n2)
@@ -382,9 +362,6 @@ func (e *Encoder) Close() error {
 	if err != nil {
 		return err
 	}
-	if e.state.fullFrameWritten {
-		return s.err
-	}
 	s.wg.Wait()
 	s.wWg.Wait()
 
@@ -444,16 +421,19 @@ func (e *Encoder) EncodeAll(src, dst []byte) []byte {
 		}
 		return dst
 	}
-	e.init.Do(e.initialize)
+	e.init.Do(func() {
+		e.o.setDefault()
+		e.initialize()
+	})
 	enc := <-e.encoders
 	defer func() {
 		// Release encoder reference to last block.
-		// If a non-single block is needed the encoder will reset again.
-		enc.Reset(true)
+		enc.Reset()
 		e.encoders <- enc
 	}()
-	// Use single segments when above minimum window and below 1MB.
-	single := len(src) < 1<<20 && len(src) > MinWindowSize
+	enc.Reset()
+	blk := enc.Block()
+	single := len(src) > 1<<20
 	if e.o.single != nil {
 		single = *e.o.single
 	}
@@ -474,24 +454,26 @@ func (e *Encoder) EncodeAll(src, dst []byte) []byte {
 		panic(err)
 	}
 
-	// If we can do everything in one block, prefer that.
-	if len(src) <= maxCompressedBlockSize {
-		// Slightly faster with no history and everything in one block.
-		if e.o.crc {
-			_, _ = enc.CRC().Write(src)
+	for len(src) > 0 {
+		todo := src
+		if len(todo) > e.o.blockSize {
+			todo = todo[:e.o.blockSize]
 		}
-		blk := enc.Block()
-		blk.last = true
-		enc.EncodeNoHist(blk, src)
-
+		src = src[len(todo):]
+		if e.o.crc {
+			_, _ = enc.CRC().Write(todo)
+		}
+		blk.reset(nil)
+		blk.pushOffsets()
+		enc.Encode(blk, todo)
+		if len(src) == 0 {
+			blk.last = true
+		}
+		err := errIncompressible
 		// If we got the exact same number of literals as input,
 		// assume the literals cannot be compressed.
-		err := errIncompressible
-		oldout := blk.output
-		if len(blk.literals) != len(src) || len(src) != e.o.blockSize {
-			// Output directly to dst
-			blk.output = dst
-			err = blk.encode(e.o.noEntropy, !e.o.allLitEntropy)
+		if len(blk.literals) != len(todo) || len(todo) != e.o.blockSize {
+			err = blk.encode()
 		}
 
 		switch err {
@@ -499,51 +481,13 @@ func (e *Encoder) EncodeAll(src, dst []byte) []byte {
 			if debug {
 				println("Storing incompressible block as raw")
 			}
-			dst = blk.encodeRawTo(dst, src)
+			blk.encodeRaw(todo)
+			blk.popOffsets()
 		case nil:
-			dst = blk.output
 		default:
 			panic(err)
 		}
-		blk.output = oldout
-	} else {
-		enc.Reset(false)
-		blk := enc.Block()
-		for len(src) > 0 {
-			todo := src
-			if len(todo) > e.o.blockSize {
-				todo = todo[:e.o.blockSize]
-			}
-			src = src[len(todo):]
-			if e.o.crc {
-				_, _ = enc.CRC().Write(todo)
-			}
-			blk.reset(nil)
-			blk.pushOffsets()
-			enc.Encode(blk, todo)
-			if len(src) == 0 {
-				blk.last = true
-			}
-			err := errIncompressible
-			// If we got the exact same number of literals as input,
-			// assume the literals cannot be compressed.
-			if len(blk.literals) != len(todo) || len(todo) != e.o.blockSize {
-				err = blk.encode(e.o.noEntropy, !e.o.allLitEntropy)
-			}
-
-			switch err {
-			case errIncompressible:
-				if debug {
-					println("Storing incompressible block as raw")
-				}
-				dst = blk.encodeRawTo(dst, todo)
-				blk.popOffsets()
-			case nil:
-				dst = append(dst, blk.output...)
-			default:
-				panic(err)
-			}
-		}
+		dst = append(dst, blk.output...)
 	}
 	if e.o.crc {
 		dst = enc.AppendCRC(dst)

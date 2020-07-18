@@ -29,10 +29,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/admpub/archiver"
 	loga "github.com/admpub/log"
 	writerPkg "github.com/admpub/nging/application/library/cron/writer"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
+	"github.com/mholt/archiver/v3"
 	"github.com/webx-top/com"
 )
 

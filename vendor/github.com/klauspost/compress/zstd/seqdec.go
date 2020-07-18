@@ -62,10 +62,8 @@ type sequenceDecs struct {
 	matchLengths sequenceDec
 	prevOffset   [3]int
 	hist         []byte
-	dict         []byte
 	literals     []byte
 	out          []byte
-	windowSize   int
 	maxBits      uint8
 }
 
@@ -84,12 +82,7 @@ func (s *sequenceDecs) initialize(br *bitReader, hist *history, literals, out []
 	s.hist = hist.b
 	s.prevOffset = hist.recentOffsets
 	s.maxBits = s.litLengths.fse.maxBits + s.offsets.fse.maxBits + s.matchLengths.fse.maxBits
-	s.windowSize = hist.windowSize
 	s.out = out
-	s.dict = nil
-	if hist.dict != nil {
-		s.dict = hist.dict.content
-	}
 	return nil
 }
 
@@ -105,78 +98,23 @@ func (s *sequenceDecs) decode(seqs int, br *bitReader, hist []byte) error {
 			printf("reading sequence %d, exceeded available data\n", seqs-i)
 			return io.ErrUnexpectedEOF
 		}
-		var ll, mo, ml int
+		var litLen, matchOff, matchLen int
 		if br.off > 4+((maxOffsetBits+16+16)>>3) {
-			// inlined function:
-			// ll, mo, ml = s.nextFast(br, llState, mlState, ofState)
-
-			// Final will not read from stream.
-			var llB, mlB, moB uint8
-			ll, llB = llState.final()
-			ml, mlB = mlState.final()
-			mo, moB = ofState.final()
-
-			// extra bits are stored in reverse order.
-			br.fillFast()
-			mo += br.getBits(moB)
-			if s.maxBits > 32 {
-				br.fillFast()
-			}
-			ml += br.getBits(mlB)
-			ll += br.getBits(llB)
-
-			if moB > 1 {
-				s.prevOffset[2] = s.prevOffset[1]
-				s.prevOffset[1] = s.prevOffset[0]
-				s.prevOffset[0] = mo
-			} else {
-				// mo = s.adjustOffset(mo, ll, moB)
-				// Inlined for rather big speedup
-				if ll == 0 {
-					// There is an exception though, when current sequence's literals_length = 0.
-					// In this case, repeated offsets are shifted by one, so an offset_value of 1 means Repeated_Offset2,
-					// an offset_value of 2 means Repeated_Offset3, and an offset_value of 3 means Repeated_Offset1 - 1_byte.
-					mo++
-				}
-
-				if mo == 0 {
-					mo = s.prevOffset[0]
-				} else {
-					var temp int
-					if mo == 3 {
-						temp = s.prevOffset[0] - 1
-					} else {
-						temp = s.prevOffset[mo]
-					}
-
-					if temp == 0 {
-						// 0 is not valid; input is corrupted; force offset to 1
-						println("temp was 0")
-						temp = 1
-					}
-
-					if mo != 1 {
-						s.prevOffset[2] = s.prevOffset[1]
-					}
-					s.prevOffset[1] = s.prevOffset[0]
-					s.prevOffset[0] = temp
-					mo = temp
-				}
-			}
+			litLen, matchOff, matchLen = s.nextFast(br, llState, mlState, ofState)
 			br.fillFast()
 		} else {
-			ll, mo, ml = s.next(br, llState, mlState, ofState)
+			litLen, matchOff, matchLen = s.next(br, llState, mlState, ofState)
 			br.fill()
 		}
 
 		if debugSequences {
-			println("Seq", seqs-i-1, "Litlen:", ll, "mo:", mo, "(abs) ml:", ml)
+			println("Seq", seqs-i-1, "Litlen:", litLen, "matchOff:", matchOff, "(abs) matchLen:", matchLen)
 		}
 
-		if ll > len(s.literals) {
-			return fmt.Errorf("unexpected literal count, want %d bytes, but only %d is available", ll, len(s.literals))
+		if litLen > len(s.literals) {
+			return fmt.Errorf("unexpected literal count, want %d bytes, but only %d is available", litLen, len(s.literals))
 		}
-		size := ll + ml + len(s.out)
+		size := litLen + matchLen + len(s.out)
 		if size-startSize > maxBlockSize {
 			return fmt.Errorf("output (%d) bigger than max block size", size)
 		}
@@ -187,70 +125,49 @@ func (s *sequenceDecs) decode(seqs int, br *bitReader, hist []byte) error {
 			s.out = append(s.out, make([]byte, maxBlockSize)...)
 			s.out = s.out[:len(s.out)-maxBlockSize]
 		}
-		if ml > maxMatchLen {
-			return fmt.Errorf("match len (%d) bigger than max allowed length", ml)
+		if matchLen > maxMatchLen {
+			return fmt.Errorf("match len (%d) bigger than max allowed length", matchLen)
+		}
+		if matchOff > len(s.out)+len(hist)+litLen {
+			return fmt.Errorf("match offset (%d) bigger than current history (%d)", matchOff, len(s.out)+len(hist)+litLen)
+		}
+		if matchOff == 0 && matchLen > 0 {
+			return fmt.Errorf("zero matchoff and matchlen > 0")
 		}
 
-		// Add literals
-		s.out = append(s.out, s.literals[:ll]...)
-		s.literals = s.literals[ll:]
+		s.out = append(s.out, s.literals[:litLen]...)
+		s.literals = s.literals[litLen:]
 		out := s.out
-
-		if mo > len(s.out)+len(hist) || mo > s.windowSize {
-			if len(s.dict) == 0 {
-				return fmt.Errorf("match offset (%d) bigger than current history (%d)", mo, len(s.out)+len(hist))
-			}
-
-			// we may be in dictionary.
-			dictO := len(s.dict) - (mo - (len(s.out) + len(hist)))
-			if dictO < 0 || dictO >= len(s.dict) {
-				return fmt.Errorf("match offset (%d) bigger than current history (%d)", mo, len(s.out)+len(hist))
-			}
-			end := dictO + ml
-			if end > len(s.dict) {
-				out = append(out, s.dict[dictO:]...)
-				mo -= len(s.dict) - dictO
-				ml -= len(s.dict) - dictO
-			} else {
-				out = append(out, s.dict[dictO:end]...)
-				mo = 0
-				ml = 0
-			}
-		}
-
-		if mo == 0 && ml > 0 {
-			return fmt.Errorf("zero matchoff and matchlen (%d) > 0", ml)
-		}
 
 		// Copy from history.
 		// TODO: Blocks without history could be made to ignore this completely.
-		if v := mo - len(s.out); v > 0 {
+		if v := matchOff - len(s.out); v > 0 {
 			// v is the start position in history from end.
 			start := len(s.hist) - v
-			if ml > v {
+			if matchLen > v {
 				// Some goes into current block.
 				// Copy remainder of history
 				out = append(out, s.hist[start:]...)
-				mo -= v
-				ml -= v
+				matchOff -= v
+				matchLen -= v
 			} else {
-				out = append(out, s.hist[start:start+ml]...)
-				ml = 0
+				out = append(out, s.hist[start:start+matchLen]...)
+				matchLen = 0
 			}
 		}
 		// We must be in current buffer now
-		if ml > 0 {
-			start := len(s.out) - mo
-			if ml <= len(s.out)-start {
+		if matchLen > 0 {
+			start := len(s.out) - matchOff
+			if matchLen <= len(s.out)-start {
 				// No overlap
-				out = append(out, s.out[start:start+ml]...)
+				out = append(out, s.out[start:start+matchLen]...)
 			} else {
 				// Overlapping copy
 				// Extend destination slice and copy one byte at the time.
-				out = out[:len(out)+ml]
-				src := out[start : start+ml]
+				out = out[:len(out)+matchLen]
+				src := out[start : start+matchLen]
 				// Destination is the space we just added.
-				dst := out[len(out)-ml:]
+				dst := out[len(out)-matchLen:]
 				dst = dst[:len(src)]
 				for i := range src {
 					dst[i] = src[i]

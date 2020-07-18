@@ -299,28 +299,14 @@ func (b *blockEnc) encodeRaw(a []byte) {
 	}
 }
 
-// encodeRaw can be used to set the output to a raw representation of supplied bytes.
-func (b *blockEnc) encodeRawTo(dst, src []byte) []byte {
-	var bh blockHeader
-	bh.setLast(b.last)
-	bh.setSize(uint32(len(src)))
-	bh.setType(blockTypeRaw)
-	dst = bh.appendTo(dst)
-	dst = append(dst, src...)
-	if debug {
-		println("Adding RAW block, length", len(src))
-	}
-	return dst
-}
-
 // encodeLits can be used if the block is only litLen.
-func (b *blockEnc) encodeLits(raw bool) error {
+func (b *blockEnc) encodeLits() error {
 	var bh blockHeader
 	bh.setLast(b.last)
 	bh.setSize(uint32(len(b.literals)))
 
 	// Don't compress extremely small blocks
-	if len(b.literals) < 32 || raw {
+	if len(b.literals) < 32 {
 		if debug {
 			println("Adding RAW block, length", len(b.literals))
 		}
@@ -338,10 +324,18 @@ func (b *blockEnc) encodeLits(raw bool) error {
 	if len(b.literals) >= 1024 {
 		// Use 4 Streams.
 		out, reUsed, err = huff0.Compress4X(b.literals, b.litEnc)
+		if len(out) > len(b.literals)-len(b.literals)>>4 {
+			// Bail out of compression is too little.
+			err = huff0.ErrIncompressible
+		}
 	} else if len(b.literals) > 32 {
 		// Use 1 stream
 		single = true
 		out, reUsed, err = huff0.Compress1X(b.literals, b.litEnc)
+		if len(out) > len(b.literals)-len(b.literals)>>4 {
+			// Bail out of compression is too little.
+			err = huff0.ErrIncompressible
+		}
 	} else {
 		err = huff0.ErrIncompressible
 	}
@@ -443,10 +437,10 @@ func fuzzFseEncoder(data []byte) int {
 	return 1
 }
 
-// encode will encode the block and append the output in b.output.
-func (b *blockEnc) encode(raw, rawAllLits bool) error {
+// encode will encode the block and put the output in b.output.
+func (b *blockEnc) encode() error {
 	if len(b.sequences) == 0 {
-		return b.encodeLits(rawAllLits)
+		return b.encodeLits()
 	}
 	// We want some difference
 	if len(b.literals) > (b.size - (b.size >> 5)) {
@@ -457,8 +451,6 @@ func (b *blockEnc) encode(raw, rawAllLits bool) error {
 	var lh literalsHeader
 	bh.setLast(b.last)
 	bh.setType(blockTypeCompressed)
-	// Store offset of the block header. Needed when we know the size.
-	bhOffset := len(b.output)
 	b.output = bh.appendTo(b.output)
 
 	var (
@@ -466,17 +458,16 @@ func (b *blockEnc) encode(raw, rawAllLits bool) error {
 		reUsed, single bool
 		err            error
 	)
-	if len(b.literals) >= 1024 && !raw {
+	if len(b.literals) >= 1024 {
 		// Use 4 Streams.
 		out, reUsed, err = huff0.Compress4X(b.literals, b.litEnc)
-	} else if len(b.literals) > 32 && !raw {
+	} else if len(b.literals) > 32 {
 		// Use 1 stream
 		single = true
 		out, reUsed, err = huff0.Compress1X(b.literals, b.litEnc)
 	} else {
 		err = huff0.ErrIncompressible
 	}
-
 	switch err {
 	case huff0.ErrIncompressible:
 		lh.setType(literalsBlockRaw)
@@ -744,18 +735,18 @@ func (b *blockEnc) encode(raw, rawAllLits bool) error {
 	}
 	b.output = wr.out
 
-	if len(b.output)-3-bhOffset >= b.size {
+	if len(b.output)-3 >= b.size {
 		// Maybe even add a bigger margin.
 		b.litEnc.Reuse = huff0.ReusePolicyNone
 		return errIncompressible
 	}
 
 	// Size is output minus block header.
-	bh.setSize(uint32(len(b.output)-bhOffset) - 3)
+	bh.setSize(uint32(len(b.output)) - 3)
 	if debug {
 		println("Rewriting block header", bh)
 	}
-	_ = bh.appendTo(b.output[bhOffset:bhOffset])
+	_ = bh.appendTo(b.output[:0])
 	b.coders.setPrev(llEnc, mlEnc, ofEnc)
 	return nil
 }
@@ -806,7 +797,7 @@ func (b *blockEnc) genCodes() {
 		mlH[v]++
 		if v > mlMax {
 			mlMax = v
-			if debugAsserts && mlMax > maxMatchLengthSymbol {
+			if debug && mlMax > maxMatchLengthSymbol {
 				panic(fmt.Errorf("mlMax > maxMatchLengthSymbol (%d), matchlen: %d", mlMax, seq.matchLen))
 			}
 		}
@@ -821,13 +812,13 @@ func (b *blockEnc) genCodes() {
 		}
 		return int(max)
 	}
-	if debugAsserts && mlMax > maxMatchLengthSymbol {
+	if mlMax > maxMatchLengthSymbol {
 		panic(fmt.Errorf("mlMax > maxMatchLengthSymbol (%d)", mlMax))
 	}
-	if debugAsserts && ofMax > maxOffsetBits {
+	if ofMax > maxOffsetBits {
 		panic(fmt.Errorf("ofMax > maxOffsetBits (%d)", ofMax))
 	}
-	if debugAsserts && llMax > maxLiteralLengthSymbol {
+	if llMax > maxLiteralLengthSymbol {
 		panic(fmt.Errorf("llMax > maxLiteralLengthSymbol (%d)", llMax))
 	}
 

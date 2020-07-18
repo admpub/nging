@@ -1,7 +1,5 @@
 package flate
 
-import "fmt"
-
 // fastEncL3
 type fastEncL3 struct {
 	fastGen
@@ -14,10 +12,6 @@ func (e *fastEncL3) Encode(dst *tokens, src []byte) {
 		inputMargin            = 8 - 1
 		minNonLiteralBlockSize = 1 + 1 + inputMargin
 	)
-
-	if debugDeflate && e.cur < 0 {
-		panic(fmt.Sprint("e.cur < 0: ", e.cur))
-	}
 
 	// Protect against e.cur wraparound.
 	for e.cur >= bufferReset {
@@ -81,26 +75,22 @@ func (e *fastEncL3) Encode(dst *tokens, src []byte) {
 			}
 			candidates := e.table[nextHash]
 			now := load3232(src, nextS)
-
-			// Safe offset distance until s + 4...
-			minOffset := e.cur + s - (maxMatchOffset - 4)
-			e.table[nextHash] = tableEntryPrev{Prev: candidates.Cur, Cur: tableEntry{offset: s + e.cur}}
+			e.table[nextHash] = tableEntryPrev{Prev: candidates.Cur, Cur: tableEntry{offset: s + e.cur, val: cv}}
 
 			// Check both candidates
 			candidate = candidates.Cur
-			if candidate.offset < minOffset {
-				cv = now
-				// Previous will also be invalid, we have nothing.
-				continue
-			}
-
-			if cv == load3232(src, candidate.offset-e.cur) {
-				if candidates.Prev.offset < minOffset || cv != load3232(src, candidates.Prev.offset-e.cur) {
+			offset := s - (candidate.offset - e.cur)
+			if cv == candidate.val {
+				if offset > maxMatchOffset {
+					cv = now
+					// Previous will also be invalid, we have nothing.
+					continue
+				}
+				o2 := s - (candidates.Prev.offset - e.cur)
+				if cv != candidates.Prev.val || o2 > maxMatchOffset {
 					break
 				}
 				// Both match and are valid, pick longest.
-				offset := s - (candidate.offset - e.cur)
-				o2 := s - (candidates.Prev.offset - e.cur)
 				l1, l2 := matchLen(src[s+4:], src[s-offset+4:]), matchLen(src[s+4:], src[s-o2+4:])
 				if l2 > l1 {
 					candidate = candidates.Prev
@@ -110,8 +100,11 @@ func (e *fastEncL3) Encode(dst *tokens, src []byte) {
 				// We only check if value mismatches.
 				// Offset will always be invalid in other cases.
 				candidate = candidates.Prev
-				if candidate.offset > minOffset && cv == load3232(src, candidate.offset-e.cur) {
-					break
+				if cv == candidate.val {
+					offset := s - (candidate.offset - e.cur)
+					if offset <= maxMatchOffset {
+						break
+					}
 				}
 			}
 			cv = now
@@ -159,7 +152,7 @@ func (e *fastEncL3) Encode(dst *tokens, src []byte) {
 					nextHash := hash(cv)
 					e.table[nextHash] = tableEntryPrev{
 						Prev: e.table[nextHash].Cur,
-						Cur:  tableEntry{offset: e.cur + t},
+						Cur:  tableEntry{offset: e.cur + t, val: cv},
 					}
 				}
 				goto emitRemainder
@@ -171,21 +164,21 @@ func (e *fastEncL3) Encode(dst *tokens, src []byte) {
 			prevHash := hash(uint32(x))
 			e.table[prevHash] = tableEntryPrev{
 				Prev: e.table[prevHash].Cur,
-				Cur:  tableEntry{offset: e.cur + s - 3},
+				Cur:  tableEntry{offset: e.cur + s - 3, val: uint32(x)},
 			}
 			x >>= 8
 			prevHash = hash(uint32(x))
 
 			e.table[prevHash] = tableEntryPrev{
 				Prev: e.table[prevHash].Cur,
-				Cur:  tableEntry{offset: e.cur + s - 2},
+				Cur:  tableEntry{offset: e.cur + s - 2, val: uint32(x)},
 			}
 			x >>= 8
 			prevHash = hash(uint32(x))
 
 			e.table[prevHash] = tableEntryPrev{
 				Prev: e.table[prevHash].Cur,
-				Cur:  tableEntry{offset: e.cur + s - 1},
+				Cur:  tableEntry{offset: e.cur + s - 1, val: uint32(x)},
 			}
 			x >>= 8
 			currHash := hash(uint32(x))
@@ -193,18 +186,21 @@ func (e *fastEncL3) Encode(dst *tokens, src []byte) {
 			cv = uint32(x)
 			e.table[currHash] = tableEntryPrev{
 				Prev: candidates.Cur,
-				Cur:  tableEntry{offset: s + e.cur},
+				Cur:  tableEntry{offset: s + e.cur, val: cv},
 			}
 
 			// Check both candidates
 			candidate = candidates.Cur
-			minOffset := e.cur + s - (maxMatchOffset - 4)
-
-			if candidate.offset > minOffset && cv != load3232(src, candidate.offset-e.cur) {
+			if cv == candidate.val {
+				offset := s - (candidate.offset - e.cur)
+				if offset <= maxMatchOffset {
+					continue
+				}
+			} else {
 				// We only check if value mismatches.
 				// Offset will always be invalid in other cases.
 				candidate = candidates.Prev
-				if candidate.offset > minOffset && cv == load3232(src, candidate.offset-e.cur) {
+				if cv == candidate.val {
 					offset := s - (candidate.offset - e.cur)
 					if offset <= maxMatchOffset {
 						continue

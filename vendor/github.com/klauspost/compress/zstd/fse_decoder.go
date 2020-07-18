@@ -19,7 +19,7 @@ const (
 	 *  Increasing memory usage improves compression ratio
 	 *  Reduced memory usage can improve speed, due to cache effect
 	 *  Recommended max value is 14, for 16KB, which nicely fits into Intel x86 L1 cache */
-	maxMemoryUsage = tablelogAbsoluteMax + 2
+	maxMemoryUsage = 11
 
 	maxTableLog    = maxMemoryUsage - 2
 	maxTablesize   = 1 << maxTableLog
@@ -55,7 +55,7 @@ func (s *fseDecoder) readNCount(b *byteReader, maxSymbol uint16) error {
 	if b.remain() < 4 {
 		return errors.New("input too small")
 	}
-	bitStream := b.Uint32NC()
+	bitStream := b.Uint32()
 	nbBits := uint((bitStream & 0xF) + minTablelog) // extract tableLog
 	if nbBits > tablelogAbsoluteMax {
 		println("Invalid tablelog:", nbBits)
@@ -79,8 +79,7 @@ func (s *fseDecoder) readNCount(b *byteReader, maxSymbol uint16) error {
 				n0 += 24
 				if r := b.remain(); r > 5 {
 					b.advance(2)
-					// The check above should make sure we can read 32 bits
-					bitStream = b.Uint32NC() >> bitCount
+					bitStream = b.Uint32() >> bitCount
 				} else {
 					// end of bit stream
 					bitStream >>= 16
@@ -105,11 +104,10 @@ func (s *fseDecoder) readNCount(b *byteReader, maxSymbol uint16) error {
 				charnum++
 			}
 
-			if r := b.remain(); r >= 7 || r-int(bitCount>>3) >= 4 {
+			if r := b.remain(); r >= 7 || r+int(bitCount>>3) >= 4 {
 				b.advance(bitCount >> 3)
 				bitCount &= 7
-				// The check above should make sure we can read 32 bits
-				bitStream = b.Uint32NC() >> bitCount
+				bitStream = b.Uint32() >> bitCount
 			} else {
 				bitStream >>= 2
 			}
@@ -120,7 +118,7 @@ func (s *fseDecoder) readNCount(b *byteReader, maxSymbol uint16) error {
 
 		if int32(bitStream)&(threshold-1) < max {
 			count = int32(bitStream) & (threshold - 1)
-			if debugAsserts && nbBits < 1 {
+			if debug && nbBits < 1 {
 				panic("nbBits underflow")
 			}
 			bitCount += nbBits - 1
@@ -150,16 +148,17 @@ func (s *fseDecoder) readNCount(b *byteReader, maxSymbol uint16) error {
 			threshold >>= 1
 		}
 
-		if r := b.remain(); r >= 7 || r-int(bitCount>>3) >= 4 {
+		//println("b.off:", b.off, "len:", len(b.b), "bc:", bitCount, "remain:", b.remain())
+		if r := b.remain(); r >= 7 || r+int(bitCount>>3) >= 4 {
 			b.advance(bitCount >> 3)
 			bitCount &= 7
-			// The check above should make sure we can read 32 bits
-			bitStream = b.Uint32NC() >> (bitCount & 31)
 		} else {
 			bitCount -= (uint)(8 * (len(b.b) - 4 - b.off))
 			b.off = len(b.b) - 4
-			bitStream = b.Uint32() >> (bitCount & 31)
+			//println("b.off:", b.off, "len:", len(b.b), "bc:", bitCount, "iend", iend)
 		}
+		bitStream = b.Uint32() >> (bitCount & 31)
+		//printf("bitstream is now: 0b%b", bitStream)
 	}
 	s.symbolLen = charnum
 	if s.symbolLen <= 1 {

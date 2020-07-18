@@ -6,29 +6,11 @@ import (
 	"compress/flate"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
-
-	"github.com/dsnet/compress/bzip2"
-	"github.com/klauspost/compress/zstd"
-	"github.com/ulikunitz/xz/lzma"
-)
-
-// ZipCompressionMethod Compression type
-type ZipCompressionMethod uint16
-
-// Compression methods.
-// see https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT.
-const (
-	Store   ZipCompressionMethod = 0
-	Deflate ZipCompressionMethod = 8
-	BZIP2   ZipCompressionMethod = 12
-	LZMA    ZipCompressionMethod = 14
-	ZSTD    ZipCompressionMethod = 93
 )
 
 // Zip provides facilities for operating ZIP archives.
@@ -73,12 +55,9 @@ type Zip struct {
 	// the operation will continue on remaining files.
 	ContinueOnError bool
 
-	// Compression algorithm
-	FileMethod     ZipCompressionMethod
-	zw             *zip.Writer
-	zr             *zip.Reader
-	ridx           int
-	decinitialized bool
+	zw   *zip.Writer
+	zr   *zip.Reader
+	ridx int
 }
 
 // CheckExt ensures the file extension matches the format.
@@ -87,36 +66,6 @@ func (*Zip) CheckExt(filename string) error {
 		return fmt.Errorf("filename must have a .zip extension")
 	}
 	return nil
-}
-
-// Registering a global decompressor is not reentrant and may panic
-func (z *Zip) registerDecompressor() {
-	if z.decinitialized {
-		return
-	}
-	z.decinitialized = true
-	// register zstd decompressor
-	z.zr.RegisterDecompressor(uint16(ZSTD), func(r io.Reader) io.ReadCloser {
-		zr, err := zstd.NewReader(r)
-		if err != nil {
-			return nil
-		}
-		return zr.IOReadCloser()
-	})
-	z.zr.RegisterDecompressor(uint16(BZIP2), func(r io.Reader) io.ReadCloser {
-		bz2r, err := bzip2.NewReader(r, nil)
-		if err != nil {
-			return nil
-		}
-		return bz2r
-	})
-	z.zr.RegisterDecompressor(uint16(LZMA), func(r io.Reader) io.ReadCloser {
-		lr, err := lzma.NewReader(r)
-		if err != nil {
-			return nil
-		}
-		return ioutil.NopCloser(lr)
-	})
 }
 
 // Archive creates a .zip file at destination containing
@@ -343,20 +292,6 @@ func (z *Zip) Create(out io.Writer) error {
 			return flate.NewWriter(out, z.CompressionLevel)
 		})
 	}
-	switch z.FileMethod {
-	case BZIP2:
-		z.zw.RegisterCompressor(uint16(BZIP2), func(out io.Writer) (io.WriteCloser, error) {
-			return bzip2.NewWriter(out, &bzip2.WriterConfig{Level: z.CompressionLevel})
-		})
-	case LZMA:
-		z.zw.RegisterCompressor(uint16(LZMA), func(out io.Writer) (io.WriteCloser, error) {
-			return lzma.NewWriter(out)
-		})
-	case ZSTD:
-		z.zw.RegisterCompressor(uint16(ZSTD), func(out io.Writer) (io.WriteCloser, error) {
-			return zstd.NewWriter(out)
-		})
-	}
 	return nil
 }
 
@@ -385,7 +320,7 @@ func (z *Zip) Write(f File) error {
 		if _, ok := compressedFormats[ext]; ok && z.SelectiveCompression {
 			header.Method = zip.Store
 		} else {
-			header.Method = uint16(z.FileMethod)
+			header.Method = zip.Deflate
 		}
 	}
 
@@ -441,7 +376,6 @@ func (z *Zip) Open(in io.Reader, size int64) error {
 	if err != nil {
 		return fmt.Errorf("creating reader: %v", err)
 	}
-	z.registerDecompressor()
 	z.ridx = 0
 	return nil
 }
@@ -498,7 +432,7 @@ func (z *Zip) Walk(archive string, walkFn WalkFunc) error {
 		return fmt.Errorf("opening zip reader: %v", err)
 	}
 	defer zr.Close()
-	z.registerDecompressor()
+
 	for _, zf := range zr.File {
 		zfrc, err := zf.Open()
 		if err != nil {
@@ -613,7 +547,6 @@ func NewZip() *Zip {
 		CompressionLevel:     flate.DefaultCompression,
 		MkdirAll:             true,
 		SelectiveCompression: true,
-		FileMethod:           Deflate,
 	}
 }
 

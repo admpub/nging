@@ -1,4 +1,4 @@
-// Copyright 2014-2019 Ulrich Kunitz. All rights reserved.
+// Copyright 2014-2017 Ulrich Kunitz. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
@@ -18,10 +18,8 @@ type WriterConfig struct {
 	DictCap    int
 	BufSize    int
 	BlockSize  int64
-	// checksum method: CRC32, CRC64 or SHA256 (default: CRC64)
+	// checksum method: CRC32, CRC64 or SHA256
 	CheckSum byte
-	// Forces NoChecksum (default: false)
-	NoCheckSum bool
 	// match algorithm
 	Matcher lzma.MatchAlgorithm
 }
@@ -42,9 +40,6 @@ func (c *WriterConfig) fill() {
 	}
 	if c.CheckSum == 0 {
 		c.CheckSum = CRC64
-	}
-	if c.NoCheckSum {
-		c.CheckSum = None
 	}
 }
 
@@ -289,11 +284,7 @@ func (c *WriterConfig) newBlockWriter(xz io.Writer, hash hash.Hash) (bw *blockWr
 	if err != nil {
 		return nil, err
 	}
-	if bw.hash.Size() != 0 {
-		bw.mw = io.MultiWriter(bw.w, bw.hash)
-	} else {
-		bw.mw = bw.w
-	}
+	bw.mw = io.MultiWriter(bw.w, bw.hash)
 	return bw, nil
 }
 

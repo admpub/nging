@@ -3,13 +3,10 @@ package flate
 import (
 	"io"
 	"math"
-	"sync"
 )
 
 const (
 	maxStatelessBlock = math.MaxInt16
-	// dictionary will be taken from maxStatelessBlock, so limit it.
-	maxStatelessDict = 8 << 10
 
 	slTableBits  = 13
 	slTableSize  = 1 << slTableBits
@@ -27,11 +24,11 @@ func (s *statelessWriter) Close() error {
 	}
 	s.closed = true
 	// Emit EOF block
-	return StatelessDeflate(s.dst, nil, true, nil)
+	return StatelessDeflate(s.dst, nil, true)
 }
 
 func (s *statelessWriter) Write(p []byte) (n int, err error) {
-	err = StatelessDeflate(s.dst, p, false, nil)
+	err = StatelessDeflate(s.dst, p, false)
 	if err != nil {
 		return 0, err
 	}
@@ -52,27 +49,11 @@ func NewStatelessWriter(dst io.Writer) io.WriteCloser {
 	return &statelessWriter{dst: dst}
 }
 
-// bitWriterPool contains bit writers that can be reused.
-var bitWriterPool = sync.Pool{
-	New: func() interface{} {
-		return newHuffmanBitWriter(nil)
-	},
-}
-
 // StatelessDeflate allows to compress directly to a Writer without retaining state.
 // When returning everything will be flushed.
-// Up to 8KB of an optional dictionary can be given which is presumed to presumed to precede the block.
-// Longer dictionaries will be truncated and will still produce valid output.
-// Sending nil dictionary is perfectly fine.
-func StatelessDeflate(out io.Writer, in []byte, eof bool, dict []byte) error {
+func StatelessDeflate(out io.Writer, in []byte, eof bool) error {
 	var dst tokens
-	bw := bitWriterPool.Get().(*huffmanBitWriter)
-	bw.reset(out)
-	defer func() {
-		// don't keep a reference to our output
-		bw.reset(nil)
-		bitWriterPool.Put(bw)
-	}()
+	bw := newHuffmanBitWriter(out)
 	if eof && len(in) == 0 {
 		// Just write an EOF block.
 		// Could be faster...
@@ -81,53 +62,35 @@ func StatelessDeflate(out io.Writer, in []byte, eof bool, dict []byte) error {
 		return bw.err
 	}
 
-	// Truncate dict
-	if len(dict) > maxStatelessDict {
-		dict = dict[len(dict)-maxStatelessDict:]
-	}
-
 	for len(in) > 0 {
 		todo := in
-		if len(todo) > maxStatelessBlock-len(dict) {
-			todo = todo[:maxStatelessBlock-len(dict)]
+		if len(todo) > maxStatelessBlock {
+			todo = todo[:maxStatelessBlock]
 		}
 		in = in[len(todo):]
-		uncompressed := todo
-		if len(dict) > 0 {
-			// combine dict and source
-			bufLen := len(todo) + len(dict)
-			combined := make([]byte, bufLen)
-			copy(combined, dict)
-			copy(combined[len(dict):], todo)
-			todo = combined
-		}
 		// Compress
-		statelessEnc(&dst, todo, int16(len(dict)))
+		statelessEnc(&dst, todo)
 		isEof := eof && len(in) == 0
 
 		if dst.n == 0 {
-			bw.writeStoredHeader(len(uncompressed), isEof)
+			bw.writeStoredHeader(len(todo), isEof)
 			if bw.err != nil {
 				return bw.err
 			}
-			bw.writeBytes(uncompressed)
-		} else if int(dst.n) > len(uncompressed)-len(uncompressed)>>4 {
+			bw.writeBytes(todo)
+		} else if int(dst.n) > len(todo)-len(todo)>>4 {
 			// If we removed less than 1/16th, huffman compress the block.
-			bw.writeBlockHuff(isEof, uncompressed, len(in) == 0)
+			bw.writeBlockHuff(isEof, todo, false)
 		} else {
-			bw.writeBlockDynamic(&dst, isEof, uncompressed, len(in) == 0)
-		}
-		if len(in) > 0 {
-			// Retain a dict if we have more
-			dict = todo[len(todo)-maxStatelessDict:]
-			dst.Reset()
+			bw.writeBlockDynamic(&dst, isEof, todo, false)
 		}
 		if bw.err != nil {
 			return bw.err
 		}
+		dst.Reset()
 	}
 	if !eof {
-		// Align, only a stored block can do that.
+		// Align.
 		bw.writeStoredHeader(0, false)
 	}
 	bw.flush()
@@ -153,7 +116,7 @@ func load6416(b []byte, i int16) uint64 {
 		uint64(b[4])<<32 | uint64(b[5])<<40 | uint64(b[6])<<48 | uint64(b[7])<<56
 }
 
-func statelessEnc(dst *tokens, src []byte, startAt int16) {
+func statelessEnc(dst *tokens, src []byte) {
 	const (
 		inputMargin            = 12 - 1
 		minNonLiteralBlockSize = 1 + 1 + inputMargin
@@ -167,23 +130,15 @@ func statelessEnc(dst *tokens, src []byte, startAt int16) {
 
 	// This check isn't in the Snappy implementation, but there, the caller
 	// instead of the callee handles this case.
-	if len(src)-int(startAt) < minNonLiteralBlockSize {
+	if len(src) < minNonLiteralBlockSize {
 		// We do not fill the token table.
 		// This will be picked up by caller.
-		dst.n = 0
+		dst.n = uint16(len(src))
 		return
 	}
-	// Index until startAt
-	if startAt > 0 {
-		cv := load3232(src, 0)
-		for i := int16(0); i < startAt; i++ {
-			table[hashSL(cv)] = tableEntry{offset: i}
-			cv = (cv >> 8) | (uint32(src[i+4]) << 24)
-		}
-	}
 
-	s := startAt + 1
-	nextEmit := startAt
+	s := int16(1)
+	nextEmit := int16(0)
 	// sLimit is when to stop looking for offset/length copies. The inputMargin
 	// lets us use a fast path for emitLiteral in the main loop, while we are
 	// looking for copies.

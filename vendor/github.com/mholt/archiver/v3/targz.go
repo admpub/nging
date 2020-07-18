@@ -1,12 +1,12 @@
 package archiver
 
 import (
+	"compress/gzip"
 	"fmt"
 	"io"
 	"strings"
 
-	"github.com/klauspost/compress/gzip"
-	"github.com/klauspost/pgzip"
+	pgzip "github.com/klauspost/pgzip"
 )
 
 // TarGz facilitates gzip compression

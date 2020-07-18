@@ -31,7 +31,6 @@ replace golang.org/x/xerrors => github.com/golang/xerrors v0.0.0-20191204190536-
 require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
-	github.com/admpub/archiver v0.0.1
 	github.com/admpub/checksum v1.0.1
 	github.com/admpub/color v1.7.0
 	github.com/admpub/confl v0.0.0-20190331072055-254deeac709e
@@ -123,8 +122,6 @@ require (
 	github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/disintegration/imaging v1.6.2 // indirect
-	github.com/dlclark/regexp2 v1.2.0 // indirect
-	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/fatedier/beego v1.7.2 // indirect
 	github.com/fatedier/golib v0.2.0 // indirect
 	github.com/fatedier/kcp-go v2.0.4-0.20190803094908-fe8645b0a904+incompatible // indirect
@@ -140,7 +137,6 @@ require (
 	github.com/gomodule/redigo v1.8.2
 	github.com/grafov/m3u8 v0.11.1 // indirect
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79 // indirect
-	github.com/gwoo/greq v0.0.0-20140625064658-5147740e0422 // indirect
 	github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce // indirect
 	github.com/igm/sockjs-go v3.0.0+incompatible // indirect
 	github.com/imdario/mergo v0.3.9 // indirect
@@ -152,6 +148,7 @@ require (
 	github.com/mattn/go-colorable v0.1.7
 	github.com/mattn/go-runewidth v0.0.9
 	github.com/mattn/go-sqlite3 v1.14.0 // indirect
+	github.com/mholt/archiver/v3 v3.3.0
 	github.com/microcosm-cc/bluemonday v1.0.3
 	github.com/minio/minio-go v6.0.14+incompatible
 	github.com/muesli/smartcrop v0.3.0 // indirect
