@@ -1,4 +1,4 @@
-go get github.com/admpub/xgo
+go install github.com/admpub/xgo
 #source ${PWD}/install-archiver.sh
 cd ..
 go generate
