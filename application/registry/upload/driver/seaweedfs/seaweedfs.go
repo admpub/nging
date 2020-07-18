@@ -41,7 +41,10 @@ func init() {
 }
 
 func NewSeaweedfs(ctx context.Context, typ string) *Seaweedfs {
-	a := DefaultConfig.New()
+	a, err := DefaultConfig.New()
+	if err != nil {
+		panic(err)
+	}
 	return &Seaweedfs{
 		config:     DefaultConfig,
 		instance:   a,
