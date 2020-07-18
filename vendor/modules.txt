@@ -260,6 +260,8 @@ github.com/admpub/web-terminal/library/utils
 # github.com/admpub/websocket v1.0.1
 ## explicit
 github.com/admpub/websocket
+# github.com/admpub/xgo v1.14.6 => github.com/admpub/xgo v1.14.6
+## explicit
 # github.com/andybalholm/brotli v1.0.0
 github.com/andybalholm/brotli
 # github.com/andybalholm/cascadia v1.1.0
