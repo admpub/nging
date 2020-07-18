@@ -75,7 +75,7 @@ github.com/admpub/frp/utils/net
 github.com/admpub/frp/utils/util
 github.com/admpub/frp/utils/version
 github.com/admpub/frp/utils/vhost
-# github.com/admpub/fsnotify v1.4.2
+# github.com/admpub/fsnotify v1.4.4
 ## explicit
 github.com/admpub/fsnotify
 # github.com/admpub/ftpserver v0.0.0-20180821023651-6b950445d653
@@ -103,7 +103,7 @@ github.com/admpub/go-phantomjs-fetcher
 ## explicit
 github.com/admpub/go-pretty/table
 github.com/admpub/go-pretty/text
-# github.com/admpub/go-ps v0.0.0-20190801133521-c0a74b318561
+# github.com/admpub/go-ps v0.0.1
 ## explicit
 github.com/admpub/go-ps
 # github.com/admpub/go-reuseport v0.0.3
@@ -1250,7 +1250,8 @@ golang.org/x/net/websocket
 # golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d => github.com/golang/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
-# golang.org/x/sys v0.0.0-20200615200032-f1bc736245b1 => github.com/golang/sys v0.0.0-20200625212154-ddb9806d33ae
+# golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae => github.com/golang/sys v0.0.0-20200625212154-ddb9806d33ae
+## explicit
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix

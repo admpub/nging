@@ -44,7 +44,7 @@ require (
 	github.com/admpub/events v0.0.0-20190913050400-383beb0843c6
 	github.com/admpub/fasthttp v0.0.0-20200705060903-f0f441048f4a // indirect
 	github.com/admpub/frp v0.28.1
-	github.com/admpub/fsnotify v1.4.2 // indirect
+	github.com/admpub/fsnotify v1.4.4 // indirect
 	github.com/admpub/ftpserver v0.0.0-20180821023651-6b950445d653
 	github.com/admpub/gifresize v1.0.2 // indirect
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
@@ -53,7 +53,7 @@ require (
 	github.com/admpub/go-isatty v0.0.9
 	github.com/admpub/go-phantomjs-fetcher v0.0.0-20180924162325-bb2ae1648e33
 	github.com/admpub/go-pretty v3.3.3+incompatible
-	github.com/admpub/go-ps v0.0.0-20190801133521-c0a74b318561 // indirect
+	github.com/admpub/go-ps v0.0.1 // indirect
 	github.com/admpub/go-reuseport v0.0.3 // indirect
 	github.com/admpub/go-utility v0.0.1 // indirect
 	github.com/admpub/godownloader v0.0.0-20191013090831-d509172649e4
@@ -194,6 +194,7 @@ require (
 	github.com/xu42/youzan-sdk-go v0.0.3
 	gocloud.dev v0.20.0
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
+	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
