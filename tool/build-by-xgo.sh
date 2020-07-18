@@ -1,5 +1,5 @@
 go get github.com/admpub/xgo
-source ${PWD}/install-archiver.sh
+#source ${PWD}/install-archiver.sh
 cd ..
 go generate
 cd tool

@@ -1,4 +1,4 @@
-source ${PWD}/install-archiver.sh
+#source ${PWD}/install-archiver.sh
 cd ..
 go generate
 cd tool

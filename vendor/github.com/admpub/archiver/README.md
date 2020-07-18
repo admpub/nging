@@ -63,7 +63,7 @@ Or download binaries from the [releases](https://github.com/mholt/archiver/relea
 To use as a dependency in your project:
 
 ```
-$ go get github.com/mholt/archiver/v3
+$ go get github.com/admpub/archiver
 ```
 
 
@@ -153,7 +153,7 @@ Flags are specified before the subcommand. Use `arc help` or `arc -h` to get usa
 The archiver package allows you to easily create and open archives, walk their contents, extract specific files, compress and decompress files, and even stream archives in and out using pure io.Reader and io.Writer interfaces, without ever needing to touch the disk.
 
 ```go
-import "github.com/mholt/archiver/v3"
+import "github.com/mholt/archiver"
 ```
 
 [See the package's GoDoc](https://pkg.go.dev/github.com/mholt/archiver?tab=doc) for full API documentation.

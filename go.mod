@@ -28,9 +28,14 @@ replace golang.org/x/tools => github.com/golang/tools v0.0.0-20200717024301-6dde
 
 replace golang.org/x/xerrors => github.com/golang/xerrors v0.0.0-20191204190536-9bdfabe68543
 
+replace github.com/admpub/xgo => github.com/admpub/xgo v1.14.6
+
+replace github.com/admpub/bindata/v3 => github.com/admpub/bindata/v3 v3.1.5
+
 require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
+	github.com/admpub/archiver v1.1.4
 	github.com/admpub/checksum v1.0.1
 	github.com/admpub/color v1.7.0
 	github.com/admpub/confl v0.0.0-20190331072055-254deeac709e
@@ -98,7 +103,7 @@ require (
 	github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2
 	github.com/admpub/web-terminal v0.0.0-20190705124712-e503d17936e9
 	github.com/admpub/websocket v1.0.1
-	github.com/andybalholm/brotli v1.0.0 // indirect
+	github.com/admpub/xgo v1.14.6 // indirect
 	github.com/araddon/gou v0.0.0-20190110011759-c797efecbb61 // indirect
 	github.com/aws/aws-sdk-go v1.33.6
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
@@ -148,12 +153,10 @@ require (
 	github.com/mattn/go-colorable v0.1.7
 	github.com/mattn/go-runewidth v0.0.9
 	github.com/mattn/go-sqlite3 v1.14.0 // indirect
-	github.com/mholt/archiver/v3 v3.3.0
 	github.com/microcosm-cc/bluemonday v1.0.3
 	github.com/minio/minio-go v6.0.14+incompatible
 	github.com/muesli/smartcrop v0.3.0 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
-	github.com/nwaples/rardecode v1.1.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.7.0 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/pkg/sftp v1.11.0
@@ -192,6 +195,7 @@ require (
 	gocloud.dev v0.20.0
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
+	golang.org/x/tools v0.0.0-20200619180055-7c47624df98f // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0

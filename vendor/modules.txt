@@ -6,6 +6,9 @@ github.com/StackExchange/wmi
 # github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
 ## explicit
 github.com/admpub/9t
+# github.com/admpub/archiver v1.1.4
+## explicit
+github.com/admpub/archiver
 # github.com/admpub/checksum v1.0.1
 ## explicit
 github.com/admpub/checksum
@@ -258,7 +261,6 @@ github.com/admpub/web-terminal/library/utils
 ## explicit
 github.com/admpub/websocket
 # github.com/andybalholm/brotli v1.0.0
-## explicit
 github.com/andybalholm/brotli
 # github.com/andybalholm/cascadia v1.1.0
 github.com/andybalholm/cascadia
@@ -732,7 +734,7 @@ github.com/kardianos/osext
 ## explicit
 # github.com/kevinburke/ssh_config v0.0.0-20190725054713-01f96b0aa0cd
 github.com/kevinburke/ssh_config
-# github.com/klauspost/compress v1.9.2
+# github.com/klauspost/compress v1.10.10
 github.com/klauspost/compress/flate
 github.com/klauspost/compress/fse
 github.com/klauspost/compress/gzip
@@ -743,7 +745,7 @@ github.com/klauspost/compress/zstd
 github.com/klauspost/compress/zstd/internal/xxhash
 # github.com/klauspost/cpuid v1.2.3
 github.com/klauspost/cpuid
-# github.com/klauspost/pgzip v1.2.1
+# github.com/klauspost/pgzip v1.2.4
 github.com/klauspost/pgzip
 # github.com/klauspost/reedsolomon v1.9.1
 github.com/klauspost/reedsolomon
@@ -830,9 +832,6 @@ github.com/mattn/go-sqlite3
 github.com/matttproud/golang_protobuf_extensions/pbutil
 # github.com/mgutz/str v1.2.0
 github.com/mgutz/str
-# github.com/mholt/archiver/v3 v3.3.0
-## explicit
-github.com/mholt/archiver/v3
 # github.com/mholt/certmagic v0.8.3
 github.com/mholt/certmagic
 # github.com/microcosm-cc/bluemonday v1.0.3
@@ -885,7 +884,6 @@ github.com/nicksnyder/go-i18n/v2/i18n
 github.com/nicksnyder/go-i18n/v2/internal
 github.com/nicksnyder/go-i18n/v2/internal/plural
 # github.com/nwaples/rardecode v1.1.0
-## explicit
 github.com/nwaples/rardecode
 # github.com/onsi/ginkgo v1.10.3
 github.com/onsi/ginkgo
@@ -911,7 +909,7 @@ github.com/onsi/ginkgo/types
 github.com/oschwald/maxminddb-golang
 # github.com/pelletier/go-toml v1.6.0
 github.com/pelletier/go-toml
-# github.com/pierrec/lz4 v2.0.5+incompatible
+# github.com/pierrec/lz4 v2.5.2+incompatible
 github.com/pierrec/lz4
 github.com/pierrec/lz4/internal/xxh32
 # github.com/pires/go-proxyproto v0.0.0-20190111085350-4d51b51e3bfc
@@ -1024,7 +1022,7 @@ github.com/tjfoc/gmsm/sm4
 # github.com/tuotoo/qrcode v0.0.0-20190222102259-ac9c44189bf2
 ## explicit
 github.com/tuotoo/qrcode
-# github.com/ulikunitz/xz v0.5.6
+# github.com/ulikunitz/xz v0.5.7
 github.com/ulikunitz/xz
 github.com/ulikunitz/xz/internal/hash
 github.com/ulikunitz/xz/internal/xlog
@@ -1280,6 +1278,8 @@ golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 # golang.org/x/time v0.0.0-20191024005414-555d28b269f0 => github.com/golang/time v0.0.0-20200630173020-3af7569d3a1e
 golang.org/x/time/rate
+# golang.org/x/tools v0.0.0-20200619180055-7c47624df98f => github.com/golang/tools v0.0.0-20200717024301-6ddee64345a6
+## explicit
 # golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543 => github.com/golang/xerrors v0.0.0-20191204190536-9bdfabe68543
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
@@ -1406,3 +1406,5 @@ gopkg.in/yaml.v3
 # golang.org/x/text => github.com/golang/text v0.3.3
 # golang.org/x/tools => github.com/golang/tools v0.0.0-20200717024301-6ddee64345a6
 # golang.org/x/xerrors => github.com/golang/xerrors v0.0.0-20191204190536-9bdfabe68543
+# github.com/admpub/xgo => github.com/admpub/xgo v1.14.6
+# github.com/admpub/bindata/v3 => github.com/admpub/bindata/v3 v3.1.5
