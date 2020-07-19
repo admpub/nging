@@ -92,7 +92,6 @@ func init() {
 		return com.JSONEncode(cfg)
 	})
 	settings.RegisterEncoder(`base.watermark`, func(v *dbschema.NgingConfig, r echo.H) ([]byte, error) {
-		echo.Dump(r)
 		cfg := image.NewWatermarkOptions().FromStore(r)
 		return com.JSONEncode(cfg)
 	})
@@ -100,6 +99,8 @@ func init() {
 		settings, ok := cfg.Store(`base`).Get(`storer`).(*storer.Info)
 		if !ok || settings == nil {
 			settings = &defaultStorer
+		} else {
+			settings.Cloud()
 		}
 		echo.Set(storer.StorerInfoKey, settings)
 		return nil
