@@ -26,18 +26,18 @@ var (
 	temporaryFileRegexp  *regexp.Regexp
 	persistentFileRegexp *regexp.Regexp
 	anyFileRegexp        *regexp.Regexp
-	placeholderRegexp = regexp.MustCompile(`\[storage:[\d]+\]`)
+	placeholderRegexp    = regexp.MustCompile(`\[storage:[\d]+\]`)
 )
 
 func init() {
-	Init()
+	Init(UploadURLPath)
 }
 
-func Init() {
+func Init(pathPrefix string) {
 	ruleEnd := ExtensionRegexpEnd()
-	temporaryFileRegexp = regexp.MustCompile(UploadURLPath + `[\w-]+/0/[\w]+` + ruleEnd)
-	persistentFileRegexp = regexp.MustCompile(UploadURLPath + `[\w-]+/([^0]|[0-9]{2,})/[\w]+` + ruleEnd)
-	anyFileRegexp = regexp.MustCompile(UploadURLPath + `[\w-]+/([\w-]+/)+[\w-]+` + ruleEnd)
+	temporaryFileRegexp = regexp.MustCompile(pathPrefix + `[\w-]+/0/[\w]+` + ruleEnd)
+	persistentFileRegexp = regexp.MustCompile(pathPrefix + `[\w-]+/([^0]|[0-9]{2,})/[\w]+` + ruleEnd)
+	anyFileRegexp = regexp.MustCompile(pathPrefix + `[\w-]+/([\w-]+/)+[\w-]+` + ruleEnd)
 }
 
 // ParseTemporaryFileName 从文本中解析出临时文件名称
@@ -65,8 +65,8 @@ var ReplaceAnyFileName = func(s string, repl func(string) string) string {
 
 // ReplacePlaceholder 从文本中替换占位符
 var ReplacePlaceholder = func(s string, repl func(string) string) string {
-	return placeholderRegexp.ReplaceAllStringFunc(s, func(find string) string{
-		id := find[9:len(find)-1]
+	return placeholderRegexp.ReplaceAllStringFunc(s, func(find string) string {
+		id := find[9 : len(find)-1]
 		return repl(id)
 	})
 }
