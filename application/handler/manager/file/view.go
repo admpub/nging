@@ -15,16 +15,16 @@ import (
 	"github.com/admpub/nging/application/registry/upload/convert"
 	"github.com/admpub/nging/application/registry/upload/driver/local"
 	"github.com/admpub/nging/application/registry/upload/helper"
-	"github.com/admpub/nging/application/registry/upload/table"
+	uploadSubdir "github.com/admpub/nging/application/registry/upload/subdir"
 )
 
 var fileGeneratorLock = sync.RWMutex{}
 
 func File(ctx echo.Context) error {
 	uploadType := ctx.Param(`type`)
-	typ, _, _ := table.GetTableInfo(uploadType)
+	params := uploadSubdir.ParseUploadType(uploadType)
 	file := ctx.Param(`*`)
-	file = filepath.Join(helper.UploadDir, typ, file)
+	file = filepath.Join(helper.UploadDir, params.MustGetSubdir(), file)
 	var (
 		convertFunc  convert.Convert
 		ok           bool
@@ -73,7 +73,7 @@ func File(ctx echo.Context) error {
 		if newStore == nil {
 			return nil, ctx.E(`存储引擎“%s”未被登记`, storerName)
 		}
-		storer, err := newStore(ctx, typ)
+		storer, err := newStore(ctx, params.MustGetSubdir())
 		if err != nil {
 			return nil, err
 		}

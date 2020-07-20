@@ -36,7 +36,6 @@ import (
 	"github.com/admpub/nging/application/model/file/storer"
 	"github.com/admpub/nging/application/registry/upload"
 	uploadPrepare "github.com/admpub/nging/application/registry/upload/prepare"
-	"github.com/admpub/nging/application/registry/upload/table"
 	"github.com/admpub/qrcode"
 )
 
@@ -222,8 +221,4 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	data := ctx.Data()
 	data.SetData(datax)
 	return ctx.JSON(data)
-}
-
-func getTableInfo(uploadType string) (tableName string, fieldName string, defaults []string) {
-	return table.GetTableInfo(uploadType)
 }

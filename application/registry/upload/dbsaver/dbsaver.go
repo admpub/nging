@@ -20,6 +20,8 @@ var (
 	}
 )
 
+// Register 注册数据保存处理函数
+// key table.field
 func Register(key string, dbsaver DBSaver) {
 	dbSavers[key] = dbsaver
 	log.Info(color.YellowString(`dbsaver.register:`), key)

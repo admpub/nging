@@ -40,12 +40,12 @@ const Name = `cloud`
 var _ upload.Storer = &Cloud{}
 
 func init() {
-	upload.StorerRegister(Name, func(ctx context.Context, typ string) (upload.Storer, error) {
-		return NewCloud(ctx, typ)
+	upload.StorerRegister(Name, func(ctx context.Context, subdir string) (upload.Storer, error) {
+		return NewCloud(ctx, subdir)
 	})
 }
 
-func NewCloud(ctx context.Context, typ string) (*Cloud, error) {
+func NewCloud(ctx context.Context, subdir string) (*Cloud, error) {
 	bucket, err := DefaultConfig.New(ctx)
 	if err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func NewCloud(ctx context.Context, typ string) (*Cloud, error) {
 	return &Cloud{
 		config:     DefaultConfig,
 		bucket:     bucket,
-		Filesystem: local.NewFilesystem(ctx, typ),
+		Filesystem: local.NewFilesystem(ctx, subdir),
 	}, nil
 }
 
@@ -83,9 +83,9 @@ func (f *Cloud) FileInfo(file string) (os.FileInfo, error) {
 	defer r.Close()
 
 	// Access storage.Reader via sr here.
-	var sr *blob.Reader
+	sr := blob.Reader{}
 	if r.As(&sr) {
-		_ = sr.Attrs
+		_ = sr.ModTime()
 	}
 	return os.Stat(file)
 }

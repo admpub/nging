@@ -1,4 +1,4 @@
-package subdir
+package subdir_test
 
 import (
 	"testing"
@@ -8,25 +8,25 @@ import (
 	"github.com/webx-top/echo/testing/test"
 
 	_ "github.com/admpub/nging/application/listener/upload"
-	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/checker"
+	uploadSubdir "github.com/admpub/nging/application/registry/upload/subdir"
 	"github.com/admpub/nging/application/registry/upload/table"
 )
 
 func TestChecker(t *testing.T) {
-	Register((&SubdirInfo{
+	uploadSubdir.Register((&uploadSubdir.SubdirInfo{
 		Allowed: true,
 		Key:     "test_user",
 		Name:    "测试",
 	}).SetTable(`test_table`, ``))
-	checker.Register(`test_user`, func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
+	uploadSubdir.CheckerRegister(`test_user`, func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
 		tis.SetTableID(`test-user-id`)
 		tis.SetTableName(`test-user`)
 		tis.SetFieldName(`test`)
 		return
 	}, ``)
 	tbl := &table.TableInfo{}
-	checkerFn := checker.Get(`test_user`)
+	checkerFn := uploadSubdir.CheckerGet(`test_user`)
 	req, resp := myTesting.NewRequestAndResponse(`GET`, `/`)
 	e := echo.New()
 	ctx := e.NewContext(req, resp)
@@ -42,19 +42,19 @@ func TestChecker(t *testing.T) {
 }
 
 func TestChecker2(t *testing.T) {
-	Register((&upload.SubdirInfo{
+	uploadSubdir.Register((&uploadSubdir.SubdirInfo{
 		Allowed: true,
 		Key:     "test_user2",
 		Name:    "测试2",
 	}).SetTable(`test_table2`, `field2`))
-	Register(`test_user2`, func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
+	uploadSubdir.CheckerRegister(`test_user2`, func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
 		tis.SetTableID(`test-user-id2`)
 		tis.SetTableName(`test-user2`)
 		tis.SetFieldName(`test2`)
 		return
 	}, `field2`)
 	tbl := &table.TableInfo{}
-	checkerFn := checker.Get(`test_user2`)
+	checkerFn := uploadSubdir.CheckerGet(`test_user2`)
 	req, resp := myTesting.NewRequestAndResponse(`GET`, `/`)
 	e := echo.New()
 	ctx := e.NewContext(req, resp)
@@ -72,8 +72,8 @@ func TestChecker2(t *testing.T) {
 
 func TestChecker3(t *testing.T) {
 	tbl := &table.TableInfo{}
-	checkerFn := checker.Get(`nging_user.avatar`)
-	req, resp := myTesting.NewRequestAndResponse(`GET`, `/`+upload.URLParam(`nging_user.avatar`, `refid`, `0`))
+	checkerFn := uploadSubdir.CheckerGet(`nging_user.avatar`)
+	req, resp := myTesting.NewRequestAndResponse(`GET`, `/`+checker.URLParam(`nging_user.avatar`, `refid`, `0`))
 	e := echo.New()
 	ctx := e.NewContext(req, resp)
 	subdir, name, err := checkerFn(ctx, tbl)
@@ -90,7 +90,7 @@ func TestChecker3(t *testing.T) {
 }
 
 func TestThumbSize(t *testing.T) {
-	c := ThumbSize{
+	c := uploadSubdir.ThumbSize{
 		Width:  400,
 		Height: 650,
 	}

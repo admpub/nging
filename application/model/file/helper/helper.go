@@ -9,7 +9,7 @@ import (
 
 	"github.com/admpub/nging/application/dbschema"
 	fileModel "github.com/admpub/nging/application/model/file"
-	"github.com/admpub/nging/application/registry/upload"
+	uploadSubdir "github.com/admpub/nging/application/registry/upload/subdir"
 )
 
 func OnRemoveOwnerFile(ctx echo.Context, typ string, id interface{}, ownerDir string) error {
@@ -26,11 +26,8 @@ func OnUpdateOwnerFilePath(ctx echo.Context,
 	newSavePath string, newViewURL string) error {
 	fileM := &dbschema.NgingFile{}
 	//embedM := &dbschema.NgingFileEmbedded{}
-	_, fieldName, defaults := upload.GetTableInfo(typ)
-	info := upload.SubdirGet(typ)
-	if info == nil && len(defaults) > 0 {
-		info = upload.SubdirGet(defaults[0])
-	}
+	params := uploadSubdir.ParseUploadType(typ)
+	info := params.SubdirInfo
 	thumbM := &dbschema.NgingFileThumb{}
 	cond := db.NewCompounds()
 	cond.Add(db.Cond{`table_id`: id})

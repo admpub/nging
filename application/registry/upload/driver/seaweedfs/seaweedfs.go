@@ -35,12 +35,12 @@ const Name = `seaweedfs`
 var _ upload.Storer = &Seaweedfs{}
 
 func init() {
-	upload.StorerRegister(Name, func(ctx context.Context, typ string) (upload.Storer, error) {
-		return NewSeaweedfs(ctx, typ), nil
+	upload.StorerRegister(Name, func(ctx context.Context, subdir string) (upload.Storer, error) {
+		return NewSeaweedfs(ctx, subdir), nil
 	})
 }
 
-func NewSeaweedfs(ctx context.Context, typ string) *Seaweedfs {
+func NewSeaweedfs(ctx context.Context, subdir string) *Seaweedfs {
 	a, err := DefaultConfig.New()
 	if err != nil {
 		panic(err)
@@ -48,7 +48,7 @@ func NewSeaweedfs(ctx context.Context, typ string) *Seaweedfs {
 	return &Seaweedfs{
 		config:     DefaultConfig,
 		instance:   a,
-		Filesystem: local.NewFilesystem(ctx, typ),
+		Filesystem: local.NewFilesystem(ctx, subdir),
 	}
 }
 
@@ -69,7 +69,7 @@ func (s *Seaweedfs) filepath(fname string) string {
 func (s *Seaweedfs) xPut(dstFile string, src io.Reader, size int64) (savePath string, viewURL string, err error) {
 	savePath = s.filepath(dstFile)
 	var rs *goseaweedfs.FilerUploadResult
-	rs, err = s.instance.Filers()[0].Upload(src, size, savePath, s.Type, s.config.TTL)
+	rs, err = s.instance.Filers()[0].Upload(src, size, savePath, s.Subdir, s.config.TTL)
 	if err != nil {
 		err = errors.WithMessage(err, Name)
 		return
@@ -139,7 +139,7 @@ func (s *Seaweedfs) xDeleteDir(dstDir string) error {
 
 func (s *Seaweedfs) apiPut(dstFile string, src io.Reader, size int64) (fID string, viewURL string, err error) {
 	var part *goseaweedfs.FilePart
-	part, err = s.instance.Upload(src, dstFile, size, s.Type, s.config.TTL)
+	part, err = s.instance.Upload(src, dstFile, size, s.Subdir, s.config.TTL)
 	if err != nil {
 		return
 	}

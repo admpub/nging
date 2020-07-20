@@ -128,6 +128,11 @@ func IsAllowed(subdir string, defaults ...string) bool {
 }
 
 func Get(subdir string) *SubdirInfo {
+	info, _ := subdirs[subdir]
+	return info
+}
+
+func GetOrCreate(subdir string) *SubdirInfo {
 	info, ok := subdirs[subdir]
 	if !ok {
 		return RegisterObject(NewSubdirInfo(subdir, ``))

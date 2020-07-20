@@ -8,7 +8,6 @@ import (
 	"github.com/admpub/nging/application/registry/upload/dbsaver"
 	"github.com/admpub/nging/application/registry/upload/driver"
 	uploadSubdir "github.com/admpub/nging/application/registry/upload/subdir"
-	"github.com/admpub/nging/application/registry/upload/table"
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/echo"
 )
@@ -49,8 +48,8 @@ func Prepare(ctx echo.Context, uploadType string, fileType string, storerInfo st
 	if len(uploadType) == 0 {
 		return nil, ctx.E(`请提供参数“%s”`, ctx.Path())
 	}
-	tableName, fieldName, defaults := table.GetTableInfo(uploadType)
-	if !uploadSubdir.IsAllowed(uploadType, defaults...) {
+	params := uploadSubdir.ParseUploadType(uploadType)
+	if !params.IsAllowed() {
 		return nil, ctx.E(`参数“%s”未被登记`, uploadType)
 	}
 	//echo.Dump(ctx.Forms())
@@ -58,7 +57,11 @@ func Prepare(ctx echo.Context, uploadType string, fileType string, storerInfo st
 	if newStore == nil {
 		return nil, ctx.E(`存储引擎“%s”未被登记`, storerInfo.Name)
 	}
-	dbSaverFn := dbsaver.Get(uploadType, defaults...)
+	dbSaverKey := params.MustGetTable()
+	if len(params.Field) > 0 {
+		dbSaverKey += `.` + params.Field
+	}
+	dbSaverFn := dbsaver.Get(dbSaverKey)
 	checkerFn := func(r *uploadClient.Result) error {
 		extension := path.Ext(r.FileName)
 		if len(r.FileType) > 0 {
@@ -75,9 +78,9 @@ func Prepare(ctx echo.Context, uploadType string, fileType string, storerInfo st
 		StorerInfo: storerInfo,
 		DBSaver:    dbSaverFn,
 		Checker:    checkerFn,
-		Checkin:    uploadSubdir.CheckerGet(uploadType, defaults...),
-		TableName:  tableName,
-		FieldName:  fieldName,
+		Checkin:    uploadSubdir.CheckerGet(params.MustGetSubdir()),
+		TableName:  params.MustGetTable(),
+		FieldName:  params.Field,
 		FileType:   fileType,
 	}
 	return data, nil

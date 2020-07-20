@@ -47,12 +47,12 @@ const (
 var _ upload.Storer = &Filesystem{}
 
 func init() {
-	upload.StorerRegister(Name, func(ctx context.Context, typ string) (upload.Storer, error) {
-		return NewFilesystem(ctx, typ)
+	upload.StorerRegister(Name, func(ctx context.Context, subdir string) (upload.Storer, error) {
+		return NewFilesystem(ctx, subdir)
 	})
 }
 
-func NewFilesystem(ctx context.Context, typ string) (*Filesystem, error) {
+func NewFilesystem(ctx context.Context, subdir string) (*Filesystem, error) {
 	var cloudAccountID string
 	eCtx, ok := ctx.(echo.Context)
 	if !ok {
@@ -79,7 +79,7 @@ func NewFilesystem(ctx context.Context, typ string) (*Filesystem, error) {
 		return nil, errors.WithMessage(err, Name)
 	}
 	return &Filesystem{
-		Filesystem: local.NewFilesystem(ctx, typ, m.Baseurl),
+		Filesystem: local.NewFilesystem(ctx, subdir, m.Baseurl),
 		model:      m,
 		mgr:        mgr,
 	}, nil
@@ -133,7 +133,7 @@ func (f *Filesystem) SendFile(ctx echo.Context, file string) error {
 
 // FileDir 物理路径文件夹
 func (f *Filesystem) FileDir(subpath string) string {
-	return path.Join(helper.UploadURLPath, f.Type, subpath)
+	return path.Join(helper.UploadURLPath, f.Subdir, subpath)
 }
 
 // Put 上传文件

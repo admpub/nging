@@ -38,12 +38,12 @@ const Name = `local`
 var _ upload.Storer = &Filesystem{}
 
 func init() {
-	upload.StorerRegister(Name, func(ctx context.Context, typ string) (upload.Storer, error) {
-		return NewFilesystem(ctx, typ), nil
+	upload.StorerRegister(Name, func(ctx context.Context, subdir string) (upload.Storer, error) {
+		return NewFilesystem(ctx, subdir), nil
 	})
 }
 
-func NewFilesystem(ctx context.Context, typ string, baseURLs ...string) *Filesystem {
+func NewFilesystem(ctx context.Context, subdir string, baseURLs ...string) *Filesystem {
 	var baseURL string
 	if len(baseURLs) > 0 {
 		baseURL = baseURLs[0]
@@ -51,7 +51,7 @@ func NewFilesystem(ctx context.Context, typ string, baseURLs ...string) *Filesys
 	}
 	return &Filesystem{
 		Context: ctx,
-		Type:    typ,
+		Subdir:  subdir,
 		baseURL: baseURL,
 	}
 }
@@ -59,7 +59,7 @@ func NewFilesystem(ctx context.Context, typ string, baseURLs ...string) *Filesys
 // Filesystem 文件系统存储引擎
 type Filesystem struct {
 	context.Context `json:"-" xml:"-"`
-	Type            string
+	Subdir          string
 	baseURL         string
 }
 
@@ -74,12 +74,12 @@ func (f *Filesystem) ErrIsNotExist(err error) bool {
 
 // FileDir 物理路径文件夹
 func (f *Filesystem) FileDir(subpath string) string {
-	return filepath.Join(helper.UploadDir, f.Type, subpath)
+	return filepath.Join(helper.UploadDir, f.Subdir, subpath)
 }
 
 // URLDir 网址路径文件夹
 func (f *Filesystem) URLDir(subpath string) string {
-	return path.Join(helper.UploadURLPath, f.Type, subpath)
+	return path.Join(helper.UploadURLPath, f.Subdir, subpath)
 }
 
 // Exists 判断文件是否存在
