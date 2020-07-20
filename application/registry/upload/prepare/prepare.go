@@ -33,7 +33,7 @@ type PrepareData struct {
 func (p *PrepareData) Storer(ctx echo.Context) (driver.Storer, error) {
 	var err error
 	if p.storer == nil {
-		p.storer, err = p.newStorer(ctx, p.Subdir) // 使用表名称作为文件夹名
+		p.storer, err = p.newStorer(ctx, p.Subdir)
 	}
 	return p.storer, err
 }
