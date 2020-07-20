@@ -23,6 +23,7 @@ type PrepareData struct {
 	DBSaver    dbsaver.DBSaver
 	Checker    uploadClient.Checker
 	Checkin    checker.Checker
+	Subdir     string
 	TableName  string
 	FieldName  string
 	FileType   string
@@ -79,6 +80,7 @@ func Prepare(ctx echo.Context, uploadType string, fileType string, storerInfo st
 		DBSaver:    dbSaverFn,
 		Checker:    checkerFn,
 		Checkin:    uploadSubdir.CheckerGet(params.MustGetSubdir()),
+		Subdir:     params.MustGetSubdir(),
 		TableName:  params.MustGetTable(),
 		FieldName:  params.Field,
 		FileType:   fileType,

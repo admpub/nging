@@ -91,7 +91,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		return err
 	}
 	defer prepareData.Close()
-	subdirInfo := uploadSubdir.Get(prepareData.TableName)
+	subdirInfo := uploadSubdir.Get(prepareData.Subdir)
 	if subdirInfo == nil {
 		return ctx.E(`“%s”未被登记`, uploadType)
 	}
