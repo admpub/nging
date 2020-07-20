@@ -84,3 +84,18 @@ func (f *File) GetIDByViewURLs(viewURLs []interface{}) (r []interface{}) {
 	}
 	return
 }
+
+func (f *File) GetIDByIDs(ids []interface{}) (r []interface{}) {
+	_, err := f.ListByOffset(nil, func(r db.Result) db.Result {
+		return r.Select(`id`)
+	}, 0, -1, db.Cond{
+		`id`: db.In(ids),
+	})
+	if err != nil {
+		return r
+	}
+	for _, v := range f.Objects() {
+		r = append(r, v.Id)
+	}
+	return
+}

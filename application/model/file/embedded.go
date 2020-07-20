@@ -143,6 +143,7 @@ func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, f
 	f.Use(f.base.Tx())
 	f.File.Use(f.Trans())
 
+	// 更新关联未关联的图片数据
 	err = f.File.UpdateUnrelation(project, table, field, tableID, fileIds...)
 	if err != nil {
 		return err
@@ -240,16 +241,38 @@ func (f *Embedded) RelationEmbeddedFiles(project string, table string, field str
 		if exists {
 			return
 		}
-		files = append(files, file)
 		if fid > 0 {
 			fids = append(fids, fid)
+		} else {
+			files = append(files, file)
 		}
 	})
-	if len(fids) < 1 && len(files) > 0 {
-		fids = f.File.GetIDByViewURLs(files)
-	}
+
+	// 仅仅提取数据库中有记录的数据
+	fids = f.FilterNotExistsFileIDs(fids, files)
+
 	err := f.UpdateEmbedded(true, project, table, field, tableID, fids...)
 	return err
+}
+
+// FilterNotExistsFileIDs 仅仅提取数据库中有记录的数据
+func (f *Embedded) FilterNotExistsFileIDs(fids []interface{}, files []interface{}) []interface{} {
+	if len(fids) > 0 {
+		fids = f.File.GetIDByIDs(fids)
+	}
+	if len(files) > 0 {
+		if len(fids) > 0 {
+			ids := f.File.GetIDByViewURLs(files)
+			for _, id := range ids {
+				if !com.InSliceIface(id, fids) {
+					fids = append(fids, id)
+				}
+			}
+		} else {
+			fids = f.File.GetIDByViewURLs(files)
+		}
+	}
+	return fids
 }
 
 func (f *Embedded) RelationFiles(project string, table string, field string, tableID string, v string, seperator ...string) error {
@@ -257,7 +280,6 @@ func (f *Embedded) RelationFiles(project string, table string, field string, tab
 		files []interface{}
 		fids  []interface{} //旧文件ID
 	)
-	//println(`RelationFiles:`, v)
 	uploadHelper.RelatedRes(v, func(file string, fid int64) {
 		var exists bool
 		if fid > 0 {
@@ -268,14 +290,16 @@ func (f *Embedded) RelationFiles(project string, table string, field string, tab
 		if exists {
 			return
 		}
-		files = append(files, file)
 		if fid > 0 {
 			fids = append(fids, fid)
+		} else {
+			files = append(files, file)
 		}
 	}, seperator...)
-	if len(fids) < 1 && len(files) > 0 {
-		fids = f.File.GetIDByViewURLs(files)
-	}
+
+	// 仅仅提取数据库中有记录的数据
+	fids = f.FilterNotExistsFileIDs(fids, files)
+
 	err := f.UpdateEmbedded(false, project, table, field, tableID, fids...)
 	return err
 }

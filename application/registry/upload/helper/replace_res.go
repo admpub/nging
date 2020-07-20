@@ -28,21 +28,20 @@ import (
 )
 
 const (
-	fileCSPattern    = `(?:[^"'#\(\)]+)` //文件名
+	fileNamePattern  = `(?:[^"'#\(\)]+)` //文件名
 	fileStartPattern = `["'\(]`          //起始符号
 	fileEndPattern   = `["'\)]`          //终止符号
 )
 
 var (
-	//defaultFilePattern = `["'\(]([^"'#\(\)]+)#FileID-(\d+)["'\)]`
-	filePattern = fileStartPattern + `(` + fileCSPattern + `\.(?:[\w]+)` + fileCSPattern + `?)` + fileEndPattern
+	filePattern = fileStartPattern + `(` + fileNamePattern + `\.(?:[\w]+)` + fileNamePattern + `?)` + fileEndPattern
 	fileRGX     = regexp.MustCompile(filePattern)
 )
 
 // ReplaceEmbeddedResID 替换正文中的资源网址
 func ReplaceEmbeddedResID(v string, reses map[uint64]string) (r string) {
 	for fid, rurl := range reses {
-		re := regexp.MustCompile(`(` + fileStartPattern + `)` + fileCSPattern + `#FileID-` + fmt.Sprint(fid) + `(` + fileEndPattern + `)`)
+		re := regexp.MustCompile(`(` + fileStartPattern + `)` + fileNamePattern + `#FileID-` + fmt.Sprint(fid) + `(` + fileEndPattern + `)`)
 		v = re.ReplaceAllString(v, `${1}`+rurl+`${2}`)
 	}
 	return v
@@ -139,7 +138,6 @@ func RelatedRes(v string, fn func(string, int64), seperator ...string) {
 	for _, file := range fileList {
 		file = strings.TrimSpace(file)
 		if len(file) == 0 {
-			fn(file, 0)
 			continue
 		}
 		p := strings.LastIndex(file, `#FileID-`)

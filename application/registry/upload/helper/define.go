@@ -90,10 +90,18 @@ func ExtensionUnregister(extensions ...string) {
 	})
 }
 
-func ExtensionRegexpEnd() string {
+func ExtensionRegexpEnd(noCaptures ...bool) string {
+	var noCapture bool
+	if len(noCaptures) > 0 {
+		noCapture = noCaptures[0]
+	}
 	extensions := make([]string, len(AllowedUploadFileExtensions))
 	for index, extension := range AllowedUploadFileExtensions {
 		extensions[index] = regexp.QuoteMeta(extension)
 	}
-	return `(` + strings.Join(extensions, `|`) + `)`
+	var prefix string
+	if noCapture {
+		prefix = `?:`
+	}
+	return `(` + prefix + strings.Join(extensions, `|`) + `)`
 }
