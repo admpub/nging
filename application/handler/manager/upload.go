@@ -45,7 +45,7 @@ var (
 )
 
 // 文件上传保存路径规则：
-// 表名称/表行ID/文件名
+// 子文件夹/表行ID/文件名
 
 // ResponseDataForUpload 根据不同的上传方式响应不同的数据格式
 func ResponseDataForUpload(ctx echo.Context, field string, err error, imageURLs []string) (result echo.H, embed bool) {
