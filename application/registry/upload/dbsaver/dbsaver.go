@@ -1,13 +1,12 @@
-package upload
+package dbsaver
 
 import (
 	"io"
 
-	uploadClient "github.com/webx-top/client/upload"
-
-	"github.com/admpub/color"
 	"github.com/admpub/log"
 	modelFile "github.com/admpub/nging/application/model/file"
+	"github.com/fatih/color"
+	uploadClient "github.com/webx-top/client/upload"
 )
 
 type (
@@ -15,18 +14,18 @@ type (
 )
 
 var (
-	dbSavers       = map[string]DBSaver{}
-	DefaultDBSaver = func(fileM *modelFile.File, result *uploadClient.Result, reader io.Reader) error {
+	dbSavers = map[string]DBSaver{}
+	Default  = func(fileM *modelFile.File, result *uploadClient.Result, reader io.Reader) error {
 		return nil
 	}
 )
 
-func DBSaverRegister(key string, dbsaver DBSaver) {
+func Register(key string, dbsaver DBSaver) {
 	dbSavers[key] = dbsaver
 	log.Info(color.YellowString(`dbsaver.register:`), key)
 }
 
-func DBSaverUnregister(keys ...string) {
+func Unregister(keys ...string) {
 	for _, key := range keys {
 		_, ok := dbSavers[key]
 		if ok {
@@ -35,12 +34,12 @@ func DBSaverUnregister(keys ...string) {
 	}
 }
 
-func DBSaverGet(key string, defaults ...string) DBSaver {
+func Get(key string, defaults ...string) DBSaver {
 	if dbsaver, ok := dbSavers[key]; ok {
 		return dbsaver
 	}
 	if len(defaults) > 0 {
-		return DBSaverGet(defaults[0])
+		return Get(defaults[0])
 	}
-	return DefaultDBSaver
+	return Default
 }

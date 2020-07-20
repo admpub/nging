@@ -34,13 +34,15 @@ import (
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/fileupdater/listener"
 	modelFile "github.com/admpub/nging/application/model/file"
-	"github.com/admpub/nging/application/registry/upload"
+	"github.com/admpub/nging/application/registry/upload/checker"
+	"github.com/admpub/nging/application/registry/upload/dbsaver"
+	uploadSubdir "github.com/admpub/nging/application/registry/upload/subdir"
 	"github.com/admpub/nging/application/registry/upload/table"
 )
 
 func init() {
 	// 用户上传个人文件时的文件命名方式
-	upload.CheckerRegister(`nging_user`, func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
+	uploadSubdir.CheckerRegister(`nging_user`, func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
 		user := handler.User(ctx)
 		if user == nil {
 			err = ctx.E(`登录信息获取失败，请重新登录`)
@@ -49,11 +51,11 @@ func init() {
 		userID := uint64(user.Id)
 		timestamp := ctx.Formx(`time`).Int64()
 		// 验证签名（避免上传接口被滥用）
-		if ctx.Form(`token`) != upload.Token(ctx.Queries()) {
+		if ctx.Form(`token`) != checker.Token(ctx.Queries()) {
 			err = ctx.E(`令牌错误`)
 			return
 		}
-		if time.Now().Local().Unix()-timestamp > upload.UploadLinkLifeTime {
+		if time.Now().Local().Unix()-timestamp > checker.UploadLinkLifeTime {
 			err = ctx.E(`上传网址已过期`)
 			return
 		}
@@ -67,12 +69,12 @@ func init() {
 	}, ``)
 
 	// 文件信息默认保存方式
-	upload.DefaultDBSaver = func(fileM *modelFile.File, result *uploadClient.Result, reader io.Reader) error {
+	dbsaver.Default = func(fileM *modelFile.File, result *uploadClient.Result, reader io.Reader) error {
 		return fileM.Add(reader)
 	}
 
 	// 后台用户头像文件信息保存方式
-	upload.DBSaverRegister(`nging_user.avatar`, func(fileM *modelFile.File, result *uploadClient.Result, reader io.Reader) (err error) {
+	dbsaver.Register(`nging_user.avatar`, func(fileM *modelFile.File, result *uploadClient.Result, reader io.Reader) (err error) {
 		if len(fileM.TableId) == 0 {
 			return fileM.Add(reader)
 		}

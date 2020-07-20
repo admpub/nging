@@ -1,4 +1,4 @@
-package upload
+package checker
 
 import (
 	"fmt"

@@ -30,16 +30,18 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/handler/manager/file"
 	"github.com/admpub/nging/application/library/common"
 	modelFile "github.com/admpub/nging/application/model/file"
-	"github.com/admpub/nging/application/registry/upload"
-	"github.com/admpub/qrcode"
 	"github.com/admpub/nging/application/model/file/storer"
-	"github.com/admpub/nging/application/handler/manager/file"
+	"github.com/admpub/nging/application/registry/upload"
+	uploadPrepare "github.com/admpub/nging/application/registry/upload/prepare"
+	"github.com/admpub/nging/application/registry/upload/table"
+	"github.com/admpub/qrcode"
 )
 
 var (
-	File = file.File
+	File                = file.File
 	GetWatermarkOptions = storer.GetWatermarkOptions
 )
 
@@ -104,7 +106,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	}
 	fileType := ctx.Form(`filetype`)
 	storerInfo := StorerEngine()
-	prepareData, err := upload.Prepare(ctx, uploadType, fileType, storerInfo)
+	prepareData, err := uploadPrepare.Prepare(ctx, uploadType, fileType, storerInfo)
 	if err != nil {
 		datax, embed := ResponseDataForUpload(ctx, field, err, fileURLs)
 		if !embed {
@@ -223,5 +225,5 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 }
 
 func getTableInfo(uploadType string) (tableName string, fieldName string, defaults []string) {
-	return upload.GetTableInfo(uploadType)
+	return table.GetTableInfo(uploadType)
 }

@@ -38,7 +38,7 @@ import (
 	"github.com/admpub/nging/application/model"
 	"github.com/admpub/nging/application/registry/dashboard"
 	"github.com/admpub/nging/application/registry/navigate"
-	"github.com/admpub/nging/application/registry/upload"
+	"github.com/admpub/nging/application/registry/upload/checker"
 	"github.com/admpub/nging/application/registry/upload/helper"
 )
 
@@ -121,9 +121,9 @@ func FuncMap() echo.MiddlewareFunc {
 			c.SetFunc(`UnixTime`, now.Local().Unix)
 			c.SetFunc(`HasString`, hasString)
 			c.SetFunc(`Date`, date)
-			c.SetFunc(`Token`, upload.Token)
-			c.SetFunc(`BackendUploadURL`, upload.BackendUploadURL)
-			c.SetFunc(`FrontendUploadURL`, upload.FrontendUploadURL)
+			c.SetFunc(`Token`, checker.Token)
+			c.SetFunc(`BackendUploadURL`, checker.BackendUploadURL)
+			c.SetFunc(`FrontendUploadURL`, checker.FrontendUploadURL)
 			c.SetFunc(`Modal`, func(data interface{}) template.HTML {
 				return modal.Render(c, data)
 			})

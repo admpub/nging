@@ -16,7 +16,7 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package upload
+package subdir
 
 import (
 	"fmt"
@@ -24,40 +24,41 @@ import (
 
 	"github.com/admpub/color"
 	"github.com/admpub/log"
+	"github.com/admpub/nging/application/registry/upload/checker"
 )
 
 var (
-	subdirs = map[string]*SubdirInfo{}
+	subdirs   = map[string]*SubdirInfo{}
 	table2dir = map[string]string{}
 )
 
 func init() {
 	//后台用户文件
-	SubdirRegisterObject((&SubdirInfo{
+	RegisterObject((&SubdirInfo{
 		Allowed:     true,
 		Key:         "nging_user",
 		Name:        "后台用户",
 		Description: "",
 	}).SetTableName("nging_user").SetFieldName(`:个人文件`, `avatar:头像`))
 	//后台系统设置中的图片
-	SubdirRegisterObject((&SubdirInfo{
+	RegisterObject((&SubdirInfo{
 		Allowed:     true,
 		Key:         "nging_config",
 		Name:        "站点公告图片",
 		Description: "",
-		checker:     ConfigChecker,
+		checker:     checker.ConfigChecker,
 	}).SetTableName("nging_config"))
 }
 
-func SubdirRegister(subdir interface{}, nameAndDescription ...string) *SubdirInfo {
+func Register(subdir interface{}, nameAndDescription ...string) *SubdirInfo {
 	var key string
 	switch v := subdir.(type) {
 	case string:
 		key = v
 	case *SubdirInfo:
-		return SubdirRegisterObject(v)
+		return RegisterObject(v)
 	case SubdirInfo:
-		return SubdirRegisterObject(&v)
+		return RegisterObject(&v)
 	default:
 		panic(fmt.Sprintf(`Unsupported type: %T`, v))
 	}
@@ -88,11 +89,11 @@ func SubdirRegister(subdir interface{}, nameAndDescription ...string) *SubdirInf
 	case 1:
 		info.tableName = r[0]
 	}
-	SubdirRegisterObject(info)
+	RegisterObject(info)
 	return info
 }
 
-func SubdirRegisterObject(info *SubdirInfo) *SubdirInfo {
+func RegisterObject(info *SubdirInfo) *SubdirInfo {
 	in, ok := subdirs[info.Key]
 	if ok {
 		return in.CopyFrom(info)
@@ -102,7 +103,7 @@ func SubdirRegisterObject(info *SubdirInfo) *SubdirInfo {
 	return info
 }
 
-func SubdirUnregister(subdirList ...string) {
+func Unregister(subdirList ...string) {
 	for _, subdir := range subdirList {
 		_, ok := subdirs[subdir]
 		if ok {
@@ -111,35 +112,35 @@ func SubdirUnregister(subdirList ...string) {
 	}
 }
 
-func SubdirAll() map[string]*SubdirInfo {
+func All() map[string]*SubdirInfo {
 	return subdirs
 }
 
-func SubdirIsAllowed(subdir string, defaults ...string) bool {
+func IsAllowed(subdir string, defaults ...string) bool {
 	info, ok := subdirs[subdir]
 	if !ok || info == nil {
 		if len(defaults) > 0 {
-			return SubdirIsAllowed(defaults[0])
+			return IsAllowed(defaults[0])
 		}
 		return false
 	}
 	return info.Allowed
 }
 
-func SubdirGet(subdir string) *SubdirInfo {
+func Get(subdir string) *SubdirInfo {
 	info, ok := subdirs[subdir]
 	if !ok {
-		return SubdirRegisterObject(NewSubdirInfo(subdir, ``))
+		return RegisterObject(NewSubdirInfo(subdir, ``))
 	}
 	return info
 }
 
-func SubdirGetByTable(table string) *SubdirInfo {
+func GetByTable(table string) *SubdirInfo {
 	subdir, ok := table2dir[table]
 	if !ok {
 		return nil
 	}
-	return SubdirGet(subdir)
+	return Get(subdir)
 }
 
 // CleanTempFile 清理临时文件

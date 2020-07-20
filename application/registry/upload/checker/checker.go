@@ -16,17 +16,14 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package upload
+package checker
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/color"
-	"github.com/admpub/log"
 	"github.com/admpub/nging/application/registry/upload/table"
 )
 
@@ -36,8 +33,8 @@ var UploadLinkLifeTime int64 = 86400
 // Checker 验证并生成子文件夹名称和文件名称
 type Checker func(echo.Context, table.TableInfoStorer) (subdir string, name string, err error)
 
-// DefaultChecker 默认Checker
-var DefaultChecker = func(ctx echo.Context, t table.TableInfoStorer) (subdir string, name string, err error) {
+// Default 默认Checker
+var Default = func(ctx echo.Context, t table.TableInfoStorer) (subdir string, name string, err error) {
 	refid := ctx.Formx(`refid`).String()
 	timestamp := ctx.Formx(`time`).Int64()
 	if len(refid) == 0 {
@@ -78,30 +75,4 @@ func ConfigChecker(ctx echo.Context, t table.TableInfoStorer) (subdir string, na
 	t.SetTableName(`nging_config`)
 	t.SetFieldName(`value`)
 	return
-}
-
-func CheckerRegister(typ string, checker Checker, fieldNames ...string) {
-	log.Info(color.GreenString(`checker.register:`), typ)
-	if len(fieldNames) > 0 {
-		SubdirGet(typ).SetChecker(checker, fieldNames...)
-		return
-	}
-	tableName, fieldName, _ := GetTableInfo(typ)
-	info := SubdirGet(tableName)
-	info.SetChecker(checker, fieldName)
-}
-
-func CheckerGet(typ string, defaults ...string) Checker {
-	s := SubdirGet(typ)
-	if s != nil {
-		return s.MustChecker()
-	}
-	if len(defaults) == 0 {
-		tmp := strings.SplitN(typ, `.`, 2)
-		if len(tmp) == 2 {
-			return CheckerGet(tmp[0])
-		}
-		return DefaultChecker
-	}
-	return CheckerGet(defaults[0])
 }

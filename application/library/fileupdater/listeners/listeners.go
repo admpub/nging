@@ -32,7 +32,7 @@ func New() *Listeners {
 
 type Listeners map[string]func(m factory.Model) (tableID string, content string, property *listener.Property)
 
-func (a *Listeners) Listen(tableName string, embedded bool, seperatorAndSameFields ...string) *Listeners {
+func (a *Listeners) Listen(tableName string, embedded bool, seperatorAndSameFields ...string) {
 	var sameFields []string
 	var seperator string
 	if len(seperatorAndSameFields) > 0 {
@@ -48,7 +48,7 @@ func (a *Listeners) Listen(tableName string, embedded bool, seperatorAndSameFiel
 	return a
 }
 
-func (a *Listeners) ListenByField(fieldNames string, tableName string, embedded bool, seperatorAndSameFields ...string) *Listeners {
+func (a *Listeners) ListenByField(fieldNames string, tableName string, embedded bool, seperatorAndSameFields ...string) {
 	var sameFields []string
 	var seperator string
 	if len(seperatorAndSameFields) > 0 {

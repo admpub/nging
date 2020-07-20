@@ -29,6 +29,7 @@ import (
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/registry/upload/convert"
 	uploadStorer "github.com/admpub/nging/application/registry/upload/driver"
+	uploadSubdir "github.com/admpub/nging/application/registry/upload/subdir"
 )
 
 func (f *Embedded) getSeperator(content string) string {
@@ -44,7 +45,7 @@ func (f *Embedded) getSeperator(content string) string {
 }
 
 func (f *Embedded) renameFile(
-	tableName string, fieldName string,
+	subdir string, fieldName string,
 	savePath string, viewURL string,
 	replaceFrom string, replaceTo string,
 	savePathSep string, prefixes ...string) (newSavePath string, newViewURL string, prefix string) {
@@ -56,13 +57,13 @@ func (f *Embedded) renameFile(
 		return
 	}
 	pos := strings.LastIndex(viewURLTmp[0], viewURLSep)
-	if viewURLTmp[0][pos+1:] != tableName {
-		viewURLTmp[0] = viewURLTmp[0][0:pos] + viewURLSep + tableName
+	if viewURLTmp[0][pos+1:] != subdir {
+		viewURLTmp[0] = viewURLTmp[0][0:pos] + viewURLSep + subdir
 	}
 	savePathTmp := strings.SplitN(savePath, savePathSep+replaceFrom+savePathSep, 2)
 	pos = strings.LastIndex(savePathTmp[0], savePathSep)
-	if savePathTmp[0][pos+1:] != tableName {
-		savePathTmp[0] = savePathTmp[0][0:pos] + savePathSep + tableName
+	if savePathTmp[0][pos+1:] != subdir {
+		savePathTmp[0] = savePathTmp[0][0:pos] + savePathSep + subdir
 	}
 	if fieldName == `avatar` {
 		ext := path.Ext(viewURLTmp[1])
@@ -91,7 +92,6 @@ func (f *Embedded) MoveFileToOwner(tableName string, fileIDs []uint64, ownerID s
 		return replaces, err
 	}
 	replaceFrom := `0`
-	findFrom := `/` + replaceFrom + `/`
 	replaceTo := ownerID
 	storers := map[string]uploadStorer.Storer{}
 	defer func() {
@@ -99,8 +99,15 @@ func (f *Embedded) MoveFileToOwner(tableName string, fileIDs []uint64, ownerID s
 			storer.Close()
 		}
 	}()
+	subdirInfo := uploadSubdir.GetByTable(tableName)
+	if subdirInfo == nil {
+		return replaces, nil
+	}
+	subdir := subdirInfo.Key
 	otherFormatExtensions := convert.Extensions()
 	for _, file := range f.File.Objects() {
+		savePathSep := f.getSeperator(file.SavePath)
+		findFrom := savePathSep + replaceFrom + savePathSep
 		if !strings.Contains(file.SavePath, findFrom) {
 			continue
 		}
@@ -116,8 +123,7 @@ func (f *Embedded) MoveFileToOwner(tableName string, fileIDs []uint64, ownerID s
 			}
 			storers[file.StorerName] = storer
 		}
-		savePathSep := f.getSeperator(file.SavePath)
-		newSavePath, newViewURL, prefix := f.renameFile(tableName, file.FieldName, file.SavePath, file.ViewUrl, replaceFrom, replaceTo, savePathSep)
+		newSavePath, newViewURL, prefix := f.renameFile(subdir, file.FieldName, file.SavePath, file.ViewUrl, replaceFrom, replaceTo, savePathSep)
 		if newSavePath != file.SavePath {
 			if errMv := storer.Move(file.SavePath, newSavePath); errMv != nil && !os.IsNotExist(errMv) {
 				return replaces, errMv
@@ -148,7 +154,7 @@ func (f *Embedded) MoveFileToOwner(tableName string, fileIDs []uint64, ownerID s
 			if !strings.Contains(thumb.SavePath, findFrom) {
 				continue
 			}
-			newSavePath, newViewURL, _ := f.renameFile(tableName, file.FieldName, thumb.SavePath, thumb.ViewUrl, replaceFrom, replaceTo, savePathSep, prefix)
+			newSavePath, newViewURL, _ := f.renameFile(subdir, file.FieldName, thumb.SavePath, thumb.ViewUrl, replaceFrom, replaceTo, savePathSep, prefix)
 			if newSavePath != thumb.SavePath {
 				if errMv := storer.Move(thumb.SavePath, newSavePath); errMv != nil && !os.IsNotExist(errMv) {
 					return replaces, errMv

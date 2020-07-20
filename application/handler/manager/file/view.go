@@ -15,13 +15,14 @@ import (
 	"github.com/admpub/nging/application/registry/upload/convert"
 	"github.com/admpub/nging/application/registry/upload/driver/local"
 	"github.com/admpub/nging/application/registry/upload/helper"
+	"github.com/admpub/nging/application/registry/upload/table"
 )
 
 var fileGeneratorLock = sync.RWMutex{}
 
 func File(ctx echo.Context) error {
 	uploadType := ctx.Param(`type`)
-	typ, _, _ := upload.GetTableInfo(uploadType)
+	typ, _, _ := table.GetTableInfo(uploadType)
 	file := ctx.Param(`*`)
 	file = filepath.Join(helper.UploadDir, typ, file)
 	var (

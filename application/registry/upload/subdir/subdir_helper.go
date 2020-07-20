@@ -1,4 +1,4 @@
-package upload
+package subdir
 
 import "github.com/admpub/nging/application/registry/upload/table"
 

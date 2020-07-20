@@ -27,13 +27,14 @@ import (
 	"github.com/admpub/nging/application/handler"
 	_ "github.com/admpub/nging/application/listener/upload/file"
 	"github.com/admpub/nging/application/middleware"
-	"github.com/admpub/nging/application/registry/upload"
+	"github.com/admpub/nging/application/registry/upload/checker"
+	uploadSubdir "github.com/admpub/nging/application/registry/upload/subdir"
 	"github.com/admpub/nging/application/registry/upload/table"
 )
 
 func init() {
 	// 后台用户头像上传
-	upload.CheckerRegister(`nging_user.avatar`, func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
+	uploadSubdir.CheckerRegister(`nging_user.avatar`, func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
 		userID := ctx.Formx(`refid`).Uint64() //为0代表新增用户
 		user := handler.User(ctx)
 		if user != nil {
@@ -49,11 +50,11 @@ func init() {
 		}
 		timestamp := ctx.Formx(`time`).Int64()
 		// 验证签名（避免上传接口被滥用）
-		if ctx.Form(`token`) != upload.Token(`refid`, userID, `time`, timestamp) {
+		if ctx.Form(`token`) != checker.Token(`refid`, userID, `time`, timestamp) {
 			err = ctx.E(`令牌错误`)
 			return
 		}
-		if time.Now().Local().Unix()-timestamp > upload.UploadLinkLifeTime {
+		if time.Now().Local().Unix()-timestamp > checker.UploadLinkLifeTime {
 			err = ctx.E(`上传网址已过期`)
 			return
 		}

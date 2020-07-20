@@ -16,18 +16,17 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package upload
+package subdir
 
 import (
 	"fmt"
 	"sort"
 	"strings"
 
+	"github.com/admpub/nging/application/registry/upload/checker"
+	"github.com/admpub/nging/application/registry/upload/table"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
-
-	pkgListeners "github.com/admpub/nging/application/library/fileupdater/listeners"
-	"github.com/admpub/nging/application/registry/upload/table"
 )
 
 type ThumbSize struct {
@@ -39,11 +38,15 @@ func (t ThumbSize) String() string {
 	return fmt.Sprintf("%vx%v", t.Width, t.Height)
 }
 
+type Listener interface {
+	Listen(tableName string, embedded bool, seperatorAndSameFields ...string)
+}
+
 type FieldInfo struct {
 	Key     string
 	Name    string
 	Thumb   []ThumbSize
-	checker Checker
+	checker checker.Checker
 }
 
 func (info *FieldInfo) String() string {
@@ -60,12 +63,12 @@ func (info *FieldInfo) IsEmpty() bool {
 	return len(info.Key) == 0 && len(info.Name) == 0 && len(info.Thumb) == 0 && info.checker == nil
 }
 
-func (info *FieldInfo) AddChecker(checker Checker) *FieldInfo {
-	if checker == nil {
+func (info *FieldInfo) AddChecker(checkerFn checker.Checker) *FieldInfo {
+	if checkerFn == nil {
 		return info
 	}
 	if info.checker == nil {
-		info.checker = checker
+		info.checker = checkerFn
 		return info
 	}
 	oldChecker := info.checker
@@ -74,7 +77,7 @@ func (info *FieldInfo) AddChecker(checker Checker) *FieldInfo {
 		if err != nil {
 			return
 		}
-		subdir2, name2, err2 := checker(ctx, tbl)
+		subdir2, name2, err2 := checkerFn(ctx, tbl)
 		if err2 != nil {
 			err = err2
 		}
@@ -91,27 +94,27 @@ func (info *FieldInfo) AddChecker(checker Checker) *FieldInfo {
 
 // SubdirInfo 子目录信息
 type SubdirInfo struct {
-	Allowed     bool
-	Key         string
-	Name        string
-	NameEN      string
-	Description string
+	Allowed     bool   // 是否允许上传
+	Key         string // 子目录文件夹名
+	Name        string // 子目录中文名称
+	NameEN      string // 子目录英文名称
+	Description string // 子目录简述
 
 	tableName  string
 	fieldInfos map[string]*FieldInfo
-	checker    Checker
+	checker    checker.Checker
 }
 
-func NewSubdirInfo(key, name string, checkers ...Checker) *SubdirInfo {
-	var checker Checker
+func NewSubdirInfo(key, name string, checkers ...checker.Checker) *SubdirInfo {
+	var checkerFn checker.Checker
 	if len(checkers) > 0 {
-		checker = checkers[0]
+		checkerFn = checkers[0]
 	}
 	return &SubdirInfo{
 		Allowed: true,
 		Key:     key,
 		Name:    name,
-		checker: checker,
+		checker: checkerFn,
 	}
 }
 
@@ -318,14 +321,14 @@ func (i *SubdirInfo) parseFieldInfo(field string) (fieldName string, fieldText s
 	return
 }
 
-func (i *SubdirInfo) AddFieldName(fieldName string, checkers ...Checker) *SubdirInfo {
+func (i *SubdirInfo) AddFieldName(fieldName string, checkers ...checker.Checker) *SubdirInfo {
 	var (
 		fieldText string
-		checker   Checker
+		checkerFn checker.Checker
 		thumbSize []ThumbSize
 	)
 	if len(checkers) > 0 {
-		checker = checkers[0]
+		checkerFn = checkers[0]
 	}
 	fieldName, fieldText, thumbSize = i.parseFieldInfo(fieldName)
 	info, ok := i.fieldInfos[fieldName]
@@ -334,13 +337,13 @@ func (i *SubdirInfo) AddFieldName(fieldName string, checkers ...Checker) *Subdir
 			Key:     fieldName,
 			Name:    fieldText,
 			Thumb:   thumbSize,
-			checker: checker,
+			checker: checkerFn,
 		}
 	} else {
 		if len(fieldText) > 0 {
 			info.Name = fieldText
 		}
-		info.AddChecker(checker)
+		info.AddChecker(checkerFn)
 		if len(thumbSize) > 0 {
 			info.Thumb = append(info.Thumb, thumbSize...)
 		}
@@ -355,7 +358,7 @@ func (i *SubdirInfo) GetNameEN() string {
 	return i.Name
 }
 
-func (i *SubdirInfo) SetChecker(checker Checker, fieldNames ...string) *SubdirInfo {
+func (i *SubdirInfo) SetChecker(checkerFn checker.Checker, fieldNames ...string) *SubdirInfo {
 	if len(fieldNames) > 0 {
 		if i.fieldInfos == nil {
 			i.fieldInfos = make(map[string]*FieldInfo)
@@ -366,37 +369,37 @@ func (i *SubdirInfo) SetChecker(checker Checker, fieldNames ...string) *SubdirIn
 			info, _ = i.fieldInfos[fieldNames[0]]
 			//panic(`not found: ` + i.Key + `.` + fieldNames[0])
 		}
-		info.AddChecker(checker)
+		info.AddChecker(checkerFn)
 		return i
 	}
-	i.checker = checker
+	i.checker = checkerFn
 	return i
 }
 
-func (i *SubdirInfo) Checker() Checker {
+func (i *SubdirInfo) Checker() checker.Checker {
 	return i.checker
 }
 
-func (i *SubdirInfo) MustChecker() Checker {
+func (i *SubdirInfo) MustChecker() checker.Checker {
 	return func(ctx echo.Context, tab table.TableInfoStorer) (subdir string, name string, err error) {
 		tab.SetTableName(i.TableName())
 		if !i.ValidFieldName(tab.FieldName()) {
 			err = table.ErrInvalidFieldName
 		}
 		//echo.Dump(echo.H{`field`: tab.FieldName(), `fields`: i.fieldInfos})
-		var checker Checker
+		var checkerFn checker.Checker
 		info, ok := i.fieldInfos[tab.FieldName()]
 		if ok {
-			checker = info.checker
+			checkerFn = info.checker
 		}
-		if checker == nil {
+		if checkerFn == nil {
 			if i.checker != nil {
-				checker = i.checker
+				checkerFn = i.checker
 			} else {
-				checker = DefaultChecker
+				checkerFn = checker.Default
 			}
 		}
-		subdir, name, err = checker(ctx, tab)
+		subdir, name, err = checkerFn(ctx, tab)
 		return
 	}
 }
@@ -421,7 +424,7 @@ func (i *SubdirInfo) SetDescription(description string) *SubdirInfo {
 	return i
 }
 
-func (i *SubdirInfo) Listen(listeners *pkgListeners.Listeners, embedded bool, seperator ...string) *SubdirInfo {
-	listeners.Listen(i.TableName(), embedded, seperator...)
+func (i *SubdirInfo) Listen(listener Listener, embedded bool, seperator ...string) *SubdirInfo {
+	listener.Listen(i.TableName(), embedded, seperator...)
 	return i
 }

@@ -39,8 +39,9 @@ import (
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/middleware"
 	modelFile "github.com/admpub/nging/application/model/file"
-	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/convert"
+	uploadPrepare "github.com/admpub/nging/application/registry/upload/prepare"
+	uploadSubdir "github.com/admpub/nging/application/registry/upload/subdir"
 )
 
 // cropPermCheckers 裁剪权限检查
@@ -85,12 +86,12 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		uploadType = ctx.Form(`type`)
 	}
 	storerInfo := StorerEngine()
-	prepareData, err := upload.Prepare(ctx, uploadType, ``, storerInfo)
+	prepareData, err := uploadPrepare.Prepare(ctx, uploadType, ``, storerInfo)
 	if err != nil {
 		return err
 	}
 	defer prepareData.Close()
-	subdirInfo := upload.SubdirGet(prepareData.TableName)
+	subdirInfo := uploadSubdir.Get(prepareData.TableName)
 	if subdirInfo == nil {
 		return ctx.E(`“%s”未被登记`, uploadType)
 	}
@@ -111,7 +112,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		thumbWidth = param.AsFloat64(cropSizeArr[0])
 		thumbHeight = thumbWidth
 	}
-	var thumbSize *upload.ThumbSize
+	var thumbSize *uploadSubdir.ThumbSize
 	if len(thumbSizes) > 0 {
 		for _, ts := range thumbSizes {
 			if ts.Width == thumbWidth && ts.Height == thumbHeight {

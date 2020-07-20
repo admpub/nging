@@ -20,12 +20,13 @@ package list
 
 import (
 	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/registry/upload"
+	"github.com/admpub/nging/application/registry/upload/subdir"
+	uploadSubdir "github.com/admpub/nging/application/registry/upload/subdir"
 )
 
 type FileInfo struct {
 	*dbschema.NgingFile
-	SubdirInfo *upload.SubdirInfo `db:"-"`
+	SubdirInfo *uploadSubdir.SubdirInfo `db:"-"`
 }
 
 var FileList = func(list []*dbschema.NgingFile) interface{} {
@@ -33,7 +34,7 @@ var FileList = func(list []*dbschema.NgingFile) interface{} {
 	for k, v := range list {
 		listData[k] = &FileInfo{
 			NgingFile:  v,
-			SubdirInfo: upload.SubdirGetByTable(v.TableName),
+			SubdirInfo: subdir.GetByTable(v.TableName),
 		}
 	}
 	return listData
