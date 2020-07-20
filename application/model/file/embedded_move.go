@@ -27,8 +27,8 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/dbschema"
-	uploadStorer "github.com/admpub/nging/application/registry/upload/driver"
 	"github.com/admpub/nging/application/registry/upload/convert"
+	uploadStorer "github.com/admpub/nging/application/registry/upload/driver"
 )
 
 func (f *Embedded) getSeperator(content string) string {
@@ -91,6 +91,7 @@ func (f *Embedded) MoveFileToOwner(tableName string, fileIDs []uint64, ownerID s
 		return replaces, err
 	}
 	replaceFrom := `0`
+	findFrom := `/` + replaceFrom + `/`
 	replaceTo := ownerID
 	storers := map[string]uploadStorer.Storer{}
 	defer func() {
@@ -100,7 +101,7 @@ func (f *Embedded) MoveFileToOwner(tableName string, fileIDs []uint64, ownerID s
 	}()
 	otherFormatExtensions := convert.Extensions()
 	for _, file := range f.File.Objects() {
-		if !strings.Contains(file.SavePath, replaceFrom) {
+		if !strings.Contains(file.SavePath, findFrom) {
 			continue
 		}
 		storer, ok := storers[file.StorerName]
@@ -122,13 +123,13 @@ func (f *Embedded) MoveFileToOwner(tableName string, fileIDs []uint64, ownerID s
 				return replaces, errMv
 			}
 			for _, extension := range otherFormatExtensions {
-				if errMv := storer.Move(file.SavePath + extension, newSavePath + extension); errMv != nil && !os.IsNotExist(errMv) {
+				if errMv := storer.Move(file.SavePath+extension, newSavePath+extension); errMv != nil && !os.IsNotExist(errMv) {
 					return replaces, errMv
 				}
 			}
 		}
 		replaces[file.ViewUrl] = newViewURL
-		err = file.SetFields(nil, echo.H{
+		err = file.CPAFrom(f.NgingFileEmbedded).SetFields(nil, echo.H{
 			`save_path`:  newSavePath,
 			`view_url`:   newViewURL,
 			`save_name`:  path.Base(newViewURL),
@@ -138,12 +139,13 @@ func (f *Embedded) MoveFileToOwner(tableName string, fileIDs []uint64, ownerID s
 			return replaces, err
 		}
 		thumbM := &dbschema.NgingFileThumb{}
+		thumbM.CPAFrom(f.NgingFileEmbedded)
 		_, err = thumbM.ListByOffset(nil, nil, 0, -1, db.Cond{`file_id`: file.Id})
 		if err != nil {
 			return replaces, err
 		}
 		for _, thumb := range thumbM.Objects() {
-			if !strings.Contains(thumb.SavePath, replaceFrom) {
+			if !strings.Contains(thumb.SavePath, findFrom) {
 				continue
 			}
 			newSavePath, newViewURL, _ := f.renameFile(tableName, file.FieldName, thumb.SavePath, thumb.ViewUrl, replaceFrom, replaceTo, savePathSep, prefix)
@@ -152,13 +154,13 @@ func (f *Embedded) MoveFileToOwner(tableName string, fileIDs []uint64, ownerID s
 					return replaces, errMv
 				}
 				for _, extension := range otherFormatExtensions {
-					if errMv := storer.Move(thumb.SavePath + extension, newSavePath + extension); errMv != nil && !os.IsNotExist(errMv) {
+					if errMv := storer.Move(thumb.SavePath+extension, newSavePath+extension); errMv != nil && !os.IsNotExist(errMv) {
 						return replaces, errMv
 					}
 				}
 			}
 			replaces[thumb.ViewUrl] = newViewURL
-			err = thumb.SetFields(nil, echo.H{
+			err = thumb.CPAFrom(f.NgingFileEmbedded).SetFields(nil, echo.H{
 				`save_path`: newSavePath,
 				`view_url`:  newViewURL,
 				`save_name`: path.Base(newViewURL),
