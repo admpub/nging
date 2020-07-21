@@ -34,7 +34,7 @@ type Block struct {
 	Extra   echo.H `json:",omitempty" xml:",omitempty"` // 附加数据
 	Hidden  sql.NullBool
 	Tmpl    string //模板文件
-	Footer  string //末尾模版或JS代码
+	Footer  string //页脚模板文件
 	content func(echo.Context) error
 	hidden  func(echo.Context) bool
 }
