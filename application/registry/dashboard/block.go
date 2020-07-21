@@ -19,6 +19,8 @@
 package dashboard
 
 import (
+	"database/sql"
+
 	"github.com/webx-top/echo"
 )
 
@@ -30,14 +32,20 @@ type Block struct {
 	Title   string `json:",omitempty" xml:",omitempty"` // 标题
 	Ident   string `json:",omitempty" xml:",omitempty"` // 英文标识
 	Extra   echo.H `json:",omitempty" xml:",omitempty"` // 附加数据
+	Hidden  sql.NullBool
 	Tmpl    string //模板文件
 	Footer  string //末尾模版或JS代码
 	content func(echo.Context) error
+	hidden  func(echo.Context) bool
 }
 
 func (c *Block) Ready(ctx echo.Context) error {
 	if c.content != nil {
 		return c.content(ctx)
+	}
+	if !c.Hidden.Valid && c.hidden != nil {
+		c.Hidden.Valid = true
+		c.Hidden.Bool = c.hidden(ctx)
 	}
 	return nil
 }
@@ -54,6 +62,11 @@ func (c *Block) SetIdent(ident string) *Block {
 
 func (c *Block) SetExtra(extra echo.H) *Block {
 	c.Extra = extra
+	return c
+}
+
+func (c *Block) SetHidden(h bool) *Block {
+	c.Hidden = h
 	return c
 }
 
@@ -77,6 +90,11 @@ func (c *Block) SetFooter(footer string) *Block {
 
 func (c *Block) SetContentGenerator(content func(echo.Context) error) *Block {
 	c.content = content
+	return c
+}
+
+func (c *Block) SetHiddenDetector(hidden func(echo.Context) bool) *Block {
+	c.hidden = hidden
 	return c
 }
 
