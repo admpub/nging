@@ -27,6 +27,9 @@ func NewBlock(content func(echo.Context) error) *Block {
 }
 
 type Block struct {
+	Title   string `json:",omitempty" xml:",omitempty"` // 标题
+	Ident   string `json:",omitempty" xml:",omitempty"` // 英文标识
+	Extra   echo.H `json:",omitempty" xml:",omitempty"` // 附加数据
 	Tmpl    string //模板文件
 	Footer  string //末尾模版或JS代码
 	content func(echo.Context) error
@@ -37,6 +40,39 @@ func (c *Block) Ready(ctx echo.Context) error {
 		return c.content(ctx)
 	}
 	return nil
+}
+
+func (c *Block) SetTitle(title string) *Block {
+	c.Title = title
+	return c
+}
+
+func (c *Block) SetIdent(ident string) *Block {
+	c.Ident = ident
+	return c
+}
+
+func (c *Block) SetExtra(extra echo.H) *Block {
+	c.Extra = extra
+	return c
+}
+
+func (c *Block) SetExtraKV(key string, value interface{}) *Block {
+	if c.Extra == nil {
+		c.Extra = echo.H{}
+	}
+	c.Extra.Set(key, value)
+	return c
+}
+
+func (c *Block) SetTmpl(tmpl string) *Block {
+	c.Tmpl = tmpl
+	return c
+}
+
+func (c *Block) SetFooter(footer string) *Block {
+	c.Footer = footer
+	return c
 }
 
 func (c *Block) SetContentGenerator(content func(echo.Context) error) *Block {
