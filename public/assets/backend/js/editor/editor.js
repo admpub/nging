@@ -455,7 +455,7 @@ App.editor.finderDialog = function (remoteURL, callback, zIndex) {
 				callback(files);
 				if (files && files.length > 0) dialog.close();
 			}
-			return $('<iframe src="' + remoteURL + '&callback=' + cb + '" style="width:620px;height:635px;border:0;padding:0;margin:0"></iframe>');
+			return $('<iframe src="' + remoteURL + '&callback=' + cb + '" style="width:100%;height:635px;border:0;padding:0;margin:0"></iframe>');
 			/*
 			var $message = $('<div></div>');
 			var pageToLoad = dialog.getData('pageToLoad');
