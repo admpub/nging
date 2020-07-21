@@ -159,18 +159,6 @@ var App = function () {
 		});
 	}
 
-	function showRequriedInputStar(){
-		$('form').each(function(){
-			$(this).find('input[required]').each(function(){
-				var row = $(this).parents('.form-group');
-				if (row.length<1) return;
-				var lbl = row.children('.control-label:not(.required)');
-				if (lbl.length<1) return;
-				lbl.addClass('required');
-			});
-		});
-	}
-
 	var cachedLang = null;
 	return {
 		clientID: {},
@@ -293,7 +281,7 @@ var App = function () {
 			$.extend(config, options);
 			App.initLeftNav();
 			App.initTool();
-			showRequriedInputStar();
+			App.showRequriedInputStar();
 			/*Small devices toggle*/
 			$(".cl-toggle").click(function (e) {
 				var ul = $(".cl-vnavigation");
@@ -1454,7 +1442,20 @@ var App = function () {
 				  	});
 				});
 			}
+		},
+		showRequriedInputStar:function(){
+			$('form:not([required-redstar])').each(function(){
+				$(this).find('input[required]').each(function(){
+					var row = $(this).parents('.form-group');
+					if (row.length<1) return;
+					var lbl = row.children('.control-label:not(.required)');
+					if (lbl.length<1) return;
+					lbl.addClass('required');
+				});
+				$(this).attr('required-redstar','1');
+			});
 		}
+	
 	};
 
 }();
