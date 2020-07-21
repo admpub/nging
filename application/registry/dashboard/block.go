@@ -43,11 +43,16 @@ func (c *Block) Ready(ctx echo.Context) error {
 	if c.content != nil {
 		return c.content(ctx)
 	}
+	c.IsHidden(ctx)
+	return nil
+}
+
+func (c *Block) IsHidden(ctx echo.Context) bool {
 	if !c.Hidden.Valid && c.hidden != nil {
 		c.Hidden.Valid = true
 		c.Hidden.Bool = c.hidden(ctx)
 	}
-	return nil
+	return c.Hidden.Bool
 }
 
 func (c *Block) SetTitle(title string) *Block {
