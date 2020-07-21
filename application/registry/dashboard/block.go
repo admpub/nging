@@ -128,8 +128,28 @@ func (c *Blocks) Remove(index int) {
 	}
 }
 
-func (c *Blocks) Add(block ...*Block) {
-	*c = append(*c, block...)
+//Add 添加列表项
+func (c *Blocks) Add(index int, list ...*Block) {
+	if len(list) == 0 {
+		return
+	}
+	if index < 0 {
+		*c = append(*c, list...)
+		return
+	}
+	size := c.Size()
+	if size > index {
+		list = append(list, (*c)[index])
+		(*c)[index] = list[0]
+		if len(list) > 1 {
+			c.Add(index+1, list[1:]...)
+		}
+		return
+	}
+	for start, end := size, index-1; start < end; start++ {
+		*c = append(*c, nil)
+	}
+	*c = append(*c, list...)
 }
 
 // Set 设置元素
@@ -162,7 +182,7 @@ func (c *Blocks) Size() int {
 var blocks = Blocks{}
 
 func BlockRegister(block ...*Block) {
-	blocks.Add(block...)
+	blocks.Add(-1, block...)
 }
 
 //BlockRemove 删除元素

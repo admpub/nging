@@ -72,8 +72,27 @@ func (c *TopButtons) Remove(index int) {
 	}
 }
 
-func (c *TopButtons) Add(button ...*TopButton) {
-	*c = append(*c, button...)
+func (c *TopButtons) Add(index int, list ...*TopButton) {
+	if len(list) == 0 {
+		return
+	}
+	if index < 0 {
+		*c = append(*c, list...)
+		return
+	}
+	size := c.Size()
+	if size > index {
+		list = append(list, (*c)[index])
+		(*c)[index] = list[0]
+		if len(list) > 1 {
+			c.Add(index+1, list[1:]...)
+		}
+		return
+	}
+	for start, end := size, index-1; start < end; start++ {
+		*c = append(*c, nil)
+	}
+	*c = append(*c, list...)
 }
 
 // Set 设置元素
@@ -119,7 +138,7 @@ var topButtons = TopButtons{
 }
 
 func TopButtonRegister(topButton ...*TopButton) {
-	topButtons.Add(topButton...)
+	topButtons.Add(-1, topButton...)
 }
 
 //TopButtonRemove 删除元素
