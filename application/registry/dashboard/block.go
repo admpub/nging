@@ -185,6 +185,10 @@ func BlockRegister(block ...*Block) {
 	blocks.Add(-1, block...)
 }
 
+func BlockAdd(index int, block ...*Block) {
+	blocks.Add(index, block...)
+}
+
 //BlockRemove 删除元素
 func BlockRemove(index int) {
 	blocks.Remove(index)

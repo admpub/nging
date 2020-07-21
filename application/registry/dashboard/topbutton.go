@@ -141,6 +141,10 @@ func TopButtonRegister(topButton ...*TopButton) {
 	topButtons.Add(-1, topButton...)
 }
 
+func TopButtonAdd(index int, topButton ...*TopButton) {
+	topButtons.Add(index, topButton...)
+}
+
 //TopButtonRemove 删除元素
 func TopButtonRemove(index int) {
 	topButtons.Remove(index)

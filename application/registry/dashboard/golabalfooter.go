@@ -124,8 +124,12 @@ func (c *GlobalFooters) Size() int {
 
 var globalFooters = GlobalFooters{}
 
-func GlobalFooterRegister(topButton ...*GlobalFooter) {
-	globalFooters.Add(-1, topButton...)
+func GlobalFooterRegister(footer ...*GlobalFooter) {
+	globalFooters.Add(-1, footer...)
+}
+
+func GlobalFooterAdd(index int, footer ...*GlobalFooter) {
+	globalFooters.Add(index, footer...)
 }
 
 //GlobalFooterRemove 删除元素

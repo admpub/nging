@@ -144,6 +144,10 @@ func CardRegister(card ...*Card) {
 	cards.Add(-1, card...)
 }
 
+func CardAdd(index int, card ...*Card) {
+	cards.Add(index, card...)
+}
+
 //CardRemove 删除元素
 func CardRemove(index int) {
 	cards.Remove(index)
