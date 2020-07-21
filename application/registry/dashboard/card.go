@@ -158,6 +158,6 @@ func CardSet(index int, list ...*Card) {
 	cards.Set(index, list...)
 }
 
-func CardAll() *Cards {
+func CardAll(_ echo.Context) *Cards {
 	return cards
 }

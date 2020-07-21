@@ -37,8 +37,8 @@ func Index(ctx echo.Context) error {
 		return ctx.Redirect(handler.URLFor(`/login`))
 	}
 	var err error
-	ctx.Set(`cards`, dashboard.CardAll().Build(ctx))
-	blocks := dashboard.BlockAll()
+	ctx.Set(`cards`, dashboard.CardAll(ctx).Build(ctx))
+	blocks := dashboard.BlockAll(ctx)
 	if err = blocks.Ready(ctx); err != nil {
 		return err
 	}
@@ -129,19 +129,19 @@ func Logout(ctx echo.Context) error {
 }
 
 var (
-	donationAccountTypes = echo.NewKVData()
-	defaultDonationAccountType= `alipay`
+	donationAccountTypes       = echo.NewKVData()
+	defaultDonationAccountType = `alipay`
 )
 
 func init() {
 	donationAccountTypes.AddItem(&echo.KV{
-		K: `alipay`, V: `支付宝付款`, X: echo.H{`qrimg`:`alipay.jpg`},
+		K: `alipay`, V: `支付宝付款`, X: echo.H{`qrimg`: `alipay.jpg`},
 	})
 	donationAccountTypes.AddItem(&echo.KV{
-		K: `wechat`, V: `微信支付`, X: echo.H{`qrimg`:`wechat.png`},
+		K: `wechat`, V: `微信支付`, X: echo.H{`qrimg`: `wechat.png`},
 	})
 	donationAccountTypes.AddItem(&echo.KV{
-		K: `btcoin`, V: `比特币支付`, X: echo.H{`qrimg`:`btcoin.jpeg`},
+		K: `btcoin`, V: `比特币支付`, X: echo.H{`qrimg`: `btcoin.jpeg`},
 	})
 }
 

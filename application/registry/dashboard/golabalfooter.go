@@ -142,6 +142,6 @@ func GlobalFooterSet(index int, list ...*GlobalFooter) {
 	globalFooters.Set(index, list...)
 }
 
-func GlobalFooterAll() GlobalFooters {
+func GlobalFooterAll(_ echo.Context) GlobalFooters {
 	return globalFooters
 }

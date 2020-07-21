@@ -202,6 +202,12 @@ func BlockSet(index int, list ...*Block) {
 	blocks.Set(index, list...)
 }
 
-func BlockAll() Blocks {
-	return blocks
+func BlockAll(ctx echo.Context) Blocks {
+	result := make(Blocks, len(blocks))
+	for k, v := range blocks {
+		val := *v
+		val.SetHidden(val.IsHidden(ctx))
+		result[k] = &val
+	}
+	return result
 }

@@ -155,6 +155,6 @@ func TopButtonSet(index int, list ...*TopButton) {
 	topButtons.Set(index, list...)
 }
 
-func TopButtonAll() TopButtons {
+func TopButtonAll(_ echo.Context) TopButtons {
 	return topButtons
 }

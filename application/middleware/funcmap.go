@@ -177,12 +177,12 @@ func FuncMap() echo.MiddlewareFunc {
 				return navigate.ProjectListAll()
 			})
 			c.SetFunc(`TopButtons`, func() dashboard.TopButtons {
-				buttons := dashboard.TopButtonAll()
+				buttons := dashboard.TopButtonAll(c)
 				buttons.Ready(c)
 				return buttons
 			})
 			c.SetFunc(`GlobalFooters`, func() dashboard.GlobalFooters {
-				footers := dashboard.GlobalFooterAll()
+				footers := dashboard.GlobalFooterAll(c)
 				footers.Ready(c)
 				return footers
 			})
