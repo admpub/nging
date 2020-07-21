@@ -65,8 +65,9 @@ func (c *Block) SetExtra(extra echo.H) *Block {
 	return c
 }
 
-func (c *Block) SetHidden(h bool) *Block {
-	c.Hidden = h
+func (c *Block) SetHidden(hidden bool) *Block {
+	c.Hidden.Bool = hidden
+	c.Hidden.Valid = true
 	return c
 }
 
