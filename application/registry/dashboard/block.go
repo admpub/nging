@@ -46,8 +46,8 @@ func (c *Block) SetContentGenerator(content func(echo.Context) error) *Block {
 
 type Blocks []*Block
 
-func (c Blocks) Ready(block echo.Context) error {
-	for _, blk := range c {
+func (c *Blocks) Ready(block echo.Context) error {
+	for _, blk := range *c {
 		if blk != nil {
 			if err := blk.Ready(block); err != nil {
 				return err
@@ -57,49 +57,67 @@ func (c Blocks) Ready(block echo.Context) error {
 	return nil
 }
 
-var blocks = Blocks{}
-
-func BlockRegister(block ...*Block) {
-	blocks = append(blocks, block...)
-}
-
-//BlockRemove 删除元素
-func BlockRemove(index int) {
+// Remove 删除元素
+func (c *Blocks) Remove(index int) {
 	if index < 0 {
-		blocks = blocks[0:0]
+		*c = (*c)[0:0]
 		return
 	}
-	size := len(blocks)
+	size := c.Size()
 	if size > index {
 		if size > index+1 {
-			blocks = append(blocks[0:index], blocks[index+1:]...)
+			*c = append((*c)[0:index], (*c)[index+1:]...)
 		} else {
-			blocks = blocks[0:index]
+			*c = (*c)[0:index]
 		}
 	}
 }
 
-//BlockSet 设置元素
-func BlockSet(index int, list ...*Block) {
+func (c *Blocks) Add(block ...*Block) {
+	*c = append(*c, block...)
+}
+
+// Set 设置元素
+func (c *Blocks) Set(index int, list ...*Block) {
 	if len(list) == 0 {
 		return
 	}
 	if index < 0 {
-		blocks = append(blocks, list...)
+		*c = append(*c, list...)
 		return
 	}
-	size := len(blocks)
+	size := c.Size()
 	if size > index {
-		blocks[index] = list[0]
+		(*c)[index] = list[0]
 		if len(list) > 1 {
-			BlockSet(index+1, list[1:]...)
+			c.Set(index+1, list[1:]...)
 		}
 		return
 	}
 	for start, end := size, index-1; start < end; start++ {
-		blocks = append(blocks, nil)
+		*c = append(*c, nil)
 	}
-	blocks = append(blocks, list...)
+	*c = append(*c, list...)
+}
+
+func (c *Blocks) Size() int {
+	return len(*c)
+}
+
+var blocks = Blocks{}
+
+func BlockRegister(block ...*Block) {
+	blocks.Add(blocks...)
+}
+
+//BlockRemove 删除元素
+func BlockRemove(index int) {
+	blocks.Remove(index)
+}
+
+//BlockSet 设置元素
+func BlockSet(index int, list ...*Block) {
+	blocks.Set(index, list...)
 }
 
 func BlockAll() Blocks {
