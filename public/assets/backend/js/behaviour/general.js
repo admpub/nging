@@ -1445,7 +1445,7 @@ var App = function () {
 		},
 		showRequriedInputStar:function(){
 			$('form:not([required-redstar])').each(function(){
-				$(this).find('input[required]').each(function(){
+				$(this).find('[required]').each(function(){
 					var row = $(this).parents('.form-group');
 					if (row.length<1) return;
 					var lbl = row.children('.control-label:not(.required)');
