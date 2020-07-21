@@ -21,7 +21,7 @@
     {{- end -}}
 </div>
 {{- range $k,$block := Stored.blocks -}}
-{{- if and $block (not $block.Hidden.Bool) -}}
+{{- if and $block (not $block.IsHidden Context) -}}
 {{- if $block.Tmpl}}{{Fetch $block.Tmpl $}}{{end -}}
 {{- end -}}
 {{- end -}}
@@ -77,7 +77,7 @@
 {{/Block}}
 {{Block "footer"}}
 {{- range $k,$block := Stored.blocks -}}
-{{- if and $block (not $block.Hidden.Bool) -}}
+{{- if and $block (not $block.IsHidden Context) -}}
 {{- if $block.Footer}}{{Fetch $block.Footer $}}{{end -}}
 {{- end -}}
 {{- end -}}
