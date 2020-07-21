@@ -5896,3 +5896,12 @@ th[sort].sort-active.sort-up{transform:rotate(0deg);color:rgb(255, 81, 0)}
 th[sort].sort-active.sort-down{transform:rotate(0deg);color:green}
 .btn > input[type="file"]{line-height:34px;margin-top:-10px}
 .collapsed > .fixed{visibility: hidden}
+.control-label.required:after,
+.required .control-label:after{
+  content:"*";
+  position:absolute;
+  margin-top:-3px;
+  z-index:10;
+  /* vertical-align:super; */
+  color:red
+}
