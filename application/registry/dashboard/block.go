@@ -43,14 +43,12 @@ func (c *Block) Ready(ctx echo.Context) error {
 	if c.content != nil {
 		return c.content(ctx)
 	}
-	c.IsHidden(ctx)
 	return nil
 }
 
 func (c *Block) IsHidden(ctx echo.Context) bool {
-	if !c.Hidden.Valid && c.hidden != nil {
-		c.Hidden.Valid = true
-		c.Hidden.Bool = c.hidden(ctx)
+	if c.hidden != nil {
+		return c.hidden(ctx)
 	}
 	return c.Hidden.Bool
 }
