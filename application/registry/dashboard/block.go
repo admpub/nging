@@ -46,10 +46,10 @@ func (c *Block) SetContentGenerator(content func(echo.Context) error) *Block {
 
 type Blocks []*Block
 
-func (c *Blocks) Ready(block echo.Context) error {
+func (c *Blocks) Ready(ctx echo.Context) error {
 	for _, blk := range *c {
 		if blk != nil {
-			if err := blk.Ready(block); err != nil {
+			if err := blk.Ready(ctx); err != nil {
 				return err
 			}
 		}
@@ -107,7 +107,7 @@ func (c *Blocks) Size() int {
 var blocks = Blocks{}
 
 func BlockRegister(block ...*Block) {
-	blocks.Add(blocks...)
+	blocks.Add(block...)
 }
 
 //BlockRemove 删除元素

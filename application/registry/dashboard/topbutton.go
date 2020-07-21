@@ -45,15 +45,62 @@ func (c *TopButton) SetContentGenerator(content func(echo.Context) error) *TopBu
 
 type TopButtons []*TopButton
 
-func (c TopButtons) Ready(block echo.Context) error {
-	for _, blk := range c {
+func (c *TopButtons) Ready(ctx echo.Context) error {
+	for _, blk := range *c {
 		if blk != nil {
-			if err := blk.Ready(block); err != nil {
+			if err := blk.Ready(ctx); err != nil {
 				return err
 			}
 		}
 	}
 	return nil
+}
+
+// Remove 删除元素
+func (c *TopButtons) Remove(index int) {
+	if index < 0 {
+		*c = (*c)[0:0]
+		return
+	}
+	size := c.Size()
+	if size > index {
+		if size > index+1 {
+			*c = append((*c)[0:index], (*c)[index+1:]...)
+		} else {
+			*c = (*c)[0:index]
+		}
+	}
+}
+
+func (c *TopButtons) Add(button ...*TopButton) {
+	*c = append(*c, button...)
+}
+
+// Set 设置元素
+func (c *TopButtons) Set(index int, list ...*TopButton) {
+	if len(list) == 0 {
+		return
+	}
+	if index < 0 {
+		*c = append(*c, list...)
+		return
+	}
+	size := c.Size()
+	if size > index {
+		(*c)[index] = list[0]
+		if len(list) > 1 {
+			c.Set(index+1, list[1:]...)
+		}
+		return
+	}
+	for start, end := size, index-1; start < end; start++ {
+		*c = append(*c, nil)
+	}
+	*c = append(*c, list...)
+}
+
+func (c *TopButtons) Size() int {
+	return len(*c)
 }
 
 var topButtons = TopButtons{
@@ -72,46 +119,17 @@ var topButtons = TopButtons{
 }
 
 func TopButtonRegister(topButton ...*TopButton) {
-	topButtons = append(topButtons, topButton...)
+	topButtons.Add(topButton...)
 }
 
 //TopButtonRemove 删除元素
 func TopButtonRemove(index int) {
-	if index < 0 {
-		topButtons = topButtons[0:0]
-		return
-	}
-	size := len(topButtons)
-	if size > index {
-		if size > index+1 {
-			topButtons = append(topButtons[0:index], topButtons[index+1:]...)
-		} else {
-			topButtons = topButtons[0:index]
-		}
-	}
+	topButtons.Remove(index)
 }
 
 //TopButtonSet 设置元素
 func TopButtonSet(index int, list ...*TopButton) {
-	if len(list) == 0 {
-		return
-	}
-	if index < 0 {
-		topButtons = append(topButtons, list...)
-		return
-	}
-	size := len(topButtons)
-	if size > index {
-		topButtons[index] = list[0]
-		if len(list) > 1 {
-			TopButtonSet(index+1, list[1:]...)
-		}
-		return
-	}
-	for start, end := size, index-1; start < end; start++ {
-		topButtons = append(topButtons, nil)
-	}
-	topButtons = append(topButtons, list...)
+	topButtons.Set(index, list...)
 }
 
 func TopButtonAll() TopButtons {

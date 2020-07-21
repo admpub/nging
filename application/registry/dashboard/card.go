@@ -51,14 +51,61 @@ func (c *Card) SetContentGenerator(content func(echo.Context) interface{}) *Card
 
 type Cards []*Card
 
-func (c Cards) Build(ctx echo.Context) Cards {
-	for _, card := range c {
+func (c *Cards) Build(ctx echo.Context) Cards {
+	for _, card := range *c {
 		card.Build(ctx)
 	}
-	return c
+	return *c
 }
 
-var cards = Cards{
+// Remove 删除元素
+func (c *Cards) Remove(index int) {
+	if index < 0 {
+		*c = (*c)[0:0]
+		return
+	}
+	size := c.Size()
+	if size > index {
+		if size > index+1 {
+			*c = append((*c)[0:index], (*c)[index+1:]...)
+		} else {
+			*c = (*c)[0:index]
+		}
+	}
+}
+
+func (c *Cards) Add(card ...*Card) {
+	*c = append(*c, card...)
+}
+
+// Set 设置元素
+func (c *Cards) Set(index int, list ...*Card) {
+	if len(list) == 0 {
+		return
+	}
+	if index < 0 {
+		*c = append(*c, list...)
+		return
+	}
+	size := c.Size()
+	if size > index {
+		(*c)[index] = list[0]
+		if len(list) > 1 {
+			c.Set(index+1, list[1:]...)
+		}
+		return
+	}
+	for start, end := size, index-1; start < end; start++ {
+		*c = append(*c, nil)
+	}
+	*c = append(*c, list...)
+}
+
+func (c *Cards) Size() int {
+	return len(*c)
+}
+
+var cards = &Cards{
 	{
 		IconName:  `fa-user`,
 		IconColor: `success`,
@@ -75,48 +122,19 @@ var cards = Cards{
 }
 
 func CardRegister(card ...*Card) {
-	cards = append(cards, card...)
+	cards.Add(card...)
 }
 
 //CardRemove 删除元素
 func CardRemove(index int) {
-	if index < 0 {
-		cards = cards[0:0]
-		return
-	}
-	size := len(cards)
-	if size > index {
-		if size > index+1 {
-			cards = append(cards[0:index], cards[index+1:]...)
-		} else {
-			cards = cards[0:index]
-		}
-	}
+	cards.Remove(index)
 }
 
 //CardSet 设置元素
 func CardSet(index int, list ...*Card) {
-	if len(list) == 0 {
-		return
-	}
-	if index < 0 {
-		cards = append(cards, list...)
-		return
-	}
-	size := len(cards)
-	if size > index {
-		cards[index] = list[0]
-		if len(list) > 1 {
-			CardSet(index+1, list[1:]...)
-		}
-		return
-	}
-	for start, end := size, index-1; start < end; start++ {
-		cards = append(cards, nil)
-	}
-	cards = append(cards, list...)
+	cards.Set(index, list...)
 }
 
-func CardAll() Cards {
+func CardAll() *Cards {
 	return cards
 }
