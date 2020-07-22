@@ -26,9 +26,8 @@ import (
 )
 
 type Map struct {
-	V       map[string]*Map
-	Nav     *navigate.Item
-	isOwner bool
+	V   map[string]*Map
+	Nav *navigate.Item
 }
 
 //Import 导入菜单（用户缓存结果）
@@ -89,7 +88,6 @@ func BuildPermActions(values []string) string {
 
 //Parse 解析用户获取的权限
 func (m *Map) Parse(permActions string, navTree *Map) *Map {
-	m.isOwner = true
 	perms := strings.Split(permActions, `,`)
 	for _, perm := range perms {
 		arr := strings.Split(perm, `/`)
@@ -124,16 +122,40 @@ func (m *Map) Parse(permActions string, navTree *Map) *Map {
 	return m
 }
 
-//Check 检测权限
-func (m *Map) Check(perm string, nav *Map) bool {
-	if !m.isOwner {
-		return false
-	}
+func (m *Map) checkByNav(perm string) bool {
 	if m.Nav != nil && m.Nav.Unlimited {
 		return true
 	}
-	if m == nav {
-		return false
+	arr := strings.Split(perm, `/`)
+	navResult := m.V
+	var prefix string
+	for _, a := range arr {
+		key := prefix + a
+		navV, hasNav := navResult[key]
+		if !hasNav {
+			prefix += key + `/`
+			continue
+		}
+		prefix = ``
+		if navV.Nav != nil && navV.Nav.Unlimited {
+			return true
+		}
+		navResult = navV.V
+	}
+	return false
+}
+
+//Check 检测权限
+func (m *Map) Check(perm string, nav *Map) bool {
+	if nav == nil || m == nav {
+		return m.checkByNav(perm)
+	}
+	return m.checkByChecked(perm, nav)
+}
+
+func (m *Map) checkByChecked(perm string, nav *Map) bool {
+	if m.Nav != nil && m.Nav.Unlimited {
+		return true
 	}
 	arr := strings.Split(perm, `/`)
 	result := m.V
