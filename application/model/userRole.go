@@ -125,12 +125,12 @@ func (u *UserRole) CheckPerm(permPath string) bool {
 	if u.PermAction == `*` {
 		return true
 	}
+	navTree := perm.NavTreeCached()
 	if u.permActions == nil {
-		navTree := perm.NavTreeCached()
 		u.permActions = perm.NewMap()
 		u.permActions.Parse(u.PermAction, navTree)
 	}
-	return u.permActions.Check(permPath, perm.NavTreeCached())
+	return u.permActions.Check(permPath, navTree)
 }
 
 func (u *UserRole) CheckCmdPerm2(roleList []*dbschema.NgingUserRole, perm string) (hasPerm bool) {
