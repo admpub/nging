@@ -133,18 +133,6 @@ func FuncMap() echo.MiddlewareFunc {
 			if !config.DefaultConfig.ConnectedDB(false) {
 				return h.Handle(c)
 			}
-			//用户相关函数
-			user, _ := c.Session().Get(`user`).(*dbschema.NgingUser)
-			roleM := model.NewUserRole(c)
-			var roleList []*dbschema.NgingUserRole
-			if user != nil {
-				c.Set(`user`, user)
-				c.SetFunc(`Username`, func() string { return user.Username })
-				roleList = roleM.ListByUser(user)
-				c.Set(`roleList`, roleList)
-			}
-			permission := model.NewPermission().Init(roleList)
-			c.Internal().Set(`permission`, permission)
 			c.SetFunc(`Avatar`, func(avatar string, defaults ...string) string {
 				if len(avatar) > 0 {
 					return tplfunc.AddSuffix(avatar, `_200_200`)
@@ -159,6 +147,34 @@ func FuncMap() echo.MiddlewareFunc {
 			c.SetFunc(`Project`, func(ident string) *navigate.ProjectItem {
 				return navigate.ProjectGet(ident)
 			})
+
+			c.SetFunc(`ProjectSearchIdent`, func(ident string) int {
+				return navigate.ProjectSearchIdent(ident)
+			})
+			c.SetFunc(`Projects`, func() navigate.ProjectList {
+				return navigate.ProjectListAll()
+			})
+			return h.Handle(c)
+		})
+	}
+}
+
+func BackendFuncMap() echo.MiddlewareFunc {
+	return func(h echo.Handler) echo.Handler {
+		return echo.HandlerFunc(func(c echo.Context) error {
+
+			//用户相关函数
+			user, _ := c.Session().Get(`user`).(*dbschema.NgingUser)
+			roleM := model.NewUserRole(c)
+			var roleList []*dbschema.NgingUserRole
+			if user != nil {
+				c.Set(`user`, user)
+				c.SetFunc(`Username`, func() string { return user.Username })
+				roleList = roleM.ListByUser(user)
+				c.Set(`roleList`, roleList)
+			}
+			permission := model.NewPermission().Init(roleList)
+			c.Internal().Set(`permission`, permission)
 			var projectIdent string
 			getProjectIdent := func() string {
 				if len(projectIdent) == 0 {
@@ -172,12 +188,6 @@ func FuncMap() echo.MiddlewareFunc {
 				return projectIdent
 			}
 			c.SetFunc(`ProjectIdent`, getProjectIdent)
-			c.SetFunc(`ProjectSearchIdent`, func(ident string) int {
-				return navigate.ProjectSearchIdent(ident)
-			})
-			c.SetFunc(`Projects`, func() navigate.ProjectList {
-				return navigate.ProjectListAll()
-			})
 			c.SetFunc(`TopButtons`, func() dashboard.TopButtons {
 				buttons := dashboard.TopButtonAll(c)
 				buttons.Ready(c)
