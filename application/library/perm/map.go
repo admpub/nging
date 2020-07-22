@@ -184,10 +184,7 @@ func (m *Map) Check(perm string, nav *Map) bool {
 		}
 		navResult = navV.V
 	}
-	if hasPerm {
-		return true
-	}
-	return false
+	return hasPerm
 }
 
 func NewMap() *Map {
