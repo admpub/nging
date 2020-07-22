@@ -93,17 +93,34 @@ func (u *UserRole) ListByUser(user *dbschema.NgingUser) (roleList []*dbschema.Ng
 	return
 }
 
-func (u *UserRole) CheckPerm2(roleList []*dbschema.NgingUserRole, perm string) (hasPerm bool) {
-	perm = strings.TrimPrefix(perm, `/`)
+func (u *UserRole) CheckPerm2(roleList []*dbschema.NgingUserRole, permPath string) bool {
+	permPath = strings.TrimPrefix(permPath, `/`)
+	if len(roleList) == 0 {
+		return perm.NavTreeCached().Check(permPath, nil)
+	}
+	checked := map[string]struct{}{}
+	var perms, sep string
 	for _, role := range roleList {
-		r := NewUserRole(nil)
-		r.NgingUserRole = role
-		if r.CheckPerm(perm) {
-			hasPerm = true
-			break
+		if len(role.PermAction) == 0 {
+			continue
+		}
+		if role.PermAction == `*` {
+			return true
+		}
+		for _, pa := range strings.Split(role.PermAction, `,`) {
+			if _, ok := checked[pa]; !ok {
+				checked[pa] = struct{}{}
+				perms += sep + pa
+				sep = `,`
+			}
 		}
 	}
-	return
+	navTree := perm.NavTreeCached()
+	if u.permActions == nil {
+		u.permActions = perm.NewMap()
+		u.permActions.Parse(perms, navTree)
+	}
+	return u.permActions.Check(permPath, navTree)
 }
 
 func (u *UserRole) Exists2(name string, excludeID uint) (bool, error) {
