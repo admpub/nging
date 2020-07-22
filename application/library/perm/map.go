@@ -26,8 +26,9 @@ import (
 )
 
 type Map struct {
-	V   map[string]*Map
-	Nav *navigate.Item
+	V       map[string]*Map
+	Nav     *navigate.Item
+	isOwner bool
 }
 
 //Import 导入菜单（用户缓存结果）
@@ -88,6 +89,7 @@ func BuildPermActions(values []string) string {
 
 //Parse 解析用户获取的权限
 func (m *Map) Parse(permActions string, navTree *Map) *Map {
+	m.isOwner = true
 	perms := strings.Split(permActions, `,`)
 	for _, perm := range perms {
 		arr := strings.Split(perm, `/`)
@@ -123,26 +125,69 @@ func (m *Map) Parse(permActions string, navTree *Map) *Map {
 }
 
 //Check 检测权限
-func (m *Map) Check(perm string) bool {
+func (m *Map) Check(perm string, nav *Map) bool {
+	if !m.isOwner {
+		return false
+	}
 	if m.Nav != nil && m.Nav.Unlimited {
 		return true
 	}
+	if m == nav {
+		return false
+	}
 	arr := strings.Split(perm, `/`)
 	result := m.V
+	navResult := nav.V
+	hasPerm := true
+	var prefix string
 	for _, a := range arr {
-		v, y := result[a]
-		if !y {
-			return false
+		key := prefix + a
+		navV, hasNav := navResult[key]
+		if !hasNav {
+			if hasPerm {
+				var v *Map
+				v, hasPerm = result[a]
+				if hasPerm {
+					if v.Nav != nil && v.Nav.Unlimited {
+						return true
+					}
+					if _, y := v.V[`*`]; y {
+						return true
+					}
+					result = v.V
+				}
+			}
+			prefix += key + `/`
+			continue
 		}
-		if v.Nav != nil && v.Nav.Unlimited {
+		prefix = ``
+		if !hasPerm {
+			if navV.Nav != nil && navV.Nav.Unlimited {
+				return true
+			}
+			navResult = navV.V
+			continue
+		}
+		var v *Map
+		v, hasPerm = result[a]
+		if hasPerm {
+			if v.Nav != nil && v.Nav.Unlimited {
+				return true
+			}
+			if _, y := v.V[`*`]; y {
+				return true
+			}
+			result = v.V
+		}
+		if navV.Nav != nil && navV.Nav.Unlimited {
 			return true
 		}
-		if _, y := v.V[`*`]; y {
-			return true
-		}
-		result = v.V
+		navResult = navV.V
 	}
-	return true
+	if hasPerm {
+		return true
+	}
+	return false
 }
 
 func NewMap() *Map {
