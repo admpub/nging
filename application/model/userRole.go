@@ -27,7 +27,6 @@ import (
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/perm"
 	"github.com/admpub/nging/application/model/base"
-	"github.com/admpub/nging/application/registry/navigate"
 )
 
 func NewUserRole(ctx echo.Context) *UserRole {
@@ -93,36 +92,6 @@ func (u *UserRole) ListByUser(user *dbschema.NgingUser) (roleList []*dbschema.Ng
 	return
 }
 
-func (u *UserRole) CheckPerm2(roleList []*dbschema.NgingUserRole, permPath string) bool {
-	permPath = strings.TrimPrefix(permPath, `/`)
-	if len(roleList) == 0 {
-		return perm.NavTreeCached().Check(permPath, nil)
-	}
-	checked := map[string]struct{}{}
-	var perms, sep string
-	for _, role := range roleList {
-		if len(role.PermAction) == 0 {
-			continue
-		}
-		if role.PermAction == `*` {
-			return true
-		}
-		for _, pa := range strings.Split(role.PermAction, `,`) {
-			if _, ok := checked[pa]; !ok {
-				checked[pa] = struct{}{}
-				perms += sep + pa
-				sep = `,`
-			}
-		}
-	}
-	navTree := perm.NavTreeCached()
-	if u.permActions == nil {
-		u.permActions = perm.NewMap()
-		u.permActions.Parse(perms, navTree)
-	}
-	return u.permActions.Check(permPath, navTree)
-}
-
 func (u *UserRole) Exists2(name string, excludeID uint) (bool, error) {
 	return u.NgingUserRole.Exists(nil, db.And(
 		db.Cond{`name`: name},
@@ -147,19 +116,8 @@ func (u *UserRole) CheckPerm(permPath string) bool {
 		u.permActions = perm.NewMap()
 		u.permActions.Parse(u.PermAction, navTree)
 	}
-	return u.permActions.Check(permPath, navTree)
-}
 
-func (u *UserRole) CheckCmdPerm2(roleList []*dbschema.NgingUserRole, perm string) (hasPerm bool) {
-	for _, role := range roleList {
-		r := NewUserRole(nil)
-		r.NgingUserRole = role
-		if r.CheckCmdPerm(perm) {
-			hasPerm = true
-			break
-		}
-	}
-	return
+	return u.permActions.Check(permPath, navTree)
 }
 
 func (u *UserRole) CheckCmdPerm(permPath string) bool {
@@ -170,57 +128,8 @@ func (u *UserRole) CheckCmdPerm(permPath string) bool {
 		return true
 	}
 	if u.permCmds == nil {
-		u.permCmds = perm.NewMap()
-		perms := strings.Split(u.PermCmd, `,`)
-		for _, _perm := range perms {
-			arr := strings.Split(_perm, `/`)
-			result := u.permCmds.V
-			for _, a := range arr {
-				if _, y := result[a]; !y {
-					result[a] = perm.NewMap()
-				}
-				result = result[a].V
-			}
-		}
+		u.permCmds = perm.NewMap().ParseCmd(u.PermCmd)
 	}
 
-	arr := strings.Split(permPath, `/`)
-	result := u.permCmds.V
-	for _, a := range arr {
-		v, y := result[a]
-		if !y {
-			return false
-		}
-		result = v.V
-	}
-	return true
-}
-
-//FilterNavigate 过滤导航菜单，只显示有权限的菜单
-func (u *UserRole) FilterNavigate(roleList []*dbschema.NgingUserRole, navList *navigate.List) navigate.List {
-	var result navigate.List
-	if navList == nil {
-		return result
-	}
-	for _, nav := range *navList {
-		if !nav.Unlimited && !u.CheckPerm2(roleList, nav.Action) {
-			continue
-		}
-		navCopy := *nav
-		navCopy.Children = &navigate.List{}
-		for _, child := range *nav.Children {
-			var perm string
-			if len(child.Action) > 0 {
-				perm = nav.Action + `/` + child.Action
-			} else {
-				perm = nav.Action
-			}
-			if !nav.Unlimited && !u.CheckPerm2(roleList, perm) {
-				continue
-			}
-			*navCopy.Children = append(*navCopy.Children, child)
-		}
-		result = append(result, &navCopy)
-	}
-	return result
+	return u.permCmds.CheckCmd(permPath)
 }

@@ -29,8 +29,7 @@ type AuthChecker func(
 	c echo.Context,
 	rpath string,
 	user *dbschema.NgingUser,
-	roleM *model.UserRole,
-	roleList []*dbschema.NgingUserRole,
+	permission *model.RolePermission,
 ) (err error, ppath string, returning bool)
 
 var SpecialAuths = map[string]AuthChecker{
@@ -39,20 +38,22 @@ var SpecialAuths = map[string]AuthChecker{
 		c echo.Context,
 		rpath string,
 		user *dbschema.NgingUser,
-		roleM *model.UserRole,
-		roleList []*dbschema.NgingUserRole,
+		permission *model.RolePermission,
 	) (err error, ppath string, returning bool) {
 		returning = true
 		c.SetFunc(`CheckPerm`, func(id string) error {
 			if user.Id == 1 {
 				return nil
 			}
+			if permission == nil {
+				return echo.ErrForbidden
+			}
 			if len(id) > 0 {
-				if !roleM.CheckCmdPerm2(roleList, id) {
+				if !permission.CheckCmd(id) {
 					return echo.ErrForbidden
 				}
 			} else {
-				if !roleM.CheckPerm2(roleList, `server/cmd`) {
+				if !permission.Check(`server/cmd`) {
 					return echo.ErrForbidden
 				}
 			}
@@ -66,8 +67,7 @@ var SpecialAuths = map[string]AuthChecker{
 		c echo.Context,
 		rpath string,
 		user *dbschema.NgingUser,
-		roleM *model.UserRole,
-		roleList []*dbschema.NgingUserRole,
+		permission *model.RolePermission,
 	) (err error, ppath string, returning bool) {
 		ppath = `server/sysinfo`
 		return
@@ -77,13 +77,16 @@ var SpecialAuths = map[string]AuthChecker{
 		c echo.Context,
 		rpath string,
 		user *dbschema.NgingUser,
-		roleM *model.UserRole,
-		roleList []*dbschema.NgingUserRole,
+		permission *model.RolePermission,
 	) (err error, ppath string, returning bool) {
 		id := c.Form(`id`)
 		if len(id) > 0 {
 			returning = true
-			if !roleM.CheckCmdPerm2(roleList, id) {
+			if permission == nil {
+				err = echo.ErrForbidden
+				return
+			}
+			if !permission.CheckCmd(id) {
 				err = echo.ErrForbidden
 				return
 			}
@@ -98,8 +101,7 @@ var SpecialAuths = map[string]AuthChecker{
 		c echo.Context,
 		rpath string,
 		user *dbschema.NgingUser,
-		roleM *model.UserRole,
-		roleList []*dbschema.NgingUserRole,
+		permission *model.RolePermission,
 	) (err error, ppath string, returning bool) {
 		ppath = `/manager/upload/:type`
 		return

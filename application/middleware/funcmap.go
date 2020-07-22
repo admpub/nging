@@ -143,6 +143,8 @@ func FuncMap() echo.MiddlewareFunc {
 				roleList = roleM.ListByUser(user)
 				c.Set(`roleList`, roleList)
 			}
+			permission := model.NewPermission().Init(roleList)
+			c.Internal().Set(`permission`, permission)
 			c.SetFunc(`Avatar`, func(avatar string, defaults ...string) string {
 				if len(avatar) > 0 {
 					return tplfunc.AddSuffix(avatar, `_200_200`)
@@ -195,7 +197,7 @@ func FuncMap() echo.MiddlewareFunc {
 						}
 						return *navigate.TopNavigate
 					}
-					return roleM.FilterNavigate(roleList, navigate.TopNavigate)
+					return permission.FilterNavigate(navigate.TopNavigate)
 				case `left`:
 					fallthrough
 				default:
@@ -212,7 +214,7 @@ func FuncMap() echo.MiddlewareFunc {
 						}
 						return *leftNav
 					}
-					return roleM.FilterNavigate(roleList, leftNav)
+					return permission.FilterNavigate(leftNav)
 				}
 			})
 			return h.Handle(c)

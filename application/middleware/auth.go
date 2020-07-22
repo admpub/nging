@@ -65,12 +65,14 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 				})
 				return h.Handle(c)
 			}
-			roleList := handler.RoleList(c)
-			roleM := model.NewUserRole(c)
+			permission, ok := c.Internal().Get(`permission`).(*model.RolePermission)
+			if !ok {
+				return echo.ErrForbidden
+			}
 			if checker, ok := perm.SpecialAuths[rpath]; ok {
 				var err error
 				var ret bool
-				err, ppath, ret = checker(h, c, rpath, user, roleM, roleList)
+				err, ppath, ret = checker(h, c, rpath, user, permission)
 				if ret {
 					return err
 				}
@@ -90,14 +92,11 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 					}
 				}
 			}
-			if !roleM.CheckPerm2(roleList, ppath) {
-				return echo.ErrForbidden
-			}
 			c.SetFunc(`CheckPerm`, func(route string) error {
 				if user.Id == 1 {
 					return nil
 				}
-				if !roleM.CheckPerm2(roleList, route) {
+				if !permission.Check(route) {
 					return echo.ErrForbidden
 				}
 				return nil
