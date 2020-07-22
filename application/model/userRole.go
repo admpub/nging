@@ -22,6 +22,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/perm"
@@ -32,15 +33,49 @@ import (
 func NewUserRole(ctx echo.Context) *UserRole {
 	return &UserRole{
 		NgingUserRole: &dbschema.NgingUserRole{},
-		Base:          base.New(ctx),
+		base:          base.New(ctx),
 	}
 }
 
 type UserRole struct {
 	*dbschema.NgingUserRole
-	*base.Base
+	base        *base.Base
 	permActions *perm.Map
 	permCmds    *perm.Map
+}
+
+func (u *UserRole) check() error {
+	if len(u.Name) == 0 {
+		return u.base.NewError(code.InvalidParameter, `角色名不能为空`)
+	}
+	var exists bool
+	var err error
+	if u.Id > 0 {
+		exists, err = u.Exists2(u.Name, u.Id)
+	} else {
+		exists, err = u.Exists(u.Name)
+	}
+	if err != nil {
+		return err
+	}
+	if exists {
+		err = u.base.NewError(code.DataAlreadyExists, `角色名已经存在`)
+	}
+	return err
+}
+
+func (u *UserRole) Add() (interface{}, error) {
+	if err := u.check(); err != nil {
+		return nil, err
+	}
+	return u.NgingUserRole.Add()
+}
+
+func (u *UserRole) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+	if err := u.check(); err != nil {
+		return err
+	}
+	return u.NgingUserRole.Edit(mw, args...)
 }
 
 func (u *UserRole) Exists(name string) (bool, error) {

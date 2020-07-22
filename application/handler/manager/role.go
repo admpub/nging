@@ -43,17 +43,9 @@ func RoleAdd(ctx echo.Context) error {
 	if ctx.IsPost() {
 		err = ctx.MustBind(m.NgingUserRole)
 		if err == nil {
-			if len(m.Name) == 0 {
-				err = ctx.E(`角色名不能为空`)
-			} else if exists, erro := m.Exists(m.Name); erro != nil {
-				err = erro
-			} else if exists {
-				err = ctx.E(`角色名已经存在`)
-			} else {
-				m.CleanPermAction(ctx.FormValues(`permAction[]`))
-				m.PermCmd = strings.Join(ctx.FormValues(`permCmd[]`), `,`)
-				_, err = m.Add()
-			}
+			m.CleanPermAction(ctx.FormValues(`permAction[]`))
+			m.PermCmd = strings.Join(ctx.FormValues(`permCmd[]`), `,`)
+			_, err = m.Add()
 		}
 		if err == nil {
 			handler.SendOk(ctx, ctx.T(`操作成功`))
@@ -90,17 +82,9 @@ func RoleEdit(ctx echo.Context) error {
 		err = ctx.MustBind(m.NgingUserRole)
 		if err == nil {
 			m.Id = id
-			if len(m.Name) == 0 {
-				err = ctx.E(`角色名不能为空`)
-			} else if exists, erro := m.Exists2(m.Name, id); erro != nil {
-				err = erro
-			} else if exists {
-				err = ctx.E(`角色名已经存在`)
-			} else {
-				m.CleanPermAction(ctx.FormValues(`permAction[]`))
-				m.PermCmd = strings.Join(ctx.FormValues(`permCmd[]`), `,`)
-				err = m.Edit(nil, `id`, id)
-			}
+			m.CleanPermAction(ctx.FormValues(`permAction[]`))
+			m.PermCmd = strings.Join(ctx.FormValues(`permCmd[]`), `,`)
+			err = m.Edit(nil, `id`, id)
 		}
 		if err == nil {
 			handler.SendOk(ctx, ctx.T(`修改成功`))
