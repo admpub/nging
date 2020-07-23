@@ -87,8 +87,8 @@ func (u *UserRole) ListByUser(user *dbschema.NgingUser) (roleList []*dbschema.Ng
 			db.Cond{`disabled`: `N`},
 			db.Cond{`id`: db.In(strings.Split(user.RoleIds, `,`))},
 		))
+		roleList = u.Objects()
 	}
-	roleList = u.Objects()
 	return
 }
 
