@@ -456,7 +456,7 @@ func (t *Transaction) Deletex(param *Param) (affected int64, err error) {
 // Stat Stat(param,`max`,`score`)
 func (t *Transaction) Stat(param *Param, fn string, field string) (float64, error) {
 	counter := struct {
-		Stat float64 `db:"_t"`
+		Stat sql.NullFloat64 `db:"_t"`
 	}{}
 	selector := t.SQLBuilder(param).Select(db.Raw(fn + "(" + field + ") AS _t")).From(param.TableName()).Where(param.Args...)
 	selector = t.joinSelect(param, selector)
@@ -470,5 +470,5 @@ func (t *Transaction) Stat(param *Param, fn string, field string) (float64, erro
 		}
 		return 0, err
 	}
-	return counter.Stat, nil
+	return counter.Stat.Float64, nil
 }

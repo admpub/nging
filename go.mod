@@ -103,7 +103,6 @@ require (
 	github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2
 	github.com/admpub/web-terminal v0.0.0-20190705124712-e503d17936e9
 	github.com/admpub/websocket v1.0.1
-	github.com/admpub/xgo v1.14.6 // indirect
 	github.com/araddon/gou v0.0.0-20190110011759-c797efecbb61 // indirect
 	github.com/aws/aws-sdk-go v1.33.6
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
@@ -183,7 +182,7 @@ require (
 	github.com/webx-top/client v0.0.0-20200706053026-a0aa773712b3
 	github.com/webx-top/codec v0.0.0-20191025184817-6fac7ce097e2
 	github.com/webx-top/com v0.0.0-20200717115231-63c1a842afd2
-	github.com/webx-top/db v1.0.5
+	github.com/webx-top/db v1.0.6
 	github.com/webx-top/echo v2.1.8+incompatible
 	github.com/webx-top/image v0.0.0-20200420122650-e33887a47834
 	github.com/webx-top/pagination v0.0.0-20200716043638-45efe28df7c2

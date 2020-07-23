@@ -254,8 +254,6 @@ github.com/admpub/web-terminal v0.0.0-20190705124712-e503d17936e9 h1:o7d1FS0BbTL
 github.com/admpub/web-terminal v0.0.0-20190705124712-e503d17936e9/go.mod h1:SpJflbA/NkKUPCXMd60Xudqen5URGK//lUSEYxhnddc=
 github.com/admpub/websocket v1.0.1 h1:SI1giUH8GGQLA+GcNNPxwxB9+ITupFkUaKfAEYZeaXM=
 github.com/admpub/websocket v1.0.1/go.mod h1:ty5Foyc1Q7rwFiwPMJdx4aqJjce030PhbnzJrM71e0s=
-github.com/admpub/xgo v1.14.6 h1:KK9J5QBKNs76TxOVgOTdLEMrnVVgUWYkMcsK+85QVvU=
-github.com/admpub/xgo v1.14.6/go.mod h1:76x+ZyCudK230LXV10pgbFIoPOytOzdnq9yqLcy/OV8=
 github.com/akamai/AkamaiOPEN-edgegrid-golang v0.9.0/go.mod h1:zpDJeKyp9ScW4NNrbdr+Eyxvry3ilGPewKoXw3XGN1k=
 github.com/akamai/AkamaiOPEN-edgegrid-golang v0.9.8/go.mod h1:aVvklgKsPENRkl29bNwrHISa1F+YLGTHArMxZMBqWM8=
 github.com/alangpierce/go-forceexport v0.0.0-20160317203124-8f1d6941cd75 h1:3ILjVyslFbc4jl1w5TWuvvslFD/nDfR2H8tVaMVLrEY=
@@ -1041,10 +1039,8 @@ github.com/webx-top/codec v0.0.0-20191025184817-6fac7ce097e2 h1:Hyb/tAwHL3ayVWrW
 github.com/webx-top/codec v0.0.0-20191025184817-6fac7ce097e2/go.mod h1:FL2TNTorudSTop040uNCTONOlIJfl6kElJLxyoHHs/g=
 github.com/webx-top/com v0.0.0-20200717115231-63c1a842afd2 h1:eVTnqk2+XMqRvp3GuS8TQKzNYlt/g0emKx3Ve/5CDhc=
 github.com/webx-top/com v0.0.0-20200717115231-63c1a842afd2/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
-github.com/webx-top/db v1.0.5 h1:hw9pIcVnzILGWZJ5T6WEwh3yfBkLBIZXM7EWIp+P9Hs=
-github.com/webx-top/db v1.0.5/go.mod h1:a3c7UZmv1kaNVkiCjsb1gypf41vc9g+JcsZIxK7OYmU=
-github.com/webx-top/echo v2.1.7+incompatible h1:MG2rx5m1QTFcPeQsFl5WY70vA9JE9rbui5qdBZtSr/A=
-github.com/webx-top/echo v2.1.7+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
+github.com/webx-top/db v1.0.6 h1:u+rJy7GtviRWI3fvEPk4zybue4PVJrfk1tL3achtjKo=
+github.com/webx-top/db v1.0.6/go.mod h1:a3c7UZmv1kaNVkiCjsb1gypf41vc9g+JcsZIxK7OYmU=
 github.com/webx-top/echo v2.1.8+incompatible h1:YPjv3iNATdXY6K0trhVyE+CtOldKRBOVD28+xULtxPE=
 github.com/webx-top/echo v2.1.8+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/image v0.0.0-20200420122650-e33887a47834 h1:6gnR2pPRE5vbc4kPjeuAYVCS8DDEjtVnksuWxX5dEq0=
