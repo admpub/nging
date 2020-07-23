@@ -20,6 +20,7 @@ package perm
 
 import (
 	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/model"
 	"github.com/webx-top/echo"
 )
@@ -46,15 +47,15 @@ var SpecialAuths = map[string]AuthChecker{
 				return nil
 			}
 			if permission == nil {
-				return echo.ErrForbidden
+				return common.ErrUserNoPerm
 			}
 			if len(id) > 0 {
 				if !permission.CheckCmd(id) {
-					return echo.ErrForbidden
+					return common.ErrUserNoPerm
 				}
 			} else {
 				if !permission.Check(`server/cmd`) {
-					return echo.ErrForbidden
+					return common.ErrUserNoPerm
 				}
 			}
 			return nil
@@ -83,11 +84,11 @@ var SpecialAuths = map[string]AuthChecker{
 		if len(id) > 0 {
 			returning = true
 			if permission == nil {
-				err = echo.ErrForbidden
+				err = common.ErrUserNoPerm
 				return
 			}
 			if !permission.CheckCmd(id) {
-				err = echo.ErrForbidden
+				err = common.ErrUserNoPerm
 				return
 			}
 			err = h.Handle(c)

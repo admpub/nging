@@ -67,7 +67,7 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 			}
 			permission, ok := c.Internal().Get(`permission`).(*model.RolePermission)
 			if !ok {
-				return echo.ErrForbidden
+				return common.ErrUserNoPerm
 			}
 			if checker, ok := perm.SpecialAuths[rpath]; ok {
 				var err error
@@ -97,7 +97,7 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 					return nil
 				}
 				if !permission.Check(route) {
-					return echo.ErrForbidden
+					return common.ErrUserNoPerm
 				}
 				return nil
 			})
@@ -116,7 +116,7 @@ func CheckAnyPerm(c echo.Context, ppaths ...string) (err error) {
 			return nil
 		}
 	}
-	return err
+	return common.ErrUserNoPerm
 }
 
 // CheckAllPerm 检查是否匹配所有给定路径权限
