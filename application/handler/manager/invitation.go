@@ -68,6 +68,9 @@ func InvitationAdd(ctx echo.Context) error {
 			} else if exists {
 				err = ctx.E(`邀请码已经存在`)
 			} else {
+				if len(ctx.FormValues(`roleIds`)) == 0 {
+					m.RoleIds = ``
+				}
 				_, err = m.Add()
 			}
 		}
@@ -107,6 +110,9 @@ func InvitationEdit(ctx echo.Context) error {
 			} else if exists {
 				err = ctx.E(`邀请码已经存在`)
 			} else {
+				if len(ctx.FormValues(`roleIds`)) == 0 {
+					m.RoleIds = ``
+				}
 				err = m.Edit(nil, `id`, id)
 			}
 		}
