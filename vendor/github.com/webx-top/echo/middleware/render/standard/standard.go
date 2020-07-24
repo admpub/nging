@@ -102,6 +102,7 @@ type Standard struct {
 	incTagRegex        *regexp.Regexp
 	extTagRegex        *regexp.Regexp
 	blkTagRegex        *regexp.Regexp
+	rplTagRegex        *regexp.Regexp
 	innerTagBlankRegex *regexp.Regexp
 	stripTagRegex      *regexp.Regexp
 	cachedRegexIdent   string
@@ -117,6 +118,9 @@ type Standard struct {
 	logger             logger.Logger
 	fileEvents         []func(string)
 	mutex              sync.RWMutex
+	quotedLeft         string
+	quotedRight        string
+	quotedRfirst       string
 }
 
 func (self *Standard) Debug() bool {
@@ -178,6 +182,7 @@ func (self *Standard) deleteCachedRelation(name string) {
 }
 
 func (self *Standard) Init() {
+	self.InitRegexp()
 	callback := func(name, typ, event string) {
 		switch event {
 		case "create":
@@ -221,14 +226,27 @@ func (self *Standard) TemplatePath(c echo.Context, p string) string {
 }
 
 func (self *Standard) InitRegexp() {
-	left := regexp.QuoteMeta(self.DelimLeft)
-	right := regexp.QuoteMeta(self.DelimRight)
-	rfirst := regexp.QuoteMeta(self.DelimRight[0:1])
-	self.incTagRegex = regexp.MustCompile(left + self.IncludeTag + `[\s]+"([^"]+)"(?:[\s]+([^` + rfirst + `]+))?[\s]*` + right)
-	self.extTagRegex = regexp.MustCompile(left + self.ExtendTag + `[\s]+"([^"]+)"(?:[\s]+([^` + rfirst + `]+))?[\s]*` + right)
-	self.blkTagRegex = regexp.MustCompile(`(?s)` + left + self.BlockTag + `[\s]+"([^"]+)"[\s]*` + right + `(.*?)` + left + `\/` + self.BlockTag + right)
-	self.innerTagBlankRegex = regexp.MustCompile(`(?s)(` + right + `|>)[\s]{2,}(` + left + `|<)`)
-	self.stripTagRegex = regexp.MustCompile(`(?s)` + left + self.StripTag + right + `(.*?)` + left + `\/` + self.StripTag + right)
+	self.quotedLeft = regexp.QuoteMeta(self.DelimLeft)
+	self.quotedRight = regexp.QuoteMeta(self.DelimRight)
+	self.quotedRfirst = regexp.QuoteMeta(self.DelimRight[0:1])
+
+	//{{Include "tmpl"}} or {{Include "tmpl" .}}
+	self.incTagRegex = regexp.MustCompile(self.quotedLeft + self.IncludeTag + `[\s]+"([^"]+)"(?:[\s]+([^` + self.quotedRfirst + `]+))?[\s]*\/?` + self.quotedRight)
+
+	//{{Extend "name"}}
+	self.extTagRegex = regexp.MustCompile(`^[\s]*` + self.quotedLeft + self.ExtendTag + `[\s]+"([^"]+)"(?:[\s]+([^` + self.quotedRfirst + `]+))?[\s]*\/?` + self.quotedRight)
+
+	//{{Block "name"}}content{{/Block}}
+	self.blkTagRegex = regexp.MustCompile(`(?s)` + self.quotedLeft + self.BlockTag + `[\s]+"([^"]+)"[\s]*` + self.quotedRight + `(.*?)` + self.quotedLeft + `\/` + self.BlockTag + self.quotedRight)
+
+	//{{Block "name"/}}
+	self.rplTagRegex = regexp.MustCompile(self.quotedLeft + self.BlockTag + `[\s]+"([^"]+)"[\s]*\/` + self.quotedRight)
+
+	//}}...{{ or >...<
+	self.innerTagBlankRegex = regexp.MustCompile(`(?s)(` + self.quotedRight + `|>)[\s]{2,}(` + self.quotedLeft + `|<)`)
+
+	//{{Strip}}...{{/Strip}}
+	self.stripTagRegex = regexp.MustCompile(`(?s)` + self.quotedLeft + self.StripTag + self.quotedRight + `(.*?)` + self.quotedLeft + `\/` + self.StripTag + self.quotedRight)
 }
 
 // Render HTML
@@ -293,7 +311,6 @@ func (self *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Temp
 		tmpl, _ = t.Parse(err.Error())
 		return
 	}
-
 	content := string(b)
 	subcs := make(map[string]string, 0) //子模板内容
 	extcs := make(map[string]string, 0) //母板内容
@@ -303,6 +320,7 @@ func (self *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Temp
 		self.InitRegexp()
 	}
 	m := self.extTagRegex.FindAllStringSubmatch(content, 1)
+	content = self.rplTagRegex.ReplaceAllString(content, ``)
 	for i := 0; i < 10 && len(m) > 0; i++ {
 		self.ParseBlock(c, content, subcs, extcs)
 		extFile := m[0][1] + self.Ext
@@ -326,7 +344,6 @@ func (self *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Temp
 		}
 	}
 	content = self.ContainsSubTpl(c, content, subcs)
-	content = string(self.strip([]byte(content)))
 	tmpl, err = t.Parse(content)
 	if err != nil {
 		content = fmt.Sprintf("Parse %v err: %v", tmplName, err)
@@ -414,6 +431,14 @@ func (self *Standard) ParseExtend(c echo.Context, content string, extcs map[stri
 	if len(passObject) == 0 {
 		passObject = "."
 	}
+	content = self.rplTagRegex.ReplaceAllStringFunc(content, func(match string) string {
+		match = match[strings.Index(match, `"`)+1:]
+		match = match[0:strings.Index(match, `"`)]
+		if v, ok := extcs[match]; ok {
+			return v
+		}
+		return ``
+	})
 	matches := self.blkTagRegex.FindAllStringSubmatch(content, -1)
 	var superTag string
 	if len(self.SuperTag) > 0 {
@@ -510,28 +535,35 @@ func (self *Standard) Tag(content string) string {
 	return self.DelimLeft + content + self.DelimRight
 }
 
-func (self *Standard) RawContent(tmpl string) (b []byte, e error) {
-	defer func() {
-		if b != nil && self.contentProcessors != nil {
-			for _, fn := range self.contentProcessors {
-				b = fn(b)
-			}
+func (self *Standard) preprocess(b []byte) []byte {
+	if b == nil {
+		return nil
+	}
+	if self.contentProcessors != nil {
+		for _, fn := range self.contentProcessors {
+			b = fn(b)
 		}
-		b = self.strip(b)
-	}()
+	}
+	return self.strip(b)
+}
+
+func (self *Standard) RawContent(tmpl string) (b []byte, e error) {
 	if self.TemplateMgr != nil {
 		b, e = self.TemplateMgr.GetTemplate(tmpl)
-		if e != nil {
-			self.logger.Error(e)
-		}
+	} else {
+		b, e = ioutil.ReadFile(filepath.Join(self.TemplateDir, tmpl))
+	}
+	if e != nil {
 		return
 	}
-	return ioutil.ReadFile(filepath.Join(self.TemplateDir, tmpl))
+	b = self.preprocess(b)
+	return
 }
 
 func (self *Standard) strip(src []byte) []byte {
 	if self.debug {
-		return self.stripTagRegex.ReplaceAll(src, driver.First)
+		src = bytes.ReplaceAll(src, []byte(self.DelimLeft+self.StripTag+self.DelimRight), []byte{})
+		return bytes.ReplaceAll(src, []byte(self.DelimLeft+`/`+self.StripTag+self.DelimRight), []byte{})
 	}
 	src = self.stripTagRegex.ReplaceAllFunc(src, func(b []byte) []byte {
 		b = bytes.TrimPrefix(b, []byte(self.DelimLeft+self.StripTag+self.DelimRight))
