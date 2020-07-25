@@ -551,7 +551,7 @@ func (self *Standard) RawContent(tmpl string) (b []byte, e error) {
 	if self.TemplateMgr != nil {
 		b, e = self.TemplateMgr.GetTemplate(tmpl)
 	} else {
-		b, e = ioutil.ReadFile(filepath.Join(self.TemplateDir, tmpl))
+		b, e = ioutil.ReadFile(tmpl)
 	}
 	if e != nil {
 		return

@@ -36,6 +36,7 @@ require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
 	github.com/admpub/archiver v1.1.4
+	github.com/admpub/bindata/v3 v3.1.5 // indirect
 	github.com/admpub/checksum v1.0.1
 	github.com/admpub/color v1.7.0
 	github.com/admpub/confl v0.0.0-20190331072055-254deeac709e
@@ -183,7 +184,7 @@ require (
 	github.com/webx-top/codec v0.0.0-20191025184817-6fac7ce097e2
 	github.com/webx-top/com v0.0.0-20200717115231-63c1a842afd2
 	github.com/webx-top/db v1.0.6
-	github.com/webx-top/echo v2.1.10+incompatible
+	github.com/webx-top/echo v2.1.11+incompatible
 	github.com/webx-top/image v0.0.0-20200420122650-e33887a47834
 	github.com/webx-top/pagination v0.0.0-20200716043638-45efe28df7c2
 	github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2 // indirect

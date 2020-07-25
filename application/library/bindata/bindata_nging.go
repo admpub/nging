@@ -22,18 +22,19 @@ package bindata
 
 import (
 	"net/http"
-	"strings"
 	"os"
+	"strings"
 
 	"github.com/admpub/nging/application/initialize/backend"
 
 	assetfs "github.com/admpub/go-bindata-assetfs"
 	"github.com/admpub/nging/application/cmd/event"
 	"github.com/admpub/nging/application/library/modal"
+	"github.com/admpub/nging/application/registry/upload/helper"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/bindata"
+	"github.com/webx-top/echo/middleware/render/driver"
 	"github.com/webx-top/image"
-	"github.com/admpub/nging/application/registry/upload/helper"
 )
 
 func NewAssetFS(prefix string) *assetfs.AssetFS {
@@ -66,14 +67,22 @@ func Initialize() {
 		BackendTmplAssetFS = NewAssetFS(BackendTmplAssetPrefix)
 	}
 	if FrontendTmplAssetFS == nil {
-		FrontendTmplAssetFS = NewAssetFS(FrontendTmplAssetPrefix)
+		if BackendTmplAssetFS.Prefix == FrontendTmplAssetPrefix {
+			FrontendTmplAssetFS = BackendTmplAssetFS
+		} else {
+			FrontendTmplAssetFS = NewAssetFS(FrontendTmplAssetPrefix)
+		}
 	}
 	event.StaticMW = bindata.Static("/public/assets/", StaticAssetFS)
 	event.FaviconHandler = func(c echo.Context) error {
 		return c.File(event.FaviconPath, StaticAssetFS)
 	}
 	event.BackendTmplMgr = bindata.NewTmplManager(BackendTmplAssetFS)
-	event.FrontendTmplMgr = bindata.NewTmplManager(FrontendTmplAssetFS)
+	if BackendTmplAssetFS == FrontendTmplAssetFS {
+		event.FrontendTmplMgr = event.BackendTmplMgr
+	} else {
+		event.FrontendTmplMgr = bindata.NewTmplManager(FrontendTmplAssetFS)
+	}
 	modal.ReadConfigFile = func(file string) ([]byte, error) {
 		file = strings.TrimPrefix(file, backend.TemplateDir)
 		return event.BackendTmplMgr.GetTemplate(file)
@@ -94,4 +103,9 @@ func Initialize() {
 		return f, err
 	}
 	event.LangFSFunc = LanguageAssetFSFunc
+	backend.RendererDo = func(renderer driver.Driver) {
+		renderer.SetTmplPathFixer(func(c echo.Context, tmpl string) string {
+			return tmpl
+		})
+	}
 }

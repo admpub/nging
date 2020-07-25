@@ -9,6 +9,8 @@ github.com/admpub/9t
 # github.com/admpub/archiver v1.1.4
 ## explicit
 github.com/admpub/archiver
+# github.com/admpub/bindata/v3 v3.1.5 => github.com/admpub/bindata/v3 v3.1.5
+## explicit
 # github.com/admpub/checksum v1.0.1
 ## explicit
 github.com/admpub/checksum
@@ -1076,7 +1078,7 @@ github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mongo
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.1.10+incompatible
+# github.com/webx-top/echo v2.1.11+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code

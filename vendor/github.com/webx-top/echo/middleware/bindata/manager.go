@@ -22,31 +22,14 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
-	"path/filepath"
-	"strings"
 
-	assetfs "github.com/admpub/go-bindata-assetfs"
-	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/render/driver"
 )
 
-func NewTmplManager(fs http.FileSystem, templateDir ...string) driver.Manager {
-	var prefix string
-	if len(templateDir) > 0 {
-		prefix = templateDir[0]
-	} else {
-		switch f := fs.(type) {
-		case *assetfs.AssetFS:
-			prefix = f.Prefix
-		default:
-			prefix = echo.Wd()
-		}
-	}
-	prefix, _ = filepath.Abs(prefix)
+func NewTmplManager(fs http.FileSystem) driver.Manager {
 	return &TmplManager{
 		BaseManager: &driver.BaseManager{},
 		FileSystem:  fs,
-		Prefix:      prefix,
 	}
 }
 
@@ -57,8 +40,6 @@ type TmplManager struct {
 }
 
 func (a *TmplManager) GetTemplate(fileName string) ([]byte, error) {
-	fileName = strings.TrimPrefix(fileName, a.Prefix)
-	fileName = filepath.ToSlash(fileName)
 	file, err := a.FileSystem.Open(fileName)
 	if err != nil {
 		err = errors.New(fileName + `: ` + err.Error())
