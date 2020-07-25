@@ -12,15 +12,15 @@
                     </div>
                     {{- end -}}
                 </th>
+                {{- if not $dialog -}}
                 <th style="width:60px" sort="-id"><strong>ID</strong></th>
+                {{- end -}}
                 <th style="width:50px"><strong>{{"图片"|T}}</strong></th>
                 <th><strong>{{"原始名称"|T}}</strong></th>
                 {{- if not $dialog -}}
                 <th><strong>{{"保存位置"|T}}</strong></th>
-                {{- end -}}
                 <th style="width:80px" sort="-type"><strong>{{"文件类型"|T}}</strong></th>
                 <th style="width:80px" sort="table_name"><strong>{{"内容类型"|T}}</strong></th>
-                {{- if not $dialog -}}
                 <th style="width:60px" sort="-size"><strong>{{"大小"|T}}</strong></th>
                 <th style="width:80px" sort="-width"><strong>{{"尺寸"|T}}</strong></th>
                 {{- end -}}
@@ -51,7 +51,9 @@
                     </div>
                     {{- end -}}
                 </td>
+                {{- if not $dialog -}}
                 <td>{{$v.Id}}</td>
+                {{- end -}}
                 <td class="no-padding">
                     <a href="{{$v.ViewUrl}}" target="_blank">
                         {{- if eq $v.Type `image` -}}
@@ -73,7 +75,6 @@
                 </td>
                 {{- if not $dialog -}}
                 <td>{{$v.SavePath}}</td>
-                {{- end -}}
                 <td>{{$v.Type}}</td>
                 <td>
                     {{- if $v.SubdirInfo -}}
@@ -85,7 +86,6 @@
                     -
                     {{- end -}}
                 </td>
-                {{- if not $dialog -}}
                 <td>{{FormatBytes $v.Size 2 true}}</td>
                 <td>{{if gt $v.Width 0}}{{$v.Width}}&times;{{$v.Height}}{{else}}-{{end}}</td>
                 {{- end -}}
