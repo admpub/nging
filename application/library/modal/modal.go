@@ -35,7 +35,7 @@ var (
 	DefaultModal = Modal{
 		ExtButtons: []Button{},
 	}
-	PathFixer = func(conf string) string {
+	PathFixer = func(ctx echo.Context, conf string) string {
 		return conf
 	}
 	ReadConfigFile = func(file string) ([]byte, error) {
@@ -74,10 +74,10 @@ type Modal struct {
 	ExtButtons  []Button //附加按钮
 }
 
-func UnmarshalFile(confile string) (Modal, error) {
+func UnmarshalFile(ctx echo.Context, confile string) (Modal, error) {
 	mutext.Lock()
 	defer mutext.Unlock()
-	confile = PathFixer(confile)
+	confile = PathFixer(ctx, confile)
 	ov, ok := modalConfig[confile]
 	if ok {
 		return ov, nil
@@ -113,7 +113,7 @@ func Render(ctx echo.Context, param interface{}) template.HTML {
 		data = v
 	case string:
 		var err error
-		data, err = UnmarshalFile(v)
+		data, err = UnmarshalFile(ctx, v)
 		if err != nil {
 			return template.HTML(err.Error())
 		}
