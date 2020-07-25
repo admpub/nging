@@ -1,7 +1,12 @@
-if(typeof(window.CropServerURL)=='undefined'){
-  window.CropServerURL=BACKEND_URL+'/manager/crop';
-}else{
-  window.CropServerURL=window.CropServerURL||BACKEND_URL+'/manager/crop';
+
+function getCropServerURL(){
+  if(typeof(window.CropServerURL)!='undefined' && window.CropServerURL){
+    return window.CropServerURL;
+  }
+  if(typeof(window.IS_BACKEND)!='undefined' && window.IS_BACKEND){
+    return BACKEND_URL+'/manager/crop';
+  }
+  return FRONTEND_URL+'/user/file/crop';
 }
 function cropImage(uploadURL,thumbsnailElem,originalElem,type,width,height){
   var jcrop=null;
@@ -72,7 +77,7 @@ function cropImage(uploadURL,thumbsnailElem,originalElem,type,width,height){
     if( c.w != 0 ){
       var ratio=natural.w/img.width();
       var timg=self.data('image-file');
-      $.get(window.CropServerURL,{
+      $.get(getCropServerURL(),{
         src:timg,
         x:c.x*ratio,
         y:c.y*ratio,

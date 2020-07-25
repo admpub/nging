@@ -22,7 +22,7 @@ App.loader.libs.uploadPreviewer = ['#jquery.uploadPreviewer/css/jquery.uploadPre
 window.UEDITOR_HOME_URL = ASSETS_URL + '/js/editor/ueditor/';
 
 App.editor = {
-	browsingFileURL: App.loader.siteURL + (typeof (window.IS_BACKEND) !== 'undefined' && window.IS_BACKEND ? '' : '/user') + '/finder'
+	browsingFileURL: App.loader.siteURL + (typeof (window.IS_BACKEND) !== 'undefined' && window.IS_BACKEND ? '' : '/user/file') + '/finder'
 };
 
 // =================================================================
