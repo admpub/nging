@@ -26,12 +26,18 @@ import (
 
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/model/file"
+	"github.com/admpub/nging/application/registry/upload/checker"
 )
+
+func setUploadURL(ctx echo.Context) {
+	ctx.Set(`uploadURL`, checker.BackendUploadURL(`nging_user`))
+}
 
 func FileList(ctx echo.Context) error {
 	err := List(ctx, ``, 0)
 	ctx.Set(`dialog`, false)
 	ctx.Set(`multiple`, true)
+	setUploadURL(ctx)
 	partial := ctx.Formx(`partial`).Bool()
 	if partial {
 		return ctx.Render(`manager/file/list.main.content`, err)

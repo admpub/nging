@@ -7,6 +7,7 @@ func Finder(ctx echo.Context) error {
 	multiple := ctx.Formx(`multiple`).Bool()
 	ctx.Set(`dialog`, true)
 	ctx.Set(`multiple`, multiple)
+	setUploadURL(ctx)
 	partial := ctx.Formx(`partial`).Bool()
 	ctx.Set(`partial`, partial)
 	if partial {
