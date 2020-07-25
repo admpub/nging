@@ -89,7 +89,7 @@ var (
 	//BackendUploadPath 后台上传网址路径
 	BackendUploadPath = `/manager/upload`
 	//FrontendUploadPath 前台上传网址路径
-	FrontendUploadPath = `/user/upload`
+	FrontendUploadPath = `/user/file/upload`
 	//SetURLParamDefaultValue 设置参数默认值
 	SetURLParamDefaultValue func(*url.Values)
 )
