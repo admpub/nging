@@ -459,15 +459,16 @@ func (m *mySQL) tableIndexes(table string) (map[string]*Indexes, []string, error
 	}
 	for rows.Next() {
 		v := &IndexInfo{}
-		switch len(cols) {
-		case 14:
-			err = rows.Scan(&v.Table, &v.Non_unique, &v.Key_name, &v.Seq_in_index,
-				&v.Column_name, &v.Collation, &v.Cardinality, &v.Sub_part,
-				&v.Packed, &v.Null, &v.Index_type, &v.Comment, &v.Index_comment, &v.Visible)
-		case 13:
-			err = rows.Scan(&v.Table, &v.Non_unique, &v.Key_name, &v.Seq_in_index,
-				&v.Column_name, &v.Collation, &v.Cardinality, &v.Sub_part,
-				&v.Packed, &v.Null, &v.Index_type, &v.Comment, &v.Index_comment)
+		recvs := []interface{}{
+			&v.Table, &v.Non_unique, &v.Key_name, &v.Seq_in_index,
+			&v.Column_name, &v.Collation, &v.Cardinality, &v.Sub_part,
+			&v.Packed, &v.Null, &v.Index_type, &v.Comment, &v.Index_comment,
+			&v.Visible, &v.Expression,
+		}
+		if len(recvs) <= len(cols) {
+			err = rows.Scan(recvs...)
+		} else {
+			err = rows.Scan(recvs[0:len(cols)]...)
 		}
 		if err != nil {
 			return ret, sorts, fmt.Errorf(`%v: %v`, sqlStr, err)

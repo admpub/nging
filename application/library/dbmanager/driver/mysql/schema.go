@@ -447,6 +447,7 @@ type IndexInfo struct {
 	Comment       sql.NullString
 	Index_comment sql.NullString
 	Visible       sql.NullString
+	Expression    sql.NullString
 }
 
 type Indexes struct {
