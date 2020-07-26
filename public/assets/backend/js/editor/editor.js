@@ -65,7 +65,7 @@ App.editor.ueditor = function (editorElement, uploadUrl, options) {
 // editormd
 // =================================================================
 App.editor.markdownReset = function() {
-	var path = BACKEND_URL + '/public/assets/backend/js/editor/markdown/';
+	var path = ASSETS_URL + '/js/editor/markdown/';
 	editormd.emoji.path = path+'images/emojis/';
 	editormd.katexURL.css = path+'lib/katex/katex.min';
 	editormd.katexURL.js = path+'lib/katex/katex.min';
