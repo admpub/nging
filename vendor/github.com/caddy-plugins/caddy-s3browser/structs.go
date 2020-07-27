@@ -8,7 +8,7 @@ import (
 	"github.com/dustin/go-humanize"
 )
 
-type TmplData struct{
+type TmplData struct {
 	CDNURL string
 	Directory
 }
@@ -41,6 +41,7 @@ type Config struct {
 	Secure   bool
 	Refresh  string
 	Debug    bool
+	CSSCDN   string
 }
 
 type Node struct {

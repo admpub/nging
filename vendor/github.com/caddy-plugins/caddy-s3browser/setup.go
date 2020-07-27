@@ -77,7 +77,7 @@ func setup(c *caddy.Controller) error {
 		}
 	}()
 
-	tpl, err := template.New("listing").Parse(DefaultTemplate())
+	tpl, err := template.New("listing").Parse(DefaultTemplate(b.Config))
 	if err != nil {
 		return err
 	}
@@ -244,6 +244,8 @@ func parse(b *Browse, c *caddy.Controller) (err error) {
 			b.Config.Refresh, err = StringArg(c)
 		case "debug":
 			b.Config.Debug, err = BoolArg(c)
+		case "csscdn":
+			b.Config.CSSCDN, err = StringArg(c)
 		default:
 			return c.Errf("Unknown s3browser arg: %s", c.Val())
 		}

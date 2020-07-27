@@ -9,8 +9,6 @@ github.com/admpub/9t
 # github.com/admpub/archiver v1.1.4
 ## explicit
 github.com/admpub/archiver
-# github.com/admpub/bindata/v3 v3.1.5 => github.com/admpub/bindata/v3 v3.1.5
-## explicit
 # github.com/admpub/checksum v1.0.1
 ## explicit
 github.com/admpub/checksum
@@ -351,7 +349,7 @@ github.com/caddy-plugins/caddy-prometheus
 # github.com/caddy-plugins/caddy-rate-limit v1.6.1
 ## explicit
 github.com/caddy-plugins/caddy-rate-limit
-# github.com/caddy-plugins/caddy-s3browser v0.0.0-20200727103911-26df45e80b1a
+# github.com/caddy-plugins/caddy-s3browser v0.0.1
 ## explicit
 github.com/caddy-plugins/caddy-s3browser
 # github.com/caddy-plugins/cors v0.0.0-20190704155148-3c98079f1197

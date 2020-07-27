@@ -1,5 +1,7 @@
 package s3browser
 
+import "strings"
+
 type DepCSS []string
 
 func (d DepCSS) String() string {
@@ -11,20 +13,31 @@ func (d DepCSS) String() string {
 }
 
 var (
-	Cloudflare = DepCSS{
+	cloudflare = DepCSS{
 		`//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css`,
 		`//cdnjs.cloudflare.com/ajax/libs/flat-ui/2.3.0/css/flat-ui.min.css`,
 	}
 
-	BootCDN = DepCSS{
+	bootCDN = DepCSS{
 		`//cdn.bootcdn.net/ajax/libs/flat-ui/2.3.0/css/vendor/bootstrap/css/bootstrap.min.css`,
 		`//cdn.bootcdn.net/ajax/libs/flat-ui/2.3.0/css/flat-ui.min.css`,
 	}
 
-	Depencies = BootCDN
+	Dependencies = map[string]DepCSS{
+		`cloudflare`: cloudflare,
+		`bootcdn`:    bootCDN,
+	}
 )
 
-var DefaultTemplate = func() string {
+var DefaultTemplate = func(c Config) string {
+	dependencies := bootCDN
+	if len(c.CSSCDN) > 0 {
+		if cdn, ok := Dependencies[c.CSSCDN]; ok {
+			dependencies = cdn
+		} else {
+			dependencies = DepCSS(strings.Split(c.CSSCDN, ","))
+		}
+	}
 	return `<!DOCTYPE html>
 <html>
 	<head>
@@ -32,7 +45,7 @@ var DefaultTemplate = func() string {
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		` + Depencies.String() + `
+		` + dependencies.String() + `
 		<style>
 			body {
 				cursor: default;

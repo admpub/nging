@@ -106,6 +106,13 @@
     </div>
 </div>
 <div class="form-group">
+    <label class="col-sm-3 control-label">{{"页面CSS"|T}}</label>
+    <div class="col-sm-9">{{$v := Form "s3browser_csscdn"}}
+        <input type="text" class="form-control" name="s3browser_csscdn" value="{{$v}}" placeholder="bootcdn">
+        <div class="help-block">{{`自定义页面CSS库<code>flat-ui.min.css</code>及其依赖的<code>bootstrap.min.css</code>文件的CDN网址，网址之间用半角逗号隔开，如果不设置则默认使用bootcdn的网址。内置有<code>bootcdn</code>和<code>cloudflare</code>，也可以输入这两个值使用内置CDN网址`|T|ToHTML}}</div>
+    </div>
+</div>
+<div class="form-group">
     <label class="col-sm-3 control-label">{{"自动代理路径"|T}}</label>
     <div class="col-sm-9">{{$v := Form "s3browser_proxypath"}}
         <input type="text" class="form-control" name="s3browser_proxypath" value="{{if $v}}{{$v}}{{else if Stored.isAdd}}/{{end}}" placeholder="">
