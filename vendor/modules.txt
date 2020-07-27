@@ -351,7 +351,7 @@ github.com/caddy-plugins/caddy-prometheus
 # github.com/caddy-plugins/caddy-rate-limit v1.6.1
 ## explicit
 github.com/caddy-plugins/caddy-rate-limit
-# github.com/caddy-plugins/caddy-s3browser v0.0.0-20200504150140-a993d0602eba
+# github.com/caddy-plugins/caddy-s3browser v0.0.0-20200727103911-26df45e80b1a
 ## explicit
 github.com/caddy-plugins/caddy-s3browser
 # github.com/caddy-plugins/cors v0.0.0-20190704155148-3c98079f1197

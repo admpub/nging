@@ -115,7 +115,7 @@ require (
 	github.com/caddy-plugins/caddy-locale v0.0.0-20190704155156-288438ce0a5e
 	github.com/caddy-plugins/caddy-prometheus v0.0.0-20190704154614-d29127a2871c
 	github.com/caddy-plugins/caddy-rate-limit v1.6.1
-	github.com/caddy-plugins/caddy-s3browser v0.0.0-20200504150140-a993d0602eba
+	github.com/caddy-plugins/caddy-s3browser v0.0.0-20200727103911-26df45e80b1a
 	github.com/caddy-plugins/cors v0.0.0-20190704155148-3c98079f1197
 	github.com/caddy-plugins/ipfilter v1.1.4
 	github.com/caddy-plugins/nobots v0.1.1

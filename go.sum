@@ -323,6 +323,8 @@ github.com/caddy-plugins/caddy-rate-limit v1.6.1 h1:Q+and0wRMMOvnrqJ0qAiGhL4qtFE
 github.com/caddy-plugins/caddy-rate-limit v1.6.1/go.mod h1:P6jH/4YoNB2VLJoH03i1LyT9ugVpUZIRwa0EqEcnz9E=
 github.com/caddy-plugins/caddy-s3browser v0.0.0-20200504150140-a993d0602eba h1:OabvmaCEpzbn9HpQgvB3EgiNIkxLEvmaN6TjS/zGeeo=
 github.com/caddy-plugins/caddy-s3browser v0.0.0-20200504150140-a993d0602eba/go.mod h1:1fFLETcFKS2+NzqDuiSwsffPTcEdD9v6ekPlfdy4iGQ=
+github.com/caddy-plugins/caddy-s3browser v0.0.0-20200727103911-26df45e80b1a h1:8Ch1P2T23tOjOO6NuARSk3xoKKDgdVr1KH51rxV0rsU=
+github.com/caddy-plugins/caddy-s3browser v0.0.0-20200727103911-26df45e80b1a/go.mod h1:1fFLETcFKS2+NzqDuiSwsffPTcEdD9v6ekPlfdy4iGQ=
 github.com/caddy-plugins/cors v0.0.0-20190704155148-3c98079f1197 h1:b3SZY/kcz2we81CWQ1/kigBJt+N6/45EX8c0m8PF2gg=
 github.com/caddy-plugins/cors v0.0.0-20190704155148-3c98079f1197/go.mod h1:bPJahalklirAjzwB5VgviqhaY0t2daCrzbYpJThsIL4=
 github.com/caddy-plugins/ipfilter v1.1.4 h1:IpZHAEEaBx+jeDR9rUnE1GhlBwveXKbA7M8zK/v1HSA=
