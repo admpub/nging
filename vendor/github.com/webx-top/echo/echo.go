@@ -20,8 +20,8 @@ type (
 	Echo struct {
 		engine            engine.Engine
 		prefix            string
+		premiddleware     []interface{}
 		middleware        []interface{}
-		head              Handler
 		hosts             map[string]*Host
 		hostAlias         map[string]string
 		maxParam          *int
@@ -118,7 +118,7 @@ func (e *Echo) Reset() *Echo {
 	e.engine = nil
 	e.prefix = ``
 	e.middleware = []interface{}{}
-	e.head = nil
+	e.premiddleware = []interface{}{}
 	e.hosts = make(map[string]*Host)
 	e.hostAlias = make(map[string]string)
 	e.maxParam = new(int)
@@ -289,32 +289,17 @@ func (e *Echo) Pre(middleware ...interface{}) {
 			e.logger.Debugf(`Middleware[Pre](%p): [] -> %s`, m, HandlerName(m))
 		}
 	}
-	e.middleware = append(middlewares, e.middleware...)
+	e.premiddleware = append(middlewares, e.premiddleware...)
 }
 
 // Clear middleware
 func (e *Echo) Clear(middleware ...interface{}) {
-	if len(middleware) > 0 {
-		for _, dm := range middleware {
-			var decr int
-			for i, m := range e.middleware {
-				if m != dm {
-					continue
-				}
-				i -= decr
-				start := i + 1
-				if start < len(e.middleware) {
-					e.middleware = append(e.middleware[0:i], e.middleware[start:]...)
-				} else {
-					e.middleware = e.middleware[0:i]
-				}
-				decr++
-			}
-		}
-	} else {
-		e.middleware = []interface{}{}
-	}
-	e.head = nil
+	e.middleware = Clear(e.middleware, middleware...)
+}
+
+// ClearPre Clear premiddleware
+func (e *Echo) ClearPre(middleware ...interface{}) {
+	e.premiddleware = Clear(e.premiddleware, middleware...)
 }
 
 // Connect adds a CONNECT route > handler to the router.
@@ -515,7 +500,6 @@ func (e *Echo) RebuildRouter(args ...[]*Route) *Echo {
 		}
 	}
 	e.router.routes = routes
-	e.head = nil
 	return e
 }
 
@@ -533,7 +517,6 @@ func (e *Echo) AppendRouter(routes []*Route) *Echo {
 		}
 		e.router.routes = append(e.router.routes, r)
 	}
-	e.head = nil
 	return e
 }
 
@@ -671,28 +654,6 @@ func (e *Echo) NamedRoutes() map[string][]int {
 	return e.router.nroute
 }
 
-// Chain middleware
-func (e *Echo) chainMiddleware() Handler {
-	if e.head != nil {
-		return e.head
-	}
-	e.head = e.router.Handle(nil)
-	e.head = e.applyMiddleware(e.head, e.middleware...)
-	return e.head
-}
-
-func (e *Echo) chainMiddlewareByHost(host string, router *Router) Handler {
-	h, ok := e.hosts[host]
-	if !ok {
-		e.hosts[host] = &Host{}
-	} else if h.head != nil {
-		return h.head
-	}
-	handler := router.Handle(nil)
-	e.hosts[host].head = e.applyMiddleware(router.Handle(nil), e.middleware...)
-	return handler
-}
-
 func (e *Echo) applyMiddleware(h Handler, middleware ...interface{}) Handler {
 	for i := len(middleware) - 1; i >= 0; i-- {
 		h = e.ValidMiddleware(middleware[i]).Handle(h)
@@ -700,20 +661,29 @@ func (e *Echo) applyMiddleware(h Handler, middleware ...interface{}) Handler {
 	return h
 }
 
-func (e *Echo) ServeHTTP(req engine.Request, res engine.Response) {
-	c := e.pool.Get().(Context)
-	c.Reset(req, res)
-	host := req.Host()
-	var handler Handler
-	if router, names, values, exist := e.findRouter(host); exist {
+func (e *Echo) buildHandler(c Context) Handler {
+	if r, names, values, exist := e.findRouter(c.Host()); exist {
 		if len(names) > 0 {
 			c.setHostParamValues(names, values)
 		}
-		handler = e.chainMiddlewareByHost(host, router)
-	} else {
-		handler = e.chainMiddleware()
+		return e.applyMiddleware(r.Handle(c), e.middleware...)
 	}
-	if err := handler.Handle(c); err != nil {
+	return e.applyMiddleware(e.router.Handle(c), e.middleware...)
+}
+
+func (e *Echo) ServeHTTP(req engine.Request, res engine.Response) {
+	c := e.pool.Get().(Context)
+	c.Reset(req, res)
+
+	var h Handler
+	if len(e.premiddleware) > 0 {
+		h = e.applyMiddleware(HandlerFunc(func(c Context) error {
+			return e.buildHandler(c).Handle(c)
+		}), e.premiddleware...)
+	} else {
+		h = e.buildHandler(c)
+	}
+	if err := h.Handle(c); err != nil {
 		c.Error(err)
 	}
 

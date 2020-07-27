@@ -138,6 +138,32 @@ func static(r RouteRegister, prefix, root string) {
 	}
 }
 
+func Clear(old []interface{}, clears ...interface{}) []interface{} {
+	if len(clears) == 0 {
+		return nil
+	}
+	if len(old) == 0 {
+		return old
+	}
+	for _, dm := range clears {
+		var decr int
+		for i, m := range old {
+			if m != dm {
+				continue
+			}
+			i -= decr
+			start := i + 1
+			if start < len(old) {
+				old = append(old[0:i], old[start:]...)
+			} else {
+				old = old[0:i]
+			}
+			decr++
+		}
+	}
+	return old
+}
+
 // Dump 输出对象和数组的结构信息
 func Dump(m interface{}, printOrNot ...bool) (r string) {
 	v, err := json.MarshalIndent(m, "", "  ")

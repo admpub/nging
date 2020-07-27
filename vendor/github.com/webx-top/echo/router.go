@@ -199,13 +199,9 @@ func NewRouter(e *Echo) *Router {
 	}
 }
 
-func (r *Router) Handle(h Handler) Handler {
-	return HandlerFunc(func(c Context) error {
-		method := c.Request().Method()
-		path := c.Request().URL().Path()
-		r.Find(method, path, c)
-		return c.Handle(c)
-	})
+func (r *Router) Handle(c Context) Handler {
+	r.Find(c.Request().Method(), c.Request().URL().Path(), c)
+	return c
 }
 
 // Add 添加路由
