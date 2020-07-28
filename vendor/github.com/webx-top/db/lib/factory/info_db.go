@@ -80,7 +80,7 @@ type Short interface {
 	Short_() string
 }
 
-func (d *DBI) OmitSelect(v interface{}, excludeColumns ...string) []interface{} {
+func NoPrefixTableName(v interface{}) string {
 	var noPrefixTableName string
 	switch a := v.(type) {
 	case string:
@@ -90,6 +90,11 @@ func (d *DBI) OmitSelect(v interface{}, excludeColumns ...string) []interface{} 
 	default:
 		panic(fmt.Sprintf(`Unsupported type: %T`, v))
 	}
+	return noPrefixTableName
+}
+
+func (d *DBI) OmitSelect(v interface{}, excludeColumns ...string) []interface{} {
+	noPrefixTableName := NoPrefixTableName(v)
 	columns := d.TableColumns(noPrefixTableName)
 	results := []interface{}{}
 	for _, column := range columns {
@@ -102,15 +107,7 @@ func (d *DBI) OmitSelect(v interface{}, excludeColumns ...string) []interface{} 
 }
 
 func (d *DBI) OmitColumns(v interface{}, excludeColumns ...string) []string {
-	var noPrefixTableName string
-	switch a := v.(type) {
-	case string:
-		noPrefixTableName = a
-	case Short:
-		noPrefixTableName = a.Short_()
-	default:
-		panic(fmt.Sprintf(`Unsupported type: %T`, v))
-	}
+	noPrefixTableName := NoPrefixTableName(v)
 	columns := d.TableColumns(noPrefixTableName)
 	results := []string{}
 	for _, column := range columns {

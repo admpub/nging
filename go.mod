@@ -183,7 +183,7 @@ require (
 	github.com/webx-top/client v0.0.0-20200706053026-a0aa773712b3
 	github.com/webx-top/codec v0.0.0-20191025184817-6fac7ce097e2
 	github.com/webx-top/com v0.0.0-20200717115231-63c1a842afd2
-	github.com/webx-top/db v1.0.6
+	github.com/webx-top/db v1.0.7
 	github.com/webx-top/echo v2.2.1+incompatible
 	github.com/webx-top/image v0.0.0-20200420122650-e33887a47834
 	github.com/webx-top/pagination v0.0.0-20200716043638-45efe28df7c2
@@ -195,7 +195,6 @@ require (
 	gocloud.dev v0.20.0
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
-	golang.org/x/tools v0.0.0-20200619180055-7c47624df98f // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
