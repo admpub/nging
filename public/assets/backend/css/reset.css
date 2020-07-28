@@ -10,3 +10,11 @@
 .table-responsive.overflow table{
     margin-bottom:0;
 }
+.label-hover-show{
+  display:none !important;
+  position:absolute;
+  opacity:.9;
+}
+*:hover > .label-hover-show{
+  display:inline !important;
+}
