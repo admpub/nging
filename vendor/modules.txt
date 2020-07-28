@@ -9,6 +9,9 @@ github.com/admpub/9t
 # github.com/admpub/archiver v1.1.4
 ## explicit
 github.com/admpub/archiver
+# github.com/admpub/bindata/v3 v3.1.5 => github.com/admpub/bindata/v3 v3.1.5
+## explicit
+github.com/admpub/bindata/v3
 # github.com/admpub/checksum v1.0.1
 ## explicit
 github.com/admpub/checksum
@@ -734,6 +737,9 @@ github.com/kardianos/osext
 ## explicit
 # github.com/kevinburke/ssh_config v0.0.0-20190725054713-01f96b0aa0cd
 github.com/kevinburke/ssh_config
+# github.com/kisielk/errcheck v1.4.0
+github.com/kisielk/errcheck
+github.com/kisielk/errcheck/internal/errcheck
 # github.com/klauspost/compress v1.10.10
 github.com/klauspost/compress/flate
 github.com/klauspost/compress/fse
@@ -1219,6 +1225,11 @@ golang.org/x/image/tiff/lzw
 golang.org/x/image/vp8
 golang.org/x/image/vp8l
 golang.org/x/image/webp
+# golang.org/x/lint v0.0.0-20200302205851-738671d3881b
+golang.org/x/lint
+golang.org/x/lint/golint
+# golang.org/x/mod v0.3.0
+golang.org/x/mod/semver
 # golang.org/x/net v0.0.0-20200625001655-4c5254603344 => github.com/golang/net v0.0.0-20200707034311-ab3426394381
 golang.org/x/net/bpf
 golang.org/x/net/context
@@ -1280,6 +1291,18 @@ golang.org/x/text/unicode/norm
 golang.org/x/time/rate
 # golang.org/x/tools v0.0.0-20200619180055-7c47624df98f => github.com/golang/tools v0.0.0-20200717024301-6ddee64345a6
 ## explicit
+golang.org/x/tools/go/ast/astutil
+golang.org/x/tools/go/gcexportdata
+golang.org/x/tools/go/internal/gcimporter
+golang.org/x/tools/go/internal/packagesdriver
+golang.org/x/tools/go/packages
+golang.org/x/tools/internal/event
+golang.org/x/tools/internal/event/core
+golang.org/x/tools/internal/event/keys
+golang.org/x/tools/internal/event/label
+golang.org/x/tools/internal/gocommand
+golang.org/x/tools/internal/packagesinternal
+golang.org/x/tools/internal/typesinternal
 # golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543 => github.com/golang/xerrors v0.0.0-20191204190536-9bdfabe68543
 golang.org/x/xerrors
 golang.org/x/xerrors/internal

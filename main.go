@@ -29,13 +29,14 @@ package main
 //go:generate go-bindata -fs -o bindata_assetfs.go -ignore "\\.(git|svn|DS_Store|less|scss)$" -minify "\\.(js|css)$" -tags bindata public/assets/... template/... config/i18n/...
 
 import (
-	//register
-
+	_ "github.com/admpub/bindata/v3"
+	"github.com/admpub/log"
+	"github.com/admpub/nging/application/cmd"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/log"
+	//register
+
 	_ "github.com/admpub/nging/application"
-	"github.com/admpub/nging/application/cmd"
 	_ "github.com/admpub/nging/application/initialize/manager"
 	_ "github.com/admpub/nging/application/library/sqlite"
 )
