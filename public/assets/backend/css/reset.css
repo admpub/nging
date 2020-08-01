@@ -18,3 +18,4 @@
 *:hover > .label-hover-show{
   display:inline !important;
 }
+.tooltip-inner{max-width: 100vw !important;}
