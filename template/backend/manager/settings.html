@@ -35,7 +35,10 @@
             {{range $k,$v := Stored.settings}}
             {{if eq $group $v.Group}}
               <div class="tab-pane cont{{if eq $group $v.Group}} active{{end}}" id="{{$v.Group}}">
-                    <h3 class="hthin">{{$v.Label|T}}</h3>
+                    <h3 class="hthin">
+                      <span class="label label-default label-xs normal pull-right">{{$v.Group}}</span>
+                      {{$v.Label|T}}
+                    </h3>
                     {{- range $i,$t := $v.Tmpl -}}
                     {{- if $t -}}
                     {{Fetch $t $}}
@@ -71,10 +74,11 @@
 <script src="__ASSETS__/js/editor/editor.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript">
 $(function(){
-  App.editor.xheditors('.html-editor');
-  App.editor.tinymces('.html-editor-tinymce');
-  App.editor.markdowns('.html-editor-markdown');
+  App.editor.xheditors('#pcont .html-editor');
+  App.editor.tinymces('#pcont .html-editor-tinymce');
+  App.editor.markdowns('#pcont .html-editor-markdown');
   App.editor.fileInput();
+  $("#body-left-navigate.nscroller:not(.has-scrollbar)").nanoScroller();
 });
 </script>
 {{/Block}}

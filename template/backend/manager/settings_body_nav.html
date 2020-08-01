@@ -3,13 +3,16 @@
 	  <span class="fa fa-chevron-down"></span>
 	</button>{{$group := Stored.group}}
     <div class="fixed nano nscroller responsive-nav collapse" id="body-left-navigate">
-        <div class="content">
+        <div class="content md-margin-bottom">
         	<div class="app-nav md-line-height no-margin-top">
 				<p class="title">{{`设置组`|T}}</p>
           		<ul class="nav nav-pills nav-stacked">
               	{{- range $k, $v := Stored.settings -}}
               		<li class="primary-active{{if eq $group $v.Group}} active{{end}}">
-                	<a href="?group={{$v.Group}}" title="{{$v.Short|T}}" data-pjax="#main-container" data-keepjs="true">{{$v.Short|T}}</a>
+					<a href="?group={{$v.Group}}" title="{{$v.Short|T}}" data-pjax="#pcont" data-keepjs="true" data-toggleclass="parent.li:active">
+						<span class="label label-default label-sm pull-right">{{$v.Group}}</span>
+						{{$v.Short|T}}
+					</a>
               		</li>
               	{{- end -}}
           		</ul>

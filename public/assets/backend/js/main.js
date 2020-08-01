@@ -25,7 +25,7 @@ require.config({
         'general': 'behaviour/general.min',
         'jquery': 'jquery',
         'modernizr': 'modernizr',
-        'nanoscroller': 'jquery.nanoscroller/jquery.nanoscroller',
+        'nanoscroller': 'jquery.nanoscroller/jquery.nanoscroller.min',
         'bootstrap-switch': 'bootstrap.switch/bootstrap-switch.min',
         'pjax': 'jquery.pjax.min',
         'modalEffects': 'jquery.niftymodals/js/jquery.modalEffects.min',

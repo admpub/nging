@@ -344,7 +344,7 @@ var App = function () {
 
 			/*NanoScroller*/
 			if (config.nanoScroller) {
-				$(".nscroller").nanoScroller();
+				$(".nscroller:not(.has-scrollbar)").nanoScroller();
 			}
 
 			/*Nestable Lists*/
@@ -543,10 +543,34 @@ var App = function () {
 			var options = $.extend({}, defaults, callbacks || {});
 			$(document).on('click', elem + '[data-pjax]', function (event) {
 				var container = $(this).data('pjax'), keepjs = $(this).data('keepjs');
-				var onclick = $(this).data('onclick');
+				var onclick = $(this).data('onclick'), toggleClass = $(this).data('toggleclass');
 				$.pjax.click(event, $(container), { timeout: timeout, keepjs: keepjs });
 				if (options.onclick) options.onclick(this);
 				if (onclick && typeof (window[onclick]) == 'function') window[onclick](this);
+				if (toggleClass) {
+					var arr = toggleClass.split(':'),parent,target;
+					if (arr.length>1) {
+						parent = arr[0];
+						toggleClass = arr[1];
+					}
+					toggleClass = toggleClass.replace(/^\./g,'');
+					if(parent){
+						var index = parent.indexOf('.'),parentElem;
+						if (index > 0) {
+							parentElem = parent.substring(index+1);
+							parent = parent.substring(0,index);
+						}
+						switch(parent){
+							case 'parent':target=$(this).parent(parentElem);break;
+							case 'parents':target=$(this).parents(parentElem);break;
+							case 'closest':target=$(this).closest(parentElem);break;
+							default:target=$(this).parent(parentElem);break;
+						}
+					}else{
+						target = $(this);
+					}
+					target.addClass(toggleClass).siblings('.'+toggleClass).removeClass(toggleClass);
+				}
 			}).on('pjax:send', function (evt, xhr, option) {
 				App.loading('show');
 				if (options.onsend) options.onsend(evt, xhr, option);
