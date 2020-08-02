@@ -4235,6 +4235,18 @@ h1:first-child {
 .label-primary,.label-hover-primary:hover {
   background-color: #4D90FD;
 }
+.label-black,.label-hover-black:hover {
+  background-color: #000;
+}
+.label-gray,.label-hover-gray:hover {
+  background-color: gray;
+}
+.label-white,.label-hover-white:hover {
+  background-color: white;
+  color:#555;
+  box-shadow:0 0 1px #555;
+}
+.label-white:hover,.label-white:focus{color:#333 !important}
 .label-warning,.label-hover-warning:hover {
   background-color: #fcad37;
 }
