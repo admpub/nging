@@ -4256,6 +4256,7 @@ h1:first-child {
 .label-info,.label-hover-info:hover {
   background-color: #5DC4EA;
 }
+.label-group > .label{display:inline-block;line-height:1.5em;margin-bottom:2px;}
 .label-lg {
   padding:8px;font-size:100%;
 }
