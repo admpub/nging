@@ -191,7 +191,7 @@ github.com/admpub/marmot/miner
 # github.com/admpub/metrohash v0.0.0-20160821164112-8d1c8b6bed28
 ## explicit
 github.com/admpub/metrohash
-# github.com/admpub/mysql-schema-sync v0.0.1
+# github.com/admpub/mysql-schema-sync v0.0.2
 ## explicit
 github.com/admpub/mysql-schema-sync/internal
 github.com/admpub/mysql-schema-sync/sync
