@@ -408,10 +408,11 @@ func (m *mySQL) CreateTable() error {
 		partitions[p] = p
 	}
 	postFields := []*Field{}
+	var collation string
 	if m.IsPost() {
 		table := m.Form(`name`)
 		engine := m.Form(`engine`)
-		collation := m.Form(`collation`)
+		collation = m.Form(`collation`)
 		autoIncrementStartValue := m.Form(`ai_start_val`)
 		autoIncrementStart := sql.NullInt64{Valid: len(autoIncrementStartValue) > 0}
 		if autoIncrementStart.Valid {
@@ -520,6 +521,18 @@ func (m *mySQL) CreateTable() error {
 	}
 	m.Set(`supportPartitioning`, supportPartitioning)
 	m.Set(`partitionTypes`, PartitionTypes)
+	if len(collation) == 0 {
+		collations, err := m.getCollations()
+		if err != nil {
+			return err
+		}
+		collation, err := m.getCollation(m.dbName, collations)
+		if err != nil {
+			return err
+		}
+		m.Set(`collation`, collation)
+		m.Request().Form().Set("collation", collation)
+	}
 	return m.Render(`db/mysql/create_table`, err)
 }
 func (m *mySQL) ModifyTable() error {
@@ -772,6 +785,7 @@ func (m *mySQL) listTableAjax(opType string) error {
 		if err != nil {
 			data.SetError(err)
 		} else {
+			data.SetInfo(m.T(`操作成功`))
 			data.SetData(m.SavedResults())
 		}
 		return m.JSON(data)
@@ -786,6 +800,7 @@ func (m *mySQL) listTableAjax(opType string) error {
 		if err != nil {
 			data.SetError(err)
 		} else {
+			data.SetInfo(m.T(`操作成功`))
 			data.SetData(m.SavedResults())
 		}
 		return m.JSON(data)
@@ -803,6 +818,7 @@ func (m *mySQL) listTableAjax(opType string) error {
 		if err != nil {
 			data.SetError(err)
 		} else {
+			data.SetInfo(m.T(`操作成功`))
 			data.SetData(m.SavedResults())
 		}
 		return m.JSON(data)
@@ -821,6 +837,7 @@ func (m *mySQL) listTableAjax(opType string) error {
 		if err != nil {
 			data.SetError(err)
 		} else {
+			data.SetInfo(m.T(`操作成功`))
 			data.SetData(m.SavedResults())
 		}
 		return m.JSON(data)
@@ -833,6 +850,7 @@ func (m *mySQL) listTableAjax(opType string) error {
 		if err != nil {
 			data.SetError(err)
 		} else {
+			data.SetInfo(m.T(`操作成功`))
 			data.SetData(m.SavedResults())
 		}
 		return m.JSON(data)
@@ -843,6 +861,27 @@ func (m *mySQL) listTableAjax(opType string) error {
 			data.SetError(err)
 		} else {
 			data.SetData(dbList)
+		}
+		return m.JSON(data)
+	case `collations`:
+		data := m.Data()
+		collations, err := m.getCollations()
+		if err != nil {
+			data.SetError(err)
+		} else {
+			data.SetData(collations.Collations)
+		}
+		return m.JSON(data)
+	case `collate`: // 更改表的字符集编码
+		tables := m.FormValues(`table[]`)
+		collate := m.Form(`collate`)
+		data := m.Data()
+		err := m.setTablesCollate(tables, collate)
+		if err != nil {
+			data.SetError(err)
+		} else {
+			data.SetInfo(m.T(`操作成功`))
+			data.SetData(m.SavedResults())
 		}
 		return m.JSON(data)
 	}
@@ -871,6 +910,15 @@ func (m *mySQL) ListTable() error {
 			return m.returnTo(m.GenURL(`listDb`))
 		}
 		m.Set(`tableStatus`, tableStatus)
+		collations, err := m.getCollations()
+		if err != nil {
+			return err
+		}
+		collation, err := m.getCollation(m.dbName, collations)
+		if err != nil {
+			return err
+		}
+		m.Set(`collation`, collation)
 	}
 	return m.Render(`db/mysql/list_table`, err)
 }

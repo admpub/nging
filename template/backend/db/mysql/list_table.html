@@ -57,6 +57,7 @@
 			    </div>
                 <fieldset>
                      <legend class="sm-padding-bottom">{{"已选中"|T}} (<span id="selected-items-count">0</span>)</legend>
+                     <button type="button" class="btn btn-default" id="collate-selected">{{"字符集"|T}}</button>
                      <button type="button" class="btn btn-default" id="analyze-selected">{{"分析"|T}}</button>
                      <button type="button" class="btn btn-default" id="optimize-selected">{{"优化"|T}}</button>
                      <button type="button" class="btn btn-default" id="check-selected">{{"检查"|T}}</button>
@@ -79,6 +80,7 @@
 {{Modal "__TMPL__/db/mysql/copy_table.yaml"}}
 {{Modal "__TMPL__/db/mysql/move_table.yaml"}}
 {{Modal "__TMPL__/db/mysql/export_table.yaml"}}
+{{Modal "__TMPL__/db/mysql/collate_table.yaml"}}
 <script type="text/template" id="tpl-move-table-form">
     <div class="form-group">
         <label>{{"移动表"|T|ToJS}}</label>
@@ -140,6 +142,24 @@
     </div>
 </form>
 </script>
+<script type="text/template" id="tpl-collate-table-form">
+<div class="alert alert-warning">
+    <!-- <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button> -->
+    <i class="fa fa-warning sign"></i><strong>{{`说明`|T}}</strong> {{`当前操作用于更改数据表内所有文本字段的字符集`|T}}
+ </div>
+    <div class="form-group">
+        <label>{{"修改表"|T|ToJS}}</label>
+        <textarea readonly="readonly" name="table" class="form-control" id="collate-tables">
+        </textarea>
+    </div>
+    <div class="form-group">
+        <label>{{"字符集"|T|ToJS}}</label>
+        {{$collation := Stored.collation}}
+        <select name="collation" class="form-control" id="collation" rel="{{if $collation}}{{$collation}}{{else}}utf8_general_ci{{end}}">
+            <option value="" readonly="readonly">loading...</option>
+        </select>
+    </div>
+</script>
 <script>
 var currentDb='{{Stored.dbName}}';
 var downloadTips='{{`请稍后到“<span class="label label-primary">离线下载</span> &gt; <span class="label label-primary">文件管理</span> &gt; <span class="label label-primary">dbmanager/cache/export</span>”中下载`|T|ToHTML}}';
@@ -169,12 +189,32 @@ function perttyCheckbox(){
         c.text(n+v);
     });
 }
+function getCollations(){
+    if($('#collation').data('loaded'))return;
+    $.get(window.location.href,{json:'collations'},function(r){
+        if(r.Code<1){
+            return App.message(r.Info);
+        }
+        var str='',sel=$('#collation').attr('rel');
+        for(var i in r.Data){
+            str+='<optgroup label="'+i+'">';
+            for(var j in r.Data[i]){
+                var s=sel==r.Data[i][j].Collation.String?' selected="selected"':'';
+                str+='<option value="'+r.Data[i][j].Collation.String+'"'+s+'>'+r.Data[i][j].Collation.String+'</option>';
+            }
+            str+='</optgroup>';
+        }
+        $('#collation').html(str);
+        $('#collation').data('loaded',true);
+    },'json');
+}
 $(function(){
     perttyCheckbox();
     App.attachCheckedAll('#checkedAll','input[type=checkbox].check-table','#selected-items-count');
     $('#move-table-modal .modal-body').html($('#tpl-move-table-form').html());
     $('#copy-table-modal .modal-body').html($('#tpl-copy-table-form').html());
     $('#export-table-modal .modal-body').html($('#tpl-export-table-form').html());
+    $('#collate-table-modal .modal-body').html($('#tpl-collate-table-form').html());
     $('#move-table-modal .btn-primary:last').removeClass('md-close').on('click',function(){
         var dbName=$('#move-table-to-db').val();
         var se=getSelectedItems();
@@ -213,6 +253,35 @@ $(function(){
             App.message({title:App.i18n.SYS_INFO,text:r.Info+'<br /><a href="'+r.URL+'" target="_blank" style="color:white">'+downloadTips+'</a>',class_name:'success'},false);
             $('#export-table-modal').niftyModal('hide');
         },'json');
+    });
+    $('#collate-table-modal .btn-primary:last').removeClass('md-close').on('click',function(){
+        var se=getSelectedItems();
+        if(se.tables.length<1){
+            return App.message({title:'{{"出错了"|T}}',text:'{{"请选择您要操作的表"|T}}',class_name:'danger'},false);
+        }
+        $.post(window.location.href,{json:'collate',table:se.tables,view:se.views,collate:$('#collation').val()},function(r){
+            if(r.Code<1){
+                return App.message({title:App.i18n.SYS_INFO,text:r.Info,class_name:'danger'},false);
+            }
+            App.message({title:App.i18n.SYS_INFO,text:r.Info,class_name:'success'},false);
+            $('#collate-table-modal').niftyModal('hide');
+        },'json');
+    });
+
+    $('#collate-selected').on('click',function(event){
+        var se=getSelectedItems();
+        if(se.tables.length<1&&se.views.length<1){
+            return App.message({title:'{{"出错了"|T}}',text:'{{"请选择您要操作的表"|T}}',class_name:'danger'},false);
+        }
+        var sed=se.tables.join(',');
+        if(se.views.length>0){
+            if(sed)sed+=',';
+            sed+=se.views.join(',');
+        }
+		$('#collate-tables').val(sed);
+		$('#collate-table-modal').niftyModal('show',{afterOpen:function(modal){
+            getCollations();
+        }});
     });
 
     $('#export-selected').on('click',function(event){

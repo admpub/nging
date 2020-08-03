@@ -128,11 +128,11 @@ func (m *mySQL) getCollations() (*Collations, error) {
 	ret := NewCollations()
 	for rows.Next() {
 		var v Collation
-		switch len(cols) {
-		case 7:
-			err = rows.Scan(&v.Collation, &v.Charset, &v.Id, &v.Default, &v.Compiled, &v.Sortlen, &v.PadAttribute)
-		case 6:
-			err = rows.Scan(&v.Collation, &v.Charset, &v.Id, &v.Default, &v.Compiled, &v.Sortlen)
+		recvs := []interface{}{&v.Collation, &v.Charset, &v.Id, &v.Default, &v.Compiled, &v.Sortlen, &v.PadAttribute}
+		if len(recvs) <= len(cols) {
+			err = rows.Scan(recvs...)
+		} else {
+			err = rows.Scan(recvs[0:len(cols)]...)
 		}
 		if err != nil {
 			return nil, fmt.Errorf(`%v: %v`, sqlStr, err)

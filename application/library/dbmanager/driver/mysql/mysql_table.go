@@ -50,8 +50,6 @@ func (m *mySQL) getTables() ([]string, error) {
 }
 
 func (m *mySQL) optimizeTables(tables []string, operation string) error {
-	r := &Result{}
-	defer m.AddResults(r)
 	var op string
 	switch operation {
 	case `optimize`, `check`, `analyze`, `repair`:
@@ -59,6 +57,8 @@ func (m *mySQL) optimizeTables(tables []string, operation string) error {
 	default:
 		return errors.New(m.T(`不支持的操作: %s`, operation))
 	}
+	r := &Result{}
+	defer m.AddResults(r)
 	for _, table := range tables {
 		table = quoteCol(table)
 		r.SQL = op + ` TABLE ` + table
@@ -69,6 +69,37 @@ func (m *mySQL) optimizeTables(tables []string, operation string) error {
 	}
 	r.end()
 	return r.err
+}
+
+func (m *mySQL) setTablesCollate(tables []string, collate string) error {
+	if len(collate) == 0 {
+		return errors.New(m.T(`请选择有效的字符集`))
+	}
+	collations, err := m.getCollations()
+	if err != nil {
+		return err
+	}
+	charset := strings.SplitN(collate, `_`, 2)[0]
+	collation, ok := collations.Collations[charset]
+	if !ok {
+		return errors.New(m.T(`不支持的字符集: %s`, charset))
+	}
+	var found bool
+	for _, c := range collation {
+		if c.Collation.String == collate {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return errors.New(m.T(`不支持的字符集: %s`, collate))
+	}
+	for _, table := range tables {
+		if err = m.alterTableCharset(table, charset, collate); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // tables： tables or views
@@ -320,6 +351,19 @@ func (m *mySQL) alterForeignKeys(table string, foreignKey *ForeignKeyParam, isDr
 			return e
 		}
 		r.SQL += "\nADD" + s
+	}
+	r.Exec(m.newParam())
+	m.AddResults(r)
+	return r.err
+}
+
+func (m *mySQL) alterTableCharset(table string, charset string, collate string) error {
+	//alter table `user` convert to character set utf8mb4 COLLATE utf8mb4_general_ci;
+	if len(charset) == 0 {
+		charset = strings.SplitN(collate, `_`, 2)[0]
+	}
+	r := &Result{
+		SQL: "ALTER TABLE " + quoteCol(table) + " CONVERT TO CHARACTER SET " + charset + " COLLATE " + collate,
 	}
 	r.Exec(m.newParam())
 	m.AddResults(r)
