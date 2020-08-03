@@ -18,19 +18,24 @@
 
 package notice
 
+import "sync"
+
 var (
 	defaultUserNotices *userNotices
 	debug              bool //= true
+	once               sync.Once
 )
 
 func SetDebug(on bool) {
 	debug = on
 }
 
+func Initialize() {
+	defaultUserNotices = NewUserNotices(debug)
+}
+
 func Default() *userNotices {
-	if defaultUserNotices == nil {
-		defaultUserNotices = NewUserNotices(debug)
-	}
+	once.Do(Initialize)
 	return defaultUserNotices
 }
 

@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -36,6 +35,7 @@ import (
 	"github.com/admpub/errors"
 	writerPkg "github.com/admpub/nging/application/library/cron/writer"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
+	"github.com/admpub/nging/application/library/notice"
 )
 
 /*
@@ -55,11 +55,14 @@ var (
 )
 
 // Export 导出SQL文件
-func Export(ctx context.Context, cfg *driver.DbAuth, tables []string, structWriter, dataWriter interface{}, resetAutoIncrements ...bool) error {
+func Export(ctx context.Context, noticer notice.Noticer, cfg *driver.DbAuth, tables []string, structWriter, dataWriter interface{}, resetAutoIncrements ...bool) error {
 	if len(tables) == 0 {
 		return errors.New(`No table selected for export`)
 	}
-	log.Println(`Starting backup:`, tables)
+	if noticer == nil {
+		noticer = notice.DefaultNoticer
+	}
+	noticer(`开始备份: `+strings.Join(tables, ","), 1)
 	var (
 		port, host         string
 		resetAutoIncrement bool
@@ -176,6 +179,7 @@ func Export(ctx context.Context, cfg *driver.DbAuth, tables []string, structWrit
 			}
 		}
 	}
+	noticer(`结束备份`, 1)
 	return nil
 }
 

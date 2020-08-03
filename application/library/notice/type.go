@@ -9,7 +9,8 @@ import (
 )
 
 type (
-	Noticer func(message interface{}, statusCode int, progress ...*Progress) error
+	Noticer          func(message interface{}, statusCode int, progress ...*Progress) error
+	CustomWithWriter func(wOut io.Writer, wErr io.Writer) Noticer
 )
 
 var (
@@ -27,7 +28,7 @@ var (
 		return nil
 	}
 
-	CustomOutputNoticer func(wOut io.Writer, wErr io.Writer) Noticer = func(wOut io.Writer, wErr io.Writer) Noticer {
+	CustomOutputNoticer CustomWithWriter = func(wOut io.Writer, wErr io.Writer) Noticer {
 		return func(message interface{}, statusCode int, progs ...*Progress) error {
 			if len(progs) > 0 && progs[0] != nil {
 				message = `[ ` + tplfunc.NumberFormat(progs[0].CalcPercent().Percent, 2) + `% ] ` + fmt.Sprint(message)

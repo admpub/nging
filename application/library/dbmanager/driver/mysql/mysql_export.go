@@ -38,6 +38,7 @@ import (
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/admpub/nging/application/library/dbmanager/driver/mysql/utils"
+	"github.com/admpub/nging/application/library/notice"
 )
 
 // SQLTempDir sql文件缓存目录获取函数(用于导入导出SQL)
@@ -197,13 +198,28 @@ func (m *mySQL) Export() error {
 		}
 		cfg := *m.DbAuth
 		cfg.Db = m.dbName
+
+		clientID := m.Form(`clientID`)
+		user := handler.User(m.Context)
+		var noticer notice.Noticer
+		if user != nil && len(clientID) > 0 {
+			noticerConfig := &notice.HTTPNoticerConfig{
+				User:     user.Username,
+				Type:     `databaseExport`,
+				ClientID: clientID,
+			}
+			noticer = noticerConfig.Noticer(m)
+		} else {
+			noticer = notice.DefaultNoticer
+		}
+
 		worker := func(ctx context.Context, cfg driver.DbAuth) error {
 			defer func() {
 				if r := recover(); r != nil {
 					err = fmt.Errorf(`RECOVER: %v`, r)
 				}
 			}()
-			err = utils.Export(ctx, &cfg, tables, structWriter, dataWriter, true)
+			err = utils.Export(ctx, noticer, &cfg, tables, structWriter, dataWriter, true)
 			if err != nil {
 				loga.Error(err)
 				return err
@@ -259,6 +275,9 @@ func (m *mySQL) Export() error {
 				}
 			}()
 			err = worker(bgExec.Context(), cfg)
+			if err != nil {
+				noticer(m.T(`导出失败`)+`: `+err.Error(), 0)
+			}
 			done <- struct{}{}
 			return err
 		}
