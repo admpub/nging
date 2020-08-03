@@ -268,15 +268,31 @@ func (sc *SchemaSync) SyncSQL4Dest(sqlStr string, sqls []string) error {
 	return err
 }
 
+func (sc *SchemaSync) Close() error {
+	if sc.DestDb != nil {
+		if err := sc.DestDb.Close(); err != nil {
+			return err
+		}
+	}
+	if sc.SourceDb != nil {
+		if err := sc.SourceDb.Close(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // CheckSchemaDiff 执行最终的diff
 func CheckSchemaDiff(cfg *Config, dbOperators ...DBOperator) *Statics {
 	statics := newStatics(cfg)
+	sc := NewSchemaSync(cfg, dbOperators...)
+
 	defer (func() {
 		statics.timer.stop()
 		statics.sendMailNotice()
+		sc.Close()
 	})()
 
-	sc := NewSchemaSync(cfg, dbOperators...)
 	newTables := sc.SourceDb.GetTableNames()
 	log.Println("source db table total:", len(newTables))
 

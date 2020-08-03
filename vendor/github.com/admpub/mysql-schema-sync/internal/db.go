@@ -11,6 +11,7 @@ type DBOperator interface {
 	GetTableSchema(name string) (schema string)
 	Query(query string, args ...interface{}) (*sql.Rows, error)
 	Begin() (*sql.Tx, error)
+	Close() error
 }
 
 var _ DBOperator = new(MyDb)
