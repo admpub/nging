@@ -62,3 +62,7 @@ func (m *MySchemaData) Query(query string, args ...interface{}) (*sql.Rows, erro
 func (m *MySchemaData) Begin() (*sql.Tx, error) {
 	return nil, nil
 }
+
+func (m *MySchemaData) Close() error {
+	return nil
+}

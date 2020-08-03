@@ -24,7 +24,9 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/admpub/log"
 	"github.com/admpub/nging/application/cmd/event"
+	"github.com/admpub/nging/application/handler/setup"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/service"
 )
@@ -62,6 +64,13 @@ func serviceRunE(cmd *cobra.Command, args []string) error {
 	if len(ServiceOptions.Name) == 0 {
 		ServiceOptions.Description = ServiceOptions.DisplayName + ` Service`
 	}
+
+	if config.IsInstalled() {
+		if err := setup.Upgrade(); err != nil && os.ErrNotExist != err {
+			log.Error(`upgrade.sql: `, err)
+		}
+	}
+
 	return service.Run(ServiceOptions, args[0])
 }
 
