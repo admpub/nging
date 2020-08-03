@@ -19,9 +19,8 @@
 package perm
 
 import (
-	"github.com/admpub/events"
-	"github.com/admpub/events/emitter"
 	"github.com/admpub/nging/application/registry/navigate"
+	"github.com/webx-top/echo"
 )
 
 var navTreeCached *Map
@@ -42,8 +41,8 @@ func NavTreeCached() *Map {
 }
 
 func init() {
-	emitter.DefaultCondEmitter.On(`beforeRun`, events.Callback(func(_ events.Event) error {
+	echo.On(`beforeRun`, func(_ echo.H) error {
 		NavTreeCached()
 		return nil
-	}))
+	})
 }

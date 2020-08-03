@@ -33,8 +33,6 @@ import (
 	"github.com/webx-top/echo/middleware/session"
 	"github.com/webx-top/echo/subdomains"
 
-	"github.com/admpub/events"
-	"github.com/admpub/events/emitter"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/cmd/event"
 	"github.com/admpub/nging/application/handler"
@@ -216,11 +214,11 @@ func init() {
 		renderOptions.AddFuncSetter(ngingMW.ErrorPageFunc)
 		renderOptions.ApplyTo(e, event.BackendTmplMgr)
 		//RendererDo(renderOptions.Renderer())
-		emitter.DefaultCondEmitter.On(`clearCache`, events.Callback(func(_ events.Event) error {
+		echo.On(`clearCache`, func(_ echo.H) error {
 			log.Debug(`clear: Backend Template Object Cache`)
 			renderOptions.Renderer().ClearCache()
 			return nil
-		}))
+		})
 		e.Get(`/favicon.ico`, event.FaviconHandler)
 		if event.Develop {
 			pprof.Wrap(e)

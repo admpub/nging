@@ -34,6 +34,9 @@ import (
 
 // Upgrade 通过自动执行配置文件目录下的upgrade.sql来进行升级
 func Upgrade() error {
+	if err := config.OnceUpgradeDB(); err != nil {
+		return err
+	}
 	sqlDir := filepath.Dir(config.DefaultCLIConfig.Conf)
 	sqlFile := filepath.Join(sqlDir, `upgrade.sql`)
 	if !com.FileExists(sqlFile) {

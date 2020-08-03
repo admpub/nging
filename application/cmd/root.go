@@ -33,7 +33,6 @@ import (
 	"github.com/webx-top/echo/middleware"
 	"github.com/webx-top/echo/subdomains"
 
-	"github.com/admpub/events/emitter"
 	figure "github.com/admpub/go-figure"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/cmd/event"
@@ -139,7 +138,7 @@ If you have already purchased a license, please place the ` + license.FileName()
 			now.Format("Monday, 02 Jan 2006"))
 	}
 	subdomains.Default.SetDebug(config.DefaultConfig.Debug)
-	emitter.DefaultCondEmitter.Fire(`beforeRun`, -1)
+	echo.Fire(`beforeRun`, -1)
 	subdomains.Default.Run(standard.NewWithConfig(c))
 	return c.Listener.Close()
 }

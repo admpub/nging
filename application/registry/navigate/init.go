@@ -18,10 +18,7 @@
 
 package navigate
 
-import (
-	"github.com/admpub/events"
-	"github.com/admpub/events/emitter"
-)
+import "github.com/webx-top/echo"
 
 // EmptyList 空菜单列表
 var EmptyList = List{}
@@ -238,11 +235,11 @@ func TopNavURLs() map[string]int {
 var LeftNavigate = defaultNavigate
 
 func init() {
-	emitter.DefaultCondEmitter.On(`beforeRun`, events.Callback(func(_ events.Event) error {
+	echo.On(`beforeRun`, func(_ echo.H) error {
 		ProjectInitURLsIdent()
 		for index, urlPath := range TopNavigate.FullPath(``) {
 			topNavURLs[urlPath] = index
 		}
 		return nil
-	}))
+	})
 }
