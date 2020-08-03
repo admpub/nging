@@ -246,7 +246,9 @@ $(function(){
         if(!$('#export-output-compress').prop('checked')){
             return form.submit();
         }
-        $.post(form.attr('action'),form.serializeArray(),function(r){
+        var data = form.serializeArray();
+        data.push({name:'clientID',value:App.clientID['notify']||1});
+        $.post(form.attr('action'),data,function(r){
             if(r.Code<1){
                 return App.message({title:App.i18n.SYS_INFO,text:r.Info,class_name:'danger'},false);
             }
