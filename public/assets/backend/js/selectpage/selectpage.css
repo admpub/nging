@@ -13,19 +13,16 @@
 }
 .sp_input {
     background-color: white;
-
     border: 1px solid #ccc;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    border-radius: 4px;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
 
     box-shadow:         0 1px 1px rgba(0,0,0,0.075) inset;
     -moz-box-shadow:    0 1px 1px rgba(0,0,0,0.075) inset;
     -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.075) inset;
     margin: 0 !important;
     /* width: 320px; */
-
-
     font-size: 14px;
     height: 34px;
     line-height: 34px;
@@ -43,12 +40,8 @@
     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 }
-
-
-
-
 .sp_container_open .sp_input {
-    border-radius: 2px !important;
+    border-radius: 0 !important;
 }
 .sp_container_open .sp_button span.sp_caret { transform: rotate(180deg); }
 
@@ -356,20 +349,10 @@ ul.sp_element_box li.selected_tag span.tag_close {
     font-size: 15px;
     font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial;
 }
-
-
-/**
- * 加深颜色表示非选中
- */
-.sp_results_off {
-    /*background: rgba(255, 255, 255, 0.8);*/
-}
-
 .sp_input_off {
     background: #eee;
     color: #333333;
 }
-
 .sp_hide {
     display: none;
 }
@@ -437,13 +420,6 @@ ul.sp_element_box li.selected_tag span.tag_close {
 .sp_container > .sp_select_ng {
     background: #fcc;
 }
-
-
-
-
-
-
-
 /*输入框设置了input-block-level样式时的特殊情况修复*/
 div.sp_container input.sp_input.input-block-level{
     box-sizing:border-box;
@@ -452,7 +428,6 @@ div.sp_container input.sp_input.input-block-level{
     min-height: 30px;
     width: 100%;
 }
-
 div.sp_container_open .sp_input::-ms-clear{display:none;}
 /* 移除微软浏览器，在输入框输入文本后，会出现X的问题，but is look like not working */
 input::-ms-clear{display:none;}/*隐藏文本框叉子*/
@@ -461,9 +436,6 @@ input::-ms-reveal{display:none;}/*隐藏密码框小眼睛*/
 div.sp_navi > p {
     font-size: 12px;
 }
-
-
-
 
 /**
  * 分页条样式
@@ -563,10 +535,6 @@ div.sp_result_area div.sp_pagination>ul>li.pageInfoBox>a:hover {
     color: #666666;
     cursor: default;
 }
-
-
-
-
 
 @keyframes dropDownFadeInDown {
     from{ opacity: 0;transform: translate3d(0, -20px, 0); }
