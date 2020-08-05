@@ -25,6 +25,7 @@ App.loader.libs.fileUpload = [
 	'#jquery.upload/js/jquery.fileupload.js',
 	'#jquery.upload/js/jquery.fileupload-process.js'
 ];
+App.loader.libs.selectPage = ['#selectpage/selectpage.css','#selectpage/selectpage.min.js'];
 window.UEDITOR_HOME_URL = ASSETS_URL + '/js/editor/ueditor/';
 
 App.editor = {
@@ -789,6 +790,35 @@ App.utils.elemToId = function(elem) {
 App.utils.unixtime = function() {
 	return new Date().getTime();
 };
+App.editor.selectPages = function(){
+	App.loader.defined(typeof ($.fn.selectPage), 'selectPage');
+	for(var i=0; i<arguments.length; i+=2){
+		App.editor.selectPage(arguments[i], arguments[i+1],true);
+	}
+}
+App.editor.selectPage = function(elem,options,loaded){
+	var defaults={
+    	showField : 'name',
+    	keyField : 'id',
+    	data : [], // url or data
+    	params : function(){return {};},
+    	eAjaxSuccess : function(d){
+			if(!d) return undefined;
+        	return {
+          		"list":d.Data.listData,
+          		"pageSize": d.Data.pagination.limit,
+          		"pageNumber": d.Data.pagination.page,
+          		"totalRow": d.Data.pagination.rows,
+          		"totalPage":d.Data.pagination.pages
+        	};
+    	},
+    	eSelect: function (data) {},
+    	eClear: function () {}
+	};
+	if(!loaded)App.loader.defined(typeof ($.fn.selectPage), 'selectPage');
+	$(elem).selectPage($.extend(defaults,options||{}));
+}
+
 App.editor.fileUpload = function(elem,options) {
 	App.loader.defined(typeof ($.fn.fileupload), 'fileUpload');
 	if(typeof(options.dataType)=='undefined')options.dataType='json';
