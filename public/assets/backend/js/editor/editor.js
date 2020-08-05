@@ -19,6 +19,12 @@ App.loader.libs.markdownit = ['#markdown/it/markdown-it.min.js', '#markdown/it/p
 App.loader.libs.codehighlight = ['#markdown/it/plugins/highlight/loader/prettify.js', '#markdown/it/plugins/highlight/loader/run_prettify.js?skin=sons-of-obsidian'];
 App.loader.libs.powerFloat = ['#float/powerFloat.min.css', '#float/powerFloat.min.js'];
 App.loader.libs.uploadPreviewer = ['#jquery.uploadPreviewer/css/jquery.uploadPreviewer.min.css', '#jquery.uploadPreviewer/jquery.uploadPreviewer.min.js'];
+App.loader.libs.fileUpload = [
+	'#jquery.upload/js/vendor/jquery.ui.widget.js',
+	'#jquery.upload/js/vendor/jquery.iframe-transport.js',
+	'#jquery.upload/js/jquery.fileupload.js',
+	'#jquery.upload/js/jquery.fileupload-process.js'
+];
 window.UEDITOR_HOME_URL = ASSETS_URL + '/js/editor/ueditor/';
 
 App.editor = {
@@ -782,6 +788,11 @@ App.utils.elemToId = function(elem) {
 };
 App.utils.unixtime = function() {
 	return new Date().getTime();
+};
+App.editor.fileUpload = function(elem,options) {
+	App.loader.defined(typeof ($.fn.fileupload), 'fileUpload');
+	if(typeof(options.dataType)=='undefined')options.dataType='json';
+	$(elem).fileupload(options).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
 };
 App.editor.fileInput = function (elem) {
 	if (!elem) {
