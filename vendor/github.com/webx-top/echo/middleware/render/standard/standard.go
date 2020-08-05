@@ -56,6 +56,7 @@ func New(templateDir string, args ...logger.Logger) driver.Driver {
 		DelimLeft:         "{{",
 		DelimRight:        "}}",
 		IncludeTag:        "Include",
+		FunctionTag:       "Function",
 		ExtendTag:         "Extend",
 		BlockTag:          "Block",
 		SuperTag:          "Super",
@@ -100,6 +101,7 @@ type Standard struct {
 	DelimLeft          string
 	DelimRight         string
 	incTagRegex        *regexp.Regexp
+	funcTagRegex       *regexp.Regexp
 	extTagRegex        *regexp.Regexp
 	blkTagRegex        *regexp.Regexp
 	rplTagRegex        *regexp.Regexp
@@ -107,6 +109,7 @@ type Standard struct {
 	stripTagRegex      *regexp.Regexp
 	cachedRegexIdent   string
 	IncludeTag         string
+	FunctionTag        string
 	ExtendTag          string
 	BlockTag           string
 	SuperTag           string
@@ -233,6 +236,9 @@ func (self *Standard) InitRegexp() {
 	//{{Include "tmpl"}} or {{Include "tmpl" .}}
 	self.incTagRegex = regexp.MustCompile(self.quotedLeft + self.IncludeTag + `[\s]+"([^"]+)"(?:[\s]+([^` + self.quotedRfirst + `]+))?[\s]*\/?` + self.quotedRight)
 
+	//{{Function "funcName"}} or {{Function "funcName" .}}
+	self.funcTagRegex = regexp.MustCompile(self.quotedLeft + self.FunctionTag + `[\s]+"([^"]+)"(?:[\s]+([^` + self.quotedRfirst + `]+))?[\s]*\/?` + self.quotedRight)
+
 	//{{Extend "name"}}
 	self.extTagRegex = regexp.MustCompile(`^[\s]*` + self.quotedLeft + self.ExtendTag + `[\s]+"([^"]+)"(?:[\s]+([^` + self.quotedRfirst + `]+))?[\s]*\/?` + self.quotedRight)
 
@@ -268,6 +274,7 @@ func (self *Standard) Render(w io.Writer, tmplName string, values interface{}, c
 
 func (self *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Template, err error) {
 	funcs := c.Funcs()
+	tmplOriginalName := tmplName
 	tmplName = tmplName + self.Ext
 	tmplName = self.TemplatePath(c, tmplName)
 	cachedKey := tmplName
@@ -314,11 +321,6 @@ func (self *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Temp
 	content := string(b)
 	subcs := make(map[string]string, 0) //子模板内容
 	extcs := make(map[string]string, 0) //母板内容
-
-	ident := self.DelimLeft + self.IncludeTag + self.DelimRight
-	if self.cachedRegexIdent != ident || self.incTagRegex == nil {
-		self.InitRegexp()
-	}
 	m := self.extTagRegex.FindAllStringSubmatch(content, 1)
 	content = self.rplTagRegex.ReplaceAllString(content, ``)
 	for i := 0; i < 10 && len(m) > 0; i++ {
@@ -344,6 +346,8 @@ func (self *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Temp
 		}
 	}
 	content = self.ContainsSubTpl(c, content, subcs)
+	clips := map[string]string{}
+	content = self.ContainsFunctionResult(c, tmplOriginalName, content, clips)
 	tmpl, err = t.Parse(content)
 	if err != nil {
 		content = fmt.Sprintf("Parse %v err: %v", tmplName, err)
@@ -361,6 +365,7 @@ func (self *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Temp
 		if name == tmpl.Name() {
 			t = tmpl
 		} else {
+			subc = self.ContainsFunctionResult(c, tmplOriginalName, subc, clips)
 			t = tmpl.New(name)
 			subc = self.Tag(`define "`+driver.CleanTemplateName(name)+`"`) + subc + self.Tag(`end`)
 			_, err = t.Parse(subc)
@@ -387,6 +392,7 @@ func (self *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Temp
 			t = tmpl
 		} else {
 			t = tmpl.New(name)
+			extc = self.ContainsFunctionResult(c, tmplOriginalName, extc, clips)
 			extc = self.Tag(`define "`+driver.CleanTemplateName(name)+`"`) + extc + self.Tag(`end`)
 			_, err = t.Parse(extc)
 			if err != nil {
@@ -527,6 +533,26 @@ func (self *Standard) ContainsSubTpl(c echo.Context, content string, subcs map[s
 			passObject = "."
 		}
 		content = strings.Replace(content, matched, self.Tag(`template "`+driver.CleanTemplateName(tmplFile)+`" `+passObject), -1)
+	}
+	return content
+}
+
+func (self *Standard) ContainsFunctionResult(c echo.Context, tmplOriginalName string, content string, clips map[string]string) string {
+	matches := self.funcTagRegex.FindAllStringSubmatch(content, -1)
+	for _, v := range matches {
+		matched := v[0]
+		funcName := v[1]
+		passArg := v[2]
+		key := funcName + `:` + passArg
+		if _, ok := clips[key]; !ok {
+			if fn, ok := c.GetFunc(funcName).(func(string, string) string); ok {
+				clips[key] = fn(tmplOriginalName, passArg)
+			} else {
+				clips[key] = ``
+			}
+		}
+
+		content = strings.Replace(content, matched, clips[key], -1)
 	}
 	return content
 }

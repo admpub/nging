@@ -470,20 +470,26 @@ func (a *KVData) SetItem(item *KV) *KVData {
 	return a
 }
 
-func (a *KVData) Get(k string) string {
+func (a *KVData) Get(k string, defaults ...string) string {
 	if indexes, ok := a.index[k]; ok {
 		if len(indexes) > 0 {
 			return a.slice[indexes[0]].V
 		}
 	}
+	if len(defaults) > 0 {
+		return defaults[0]
+	}
 	return ``
 }
 
-func (a *KVData) GetItem(k string) *KV {
+func (a *KVData) GetItem(k string, defaults ...func() *KV) *KV {
 	if indexes, ok := a.index[k]; ok {
 		if len(indexes) > 0 {
 			return a.slice[indexes[0]]
 		}
+	}
+	if len(defaults) > 0 {
+		return defaults[0]()
 	}
 	return nil
 }

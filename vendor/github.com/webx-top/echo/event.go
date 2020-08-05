@@ -30,6 +30,7 @@ const (
 	EventAsyncMode = emitter.Async
 	EventSyncMode  = emitter.Sync
 	EventCondMode  = emitter.Cond
+	EventNoneMode  = -1
 )
 
 func Fire(e interface{}, mode int, context ...H) error {
