@@ -6,12 +6,16 @@ App.select2 = {
     },
     tags: function (element, tagsArray, ajax, sortable, onlySelect, extOpts) {
         //tagsArray:[{id:1,text:'coscms',locked:true}] locked元素不是必须的，如果为true代表不可删除
-        if (tagsArray == null) tagsArray = $(element).data('tags') || [];
+        if (tagsArray == null) {
+            tagsArray = $(element).data('tags') || [];
+        } else if (typeof(tagsArray)=='object'&&!$.isArray(tagsArray)&&ajax==null) {
+            ajax = tagsArray;
+        }
         if (ajax == null) ajax = $(element).data('url');
         if (sortable == null) sortable = $(element).data('sortable') || false;
         if (onlySelect == null) onlySelect = $(element).data('onlyselect') || false;
         var single = $(element).data('single') || false;
-        var mapField = $(element).data('map'); //{ "id": "id", "text": "text", "locked": "locked", "disabled": "disabled" }
+        var mapField = $(element).data('map') || {id:'id',text:'name'}; //{ "id": "id", "text": "text", "locked": "locked", "disabled": "disabled" }
         if (single) single = App.parseBool(single);
         var options = { multiple: !single, width: '100%', minimumInputLength: 0, tokenSeparators: [',','，'] };
         if (onlySelect) {//仅仅可选择，不可新增选项
@@ -22,18 +26,18 @@ App.select2 = {
             options.placeholder = App.select2.i18n.TAG_INPUT;
             options.tags = tagsArray;
         }
+        var listKey = $(element).data('listkey') || 'list';
         var queryFunc = null,ajaxObj = null;
         if (ajax) {
             switch (typeof (ajax)) {
                 case 'string':
-                    var listKey = $(element).data('listkey') || 'list';
                     queryFunc = App.select2.buildQueryFunction(ajax, {}, listKey, mapField);
                     break;
 
                 default:
                     if ($.isArray(ajax)) {
-                        var listKey = ajax.length > 2 ? ajax[2] : ($(element).data('listkey') || 'list');
-                        queryFunc = App.select2.buildQueryFunction(ajax[0], ajax.length > 1 ? ajax[1] : {}, listKey, mapField);
+                        var listKeyNew = ajax.length > 2 ? ajax[2] : listKey;
+                        queryFunc = App.select2.buildQueryFunction(ajax[0], ajax.length > 1 ? ajax[1] : {}, listKeyNew, mapField);
                         break;
                     }
                     ajaxObj = ajax;
@@ -42,9 +46,11 @@ App.select2 = {
         }
         if (!onlySelect) {//支持新增选项。ajax方式获取数据时，需要预先加载数据并取消对select2的ajax设置
             options.tags = function(query){
-                var keywords = '', value = '';
+                var keywords = '', value = ''
+                var page = 1;;
                 if(query){
                     keywords = query.term;
+                    page = query.page;
                 }else{
                     value = $(element).val();
                 }
@@ -54,13 +60,27 @@ App.select2 = {
                 if (queryFunc) {
                     queryFunc({ term: keywords, callback: callback, value: value });
                 } else if (ajaxObj) {
-                    var page = 1;
+                    if(typeof(ajaxObj.data)=='undefined'||ajaxObj.data==null) ajaxObj.data=function(keywords,page){
+                        return {q:keywords,page:page};
+                    };
+                    if(typeof(ajaxObj.results)=='undefined'||ajaxObj.results==null) ajaxObj.results=function(resp,page){
+                        var list = typeof(resp.Data[listKey])!='undefined'?resp.Data.resp.Data[listKey]:resp.Data.listData;
+                        return App.select2.buildResults(page,resp.Data.pagination.pages,list,mapField);
+                    };
                     $.ajax(ajaxObj.url, {
                         dataType: ajaxObj.dataType || "json",
                         data: ajaxObj.data(keywords, page),
                         async: false
-                    }).done(function (data) {
-                        data = ajaxObj.results(data, page);
+                    }).done(function (resp) {
+                        if (resp.Code != 1) {
+                            App.message({
+                                title: App.i18n.SYS_INFO,
+                                text: resp.Info,
+                                type: 'error'
+                            }, false);
+                            return { results: [], more: false };
+                        }
+                        var data = ajaxObj.results(resp, page);
                         callback(data);
                     });
                 }
@@ -168,6 +188,22 @@ App.select2 = {
             });
         };
     },
+    buildResults: function(page,totalPages,list,mapField){
+        var more = page < totalPages; // more变量用于通知select2可以加载更多数据
+        var data = { results: [], more: more };
+        if (mapField) {
+            for (var i = 0; i < list.length; i++) {
+                var v = list[i], u = {};
+                for (var k in mapField) {
+                    u[k] = v[mapField[k]];
+                }
+                data.results.push(u);
+            }
+        } else {
+            data.results = list;
+        }
+        return data;
+    },
     buildAjaxOptions: function (options, params, listKey, mapField) {
         if (listKey == null) listKey = 'list';
         var defaults = {
@@ -191,20 +227,7 @@ App.select2 = {
                     }, false);
                     return { results: [], more: false };
                 }
-                var more = page < r.Data.pagination.pages; // more变量用于通知select2可以加载更多数据
-                var data = { results: [], more: more };
-                if (mapField) {
-                    for (var i = 0; i < r.Data[listKey].length; i++) {
-                        var v = r.Data[listKey][i], u = {};
-                        for (var k in mapField) {
-                            u[k] = v[mapField[k]];
-                        }
-                        data.results.push(u);
-                    }
-                } else {
-                    data.results = r.Data[listKey];
-                }
-                return data;
+                return App.select2.buildResults(page,r.Data.pagination.pages,r.Data[listKey],mapField);
             }
         }
         return $.extend({}, defaults, options || {});
