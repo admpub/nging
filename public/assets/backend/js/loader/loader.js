@@ -66,7 +66,12 @@
                     continue;
                 }
             }
-            $(location).append(ej);
+            try{
+                $(location).append(ej);
+            }catch(err){
+                console.error(err.message);
+                console.log(name);
+            }
         }
         $.ajaxSetup({cache: false});
     };
@@ -79,28 +84,25 @@
         Loader.includes(key, true, onloadCallback);
         if (callback != null) return callback();
     };
+    Loader.fullURL = function(file) {
+        var url=Loader.staticURL;
+        if (file.substring(0,1)=='#') {
+            url=Loader.assetsURL+'/js/';
+            file=file.substring(1);
+        }
+        return url+file;
+    };
     Loader.includes = function(js,once,onloadCallback) {
         if (!js) return;
         switch (typeof(js)) {
         case 'string':
-            var url=Loader.staticURL;
-            if (js.substring(0,1)=='#') {
-                url=Loader.assetsURL+'/js/';
-                js=js.substring(1);
-            }
-            Loader.include(url + '/' + js,null,once);
+            Loader.include(Loader.fullURL(js),null,once);
             break;
         default:
             if (typeof(js.length) == 'undefined') return;
             var jss = [];
             for (var i = 0; i < js.length; i++) {
-                var url=Loader.staticURL;
-                var jsf=js[i];
-                if (jsf.substring(0,1)=='#') {
-                    url=Loader.assetsURL+'/js/';
-                    jsf=jsf.substring(1);
-                }
-                jss.push(url + '/' + jsf);
+                jss.push(Loader.fullURL(js[i]));
             }
             Loader.include(jss,null,once);
         }

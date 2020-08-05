@@ -21,10 +21,14 @@ App.loader.libs.powerFloat = ['#float/powerFloat.min.css', '#float/powerFloat.mi
 App.loader.libs.uploadPreviewer = ['#jquery.uploadPreviewer/css/jquery.uploadPreviewer.min.css', '#jquery.uploadPreviewer/jquery.uploadPreviewer.min.js'];
 App.loader.libs.fileUpload = [
 	'#jquery.upload/js/vendor/jquery.ui.widget.js',
-	'#jquery.upload/js/vendor/jquery.iframe-transport.js',
+	'#jquery.upload/js/jquery.iframe-transport.js',
 	'#jquery.upload/js/jquery.fileupload.js',
 	'#jquery.upload/js/jquery.fileupload-process.js'
 ];
+App.loader.libs.jcrop = ['#jquery.crop/css/jquery.Jcrop.min.css','#jquery.crop/js/jquery.Jcrop.min.js'];
+App.loader.libs.cropImage = ['#jquery.crop/css/jquery.Jcrop.min.css','#jquery.crop/js/jquery.Jcrop.min.js','#behavior/page/crop-image.min.js'];
+App.loader.libs.select2 = ['#jquery.select2/select2.css','#jquery.select2/select2.min.js'];
+App.loader.libs.select2ex = ['#behaviour/page/select2.min.js'];
 App.loader.libs.selectPage = ['#selectpage/selectpage.css','#selectpage/selectpage.min.js'];
 window.UEDITOR_HOME_URL = ASSETS_URL + '/js/editor/ueditor/';
 
@@ -818,11 +822,21 @@ App.editor.selectPage = function(elem,options,loaded){
 	if(!loaded)App.loader.defined(typeof ($.fn.selectPage), 'selectPage');
 	$(elem).selectPage($.extend(defaults,options||{}));
 }
-
+App.editor.select2 = function(){
+	App.loader.defined(typeof ($.fn.select2), 'select2');
+	App.loader.defined(typeof (App.select2), 'select2ex');
+	return App.select2;
+}
 App.editor.fileUpload = function(elem,options) {
 	App.loader.defined(typeof ($.fn.fileupload), 'fileUpload');
 	if(typeof(options.dataType)=='undefined')options.dataType='json';
 	$(elem).fileupload(options).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
+};
+App.editor.cropImage = function(uploadURL,thumbsnailElem,originalElem,type,width,height) {
+	App.loader.defined(typeof ($.fn.fileupload), 'fileUpload');
+	App.loader.defined(typeof ($.fn.Jcrop), 'jcrop');
+	App.loader.defined(typeof (cropImage), 'cropImage');
+	return cropImage(uploadURL,thumbsnailElem,originalElem,type,width,height);
 };
 App.editor.fileInput = function (elem) {
 	if (!elem) {
