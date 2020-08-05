@@ -805,7 +805,7 @@ App.editor.selectPage = function(elem,options,loaded){
     	eAjaxSuccess : function(d){
 			if(!d) return undefined;
         	return {
-          		"list":d.Data.listData,
+          		"list":typeof(d.Data.listData)!='undefined'?d.Data.listData:d.Data.list,
           		"pageSize": d.Data.pagination.limit,
           		"pageNumber": d.Data.pagination.page,
           		"totalRow": d.Data.pagination.rows,
