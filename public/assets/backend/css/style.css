@@ -3938,17 +3938,17 @@ h1:first-child {
 }
 /*Tags*/
 .select2-container-multi .select2-choices .select2-search-choice {
-  border: 1px solid #CCCCCC;
-  background-color: #FFFFFF;
-  background-image: linear-gradient(to bottom, #ffffff 60%, #f9f9f9 100%);
-  padding: 3px 5px 5px 18px;
+  border: 1px solid #CCCCCC !important;
+  background-color: #FFFFFF !important;
+  background-image: linear-gradient(to bottom, #ffffff 60%, #f9f9f9 100%) !important;
+  padding: 3px 5px 5px 18px !important;
 }
 .select2-container-multi .select2-choices {
-  padding: 2px;
-  background: #fff;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
+  padding: 2px !important;
+  background: #fff !important;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset !important
 }
-.select2-container-multi .select2-choices .select2-search-field input{padding-top:2px;padding-bottom:2px}
+.select2-container-multi .select2-choices .select2-search-field input{padding-top:2px !important;padding-bottom:2px !important}
 /*Slider*/
 .slider.slider-vertical {
   margin-right: 13px;
