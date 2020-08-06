@@ -31,17 +31,17 @@
                 before: {},
                 after: {}
             };
-            if (jsAfter.length) {
+            if (jsAfter.length>0) {
                 Loader.data.include.after.script = jsAfter;
             } else {
                 var jsBefore = $("#js-lazyload-end");
-                if (jsBefore.length) Loader.data.include.before.script = jsBefore;
+                if (jsBefore.length>0) Loader.data.include.before.script = jsBefore;
             }
-            if (cssAfter.length) {
+            if (cssAfter.length>0) {
                 Loader.data.include.after.link = cssAfter;
             } else {
                 var cssBefore = $("#css-lazyload-end");
-                if (cssBefore.length) Loader.data.include.before.link = cssBefore;
+                if (cssBefore.length>0) Loader.data.include.before.link = cssBefore;
             }
         }
         $.ajaxSetup({cache: true});
@@ -61,7 +61,8 @@
                 if (typeof(Loader.data.include.after[tag]) != 'undefined') {
                     Loader.data.include.after[tag].after(ej);
                     continue;
-                } else if (typeof(Loader.data.include.before[tag]) != 'undefined') {
+                } 
+                if (typeof(Loader.data.include.before[tag]) != 'undefined') {
                     Loader.data.include.before[tag].before(ej);
                     continue;
                 }
