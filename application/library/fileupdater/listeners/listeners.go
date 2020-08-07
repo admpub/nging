@@ -65,7 +65,9 @@ func (a *Listeners) ListenByField(fieldNames string, tableName string, embedded 
 		if _listener, ok := (*a)[fieldName]; ok {
 			listener.New(_listener, embedded, seperator).SetTable(tableName, fieldName, sameFields...).ListenDefault()
 			delete(*a, fieldName)
+			continue
 		}
+		listener.New(GenDefaultCallback(fieldName), embedded, seperator).SetTable(tableName, fieldName, sameFields...).ListenDefault()
 	}
 }
 
