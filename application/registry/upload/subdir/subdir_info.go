@@ -464,10 +464,7 @@ func (i *SubdirInfo) SetDescription(description string) *SubdirInfo {
 }
 
 func (i *SubdirInfo) ListenField(fieldNames string, embedded bool, seperatorAndSameFields ...string) *SubdirInfo {
-	if len(fieldNames) > 0 {
-		i.FileListener().AddDefaultCallback(strings.Split(fieldNames, `,`)...)
-	}
-	i.FileListener().Listen(i.TableName(), embedded, seperatorAndSameFields...)
+	i.FileListener().ListenByField(fieldNames, i.TableName(), embedded, seperatorAndSameFields...)
 	return i
 }
 
