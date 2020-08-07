@@ -19,87 +19,65 @@
 package listeners
 
 import (
-	"strings"
-
-	"github.com/webx-top/db"
-	"github.com/webx-top/db/lib/factory"
-
 	"github.com/admpub/nging/application/library/fileupdater"
 	"github.com/admpub/nging/application/library/fileupdater/listener"
 )
 
 func New() fileupdater.Listener {
-	return &Listeners{}
-}
-
-type Listeners map[string]func(m factory.Model) (tableID string, content string, property *listener.Property)
-
-func (a *Listeners) Listen(tableName string, embedded bool, seperatorAndSameFields ...string) {
-	var sameFields []string
-	var seperator string
-	if len(seperatorAndSameFields) > 0 {
-		seperator = seperatorAndSameFields[0]
-	}
-	if len(seperatorAndSameFields) > 1 {
-		sameFields = seperatorAndSameFields[1:]
-	}
-	for _field, _listener := range *a {
-		listener.New(_listener, embedded, seperator).SetTable(tableName, _field, sameFields...).ListenDefault()
-		delete(*a, _field)
+	return &Listeners{
+		options: map[string]*fileupdater.Options{},
 	}
 }
 
-func (a *Listeners) ListenByField(fieldNames string, tableName string, embedded bool, seperatorAndSameFields ...string) {
-	if len(fieldNames) == 0 {
-		return
-	}
-	var sameFields []string
-	var seperator string
-	if len(seperatorAndSameFields) > 0 {
-		seperator = seperatorAndSameFields[0]
-	}
-	if len(seperatorAndSameFields) > 1 {
-		sameFields = seperatorAndSameFields[1:]
-	}
-	for _, fieldName := range strings.Split(fieldNames, `,`) {
-		if _listener, ok := (*a)[fieldName]; ok {
-			listener.New(_listener, embedded, seperator).SetTable(tableName, fieldName, sameFields...).ListenDefault()
-			delete(*a, fieldName)
-			continue
-		}
-		listener.New(GenDefaultCallback(fieldName), embedded, seperator).SetTable(tableName, fieldName, sameFields...).ListenDefault()
-	}
+type Listeners struct {
+	options   map[string]*fileupdater.Options
+	tableName string
 }
 
-func GenDefaultCallback(fieldName string) func(m factory.Model) (tableID string, content string, property *listener.Property) {
-	return func(m factory.Model) (tableID string, content string, property *listener.Property) {
-		row := m.AsRow()
-		tableID = row.String(`id`, `-1`)
-		content = row.String(fieldName)
-		property = listener.NewPropertyWith(m, db.Cond{`id`: row.Get(`id`, `-1`)})
-		return
-	}
-}
-
-func (a *Listeners) Add(fieldName string, callback func(m factory.Model) (tableID string, content string, property *listener.Property)) fileupdater.Listener {
-	if callback == nil {
-		callback = GenDefaultCallback(fieldName)
-	}
-	(*a)[fieldName] = callback
+func (a *Listeners) SetTableName(tableName string) fileupdater.Listener {
+	a.tableName = tableName
 	return a
 }
 
-func (a *Listeners) AddDefaultCallback(fieldNames ...string) fileupdater.Listener {
-	for _, fieldName := range fieldNames {
-		(*a)[fieldName] = GenDefaultCallback(fieldName)
+func (a *Listeners) Listen() {
+	for _field, _option := range a.options {
+		listener.NewWithOptions(_option).ListenDefault()
+		delete(a.options, _field)
 	}
+}
+
+func (a *Listeners) BuildOptions(fieldName string, setters ...fileupdater.OptionSetter) *fileupdater.Options {
+	options := &fileupdater.Options{
+		FieldName: fieldName,
+		TableName: a.tableName,
+	}
+	for _, setter := range setters {
+		setter(options)
+	}
+	if options.Callback == nil {
+		options.Callback = GenDefaultCallback(fieldName)
+	}
+	if len(options.TableName) == 0 {
+		panic(`liseners.options: TableName is empty`)
+	}
+	return options
+}
+
+func (a *Listeners) ListenByOptions(fieldName string, setters ...fileupdater.OptionSetter) {
+	options := a.BuildOptions(fieldName, setters...)
+	listener.NewWithOptions(options).ListenDefault()
+}
+
+func (a *Listeners) Add(fieldName string, setters ...fileupdater.OptionSetter) fileupdater.Listener {
+	options := a.BuildOptions(fieldName, setters...)
+	a.options[fieldName] = options
 	return a
 }
 
 func (a *Listeners) Delete(fieldNames ...string) fileupdater.Listener {
 	for _, fieldName := range fieldNames {
-		if _, ok := (*a)[fieldName]; ok {
-			delete(*a, fieldName)
+		if _, ok := a.options[fieldName]; ok {
+			delete(a.options, fieldName)
 		}
 	}
 	return a

@@ -27,7 +27,6 @@ import (
 
 	"github.com/admpub/nging/application/registry/upload/checker"
 	"github.com/admpub/nging/application/registry/upload/table"
-	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 )
@@ -150,6 +149,7 @@ func (i *SubdirInfo) SetFileListener(listener fileupdater.Listener) *SubdirInfo 
 func (i *SubdirInfo) FileListener() fileupdater.Listener {
 	if i.fileListener == nil && FileListenerGenerator != nil {
 		i.fileListener = FileListenerGenerator()
+		i.fileListener.SetTableName(i.tableName)
 	}
 	return i.fileListener
 }
@@ -342,24 +342,6 @@ func (i *SubdirInfo) parseFieldInfo(field string) (fieldName string, fieldText s
 	return
 }
 
-// parseSameFieldInfo 解析相似字段信息
-// example parseSameFieldInfo(`image_original(image;image2)`)
-func (i *SubdirInfo) parseSameFieldInfo(fieldName string) (field string, sameFields []string) {
-	if strings.HasSuffix(fieldName, `)`) {
-		same := fieldName[0 : len(fieldName)-1]
-		arr := strings.SplitN(same, `(`, 2)
-		if len(arr) == 2 {
-			fieldName = arr[0]
-			same = arr[1]
-			if len(same) > 0 {
-				sameFields = strings.Split(same, ";")
-			}
-		}
-	}
-	field = fieldName
-	return
-}
-
 func (i *SubdirInfo) AddFieldName(fieldName string, checkers ...checker.Checker) *SubdirInfo {
 	var (
 		fieldText string
@@ -460,18 +442,5 @@ func (i *SubdirInfo) SetNameEN(nameEN string) *SubdirInfo {
 
 func (i *SubdirInfo) SetDescription(description string) *SubdirInfo {
 	i.Description = description
-	return i
-}
-
-func (i *SubdirInfo) ListenField(fieldNames string, embedded bool, seperatorAndSameFields ...string) *SubdirInfo {
-	i.FileListener().ListenByField(fieldNames, i.TableName(), embedded, seperatorAndSameFields...)
-	return i
-}
-
-func (i *SubdirInfo) ListenFieldWithCustomCallback(fieldWithCustomCallback map[string]func(m factory.Model) (tableID string, content string, property *fileupdater.Property), embedded bool, seperatorAndSameFields ...string) *SubdirInfo {
-	for fieldName, callbackFunc := range fieldWithCustomCallback {
-		i.FileListener().Add(fieldName, callbackFunc)
-	}
-	i.FileListener().Listen(i.TableName(), embedded, seperatorAndSameFields...)
 	return i
 }

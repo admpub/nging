@@ -25,6 +25,7 @@ import (
 	"github.com/admpub/color"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/library/fileupdater"
 	modelFile "github.com/admpub/nging/application/model/file"
 )
 
@@ -33,35 +34,39 @@ var DBI = func() *factory.DBI {
 }
 
 // New 实例化监听器具
-func New(cb Callback, embedded bool, seperators ...string) *FileRelation {
+func New(cb fileupdater.CallbackFunc, embedded bool, seperators ...string) *FileRelation {
 	var seperator string
 	if len(seperators) > 0 {
 		seperator = seperators[0]
 	}
-	return &FileRelation{Embedded: embedded, Seperator: seperator, callback: cb}
+	return &FileRelation{
+		Options: &fileupdater.Options{
+			Embedded:  embedded,
+			Seperator: seperator,
+			Callback:  cb,
+		},
+	}
 }
 
-type Callback func(m factory.Model) (tableID string, content string, property *Property)
+// NewWithOptions 实例化监听器具
+func NewWithOptions(options *fileupdater.Options) *FileRelation {
+	return &FileRelation{
+		Options: options,
+	}
+}
+
+type Callback = fileupdater.CallbackFunc
 
 // FileRelation 文件关联数据监听
 // FileRelation.SetTable(`table`,`field`).ListenDefault()
 type FileRelation struct {
-	TableName  string   // 数据表名称
-	FieldName  string   // 数据表字段名
-	SameFields []string // 数据表类似字段名
-	Embedded   bool     // 是否为嵌入图片
-	Seperator  string   // 文件字段中多个文件路径之间的分隔符，空字符串代表为单个文件
-	callback   Callback //根据模型获取表行ID和内容
-	dbi        *factory.DBI
+	*fileupdater.Options
+	dbi *factory.DBI
 }
 
 func (f *FileRelation) SetSeperator(seperator string) *FileRelation {
 	f.Seperator = seperator
 	return f
-}
-
-func (f *FileRelation) Callback() Callback {
-	return f.callback
 }
 
 func (f *FileRelation) SetTable(table string, field string, samesFields ...string) *FileRelation {
@@ -88,7 +93,7 @@ func (f *FileRelation) ListenDefault() *FileRelation {
 func (f *FileRelation) attachUpdateEvent(event string) func(m factory.Model, editColumns ...string) error {
 	seperator := f.Seperator
 	embedded := f.Embedded
-	callback := f.callback
+	callback := f.Callback
 	return func(m factory.Model, editColumns ...string) error {
 		if len(editColumns) > 0 && !com.InSlice(f.FieldName, editColumns) {
 			return nil
@@ -127,7 +132,7 @@ func (f *FileRelation) attachUpdateEvent(event string) func(m factory.Model, edi
 func (f *FileRelation) attachEvent(event string) func(m factory.Model, editColumns ...string) error {
 	seperator := f.Seperator
 	embedded := f.Embedded
-	callback := f.callback
+	callback := f.Callback
 	return func(m factory.Model, _ ...string) error {
 		fileM := modelFile.NewEmbedded(m.Context())
 		tableID, content, property := callback(m)
@@ -162,7 +167,7 @@ func (f *FileRelation) attachEvent(event string) func(m factory.Model, editColum
 func (f *FileRelation) attachDeleteEvent(event string) func(m factory.Model, editColumns ...string) error {
 	seperator := f.Seperator
 	embedded := f.Embedded
-	callback := f.callback
+	callback := f.Callback
 	return func(m factory.Model, _ ...string) error {
 		fileM := modelFile.NewEmbedded(m.Context())
 		tableID, content, property := callback(m)

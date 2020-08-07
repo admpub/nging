@@ -24,4 +24,10 @@ import (
 	_ "github.com/admpub/nging/application/handler/tool"
 	_ "github.com/admpub/nging/application/handler/user"
 	_ "github.com/admpub/nging/application/initialize/backend"
+	"github.com/admpub/nging/application/library/fileupdater/listeners"
+	"github.com/admpub/nging/application/registry/upload/subdir"
 )
+
+func init() {
+	subdir.FileListenerGenerator = listeners.New
+}

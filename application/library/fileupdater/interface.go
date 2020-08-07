@@ -29,9 +29,12 @@ type Reler interface {
 }
 
 type Listener interface {
-	Listen(tableName string, embedded bool, seperatorAndSameFields ...string)
-	ListenByField(fieldNames string, tableName string, embedded bool, seperatorAndSameFields ...string)
-	Add(fieldName string, callback func(m factory.Model) (tableID string, content string, property *Property)) Listener
-	AddDefaultCallback(fieldNames ...string) Listener
+	SetTableName(table string) Listener
+	Listen()
+	ListenByOptions(fieldName string, setters ...OptionSetter)
+	Add(fieldName string, setters ...OptionSetter) Listener
+	BuildOptions(fieldName string, setters ...OptionSetter) *Options
 	Delete(fieldNames ...string) Listener
 }
+
+type CallbackFunc func(m factory.Model) (tableID string, content string, property *Property)
