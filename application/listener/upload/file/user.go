@@ -115,7 +115,7 @@ func init() {
 		fm := m.(*dbschema.NgingUser)
 		tableID = fmt.Sprint(fm.Id)
 		content = fm.Avatar
-		property = listener.NewProUP(fm, db.Cond{`id`: fm.Id})
+		property = listener.NewPropertyWith(fm, db.Cond{`id`: fm.Id})
 		return
 	}, false).SetTable(`nging_user`, `avatar`).ListenDefault()
 
