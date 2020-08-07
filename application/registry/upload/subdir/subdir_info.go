@@ -23,8 +23,11 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/admpub/nging/application/library/fileupdater"
+
 	"github.com/admpub/nging/application/registry/upload/checker"
 	"github.com/admpub/nging/application/registry/upload/table"
+	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 )
@@ -36,10 +39,6 @@ type ThumbSize struct {
 
 func (t ThumbSize) String() string {
 	return fmt.Sprintf("%vx%v", t.Width, t.Height)
-}
-
-type Listener interface {
-	Listen(tableName string, embedded bool, seperatorAndSameFields ...string)
 }
 
 type FieldInfo struct {
@@ -92,6 +91,8 @@ func (info *FieldInfo) AddChecker(checkerFn checker.Checker) *FieldInfo {
 	return info
 }
 
+var FileListenerGenerator func() fileupdater.Listener
+
 // SubdirInfo 子目录信息
 type SubdirInfo struct {
 	Allowed     bool   // 是否允许上传
@@ -100,21 +101,29 @@ type SubdirInfo struct {
 	NameEN      string // 子目录英文名称
 	Description string // 子目录简述
 
-	tableName  string
-	fieldInfos map[string]*FieldInfo
-	checker    checker.Checker
+	tableName    string
+	fieldInfos   map[string]*FieldInfo
+	checker      checker.Checker
+	fileListener fileupdater.Listener
 }
 
 func NewSubdirInfo(key, name string, checkers ...checker.Checker) *SubdirInfo {
-	var checkerFn checker.Checker
+	var (
+		checkerFn    checker.Checker
+		fileListener fileupdater.Listener
+	)
 	if len(checkers) > 0 {
 		checkerFn = checkers[0]
 	}
+	if FileListenerGenerator != nil {
+		fileListener = FileListenerGenerator()
+	}
 	return &SubdirInfo{
-		Allowed: true,
-		Key:     key,
-		Name:    name,
-		checker: checkerFn,
+		Allowed:      true,
+		Key:          key,
+		Name:         name,
+		checker:      checkerFn,
+		fileListener: fileListener,
 	}
 }
 
@@ -131,6 +140,18 @@ func (i *SubdirInfo) GetField(field string) *FieldInfo {
 		return info
 	}
 	return EmptyFieldInfo
+}
+
+func (i *SubdirInfo) SetFileListener(listener fileupdater.Listener) *SubdirInfo {
+	i.fileListener = listener
+	return i
+}
+
+func (i *SubdirInfo) FileListener() fileupdater.Listener {
+	if i.fileListener == nil && FileListenerGenerator != nil {
+		i.fileListener = FileListenerGenerator()
+	}
+	return i.fileListener
 }
 
 func (i *SubdirInfo) CopyFrom(other *SubdirInfo) *SubdirInfo {
@@ -424,7 +445,18 @@ func (i *SubdirInfo) SetDescription(description string) *SubdirInfo {
 	return i
 }
 
-func (i *SubdirInfo) Listen(listener Listener, embedded bool, seperator ...string) *SubdirInfo {
-	listener.Listen(i.TableName(), embedded, seperator...)
+func (i *SubdirInfo) ListenField(fieldNames string, embedded bool, seperatorAndSameFields ...string) *SubdirInfo {
+	if len(fieldNames) > 0 {
+		i.FileListener().AddDefaultCallback(strings.Split(fieldNames, `,`)...)
+	}
+	i.FileListener().Listen(i.TableName(), embedded, seperatorAndSameFields...)
+	return i
+}
+
+func (i *SubdirInfo) ListenFieldWithCustomCallback(fieldWithCustomCallback map[string]func(m factory.Model) (tableID string, content string, property *fileupdater.Property), embedded bool, seperatorAndSameFields ...string) *SubdirInfo {
+	for fieldName, callbackFunc := range fieldWithCustomCallback {
+		i.FileListener().Add(fieldName, callbackFunc)
+	}
+	i.FileListener().Listen(i.TableName(), embedded, seperatorAndSameFields...)
 	return i
 }

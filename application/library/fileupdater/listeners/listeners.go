@@ -21,12 +21,14 @@ package listeners
 import (
 	"strings"
 
+	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
 
+	"github.com/admpub/nging/application/library/fileupdater"
 	"github.com/admpub/nging/application/library/fileupdater/listener"
 )
 
-func New() *Listeners {
+func New() fileupdater.Listener {
 	return &Listeners{}
 }
 
@@ -45,10 +47,12 @@ func (a *Listeners) Listen(tableName string, embedded bool, seperatorAndSameFiel
 		listener.New(_listener, embedded, seperator).SetTable(tableName, _field, sameFields...).ListenDefault()
 		delete(*a, _field)
 	}
-	return a
 }
 
 func (a *Listeners) ListenByField(fieldNames string, tableName string, embedded bool, seperatorAndSameFields ...string) {
+	if len(fieldNames) == 0 {
+		return
+	}
 	var sameFields []string
 	var seperator string
 	if len(seperatorAndSameFields) > 0 {
@@ -63,15 +67,34 @@ func (a *Listeners) ListenByField(fieldNames string, tableName string, embedded 
 			delete(*a, fieldName)
 		}
 	}
-	return a
 }
 
-func (a *Listeners) Add(fieldName string, callback func(m factory.Model) (tableID string, content string, property *listener.Property)) *Listeners {
+func GenDefaultCallback(fieldName string) func(m factory.Model) (tableID string, content string, property *listener.Property) {
+	return func(m factory.Model) (tableID string, content string, property *listener.Property) {
+		row := m.AsRow()
+		tableID = row.String(`id`, `-1`)
+		content = row.String(fieldName)
+		property = listener.NewPropertyWith(m, db.Cond{`id`: row.Get(`id`, `-1`)})
+		return
+	}
+}
+
+func (a *Listeners) Add(fieldName string, callback func(m factory.Model) (tableID string, content string, property *listener.Property)) fileupdater.Listener {
+	if callback == nil {
+		callback = GenDefaultCallback(fieldName)
+	}
 	(*a)[fieldName] = callback
 	return a
 }
 
-func (a *Listeners) Delete(fieldNames ...string) *Listeners {
+func (a *Listeners) AddDefaultCallback(fieldNames ...string) fileupdater.Listener {
+	for _, fieldName := range fieldNames {
+		(*a)[fieldName] = GenDefaultCallback(fieldName)
+	}
+	return a
+}
+
+func (a *Listeners) Delete(fieldNames ...string) fileupdater.Listener {
 	for _, fieldName := range fieldNames {
 		if _, ok := (*a)[fieldName]; ok {
 			delete(*a, fieldName)
