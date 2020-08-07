@@ -5821,9 +5821,34 @@ ul.no-list-style{
 .no-border{
   border:0 !important;
 }
+.no-border-x{
+  border-left:0 !important;
+  border-right:0 !important;
+}
+.no-border-left{
+  border-left:0 !important;
+}
+.no-border-right{
+  border-right:0 !important;
+}
+.no-border-y{
+  border-top:0 !important;
+  border-bottom:0 !important;
+}
+.no-border-top{
+  border-top:0 !important;
+}
+.no-border-bottom{
+  border-bottom:0 !important;
+}
 .form-control.no-border{
   box-shadow:none;
 }
+.input-group .input-group-addon{border-right:0}
+.input-group .form-control+.input-group-addon{
+  border-left:0 !important;
+}
+.input-group .input-group-addon:last-child{border-right:1px solid #ccc}
 .normal{font-weight:normal;}
 .CodeMirror{font-family:"monospace,'Courier New'";}
 input[type="date"]{line-height: 1em;}
