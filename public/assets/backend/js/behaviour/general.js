@@ -1494,7 +1494,17 @@ var App = function () {
 		showRequriedInputStar:function(){
 			$('form:not([required-redstar])').each(function(){
 				$(this).find('[required]').each(function(){
-					var row = $(this).parents('.form-group');
+					var parent = $(this).parent('.input-group');
+					if(parent.length>0){
+						parent.addClass('required');
+						return;
+					}
+					parent = $(this).parent('div[class*="col-"]');
+					if (parent.length>0 && parent.prev('.control-label').length>0) {
+						parent.prev('.control-label').addClass('required');
+						return;
+					}
+					var row = $(this).closest('.form-group');
 					if (row.length<1) return;
 					var lbl = row.children('.control-label:not(.required)');
 					if (lbl.length<1) return;
