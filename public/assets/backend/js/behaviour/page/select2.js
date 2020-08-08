@@ -65,7 +65,8 @@ App.select2 = {
                     };
                     if(typeof(ajaxObj.results)=='undefined'||ajaxObj.results==null) ajaxObj.results=function(resp,page){
                         var list = typeof(resp.Data[listKey])!='undefined'?resp.Data.resp.Data[listKey]:resp.Data.listData;
-                        return App.select2.buildResults(page,resp.Data.pagination.pages,list,mapField);
+                        var pages = typeof(resp.Data.pagination)!='undefined'?resp.Data.pagination.pages:0;
+                        return App.select2.buildResults(page,pages,list,mapField);
                     };
                     $.ajax(ajaxObj.url, {
                         dataType: ajaxObj.dataType || "json",
@@ -229,7 +230,8 @@ App.select2 = {
                     }, false);
                     return { results: [], more: false };
                 }
-                return App.select2.buildResults(page,r.Data.pagination.pages,r.Data[listKey],mapField);
+                var pages = typeof(r.Data.pagination)!='undefined'?r.Data.pagination.pages:0;
+                return App.select2.buildResults(page,pages,r.Data[listKey],mapField);
             }
         }
         return $.extend({}, defaults, options || {});

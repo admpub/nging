@@ -801,26 +801,40 @@ App.editor.selectPages = function(){
 	}
 }
 App.editor.selectPage = function(elem,options,loaded){
+	if($(elem).length<1)return;
+	var listKey='listData',pagingKey='pagination';
+	if(options!=null){
+		if(typeof(options.listKey)!='undefined') listKey = options.listKey;
+		if(typeof(options.pagingKey)!='undefined') pagingKey = options.pagingKey;
+	}
 	var defaults={
-    	showField : 'name',
-    	keyField : 'id',
-    	data : [], // url or data
-    	params : function(){return {};},
-    	eAjaxSuccess : function(d){
+    	showField: 'name',
+    	keyField: 'id',
+    	data: [], // url or data
+    	params: function(){return {};},
+    	eAjaxSuccess: function(d){
 			if(!d) return undefined;
+			var list = typeof(d.Data[listKey])!='undefined'?d.Data[listKey]:d.Data.list;
+			if(list==null) list=[];
+			var paging;
+			if(typeof(d.Data[pagingKey])=='undefined'||d.Data[pagingKey]==null) {
+				paging={limit:0,page:1,rows:0,pages:0};
+			}else{
+				paging=d.Data[pagingKey];
+			}
         	return {
-          		"list":typeof(d.Data.listData)!='undefined'?d.Data.listData:d.Data.list,
-          		"pageSize": d.Data.pagination.limit,
-          		"pageNumber": d.Data.pagination.page,
-          		"totalRow": d.Data.pagination.rows,
-          		"totalPage":d.Data.pagination.pages
+          		"list":list,
+          		"pageSize": paging.limit,
+          		"pageNumber": paging.page,
+          		"totalRow": paging.rows,
+          		"totalPage": paging.pages
         	};
     	},
     	eSelect: function (data) {},
     	eClear: function () {}
 	};
 	if(!loaded)App.loader.defined(typeof ($.fn.selectPage), 'selectPage');
-	$(elem).selectPage($.extend(defaults,options||{}));
+	$(elem).selectPage($.extend({},defaults,options||{}));
 }
 App.editor.select2 = function(){
 	App.loader.defined(typeof ($.fn.select2), 'select2');
