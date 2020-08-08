@@ -20,10 +20,10 @@ App.loader.libs.codehighlight = ['#markdown/it/plugins/highlight/loader/prettify
 App.loader.libs.powerFloat = ['#float/powerFloat.min.css', '#float/powerFloat.min.js'];
 App.loader.libs.uploadPreviewer = ['#jquery.uploadPreviewer/css/jquery.uploadPreviewer.min.css', '#jquery.uploadPreviewer/jquery.uploadPreviewer.min.js'];
 App.loader.libs.fileUpload = [
-	'#jquery.upload/js/vendor/jquery.ui.widget.js',
-	'#jquery.upload/js/jquery.iframe-transport.js',
-	'#jquery.upload/js/jquery.fileupload.js',
-	'#jquery.upload/js/jquery.fileupload-process.js'
+	'#jquery.upload/js/vendor/jquery.ui.widget.min.js',
+	'#jquery.upload/js/jquery.iframe-transport.min.js',
+	'#jquery.upload/js/jquery.fileupload.min.js',
+	'#jquery.upload/js/jquery.fileupload-process.min.js'
 ];
 App.loader.libs.jcrop = ['#jquery.crop/css/jquery.Jcrop.min.css','#jquery.crop/js/jquery.Jcrop.min.js'];
 App.loader.libs.cropImage = ['#jquery.crop/css/jquery.Jcrop.min.css','#jquery.crop/js/jquery.Jcrop.min.js','#behavior/page/crop-image.min.js'];
