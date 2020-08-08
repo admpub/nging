@@ -173,6 +173,7 @@ App.select2 = {
                 //locked元素不是必须的，如果为true代表不可删除(用于tags)
                 //disabled元素不是必须的，如果为true代表不可选择(用于select)
                 var data = { results: [] };
+                if (r.Data[listKey]==null) return query.callback(data);
                 if (mapField) {
                     for (var i = 0; i < r.Data[listKey].length; i++) {
                         var v = r.Data[listKey][i], u = {};
@@ -184,13 +185,14 @@ App.select2 = {
                 } else {
                     data.results = r.Data[listKey];
                 }
-                query.callback(data);
+                return query.callback(data);
             });
         };
     },
     buildResults: function(page,totalPages,list,mapField){
         var more = page < totalPages; // more变量用于通知select2可以加载更多数据
         var data = { results: [], more: more };
+        if (list==null) return data;
         if (mapField) {
             for (var i = 0; i < list.length; i++) {
                 var v = list[i], u = {};
