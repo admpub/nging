@@ -1512,6 +1512,14 @@ var App = function () {
 				});
 				$(this).attr('required-redstar','1');
 			});
+		},
+		pushState:function(data,title,url){
+			if(!window.history || !window.history.pushState)return;
+			window.history.pushState(data,title,url);
+		},
+		replaceState:function(data,title,url){
+			if(!window.history || !window.history.replaceState)return;
+			window.history.replaceState(data,title,url);
 		}
 	
 	};
