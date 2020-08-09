@@ -50,7 +50,6 @@
 	<meta name="commitID" content="{{CommitID}}">
 	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
 	<title>{{Block "title"}}Start{{/Block}} - {{Version}}</title>
-	<link rel="stylesheet" href="__ASSETS__/css/reset.css?t={{BuildTime}}" />
 	<link rel='stylesheet' href='__ASSETS__/css/font_OpenSans400_300_600_400italic_700_800.css?t={{BuildTime}}' type='text/css' />
 	<link rel='stylesheet' href='__ASSETS__/css/font_Raleway_300_200_100.css?t={{BuildTime}}' type='text/css' />
   <link rel="stylesheet" href="__ASSETS__/css/iconfont/iconfont.css?t={{BuildTime}}">
@@ -66,8 +65,9 @@
 	<link rel="stylesheet" href="__ASSETS__/css/form/checkbox.css?t={{BuildTime}}" />
 	{{Include "global_js"}}
     {{Block "head"}}{{/Block}}
+	<link id="css-lazyload-end" rel="stylesheet" href="__ASSETS__/css/reset.css?t={{BuildTime}}" />
 	<!-- Custom styles for this template -->
-	<link id="css-lazyload-end" href="__ASSETS__/css/style.min.css?t={{BuildTime}}" rel="stylesheet" />
+	<link href="__ASSETS__/css/style.min.css?t={{BuildTime}}" rel="stylesheet" />
 </head>
  
 <body{{Block "bodyAttr"}}{{/Block}}>

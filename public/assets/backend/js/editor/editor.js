@@ -30,6 +30,11 @@ App.loader.libs.cropImage = ['#jquery.crop/css/jquery.Jcrop.min.css','#jquery.cr
 App.loader.libs.select2 = ['#jquery.select2/select2.css','#jquery.select2/select2.min.js'];
 App.loader.libs.select2ex = ['#behaviour/page/select2.min.js'];
 App.loader.libs.selectPage = ['#selectpage/selectpage.css','#selectpage/selectpage.min.js'];
+App.loader.libs.jqueryui = ['#jquery.ui/jquery-ui.custom.min.js','#jquery.ui/jquery-ui.touch-punch.min.js'];
+App.loader.libs.dropzone = [
+	'#jquery.ui/css/dropzone.min.css',
+	'#dropzone/dropzone.min.js'
+];
 window.UEDITOR_HOME_URL = ASSETS_URL + '/js/editor/ueditor/';
 
 App.editor = {
@@ -934,3 +939,31 @@ App.editor.fileInput = function (elem) {
 		});
 	});
 };
+App.editor.dropzone = function (elem,options,onSuccss,onRemove) {
+	App.loader.defined(typeof ($.fn.dropzone), 'dropzone', null, function(){
+		Dropzone.autoDiscover = false;
+	});
+	App.loader.defined(typeof ($.ui), 'jqueryui');
+	var d = $(elem).dropzone($.extend({
+		params: {client:'webuploader'},
+	    paramName: "file", maxFilesize: 0.5, // MB
+		addRemoveLinks : true,
+		acceptedFiles:'image/*',
+		dictDefaultMessage :'<div class="dz-custom-message"><span class="text-bold text-md" title="'+App.t('拖动文件到这里开始上传')+'"><i class="fa fa-caret-right text-danger"></i> Drop files</span> to upload \
+		<span class="grey text-xs text-xs-minus">(or click)</span><br /> \
+		<i class="fa fa-cloud-upload text-primary fa-3x"></i></div>',
+		dictResponseError: 'Error while uploading file!',
+		dictRemoveFile: App.t('删除')
+	},options||{}));
+	d.on("success", function(file,resp,evt) {
+		if(resp.error) {
+			if(typeof(resp.error.message)!="undefined") resp.error = resp.error.message;
+			return App.message({text:resp.error,type:"error"});
+		}
+		if(onSuccss) onSuccss.call(this,arguments);
+  	}).on('removedfile', function(file){
+		if(onRemove) onRemove.call(this,arguments);
+	});
+	//d=$(elem).get(0).dropzone;
+	return d;
+}

@@ -23,3 +23,18 @@
 .input-group .sp_container+.input-group-addon{
   border-left:0 !important;
 }
+/* dropzone */
+.dropzone .dz-default.dz-message {
+  background-image: none;
+  font-size: 24px;
+  text-align: center;
+  line-height: 32px;
+  left: 0;
+  width: 100%;
+  margin-left: auto;
+}
+.dropzone .dz-default.dz-message span{
+  display: inline;
+  color: #555;
+}
+.dropzone .dz-default.dz-message span .grey{color:grey !important}
