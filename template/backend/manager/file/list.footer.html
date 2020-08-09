@@ -6,18 +6,18 @@
 <script src="__ASSETS__/js/loadingoverlay/loadingoverlay.min.js?t={{BuildTime}}" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">
 App.i18n.UPLOADING="{{`文件上传中，请稍候...`|T}}";
-App.i18n.UPLOAD_SUCCEED='{{"上传成功"|T}}';
+App.i18n.UPLOAD_SUCCEED='{{`上传成功`|T}}';
 App.i18n.BUTTON_UPLOAD="{{`上传附件`|T}}";
 var uploadURL='{{Stored.uploadURL | Default (BackendUploadURL `nging_user`)}}';
 var listURL='{{URL.Path}}{{if Form `filetype`}}?filetype={{Stored.fileType}}{{if Form `multiple`}}&multiple=1{{end}}{{end}}';
 var target=window;
-App.i18n.NO_CALLBACK_NAME='{{"请在网址参数callback变量中指定您所定义的回调函数名"|T}}';
-App.i18n.PLEASE_SELECT='{{"请选择要使用的文件"|T}}';
-{{- $from := Form "from" -}}
-var callback='{{Form "callback"}}',client='{{Form `client`}}', insertTo='{{Form "insertTo"}}';
-{{- if eq $from "parent" -}}
+App.i18n.NO_CALLBACK_NAME='{{`请在网址参数callback变量中指定您所定义的回调函数名`|T}}';
+App.i18n.PLEASE_SELECT='{{`请选择要使用的文件`|T}}';
+{{- $from := Form `from` -}}
+var callback='{{Form `callback`}}',client='{{Form `client`}}', insertTo='{{Form `insertTo`}}';
+{{- if eq $from `parent` -}}
 target=window.parent;
-{{- else if eq $from "opener" -}}
+{{- else if eq $from `opener` -}}
 target=window.opener;
 {{- end -}}
 var dialogMode={{- Stored.dialog -}};

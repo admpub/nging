@@ -27,12 +27,11 @@ func OnUpdateOwnerFilePath(ctx echo.Context,
 	fileM := &dbschema.NgingFile{}
 	//embedM := &dbschema.NgingFileEmbedded{}
 	params := uploadSubdir.ParseUploadType(typ)
-	info := params.SubdirInfo
 	thumbM := &dbschema.NgingFileThumb{}
 	cond := db.NewCompounds()
 	cond.Add(db.Cond{`table_id`: id})
-	cond.Add(db.Cond{`table_name`: info.TableName()})
-	cond.Add(db.Cond{`field_name`: fieldName})
+	cond.Add(db.Cond{`table_name`: params.MustGetTable()})
+	cond.Add(db.Cond{`field_name`: params.Field})
 	cond.Add(db.Cond{`view_url`: src})
 	_, err := fileM.ListByOffset(nil, nil, 0, -1, cond.And())
 	if err != nil {

@@ -1,16 +1,18 @@
 function ownerTypeChange(a){}
 function applySelected(){
+	var s = getSelectedFiles();
+	if(!s) return false;
 	if(client=='xheditor'&&window.callback){
-		window.callback('!'+getSelectedFiles().join(' '));
+		window.callback('!'+s.files.join(' '));
 		return false;
 	}
 	if(callback){
 		if(typeof(target[callback])=='function'){
-			target[callback](getSelectedFiles());
+			target[callback](s.files,s.infos);
 		}
 	}else{
 		if(insertTo){
-			$(insertTo).val(getSelectedFiles().join(','));
+			$(insertTo).val(s.files.join(','));
 			return false;
 		}
         App.message({title:App.i18n.SYS_INFO,text:App.i18n.NO_CALLBACK_NAME,type:'error'});
@@ -19,15 +21,18 @@ function applySelected(){
     return false;
 }
 function getSelectedFiles(){
-	var files=[];
+	var files=[],infos=[];
 	$("input.check-table:checked").each(function(){
-		files.push($(this).data('file-url'));
+		var info=$(this).data('info');
+		//{"id":2026,"owner_type":"user","owner_id":1,"name":"未标题-1.jpg","save_name":"102568426320429056.jpg","save_path":"public/upload/b2c_store_goods/0/102568426320429056.jpg","view_url":"/public/upload/b2c_store_goods/0/102568426320429056.jpg","ext":".jpg","mime":"image/jpeg","type":"image","size":26341,"width":388,"height":388,"dpi":0,"md5":"8541a261e493e3b15f982c361d3f97cc","storer_name":"local","storer_id":"","created":1596896034,"updated":0,"project":"","table_id":"0","table_name":"official_b2c_store_goods","field_name":"content","sort":0,"status":0,"category_id":0,"used_times":0}
+		files.push(info.view_url);
+		infos.push(info);
 	});
 	if(files.length<1){
 		App.message({title:App.i18n.SYS_INFO,text:App.i18n.PLEASE_SELECT,type:'error'});
 		return false;
 	}
-	return files;
+	return {files:files,infos:infos};
 }
 $(function(){
 	$('#timerange').on('focus',function(){
