@@ -229,14 +229,14 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 		};
 		params.toolbarHandlers = {
 			'browsing-image': function (cm, icon, cursor, selection) {
-				App.editor.finderDialog(App.editor.browsingFileURL + '?from=parent&size=12&filetype=image&multiple=1', function(fileList){
+				App.editor.finderDialog(App.editor.browsingFileURL + '?from=parent&size=12&filetype=image&multiple=1', function(fileList,infoList){
 					if (fileList.length <= 0) {
 						return App.message({ type: 'error', text: App.t('没有选择任何选项！') });
 					} 
 					var urls = [];
 					for (var i = 0; i < fileList.length; i++) {
-						var v = fileList[i], r = String(v).split('/');
-						var name = r.length > 0 ? r[r.length-1] : v;
+						var v = fileList[i];
+						var name = infoList[i].name;
 						urls.push('![' + name + '](' + v + ')');
 					}
 					//var linenum=urls.length>0?urls.length-1:0;
@@ -467,8 +467,8 @@ App.editor.finderDialog = function (remoteURL, callback, zIndex) {
 		//animate: false,
 		message: function (dialog) {
 			var cb = "finderDialogCallback" + App.utils.unixtime();
-			window[cb] = function (files) {
-				callback(files);
+			window[cb] = function (files,infos) {
+				callback(files,infos);
 				if (files && files.length > 0) dialog.close();
 			}
 			return $('<iframe src="' + remoteURL + '&callback=' + cb + '" style="width:100%;height:635px;border:0;padding:0;margin:0"></iframe>');
@@ -528,9 +528,9 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 	var filePickerCallback = function (callback, value, meta) {
 		switch (meta.filetype) {
 			case 'file': //Provide file and text for the link dialog
-				App.editor.finderDialog(managerUrl + meta.filetype, function (files) {
+				App.editor.finderDialog(managerUrl + meta.filetype, function (files,infos) {
 					if (files && files.length > 0)
-						callback(files[0], { text: 'My text' });
+						callback(files[0], { text: infos[0].name });
 				});
 				//callback('https://www.google.com/logos/google.jpg', { text: 'My text' });
 				break;
@@ -538,7 +538,7 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 			case 'image': //Provide image and alt text for the image dialog
 				App.editor.finderDialog(managerUrl + meta.filetype, function (files) {
 					if (files && files.length > 0)
-						callback(files[0], { alt: '' });
+						callback(files[0], { alt: infos[0].name });
 				});
 				//callback('https://www.google.com/logos/google.jpg', { alt: 'My alt text' });
 				break;
@@ -940,6 +940,7 @@ App.editor.fileInput = function (elem) {
 	});
 };
 App.editor.dropzone = function (elem,options,onSuccss,onRemove) {
+	if($(elem).length<1) return null;
 	App.loader.defined(typeof ($.fn.dropzone), 'dropzone', null, function(){
 		Dropzone.autoDiscover = false;
 	});
@@ -955,6 +956,7 @@ App.editor.dropzone = function (elem,options,onSuccss,onRemove) {
 		dictResponseError: 'Error while uploading file!',
 		dictRemoveFile: App.t('删除')
 	},options||{}));
+	//console.dir(d[0].dropzone);
 	d.on("success", function(file,resp,evt) {
 		if(resp.error) {
 			if(typeof(resp.error.message)!="undefined") resp.error = resp.error.message;
@@ -964,6 +966,6 @@ App.editor.dropzone = function (elem,options,onSuccss,onRemove) {
   	}).on('removedfile', function(file){
 		if(onRemove) onRemove.call(this,arguments);
 	});
-	//d=$(elem).get(0).dropzone;
+	$(elem).data('dropzone',d[0].dropzone);
 	return d;
 }
