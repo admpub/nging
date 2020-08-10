@@ -19,6 +19,7 @@
 package driver
 
 import (
+	_ "github.com/webx-top/client/upload/driver/dropzone"
 	_ "github.com/webx-top/client/upload/driver/markdown"
 	_ "github.com/webx-top/client/upload/driver/simple"
 	_ "github.com/webx-top/client/upload/driver/webuploader"

@@ -20,6 +20,7 @@ package upload
 
 import (
 	"fmt"
+	"net/http"
 	"path/filepath"
 	"time"
 
@@ -83,9 +84,11 @@ var DefaultFormField = `filedata`
 type BaseClient struct {
 	Data *Result
 	echo.Context
-	Object    Client
-	FormField string // 表单文件字段名
-	err       error
+	Object      Client
+	FormField   string // 表单文件字段名
+	Code        int    // HTTP code
+	ContentType string
+	err         error
 }
 
 func (a *BaseClient) Init(ctx echo.Context, res *Result) {
@@ -144,7 +147,22 @@ func (a *BaseClient) Response() error {
 	} else {
 		result = a.Result()
 	}
-	return a.JSONBlob(engine.Str2bytes(result))
+	if a.Code > 0 {
+		return a.responseContentType(result, a.Code)
+	}
+	return a.responseContentType(result, http.StatusOK)
+}
+
+func (a *BaseClient) responseContentType(content string, code int) error {
+	if len(a.ContentType) == 0 {
+		return a.JSONBlob(engine.Str2bytes(content), code)
+	}
+	switch a.ContentType {
+	case `string`:
+		return a.String(content, code)
+	default:
+		return a.JSONBlob(engine.Str2bytes(content), code)
+	}
 }
 
 type Client interface {

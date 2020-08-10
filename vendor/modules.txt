@@ -1048,10 +1048,11 @@ github.com/webx-top/captcha
 # github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f
 ## explicit
 github.com/webx-top/chardet
-# github.com/webx-top/client v0.0.0-20200706053026-a0aa773712b3
+# github.com/webx-top/client v0.0.0-20200810010021-75e366623665
 ## explicit
 github.com/webx-top/client/upload
 github.com/webx-top/client/upload/driver
+github.com/webx-top/client/upload/driver/dropzone
 github.com/webx-top/client/upload/driver/markdown
 github.com/webx-top/client/upload/driver/simple
 github.com/webx-top/client/upload/driver/webuploader
