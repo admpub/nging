@@ -108,9 +108,7 @@ func ErrorPageFunc(c echo.Context) error {
 		return common.WithReturnURL(c, urlStr, varNames...)
 	})
 	c.SetFunc(`WithURLParams`, common.WithURLParams)
-	c.SetFunc(`MakeMap`, func(key string, value interface{}) echo.H {
-		return echo.H{key: value}
-	})
+	c.SetFunc(`MakeMap`, common.MakeMap)
 	return nil
 }
 

@@ -20,6 +20,7 @@ package common
 
 import (
 	stdErr "errors"
+	"fmt"
 
 	"github.com/webx-top/captcha"
 	"github.com/webx-top/echo"
@@ -123,4 +124,24 @@ func CaptchaInfo(hostAlias string, captchaName string, args ...string) echo.H {
 
 type ConfigFromDB interface {
 	ConfigFromDB() echo.H
+}
+
+func MakeMap(values ...interface{}) echo.H {
+	h := echo.H{}
+	if len(values) == 0 {
+		return h
+	}
+	var k string
+	for i, j := 0, len(values); i < j; i++ {
+		if i%2 == 0 {
+			k = fmt.Sprint(values[i])
+			continue
+		}
+		h.Set(k, values[i])
+		k = ``
+	}
+	if len(k) > 0 {
+		h.Set(k, nil)
+	}
+	return h
 }
