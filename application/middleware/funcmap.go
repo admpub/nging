@@ -42,7 +42,10 @@ import (
 	"github.com/admpub/nging/application/registry/upload/helper"
 )
 
-var DefaultAvatarURL = `/public/assets/backend/images/user_128.png`
+var (
+	DefaultAvatarURL = `/public/assets/backend/images/user_128.png`
+	EmptyURL         = url.URL{}
+)
 
 func ErrorPageFunc(c echo.Context) error {
 	c.SetFunc(`Context`, func() echo.Context {
@@ -94,7 +97,7 @@ func ErrorPageFunc(c echo.Context) error {
 	c.Internal().Set(`siteURI`, siteURI)
 	c.SetFunc(`SiteURI`, func() url.URL {
 		if siteURI == nil {
-			return url.URL{}
+			return EmptyURL
 		}
 		return *siteURI
 	})
