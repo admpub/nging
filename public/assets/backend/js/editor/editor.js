@@ -939,7 +939,7 @@ App.editor.fileInput = function (elem) {
 		});
 	});
 };
-App.editor.dropzone = function (elem,options,onSuccss,onRemove) {
+App.editor.dropzone = function (elem,options,onSuccss,onError,onRemove) {
 	if($(elem).length<1) return null;
 	App.loader.defined(typeof ($.fn.dropzone), 'dropzone', null, function(){
 		Dropzone.autoDiscover = false;
@@ -956,16 +956,19 @@ App.editor.dropzone = function (elem,options,onSuccss,onRemove) {
 		dictResponseError: 'Error while uploading file!',
 		dictRemoveFile: App.t('删除')
 	},options||{}));
-	//console.dir(d[0].dropzone);
-	d.on("success", function(file,resp,evt) {
+	var dropzone=d[0].dropzone;
+	dropzone.on("success", function(file,resp,evt) {
 		if(resp.error) {
 			if(typeof(resp.error.message)!="undefined") resp.error = resp.error.message;
+			if(onError) onError.call(this,file,resp.error);
 			return App.message({text:resp.error,type:"error"});
 		}
-		if(onSuccss) onSuccss.call(this,arguments);
+		if(onSuccss) onSuccss.apply(this,arguments);
   	}).on('removedfile', function(file){
-		if(onRemove) onRemove.call(this,arguments);
+		if(onRemove) onRemove.apply(this,arguments);
+	}).on('error', function(file, message, xhr){
+		if(onError) onError.apply(this,arguments);
 	});
-	$(elem).data('dropzone',d[0].dropzone);
-	return d;
+	$(elem).data('dropzone',dropzone);
+	return dropzone;
 }
