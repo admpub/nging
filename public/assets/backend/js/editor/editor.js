@@ -946,7 +946,7 @@ App.editor.dropzone = function (elem,options,onSuccss,onRemove) {
 	});
 	App.loader.defined(typeof ($.ui), 'jqueryui');
 	var d = $(elem).dropzone($.extend({
-		params: {client:'webuploader'},
+		params: {client:'dropzone'},
 	    paramName: "file", maxFilesize: 0.5, // MB
 		addRemoveLinks : true,
 		acceptedFiles:'image/*',

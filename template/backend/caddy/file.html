@@ -1,8 +1,8 @@
 {{Extend "layout"}}
-{{Block "title"}}{{Stored.data.Domain}} - {{"网站文件管理"|T}}{{/Block}}
+{{Block "title"}}{{Stored.data.Name|Default Stored.data.Domain}} - {{"网站文件管理"|T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li>{{Stored.data.Domain}}</li>
+<li>{{Stored.data.Name|Default Stored.data.Domain}}</li>
 <li class="active">
     {{"网站文件管理"|T}}: {{/* Stored.Get "absPath" */}}
     <a href="__BACKEND__/caddy/vhost_file?id={{Stored.data.Id}}" class="text-white">
