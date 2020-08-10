@@ -14,7 +14,6 @@ import (
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/param"
 	"github.com/webx-top/tagfast"
-	"github.com/webx-top/validation"
 )
 
 type (
@@ -106,250 +105,343 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 	default:
 		return errors.New(`binder: unsupported type ` + tc.Kind().String())
 	}
-	var validator *validation.Validation
-	for k, t := range data {
+	for key, values := range data {
 		for _, filter := range filters {
-			k, t = filter(k, t)
-			if len(k) == 0 {
+			key, values = filter(key, values)
+			if len(key) == 0 {
 				break
 			}
 		}
-		if len(k) == 0 || k[0] == '_' {
+		if len(key) == 0 || key[0] == '_' {
 			continue
 		}
 
 		if len(topName) > 0 {
-			if !strings.HasPrefix(k, topName) {
+			if !strings.HasPrefix(key, topName) {
 				continue
 			}
-			k = k[len(topName)+1:]
+			key = key[len(topName)+1:]
 		}
 
-		v := t[0]
-		names := strings.Split(k, `.`)
-		var (
-			err      error
-			propPath string
-		)
-		length := len(names)
-		if length == 1 && strings.HasSuffix(k, `]`) {
-			k = strings.TrimRight(k, `[]`)
-			names = FormNames(k)
-			length = len(names)
+		names := strings.Split(key, `.`)
+		var propPath string
+		if len(names) == 1 && strings.HasSuffix(key, `]`) {
+			key = strings.TrimSuffix(key, `[]`)
+			names = FormNames(key)
 		}
-		value := vc
-		typev := tc
-		for i, name := range names {
-			name = strings.Title(name)
-			if i > 0 {
-				propPath += `.`
-			}
-			propPath += name
+		err := parseFormItem(e, m, tc, vc, names, propPath, key, values)
+		if err == nil {
+			continue
+		}
+		if err == ErrBreak {
+			err = nil
+			break
+		}
+		return err
+	}
+	return nil
+}
 
-			//不是最后一个元素
-			if i != length-1 {
-				if value.Kind() != reflect.Struct {
-					e.Logger().Warnf(`binder: arg error, value kind is %v`, value.Kind())
-					break
-				}
-				f, _ := typev.FieldByName(name)
-				if tagfast.Value(tc, f, `form_options`) == `-` {
-					break
-				}
-				value = value.FieldByName(name)
-				if !value.IsValid() {
-					e.Logger().Debugf(`binder: %T#%v value is not valid %v`, m, propPath, value)
-					break
-				}
-				if !value.CanSet() {
-					e.Logger().Warnf(`binder: can not set %T#%v -> %v`, m, propPath, value.Interface())
-					break
-				}
-				if value.Kind() == reflect.Ptr {
-					if value.IsNil() {
-						value.Set(reflect.New(value.Type().Elem()))
-					}
-					value = value.Elem()
-				}
-				if value.Kind() != reflect.Struct {
-					e.Logger().Warnf(`binder: arg error, value %T#%v kind is %v`, m, propPath, value.Kind())
-					break
-				}
-				typev = value.Type()
-				f, _ = typev.FieldByName(name)
-				if tagfast.Value(tc, f, `form_options`) == `-` {
-					break
-				}
+func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Value, names []string, propPath string, key string, values []string) error {
+	length := len(names)
+	tc := typev
+	for i, name := range names {
+		name = strings.Title(name)
+		if i > 0 {
+			propPath += `.`
+		}
+		propPath += name
+
+		//最后一个元素
+		if i == length-1 {
+			err := setField(e, key, name, value, tc, typev, values)
+			if err == nil {
 				continue
 			}
+			if err == ErrBreak {
+				err = nil
+				break
+			}
+			return err
+		}
 
-			//最后一个元素
-			tv := value.FieldByName(name)
-			if !tv.IsValid() {
+		//不是最后一个元素
+		switch value.Kind() {
+		case reflect.Slice:
+			index, err := strconv.Atoi(name)
+			if err != nil {
+				e.Logger().Warnf(`binder: can not convert index number %T#%v -> %v`, m, propPath, err.Error())
 				break
 			}
-			if !tv.CanSet() {
-				e.Logger().Warnf(`binder: can not set %v to %v`, k, tv)
-				break
+			if e.FormSliceMaxIndex > 0 && index > e.FormSliceMaxIndex {
+				return fmt.Errorf(`%w, greater than %d`, ErrSliceIndexTooLarge, e.FormSliceMaxIndex)
 			}
+			if value.IsNil() {
+				value.Set(reflect.MakeSlice(value.Type(), 1, 1))
+			}
+			itemT := value.Type()
+			if itemT.Kind() == reflect.Ptr {
+				itemT = itemT.Elem()
+				value = value.Elem()
+			}
+			itemT = itemT.Elem()
+			if index >= value.Len() {
+				for i := value.Len(); i <= index; i++ {
+					tempv := reflect.New(itemT)
+					value.Set(reflect.Append(value, tempv.Elem()))
+				}
+			}
+			newV := value.Index(index)
+			newT := newV.Type()
+			switch newT.Kind() {
+			case reflect.Struct:
+			case reflect.Ptr:
+				newT = newT.Elem()
+				if newV.IsNil() {
+					newV.Set(reflect.New(newT))
+				}
+				newV = newV.Elem()
+			default:
+				return errors.New(`binder: unsupported type ` + tc.Kind().String())
+			}
+			return parseFormItem(e, m, newT, newV, names[i+1:], propPath+`.`, key, values)
+		case reflect.Map:
+			if value.IsNil() {
+				value.Set(reflect.MakeMap(value.Type()))
+			}
+			itemT := value.Type()
+			if itemT.Kind() == reflect.Ptr {
+				itemT = itemT.Elem()
+				value = value.Elem()
+			}
+			itemT = itemT.Elem()
+			index := reflect.ValueOf(name)
+			newV := value.MapIndex(index)
+			if !newV.IsValid() {
+				newV = reflect.New(itemT).Elem()
+				value.SetMapIndex(index, newV)
+			}
+			newT := newV.Type()
+			switch newT.Kind() {
+			case reflect.Struct:
+			case reflect.Ptr:
+				newT = newT.Elem()
+				if newV.IsNil() {
+					newV = reflect.New(newT)
+					value.SetMapIndex(index, newV)
+				}
+				newV = newV.Elem()
+			default:
+				return errors.New(`binder: unsupported type ` + tc.Kind().String())
+			}
+			return parseFormItem(e, m, newT, newV, names[i+1:], propPath+`.`, key, values)
+		case reflect.Struct:
 			f, _ := typev.FieldByName(name)
 			if tagfast.Value(tc, f, `form_options`) == `-` {
 				break
 			}
-			if tv.Kind() == reflect.Ptr {
-				tv.Set(reflect.New(tv.Type().Elem()))
-				tv = tv.Elem()
-			}
-
-			var l interface{}
-			switch k := tv.Kind(); k {
-			case reflect.String:
-				switch tagfast.Value(tc, f, `form_filter`) {
-				case `html`:
-					v = DefaultHTMLFilter(v)
-				default:
-					delimter := tagfast.Value(tc, f, `form_delimiter`)
-					if len(delimter) > 0 {
-						v = strings.Join(t, delimter)
-					}
-				}
-				l = v
-				tv.Set(reflect.ValueOf(l))
-			case reflect.Bool:
-				l = (v != `false` && v != `0` && v != ``)
-				tv.Set(reflect.ValueOf(l))
-			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32:
-				dateformat := tagfast.Value(tc, f, `form_format`)
-				if len(dateformat) > 0 {
-					t, err := time.ParseInLocation(dateformat, v, time.Local)
-					if err != nil {
-						e.Logger().Warnf(`binder: arg %v as int: %v`, v, err)
-						l = int(0)
-					} else {
-						l = int(t.Unix())
-					}
-				} else {
-					x, err := strconv.Atoi(v)
-					if err != nil {
-						e.Logger().Warnf(`binder: arg %v as int: %v`, v, err)
-					}
-					l = x
-				}
-				tv.Set(reflect.ValueOf(l))
-			case reflect.Int64:
-				dateformat := tagfast.Value(tc, f, `form_format`)
-				if len(dateformat) > 0 {
-					t, err := time.ParseInLocation(dateformat, v, time.Local)
-					if err != nil {
-						e.Logger().Warnf(`binder: arg %v as int64: %v`, v, err)
-						l = int64(0)
-					} else {
-						l = t.Unix()
-					}
-				} else {
-					x, err := strconv.ParseInt(v, 10, 64)
-					if err != nil {
-						e.Logger().Warnf(`binder: arg %v as int64: %v`, v, err)
-					}
-					l = x
-				}
-				tv.Set(reflect.ValueOf(l))
-			case reflect.Float32, reflect.Float64:
-				x, err := strconv.ParseFloat(v, 64)
-				if err != nil {
-					e.Logger().Warnf(`binder: arg %v as float64: %v`, v, err)
-				}
-				l = x
-				tv.Set(reflect.ValueOf(l))
-			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-				dateformat := tagfast.Value(tc, f, `form_format`)
-				var x uint64
-				var bitSize int
-				switch k {
-				case reflect.Uint8:
-					bitSize = 8
-				case reflect.Uint16:
-					bitSize = 16
-				case reflect.Uint32:
-					bitSize = 32
-				default:
-					bitSize = 64
-				}
-				if len(dateformat) > 0 {
-					t, err := time.ParseInLocation(dateformat, v, time.Local)
-					if err != nil {
-						e.Logger().Warnf(`binder: arg %v as uint: %v`, v, err)
-						x = uint64(0)
-					} else {
-						x = uint64(t.Unix())
-					}
-				} else {
-					x, err = strconv.ParseUint(v, 10, bitSize)
-					if err != nil {
-						e.Logger().Warnf(`binder: arg %v as uint: %v`, v, err)
-					}
-				}
-				switch k {
-				case reflect.Uint:
-					l = uint(x)
-				case reflect.Uint8:
-					l = uint8(x)
-				case reflect.Uint16:
-					l = uint16(x)
-				case reflect.Uint32:
-					l = uint32(x)
-				default:
-					l = x
-				}
-				tv.Set(reflect.ValueOf(l))
-			case reflect.Struct:
-				if tvf, ok := tv.Interface().(FromConversion); ok {
-					err := tvf.FromString(v)
-					if err != nil {
-						e.Logger().Warnf(`binder: struct %v invoke FromString faild`, tvf)
-					}
-				} else if tv.Type().String() == `time.Time` {
-					x, err := time.ParseInLocation(`2006-01-02 15:04:05.000 -0700`, v, time.Local)
-					if err != nil {
-						x, err = time.ParseInLocation(`2006-01-02 15:04:05`, v, time.Local)
-						if err != nil {
-							x, err = time.ParseInLocation(`2006-01-02`, v, time.Local)
-							if err != nil {
-								e.Logger().Warnf(`binder: unsupported time format %v, %v`, v, err)
-							}
-						}
-					}
-					l = x
-					tv.Set(reflect.ValueOf(l))
-				} else {
-					e.Logger().Warn(`binder: can not set an struct which is not implement Fromconversion interface`)
-				}
-			case reflect.Ptr:
-				e.Logger().Warn(`binder: can not set an ptr of ptr`)
-			case reflect.Slice, reflect.Array:
-				setSlice(e, name, tv, t)
-			default:
+			value = value.FieldByName(name)
+			if !value.IsValid() {
+				e.Logger().Debugf(`binder: %T#%v value is not valid %v`, m, propPath, value)
 				break
 			}
+			if !value.CanSet() {
+				e.Logger().Warnf(`binder: can not set %T#%v -> %v`, m, propPath, value.Interface())
+				break
+			}
+			if value.Kind() == reflect.Ptr {
+				if value.IsNil() {
+					value.Set(reflect.New(value.Type().Elem()))
+				}
+				value = value.Elem()
+			}
+			switch value.Kind() {
+			case reflect.Struct:
+			case reflect.Slice, reflect.Map:
+				return parseFormItem(e, m, value.Type(), value, names[i+1:], propPath+`.`, key, values)
+			default:
+				e.Logger().Warnf(`binder: arg error, value %T#%v kind is %v`, m, propPath, value.Kind())
+				break
+			}
+			typev = value.Type()
+			f, _ = typev.FieldByName(name)
+			if tagfast.Value(tc, f, `form_options`) == `-` {
+				break
+			}
+		default:
+			e.Logger().Warnf(`binder: arg error, value kind is %v`, value.Kind())
+			break
 
-			//validation
-			valid := tagfast.Value(tc, f, `valid`)
-			if len(valid) == 0 {
-				continue
-			}
-			if validator == nil {
-				validator = validation.New()
-			}
-			ok, err := validator.ValidSimple(name, fmt.Sprintf(`%v`, l), valid)
-			if !ok {
-				return validator.Errors[0].WithField()
-			}
-			if err != nil {
-				e.Logger().Warn(err)
-			}
 		}
 	}
 	return nil
+}
+
+var (
+	ErrBreak              = errors.New("[BREAK]")
+	ErrContinue           = errors.New("[CONTINUE]")
+	ErrExit               = errors.New("[EXIT]")
+	ErrReturn             = errors.New("[RETURN]")
+	ErrSliceIndexTooLarge = errors.New("The slice index value of the form field is too large")
+)
+
+func setField(e *Echo, k string, name string, value reflect.Value, tc reflect.Type, typev reflect.Type, values []string) error {
+	tv := value.FieldByName(name)
+	if !tv.IsValid() {
+		return ErrBreak
+	}
+	if !tv.CanSet() {
+		e.Logger().Warnf(`binder: can not set %v to %v`, k, tv)
+		return ErrBreak
+	}
+	f, _ := typev.FieldByName(name)
+	if tagfast.Value(tc, f, `form_options`) == `-` {
+		return ErrBreak
+	}
+	if tv.Kind() == reflect.Ptr {
+		tv.Set(reflect.New(tv.Type().Elem()))
+		tv = tv.Elem()
+	}
+	v := values[0]
+	var l interface{}
+	switch kind := tv.Kind(); kind {
+	case reflect.String:
+		switch tagfast.Value(tc, f, `form_filter`) {
+		case `html`:
+			v = DefaultHTMLFilter(v)
+		default:
+			delimter := tagfast.Value(tc, f, `form_delimiter`)
+			if len(delimter) > 0 {
+				v = strings.Join(values, delimter)
+			}
+		}
+		l = v
+		tv.Set(reflect.ValueOf(l))
+	case reflect.Bool:
+		l = (v != `false` && v != `0` && v != ``)
+		tv.Set(reflect.ValueOf(l))
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32:
+		dateformat := tagfast.Value(tc, f, `form_format`)
+		if len(dateformat) > 0 {
+			t, err := time.ParseInLocation(dateformat, v, time.Local)
+			if err != nil {
+				e.Logger().Warnf(`binder: arg %v as int: %v`, v, err)
+				l = int(0)
+			} else {
+				l = int(t.Unix())
+			}
+		} else {
+			x, err := strconv.Atoi(v)
+			if err != nil {
+				e.Logger().Warnf(`binder: arg %v as int: %v`, v, err)
+			}
+			l = x
+		}
+		tv.Set(reflect.ValueOf(l))
+	case reflect.Int64:
+		dateformat := tagfast.Value(tc, f, `form_format`)
+		if len(dateformat) > 0 {
+			t, err := time.ParseInLocation(dateformat, v, time.Local)
+			if err != nil {
+				e.Logger().Warnf(`binder: arg %v as int64: %v`, v, err)
+				l = int64(0)
+			} else {
+				l = t.Unix()
+			}
+		} else {
+			x, err := strconv.ParseInt(v, 10, 64)
+			if err != nil {
+				e.Logger().Warnf(`binder: arg %v as int64: %v`, v, err)
+			}
+			l = x
+		}
+		tv.Set(reflect.ValueOf(l))
+	case reflect.Float32, reflect.Float64:
+		x, err := strconv.ParseFloat(v, 64)
+		if err != nil {
+			e.Logger().Warnf(`binder: arg %v as float64: %v`, v, err)
+		}
+		l = x
+		tv.Set(reflect.ValueOf(l))
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		dateformat := tagfast.Value(tc, f, `form_format`)
+		var x uint64
+		var bitSize int
+		switch kind {
+		case reflect.Uint8:
+			bitSize = 8
+		case reflect.Uint16:
+			bitSize = 16
+		case reflect.Uint32:
+			bitSize = 32
+		default:
+			bitSize = 64
+		}
+		if len(dateformat) > 0 {
+			t, err := time.ParseInLocation(dateformat, v, time.Local)
+			if err != nil {
+				e.Logger().Warnf(`binder: arg %v as uint: %v`, v, err)
+				x = uint64(0)
+			} else {
+				x = uint64(t.Unix())
+			}
+		} else {
+			var err error
+			x, err = strconv.ParseUint(v, 10, bitSize)
+			if err != nil {
+				e.Logger().Warnf(`binder: arg %v as uint: %v`, v, err)
+			}
+		}
+		switch kind {
+		case reflect.Uint:
+			l = uint(x)
+		case reflect.Uint8:
+			l = uint8(x)
+		case reflect.Uint16:
+			l = uint16(x)
+		case reflect.Uint32:
+			l = uint32(x)
+		default:
+			l = x
+		}
+		tv.Set(reflect.ValueOf(l))
+	case reflect.Struct:
+		if tvf, ok := tv.Interface().(FromConversion); ok {
+			err := tvf.FromString(v)
+			if err != nil {
+				e.Logger().Warnf(`binder: struct %v invoke FromString faild`, tvf)
+			}
+		} else if tv.Type().String() == `time.Time` {
+			x, err := time.ParseInLocation(`2006-01-02 15:04:05.000 -0700`, v, time.Local)
+			if err != nil {
+				x, err = time.ParseInLocation(`2006-01-02 15:04:05`, v, time.Local)
+				if err != nil {
+					x, err = time.ParseInLocation(`2006-01-02`, v, time.Local)
+					if err != nil {
+						e.Logger().Warnf(`binder: unsupported time format %v, %v`, v, err)
+					}
+				}
+			}
+			l = x
+			tv.Set(reflect.ValueOf(l))
+		} else {
+			e.Logger().Warn(`binder: can not set an struct which is not implement Fromconversion interface`)
+		}
+	case reflect.Ptr:
+		e.Logger().Warn(`binder: can not set an ptr of ptr`)
+	case reflect.Slice, reflect.Array:
+		setSlice(e, name, tv, values)
+	default:
+		return ErrBreak
+	}
+
+	//validation
+	valid := tagfast.Value(tc, f, `valid`)
+	if len(valid) == 0 {
+		return nil
+	}
+	result := e.Validator.Validate(name, fmt.Sprintf(`%v`, l), valid)
+	return result.Error()
 }
 
 func setSlice(e *Echo, fieldName string, tv reflect.Value, t []string) {

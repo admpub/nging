@@ -51,7 +51,7 @@ type xContext struct {
 // NewContext creates a Context object.
 func NewContext(req engine.Request, res engine.Response, e *Echo) Context {
 	c := &xContext{
-		Validator:   DefaultNopValidate,
+		Validator:   e.Validator,
 		Translator:  DefaultNopTranslate,
 		Emitter:     emitter.DefaultCondEmitter,
 		transaction: DefaultNopTransaction,
@@ -169,7 +169,7 @@ func (c *xContext) SetTranslator(t Translator) {
 }
 
 func (c *xContext) Reset(req engine.Request, res engine.Response) {
-	c.Validator = DefaultNopValidate
+	c.Validator = c.echo.Validator
 	c.Emitter = emitter.DefaultCondEmitter
 	c.Translator = DefaultNopTranslate
 	c.transaction = DefaultNopTransaction

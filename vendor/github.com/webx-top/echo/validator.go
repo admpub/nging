@@ -134,7 +134,7 @@ func (v *Validation) Validate(i interface{}, args ...string) ValidateResult {
 		return e.SetError(err)
 	}
 	if v.validator.HasError() {
-		vErr := v.validator.Errors[0]
+		vErr := v.validator.Errors[0].WithField()
 		e.SetError(vErr)
 		e.SetField(vErr.Field)
 		e.SetRaw(v.validator.Errors)
