@@ -1,0 +1,4 @@
+# These are supported funding model platforms
+
+#github: [admpub]
+custom: ['https://backend.hifilm.top/donation/wechat', 'https://backend.hifilm.top/donation/alipay']
