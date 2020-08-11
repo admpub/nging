@@ -159,8 +159,7 @@ func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Val
 				continue
 			}
 			if err == ErrBreak {
-				err = nil
-				break
+				return nil
 			}
 			return err
 		}
@@ -171,7 +170,7 @@ func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Val
 			index, err := strconv.Atoi(name)
 			if err != nil {
 				e.Logger().Warnf(`binder: can not convert index number %T#%v -> %v`, m, propPath, err.Error())
-				break
+				return nil
 			}
 			if e.FormSliceMaxIndex > 0 && index > e.FormSliceMaxIndex {
 				return fmt.Errorf(`%w, greater than %d`, ErrSliceIndexTooLarge, e.FormSliceMaxIndex)
@@ -238,16 +237,16 @@ func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Val
 		case reflect.Struct:
 			f, _ := typev.FieldByName(name)
 			if tagfast.Value(tc, f, `form_options`) == `-` {
-				break
+				return nil
 			}
 			value = value.FieldByName(name)
 			if !value.IsValid() {
 				e.Logger().Debugf(`binder: %T#%v value is not valid %v`, m, propPath, value)
-				break
+				return nil
 			}
 			if !value.CanSet() {
 				e.Logger().Warnf(`binder: can not set %T#%v -> %v`, m, propPath, value.Interface())
-				break
+				return nil
 			}
 			if value.Kind() == reflect.Ptr {
 				if value.IsNil() {
@@ -261,17 +260,16 @@ func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Val
 				return parseFormItem(e, m, value.Type(), value, names[i+1:], propPath+`.`, key, values)
 			default:
 				e.Logger().Warnf(`binder: arg error, value %T#%v kind is %v`, m, propPath, value.Kind())
-				break
+				return nil
 			}
 			typev = value.Type()
 			f, _ = typev.FieldByName(name)
 			if tagfast.Value(tc, f, `form_options`) == `-` {
-				break
+				return nil
 			}
 		default:
 			e.Logger().Warnf(`binder: arg error, value kind is %v`, value.Kind())
-			break
-
+			return nil
 		}
 	}
 	return nil
