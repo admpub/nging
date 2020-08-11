@@ -476,7 +476,7 @@ var App = function () {
 				text: '',
 				image: '',
 				class_name: 'clean',//primary|info|danger|warning|success|dark
-				sticky: false
+				sticky: false // 是否保持显示(不自动关闭)
 				//,time: 1000,speed: 500,position: 'bottom-right'
 			};
 			if (typeof (options) != "object") options = { text: options };
@@ -501,7 +501,10 @@ var App = function () {
 					if (options.title) options.title = '<i class="fa fa-check"></i> ' + options.title; break;
 			}
 			if (sticky != null) options.sticky = sticky;
-			$.gritter.add(options);
+			var number = $.gritter.add(options);
+			//$.gritter.remove(number);
+			//$.gritter.removeAll({before_close:function(wrap){},after_close:function(){}});
+			return number;
 		},
 		attachAjaxURL: function (elem) {
 			if (elem == null) elem = document;
@@ -725,7 +728,7 @@ var App = function () {
 						if ('notify' != m.mode) m.mode = 'notify';
 						var c = $('#notice-message-container');
 						if (c.length < 1) {
-							App.message({ title: App.i18n.SYS_INFO, text: '<ul id="notice-message-container" class="no-list-style" style="max-height:500px;overflow-y:auto;overflow-x:hidden"></ul>' });
+							App.message({ title: App.i18n.SYS_INFO, text: '<ul id="notice-message-container" class="no-list-style" style="max-height:500px;overflow-y:auto;overflow-x:hidden"></ul>', sticky: true });
 							c = $('#notice-message-container');
 						}
 						if (messageCount[m.mode] >= messageMax[m.mode]) {
