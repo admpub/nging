@@ -5954,3 +5954,8 @@ th[sort].sort-active.sort-down{transform:rotate(0deg);color:green}
   /* vertical-align:super; */
   color:red
 }
+.input-group.control-label{float:left;padding-top:0}
+.control-label .form-control,
+.control-label .input-group-addon{text-align:right}
+.control-label .input-group-addon+.form-control{text-align:left}
+.input-group-btn > .btn-group > .btn{float:none}
