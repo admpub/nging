@@ -107,7 +107,6 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 	default:
 		return errors.New(`binder: unsupported type ` + tc.Kind().String())
 	}
-	copier.InitNilFields(tc, vc, ``, copier.AllNilFields)
 	for key, values := range data {
 		for _, filter := range filters {
 			key, values = filter(key, values)
@@ -147,6 +146,7 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 
 func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Value, names []string, propPath string, key string, values []string) error {
 	length := len(names)
+	vc := value
 	tc := typev
 	for i, name := range names {
 		name = strings.Title(name)
@@ -157,7 +157,7 @@ func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Val
 
 		//最后一个元素
 		if i == length-1 {
-			err := setField(e, tc, key, name, value, typev, values)
+			err := setField(e, tc, vc, key, name, value, typev, values)
 			if err == nil {
 				continue
 			}
@@ -178,9 +178,7 @@ func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Val
 			if e.FormSliceMaxIndex > 0 && index > e.FormSliceMaxIndex {
 				return fmt.Errorf(`%w, greater than %d`, ErrSliceIndexTooLarge, e.FormSliceMaxIndex)
 			}
-			var notInited bool
 			if value.IsNil() {
-				notInited = true
 				value.Set(reflect.MakeSlice(value.Type(), 1, 1))
 			}
 			itemT := value.Type()
@@ -208,14 +206,9 @@ func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Val
 			default:
 				return errors.New(`binder: unsupported type ` + tc.Kind().String())
 			}
-			if notInited {
-				copier.InitNilFields(newT, newV, ``, copier.AllNilFields)
-			}
 			return parseFormItem(e, m, newT, newV, names[i+1:], propPath+`.`, key, values)
 		case reflect.Map:
-			var notInited bool
 			if value.IsNil() {
-				notInited = true
 				value.Set(reflect.MakeMap(value.Type()))
 			}
 			itemT := value.Type()
@@ -242,9 +235,6 @@ func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Val
 				newV = newV.Elem()
 			default:
 				return errors.New(`binder: unsupported type ` + tc.Kind().String())
-			}
-			if notInited {
-				copier.InitNilFields(newT, newV, ``, copier.AllNilFields)
 			}
 			return parseFormItem(e, m, newT, newV, names[i+1:], propPath+`.`, key, values)
 		case reflect.Struct:
@@ -296,8 +286,24 @@ var (
 	ErrSliceIndexTooLarge = errors.New("The slice index value of the form field is too large")
 )
 
-func setField(e *Echo, parentT reflect.Type, k string, name string, value reflect.Value, typev reflect.Type, values []string) error {
-	tv := value.FieldByName(name)
+func SafeGetFieldByName(parentT reflect.Type, parentV reflect.Value, name string, value reflect.Value) (v reflect.Value) {
+	defer func() {
+		if r := recover(); r != nil {
+			switch fmt.Sprint(r) {
+			case `reflect: indirection through nil pointer to embedded struct`:
+				copier.InitNilFields(parentT, parentV, ``, copier.AllNilFields)
+				v = value.FieldByName(name)
+			default:
+				panic(r)
+			}
+		}
+	}()
+	v = value.FieldByName(name)
+	return
+}
+
+func setField(e *Echo, parentT reflect.Type, parentV reflect.Value, k string, name string, value reflect.Value, typev reflect.Type, values []string) error {
+	tv := SafeGetFieldByName(parentT, parentV, name, value)
 	if !tv.IsValid() {
 		return ErrBreak
 	}
