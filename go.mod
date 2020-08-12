@@ -40,6 +40,7 @@ require (
 	github.com/admpub/checksum v1.0.1
 	github.com/admpub/color v1.7.0
 	github.com/admpub/confl v0.0.0-20190331072055-254deeac709e
+	github.com/admpub/copier v0.0.0-20200812014131-931651b20f74 // indirect
 	github.com/admpub/cr v0.0.0-20200630080251-9947244796af
 	github.com/admpub/cron v0.0.1
 	github.com/admpub/decimal v0.0.0-20180709203117-cd690d0c9e24 // indirect
@@ -184,7 +185,7 @@ require (
 	github.com/webx-top/codec v0.0.0-20191025184817-6fac7ce097e2
 	github.com/webx-top/com v0.0.0-20200717115231-63c1a842afd2
 	github.com/webx-top/db v1.0.7
-	github.com/webx-top/echo v2.2.4+incompatible
+	github.com/webx-top/echo v2.2.5+incompatible
 	github.com/webx-top/image v0.0.0-20200420122650-e33887a47834
 	github.com/webx-top/pagination v0.0.0-20200716043638-45efe28df7c2
 	github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2 // indirect

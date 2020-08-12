@@ -21,6 +21,9 @@ github.com/admpub/color
 # github.com/admpub/confl v0.0.0-20190331072055-254deeac709e
 ## explicit
 github.com/admpub/confl
+# github.com/admpub/copier v0.0.0-20200812014131-931651b20f74
+## explicit
+github.com/admpub/copier
 # github.com/admpub/cr v0.0.0-20200630080251-9947244796af
 ## explicit
 github.com/admpub/cr
@@ -1083,7 +1086,7 @@ github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mongo
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.2.4+incompatible
+# github.com/webx-top/echo v2.2.5+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code

@@ -1,6 +1,7 @@
 package echo
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"reflect"
@@ -9,6 +10,7 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/admpub/copier"
 	"github.com/admpub/log"
 
 	"github.com/webx-top/echo/engine"
@@ -105,14 +107,15 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 	default:
 		return errors.New(`binder: unsupported type ` + tc.Kind().String())
 	}
+	copier.InitNilFields(tc, vc, ``, copier.AllNilFields)
 	for key, values := range data {
 		for _, filter := range filters {
 			key, values = filter(key, values)
-			if len(key) == 0 {
+			if len(key) == 0 || len(values) == 0 {
 				break
 			}
 		}
-		if len(key) == 0 || key[0] == '_' {
+		if len(key) == 0 || key[0] == '_' || len(values) == 0 {
 			continue
 		}
 
@@ -154,7 +157,7 @@ func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Val
 
 		//最后一个元素
 		if i == length-1 {
-			err := setField(e, key, name, value, tc, typev, values)
+			err := setField(e, tc, key, name, value, typev, values)
 			if err == nil {
 				continue
 			}
@@ -175,7 +178,9 @@ func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Val
 			if e.FormSliceMaxIndex > 0 && index > e.FormSliceMaxIndex {
 				return fmt.Errorf(`%w, greater than %d`, ErrSliceIndexTooLarge, e.FormSliceMaxIndex)
 			}
+			var notInited bool
 			if value.IsNil() {
+				notInited = true
 				value.Set(reflect.MakeSlice(value.Type(), 1, 1))
 			}
 			itemT := value.Type()
@@ -203,9 +208,14 @@ func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Val
 			default:
 				return errors.New(`binder: unsupported type ` + tc.Kind().String())
 			}
+			if notInited {
+				copier.InitNilFields(newT, newV, ``, copier.AllNilFields)
+			}
 			return parseFormItem(e, m, newT, newV, names[i+1:], propPath+`.`, key, values)
 		case reflect.Map:
+			var notInited bool
 			if value.IsNil() {
+				notInited = true
 				value.Set(reflect.MakeMap(value.Type()))
 			}
 			itemT := value.Type()
@@ -232,6 +242,9 @@ func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Val
 				newV = newV.Elem()
 			default:
 				return errors.New(`binder: unsupported type ` + tc.Kind().String())
+			}
+			if notInited {
+				copier.InitNilFields(newT, newV, ``, copier.AllNilFields)
 			}
 			return parseFormItem(e, m, newT, newV, names[i+1:], propPath+`.`, key, values)
 		case reflect.Struct:
@@ -283,7 +296,7 @@ var (
 	ErrSliceIndexTooLarge = errors.New("The slice index value of the form field is too large")
 )
 
-func setField(e *Echo, k string, name string, value reflect.Value, tc reflect.Type, typev reflect.Type, values []string) error {
+func setField(e *Echo, parentT reflect.Type, k string, name string, value reflect.Value, typev reflect.Type, values []string) error {
 	tv := value.FieldByName(name)
 	if !tv.IsValid() {
 		return ErrBreak
@@ -293,7 +306,7 @@ func setField(e *Echo, k string, name string, value reflect.Value, tc reflect.Ty
 		return ErrBreak
 	}
 	f, _ := typev.FieldByName(name)
-	if tagfast.Value(tc, f, `form_options`) == `-` {
+	if tagfast.Value(parentT, f, `form_options`) == `-` {
 		return ErrBreak
 	}
 	if tv.Kind() == reflect.Ptr {
@@ -304,11 +317,11 @@ func setField(e *Echo, k string, name string, value reflect.Value, tc reflect.Ty
 	var l interface{}
 	switch kind := tv.Kind(); kind {
 	case reflect.String:
-		switch tagfast.Value(tc, f, `form_filter`) {
+		switch tagfast.Value(parentT, f, `form_filter`) {
 		case `html`:
 			v = DefaultHTMLFilter(v)
 		default:
-			delimter := tagfast.Value(tc, f, `form_delimiter`)
+			delimter := tagfast.Value(parentT, f, `form_delimiter`)
 			if len(delimter) > 0 {
 				v = strings.Join(values, delimter)
 			}
@@ -319,7 +332,7 @@ func setField(e *Echo, k string, name string, value reflect.Value, tc reflect.Ty
 		l = (v != `false` && v != `0` && v != ``)
 		tv.Set(reflect.ValueOf(l))
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32:
-		dateformat := tagfast.Value(tc, f, `form_format`)
+		dateformat := tagfast.Value(parentT, f, `form_format`)
 		if len(dateformat) > 0 {
 			t, err := time.ParseInLocation(dateformat, v, time.Local)
 			if err != nil {
@@ -337,7 +350,7 @@ func setField(e *Echo, k string, name string, value reflect.Value, tc reflect.Ty
 		}
 		tv.Set(reflect.ValueOf(l))
 	case reflect.Int64:
-		dateformat := tagfast.Value(tc, f, `form_format`)
+		dateformat := tagfast.Value(parentT, f, `form_format`)
 		if len(dateformat) > 0 {
 			t, err := time.ParseInLocation(dateformat, v, time.Local)
 			if err != nil {
@@ -362,7 +375,7 @@ func setField(e *Echo, k string, name string, value reflect.Value, tc reflect.Ty
 		l = x
 		tv.Set(reflect.ValueOf(l))
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		dateformat := tagfast.Value(tc, f, `form_format`)
+		dateformat := tagfast.Value(parentT, f, `form_format`)
 		var x uint64
 		var bitSize int
 		switch kind {
@@ -404,12 +417,12 @@ func setField(e *Echo, k string, name string, value reflect.Value, tc reflect.Ty
 		}
 		tv.Set(reflect.ValueOf(l))
 	case reflect.Struct:
-		if tvf, ok := tv.Interface().(FromConversion); ok {
-			err := tvf.FromString(v)
-			if err != nil {
-				e.Logger().Warnf(`binder: struct %v invoke FromString faild`, tvf)
+		switch rawType := tv.Interface().(type) {
+		case FromConversion:
+			if err := rawType.FromString(v); err != nil {
+				e.Logger().Warnf(`binder: struct %v invoke FromString faild`, rawType)
 			}
-		} else if tv.Type().String() == `time.Time` {
+		case time.Time:
 			x, err := time.ParseInLocation(`2006-01-02 15:04:05.000 -0700`, v, time.Local)
 			if err != nil {
 				x, err = time.ParseInLocation(`2006-01-02 15:04:05`, v, time.Local)
@@ -422,8 +435,12 @@ func setField(e *Echo, k string, name string, value reflect.Value, tc reflect.Ty
 			}
 			l = x
 			tv.Set(reflect.ValueOf(l))
-		} else {
-			e.Logger().Warn(`binder: can not set an struct which is not implement Fromconversion interface`)
+		default:
+			if scanner, ok := tv.Addr().Interface().(sql.Scanner); ok {
+				if err := scanner.Scan(values[0]); err != nil {
+					e.Logger().Warnf(`binder: struct %v invoke Scan faild`, rawType)
+				}
+			}
 		}
 	case reflect.Ptr:
 		e.Logger().Warn(`binder: can not set an ptr of ptr`)
@@ -434,7 +451,7 @@ func setField(e *Echo, k string, name string, value reflect.Value, tc reflect.Ty
 	}
 
 	//validation
-	valid := tagfast.Value(tc, f, `valid`)
+	valid := tagfast.Value(parentT, f, `valid`)
 	if len(valid) == 0 {
 		return nil
 	}
