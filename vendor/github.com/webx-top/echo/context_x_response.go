@@ -172,7 +172,8 @@ func (c *xContext) Attachment(r io.Reader, name string, inline ...bool) (err err
 		typ = `attachment`
 	}
 	c.response.Header().Set(HeaderContentType, ContentTypeByExtension(name))
-	c.response.Header().Set(HeaderContentDisposition, typ+"; filename="+name)
+	encodedName := URLEncode(name, true)
+	c.response.Header().Set(HeaderContentDisposition, typ+"; filename="+encodedName+"; filename*=utf-8''"+encodedName)
 	c.response.WriteHeader(http.StatusOK)
 	c.response.KeepBody(false)
 	_, err = io.Copy(c.response, r)

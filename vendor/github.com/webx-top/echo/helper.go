@@ -3,6 +3,7 @@ package echo
 import (
 	"fmt"
 	"mime"
+	"net/url"
 	"os"
 	"path"
 	"path/filepath"
@@ -205,4 +206,19 @@ func LogIf(err error, types ...string) {
 	default:
 		log.Error(err)
 	}
+}
+
+func URLEncode(s string, rfc ...bool) string {
+	encoded := url.QueryEscape(s)
+	if len(rfc) > 0 && rfc[0] { // RFC 3986
+		encoded = strings.Replace(encoded, `+`, `%20`, -1)
+	}
+	return encoded
+}
+
+func URLDecode(encoded string, rfc ...bool) (string, error) {
+	if len(rfc) > 0 && rfc[0] {
+		encoded = strings.Replace(encoded, `%20`, `+`, -1)
+	}
+	return url.QueryUnescape(encoded)
 }

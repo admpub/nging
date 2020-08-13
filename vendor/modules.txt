@@ -1086,7 +1086,7 @@ github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mongo
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.2.6+incompatible
+# github.com/webx-top/echo v2.2.7+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code

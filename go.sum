@@ -1052,6 +1052,8 @@ github.com/webx-top/echo v2.2.5+incompatible h1:fkXnPYFYKLDMHDm/ZpuSVm8EQcvYJsQS
 github.com/webx-top/echo v2.2.5+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.2.6+incompatible h1:Lc6FG+w16/+qCM3twYkVjv91zycKi7ePLIIng/d2g5o=
 github.com/webx-top/echo v2.2.6+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
+github.com/webx-top/echo v2.2.7+incompatible h1:fFa43jhvmtt9T4CoSePagz5sIYFbihapmFXErr4szu8=
+github.com/webx-top/echo v2.2.7+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/image v0.0.0-20200420122650-e33887a47834 h1:6gnR2pPRE5vbc4kPjeuAYVCS8DDEjtVnksuWxX5dEq0=
 github.com/webx-top/image v0.0.0-20200420122650-e33887a47834/go.mod h1:+h1W1x6ci+EqAlbnKSEdpflMWrCGNlLqB0OcmfglzMg=
 github.com/webx-top/pagination v0.0.0-20200716043638-45efe28df7c2 h1:5tDy98j2jG1YUnn+orDVS5AL98G6Ie9eoUlnhUDrZtU=
