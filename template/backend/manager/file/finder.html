@@ -3,13 +3,21 @@
 {{Block "title"}}{{"选择附件"|T}}{{/Block}}
 {{Block "head"}}
 <link rel="stylesheet" href="__ASSETS__/css/form/checkbox.css?t={{BuildTime}}" />
+<style type="text/css">
+#file-list-box > .sm-margin-top{margin-top:0 !important}
+#file-list-box .block-flat{margin:0 !important}
+#search-form-box > .sm-margin-top{margin-top:0 !important;margin-bottom:10px !important}
+</style>
 {{Include "manager/file/list.head"}}
 {{/Block}}
 {{Block "breadcrumb"}}{{/Block}}
+{{Block "bodyAttr"}} style="overflow-x:hidden"{{/Block}}
 {{Block "main"}}
-<div class="col-md-12 sm-padding-top" id="file-list-box">
-{{Include "manager/file/list.main"}}
-</div>
+    <div class="row">
+        <div class="col-md-12" id="file-list-box">
+        {{Include "manager/file/list.main"}}
+        </div>
+    </div>
 {{/Block}}
 {{Block "footer"}}
 {{Include "manager/file/list.footer"}}
