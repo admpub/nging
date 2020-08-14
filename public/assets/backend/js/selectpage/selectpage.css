@@ -235,7 +235,6 @@ ul.sp_results > li.sp_selected {
  */
 div.sp_container_combo{
     border: 1px solid #CCCCCC;
-    border-radius: 4px;
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
@@ -257,9 +256,6 @@ div.sp_container_combo.sp_disabled ul.sp_element_box span.tag_close{
     display: none;
 }
 
-div.sp_container_combo.sp_container_open{
-    border-radius: 2px;
-}
 input.sp_combo_input{
     border: 0 !important;
     box-shadow: none;
