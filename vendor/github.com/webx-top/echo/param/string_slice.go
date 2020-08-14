@@ -39,6 +39,31 @@ func (p StringSlice) GetByIndex(i int, defaults ...string) string {
 	return ``
 }
 
+func (p StringSlice) Unique() StringSlice {
+	record := map[string]struct{}{}
+	result := StringSlice{}
+	for _, s := range p {
+		if _, ok := record[s]; !ok {
+			record[s] = struct{}{}
+			result = append(result, s)
+		}
+	}
+	return result
+}
+
+func (p StringSlice) Filter(filterFunc func(s *string) bool) StringSlice {
+	if filterFunc == nil {
+		return p
+	}
+	result := StringSlice{}
+	for _, s := range p {
+		if filterFunc(&s) {
+			result = append(result, s)
+		}
+	}
+	return result
+}
+
 func (p StringSlice) HasValue(v interface{}) bool {
 	expected := AsString(v)
 	for _, val := range p {
@@ -47,6 +72,10 @@ func (p StringSlice) HasValue(v interface{}) bool {
 		}
 	}
 	return false
+}
+
+func (p StringSlice) Size() int {
+	return len(p)
 }
 
 func (p StringSlice) Join(sep string) string {

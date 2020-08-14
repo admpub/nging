@@ -146,23 +146,20 @@ func Clear(old []interface{}, clears ...interface{}) []interface{} {
 	if len(old) == 0 {
 		return old
 	}
-	for _, dm := range clears {
-		var decr int
-		for i, m := range old {
-			if m != dm {
-				continue
+	result := []interface{}{}
+	for _, el := range old {
+		var exists bool
+		for _, d := range clears {
+			if d == el {
+				exists = true
+				break
 			}
-			i -= decr
-			start := i + 1
-			if start < len(old) {
-				old = append(old[0:i], old[start:]...)
-			} else {
-				old = old[0:i]
-			}
-			decr++
+		}
+		if !exists {
+			result = append(result, el)
 		}
 	}
-	return old
+	return result
 }
 
 // Dump 输出对象和数组的结构信息
