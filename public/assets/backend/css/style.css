@@ -2009,8 +2009,8 @@ table.information > tbody > tr > td {
   width: 0%;
   vertical-align: middle;
 }
-.avatar-upload .avatar-remove{display:none;position:absolute;z-index:90;}
-.avatar-upload:hover .avatar-remove{display:block;}
+.avatar-upload .avatar-actions{display:none;position:absolute;z-index:90;}
+.avatar-upload:hover .avatar-actions{display:block;}
 .crop-image img {
   max-width: 480px;
   max-height: 380px;

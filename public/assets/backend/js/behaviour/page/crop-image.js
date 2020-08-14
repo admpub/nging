@@ -8,96 +8,147 @@ function getCropServerURL(){
   }
   return FRONTEND_URL+'/user/file/crop';
 }
-function cropImage(uploadURL,thumbsnailElem,originalElem,type,width,height){
-  var jcrop=null;
-  if(!type) {
-    type=uploadURL.split('?',2)[0];
-    type=type.substring(type.lastIndexOf('/')+1);
+function cropImage(uploadURL,thumbsnailInput,originalInput,type,width,height){
+  var options = {
+    uploadURL:uploadURL,
+    croperURL:getCropServerURL(),
+    fileElem:null,
+    thumbsnailInput:thumbsnailInput,
+    originalInput:originalInput,
+    previewElem:null,
+    type:type,
+    width:width,
+    height:height,
+    prefix:'noprefix'
+  };
+  if(typeof(uploadURL)=='object') {
+    options = $.extend(options,uploadURL);
+  }else{
+    options.fileElem = '#fileupload';
   }
-  if(width==null) width=200;
-  if(height==null) height=width;
-  $('#fileupload').fileupload({
-      url: uploadURL,
+  if(!options.fileElem) {
+    options.fileElem = '#'+options.prefix+'-fileupload';
+  }else{
+    options.prefix = $(options.fileElem).data('prefix')||'noprefix';
+  }
+  if(!options.thumbsnailInput) {
+    options.thumbsnailInput = $(options.fileElem).data('thumbsnail-input')||'#'+options.prefix+'-image';
+  }
+  if(!options.originalInput) {
+    options.originalInput = $(options.fileElem).data('original-input')||'#'+options.prefix+'-image-original';
+  }
+  if(!options.previewElem) {
+    options.previewElem = $(options.fileElem).data('preview')||'';
+    if(!options.previewElem) options.previewElem=$(options.fileElem).siblings('img')[0];
+  }
+  if(!options.type) {
+    options.type = $(options.fileElem).data('type')||'';
+    if(!options.type){
+      options.type=options.uploadURL.split('?',2)[0];
+      options.type=options.type.substring(options.type.lastIndexOf('/')+1);
+    }
+  }
+  if(options.width==null) {
+    options.width=$(options.fileElem).data('width')||200;
+  }
+  if(options.height==null) {
+    options.height=$(options.fileElem).data('height')||options.width;
+  }
+  //console.dir(options);
+  var modal=$('#'+options.prefix+'-crop-image'),
+      progress=$('#'+options.prefix+'-progress'),
+      saveBtn=$('#'+options.prefix+'-save-image'),
+      width=options.width,height=options.height;
+
+  var jcrop=null;
+  var imageSet=function(img){
+      App.getImgNaturalDimensions(img[0],function(natural){
+        var ratio=1;
+        if(natural.w>0){
+          ratio=img.width()/natural.w;
+        }
+        var w=width*ratio,h=height*ratio;
+        img.Jcrop({
+          aspectRatio:width/height,
+          //minSize:[w,h],
+          setSelect:[0,0,w,h],
+        },function(){
+          jcrop=this;
+        });
+      });
+  };
+  var crop=function(fileList,type){
+    var afterClose=function(){
+      jcrop.destroy();
+      modal.find(".crop-image").empty();
+      jcrop=null;
+    };
+    if(jcrop) afterClose();
+    $.each(fileList, function (index, file) {
+      $(options.originalInput).val(file);
+      modal.find(".crop-image").html('<img src="' + file + '?_='+Math.random()+'" />');
+      progress.fadeOut();
+      saveBtn.data('image-file',file);
+      var img=modal.find(".crop-image img");
+      img.off().on('load',function(){
+        imageSet(img);
+      });
+    });
+    if(typeof($.fn.niftyModal)!='undefined'){
+      modal.niftyModal('show',{afterClose:afterClose});
+    }else{
+      modal.modal('show');
+      modal.off('hide.bs.modal').on('hide.bs.modal', function(){
+        afterClose();
+      });
+    }
+  };
+  $(options.fileElem).fileupload({
+      url: options.uploadURL,
       dataType: 'json',
       done: function (e, data) {
         var r=data.result;
         if(r.Code!=1){
           return App.message({title:App.i18n.SYS_INFO,text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
         }
-        var afterClose=function(){
-          jcrop.destroy();
-          $(".crop-image").empty();
-          jcrop=null;
-        };
-        if(jcrop) afterClose();
-        $.each(r.Data.files, function (index, file) {
-          $(originalElem).val(file);
-          $(".crop-image").html('<img src="' + file + '?_='+Math.random()+'" />');
-          $('#progress').fadeOut();
-          $("#save-image").data('image-file',file);
-          //Crop Image
-          var img=$(".crop-image img");
-          img.off().on('load',function(){
-            App.getImgNaturalDimensions(img[0],function(natural){
-              var ratio=1;
-              if(natural.w>0){
-                ratio=img.width()/natural.w;
-              }
-              var w=width*ratio,h=height*ratio;
-              img.Jcrop({
-                aspectRatio:width/height,
-                //minSize:[w,h],
-                setSelect:[0,0,w,h],
-              },function(){
-                jcrop=this;
-              });
-            });
-          });
-        });
-        if(typeof($.fn.niftyModal)!='undefined'){
-          $("#crop-image").niftyModal('show',{afterClose:afterClose});
-        }else{
-          $("#crop-image").modal('show');
-          $('#crop-image').off('hide.bs.modal').on('hide.bs.modal', function(){
-            afterClose();
-          });
-        }
+        saveBtn.data('type',options.type);
+        crop(r.Data.files);
       },
       progressall: function (e, data) {
-          var progress = parseInt(data.loaded / data.total * 100, 10);
-          $('#progress').fadeIn();
-          $('#progress').css('width',progress + '%');
+          var progressValue = parseInt(data.loaded / data.total * 100, 10);
+          progress.fadeIn();
+          progress.css('width',progressValue + '%');
       }
   }).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
 
-  $("#save-image").on('click',function(){
-    var self=$(this),img=$(".crop-image img");
+  saveBtn.on('click',function(){
+    var self=$(this),img=modal.find(".crop-image img");
     App.getImgNaturalDimensions(img[0],function(natural){
     var c = jcrop.tellSelect();
     if( c.w != 0 ){
       var ratio=natural.w/img.width();
       var timg=self.data('image-file');
-      $.get(getCropServerURL(),{
+      $.get(options.croperURL,{
         src:timg,
         x:c.x*ratio,
         y:c.y*ratio,
         w:c.w*ratio,
         h:c.h*ratio,
-        type:type,
+        type:self.data('type')||options.type,
         size:width+'x'+height
       },function(r){
         if(r.Code!=1){
           return App.message({title:App.i18n.SYS_INFO,text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
         }
-        $(".profile-avatar").attr("src", r.Data+'?_='+Math.random());
-        $(thumbsnailElem).val(r.Data);
+        $(options.previewElem).attr("src", r.Data+'?_='+Math.random());
+        $(options.thumbsnailInput).val(r.Data);
         if(typeof($.fn.niftyModal)!='undefined'){
-          $("#crop-image").niftyModal('hide');
+          modal.niftyModal('hide');
         }else{
-          $("#crop-image").modal('hide');
+          modal.modal('hide');
         }
         jcrop.destroy();
-        $(".crop-image").empty();
+        modal.find(".crop-image").empty();
         jcrop=null;
       },'json');
     }else{
@@ -105,9 +156,35 @@ function cropImage(uploadURL,thumbsnailElem,originalElem,type,width,height){
     }
     });
   });
-  $('.avatar-upload .avatar-remove').on('click',function(){
-    $(".profile-avatar").attr("src", "");
-    $(originalElem).val("");
-    $(thumbsnailElem).val("");
+  var actions=$(options.fileElem).siblings('.avatar-actions');
+  if(actions.length<1){
+    actions=$('<div class="avatar-actions"></div');
+    $(options.fileElem).parent('div').prepend(actions);
+  }
+  var removeBtn=actions.children('.avatar-remove');
+  if(removeBtn.length<1){
+    removeBtn=$('<a class="label label-danger avatar-remove" href="javascript:;" title="'+ App.t('删除图片')+'"><i class="fa fa-times"></i></a>');
+    actions.append(removeBtn);
+  }
+  removeBtn.on('click',function(){
+    //if(!confirm(App.t('确定删除封面图吗？'))) return;
+    $(options.previewElem).attr("src", ASSETS_URL+"/images/user_128.png");
+    $(options.originalInput).val("");
+    $(options.thumbsnailInput).val("");
+  });
+  if(typeof(App.editor)=="undefined"){
+    return;
+  }
+  var browsing=$('<a class="label label-primary avatar-browsing" href="javascript:;" title="'+App.t('从服务器选择')+'"><i class="fa fa-folder-open-o"></i></a>');
+  actions.append(browsing);
+  browsing.on('click',function(){
+    App.editor.finderDialog(App.editor.browsingFileURL + '?from=parent&size=12&filetype=image&multiple=0', function (fileList,infoList) {
+        if (fileList.length <= 0) {
+          return App.message({ type: 'error', text: App.t('没有选择任何选项！') });
+        }
+        var info = infoList[0];
+        saveBtn.data('type',info.table_name+'.'+info.field_name);
+        crop([fileList[0]]);
+    }, 100000);
   });
 }

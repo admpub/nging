@@ -1,0 +1,20 @@
+{{- $k := .Get `key` -}}
+{{- $subdir := .Get `subdir` -}}
+{{- $uptype := printf `%v:%v` $subdir $k -}}
+{{- $v := Form $k -}}
+<span class="input-group">
+<span class="input-group-btn preview-btn{{if not $v}} hidden{{end}}"id="{{$k}}ImagePreviewBtn">
+	<a class="btn btn-default no-padding" href="{{$v}}" target="_blank" data-toggle="tooltip" title="{{`查看图片`|T}}"><img src="{{$v}}" class="scale" /></a>
+</span>
+<input type="text" class="form-control" name="{{$k}}" value="{{$v}}" maxlength="200" />
+<label class="input-group-btn">
+	<input type="file" id="{{$k}}ImageFile" data-toggle="uploadPreviewer" data-preview-container="#{{$k}}ImagePreviewTableContainer" data-upload-url="{{BackendUploadURL $uptype `refid` (Form `id`)}}" data-preview-btn="#{{$k}}ImagePreviewBtn" />
+</label>
+<label class="input-group-btn">
+	<a class="btn btn-info" href="javascript:;" data-toggle="finder">
+		<i class="fa fa-folder"></i>
+		{{`浏览`|T}}
+	</a>
+</label>
+</span>
+<div id="{{$k}}ImagePreviewTableContainer"></div>
