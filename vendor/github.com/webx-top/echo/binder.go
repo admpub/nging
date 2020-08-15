@@ -108,15 +108,6 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 		return errors.New(`binder: unsupported type ` + tc.Kind().String())
 	}
 	for key, values := range data {
-		for _, filter := range filters {
-			key, values = filter(key, values)
-			if len(key) == 0 || len(values) == 0 {
-				break
-			}
-		}
-		if len(key) == 0 || key[0] == '_' || len(values) == 0 {
-			continue
-		}
 
 		if len(topName) > 0 {
 			if !strings.HasPrefix(key, topName) {
@@ -126,12 +117,12 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 		}
 
 		names := strings.Split(key, `.`)
-		var propPath string
+		var propPath, checkPath string
 		if len(names) == 1 && strings.HasSuffix(key, `]`) {
 			key = strings.TrimSuffix(key, `[]`)
 			names = FormNames(key)
 		}
-		err := parseFormItem(e, m, tc, vc, names, propPath, key, values)
+		err := parseFormItem(e, m, tc, vc, names, propPath, checkPath, key, values, filters...)
 		if err == nil {
 			continue
 		}
@@ -144,7 +135,7 @@ func NamedStructMap(e *Echo, m interface{}, data map[string][]string, topName st
 	return nil
 }
 
-func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Value, names []string, propPath string, key string, values []string) error {
+func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Value, names []string, propPath string, checkPath string, key string, values []string, filters ...FormDataFilter) error {
 	length := len(names)
 	vc := value
 	tc := typev
@@ -152,8 +143,20 @@ func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Val
 		name = strings.Title(name)
 		if i > 0 {
 			propPath += `.`
+			checkPath += `.`
 		}
 		propPath += name
+
+		// check
+		vk := checkPath + name // example: Name or *.Name or *.*.Password
+		for _, filter := range filters {
+			vk, values = filter(vk, values)
+			if len(vk) == 0 || len(values) == 0 {
+				e.Logger().Debugf(`binder: skip %v%v (%v) => %v`, checkPath, name, propPath, values)
+				return nil
+			}
+		}
+		checkPath += `*`
 
 		//最后一个元素
 		if i == length-1 {
@@ -206,7 +209,7 @@ func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Val
 			default:
 				return errors.New(`binder: unsupported type ` + tc.Kind().String())
 			}
-			return parseFormItem(e, m, newT, newV, names[i+1:], propPath+`.`, key, values)
+			return parseFormItem(e, m, newT, newV, names[i+1:], propPath+`.`, checkPath+`.`, key, values, filters...)
 		case reflect.Map:
 			if value.IsNil() {
 				value.Set(reflect.MakeMap(value.Type()))
@@ -236,7 +239,7 @@ func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Val
 			default:
 				return errors.New(`binder: unsupported type ` + tc.Kind().String())
 			}
-			return parseFormItem(e, m, newT, newV, names[i+1:], propPath+`.`, key, values)
+			return parseFormItem(e, m, newT, newV, names[i+1:], propPath+`.`, checkPath+`.`, key, values, filters...)
 		case reflect.Struct:
 			f, _ := typev.FieldByName(name)
 			if tagfast.Value(tc, f, `form_options`) == `-` {
@@ -260,7 +263,7 @@ func parseFormItem(e *Echo, m interface{}, typev reflect.Type, value reflect.Val
 			switch value.Kind() {
 			case reflect.Struct:
 			case reflect.Slice, reflect.Map:
-				return parseFormItem(e, m, value.Type(), value, names[i+1:], propPath+`.`, key, values)
+				return parseFormItem(e, m, value.Type(), value, names[i+1:], propPath+`.`, checkPath+`.`, key, values, filters...)
 			default:
 				e.Logger().Warnf(`binder: arg error, value %T#%v kind is %v`, m, propPath, value.Kind())
 				return nil
