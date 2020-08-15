@@ -22,6 +22,7 @@
   -webkit-transition: border 0.15s ease-in-out, color 0.15s ease-in-out;
   -o-transition: border 0.15s ease-in-out, color 0.15s ease-in-out;
   transition: border 0.15s ease-in-out, color 0.15s ease-in-out;
+  box-shadow: 0 0 2px #ccc;
 }
 .checkbox label::after {
   display: inline-block;
