@@ -64,6 +64,9 @@ func (this *Base) Use(trans *Transaction) {
 
 func (this *Base) SetContext(ctx echo.Context) *Base {
 	this.context = ctx
+	if ctx == nil {
+		return this
+	}
 	if setter, ok := ctx.(ModelBaseSetter); ok {
 		setter.SetModelBase(this)
 	}
