@@ -100,4 +100,8 @@
         </tbody>
     </table>
 </div>
+{{- if $dialog -}}
+{{(Stored.pagination.SetNum 3).Render}}
+{{- else -}}
 {{Stored.pagination.Render}}
+{{- end -}}
