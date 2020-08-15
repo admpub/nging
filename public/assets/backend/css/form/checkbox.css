@@ -23,9 +23,6 @@
   -o-transition: border 0.15s ease-in-out, color 0.15s ease-in-out;
   transition: border 0.15s ease-in-out, color 0.15s ease-in-out;
 }
-.checkbox-shadow{
-  box-shadow: 0 0 2px #ccc;
-}
 .checkbox label::after {
   display: inline-block;
   position: absolute;
@@ -329,4 +326,9 @@ input[type="radio"] .styled:checked + label::before {
 input[type="checkbox"] .styled:checked + label::after,
 input[type="radio"] .styled:checked + label::after {
   color: #fff;
+}
+
+.checkbox-shadow label::before
+.radio-shadow label::before{
+  box-shadow: 0 0 2px #ccc;
 }
