@@ -15,6 +15,14 @@ type Base struct {
 	eventOff bool
 }
 
+type ModelBaseSetter interface {
+	SetModelBase(*Base)
+}
+
+type ModelSetter interface {
+	SetModel(Model)
+}
+
 func (this *Base) EventOFF(off ...bool) *Base {
 	if len(off) == 0 {
 		this.eventOff = true
@@ -56,6 +64,17 @@ func (this *Base) Use(trans *Transaction) {
 
 func (this *Base) SetContext(ctx echo.Context) *Base {
 	this.context = ctx
+	if setter, ok := ctx.(ModelBaseSetter); ok {
+		setter.SetModelBase(this)
+	}
+	switch t := ctx.Transaction().(type) {
+	case *echo.BaseTransaction:
+		if tr, ok := t.Transaction.(*Param); ok {
+			this.trans = tr.T()
+		}
+	case *Param:
+		this.trans = t.T()
+	}
 	return this
 }
 
