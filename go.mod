@@ -6,11 +6,11 @@ replace github.com/caddyserver/caddy => github.com/caddyserver/caddy v1.0.5
 
 replace google.golang.org/protobuf => github.com/protocolbuffers/protobuf-go v1.25.0
 
-replace golang.org/x/crypto => github.com/golang/crypto v0.0.0-20200709230013-948cd5f35899
+replace golang.org/x/crypto => github.com/golang/crypto v0.0.0-20200728195943-123391ffb6de
 
-replace golang.org/x/image => github.com/golang/image v0.0.0-20200618115811-c13761719519
+replace golang.org/x/image => github.com/golang/image v0.0.0-20200801110659-972c09e46d76
 
-replace golang.org/x/net => github.com/golang/net v0.0.0-20200707034311-ab3426394381
+replace golang.org/x/net => github.com/golang/net v0.0.0-20200813134508-3edf25e44fcc
 
 replace golang.org/x/oauth2 => github.com/golang/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 
@@ -20,13 +20,13 @@ replace golang.org/x/time => github.com/golang/time v0.0.0-20200630173020-3af756
 
 replace golang.org/x/sync => github.com/golang/sync v0.0.0-20200625203802-6e8e738ad208
 
-replace golang.org/x/sys => github.com/golang/sys v0.0.0-20200625212154-ddb9806d33ae
+replace golang.org/x/sys => github.com/golang/sys v0.0.0-20200814200057-3d37ad5750ed
 
 replace golang.org/x/text => github.com/golang/text v0.3.3
 
-replace golang.org/x/tools => github.com/golang/tools v0.0.0-20200717024301-6ddee64345a6
+replace golang.org/x/tools => github.com/golang/tools v0.0.0-20200815165600-90abf76919f3
 
-replace golang.org/x/xerrors => github.com/golang/xerrors v0.0.0-20191204190536-9bdfabe68543
+replace golang.org/x/xerrors => github.com/golang/xerrors v0.0.0-20200804184101-5ec99f83aff1
 
 replace github.com/admpub/xgo => github.com/admpub/xgo v1.14.6
 

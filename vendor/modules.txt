@@ -1181,7 +1181,7 @@ gocloud.dev/internal/gcerr
 gocloud.dev/internal/oc
 gocloud.dev/internal/openurl
 gocloud.dev/internal/retry
-# golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 => github.com/golang/crypto v0.0.0-20200709230013-948cd5f35899
+# golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 => github.com/golang/crypto v0.0.0-20200728195943-123391ffb6de
 ## explicit
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
@@ -1216,7 +1216,7 @@ golang.org/x/crypto/ssh/knownhosts
 golang.org/x/crypto/tea
 golang.org/x/crypto/twofish
 golang.org/x/crypto/xtea
-# golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 => github.com/golang/image v0.0.0-20200618115811-c13761719519
+# golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 => github.com/golang/image v0.0.0-20200801110659-972c09e46d76
 golang.org/x/image/bmp
 golang.org/x/image/ccitt
 golang.org/x/image/draw
@@ -1234,7 +1234,7 @@ golang.org/x/lint
 golang.org/x/lint/golint
 # golang.org/x/mod v0.3.0
 golang.org/x/mod/semver
-# golang.org/x/net v0.0.0-20200625001655-4c5254603344 => github.com/golang/net v0.0.0-20200707034311-ab3426394381
+# golang.org/x/net v0.0.0-20200625001655-4c5254603344 => github.com/golang/net v0.0.0-20200813134508-3edf25e44fcc
 golang.org/x/net/bpf
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
@@ -1258,7 +1258,7 @@ golang.org/x/net/websocket
 # golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d => github.com/golang/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
-# golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae => github.com/golang/sys v0.0.0-20200625212154-ddb9806d33ae
+# golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae => github.com/golang/sys v0.0.0-20200814200057-3d37ad5750ed
 ## explicit
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
@@ -1293,7 +1293,7 @@ golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 # golang.org/x/time v0.0.0-20191024005414-555d28b269f0 => github.com/golang/time v0.0.0-20200630173020-3af7569d3a1e
 golang.org/x/time/rate
-# golang.org/x/tools v0.0.0-20200619180055-7c47624df98f => github.com/golang/tools v0.0.0-20200717024301-6ddee64345a6
+# golang.org/x/tools v0.0.0-20200619180055-7c47624df98f => github.com/golang/tools v0.0.0-20200815165600-90abf76919f3
 golang.org/x/tools/go/ast/astutil
 golang.org/x/tools/go/gcexportdata
 golang.org/x/tools/go/internal/gcimporter
@@ -1306,7 +1306,7 @@ golang.org/x/tools/internal/event/label
 golang.org/x/tools/internal/gocommand
 golang.org/x/tools/internal/packagesinternal
 golang.org/x/tools/internal/typesinternal
-# golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543 => github.com/golang/xerrors v0.0.0-20191204190536-9bdfabe68543
+# golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543 => github.com/golang/xerrors v0.0.0-20200804184101-5ec99f83aff1
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
 # google.golang.org/appengine v1.6.6
@@ -1421,16 +1421,16 @@ gopkg.in/yaml.v2
 gopkg.in/yaml.v3
 # github.com/caddyserver/caddy => github.com/caddyserver/caddy v1.0.5
 # google.golang.org/protobuf => github.com/protocolbuffers/protobuf-go v1.25.0
-# golang.org/x/crypto => github.com/golang/crypto v0.0.0-20200709230013-948cd5f35899
-# golang.org/x/image => github.com/golang/image v0.0.0-20200618115811-c13761719519
-# golang.org/x/net => github.com/golang/net v0.0.0-20200707034311-ab3426394381
+# golang.org/x/crypto => github.com/golang/crypto v0.0.0-20200728195943-123391ffb6de
+# golang.org/x/image => github.com/golang/image v0.0.0-20200801110659-972c09e46d76
+# golang.org/x/net => github.com/golang/net v0.0.0-20200813134508-3edf25e44fcc
 # golang.org/x/oauth2 => github.com/golang/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 # golang.org/x/protobuf => github.com/golang/protobuf v1.4.2
 # golang.org/x/time => github.com/golang/time v0.0.0-20200630173020-3af7569d3a1e
 # golang.org/x/sync => github.com/golang/sync v0.0.0-20200625203802-6e8e738ad208
-# golang.org/x/sys => github.com/golang/sys v0.0.0-20200625212154-ddb9806d33ae
+# golang.org/x/sys => github.com/golang/sys v0.0.0-20200814200057-3d37ad5750ed
 # golang.org/x/text => github.com/golang/text v0.3.3
-# golang.org/x/tools => github.com/golang/tools v0.0.0-20200717024301-6ddee64345a6
-# golang.org/x/xerrors => github.com/golang/xerrors v0.0.0-20191204190536-9bdfabe68543
+# golang.org/x/tools => github.com/golang/tools v0.0.0-20200815165600-90abf76919f3
+# golang.org/x/xerrors => github.com/golang/xerrors v0.0.0-20200804184101-5ec99f83aff1
 # github.com/admpub/xgo => github.com/admpub/xgo v1.14.6
 # github.com/admpub/bindata/v3 => github.com/admpub/bindata/v3 v3.1.5
