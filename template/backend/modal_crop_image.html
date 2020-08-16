@@ -1,4 +1,4 @@
-{{- $prefix := .Get `prefix` | Default `noprefix` -}}
+{{- $prefix := Stored.Get `cropImageModalPrefix` | Default `noprefix` -}}
 <div id="{{$prefix}}-crop-image" class="md-modal colored-header md-effect-1" tabindex="-1" role="dialog">
     <div class="md-content">
       <div class="modal-header">
@@ -16,6 +16,6 @@
 </div>
 <div class="md-overlay"></div>
 {{- if not (Stored.Get `cropImageIsLoaded`) -}}
-{{- Stored.Set `cropImageIsLoaded` true|Ignore -}}
+{{- Stored.Set `cropImageIsLoaded` true | Ignore -}}
 <script type="text/javascript" src="__ASSETS__/js/behaviour/page/crop-image.min.js?t={{BuildTime}}"></script>
 {{- end -}}
