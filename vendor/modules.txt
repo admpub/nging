@@ -276,7 +276,7 @@ github.com/andybalholm/cascadia
 github.com/armon/go-socks5
 # github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a
 github.com/asaskevich/govalidator
-# github.com/aws/aws-sdk-go v1.33.6
+# github.com/aws/aws-sdk-go v1.34.5
 ## explicit
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -368,7 +368,7 @@ github.com/caddy-plugins/ipfilter
 # github.com/caddy-plugins/nobots v0.1.1
 ## explicit
 github.com/caddy-plugins/nobots
-# github.com/caddyserver/caddy v1.0.3 => github.com/caddyserver/caddy v1.0.5
+# github.com/caddyserver/caddy v1.0.5 => github.com/caddyserver/caddy v1.0.5
 ## explicit
 github.com/caddyserver/caddy
 github.com/caddyserver/caddy/caddyfile
@@ -843,7 +843,7 @@ github.com/matttproud/golang_protobuf_extensions/pbutil
 github.com/mgutz/str
 # github.com/mholt/certmagic v0.8.3
 github.com/mholt/certmagic
-# github.com/microcosm-cc/bluemonday v1.0.3
+# github.com/microcosm-cc/bluemonday v1.0.4
 ## explicit
 github.com/microcosm-cc/bluemonday
 # github.com/miekg/dns v1.1.27
@@ -959,7 +959,7 @@ github.com/rwcarlsen/goexif/tiff
 github.com/sergi/go-diff/diffmatchpatch
 # github.com/shibukawa/configdir v0.0.0-20170330084843-e180dbdc8da0
 github.com/shibukawa/configdir
-# github.com/shirou/gopsutil v2.20.6+incompatible
+# github.com/shirou/gopsutil v2.20.7+incompatible
 ## explicit
 github.com/shirou/gopsutil/cpu
 github.com/shirou/gopsutil/disk
