@@ -148,7 +148,7 @@ require (
 	github.com/imdario/mergo v0.3.9 // indirect
 	github.com/jedib0t/go-pretty v4.3.0+incompatible // indirect
 	github.com/jesseduffield/lazygit v0.20.9
-	github.com/jlaffaye/ftp v0.0.0-20200715164256-5d10dd64f695 // indirect
+	github.com/jlaffaye/ftp v0.0.0-20200812143550-39e3779af0db // indirect
 	github.com/kardianos/service v1.1.0 // indirect
 	github.com/markbates/goth v1.64.2 // indirect
 	github.com/mattn/go-colorable v0.1.7

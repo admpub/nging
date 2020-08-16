@@ -673,6 +673,8 @@ github.com/jimstudt/http-authentication v0.0.0-20140401203705-3eca13d6893a h1:Bc
 github.com/jimstudt/http-authentication v0.0.0-20140401203705-3eca13d6893a/go.mod h1:wK6yTYYcgjHE1Z1QtXACPDjcFJyBskHEdagmnq3vsP8=
 github.com/jlaffaye/ftp v0.0.0-20200715164256-5d10dd64f695 h1:YuVucjWWwiYV7Y0vJrwU3gnZ0+Hn4gFtSwwavh/7gxY=
 github.com/jlaffaye/ftp v0.0.0-20200715164256-5d10dd64f695/go.mod h1:2lmrmq866uF2tnje75wQHzmPXhmSWUt7Gyx2vgK1RCU=
+github.com/jlaffaye/ftp v0.0.0-20200812143550-39e3779af0db h1:e30IC+OuZIeMVK33/zE7wDvxDaRmGuRt/ps67pzcxAw=
+github.com/jlaffaye/ftp v0.0.0-20200812143550-39e3779af0db/go.mod h1:2lmrmq866uF2tnje75wQHzmPXhmSWUt7Gyx2vgK1RCU=
 github.com/jmespath/go-jmespath v0.0.0-20160202185014-0b12d6b521d8/go.mod h1:Nht3zPeWKUH0NzdCt2Blrr5ys8VGpn0CEB0cQHVjt7k=
 github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af/go.mod h1:Nht3zPeWKUH0NzdCt2Blrr5ys8VGpn0CEB0cQHVjt7k=
 github.com/jmespath/go-jmespath v0.3.0 h1:OS12ieG61fsCg5+qLJ+SsW9NicxNkg3b25OyT2yCeUc=
