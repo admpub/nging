@@ -106,7 +106,7 @@ require (
 	github.com/admpub/web-terminal v0.0.0-20190705124712-e503d17936e9
 	github.com/admpub/websocket v1.0.1
 	github.com/araddon/gou v0.0.0-20190110011759-c797efecbb61 // indirect
-	github.com/aws/aws-sdk-go v1.33.6
+	github.com/aws/aws-sdk-go v1.34.5
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
@@ -120,7 +120,7 @@ require (
 	github.com/caddy-plugins/cors v0.0.0-20190704155148-3c98079f1197
 	github.com/caddy-plugins/ipfilter v1.1.4
 	github.com/caddy-plugins/nobots v0.1.1
-	github.com/caddyserver/caddy v1.0.3
+	github.com/caddyserver/caddy v1.0.5
 	github.com/caddyserver/certmagic v0.11.2
 	github.com/chromedp/cdproto v0.0.0-20200709115526-d1f6fc58448b
 	github.com/chromedp/chromedp v0.5.3
@@ -154,7 +154,7 @@ require (
 	github.com/mattn/go-colorable v0.1.7
 	github.com/mattn/go-runewidth v0.0.9
 	github.com/mattn/go-sqlite3 v1.14.0 // indirect
-	github.com/microcosm-cc/bluemonday v1.0.3
+	github.com/microcosm-cc/bluemonday v1.0.4
 	github.com/minio/minio-go v6.0.14+incompatible
 	github.com/muesli/smartcrop v0.3.0 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
@@ -165,7 +165,7 @@ require (
 	github.com/russross/blackfriday v1.5.2
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd // indirect
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
-	github.com/shirou/gopsutil v2.20.6+incompatible
+	github.com/shirou/gopsutil v2.20.7+incompatible
 	github.com/shivakar/metrohash v0.0.0-20160821164112-8d1c8b6bed28 // indirect
 	github.com/shivakar/xxhash v0.0.0-20160821164220-5ea66fb45566 // indirect
 	github.com/spf13/cobra v1.0.0
