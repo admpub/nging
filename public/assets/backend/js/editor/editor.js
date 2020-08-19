@@ -529,24 +529,21 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 		switch (meta.filetype) {
 			case 'file': //Provide file and text for the link dialog
 				App.editor.finderDialog(managerUrl + meta.filetype, function (files,infos) {
-					if (files && files.length > 0)
-						callback(files[0], { text: infos[0].name });
+					if (files && files.length > 0) callback(files[0], { text: infos[0].name });
 				});
 				//callback('https://www.google.com/logos/google.jpg', { text: 'My text' });
 				break;
 
 			case 'image': //Provide image and alt text for the image dialog
-				App.editor.finderDialog(managerUrl + meta.filetype, function (files) {
-					if (files && files.length > 0)
-						callback(files[0], { alt: infos[0].name });
+				App.editor.finderDialog(managerUrl + meta.filetype, function (files,infos) {
+					if (files && files.length > 0) callback(files[0], { alt: infos[0].name });
 				});
 				//callback('https://www.google.com/logos/google.jpg', { alt: 'My alt text' });
 				break;
 
 			case 'media': //Provide alternative source and posted for the media dialog
-				App.editor.finderDialog(managerUrl + meta.filetype, function (files) {
-					if (files && files.length > 0)
-						callback(files[0], {});
+				App.editor.finderDialog(managerUrl + meta.filetype, function (files,infos) {
+					if (files && files.length > 0) callback(files[0], {});
 				});
 				//callback('movie.mp4', { source2: 'alt.ogg', poster: 'https://www.google.com/logos/google.jpg' });
 				break;
