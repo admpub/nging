@@ -39,15 +39,18 @@ func init() {
 		Key:         "nging_user",
 		Name:        "后台用户",
 		Description: "",
-	}).SetTableName("nging_user").SetFieldName(`:个人文件`, `avatar:头像`))
+	}).SetTableName("nging_user").
+		SetFieldName(`:个人文件`, `avatar:头像`))
+
 	//后台系统设置中的图片
 	RegisterObject((&SubdirInfo{
 		Allowed:     true,
 		Key:         "nging_config",
-		Name:        "站点公告图片",
+		Name:        "站点配置",
 		Description: "",
 		checker:     checker.ConfigChecker,
-	}).SetTableName("nging_config"))
+	}).SetTableName("nging_config")).
+		SetFieldName(`:内容图片`)
 }
 
 func Register(subdir interface{}, nameAndDescription ...string) *SubdirInfo {

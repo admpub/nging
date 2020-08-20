@@ -19,14 +19,7 @@
 package upload
 
 import (
-	"bytes"
 	"io"
-	"io/ioutil"
-	"path"
-
-	"github.com/webx-top/client/upload/watermark"
-	"github.com/webx-top/image"
-	"github.com/webx-top/echo"
 )
 
 var clients = make(map[string]func() Client)
@@ -59,43 +52,5 @@ func Delete(name string) {
 
 type Storer interface {
 	Put(dstFile string, body io.Reader, size int64) (savePath string, fileURL string, err error)
-}
-
-func Upload(ctx echo.Context, clientName string, result *Result, storer Storer, watermartOptions *image.WatermarkOptions, checkers ...func(*Result) error) Client {
-	client := Get(clientName)
-	client.Init(ctx, result)
-	body, err := client.Body()
-	if err != nil {
-		return client.SetError(err)
-	}
-	defer body.Close()
-	if len(checkers) > 0 {
-		err = checkers[0](result)
-		if err != nil {
-			return client.SetError(err)
-		}
-	}
-	dstFile, err := result.GenFileName()
-	if err != nil {
-		return client.SetError(err)
-	}
-	if result.FileType.String() == `image` && watermartOptions != nil && watermartOptions.IsEnabled() {
-		var b []byte
-		b, err = ioutil.ReadAll(body)
-		if err != nil {
-			return client.SetError(err)
-		}
-		b, err = watermark.Bytes(b, path.Ext(result.FileName), watermartOptions)
-		if err != nil {
-			return client.SetError(err)
-		}
-		byteReader := bytes.NewReader(b)
-		result.SavePath, result.FileURL, err = storer.Put(dstFile, byteReader, byteReader.Size())
-	} else {
-		result.SavePath, result.FileURL, err = storer.Put(dstFile, body, body.Size())
-	}
-	if err != nil {
-		return client.SetError(err)
-	}
-	return client
+	Delete(file string) error
 }

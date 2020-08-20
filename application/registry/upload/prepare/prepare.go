@@ -28,6 +28,7 @@ type PrepareData struct {
 	TableName  string
 	FieldName  string
 	FileType   string
+	SubdirInfo *uploadSubdir.SubdirInfo
 }
 
 func (p *PrepareData) Storer(ctx echo.Context) (driver.Storer, error) {
@@ -43,6 +44,14 @@ func (p *PrepareData) Close() error {
 		return nil
 	}
 	return p.storer.Close()
+}
+
+func (p *PrepareData) GetFieldInfo() *uploadSubdir.FieldInfo {
+	return p.SubdirInfo.GetField(p.FieldName)
+}
+
+func (p *PrepareData) AutoCropThumbSize() []uploadSubdir.ThumbSize {
+	return p.SubdirInfo.AutoCropThumbSize(p.FieldName)
 }
 
 // Prepare 上传前的环境准备
@@ -85,6 +94,7 @@ func Prepare(ctx echo.Context, uploadType string, fileType string, storerInfo st
 		TableName:  params.MustGetTable(),
 		FieldName:  params.Field,
 		FileType:   fileType,
+		SubdirInfo: params.SubdirInfo,
 	}
 	return data, nil
 }

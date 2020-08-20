@@ -32,8 +32,9 @@ import (
 )
 
 type ThumbSize struct {
-	Width  float64
-	Height float64
+	AutoCrop bool
+	Width    float64
+	Height   float64
 }
 
 func (t ThumbSize) String() string {
@@ -255,6 +256,17 @@ func (i *SubdirInfo) ThumbSize(fieldNames ...string) []ThumbSize {
 	return nil
 }
 
+func (i *SubdirInfo) AutoCropThumbSize(fieldName string) []ThumbSize {
+	r := []ThumbSize{}
+	sizes := i.ThumbSize(fieldName)
+	for _, size := range sizes {
+		if size.AutoCrop {
+			r = append(r, size)
+		}
+	}
+	return r
+}
+
 func (i *SubdirInfo) FieldNames() []string {
 	fieldNames := make([]string, len(i.fieldInfos))
 	if i.fieldInfos == nil {
@@ -301,6 +313,8 @@ func (i *SubdirInfo) SetFieldName(fieldNames ...string) *SubdirInfo {
 	return i
 }
 
+var AutoCropPrefix = `[auto]`
+
 // parseFieldInfo fieldName:fieldDescription:thumbWidth x thumbHeight,thumbWidth x thumbHeight
 // example parseFieldInfo(`user:用户:200x200,300x600`)
 func (i *SubdirInfo) parseFieldInfo(field string) (fieldName string, fieldText string, thumbSize []ThumbSize) {
@@ -313,8 +327,12 @@ func (i *SubdirInfo) parseFieldInfo(field string) (fieldName string, fieldText s
 			if len(size) == 0 {
 				continue
 			}
+			autoCrop := strings.HasPrefix(size, AutoCropPrefix)
+			if autoCrop {
+				size = strings.TrimPrefix(size, AutoCropPrefix)
+			}
 			sz := strings.SplitN(size, `x`, 2)
-			ts := ThumbSize{}
+			ts := ThumbSize{AutoCrop: autoCrop}
 			switch len(sz) {
 			case 2:
 				sz[1] = strings.TrimSpace(sz[1])
@@ -327,6 +345,9 @@ func (i *SubdirInfo) parseFieldInfo(field string) (fieldName string, fieldText s
 				ts.Height = ts.Width
 			}
 			if ts.Width > 0 && ts.Height > 0 {
+				if autoCrop {
+
+				}
 				thumbSize = append(thumbSize, ts)
 			}
 		}

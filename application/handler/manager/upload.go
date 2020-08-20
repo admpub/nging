@@ -19,8 +19,8 @@
 package manager
 
 import (
+	"fmt"
 	"io"
-	"mime/multipart"
 	"path"
 	"path/filepath"
 	"strings"
@@ -28,6 +28,7 @@ import (
 	uploadClient "github.com/webx-top/client/upload"
 	_ "github.com/webx-top/client/upload/driver"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/middleware/tplfunc"
 
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/handler/manager/file"
@@ -42,6 +43,7 @@ import (
 var (
 	File                = file.File
 	GetWatermarkOptions = storer.GetWatermarkOptions
+	CropOptions         = modelFile.ImageOptions
 )
 
 // 文件上传保存路径规则：
@@ -141,6 +143,50 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		return err
 	}
 
+	callback := func(result *uploadClient.Result, originalReader io.Reader, _ io.Reader) error {
+		fileM.Id = 0
+		fileM.SetByUploadResult(result)
+		if err := ctx.Begin(); err != nil {
+			return err
+		}
+		fileM.Use(common.Tx(ctx))
+		err := prepareData.DBSaver(fileM, result, originalReader)
+		if err != nil {
+			ctx.Rollback()
+			return err
+		}
+		if result.FileType.String() != `image` {
+			ctx.Commit()
+			return nil
+		}
+		thumbSizes := prepareData.AutoCropThumbSize()
+		thumbM := modelFile.NewThumb(ctx)
+		thumbM.CPAFrom(fileM.NgingFile)
+		for _, thumbSize := range thumbSizes {
+			thumbM.Reset()
+			if seek, ok := originalReader.(io.Seeker); ok {
+				seek.Seek(0, 0)
+			}
+			thumbURL := tplfunc.AddSuffix(result.FileURL, fmt.Sprintf(`_%v_%v`, thumbSize.Width, thumbSize.Height))
+			cropOpt := &modelFile.CropOptions{
+				Options:          CropOptions(thumbSize.Width, thumbSize.Height),
+				File:             fileM.NgingFile,
+				SrcReader:        originalReader,
+				Storer:           storer,
+				DestFile:         storer.URLToFile(thumbURL),
+				FileMD5:          ``,
+				WatermarkOptions: GetWatermarkOptions(),
+			}
+			err = thumbM.Crop(cropOpt)
+			if err != nil {
+				ctx.Rollback()
+				return err
+			}
+		}
+		ctx.Commit()
+		return nil
+	}
+
 	clientName := ctx.Form(`client`)
 	if len(clientName) > 0 {
 		result := &uploadClient.Result{}
@@ -148,25 +194,32 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 			return SaveFilename(subdir, name, filename)
 		})
 
-		client := uploadClient.Upload(ctx, clientName, result, storer, GetWatermarkOptions(), prepareData.Checker)
+		client := uploadClient.Upload(
+			ctx,
+			uploadClient.OptClientName(clientName),
+			uploadClient.OptResult(result),
+			uploadClient.OptStorer(storer),
+			uploadClient.OptWatermarkOptions(GetWatermarkOptions()),
+			uploadClient.OptChecker(prepareData.Checker),
+			uploadClient.OptCallback(callback),
+		)
 		if client.GetError() != nil {
 			if client.GetError() == upload.ErrExistsFile {
 				client.SetError(nil)
 			}
 			return client.Response()
 		}
-
-		fileM.SetByUploadResult(result)
-
-		var reader io.ReadCloser
-		reader, err = storer.Get(result.SavePath)
-		if reader != nil {
-			defer reader.Close()
-		}
-		if err != nil {
-			return client.SetError(err).Response()
-		}
-		err = prepareData.DBSaver(fileM, result, reader)
+		/*
+			var reader io.ReadCloser
+			reader, err = storer.Get(result.SavePath)
+			if reader != nil {
+				defer reader.Close()
+			}
+			if err != nil {
+				return client.SetError(err).Response()
+			}
+			err = callback(result, reader, nil)
+		*/
 		return client.SetError(err).Response()
 	}
 	var results uploadClient.Results
@@ -180,11 +233,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 			return SaveFilename(subdir, name, r.FileName)
 		},
 		storer,
-		func(result *uploadClient.Result, file multipart.File) error {
-			fileM.Id = 0
-			fileM.SetByUploadResult(result)
-			return prepareData.DBSaver(fileM, result, file)
-		},
+		callback,
 		GetWatermarkOptions(),
 	)
 	datax, embed := ResponseDataForUpload(ctx, field, err, results.FileURLs())

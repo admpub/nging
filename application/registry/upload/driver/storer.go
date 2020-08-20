@@ -33,7 +33,7 @@ func BatchUpload(
 	fieldName string,
 	dstNamer func(*uploadClient.Result) (dst string, err error),
 	storer Storer,
-	callback func(*uploadClient.Result, multipart.File) error,
+	callback func(*uploadClient.Result, io.Reader, io.Reader) error,
 	watermarkOptions *image.WatermarkOptions,
 ) (results uploadClient.Results, err error) {
 	req := ctx.Request()
@@ -91,6 +91,8 @@ func BatchUpload(
 			results.Add(result)
 			continue
 		}
+		originalFile := file
+		fileSize := fileHdr.Size
 		file.Seek(0, 0)
 		if result.FileType.String() == `image` && watermarkOptions != nil && watermarkOptions.IsEnabled() {
 			var b []byte
@@ -104,18 +106,19 @@ func BatchUpload(
 				file.Close()
 				return
 			}
+			file.Seek(0, 0)
 			file = watermark.Bytes2file(b)
-			result.SavePath, result.FileURL, err = storer.Put(dstFile, file, int64(len(b)))
-		} else {
-			result.SavePath, result.FileURL, err = storer.Put(dstFile, file, fileHdr.Size)
+			fileSize = int64(len(b))
 		}
+		result.SavePath, result.FileURL, err = storer.Put(dstFile, file, fileSize)
 		if err != nil {
 			file.Close()
 			return
 		}
 		file.Seek(0, 0)
-		if err = callback(result, file); err != nil {
+		if err = callback(result, originalFile, file); err != nil {
 			file.Close()
+			storer.Delete(dstFile)
 			return
 		}
 		file.Close()

@@ -7,7 +7,7 @@ type Params struct {
 	Table      string
 	Field      string
 	SubdirInfo *SubdirInfo
-	TableFlag  bool
+	TableFlag  bool // uploadType中是否传递的表名称的方式：table.field
 }
 
 func (p *Params) MustGetSubdir() string {
