@@ -462,7 +462,8 @@ CREATE TABLE `nging_file` (
   PRIMARY KEY (`id`),
   KEY `category_id` (`category_id`),
   KEY `owner_id_owner_type` (`owner_id`,`owner_type`),
-  KEY `table_id_table_name` (`table_id`,`table_name`)
+  KEY `table_id_table_name` (`table_id`,`table_name`),
+  KEY `view_url` (`view_url`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='文件表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -506,8 +507,9 @@ CREATE TABLE `nging_file_thumb` (
   `used_times` int unsigned NOT NULL DEFAULT '0' COMMENT '被使用的次数',
   `md5` char(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '缩略图文件MD5值',
   PRIMARY KEY (`id`),
+  UNIQUE KEY `save_path` (`save_path`),
   UNIQUE KEY `file_id_size_flag` (`file_id`,`size`),
-  UNIQUE KEY `save_path` (`save_path`)
+  KEY `view_url` (`view_url`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='图片文件缩略图';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -986,4 +988,4 @@ CREATE TABLE `nging_vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-08-03 13:49:45
+-- Dump completed on 2020-08-20 19:48:34
