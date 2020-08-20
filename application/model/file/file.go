@@ -33,8 +33,8 @@ import (
 	"github.com/admpub/events"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
-	"github.com/admpub/nging/application/registry/upload/table"
 	"github.com/admpub/nging/application/model/file/storer"
+	"github.com/admpub/nging/application/registry/upload/table"
 )
 
 func NewFile(ctx echo.Context) *File {
@@ -88,6 +88,10 @@ func (f *File) TableName() string {
 
 func (f *File) FieldName() string {
 	return f.NgingFile.FieldName
+}
+
+func (f *File) UploadType() string {
+	return f.NgingFile.TableName + `.` + f.NgingFile.FieldName
 }
 
 func (f *File) SetByUploadResult(result *uploadClient.Result) *File {
