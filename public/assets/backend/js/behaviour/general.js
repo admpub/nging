@@ -1434,9 +1434,9 @@ var App = function () {
 				}
 			}, 50);
 		},
-		float: function (elem, mode, attr, position) {
+		float: function (elem, mode, attr, position, options) {
 			if (!mode) mode = 'ajax';
-			if (!attr) attr = 'src';
+			if (!attr) attr = mode=='remind'?'rel':'src';
 			if (!position) position = '5-7';//两个数字分别代表trigger(浮动层)-target(来源对象)，（各个数字的编号从矩形框的左上角开始，沿着顺时针开始旋转来进行编号，然后再从上中部开始沿着顺时针开始编号进行。也就是1、2、3、4分别代表左上角、右上角、右下角、左下角；5、6、7、8分别代表上中、右中、下中、左中）
 			else {
 				switch (position) {
@@ -1450,7 +1450,8 @@ var App = function () {
 					case 'right-top':position='4-2';break;
 				}
 			}
-			$(elem).powerFloat({ 'targetMode': mode, 'targetAttr': attr, 'position': position });
+			var defaults = { 'targetMode': mode, 'targetAttr': attr, 'position': position };
+			$(elem).powerFloat($.extend(defaults,options||{}));
 		},
 		uploadPreviewer: function (elem, options, callback) {
 			if($(elem).parent('.file-preview-shadow').length<1){
