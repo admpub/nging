@@ -75,6 +75,12 @@ func (f *FileUpdater) Add(content *string, embedded bool) (err error) {
 	if err != nil {
 		return
 	}
+	if mp, ok := f.rel.Context().Internal().Get(`FileReplaces`).(map[string]string); ok {
+		for k, v := range mp {
+			replaces[k] = v
+		}
+	}
+	f.rel.Context().Internal().Set(`FileReplaces`, replaces)
 	if embedded {
 		*content = uploadHelper.ReplaceEmbeddedRes(*content, replaces)
 	} else {

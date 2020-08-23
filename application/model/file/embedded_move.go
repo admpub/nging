@@ -133,14 +133,18 @@ func (f *Embedded) MoveFileToOwner(tableName string, fileIDs []uint64, ownerID s
 					return replaces, errMv
 				}
 			}
+			replaces[file.ViewUrl] = newViewURL
+			err = file.CPAFrom(f.NgingFileEmbedded).SetFields(nil, echo.H{
+				`save_path`:  newSavePath,
+				`view_url`:   newViewURL,
+				`save_name`:  path.Base(newViewURL),
+				`used_times`: db.Raw(`used_times+1`),
+			}, db.Cond{`id`: file.Id})
+		} else {
+			err = file.CPAFrom(f.NgingFileEmbedded).SetFields(nil, echo.H{
+				`used_times`: db.Raw(`used_times+1`),
+			}, db.Cond{`id`: file.Id})
 		}
-		replaces[file.ViewUrl] = newViewURL
-		err = file.CPAFrom(f.NgingFileEmbedded).SetFields(nil, echo.H{
-			`save_path`:  newSavePath,
-			`view_url`:   newViewURL,
-			`save_name`:  path.Base(newViewURL),
-			`used_times`: 1,
-		}, db.Cond{`id`: file.Id})
 		if err != nil {
 			return replaces, err
 		}
@@ -164,15 +168,15 @@ func (f *Embedded) MoveFileToOwner(tableName string, fileIDs []uint64, ownerID s
 						return replaces, errMv
 					}
 				}
-			}
-			replaces[thumb.ViewUrl] = newViewURL
-			err = thumb.CPAFrom(f.NgingFileEmbedded).SetFields(nil, echo.H{
-				`save_path`: newSavePath,
-				`view_url`:  newViewURL,
-				`save_name`: path.Base(newViewURL),
-			}, db.Cond{`id`: thumb.Id})
-			if err != nil {
-				return replaces, err
+				replaces[thumb.ViewUrl] = newViewURL
+				err = thumb.CPAFrom(f.NgingFileEmbedded).SetFields(nil, echo.H{
+					`save_path`: newSavePath,
+					`view_url`:  newViewURL,
+					`save_name`: path.Base(newViewURL),
+				}, db.Cond{`id`: thumb.Id})
+				if err != nil {
+					return replaces, err
+				}
 			}
 		}
 	}

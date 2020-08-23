@@ -51,7 +51,7 @@ var Default = func(ctx echo.Context, t table.TableInfoStorer) (subdir string, na
 		return
 	}
 	subdir = fmt.Sprint(refid) + `/`
-	//subdir = time.Now().Format(`2006/01/02/`)
+	//subdir = time.Now().Format(`Y2006/01/02/`)
 	t.SetTableID(refid)
 	return
 }

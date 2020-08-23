@@ -122,7 +122,7 @@ func All() map[string]*SubdirInfo {
 func IsAllowed(subdir string, defaults ...string) bool {
 	info, ok := subdirs[subdir]
 	if !ok || info == nil {
-		if len(defaults) > 0 {
+		if len(defaults) > 0 && defaults[0] != subdir {
 			return IsAllowed(defaults[0])
 		}
 		return false

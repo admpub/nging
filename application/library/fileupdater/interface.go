@@ -18,7 +18,10 @@
 
 package fileupdater
 
-import "github.com/webx-top/db/lib/factory"
+import (
+	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo"
+)
 
 type Reler interface {
 	RelationFiles(project string, table string, field string, tableID string, content string, seperator ...string) error
@@ -26,6 +29,7 @@ type Reler interface {
 	DeleteByTableID(project string, table string, tableID string) error
 	FileIDs() []uint64
 	MoveFileToOwner(table string, fileIDs []uint64, ownerID string) (replaces map[string]string, err error)
+	Context() echo.Context
 }
 
 type Listener interface {
