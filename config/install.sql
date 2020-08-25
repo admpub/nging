@@ -488,6 +488,25 @@ CREATE TABLE `nging_file_embedded` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `nging_file_moved`
+--
+
+DROP TABLE IF EXISTS `nging_file_moved`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `nging_file_moved` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `file_id` bigint unsigned NOT NULL COMMENT '文件ID',
+  `from` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '文件原路径',
+  `to` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '文件新路径',
+  `thumb_id` bigint unsigned NOT NULL DEFAULT '0' COMMENT '缩略图ID(缩略图时有效)',
+  `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `from` (`from`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='文件移动记录';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `nging_file_thumb`
 --
 
@@ -988,4 +1007,4 @@ CREATE TABLE `nging_vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-08-21 23:06:07
+-- Dump completed on 2020-08-25 15:29:44

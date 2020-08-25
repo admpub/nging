@@ -128,6 +128,13 @@ func (f *Embedded) MoveFileToOwner(tableName string, fileIDs []uint64, ownerID s
 			if errMv := storer.Move(file.SavePath, newSavePath); errMv != nil && !os.IsNotExist(errMv) {
 				return replaces, errMv
 			}
+			f.Moved.Reset()
+			f.Moved.FileId = file.Id
+			f.Moved.From = file.ViewUrl
+			f.Moved.To = newViewURL
+			if err = f.Moved.Add(); err != nil {
+				return replaces, err
+			}
 			for _, extension := range otherFormatExtensions {
 				if errMv := storer.Move(file.SavePath+extension, newSavePath+extension); errMv != nil && !os.IsNotExist(errMv) {
 					return replaces, errMv
@@ -162,6 +169,14 @@ func (f *Embedded) MoveFileToOwner(tableName string, fileIDs []uint64, ownerID s
 			if newSavePath != thumb.SavePath {
 				if errMv := storer.Move(thumb.SavePath, newSavePath); errMv != nil && !os.IsNotExist(errMv) {
 					return replaces, errMv
+				}
+				f.Moved.Reset()
+				f.Moved.FileId = thumb.FileId
+				f.Moved.ThumbId = thumb.Id
+				f.Moved.From = thumb.ViewUrl
+				f.Moved.To = newViewURL
+				if err = f.Moved.Add(); err != nil {
+					return replaces, err
 				}
 				for _, extension := range otherFormatExtensions {
 					if errMv := storer.Move(thumb.SavePath+extension, newSavePath+extension); errMv != nil && !os.IsNotExist(errMv) {

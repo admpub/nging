@@ -58,9 +58,22 @@ func (f *FileUpdater) Add(content *string, embedded bool) (err error) {
 		return
 	}
 	err = f.Edit(content, embedded)
+	return
+}
+
+func (f *FileUpdater) Edit(content *string, embedded bool) (err error) {
+	if embedded {
+		err = f.rel.RelationEmbeddedFiles(f.project, f.table, f.field, f.tableID, *content)
+	} else {
+		err = f.rel.RelationFiles(f.project, f.table, f.field, f.tableID, *content, f.seperator)
+	}
 	if err != nil {
 		return
 	}
+	return f.replace(content, embedded)
+}
+
+func (f *FileUpdater) replace(content *string, embedded bool) (err error) {
 	if len(f.tableID) == 0 || f.tableID == `0` {
 		log.Error(`FileUpdater.Add: tableID is empty`)
 		return
@@ -81,20 +94,16 @@ func (f *FileUpdater) Add(content *string, embedded bool) (err error) {
 		}
 	}
 	f.rel.Context().Internal().Set(`FileReplaces`, replaces)
+	if f.rel.ReplacedViewURLs() != nil {
+		for k, v := range f.rel.ReplacedViewURLs() {
+			replaces[k] = v
+		}
+	}
 	if embedded {
 		*content = uploadHelper.ReplaceEmbeddedRes(*content, replaces)
 	} else {
 		*content = uploadHelper.ReplaceRelatedRes(*content, replaces, f.seperator)
 	}
-	return
-}
-
-func (f *FileUpdater) Edit(content *string, embedded bool) (err error) {
-	if !embedded {
-		err = f.rel.RelationFiles(f.project, f.table, f.field, f.tableID, *content, f.seperator)
-		return
-	}
-	err = f.rel.RelationEmbeddedFiles(f.project, f.table, f.field, f.tableID, *content)
 	return
 }
 

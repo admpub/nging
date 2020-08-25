@@ -47,6 +47,7 @@ func NewEmbedded(ctx echo.Context, fileMdls ...*File) *Embedded {
 		NgingFileEmbedded: &dbschema.NgingFileEmbedded{},
 		base:              base.New(ctx),
 		File:              fileM,
+		Moved:             NewMoved(ctx),
 	}
 	m.NgingFileEmbedded.SetContext(ctx)
 	return m
@@ -54,9 +55,11 @@ func NewEmbedded(ctx echo.Context, fileMdls ...*File) *Embedded {
 
 type Embedded struct {
 	*dbschema.NgingFileEmbedded
-	base    *base.Base
-	File    *File
-	updater *fileupdater.FileUpdater
+	base             *base.Base
+	File             *File
+	Moved            *Moved
+	replacedViewURLs map[string]string // viewURL => newViewURL
+	updater          *fileupdater.FileUpdater
 }
 
 func (f *Embedded) Updater(table string, field string, tableID string) *fileupdater.FileUpdater {
@@ -76,6 +79,10 @@ func (f *Embedded) FileIDs() []uint64 {
 		fileIDs = append(fileIDs, param.AsUint64(fileID))
 	}
 	return fileIDs
+}
+
+func (f *Embedded) ReplacedViewURLs() map[string]string {
+	return f.replacedViewURLs
 }
 
 // DeleteByTableID 删除嵌入文件
@@ -249,28 +256,41 @@ func (f *Embedded) RelationEmbeddedFiles(project string, table string, field str
 	})
 
 	// 仅仅提取数据库中有记录的数据
-	fids = f.FilterNotExistsFileIDs(fids, files)
+	fids = f.FilterNotExistsFileIDs(fids, files, true)
 
 	err := f.UpdateEmbedded(true, project, table, field, tableID, fids...)
 	return err
 }
 
 // FilterNotExistsFileIDs 仅仅提取数据库中有记录的数据
-func (f *Embedded) FilterNotExistsFileIDs(fids []interface{}, files []interface{}) []interface{} {
+func (f *Embedded) FilterNotExistsFileIDs(fids []interface{}, files []interface{}, recordMoved ...bool) []interface{} {
 	if len(fids) > 0 {
 		fids = f.File.GetIDByIDs(fids)
 	}
 	if len(files) > 0 {
+		ids := f.File.GetIDByViewURLs(files)
 		if len(fids) > 0 {
-			ids := f.File.GetIDByViewURLs(files)
 			for _, id := range ids {
 				if !com.InSliceIface(id, fids) {
 					fids = append(fids, id)
 				}
 			}
 		} else {
-			fids = f.File.GetIDByViewURLs(files)
+			fids = ids
 		}
+		if len(recordMoved) > 0 && recordMoved[0] { // 查询并记录以前已经移动走了的文件
+			movedList, err := f.Moved.ListByViewURLs(files)
+			if err != nil {
+				return fids
+			}
+			if f.replacedViewURLs == nil {
+				f.replacedViewURLs = map[string]string{}
+			}
+			for _, moved := range movedList {
+				f.replacedViewURLs[moved.From] = moved.To
+			}
+		}
+
 	}
 	return fids
 }
@@ -298,7 +318,7 @@ func (f *Embedded) RelationFiles(project string, table string, field string, tab
 	}, seperator...)
 
 	// 仅仅提取数据库中有记录的数据
-	fids = f.FilterNotExistsFileIDs(fids, files)
+	fids = f.FilterNotExistsFileIDs(fids, files, true)
 
 	err := f.UpdateEmbedded(false, project, table, field, tableID, fids...)
 	return err
