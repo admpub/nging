@@ -54,9 +54,9 @@ func OptFieldValue(field string, value ValueFunc) OptionSetter {
 	return func(o *Options) {
 		if o.FieldValue == nil {
 			o.FieldValue = FieldValueWith(field, value)
-			return
+		} else {
+			o.FieldValue.Set(field, value)
 		}
-		o.FieldValue.Set(field, value)
 		if !com.InSlice(field, o.SameFields) {
 			o.SameFields = append(o.SameFields, field)
 		}
