@@ -2,6 +2,7 @@ package fileupdater
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
@@ -30,9 +31,9 @@ func (f FieldValue) Delete(fields ...string) FieldValue {
 	return f
 }
 
-func ThumbValue(size string) ValueFunc {
+func ThumbValue(width int, height int) ValueFunc {
 	return func(field, content string) interface{} {
-		return tplfunc.AddSuffix(content, `_`+size) // size: <width>x<height>
+		return tplfunc.AddSuffix(content, `_`+fmt.Sprintf(`%v_%v`, width, height)) // size: <width>_<height>
 	}
 }
 
