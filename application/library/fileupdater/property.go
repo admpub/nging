@@ -5,13 +5,29 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/echo"
 )
 
+type ValueFunc func(string, string) interface{}
+
 // GenUpdater 生成Updater
-func GenUpdater(m factory.Model, cond db.Compound) func(event string, content string) error {
+func GenUpdater(m factory.Model, cond db.Compound, otherFieldAndValues ...map[string]ValueFunc) func(event string, content string) error {
+	var otherFieldAndValue map[string]ValueFunc
+	if len(otherFieldAndValues) > 0 {
+		otherFieldAndValue = otherFieldAndValues[0]
+	}
 	return func(field string, content string) error {
 		m.EventOFF()
-		err := m.SetField(nil, field, content, cond)
+		set := echo.H{field: content}
+		if otherFieldAndValue != nil {
+			for fieldName, valueFunc := range otherFieldAndValue {
+				value := valueFunc(field, content)
+				if value != nil {
+					set[fieldName] = value
+				}
+			}
+		}
+		err := m.SetFields(nil, set, cond)
 		m.EventON()
 		return err
 	}
@@ -30,12 +46,12 @@ func NewProperty() *Property {
 }
 
 // NewPropertyWith 创建并生成带默认Updater的实例
-func NewPropertyWith(m factory.Model, cond db.Compound) *Property {
-	return NewProperty().GenUpdater(m, cond)
+func NewPropertyWith(m factory.Model, cond db.Compound, otherFieldAndValues ...map[string]ValueFunc) *Property {
+	return NewProperty().GenUpdater(m, cond, otherFieldAndValues...)
 }
 
-func (pro *Property) GenUpdater(m factory.Model, cond db.Compound) *Property {
-	pro.updater = GenUpdater(m, cond)
+func (pro *Property) GenUpdater(m factory.Model, cond db.Compound, otherFieldAndValues ...map[string]ValueFunc) *Property {
+	pro.updater = GenUpdater(m, cond, otherFieldAndValues...)
 	return pro
 }
 

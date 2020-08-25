@@ -9,12 +9,16 @@ var UpdaterInfos = map[string]map[string]map[string]UpdaterInfo{
 		`nging_file_thumb`: {
 			`view_url`: UpdaterInfo{},
 		},
+		`nging_file_moved`: {
+			`from`: UpdaterInfo{},
+			`to`:   UpdaterInfo{},
+		},
 	},
 }
 
 type UpdaterInfo struct {
 	Seperator string
-	Embedded bool
+	Embedded  bool
 }
 
 // RecordUpdaterInfo 记录
@@ -28,14 +32,14 @@ func RecordUpdaterInfo(project, table, field, seperator string, embedded bool, s
 	if _, ok := UpdaterInfos[project][table][field]; !ok {
 		UpdaterInfos[project][table][field] = UpdaterInfo{
 			Seperator: seperator,
-			Embedded: embedded,
+			Embedded:  embedded,
 		}
 	}
 	for _, field := range sameFields {
 		if _, ok := UpdaterInfos[project][table][field]; !ok {
 			UpdaterInfos[project][table][field] = UpdaterInfo{
 				Seperator: seperator,
-				Embedded: embedded,
+				Embedded:  embedded,
 			}
 		}
 	}

@@ -30,7 +30,8 @@ import (
 )
 
 func setUploadURL(ctx echo.Context) {
-	uploadType := ctx.Form(`uploadtype`, `nging_user`)
+	uploadType := `nging_user`
+	//uploadType := ctx.Form(`uploadtype`, `nging_user`)
 	ctx.Set(`uploadType`, uploadType)
 	ctx.Set(`uploadURL`, checker.BackendUploadURL(uploadType))
 }
