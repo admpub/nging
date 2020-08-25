@@ -1,5 +1,6 @@
 export PKGPATH=github.com/admpub/nging
-export ENTRYDIR=${GOPATH}
+export ENTRYDIR=${GOPATH}/src
+export WORKDIR=${PWD}
 
 export NGING_VERSION="2.2.5"
 export NGING_BUILD=`date +%Y%m%d%H%M%S`
