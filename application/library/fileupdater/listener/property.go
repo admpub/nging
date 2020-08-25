@@ -10,6 +10,7 @@ var (
 	NewProperty     = fileupdater.NewProperty
 	NewPropertyWith = fileupdater.NewPropertyWith
 	ThumbValue      = fileupdater.ThumbValue
+	FieldValueWith  = fileupdater.FieldValueWith
 )
 
 type (

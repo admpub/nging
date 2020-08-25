@@ -12,6 +12,10 @@ import (
 type ValueFunc func(string, string) interface{}
 type FieldValue map[string]ValueFunc
 
+func FieldValueWith(field string, value ValueFunc) FieldValue {
+	return FieldValue{field: value}
+}
+
 func (f FieldValue) Set(field string, value ValueFunc) FieldValue {
 	f[field] = value
 	return f
@@ -68,11 +72,11 @@ func NewProperty() *Property {
 }
 
 // NewPropertyWith 创建并生成带默认Updater的实例
-func NewPropertyWith(m factory.Model, cond db.Compound, otherFieldAndValues ...map[string]ValueFunc) *Property {
+func NewPropertyWith(m factory.Model, cond db.Compound, otherFieldAndValues ...FieldValue) *Property {
 	return NewProperty().GenUpdater(m, cond, otherFieldAndValues...)
 }
 
-func (pro *Property) GenUpdater(m factory.Model, cond db.Compound, otherFieldAndValues ...map[string]ValueFunc) *Property {
+func (pro *Property) GenUpdater(m factory.Model, cond db.Compound, otherFieldAndValues ...FieldValue) *Property {
 	pro.updater = GenUpdater(m, cond, otherFieldAndValues...)
 	return pro
 }
