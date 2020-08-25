@@ -309,6 +309,8 @@ func (i *SubdirInfo) SetTable(tableName string, fieldNames ...string) *SubdirInf
 	return i
 }
 
+// SetFieldName 添加字段名
+// fieldName支持的格式： 图片字段名:图片描述:支持裁剪的尺寸(宽x高)
 func (i *SubdirInfo) SetFieldName(fieldNames ...string) *SubdirInfo {
 	i.fieldInfos = map[string]*FieldInfo{}
 	for _, fieldName := range fieldNames {
@@ -321,6 +323,7 @@ var AutoCropPrefix = `[auto]`
 
 // parseFieldInfo fieldName:fieldDescription:thumbWidth x thumbHeight,thumbWidth x thumbHeight
 // example parseFieldInfo(`user:用户:200x200,300x600`)
+// 格式： 图片字段名:图片描述:支持裁剪的尺寸(宽x高)
 func (i *SubdirInfo) parseFieldInfo(field string) (fieldName string, fieldText string, thumbSize []ThumbSize) {
 	r := strings.SplitN(field, ":", 3)
 	switch len(r) {
@@ -367,6 +370,8 @@ func (i *SubdirInfo) parseFieldInfo(field string) (fieldName string, fieldText s
 	return
 }
 
+// AddFieldName 添加字段名
+// fieldName支持的格式： 图片字段名:图片描述:支持裁剪的尺寸(宽x高)
 func (i *SubdirInfo) AddFieldName(fieldName string, checkers ...checker.Checker) *SubdirInfo {
 	var (
 		fieldText string
