@@ -27,12 +27,16 @@ func parseSameFieldInfo(fieldName string) (field string, sameFields []string) {
 	return
 }
 
-func GenDefaultCallback(fieldName string) fileupdater.CallbackFunc {
+func GenDefaultCallback(fieldName string, fieldValues ...fileupdater.FieldValue) fileupdater.CallbackFunc {
 	return func(m factory.Model) (tableID string, content string, property *listener.Property) {
 		row := m.AsRow()
 		tableID = row.String(`id`, `-1`)
 		content = row.String(fieldName)
-		property = listener.NewPropertyWith(m, db.Cond{`id`: row.Get(`id`, `-1`)})
+		property = listener.NewPropertyWith(
+			m,
+			db.Cond{`id`: row.Get(`id`, `-1`)},
+			fieldValues...,
+		)
 		return
 	}
 }
