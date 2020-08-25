@@ -1,0 +1,28 @@
+before:
+  hooks:
+    - go mod download
+
+builds:
+  -
+    main: ./xgo.go
+    binary: xgo
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - 386
+      - amd64
+
+archives:
+  -
+    format: binary
+    name_template: '{{ .Binary }}_{{ .Os }}_{{ .Arch }}'
+    wrap_in_directory: true
+
+checksum:
+  name_template: 'checksums.txt'

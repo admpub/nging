@@ -258,6 +258,8 @@ github.com/admpub/web-terminal v0.0.0-20190705124712-e503d17936e9 h1:o7d1FS0BbTL
 github.com/admpub/web-terminal v0.0.0-20190705124712-e503d17936e9/go.mod h1:SpJflbA/NkKUPCXMd60Xudqen5URGK//lUSEYxhnddc=
 github.com/admpub/websocket v1.0.1 h1:SI1giUH8GGQLA+GcNNPxwxB9+ITupFkUaKfAEYZeaXM=
 github.com/admpub/websocket v1.0.1/go.mod h1:ty5Foyc1Q7rwFiwPMJdx4aqJjce030PhbnzJrM71e0s=
+github.com/admpub/xgo v1.14.6 h1:KK9J5QBKNs76TxOVgOTdLEMrnVVgUWYkMcsK+85QVvU=
+github.com/admpub/xgo v1.14.6/go.mod h1:76x+ZyCudK230LXV10pgbFIoPOytOzdnq9yqLcy/OV8=
 github.com/akamai/AkamaiOPEN-edgegrid-golang v0.9.0/go.mod h1:zpDJeKyp9ScW4NNrbdr+Eyxvry3ilGPewKoXw3XGN1k=
 github.com/akamai/AkamaiOPEN-edgegrid-golang v0.9.8/go.mod h1:aVvklgKsPENRkl29bNwrHISa1F+YLGTHArMxZMBqWM8=
 github.com/alangpierce/go-forceexport v0.0.0-20160317203124-8f1d6941cd75 h1:3ILjVyslFbc4jl1w5TWuvvslFD/nDfR2H8tVaMVLrEY=
