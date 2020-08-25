@@ -41,6 +41,10 @@ func (t ThumbSize) String() string {
 	return fmt.Sprintf("%vx%v", t.Width, t.Height)
 }
 
+func (t ThumbSize) ThumbValue() fileupdater.ValueFunc {
+	return fileupdater.ThumbValue(int(t.Width), int(t.Height))
+}
+
 type FieldInfo struct {
 	Key     string
 	Name    string
