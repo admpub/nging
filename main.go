@@ -32,7 +32,6 @@ import (
 	_ "github.com/admpub/bindata/v3"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/cmd"
-	_ "github.com/admpub/xgo"
 	"github.com/webx-top/echo"
 
 	//register
