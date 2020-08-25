@@ -22,8 +22,12 @@ package fileupdater
 
 import (
 	"github.com/admpub/log"
+	"github.com/webx-top/echo"
+
 	uploadHelper "github.com/admpub/nging/application/registry/upload/helper"
 )
+
+var Debug = false
 
 func New(reler Reler) *FileUpdater {
 	return &FileUpdater{
@@ -75,29 +79,46 @@ func (f *FileUpdater) Edit(content *string, embedded bool) (err error) {
 
 func (f *FileUpdater) replace(content *string, embedded bool) (err error) {
 	if len(f.tableID) == 0 || f.tableID == `0` {
-		log.Error(`FileUpdater.Add: tableID is empty`)
-		return
-	}
-	fileIDs := f.rel.FileIDs()
-	if len(fileIDs) == 0 {
-		//println(`fileIDs is empty`)
+		log.Error(`FileUpdater: tableID is empty`)
 		return
 	}
 	var replaces map[string]string
-	replaces, err = f.rel.MoveFileToOwner(f.table, fileIDs, f.tableID)
-	if err != nil {
-		return
+	fileIDs := f.rel.FileIDs()
+	if len(fileIDs) > 0 {
+		replaces, err = f.rel.MoveFileToOwner(f.table, fileIDs, f.tableID)
+		if err != nil {
+			return
+		}
 	}
 	if mp, ok := f.rel.Context().Internal().Get(`FileReplaces`).(map[string]string); ok {
-		for k, v := range mp {
-			replaces[k] = v
+		if replaces == nil {
+			replaces = mp
+		} else {
+			for k, v := range mp {
+				replaces[k] = v
+			}
 		}
 	}
-	f.rel.Context().Internal().Set(`FileReplaces`, replaces)
+	if replaces != nil {
+		f.rel.Context().Internal().Set(`FileReplaces`, replaces)
+	}
 	if f.rel.ReplacedViewURLs() != nil {
-		for k, v := range f.rel.ReplacedViewURLs() {
-			replaces[k] = v
+		if replaces == nil {
+			replaces = f.rel.ReplacedViewURLs()
+		} else {
+			for k, v := range f.rel.ReplacedViewURLs() {
+				replaces[k] = v
+			}
 		}
+	}
+	if Debug {
+		echo.Dump(echo.H{
+			`project`: f.project,
+			`table`:   f.table,
+			`field`:   f.field,
+			`tableID`: f.tableID,
+			`replace`: replaces,
+		})
 	}
 	if embedded {
 		*content = uploadHelper.ReplaceEmbeddedRes(*content, replaces)
