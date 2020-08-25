@@ -9,7 +9,12 @@ var (
 	GenUpdater      = fileupdater.GenUpdater
 	NewProperty     = fileupdater.NewProperty
 	NewPropertyWith = fileupdater.NewPropertyWith
+	ThumbValue      = fileupdater.ThumbValue
 )
 
-// Property 附加属性
-type Property = fileupdater.Property
+type (
+	// Property 附加属性
+	Property   = fileupdater.Property
+	ValueFunc  = fileupdater.ValueFunc
+	FieldValue = fileupdater.FieldValue
+)

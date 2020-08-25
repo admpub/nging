@@ -6,13 +6,35 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/middleware/tplfunc"
 )
 
 type ValueFunc func(string, string) interface{}
+type FieldValue map[string]ValueFunc
+
+func (f FieldValue) Set(field string, value ValueFunc) FieldValue {
+	f[field] = value
+	return f
+}
+
+func (f FieldValue) Delete(fields ...string) FieldValue {
+	for _, field := range fields {
+		if _, ok := f[field]; ok {
+			delete(f, field)
+		}
+	}
+	return f
+}
+
+func ThumbValue(size string) ValueFunc {
+	return func(field, content string) interface{} {
+		return tplfunc.AddSuffix(content, `_`+size) // size: <width>x<height>
+	}
+}
 
 // GenUpdater 生成Updater
-func GenUpdater(m factory.Model, cond db.Compound, otherFieldAndValues ...map[string]ValueFunc) func(event string, content string) error {
-	var otherFieldAndValue map[string]ValueFunc
+func GenUpdater(m factory.Model, cond db.Compound, otherFieldAndValues ...FieldValue) func(event string, content string) error {
+	var otherFieldAndValue FieldValue
 	if len(otherFieldAndValues) > 0 {
 		otherFieldAndValue = otherFieldAndValues[0]
 	}
