@@ -1,5 +1,7 @@
 package fileupdater
 
+import "github.com/webx-top/com"
+
 type Options struct {
 	TableName  string       // 数据表名称
 	FieldName  string       // 数据表字段名
@@ -48,8 +50,15 @@ func OptCallback(callbackFunc CallbackFunc) OptionSetter {
 	}
 }
 
-func OptFieldValue(fieldValue FieldValue) OptionSetter {
+func OptFieldValue(field string, value ValueFunc) OptionSetter {
 	return func(o *Options) {
-		o.FieldValue = fieldValue
+		if o.FieldValue == nil {
+			o.FieldValue = FieldValueWith(field, value)
+			return
+		}
+		o.FieldValue.Set(field, value)
+		if !com.InSlice(field, o.SameFields) {
+			o.SameFields = append(o.SameFields, field)
+		}
 	}
 }
