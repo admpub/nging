@@ -1,10 +1,14 @@
-go install github.com/admpub/xgo
-#source ${PWD}/install-archiver.sh
-cd ..
-go generate
-cd tool
-
 source ${PWD}/inc-version.sh
+
+#go install github.com/admpub/xgo
+#source ${PWD}/install-archiver.sh
+
+cd ./${PKGPATH}
+go generate
+
+# 回到入口
+cd ${ENTRYDIR}
+export PWD=${ENTRYDIR}
 
 export TMPDIR=
 
