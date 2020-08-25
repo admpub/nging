@@ -31,10 +31,17 @@ import (
 	"github.com/webx-top/echo/param"
 )
 
+var DefaultThumbSize = ThumbSize{
+	Width:   200,
+	Height:  200,
+	Quality: 90,
+}
+
 type ThumbSize struct {
 	AutoCrop bool
 	Width    float64
 	Height   float64
+	Quality  int
 }
 
 func (t ThumbSize) String() string {

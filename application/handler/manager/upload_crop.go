@@ -174,23 +174,26 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	//{"x":528,"y":108,"height":864,"width":864,"rotate":0}
 	//fmt.Println(avatard)
 	opt := &imageproxy.Options{
-		CropX:          x,   //裁剪X轴起始位置
-		CropY:          y,   //裁剪Y轴起始位置
-		CropWidth:      w,   //裁剪宽度
-		CropHeight:     h,   //裁剪高度
-		Width:          200, //缩略图宽度
-		Height:         200, //缩略图高度
+		CropX:          x,                                    //裁剪X轴起始位置
+		CropY:          y,                                    //裁剪Y轴起始位置
+		CropWidth:      w,                                    //裁剪宽度
+		CropHeight:     h,                                    //裁剪高度
+		Width:          uploadSubdir.DefaultThumbSize.Width,  //缩略图宽度
+		Height:         uploadSubdir.DefaultThumbSize.Height, //缩略图高度
 		Fit:            false,
 		Rotate:         0,
 		FlipVertical:   false,
 		FlipHorizontal: false,
-		Quality:        100,
+		Quality:        uploadSubdir.DefaultThumbSize.Quality,
 		Signature:      "",
 		ScaleUp:        true,
 	}
 	if thumbSize != nil {
 		opt.Width = thumbSize.Width
 		opt.Height = thumbSize.Height
+		if thumbSize.Quality > 0 {
+			opt.Quality = thumbSize.Quality
+		}
 	}
 	thumbURL := tplfunc.AddSuffix(srcURL, fmt.Sprintf(`_%v_%v`, opt.Width, opt.Height))
 	var cropped bool
