@@ -31,6 +31,7 @@ import (
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/filemanager"
 	"github.com/admpub/nging/application/library/notice"
+	"github.com/admpub/nging/application/library/respond"
 	"github.com/admpub/nging/application/library/s3manager/s3client"
 	"github.com/admpub/nging/application/model"
 )
@@ -128,9 +129,8 @@ func StorageFile(ctx echo.Context) error {
 				notice.OpenMessage(user.Username, `upload`)
 				notice.Send(user.Username, notice.NewMessageWithValue(`upload`, ctx.T(`文件上传出错`), err.Error()))
 			}
-			return ctx.JSON(echo.H{`error`: err.Error()}, 500)
 		}
-		return ctx.String(`OK`)
+		return respond.Dropzone(ctx, err, nil)
 	case `download`:
 		return mgr.Download(ctx, ppath)
 	default:

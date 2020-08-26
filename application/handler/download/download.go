@@ -34,6 +34,7 @@ import (
 	"github.com/admpub/nging/application/library/dbmanager/driver/mysql"
 	"github.com/admpub/nging/application/library/filemanager"
 	"github.com/admpub/nging/application/library/notice"
+	"github.com/admpub/nging/application/library/respond"
 )
 
 var downloadDir = func() string {
@@ -127,9 +128,8 @@ func File(ctx echo.Context) error {
 				notice.OpenMessage(user.Username, `upload`)
 				notice.Send(user.Username, notice.NewMessageWithValue(`upload`, ctx.T(`文件上传出错`), err.Error()))
 			}
-			return ctx.JSON(echo.H{`error`: err.Error()}, 500)
 		}
-		return ctx.String(`OK`)
+		return respond.Dropzone(ctx, err, nil)
 	default:
 		var dirs []os.FileInfo
 		var exit bool

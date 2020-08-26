@@ -29,19 +29,18 @@ import (
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/dbmanager/driver/mysql/utils"
 	"github.com/admpub/nging/application/library/notice"
+	"github.com/admpub/nging/application/library/respond"
 	"github.com/webx-top/echo"
 )
 
 func responseDropzone(err error, ctx echo.Context) error {
 	if err != nil {
-		user := handler.User(ctx)
-		if user != nil {
+		if user := handler.User(ctx); user != nil {
 			notice.OpenMessage(user.Username, `upload`)
 			notice.Send(user.Username, notice.NewMessageWithValue(`upload`, ctx.T(`文件上传出错`), err.Error()))
 		}
-		return ctx.JSON(echo.H{`error`: err.Error()}, 500)
 	}
-	return ctx.String(`OK`)
+	return respond.Dropzone(ctx, err, nil)
 }
 
 func (m *mySQL) importing() error {
