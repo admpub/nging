@@ -91,7 +91,7 @@ func FuncMap(funcMap map[string]interface{}, skipper ...echo.Skipper) echo.Middl
 			c.SetFunc(`CaptchaForm`, func(args ...interface{}) template.HTML {
 				return tplfunc.CaptchaFormWithURLPrefix(c.Echo().Prefix(), args...)
 			})
-			c.SetFunc(`URLFor`, c.Echo().URL)
+			c.SetFunc(`MakeURL`, c.Echo().URL)
 			return h.Handle(c)
 		})
 	}

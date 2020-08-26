@@ -31,6 +31,27 @@ type Info struct {
 	*echo.Echo
 }
 
+func (info *Info) URL(s *Subdomains, uri string) string {
+	if len(info.Host) == 0 {
+		if s.Default == info.Name {
+			return info.Prefix() + uri
+		}
+		return info.Prefix() + `/` + info.Name + uri
+	}
+	protocol := info.Protocol
+	if len(protocol) == 0 {
+		protocol = s.Protocol
+		if len(protocol) == 0 {
+			protocol = `http`
+		}
+	}
+	return protocol + `://` + info.Host + info.Prefix() + uri
+}
+
+func (info *Info) URLByName(s *Subdomains, name string, args ...interface{}) string {
+	return info.URL(s, info.Echo.URI(name, args...))
+}
+
 type Dispatcher func(r engine.Request, w engine.Response) (*echo.Echo, bool)
 
 type Subdomains struct {
@@ -110,25 +131,31 @@ func (s *Subdomains) SetDebug(on bool) *Subdomains {
 // URL(网址路径,域名别名)，如果这里不传递域名别名，将使用默认别名的域名
 // 例如：URL("/list?cid=1","blog")
 // 对于一个别名对应有多个域名的情况，将总是使用第一个域名
-func (s *Subdomains) URL(purl string, args ...string) string {
+func (s *Subdomains) URL(uri string, args ...string) string {
 	info := s.Get(args...)
 	if info == nil {
-		return purl
+		return uri
 	}
-	if len(info.Host) == 0 {
-		if s.Default == info.Name {
-			return info.Prefix() + purl
+	return info.URL(s, uri)
+}
+
+// URLByName 根据路由别名生成网址
+// 可以在名称中采用 #backend#name 的方式来获取子域名别名为bakcend的网址
+func (s *Subdomains) URLByName(name string, params ...interface{}) string {
+	var args []string
+	if strings.HasPrefix(name, `#`) {
+		name = strings.TrimPrefix(name, `#`)
+		arr := strings.SplitN(name, `#`, 2)
+		if len(arr) == 2 {
+			args = append(args, arr[0])
+			name = arr[1]
 		}
-		return info.Prefix() + `/` + info.Name + purl
 	}
-	protocol := info.Protocol
-	if len(protocol) == 0 {
-		protocol = s.Protocol
-		if len(protocol) == 0 {
-			protocol = `http`
-		}
+	info := s.Get(args...)
+	if info == nil {
+		return `/not-found:` + name
 	}
-	return protocol + `://` + info.Host + info.Prefix() + purl
+	return info.URLByName(s, name, params...)
 }
 
 func (s *Subdomains) FindByDomain(host string) (*echo.Echo, bool) {
