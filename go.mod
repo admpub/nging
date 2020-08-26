@@ -105,7 +105,6 @@ require (
 	github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2
 	github.com/admpub/web-terminal v0.0.0-20190705124712-e503d17936e9
 	github.com/admpub/websocket v1.0.1
-	github.com/admpub/xgo v0.0.0-00010101000000-000000000000
 	github.com/araddon/gou v0.0.0-20190110011759-c797efecbb61 // indirect
 	github.com/aws/aws-sdk-go v1.34.5
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
