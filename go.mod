@@ -160,7 +160,7 @@ require (
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/oschwald/maxminddb-golang v1.7.0 // indirect
 	github.com/pkg/errors v0.9.1
-	github.com/pkg/sftp v1.11.0
+	github.com/pkg/sftp v1.12.0
 	github.com/prometheus/client_golang v1.7.1 // indirect
 	github.com/russross/blackfriday v1.5.2
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd // indirect
@@ -194,7 +194,7 @@ require (
 	github.com/xtaci/lossyconn v0.0.0-20190602105132-8df528c0c9ae // indirect
 	github.com/xu42/youzan-sdk-go v0.0.3
 	gocloud.dev v0.20.0
-	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
+	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
 	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
