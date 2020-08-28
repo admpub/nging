@@ -2,11 +2,6 @@ package listeners
 
 import (
 	"strings"
-
-	"github.com/admpub/nging/application/library/fileupdater"
-	"github.com/admpub/nging/application/library/fileupdater/listener"
-	"github.com/webx-top/db"
-	"github.com/webx-top/db/lib/factory"
 )
 
 // parseSameFieldInfo 解析相似字段信息
@@ -25,18 +20,4 @@ func parseSameFieldInfo(fieldName string) (field string, sameFields []string) {
 	}
 	field = fieldName
 	return
-}
-
-func GenDefaultCallback(fieldName string, fieldValues ...fileupdater.FieldValue) fileupdater.CallbackFunc {
-	return func(m factory.Model) (tableID string, content string, property *listener.Property) {
-		row := m.AsRow()
-		tableID = row.String(`id`, `-1`)
-		content = row.String(fieldName)
-		property = listener.NewPropertyWith(
-			m,
-			db.Cond{`id`: row.Get(`id`, `-1`)},
-			fieldValues...,
-		)
-		return
-	}
 }

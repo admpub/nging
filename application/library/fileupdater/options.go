@@ -1,6 +1,9 @@
 package fileupdater
 
-import "github.com/webx-top/com"
+import (
+	"github.com/webx-top/com"
+	"github.com/webx-top/db"
+)
 
 type Options struct {
 	TableName  string       // 数据表名称
@@ -48,6 +51,10 @@ func OptCallback(callbackFunc CallbackFunc) OptionSetter {
 	return func(o *Options) {
 		o.Callback = callbackFunc
 	}
+}
+
+func OptGenCallback(cond db.Compound, fieldValues ...FieldValue) OptionSetter {
+	return OptCallback(GenCallbackWithCond(cond, fieldValues...))
 }
 
 func OptFieldValue(field string, value ValueFunc) OptionSetter {
