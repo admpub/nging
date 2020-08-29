@@ -37,6 +37,23 @@ var DefaultThumbSize = ThumbSize{
 	Quality: 90,
 }
 
+func AsThumbSizes(ts ...ThumbSize) ThumbSizes {
+	return ThumbSizes(ts)
+}
+
+type ThumbSizes []ThumbSize
+
+func (s ThumbSizes) String() string {
+	var r string
+	for i, t := range s {
+		if i > 0 {
+			r += `,`
+		}
+		r += t.String()
+	}
+	return r
+}
+
 type ThumbSize struct {
 	AutoCrop bool
 	Width    float64
