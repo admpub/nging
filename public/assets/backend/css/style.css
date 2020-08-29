@@ -4261,7 +4261,15 @@ h1:first-child {
 .label-info,.label-hover-info:hover {
   background-color: #5DC4EA;
 }
-.label-group > .label{display:inline-block;line-height:1.5em;margin-bottom:2px;}
+.label-group > .label{
+  display:inline-block;
+  line-height:1.5em;
+  margin-bottom:2px;
+}
+.label.no-padding-x > .label:first-child{
+  margin-left:1px;
+  line-height:inherit
+}
 .label-lg {
   padding:8px;font-size:100%;
 }
