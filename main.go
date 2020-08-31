@@ -49,7 +49,7 @@ var (
 	VERSION    = `2.2.5`
 
 	version   string
-	schemaVer = 3.6 //数据表结构版本
+	schemaVer = 3.7 //数据表结构版本
 )
 
 func main() {

@@ -63,6 +63,9 @@ func init() {
 		g.Route(`GET,POST`, `/kv_add`, KvAdd)
 		g.Route(`GET,POST`, `/kv_edit`, KvEdit)
 		g.Route(`GET,POST`, `/kv_delete`, KvDelete)
+
+		g.Route(`GET,POST`, `/login_log`, LoginLog)
+		g.Route(`GET,POST`, `/login_log_delete`, LoginLogDelete)
 	})
 
 }

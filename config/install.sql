@@ -740,6 +740,30 @@ CREATE TABLE `nging_kv` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `nging_login_log`
+--
+
+DROP TABLE IF EXISTS `nging_login_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `nging_login_log` (
+  `owner_type` enum('customer','user') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'user' COMMENT '用户类型(user-后台用户;customer-前台客户)',
+  `owner_id` bigint unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
+  `username` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '登录名',
+  `errpwd` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '错误密码',
+  `ip_address` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'ip地址',
+  `ip_location` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'ip定位',
+  `user_agent` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '浏览器代理',
+  `success` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否登录成功',
+  `failmsg` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '失败信息',
+  `day` int unsigned NOT NULL DEFAULT '0' COMMENT '日期(Ymd)',
+  `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  KEY `ip_address` (`ip_address`,`day`),
+  KEY `owner_type` (`owner_type`,`owner_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='登录日志';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `nging_sending_log`
 --
 
@@ -1007,4 +1031,4 @@ CREATE TABLE `nging_vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-08-25 15:29:44
+-- Dump completed on 2020-08-31 12:07:33

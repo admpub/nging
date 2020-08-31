@@ -21,32 +21,13 @@ package tool
 import (
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/ip2region/binding/golang/ip2region"
+	"github.com/admpub/nging/application/library/ip2region"
 )
-
-var (
-	region   *ip2region.Ip2Region
-	dictFile string
-)
-
-func IPInfo(ip string) (info ip2region.IpInfo, err error) {
-	if len(ip) == 0 {
-		return
-	}
-	if region == nil {
-		region, err = ip2region.New(dictFile)
-		if err != nil {
-			return
-		}
-	}
-	info, err = region.MemorySearch(ip)
-	return
-}
 
 func IP2Region(c echo.Context) error {
 	ip := c.Form(`ip`)
 	if len(ip) > 0 {
-		info, err := IPInfo(ip)
+		info, err := ip2region.IPInfo(ip)
 		if err != nil {
 			return err
 		}

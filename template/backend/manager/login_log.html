@@ -1,0 +1,91 @@
+{{Extend "layout"}}
+{{Block "title"}}{{"登录日志"|T}}{{/Block}}
+{{Block "breadcrumb"}}
+{{Super}}
+<li class="active">{{"登录日志"|T}}</li>
+{{/Block}}
+{{Block "main"}}
+<div class="row">
+	<div class="col-md-12">
+		<div class="block-flat">
+			<div class="header">
+				<div class="pull-right" style="margin-left:10px">
+					<form class="form-horizontal" action="" id="search-form" method="GET">
+						<div class="input-group">
+							<span class="input-group-addon">{{"登录状态"|T}}</span>
+							<select name="success" class="form-control" id="success" onchange="$('#search-form').submit()">
+                                <option value=""> - {{"不限"|T}} - </option>
+                                {{$success := Form "success"}}
+								<option value="Y" {{if eq $success "Y"}} selected{{end}}>{{"成功"|T}}</option>
+								<option value="N" {{if eq $success "N"}} selected{{end}}>{{"失败"|T}}</option>
+							</select>
+							<span class="input-group-addon">{{"用户类型"|T}}</span>
+							<select name="ownerType" id="ownerType" class="form-control" onchange="$('#search-form').submit()">
+                                <option value=""> - {{"不限"|T}} - </option>
+                                {{$ownerType := Form "ownerType"}}
+								<option value="user" {{if eq $ownerType "user"}} selected{{end}}>{{"后台用户"|T}}</option>
+								<option value="customer" {{if eq $ownerType "customer"}} selected{{end}}>{{"前台用户"|T}}</option>
+							</select>
+							<span class="input-group-addon">{{"登录名"|T}}</span>
+							<input name="username" class="form-control" value="{{Form "username"}}" placeholder="{{"登录名"|T}}" onkeyup="if(event.keyCode==13)$('#search-form').submit()">
+                        </div>
+					</form>
+				</div>
+                <a href="__BACKEND__/manager/login_log_delete" class="btn btn-danger pull-right" onclick="return confirm('{{`确定要删除30天前的日志吗？`|T}}');">
+                    <i class="fa fa-trash"></i>
+                    {{"删除30天前的日志"|T}}
+                </a>
+				<h3>{{"登录日志"|T}}</h3>
+			</div>
+			<div class="content">
+				<div class="table-responsive">
+				<table class="table no-border hover">
+					<thead class="no-border">
+						<tr>
+							<th style="width:70px"><strong>{{"用户类型"|T}}</strong></th>
+							<th><strong>{{"登录名"|T}}</strong></th>
+							<th><strong>{{"错误密码"|T}}</strong></th>
+							<th><strong>{{"失败信息"|T}}</strong></th>
+							<th style="width:70px"><strong>{{"登录IP"|T}}</strong></th>
+							<th><strong>{{"登录地址"|T}}</strong></th>
+							<th style="width:70px"><strong>{{"UserAgent"|T}}</strong></th>
+							<th style="width:70px"><strong>{{"登录状态"|T}}</strong></th>
+							<th style="width:130px"><strong>{{"时间"|T}}</strong></th>
+						</tr>
+					</thead>
+					<tbody class="no-border-y">
+                        {{range $k,$v := Stored.listData}}
+						<tr>
+							<td>
+                                {{- if eq $v.OwnerType `user` -}}
+                                {{- `后台用户`|T -}}
+                                {{- else -}}
+                                {{- `前台用户`|T -}}
+                                {{- end -}}
+                            </td>
+							<td>{{$v.Username}}</td>
+							<td>{{$v.Errpwd|Default "N/A"}}</td>
+							<td>{{$v.Failmsg|Default "N/A"}}</td>
+							<td>{{$v.IpAddress}}</td>
+							<td>{{$v.IpLocation}}</td>
+							<td><a href="javascript:;" onclick="$('#user-agent-{{$k}}').toggleClass('hidden');">{{`查看`|T}}</a></td>
+							<td>
+                                {{- if eq $v.Success "Y" -}}
+                                <span class="label label-success">{{"成功"|T}}</span>
+                                {{- else -}}
+                                <span class="label label-danger">{{"失败"|T}}</span>
+                                {{- end -}}
+                            </td>
+							<td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}</td>
+                        </tr>
+                        <tr id="user-agent-{{$k}}" class="hidden"><td colspan="10">{{$v.UserAgent}}</td></tr>
+                        {{end}}
+					</tbody>
+				</table>		
+				</div>
+				{{Stored.pagination.Render}}
+			</div>
+		</div>				
+	</div>
+</div>
+{{/Block}}

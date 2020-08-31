@@ -22,8 +22,8 @@ import (
 	"strings"
 
 	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/handler/tool"
 	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/application/library/ip2region"
 	"github.com/admpub/nging/application/model"
 	"github.com/admpub/tail"
 	ua "github.com/admpub/useragent"
@@ -62,7 +62,7 @@ func init() {
 		} else if len(logM.XRealIp) > 0 {
 			realIP = logM.XRealIp
 		}
-		if ipInfo, _err := tool.IPInfo(realIP); _err == nil {
+		if ipInfo, _err := ip2region.IPInfo(realIP); _err == nil {
 			res.Region = ipInfo.Country + " - " + ipInfo.Region + " - " + ipInfo.Province + " - " + ipInfo.City + " " + ipInfo.ISP + " (" + realIP + ")"
 		} else {
 			res.Region = realIP

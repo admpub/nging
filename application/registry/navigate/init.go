@@ -143,6 +143,11 @@ var TopNavigate = &List{
 				Name:          `删除角色`,
 				Action:        `role_delete`,
 			},
+			{
+				DisplayOnMenu: true,
+				Name:          `登录日志`,
+				Action:        `login_log`,
+			},
 			//邀请码管理
 			{
 				DisplayOnMenu: true,

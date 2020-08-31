@@ -134,9 +134,16 @@ func Auth(c echo.Context, saveSession bool) error {
 	user := c.Form(`user`)
 	pass := c.Form(`pass`)
 	common.DecryptedByRandomSecret(c, `loginPassword`, &pass)
+	loginLogM := model.NewLoginLog(c)
+	loginLogM.OwnerType = `user`
+	loginLogM.Username = user
 	m := model.NewUser(c)
 	exists, err := m.CheckPasswd(user, pass)
 	if !exists {
+		loginLogM.Errpwd = pass
+		loginLogM.Failmsg = c.T(`用户不存在`)
+		loginLogM.Success = `N`
+		loginLogM.Add()
 		return c.E(`用户不存在`)
 	}
 	if err == nil {
@@ -153,6 +160,14 @@ func Auth(c echo.Context, saveSession bool) error {
 			`last_ip`:    m.NgingUser.LastIp,
 		}, `id`, m.NgingUser.Id)
 		common.DeleteRandomSecret(c, `loginPassword`)
+
+		loginLogM.OwnerId = uint64(m.Id)
+		loginLogM.Success = `Y`
+	} else {
+		loginLogM.Errpwd = pass
+		loginLogM.Failmsg = err.Error()
+		loginLogM.Success = `N`
 	}
+	loginLogM.Add()
 	return err
 }
