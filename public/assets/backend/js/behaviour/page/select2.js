@@ -15,7 +15,7 @@ App.select2 = {
         if (sortable == null) sortable = $(element).data('sortable') || false;
         if (onlySelect == null) onlySelect = $(element).data('onlyselect') || false;
         var single = $(element).data('single') || false;
-        var mapField = $(element).data('map') || {id:'id',text:'name'}; //{ "id": "id", "text": "text", "locked": "locked", "disabled": "disabled" }
+        var mapField = $(element).data('map'); //{ "id": "id", "text": "text", "locked": "locked", "disabled": "disabled" }
         if (single) single = App.parseBool(single);
         var options = { multiple: !single, width: '100%', minimumInputLength: 0, tokenSeparators: [',','，'] };
         if (onlySelect) {//仅仅可选择，不可新增选项
