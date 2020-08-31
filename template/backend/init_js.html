@@ -1,8 +1,8 @@
 <script>
-window.activeURL={{if Stored.Get "activeURL"}}'__BACKEND__{{Stored.Get "activeURL"}}'{{else}}null{{end}};
+window.activeURL='{{if Stored.Get "activeURL"}}__BACKEND__{{Stored.Get "activeURL"}}{{end}}';
 window.errorMSG=null;
 window.successMSG=null;
-$.extend(App.i18n,{"SYS_INFO":'{{"系统消息"|T}}',"UPLOAD_ERR":'{{"上传失败"|T}}',"PLEASE_SELECT_FOR_REMOVE":'{{"请选择要删除的项"|T}}',"CONFIRM_REMOVE":'{{"确定删除吗？"|T}}',"SUCCESS":'{{"操作成功"|T}}',"FAILURE":'{{"操作失败"|T}}'});
+$.extend(App.i18n,{"SYS_INFO":'{{"系统消息"|T}}',"UPLOAD_ERR":'{{"上传失败"|T}}',"PLEASE_SELECT_FOR_REMOVE":'{{"请选择要删除的项"|T}}',"CONFIRM_REMOVE":'{{"确定删除吗？"|T}}',"SUCCESS":'{{"操作成功"|T}}',"FAILURE":'{{"操作失败"|T}}',"PLEASE_SELECT":'{{`请选择`|T}}',"UPLOADING":"{{`文件上传中，请稍候...`|T}}","UPLOAD_SUCCEED":'{{"上传成功"|T}}',"BUTTON_UPLOAD":"{{`上传附件`|T}}"});
 App.lang='{{Lang}}';
 {{if .}}
 	{{- if IsError . -}}
