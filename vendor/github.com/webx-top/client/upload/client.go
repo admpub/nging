@@ -25,7 +25,6 @@ import (
 	"time"
 
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/engine"
 )
 
 type Results []*Result
@@ -84,11 +83,13 @@ var DefaultFormField = `filedata`
 type BaseClient struct {
 	Data *Result
 	echo.Context
-	Object      Client
-	FormField   string // 表单文件字段名
-	Code        int    // HTTP code
-	ContentType string
-	err         error
+	Object       Client
+	FormField    string // 表单文件字段名
+	Code         int    // HTTP code
+	ContentType  string
+	JSONPVarName string
+	err          error
+	RespData     interface{}
 }
 
 func (a *BaseClient) Init(ctx echo.Context, res *Result) {
@@ -129,39 +130,44 @@ func (a *BaseClient) Body() (file ReadCloserWithSize, err error) {
 	return
 }
 
-func (a *BaseClient) Result() (r string) {
-	status := "1"
-	var info string
+func (a *BaseClient) BuildResult() {
+	data := a.Context.Data()
+	data.SetData(echo.H{
+		`Url`: a.Data.FileURL,
+		`Id`:  a.Data.FileIdString(),
+	}, 1)
 	if a.err != nil {
-		status = "0"
-		info = a.err.Error()
+		data.SetError(a.err)
 	}
-	r = `{"Code":` + status + `,"Info":"` + info + `","Data":{"Url":"` + a.Data.FileURL + `","Id":"` + a.Data.FileIdString() + `"}}`
+	a.RespData = data
 	return
 }
 
 func (a *BaseClient) Response() error {
-	var result string
 	if a.Object != nil {
-		result = a.Object.Result()
+		a.Object.BuildResult()
 	} else {
-		result = a.Result()
+		a.BuildResult()
 	}
 	if a.Code > 0 {
-		return a.responseContentType(result, a.Code)
+		return a.responseContentType(a.Code)
 	}
-	return a.responseContentType(result, http.StatusOK)
+	return a.responseContentType(http.StatusOK)
 }
 
-func (a *BaseClient) responseContentType(content string, code int) error {
-	if len(a.ContentType) == 0 {
-		return a.JSONBlob(engine.Str2bytes(content), code)
-	}
+func (a *BaseClient) responseContentType(code int) error {
 	switch a.ContentType {
 	case `string`:
-		return a.String(content, code)
+		return a.String(fmt.Sprint(a.RespData), code)
+	case `xml`:
+		return a.XML(a.RespData, code)
+	case `redirect`:
+		return a.Redirect(fmt.Sprint(a.RespData), code)
 	default:
-		return a.JSONBlob(engine.Str2bytes(content), code)
+		if len(a.JSONPVarName) > 0 {
+			return a.JSONP(a.JSONPVarName, a.RespData, code)
+		}
+		return a.JSON(a.RespData, code)
 	}
 }
 
@@ -178,8 +184,8 @@ type Client interface {
 	//文件内容
 	Body() (ReadCloserWithSize, error)
 
-	//返回结果
-	Result() string
+	//构建结果
+	BuildResult()
 
 	Response() error
 }

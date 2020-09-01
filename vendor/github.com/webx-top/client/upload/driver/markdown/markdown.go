@@ -19,11 +19,13 @@
 package markdown
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 	"time"
 
 	uploadClient "github.com/webx-top/client/upload"
+	"github.com/webx-top/echo"
 )
 
 func init() {
@@ -44,19 +46,24 @@ type Markdown struct {
 	*uploadClient.BaseClient
 }
 
-func (a *Markdown) Result() (r string) {
-	succed := "1" // 0 表示上传失败，1 表示上传成功
+func (a *Markdown) BuildResult() {
+	succed := 1 // 0 表示上传失败，1 表示上传成功
 	if a.GetError() != nil {
-		succed = "0"
+		succed = 0
 	}
 	callback := a.Form(`callback`)
 	dialogID := a.Form(`dialog_id`)
 	if len(callback) > 0 && len(dialogID) > 0 {
+		a.Code = http.StatusFound
+		a.ContentType = `redirect`
 		//跨域上传返回操作
-		nextURL := callback + "?dialog_id=" + dialogID + "&temp=" + time.Now().Format(`20060102150405`) + "&success=" + succed + "&message=" + url.QueryEscape(a.Error()) + "&url=" + a.Data.FileURL
-		a.Context.Response().Redirect(nextURL, http.StatusFound)
+		a.RespData = callback + "?dialog_id=" + dialogID + "&temp=" + time.Now().Format(`20060102150405`) + "&success=" + fmt.Sprint(succed) + "&message=" + url.QueryEscape(a.Error()) + "&url=" + a.Data.FileURL
 	} else {
-		r = `{"success":` + succed + `,"message":"` + a.Error() + `","url":"` + a.Data.FileURL + `","id":"` + a.Data.FileIdString() + `"}`
+		a.RespData = echo.H{
+			`success`: succed,
+			`message`: a.Error(),
+			`url`:     a.Data.FileURL,
+			`id`:      a.Data.FileIdString(),
+		}
 	}
-	return
 }

@@ -22,6 +22,7 @@ import (
 	"net/url"
 
 	uploadClient "github.com/webx-top/client/upload"
+	"github.com/webx-top/echo"
 )
 
 func init() {
@@ -42,30 +43,33 @@ type XhEditor struct {
 	*uploadClient.BaseClient
 }
 
-func (a *XhEditor) Result() (r string) {
-	var msg, publicURL string
+func (a *XhEditor) BuildResult() {
+	var publicURL string
 	if a.Form("immediate") == "1" {
 		publicURL = "!" + a.Data.FileURL
 	} else {
 		publicURL = a.Data.FileURL
 	}
+	data := echo.H{
+		`id`: a.Data.FileIdString(),
+	}
 	switch a.Data.FileType {
 	case uploadClient.TypeImage, "":
-		msg = `{"url":"` + publicURL + `||||` + url.QueryEscape(a.Data.FileName) + `","localname":"` + a.Data.FileName + `","id":"` + a.Data.FileIdString() + `"}`
+		data[`url`] = publicURL + `||||` + url.QueryEscape(a.Data.FileName)
+		data[`localname`] = a.Data.FileName
 	case uploadClient.TypeFlash,
 		uploadClient.TypeAudio, uploadClient.TypeVideo,
 		"media", "file":
 		fallthrough
 	default:
-		msg = `{"url":"` + publicURL + `","id":"` + a.Data.FileIdString() + `"}`
-	}
-	if len(msg) == 0 {
-		msg = "{}"
+		data[`url`] = publicURL
 	}
 	var errMsg string
 	if a.GetError() != nil {
 		errMsg = a.Error()
 	}
-	r = `{"err":"` + errMsg + `","msg":` + msg + `}`
-	return
+	a.RespData = echo.H{
+		`err`: errMsg,
+		`msg`: data,
+	}
 }

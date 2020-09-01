@@ -20,6 +20,7 @@ package webuploader
 
 import (
 	uploadClient "github.com/webx-top/client/upload"
+	"github.com/webx-top/echo"
 )
 
 func init() {
@@ -40,7 +41,7 @@ type Webuploader struct {
 	*uploadClient.BaseClient
 }
 
-func (a *Webuploader) Result() (r string) {
+func (a *Webuploader) BuildResult() {
 	cid := a.Form("id")
 	if len(cid) == 0 {
 		form := a.Request().MultipartForm()
@@ -50,12 +51,20 @@ func (a *Webuploader) Result() (r string) {
 			}
 		}
 	}
-	if a.GetError() == nil {
-		r = `{"jsonrpc":"2.0","result":{"url":"` + a.Data.FileURL + `","id":"` + a.Data.FileIdString() + `","containerid":"` + cid + `"},"error":null}`
-		return
+	data := echo.H{
+		`jsonrpc`: `2.0`,
+		`result`: echo.H{
+			`url`:         a.Data.FileURL,
+			`id`:          a.Data.FileIdString(),
+			`containerid`: cid,
+		},
+		`error`: nil,
 	}
-	code := "100"
-	r = `{"jsonrpc":"2.0","result":{"url":"` + a.Data.FileURL + `","id":"` + a.Data.FileIdString() + `","containerid":"` + cid + `"},"error":{"code":"` + code + `","message":"` + a.Error() + `"}}`
-
-	return
+	if a.GetError() != nil {
+		data[`error`] = echo.H{
+			`code`:    100,
+			`message`: a.Error(),
+		}
+	}
+	a.RespData = data
 }

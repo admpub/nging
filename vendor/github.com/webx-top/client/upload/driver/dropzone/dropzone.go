@@ -22,6 +22,7 @@ import (
 	"net/http"
 
 	uploadClient "github.com/webx-top/client/upload"
+	"github.com/webx-top/echo"
 )
 
 func init() {
@@ -42,13 +43,18 @@ type Dropzone struct {
 	*uploadClient.BaseClient
 }
 
-func (a *Dropzone) Result() (r string) {
+func (a *Dropzone) BuildResult() {
 	if a.GetError() == nil {
-		r = `{"result":{"url":"` + a.Data.FileURL + `","id":"` + a.Data.FileIdString() + `"},"error":null}`
+		a.RespData = echo.H{
+			`result`: echo.H{
+				`url`: a.Data.FileURL,
+				`id`:  a.Data.FileIdString(),
+			},
+			`error`: nil,
+		}
 	} else {
 		a.Code = http.StatusInternalServerError
 		a.ContentType = `string`
-		r = a.Error()
+		a.RespData = a.Error()
 	}
-	return
 }

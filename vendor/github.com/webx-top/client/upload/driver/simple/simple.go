@@ -20,6 +20,7 @@ package simple
 
 import (
 	uploadClient "github.com/webx-top/client/upload"
+	"github.com/webx-top/echo"
 )
 
 func init() {
@@ -40,13 +41,19 @@ type Simple struct {
 	*uploadClient.BaseClient
 }
 
-func (a *Simple) Result() (r string) {
-	status := "1"
+func (a *Simple) BuildResult() {
+	status := 1
 	var errMsg string
 	if a.GetError() != nil {
-		status = "0"
+		status = 0
 		errMsg = a.Error()
 	}
-	r = `{"Status":` + status + `,"Message":"` + errMsg + `","Data":{"Url":"` + a.Data.FileURL + `","Id":"` + a.Data.FileIdString() + `"}}`
-	return
+	a.RespData = echo.H{
+		`Status`:  status,
+		`Message`: errMsg,
+		`Data`: echo.H{
+			`Url`: a.Data.FileURL,
+			`Id`:  a.Data.FileIdString(),
+		},
+	}
 }
