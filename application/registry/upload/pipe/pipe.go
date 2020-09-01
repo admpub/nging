@@ -6,7 +6,7 @@ import (
 	"github.com/webx-top/echo"
 )
 
-type PipeFunc func(ctx echo.Context, storer driver.Storer, results uploadClient.Results, recv interface{}) error
+type PipeFunc func(ctx echo.Context, storer driver.Storer, results uploadClient.Results, recv map[string]interface{}) error
 
 var pipes = map[string]PipeFunc{}
 

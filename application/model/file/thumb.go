@@ -53,7 +53,7 @@ func (t *Thumb) GetByOriginalViewURL(viewURL string, width, height interface{}) 
 }
 
 func GetViewURLByOriginalURL(viewURL string, width, height interface{}) string {
-	return tplfunc.AddSuffix(viewURL, fmt.Sprintf("%v_%v", width, height))
+	return tplfunc.AddSuffix(viewURL, fmt.Sprintf("_%v_%v", width, height))
 }
 
 func (t *Thumb) SetByFile(file *dbschema.NgingFile) *Thumb {

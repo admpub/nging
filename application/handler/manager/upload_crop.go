@@ -39,6 +39,7 @@ import (
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/middleware"
 	modelFile "github.com/admpub/nging/application/model/file"
+	uploadChecker "github.com/admpub/nging/application/registry/upload/checker"
 	"github.com/admpub/nging/application/registry/upload/convert"
 	uploadPrepare "github.com/admpub/nging/application/registry/upload/prepare"
 	uploadSubdir "github.com/admpub/nging/application/registry/upload/subdir"
@@ -85,19 +86,6 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	if len(uploadType) == 0 {
 		uploadType = ctx.Form(`type`)
 	}
-	storerInfo := StorerEngine()
-	prepareData, err := uploadPrepare.Prepare(ctx, uploadType, ``, storerInfo)
-	if err != nil {
-		return err
-	}
-	defer prepareData.Close()
-	subdirInfo := uploadSubdir.Get(prepareData.Subdir)
-	if subdirInfo == nil {
-		return ctx.E(`“%s”未被登记`, uploadType)
-	}
-
-	// 获取缩略图尺寸
-	thumbSizes := subdirInfo.ThumbSize(prepareData.FieldName)
 	cropSize := ctx.Form(`size`, `200x200`)
 	var thumbWidth, thumbHeight float64
 	cropSizeArr := strings.SplitN(cropSize, `x`, 2)
@@ -112,27 +100,52 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		thumbWidth = param.AsFloat64(cropSizeArr[0])
 		thumbHeight = thumbWidth
 	}
-	var thumbSize *uploadSubdir.ThumbSize
-	if len(thumbSizes) > 0 {
-		for _, ts := range thumbSizes {
-			if ts.Width == thumbWidth && ts.Height == thumbHeight {
-				thumbSize = &ts
-				break
-			}
-		}
-		if thumbSize == nil {
-			return ctx.E(`“%s”不支持裁剪图片`, uploadType)
-		}
-	}
 	srcURL := ctx.Form(`src`)
 	srcURL, err = com.URLDecode(srcURL)
 	if err != nil {
 		return err
 	}
 	fileM := modelFile.NewFile(ctx)
-	err = fileM.GetByViewURL(storerInfo, srcURL)
+	err = fileM.GetByViewURL(srcURL)
 	if err != nil {
 		return err
+	}
+	uploadType = fileM.UploadType()
+	var unlimitResize bool
+	unlimitResizeToken := ctx.Form(`token`)
+	if len(unlimitResizeToken) > 0 {
+		unlimitResize = unlimitResizeToken == uploadChecker.Token(`file`, srcURL, `width`, thumbWidth, `height`, thumbHeight)
+	}
+	storerInfo := StorerEngine()
+	prepareData, err := uploadPrepare.Prepare(ctx, uploadType, ``, storerInfo)
+	if err != nil {
+		return err
+	}
+	defer prepareData.Close()
+	subdirInfo := uploadSubdir.Get(prepareData.Subdir)
+	if subdirInfo == nil {
+		return ctx.E(`“%s”未被登记`, uploadType)
+	}
+	var thumbSize *uploadSubdir.ThumbSize
+	if !unlimitResize { // 是否检查尺寸
+		// 获取缩略图尺寸
+		thumbSizes := subdirInfo.ThumbSize(prepareData.FieldName)
+		if len(thumbSizes) > 0 {
+			for _, ts := range thumbSizes {
+				if ts.Width == thumbWidth && ts.Height == thumbHeight {
+					thumbSize = &ts
+					break
+				}
+			}
+			if thumbSize == nil {
+				return ctx.E(`“%s”不支持裁剪图片`, uploadType)
+			}
+		}
+	} else {
+		thumbSize = &uploadSubdir.ThumbSize{
+			Width:  thumbWidth,
+			Height: thumbHeight,
+		}
 	}
 	ctx.Internal().Set(`storerID`, fileM.StorerId)
 	storer, err := prepareData.Storer(ctx)

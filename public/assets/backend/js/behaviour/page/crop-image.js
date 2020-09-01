@@ -121,6 +121,12 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,type,width,height){
       }
   }).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
 
+  var actions=$(options.fileElem).siblings('.avatar-actions');
+  if(actions.length<1){
+    actions=$('<div class="avatar-actions"></div');
+    $(options.fileElem).parent('div').prepend(actions);
+  }
+
   saveBtn.on('click',function(){
     var self=$(this),img=modal.find(".crop-image img");
     App.getImgNaturalDimensions(img[0],function(natural){
@@ -128,7 +134,8 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,type,width,height){
     if( c.w != 0 ){
       var ratio=natural.w/img.width();
       var timg=self.data('image-file');
-      $.get(options.croperURL,{
+      var token=actions.children('.avatar-resize').data('token');
+      var data={
         src:timg,
         x:c.x*ratio,
         y:c.y*ratio,
@@ -136,7 +143,9 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,type,width,height){
         h:c.h*ratio,
         type:self.data('type')||options.type,
         size:width+'x'+height
-      },function(r){
+      };
+      if(token!==undefined && token) data.token = token;
+      $.get(options.croperURL,data,function(r){
         if(r.Code!=1){
           return App.message({title:App.i18n.SYS_INFO,text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
         }
@@ -156,11 +165,6 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,type,width,height){
     }
     });
   });
-  var actions=$(options.fileElem).siblings('.avatar-actions');
-  if(actions.length<1){
-    actions=$('<div class="avatar-actions"></div');
-    $(options.fileElem).parent('div').prepend(actions);
-  }
   var removeBtn=actions.children('.avatar-remove');
   if(removeBtn.length<1){
     removeBtn=$('<a class="label label-danger avatar-remove" href="javascript:;" title="'+ App.t('删除图片')+'"><i class="fa fa-times"></i></a>');
@@ -171,12 +175,18 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,type,width,height){
     $(options.previewElem).attr("src", ASSETS_URL+"/images/user_128.png");
     $(options.originalInput).val("");
     $(options.thumbsnailInput).val("");
+    actions.children('.avatar-resize').hide();
   });
   if(typeof(App.editor)=="undefined"){
     return;
   }
   var browsing=$('<a class="label label-primary avatar-browsing" href="javascript:;" title="'+App.t('从服务器选择')+'"><i class="fa fa-folder-open-o"></i></a>');
   actions.append(browsing);
+  var resizeBtn=actions.children('.avatar-resize');
+  if(resizeBtn.length<1){
+    resizeBtn=$('<a class="label label-warning avatar-resize" href="javascript:;" title="'+ App.t('裁剪图片')+'" style="display:none"><i class="fa fa-crop"></i></a>');
+    actions.append(resizeBtn);
+  }
   browsing.on('click',function(){
     App.editor.finderDialog(App.editor.browsingFileURL + '?from=parent&size=12&filetype=image&multiple=0', function (fileList,infoList) {
         if (fileList.length <= 0) {
@@ -184,7 +194,22 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,type,width,height){
         }
         var info = infoList[0];
         saveBtn.data('type',info.table_name+'.'+info.field_name);
-        crop([fileList[0]]);
+        $.post(options.uploadURL,{pipe:'_queryThumb',file:fileList[0],size:width+'x'+height},function(r){
+          if(r.Code!=1) return App.message({ type: 'error', text: r.Info });
+          if('thumb' in r.Data) {
+            var thumb = r.Data.thumb;
+            $(options.previewElem).attr("src", thumb+'?_='+Math.random());
+            $(options.thumbsnailInput).val(thumb);
+            actions.children('.avatar-resize').data('token',r.Data.token).show();
+            return;
+          }
+          crop([fileList[0]]);
+        },'json');
     }, 100000);
+  });
+  resizeBtn.on('click',function(){
+    var file = $(options.originalInput).val();
+    if (!file) return App.message({ type: 'error', text: App.t('请先选择图片！') });
+    crop([file]);
   });
 }

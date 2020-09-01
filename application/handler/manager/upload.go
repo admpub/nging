@@ -85,6 +85,18 @@ func Upload(ctx echo.Context) error {
 // UploadByOwner 上传文件
 func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	pipe := ctx.Form(`pipe`)
+	if len(pipe) > 0 && pipe[0] == '_' {
+		pipeFunc := uploadPipe.Get(pipe)
+		if pipeFunc == nil {
+			return ctx.NewError(code.InvalidParameter, ctx.T(`无效的pipe值`))
+		}
+		data := echo.H{}
+		err := pipeFunc(ctx, nil, nil, data)
+		if err != nil {
+			return err
+		}
+		return ctx.JSON(ctx.Data().SetData(data))
+	}
 	uploadType := ctx.Param(`type`)
 	clientName := ctx.Form(`client`, `default`)
 	var err error
@@ -96,14 +108,6 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	client.Init(ctx, result)
 	if len(uploadType) == 0 {
 		err = ctx.E(`请提供参数“%s”`, ctx.Path())
-		return client.SetError(err).Response()
-	}
-	if len(pipe) > 0 && pipe[0] == '_' {
-		pipeFunc := uploadPipe.Get(pipe)
-		if pipeFunc == nil {
-			return client.SetError(ctx.NewError(code.InvalidParameter, ctx.T(`无效的pipe值`))).Response()
-		}
-		err = pipeFunc(ctx, nil, nil, client.GetRespData)
 		return client.SetError(err).Response()
 	}
 	fileType := ctx.Form(`filetype`)
@@ -196,6 +200,10 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		return client.Response()
 	}
 	if len(pipe) > 0 {
+		recv, ok := client.GetRespData().(map[string]interface{})
+		if !ok {
+			return client.Response()
+		}
 		pipeFunc := uploadPipe.Get(pipe)
 		if pipeFunc == nil {
 			return client.SetError(ctx.NewError(code.InvalidParameter, ctx.T(`无效的pipe值`))).Response()
@@ -204,7 +212,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		if results == nil {
 			results = uploadClient.Results{result}
 		}
-		err = pipeFunc(ctx, storer, results, client.GetRespData)
+		err = pipeFunc(ctx, storer, results, recv)
 		if err != nil {
 			return client.SetError(err).Response()
 		}

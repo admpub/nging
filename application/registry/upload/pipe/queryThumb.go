@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	modelFile "github.com/admpub/nging/application/model/file"
+	uploadChecker "github.com/admpub/nging/application/registry/upload/checker"
 	"github.com/admpub/nging/application/registry/upload/driver"
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/db"
@@ -19,11 +20,7 @@ func init() {
 var WidthAndHeightRegexp = regexp.MustCompile(`^[\d]+x[\d]+$`)
 
 // queryThumb 查询缩略图
-func queryThumb(ctx echo.Context, _ driver.Storer, _ uploadClient.Results, recv interface{}) error {
-	data, ok := recv.(echo.H)
-	if !ok {
-		return nil
-	}
+func queryThumb(ctx echo.Context, _ driver.Storer, _ uploadClient.Results, data map[string]interface{}) error {
 	viewURL := ctx.Form(`file`)
 	size := ctx.Form(`size`)
 	if len(size) == 0 {
@@ -37,6 +34,7 @@ func queryThumb(ctx echo.Context, _ driver.Storer, _ uploadClient.Results, recv 
 	height := sizes[1]
 	m := modelFile.NewThumb(ctx)
 	viewURL = modelFile.GetViewURLByOriginalURL(viewURL, width, height)
+	//panic(viewURL)
 	err := m.GetByViewURL(viewURL)
 	if err != nil {
 		if err == db.ErrNoMoreRows {
@@ -45,5 +43,6 @@ func queryThumb(ctx echo.Context, _ driver.Storer, _ uploadClient.Results, recv 
 		return err
 	}
 	data[`thumb`] = viewURL
+	data[`token`] = uploadChecker.Token(`file`, viewURL, `width`, width, `height`, height)
 	return nil
 }

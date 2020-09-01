@@ -209,10 +209,17 @@ func (f *File) GetBySavePath(storerInfo storer.Info, savePath string) (err error
 	return
 }
 
-func (f *File) GetByViewURL(storerInfo storer.Info, viewURL string) (err error) {
+func (f *File) GetByStorerAndURL(storerInfo storer.Info, viewURL string) (err error) {
 	err = f.Get(nil, db.And(
 		db.Cond{`storer_name`: storerInfo.Name},
 		db.Cond{`storer_id`: storerInfo.ID},
+		db.Cond{`view_url`: viewURL},
+	))
+	return
+}
+
+func (f *File) GetByViewURL(viewURL string) (err error) {
+	err = f.Get(nil, db.And(
 		db.Cond{`view_url`: viewURL},
 	))
 	return

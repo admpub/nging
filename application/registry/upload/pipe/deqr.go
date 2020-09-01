@@ -15,12 +15,8 @@ func init() {
 }
 
 // Deqr 识别二维码
-func Deqr(ctx echo.Context, storer driver.Storer, results uploadClient.Results, recv interface{}) error {
+func Deqr(ctx echo.Context, storer driver.Storer, results uploadClient.Results, data map[string]interface{}) error {
 	if len(results) == 0 {
-		return nil
-	}
-	data, ok := recv.(echo.H)
-	if !ok {
 		return nil
 	}
 	reader, err := storer.Get(results[0].SavePath)

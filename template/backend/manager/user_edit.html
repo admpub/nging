@@ -7,7 +7,6 @@
 {{/Block}}
 {{Block "head"}}
 <link rel="stylesheet" type="text/css" href="__ASSETS__/js/jquery.select2/select2.css" />
-<link rel="stylesheet" href="__ASSETS__/js/jquery.crop/css/jquery.Jcrop.min.css?t={{BuildTime}}" type="text/css" />
 {{/Block}}
 {{Block "main"}}
 <div class="row">
@@ -22,9 +21,6 @@
                   <label class="col-sm-2 control-label">{{"头像"|T}}</label>
                   <div class="col-sm-8">
                     <div class="avatar-upload">
-                      <div class="avatar-actions">
-                        <a class="label label-danger pull-right avatar-remove" href="javascript:;" title="{{"删除图片"|T}}"><i class="fa fa-times"></i></a>
-                      </div>
                       {{$avatar := Form "avatar"}}
                       <img src="{{if $avatar}}{{AddSuffix $avatar "_200_200"}}{{else}}__ASSETS__/images/user_128.png{{end}}" class="profile-avatar img-thumbnail" onerror="this.onerror=null;this.src='__ASSETS__/images/user_128.png';" />
                       <input id="fileupload" type="file" name="files[]">
@@ -139,12 +135,8 @@
 {{/Block}}
 {{Block "footer"}}
 <script src="__ASSETS__/js/jquery.select2/select2.min.js" type="text/javascript"></script>
-<script src="__ASSETS__/js/jquery.upload/js/vendor/jquery.ui.widget.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/jquery.crop/js/jquery.Jcrop.min.js?t={{BuildTime}}"></script>
-<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
-<script src="__ASSETS__/js/jquery.upload/js/jquery.iframe-transport.min.js?t={{BuildTime}}"></script>
-<!-- The basic File Upload plugin -->
-<script src="__ASSETS__/js/jquery.upload/js/jquery.fileupload.min.js?t={{BuildTime}}"></script>
+<script src="__ASSETS__/js/loader/loader.min.js?t={{BuildTime}}"></script>
+<script src="__ASSETS__/js/editor/editor.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="__ASSETS__/js/crypto/crypto-js.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="__ASSETS__/js/crypto/helper.js?t={{BuildTime}}"></script>
 <script type="text/javascript">
@@ -164,7 +156,7 @@ $(function(){
   }
 //{{end}}
   $('#select2roles').select2({width:'100%'});
-  cropImage('{{BackendUploadURL "nging_user.avatar" "refid" (Form "id")}}',"#avatar-image",'#avatar-image-original');
+  App.editor.cropImage('{{BackendUploadURL "nging_user.avatar" "refid" (Form "id")}}',"#avatar-image",'#avatar-image-original');
   submitEncryptedData('#profile-form');
 });
 </script>
