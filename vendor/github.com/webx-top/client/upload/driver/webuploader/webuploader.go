@@ -41,7 +41,7 @@ type Webuploader struct {
 	*uploadClient.BaseClient
 }
 
-func (a *Webuploader) BuildResult() {
+func (a *Webuploader) BuildResult() uploadClient.Client {
 	cid := a.Form("id")
 	if len(cid) == 0 {
 		form := a.Request().MultipartForm()
@@ -63,8 +63,9 @@ func (a *Webuploader) BuildResult() {
 	if a.GetError() != nil {
 		data[`error`] = echo.H{
 			`code`:    100,
-			`message`: a.Error(),
+			`message`: a.ErrorString(),
 		}
 	}
 	a.RespData = data
+	return a
 }

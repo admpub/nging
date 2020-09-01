@@ -21,13 +21,12 @@ package manager
 import (
 	"fmt"
 	"io"
-	"path"
 	"path/filepath"
-	"strings"
 
 	uploadClient "github.com/webx-top/client/upload"
 	_ "github.com/webx-top/client/upload/driver"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/middleware/tplfunc"
 
 	"github.com/admpub/nging/application/handler"
@@ -35,9 +34,9 @@ import (
 	"github.com/admpub/nging/application/library/common"
 	modelFile "github.com/admpub/nging/application/model/file"
 	"github.com/admpub/nging/application/model/file/storer"
-	"github.com/admpub/nging/application/registry/upload"
+	_ "github.com/admpub/nging/application/registry/upload/client"
+	uploadPipe "github.com/admpub/nging/application/registry/upload/pipe"
 	uploadPrepare "github.com/admpub/nging/application/registry/upload/prepare"
-	"github.com/admpub/qrcode"
 )
 
 var (
@@ -48,11 +47,6 @@ var (
 
 // 文件上传保存路径规则：
 // 子文件夹/表行ID/文件名
-
-// ResponseDataForUpload 根据不同的上传方式响应不同的数据格式
-func ResponseDataForUpload(ctx echo.Context, field string, err error, imageURLs []string) (result echo.H, embed bool) {
-	return upload.ResponserGet(field)(ctx, field, err, imageURLs)
-}
 
 func StorerEngine() storer.Info {
 	return storer.Get()
@@ -91,37 +85,28 @@ func Upload(ctx echo.Context) error {
 // UploadByOwner 上传文件
 func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	uploadType := ctx.Param(`type`)
-	field := ctx.Query(`field`) // 上传表单file输入框名称
 	pipe := ctx.Form(`pipe`)
-	var (
-		err      error
-		fileURLs []string
-	)
+	clientName := ctx.Form(`client`, `default`)
+	var err error
+	result := &uploadClient.Result{}
+	if !uploadClient.Has(clientName) {
+		return ctx.NewError(code.InvalidParameter, ctx.T(`不支持的client值: %v`, clientName))
+	}
+	client := uploadClient.Get(clientName)
+	client.Init(ctx, result)
 	if len(uploadType) == 0 {
 		err = ctx.E(`请提供参数“%s”`, ctx.Path())
-		datax, embed := ResponseDataForUpload(ctx, field, err, fileURLs)
-		if !embed {
-			return ctx.JSON(datax)
-		}
-		return err
+		return client.SetError(err).Response()
 	}
 	fileType := ctx.Form(`filetype`)
 	storerInfo := StorerEngine()
 	prepareData, err := uploadPrepare.Prepare(ctx, uploadType, fileType, storerInfo)
 	if err != nil {
-		datax, embed := ResponseDataForUpload(ctx, field, err, fileURLs)
-		if !embed {
-			return ctx.JSON(datax)
-		}
-		return err
+		return client.SetError(err).Response()
 	}
 	storer, err := prepareData.Storer(ctx)
 	if err != nil {
-		datax, embed := ResponseDataForUpload(ctx, field, err, fileURLs)
-		if !embed {
-			return ctx.JSON(datax)
-		}
-		return err
+		return client.SetError(err).Response()
 	}
 	defer prepareData.Close()
 	fileM := modelFile.NewFile(ctx)
@@ -136,12 +121,11 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 
 	subdir, name, err := prepareData.Checkin(ctx, fileM)
 	if err != nil {
-		datax, embed := ResponseDataForUpload(ctx, field, err, fileURLs)
-		if !embed {
-			return ctx.JSON(datax)
-		}
-		return err
+		return client.SetError(err).Response()
 	}
+	result.SetFileNameGenerator(func(filename string) (string, error) {
+		return SaveFilename(subdir, name, filename)
+	})
 
 	callback := func(result *uploadClient.Result, originalReader io.Reader, _ io.Reader) error {
 		fileM.Id = 0
@@ -187,87 +171,35 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		return nil
 	}
 
-	clientName := ctx.Form(`client`)
-	if len(clientName) > 0 {
-		result := &uploadClient.Result{}
-		result.SetFileNameGenerator(func(filename string) (string, error) {
-			return SaveFilename(subdir, name, filename)
-		})
-
-		client := uploadClient.Upload(
-			ctx,
-			uploadClient.OptClientName(clientName),
-			uploadClient.OptResult(result),
-			uploadClient.OptStorer(storer),
-			uploadClient.OptWatermarkOptions(GetWatermarkOptions()),
-			uploadClient.OptChecker(prepareData.Checker),
-			uploadClient.OptCallback(callback),
-		)
-		if client.GetError() != nil {
-			if client.GetError() == upload.ErrExistsFile {
-				client.SetError(nil)
-			}
-			return client.Response()
-		}
-		/*
-			var reader io.ReadCloser
-			reader, err = storer.Get(result.SavePath)
-			if reader != nil {
-				defer reader.Close()
-			}
-			if err != nil {
-				return client.SetError(err).Response()
-			}
-			err = callback(result, reader, nil)
-		*/
-		return client.SetError(err).Response()
+	optionsSetters := []uploadClient.OptionsSetter{
+		uploadClient.OptClientName(clientName),
+		uploadClient.OptResult(result),
+		uploadClient.OptStorer(storer),
+		uploadClient.OptWatermarkOptions(GetWatermarkOptions()),
+		uploadClient.OptChecker(prepareData.Checker),
+		uploadClient.OptCallback(callback),
 	}
-	var results uploadClient.Results
-	results, err = upload.BatchUpload(
-		ctx,
-		`files[]`,
-		func(r *uploadClient.Result) (string, error) {
-			if err := prepareData.Checker(r); err != nil {
-				return ``, err
-			}
-			return SaveFilename(subdir, name, r.FileName)
-		},
-		storer,
-		callback,
-		GetWatermarkOptions(),
-	)
-	datax, embed := ResponseDataForUpload(ctx, field, err, results.FileURLs())
-	if err != nil {
-		if !embed {
-			return ctx.JSON(datax)
-		}
-		return err
+	if clientName == `default` {
+		client.BatchUpload(optionsSetters...)
+	} else {
+		client.Upload(optionsSetters...)
 	}
-
-	if pipe == `deqr` { //解析二维码
-		if len(results) > 0 {
-			reader, err := storer.Get(results[0].SavePath)
-			if reader != nil {
-				defer reader.Close()
-			}
-			if err != nil {
-				if !embed {
-					datax[`raw`] = err.Error()
-					return ctx.JSON(datax)
-				}
-				return err
-			}
-			raw, err := qrcode.Decode(reader, strings.TrimPrefix(path.Ext(results[0].SavePath), `.`))
-			if err != nil {
-				raw = err.Error()
-			}
-			datax[`raw`] = raw
+	if client.GetError() != nil {
+		return client.Response()
+	}
+	if len(pipe) > 0 {
+		pipeFunc := uploadPipe.Get(pipe)
+		if pipeFunc == nil {
+			return client.SetError(ctx.NewError(code.InvalidParameter, ctx.T(`无效的pipe值`))).Response()
+		}
+		results := client.GetBatchUploadResults()
+		if results == nil {
+			results = uploadClient.Results{result}
+		}
+		err = pipeFunc(storer, results, client.GetRespData)
+		if err != nil {
+			return client.SetError(err).Response()
 		}
 	}
-	if !embed {
-		return ctx.JSON(datax)
-	}
-	data := ctx.Data()
-	data.SetData(datax)
-	return ctx.JSON(data)
+	return client.Response()
 }

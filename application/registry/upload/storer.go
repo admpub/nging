@@ -27,9 +27,6 @@ var (
 	// ErrExistsFile 文件不存在
 	ErrExistsFile = table.ErrExistsFile
 
-	// BatchUpload 批量上传
-	BatchUpload = driver.BatchUpload
-
 	// StorerRegister 存储引擎注册
 	StorerRegister = driver.Register
 

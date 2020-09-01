@@ -3,129 +3,16 @@ package driver
 import (
 	"context"
 	"io"
-	"io/ioutil"
-	"mime/multipart"
 	"net/url"
 	"os"
-	"path"
 	"sort"
 
-	uploadClient "github.com/webx-top/client/upload"
-	"github.com/webx-top/client/upload/watermark"
 	"github.com/webx-top/echo"
 
-	"github.com/admpub/checksum"
 	"github.com/admpub/color"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/model/file/storer"
-	"github.com/admpub/nging/application/registry/upload/table"
-	"github.com/webx-top/image"
 )
-
-var (
-	// ErrExistsFile 文件不存在
-	ErrExistsFile = table.ErrExistsFile
-)
-
-// BatchUpload 批量上传
-func BatchUpload(
-	ctx echo.Context,
-	fieldName string,
-	dstNamer func(*uploadClient.Result) (dst string, err error),
-	storer Storer,
-	callback func(*uploadClient.Result, io.Reader, io.Reader) error,
-	watermarkOptions *image.WatermarkOptions,
-) (results uploadClient.Results, err error) {
-	req := ctx.Request()
-	if req == nil {
-		err = ctx.E(`Invalid upload content`)
-		return
-	}
-	m := req.MultipartForm()
-	if m == nil || m.File == nil {
-		err = ctx.E(`Invalid upload content`)
-		return
-	}
-	files, ok := m.File[fieldName]
-	if !ok {
-		err = echo.ErrNotFoundFileInput
-		return
-	}
-	var dstFile string
-	for _, fileHdr := range files {
-		//for each fileheader, get a handle to the actual file
-		var file multipart.File
-		file, err = fileHdr.Open()
-		if err != nil {
-			if file != nil {
-				file.Close()
-			}
-			return
-		}
-		result := &uploadClient.Result{
-			FileName: fileHdr.Filename,
-			FileSize: fileHdr.Size,
-		}
-		result.Md5, err = checksum.MD5sumReader(file)
-		if err != nil {
-			file.Close()
-			return
-		}
-
-		dstFile, err = dstNamer(result)
-		if err != nil {
-			file.Close()
-			if err == ErrExistsFile {
-				results.Add(result)
-				err = nil
-				continue
-			}
-			return
-		}
-		if len(dstFile) == 0 {
-			file.Close()
-			continue
-		}
-		if len(result.SavePath) > 0 {
-			file.Close()
-			results.Add(result)
-			continue
-		}
-		originalFile := file
-		fileSize := fileHdr.Size
-		file.Seek(0, 0)
-		if result.FileType.String() == `image` && watermarkOptions != nil && watermarkOptions.IsEnabled() {
-			var b []byte
-			b, err = ioutil.ReadAll(file)
-			if err != nil {
-				file.Close()
-				return
-			}
-			b, err = watermark.Bytes(b, path.Ext(result.FileName), watermarkOptions)
-			if err != nil {
-				file.Close()
-				return
-			}
-			file.Seek(0, 0)
-			file = watermark.Bytes2file(b)
-			fileSize = int64(len(b))
-		}
-		result.SavePath, result.FileURL, err = storer.Put(dstFile, file, fileSize)
-		if err != nil {
-			file.Close()
-			return
-		}
-		file.Seek(0, 0)
-		if err = callback(result, originalFile, file); err != nil {
-			file.Close()
-			storer.Delete(dstFile)
-			return
-		}
-		file.Close()
-		results.Add(result)
-	}
-	return
-}
 
 // Sizer 尺寸接口
 type Sizer interface {

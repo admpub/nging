@@ -3,18 +3,21 @@ package upload
 import (
 	"io"
 	"io/ioutil"
+	"mime/multipart"
 	"path"
 
 	"github.com/webx-top/client/upload/watermark"
-	"github.com/webx-top/echo"
 	"github.com/webx-top/image"
 )
+
+type SaveBeforeHook func(file multipart.File, result *Result, options *Options) (newFile multipart.File, size int64, err error)
 
 type Options struct {
 	ClientName       string
 	Result           *Result
 	Storer           Storer
 	WatermarkOptions *image.WatermarkOptions
+	SaveBefore       []SaveBeforeHook
 	Checker          func(*Result) error
 	Callback         func(*Result, io.Reader, io.Reader) error
 }
@@ -42,6 +45,13 @@ func OptStorer(storer Storer) OptionsSetter {
 func OptWatermarkOptions(wmOpt *image.WatermarkOptions) OptionsSetter {
 	return func(options *Options) {
 		options.WatermarkOptions = wmOpt
+		options.SaveBefore = append(options.SaveBefore, ImageAddWatermark(wmOpt))
+	}
+}
+
+func OptSaveBefore(hook SaveBeforeHook) OptionsSetter {
+	return func(options *Options) {
+		options.SaveBefore = append(options.SaveBefore, hook)
 	}
 }
 
@@ -62,78 +72,33 @@ type ReaderAndSizer interface {
 	Sizer
 }
 
-func CopyBody(body ReadCloserWithSize) (oldBody []byte, newBody ReadCloserWithSize, err error) {
+func AsFile(body ReadCloserWithSize) (file multipart.File, err error) {
+	var oldBody []byte
 	oldBody, err = ioutil.ReadAll(body)
 	if err != nil {
 		return
 	}
-	body.Close()
-	newBody = WrapFileWithSize(body.Size(), watermark.Bytes2file(oldBody))
+	file = watermark.Bytes2file(oldBody)
 	return
 }
 
-func Upload(ctx echo.Context, opts ...OptionsSetter) Client {
-	options := &Options{}
-	for _, opt := range opts {
-		opt(options)
-	}
-	client := Get(options.ClientName)
-	client.Init(ctx, options.Result)
-	body, err := client.Body()
-	if err != nil {
-		return client.SetError(err)
-	}
-	defer body.Close()
-	if options.Checker != nil {
-		err = options.Checker(options.Result)
+// ImageAddWatermark 图片加水印
+func ImageAddWatermark(watermarkOptions *image.WatermarkOptions) SaveBeforeHook {
+	return func(file multipart.File, result *Result, options *Options) (newFile multipart.File, size int64, err error) {
+		if result.FileType.String() != `image` || watermarkOptions == nil || !watermarkOptions.IsEnabled() {
+			return file, -1, nil
+		}
+		b, err := ioutil.ReadAll(file)
 		if err != nil {
-			return client.SetError(err)
+			return file, -1, err
 		}
-	}
-	dstFile, err := options.Result.GenFileName()
-	if err != nil {
-		return client.SetError(err)
-	}
-
-	var readerAndSizer ReaderAndSizer = body
-
-	if options.Result.FileType.String() == `image` {
-		if options.WatermarkOptions != nil && options.WatermarkOptions.IsEnabled() {
-			var b []byte
-			b, body, err = CopyBody(body)
-			if err != nil {
-				return client.SetError(err)
-			}
-			b, err = watermark.Bytes(b, path.Ext(options.Result.FileName), options.WatermarkOptions)
-			if err != nil {
-				return client.SetError(err)
-			}
-			readerAndSizer = WrapFileWithSize(int64(len(b)), watermark.Bytes2file(b))
-		} else if options.Callback != nil {
-			if _, ok := body.(io.Seeker); !ok {
-				_, body, err = CopyBody(body)
-				if err != nil {
-					return client.SetError(err)
-				}
-			}
-		}
-	}
-	options.Result.SavePath, options.Result.FileURL, err = options.Storer.Put(dstFile, readerAndSizer, readerAndSizer.Size())
-	if err != nil {
-		return client.SetError(err)
-	}
-	if options.Callback != nil {
-		if seek, ok := body.(io.Seeker); ok {
-			seek.Seek(0, 0)
-		}
-		if seek, ok := readerAndSizer.(io.Seeker); ok {
-			seek.Seek(0, 0)
-		}
-		err = options.Callback(options.Result, body, readerAndSizer)
+		b, err = watermark.Bytes(b, path.Ext(result.FileName), watermarkOptions)
 		if err != nil {
-			options.Storer.Delete(dstFile)
-			return client.SetError(err)
+			return file, -1, err
 		}
+		file.Seek(0, 0)
+		newFile = watermark.Bytes2file(b)
+		size = int64(len(b))
+		return
 	}
-	return client
 }

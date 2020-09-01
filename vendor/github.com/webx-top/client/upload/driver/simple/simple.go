@@ -41,12 +41,12 @@ type Simple struct {
 	*uploadClient.BaseClient
 }
 
-func (a *Simple) BuildResult() {
+func (a *Simple) BuildResult() uploadClient.Client {
 	status := 1
 	var errMsg string
 	if a.GetError() != nil {
 		status = 0
-		errMsg = a.Error()
+		errMsg = a.ErrorString()
 	}
 	a.RespData = echo.H{
 		`Status`:  status,
@@ -56,4 +56,5 @@ func (a *Simple) BuildResult() {
 			`Id`:  a.Data.FileIdString(),
 		},
 	}
+	return a
 }

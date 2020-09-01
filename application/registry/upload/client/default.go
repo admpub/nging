@@ -16,46 +16,40 @@
 
 */
 
-package dropzone
+package client
 
 import (
-	"net/http"
-
 	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/echo"
 )
 
 func init() {
-	uploadClient.Register(`dropzone`, func() uploadClient.Client {
+	uploadClient.Register(`default`, func() uploadClient.Client {
 		return New()
 	})
 }
 
-var FormField = `file`
+var FormField = `files[]`
 
 func New() uploadClient.Client {
-	client := &Dropzone{}
+	client := &Default{}
 	client.BaseClient = uploadClient.New(client, FormField)
 	return client
 }
 
-type Dropzone struct {
+type Default struct {
 	*uploadClient.BaseClient
 }
 
-func (a *Dropzone) BuildResult() uploadClient.Client {
-	if a.GetError() == nil {
-		a.RespData = echo.H{
-			`result`: echo.H{
-				`url`: a.Data.FileURL,
-				`id`:  a.Data.FileIdString(),
-			},
-			`error`: nil,
-		}
+func (a *Default) BuildResult() uploadClient.Client {
+	data := a.Context.Data()
+	if err := a.GetError(); err != nil {
+		data.SetError(err)
 	} else {
-		a.Code = http.StatusInternalServerError
-		a.ContentType = `string`
-		a.RespData = a.ErrorString()
+		data.SetData(echo.H{
+			`files`: a.Results.FileURLs(),
+		})
 	}
+	a.RespData = data
 	return a
 }

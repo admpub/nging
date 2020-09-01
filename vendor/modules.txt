@@ -1051,7 +1051,7 @@ github.com/webx-top/captcha
 # github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f
 ## explicit
 github.com/webx-top/chardet
-# github.com/webx-top/client v0.0.6
+# github.com/webx-top/client v0.1.3
 ## explicit
 github.com/webx-top/client/upload
 github.com/webx-top/client/upload/driver
@@ -1123,7 +1123,7 @@ github.com/webx-top/echo/param
 github.com/webx-top/echo/subdomains
 github.com/webx-top/echo/testing
 github.com/webx-top/echo/testing/test
-# github.com/webx-top/image v0.0.0-20200420122650-e33887a47834
+# github.com/webx-top/image v0.0.0-20200901141228-623a3d6fc464
 ## explicit
 github.com/webx-top/image
 # github.com/webx-top/pagination v0.0.0-20200716043638-45efe28df7c2

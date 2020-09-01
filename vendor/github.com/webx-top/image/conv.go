@@ -3,11 +3,11 @@ package image
 import (
 	"bytes"
 	"encoding/base64"
-	"mime/multipart"
 	"image"
 	"image/jpeg"
-	"io/ioutil"
 	"io"
+	"io/ioutil"
+	"mime/multipart"
 	"os"
 )
 
@@ -80,7 +80,12 @@ func FileToBase64(srcFile string) ([]byte, error) {
 
 // Bytes2file 直接转 multipart.File
 func Bytes2file(b []byte) multipart.File {
-	r := io.NewSectionReader(bytes.NewReader(b), 0, int64(len(b)))
+	return ReaderAt2file(bytes.NewReader(b), int64(len(b)))
+}
+
+// ReaderAt2file 直接转 multipart.File
+func ReaderAt2file(readerAt io.ReaderAt, size int64) multipart.File {
+	r := io.NewSectionReader(readerAt, 0, size)
 	return SectionReadCloser{r}
 }
 
