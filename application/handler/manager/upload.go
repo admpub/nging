@@ -84,8 +84,8 @@ func Upload(ctx echo.Context) error {
 
 // UploadByOwner 上传文件
 func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
-	uploadType := ctx.Param(`type`)
 	pipe := ctx.Form(`pipe`)
+	uploadType := ctx.Param(`type`)
 	clientName := ctx.Form(`client`, `default`)
 	var err error
 	result := &uploadClient.Result{}
@@ -96,6 +96,14 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	client.Init(ctx, result)
 	if len(uploadType) == 0 {
 		err = ctx.E(`请提供参数“%s”`, ctx.Path())
+		return client.SetError(err).Response()
+	}
+	if len(pipe) > 0 && pipe[0] == '_' {
+		pipeFunc := uploadPipe.Get(pipe)
+		if pipeFunc == nil {
+			return client.SetError(ctx.NewError(code.InvalidParameter, ctx.T(`无效的pipe值`))).Response()
+		}
+		err = pipeFunc(ctx, nil, nil, client.GetRespData)
 		return client.SetError(err).Response()
 	}
 	fileType := ctx.Form(`filetype`)
@@ -196,7 +204,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		if results == nil {
 			results = uploadClient.Results{result}
 		}
-		err = pipeFunc(storer, results, client.GetRespData)
+		err = pipeFunc(ctx, storer, results, client.GetRespData)
 		if err != nil {
 			return client.SetError(err).Response()
 		}

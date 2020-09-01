@@ -19,8 +19,11 @@
 package file
 
 import (
+	"fmt"
+
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/middleware/tplfunc"
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
@@ -38,6 +41,19 @@ func NewThumb(ctx echo.Context) *Thumb {
 type Thumb struct {
 	*dbschema.NgingFileThumb
 	base *base.Base
+}
+
+func (t *Thumb) GetByViewURL(viewURL string) error {
+	return t.Get(nil, db.Cond{`view_url`: viewURL})
+}
+
+func (t *Thumb) GetByOriginalViewURL(viewURL string, width, height interface{}) error {
+	viewURL = GetViewURLByOriginalURL(viewURL, width, height)
+	return t.Get(nil, db.Cond{`view_url`: viewURL})
+}
+
+func GetViewURLByOriginalURL(viewURL string, width, height interface{}) string {
+	return tplfunc.AddSuffix(viewURL, fmt.Sprintf("%v_%v", width, height))
 }
 
 func (t *Thumb) SetByFile(file *dbschema.NgingFile) *Thumb {
