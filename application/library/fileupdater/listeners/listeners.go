@@ -23,10 +23,14 @@ import (
 	"github.com/admpub/nging/application/library/fileupdater/listener"
 )
 
-func New() fileupdater.Listener {
-	return &Listeners{
+func New(table ...string) fileupdater.Listener {
+	l := &Listeners{
 		options: map[string]*fileupdater.Options{},
 	}
+	if len(table) > 0 {
+		l.SetTableName(table[0])
+	}
+	return l
 }
 
 type Listeners struct {
