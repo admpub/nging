@@ -112,7 +112,6 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,subdir,width,height){
         if(r.Code!=1){
           return App.message({title:App.i18n.SYS_INFO,text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
         }
-        saveBtn.data('subdir',options.subdir);
         crop(r.Data.files);
       },
       progressall: function (e, data) {
@@ -142,7 +141,6 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,subdir,width,height){
         y:c.y*ratio,
         w:c.w*ratio,
         h:c.h*ratio,
-        subidr:self.data('subdir')||options.subdir,
         size:width+'x'+height
       };
       if(token!==undefined && token) data.token = token;
@@ -193,8 +191,6 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,subdir,width,height){
         if (fileList.length <= 0) {
           return App.message({ type: 'error', text: App.t('没有选择任何选项！') });
         }
-        var info = infoList[0];
-        saveBtn.data('subdir',info.subdir);
         $.post(options.uploadURL,{
           pipe:'_queryThumb',
           file:fileList[0],
