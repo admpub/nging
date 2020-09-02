@@ -41,8 +41,8 @@ func (s Sizes) AutoCrop() Sizes {
 	return r
 }
 
-func (s Sizes) Add(size Size) {
-	s = append(s, size)
+func (s *Sizes) Add(size Size) {
+	*s = append(*s, size)
 }
 
 func (s Sizes) Has(width, height float64) bool {
