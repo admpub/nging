@@ -27,7 +27,9 @@ import (
 	"strings"
 
 	"github.com/webx-top/com"
+	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/middleware/tplfunc"
 	"github.com/webx-top/echo/param"
 
@@ -108,9 +110,14 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	fileM := modelFile.NewFile(ctx)
 	err = fileM.GetByViewURL(srcURL)
 	if err != nil {
+		if err == db.ErrNoMoreRows {
+			err = ctx.NewError(code.DataNotFound, ctx.T(`文件数据不存在`))
+		}
 		return err
 	}
-	uploadType = fileM.UploadType()
+	if len(uploadType) == 0 {
+		uploadType = fileM.UploadType()
+	}
 	var unlimitResize bool
 	unlimitResizeToken := ctx.Form(`token`)
 	if len(unlimitResizeToken) > 0 {

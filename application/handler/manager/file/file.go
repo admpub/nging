@@ -23,24 +23,33 @@ import (
 	"time"
 
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/model/file"
 	"github.com/admpub/nging/application/registry/upload/checker"
+	uploadSubdir "github.com/admpub/nging/application/registry/upload/subdir"
 )
 
-func setUploadURL(ctx echo.Context) {
-	uploadType := `nging_user`
-	//uploadType := ctx.Form(`uploadtype`, `nging_user`)
+func setUploadURL(ctx echo.Context) error {
+	//uploadType := `nging_user`
+	uploadType := ctx.Form(`uploadtype`, `nging_user`)
+	params := uploadSubdir.ParseUploadType(uploadType)
+	if !params.IsAllowed() {
+		return ctx.NewError(code.Failure, ctx.T(`不支持的上传类型: %v`, uploadType))
+	}
 	ctx.Set(`uploadType`, uploadType)
 	ctx.Set(`uploadURL`, checker.BackendUploadURL(uploadType))
+	return nil
 }
 
 func FileList(ctx echo.Context) error {
+	if err := setUploadURL(ctx); err != nil {
+		return err
+	}
 	err := List(ctx, ``, 0)
 	ctx.Set(`dialog`, false)
 	ctx.Set(`multiple`, true)
-	setUploadURL(ctx)
 	partial := ctx.Formx(`partial`).Bool()
 	if partial {
 		return ctx.Render(`manager/file/list.main.content`, err)

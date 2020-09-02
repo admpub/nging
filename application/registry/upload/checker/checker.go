@@ -34,7 +34,9 @@ var UploadLinkLifeTime int64 = 86400
 type Checker func(echo.Context, table.TableInfoStorer) (subdir string, name string, err error)
 
 // Default 默认Checker
-var Default = func(ctx echo.Context, t table.TableInfoStorer) (subdir string, name string, err error) {
+var Default = TempDirChecker
+
+var SimpleChecker = func(ctx echo.Context, t table.TableInfoStorer) (subdir string, name string, err error) {
 	refid := ctx.Formx(`refid`).String()
 	timestamp := ctx.Formx(`time`).Int64()
 	if len(refid) == 0 {
@@ -50,8 +52,28 @@ var Default = func(ctx echo.Context, t table.TableInfoStorer) (subdir string, na
 		err = ctx.E(`上传网址已过期`)
 		return
 	}
+	subdir = time.Now().Local().Format(`Y2006/01/02/`)
+	t.SetTableID(refid)
+	return
+}
+
+// TempDirChecker 用于上传到临时文件夹(0号文件夹)的Checker
+var TempDirChecker = func(ctx echo.Context, t table.TableInfoStorer) (subdir string, name string, err error) {
+	refid := ctx.Formx(`refid`).String()
+	timestamp := ctx.Formx(`time`).Int64()
+	if len(refid) == 0 {
+		refid = `0`
+	}
+	// 验证签名（避免上传接口被滥用）
+	if ctx.Form(`token`) != Token(`refid`, refid, `time`, timestamp) {
+		err = ctx.E(`令牌错误`)
+		return
+	}
+	if time.Now().Local().Unix()-timestamp > UploadLinkLifeTime {
+		err = ctx.E(`上传网址已过期`)
+		return
+	}
 	subdir = fmt.Sprint(refid) + `/`
-	//subdir = time.Now().Format(`Y2006/01/02/`)
 	t.SetTableID(refid)
 	return
 }

@@ -188,13 +188,19 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,type,width,height){
     actions.append(resizeBtn);
   }
   browsing.on('click',function(){
-    App.editor.finderDialog(App.editor.browsingFileURL + '?from=parent&size=12&filetype=image&multiple=0', function (fileList,infoList) {
+    App.editor.finderDialog(App.editor.browsingFileURL + '?from=parent&size=12&filetype=image&uploadtype='+options.type+'&multiple=0', function (fileList,infoList) {
         if (fileList.length <= 0) {
           return App.message({ type: 'error', text: App.t('没有选择任何选项！') });
         }
         var info = infoList[0];
-        saveBtn.data('type',info.table_name+'.'+info.field_name);
-        $.post(options.uploadURL,{pipe:'_queryThumb',file:fileList[0],size:width+'x'+height},function(r){
+        var type = '';
+        if(info.table_name && info.field_name) type = info.table_name + '.' + info.field_name;
+        saveBtn.data('type',type);
+        $.post(options.uploadURL,{
+          pipe:'_queryThumb',
+          file:fileList[0],
+          size:width+'x'+height
+        },function(r){
           if(r.Code!=1) return App.message({ type: 'error', text: r.Info });
           if('thumb' in r.Data) {
             var thumb = r.Data.thumb;
