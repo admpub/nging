@@ -40,12 +40,12 @@
                     </div>
                     {{- else if $multiple -}}
                     <div class="checkbox checkbox-primary no-margin-y">
-                        <input id="checkbox-{{$k}}" class="check-table" type="checkbox" name="id[]" value="{{$v.Id}}" data-info='{{$v.NgingFile|JSONEncode}}'>
+                        <input id="checkbox-{{$k}}" class="check-table" type="checkbox" name="id[]" value="{{$v.Id}}" data-info='{{$v|JSONEncode}}'>
                         <label for="checkbox-{{$k}}"></label>
                     </div>
                     {{- else -}}
                     <div class="radio radio-primary no-margin-y">
-                        <input id="radio-{{$k}}" class="check-table" type="radio" name="id" value="{{$v.Id}}" data-info='{{$v.NgingFile|JSONEncode}}' onclick="applySelected();">
+                        <input id="radio-{{$k}}" class="check-table" type="radio" name="id" value="{{$v.Id}}" data-info='{{$v|JSONEncode}}' onclick="applySelected();">
                         <label for="radio-{{$k}}"></label>
                     </div>
                     {{- end -}}

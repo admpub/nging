@@ -24,4 +24,5 @@ import (
 	_ "github.com/admpub/nging/application/handler/tool"
 	_ "github.com/admpub/nging/application/handler/user"
 	_ "github.com/admpub/nging/application/initialize/backend"
+	_ "github.com/admpub/nging/application/listener"
 )

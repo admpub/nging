@@ -21,6 +21,7 @@ package checker
 import (
 	"fmt"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/webx-top/com"
@@ -50,6 +51,19 @@ func Token(values ...interface{}) string {
 		urlValues = tplfunc.URLValues(values...)
 	}
 	urlValues.Del(`token`)
+	enckeys := urlValues.Get(`enckeys`)
+	if len(enckeys) > 0 {
+		cleaned := url.Values{
+			`enckeys`: urlValues[`enckeys`],
+		}
+		for _, key := range strings.Split(enckeys, `,`) {
+			vals, ok := urlValues[key]
+			if ok {
+				cleaned[key] = vals
+			}
+		}
+		urlValues = cleaned
+	}
 	var apiKey string
 	if cfg, ok := echo.Get(`DefaultConfig`).(APIKey); ok {
 		apiKey = cfg.APIKey()
@@ -79,6 +93,11 @@ func URLParam(subdir string, values ...interface{}) string {
 	urlValues.Set(`time`, unixtime)
 	urlValues.Set(`subdir`, subdir)
 	urlValues.Del(`token`)
+	enckeys := []string{}
+	for enckey := range urlValues {
+		enckeys = append(enckeys, enckey)
+	}
+	urlValues.Set(`enckeys`, strings.Join(enckeys, ","))
 	urlValues.Set(`token`, Token(urlValues))
 	return `?` + urlValues.Encode()
 }

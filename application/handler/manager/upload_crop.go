@@ -42,9 +42,9 @@ import (
 	modelFile "github.com/admpub/nging/application/model/file"
 	uploadChecker "github.com/admpub/nging/application/registry/upload/checker"
 	"github.com/admpub/nging/application/registry/upload/convert"
+	"github.com/admpub/nging/application/registry/upload/helper"
 	uploadPrepare "github.com/admpub/nging/application/registry/upload/prepare"
 	"github.com/admpub/nging/application/registry/upload/thumb"
-	"github.com/admpub/nging/application/registry/upload"
 )
 
 // Crop 图片裁剪
@@ -95,16 +95,16 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	if fileM.Type != `image` {
 		return ctx.NewError(code.InvalidParameter, ctx.T(`只支持裁剪图片文件`))
 	}
+	subdir := fileM.Subdir
+	if len(subdir) == 0 {
+		subdir = helper.ParseSubdir(srcURL)
+	}
 	var unlimitResize bool
 	unlimitResizeToken := ctx.Form(`token`)
 	if len(unlimitResizeToken) > 0 {
 		unlimitResize = unlimitResizeToken == uploadChecker.Token(`file`, srcURL, `width`, thumbWidth, `height`, thumbHeight)
 	}
 	storerInfo := StorerEngine()
-	subdir := ctx.Form(`subdir`, `default`)
-	if !upload.Subdir.Has(subdir) {
-		return ctx.NewError(code.InvalidParameter,ctx.T(`参数subdir的值无效: %s`, subdir))
-	}
 	prepareData, err := uploadPrepare.Prepare(ctx, subdir, ``, storerInfo)
 	if err != nil {
 		return err
@@ -282,6 +282,7 @@ END:
 		FileMD5:          fileMd5,
 		WatermarkOptions: GetWatermarkOptions(),
 	}
+	//panic(cropOpt.DestFile)
 	err = thumbM.Crop(cropOpt)
 	if err != nil {
 		return err

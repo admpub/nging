@@ -60,6 +60,15 @@ func URLToFile(fileURL string) string {
 	return filePath
 }
 
+// ParseSubdir 从文件网址中获取子文件夹名
+func ParseSubdir(fileURL string) string {
+	fileURL = CleanDomain(fileURL)
+	prefix := UploadURLPath
+	filePath := strings.TrimPrefix(fileURL, prefix)
+	filePath = strings.TrimPrefix(filePath, `/`)
+	return strings.SplitN(filePath, "/", 2)[0]
+}
+
 // FileTypeByName 根据文件名判断文件类型
 func FileTypeByName(filename string) string {
 	p := strings.LastIndex(filename, `.`)

@@ -25,6 +25,10 @@ import (
 )
 
 func TestParseFileName(t *testing.T) {
+	scheme, domain := ParseDomain(`https://admpub.com/fefef`)
+	assert.Equal(t, `https:`, scheme)
+	assert.Equal(t, `admpub.com`, domain)
+	assert.Equal(t, `/fefef`, CleanDomain(`https://admpub.com/fefef`))
 	expected := []string{
 		"/public/upload/test/0/1232aawdwwd.jpg",
 		"/public/upload/test/0/1232aawdwwe.jpg",

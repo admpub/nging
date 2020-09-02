@@ -26,8 +26,22 @@ var (
 	temporaryFileRegexp  *regexp.Regexp
 	persistentFileRegexp *regexp.Regexp
 	anyFileRegexp        *regexp.Regexp
+	fileURLDomainRegex   = regexp.MustCompile(`^(?i)(http[s]?:)?//([^/]+)`)
 	placeholderRegexp    = regexp.MustCompile(`\[storage:[\d]+\]`)
 )
+
+func CleanDomain(fileURL string) string {
+	return fileURLDomainRegex.ReplaceAllString(fileURL, ``)
+}
+
+func ParseDomain(fileURL string) (scheme string, domain string) {
+	matched := fileURLDomainRegex.FindStringSubmatch(fileURL)
+	if len(matched) > 2 {
+		scheme = matched[1]
+		domain = matched[2]
+	}
+	return
+}
 
 func init() {
 	Init(UploadURLPath)

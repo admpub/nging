@@ -22,7 +22,6 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/handler"
-	_ "github.com/admpub/nging/application/listener/upload"
 	"github.com/admpub/nging/application/middleware"
 )
 
