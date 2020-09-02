@@ -19,82 +19,30 @@
 package checker
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/webx-top/echo"
-
-	"github.com/admpub/nging/application/registry/upload/table"
+	"github.com/webx-top/echo/code"
 )
 
-// UploadLinkLifeTime 上传链接生存时间
-var UploadLinkLifeTime int64 = 86400
+// UploadURLMaxAge 上传链接生存时间
+var UploadURLMaxAge int64 = 86400
 
 // Checker 验证并生成子文件夹名称和文件名称
-type Checker func(echo.Context, table.TableInfoStorer) (subdir string, name string, err error)
+type Checker func(echo.Context) (subdir string, name string, err error)
 
 // Default 默认Checker
-var Default = TempDirChecker
-
-var SimpleChecker = func(ctx echo.Context, t table.TableInfoStorer) (subdir string, name string, err error) {
-	refid := ctx.Formx(`refid`).String()
-	timestamp := ctx.Formx(`time`).Int64()
-	if len(refid) == 0 {
-		refid = `0`
-	}
-	// Token(ctx.Queries())
-	// 验证签名（避免上传接口被滥用）
-	if ctx.Form(`token`) != Token(`refid`, refid, `time`, timestamp) {
-		err = ctx.E(`令牌错误`)
-		return
-	}
-	if time.Now().Local().Unix()-timestamp > UploadLinkLifeTime {
-		err = ctx.E(`上传网址已过期`)
-		return
-	}
-	subdir = time.Now().Local().Format(`Y2006/01/02/`)
-	t.SetTableID(refid)
-	return
-}
-
-// TempDirChecker 用于上传到临时文件夹(0号文件夹)的Checker
-var TempDirChecker = func(ctx echo.Context, t table.TableInfoStorer) (subdir string, name string, err error) {
-	refid := ctx.Formx(`refid`).String()
-	timestamp := ctx.Formx(`time`).Int64()
-	if len(refid) == 0 {
-		refid = `0`
-	}
-	// 验证签名（避免上传接口被滥用）
-	if ctx.Form(`token`) != Token(`refid`, refid, `time`, timestamp) {
-		err = ctx.E(`令牌错误`)
-		return
-	}
-	if time.Now().Local().Unix()-timestamp > UploadLinkLifeTime {
-		err = ctx.E(`上传网址已过期`)
-		return
-	}
-	subdir = fmt.Sprint(refid) + `/`
-	t.SetTableID(refid)
-	return
-}
-
-// ConfigChecker 系统配置文件上传
-func ConfigChecker(ctx echo.Context, t table.TableInfoStorer) (subdir string, name string, err error) {
-	group := ctx.Form(`group`)
-	key := ctx.Form(`key`)
+var Default = func(ctx echo.Context) (subdir string, name string, err error) {
 	timestamp := ctx.Formx(`time`).Int64()
 	// 验证签名（避免上传接口被滥用）
-	if ctx.Form(`token`) != Token(`group`, group, `key`, key, `refid`, `0`, `time`, timestamp) {
-		err = ctx.E(`令牌错误`)
+	if ctx.Form(`token`) != Token(ctx.Queries()) {
+		err = ctx.NewError(code.InvalidParameter, ctx.T(`令牌错误`))
 		return
 	}
-	if time.Now().Local().Unix()-timestamp > UploadLinkLifeTime {
-		err = ctx.E(`上传网址已过期`)
+	if time.Now().Local().Unix()-timestamp > UploadURLMaxAge {
+		err = ctx.NewError(code.DataHasExpired, ctx.T(`上传网址已过期`))
 		return
 	}
-	subdir = key + `/`
-	t.SetTableID(group + `.` + key)
-	t.SetTableName(`nging_config`)
-	t.SetFieldName(`value`)
+	subdir = time.Now().Local().Format(`2006/01/02/`)
 	return
 }

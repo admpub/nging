@@ -34,9 +34,11 @@ import (
 	"github.com/admpub/nging/application/library/common"
 	modelFile "github.com/admpub/nging/application/model/file"
 	"github.com/admpub/nging/application/model/file/storer"
+	"github.com/admpub/nging/application/registry/upload"
 	_ "github.com/admpub/nging/application/registry/upload/client"
 	uploadPipe "github.com/admpub/nging/application/registry/upload/pipe"
 	uploadPrepare "github.com/admpub/nging/application/registry/upload/prepare"
+	"github.com/admpub/nging/application/registry/upload/thumb"
 )
 
 var (
@@ -97,7 +99,6 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 		}
 		return ctx.JSON(ctx.Data().SetData(data))
 	}
-	uploadType := ctx.Param(`type`)
 	clientName := ctx.Form(`client`, `default`)
 	var err error
 	result := &uploadClient.Result{}
@@ -106,13 +107,14 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	}
 	client := uploadClient.Get(clientName)
 	client.Init(ctx, result)
-	if len(uploadType) == 0 {
-		err = ctx.E(`请提供参数“%s”`, ctx.Path())
+	subdir := ctx.Form(`subdir`, `default`)
+	if !upload.Subdir.Has(subdir) {
+		err = ctx.E(`参数subdir的值无效: %s`, subdir)
 		return client.SetError(err).Response()
 	}
 	fileType := ctx.Form(`filetype`)
 	storerInfo := StorerEngine()
-	prepareData, err := uploadPrepare.Prepare(ctx, uploadType, fileType, storerInfo)
+	prepareData, err := uploadPrepare.Prepare(ctx, subdir, fileType, storerInfo)
 	if err != nil {
 		return client.SetError(err).Response()
 	}
@@ -124,14 +126,11 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	fileM := modelFile.NewFile(ctx)
 	fileM.StorerName = storerInfo.Name
 	fileM.StorerId = storerInfo.ID
-	fileM.TableId = ``
-	fileM.SetFieldName(prepareData.FieldName)
-	fileM.SetTableName(prepareData.TableName)
 	fileM.OwnerId = ownerID
 	fileM.OwnerType = ownerType
 	fileM.Type = fileType
 
-	subdir, name, err := prepareData.Checkin(ctx, fileM)
+	subdir, name, err := prepareData.Checkin(ctx)
 	if err != nil {
 		return client.SetError(err).Response()
 	}
@@ -155,28 +154,30 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 			ctx.Commit()
 			return nil
 		}
-		thumbSizes := prepareData.AutoCropThumbSize()
-		thumbM := modelFile.NewThumb(ctx)
-		thumbM.CPAFrom(fileM.NgingFile)
-		for _, thumbSize := range thumbSizes {
-			thumbM.Reset()
-			if seek, ok := originalReader.(io.Seeker); ok {
-				seek.Seek(0, 0)
-			}
-			thumbURL := tplfunc.AddSuffix(result.FileURL, fmt.Sprintf(`_%v_%v`, thumbSize.Width, thumbSize.Height))
-			cropOpt := &modelFile.CropOptions{
-				Options:          CropOptions(thumbSize.Width, thumbSize.Height),
-				File:             fileM.NgingFile,
-				SrcReader:        originalReader,
-				Storer:           storer,
-				DestFile:         storer.URLToFile(thumbURL),
-				FileMD5:          ``,
-				WatermarkOptions: GetWatermarkOptions(),
-			}
-			err = thumbM.Crop(cropOpt)
-			if err != nil {
-				ctx.Rollback()
-				return err
+		thumbSizes := thumb.Registry.AutoCrop()
+		if len(thumbSizes) > 0 {
+			thumbM := modelFile.NewThumb(ctx)
+			thumbM.CPAFrom(fileM.NgingFile)
+			for _, thumbSize := range thumbSizes {
+				thumbM.Reset()
+				if seek, ok := originalReader.(io.Seeker); ok {
+					seek.Seek(0, 0)
+				}
+				thumbURL := tplfunc.AddSuffix(result.FileURL, fmt.Sprintf(`_%v_%v`, thumbSize.Width, thumbSize.Height))
+				cropOpt := &modelFile.CropOptions{
+					Options:          CropOptions(thumbSize.Width, thumbSize.Height),
+					File:             fileM.NgingFile,
+					SrcReader:        originalReader,
+					Storer:           storer,
+					DestFile:         storer.URLToFile(thumbURL),
+					FileMD5:          ``,
+					WatermarkOptions: GetWatermarkOptions(),
+				}
+				err = thumbM.Crop(cropOpt)
+				if err != nil {
+					ctx.Rollback()
+					return err
+				}
 			}
 		}
 		ctx.Commit()

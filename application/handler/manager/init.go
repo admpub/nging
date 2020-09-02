@@ -28,7 +28,7 @@ import (
 
 func init() {
 	handler.RegisterToGroup(`/manager`, func(g echo.RouteRegister) {
-		handler.Echo().Route(`GET,HEAD`, helper.UploadURLPath+`:type/*`, File) //显示上传文件夹下的静态文件
+		handler.Echo().Route(`GET,HEAD`, helper.UploadURLPath+`:subdir/*`, File) //显示上传文件夹下的静态文件
 		g.Route(`GET,POST`, `/user`, User)
 		g.Route(`GET,POST`, `/role`, Role)
 		g.Route(`GET,POST`, `/user_add`, UserAdd)
@@ -45,8 +45,8 @@ func init() {
 		g.Route(`GET,POST`, `/verification_delete`, VerificationDelete)
 		g.Route(`GET`, `/clear_cache`, ClearCache)
 		g.Route(`GET,POST`, `/settings`, Settings)
-		g.Route(`POST`, `/upload/:type`, Upload) //文件上传
-		g.Route(`GET,POST`, `/crop`, Crop)       //裁剪图片
+		g.Route(`POST`, `/upload`, Upload) //文件上传
+		g.Route(`GET,POST`, `/crop`, Crop) //裁剪图片
 		g.Route(`GET,POST`, `/uploaded_file`, UploadedFile)
 
 		g.Route(`GET,POST`, `/alert_topic`, AlertTopic)

@@ -18,11 +18,17 @@
 			<div class="row no-margin">
 				<div class="form-group col-sm-3 no-margin xs-margin-top no-padding">
 				<div class="input-group no-margin-bottom">
+					<span class="input-group-addon">{{"文件名称"|T}}</span>
+					<input type="text" id="saveName" class="form-control" name="saveName" value="{{Form `saveName`}}">
+				</div>
+				</div>
+				<div class="form-group col-sm-3 no-margin xs-margin-top no-padding">
+				<div class="input-group no-margin-bottom">
 					<span class="input-group-addon">{{"上传时间"|T}}</span>
 					<input type="text" id="timerange" class="form-control" name="timerange" value="{{Form `timerange`}}">
 				</div>
 				</div>
-				<div class="form-group col-sm-3 no-margin xs-margin-top no-padding">
+				<div class="form-group col-sm-2 no-margin xs-margin-top no-padding">
 				<div class="input-group no-margin-bottom">
 					<span class="input-group-addon no-padding no-border"><select name="ownerType" class="form-control" id="ownerType" onchange="ownerTypeChange(this)" style="width:100px">
 						<option value="">-{{"用户类型"|T}}-</option>
@@ -31,28 +37,6 @@
 						<option value="customer" {{if eq $ownerType `customer`}} selected{{end}}>{{`前台客户`|T}}</option>
 					</select></span>
 					<input name="ownerId" class="form-control" id="ownerId" placeholder="{{`用户ID`|T}}" value="{{Form `ownerId`}}">
-				</div>
-				</div>
-				<div class="form-group col-sm-2 no-margin xs-margin-top no-padding">
-				<div class="input-group no-margin-bottom">
-					<span class="input-group-addon">{{"内容类型"|T}}</span>
-					<select name="table" class="form-control" id="table">
-						<option value="">-{{"不限"|T}}-</option>
-						{{- $table := Form "table" -}}
-						{{- range $k, $v := Stored.tableNames -}}
-						{{- $fields := $v.FieldInfos -}}
-						{{- if gt (len $fields) 0 -}}
-						<optgroup label="{{$v}}">
-						<option value="{{$v.TableName}}" {{if eq $table $k}} selected{{end}}>{{$v}}(ALL)</option>
-						{{- range $key, $val := $fields -}}
-						<option value="{{$v.TableName}}.{{$val.K}}" {{if eq $table (printf `%v.%v` $v.TableName $val.K)}} selected{{end}}>{{$v}}:{{$val.V}}</option>
-						{{- end -}}
-						</optgroup>
-						{{- else -}}
-						<option value="{{$v.TableName}}" {{if eq $table $k}} selected{{end}}>{{$v}}</option>
-						{{- end -}}
-						{{- end -}}
-					</select>
 				</div>
 				</div>
 				{{- if not $dialog -}}

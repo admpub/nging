@@ -28,8 +28,6 @@ import (
 
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/model/file"
-	fileListModel "github.com/admpub/nging/application/model/file/list"
-	uploadSubdir "github.com/admpub/nging/application/registry/upload/subdir"
 )
 
 func List(ctx echo.Context, ownerType string, ownerID uint64) error {
@@ -87,10 +85,8 @@ func List(ctx echo.Context, ownerType string, ownerID uint64) error {
 		return err
 	}
 	list := fileM.Objects()
-	listData := fileListModel.FileList(list)
-	ctx.Set(`listData`, listData)
+	ctx.Set(`listData`, list)
 	ctx.Set(`fileTypes`, uploadClient.FileTypeExts)
 	ctx.Set(`fileType`, typ)
-	ctx.Set(`tableNames`, uploadSubdir.All())
 	return err
 }

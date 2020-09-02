@@ -27,19 +27,16 @@ import (
 
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/model/file"
+	"github.com/admpub/nging/application/registry/upload"
 	"github.com/admpub/nging/application/registry/upload/checker"
-	uploadSubdir "github.com/admpub/nging/application/registry/upload/subdir"
 )
 
 func setUploadURL(ctx echo.Context) error {
-	//uploadType := `nging_user`
-	uploadType := ctx.Form(`uploadtype`, `nging_user`)
-	params := uploadSubdir.ParseUploadType(uploadType)
-	if !params.IsAllowed() {
-		return ctx.NewError(code.Failure, ctx.T(`不支持的上传类型: %v`, uploadType))
+	subdir := ctx.Form(`subdir`, `default`)
+	if !upload.Subdir.Has(subdir) {
+		return ctx.NewError(code.InvalidParameter, ctx.T(`无效的subdir值`))
 	}
-	ctx.Set(`uploadType`, uploadType)
-	ctx.Set(`uploadURL`, checker.BackendUploadURL(uploadType))
+	ctx.Set(`uploadURL`, checker.BackendUploadURL(subdir))
 	return nil
 }
 

@@ -21,93 +21,15 @@ package file
 
 import (
 	"fmt"
-	"io"
-	"time"
 
-	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
-	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/fileupdater/listener"
-	modelFile "github.com/admpub/nging/application/model/file"
-	"github.com/admpub/nging/application/registry/upload/checker"
-	"github.com/admpub/nging/application/registry/upload/dbsaver"
-	uploadSubdir "github.com/admpub/nging/application/registry/upload/subdir"
-	"github.com/admpub/nging/application/registry/upload/table"
 )
 
 func init() {
-	// 用户上传个人文件时的文件命名方式
-	uploadSubdir.CheckerRegister(`nging_user`, func(ctx echo.Context, tis table.TableInfoStorer) (subdir string, name string, err error) {
-		user := handler.User(ctx)
-		if user == nil {
-			err = ctx.E(`登录信息获取失败，请重新登录`)
-			return
-		}
-		userID := uint64(user.Id)
-		timestamp := ctx.Formx(`time`).Int64()
-		// 验证签名（避免上传接口被滥用）
-		if ctx.Form(`token`) != checker.Token(ctx.Queries()) {
-			err = ctx.E(`令牌错误`)
-			return
-		}
-		if time.Now().Local().Unix()-timestamp > checker.UploadLinkLifeTime {
-			err = ctx.E(`上传网址已过期`)
-			return
-		}
-		uid := fmt.Sprint(userID)
-		subdir = uid + `/`
-		subdir += time.Now().Format(`2006/01/02/`)
-		tis.SetTableID(uid)
-		tis.SetTableName(`nging_user`)
-		tis.SetFieldName(``)
-		return
-	}, ``)
-
-	// 文件信息默认保存方式
-	dbsaver.Default = func(fileM *modelFile.File, result *uploadClient.Result, reader io.Reader) error {
-		return fileM.Add(reader)
-	}
-
-	// 后台用户头像文件信息保存方式
-	dbsaver.Register(`nging_user.avatar`, func(fileM *modelFile.File, result *uploadClient.Result, reader io.Reader) (err error) {
-		if len(fileM.TableId) == 0 {
-			return fileM.Add(reader)
-		}
-		fileM.UsedTimes = 0
-		var m *dbschema.NgingFile
-		m, err = fileM.GetAvatar()
-		defer func() {
-			if err != nil {
-				return
-			}
-			userID := param.AsUint64(fileM.TableId)
-			if userID == 0 { // 新增用户时
-				return
-			}
-			userM := &dbschema.NgingUser{}
-			userM.CPAFrom(fileM.NgingFile)
-			err = userM.SetField(nil, `avatar`, fileM.ViewUrl, db.Cond{`id`: userID})
-		}()
-		if err != nil {
-			if err != db.ErrNoMoreRows {
-				return err
-			}
-			// 不存在
-			return fileM.Add(reader)
-		}
-		// 已存在
-		fileM.Id = m.Id
-		fileM.Created = m.Created
-		fileM.UsedTimes = m.UsedTimes
-		fileM.FillData(reader, true)
-		return fileM.Edit(nil, db.Cond{`id`: m.Id})
-	})
-
 	// - 监听数据表事件
 
 	// - user 表事件

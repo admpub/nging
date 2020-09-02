@@ -113,13 +113,10 @@ type NgingFile struct {
 	StorerId   string `db:"storer_id" bson:"storer_id" comment:"位置ID" json:"storer_id" xml:"storer_id"`
 	Created    uint   `db:"created" bson:"created" comment:"上传时间" json:"created" xml:"created"`
 	Updated    uint   `db:"updated" bson:"updated" comment:"修改时间" json:"updated" xml:"updated"`
-	Project    string `db:"project" bson:"project" comment:"项目名称" json:"project" xml:"project"`
-	TableId    string `db:"table_id" bson:"table_id" comment:"关联表数据id" json:"table_id" xml:"table_id"`
-	TableName  string `db:"table_name" bson:"table_name" comment:"关联表名称" json:"table_name" xml:"table_name"`
-	FieldName  string `db:"field_name" bson:"field_name" comment:"关联表字段名" json:"field_name" xml:"field_name"`
 	Sort       int64  `db:"sort" bson:"sort" comment:"排序" json:"sort" xml:"sort"`
 	Status     int    `db:"status" bson:"status" comment:"状态(1-已审核/0-未审核)" json:"status" xml:"status"`
 	CategoryId uint   `db:"category_id" bson:"category_id" comment:"分类ID" json:"category_id" xml:"category_id"`
+	Tags       string `db:"tags" bson:"tags" comment:"标签" json:"tags" xml:"tags"`
 	UsedTimes  uint   `db:"used_times" bson:"used_times" comment:"被使用的次数" json:"used_times" xml:"used_times"`
 }
 
@@ -342,9 +339,6 @@ func (a *NgingFile) Add() (pk interface{}, err error) {
 	if len(a.Type) == 0 {
 		a.Type = "image"
 	}
-	if len(a.TableId) == 0 {
-		a.TableId = "0"
-	}
 	if a.base.Eventable() {
 		err = DBI.Fire("creating", a, nil)
 		if err != nil {
@@ -372,9 +366,6 @@ func (a *NgingFile) Edit(mw func(db.Result) db.Result, args ...interface{}) (err
 	}
 	if len(a.Type) == 0 {
 		a.Type = "image"
-	}
-	if len(a.TableId) == 0 {
-		a.TableId = "0"
 	}
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).SetSend(a).Update()
@@ -406,11 +397,6 @@ func (a *NgingFile) SetFields(mw func(db.Result) db.Result, kvset map[string]int
 			kvset["type"] = "image"
 		}
 	}
-	if val, ok := kvset["table_id"]; ok && val != nil {
-		if v, ok := val.(string); ok && len(v) == 0 {
-			kvset["table_id"] = "0"
-		}
-	}
 	if !a.base.Eventable() {
 		return a.Param(mw, args...).SetSend(kvset).Update()
 	}
@@ -438,9 +424,6 @@ func (a *NgingFile) Upsert(mw func(db.Result) db.Result, args ...interface{}) (p
 		if len(a.Type) == 0 {
 			a.Type = "image"
 		}
-		if len(a.TableId) == 0 {
-			a.TableId = "0"
-		}
 		if !a.base.Eventable() {
 			return nil
 		}
@@ -453,9 +436,6 @@ func (a *NgingFile) Upsert(mw func(db.Result) db.Result, args ...interface{}) (p
 		}
 		if len(a.Type) == 0 {
 			a.Type = "image"
-		}
-		if len(a.TableId) == 0 {
-			a.TableId = "0"
 		}
 		if !a.base.Eventable() {
 			return nil
@@ -521,13 +501,10 @@ func (a *NgingFile) Reset() *NgingFile {
 	a.StorerId = ``
 	a.Created = 0
 	a.Updated = 0
-	a.Project = ``
-	a.TableId = ``
-	a.TableName = ``
-	a.FieldName = ``
 	a.Sort = 0
 	a.Status = 0
 	a.CategoryId = 0
+	a.Tags = ``
 	a.UsedTimes = 0
 	return a
 }
@@ -553,13 +530,10 @@ func (a *NgingFile) AsMap() param.Store {
 	r["StorerId"] = a.StorerId
 	r["Created"] = a.Created
 	r["Updated"] = a.Updated
-	r["Project"] = a.Project
-	r["TableId"] = a.TableId
-	r["TableName"] = a.TableName
-	r["FieldName"] = a.FieldName
 	r["Sort"] = a.Sort
 	r["Status"] = a.Status
 	r["CategoryId"] = a.CategoryId
+	r["Tags"] = a.Tags
 	r["UsedTimes"] = a.UsedTimes
 	return r
 }
@@ -605,20 +579,14 @@ func (a *NgingFile) FromRow(row map[string]interface{}) {
 			a.Created = param.AsUint(value)
 		case "updated":
 			a.Updated = param.AsUint(value)
-		case "project":
-			a.Project = param.AsString(value)
-		case "table_id":
-			a.TableId = param.AsString(value)
-		case "table_name":
-			a.TableName = param.AsString(value)
-		case "field_name":
-			a.FieldName = param.AsString(value)
 		case "sort":
 			a.Sort = param.AsInt64(value)
 		case "status":
 			a.Status = param.AsInt(value)
 		case "category_id":
 			a.CategoryId = param.AsUint(value)
+		case "tags":
+			a.Tags = param.AsString(value)
 		case "used_times":
 			a.UsedTimes = param.AsUint(value)
 		}
@@ -683,20 +651,14 @@ func (a *NgingFile) Set(key interface{}, value ...interface{}) {
 			a.Created = param.AsUint(vv)
 		case "Updated":
 			a.Updated = param.AsUint(vv)
-		case "Project":
-			a.Project = param.AsString(vv)
-		case "TableId":
-			a.TableId = param.AsString(vv)
-		case "TableName":
-			a.TableName = param.AsString(vv)
-		case "FieldName":
-			a.FieldName = param.AsString(vv)
 		case "Sort":
 			a.Sort = param.AsInt64(vv)
 		case "Status":
 			a.Status = param.AsInt(vv)
 		case "CategoryId":
 			a.CategoryId = param.AsUint(vv)
+		case "Tags":
+			a.Tags = param.AsString(vv)
 		case "UsedTimes":
 			a.UsedTimes = param.AsUint(vv)
 		}
@@ -724,13 +686,10 @@ func (a *NgingFile) AsRow() param.Store {
 	r["storer_id"] = a.StorerId
 	r["created"] = a.Created
 	r["updated"] = a.Updated
-	r["project"] = a.Project
-	r["table_id"] = a.TableId
-	r["table_name"] = a.TableName
-	r["field_name"] = a.FieldName
 	r["sort"] = a.Sort
 	r["status"] = a.Status
 	r["category_id"] = a.CategoryId
+	r["tags"] = a.Tags
 	r["used_times"] = a.UsedTimes
 	return r
 }

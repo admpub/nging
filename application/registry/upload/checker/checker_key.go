@@ -57,7 +57,7 @@ func Token(values ...interface{}) string {
 	return com.SafeBase64Encode(com.Token(apiKey, com.Str2bytes(urlValues.Encode())))
 }
 
-// URLParam URLParam(`news`,`refid`,123)
+// URLParam URLParam(`refid`,123)
 func URLParam(subdir string, values ...interface{}) string {
 	var urlValues url.Values
 	if len(values) == 1 {
@@ -72,17 +72,15 @@ func URLParam(subdir string, values ...interface{}) string {
 	} else {
 		urlValues = tplfunc.URLValues(values...)
 	}
-	if len(urlValues.Get(`refid`)) == 0 {
-		urlValues.Set(`refid`, `0`)
-	}
 	if SetURLParamDefaultValue != nil {
 		SetURLParamDefaultValue(&urlValues)
 	}
 	unixtime := fmt.Sprint(time.Now().Unix())
 	urlValues.Set(`time`, unixtime)
+	urlValues.Set(`subdir`, subdir)
 	urlValues.Del(`token`)
 	urlValues.Set(`token`, Token(urlValues))
-	return subdir + `?` + urlValues.Encode()
+	return `?` + urlValues.Encode()
 }
 
 var (
@@ -96,12 +94,12 @@ var (
 
 // BackendUploadURL 构建后台上传网址
 func BackendUploadURL(subdir string, values ...interface{}) string {
-	return BackendURL() + BackendUploadPath + `/` + URLParam(subdir, values...)
+	return BackendURL() + BackendUploadPath + URLParam(subdir, values...)
 }
 
 // FrontendUploadURL 构建前台上传网址
 func FrontendUploadURL(subdir string, values ...interface{}) string {
-	return FrontendURL() + FrontendUploadPath + `/` + URLParam(subdir, values...)
+	return FrontendURL() + FrontendUploadPath + URLParam(subdir, values...)
 }
 
 // BackendURL 后台网址

@@ -29,7 +29,6 @@ type Reler interface {
 	DeleteByTableID(project string, table string, tableID string) error
 	FileIDs() []uint64
 	ReplacedViewURLs() map[string]string
-	MoveFileToOwner(table string, fileIDs []uint64, ownerID string) (replaces map[string]string, err error)
 	Context() echo.Context
 }
 

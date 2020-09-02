@@ -113,11 +113,7 @@ func (f *Embedded) DeleteByTableID(project string, table string, tableID string)
 }
 
 func (f *Embedded) UpdateByFileID(project string, table string, field string, tableID string, fileID uint64) error {
-	err := f.File.UpdateUnrelation(project, table, field, tableID, fileID)
-	if err != nil {
-		return err
-	}
-	err = f.File.Incr(fileID)
+	err := f.File.Incr(fileID)
 	if err != nil {
 		return err
 	}
@@ -149,12 +145,6 @@ func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, f
 	}()
 	f.Use(f.base.Tx())
 	f.File.Use(f.Trans())
-
-	// 更新关联未关联的图片数据
-	err = f.File.UpdateUnrelation(project, table, field, tableID, fileIds...)
-	if err != nil {
-		return err
-	}
 
 	m := &dbschema.NgingFileEmbedded{}
 	err = m.Use(f.Trans()).Get(nil, db.And(

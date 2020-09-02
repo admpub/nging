@@ -34,7 +34,6 @@ import (
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
 	"github.com/admpub/nging/application/model/file/storer"
-	"github.com/admpub/nging/application/registry/upload/table"
 )
 
 func NewFile(ctx echo.Context) *File {
@@ -58,40 +57,6 @@ func (f *File) NewFile(m *dbschema.NgingFile) *File {
 	}
 	r.SetContext(f.base.Context)
 	return r
-}
-
-func (f *File) SetTableID(tableID string) table.TableInfoStorer {
-	if len(tableID) == 0 {
-		tableID = `0`
-	}
-	f.NgingFile.TableId = tableID
-	return f
-}
-
-func (f *File) SetTableName(table string) table.TableInfoStorer {
-	f.NgingFile.TableName = table
-	return f
-}
-
-func (f *File) SetFieldName(field string) table.TableInfoStorer {
-	f.NgingFile.FieldName = field
-	return f
-}
-
-func (f *File) TableID() string {
-	return f.NgingFile.TableId
-}
-
-func (f *File) TableName() string {
-	return f.NgingFile.TableName
-}
-
-func (f *File) FieldName() string {
-	return f.NgingFile.FieldName
-}
-
-func (f *File) UploadType() string {
-	return f.NgingFile.TableName + `.` + f.NgingFile.FieldName
 }
 
 func (f *File) SetByUploadResult(result *uploadClient.Result) *File {
@@ -238,7 +203,7 @@ func (f *File) FnGetByMd5() func(r *uploadClient.Result) error {
 		}
 		r.SavePath = fileD.SavePath
 		r.FileURL = fileD.ViewUrl
-		return table.ErrExistsFile
+		return uploadClient.ErrExistsFile
 	}
 }
 
@@ -313,20 +278,6 @@ func (f *File) CondByOwner(ownerType string, ownerID uint64) db.Compound {
 	)
 }
 
-// CondByNoTarget 无宿主条件
-func (f *File) CondByNoTarget() db.Compound {
-	return db.Cond{`table_id`: 0}
-}
-
-// UnbindTargetData 解除宿主时的设置值
-func (f *File) UnbindTargetData() echo.H {
-	return echo.H{
-		`table_id`:   0,
-		`table_name`: ``,
-		`field_name`: ``,
-	}
-}
-
 func (f *File) DeleteBy(cond db.Compound) error {
 	size := 500
 	cnt, err := f.ListByOffset(nil, nil, 0, size, cond)
@@ -375,16 +326,6 @@ func (f *File) RemoveAvatar(ownerType string, ownerID int64) error {
 func (f *File) GetAvatar() (*dbschema.NgingFile, error) {
 	m := &dbschema.NgingFile{}
 	m.CPAFrom(f.NgingFile)
-	err := m.Get(nil, db.Or(
-		db.And(
-			db.Cond{`table_id`: f.TableID()},
-			db.Cond{`table_name`: f.TableName()},
-			db.Cond{`field_name`: f.FieldName()},
-		),
-		db.And(
-			f.CondByNoTarget(),
-			db.Cond{`view_url`: f.ViewUrl},
-		),
-	))
+	err := m.Get(nil, db.Cond{`view_url`: f.ViewUrl})
 	return m, err
 }

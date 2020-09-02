@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/webx-top/com"
-	"github.com/webx-top/db"
 
 	"github.com/admpub/nging/application/dbschema"
 )
@@ -57,9 +56,5 @@ func (f *Embedded) DeleteFileByIds(fileIds []string, excludeFileIds ...string) e
 		return nil
 	}
 	err := f.File.Decr(delIds...)
-	if err != nil {
-		return err
-	}
-	err = f.File.SetFields(nil, f.File.UnbindTargetData(), db.Cond{`used_times`: 0})
 	return err
 }

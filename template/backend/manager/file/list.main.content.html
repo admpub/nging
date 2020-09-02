@@ -20,7 +20,6 @@
                 {{- if not $dialog -}}
                 <th><strong>{{"保存位置"|T}}</strong></th>
                 <th style="width:80px" sort="-type"><strong>{{"文件类型"|T}}</strong></th>
-                <th style="width:80px" sort="table_name"><strong>{{"内容类型"|T}}</strong></th>
                 <th style="width:60px" sort="-size"><strong>{{"大小"|T}}</strong></th>
                 <th style="width:80px" sort="-width"><strong>{{"尺寸"|T}}</strong></th>
                 {{- end -}}
@@ -76,23 +75,13 @@
                 {{- if not $dialog -}}
                 <td>{{$v.SavePath}}</td>
                 <td>{{$v.Type}}</td>
-                <td>
-                    {{- if $v.SubdirInfo -}}
-                    {{- $v.SubdirInfo.String -}}
-                    {{- if $v.FieldName -}}:
-                    {{- $v.SubdirInfo.GetField $v.FieldName -}}
-                    {{- end -}}
-                    {{- else -}}
-                    -
-                    {{- end -}}
-                </td>
                 <td>{{FormatBytes $v.Size 2 true}}</td>
                 <td>{{if gt $v.Width 0}}{{$v.Width}}&times;{{$v.Height}}{{else}}-{{end}}</td>
                 {{- end -}}
                 <td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}</td>
                 {{- if not $dialog -}}
                 <td class="text-center">
-                    <a class="label label-danger" href="__BACKEND__/manager/file/delete/{{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
+                    <a class="label label-danger" href="__BACKEND__/manager/file/delete/{{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|T}}');"><i class="fa fa-times"></i></a>
                 </td>
                 {{- end -}}
             </tr>

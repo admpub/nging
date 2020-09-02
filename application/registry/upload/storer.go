@@ -20,13 +20,9 @@ package upload
 
 import (
 	"github.com/admpub/nging/application/registry/upload/driver"
-	"github.com/admpub/nging/application/registry/upload/table"
 )
 
 var (
-	// ErrExistsFile 文件不存在
-	ErrExistsFile = table.ErrExistsFile
-
 	// StorerRegister 存储引擎注册
 	StorerRegister = driver.Register
 

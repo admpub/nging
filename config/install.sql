@@ -451,18 +451,14 @@ CREATE TABLE `nging_file` (
   `storer_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '位置ID',
   `created` int unsigned NOT NULL DEFAULT '0' COMMENT '上传时间',
   `updated` int unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
-  `project` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '项目名称',
-  `table_id` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '0' COMMENT '关联表数据id',
-  `table_name` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '关联表名称',
-  `field_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '关联表字段名',
   `sort` bigint NOT NULL DEFAULT '0' COMMENT '排序',
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态(1-已审核/0-未审核)',
   `category_id` int unsigned NOT NULL DEFAULT '0' COMMENT '分类ID',
+  `tags` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '标签',
   `used_times` int unsigned NOT NULL DEFAULT '0' COMMENT '被使用的次数',
   PRIMARY KEY (`id`),
   KEY `category_id` (`category_id`),
   KEY `owner_id_owner_type` (`owner_id`,`owner_type`),
-  KEY `table_id_table_name` (`table_id`,`table_name`),
   KEY `view_url` (`view_url`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='文件表';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -759,7 +755,8 @@ CREATE TABLE `nging_login_log` (
   `day` int unsigned NOT NULL DEFAULT '0' COMMENT '日期(Ymd)',
   `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   KEY `ip_address` (`ip_address`,`day`),
-  KEY `owner_type` (`owner_type`,`owner_id`)
+  KEY `owner_type` (`owner_type`,`owner_id`),
+  KEY `created` (`created`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='登录日志';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1031,4 +1028,4 @@ CREATE TABLE `nging_vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-08-31 12:07:33
+-- Dump completed on 2020-09-02 11:51:57
