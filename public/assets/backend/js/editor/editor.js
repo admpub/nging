@@ -558,14 +558,12 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 		xhr.withCredentials = false;
 		xhr.open('POST', uploadUrl);
 		xhr.onload = function () {
-			var json;
-
 			if (xhr.status != 200) {
 				failure('HTTP Error: ' + xhr.status);
 				return;
 			}
 
-			json = JSON.parse(xhr.responseText);
+			var json = JSON.parse(xhr.responseText);
 			//{"Code":1,"Info":"","Data":{"Url":"a.jpg","Id":"1"}}
 			if (!json || typeof json.Code == 'undefined') {
 				failure('Invalid JSON: ' + xhr.responseText);

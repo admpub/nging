@@ -102,9 +102,6 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	clientName := ctx.Form(`client`, `default`)
 	var err error
 	result := &uploadClient.Result{}
-	if !uploadClient.Has(clientName) {
-		return ctx.NewError(code.InvalidParameter, ctx.T(`不支持的client值: %v`, clientName))
-	}
 	client := uploadClient.Get(clientName)
 	client.Init(ctx, result)
 	subdir := ctx.Form(`subdir`, `default`)
