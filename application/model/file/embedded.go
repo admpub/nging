@@ -246,14 +246,14 @@ func (f *Embedded) RelationEmbeddedFiles(project string, table string, field str
 	})
 
 	// 仅仅提取数据库中有记录的数据
-	fids = f.FilterNotExistsFileIDs(fids, files, true)
+	fids = f.FilterNotExistsFileIDs(fids, files)
 
 	err := f.UpdateEmbedded(true, project, table, field, tableID, fids...)
 	return err
 }
 
 // FilterNotExistsFileIDs 仅仅提取数据库中有记录的数据
-func (f *Embedded) FilterNotExistsFileIDs(fids []interface{}, files []interface{}, recordMoved ...bool) []interface{} {
+func (f *Embedded) FilterNotExistsFileIDs(fids []interface{}, files []interface{}) []interface{} {
 	if len(fids) > 0 {
 		fids = f.File.GetIDByIDs(fids)
 	}
@@ -268,19 +268,6 @@ func (f *Embedded) FilterNotExistsFileIDs(fids []interface{}, files []interface{
 		} else {
 			fids = ids
 		}
-		if len(recordMoved) > 0 && recordMoved[0] { // 查询并记录以前已经移动走了的文件
-			movedList, err := f.Moved.ListByViewURLs(files)
-			if err != nil {
-				return fids
-			}
-			if f.replacedViewURLs == nil {
-				f.replacedViewURLs = map[string]string{}
-			}
-			for _, moved := range movedList {
-				f.replacedViewURLs[moved.From] = moved.To
-			}
-		}
-
 	}
 	return fids
 }
@@ -308,7 +295,7 @@ func (f *Embedded) RelationFiles(project string, table string, field string, tab
 	}, seperator...)
 
 	// 仅仅提取数据库中有记录的数据
-	fids = f.FilterNotExistsFileIDs(fids, files, true)
+	fids = f.FilterNotExistsFileIDs(fids, files)
 
 	err := f.UpdateEmbedded(false, project, table, field, tableID, fids...)
 	return err

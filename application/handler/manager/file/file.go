@@ -36,6 +36,7 @@ func setUploadURL(ctx echo.Context) error {
 	if !upload.Subdir.Has(subdir) {
 		return ctx.NewError(code.InvalidParameter, ctx.T(`无效的subdir值`))
 	}
+	ctx.Set(`subdir`, subdir)
 	ctx.Set(`uploadURL`, checker.BackendUploadURL(subdir))
 	return nil
 }

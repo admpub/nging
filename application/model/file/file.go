@@ -227,31 +227,9 @@ func (f *File) DeleteBySavePath(savePath string) (err error) {
 	return f.fireDelete()
 }
 
-func (f *File) UpdateAvatar(project string, ownerType string, ownerID uint64) error {
-	f.base.Begin()
-	f.Use(f.base.Tx())
-	err := f.SetFields(nil, echo.H{
-		`table_id`:   ownerID,
-		`table_name`: ownerType,
-		`field_name`: `avatar`,
-		`project`:    project,
-		`used_times`: 1,
-	}, db.Cond{`id`: f.Id})
-	defer func() {
-		f.base.End(err == nil)
-	}()
-	if err != nil {
-		return err
-	}
-	err = f.RemoveUnusedAvatar(ownerType, f.Id)
-	return err
-}
-
 func (f *File) RemoveUnusedAvatar(ownerType string, excludeID uint64) error {
 	return f.DeleteBy(db.And(
-		db.Cond{`table_id`: 0},
-		db.Cond{`table_name`: ownerType},
-		db.Cond{`field_name`: `avatar`},
+		db.Cond{`subdir`: `avatar`},
 		db.Cond{`id`: db.NotEq(excludeID)},
 	))
 }
@@ -313,14 +291,6 @@ func (f *File) DeleteBy(cond db.Compound) error {
 		}
 	}
 	return err
-}
-
-func (f *File) RemoveAvatar(ownerType string, ownerID int64) error {
-	return f.DeleteBy(db.And(
-		db.Cond{`table_id`: ownerID},
-		db.Cond{`table_name`: ownerType},
-		db.Cond{`field_name`: `avatar`},
-	))
 }
 
 func (f *File) GetAvatar() (*dbschema.NgingFile, error) {

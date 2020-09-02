@@ -1,3 +1,3 @@
 package thumb
 
-var Registry = Sizes{}
+var Registry = Sizes{DefaultSize}

@@ -455,6 +455,7 @@ CREATE TABLE `nging_file` (
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态(1-已审核/0-未审核)',
   `category_id` int unsigned NOT NULL DEFAULT '0' COMMENT '分类ID',
   `tags` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '标签',
+  `subdir` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '子目录',
   `used_times` int unsigned NOT NULL DEFAULT '0' COMMENT '被使用的次数',
   PRIMARY KEY (`id`),
   KEY `category_id` (`category_id`),
@@ -1028,4 +1029,4 @@ CREATE TABLE `nging_vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-09-02 11:51:57
+-- Dump completed on 2020-09-02 14:10:28

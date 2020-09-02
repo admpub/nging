@@ -156,7 +156,7 @@ $(function(){
   }
 //{{end}}
   $('#select2roles').select2({width:'100%'});
-  App.editor.cropImage('{{BackendUploadURL "nging_user.avatar" "refid" (Form "id")}}',"#avatar-image",'#avatar-image-original');
+  App.editor.cropImage('{{BackendUploadURL "avatar"}}',"#avatar-image",'#avatar-image-original');
   submitEncryptedData('#profile-form');
 });
 </script>

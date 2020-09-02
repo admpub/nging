@@ -117,6 +117,7 @@ type NgingFile struct {
 	Status     int    `db:"status" bson:"status" comment:"状态(1-已审核/0-未审核)" json:"status" xml:"status"`
 	CategoryId uint   `db:"category_id" bson:"category_id" comment:"分类ID" json:"category_id" xml:"category_id"`
 	Tags       string `db:"tags" bson:"tags" comment:"标签" json:"tags" xml:"tags"`
+	Subdir     string `db:"subdir" bson:"subdir" comment:"子目录" json:"subdir" xml:"subdir"`
 	UsedTimes  uint   `db:"used_times" bson:"used_times" comment:"被使用的次数" json:"used_times" xml:"used_times"`
 }
 
@@ -505,6 +506,7 @@ func (a *NgingFile) Reset() *NgingFile {
 	a.Status = 0
 	a.CategoryId = 0
 	a.Tags = ``
+	a.Subdir = ``
 	a.UsedTimes = 0
 	return a
 }
@@ -534,6 +536,7 @@ func (a *NgingFile) AsMap() param.Store {
 	r["Status"] = a.Status
 	r["CategoryId"] = a.CategoryId
 	r["Tags"] = a.Tags
+	r["Subdir"] = a.Subdir
 	r["UsedTimes"] = a.UsedTimes
 	return r
 }
@@ -587,6 +590,8 @@ func (a *NgingFile) FromRow(row map[string]interface{}) {
 			a.CategoryId = param.AsUint(value)
 		case "tags":
 			a.Tags = param.AsString(value)
+		case "subdir":
+			a.Subdir = param.AsString(value)
 		case "used_times":
 			a.UsedTimes = param.AsUint(value)
 		}
@@ -659,6 +664,8 @@ func (a *NgingFile) Set(key interface{}, value ...interface{}) {
 			a.CategoryId = param.AsUint(vv)
 		case "Tags":
 			a.Tags = param.AsString(vv)
+		case "Subdir":
+			a.Subdir = param.AsString(vv)
 		case "UsedTimes":
 			a.UsedTimes = param.AsUint(vv)
 		}
@@ -690,6 +697,7 @@ func (a *NgingFile) AsRow() param.Store {
 	r["status"] = a.Status
 	r["category_id"] = a.CategoryId
 	r["tags"] = a.Tags
+	r["subdir"] = a.Subdir
 	r["used_times"] = a.UsedTimes
 	return r
 }

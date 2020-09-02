@@ -8,7 +8,7 @@ function getCropServerURL(){
   }
   return FRONTEND_URL+'/user/file/crop';
 }
-function cropImage(uploadURL,thumbsnailInput,originalInput,type,width,height){
+function cropImage(uploadURL,thumbsnailInput,originalInput,subdir,width,height){
   var options = {
     uploadURL:uploadURL,
     croperURL:getCropServerURL(),
@@ -16,7 +16,7 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,type,width,height){
     thumbsnailInput:thumbsnailInput,
     originalInput:originalInput,
     previewElem:null,
-    type:type,
+    subdir:subdir,
     width:width,
     height:height,
     prefix:'noprefix'
@@ -41,13 +41,14 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,type,width,height){
     options.previewElem = $(options.fileElem).data('preview')||'';
     if(!options.previewElem) options.previewElem=$(options.fileElem).siblings('img')[0];
   }
-  if(!options.type) {
-    options.type = $(options.fileElem).data('type')||'';
-    if(!options.type){
-      options.type=options.uploadURL.split('?',2)[0];
-      options.type=options.type.substring(options.type.lastIndexOf('/')+1);
+  if(!options.subdir) {
+    options.subdir = $(options.fileElem).data('subdir')||'';
+    if(!options.subdir){
+      var matched = options.uploadURL.match(/subdir=([^&]+)/);
+      if(matched && matched.length>0) options.subdir=matched[1];
     }
   }
+  //alert(options.subdir)
   if(options.width==null) {
     options.width=$(options.fileElem).data('width')||200;
   }
@@ -111,7 +112,7 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,type,width,height){
         if(r.Code!=1){
           return App.message({title:App.i18n.SYS_INFO,text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
         }
-        saveBtn.data('type',options.type);
+        saveBtn.data('subdir',options.subdir);
         crop(r.Data.files);
       },
       progressall: function (e, data) {
@@ -141,7 +142,7 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,type,width,height){
         y:c.y*ratio,
         w:c.w*ratio,
         h:c.h*ratio,
-        type:self.data('type')||options.type,
+        subidr:self.data('subdir')||options.subdir,
         size:width+'x'+height
       };
       if(token!==undefined && token) data.token = token;
@@ -188,14 +189,12 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,type,width,height){
     actions.append(resizeBtn);
   }
   browsing.on('click',function(){
-    App.editor.finderDialog(App.editor.browsingFileURL + '?from=parent&size=12&filetype=image&uploadtype='+options.type+'&multiple=0', function (fileList,infoList) {
+    App.editor.finderDialog(App.editor.browsingFileURL + '?from=parent&size=12&filetype=image&subdir='+options.subdir+'&multiple=0', function (fileList,infoList) {
         if (fileList.length <= 0) {
           return App.message({ type: 'error', text: App.t('没有选择任何选项！') });
         }
         var info = infoList[0];
-        var type = '';
-        if(info.table_name && info.field_name) type = info.table_name + '.' + info.field_name;
-        saveBtn.data('type',type);
+        saveBtn.data('subdir',info.subdir);
         $.post(options.uploadURL,{
           pipe:'_queryThumb',
           file:fileList[0],

@@ -129,6 +129,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	fileM.OwnerId = ownerID
 	fileM.OwnerType = ownerType
 	fileM.Type = fileType
+	fileM.Subdir = subdir
 
 	subdir, name, err := prepareData.Checkin(ctx)
 	if err != nil {
