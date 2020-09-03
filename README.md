@@ -1,13 +1,10 @@
-# Nging2
+# Nging V3
 
 ![Nging's logo](https://github.com/admpub/nging/blob/master/public/assets/backend/images/nging-gear.png?raw=true)
 
-> 注意：这是Nging2.0.0源代码，旧版1.x已经转移到 [v1分支](https://github.com/admpub/nging/tree/v1)
+> 注意：这是Nging V3源代码，旧版V2.x、V1.x已经转移到 [v2分支](https://github.com/admpub/nging/tree/v2) [v1分支](https://github.com/admpub/nging/tree/v1)
 
-
-    Nging2相较于Nging1.x进行了相当大的改进，包括增加了几个重量级的新功能、提高了稳定性、降低了CPU占用、修复了界面细节上的bug、作为通用后台基础框架这个定位来进行的项目结构优化等等，欢迎使用最新版本。
-
-    注意：目前只支持安装到MySQL的Nging1.x无缝升级，暂不支持SQLite安装方式的升级（推荐安装到MySQL）。
+    注意：目前只支持安装到MySQL的Nging无缝升级，暂不支持SQLite安装方式的升级（推荐安装到MySQL）。
 
     升级步骤：
     0. 备份数据库和旧版可执行文件；
@@ -34,6 +31,16 @@ import (
 * [最新版下载地址](http://dl.eget.io/nging/latest/)
 
 * [最新版备用地址](http://dl2.eget.io/nging/latest/)
+
+## 版本说明
+
+### V3 说明
+
+2020-09-02. 移除上传文件后需要移动文件的功能，简化上传处理。
+
+### V2 说明
+
+相较于Nging V1.x进行了相当大的改进，包括增加了几个重量级的新功能、提高了稳定性、降低了CPU占用、修复了界面细节上的bug、作为通用后台基础框架这个定位来进行的项目结构优化
 
 ## 安装
 
