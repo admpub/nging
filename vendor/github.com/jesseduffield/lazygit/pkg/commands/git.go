@@ -16,6 +16,7 @@ import (
 	"github.com/go-errors/errors"
 
 	gogit "github.com/go-git/go-git/v5"
+	"github.com/jesseduffield/lazygit/pkg/commands/patch"
 	"github.com/jesseduffield/lazygit/pkg/config"
 	"github.com/jesseduffield/lazygit/pkg/i18n"
 	"github.com/jesseduffield/lazygit/pkg/utils"
@@ -84,7 +85,7 @@ type GitCommand struct {
 	removeFile           func(string) error
 	DotGitDir            string
 	onSuccessfulContinue func() error
-	PatchManager         *PatchManager
+	PatchManager         *patch.PatchManager
 
 	// Push to current determines whether the user has configured to push to the remote branch of the same name as the current or not
 	PushToCurrent bool
@@ -143,7 +144,7 @@ func NewGitCommand(log *logrus.Entry, osCommand *OSCommand, tr *i18n.Localizer, 
 		PushToCurrent:      pushToCurrent,
 	}
 
-	gitCommand.PatchManager = NewPatchManager(log, gitCommand.ApplyPatch)
+	gitCommand.PatchManager = patch.NewPatchManager(log, gitCommand.ApplyPatch, gitCommand.ShowFileDiff)
 
 	return gitCommand, nil
 }
@@ -227,16 +228,27 @@ func stashEntryFromLine(line string, index int) *StashEntry {
 
 // GetStashEntryDiff stash diff
 func (c *GitCommand) ShowStashEntryCmdStr(index int) string {
-	return fmt.Sprintf("git stash show -p --color=%s stash@{%d}", c.colorArg(), index)
+	return fmt.Sprintf("git stash show -p --stat --color=%s stash@{%d}", c.colorArg(), index)
 }
 
 // GetStatusFiles git status files
-func (c *GitCommand) GetStatusFiles() []*File {
-	statusOutput, _ := c.GitStatus()
+type GetStatusFileOptions struct {
+	NoRenames bool
+}
+
+func (c *GitCommand) GetStatusFiles(opts GetStatusFileOptions) []*File {
+	statusOutput, err := c.GitStatus(GitStatusOptions{NoRenames: opts.NoRenames})
+	if err != nil {
+		c.Log.Error(err)
+	}
 	statusStrings := utils.SplitLines(statusOutput)
 	files := []*File{}
 
 	for _, statusString := range statusStrings {
+		if strings.HasPrefix(statusString, "warning") {
+			c.Log.Warning(statusString)
+			continue
+		}
 		change := statusString[0:2]
 		stagedChange := change[0:1]
 		unstagedChange := statusString[1:2]
@@ -275,7 +287,7 @@ func (c *GitCommand) StashSave(message string) error {
 }
 
 // MergeStatusFiles merge status files
-func (c *GitCommand) MergeStatusFiles(oldFiles, newFiles []*File) []*File {
+func (c *GitCommand) MergeStatusFiles(oldFiles, newFiles []*File, selectedFile *File) []*File {
 	if len(oldFiles) == 0 {
 		return newFiles
 	}
@@ -286,10 +298,15 @@ func (c *GitCommand) MergeStatusFiles(oldFiles, newFiles []*File) []*File {
 	result := []*File{}
 	for _, oldFile := range oldFiles {
 		for newIndex, newFile := range newFiles {
-			if oldFile.Name == newFile.Name {
+			if includesInt(appendedIndexes, newIndex) {
+				continue
+			}
+			// if we just staged B and in doing so created 'A -> B' and we are currently have oldFile: A and newFile: 'A -> B', we want to wait until we come across B so the our cursor isn't jumping anywhere
+			waitForMatchingFile := selectedFile != nil && newFile.IsRename() && !selectedFile.IsRename() && newFile.Matches(selectedFile) && !oldFile.Matches(selectedFile)
+
+			if oldFile.Matches(newFile) && !waitForMatchingFile {
 				result = append(result, newFile)
 				appendedIndexes = append(appendedIndexes, newIndex)
-				break
 			}
 		}
 	}
@@ -360,11 +377,26 @@ func (c *GitCommand) RebaseBranch(branchName string) error {
 	return c.OSCommand.RunPreparedCommand(cmd)
 }
 
+type FetchOptions struct {
+	PromptUserForCredential func(string) string
+	RemoteName              string
+	BranchName              string
+}
+
 // Fetch fetch git repo
-func (c *GitCommand) Fetch(unamePassQuestion func(string) string, canAskForCredentials bool) error {
-	return c.OSCommand.DetectUnamePass("git fetch", func(question string) string {
-		if canAskForCredentials {
-			return unamePassQuestion(question)
+func (c *GitCommand) Fetch(opts FetchOptions) error {
+	command := "git fetch"
+
+	if opts.RemoteName != "" {
+		command = fmt.Sprintf("%s %s", command, opts.RemoteName)
+	}
+	if opts.BranchName != "" {
+		command = fmt.Sprintf("%s %s", command, opts.BranchName)
+	}
+
+	return c.OSCommand.DetectUnamePass(command, func(question string) string {
+		if opts.PromptUserForCredential != nil {
+			return opts.PromptUserForCredential(question)
 		}
 		return "\n"
 	})
@@ -376,8 +408,8 @@ func (c *GitCommand) ResetToCommit(sha string, strength string, options RunComma
 }
 
 // NewBranch create new branch
-func (c *GitCommand) NewBranch(name string, baseBranch string) error {
-	return c.OSCommand.RunCommand("git checkout -b %s %s", name, baseBranch)
+func (c *GitCommand) NewBranch(name string, base string) error {
+	return c.OSCommand.RunCommand("git checkout -b %s %s", name, base)
 }
 
 // CurrentBranchName get the current branch name and displayname.
@@ -421,10 +453,20 @@ func (c *GitCommand) ListStash() (string, error) {
 	return c.OSCommand.RunCommandWithOutput("git stash list")
 }
 
+type MergeOpts struct {
+	FastForwardOnly bool
+}
+
 // Merge merge
-func (c *GitCommand) Merge(branchName string) error {
+func (c *GitCommand) Merge(branchName string, opts MergeOpts) error {
 	mergeArgs := c.Config.GetUserConfig().GetString("git.merging.args")
-	return c.OSCommand.RunCommand("git merge --no-edit %s %s", mergeArgs, branchName)
+
+	command := fmt.Sprintf("git merge --no-edit %s %s", mergeArgs, branchName)
+	if opts.FastForwardOnly {
+		command = fmt.Sprintf("%s --ff-only", command)
+	}
+
+	return c.OSCommand.RunCommand(command)
 }
 
 // AbortMerge abort merge
@@ -466,6 +508,13 @@ func (c *GitCommand) GetHeadCommitMessage() (string, error) {
 	return strings.TrimSpace(message), err
 }
 
+func (c *GitCommand) GetCommitMessage(commitSha string) (string, error) {
+	cmdStr := "git rev-list --format=%B --max-count=1 " + commitSha
+	messageWithHeader, err := c.OSCommand.RunCommandWithOutput(cmdStr)
+	message := strings.Join(strings.SplitAfter(messageWithHeader, "\n")[1:], "\n")
+	return strings.TrimSpace(message), err
+}
+
 // AmendHead amends HEAD with whatever is staged in your working tree
 func (c *GitCommand) AmendHead() (*exec.Cmd, error) {
 	command := "git commit --amend --no-edit --allow-empty"
@@ -476,18 +525,8 @@ func (c *GitCommand) AmendHead() (*exec.Cmd, error) {
 	return nil, c.OSCommand.RunCommand(command)
 }
 
-// Pull pulls from repo
-func (c *GitCommand) Pull(args string, ask func(string) string) error {
-	return c.OSCommand.DetectUnamePass("git pull --no-edit "+args, ask)
-}
-
-// PullWithoutPasswordCheck assumes that the pull will not prompt the user for a password
-func (c *GitCommand) PullWithoutPasswordCheck(args string) error {
-	return c.OSCommand.RunCommand("git pull --no-edit " + args)
-}
-
 // Push pushes to a branch
-func (c *GitCommand) Push(branchName string, force bool, upstream string, args string, ask func(string) string) error {
+func (c *GitCommand) Push(branchName string, force bool, upstream string, args string, promptUserForCredential func(string) string) error {
 	forceFlag := ""
 	if force {
 		forceFlag = "--force-with-lease"
@@ -499,7 +538,7 @@ func (c *GitCommand) Push(branchName string, force bool, upstream string, args s
 	}
 
 	cmd := fmt.Sprintf("git push --follow-tags %s %s %s", forceFlag, setUpstreamArg, args)
-	return c.OSCommand.DetectUnamePass(cmd, ask)
+	return c.OSCommand.DetectUnamePass(cmd, promptUserForCredential)
 }
 
 // CatFile obtains the content of a file
@@ -509,7 +548,9 @@ func (c *GitCommand) CatFile(fileName string) (string, error) {
 
 // StageFile stages a file
 func (c *GitCommand) StageFile(fileName string) error {
-	return c.OSCommand.RunCommand("git add %s", c.OSCommand.Quote(fileName))
+	// renamed files look like "file1 -> file2"
+	fileNames := strings.Split(fileName, " -> ")
+	return c.OSCommand.RunCommand("git add %s", c.OSCommand.Quote(fileNames[len(fileNames)-1]))
 }
 
 // StageAll stages all files
@@ -540,8 +581,16 @@ func (c *GitCommand) UnStageFile(fileName string, tracked bool) error {
 }
 
 // GitStatus returns the plaintext short status of the repo
-func (c *GitCommand) GitStatus() (string, error) {
-	return c.OSCommand.RunCommandWithOutput("git status --untracked-files=all --porcelain")
+type GitStatusOptions struct {
+	NoRenames bool
+}
+
+func (c *GitCommand) GitStatus(opts GitStatusOptions) (string, error) {
+	noRenamesFlag := ""
+	if opts.NoRenames {
+		noRenamesFlag = "--no-renames"
+	}
+	return c.OSCommand.RunCommandWithOutput("git status --untracked-files=all --porcelain %s", noRenamesFlag)
 }
 
 // IsInMergeState states whether we are still mid-merge
@@ -567,8 +616,61 @@ func (c *GitCommand) RebaseMode() (string, error) {
 	}
 }
 
+func (c *GitCommand) BeforeAndAfterFileForRename(file *File) (*File, *File, error) {
+
+	if !file.IsRename() {
+		return nil, nil, errors.New("Expected renamed file")
+	}
+
+	// we've got a file that represents a rename from one file to another. Unfortunately
+	// our File abstraction fails to consider this case, so here we will refetch
+	// all files, passing the --no-renames flag and then recursively call the function
+	// again for the before file and after file. At some point we should fix the abstraction itself
+
+	split := strings.Split(file.Name, " -> ")
+	filesWithoutRenames := c.GetStatusFiles(GetStatusFileOptions{NoRenames: true})
+	var beforeFile *File
+	var afterFile *File
+	for _, f := range filesWithoutRenames {
+		if f.Name == split[0] {
+			beforeFile = f
+		}
+		if f.Name == split[1] {
+			afterFile = f
+		}
+	}
+
+	if beforeFile == nil || afterFile == nil {
+		return nil, nil, errors.New("Could not find deleted file or new file for file rename")
+	}
+
+	if beforeFile.IsRename() || afterFile.IsRename() {
+		// probably won't happen but we want to ensure we don't get an infinite loop
+		return nil, nil, errors.New("Nested rename found")
+	}
+
+	return beforeFile, afterFile, nil
+}
+
 // DiscardAllFileChanges directly
 func (c *GitCommand) DiscardAllFileChanges(file *File) error {
+	if file.IsRename() {
+		beforeFile, afterFile, err := c.BeforeAndAfterFileForRename(file)
+		if err != nil {
+			return err
+		}
+
+		if err := c.DiscardAllFileChanges(beforeFile); err != nil {
+			return err
+		}
+
+		if err := c.DiscardAllFileChanges(afterFile); err != nil {
+			return err
+		}
+
+		return nil
+	}
+
 	// if the file isn't tracked, we assume you want to delete it
 	quotedFileName := c.OSCommand.Quote(file.Name)
 	if file.HasStagedChanges || file.HasMergeConflicts {
@@ -663,14 +765,14 @@ func (c *GitCommand) CheckRemoteBranchExists(branch *Branch) bool {
 	return err == nil
 }
 
-// Diff returns the diff of a file
-func (c *GitCommand) Diff(file *File, plain bool, cached bool) string {
+// WorktreeFileDiff returns the diff of a file
+func (c *GitCommand) WorktreeFileDiff(file *File, plain bool, cached bool) string {
 	// for now we assume an error means the file was deleted
-	s, _ := c.OSCommand.RunCommandWithOutput(c.DiffCmdStr(file, plain, cached))
+	s, _ := c.OSCommand.RunCommandWithOutput(c.WorktreeFileDiffCmdStr(file, plain, cached))
 	return s
 }
 
-func (c *GitCommand) DiffCmdStr(file *File, plain bool, cached bool) string {
+func (c *GitCommand) WorktreeFileDiffCmdStr(file *File, plain bool, cached bool) string {
 	cachedArg := ""
 	trackedArg := "--"
 	colorArg := c.colorArg()
@@ -704,8 +806,9 @@ func (c *GitCommand) ApplyPatch(patch string, flags ...string) error {
 	return c.OSCommand.RunCommand("git apply %s %s", flagStr, c.OSCommand.Quote(filepath))
 }
 
-func (c *GitCommand) FastForward(branchName string, remoteName string, remoteBranchName string) error {
-	return c.OSCommand.RunCommand("git fetch %s %s:%s", remoteName, remoteBranchName, branchName)
+func (c *GitCommand) FastForward(branchName string, remoteName string, remoteBranchName string, promptUserForCredential func(string) string) error {
+	command := fmt.Sprintf("git fetch %s %s:%s", remoteName, remoteBranchName, branchName)
+	return c.OSCommand.DetectUnamePass(command, promptUserForCredential)
 }
 
 func (c *GitCommand) RunSkipEditorCommand(command string) error {
@@ -949,45 +1052,67 @@ func (c *GitCommand) CherryPickCommits(commits []*Commit) error {
 	return c.OSCommand.RunPreparedCommand(cmd)
 }
 
-// GetCommitFiles get the specified commit files
-func (c *GitCommand) GetCommitFiles(commitSha string, patchManager *PatchManager) ([]*CommitFile, error) {
-	files, err := c.OSCommand.RunCommandWithOutput("git diff-tree --no-commit-id --name-only -r --no-renames %s", commitSha)
+// GetFilesInDiff get the specified commit files
+func (c *GitCommand) GetFilesInDiff(from string, to string, reverse bool, patchManager *patch.PatchManager) ([]*CommitFile, error) {
+	reverseFlag := ""
+	if reverse {
+		reverseFlag = " -R "
+	}
+
+	filenames, err := c.OSCommand.RunCommandWithOutput("git diff --name-status %s %s %s", reverseFlag, from, to)
 	if err != nil {
 		return nil, err
 	}
 
+	return c.GetCommitFilesFromFilenames(filenames, to, patchManager), nil
+}
+
+// filenames string is something like "file1\nfile2\nfile3"
+func (c *GitCommand) GetCommitFilesFromFilenames(filenames string, parent string, patchManager *patch.PatchManager) []*CommitFile {
 	commitFiles := make([]*CommitFile, 0)
 
-	for _, file := range strings.Split(strings.TrimRight(files, "\n"), "\n") {
-		status := UNSELECTED
-		if patchManager != nil && patchManager.CommitSha == commitSha {
-			status = patchManager.GetFileStatus(file)
+	for _, line := range strings.Split(strings.TrimRight(filenames, "\n"), "\n") {
+		// typical result looks like 'A my_file' meaning my_file was added
+		if line == "" {
+			continue
+		}
+		changeStatus := line[0:1]
+		name := line[2:]
+		status := patch.UNSELECTED
+		if patchManager != nil && patchManager.To == parent {
+			status = patchManager.GetFileStatus(name)
 		}
 
 		commitFiles = append(commitFiles, &CommitFile{
-			Sha:           commitSha,
-			Name:          file,
-			DisplayString: file,
-			Status:        status,
+			Parent:       parent,
+			Name:         name,
+			ChangeStatus: changeStatus,
+			PatchStatus:  status,
 		})
 	}
 
-	return commitFiles, nil
+	return commitFiles
 }
 
-// ShowCommitFile get the diff of specified commit file
-func (c *GitCommand) ShowCommitFile(commitSha, fileName string, plain bool) (string, error) {
-	cmdStr := c.ShowCommitFileCmdStr(commitSha, fileName, plain)
+// ShowFileDiff get the diff of specified from and to. Typically this will be used for a single commit so it'll be 123abc^..123abc
+// but when we're in diff mode it could be any 'from' to any 'to'. The reverse flag is also here thanks to diff mode.
+func (c *GitCommand) ShowFileDiff(from string, to string, reverse bool, fileName string, plain bool) (string, error) {
+	cmdStr := c.ShowFileDiffCmdStr(from, to, reverse, fileName, plain)
 	return c.OSCommand.RunCommandWithOutput(cmdStr)
 }
 
-func (c *GitCommand) ShowCommitFileCmdStr(commitSha, fileName string, plain bool) string {
+func (c *GitCommand) ShowFileDiffCmdStr(from string, to string, reverse bool, fileName string, plain bool) string {
 	colorArg := c.colorArg()
 	if plain {
 		colorArg = "never"
 	}
 
-	return fmt.Sprintf("git show --no-renames --color=%s %s -- %s", colorArg, commitSha, fileName)
+	reverseFlag := ""
+	if reverse {
+		reverseFlag = " -R "
+	}
+
+	return fmt.Sprintf("git diff --no-renames --color=%s %s %s %s -- %s", colorArg, from, to, reverseFlag, fileName)
 }
 
 // CheckoutFile checks out the file for the given commit
@@ -1093,7 +1218,7 @@ func (c *GitCommand) StashSaveStagedChanges(message string) error {
 	// if you had staged an untracked file, that will now appear as 'AD' in git status
 	// meaning it's deleted in your working tree but added in your index. Given that it's
 	// now safely stashed, we need to remove it.
-	files := c.GetStatusFiles()
+	files := c.GetStatusFiles(GetStatusFileOptions{})
 	for _, file := range files {
 		if file.ShortStatus == "AD" {
 			if err := c.UnStageFile(file.Name, false); err != nil {

@@ -1,8 +1,11 @@
 package gui
 
 import (
+	"fmt"
+
+	"github.com/go-errors/errors"
 	"github.com/jesseduffield/gocui"
-	"github.com/jesseduffield/lazygit/pkg/commands"
+	"github.com/jesseduffield/lazygit/pkg/commands/patch"
 )
 
 // Currently there are two 'pseudo-panels' that make use of this 'pseudo-panel'.
@@ -24,7 +27,7 @@ const (
 func (gui *Gui) refreshLineByLinePanel(diff string, secondaryDiff string, secondaryFocused bool, selectedLineIdx int) (bool, error) {
 	state := gui.State.Panels.LineByLine
 
-	patchParser, err := commands.NewPatchParser(gui.Log, diff)
+	patchParser, err := patch.NewPatchParser(gui.Log, diff)
 	if err != nil {
 		return false, nil
 	}
@@ -50,7 +53,7 @@ func (gui *Gui) refreshLineByLinePanel(diff string, secondaryDiff string, second
 			prevNewHunk := state.PatchParser.GetHunkContainingLine(state.SelectedLineIdx, 0)
 			selectedLineIdx = patchParser.GetNextStageableLineIndex(prevNewHunk.FirstLineIdx)
 			newHunk := patchParser.GetHunkContainingLine(selectedLineIdx, 0)
-			firstLineIdx, lastLineIdx = newHunk.FirstLineIdx, newHunk.LastLineIdx
+			firstLineIdx, lastLineIdx = newHunk.FirstLineIdx, newHunk.LastLineIdx()
 		} else {
 			selectedLineIdx = patchParser.GetNextStageableLineIndex(state.SelectedLineIdx)
 			firstLineIdx, lastLineIdx = selectedLineIdx, selectedLineIdx
@@ -70,7 +73,7 @@ func (gui *Gui) refreshLineByLinePanel(diff string, secondaryDiff string, second
 		SecondaryFocused: secondaryFocused,
 	}
 
-	if err := gui.refreshMainView(); err != nil {
+	if err := gui.refreshMainViewForLineByLine(); err != nil {
 		return false, err
 	}
 
@@ -82,7 +85,7 @@ func (gui *Gui) refreshLineByLinePanel(diff string, secondaryDiff string, second
 	secondaryView.Highlight = true
 	secondaryView.Wrap = false
 
-	secondaryPatchParser, err := commands.NewPatchParser(gui.Log, secondaryDiff)
+	secondaryPatchParser, err := patch.NewPatchParser(gui.Log, secondaryDiff)
 	if err != nil {
 		return false, nil
 	}
@@ -117,16 +120,16 @@ func (gui *Gui) handleSelectNextHunk(g *gocui.Gui, v *gocui.View) error {
 	return gui.selectNewHunk(newHunk)
 }
 
-func (gui *Gui) selectNewHunk(newHunk *commands.PatchHunk) error {
+func (gui *Gui) selectNewHunk(newHunk *patch.PatchHunk) error {
 	state := gui.State.Panels.LineByLine
 	state.SelectedLineIdx = state.PatchParser.GetNextStageableLineIndex(newHunk.FirstLineIdx)
 	if state.SelectMode == HUNK {
-		state.FirstLineIdx, state.LastLineIdx = newHunk.FirstLineIdx, newHunk.LastLineIdx
+		state.FirstLineIdx, state.LastLineIdx = newHunk.FirstLineIdx, newHunk.LastLineIdx()
 	} else {
 		state.FirstLineIdx, state.LastLineIdx = state.SelectedLineIdx, state.SelectedLineIdx
 	}
 
-	if err := gui.refreshMainView(); err != nil {
+	if err := gui.refreshMainViewForLineByLine(); err != nil {
 		return err
 	}
 
@@ -166,7 +169,7 @@ func (gui *Gui) handleSelectNewLine(newSelectedLineIdx int) error {
 		state.FirstLineIdx = state.SelectedLineIdx
 	}
 
-	if err := gui.refreshMainView(); err != nil {
+	if err := gui.refreshMainViewForLineByLine(); err != nil {
 		return err
 	}
 
@@ -222,18 +225,22 @@ func (gui *Gui) handleMouseScrollDown(g *gocui.Gui, v *gocui.View) error {
 }
 
 func (gui *Gui) getSelectedCommitFileName() string {
-	return gui.State.CommitFiles[gui.State.Panels.CommitFiles.SelectedLine].Name
+	return gui.State.CommitFiles[gui.State.Panels.CommitFiles.SelectedLineIdx].Name
 }
 
-func (gui *Gui) refreshMainView() error {
+func (gui *Gui) refreshMainViewForLineByLine() error {
 	state := gui.State.Panels.LineByLine
 
 	var includedLineIndices []int
 	// I'd prefer not to have knowledge of contexts using this file but I'm not sure
 	// how to get around this
-	if gui.State.MainContext == "patch-building" {
+	if gui.currentContext().GetKey() == gui.Contexts.PatchBuilding.Context.GetKey() {
 		filename := gui.getSelectedCommitFileName()
-		includedLineIndices = gui.GitCommand.PatchManager.GetFileIncLineIndices(filename)
+		var err error
+		includedLineIndices, err = gui.GitCommand.PatchManager.GetFileIncLineIndices(filename)
+		if err != nil {
+			return err
+		}
 	}
 	colorDiff := state.PatchParser.Render(state.FirstLineIdx, state.LastLineIdx, includedLineIndices)
 
@@ -265,7 +272,7 @@ func (gui *Gui) focusSelection(includeCurrentHunk bool) error {
 	if includeCurrentHunk {
 		hunk := state.PatchParser.GetHunkContainingLine(state.SelectedLineIdx, 0)
 		firstLineIdx = hunk.FirstLineIdx
-		lastLineIdx = hunk.LastLineIdx
+		lastLineIdx = hunk.LastLineIdx()
 	}
 
 	margin := 0 // we may want to have a margin in place to show context  but right now I'm thinking we keep this at zero
@@ -299,7 +306,7 @@ func (gui *Gui) handleToggleSelectRange(g *gocui.Gui, v *gocui.View) error {
 	}
 	state.FirstLineIdx, state.LastLineIdx = state.SelectedLineIdx, state.SelectedLineIdx
 
-	return gui.refreshMainView()
+	return gui.refreshMainViewForLineByLine()
 }
 
 func (gui *Gui) handleToggleSelectHunk(g *gocui.Gui, v *gocui.View) error {
@@ -311,10 +318,10 @@ func (gui *Gui) handleToggleSelectHunk(g *gocui.Gui, v *gocui.View) error {
 	} else {
 		state.SelectMode = HUNK
 		selectedHunk := state.PatchParser.GetHunkContainingLine(state.SelectedLineIdx, 0)
-		state.FirstLineIdx, state.LastLineIdx = selectedHunk.FirstLineIdx, selectedHunk.LastLineIdx
+		state.FirstLineIdx, state.LastLineIdx = selectedHunk.FirstLineIdx, selectedHunk.LastLineIdx()
 	}
 
-	if err := gui.refreshMainView(); err != nil {
+	if err := gui.refreshMainViewForLineByLine(); err != nil {
 		return err
 	}
 
@@ -322,6 +329,33 @@ func (gui *Gui) handleToggleSelectHunk(g *gocui.Gui, v *gocui.View) error {
 }
 
 func (gui *Gui) handleEscapeLineByLinePanel() {
-	gui.changeMainViewsContext("normal")
 	gui.State.Panels.LineByLine = nil
+}
+
+func (gui *Gui) handleOpenFileAtLine() error {
+	// again, would be good to use inheritance here (or maybe even composition)
+	var filename string
+	switch gui.State.MainContext {
+	case gui.Contexts.PatchBuilding.Context.GetKey():
+		filename = gui.getSelectedCommitFileName()
+	case gui.Contexts.Staging.Context.GetKey():
+		file := gui.getSelectedFile()
+		if file == nil {
+			return nil
+		}
+		filename = file.Name
+	default:
+		return errors.Errorf("unknown main context: %s", gui.State.MainContext)
+	}
+
+	state := gui.State.Panels.LineByLine
+	// need to look at current index, then work out what my hunk's header information is, and see how far my line is away from the hunk header
+	selectedHunk := state.PatchParser.GetHunkContainingLine(state.SelectedLineIdx, 0)
+	lineNumber := selectedHunk.LineNumberOfLine(state.SelectedLineIdx)
+	filenameWithLineNum := fmt.Sprintf("%s:%d", filename, lineNumber)
+	if err := gui.OSCommand.OpenFile(filenameWithLineNum); err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
+	"github.com/go-errors/errors"
 	"github.com/golang-collections/collections/stack"
 	"github.com/jesseduffield/gocui"
 	"github.com/jesseduffield/lazygit/pkg/commands"
@@ -19,8 +20,13 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/utils"
 )
 
-func (gui *Gui) findConflicts(content string) ([]commands.Conflict, error) {
+func (gui *Gui) findConflicts(content string) []commands.Conflict {
 	conflicts := make([]commands.Conflict, 0)
+
+	if content == "" {
+		return conflicts
+	}
+
 	var newConflict commands.Conflict
 	for i, line := range utils.SplitLines(content) {
 		trimmedLine := strings.TrimPrefix(line, "++")
@@ -34,7 +40,7 @@ func (gui *Gui) findConflicts(content string) ([]commands.Conflict, error) {
 			conflicts = append(conflicts, newConflict)
 		}
 	}
-	return conflicts, nil
+	return conflicts
 }
 
 func (gui *Gui) shiftConflict(conflicts []commands.Conflict) (commands.Conflict, []commands.Conflict) {
@@ -112,10 +118,10 @@ func (gui *Gui) isIndexToDelete(i int, conflict commands.Conflict, pick string) 
 		(pick == "top" && i > conflict.Middle && i < conflict.End)
 }
 
-func (gui *Gui) resolveConflict(g *gocui.Gui, conflict commands.Conflict, pick string) error {
-	gitFile, err := gui.getSelectedFile()
-	if err != nil {
-		return err
+func (gui *Gui) resolveConflict(conflict commands.Conflict, pick string) error {
+	gitFile := gui.getSelectedFile()
+	if gitFile == nil {
+		return nil
 	}
 	file, err := os.Open(gitFile.Name)
 	if err != nil {
@@ -139,9 +145,9 @@ func (gui *Gui) resolveConflict(g *gocui.Gui, conflict commands.Conflict, pick s
 }
 
 func (gui *Gui) pushFileSnapshot(g *gocui.Gui) error {
-	gitFile, err := gui.getSelectedFile()
-	if err != nil {
-		return err
+	gitFile := gui.getSelectedFile()
+	if gitFile == nil {
+		return nil
 	}
 	content, err := gui.GitCommand.CatFile(gitFile.Name)
 	if err != nil {
@@ -156,9 +162,9 @@ func (gui *Gui) handlePopFileSnapshot(g *gocui.Gui, v *gocui.View) error {
 		return nil
 	}
 	prevContent := gui.State.Panels.Merging.EditHistory.Pop().(string)
-	gitFile, err := gui.getSelectedFile()
-	if err != nil {
-		return err
+	gitFile := gui.getSelectedFile()
+	if gitFile == nil {
+		return nil
 	}
 	if err := ioutil.WriteFile(gitFile.Name, []byte(prevContent), 0644); err != nil {
 		return err
@@ -179,7 +185,7 @@ func (gui *Gui) handlePickHunk(g *gocui.Gui, v *gocui.View) error {
 	if gui.State.Panels.Merging.ConflictTop {
 		pick = "top"
 	}
-	err := gui.resolveConflict(g, conflict, pick)
+	err := gui.resolveConflict(conflict, pick)
 	if err != nil {
 		panic(err)
 	}
@@ -200,7 +206,7 @@ func (gui *Gui) handlePickBothHunks(g *gocui.Gui, v *gocui.View) error {
 	if err := gui.pushFileSnapshot(g); err != nil {
 		return err
 	}
-	err := gui.resolveConflict(g, conflict, "both")
+	err := gui.resolveConflict(conflict, "both")
 	if err != nil {
 		panic(err)
 	}
@@ -211,15 +217,15 @@ func (gui *Gui) refreshMergePanel() error {
 	panelState := gui.State.Panels.Merging
 	cat, err := gui.catSelectedFile(gui.g)
 	if err != nil {
-		return err
+		return gui.refreshMainViews(refreshMainOpts{
+			main: &viewUpdateOpts{
+				title: "",
+				task:  gui.createRenderStringTask(err.Error()),
+			},
+		})
 	}
-	if cat == "" {
-		return nil
-	}
-	panelState.Conflicts, err = gui.findConflicts(cat)
-	if err != nil {
-		return err
-	}
+
+	panelState.Conflicts = gui.findConflicts(cat)
 
 	// handle potential fixes that the user made in their editor since we last refreshed
 	if len(panelState.Conflicts) == 0 {
@@ -238,31 +244,29 @@ func (gui *Gui) refreshMergePanel() error {
 		return err
 	}
 
-	mainView := gui.getMainView()
-	mainView.Wrap = false
-
-	if err := gui.newStringTaskWithoutScroll("main", content); err != nil {
-		return err
-	}
-
-	return nil
+	return gui.refreshMainViews(refreshMainOpts{
+		main: &viewUpdateOpts{
+			title:  gui.Tr.SLocalize("MergeConflictsTitle"),
+			task:   gui.createRenderStringWithoutScrollTask(content),
+			noWrap: true,
+		},
+	})
 }
 
 func (gui *Gui) catSelectedFile(g *gocui.Gui) (string, error) {
-	item, err := gui.getSelectedFile()
-	if err != nil {
-		if err != gui.Errors.ErrNoFiles {
-			return "", err
-		}
-		return "", gui.newStringTask("main", gui.Tr.SLocalize("NoFilesDisplay"))
+	item := gui.getSelectedFile()
+	if item == nil {
+		return "", errors.New(gui.Tr.SLocalize("NoFilesDisplay"))
 	}
+
 	if item.Type != "file" {
-		return "", gui.newStringTask("main", gui.Tr.SLocalize("NotAFile"))
+		return "", errors.New(gui.Tr.SLocalize("NotAFile"))
 	}
+
 	cat, err := gui.GitCommand.CatFile(item.Name)
 	if err != nil {
 		gui.Log.Error(err)
-		return "", gui.newStringTask("main", err.Error())
+		return "", err
 	}
 	return cat, nil
 }
@@ -288,17 +292,17 @@ func (gui *Gui) scrollToConflict(g *gocui.Gui) error {
 	return nil
 }
 
-func (gui *Gui) renderMergeOptions() error {
-	return gui.renderOptionsMap(map[string]string{
+func (gui *Gui) getMergingOptions() map[string]string {
+	return map[string]string{
 		fmt.Sprintf("%s %s", gui.getKeyDisplay("universal.prevItem"), gui.getKeyDisplay("universal.nextItem")):   gui.Tr.SLocalize("selectHunk"),
 		fmt.Sprintf("%s %s", gui.getKeyDisplay("universal.prevBlock"), gui.getKeyDisplay("universal.nextBlock")): gui.Tr.SLocalize("navigateConflicts"),
 		gui.getKeyDisplay("universal.select"):   gui.Tr.SLocalize("pickHunk"),
 		gui.getKeyDisplay("main.pickBothHunks"): gui.Tr.SLocalize("pickBothHunks"),
 		gui.getKeyDisplay("universal.undo"):     gui.Tr.SLocalize("undo"),
-	})
+	}
 }
 
-func (gui *Gui) handleEscapeMerge(g *gocui.Gui, v *gocui.View) error {
+func (gui *Gui) handleEscapeMerge() error {
 	gui.takeOverScrolling()
 
 	gui.State.Panels.Merging.EditHistory = stack.New()
@@ -308,7 +312,7 @@ func (gui *Gui) handleEscapeMerge(g *gocui.Gui, v *gocui.View) error {
 	// it's possible this method won't be called from the merging view so we need to
 	// ensure we only 'return' focus if we already have it
 	if gui.g.CurrentView() == gui.getMainView() {
-		return gui.switchFocus(g, v, gui.getFilesView())
+		return gui.switchContext(gui.Contexts.Files.Context)
 	}
 	return nil
 }
@@ -323,22 +327,34 @@ func (gui *Gui) handleCompleteMerge() error {
 	// if we got conflicts after unstashing, we don't want to call any git
 	// commands to continue rebasing/merging here
 	if gui.GitCommand.WorkingTreeState() == "normal" {
-		return gui.handleEscapeMerge(gui.g, gui.getMainView())
+		return gui.handleEscapeMerge()
 	}
 	// if there are no more files with merge conflicts, we should ask whether the user wants to continue
 	if !gui.anyFilesWithMergeConflicts() {
 		return gui.promptToContinue()
 	}
-	return gui.handleEscapeMerge(gui.g, gui.getMainView())
+	return gui.handleEscapeMerge()
 }
 
 // promptToContinue asks the user if they want to continue the rebase/merge that's in progress
 func (gui *Gui) promptToContinue() error {
 	gui.takeOverScrolling()
 
-	return gui.createConfirmationPanel(gui.g, gui.getFilesView(), true, "continue", gui.Tr.SLocalize("ConflictsResolved"), func(g *gocui.Gui, v *gocui.View) error {
-		return gui.genericMergeCommand("continue")
-	}, nil)
+	return gui.ask(askOpts{
+		title:               "continue",
+		prompt:              gui.Tr.SLocalize("ConflictsResolved"),
+		handlersManageFocus: true,
+		handleConfirm: func() error {
+			if err := gui.switchContext(gui.Contexts.Files.Context); err != nil {
+				return err
+			}
+
+			return gui.genericMergeCommand("continue")
+		},
+		handleClose: func() error {
+			return gui.switchContext(gui.Contexts.Files.Context)
+		},
+	})
 }
 
 func (gui *Gui) canScrollMergePanel() bool {
@@ -347,8 +363,8 @@ func (gui *Gui) canScrollMergePanel() bool {
 		return false
 	}
 
-	file, err := gui.getSelectedFile()
-	if err != nil {
+	file := gui.getSelectedFile()
+	if file == nil {
 		return false
 	}
 

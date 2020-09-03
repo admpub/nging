@@ -276,7 +276,9 @@ github.com/andybalholm/cascadia
 github.com/armon/go-socks5
 # github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a
 github.com/asaskevich/govalidator
-# github.com/aws/aws-sdk-go v1.34.5
+# github.com/atotto/clipboard v0.1.2
+github.com/atotto/clipboard
+# github.com/aws/aws-sdk-go v1.34.15
 ## explicit
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -478,7 +480,7 @@ github.com/codegangsta/inject
 # github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
 ## explicit
 github.com/coscms/go-imgparse/imgparse
-# github.com/creack/pty v1.1.10-0.20191209115840-8ab47f72e854
+# github.com/creack/pty v1.1.11
 github.com/creack/pty
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
@@ -553,7 +555,7 @@ github.com/go-acme/lego/v3/lego
 github.com/go-acme/lego/v3/log
 github.com/go-acme/lego/v3/platform/wait
 github.com/go-acme/lego/v3/registration
-# github.com/go-errors/errors v1.0.2
+# github.com/go-errors/errors v1.1.1
 github.com/go-errors/errors
 # github.com/go-git/gcfg v1.5.0
 github.com/go-git/gcfg
@@ -710,21 +712,23 @@ github.com/inconshreveable/mousetrap
 github.com/jbenet/go-context/io
 # github.com/jedib0t/go-pretty v4.3.0+incompatible
 ## explicit
-# github.com/jesseduffield/gocui v0.3.1-0.20200513110002-8cde0b9be542
+# github.com/jesseduffield/gocui v0.3.1-0.20200824100831-1b6ec5d7d449
 github.com/jesseduffield/gocui
-# github.com/jesseduffield/lazygit v0.20.9
+# github.com/jesseduffield/lazygit v0.22.1
 ## explicit
 github.com/jesseduffield/lazygit/pkg/app
 github.com/jesseduffield/lazygit/pkg/commands
+github.com/jesseduffield/lazygit/pkg/commands/patch
 github.com/jesseduffield/lazygit/pkg/config
 github.com/jesseduffield/lazygit/pkg/gui
+github.com/jesseduffield/lazygit/pkg/gui/boxlayout
 github.com/jesseduffield/lazygit/pkg/gui/presentation
 github.com/jesseduffield/lazygit/pkg/i18n
 github.com/jesseduffield/lazygit/pkg/tasks
 github.com/jesseduffield/lazygit/pkg/theme
 github.com/jesseduffield/lazygit/pkg/updates
 github.com/jesseduffield/lazygit/pkg/utils
-# github.com/jesseduffield/termbox-go v0.0.0-20200405031649-4dc645f7e8ba
+# github.com/jesseduffield/termbox-go v0.0.0-20200823212418-a2289ed6aafe
 github.com/jesseduffield/termbox-go
 # github.com/jimstudt/http-authentication v0.0.0-20140401203705-3eca13d6893a
 github.com/jimstudt/http-authentication/basic
@@ -926,7 +930,7 @@ github.com/pires/go-proxyproto
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
-# github.com/pkg/sftp v1.11.0
+# github.com/pkg/sftp v1.12.0
 ## explicit
 github.com/pkg/sftp
 # github.com/pmezard/go-difflib v1.0.0
@@ -959,7 +963,7 @@ github.com/rwcarlsen/goexif/tiff
 github.com/sergi/go-diff/diffmatchpatch
 # github.com/shibukawa/configdir v0.0.0-20170330084843-e180dbdc8da0
 github.com/shibukawa/configdir
-# github.com/shirou/gopsutil v2.20.7+incompatible
+# github.com/shirou/gopsutil v2.20.8+incompatible
 ## explicit
 github.com/shirou/gopsutil/cpu
 github.com/shirou/gopsutil/disk
@@ -1181,7 +1185,7 @@ gocloud.dev/internal/gcerr
 gocloud.dev/internal/oc
 gocloud.dev/internal/openurl
 gocloud.dev/internal/retry
-# golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 => github.com/golang/crypto v0.0.0-20200728195943-123391ffb6de
+# golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a => github.com/golang/crypto v0.0.0-20200728195943-123391ffb6de
 ## explicit
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
@@ -1258,8 +1262,7 @@ golang.org/x/net/websocket
 # golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d => github.com/golang/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
-# golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae => github.com/golang/sys v0.0.0-20200814200057-3d37ad5750ed
-## explicit
+# golang.org/x/sys v0.0.0-20200824131525-c12d262b63d8 => github.com/golang/sys v0.0.0-20200814200057-3d37ad5750ed
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix

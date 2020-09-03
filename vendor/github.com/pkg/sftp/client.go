@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path"
+	"sync"
 	"sync/atomic"
 	"syscall"
 	"time"
@@ -214,7 +215,7 @@ func (c *Client) nextID() uint32 {
 }
 
 func (c *Client) recvVersion() error {
-	typ, data, err := c.recvPacket()
+	typ, data, err := c.recvPacket(0)
 	if err != nil {
 		return err
 	}
@@ -419,6 +420,25 @@ func (c *Client) Symlink(oldname, newname string) error {
 		ID:         id,
 		Linkpath:   newname,
 		Targetpath: oldname,
+	})
+	if err != nil {
+		return err
+	}
+	switch typ {
+	case sshFxpStatus:
+		return normaliseError(unmarshalStatus(id, data))
+	default:
+		return unimplementedPacketErr(typ)
+	}
+}
+
+func (c *Client) setfstat(handle string, flags uint32, attrs interface{}) error {
+	id := c.nextID()
+	typ, data, err := c.sendPacket(sshFxpFsetstatPacket{
+		ID:     id,
+		Handle: handle,
+		Flags:  flags,
+		Attrs:  attrs,
 	})
 	if err != nil {
 		return err
@@ -815,6 +835,8 @@ type File struct {
 	c      *Client
 	path   string
 	handle string
+
+	mu     sync.Mutex
 	offset uint64 // current offset within remote file
 }
 
@@ -839,13 +861,25 @@ func (f *File) Name() string {
 // than calling Read multiple times. io.Copy will do this
 // automatically.
 func (f *File) Read(b []byte) (int, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+
+	r, err := f.ReadAt(b, int64(f.offset))
+	f.offset += uint64(r)
+	return r, err
+}
+
+// ReadAt reads up to len(b) byte from the File at a given offset `off`. It returns
+// the number of bytes read and an error, if any. ReadAt follows io.ReaderAt semantics,
+// so the file offset is not altered during the read.
+func (f *File) ReadAt(b []byte, off int64) (n int, err error) {
 	// Split the read into multiple maxPacket sized concurrent reads
 	// bounded by maxConcurrentRequests. This allows reads with a suitably
 	// large buffer to transfer data at a much faster rate due to
 	// overlapping round trip times.
 	inFlight := 0
 	desiredInFlight := 1
-	offset := f.offset
+	offset := uint64(off)
 	// maxConcurrentRequests buffer to deal with broadcastErr() floods
 	// also must have a buffer of max value of (desiredInFlight - inFlight)
 	ch := make(chan result, f.c.maxConcurrentRequests+1)
@@ -927,7 +961,6 @@ func (f *File) Read(b []byte) (int, error) {
 	if firstErr.err != nil && firstErr.err != io.EOF {
 		read = 0
 	}
-	f.offset += uint64(read)
 	return read, firstErr.err
 }
 
@@ -1266,8 +1299,9 @@ func (f *File) Chmod(mode os.FileMode) error {
 // that if the size is less than its current size it will be truncated to fit,
 // the SFTP protocol does not specify what behavior the server should do when setting
 // size greater than the current size.
+// We send a SSH_FXP_FSETSTAT here since we have a file handle
 func (f *File) Truncate(size int64) error {
-	return f.c.Truncate(f.path, size)
+	return f.c.setfstat(f.handle, sshFileXferAttrSize, uint64(size))
 }
 
 func min(a, b int) int {

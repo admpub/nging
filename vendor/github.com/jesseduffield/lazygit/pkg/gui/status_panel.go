@@ -57,11 +57,24 @@ func cursorInSubstring(cx int, prefix string, substring string) bool {
 
 func (gui *Gui) handleCheckForUpdate(g *gocui.Gui, v *gocui.View) error {
 	gui.Updater.CheckForNewUpdate(gui.onUserUpdateCheckFinish, true)
-	return gui.createLoaderPanel(gui.g, v, gui.Tr.SLocalize("CheckingForUpdates"))
+	return gui.createLoaderPanel(v, gui.Tr.SLocalize("CheckingForUpdates"))
 }
 
 func (gui *Gui) handleStatusClick(g *gocui.Gui, v *gocui.View) error {
+	// TODO: move into some abstraction (status is currently not a listViewContext where a lot of this code lives)
+	if gui.popupPanelFocused() {
+		return nil
+	}
+
 	currentBranch := gui.currentBranch()
+	if currentBranch == nil {
+		// need to wait for branches to refresh
+		return nil
+	}
+
+	if err := gui.switchContext(gui.Contexts.Status.Context); err != nil {
+		return err
+	}
 
 	cx, _ := v.Cursor()
 	upstreamStatus := fmt.Sprintf("↑%s↓%s", currentBranch.Pushables, currentBranch.Pullables)
@@ -70,35 +83,24 @@ func (gui *Gui) handleStatusClick(g *gocui.Gui, v *gocui.View) error {
 	case "rebasing", "merging":
 		workingTreeStatus := fmt.Sprintf("(%s)", gui.GitCommand.WorkingTreeState())
 		if cursorInSubstring(cx, upstreamStatus+" ", workingTreeStatus) {
-			return gui.handleCreateRebaseOptionsMenu(gui.g, v)
+			return gui.handleCreateRebaseOptionsMenu()
 		}
 		if cursorInSubstring(cx, upstreamStatus+" "+workingTreeStatus+" ", repoName) {
-			return gui.handleCreateRecentReposMenu(gui.g, v)
+			return gui.handleCreateRecentReposMenu()
 		}
 	default:
 		if cursorInSubstring(cx, upstreamStatus+" ", repoName) {
-			return gui.handleCreateRecentReposMenu(gui.g, v)
+			return gui.handleCreateRecentReposMenu()
 		}
 	}
 
-	return gui.handleStatusSelect(gui.g, v)
+	return gui.handleStatusSelect()
 }
 
-func (gui *Gui) handleStatusSelect(g *gocui.Gui, v *gocui.View) error {
+func (gui *Gui) handleStatusSelect() error {
+	// TODO: move into some abstraction (status is currently not a listViewContext where a lot of this code lives)
 	if gui.popupPanelFocused() {
 		return nil
-	}
-
-	gui.State.SplitMainPanel = false
-
-	if _, err := gui.g.SetCurrentView(v.Name()); err != nil {
-		return err
-	}
-
-	gui.getMainView().Title = ""
-
-	if gui.inDiffMode() {
-		return gui.renderDiff()
 	}
 
 	magenta := color.New(color.FgMagenta)
@@ -114,7 +116,12 @@ func (gui *Gui) handleStatusSelect(g *gocui.Gui, v *gocui.View) error {
 			magenta.Sprint("Become a sponsor (github is matching all donations for 12 months): https://github.com/sponsors/jesseduffield"), // caffeine ain't free
 		}, "\n\n")
 
-	return gui.newStringTask("main", dashboardString)
+	return gui.refreshMainViews(refreshMainOpts{
+		main: &viewUpdateOpts{
+			title: "",
+			task:  gui.createRenderStringTask(dashboardString),
+		},
+	})
 }
 
 func (gui *Gui) handleOpenConfig(g *gocui.Gui, v *gocui.View) error {

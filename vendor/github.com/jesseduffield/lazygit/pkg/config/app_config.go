@@ -246,6 +246,8 @@ func GetDefaultConfig() []byte {
   skipUnstageLineWarning: false
   skipStashWarning: true
   sidePanelWidth: 0.3333
+  expandFocusedSidePanel: false
+  mainPanelSplitMode: 'flexible' # one of 'horizontal' | 'flexible' | 'vertical'
   theme:
     lightTheme: false
     activeBorderColor:
@@ -268,6 +270,8 @@ git:
   merging:
     manualCommit: false
     args: ""
+  pull:
+    mode: 'merge' # one of 'merge' | 'rebase' | 'ff-only'
   skipHookPrefix: 'WIP'
   autoFetch: true
   branchLogCmd: "git log --graph --color=always --abbrev-commit --decorate --date=relative --pretty=medium {{branchName}} --"
@@ -278,6 +282,7 @@ update:
 reporting: 'undetermined' # one of: 'on' | 'off' | 'undetermined'
 splashUpdatesIndex: 0
 confirmOnQuit: false
+quitOnTopLevelReturn: true
 keybinding:
   universal:
     quit: 'q'
@@ -304,6 +309,8 @@ keybinding:
     optionMenu-alt1: '?'
     select: '<space>'
     goInto: '<enter>'
+    confirm: '<enter>'
+    confirm-alt1: 'y'
     remove: 'd'
     new: 'n'
     edit: 'e'
@@ -327,7 +334,8 @@ keybinding:
     undo: 'z'
     redo: '<c-z>'
     filteringMenu: <c-s>
-    diffingMenu: '<c-e>'
+    diffingMenu: 'W'
+    diffingMenu-alt: '<c-e>'
     copyToClipboard: '<c-o>'
   status:
     checkForUpdate: 'u'

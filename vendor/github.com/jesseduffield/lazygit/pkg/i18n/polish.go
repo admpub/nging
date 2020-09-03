@@ -129,9 +129,6 @@ func addPolish(i18nObject *i18n.Bundle) error {
 			ID:    "CannotGitAdd",
 			Other: "Nie można git add --patch nieśledzonych plików",
 		}, &i18n.Message{
-			ID:    "NoStagedFilesToCommit",
-			Other: "Brak zatwierdzonych plików do commita",
-		}, &i18n.Message{
 			ID:    "NoFilesDisplay",
 			Other: "Brak pliku do wyświetlenia",
 		}, &i18n.Message{
@@ -209,6 +206,9 @@ func addPolish(i18nObject *i18n.Bundle) error {
 		}, &i18n.Message{
 			ID:    "NoTrackingThisBranch",
 			Other: "Brak śledzenia dla tej gałęzi",
+		}, &i18n.Message{
+			ID:    "CommitMessageConfirm",
+			Other: "{{.keyBindClose}}: zamknij, {{.keyBindNewLine}}: new line, {{.keyBindConfirm}}: potwierdź",
 		}, &i18n.Message{
 			ID:    "CommitWithoutMessageErr",
 			Other: "Nie możesz commitować bez podania wiadomości",
@@ -320,9 +320,6 @@ func addPolish(i18nObject *i18n.Bundle) error {
 		}, &i18n.Message{
 			ID:    "IssntListOfViews",
 			Other: "{{.name}} nie jest na liście widoków",
-		}, &i18n.Message{
-			ID:    "NoViewMachingNewLineFocusedSwitchStatement",
-			Other: "Brak widoku pasującego do instrukcji przełączania newLineFocused",
 		}, &i18n.Message{
 			ID:    "newFocusedViewIs",
 			Other: "nowy skupiony widok to {{.newFocusedView}}",
@@ -749,6 +746,18 @@ func addPolish(i18nObject *i18n.Bundle) error {
 		}, &i18n.Message{
 			ID:    "commitPrefixPatternError",
 			Other: "Error in commitPrefix pattern",
+		}, &i18n.Message{
+			ID:    "NoFilesStagedTitle",
+			Other: "No files staged",
+		}, &i18n.Message{
+			ID:    "NoFilesStagedPrompt",
+			Other: "You have not staged any files. Commit all files?",
+		}, &i18n.Message{
+			ID:    "BranchNotFoundTitle",
+			Other: "Branch not found",
+		}, &i18n.Message{
+			ID:    "BranchNotFoundPrompt",
+			Other: "Branch not found. Create a new branch named",
 		},
 	)
 }

@@ -14,6 +14,7 @@ import (
 
 	"github.com/go-errors/errors"
 
+	"github.com/atotto/clipboard"
 	"github.com/jesseduffield/lazygit/pkg/config"
 	"github.com/jesseduffield/lazygit/pkg/utils"
 	"github.com/mgutz/str"
@@ -139,9 +140,9 @@ func (c *OSCommand) RunCommandWithOutputLive(command string, output func(string)
 }
 
 // DetectUnamePass detect a username / password question in a command
-// ask is a function that gets executen when this function detect you need to fillin a password
-// The ask argument will be "username" or "password" and expects the user's password or username back
-func (c *OSCommand) DetectUnamePass(command string, ask func(string) string) error {
+// promptUserForCredential is a function that gets executed when this function detect you need to fillin a password
+// The promptUserForCredential argument will be "username" or "password" and expects the user's password or username back
+func (c *OSCommand) DetectUnamePass(command string, promptUserForCredential func(string) string) error {
 	ttyText := ""
 	errMessage := c.RunCommandWithOutputLive(command, func(word string) string {
 		ttyText = ttyText + " " + word
@@ -155,7 +156,7 @@ func (c *OSCommand) DetectUnamePass(command string, ask func(string) string) err
 		for pattern, askFor := range prompts {
 			if match, _ := regexp.MatchString(pattern, ttyText); match {
 				ttyText = ""
-				return ask(askFor)
+				return promptUserForCredential(askFor)
 			}
 		}
 
@@ -249,7 +250,9 @@ func (c *OSCommand) EditFile(filename string) (*exec.Cmd, error) {
 		return nil, errors.New("No editor defined in $VISUAL, $EDITOR, or git config")
 	}
 
-	return c.PrepareSubProcess(editor, filename), nil
+	splitCmd := str.ToArgv(fmt.Sprintf("%s %s", editor, filename))
+
+	return c.PrepareSubProcess(splitCmd[0], splitCmd[1:]...), nil
 }
 
 // PrepareSubProcess iniPrepareSubProcessrocess then tells the Gui to switch to it
@@ -473,12 +476,5 @@ func RunLineOutputCmd(cmd *exec.Cmd, onLine func(line string) (bool, error)) err
 }
 
 func (c *OSCommand) CopyToClipboard(str string) error {
-	commandTemplate := c.Config.GetUserConfig().GetString("os.copyToClipboardCommand")
-	templateValues := map[string]string{
-		"str": c.Quote(str),
-	}
-
-	command := utils.ResolvePlaceholderString(commandTemplate, templateValues)
-
-	return c.RunCommand(command)
+	return clipboard.WriteAll(str)
 }

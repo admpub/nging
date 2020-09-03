@@ -4,31 +4,21 @@ import (
 	"strings"
 
 	"github.com/jesseduffield/gocui"
-	"github.com/jesseduffield/lazygit/pkg/commands"
+	"github.com/jesseduffield/lazygit/pkg/commands/patch"
 )
 
 func (gui *Gui) refreshStagingPanel(forceSecondaryFocused bool, selectedLineIdx int) error {
-	gui.State.SplitMainPanel = true
+	gui.splitMainPanel(true)
 
 	state := gui.State.Panels.LineByLine
 
-	// We need to force focus here because the confirmation panel for safely staging lines does not return focus automatically.
-	// This is because if we tell it to return focus it will unconditionally return it to the main panel which may not be what we want
-	// e.g. in the event that there's nothing left to stage.
-	if err := gui.switchFocus(gui.g, nil, gui.getMainView()); err != nil {
-		return err
-	}
-
-	file, err := gui.getSelectedFile()
-	if err != nil {
-		if err != gui.Errors.ErrNoFiles {
-			return err
-		}
-		return gui.handleStagingEscape(gui.g, nil)
+	file := gui.getSelectedFile()
+	if file == nil {
+		return gui.handleStagingEscape()
 	}
 
 	if !file.HasUnstagedChanges && !file.HasStagedChanges {
-		return gui.handleStagingEscape(gui.g, nil)
+		return gui.handleStagingEscape()
 	}
 
 	secondaryFocused := false
@@ -53,14 +43,14 @@ func (gui *Gui) refreshStagingPanel(forceSecondaryFocused bool, selectedLineIdx 
 	}
 
 	// note for custom diffs, we'll need to send a flag here saying not to use the custom diff
-	diff := gui.GitCommand.Diff(file, true, secondaryFocused)
-	secondaryDiff := gui.GitCommand.Diff(file, true, !secondaryFocused)
+	diff := gui.GitCommand.WorktreeFileDiff(file, true, secondaryFocused)
+	secondaryDiff := gui.GitCommand.WorktreeFileDiff(file, true, !secondaryFocused)
 
 	// if we have e.g. a deleted file with nothing else to the diff will have only
 	// 4-5 lines in which case we'll swap panels
 	if len(strings.Split(diff, "\n")) < 5 {
 		if len(strings.Split(secondaryDiff, "\n")) < 5 {
-			return gui.handleStagingEscape(gui.g, nil)
+			return gui.handleStagingEscape()
 		}
 		secondaryFocused = !secondaryFocused
 		diff, secondaryDiff = secondaryDiff, diff
@@ -72,7 +62,7 @@ func (gui *Gui) refreshStagingPanel(forceSecondaryFocused bool, selectedLineIdx 
 	}
 
 	if empty {
-		return gui.handleStagingEscape(gui.g, nil)
+		return gui.handleStagingEscape()
 	}
 
 	return nil
@@ -93,10 +83,10 @@ func (gui *Gui) handleTogglePanel(g *gocui.Gui, v *gocui.View) error {
 	return gui.refreshStagingPanel(false, -1)
 }
 
-func (gui *Gui) handleStagingEscape(g *gocui.Gui, v *gocui.View) error {
+func (gui *Gui) handleStagingEscape() error {
 	gui.handleEscapeLineByLinePanel()
 
-	return gui.switchFocus(gui.g, nil, gui.getFilesView())
+	return gui.switchContext(gui.Contexts.Files.Context)
 }
 
 func (gui *Gui) handleToggleStagedSelection(g *gocui.Gui, v *gocui.View) error {
@@ -114,9 +104,21 @@ func (gui *Gui) handleResetSelection(g *gocui.Gui, v *gocui.View) error {
 	}
 
 	if !gui.Config.GetUserConfig().GetBool("gui.skipUnstageLineWarning") {
-		return gui.createConfirmationPanel(gui.g, gui.getMainView(), false, "unstage lines", "Are you sure you want to delete the selected lines (git reset)? It is irreversible.\nTo disable this dialogue set the config key of 'gui.skipUnstageLineWarning' to true", func(*gocui.Gui, *gocui.View) error {
-			return gui.applySelection(true)
-		}, nil)
+		return gui.ask(askOpts{
+			title:               gui.Tr.SLocalize("UnstageLinesTitle"),
+			prompt:              gui.Tr.SLocalize("UnstageLinesPrompt"),
+			handlersManageFocus: true,
+			handleConfirm: func() error {
+				if err := gui.switchContext(gui.Contexts.Staging.Context); err != nil {
+					return err
+				}
+
+				return gui.applySelection(true)
+			},
+			handleClose: func() error {
+				return gui.switchContext(gui.Contexts.Staging.Context)
+			},
+		})
 	} else {
 		return gui.applySelection(true)
 	}
@@ -125,12 +127,12 @@ func (gui *Gui) handleResetSelection(g *gocui.Gui, v *gocui.View) error {
 func (gui *Gui) applySelection(reverse bool) error {
 	state := gui.State.Panels.LineByLine
 
-	file, err := gui.getSelectedFile()
-	if err != nil {
-		return err
+	file := gui.getSelectedFile()
+	if file == nil {
+		return nil
 	}
 
-	patch := commands.ModifiedPatchForRange(gui.Log, file.Name, state.Diff, state.FirstLineIdx, state.LastLineIdx, reverse, false)
+	patch := patch.ModifiedPatchForRange(gui.Log, file.Name, state.Diff, state.FirstLineIdx, state.LastLineIdx, reverse, false)
 
 	if patch == "" {
 		return nil
@@ -142,7 +144,7 @@ func (gui *Gui) applySelection(reverse bool) error {
 	if !reverse || state.SecondaryFocused {
 		applyFlags = append(applyFlags, "cached")
 	}
-	err = gui.GitCommand.ApplyPatch(patch, applyFlags...)
+	err := gui.GitCommand.ApplyPatch(patch, applyFlags...)
 	if err != nil {
 		return gui.surfaceError(err)
 	}

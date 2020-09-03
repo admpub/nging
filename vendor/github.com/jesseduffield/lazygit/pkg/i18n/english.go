@@ -157,9 +157,6 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 			ID:    "CannotGitAdd",
 			Other: "Cannot git add --patch untracked files",
 		}, &i18n.Message{
-			ID:    "NoStagedFilesToCommit",
-			Other: "There are no staged files to commit",
-		}, &i18n.Message{
 			ID:    "NoFilesDisplay",
 			Other: "No file to display",
 		}, &i18n.Message{
@@ -244,6 +241,9 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 			ID:    "NoTrackingThisBranch",
 			Other: "There is no tracking for this branch",
 		}, &i18n.Message{
+			ID:    "CommitMessageConfirm",
+			Other: "{{.keyBindClose}}: close, {{.keyBindNewLine}}: new line, {{.keyBindConfirm}}: confirm",
+		}, &i18n.Message{
 			ID:    "CommitWithoutMessageErr",
 			Other: "You cannot commit without a commit message",
 		}, &i18n.Message{
@@ -252,6 +252,9 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 		}, &i18n.Message{
 			ID:    "close",
 			Other: "close",
+		}, &i18n.Message{
+			ID:    "quit",
+			Other: "quit",
 		}, &i18n.Message{
 			ID:    "SureResetThisCommit",
 			Other: "Are you sure you want to reset to this commit?",
@@ -403,9 +406,6 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 			ID:    "IssntListOfViews",
 			Other: "{{.name}} is not in the list of views",
 		}, &i18n.Message{
-			ID:    "NoViewMachingNewLineFocusedSwitchStatement",
-			Other: "No view matching newLineFocused switch statement",
-		}, &i18n.Message{
 			ID:    "newFocusedViewIs",
 			Other: "new focused view is {{.newFocusedView}}",
 		}, &i18n.Message{
@@ -448,18 +448,14 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 			ID:    "AnonymousReportingPrompt",
 			Other: "Would you like to enable anonymous reporting data to help improve lazygit? (enter/esc)",
 		}, &i18n.Message{
-			ID:    "ShamelessSelfPromotionTitle",
-			Other: "Shameless Self Promotion",
-		}, &i18n.Message{
-			ID: "ShamelessSelfPromotionMessage",
-			Other: `Thanks for using lazygit! Three things to share with you:
+			ID: "IntroPopupMessage",
+			Other: `Thanks for using lazygit! Two things to share with you:
 
-1) lazygit now has basic mouse support!
-
-2) If you want to learn about lazygit's features, watch this vid:
+1) If you want to learn about lazygit's features, watch this vid:
    https://youtu.be/CPLdltN7wgE
 
-3) Github are now matching any donations dollar-for-dollar for the next 12 months, so if you've been tossing up over whether to click the donate link in the bottom right corner, now is the time!`,
+3) If you're using git, that makes you a programmer! With your help we can make lazygit better, so consider becoming a contributor and joining the fun at
+   https://github.com/jesseduffield/lazygit`,
 		}, &i18n.Message{
 			ID:    "GitconfigParseErr",
 			Other: `Gogit failed to parse your gitconfig file due to the presence of unquoted '\' characters. Removing these should fix the issue.`,
@@ -526,12 +522,10 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 		}, &i18n.Message{
 			ID:    "ToggleSelectionForPatch",
 			Other: `add/remove line(s) to patch`,
-		},
-		&i18n.Message{
+		}, &i18n.Message{
 			ID:    "TogglePanel",
 			Other: `switch to other panel`,
-		},
-		&i18n.Message{
+		}, &i18n.Message{
 			ID:    "CantStageStaged",
 			Other: `You can't stage an already staged change!`,
 		}, &i18n.Message{
@@ -893,7 +887,7 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 			Other: "Discard Patch",
 		}, &i18n.Message{
 			ID:    "DiscardPatchConfirm",
-			Other: "You can only build a patch from one commit at a time. Discard current patch?",
+			Other: "You can only build a patch from one commit/stash-entry at a time. Discard current patch?",
 		}, &i18n.Message{
 			ID:    "CantPatchWhileRebasingError",
 			Other: "You cannot build a patch or run patch commands while in a merging or rebasing state",
@@ -926,7 +920,7 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 			Other: "(not tracking any remote)",
 		}, &i18n.Message{
 			ID:    "ReturnToRemotesList",
-			Other: `return to remotes list`,
+			Other: `Return to remotes list`,
 		}, &i18n.Message{
 			ID:    "addNewRemote",
 			Other: `add new remote`,
@@ -1152,6 +1146,36 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 		}, &i18n.Message{
 			ID:    "commitPrefixPatternError",
 			Other: "Error in commitPrefix pattern",
+		}, &i18n.Message{
+			ID:    "NoFilesStagedTitle",
+			Other: "No files staged",
+		}, &i18n.Message{
+			ID:    "NoFilesStagedPrompt",
+			Other: "You have not staged any files. Commit all files?",
+		}, &i18n.Message{
+			ID:    "BranchNotFoundTitle",
+			Other: "Branch not found",
+		}, &i18n.Message{
+			ID:    "BranchNotFoundPrompt",
+			Other: "Branch not found. Create a new branch named",
+		}, &i18n.Message{
+			ID:    "UnstageLinesTitle",
+			Other: "Unstage lines",
+		}, &i18n.Message{
+			ID:    "UnstageLinesPrompt",
+			Other: "Are you sure you want to delete the selected lines (git reset)? It is irreversible.\nTo disable this dialogue set the config key of 'gui.skipUnstageLineWarning' to true",
+		}, &i18n.Message{
+			ID:    "createNewBranchFromCommit",
+			Other: "create new branch off of commit",
+		}, &i18n.Message{
+			ID:    "viewStashFiles",
+			Other: "view stash entry's files",
+		}, &i18n.Message{
+			ID:    "buildingPatch",
+			Other: "building patch",
+		}, &i18n.Message{
+			ID:    "viewCommits",
+			Other: "view commits",
 		},
 	)
 }

@@ -32,21 +32,41 @@ type RequestServer struct {
 	handleCount     int
 }
 
+// A RequestServerOption is a function which applies configuration to a RequestServer.
+type RequestServerOption func(*RequestServer)
+
+// WithRSAllocator enable the allocator.
+// After processing a packet we keep in memory the allocated slices
+// and we reuse them for new packets.
+// The allocator is experimental
+func WithRSAllocator() RequestServerOption {
+	return func(rs *RequestServer) {
+		alloc := newAllocator()
+		rs.pktMgr.alloc = alloc
+		rs.conn.alloc = alloc
+	}
+}
+
 // NewRequestServer creates/allocates/returns new RequestServer.
-// Normally there there will be one server per user-session.
-func NewRequestServer(rwc io.ReadWriteCloser, h Handlers) *RequestServer {
+// Normally there will be one server per user-session.
+func NewRequestServer(rwc io.ReadWriteCloser, h Handlers, options ...RequestServerOption) *RequestServer {
 	svrConn := &serverConn{
 		conn: conn{
 			Reader:      rwc,
 			WriteCloser: rwc,
 		},
 	}
-	return &RequestServer{
+	rs := &RequestServer{
 		serverConn:   svrConn,
 		Handlers:     h,
 		pktMgr:       newPktMgr(svrConn),
 		openRequests: make(map[string]*Request),
 	}
+
+	for _, o := range options {
+		o(rs)
+	}
+	return rs
 }
 
 // New Open packet/Request
@@ -86,8 +106,44 @@ func (rs *RequestServer) closeRequest(handle string) error {
 // Close the read/write/closer to trigger exiting the main server loop
 func (rs *RequestServer) Close() error { return rs.conn.Close() }
 
+func (rs *RequestServer) serveLoop(pktChan chan<- orderedRequest) error {
+	defer close(pktChan) // shuts down sftpServerWorkers
+
+	var err error
+	var pkt requestPacket
+	var pktType uint8
+	var pktBytes []byte
+
+	for {
+		pktType, pktBytes, err = rs.serverConn.recvPacket(rs.pktMgr.getNextOrderID())
+		if err != nil {
+			// we don't care about releasing allocated pages here, the server will quit and the allocator freed
+			return err
+		}
+
+		pkt, err = makePacket(rxPacket{fxp(pktType), pktBytes})
+		if err != nil {
+			switch errors.Cause(err) {
+			case errUnknownExtendedPacket:
+				// do nothing
+			default:
+				debug("makePacket err: %v", err)
+				rs.conn.Close() // shuts down recvPacket
+				return err
+			}
+		}
+
+		pktChan <- rs.pktMgr.newOrderedRequest(pkt)
+	}
+}
+
 // Serve requests for user session
 func (rs *RequestServer) Serve() error {
+	defer func() {
+		if rs.pktMgr.alloc != nil {
+			rs.pktMgr.alloc.Free()
+		}
+	}()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	var wg sync.WaitGroup
@@ -102,51 +158,18 @@ func (rs *RequestServer) Serve() error {
 	}
 	pktChan := rs.pktMgr.workerChan(runWorker)
 
-	var err error
-	var pkt requestPacket
-	var pktType uint8
-	var pktBytes []byte
-	for {
-		pktType, pktBytes, err = rs.recvPacket()
-		if err != nil {
-			break
-		}
+	err := rs.serveLoop(pktChan)
 
-		pkt, err = makePacket(rxPacket{fxp(pktType), pktBytes})
-		if err != nil {
-			switch errors.Cause(err) {
-			case errUnknownExtendedPacket:
-				// do nothing
-			default:
-				debug("makePacket err: %v", err)
-				rs.conn.Close() // shuts down recvPacket
-				break
-			}
-		}
+	wg.Wait() // wait for all workers to exit
 
-		pktChan <- rs.pktMgr.newOrderedRequest(pkt)
-	}
-
-	close(pktChan) // shuts down sftpServerWorkers
-	wg.Wait()      // wait for all workers to exit
+	rs.openRequestLock.Lock()
+	defer rs.openRequestLock.Unlock()
 
 	// make sure all open requests are properly closed
 	// (eg. possible on dropped connections, client crashes, etc.)
 	for handle, req := range rs.openRequests {
-		if err != nil {
-			req.state.RLock()
-			writer := req.state.writerAt
-			reader := req.state.readerAt
-			req.state.RUnlock()
-			if t, ok := writer.(TransferError); ok {
-				debug("notify error: %v to writer: %v\n", err, writer)
-				t.TransferError(err)
-			}
-			if t, ok := reader.(TransferError); ok {
-				debug("notify error: %v to reader: %v\n", err, reader)
-				t.TransferError(err)
-			}
-		}
+		req.transferError(err)
+
 		delete(rs.openRequests, handle)
 		req.close()
 	}
@@ -158,6 +181,7 @@ func (rs *RequestServer) packetWorker(
 	ctx context.Context, pktChan chan orderedRequest,
 ) error {
 	for pkt := range pktChan {
+		orderID := pkt.orderID()
 		if epkt, ok := pkt.requestPacket.(*sshFxpExtendedPacket); ok {
 			if epkt.SpecificPacket != nil {
 				pkt.requestPacket = epkt.SpecificPacket
@@ -188,30 +212,39 @@ func (rs *RequestServer) packetWorker(
 				rpkt = statusFromError(pkt, syscall.EBADF)
 			} else {
 				request = NewRequest("Stat", request.Filepath)
-				rpkt = request.call(rs.Handlers, pkt)
+				rpkt = request.call(rs.Handlers, pkt, rs.pktMgr.alloc, orderID)
+			}
+		case *sshFxpFsetstatPacket:
+			handle := pkt.getHandle()
+			request, ok := rs.getRequest(handle)
+			if !ok {
+				rpkt = statusFromError(pkt, syscall.EBADF)
+			} else {
+				request = NewRequest("Setstat", request.Filepath)
+				rpkt = request.call(rs.Handlers, pkt, rs.pktMgr.alloc, orderID)
 			}
 		case *sshFxpExtendedPacketPosixRename:
 			request := NewRequest("Rename", pkt.Oldpath)
 			request.Target = pkt.Newpath
-			rpkt = request.call(rs.Handlers, pkt)
+			rpkt = request.call(rs.Handlers, pkt, rs.pktMgr.alloc, orderID)
 		case hasHandle:
 			handle := pkt.getHandle()
 			request, ok := rs.getRequest(handle)
 			if !ok {
 				rpkt = statusFromError(pkt, syscall.EBADF)
 			} else {
-				rpkt = request.call(rs.Handlers, pkt)
+				rpkt = request.call(rs.Handlers, pkt, rs.pktMgr.alloc, orderID)
 			}
 		case hasPath:
 			request := requestFromPacket(ctx, pkt)
-			rpkt = request.call(rs.Handlers, pkt)
+			rpkt = request.call(rs.Handlers, pkt, rs.pktMgr.alloc, orderID)
 			request.close()
 		default:
 			rpkt = statusFromError(pkt, ErrSSHFxOpUnsupported)
 		}
 
 		rs.pktMgr.readyPacket(
-			rs.pktMgr.newOrderedResponse(rpkt, pkt.orderID()))
+			rs.pktMgr.newOrderedResponse(rpkt, orderID))
 	}
 	return nil
 }
@@ -232,7 +265,7 @@ func cleanPacketPath(pkt *sshFxpRealpathPacket) responsePacket {
 // Makes sure we have a clean POSIX (/) absolute path to work with
 func cleanPath(p string) string {
 	p = filepath.ToSlash(p)
-	if !filepath.IsAbs(p) {
+	if !path.IsAbs(p) {
 		p = "/" + p
 	}
 	return path.Clean(p)

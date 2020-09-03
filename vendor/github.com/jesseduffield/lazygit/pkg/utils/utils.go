@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -321,4 +322,24 @@ func FindStringSubmatch(str string, regexpStr string) (bool, []string) {
 	re := regexp.MustCompile(regexpStr)
 	match := re.FindStringSubmatch(str)
 	return len(match) > 0, match
+}
+
+func StringArraysOverlap(strArrA []string, strArrB []string) bool {
+	for _, first := range strArrA {
+		for _, second := range strArrB {
+			if first == second {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+func MustConvertToInt(s string) int {
+	i, err := strconv.Atoi(s)
+	if err != nil {
+		panic(err)
+	}
+	return i
 }
