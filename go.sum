@@ -921,6 +921,8 @@ github.com/shibukawa/configdir v0.0.0-20170330084843-e180dbdc8da0 h1:Xuk8ma/ibJ1
 github.com/shibukawa/configdir v0.0.0-20170330084843-e180dbdc8da0/go.mod h1:7AwjWCpdPhkSmNAgUv5C7EJ4AbmjEB3r047r3DXWu3Y=
 github.com/shirou/gopsutil v2.20.7+incompatible h1:Ymv4OD12d6zm+2yONe39VSmp2XooJe8za7ngOLW/o/w=
 github.com/shirou/gopsutil v2.20.7+incompatible/go.mod h1:5b4v6he4MtMOwMlS0TUMTu2PcXUg8+E1lC7eC3UO/RA=
+github.com/shirou/gopsutil v2.20.8+incompatible h1:8c7Atn0FAUZJo+f4wYbN0iVpdWniCQk7IYwGtgdh1mY=
+github.com/shirou/gopsutil v2.20.8+incompatible/go.mod h1:5b4v6he4MtMOwMlS0TUMTu2PcXUg8+E1lC7eC3UO/RA=
 github.com/shivakar/metrohash v0.0.0-20160821164112-8d1c8b6bed28 h1:T0pHmIIcYaJ1wFBkZtjKEMJ7mHb7iuFS9jH0hZOaXME=
 github.com/shivakar/metrohash v0.0.0-20160821164112-8d1c8b6bed28/go.mod h1:iPY+DBBhMwu94EsrqYzmQYJYZpMAHuBdToFD//nbb00=
 github.com/shivakar/xxhash v0.0.0-20160821164220-5ea66fb45566 h1:h1L+TECcYYeIRv4ZWpcCe5fo0SEWVdqdpaBjv4NbqfQ=
