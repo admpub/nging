@@ -29,19 +29,19 @@ import (
 	"sync/atomic"
 	"time"
 
-	cronWriter "github.com/admpub/nging/application/library/cron/writer"
 	"github.com/admpub/nging/application/library/cron/send"
+	cronWriter "github.com/admpub/nging/application/library/cron/writer"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/code"
+	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/middleware/tplfunc"
 	"github.com/webx-top/echo/param"
 	"github.com/webx-top/echo/subdomains"
 
 	"github.com/admpub/log"
-	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/charset"
 )
 
@@ -263,10 +263,10 @@ func (j *Job) addAndReturningLog() *Job {
 
 func (j *Job) send(elapsed int64, t time.Time, err error, cmdOut string, isTimeout bool, timeout time.Duration) error {
 	data := param.Store{
-		"task":         *j.task,
-		"startTime":   	t.Format("2006-01-02 15:04:05"),
-		"elapsed": 		tplfunc.NumberTrim(float64(elapsed)/1000, 6),
-		"output":       cmdOut,
+		"task":      *j.task,
+		"startTime": t.Format("2006-01-02 15:04:05"),
+		"elapsed":   tplfunc.NumberTrim(float64(elapsed)/1000, 6),
+		"output":    cmdOut,
 	}
 	var title, status, statusText string
 	if isTimeout {
@@ -299,33 +299,42 @@ func (j *Job) Run() {
 		isTimeout bool
 	)
 	t := time.Now()
-	tl := new(dbschema.NgingTaskLog)
-	tl.TaskId = j.id
-	tl.Created = uint(t.Unix())
+	taskLog := new(dbschema.NgingTaskLog)
+	taskLog.TaskId = j.id
+	taskLog.Created = uint(t.Unix())
 
-	j.taskLog = tl
+	j.taskLog = taskLog
 
 	defer func() {
+		taskLog.Output = cmdOut
+		taskLog.Error = cmdErr
 		if e := recover(); e != nil {
-			panicErr := fmt.Errorf(`%v`, e)
-			if len(tl.Error) > 0 {
-				tl.Error += `; ` + panicErr.Error()
+			errMsg := fmt.Sprintf(`[NGING.PANIC] %v`, e)
+			if len(taskLog.Error) > 0 {
+				taskLog.Error += "\n" + errMsg
 			} else {
-				tl.Error = panicErr.Error()
+				taskLog.Error = errMsg
 			}
 			log.Error(e, "\n", string(debug.Stack()))
+			taskLog.Status = `failure`
 		}
-		tl.Output = cmdOut
-		tl.Error = cmdErr
+		if j == nil { // 异常情况
+			_, err = taskLog.Add()
+			if err != nil {
+				log.Error("Job: 日志写入失败: ", err)
+			}
+			return
+		}
 		if j.task.ClosedLog == `N` && !strings.HasPrefix(cmdOut, cronWriter.NotRecordPrefixFlag) && !strings.HasPrefix(cmdErr, cronWriter.NotRecordPrefixFlag) {
 			j.addAndReturningLog()
 		}
-
 	}()
 
-	if !j.Concurrent && atomic.LoadInt64(&j.status) > 0 {
-		tl.Output = fmt.Sprintf("任务[ %d. %s ]上一次执行尚未结束，本次被忽略。", j.id, j.name)
-		return
+	if !j.Concurrent {
+		if atomic.LoadInt64(&j.status) > 0 {
+			taskLog.Output = fmt.Sprintf("任务[ %d. %s ]上一次执行尚未结束，本次被忽略。", j.id, j.name)
+			return
+		}
 	}
 
 	if workPool != nil {
@@ -352,15 +361,15 @@ func (j *Job) Run() {
 
 	cmdOut, cmdErr, err, isTimeout = j.runner(timeout)
 	elapsed := time.Now().Sub(t).Milliseconds()
-	tl.Elapsed = uint(elapsed)
+	taskLog.Elapsed = uint(elapsed)
 	if isTimeout {
-		tl.Status = `timeout`
-		tl.Error = fmt.Sprintf("任务执行超过 %d 秒\n----------------------\n", int64(timeout/time.Second))
+		taskLog.Status = `timeout`
+		taskLog.Error = fmt.Sprintf("任务执行超过 %d 秒\n----------------------\n", int64(timeout/time.Second))
 	} else if err != nil {
-		tl.Status = `failure`
-		tl.Error = err.Error()
+		taskLog.Status = `failure`
+		taskLog.Error = err.Error()
 	} else {
-		tl.Status = `success`
+		taskLog.Status = `success`
 	}
 
 	// 更新上次执行时间
