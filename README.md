@@ -4,7 +4,7 @@
 
 > 注意：这是Nging V3源代码，旧版V2.x、V1.x已经转移到 [v2分支](https://github.com/admpub/nging/tree/v2) [v1分支](https://github.com/admpub/nging/tree/v1)
 
-    注意：目前只支持安装到MySQL的Nging无缝升级，暂不支持SQLite安装方式的升级（推荐安装到MySQL）。
+    注意：目前只支持安装到MySQL的Nging无缝升级，暂不支持SQLite安装方式的升级（推荐安装到MySQL，版本需不低于MySQL v5.7.18+）。
 
     升级步骤：
     0. 备份数据库和旧版可执行文件；
