@@ -82,6 +82,7 @@ var App = function () {
 
 	function firstChildrenTable(jqObj) {
 		var table = jqObj.children();
+		if(table.length<1) return null;
 		switch (table[0].tagName.toUpperCase()) {
 			case 'TABLE': return table;
 			default: return firstChildrenTable(table)
@@ -99,6 +100,7 @@ var App = function () {
 			if (oldWidth && oldWidth == bodyWidth) return;
 			$(this).data('width', bodyWidth);
 			var table = firstChildrenTable($(this));
+			if (table == null) return;
 			if (table.outerWidth() > bodyWidth) {
 				$(this).addClass('overflow').css('max-width', bodyWidth);
 			} else {

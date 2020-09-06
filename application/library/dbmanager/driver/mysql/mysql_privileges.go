@@ -22,7 +22,7 @@ func (m *mySQL) listPrivileges() (bool, []map[string]string, error) {
 	if len(m.dbName) == 0 {
 		sqlStr += `user`
 	} else {
-		sqlStr += "db WHERE " + quoteCol(m.dbName) + " LIKE Db"
+		sqlStr += "db WHERE Db LIKE " + quoteVal(m.dbName)
 	}
 	sqlStr += " ORDER BY Host, User"
 	res, err := m.kvVal(sqlStr)

@@ -38,14 +38,18 @@
                         {{- $modifyPassword := eq (Form `modifyPassword`) `1` -}}
                         <input type="password" name="pass" class="form-control" value="{{Form `pass`}}" id="passwd-input"{{if not $modifyPassword}} placeholder="{{`保持不变`|T}}" disabled="disabled"{{end}}>
                         <label class="input-group-addon">
-                        <input type="checkbox" name="modifyPassword" value='1'{{if $modifyPassword}} checked{{end}}>
-                        {{`修改`|T}}
+                            <input type="checkbox" id="show-password"> 
+                            {{`显示密码`|T}}
+                        </label>
+                        <label class="input-group-addon">
+                            <input type="checkbox" name="modifyPassword" value="1"{{if $modifyPassword}} checked{{end}}>
+                            {{`修改`|T}}
                         </label>
                         {{else}}
                         <input type="password" name="pass" class="form-control" required="required" value="{{Form `pass`}}" id="passwd-input">
                         <label class="input-group-addon">
-                        <input type="checkbox" id="show-password"> 
-                        {{`显示密码`|T}}
+                            <input type="checkbox" id="show-password"> 
+                            {{`显示密码`|T}}
                         </label>
                         {{end}}
                     </div>
@@ -131,41 +135,41 @@ MySQL grant 权限，分别可以作用在多个层次上
 						</tr>
 					</thead>
 					<tbody class="no-border-x" id="tbody-content">
-                        {{$fGrant := Form "grant"}}
-                        {{$list := Stored.list}}
+                        {{- $fGrant := Form "grant" -}}
+                        {{- $list := Stored.list -}}
 
-                        {{range $index,$group := Stored.groups}}
+                        {{- range $index,$group := Stored.groups -}}
 
-                        {{if index $list $group.Value}}
-                        {{range $privilege,$comment := index $list $group.Value}}
+                        {{- if index $list $group.Value -}}
+                        {{- range $privilege,$comment := index $list $group.Value -}}
 						<tr>
-                            {{if eq $group.Value "_Global_"}}
-                            <td colspan="2" title="{{if eq $privilege "All privileges"}}{{"所有权限"|T}}{{else if eq $privilege "Grant option"}}{{"分配权限"|T}}{{else}}{{$privilege}}{{end}}">{{$privilege}}</td>
-                            {{else}}
+                            {{- if eq $group.Value "_Global_" -}}
+                            <td colspan="2" title="{{if eq $privilege `All privileges`}}{{`所有权限`|T}}{{else if eq $privilege `Grant option`}}{{`分配权限`|T}}{{else}}{{$privilege}}{{end}}">{{$privilege}}</td>
+                            {{- else -}}
                             <td>{{$group.Text}}</td>
                             <td>{{$privilege}}</td>
-                            {{end}}
-                            {{range $k,$object := $sorts}}
+                            {{- end -}}
+                            {{- range $k,$object := $sorts -}}
 							<td>
-                                {{$grant := getGrantsByKey $object}}
-                                {{$value := getGrantByPrivilege $grant $k $group.Value $privilege}}
-                                {{$name := fieldName $k $group.Value $privilege}}
-                                {{if $fGrant}}
+                                {{- $grant := getGrantsByKey $object -}}
+                                {{- $value := getGrantByPrivilege $grant $k $group.Value $privilege -}}
+                                {{- $name := fieldName $k $group.Value $privilege -}}
+                                {{- if $fGrant -}}
                                 <select name="{{$name}}" class="PT-{{$group.Value}}-{{$k}}">
                                     <option value=""></option>
                                     <option value='1'{{if $value}} selected{{end}}>{{"授权"|T}}</option>
                                     <option value='0'{{if not $value}} selected{{end}}>{{"废除"|T}}</option>
                                 </select>
-                                {{else}}
-                                <input class="PT-{{$group.Value}}-{{$k}}" type="checkbox" name="{{$name}}" value='1'{{if $value}} checked{{end}}{{if eq $privilege "All privileges"}} id='grants-{{$k}}-all'{{else if eq $privilege "Grant option"}}{{else}} onclick="if (this.checked) $('#grants-{{$k}}-all').prop('checked',false);"{{end}}>
-                                {{end}}
+                                {{- else -}}
+                                <input class="PT-{{$group.Value}}-{{$k}}" type="checkbox" name="{{$name}}" value='1'{{if $value}} checked{{end}}{{if eq $privilege `All privileges`}} id='grants-{{$k}}-all'{{else if eq $privilege `Grant option`}}{{else}} onclick="if (this.checked) $('#grants-{{$k}}-all').prop('checked',false);"{{end}}>
+                                {{- end -}}
                             </td>
-                            {{end}}
+                            {{- end -}}
 						</tr>
-                        {{end}}
-                        {{end}}
+                        {{- end -}}
+                        {{- end -}}
 
-                        {{end}}
+                        {{- end -}}
 					</tbody>
 				</table>
 			    </div>
@@ -195,8 +199,10 @@ if($('input[name="modifyPassword"]').length>0){
     $('input[name="modifyPassword"]').on('click change', function() {
         if(this.checked){
             $('#passwd-input').attr('required','required').removeAttr('disabled').attr('placeholder','{{`请设置新密码`|T}}');
+            $('#show-password').parent('label').show();
         }else{
             $('#passwd-input').removeAttr('required').attr('disabled', 'disabled').attr('placeholder','{{`保持不变`|T}}');
+            $('#show-password').parent('label').hide();
         }
     }).trigger('change');
     $('#host-input,#user-input').on('change', function() {

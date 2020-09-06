@@ -66,6 +66,7 @@ type mySQL struct {
 	version        string
 	TriggerOptions TriggerOptions
 	supportSQL     bool
+	_isV8Plus      sql.NullBool
 }
 
 func (m *mySQL) Name() string {
@@ -167,15 +168,24 @@ func (m *mySQL) Privileges() error {
 				m.Session().AddFlash(errors.New(m.T(`root 用户不可删除`)))
 				return m.returnTo()
 			}
+			if user == m.DbAuth.Username {
+				m.Session().AddFlash(errors.New(m.T(`不可删除你自己`)))
+				return m.returnTo()
+			}
 			err = m.dropUser(user, host)
 			if err != nil {
 				m.fail(err.Error())
 			}
 			return m.returnTo(m.GenURL(`privileges`))
+
 		case `edit`:
 			oldUser := m.Query(`user`)
 			oldHost := m.Query(`host`)
 			if m.IsPost() {
+				if oldUser == m.DbAuth.Username {
+					m.Session().AddFlash(errors.New(m.T(`不可修改你自己的权限`)))
+					return m.returnTo()
+				}
 				modifyPassword := m.Formx(`modifyPassword`).Bool()
 				oldUser = m.Form(`oldUser`)
 				oldHost = m.Form(`oldHost`)
@@ -246,12 +256,31 @@ func (m *mySQL) Privileges() error {
 			})
 			ret = common.Err(m.Context, err)
 			return m.Render(`db/mysql/privilege_edit`, ret)
+
+		case `modifyPassword`:
+			if m.IsPost() {
+				host := m.Form(`host`)
+				user := m.Form(`user`)
+				pass := m.Form(`pass`)
+				err = m.modifyPassword(user, host, pass)
+				data := m.Data()
+				if err != nil {
+					data.SetError(err)
+				} else {
+					data.SetInfo(m.T(`操作成功`))
+				}
+				return m.JSON(data)
+			}
 		}
 	}
 	ret = common.Err(m.Context, err)
 	isSysUser, list, err := m.listPrivileges()
 	m.Set(`isSysUser`, isSysUser)
+	m.Set(`myUsername`, m.DbAuth.Username)
 	m.Set(`list`, list)
+	m.SetFunc(`isMyself`, func(user string) bool {
+		return m.DbAuth.Username == user
+	})
 	return m.Render(`db/mysql/privileges`, ret)
 }
 func (m *mySQL) Info() error {
