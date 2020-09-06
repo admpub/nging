@@ -46,7 +46,7 @@ func (m *mySQL) dropUser(user string, host string) error {
 	return r2.err
 }
 
-func (m *mySQL) editUser(oldUser string, oldHost string, newUser string, newHost string, oldPasswd string, newPasswd string, isHashed bool) error {
+func (m *mySQL) editUser(oldUser string, oldHost string, newUser string, newHost string, newPasswd string, modifyPassword bool) error {
 	var user string
 	if len(oldHost) > 0 {
 		user = quoteVal(oldUser) + `@` + quoteVal(oldHost)
@@ -57,47 +57,31 @@ func (m *mySQL) editUser(oldUser string, oldHost string, newUser string, newHost
 		return errors.New(m.T(`用户名不能为空`))
 	}
 
-	oldPass, grants, _, err := m.getUserGrants(oldHost, oldUser)
+	_, grants, _, err := m.getUserGrants(oldHost, oldUser)
 	if err != nil {
 		return err
 	}
-	if len(oldPasswd) == 0 {
-		oldPasswd = oldPass
-	}
-
+	v8plus := com.VersionCompare(m.getVersion(), `8.0.11`) >= 0
 	r := &Result{}
 	newUser = quoteVal(newUser) + `@` + quoteVal(newHost)
-	if len(newPasswd) > 0 {
-		if !isHashed {
-			r.SQL = `SELECT PASSWORD(` + quoteVal(newPasswd) + `)`
-			row, err := m.newParam().SetCollection(r.SQL).QueryRow()
-			if err != nil {
-				return err
-			}
-			var v sql.NullString
-			err = row.Scan(&v)
-			if err != nil {
-				return err
-			}
-			newPasswd = v.String
-		}
-	} else {
-		newPasswd = oldPasswd
-	}
 	var created bool
 	onerror := func(err error) error {
 		return err
 	}
-	if user != newUser {
+	if user != newUser { // 新建账号
+		created = true
 		if len(newPasswd) == 0 {
 			return errors.New(m.T(`密码不能为空。请注意：修改用户名的时候，必须设置密码`))
 		}
-		r.SQL = `GRANT USAGE ON *.* TO`
-		if com.VersionCompare(m.version, `5`) >= 0 {
-			r.SQL = `CREATE USER`
+		if v8plus {
+			r.SQL = `CREATE USER ` + newUser + ` IDENTIFIED WITH MYSQL_NATIVE_PASSWORD BY ` + quoteVal(newPasswd)
+		} else {
+			r.SQL = `GRANT USAGE ON *.* TO`
+			if com.VersionCompare(m.version, `5`) >= 0 {
+				r.SQL = `CREATE USER`
+			}
+			r.SQL += ` ` + newUser + ` IDENTIFIED BY ` + quoteVal(newPasswd)
 		}
-		r.SQL += ` ` + newUser + ` IDENTIFIED BY PASSWORD ` + quoteVal(newPasswd)
-		created = true
 		onerror = func(err error) error {
 			r2 := &Result{}
 			r2.SQL = "DROP USER " + newUser
@@ -108,12 +92,18 @@ func (m *mySQL) editUser(oldUser string, oldHost string, newUser string, newHost
 			m.AddResults(r2)
 			return err
 		}
-	} else if len(newPasswd) > 0 && oldPasswd != newPasswd {
-		r.SQL = `SET PASSWORD FOR ` + newUser + `=` + quoteVal(newPasswd)
+	} else if modifyPassword {
+		if len(newPasswd) == 0 {
+			return errors.New(m.T(`密码不能为空`))
+		}
+		if v8plus {
+			r.SQL = `ALTER USER ` + newUser + ` IDENTIFIED WITH MYSQL_NATIVE_PASSWORD BY ` + quoteVal(newPasswd)
+		} else {
+			r.SQL = `SET PASSWORD FOR ` + newUser + `=PASSWORD(` + quoteVal(newPasswd) + `)`
+		}
 	} else {
 		r.SQL = ``
 	}
-	//panic(r.SQL)
 	if len(r.SQL) > 0 {
 		r.Exec(m.newParam())
 		m.AddResults(r)
@@ -265,7 +255,7 @@ func (m *mySQL) editUser(oldUser string, oldHost string, newUser string, newHost
 			return onerror(err)
 		}
 	}
-	if len(oldUser) > 0 {
+	if len(oldUser) > 0 { // 如果是在旧账号的基础上创建新账号，则删除旧账号
 		if created {
 			r := &Result{}
 			r.SQL = "DROP USER " + user

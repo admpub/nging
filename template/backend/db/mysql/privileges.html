@@ -30,12 +30,12 @@
 							<td>{{$v.k}}</td>
 							<td>{{$v.v}}</td>
 							<td>
-								<a title="{{"编辑"|T}}" class="label label-success" href="{{dbMgrURL "privileges"}}&act=edit&user={{$v.k}}&host={{$v.v}}" data-pjax="#pcont" data-keepjs="true">
+								<a title="{{`编辑`|T}}" class="label label-success" href="{{dbMgrURL `privileges`}}&act=edit&user={{$v.k}}&host={{$v.v}}" data-pjax="#pcont" data-keepjs="true">
                                     <i class="fa fa-pencil"></i>
                                 </a>
 								{{if ne $v.k "root"}}
 								&nbsp;
-								<a title="{{"删除"|T}}" class="label label-danger" href="{{dbMgrURL "privileges"}}&act=drop&user={{$v.k}}&host={{$v.v}}" onclick="return confirm('{{T "确定要删除用户“%v@%v”吗？" $v.k $v.v}}');">
+								<a title="{{`删除`|T}}" class="label label-danger" href="{{dbMgrURL `privileges`}}&act=drop&user={{$v.k}}&host={{$v.v}}" onclick="return confirm('{{T `确定要删除用户“%v@%v”吗？` $v.k $v.v}}');">
                                     <i class="fa fa-times"></i>
                                 </a>
 								{{end}}

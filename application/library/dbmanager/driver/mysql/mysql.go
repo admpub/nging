@@ -173,15 +173,16 @@ func (m *mySQL) Privileges() error {
 			}
 			return m.returnTo(m.GenURL(`privileges`))
 		case `edit`:
+			oldUser := m.Query(`user`)
+			oldHost := m.Query(`host`)
 			if m.IsPost() {
-				isHashed := len(m.Form(`hashed`)) > 0
-				user := m.Form(`oldUser`)
-				host := m.Query(`host`)
+				modifyPassword := m.Formx(`modifyPassword`).Bool()
+				oldUser = m.Form(`oldUser`)
+				oldHost = m.Form(`oldHost`)
 				newHost := m.Form(`host`)
 				newUser := m.Form(`user`)
-				oldPasswd := m.Form(`oldPass`)
 				newPasswd := m.Form(`pass`)
-				err = m.editUser(user, host, newUser, newHost, oldPasswd, newPasswd, isHashed)
+				err = m.editUser(oldUser, oldHost, newUser, newHost, newPasswd, modifyPassword)
 				if err == nil {
 					m.ok(m.T(`操作成功`))
 					return m.returnTo(m.GenURL(`privileges`) + `&act=edit&user=` + url.QueryEscape(newUser) + `&host=` + url.QueryEscape(newHost))
@@ -201,36 +202,37 @@ func (m *mySQL) Privileges() error {
 				&KV{`Columns`, m.T(`列`)},
 				&KV{`Procedures`, m.T(`子程序`)},
 			})
-			user := m.Form(`user`)
-			host := m.Form(`host`)
-			var oldUser string
-			oldPass, grants, sorts, err := m.getUserGrants(host, user)
+			_, grants, sorts, err := m.getUserGrants(oldHost, oldUser)
 			if _, ok := grants["*.*"]; ok {
 				m.Set(`hasGlobalScope`, true)
 			} else {
 				m.Set(`hasGlobalScope`, false)
 			}
-			if err == nil {
-				oldUser = user
-			}
 
 			m.Set(`sorts`, sorts)
 			m.Set(`grants`, grants)
-			if oldPass != `` {
-				m.Set(`hashed`, true)
-			} else {
-				m.Set(`hashed`, false)
-			}
-			m.Set(`oldPass`, oldPass)
+			m.Set(`oldHost`, oldHost)
 			m.Set(`oldUser`, oldUser)
-			m.Request().Form().Set(`pass`, oldPass)
 			m.SetFunc(`getGrantByPrivilege`, func(grant map[string]bool, index int, group string, privilege string) bool {
 				priv := strings.ToUpper(privilege)
 				value := m.Form(fmt.Sprintf(`grants[%v][%v][%v]`, index, group, priv))
 				if len(value) > 0 && value == `1` {
 					return true
 				}
-				return grant[priv]
+				if granted, ok := grant[priv]; ok {
+					return granted
+				}
+				if priv == `ALL PRIVILEGES` && len(grant) > 0 {
+					all := true
+					for _, granted := range grant {
+						if !granted {
+							all = false
+							break
+						}
+					}
+					return all
+				}
+				return false
 			})
 			m.SetFunc(`getGrantsByKey`, func(key string) map[string]bool {
 				if vs, ok := grants[key]; ok {
