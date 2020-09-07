@@ -258,17 +258,18 @@
 			var dbName = $('#database-name').val();
 			switch ($(this).val()) {
 				case 'mysql':
-					var inputs = ['host', 'user', 'password', 'name', 'charset'];
-					for (var i = 0; i < inputs.length; i++) {
-						$('#database-' + inputs[i]).parents('.form-group').show();
+					var showInputs = ['host', 'user', 'password', 'name', 'charset'];
+					for (var i = 0; i < showInputs.length; i++) {
+						$('#database-' + showInputs[i]).closest('.form-group').show();
 					}
 					$('#database-name').val(dbName.replace(/\.db$/g, ''));
 					break;
 				case 'sqlite':
-					var inputs = ['host', 'user', 'password'];
-					for (var i = 0; i < inputs.length; i++) {
-						if ($('#database-' + inputs[i]).val() == '') $('#database-' + inputs[i]).val('none');
-						if (i+1==inputs.length) $('#database-' + inputs[i]).parents('.form-group').hide();
+					var hideInputs = ['host', 'user', 'password', 'charset'];
+					for (var i = 0; i < hideInputs.length; i++) {
+						var field = hideInputs[i];
+						if ($('#database-' + field).val() == '') $('#database-' + field).val('none');
+						$('#database-' + field).closest('.form-group').hide();
 					}
 					if (dbName == '') {
 						$('#database-name').val('nging.db');
