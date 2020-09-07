@@ -183,7 +183,7 @@ require (
 	github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f // indirect
 	github.com/webx-top/client v0.1.3
 	github.com/webx-top/codec v0.0.0-20191025184817-6fac7ce097e2
-	github.com/webx-top/com v0.0.0-20200717115231-63c1a842afd2
+	github.com/webx-top/com v0.0.1
 	github.com/webx-top/db v1.0.9
 	github.com/webx-top/echo v2.3.1+incompatible
 	github.com/webx-top/image v0.0.0-20200901141228-623a3d6fc464

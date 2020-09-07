@@ -1049,6 +1049,10 @@ github.com/webx-top/codec v0.0.0-20191025184817-6fac7ce097e2 h1:Hyb/tAwHL3ayVWrW
 github.com/webx-top/codec v0.0.0-20191025184817-6fac7ce097e2/go.mod h1:FL2TNTorudSTop040uNCTONOlIJfl6kElJLxyoHHs/g=
 github.com/webx-top/com v0.0.0-20200717115231-63c1a842afd2 h1:eVTnqk2+XMqRvp3GuS8TQKzNYlt/g0emKx3Ve/5CDhc=
 github.com/webx-top/com v0.0.0-20200717115231-63c1a842afd2/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
+github.com/webx-top/com v0.0.0-20200812010838-4c474f165238 h1:BArgAOWEdXIwWTHosHfOZRJbDuOnCbhlCLqDG87Ek4U=
+github.com/webx-top/com v0.0.0-20200812010838-4c474f165238/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
+github.com/webx-top/com v0.0.1 h1:DlKmmin0rxBPecNbqsOaE+0xff6thy3F7X966X2HkOE=
+github.com/webx-top/com v0.0.1/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/db v1.0.9 h1:IZ4ohNuKuqAh7GCQsi1sSyCajBATUv4Fe+UxAsjPNAU=
 github.com/webx-top/db v1.0.9/go.mod h1:a3c7UZmv1kaNVkiCjsb1gypf41vc9g+JcsZIxK7OYmU=
 github.com/webx-top/echo v2.3.1+incompatible h1:yH0lq7plG6Z6H8aBmkQV/HY4F61InkACe6752Caxn1A=

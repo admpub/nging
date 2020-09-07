@@ -44,21 +44,31 @@ func Base64Decode(str string) (string, error) {
 	return string(s), e
 }
 
-// SafeBase64Encode base64 encode
-func SafeBase64Encode(str string) string {
-	str = Base64Encode(str)
-	str = strings.TrimRight(str, `=`)
-	str = strings.Replace(str, `/`, `_`, -1)
-	str = strings.Replace(str, `+`, `-`, -1)
-	return str
-}
-
-// SafeBase64Decode base64 decode
-func SafeBase64Decode(str string) (string, error) {
+// URLSafeBase64 base64字符串编码为URL友好的字符串
+func URLSafeBase64(str string, encode bool) string {
+	if encode { // 编码后处理
+		str = strings.TrimRight(str, `=`)
+		str = strings.Replace(str, `/`, `_`, -1)
+		str = strings.Replace(str, `+`, `-`, -1)
+		return str
+	}
+	// 解码前处理
 	str = strings.Replace(str, `_`, `/`, -1)
 	str = strings.Replace(str, `-`, `+`, -1)
 	var missing = (4 - len(str)%4) % 4
 	str += strings.Repeat(`=`, missing)
+	return str
+}
+
+// SafeBase64Encode base64 encode
+func SafeBase64Encode(str string) string {
+	str = Base64Encode(str)
+	return URLSafeBase64(str, true)
+}
+
+// SafeBase64Decode base64 decode
+func SafeBase64Decode(str string) (string, error) {
+	str = URLSafeBase64(str, false)
 	return Base64Decode(str)
 }
 

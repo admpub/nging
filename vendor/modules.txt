@@ -1068,7 +1068,7 @@ github.com/webx-top/client/upload/watermark
 # github.com/webx-top/codec v0.0.0-20191025184817-6fac7ce097e2
 ## explicit
 github.com/webx-top/codec
-# github.com/webx-top/com v0.0.0-20200717115231-63c1a842afd2
+# github.com/webx-top/com v0.0.1
 ## explicit
 github.com/webx-top/com
 github.com/webx-top/com/httpClientOptions
