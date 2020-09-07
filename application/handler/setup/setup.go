@@ -108,7 +108,7 @@ func install(ctx echo.Context, sqlFile string, isFile bool, charset string, inst
 			defer func() {
 				sqlStr = ``
 			}()
-			sqlStr = common.ReplaceCharset(sqlStr, charset)
+			sqlStr = common.ReplaceCharset(sqlStr, charset, true)
 			return installer(sqlStr)
 		}
 		return nil

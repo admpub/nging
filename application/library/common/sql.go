@@ -57,12 +57,14 @@ var (
 )
 
 // ReplaceCharset 替换DDL语句中的字符集
-func ReplaceCharset(sqlStr string, charset string) string {
+func ReplaceCharset(sqlStr string, charset string, checkCreateDDL ...bool) string {
 	if charset == `utf8mb4` {
 		return sqlStr
 	}
-	if !sqlCreateTableRegexp.MatchString(sqlStr) {
-		return sqlStr
+	if len(checkCreateDDL) > 0 && checkCreateDDL[0] {
+		if !sqlCreateTableRegexp.MatchString(sqlStr) {
+			return sqlStr
+		}
 	}
 	sqlStr = sqlCharsetRegexp.ReplaceAllString(sqlStr, ` ${1}`+charset+` `)
 	sqlStr = sqlCollateRegexp.ReplaceAllString(sqlStr, ` ${1}`+charset+`_general_ci`)
