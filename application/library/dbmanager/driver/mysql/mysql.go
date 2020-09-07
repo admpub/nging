@@ -525,7 +525,7 @@ func (m *mySQL) CreateTable() error {
 			partitioning)
 		if err == nil {
 			m.ok(m.T(`添加成功`))
-			return m.returnTo(m.GenURL(`listDb`))
+			return m.returnTo(m.GenURL(`listDb`, m.dbName))
 		}
 	}
 	engines, err := m.getEngines()
