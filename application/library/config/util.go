@@ -194,6 +194,8 @@ func CreaterMySQL(err error, c *Config) error {
 	return err
 }
 
+var mysqlNetworkRegexp = regexp.MustCompile(`^[/]{2,}`)
+
 func ConnectMySQL(c *Config) error {
 	settings := mysql.ConnectionURL{
 		Host:     c.DB.Host,
@@ -201,6 +203,11 @@ func ConnectMySQL(c *Config) error {
 		User:     c.DB.User,
 		Password: c.DB.Password,
 		Options:  c.DB.Options,
+	}
+	if strings.HasPrefix(settings.Host, `unix:`) {
+		settings.Socket = strings.TrimPrefix(settings.Host, `unix:`)
+		settings.Socket = mysqlNetworkRegexp.ReplaceAllString(settings.Socket, ``)
+		settings.Host = ``
 	}
 	if settings.Options == nil {
 		settings.Options = map[string]string{}
