@@ -7,6 +7,7 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
+	"github.com/webx-top/db/mysql"
 )
 
 func ParseSQL(sqlFile string, isFile bool, installer func(string) error) (err error) {
@@ -52,6 +53,7 @@ var (
 	sqlCharsetRegexp     = regexp.MustCompile(`(?i) (CHARACTER SET |CHARSET=)utf8mb4 `)
 	sqlCollateRegexp     = regexp.MustCompile(`(?i) (COLLATE[= ])utf8mb4_general_ci`)
 	sqlCreateTableRegexp = regexp.MustCompile(`(?i)^CREATE TABLE `)
+	mysqlNetworkRegexp   = regexp.MustCompile(`^[/]{2,}`)
 )
 
 // ReplaceCharset 替换DDL语句中的字符集
@@ -65,4 +67,12 @@ func ReplaceCharset(sqlStr string, charset string) string {
 	sqlStr = sqlCharsetRegexp.ReplaceAllString(sqlStr, ` ${1}`+charset+` `)
 	sqlStr = sqlCollateRegexp.ReplaceAllString(sqlStr, ` ${1}`+charset+`_general_ci`)
 	return sqlStr
+}
+
+func ParseMysqlConnectionURL(settings *mysql.ConnectionURL) {
+	if strings.HasPrefix(settings.Host, `unix:`) {
+		settings.Socket = strings.TrimPrefix(settings.Host, `unix:`)
+		settings.Socket = mysqlNetworkRegexp.ReplaceAllString(settings.Socket, ``)
+		settings.Host = ``
+	}
 }

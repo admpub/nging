@@ -91,6 +91,7 @@ func (m *mySQL) Login() error {
 		Host:     m.DbAuth.Host,
 		Database: m.DbAuth.Db,
 	}
+	common.ParseMysqlConnectionURL(&settings)
 	var dbNameIsEmpty bool
 	if len(settings.Database) == 0 {
 		dbNameIsEmpty = true

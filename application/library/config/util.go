@@ -15,6 +15,7 @@
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
 package config
 
 import (
@@ -32,6 +33,7 @@ import (
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/cmd/event"
 	"github.com/admpub/nging/application/library/caddy"
+	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/cron"
 	cronSend "github.com/admpub/nging/application/library/cron/send"
 	"github.com/admpub/nging/application/library/ftp"
@@ -194,8 +196,6 @@ func CreaterMySQL(err error, c *Config) error {
 	return err
 }
 
-var mysqlNetworkRegexp = regexp.MustCompile(`^[/]{2,}`)
-
 func ConnectMySQL(c *Config) error {
 	settings := mysql.ConnectionURL{
 		Host:     c.DB.Host,
@@ -204,11 +204,7 @@ func ConnectMySQL(c *Config) error {
 		Password: c.DB.Password,
 		Options:  c.DB.Options,
 	}
-	if strings.HasPrefix(settings.Host, `unix:`) {
-		settings.Socket = strings.TrimPrefix(settings.Host, `unix:`)
-		settings.Socket = mysqlNetworkRegexp.ReplaceAllString(settings.Socket, ``)
-		settings.Host = ``
-	}
+	common.ParseMysqlConnectionURL(&settings)
 	if settings.Options == nil {
 		settings.Options = map[string]string{}
 	}
