@@ -45,6 +45,27 @@ type DB struct {
 	connMaxDuration time.Duration
 }
 
+func (d *DB) SetKV(key string, value string) *DB {
+	if d.Options == nil {
+		d.Options = map[string]string{}
+	}
+	d.Options[key] = value
+	return d
+}
+
+func (d *DB) GetByKey(key string) (string, bool) {
+	if d.Options == nil {
+		return ``, false
+	}
+	value, ok := d.Options[key]
+	return value, ok
+}
+
+func (d *DB) Charset() string {
+	charset, _ := d.GetByKey(`charset`)
+	return charset
+}
+
 type DBConnSetter interface {
 	SetConnMaxLifetime(time.Duration)
 	SetMaxIdleConns(int)

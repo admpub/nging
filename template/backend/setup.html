@@ -102,6 +102,21 @@
 											<div id="database-error"></div>
 										</div>
 									</div>
+									<div class="form-group">
+										<div class="col-sm-12">
+											<div class="input-group no-margin-bottom">
+												<span class="input-group-addon"><i class="fa fa-language"></i></span>
+												<select name="charset" id="database-charset"  class="form-control" data-toggle="tooltip" title="{{`字符集`|T}}">{{$charset:=Form "charset"}}
+													<option value="utf8mb4"{{if eq $charset "utf8mb4"}} selected{{end}}>utf8mb4</option>
+													<option value="utf8"{{if eq $charset "utf8"}} selected{{end}}>utf8</option>
+												</select>
+											</div>
+											<div class="help-block text-muted">
+												{{`如果MySQL数据库的版本低于5.7，请选择utf8`|T}}
+											</div>
+										</div>
+									</div>
+
 
 
 
@@ -243,7 +258,7 @@
 			var dbName = $('#database-name').val();
 			switch ($(this).val()) {
 				case 'mysql':
-					var inputs = ['host', 'user', 'password', 'name'];
+					var inputs = ['host', 'user', 'password', 'name', 'charset'];
 					for (var i = 0; i < inputs.length; i++) {
 						$('#database-' + inputs[i]).parents('.form-group').show();
 					}
@@ -253,7 +268,7 @@
 					var inputs = ['host', 'user', 'password'];
 					for (var i = 0; i < inputs.length; i++) {
 						if ($('#database-' + inputs[i]).val() == '') $('#database-' + inputs[i]).val('none');
-						$('#database-' + inputs[i]).parents('.form-group').hide();
+						if (i+1==inputs.length) $('#database-' + inputs[i]).parents('.form-group').hide();
 					}
 					if (dbName == '') {
 						$('#database-name').val('nging.db');

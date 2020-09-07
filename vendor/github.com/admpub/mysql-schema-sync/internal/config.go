@@ -8,15 +8,24 @@ import (
 
 // Config  config struct
 type Config struct {
-	SourceDSN   string                       `json:"source"`
-	DestDSN     string                       `json:"dest"`
-	AlterIgnore map[string]*AlterIgnoreTable `json:"alter_ignore"`
-	Tables      []string                     `json:"tables"`
-	SkipTables  []string                     `json:"skip_tables"`
-	Email       *EmailStruct                 `json:"email"`
-	ConfigPath  string
-	Sync        bool
-	Drop        bool
+	SourceDSN       string                       `json:"source"`
+	DestDSN         string                       `json:"dest"`
+	AlterIgnore     map[string]*AlterIgnoreTable `json:"alter_ignore"`
+	Tables          []string                     `json:"tables"`
+	SkipTables      []string                     `json:"skip_tables"`
+	Email           *EmailStruct                 `json:"email"`
+	ConfigPath      string
+	Sync            bool
+	Drop            bool
+	sqlPreprocessor func(string) string
+}
+
+func (cfg *Config) SetSQLPreprocessor(fn func(string) string) {
+	cfg.sqlPreprocessor = fn
+}
+
+func (cfg *Config) SQLPreprocessor() func(string) string {
+	return cfg.sqlPreprocessor
 }
 
 func (cfg *Config) String() string {

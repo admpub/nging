@@ -126,6 +126,9 @@ func (sc *SchemaSync) getSchemaDiff(alter *TableAlterData) string {
 			log.Printf("ignore column %s.%s", table, name)
 			continue
 		}
+		if sc.Config.SQLPreprocessor() != nil {
+			dt = sc.Config.SQLPreprocessor()(dt)
+		}
 		var alterSQL string
 		if destDt, has := destMyS.Fields[name]; has {
 			if !isSameSchemaItem(dt, destDt) {

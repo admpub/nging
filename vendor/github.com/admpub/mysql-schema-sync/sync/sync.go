@@ -12,6 +12,7 @@ func Sync(c *Config, mc *EmailConfig, dbOperators ...internal.DBOperator) (sta *
 	cfg.DestDSN = c.DestDSN
 	cfg.Sync = c.Sync
 	cfg.Drop = c.Drop
+	cfg.SetSQLPreprocessor(c.SQLPreprocessor)
 	c.AlterIgnore = strings.TrimSpace(c.AlterIgnore)
 	c.AlterIgnore = strings.TrimLeft(c.AlterIgnore, `{`)
 	c.AlterIgnore = strings.TrimRight(c.AlterIgnore, `}`)

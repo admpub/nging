@@ -32,6 +32,7 @@ import (
 	"github.com/admpub/errors"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/model"
 	"github.com/admpub/nging/application/registry/settings"
@@ -90,7 +91,7 @@ func Progress(ctx echo.Context) error {
 	return ctx.JSON(data)
 }
 
-func install(ctx echo.Context, sqlFile string, isFile bool, installer func(string) error) (err error) {
+func install(ctx echo.Context, sqlFile string, isFile bool, charset string, installer func(string) error) (err error) {
 	var sqlStr string
 	installFunction := func(line string) (rErr error) {
 		installProgress.Finished += int64(len(line)) + 1
@@ -107,6 +108,7 @@ func install(ctx echo.Context, sqlFile string, isFile bool, installer func(strin
 			defer func() {
 				sqlStr = ``
 			}()
+			sqlStr = common.ReplaceCharset(sqlStr, charset)
 			return installer(sqlStr)
 		}
 		return nil
@@ -166,6 +168,7 @@ func Setup(ctx echo.Context) error {
 		if err != nil {
 			return ctx.NewError(stdCode.Failure, err.Error())
 		}
+		charset := `utf8mb4`
 		config.DefaultConfig.DB.Database = strings.Replace(config.DefaultConfig.DB.Database, "'", "", -1)
 		config.DefaultConfig.DB.Database = strings.Replace(config.DefaultConfig.DB.Database, "`", "", -1)
 		if config.DefaultConfig.DB.Type == `sqlite` {
@@ -175,7 +178,13 @@ func Setup(ctx echo.Context) error {
 			if strings.HasSuffix(config.DefaultConfig.DB.Database, `.db`) == false {
 				config.DefaultConfig.DB.Database += `.db`
 			}
+		} else {
+			charset = ctx.Form(`charset`, `utf8mb4`)
+			if !com.InSlice(charset, []string{`utf8mb4`, `utf8`}) {
+				return ctx.NewError(stdCode.InvalidParameter, ctx.T(`字符集参数无效`)).SetZone(`charset`)
+			}
 		}
+		config.DefaultConfig.DB.SetKV(`charset`, charset)
 		//连接数据库
 		err = config.ConnectDB(config.DefaultConfig)
 		if err != nil {
@@ -217,13 +226,13 @@ func Setup(ctx echo.Context) error {
 		data := ctx.Data()
 		for _, sqlFile := range sqlFiles {
 			log.Info(color.GreenString(`[installer]`), `Execute SQL file: `, sqlFile)
-			err = install(ctx, sqlFile, true, installer)
+			err = install(ctx, sqlFile, true, charset, installer)
 			if err != nil {
 				return ctx.NewError(stdCode.Failure, err.Error())
 			}
 		}
 		if len(handler.OfficialSQL) > 0 {
-			err = install(ctx, handler.OfficialSQL, false, installer)
+			err = install(ctx, handler.OfficialSQL, false, charset, installer)
 			if err != nil {
 				return ctx.NewError(stdCode.Failure, err.Error())
 			}

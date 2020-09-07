@@ -208,6 +208,15 @@ func autoUpgradeDatabase() {
 		Tables:     ``,
 		SkipTables: ``,
 		MailTo:     ``,
+		SQLPreprocessor: func() func(string) string {
+			charset := DefaultConfig.DB.Charset()
+			if len(charset) == 0 {
+				charset = `utf8mb4`
+			}
+			return func(sqlStr string) string {
+				return common.ReplaceCharset(sqlStr, charset)
+			}
+		}(),
 	}, nil, sync.NewMySchemaData(schema, `source`))
 	if err != nil {
 		panic(`尝试自动升级数据库失败！同步表结构时出错：` + err.Error())

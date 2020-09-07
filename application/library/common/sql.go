@@ -1,6 +1,7 @@
 package common
 
 import (
+	"regexp"
 	"strings"
 
 	"github.com/webx-top/com"
@@ -45,4 +46,23 @@ func ReplacePrefix(m factory.Model, field string, oldPrefix string, newPrefix st
 	oldPrefix = com.AddSlashes(oldPrefix, '_', '%')
 	value := db.Raw("REPLACE(`"+field+"`, ?, ?)", oldPrefix, newPrefix)
 	return m.SetField(nil, field, value, field, db.Like(oldPrefix+`%`))
+}
+
+var (
+	sqlCharsetRegexp     = regexp.MustCompile(`(?i) (CHARACTER SET |CHARSET=)utf8mb4 `)
+	sqlCollateRegexp     = regexp.MustCompile(`(?i) (COLLATE[= ])utf8mb4_general_ci`)
+	sqlCreateTableRegexp = regexp.MustCompile(`(?i)^CREATE TABLE `)
+)
+
+// ReplaceCharset 替换DDL语句中的字符集
+func ReplaceCharset(sqlStr string, charset string) string {
+	if charset == `utf8mb4` {
+		return sqlStr
+	}
+	if !sqlCreateTableRegexp.MatchString(sqlStr) {
+		return sqlStr
+	}
+	sqlStr = sqlCharsetRegexp.ReplaceAllString(sqlStr, ` ${1}`+charset+` `)
+	sqlStr = sqlCollateRegexp.ReplaceAllString(sqlStr, ` ${1}`+charset+`_general_ci`)
+	return sqlStr
 }
