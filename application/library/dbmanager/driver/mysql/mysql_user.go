@@ -21,6 +21,7 @@ import (
 	"database/sql"
 	"errors"
 	"strconv"
+	"strings"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -86,7 +87,11 @@ func (m *mySQL) addUser(user string, host string, password string) error {
 
 func (m *mySQL) isV8Plus() bool {
 	if !m._isV8Plus.Valid {
-		m._isV8Plus.Bool = com.VersionCompare(m.getVersion(), `8.0.11`) >= 0
+		if !strings.Contains(m.getVersion(), `MariaDB`) {
+			m._isV8Plus.Bool = com.VersionCompare(m.getVersion(), `8.0.11`) >= 0
+		} else {
+			m._isV8Plus.Bool = false
+		}
 		m._isV8Plus.Valid = true
 	}
 	return m._isV8Plus.Bool
