@@ -217,7 +217,7 @@ func (m *mySQL) editUser(oldUser string, oldHost string, newUser string, newHost
 			Revoke:  []string{},
 			Columns: onAndCol[2],
 			On:      onAndCol[1],
-			User:    newUser,
+			User:    newUserAndHost,
 			Scope:   grant.Scope,
 		}
 		if hasURLGrantValue { // 下拉菜单模式
@@ -267,7 +267,7 @@ func (m *mySQL) editUser(oldUser string, oldHost string, newUser string, newHost
 				Revoke:  []string{},
 				Columns: onAndCol[2],
 				On:      onAndCol[1],
-				User:    newUser,
+				User:    newUserAndHost,
 			}
 			for k := range revoke {
 				op.Revoke = append(op.Revoke, k)
