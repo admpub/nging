@@ -72,7 +72,7 @@ func ReplaceCharset(sqlStr string, charset string) string {
 func ParseMysqlConnectionURL(settings *mysql.ConnectionURL) {
 	if strings.HasPrefix(settings.Host, `unix:`) {
 		settings.Socket = strings.TrimPrefix(settings.Host, `unix:`)
-		settings.Socket = mysqlNetworkRegexp.ReplaceAllString(settings.Socket, ``)
+		settings.Socket = mysqlNetworkRegexp.ReplaceAllString(settings.Socket, `/`)
 		settings.Host = ``
 	}
 }
