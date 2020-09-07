@@ -98,7 +98,7 @@ func (m *mySQL) isV8Plus() bool {
 }
 
 func (m *mySQL) editUser(oldUser string, oldHost string, newUser string, newHost string, newPasswd string, modifyPassword bool) error {
-	user := quoteVal(oldUser) + `@` + quoteVal(oldHost)
+	oldUserAndHost := quoteVal(oldUser) + `@` + quoteVal(oldHost)
 	if len(newUser) == 0 {
 		return errors.New(m.T(`用户名不能为空`))
 	}
@@ -107,19 +107,19 @@ func (m *mySQL) editUser(oldUser string, oldHost string, newUser string, newHost
 	if err != nil {
 		return err
 	}
-	newUser = quoteVal(newUser) + `@` + quoteVal(newHost)
+	newUserAndHost := quoteVal(newUser) + `@` + quoteVal(newHost)
 	var created bool
 	onerror := func(err error) error {
 		return err
 	}
-	if user != newUser { // 新建账号
+	if oldUserAndHost != newUserAndHost { // 新建账号
 		created = true
 		if err = m.addUser(newUser, newHost, newPasswd); err != nil {
 			return err
 		}
 		onerror = func(err error) error {
 			r2 := &Result{}
-			r2.SQL = "DROP USER " + newUser
+			r2.SQL = "DROP USER " + newUserAndHost
 			r2.Exec(m.newParam())
 			if r2.err != nil {
 				m.Echo().Logger().Error(r2.err)
@@ -285,7 +285,7 @@ func (m *mySQL) editUser(oldUser string, oldHost string, newUser string, newHost
 	if len(oldUser) > 0 { // 如果是在旧账号的基础上创建新账号，则删除旧账号
 		if created {
 			r := &Result{}
-			r.SQL = "DROP USER " + user
+			r.SQL = "DROP USER " + oldUserAndHost
 			r.Exec(m.newParam())
 			m.AddResults(r)
 			if r.err != nil {
@@ -297,9 +297,6 @@ func (m *mySQL) editUser(oldUser string, oldHost string, newUser string, newHost
 	r2.SQL = "FLUSH PRIVILEGES"
 	r2.Exec(m.newParam())
 	m.AddResults(r2)
-	if r2.err != nil {
-		return onerror(err)
-	}
 	return nil
 }
 
