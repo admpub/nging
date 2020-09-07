@@ -20,7 +20,7 @@ export GOOS=linux
 export GOARCH=amd64
 source ${WORKDIR}/inc-build-x.sh
 
-exit;
+#exit;
 
 export GOOS=linux
 export GOARCH=arm-5
