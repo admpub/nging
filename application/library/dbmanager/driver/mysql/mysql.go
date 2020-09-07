@@ -525,7 +525,7 @@ func (m *mySQL) CreateTable() error {
 			partitioning)
 		if err == nil {
 			m.ok(m.T(`添加成功`))
-			return m.returnTo(m.GenURL(`listDb`, m.dbName))
+			return m.returnTo(m.GenURL(`listTable`, m.dbName))
 		}
 	}
 	engines, err := m.getEngines()
@@ -534,7 +534,7 @@ func (m *mySQL) CreateTable() error {
 	m.Set(`foreignKeys`, foreignKeys)
 	m.Set(`onActions`, strings.Split(OnActions, `|`))
 	m.Set(`unsignedTags`, UnsignedTags)
-	if m.Form(`engine`) == `` {
+	if len(m.Form(`engine`)) == 0 {
 		m.Request().Form().Set(`engine`, `InnoDB`)
 	}
 	if len(postFields) == 0 {
@@ -580,7 +580,7 @@ func (m *mySQL) ModifyTable() error {
 	oldTable := m.Form(`table`)
 	if len(oldTable) < 1 {
 		m.fail(m.T(`table参数不能为空`))
-		return m.returnTo(m.GenURL(`listDb`))
+		return m.returnTo(m.GenURL(`listTable`, m.dbName))
 	}
 
 	referencablePrimary, _, err := m.referencablePrimary(``)
@@ -762,7 +762,7 @@ func (m *mySQL) ModifyTable() error {
 		if err == nil {
 			returnURLs := []string{}
 			if oldTable != table {
-				returnURLs = append(returnURLs, m.GenURL(`listDb`))
+				returnURLs = append(returnURLs, m.GenURL(`listTable`, m.dbName))
 			}
 			m.ok(m.T(`修改成功`))
 			return m.returnTo(returnURLs...)
