@@ -138,6 +138,15 @@ func (s CodeMap) Get(code Code) TextHTTPCode {
 	return v
 }
 
+func (s CodeMap) Set(code Code, text string, httpCodes ...int) CodeMap {
+	httpCode := http.StatusOK
+	if len(httpCodes) > 0 {
+		httpCode = httpCodes[0]
+	}
+	s[code] = TextHTTPCode{Text: text, HTTPCode: httpCode}
+	return s
+}
+
 func (s CodeMap) GetByInt(code int) TextHTTPCode {
 	return s.Get(Code(code))
 }
