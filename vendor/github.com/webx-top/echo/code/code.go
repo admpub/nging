@@ -32,9 +32,10 @@ const (
 
 	// - 数据状态
 
-	InvalidSecretKey Code = -151 //密钥不正确
-	InvalidAppID     Code = -150 //AppID不正确
+	InvalidToken Code = -151 //令牌错误
+	InvalidAppID Code = -150 //AppID不正确
 
+	DataSizeTooBig      Code = -110 //数据尺寸太大
 	DataAlreadyExists   Code = -109 //数据已经存在
 	DataFormatIncorrect Code = -108 //数据格式不正确
 	DataStatusIncorrect Code = -107 //数据状态不正确
@@ -82,9 +83,10 @@ var CodeDict = CodeMap{
 
 	// - 数据状态
 
-	InvalidAppID:     {"InvalidAppID", http.StatusOK},
-	InvalidSecretKey: {"InvalidSecretKey", http.StatusOK},
+	InvalidAppID: {"InvalidAppID", http.StatusOK},
+	InvalidToken: {"InvalidToken", http.StatusOK},
 
+	DataSizeTooBig:      {"DataSizeTooBig", http.StatusOK},
 	DataAlreadyExists:   {"DataAlreadyExists", http.StatusOK},
 	DataFormatIncorrect: {"DataFormatIncorrect", http.StatusOK},
 	DataStatusIncorrect: {"DataStatusIncorrect", http.StatusOK},

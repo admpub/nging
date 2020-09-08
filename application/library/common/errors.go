@@ -46,6 +46,12 @@ var (
 	ErrBalanceNoEnough = echo.NewError(`Balance is not enough`, code.BalanceNoEnough)
 	//ErrCaptcha 验证码错误
 	ErrCaptcha = echo.NewError(`Captcha is incorrect`, code.CaptchaError)
+	//ErrInvalidAppID App ID 无效
+	ErrInvalidAppID = echo.NewError(`Invalid app id`, code.InvalidAppID)
+	//ErrInvalidSign 无效签名
+	ErrInvalidSign = echo.NewError(`Invalid sign`, code.InvalidSignature)
+	//ErrInvalidToken 令牌无效
+	ErrInvalidToken = echo.NewError(`Invalid token`, code.InvalidToken)
 
 	// - Operation
 
