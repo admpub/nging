@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/webx-top/com"
 )
 
 const (
@@ -62,14 +64,7 @@ func AsType(typ string, val interface{}) interface{} {
 }
 
 func AsString(val interface{}) string {
-	switch v := val.(type) {
-	case string:
-		return v
-	case nil:
-		return ``
-	default:
-		return fmt.Sprint(val)
-	}
+	return com.ToStr(val)
 }
 
 func AsBytes(val interface{}) []byte {

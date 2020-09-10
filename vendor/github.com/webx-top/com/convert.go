@@ -146,6 +146,10 @@ func ToStr(value interface{}, args ...int) (s string) {
 		s = v
 	case []byte:
 		s = string(v)
+	case []rune:
+		s = string(v)
+	case nil:
+		return
 	default:
 		s = fmt.Sprintf("%v", v)
 	}
