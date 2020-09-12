@@ -416,7 +416,7 @@ var App = function () {
 			wizard();
 		},
 		markNavByURL: function (url) {
-			if (url == null) url = window.location.pathname;
+			if (!url) url = window.location.pathname;
 			var leftAnchor=$('#leftnav a[href="' + BACKEND_URL+url + '"]');
 			if (leftAnchor.length<1) leftAnchor=$('#leftnav a[href="' + url + '"]');
 			App.markNav(leftAnchor, 'left');
