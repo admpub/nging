@@ -325,7 +325,7 @@ var App = function () {
 					updateHeight();
 				});
 
-				update_height();
+				updateHeight();
 				$("#cl-wrapper .nscroller").nanoScroller({ preventPageScrolling: true });
 			}else{
 				$(window).resize(function () {
