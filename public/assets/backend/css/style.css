@@ -5349,7 +5349,7 @@ ul.timeline > li > .date {
 }
 @media (max-width: 767px) {
   #cl-wrapper {
-    padding-top: 0;
+    padding-top: 0 !important;
     display: block;
   }
   #main-container, .cl-body{display:block}

@@ -312,7 +312,7 @@ var App = function () {
 				var scroll = $("#cl-wrapper .menu-space");
 				scroll.addClass("nano nscroller");
 
-				function update_height() {
+				function updateHeight() {
 					var button = $("#cl-wrapper .collapse-button");
 					var collapseH = button.outerHeight();
 					var navH = $("#head-nav").height();
@@ -322,11 +322,18 @@ var App = function () {
 				}
 
 				$(window).resize(function () {
-					update_height();
+					updateHeight();
 				});
 
 				update_height();
 				$("#cl-wrapper .nscroller").nanoScroller({ preventPageScrolling: true });
+			}else{
+				$(window).resize(function () {
+					if($(window).width()>767){
+						var navH = $("#head-nav").height();
+						$('#cl-wrapper').css("padding-top", navH);
+					}
+				});
 			}
 
 			returnToTopButton();
