@@ -25,6 +25,7 @@ import (
 )
 
 type System struct {
+	Env                    string            `json:"env"` // prod/dev/test
 	VhostsfileDir          string            `json:"vhostsfileDir"`
 	AllowIP                []string          `json:"allowIP"`
 	SSLAuto                bool              `json:"sslAuto"`
@@ -52,6 +53,15 @@ func (sys *System) Editable(fileName string) (string, bool) {
 	ext = strings.ToLower(ext)
 	typ, ok := sys.EditableFileExtensions[ext]
 	return typ, ok
+}
+
+func (sys *System) IsEnv(name string) bool {
+	if name == `prod` {
+		if len(sys.Env) == 0 {
+			return true
+		}
+	}
+	return sys.Env == name
 }
 
 func (sys *System) Playable(fileName string) (string, bool) {
