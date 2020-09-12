@@ -80,19 +80,12 @@ var (
 			return xml.NewDecoder(body).Decode(i)
 		},
 		MIMEApplicationForm: func(i interface{}, ctx Context, filter ...FormDataFilter) error {
-			body := ctx.Request().Body()
-			if body == nil {
-				return NewHTTPError(http.StatusBadRequest, "Request body can't be nil")
-			}
-			defer body.Close()
 			return NamedStructMap(ctx.Echo(), i, ctx.Request().PostForm().All(), ``, filter...)
 		},
 		MIMEMultipartForm: func(i interface{}, ctx Context, filter ...FormDataFilter) error {
-			body := ctx.Request().Body()
-			if body == nil {
-				return NewHTTPError(http.StatusBadRequest, "Request body can't be nil")
-			}
-			defer body.Close()
+			return NamedStructMap(ctx.Echo(), i, ctx.Request().Form().All(), ``, filter...)
+		},
+		`*`: func(i interface{}, ctx Context, filter ...FormDataFilter) error {
 			return NamedStructMap(ctx.Echo(), i, ctx.Request().Form().All(), ``, filter...)
 		},
 	}

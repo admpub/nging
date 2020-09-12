@@ -43,6 +43,9 @@ func (b *binder) MustBind(i interface{}, c Context, filter ...FormDataFilter) er
 	if decoder, ok := b.decoders[contentType]; ok {
 		return decoder(i, c, filter...)
 	}
+	if decoder, ok := b.decoders[`*`]; ok {
+		return decoder(i, c, filter...)
+	}
 	return ErrUnsupportedMediaType
 }
 
