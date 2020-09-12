@@ -595,7 +595,7 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 		plugins: [plugin],
 		toolbar: useSimpleToolbar ? simpleToolbar : fullToolbar,
 		toolbar_sticky: true,
-		autosave_ask_before_unload: true,
+		autosave_ask_before_unload: false,
 		autosave_interval: "30s",
 		autosave_prefix: "{path}{query}-{id}-",
 		autosave_restore_when_empty: true,

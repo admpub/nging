@@ -576,6 +576,12 @@ var App = function () {
 					}
 					target.addClass(toggleClass).siblings('.'+toggleClass).removeClass(toggleClass);
 				}
+				$('.sp_result_area').remove();
+				$('.tox').remove();
+				$('.select2-hidden-accessible').remove();
+				$('.select2-sizer').remove();
+				$('.select2-drop').remove();
+				$('#select2-drop-mask').remove();
 			}).on('pjax:send', function (evt, xhr, option) {
 				App.loading('show');
 				if (options.onsend) options.onsend(evt, xhr, option);
