@@ -18,130 +18,71 @@
 
 package codec
 
-import (
-	"bytes"
-	"crypto/aes"
-	"crypto/cipher"
-	"encoding/base64"
-	"log"
-)
+import "strings"
 
-type AesCrypto struct {
-	key map[string][]byte
+func NewAesCrypto(keyTypes ...string) *AesCrypto {
+	c := &AesCrypto{}
+	var keyType string
+	if len(keyTypes) > 0 {
+		keyType = keyTypes[0]
+	}
+	if len(keyType) > 0 { // AES-128-CBC
+		args := strings.SplitN(keyType, `-`, 3)
+		if len(args) == 3 {
+			switch args[2] {
+			case `CBC`:
+				keyType := strings.Join(args[0:2], `-`)
+				c.Codec = NewAesCBCCrypto(keyType)
+			case `ECB`:
+				keyType := strings.Join(args[0:2], `-`)
+				c.Codec = NewAesECBCrypto(keyType)
+			default:
+				panic("Unsuppored: " + keyType)
+			}
+		}
+	}
+	if c.Codec == nil {
+		c.Codec = NewAesCBCCrypto(keyType)
+	}
+	return c
 }
 
-func NewAesCrypto() *AesCrypto {
-	return &AesCrypto{key: make(map[string][]byte)}
+type AesCrypto struct {
+	Codec
 }
 
 const (
-	aesKeyLen = 128
-	keyLen    = aesKeyLen / 8
+	aes128KeyLen = 128 / 8 // 16
+	aes192KeyLen = 192 / 8 // 24
+	aes256KeyLen = 256 / 8 // 32
 )
 
-func (c *AesCrypto) aesKey(key []byte) []byte {
-	if c.key == nil {
-		c.key = make(map[string][]byte, 0)
-	}
-	ckey := string(key)
-	k, ok := c.key[ckey]
-	if !ok {
-		if len(key) == keyLen {
-			return key
-		}
+// AESKeyTypes AES Key类型
+var AESKeyTypes = map[string]int{
+	`AES-128`: aes128KeyLen,
+	`AES-192`: aes192KeyLen,
+	`AES-256`: aes256KeyLen,
+}
 
-		k = make([]byte, keyLen)
-		copy(k, key)
-		for i := keyLen; i < len(key); {
-			for j := 0; j < keyLen && i < len(key); j, i = j+1, i+1 {
-				k[j] ^= key[i]
-			}
+func AesGenKey(key []byte, typ ...string) []byte {
+	var keyType string
+	if len(typ) > 0 {
+		keyType = typ[0]
+	}
+	keyLen, ok := AESKeyTypes[keyType]
+	if !ok {
+		keyLen = aes128KeyLen
+	}
+	if len(key) == keyLen {
+		return key
+	}
+
+	k := make([]byte, keyLen)
+	copy(k, key)
+	for i := keyLen; i < len(key); {
+		for j := 0; j < keyLen && i < len(key); j, i = j+1, i+1 {
+			k[j] ^= key[i]
 		}
-		c.key[ckey] = k
 	}
 	return k
-}
-
-func (c *AesCrypto) Encode(rawData, authKey string) string {
-	crypted := c.EncodeBytes([]byte(rawData), []byte(authKey))
-	return base64.StdEncoding.EncodeToString(crypted)
-}
-
-func (c *AesCrypto) Decode(cryptedData, authKey string) string {
-	crypted, err := base64.StdEncoding.DecodeString(cryptedData)
-	if err != nil {
-		log.Println(err)
-		return ``
-	}
-	origData := c.DecodeBytes(crypted, []byte(authKey))
-	return string(origData)
-}
-
-func (c *AesCrypto) EncodeBytes(rawData, authKey []byte) []byte {
-	in := rawData
-	key := authKey
-	key = c.aesKey(key)
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		log.Println(err)
-		return nil
-	}
-	blockSize := block.BlockSize()
-	in = PKCS5Padding(in, blockSize)
-	blockMode := cipher.NewCBCEncrypter(block, key[:blockSize])
-	crypted := make([]byte, len(in))
-	blockMode.CryptBlocks(crypted, in)
-	return crypted
-}
-
-func (c *AesCrypto) DecodeBytes(cryptedData, authKey []byte) []byte {
-	defer func() {
-		if r := recover(); r != nil {
-			log.Println(r)
-		}
-	}()
-	in := cryptedData
-	key := authKey
-	key = c.aesKey(key)
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		log.Println(err)
-		return nil
-	}
-	blockSize := block.BlockSize()
-	blockMode := cipher.NewCBCDecrypter(block, key[:blockSize])
-	origData := make([]byte, len(in))
-	blockMode.CryptBlocks(origData, in)
-	origData = PKCS5UnPadding(origData)
-	return origData
-}
-
-func ZeroPadding(ciphertext []byte, blockSize int) []byte {
-	padding := blockSize - len(ciphertext)%blockSize
-	padtext := bytes.Repeat([]byte{0}, padding)
-	return append(ciphertext, padtext...)
-}
-
-func ZeroUnPadding(origData []byte) []byte {
-	length := len(origData)
-	unpadding := int(origData[length-1])
-	if length > unpadding {
-		return origData[:(length - unpadding)]
-	}
-	return []byte{}
-}
-
-func PKCS5Padding(ciphertext []byte, blockSize int) []byte {
-	padding := blockSize - len(ciphertext)%blockSize
-	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
-	return append(ciphertext, padtext...)
-}
-
-func PKCS5UnPadding(origData []byte) []byte {
-	length := len(origData)
-	unpadding := int(origData[length-1])
-	if length > unpadding {
-		return origData[:(length - unpadding)]
-	}
-	return []byte{}
 }
