@@ -72,14 +72,13 @@ func Encrypt(secret string, datas ...*string) {
 }
 
 // GenSecret 生成随机密钥
-func GenSecret(sizes ...int) string {
-	var size int
+func GenSecret(sizes ...uint) string {
+	var size uint
 	if len(sizes) > 0 {
 		size = sizes[0]
 	}
 	if size < 1 {
 		size = 32
 	}
-	secret := com.RandomAlphanumeric(32)
-	return secret
+	return com.RandomAlphanumeric(size)
 }
