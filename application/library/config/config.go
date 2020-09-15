@@ -112,8 +112,10 @@ func (c *Config) SetDebug(on bool) *Config {
 }
 
 func (c *Config) Codec() codec.Codec {
-	return codec.Default
+	return defaultCodec
 }
+
+var defaultCodec = codec.NewAesCrypto(`AES-256-CBC`)
 
 func (c *Config) Encode(raw string, keys ...string) string {
 	var key string
@@ -122,7 +124,7 @@ func (c *Config) Encode(raw string, keys ...string) string {
 	} else {
 		key = c.Cookie.HashKey
 	}
-	return codec.Default.Encode(raw, key)
+	return c.Codec().Encode(raw, key)
 }
 
 func (c *Config) Decode(encrypted string, keys ...string) string {
@@ -135,7 +137,7 @@ func (c *Config) Decode(encrypted string, keys ...string) string {
 	} else {
 		key = c.Cookie.HashKey
 	}
-	return codec.Default.Decode(encrypted, key)
+	return c.Codec().Decode(encrypted, key)
 }
 
 func (c *Config) InitSecretKey() *Config {
