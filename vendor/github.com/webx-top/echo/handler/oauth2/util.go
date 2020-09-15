@@ -20,6 +20,7 @@ package oauth2
 import (
 	"errors"
 	"net/url"
+	"strings"
 
 	"github.com/markbates/goth"
 	"github.com/webx-top/echo"
@@ -109,15 +110,15 @@ func GetAuthURL(ctx echo.Context) (string, error) {
 	if length > 0 {
 		switch url[0] {
 		case '/':
-			url = ctx.Site() + url
+			url = ctx.Site() + strings.TrimPrefix(url, `/`)
 		case '.':
-			url = ctx.Site() + `/` + url
+			url = ctx.Site() + url
 		default:
 			if length > 7 {
 				switch url[0:7] {
 				case `https:/`, `http://`:
 				default:
-					url = ctx.Site() + `/` + url
+					url = ctx.Site() + url
 				}
 			}
 		}
