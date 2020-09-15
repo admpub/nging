@@ -23,10 +23,11 @@ import (
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/handler/term"
-	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/application/library/codec"
 	"github.com/admpub/nging/application/library/filemanager"
 	"github.com/admpub/nging/application/model"
 )
@@ -55,10 +56,19 @@ func Edit(ctx echo.Context) error {
 		//旧密码
 		passwd := strings.TrimSpace(ctx.Form(`pass`))
 
+		passwd, err = codec.DefaultSM2DecryptHex(passwd)
+		if err != nil {
+			return ctx.NewError(code.InvalidParameter, ctx.T(`旧密码解密失败: %v`, err)).SetZone(`pass`)
+		}
 		if modifyPass {
-			common.DecryptedByRandomSecret(ctx, `modifyProfile`, &passwd, &newPass, &confirmPass)
-		} else {
-			common.DecryptedByRandomSecret(ctx, `modifyProfile`, &passwd)
+			newPass, err = codec.DefaultSM2DecryptHex(newPass)
+			if err != nil {
+				return ctx.NewError(code.InvalidParameter, ctx.T(`新密码解密失败: %v`, err)).SetZone(`newPass`)
+			}
+			confirmPass, err = codec.DefaultSM2DecryptHex(confirmPass)
+			if err != nil {
+				return ctx.NewError(code.InvalidParameter, ctx.T(`您输入的确认密码解密失败: %v`, err)).SetZone(`confirmPass`)
+			}
 		}
 
 		gender := strings.TrimSpace(ctx.Form(`gender`))
@@ -98,12 +108,10 @@ func Edit(ctx echo.Context) error {
 			handler.SendOk(ctx, ctx.T(`修改成功`))
 			m.Get(nil, `id`, user.Id)
 			m.SetSession()
-			common.DeleteRandomSecret(ctx, `modifyProfile`)
 			return ctx.Redirect(handler.URLFor(`/user/edit`))
 		}
 	}
 	ctx.Set(`needCheckU2F`, needCheckU2F)
-	common.SetRandomSecret(ctx, `modifyProfile`, `passwordSecrect`)
 	return ctx.Render(`user/edit`, handler.Err(ctx, err))
 }
 

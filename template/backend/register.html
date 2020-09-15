@@ -11,7 +11,7 @@
 				<h3 class="text-center"><img class="logo-img logo-img-sm" src="__ASSETS__/images/logo.png" alt="logo"/> {{"账号注册"|T}}</h3>
 			</div>
 			<div>
-				<form style="margin-bottom: 0px !important;" data-secret="{{Stored.passwordSecrect}}" id="register-form" class="form-horizontal" action="" data-parsley-validate novalidate method="POST">
+				<form style="margin-bottom: 0px !important;" data-secret="{{SM2PublicKey}}" id="register-form" class="form-horizontal" action="" data-parsley-validate novalidate method="POST">
 					<div class="content">
 							<div class="form-group">
 								<div class="col-sm-12">
@@ -75,6 +75,7 @@
 <script type="text/javascript" src="__ASSETS__/js/behaviour/sprintf.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="__ASSETS__/js/behaviour/general.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="__ASSETS__/js/crypto/crypto-js.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="__ASSETS__/js/crypto/sm2.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="__ASSETS__/js/crypto/helper.js?t={{BuildTime}}"></script>
 <script type="text/javascript">
 $(function(){

@@ -47,6 +47,7 @@ debug.log
 /config/frp/*
 /data/nging.pem
 /data/nging.pem.pub
+/data/sm2/*
 /data/logs/*.txt
 /application/library/collector/chrome/*.png
 /data/cache/*

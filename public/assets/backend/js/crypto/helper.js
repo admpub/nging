@@ -88,6 +88,10 @@ function SHA1(data) {
     var encrypted = CryptoJS.SHA1(data).toString(CryptoJS.enc.Hex);
     return encrypted;
 }
+function SM2Encrypt(data,publicKey,cipherMode) {
+    if(cipherMode==null) cipherMode=0;
+    return SM2Utils.encs(publicKey,data,cipherMode)
+}
 function encryptFormPassword(formElem) {
     var data = $(formElem).serializeArray();
     var pwdn = $(formElem).find('input[type="password"]').length;
@@ -96,7 +100,7 @@ function encryptFormPassword(formElem) {
     for (var i = 0; i < data.length; i++) {
         var v = data[i];
         if ($(formElem).find('input[name="' + v.name + '"][type="password"]').length > 0) {
-            if (v.value != '') data[i].value = AESEncryptECB(v.value, secret);
+            if (v.value != '') data[i].value = SM2Encrypt(v.value, secret);
             pwdi++;
             if (pwdi >= pwdn) break;
         }

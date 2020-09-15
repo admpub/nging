@@ -16,7 +16,7 @@
             <h3>{{"修改个人资料"|T}}</h3>
           </div>
           <div class="content">
-              <form class="form-horizontal group-border-dashed" data-parsley-validate novalidate method="POST" id="profile-form" data-secret="{{Stored.passwordSecrect}}" action="">
+              <form class="form-horizontal group-border-dashed" data-parsley-validate novalidate method="POST" id="profile-form" data-secret="{{SM2PublicKey}}" action="">
               <div class="form-group">
                   <label class="col-sm-2 control-label">{{"头像"|T}}</label>
                   <div class="col-sm-8">
@@ -125,6 +125,7 @@
 <!-- The basic File Upload plugin -->
 <script src="__ASSETS__/js/jquery.upload/js/jquery.fileupload.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="__ASSETS__/js/crypto/crypto-js.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="__ASSETS__/js/crypto/sm2.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="__ASSETS__/js/crypto/helper.js?t={{BuildTime}}"></script>
 <script type="text/javascript">
 $(function(){

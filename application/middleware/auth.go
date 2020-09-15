@@ -23,8 +23,10 @@ import (
 	"time"
 
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/library/codec"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/license"
@@ -133,7 +135,11 @@ func CheckAllPerm(c echo.Context, ppaths ...string) (err error) {
 func Auth(c echo.Context, saveSession bool) error {
 	user := c.Form(`user`)
 	pass := c.Form(`pass`)
-	common.DecryptedByRandomSecret(c, `loginPassword`, &pass)
+	var err error
+	pass, err = codec.DefaultSM2DecryptHex(pass)
+	if err != nil {
+		return c.NewError(code.InvalidParameter, c.T(`密码解密失败: %v`, err))
+	}
 	loginLogM := model.NewLoginLog(c)
 	loginLogM.OwnerType = `user`
 	loginLogM.Username = user
@@ -159,7 +165,6 @@ func Auth(c echo.Context, saveSession bool) error {
 			`last_login`: m.NgingUser.LastLogin,
 			`last_ip`:    m.NgingUser.LastIp,
 		}, `id`, m.NgingUser.Id)
-		common.DeleteRandomSecret(c, `loginPassword`)
 
 		loginLogM.OwnerId = uint64(m.Id)
 		loginLogM.Success = `Y`

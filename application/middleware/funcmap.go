@@ -31,6 +31,7 @@ import (
 	"github.com/webx-top/echo/subdomains"
 
 	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/library/codec"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/license"
@@ -159,6 +160,7 @@ func FuncMap() echo.MiddlewareFunc {
 			c.SetFunc(`Projects`, func() navigate.ProjectList {
 				return navigate.ProjectListAll()
 			})
+			c.SetFunc(`SM2PublicKey`, codec.DefaultPublicKeyHex)
 			return h.Handle(c)
 		})
 	}

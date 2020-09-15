@@ -24,10 +24,11 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/application/library/codec"
 	"github.com/admpub/nging/application/model"
 )
 
@@ -64,7 +65,14 @@ func UserAdd(ctx echo.Context) error {
 		m.Mobile = strings.TrimSpace(ctx.Form(`mobile`))
 		m.Password = strings.TrimSpace(ctx.Form(`password`))
 		confirmPwd := strings.TrimSpace(ctx.Form(`confirmPwd`))
-		common.DecryptedByRandomSecret(ctx, `userAdd`, &m.Password, &confirmPwd)
+		m.Password, err = codec.DefaultSM2DecryptHex(m.Password)
+		if err != nil {
+			return ctx.NewError(code.InvalidParameter, ctx.T(`密码解密失败: %v`, err)).SetZone(`password`)
+		}
+		confirmPwd, err = codec.DefaultSM2DecryptHex(confirmPwd)
+		if err != nil {
+			return ctx.NewError(code.InvalidParameter, ctx.T(`您输入的确认密码解密失败: %v`, err)).SetZone(`confirmPwd`)
+		}
 		if m.Password != confirmPwd {
 			err = ctx.E(`密码与确认密码不一致`)
 			goto END
@@ -75,7 +83,6 @@ func UserAdd(ctx echo.Context) error {
 		err = m.Add()
 		if err == nil {
 			handler.SendOk(ctx, ctx.T(`操作成功`))
-			common.DeleteRandomSecret(ctx, `userAdd`)
 			return ctx.Redirect(handler.URLFor(`/manager/user`))
 		}
 	} else {
@@ -88,8 +95,6 @@ func UserAdd(ctx echo.Context) error {
 			}
 		}
 	}
-
-	common.SetRandomSecret(ctx, `userAdd`, `passwordSecrect`)
 
 END:
 	ctx.Set(`activeURL`, `/manager/user`)
@@ -117,7 +122,16 @@ func UserEdit(ctx echo.Context) error {
 		password := strings.TrimSpace(ctx.Form(`password`))
 		confirmPwd := strings.TrimSpace(ctx.Form(`confirmPwd`))
 		if modifyPwd {
-			common.DecryptedByRandomSecret(ctx, `userEdit`, &password, &confirmPwd)
+			password, err = codec.DefaultSM2DecryptHex(password)
+			if err != nil {
+				err = ctx.NewError(code.InvalidParameter, ctx.T(`新密码解密失败: %v`, err)).SetZone(`newPass`)
+				goto END
+			}
+			confirmPwd, err = codec.DefaultSM2DecryptHex(confirmPwd)
+			if err != nil {
+				err = ctx.NewError(code.InvalidParameter, ctx.T(`您输入的确认密码解密失败: %v`, err)).SetZone(`confirmPwd`)
+				goto END
+			}
 			if password != confirmPwd {
 				err = ctx.E(`密码与确认密码不一致`)
 				goto END
@@ -146,14 +160,12 @@ func UserEdit(ctx echo.Context) error {
 		}
 		if err == nil {
 			handler.SendOk(ctx, ctx.T(`修改成功`))
-			common.DeleteRandomSecret(ctx, `userEdit`)
 			return ctx.Redirect(handler.URLFor(`/manager/user`))
 		}
 	}
 
 END:
 	setFormData(ctx, m)
-	common.SetRandomSecret(ctx, `userEdit`, `passwordSecrect`)
 	ctx.Set(`activeURL`, `/manager/user`)
 	roleM := model.NewUserRole(ctx)
 	roleM.ListByOffset(nil, func(r db.Result) db.Result {

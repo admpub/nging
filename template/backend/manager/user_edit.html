@@ -16,7 +16,7 @@
             <h3>{{if HasSuffix URL.Path "_add"}}{{"添加用户"|T}}{{else}}{{"修改用户"|T}}{{end}}</h3>
           </div>
           <div class="content">
-              <form class="form-horizontal group-border-dashed" data-parsley-validate method="POST" id="profile-form" data-secret="{{Stored.passwordSecrect}}" action="">
+              <form class="form-horizontal group-border-dashed" data-parsley-validate method="POST" id="profile-form" data-secret="{{SM2PublicKey}}" action="">
               <div class="form-group">
                   <label class="col-sm-2 control-label">{{"头像"|T}}</label>
                   <div class="col-sm-8">
@@ -138,6 +138,7 @@
 <script src="__ASSETS__/js/loader/loader.min.js?t={{BuildTime}}"></script>
 <script src="__ASSETS__/js/editor/editor.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="__ASSETS__/js/crypto/crypto-js.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="__ASSETS__/js/crypto/sm2.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript" src="__ASSETS__/js/crypto/helper.js?t={{BuildTime}}"></script>
 <script type="text/javascript">
 $(function(){

@@ -23,12 +23,13 @@ import (
 	"github.com/webx-top/echo/middleware/tplfunc"
 
 	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/application/library/codec"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/license"
 	"github.com/admpub/nging/application/middleware"
 	"github.com/admpub/nging/application/model"
 	"github.com/admpub/nging/application/registry/dashboard"
+	stdCode "github.com/webx-top/echo/code"
 )
 
 func Index(ctx echo.Context) error {
@@ -76,8 +77,6 @@ func Login(ctx echo.Context) error {
 			}
 		}
 	}
-
-	common.SetRandomSecret(ctx, `loginPassword`, `passwordSecrect`)
 	return ctx.Render(`login`, handler.Err(ctx, err))
 }
 
@@ -91,7 +90,16 @@ func Register(ctx echo.Context) error {
 		email := ctx.Form(`email`)
 		passwd := ctx.Form(`password`)
 		repwd := ctx.Form(`confirmationPassword`)
-		common.DecryptedByRandomSecret(ctx, `registerPassword`, &passwd, &repwd)
+		passwd, err = codec.DefaultSM2DecryptHex(passwd)
+		if err != nil {
+			err = ctx.NewError(stdCode.InvalidParameter, ctx.T(`密码解密失败: %v`, err)).SetZone(`password`)
+			goto END
+		}
+		repwd, err = codec.DefaultSM2DecryptHex(repwd)
+		if err != nil {
+			err = ctx.NewError(stdCode.InvalidParameter, ctx.T(`您输入的确认密码解密失败: %v`, err)).SetZone(`confirmationPassword`)
+			goto END
+		}
 		if len(code) == 0 {
 			err = ctx.E(`邀请码不能为空`)
 			goto END
@@ -109,7 +117,6 @@ func Register(ctx echo.Context) error {
 			goto END
 		}
 		c.UseInvitationCode(c.Invitation, m.NgingUser.Id)
-		common.DeleteRandomSecret(ctx, `registerPassword`)
 		m.SetSession()
 		returnTo := ctx.Query(`return_to`)
 		if len(returnTo) == 0 {
@@ -119,7 +126,6 @@ func Register(ctx echo.Context) error {
 	}
 
 END:
-	common.SetRandomSecret(ctx, `registerPassword`, `passwordSecrect`)
 	return ctx.Render(`register`, handler.Err(ctx, err))
 }
 
