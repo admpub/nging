@@ -24,6 +24,22 @@ function AESDecrypt(encrypted, key, iv) {//解密
     });
     return decrypted.toString(CryptoJS.enc.Utf8);
 }
+function AESEncryptECB(data, key) {//加密
+    var key = CryptoJS.enc.Utf8.parse(key);
+    var encrypted = CryptoJS.AES.encrypt(data, key, {
+        mode: CryptoJS.mode.ECB,
+        padding: CryptoJS.pad.Pkcs7
+    });
+    return encrypted.toString(); //返回的是base64格式的密文
+}
+function AESDecryptECB(encrypted, key) {//解密
+    var key = CryptoJS.enc.Utf8.parse(key);
+    var decrypted = CryptoJS.AES.decrypt(encrypted, key, {
+        mode: CryptoJS.mode.ECB,
+        padding: CryptoJS.pad.Pkcs7
+    });
+    return decrypted.toString(CryptoJS.enc.Utf8);
+}
 function DESEncrypt(data, key, iv) {//加密
     var key = CryptoJS.enc.Utf8.parse(key);
     var iv = CryptoJS.enc.Utf8.parse(iv);
@@ -80,7 +96,7 @@ function encryptFormPassword(formElem) {
     for (var i = 0; i < data.length; i++) {
         var v = data[i];
         if ($(formElem).find('input[name="' + v.name + '"][type="password"]').length > 0) {
-            if (v.value != '') data[i].value = DESEncryptECB(v.value, secret);
+            if (v.value != '') data[i].value = AESEncryptECB(v.value, secret);
             pwdi++;
             if (pwdi >= pwdn) break;
         }
