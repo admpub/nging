@@ -53,10 +53,12 @@ var (
 	}
 )
 
+// New 创建分页实例
 func New(ctx echo.Context) *Pagination {
 	return &Pagination{context: ctx, pages: -1, data: echo.H{}, mode: ModePageNumber}
 }
 
+// Pagination 分页
 type Pagination struct {
 	context   echo.Context
 	tmpl      string
@@ -71,10 +73,10 @@ type Pagination struct {
 
 	// 按页码分页
 	page  int
-	rows  int //total rows
-	limit int
-	num   int
-	pages int //total pages
+	rows  int //总行数
+	size  int //每页数据行数
+	num   int //页码链接数量
+	pages int //总页数
 
 }
 
@@ -87,7 +89,7 @@ type Pagination struct {
 func (p *Pagination) SetAll(tmpl string, rows int, pnl ...int) *Pagination {
 	switch len(pnl) {
 	case 3:
-		p.limit = pnl[2]
+		p.size = pnl[2]
 		fallthrough
 	case 2:
 		p.num = pnl[1]
@@ -213,12 +215,22 @@ func (p *Pagination) Rows() int {
 
 func (p *Pagination) SetLimit(limit int) *Pagination {
 	p.pages = -1
-	p.limit = limit
+	p.size = limit
 	return p
 }
 
+// SetSize SetLimit方法的别名
+func (p *Pagination) SetSize(size int) *Pagination {
+	return p.SetLimit(size)
+}
+
 func (p *Pagination) Limit() int {
-	return p.limit
+	return p.size
+}
+
+// Size Limit方法的别名
+func (p *Pagination) Size() int {
+	return p.Limit()
 }
 
 func (p *Pagination) SetNum(num int) *Pagination {
@@ -241,17 +253,18 @@ func (p *Pagination) Tmpl() string {
 
 func (p *Pagination) Pages() int {
 	if p.pages == -1 {
-		p.pages = int(math.Ceil(float64(p.rows) / float64(p.limit)))
+		p.pages = int(math.Ceil(float64(p.rows) / float64(p.size)))
 	}
 	return p.pages
 }
 
 func (p *Pagination) URL(curr interface{}) (s string) {
 	if p.mode == ModePageNumber {
+		size := strconv.Itoa(p.size)
 		s = strings.Replace(p.urlLayout, `{page}`, fmt.Sprint(curr), -1)
 		s = strings.Replace(s, `{rows}`, strconv.Itoa(p.rows), -1)
-		s = strings.Replace(s, `{size}`, strconv.Itoa(p.limit), -1)
-		s = strings.Replace(s, `{limit}`, strconv.Itoa(p.limit), -1)
+		s = strings.Replace(s, `{size}`, size, -1)
+		s = strings.Replace(s, `{limit}`, size, -1)
 		s = strings.Replace(s, `{pages}`, strconv.Itoa(p.pages), -1)
 	} else {
 		s = strings.Replace(p.urlLayout, `{curr}`, fmt.Sprint(curr), -1)
@@ -339,8 +352,8 @@ func (p *Pagination) setDefault() *Pagination {
 		if p.page < 1 {
 			p.page = 1
 		}
-		if p.limit < 1 {
-			p.limit = 50
+		if p.size < 1 {
+			p.size = 50
 		}
 		if p.num < 1 {
 			p.num = 10
@@ -376,7 +389,7 @@ func (p *Pagination) MarshalJSON() ([]byte, error) {
 	}
 	if p.mode == ModePageNumber {
 		p.setDefault()
-		s = fmt.Sprintf(`{"page":%d,"rows":%d,"limit":%d,"pages":%d,"urlLayout":%q,"data":%s}`, p.Page(), p.Rows(), p.Limit(), p.Pages(), p.urlLayout, s)
+		s = fmt.Sprintf(`{"page":%d,"rows":%d,"size":%d,"limit":%d,"pages":%d,"urlLayout":%q,"data":%s}`, p.Page(), p.Rows(), p.Size(), p.Limit(), p.Pages(), p.urlLayout, s)
 	} else {
 		s = fmt.Sprintf(`{"curr":%q,"prev":%q,"next":%q,"urlLayout":%q,"data":%s}`, p.Position(), p.PrevPosition(), p.NextPosition(), p.urlLayout, s)
 	}
@@ -388,7 +401,10 @@ func (p *Pagination) SetOptions(m echo.H) *Pagination {
 		p.mode = ModePageNumber
 		p.page = m.Int(`page`)
 		p.rows = m.Int(`rows`)
-		p.limit = m.Int(`limit`)
+		p.size = m.Int(`size`)
+		if p.size <= 0 && m.Has(`limit`) {
+			p.size = m.Int(`limit`)
+		}
 		p.pages = m.Int(`pages`)
 	} else {
 		p.mode = ModePosition
@@ -406,7 +422,8 @@ func (p *Pagination) Options() echo.H {
 	if p.mode == ModePageNumber {
 		m.Set(`page`, p.page)
 		m.Set(`rows`, p.rows)
-		m.Set(`limit`, p.limit)
+		m.Set(`size`, p.size)
+		m.Set(`limit`, p.size)
 		m.Set(`pages`, p.pages)
 	} else {
 		m.Set(`curr`, p.position)
@@ -433,6 +450,9 @@ func (p *Pagination) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 			return err
 		}
 		if err := xmlEncode(e, `limit`, p.Limit()); err != nil {
+			return err
+		}
+		if err := xmlEncode(e, `size`, p.Size()); err != nil {
 			return err
 		}
 		if err := xmlEncode(e, `pages`, p.Pages()); err != nil {

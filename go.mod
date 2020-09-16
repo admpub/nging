@@ -187,12 +187,12 @@ require (
 	github.com/webx-top/com v0.0.2
 	github.com/webx-top/db v1.0.9
 	github.com/webx-top/echo v2.3.6+incompatible
-	github.com/webx-top/image v0.0.0-20200901141228-623a3d6fc464
-	github.com/webx-top/pagination v0.0.0-20200716043638-45efe28df7c2
+	github.com/webx-top/image v0.0.1
+	github.com/webx-top/pagination v0.0.1
 	github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2 // indirect
 	github.com/webx-top/validation v0.0.0-20200425052735-86da7bb89191 // indirect
-	github.com/willf/bitset v1.1.10 // indirect
-	github.com/xtaci/lossyconn v0.0.0-20190602105132-8df528c0c9ae // indirect
+	github.com/willf/bitset v1.1.11 // indirect
+	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect
 	github.com/xu42/youzan-sdk-go v0.0.3
 	gocloud.dev v0.20.0
 	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a

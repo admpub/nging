@@ -1133,10 +1133,10 @@ github.com/webx-top/echo/param
 github.com/webx-top/echo/subdomains
 github.com/webx-top/echo/testing
 github.com/webx-top/echo/testing/test
-# github.com/webx-top/image v0.0.0-20200901141228-623a3d6fc464
+# github.com/webx-top/image v0.0.1
 ## explicit
 github.com/webx-top/image
-# github.com/webx-top/pagination v0.0.0-20200716043638-45efe28df7c2
+# github.com/webx-top/pagination v0.0.1
 ## explicit
 github.com/webx-top/pagination
 # github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2
@@ -1145,13 +1145,13 @@ github.com/webx-top/tagfast
 # github.com/webx-top/validation v0.0.0-20200425052735-86da7bb89191
 ## explicit
 github.com/webx-top/validation
-# github.com/willf/bitset v1.1.10
+# github.com/willf/bitset v1.1.11
 ## explicit
 # github.com/xanzy/ssh-agent v0.2.1
 github.com/xanzy/ssh-agent
 # github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8
 github.com/xi2/xz
-# github.com/xtaci/lossyconn v0.0.0-20190602105132-8df528c0c9ae
+# github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37
 ## explicit
 # github.com/xu42/youzan-sdk-go v0.0.3
 ## explicit
