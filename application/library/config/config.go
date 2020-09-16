@@ -111,11 +111,21 @@ func (c *Config) SetDebug(on bool) *Config {
 	return c
 }
 
-func (c *Config) Codec() codec.Codec {
+func (c *Config) Codec(lengths ...int) codec.Codec {
+	length := 128
+	if len(lengths) > 0 {
+		length = lengths[0]
+	}
+	if length == 256 {
+		return default256Codec
+	}
 	return defaultCodec
 }
 
-var defaultCodec = codec.NewAesCrypto(`AES-256-CBC`)
+var (
+	defaultCodec    = codec.NewAesCrypto(`AES-128-CBC`)
+	default256Codec = codec.NewAesCrypto(`AES-256-CBC`)
+)
 
 func (c *Config) Encode(raw string, keys ...string) string {
 	var key string
