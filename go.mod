@@ -122,7 +122,7 @@ require (
 	github.com/caddy-plugins/ipfilter v1.1.4
 	github.com/caddy-plugins/nobots v0.1.1
 	github.com/caddyserver/caddy v1.0.5
-	github.com/caddyserver/certmagic v0.11.2
+	github.com/caddyserver/certmagic v0.12.0
 	github.com/chromedp/cdproto v0.0.0-20200709115526-d1f6fc58448b
 	github.com/chromedp/chromedp v0.5.3
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
