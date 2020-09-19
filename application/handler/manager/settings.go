@@ -43,18 +43,16 @@ func Settings(ctx echo.Context) error {
 		if err != nil {
 			return err
 		}
-		if err == nil {
-			if len(groups) > 0 {
-				if com.InSlice(`base`, groups) {
-					config.DefaultConfig.SetDebug(ctx.Formx(`base[debug][value]`).Bool())
-				}
-				config.DefaultConfig.Settings.SetConfigs(groups...)
-			} else {
-				config.DefaultConfig.Settings.Init()
+		if len(groups) > 0 {
+			if com.InSlice(`base`, groups) {
+				config.DefaultConfig.SetDebug(ctx.Formx(`base[debug][value]`).Bool())
 			}
-			handler.SendOk(ctx, ctx.T(`操作成功`))
-			return ctx.Redirect(handler.URLFor(`/manager/settings?group=` + group))
+			config.DefaultConfig.Settings.SetConfigs(groups...)
+		} else {
+			config.DefaultConfig.Settings.Init()
 		}
+		handler.SendOk(ctx, ctx.T(`操作成功`))
+		return ctx.Redirect(handler.URLFor(`/manager/settings?group=` + group))
 	}
 	if _err := configGet(ctx, groups...); _err != nil {
 		return _err
