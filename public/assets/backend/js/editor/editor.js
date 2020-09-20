@@ -31,16 +31,21 @@ App.loader.libs.select2 = ['#jquery.select2/select2.css','#jquery.select2/select
 App.loader.libs.select2ex = ['#behaviour/page/select2.min.js'];
 App.loader.libs.selectPage = ['#selectpage/selectpage.css','#selectpage/selectpage.min.js'];
 App.loader.libs.jqueryui = ['#jquery.ui/jquery-ui.custom.min.js','#jquery.ui/jquery-ui.touch-punch.min.js'];
-App.loader.libs.dropzone = [
-	'#jquery.ui/css/dropzone.min.css',
-	'#dropzone/dropzone.min.js'
-];
+App.loader.libs.dropzone = ['#jquery.ui/css/dropzone.min.css','#dropzone/dropzone.min.js'];
+App.loader.libs.loadingOverlay = ['#loadingoverlay/loadingoverlay.min.js'];
 window.UEDITOR_HOME_URL = ASSETS_URL + '/js/editor/ueditor/';
 
 App.editor = {
 	browsingFileURL: App.loader.siteURL + (typeof (window.IS_BACKEND) !== 'undefined' && window.IS_BACKEND ? '' : '/user/file') + '/finder'
 };
-
+App.editor.loadingOverlay = function (options) {
+	App.loader.defined(typeof ($.fn.LoadingOverlay), 'loadingOverlay');
+	return $.LoadingOverlay(options||{});
+};
+App.editor.dialog = function (options) {
+	App.loader.defined(typeof (BootstrapDialog), 'dialog');
+	return BootstrapDialog.show(options||{});
+};
 // =================================================================
 // ueditor
 // =================================================================
