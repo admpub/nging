@@ -74,6 +74,18 @@ type Config struct {
 	connectedDB bool
 }
 
+func (c *Config) IsEnv(env string) bool {
+	return c.Sys.IsEnv(env)
+}
+
+func (c *Config) IsEnvProd() bool {
+	return c.Sys.IsEnv(`prod`)
+}
+
+func (c *Config) IsEnvDev() bool {
+	return c.Sys.IsEnv(`dev`)
+}
+
 // ConnectedDB 数据库是否已连接，如果没有连接则自动连接
 func (c *Config) ConnectedDB(autoConn ...bool) bool {
 	if c.connectedDB {
