@@ -1539,6 +1539,22 @@ var App = function () {
 		replaceState:function(data,title,url){
 			if(!window.history || !window.history.replaceState)return;
 			window.history.replaceState(data,title,url);
+		},
+		formatJSON:function(json){
+			json = $.trim(json);
+			var first = json.substring(0,1);
+			if (first=='['||first=='{'){
+				var obj = JSON.parse(json);
+				json = JSON.stringify(obj, null, "\t");
+				return json;
+			}
+			return '';
+		},
+		formatJSONFromInnerHTML:function($a){
+			if($a.data('jsonformatted'))return;
+			$a.data('jsonformatted',true);
+			var json = App.formatJSON($a.html());
+			if(json!='') $a.html(json);
 		}
 	
 	};
