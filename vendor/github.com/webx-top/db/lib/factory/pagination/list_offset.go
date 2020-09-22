@@ -59,15 +59,16 @@ func (f *OffsetList) ListByOffset(recv interface{}, mw func(db.Result) db.Result
 
 // ChunkList 分批查询列表
 func (f *OffsetList) ChunkList(eachPageCallback func() error, size int, offset int) error {
-	cnt, err := f.ListByOffset(nil, nil, offset, size)
+	cnt, err := f.ListByOffset(f.recv, f.mw, offset, size)
 	if err != nil {
 		if err == db.ErrNoMoreRows {
 			return nil
 		}
 		return err
 	}
+	initOffset := offset
 	for total := cnt(); int64(offset) < total; offset += size {
-		if offset > 0 {
+		if offset > initOffset {
 			_, err = f.ListByOffset(nil, nil, offset, size)
 			if err != nil {
 				if err == db.ErrNoMoreRows {
