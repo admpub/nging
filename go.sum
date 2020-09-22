@@ -1061,6 +1061,8 @@ github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2 h1:lqnGa1BnWT7pN+
 github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2/go.mod h1:pMe3sJitHxbxX2EAI/v9HEAXjodP4c+yUVw3rbKcljI=
 github.com/webx-top/validation v0.0.0-20200425052735-86da7bb89191 h1:35lPthxj2aAsj06Kz0PHm4rkeuPN5tzVlq/ZkQkzVG0=
 github.com/webx-top/validation v0.0.0-20200425052735-86da7bb89191/go.mod h1:/AxMVFpDkheXZeolg1e8GQt7tM3pbc2hnORE+cKMOho=
+github.com/webx-top/validation v0.0.1 h1:I7d5iCsEY8CRzvqCJbUnIZ3Yz0MyLvInVoaljUdn21c=
+github.com/webx-top/validation v0.0.1/go.mod h1:/AxMVFpDkheXZeolg1e8GQt7tM3pbc2hnORE+cKMOho=
 github.com/willf/bitset v1.1.11 h1:N7Z7E9UvjW+sGsEl7k/SJrvY2reP1A07MrGuCjIOjRE=
 github.com/willf/bitset v1.1.11/go.mod h1:83CECat5yLh5zVOf4P1ErAgKA5UDvKtgyUABdr3+MjI=
 github.com/xanzy/ssh-agent v0.2.1 h1:TCbipTQL2JiiCprBWx9frJ2eJlCYT00NmctrHxVAr70=

@@ -246,6 +246,8 @@ func magic(t reflect.Type, s string) (i interface{}, err error) {
 	switch t.Kind() {
 	case reflect.Int:
 		i, err = strconv.Atoi(s)
+	case reflect.Float64:
+		i, err = strconv.ParseFloat(s, 64)
 	case reflect.String:
 		i = s
 	case reflect.Ptr:

@@ -105,7 +105,7 @@ func (v *Validation) HasErrors() bool {
 	return len(v.Errors) > 1
 }
 
-// Return the errors mapped by key.
+// ErrorMap Return the errors mapped by key.
 // If there are multiple validation errors associated with a single key, the
 // first one "wins".  (Typically the first validation will be the more basic).
 func (v *Validation) ErrorMap() map[string]*ValidationError {
@@ -119,23 +119,23 @@ func (v *Validation) Error() *ValidationError {
 	return NoError
 }
 
-// Test that the argument is non-nil and non-empty (if string or list)
+// Required Test that the argument is non-nil and non-empty (if string or list)
 func (v *Validation) Required(obj interface{}, key string) *ValidationResult {
 	return v.apply(Required{key}, obj)
 }
 
-// Test that the obj is greater than min if obj's type is int
-func (v *Validation) Min(obj interface{}, min int, key string) *ValidationResult {
+// Min Test that the obj is greater than min if obj's type is int
+func (v *Validation) Min(obj interface{}, min float64, key string) *ValidationResult {
 	return v.apply(Min{min, key}, obj)
 }
 
-// Test that the obj is less than max if obj's type is int
-func (v *Validation) Max(obj interface{}, max int, key string) *ValidationResult {
+// Max Test that the obj is less than max if obj's type is int
+func (v *Validation) Max(obj interface{}, max float64, key string) *ValidationResult {
 	return v.apply(Max{max, key}, obj)
 }
 
-// Test that the obj is between mni and max if obj's type is int
-func (v *Validation) Range(obj interface{}, min, max int, key string) *ValidationResult {
+// Range Test that the obj is between mni and max if obj's type is int
+func (v *Validation) Range(obj interface{}, min, max float64, key string) *ValidationResult {
 	return v.apply(Range{Min{Min: min}, Max{Max: max}, key}, obj)
 }
 

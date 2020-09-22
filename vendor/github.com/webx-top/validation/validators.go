@@ -138,16 +138,21 @@ func (r Required) GetLimitValue() interface{} {
 }
 
 type Min struct {
-	Min int
+	Min float64
 	Key string
 }
 
 func (m Min) IsSatisfied(obj interface{}) bool {
-	num, ok := obj.(int)
-	if ok {
+	switch num := obj.(type) {
+	case int:
+		return float64(num) >= m.Min
+	case int64:
+		return float64(num) >= m.Min
+	case float64:
 		return num >= m.Min
+	default:
+		return false
 	}
-	return false
 }
 
 func (m Min) DefaultMessage() string {
@@ -163,16 +168,21 @@ func (m Min) GetLimitValue() interface{} {
 }
 
 type Max struct {
-	Max int
+	Max float64
 	Key string
 }
 
 func (m Max) IsSatisfied(obj interface{}) bool {
-	num, ok := obj.(int)
-	if ok {
+	switch num := obj.(type) {
+	case int:
+		return float64(num) <= m.Max
+	case int64:
+		return float64(num) <= m.Max
+	case float64:
 		return num <= m.Max
+	default:
+		return false
 	}
-	return false
 }
 
 func (m Max) DefaultMessage() string {
@@ -187,7 +197,7 @@ func (m Max) GetLimitValue() interface{} {
 	return m.Max
 }
 
-// Requires an integer to be within Min, Max inclusive.
+// Range Requires an integer to be within Min, Max inclusive.
 type Range struct {
 	Min
 	Max
@@ -207,10 +217,10 @@ func (r Range) GetKey() string {
 }
 
 func (r Range) GetLimitValue() interface{} {
-	return []int{r.Min.Min, r.Max.Max}
+	return []float64{r.Min.Min, r.Max.Max}
 }
 
-// Requires an array or string to be at least a given length.
+// MinSize Requires an array or string to be at least a given length.
 type MinSize struct {
 	Min int
 	Key string

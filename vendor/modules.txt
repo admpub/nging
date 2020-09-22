@@ -1142,7 +1142,7 @@ github.com/webx-top/pagination
 # github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2
 ## explicit
 github.com/webx-top/tagfast
-# github.com/webx-top/validation v0.0.0-20200425052735-86da7bb89191
+# github.com/webx-top/validation v0.0.1
 ## explicit
 github.com/webx-top/validation
 # github.com/willf/bitset v1.1.11
