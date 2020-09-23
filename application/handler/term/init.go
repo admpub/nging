@@ -111,7 +111,7 @@ func init() {
 			}
 			return value
 		}
-		termConfig.Default.APPRoot = `/client/`
+		termConfig.Default.APPRoot = handler.BackendPrefix + `/client/`
 		termConfig.Default.Debug = config.DefaultConfig.Debug
 		logDir := filepath.Join(echo.Wd(), `data/logs`)
 		err := os.MkdirAll(logDir, os.ModePerm)
