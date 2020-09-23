@@ -99,6 +99,11 @@ var TopNavigate = &List{
 				Name:          `取消关联收信账号`,
 				Action:        `alert_topic_delete`,
 			},
+			{
+				DisplayOnMenu: false,
+				Name:          `测试发送警报信息`,
+				Action:        `alert_recipient_test`,
+			},
 			//用户管理
 			{
 				DisplayOnMenu: true,
@@ -148,6 +153,11 @@ var TopNavigate = &List{
 				Name:          `登录日志`,
 				Action:        `login_log`,
 			},
+			{
+				DisplayOnMenu: false,
+				Name:          `删除登录日志`,
+				Action:        `login_log_delete`,
+			},
 			//邀请码管理
 			{
 				DisplayOnMenu: true,
@@ -183,7 +193,7 @@ var TopNavigate = &List{
 			{
 				DisplayOnMenu: false,
 				Name:          `上传图片`,
-				Action:        `upload/:type`,
+				Action:        `upload`,
 			},
 			{
 				DisplayOnMenu: true,

@@ -59,7 +59,9 @@ var UnlimitedURLs = []string{
 	`/gauth_check`,
 	`/qrcode`,
 	`/server/dynamic`,
-	`/public/upload/:type/*`, //查看上传后的文件
+	`/public/upload/:subdir/*`, //查看上传后的文件
+	`/finder`,
+	`/donation/:type`,
 }
 
 func RouteNotin(ctx echo.Context) error {

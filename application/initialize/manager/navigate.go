@@ -236,6 +236,11 @@ var LeftNavigate = &navigate.List{
 				Name:          `删除值守配置`,
 				Action:        `daemon_delete`,
 			},
+			{
+				DisplayOnMenu: false,
+				Name:          `重启值守`,
+				Action:        `daemon_restart`,
+			},
 		},
 	},
 	{
