@@ -6,13 +6,13 @@ replace github.com/caddyserver/caddy => github.com/caddyserver/caddy v1.0.5
 
 replace google.golang.org/protobuf => github.com/protocolbuffers/protobuf-go v1.25.0
 
-replace golang.org/x/crypto => github.com/golang/crypto v0.0.0-20200728195943-123391ffb6de
+replace golang.org/x/crypto => github.com/golang/crypto v0.0.0-20200820211705-5c72a883971a
 
-replace golang.org/x/image => github.com/golang/image v0.0.0-20200801110659-972c09e46d76
+replace golang.org/x/image => github.com/golang/image v0.0.0-20200924062109-4578eab98f00
 
-replace golang.org/x/net => github.com/golang/net v0.0.0-20200813134508-3edf25e44fcc
+replace golang.org/x/net => github.com/golang/net v0.0.0-20200925080053-05aa5d4ee321
 
-replace golang.org/x/oauth2 => github.com/golang/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
+replace golang.org/x/oauth2 => github.com/golang/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 
 replace golang.org/x/protobuf => github.com/golang/protobuf v1.4.2
 
@@ -20,11 +20,11 @@ replace golang.org/x/time => github.com/golang/time v0.0.0-20200630173020-3af756
 
 replace golang.org/x/sync => github.com/golang/sync v0.0.0-20200625203802-6e8e738ad208
 
-replace golang.org/x/sys => github.com/golang/sys v0.0.0-20200814200057-3d37ad5750ed
+replace golang.org/x/sys => github.com/golang/sys v0.0.0-20200923182605-d9f96fdee20d
 
 replace golang.org/x/text => github.com/golang/text v0.3.3
 
-replace golang.org/x/tools => github.com/golang/tools v0.0.0-20200815165600-90abf76919f3
+replace golang.org/x/tools => github.com/golang/tools v0.0.0-20200925191224-5d1fdd8fa346
 
 replace golang.org/x/xerrors => github.com/golang/xerrors v0.0.0-20200804184101-5ec99f83aff1
 
@@ -199,5 +199,5 @@ require (
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
-	gopkg.in/square/go-jose.v2 v2.4.1 // indirect
+	gopkg.in/square/go-jose.v2 v2.5.1 // indirect
 )
