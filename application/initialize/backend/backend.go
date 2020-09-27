@@ -136,23 +136,6 @@ func init() {
 		subdomains.Default.Add(domainName, e)
 
 		e.Use(middleware.Log(), middleware.Recover())
-		skippedGzipPaths := map[string]bool{
-			e.Prefix() + `/server/cmdSend/info`:      true,
-			e.Prefix() + `/download/progress/info`:   true,
-			e.Prefix() + `/debug/pprof/`:             true,
-			e.Prefix() + `/debug/pprof/allocs`:       true,
-			e.Prefix() + `/debug/pprof/block`:        true,
-			e.Prefix() + `/debug/pprof/cmdline`:      true,
-			e.Prefix() + `/debug/pprof/goroutine`:    true,
-			e.Prefix() + `/debug/pprof/heap`:         true,
-			e.Prefix() + `/debug/pprof/mutex`:        true,
-			e.Prefix() + `/debug/pprof/profile`:      true,
-			e.Prefix() + `/debug/pprof/threadcreate`: true,
-			e.Prefix() + `/debug/pprof/trace`:        true,
-		}
-		for k, v := range skippedGzipPaths {
-			SkippedGzipPaths[k] = v
-		}
 		e.Use(middleware.Gzip(&middleware.GzipConfig{
 			Skipper: GzipSkipper(SkippedGzipPaths),
 		}))
