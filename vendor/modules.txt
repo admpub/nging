@@ -415,9 +415,6 @@ github.com/caddyserver/caddy/caddytls
 github.com/caddyserver/caddy/onevent
 github.com/caddyserver/caddy/onevent/hook
 github.com/caddyserver/caddy/telemetry
-# github.com/caddyserver/certmagic v0.11.2
-## explicit
-github.com/caddyserver/certmagic
 # github.com/cenkalti/backoff/v4 v4.0.0
 github.com/cenkalti/backoff/v4
 # github.com/cespare/xxhash/v2 v2.1.1
@@ -545,6 +542,7 @@ github.com/francoispqt/gojay
 # github.com/fsnotify/fsnotify v1.4.7
 github.com/fsnotify/fsnotify
 # github.com/go-acme/lego/v3 v3.7.0
+## explicit
 github.com/go-acme/lego/v3/acme
 github.com/go-acme/lego/v3/acme/api
 github.com/go-acme/lego/v3/acme/api/internal/nonces
@@ -763,6 +761,7 @@ github.com/klauspost/compress/zlib
 github.com/klauspost/compress/zstd
 github.com/klauspost/compress/zstd/internal/xxhash
 # github.com/klauspost/cpuid v1.2.3
+## explicit
 github.com/klauspost/cpuid
 # github.com/klauspost/pgzip v1.2.4
 github.com/klauspost/pgzip
@@ -852,6 +851,7 @@ github.com/matttproud/golang_protobuf_extensions/pbutil
 # github.com/mgutz/str v1.2.0
 github.com/mgutz/str
 # github.com/mholt/certmagic v0.8.3
+## explicit
 github.com/mholt/certmagic
 # github.com/microcosm-cc/bluemonday v1.0.4
 ## explicit
