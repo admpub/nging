@@ -107,8 +107,8 @@ $(function(){
     }
     if($(this).closest('.form-group').length>0){
       var e = $(this).closest('.form-group');
-      if(e.chindren('.control-label').length>0){
-        e.chindren('.control-label').attr('data-toggle','tooltip').attr('title',getTmplTag($(this).attr('name'))).tooltip();
+      if(e.children('.control-label').length>0){
+        e.children('.control-label').attr('data-toggle','tooltip').attr('title',getTmplTag($(this).attr('name'))).tooltip();
         return;
       }
     }
