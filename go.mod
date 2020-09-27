@@ -186,7 +186,7 @@ require (
 	github.com/webx-top/codec v0.0.0-20200914105801-3782d81a0302
 	github.com/webx-top/com v0.0.2
 	github.com/webx-top/db v1.0.10
-	github.com/webx-top/echo v2.3.7+incompatible
+	github.com/webx-top/echo v2.3.8+incompatible
 	github.com/webx-top/image v0.0.1
 	github.com/webx-top/pagination v0.0.1
 	github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2 // indirect

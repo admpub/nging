@@ -10,17 +10,18 @@ import (
 )
 
 type Response struct {
-	config    *engine.Config
-	response  http.ResponseWriter
-	request   *http.Request
-	header    engine.Header
-	status    int
-	size      int64
-	committed bool
-	writer    io.Writer
-	logger    logger.Logger
-	body      []byte
-	keepBody  bool
+	config         *engine.Config
+	response       http.ResponseWriter
+	request        *http.Request
+	header         engine.Header
+	status         int
+	size           int64
+	committed      bool
+	writer         io.Writer
+	logger         logger.Logger
+	body           []byte
+	keepBody       bool
+	responseWriter *responseWriter
 }
 
 func NewResponse(w http.ResponseWriter, r *http.Request, l logger.Logger) *Response {
@@ -110,6 +111,7 @@ func (r *Response) reset(w http.ResponseWriter, req *http.Request, h engine.Head
 	r.writer = w
 	r.body = nil
 	r.keepBody = false
+	r.responseWriter = &responseWriter{r}
 }
 
 func (r *Response) Hijack(fn func(net.Conn)) {
@@ -165,5 +167,28 @@ func (r *Response) Stream(step func(io.Writer) bool) {
 }
 
 func (r *Response) StdResponseWriter() http.ResponseWriter {
-	return r.response
+	return r.responseWriter
+}
+
+type responseWriter struct {
+	response *Response
+}
+
+func (r *responseWriter) StatusCode() int {
+	if r.response.Status() == 0 {
+		return http.StatusOK
+	}
+	return r.response.Status()
+}
+
+func (r *responseWriter) Header() http.Header {
+	return r.response.header.(*Header).Header
+}
+
+func (r *responseWriter) Write(b []byte) (n int, err error) {
+	return r.response.Write(b)
+}
+
+func (r *responseWriter) WriteHeader(code int) {
+	r.response.WriteHeader(code)
 }
