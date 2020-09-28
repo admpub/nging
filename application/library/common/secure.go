@@ -2,13 +2,14 @@ package common
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
 )
 
 func NewUGCPolicy() *bluemonday.Policy {
@@ -268,89 +269,23 @@ var (
 	markdownLinkWithSingleQuote = regexp.MustCompile(`(\]\([^ \)]+ )&#39;([^'\)]+)&#39;(\))`)
 	markdownLinkWithScript      = regexp.MustCompile(`(?i)(\]\()(javascript):([^\)]*\))`)
 	markdownQuoteTag            = regexp.MustCompile("((\n|^)[ ]{0,3})&gt;")
+	markdownCodeBlock           = regexp.MustCompile("(?s)([\r\n]|^)```([\\w]*[\r\n].*?[\r\n])```([\r\n]|$)")
 )
 
 func MarkdownPickoutCodeblock(content string) (repl []string, newContent string) {
-	var (
-		// reset
-		start bool
-		n     int
-		code  []rune
-
-		// keep
-		keep []rune
-	)
-
-	for i, b := range content {
-		if b == q {
-			if start {
-				if n == 2 { //终止标记“```”后面必须带换行
-					index := i + 1
-					if index < len(content)-1 {
-						if content[index] == '\r' {
-							index++
-							if index > len(content)-1 {
-								code = append(code, keep[len(keep)-2:]...)
-								keep = keep[0 : len(keep)-2]
-								code = append(code, b)
-								n = 0
-								continue
-							}
-						}
-						if content[index] != '\n' {
-							code = append(code, keep[len(keep)-2:]...)
-							keep = keep[0 : len(keep)-2]
-							code = append(code, b)
-							n = 0
-							continue
-						}
-					}
-				}
-			} else {
-				if n == 0 { //起始标记“```”前面必须带换行
-					if i > 0 {
-						if content[i-1] != '\n' {
-							keep = append(keep, b)
-							continue
-						}
-					}
-				}
-			}
-			n++
-			if n == 3 {
-				if start { // end
-					keep = append(keep, b)
-					repl = append(repl, string(code))
-
-					start = false
-					n = 0
-					code = nil
-					continue
-				}
-				code = nil
-				start = true
-				insert := []rune(`{codeblock(` + fmt.Sprint(len(repl)) + `)}`)
-				keep = append(keep, b)
-				keep = append(keep, insert...)
-				n = 0
-				continue
-			}
-			keep = append(keep, b)
-			continue
-		}
-		if start {
-			code = append(code, b)
-		} else {
-			keep = append(keep, b)
-		}
-	}
-	newContent = string(keep)
+	newContent = markdownCodeBlock.ReplaceAllStringFunc(content, func(found string) string {
+		placeholder := `{codeblock(` + strconv.Itoa(len(repl)) + `)}`
+		leftIndex := strings.Index(found, "```")
+		rightIndex := strings.LastIndex(found, "```")
+		repl = append(repl, found[leftIndex+3:rightIndex])
+		return found[0:leftIndex+3] + placeholder + found[rightIndex:]
+	})
+	echo.Dump([]interface{}{repl, newContent, content})
 	return
 }
 
 func MarkdownRestorePickout(repl []string, content string) string {
 	for i, r := range repl {
-		find := "```{codeblock(" + fmt.Sprint(i) + ")}```"
 		if strings.Count(r, "\n") < 2 {
 			r = strings.TrimLeft(r, "\r")
 			if !strings.HasPrefix(r, "\n") {
@@ -360,6 +295,7 @@ func MarkdownRestorePickout(repl []string, content string) string {
 		if !strings.HasSuffix(r, "\n") {
 			r += "\n"
 		}
+		find := "```{codeblock(" + strconv.Itoa(i) + ")}```"
 		content = strings.Replace(content, find, "```"+r+"```", 1)
 	}
 	return content
@@ -387,6 +323,7 @@ func ContentEncode(content string, contypes ...string) string {
 		// 提取代码块
 		var pick []string
 		pick, content = MarkdownPickoutCodeblock(content)
+		echo.Dump([]interface{}{pick, content})
 
 		// - 删除XSS
 
@@ -405,6 +342,7 @@ func ContentEncode(content string, contypes ...string) string {
 		content = markdownQuoteTag.ReplaceAllString(content, `${1}>`)
 		// 还原代码块
 		content = MarkdownRestorePickout(pick, content)
+		_ = pick
 
 	case `list`:
 		content = MyCleanText(content)
