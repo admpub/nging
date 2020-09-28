@@ -35,7 +35,7 @@ func BackendURLFunc(c echo.Context) error {
 		for _, ppath := range paths {
 			r += ppath
 		}
-		return subdomains.Default.URL(handler.FrontendPrefix, `frontend`)
+		return subdomains.Default.URL(r, `frontend`)
 	})
 	return nil
 }
