@@ -171,7 +171,7 @@ func init() {
 			Engine:  `standard`,
 			ParseStrings: map[string]string{
 				`__ASSETS__`:   `{{AssetsURL}}`,
-				`__TMPL__`:     `{{TmplDir}}`,
+				`__TMPL__`:     TemplateDir,
 				`__BACKEND__`:  `{{BackendURL}}`,
 				`__FRONTEND__`: `{{FrontendURL}}`,
 			},

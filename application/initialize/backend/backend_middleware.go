@@ -19,9 +19,6 @@ func BackendURLFunc(c echo.Context) error {
 	c.SetFunc(`AssetsURL`, func() string {
 		return AssetsURLPath
 	})
-	c.SetFunc(`TmplDir`, func() string {
-		return TemplateDir
-	})
 	c.SetFunc(`BackendURL`, func() string {
 		return subdomains.Default.URL(handler.BackendPrefix, `backend`)
 	})
