@@ -16,13 +16,25 @@ func BackendURLFuncMW() echo.MiddlewareFunc {
 }
 
 func BackendURLFunc(c echo.Context) error {
-	c.SetFunc(`AssetsURL`, func() string {
-		return AssetsURLPath
+	c.SetFunc(`AssetsURL`, func(paths ...string) (r string) {
+		r = AssetsURLPath
+		for _, ppath := range paths {
+			r += ppath
+		}
+		return r
 	})
-	c.SetFunc(`BackendURL`, func() string {
-		return subdomains.Default.URL(handler.BackendPrefix, `backend`)
+	c.SetFunc(`BackendURL`, func(paths ...string) (r string) {
+		r = handler.BackendPrefix
+		for _, ppath := range paths {
+			r += ppath
+		}
+		return subdomains.Default.URL(r, `backend`)
 	})
-	c.SetFunc(`FrontendURL`, func() string {
+	c.SetFunc(`FrontendURL`, func(paths ...string) (r string) {
+		r = handler.FrontendPrefix
+		for _, ppath := range paths {
+			r += ppath
+		}
 		return subdomains.Default.URL(handler.FrontendPrefix, `frontend`)
 	})
 	return nil
