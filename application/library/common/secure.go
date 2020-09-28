@@ -9,7 +9,6 @@ import (
 
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/webx-top/com"
-	"github.com/webx-top/echo"
 )
 
 func NewUGCPolicy() *bluemonday.Policy {
@@ -280,7 +279,7 @@ func MarkdownPickoutCodeblock(content string) (repl []string, newContent string)
 		repl = append(repl, found[leftIndex+3:rightIndex])
 		return found[0:leftIndex+3] + placeholder + found[rightIndex:]
 	})
-	echo.Dump([]interface{}{repl, newContent, content})
+	//echo.Dump([]interface{}{repl, newContent, content})
 	return
 }
 
@@ -323,7 +322,6 @@ func ContentEncode(content string, contypes ...string) string {
 		// 提取代码块
 		var pick []string
 		pick, content = MarkdownPickoutCodeblock(content)
-		echo.Dump([]interface{}{pick, content})
 
 		// - 删除XSS
 
@@ -342,7 +340,6 @@ func ContentEncode(content string, contypes ...string) string {
 		content = markdownQuoteTag.ReplaceAllString(content, `${1}>`)
 		// 还原代码块
 		content = MarkdownRestorePickout(pick, content)
-		_ = pick
 
 	case `list`:
 		content = MyCleanText(content)
