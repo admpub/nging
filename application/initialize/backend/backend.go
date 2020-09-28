@@ -170,12 +170,10 @@ func init() {
 			TmplDir: TemplateDir,
 			Engine:  `standard`,
 			ParseStrings: map[string]string{
-				`__ASSETS__`: AssetsURLPath,
-				`__TMPL__`:   TemplateDir,
-			},
-			ParseStringFuncs: map[string]func() string{
-				`__BACKEND__`:  func() string { return subdomains.Default.URL(handler.BackendPrefix, `backend`) },
-				`__FRONTEND__`: func() string { return subdomains.Default.URL(handler.FrontendPrefix, `frontend`) },
+				`__ASSETS__`:   `{{AssetsURL}}`,
+				`__TMPL__`:     `{{TmplDir}}`,
+				`__BACKEND__`:  `{{BackendURL}}`,
+				`__FRONTEND__`: `{{FrontendURL}}`,
 			},
 			DefaultHTTPErrorCode: http.StatusOK,
 			Reload:               true,
@@ -194,6 +192,7 @@ func init() {
 		if RendererDo != nil {
 			renderOptions.AddRendererDo(RendererDo)
 		}
+		renderOptions.AddFuncSetter(BackendURLFunc)
 		renderOptions.AddFuncSetter(ngingMW.ErrorPageFunc)
 		renderOptions.ApplyTo(e, event.BackendTmplMgr)
 		//RendererDo(renderOptions.Renderer())
