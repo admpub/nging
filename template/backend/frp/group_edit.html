@@ -2,7 +2,7 @@
 {{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加FRP配置组"|T}}{{else}}{{"修改FRP配置组"|T}}{{end}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="__BACKEND__/frp/group_index">{{"FRP配置组"|T}}</a></li>
+<li><a href="{{BackendURL}}/frp/group_index">{{"FRP配置组"|T}}</a></li>
 <li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
 {{/Block}}
 {{Block "main"}}

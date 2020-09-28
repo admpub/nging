@@ -22,7 +22,7 @@
 						</div>
 					</form>
 				</div>
-				<a href="__BACKEND__/manager/user_add" class="btn btn-success pull-right">
+				<a href="{{BackendURL}}/manager/user_add" class="btn btn-success pull-right">
 					<i class="fa fa-plus"></i>
 					{{"添加用户"|T}}
 				</a>
@@ -47,11 +47,11 @@
                         {{range $k,$v := Stored.listData}}
 						<tr>
 							<td>{{$v.Id}}</td>
-							<td class="no-padding"><img style="width:50px;height:50px" src="{{if $v.Avatar}}{{AddSuffix $v.Avatar "_200_200"}}{{else}}__ASSETS__/images/user_128.png{{end}}" onerror="this.onerror=null;this.src='__ASSETS__/images/user_128.png';" /></td>
+							<td class="no-padding"><img style="width:50px;height:50px" src="{{if $v.Avatar}}{{AddSuffix $v.Avatar "_200_200"}}{{else}}{{AssetsURL}}/images/user_128.png{{end}}" onerror="this.onerror=null;this.src='{{AssetsURL}}/images/user_128.png';" /></td>
 							<td>
 								{{$v.Username}}
 								{{if eq $v.Online "Y"}}
-								<img src="__ASSETS__/images/state_online.png" alt="Status" data-toggle="tooltip" title="{{"在线"|T}}" />
+								<img src="{{AssetsURL}}/images/state_online.png" alt="Status" data-toggle="tooltip" title="{{"在线"|T}}" />
 								{{end}}
 							</td>
 							<td>{{$v.Email}}</td>
@@ -59,10 +59,10 @@
 							<td>{{$v.LastIp|Default "N/A"}}</td>
 							<td>{{if eq $v.Disabled "Y"}}{{"禁用"|T}}{{else}}{{"启用"|T}}{{end}}</td>
 							<td class="text-center">
-							<a class="label label-default" href="__BACKEND__/manager/user_add?copyId={{$v.Id}}" title="{{"复制"|T}}"><i class="fa fa-copy"></i></a>
-							<a class="label label-success" href="__BACKEND__/manager/user_edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a>
+							<a class="label label-default" href="{{BackendURL}}/manager/user_add?copyId={{$v.Id}}" title="{{"复制"|T}}"><i class="fa fa-copy"></i></a>
+							<a class="label label-success" href="{{BackendURL}}/manager/user_edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a>
 							{{if gt $v.Id 1}} 
-							<a class="label label-danger" href="__BACKEND__/manager/user_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
+							<a class="label label-danger" href="{{BackendURL}}/manager/user_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
 							{{end}}
 							</td>
 						</tr>

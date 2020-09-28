@@ -7,13 +7,13 @@
 {{/Block}}
 {{Block "head"}}
 <!-- codemirror -->
-<link rel="stylesheet" href="__ASSETS__/js/editor/markdown/lib/codemirror/codemirror.min.css">
-<link rel="stylesheet" href="__ASSETS__/js/editor/markdown/lib/codemirror/theme/night.css">
-<link rel="stylesheet" href="__ASSETS__/js/editor/markdown/lib/codemirror/addon/hint/show-hint.css">
-<script src="__ASSETS__/js/editor/markdown/lib/codemirror/codemirror.min.js"></script>
-<script src="__ASSETS__/js/editor/markdown/lib/codemirror/addon/mode/loadmode.js"></script>
-<script src="__ASSETS__/js/editor/markdown/lib/codemirror/addon/hint/show-hint.js"></script>
-<script src="__ASSETS__/js/editor/markdown/lib/codemirror/addon/hint/sql-hint.js"></script>
+<link rel="stylesheet" href="{{AssetsURL}}/js/editor/markdown/lib/codemirror/codemirror.min.css">
+<link rel="stylesheet" href="{{AssetsURL}}/js/editor/markdown/lib/codemirror/theme/night.css">
+<link rel="stylesheet" href="{{AssetsURL}}/js/editor/markdown/lib/codemirror/addon/hint/show-hint.css">
+<script src="{{AssetsURL}}/js/editor/markdown/lib/codemirror/codemirror.min.js"></script>
+<script src="{{AssetsURL}}/js/editor/markdown/lib/codemirror/addon/mode/loadmode.js"></script>
+<script src="{{AssetsURL}}/js/editor/markdown/lib/codemirror/addon/hint/show-hint.js"></script>
+<script src="{{AssetsURL}}/js/editor/markdown/lib/codemirror/addon/hint/sql-hint.js"></script>
 <style>
 .CodeMirror {border: 1px solid #ccc; min-height:350px}
 </style>
@@ -109,7 +109,7 @@
 {{Modal "__TMPL__/db/mysql/analysis.yaml"}}
 <script>
 var editor;
-CodeMirror.modeURL = "__ASSETS__/js/editor/markdown/lib/codemirror/mode/%N/%N.js";
+CodeMirror.modeURL = "{{AssetsURL}}/js/editor/markdown/lib/codemirror/mode/%N/%N.js";
 function initCodeMirrorEditor() { // if(editor)return;
     editor = CodeMirror.fromTextArea($("#query")[0], {
         lineNumbers: true,

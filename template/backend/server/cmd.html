@@ -51,7 +51,7 @@
 {{Block "footer"}}
 <script type="text/template" id="receive-message-tmpl">
 <div class="chat-conv sent">
-	<img alt="Avatar" class="c-avatar ttip" src="__ASSETS__/images/logo_256.png" data-toggle="tooltip" title="" data-original-title="Nging">
+	<img alt="Avatar" class="c-avatar ttip" src="{{AssetsURL}}/images/logo_256.png" data-toggle="tooltip" title="" data-original-title="Nging">
 	<div class="c-bubble">
 		<div class="msg">{message}</div>
 		<div><small>{time}</small></div>
@@ -61,7 +61,7 @@
 </script>
 <script type="text/template" id="send-message-tmpl">
 <div class="chat-conv">
-	<img alt="Avatar" class="c-avatar ttip" src="__ASSETS__/images/user_50.png" data-toggle="tooltip" title="" data-original-title="{{Username}}">
+	<img alt="Avatar" class="c-avatar ttip" src="{{AssetsURL}}/images/user_50.png" data-toggle="tooltip" title="" data-original-title="{{Username}}">
 	<div class="c-bubble">
 		<div class="msg">{message}</div>
 		<div><small>{time}</small></div>
@@ -69,7 +69,7 @@
 	</div>
 </div>
 </script>
-<script type="text/javascript" src="__ASSETS__/js/sockjs.min.js"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/sockjs.min.js"></script>
 <script>
 var ws,rows=0,maxRows=200;
 function showMsg(data){

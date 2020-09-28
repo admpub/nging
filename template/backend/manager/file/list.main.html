@@ -82,7 +82,7 @@
 					<input type="file" multiple="true" id="input-file-upload" style="width:95px" />
 				</span>
 				{{- if not $dialog -}}
-				<a href="javascript:;" class="btn btn-danger pull-right" onclick="App.removeSelected('input:checkbox[name=\'id[]\']','id','__BACKEND__/manager/file/delete/0');">
+				<a href="javascript:;" class="btn btn-danger pull-right" onclick="App.removeSelected('input:checkbox[name=\'id[]\']','id','{{BackendURL}}/manager/file/delete/0');">
 					<i class="fa fa-trash-o"></i>
 					{{"删除选中"|T}}
 				</a>

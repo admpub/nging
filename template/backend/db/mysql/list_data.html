@@ -10,7 +10,7 @@
 {{/Block}}
 {{Block "head"}}
 {{Super}}
-<link rel="stylesheet" href="__ASSETS__/js/bootstrap.editable/css/bootstrap-editable.min.css">
+<link rel="stylesheet" href="{{AssetsURL}}/js/bootstrap.editable/css/bootstrap-editable.min.css">
 <style>
 .editable-click, a.editable-click, a.editable-click:hover{border:0 !important}
 </style>
@@ -272,8 +272,8 @@ function onselectColumns(obj){
 
 {{Block "footer"}}
 {{Super}}
-<script src="__ASSETS__/js/bootstrap.editable/js/bootstrap-editable.min.js"></script>
-<script type="text/javascript" src="__ASSETS__/js/textarea/autosize.min.js"></script>
+<script src="{{AssetsURL}}/js/bootstrap.editable/js/bootstrap-editable.min.js"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/textarea/autosize.min.js"></script>
 {{Modal "__TMPL__/db/mysql/copy_table.yaml"}}
 {{Modal "__TMPL__/db/mysql/move_table.yaml"}}
 <script type="text/template" id="tpl-move-table-form">

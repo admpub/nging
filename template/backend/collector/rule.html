@@ -23,7 +23,7 @@
 						</div>
 					</form>
 				</div>
-				<a href="__BACKEND__/collector/rule_add" class="btn btn-success pull-right">
+				<a href="{{BackendURL}}/collector/rule_add" class="btn btn-success pull-right">
 					<i class="fa fa-plus"></i>
 					{{"添加规则"|T}}
 				</a>
@@ -52,13 +52,13 @@
 							<td>{{if $v.Group}}{{$v.Group.Name}}{{else}}{{"无"|T}}{{end}}</td>
 							<td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}</td>
 							<td>{{$v.Description}}</td>
-							<td class="text-center"><a data-toggle="tooltip" title="{{"加入计划任务"|T}}" class="label label-success" href="__BACKEND__/task/add?command={{">collect_page:"}}{{$v.Id}}"><i class="fa fa-clock-o"></i></a>
+							<td class="text-center"><a data-toggle="tooltip" title="{{"加入计划任务"|T}}" class="label label-success" href="{{BackendURL}}/task/add?command={{">collect_page:"}}{{$v.Id}}"><i class="fa fa-clock-o"></i></a>
 							<a class="label label-primary" href="javascript:;" data-toggle="tooltip" title="{{"采集"|T}}" id="collect-start-{{$v.Id}}" data-id="{{$v.Id}}" onclick="return collecting(this,'start')"><i class="fa fa-play"></i></a>
 							<a class="label label-danger hidden" href="javascript:;" data-toggle="tooltip" title="{{"停止"|T}}" id="collect-stop-{{$v.Id}}" data-id="{{$v.Id}}" onclick="return collecting(this,'stop')"><i class="fa fa-stop"></i></a>
-							<a class="label label-info" data-toggle="tooltip" href="__BACKEND__/collector/rule_collect?id={{$v.Id}}" title="{{"采集测试"|T}}"><i class="fa fa-refresh"></i></a>
-							<a class="label label-default" data-toggle="tooltip" href="__BACKEND__/collector/rule_add?copyId={{$v.Id}}" title="{{"复制"|T}}"><i class="fa fa-copy"></i></a>
-							<a class="label label-success" data-toggle="tooltip" href="__BACKEND__/collector/rule_edit?id={{$v.Id}}" title="{{"编辑"|T}}"><i class="fa fa-pencil"></i></a> 
-							<a class="label label-danger" data-toggle="tooltip" href="__BACKEND__/collector/rule_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
+							<a class="label label-info" data-toggle="tooltip" href="{{BackendURL}}/collector/rule_collect?id={{$v.Id}}" title="{{"采集测试"|T}}"><i class="fa fa-refresh"></i></a>
+							<a class="label label-default" data-toggle="tooltip" href="{{BackendURL}}/collector/rule_add?copyId={{$v.Id}}" title="{{"复制"|T}}"><i class="fa fa-copy"></i></a>
+							<a class="label label-success" data-toggle="tooltip" href="{{BackendURL}}/collector/rule_edit?id={{$v.Id}}" title="{{"编辑"|T}}"><i class="fa fa-pencil"></i></a> 
+							<a class="label label-danger" data-toggle="tooltip" href="{{BackendURL}}/collector/rule_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
 							</td>
 						</tr>
                          {{end}}

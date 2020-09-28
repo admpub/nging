@@ -8,7 +8,7 @@
 	<div class="middle-sign-up">
 		<div class="block-flat">
 			<div class="header">
-				<h3 class="text-center"><img class="logo-img logo-img-sm" src="__ASSETS__/images/logo.png" alt="logo"/> {{"账号注册"|T}}</h3>
+				<h3 class="text-center"><img class="logo-img logo-img-sm" src="{{AssetsURL}}/images/logo.png" alt="logo"/> {{"账号注册"|T}}</h3>
 			</div>
 			<div>
 				<form style="margin-bottom: 0px !important;" data-secret="{{SM2PublicKey}}" id="register-form" class="form-horizontal" action="" data-parsley-validate novalidate method="POST">
@@ -59,7 +59,7 @@
              <!--<p class="spacer">By creating an account, you agree with the <a href="#">Terms</a> and <a href="#">Conditions</a>.</p>-->
             <button class="btn btn-block btn-success btn-rad btn-lg" type="submit">{{"注册"|T}}</button>
             <p class="text-center">Or</p>
-            <a class="btn btn-block btn-default btn-rad btn-lg" href="__BACKEND__/login">{{"登录"|T}}</a>
+            <a class="btn btn-block btn-default btn-rad btn-lg" href="{{BackendURL}}/login">{{"登录"|T}}</a>
 					</div>
 			  </form>
 			</div>
@@ -70,13 +70,13 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
-<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/parsley.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/i18n/{{(Replace Lang `-` `_` -1)|ToLower}}.js?t={{BuildTime}}" charset="utf-8"></script>
-<script type="text/javascript" src="__ASSETS__/js/behaviour/sprintf.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/behaviour/general.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/crypto/crypto-js.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/crypto/sm2.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/crypto/helper.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/jquery.parsley/parsley.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/jquery.parsley/i18n/{{(Replace Lang `-` `_` -1)|ToLower}}.js?t={{BuildTime}}" charset="utf-8"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/sprintf.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/general.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/crypto/crypto-js.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/crypto/sm2.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/crypto/helper.js?t={{BuildTime}}"></script>
 <script type="text/javascript">
 $(function(){
 {{- if . -}}

@@ -2,8 +2,8 @@
 {{Block "title"}}{{"日志详情"|T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="__BACKEND__/db/schema_sync">{{"方案管理"|T}}</a></li>
-<li><a href="__BACKEND__/db/schema_sync_log/{{if Stored.data}}{{Stored.data.SyncId}}{{else}}0{{end}}">{{"任务日志"|T}}</a></li>
+<li><a href="{{BackendURL}}/db/schema_sync">{{"方案管理"|T}}</a></li>
+<li><a href="{{BackendURL}}/db/schema_sync_log/{{if Stored.data}}{{Stored.data.SyncId}}{{else}}0{{end}}">{{"任务日志"|T}}</a></li>
 <li class="active">{{"日志详情"|T}}</li>
 {{/Block}}
 {{Block "main"}}

@@ -2,7 +2,7 @@
 {{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加指令"|T}}{{else}}{{"修改指令"|T}}{{end}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="__BACKEND__/server/command">{{"任务指令"|T}}</a></li>
+<li><a href="{{BackendURL}}/server/command">{{"任务指令"|T}}</a></li>
 <li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
 {{/Block}}
 {{Block "main"}}
@@ -40,7 +40,7 @@
                     {{end}}
                   </select>
                 </div>
-                <div class="col-sm-2"><a href="__BACKEND__/term/account_add" target="account_add_by_command">{{"添加账号"|T}}</a></div>
+                <div class="col-sm-2"><a href="{{BackendURL}}/term/account_add" target="account_add_by_command">{{"添加账号"|T}}</a></div>
               </div>
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"名称"|T}}</label>

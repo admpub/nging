@@ -5,7 +5,7 @@
 {{Super}}
 <li>{{"离线下载"|T}}</li>
 <li class="active">{{"文件管理"|T}}: {{/* Stored.Get "absPath" */}}
-    <a href="__BACKEND__/download/file">
+    <a href="{{BackendURL}}/download/file">
         <span class="badge badge-primary">{{Stored.rootPath}}</span>
     </a>
     {{- range $k,$v := Stored.pathLinks -}}
@@ -29,7 +29,7 @@
 					{{"删除选中"|T}}
 				</a>
 				<div class="btn-group">
-					<button type="button" id="mkdirBtn" class="btn btn-success" data-url="__BACKEND__/download/file?do=mkdir&path={{if $path}}{{$path}}/{{end}}" onclick="fileMkdir(this)">
+					<button type="button" id="mkdirBtn" class="btn btn-success" data-url="{{BackendURL}}/download/file?do=mkdir&path={{if $path}}{{$path}}/{{end}}" onclick="fileMkdir(this)">
                         <i class="fa fa-plus"></i>
                         {{"新建文件夹"|T}}
                     </button>
@@ -66,7 +66,7 @@
                             <td></td>
 							<td>
                                 <i class="fa fa-folder-o"></i>
-                                <a title="{{"点击回到上一级"|T}}" href="__BACKEND__/download/file?path={{$path}}/.." style="font-size:18px;font-weight:bold" data-toggle="tooltip">..</a>
+                                <a title="{{"点击回到上一级"|T}}" href="{{BackendURL}}/download/file?path={{$path}}/.." style="font-size:18px;font-weight:bold" data-toggle="tooltip">..</a>
                             </td>
 							<td></td>
 							<td></td>
@@ -86,12 +86,12 @@
                                 {{$fileType := FileTypeByName $v.Name}}
                                 <i class="fa fa-{{FileTypeIcon $fileType}}"></i>
                                 {{if eq $fileType `image`}}
-                                <a class="pull-right" href="__BACKEND__/download/file?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" target="_blank"><img src="__BACKEND__/download/file?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" style="max-width:100px;max-height:30px;" class="previewable" /></a>
+                                <a class="pull-right" href="{{BackendURL}}/download/file?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" target="_blank"><img src="{{BackendURL}}/download/file?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" style="max-width:100px;max-height:30px;" class="previewable" /></a>
                                 {{end}}
                                 {{end}}
-                                <a href="__BACKEND__/download/file?path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">{{$v.Name}}</a>
+                                <a href="{{BackendURL}}/download/file?path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">{{$v.Name}}</a>
                                 &nbsp;
-                                <a href="javascript:;" title="{{"重命名"|T}}" data-url="__BACKEND__/download/file?do=rename&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileRename(this,'{{$v.Name}}',{{if $v.IsDir}}true{{else}}false{{end}})" data-toggle="tooltip">
+                                <a href="javascript:;" title="{{"重命名"|T}}" data-url="{{BackendURL}}/download/file?do=rename&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileRename(this,'{{$v.Name}}',{{if $v.IsDir}}true{{else}}false{{end}})" data-toggle="tooltip">
                                 <i class="fa fa-pencil"></i>
                                 </a>
                             </td>
@@ -99,20 +99,20 @@
 							<td>{{if $v.IsDir}}{{"文件夹"|T}}{{else}}{{"文件"|T}}{{end}}</td>
 							<td>{{if $v.IsDir}}-{{else}}{{$v.Size|FormatByte}}{{end}}</td>
 							<td>
-                                <a title="{{"删除"|T}}" class="label label-danger" href="__BACKEND__/download/file?do=delete&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="return confirm('{{T "真的要删除“%v”吗？" $v.Name}}');" data-toggle="tooltip">
+                                <a title="{{"删除"|T}}" class="label label-danger" href="{{BackendURL}}/download/file?do=delete&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="return confirm('{{T "真的要删除“%v”吗？" $v.Name}}');" data-toggle="tooltip">
                                 <i class="fa fa-times"></i>
                                 </a>
                                 {{if not $v.IsDir}}
                                 {{if Editable $v.Name}}
                                 &nbsp;
-                                <a title="{{"编辑"|T}}" class="label label-success" href="javascript:;" data-url="__BACKEND__/download/file?do=edit&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileEdit(this,'{{$v.Name}}')" data-toggle="tooltip">
+                                <a title="{{"编辑"|T}}" class="label label-success" href="javascript:;" data-url="{{BackendURL}}/download/file?do=edit&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="fileEdit(this,'{{$v.Name}}')" data-toggle="tooltip">
                                 <i class="fa fa-pencil"></i>
                                 </a>
                                 {{end}}
                                 {{$mediaMime:=Playable $v.Name}}
                                 {{if $mediaMime}}
                                 &nbsp;
-                                <a title="{{"播放"|T}}" class="label label-primary" href="javascript:;" playable data-mime="{{$mediaMime}}" data-name="{{$v.Name}}" data-url="__BACKEND__/download/file?path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="filePlay(this)" data-toggle="tooltip">
+                                <a title="{{"播放"|T}}" class="label label-primary" href="javascript:;" playable data-mime="{{$mediaMime}}" data-name="{{$v.Name}}" data-url="{{BackendURL}}/download/file?path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" onclick="filePlay(this)" data-toggle="tooltip">
                                 <i class="fa fa-play"></i>
                                 </a>
                                 {{end}}
@@ -148,5 +148,5 @@ function initDropzone() {
     });
 }
 </script>
-<script type="text/javascript" src="__ASSETS__/js/behaviour/page/file.min.js"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/page/file.min.js"></script>
 {{/Block}}

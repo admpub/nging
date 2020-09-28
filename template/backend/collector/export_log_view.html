@@ -2,8 +2,8 @@
 {{Block "title"}}{{"日志详情"|T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="__BACKEND__/collector/export">{{"导出管理"|T}}</a></li>
-<li><a href="__BACKEND__/collector/export_log{{if Stored.export}}?exportId={{Stored.export.Id}}{{end}}">{{"任务日志"|T}}</a></li>
+<li><a href="{{BackendURL}}/collector/export">{{"导出管理"|T}}</a></li>
+<li><a href="{{BackendURL}}/collector/export_log{{if Stored.export}}?exportId={{Stored.export.Id}}{{end}}">{{"任务日志"|T}}</a></li>
 <li class="active">{{"日志详情"|T}}</li>
 {{/Block}}
 {{Block "main"}}

@@ -22,7 +22,7 @@
 						</div>
 					</form>
 				</div>
-				<a href="__BACKEND__/collector/group_add" class="btn btn-success pull-right">
+				<a href="{{BackendURL}}/collector/group_add" class="btn btn-success pull-right">
 					<i class="fa fa-plus"></i>
 					{{"添加分组"|T}}
 				</a>
@@ -56,8 +56,8 @@
 							</td>
 							<td>{{$v.Description}}</td>
 							<td class="text-center">
-							<a class="label label-success" href="__BACKEND__/collector/group_edit?id={{$v.Id}}"><i class="fa fa-pencil" data-toggle="tooltip" title="{{"编辑"|T}}"></i></a> 
-							<a class="label label-danger" href="__BACKEND__/collector/group_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" data-toggle="tooltip" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
+							<a class="label label-success" href="{{BackendURL}}/collector/group_edit?id={{$v.Id}}"><i class="fa fa-pencil" data-toggle="tooltip" title="{{"编辑"|T}}"></i></a> 
+							<a class="label label-danger" href="{{BackendURL}}/collector/group_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" data-toggle="tooltip" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
 							</td>
 						</tr>
                         {{end}}

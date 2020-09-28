@@ -5,7 +5,7 @@
 <li class="active">{{"修改个人资料"|T}}</li>
 {{/Block}}
 {{Block "head"}}
-<link rel="stylesheet" href="__ASSETS__/js/jquery.crop/css/jquery.Jcrop.min.css?t={{BuildTime}}" type="text/css" />
+<link rel="stylesheet" href="{{AssetsURL}}/js/jquery.crop/css/jquery.Jcrop.min.css?t={{BuildTime}}" type="text/css" />
 {{/Block}}
 {{Block "main"}}
 
@@ -22,7 +22,7 @@
                   <div class="col-sm-8">
                     <div class="avatar-upload">
                       {{$avatar := Form "avatar" Stored.user.Avatar}}
-                      <img src="{{if $avatar}}{{AddSuffix $avatar "_200_200"}}{{else}}__ASSETS__/images/user_128.png{{end}}" class="profile-avatar img-thumbnail" onerror="this.onerror=null;this.src='__ASSETS__/images/user_128.png';" />
+                      <img src="{{if $avatar}}{{AddSuffix $avatar "_200_200"}}{{else}}{{AssetsURL}}/images/user_128.png{{end}}" class="profile-avatar img-thumbnail" onerror="this.onerror=null;this.src='{{AssetsURL}}/images/user_128.png';" />
                       <input id="fileupload" type="file" name="files[]">
                       <input type="hidden" id="avatar-image" name="avatar-small" value="{{if $avatar}}{{AddSuffix $avatar "_200_200"}}{{end}}" />
                       <input type="hidden" id="avatar-image-original" name="avatar" value="{{$avatar}}" />
@@ -118,15 +118,15 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
-<script src="__ASSETS__/js/jquery.upload/js/vendor/jquery.ui.widget.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/jquery.crop/js/jquery.Jcrop.min.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/js/jquery.upload/js/vendor/jquery.ui.widget.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/jquery.crop/js/jquery.Jcrop.min.js?t={{BuildTime}}"></script>
 <!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
-<script src="__ASSETS__/js/jquery.upload/js/jquery.iframe-transport.min.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/js/jquery.upload/js/jquery.iframe-transport.min.js?t={{BuildTime}}"></script>
 <!-- The basic File Upload plugin -->
-<script src="__ASSETS__/js/jquery.upload/js/jquery.fileupload.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/crypto/crypto-js.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/crypto/sm2.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/crypto/helper.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/js/jquery.upload/js/jquery.fileupload.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/crypto/crypto-js.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/crypto/sm2.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/crypto/helper.js?t={{BuildTime}}"></script>
 <script type="text/javascript">
 $(function(){
   $('input[name="modifyPass"]').on('click',function(){

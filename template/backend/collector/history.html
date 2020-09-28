@@ -41,9 +41,9 @@
 							<td class="text-center">
                             <a class="label label-primary" href="javascript:;" onclick="showContentModal('{{$v.UrlMd5}}')" data-toggle="tooltip" title="{{"查看采集内容"|T}}"><i class="fa fa-eye"></i></a>
                             {{if eq $v.HasChild "Y"}}
-                            <a class="label label-success" href="__BACKEND__/collector/history?pageId={{$v.PageId}}" data-toggle="tooltip" title="{{"查看下级页面"|T}}"><i class="fa fa-hand-o-down"></i></a>
+                            <a class="label label-success" href="{{BackendURL}}/collector/history?pageId={{$v.PageId}}" data-toggle="tooltip" title="{{"查看下级页面"|T}}"><i class="fa fa-hand-o-down"></i></a>
                             {{end}} 
-							<a class="label label-danger" href="__BACKEND__/collector/history_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" data-toggle="tooltip" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
+							<a class="label label-danger" href="{{BackendURL}}/collector/history_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" data-toggle="tooltip" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
 							</td>
 						</tr>
                         {{end}}

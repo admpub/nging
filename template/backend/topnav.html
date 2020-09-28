@@ -4,7 +4,7 @@
           {{- $foundKey := ProjectSearchIdent $ident -}}
           {{- range $key,$project := Projects -}}
           {{- if $project -}}
-          <li{{if eq $key $foundKey}} class="active"{{end}} data-project="{{$project.GetIdent}}"><a href="__BACKEND__{{$project.GetURL}}" data-project="{{$project.GetIdent}}"><i class="fa fa-dashboard"></i> {{$project.GetName}}</a></li>
+          <li{{if eq $key $foundKey}} class="active"{{end}} data-project="{{$project.GetIdent}}"><a href="{{BackendURL}}{{$project.GetURL}}" data-project="{{$project.GetIdent}}"><i class="fa fa-dashboard"></i> {{$project.GetName}}</a></li>
           {{- end -}}
           {{- end -}}
           <!-- 
@@ -61,7 +61,7 @@
               {{- range $k, $c := $nav.Children -}}
               {{- if and $c $c.DisplayOnMenu -}}
               <li>
-                <a{{if eq $c.Target "ajax"}} href="javascript:;" data-ajax-url="__BACKEND__/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{else}} href="__BACKEND__/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if ne $c.Target "redirect"}} data-pjax="#main-container" data-keepjs="true" data-marknav="top"{{end}}{{end}}>
+                <a{{if eq $c.Target "ajax"}} href="javascript:;" data-ajax-url="{{BackendURL}}/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{else}} href="{{BackendURL}}/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if ne $c.Target "redirect"}} data-pjax="#main-container" data-keepjs="true" data-marknav="top"{{end}}{{end}}>
                 {{- if eq $c.Icon "plus" -}}
                 <span class="label label-primary pull-right">+</span>
                 {{- end -}}
@@ -72,7 +72,7 @@
               {{- end -}}
             </ul>
             {{- else -}}
-            <a{{if eq $nav.Target "ajax"}} href="javascript:;" data-ajax-url="__BACKEND__/{{$nav.Action}}"{{else}} href="__BACKEND__/{{$nav.Action}}"{{if ne $nav.Target "redirect"}} data-pjax="#main-container" data-keepjs="true" data-marknav="true"{{end}}{{end}}>
+            <a{{if eq $nav.Target "ajax"}} href="javascript:;" data-ajax-url="{{BackendURL}}/{{$nav.Action}}"{{else}} href="{{BackendURL}}/{{$nav.Action}}"{{if ne $nav.Target "redirect"}} data-pjax="#main-container" data-keepjs="true" data-marknav="true"{{end}}{{end}}>
                 <i class="fa fa-{{$nav.Icon|Default "gear"}}"></i>
                 {{$nav.Name}} <b class="caret"></b>
               </a>

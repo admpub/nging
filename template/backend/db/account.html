@@ -9,7 +9,7 @@
 	<div class="col-md-12">
 		<div class="block-flat">
 			<div class="header">
-				<a href="__BACKEND__/db/account_add" class="btn btn-success pull-right">
+				<a href="{{BackendURL}}/db/account_add" class="btn btn-success pull-right">
 					<i class="fa fa-plus"></i>
 					{{"添加账号"|T}}
 				</a>
@@ -43,9 +43,9 @@
 							<td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}</td>
 							<td>{{if gt $v.Updated 0}}{{(Date $v.Updated).Format "2006-01-02 15:04:05"}}{{end}}</td>
 							<td class="text-center">
-							<a title="{{"连接"|T}}" class="label label-success" href="__BACKEND__/db?accountId={{$v.Id}}&operation=login" data-toggle="tooltip"><i class="fa fa-link"></i></a>
-							<a title="{{"修改"|T}}" class="label label-default" href="__BACKEND__/db/account_edit?id={{$v.Id}}" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
-							<a title="{{"删除"|T}}" class="label label-danger" href="__BACKEND__/db/account_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" data-toggle="tooltip"><i class="fa fa-times"></i></a>
+							<a title="{{"连接"|T}}" class="label label-success" href="{{BackendURL}}/db?accountId={{$v.Id}}&operation=login" data-toggle="tooltip"><i class="fa fa-link"></i></a>
+							<a title="{{"修改"|T}}" class="label label-default" href="{{BackendURL}}/db/account_edit?id={{$v.Id}}" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+							<a title="{{"删除"|T}}" class="label label-danger" href="{{BackendURL}}/db/account_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" data-toggle="tooltip"><i class="fa fa-times"></i></a>
 							</td>
 						</tr>
                         {{end}}

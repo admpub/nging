@@ -2,11 +2,11 @@
 {{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加用户"|T}}{{else}}{{"修改用户"|T}}{{end}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="__BACKEND__/manager/user">{{"用户列表"|T}}</a></li>
+<li><a href="{{BackendURL}}/manager/user">{{"用户列表"|T}}</a></li>
 <li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
 {{/Block}}
 {{Block "head"}}
-<link rel="stylesheet" type="text/css" href="__ASSETS__/js/jquery.select2/select2.css" />
+<link rel="stylesheet" type="text/css" href="{{AssetsURL}}/js/jquery.select2/select2.css" />
 {{/Block}}
 {{Block "main"}}
 <div class="row">
@@ -22,7 +22,7 @@
                   <div class="col-sm-8">
                     <div class="avatar-upload">
                       {{$avatar := Form "avatar"}}
-                      <img src="{{if $avatar}}{{AddSuffix $avatar "_200_200"}}{{else}}__ASSETS__/images/user_128.png{{end}}" class="profile-avatar img-thumbnail" onerror="this.onerror=null;this.src='__ASSETS__/images/user_128.png';" />
+                      <img src="{{if $avatar}}{{AddSuffix $avatar "_200_200"}}{{else}}{{AssetsURL}}/images/user_128.png{{end}}" class="profile-avatar img-thumbnail" onerror="this.onerror=null;this.src='{{AssetsURL}}/images/user_128.png';" />
                       <input id="fileupload" type="file" name="files[]">
                       <input type="hidden" id="avatar-image" name="avatar-small" value="{{if $avatar}}{{AddSuffix $avatar "_200_200"}}{{end}}" />
                       <input type="hidden" id="avatar-image-original" name="avatar" value="{{$avatar}}" />
@@ -134,12 +134,12 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
-<script src="__ASSETS__/js/jquery.select2/select2.min.js" type="text/javascript"></script>
-<script src="__ASSETS__/js/loader/loader.min.js?t={{BuildTime}}"></script>
-<script src="__ASSETS__/js/editor/editor.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/crypto/crypto-js.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/crypto/sm2.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/crypto/helper.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/js/jquery.select2/select2.min.js" type="text/javascript"></script>
+<script src="{{AssetsURL}}/js/loader/loader.min.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/js/editor/editor.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/crypto/crypto-js.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/crypto/sm2.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/crypto/helper.js?t={{BuildTime}}"></script>
 <script type="text/javascript">
 $(function(){
 //{{if HasSuffix URL.Path "_edit"}}

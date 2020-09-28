@@ -23,15 +23,15 @@
 						</div>
 					</form>
 				</div>
-				<a href="javascript:;" data-url="__BACKEND__/caddy/log_show" id="caddy-log-show" class="btn btn-info pull-right">
+				<a href="javascript:;" data-url="{{BackendURL}}/caddy/log_show" id="caddy-log-show" class="btn btn-info pull-right">
 					<i class="fa fa-search"></i>
 					{{"Caddy日志"|T}}
 				</a>
-				<a href="__BACKEND__/caddy/vhost_add" class="btn btn-success pull-right">
+				<a href="{{BackendURL}}/caddy/vhost_add" class="btn btn-success pull-right">
 					<i class="fa fa-plus"></i>
 					{{"添加网站"|T}}
 				</a>
-				<a href="__BACKEND__/caddy/vhost_build" class="pull-right btn btn-warning">
+				<a href="{{BackendURL}}/caddy/vhost_build" class="pull-right btn btn-warning">
                     <i class="fa fa-refresh"></i>
                     {{"应用配置"|T}}
                 </a>
@@ -87,14 +87,14 @@
 								{{- "更新"|T}}: {{if gt $v.Updated 0}}{{(Date $v.Updated).Format "2006-01-02 15:04:05"}}{{end -}}
 							</td>
 							<td>
-								<a href="javascript:;" data-url="__BACKEND__/caddy/vhost_log?id={{$v.Id}}" title="{{"日志"|T}}" data-toggle="tooltip" onclick="App.logShow(this,true,'access');">{{"日志"|T}}</a>
+								<a href="javascript:;" data-url="{{BackendURL}}/caddy/vhost_log?id={{$v.Id}}" title="{{"日志"|T}}" data-toggle="tooltip" onclick="App.logShow(this,true,'access');">{{"日志"|T}}</a>
 							</td>
 							<td>
-								<a class="label label-default" href="__BACKEND__/caddy/vhost_add?copyId={{$v.Id}}" title="{{"复制"|T}}" data-toggle="tooltip"><i class="fa fa-copy"></i></a>
-								<a class="label label-success" href="__BACKEND__/caddy/vhost_edit?id={{$v.Id}}" title="{{"编辑"|T}}" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
-								<a class="label label-danger" href="__BACKEND__/caddy/vhost_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" title="{{"删除"|T}}" data-toggle="tooltip"><i class="fa fa-times"></i></a>
+								<a class="label label-default" href="{{BackendURL}}/caddy/vhost_add?copyId={{$v.Id}}" title="{{"复制"|T}}" data-toggle="tooltip"><i class="fa fa-copy"></i></a>
+								<a class="label label-success" href="{{BackendURL}}/caddy/vhost_edit?id={{$v.Id}}" title="{{"编辑"|T}}" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
+								<a class="label label-danger" href="{{BackendURL}}/caddy/vhost_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" title="{{"删除"|T}}" data-toggle="tooltip"><i class="fa fa-times"></i></a>
 								{{- if $v.Root}}
-								<a class="label label-primary" href="__BACKEND__/caddy/vhost_file?id={{$v.Id}}" title="{{"文件管理"|T}}" data-toggle="tooltip"><i class="fa fa-folder"></i>
+								<a class="label label-primary" href="{{BackendURL}}/caddy/vhost_file?id={{$v.Id}}" title="{{"文件管理"|T}}" data-toggle="tooltip"><i class="fa fa-folder"></i>
 								</a>
 								{{- end -}}
 							</td>

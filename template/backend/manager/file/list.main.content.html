@@ -56,9 +56,9 @@
                 <td class="no-padding">
                     <a href="{{$v.ViewUrl}}" target="_blank">
                         {{- if eq $v.Type `image` -}}
-                        <img style="width:50px;height:50px" class="previewable" src="{{if $v.ViewUrl}}{{$v.ViewUrl}}{{else}}__ASSETS__/images/nopreview.jpg{{end}}" onerror="this.onerror=null;this.src='__ASSETS__/images/nopreview.jpg';" />
+                        <img style="width:50px;height:50px" class="previewable" src="{{if $v.ViewUrl}}{{$v.ViewUrl}}{{else}}{{AssetsURL}}/images/nopreview.jpg{{end}}" onerror="this.onerror=null;this.src='{{AssetsURL}}/images/nopreview.jpg';" />
                         {{- else -}}
-                        <img style="width:50px;height:50px" class="previewable" src="__ASSETS__/images/nopreview.jpg" />
+                        <img style="width:50px;height:50px" class="previewable" src="{{AssetsURL}}/images/nopreview.jpg" />
                         {{- end -}}
                     </a>
                 </td>
@@ -81,7 +81,7 @@
                 <td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}</td>
                 {{- if not $dialog -}}
                 <td class="text-center">
-                    <a class="label label-danger" href="__BACKEND__/manager/file/delete/{{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|T}}');"><i class="fa fa-times"></i></a>
+                    <a class="label label-danger" href="{{BackendURL}}/manager/file/delete/{{$v.Id}}" onclick="return confirm('{{`真的要删除吗？`|T}}');"><i class="fa fa-times"></i></a>
                 </td>
                 {{- end -}}
             </tr>

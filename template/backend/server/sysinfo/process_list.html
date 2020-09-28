@@ -31,7 +31,7 @@
 						{{end}}
 						</td>
 					<td>{{$status,_:=$v.Status}}{{$status}}</td>
-					<td class="text-center"><a class="label label-danger" href="__BACKEND__/server/sysinfo?op=shutdown&pid={{$v.Pid}}" onclick="return confirm('{{"真的要关闭进程吗？"|T}}');"><i class="fa fa-times"></i></a></td>
+					<td class="text-center"><a class="label label-danger" href="{{BackendURL}}/server/sysinfo?op=shutdown&pid={{$v.Pid}}" onclick="return confirm('{{"真的要关闭进程吗？"|T}}');"><i class="fa fa-times"></i></a></td>
 				</tr>
                 {{end}}
 			</tbody>

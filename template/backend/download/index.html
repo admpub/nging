@@ -141,8 +141,8 @@ var tableHead={fileName:'{{"File Name"|T}}',size:'{{"Size"|T}}',downloaded:'{{"D
 var states={Completed:'{{"Completed"|T}}',Running:'{{"Running"|T}}',Stopped:'{{"Stopped"|T}}',Failed:'{{"Failed"|T}}'};
 var pipes={{Stored.pipes|JSONEncode|ToJS}};
 </script>
-<script type="text/javascript" src="__ASSETS__/js/sockjs.min.js"></script>
-<script type="text/javascript" src="__ASSETS__/js/behaviour/download.min.js"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/sockjs.min.js"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/download.min.js"></script>
 <script type="text/javascript">
 {{if Form "_pjax"}}
 App.loading('hide');

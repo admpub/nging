@@ -2,8 +2,8 @@
 {{Block "title"}}{{"测试采集规则"|T}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="__BACKEND__/collector/rule">{{"采集规则"|T}}</a></li>
-<li><a href="__BACKEND__/collector/rule_edit?id={{Stored.data.Id}}" data-toggle="tooltip" title="{{"点击编辑此规则"|T}}">{{Stored.data.Name}}</a></li>
+<li><a href="{{BackendURL}}/collector/rule">{{"采集规则"|T}}</a></li>
+<li><a href="{{BackendURL}}/collector/rule_edit?id={{Stored.data.Id}}" data-toggle="tooltip" title="{{"点击编辑此规则"|T}}">{{Stored.data.Name}}</a></li>
 <li class="active">{{"测试采集规则"|T}}</li>
 {{/Block}}
 {{Block "main"}}

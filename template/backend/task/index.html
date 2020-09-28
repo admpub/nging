@@ -9,7 +9,7 @@
 	<div class="col-md-12">
 		<div class="block-flat">
 			<div class="header">
-				<a href="__BACKEND__/task/add" class="btn btn-success pull-right">
+				<a href="{{BackendURL}}/task/add" class="btn btn-success pull-right">
 					<i class="fa fa-plus"></i>
 					{{"添加任务"|T}}
 				</a>							
@@ -32,12 +32,12 @@
 				</div>
 				{{if Stored.cronRunning}}
 				<span class="label label-success label-lg">{{"任务处理中"|T}}</span>
-				<a href="__BACKEND__/task/exit" class="btn btn-danger" onclick="return confirm('{{"确定要强制退出全部任务吗？\n本操作将会彻底退出任务处理功能。\n\n可以通过点击“继续历史任务”按钮，重新开启"|T}}')" data-toggle="tooltip" title="{{"强制退出全部任务。下次可以点击“继续历史任务”按钮，继续执行本次退出的任务。"|T}}">{{"退出任务处理"|T}}</a>
+				<a href="{{BackendURL}}/task/exit" class="btn btn-danger" onclick="return confirm('{{"确定要强制退出全部任务吗？\n本操作将会彻底退出任务处理功能。\n\n可以通过点击“继续历史任务”按钮，重新开启"|T}}')" data-toggle="tooltip" title="{{"强制退出全部任务。下次可以点击“继续历史任务”按钮，继续执行本次退出的任务。"|T}}">{{"退出任务处理"|T}}</a>
 				{{else}}
 				<span class="label label-danger label-lg">{{"任务已停止"|T}}</span>
 				{{end}}
 				{{if not Stored.histroyRunning}}
-				<a href="__BACKEND__/task/start_history" class="btn btn-primary" data-toggle="tooltip" title="{{"继续执行上次异常退出的任务。"|T}}">{{"继续历史任务"|T}}</a>
+				<a href="{{BackendURL}}/task/start_history" class="btn btn-primary" data-toggle="tooltip" title="{{"继续执行上次异常退出的任务。"|T}}">{{"继续历史任务"|T}}</a>
 				{{end}}
 				<hr />
 				<div class="table-responsive">
@@ -96,16 +96,16 @@
 							<td class="text-right">
 							<span id="btn-group-{{$v.Id}}">
 							{{if $extra.Running}}
-                            <a class="label label-success" data-toggle="tooltip" title="{{"暂停"|T}}" href="__BACKEND__/task/pause?id={{$v.Id}}" data-id="{{$v.Id}}" onclick="return taskCtl(this,'pause')"><i class="fa fa-pause"></i></a>
+                            <a class="label label-success" data-toggle="tooltip" title="{{"暂停"|T}}" href="{{BackendURL}}/task/pause?id={{$v.Id}}" data-id="{{$v.Id}}" onclick="return taskCtl(this,'pause')"><i class="fa fa-pause"></i></a>
                             {{else}}
-							<a class="label label-danger" href="__BACKEND__/task/start?id={{$v.Id}}" data-toggle="tooltip" title="{{"启动"|T}}" data-id="{{$v.Id}}" onclick="return taskCtl(this,'start')"><i class="fa fa-play"></i></a>
-							<a class="label label-info" href="__BACKEND__/task/run?id={{$v.Id}}" data-toggle="tooltip" onclick="return confirm('{{"该功能建议只用来做任务测试，确定要立即执行该任务吗？"|T}}')" title="{{"运行"|T}}"><i class="fa fa-refresh"></i></a>
+							<a class="label label-danger" href="{{BackendURL}}/task/start?id={{$v.Id}}" data-toggle="tooltip" title="{{"启动"|T}}" data-id="{{$v.Id}}" onclick="return taskCtl(this,'start')"><i class="fa fa-play"></i></a>
+							<a class="label label-info" href="{{BackendURL}}/task/run?id={{$v.Id}}" data-toggle="tooltip" onclick="return confirm('{{"该功能建议只用来做任务测试，确定要立即执行该任务吗？"|T}}')" title="{{"运行"|T}}"><i class="fa fa-refresh"></i></a>
 							{{end}}
 							</span>
-							<a class="label label-primary" data-toggle="tooltip" title="{{"日志"|T}}" href="__BACKEND__/task/log?taskId={{$v.Id}}"><i class="fa fa-comments-o"></i></a>
-							<a class="label label-default" data-toggle="tooltip" title="{{"复制"|T}}" href="__BACKEND__/task/add?copyId={{$v.Id}}"><i class="fa fa-copy"></i></a>
-							<a class="label label-success" data-toggle="tooltip" title="{{"修改"|T}}" href="__BACKEND__/task/edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a> 
-							<a class="label label-danger" data-toggle="tooltip" title="{{"删除"|T}}" href="__BACKEND__/task/delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
+							<a class="label label-primary" data-toggle="tooltip" title="{{"日志"|T}}" href="{{BackendURL}}/task/log?taskId={{$v.Id}}"><i class="fa fa-comments-o"></i></a>
+							<a class="label label-default" data-toggle="tooltip" title="{{"复制"|T}}" href="{{BackendURL}}/task/add?copyId={{$v.Id}}"><i class="fa fa-copy"></i></a>
+							<a class="label label-success" data-toggle="tooltip" title="{{"修改"|T}}" href="{{BackendURL}}/task/edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a> 
+							<a class="label label-danger" data-toggle="tooltip" title="{{"删除"|T}}" href="{{BackendURL}}/task/delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a>
 							</td>
 						</tr>
                         {{end}}
@@ -120,11 +120,11 @@
 {{/Block}}
 {{Block "footer"}}
 <script type="text/template" id="tmpl-btn-pause">
-	<a class="label label-success" data-toggle="tooltip" title="{{"暂停"|T}}" href="__BACKEND__/task/pause?id={=Id=}" id="btn-task-pause-{=Id=}" data-id="{=Id=}" onclick="return taskCtl(this,'pause')"><i class="fa fa-pause"></i></a>
+	<a class="label label-success" data-toggle="tooltip" title="{{"暂停"|T}}" href="{{BackendURL}}/task/pause?id={=Id=}" id="btn-task-pause-{=Id=}" data-id="{=Id=}" onclick="return taskCtl(this,'pause')"><i class="fa fa-pause"></i></a>
 </script>
 <script type="text/template" id="tmpl-btn-start">
-	<a class="label label-danger" href="__BACKEND__/task/start?id={=Id=}" data-toggle="tooltip" title="{{"启动"|T}}" id="btn-task-start-{=Id=}" data-id="{=Id=}" onclick="return taskCtl(this,'start')"><i class="fa fa-play"></i></a>
-	<a class="label label-info" href="__BACKEND__/task/run?id={=Id=}" data-toggle="tooltip" onclick="return confirm('{{"该功能建议只用来做任务测试，确定要立即执行该任务吗？"|T}}')" title="{{"运行"|T}}" id="btn-task-run-{=Id=}"><i class="fa fa-refresh"></i></a>
+	<a class="label label-danger" href="{{BackendURL}}/task/start?id={=Id=}" data-toggle="tooltip" title="{{"启动"|T}}" id="btn-task-start-{=Id=}" data-id="{=Id=}" onclick="return taskCtl(this,'start')"><i class="fa fa-play"></i></a>
+	<a class="label label-info" href="{{BackendURL}}/task/run?id={=Id=}" data-toggle="tooltip" onclick="return confirm('{{"该功能建议只用来做任务测试，确定要立即执行该任务吗？"|T}}')" title="{{"运行"|T}}" id="btn-task-run-{=Id=}"><i class="fa fa-refresh"></i></a>
 </script>
 <script>
 function taskCtl(a,type){

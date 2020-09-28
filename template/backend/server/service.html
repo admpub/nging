@@ -11,21 +11,21 @@
         <dl class="clearfix">
             <dt>{{"Web服务"|T}}:</dt>
             <dd class="pull-left">
-                <button type="button" class="btn btn-primary btn-flat" data-ajax-url="__BACKEND__/caddy/restart" title="{{"重启Web服务"|T}}">
+                <button type="button" class="btn btn-primary btn-flat" data-ajax-url="{{BackendURL}}/caddy/restart" title="{{"重启Web服务"|T}}">
                 <i class="fa fa-refresh"></i> {{"重启"|T}}
                 </button>
             </dd>
             <dd class="pull-left">
-                <button type="button" class="btn btn-warning btn-flat" data-ajax-url="__BACKEND__/caddy/stop" title="{{"关闭Web服务"|T}}">
+                <button type="button" class="btn btn-warning btn-flat" data-ajax-url="{{BackendURL}}/caddy/stop" title="{{"关闭Web服务"|T}}">
                 <i class="fa fa-power-off"></i> {{"关闭"|T}}
                 </button>
             </dd>
             <dd class="pull-left">
                 <div class="btn-group">
-                <button type="button" class="btn btn-default" data-ajax-url="__BACKEND__/caddy/log?on=true" title="{{"查看Web服务动态"|T}}">
+                <button type="button" class="btn btn-default" data-ajax-url="{{BackendURL}}/caddy/log?on=true" title="{{"查看Web服务动态"|T}}">
                 <i class="fa fa-eye"></i> {{"查看动态"|T}}
                 </button>
-                <button type="button" class="btn btn-default" data-ajax-url="__BACKEND__/caddy/log" title="{{"停止查看Web服务动态"|T}}">
+                <button type="button" class="btn btn-default" data-ajax-url="{{BackendURL}}/caddy/log" title="{{"停止查看Web服务动态"|T}}">
                 <i class="fa fa-eye-slash"></i> {{"停止查看"|T}}
                 </button>
                 </div>
@@ -35,21 +35,21 @@
         <dl class="clearfix">
             <dt>{{"FTP服务"|T}}:</dt>
             <dd class="pull-left">
-                <button type="button" class="btn btn-primary btn-flat" data-ajax-url="__BACKEND__/ftp/restart" title="{{"重启FTP服务"|T}}">
+                <button type="button" class="btn btn-primary btn-flat" data-ajax-url="{{BackendURL}}/ftp/restart" title="{{"重启FTP服务"|T}}">
                 <i class="fa fa-refresh"></i> {{"重启"|T}}
                 </button>
             </dd>
             <dd class="pull-left">
-                <button type="button" class="btn btn-warning btn-flat" data-ajax-url="__BACKEND__/ftp/stop" title="{{"关闭FTP服务"|T}}">
+                <button type="button" class="btn btn-warning btn-flat" data-ajax-url="{{BackendURL}}/ftp/stop" title="{{"关闭FTP服务"|T}}">
                 <i class="fa fa-power-off"></i> {{"关闭"|T}}
                 </button>
             </dd>
             <dd class="pull-left">
                 <div class="btn-group">
-                <button type="button" class="btn btn-default" data-ajax-url="__BACKEND__/ftp/log?on=true" title="{{"查看FTP服务动态"|T}}">
+                <button type="button" class="btn btn-default" data-ajax-url="{{BackendURL}}/ftp/log?on=true" title="{{"查看FTP服务动态"|T}}">
                 <i class="fa fa-eye"></i> {{"查看动态"|T}}
                 </button>
-                <button type="button" class="btn btn-default" data-ajax-url="__BACKEND__/ftp/log" title="{{"停止查看FTP服务动态"|T}}">
+                <button type="button" class="btn btn-default" data-ajax-url="{{BackendURL}}/ftp/log" title="{{"停止查看FTP服务动态"|T}}">
                 <i class="fa fa-eye-slash"></i> {{"停止查看"|T}}
                 </button>
                 </div>
@@ -61,7 +61,7 @@
             <dt>{{"Nging"|T}}:</dt>
             <dd class="pull-left">
                 <div class="btn-group">
-                <button type="button" class="btn btn-default" data-url="__BACKEND__/server/log" title="{{"查看Nging日志"|T}}" onclick="App.logShow(this,true);">
+                <button type="button" class="btn btn-default" data-url="{{BackendURL}}/server/log" title="{{"查看Nging日志"|T}}" onclick="App.logShow(this,true);">
                 <i class="fa fa-eye"></i> {{"查看日志"|T}}
                 </button>
                 </div>

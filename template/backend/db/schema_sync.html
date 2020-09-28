@@ -9,7 +9,7 @@
 	<div class="col-md-12">
 		<div class="block-flat">
 			<div class="header">
-                <a href="__BACKEND__/db/schema_sync_add" class="btn btn-success pull-right">
+                <a href="{{BackendURL}}/db/schema_sync_add" class="btn btn-success pull-right">
                 <i class="fa fa-plus"></i>
                 {{"添加方案"|T}}
                 </a>
@@ -56,13 +56,13 @@
 							<td>{{(Date $v.Created).Format "2006-01-02 15:04:05"}}<br />{{if gt $v.Updated 0}}{{(Date $v.Updated).Format "2006-01-02 15:04:05"}}{{else}}None{{end}}</td>
 							<td>
 							<div style="margin-bottom:7px">
-							<a class="label label-default" data-toggle="tooltip" href="__BACKEND__/db/schema_sync_add?copyId={{$v.Id}}" title="{{"复制"|T}}"><i class="fa fa-copy"></i></a>	
-							<a data-toggle="tooltip" title="{{"加入计划任务"|T}}" class="label label-danger" href="__BACKEND__/task/add?command={{">mysql_schema_sync:"}}{{$v.Id}}"><i class="fa fa-clock-o"></i></a>
-							<a data-toggle="tooltip" title="{{"预览"|T}}" class="label label-success" href="__BACKEND__/db/schema_sync_preview?id={{$v.Id}}"><i class="fa fa-eye"></i></a>
-							<a data-toggle="tooltip" title="{{"同步"|T}}" class="label label-warning" href="__BACKEND__/db/schema_sync_run?id={{$v.Id}}" onclick="return confirm('{{"警告！本操作很危险！！！\n请确认您已经备份过目标数据库。\n确定要现在执行同步操作吗？"|T}}');"><i class="fa fa-refresh"></i></a></div>
-							<div><a class="label label-primary" data-toggle="tooltip" title="{{"日志"|T}}" href="__BACKEND__/db/schema_sync_log/{{$v.Id}}"><i class="fa fa-comments-o"></i></a>
-							<a data-toggle="tooltip" title="{{"修改"|T}}" class="label label-default" href="__BACKEND__/db/schema_sync_edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a>
-							<a data-toggle="tooltip" title="{{"删除"|T}}" class="label label-danger" href="__BACKEND__/db/schema_sync_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a></div>
+							<a class="label label-default" data-toggle="tooltip" href="{{BackendURL}}/db/schema_sync_add?copyId={{$v.Id}}" title="{{"复制"|T}}"><i class="fa fa-copy"></i></a>	
+							<a data-toggle="tooltip" title="{{"加入计划任务"|T}}" class="label label-danger" href="{{BackendURL}}/task/add?command={{">mysql_schema_sync:"}}{{$v.Id}}"><i class="fa fa-clock-o"></i></a>
+							<a data-toggle="tooltip" title="{{"预览"|T}}" class="label label-success" href="{{BackendURL}}/db/schema_sync_preview?id={{$v.Id}}"><i class="fa fa-eye"></i></a>
+							<a data-toggle="tooltip" title="{{"同步"|T}}" class="label label-warning" href="{{BackendURL}}/db/schema_sync_run?id={{$v.Id}}" onclick="return confirm('{{"警告！本操作很危险！！！\n请确认您已经备份过目标数据库。\n确定要现在执行同步操作吗？"|T}}');"><i class="fa fa-refresh"></i></a></div>
+							<div><a class="label label-primary" data-toggle="tooltip" title="{{"日志"|T}}" href="{{BackendURL}}/db/schema_sync_log/{{$v.Id}}"><i class="fa fa-comments-o"></i></a>
+							<a data-toggle="tooltip" title="{{"修改"|T}}" class="label label-default" href="{{BackendURL}}/db/schema_sync_edit?id={{$v.Id}}"><i class="fa fa-pencil"></i></a>
+							<a data-toggle="tooltip" title="{{"删除"|T}}" class="label label-danger" href="{{BackendURL}}/db/schema_sync_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');"><i class="fa fa-times"></i></a></div>
 							</td>
 						</tr>
                         {{end}}

@@ -4,7 +4,7 @@
 {{- $image := Form $key -}}
 {{- $prefix := .Get `prefix` | Default `noprefix` -}}
 <div class="avatar-upload">
-<img src="{{$image|Default (AssetsURL `/images/user_128.png`)}}" class="profile-avatar img-thumbnail" onerror="this.src='__ASSETS__/images/user_128.png';" />
+<img src="{{$image|Default (AssetsURL `/images/user_128.png`)}}" class="profile-avatar img-thumbnail" onerror="this.src='{{AssetsURL}}/images/user_128.png';" />
 <input id="{{$prefix}}-fileupload" data-upload-url="{{BackendUploadURL $subdir}}" data-toggle="cropImage" type="file" name="files[]">
 <input type="hidden" id="{{$prefix}}-image" name="{{$key}}" value="{{$image}}" />
 <input type="hidden" id="{{$prefix}}-image-original" name="{{$kOriginal}}" value="{{Form $kOriginal}}" />

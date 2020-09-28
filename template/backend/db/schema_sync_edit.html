@@ -2,7 +2,7 @@
 {{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加表结构同步方案"|T}}{{else}}{{"修改表结构同步方案"|T}}{{end}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="__BACKEND__/db/schema_sync">{{"方案列表"|T}}</a></li>
+<li><a href="{{BackendURL}}/db/schema_sync">{{"方案列表"|T}}</a></li>
 <li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加表结构同步方案"|T}}{{else}}{{"修改表结构同步方案"|T}}{{end}}</li>
 {{/Block}}
 {{Block "main"}}

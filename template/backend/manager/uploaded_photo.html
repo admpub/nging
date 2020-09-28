@@ -7,7 +7,7 @@
 {{Super}}
 <li>{{"附件管理"|T}}</li>
 <li class="active">{{"文件管理"|T}}: {{/* Stored.Get "absPath" */}}
-  <a href="__BACKEND__/manager/uploaded_file?gallery=1">
+  <a href="{{BackendURL}}/manager/uploaded_file?gallery=1">
     <span class="badge badge-primary">{{Stored.rootPath}}</span>
   </a>
   {{- range $k,$v := Stored.pathLinks -}}
@@ -18,7 +18,7 @@
 
 {{Block "head"}}
 {{Include "caddy/file.head"}}
-<link rel="stylesheet" href="__ASSETS__/js/magnific-popup/magnific-popup.min.css?t={{BuildTime}}" type="text/css">
+<link rel="stylesheet" href="{{AssetsURL}}/js/magnific-popup/magnific-popup.min.css?t={{BuildTime}}" type="text/css">
 {{/Block}}
 
 {{Block "main"}}
@@ -28,7 +28,7 @@
       <div class="btn-group">
         {{Include "manager/uploaded_file_btn"}}
         {{if $path}}
-        <a title="{{"点击回到上一级"|T}}" class="btn btn-default" href="__BACKEND__/manager/uploaded_file?gallery=1&path={{$path}}/.." style="margin-left:10px">
+        <a title="{{"点击回到上一级"|T}}" class="btn btn-default" href="{{BackendURL}}/manager/uploaded_file?gallery=1&path={{$path}}/.." style="margin-left:10px">
           <i class="fa fa-reply"></i>
           {{"返回上一级"|T}}
         </a>
@@ -53,19 +53,19 @@
           {{$fileType := FileTypeByName $v.Name}}
           {{if $v.IsDir}}
           <div class="icon">
-          <a href="__BACKEND__/manager/uploaded_file?gallery=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">
+          <a href="{{BackendURL}}/manager/uploaded_file?gallery=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">
             <i class="fa fa-folder"></i>
           </a>
           </div>
           {{else if eq $fileType `image`}}
           <div class="img">
-            <img src="__BACKEND__/manager/uploaded_file?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" />
+            <img src="{{BackendURL}}/manager/uploaded_file?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" />
             <div class="over">
               <div class="func">
-                <a href="__BACKEND__/manager/uploaded_file?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" target="_blank">
+                <a href="{{BackendURL}}/manager/uploaded_file?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" target="_blank">
                   <i class="fa fa-link"></i>
                 </a>
-                <a class="image-zoom" href="__BACKEND__/manager/uploaded_file?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" title="{{$v.Name}}">
+                <a class="image-zoom" href="{{BackendURL}}/manager/uploaded_file?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" title="{{$v.Name}}">
                   <i class="fa fa-search"></i>
                 </a>
               </div>
@@ -73,7 +73,7 @@
           </div>
           {{else}}
           <div class="icon">
-          <a href="__BACKEND__/manager/uploaded_file?gallery=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">
+          <a href="{{BackendURL}}/manager/uploaded_file?gallery=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">
             <i class="fa fa-{{FileTypeIcon $fileType}}"></i>
           </a>
           </div>
@@ -89,8 +89,8 @@
 {{/Block}}
 
 {{Block "footer"}}
-<script type="text/javascript" src="__ASSETS__/js/masonry/masonry.min.js"></script>
-<script type="text/javascript" src="__ASSETS__/js/magnific-popup/jquery.magnific-popup.min.js"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/masonry/masonry.min.js"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/magnific-popup/jquery.magnific-popup.min.js"></script>
 {{Include "caddy/file.script"}}
 <script>
   function uploadURL(currentPath) {
@@ -141,5 +141,5 @@ $(function () {
   }).trigger('refresh');
 });
 </script>
-<script type="text/javascript" src="__ASSETS__/js/behaviour/page/file.min.js"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/page/file.min.js"></script>
 {{/Block}}

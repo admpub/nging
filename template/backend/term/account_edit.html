@@ -2,7 +2,7 @@
 {{Block "title"}}{{if HasSuffix URL.Path "_add"}}{{"添加账号"|T}}{{else}}{{"修改账号"|T}}{{end}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="__BACKEND__/term/account">{{"SSH账号"|T}}</a></li>
+<li><a href="{{BackendURL}}/term/account">{{"SSH账号"|T}}</a></li>
 <li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
 {{/Block}}
 {{Block "main"}}

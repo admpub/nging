@@ -2,15 +2,15 @@
 {{Block "title"}}{{Stored.title}}{{/Block}}
 {{Block "breadcrumb"}}
 {{Super}}
-<li><a href="__BACKEND__/manager/alert_recipient">{{"警报收信账号"|T}}</a></li>
-<li><a href="__BACKEND__/manager/alert_topic">{{Stored.title}}</a></li>
+<li><a href="{{BackendURL}}/manager/alert_recipient">{{"警报收信账号"|T}}</a></li>
+<li><a href="{{BackendURL}}/manager/alert_topic">{{Stored.title}}</a></li>
 {{- if Stored.topic -}}
 <li class="active"><span class="label label-default label-sm">{{`专题`|T}}</span> {{topicName Stored.topic}}</li>
 {{- end -}}
 {{/Block}}
 
 {{Block "head"}}
-<link rel="stylesheet" type="text/css" href="__ASSETS__/js/selectpage/selectpage.css?t={{BuildTime}}" />
+<link rel="stylesheet" type="text/css" href="{{AssetsURL}}/js/selectpage/selectpage.css?t={{BuildTime}}" />
 {{/Block}}
 
 {{Block "bodyNav"}}
@@ -64,7 +64,7 @@
 											<span data-toggle="tooltip" title="{{`平台`|T}}: {{$platformName}}">{{$platformName}}</span>
 										</td>
 										<td>
-											<a href="__BACKEND__/manager/alert_topic?topic={{$v.Topic}}"><span class="label label-default">{{topicName $v.Topic}}</span></a>
+											<a href="{{BackendURL}}/manager/alert_topic?topic={{$v.Topic}}"><span class="label label-default">{{topicName $v.Topic}}</span></a>
 										</td>
 										<td>
 											{{`创建`|T}}:{{$v.Created|DateFormat "2006-01-02 15:04:05"}}<br />
@@ -80,7 +80,7 @@
 											</div>
 										</td>
 										<td class="text-center">
-										<a class="label label-danger" href="__BACKEND__/manager/alert_topic_delete?id={{$v.Id}}&topic={{Stored.topic}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" data-toggle="tooltip" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
+										<a class="label label-danger" href="{{BackendURL}}/manager/alert_topic_delete?id={{$v.Id}}&topic={{Stored.topic}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" data-toggle="tooltip" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
 										</td>
 									</tr>
                                     {{- end -}}
@@ -94,7 +94,7 @@
 			</div>
 {{/Block}}
 {{Block "footer"}}
-<script src="__ASSETS__/js/selectpage/selectpage.min.js?t={{BuildTime}}" type="text/javascript"></script>
+<script src="{{AssetsURL}}/js/selectpage/selectpage.min.js?t={{BuildTime}}" type="text/javascript"></script>
 <script>
 var topic = '{{Stored.topic}}';
 function addAlertToTopic(a){

@@ -11,7 +11,7 @@
 				<h2>{{Block "name"}}{{/Block}}</h2>
 				<ol class="breadcrumb">
 				  {{Block "breadcrumb"}}
-				  <li><a href="__BACKEND__/index" data-pjax="#main-container" data-keepjs="true">Home</a></li>
+				  <li><a href="{{BackendURL}}/index" data-pjax="#main-container" data-keepjs="true">Home</a></li>
 				  {{/Block}}
 				</ol>
 			</div>
@@ -27,7 +27,7 @@
 			<h2>{{Block "name"}}{{/Block}}</h2>
 			<ol class="breadcrumb">
 			  {{Block "breadcrumb"}}
-			  <li><a href="__BACKEND__/index" data-pjax="#main-container" data-keepjs="true">Home</a></li>
+			  <li><a href="{{BackendURL}}/index" data-pjax="#main-container" data-keepjs="true">Home</a></li>
 			  <!-- <li class="active">Current</li> -->
 			  {{/Block}}
 			</ol>
@@ -53,24 +53,24 @@
 	<meta name="commitID" content="{{CommitID}}">
 	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
 	<title>{{Block "title"}}Start{{/Block}} - {{Version}}</title>
-	<link rel='stylesheet' href='__ASSETS__/css/font_OpenSans400_300_600_400italic_700_800.css?t={{BuildTime}}' type='text/css' />
-	<link rel='stylesheet' href='__ASSETS__/css/font_Raleway_300_200_100.css?t={{BuildTime}}' type='text/css' />
-  <link rel="stylesheet" href="__ASSETS__/css/iconfont/iconfont.css?t={{BuildTime}}">
+	<link rel='stylesheet' href='{{AssetsURL}}/css/font_OpenSans400_300_600_400italic_700_800.css?t={{BuildTime}}' type='text/css' />
+	<link rel='stylesheet' href='{{AssetsURL}}/css/font_Raleway_300_200_100.css?t={{BuildTime}}' type='text/css' />
+  <link rel="stylesheet" href="{{AssetsURL}}/css/iconfont/iconfont.css?t={{BuildTime}}">
 	<!-- Bootstrap core CSS -->
-	<link rel="stylesheet" href="__ASSETS__/js/bootstrap/dist/css/bootstrap.min.css?t={{BuildTime}}" />
-	<link rel="stylesheet" href="__ASSETS__/fonts/font-awesome/css/font-awesome.min.css?t={{BuildTime}}">
-	<link rel="stylesheet" href="__ASSETS__/js/jquery.gritter/css/jquery.gritter.min.css?t={{BuildTime}}" />
-	<link rel="stylesheet" href="__ASSETS__/js/jquery.gritter/css/custom.min.css?t={{BuildTime}}" />
-  <link rel="stylesheet" href="__ASSETS__/js/jquery.nanoscroller/nanoscroller.css?t={{BuildTime}}" />
-  <link rel="stylesheet" href="__ASSETS__/js/bootstrap.switch/bootstrap-switch.css?t={{BuildTime}}" />
-	<link rel="stylesheet" href="__ASSETS__/js/jquery.niftymodals/css/component.css?t={{BuildTime}}" />
-	<link rel="stylesheet" href="__ASSETS__/js/bootstrap.typeahead/typeahead.css?t={{BuildTime}}" />
-	<link rel="stylesheet" href="__ASSETS__/css/form/checkbox.css?t={{BuildTime}}" />
+	<link rel="stylesheet" href="{{AssetsURL}}/js/bootstrap/dist/css/bootstrap.min.css?t={{BuildTime}}" />
+	<link rel="stylesheet" href="{{AssetsURL}}/fonts/font-awesome/css/font-awesome.min.css?t={{BuildTime}}">
+	<link rel="stylesheet" href="{{AssetsURL}}/js/jquery.gritter/css/jquery.gritter.min.css?t={{BuildTime}}" />
+	<link rel="stylesheet" href="{{AssetsURL}}/js/jquery.gritter/css/custom.min.css?t={{BuildTime}}" />
+  <link rel="stylesheet" href="{{AssetsURL}}/js/jquery.nanoscroller/nanoscroller.css?t={{BuildTime}}" />
+  <link rel="stylesheet" href="{{AssetsURL}}/js/bootstrap.switch/bootstrap-switch.css?t={{BuildTime}}" />
+	<link rel="stylesheet" href="{{AssetsURL}}/js/jquery.niftymodals/css/component.css?t={{BuildTime}}" />
+	<link rel="stylesheet" href="{{AssetsURL}}/js/bootstrap.typeahead/typeahead.css?t={{BuildTime}}" />
+	<link rel="stylesheet" href="{{AssetsURL}}/css/form/checkbox.css?t={{BuildTime}}" />
 	{{Include "global_js"}}
     {{Block "head"}}{{/Block}}
-	<link id="css-lazyload-end" rel="stylesheet" href="__ASSETS__/css/reset.css?t={{BuildTime}}" />
+	<link id="css-lazyload-end" rel="stylesheet" href="{{AssetsURL}}/css/reset.css?t={{BuildTime}}" />
 	<!-- Custom styles for this template -->
-	<link href="__ASSETS__/css/style.min.css?t={{BuildTime}}" rel="stylesheet" />
+	<link href="{{AssetsURL}}/css/style.min.css?t={{BuildTime}}" rel="stylesheet" />
     {{Block "headEnd"}}{{/Block}}
 </head>
  
@@ -87,7 +87,7 @@
 				<h2>{{Block "name"}}{{/Block}}</h2>
 				<ol class="breadcrumb">
 				  {{Block "breadcrumb"}}
-				  <li><a href="__BACKEND__/index" data-pjax="#main-container" data-keepjs="true">Home</a></li>
+				  <li><a href="{{BackendURL}}/index" data-pjax="#main-container" data-keepjs="true">Home</a></li>
 				  <!-- <li class="active">Current</li> -->
 				  {{/Block}}
 				</ol>
@@ -99,28 +99,28 @@
 		</div><!-- .cl-right -->
 	</div><!-- #cl-wrapper -->
 
-<!-- <script src="__ASSETS__/js/require.min.js?t={{BuildTime}}"></script>
-<script src="__ASSETS__/js/main.js?t={{BuildTime}}"></script> -->
+<!-- <script src="{{AssetsURL}}/js/require.min.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/js/main.js?t={{BuildTime}}"></script> -->
 
-<script src="__ASSETS__/js/jquery.js?t={{BuildTime}}"></script>
-<script src="__ASSETS__/js/compatible.min.js?t={{BuildTime}}" type="text/javascript"></script>
-<script src="__ASSETS__/js/modernizr.js?t={{BuildTime}}" type="text/javascript"></script>
-<script type="text/javascript" src="__ASSETS__/js/jquery.nanoscroller/jquery.nanoscroller.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/bootstrap.switch/bootstrap-switch.min.js?t={{BuildTime}}"></script>
-<!--<script type="text/javascript" src="__ASSETS__/js/jquery.nestable/jquery.nestable.js"></script>-->
-<script type="text/javascript" src="__ASSETS__/js/jquery.pjax.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/jquery.niftymodals/js/jquery.modalEffects.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/behaviour/sprintf.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/behaviour/general.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/jquery.gritter/js/jquery.gritter.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/bootstrap/dist/js/bootstrap.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/storeWithJson2.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/bootstrap.typeahead/typeahead.bundle.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/parsley.min.js?t={{BuildTime}}"></script>
-<script type="text/javascript" src="__ASSETS__/js/jquery.parsley/i18n/{{(Replace Lang `-` `_` -1)|ToLower}}.js?t={{BuildTime}}" charset="utf-8"></script>
+<script src="{{AssetsURL}}/js/jquery.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/js/compatible.min.js?t={{BuildTime}}" type="text/javascript"></script>
+<script src="{{AssetsURL}}/js/modernizr.js?t={{BuildTime}}" type="text/javascript"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/jquery.nanoscroller/jquery.nanoscroller.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/bootstrap.switch/bootstrap-switch.min.js?t={{BuildTime}}"></script>
+<!--<script type="text/javascript" src="{{AssetsURL}}/js/jquery.nestable/jquery.nestable.js"></script>-->
+<script type="text/javascript" src="{{AssetsURL}}/js/jquery.pjax.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/jquery.niftymodals/js/jquery.modalEffects.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/sprintf.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/general.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/jquery.gritter/js/jquery.gritter.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/bootstrap/dist/js/bootstrap.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/storeWithJson2.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/bootstrap.typeahead/typeahead.bundle.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/jquery.parsley/parsley.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/jquery.parsley/i18n/{{(Replace Lang `-` `_` -1)|ToLower}}.js?t={{BuildTime}}" charset="utf-8"></script>
 {{Block "importJS"}}{{/Block}}
 {{Include "init_js"}}
-<script type="text/javascript" src="__ASSETS__/js/behaviour/page/footer.min.js?t={{BuildTime}}"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/page/footer.min.js?t={{BuildTime}}"></script>
 {{Block "footer"}}{{/Block}}
 {{- range $k,$footer := GlobalFooters -}}
 {{- if $footer -}}

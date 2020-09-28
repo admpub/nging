@@ -17,7 +17,7 @@
 				<div class="col-md-12">
 					<div class="block-flat">
 						<div class="header">
-							<a href="__BACKEND__/manager/kv_add?type={{- if Stored.typeData -}}{{Stored.typeData.Key}}{{- end -}}" class="btn btn-success pull-right">
+							<a href="{{BackendURL}}/manager/kv_add?type={{- if Stored.typeData -}}{{Stored.typeData.Key}}{{- end -}}" class="btn btn-success pull-right">
 								<i class="fa fa-plus"></i>
 								{{"添加元数据"|T}}
 							</a>
@@ -51,8 +51,8 @@
 											{{end}}
 										</td>
 										<td class="text-center">
-										<a class="label label-success" href="__BACKEND__/manager/kv_edit?id={{$v.Id}}" data-toggle="tooltip" title="{{"修改"|T}}"><i class="fa fa-pencil"></i></a>
-										<a class="label label-danger" href="__BACKEND__/manager/kv_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" data-toggle="tooltip" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
+										<a class="label label-success" href="{{BackendURL}}/manager/kv_edit?id={{$v.Id}}" data-toggle="tooltip" title="{{"修改"|T}}"><i class="fa fa-pencil"></i></a>
+										<a class="label label-danger" href="{{BackendURL}}/manager/kv_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" data-toggle="tooltip" title="{{"删除"|T}}"><i class="fa fa-times"></i></a>
 										</td>
 									</tr>
                                     {{end}}

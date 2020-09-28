@@ -11,7 +11,7 @@
 				{{- $topic := Form `topic` -}}
               	{{- range $key, $row := Stored.topicList -}}
               		<li class="primary-active{{if eq $topic $row.K}} active{{end}}">
-                	<a href="__BACKEND__/manager/alert_topic?topic={{$row.K}}" title="{{$row.V}}" data-pjax="#main-container" data-keepjs="true">{{$row.V}}</a>
+                	<a href="{{BackendURL}}/manager/alert_topic?topic={{$row.K}}" title="{{$row.V}}" data-pjax="#main-container" data-keepjs="true">{{$row.V}}</a>
               		</li>
               	{{- end -}}
           		</ul>

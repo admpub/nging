@@ -4,7 +4,7 @@
 {{$accountTitle := Stored.accountTitle}}
 {{Include "db/logout_button"}}
 {{Super}}
-<li><a href="__BACKEND__/db">{{T "%s管理" Stored.dbType}}</a></li>
+<li><a href="{{BackendURL}}/db">{{T "%s管理" Stored.dbType}}</a></li>
 {{- if $accountTitle -}}
 <li><a href="{{dbMgrURL `listDb`}}">{{$accountTitle}}</a></li>
 {{- else -}}
@@ -12,8 +12,8 @@
 {{- end -}}
 {{/Block}}
 {{Block "head"}}
-<link rel="stylesheet" type="text/css" href="__ASSETS__/js/jquery.nanoscroller/nanoscroller.css" />
-<link rel="stylesheet" type="text/css" href="__ASSETS__/js/bootstrap.slider/css/slider.css" />
+<link rel="stylesheet" type="text/css" href="{{AssetsURL}}/js/jquery.nanoscroller/nanoscroller.css" />
+<link rel="stylesheet" type="text/css" href="{{AssetsURL}}/js/bootstrap.slider/css/slider.css" />
 {{/Block}}
 {{Block "bodyNav"}}
 {{if Stored.Get "signedIn"}}
@@ -89,7 +89,7 @@
 {{Block "footer"}}
 {{$pjax:=Form "_pjax"}}
 {{if ne $pjax "#pcont"}}
-<script src="__ASSETS__/js/bootstrap.slider/js/bootstrap-slider.min.js" type="text/javascript"></script>
+<script src="{{AssetsURL}}/js/bootstrap.slider/js/bootstrap-slider.min.js" type="text/javascript"></script>
 <script>
 $(function(){
 {{if Stored.Get "signedIn"}}

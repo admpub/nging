@@ -10,7 +10,7 @@
 				{{- $type := Form `type` -}}
               	{{- range $key, $row := Stored.typeList -}}
               		<li class="primary-active{{if eq $type $row.Key}} active{{end}}">
-                	<a href="__BACKEND__/manager/kv?type={{$row.Key}}" title="{{$row.Value}}" data-pjax="#main-container" data-keepjs="true">{{$row.Value}}</a>
+                	<a href="{{BackendURL}}/manager/kv?type={{$row.Key}}" title="{{$row.Value}}" data-pjax="#main-container" data-keepjs="true">{{$row.Value}}</a>
               		</li>
               	{{- end -}}
           		</ul>

@@ -8,7 +8,7 @@
 	<div class="middle-login">
 		<div class="block-flat">
 			<div class="header">							
-				<h3 class="text-center"><img class="logo-img" src="__ASSETS__/images/logo.png" alt="logo"/>{{"两步验证"|T}}</h3>
+				<h3 class="text-center"><img class="logo-img" src="{{AssetsURL}}/images/logo.png" alt="logo"/>{{"两步验证"|T}}</h3>
 			</div> 
 			<div>
 				<form class="form-horizontal" action="" method="POST">
@@ -25,7 +25,7 @@
 					</div>
 					<div class="foot">
 						<input type="hidden" name="return_to" value="{{Form "return_to"}}">
-						<a class="btn btn-default" href="__BACKEND__/logout">{{"退出"|T}}</a>
+						<a class="btn btn-default" href="{{BackendURL}}/logout">{{"退出"|T}}</a>
 						<button class="btn btn-primary" data-dismiss="modal" type="submit">{{"验证"|T}}</button>
 					</div>
 				</form>
@@ -39,9 +39,9 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
-<script type="text/javascript" src="__ASSETS__/js/behaviour/sprintf.min.js"></script>
-<script type="text/javascript" src="__ASSETS__/js/behaviour/general.min.js"></script>
-<script type="text/javascript" src="__ASSETS__/js/jquery.gritter/js/jquery.gritter.min.js"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/sprintf.min.js"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/behaviour/general.min.js"></script>
+<script type="text/javascript" src="{{AssetsURL}}/js/jquery.gritter/js/jquery.gritter.min.js"></script>
 <script>
 {{if .}}
 App.message({title: '{{"系统消息"|T}}', text: "{{.}}"});

@@ -10,19 +10,19 @@
 	<meta name="commitID" content="{{CommitID}}">
 	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
 	<title>{{Block "title"}}{{/Block}} - {{Version}}</title>
-	<link href='__ASSETS__/css/font_OpenSans400_300_600_400italic_700_800.css?t={{BuildTime}}' rel='stylesheet' type='text/css'>
-	<link href='__ASSETS__/css/font_Raleway_300_200_100.css?t={{BuildTime}}' rel='stylesheet' type='text/css'>
-	<link href='__ASSETS__/css/iconfont/iconfont.css?t={{BuildTime}}' rel='stylesheet' type='text/css'>
+	<link href='{{AssetsURL}}/css/font_OpenSans400_300_600_400italic_700_800.css?t={{BuildTime}}' rel='stylesheet' type='text/css'>
+	<link href='{{AssetsURL}}/css/font_Raleway_300_200_100.css?t={{BuildTime}}' rel='stylesheet' type='text/css'>
+	<link href='{{AssetsURL}}/css/iconfont/iconfont.css?t={{BuildTime}}' rel='stylesheet' type='text/css'>
 	<!-- Bootstrap core CSS -->
-	<link href="__ASSETS__/js/bootstrap/dist/css/bootstrap.min.css?t={{BuildTime}}" rel="stylesheet">
-	<link rel="stylesheet" href="__ASSETS__/fonts/font-awesome/css/font-awesome.min.css?t={{BuildTime}}">
-	<link rel="stylesheet" href="__ASSETS__/js/jquery.gritter/css/jquery.gritter.min.css?t={{BuildTime}}" />
-	<link rel="stylesheet" href="__ASSETS__/js/jquery.gritter/css/custom.min.css?t={{BuildTime}}" />
+	<link href="{{AssetsURL}}/js/bootstrap/dist/css/bootstrap.min.css?t={{BuildTime}}" rel="stylesheet">
+	<link rel="stylesheet" href="{{AssetsURL}}/fonts/font-awesome/css/font-awesome.min.css?t={{BuildTime}}">
+	<link rel="stylesheet" href="{{AssetsURL}}/js/jquery.gritter/css/jquery.gritter.min.css?t={{BuildTime}}" />
+	<link rel="stylesheet" href="{{AssetsURL}}/js/jquery.gritter/css/custom.min.css?t={{BuildTime}}" />
 	{{Include "global_js"}}
 	{{Block "head"}}{{/Block}}
-	<link id="css-lazyload-end" href="__ASSETS__/css/reset.css?t={{BuildTime}}" rel="stylesheet" />
+	<link id="css-lazyload-end" href="{{AssetsURL}}/css/reset.css?t={{BuildTime}}" rel="stylesheet" />
 	<!-- Custom styles for this template -->
-	<link href="__ASSETS__/css/style.min.css?t={{BuildTime}}" rel="stylesheet" />
+	<link href="{{AssetsURL}}/css/style.min.css?t={{BuildTime}}" rel="stylesheet" />
     {{Block "headEnd"}}{{/Block}}
 </head>
  
@@ -42,12 +42,12 @@
 </div>
 {{end}}
 {{Block "main"}}{{/Block}}
-<script src="__ASSETS__/js/jquery.js?t={{BuildTime}}" type="text/javascript"></script>
-<script src="__ASSETS__/js/compatible.min.js?t={{BuildTime}}" type="text/javascript"></script>
-<script src="__ASSETS__/js/jquery.gritter/js/jquery.gritter.min.js?t={{BuildTime}}" type="text/javascript"></script>
-<script src="__ASSETS__/js/bootstrap/dist/js/bootstrap.min.js?t={{BuildTime}}" type="text/javascript"></script>
-<script src="__ASSETS__/js/behaviour/sprintf.min.js?t={{BuildTime}}" type="text/javascript"></script>
-<script src="__ASSETS__/js/behaviour/general.min.js?t={{BuildTime}}" type="text/javascript"></script>
+<script src="{{AssetsURL}}/js/jquery.js?t={{BuildTime}}" type="text/javascript"></script>
+<script src="{{AssetsURL}}/js/compatible.min.js?t={{BuildTime}}" type="text/javascript"></script>
+<script src="{{AssetsURL}}/js/jquery.gritter/js/jquery.gritter.min.js?t={{BuildTime}}" type="text/javascript"></script>
+<script src="{{AssetsURL}}/js/bootstrap/dist/js/bootstrap.min.js?t={{BuildTime}}" type="text/javascript"></script>
+<script src="{{AssetsURL}}/js/behaviour/sprintf.min.js?t={{BuildTime}}" type="text/javascript"></script>
+<script src="{{AssetsURL}}/js/behaviour/general.min.js?t={{BuildTime}}" type="text/javascript"></script>
 {{Include "init_js"}}
 {{Block "footer"}}{{/Block}}
 {{Block "tracker"}}

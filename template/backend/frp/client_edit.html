@@ -5,7 +5,7 @@
 {{Block "breadcrumb"}} 
 {{Super}}
 <li>
-    <a href="__BACKEND__/frp/client_index">{{"客户端配置"|T}}</a>
+    <a href="{{BackendURL}}/frp/client_index">{{"客户端配置"|T}}</a>
 </li>
 <li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
 {{/Block}} 

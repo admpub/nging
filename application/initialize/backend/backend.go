@@ -170,10 +170,7 @@ func init() {
 			TmplDir: TemplateDir,
 			Engine:  `standard`,
 			ParseStrings: map[string]string{
-				`__ASSETS__`:   `{{AssetsURL}}`,
-				`__TMPL__`:     TemplateDir,
-				`__BACKEND__`:  `{{BackendURL}}`,
-				`__FRONTEND__`: `{{FrontendURL}}`,
+				`__TMPL__`: TemplateDir,
 			},
 			DefaultHTTPErrorCode: http.StatusOK,
 			Reload:               true,
