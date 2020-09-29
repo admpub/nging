@@ -102,7 +102,7 @@ func BackupConfigEdit(ctx echo.Context) error {
 			err = m.Edit(nil, db.Cond{`id`: id})
 			if err == nil {
 				if m.Disabled == `Y` {
-					err = backupStop(m.Id)
+					err = monitorBackupStop(m.Id)
 				}
 			}
 			if err != nil {

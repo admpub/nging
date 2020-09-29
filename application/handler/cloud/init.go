@@ -58,7 +58,7 @@ func init() {
 			return
 		}
 		for _, row := range rows {
-			err = backupStart(row)
+			err = monitorBackupStart(row)
 			if err != nil {
 				log.Error(err)
 			}

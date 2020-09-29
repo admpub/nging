@@ -27,6 +27,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
 )
 
 // 导出软著源码
@@ -79,7 +80,7 @@ func exportSourceCodeRunE(cmd *cobra.Command, args []string) error {
 			return nil
 		}
 		if *sourceCodeMaxLines > 0 && lines > *sourceCodeMaxLines {
-			return filepath.SkipDir
+			return echo.ErrExit
 		}
 		extension := strings.ToLower(filepath.Ext(info.Name()))
 		var ok bool
@@ -129,6 +130,9 @@ func exportSourceCodeRunE(cmd *cobra.Command, args []string) error {
 		_, err = f.WriteString("// Location: " + strings.TrimPrefix(pPath, root) + "\n" + content)
 		return err
 	})
+	if err == echo.ErrExit {
+		err = nil
+	}
 	return err
 }
 
