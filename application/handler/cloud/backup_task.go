@@ -40,13 +40,18 @@ func BackupStart(ctx echo.Context) error {
 	if len(recv.Storage.Endpoint) == 0 {
 		return ctx.NewError(code.InvalidParameter, ctx.T(`Endpoint无效`))
 	}
-	if err = fullBackupStart(recv); err != nil {
-		if err == ErrRunningPleaseWait {
-			err = ctx.NewError(code.OperationProcessing, ctx.T(`运行中，请稍候，如果文件很多可能需要会多等一会儿`))
+	switch ctx.Form(`op`) {
+	case "full":
+		err = fullBackupStart(recv)
+		if err != nil {
+			if err == ErrRunningPleaseWait {
+				err = ctx.NewError(code.OperationProcessing, ctx.T(`运行中，请稍候，如果文件很多可能需要会多等一会儿`))
+			}
 		}
-		return err
+	default:
+		err = monitorBackupStart(recv)
 	}
-	if err = monitorBackupStart(recv); err != nil {
+	if err != nil {
 		return err
 	}
 	handler.SendOk(ctx, ctx.T(`操作成功`))
@@ -240,7 +245,6 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 		return ErrRunningPleaseWait
 	}
 	echo.Set(key, true)
-	defer func() { echo.Delete(key) }()
 	cacheDir := filepath.Join(echo.Wd(), `data/cache/backup-db`)
 	os.MkdirAll(cacheDir, 0777)
 	cacheFile := filepath.Join(cacheDir, idKey)
@@ -254,60 +258,72 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 		return err
 	}
 	sourcePath := recv.SourcePath
-	//debug := !config.DefaultConfig.Sys.IsEnv(`prod`)
+	debug := !config.DefaultConfig.Sys.IsEnv(`prod`)
 	recv.Storage.Secret = common.Crypto().Decode(recv.Storage.Secret)
 	mgr, err := s3client.New(recv.Storage, config.DefaultConfig.Sys.EditableFileMaxBytes)
 	if err != nil {
 		return err
 	}
-	fullBackupExit = false
-	err = filepath.Walk(sourcePath, func(ppath string, info os.FileInfo, err error) error {
-		if fullBackupExit {
-			return echo.ErrExit
-		}
-		if info.IsDir() {
-			return nil
-		}
-		if !filter(ppath) {
-			return filepath.SkipDir
-		}
-		var oldMd5 string
-		dbKey := com.Str2bytes(ppath)
-		cv, ce := db.Get(dbKey, nil)
-		if ce != nil {
-			if ce != leveldb.ErrNotFound {
-				return ce
+	go func() {
+		defer func() { echo.Delete(key) }()
+		fullBackupExit = false
+		err := filepath.Walk(sourcePath, func(ppath string, info os.FileInfo, err error) error {
+			if fullBackupExit {
+				return echo.ErrExit
 			}
-		} else {
-			oldMd5 = com.Bytes2str(cv)
-		}
-		md5, err := checksum.MD5sum(ppath)
-		if err != nil {
-			return err
-		}
-		if oldMd5 == md5 {
-			return nil
-		}
+			if info.IsDir() {
+				return nil
+			}
+			if !filter(ppath) {
+				return filepath.SkipDir
+			}
+			var oldMd5 string
+			dbKey := com.Str2bytes(ppath)
+			cv, ce := db.Get(dbKey, nil)
+			if ce != nil {
+				if ce != leveldb.ErrNotFound {
+					return ce
+				}
+			} else {
+				oldMd5 = com.Bytes2str(cv)
+			}
+			md5, err := checksum.MD5sum(ppath)
+			if err != nil {
+				return err
+			}
+			if oldMd5 == md5 {
+				if debug {
+					log.Info(ppath, `: 文件备份过并且没有改变【跳过】`)
+				}
+				return nil
+			}
+			if debug {
+				if len(oldMd5) > 0 {
+					log.Info(ppath, `: 文件备份过并且有更改【更新】`)
+				} else {
+					log.Info(ppath, `: 文件未曾备份过【添加】`)
+				}
+			}
 
-		objectName := path.Join(recv.DestPath, strings.TrimPrefix(ppath, sourcePath))
-		fp, err := os.Open(ppath)
-		if err != nil {
-			log.Error(err)
-			return err
-		}
-		defer func() {
-			fp.Close()
-			err = db.Put(dbKey, com.Str2bytes(md5), nil)
+			objectName := path.Join(recv.DestPath, strings.TrimPrefix(ppath, sourcePath))
+			fp, err := os.Open(ppath)
 			if err != nil {
 				log.Error(err)
+				return err
 			}
-		}()
-		return mgr.Put(fp, objectName, info.Size())
-	})
-	if err == echo.ErrExit {
-		log.Info(`强制退出全量备份`)
-		err = nil
-	}
-	fullBackupExit = false
+			defer func() {
+				fp.Close()
+				err = db.Put(dbKey, com.Str2bytes(md5), nil)
+				if err != nil {
+					log.Error(err)
+				}
+			}()
+			return mgr.Put(fp, objectName, info.Size())
+		})
+		if err == echo.ErrExit {
+			log.Info(`强制退出全量备份`)
+		}
+		fullBackupExit = false
+	}()
 	return err
 }
