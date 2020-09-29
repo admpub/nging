@@ -4,6 +4,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/admpub/log"
@@ -76,6 +77,26 @@ func backupStart(recv *model.CloudBackupExt) error {
 	if err != nil {
 		return err
 	}
+	var re *regexp.Regexp
+	if len(recv.IgnoreRule) > 0 {
+		re, err = regexp.Compile(recv.IgnoreRule)
+		if err != nil {
+			return err
+		}
+	}
+	monitor.SetFilters(func(file string) bool {
+		switch filepath.Ext(file) {
+		case ".swp":
+			return false
+		case ".tmp", ".TMP":
+			return false
+		default:
+			if strings.Contains(file, echo.FilePathSeparator+`.`) { // 忽略所有以点号开头的文件
+				return false
+			}
+			return true
+		}
+	})
 	sourcePath, err := filepath.Abs(recv.SourcePath)
 	if err != nil {
 		return err

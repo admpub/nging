@@ -97,6 +97,7 @@ type NgingCloudBackup struct {
 	Id           uint   `db:"id,omitempty,pk" bson:"id,omitempty" comment:"ID" json:"id" xml:"id"`
 	Name         string `db:"name" bson:"name" comment:"配置名" json:"name" xml:"name"`
 	SourcePath   string `db:"source_path" bson:"source_path" comment:"源" json:"source_path" xml:"source_path"`
+	IgnoreRule   string `db:"ignore_rule" bson:"ignore_rule" comment:"忽略文件路径(正则表达式)" json:"ignore_rule" xml:"ignore_rule"`
 	DestStorage  uint   `db:"dest_storage" bson:"dest_storage" comment:"目标存储ID" json:"dest_storage" xml:"dest_storage"`
 	DestPath     string `db:"dest_path" bson:"dest_path" comment:"目标存储路径" json:"dest_path" xml:"dest_path"`
 	Result       string `db:"result" bson:"result" comment:"运行结果" json:"result" xml:"result"`
@@ -472,6 +473,7 @@ func (a *NgingCloudBackup) Reset() *NgingCloudBackup {
 	a.Id = 0
 	a.Name = ``
 	a.SourcePath = ``
+	a.IgnoreRule = ``
 	a.DestStorage = 0
 	a.DestPath = ``
 	a.Result = ``
@@ -488,6 +490,7 @@ func (a *NgingCloudBackup) AsMap() param.Store {
 	r["Id"] = a.Id
 	r["Name"] = a.Name
 	r["SourcePath"] = a.SourcePath
+	r["IgnoreRule"] = a.IgnoreRule
 	r["DestStorage"] = a.DestStorage
 	r["DestPath"] = a.DestPath
 	r["Result"] = a.Result
@@ -508,6 +511,8 @@ func (a *NgingCloudBackup) FromRow(row map[string]interface{}) {
 			a.Name = param.AsString(value)
 		case "source_path":
 			a.SourcePath = param.AsString(value)
+		case "ignore_rule":
+			a.IgnoreRule = param.AsString(value)
 		case "dest_storage":
 			a.DestStorage = param.AsUint(value)
 		case "dest_path":
@@ -554,6 +559,8 @@ func (a *NgingCloudBackup) Set(key interface{}, value ...interface{}) {
 			a.Name = param.AsString(vv)
 		case "SourcePath":
 			a.SourcePath = param.AsString(vv)
+		case "IgnoreRule":
+			a.IgnoreRule = param.AsString(vv)
 		case "DestStorage":
 			a.DestStorage = param.AsUint(vv)
 		case "DestPath":
@@ -579,6 +586,7 @@ func (a *NgingCloudBackup) AsRow() param.Store {
 	r["id"] = a.Id
 	r["name"] = a.Name
 	r["source_path"] = a.SourcePath
+	r["ignore_rule"] = a.IgnoreRule
 	r["dest_storage"] = a.DestStorage
 	r["dest_path"] = a.DestPath
 	r["result"] = a.Result
