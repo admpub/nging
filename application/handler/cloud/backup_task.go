@@ -25,6 +25,7 @@ var backupTasks = param.NewMap()
 
 func getTask(m *model.CloudBackupExt) (*com.MonitorEvent, bool) {
 	monitor := com.NewMonitor()
+	monitor.Debug = !config.DefaultConfig.Sys.IsEnv(`prod`)
 	v, ok := backupTasks.GetOrSet(m.Id, monitor)
 	if ok {
 		monitor = v.(*com.MonitorEvent)
