@@ -23,16 +23,6 @@ import (
 
 var backupTasks = param.NewMap()
 
-func getTask(m *model.CloudBackupExt) (*com.MonitorEvent, bool) {
-	monitor := com.NewMonitor()
-	monitor.Debug = !config.DefaultConfig.Sys.IsEnv(`prod`)
-	v, ok := backupTasks.GetOrSet(m.Id, monitor)
-	if ok {
-		monitor = v.(*com.MonitorEvent)
-	}
-	return monitor, ok
-}
-
 func BackupStart(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
 	m := model.NewCloudBackup(ctx)
@@ -69,10 +59,11 @@ func BackupStop(ctx echo.Context) error {
 }
 
 func backupStart(recv *model.CloudBackupExt) error {
-	monitor, loaded := getTask(recv)
-	if loaded {
-		monitor.Close()
+	if err := backupStop(recv.Id); err != nil {
+		return err
 	}
+	monitor := com.NewMonitor()
+	monitor.Debug = !config.DefaultConfig.Sys.IsEnv(`prod`)
 	recv.Storage.Secret = common.Crypto().Decode(recv.Storage.Secret)
 	mgr, err := s3client.New(recv.Storage, config.DefaultConfig.Sys.EditableFileMaxBytes)
 	if err != nil {
