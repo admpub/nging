@@ -93,7 +93,10 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 		recv.SetContext(ctx)
 		db, err := leveldb.OpenFile(cacheFile, nil)
 		if err != nil {
-			recv.SetField(nil, `result`, err.Error(), `id`, recv.Id)
+			recv.SetFields(nil, echo.H{
+				`result`: err.Error(),
+				`status`: `failure`,
+			}, `id`, recv.Id)
 			return
 		}
 		defer db.Close()
