@@ -74,31 +74,29 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 	sourcePath := recv.SourcePath
 	debug := !config.DefaultConfig.Sys.IsEnv(`prod`)
 	recv.Storage.Secret = common.Crypto().Decode(recv.Storage.Secret)
+	filter, err := fileFilter(recv)
+	if err != nil {
+		return err
+	}
+	cacheDir := filepath.Join(echo.Wd(), `data/cache/backup-db`)
+	os.MkdirAll(cacheDir, 0777)
+	cacheFile := filepath.Join(cacheDir, idKey)
+	mgr, err := s3client.New(recv.Storage, config.DefaultConfig.Sys.EditableFileMaxBytes)
+	if err != nil {
+		return err
+	}
 	go func() {
 		defer func() {
 			echo.Delete(key)
 		}()
 		ctx := defaults.NewMockContext()
 		recv.SetContext(ctx)
-		mgr, err := s3client.New(recv.Storage, config.DefaultConfig.Sys.EditableFileMaxBytes)
-		if err != nil {
-			recv.SetField(nil, `result`, err.Error(), `id`, recv.Id)
-			return err
-		}
-		cacheDir := filepath.Join(echo.Wd(), `data/cache/backup-db`)
-		os.MkdirAll(cacheDir, 0777)
-		cacheFile := filepath.Join(cacheDir, idKey)
 		db, err := leveldb.OpenFile(cacheFile, nil)
 		if err != nil {
 			recv.SetField(nil, `result`, err.Error(), `id`, recv.Id)
-			return err
+			return
 		}
 		defer db.Close()
-		filter, err := fileFilter(recv)
-		if err != nil {
-			recv.SetField(nil, `result`, err.Error(), `id`, recv.Id)
-			return err
-		}
 		fullBackupExit = false
 		err = filepath.Walk(sourcePath, func(ppath string, info os.FileInfo, err error) error {
 			if fullBackupExit {
@@ -162,5 +160,5 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 		}
 		fullBackupExit = false
 	}()
-	return err
+	return nil
 }
