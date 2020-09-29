@@ -36,6 +36,7 @@ func BackupConfigList(ctx echo.Context) error {
 	list, err := m.ListPage(cond, `-id`)
 	for _, row := range list {
 		row.Watching = backupTasks.Has(row.Id)
+		row.FullBackuping = fullBackupIsRunning(row.Id)
 	}
 	ctx.Set(`listData`, list)
 	return ctx.Render(`cloud/backup`, handler.Err(ctx, err))
@@ -102,7 +103,7 @@ func BackupConfigEdit(ctx echo.Context) error {
 			err = m.Edit(nil, db.Cond{`id`: id})
 			if err == nil {
 				if m.Disabled == `Y` {
-					err = monitorBackupStop(m.Id)
+					err = allBackupStop(m.Id)
 				}
 			}
 			if err != nil {

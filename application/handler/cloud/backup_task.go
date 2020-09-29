@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/admpub/checksum"
 	"github.com/admpub/log"
@@ -21,6 +22,7 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
+	"github.com/webx-top/echo/defaults"
 	"github.com/webx-top/echo/param"
 )
 
@@ -54,6 +56,10 @@ func BackupStart(ctx echo.Context) error {
 	if err != nil {
 		return err
 	}
+	err = m.SetField(nil, `last_executed`, time.Now().Local().Uint(), `id`, m.Id)
+	if err != nil {
+		return err
+	}
 	handler.SendOk(ctx, ctx.T(`操作成功`))
 	return ctx.Redirect(handler.URLFor(`/cloud/backup`))
 }
@@ -68,14 +74,26 @@ func BackupStop(ctx echo.Context) error {
 		}
 		return err
 	}
-	if fullBackupIsRunning(m.Id) {
-		fullBackupExit = true
+	switch ctx.Form(`op`) {
+	case "full":
+		if fullBackupIsRunning(m.Id) {
+			fullBackupExit = true
+		}
+	default:
+		err = monitorBackupStop(m.Id)
 	}
-	if err = monitorBackupStop(m.Id); err != nil {
+	if err != nil {
 		return err
 	}
 	handler.SendOk(ctx, ctx.T(`操作成功`))
 	return ctx.Redirect(handler.URLFor(`/cloud/backup`))
+}
+
+func allBackupStop(id uint) error {
+	if fullBackupIsRunning(id) {
+		fullBackupExit = true
+	}
+	return monitorBackupStop(id)
 }
 
 func fileFilter(recv *model.CloudBackupExt) (func(string) bool, error) {
@@ -132,7 +150,9 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 		return err
 	}
 	monitor.Create = func(file string) {
-		msgbox.Success(`Create`, file)
+		if monitor.Debug {
+			msgbox.Success(`Create`, file)
+		}
 		fp, err := os.Open(file)
 		if err != nil {
 			log.Error(err)
@@ -167,7 +187,9 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 		}
 	}
 	monitor.Delete = func(file string) {
-		msgbox.Error(`Delete`, file)
+		if monitor.Debug {
+			msgbox.Error(`Delete`, file)
+		}
 		objectName := path.Join(recv.DestPath, strings.TrimPrefix(file, sourcePath))
 		err = mgr.RemoveDir(objectName)
 		if err != nil {
@@ -179,7 +201,9 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 		}
 	}
 	monitor.Modify = func(file string) {
-		msgbox.Info(`Modify`, file)
+		if monitor.Debug {
+			msgbox.Info(`Modify`, file)
+		}
 		objectName := path.Join(recv.DestPath, strings.TrimPrefix(file, sourcePath))
 		fp, err := os.Open(file)
 		if err != nil {
@@ -198,7 +222,9 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 		}
 	}
 	monitor.Rename = func(file string) {
-		msgbox.Warn(`Rename`, file)
+		if monitor.Debug {
+			msgbox.Warn(`Rename`, file)
+		}
 		objectName := path.Join(recv.DestPath, strings.TrimPrefix(file, sourcePath))
 		err = mgr.RemoveDir(objectName)
 		if err != nil {
@@ -266,6 +292,8 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 	}
 	go func() {
 		defer func() { echo.Delete(key) }()
+		ctx := defaults.NewMockContext()
+		recv.SetContext(ctx)
 		fullBackupExit = false
 		err := filepath.Walk(sourcePath, func(ppath string, info os.FileInfo, err error) error {
 			if fullBackupExit {
@@ -320,8 +348,12 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 			}()
 			return mgr.Put(fp, objectName, info.Size())
 		})
-		if err == echo.ErrExit {
-			log.Info(`强制退出全量备份`)
+		if err != nil {
+			if err == echo.ErrExit {
+				log.Info(`强制退出全量备份`)
+			} else {
+				recv.SetField(nil, `result`, err.Error(), `id`, recv.Id)
+			}
 		}
 		fullBackupExit = false
 	}()
