@@ -202,7 +202,7 @@ func (ins *inserter) Iterator() Iterator {
 
 func (ins *inserter) IteratorContext(ctx context.Context) Iterator {
 	rows, err := ins.QueryContext(ctx)
-	return &iterator{ins.SQLBuilder(), rows, err}
+	return &iterator{ins.SQLBuilder(), rows, err, nil}
 }
 
 func (ins *inserter) Into(table string) Inserter {

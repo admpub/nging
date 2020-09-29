@@ -61,7 +61,7 @@ var (
 				return nil
 			}
 		},
-		`eq`: func(params string) Pipe { // name,value
+		`eq`: func(params string) Pipe { // name:value
 			args := strings.SplitN(params, `:`, 2)
 			var (
 				fieldName     string

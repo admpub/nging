@@ -78,7 +78,7 @@ func fetchRow(iter *iterator, dst interface{}) error {
 		itemV.Set(reflect.Indirect(item))
 	}
 
-	return RelationOne(iter.SQLBuilder, dst)
+	return RelationOne(iter.SQLBuilder, dst, iter.relationMap)
 }
 
 // fetchRows receives a *sql.Rows value and tries to map all the rows into a
@@ -129,7 +129,7 @@ func fetchRows(iter *iterator, dst interface{}) error {
 	if err := rows.Err(); err != nil {
 		return err
 	}
-	return RelationAll(iter.SQLBuilder, dst)
+	return RelationAll(iter.SQLBuilder, dst, iter.relationMap)
 }
 
 func fetchResult(iter *iterator, itemT reflect.Type, columns []string) (reflect.Value, error) {

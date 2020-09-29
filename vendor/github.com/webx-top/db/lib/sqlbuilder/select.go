@@ -38,7 +38,8 @@ type selectorQuery struct {
 
 	amendFn func(string) string
 
-	forceIndex *exql.Columns //[SWH|+]
+	forceIndex  *exql.Columns               //[SWH|+]
+	relationMap map[string]BuilderChainFunc //[SWH|+]
 }
 
 func (sq *selectorQuery) and(b *sqlBuilder, terms ...interface{}) error {
@@ -476,11 +477,11 @@ func (sel *selector) IteratorContext(ctx context.Context) Iterator {
 	sess := sel.SQLBuilder().sess
 	sq, err := sel.build()
 	if err != nil {
-		return &iterator{sel.SQLBuilder(), nil, err}
+		return &iterator{sel.SQLBuilder(), nil, err, sq.relationMap}
 	}
 
 	rows, err := sess.StatementQuery(ctx, sq.statement(), sq.arguments()...)
-	return &iterator{sel.SQLBuilder(), rows, err}
+	return &iterator{sel.SQLBuilder(), rows, err, sq.relationMap}
 }
 
 func (sel *selector) Paginate(pageSize uint) Paginator {
@@ -532,6 +533,13 @@ func (sel *selector) ForceIndex(index string) Selector {
 	}
 	return sel.frame(func(sq *selectorQuery) error {
 		sq.forceIndex = exql.JoinColumns(exql.Fragment(exql.ColumnWithName(index)))
+		return nil
+	})
+}
+
+func (sel *selector) RelationMap(relationMap map[string]BuilderChainFunc) Selector {
+	return sel.frame(func(sq *selectorQuery) error {
+		sq.relationMap = relationMap
 		return nil
 	})
 }

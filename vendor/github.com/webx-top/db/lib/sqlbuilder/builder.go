@@ -62,8 +62,9 @@ type hasIsZero interface {
 
 type iterator struct {
 	SQLBuilder
-	cursor *sql.Rows // This is the main query cursor. It starts as a nil value.
-	err    error
+	cursor      *sql.Rows // This is the main query cursor. It starts as a nil value.
+	err         error
+	relationMap map[string]BuilderChainFunc //[SWH|+]
 }
 
 type fieldValue struct {
@@ -93,9 +94,8 @@ type exprDB interface {
 }
 
 type sqlBuilder struct {
-	sess        exprDB
-	t           *templateWithUtils
-	relationMap map[string]BuilderChainFunc //[SWH|+]
+	sess exprDB
+	t    *templateWithUtils
 }
 
 // WithSession returns a query builder that is bound to the given database session.
@@ -104,23 +104,21 @@ func WithSession(sess interface{}, t *exql.Template) SQLBuilder {
 		sess = sqlDB
 	}
 	return &sqlBuilder{
-		sess:        sess.(exprDB), // Let it panic, it will show the developer an informative error.
-		t:           newTemplateWithUtils(t),
-		relationMap: map[string]BuilderChainFunc{},
+		sess: sess.(exprDB), // Let it panic, it will show the developer an informative error.
+		t:    newTemplateWithUtils(t),
 	}
 }
 
 // WithTemplate returns a builder that is based on the given template.
 func WithTemplate(t *exql.Template) SQLBuilder {
 	return &sqlBuilder{
-		t:           newTemplateWithUtils(t),
-		relationMap: map[string]BuilderChainFunc{},
+		t: newTemplateWithUtils(t),
 	}
 }
 
 // NewIterator creates an iterator using the given *sql.Rows.
 func NewIterator(builder SQLBuilder, rows *sql.Rows) Iterator {
-	return &iterator{builder, rows, nil}
+	return &iterator{builder, rows, nil, nil}
 }
 
 func (b *sqlBuilder) Iterator(query interface{}, args ...interface{}) Iterator {
@@ -129,7 +127,7 @@ func (b *sqlBuilder) Iterator(query interface{}, args ...interface{}) Iterator {
 
 func (b *sqlBuilder) IteratorContext(ctx context.Context, query interface{}, args ...interface{}) Iterator {
 	rows, err := b.QueryContext(ctx, query, args...)
-	return &iterator{b, rows, err}
+	return &iterator{b, rows, err, nil}
 }
 
 func (b *sqlBuilder) Prepare(query interface{}) (*sql.Stmt, error) {

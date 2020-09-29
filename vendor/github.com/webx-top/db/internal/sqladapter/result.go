@@ -61,10 +61,11 @@ type result struct {
 	groupBy []interface{}
 	conds   [][]interface{}
 
-	forceIndex string                                        //[SWH|+]
-	onSelector func(sqlbuilder.Selector) sqlbuilder.Selector //[SWH|+]
-	onUpdater  func(sqlbuilder.Updater) sqlbuilder.Updater   //[SWH|+]
-	onDeleter  func(sqlbuilder.Deleter) sqlbuilder.Deleter   //[SWH|+]
+	forceIndex  string                                        //[SWH|+]
+	onSelector  func(sqlbuilder.Selector) sqlbuilder.Selector //[SWH|+]
+	onUpdater   func(sqlbuilder.Updater) sqlbuilder.Updater   //[SWH|+]
+	onDeleter   func(sqlbuilder.Deleter) sqlbuilder.Deleter   //[SWH|+]
+	relationMap map[string]sqlbuilder.BuilderChainFunc        //[SWH|+]
 }
 
 func filter(conds []interface{}) []interface{} {
@@ -411,7 +412,8 @@ func (r *Result) buildPaginator() (sqlbuilder.Paginator, error) {
 		Limit(res.limit).
 		Offset(res.offset).
 		GroupBy(res.groupBy...).
-		OrderBy(res.orderBy...)
+		OrderBy(res.orderBy...).
+		RelationMap(res.relationMap)
 
 	for i := range res.conds {
 		sel = sel.And(filter(res.conds[i])...)
@@ -539,11 +541,21 @@ func (r *Result) fastForward() (*result, error) {
 func (r *Result) Relation(name string, fn interface{}) db.Result {
 	switch fnn := fn.(type) {
 	case func(sqlbuilder.Selector) sqlbuilder.Selector:
-		r.SQLBuilder().Relation(name, fnn)
-		return r
+		return r.frame(func(res *result) error {
+			if res.relationMap == nil {
+				res.relationMap = map[string]sqlbuilder.BuilderChainFunc{}
+			}
+			res.relationMap[name] = fnn
+			return nil
+		})
 	case sqlbuilder.BuilderChainFunc:
-		r.SQLBuilder().Relation(name, fnn)
-		return r
+		return r.frame(func(res *result) error {
+			if res.relationMap == nil {
+				res.relationMap = map[string]sqlbuilder.BuilderChainFunc{}
+			}
+			res.relationMap[name] = fnn
+			return nil
+		})
 	default:
 		panic(fmt.Sprintf(`Unsupported type: %T`, fn))
 	}

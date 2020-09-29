@@ -170,7 +170,7 @@ func (pag *paginator) One(dest interface{}) error {
 func (pag *paginator) Iterator() Iterator {
 	pq, err := pag.buildWithCursor()
 	if err != nil {
-		return &iterator{pq.sel.(*selector).SQLBuilder(), nil, err}
+		return &iterator{pq.sel.(*selector).SQLBuilder(), nil, err, nil}
 	}
 	return pq.sel.Iterator()
 }
@@ -178,7 +178,7 @@ func (pag *paginator) Iterator() Iterator {
 func (pag *paginator) IteratorContext(ctx context.Context) Iterator {
 	pq, err := pag.buildWithCursor()
 	if err != nil {
-		return &iterator{pq.sel.(*selector).SQLBuilder(), nil, err}
+		return &iterator{pq.sel.(*selector).SQLBuilder(), nil, err, nil}
 	}
 	return pq.sel.IteratorContext(ctx)
 }
