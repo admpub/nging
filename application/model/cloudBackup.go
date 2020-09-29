@@ -72,8 +72,8 @@ func (s *CloudBackup) Edit(mw func(db.Result) db.Result, args ...interface{}) (e
 	return s.NgingCloudBackup.Edit(mw, args...)
 }
 
-func (s *CloudBackup) ListPage(cond *db.Compounds, sorts ...interface{}) ([]*CloudBackupExt, error) {
-	rows := []*CloudBackupExt{}
+func (s *CloudBackup) ListPage(cond *db.Compounds, sorts ...interface{}) ([]*CloudBackupListItem, error) {
+	rows := []*CloudBackupListItem{}
 	_, err := common.NewLister(s.NgingCloudBackup, &rows, func(r db.Result) db.Result {
 		return r.Relation(`Storage`, func(sel sqlbuilder.Selector) sqlbuilder.Selector {
 			return sel.Columns(`id`, `name`)
