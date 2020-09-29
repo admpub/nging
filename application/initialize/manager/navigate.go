@@ -621,6 +621,27 @@ var LeftNavigate = &navigate.List{
 				Name:          `云存储文件管理`,
 				Action:        `storage_file`,
 			},
+			{
+				DisplayOnMenu: true,
+				Name:          `文件备份`,
+				Action:        `backup`,
+			},
+			{
+				DisplayOnMenu: false,
+				Name:          `添加备份配置`,
+				Action:        `backup_add`,
+				Icon:          `plus`,
+			},
+			{
+				DisplayOnMenu: false,
+				Name:          `修改备份配置`,
+				Action:        `backup_edit`,
+			},
+			{
+				DisplayOnMenu: false,
+				Name:          `删除备份配置`,
+				Action:        `backup_delete`,
+			},
 		},
 	},
 	{

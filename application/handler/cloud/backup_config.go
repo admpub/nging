@@ -23,57 +23,45 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/model"
 )
 
-func StorageIndex(ctx echo.Context) error {
-	m := model.NewCloudStorage(ctx)
-	cond := db.Compounds{}
-	searchValue := ctx.Formx(`searchValue`).String()
-	if len(searchValue) > 0 {
-		cond.AddKV(`id`, searchValue)
-	} else {
-		q := ctx.Formx(`q`).String()
-		if len(q) == 0 {
-			q = ctx.Formx(`name`).String()
-		}
-		if len(q) > 0 {
-			cond.AddKV(`name`, db.Like(`%`+q+`%`))
-		}
+func BackupConfigList(ctx echo.Context) error {
+	m := model.NewCloudBackup(ctx)
+	cond := db.NewCompounds()
+	q := ctx.Formx(`q`).String()
+	if len(q) > 0 {
+		cond.AddKV(`name`, db.Like(`%`+q+`%`))
 	}
-	_, err := common.NewLister(m, nil, func(r db.Result) db.Result {
-		return r.OrderBy(`-id`)
-	}, cond.And()).Paging(ctx)
-	list := m.Objects()
+	list, err := m.ListPage(cond, `-id`)
 	ctx.Set(`listData`, list)
-	return ctx.Render(`cloud/storage`, handler.Err(ctx, err))
+	return ctx.Render(`cloud/backup`, handler.Err(ctx, err))
 }
 
-func StorageAdd(ctx echo.Context) error {
+func BackupConfigAdd(ctx echo.Context) error {
 	var (
 		err error
 		id  uint
 	)
-	m := model.NewCloudStorage(ctx)
+	m := model.NewCloudBackup(ctx)
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.NgingCloudStorage)
+		err = ctx.MustBind(m.NgingCloudBackup)
 		if err != nil {
 			goto END
 		}
-		m.Baseurl = ctx.Formx(`baseurl`).String()
 		_, err = m.Add()
+
 		if err != nil {
 			goto END
 		}
 		handler.SendOk(ctx, ctx.T(`操作成功`))
-		return ctx.Redirect(handler.URLFor(`/cloud/storage`))
+		return ctx.Redirect(handler.URLFor(`/cloud/backup`))
 	}
 	id = ctx.Formx(`copyId`).Uint()
 	if id > 0 {
 		err = m.Get(nil, `id`, id)
 		if err == nil {
-			echo.StructToForm(ctx, m.NgingCloudStorage, ``, func(topName, fieldName string) string {
+			echo.StructToForm(ctx, m.NgingCloudBackup, ``, func(topName, fieldName string) string {
 				return echo.LowerCaseFirstLetter(topName, fieldName)
 			})
 			ctx.Request().Form().Set(`id`, `0`)
@@ -83,30 +71,47 @@ func StorageAdd(ctx echo.Context) error {
 END:
 	ctx.Set(`isAdd`, true)
 	ctx.Set(`title`, ctx.T(`添加云存储账号`))
-	return ctx.Render(`cloud/storage_edit`, err)
+	return ctx.Render(`cloud/backup_edit`, err)
 }
 
-func StorageEdit(ctx echo.Context) error {
+func BackupConfigEdit(ctx echo.Context) error {
 	var err error
 	id := ctx.Formx(`id`).Uint()
-	m := model.NewCloudStorage(ctx)
+	m := model.NewCloudBackup(ctx)
 	err = m.Get(nil, db.Cond{`id`: id})
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.NgingCloudStorage, echo.ExcludeFieldName(`created`))
+		err = ctx.MustBind(m.NgingCloudBackup, echo.ExcludeFieldName(`created`))
 		if err != nil {
 			goto END
 		}
 		m.Id = id
-		m.Baseurl = ctx.Formx(`baseurl`).String()
 		err = m.Edit(nil, db.Cond{`id`: id})
 		if err != nil {
 			goto END
 		}
 		handler.SendOk(ctx, ctx.T(`操作成功`))
-		return ctx.Redirect(handler.URLFor(`/cloud/storage`))
+		return ctx.Redirect(handler.URLFor(`/cloud/backup`))
+	} else if ctx.IsAjax() {
+		disabled := ctx.Query(`disabled`)
+		if len(disabled) > 0 {
+			m.Disabled = disabled
+			data := ctx.Data()
+			err = m.Edit(nil, db.Cond{`id`: id})
+			if err == nil {
+				if m.Disabled == `Y` {
+					err = backupStop(m.Id)
+				}
+			}
+			if err != nil {
+				data.SetError(err)
+				return ctx.JSON(data)
+			}
+			data.SetInfo(ctx.T(`状态已经更改成功，请重启客户端令其生效`))
+			return ctx.JSON(data)
+		}
 	}
 	if err == nil {
-		echo.StructToForm(ctx, m.NgingCloudStorage, ``, func(topName, fieldName string) string {
+		echo.StructToForm(ctx, m.NgingCloudBackup, ``, func(topName, fieldName string) string {
 			return echo.LowerCaseFirstLetter(topName, fieldName)
 		})
 	}
@@ -114,13 +119,13 @@ func StorageEdit(ctx echo.Context) error {
 END:
 	ctx.Set(`isAdd`, false)
 	ctx.Set(`title`, ctx.T(`修改云存储账号`))
-	ctx.Set(`activeURL`, `/cloud/storage`)
-	return ctx.Render(`cloud/storage_edit`, err)
+	ctx.Set(`activeURL`, `/cloud/backup`)
+	return ctx.Render(`cloud/backup_edit`, err)
 }
 
-func StorageDelete(ctx echo.Context) error {
+func BackupConfigDelete(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
-	m := model.NewCloudStorage(ctx)
+	m := model.NewCloudBackup(ctx)
 	err := m.Delete(nil, db.Cond{`id`: id})
 	if err == nil {
 		handler.SendOk(ctx, ctx.T(`操作成功`))
@@ -128,5 +133,5 @@ func StorageDelete(ctx echo.Context) error {
 		handler.SendFail(ctx, err.Error())
 	}
 
-	return ctx.Redirect(handler.URLFor(`/cloud/storage`))
+	return ctx.Redirect(handler.URLFor(`/cloud/backup`))
 }

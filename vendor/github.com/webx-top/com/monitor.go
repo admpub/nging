@@ -163,27 +163,31 @@ func (m *MonitorEvent) listen() {
 					break
 				}
 			}
-			switch ev.Op {
-			case fsnotify.Create:
+			switch {
+			case ev.Op&fsnotify.Create == fsnotify.Create:
 				if m.IsDir(ev.Name) {
 					watcher.Add(ev.Name)
 				}
 				if m.Create != nil {
 					m.Create(ev.Name)
 				}
-			case fsnotify.Remove:
+			case ev.Op&fsnotify.Remove == fsnotify.Remove:
+				if m.IsDir(ev.Name) {
+					watcher.Remove(ev.Name)
+				}
 				if m.Delete != nil {
 					m.Delete(ev.Name)
 				}
-			case fsnotify.Write:
+			case ev.Op&fsnotify.Write == fsnotify.Write:
 				if m.Modify != nil {
 					m.Modify(ev.Name)
 				}
-			case fsnotify.Rename:
+			case ev.Op&fsnotify.Rename == fsnotify.Rename:
+				watcher.Remove(ev.Name)
 				if m.Rename != nil {
 					m.Rename(ev.Name)
 				}
-			case fsnotify.Chmod:
+			case ev.Op&fsnotify.Chmod == fsnotify.Chmod:
 				if m.Chmod != nil {
 					m.Chmod(ev.Name)
 				}

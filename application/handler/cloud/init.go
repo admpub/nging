@@ -19,8 +19,14 @@
 package cloud
 
 import (
+	"github.com/admpub/log"
 	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/nging/application/library/config/startup"
+	"github.com/admpub/nging/application/model"
+	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/defaults"
 )
 
 func init() {
@@ -30,5 +36,32 @@ func init() {
 		g.Route(`GET,POST`, `/storage_edit`, StorageEdit)
 		g.Route(`GET,POST`, `/storage_delete`, StorageDelete)
 		g.Route(`GET,POST`, `/storage_file`, StorageFile)
+
+		g.Route(`GET,POST`, `/backup`, BackupConfigList)
+		g.Route(`GET,POST`, `/backup_add`, BackupConfigAdd)
+		g.Route(`GET,POST`, `/backup_edit`, BackupConfigEdit)
+		g.Route(`GET,POST`, `/backup_delete`, BackupConfigDelete)
+		g.Route(`GET,POST`, `/backup_start`, BackupStart)
+		g.Route(`GET,POST`, `/backup_stop`, BackupStop)
+	})
+
+	startup.OnBefore(`web`, func() {
+		if !config.IsInstalled() {
+			return
+		}
+		ctx := defaults.NewMockContext()
+		m := model.NewCloudBackup(ctx)
+		rows := []*model.CloudBackupExt{}
+		_, err := m.ListByOffset(&rows, nil, 0, -1, db.Cond{`disabled`: `N`})
+		if err != nil {
+			log.Error(err)
+			return
+		}
+		for _, row := range rows {
+			err = backupStart(row)
+			if err != nil {
+				log.Error(err)
+			}
+		}
 	})
 }

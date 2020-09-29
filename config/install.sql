@@ -93,6 +93,29 @@ CREATE TABLE `nging_alert_topic` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `nging_cloud_backup`
+--
+
+DROP TABLE IF EXISTS `nging_cloud_backup`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `nging_cloud_backup` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '配置名',
+  `source_path` varchar(200) COLLATE utf8mb4_general_ci NOT NULL COMMENT '源',
+  `dest_storage` int unsigned NOT NULL COMMENT '目标存储ID',
+  `dest_path` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '目标存储路径',
+  `result` varchar(255) COLLATE utf8mb4_general_ci NOT NULL COMMENT '运行结果',
+  `last_executed` int unsigned NOT NULL DEFAULT '0' COMMENT '最近运行时间',
+  `status` enum('idle','running','failure') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'idle' COMMENT '运行状态',
+  `disabled` enum('Y','N') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否(Y/N)禁用',
+  `created` int unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `updated` int unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='云备份';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `nging_cloud_storage`
 --
 
@@ -1029,4 +1052,4 @@ CREATE TABLE `nging_vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-09-12 22:02:12
+-- Dump completed on 2020-09-29 11:14:13
