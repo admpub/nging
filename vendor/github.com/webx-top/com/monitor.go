@@ -147,7 +147,10 @@ func (m *MonitorEvent) listen() {
 	for {
 		watcher := m.Watcher()
 		select {
-		case ev := <-watcher.Events:
+		case ev, ok := <-watcher.Events:
+			if !ok {
+				return
+			}
 			if m.Debug {
 				log.Println(`[Monitor]`, `Trigger Event:`, ev)
 			}
@@ -192,7 +195,10 @@ func (m *MonitorEvent) listen() {
 					m.Chmod(ev.Name)
 				}
 			}
-		case err := <-watcher.Errors:
+		case err, ok := <-watcher.Errors:
+			if !ok {
+				return
+			}
 			if err != nil {
 				log.Println("Watcher error:", err)
 			}
