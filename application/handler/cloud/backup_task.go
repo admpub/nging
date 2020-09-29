@@ -94,6 +94,11 @@ func backupStart(recv *model.CloudBackupExt) error {
 			if strings.Contains(file, echo.FilePathSeparator+`.`) { // 忽略所有以点号开头的文件
 				return false
 			}
+			if re != nil {
+				if re.MatchString(file) {
+					return false
+				}
+			}
 			return true
 		}
 	})
