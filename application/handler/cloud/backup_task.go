@@ -85,7 +85,7 @@ func backupStart(recv *model.CloudBackupExt) error {
 			return err
 		}
 	}
-	monitor.SetFilters(func(file string) bool {
+	filter := func(file string) bool {
 		switch filepath.Ext(file) {
 		case ".swp":
 			return false
@@ -102,7 +102,8 @@ func backupStart(recv *model.CloudBackupExt) error {
 			}
 			return true
 		}
-	})
+	}
+	monitor.SetFilters(filter)
 	sourcePath, err := filepath.Abs(recv.SourcePath)
 	if err != nil {
 		return err
@@ -122,7 +123,7 @@ func backupStart(recv *model.CloudBackupExt) error {
 		}
 		if fi.IsDir() {
 			err = filepath.Walk(file, func(ppath string, info os.FileInfo, err error) error {
-				if info.IsDir() {
+				if info.IsDir() || !filter(ppath) {
 					return nil
 				}
 				objectName := path.Join(recv.DestPath, strings.TrimPrefix(file, sourcePath))

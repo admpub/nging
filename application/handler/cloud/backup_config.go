@@ -34,6 +34,9 @@ func BackupConfigList(ctx echo.Context) error {
 		cond.AddKV(`name`, db.Like(`%`+q+`%`))
 	}
 	list, err := m.ListPage(cond, `-id`)
+	for _, row := range list {
+		row.Watching = backupTasks.Has(row.Id)
+	}
 	ctx.Set(`listData`, list)
 	return ctx.Render(`cloud/backup`, handler.Err(ctx, err))
 }
