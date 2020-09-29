@@ -66,6 +66,7 @@ func backupStart(recv *model.CloudBackupExt) error {
 		return err
 	}
 	monitor := com.NewMonitor()
+	backupTasks.Set(recv.Id, monitor)
 	monitor.Debug = !config.DefaultConfig.Sys.IsEnv(`prod`)
 	recv.Storage.Secret = common.Crypto().Decode(recv.Storage.Secret)
 	mgr, err := s3client.New(recv.Storage, config.DefaultConfig.Sys.EditableFileMaxBytes)
