@@ -4228,6 +4228,10 @@ h1:first-child {
 .label-default {
   background-color: #a1a1a1;
 }
+.label-disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
 .label i {
   font-size: 100% !important;
   color: inherit !important;
