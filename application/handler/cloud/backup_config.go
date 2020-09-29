@@ -109,7 +109,7 @@ func BackupConfigEdit(ctx echo.Context) error {
 				data.SetError(err)
 				return ctx.JSON(data)
 			}
-			data.SetInfo(ctx.T(`状态已经更改成功，请重启客户端令其生效`))
+			data.SetInfo(ctx.T(`操作成功`))
 			return ctx.JSON(data)
 		}
 	}
