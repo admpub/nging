@@ -34,6 +34,9 @@ func BackupStart(ctx echo.Context) error {
 		}
 		return err
 	}
+	if len(recv.Storage.Endpoint) == 0 {
+		return ctx.NewError(code.InvalidParameter, ctx.T(`Endpoint无效`))
+	}
 	if err = backupStart(recv); err != nil {
 		return err
 	}
