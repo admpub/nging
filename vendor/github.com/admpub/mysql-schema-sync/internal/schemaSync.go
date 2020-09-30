@@ -69,6 +69,11 @@ func (sc *SchemaSync) getAlterDataByTable(table string) *TableAlterData {
 	}
 	if dschema == "" {
 		alter.Type = alterTypeCreate
+
+		if sc.Config.SQLPreprocessor() != nil {
+			sschema = sc.Config.SQLPreprocessor()(sschema)
+		}
+
 		alter.SQL = sschema + ";"
 		return alter
 	}
