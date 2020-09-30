@@ -30,13 +30,24 @@ source ${PWD}/inc-build.sh
 # export GOARCH=amd64
 # source ${PWD}/inc-build.sh
 
-# export GOOS=linux
-# export GOARCH=arm
-# source ${PWD}/inc-build.sh
+export GOOS=linux
+export GOARM=5
+export GOARCH=arm
+source ${PWD}/inc-build.sh
 
-# export GOOS=linux
-# export GOARCH=arm64
-# source ${PWD}/inc-build.sh
+export GOOS=linux
+export GOARM=6
+export GOARCH=arm
+source ${PWD}/inc-build.sh
+
+export GOOS=linux
+export GOARM=7
+export GOARCH=arm
+
+export GOOS=linux
+export GOARM=
+export GOARCH=arm64
+source ${PWD}/inc-build.sh
 
 # export GOOS=linux
 # export GOARCH=mips
