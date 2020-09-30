@@ -74,7 +74,8 @@ func BackupConfigAdd(ctx echo.Context) error {
 
 END:
 	ctx.Set(`isAdd`, true)
-	ctx.Set(`title`, ctx.T(`添加云存储账号`))
+	ctx.Set(`title`, ctx.T(`添加云备份配置`))
+	ctx.Set(`activeURL`, `/cloud/backup`)
 	return ctx.Render(`cloud/backup_edit`, err)
 }
 
@@ -122,7 +123,7 @@ func BackupConfigEdit(ctx echo.Context) error {
 
 END:
 	ctx.Set(`isAdd`, false)
-	ctx.Set(`title`, ctx.T(`修改云存储账号`))
+	ctx.Set(`title`, ctx.T(`修改云备份配置`))
 	ctx.Set(`activeURL`, `/cloud/backup`)
 	return ctx.Render(`cloud/backup_edit`, err)
 }

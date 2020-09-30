@@ -83,6 +83,7 @@ func StorageAdd(ctx echo.Context) error {
 END:
 	ctx.Set(`isAdd`, true)
 	ctx.Set(`title`, ctx.T(`添加云存储账号`))
+	ctx.Set(`activeURL`, `/cloud/storage`)
 	return ctx.Render(`cloud/storage_edit`, err)
 }
 
