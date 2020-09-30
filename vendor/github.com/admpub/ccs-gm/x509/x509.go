@@ -24,6 +24,8 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"github.com/admpub/ccs-gm/sm2"
+	"github.com/admpub/ccs-gm/sm3"
 	"hash"
 	"io"
 	"math/big"
@@ -31,9 +33,6 @@ import (
 	"reflect"
 	"strconv"
 	"time"
-
-	"github.com/admpub/ccs-gm/sm2"
-	"github.com/admpub/ccs-gm/sm3"
 )
 
 // pkixPublicKey reflects a PKIX public key structure. See SubjectPublicKeyInfo

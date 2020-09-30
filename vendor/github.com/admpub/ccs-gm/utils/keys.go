@@ -7,7 +7,6 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
-
 	"github.com/admpub/ccs-gm/sm2"
 	"github.com/admpub/ccs-gm/x509"
 )

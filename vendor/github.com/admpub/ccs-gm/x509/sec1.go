@@ -10,9 +10,8 @@ import (
 	"encoding/asn1"
 	"errors"
 	"fmt"
-	"math/big"
-
 	"github.com/admpub/ccs-gm/sm2"
+	"math/big"
 )
 
 const ecPrivKeyVersion = 1

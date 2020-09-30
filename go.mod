@@ -37,7 +37,7 @@ require (
 	github.com/admpub/9t v0.0.0-20190605154903-a68069ace5e1
 	github.com/admpub/archiver v1.1.4
 	github.com/admpub/bindata/v3 v3.1.5
-	github.com/admpub/ccs-gm v0.0.1
+	github.com/admpub/ccs-gm v0.0.3
 	github.com/admpub/checksum v1.0.1
 	github.com/admpub/color v1.7.0
 	github.com/admpub/confl v0.0.0-20190331072055-254deeac709e
