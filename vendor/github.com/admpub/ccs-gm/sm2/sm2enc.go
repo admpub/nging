@@ -6,6 +6,7 @@ package sm2
 
 import (
 	"bytes"
+	"crypto"
 	"encoding/binary"
 	"errors"
 	"io"
@@ -17,6 +18,10 @@ import (
 
 var EncryptionErr = errors.New("sm2: encryption error")
 var DecryptionErr = errors.New("sm2: decryption error")
+
+func (key *PrivateKey) Decrypt(rand io.Reader, msg []byte, opts crypto.DecrypterOpts) (plaintext []byte, err error) {
+	return Decrypt(msg, key)
+}
 
 func keyDerivation(Z []byte, klen int) []byte {
 	var ct = 1

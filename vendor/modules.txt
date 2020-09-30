@@ -12,7 +12,7 @@ github.com/admpub/archiver
 # github.com/admpub/bindata/v3 v3.1.5 => github.com/admpub/bindata/v3 v3.1.5
 ## explicit
 github.com/admpub/bindata/v3
-# github.com/admpub/ccs-gm v0.0.0-20200915103735-24513c2508cf
+# github.com/admpub/ccs-gm v0.0.1
 ## explicit
 github.com/admpub/ccs-gm/sm2
 github.com/admpub/ccs-gm/sm3
