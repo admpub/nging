@@ -102,6 +102,9 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 		defer db.Close()
 		fullBackupExit = false
 		err = filepath.Walk(sourcePath, func(ppath string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
 			if fullBackupExit {
 				return echo.ErrExit
 			}
