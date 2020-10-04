@@ -141,6 +141,7 @@ func NewBaseDatabase(p PartialDatabase) BaseDatabase {
 	d := &database{
 		Settings:          db.NewSettings(),
 		PartialDatabase:   p,
+		cachedPKs:         cache.NewCache(),
 		cachedCollections: cache.NewCache(),
 		cachedStatements:  cache.NewCache(),
 	}
@@ -168,6 +169,7 @@ type database struct {
 	txID   uint64
 
 	cacheMu           sync.Mutex // guards cachedStatements and cachedCollections
+	cachedPKs         *cache.Cache
 	cachedStatements  *cache.Cache
 	cachedCollections *cache.Cache
 
@@ -250,6 +252,22 @@ func (d *database) Name() string {
 	return d.name
 }
 
+func (d *database) PrimaryKeys(tableName string) ([]string, error) {
+	h := cache.String(tableName)
+	cachedPK, ok := d.cachedPKs.ReadRaw(h)
+	if ok {
+		return cachedPK.([]string), nil
+	}
+
+	pk, err := d.PartialDatabase.PrimaryKeys(tableName)
+	if err != nil {
+		return nil, err
+	}
+
+	d.cachedPKs.Write(h, pk)
+	return pk, nil
+}
+
 // BindSession binds a *sql.DB into *database
 func (d *database) BindSession(sess *sql.DB) error {
 	d.sessMu.Lock()
@@ -311,6 +329,7 @@ func (d *database) SetMaxOpenConns(n int) {
 func (d *database) ClearCache() {
 	d.cacheMu.Lock()
 	defer d.cacheMu.Unlock()
+	d.cachedPKs.Clear()
 	d.cachedCollections.Clear()
 	d.cachedStatements.Clear()
 	if d.template != nil {
@@ -326,6 +345,7 @@ func (d *database) NewClone(p PartialDatabase, checkConn bool) (BaseDatabase, er
 
 	nd.name = d.name
 	nd.sess = d.sess
+	nd.cachedPKs = d.cachedPKs
 
 	if checkConn {
 		if err := nd.Ping(); err != nil {
@@ -355,6 +375,7 @@ func (d *database) Close() error {
 		return nil
 	}
 
+	d.cachedPKs.Clear()
 	d.cachedCollections.Clear()
 	d.cachedStatements.Clear() // Closes prepared statements as well.
 
