@@ -153,7 +153,7 @@ require (
 	github.com/kardianos/service v1.1.0 // indirect
 	github.com/klauspost/cpuid v1.2.3 // indirect
 	github.com/markbates/goth v1.64.2 // indirect
-	github.com/mattn/go-colorable v0.1.7
+	github.com/mattn/go-colorable v0.1.8
 	github.com/mattn/go-runewidth v0.0.9
 	github.com/mattn/go-sqlite3 v1.14.0 // indirect
 	github.com/mholt/certmagic v0.8.3
