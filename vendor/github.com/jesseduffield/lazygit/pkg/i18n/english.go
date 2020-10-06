@@ -427,6 +427,12 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 			ID:    "ForcePushPrompt",
 			Other: "Your branch has diverged from the remote branch. Press 'esc' to cancel, or 'enter' to force push.",
 		}, &i18n.Message{
+			ID:    "ForcePushDisabled",
+			Other: "Your branch has diverged from the remote branch and you've disabled force pushing",
+		}, &i18n.Message{
+			ID:    "UpdatesRejectedAndForcePushDisabled",
+			Other: "Updates were rejected and you have disabled force pushing",
+		}, &i18n.Message{
 			ID:    "checkForUpdate",
 			Other: "check for update",
 		}, &i18n.Message{
@@ -454,7 +460,7 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 1) If you want to learn about lazygit's features, watch this vid:
    https://youtu.be/CPLdltN7wgE
 
-3) If you're using git, that makes you a programmer! With your help we can make lazygit better, so consider becoming a contributor and joining the fun at
+2) If you're using git, that makes you a programmer! With your help we can make lazygit better, so consider becoming a contributor and joining the fun at
    https://github.com/jesseduffield/lazygit`,
 		}, &i18n.Message{
 			ID:    "GitconfigParseErr",
@@ -1176,6 +1182,9 @@ func addEnglish(i18nObject *i18n.Bundle) error {
 		}, &i18n.Message{
 			ID:    "viewCommits",
 			Other: "view commits",
+		}, &i18n.Message{
+			ID:    "minGitVersionError",
+			Other: "Git version must be at least 2.0 (i.e. from 2014 onwards). Please upgrade your git version. Alternatively raise an issue at https://github.com/jesseduffield/lazygit/issues for lazygit to be more backwards compatible.",
 		},
 	)
 }

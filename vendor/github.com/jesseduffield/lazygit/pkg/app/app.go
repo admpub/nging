@@ -2,11 +2,14 @@ package app
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/jesseduffield/lazygit/pkg/commands"
@@ -129,7 +132,47 @@ func NewApp(config config.AppConfigurer, filterPath string) (*App, error) {
 	return app, nil
 }
 
+func (app *App) validateGitVersion() error {
+	output, err := app.OSCommand.RunCommandWithOutput("git --version")
+	// if we get an error anywhere here we'll show the same status
+	minVersionError := errors.New(app.Tr.SLocalize("minGitVersionError"))
+	if err != nil {
+		return minVersionError
+	}
+
+	if isGitVersionValid(output) {
+		return nil
+	}
+
+	return minVersionError
+}
+
+func isGitVersionValid(versionStr string) bool {
+	// output should be something like: 'git version 2.23.0 (blah)'
+	re := regexp.MustCompile(`[^\d]+([\d\.]+)`)
+	matches := re.FindStringSubmatch(versionStr)
+
+	if len(matches) == 0 {
+		return false
+	}
+
+	gitVersion := matches[1]
+	majorVersion, err := strconv.Atoi(gitVersion[0:1])
+	if err != nil {
+		return false
+	}
+	if majorVersion < 2 {
+		return false
+	}
+
+	return true
+}
+
 func (app *App) setupRepo() (bool, error) {
+	if err := app.validateGitVersion(); err != nil {
+		return false, err
+	}
+
 	// if we are not in a git repo, we ask if we want to `git init`
 	if err := app.OSCommand.RunCommand("git status"); err != nil {
 		cwd, err := os.Getwd()
@@ -215,6 +258,14 @@ func (app *App) Close() error {
 // KnownError takes an error and tells us whether it's an error that we know about where we can print a nicely formatted version of it rather than panicking with a stack trace
 func (app *App) KnownError(err error) (string, bool) {
 	errorMessage := err.Error()
+
+	knownErrorMessages := []string{app.Tr.SLocalize("minGitVersionError")}
+
+	for _, message := range knownErrorMessages {
+		if errorMessage == message {
+			return message, true
+		}
+	}
 
 	mappings := []errorMapping{
 		{

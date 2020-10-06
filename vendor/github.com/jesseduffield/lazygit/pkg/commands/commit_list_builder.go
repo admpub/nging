@@ -12,7 +12,6 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/jesseduffield/lazygit/pkg/i18n"
-	"github.com/jesseduffield/lazygit/pkg/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -29,21 +28,19 @@ const SEPARATION_CHAR = "|"
 
 // CommitListBuilder returns a list of Branch objects for the current repo
 type CommitListBuilder struct {
-	Log                 *logrus.Entry
-	GitCommand          *GitCommand
-	OSCommand           *OSCommand
-	Tr                  *i18n.Localizer
-	CherryPickedCommits []*Commit
+	Log        *logrus.Entry
+	GitCommand *GitCommand
+	OSCommand  *OSCommand
+	Tr         *i18n.Localizer
 }
 
 // NewCommitListBuilder builds a new commit list builder
-func NewCommitListBuilder(log *logrus.Entry, gitCommand *GitCommand, osCommand *OSCommand, tr *i18n.Localizer, cherryPickedCommits []*Commit) *CommitListBuilder {
+func NewCommitListBuilder(log *logrus.Entry, gitCommand *GitCommand, osCommand *OSCommand, tr *i18n.Localizer) *CommitListBuilder {
 	return &CommitListBuilder{
-		Log:                 log,
-		GitCommand:          gitCommand,
-		OSCommand:           osCommand,
-		Tr:                  tr,
-		CherryPickedCommits: cherryPickedCommits,
+		Log:        log,
+		GitCommand: gitCommand,
+		OSCommand:  osCommand,
+		Tr:         tr,
 	}
 }
 
@@ -58,7 +55,9 @@ func (c *CommitListBuilder) extractCommitFromLine(line string) *Commit {
 	unixTimestamp := split[1]
 	author := split[2]
 	extraInfo := strings.TrimSpace(split[3])
-	message := strings.Join(split[4:], SEPARATION_CHAR)
+	parentHashes := split[4]
+
+	message := strings.Join(split[5:], SEPARATION_CHAR)
 	tags := []string{}
 
 	if extraInfo != "" {
@@ -71,6 +70,10 @@ func (c *CommitListBuilder) extractCommitFromLine(line string) *Commit {
 
 	unitTimestampInt, _ := strconv.Atoi(unixTimestamp)
 
+	// Any commit with multiple parents is a merge commit.
+	// If there's a space then it means there must be more than one parent hash
+	isMerge := strings.Contains(parentHashes, " ")
+
 	return &Commit{
 		Sha:           sha,
 		Name:          message,
@@ -78,6 +81,7 @@ func (c *CommitListBuilder) extractCommitFromLine(line string) *Commit {
 		ExtraInfo:     extraInfo,
 		UnixTimestamp: int64(unitTimestampInt),
 		Author:        author,
+		IsMerge:       isMerge,
 	}
 }
 
@@ -88,38 +92,71 @@ type GetCommitsOptions struct {
 	RefName              string // e.g. "HEAD" or "my_branch"
 }
 
+func (c *CommitListBuilder) MergeRebasingCommits(commits []*Commit) ([]*Commit, error) {
+	// chances are we have as many commits as last time so we'll set the capacity to be the old length
+	result := make([]*Commit, 0, len(commits))
+	for i, commit := range commits {
+		if commit.Status != "rebasing" { // removing the existing rebase commits so we can add the refreshed ones
+			result = append(result, commits[i:]...)
+			break
+		}
+	}
+
+	rebaseMode, err := c.GitCommand.RebaseMode()
+	if err != nil {
+		return nil, err
+	}
+
+	if rebaseMode == "" {
+		// not in rebase mode so return original commits
+		return result, nil
+	}
+
+	rebasingCommits, err := c.getRebasingCommits(rebaseMode)
+	if err != nil {
+		return nil, err
+	}
+	if len(rebasingCommits) > 0 {
+		result = append(rebasingCommits, result...)
+	}
+
+	return result, nil
+}
+
 // GetCommits obtains the commits of the current branch
 func (c *CommitListBuilder) GetCommits(opts GetCommitsOptions) ([]*Commit, error) {
 	commits := []*Commit{}
 	var rebasingCommits []*Commit
-	rebaseMode := ""
+	rebaseMode, err := c.GitCommand.RebaseMode()
+	if err != nil {
+		return nil, err
+	}
 
-	if opts.IncludeRebaseCommits {
+	if opts.IncludeRebaseCommits && opts.FilterPath == "" {
 		var err error
-		rebaseMode, err = c.GitCommand.RebaseMode()
+		rebasingCommits, err = c.MergeRebasingCommits(commits)
 		if err != nil {
 			return nil, err
 		}
-		if rebaseMode != "" && opts.FilterPath == "" {
-			// here we want to also prepend the commits that we're in the process of rebasing
-			rebasingCommits, err = c.getRebasingCommits(rebaseMode)
-			if err != nil {
-				return nil, err
-			}
-			if len(rebasingCommits) > 0 {
-				commits = append(commits, rebasingCommits...)
-			}
-		}
+		commits = append(commits, rebasingCommits...)
 	}
 
-	unpushedCommits := c.getUnpushedCommits(opts.RefName)
+	passedFirstPushedCommit := false
+	firstPushedCommit, err := c.getFirstPushedCommit(opts.RefName)
+	if err != nil {
+		// must have no upstream branch so we'll consider everything as pushed
+		passedFirstPushedCommit = true
+	}
+
 	cmd := c.getLogCmd(opts)
 
-	err := RunLineOutputCmd(cmd, func(line string) (bool, error) {
+	err = RunLineOutputCmd(cmd, func(line string) (bool, error) {
 		if strings.Split(line, " ")[0] != "gpg:" {
 			commit := c.extractCommitFromLine(line)
-			_, unpushed := unpushedCommits[commit.ShortSha()]
-			commit.Status = map[bool]string{true: "unpushed", false: "pushed"}[unpushed]
+			if commit.Sha == firstPushedCommit {
+				passedFirstPushedCommit = true
+			}
+			commit.Status = map[bool]string{true: "unpushed", false: "pushed"}[!passedFirstPushedCommit]
 			commits = append(commits, commit)
 		}
 		return false, nil
@@ -135,7 +172,7 @@ func (c *CommitListBuilder) GetCommits(opts GetCommitsOptions) ([]*Commit, error
 		currentCommit.Name = fmt.Sprintf("%s %s", youAreHere, currentCommit.Name)
 	}
 
-	commits, err = c.setCommitMergedStatuses(commits)
+	commits, err = c.setCommitMergedStatuses(opts.RefName, commits)
 	if err != nil {
 		return nil, err
 	}
@@ -253,8 +290,8 @@ func (c *CommitListBuilder) commitFromPatch(content string) (*Commit, error) {
 	}, nil
 }
 
-func (c *CommitListBuilder) setCommitMergedStatuses(commits []*Commit) ([]*Commit, error) {
-	ancestor, err := c.getMergeBase()
+func (c *CommitListBuilder) setCommitMergedStatuses(refName string, commits []*Commit) ([]*Commit, error) {
+	ancestor, err := c.getMergeBase(refName)
 	if err != nil {
 		return nil, err
 	}
@@ -276,7 +313,7 @@ func (c *CommitListBuilder) setCommitMergedStatuses(commits []*Commit) ([]*Commi
 	return commits, nil
 }
 
-func (c *CommitListBuilder) getMergeBase() (string, error) {
+func (c *CommitListBuilder) getMergeBase(refName string) (string, error) {
 	currentBranch, _, err := c.GitCommand.CurrentBranchName()
 	if err != nil {
 		return "", err
@@ -288,23 +325,29 @@ func (c *CommitListBuilder) getMergeBase() (string, error) {
 	}
 
 	// swallowing error because it's not a big deal; probably because there are no commits yet
-	output, _ := c.OSCommand.RunCommandWithOutput("git merge-base HEAD %s", baseBranch)
-	return output, nil
+	output, _ := c.OSCommand.RunCommandWithOutput("git merge-base %s %s", refName, baseBranch)
+	return ignoringWarnings(output), nil
 }
 
-// getUnpushedCommits Returns the sha's of the commits that have not yet been pushed
-// to the remote branch of the current branch, a map is returned to ease look up
-func (c *CommitListBuilder) getUnpushedCommits(refName string) map[string]bool {
-	pushables := map[string]bool{}
-	o, err := c.OSCommand.RunCommandWithOutput("git rev-list %s@{u}..%s --abbrev-commit --abbrev=8", refName, refName)
+func ignoringWarnings(commandOutput string) string {
+	trimmedOutput := strings.TrimSpace(commandOutput)
+	split := strings.Split(trimmedOutput, "\n")
+	// need to get last line in case the first line is a warning about how the error is ambiguous.
+	// At some point we should find a way to make it unambiguous
+	lastLine := split[len(split)-1]
+
+	return lastLine
+}
+
+// getFirstPushedCommit returns the first commit SHA which has been pushed to the ref's upstream.
+// all commits above this are deemed unpushed and marked as such.
+func (c *CommitListBuilder) getFirstPushedCommit(refName string) (string, error) {
+	output, err := c.OSCommand.RunCommandWithOutput("git merge-base %s %s@{u}", refName, refName)
 	if err != nil {
-		return pushables
-	}
-	for _, p := range utils.SplitLines(o) {
-		pushables[p] = true
+		return "", err
 	}
 
-	return pushables
+	return ignoringWarnings(output), nil
 }
 
 // getLog gets the git log.
@@ -319,5 +362,18 @@ func (c *CommitListBuilder) getLogCmd(opts GetCommitsOptions) *exec.Cmd {
 		filterFlag = fmt.Sprintf(" --follow -- %s", c.OSCommand.Quote(opts.FilterPath))
 	}
 
-	return c.OSCommand.ExecutableFromString(fmt.Sprintf("git log %s --oneline --pretty=format:\"%%H%s%%at%s%%aN%s%%d%s%%s\" %s --abbrev=%d --date=unix %s", opts.RefName, SEPARATION_CHAR, SEPARATION_CHAR, SEPARATION_CHAR, SEPARATION_CHAR, limitFlag, 20, filterFlag))
+	return c.OSCommand.ExecutableFromString(
+		fmt.Sprintf(
+			"git log %s --oneline --pretty=format:\"%%H%s%%at%s%%aN%s%%d%s%%p%s%%s\" %s --abbrev=%d --date=unix %s",
+			opts.RefName,
+			SEPARATION_CHAR,
+			SEPARATION_CHAR,
+			SEPARATION_CHAR,
+			SEPARATION_CHAR,
+			SEPARATION_CHAR,
+			limitFlag,
+			20,
+			filterFlag,
+		),
+	)
 }

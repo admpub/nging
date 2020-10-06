@@ -332,15 +332,17 @@ func (gui *Gui) handleAmendCommitPress() error {
 		title:  strings.Title(gui.Tr.SLocalize("AmendLastCommit")),
 		prompt: gui.Tr.SLocalize("SureToAmend"),
 		handleConfirm: func() error {
-			ok, err := gui.runSyncOrAsyncCommand(gui.GitCommand.AmendHead())
-			if err != nil {
-				return err
-			}
-			if !ok {
-				return nil
-			}
+			return gui.WithWaitingStatus(gui.Tr.SLocalize("AmendingStatus"), func() error {
+				ok, err := gui.runSyncOrAsyncCommand(gui.GitCommand.AmendHead())
+				if err != nil {
+					return err
+				}
+				if !ok {
+					return nil
+				}
 
-			return gui.refreshSidePanels(refreshOptions{mode: ASYNC})
+				return gui.refreshSidePanels(refreshOptions{mode: ASYNC})
+			})
 		},
 	})
 }
@@ -517,6 +519,11 @@ func (gui *Gui) pushWithForceFlag(v *gocui.View, force bool, upstream string, ar
 		branchName := gui.getCheckedOutBranch().Name
 		err := gui.GitCommand.Push(branchName, force, upstream, args, gui.promptUserForCredential)
 		if err != nil && !force && strings.Contains(err.Error(), "Updates were rejected") {
+			forcePushDisabled := gui.Config.GetUserConfig().GetBool("git.disableForcePushing")
+			if forcePushDisabled {
+				gui.createErrorPanel(gui.Tr.SLocalize("UpdatesRejectedAndForcePushDisabled"))
+				return
+			}
 			gui.ask(askOpts{
 				title:  gui.Tr.SLocalize("ForcePush"),
 				prompt: gui.Tr.SLocalize("ForcePushPrompt"),
@@ -524,7 +531,6 @@ func (gui *Gui) pushWithForceFlag(v *gocui.View, force bool, upstream string, ar
 					return gui.pushWithForceFlag(v, true, upstream, args)
 				},
 			})
-
 			return
 		}
 		gui.handleCredentialsPopup(err)
@@ -562,6 +568,11 @@ func (gui *Gui) pushFiles(g *gocui.Gui, v *gocui.View) error {
 		}
 	} else if currentBranch.Pullables == "0" {
 		return gui.pushWithForceFlag(v, false, "", "")
+	}
+
+	forcePushDisabled := gui.Config.GetUserConfig().GetBool("git.disableForcePushing")
+	if forcePushDisabled {
+		return gui.createErrorPanel(gui.Tr.SLocalize("ForcePushDisabled"))
 	}
 
 	return gui.ask(askOpts{

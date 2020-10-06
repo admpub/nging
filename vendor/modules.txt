@@ -284,7 +284,7 @@ github.com/armon/go-socks5
 github.com/asaskevich/govalidator
 # github.com/atotto/clipboard v0.1.2
 github.com/atotto/clipboard
-# github.com/aws/aws-sdk-go v1.34.15
+# github.com/aws/aws-sdk-go v1.35.2
 ## explicit
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -307,7 +307,9 @@ github.com/aws/aws-sdk-go/aws/session
 github.com/aws/aws-sdk-go/aws/signer/v4
 github.com/aws/aws-sdk-go/internal/context
 github.com/aws/aws-sdk-go/internal/ini
-github.com/aws/aws-sdk-go/internal/s3err
+github.com/aws/aws-sdk-go/internal/s3shared
+github.com/aws/aws-sdk-go/internal/s3shared/arn
+github.com/aws/aws-sdk-go/internal/s3shared/s3err
 github.com/aws/aws-sdk-go/internal/sdkio
 github.com/aws/aws-sdk-go/internal/sdkmath
 github.com/aws/aws-sdk-go/internal/sdkrand
@@ -326,7 +328,6 @@ github.com/aws/aws-sdk-go/private/protocol/rest
 github.com/aws/aws-sdk-go/private/protocol/restxml
 github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil
 github.com/aws/aws-sdk-go/service/s3
-github.com/aws/aws-sdk-go/service/s3/internal/arn
 github.com/aws/aws-sdk-go/service/sts
 github.com/aws/aws-sdk-go/service/sts/stsiface
 # github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394
@@ -718,7 +719,7 @@ github.com/jbenet/go-context/io
 ## explicit
 # github.com/jesseduffield/gocui v0.3.1-0.20200824100831-1b6ec5d7d449
 github.com/jesseduffield/gocui
-# github.com/jesseduffield/lazygit v0.22.1
+# github.com/jesseduffield/lazygit v0.22.9
 ## explicit
 github.com/jesseduffield/lazygit/pkg/app
 github.com/jesseduffield/lazygit/pkg/commands
@@ -738,7 +739,7 @@ github.com/jesseduffield/termbox-go
 github.com/jimstudt/http-authentication/basic
 # github.com/jlaffaye/ftp v0.0.0-20200812143550-39e3779af0db
 ## explicit
-# github.com/jmespath/go-jmespath v0.3.0
+# github.com/jmespath/go-jmespath v0.4.0
 github.com/jmespath/go-jmespath
 # github.com/json-iterator/go v1.1.10
 github.com/json-iterator/go
@@ -835,7 +836,7 @@ github.com/marten-seemann/qtls
 # github.com/maruel/rs v0.0.0-20150922171536-2c81c4312fe4
 github.com/maruel/rs
 github.com/maruel/rs/internal/gf256
-# github.com/mattn/go-colorable v0.1.7
+# github.com/mattn/go-colorable v0.1.8
 ## explicit
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.12
@@ -969,7 +970,7 @@ github.com/rwcarlsen/goexif/tiff
 github.com/sergi/go-diff/diffmatchpatch
 # github.com/shibukawa/configdir v0.0.0-20170330084843-e180dbdc8da0
 github.com/shibukawa/configdir
-# github.com/shirou/gopsutil v2.20.8+incompatible
+# github.com/shirou/gopsutil v2.20.9+incompatible
 ## explicit
 github.com/shirou/gopsutil/cpu
 github.com/shirou/gopsutil/disk

@@ -97,7 +97,10 @@ func (gui *Gui) refreshCommits() error {
 }
 
 func (gui *Gui) refreshCommitsWithLimit() error {
-	builder := commands.NewCommitListBuilder(gui.Log, gui.GitCommand, gui.OSCommand, gui.Tr, gui.State.Modes.CherryPicking.CherryPickedCommits)
+	gui.State.BranchCommitsMutex.Lock()
+	defer gui.State.BranchCommitsMutex.Unlock()
+
+	builder := commands.NewCommitListBuilder(gui.Log, gui.GitCommand, gui.OSCommand, gui.Tr)
 
 	commits, err := builder.GetCommits(
 		commands.GetCommitsOptions{
@@ -111,6 +114,21 @@ func (gui *Gui) refreshCommitsWithLimit() error {
 		return err
 	}
 	gui.State.Commits = commits
+
+	return gui.postRefreshUpdate(gui.Contexts.BranchCommits.Context)
+}
+
+func (gui *Gui) refreshRebaseCommits() error {
+	gui.State.BranchCommitsMutex.Lock()
+	defer gui.State.BranchCommitsMutex.Unlock()
+
+	builder := commands.NewCommitListBuilder(gui.Log, gui.GitCommand, gui.OSCommand, gui.Tr)
+
+	updatedCommits, err := builder.MergeRebasingCommits(gui.State.Commits)
+	if err != nil {
+		return err
+	}
+	gui.State.Commits = updatedCommits
 
 	return gui.postRefreshUpdate(gui.Contexts.BranchCommits.Context)
 }
@@ -256,9 +274,8 @@ func (gui *Gui) handleMidRebaseCommand(action string) (bool, error) {
 	if err := gui.GitCommand.EditRebaseTodo(gui.State.Panels.Commits.SelectedLineIdx, action); err != nil {
 		return false, gui.surfaceError(err)
 	}
-	// TODO: consider doing this in a way that is less expensive. We don't actually
-	// need to reload all the commits, just the TODO commits.
-	return true, gui.refreshSidePanels(refreshOptions{scope: []int{COMMITS}})
+
+	return true, gui.refreshRebaseCommits()
 }
 
 func (gui *Gui) handleCommitDelete(g *gocui.Gui, v *gocui.View) error {
@@ -301,7 +318,7 @@ func (gui *Gui) handleCommitMoveDown(g *gocui.Gui, v *gocui.View) error {
 			return gui.surfaceError(err)
 		}
 		gui.State.Panels.Commits.SelectedLineIdx++
-		return gui.refreshSidePanels(refreshOptions{mode: BLOCK_UI, scope: []int{COMMITS, BRANCHES}})
+		return gui.refreshRebaseCommits()
 	}
 
 	return gui.WithWaitingStatus(gui.Tr.SLocalize("MovingStatus"), func() error {
@@ -328,7 +345,7 @@ func (gui *Gui) handleCommitMoveUp(g *gocui.Gui, v *gocui.View) error {
 			return gui.surfaceError(err)
 		}
 		gui.State.Panels.Commits.SelectedLineIdx--
-		return gui.refreshSidePanels(refreshOptions{mode: BLOCK_UI, scope: []int{COMMITS, BRANCHES}})
+		return gui.refreshRebaseCommits()
 	}
 
 	return gui.WithWaitingStatus(gui.Tr.SLocalize("MovingStatus"), func() error {
