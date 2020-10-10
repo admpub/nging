@@ -1,7 +1,9 @@
 debug
 debug.test
 main
+mockgen_tmp.go
 *.qtr
+*.qlog
 
 fuzzing/*/*.zip
 fuzzing/*/coverprofile
@@ -9,6 +11,7 @@ fuzzing/*/crashers
 fuzzing/*/sonarprofile
 fuzzing/*/suppressions
 fuzzing/*/corpus/
+fuzzing/*-fuzz.zip
 !fuzzing/frames/single-frame*
 !fuzzing/frames/multiple-frame*
 !fuzzing/header/header*

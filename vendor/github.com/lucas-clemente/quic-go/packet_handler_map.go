@@ -4,7 +4,7 @@ import (
 	"crypto/hmac"
 	"crypto/rand"
 	"crypto/sha256"
-	"errors"
+	"fmt"
 	"hash"
 	"net"
 	"sync"
@@ -13,7 +13,16 @@ import (
 	"github.com/lucas-clemente/quic-go/internal/protocol"
 	"github.com/lucas-clemente/quic-go/internal/utils"
 	"github.com/lucas-clemente/quic-go/internal/wire"
+	"github.com/lucas-clemente/quic-go/logging"
 )
+
+type statelessResetErr struct {
+	token protocol.StatelessResetToken
+}
+
+func (e statelessResetErr) Error() string {
+	return fmt.Sprintf("received a stateless reset with token %x", e.token)
+}
 
 // The packetHandlerMap stores packetHandlers, identified by connection ID.
 // It is used:
@@ -26,7 +35,7 @@ type packetHandlerMap struct {
 	connIDLen int
 
 	handlers    map[string] /* string(ConnectionID)*/ packetHandler
-	resetTokens map[[16]byte] /* stateless reset token */ packetHandler
+	resetTokens map[protocol.StatelessResetToken] /* stateless reset token */ packetHandler
 	server      unknownPacketHandler
 
 	listening chan struct{} // is closed when listen returns
@@ -38,6 +47,7 @@ type packetHandlerMap struct {
 	statelessResetMutex   sync.Mutex
 	statelessResetHasher  hash.Hash
 
+	tracer logging.Tracer
 	logger utils.Logger
 }
 
@@ -47,6 +57,7 @@ func newPacketHandlerMap(
 	conn net.PacketConn,
 	connIDLen int,
 	statelessResetKey []byte,
+	tracer logging.Tracer,
 	logger utils.Logger,
 ) packetHandlerManager {
 	m := &packetHandlerMap{
@@ -54,10 +65,11 @@ func newPacketHandlerMap(
 		connIDLen:                  connIDLen,
 		listening:                  make(chan struct{}),
 		handlers:                   make(map[string]packetHandler),
-		resetTokens:                make(map[[16]byte]packetHandler),
+		resetTokens:                make(map[protocol.StatelessResetToken]packetHandler),
 		deleteRetiredSessionsAfter: protocol.RetiredConnectionIDDeleteTimeout,
 		statelessResetEnabled:      len(statelessResetKey) > 0,
 		statelessResetHasher:       hmac.New(sha256.New, statelessResetKey),
+		tracer:                     tracer,
 		logger:                     logger,
 	}
 	go m.listen()
@@ -95,24 +107,52 @@ func (h *packetHandlerMap) logUsage() {
 	}
 }
 
-func (h *packetHandlerMap) Add(id protocol.ConnectionID, handler packetHandler) [16]byte {
+func (h *packetHandlerMap) Add(id protocol.ConnectionID, handler packetHandler) bool /* was added */ {
+	sid := string(id)
+
 	h.mutex.Lock()
-	h.handlers[string(id)] = handler
-	h.mutex.Unlock()
-	return h.getStatelessResetToken(id)
+	defer h.mutex.Unlock()
+
+	if _, ok := h.handlers[sid]; ok {
+		h.logger.Debugf("Not adding connection ID %s, as it already exists.", id)
+		return false
+	}
+	h.handlers[sid] = handler
+	h.logger.Debugf("Adding connection ID %s.", id)
+	return true
+}
+
+func (h *packetHandlerMap) AddWithConnID(clientDestConnID, newConnID protocol.ConnectionID, fn func() packetHandler) bool {
+	sid := string(clientDestConnID)
+	h.mutex.Lock()
+	defer h.mutex.Unlock()
+
+	if _, ok := h.handlers[sid]; ok {
+		h.logger.Debugf("Not adding connection ID %s for a new session, as it already exists.", clientDestConnID)
+		return false
+	}
+
+	sess := fn()
+	h.handlers[sid] = sess
+	h.handlers[string(newConnID)] = sess
+	h.logger.Debugf("Adding connection IDs %s and %s for a new session.", clientDestConnID, newConnID)
+	return true
 }
 
 func (h *packetHandlerMap) Remove(id protocol.ConnectionID) {
 	h.mutex.Lock()
 	delete(h.handlers, string(id))
 	h.mutex.Unlock()
+	h.logger.Debugf("Removing connection ID %s.", id)
 }
 
 func (h *packetHandlerMap) Retire(id protocol.ConnectionID) {
+	h.logger.Debugf("Retiring connection ID %s in %s.", id, h.deleteRetiredSessionsAfter)
 	time.AfterFunc(h.deleteRetiredSessionsAfter, func() {
 		h.mutex.Lock()
 		delete(h.handlers, string(id))
 		h.mutex.Unlock()
+		h.logger.Debugf("Removing connection ID %s after it has been retired.", id)
 	})
 }
 
@@ -120,28 +160,30 @@ func (h *packetHandlerMap) ReplaceWithClosed(id protocol.ConnectionID, handler p
 	h.mutex.Lock()
 	h.handlers[string(id)] = handler
 	h.mutex.Unlock()
+	h.logger.Debugf("Replacing session for connection ID %s with a closed session.", id)
 
 	time.AfterFunc(h.deleteRetiredSessionsAfter, func() {
 		h.mutex.Lock()
-		handler.Close()
+		handler.shutdown()
 		delete(h.handlers, string(id))
 		h.mutex.Unlock()
+		h.logger.Debugf("Removing connection ID %s for a closed session after it has been retired.", id)
 	})
 }
 
-func (h *packetHandlerMap) AddResetToken(token [16]byte, handler packetHandler) {
+func (h *packetHandlerMap) AddResetToken(token protocol.StatelessResetToken, handler packetHandler) {
 	h.mutex.Lock()
 	h.resetTokens[token] = handler
 	h.mutex.Unlock()
 }
 
-func (h *packetHandlerMap) RemoveResetToken(token [16]byte) {
+func (h *packetHandlerMap) RemoveResetToken(token protocol.StatelessResetToken) {
 	h.mutex.Lock()
 	delete(h.resetTokens, token)
 	h.mutex.Unlock()
 }
 
-func (h *packetHandlerMap) RetireResetToken(token [16]byte) {
+func (h *packetHandlerMap) RetireResetToken(token protocol.StatelessResetToken) {
 	time.AfterFunc(h.deleteRetiredSessionsAfter, func() {
 		h.mutex.Lock()
 		delete(h.resetTokens, token)
@@ -163,8 +205,8 @@ func (h *packetHandlerMap) CloseServer() {
 		if handler.getPerspective() == protocol.PerspectiveServer {
 			wg.Add(1)
 			go func(handler packetHandler) {
-				// session.Close() blocks until the CONNECTION_CLOSE has been sent and the run-loop has stopped
-				_ = handler.Close()
+				// blocks until the CONNECTION_CLOSE has been sent and the run-loop has stopped
+				handler.shutdown()
 				wg.Done()
 			}(handler)
 		}
@@ -173,8 +215,9 @@ func (h *packetHandlerMap) CloseServer() {
 	wg.Wait()
 }
 
-// Close the underlying connection and wait until listen() has returned.
-func (h *packetHandlerMap) Close() error {
+// Destroy the underlying connection and wait until listen() has returned.
+// It does not close active sessions.
+func (h *packetHandlerMap) Destroy() error {
 	if err := h.conn.Close(); err != nil {
 		return err
 	}
@@ -211,7 +254,7 @@ func (h *packetHandlerMap) listen() {
 	defer close(h.listening)
 	for {
 		buffer := getPacketBuffer()
-		data := buffer.Slice
+		data := buffer.Data[:protocol.MaxReceivePacketSize]
 		// The packet size should not exceed protocol.MaxReceivePacketSize bytes
 		// If it does, we only read a truncated packet, which will then end up undecryptable
 		n, addr, err := h.conn.ReadFrom(data)
@@ -230,7 +273,11 @@ func (h *packetHandlerMap) handlePacket(
 ) {
 	connID, err := wire.ParseConnectionID(data, h.connIDLen)
 	if err != nil {
+		buffer.MaybeRelease()
 		h.logger.Debugf("error parsing connection ID on packet from %s: %s", addr, err)
+		if h.tracer != nil {
+			h.tracer.DroppedPacket(addr, logging.PacketTypeNotDetermined, protocol.ByteCount(len(data)), logging.PacketDropHeaderParseError)
+		}
 		return
 	}
 	rcvTime := time.Now()
@@ -274,18 +321,18 @@ func (h *packetHandlerMap) maybeHandleStatelessReset(data []byte) bool {
 		return false
 	}
 
-	var token [16]byte
+	var token protocol.StatelessResetToken
 	copy(token[:], data[len(data)-16:])
 	if sess, ok := h.resetTokens[token]; ok {
-		h.logger.Debugf("Received a stateless retry with token %#x. Closing session.", token)
-		go sess.destroy(errors.New("received a stateless reset"))
+		h.logger.Debugf("Received a stateless reset with token %#x. Closing session.", token)
+		go sess.destroy(statelessResetErr{token: token})
 		return true
 	}
 	return false
 }
 
-func (h *packetHandlerMap) getStatelessResetToken(connID protocol.ConnectionID) [16]byte {
-	var token [16]byte
+func (h *packetHandlerMap) GetStatelessResetToken(connID protocol.ConnectionID) protocol.StatelessResetToken {
+	var token protocol.StatelessResetToken
 	if !h.statelessResetEnabled {
 		// Return a random stateless reset token.
 		// This token will be sent in the server's transport parameters.
@@ -311,7 +358,7 @@ func (h *packetHandlerMap) maybeSendStatelessReset(p *receivedPacket, connID pro
 	if len(p.data) <= protocol.MinStatelessResetSize {
 		return
 	}
-	token := h.getStatelessResetToken(connID)
+	token := h.GetStatelessResetToken(connID)
 	h.logger.Debugf("Sending stateless reset to %s (connection ID: %s). Token: %#x", p.remoteAddr, connID, token)
 	data := make([]byte, protocol.MinStatelessResetSize-16, protocol.MinStatelessResetSize)
 	rand.Read(data)

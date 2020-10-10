@@ -17,13 +17,13 @@ import (
 )
 
 const (
-	// DefaultPropagationTimeout default propagation timeout
+	// DefaultPropagationTimeout default propagation timeout.
 	DefaultPropagationTimeout = 60 * time.Second
 
-	// DefaultPollingInterval default polling interval
+	// DefaultPollingInterval default polling interval.
 	DefaultPollingInterval = 2 * time.Second
 
-	// DefaultTTL default TTL
+	// DefaultTTL default TTL.
 	DefaultTTL = 120
 )
 
@@ -126,6 +126,8 @@ func (c *Challenge) Solve(authz acme.Authorization) error {
 
 	log.Infof("[%s] acme: Checking DNS record propagation using %+v", domain, recursiveNameservers)
 
+	time.Sleep(interval)
+
 	err = wait.For("propagation", timeout, interval, func() (bool, error) {
 		stop, errP := c.preCheck.call(domain, fqdn, value)
 		if !stop || errP != nil {
@@ -170,7 +172,7 @@ type sequential interface {
 }
 
 // GetRecord returns a DNS record which will fulfill the `dns-01` challenge.
-func GetRecord(domain, keyAuth string) (fqdn string, value string) {
+func GetRecord(domain, keyAuth string) (fqdn, value string) {
 	keyAuthShaBytes := sha256.Sum256([]byte(keyAuth))
 	// base64URL encoding without padding
 	value = base64.RawURLEncoding.EncodeToString(keyAuthShaBytes[:sha256.Size])

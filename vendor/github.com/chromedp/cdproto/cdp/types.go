@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/knq/sysutil"
+	"github.com/chromedp/sysutil"
 	"github.com/mailru/easyjson"
 	"github.com/mailru/easyjson/jlexer"
 	"github.com/mailru/easyjson/jwriter"

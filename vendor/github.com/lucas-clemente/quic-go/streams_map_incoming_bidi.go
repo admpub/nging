@@ -2,7 +2,6 @@
 // Any changes will be lost if this file is regenerated.
 // see https://github.com/cheekybits/genny
 
-//nolint:unused
 package quic
 
 import (
@@ -160,12 +159,15 @@ func (m *incomingBidiStreamsMap) deleteStream(num protocol.StreamNum) error {
 	delete(m.streams, num)
 	// queue a MAX_STREAM_ID frame, giving the peer the option to open a new stream
 	if m.maxNumStreams > uint64(len(m.streams)) {
-		numNewStreams := m.maxNumStreams - uint64(len(m.streams))
-		m.maxStream = m.nextStreamToOpen + protocol.StreamNum(numNewStreams) - 1
-		m.queueMaxStreamID(&wire.MaxStreamsFrame{
-			Type:         protocol.StreamTypeBidi,
-			MaxStreamNum: m.maxStream,
-		})
+		maxStream := m.nextStreamToOpen + protocol.StreamNum(m.maxNumStreams-uint64(len(m.streams))) - 1
+		// Never send a value larger than protocol.MaxStreamCount.
+		if maxStream <= protocol.MaxStreamCount {
+			m.maxStream = maxStream
+			m.queueMaxStreamID(&wire.MaxStreamsFrame{
+				Type:         protocol.StreamTypeBidi,
+				MaxStreamNum: m.maxStream,
+			})
+		}
 	}
 	return nil
 }

@@ -2,14 +2,26 @@ package quic
 
 import (
 	"context"
-	"crypto/tls"
 	"io"
 	"net"
 	"time"
 
+	"github.com/lucas-clemente/quic-go/logging"
+
+	"github.com/lucas-clemente/quic-go/internal/handshake"
 	"github.com/lucas-clemente/quic-go/internal/protocol"
 	"github.com/lucas-clemente/quic-go/quictrace"
 )
+
+// RetireBugBackwardsCompatibilityMode controls a backwards compatibility mode, necessary due to a bug in
+// quic-go v0.17.2 (and earlier), where under certain circumstances, an endpoint would retire the connection
+// ID it is currently using. See https://github.com/lucas-clemente/quic-go/issues/2658.
+// The bug has now been fixed, and new deployments have nothing to worry about.
+// Deployments that already have quic-go <= v0.17.2 deployed should active RetireBugBackwardsCompatibilityMode.
+// If activated, quic-go will take steps to avoid the bug from triggering when connected to endpoints that are still
+// running quic-go <= v0.17.2.
+// This flag will be removed in a future version of quic-go.
+var RetireBugBackwardsCompatibilityMode bool
 
 // The StreamID is the ID of a QUIC stream.
 type StreamID = protocol.StreamID
@@ -50,6 +62,16 @@ type ErrorCode = protocol.ApplicationErrorCode
 
 // Stream is the interface implemented by QUIC streams
 type Stream interface {
+	ReceiveStream
+	SendStream
+	// SetDeadline sets the read and write deadlines associated
+	// with the connection. It is equivalent to calling both
+	// SetReadDeadline and SetWriteDeadline.
+	SetDeadline(t time.Time) error
+}
+
+// A ReceiveStream is a unidirectional Receive Stream.
+type ReceiveStream interface {
 	// StreamID returns the stream ID.
 	StreamID() StreamID
 	// Read reads data from the stream.
@@ -60,6 +82,22 @@ type Stream interface {
 	// If the session was closed due to a timeout, the error satisfies
 	// the net.Error interface, and Timeout() will be true.
 	io.Reader
+	// CancelRead aborts receiving on this stream.
+	// It will ask the peer to stop transmitting stream data.
+	// Read will unblock immediately, and future Read calls will fail.
+	// When called multiple times or after reading the io.EOF it is a no-op.
+	CancelRead(ErrorCode)
+	// SetReadDeadline sets the deadline for future Read calls and
+	// any currently-blocked Read call.
+	// A zero value for t means Read will not time out.
+
+	SetReadDeadline(t time.Time) error
+}
+
+// A SendStream is a unidirectional Send Stream.
+type SendStream interface {
+	// StreamID returns the stream ID.
+	StreamID() StreamID
 	// Write writes data to the stream.
 	// Write can be made to time out and return a net.Error with Timeout() == true
 	// after a fixed time limit; see SetDeadline and SetWriteDeadline.
@@ -78,57 +116,16 @@ type Stream interface {
 	// Write will unblock immediately, and future calls to Write will fail.
 	// When called multiple times or after closing the stream it is a no-op.
 	CancelWrite(ErrorCode)
-	// CancelRead aborts receiving on this stream.
-	// It will ask the peer to stop transmitting stream data.
-	// Read will unblock immediately, and future Read calls will fail.
-	// When called multiple times or after reading the io.EOF it is a no-op.
-	CancelRead(ErrorCode)
 	// The context is canceled as soon as the write-side of the stream is closed.
 	// This happens when Close() or CancelWrite() is called, or when the peer
 	// cancels the read-side of their stream.
 	// Warning: This API should not be considered stable and might change soon.
 	Context() context.Context
-	// SetReadDeadline sets the deadline for future Read calls and
-	// any currently-blocked Read call.
-	// A zero value for t means Read will not time out.
-	SetReadDeadline(t time.Time) error
 	// SetWriteDeadline sets the deadline for future Write calls
 	// and any currently-blocked Write call.
 	// Even if write times out, it may return n > 0, indicating that
 	// some of the data was successfully written.
 	// A zero value for t means Write will not time out.
-	SetWriteDeadline(t time.Time) error
-	// SetDeadline sets the read and write deadlines associated
-	// with the connection. It is equivalent to calling both
-	// SetReadDeadline and SetWriteDeadline.
-	SetDeadline(t time.Time) error
-}
-
-// A ReceiveStream is a unidirectional Receive Stream.
-type ReceiveStream interface {
-	// see Stream.StreamID
-	StreamID() StreamID
-	// see Stream.Read
-	io.Reader
-	// see Stream.CancelRead
-	CancelRead(ErrorCode)
-	// see Stream.SetReadDealine
-	SetReadDeadline(t time.Time) error
-}
-
-// A SendStream is a unidirectional Send Stream.
-type SendStream interface {
-	// see Stream.StreamID
-	StreamID() StreamID
-	// see Stream.Write
-	io.Writer
-	// see Stream.Close
-	io.Closer
-	// see Stream.CancelWrite
-	CancelWrite(ErrorCode)
-	// see Stream.Context
-	Context() context.Context
-	// see Stream.SetWriteDeadline
 	SetWriteDeadline(t time.Time) error
 }
 
@@ -138,6 +135,8 @@ type StreamError interface {
 	Canceled() bool
 	ErrorCode() ErrorCode
 }
+
+type ConnectionState = handshake.ConnectionState
 
 // A Session is a QUIC connection between two peers.
 type Session interface {
@@ -175,8 +174,6 @@ type Session interface {
 	LocalAddr() net.Addr
 	// RemoteAddr returns the address of the peer.
 	RemoteAddr() net.Addr
-	// Close the connection.
-	io.Closer
 	// Close the connection with an error.
 	// The error string will be sent to the peer.
 	CloseWithError(ErrorCode, string) error
@@ -184,8 +181,9 @@ type Session interface {
 	// Warning: This API should not be considered stable and might change soon.
 	Context() context.Context
 	// ConnectionState returns basic details about the QUIC connection.
+	// It blocks until the handshake completes.
 	// Warning: This API should not be considered stable and might change soon.
-	ConnectionState() tls.ConnectionState
+	ConnectionState() ConnectionState
 }
 
 // An EarlySession is a session that is handshaking.
@@ -218,11 +216,12 @@ type Config struct {
 	// If the timeout is exceeded, the connection is closed.
 	// If this value is zero, the timeout is set to 10 seconds.
 	HandshakeTimeout time.Duration
-	// IdleTimeout is the maximum duration that may pass without any incoming network activity.
+	// MaxIdleTimeout is the maximum duration that may pass without any incoming network activity.
+	// The actual value for the idle timeout is the minimum of this value and the peer's.
 	// This value only applies after the handshake has completed.
 	// If the timeout is exceeded, the connection is closed.
 	// If this value is zero, the timeout is set to 30 seconds.
-	IdleTimeout time.Duration
+	MaxIdleTimeout time.Duration
 	// AcceptToken determines if a Token is accepted.
 	// It is called with token = nil if the client didn't send a token.
 	// If not set, a default verification function is used:
@@ -243,13 +242,15 @@ type Config struct {
 	// If this value is zero, it will default to 1.5 MB for the server and 15 MB for the client.
 	MaxReceiveConnectionFlowControlWindow uint64
 	// MaxIncomingStreams is the maximum number of concurrent bidirectional streams that a peer is allowed to open.
+	// Values above 2^60 are invalid.
 	// If not set, it will default to 100.
 	// If set to a negative value, it doesn't allow any bidirectional streams.
-	MaxIncomingStreams int
+	MaxIncomingStreams int64
 	// MaxIncomingUniStreams is the maximum number of concurrent unidirectional streams that a peer is allowed to open.
+	// Values above 2^60 are invalid.
 	// If not set, it will default to 100.
 	// If set to a negative value, it doesn't allow any unidirectional streams.
-	MaxIncomingUniStreams int
+	MaxIncomingUniStreams int64
 	// The StatelessResetKey is used to generate stateless reset tokens.
 	// If no key is configured, sending of stateless resets is disabled.
 	StatelessResetKey []byte
@@ -258,6 +259,7 @@ type Config struct {
 	// QUIC Event Tracer.
 	// Warning: Experimental. This API should not be considered stable and will change soon.
 	QuicTracer quictrace.Tracer
+	Tracer     logging.Tracer
 }
 
 // A Listener for incoming QUIC connections

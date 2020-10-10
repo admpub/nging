@@ -5,12 +5,12 @@ import (
 	"encoding/binary"
 
 	"github.com/lucas-clemente/quic-go/internal/protocol"
-	"github.com/marten-seemann/qtls"
+	"github.com/lucas-clemente/quic-go/internal/qtls"
 )
 
 func createAEAD(suite *qtls.CipherSuiteTLS13, trafficSecret []byte) cipher.AEAD {
-	key := qtls.HkdfExpandLabel(suite.Hash, trafficSecret, []byte{}, "quic key", suite.KeyLen)
-	iv := qtls.HkdfExpandLabel(suite.Hash, trafficSecret, []byte{}, "quic iv", suite.IVLen())
+	key := hkdfExpandLabel(suite.Hash, trafficSecret, []byte{}, "quic key", suite.KeyLen)
+	iv := hkdfExpandLabel(suite.Hash, trafficSecret, []byte{}, "quic iv", suite.IVLen())
 	return suite.AEAD(key, iv)
 }
 

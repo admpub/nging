@@ -110,25 +110,38 @@ func (s *sessionState) unmarshal(data []byte) bool {
 // sessionStateTLS13 is the content of a TLS 1.3 session ticket. Its first
 // version (revision = 0) doesn't carry any of the information needed for 0-RTT
 // validation and the nonce is always empty.
+// version (revision = 1) carries the max_early_data_size sent in the ticket.
+// version (revision = 2) carries the ALPN sent in the ticket.
 type sessionStateTLS13 struct {
 	// uint8 version  = 0x0304;
-	// uint8 revision = 0;
+	// uint8 revision = 2;
 	cipherSuite      uint16
 	createdAt        uint64
 	resumptionSecret []byte      // opaque resumption_master_secret<1..2^8-1>;
 	certificate      Certificate // CertificateEntry certificate_list<0..2^24-1>;
+	maxEarlyData     uint32
+	alpn             string
+
+	appData []byte
 }
 
 func (m *sessionStateTLS13) marshal() []byte {
 	var b cryptobyte.Builder
 	b.AddUint16(VersionTLS13)
-	b.AddUint8(0) // revision
+	b.AddUint8(2) // revision
 	b.AddUint16(m.cipherSuite)
 	addUint64(&b, m.createdAt)
 	b.AddUint8LengthPrefixed(func(b *cryptobyte.Builder) {
 		b.AddBytes(m.resumptionSecret)
 	})
 	marshalCertificate(&b, m.certificate)
+	b.AddUint32(m.maxEarlyData)
+	b.AddUint8LengthPrefixed(func(b *cryptobyte.Builder) {
+		b.AddBytes([]byte(m.alpn))
+	})
+	b.AddUint16LengthPrefixed(func(b *cryptobyte.Builder) {
+		b.AddBytes(m.appData)
+	})
 	return b.BytesOrPanic()
 }
 
@@ -137,16 +150,22 @@ func (m *sessionStateTLS13) unmarshal(data []byte) bool {
 	s := cryptobyte.String(data)
 	var version uint16
 	var revision uint8
-	return s.ReadUint16(&version) &&
+	var alpn []byte
+	ret := s.ReadUint16(&version) &&
 		version == VersionTLS13 &&
 		s.ReadUint8(&revision) &&
-		revision == 0 &&
+		revision == 2 &&
 		s.ReadUint16(&m.cipherSuite) &&
 		readUint64(&s, &m.createdAt) &&
 		readUint8LengthPrefixed(&s, &m.resumptionSecret) &&
 		len(m.resumptionSecret) != 0 &&
 		unmarshalCertificate(&s, &m.certificate) &&
+		s.ReadUint32(&m.maxEarlyData) &&
+		readUint8LengthPrefixed(&s, &alpn) &&
+		readUint16LengthPrefixed(&s, &m.appData) &&
 		s.Empty()
+	m.alpn = string(alpn)
+	return ret
 }
 
 func (c *Conn) encryptTicket(state []byte) ([]byte, error) {
@@ -215,19 +234,7 @@ func (c *Conn) decryptTicket(encrypted []byte) (plaintext []byte, usedOldKey boo
 	return plaintext, keyIndex > 0
 }
 
-// GetSessionTicket generates a new session ticket.
-// It should only be called after the handshake completes.
-// It can only be used for servers, and only if the alternative record layer is set.
-// The ticket may be nil if config.SessionTicketsDisabled is set,
-// or if the client isn't able to receive session tickets.
-func (c *Conn) GetSessionTicket() ([]byte, error) {
-	if c.isClient || !c.handshakeComplete() || c.config.AlternativeRecordLayer == nil {
-		return nil, errors.New("GetSessionTicket is only valid for servers after completion of the handshake, and if an alternative record layer is set.")
-	}
-	if c.config.SessionTicketsDisabled {
-		return nil, nil
-	}
-
+func (c *Conn) getSessionTicketMsg(appData []byte) (*newSessionTicketMsgTLS13, error) {
 	m := new(newSessionTicketMsgTLS13)
 
 	var certsFromClient [][]byte
@@ -243,6 +250,9 @@ func (c *Conn) GetSessionTicket() ([]byte, error) {
 			OCSPStaple:                  c.ocspResponse,
 			SignedCertificateTimestamps: c.scts,
 		},
+		maxEarlyData: c.config.MaxEarlyData,
+		alpn:         c.clientProtocol,
+		appData:      appData,
 	}
 	var err error
 	m.label, err = c.encryptTicket(state.marshal())
@@ -250,5 +260,26 @@ func (c *Conn) GetSessionTicket() ([]byte, error) {
 		return nil, err
 	}
 	m.lifetime = uint32(maxSessionTicketLifetime / time.Second)
+	m.maxEarlyData = c.config.MaxEarlyData
+	return m, nil
+}
+
+// GetSessionTicket generates a new session ticket.
+// It should only be called after the handshake completes.
+// It can only be used for servers, and only if the alternative record layer is set.
+// The ticket may be nil if config.SessionTicketsDisabled is set,
+// or if the client isn't able to receive session tickets.
+func (c *Conn) GetSessionTicket(appData []byte) ([]byte, error) {
+	if c.isClient || !c.handshakeComplete() || c.config.AlternativeRecordLayer == nil {
+		return nil, errors.New("GetSessionTicket is only valid for servers after completion of the handshake, and if an alternative record layer is set.")
+	}
+	if c.config.SessionTicketsDisabled {
+		return nil, nil
+	}
+
+	m, err := c.getSessionTicketMsg(appData)
+	if err != nil {
+		return nil, err
+	}
 	return m.marshal(), nil
 }

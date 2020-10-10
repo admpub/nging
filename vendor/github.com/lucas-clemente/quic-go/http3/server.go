@@ -17,16 +17,31 @@ import (
 	"github.com/lucas-clemente/quic-go"
 	"github.com/lucas-clemente/quic-go/internal/utils"
 	"github.com/marten-seemann/qpack"
-	"github.com/onsi/ginkgo"
 )
 
 // allows mocking of quic.Listen and quic.ListenAddr
 var (
-	quicListen     = quic.Listen
-	quicListenAddr = quic.ListenAddr
+	quicListen     = quic.ListenEarly
+	quicListenAddr = quic.ListenAddrEarly
 )
 
-const nextProtoH3 = "h3-23"
+const nextProtoH3 = "h3-29"
+
+// contextKey is a value for use with context.WithValue. It's used as
+// a pointer so it fits in an interface{} without allocation.
+type contextKey struct {
+	name string
+}
+
+func (k *contextKey) String() string { return "quic-go/http3 context value " + k.name }
+
+var (
+	// ServerContextKey is a context key. It can be used in HTTP
+	// handlers with Context.Value to access the server that
+	// started the handler. The associated value will be of
+	// type *http3.Server.
+	ServerContextKey = &contextKey{"http3-server"}
+)
 
 type requestError struct {
 	err       error
@@ -53,10 +68,11 @@ type Server struct {
 	port uint32 // used atomically
 
 	mutex     sync.Mutex
-	listeners map[*quic.Listener]struct{}
+	listeners map[*quic.EarlyListener]struct{}
 	closed    utils.AtomicBool
 
-	logger utils.Logger
+	loggerOnce sync.Once
+	logger     utils.Logger
 }
 
 // ListenAndServe listens on the UDP address s.Addr and calls s.Handler to handle HTTP/3 requests on incoming connections.
@@ -97,7 +113,9 @@ func (s *Server) serveImpl(tlsConf *tls.Config, conn net.PacketConn) error {
 	if s.Server == nil {
 		return errors.New("use of http3.Server without http.Server")
 	}
-	s.logger = utils.DefaultLogger.WithPrefix("server")
+	s.loggerOnce.Do(func() {
+		s.logger = utils.DefaultLogger.WithPrefix("server")
+	})
 
 	if tlsConf == nil {
 		tlsConf = &tls.Config{}
@@ -119,7 +137,7 @@ func (s *Server) serveImpl(tlsConf *tls.Config, conn net.PacketConn) error {
 		}
 	}
 
-	var ln quic.Listener
+	var ln quic.EarlyListener
 	var err error
 	if conn == nil {
 		ln, err = quicListenAddr(s.Addr, tlsConf, s.QuicConfig)
@@ -144,22 +162,22 @@ func (s *Server) serveImpl(tlsConf *tls.Config, conn net.PacketConn) error {
 // We store a pointer to interface in the map set. This is safe because we only
 // call trackListener via Serve and can track+defer untrack the same pointer to
 // local variable there. We never need to compare a Listener from another caller.
-func (s *Server) addListener(l *quic.Listener) {
+func (s *Server) addListener(l *quic.EarlyListener) {
 	s.mutex.Lock()
 	if s.listeners == nil {
-		s.listeners = make(map[*quic.Listener]struct{})
+		s.listeners = make(map[*quic.EarlyListener]struct{})
 	}
 	s.listeners[l] = struct{}{}
 	s.mutex.Unlock()
 }
 
-func (s *Server) removeListener(l *quic.Listener) {
+func (s *Server) removeListener(l *quic.EarlyListener) {
 	s.mutex.Lock()
 	delete(s.listeners, l)
 	s.mutex.Unlock()
 }
 
-func (s *Server) handleConn(sess quic.Session) {
+func (s *Server) handleConn(sess quic.EarlySession) {
 	// TODO: accept control streams
 	decoder := qpack.NewDecoder(nil)
 
@@ -173,6 +191,8 @@ func (s *Server) handleConn(sess quic.Session) {
 	(&settingsFrame{}).Write(buf)
 	str.Write(buf.Bytes())
 
+	// Process all requests immediately.
+	// It's the client's responsibility to decide which requests are eligible for 0-RTT.
 	for {
 		str, err := sess.AcceptStream(context.Background())
 		if err != nil {
@@ -180,8 +200,7 @@ func (s *Server) handleConn(sess quic.Session) {
 			return
 		}
 		go func() {
-			defer ginkgo.GinkgoRecover()
-			rerr := s.handleRequest(str, decoder, func() {
+			rerr := s.handleRequest(sess, str, decoder, func() {
 				sess.CloseWithError(quic.ErrorCode(errorFrameUnexpected), "")
 			})
 			if rerr.err != nil || rerr.streamErr != 0 || rerr.connErr != 0 {
@@ -210,7 +229,7 @@ func (s *Server) maxHeaderBytes() uint64 {
 	return uint64(s.Server.MaxHeaderBytes)
 }
 
-func (s *Server) handleRequest(str quic.Stream, decoder *qpack.Decoder, onFrameError func()) requestError {
+func (s *Server) handleRequest(sess quic.Session, str quic.Stream, decoder *qpack.Decoder, onFrameError func()) requestError {
 	frame, err := parseNextFrame(str)
 	if err != nil {
 		return newStreamError(errorRequestIncomplete, err)
@@ -236,6 +255,8 @@ func (s *Server) handleRequest(str quic.Stream, decoder *qpack.Decoder, onFrameE
 		// TODO: use the right error code
 		return newStreamError(errorGeneralProtocolError, err)
 	}
+
+	req.RemoteAddr = sess.RemoteAddr().String()
 	req.Body = newRequestBody(str, onFrameError)
 
 	if s.logger.Debug() {
@@ -244,14 +265,18 @@ func (s *Server) handleRequest(str quic.Stream, decoder *qpack.Decoder, onFrameE
 		s.logger.Infof("%s %s%s", req.Method, req.Host, req.RequestURI)
 	}
 
-	req = req.WithContext(str.Context())
+	ctx := str.Context()
+	ctx = context.WithValue(ctx, ServerContextKey, s)
+	ctx = context.WithValue(ctx, http.LocalAddrContextKey, sess.LocalAddr())
+	req = req.WithContext(ctx)
 	responseWriter := newResponseWriter(str, s.logger)
+	defer responseWriter.Flush()
 	handler := s.Handler
 	if handler == nil {
 		handler = http.DefaultServeMux
 	}
 
-	var panicked, readEOF bool
+	var panicked bool
 	func() {
 		defer func() {
 			if p := recover(); p != nil {
@@ -264,10 +289,6 @@ func (s *Server) handleRequest(str quic.Stream, decoder *qpack.Decoder, onFrameE
 			}
 		}()
 		handler.ServeHTTP(responseWriter, req)
-		// read the eof
-		if _, err = str.Read([]byte{0}); err == io.EOF {
-			readEOF = true
-		}
 	}()
 
 	if panicked {
@@ -276,9 +297,8 @@ func (s *Server) handleRequest(str quic.Stream, decoder *qpack.Decoder, onFrameE
 		responseWriter.WriteHeader(200)
 	}
 
-	if !readEOF {
-		str.CancelRead(quic.ErrorCode(errorEarlyResponse))
-	}
+	// If the EOF was read by the handler, CancelRead() is a no-op.
+	str.CancelRead(quic.ErrorCode(errorNoError))
 	return requestError{}
 }
 

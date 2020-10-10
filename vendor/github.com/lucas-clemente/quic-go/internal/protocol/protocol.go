@@ -43,18 +43,21 @@ const MaxByteCount = ByteCount(1<<62 - 1)
 // An ApplicationErrorCode is an application-defined error code.
 type ApplicationErrorCode uint64
 
+// A StatelessResetToken is a stateless reset token.
+type StatelessResetToken [16]byte
+
 // MaxReceivePacketSize maximum packet size of any QUIC packet, based on
 // ethernet's max size, minus the IP and UDP headers. IPv6 has a 40 byte header,
 // UDP adds an additional 8 bytes.  This is a total overhead of 48 bytes.
 // Ethernet's max packet size is 1500 bytes,  1500 - 48 = 1452.
 const MaxReceivePacketSize ByteCount = 1452
 
-// DefaultTCPMSS is the default maximum packet size used in the Linux TCP implementation.
-// Used in QUIC for congestion window computations in bytes.
-const DefaultTCPMSS ByteCount = 1460
-
 // MinInitialPacketSize is the minimum size an Initial packet is required to have.
 const MinInitialPacketSize = 1200
+
+// MinUnknownVersionPacketSize is the minimum size a packet with an unknown version
+// needs to have in order to trigger a Version Negotiation packet.
+const MinUnknownVersionPacketSize = MinInitialPacketSize
 
 // MinStatelessResetSize is the minimum size of a stateless reset packet that we send
 const MinStatelessResetSize = 1 /* first byte */ + 20 /* max. conn ID length */ + 4 /* max. packet number length */ + 1 /* min. payload length */ + 16 /* token */

@@ -28,7 +28,7 @@ func (a *AccountService) New(req acme.Account) (acme.ExtendedAccount, error) {
 }
 
 // NewEAB Creates a new account with an External Account Binding.
-func (a *AccountService) NewEAB(accMsg acme.Account, kid string, hmacEncoded string) (acme.ExtendedAccount, error) {
+func (a *AccountService) NewEAB(accMsg acme.Account, kid, hmacEncoded string) (acme.ExtendedAccount, error) {
 	hmac, err := base64.RawURLEncoding.DecodeString(hmacEncoded)
 	if err != nil {
 		return acme.ExtendedAccount{}, fmt.Errorf("acme: could not decode hmac key: %w", err)
@@ -58,16 +58,17 @@ func (a *AccountService) Get(accountURL string) (acme.Account, error) {
 }
 
 // Update Updates an account.
-func (a *AccountService) Update(accountURL string, req acme.Account) (acme.ExtendedAccount, error) {
+func (a *AccountService) Update(accountURL string, req acme.Account) (acme.Account, error) {
 	if len(accountURL) == 0 {
-		return acme.ExtendedAccount{}, errors.New("account[update]: empty URL")
+		return acme.Account{}, errors.New("account[update]: empty URL")
 	}
 
-	var account acme.ExtendedAccount
+	var account acme.Account
 	_, err := a.core.post(accountURL, req, &account)
 	if err != nil {
-		return acme.ExtendedAccount{}, err
+		return acme.Account{}, err
 	}
+
 	return account, nil
 }
 
