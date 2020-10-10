@@ -136,6 +136,9 @@ func now() string {
 }
 
 func (c *Config) Start() error {
+	if !com.FileExists(c.Caddyfile) {
+		return errors.New(`not found caddyfile: ` + c.Caddyfile)
+	}
 	caddy.AppName = c.appName
 	caddy.AppVersion = c.appVersion
 	certmagic.UserAgent = c.appName + "/" + c.appVersion
@@ -320,7 +323,6 @@ func (c *Config) defaultLoader(serverType string) (caddy.Input, error) {
 	contents, err := ioutil.ReadFile(caddy.DefaultConfigFile)
 	if err != nil {
 		if os.IsNotExist(err) {
-			log.Println(err)
 			return nil, nil
 		}
 		return nil, err
