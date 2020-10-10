@@ -320,6 +320,7 @@ func (c *Config) defaultLoader(serverType string) (caddy.Input, error) {
 	contents, err := ioutil.ReadFile(caddy.DefaultConfigFile)
 	if err != nil {
 		if os.IsNotExist(err) {
+			log.Println(err)
 			return nil, nil
 		}
 		return nil, err
