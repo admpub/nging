@@ -75,13 +75,21 @@ func (c *CLIConfig) OnlyRunServer() bool {
 		caddy.TrapSignals()
 		c.ParseConfig()
 		startup.FireBefore(c.Type)
-		DefaultConfig.Caddy.Init().Start()
+		err := DefaultConfig.Caddy.Init().Start()
+		if err != nil {
+			stdLog.Println(err)
+			os.Exit(1)
+		}
 		startup.FireAfter(c.Type)
 		return true
 	case `ftpserver`:
 		c.ParseConfig()
 		startup.FireBefore(c.Type)
-		DefaultConfig.FTP.Init().Start()
+		err := DefaultConfig.FTP.Init().Start()
+		if err != nil {
+			stdLog.Println(err)
+			os.Exit(1)
+		}
 		startup.FireAfter(c.Type)
 		return true
 	case `frpserver`:

@@ -144,7 +144,7 @@ func (c *Config) SetPort(port int) *Config {
 }
 
 // Start start ftp server
-func (c *Config) Start() {
+func (c *Config) Start() error {
 	if len(c.PidFile) > 0 {
 		err := com.WritePidFile(c.PidFile)
 		if err != nil {
@@ -160,4 +160,5 @@ func (c *Config) Start() {
 		}
 		log.Fatal("Error starting server:", err)
 	}
+	return err
 }
