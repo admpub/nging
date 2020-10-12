@@ -308,13 +308,18 @@ crontab的完美替代，并采用了图形化配置界面，支持记录日志�
 这里的离线下载支持并行下载。  
 对于需要很长时间才能下载完成的大文件，我们只需要建立一个离线下载任务并且启动，然后就可以关闭浏览器去做其它的事情了，Nging会自动在后台帮您下载。
 
-### 七. 数据库管理
+### 七. 云服务
+
+1. 云存储账号 可以管理所有与Amazon S3 API兼容的对象存储文件，比如亚马逊AWS、阿里云OSS、腾讯云COS、网易云NOS、百度云BOS、华为云OBS、七牛云Kodo等
+2. 文件备份 可以通过配置将指定目录下的文件备份到云存储
+
+### 八. 数据库管理
 
 1. 管理MySQL
 2. 管理Redis
 3. MySQL表结构比较/同步
 
-### 八. FRP内网穿透
+### 九. FRP内网穿透
 
 当你想要将局域网内的电脑暴露到外网，以便于外网的用户也能访问到您的网站服务时，这时候就需要用到内网穿透。
 
@@ -322,7 +327,7 @@ crontab的完美替代，并采用了图形化配置界面，支持记录日志�
 
 要成功使用内网穿透功能，必须在局域网电脑上启动客户端模式，在提供外网的服务器或VPS上启动服务端模式。
 
-### 九. SSH管理
+### 十. SSH管理
 
 SSH管理功能实现了SSH的Web客户端管理功能，您可以在Nging网页上进行SSH命令行交互操作，也可以通过Nging以SFTP方式来进行文件的上传、下载、删除和编辑
 
@@ -331,19 +336,19 @@ SSH管理功能实现了SSH的Web客户端管理功能，您可以在Nging网页
 
 ### 运行
 
-[![安装](https://github.com/admpub/nging/blob/master/preview/preview_cli.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_cli.png)
+[![安装](https://gitee.com/admpub/nging/raw/master/preview/preview_cli.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/preview_cli.png)
 
 ### 安装：
 
-[![安装](https://github.com/admpub/nging/blob/master/preview/preview_install.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_install.png)
+[![安装](https://gitee.com/admpub/nging/raw/master/preview/preview_install.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/preview_install.png)
 
 ### 登录：
 
-[![登录](https://github.com/admpub/nging/blob/master/preview/preview_login.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_login.png)
+[![登录](https://gitee.com/admpub/nging/raw/master/preview/preview_login.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/preview_login.png)
 
 ### 系统信息：
 
-[![系统信息](https://github.com/admpub/nging/blob/master/preview/preview_sysinfo.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_sysinfo.png)
+[![系统信息](https://gitee.com/admpub/nging/raw/master/preview/preview_sysinfo.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/preview_sysinfo.png)
 
 ### 实时状态：
 
@@ -352,15 +357,15 @@ SSH管理功能实现了SSH的Web客户端管理功能，您可以在Nging网页
 
 ### 在线编辑文件：
 
-[![在线编辑文件](https://github.com/admpub/nging/blob/master/preview/preview_editfile.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_editfile.png)
+[![在线编辑文件](https://gitee.com/admpub/nging/raw/master/preview/preview_editfile.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/preview_editfile.png)
 
 ### 添加计划任务：
 
-[![添加计划任务](https://github.com/admpub/nging/blob/master/preview/preview_task.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_task.png)
+[![添加计划任务](https://gitee.com/admpub/nging/raw/master/preview/preview_task.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/preview_task.png)
 
 ### MySQL数据库管理：
 
-[![MySQL数据库管理](https://github.com/admpub/nging/blob/master/preview/preview_listtable.png?raw=true)](https://github.com/admpub/nging/blob/master/preview/preview_listtable.png)
+[![MySQL数据库管理](https://gitee.com/admpub/nging/raw/master/preview/preview_listtable.png?raw=true)](https://gitee.com/admpub/nging/raw/master/preview/preview_listtable.png)
 
 ## Ⅲ、开发环境下的启动方式
 
