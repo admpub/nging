@@ -63,10 +63,18 @@ type ServerURL struct {
 }
 
 func (s *ServerURL) Apply() {
-	trackerURL = s.Tracker
-	productURL = s.Product
-	licenseURL = s.License
-	versionURL = s.Version
+	if len(s.Tracker) > 0 {
+		trackerURL = s.Tracker
+	}
+	if len(s.Product) > 0 {
+		productURL = s.Product
+	}
+	if len(s.License) > 0 {
+		licenseURL = s.License
+	}
+	if len(s.Version) > 0 {
+		versionURL = s.Version
+	}
 	if len(s.LicenseFileName) > 0 {
 		licenseFileName = s.LicenseFileName
 		licenseFile = filepath.Join(echo.Wd(), licenseFileName)
