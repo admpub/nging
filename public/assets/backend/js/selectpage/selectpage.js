@@ -769,15 +769,23 @@
 				if(!p.multiple && data.length > 1) data = [data[0]];
 				self.afterInit(self, data);
 			} else {//ajax data source mode to init selected item
+				var _paramsFunc = p.params, _params = {};
+				var _orgParams = {
+					searchTable: p.dbTable,
+					searchKey: p.keyField,
+					searchValue: key
+				};
+				if (_paramsFunc && $.isFunction(_paramsFunc)) {
+					var result = _paramsFunc.call(self);
+					if (result && $.isPlainObject(result)) {
+						_params = $.extend({}, _orgParams, result);
+					} else _params = _orgParams;
+				} else _params = _orgParams;
 				$.ajax({
 					dataType: 'json',
                     type: 'POST',
 					url: p.data,
-					data: {
-						searchTable: p.dbTable,
-						searchKey: p.keyField,
-						searchValue: key
-					},
+					data: _params,
 					success: function(json) {
 					    var d = null;
 					    if(p.eAjaxSuccess && $.isFunction(p.eAjaxSuccess))
