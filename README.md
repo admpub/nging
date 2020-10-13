@@ -63,6 +63,21 @@ import (
     在页面中配置数据库和管理员账号信息进行安装。
     安装成功后，使用管理员账号登录。
 
+## 开机自动运行
+
+1. 首先，安装为服务，执行命令 `./nging service install`
+2. 启动服务，执行命令 `./nging service start`
+
+与服务相关的命令：
+
+命令 | 说明
+:--- | :---
+`./nging service install` | 安装服务
+`./nging service start` | 启动服务
+`./nging service stop` | 停止服务
+`./nging service restart` | 重启服务
+`./nging service uninstall` | 卸载服务
+
 
 ## 0、基本功能
 
