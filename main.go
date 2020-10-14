@@ -32,6 +32,7 @@ import (
 	_ "github.com/admpub/bindata/v3"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/cmd"
+	//"github.com/admpub/nging/application/library/loader"
 	"github.com/webx-top/echo"
 
 	//register
@@ -53,6 +54,9 @@ var (
 )
 
 func main() {
+	// if err:=loader.LoadPlugins();err!=nil{
+	// 	panic(err)
+	// }
 	defer log.Sync()
 	echo.Set(`BUILD_TIME`, BUILD_TIME)
 	echo.Set(`COMMIT`, COMMIT)

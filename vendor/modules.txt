@@ -144,6 +144,9 @@ github.com/admpub/gohls-server/utils
 # github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e
 ## explicit
 github.com/admpub/gohttp
+# github.com/admpub/goloader v0.0.0-20200821104313-abaac9b4b83f
+## explicit
+github.com/admpub/goloader
 # github.com/admpub/gopiper v1.0.1
 ## explicit
 github.com/admpub/gopiper
@@ -1180,7 +1183,7 @@ gocloud.dev/internal/gcerr
 gocloud.dev/internal/oc
 gocloud.dev/internal/openurl
 gocloud.dev/internal/retry
-# golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a => github.com/golang/crypto v0.0.0-20200820211705-5c72a883971a
+# golang.org/x/crypto v0.0.0-20201012173705-84dcc777aaee => github.com/golang/crypto v0.0.0-20200820211705-5c72a883971a
 ## explicit
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
@@ -1233,7 +1236,8 @@ golang.org/x/lint
 golang.org/x/lint/golint
 # golang.org/x/mod v0.3.0
 golang.org/x/mod/semver
-# golang.org/x/net v0.0.0-20201009032441-dbdefad45b89 => github.com/golang/net v0.0.0-20200925080053-05aa5d4ee321
+# golang.org/x/net v0.0.0-20201010224723-4f7140c49acb => github.com/golang/net v0.0.0-20200925080053-05aa5d4ee321
+## explicit
 golang.org/x/net/bpf
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
@@ -1257,7 +1261,8 @@ golang.org/x/net/websocket
 # golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d => github.com/golang/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
-# golang.org/x/sys v0.0.0-20201009025420-dfb3f7c4e634 => github.com/golang/sys v0.0.0-20200923182605-d9f96fdee20d
+# golang.org/x/sys v0.0.0-20201013132646-2da7054afaeb => github.com/golang/sys v0.0.0-20200923182605-d9f96fdee20d
+## explicit
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix

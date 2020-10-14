@@ -68,6 +68,7 @@ require (
 	github.com/admpub/gohls v0.0.0-20191013012052-b7505aaf3c90 // indirect
 	github.com/admpub/gohls-server v0.3.3 // indirect
 	github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e
+	github.com/admpub/goloader v0.0.0-20200821104313-abaac9b4b83f
 	github.com/admpub/gopiper v1.0.1
 	github.com/admpub/goseaweedfs v0.1.2
 	github.com/admpub/highwayhash v0.0.0-20180501080913-85fc8a2dacad
@@ -195,7 +196,9 @@ require (
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect
 	github.com/xu42/youzan-sdk-go v0.0.3
 	gocloud.dev v0.20.0
-	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
+	golang.org/x/crypto v0.0.0-20201012173705-84dcc777aaee
+	golang.org/x/net v0.0.0-20201010224723-4f7140c49acb // indirect
+	golang.org/x/sys v0.0.0-20201013132646-2da7054afaeb // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0

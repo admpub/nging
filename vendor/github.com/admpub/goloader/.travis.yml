@@ -1,0 +1,36 @@
+language: go
+
+go:
+  - "1.8.x"
+  - "1.9.x"
+  - "1.10.x"
+  - "1.11.x"
+  - "1.12.x"
+  - "1.13.x"
+  - "1.14.x"
+  - "1.15.x"
+
+compiler: go
+
+os: 
+  - linux
+  - osx
+  - windows
+
+arch:
+  - amd64
+  - arm64
+
+notifications:
+  email: false
+
+before_install:
+  - cp -r $GOROOT/src/cmd/internal $GOROOT/src/cmd/objfile
+  - go get github.com/kr/pretty
+
+script:
+  - go build github.com/pkujhd/goloader/examples/loader
+  - go tool compile $GOPATH/src/github.com/pkujhd/goloader/examples/base/base.go
+  - go tool compile $GOPATH/src/github.com/pkujhd/goloader/examples/const/const.go
+  - ./loader -o base.o -run main.main
+  - ./loader -o const.o -run main.main
