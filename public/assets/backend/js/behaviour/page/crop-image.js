@@ -19,17 +19,20 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,subdir,width,height){
     subdir:subdir,
     width:width,
     height:height,
-    prefix:'noprefix'
+    prefix:''
   };
   if(typeof(uploadURL)=='object') {
     options = $.extend(options,uploadURL);
-  }else{
-    options.fileElem = '#fileupload';
   }
   if(!options.fileElem) {
-    options.fileElem = '#'+options.prefix+'-fileupload';
-  }else{
-    options.prefix = $(options.fileElem).data('prefix')||'noprefix';
+    if(options.prefix){
+      options.fileElem = '#'+options.prefix+'-fileupload';
+    }else{
+      options.fileElem = '#fileupload';
+    }
+  }
+  if(!options.prefix){
+    options.prefix = 'noprefix';
   }
   if(!options.thumbsnailInput) {
     options.thumbsnailInput = $(options.fileElem).data('thumbsnail-input')||'#'+options.prefix+'-image';
