@@ -132,7 +132,7 @@ func Check(machineID, domain string) error {
 		return nil
 	}
 	licenseError = validateFromOfficial(machineID, domain)
-	if licenseError != ErrConnectionNotFound {
+	if licenseError != ErrConnectionFailed {
 		return licenseError
 	}
 	//当官方服务器不可用时才验证本地许可证

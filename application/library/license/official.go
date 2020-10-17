@@ -34,7 +34,7 @@ import (
 )
 
 var (
-	ErrConnectionNotFound     = errors.New(`连接授权服务器失败`)
+	ErrConnectionFailed       = errors.New(`连接授权服务器失败`)
 	ErrOfficialDataUnexcepted = errors.New(`官方数据返回异常`)
 )
 
@@ -75,7 +75,7 @@ func (v *ValidResult) Validate() error {
 func validateFromOfficial(machineID, domain string) error {
 	response := rest.Get(FullLicenseURL(machineID, domain))
 	if response == nil {
-		return ErrConnectionNotFound
+		return ErrConnectionFailed
 	}
 	if response.Err != nil {
 		return errors.Wrap(response.Err, `Connection to the license server failed`)
@@ -95,7 +95,7 @@ func validateFromOfficial(machineID, domain string) error {
 		}
 		return result.Data.Validate()
 	case http.StatusNotFound:
-		return ErrConnectionNotFound
+		return ErrConnectionFailed
 	default:
 		return errors.New(response.Status)
 	}
@@ -111,7 +111,7 @@ type VersionResp struct {
 func latestVersion() error {
 	response := rest.Get(versionURL)
 	if response == nil {
-		return ErrConnectionNotFound
+		return ErrConnectionFailed
 	}
 	if response.Err != nil {
 		return errors.Wrap(response.Err, `Check for the latest version failed`)
@@ -173,7 +173,7 @@ func latestVersion() error {
 		}
 		return nil
 	case http.StatusNotFound:
-		return ErrConnectionNotFound
+		return ErrConnectionFailed
 	default:
 		return errors.New(response.Status)
 	}
