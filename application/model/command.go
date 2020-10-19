@@ -24,6 +24,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
@@ -32,13 +33,35 @@ import (
 func NewCommand(ctx echo.Context) *Command {
 	return &Command{
 		NgingCommand: &dbschema.NgingCommand{},
-		Base:         base.New(ctx),
+		base:         base.New(ctx),
 	}
 }
 
 type Command struct {
 	*dbschema.NgingCommand
-	*base.Base
+	base *base.Base
+}
+
+func (u *Command) check() error {
+	if len(u.Name) == 0 {
+		return u.base.NewError(code.InvalidParameter, u.base.T(`指令名不能为空`))
+	}
+	var (
+		err    error
+		exists bool
+	)
+	if u.Id > 0 {
+		exists, err = u.Exists2(u.Name, u.Id)
+	} else {
+		exists, err = u.Exists(u.Name)
+	}
+	if err != nil {
+		return err
+	}
+	if exists {
+		err = u.base.NewError(code.DataAlreadyExists, u.base.T(`指令名已经存在`))
+	}
+	return err
 }
 
 func (u *Command) Exists(name string) (bool, error) {
@@ -50,6 +73,20 @@ func (u *Command) Exists2(name string, excludeID uint) (bool, error) {
 		db.Cond{`name`: name},
 		db.Cond{`id`: db.NotEq(excludeID)},
 	))
+}
+
+func (u *Command) Add() (pk interface{}, err error) {
+	if err := u.check(); err != nil {
+		return nil, err
+	}
+	return u.NgingCommand.Add()
+}
+
+func (u *Command) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+	if err := u.check(); err != nil {
+		return err
+	}
+	return u.NgingCommand.Edit(mw, args...)
 }
 
 func (u *Command) CreateCmd() *exec.Cmd {

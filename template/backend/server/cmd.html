@@ -5,6 +5,7 @@
 <li class="active">{{"执行系统命令"|T}}</li>
 {{/Block}}
 {{Block "main"}}
+{{- $id := Stored.id -}}
 <div class="row">
 	<div class="col-sm-12 col-md-12">
 		<ul class="nav nav-tabs">
@@ -20,18 +21,18 @@
 					<form action="" method="post" name="cmdform" id="cmd-form">
 						<button class="btn btn-success pull-right" type="submit">{{"执行"|T}}</button>
 						<div class="input">
-							{{if gt Stored.id 0}}
-							<input type="text" disabled="disabled" value="{{Stored.cmd.Command}}">
-							<input placeholder="{{"系统命令"|T}}" id="system_cmd" name="system_cmd" type="hidden" value=">{{Stored.id}}">
-							{{else}}
+							{{- if gt $id 0 -}}
+							<input type="text" disabled="disabled" value="{{Stored.cmd}}">
+							<input placeholder="{{"系统命令"|T}}" id="system_cmd" name="system_cmd" type="hidden" value=">{{$id}}">
+							{{- else -}}
 							<input placeholder="{{"系统命令"|T}}" id="system_cmd" name="system_cmd" type="text" autofocus>
-							{{end}}
+							{{- end -}}
 						</div>
 						<div class="chat-tools">
 							<ul class="nav nav-pills">
 								<li title="{{T `执行“%s”` `Ctrl+C`}}" data-toggle="tooltip" onclick="sendCmd('^C')"><i class="fa fa-bolt"></i></li>
 								<li title="{{`清空会话内容`|T}}" data-toggle="tooltip" onclick="clearScreen()"><i class="fa fa-eraser"></i></li>
-								{{- if eq Stored.id 0 -}}
+								{{- if eq $id 0 -}}
 								{{if or Stored.isLinux Stored.isMac}}
 								<li title="{{`查看内存占用前五的进程`|T}}" data-toggle="tooltip" onclick="sendCmd('ps auxw | head -1;ps auxw|sort -rn -k4|head -5')"><i class="fa fa-flag"></i></li>
 								<li title="{{`查看CPU占用前五的进程`|T}}" data-toggle="tooltip" onclick="sendCmd('ps auxw|head -1;ps auxw|sort -rn -k3|head -5')"><i class="fa fa-heart"></i></li>

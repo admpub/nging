@@ -30,26 +30,17 @@ func Command(ctx echo.Context) error {
 	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, nil, func(r db.Result) db.Result {
 		return r.OrderBy(`-id`)
 	}))
-	ret := handler.Err(ctx, err)
 	ctx.Set(`listData`, m.Objects())
-	return ctx.Render(`/server/command`, ret)
+	return ctx.Render(`/server/command`, handler.Err(ctx, err))
 }
 
 func CommandAdd(ctx echo.Context) error {
 	var err error
 	m := model.NewCommand(ctx)
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.Command)
+		err = ctx.MustBind(m.NgingCommand)
 		if err == nil {
-			if len(m.Name) == 0 {
-				err = ctx.E(`角色名不能为空`)
-			} else if exists, erro := m.Exists(m.Name); erro != nil {
-				err = erro
-			} else if exists {
-				err = ctx.E(`角色名已经存在`)
-			} else {
-				_, err = m.Add()
-			}
+			_, err = m.Add()
 		}
 		if err == nil {
 			handler.SendOk(ctx, ctx.T(`操作成功`))
@@ -83,18 +74,10 @@ func CommandEdit(ctx echo.Context) error {
 		return ctx.Redirect(handler.URLFor(`/server/command`))
 	}
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.Command)
+		err = ctx.MustBind(m.NgingCommand)
 		if err == nil {
 			m.Id = id
-			if len(m.Name) == 0 {
-				err = ctx.E(`角色名不能为空`)
-			} else if exists, erro := m.Exists2(m.Name, id); erro != nil {
-				err = erro
-			} else if exists {
-				err = ctx.E(`角色名已经存在`)
-			} else {
-				err = m.Edit(nil, `id`, id)
-			}
+			err = m.Edit(nil, `id`, id)
 		}
 		if err == nil {
 			handler.SendOk(ctx, ctx.T(`修改成功`))
@@ -115,7 +98,7 @@ func CommandEdit(ctx echo.Context) error {
 		}
 	}
 
-	echo.StructToForm(ctx, m.Command, ``, echo.LowerCaseFirstLetter)
+	echo.StructToForm(ctx, m.NgingCommand, ``, echo.LowerCaseFirstLetter)
 	ctx.Set(`activeURL`, `/server/command`)
 	sshUser := model.NewSshUser(ctx)
 	_, err = sshUser.ListByOffset(nil, func(r db.Result) db.Result {
