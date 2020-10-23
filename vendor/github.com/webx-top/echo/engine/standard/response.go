@@ -10,8 +10,8 @@ import (
 )
 
 type Response struct {
+	http.ResponseWriter
 	config         *engine.Config
-	response       http.ResponseWriter
 	request        *http.Request
 	header         engine.Header
 	status         int
@@ -26,11 +26,11 @@ type Response struct {
 
 func NewResponse(w http.ResponseWriter, r *http.Request, l logger.Logger) *Response {
 	return &Response{
-		response: w,
-		request:  r,
-		header:   &Header{Header: w.Header()},
-		writer:   w,
-		logger:   l,
+		ResponseWriter: w,
+		request:        r,
+		header:         &Header{Header: w.Header()},
+		writer:         w,
+		logger:         l,
 	}
 }
 
@@ -44,7 +44,7 @@ func (r *Response) WriteHeader(code int) {
 		return
 	}
 	r.status = code
-	r.response.WriteHeader(code)
+	r.ResponseWriter.WriteHeader(code)
 	r.committed = true
 }
 
@@ -88,7 +88,7 @@ func (r *Response) Writer() io.Writer {
 }
 
 func (r *Response) Object() interface{} {
-	return r.response
+	return r.ResponseWriter
 }
 
 func (r *Response) Error(errMsg string, args ...int) {
@@ -102,7 +102,7 @@ func (r *Response) Error(errMsg string, args ...int) {
 }
 
 func (r *Response) reset(w http.ResponseWriter, req *http.Request, h engine.Header) {
-	r.response = w
+	r.ResponseWriter = w
 	r.request = req
 	r.header = h
 	r.status = http.StatusOK
@@ -114,15 +114,16 @@ func (r *Response) reset(w http.ResponseWriter, req *http.Request, h engine.Head
 	r.responseWriter = &responseWriter{r}
 }
 
-func (r *Response) Hijack(fn func(net.Conn)) {
-	conn, bufrw, err := r.response.(http.Hijacker).Hijack()
+func (r *Response) Hijacker(fn func(net.Conn)) error {
+	conn, bufrw, err := r.ResponseWriter.(http.Hijacker).Hijack()
 	if err != nil {
-		r.logger.Error(err)
+		return err
 	}
 	_ = bufrw
 	fn(conn)
 	conn.Close()
 	r.committed = true
+	return nil
 }
 
 func (r *Response) Body() []byte {
@@ -130,12 +131,12 @@ func (r *Response) Body() []byte {
 }
 
 func (r *Response) Redirect(url string, code int) {
-	http.Redirect(r.response, r.request, url, code)
+	http.Redirect(r.ResponseWriter, r.request, url, code)
 	r.committed = true
 }
 
 func (r *Response) NotFound() {
-	http.Error(r.response, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	http.Error(r.ResponseWriter, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 	r.committed = true
 }
 
@@ -145,12 +146,12 @@ func (r *Response) SetCookie(cookie *http.Cookie) {
 
 func (r *Response) ServeFile(file string) {
 	r.keepBody = false
-	http.ServeFile(r.response, r.request, file)
+	http.ServeFile(r.ResponseWriter, r.request, file)
 	r.committed = true
 }
 
 func (r *Response) Stream(step func(io.Writer) bool) {
-	w := r.response
+	w := r.ResponseWriter
 	clientGone := w.(http.CloseNotifier).CloseNotify()
 	for {
 		select {
@@ -171,24 +172,24 @@ func (r *Response) StdResponseWriter() http.ResponseWriter {
 }
 
 type responseWriter struct {
-	response *Response
+	*Response
 }
 
 func (r *responseWriter) StatusCode() int {
-	if r.response.Status() == 0 {
+	if r.Response.Status() == 0 {
 		return http.StatusOK
 	}
-	return r.response.Status()
+	return r.Response.Status()
 }
 
 func (r *responseWriter) Header() http.Header {
-	return r.response.header.(*Header).Header
+	return r.Response.header.(*Header).Header
 }
 
 func (r *responseWriter) Write(b []byte) (n int, err error) {
-	return r.response.Write(b)
+	return r.Response.Write(b)
 }
 
 func (r *responseWriter) WriteHeader(code int) {
-	r.response.WriteHeader(code)
+	r.Response.WriteHeader(code)
 }

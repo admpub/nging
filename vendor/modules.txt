@@ -272,7 +272,7 @@ github.com/admpub/web-terminal/handler
 github.com/admpub/web-terminal/library/ssh
 github.com/admpub/web-terminal/library/telnet
 github.com/admpub/web-terminal/library/utils
-# github.com/admpub/websocket v1.0.1
+# github.com/admpub/websocket v1.0.2
 ## explicit
 github.com/admpub/websocket
 # github.com/andybalholm/brotli v1.0.0
@@ -1088,7 +1088,7 @@ github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mongo
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.3.8+incompatible
+# github.com/webx-top/echo v2.3.9+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code

@@ -126,7 +126,7 @@ type (
 		Writer() io.Writer
 		Object() interface{}
 
-		Hijack(func(net.Conn))
+		Hijacker(func(net.Conn)) error
 		Body() []byte
 		Redirect(string, int)
 		NotFound()

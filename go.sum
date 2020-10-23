@@ -278,6 +278,8 @@ github.com/admpub/web-terminal v0.0.0-20190705124712-e503d17936e9 h1:o7d1FS0BbTL
 github.com/admpub/web-terminal v0.0.0-20190705124712-e503d17936e9/go.mod h1:SpJflbA/NkKUPCXMd60Xudqen5URGK//lUSEYxhnddc=
 github.com/admpub/websocket v1.0.1 h1:SI1giUH8GGQLA+GcNNPxwxB9+ITupFkUaKfAEYZeaXM=
 github.com/admpub/websocket v1.0.1/go.mod h1:ty5Foyc1Q7rwFiwPMJdx4aqJjce030PhbnzJrM71e0s=
+github.com/admpub/websocket v1.0.2 h1:tnWIzw+8Lvd/2KN7yWiHdydOAHInbTmFcczZSScClrE=
+github.com/admpub/websocket v1.0.2/go.mod h1:ty5Foyc1Q7rwFiwPMJdx4aqJjce030PhbnzJrM71e0s=
 github.com/akamai/AkamaiOPEN-edgegrid-golang v0.9.0/go.mod h1:zpDJeKyp9ScW4NNrbdr+Eyxvry3ilGPewKoXw3XGN1k=
 github.com/akamai/AkamaiOPEN-edgegrid-golang v0.9.8/go.mod h1:aVvklgKsPENRkl29bNwrHISa1F+YLGTHArMxZMBqWM8=
 github.com/akamai/AkamaiOPEN-edgegrid-golang v0.9.18/go.mod h1:L+HB2uBoDgi3+r1pJEJcbGwyyHhd2QXaGsKLbDwtm8Q=
@@ -1140,6 +1142,8 @@ github.com/webx-top/db v1.1.2 h1:psvI0P5L5uMDeSHh6mZn9Qtp/cxlnKib2NxsWdjOriQ=
 github.com/webx-top/db v1.1.2/go.mod h1:a3c7UZmv1kaNVkiCjsb1gypf41vc9g+JcsZIxK7OYmU=
 github.com/webx-top/echo v2.3.8+incompatible h1:kIZdsp4KIyML261O7TWMJV0S4ZJAt55rQbOi8dIxkTc=
 github.com/webx-top/echo v2.3.8+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
+github.com/webx-top/echo v2.3.9+incompatible h1:ZOEqwkKUiVn2l+Kr/cgf/KCKnT/NHlQ4kIcXjCUZVpQ=
+github.com/webx-top/echo v2.3.9+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/image v0.0.1 h1:xg5pVu0GhfuTTfNjb3JueeNMLVgst6DcN9UI0pT6a2Y=
 github.com/webx-top/image v0.0.1/go.mod h1:+h1W1x6ci+EqAlbnKSEdpflMWrCGNlLqB0OcmfglzMg=
 github.com/webx-top/pagination v0.0.1 h1:TT6llyG/6aUaHcFdA6o7fmjbSUQVWpPxQb8Wbcwotxc=

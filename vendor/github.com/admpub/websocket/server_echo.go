@@ -15,7 +15,7 @@ import (
 	"github.com/webx-top/echo/engine"
 )
 
-// Upgrader specifies parameters for upgrading an HTTP connection to a
+// EchoUpgrader specifies parameters for upgrading an HTTP connection to a
 // WebSocket connection.
 type EchoUpgrader struct {
 	// Handler receives a websocket connection after the handshake has been
@@ -182,7 +182,7 @@ func (u *EchoUpgrader) Upgrade(ctx echo.Context, handler func(*Conn) error, resp
 	}
 	w.WriteHeader(http.StatusSwitchingProtocols)
 
-	w.Hijack(func(netConn net.Conn) {
+	err = w.Hijacker(func(netConn net.Conn) {
 		c := newConn(netConn, true, u.ReadBufferSize, u.WriteBufferSize)
 		c.subprotocol = subprotocol
 		if compress {
@@ -206,7 +206,7 @@ func (u *EchoUpgrader) Upgrade(ctx echo.Context, handler func(*Conn) error, resp
 	return err
 }
 
-// Upgrade upgrades the HTTP server connection to the WebSocket protocol.
+// EchoUpgrade upgrades the HTTP server connection to the WebSocket protocol.
 //
 // This function is deprecated, use websocket.Upgrader instead.
 //
@@ -247,7 +247,7 @@ func EchoUpgrade(ctx echo.Context, handler func(*Conn) error, responseHeader htt
 	return u.Upgrade(ctx, handler, responseHeader)
 }
 
-// Subprotocols returns the subprotocols requested by the client in the
+// EchoSubprotocols returns the subprotocols requested by the client in the
 // Sec-Websocket-Protocol header.
 func EchoSubprotocols(r engine.Request) []string {
 	h := strings.TrimSpace(r.Header().Get("Sec-Websocket-Protocol"))
@@ -261,7 +261,7 @@ func EchoSubprotocols(r engine.Request) []string {
 	return protocols
 }
 
-// IsWebSocketUpgrade returns true if the client requested upgrade to the
+// EchoIsWebSocketUpgrade returns true if the client requested upgrade to the
 // WebSocket protocol.
 func EchoIsWebSocketUpgrade(r engine.Request) bool {
 	reqHeader := r.Header().Std()

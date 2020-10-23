@@ -20,7 +20,7 @@ import (
 var ErrAlreadyCommitted = errors.New(`response already committed`)
 
 type Response struct {
-	context           *fasthttp.RequestCtx
+	*fasthttp.RequestCtx
 	header            engine.Header
 	status            int
 	size              int64
@@ -32,15 +32,15 @@ type Response struct {
 
 func NewResponse(c *fasthttp.RequestCtx) *Response {
 	return &Response{
-		context: c,
-		header:  &ResponseHeader{header: &c.Response.Header, stdhdr: nil},
-		writer:  c,
-		logger:  log.New("echo"),
+		RequestCtx: c,
+		header:     &ResponseHeader{header: &c.Response.Header, stdhdr: nil},
+		writer:     c,
+		logger:     log.New("echo"),
 	}
 }
 
 func (r *Response) Object() interface{} {
-	return r.context
+	return r.RequestCtx
 }
 
 func (r *Response) Header() engine.Header {
@@ -53,7 +53,7 @@ func (r *Response) WriteHeader(code int) {
 		return
 	}
 	r.status = code
-	r.context.SetStatusCode(code)
+	r.RequestCtx.SetStatusCode(code)
 	r.committed = true
 }
 
@@ -92,38 +92,39 @@ func (r *Response) Writer() io.Writer {
 	return r.writer
 }
 
-func (r *Response) Hijack(fn func(net.Conn)) {
-	r.context.Hijack(fasthttp.HijackHandler(fn))
+func (r *Response) Hijacker(fn func(net.Conn)) error {
+	r.RequestCtx.Hijack(fasthttp.HijackHandler(fn))
 	r.committed = true
+	return nil
 }
 
 func (r *Response) Body() []byte {
 	switch strings.ToLower(r.header.Get(`Content-Encoding`)) {
 	case `gzip`:
-		body, err := r.context.Response.BodyGunzip()
+		body, err := r.RequestCtx.Response.BodyGunzip()
 		if err != nil {
 			r.logger.Error(err)
 		}
 		return body
 	case `deflate`:
-		body, err := r.context.Response.BodyInflate()
+		body, err := r.RequestCtx.Response.BodyInflate()
 		if err != nil {
 			r.logger.Error(err)
 		}
 		return body
 	default:
-		return r.context.Response.Body()
+		return r.RequestCtx.Response.Body()
 	}
 }
 
 func (r *Response) Redirect(url string, code int) {
-	//r.context.Redirect(url, code)  bug: missing port number
+	//r.RequestCtx.Redirect(url, code)  bug: missing port number
 	r.header.Set(`Location`, url)
 	r.WriteHeader(code)
 }
 
 func (r *Response) NotFound() {
-	r.context.NotFound()
+	r.RequestCtx.NotFound()
 	r.committed = true
 }
 
@@ -132,12 +133,12 @@ func (r *Response) SetCookie(cookie *http.Cookie) {
 }
 
 func (r *Response) ServeFile(file string) {
-	fasthttp.ServeFile(r.context, file)
+	fasthttp.ServeFile(r.RequestCtx, file)
 	r.committed = true
 }
 
 func (r *Response) Stream(step func(io.Writer) bool) {
-	r.context.SetBodyStreamWriter(func(w *bufio.Writer) {
+	r.RequestCtx.SetBodyStreamWriter(func(w *bufio.Writer) {
 		//TODO
 	})
 }
@@ -153,7 +154,7 @@ func (r *Response) Error(errMsg string, args ...int) {
 }
 
 func (r *Response) reset(c *fasthttp.RequestCtx, h engine.Header) {
-	r.context = c
+	r.RequestCtx = c
 	r.header = h
 	r.status = http.StatusOK
 	r.size = 0
