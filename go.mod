@@ -133,7 +133,6 @@ require (
 	github.com/fatedier/kcp-go v2.0.4-0.20190803094908-fe8645b0a904+incompatible // indirect
 	github.com/fatih/color v1.9.0
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
-	github.com/francoispqt/gojay v1.2.13 // indirect
 	github.com/friendsofgo/errors v0.9.2 // indirect
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-openapi/strfmt v0.19.5 // indirect
@@ -187,7 +186,7 @@ require (
 	github.com/webx-top/codec v0.0.0-20200914105801-3782d81a0302
 	github.com/webx-top/com v0.0.4
 	github.com/webx-top/db v1.1.2
-	github.com/webx-top/echo v2.4.0+incompatible
+	github.com/webx-top/echo v2.4.1+incompatible
 	github.com/webx-top/image v0.0.1
 	github.com/webx-top/pagination v0.0.1
 	github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2 // indirect

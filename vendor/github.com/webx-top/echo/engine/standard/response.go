@@ -1,6 +1,7 @@
 package standard
 
 import (
+	"bufio"
 	"io"
 	"net"
 	"net/http"
@@ -165,6 +166,20 @@ func (r *Response) Stream(step func(io.Writer) bool) {
 			}
 		}
 	}
+}
+
+func (r *Response) Flush() {
+	if flusher, ok := r.ResponseWriter.(http.Flusher); ok {
+		flusher.Flush()
+	}
+}
+
+func (r *Response) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	return r.ResponseWriter.(http.Hijacker).Hijack()
+}
+
+func (r *Response) CloseNotify() <-chan bool {
+	return r.ResponseWriter.(http.CloseNotifier).CloseNotify()
 }
 
 func (r *Response) StdResponseWriter() http.ResponseWriter {
