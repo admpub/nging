@@ -175,7 +175,9 @@ func RelationOne(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			sel := builder.SelectFrom(table).Where(cond)
 			if relationMap != nil {
 				if chainFn, ok := relationMap[name]; ok {
-					sel = chainFn(sel)
+					if sel = chainFn(sel); sel == nil {
+						return nil
+					}
 				}
 			}
 			err = sel.All(foreignIV)
@@ -206,7 +208,9 @@ func RelationOne(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			sel := builder.SelectFrom(table).Where(cond)
 			if relationMap != nil {
 				if chainFn, ok := relationMap[name]; ok {
-					sel = chainFn(sel)
+					if sel = chainFn(sel); sel == nil {
+						return nil
+					}
 				}
 			}
 			err = sel.One(foreignIV)
@@ -301,7 +305,9 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			})
 			if relationMap != nil {
 				if chainFn, ok := relationMap[name]; ok {
-					sel = chainFn(sel)
+					if sel = chainFn(sel); sel == nil {
+						return nil
+					}
 				}
 			}
 			err = sel.All(foreignIV)
@@ -373,7 +379,9 @@ func RelationAll(builder SQLBuilder, data interface{}, relationMap map[string]Bu
 			})
 			if relationMap != nil {
 				if chainFn, ok := relationMap[name]; ok {
-					sel = chainFn(sel)
+					if sel = chainFn(sel); sel == nil {
+						return nil
+					}
 				}
 			}
 			err = sel.All(foreignIV)

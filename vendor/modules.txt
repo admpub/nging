@@ -1069,7 +1069,7 @@ github.com/webx-top/codec
 ## explicit
 github.com/webx-top/com
 github.com/webx-top/com/httpClientOptions
-# github.com/webx-top/db v1.1.2
+# github.com/webx-top/db v1.1.3
 ## explicit
 github.com/webx-top/db
 github.com/webx-top/db/internal/cache
