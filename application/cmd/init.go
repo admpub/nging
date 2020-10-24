@@ -36,8 +36,10 @@ import (
 func Init() {
 	config.Version.Number = echo.String(`VERSION`)
 	config.Version.Label = echo.String(`LABEL`)
-	if !event.Bindata {
+	if event.Licensed {
 		license.SkipLicenseCheck = true
+	}
+	if !event.Bindata {
 		event.Develop = true
 	}
 	buildTime := echo.String(`BUILD_TIME`)

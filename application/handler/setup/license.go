@@ -77,7 +77,7 @@ func License(c echo.Context) error {
 	c.Set(`machineID`, machineID)
 	c.Set(`licenseFile`, license.FilePath())
 	productURL := license.ProductURL() + `?version=` + config.Version.Number + `&machineID=` + machineID + `&source=`
-	productURL += url.QueryEscape(c.Site() + c.Request().URL().String()) //c.RequestURI()
+	productURL += url.QueryEscape(c.RequestURI())
 	c.Set(`productURL`, productURL)
 	c.Set(`fileName`, license.FileName())
 	return c.Render(`license`, err)
