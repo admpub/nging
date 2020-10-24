@@ -36,6 +36,7 @@ import (
 func Init() {
 	config.Version.Number = echo.String(`VERSION`)
 	config.Version.Label = echo.String(`LABEL`)
+	license.SetVersion(config.Version.Number)
 	if event.Licensed {
 		license.SkipLicenseCheck = true
 	}
@@ -56,7 +57,7 @@ func Init() {
 	middleware.DefaultLogWriter = stdLogWriter
 	stdLog.SetOutput(stdLogWriter)
 	stdLog.SetFlags(stdLog.Lshortfile)
-	event.Licensed = license.Ok(``)
+	event.Licensed = license.Ok(nil)
 	event.MustLicensed = echo.Bool(`MUST_LICENSED`)
 	config.Version.Licensed = event.Licensed
 	config.Version.CommitID = echo.String(`COMMIT`)

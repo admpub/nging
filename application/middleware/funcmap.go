@@ -103,6 +103,7 @@ func ErrorPageFunc(c echo.Context) error {
 		}
 		return siteURI
 	})
+	c.SetFunc(`RequestURI`, c.RequestURI)
 	c.SetFunc(`GetReturnURL`, func(varNames ...string) string {
 		return common.GetReturnURL(c, varNames...)
 	})

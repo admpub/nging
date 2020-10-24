@@ -72,8 +72,8 @@ func (v *ValidResult) Validate() error {
 	return nil
 }
 
-func validateFromOfficial(machineID, domain string) error {
-	response := rest.Get(FullLicenseURL(machineID, domain))
+func validateFromOfficial(machineID string, ctx echo.Context) error {
+	response := rest.Get(FullLicenseURL(machineID, ctx))
 	if response == nil {
 		return ErrConnectionFailed
 	}

@@ -26,7 +26,7 @@ import (
 func LicenseCheck(h echo.Handler) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		//验证授权文件
-		if license.Ok(c.Host()) {
+		if license.Ok(c) {
 			return h.Handle(c)
 		}
 

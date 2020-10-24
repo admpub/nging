@@ -20,7 +20,6 @@ package setup
 
 import (
 	"errors"
-	"net/url"
 
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
@@ -30,9 +29,8 @@ import (
 
 // License 获取商业授权
 func License(c echo.Context) error {
-	domain := c.Host()
 	machineID, _ := license.MachineID()
-	err := license.Check(machineID, domain)
+	err := license.Check(machineID, c)
 	/*
 		if err != nil {
 			err = license.Generate(nil)
@@ -68,7 +66,7 @@ func License(c echo.Context) error {
 	}
 	//需要重新获取授权文件
 	if err == license.ErrLicenseNotFound {
-		err = license.Download(machineID, domain)
+		err = license.Download(machineID, c)
 		c.Set(`downloaded`, err == nil)
 	} else {
 		c.Set(`downloaded`, false)
@@ -76,8 +74,8 @@ func License(c echo.Context) error {
 
 	c.Set(`machineID`, machineID)
 	c.Set(`licenseFile`, license.FilePath())
-	productURL := license.ProductURL() + `?version=` + config.Version.Number + `&machineID=` + machineID + `&source=`
-	productURL += url.QueryEscape(c.RequestURI())
+
+	productURL := license.ProductURL() + `?` + license.URLValues(machineID, c).Encode()
 	c.Set(`productURL`, productURL)
 	c.Set(`fileName`, license.FileName())
 	return c.Render(`license`, err)

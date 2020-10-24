@@ -43,7 +43,7 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 		}
 
 		//验证授权文件
-		if !license.Ok(c.Host()) {
+		if !license.Ok(c) {
 			c.Data().SetError(c.E(`请先获取本系统授权`))
 			return c.Redirect(handler.URLFor(`/license`))
 		}

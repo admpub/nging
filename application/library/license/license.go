@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -127,11 +128,18 @@ func License() lib.LicenseData {
 }
 
 // Check 检查权限
-func Check(machineID, domain string) error {
+func Check(machineID string, ctx echo.Context) error {
 	if SkipLicenseCheck {
 		return nil
 	}
-	licenseError = validateFromOfficial(machineID, domain)
+	if len(machineID) == 0 {
+		var err error
+		machineID, err = MachineID()
+		if err != nil {
+			return err
+		}
+	}
+	licenseError = validateFromOfficial(machineID, ctx)
 	if licenseError != ErrConnectionFailed {
 		return licenseError
 	}
@@ -140,7 +148,7 @@ func Check(machineID, domain string) error {
 	return licenseError
 }
 
-func Ok(domain string) bool {
+func Ok(ctx echo.Context) bool {
 	if SkipLicenseCheck {
 		return true
 	}
@@ -157,7 +165,7 @@ func Ok(domain string) bool {
 		return true
 	default:
 		machineID, _ := MachineID()
-		err := Check(machineID, domain)
+		err := Check(machineID, ctx)
 		if err == nil {
 			licenseError = nil
 			return true
@@ -285,14 +293,32 @@ func MachineID() (string, error) {
 }
 
 // FullLicenseURL 包含完整参数的授权网址
-func FullLicenseURL(machineID, domain string) string {
-	return licenseURL + `?os=` + runtime.GOOS + `&arch=` + runtime.GOARCH + `&version=` + licenseVersion + `&machineID=` + machineID + `&domain=` + domain + `&time=` + time.Now().Format(`20060102-150405`)
+func FullLicenseURL(machineID string, ctx echo.Context) string {
+	return licenseURL + `?` + URLValues(machineID, ctx).Encode()
+}
+
+// URLValues 组装网址参数
+func URLValues(machineID string, ctx echo.Context) url.Values {
+	if len(machineID) == 0 {
+		machineID, _ = MachineID()
+	}
+	v := url.Values{}
+	v.Set(`os`, runtime.GOOS)
+	v.Set(`arch`, runtime.GOARCH)
+	v.Set(`version`, licenseVersion)
+	v.Set(`machineID`, machineID)
+	if ctx != nil {
+		v.Set(`domain`, ctx.Domain())
+		v.Set(`source`, ctx.RequestURI())
+	}
+	v.Set(`time`, time.Now().Local().Format(`20060102-150405`))
+	return v
 }
 
 // Download 从官方服务器重新下载许可证
-func Download(machineID, domain string) error {
+func Download(machineID string, ctx echo.Context) error {
 	operation := `获取授权证书失败：%v`
-	response := rest.Get(FullLicenseURL(machineID, domain) + `&pipe=download`)
+	response := rest.Get(FullLicenseURL(machineID, ctx) + `&pipe=download`)
 	if response.StatusCode != http.StatusOK {
 		return fmt.Errorf(operation, response.Status)
 	}
