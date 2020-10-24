@@ -20,6 +20,7 @@ package setup
 
 import (
 	"errors"
+	"net/url"
 
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/config"
@@ -75,7 +76,9 @@ func License(c echo.Context) error {
 
 	c.Set(`machineID`, machineID)
 	c.Set(`licenseFile`, license.FilePath())
-	c.Set(`productURL`, license.ProductURL()+`?version=`+config.Version.Number+`&machineID=`+machineID)
+	productURL := license.ProductURL() + `?version=` + config.Version.Number + `&machineID=` + machineID + `&source=`
+	productURL += url.QueryEscape(c.Site() + c.Request().URL().String()) //c.RequestURI()
+	c.Set(`productURL`, productURL)
 	c.Set(`fileName`, license.FileName())
 	return c.Render(`license`, err)
 }
