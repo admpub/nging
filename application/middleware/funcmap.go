@@ -45,7 +45,7 @@ import (
 
 var (
 	DefaultAvatarURL = `/public/assets/backend/images/user_128.png`
-	EmptyURL         = url.URL{}
+	EmptyURL         = &url.URL{}
 )
 
 func ErrorPageFunc(c echo.Context) error {
@@ -97,11 +97,11 @@ func ErrorPageFunc(c echo.Context) error {
 		siteURI, _ = url.Parse(siteURL)
 	}
 	c.Internal().Set(`siteURI`, siteURI)
-	c.SetFunc(`SiteURI`, func() url.URL {
+	c.SetFunc(`SiteURI`, func() *url.URL {
 		if siteURI == nil {
 			return EmptyURL
 		}
-		return *siteURI
+		return siteURI
 	})
 	c.SetFunc(`GetReturnURL`, func(varNames ...string) string {
 		return common.GetReturnURL(c, varNames...)
