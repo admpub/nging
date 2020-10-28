@@ -34,12 +34,13 @@ type Validator interface {
 
 // LicenseInfo - Core information about a license
 type LicenseInfo struct {
-	Name       string    `json:"name,omitempty"`
-	LicenseID  string    `json:"licenseID,omitempty"`
-	MachineID  string    `json:"machineID,omitempty"`
-	Version    string    `json:"version,omitempty"`
-	Expiration time.Time `json:"expiration"`
-	Extra      Validator `json:"extra,omitempty"`
+	Name       string    `json:"name,omitempty" xml:"name,omitempty"`
+	LicenseID  string    `json:"licenseID,omitempty" xml:"licenseID,omitempty"`
+	MachineID  string    `json:"machineID,omitempty" xml:"machineID,omitempty"`
+	Version    string    `json:"version,omitempty" xml:"version,omitempty"`
+	Package    string    `json:"package,omitempty" xml:"package,omitempty"`
+	Expiration time.Time `json:"expiration" xml:"expiration,omitempty"`
+	Extra      Validator `json:"extra,omitempty" xml:"extra,omitempty"`
 	validator  Validator
 }
 
@@ -62,8 +63,8 @@ func (a LicenseInfo) Remaining(langs ...string) *com.Durafmt {
 
 // LicenseData - This is the license data we serialise into a license file
 type LicenseData struct {
-	Info LicenseInfo `json:"info"`
-	Key  string      `json:"key"`
+	Info LicenseInfo `json:"info" xml:"info"`
+	Key  string      `json:"key" xml:"key"`
 }
 
 // NewLicense from given info

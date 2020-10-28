@@ -32,6 +32,7 @@ import (
 	_ "github.com/admpub/bindata/v3"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/cmd"
+
 	//"github.com/admpub/nging/application/library/loader"
 	"github.com/webx-top/echo"
 
@@ -48,6 +49,7 @@ var (
 	COMMIT     string
 	LABEL      = `dev` //beta/alpha/stable
 	VERSION    = `3.0.0`
+	PACKAGE    = `free`
 
 	version   string
 	schemaVer = 3.9 //数据表结构版本
@@ -62,6 +64,7 @@ func main() {
 	echo.Set(`COMMIT`, COMMIT)
 	echo.Set(`LABEL`, LABEL)
 	echo.Set(`VERSION`, VERSION)
+	echo.Set(`PACKAGE`, PACKAGE)
 	echo.Set(`SCHEMA_VER`, schemaVer)
 	exec()
 }

@@ -24,6 +24,7 @@ import (
 	"github.com/webx-top/com"
 )
 
+// Version 版本信息
 var Version = &VersionInfo{Name: `Nging`}
 var versionLabelWeight = map[string]int{
 	`stable`: 0,
@@ -34,6 +35,7 @@ var versionLabelWeight = map[string]int{
 type VersionInfo struct {
 	Name      string    //软件名称
 	Number    string    //版本号 1.0.1
+	Package   string    //套餐
 	Label     string    //版本标签 beta/alpha/stable
 	DBSchema  float64   //数据库表版本 例如：1.2
 	BuildTime string    //构建时间

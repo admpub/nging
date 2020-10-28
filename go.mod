@@ -80,7 +80,7 @@ require (
 	github.com/admpub/imaging v1.5.0 // indirect
 	github.com/admpub/ini v1.38.2
 	github.com/admpub/ip2region v1.2.5
-	github.com/admpub/license_gen v0.0.0-20181201145035-5d7646743eec
+	github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
 	github.com/admpub/log v0.0.0-20191027043925-a6c03a7421a3
 	github.com/admpub/logcool v0.3.1
 	github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d

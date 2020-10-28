@@ -36,7 +36,9 @@ import (
 func Init() {
 	config.Version.Number = echo.String(`VERSION`)
 	config.Version.Label = echo.String(`LABEL`)
+	config.Version.Package = echo.String(`PACKAGE`)
 	license.SetVersion(config.Version.Number + `-` + config.Version.Label)
+	license.SetPackage(config.Version.Package)
 	if event.Licensed {
 		license.SkipLicenseCheck = true
 	}

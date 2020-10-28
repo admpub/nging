@@ -38,21 +38,24 @@ import (
 )
 
 var (
-	trackerURL         = `//www.webx.top/product/script/nging/tracker.js`
-	productURL         = `http://www.webx.top/product/detail/nging`
-	licenseURL         = `http://www.webx.top/product/license/nging`
-	versionURL         = `http://www.webx.top/product/version/nging`
-	licenseFileName    = `license.key`
-	licenseFile        = filepath.Join(echo.Wd(), licenseFileName)
-	licenseExists      bool
-	licenseError       = lib.UnlicensedVersion
-	licenseData        *lib.LicenseData
-	licenseVersion     string
-	machineID          string
-	domain             string
-	emptyLicense       = lib.LicenseData{}
+	trackerURL      = `//www.webx.top/product/script/nging/tracker.js`
+	productURL      = `http://www.webx.top/product/detail/nging`
+	licenseURL      = `http://www.webx.top/product/license/nging`
+	versionURL      = `http://www.webx.top/product/version/nging`
+	licenseFileName = `license.key`
+	licenseFile     = filepath.Join(echo.Wd(), licenseFileName)
+	licenseExists   bool
+	licenseError    = lib.UnlicensedVersion
+	licenseData     *lib.LicenseData
+	licenseVersion  string
+	licensePackage  string
+	machineID       string
+	domain          string
+	emptyLicense    = lib.LicenseData{}
+	// ErrLicenseNotFound 授权证书不存在
 	ErrLicenseNotFound = errors.New(`License does not exist`)
-	SkipLicenseCheck   = true
+	// SkipLicenseCheck 跳过授权检测
+	SkipLicenseCheck = true
 )
 
 type ServerURL struct {
@@ -92,8 +95,16 @@ func SetVersion(version string) {
 	licenseVersion = version
 }
 
+func SetPackage(pkg string) {
+	licensePackage = pkg
+}
+
 func Version() string {
 	return licenseVersion
+}
+
+func Package() string {
+	return licensePackage
 }
 
 func ProductURL() string {
@@ -252,6 +263,7 @@ func Generate(privBytes []byte, pemSaveDirs ...string) error {
 		Name:       `demo`,
 		LicenseID:  `0`,
 		Version:    licenseVersion,
+		Package:    licensePackage,
 		Expiration: time.Now().Add(30 * 24 * time.Hour),
 	}
 	info.MachineID, err = MachineID()
@@ -306,6 +318,7 @@ func URLValues(machineID string, ctx echo.Context) url.Values {
 	v.Set(`os`, runtime.GOOS)
 	v.Set(`arch`, runtime.GOARCH)
 	v.Set(`version`, licenseVersion)
+	v.Set(`package`, licensePackage)
 	v.Set(`machineID`, machineID)
 	if ctx != nil {
 		v.Set(`domain`, ctx.Domain())
