@@ -1355,8 +1355,19 @@ var App = function () {
 		},
 		switchStatus: function (a, type, editURL, callback) {
 			if (type == null) type = $(a).data('type');
+			var checkedValue = $(a).data('v-checked')||'N',
+			uncheckedValue = $(a).data('v-unchecked')||'Y';
+			if (type) {
+				var tmp=String(type).split('=');//disabled=Y|N
+				type=tmp[0];
+				if(tmp.length>1&&tmp[1]){
+					var optValues=tmp[1].split('|');
+					checkedValue=optValues[0];
+					uncheckedValue=optValues[1];
+				}
+			}
 			if (editURL == null) editURL = $(a).data('url');
-			var that = $(a), status = that.attr('data-' + type) == 'Y' ? 'N' : 'Y', data = { id: that.data('id') };
+			var that = $(a), status = that.attr('data-' + type) == uncheckedValue ? checkedValue : uncheckedValue, data = { id: that.data('id') };
 			var v = that.val();
 			data[type] = status;
 			if (String(editURL).charAt(0) != '/') editURL = BACKEND_URL + '/' + editURL;
