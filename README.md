@@ -28,9 +28,9 @@ import (
 
 ## 可执行文件下载
 
-* [最新版下载地址](http://dl.eget.io/nging/latest/)
+* [最新版下载地址](http://dl.webx.top/nging/latest/)
 
-* [最新版备用地址](http://dl2.eget.io/nging/latest/)
+* [最新版备用地址](http://dl2.webx.top/nging/latest/)
 
 ## 版本说明
 
