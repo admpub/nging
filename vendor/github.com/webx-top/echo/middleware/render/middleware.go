@@ -175,7 +175,7 @@ func HTTPErrorHandler(opt *Options) echo.HTTPErrorHandler {
 			"debug":   c.Echo().Debug(),
 			"code":    code,
 			"panic":   panicErr,
-		}, 0)
+		}, data.GetCode().Int())
 
 	END:
 		if renderErr := c.SetAuto(true).Render(tmpl, nil); renderErr != nil {

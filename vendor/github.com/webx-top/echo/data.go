@@ -420,6 +420,18 @@ func (a *KVData) Slice() []*KV {
 	return a.slice
 }
 
+//Keys 返回所有K值
+func (a *KVData) Keys() []string {
+	keys := make([]string, len(a.slice))
+	for i, v := range a.slice {
+		if v == nil {
+			continue
+		}
+		keys[i] = v.K
+	}
+	return keys
+}
+
 //Index 返回某个key的所有索引值
 func (a *KVData) Index(k string) []int {
 	v, _ := a.index[k]
