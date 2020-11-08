@@ -1,6 +1,8 @@
 package backend
 
 import (
+	"strings"
+
 	"github.com/admpub/nging/application/handler"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/subdomains"
@@ -28,7 +30,11 @@ func BackendURLFunc(c echo.Context) error {
 		for _, ppath := range paths {
 			r += ppath
 		}
-		return subdomains.Default.URL(r, `backend`)
+		if !strings.HasPrefix(r, `/`) {
+			r = `/` + r
+		}
+		return r
+		//return subdomains.Default.URL(r, `backend`)
 	})
 	c.SetFunc(`FrontendURL`, func(paths ...string) (r string) {
 		r = handler.FrontendPrefix
