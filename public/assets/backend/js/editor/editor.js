@@ -33,6 +33,7 @@ App.loader.libs.selectPage = ['#selectpage/selectpage.css','#selectpage/selectpa
 App.loader.libs.jqueryui = ['#jquery.ui/jquery-ui.custom.min.js','#jquery.ui/jquery-ui.touch-punch.min.js'];
 App.loader.libs.dropzone = ['#jquery.ui/css/dropzone.min.css','#dropzone/dropzone.min.js'];
 App.loader.libs.loadingOverlay = ['#loadingoverlay/loadingoverlay.min.js'];
+App.loader.libs.dateRangePicker = ['#daterangepicker/daterangepicker.min.css','#daterangepicker/moment.min.js','#daterangepicker/jquery.daterangepicker.min.js','#behaviour/page/datetime.min.js'];
 window.UEDITOR_HOME_URL = ASSETS_URL + '/js/editor/ueditor/';
 
 App.editor = {
@@ -971,4 +972,8 @@ App.editor.dropzone = function (elem,options,onSuccss,onError,onRemove) {
 	});
 	$(elem).data('dropzone',dropzone);
 	return dropzone;
-}
+};
+App.editor.dateRangePicker = function(rangeElem, options){
+	App.loader.defined(typeof (App.daterangepicker), 'dateRangePicker');
+	return App.daterangepicker(rangeElem, options)
+};
