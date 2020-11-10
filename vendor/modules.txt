@@ -1124,7 +1124,7 @@ github.com/webx-top/echo/param
 github.com/webx-top/echo/subdomains
 github.com/webx-top/echo/testing
 github.com/webx-top/echo/testing/test
-# github.com/webx-top/image v0.0.1
+# github.com/webx-top/image v0.0.3
 ## explicit
 github.com/webx-top/image
 # github.com/webx-top/pagination v0.0.1

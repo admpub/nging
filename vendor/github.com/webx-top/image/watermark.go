@@ -47,6 +47,7 @@ type Watermark struct {
 	image   image.Image // 水印图片
 	padding int         // 水印留的边白
 	pos     Pos         // 水印的位置
+	retry   int
 }
 
 func NewWatermarkData(f multipart.File) *WatermarkData {
@@ -200,7 +201,7 @@ func (w *Watermark) Mark(src io.ReadWriteSeeker, ext string) error {
 		return errors.WithMessage(ErrUnsupportedWatermarkType, ext)
 	}
 	if err != nil {
-		if IsFormatError(err) {
+		if w.retry < 1 && IsFormatError(err) {
 			body := make([]byte, sniffLen)
 			src.Seek(0, 0)
 			if _, err := io.ReadFull(src, body); err != nil {
@@ -212,6 +213,7 @@ func (w *Watermark) Mark(src io.ReadWriteSeeker, ext string) error {
 				return err
 			}
 			src.Seek(0, 0)
+			w.retry++
 			return w.Mark(src, newExt)
 		}
 		return err

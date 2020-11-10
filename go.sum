@@ -1110,6 +1110,8 @@ github.com/webx-top/echo v2.4.3+incompatible h1:SfPszysikzeF29rze3rhtJNT9pSad0z3
 github.com/webx-top/echo v2.4.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/image v0.0.1 h1:xg5pVu0GhfuTTfNjb3JueeNMLVgst6DcN9UI0pT6a2Y=
 github.com/webx-top/image v0.0.1/go.mod h1:+h1W1x6ci+EqAlbnKSEdpflMWrCGNlLqB0OcmfglzMg=
+github.com/webx-top/image v0.0.3 h1:TdAbN/dfywsmT0WsGZ65iqIn1TXVzZdenHRFDrayFZc=
+github.com/webx-top/image v0.0.3/go.mod h1:+h1W1x6ci+EqAlbnKSEdpflMWrCGNlLqB0OcmfglzMg=
 github.com/webx-top/pagination v0.0.1 h1:TT6llyG/6aUaHcFdA6o7fmjbSUQVWpPxQb8Wbcwotxc=
 github.com/webx-top/pagination v0.0.1/go.mod h1:5jelnjgnc0GwTVBhX0SjlSKMGFOym3IoXpnmvB+1LQo=
 github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2 h1:lqnGa1BnWT7pN+c9V31bik0lTp5XxyOMRp7ICsZ6K5M=

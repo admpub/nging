@@ -36,6 +36,11 @@ func TextToImage(textContent string, fontFile string, args ...interface{}) *imag
 	var c, textLayer *image.RGBA
 	rlen := len(args)
 	var width, height int
+	opt := NewTextImageOptions()
+	opt.Text = textContent
+	opt.FontFile = fontFile
+	opt.Width = width
+	opt.Height = height
 	if rlen > 0 {
 		pngBgImgPath := args[0].(string)
 		var img image.Image
@@ -54,7 +59,9 @@ func TextToImage(textContent string, fontFile string, args ...interface{}) *imag
 		if rlen > 2 {
 			height = args[2].(int)
 		}
-		textLayer = TextImage(textContent, fontFile, width, height)
+		opt.Width = width
+		opt.Height = height
+		textLayer = TextImage(opt)
 		width = textLayer.Bounds().Max.X
 		height = textLayer.Bounds().Max.Y
 		c = image.NewRGBA(image.Rect(0, 0, width, height))
@@ -63,7 +70,7 @@ func TextToImage(textContent string, fontFile string, args ...interface{}) *imag
 			draw.Draw(c, c.Bounds(), img, image.Point{0, 0}, draw.Src)
 		}
 	} else {
-		textLayer = TextImage(textContent, fontFile, width, height)
+		textLayer = TextImage(opt)
 		width = textLayer.Bounds().Max.X
 		height = textLayer.Bounds().Max.Y
 		c = image.NewRGBA(image.Rect(0, 0, width, height))
@@ -75,34 +82,51 @@ func TextToImage(textContent string, fontFile string, args ...interface{}) *imag
 	return c
 }
 
-func TextImage(textContent string, fontFile string, width int, height int) *image.RGBA {
-	lines := strings.Split(textContent, "\n")
-	posX := 10
-	posY := 10
-	spacing := 1.5
-	var fontsize float64 = 8
+func NewTextImageOptions() *TextImageOptions {
+	return &TextImageOptions{
+		FontSize: 8,
+		PosX:     10,
+		PosY:     10,
+		Spacing:  1.5,
+		DPI:      300,
+	}
+}
 
+type TextImageOptions struct {
+	Text     string
+	FontFile string
+	FontSize float64
+	Width    int
+	Height   int
+	PosX     int
+	PosY     int
+	Spacing  float64
+	DPI      float64
+}
+
+func TextImage(opt *TextImageOptions) *image.RGBA {
+	lines := strings.Split(opt.Text, "\n")
 	// read font
-	fontBytes, err := ioutil.ReadFile(fontFile)
+	fontBytes, err := ioutil.ReadFile(opt.FontFile)
 	checkErr(err)
 	font, err := freetype.ParseFont(fontBytes)
 	checkErr(err)
 
 	c := freetype.NewContext()
-	c.SetDPI(300)
+	c.SetDPI(opt.DPI)
 	c.SetFont(font)
-	c.SetFontSize(fontsize)
+	c.SetFontSize(opt.FontSize)
 
 	// Initialize the context.
 	fg, bg := image.White, image.Transparent
-	if width <= 0 {
-		s := float64(c.PointToFixed(fontsize) >> 8)
-		width = int(math.Ceil((s-float64(s)/2.5)*float64(len(textContent)) + float64(posX)*2))
+	if opt.Width <= 0 {
+		s := float64(c.PointToFixed(opt.FontSize) >> 8)
+		opt.Width = int(math.Ceil((s-float64(s)/2.5)*float64(len(opt.Text)) + float64(opt.PosX)*2))
 	}
-	if height <= 0 {
-		height = len(lines)*int(c.PointToFixed(fontsize*spacing)>>8) + posY*2
+	if opt.Height <= 0 {
+		opt.Height = len(lines)*int(c.PointToFixed(opt.FontSize*opt.Spacing)>>8) + opt.PosY*2
 	}
-	rgba := image.NewRGBA(image.Rect(0, 0, width, height))
+	rgba := image.NewRGBA(image.Rect(0, 0, opt.Width, opt.Height))
 
 	draw.Draw(rgba, rgba.Bounds(), bg, image.ZP, draw.Src)
 	c.SetClip(rgba.Bounds())
@@ -110,11 +134,11 @@ func TextImage(textContent string, fontFile string, width int, height int) *imag
 	c.SetSrc(fg)
 
 	// Draw the text
-	pt := freetype.Pt(posX, posY+int(c.PointToFixed(fontsize)>>8))
+	pt := freetype.Pt(opt.PosX, opt.PosY+int(c.PointToFixed(opt.FontSize)>>8))
 	for _, s := range lines {
 		_, err = c.DrawString(s, pt)
 		checkErr(err)
-		pt.Y += c.PointToFixed(fontsize * spacing)
+		pt.Y += c.PointToFixed(opt.FontSize * opt.Spacing)
 	}
 
 	return rgba
