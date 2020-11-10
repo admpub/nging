@@ -187,7 +187,7 @@ require (
 	github.com/webx-top/com v0.0.4
 	github.com/webx-top/db v1.1.3
 	github.com/webx-top/echo v2.4.3+incompatible
-	github.com/webx-top/image v0.0.3
+	github.com/webx-top/image v0.0.4
 	github.com/webx-top/pagination v0.0.1
 	github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2 // indirect
 	github.com/webx-top/validation v0.0.1 // indirect

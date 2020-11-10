@@ -3,6 +3,7 @@ package image
 import (
 	"bufio"
 	"image"
+	"image/color"
 	"image/draw"
 	"image/png"
 	"io/ioutil"
@@ -84,24 +85,28 @@ func TextToImage(textContent string, fontFile string, args ...interface{}) *imag
 
 func NewTextImageOptions() *TextImageOptions {
 	return &TextImageOptions{
-		FontSize: 8,
-		PosX:     10,
-		PosY:     10,
-		Spacing:  1.5,
-		DPI:      300,
+		FontSize:        8,
+		PosX:            10,
+		PosY:            10,
+		Spacing:         1.5,
+		DPI:             300,
+		ForegroundColor: color.White,
+		BackgroundColor: color.Transparent,
 	}
 }
 
 type TextImageOptions struct {
-	Text     string
-	FontFile string
-	FontSize float64
-	Width    int
-	Height   int
-	PosX     int
-	PosY     int
-	Spacing  float64
-	DPI      float64
+	Text            string
+	FontFile        string
+	FontSize        float64
+	Width           int
+	Height          int
+	PosX            int
+	PosY            int
+	Spacing         float64
+	DPI             float64
+	ForegroundColor color.Color // 前景色
+	BackgroundColor color.Color // 背景色
 }
 
 func TextImage(opt *TextImageOptions) *image.RGBA {
@@ -118,7 +123,7 @@ func TextImage(opt *TextImageOptions) *image.RGBA {
 	c.SetFontSize(opt.FontSize)
 
 	// Initialize the context.
-	fg, bg := image.White, image.Transparent
+	fg, bg := image.NewUniform(opt.ForegroundColor), image.NewUniform(opt.BackgroundColor)
 	if opt.Width <= 0 {
 		s := float64(c.PointToFixed(opt.FontSize) >> 8)
 		opt.Width = int(math.Ceil((s-float64(s)/2.5)*float64(len(opt.Text)) + float64(opt.PosX)*2))
