@@ -185,7 +185,7 @@ func (c *xContext) IsAjax() bool {
 }
 
 func (c *xContext) IsPjax() bool {
-	return len(c.Header(`X-PJAX`)) > 0
+	return len(c.Header(`X-PJAX`)) > 0 || len(c.PjaxContainer()) > 0
 }
 
 func (c *xContext) PjaxContainer() string {
