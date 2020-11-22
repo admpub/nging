@@ -237,7 +237,7 @@ github.com/admpub/securecookie
 # github.com/admpub/service v0.0.0-20200628035946-b971165ffff2
 ## explicit
 github.com/admpub/service
-# github.com/admpub/sessions v0.0.0-20201122092736-0b7b4a84d61a
+# github.com/admpub/sessions v0.0.0-20201122094053-d1d15b8bee22
 ## explicit
 github.com/admpub/sessions
 # github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede

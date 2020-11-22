@@ -73,6 +73,11 @@ func (s *Session) AddFlash(value interface{}, vars ...string) {
 	s.Values[key] = append(flashes, value)
 }
 
+// Reload reload session data
+func (s *Session) Reload(ctx echo.Context) error {
+	return s.store.Reload(ctx, s)
+}
+
 // Save is a convenience method to save this session. It is the same as calling
 // store.Save(request, response, session). You should call Save before writing to
 // the response or returning from the handler.

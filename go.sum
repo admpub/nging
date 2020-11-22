@@ -254,6 +254,8 @@ github.com/admpub/sessions v0.0.0-20200615143229-e7dd49c7c4f5 h1:psaGCl5GE0RhyU/
 github.com/admpub/sessions v0.0.0-20200615143229-e7dd49c7c4f5/go.mod h1:sgTgL2Hn7pMvZc09uxd9TVPXMSykzoZI27fpMXZu/5U=
 github.com/admpub/sessions v0.0.0-20201122092736-0b7b4a84d61a h1:k0nsbplmRT9ARXYnAqJsLq3Y6HCoyk4xiaEvE2mrJps=
 github.com/admpub/sessions v0.0.0-20201122092736-0b7b4a84d61a/go.mod h1:sgTgL2Hn7pMvZc09uxd9TVPXMSykzoZI27fpMXZu/5U=
+github.com/admpub/sessions v0.0.0-20201122094053-d1d15b8bee22 h1:YQmeMX7pNhrsCMPE2NSbn4wQFruVOpBZ2SA4DshdJwQ=
+github.com/admpub/sessions v0.0.0-20201122094053-d1d15b8bee22/go.mod h1:sgTgL2Hn7pMvZc09uxd9TVPXMSykzoZI27fpMXZu/5U=
 github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede h1:JYvqawpNo1Uc0+UFguWxCjoZSuCXUY+AVwdV1znAe8s=
 github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede/go.mod h1:6/M8sECTqSzuUsSlAB6Ayn/wWBp//vcwnl6I3VoaLa8=
 github.com/admpub/sockjs-go v0.0.0-20170208085255-715e9716fc23 h1:U1KOAhVNV8cQIQGrUCimkN6DZdI/EtyUiFu+L78249M=
