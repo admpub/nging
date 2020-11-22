@@ -15,9 +15,14 @@
    limitations under the License.
 
 */
+
 package engine
 
 import (
+	"encoding/base32"
+	"strings"
+
+	"github.com/admpub/securecookie"
 	"github.com/admpub/sessions"
 	"github.com/webx-top/echo"
 )
@@ -49,6 +54,19 @@ func StoreEngine(options *echo.SessionOptions) (store sessions.Store) {
 		}
 	}
 	return
+}
+
+func GenerateSessionID(prefix ...string) string {
+	var _prefix string
+	if len(prefix) > 0 {
+		_prefix = prefix[0]
+	}
+	return _prefix + strings.TrimRight(
+		base32.StdEncoding.EncodeToString(
+			securecookie.GenerateRandomKey(32),
+		),
+		"=",
+	)
 }
 
 var stores = map[string]sessions.Store{}

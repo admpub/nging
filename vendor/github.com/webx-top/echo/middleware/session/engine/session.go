@@ -81,6 +81,13 @@ func (s *Session) ID() string {
 	return s.Session().ID
 }
 
+func (s *Session) MustID() string {
+	if len(s.Session().ID) == 0 {
+		s.Session().ID = GenerateSessionID()
+	}
+	return s.Session().ID
+}
+
 func (s *Session) Save() error {
 	if !s.Written() {
 		return nil

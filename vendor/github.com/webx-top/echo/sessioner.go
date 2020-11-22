@@ -66,6 +66,7 @@ type Sessioner interface {
 	Set(key string, val interface{}) Sessioner
 	SetID(id string) Sessioner
 	ID() string
+	MustID() string
 	// Delete removes the session value associated to the given key.
 	Delete(key string) Sessioner
 	// Clear deletes all values in the session.
@@ -100,6 +101,10 @@ func (n *NopSession) SetID(id string) Sessioner {
 }
 
 func (n *NopSession) ID() string {
+	return ``
+}
+
+func (n *NopSession) MustID() string {
 	return ``
 }
 
@@ -153,6 +158,11 @@ func (n *DebugSession) SetID(id string) Sessioner {
 
 func (n *DebugSession) ID() string {
 	log.Println(`DebugSession.ID`)
+	return ``
+}
+
+func (n *DebugSession) MustID() string {
+	log.Println(`DebugSession.MustID`)
 	return ``
 }
 
