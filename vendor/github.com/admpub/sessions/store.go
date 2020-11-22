@@ -28,6 +28,7 @@ type Store interface {
 	// Note that New should never return a nil session, even in the case of
 	// an error if using the Registry infrastructure to cache the session.
 	New(ctx echo.Context, name string) (*Session, error)
+	Reload(ctx echo.Context, s *Session) error
 
 	// Save should persist session to the underlying store implementation.
 	Save(ctx echo.Context, s *Session) error
@@ -92,6 +93,10 @@ func (s *CookieStore) New(ctx echo.Context, name string) (*Session, error) {
 		}
 	}
 	return session, err
+}
+
+func (s *CookieStore) Reload(_ echo.Context, _ *Session) error {
+	return nil
 }
 
 // Save adds a single session to the response.
@@ -186,6 +191,14 @@ func (s *FilesystemStore) New(ctx echo.Context, name string) (*Session, error) {
 		}
 	}
 	return session, err
+}
+
+func (s *FilesystemStore) Reload(ctx echo.Context, session *Session) error {
+	err := s.load(ctx, session)
+	if err == nil {
+		session.IsNew = false
+	}
+	return err
 }
 
 // Save adds a single session to the response.

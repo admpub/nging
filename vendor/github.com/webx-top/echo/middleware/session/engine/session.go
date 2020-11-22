@@ -72,7 +72,11 @@ func (s *Session) Flashes(vars ...string) []interface{} {
 }
 
 func (s *Session) SetID(id string) echo.Sessioner {
+	if s.Session().ID == id {
+		return s
+	}
 	s.Session().ID = id
+	s.Session().Reload(s.context)
 	s.setWritten()
 	return s
 }

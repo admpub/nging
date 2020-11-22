@@ -252,6 +252,8 @@ github.com/admpub/service v0.0.0-20200628035946-b971165ffff2 h1:Y6FNrZEFQlnaWE0U
 github.com/admpub/service v0.0.0-20200628035946-b971165ffff2/go.mod h1:v6paMl5xamyS7yVJkUD1Gh+A3nVn1RxTcah/oxdf0Vc=
 github.com/admpub/sessions v0.0.0-20200615143229-e7dd49c7c4f5 h1:psaGCl5GE0RhyU/QFrs2x0M+J++/cHVdiEFQ6dLVUGo=
 github.com/admpub/sessions v0.0.0-20200615143229-e7dd49c7c4f5/go.mod h1:sgTgL2Hn7pMvZc09uxd9TVPXMSykzoZI27fpMXZu/5U=
+github.com/admpub/sessions v0.0.0-20201122092736-0b7b4a84d61a h1:k0nsbplmRT9ARXYnAqJsLq3Y6HCoyk4xiaEvE2mrJps=
+github.com/admpub/sessions v0.0.0-20201122092736-0b7b4a84d61a/go.mod h1:sgTgL2Hn7pMvZc09uxd9TVPXMSykzoZI27fpMXZu/5U=
 github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede h1:JYvqawpNo1Uc0+UFguWxCjoZSuCXUY+AVwdV1znAe8s=
 github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede/go.mod h1:6/M8sECTqSzuUsSlAB6Ayn/wWBp//vcwnl6I3VoaLa8=
 github.com/admpub/sockjs-go v0.0.0-20170208085255-715e9716fc23 h1:U1KOAhVNV8cQIQGrUCimkN6DZdI/EtyUiFu+L78249M=
@@ -1118,6 +1120,8 @@ github.com/webx-top/echo v2.4.7+incompatible h1:T9uP0HRhuIM3uFz/aKHtF4nRZbomX1n3
 github.com/webx-top/echo v2.4.7+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.5.0+incompatible h1:pUlwgMWjCCKLo6AkpemyEeNXg9zMCtO3Lp5sSpD2158=
 github.com/webx-top/echo v2.5.0+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
+github.com/webx-top/echo v2.5.1+incompatible h1:Y6l1u9sO9kAKpzzBZUETYztuBKHbb7g8IKPaedVfck8=
+github.com/webx-top/echo v2.5.1+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/image v0.0.1 h1:xg5pVu0GhfuTTfNjb3JueeNMLVgst6DcN9UI0pT6a2Y=
 github.com/webx-top/image v0.0.1/go.mod h1:+h1W1x6ci+EqAlbnKSEdpflMWrCGNlLqB0OcmfglzMg=
 github.com/webx-top/image v0.0.3 h1:TdAbN/dfywsmT0WsGZ65iqIn1TXVzZdenHRFDrayFZc=
