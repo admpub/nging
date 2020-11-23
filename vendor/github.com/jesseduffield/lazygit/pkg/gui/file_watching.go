@@ -5,7 +5,8 @@ import (
 	"path/filepath"
 
 	"github.com/fsnotify/fsnotify"
-	"github.com/jesseduffield/lazygit/pkg/commands"
+	"github.com/jesseduffield/lazygit/pkg/commands/models"
+	"github.com/jesseduffield/lazygit/pkg/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -59,22 +60,21 @@ func (w *fileWatcher) popOldestFilename() {
 	w.WatchedFilenames = w.WatchedFilenames[1:]
 	if err := w.Watcher.Remove(oldestFilename); err != nil {
 		// swallowing errors here because it doesn't really matter if we can't unwatch a file
-		w.Log.Warn(err)
+		w.Log.Error(err)
 	}
 }
 
 func (w *fileWatcher) watchFilename(filename string) {
-	w.Log.Warn(filename)
 	if err := w.Watcher.Add(filename); err != nil {
 		// swallowing errors here because it doesn't really matter if we can't watch a file
-		w.Log.Warn(err)
+		w.Log.Error(err)
 	}
 
 	// assume we're watching it now to be safe
 	w.WatchedFilenames = append(w.WatchedFilenames, filename)
 }
 
-func (w *fileWatcher) addFilesToFileWatcher(files []*commands.File) error {
+func (w *fileWatcher) addFilesToFileWatcher(files []*models.File) error {
 	if w.Disabled {
 		return nil
 	}
@@ -121,7 +121,7 @@ func (gui *Gui) watchFilesForChanges() {
 	if gui.fileWatcher.Disabled {
 		return
 	}
-	go func() {
+	go utils.Safe(func() {
 		for {
 			select {
 			// watch for events
@@ -138,9 +138,9 @@ func (gui *Gui) watchFilesForChanges() {
 			// watch for errors
 			case err := <-gui.fileWatcher.Watcher.Errors:
 				if err != nil {
-					gui.Log.Warn(err)
+					gui.Log.Error(err)
 				}
 			}
 		}
-	}()
+	})
 }

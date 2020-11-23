@@ -4,12 +4,13 @@ import (
 	"fmt"
 
 	"github.com/jesseduffield/gocui"
-	"github.com/jesseduffield/lazygit/pkg/commands"
+	"github.com/jesseduffield/lazygit/pkg/commands/models"
+	"github.com/jesseduffield/lazygit/pkg/utils"
 )
 
 // list panel functions
 
-func (gui *Gui) getSelectedRemoteBranch() *commands.RemoteBranch {
+func (gui *Gui) getSelectedRemoteBranch() *models.RemoteBranch {
 	selectedLine := gui.State.Panels.RemoteBranches.SelectedLineIdx
 	if selectedLine == -1 || len(gui.State.RemoteBranches) == 0 {
 		return nil
@@ -52,16 +53,15 @@ func (gui *Gui) handleDeleteRemoteBranch(g *gocui.Gui, v *gocui.View) error {
 	if remoteBranch == nil {
 		return nil
 	}
-	message := fmt.Sprintf("%s '%s'?", gui.Tr.SLocalize("DeleteRemoteBranchMessage"), remoteBranch.FullName())
+	message := fmt.Sprintf("%s '%s'?", gui.Tr.DeleteRemoteBranchMessage, remoteBranch.FullName())
 
 	return gui.ask(askOpts{
-		title:  gui.Tr.SLocalize("DeleteRemoteBranch"),
+		title:  gui.Tr.DeleteRemoteBranch,
 		prompt: message,
 		handleConfirm: func() error {
-			return gui.WithWaitingStatus(gui.Tr.SLocalize("DeletingStatus"), func() error {
-				if err := gui.GitCommand.DeleteRemoteBranch(remoteBranch.RemoteName, remoteBranch.Name); err != nil {
-					return err
-				}
+			return gui.WithWaitingStatus(gui.Tr.DeletingStatus, func() error {
+				err := gui.GitCommand.DeleteRemoteBranch(remoteBranch.RemoteName, remoteBranch.Name, gui.promptUserForCredential)
+				gui.handleCredentialsPopup(err)
 
 				return gui.refreshSidePanels(refreshOptions{scope: []int{BRANCHES, REMOTES}})
 			})
@@ -78,16 +78,16 @@ func (gui *Gui) handleSetBranchUpstream(g *gocui.Gui, v *gocui.View) error {
 	selectedBranch := gui.getSelectedRemoteBranch()
 	checkedOutBranch := gui.getCheckedOutBranch()
 
-	message := gui.Tr.TemplateLocalize(
-		"SetUpstreamMessage",
-		Teml{
+	message := utils.ResolvePlaceholderString(
+		gui.Tr.SetUpstreamMessage,
+		map[string]string{
 			"checkedOut": checkedOutBranch.Name,
 			"selected":   selectedBranch.FullName(),
 		},
 	)
 
 	return gui.ask(askOpts{
-		title:  gui.Tr.SLocalize("SetUpstreamTitle"),
+		title:  gui.Tr.SetUpstreamTitle,
 		prompt: message,
 		handleConfirm: func() error {
 			if err := gui.GitCommand.SetBranchUpstream(selectedBranch.RemoteName, selectedBranch.Name, checkedOutBranch.Name); err != nil {

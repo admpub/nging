@@ -161,6 +161,11 @@ func (lc *ListContext) handleLineChange(change int) error {
 		return err
 	}
 
+	selectedLineIdx := lc.GetPanelState().GetSelectedLineIdx()
+	if (change < 0 && selectedLineIdx == 0) || (change > 0 && selectedLineIdx == lc.GetItemsLength()-1) {
+		return nil
+	}
+
 	lc.Gui.changeSelectedLine(lc.GetPanelState(), lc.GetItemsLength(), change)
 	view.FocusPoint(0, lc.GetPanelState().GetSelectedLineIdx())
 
@@ -181,11 +186,8 @@ func (lc *ListContext) handleNextPage(g *gocui.Gui, v *gocui.View) error {
 	if err != nil {
 		return nil
 	}
-	_, height := view.Size()
-	delta := height - 1
-	if delta == 0 {
-		delta = 1
-	}
+	delta := lc.Gui.pageDelta(view)
+
 	return lc.handleLineChange(delta)
 }
 
@@ -202,11 +204,9 @@ func (lc *ListContext) handlePrevPage(g *gocui.Gui, v *gocui.View) error {
 	if err != nil {
 		return nil
 	}
-	_, height := view.Size()
-	delta := height - 1
-	if delta == 0 {
-		delta = 1
-	}
+
+	delta := lc.Gui.pageDelta(view)
+
 	return lc.handleLineChange(-delta)
 }
 
@@ -270,7 +270,7 @@ func (gui *Gui) filesListContext() *ListContext {
 		ResetMainViewOriginOnFocus: false,
 		Kind:                       SIDE_CONTEXT,
 		GetDisplayStrings: func() [][]string {
-			return presentation.GetFileListDisplayStrings(gui.State.Files, gui.State.Modes.Diffing.Ref)
+			return presentation.GetFileListDisplayStrings(gui.State.Files, gui.State.Modes.Diffing.Ref, gui.State.Submodules)
 		},
 		SelectedItem: func() (ListItem, bool) {
 			item := gui.getSelectedFile()
@@ -412,7 +412,6 @@ func (gui *Gui) subCommitsListContext() *ListContext {
 		ResetMainViewOriginOnFocus: true,
 		Kind:                       SIDE_CONTEXT,
 		GetDisplayStrings: func() [][]string {
-			gui.Log.Warn("getting display strings for sub commits")
 			return presentation.GetCommitListDisplayStrings(gui.State.SubCommits, gui.State.ScreenMode != SCREEN_NORMAL, gui.cherryPickedCommitShaMap(), gui.State.Modes.Diffing.Ref)
 		},
 		SelectedItem: func() (ListItem, bool) {
@@ -463,6 +462,27 @@ func (gui *Gui) commitFilesListContext() *ListContext {
 	}
 }
 
+func (gui *Gui) submodulesListContext() *ListContext {
+	return &ListContext{
+		ViewName:                   "files",
+		WindowName:                 "files",
+		ContextKey:                 SUBMODULES_CONTEXT_KEY,
+		GetItemsLength:             func() int { return len(gui.State.Submodules) },
+		GetPanelState:              func() IListPanelState { return gui.State.Panels.Submodules },
+		OnFocus:                    gui.handleSubmoduleSelect,
+		Gui:                        gui,
+		ResetMainViewOriginOnFocus: true,
+		Kind:                       SIDE_CONTEXT,
+		GetDisplayStrings: func() [][]string {
+			return presentation.GetSubmoduleListDisplayStrings(gui.State.Submodules)
+		},
+		SelectedItem: func() (ListItem, bool) {
+			item := gui.getSelectedSubmodule()
+			return item, item != nil
+		},
+	}
+}
+
 func (gui *Gui) getListContexts() []*ListContext {
 	return []*ListContext{
 		gui.menuListContext(),
@@ -476,23 +496,26 @@ func (gui *Gui) getListContexts() []*ListContext {
 		gui.subCommitsListContext(),
 		gui.stashListContext(),
 		gui.commitFilesListContext(),
+		gui.submodulesListContext(),
 	}
 }
 
 func (gui *Gui) getListContextKeyBindings() []*Binding {
 	bindings := make([]*Binding, 0)
 
+	keybindingConfig := gui.Config.GetUserConfig().Keybinding
+
 	for _, listContext := range gui.getListContexts() {
 		bindings = append(bindings, []*Binding{
-			{ViewName: listContext.ViewName, Contexts: []string{listContext.ContextKey}, Key: gui.getKey("universal.prevItem-alt"), Modifier: gocui.ModNone, Handler: listContext.handlePrevLine},
-			{ViewName: listContext.ViewName, Contexts: []string{listContext.ContextKey}, Key: gui.getKey("universal.prevItem"), Modifier: gocui.ModNone, Handler: listContext.handlePrevLine},
-			{ViewName: listContext.ViewName, Contexts: []string{listContext.ContextKey}, Key: gocui.MouseWheelUp, Modifier: gocui.ModNone, Handler: listContext.handlePrevLine},
-			{ViewName: listContext.ViewName, Contexts: []string{listContext.ContextKey}, Key: gui.getKey("universal.nextItem-alt"), Modifier: gocui.ModNone, Handler: listContext.handleNextLine},
-			{ViewName: listContext.ViewName, Contexts: []string{listContext.ContextKey}, Key: gui.getKey("universal.nextItem"), Modifier: gocui.ModNone, Handler: listContext.handleNextLine},
-			{ViewName: listContext.ViewName, Contexts: []string{listContext.ContextKey}, Key: gui.getKey("universal.prevPage"), Modifier: gocui.ModNone, Handler: listContext.handlePrevPage, Description: gui.Tr.SLocalize("prevPage")},
-			{ViewName: listContext.ViewName, Contexts: []string{listContext.ContextKey}, Key: gui.getKey("universal.nextPage"), Modifier: gocui.ModNone, Handler: listContext.handleNextPage, Description: gui.Tr.SLocalize("nextPage")},
-			{ViewName: listContext.ViewName, Contexts: []string{listContext.ContextKey}, Key: gui.getKey("universal.gotoTop"), Modifier: gocui.ModNone, Handler: listContext.handleGotoTop, Description: gui.Tr.SLocalize("gotoTop")},
-			{ViewName: listContext.ViewName, Contexts: []string{listContext.ContextKey}, Key: gocui.MouseWheelDown, Modifier: gocui.ModNone, Handler: listContext.handleNextLine},
+			{ViewName: listContext.ViewName, Tag: "navigation", Contexts: []string{listContext.ContextKey}, Key: gui.getKey(keybindingConfig.Universal.PrevItemAlt), Modifier: gocui.ModNone, Handler: listContext.handlePrevLine},
+			{ViewName: listContext.ViewName, Tag: "navigation", Contexts: []string{listContext.ContextKey}, Key: gui.getKey(keybindingConfig.Universal.PrevItem), Modifier: gocui.ModNone, Handler: listContext.handlePrevLine},
+			{ViewName: listContext.ViewName, Tag: "navigation", Contexts: []string{listContext.ContextKey}, Key: gocui.MouseWheelUp, Modifier: gocui.ModNone, Handler: listContext.handlePrevLine},
+			{ViewName: listContext.ViewName, Tag: "navigation", Contexts: []string{listContext.ContextKey}, Key: gui.getKey(keybindingConfig.Universal.NextItemAlt), Modifier: gocui.ModNone, Handler: listContext.handleNextLine},
+			{ViewName: listContext.ViewName, Tag: "navigation", Contexts: []string{listContext.ContextKey}, Key: gui.getKey(keybindingConfig.Universal.NextItem), Modifier: gocui.ModNone, Handler: listContext.handleNextLine},
+			{ViewName: listContext.ViewName, Tag: "navigation", Contexts: []string{listContext.ContextKey}, Key: gui.getKey(keybindingConfig.Universal.PrevPage), Modifier: gocui.ModNone, Handler: listContext.handlePrevPage, Description: gui.Tr.LcPrevPage},
+			{ViewName: listContext.ViewName, Tag: "navigation", Contexts: []string{listContext.ContextKey}, Key: gui.getKey(keybindingConfig.Universal.NextPage), Modifier: gocui.ModNone, Handler: listContext.handleNextPage, Description: gui.Tr.LcNextPage},
+			{ViewName: listContext.ViewName, Tag: "navigation", Contexts: []string{listContext.ContextKey}, Key: gui.getKey(keybindingConfig.Universal.GotoTop), Modifier: gocui.ModNone, Handler: listContext.handleGotoTop, Description: gui.Tr.LcGotoTop},
+			{ViewName: listContext.ViewName, Tag: "navigation", Contexts: []string{listContext.ContextKey}, Key: gocui.MouseWheelDown, Modifier: gocui.ModNone, Handler: listContext.handleNextLine},
 			{ViewName: listContext.ViewName, Contexts: []string{listContext.ContextKey}, Key: gocui.MouseLeft, Modifier: gocui.ModNone, Handler: listContext.handleClick},
 		}...)
 
@@ -508,16 +531,18 @@ func (gui *Gui) getListContextKeyBindings() []*Binding {
 			{
 				ViewName:    listContext.ViewName,
 				Contexts:    []string{listContext.ContextKey},
-				Key:         gui.getKey("universal.startSearch"),
+				Key:         gui.getKey(keybindingConfig.Universal.StartSearch),
 				Handler:     openSearchHandler,
-				Description: gui.Tr.SLocalize("startSearch"),
+				Description: gui.Tr.LcStartSearch,
+				Tag:         "navigation",
 			},
 			{
 				ViewName:    listContext.ViewName,
 				Contexts:    []string{listContext.ContextKey},
-				Key:         gui.getKey("universal.gotoBottom"),
+				Key:         gui.getKey(keybindingConfig.Universal.GotoBottom),
 				Handler:     gotoBottomHandler,
-				Description: gui.Tr.SLocalize("gotoBottom"),
+				Description: gui.Tr.LcGotoBottom,
+				Tag:         "navigation",
 			},
 		}...)
 	}

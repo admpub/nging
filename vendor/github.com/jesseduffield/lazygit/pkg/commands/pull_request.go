@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/go-errors/errors"
+	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/config"
 )
 
@@ -59,7 +60,7 @@ func getServices(config config.AppConfigurer) []*Service {
 		NewService("gitlab", "gitlab.com", "gitlab.com"),
 	}
 
-	configServices := config.GetUserConfig().GetStringMapString("services")
+	configServices := config.GetUserConfig().Services
 
 	for repoDomain, typeAndDomain := range configServices {
 		splitData := strings.Split(typeAndDomain, ":")
@@ -89,11 +90,11 @@ func NewPullRequest(gitCommand *GitCommand) *PullRequest {
 }
 
 // Create opens link to new pull request in browser
-func (pr *PullRequest) Create(branch *Branch) error {
+func (pr *PullRequest) Create(branch *models.Branch) error {
 	branchExistsOnRemote := pr.GitCommand.CheckRemoteBranchExists(branch)
 
 	if !branchExistsOnRemote {
-		return errors.New(pr.GitCommand.Tr.SLocalize("NoBranchOnRemote"))
+		return errors.New(pr.GitCommand.Tr.NoBranchOnRemote)
 	}
 
 	repoURL := pr.GitCommand.GetRemoteURL()
@@ -107,7 +108,7 @@ func (pr *PullRequest) Create(branch *Branch) error {
 	}
 
 	if gitService == nil {
-		return errors.New(pr.GitCommand.Tr.SLocalize("UnsupportedGitService"))
+		return errors.New(pr.GitCommand.Tr.UnsupportedGitService)
 	}
 
 	repoInfo := getRepoInfoFromURL(repoURL)

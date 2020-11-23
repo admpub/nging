@@ -33,18 +33,17 @@ func (gui *Gui) handleMenuSelect() error {
 // specific functions
 
 func (gui *Gui) getMenuOptions() map[string]string {
+	keybindingConfig := gui.Config.GetUserConfig().Keybinding
+
 	return map[string]string{
-		gui.getKeyDisplay("universal.return"): gui.Tr.SLocalize("close"),
-		fmt.Sprintf("%s %s", gui.getKeyDisplay("universal.prevItem"), gui.getKeyDisplay("universal.nextItem")): gui.Tr.SLocalize("navigate"),
-		gui.getKeyDisplay("universal.select"): gui.Tr.SLocalize("execute"),
+		gui.getKeyDisplay(keybindingConfig.Universal.Return): gui.Tr.LcClose,
+		fmt.Sprintf("%s %s", gui.getKeyDisplay(keybindingConfig.Universal.PrevItem), gui.getKeyDisplay(keybindingConfig.Universal.NextItem)): gui.Tr.LcNavigate,
+		gui.getKeyDisplay(keybindingConfig.Universal.Select): gui.Tr.LcExecute,
 	}
 }
 
 func (gui *Gui) handleMenuClose(g *gocui.Gui, v *gocui.View) error {
-	err := g.DeleteView("menu")
-	if err != nil {
-		return err
-	}
+	_ = g.DeleteView("menu")
 	return gui.returnFromContext()
 }
 
@@ -56,7 +55,7 @@ func (gui *Gui) createMenu(title string, items []*menuItem, createMenuOptions cr
 	if createMenuOptions.showCancel {
 		// this is mutative but I'm okay with that for now
 		items = append(items, &menuItem{
-			displayStrings: []string{gui.Tr.SLocalize("cancel")},
+			displayStrings: []string{gui.Tr.LcCancel},
 			onPress: func() error {
 				return nil
 			},

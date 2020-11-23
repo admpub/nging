@@ -49,7 +49,18 @@ func (gui *Gui) handleTopLevelReturn(g *gocui.Gui, v *gocui.View) error {
 		}
 	}
 
-	if gui.Config.GetUserConfig().GetBool("quitOnTopLevelReturn") {
+	repoPathStack := gui.State.RepoPathStack
+	if len(repoPathStack) > 0 {
+		n := len(repoPathStack) - 1
+
+		path := repoPathStack[n]
+
+		gui.State.RepoPathStack = repoPathStack[:n]
+
+		return gui.dispatchSwitchToRepo(path)
+	}
+
+	if gui.Config.GetUserConfig().QuitOnTopLevelReturn {
 		return gui.handleQuit()
 	}
 
@@ -61,10 +72,10 @@ func (gui *Gui) quit() error {
 		return gui.createUpdateQuitConfirmation()
 	}
 
-	if gui.Config.GetUserConfig().GetBool("confirmOnQuit") {
+	if gui.Config.GetUserConfig().ConfirmOnQuit {
 		return gui.ask(askOpts{
 			title:  "",
-			prompt: gui.Tr.SLocalize("ConfirmQuit"),
+			prompt: gui.Tr.ConfirmQuit,
 			handleConfirm: func() error {
 				return gocui.ErrQuit
 			},

@@ -36,13 +36,24 @@ var processUnique = processUniqueBytes()
 
 // NewObjectID generates a new ObjectID.
 func NewObjectID() ObjectID {
+	return NewObjectIDFromTimestamp(time.Now())
+}
+
+// NewObjectIDFromTimestamp generates a new ObjectID based on the given time.
+func NewObjectIDFromTimestamp(timestamp time.Time) ObjectID {
 	var b [12]byte
 
-	binary.BigEndian.PutUint32(b[0:4], uint32(time.Now().Unix()))
+	binary.BigEndian.PutUint32(b[0:4], uint32(timestamp.Unix()))
 	copy(b[4:9], processUnique[:])
 	putUint24(b[9:12], atomic.AddUint32(&objectIDCounter, 1))
 
 	return b
+}
+
+// Timestamp extracts the time part of the ObjectId.
+func (id ObjectID) Timestamp() time.Time {
+	unixSecs := binary.BigEndian.Uint32(id[0:4])
+	return time.Unix(int64(unixSecs), 0).UTC()
 }
 
 // Hex returns the hex encoding of the ObjectID as a string.
@@ -82,11 +93,18 @@ func (id ObjectID) MarshalJSON() ([]byte, error) {
 	return json.Marshal(id.Hex())
 }
 
-// UnmarshalJSON populates the byte slice with the ObjectID. If the byte slice is 64 bytes long, it
+// UnmarshalJSON populates the byte slice with the ObjectID. If the byte slice is 24 bytes long, it
 // will be populated with the hex representation of the ObjectID. If the byte slice is twelve bytes
-// long, it will be populated with the BSON representation of the ObjectID. Otherwise, it will
-// return an error.
+// long, it will be populated with the BSON representation of the ObjectID. This method also accepts empty strings and
+// decodes them as NilObjectID. For any other inputs, an error will be returned.
 func (id *ObjectID) UnmarshalJSON(b []byte) error {
+	// Ignore "null" to keep parity with the standard library. Decoding a JSON null into a non-pointer ObjectID field
+	// will leave the field unchanged. For pointer values, encoding/json will set the pointer to nil and will not
+	// enter the UnmarshalJSON hook.
+	if string(b) == "null" {
+		return nil
+	}
+
 	var err error
 	switch len(b) {
 	case 12:
@@ -114,8 +132,14 @@ func (id *ObjectID) UnmarshalJSON(b []byte) error {
 			}
 		}
 
+		// An empty string is not a valid ObjectID, but we treat it as a special value that decodes as NilObjectID.
+		if len(str) == 0 {
+			copy(id[:], NilObjectID[:])
+			return nil
+		}
+
 		if len(str) != 24 {
-			return fmt.Errorf("cannot unmarshal into an ObjectID, the length must be 12 but it is %d", len(str))
+			return fmt.Errorf("cannot unmarshal into an ObjectID, the length must be 24 but it is %d", len(str))
 		}
 
 		_, err = hex.Decode(id[:], []byte(str))

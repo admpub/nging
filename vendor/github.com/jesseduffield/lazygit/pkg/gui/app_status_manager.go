@@ -50,32 +50,31 @@ func (m *statusManager) getStatusString() string {
 
 // WithWaitingStatus wraps a function and shows a waiting status while the function is still executing
 func (gui *Gui) WithWaitingStatus(name string, f func() error) error {
-	go func() {
+	go utils.Safe(func() {
 		gui.statusManager.addWaitingStatus(name)
 
 		defer func() {
 			gui.statusManager.removeStatus(name)
 		}()
 
-		go func() {
+		go utils.Safe(func() {
 			ticker := time.NewTicker(time.Millisecond * 50)
 			defer ticker.Stop()
 			for range ticker.C {
 				appStatus := gui.statusManager.getStatusString()
-				gui.Log.Warn(appStatus)
 				if appStatus == "" {
 					return
 				}
 				gui.renderString("appStatus", appStatus)
 			}
-		}()
+		})
 
 		if err := f(); err != nil {
 			gui.g.Update(func(g *gocui.Gui) error {
 				return gui.surfaceError(err)
 			})
 		}
-	}()
+	})
 
 	return nil
 }

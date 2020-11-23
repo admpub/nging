@@ -12,7 +12,7 @@ func (gui *Gui) getBindings(v *gocui.View) []*Binding {
 		bindingsGlobal, bindingsPanel []*Binding
 	)
 
-	bindings := gui.GetInitialKeybindings()
+	bindings := append(gui.GetCustomCommandKeybindings(), gui.GetInitialKeybindings()...)
 
 	for _, binding := range bindings {
 		if GetKeyDisplay(binding.Key) != "" && binding.Description != "" {
@@ -39,20 +39,20 @@ func (gui *Gui) handleCreateOptionsMenu(g *gocui.Gui, v *gocui.View) error {
 	menuItems := make([]*menuItem, len(bindings))
 
 	for i, binding := range bindings {
-		innerBinding := binding // note to self, never close over loop variables
+		binding := binding // note to self, never close over loop variables
 		menuItems[i] = &menuItem{
-			displayStrings: []string{GetKeyDisplay(innerBinding.Key), innerBinding.Description},
+			displayStrings: []string{GetKeyDisplay(binding.Key), binding.Description},
 			onPress: func() error {
-				if innerBinding.Key == nil {
+				if binding.Key == nil {
 					return nil
 				}
 				if err := gui.handleMenuClose(g, v); err != nil {
 					return err
 				}
-				return innerBinding.Handler(g, v)
+				return binding.Handler(g, v)
 			},
 		}
 	}
 
-	return gui.createMenu(strings.Title(gui.Tr.SLocalize("menu")), menuItems, createMenuOptions{})
+	return gui.createMenu(strings.Title(gui.Tr.LcMenu), menuItems, createMenuOptions{})
 }

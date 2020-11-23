@@ -32,9 +32,91 @@ const (
 	MENU_CONTEXT_KEY                = "menu"
 	CREDENTIALS_CONTEXT_KEY         = "credentials"
 	CONFIRMATION_CONTEXT_KEY        = "confirmation"
-	SEARCH_CONTEXT_KEY              = "confirmation"
+	SEARCH_CONTEXT_KEY              = "search"
 	COMMIT_MESSAGE_CONTEXT_KEY      = "commitMessage"
+	SUBMODULES_CONTEXT_KEY          = "submodules"
 )
+
+var allContextKeys = []string{
+	STATUS_CONTEXT_KEY,
+	FILES_CONTEXT_KEY,
+	LOCAL_BRANCHES_CONTEXT_KEY,
+	REMOTES_CONTEXT_KEY,
+	REMOTE_BRANCHES_CONTEXT_KEY,
+	TAGS_CONTEXT_KEY,
+	BRANCH_COMMITS_CONTEXT_KEY,
+	REFLOG_COMMITS_CONTEXT_KEY,
+	SUB_COMMITS_CONTEXT_KEY,
+	COMMIT_FILES_CONTEXT_KEY,
+	STASH_CONTEXT_KEY,
+	MAIN_NORMAL_CONTEXT_KEY,
+	MAIN_MERGING_CONTEXT_KEY,
+	MAIN_PATCH_BUILDING_CONTEXT_KEY,
+	MAIN_STAGING_CONTEXT_KEY,
+	MENU_CONTEXT_KEY,
+	CREDENTIALS_CONTEXT_KEY,
+	CONFIRMATION_CONTEXT_KEY,
+	SEARCH_CONTEXT_KEY,
+	COMMIT_MESSAGE_CONTEXT_KEY,
+	SUBMODULES_CONTEXT_KEY,
+}
+
+type SimpleContextNode struct {
+	Context Context
+}
+
+type RemotesContextNode struct {
+	Context  Context
+	Branches SimpleContextNode
+}
+
+type ContextTree struct {
+	Status        SimpleContextNode
+	Files         SimpleContextNode
+	Submodules    SimpleContextNode
+	Menu          SimpleContextNode
+	Branches      SimpleContextNode
+	Remotes       RemotesContextNode
+	Tags          SimpleContextNode
+	BranchCommits SimpleContextNode
+	CommitFiles   SimpleContextNode
+	ReflogCommits SimpleContextNode
+	SubCommits    SimpleContextNode
+	Stash         SimpleContextNode
+	Normal        SimpleContextNode
+	Staging       SimpleContextNode
+	PatchBuilding SimpleContextNode
+	Merging       SimpleContextNode
+	Credentials   SimpleContextNode
+	Confirmation  SimpleContextNode
+	CommitMessage SimpleContextNode
+	Search        SimpleContextNode
+}
+
+func (gui *Gui) allContexts() []Context {
+	return []Context{
+		gui.Contexts.Status.Context,
+		gui.Contexts.Files.Context,
+		gui.Contexts.Submodules.Context,
+		gui.Contexts.Branches.Context,
+		gui.Contexts.Remotes.Context,
+		gui.Contexts.Remotes.Branches.Context,
+		gui.Contexts.Tags.Context,
+		gui.Contexts.BranchCommits.Context,
+		gui.Contexts.CommitFiles.Context,
+		gui.Contexts.ReflogCommits.Context,
+		gui.Contexts.Stash.Context,
+		gui.Contexts.Menu.Context,
+		gui.Contexts.Confirmation.Context,
+		gui.Contexts.Credentials.Context,
+		gui.Contexts.CommitMessage.Context,
+		gui.Contexts.Normal.Context,
+		gui.Contexts.Staging.Context,
+		gui.Contexts.Merging.Context,
+		gui.Contexts.PatchBuilding.Context,
+		gui.Contexts.SubCommits.Context,
+	}
+}
 
 type Context interface {
 	HandleFocus() error
@@ -116,61 +198,6 @@ func (c BasicContext) GetKey() string {
 	return c.Key
 }
 
-type SimpleContextNode struct {
-	Context Context
-}
-
-type RemotesContextNode struct {
-	Context  Context
-	Branches SimpleContextNode
-}
-
-type ContextTree struct {
-	Status        SimpleContextNode
-	Files         SimpleContextNode
-	Menu          SimpleContextNode
-	Branches      SimpleContextNode
-	Remotes       RemotesContextNode
-	Tags          SimpleContextNode
-	BranchCommits SimpleContextNode
-	CommitFiles   SimpleContextNode
-	ReflogCommits SimpleContextNode
-	SubCommits    SimpleContextNode
-	Stash         SimpleContextNode
-	Normal        SimpleContextNode
-	Staging       SimpleContextNode
-	PatchBuilding SimpleContextNode
-	Merging       SimpleContextNode
-	Credentials   SimpleContextNode
-	Confirmation  SimpleContextNode
-	CommitMessage SimpleContextNode
-	Search        SimpleContextNode
-}
-
-func (gui *Gui) allContexts() []Context {
-	return []Context{
-		gui.Contexts.Status.Context,
-		gui.Contexts.Files.Context,
-		gui.Contexts.Branches.Context,
-		gui.Contexts.Remotes.Context,
-		gui.Contexts.Remotes.Branches.Context,
-		gui.Contexts.Tags.Context,
-		gui.Contexts.BranchCommits.Context,
-		gui.Contexts.CommitFiles.Context,
-		gui.Contexts.ReflogCommits.Context,
-		gui.Contexts.Stash.Context,
-		gui.Contexts.Menu.Context,
-		gui.Contexts.Confirmation.Context,
-		gui.Contexts.Credentials.Context,
-		gui.Contexts.CommitMessage.Context,
-		gui.Contexts.Normal.Context,
-		gui.Contexts.Staging.Context,
-		gui.Contexts.Merging.Context,
-		gui.Contexts.PatchBuilding.Context,
-		gui.Contexts.SubCommits.Context,
-	}
-}
-
 func (gui *Gui) contextTree() ContextTree {
 	return ContextTree{
 		Status: SimpleContextNode{
@@ -183,6 +210,9 @@ func (gui *Gui) contextTree() ContextTree {
 		},
 		Files: SimpleContextNode{
 			Context: gui.filesListContext(),
+		},
+		Submodules: SimpleContextNode{
+			Context: gui.submodulesListContext(),
 		},
 		Menu: SimpleContextNode{
 			Context: gui.menuListContext(),
@@ -342,6 +372,18 @@ func (gui *Gui) viewTabContextMap() map[string][]tabContext {
 				},
 			},
 		},
+		"files": {
+			{
+				tab:      "Files",
+				contexts: []Context{gui.Contexts.Files.Context},
+			},
+			{
+				tab: "Submodules",
+				contexts: []Context{
+					gui.Contexts.Submodules.Context,
+				},
+			},
+		},
 	}
 }
 
@@ -477,11 +519,13 @@ func (gui *Gui) activateContext(c Context) error {
 	gui.setViewTabForContext(c)
 
 	if _, err := gui.g.SetCurrentView(viewName); err != nil {
-		return err
+		// if view no longer exists, pop again
+		return gui.returnFromContext()
 	}
 
 	if _, err := gui.g.SetViewOnTop(viewName); err != nil {
-		return err
+		// if view no longer exists, pop again
+		return gui.returnFromContext()
 	}
 
 	// if the new context's view was previously displaying another context, render the new context
@@ -592,6 +636,9 @@ func (gui *Gui) getFocusLayout() func(g *gocui.Gui) error {
 }
 
 func (gui *Gui) onViewFocusChange() error {
+	gui.g.Mutexes.ViewsMutex.Lock()
+	defer gui.g.Mutexes.ViewsMutex.Unlock()
+
 	currentView := gui.g.CurrentView()
 	for _, view := range gui.g.Views() {
 		view.Highlight = view.Name() != "main" && view == currentView
@@ -610,7 +657,6 @@ func (gui *Gui) onViewFocusLost(v *gocui.View, newView *gocui.View) error {
 		}
 	}
 
-	gui.Log.Info(v.Name() + " focus lost")
 	return nil
 }
 
@@ -636,6 +682,10 @@ func (gui *Gui) changeMainViewsContext(contextKey string) {
 
 func (gui *Gui) viewTabNames(viewName string) []string {
 	tabContexts := gui.ViewTabContextMap[viewName]
+
+	if len(tabContexts) == 0 {
+		return nil
+	}
 
 	result := make([]string, len(tabContexts))
 	for i, tabContext := range tabContexts {
@@ -673,14 +723,24 @@ type tabContext struct {
 	contexts []Context
 }
 
-func (gui *Gui) contextForContextKey(contextKey string) Context {
+func (gui *Gui) mustContextForContextKey(contextKey string) Context {
+	context, ok := gui.contextForContextKey(contextKey)
+
+	if !ok {
+		panic(fmt.Sprintf("context not found for key %s", contextKey))
+	}
+
+	return context
+}
+
+func (gui *Gui) contextForContextKey(contextKey string) (Context, bool) {
 	for _, context := range gui.allContexts() {
 		if context.GetKey() == contextKey {
-			return context
+			return context, true
 		}
 	}
 
-	panic(fmt.Sprintf("context now found for key %s", contextKey))
+	return nil, false
 }
 
 func (gui *Gui) rerenderView(viewName string) error {
@@ -690,7 +750,7 @@ func (gui *Gui) rerenderView(viewName string) error {
 	}
 
 	contextKey := v.Context
-	context := gui.contextForContextKey(contextKey)
+	context := gui.mustContextForContextKey(contextKey)
 
 	return context.HandleRender()
 }

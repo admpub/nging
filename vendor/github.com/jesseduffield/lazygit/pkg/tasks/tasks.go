@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"io"
 	"os/exec"
+	"strings"
 	"sync"
 	"time"
 
-	"github.com/jesseduffield/lazygit/pkg/commands"
+	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
+	"github.com/jesseduffield/lazygit/pkg/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -40,22 +42,24 @@ func NewViewBufferManager(log *logrus.Entry, writer io.Writer, beforeStart func(
 }
 
 func (m *ViewBufferManager) ReadLines(n int) {
-	go func() {
+	go utils.Safe(func() {
 		m.readLines <- n
-	}()
+	})
 }
 
-func (m *ViewBufferManager) NewCmdTask(r io.Reader, cmd *exec.Cmd, linesToRead int, onDone func()) func(chan struct{}) error {
+func (m *ViewBufferManager) NewCmdTask(r io.Reader, cmd *exec.Cmd, prefix string, linesToRead int, onDone func()) func(chan struct{}) error {
 	return func(stop chan struct{}) error {
-		go func() {
+		go utils.Safe(func() {
 			<-stop
-			if err := commands.Kill(cmd); err != nil {
-				m.Log.Warn(err)
+			if err := oscommands.Kill(cmd); err != nil {
+				if !strings.Contains(err.Error(), "process already finished") {
+					m.Log.Errorf("error when running cmd task: %v", err)
+				}
 			}
 			if onDone != nil {
 				onDone()
 			}
-		}()
+		})
 
 		loadingMutex := sync.Mutex{}
 
@@ -64,13 +68,13 @@ func (m *ViewBufferManager) NewCmdTask(r io.Reader, cmd *exec.Cmd, linesToRead i
 
 		done := make(chan struct{})
 
-		go func() {
+		go utils.Safe(func() {
 			scanner := bufio.NewScanner(r)
 			scanner.Split(bufio.ScanLines)
 
 			loaded := false
 
-			go func() {
+			go utils.Safe(func() {
 				ticker := time.NewTicker(time.Millisecond * 100)
 				defer ticker.Stop()
 				select {
@@ -85,7 +89,7 @@ func (m *ViewBufferManager) NewCmdTask(r io.Reader, cmd *exec.Cmd, linesToRead i
 				case <-stop:
 					return
 				}
-			}()
+			})
 
 		outer:
 			for {
@@ -96,6 +100,9 @@ func (m *ViewBufferManager) NewCmdTask(r io.Reader, cmd *exec.Cmd, linesToRead i
 						loadingMutex.Lock()
 						if !loaded {
 							m.beforeStart()
+							if prefix != "" {
+								_, _ = m.writer.Write([]byte(prefix))
+							}
 							loaded = true
 						}
 						loadingMutex.Unlock()
@@ -120,7 +127,10 @@ func (m *ViewBufferManager) NewCmdTask(r io.Reader, cmd *exec.Cmd, linesToRead i
 			}
 
 			if err := cmd.Wait(); err != nil {
-				m.Log.Warn(err)
+				// it's fine if we've killed this program ourselves
+				if !strings.Contains(err.Error(), "signal: killed") {
+					m.Log.Error(err)
+				}
 			}
 
 			m.refreshView()
@@ -130,7 +140,7 @@ func (m *ViewBufferManager) NewCmdTask(r io.Reader, cmd *exec.Cmd, linesToRead i
 			}
 
 			close(done)
-		}()
+		})
 
 		m.readLines <- linesToRead
 
@@ -148,10 +158,10 @@ func (t *ViewBufferManager) Close() {
 
 	c := make(chan struct{})
 
-	go func() {
+	go utils.Safe(func() {
 		t.currentTask.Stop()
 		c <- struct{}{}
-	}()
+	})
 
 	select {
 	case <-c:
@@ -166,19 +176,16 @@ func (t *ViewBufferManager) Close() {
 // 2) string based, where the manager can also be asked to read more lines
 
 func (m *ViewBufferManager) NewTask(f func(stop chan struct{}) error) error {
-	go func() {
+	go utils.Safe(func() {
 		m.taskIDMutex.Lock()
 		m.newTaskId++
 		taskID := m.newTaskId
-		m.Log.Infof("starting task %d", taskID)
 		m.taskIDMutex.Unlock()
 
 		m.waitingMutex.Lock()
 		defer m.waitingMutex.Unlock()
 
-		m.Log.Infof("done waiting")
 		if taskID < m.newTaskId {
-			m.Log.Infof("returning cos the task is obsolete")
 			return
 		}
 
@@ -186,9 +193,7 @@ func (m *ViewBufferManager) NewTask(f func(stop chan struct{}) error) error {
 		notifyStopped := make(chan struct{})
 
 		if m.currentTask != nil {
-			m.Log.Info("asking task to stop")
 			m.currentTask.Stop()
-			m.Log.Info("task stopped")
 		}
 
 		m.currentTask = &Task{
@@ -198,15 +203,14 @@ func (m *ViewBufferManager) NewTask(f func(stop chan struct{}) error) error {
 			f:             f,
 		}
 
-		go func() {
+		go utils.Safe(func() {
 			if err := f(stop); err != nil {
 				m.Log.Error(err) // might need an onError callback
 			}
 
-			m.Log.Infof("returning from task %d", taskID)
 			close(notifyStopped)
-		}()
-	}()
+		})
+	})
 
 	return nil
 }
@@ -218,8 +222,6 @@ func (t *Task) Stop() {
 		return
 	}
 	close(t.stop)
-	t.Log.Info("closed stop channel, waiting for notifyStopped message")
 	<-t.notifyStopped
-	t.Log.Info("received notifystopped message")
 	t.stopped = true
 }

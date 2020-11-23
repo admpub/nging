@@ -42,12 +42,12 @@ func (gui *Gui) getMidSectionWeights() (int, int) {
 	currentWindow := gui.currentWindow()
 
 	// we originally specified this as a ratio i.e. .20 would correspond to a weight of 1 against 4
-	sidePanelWidthRatio := gui.Config.GetUserConfig().GetFloat64("gui.sidePanelWidth")
+	sidePanelWidthRatio := gui.Config.GetUserConfig().Gui.SidePanelWidth
 	// we could make this better by creating ratios like 2:3 rather than always 1:something
 	mainSectionWeight := int(1/sidePanelWidthRatio) - 1
 	sideSectionWeight := 1
 
-	if gui.isMainPanelSplit() {
+	if gui.splitMainPanelSideBySide() {
 		mainSectionWeight = 5 // need to shrink side panel to make way for main panels if side-by-side
 	}
 
@@ -108,6 +108,28 @@ func (gui *Gui) infoSectionChildren(informationStr string, appStatus string) []*
 	return result
 }
 
+func (gui *Gui) splitMainPanelSideBySide() bool {
+	if !gui.isMainPanelSplit() {
+		return false
+	}
+
+	mainPanelSplitMode := gui.Config.GetUserConfig().Gui.MainPanelSplitMode
+	width, height := gui.g.Size()
+
+	switch mainPanelSplitMode {
+	case "vertical":
+		return false
+	case "horizontal":
+		return true
+	default:
+		if width < 200 && height > 30 { // 2 80 character width panels + 40 width for side panel
+			return false
+		} else {
+			return true
+		}
+	}
+}
+
 func (gui *Gui) getWindowDimensions(informationStr string, appStatus string) map[string]boxlayout.Dimensions {
 	width, height := gui.g.Size()
 
@@ -117,6 +139,11 @@ func (gui *Gui) getWindowDimensions(informationStr string, appStatus string) map
 	portraitMode := width <= 84 && height > 45
 	if portraitMode {
 		sidePanelsDirection = boxlayout.ROW
+	}
+
+	mainPanelsDirection := boxlayout.ROW
+	if gui.splitMainPanelSideBySide() {
+		mainPanelsDirection = boxlayout.COLUMN
 	}
 
 	root := &boxlayout.Box{
@@ -132,23 +159,7 @@ func (gui *Gui) getWindowDimensions(informationStr string, appStatus string) map
 						ConditionalChildren: gui.sidePanelChildren,
 					},
 					{
-						ConditionalDirection: func(width int, height int) int {
-							mainPanelSplitMode := gui.Config.GetUserConfig().GetString("gui.mainPanelSplitMode")
-
-							switch mainPanelSplitMode {
-							case "vertical":
-								return boxlayout.ROW
-							case "horizontal":
-								return boxlayout.COLUMN
-							default:
-								if width < 160 && height > 30 { // 2 80 character width panels
-									return boxlayout.ROW
-								} else {
-									return boxlayout.COLUMN
-								}
-							}
-						},
-						Direction: boxlayout.COLUMN,
+						Direction: mainPanelsDirection,
 						Weight:    mainSectionWeight,
 						Children:  gui.mainSectionChildren(),
 					},
@@ -213,7 +224,7 @@ func (gui *Gui) sidePanelChildren(width int, height int) []*boxlayout.Box {
 			fullHeightBox("stash"),
 		}
 	} else if height >= 28 {
-		accordianMode := gui.Config.GetUserConfig().GetBool("gui.expandFocusedSidePanel")
+		accordianMode := gui.Config.GetUserConfig().Gui.ExpandFocusedSidePanel
 		accordianBox := func(defaultBox *boxlayout.Box) *boxlayout.Box {
 			if accordianMode && defaultBox.Window == currentWindow {
 				return &boxlayout.Box{

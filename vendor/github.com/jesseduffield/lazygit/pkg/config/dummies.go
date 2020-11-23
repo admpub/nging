@@ -1,0 +1,20 @@
+package config
+
+import (
+	yaml "github.com/jesseduffield/yaml"
+)
+
+// NewDummyAppConfig creates a new dummy AppConfig for testing
+func NewDummyAppConfig() *AppConfig {
+	appConfig := &AppConfig{
+		Name:        "lazygit",
+		Version:     "unversioned",
+		Commit:      "",
+		BuildDate:   "",
+		Debug:       false,
+		BuildSource: "",
+		UserConfig:  GetDefaultConfig(),
+	}
+	_ = yaml.Unmarshal([]byte{}, appConfig.AppState)
+	return appConfig
+}

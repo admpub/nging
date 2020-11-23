@@ -17,7 +17,7 @@ func (gui *Gui) informationStr() string {
 	}
 
 	if gui.g.Mouse {
-		donate := color.New(color.FgMagenta, color.Underline).Sprint(gui.Tr.SLocalize("Donate"))
+		donate := color.New(color.FgMagenta, color.Underline).Sprint(gui.Tr.Donate)
 		return donate + " " + gui.Config.GetVersion()
 	} else {
 		return gui.Config.GetVersion()
@@ -37,7 +37,7 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 			if err.Error() != "unknown view" {
 				return err
 			}
-			v.Title = gui.Tr.SLocalize("NotEnoughSpace")
+			v.Title = gui.Tr.NotEnoughSpace
 			v.Wrap = true
 			_, _ = g.SetViewOnTop("limit")
 		}
@@ -104,7 +104,7 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		if err.Error() != "unknown view" {
 			return err
 		}
-		v.Title = gui.Tr.SLocalize("DiffTitle")
+		v.Title = gui.Tr.DiffTitle
 		v.Wrap = true
 		v.FgColor = textColor
 		v.IgnoreCarriageReturns = true
@@ -115,7 +115,7 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		if err.Error() != "unknown view" {
 			return err
 		}
-		secondaryView.Title = gui.Tr.SLocalize("DiffTitle")
+		secondaryView.Title = gui.Tr.DiffTitle
 		secondaryView.Wrap = true
 		secondaryView.FgColor = textColor
 		secondaryView.IgnoreCarriageReturns = true
@@ -127,7 +127,7 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		if err.Error() != "unknown view" {
 			return err
 		}
-		v.Title = gui.Tr.SLocalize("StatusTitle")
+		v.Title = gui.Tr.StatusTitle
 		v.FgColor = textColor
 	}
 
@@ -137,7 +137,8 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 			return err
 		}
 		filesView.Highlight = true
-		filesView.Title = gui.Tr.SLocalize("FilesTitle")
+		filesView.Title = gui.Tr.FilesTitle
+		filesView.FgColor = textColor
 		filesView.ContainsList = true
 	}
 
@@ -146,8 +147,7 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		if err.Error() != "unknown view" {
 			return err
 		}
-		branchesView.Title = gui.Tr.SLocalize("BranchesTitle")
-		branchesView.Tabs = gui.viewTabNames("branches")
+		branchesView.Title = gui.Tr.BranchesTitle
 		branchesView.FgColor = textColor
 		branchesView.ContainsList = true
 	}
@@ -157,9 +157,10 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		if err.Error() != "unknown view" {
 			return err
 		}
-		commitFilesView.Title = gui.Tr.SLocalize("CommitFiles")
+		commitFilesView.Title = gui.Tr.CommitFiles
 		commitFilesView.FgColor = textColor
 		commitFilesView.ContainsList = true
+		_, _ = gui.g.SetViewOnBottom("commitFiles")
 	}
 
 	commitsView, err := setViewFromDimensions("commits", "commits", true)
@@ -167,8 +168,7 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		if err.Error() != "unknown view" {
 			return err
 		}
-		commitsView.Title = gui.Tr.SLocalize("CommitsTitle")
-		commitsView.Tabs = gui.viewTabNames("commits")
+		commitsView.Title = gui.Tr.CommitsTitle
 		commitsView.FgColor = textColor
 		commitsView.ContainsList = true
 	}
@@ -178,7 +178,7 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		if err.Error() != "unknown view" {
 			return err
 		}
-		stashView.Title = gui.Tr.SLocalize("StashTitle")
+		stashView.Title = gui.Tr.StashTitle
 		stashView.FgColor = textColor
 		stashView.ContainsList = true
 	}
@@ -190,7 +190,7 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 				return err
 			}
 			_, _ = g.SetViewOnBottom("commitMessage")
-			commitMessageView.Title = gui.Tr.SLocalize("CommitMessage")
+			commitMessageView.Title = gui.Tr.CommitMessage
 			commitMessageView.FgColor = textColor
 			commitMessageView.Editable = true
 			commitMessageView.Editor = gocui.EditorFunc(gui.commitMessageEditor)
@@ -204,7 +204,7 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 				return err
 			}
 			_, _ = g.SetViewOnBottom("credentials")
-			credentialsView.Title = gui.Tr.SLocalize("CredentialsUsername")
+			credentialsView.Title = gui.Tr.CredentialsUsername
 			credentialsView.FgColor = textColor
 			credentialsView.Editable = true
 		}
@@ -287,8 +287,10 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		listContext *ListContext
 	}
 
+	// TODO: don't we already have the view included in the context object itself? Or might that change in a way we don't want reflected here?
 	listContextStates := []listContextState{
 		{view: filesView, listContext: gui.filesListContext()},
+		{view: filesView, listContext: gui.submodulesListContext()},
 		{view: branchesView, listContext: gui.branchesListContext()},
 		{view: branchesView, listContext: gui.remotesListContext()},
 		{view: branchesView, listContext: gui.remoteBranchesListContext()},
@@ -317,6 +319,8 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		listContextState.view.SetOnSelectItem(gui.onSelectItemWrapper(listContextState.listContext.onSearchSelect))
 	}
 
+	gui.getMainView().SetOnSelectItem(gui.onSelectItemWrapper(gui.handlelineByLineNavigateTo))
+
 	mainViewWidth, mainViewHeight := gui.getMainView().Size()
 	if mainViewWidth != gui.State.PrevMainWidth || mainViewHeight != gui.State.PrevMainHeight {
 		gui.State.PrevMainWidth = mainViewWidth
@@ -327,7 +331,7 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 	}
 
 	// here is a good place log some stuff
-	// if you download humanlog and do tail -f development.log | humanlog
+	// if you run `lazygit --logs`
 	// this will let you see these branches as prettified json
 	// gui.Log.Info(utils.AsJson(gui.State.Branches[0:4]))
 	return gui.resizeCurrentPopupPanel()
@@ -335,6 +339,17 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 
 func (gui *Gui) onInitialViewsCreation() error {
 	gui.setInitialViewContexts()
+
+	// add tabs to views
+	gui.g.Mutexes.ViewsMutex.Lock()
+	for _, view := range gui.g.Views() {
+		tabs := gui.viewTabNames(view.Name())
+		if len(tabs) == 0 {
+			continue
+		}
+		view.Tabs = tabs
+	}
+	gui.g.Mutexes.ViewsMutex.Unlock()
 
 	if err := gui.switchContext(gui.defaultSideContext()); err != nil {
 		return err

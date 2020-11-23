@@ -2,12 +2,13 @@ package gui
 
 import (
 	"github.com/jesseduffield/gocui"
-	"github.com/jesseduffield/lazygit/pkg/commands"
+	"github.com/jesseduffield/lazygit/pkg/commands/models"
+	"github.com/jesseduffield/lazygit/pkg/utils"
 )
 
 // list panel functions
 
-func (gui *Gui) getSelectedTag() *commands.Tag {
+func (gui *Gui) getSelectedTag() *models.Tag {
 	selectedLine := gui.State.Panels.Tags.SelectedLineIdx
 	if selectedLine == -1 || len(gui.State.Tags) == 0 {
 		return nil
@@ -64,15 +65,15 @@ func (gui *Gui) handleDeleteTag(g *gocui.Gui, v *gocui.View) error {
 		return nil
 	}
 
-	prompt := gui.Tr.TemplateLocalize(
-		"DeleteTagPrompt",
-		Teml{
+	prompt := utils.ResolvePlaceholderString(
+		gui.Tr.DeleteTagPrompt,
+		map[string]string{
 			"tagName": tag.Name,
 		},
 	)
 
 	return gui.ask(askOpts{
-		title:  gui.Tr.SLocalize("DeleteTagTitle"),
+		title:  gui.Tr.DeleteTagTitle,
 		prompt: prompt,
 		handleConfirm: func() error {
 			if err := gui.GitCommand.DeleteTag(tag.Name); err != nil {
@@ -89,23 +90,25 @@ func (gui *Gui) handlePushTag(g *gocui.Gui, v *gocui.View) error {
 		return nil
 	}
 
-	title := gui.Tr.TemplateLocalize(
-		"PushTagTitle",
-		Teml{
+	title := utils.ResolvePlaceholderString(
+		gui.Tr.PushTagTitle,
+		map[string]string{
 			"tagName": tag.Name,
 		},
 	)
 
 	return gui.prompt(title, "origin", func(response string) error {
-		if err := gui.GitCommand.PushTag(response, tag.Name); err != nil {
-			return gui.surfaceError(err)
-		}
-		return nil
+		return gui.WithWaitingStatus(gui.Tr.PushingTagStatus, func() error {
+			err := gui.GitCommand.PushTag(response, tag.Name, gui.promptUserForCredential)
+			gui.handleCredentialsPopup(err)
+
+			return nil
+		})
 	})
 }
 
 func (gui *Gui) handleCreateTag(g *gocui.Gui, v *gocui.View) error {
-	return gui.prompt(gui.Tr.SLocalize("CreateTagTitle"), "", func(tagName string) error {
+	return gui.prompt(gui.Tr.CreateTagTitle, "", func(tagName string) error {
 		// leaving commit SHA blank so that we're just creating the tag for the current commit
 		if err := gui.GitCommand.CreateLightweightTag(tagName, ""); err != nil {
 			return gui.surfaceError(err)

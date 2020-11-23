@@ -5,11 +5,13 @@ import (
 
 	"github.com/jesseduffield/gocui"
 	"github.com/jesseduffield/lazygit/pkg/commands"
+	"github.com/jesseduffield/lazygit/pkg/commands/models"
+	"github.com/jesseduffield/lazygit/pkg/utils"
 )
 
 // list panel functions
 
-func (gui *Gui) getSelectedLocalCommit() *commands.Commit {
+func (gui *Gui) getSelectedLocalCommit() *models.Commit {
 	selectedLine := gui.State.Panels.Commits.SelectedLineIdx
 	if selectedLine == -1 {
 		return nil
@@ -22,19 +24,19 @@ func (gui *Gui) handleCommitSelect() error {
 	state := gui.State.Panels.Commits
 	if state.SelectedLineIdx > 290 && state.LimitCommits {
 		state.LimitCommits = false
-		go func() {
+		go utils.Safe(func() {
 			if err := gui.refreshCommitsWithLimit(); err != nil {
 				_ = gui.surfaceError(err)
 			}
-		}()
+		})
 	}
 
-	gui.handleEscapeLineByLinePanel()
+	gui.escapeLineByLinePanel()
 
 	var task updateTask
 	commit := gui.getSelectedLocalCommit()
 	if commit == nil {
-		task = gui.createRenderStringTask(gui.Tr.SLocalize("NoCommitsThisBranch"))
+		task = gui.createRenderStringTask(gui.Tr.NoCommitsThisBranch)
 	} else {
 		cmd := gui.OSCommand.ExecutableFromString(
 			gui.GitCommand.ShowCmdStr(commit.Sha, gui.State.Modes.Filtering.Path),
@@ -58,11 +60,11 @@ func (gui *Gui) handleCommitSelect() error {
 func (gui *Gui) refreshReflogCommitsConsideringStartup() {
 	switch gui.State.StartupStage {
 	case INITIAL:
-		go func() {
+		go utils.Safe(func() {
 			_ = gui.refreshReflogCommits()
 			gui.refreshBranches()
 			gui.State.StartupStage = COMPLETE
-		}()
+		})
 
 	case COMPLETE:
 		_ = gui.refreshReflogCommits()
@@ -76,20 +78,31 @@ func (gui *Gui) refreshCommits() error {
 	wg := sync.WaitGroup{}
 	wg.Add(2)
 
-	go func() {
+	go utils.Safe(func() {
 		gui.refreshReflogCommitsConsideringStartup()
 
 		gui.refreshBranches()
 		wg.Done()
-	}()
+	})
 
-	go func() {
+	go utils.Safe(func() {
 		_ = gui.refreshCommitsWithLimit()
-		if gui.g.CurrentView() == gui.getCommitFilesView() || (gui.currentContext().GetKey() == gui.Contexts.PatchBuilding.Context.GetKey()) {
-			_ = gui.refreshCommitFilesView()
+		context, ok := gui.Contexts.CommitFiles.Context.GetParentContext()
+		if ok && context.GetKey() == BRANCH_COMMITS_CONTEXT_KEY {
+			// This makes sense when we've e.g. just amended a commit, meaning we get a new commit SHA at the same position.
+			// However if we've just added a brand new commit, it pushes the list down by one and so we would end up
+			// showing the contents of a different commit than the one we initially entered.
+			// Ideally we would know when to refresh the commit files context and when not to,
+			// or perhaps we could just pop that context off the stack whenever cycling windows.
+			// For now the awkwardness remains.
+			commit := gui.getSelectedLocalCommit()
+			if commit != nil {
+				gui.State.Panels.CommitFiles.refName = commit.RefName()
+				_ = gui.refreshCommitFilesView()
+			}
 		}
 		wg.Done()
-	}()
+	})
 
 	wg.Wait()
 
@@ -97,8 +110,8 @@ func (gui *Gui) refreshCommits() error {
 }
 
 func (gui *Gui) refreshCommitsWithLimit() error {
-	gui.State.BranchCommitsMutex.Lock()
-	defer gui.State.BranchCommitsMutex.Unlock()
+	gui.Mutexes.BranchCommitsMutex.Lock()
+	defer gui.Mutexes.BranchCommitsMutex.Unlock()
 
 	builder := commands.NewCommitListBuilder(gui.Log, gui.GitCommand, gui.OSCommand, gui.Tr)
 
@@ -119,8 +132,8 @@ func (gui *Gui) refreshCommitsWithLimit() error {
 }
 
 func (gui *Gui) refreshRebaseCommits() error {
-	gui.State.BranchCommitsMutex.Lock()
-	defer gui.State.BranchCommitsMutex.Unlock()
+	gui.Mutexes.BranchCommitsMutex.Lock()
+	defer gui.Mutexes.BranchCommitsMutex.Unlock()
 
 	builder := commands.NewCommitListBuilder(gui.Log, gui.GitCommand, gui.OSCommand, gui.Tr)
 
@@ -141,7 +154,7 @@ func (gui *Gui) handleCommitSquashDown(g *gocui.Gui, v *gocui.View) error {
 	}
 
 	if len(gui.State.Commits) <= 1 {
-		return gui.createErrorPanel(gui.Tr.SLocalize("YouNoCommitsToSquash"))
+		return gui.createErrorPanel(gui.Tr.YouNoCommitsToSquash)
 	}
 
 	applied, err := gui.handleMidRebaseCommand("squash")
@@ -153,10 +166,10 @@ func (gui *Gui) handleCommitSquashDown(g *gocui.Gui, v *gocui.View) error {
 	}
 
 	return gui.ask(askOpts{
-		title:  gui.Tr.SLocalize("Squash"),
-		prompt: gui.Tr.SLocalize("SureSquashThisCommit"),
+		title:  gui.Tr.Squash,
+		prompt: gui.Tr.SureSquashThisCommit,
 		handleConfirm: func() error {
-			return gui.WithWaitingStatus(gui.Tr.SLocalize("SquashingStatus"), func() error {
+			return gui.WithWaitingStatus(gui.Tr.SquashingStatus, func() error {
 				err := gui.GitCommand.InteractiveRebase(gui.State.Commits, gui.State.Panels.Commits.SelectedLineIdx, "squash")
 				return gui.handleGenericMergeCommandResult(err)
 			})
@@ -170,7 +183,7 @@ func (gui *Gui) handleCommitFixup(g *gocui.Gui, v *gocui.View) error {
 	}
 
 	if len(gui.State.Commits) <= 1 {
-		return gui.createErrorPanel(gui.Tr.SLocalize("YouNoCommitsToSquash"))
+		return gui.createErrorPanel(gui.Tr.YouNoCommitsToSquash)
 	}
 
 	applied, err := gui.handleMidRebaseCommand("fixup")
@@ -182,10 +195,10 @@ func (gui *Gui) handleCommitFixup(g *gocui.Gui, v *gocui.View) error {
 	}
 
 	return gui.ask(askOpts{
-		title:  gui.Tr.SLocalize("Fixup"),
-		prompt: gui.Tr.SLocalize("SureFixupThisCommit"),
+		title:  gui.Tr.Fixup,
+		prompt: gui.Tr.SureFixupThisCommit,
 		handleConfirm: func() error {
-			return gui.WithWaitingStatus(gui.Tr.SLocalize("FixingStatus"), func() error {
+			return gui.WithWaitingStatus(gui.Tr.FixingStatus, func() error {
 				err := gui.GitCommand.InteractiveRebase(gui.State.Commits, gui.State.Panels.Commits.SelectedLineIdx, "fixup")
 				return gui.handleGenericMergeCommandResult(err)
 			})
@@ -207,7 +220,7 @@ func (gui *Gui) handleRenameCommit(g *gocui.Gui, v *gocui.View) error {
 	}
 
 	if gui.State.Panels.Commits.SelectedLineIdx != 0 {
-		return gui.createErrorPanel(gui.Tr.SLocalize("OnlyRenameTopCommit"))
+		return gui.createErrorPanel(gui.Tr.OnlyRenameTopCommit)
 	}
 
 	commit := gui.getSelectedLocalCommit()
@@ -220,7 +233,7 @@ func (gui *Gui) handleRenameCommit(g *gocui.Gui, v *gocui.View) error {
 		return gui.surfaceError(err)
 	}
 
-	return gui.prompt(gui.Tr.SLocalize("renameCommit"), message, func(response string) error {
+	return gui.prompt(gui.Tr.LcRenameCommit, message, func(response string) error {
 		if err := gui.GitCommand.RenameCommit(response); err != nil {
 			return gui.surfaceError(err)
 		}
@@ -268,7 +281,7 @@ func (gui *Gui) handleMidRebaseCommand(action string) (bool, error) {
 	// our input or we set a lazygit client as the EDITOR env variable and have it
 	// request us to edit the commit message when prompted.
 	if action == "reword" {
-		return true, gui.createErrorPanel(gui.Tr.SLocalize("rewordNotSupported"))
+		return true, gui.createErrorPanel(gui.Tr.LcRewordNotSupported)
 	}
 
 	if err := gui.GitCommand.EditRebaseTodo(gui.State.Panels.Commits.SelectedLineIdx, action); err != nil {
@@ -292,10 +305,10 @@ func (gui *Gui) handleCommitDelete(g *gocui.Gui, v *gocui.View) error {
 	}
 
 	return gui.ask(askOpts{
-		title:  gui.Tr.SLocalize("DeleteCommitTitle"),
-		prompt: gui.Tr.SLocalize("DeleteCommitPrompt"),
+		title:  gui.Tr.DeleteCommitTitle,
+		prompt: gui.Tr.DeleteCommitPrompt,
 		handleConfirm: func() error {
-			return gui.WithWaitingStatus(gui.Tr.SLocalize("DeletingStatus"), func() error {
+			return gui.WithWaitingStatus(gui.Tr.DeletingStatus, func() error {
 				err := gui.GitCommand.InteractiveRebase(gui.State.Commits, gui.State.Panels.Commits.SelectedLineIdx, "drop")
 				return gui.handleGenericMergeCommandResult(err)
 			})
@@ -321,7 +334,7 @@ func (gui *Gui) handleCommitMoveDown(g *gocui.Gui, v *gocui.View) error {
 		return gui.refreshRebaseCommits()
 	}
 
-	return gui.WithWaitingStatus(gui.Tr.SLocalize("MovingStatus"), func() error {
+	return gui.WithWaitingStatus(gui.Tr.MovingStatus, func() error {
 		err := gui.GitCommand.MoveCommitDown(gui.State.Commits, index)
 		if err == nil {
 			gui.State.Panels.Commits.SelectedLineIdx++
@@ -348,7 +361,7 @@ func (gui *Gui) handleCommitMoveUp(g *gocui.Gui, v *gocui.View) error {
 		return gui.refreshRebaseCommits()
 	}
 
-	return gui.WithWaitingStatus(gui.Tr.SLocalize("MovingStatus"), func() error {
+	return gui.WithWaitingStatus(gui.Tr.MovingStatus, func() error {
 		err := gui.GitCommand.MoveCommitDown(gui.State.Commits, index-1)
 		if err == nil {
 			gui.State.Panels.Commits.SelectedLineIdx--
@@ -370,7 +383,7 @@ func (gui *Gui) handleCommitEdit(g *gocui.Gui, v *gocui.View) error {
 		return nil
 	}
 
-	return gui.WithWaitingStatus(gui.Tr.SLocalize("RebasingStatus"), func() error {
+	return gui.WithWaitingStatus(gui.Tr.RebasingStatus, func() error {
 		err = gui.GitCommand.InteractiveRebase(gui.State.Commits, gui.State.Panels.Commits.SelectedLineIdx, "edit")
 		return gui.handleGenericMergeCommandResult(err)
 	})
@@ -382,10 +395,10 @@ func (gui *Gui) handleCommitAmendTo(g *gocui.Gui, v *gocui.View) error {
 	}
 
 	return gui.ask(askOpts{
-		title:  gui.Tr.SLocalize("AmendCommitTitle"),
-		prompt: gui.Tr.SLocalize("AmendCommitPrompt"),
+		title:  gui.Tr.AmendCommitTitle,
+		prompt: gui.Tr.AmendCommitPrompt,
 		handleConfirm: func() error {
-			return gui.WithWaitingStatus(gui.Tr.SLocalize("AmendingStatus"), func() error {
+			return gui.WithWaitingStatus(gui.Tr.AmendingStatus, func() error {
 				err := gui.GitCommand.AmendTo(gui.State.Commits[gui.State.Panels.Commits.SelectedLineIdx].Sha)
 				return gui.handleGenericMergeCommandResult(err)
 			})
@@ -432,7 +445,7 @@ func (gui *Gui) handleViewCommitFiles() error {
 	return gui.switchToCommitFilesContext(commit.Sha, true, gui.Contexts.BranchCommits.Context, "commits")
 }
 
-func (gui *Gui) hasCommit(commits []*commands.Commit, target string) (int, bool) {
+func (gui *Gui) hasCommit(commits []*models.Commit, target string) (int, bool) {
 	for idx, commit := range commits {
 		if commit.Sha == target {
 			return idx, true
@@ -441,7 +454,7 @@ func (gui *Gui) hasCommit(commits []*commands.Commit, target string) (int, bool)
 	return -1, false
 }
 
-func (gui *Gui) unchooseCommit(commits []*commands.Commit, i int) []*commands.Commit {
+func (gui *Gui) unchooseCommit(commits []*models.Commit, i int) []*models.Commit {
 	return append(commits[:i], commits[i+1:]...)
 }
 
@@ -455,14 +468,16 @@ func (gui *Gui) handleCreateFixupCommit(g *gocui.Gui, v *gocui.View) error {
 		return nil
 	}
 
+	prompt := utils.ResolvePlaceholderString(
+		gui.Tr.SureCreateFixupCommit,
+		map[string]string{
+			"commit": commit.Sha,
+		},
+	)
+
 	return gui.ask(askOpts{
-		title: gui.Tr.SLocalize("CreateFixupCommit"),
-		prompt: gui.Tr.TemplateLocalize(
-			"SureCreateFixupCommit",
-			Teml{
-				"commit": commit.Sha,
-			},
-		),
+		title:  gui.Tr.CreateFixupCommit,
+		prompt: prompt,
 		handleConfirm: func() error {
 			if err := gui.GitCommand.CreateFixupCommit(commit.Sha); err != nil {
 				return gui.surfaceError(err)
@@ -483,16 +498,18 @@ func (gui *Gui) handleSquashAllAboveFixupCommits(g *gocui.Gui, v *gocui.View) er
 		return nil
 	}
 
+	prompt := utils.ResolvePlaceholderString(
+		gui.Tr.SureSquashAboveCommits,
+		map[string]string{
+			"commit": commit.Sha,
+		},
+	)
+
 	return gui.ask(askOpts{
-		title: gui.Tr.SLocalize("SquashAboveCommits"),
-		prompt: gui.Tr.TemplateLocalize(
-			"SureSquashAboveCommits",
-			Teml{
-				"commit": commit.Sha,
-			},
-		),
+		title:  gui.Tr.SquashAboveCommits,
+		prompt: prompt,
 		handleConfirm: func() error {
-			return gui.WithWaitingStatus(gui.Tr.SLocalize("SquashingStatus"), func() error {
+			return gui.WithWaitingStatus(gui.Tr.SquashingStatus, func() error {
 				err := gui.GitCommand.SquashAllAboveFixupCommits(commit.Sha)
 				return gui.handleGenericMergeCommandResult(err)
 			})
@@ -513,7 +530,7 @@ func (gui *Gui) handleTagCommit(g *gocui.Gui, v *gocui.View) error {
 }
 
 func (gui *Gui) handleCreateLightweightTag(commitSha string) error {
-	return gui.prompt(gui.Tr.SLocalize("TagNameTitle"), "", func(response string) error {
+	return gui.prompt(gui.Tr.TagNameTitle, "", func(response string) error {
 		if err := gui.GitCommand.CreateLightweightTag(response, commitSha); err != nil {
 			return gui.surfaceError(err)
 		}
@@ -528,8 +545,8 @@ func (gui *Gui) handleCheckoutCommit(g *gocui.Gui, v *gocui.View) error {
 	}
 
 	return gui.ask(askOpts{
-		title:  gui.Tr.SLocalize("checkoutCommit"),
-		prompt: gui.Tr.SLocalize("SureCheckoutThisCommit"),
+		title:  gui.Tr.LcCheckoutCommit,
+		prompt: gui.Tr.SureCheckoutThisCommit,
 		handleConfirm: func() error {
 			return gui.handleCheckoutRef(commit.Sha, handleCheckoutRefOptions{})
 		},
@@ -539,7 +556,7 @@ func (gui *Gui) handleCheckoutCommit(g *gocui.Gui, v *gocui.View) error {
 func (gui *Gui) handleCreateCommitResetMenu(g *gocui.Gui, v *gocui.View) error {
 	commit := gui.getSelectedLocalCommit()
 	if commit == nil {
-		return gui.createErrorPanel(gui.Tr.SLocalize("NoCommitsThisBranch"))
+		return gui.createErrorPanel(gui.Tr.NoCommitsThisBranch)
 	}
 
 	return gui.createResetMenu(commit.Sha)
@@ -573,4 +590,17 @@ func (gui *Gui) handleGotoBottomForCommitsPanel(g *gocui.Gui, v *gocui.View) err
 	}
 
 	return nil
+}
+
+func (gui *Gui) handleCopySelectedCommitMessageToClipboard() error {
+	commit := gui.getSelectedLocalCommit()
+	if commit == nil {
+		return nil
+	}
+
+	message, err := gui.GitCommand.GetCommitMessage(commit.Sha)
+	if err != nil {
+		return gui.surfaceError(err)
+	}
+	return gui.OSCommand.CopyToClipboard(message)
 }

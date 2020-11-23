@@ -1,4 +1,4 @@
-# Goth: Multi-Provider Authentication for Go [![GoDoc](https://godoc.org/github.com/markbates/goth?status.svg)](https://godoc.org/github.com/markbates/goth) [![Build Status](https://travis-ci.org/markbates/goth.svg)](https://travis-ci.org/markbates/goth) [![Go Report Card](https://goreportcard.com/badge/github.com/markbates/goth)](https://goreportcard.com/report/github.com/markbates/goth)
+# Goth: Multi-Provider Authentication for Go [![GoDoc](https://godoc.org/github.com/markbates/goth?status.svg)](https://godoc.org/github.com/markbates/goth) [![Build Status](https://github.com/markbates/goth/workflows/ci/badge.svg)](https://github.com/markbates/goth/actions) [![Go Report Card](https://goreportcard.com/badge/github.com/markbates/goth)](https://goreportcard.com/report/github.com/markbates/goth)
 
 Package goth provides a simple, clean, and idiomatic way to write authentication
 packages for Go web applications.
@@ -26,7 +26,7 @@ $ go get github.com/markbates/goth
 * Cloud Foundry
 * Dailymotion
 * Deezer
-* Digital Ocean
+* DigitalOcean
 * Discord
 * Dropbox
 * Eve Online
@@ -52,6 +52,7 @@ $ go get github.com/markbates/goth
 * Nextcloud
 * OneDrive
 * OpenID Connect (auto discovery)
+* Oura
 * Paypal
 * SalesForce
 * Shopify
@@ -144,6 +145,7 @@ Would I love to see more providers? Certainly! Would you love to contribute one?
 1. Fork it
 2. Create your feature branch (git checkout -b my-new-feature)
 3. Write Tests!
-4. Commit your changes (git commit -am 'Add some feature')
-5. Push to the branch (git push origin my-new-feature)
-6. Create new Pull Request
+4. Make sure the codebase adhere to the Go coding standards by executing `gofmt -s -w ./`
+5. Commit your changes (git commit -am 'Add some feature')
+6. Push to the branch (git push origin my-new-feature)
+7. Create new Pull Request

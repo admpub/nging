@@ -25,7 +25,42 @@ const (
 	TAGS
 	REMOTES
 	STATUS
+	SUBMODULES
 )
+
+func getScopeNames(scopes []int) []string {
+	scopeNameMap := map[int]string{
+		COMMITS:    "commits",
+		BRANCHES:   "branches",
+		FILES:      "files",
+		SUBMODULES: "submodules",
+		STASH:      "stash",
+		REFLOG:     "reflog",
+		TAGS:       "tags",
+		REMOTES:    "remotes",
+		STATUS:     "status",
+	}
+
+	scopeNames := make([]string, len(scopes))
+	for i, scope := range scopes {
+		scopeNames[i] = scopeNameMap[scope]
+	}
+
+	return scopeNames
+}
+
+func getModeName(mode int) string {
+	switch mode {
+	case SYNC:
+		return "sync"
+	case ASYNC:
+		return "async"
+	case BLOCK_UI:
+		return "block-ui"
+	default:
+		return "unknown mode"
+	}
+}
 
 const (
 	SYNC     = iota // wait until everything is done before returning
@@ -48,6 +83,19 @@ func intArrToMap(arr []int) map[int]bool {
 }
 
 func (gui *Gui) refreshSidePanels(options refreshOptions) error {
+	if options.scope == nil {
+		gui.Log.Infof(
+			"refreshing all scopes in %s mode",
+			getModeName(options.mode),
+		)
+	} else {
+		gui.Log.Infof(
+			"refreshing the following scopes in %s mode: %s",
+			getModeName(options.mode),
+			strings.Join(getScopeNames(options.scope), ","),
+		)
+	}
+
 	wg := sync.WaitGroup{}
 
 	f := func() {
@@ -62,7 +110,7 @@ func (gui *Gui) refreshSidePanels(options refreshOptions) error {
 			wg.Add(1)
 			func() {
 				if options.mode == ASYNC {
-					go gui.refreshCommits()
+					go utils.Safe(func() { gui.refreshCommits() })
 				} else {
 					gui.refreshCommits()
 				}
@@ -70,13 +118,13 @@ func (gui *Gui) refreshSidePanels(options refreshOptions) error {
 			}()
 		}
 
-		if scopeMap[FILES] {
+		if scopeMap[FILES] || scopeMap[SUBMODULES] {
 			wg.Add(1)
 			func() {
 				if options.mode == ASYNC {
-					go gui.refreshFiles()
+					go utils.Safe(func() { gui.refreshFilesAndSubmodules() })
 				} else {
-					gui.refreshFiles()
+					gui.refreshFilesAndSubmodules()
 				}
 				wg.Done()
 			}()
@@ -86,7 +134,7 @@ func (gui *Gui) refreshSidePanels(options refreshOptions) error {
 			wg.Add(1)
 			func() {
 				if options.mode == ASYNC {
-					go gui.refreshStashEntries()
+					go utils.Safe(func() { gui.refreshStashEntries() })
 				} else {
 					gui.refreshStashEntries()
 				}
@@ -98,7 +146,7 @@ func (gui *Gui) refreshSidePanels(options refreshOptions) error {
 			wg.Add(1)
 			func() {
 				if options.mode == ASYNC {
-					go gui.refreshTags()
+					go utils.Safe(func() { gui.refreshTags() })
 				} else {
 					gui.refreshTags()
 				}
@@ -110,7 +158,7 @@ func (gui *Gui) refreshSidePanels(options refreshOptions) error {
 			wg.Add(1)
 			func() {
 				if options.mode == ASYNC {
-					go gui.refreshRemotes()
+					go utils.Safe(func() { gui.refreshRemotes() })
 				} else {
 					gui.refreshRemotes()
 				}
@@ -283,7 +331,6 @@ func (gui *Gui) resizePopupPanel(v *gocui.View) error {
 	if vx0 == x0 && vy0 == y0 && vx1 == x1 && vy1 == y1 {
 		return nil
 	}
-	gui.Log.Info(gui.Tr.SLocalize("resizingPopupPanel"))
 	_, err := gui.g.SetView(v.Name(), x0, y0, x1, y1, 0)
 	return err
 }
@@ -327,13 +374,15 @@ func (gui *Gui) renderDisplayStrings(v *gocui.View, displayStrings [][]string) {
 }
 
 func (gui *Gui) globalOptionsMap() map[string]string {
+	keybindingConfig := gui.Config.GetUserConfig().Keybinding
+
 	return map[string]string{
-		fmt.Sprintf("%s/%s", gui.getKeyDisplay("universal.scrollUpMain"), gui.getKeyDisplay("universal.scrollDownMain")):                                                                                 gui.Tr.SLocalize("scroll"),
-		fmt.Sprintf("%s %s %s %s", gui.getKeyDisplay("universal.prevBlock"), gui.getKeyDisplay("universal.nextBlock"), gui.getKeyDisplay("universal.prevItem"), gui.getKeyDisplay("universal.nextItem")): gui.Tr.SLocalize("navigate"),
-		gui.getKeyDisplay("universal.return"):     gui.Tr.SLocalize("cancel"),
-		gui.getKeyDisplay("universal.quit"):       gui.Tr.SLocalize("quit"),
-		gui.getKeyDisplay("universal.optionMenu"): gui.Tr.SLocalize("menu"),
-		"1-5": gui.Tr.SLocalize("jump"),
+		fmt.Sprintf("%s/%s", gui.getKeyDisplay(keybindingConfig.Universal.ScrollUpMain), gui.getKeyDisplay(keybindingConfig.Universal.ScrollDownMain)):                                                                                                               gui.Tr.LcScroll,
+		fmt.Sprintf("%s %s %s %s", gui.getKeyDisplay(keybindingConfig.Universal.PrevBlock), gui.getKeyDisplay(keybindingConfig.Universal.NextBlock), gui.getKeyDisplay(keybindingConfig.Universal.PrevItem), gui.getKeyDisplay(keybindingConfig.Universal.NextItem)): gui.Tr.LcNavigate,
+		gui.getKeyDisplay(keybindingConfig.Universal.Return):     gui.Tr.LcCancel,
+		gui.getKeyDisplay(keybindingConfig.Universal.Quit):       gui.Tr.LcQuit,
+		gui.getKeyDisplay(keybindingConfig.Universal.OptionMenu): gui.Tr.LcMenu,
+		"1-5": gui.Tr.LcJump,
 	}
 }
 
@@ -356,7 +405,8 @@ func (gui *Gui) wrappedHandler(f func() error) func(g *gocui.Gui, v *gocui.View)
 
 // secondaryViewFocused tells us whether it appears that the secondary view is focused. The view is actually never focused for real: we just swap the main and secondary views and then you're still focused on the main view so that we can give you access to all its keybindings for free. I will probably regret this design decision soon enough.
 func (gui *Gui) secondaryViewFocused() bool {
-	return gui.State.Panels.LineByLine != nil && gui.State.Panels.LineByLine.SecondaryFocused
+	state := gui.State.Panels.LineByLine
+	return state != nil && state.SecondaryFocused
 }
 
 func (gui *Gui) clearEditorView(v *gocui.View) {
@@ -383,4 +433,16 @@ func (gui *Gui) handlePrevTab(g *gocui.Gui, v *gocui.View) error {
 		v.Name(),
 		utils.ModuloWithWrap(v.TabIndex-1, len(v.Tabs)),
 	)
+}
+
+// this is the distance we will move the cursor when paging up or down in a view
+func (gui *Gui) pageDelta(view *gocui.View) int {
+	_, height := view.Size()
+
+	delta := height - 1
+	if delta == 0 {
+		return 1
+	}
+
+	return delta
 }

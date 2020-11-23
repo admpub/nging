@@ -2,12 +2,18 @@ package gui
 
 import (
 	"os/exec"
+	"strings"
 
 	"github.com/jesseduffield/gocui"
 	"github.com/jesseduffield/lazygit/pkg/tasks"
 )
 
-func (gui *Gui) newCmdTask(viewName string, cmd *exec.Cmd) error {
+func (gui *Gui) newCmdTask(viewName string, cmd *exec.Cmd, prefix string) error {
+	gui.Log.WithField(
+		"command",
+		strings.Join(cmd.Args, " "),
+	).Debug("RunCommand")
+
 	view, err := gui.g.View(viewName)
 	if err != nil {
 		return nil // swallowing for now
@@ -28,7 +34,7 @@ func (gui *Gui) newCmdTask(viewName string, cmd *exec.Cmd) error {
 		return err
 	}
 
-	if err := manager.NewTask(manager.NewCmdTask(r, cmd, height+oy+10, nil)); err != nil {
+	if err := manager.NewTask(manager.NewCmdTask(r, cmd, prefix, height+oy+10, nil)); err != nil {
 		return err
 	}
 

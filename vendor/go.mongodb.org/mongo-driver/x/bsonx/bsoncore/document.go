@@ -115,6 +115,9 @@ var ErrOutOfBounds = errors.New("out of bounds")
 // Document is a raw bytes representation of a BSON document.
 type Document []byte
 
+// Array is a raw bytes representation of a BSON array.
+type Array = Document
+
 // NewDocumentFromReader reads a document from r. This function will only validate the length is
 // correct and that the document ends with a null byte.
 func NewDocumentFromReader(r io.Reader) (Document, error) {
@@ -178,7 +181,8 @@ func (d Document) LookupErr(key ...string) (Value, error) {
 		if !ok {
 			return Value{}, NewInsufficientBytesError(d, rem)
 		}
-		if elem.Key() != key[0] {
+		// We use `KeyBytes` rather than `Key` to avoid a needless string alloc.
+		if string(elem.KeyBytes()) != key[0] {
 			continue
 		}
 		if len(key) > 1 {
