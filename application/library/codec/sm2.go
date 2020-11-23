@@ -177,7 +177,7 @@ func PublicKeyToHexString(publicKey *sm2.PublicKey) string {
 }
 
 // SM2DecryptHex 解密
-func SM2DecryptHex(priv *sm2.PrivateKey, cipher string) (string, error) {
+func SM2DecryptHex(priv *sm2.PrivateKey, cipher string, noBase64 ...bool) (string, error) {
 	if len(cipher) == 0 {
 		return ``, nil
 	}
@@ -190,6 +190,9 @@ func SM2DecryptHex(priv *sm2.PrivateKey, cipher string) (string, error) {
 		return ``, err
 	}
 	actual := string(plain)
+	if len(noBase64) > 0 && noBase64[0] {
+		return actual, nil
+	}
 	return com.Base64Decode(actual)
 }
 
@@ -199,6 +202,6 @@ func DefaultPublicKeyHex() string {
 }
 
 // DefaultSM2DecryptHex 默认密钥解密hex字符串
-func DefaultSM2DecryptHex(cipher string) (string, error) {
-	return SM2DecryptHex(DefaultKey(), cipher)
+func DefaultSM2DecryptHex(cipher string, noBase64 ...bool) (string, error) {
+	return SM2DecryptHex(DefaultKey(), cipher, noBase64...)
 }
