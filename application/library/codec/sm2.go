@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/admpub/ccs-gm/sm2"
@@ -181,6 +182,13 @@ func SM2DecryptHex(priv *sm2.PrivateKey, cipher string, noBase64 ...bool) (strin
 	if len(cipher) == 0 {
 		return ``, nil
 	}
+	base64 := true
+	if len(noBase64) > 0 {
+		base64 = !noBase64[0]
+	} else if strings.HasPrefix(cipher, `-`) {
+		base64 = false
+		cipher = strings.TrimPrefix(cipher, `-`)
+	}
 	b, err := hex.DecodeString(cipher)
 	if err != nil {
 		return ``, err
@@ -190,7 +198,7 @@ func SM2DecryptHex(priv *sm2.PrivateKey, cipher string, noBase64 ...bool) (strin
 		return ``, err
 	}
 	actual := string(plain)
-	if len(noBase64) > 0 && noBase64[0] {
+	if !base64 {
 		return actual, nil
 	}
 	return com.Base64Decode(actual)
