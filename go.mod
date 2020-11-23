@@ -97,7 +97,7 @@ require (
 	github.com/admpub/restful v0.0.0-20180328144945-2e8d62d39607
 	github.com/admpub/securecookie v0.0.0-20170722041919-69560e375596
 	github.com/admpub/service v0.0.0-20200628035946-b971165ffff2
-	github.com/admpub/sessions v0.0.0-20201122094053-d1d15b8bee22 // indirect
+	github.com/admpub/sessions v0.0.0-20201123012843-e83c830d057a // indirect
 	github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede
 	github.com/admpub/sockjs-go v0.0.0-20170208085255-715e9716fc23
 	github.com/admpub/sonyflake v0.0.0-20160530021500-fa881fb1052b
@@ -186,7 +186,7 @@ require (
 	github.com/webx-top/codec v0.0.0-20200914105801-3782d81a0302
 	github.com/webx-top/com v0.0.4
 	github.com/webx-top/db v1.1.3
-	github.com/webx-top/echo v2.5.4+incompatible
+	github.com/webx-top/echo v2.5.5+incompatible
 	github.com/webx-top/image v0.0.4
 	github.com/webx-top/pagination v0.0.1
 	github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2 // indirect

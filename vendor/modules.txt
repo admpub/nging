@@ -237,7 +237,7 @@ github.com/admpub/securecookie
 # github.com/admpub/service v0.0.0-20200628035946-b971165ffff2
 ## explicit
 github.com/admpub/service
-# github.com/admpub/sessions v0.0.0-20201122094053-d1d15b8bee22
+# github.com/admpub/sessions v0.0.0-20201123012843-e83c830d057a
 ## explicit
 github.com/admpub/sessions
 # github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede
@@ -1087,7 +1087,7 @@ github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mongo
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.5.4+incompatible
+# github.com/webx-top/echo v2.5.5+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code

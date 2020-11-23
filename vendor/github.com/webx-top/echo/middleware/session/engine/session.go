@@ -2,9 +2,11 @@
 // within echo. This package was originally inspired from the
 // https://github.com/ipfans/echo-session package, and modified to provide more
 // functionality
+
 package engine
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/admpub/sessions"
@@ -86,9 +88,19 @@ func (s *Session) ID() string {
 }
 
 func (s *Session) MustID() string {
-	if len(s.Session().ID) == 0 {
-		s.Session().ID = GenerateSessionID()
+	if len(s.Session().ID) > 0 {
+		return s.Session().ID
 	}
+	if idGen, ok := s.Session().Store().(sessions.IDGenerator); ok {
+		var err error
+		s.Session().ID, err = idGen.GenerateID(s.context, s.Session())
+		if err != nil {
+			err = fmt.Errorf(`Session ID generation failed: %w`, err)
+			panic(err)
+		}
+		return s.Session().ID
+	}
+	s.Session().ID = GenerateSessionID()
 	return s.Session().ID
 }
 

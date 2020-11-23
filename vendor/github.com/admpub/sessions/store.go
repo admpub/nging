@@ -34,6 +34,11 @@ type Store interface {
 	Save(ctx echo.Context, s *Session) error
 }
 
+// IDGenerator session id generator
+type IDGenerator interface {
+	GenerateID(ctx echo.Context, session *Session) (string, error)
+}
+
 // CookieStore ----------------------------------------------------------------
 
 // NewCookieStore returns a new CookieStore.
@@ -90,13 +95,29 @@ func (s *CookieStore) New(ctx echo.Context, name string) (*Session, error) {
 			s.Codecs...)
 		if err == nil {
 			session.IsNew = false
+			session.ID = v
 		}
 	}
 	return session, err
 }
 
-func (s *CookieStore) Reload(_ echo.Context, _ *Session) error {
-	return nil
+func (s *CookieStore) Reload(ctx echo.Context, session *Session) error {
+	if len(session.ID) == 0 {
+		return nil
+	}
+	err := securecookie.DecodeMultiWithMaxAge(
+		session.Name(), session.ID, &session.Values,
+		ctx.CookieOptions().MaxAge,
+		s.Codecs...)
+	if err == nil {
+		session.IsNew = false
+	}
+	return err
+}
+
+func (s *CookieStore) GenerateID(ctx echo.Context, session *Session) (string, error) {
+	return securecookie.EncodeMulti(session.Name(), session.Values,
+		s.Codecs...)
 }
 
 // Save adds a single session to the response.
