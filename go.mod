@@ -110,7 +110,7 @@ require (
 	github.com/admpub/websocket v1.0.2
 	github.com/araddon/gou v0.0.0-20190110011759-c797efecbb61 // indirect
 	github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6 // indirect
-	github.com/aws/aws-sdk-go v1.35.33
+	github.com/aws/aws-sdk-go v1.36.0
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
