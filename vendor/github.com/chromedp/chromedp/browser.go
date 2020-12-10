@@ -15,6 +15,7 @@ import (
 	"github.com/chromedp/cdproto"
 	"github.com/chromedp/cdproto/browser"
 	"github.com/chromedp/cdproto/cdp"
+	"github.com/chromedp/cdproto/runtime"
 	"github.com/chromedp/cdproto/target"
 )
 
@@ -31,6 +32,13 @@ type Browser struct {
 	// dropped. This can be useful to make sure that Browser's context is
 	// cancelled (and the handler stopped) once the connection has failed.
 	LostConnection chan struct{}
+
+	// closingGracefully is closed by Close before gracefully shutting down
+	// the browser. This way, when the connection to the browser is lost and
+	// LostConnection is closed, we will know not to immediately kill the
+	// Chrome process. This is important to let the browser shut itself off,
+	// saving its state to disk.
+	closingGracefully chan struct{}
 
 	dialTimeout time.Duration
 
@@ -72,7 +80,8 @@ type Browser struct {
 // directly, as the Allocator interface takes care of it.
 func NewBrowser(ctx context.Context, urlstr string, opts ...BrowserOption) (*Browser, error) {
 	b := &Browser{
-		LostConnection: make(chan struct{}),
+		LostConnection:    make(chan struct{}),
+		closingGracefully: make(chan struct{}),
 
 		dialTimeout: 10 * time.Second,
 
@@ -124,6 +133,8 @@ func (b *Browser) newExecutorForTarget(ctx context.Context, targetID target.ID, 
 
 		messageQueue: make(chan *cdproto.Message, 1024),
 		frames:       make(map[cdp.FrameID]*cdp.Frame),
+		execContexts: make(map[cdp.FrameID]runtime.ExecutionContextID),
+		cur:          cdp.FrameID(targetID),
 
 		logf: b.logf,
 		errf: b.errf,

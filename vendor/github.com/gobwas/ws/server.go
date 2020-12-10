@@ -7,6 +7,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gobwas/httphead"
@@ -159,7 +160,7 @@ func (u HTTPUpgrader) Upgrade(r *http.Request, w http.ResponseWriter) (conn net.
 		err = ErrHandshakeBadProtocol
 	} else if r.Host == "" {
 		err = ErrHandshakeBadHost
-	} else if u := httpGetHeader(r.Header, headerUpgradeCanonical); u != "websocket" && !strEqualFold(u, "websocket") {
+	} else if u := httpGetHeader(r.Header, headerUpgradeCanonical); u != "websocket" && !strings.EqualFold(u, "websocket") {
 		err = ErrHandshakeBadUpgrade
 	} else if c := httpGetHeader(r.Header, headerConnectionCanonical); c != "Upgrade" && !strHasToken(c, "upgrade") {
 		err = ErrHandshakeBadConnection
@@ -284,7 +285,7 @@ type Upgrader struct {
 	// preferable."
 	Extension func(httphead.Option) bool
 
-	// ExtensionCustorm allow user to parse Sec-WebSocket-Extensions header manually.
+	// ExtensionCustom allow user to parse Sec-WebSocket-Extensions header manually.
 	// Note that returned options should be valid until Upgrade returns.
 	// If ExtensionCustom is set, it used instead of Extension function.
 	ExtensionCustom func([]byte, []httphead.Option) ([]httphead.Option, bool)
@@ -475,7 +476,7 @@ func (u Upgrader) Upgrade(conn io.ReadWriter) (hs Handshake, err error) {
 
 		case headerUpgradeCanonical:
 			headerSeen |= headerSeenUpgrade
-			if !bytes.Equal(v, specHeaderValueUpgrade) && !btsEqualFold(v, specHeaderValueUpgrade) {
+			if !bytes.Equal(v, specHeaderValueUpgrade) && !bytes.EqualFold(v, specHeaderValueUpgrade) {
 				err = ErrHandshakeBadUpgrade
 			}
 

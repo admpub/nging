@@ -69,7 +69,6 @@ require (
 	github.com/admpub/gohls v0.0.0-20191013012052-b7505aaf3c90 // indirect
 	github.com/admpub/gohls-server v0.3.3 // indirect
 	github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e
-	github.com/admpub/goloader v0.0.0-20200821104313-abaac9b4b83f
 	github.com/admpub/gopiper v1.0.1
 	github.com/admpub/goseaweedfs v0.1.2
 	github.com/admpub/highwayhash v0.0.0-20180501080913-85fc8a2dacad
