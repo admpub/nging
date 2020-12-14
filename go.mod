@@ -106,7 +106,7 @@ require (
 	github.com/admpub/tail v1.0.2
 	github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2
 	github.com/admpub/web-terminal v0.0.0-20190705124712-e503d17936e9
-	github.com/admpub/websocket v1.0.2
+	github.com/admpub/websocket v1.0.3
 	github.com/araddon/gou v0.0.0-20190110011759-c797efecbb61 // indirect
 	github.com/aws/aws-sdk-go v1.36.4
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
@@ -194,7 +194,7 @@ require (
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect
 	github.com/xu42/youzan-sdk-go v0.0.3
 	gocloud.dev v0.21.0
-	golang.org/x/crypto v0.0.0-20201203163018-be400aefbc4c
+	golang.org/x/crypto v0.0.0-20201208171446-5f87f3452ae9
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
