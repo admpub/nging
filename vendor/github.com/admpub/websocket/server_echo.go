@@ -10,10 +10,18 @@ import (
 	"net/url"
 	"strings"
 	"time"
+	"sync"
 
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
 )
+
+var poolWriteBuffer = sync.Pool{
+	New: func() interface{} {
+		var buf []byte
+		return buf
+	},
+}
 
 // EchoUpgrader specifies parameters for upgrading an HTTP connection to a
 // WebSocket connection.
@@ -29,6 +37,17 @@ type EchoUpgrader struct {
 	// size is zero, then a default value of 4096 is used. The I/O buffer sizes
 	// do not limit the size of the messages that can be sent or received.
 	ReadBufferSize, WriteBufferSize int
+
+	// WriteBufferPool is a pool of buffers for write operations. If the value
+	// is not set, then write buffers are allocated to the connection for the
+	// lifetime of the connection.
+	//
+	// A pool is most useful when the application has a modest volume of writes
+	// across a large number of connections.
+	//
+	// Applications should use a single pool for each unique value of
+	// WriteBufferSize.
+	WriteBufferPool BufferPool
 
 	// Subprotocols specifies the server's supported protocols in order of
 	// preference. If this field is set, then the Upgrade method negotiates a
@@ -183,7 +202,8 @@ func (u *EchoUpgrader) Upgrade(ctx echo.Context, handler func(*Conn) error, resp
 	w.WriteHeader(http.StatusSwitchingProtocols)
 
 	err = w.Hijacker(func(netConn net.Conn) {
-		c := newConn(netConn, true, u.ReadBufferSize, u.WriteBufferSize)
+		writeBuf := poolWriteBuffer.Get().([]byte)
+		c := newConn(netConn, true, u.ReadBufferSize, u.WriteBufferSize, u.WriteBufferPool, nil, writeBuf)
 		c.subprotocol = subprotocol
 		if compress {
 			c.newCompressionWriter = compressNoContextTakeover
@@ -202,6 +222,8 @@ func (u *EchoUpgrader) Upgrade(ctx echo.Context, handler func(*Conn) error, resp
 		if handler != nil {
 			err = handler(c)
 		}
+		writeBuf = writeBuf[0:0]
+		poolWriteBuffer.Put(writeBuf)
 	})
 	return err
 }
