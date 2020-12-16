@@ -30,6 +30,6 @@ cp -R ${DISTPATH}/default/* ${RELEASEDIR}/
 rm -rf ${RELEASEDIR}.${archiver_extension}
 
 #${NGING_VERSION}${NGING_LABEL}
-arc archive ${RELEASEDIR}.${archiver_extension} ${RELEASEDIR}/
+arc archive ${RELEASEDIR}.${archiver_extension} ${RELEASEDIR}
 
 rm -rf ${RELEASEDIR}
