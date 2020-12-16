@@ -1,6 +1,6 @@
 export DISTPATH=../dist
 export RELEASEDIR=${DISTPATH}/${NGING_EXECUTOR}_${GOOS}_${GOARCH}
-if [ $GOARM != "" ]; then
+if [ "$GOARM" != "" ]; then
 	export RELEASEDIR=${RELEASEDIR}v${GOARM}
 fi
 mkdir ${RELEASEDIR}
@@ -19,7 +19,7 @@ cp -R ../config/install.* ${RELEASEDIR}/config/
 cp -R ../config/preupgrade.* ${RELEASEDIR}/config/
 cp -R ../config/ua.txt ${RELEASEDIR}/config/ua.txt
 
-if [ $GOOS = "windows" ]; then
+if [ "$GOOS" = "windows" ]; then
     cp -R ../support/sqlite3_${GOARCH}.dll ${RELEASEDIR}/sqlite3_${GOARCH}.dll
 	export archiver_extension=zip
 else

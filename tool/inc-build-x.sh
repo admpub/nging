@@ -17,7 +17,7 @@ cp -R ${PKGPATH}/config/install.* ${RELEASEDIR}/config/
 cp -R ${PKGPATH}/config/preupgrade.* ${RELEASEDIR}/config/
 cp -R ${PKGPATH}/config/ua.txt ${RELEASEDIR}/config/ua.txt
 
-if [ $GOOS = "windows" ]; then
+if [ "$GOOS" = "windows" ]; then
     cp -R ${PKGPATH}/support/sqlite3_${GOARCH}.dll ${RELEASEDIR}/
 	export archiver_extension=zip
 else
