@@ -28,6 +28,6 @@ fi
 
 cp -R ../dist/default/* ${RELEASEDIR}/
 
-arc archive ${RELEASEDIR}.${archiver_extension} ${RELEASEDIR}/
+arc archive ${RELEASEDIR}.${archiver_extension} ${RELEASEDIR}
 
 rm -rf ${RELEASEDIR}
