@@ -54,7 +54,7 @@ require (
 	github.com/admpub/ftpserver v0.0.0-20180821023651-6b950445d653
 	github.com/admpub/gifresize v1.0.2 // indirect
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
-	github.com/admpub/go-download v2.1.2+incompatible
+	github.com/admpub/go-download v2.1.3+incompatible
 	github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
 	github.com/admpub/go-isatty v0.0.9
 	github.com/admpub/go-phantomjs-fetcher v0.0.0-20180924162325-bb2ae1648e33

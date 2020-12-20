@@ -176,8 +176,8 @@ github.com/admpub/gifresize v1.0.2 h1:aFLkKkdyfyg4OIl84R2xA/q/+itFd/mOlGPnhIAbq8
 github.com/admpub/gifresize v1.0.2/go.mod h1:4cJFfCR1yfgyq7lZiQZomEGeR/OVQVPeflN38P0T+M0=
 github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588 h1:OzETPaPe3vghcMkx/J6VpnNFg+Sd8TiQ5L+xaty3vJY=
 github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588/go.mod h1:ukjkgape3aExDbQ8N5uIbsU2m/dHL800EdWSSl46ECc=
-github.com/admpub/go-download v2.1.2+incompatible h1:l4Ok08cW8jjheRsg7RMV5g2g+j56DbwXvKNiVFef1EA=
-github.com/admpub/go-download v2.1.2+incompatible/go.mod h1:6eS2OHbr4iTHkTAt2v8utFqSGRHyFQ79tKkgr5Ko8Q8=
+github.com/admpub/go-download v2.1.3+incompatible h1:z+fIDvSO7f40Ubs+3OfrHqazd6kbFb0jETLwD/XJE+M=
+github.com/admpub/go-download v2.1.3+incompatible/go.mod h1:6eS2OHbr4iTHkTAt2v8utFqSGRHyFQ79tKkgr5Ko8Q8=
 github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c h1:oYhSKy3uos97Kbr+Z0ussJh/xaAHxk8LZJSyyRnZ2l4=
 github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c/go.mod h1:8ktBleP5BjBPkfOSrOUkzdZeaFi+TfDwN+R+4ENatbs=
 github.com/admpub/go-isatty v0.0.9 h1:zn0gdvcFLBRdFdInpe1dQZwVHIQUA9wLKuErs47ajj4=

@@ -13,17 +13,21 @@ import (
 	"path/filepath"
 	"strconv"
 	"time"
+
+	"github.com/webx-top/com"
 )
 
 const (
 	defaultGoroutines = 10
 	defaultDir        = "go-download"
+	MB                = 1024 * 1024
 )
 
 var (
-	_           io.Reader = (*File)(nil)
-	fileMode              = os.FileMode(0770)
-	defaultTime           = time.Time{}
+	_                      io.Reader = (*File)(nil)
+	fileMode                         = os.FileMode(0770)
+	defaultTime                      = time.Time{}
+	ErrMaximumSizeExceeded           = errors.New("Maximum size exceeded")
 )
 
 // Options contains any specific configuration values
@@ -33,6 +37,7 @@ type Options struct {
 	Proxy       ProxyFn
 	Client      ClientFn
 	Request     RequestFn
+	MaxSize     int64
 }
 
 // RequestFn allows for additional information, such as http headers, to the http request
@@ -120,7 +125,9 @@ func OpenContext(ctx context.Context, url string, options *Options) (*File, erro
 		err = f.download(ctx)
 	} else {
 		f.size = resp.ContentLength
-
+		if f.options.MaxSize > 0 && f.size > f.options.MaxSize {
+			return nil, fmt.Errorf("%w: %s (%s)", ErrMaximumSizeExceeded, com.HumaneFileSize(uint64(f.options.MaxSize)), com.HumaneFileSize(uint64(f.size)))
+		}
 		if t := resp.Header.Get("Accept-Ranges"); t == "bytes" {
 			err = f.downloadRangeBytes(ctx)
 		} else {
@@ -162,6 +169,9 @@ func (f *File) download(ctx context.Context) error {
 
 	if resp.StatusCode != http.StatusOK {
 		return &InvalidResponseCode{got: resp.StatusCode, expected: http.StatusOK}
+	}
+	if f.options.MaxSize > 0 && resp.ContentLength > f.options.MaxSize {
+		return fmt.Errorf("%w: %s (%s)", ErrMaximumSizeExceeded, com.HumaneFileSize(uint64(f.options.MaxSize)), com.HumaneFileSize(uint64(resp.ContentLength)))
 	}
 
 	f.dir, err = ioutil.TempDir("", defaultDir)

@@ -100,7 +100,7 @@ github.com/admpub/gifresize
 # github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
 ## explicit
 github.com/admpub/go-bindata-assetfs
-# github.com/admpub/go-download v2.1.2+incompatible
+# github.com/admpub/go-download v2.1.3+incompatible
 ## explicit
 github.com/admpub/go-download
 # github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
