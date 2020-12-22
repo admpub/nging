@@ -141,17 +141,16 @@ func CSRFWithConfig(config CSRFConfig) echo.MiddlewareFuncd {
 			}
 
 			// Set CSRF cookie
-			cookie := echo.NewCookie(config.CookieName, token)
-			if config.CookiePath != "" {
-				cookie.Path(config.CookiePath)
+			cookie := echo.NewCookie(config.CookieName, token, c.CookieOptions())
+			if len(config.CookiePath) > 0 {
+				cookie.Path = config.CookiePath
 			}
-			if config.CookieDomain != "" {
-				cookie.Domain(config.CookieDomain)
+			if len(config.CookieDomain) > 0 {
+				cookie.Domain = config.CookieDomain
 			}
-			cookie.MaxAge(config.CookieMaxAge)
-			cookie.Secure(config.CookieSecure)
-			cookie.HttpOnly(config.CookieHTTPOnly)
-			cookie.Send(c)
+			echo.CookieMaxAge(cookie, config.CookieMaxAge)
+			cookie.Secure = config.CookieSecure
+			cookie.HttpOnly = config.CookieHTTPOnly
 
 			// Store token in the context
 			c.Set(config.ContextKey, token)

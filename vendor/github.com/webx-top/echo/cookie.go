@@ -65,102 +65,39 @@ func (c *CookieOptions) SetMaxAge(maxAge int) *CookieOptions {
 //Cookier interface
 type Cookier interface {
 	Get(key string) string
+	Add(cookies ...*http.Cookie) Cookier
 	Set(key string, val string, args ...interface{}) Cookier
+	Send()
 }
 
 //NewCookier create a cookie instance
 func NewCookier(ctx Context) Cookier {
 	return &cookie{
 		context: ctx,
-		cookies: []*Cookie{},
+		cookies: []*http.Cookie{},
+		indexes: map[string]int{},
 	}
-}
-
-//NewCookie create a cookie instance
-func newCookie(name string, value string, opt *CookieOptions) *Cookie {
-	if len(opt.Path) == 0 {
-		opt.Path = `/`
-	}
-	cookie := &Cookie{
-		cookie: &http.Cookie{
-			Name:     opt.Prefix + name,
-			Value:    value,
-			Path:     opt.Path,
-			Domain:   opt.Domain,
-			MaxAge:   opt.MaxAge,
-			Expires:  opt.Expires,
-			Secure:   opt.Secure,
-			HttpOnly: opt.HttpOnly,
-		},
-	}
-	return cookie
-}
-
-// Cookie 操作封装
-type Cookie struct {
-	cookie *http.Cookie
-}
-
-// Path 设置路径
-func (c *Cookie) Path(p string) *Cookie {
-	c.cookie.Path = p
-	return c
-}
-
-// Domain 设置域名
-func (c *Cookie) Domain(p string) *Cookie {
-	c.cookie.Domain = p
-	return c
-}
-
-// MaxAge 设置有效时长（秒）
-// IE6/7/8不支持
-// 如果同时设置了MaxAge和Expires，则优先使用MaxAge
-// 设置MaxAge则代表每次保存Cookie都会续期，因为MaxAge是基于保存时间来设置的
-func (c *Cookie) MaxAge(p int) *Cookie {
-	c.cookie.MaxAge = p
-	if p > 0 {
-		c.cookie.Expires = time.Unix(time.Now().Unix()+int64(p), 0)
-	} else if p < 0 {
-		c.cookie.Expires = time.Unix(1, 0)
-	} else {
-		c.cookie.Expires = param.EmptyTime
-	}
-	return c
-}
-
-// Expires 设置过期时间
-// 所有浏览器都支持
-// 如果仅仅设置Expires，因为过期时间是固定的，所以不会导致保存Cookie时被续期
-func (c *Cookie) Expires(expires time.Time) *Cookie {
-	if expires.IsZero() {
-		return c
-	}
-	c.cookie.MaxAge = 0
-	c.cookie.Expires = expires
-	return c
-}
-
-// Secure 设置是否启用HTTPS
-func (c *Cookie) Secure(p bool) *Cookie {
-	c.cookie.Secure = p
-	return c
-}
-
-// HttpOnly 设置是否启用HttpOnly
-func (c *Cookie) HttpOnly(p bool) *Cookie {
-	c.cookie.HttpOnly = p
-	return c
-}
-
-// Send 发送cookie数据到响应头
-func (c *Cookie) Send(ctx Context) {
-	ctx.Response().SetCookie(c.cookie)
 }
 
 type cookie struct {
 	context Context
-	cookies []*Cookie
+	cookies []*http.Cookie
+	indexes map[string]int
+}
+
+func (c *cookie) Send() {
+	for _, cookie := range c.cookies {
+		c.context.Response().SetCookie(cookie)
+	}
+}
+
+func (c *cookie) record(stdCookie *http.Cookie) {
+	if idx, ok := c.indexes[stdCookie.Name]; ok {
+		c.cookies[idx] = stdCookie
+		return
+	}
+	c.indexes[stdCookie.Name] = len(c.cookies)
+	c.cookies = append(c.cookies, stdCookie)
 }
 
 func (c *cookie) Get(key string) string {
@@ -169,6 +106,13 @@ func (c *cookie) Get(key string) string {
 		val, _ = url.QueryUnescape(v)
 	}
 	return val
+}
+
+func (c *cookie) Add(cookies ...*http.Cookie) Cookier {
+	for _, cookie := range c.cookies {
+		c.record(cookie)
+	}
+	return c
 }
 
 // Set Set cookie value
@@ -181,73 +125,103 @@ func (c *cookie) Get(key string) string {
 // @param bool args[4]:httpOnly
 // @param string args[5]:sameSite (lax/strict/default)
 func (c *cookie) Set(key string, val string, args ...interface{}) Cookier {
-	val = url.QueryEscape(val)
-	var cookie *Cookie
-	var found bool
-	for _, v := range c.cookies {
-		if key == v.cookie.Name {
-			cookie = v
-			found = true
-			break
-		}
-	}
-	if cookie == nil {
-		cookie = NewCookie(key, val, c.context.CookieOptions())
-	}
+	cookie := NewCookie(key, val, c.context.CookieOptions())
 	switch len(args) {
 	case 6:
 		sameSite, _ := args[5].(string)
-		cookie.SameSite(sameSite)
+		CookieSameSite(cookie, sameSite)
 		fallthrough
 	case 5:
 		httpOnly, _ := args[4].(bool)
-		cookie.HttpOnly(httpOnly)
+		cookie.HttpOnly = httpOnly
 		fallthrough
 	case 4:
 		secure, _ := args[3].(bool)
-		cookie.Secure(secure)
+		cookie.Secure = secure
 		fallthrough
 	case 3:
 		domain, _ := args[2].(string)
-		cookie.Domain(domain)
+		cookie.Domain = domain
 		fallthrough
 	case 2:
 		ppath, _ := args[1].(string)
-		cookie.Path(ppath)
+		if len(ppath) == 0 {
+			ppath = `/`
+		}
+		cookie.Path = ppath
 		fallthrough
 	case 1:
 		switch v := args[0].(type) {
 		case *http.Cookie:
 			CopyCookieOptions(v, cookie)
 		case *CookieOptions:
-			cookie.MaxAge(v.MaxAge)
-			cookie.Expires(v.Expires)
+			cookie.MaxAge = v.MaxAge
+			cookie.Expires = v.Expires
 			if len(v.Path) == 0 {
 				v.Path = `/`
 			}
-			cookie.Path(v.Path)
-			cookie.Domain(v.Domain)
-			cookie.Secure(v.Secure)
-			cookie.HttpOnly(v.HttpOnly)
-			cookie.SameSite(v.SameSite)
+			cookie.Path = v.Path
+			cookie.Domain = v.Domain
+			cookie.Secure = v.Secure
+			cookie.HttpOnly = v.HttpOnly
+			CookieSameSite(cookie, v.SameSite)
 		case int:
-			cookie.MaxAge(v)
+			CookieMaxAge(cookie, v)
 		case int64:
-			cookie.MaxAge(int(v))
+			CookieMaxAge(cookie, int(v))
 		case time.Duration:
-			cookie.MaxAge(int(v.Seconds()))
+			CookieMaxAge(cookie, int(v.Seconds()))
 		case time.Time:
-			cookie.Expires(v)
+			CookieExpires(cookie, v)
 		}
 	}
-	if !found {
-		c.cookies = append(c.cookies, cookie)
-		cookie.Send(c.context)
+	c.record(cookie)
+	return c
+}
+
+// CookieMaxAge 设置有效时长（秒）
+// IE6/7/8不支持
+// 如果同时设置了MaxAge和Expires，则优先使用MaxAge
+// 设置MaxAge则代表每次保存Cookie都会续期，因为MaxAge是基于保存时间来设置的
+func CookieMaxAge(stdCookie *http.Cookie, p int) {
+	stdCookie.MaxAge = p
+	if p > 0 {
+		stdCookie.Expires = time.Unix(time.Now().Unix()+int64(p), 0)
+	} else if p < 0 {
+		stdCookie.Expires = time.Unix(1, 0)
 	} else {
-		c.context.Response().Header().Del(HeaderSetCookie)
-		for _, cookie := range c.cookies {
-			cookie.Send(c.context)
-		}
+		stdCookie.Expires = param.EmptyTime
+	}
+}
+
+// CookieExpires 设置过期时间
+// 所有浏览器都支持
+// 如果仅仅设置Expires，因为过期时间是固定的，所以不会导致保存Cookie时被续期
+func CookieExpires(stdCookie *http.Cookie, expires time.Time) {
+	if expires.IsZero() {
+		return
+	}
+	stdCookie.MaxAge = 0
+	stdCookie.Expires = expires
+}
+
+// NewCookie 新建cookie对象
+func NewCookie(key, value string, opt *CookieOptions) *http.Cookie {
+	c := &http.Cookie{
+		Name:     opt.Prefix + key,
+		Value:    value,
+		Path:     `/`,
+		Domain:   opt.Domain,
+		MaxAge:   opt.MaxAge,
+		Expires:  opt.Expires,
+		Secure:   opt.Secure,
+		HttpOnly: opt.HttpOnly,
+	}
+	if len(opt.Path) > 0 {
+		c.Path = opt.Path
+	}
+	if len(opt.SameSite) > 0 {
+		CookieSameSite(c, opt.SameSite)
 	}
 	return c
 }

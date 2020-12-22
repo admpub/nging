@@ -165,7 +165,7 @@ type Context interface {
 
 	SetCookieOptions(*CookieOptions)
 	CookieOptions() *CookieOptions
-	NewCookie(string, string) *Cookie
+	NewCookie(string, string) *http.Cookie
 	Cookie() Cookier
 	GetCookie(string) string
 	// SetCookie @param:key,value,maxAge(seconds),path(/),domain,secure,httpOnly,sameSite(lax/strict/default)

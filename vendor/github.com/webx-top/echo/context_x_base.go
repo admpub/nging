@@ -307,6 +307,7 @@ func (c *xContext) SetPreResponseHook(hook ...func() error) Context {
 
 func (c *xContext) preResponse() error {
 	if c.preResponseHook == nil {
+		c.cookier.Send()
 		return nil
 	}
 	for _, hook := range c.preResponseHook {
@@ -314,6 +315,7 @@ func (c *xContext) preResponse() error {
 			return err
 		}
 	}
+	c.cookier.Send()
 	return nil
 }
 

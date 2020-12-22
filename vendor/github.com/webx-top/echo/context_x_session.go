@@ -1,5 +1,7 @@
 package echo
 
+import "net/http"
+
 func (c *xContext) Session() Sessioner {
 	return c.sessioner
 }
@@ -30,7 +32,7 @@ func (c *xContext) SessionOptions() *SessionOptions {
 	return c.sessionOptions
 }
 
-func (c *xContext) NewCookie(key string, value string) *Cookie {
+func (c *xContext) NewCookie(key string, value string) *http.Cookie {
 	return NewCookie(key, value, c.CookieOptions())
 }
 
