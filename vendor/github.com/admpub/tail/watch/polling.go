@@ -26,6 +26,8 @@ func NewPollingFileWatcher(filename string) *PollingFileWatcher {
 var POLL_DURATION time.Duration
 
 func (fw *PollingFileWatcher) BlockUntilExists(t *tomb.Tomb) error {
+	timer := time.NewTimer(POLL_DURATION)
+	defer timer.Stop()
 	for {
 		if _, err := os.Stat(fw.Filename); err == nil {
 			return nil
@@ -33,7 +35,7 @@ func (fw *PollingFileWatcher) BlockUntilExists(t *tomb.Tomb) error {
 			return err
 		}
 		select {
-		case <-time.After(POLL_DURATION):
+		case <-timer.C:
 			continue
 		case <-t.Dying():
 			return tomb.ErrDying

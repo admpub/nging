@@ -44,7 +44,7 @@ github.com/admpub/decimal
 # github.com/admpub/dgoogauth v0.0.0-20170926052827-752650e076f2
 ## explicit
 github.com/admpub/dgoogauth
-# github.com/admpub/email v0.0.0-20180510084211-36989e527d89
+# github.com/admpub/email v2.3.1+incompatible
 ## explicit
 github.com/admpub/email
 # github.com/admpub/errors v0.8.2
@@ -136,7 +136,7 @@ github.com/admpub/goforever
 # github.com/admpub/gohls v0.0.0-20191013012052-b7505aaf3c90
 ## explicit
 github.com/admpub/gohls/pkg
-# github.com/admpub/gohls-server v0.3.3
+# github.com/admpub/gohls-server v0.3.4
 ## explicit
 github.com/admpub/gohls-server/internal/fileindex
 github.com/admpub/gohls-server/internal/hls
@@ -230,7 +230,7 @@ github.com/admpub/restful/rest
 # github.com/admpub/securecookie v0.0.0-20170722041919-69560e375596
 ## explicit
 github.com/admpub/securecookie
-# github.com/admpub/service v0.0.0-20200628035946-b971165ffff2
+# github.com/admpub/service v0.0.1
 ## explicit
 github.com/admpub/service
 # github.com/admpub/sessions v0.0.0-20201123012843-e83c830d057a
@@ -251,7 +251,7 @@ github.com/admpub/sqlboiler/randomize
 # github.com/admpub/statik v0.1.7
 ## explicit
 github.com/admpub/statik/fs
-# github.com/admpub/tail v1.0.2
+# github.com/admpub/tail v1.0.3
 ## explicit
 github.com/admpub/tail
 github.com/admpub/tail/ratelimiter

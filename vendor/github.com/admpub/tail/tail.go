@@ -467,8 +467,10 @@ func (tail *Tail) tailFileSync() {
 				msg := ("Too much log activity; waiting a second " +
 					"before resuming tailing")
 				tail.Lines <- &Line{msg, time.Now(), errors.New(msg)}
+				timer := time.NewTimer(time.Second)
+				defer timer.Stop()
 				select {
-				case <-time.After(time.Second):
+				case <-timer.C:
 				case <-tail.Dying():
 					return
 				}

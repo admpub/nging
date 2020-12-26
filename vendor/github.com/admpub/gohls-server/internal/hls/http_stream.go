@@ -45,12 +45,14 @@ func (s *StreamHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.encoder.Encode(*er)
 
 	w.Header()["Access-Control-Allow-Origin"] = []string{"*"}
+	t := time.NewTimer(60 * time.Second)
+	defer t.Stop()
 	select {
 	case data := <-er.data:
 		w.Write(*data)
 	case err := <-er.err:
 		log.Errorf("Error encoding %v", err)
-	case <-time.After(60 * time.Second):
+	case <-t.C:
 		log.Errorf("Timeout encoding")
 	}
 }

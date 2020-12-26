@@ -46,7 +46,7 @@ require (
 	github.com/admpub/cron v0.0.1
 	github.com/admpub/decimal v0.0.0-20180709203117-cd690d0c9e24 // indirect
 	github.com/admpub/dgoogauth v0.0.0-20170926052827-752650e076f2
-	github.com/admpub/email v0.0.0-20180510084211-36989e527d89
+	github.com/admpub/email v2.3.1+incompatible
 	github.com/admpub/errors v0.8.2
 	github.com/admpub/events v0.0.0-20190913050400-383beb0843c6
 	github.com/admpub/fasthttp v0.0.0-20200705060903-f0f441048f4a // indirect
@@ -64,7 +64,7 @@ require (
 	github.com/admpub/godownloader v0.0.0-20191013090831-d509172649e4
 	github.com/admpub/goforever v0.1.1
 	github.com/admpub/gohls v0.0.0-20191013012052-b7505aaf3c90 // indirect
-	github.com/admpub/gohls-server v0.3.3 // indirect
+	github.com/admpub/gohls-server v0.3.4 // indirect
 	github.com/admpub/gohttp v0.0.0-20190322032039-b55c707b8f1e
 	github.com/admpub/gopiper v1.0.1
 	github.com/admpub/goseaweedfs v0.1.2
@@ -92,14 +92,14 @@ require (
 	github.com/admpub/regexp2 v1.1.7
 	github.com/admpub/restful v0.0.0-20180328144945-2e8d62d39607
 	github.com/admpub/securecookie v0.0.0-20170722041919-69560e375596
-	github.com/admpub/service v0.0.0-20200628035946-b971165ffff2
+	github.com/admpub/service v0.0.1
 	github.com/admpub/sessions v0.0.0-20201123012843-e83c830d057a // indirect
 	github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede
 	github.com/admpub/sockjs-go v0.0.0-20170208085255-715e9716fc23
 	github.com/admpub/sonyflake v0.0.0-20160530021500-fa881fb1052b
 	github.com/admpub/sqlboiler v3.0.1+incompatible // indirect
 	github.com/admpub/statik v0.1.7 // indirect
-	github.com/admpub/tail v1.0.2
+	github.com/admpub/tail v1.0.3
 	github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2
 	github.com/admpub/web-terminal v0.0.0-20190705124712-e503d17936e9
 	github.com/admpub/websocket v1.0.3

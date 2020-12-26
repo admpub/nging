@@ -14,16 +14,17 @@ import (
 )
 
 type Pool struct {
-	addr         string
-	auth         smtp.Auth
-	max          int
-	created      int
-	clients      chan *client
-	rebuild      chan struct{}
-	mut          *sync.Mutex
-	lastBuildErr *timestampedErr
-	closing      chan struct{}
-	tlsConfig    *tls.Config
+	addr          string
+	auth          smtp.Auth
+	max           int
+	created       int
+	clients       chan *client
+	rebuild       chan struct{}
+	mut           *sync.Mutex
+	lastBuildErr  *timestampedErr
+	closing       chan struct{}
+	tlsConfig     *tls.Config
+	helloHostname string
 }
 
 type client struct {
@@ -68,6 +69,14 @@ func (c *client) Close() error {
 	return c.Text.Close()
 }
 
+// SetHelloHostname optionally sets the hostname that the Go smtp.Client will
+// use when doing a HELLO with the upstream SMTP server. By default, Go uses
+// "localhost" which may not be accepted by certain SMTP servers that demand
+// an FQDN.
+func (p *Pool) SetHelloHostname(h string) {
+	p.helloHostname = h
+}
+
 func (p *Pool) get(timeout time.Duration) *client {
 	select {
 	case c := <-p.clients:
@@ -80,10 +89,10 @@ func (p *Pool) get(timeout time.Duration) *client {
 	}
 
 	var deadline <-chan time.Time
-	if timeout < 0 {
-		deadline = nil
-	} else {
-		deadline = time.After(timeout)
+	if timeout >= 0 {
+		t := time.NewTimer(timeout)
+		defer t.Stop()
+		deadline = t.C
 	}
 
 	for {
@@ -202,6 +211,12 @@ func (p *Pool) build() (*client, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// Is there a custom hostname for doing a HELLO with the SMTP server?
+	if p.helloHostname != "" {
+		cl.Hello(p.helloHostname)
+	}
+
 	c := &client{cl, 0}
 
 	if _, err := startTLS(c, p.tlsConfig); err != nil {

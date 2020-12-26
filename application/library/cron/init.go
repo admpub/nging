@@ -82,8 +82,10 @@ func runCmdWithTimeout(cmd *exec.Cmd, timeout time.Duration, ctx context.Context
 			log.Errorf("进程[%d]无法关闭, 错误信息: %s", cmd.Process.Pid, err)
 		}
 	}
+	t := time.NewTimer(timeout)
+	defer t.Stop()
 	select {
-	case <-time.After(timeout):
+	case <-t.C:
 		log.Warnf("任务执行时间超过%d秒，强制关闭进程: %d", int(timeout/time.Second), cmd.Process.Pid)
 		kill()
 		return err, true

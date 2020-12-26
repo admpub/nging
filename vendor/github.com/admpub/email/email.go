@@ -16,7 +16,6 @@ import (
 	"mime"
 	"mime/multipart"
 	"mime/quotedprintable"
-	"net"
 	"net/mail"
 	"net/smtp"
 	"net/textproto"
@@ -41,6 +40,7 @@ var ErrMissingContentType = errors.New("No Content-Type found for MIME entity")
 
 // Email is the type used for email messages
 type Email struct {
+	ReplyTo     []string
 	From        string
 	To          []string
 	Bcc         []string
@@ -68,14 +68,21 @@ func NewEmail() *Email {
 // trimReader is a custom io.Reader that will trim any leading
 // whitespace, as this can cause email imports to fail.
 type trimReader struct {
-	rd io.Reader
+	rd      io.Reader
+	trimmed bool
 }
 
 // Read trims off any unicode whitespace from the originating reader
-func (tr trimReader) Read(buf []byte) (int, error) {
+func (tr *trimReader) Read(buf []byte) (int, error) {
 	n, err := tr.rd.Read(buf)
-	t := bytes.TrimLeftFunc(buf[:n], unicode.IsSpace)
-	n = copy(buf, t)
+	if err != nil {
+		return n, err
+	}
+	if !tr.trimmed {
+		t := bytes.TrimLeftFunc(buf[:n], unicode.IsSpace)
+		tr.trimmed = true
+		n = copy(buf, t)
+	}
 	return n, err
 }
 
@@ -84,7 +91,7 @@ func (tr trimReader) Read(buf []byte) (int, error) {
 // This function expects the data in RFC 5322 format.
 func NewEmailFromReader(r io.Reader) (*Email, error) {
 	e := NewEmail()
-	s := trimReader{rd: r}
+	s := &trimReader{rd: r}
 	tp := textproto.NewReader(bufio.NewReader(s))
 	// Parse the main headers
 	hdrs, err := tp.ReadMIMEHeader()
@@ -96,18 +103,56 @@ func NewEmailFromReader(r io.Reader) (*Email, error) {
 		switch {
 		case h == "Subject":
 			e.Subject = v[0]
+			subj, err := (&mime.WordDecoder{}).DecodeHeader(e.Subject)
+			if err == nil && len(subj) > 0 {
+				e.Subject = subj
+			}
 			delete(hdrs, h)
 		case h == "To":
-			e.To = v
+			for _, toA := range v {
+				w := strings.Split(toA, ",")
+				for _, to := range w {
+					tt, err := (&mime.WordDecoder{}).DecodeHeader(strings.TrimSpace(to))
+					if err == nil {
+						e.To = append(e.To, tt)
+					} else {
+						e.To = append(e.To, to)
+					}
+				}
+			}
 			delete(hdrs, h)
 		case h == "Cc":
-			e.Cc = v
+			for _, ccA := range v {
+				w := strings.Split(ccA, ",")
+				for _, cc := range w {
+					tcc, err := (&mime.WordDecoder{}).DecodeHeader(strings.TrimSpace(cc))
+					if err == nil {
+						e.Cc = append(e.Cc, tcc)
+					} else {
+						e.Cc = append(e.Cc, cc)
+					}
+				}
+			}
 			delete(hdrs, h)
 		case h == "Bcc":
-			e.Bcc = v
+			for _, bccA := range v {
+				w := strings.Split(bccA, ",")
+				for _, bcc := range w {
+					tbcc, err := (&mime.WordDecoder{}).DecodeHeader(strings.TrimSpace(bcc))
+					if err == nil {
+						e.Bcc = append(e.Bcc, tbcc)
+					} else {
+						e.Bcc = append(e.Bcc, bcc)
+					}
+				}
+			}
 			delete(hdrs, h)
 		case h == "From":
 			e.From = v[0]
+			fr, err := (&mime.WordDecoder{}).DecodeHeader(e.From)
+			if err == nil && len(fr) > 0 {
+				e.From = fr
+			}
 			delete(hdrs, h)
 		}
 	}
@@ -125,6 +170,21 @@ func NewEmailFromReader(r io.Reader) (*Email, error) {
 		ct, _, err := mime.ParseMediaType(p.header.Get("Content-Type"))
 		if err != nil {
 			return e, err
+		}
+		// Check if part is an attachment based on the existence of the Content-Disposition header with a value of "attachment".
+		if cd := p.header.Get("Content-Disposition"); cd != "" {
+			cd, params, err := mime.ParseMediaType(p.header.Get("Content-Disposition"))
+			if err != nil {
+				return e, err
+			}
+			filename, filenameDefined := params["filename"]
+			if cd == "attachment" || (cd == "inline" && filenameDefined) {
+				_, err = e.Attach(bytes.NewReader(p.body), filename, ct)
+				if err != nil {
+					return e, err
+				}
+				continue
+			}
 		}
 		switch {
 		case ct == "text/plain":
@@ -169,6 +229,9 @@ func parseMIMEParts(hs textproto.MIMEHeader, b io.Reader) ([]*part, error) {
 				p.Header.Set("Content-Type", defaultContentType)
 			}
 			subct, _, err := mime.ParseMediaType(p.Header.Get("Content-Type"))
+			if err != nil {
+				return ps, err
+			}
 			if strings.HasPrefix(subct, "multipart/") {
 				sps, err := parseMIMEParts(p.Header, p)
 				if err != nil {
@@ -192,6 +255,10 @@ func parseMIMEParts(hs textproto.MIMEHeader, b io.Reader) ([]*part, error) {
 		}
 	} else {
 		// If it is not a multipart email, parse the body content as a single "part"
+		if hs.Get("Content-Transfer-Encoding") == "quoted-printable" {
+			b = quotedprintable.NewReader(b)
+
+		}
 		var buf bytes.Buffer
 		if _, err := io.Copy(&buf, b); err != nil {
 			return ps, err
@@ -214,11 +281,9 @@ func (e *Email) Attach(r io.Reader, filename string, c string) (a *Attachment, e
 		Header:   textproto.MIMEHeader{},
 		Content:  buffer.Bytes(),
 	}
-	// Get the Content-Type to be used in the MIMEHeader
 	if c != "" {
 		at.Header.Set("Content-Type", c)
 	} else {
-		// If the Content-Type is blank, set the Content-Type to "application/octet-stream"
 		at.Header.Set("Content-Type", "application/octet-stream")
 	}
 	at.Header.Set("Content-Disposition", fmt.Sprintf("attachment;\r\n filename=\"%s\"", filename))
@@ -251,15 +316,18 @@ func (e *Email) AttachFile(filename string) (a *Attachment, err error) {
 // "e"'s fields To, Cc, From, Subject will be used unless they are present in
 // e.Headers. Unless set in e.Headers, "Date" will filled with the current time.
 func (e *Email) msgHeaders() (textproto.MIMEHeader, error) {
-	res := make(textproto.MIMEHeader, len(e.Headers)+4)
+	res := make(textproto.MIMEHeader, len(e.Headers)+6)
 	if e.Headers != nil {
-		for _, h := range []string{"To", "Cc", "From", "Subject", "Date", "Message-Id", "MIME-Version"} {
+		for _, h := range []string{"Reply-To", "To", "Cc", "From", "Subject", "Date", "Message-Id", "MIME-Version"} {
 			if v, ok := e.Headers[h]; ok {
 				res[h] = v
 			}
 		}
 	}
 	// Set headers if there are values.
+	if _, ok := res["Reply-To"]; !ok && len(e.ReplyTo) > 0 {
+		res.Set("Reply-To", strings.Join(e.ReplyTo, ", "))
+	}
 	if _, ok := res["To"]; !ok && len(e.To) > 0 {
 		res.Set("To", strings.Join(e.To, ", "))
 	}
@@ -294,7 +362,7 @@ func (e *Email) msgHeaders() (textproto.MIMEHeader, error) {
 	return res, nil
 }
 
-func writeMessage(buff *bytes.Buffer, msg []byte, multipart bool, mediaType string, w *multipart.Writer) error {
+func writeMessage(buff io.Writer, msg []byte, multipart bool, mediaType string, w *multipart.Writer) error {
 	if multipart {
 		header := textproto.MIMEHeader{
 			"Content-Type":              {mediaType + "; charset=UTF-8"},
@@ -313,6 +381,17 @@ func writeMessage(buff *bytes.Buffer, msg []byte, multipart bool, mediaType stri
 	return qp.Close()
 }
 
+func (e *Email) categorizeAttachments() (htmlRelated, others []*Attachment) {
+	for _, a := range e.Attachments {
+		if a.HTMLRelated {
+			htmlRelated = append(htmlRelated, a)
+		} else {
+			others = append(others, a)
+		}
+	}
+	return
+}
+
 // Bytes converts the Email object to a []byte representation, including all needed MIMEHeaders, boundaries, etc.
 func (e *Email) Bytes() ([]byte, error) {
 	// TODO: better guess buffer size
@@ -323,8 +402,13 @@ func (e *Email) Bytes() ([]byte, error) {
 		return nil, err
 	}
 
+	htmlAttachments, otherAttachments := e.categorizeAttachments()
+	if len(e.HTML) == 0 && len(htmlAttachments) > 0 {
+		return nil, errors.New("there are HTML attachments, but no HTML body")
+	}
+
 	var (
-		isMixed       = len(e.Attachments) > 0
+		isMixed       = len(otherAttachments) > 0
 		isAlternative = len(e.Text) > 0 && len(e.HTML) > 0
 	)
 
@@ -345,7 +429,10 @@ func (e *Email) Bytes() ([]byte, error) {
 		headers.Set("Content-Transfer-Encoding", "quoted-printable")
 	}
 	headerToBytes(buff, headers)
-	io.WriteString(buff, "\r\n")
+	_, err = io.WriteString(buff, "\r\n")
+	if err != nil {
+		return nil, err
+	}
 
 	// Check to see if there is a Text or HTML field
 	if len(e.Text) > 0 || len(e.HTML) > 0 {
@@ -371,9 +458,34 @@ func (e *Email) Bytes() ([]byte, error) {
 			}
 		}
 		if len(e.HTML) > 0 {
+			messageWriter := subWriter
+			var relatedWriter *multipart.Writer
+			if len(htmlAttachments) > 0 {
+				relatedWriter = multipart.NewWriter(buff)
+				header := textproto.MIMEHeader{
+					"Content-Type": {"multipart/related;\r\n boundary=" + relatedWriter.Boundary()},
+				}
+				if _, err := subWriter.CreatePart(header); err != nil {
+					return nil, err
+				}
+
+				messageWriter = relatedWriter
+			}
 			// Write the HTML
-			if err := writeMessage(buff, e.HTML, isMixed || isAlternative, "text/html", subWriter); err != nil {
+			if err := writeMessage(buff, e.HTML, isMixed || isAlternative, "text/html", messageWriter); err != nil {
 				return nil, err
+			}
+			if len(htmlAttachments) > 0 {
+				for _, a := range htmlAttachments {
+					ap, err := relatedWriter.CreatePart(a.Header)
+					if err != nil {
+						return nil, err
+					}
+					// Write the base64Wrapped content to the part
+					base64Wrap(ap, a.Content)
+				}
+
+				relatedWriter.Close()
 			}
 		}
 		if isMixed && isAlternative {
@@ -383,7 +495,7 @@ func (e *Email) Bytes() ([]byte, error) {
 		}
 	}
 	// Create attachment part, if necessary
-	for _, a := range e.Attachments {
+	for _, a := range otherAttachments {
 		ap, err := w.CreatePart(a.Header)
 		if err != nil {
 			return nil, err
@@ -443,8 +555,9 @@ func (e *Email) parseSender() (string, error) {
 	return from.Address, nil
 }
 
-// SendWithTLS sends an email with an optional TLS config.
-// This is helpful if you need to connect to a host that is used an untrusted
+// SendWithTLS sends an email over tls with an optional TLS config.
+//
+// The TLS Config is helpful if you need to connect to a host that is used an untrusted
 // certificate.
 func (e *Email) SendWithTLS(addr string, a smtp.Auth, t *tls.Config) error {
 	// Merge the To, Cc, and Bcc fields
@@ -470,21 +583,84 @@ func (e *Email) SendWithTLS(addr string, a smtp.Auth, t *tls.Config) error {
 		return err
 	}
 
-	host, _, err := net.SplitHostPort(addr)
-	if err != nil {
-		return err
-	}
-
 	conn, err := tls.Dial("tcp", addr, t)
 	if err != nil {
 		return err
 	}
 
-	c, err := smtp.NewClient(conn, host)
+	c, err := smtp.NewClient(conn, t.ServerName)
+	if err != nil {
+		return err
+	}
+	defer c.Close()
+	if err = c.Hello("localhost"); err != nil {
+		return err
+	}
+
+	if a != nil {
+		if ok, _ := c.Extension("AUTH"); ok {
+			if err = c.Auth(a); err != nil {
+				return err
+			}
+		}
+	}
+	if err = c.Mail(sender); err != nil {
+		return err
+	}
+	for _, addr := range to {
+		if err = c.Rcpt(addr); err != nil {
+			return err
+		}
+	}
+	w, err := c.Data()
+	if err != nil {
+		return err
+	}
+	_, err = w.Write(raw)
+	if err != nil {
+		return err
+	}
+	err = w.Close()
+	if err != nil {
+		return err
+	}
+	return c.Quit()
+}
+
+// SendWithStartTLS sends an email over TLS using STARTTLS with an optional TLS config.
+//
+// The TLS Config is helpful if you need to connect to a host that is used an untrusted
+// certificate.
+func (e *Email) SendWithStartTLS(addr string, a smtp.Auth, t *tls.Config) error {
+	// Merge the To, Cc, and Bcc fields
+	to := make([]string, 0, len(e.To)+len(e.Cc)+len(e.Bcc))
+	to = append(append(append(to, e.To...), e.Cc...), e.Bcc...)
+	for i := 0; i < len(to); i++ {
+		addr, err := mail.ParseAddress(to[i])
+		if err != nil {
+			return err
+		}
+		to[i] = addr.Address
+	}
+	// Check to make sure there is at least one recipient and one "From" address
+	if e.From == "" || len(to) == 0 {
+		return errors.New("Must specify at least one From address and one To address")
+	}
+	sender, err := e.parseSender()
+	if err != nil {
+		return err
+	}
+	raw, err := e.Bytes()
 	if err != nil {
 		return err
 	}
 
+	// Taken from the standard library
+	// https://github.com/golang/go/blob/master/src/net/smtp/smtp.go#L328
+	c, err := smtp.Dial(addr)
+	if err != nil {
+		return err
+	}
 	defer c.Close()
 	if err = c.Hello("localhost"); err != nil {
 		return err
@@ -529,9 +705,10 @@ func (e *Email) SendWithTLS(addr string, a smtp.Auth, t *tls.Config) error {
 // Attachment is a struct representing an email attachment.
 // Based on the mime/multipart.FileHeader struct, Attachment contains the name, MIMEHeader, and content of the attachment in question
 type Attachment struct {
-	Filename string
-	Header   textproto.MIMEHeader
-	Content  []byte
+	Filename    string
+	Header      textproto.MIMEHeader
+	Content     []byte
+	HTMLRelated bool
 }
 
 // base64Wrap encodes the attachment content, and wraps it according to RFC 2045 standards (every 76 chars)
@@ -559,7 +736,7 @@ func base64Wrap(w io.Writer, b []byte) {
 
 // headerToBytes renders "header" to "buff". If there are multiple values for a
 // field, multiple "Field: value\r\n" lines will be emitted.
-func headerToBytes(buff *bytes.Buffer, header textproto.MIMEHeader) {
+func headerToBytes(buff io.Writer, header textproto.MIMEHeader) {
 	for field, vals := range header {
 		for _, subval := range vals {
 			// bytes.Buffer.Write() never returns an error.
@@ -569,6 +746,18 @@ func headerToBytes(buff *bytes.Buffer, header textproto.MIMEHeader) {
 			switch {
 			case field == "Content-Type" || field == "Content-Disposition":
 				buff.Write([]byte(subval))
+			case field == "From" || field == "To" || field == "Cc" || field == "Bcc":
+				participants := strings.Split(subval, ",")
+				for i, v := range participants {
+					addr, err := mail.ParseAddress(v)
+					if err != nil {
+						continue
+					}
+					if addr.Name != "" {
+						participants[i] = fmt.Sprintf("%s <%s>", mime.QEncoding.Encode("UTF-8", addr.Name), addr.Address)
+					}
+				}
+				buff.Write([]byte(strings.Join(participants, ", ")))
 			default:
 				buff.Write([]byte(mime.QEncoding.Encode("UTF-8", subval)))
 			}
