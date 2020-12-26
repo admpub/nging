@@ -49,5 +49,5 @@ func init() {
 		g.Route(`GET,POST`, `/group_delete`, e.MetaHandler(echo.H{`name`: `删除分组`}, GroupDelete))
 		g.Route(`GET,POST`, `/regexp_test`, e.MetaHandler(echo.H{`name`: `测试正则表达式`}, RegexpTest))
 	})
-	cron.AddSYSJob(`collect_page`, CollectPageJob, `>collect_page:1`, `网页采集`)
+	cron.Register(`collect_page`, CollectPageJob, `>collect_page:1`, `网页采集`)
 }

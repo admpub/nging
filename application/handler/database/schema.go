@@ -49,7 +49,7 @@ func init() {
 		g.Route(`GET`, `/schema_sync_log_view/:id`, e.MetaHandler(echo.H{`name`: `日志详情`}, SchemaSyncLogView))
 		g.Route(`GET`, `/schema_sync_log_delete`, e.MetaHandler(echo.H{`name`: `删除日志`}, SchemaSyncLogDelete))
 	})
-	cron.AddSYSJob(`mysql_schema_sync`, SchemaSyncJob, `>mysql_schema_sync:1`, `同步MySQL数据表结构`)
+	cron.Register(`mysql_schema_sync`, SchemaSyncJob, `>mysql_schema_sync:1`, `同步MySQL数据表结构`)
 }
 
 //SchemaSyncJob 计划任务调用方式

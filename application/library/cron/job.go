@@ -49,50 +49,14 @@ var (
 	defaultOuputSize uint64 = 2000
 	cmdPreParams     []string
 
-	// SYSJobs 系统Job
-	SYSJobs = map[string]Jobx{}
-
 	// ErrFailure 报错:执行失败
 	ErrFailure = errors.New(`Error`)
-
-	// Senders 发信程序
-	Senders = []func(param.Store) error{}
 )
 
-// AddSYSJob 添加系统Job
-func AddSYSJob(name string, fn RunnerGetter, example string, description string) {
-	SYSJobs[name] = Jobx{
-		Example:      example,
-		Description:  description,
-		RunnerGetter: fn,
-	}
-}
-
-// AddSender 添加发信程序
-func AddSender(sender func(params param.Store) error) {
-	Senders = append(Senders, sender)
-}
-
-// Send 发送通知/信件
-func Send(params param.Store) (err error) {
-	for _, sender := range Senders {
-		err = sender(params)
-		if err != nil {
-			return err
-		}
-	}
-	return err
-}
-
+// Runner 命令运行
 type Runner func(timeout time.Duration) (out string, runingErr string, onRunErr error, isTimeout bool)
 
 type RunnerGetter func(string) Runner
-
-type Jobx struct {
-	Example      string //">funcName:param"
-	Description  string
-	RunnerGetter RunnerGetter
-}
 
 func init() {
 	if com.IsWindows {
@@ -113,6 +77,7 @@ func CmdParams(command string) []string {
 	return params
 }
 
+// Job 定义需要处理的job
 type Job struct {
 	id         uint                   // 任务ID
 	logID      uint64                 // 日志记录ID
@@ -120,9 +85,9 @@ type Job struct {
 	task       *dbschema.NgingTask    // 任务对象
 	taskLog    *dbschema.NgingTaskLog // 结果日志
 	runner     Runner                 // 执行函数
-	isSYS      bool                   // 是否是系统内部功能
+	system     bool                   // 是否是系统内部功能
 	status     int64                  // 任务状态，大于0表示正在执行中
-	Concurrent bool                   // 同一个任务是否允许并行执行
+	concurrent bool                   // 同一个任务是否允许并行执行
 }
 
 func NewJobFromTask(ctx context.Context, task *dbschema.NgingTask) (*Job, error) {
@@ -150,7 +115,7 @@ func NewJobFromTask(ctx context.Context, task *dbschema.NgingTask) (*Job, error)
 			fallthrough
 		case 1:
 			fnName := cmdInfo[0]
-			jobx, ok := SYSJobs[fnName]
+			jobx, ok := systemJobs[fnName]
 			if !ok {
 				return nil, echo.NewError(fmt.Sprintf("Job: invalid job name: %s", fnName), code.InvalidParameter)
 			}
@@ -158,9 +123,9 @@ func NewJobFromTask(ctx context.Context, task *dbschema.NgingTask) (*Job, error)
 				id:         task.Id,
 				name:       task.Name,
 				task:       task,
-				Concurrent: task.Concurrent == 1,
+				concurrent: task.Concurrent == 1,
 				runner:     jobx.RunnerGetter(param),
-				isSYS:      true,
+				system:     true,
 			}
 			return job, nil
 		}
@@ -180,7 +145,7 @@ func NewJobFromTask(ctx context.Context, task *dbschema.NgingTask) (*Job, error)
 	}
 	job := NewCommandJob(ctx, task.Id, task.Name, cmd, task.WorkDirectory, env...)
 	job.task = task
-	job.Concurrent = task.Concurrent == 1
+	job.concurrent = task.Concurrent == 1
 	return job, nil
 }
 
@@ -330,7 +295,7 @@ func (j *Job) Run() {
 		}
 	}()
 
-	if !j.Concurrent {
+	if !j.concurrent {
 		if atomic.LoadInt64(&j.status) > 0 {
 			taskLog.Output = fmt.Sprintf("任务[ %d. %s ]上一次执行尚未结束，本次被忽略。", j.id, j.name)
 			return
