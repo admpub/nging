@@ -51,11 +51,7 @@ func (g *Group) Register(groupName string, fn func(echo.RouteRegister), middlewa
 		g.Handlers[groupName] = []func(echo.RouteRegister){}
 	}
 	if len(middlewares) > 0 {
-		_, ok = g.Middlewares[groupName]
-		if !ok {
-			g.Middlewares[groupName] = []interface{}{}
-		}
-		g.Middlewares[groupName] = append(g.Middlewares[groupName], middlewares...)
+		g.Use(groupName, middlewares...)
 	}
 	g.Handlers[groupName] = append(g.Handlers[groupName], fn)
 }
@@ -68,6 +64,7 @@ func (g *Group) Apply(e echo.RouteRegister, rootGroup string) {
 		groupDefaultMiddlewares = append(groupDefaultMiddlewares, middlewares...)
 	}
 	for group, handlers := range g.Handlers {
+		originalGroupName := group
 		for _, namer := range g.Namers {
 			group = namer(group)
 		}
@@ -76,11 +73,11 @@ func (g *Group) Apply(e echo.RouteRegister, rootGroup string) {
 			grp.Use(groupDefaultMiddlewares...)
 		}
 		for prefix, middlewares := range g.PreMiddlewares {
-			if strings.HasPrefix(group, prefix) {
+			if strings.HasPrefix(originalGroupName, prefix) {
 				grp.Use(middlewares...)
 			}
 		}
-		middlewares, ok := g.Middlewares[group]
+		middlewares, ok := g.Middlewares[originalGroupName]
 		if ok {
 			grp.Use(middlewares...)
 		}
