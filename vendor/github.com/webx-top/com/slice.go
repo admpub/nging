@@ -15,7 +15,9 @@
 package com
 
 import (
+	"errors"
 	"math/rand"
+	"reflect"
 	"strings"
 	"time"
 )
@@ -355,12 +357,37 @@ func SliceUnique(slice []interface{}) (uniqueslice []interface{}) {
 }
 
 func SliceShuffle(slice []interface{}) []interface{} {
-	for i := 0; i < len(slice); i++ {
-		a := rand.Intn(len(slice))
-		b := rand.Intn(len(slice))
+	size := len(slice)
+	for i := 0; i < size; i++ {
+		a := rand.Intn(size)
+		b := rand.Intn(size)
+		if a == b {
+			continue
+		}
 		slice[a], slice[b] = slice[b], slice[a]
 	}
 	return slice
+}
+
+var ErrNotSliceType = errors.New("expects a slice type")
+
+// Shuffle 打乱数组
+func Shuffle(arr interface{}) error {
+	contentType := reflect.TypeOf(arr)
+	if contentType.Kind() != reflect.Slice {
+		return ErrNotSliceType
+	}
+	contentValue := reflect.ValueOf(arr)
+	source := rand.NewSource(time.Now().UnixNano())
+	random := rand.New(source)
+	len := contentValue.Len()
+	for i := len - 1; i > 0; i-- {
+		j := random.Intn(i + 1)
+		x, y := contentValue.Index(i).Interface(), contentValue.Index(j).Interface()
+		contentValue.Index(i).Set(reflect.ValueOf(y))
+		contentValue.Index(j).Set(reflect.ValueOf(x))
+	}
+	return nil
 }
 
 func SliceInsert(slice, insertion []interface{}, index int) []interface{} {
