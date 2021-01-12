@@ -146,7 +146,7 @@ require (
 	github.com/kardianos/service v1.2.0 // indirect
 	github.com/markbates/goth v1.66.0 // indirect
 	github.com/mattn/go-colorable v0.1.8
-	github.com/mattn/go-runewidth v0.0.9
+	github.com/mattn/go-runewidth v0.0.10
 	github.com/mattn/go-sqlite3 v1.14.5 // indirect
 	github.com/mholt/certmagic v0.8.3
 	github.com/microcosm-cc/bluemonday v1.0.4
