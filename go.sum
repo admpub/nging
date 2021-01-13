@@ -387,8 +387,10 @@ github.com/chris-ramon/douceur v0.2.0 h1:IDMEdxlEUUBYBKE4z/mJnFyVXox+MjuEVDJNN27
 github.com/chris-ramon/douceur v0.2.0/go.mod h1:wDW5xjJdeoMm1mRt4sD4c/LbF/mWdEpRXQKjTR8nIBE=
 github.com/chromedp/cdproto v0.0.0-20201009231348-1c6a710e77de h1:cuPPanKjAp5XBwrD1RkeN4ILGRSffUhS69LKkFqKtIA=
 github.com/chromedp/cdproto v0.0.0-20201009231348-1c6a710e77de/go.mod h1:zx0YH7hi8sqkYXAa0LZZxpQLDsU8/a2jzbYbK79dQO8=
+github.com/chromedp/cdproto v0.0.0-20210113043257-dabd2f2e7693/go.mod h1:55pim6Ht4LJKdVLlyFJV/g++HsEA1hQxPbB5JyNdZC0=
 github.com/chromedp/chromedp v0.5.4 h1:hQC6Wj+0mBu2B+HDF4eoAyTkDo0BnL16sz3gAAmZ8fc=
 github.com/chromedp/chromedp v0.5.4/go.mod h1:Jl2gvx3U9zl4lS/dMjDVGXX0jZ4qo/vsGreqYME/lqc=
+github.com/chromedp/chromedp v0.6.1/go.mod h1:N1O4rajj/6pIT3S+5q9RDkQlmI7/M6xC7gbibwWq4FE=
 github.com/chromedp/sysutil v0.0.0-20201009230539-dc95e7e83e8a h1:31c/rx2f48S4oFimjMnIJNEutSwrWoASeUiGzPV5joA=
 github.com/chromedp/sysutil v0.0.0-20201009230539-dc95e7e83e8a/go.mod h1:kgWmDdq8fTzXYcKIBqIYvRRTnYb9aNS9moAV0xufSww=
 github.com/chromedp/sysutil v1.0.0 h1:+ZxhTpfpZlmchB58ih/LBHX52ky7w2VhQVKQMucy3Ic=
@@ -577,6 +579,7 @@ github.com/gobuffalo/syncx v0.0.0-20190224160051-33c29581e754/go.mod h1:HhnNqWY9
 github.com/gobwas/httphead v0.0.0-20180130184737-2c6c146eadee/go.mod h1:L0fX3K22YWvt/FAX9NnzrNzcI4wNYi9Yku4O0LKYflo=
 github.com/gobwas/httphead v0.0.0-20200921212729-da3d93bc3c58 h1:YyrUZvJaU8Q0QsoVo+xLFBgWDTam29PKea6GYmwvSiQ=
 github.com/gobwas/httphead v0.0.0-20200921212729-da3d93bc3c58/go.mod h1:L0fX3K22YWvt/FAX9NnzrNzcI4wNYi9Yku4O0LKYflo=
+github.com/gobwas/httphead v0.1.0/go.mod h1:O/RXo79gxV8G+RqlR/otEwx4Q36zl9rqC5u12GKvMCM=
 github.com/gobwas/pool v0.2.0/go.mod h1:q8bcK0KcYlCgd9e7WYLm9LpyS+YeLd8JVDW6WezmKEw=
 github.com/gobwas/pool v0.2.1 h1:xfeeEhW7pwmX8nuLVlqbzVc7udMDrwetjEv+TZIz1og=
 github.com/gobwas/pool v0.2.1/go.mod h1:q8bcK0KcYlCgd9e7WYLm9LpyS+YeLd8JVDW6WezmKEw=
