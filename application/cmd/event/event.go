@@ -30,6 +30,7 @@ func OnStart(index int, fn ...func()) {
 	}
 	size := len(OnStartList)
 	if size > index {
+		fn = append(fn, OnStartList[index])
 		OnStartList[index] = fn[0]
 		if len(fn) > 1 {
 			OnStart(index+1, fn[1:]...)
