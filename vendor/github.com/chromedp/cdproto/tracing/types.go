@@ -120,6 +120,55 @@ func (t *StreamCompression) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
+// MemoryDumpLevelOfDetail details exposed when memory request explicitly
+// declared. Keep consistent with memory_dump_request_args.h and
+// memory_instrumentation.mojom.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Tracing#type-MemoryDumpLevelOfDetail
+type MemoryDumpLevelOfDetail string
+
+// String returns the MemoryDumpLevelOfDetail as string value.
+func (t MemoryDumpLevelOfDetail) String() string {
+	return string(t)
+}
+
+// MemoryDumpLevelOfDetail values.
+const (
+	MemoryDumpLevelOfDetailBackground MemoryDumpLevelOfDetail = "background"
+	MemoryDumpLevelOfDetailLight      MemoryDumpLevelOfDetail = "light"
+	MemoryDumpLevelOfDetailDetailed   MemoryDumpLevelOfDetail = "detailed"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t MemoryDumpLevelOfDetail) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t MemoryDumpLevelOfDetail) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *MemoryDumpLevelOfDetail) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch MemoryDumpLevelOfDetail(in.String()) {
+	case MemoryDumpLevelOfDetailBackground:
+		*t = MemoryDumpLevelOfDetailBackground
+	case MemoryDumpLevelOfDetailLight:
+		*t = MemoryDumpLevelOfDetailLight
+	case MemoryDumpLevelOfDetailDetailed:
+		*t = MemoryDumpLevelOfDetailDetailed
+
+	default:
+		in.AddError(errors.New("unknown MemoryDumpLevelOfDetail value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *MemoryDumpLevelOfDetail) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
 // RecordMode controls how the trace buffer stores data.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Tracing#type-TraceConfig

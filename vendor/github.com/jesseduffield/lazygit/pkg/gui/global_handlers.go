@@ -1,6 +1,7 @@
 package gui
 
 import (
+	"fmt"
 	"math"
 	"strings"
 
@@ -175,10 +176,10 @@ func (gui *Gui) fetch(canPromptForCredentials bool) (err error) {
 	err = gui.GitCommand.Fetch(fetchOpts)
 
 	if canPromptForCredentials && err != nil && strings.Contains(err.Error(), "exit status 128") {
-		gui.createErrorPanel(gui.Tr.PassUnameWrong)
+		_ = gui.createErrorPanel(gui.Tr.PassUnameWrong)
 	}
 
-	gui.refreshSidePanels(refreshOptions{scope: []int{BRANCHES, COMMITS, REMOTES, TAGS}, mode: ASYNC})
+	_ = gui.refreshSidePanels(refreshOptions{scope: []int{BRANCHES, COMMITS, REMOTES, TAGS}, mode: ASYNC})
 
 	return err
 }
@@ -191,5 +192,13 @@ func (gui *Gui) handleCopySelectedSideContextItemToClipboard() error {
 		return nil
 	}
 
-	return gui.OSCommand.CopyToClipboard(itemId)
+	if err := gui.OSCommand.CopyToClipboard(itemId); err != nil {
+		return gui.surfaceError(err)
+	}
+
+	truncatedItemId := utils.TruncateWithEllipsis(strings.Replace(itemId, "\n", " ", -1), 50)
+
+	gui.raiseToast(fmt.Sprintf("'%s' %s", truncatedItemId, gui.Tr.LcCopiedToClipboard))
+
+	return nil
 }

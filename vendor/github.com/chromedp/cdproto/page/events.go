@@ -37,7 +37,8 @@ type EventFrameAttached struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Page#event-frameDetached
 type EventFrameDetached struct {
-	FrameID cdp.FrameID `json:"frameId"` // Id of the frame that has been detached.
+	FrameID cdp.FrameID         `json:"frameId"` // Id of the frame that has been detached.
+	Reason  FrameDetachedReason `json:"reason"`
 }
 
 // EventFrameNavigated fired once navigation of the frame has completed.
@@ -45,6 +46,13 @@ type EventFrameDetached struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Page#event-frameNavigated
 type EventFrameNavigated struct {
+	Frame *cdp.Frame `json:"frame"` // Frame object.
+}
+
+// EventDocumentOpened fired when opening document to write to.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#event-documentOpened
+type EventDocumentOpened struct {
 	Frame *cdp.Frame `json:"frame"` // Frame object.
 }
 

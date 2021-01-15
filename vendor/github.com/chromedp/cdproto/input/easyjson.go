@@ -28,7 +28,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoInput(in *jlexer.Lexer, out *
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -48,6 +48,14 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoInput(in *jlexer.Lexer, out *
 			out.RotationAngle = float64(in.Float64())
 		case "force":
 			out.Force = float64(in.Float64())
+		case "tangentialPressure":
+			out.TangentialPressure = float64(in.Float64())
+		case "tiltX":
+			out.TiltX = int64(in.Int64())
+		case "tiltY":
+			out.TiltY = int64(in.Int64())
+		case "twist":
+			out.Twist = int64(in.Int64())
 		case "id":
 			out.ID = float64(in.Float64())
 		default:
@@ -94,6 +102,26 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoInput(out *jwriter.Writer, in
 		out.RawString(prefix)
 		out.Float64(float64(in.Force))
 	}
+	if in.TangentialPressure != 0 {
+		const prefix string = ",\"tangentialPressure\":"
+		out.RawString(prefix)
+		out.Float64(float64(in.TangentialPressure))
+	}
+	if in.TiltX != 0 {
+		const prefix string = ",\"tiltX\":"
+		out.RawString(prefix)
+		out.Int64(int64(in.TiltX))
+	}
+	if in.TiltY != 0 {
+		const prefix string = ",\"tiltY\":"
+		out.RawString(prefix)
+		out.Int64(int64(in.TiltY))
+	}
+	if in.Twist != 0 {
+		const prefix string = ",\"twist\":"
+		out.RawString(prefix)
+		out.Int64(int64(in.Twist))
+	}
 	if in.ID != 0 {
 		const prefix string = ",\"id\":"
 		out.RawString(prefix)
@@ -136,7 +164,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoInput1(in *jlexer.Lexer, out 
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -230,7 +258,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoInput2(in *jlexer.Lexer, out 
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -373,7 +401,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoInput3(in *jlexer.Lexer, out 
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -467,7 +495,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoInput4(in *jlexer.Lexer, out 
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -533,7 +561,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoInput5(in *jlexer.Lexer, out 
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -599,7 +627,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoInput6(in *jlexer.Lexer, out 
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -729,7 +757,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoInput7(in *jlexer.Lexer, out 
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -868,7 +896,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoInput8(in *jlexer.Lexer, out 
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -900,6 +928,16 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoInput8(in *jlexer.Lexer, out 
 			out.Buttons = int64(in.Int64())
 		case "clickCount":
 			out.ClickCount = int64(in.Int64())
+		case "force":
+			out.Force = float64(in.Float64())
+		case "tangentialPressure":
+			out.TangentialPressure = float64(in.Float64())
+		case "tiltX":
+			out.TiltX = int64(in.Int64())
+		case "tiltY":
+			out.TiltY = int64(in.Int64())
+		case "twist":
+			out.Twist = int64(in.Int64())
 		case "deltaX":
 			out.DeltaX = float64(in.Float64())
 		case "deltaY":
@@ -960,6 +998,31 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoInput8(out *jwriter.Writer, i
 		out.RawString(prefix)
 		out.Int64(int64(in.ClickCount))
 	}
+	if in.Force != 0 {
+		const prefix string = ",\"force\":"
+		out.RawString(prefix)
+		out.Float64(float64(in.Force))
+	}
+	if in.TangentialPressure != 0 {
+		const prefix string = ",\"tangentialPressure\":"
+		out.RawString(prefix)
+		out.Float64(float64(in.TangentialPressure))
+	}
+	if in.TiltX != 0 {
+		const prefix string = ",\"tiltX\":"
+		out.RawString(prefix)
+		out.Int64(int64(in.TiltX))
+	}
+	if in.TiltY != 0 {
+		const prefix string = ",\"tiltY\":"
+		out.RawString(prefix)
+		out.Int64(int64(in.TiltY))
+	}
+	if in.Twist != 0 {
+		const prefix string = ",\"twist\":"
+		out.RawString(prefix)
+		out.Int64(int64(in.Twist))
+	}
 	if in.DeltaX != 0 {
 		const prefix string = ",\"deltaX\":"
 		out.RawString(prefix)
@@ -1012,7 +1075,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoInput9(in *jlexer.Lexer, out 
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()

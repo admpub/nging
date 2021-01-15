@@ -52,6 +52,8 @@ func (t SameSiteCookieExclusionReason) String() string {
 const (
 	SameSiteCookieExclusionReasonExcludeSameSiteUnspecifiedTreatedAsLax SameSiteCookieExclusionReason = "ExcludeSameSiteUnspecifiedTreatedAsLax"
 	SameSiteCookieExclusionReasonExcludeSameSiteNoneInsecure            SameSiteCookieExclusionReason = "ExcludeSameSiteNoneInsecure"
+	SameSiteCookieExclusionReasonExcludeSameSiteLax                     SameSiteCookieExclusionReason = "ExcludeSameSiteLax"
+	SameSiteCookieExclusionReasonExcludeSameSiteStrict                  SameSiteCookieExclusionReason = "ExcludeSameSiteStrict"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -71,6 +73,10 @@ func (t *SameSiteCookieExclusionReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = SameSiteCookieExclusionReasonExcludeSameSiteUnspecifiedTreatedAsLax
 	case SameSiteCookieExclusionReasonExcludeSameSiteNoneInsecure:
 		*t = SameSiteCookieExclusionReasonExcludeSameSiteNoneInsecure
+	case SameSiteCookieExclusionReasonExcludeSameSiteLax:
+		*t = SameSiteCookieExclusionReasonExcludeSameSiteLax
+	case SameSiteCookieExclusionReasonExcludeSameSiteStrict:
+		*t = SameSiteCookieExclusionReasonExcludeSameSiteStrict
 
 	default:
 		in.AddError(errors.New("unknown SameSiteCookieExclusionReason value"))
@@ -438,9 +444,10 @@ func (t *BlockedByResponseReason) UnmarshalJSON(buf []byte) error {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-BlockedByResponseIssueDetails
 type BlockedByResponseIssueDetails struct {
-	Request *AffectedRequest        `json:"request"`
-	Frame   *AffectedFrame          `json:"frame,omitempty"`
-	Reason  BlockedByResponseReason `json:"reason"`
+	Request      *AffectedRequest        `json:"request"`
+	ParentFrame  *AffectedFrame          `json:"parentFrame,omitempty"`
+	BlockedFrame *AffectedFrame          `json:"blockedFrame,omitempty"`
+	Reason       BlockedByResponseReason `json:"reason"`
 }
 
 // HeavyAdResolutionStatus [no description].
@@ -596,14 +603,36 @@ func (t *ContentSecurityPolicyViolationType) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
+// SourceCodeLocation [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-SourceCodeLocation
+type SourceCodeLocation struct {
+	URL          string `json:"url"`
+	LineNumber   int64  `json:"lineNumber"`
+	ColumnNumber int64  `json:"columnNumber"`
+}
+
 // ContentSecurityPolicyIssueDetails [no description].
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-ContentSecurityPolicyIssueDetails
 type ContentSecurityPolicyIssueDetails struct {
 	BlockedURL                         string                             `json:"blockedURL,omitempty"` // The url not included in allowed sources.
 	ViolatedDirective                  string                             `json:"violatedDirective"`    // Specific directive that is violated, causing the CSP issue.
+	IsReportOnly                       bool                               `json:"isReportOnly"`
 	ContentSecurityPolicyViolationType ContentSecurityPolicyViolationType `json:"contentSecurityPolicyViolationType"`
 	FrameAncestor                      *AffectedFrame                     `json:"frameAncestor,omitempty"`
+	SourceCodeLocation                 *SourceCodeLocation                `json:"sourceCodeLocation,omitempty"`
+	ViolatingNodeID                    cdp.BackendNodeID                  `json:"violatingNodeId,omitempty"`
+}
+
+// SharedArrayBufferTransferIssueDetails details for a request that has been
+// blocked with the BLOCKED_BY_RESPONSE code. Currently only used for COEP/COOP,
+// but may be extended to include some CSP errors in the future.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-SharedArrayBufferTransferIssueDetails
+type SharedArrayBufferTransferIssueDetails struct {
+	SourceCodeLocation *SourceCodeLocation `json:"sourceCodeLocation"`
+	IsWarning          bool                `json:"isWarning"`
 }
 
 // InspectorIssueCode a unique identifier for the type of issue. Each type
@@ -620,11 +649,12 @@ func (t InspectorIssueCode) String() string {
 
 // InspectorIssueCode values.
 const (
-	InspectorIssueCodeSameSiteCookieIssue        InspectorIssueCode = "SameSiteCookieIssue"
-	InspectorIssueCodeMixedContentIssue          InspectorIssueCode = "MixedContentIssue"
-	InspectorIssueCodeBlockedByResponseIssue     InspectorIssueCode = "BlockedByResponseIssue"
-	InspectorIssueCodeHeavyAdIssue               InspectorIssueCode = "HeavyAdIssue"
-	InspectorIssueCodeContentSecurityPolicyIssue InspectorIssueCode = "ContentSecurityPolicyIssue"
+	InspectorIssueCodeSameSiteCookieIssue            InspectorIssueCode = "SameSiteCookieIssue"
+	InspectorIssueCodeMixedContentIssue              InspectorIssueCode = "MixedContentIssue"
+	InspectorIssueCodeBlockedByResponseIssue         InspectorIssueCode = "BlockedByResponseIssue"
+	InspectorIssueCodeHeavyAdIssue                   InspectorIssueCode = "HeavyAdIssue"
+	InspectorIssueCodeContentSecurityPolicyIssue     InspectorIssueCode = "ContentSecurityPolicyIssue"
+	InspectorIssueCodeSharedArrayBufferTransferIssue InspectorIssueCode = "SharedArrayBufferTransferIssue"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -650,6 +680,8 @@ func (t *InspectorIssueCode) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = InspectorIssueCodeHeavyAdIssue
 	case InspectorIssueCodeContentSecurityPolicyIssue:
 		*t = InspectorIssueCodeContentSecurityPolicyIssue
+	case InspectorIssueCodeSharedArrayBufferTransferIssue:
+		*t = InspectorIssueCodeSharedArrayBufferTransferIssue
 
 	default:
 		in.AddError(errors.New("unknown InspectorIssueCode value"))
@@ -667,11 +699,12 @@ func (t *InspectorIssueCode) UnmarshalJSON(buf []byte) error {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-InspectorIssueDetails
 type InspectorIssueDetails struct {
-	SameSiteCookieIssueDetails        *SameSiteCookieIssueDetails        `json:"sameSiteCookieIssueDetails,omitempty"`
-	MixedContentIssueDetails          *MixedContentIssueDetails          `json:"mixedContentIssueDetails,omitempty"`
-	BlockedByResponseIssueDetails     *BlockedByResponseIssueDetails     `json:"blockedByResponseIssueDetails,omitempty"`
-	HeavyAdIssueDetails               *HeavyAdIssueDetails               `json:"heavyAdIssueDetails,omitempty"`
-	ContentSecurityPolicyIssueDetails *ContentSecurityPolicyIssueDetails `json:"contentSecurityPolicyIssueDetails,omitempty"`
+	SameSiteCookieIssueDetails            *SameSiteCookieIssueDetails            `json:"sameSiteCookieIssueDetails,omitempty"`
+	MixedContentIssueDetails              *MixedContentIssueDetails              `json:"mixedContentIssueDetails,omitempty"`
+	BlockedByResponseIssueDetails         *BlockedByResponseIssueDetails         `json:"blockedByResponseIssueDetails,omitempty"`
+	HeavyAdIssueDetails                   *HeavyAdIssueDetails                   `json:"heavyAdIssueDetails,omitempty"`
+	ContentSecurityPolicyIssueDetails     *ContentSecurityPolicyIssueDetails     `json:"contentSecurityPolicyIssueDetails,omitempty"`
+	SharedArrayBufferTransferIssueDetails *SharedArrayBufferTransferIssueDetails `json:"sharedArrayBufferTransferIssueDetails,omitempty"`
 }
 
 // InspectorIssue an inspector issue reported from the back-end.

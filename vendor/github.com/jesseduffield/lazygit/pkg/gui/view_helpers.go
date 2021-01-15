@@ -110,9 +110,9 @@ func (gui *Gui) refreshSidePanels(options refreshOptions) error {
 			wg.Add(1)
 			func() {
 				if options.mode == ASYNC {
-					go utils.Safe(func() { gui.refreshCommits() })
+					go utils.Safe(func() { _ = gui.refreshCommits() })
 				} else {
-					gui.refreshCommits()
+					_ = gui.refreshCommits()
 				}
 				wg.Done()
 			}()
@@ -122,9 +122,9 @@ func (gui *Gui) refreshSidePanels(options refreshOptions) error {
 			wg.Add(1)
 			func() {
 				if options.mode == ASYNC {
-					go utils.Safe(func() { gui.refreshFilesAndSubmodules() })
+					go utils.Safe(func() { _ = gui.refreshFilesAndSubmodules() })
 				} else {
-					gui.refreshFilesAndSubmodules()
+					_ = gui.refreshFilesAndSubmodules()
 				}
 				wg.Done()
 			}()
@@ -134,9 +134,9 @@ func (gui *Gui) refreshSidePanels(options refreshOptions) error {
 			wg.Add(1)
 			func() {
 				if options.mode == ASYNC {
-					go utils.Safe(func() { gui.refreshStashEntries() })
+					go utils.Safe(func() { _ = gui.refreshStashEntries() })
 				} else {
-					gui.refreshStashEntries()
+					_ = gui.refreshStashEntries()
 				}
 				wg.Done()
 			}()
@@ -146,9 +146,9 @@ func (gui *Gui) refreshSidePanels(options refreshOptions) error {
 			wg.Add(1)
 			func() {
 				if options.mode == ASYNC {
-					go utils.Safe(func() { gui.refreshTags() })
+					go utils.Safe(func() { _ = gui.refreshTags() })
 				} else {
-					gui.refreshTags()
+					_ = gui.refreshTags()
 				}
 				wg.Done()
 			}()
@@ -158,9 +158,9 @@ func (gui *Gui) refreshSidePanels(options refreshOptions) error {
 			wg.Add(1)
 			func() {
 				if options.mode == ASYNC {
-					go utils.Safe(func() { gui.refreshRemotes() })
+					go utils.Safe(func() { _ = gui.refreshRemotes() })
 				} else {
-					gui.refreshRemotes()
+					_ = gui.refreshRemotes()
 				}
 				wg.Done()
 			}()
@@ -244,11 +244,6 @@ func (gui *Gui) getFilesView() *gocui.View {
 	return v
 }
 
-func (gui *Gui) getCommitsView() *gocui.View {
-	v, _ := gui.g.View("commits")
-	return v
-}
-
 func (gui *Gui) getCommitMessageView() *gocui.View {
 	v, _ := gui.g.View("commitMessage")
 	return v
@@ -264,20 +259,27 @@ func (gui *Gui) getMainView() *gocui.View {
 	return v
 }
 
+func (gui *Gui) getSuggestionsView() *gocui.View {
+	v, _ := gui.g.View("suggestions")
+	return v
+}
+
 func (gui *Gui) getSecondaryView() *gocui.View {
 	v, _ := gui.g.View("secondary")
 	return v
 }
 
-func (gui *Gui) getStashView() *gocui.View {
-	v, _ := gui.g.View("stash")
-	return v
-}
+// currently unused
+// func (gui *Gui) getStashView() *gocui.View {
+// 	v, _ := gui.g.View("stash")
+// 	return v
+// }
 
-func (gui *Gui) getCommitFilesView() *gocui.View {
-	v, _ := gui.g.View("commitFiles")
-	return v
-}
+// currently unused
+// func (gui *Gui) getCommitFilesView() *gocui.View {
+// 	v, _ := gui.g.View("commitFiles")
+// 	return v
+// }
 
 func (gui *Gui) getMenuView() *gocui.View {
 	v, _ := gui.g.View("menu")
@@ -418,7 +420,7 @@ func (gui *Gui) clearEditorView(v *gocui.View) {
 func (gui *Gui) onViewTabClick(viewName string, tabIndex int) error {
 	context := gui.ViewTabContextMap[viewName][tabIndex].contexts[0]
 
-	return gui.switchContext(context)
+	return gui.pushContext(context)
 }
 
 func (gui *Gui) handleNextTab(g *gocui.Gui, v *gocui.View) error {

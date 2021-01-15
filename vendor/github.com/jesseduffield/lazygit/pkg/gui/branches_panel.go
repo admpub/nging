@@ -7,6 +7,8 @@ import (
 	"github.com/jesseduffield/gocui"
 	"github.com/jesseduffield/lazygit/pkg/commands"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
+	"github.com/jesseduffield/lazygit/pkg/gui/presentation"
+	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
 )
 
@@ -99,8 +101,21 @@ func (gui *Gui) handleCreatePullRequestPress(g *gocui.Gui, v *gocui.View) error 
 	return nil
 }
 
+func (gui *Gui) handleCopyPullRequestURLPress(g *gocui.Gui, v *gocui.View) error {
+	pullRequest := commands.NewPullRequest(gui.GitCommand)
+
+	branch := gui.getSelectedBranch()
+	if err := pullRequest.CopyURL(branch); err != nil {
+		return gui.surfaceError(err)
+	}
+
+	gui.raiseToast(gui.Tr.PullRequestURLCopiedToClipboard)
+
+	return nil
+}
+
 func (gui *Gui) handleGitFetch(g *gocui.Gui, v *gocui.View) error {
-	if err := gui.createLoaderPanel(v, gui.Tr.FetchWait); err != nil {
+	if err := gui.createLoaderPanel(gui.Tr.FetchWait); err != nil {
 		return err
 	}
 	go utils.Safe(func() {
@@ -194,21 +209,24 @@ func (gui *Gui) handleCheckoutRef(ref string, options handleCheckoutRefOptions) 
 }
 
 func (gui *Gui) handleCheckoutByName(g *gocui.Gui, v *gocui.View) error {
-	return gui.prompt(gui.Tr.BranchName+":", "", func(response string) error {
-		return gui.handleCheckoutRef(response, handleCheckoutRefOptions{
-			onRefNotFound: func(ref string) error {
+	return gui.prompt(promptOpts{
+		title:               gui.Tr.BranchName + ":",
+		findSuggestionsFunc: gui.findBranchNameSuggestions,
+		handleConfirm: func(response string) error {
+			return gui.handleCheckoutRef(response, handleCheckoutRefOptions{
+				onRefNotFound: func(ref string) error {
 
-				return gui.ask(askOpts{
-
-					title:  gui.Tr.BranchNotFoundTitle,
-					prompt: fmt.Sprintf("%s %s%s", gui.Tr.BranchNotFoundPrompt, ref, "?"),
-					handleConfirm: func() error {
-						return gui.createNewBranchWithName(ref)
-					},
-				})
-			},
-		})
-	})
+					return gui.ask(askOpts{
+						title:  gui.Tr.BranchNotFoundTitle,
+						prompt: fmt.Sprintf("%s %s%s", gui.Tr.BranchNotFoundPrompt, ref, "?"),
+						handleConfirm: func() error {
+							return gui.createNewBranchWithName(ref)
+						},
+					})
+				},
+			})
+		}},
+	)
 }
 
 func (gui *Gui) getCheckedOutBranch() *models.Branch {
@@ -265,7 +283,6 @@ func (gui *Gui) deleteNamedBranch(selectedBranch *models.Branch, force bool) err
 	)
 
 	return gui.ask(askOpts{
-
 		title:  title,
 		prompt: message,
 		handleConfirm: func() error {
@@ -302,7 +319,6 @@ func (gui *Gui) mergeBranchIntoCheckedOutBranch(branchName string) error {
 	)
 
 	return gui.ask(askOpts{
-
 		title:  gui.Tr.MergingTitle,
 		prompt: prompt,
 		handleConfirm: func() error {
@@ -344,7 +360,6 @@ func (gui *Gui) handleRebaseOntoBranch(selectedBranchName string) error {
 	)
 
 	return gui.ask(askOpts{
-
 		title:  gui.Tr.RebasingTitle,
 		prompt: prompt,
 		handleConfirm: func() error {
@@ -386,7 +401,7 @@ func (gui *Gui) handleFastForward(g *gocui.Gui, v *gocui.View) error {
 		},
 	)
 	go utils.Safe(func() {
-		_ = gui.createLoaderPanel(v, message)
+		_ = gui.createLoaderPanel(message)
 
 		if gui.State.Panels.Branches.SelectedLineIdx == 0 {
 			_ = gui.pullWithMode("ff-only", PullFilesOptions{})
@@ -418,17 +433,20 @@ func (gui *Gui) handleRenameBranch(g *gocui.Gui, v *gocui.View) error {
 	// way to get it to show up in the reflog)
 
 	promptForNewName := func() error {
-		return gui.prompt(gui.Tr.NewBranchNamePrompt+" "+branch.Name+":", "", func(newBranchName string) error {
-			if err := gui.GitCommand.RenameBranch(branch.Name, newBranchName); err != nil {
-				return gui.surfaceError(err)
-			}
-			// need to checkout so that the branch shows up in our reflog and therefore
-			// doesn't get lost among all the other branches when we switch to something else
-			if err := gui.GitCommand.Checkout(newBranchName, commands.CheckoutOptions{Force: false}); err != nil {
-				return gui.surfaceError(err)
-			}
+		return gui.prompt(promptOpts{
+			title: gui.Tr.NewBranchNamePrompt + " " + branch.Name + ":",
+			handleConfirm: func(newBranchName string) error {
+				if err := gui.GitCommand.RenameBranch(branch.Name, newBranchName); err != nil {
+					return gui.surfaceError(err)
+				}
+				// need to checkout so that the branch shows up in our reflog and therefore
+				// doesn't get lost among all the other branches when we switch to something else
+				if err := gui.GitCommand.Checkout(newBranchName, commands.CheckoutOptions{Force: false}); err != nil {
+					return gui.surfaceError(err)
+				}
 
-			return gui.refreshSidePanels(refreshOptions{mode: ASYNC})
+				return gui.refreshSidePanels(refreshOptions{mode: ASYNC})
+			},
 		})
 	}
 
@@ -441,7 +459,6 @@ func (gui *Gui) handleRenameBranch(g *gocui.Gui, v *gocui.View) error {
 	}
 
 	return gui.ask(askOpts{
-
 		title:         gui.Tr.LcRenameBranch,
 		prompt:        gui.Tr.RenameBranchWarning,
 		handleConfirm: promptForNewName,
@@ -475,25 +492,56 @@ func (gui *Gui) handleNewBranchOffCurrentItem() error {
 		// will set to the remote's existing name
 		prefilledName = item.ID()
 	}
-	return gui.prompt(message, prefilledName, func(response string) error {
-		if err := gui.GitCommand.NewBranch(response, item.ID()); err != nil {
-			return err
-		}
 
-		// if we're currently in the branch commits context then the selected commit
-		// is about to go to the top of the list
-		if context.GetKey() == BRANCH_COMMITS_CONTEXT_KEY {
-			context.GetPanelState().SetSelectedLineIdx(0)
-		}
-
-		if context.GetKey() != gui.Contexts.Branches.Context.GetKey() {
-			if err := gui.switchContext(gui.Contexts.Branches.Context); err != nil {
+	return gui.prompt(promptOpts{
+		title:          message,
+		initialContent: prefilledName,
+		handleConfirm: func(response string) error {
+			if err := gui.GitCommand.NewBranch(response, item.ID()); err != nil {
 				return err
 			}
-		}
 
-		gui.State.Panels.Branches.SelectedLineIdx = 0
+			// if we're currently in the branch commits context then the selected commit
+			// is about to go to the top of the list
+			if context.GetKey() == BRANCH_COMMITS_CONTEXT_KEY {
+				context.GetPanelState().SetSelectedLineIdx(0)
+			}
 
-		return gui.refreshSidePanels(refreshOptions{mode: ASYNC})
+			if context.GetKey() != gui.Contexts.Branches.Context.GetKey() {
+				if err := gui.pushContext(gui.Contexts.Branches.Context); err != nil {
+					return err
+				}
+			}
+
+			gui.State.Panels.Branches.SelectedLineIdx = 0
+
+			return gui.refreshSidePanels(refreshOptions{mode: ASYNC})
+		},
 	})
+}
+
+func (gui *Gui) getBranchNames() []string {
+	result := make([]string, len(gui.State.Branches))
+
+	for i, branch := range gui.State.Branches {
+		result[i] = branch.Name
+	}
+
+	return result
+}
+
+func (gui *Gui) findBranchNameSuggestions(input string) []*types.Suggestion {
+	branchNames := gui.getBranchNames()
+
+	matchingBranchNames := utils.FuzzySearch(input, branchNames)
+
+	suggestions := make([]*types.Suggestion, len(matchingBranchNames))
+	for i, branchName := range matchingBranchNames {
+		suggestions[i] = &types.Suggestion{
+			Value: branchName,
+			Label: utils.ColoredString(branchName, presentation.GetBranchColor(branchName)),
+		}
+	}
+
+	return suggestions
 }

@@ -50,7 +50,7 @@ func (t UnserializableValue) String() string {
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-RemoteObject
 type RemoteObject struct {
 	Type                Type                `json:"type"`                          // Object type.
-	Subtype             Subtype             `json:"subtype,omitempty"`             // Object subtype hint. Specified for object or wasm type values only.
+	Subtype             Subtype             `json:"subtype,omitempty"`             // Object subtype hint. Specified for object type values only. NOTE: If you change anything here, make sure to also update subtype in ObjectPreview and PropertyPreview below.
 	ClassName           string              `json:"className,omitempty"`           // Object class (constructor) name. Specified for object type values only.
 	Value               easyjson.RawMessage `json:"value,omitempty"`               // Remote object value in case of primitive values or JSON values (if it was requested).
 	UnserializableValue UnserializableValue `json:"unserializableValue,omitempty"` // Primitive value which can not be JSON-stringified does not have value, but gets this property.
@@ -159,10 +159,11 @@ func (t ExecutionContextID) Int64() int64 {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-ExecutionContextDescription
 type ExecutionContextDescription struct {
-	ID      ExecutionContextID  `json:"id"`     // Unique id of the execution context. It can be used to specify in which execution context script evaluation should be performed.
-	Origin  string              `json:"origin"` // Execution context origin.
-	Name    string              `json:"name"`   // Human readable name describing given context.
-	AuxData easyjson.RawMessage `json:"auxData,omitempty"`
+	ID       ExecutionContextID  `json:"id"`       // Unique id of the execution context. It can be used to specify in which execution context script evaluation should be performed.
+	Origin   string              `json:"origin"`   // Execution context origin.
+	Name     string              `json:"name"`     // Human readable name describing given context.
+	UniqueID string              `json:"uniqueId"` // A system-unique execution context identifier. Unlike the id, this is unique across multiple processes, so can be reliably used to identify specific context while backend performs a cross-process navigation.
+	AuxData  easyjson.RawMessage `json:"auxData,omitempty"`
 }
 
 // ExceptionDetails detailed information about exception (or error) that was
@@ -297,7 +298,6 @@ const (
 	TypeBoolean   Type = "boolean"
 	TypeSymbol    Type = "symbol"
 	TypeBigint    Type = "bigint"
-	TypeWasm      Type = "wasm"
 	TypeAccessor  Type = "accessor"
 )
 
@@ -330,8 +330,6 @@ func (t *Type) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = TypeSymbol
 	case TypeBigint:
 		*t = TypeBigint
-	case TypeWasm:
-		*t = TypeWasm
 	case TypeAccessor:
 		*t = TypeAccessor
 
@@ -345,8 +343,9 @@ func (t *Type) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
-// Subtype object subtype hint. Specified for object or wasm type values
-// only.
+// Subtype object subtype hint. Specified for object type values only. NOTE:
+// If you change anything here, make sure to also update subtype in
+// ObjectPreview and PropertyPreview below.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-RemoteObject
 type Subtype string
@@ -358,29 +357,24 @@ func (t Subtype) String() string {
 
 // Subtype values.
 const (
-	SubtypeArray       Subtype = "array"
-	SubtypeNull        Subtype = "null"
-	SubtypeNode        Subtype = "node"
-	SubtypeRegexp      Subtype = "regexp"
-	SubtypeDate        Subtype = "date"
-	SubtypeMap         Subtype = "map"
-	SubtypeSet         Subtype = "set"
-	SubtypeWeakmap     Subtype = "weakmap"
-	SubtypeWeakset     Subtype = "weakset"
-	SubtypeIterator    Subtype = "iterator"
-	SubtypeGenerator   Subtype = "generator"
-	SubtypeError       Subtype = "error"
-	SubtypeProxy       Subtype = "proxy"
-	SubtypePromise     Subtype = "promise"
-	SubtypeTypedarray  Subtype = "typedarray"
-	SubtypeArraybuffer Subtype = "arraybuffer"
-	SubtypeDataview    Subtype = "dataview"
-	SubtypeI32         Subtype = "i32"
-	SubtypeI64         Subtype = "i64"
-	SubtypeF32         Subtype = "f32"
-	SubtypeF64         Subtype = "f64"
-	SubtypeV128        Subtype = "v128"
-	SubtypeExternref   Subtype = "externref"
+	SubtypeArray             Subtype = "array"
+	SubtypeNull              Subtype = "null"
+	SubtypeNode              Subtype = "node"
+	SubtypeRegexp            Subtype = "regexp"
+	SubtypeDate              Subtype = "date"
+	SubtypeMap               Subtype = "map"
+	SubtypeSet               Subtype = "set"
+	SubtypeWeakmap           Subtype = "weakmap"
+	SubtypeWeakset           Subtype = "weakset"
+	SubtypeIterator          Subtype = "iterator"
+	SubtypeGenerator         Subtype = "generator"
+	SubtypeError             Subtype = "error"
+	SubtypeProxy             Subtype = "proxy"
+	SubtypePromise           Subtype = "promise"
+	SubtypeTypedarray        Subtype = "typedarray"
+	SubtypeArraybuffer       Subtype = "arraybuffer"
+	SubtypeDataview          Subtype = "dataview"
+	SubtypeWebassemblymemory Subtype = "webassemblymemory"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -430,18 +424,8 @@ func (t *Subtype) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = SubtypeArraybuffer
 	case SubtypeDataview:
 		*t = SubtypeDataview
-	case SubtypeI32:
-		*t = SubtypeI32
-	case SubtypeI64:
-		*t = SubtypeI64
-	case SubtypeF32:
-		*t = SubtypeF32
-	case SubtypeF64:
-		*t = SubtypeF64
-	case SubtypeV128:
-		*t = SubtypeV128
-	case SubtypeExternref:
-		*t = SubtypeExternref
+	case SubtypeWebassemblymemory:
+		*t = SubtypeWebassemblymemory
 
 	default:
 		in.AddError(errors.New("unknown Subtype value"))

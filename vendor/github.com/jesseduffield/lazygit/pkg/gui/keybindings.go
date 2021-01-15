@@ -360,6 +360,12 @@ func (gui *Gui) GetInitialKeybindings() []*Binding {
 			Description: gui.Tr.SwitchRepo,
 		},
 		{
+			ViewName:    "status",
+			Key:         gui.getKey(config.Status.AllBranchesLogGraph),
+			Handler:     gui.wrappedHandler(gui.handleShowAllBranchLogs),
+			Description: gui.Tr.LcAllBranchesLogGraph,
+		},
+		{
 			ViewName:    "files",
 			Contexts:    []string{FILES_CONTEXT_KEY},
 			Key:         gui.getKey(config.Files.CommitChanges),
@@ -504,6 +510,13 @@ func (gui *Gui) GetInitialKeybindings() []*Binding {
 			Key:         gui.getKey(config.Branches.CreatePullRequest),
 			Handler:     gui.handleCreatePullRequestPress,
 			Description: gui.Tr.LcCreatePullRequest,
+		},
+		{
+			ViewName:    "branches",
+			Contexts:    []string{LOCAL_BRANCHES_CONTEXT_KEY},
+			Key:         gui.getKey(config.Branches.CopyPullRequestURL),
+			Handler:     gui.handleCopyPullRequestURLPress,
+			Description: gui.Tr.LcCopyPullRequestURL,
 		},
 		{
 			ViewName:    "branches",

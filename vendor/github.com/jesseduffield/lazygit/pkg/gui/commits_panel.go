@@ -233,12 +233,16 @@ func (gui *Gui) handleRenameCommit(g *gocui.Gui, v *gocui.View) error {
 		return gui.surfaceError(err)
 	}
 
-	return gui.prompt(gui.Tr.LcRenameCommit, message, func(response string) error {
-		if err := gui.GitCommand.RenameCommit(response); err != nil {
-			return gui.surfaceError(err)
-		}
+	return gui.prompt(promptOpts{
+		title:          gui.Tr.LcRenameCommit,
+		initialContent: message,
+		handleConfirm: func(response string) error {
+			if err := gui.GitCommand.RenameCommit(response); err != nil {
+				return gui.surfaceError(err)
+			}
 
-		return gui.refreshSidePanels(refreshOptions{mode: ASYNC})
+			return gui.refreshSidePanels(refreshOptions{mode: ASYNC})
+		},
 	})
 }
 
@@ -445,19 +449,6 @@ func (gui *Gui) handleViewCommitFiles() error {
 	return gui.switchToCommitFilesContext(commit.Sha, true, gui.Contexts.BranchCommits.Context, "commits")
 }
 
-func (gui *Gui) hasCommit(commits []*models.Commit, target string) (int, bool) {
-	for idx, commit := range commits {
-		if commit.Sha == target {
-			return idx, true
-		}
-	}
-	return -1, false
-}
-
-func (gui *Gui) unchooseCommit(commits []*models.Commit, i int) []*models.Commit {
-	return append(commits[:i], commits[i+1:]...)
-}
-
 func (gui *Gui) handleCreateFixupCommit(g *gocui.Gui, v *gocui.View) error {
 	if ok, err := gui.validateNotInFilterMode(); err != nil || !ok {
 		return err
@@ -530,11 +521,14 @@ func (gui *Gui) handleTagCommit(g *gocui.Gui, v *gocui.View) error {
 }
 
 func (gui *Gui) handleCreateLightweightTag(commitSha string) error {
-	return gui.prompt(gui.Tr.TagNameTitle, "", func(response string) error {
-		if err := gui.GitCommand.CreateLightweightTag(response, commitSha); err != nil {
-			return gui.surfaceError(err)
-		}
-		return gui.refreshSidePanels(refreshOptions{mode: ASYNC, scope: []int{COMMITS, TAGS}})
+	return gui.prompt(promptOpts{
+		title: gui.Tr.TagNameTitle,
+		handleConfirm: func(response string) error {
+			if err := gui.GitCommand.CreateLightweightTag(response, commitSha); err != nil {
+				return gui.surfaceError(err)
+			}
+			return gui.refreshSidePanels(refreshOptions{mode: ASYNC, scope: []int{COMMITS, TAGS}})
+		},
 	})
 }
 
@@ -602,5 +596,12 @@ func (gui *Gui) handleCopySelectedCommitMessageToClipboard() error {
 	if err != nil {
 		return gui.surfaceError(err)
 	}
-	return gui.OSCommand.CopyToClipboard(message)
+
+	if err := gui.OSCommand.CopyToClipboard(message); err != nil {
+		return gui.surfaceError(err)
+	}
+
+	gui.raiseToast(gui.Tr.CommitMessageCopiedToClipboard)
+
+	return nil
 }

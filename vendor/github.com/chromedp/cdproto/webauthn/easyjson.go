@@ -28,7 +28,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoWebauthn(in *jlexer.Lexer, ou
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -38,12 +38,16 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoWebauthn(in *jlexer.Lexer, ou
 		switch key {
 		case "protocol":
 			(out.Protocol).UnmarshalEasyJSON(in)
+		case "ctap2Version":
+			(out.Ctap2version).UnmarshalEasyJSON(in)
 		case "transport":
 			(out.Transport).UnmarshalEasyJSON(in)
 		case "hasResidentKey":
 			out.HasResidentKey = bool(in.Bool())
 		case "hasUserVerification":
 			out.HasUserVerification = bool(in.Bool())
+		case "hasLargeBlob":
+			out.HasLargeBlob = bool(in.Bool())
 		case "automaticPresenceSimulation":
 			out.AutomaticPresenceSimulation = bool(in.Bool())
 		case "isUserVerified":
@@ -67,6 +71,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoWebauthn(out *jwriter.Writer,
 		out.RawString(prefix[1:])
 		(in.Protocol).MarshalEasyJSON(out)
 	}
+	if in.Ctap2version != "" {
+		const prefix string = ",\"ctap2Version\":"
+		out.RawString(prefix)
+		(in.Ctap2version).MarshalEasyJSON(out)
+	}
 	{
 		const prefix string = ",\"transport\":"
 		out.RawString(prefix)
@@ -81,6 +90,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoWebauthn(out *jwriter.Writer,
 		const prefix string = ",\"hasUserVerification\":"
 		out.RawString(prefix)
 		out.Bool(bool(in.HasUserVerification))
+	}
+	if in.HasLargeBlob {
+		const prefix string = ",\"hasLargeBlob\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.HasLargeBlob))
 	}
 	if in.AutomaticPresenceSimulation {
 		const prefix string = ",\"automaticPresenceSimulation\":"
@@ -129,7 +143,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoWebauthn1(in *jlexer.Lexer, o
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -202,7 +216,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoWebauthn2(in *jlexer.Lexer, o
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -275,7 +289,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoWebauthn3(in *jlexer.Lexer, o
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -341,7 +355,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoWebauthn4(in *jlexer.Lexer, o
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -414,7 +428,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoWebauthn5(in *jlexer.Lexer, o
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -523,7 +537,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoWebauthn6(in *jlexer.Lexer, o
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -589,7 +603,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoWebauthn7(in *jlexer.Lexer, o
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -664,7 +678,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoWebauthn8(in *jlexer.Lexer, o
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -737,7 +751,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoWebauthn9(in *jlexer.Lexer, o
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -796,7 +810,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoWebauthn10(in *jlexer.Lexer, 
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -855,7 +869,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoWebauthn11(in *jlexer.Lexer, 
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -875,6 +889,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoWebauthn11(in *jlexer.Lexer, 
 			out.UserHandle = string(in.String())
 		case "signCount":
 			out.SignCount = int64(in.Int64())
+		case "largeBlob":
+			out.LargeBlob = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -919,6 +935,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoWebauthn11(out *jwriter.Write
 		out.RawString(prefix)
 		out.Int64(int64(in.SignCount))
 	}
+	if in.LargeBlob != "" {
+		const prefix string = ",\"largeBlob\":"
+		out.RawString(prefix)
+		out.String(string(in.LargeBlob))
+	}
 	out.RawByte('}')
 }
 
@@ -956,7 +977,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoWebauthn12(in *jlexer.Lexer, 
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -1022,7 +1043,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoWebauthn13(in *jlexer.Lexer, 
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -1089,7 +1110,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoWebauthn14(in *jlexer.Lexer, 
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -1167,7 +1188,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoWebauthn15(in *jlexer.Lexer, 
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()

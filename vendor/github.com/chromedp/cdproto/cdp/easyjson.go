@@ -28,7 +28,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoCdp(in *jlexer.Lexer, out *RG
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -115,7 +115,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoCdp1(in *jlexer.Lexer, out *N
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -592,7 +592,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoCdp2(in *jlexer.Lexer, out *F
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -612,12 +612,43 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoCdp2(in *jlexer.Lexer, out *F
 			out.URL = string(in.String())
 		case "urlFragment":
 			out.URLFragment = string(in.String())
+		case "domainAndRegistry":
+			out.DomainAndRegistry = string(in.String())
 		case "securityOrigin":
 			out.SecurityOrigin = string(in.String())
 		case "mimeType":
 			out.MimeType = string(in.String())
 		case "unreachableUrl":
 			out.UnreachableURL = string(in.String())
+		case "adFrameType":
+			(out.AdFrameType).UnmarshalEasyJSON(in)
+		case "secureContextType":
+			(out.SecureContextType).UnmarshalEasyJSON(in)
+		case "crossOriginIsolatedContextType":
+			(out.CrossOriginIsolatedContextType).UnmarshalEasyJSON(in)
+		case "gatedAPIFeatures":
+			if in.IsNull() {
+				in.Skip()
+				out.GatedAPIFeatures = nil
+			} else {
+				in.Delim('[')
+				if out.GatedAPIFeatures == nil {
+					if !in.IsDelim(']') {
+						out.GatedAPIFeatures = make([]GatedAPIFeatures, 0, 4)
+					} else {
+						out.GatedAPIFeatures = []GatedAPIFeatures{}
+					}
+				} else {
+					out.GatedAPIFeatures = (out.GatedAPIFeatures)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v16 GatedAPIFeatures
+					(v16).UnmarshalEasyJSON(in)
+					out.GatedAPIFeatures = append(out.GatedAPIFeatures, v16)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
 		default:
 			in.SkipRecursive()
 		}
@@ -663,6 +694,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoCdp2(out *jwriter.Writer, in 
 		out.String(string(in.URLFragment))
 	}
 	{
+		const prefix string = ",\"domainAndRegistry\":"
+		out.RawString(prefix)
+		out.String(string(in.DomainAndRegistry))
+	}
+	{
 		const prefix string = ",\"securityOrigin\":"
 		out.RawString(prefix)
 		out.String(string(in.SecurityOrigin))
@@ -676,6 +712,37 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoCdp2(out *jwriter.Writer, in 
 		const prefix string = ",\"unreachableUrl\":"
 		out.RawString(prefix)
 		out.String(string(in.UnreachableURL))
+	}
+	if in.AdFrameType != "" {
+		const prefix string = ",\"adFrameType\":"
+		out.RawString(prefix)
+		(in.AdFrameType).MarshalEasyJSON(out)
+	}
+	{
+		const prefix string = ",\"secureContextType\":"
+		out.RawString(prefix)
+		(in.SecureContextType).MarshalEasyJSON(out)
+	}
+	{
+		const prefix string = ",\"crossOriginIsolatedContextType\":"
+		out.RawString(prefix)
+		(in.CrossOriginIsolatedContextType).MarshalEasyJSON(out)
+	}
+	{
+		const prefix string = ",\"gatedAPIFeatures\":"
+		out.RawString(prefix)
+		if in.GatedAPIFeatures == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+			out.RawString("null")
+		} else {
+			out.RawByte('[')
+			for v17, v18 := range in.GatedAPIFeatures {
+				if v17 > 0 {
+					out.RawByte(',')
+				}
+				(v18).MarshalEasyJSON(out)
+			}
+			out.RawByte(']')
+		}
 	}
 	out.RawByte('}')
 }
@@ -714,7 +781,7 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoCdp3(in *jlexer.Lexer, out *B
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()

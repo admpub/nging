@@ -164,8 +164,10 @@ type TranslationSet struct {
 	LcMergeIntoCurrentBranch            string
 	ConfirmQuit                         string
 	SwitchRepo                          string
+	LcAllBranchesLogGraph               string
 	UnsupportedGitService               string
 	LcCreatePullRequest                 string
+	LcCopyPullRequestURL                string
 	NoBranchOnRemote                    string
 	LcFetch                             string
 	NoAutomaticGitFetchTitle            string
@@ -429,9 +431,38 @@ type TranslationSet struct {
 	SubmodulesTitle                     string
 	NavigationTitle                     string
 	PushingTagStatus                    string
+	PullRequestURLCopiedToClipboard     string
+	CommitMessageCopiedToClipboard      string
+	LcCopiedToClipboard                 string
 }
 
-const englishReleaseNotes = `## lazygit 0.23.2 Release Notes
+const englishReleaseNotes = `## lazygit 0.24 Release Notes
+
+- Suggestions now shown when checking out branch by name
+
+- Minimum OSX version is now officially 10.10
+
+- Pull requests URLs can be copied from the keyboard, thanks @farzadmf!
+
+- Allow --follow-tags flag for git push to be disabled in config,
+  thanks @fishybell!
+
+- Allow quick commit when no files are staged and the user presses 'c',
+  thanks @fluffynuts!
+
+- Lazygit config is now by default created with 'jesseduffield' as the parent
+  folder, thanks @Liberatys!
+
+- You can now configure how lazygit behaves when you open it outside a repo
+  (e.g. skip the prompt and open the most recent repo), thanks @kalvinpearce!
+
+- You can now visualise the commit graph for all branches by pressing 'a' in
+	the status panel - thanks @Yuuki77!
+
+- And thanks to @dawidd6, @sstiglitz, @fargozhu and @nils-a for helping out with
+  CI and documentation!
+
+## lazygit 0.23.2 Release Notes
 
 - Fixed bug where editing a file with spaces did not work
 - Fixed formatting issue with delta that rendered '[0;K' to the screen
@@ -662,8 +693,10 @@ func englishTranslationSet() TranslationSet {
 		LcMergeIntoCurrentBranch:            `merge into currently checked out branch`,
 		ConfirmQuit:                         `Are you sure you want to quit?`,
 		SwitchRepo:                          `switch to a recent repo`,
+		LcAllBranchesLogGraph:               `show all branch logs`,
 		UnsupportedGitService:               `Unsupported git service`,
 		LcCreatePullRequest:                 `create pull request`,
+		LcCopyPullRequestURL:                `copy pull request URL to clipboard`,
 		NoBranchOnRemote:                    `This branch doesn't exist on remote. You need to push it to remote first.`,
 		LcFetch:                             `fetch`,
 		NoAutomaticGitFetchTitle:            `No automatic git fetch`,
@@ -928,5 +961,8 @@ func englishTranslationSet() TranslationSet {
 		SubmodulesTitle:                     "Submodules",
 		NavigationTitle:                     "List Panel Navigation",
 		PushingTagStatus:                    "pushing tag",
+		PullRequestURLCopiedToClipboard:     "Pull request URL copied to clipboard",
+		CommitMessageCopiedToClipboard:      "Commit message copied to clipboard",
+		LcCopiedToClipboard:                 "copied to clipboard",
 	}
 }

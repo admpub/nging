@@ -267,7 +267,7 @@ func (p *GetCertificateParams) Do(ctx context.Context) (tableNames []string, err
 // Depending on the backend support, will return detailed cookie information in
 // the cookies field.
 type GetCookiesParams struct {
-	Urls []string `json:"urls,omitempty"` // The list of URLs for which applicable cookies will be fetched
+	Urls []string `json:"urls,omitempty"` // The list of URLs for which applicable cookies will be fetched. If not specified, it's assumed to be set to the list containing the URLs of the page and all of its subframes.
 }
 
 // GetCookies returns all browser cookies for the current URL. Depending on
@@ -281,7 +281,9 @@ func GetCookies() *GetCookiesParams {
 	return &GetCookiesParams{}
 }
 
-// WithUrls the list of URLs for which applicable cookies will be fetched.
+// WithUrls the list of URLs for which applicable cookies will be fetched. If
+// not specified, it's assumed to be set to the list containing the URLs of the
+// page and all of its subframes.
 func (p GetCookiesParams) WithUrls(urls []string) *GetCookiesParams {
 	p.Urls = urls
 	return &p
@@ -720,24 +722,9 @@ func (p SetCookieParams) WithPriority(priority CookiePriority) *SetCookieParams 
 	return &p
 }
 
-// SetCookieReturns return values.
-type SetCookieReturns struct {
-	Success bool `json:"success,omitempty"` // True if successfully set cookie.
-}
-
 // Do executes Network.setCookie against the provided context.
-//
-// returns:
-//   success - True if successfully set cookie.
-func (p *SetCookieParams) Do(ctx context.Context) (success bool, err error) {
-	// execute
-	var res SetCookieReturns
-	err = cdp.Execute(ctx, CommandSetCookie, p, &res)
-	if err != nil {
-		return false, err
-	}
-
-	return res.Success, nil
+func (p *SetCookieParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetCookie, p, nil)
 }
 
 // SetCookiesParams sets given cookies.
@@ -811,6 +798,116 @@ func (p *SetExtraHTTPHeadersParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSetExtraHTTPHeaders, p, nil)
 }
 
+// SetAttachDebugStackParams specifies whether to attach a page script stack
+// id in requests.
+type SetAttachDebugStackParams struct {
+	Enabled bool `json:"enabled"` // Whether to attach a page script stack for debugging purpose.
+}
+
+// SetAttachDebugStack specifies whether to attach a page script stack id in
+// requests.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#method-setAttachDebugStack
+//
+// parameters:
+//   enabled - Whether to attach a page script stack for debugging purpose.
+func SetAttachDebugStack(enabled bool) *SetAttachDebugStackParams {
+	return &SetAttachDebugStackParams{
+		Enabled: enabled,
+	}
+}
+
+// Do executes Network.setAttachDebugStack against the provided context.
+func (p *SetAttachDebugStackParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetAttachDebugStack, p, nil)
+}
+
+// GetSecurityIsolationStatusParams returns information about the COEP/COOP
+// isolation status.
+type GetSecurityIsolationStatusParams struct {
+	FrameID cdp.FrameID `json:"frameId,omitempty"` // If no frameId is provided, the status of the target is provided.
+}
+
+// GetSecurityIsolationStatus returns information about the COEP/COOP
+// isolation status.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#method-getSecurityIsolationStatus
+//
+// parameters:
+func GetSecurityIsolationStatus() *GetSecurityIsolationStatusParams {
+	return &GetSecurityIsolationStatusParams{}
+}
+
+// WithFrameID if no frameId is provided, the status of the target is
+// provided.
+func (p GetSecurityIsolationStatusParams) WithFrameID(frameID cdp.FrameID) *GetSecurityIsolationStatusParams {
+	p.FrameID = frameID
+	return &p
+}
+
+// GetSecurityIsolationStatusReturns return values.
+type GetSecurityIsolationStatusReturns struct {
+	Status *SecurityIsolationStatus `json:"status,omitempty"`
+}
+
+// Do executes Network.getSecurityIsolationStatus against the provided context.
+//
+// returns:
+//   status
+func (p *GetSecurityIsolationStatusParams) Do(ctx context.Context) (status *SecurityIsolationStatus, err error) {
+	// execute
+	var res GetSecurityIsolationStatusReturns
+	err = cdp.Execute(ctx, CommandGetSecurityIsolationStatus, p, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Status, nil
+}
+
+// LoadNetworkResourceParams fetches the resource and returns the content.
+type LoadNetworkResourceParams struct {
+	FrameID cdp.FrameID                 `json:"frameId"` // Frame id to get the resource for.
+	URL     string                      `json:"url"`     // URL of the resource to get content for.
+	Options *LoadNetworkResourceOptions `json:"options"` // Options for the request.
+}
+
+// LoadNetworkResource fetches the resource and returns the content.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#method-loadNetworkResource
+//
+// parameters:
+//   frameID - Frame id to get the resource for.
+//   url - URL of the resource to get content for.
+//   options - Options for the request.
+func LoadNetworkResource(frameID cdp.FrameID, url string, options *LoadNetworkResourceOptions) *LoadNetworkResourceParams {
+	return &LoadNetworkResourceParams{
+		FrameID: frameID,
+		URL:     url,
+		Options: options,
+	}
+}
+
+// LoadNetworkResourceReturns return values.
+type LoadNetworkResourceReturns struct {
+	Resource *LoadNetworkResourcePageResult `json:"resource,omitempty"`
+}
+
+// Do executes Network.loadNetworkResource against the provided context.
+//
+// returns:
+//   resource
+func (p *LoadNetworkResourceParams) Do(ctx context.Context) (resource *LoadNetworkResourcePageResult, err error) {
+	// execute
+	var res LoadNetworkResourceReturns
+	err = cdp.Execute(ctx, CommandLoadNetworkResource, p, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Resource, nil
+}
+
 // Command names.
 const (
 	CommandClearBrowserCache                       = "Network.clearBrowserCache"
@@ -835,4 +932,7 @@ const (
 	CommandSetCookies                              = "Network.setCookies"
 	CommandSetDataSizeLimitsForTest                = "Network.setDataSizeLimitsForTest"
 	CommandSetExtraHTTPHeaders                     = "Network.setExtraHTTPHeaders"
+	CommandSetAttachDebugStack                     = "Network.setAttachDebugStack"
+	CommandGetSecurityIsolationStatus              = "Network.getSecurityIsolationStatus"
+	CommandLoadNetworkResource                     = "Network.loadNetworkResource"
 )

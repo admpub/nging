@@ -174,6 +174,9 @@ const (
 	PseudoTypeMarker              PseudoType = "marker"
 	PseudoTypeBackdrop            PseudoType = "backdrop"
 	PseudoTypeSelection           PseudoType = "selection"
+	PseudoTypeTargetText          PseudoType = "target-text"
+	PseudoTypeSpellingError       PseudoType = "spelling-error"
+	PseudoTypeGrammarError        PseudoType = "grammar-error"
 	PseudoTypeFirstLineInherited  PseudoType = "first-line-inherited"
 	PseudoTypeScrollbar           PseudoType = "scrollbar"
 	PseudoTypeScrollbarThumb      PseudoType = "scrollbar-thumb"
@@ -212,6 +215,12 @@ func (t *PseudoType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PseudoTypeBackdrop
 	case PseudoTypeSelection:
 		*t = PseudoTypeSelection
+	case PseudoTypeTargetText:
+		*t = PseudoTypeTargetText
+	case PseudoTypeSpellingError:
+		*t = PseudoTypeSpellingError
+	case PseudoTypeGrammarError:
+		*t = PseudoTypeGrammarError
 	case PseudoTypeFirstLineInherited:
 		*t = PseudoTypeFirstLineInherited
 	case PseudoTypeScrollbar:
@@ -736,23 +745,224 @@ func (t *FrameID) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
+// AdFrameType indicates whether a frame has been identified as an ad.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-AdFrameType
+type AdFrameType string
+
+// String returns the AdFrameType as string value.
+func (t AdFrameType) String() string {
+	return string(t)
+}
+
+// AdFrameType values.
+const (
+	AdFrameTypeNone  AdFrameType = "none"
+	AdFrameTypeChild AdFrameType = "child"
+	AdFrameTypeRoot  AdFrameType = "root"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t AdFrameType) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t AdFrameType) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *AdFrameType) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch AdFrameType(in.String()) {
+	case AdFrameTypeNone:
+		*t = AdFrameTypeNone
+	case AdFrameTypeChild:
+		*t = AdFrameTypeChild
+	case AdFrameTypeRoot:
+		*t = AdFrameTypeRoot
+
+	default:
+		in.AddError(errors.New("unknown AdFrameType value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *AdFrameType) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// SecureContextType indicates whether the frame is a secure context and why
+// it is the case.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-SecureContextType
+type SecureContextType string
+
+// String returns the SecureContextType as string value.
+func (t SecureContextType) String() string {
+	return string(t)
+}
+
+// SecureContextType values.
+const (
+	SecureContextTypeSecure           SecureContextType = "Secure"
+	SecureContextTypeSecureLocalhost  SecureContextType = "SecureLocalhost"
+	SecureContextTypeInsecureScheme   SecureContextType = "InsecureScheme"
+	SecureContextTypeInsecureAncestor SecureContextType = "InsecureAncestor"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t SecureContextType) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t SecureContextType) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *SecureContextType) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch SecureContextType(in.String()) {
+	case SecureContextTypeSecure:
+		*t = SecureContextTypeSecure
+	case SecureContextTypeSecureLocalhost:
+		*t = SecureContextTypeSecureLocalhost
+	case SecureContextTypeInsecureScheme:
+		*t = SecureContextTypeInsecureScheme
+	case SecureContextTypeInsecureAncestor:
+		*t = SecureContextTypeInsecureAncestor
+
+	default:
+		in.AddError(errors.New("unknown SecureContextType value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *SecureContextType) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// CrossOriginIsolatedContextType indicates whether the frame is cross-origin
+// isolated and why it is the case.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-CrossOriginIsolatedContextType
+type CrossOriginIsolatedContextType string
+
+// String returns the CrossOriginIsolatedContextType as string value.
+func (t CrossOriginIsolatedContextType) String() string {
+	return string(t)
+}
+
+// CrossOriginIsolatedContextType values.
+const (
+	CrossOriginIsolatedContextTypeIsolated                   CrossOriginIsolatedContextType = "Isolated"
+	CrossOriginIsolatedContextTypeNotIsolated                CrossOriginIsolatedContextType = "NotIsolated"
+	CrossOriginIsolatedContextTypeNotIsolatedFeatureDisabled CrossOriginIsolatedContextType = "NotIsolatedFeatureDisabled"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t CrossOriginIsolatedContextType) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t CrossOriginIsolatedContextType) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *CrossOriginIsolatedContextType) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch CrossOriginIsolatedContextType(in.String()) {
+	case CrossOriginIsolatedContextTypeIsolated:
+		*t = CrossOriginIsolatedContextTypeIsolated
+	case CrossOriginIsolatedContextTypeNotIsolated:
+		*t = CrossOriginIsolatedContextTypeNotIsolated
+	case CrossOriginIsolatedContextTypeNotIsolatedFeatureDisabled:
+		*t = CrossOriginIsolatedContextTypeNotIsolatedFeatureDisabled
+
+	default:
+		in.AddError(errors.New("unknown CrossOriginIsolatedContextType value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *CrossOriginIsolatedContextType) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// GatedAPIFeatures [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-GatedAPIFeatures
+type GatedAPIFeatures string
+
+// String returns the GatedAPIFeatures as string value.
+func (t GatedAPIFeatures) String() string {
+	return string(t)
+}
+
+// GatedAPIFeatures values.
+const (
+	GatedAPIFeaturesSharedArrayBuffers                GatedAPIFeatures = "SharedArrayBuffers"
+	GatedAPIFeaturesSharedArrayBuffersTransferAllowed GatedAPIFeatures = "SharedArrayBuffersTransferAllowed"
+	GatedAPIFeaturesPerformanceMeasureMemory          GatedAPIFeatures = "PerformanceMeasureMemory"
+	GatedAPIFeaturesPerformanceProfile                GatedAPIFeatures = "PerformanceProfile"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t GatedAPIFeatures) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t GatedAPIFeatures) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *GatedAPIFeatures) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch GatedAPIFeatures(in.String()) {
+	case GatedAPIFeaturesSharedArrayBuffers:
+		*t = GatedAPIFeaturesSharedArrayBuffers
+	case GatedAPIFeaturesSharedArrayBuffersTransferAllowed:
+		*t = GatedAPIFeaturesSharedArrayBuffersTransferAllowed
+	case GatedAPIFeaturesPerformanceMeasureMemory:
+		*t = GatedAPIFeaturesPerformanceMeasureMemory
+	case GatedAPIFeaturesPerformanceProfile:
+		*t = GatedAPIFeaturesPerformanceProfile
+
+	default:
+		in.AddError(errors.New("unknown GatedAPIFeatures value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *GatedAPIFeatures) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
 // Frame information about the Frame on the page.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-Frame
 type Frame struct {
-	ID             FrameID          `json:"id"`                       // Frame unique identifier.
-	ParentID       FrameID          `json:"parentId,omitempty"`       // Parent frame identifier.
-	LoaderID       LoaderID         `json:"loaderId"`                 // Identifier of the loader associated with this frame.
-	Name           string           `json:"name,omitempty"`           // Frame's name as specified in the tag.
-	URL            string           `json:"url"`                      // Frame document's URL without fragment.
-	URLFragment    string           `json:"urlFragment,omitempty"`    // Frame document's URL fragment including the '#'.
-	SecurityOrigin string           `json:"securityOrigin"`           // Frame document's security origin.
-	MimeType       string           `json:"mimeType"`                 // Frame document's mimeType as determined by the browser.
-	UnreachableURL string           `json:"unreachableUrl,omitempty"` // If the frame failed to load, this contains the URL that could not be loaded. Note that unlike url above, this URL may contain a fragment.
-	State          FrameState       `json:"-"`                        // Frame state.
-	Root           *Node            `json:"-"`                        // Frame document root.
-	Nodes          map[NodeID]*Node `json:"-"`                        // Frame nodes.
-	sync.RWMutex   `json:"-"`       // Read write mutex.
+	ID                             FrameID                        `json:"id"`                             // Frame unique identifier.
+	ParentID                       FrameID                        `json:"parentId,omitempty"`             // Parent frame identifier.
+	LoaderID                       LoaderID                       `json:"loaderId"`                       // Identifier of the loader associated with this frame.
+	Name                           string                         `json:"name,omitempty"`                 // Frame's name as specified in the tag.
+	URL                            string                         `json:"url"`                            // Frame document's URL without fragment.
+	URLFragment                    string                         `json:"urlFragment,omitempty"`          // Frame document's URL fragment including the '#'.
+	DomainAndRegistry              string                         `json:"domainAndRegistry"`              // Frame document's registered domain, taking the public suffixes list into account. Extracted from the Frame's url. Example URLs: http://www.google.com/file.html -> "google.com" http://a.b.co.uk/file.html      -> "b.co.uk"
+	SecurityOrigin                 string                         `json:"securityOrigin"`                 // Frame document's security origin.
+	MimeType                       string                         `json:"mimeType"`                       // Frame document's mimeType as determined by the browser.
+	UnreachableURL                 string                         `json:"unreachableUrl,omitempty"`       // If the frame failed to load, this contains the URL that could not be loaded. Note that unlike url above, this URL may contain a fragment.
+	AdFrameType                    AdFrameType                    `json:"adFrameType,omitempty"`          // Indicates whether this frame was tagged as an ad.
+	SecureContextType              SecureContextType              `json:"secureContextType"`              // Indicates whether the main document is a secure context and explains why that is the case.
+	CrossOriginIsolatedContextType CrossOriginIsolatedContextType `json:"crossOriginIsolatedContextType"` // Indicates whether this is a cross origin isolated context.
+	GatedAPIFeatures               []GatedAPIFeatures             `json:"gatedAPIFeatures"`               // Indicated which gated APIs / features are available.
+	State                          FrameState                     `json:"-"`                              // Frame state.
+	Root                           *Node                          `json:"-"`                              // Frame document root.
+	Nodes                          map[NodeID]*Node               `json:"-"`                              // Frame nodes.
+	sync.RWMutex                   `json:"-"`                     // Read write mutex.
 }
 
 // FrameState is the state of a Frame.

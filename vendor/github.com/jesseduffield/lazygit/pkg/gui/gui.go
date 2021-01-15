@@ -21,6 +21,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
 	"github.com/jesseduffield/lazygit/pkg/commands/patch"
 	"github.com/jesseduffield/lazygit/pkg/config"
+	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/i18n"
 	"github.com/jesseduffield/lazygit/pkg/tasks"
 	"github.com/jesseduffield/lazygit/pkg/theme"
@@ -50,6 +51,8 @@ type SentinelErrors struct {
 	ErrSwitchRepo error
 	ErrRestart    error
 }
+
+const UNKNOWN_VIEW_ERROR_MSG = "unknown view"
 
 // GenerateSentinelErrors makes the sentinel errors for the gui. We're defining it here
 // because we can't do package-scoped errors with localization, and also because
@@ -110,6 +113,10 @@ type Gui struct {
 	StartTime      time.Time
 
 	Mutexes guiStateMutexes
+
+	// findSuggestions will take a string that the user has typed into a prompt
+	// and return a slice of suggestions which match that string.
+	findSuggestions func(string) []*types.Suggestion
 }
 
 type RecordedEvent struct {
@@ -218,6 +225,10 @@ type submodulePanelState struct {
 	listPanelState
 }
 
+type suggestionsPanelState struct {
+	listPanelState
+}
+
 type panelStates struct {
 	Files          *filePanelState
 	Branches       *branchPanelState
@@ -233,6 +244,7 @@ type panelStates struct {
 	Merging        *mergingPanelState
 	CommitFiles    *commitFilesPanelState
 	Submodules     *submodulePanelState
+	Suggestions    *suggestionsPanelState
 }
 
 type searchingState struct {
@@ -297,6 +309,8 @@ type guiState struct {
 	Commits      []*models.Commit
 	StashEntries []*models.StashEntry
 	CommitFiles  []*models.CommitFile
+	// Suggestions will sometimes appear when typing into a prompt
+	Suggestions []*types.Suggestion
 	// FilteredReflogCommits are the ones that appear in the reflog panel.
 	// when in filtering mode we only include the ones that match the given path
 	FilteredReflogCommits []*models.Commit
@@ -383,6 +397,7 @@ func (gui *Gui) resetState() {
 			CommitFiles:    &commitFilesPanelState{listPanelState: listPanelState{SelectedLineIdx: -1}, refName: ""},
 			Stash:          &stashPanelState{listPanelState{SelectedLineIdx: -1}},
 			Menu:           &menuPanelState{listPanelState: listPanelState{SelectedLineIdx: 0}, OnPress: nil},
+			Suggestions:    &suggestionsPanelState{listPanelState: listPanelState{SelectedLineIdx: 0}},
 			Merging: &mergingPanelState{
 				ConflictIndex: 0,
 				ConflictTop:   true,
@@ -582,6 +597,7 @@ func (gui *Gui) showInitialPopups(tasks []func(chan struct{}) error) {
 
 	go utils.Safe(func() {
 		for _, task := range tasks {
+			task := task
 			go utils.Safe(func() {
 				if err := task(done); err != nil {
 					_ = gui.surfaceError(err)

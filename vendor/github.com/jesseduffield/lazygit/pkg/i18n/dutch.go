@@ -152,8 +152,10 @@ func dutchTranslationSet() TranslationSet {
 		LcMergeIntoCurrentBranch:            `merge in met huidige checked out branch`,
 		ConfirmQuit:                         `Weet je zeker dat je dit programma wil sluiten?`,
 		SwitchRepo:                          "wissel naar een recente repo",
+		LcAllBranchesLogGraph:               `alle takken van het houtblok laten zien`,
 		UnsupportedGitService:               `Niet-ondersteunde git-service`,
 		LcCreatePullRequest:                 `maak een pull-aanvraag`,
+		LcCopyPullRequestURL:                `kopieer de URL van het pull-verzoek naar het klembord`,
 		NoBranchOnRemote:                    `Deze branch bestaat niet op de remote. U moet het eerst naar de remote pushen.`,
 		LcFetch:                             `fetch`,
 		NoAutomaticGitFetchTitle:            `Geen automatische git fetch`,
@@ -380,5 +382,8 @@ func dutchTranslationSet() TranslationSet {
 		NoFilesStagedPrompt:                 "Je hebt geen bestanden gestaged. Commit alle bestanden?",
 		BranchNotFoundTitle:                 "Branch niet gevonden",
 		BranchNotFoundPrompt:                "Branch niet gevonden. Creëer een nieuwe branch genaamd",
+		PullRequestURLCopiedToClipboard:     "Pull-aanvraag-URL gekopieerd naar klembord",
+		CommitMessageCopiedToClipboard:      "Commit message gekopieerd naar klembord",
+		LcCopiedToClipboard:                 "gekopieerd naar klembord",
 	}
 }

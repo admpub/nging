@@ -85,10 +85,11 @@ func (p *BringToFrontParams) Do(ctx context.Context) (err error) {
 
 // CaptureScreenshotParams capture page screenshot.
 type CaptureScreenshotParams struct {
-	Format      CaptureScreenshotFormat `json:"format,omitempty"`      // Image compression format (defaults to png).
-	Quality     int64                   `json:"quality,omitempty"`     // Compression quality from range [0..100] (jpeg only).
-	Clip        *Viewport               `json:"clip,omitempty"`        // Capture the screenshot of a given region only.
-	FromSurface bool                    `json:"fromSurface,omitempty"` // Capture the screenshot from the surface, rather than the view. Defaults to true.
+	Format                CaptureScreenshotFormat `json:"format,omitempty"`                // Image compression format (defaults to png).
+	Quality               int64                   `json:"quality,omitempty"`               // Compression quality from range [0..100] (jpeg only).
+	Clip                  *Viewport               `json:"clip,omitempty"`                  // Capture the screenshot of a given region only.
+	FromSurface           bool                    `json:"fromSurface,omitempty"`           // Capture the screenshot from the surface, rather than the view. Defaults to true.
+	CaptureBeyondViewport bool                    `json:"captureBeyondViewport,omitempty"` // Capture the screenshot beyond the viewport. Defaults to false.
 }
 
 // CaptureScreenshot capture page screenshot.
@@ -122,6 +123,13 @@ func (p CaptureScreenshotParams) WithClip(clip *Viewport) *CaptureScreenshotPara
 // view. Defaults to true.
 func (p CaptureScreenshotParams) WithFromSurface(fromSurface bool) *CaptureScreenshotParams {
 	p.FromSurface = fromSurface
+	return &p
+}
+
+// WithCaptureBeyondViewport capture the screenshot beyond the viewport.
+// Defaults to false.
+func (p CaptureScreenshotParams) WithCaptureBeyondViewport(captureBeyondViewport bool) *CaptureScreenshotParams {
+	p.CaptureBeyondViewport = captureBeyondViewport
 	return &p
 }
 

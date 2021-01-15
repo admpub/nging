@@ -511,6 +511,50 @@ func (t *FileChooserOpenedMode) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
+// FrameDetachedReason [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#event-frameDetached
+type FrameDetachedReason string
+
+// String returns the FrameDetachedReason as string value.
+func (t FrameDetachedReason) String() string {
+	return string(t)
+}
+
+// FrameDetachedReason values.
+const (
+	FrameDetachedReasonRemove FrameDetachedReason = "remove"
+	FrameDetachedReasonSwap   FrameDetachedReason = "swap"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t FrameDetachedReason) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t FrameDetachedReason) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *FrameDetachedReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch FrameDetachedReason(in.String()) {
+	case FrameDetachedReasonRemove:
+		*t = FrameDetachedReasonRemove
+	case FrameDetachedReasonSwap:
+		*t = FrameDetachedReasonSwap
+
+	default:
+		in.AddError(errors.New("unknown FrameDetachedReason value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *FrameDetachedReason) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
 // DownloadProgressState download status.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Page#event-downloadProgress

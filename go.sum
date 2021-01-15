@@ -325,6 +325,7 @@ github.com/aws/aws-sdk-go v1.34.28/go.mod h1:H7NKnBqNVzoTJpGfLrQkkD+ytBA93eiDYi/
 github.com/aws/aws-sdk-go v1.36.1/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zKMmprdro=
 github.com/aws/aws-sdk-go v1.36.7 h1:XoJPAjKoqvdL531XGWxKYn5eGX/xMoXzMN5fBtoyfSY=
 github.com/aws/aws-sdk-go v1.36.7/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zKMmprdro=
+github.com/aws/aws-sdk-go v1.36.26 h1:710u7Q1xpbzpigh/RPPUXwr/5X/VwCxTXSeam8icgos=
 github.com/aws/aws-sdk-go v1.36.26/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zKMmprdro=
 github.com/aws/aws-sdk-go-v2 v0.18.0/go.mod h1:JWVYvqSMppoMJC0x5wdwiImzgXTI9FuZwxzkQq9wy+g=
 github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 h1:OYA+5W64v3OgClL+IrOD63t4i/RW7RqrAVl9LTZ9UqQ=
@@ -388,9 +389,11 @@ github.com/chris-ramon/douceur v0.2.0 h1:IDMEdxlEUUBYBKE4z/mJnFyVXox+MjuEVDJNN27
 github.com/chris-ramon/douceur v0.2.0/go.mod h1:wDW5xjJdeoMm1mRt4sD4c/LbF/mWdEpRXQKjTR8nIBE=
 github.com/chromedp/cdproto v0.0.0-20201009231348-1c6a710e77de h1:cuPPanKjAp5XBwrD1RkeN4ILGRSffUhS69LKkFqKtIA=
 github.com/chromedp/cdproto v0.0.0-20201009231348-1c6a710e77de/go.mod h1:zx0YH7hi8sqkYXAa0LZZxpQLDsU8/a2jzbYbK79dQO8=
+github.com/chromedp/cdproto v0.0.0-20210113043257-dabd2f2e7693 h1:11eq/RkpaotwdF6b1TRMcdgQUPNmyFEJOB7zLvh0O/Y=
 github.com/chromedp/cdproto v0.0.0-20210113043257-dabd2f2e7693/go.mod h1:55pim6Ht4LJKdVLlyFJV/g++HsEA1hQxPbB5JyNdZC0=
 github.com/chromedp/chromedp v0.5.4 h1:hQC6Wj+0mBu2B+HDF4eoAyTkDo0BnL16sz3gAAmZ8fc=
 github.com/chromedp/chromedp v0.5.4/go.mod h1:Jl2gvx3U9zl4lS/dMjDVGXX0jZ4qo/vsGreqYME/lqc=
+github.com/chromedp/chromedp v0.6.1 h1:5jUNWGaXezV5jckiM+Y2AnJ3KU3xmvIFh9CsOjx1QqA=
 github.com/chromedp/chromedp v0.6.1/go.mod h1:N1O4rajj/6pIT3S+5q9RDkQlmI7/M6xC7gbibwWq4FE=
 github.com/chromedp/sysutil v0.0.0-20201009230539-dc95e7e83e8a h1:31c/rx2f48S4oFimjMnIJNEutSwrWoASeUiGzPV5joA=
 github.com/chromedp/sysutil v0.0.0-20201009230539-dc95e7e83e8a/go.mod h1:kgWmDdq8fTzXYcKIBqIYvRRTnYb9aNS9moAV0xufSww=
@@ -580,6 +583,7 @@ github.com/gobuffalo/syncx v0.0.0-20190224160051-33c29581e754/go.mod h1:HhnNqWY9
 github.com/gobwas/httphead v0.0.0-20180130184737-2c6c146eadee/go.mod h1:L0fX3K22YWvt/FAX9NnzrNzcI4wNYi9Yku4O0LKYflo=
 github.com/gobwas/httphead v0.0.0-20200921212729-da3d93bc3c58 h1:YyrUZvJaU8Q0QsoVo+xLFBgWDTam29PKea6GYmwvSiQ=
 github.com/gobwas/httphead v0.0.0-20200921212729-da3d93bc3c58/go.mod h1:L0fX3K22YWvt/FAX9NnzrNzcI4wNYi9Yku4O0LKYflo=
+github.com/gobwas/httphead v0.1.0 h1:exrUm0f4YX0L7EBwZHuCF4GDp8aJfVeBrlLQrs6NqWU=
 github.com/gobwas/httphead v0.1.0/go.mod h1:O/RXo79gxV8G+RqlR/otEwx4Q36zl9rqC5u12GKvMCM=
 github.com/gobwas/pool v0.2.0/go.mod h1:q8bcK0KcYlCgd9e7WYLm9LpyS+YeLd8JVDW6WezmKEw=
 github.com/gobwas/pool v0.2.1 h1:xfeeEhW7pwmX8nuLVlqbzVc7udMDrwetjEv+TZIz1og=
@@ -815,6 +819,7 @@ github.com/jesseduffield/gocui v0.3.1-0.20201010224802-8a6768078fd7 h1:K3MGrjmpP
 github.com/jesseduffield/gocui v0.3.1-0.20201010224802-8a6768078fd7/go.mod h1:2RtZznzYKt8RLRwvFiSkXjU0Ei8WwHdubgnlaYH47dw=
 github.com/jesseduffield/lazygit v0.23.7 h1:GxUWZC88z/4l89xijtwpp5Lf/FXPVVNYDlSeMaH2vyQ=
 github.com/jesseduffield/lazygit v0.23.7/go.mod h1:sQGZvLcrSoodyz8Eegung/fxBUQ3RKs15BwcLne7oN0=
+github.com/jesseduffield/lazygit v0.24.2 h1:+wX/bie8scJaDgOjrm2WnPtgRUIf1C3Mn+AamZ8IJxE=
 github.com/jesseduffield/lazygit v0.24.2/go.mod h1:MJmiltG/hm+bopWKJ/a1GdEaDenMISgLJT8IBIx9doU=
 github.com/jesseduffield/termbox-go v0.0.0-20200823212418-a2289ed6aafe h1:qsVhCf2RFyyKIUe/+gJblbCpXMUki9rZrHuEctg6M/E=
 github.com/jesseduffield/termbox-go v0.0.0-20200823212418-a2289ed6aafe/go.mod h1:anMibpZtqNxjDbxrcDEAwSdaJ37vyUeM1f/M4uekib4=
@@ -958,6 +963,7 @@ github.com/mattn/go-runewidth v0.0.2/go.mod h1:LwmH8dsx7+W8Uxz3IHJYH5QSwggIsqBzp
 github.com/mattn/go-runewidth v0.0.4/go.mod h1:LwmH8dsx7+W8Uxz3IHJYH5QSwggIsqBzpuz5H//U1FU=
 github.com/mattn/go-runewidth v0.0.9 h1:Lm995f3rfxdpd6TSmuVCHVb/QhupuXlYr8sCI/QdE+0=
 github.com/mattn/go-runewidth v0.0.9/go.mod h1:H031xJmbD/WCDINGzjvQ9THkh0rPKHF+m2gUSrubnMI=
+github.com/mattn/go-runewidth v0.0.10 h1:CoZ3S2P7pvtP45xOtBw+/mDL2z0RKI576gSkzRRpdGg=
 github.com/mattn/go-runewidth v0.0.10/go.mod h1:RAqKPSqVFrSLVXbA8x7dzmKdmGzieGRCM46jaSJTDAk=
 github.com/mattn/go-sqlite3 v1.14.5 h1:1IdxlwTNazvbKJQSxoJ5/9ECbEeaTTyeU7sEAZ5KKTQ=
 github.com/mattn/go-sqlite3 v1.14.5/go.mod h1:WVKg1VTActs4Qso6iwGbiFih2UIHo0ENGwNd0Lj+XmI=
@@ -1148,6 +1154,7 @@ github.com/rainycape/memcache v0.0.0-20150622160815-1031fa0ce2f2/go.mod h1:7tZKc
 github.com/rakyll/statik v0.1.1 h1:fCLHsIMajHqD5RKigbFXpvX3dN7c80Pm12+NCrI3kvg=
 github.com/rakyll/statik v0.1.1/go.mod h1:OEi9wJV/fMUAGx1eNjq75DKDsJVuEv1U0oYdX6GX8Zs=
 github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a/go.mod h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4=
+github.com/rivo/uniseg v0.1.0 h1:+2KBaVoUmb9XzDsrx/Ct0W/EYOSFf/nWTauy++DprtY=
 github.com/rivo/uniseg v0.1.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 github.com/rodaine/table v1.0.0/go.mod h1:YAUzwPOji0DUJNEvggdxyQcUAl4g3hDRcFlyjnnR51I=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=
@@ -1163,6 +1170,7 @@ github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd h1:CmH9+J6ZSsIjUK
 github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd/go.mod h1:hPqNNc0+uJM6H+SuU8sEs5K5IQeKccPqeSjfgcKGgPk=
 github.com/ryanuber/columnize v0.0.0-20160712163229-9b3edd62028f/go.mod h1:sm1tb6uqfes/u+d4ooFouqFdy9/2g9QGwK3SQygK0Ts=
 github.com/sacloud/libsacloud v1.26.1/go.mod h1:79ZwATmHLIFZIMd7sxA3LwzVy/B77uj3LDoToVTxDoQ=
+github.com/sahilm/fuzzy v0.1.0 h1:FzWGaw2Opqyu+794ZQ9SYifWv2EIXpwP4q8dY1kDAwI=
 github.com/sahilm/fuzzy v0.1.0/go.mod h1:VFvziUEIMCrT6A6tw2RFIXPXXmzXbOsSHF0DOI8ZK9Y=
 github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca h1:NugYot0LIVPxTvN8n+Kvkn6TrbMyxQiuvKdEwFdR9vI=
 github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca/go.mod h1:uugorj2VCxiV1x+LzaIdVa9b4S4qGAcH6cbhh4qVxOU=
@@ -1175,6 +1183,7 @@ github.com/sergi/go-diff v1.1.0 h1:we8PVUC3FE2uYfodKH/nBHMSetSfHDR6scGdBi+erh0=
 github.com/sergi/go-diff v1.1.0/go.mod h1:STckp+ISIX8hZLjrqAeVduY0gWCT9IjLuqbuNXdaHfM=
 github.com/shirou/gopsutil v3.20.11+incompatible h1:LJr4ZQK4mPpIV5gOa4jCOKOGb4ty4DZO54I4FGqIpto=
 github.com/shirou/gopsutil v3.20.11+incompatible/go.mod h1:5b4v6he4MtMOwMlS0TUMTu2PcXUg8+E1lC7eC3UO/RA=
+github.com/shirou/gopsutil v3.20.12+incompatible h1:6VEGkOXP/eP4o2Ilk8cSsX0PhOEfX6leqAnD+urrp9M=
 github.com/shirou/gopsutil v3.20.12+incompatible/go.mod h1:5b4v6he4MtMOwMlS0TUMTu2PcXUg8+E1lC7eC3UO/RA=
 github.com/shivakar/metrohash v0.0.0-20160821164112-8d1c8b6bed28 h1:T0pHmIIcYaJ1wFBkZtjKEMJ7mHb7iuFS9jH0hZOaXME=
 github.com/shivakar/metrohash v0.0.0-20160821164112-8d1c8b6bed28/go.mod h1:iPY+DBBhMwu94EsrqYzmQYJYZpMAHuBdToFD//nbb00=
@@ -1249,6 +1258,7 @@ github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81P
 github.com/stretchr/testify v1.5.1/go.mod h1:5W2xD1RspED5o8YsWQXVCued0rvSQ+mT+I5cxcmMvtA=
 github.com/stretchr/testify v1.6.1 h1:hDPOHmpOpP40lSULcqw7IrRb/u7w6RpDC9399XyoNd0=
 github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
+github.com/stretchr/testify v1.7.0 h1:nwc3DEeHmmLAfoZucVR881uASk0Mfjw8xYJ99tb5CcY=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/subosito/gotenv v1.2.0 h1:Slr1R9HxAlEKefgq5jn9U+DnETlIUa6HfgEzj0g5d7s=
 github.com/subosito/gotenv v1.2.0/go.mod h1:N0PQaV/YGNqwC0u51sEeR/aUtSLEXKX9iv69rRypqCw=

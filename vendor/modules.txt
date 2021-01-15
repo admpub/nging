@@ -283,7 +283,7 @@ github.com/armon/go-socks5
 github.com/asaskevich/govalidator
 # github.com/atotto/clipboard v0.1.2
 github.com/atotto/clipboard
-# github.com/aws/aws-sdk-go v1.36.7
+# github.com/aws/aws-sdk-go v1.36.26
 ## explicit
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -424,7 +424,7 @@ github.com/cespare/xxhash/v2
 github.com/cheekybits/genny/generic
 # github.com/chris-ramon/douceur v0.2.0
 github.com/chris-ramon/douceur/parser
-# github.com/chromedp/cdproto v0.0.0-20201009231348-1c6a710e77de
+# github.com/chromedp/cdproto v0.0.0-20210113043257-dabd2f2e7693
 ## explicit
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
@@ -460,6 +460,7 @@ github.com/chromedp/cdproto/network
 github.com/chromedp/cdproto/overlay
 github.com/chromedp/cdproto/page
 github.com/chromedp/cdproto/performance
+github.com/chromedp/cdproto/performancetimeline
 github.com/chromedp/cdproto/profiler
 github.com/chromedp/cdproto/runtime
 github.com/chromedp/cdproto/security
@@ -471,7 +472,7 @@ github.com/chromedp/cdproto/tethering
 github.com/chromedp/cdproto/tracing
 github.com/chromedp/cdproto/webaudio
 github.com/chromedp/cdproto/webauthn
-# github.com/chromedp/chromedp v0.5.4
+# github.com/chromedp/chromedp v0.6.1
 ## explicit
 github.com/chromedp/chromedp
 github.com/chromedp/chromedp/device
@@ -590,7 +591,7 @@ github.com/go-openapi/strfmt
 github.com/go-sql-driver/mysql
 # github.com/go-stack/stack v1.8.0
 github.com/go-stack/stack
-# github.com/gobwas/httphead v0.0.0-20200921212729-da3d93bc3c58
+# github.com/gobwas/httphead v0.1.0
 github.com/gobwas/httphead
 # github.com/gobwas/pool v0.2.1
 github.com/gobwas/pool
@@ -704,7 +705,7 @@ github.com/jesseduffield/go-git/v5/utils/merkletrie/internal/frame
 github.com/jesseduffield/go-git/v5/utils/merkletrie/noder
 # github.com/jesseduffield/gocui v0.3.1-0.20201010224802-8a6768078fd7
 github.com/jesseduffield/gocui
-# github.com/jesseduffield/lazygit v0.23.7
+# github.com/jesseduffield/lazygit v0.24.2
 ## explicit
 github.com/jesseduffield/lazygit/pkg/app
 github.com/jesseduffield/lazygit/pkg/commands
@@ -716,6 +717,7 @@ github.com/jesseduffield/lazygit/pkg/env
 github.com/jesseduffield/lazygit/pkg/gui
 github.com/jesseduffield/lazygit/pkg/gui/boxlayout
 github.com/jesseduffield/lazygit/pkg/gui/presentation
+github.com/jesseduffield/lazygit/pkg/gui/types
 github.com/jesseduffield/lazygit/pkg/i18n
 github.com/jesseduffield/lazygit/pkg/tasks
 github.com/jesseduffield/lazygit/pkg/theme
@@ -832,7 +834,7 @@ github.com/maruel/rs/internal/gf256
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.12
 github.com/mattn/go-isatty
-# github.com/mattn/go-runewidth v0.0.9
+# github.com/mattn/go-runewidth v0.0.10
 ## explicit
 github.com/mattn/go-runewidth
 # github.com/mattn/go-sqlite3 v1.14.5
@@ -923,6 +925,8 @@ github.com/prometheus/common/model
 github.com/prometheus/procfs
 github.com/prometheus/procfs/internal/fs
 github.com/prometheus/procfs/internal/util
+# github.com/rivo/uniseg v0.1.0
+github.com/rivo/uniseg
 # github.com/russross/blackfriday v1.6.0
 ## explicit
 github.com/russross/blackfriday
@@ -930,11 +934,13 @@ github.com/russross/blackfriday
 ## explicit
 github.com/rwcarlsen/goexif/exif
 github.com/rwcarlsen/goexif/tiff
+# github.com/sahilm/fuzzy v0.1.0
+github.com/sahilm/fuzzy
 # github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca
 ## explicit
 # github.com/sergi/go-diff v1.1.0
 github.com/sergi/go-diff/diffmatchpatch
-# github.com/shirou/gopsutil v3.20.11+incompatible
+# github.com/shirou/gopsutil v3.20.12+incompatible
 ## explicit
 github.com/shirou/gopsutil/cpu
 github.com/shirou/gopsutil/disk
@@ -958,7 +964,7 @@ github.com/spf13/cobra
 github.com/spf13/pflag
 # github.com/spkg/bom v0.0.0-20160624110644-59b7046e48ad
 github.com/spkg/bom
-# github.com/stretchr/testify v1.6.1
+# github.com/stretchr/testify v1.7.0
 ## explicit
 github.com/stretchr/testify/assert
 # github.com/syndtr/goleveldb v1.0.0
@@ -1235,7 +1241,7 @@ golang.org/x/net/websocket
 # golang.org/x/oauth2 v0.0.0-20201203001011-0b49973bad19 => github.com/golang/oauth2 v0.0.0-20201109201403-9fd604954f58
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
-# golang.org/x/sys v0.0.0-20201202213521-69691e467435 => github.com/golang/sys v0.0.0-20201119102817-f84b799fce68
+# golang.org/x/sys v0.0.0-20210113000019-eaf3bda374d2 => github.com/golang/sys v0.0.0-20201119102817-f84b799fce68
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix

@@ -17,13 +17,17 @@ import (
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Input#type-TouchPoint
 type TouchPoint struct {
-	X             float64 `json:"x"`                       // X coordinate of the event relative to the main frame's viewport in CSS pixels.
-	Y             float64 `json:"y"`                       // Y coordinate of the event relative to the main frame's viewport in CSS pixels. 0 refers to the top of the viewport and Y increases as it proceeds towards the bottom of the viewport.
-	RadiusX       float64 `json:"radiusX,omitempty"`       // X radius of the touch area (default: 1.0).
-	RadiusY       float64 `json:"radiusY,omitempty"`       // Y radius of the touch area (default: 1.0).
-	RotationAngle float64 `json:"rotationAngle,omitempty"` // Rotation angle (default: 0.0).
-	Force         float64 `json:"force,omitempty"`         // Force (default: 1.0).
-	ID            float64 `json:"id,omitempty"`            // Identifier used to track touch sources between events, must be unique within an event.
+	X                  float64 `json:"x"`                            // X coordinate of the event relative to the main frame's viewport in CSS pixels.
+	Y                  float64 `json:"y"`                            // Y coordinate of the event relative to the main frame's viewport in CSS pixels. 0 refers to the top of the viewport and Y increases as it proceeds towards the bottom of the viewport.
+	RadiusX            float64 `json:"radiusX,omitempty"`            // X radius of the touch area (default: 1.0).
+	RadiusY            float64 `json:"radiusY,omitempty"`            // Y radius of the touch area (default: 1.0).
+	RotationAngle      float64 `json:"rotationAngle,omitempty"`      // Rotation angle (default: 0.0).
+	Force              float64 `json:"force,omitempty"`              // Force (default: 1.0).
+	TangentialPressure float64 `json:"tangentialPressure,omitempty"` // The normalized tangential pressure, which has a range of [-1,1] (default: 0).
+	TiltX              int64   `json:"tiltX,omitempty"`              // The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range [-90,90], a positive tiltX is to the right (default: 0)
+	TiltY              int64   `json:"tiltY,omitempty"`              // The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range [-90,90], a positive tiltY is towards the user (default: 0).
+	Twist              int64   `json:"twist,omitempty"`              // The clockwise rotation of a pen stylus around its own major axis, in degrees in the range [0,359] (default: 0).
+	ID                 float64 `json:"id,omitempty"`                 // Identifier used to track touch sources between events, must be unique within an event.
 }
 
 // GestureSourceType [no description].

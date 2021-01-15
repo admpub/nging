@@ -14,19 +14,21 @@ type UserConfig struct {
 	DisableStartupPopups bool              `yaml:"disableStartupPopups"`
 	CustomCommands       []CustomCommand   `yaml:"customCommands"`
 	Services             map[string]string `yaml:"services"`
+	NotARepository       string            `yaml:"notARepository"`
 }
 
 type GuiConfig struct {
-	ScrollHeight           int                `yaml:"scrollHeight"`
-	ScrollPastBottom       bool               `yaml:"scrollPastBottom"`
-	MouseEvents            bool               `yaml:"mouseEvents"`
-	SkipUnstageLineWarning bool               `yaml:"skipUnstageLineWarning"`
-	SkipStashWarning       bool               `yaml:"skipStashWarning"`
-	SidePanelWidth         float64            `yaml:"sidePanelWidth"`
-	ExpandFocusedSidePanel bool               `yaml:"expandFocusedSidePanel"`
-	MainPanelSplitMode     string             `yaml:"mainPanelSplitMode"`
-	Theme                  ThemeConfig        `yaml:"theme"`
-	CommitLength           CommitLengthConfig `yaml:"commitLength"`
+	ScrollHeight             int                `yaml:"scrollHeight"`
+	ScrollPastBottom         bool               `yaml:"scrollPastBottom"`
+	MouseEvents              bool               `yaml:"mouseEvents"`
+	SkipUnstageLineWarning   bool               `yaml:"skipUnstageLineWarning"`
+	SkipStashWarning         bool               `yaml:"skipStashWarning"`
+	SidePanelWidth           float64            `yaml:"sidePanelWidth"`
+	ExpandFocusedSidePanel   bool               `yaml:"expandFocusedSidePanel"`
+	MainPanelSplitMode       string             `yaml:"mainPanelSplitMode"`
+	Theme                    ThemeConfig        `yaml:"theme"`
+	CommitLength             CommitLengthConfig `yaml:"commitLength"`
+	SkipNoStagedFilesWarning bool               `yaml:"skipNoStagedFilesWarning"`
 }
 
 type ThemeConfig struct {
@@ -49,6 +51,7 @@ type GitConfig struct {
 	SkipHookPrefix      string                        `yaml:"skipHookPrefix"`
 	AutoFetch           bool                          `yaml:"autoFetch"`
 	BranchLogCmd        string                        `yaml:"branchLogCmd"`
+	AllBranchesLogCmd   string                        `yaml:"allBranchesLogCmd"`
 	OverrideGpg         bool                          `yaml:"overrideGpg"`
 	DisableForcePushing bool                          `yaml:"disableForcePushing"`
 	CommitPrefixes      map[string]CommitPrefixConfig `yaml:"commitPrefixes"`
@@ -149,8 +152,9 @@ type KeybindingUniversalConfig struct {
 }
 
 type KeybindingStatusConfig struct {
-	CheckForUpdate string `yaml:"checkForUpdate"`
-	RecentRepos    string `yaml:"recentRepos"`
+	CheckForUpdate      string `yaml:"checkForUpdate"`
+	RecentRepos         string `yaml:"recentRepos"`
+	AllBranchesLogGraph string `yaml:"allBranchesLogGraph"`
 }
 
 type KeybindingFilesConfig struct {
@@ -169,6 +173,7 @@ type KeybindingFilesConfig struct {
 
 type KeybindingBranchesConfig struct {
 	CreatePullRequest      string `yaml:"createPullRequest"`
+	CopyPullRequestURL     string `yaml:"copyPullRequestURL"`
 	CheckoutBranchByName   string `yaml:"checkoutBranchByName"`
 	ForceCheckoutBranch    string `yaml:"forceCheckoutBranch"`
 	RebaseBranch           string `yaml:"rebaseBranch"`
@@ -279,7 +284,8 @@ func GetDefaultConfig() *UserConfig {
 				SelectedLineBgColor:  []string{"default"},
 				SelectedRangeBgColor: []string{"blue"},
 			},
-			CommitLength: CommitLengthConfig{Show: true},
+			CommitLength:             CommitLengthConfig{Show: true},
+			SkipNoStagedFilesWarning: false,
 		},
 		Git: GitConfig{
 			Paging: PagingConfig{
@@ -296,7 +302,7 @@ func GetDefaultConfig() *UserConfig {
 			SkipHookPrefix:      "WIP",
 			AutoFetch:           true,
 			BranchLogCmd:        "git log --graph --color=always --abbrev-commit --decorate --date=relative --pretty=medium {{branchName}} --",
-			OverrideGpg:         false,
+			AllBranchesLogCmd:   "git log --graph --all --color=always --abbrev-commit --decorate --date=relative  --pretty=medium",
 			DisableForcePushing: false,
 			CommitPrefixes:      map[string]CommitPrefixConfig(nil),
 		},
@@ -366,8 +372,9 @@ func GetDefaultConfig() *UserConfig {
 				AppendNewline:                "<tab>",
 			},
 			Status: KeybindingStatusConfig{
-				CheckForUpdate: "u",
-				RecentRepos:    "<enter>",
+				CheckForUpdate:      "u",
+				RecentRepos:         "<enter>",
+				AllBranchesLogGraph: "a",
 			},
 			Files: KeybindingFilesConfig{
 				CommitChanges:            "c",
@@ -383,6 +390,7 @@ func GetDefaultConfig() *UserConfig {
 				Fetch:                    "f",
 			},
 			Branches: KeybindingBranchesConfig{
+				CopyPullRequestURL:     "<c-y>",
 				CreatePullRequest:      "o",
 				CheckoutBranchByName:   "c",
 				ForceCheckoutBranch:    "F",
@@ -438,5 +446,6 @@ func GetDefaultConfig() *UserConfig {
 		DisableStartupPopups: false,
 		CustomCommands:       []CustomCommand(nil),
 		Services:             map[string]string(nil),
+		NotARepository:       "prompt",
 	}
 }

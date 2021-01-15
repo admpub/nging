@@ -505,6 +505,29 @@ func (p *SetDockTileParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSetDockTile, p, nil)
 }
 
+// ExecuteBrowserCommandParams invoke custom browser commands used by
+// telemetry.
+type ExecuteBrowserCommandParams struct {
+	CommandID CommandID `json:"commandId"`
+}
+
+// ExecuteBrowserCommand invoke custom browser commands used by telemetry.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-executeBrowserCommand
+//
+// parameters:
+//   commandID
+func ExecuteBrowserCommand(commandID CommandID) *ExecuteBrowserCommandParams {
+	return &ExecuteBrowserCommandParams{
+		CommandID: commandID,
+	}
+}
+
+// Do executes Browser.executeBrowserCommand against the provided context.
+func (p *ExecuteBrowserCommandParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandExecuteBrowserCommand, p, nil)
+}
+
 // Command names.
 const (
 	CommandSetPermission         = "Browser.setPermission"
@@ -522,4 +545,5 @@ const (
 	CommandGetWindowForTarget    = "Browser.getWindowForTarget"
 	CommandSetWindowBounds       = "Browser.setWindowBounds"
 	CommandSetDockTile           = "Browser.setDockTile"
+	CommandExecuteBrowserCommand = "Browser.executeBrowserCommand"
 )

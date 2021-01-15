@@ -114,6 +114,81 @@ func (p *GetHighlightObjectForTestParams) Do(ctx context.Context) (highlight eas
 	return res.Highlight, nil
 }
 
+// GetGridHighlightObjectsForTestParams for Persistent Grid testing.
+type GetGridHighlightObjectsForTestParams struct {
+	NodeIds []cdp.NodeID `json:"nodeIds"` // Ids of the node to get highlight object for.
+}
+
+// GetGridHighlightObjectsForTest for Persistent Grid testing.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Overlay#method-getGridHighlightObjectsForTest
+//
+// parameters:
+//   nodeIds - Ids of the node to get highlight object for.
+func GetGridHighlightObjectsForTest(nodeIds []cdp.NodeID) *GetGridHighlightObjectsForTestParams {
+	return &GetGridHighlightObjectsForTestParams{
+		NodeIds: nodeIds,
+	}
+}
+
+// GetGridHighlightObjectsForTestReturns return values.
+type GetGridHighlightObjectsForTestReturns struct {
+	Highlights easyjson.RawMessage `json:"highlights,omitempty"`
+}
+
+// Do executes Overlay.getGridHighlightObjectsForTest against the provided context.
+//
+// returns:
+//   highlights - Grid Highlight data for the node ids provided.
+func (p *GetGridHighlightObjectsForTestParams) Do(ctx context.Context) (highlights easyjson.RawMessage, err error) {
+	// execute
+	var res GetGridHighlightObjectsForTestReturns
+	err = cdp.Execute(ctx, CommandGetGridHighlightObjectsForTest, p, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Highlights, nil
+}
+
+// GetSourceOrderHighlightObjectForTestParams for Source Order Viewer
+// testing.
+type GetSourceOrderHighlightObjectForTestParams struct {
+	NodeID cdp.NodeID `json:"nodeId"` // Id of the node to highlight.
+}
+
+// GetSourceOrderHighlightObjectForTest for Source Order Viewer testing.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Overlay#method-getSourceOrderHighlightObjectForTest
+//
+// parameters:
+//   nodeID - Id of the node to highlight.
+func GetSourceOrderHighlightObjectForTest(nodeID cdp.NodeID) *GetSourceOrderHighlightObjectForTestParams {
+	return &GetSourceOrderHighlightObjectForTestParams{
+		NodeID: nodeID,
+	}
+}
+
+// GetSourceOrderHighlightObjectForTestReturns return values.
+type GetSourceOrderHighlightObjectForTestReturns struct {
+	Highlight easyjson.RawMessage `json:"highlight,omitempty"`
+}
+
+// Do executes Overlay.getSourceOrderHighlightObjectForTest against the provided context.
+//
+// returns:
+//   highlight - Source order highlight data for the node id provided.
+func (p *GetSourceOrderHighlightObjectForTestParams) Do(ctx context.Context) (highlight easyjson.RawMessage, err error) {
+	// execute
+	var res GetSourceOrderHighlightObjectForTestReturns
+	err = cdp.Execute(ctx, CommandGetSourceOrderHighlightObjectForTest, p, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Highlight, nil
+}
+
 // HideHighlightParams hides any highlight.
 type HideHighlightParams struct{}
 
@@ -304,6 +379,53 @@ func (p *HighlightRectParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandHighlightRect, p, nil)
 }
 
+// HighlightSourceOrderParams highlights the source order of the children of
+// the DOM node with given id or with the given JavaScript object wrapper.
+// Either nodeId or objectId must be specified.
+type HighlightSourceOrderParams struct {
+	SourceOrderConfig *SourceOrderConfig     `json:"sourceOrderConfig"`       // A descriptor for the appearance of the overlay drawing.
+	NodeID            cdp.NodeID             `json:"nodeId,omitempty"`        // Identifier of the node to highlight.
+	BackendNodeID     cdp.BackendNodeID      `json:"backendNodeId,omitempty"` // Identifier of the backend node to highlight.
+	ObjectID          runtime.RemoteObjectID `json:"objectId,omitempty"`      // JavaScript object id of the node to be highlighted.
+}
+
+// HighlightSourceOrder highlights the source order of the children of the
+// DOM node with given id or with the given JavaScript object wrapper. Either
+// nodeId or objectId must be specified.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Overlay#method-highlightSourceOrder
+//
+// parameters:
+//   sourceOrderConfig - A descriptor for the appearance of the overlay drawing.
+func HighlightSourceOrder(sourceOrderConfig *SourceOrderConfig) *HighlightSourceOrderParams {
+	return &HighlightSourceOrderParams{
+		SourceOrderConfig: sourceOrderConfig,
+	}
+}
+
+// WithNodeID identifier of the node to highlight.
+func (p HighlightSourceOrderParams) WithNodeID(nodeID cdp.NodeID) *HighlightSourceOrderParams {
+	p.NodeID = nodeID
+	return &p
+}
+
+// WithBackendNodeID identifier of the backend node to highlight.
+func (p HighlightSourceOrderParams) WithBackendNodeID(backendNodeID cdp.BackendNodeID) *HighlightSourceOrderParams {
+	p.BackendNodeID = backendNodeID
+	return &p
+}
+
+// WithObjectID JavaScript object id of the node to be highlighted.
+func (p HighlightSourceOrderParams) WithObjectID(objectID runtime.RemoteObjectID) *HighlightSourceOrderParams {
+	p.ObjectID = objectID
+	return &p
+}
+
+// Do executes Overlay.highlightSourceOrder against the provided context.
+func (p *HighlightSourceOrderParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandHighlightSourceOrder, p, nil)
+}
+
 // SetInspectModeParams enters the 'inspect' mode. In this mode, elements
 // that user is hovering over are highlighted. Backend then generates
 // 'inspectNodeRequested' event upon element selection.
@@ -431,6 +553,51 @@ func SetShowFPSCounter(show bool) *SetShowFPSCounterParams {
 // Do executes Overlay.setShowFPSCounter against the provided context.
 func (p *SetShowFPSCounterParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSetShowFPSCounter, p, nil)
+}
+
+// SetShowGridOverlaysParams highlight multiple elements with the CSS Grid
+// overlay.
+type SetShowGridOverlaysParams struct {
+	GridNodeHighlightConfigs []*GridNodeHighlightConfig `json:"gridNodeHighlightConfigs"` // An array of node identifiers and descriptors for the highlight appearance.
+}
+
+// SetShowGridOverlays highlight multiple elements with the CSS Grid overlay.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Overlay#method-setShowGridOverlays
+//
+// parameters:
+//   gridNodeHighlightConfigs - An array of node identifiers and descriptors for the highlight appearance.
+func SetShowGridOverlays(gridNodeHighlightConfigs []*GridNodeHighlightConfig) *SetShowGridOverlaysParams {
+	return &SetShowGridOverlaysParams{
+		GridNodeHighlightConfigs: gridNodeHighlightConfigs,
+	}
+}
+
+// Do executes Overlay.setShowGridOverlays against the provided context.
+func (p *SetShowGridOverlaysParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetShowGridOverlays, p, nil)
+}
+
+// SetShowFlexOverlaysParams [no description].
+type SetShowFlexOverlaysParams struct {
+	FlexNodeHighlightConfigs []*FlexNodeHighlightConfig `json:"flexNodeHighlightConfigs"` // An array of node identifiers and descriptors for the highlight appearance.
+}
+
+// SetShowFlexOverlays [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Overlay#method-setShowFlexOverlays
+//
+// parameters:
+//   flexNodeHighlightConfigs - An array of node identifiers and descriptors for the highlight appearance.
+func SetShowFlexOverlays(flexNodeHighlightConfigs []*FlexNodeHighlightConfig) *SetShowFlexOverlaysParams {
+	return &SetShowFlexOverlaysParams{
+		FlexNodeHighlightConfigs: flexNodeHighlightConfigs,
+	}
+}
+
+// Do executes Overlay.setShowFlexOverlays against the provided context.
+func (p *SetShowFlexOverlaysParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetShowFlexOverlays, p, nil)
 }
 
 // SetShowPaintRectsParams requests that backend shows paint rectangles.
@@ -577,23 +744,28 @@ func (p *SetShowHingeParams) Do(ctx context.Context) (err error) {
 
 // Command names.
 const (
-	CommandDisable                      = "Overlay.disable"
-	CommandEnable                       = "Overlay.enable"
-	CommandGetHighlightObjectForTest    = "Overlay.getHighlightObjectForTest"
-	CommandHideHighlight                = "Overlay.hideHighlight"
-	CommandHighlightFrame               = "Overlay.highlightFrame"
-	CommandHighlightNode                = "Overlay.highlightNode"
-	CommandHighlightQuad                = "Overlay.highlightQuad"
-	CommandHighlightRect                = "Overlay.highlightRect"
-	CommandSetInspectMode               = "Overlay.setInspectMode"
-	CommandSetShowAdHighlights          = "Overlay.setShowAdHighlights"
-	CommandSetPausedInDebuggerMessage   = "Overlay.setPausedInDebuggerMessage"
-	CommandSetShowDebugBorders          = "Overlay.setShowDebugBorders"
-	CommandSetShowFPSCounter            = "Overlay.setShowFPSCounter"
-	CommandSetShowPaintRects            = "Overlay.setShowPaintRects"
-	CommandSetShowLayoutShiftRegions    = "Overlay.setShowLayoutShiftRegions"
-	CommandSetShowScrollBottleneckRects = "Overlay.setShowScrollBottleneckRects"
-	CommandSetShowHitTestBorders        = "Overlay.setShowHitTestBorders"
-	CommandSetShowViewportSizeOnResize  = "Overlay.setShowViewportSizeOnResize"
-	CommandSetShowHinge                 = "Overlay.setShowHinge"
+	CommandDisable                              = "Overlay.disable"
+	CommandEnable                               = "Overlay.enable"
+	CommandGetHighlightObjectForTest            = "Overlay.getHighlightObjectForTest"
+	CommandGetGridHighlightObjectsForTest       = "Overlay.getGridHighlightObjectsForTest"
+	CommandGetSourceOrderHighlightObjectForTest = "Overlay.getSourceOrderHighlightObjectForTest"
+	CommandHideHighlight                        = "Overlay.hideHighlight"
+	CommandHighlightFrame                       = "Overlay.highlightFrame"
+	CommandHighlightNode                        = "Overlay.highlightNode"
+	CommandHighlightQuad                        = "Overlay.highlightQuad"
+	CommandHighlightRect                        = "Overlay.highlightRect"
+	CommandHighlightSourceOrder                 = "Overlay.highlightSourceOrder"
+	CommandSetInspectMode                       = "Overlay.setInspectMode"
+	CommandSetShowAdHighlights                  = "Overlay.setShowAdHighlights"
+	CommandSetPausedInDebuggerMessage           = "Overlay.setPausedInDebuggerMessage"
+	CommandSetShowDebugBorders                  = "Overlay.setShowDebugBorders"
+	CommandSetShowFPSCounter                    = "Overlay.setShowFPSCounter"
+	CommandSetShowGridOverlays                  = "Overlay.setShowGridOverlays"
+	CommandSetShowFlexOverlays                  = "Overlay.setShowFlexOverlays"
+	CommandSetShowPaintRects                    = "Overlay.setShowPaintRects"
+	CommandSetShowLayoutShiftRegions            = "Overlay.setShowLayoutShiftRegions"
+	CommandSetShowScrollBottleneckRects         = "Overlay.setShowScrollBottleneckRects"
+	CommandSetShowHitTestBorders                = "Overlay.setShowHitTestBorders"
+	CommandSetShowViewportSizeOnResize          = "Overlay.setShowViewportSizeOnResize"
+	CommandSetShowHinge                         = "Overlay.setShowHinge"
 )
