@@ -815,6 +815,7 @@ github.com/jesseduffield/gocui v0.3.1-0.20201010224802-8a6768078fd7 h1:K3MGrjmpP
 github.com/jesseduffield/gocui v0.3.1-0.20201010224802-8a6768078fd7/go.mod h1:2RtZznzYKt8RLRwvFiSkXjU0Ei8WwHdubgnlaYH47dw=
 github.com/jesseduffield/lazygit v0.23.7 h1:GxUWZC88z/4l89xijtwpp5Lf/FXPVVNYDlSeMaH2vyQ=
 github.com/jesseduffield/lazygit v0.23.7/go.mod h1:sQGZvLcrSoodyz8Eegung/fxBUQ3RKs15BwcLne7oN0=
+github.com/jesseduffield/lazygit v0.24.2/go.mod h1:MJmiltG/hm+bopWKJ/a1GdEaDenMISgLJT8IBIx9doU=
 github.com/jesseduffield/termbox-go v0.0.0-20200823212418-a2289ed6aafe h1:qsVhCf2RFyyKIUe/+gJblbCpXMUki9rZrHuEctg6M/E=
 github.com/jesseduffield/termbox-go v0.0.0-20200823212418-a2289ed6aafe/go.mod h1:anMibpZtqNxjDbxrcDEAwSdaJ37vyUeM1f/M4uekib4=
 github.com/jesseduffield/yaml v2.1.0+incompatible h1:HWQJ1gIv2zHKbDYNp0Jwjlj24K8aqpFHnMCynY1EpmE=
@@ -1162,6 +1163,7 @@ github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd h1:CmH9+J6ZSsIjUK
 github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd/go.mod h1:hPqNNc0+uJM6H+SuU8sEs5K5IQeKccPqeSjfgcKGgPk=
 github.com/ryanuber/columnize v0.0.0-20160712163229-9b3edd62028f/go.mod h1:sm1tb6uqfes/u+d4ooFouqFdy9/2g9QGwK3SQygK0Ts=
 github.com/sacloud/libsacloud v1.26.1/go.mod h1:79ZwATmHLIFZIMd7sxA3LwzVy/B77uj3LDoToVTxDoQ=
+github.com/sahilm/fuzzy v0.1.0/go.mod h1:VFvziUEIMCrT6A6tw2RFIXPXXmzXbOsSHF0DOI8ZK9Y=
 github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca h1:NugYot0LIVPxTvN8n+Kvkn6TrbMyxQiuvKdEwFdR9vI=
 github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca/go.mod h1:uugorj2VCxiV1x+LzaIdVa9b4S4qGAcH6cbhh4qVxOU=
 github.com/samuel/go-zookeeper v0.0.0-20190923202752-2cc03de413da/go.mod h1:gi+0XIa01GRL2eRQVjQkKGqKF3SF9vZR/HnPullcV2E=
