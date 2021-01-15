@@ -20,7 +20,6 @@ package chrome
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"testing"
@@ -38,16 +37,13 @@ func getServiceList(res *string, pageURL string) chromedp.Tasks {
 	return chromedp.Tasks{
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			expr := cdp.TimeSinceEpoch(time.Now().Add(180 * 24 * time.Hour))
-			success, err := network.SetCookie("cookiename", "cookievalue").
+			err := network.SetCookie("cookiename", "cookievalue").
 				WithExpires(&expr).
 				WithDomain("localhost").
 				WithHTTPOnly(true).
 				Do(ctx)
 			if err != nil {
 				return err
-			}
-			if !success {
-				return errors.New("could not set cookie")
 			}
 			return nil
 		}),
