@@ -52,9 +52,8 @@ require (
 	github.com/admpub/fasthttp v0.0.0-20200705060903-f0f441048f4a // indirect
 	github.com/admpub/frp v0.28.1
 	github.com/admpub/ftpserver v0.0.0-20180821023651-6b950445d653
-	github.com/admpub/gifresize v1.0.2 // indirect
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
-	github.com/admpub/go-download v2.1.3+incompatible
+	github.com/admpub/go-download/v2 v2.1.4
 	github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
 	github.com/admpub/go-isatty v0.0.9
 	github.com/admpub/go-phantomjs-fetcher v0.0.0-20180924162325-bb2ae1648e33
@@ -72,9 +71,7 @@ require (
 	github.com/admpub/httpscerts v0.0.0-20180907121630-a2990e2af45c
 	github.com/admpub/humanize v0.0.0-20190501023926-5f826e92c8ca // indirect
 	github.com/admpub/i18n v0.0.0-20190425064330-383d24a2fded // indirect
-	github.com/admpub/identicon v1.0.2 // indirect
 	github.com/admpub/imageproxy v0.9.1
-	github.com/admpub/imaging v1.5.0 // indirect
 	github.com/admpub/ini v1.38.2
 	github.com/admpub/ip2region v1.2.5
 	github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
@@ -123,7 +120,6 @@ require (
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
 	github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
 	github.com/deckarep/golang-set v1.7.1 // indirect
-	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/fatedier/beego v1.7.2 // indirect
 	github.com/fatedier/golib v0.2.0 // indirect
 	github.com/fatedier/kcp-go v2.0.4-0.20190803094908-fe8645b0a904+incompatible // indirect
@@ -134,10 +130,8 @@ require (
 	github.com/go-openapi/strfmt v0.19.11 // indirect
 	github.com/goftp/file-driver v0.0.0-20180502053751-5d604a0fc0c9 // indirect
 	github.com/goftp/server v0.0.0-20200708154336-f64f7c2d8a42 // indirect
-	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/gomodule/redigo v1.8.3
 	github.com/grafov/m3u8 v0.11.1 // indirect
-	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79 // indirect
 	github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce // indirect
 	github.com/igm/sockjs-go v3.0.0+incompatible // indirect
 	github.com/jedib0t/go-pretty v4.3.0+incompatible // indirect
@@ -151,14 +145,11 @@ require (
 	github.com/mholt/certmagic v0.8.3
 	github.com/microcosm-cc/bluemonday v1.0.4
 	github.com/minio/minio-go v6.0.14+incompatible
-	github.com/muesli/smartcrop v0.3.0 // indirect
-	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/oschwald/maxminddb-golang v1.7.0 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/pkg/sftp v1.12.0
 	github.com/prometheus/client_golang v1.8.0 // indirect
 	github.com/russross/blackfriday v1.6.0
-	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd // indirect
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
 	github.com/shirou/gopsutil v3.20.12+incompatible
 	github.com/shivakar/metrohash v0.0.0-20160821164112-8d1c8b6bed28 // indirect
@@ -182,7 +173,7 @@ require (
 	github.com/webx-top/com v0.0.5
 	github.com/webx-top/db v1.1.3
 	github.com/webx-top/echo v2.6.0+incompatible
-	github.com/webx-top/image v0.0.4
+	github.com/webx-top/image v0.0.5
 	github.com/webx-top/pagination v0.0.1
 	github.com/willf/bitset v1.1.11 // indirect
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect

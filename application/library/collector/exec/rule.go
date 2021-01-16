@@ -31,6 +31,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
 	// import collector browser driver
 
 	"github.com/webx-top/com"
@@ -39,7 +40,7 @@ import (
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/middleware/tplfunc"
 
-	download "github.com/admpub/go-download"
+	download "github.com/admpub/go-download/v2"
 	"github.com/admpub/gopiper"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/dbschema"
@@ -49,6 +50,7 @@ import (
 	"github.com/admpub/nging/application/library/collector/sender"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/notice"
+
 	//_ "github.com/admpub/nging/application/library/collector/driver/phantomjs" //高CPU占用
 	//_ "github.com/admpub/nging/application/library/collector/driver/phantomjsfetcher" //高CPU占用
 	_ "github.com/admpub/nging/application/library/collector/driver/standard"
