@@ -120,6 +120,9 @@ github.com/admpub/go-pretty/text
 github.com/admpub/go-ps
 # github.com/admpub/go-reuseport v0.0.3
 github.com/admpub/go-reuseport
+# github.com/admpub/go-sshclient v0.0.0-20200729145748-988808eb5279
+## explicit
+github.com/admpub/go-sshclient
 # github.com/admpub/go-utility v0.0.1
 ## explicit
 github.com/admpub/go-utility/filesystem
@@ -824,7 +827,6 @@ github.com/marten-seemann/qtls-go1-15
 github.com/maruel/rs
 github.com/maruel/rs/internal/gf256
 # github.com/mattn/go-colorable v0.1.8
-## explicit
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.12
 github.com/mattn/go-isatty

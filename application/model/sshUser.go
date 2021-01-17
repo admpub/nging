@@ -18,21 +18,20 @@
 package model
 
 import (
+	"fmt"
 	"io"
 	"strings"
 
-	colorable "github.com/mattn/go-colorable"
 	"github.com/webx-top/echo"
-	stdSSH "golang.org/x/crypto/ssh"
+	"golang.org/x/crypto/ssh"
 
+	"github.com/admpub/go-sshclient"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
-	"github.com/admpub/web-terminal/library/ssh"
 )
 
 var (
 	Decode = func(r string) string { return r }
-	_      = stdSSH.CS7
 )
 
 type SshUserAndGroup struct {
@@ -53,55 +52,50 @@ type SshUser struct {
 }
 
 func (s *SshUser) ExecMultiCMD(writer io.Writer, commands ...string) error {
-	multiCMD := strings.Join(commands, "\n")
-	reader := strings.NewReader(multiCMD + "\nexit\n")
-	return s.Connect(reader, writer)
+	if len(commands) == 0 {
+		return nil
+	}
+	client, err := s.Connect()
+	if err != nil {
+		return err
+	}
+	defer client.Close()
+	err = client.Script(strings.Join(commands, "\r\n")).SetStdio(writer, writer).Run()
+	return err
 }
 
-func (s *SshUser) Connect(reader io.Reader, writer io.Writer) error {
-	account := &ssh.AccountConfig{
-		User:     s.Username,
-		Password: Decode(s.Password),
+func (s *SshUser) Connect() (*sshclient.Client, error) {
+	config := &ssh.ClientConfig{
+		User:            s.Username,
+		Auth:            []ssh.AuthMethod{},
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 	if len(s.PrivateKey) > 0 {
-		account.PrivateKey = []byte(s.PrivateKey)
+		var signer ssh.Signer
+		var err error
+		pemBytes := []byte(s.PrivateKey)
+		if len(s.Passphrase) > 0 {
+			signer, err = ssh.ParsePrivateKeyWithPassphrase(pemBytes, []byte(Decode(s.Passphrase)))
+		} else {
+			signer, err = ssh.ParsePrivateKey(pemBytes)
+		}
+		if err != nil {
+			return nil, err
+		}
+		config.Auth = append(config.Auth, ssh.PublicKeys(signer))
 	}
-	if len(s.Passphrase) > 0 {
-		account.Passphrase = []byte(Decode(s.Passphrase))
+
+	if len(s.Password) > 0 {
+		config.Auth = append(config.Auth, ssh.Password(Decode(s.Password)))
 	}
-	config, err := ssh.NewSSHConfig(reader, writer, account)
+	config.SetDefaults()
+	if s.Port <= 0 {
+		s.Port = 22
+	}
+	client, err := sshclient.Dial("tcp", fmt.Sprintf(`%s:%d`, s.Host, s.Port), config)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	client := ssh.New(config)
-	err = client.Connect(s.Host, s.Port)
-	if err != nil {
-		return err
-	}
-	session := client.Session
-	defer client.Close()
-	// Set up terminal modes
-	modes := stdSSH.TerminalModes{
-		stdSSH.ECHO:          0,     // enable echoing
-		stdSSH.TTY_OP_ISPEED: 14400, // input speed = 14.4kbaud
-		stdSSH.TTY_OP_OSPEED: 14400, // output speed = 14.4kbaud
-	}
-	columns := 120
-	rows := 80
-	// Request pseudo terminal
-	if err = session.RequestPty("xterm", rows, columns, modes); err != nil {
-		return err
-	}
-	writer = colorable.NewNonColorable(writer)
-	session.Stdout = writer
-	session.Stderr = writer
-	session.Stdin = reader
-	if err = session.Shell(); nil != err {
-		return err
-	}
-	if err = session.Wait(); nil != err {
-		return err
-	}
-	_ = colorable.NewNonColorable
-	return nil
+	//defer client.Close()
+	return client, nil
 }

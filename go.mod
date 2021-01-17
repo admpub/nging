@@ -59,6 +59,7 @@ require (
 	github.com/admpub/go-phantomjs-fetcher v0.0.0-20180924162325-bb2ae1648e33
 	github.com/admpub/go-pretty v3.3.3+incompatible
 	github.com/admpub/go-ps v0.0.1 // indirect
+	github.com/admpub/go-sshclient v0.0.0-20200729145748-988808eb5279
 	github.com/admpub/go-utility v0.0.1 // indirect
 	github.com/admpub/godownloader v0.0.0-20191013090831-d509172649e4
 	github.com/admpub/goforever v0.1.1
@@ -139,7 +140,6 @@ require (
 	github.com/jlaffaye/ftp v0.0.0-20201112195030-9aae4d151126 // indirect
 	github.com/kardianos/service v1.2.0 // indirect
 	github.com/markbates/goth v1.66.0 // indirect
-	github.com/mattn/go-colorable v0.1.8
 	github.com/mattn/go-runewidth v0.0.10
 	github.com/mattn/go-sqlite3 v1.14.5 // indirect
 	github.com/mholt/certmagic v0.8.3
