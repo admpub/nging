@@ -1,18 +1,19 @@
 package image
 
 import (
-	"github.com/admpub/errors"
-	godl "github.com/admpub/go-download"
-	_ "golang.org/x/image/webp"
 	"io/ioutil"
 	"mime/multipart"
 	"sync"
+
+	"github.com/admpub/errors"
+	godl "github.com/admpub/go-download/v2"
+	_ "golang.org/x/image/webp"
 )
 
 var (
 	cachedWatermarkFileData  = sync.Map{}
 	cachedWatermarkFileIndex = []string{}
-	cachedWatermarkFileMax = 10
+	cachedWatermarkFileMax   = 10
 )
 
 func SetCachedWatermarkFileMax(n int) {

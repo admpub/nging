@@ -2,8 +2,11 @@ package download
 
 import (
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/webx-top/com"
 )
 
 func Download(url, saveName string, options *Options) (int64, error) {
@@ -36,4 +39,13 @@ func Download(url, saveName string, options *Options) (int64, error) {
 	defer output.Close()
 
 	return io.Copy(output, f)
+}
+
+// NewHTTPClient New a client
+func NewHTTPClient(options ...com.HTTPClientOptions) *http.Client {
+	client := &http.Client{}
+	for _, option := range options {
+		option(client)
+	}
+	return client
 }

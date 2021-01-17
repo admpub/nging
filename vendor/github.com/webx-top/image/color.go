@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	ID "github.com/admpub/identicon"
-
 	"github.com/webx-top/com"
 )
 

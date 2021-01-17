@@ -9,7 +9,7 @@ see all examples https://github.com/admpub/go-download/tree/master/examples
 	import (
 		"log"
 
-		download "github.com/admpub/go-download"
+		download "github.com/admpub/go-download/v2"
 	)
 
 	func main() {

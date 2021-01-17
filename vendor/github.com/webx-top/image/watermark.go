@@ -15,7 +15,7 @@ import (
 	"time"
 
 	"github.com/admpub/errors"
-	godl "github.com/admpub/go-download"
+	godl "github.com/admpub/go-download/v2"
 	"github.com/webx-top/com"
 	"golang.org/x/image/bmp"
 	_ "golang.org/x/image/webp"
