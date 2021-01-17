@@ -53,7 +53,7 @@ require (
 	github.com/admpub/frp v0.28.1
 	github.com/admpub/ftpserver v0.0.0-20180821023651-6b950445d653
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
-	github.com/admpub/go-download/v2 v2.1.4
+	github.com/admpub/go-download/v2 v2.1.5
 	github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
 	github.com/admpub/go-isatty v0.0.9
 	github.com/admpub/go-phantomjs-fetcher v0.0.0-20180924162325-bb2ae1648e33
@@ -173,7 +173,7 @@ require (
 	github.com/webx-top/com v0.0.5
 	github.com/webx-top/db v1.1.3
 	github.com/webx-top/echo v2.6.0+incompatible
-	github.com/webx-top/image v0.0.5
+	github.com/webx-top/image v0.0.6
 	github.com/webx-top/pagination v0.0.1
 	github.com/willf/bitset v1.1.11 // indirect
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect

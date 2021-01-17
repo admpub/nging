@@ -99,7 +99,7 @@ github.com/admpub/gifresize
 # github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
 ## explicit
 github.com/admpub/go-bindata-assetfs
-# github.com/admpub/go-download/v2 v2.1.4
+# github.com/admpub/go-download/v2 v2.1.5
 ## explicit
 github.com/admpub/go-download/v2
 # github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
@@ -1098,7 +1098,7 @@ github.com/webx-top/echo/param
 github.com/webx-top/echo/subdomains
 github.com/webx-top/echo/testing
 github.com/webx-top/echo/testing/test
-# github.com/webx-top/image v0.0.5
+# github.com/webx-top/image v0.0.6
 ## explicit
 github.com/webx-top/image
 # github.com/webx-top/pagination v0.0.1

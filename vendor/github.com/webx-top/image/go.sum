@@ -18,8 +18,8 @@ github.com/admpub/fsnotify v1.4.4 h1:LhmWQAC3la+JtwlVZ42uRSahOU0lccSOZV7/hB4gqCA
 github.com/admpub/fsnotify v1.4.4/go.mod h1:IE7rjoj2vwr4cYUYQFUeBV1KgldTeXTQy7TwOe0Zwlk=
 github.com/admpub/gifresize v1.0.2 h1:aFLkKkdyfyg4OIl84R2xA/q/+itFd/mOlGPnhIAbq8s=
 github.com/admpub/gifresize v1.0.2/go.mod h1:4cJFfCR1yfgyq7lZiQZomEGeR/OVQVPeflN38P0T+M0=
-github.com/admpub/go-download/v2 v2.1.4 h1:CO+umpopStDlGU1VZ1sAcTrI1QOcQqYSh2FByZ3XKEE=
-github.com/admpub/go-download/v2 v2.1.4/go.mod h1:KnldQBT0niK6tsh+nzP6J3Ig2rwLzpw+rlSFNqHGEuU=
+github.com/admpub/go-download/v2 v2.1.5 h1:sYlV5v8MJa61SAmZijJuMhv5F1typwvKwnJX7MRdoWQ=
+github.com/admpub/go-download/v2 v2.1.5/go.mod h1:KnldQBT0niK6tsh+nzP6J3Ig2rwLzpw+rlSFNqHGEuU=
 github.com/admpub/identicon v1.0.2 h1:gg3F1Qq4ckH8ANs1iVKEZUnzZynhzmKR28A1ejO7E58=
 github.com/admpub/identicon v1.0.2/go.mod h1:jUrdpNyanISNMRiOTYXex6OVUbDznf1rFPp1iVmTA8Q=
 github.com/admpub/imageproxy v0.9.1 h1:9NNq914EtkVfNzlAAJ9a5gXUFnJ+rvV0qb3DKTGemLQ=

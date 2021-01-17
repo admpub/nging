@@ -5,7 +5,7 @@ go 1.15
 require (
 	github.com/admpub/errors v0.8.2
 	github.com/admpub/gifresize v1.0.2 // indirect
-	github.com/admpub/go-download/v2 v2.1.4
+	github.com/admpub/go-download/v2 v2.1.5
 	github.com/admpub/identicon v1.0.2
 	github.com/admpub/imageproxy v0.9.1
 	github.com/admpub/imaging v1.5.0
