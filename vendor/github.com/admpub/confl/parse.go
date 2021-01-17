@@ -115,7 +115,7 @@ func (p *parser) expect(typ itemType) item {
 
 func (p *parser) assertEqual(expected, got itemType) {
 	if expected != got {
-		p.bug("Expected '%s' but got '%s'.", expected, got)
+		p.bug("Expected '%v' but got '%v'.", expected, got)
 	}
 }
 

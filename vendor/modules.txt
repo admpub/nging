@@ -27,7 +27,7 @@ github.com/admpub/checksum
 # github.com/admpub/color v1.7.0
 ## explicit
 github.com/admpub/color
-# github.com/admpub/confl v0.0.0-20190331072055-254deeac709e
+# github.com/admpub/confl v0.0.1
 ## explicit
 github.com/admpub/confl
 # github.com/admpub/copier v0.0.0-20200812014131-931651b20f74
@@ -194,6 +194,8 @@ github.com/admpub/mahonia
 # github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b
 ## explicit
 github.com/admpub/mail
+# github.com/admpub/map2struct v0.0.0-20170301071106-6be1b201efe1
+github.com/admpub/map2struct
 # github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5
 ## explicit
 github.com/admpub/marmot/miner
@@ -275,8 +277,6 @@ github.com/admpub/websocket
 github.com/andybalholm/brotli
 # github.com/andybalholm/cascadia v1.1.0
 github.com/andybalholm/cascadia
-# github.com/araddon/gou v0.0.0-20190110011759-c797efecbb61
-## explicit
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
 github.com/armon/go-socks5
 # github.com/asaskevich/govalidator v0.0.0-20200907205600-7a23bdc65eef

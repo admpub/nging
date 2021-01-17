@@ -41,7 +41,7 @@ require (
 	github.com/admpub/ccs-gm v0.0.3
 	github.com/admpub/checksum v1.0.1
 	github.com/admpub/color v1.7.0
-	github.com/admpub/confl v0.0.0-20190331072055-254deeac709e
+	github.com/admpub/confl v0.0.1
 	github.com/admpub/cr v0.0.0-20200630080251-9947244796af
 	github.com/admpub/cron v0.0.1
 	github.com/admpub/decimal v0.0.0-20180709203117-cd690d0c9e24 // indirect
@@ -101,7 +101,6 @@ require (
 	github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2
 	github.com/admpub/web-terminal v0.0.0-20190705124712-e503d17936e9
 	github.com/admpub/websocket v1.0.3
-	github.com/araddon/gou v0.0.0-20190110011759-c797efecbb61 // indirect
 	github.com/aws/aws-sdk-go v1.36.26
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect

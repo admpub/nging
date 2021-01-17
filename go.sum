@@ -146,8 +146,8 @@ github.com/admpub/checksum v1.0.1 h1:TWVyWYIY7O4ofdSfCcvp9sJXKlCEFUG2B3YE7kGD4g0
 github.com/admpub/checksum v1.0.1/go.mod h1:02MEp8ALkHpZV63/jyZKB91bQr0MYLTMMqnRsXTafK8=
 github.com/admpub/color v1.7.0 h1:m7DvtyOQ+oOsZ+enN9KOZFACeHILJGnUnP0H7Pd3fCE=
 github.com/admpub/color v1.7.0/go.mod h1:hpRNfDEV4EmWTuzLe+yeuK9km/ys1Zs+dWJS1AGey2s=
-github.com/admpub/confl v0.0.0-20190331072055-254deeac709e h1:X/1LdaYSfA7/FI7gjF8oTyfJBj8RnT/1vAEJfTVJ3Nc=
-github.com/admpub/confl v0.0.0-20190331072055-254deeac709e/go.mod h1:IHabolnzuiUZKCt2spNhDHPMAJFIqcdzi5Sl5gJlB1U=
+github.com/admpub/confl v0.0.1 h1:LDyl9eH+SW7XW66pCwG8ns1bX9K52dB7bSl2PGzo3Wo=
+github.com/admpub/confl v0.0.1/go.mod h1:Zg744Di2vlbXyEUaAYq/Kzr4700SiWhhrkzZFZBHE2I=
 github.com/admpub/copier v0.0.0-20200812014131-931651b20f74 h1:H9n/Svb0wyRaNi5P/2gUGoUCpjw78GVxUjCfXc6B3Iw=
 github.com/admpub/copier v0.0.0-20200812014131-931651b20f74/go.mod h1:fwiKlJfEVncKmI7sZmXddazaYpwN4znDSF1285yrsBU=
 github.com/admpub/cr v0.0.0-20200630080251-9947244796af h1:JKvz8zCApy9s/o7CPWz8124g9Z5acK6HG01qzWF/xeg=
@@ -238,6 +238,8 @@ github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d h1:9QaiQwHoN3e+ImMx
 github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d/go.mod h1:vgwHdVKJ65SPQqItXbsoY+FFZqGwgo07DzO/0sXAyHk=
 github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b h1:PX+gB0uvxOx1scR8WWr8tC5QIEjxwyfNlM1jmW69FBs=
 github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b/go.mod h1:uzZ665vldasVbB/L2jX1ZamV9yt/L0LlF6eu2Xju5kk=
+github.com/admpub/map2struct v0.0.0-20170301071106-6be1b201efe1 h1:fivYYVCvjM1HTWH7M8wEi9GvNKO7ckjttnAUNAqdRtw=
+github.com/admpub/map2struct v0.0.0-20170301071106-6be1b201efe1/go.mod h1:ervwWz25v8EbX+eSQuEQTJ61QwsIk/D/Uv1f2IFhAzg=
 github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5 h1:N9+M16t6Pa0zNjy2g3GHCLmxaw3tHR2bHs0+Ic0VLR0=
 github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5/go.mod h1:Aim7aOlr/P9OkX0ucuhrzMEUcKOJXErCMS3MDGTBGJc=
 github.com/admpub/metrohash v0.0.0-20160821164112-8d1c8b6bed28 h1:EMbeLnzWmybLRHMY/K1r/ciCdMGjht/EbFMEdpm4xxI=
