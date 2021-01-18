@@ -518,7 +518,9 @@ var App = function () {
 		attachAjaxURL: function (elem) {
 			if (elem == null) elem = document;
 			$(elem).on('click', '[data-ajax-url]', function () {
-				var a = $(this), url = a.data('ajax-url'), method = a.data('ajax-method') || 'get', params = a.data('ajax-params') || {}, title = a.attr('title'), accept = a.data('ajax-accept') || 'html', target = a.data('ajax-target'), callback = a.data('ajax-callback');
+				var a = $(this), confirmMsg = a.data('ajax-confirm');
+				if(confirmMsg && !confirm(confirmMsg)) return;
+				var url = a.data('ajax-url'), method = a.data('ajax-method') || 'get', params = a.data('ajax-params') || {}, title = a.attr('title'), accept = a.data('ajax-accept') || 'html', target = a.data('ajax-target'), callback = a.data('ajax-callback');
 				if (!title) title = a.text();
 				App.loading('show');
 				if ($.isFunction(params)) params = params.call(this, arguments);
