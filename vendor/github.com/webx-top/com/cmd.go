@@ -87,11 +87,17 @@ func ExecCmd(cmdName string, args ...string) (string, string, error) {
 
 // WritePidFile writes the process ID to the file at PidFile.
 // It does nothing if PidFile is not set.
-func WritePidFile(pidFile string) error {
+func WritePidFile(pidFile string, pidNumbers ...int) error {
 	if pidFile == "" {
 		return nil
 	}
-	pid := []byte(strconv.Itoa(os.Getpid()) + "\n")
+	var pidNumber int
+	if len(pidNumbers) > 0 {
+		pidNumber = pidNumbers[0]
+	} else {
+		pidNumber = os.Getpid()
+	}
+	pid := []byte(strconv.Itoa(pidNumber) + "\n")
 	return ioutil.WriteFile(pidFile, pid, 0644)
 }
 
