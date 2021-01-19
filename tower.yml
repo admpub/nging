@@ -43,7 +43,7 @@ watch {
   otherDir : ""
   
   # 忽略的路径(正则表达式)，不填则不限制(排除某个完整的文件夹名请用“/文件夹名/”的格式)
-  ignoredPath : "/.git/|/node_modules/|/web-terminal/|/vendor/"
+  ignoredPath : "/.git/|/.vscode/|/.idea/|/node_modules/|/web-terminal/|/vendor/|/template/|/public/|/dist/|/tool/|/support/|/data/"
 }
 
 # 是否显示细节信息。如果设置为true，会自动将下面的logLevel设置为Debug
