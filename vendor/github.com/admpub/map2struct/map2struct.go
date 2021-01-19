@@ -7,9 +7,11 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/admpub/copier"
 )
 
-func Scan(sv interface{}, m map[string]interface{}) (err error) {
+func Scan(sv interface{}, m map[string]interface{}, tagNames ...string) (err error) {
 	val := reflect.ValueOf(sv)
 	if val.Kind() != reflect.Ptr {
 		return errors.New("non-pointer passed to Unmarshal")
@@ -21,12 +23,29 @@ func Scan(sv interface{}, m map[string]interface{}) (err error) {
 		return errors.New("paramter error")
 	}
 
+	fields := copier.DeepFindFields(typ, v, ``, copier.AllNilFields)
 	mcols := map[string]string{}
-	for i := 0; i < typ.NumField(); i++ {
-		mcols[strings.ToLower(typ.Field(i).Name)] = typ.Field(i).Name
+	for _, f := range fields {
+		var mapKey string
+		if len(tagNames) > 0 {
+			for _, tagName := range tagNames {
+				mapKey = f.Tag.Get(tagName)
+				if len(mapKey) > 0 {
+					mapKey = strings.SplitN(mapKey, `,`, 2)[0]
+					break
+				}
+			}
+			if mapKey == "-" {
+				continue
+			}
+		}
+		if len(mapKey) == 0 {
+			mapKey = f.Name
+		}
+		mcols[mapKey] = f.Name
 	}
 	for k, vv := range m {
-		if name, ok := mcols[strings.ToLower(k)]; ok {
+		if name, ok := mcols[k]; ok {
 			kv := v.FieldByName(name)
 			convertAssign(kv, vv)
 		}

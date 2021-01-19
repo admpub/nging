@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/webx-top/echo/encoding/json"
+	"github.com/webx-top/com/encoding/json"
 )
 
 // GetJSON Read json data, writes in struct f

@@ -30,8 +30,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/admpub/log"
 )
 
 var ErrCmdNotRunning = errors.New(`command is not running`)
@@ -420,7 +418,6 @@ func CloseProcessFromPidFile(pidFile string) (err error) {
 	}
 	pid, err := strconv.Atoi(strings.TrimSpace(string(b)))
 	if err != nil {
-		log.Error(err.Error())
 		return nil
 	}
 	return CloseProcessFromPid(pid)
