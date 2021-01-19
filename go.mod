@@ -41,7 +41,7 @@ require (
 	github.com/admpub/ccs-gm v0.0.3
 	github.com/admpub/checksum v1.0.1
 	github.com/admpub/color v1.7.0
-	github.com/admpub/confl v0.0.1
+	github.com/admpub/confl v0.0.3
 	github.com/admpub/cr v0.0.0-20200630080251-9947244796af
 	github.com/admpub/cron v0.0.1
 	github.com/admpub/decimal v0.0.0-20180709203117-cd690d0c9e24 // indirect
