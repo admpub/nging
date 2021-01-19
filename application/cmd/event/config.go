@@ -46,3 +46,15 @@ var (
 	// Welcome 欢迎语
 	Welcome = "Thank you for choosing nging %s, I hope you enjoy using it.\nToday is %s."
 )
+
+func IsWeb() bool {
+	return IsServerType(`web`)
+}
+
+func IsServerType(typ string) bool {
+	return echo.String(`serverType`) == typ
+}
+
+func SetServerType(typ string) {
+	echo.Set(`serverType`, typ)
+}

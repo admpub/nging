@@ -85,9 +85,11 @@ If you have already purchased a license, please place the ` + license.FileName()
 
 	//独立模块
 	if config.DefaultCLIConfig.OnlyRunServer() {
+		event.SetServerType(config.DefaultCLIConfig.Type)
 		return nil
 	}
 
+	event.SetServerType(`web`)
 	//Manager
 	config.DefaultCLIConfig.RunStartup()
 

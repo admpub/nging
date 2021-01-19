@@ -4,6 +4,7 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
+	"github.com/admpub/nging/application/cmd/event"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/system"
@@ -47,6 +48,9 @@ func init() {
 		return com.JSONEncode(cfg)
 	})
 	config.OnInitSettings(func(cfg echo.H) error {
+		if !event.IsWeb() {
+			return nil
+		}
 		settings, ok := cfg.Store(`base`).Get(`systemStatus`).(*system.Settings)
 		if !ok || !settings.MonitorOn {
 			return nil
@@ -55,6 +59,9 @@ func init() {
 		return nil
 	})
 	config.OnSetSettings(func(group string, cfg echo.H) error {
+		if !event.IsWeb() {
+			return nil
+		}
 		if group != `base` {
 			return nil
 		}

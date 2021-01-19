@@ -113,6 +113,7 @@ func (c *CLIConfig) OnlyRunServer() bool {
 		startup.FireAfter(c.Type)
 		return true
 	default:
+		// manager mode
 		if c.Type == `official` || !event.SupportManager {
 			c.Startup = `none`
 			return false
