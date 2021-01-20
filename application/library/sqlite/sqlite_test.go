@@ -51,17 +51,25 @@ var sqlStr = `CREATE TABLE ` + "`" + `forever_process` + "`" + ` (
 	UNIQUE KEY ` + "`" + `name` + "`" + ` (` + "`" + `name` + "`" + `)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='持久进程';`
 
+func parseTestSQL(sql string) error {
+	sqls, err := covertCreateTableSQL(sql)
+	if err != nil {
+		return err
+	}
+	for _, sql := range sqls {
+		fmt.Println(sql)
+	}
+	return nil
+}
+
 func TestMySQLToSQLite(t *testing.T) {
-	err := common.ParseSQL(sqlStr, false, func(sql string) error {
-		sqls, err := covertCreateTableSQL(sql)
-		if err != nil {
-			return err
-		}
-		for _, sql := range sqls {
-			fmt.Println(sql)
-		}
-		return nil
-	})
+	fmt.Println(`============= single-line:`)
+	err := common.ParseSQL(sqlStr, false, parseTestSQL)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(`============= multi-line:`)
+	err = parseTestSQL(sqlStr)
 	if err != nil {
 		panic(err)
 	}

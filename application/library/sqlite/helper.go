@@ -24,6 +24,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/admpub/nging/application/library/config"
 	"github.com/webx-top/com"
@@ -31,13 +32,13 @@ import (
 
 var (
 	sqlComment   = regexp.MustCompile("(?is) COMMENT '[^']*'")
-	sqlPK        = regexp.MustCompile("(?is),PRIMARY KEY \\(([^)]+)\\)([,]?)")
+	sqlPK        = regexp.MustCompile("(?is),[\\s]*PRIMARY KEY \\(([^)]+)\\)([,]?)")
 	sqlEngine    = regexp.MustCompile("(?is) ENGINE=[^ ]+ [^;]*;")
 	sqlEnum      = regexp.MustCompile("(?is) (enum|set)\\(([^)]+)\\) ")
 	sqlUnsigned  = regexp.MustCompile("(?is) unsigned ")
 	sqlTableName = regexp.MustCompile("CREATE TABLE [^`]*`([^`]+)` \\(")
-	sqlUnique    = regexp.MustCompile("(?is),UNIQUE KEY `([\\w]+)` \\(([^)]+)\\)([,]?)")
-	sqlIndex     = regexp.MustCompile("(?is),KEY `([\\w]+)` \\(([^)]+)\\)([,]?)")
+	sqlUnique    = regexp.MustCompile("(?is),[\\s]*UNIQUE KEY `([\\w]+)` \\(([^)]+)\\)([,]?)")
+	sqlIndex     = regexp.MustCompile("(?is),[\\s]*KEY `([\\w]+)` \\(([^)]+)\\)([,]?)")
 	sqlInteger   = regexp.MustCompile("(?is) (smallint|tinyint|bigint|int)\\([0-9]+\\) ")
 	sqlCharset   = regexp.MustCompile("(?is) character set [^ ]* ")
 	sqlOnUpdate  = regexp.MustCompile("(?is) on update [^,]*")
@@ -48,8 +49,8 @@ var (
 	alterSQLColumnA           = regexp.MustCompile("(?is) (FIRST|LAST)$")
 	alterSQLTableName         = regexp.MustCompile("ALTER TABLE `([^`]+)`")
 	alterSQLOperate           = regexp.MustCompile("(?is)[\\s]+(DROP|CHANGE|ADD) (INDEX )?([^,;]+)[,;]")
-	alterSQLFieldChange       = regexp.MustCompile("(?is)`([^ ]+)` `([^ ]+)` ([^ ]+)") //旧字段名 新字段名 新字段数据类型
-	alterSQLFieldAdd          = regexp.MustCompile("(?is)`([^ ]+)` ([^ ]+)")           //新字段名 新字段数据类型
+	alterSQLFieldChange       = regexp.MustCompile("(?is)[\\s]*`([^ ]+)` `([^ ]+)` ([^ ]+)") //旧字段名 新字段名 新字段数据类型
+	alterSQLFieldAdd          = regexp.MustCompile("(?is)[\\s]*`([^ ]+)` ([^ ]+)")           //新字段名 新字段数据类型
 	alterSQLFieldNULL         = regexp.MustCompile("(?is) (NOT )?NULL")
 	alterSQLFieldDefaultValue = regexp.MustCompile("(?is) DEFAULT ([^ ]+)")
 	alterSQLFieldUnsigned     = regexp.MustCompile("(?is) unsigned")
@@ -353,15 +354,16 @@ func execAlter(sqlStr string) error {
 			}
 		}
 	}
-
+	tempTable := "_" + tableName + "_old_" + time.Now().Local().Format("20060102_150405")
+	newTableFields := "`" + strings.Join(sqlFieldsToInsert, "`,`") + "`"
 	queryies := []string{
 		"SAVEPOINT alter_column_" + tableName,
 		"PRAGMA foreign_keys = 0",
 		"PRAGMA triggers = NO",
-		"CREATE TABLE `temp_" + tableName + "` AS SELECT * FROM `" + tableName + "`",
+		"ALTER TABLE `" + tableName + "` RENAME TO `" + tempTable + "`",
 		"DROP TABLE `" + tableName + "`",
 		"CREATE TABLE `" + tableName + "` (" + strings.Trim(ddlFieldsDef, " \n\r\t,") + ")",
-		"INSERT INTO `" + tableName + "` SELECT " + strings.Join(sqlFieldsToInsert, ",") + " FROM `temp_" + tableName + "`",
+		"INSERT INTO `" + tableName + "` () SELECT " + newTableFields + " FROM `" + tempTable + "`",
 		"DROP TABLE `temp_" + tableName + "`",
 	}
 	// Create indexes for the new table
