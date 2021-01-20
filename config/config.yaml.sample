@@ -8,11 +8,6 @@ db {
   debug : true
 }
 sys {
-  accounts : {
-    admin : {
-      password : "admin"
-    }
-  }
   sslHosts               : []
   sslCertFile            : ""
   sslKeyFile             : ""
