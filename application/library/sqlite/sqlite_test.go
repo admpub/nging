@@ -21,6 +21,8 @@ package sqlite
 import (
 	"fmt"
 	"testing"
+
+	"github.com/admpub/nging/application/library/common"
 )
 
 var sqlStr = `CREATE TABLE ` + "`" + `forever_process` + "`" + ` (
@@ -50,7 +52,17 @@ var sqlStr = `CREATE TABLE ` + "`" + `forever_process` + "`" + ` (
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='持久进程';`
 
 func TestMySQLToSQLite(t *testing.T) {
-	r := mySQLField2SQLite(sqlStr)
-	fmt.Println(r)
-	panic(r)
+	err := common.ParseSQL(sqlStr, false, func(sql string) error {
+		sqls, err := covertCreateTableSQL(sql)
+		if err != nil {
+			return err
+		}
+		for _, sql := range sqls {
+			fmt.Println(sql)
+		}
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
 }

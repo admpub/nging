@@ -61,13 +61,41 @@ var (
 )
 
 func execIntall(sqlStr string) error {
+	sqls, err := covertCreateTableSQL(sqlStr)
+	if err != nil {
+		return err
+	}
+	for _, sql := range sqls {
+		err = config.ExecMySQL(sql)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+//CREATE TABLE `db_sync` (`id` integer PRIMARY KEY NOT NULL ,`dsn_source` varchar(255) NOT NULL,`dsn_destination` varchar(255) NOT NULL,`tables` text NOT NULL,`skip_tables` text NOT NULL,`alter_ignore` text NOT NULL,`drop` integer NOT NULL DEFAULT '0',`mail_to` varchar(200) NOT NULL DEFAULT '',`created` integer NOT NULL,`updated` integer NOT NULL DEFAULT '0')
+func createTableSQL(table string) string {
+	sqlStr := `select sql from SQLite_Master where tbl_name = '` + table + `' and type='table'`
+	rows := []map[string]string{}
+	_, err := config.QueryTo(sqlStr, &rows)
+	if err != nil {
+		log.Println(err.Error(), `->SQL:`, sqlStr)
+	}
+	if len(rows) > 0 {
+		return rows[0]["sql"]
+	}
+	return ``
+}
+
+func covertCreateTableSQL(sqlStr string) ([]string, error) {
 	matches := sqlTableName.FindStringSubmatch(sqlStr)
 	if matches == nil {
-		return errors.New(`Can not find table name`)
+		return nil, errors.New(`Can not find table name`)
 	}
 	tableName := matches[1]
 	sqlStr = mySQLField2SQLite(sqlStr)
-
+	var sqls []string
 	matches = sqlPK.FindStringSubmatch(sqlStr)
 	if len(matches) > 1 {
 		sqlStr = sqlPK.ReplaceAllString(sqlStr, `$2`)
@@ -121,39 +149,16 @@ func execIntall(sqlStr string) error {
 		}
 		matches2 = sqlIndex.FindAllStringSubmatch(sqlStr, -1)
 	}
-	err := config.ExecMySQL(sqlStr)
-	if err != nil {
-		return err
-	}
+	sqls = append(sqls, sqlStr)
 	for _, v := range indexes {
 		sql := fmt.Sprintf("CREATE INDEX `IDX_%[2]s_%[1]s` ON `%[2]s`(%[3]s)", v["name"], v["table"], v["columns"])
-		err = config.ExecMySQL(sql)
-		if err != nil {
-			return err
-		}
+		sqls = append(sqls, sql)
 	}
 	for _, v := range uniqueIndexes {
 		sql := fmt.Sprintf("CREATE UNIQUE INDEX `UNQ_%[2]s_%[1]s` ON `%[2]s`(%[3]s)", v["name"], v["table"], v["columns"])
-		err = config.ExecMySQL(sql)
-		if err != nil {
-			return err
-		}
+		sqls = append(sqls, sql)
 	}
-	return nil
-}
-
-//CREATE TABLE `db_sync` (`id` integer PRIMARY KEY NOT NULL ,`dsn_source` varchar(255) NOT NULL,`dsn_destination` varchar(255) NOT NULL,`tables` text NOT NULL,`skip_tables` text NOT NULL,`alter_ignore` text NOT NULL,`drop` integer NOT NULL DEFAULT '0',`mail_to` varchar(200) NOT NULL DEFAULT '',`created` integer NOT NULL,`updated` integer NOT NULL DEFAULT '0')
-func createTableSQL(table string) string {
-	sqlStr := `select sql from SQLite_Master where tbl_name = '` + table + `' and type='table'`
-	rows := []map[string]string{}
-	_, err := config.QueryTo(sqlStr, &rows)
-	if err != nil {
-		log.Println(err.Error(), `->SQL:`, sqlStr)
-	}
-	if len(rows) > 0 {
-		return rows[0]["sql"]
-	}
-	return ``
+	return sqls, nil
 }
 
 func foreignKeysState() string {
