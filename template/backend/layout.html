@@ -67,6 +67,11 @@
 	<link rel="stylesheet" href="{{AssetsURL}}/js/bootstrap.typeahead/typeahead.css?t={{BuildTime}}" />
 	<link rel="stylesheet" href="{{AssetsURL}}/css/form/checkbox.css?t={{BuildTime}}" />
 	{{Include "global_js"}}
+	{{- range $k,$head := GlobalHeads -}}
+	{{- if $head -}}
+	{{- if $head.Tmpl}}{{Fetch $head.Tmpl $}}{{end -}}
+	{{- end -}}
+	{{- end -}}
     {{Block "head"}}{{/Block}}
 	<link id="css-lazyload-end" rel="stylesheet" href="{{AssetsURL}}/css/reset.css?t={{BuildTime}}" />
 	<!-- Custom styles for this template -->

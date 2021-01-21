@@ -201,6 +201,11 @@ func BackendFuncMap() echo.MiddlewareFunc {
 				buttons.Ready(c)
 				return buttons
 			})
+			c.SetFunc(`GlobalHeads`, func() dashboard.GlobalHeads {
+				heads := dashboard.GlobalHeadAll(c)
+				heads.Ready(c)
+				return heads
+			})
 			c.SetFunc(`GlobalFooters`, func() dashboard.GlobalFooters {
 				footers := dashboard.GlobalFooterAll(c)
 				footers.Ready(c)
