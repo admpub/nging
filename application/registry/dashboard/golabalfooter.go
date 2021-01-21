@@ -22,8 +22,12 @@ import (
 	"github.com/webx-top/echo"
 )
 
-func NewGlobalFooter(content func(echo.Context) error) *GlobalFooter {
-	return &GlobalFooter{content: content}
+func NewGlobalFooter(tmpl string, handle ...func(echo.Context) error) *GlobalFooter {
+	var content func(echo.Context) error
+	if len(handle) > 0 {
+		content = handle[0]
+	}
+	return &GlobalFooter{Tmpl: tmpl, content: content}
 }
 
 type GlobalFooter struct {
@@ -40,6 +44,11 @@ func (c *GlobalFooter) Ready(ctx echo.Context) error {
 
 func (c *GlobalFooter) SetContentGenerator(content func(echo.Context) error) *GlobalFooter {
 	c.content = content
+	return c
+}
+
+func (c *GlobalFooter) SetTmpl(tmpl string) *GlobalFooter {
+	c.Tmpl = tmpl
 	return c
 }
 
