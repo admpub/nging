@@ -361,9 +361,10 @@ func execAlter(sqlStr string) error {
 		"PRAGMA foreign_keys = 0",
 		"PRAGMA triggers = NO",
 		"ALTER TABLE `" + tableName + "` RENAME TO `" + tempTable + "`",
+		//"CREATE TABLE `" + tempTable + "` AS SELECT * FROM `" + tableName + "`",
 		"DROP TABLE `" + tableName + "`",
 		"CREATE TABLE `" + tableName + "` (" + strings.Trim(ddlFieldsDef, " \n\r\t,") + ")",
-		"INSERT INTO `" + tableName + "` () SELECT " + newTableFields + " FROM `" + tempTable + "`",
+		"INSERT INTO `" + tableName + "` SELECT " + newTableFields + " FROM `" + tempTable + "`",
 		"DROP TABLE `temp_" + tableName + "`",
 	}
 	// Create indexes for the new table
