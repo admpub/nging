@@ -362,10 +362,10 @@ func execAlter(sqlStr string) error {
 		"PRAGMA triggers = NO",
 		"ALTER TABLE `" + tableName + "` RENAME TO `" + tempTable + "`",
 		//"CREATE TABLE `" + tempTable + "` AS SELECT * FROM `" + tableName + "`",
-		"DROP TABLE `" + tableName + "`",
+		//"DROP TABLE `" + tableName + "`",
 		"CREATE TABLE `" + tableName + "` (" + strings.Trim(ddlFieldsDef, " \n\r\t,") + ")",
 		"INSERT INTO `" + tableName + "` SELECT " + newTableFields + " FROM `" + tempTable + "`",
-		"DROP TABLE `temp_" + tableName + "`",
+		"DROP TABLE `" + tempTable + "`",
 	}
 	// Create indexes for the new table
 	indexes := indexSQL(tableName)
