@@ -21,11 +21,13 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/webx-top/com"
 )
@@ -90,10 +92,12 @@ func createTableSQL(table string) string {
 	return ``
 }
 
+var errCanNotFindTableName = errors.New(`Can not find table name`)
+
 func covertCreateTableSQL(sqlStr string) ([]string, error) {
 	matches := sqlTableName.FindStringSubmatch(sqlStr)
 	if matches == nil {
-		return nil, errors.New(`Can not find table name`)
+		return nil, errCanNotFindTableName
 	}
 	tableName := matches[1]
 	sqlStr = mySQLField2SQLite(sqlStr)
@@ -109,32 +113,9 @@ func covertCreateTableSQL(sqlStr string) ([]string, error) {
 		}
 	}
 	sqlStr = replaceEnum(sqlStr)
-	matches2 := sqlUnique.FindAllStringSubmatch(sqlStr, -1)
-	uniqueIndexes := []map[string]string{}
-	for matches2 != nil {
-		for _, matches := range matches2 {
-			sqlStr = sqlUnique.ReplaceAllString(sqlStr, `$3`)
-			uniqueIndexes = append(uniqueIndexes, map[string]string{
-				`name`:    matches[1],
-				`table`:   tableName,
-				`columns`: matches[2],
-			})
-		}
-		matches2 = sqlUnique.FindAllStringSubmatch(sqlStr, -1)
-	}
-	matches2 = sqlIndex.FindAllStringSubmatch(sqlStr, -1)
-	indexes := []map[string]string{}
-	for matches2 != nil {
-		for _, matches := range matches2 {
-			sqlStr = sqlIndex.ReplaceAllString(sqlStr, `$3`)
-			indexes = append(indexes, map[string]string{
-				`name`:    matches[1],
-				`table`:   tableName,
-				`columns`: matches[2],
-			})
-		}
-		matches2 = sqlIndex.FindAllStringSubmatch(sqlStr, -1)
-	}
+	var indexes, uniqueIndexes []map[string]string
+	uniqueIndexes, sqlStr = replaceUniqueIndex(tableName, sqlStr)
+	indexes, sqlStr = replaceIndex(tableName, sqlStr)
 	sqls = append(sqls, sqlStr)
 	for _, v := range indexes {
 		sql := fmt.Sprintf("CREATE INDEX `IDX_%[2]s_%[1]s` ON `%[2]s`(%[3]s);", v["name"], v["table"], v["columns"])
@@ -147,29 +128,79 @@ func covertCreateTableSQL(sqlStr string) ([]string, error) {
 	return sqls, nil
 }
 
+func replaceIndex(tableName, sqlStr string) ([]map[string]string, string) {
+	indexes := []map[string]string{}
+	for {
+		var found bool
+		sqlStr = sqlIndex.ReplaceAllStringFunc(sqlStr, func(s string) string {
+			match := sqlIndex.FindStringSubmatch(s)
+			indexes = append(indexes, map[string]string{
+				`name`:    match[1],
+				`table`:   tableName,
+				`columns`: match[2],
+			})
+			found = true
+			return match[3]
+		})
+		if !found {
+			break
+		}
+	}
+	return indexes, sqlStr
+}
+
+func replaceUniqueIndex(tableName, sqlStr string) ([]map[string]string, string) {
+	uniqueIndexes := []map[string]string{}
+	for {
+		var found bool
+		sqlStr = sqlUnique.ReplaceAllStringFunc(sqlStr, func(s string) string {
+			match := sqlUnique.FindStringSubmatch(s)
+			uniqueIndexes = append(uniqueIndexes, map[string]string{
+				`name`:    match[1],
+				`table`:   tableName,
+				`columns`: match[2],
+			})
+			found = true
+			return match[3]
+		})
+		if !found {
+			break
+		}
+	}
+	return uniqueIndexes, sqlStr
+}
+
 func replaceEnum(sqlStr string) string {
-	return sqlEnum.ReplaceAllStringFunc(sqlStr, func(s string) string {
-		match := sqlEnum.FindStringSubmatch(s)
-		items := strings.Split(match[2], `,`)
-		var maxSize int
-		for _, item := range items {
-			size := len(item)
-			if size > 0 {
-				switch item[0] {
-				case '"', '\'':
-					size -= 2
-				default:
+	for {
+		var found bool
+		sqlStr = sqlEnum.ReplaceAllStringFunc(sqlStr, func(s string) string {
+			found = true
+			match := sqlEnum.FindStringSubmatch(s)
+			items := strings.Split(match[2], `,`)
+			var maxSize int
+			for _, item := range items {
+				size := len(item)
+				if size > 0 {
+					switch item[0] {
+					case '"', '\'':
+						size -= 2
+					default:
+					}
+				}
+				if size > maxSize {
+					maxSize = size
 				}
 			}
-			if size > maxSize {
-				maxSize = size
+			if maxSize < 1 {
+				maxSize = 1
 			}
+			return ` char(` + strconv.Itoa(maxSize) + `) `
+		})
+		if !found {
+			break
 		}
-		if maxSize < 1 {
-			maxSize = 1
-		}
-		return ` char(` + strconv.Itoa(maxSize) + `) `
-	})
+	}
+	return sqlStr
 }
 
 func foreignKeysState() string {
@@ -405,4 +436,38 @@ func ExecSQL(sqlStr string) error {
 	// 	return execAlter(sqlStr)
 	// }
 	return config.ExecMySQL(sqlStr)
+}
+
+// ConvertMySQLFile 转换MySQL文件为SQLite文件
+func ConvertMySQLFile(sqlFile string, sqliteSQLFile string) error {
+	fp, err := os.OpenFile(sqliteSQLFile, os.O_WRONLY|os.O_CREATE, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	defer fp.Close()
+	err = common.ParseSQL(sqlFile, true, func(s string) error {
+		sqls, err := covertCreateTableSQL(s)
+		if err == nil {
+			fp.WriteString(strings.Join(sqls, "\n") + "\n")
+		} else if err != errCanNotFindTableName {
+			fmt.Println(err)
+		}
+		return nil
+	})
+	return err
+}
+
+// ConvertMySQL 转换MySQL为SQLite
+func ConvertMySQL(sqlFile string) (string, error) {
+	var sqlStr string
+	err := common.ParseSQL(sqlFile, true, func(s string) error {
+		sqls, err := covertCreateTableSQL(s)
+		if err == nil {
+			sqlStr += strings.Join(sqls, "\n") + "\n"
+		} else if err != errCanNotFindTableName {
+			fmt.Println(err)
+		}
+		return nil
+	})
+	return sqlStr, err
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/webx-top/db/mysql"
 )
 
-func SQLLineParser(exec func(string) error) func(string) error {
+func SQLLineParser(exec func(string) error, lastSQLs ...*string) func(string) error {
 	var sqlStr string
 	return func(line string) error {
 		if strings.HasPrefix(line, `--`) {
@@ -26,6 +26,9 @@ func SQLLineParser(exec func(string) error) func(string) error {
 				sqlStr = ``
 			}()
 			//println(sqlStr)
+			if sqlStr == `;` {
+				return nil
+			}
 			return exec(sqlStr)
 		}
 		sqlStr += "\n"
