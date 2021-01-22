@@ -126,12 +126,12 @@
 {{Block "importJS"}}{{/Block}}
 {{Include "init_js"}}
 <script type="text/javascript" src="{{AssetsURL}}/js/behaviour/page/footer.min.js?t={{BuildTime}}"></script>
-{{Block "footer"}}{{/Block}}
 {{- range $k,$footer := GlobalFooters -}}
 {{- if $footer -}}
 {{- if $footer.Tmpl}}{{Fetch $footer.Tmpl $}}{{end -}}
 {{- end -}}
 {{- end -}}
+{{Block "footer"}}{{/Block}}
 <div id="loading-status"><i class="fa fa-spinner fa-spin fa-3x"></i></div>
 <script type="text/javascript" async src="{{TrackerURL}}"></script>
 </body>

@@ -48,6 +48,7 @@ var (
 	alterSQLColumnB           = regexp.MustCompile("(?is) (AFTER|BEFORE) `[^`]+`")
 	alterSQLColumnA           = regexp.MustCompile("(?is) (FIRST|LAST)$")
 	alterSQLTableName         = regexp.MustCompile("ALTER TABLE `([^`]+)`")
+	alterSQLRenameTableName   = regexp.MustCompile("ALTER TABLE `([^`]+)` RENAME TO ")
 	alterSQLOperate           = regexp.MustCompile("(?is)[\\s]+(DROP|CHANGE|ADD) (INDEX )?([^,;]+)[,;]")
 	alterSQLFieldChange       = regexp.MustCompile("(?is)[\\s]*`([^ ]+)` `([^ ]+)` ([^ ]+)") //旧字段名 新字段名 新字段数据类型
 	alterSQLFieldAdd          = regexp.MustCompile("(?is)[\\s]*`([^ ]+)` ([^ ]+)")           //新字段名 新字段数据类型
@@ -58,7 +59,7 @@ var (
 	alterSQLFieldUnique       = regexp.MustCompile("(?is) UNIQUE")
 	alterSQLFieldCollate      = regexp.MustCompile("(?is) COLLATE [']?([^' ]+)[']?")
 	sqlDDLParseSingle         = regexp.MustCompile("`([^`]+)` ([^,]+)")
-	sqlDDLSeperator           = ",`"
+	sqlDDLSeperator           = regexp.MustCompile(",[\\r\\n\\s]*`")
 )
 
 func execIntall(sqlStr string) error {
@@ -107,24 +108,8 @@ func covertCreateTableSQL(sqlStr string) ([]string, error) {
 			sqlStr = sqlPKCol.ReplaceAllString(sqlStr, `$1 integer PRIMARY KEY $4`)
 		}
 	}
-	matches2 := sqlEnum.FindAllStringSubmatch(sqlStr, -1)
-	if matches2 != nil {
-		for _, matches := range matches2 {
-			items := strings.Split(matches[2], `,`)
-			var maxSize int
-			for _, item := range items {
-				size := len(item)
-				if size > maxSize {
-					maxSize = size
-				}
-			}
-			if maxSize > 1 {
-				maxSize -= 2
-			}
-			sqlStr = sqlEnum.ReplaceAllString(sqlStr, ` char(`+strconv.Itoa(maxSize)+`) `)
-		}
-	}
-	matches2 = sqlUnique.FindAllStringSubmatch(sqlStr, -1)
+	sqlStr = replaceEnum(sqlStr)
+	matches2 := sqlUnique.FindAllStringSubmatch(sqlStr, -1)
 	uniqueIndexes := []map[string]string{}
 	for matches2 != nil {
 		for _, matches := range matches2 {
@@ -160,6 +145,31 @@ func covertCreateTableSQL(sqlStr string) ([]string, error) {
 		sqls = append(sqls, sql)
 	}
 	return sqls, nil
+}
+
+func replaceEnum(sqlStr string) string {
+	return sqlEnum.ReplaceAllStringFunc(sqlStr, func(s string) string {
+		match := sqlEnum.FindStringSubmatch(s)
+		items := strings.Split(match[2], `,`)
+		var maxSize int
+		for _, item := range items {
+			size := len(item)
+			if size > 0 {
+				switch item[0] {
+				case '"', '\'':
+					size -= 2
+				default:
+				}
+			}
+			if size > maxSize {
+				maxSize = size
+			}
+		}
+		if maxSize < 1 {
+			maxSize = 1
+		}
+		return ` char(` + strconv.Itoa(maxSize) + `) `
+	})
 }
 
 func foreignKeysState() string {
@@ -222,6 +232,9 @@ func mySQLField2SQLite(sqlStr string) string {
 //CHANGE `id` `id` int(11) unsigned NOT NULL FIRST,
 //CHANGE `created` `created` int(11) NOT NULL COMMENT '创建时间' AUTO_INCREMENT UNIQUE AFTER `elapsed`;
 func execAlter(sqlStr string) error {
+	if alterSQLRenameTableName.MatchString(sqlStr) {
+		return config.ExecMySQL(sqlStr)
+	}
 	matches := alterSQLTableName.FindStringSubmatch(sqlStr)
 	if matches == nil {
 		return errors.New(`Can not find table name`)
@@ -244,7 +257,7 @@ func execAlter(sqlStr string) error {
 	fieldsDef = strings.TrimRight(fieldsDef, `)`)
 	fields := map[string]string{}
 	fieldk := []string{}
-	for _, fieldDef := range strings.Split(fieldsDef, sqlDDLSeperator) {
+	for _, fieldDef := range sqlDDLSeperator.Split(fieldsDef, -1) {
 		match := sqlDDLParseSingle.FindStringSubmatch("`" + fieldDef)
 		if len(match) < 3 {
 			continue

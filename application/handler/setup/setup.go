@@ -101,9 +101,8 @@ func install(ctx echo.Context, sqlFile string, isFile bool, charset string, inst
 		if strings.HasPrefix(line, `/*`) && strings.HasSuffix(line, `*/;`) {
 			return nil
 		}
-		line = strings.TrimSpace(line)
-		sqlStr += line
-		if strings.HasSuffix(line, `;`) && len(sqlStr) > 0 {
+		sqlStr += line + "\n"
+		if strings.HasSuffix(strings.TrimRight(line, " "), `;`) {
 			//installProgress.Summary = sqlStr
 			defer func() {
 				sqlStr = ``

@@ -1877,9 +1877,8 @@ func (m *mySQL) RunCommand() error {
 					if strings.HasPrefix(line, `/*`) && strings.HasSuffix(line, `*/;`) {
 						return nil
 					}
-					line = strings.TrimSpace(line)
-					sqlStr += line
-					if strings.HasSuffix(line, `;`) && len(sqlStr) > 0 {
+					sqlStr += line + "\n"
+					if strings.HasSuffix(strings.TrimRight(line, " "), `;`) {
 						defer func() {
 							sqlStr = ``
 						}()

@@ -53,9 +53,8 @@ func Upgrade() error {
 		if strings.HasPrefix(line, `--`) {
 			return nil
 		}
-		line = strings.TrimSpace(line)
-		sqlStr += line
-		if strings.HasSuffix(line, `;`) && len(sqlStr) > 0 {
+		sqlStr += line + "\n"
+		if strings.HasSuffix(strings.TrimRight(line, " "), `;`) {
 			defer func() {
 				sqlStr = ``
 			}()

@@ -20,6 +20,10 @@ package sqlite
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/admpub/nging/application/library/common"
@@ -70,6 +74,21 @@ func TestMySQLToSQLite(t *testing.T) {
 	}
 	fmt.Println(`============= multi-line:`)
 	err = parseTestSQL(sqlStr)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func TestMySQLToSQLiteFile(t *testing.T) {
+	b, err := ioutil.ReadFile(filepath.Join(os.Getenv("GOPATH"), `src/github.com/admpub/nging/config/install.sql`))
+	if err != nil {
+		panic(err)
+	}
+	sqls, err := covertCreateTableSQL(string(b))
+	if err != nil {
+		panic(err)
+	}
+	err = ioutil.WriteFile(`/Users/hank/Downloads/nging.sqlite.sql`, []byte(strings.Join(sqls, "\n")), os.ModePerm)
 	if err != nil {
 		panic(err)
 	}
