@@ -10,15 +10,15 @@ type myTimer struct {
 	end   time.Time
 }
 
-func newMyTimer() *myTimer {
+func NewMyTimer() *myTimer {
 	return &myTimer{
 		start: time.Now(),
 	}
 }
 
-func (mt *myTimer) stop() {
+func (mt *myTimer) Stop() {
 	mt.end = time.Now()
 }
-func (mt *myTimer) usedSecond() string {
+func (mt *myTimer) UsedSecond() string {
 	return fmt.Sprintf("%f s", mt.end.Sub(mt.start).Seconds())
 }

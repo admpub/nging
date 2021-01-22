@@ -82,7 +82,7 @@ require (
 	github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b
 	github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5
 	github.com/admpub/metrohash v0.0.0-20160821164112-8d1c8b6bed28
-	github.com/admpub/mysql-schema-sync v0.0.4
+	github.com/admpub/mysql-schema-sync v0.0.5
 	github.com/admpub/null v8.0.1+incompatible
 	github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48 // indirect
 	github.com/admpub/phantomjs v0.0.0-20180924162111-8a5af756140e
@@ -140,7 +140,6 @@ require (
 	github.com/kardianos/service v1.2.0 // indirect
 	github.com/markbates/goth v1.66.0 // indirect
 	github.com/mattn/go-runewidth v0.0.10
-	github.com/mattn/go-sqlite3 v1.14.5 // indirect
 	github.com/mholt/certmagic v0.8.3
 	github.com/microcosm-cc/bluemonday v1.0.4
 	github.com/minio/minio-go v6.0.14+incompatible

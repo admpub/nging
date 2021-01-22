@@ -18,10 +18,15 @@ type Config struct {
 	Sync            bool
 	Drop            bool
 	sqlPreprocessor func(string) string
+	comparer        Comparer
 }
 
 func (cfg *Config) SetSQLPreprocessor(fn func(string) string) {
 	cfg.sqlPreprocessor = fn
+}
+
+func (cfg *Config) SetComparer(comparer Comparer) {
+	cfg.comparer = comparer
 }
 
 func (cfg *Config) SQLPreprocessor() func(string) string {

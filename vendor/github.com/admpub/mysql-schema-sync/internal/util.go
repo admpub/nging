@@ -2,6 +2,7 @@ package internal
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"html"
@@ -16,7 +17,7 @@ import (
 const Version = "0.3"
 
 // AppURL site
-const AppURL = "https://github.com/hidu/mysql-schema-sync/"
+const AppURL = "https://github.com/admpub/mysql-schema-sync/"
 
 const timeFormatStd string = "2006-01-02 15:04:05"
 
@@ -91,4 +92,55 @@ func maxMapKeyLen(data interface{}, ext int) string {
 		}
 	}
 	return fmt.Sprintf("%d", l+ext)
+}
+
+func Exec(mydb *sql.DB, query string) (sql.Result, error) {
+	var sqlStr string
+	var ret sql.Result
+	tx, err := mydb.Begin()
+	if err != nil {
+		return nil, err
+	}
+	execute := func(line string) (rErr error) {
+		if strings.HasPrefix(line, `--`) {
+			return nil
+		}
+		if strings.HasPrefix(line, `/*`) && strings.HasSuffix(line, `*/;`) {
+			return nil
+		}
+		line = strings.TrimRight(line, "\r ")
+		sqlStr += line
+		if strings.HasSuffix(line, `;`) {
+			ret, err = tx.Exec(sqlStr)
+			sqlStr = ``
+			log.Println("exec_one:[", sqlStr, "]", err)
+			return err
+		}
+		sqlStr += "\n"
+		return nil
+	}
+	for _, line := range strings.Split(query, "\n") {
+		line = strings.TrimSpace(line)
+		if len(line) == 0 {
+			continue
+		}
+		err = execute(line)
+		if err != nil {
+			break
+		}
+	}
+	if err == nil {
+		sqlStr = strings.TrimSpace(sqlStr)
+		if len(sqlStr) > 0 {
+			ret, err = tx.Exec(sqlStr)
+			sqlStr = ``
+			log.Println("exec_one:[", sqlStr, "]", err)
+		}
+	}
+	if err == nil {
+		err = tx.Commit()
+	} else {
+		tx.Rollback()
+	}
+	return ret, err
 }

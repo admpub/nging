@@ -10,33 +10,33 @@ import (
 
 // DbIndex db index
 type DbIndex struct {
-	IndexType      indexType
+	IndexType      IndexType
 	Name           string
 	SQL            string
 	RelationTables []string //相关联的表
 }
 
-type indexType string
+type IndexType string
 
 const (
-	indexTypePrimary    indexType = "PRIMARY"
-	indexTypeIndex                = "INDEX"
-	indexTypeForeignKey           = "FOREIGN KEY"
+	IndexTypePrimary    IndexType = "PRIMARY"
+	IndexTypeIndex                = "INDEX"
+	IndexTypeForeignKey           = "FOREIGN KEY"
 )
 
-func (idx *DbIndex) alterAddSQL(drop bool) string {
+func (idx *DbIndex) AlterAddSQL(drop bool) string {
 	alterSQL := []string{}
 	if drop {
-		dropSQL := idx.alterDropSQL()
+		dropSQL := idx.AlterDropSQL()
 		if dropSQL != "" {
 			alterSQL = append(alterSQL, dropSQL)
 		}
 	}
 
 	switch idx.IndexType {
-	case indexTypePrimary:
+	case IndexTypePrimary:
 		alterSQL = append(alterSQL, "ADD "+idx.SQL)
-	case indexTypeIndex, indexTypeForeignKey:
+	case IndexTypeIndex, IndexTypeForeignKey:
 		alterSQL = append(alterSQL, fmt.Sprintf("ADD %s", idx.SQL))
 	default:
 		log.Fatalln("unknow indexType", idx.IndexType)
@@ -49,13 +49,13 @@ func (idx *DbIndex) String() string {
 	return string(bs)
 }
 
-func (idx *DbIndex) alterDropSQL() string {
+func (idx *DbIndex) AlterDropSQL() string {
 	switch idx.IndexType {
-	case indexTypePrimary:
+	case IndexTypePrimary:
 		return "DROP PRIMARY KEY"
-	case indexTypeIndex:
+	case IndexTypeIndex:
 		return fmt.Sprintf("DROP INDEX `%s`", idx.Name)
-	case indexTypeForeignKey:
+	case IndexTypeForeignKey:
 		return fmt.Sprintf("DROP FOREIGN KEY `%s`", idx.Name)
 	default:
 		log.Fatalln("unknow indexType", idx.IndexType)
@@ -68,6 +68,10 @@ func (idx *DbIndex) addRelationTable(table string) {
 	if table != "" {
 		idx.RelationTables = append(idx.RelationTables, table)
 	}
+}
+
+func (idx *DbIndex) AddRelationTable(table string) {
+	idx.addRelationTable(table)
 }
 
 //匹配索引字段
@@ -83,7 +87,7 @@ func parseDbIndexLine(line string) *DbIndex {
 		RelationTables: []string{},
 	}
 	if strings.HasPrefix(line, "PRIMARY") {
-		idx.IndexType = indexTypePrimary
+		idx.IndexType = IndexTypePrimary
 		idx.Name = "PRIMARY KEY"
 		return idx
 	}
@@ -94,7 +98,7 @@ func parseDbIndexLine(line string) *DbIndex {
 	//  KEY `idx_e` (`e`),
 	if indexReg.MatchString(line) {
 		arr := strings.Split(line, "`")
-		idx.IndexType = indexTypeIndex
+		idx.IndexType = IndexTypeIndex
 		idx.Name = arr[1]
 		return idx
 	}
@@ -102,7 +106,7 @@ func parseDbIndexLine(line string) *DbIndex {
 	//CONSTRAINT `busi_table_ibfk_1` FOREIGN KEY (`repo_id`) REFERENCES `repo_table` (`repo_id`)
 	foreignMatches := foreignKeyReg.FindStringSubmatch(line)
 	if len(foreignMatches) > 0 {
-		idx.IndexType = indexTypeForeignKey
+		idx.IndexType = IndexTypeForeignKey
 		idx.Name = foreignMatches[1]
 		idx.addRelationTable(foreignMatches[2])
 		return idx

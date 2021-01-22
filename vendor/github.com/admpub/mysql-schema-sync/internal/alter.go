@@ -5,24 +5,24 @@ import (
 	"strings"
 )
 
-type alterType int
+type AlterType int
 
 const (
-	alterTypeNo     alterType = 0
-	alterTypeCreate           = 1
-	alterTypeDrop             = 2
-	alterTypeAlter            = 3
+	AlterTypeNo     AlterType = 0
+	AlterTypeCreate           = 1
+	AlterTypeDrop             = 2
+	AlterTypeAlter            = 3
 )
 
-func (at alterType) String() string {
+func (at AlterType) String() string {
 	switch at {
-	case alterTypeNo:
+	case AlterTypeNo:
 		return "not_change"
-	case alterTypeCreate:
+	case AlterTypeCreate:
 		return "create"
-	case alterTypeDrop:
+	case AlterTypeDrop:
 		return "drop"
-	case alterTypeAlter:
+	case AlterTypeAlter:
 		return "alter"
 	default:
 		return "unknow"
@@ -30,10 +30,17 @@ func (at alterType) String() string {
 
 }
 
+func NewAlterData(tableName string) *TableAlterData {
+	return &TableAlterData{
+		Table: tableName,
+		Type:  AlterTypeNo,
+	}
+}
+
 // TableAlterData 表的变更情况
 type TableAlterData struct {
 	Table      string
-	Type       alterType
+	Type       AlterType
 	SQL        string
 	SchemaDiff *SchemaDiff
 }

@@ -202,7 +202,7 @@ github.com/admpub/marmot/miner
 # github.com/admpub/metrohash v0.0.0-20160821164112-8d1c8b6bed28
 ## explicit
 github.com/admpub/metrohash
-# github.com/admpub/mysql-schema-sync v0.0.4
+# github.com/admpub/mysql-schema-sync v0.0.5
 ## explicit
 github.com/admpub/mysql-schema-sync/internal
 github.com/admpub/mysql-schema-sync/sync
@@ -833,8 +833,7 @@ github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.10
 ## explicit
 github.com/mattn/go-runewidth
-# github.com/mattn/go-sqlite3 v1.14.5
-## explicit
+# github.com/mattn/go-sqlite3 v1.14.6
 github.com/mattn/go-sqlite3
 # github.com/matttproud/golang_protobuf_extensions v1.0.1
 github.com/matttproud/golang_protobuf_extensions/pbutil

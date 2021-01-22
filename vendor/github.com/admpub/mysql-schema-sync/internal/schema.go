@@ -5,6 +5,15 @@ import (
 	"strings"
 )
 
+func NewSchema(schema string) *MySchema {
+	return &MySchema{
+		SchemaRaw:  schema,
+		Fields:     make(map[string]string),
+		IndexAll:   make(map[string]*DbIndex, 0),
+		ForeignAll: make(map[string]*DbIndex, 0),
+	}
+}
+
 // MySchema table schema
 type MySchema struct {
 	SchemaRaw  string
@@ -60,12 +69,7 @@ func (mys *MySchema) RelationTables() []string {
 func ParseSchema(schema string) *MySchema {
 	schema = strings.TrimSpace(schema)
 	lines := strings.Split(schema, "\n")
-	mys := &MySchema{
-		SchemaRaw:  schema,
-		Fields:     make(map[string]string),
-		IndexAll:   make(map[string]*DbIndex, 0),
-		ForeignAll: make(map[string]*DbIndex, 0),
-	}
+	mys := NewSchema(schema)
 
 	for i := 1; i < len(lines)-1; i++ {
 		line := strings.TrimSpace(lines[i])
@@ -83,7 +87,7 @@ func ParseSchema(schema string) *MySchema {
 				continue
 			}
 			switch idx.IndexType {
-			case indexTypeForeignKey:
+			case IndexTypeForeignKey:
 				mys.ForeignAll[idx.Name] = idx
 			default:
 				mys.IndexAll[idx.Name] = idx
@@ -103,12 +107,16 @@ type SchemaDiff struct {
 	Dest   *MySchema
 }
 
-func newSchemaDiff(table, source, dest string) *SchemaDiff {
+func NewSchemaDiff(table string, source *MySchema, dest *MySchema) *SchemaDiff {
 	return &SchemaDiff{
 		Table:  table,
-		Source: ParseSchema(source),
-		Dest:   ParseSchema(dest),
+		Source: source,
+		Dest:   dest,
 	}
+}
+
+func newSchemaDiff(table, source, dest string) *SchemaDiff {
+	return NewSchemaDiff(table, ParseSchema(source), ParseSchema(dest))
 }
 
 func (sdiff *SchemaDiff) RelationTables() []string {

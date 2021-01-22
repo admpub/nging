@@ -27,7 +27,7 @@ type tableStatics struct {
 
 func newStatics(cfg *Config) *Statics {
 	return &Statics{
-		timer:     newMyTimer(),
+		timer:     NewMyTimer(),
 		tables:    make([]*tableStatics, 0),
 		Config:    cfg,
 		failedNum: -1,
@@ -37,11 +37,11 @@ func newStatics(cfg *Config) *Statics {
 
 func (s *Statics) newTableStatics(table string, sd *TableAlterData) *tableStatics {
 	ts := &tableStatics{
-		timer: newMyTimer(),
+		timer: NewMyTimer(),
 		table: table,
 		alter: sd,
 	}
-	if sd.Type != alterTypeNo {
+	if sd.Type != AlterTypeNo {
 		s.tables = append(s.tables, ts)
 	}
 	return ts
@@ -105,7 +105,7 @@ func (s *Statics) toHTML() string {
 	code += "  host : " + hostName + "\n"
 	code += " start : " + s.timer.start.Format(timeFormatStd) + "\n"
 	code += "   end : " + s.timer.end.Format(timeFormatStd) + "\n"
-	code += "  used : " + s.timer.usedSecond() + "\n"
+	code += "  used : " + s.timer.UsedSecond() + "\n"
 
 	code += "</pre>\n"
 	code += "<h2>Result</h2>\n"
@@ -135,7 +135,7 @@ func (s *Statics) toHTML() string {
 			code += "not sync"
 		}
 		code += "</td>\n"
-		code += "<td>" + tb.timer.usedSecond() + "</td>\n"
+		code += "<td>" + tb.timer.UsedSecond() + "</td>\n"
 		code += "</tr>\n"
 	}
 	code += "</tbody></table>\n<h3>Sqls</h3>\n<pre>"

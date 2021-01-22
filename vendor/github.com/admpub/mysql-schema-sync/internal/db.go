@@ -7,11 +7,17 @@ import (
 )
 
 type DBOperator interface {
+	DBEngine() string
 	GetTableNames() []string
 	GetTableSchema(name string) (schema string)
 	Query(query string, args ...interface{}) (*sql.Rows, error)
+	Exec(query string) (sql.Result, error)
 	Begin() (*sql.Tx, error)
 	Close() error
+}
+
+type Comparer interface {
+	AlterData(sc *SchemaSync, tableName string) *TableAlterData
 }
 
 var _ DBOperator = new(MyDb)
@@ -20,6 +26,7 @@ var _ DBOperator = new(MyDb)
 type MyDb struct {
 	*sql.DB
 	dbType string
+	engine string
 }
 
 // NewMyDb parse dsn
@@ -34,7 +41,12 @@ func NewMyDb(dsn string, dbType string) *MyDb {
 	return &MyDb{
 		DB:     db,
 		dbType: dbType,
+		engine: `mysql`,
 	}
+}
+
+func (db *MyDb) DBEngine() string {
+	return db.engine
 }
 
 // GetTableNames table names
@@ -95,4 +107,10 @@ func (mydb *MyDb) GetTableSchema(name string) (schema string) {
 func (mydb *MyDb) Query(query string, args ...interface{}) (*sql.Rows, error) {
 	log.Println("[SQL]", "["+mydb.dbType+"]", query, args)
 	return mydb.DB.Query(query, args...)
+}
+
+// Exec execute sql query
+func (mydb *MyDb) Exec(query string) (sql.Result, error) {
+	log.Println("[SQL]", "["+mydb.dbType+"]", query)
+	return Exec(mydb.DB, query)
 }

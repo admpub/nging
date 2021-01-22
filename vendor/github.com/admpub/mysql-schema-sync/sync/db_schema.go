@@ -17,6 +17,7 @@ var (
 type MySchemaData struct {
 	Data   string
 	dbType string
+	engine string
 }
 
 // NewMySchemaData object
@@ -24,7 +25,12 @@ func NewMySchemaData(schema string, dbType string) *MySchemaData {
 	return &MySchemaData{
 		Data:   schema,
 		dbType: dbType,
+		engine: `mysql`,
 	}
+}
+
+func (m *MySchemaData) DBEngine() string {
+	return m.engine
 }
 
 // GetTableNames table names
@@ -56,6 +62,12 @@ func (m *MySchemaData) GetTableSchema(name string) (schema string) {
 // Query execute sql query
 func (m *MySchemaData) Query(query string, args ...interface{}) (*sql.Rows, error) {
 	log.Println("[SQL]", "["+m.dbType+"]", query, args)
+	return nil, nil
+}
+
+// Exec execute sql query
+func (m *MySchemaData) Exec(query string) (sql.Result, error) {
+	log.Println("[SQL]", "["+m.dbType+"]", query)
 	return nil, nil
 }
 
