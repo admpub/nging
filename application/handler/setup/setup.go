@@ -92,26 +92,10 @@ func Progress(ctx echo.Context) error {
 }
 
 func install(ctx echo.Context, sqlFile string, isFile bool, charset string, installer func(string) error) (err error) {
-	var sqlStr string
-	installFunction := func(line string) (rErr error) {
-		installProgress.Finished += int64(len(line)) + 1
-		if strings.HasPrefix(line, `--`) {
-			return nil
-		}
-		if strings.HasPrefix(line, `/*`) && strings.HasSuffix(line, `*/;`) {
-			return nil
-		}
-		sqlStr += line + "\n"
-		if strings.HasSuffix(strings.TrimRight(line, " "), `;`) {
-			//installProgress.Summary = sqlStr
-			defer func() {
-				sqlStr = ``
-			}()
-			sqlStr = common.ReplaceCharset(sqlStr, charset, true)
-			return installer(sqlStr)
-		}
-		return nil
-	}
+	installFunction := common.SQLLineParser(func(sqlStr string) error {
+		sqlStr = common.ReplaceCharset(sqlStr, charset, true)
+		return installer(sqlStr)
+	})
 	if isFile {
 		return com.SeekFileLines(sqlFile, installFunction)
 	}

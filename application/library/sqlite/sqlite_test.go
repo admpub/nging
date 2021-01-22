@@ -67,12 +67,12 @@ func parseTestSQL(sql string) error {
 }
 
 func TestMySQLToSQLite(t *testing.T) {
-	fmt.Println(`============= single-line:`)
+	fmt.Println(`============= multi-line:`)
 	err := common.ParseSQL(sqlStr, false, parseTestSQL)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(`============= multi-line:`)
+	fmt.Println(`============= single-line:`)
 	err = parseTestSQL(sqlStr)
 	if err != nil {
 		panic(err)
@@ -80,6 +80,7 @@ func TestMySQLToSQLite(t *testing.T) {
 }
 
 func TestMySQLToSQLiteFile(t *testing.T) {
+	//return
 	b, err := ioutil.ReadFile(filepath.Join(os.Getenv("GOPATH"), `src/github.com/admpub/nging/config/install.sql`))
 	if err != nil {
 		panic(err)

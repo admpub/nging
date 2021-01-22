@@ -22,13 +22,13 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/fatih/color"
 	"github.com/webx-top/com"
 
 	"github.com/admpub/log"
+	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
 )
 
@@ -44,24 +44,11 @@ func Upgrade() error {
 	}
 	log.Info(color.GreenString(`[upgrader]`), `Execute SQL file: `, sqlFile)
 	//创建数据表
-	var sqlStr string
 	installer, ok := config.DBInstallers[config.DefaultConfig.DB.Type]
 	if !ok {
 		return fmt.Errorf(`不支持安装到%s`, config.DefaultConfig.DB.Type)
 	}
-	err := com.SeekFileLines(sqlFile, func(line string) error {
-		if strings.HasPrefix(line, `--`) {
-			return nil
-		}
-		sqlStr += line + "\n"
-		if strings.HasSuffix(strings.TrimRight(line, " "), `;`) {
-			defer func() {
-				sqlStr = ``
-			}()
-			return installer(sqlStr)
-		}
-		return nil
-	})
+	err := com.SeekFileLines(sqlFile, common.SQLLineParser(installer))
 	if err != nil {
 		return err
 	}

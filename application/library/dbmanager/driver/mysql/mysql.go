@@ -1869,28 +1869,14 @@ func (m *mySQL) RunCommand() error {
 			}
 
 			if !regexp.MustCompile(`(?i)^(` + space + `|\()*(SELECT|SHOW|EXPLAIN)\b`).MatchString(query) {
-				var sqlStr string
-				execute := func(line string) (rErr error) {
-					if strings.HasPrefix(line, `--`) {
-						return nil
+				execute := common.SQLLineParser(func(sqlStr string) error {
+					r := &Result{
+						SQL: sqlStr,
 					}
-					if strings.HasPrefix(line, `/*`) && strings.HasSuffix(line, `*/;`) {
-						return nil
-					}
-					sqlStr += line + "\n"
-					if strings.HasSuffix(strings.TrimRight(line, " "), `;`) {
-						defer func() {
-							sqlStr = ``
-						}()
-						r := &Result{
-							SQL: sqlStr,
-						}
-						r.Exec(m.newParam())
-						m.AddResults(r)
-						return r.Error()
-					}
-					return nil
-				}
+					r.Exec(m.newParam())
+					m.AddResults(r)
+					return r.Error()
+				})
 				for _, line := range strings.Split(query, "\n") {
 					line = strings.TrimSpace(line)
 					if len(line) == 0 {

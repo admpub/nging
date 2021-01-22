@@ -10,24 +10,31 @@ import (
 	"github.com/webx-top/db/mysql"
 )
 
-func ParseSQL(sqlFile string, isFile bool, installer func(string) error) (err error) {
+func SQLLineParser(exec func(string) error) func(string) error {
 	var sqlStr string
-	installFunction := func(line string) (rErr error) {
+	return func(line string) error {
 		if strings.HasPrefix(line, `--`) {
 			return nil
 		}
+		line = strings.TrimRight(line, "\r ")
 		if strings.HasPrefix(line, `/*`) && strings.HasSuffix(line, `*/;`) {
 			return nil
 		}
-		sqlStr += line + "\n"
-		if strings.HasSuffix(strings.TrimRight(line, " "), `;`) {
+		sqlStr += line
+		if strings.HasSuffix(line, `;`) {
 			defer func() {
 				sqlStr = ``
 			}()
-			return installer(sqlStr)
+			//println(sqlStr)
+			return exec(sqlStr)
 		}
+		sqlStr += "\n"
 		return nil
 	}
+}
+
+func ParseSQL(sqlFile string, isFile bool, installer func(string) error) (err error) {
+	installFunction := SQLLineParser(installer)
 	if isFile {
 		return com.SeekFileLines(sqlFile, installFunction)
 	}
