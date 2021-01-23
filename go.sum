@@ -250,6 +250,8 @@ github.com/admpub/mysql-schema-sync v0.0.5 h1:PD+S+7NPYe1S+i8Bru1skvUQUscL2pfo93
 github.com/admpub/mysql-schema-sync v0.0.5/go.mod h1:62s+FnWwUvioVybJ3O8DWtM42fkYelj2wxsoEA8l+XU=
 github.com/admpub/mysql-schema-sync v0.0.6 h1:XLR1tkrfYMOHyRlC6sP33cYIqYQg6rw9hrNEtQ7iOsU=
 github.com/admpub/mysql-schema-sync v0.0.6/go.mod h1:62s+FnWwUvioVybJ3O8DWtM42fkYelj2wxsoEA8l+XU=
+github.com/admpub/mysql-schema-sync v0.0.7 h1:xqKTEnHtND3KFAQAKEmEP5N5njUAGy/LDEc2ro/df9o=
+github.com/admpub/mysql-schema-sync v0.0.7/go.mod h1:62s+FnWwUvioVybJ3O8DWtM42fkYelj2wxsoEA8l+XU=
 github.com/admpub/null v8.0.1+incompatible h1:qdlnK7zdAuA2LRMV+vRIXKCsM+kirfH4SntMkdy6Ei4=
 github.com/admpub/null v8.0.1+incompatible/go.mod h1:DMV9RC+JZv6AhaX1E62ur1mS7gyGLYRh+r0s8MF7mHA=
 github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48 h1:WWGrJEBR1fkAGbUmxG/J63ahbq6nb4NrF80miMlyxdU=
