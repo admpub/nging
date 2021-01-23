@@ -14,7 +14,7 @@ import (
 )
 
 // Version version
-const Version = "0.3"
+const Version = "0.4"
 
 // AppURL site
 const AppURL = "https://github.com/admpub/mysql-schema-sync/"
@@ -85,7 +85,6 @@ func dsnSort(dsn string) string {
 
 func maxMapKeyLen(data interface{}, ext int) string {
 	l := 0
-
 	for _, k := range reflect.ValueOf(data).MapKeys() {
 		if k.Len() > l {
 			l = k.Len()
@@ -105,14 +104,19 @@ func Exec(mydb *sql.DB, query string) (sql.Result, error) {
 		if strings.HasPrefix(line, `--`) {
 			return nil
 		}
+		line = strings.TrimRight(line, "\r ")
 		if strings.HasPrefix(line, `/*`) && strings.HasSuffix(line, `*/;`) {
 			return nil
 		}
-		line = strings.TrimRight(line, "\r ")
 		sqlStr += line
 		if strings.HasSuffix(line, `;`) {
+			defer func() {
+				sqlStr = ``
+			}()
+			if sqlStr == `;` {
+				return nil
+			}
 			ret, err = tx.Exec(sqlStr)
-			sqlStr = ``
 			log.Println("exec_one:[", sqlStr, "]", err)
 			return err
 		}
@@ -132,9 +136,11 @@ func Exec(mydb *sql.DB, query string) (sql.Result, error) {
 	if err == nil {
 		sqlStr = strings.TrimSpace(sqlStr)
 		if len(sqlStr) > 0 {
-			ret, err = tx.Exec(sqlStr)
+			if sqlStr != `;` {
+				ret, err = tx.Exec(sqlStr)
+				log.Println("exec_one:[", sqlStr, "]", err)
+			}
 			sqlStr = ``
-			log.Println("exec_one:[", sqlStr, "]", err)
 		}
 	}
 	if err == nil {

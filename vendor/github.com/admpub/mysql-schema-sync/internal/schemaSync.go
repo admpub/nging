@@ -61,7 +61,7 @@ func (sc *SchemaSync) getAlterDataByTable(table string) *TableAlterData {
 }
 
 // SyncSQL4Dest sync schema change
-func (sc *SchemaSync) SyncSQL4Dest(sqlStr string, sqls []string) error {
+func (sc *SchemaSync) SyncSQL4Dest(sqlStr string) error {
 	log.Println("Exec_SQL_START:")
 	log.Println(">>>>>>")
 	log.Println(sqlStr)
@@ -73,28 +73,6 @@ func (sc *SchemaSync) SyncSQL4Dest(sqlStr string, sqls []string) error {
 	}
 	t := NewMyTimer()
 	ret, err := sc.DestDb.Exec(sqlStr)
-
-	//how to enable allowMultiQueries?
-	if err != nil && len(sqls) > 1 {
-		log.Println("exec_mut_query failed,err=", err, ",now exec sqls foreach")
-		tx, errTx := sc.DestDb.Begin()
-		if errTx == nil {
-			for _, sql := range sqls {
-				ret, err = tx.Exec(sql)
-				log.Println("query_one:[", sql, "]", err)
-				if err != nil {
-					break
-				}
-			}
-			if err == nil {
-				err = tx.Commit()
-			} else {
-				tx.Rollback()
-			}
-		} else {
-			err = errTx
-		}
-	}
 	t.Stop()
 	if err != nil {
 		log.Println("EXEC_SQL_FAIELD", err)
@@ -201,7 +179,7 @@ run_sync:
 
 		if sc.Config.Sync {
 
-			ret = sc.SyncSQL4Dest(sql, sqls)
+			ret = sc.SyncSQL4Dest(sql)
 			if ret == nil {
 				countSuccess++
 			} else {
