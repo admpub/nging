@@ -255,6 +255,10 @@ function connectWS(onopen){
 	  ws = null;
   };
 	ws.onmessage = function(evt) {
+    if($(idElem).length<1){
+      ws.close();clear();
+      return;
+    }
     //console.dir(evt.data);
     var info=JSON.parse(evt.data);
     chartCPU(info);
@@ -266,15 +270,15 @@ function tick(){
     connectWS(function(){
       ws.send("ping");
     });
-    if($(idElem).length<1){
-      clearInterval(window._interval);
-      window._interval=null;
-    }
+    if($(idElem).length<1)clear();
 }
-$(function(){
+function clear(){
   if(typeof(window._interval)!='undefined' && window._interval){
     clearInterval(window._interval);
   }
+}
+$(function(){
+  clear();
   tick();
   window._interval=window.setInterval(tick,2000);
 });
