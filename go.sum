@@ -400,8 +400,10 @@ github.com/chris-ramon/douceur v0.2.0 h1:IDMEdxlEUUBYBKE4z/mJnFyVXox+MjuEVDJNN27
 github.com/chris-ramon/douceur v0.2.0/go.mod h1:wDW5xjJdeoMm1mRt4sD4c/LbF/mWdEpRXQKjTR8nIBE=
 github.com/chromedp/cdproto v0.0.0-20210113043257-dabd2f2e7693 h1:11eq/RkpaotwdF6b1TRMcdgQUPNmyFEJOB7zLvh0O/Y=
 github.com/chromedp/cdproto v0.0.0-20210113043257-dabd2f2e7693/go.mod h1:55pim6Ht4LJKdVLlyFJV/g++HsEA1hQxPbB5JyNdZC0=
+github.com/chromedp/cdproto v0.0.0-20210122124816-7a656c010d57/go.mod h1:55pim6Ht4LJKdVLlyFJV/g++HsEA1hQxPbB5JyNdZC0=
 github.com/chromedp/chromedp v0.6.1 h1:5jUNWGaXezV5jckiM+Y2AnJ3KU3xmvIFh9CsOjx1QqA=
 github.com/chromedp/chromedp v0.6.1/go.mod h1:N1O4rajj/6pIT3S+5q9RDkQlmI7/M6xC7gbibwWq4FE=
+github.com/chromedp/chromedp v0.6.5/go.mod h1:/Q6h52DkrFuvOgmCuR6O3xT5g0bZYoPqjANKBEvQGEY=
 github.com/chromedp/sysutil v1.0.0 h1:+ZxhTpfpZlmchB58ih/LBHX52ky7w2VhQVKQMucy3Ic=
 github.com/chromedp/sysutil v1.0.0/go.mod h1:kgWmDdq8fTzXYcKIBqIYvRRTnYb9aNS9moAV0xufSww=
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=
