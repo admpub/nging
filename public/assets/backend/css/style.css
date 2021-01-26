@@ -956,7 +956,7 @@ body.modal-open,
   padding-top: 4px;
 }
 .cl-vnavigation .parent ul li:last-child {
-  padding-bottom: 13px;
+  padding-bottom: 4px;
 }
 .cl-vnavigation .parent ul li {
   background-color: #1a1c20;
