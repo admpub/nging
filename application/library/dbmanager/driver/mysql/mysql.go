@@ -523,10 +523,11 @@ func (m *mySQL) CreateTable() error {
 			engine, collation,
 			autoIncrementStart,
 			partitioning)
-		if err == nil {
-			m.ok(m.T(`添加成功`))
-			return m.returnTo(m.GenURL(`listTable`, m.dbName))
+		if err != nil {
+			return err
 		}
+		m.ok(m.T(`添加成功`))
+		return m.returnTo(m.GenURL(`listTable`, m.dbName))
 	}
 	engines, err := m.getEngines()
 	m.Set(`engines`, engines)
@@ -759,19 +760,19 @@ func (m *mySQL) ModifyTable() error {
 				autoIncrementStart,
 				partitioning)
 		}
-		if err == nil {
-			returnURLs := []string{}
-			if oldTable != table {
-				returnURLs = append(returnURLs, m.GenURL(`listTable`, m.dbName))
-			}
-			m.ok(m.T(`修改成功`))
-			return m.returnTo(returnURLs...)
+		if err != nil {
+			return err
 		}
-	} else {
-		postFields = make([]*Field, len(sortFields))
-		for k, v := range sortFields {
-			postFields[k] = origFields[v]
+		returnURLs := []string{}
+		if oldTable != table {
+			returnURLs = append(returnURLs, m.GenURL(`listTable`, m.dbName))
 		}
+		m.ok(m.T(`修改成功`))
+		return m.returnTo(returnURLs...)
+	}
+	postFields = make([]*Field, len(sortFields))
+	for k, v := range sortFields {
+		postFields[k] = origFields[v]
 	}
 	engines, err := m.getEngines()
 	m.Set(`engines`, engines)
