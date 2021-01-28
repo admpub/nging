@@ -22,7 +22,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -31,7 +30,7 @@ import (
 
 	"github.com/admpub/license_gen/lib"
 	"github.com/admpub/log"
-	"github.com/admpub/restful/rest"
+	"github.com/admpub/resty/v2"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -331,14 +330,20 @@ func URLValues(machineID string, ctx echo.Context) url.Values {
 // Download 从官方服务器重新下载许可证
 func Download(machineID string, ctx echo.Context) error {
 	operation := `获取授权证书失败：%v`
-	response := rest.Get(FullLicenseURL(machineID, ctx) + `&pipe=download`)
-	if response.StatusCode != http.StatusOK {
-		return fmt.Errorf(operation, response.Status)
-	}
+	client := resty.New().SetTimeout(DefaultTimeout).R()
+	client.SetHeader("Accept", "application/json")
 	officialResp := &OfficialResp{}
-	err := response.FillUp(officialResp)
+	client.SetResult(officialResp)
+	fullURL := FullLicenseURL(machineID, ctx) + `&pipe=download`
+	response, err := client.Get(fullURL)
 	if err != nil {
 		return fmt.Errorf(operation, err)
+	}
+	if response == nil {
+		return ErrConnectionFailed
+	}
+	if response.IsError() {
+		return fmt.Errorf(operation, string(response.Body()))
 	}
 	if officialResp.Code != 1 {
 		return fmt.Errorf(`%v`, officialResp.Info)

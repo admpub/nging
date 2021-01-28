@@ -88,7 +88,7 @@ require (
 	github.com/admpub/phantomjs v0.0.0-20180924162111-8a5af756140e
 	github.com/admpub/qrcode v0.0.0-20190512103923-0a2b75fa9edc
 	github.com/admpub/regexp2 v1.1.7
-	github.com/admpub/restful v0.0.0-20180328144945-2e8d62d39607
+	github.com/admpub/resty/v2 v2.3.1
 	github.com/admpub/securecookie v0.0.0-20170722041919-69560e375596
 	github.com/admpub/service v0.0.1
 	github.com/admpub/sessions v0.0.0-20201123012843-e83c830d057a // indirect

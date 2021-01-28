@@ -24,11 +24,12 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/admpub/errors"
 	"github.com/admpub/license_gen/lib"
 	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/restful/rest"
+	"github.com/admpub/resty/v2"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
@@ -72,21 +73,24 @@ func (v *ValidResult) Validate() error {
 	return nil
 }
 
+// DefaultTimeout 默认超时时间
+var DefaultTimeout = 10 * time.Second
+
 func validateFromOfficial(machineID string, ctx echo.Context) error {
-	response := rest.Get(FullLicenseURL(machineID, ctx))
+	client := resty.New().SetTimeout(DefaultTimeout).R()
+	client.SetHeader("Accept", "application/json")
+	result := NewValidResp()
+	client.SetResult(result)
+	fullURL := FullLicenseURL(machineID, ctx)
+	response, err := client.Get(fullURL)
+	if err != nil {
+		return errors.Wrap(err, `Connection to the license server failed`)
+	}
 	if response == nil {
 		return ErrConnectionFailed
 	}
-	if response.Err != nil {
-		return errors.Wrap(response.Err, `Connection to the license server failed`)
-	}
-	switch response.StatusCode {
+	switch response.StatusCode() {
 	case http.StatusOK:
-		result := NewValidResp()
-		err := response.FillUp(result)
-		if err != nil {
-			return err
-		}
 		if result.Code != 1 {
 			return errors.New(result.Info)
 		}
@@ -97,7 +101,7 @@ func validateFromOfficial(machineID string, ctx echo.Context) error {
 	case http.StatusNotFound:
 		return ErrConnectionFailed
 	default:
-		return errors.New(response.Status)
+		return errors.New(response.Status())
 	}
 }
 
@@ -109,20 +113,19 @@ type VersionResp struct {
 }
 
 func latestVersion() error {
-	response := rest.Get(versionURL)
+	client := resty.New().SetTimeout(DefaultTimeout).R()
+	client.SetHeader("Accept", "application/json")
+	result := &VersionResp{}
+	client.SetResult(result)
+	response, err := client.Get(versionURL)
+	if err != nil {
+		return errors.Wrap(err, `Check for the latest version failed`)
+	}
 	if response == nil {
 		return ErrConnectionFailed
 	}
-	if response.Err != nil {
-		return errors.Wrap(response.Err, `Check for the latest version failed`)
-	}
-	switch response.StatusCode {
+	switch response.StatusCode() {
 	case http.StatusOK:
-		result := &VersionResp{}
-		err := response.FillUp(result)
-		if err != nil {
-			return err
-		}
 		if result.Code != 1 {
 			return errors.New(result.Info)
 		}
@@ -175,6 +178,6 @@ func latestVersion() error {
 	case http.StatusNotFound:
 		return ErrConnectionFailed
 	default:
-		return errors.New(response.Status)
+		return errors.New(response.Status())
 	}
 }
