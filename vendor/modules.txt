@@ -226,7 +226,7 @@ github.com/admpub/queueChan
 ## explicit
 github.com/admpub/regexp2
 github.com/admpub/regexp2/syntax
-# github.com/admpub/resty/v2 v2.3.1
+# github.com/admpub/resty/v2 v2.4.1
 ## explicit
 github.com/admpub/resty/v2
 # github.com/admpub/securecookie v0.0.0-20170722041919-69560e375596
@@ -1210,7 +1210,7 @@ golang.org/x/lint
 golang.org/x/lint/golint
 # golang.org/x/mod v0.4.0
 golang.org/x/mod/semver
-# golang.org/x/net v0.0.0-20201202161906-c7110b5ffcbb => github.com/golang/net v0.0.0-20201110031124-69a78807bb2b
+# golang.org/x/net v0.0.0-20201224014010-6772e930b67b => github.com/golang/net v0.0.0-20201110031124-69a78807bb2b
 golang.org/x/net/bpf
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
