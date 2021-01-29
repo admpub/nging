@@ -126,6 +126,7 @@ func (d *DB) SetConn(setter DBConnSetter) error {
 					d.connMaxDuration /= 2
 				}
 			}
+			rows.Close()
 		}
 		retErr = err
 	default:
