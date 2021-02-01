@@ -77,25 +77,24 @@ type Pagination struct {
 	size  int //每页数据行数
 	num   int //页码链接数量
 	pages int //总页数
-
 }
 
 // SetAll 设置按页码分页模式所需的所有参数
 // tmpl 模板
 // rows 总行数
-// pnl[0] 当前页码
-// pnl[1] 分页链接数量
-// pnl[2] 每页数量
-func (p *Pagination) SetAll(tmpl string, rows int, pnl ...int) *Pagination {
-	switch len(pnl) {
+// pageAndLinksAndSize[0] 当前页码
+// pageAndLinksAndSize[1] 分页链接数量
+// pageAndLinksAndSize[2] 每页数量
+func (p *Pagination) SetAll(tmpl string, rows int, pageAndLinksAndSize ...int) *Pagination {
+	switch len(pageAndLinksAndSize) {
 	case 3:
-		p.size = pnl[2]
+		p.size = pageAndLinksAndSize[2]
 		fallthrough
 	case 2:
-		p.num = pnl[1]
+		p.num = pageAndLinksAndSize[1]
 		fallthrough
 	case 1:
-		p.page = pnl[0]
+		p.page = pageAndLinksAndSize[0]
 	}
 	p.rows = rows
 	p.tmpl = tmpl
@@ -258,6 +257,13 @@ func (p *Pagination) Pages() int {
 	return p.pages
 }
 
+func (p *Pagination) Offset() int {
+	if p.page < 1 {
+		return 0
+	}
+	return (p.page - 1) * p.size
+}
+
 func (p *Pagination) URL(curr interface{}) (s string) {
 	if p.mode == ModePageNumber {
 		size := strconv.Itoa(p.size)
@@ -376,6 +382,42 @@ func (p *Pagination) Render(settings ...string) interface{} {
 		return e
 	}
 	return template.HTML(string(b))
+}
+
+func (p *Pagination) UnmarshalJSON(b []byte) error {
+	var r Applier
+	if p.mode == ModePageNumber {
+		r = &pageData{}
+	} else {
+		r = &positionData{}
+	}
+	err := json.Unmarshal(b, r)
+	if err != nil {
+		return nil
+	}
+	r.Apply(p)
+	return nil
+}
+
+func (p *Pagination) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	data := echo.H{}
+	defer p.SetOptions(data)
+	for {
+		token, err := d.Token()
+		if err != nil || token == nil {
+			return err
+		}
+		switch t := token.(type) {
+		case xml.StartElement:
+			e := xml.StartElement(t)
+			var q string
+			err = d.DecodeElement(&q, &e)
+			//println(`start`, e.Name.Local, q)
+			data[e.Name.Local] = q
+		case xml.EndElement:
+			return err
+		}
+	}
 }
 
 // MarshalJSON allows type Pagination to be used with json.Marshal

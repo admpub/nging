@@ -51,9 +51,20 @@ func (p StringSlice) Unique() StringSlice {
 	return result
 }
 
-func (p StringSlice) Filter(filterFunc func(s *string) bool) StringSlice {
-	if filterFunc == nil {
-		return p
+func defaultStringFilterFunc(s *string) bool {
+	if s == nil {
+		return false
+	}
+	return len(*s) > 0
+}
+
+func (p StringSlice) Filter(filterFuncs ...func(s *string) bool) StringSlice {
+	filterFunc := defaultStringFilterFunc
+	if len(filterFuncs) > 0 {
+		filterFunc = filterFuncs[0]
+		if filterFunc == nil {
+			return p
+		}
 	}
 	result := StringSlice{}
 	for _, s := range p {
