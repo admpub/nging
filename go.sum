@@ -1335,6 +1335,7 @@ github.com/webx-top/image v0.0.6 h1:mDQMSD7JIG/m/MJxhfCKbqPxuf325pAAzHjcKTkXF1M=
 github.com/webx-top/image v0.0.6/go.mod h1:AboG/VxQZMMZWopyW+m7SCXjxDtir42e5XKZqbFrqTo=
 github.com/webx-top/pagination v0.0.1 h1:TT6llyG/6aUaHcFdA6o7fmjbSUQVWpPxQb8Wbcwotxc=
 github.com/webx-top/pagination v0.0.1/go.mod h1:5jelnjgnc0GwTVBhX0SjlSKMGFOym3IoXpnmvB+1LQo=
+github.com/webx-top/pagination v0.0.2/go.mod h1:5jelnjgnc0GwTVBhX0SjlSKMGFOym3IoXpnmvB+1LQo=
 github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2 h1:lqnGa1BnWT7pN+c9V31bik0lTp5XxyOMRp7ICsZ6K5M=
 github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2/go.mod h1:pMe3sJitHxbxX2EAI/v9HEAXjodP4c+yUVw3rbKcljI=
 github.com/webx-top/validation v0.0.1 h1:I7d5iCsEY8CRzvqCJbUnIZ3Yz0MyLvInVoaljUdn21c=
