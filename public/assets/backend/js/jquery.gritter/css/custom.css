@@ -54,6 +54,9 @@
   padding-left: 7px;
   width: 260px;
 }
+.gritter-without-image{
+  width: 300px;
+}
 .gritter-item-wrapper.clean {
   background: #FFF;
 }
