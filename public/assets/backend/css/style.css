@@ -4873,6 +4873,9 @@ button::-moz-focus-inner {
 .modal-content h2 {
   margin: 0;
 }
+.modal-title, .modal-header > h3 {
+  display: inline;
+}
 .modal-content .modal-footer {
   background: #FBFBFB;
   border-radius: 0 0 5px 5px;
