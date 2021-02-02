@@ -1568,6 +1568,24 @@ var App = function () {
 			$a.data('jsonformatted',true);
 			var json = App.formatJSON($a.html());
 			if(json!='') $a.html(json);
+		},
+		rewriteFormValueAsArray: function(formData,fieldName,arrayData){
+			var j = 0;
+			for (var i=0; i<formData.length; i++) {
+				var v = formData[i];
+				if(v.name == fieldName) {
+					if(arrayData.length > j){
+						v.value = arrayData[j];
+						j++;
+					}else{
+						v.value = '';
+					}
+				}
+			}
+			for (var i=j; i<arrayData.length; i++) {
+				formData.push({name:fieldName,value:arrayData[i]});
+			}
+			return formData;
 		}
 	
 	};
