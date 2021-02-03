@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"strings"
+	"sync"
 
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
@@ -28,6 +29,10 @@ type (
 		io.Writer
 		engine.Response
 	}
+)
+
+const (
+	gzipScheme = "gzip"
 )
 
 var (
@@ -78,6 +83,13 @@ func (w *gzipWriter) CloseNotify() <-chan bool {
 	return w.StdResponseWriter().(http.CloseNotifier).CloseNotify()
 }
 
+func (w *gzipWriter) Push(target string, opts *http.PushOptions) error {
+	if p, ok := w.Response.(http.Pusher); ok {
+		return p.Push(target, opts)
+	}
+	return http.ErrNotSupported
+}
+
 // Gzip returns a middleware which compresses HTTP response using gzip compression
 // scheme.
 func Gzip(config ...*GzipConfig) echo.MiddlewareFunc {
@@ -97,8 +109,7 @@ func GzipWithConfig(config *GzipConfig) echo.MiddlewareFunc {
 	if config.Level == 0 {
 		config.Level = DefaultGzipConfig.Level
 	}
-	scheme := `gzip`
-
+	pool := gzipCompressPool(config)
 	return func(h echo.Handler) echo.Handler {
 		return echo.HandlerFunc(func(c echo.Context) error {
 			if config.Skipper(c) {
@@ -106,16 +117,18 @@ func GzipWithConfig(config *GzipConfig) echo.MiddlewareFunc {
 			}
 			resp := c.Response()
 			resp.Header().Add(echo.HeaderVary, echo.HeaderAcceptEncoding)
-			if strings.Contains(c.Request().Header().Get(echo.HeaderAcceptEncoding), scheme) {
-				resp.Header().Add(echo.HeaderContentEncoding, scheme)
-				rw := resp.Writer()
-				w, err := gzip.NewWriterLevel(rw, config.Level)
-				if err != nil {
-					return err
+			if strings.Contains(c.Request().Header().Get(echo.HeaderAcceptEncoding), gzipScheme) {
+				resp.Header().Add(echo.HeaderContentEncoding, gzipScheme)
+				i := pool.Get()
+				w, ok := i.(*gzip.Writer)
+				if !ok {
+					return echo.NewHTTPError(http.StatusInternalServerError, i.(error).Error())
 				}
+				rw := resp.Writer()
+				w.Reset(rw)
 				defer func() {
 					if resp.Size() == 0 {
-						if resp.Header().Get(echo.HeaderContentEncoding) == scheme {
+						if resp.Header().Get(echo.HeaderContentEncoding) == gzipScheme {
 							resp.Header().Del(echo.HeaderContentEncoding)
 						}
 						// We have to reset response to it's pristine state when
@@ -125,10 +138,23 @@ func GzipWithConfig(config *GzipConfig) echo.MiddlewareFunc {
 						w.Reset(ioutil.Discard)
 					}
 					w.Close()
+					pool.Put(w)
 				}()
 				resp.SetWriter(&gzipWriter{Writer: w, Response: resp})
 			}
 			return h.Handle(c)
 		})
+	}
+}
+
+func gzipCompressPool(config *GzipConfig) sync.Pool {
+	return sync.Pool{
+		New: func() interface{} {
+			w, err := gzip.NewWriterLevel(ioutil.Discard, config.Level)
+			if err != nil {
+				return err
+			}
+			return w
+		},
 	}
 }

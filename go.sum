@@ -1334,6 +1334,8 @@ github.com/webx-top/echo v2.6.0+incompatible h1:bSnPLD1HrKPdVPyioS6bJgdOuP6DgAI8
 github.com/webx-top/echo v2.6.0+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.6.1+incompatible h1:yAmk/s3uMianbVcZNiVcf9sDMarzOsVWlz8V6F2aN40=
 github.com/webx-top/echo v2.6.1+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
+github.com/webx-top/echo v2.6.2+incompatible h1:a6fmhrfVD9svUEox2oSQmcGXxVc2xPEiu/3ZzMErZck=
+github.com/webx-top/echo v2.6.2+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/image v0.0.6 h1:mDQMSD7JIG/m/MJxhfCKbqPxuf325pAAzHjcKTkXF1M=
 github.com/webx-top/image v0.0.6/go.mod h1:AboG/VxQZMMZWopyW+m7SCXjxDtir42e5XKZqbFrqTo=
 github.com/webx-top/pagination v0.0.1 h1:TT6llyG/6aUaHcFdA6o7fmjbSUQVWpPxQb8Wbcwotxc=
