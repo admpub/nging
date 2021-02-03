@@ -95,11 +95,12 @@ github.com/admpub/fsnotify
 ## explicit
 github.com/admpub/ftpserver
 # github.com/admpub/gifresize v1.0.2
+## explicit
 github.com/admpub/gifresize
 # github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
 ## explicit
 github.com/admpub/go-bindata-assetfs
-# github.com/admpub/go-download/v2 v2.1.5
+# github.com/admpub/go-download/v2 v2.1.6
 ## explicit
 github.com/admpub/go-download/v2
 # github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
@@ -165,12 +166,14 @@ github.com/admpub/humanize
 ## explicit
 github.com/admpub/i18n
 # github.com/admpub/identicon v1.0.2
+## explicit
 github.com/admpub/identicon
 # github.com/admpub/imageproxy v0.9.1
 ## explicit
 github.com/admpub/imageproxy
 github.com/admpub/imageproxy/third_party/http
 # github.com/admpub/imaging v1.5.0
+## explicit
 github.com/admpub/imaging
 # github.com/admpub/ini v1.38.2
 ## explicit
@@ -270,7 +273,7 @@ github.com/admpub/web-terminal/handler
 github.com/admpub/web-terminal/library/ssh
 github.com/admpub/web-terminal/library/telnet
 github.com/admpub/web-terminal/library/utils
-# github.com/admpub/websocket v1.0.3
+# github.com/admpub/websocket v1.0.4
 ## explicit
 github.com/admpub/websocket
 # github.com/andybalholm/brotli v1.0.0
@@ -494,6 +497,7 @@ github.com/davecgh/go-spew/spew
 # github.com/deckarep/golang-set v1.7.1
 ## explicit
 # github.com/disintegration/imaging v1.6.2
+## explicit
 github.com/disintegration/imaging
 # github.com/dsnet/compress v0.0.1
 github.com/dsnet/compress
@@ -609,6 +613,7 @@ github.com/gofrs/uuid
 # github.com/golang-collections/collections v0.0.0-20130729185459-604e922904d3
 github.com/golang-collections/collections/stack
 # github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
+## explicit
 github.com/golang/freetype
 github.com/golang/freetype/raster
 github.com/golang/freetype/truetype
@@ -640,7 +645,7 @@ github.com/gorilla/websocket
 # github.com/grafov/m3u8 v0.11.1
 ## explicit
 github.com/grafov/m3u8
-# github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79
+# github.com/gregjones/httpcache v0.0.0-20180305231024-9cad4c3443a7
 github.com/gregjones/httpcache
 # github.com/hashicorp/go-syslog v1.0.0
 github.com/hashicorp/go-syslog
@@ -875,6 +880,7 @@ github.com/modern-go/reflect2
 # github.com/mrjones/oauth v0.0.0-20180629183705-f4e24b6d100c
 github.com/mrjones/oauth
 # github.com/muesli/smartcrop v0.3.0
+## explicit
 github.com/muesli/smartcrop
 github.com/muesli/smartcrop/nfnt
 github.com/muesli/smartcrop/options
@@ -884,6 +890,7 @@ github.com/naoina/go-stringutil
 github.com/naoina/toml
 github.com/naoina/toml/ast
 # github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
+## explicit
 github.com/nfnt/resize
 # github.com/nwaples/rardecode v1.1.0
 github.com/nwaples/rardecode
@@ -924,6 +931,7 @@ github.com/rivo/uniseg
 ## explicit
 github.com/russross/blackfriday
 # github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
+## explicit
 github.com/rwcarlsen/goexif/exif
 github.com/rwcarlsen/goexif/tiff
 # github.com/sahilm/fuzzy v0.1.0
@@ -1100,7 +1108,7 @@ github.com/webx-top/echo/param
 github.com/webx-top/echo/subdomains
 github.com/webx-top/echo/testing
 github.com/webx-top/echo/testing/test
-# github.com/webx-top/image v0.0.6
+# github.com/webx-top/image v0.0.7
 ## explicit
 github.com/webx-top/image
 # github.com/webx-top/pagination v0.0.3
@@ -1192,7 +1200,7 @@ golang.org/x/crypto/ssh/knownhosts
 golang.org/x/crypto/tea
 golang.org/x/crypto/twofish
 golang.org/x/crypto/xtea
-# golang.org/x/image v0.0.0-20201208152932-35266b937fa6 => github.com/golang/image v0.0.0-20200927104501-e162460cd6b5
+# golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 => github.com/golang/image v0.0.0-20200927104501-e162460cd6b5
 golang.org/x/image/bmp
 golang.org/x/image/ccitt
 golang.org/x/image/draw
@@ -1394,7 +1402,7 @@ gopkg.in/tomb.v1
 gopkg.in/warnings.v0
 # gopkg.in/yaml.v2 v2.3.0
 gopkg.in/yaml.v2
-# gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
+# gopkg.in/yaml.v3 v3.0.0-20200605160147-a5ece683394c
 gopkg.in/yaml.v3
 # github.com/caddyserver/caddy => github.com/admpub/caddy v1.1.5
 # google.golang.org/protobuf => github.com/protocolbuffers/protobuf-go v1.25.0

@@ -23,3 +23,5 @@ _testmain.go
 
 .idea/
 *.iml
+go.mod
+go.sum
