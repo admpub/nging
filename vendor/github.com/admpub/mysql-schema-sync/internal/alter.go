@@ -25,7 +25,7 @@ func (at AlterType) String() string {
 	case AlterTypeAlter:
 		return "alter"
 	default:
-		return "unknow"
+		return "unknown"
 	}
 
 }

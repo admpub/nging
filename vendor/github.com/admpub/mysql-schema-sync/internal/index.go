@@ -39,7 +39,7 @@ func (idx *DbIndex) AlterAddSQL(drop bool) string {
 	case IndexTypeIndex, IndexTypeForeignKey:
 		alterSQL = append(alterSQL, fmt.Sprintf("ADD %s", idx.SQL))
 	default:
-		log.Fatalln("unknow indexType", idx.IndexType)
+		log.Fatalln("unknown indexType", idx.IndexType)
 	}
 	return strings.Join(alterSQL, ",\n")
 }
@@ -58,7 +58,7 @@ func (idx *DbIndex) AlterDropSQL() string {
 	case IndexTypeForeignKey:
 		return fmt.Sprintf("DROP FOREIGN KEY `%s`", idx.Name)
 	default:
-		log.Fatalln("unknow indexType", idx.IndexType)
+		log.Fatalln("unknown indexType", idx.IndexType)
 	}
 	return ""
 }
@@ -112,6 +112,6 @@ func parseDbIndexLine(line string) *DbIndex {
 		return idx
 	}
 
-	log.Fatalln("db_index parse failed,unsupport,line:", line)
+	log.Fatalln("db_index parse failed,unsupported,line:", line)
 	return nil
 }

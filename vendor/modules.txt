@@ -120,6 +120,7 @@ github.com/admpub/go-pretty/text
 ## explicit
 github.com/admpub/go-ps
 # github.com/admpub/go-reuseport v0.0.3
+## explicit
 github.com/admpub/go-reuseport
 # github.com/admpub/go-sshclient v0.0.0-20200729145748-988808eb5279
 ## explicit
@@ -205,7 +206,7 @@ github.com/admpub/marmot/miner
 # github.com/admpub/metrohash v0.0.0-20160821164112-8d1c8b6bed28
 ## explicit
 github.com/admpub/metrohash
-# github.com/admpub/mysql-schema-sync v0.0.8
+# github.com/admpub/mysql-schema-sync v0.1.0
 ## explicit
 github.com/admpub/mysql-schema-sync/internal
 github.com/admpub/mysql-schema-sync/sync
@@ -224,6 +225,7 @@ github.com/admpub/phantomjs
 github.com/admpub/qrcode
 github.com/admpub/qrcode/decode
 # github.com/admpub/queueChan v0.0.0-20151001074356-79908f7a499f
+## explicit
 github.com/admpub/queueChan
 # github.com/admpub/regexp2 v1.1.7
 ## explicit
@@ -1115,8 +1117,10 @@ github.com/webx-top/image
 ## explicit
 github.com/webx-top/pagination
 # github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2
+## explicit
 github.com/webx-top/tagfast
 # github.com/webx-top/validation v0.0.1
+## explicit
 github.com/webx-top/validation
 # github.com/willf/bitset v1.1.11
 ## explicit
@@ -1242,7 +1246,7 @@ golang.org/x/net/websocket
 # golang.org/x/oauth2 v0.0.0-20201203001011-0b49973bad19 => github.com/golang/oauth2 v0.0.0-20201109201403-9fd604954f58
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
-# golang.org/x/sys v0.0.0-20210113181707-4bcb84eeeb78 => github.com/golang/sys v0.0.0-20201119102817-f84b799fce68
+# golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c => github.com/golang/sys v0.0.0-20201119102817-f84b799fce68
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix

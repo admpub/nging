@@ -60,6 +60,7 @@ require (
 	github.com/admpub/go-phantomjs-fetcher v0.0.0-20180924162325-bb2ae1648e33
 	github.com/admpub/go-pretty v3.3.3+incompatible
 	github.com/admpub/go-ps v0.0.1 // indirect
+	github.com/admpub/go-reuseport v0.0.3 // indirect
 	github.com/admpub/go-sshclient v0.0.0-20200729145748-988808eb5279
 	github.com/admpub/go-utility v0.0.1 // indirect
 	github.com/admpub/godownloader v0.0.0-20191013090831-d509172649e4
@@ -85,11 +86,12 @@ require (
 	github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b
 	github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5
 	github.com/admpub/metrohash v0.0.0-20160821164112-8d1c8b6bed28
-	github.com/admpub/mysql-schema-sync v0.0.8
+	github.com/admpub/mysql-schema-sync v0.1.0
 	github.com/admpub/null v8.0.1+incompatible
 	github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48 // indirect
 	github.com/admpub/phantomjs v0.0.0-20180924162111-8a5af756140e
 	github.com/admpub/qrcode v0.0.0-20190512103923-0a2b75fa9edc
+	github.com/admpub/queueChan v0.0.0-20151001074356-79908f7a499f // indirect
 	github.com/admpub/regexp2 v1.1.7
 	github.com/admpub/resty/v2 v2.4.1
 	github.com/admpub/securecookie v0.0.0-20170722041919-69560e375596
@@ -181,6 +183,8 @@ require (
 	github.com/webx-top/echo v2.7.0+incompatible
 	github.com/webx-top/image v0.0.7
 	github.com/webx-top/pagination v0.0.3
+	github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2 // indirect
+	github.com/webx-top/validation v0.0.1 // indirect
 	github.com/willf/bitset v1.1.11 // indirect
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect
 	github.com/xu42/youzan-sdk-go v0.0.3
