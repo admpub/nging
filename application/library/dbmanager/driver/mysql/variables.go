@@ -37,7 +37,7 @@ var (
 
 	reView                = regexp.MustCompile("^.+?\\s+AS\\s+")
 	reField               = regexp.MustCompile("^([^( ]+)(?:\\((.+)\\))?( unsigned)?( zerofill)?$")
-	reFieldOnUpdate       = regexp.MustCompile("^(?i)on update (.+)")
+	reFieldOnUpdate       = regexp.MustCompile("^(?i)(?:DEFAULT_GENERATED )?on update (.+)")
 	reFieldDefault        = regexp.MustCompile("char|set")
 	reFieldPrivilegeDelim = regexp.MustCompile(", *")
 

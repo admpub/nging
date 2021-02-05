@@ -59,6 +59,7 @@
                   {{if $v.Null}}<span>NULL</span>{{end}}
                   {{if $v.AutoIncrement.Valid}}<em>{{"自动增量"|T}}</em>{{end}}
                   {{if $v.Default.Valid}}[<b>{{$v.Default.String}}</b>]{{end}}
+                  {{if $v.On_update}}ON UPDATE <b>{{$v.On_update}}</b>{{end}}
                 </td>
                 <td>{{$v.Comment}}</td>
               </tr>
