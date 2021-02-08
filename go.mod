@@ -188,7 +188,7 @@ require (
 	github.com/willf/bitset v1.1.11 // indirect
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect
 	github.com/xu42/youzan-sdk-go v0.0.3
-	gocloud.dev v0.21.0
+	gocloud.dev v0.22.0
 	golang.org/x/crypto v0.0.0-20201208171446-5f87f3452ae9
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
