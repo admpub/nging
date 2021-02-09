@@ -35,6 +35,7 @@ import (
 	"github.com/admpub/nging/application/library/s3manager/s3client/awsclient"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	minio "github.com/minio/minio-go"
 	"github.com/pkg/errors"
 	"github.com/webx-top/com"
@@ -267,6 +268,7 @@ func (s *S3Manager) Upload(ctx echo.Context, ppath string) error {
 	}
 	defer fileSrc.Close()
 	objectName := path.Join(ppath, fileHdr.Filename)
+	//return s.uploadByAWS(fileSrc, objectName)
 	return s.Put(fileSrc, objectName, fileHdr.Size)
 }
 
@@ -367,6 +369,23 @@ func (s *S3Manager) listByMinio(ctx echo.Context, objectPrefix string) (err erro
 		dirs = append(dirs, obj)
 	}
 	return
+}
+
+func (s *S3Manager) uploadByAWS(reader io.Reader, objectName string) error {
+	// Set up a new s3manager client
+	sess, err := awsclient.NewSession(s.config)
+	if err != nil {
+		return err
+	}
+	uploader := s3manager.NewUploader(sess)
+	result, err := uploader.Upload(&s3manager.UploadInput{
+		Body:   reader,
+		Bucket: aws.String(s.bucketName),
+		Key:    aws.String(objectName),
+	})
+	//com.Dump(result)
+	_ = result
+	return err
 }
 
 func (s *S3Manager) listByAWS(ctx echo.Context, objectPrefix string) (err error, dirs []os.FileInfo) {

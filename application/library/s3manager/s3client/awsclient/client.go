@@ -9,6 +9,16 @@ import (
 )
 
 func Connect(m *dbschema.NgingCloudStorage) (client *s3.S3, err error) {
+	var sess *session.Session
+	sess, err = NewSession(m)
+	if err != nil {
+		return
+	}
+	client = s3.New(sess)
+	return client, nil
+}
+
+func NewSession(m *dbschema.NgingCloudStorage) (*session.Session, error) {
 	isSecure := m.Secure == `Y`
 	config := &aws.Config{
 		DisableSSL:  aws.Bool(!isSecure),
@@ -18,11 +28,5 @@ func Connect(m *dbschema.NgingCloudStorage) (client *s3.S3, err error) {
 	if len(m.Region) > 0 {
 		config.Region = aws.String(m.Region)
 	}
-	var sess *session.Session
-	sess, err = session.NewSession(config)
-	if err != nil {
-		return
-	}
-	client = s3.New(sess)
-	return client, nil
+	return session.NewSession(config)
 }
