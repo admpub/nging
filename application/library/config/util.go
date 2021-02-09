@@ -46,7 +46,10 @@ import (
 	"github.com/webx-top/echo/middleware/bytes"
 )
 
-var reNumeric = regexp.MustCompile(`^[0-9]+$`)
+var (
+	reNumeric                  = regexp.MustCompile(`^[0-9]+$`)
+	defaultMaxRequestBodyBytes = 2 << 20 // 2M
+)
 
 func ParseTimeDuration(timeout string) time.Duration {
 	var timeoutDuration time.Duration
@@ -107,6 +110,9 @@ func InitConfig() (*Config, error) {
 	}
 	if len(temporaryConfig.Sys.VhostsfileDir) == 0 {
 		temporaryConfig.Sys.VhostsfileDir = path.Join(confDir, `vhosts`)
+	}
+	if temporaryConfig.Sys.MaxRequestBodySize <= 0 {
+		temporaryConfig.Sys.MaxRequestBodySize = defaultMaxRequestBodyBytes
 	}
 	if temporaryConfig.Sys.EditableFileMaxBytes < 1 && len(temporaryConfig.Sys.EditableFileMaxSize) > 0 {
 		temporaryConfig.Sys.EditableFileMaxBytes, err = bytes.Parse(temporaryConfig.Sys.EditableFileMaxSize)

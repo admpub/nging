@@ -107,13 +107,14 @@ If you have already purchased a license, please place the ` + license.FileName()
 	defer startup.FireAfter(`web`)
 
 	c := &engine.Config{
-		ReusePort:   true,
-		TLSAuto:     config.DefaultConfig.Sys.SSLAuto,
-		TLSEmail:    config.DefaultConfig.Sys.SSLEmail,
-		TLSHosts:    config.DefaultConfig.Sys.SSLHosts,
-		TLSCacheDir: config.DefaultConfig.Sys.SSLCacheDir,
-		TLSCertFile: config.DefaultConfig.Sys.SSLCertFile,
-		TLSKeyFile:  config.DefaultConfig.Sys.SSLKeyFile,
+		ReusePort:          true,
+		TLSAuto:            config.DefaultConfig.Sys.SSLAuto,
+		TLSEmail:           config.DefaultConfig.Sys.SSLEmail,
+		TLSHosts:           config.DefaultConfig.Sys.SSLHosts,
+		TLSCacheDir:        config.DefaultConfig.Sys.SSLCacheDir,
+		TLSCertFile:        config.DefaultConfig.Sys.SSLCertFile,
+		TLSKeyFile:         config.DefaultConfig.Sys.SSLKeyFile,
+		MaxRequestBodySize: config.DefaultConfig.Sys.MaxRequestBodySize,
 	}
 	c.Address = fmt.Sprintf(`%s:%v`, config.DefaultCLIConfig.Address, config.DefaultCLIConfig.Port)
 	hasCert := (len(c.TLSCertFile) > 0 && len(c.TLSKeyFile) > 0)
