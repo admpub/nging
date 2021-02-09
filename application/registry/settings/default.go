@@ -53,7 +53,7 @@ var configDefaults = map[string]map[string]*dbschema.NgingConfig{
 		},
 		`maxRequestBodySize`: {
 			Key:         `maxRequestBodySize`,
-			Label:       `调试模式`,
+			Label:       `最大提交(bytes)`,
 			Description: ``,
 			Value:       ``,
 			Group:       `base`,
