@@ -110,6 +110,7 @@ func (r *Request) SetBody(reader io.Reader) {
 }
 
 func (r *Request) FormValue(name string) string {
+	r.MultipartForm()
 	return r.request.FormValue(name)
 }
 
@@ -164,6 +165,7 @@ func (r *Request) reset(req *http.Request, h engine.Header, u engine.URL) {
 }
 
 func (r *Request) FormFile(key string) (multipart.File, *multipart.FileHeader, error) {
+	r.MultipartForm()
 	file, fileHeader, err := r.request.FormFile(key)
 	if err != nil {
 		return nil, nil, err

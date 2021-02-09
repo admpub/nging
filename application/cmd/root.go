@@ -114,7 +114,7 @@ If you have already purchased a license, please place the ` + license.FileName()
 		TLSCacheDir:        config.DefaultConfig.Sys.SSLCacheDir,
 		TLSCertFile:        config.DefaultConfig.Sys.SSLCertFile,
 		TLSKeyFile:         config.DefaultConfig.Sys.SSLKeyFile,
-		MaxRequestBodySize: config.DefaultConfig.Sys.MaxRequestBodySize,
+		MaxRequestBodySize: config.DefaultConfig.GetMaxRequestBodySize(),
 	}
 	c.Address = fmt.Sprintf(`%s:%v`, config.DefaultCLIConfig.Address, config.DefaultCLIConfig.Port)
 	hasCert := (len(c.TLSCertFile) > 0 && len(c.TLSKeyFile) > 0)

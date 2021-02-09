@@ -86,6 +86,16 @@ func (c *Config) IsEnvDev() bool {
 	return c.Sys.IsEnv(`dev`)
 }
 
+func (c *Config) GetMaxRequestBodySize() int {
+	if c.MaxRequestBodySize > 0 {
+		return c.MaxRequestBodySize
+	}
+	if c.Sys.MaxRequestBodySize > 0 {
+		return c.Sys.MaxRequestBodySize
+	}
+	return defaultMaxRequestBodyBytes
+}
+
 // ConnectedDB 数据库是否已连接，如果没有连接则自动连接
 func (c *Config) ConnectedDB(autoConn ...bool) bool {
 	if c.connectedDB {

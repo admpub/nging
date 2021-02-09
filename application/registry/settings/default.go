@@ -51,6 +51,16 @@ var configDefaults = map[string]map[string]*dbschema.NgingConfig{
 			Sort:        0,
 			Disabled:    `N`,
 		},
+		`maxRequestBodySize`: {
+			Key:         `maxRequestBodySize`,
+			Label:       `调试模式`,
+			Description: ``,
+			Value:       ``,
+			Group:       `base`,
+			Type:        `text`,
+			Sort:        0,
+			Disabled:    `N`,
+		},
 	},
 	`smtp`: {
 		`username`: {

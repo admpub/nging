@@ -57,12 +57,13 @@ func NewSettings(config *Config) *Settings {
 }
 
 type Settings struct {
-	Email  Email  `json:"email"`
-	Log    Log    `json:"log"`
-	APIKey string `json:"-"` //API密钥
-	Debug  bool   `json:"debug"`
-	Base   echo.H `json:"base"`
-	config *Config
+	Email              Email  `json:"email"`
+	Log                Log    `json:"log"`
+	APIKey             string `json:"-"` //API密钥
+	Debug              bool   `json:"debug"`
+	MaxRequestBodySize int    `json:"maxRequestBodySize"`
+	Base               echo.H `json:"base"`
+	config             *Config
 }
 
 func (c *Settings) SetBy(r echo.H, defaults echo.H) *Settings {
@@ -72,6 +73,7 @@ func (c *Settings) SetBy(r echo.H, defaults echo.H) *Settings {
 	c.Base = r.Store(`base`)
 	c.APIKey = c.Base.String(`apiKey`)
 	c.Debug = c.Base.Bool(`debug`)
+	c.MaxRequestBodySize = c.Base.Int(`maxRequestBodySize`)
 	return c
 }
 
