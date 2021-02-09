@@ -210,7 +210,7 @@ github.com/admpub/metrohash
 ## explicit
 github.com/admpub/mysql-schema-sync/internal
 github.com/admpub/mysql-schema-sync/sync
-# github.com/admpub/null v8.0.1+incompatible
+# github.com/admpub/null v8.0.2+incompatible
 ## explicit
 github.com/admpub/null
 github.com/admpub/null/convert
@@ -227,6 +227,9 @@ github.com/admpub/qrcode/decode
 # github.com/admpub/queueChan v0.0.0-20151001074356-79908f7a499f
 ## explicit
 github.com/admpub/queueChan
+# github.com/admpub/randomize v0.0.2
+## explicit
+github.com/admpub/randomize
 # github.com/admpub/regexp2 v1.1.7
 ## explicit
 github.com/admpub/regexp2
@@ -252,9 +255,6 @@ github.com/admpub/sockjs-go/sockjs
 # github.com/admpub/sonyflake v0.0.0-20160530021500-fa881fb1052b
 ## explicit
 github.com/admpub/sonyflake
-# github.com/admpub/sqlboiler v3.0.1+incompatible
-## explicit
-github.com/admpub/sqlboiler/randomize
 # github.com/admpub/statik v0.1.7
 ## explicit
 github.com/admpub/statik/fs
@@ -546,7 +546,7 @@ github.com/flynn/go-shlex
 # github.com/francoispqt/gojay v1.2.13
 github.com/francoispqt/gojay
 # github.com/friendsofgo/errors v0.9.2
-## explicit
+github.com/friendsofgo/errors
 # github.com/fsnotify/fsnotify v1.4.9
 github.com/fsnotify/fsnotify
 # github.com/go-acme/lego/v3 v3.9.0
@@ -1026,11 +1026,9 @@ github.com/ulikunitz/xz/lzma
 ## explicit
 github.com/valyala/bytebufferpool
 # github.com/volatiletech/inflect v0.0.1
-## explicit
 github.com/volatiletech/inflect
-# github.com/volatiletech/sqlboiler v3.7.1+incompatible
-## explicit
-github.com/volatiletech/sqlboiler/strmangle
+# github.com/volatiletech/strmangle v0.0.1
+github.com/volatiletech/strmangle
 # github.com/webx-top/captcha v0.0.0-20161202061115-29e9e7f30aa0
 ## explicit
 github.com/webx-top/captcha

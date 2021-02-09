@@ -3,7 +3,6 @@ package null
 import (
 	"time"
 
-	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
 )
 
@@ -11,7 +10,7 @@ var EmptyString = String{}
 
 type StringMapSlice []StringMap
 
-func StringMapSliceFrom(list []echo.H) StringMapSlice {
+func StringMapSliceFrom(list []param.Store) StringMapSlice {
 	result := make([]StringMap, len(list))
 	for k, values := range list {
 		mp := StringMap{}
@@ -57,7 +56,7 @@ func (p StringMap) Get(key string) String {
 	return EmptyString
 }
 
-func (p StringMap) MapFrom(values echo.H) StringMap {
+func (p StringMap) MapFrom(values param.Store) StringMap {
 	for key, value := range values {
 		p[key] = NewString(values.String(key), value != nil)
 	}

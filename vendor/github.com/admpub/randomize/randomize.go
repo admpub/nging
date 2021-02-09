@@ -9,8 +9,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/pkg/errors"
-	"github.com/volatiletech/sqlboiler/strmangle"
+	"github.com/friendsofgo/errors"
+	"github.com/volatiletech/strmangle"
 )
 
 // Randomizer allows a field to be randomized
@@ -60,6 +60,7 @@ func Struct(s *Seed, str interface{}, colTypes map[string]string, canBeNull bool
 	copyBlacklist := make([]string, len(blacklist))
 	copy(copyBlacklist, blacklist)
 	blacklist = copyBlacklist
+	blacklist = append(blacklist, "deleted_at")
 
 	sort.Strings(blacklist)
 
@@ -87,7 +88,7 @@ func Struct(s *Seed, str interface{}, colTypes map[string]string, canBeNull bool
 
 		var found bool
 		for _, v := range blacklist {
-			if strmangle.TitleCase(v) == fieldTyp.Name {
+			if strmangle.TitleCase(v) == fieldTyp.Name || v == fieldTyp.Tag.Get("boil") {
 				found = true
 				break
 			}
@@ -159,15 +160,19 @@ func randomizeField(s *Seed, field reflect.Value, fieldType string, canBeNull bo
 		return errors.Errorf("unsupported type: %s", typ.String())
 	}
 
-	field.Set(reflect.ValueOf(value))
+	newValue := reflect.ValueOf(value)
+	if reflect.TypeOf(value) != typ {
+		newValue = newValue.Convert(typ)
+	}
+
+	field.Set(newValue)
 
 	return nil
 }
 
 // getStructNullValue for the matching type.
 func getStructNullValue(s *Seed, fieldType string, typ reflect.Type) interface{} {
-	switch typ {
-	case typeTime:
+	if typ == typeTime {
 		// MySQL does not support 0 value time.Time, so use rand
 		return Date(s.NextInt)
 	}
@@ -179,8 +184,7 @@ func getStructNullValue(s *Seed, fieldType string, typ reflect.Type) interface{}
 // The randomness is really an incrementation of the global seed,
 // this is done to avoid duplicate key violations.
 func getStructRandValue(s *Seed, fieldType string, typ reflect.Type) interface{} {
-	switch typ {
-	case typeTime:
+	if typ == typeTime {
 		return Date(s.NextInt)
 	}
 
@@ -261,6 +265,10 @@ func getVariableRandValue(s *Seed, fieldType string, kind reflect.Kind, typ refl
 	case reflect.Uint16:
 		return uint16(s.NextInt() % math.MaxUint16)
 	case reflect.Uint32:
+		val, ok := MediumUint(s.NextInt, fieldType)
+		if ok {
+			return val
+		}
 		return uint32(s.NextInt() % math.MaxUint32)
 	case reflect.Uint64:
 		return uint64(s.NextInt())

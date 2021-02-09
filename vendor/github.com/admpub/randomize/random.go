@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
-	"github.com/volatiletech/sqlboiler/strmangle"
+	"github.com/volatiletech/strmangle"
 )
 
 const alphabetAll = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -71,6 +71,16 @@ func FormattedString(nextInt func() int64, fieldType string) (string, bool) {
 func MediumInt(nextInt func() int64, fieldType string) (int32, bool) {
 	if fieldType == "mediumint" {
 		return int32(nextInt()) % 8388607, true
+	}
+
+	return 0, false
+}
+
+// MediumUint is the unsigned version of MediumInt
+func MediumUint(nextInt func() int64, fieldType string) (uint32, bool) {
+	fmt.Println(fieldType)
+	if fieldType == "mediumint" {
+		return uint32(nextInt()) % 16777215, true
 	}
 
 	return 0, false

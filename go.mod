@@ -87,11 +87,12 @@ require (
 	github.com/admpub/marmot v0.0.0-20200702042226-2170d9ff59f5
 	github.com/admpub/metrohash v0.0.0-20160821164112-8d1c8b6bed28
 	github.com/admpub/mysql-schema-sync v0.1.0
-	github.com/admpub/null v8.0.1+incompatible
+	github.com/admpub/null v8.0.2+incompatible
 	github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48 // indirect
 	github.com/admpub/phantomjs v0.0.0-20180924162111-8a5af756140e
 	github.com/admpub/qrcode v0.0.0-20190512103923-0a2b75fa9edc
 	github.com/admpub/queueChan v0.0.0-20151001074356-79908f7a499f // indirect
+	github.com/admpub/randomize v0.0.2 // indirect
 	github.com/admpub/regexp2 v1.1.7
 	github.com/admpub/resty/v2 v2.4.1
 	github.com/admpub/securecookie v0.0.0-20170722041919-69560e375596
@@ -100,7 +101,6 @@ require (
 	github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede
 	github.com/admpub/sockjs-go v0.0.0-20170208085255-715e9716fc23
 	github.com/admpub/sonyflake v0.0.0-20160530021500-fa881fb1052b
-	github.com/admpub/sqlboiler v3.0.1+incompatible // indirect
 	github.com/admpub/statik v0.1.7 // indirect
 	github.com/admpub/tail v1.0.3
 	github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2
@@ -131,7 +131,6 @@ require (
 	github.com/fatedier/kcp-go v2.0.4-0.20190803094908-fe8645b0a904+incompatible // indirect
 	github.com/fatih/color v1.10.0
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
-	github.com/friendsofgo/errors v0.9.2 // indirect
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-openapi/strfmt v0.19.11 // indirect
 	github.com/goftp/file-driver v0.0.0-20180502053751-5d604a0fc0c9 // indirect
@@ -172,8 +171,6 @@ require (
 	github.com/tebeka/selenium v0.9.9
 	github.com/tuotoo/qrcode v0.0.0-20190222102259-ac9c44189bf2 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/volatiletech/inflect v0.0.1 // indirect
-	github.com/volatiletech/sqlboiler v3.7.1+incompatible // indirect
 	github.com/webx-top/captcha v0.0.0-20161202061115-29e9e7f30aa0
 	github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f // indirect
 	github.com/webx-top/client v0.1.3

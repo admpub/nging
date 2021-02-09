@@ -117,6 +117,11 @@ func (u Uint64) Value() (driver.Value, error) {
 	if !u.Valid {
 		return nil, nil
 	}
+
+	if u.Uint64 >= 1<<63 {
+		return strconv.FormatUint(u.Uint64, 10), nil
+	}
+
 	return int64(u.Uint64), nil
 }
 

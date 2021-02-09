@@ -8,7 +8,7 @@ import (
 	"fmt"
 
 	"github.com/admpub/null/convert"
-	"github.com/admpub/sqlboiler/randomize"
+	"github.com/admpub/randomize"
 )
 
 // JSON is a nullable []byte.

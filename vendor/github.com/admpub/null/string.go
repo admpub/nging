@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 
 	"github.com/admpub/null/convert"
-	"github.com/admpub/sqlboiler/randomize"
+	"github.com/admpub/randomize"
 )
 
 // String is a nullable string. It supports SQL and JSON serialization.
