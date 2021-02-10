@@ -120,8 +120,8 @@ require (
 	github.com/caddy-plugins/ipfilter v1.1.4
 	github.com/caddy-plugins/nobots v0.1.1
 	github.com/caddyserver/caddy v1.1.5
-	github.com/chromedp/cdproto v0.0.0-20210113043257-dabd2f2e7693
-	github.com/chromedp/chromedp v0.6.1
+	github.com/chromedp/cdproto v0.0.0-20210122124816-7a656c010d57
+	github.com/chromedp/chromedp v0.6.5
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
 	github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
 	github.com/deckarep/golang-set v1.7.1 // indirect
