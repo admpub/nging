@@ -471,6 +471,7 @@ const (
 	CommandOverlaySetShowLayoutShiftRegions                = overlay.CommandSetShowLayoutShiftRegions
 	CommandOverlaySetShowScrollBottleneckRects             = overlay.CommandSetShowScrollBottleneckRects
 	CommandOverlaySetShowHitTestBorders                    = overlay.CommandSetShowHitTestBorders
+	CommandOverlaySetShowWebVitals                         = overlay.CommandSetShowWebVitals
 	CommandOverlaySetShowViewportSizeOnResize              = overlay.CommandSetShowViewportSizeOnResize
 	CommandOverlaySetShowHinge                             = overlay.CommandSetShowHinge
 	EventOverlayInspectNodeRequested                       = "Overlay.inspectNodeRequested"
@@ -630,6 +631,7 @@ const (
 	CommandStorageTrackIndexedDBForOrigin                  = storage.CommandTrackIndexedDBForOrigin
 	CommandStorageUntrackCacheStorageForOrigin             = storage.CommandUntrackCacheStorageForOrigin
 	CommandStorageUntrackIndexedDBForOrigin                = storage.CommandUntrackIndexedDBForOrigin
+	CommandStorageGetTrustTokens                           = storage.CommandGetTrustTokens
 	EventStorageCacheStorageContentUpdated                 = "Storage.cacheStorageContentUpdated"
 	EventStorageCacheStorageListUpdated                    = "Storage.cacheStorageListUpdated"
 	EventStorageIndexedDBContentUpdated                    = "Storage.indexedDBContentUpdated"
@@ -1913,6 +1915,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandOverlaySetShowHitTestBorders:
 		return emptyVal, nil
 
+	case CommandOverlaySetShowWebVitals:
+		return emptyVal, nil
+
 	case CommandOverlaySetShowViewportSizeOnResize:
 		return emptyVal, nil
 
@@ -2389,6 +2394,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case CommandStorageUntrackIndexedDBForOrigin:
 		return emptyVal, nil
+
+	case CommandStorageGetTrustTokens:
+		v = new(storage.GetTrustTokensReturns)
 
 	case EventStorageCacheStorageContentUpdated:
 		v = new(storage.EventCacheStorageContentUpdated)

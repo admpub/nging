@@ -694,6 +694,30 @@ func (p *SetShowHitTestBordersParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSetShowHitTestBorders, p, nil)
 }
 
+// SetShowWebVitalsParams request that backend shows an overlay with web
+// vital metrics.
+type SetShowWebVitalsParams struct {
+	Show bool `json:"show"`
+}
+
+// SetShowWebVitals request that backend shows an overlay with web vital
+// metrics.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Overlay#method-setShowWebVitals
+//
+// parameters:
+//   show
+func SetShowWebVitals(show bool) *SetShowWebVitalsParams {
+	return &SetShowWebVitalsParams{
+		Show: show,
+	}
+}
+
+// Do executes Overlay.setShowWebVitals against the provided context.
+func (p *SetShowWebVitalsParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetShowWebVitals, p, nil)
+}
+
 // SetShowViewportSizeOnResizeParams paints viewport size upon main frame
 // resize.
 type SetShowViewportSizeOnResizeParams struct {
@@ -766,6 +790,7 @@ const (
 	CommandSetShowLayoutShiftRegions            = "Overlay.setShowLayoutShiftRegions"
 	CommandSetShowScrollBottleneckRects         = "Overlay.setShowScrollBottleneckRects"
 	CommandSetShowHitTestBorders                = "Overlay.setShowHitTestBorders"
+	CommandSetShowWebVitals                     = "Overlay.setShowWebVitals"
 	CommandSetShowViewportSizeOnResize          = "Overlay.setShowViewportSizeOnResize"
 	CommandSetShowHinge                         = "Overlay.setShowHinge"
 )

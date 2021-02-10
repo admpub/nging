@@ -289,7 +289,7 @@ github.com/armon/go-socks5
 github.com/asaskevich/govalidator
 # github.com/atotto/clipboard v0.1.2
 github.com/atotto/clipboard
-# github.com/aws/aws-sdk-go v1.36.26
+# github.com/aws/aws-sdk-go v1.37.8
 ## explicit
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -302,6 +302,7 @@ github.com/aws/aws-sdk-go/aws/credentials
 github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds
 github.com/aws/aws-sdk-go/aws/credentials/endpointcreds
 github.com/aws/aws-sdk-go/aws/credentials/processcreds
+github.com/aws/aws-sdk-go/aws/credentials/ssocreds
 github.com/aws/aws-sdk-go/aws/credentials/stscreds
 github.com/aws/aws-sdk-go/aws/csm
 github.com/aws/aws-sdk-go/aws/defaults
@@ -327,14 +328,18 @@ github.com/aws/aws-sdk-go/private/protocol
 github.com/aws/aws-sdk-go/private/protocol/eventstream
 github.com/aws/aws-sdk-go/private/protocol/eventstream/eventstreamapi
 github.com/aws/aws-sdk-go/private/protocol/json/jsonutil
+github.com/aws/aws-sdk-go/private/protocol/jsonrpc
 github.com/aws/aws-sdk-go/private/protocol/query
 github.com/aws/aws-sdk-go/private/protocol/query/queryutil
 github.com/aws/aws-sdk-go/private/protocol/rest
+github.com/aws/aws-sdk-go/private/protocol/restjson
 github.com/aws/aws-sdk-go/private/protocol/restxml
 github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil
 github.com/aws/aws-sdk-go/service/s3
 github.com/aws/aws-sdk-go/service/s3/s3iface
 github.com/aws/aws-sdk-go/service/s3/s3manager
+github.com/aws/aws-sdk-go/service/sso
+github.com/aws/aws-sdk-go/service/sso/ssoiface
 github.com/aws/aws-sdk-go/service/sts
 github.com/aws/aws-sdk-go/service/sts/stsiface
 # github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394
@@ -432,7 +437,7 @@ github.com/cespare/xxhash/v2
 github.com/cheekybits/genny/generic
 # github.com/chris-ramon/douceur v0.2.0
 github.com/chris-ramon/douceur/parser
-# github.com/chromedp/cdproto v0.0.0-20210113043257-dabd2f2e7693
+# github.com/chromedp/cdproto v0.0.0-20210122124816-7a656c010d57
 ## explicit
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
@@ -480,7 +485,7 @@ github.com/chromedp/cdproto/tethering
 github.com/chromedp/cdproto/tracing
 github.com/chromedp/cdproto/webaudio
 github.com/chromedp/cdproto/webauthn
-# github.com/chromedp/chromedp v0.6.1
+# github.com/chromedp/chromedp v0.6.5
 ## explicit
 github.com/chromedp/chromedp
 github.com/chromedp/chromedp/device
@@ -639,8 +644,8 @@ github.com/golang/snappy
 github.com/gomodule/redigo/redis
 # github.com/google/uuid v1.1.2
 github.com/google/uuid
-# github.com/googleapis/gax-go v2.0.2+incompatible
-github.com/googleapis/gax-go
+# github.com/googleapis/gax-go/v2 v2.0.5
+github.com/googleapis/gax-go/v2
 # github.com/gorilla/css v1.0.0
 github.com/gorilla/css/scanner
 # github.com/gorilla/mux v1.7.3
@@ -945,7 +950,7 @@ github.com/sahilm/fuzzy
 ## explicit
 # github.com/sergi/go-diff v1.1.0
 github.com/sergi/go-diff/diffmatchpatch
-# github.com/shirou/gopsutil v3.20.12+incompatible
+# github.com/shirou/gopsutil v3.21.1+incompatible
 ## explicit
 github.com/shirou/gopsutil/cpu
 github.com/shirou/gopsutil/disk
@@ -961,7 +966,7 @@ github.com/shirou/gopsutil/process
 ## explicit
 # github.com/sirupsen/logrus v1.6.0
 github.com/sirupsen/logrus
-# github.com/spf13/cobra v1.1.1
+# github.com/spf13/cobra v1.1.2
 ## explicit
 github.com/spf13/cobra
 # github.com/spf13/pflag v1.0.5
@@ -1161,7 +1166,7 @@ go.opencensus.io/trace
 go.opencensus.io/trace/internal
 go.opencensus.io/trace/propagation
 go.opencensus.io/trace/tracestate
-# gocloud.dev v0.21.0
+# gocloud.dev v0.22.0
 ## explicit
 gocloud.dev/blob
 gocloud.dev/blob/driver
@@ -1405,7 +1410,7 @@ gopkg.in/square/go-jose.v2/json
 gopkg.in/tomb.v1
 # gopkg.in/warnings.v0 v0.1.2
 gopkg.in/warnings.v0
-# gopkg.in/yaml.v2 v2.3.0
+# gopkg.in/yaml.v2 v2.4.0
 gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.0-20200605160147-a5ece683394c
 gopkg.in/yaml.v3

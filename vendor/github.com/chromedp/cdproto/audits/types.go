@@ -635,6 +635,64 @@ type SharedArrayBufferTransferIssueDetails struct {
 	IsWarning          bool                `json:"isWarning"`
 }
 
+// TwaQualityEnforcementViolationType [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-TwaQualityEnforcementViolationType
+type TwaQualityEnforcementViolationType string
+
+// String returns the TwaQualityEnforcementViolationType as string value.
+func (t TwaQualityEnforcementViolationType) String() string {
+	return string(t)
+}
+
+// TwaQualityEnforcementViolationType values.
+const (
+	TwaQualityEnforcementViolationTypeKHTTPError          TwaQualityEnforcementViolationType = "kHttpError"
+	TwaQualityEnforcementViolationTypeKUnavailableOffline TwaQualityEnforcementViolationType = "kUnavailableOffline"
+	TwaQualityEnforcementViolationTypeKDigitalAssetLinks  TwaQualityEnforcementViolationType = "kDigitalAssetLinks"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t TwaQualityEnforcementViolationType) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t TwaQualityEnforcementViolationType) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *TwaQualityEnforcementViolationType) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch TwaQualityEnforcementViolationType(in.String()) {
+	case TwaQualityEnforcementViolationTypeKHTTPError:
+		*t = TwaQualityEnforcementViolationTypeKHTTPError
+	case TwaQualityEnforcementViolationTypeKUnavailableOffline:
+		*t = TwaQualityEnforcementViolationTypeKUnavailableOffline
+	case TwaQualityEnforcementViolationTypeKDigitalAssetLinks:
+		*t = TwaQualityEnforcementViolationTypeKDigitalAssetLinks
+
+	default:
+		in.AddError(errors.New("unknown TwaQualityEnforcementViolationType value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *TwaQualityEnforcementViolationType) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// TrustedWebActivityIssueDetails [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-TrustedWebActivityIssueDetails
+type TrustedWebActivityIssueDetails struct {
+	URL            string                             `json:"url"` // The url that triggers the violation.
+	ViolationType  TwaQualityEnforcementViolationType `json:"violationType"`
+	HTTPStatusCode int64                              `json:"httpStatusCode,omitempty"`
+	PackageName    string                             `json:"packageName,omitempty"` // The package name of the Trusted Web Activity client app. This field is only used when violation type is kDigitalAssetLinks.
+	Signature      string                             `json:"signature,omitempty"`   // The signature of the Trusted Web Activity client app. This field is only used when violation type is kDigitalAssetLinks.
+}
+
 // InspectorIssueCode a unique identifier for the type of issue. Each type
 // may use one of the optional fields in InspectorIssueDetails to convey more
 // specific information about the kind of issue.
@@ -655,6 +713,7 @@ const (
 	InspectorIssueCodeHeavyAdIssue                   InspectorIssueCode = "HeavyAdIssue"
 	InspectorIssueCodeContentSecurityPolicyIssue     InspectorIssueCode = "ContentSecurityPolicyIssue"
 	InspectorIssueCodeSharedArrayBufferTransferIssue InspectorIssueCode = "SharedArrayBufferTransferIssue"
+	InspectorIssueCodeTrustedWebActivityIssue        InspectorIssueCode = "TrustedWebActivityIssue"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -682,6 +741,8 @@ func (t *InspectorIssueCode) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = InspectorIssueCodeContentSecurityPolicyIssue
 	case InspectorIssueCodeSharedArrayBufferTransferIssue:
 		*t = InspectorIssueCodeSharedArrayBufferTransferIssue
+	case InspectorIssueCodeTrustedWebActivityIssue:
+		*t = InspectorIssueCodeTrustedWebActivityIssue
 
 	default:
 		in.AddError(errors.New("unknown InspectorIssueCode value"))
@@ -705,6 +766,7 @@ type InspectorIssueDetails struct {
 	HeavyAdIssueDetails                   *HeavyAdIssueDetails                   `json:"heavyAdIssueDetails,omitempty"`
 	ContentSecurityPolicyIssueDetails     *ContentSecurityPolicyIssueDetails     `json:"contentSecurityPolicyIssueDetails,omitempty"`
 	SharedArrayBufferTransferIssueDetails *SharedArrayBufferTransferIssueDetails `json:"sharedArrayBufferTransferIssueDetails,omitempty"`
+	TwaQualityEnforcementDetails          *TrustedWebActivityIssueDetails        `json:"twaQualityEnforcementDetails,omitempty"`
 }
 
 // InspectorIssue an inspector issue reported from the back-end.

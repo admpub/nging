@@ -309,6 +309,38 @@ func (p *UntrackIndexedDBForOriginParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandUntrackIndexedDBForOrigin, p, nil)
 }
 
+// GetTrustTokensParams returns the number of stored Trust Tokens per issuer
+// for the current browsing context.
+type GetTrustTokensParams struct{}
+
+// GetTrustTokens returns the number of stored Trust Tokens per issuer for
+// the current browsing context.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Storage#method-getTrustTokens
+func GetTrustTokens() *GetTrustTokensParams {
+	return &GetTrustTokensParams{}
+}
+
+// GetTrustTokensReturns return values.
+type GetTrustTokensReturns struct {
+	Tokens []*TrustTokens `json:"tokens,omitempty"`
+}
+
+// Do executes Storage.getTrustTokens against the provided context.
+//
+// returns:
+//   tokens
+func (p *GetTrustTokensParams) Do(ctx context.Context) (tokens []*TrustTokens, err error) {
+	// execute
+	var res GetTrustTokensReturns
+	err = cdp.Execute(ctx, CommandGetTrustTokens, nil, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Tokens, nil
+}
+
 // Command names.
 const (
 	CommandClearDataForOrigin           = "Storage.clearDataForOrigin"
@@ -321,4 +353,5 @@ const (
 	CommandTrackIndexedDBForOrigin      = "Storage.trackIndexedDBForOrigin"
 	CommandUntrackCacheStorageForOrigin = "Storage.untrackCacheStorageForOrigin"
 	CommandUntrackIndexedDBForOrigin    = "Storage.untrackIndexedDBForOrigin"
+	CommandGetTrustTokens               = "Storage.getTrustTokens"
 )
