@@ -31,6 +31,7 @@ import (
 
 	"github.com/admpub/confl"
 	"github.com/admpub/log"
+	"github.com/admpub/mysql-schema-sync/sync"
 	"github.com/admpub/nging/application/cmd/event"
 	"github.com/admpub/nging/application/library/caddy"
 	"github.com/admpub/nging/application/library/common"
@@ -180,8 +181,16 @@ var (
 	DBCreaters = map[string]func(error, *Config) error{
 		`mysql`: CreaterMySQL,
 	}
+	DBUpgraders = map[string]func(string, *sync.Config, *Config) (DBOperators, error){
+		`mysql`: UpgradeMySQL,
+	}
 	DBEngines = echo.NewKVData().Add(`mysql`, `MySQL`)
 )
+
+type DBOperators struct {
+	Source      sync.DBOperator
+	Destination sync.DBOperator
+}
 
 func CreaterMySQL(err error, c *Config) error {
 	if strings.Contains(err.Error(), `Unknown database`) {
@@ -200,6 +209,20 @@ func CreaterMySQL(err error, c *Config) error {
 		err = ConnectDB(c)
 	}
 	return err
+}
+
+func UpgradeMySQL(schema string, syncConfig *sync.Config, cfg *Config) (DBOperators, error) {
+	syncConfig.DestDSN = cfg.DB.User + `:` + cfg.DB.Password + `@(` + cfg.DB.Host + `)/` + cfg.DB.Database
+	syncConfig.SQLPreprocessor = func() func(string) string {
+		charset := cfg.DB.Charset()
+		if len(charset) == 0 {
+			charset = `utf8mb4`
+		}
+		return func(sqlStr string) string {
+			return common.ReplaceCharset(sqlStr, charset)
+		}
+	}()
+	return DBOperators{Source: sync.NewMySchemaData(schema, `source`)}, nil
 }
 
 func ConnectMySQL(c *Config) error {

@@ -103,19 +103,13 @@ func UpgradeDB() {
 	if DefaultConfig == nil {
 		return
 	}
-	var upgraded bool
-	if DefaultConfig.DB.Type == `mysql` {
-		executePreupgrade()
-		autoUpgradeDatabase()
-		upgraded = true
-	} else {
-		stdLog.Panicln(`数据库表结构需要升级！`)
-	}
-	if !upgraded {
-		return
-	}
+	executePreupgrade()
+	autoUpgradeDatabase()
 	installedSchemaVer = Version.DBSchema
-	ioutil.WriteFile(filepath.Join(echo.Wd(), `installed.lock`), []byte(installedTime.Format(`2006-01-02 15:04:05`)+"\n"+fmt.Sprint(Version.DBSchema)), os.ModePerm)
+	err := ioutil.WriteFile(filepath.Join(echo.Wd(), `installed.lock`), []byte(installedTime.Format(`2006-01-02 15:04:05`)+"\n"+fmt.Sprint(Version.DBSchema)), os.ModePerm)
+	if err != nil {
+		log.Error(err)
+	}
 }
 
 func GetSQLInstallFiles() ([]string, error) {
@@ -190,36 +184,36 @@ func executePreupgrade() {
 func autoUpgradeDatabase() {
 	sqlFiles, err := GetSQLInstallFiles()
 	if err != nil {
-		panic(`尝试自动升级数据库失败！数据库安装文件不存在：config/install.sql`)
+		stdLog.Panicln(`尝试自动升级数据库失败！数据库安装文件不存在：config/install.sql`)
 	}
 	var schema string
 	for _, sqlFile := range sqlFiles {
 		b, err := ioutil.ReadFile(sqlFile)
 		if err != nil {
-			panic(err)
+			stdLog.Panicln(err)
 		}
 		schema += string(b)
 	}
-	r, err := sync.Sync(&sync.Config{
+	syncConfig := &sync.Config{
 		Sync:       true,
 		Drop:       true,
 		SourceDSN:  ``,
-		DestDSN:    DefaultConfig.DB.User + `:` + DefaultConfig.DB.Password + `@(` + DefaultConfig.DB.Host + `)/` + DefaultConfig.DB.Database,
+		DestDSN:    ``,
 		Tables:     ``,
 		SkipTables: ``,
 		MailTo:     ``,
-		SQLPreprocessor: func() func(string) string {
-			charset := DefaultConfig.DB.Charset()
-			if len(charset) == 0 {
-				charset = `utf8mb4`
-			}
-			return func(sqlStr string) string {
-				return common.ReplaceCharset(sqlStr, charset)
-			}
-		}(),
-	}, nil, sync.NewMySchemaData(schema, `source`))
+	}
+	upgrader, ok := DBUpgraders[DefaultConfig.DB.Type]
+	if !ok {
+		stdLog.Panicf(`不支持升级%s数据表`, DefaultConfig.DB.Type)
+	}
+	dbOperators, err := upgrader(schema, syncConfig, DefaultConfig)
 	if err != nil {
-		panic(`尝试自动升级数据库失败！同步表结构时出错：` + err.Error())
+		stdLog.Panicln(err)
+	}
+	r, err := sync.Sync(syncConfig, nil, dbOperators.Source, dbOperators.Destination)
+	if err != nil {
+		stdLog.Panicln(`尝试自动升级数据库失败！同步表结构时出错：` + err.Error())
 	}
 	nowTime := time.Now().Format(`20060102150405`)
 	//写日志

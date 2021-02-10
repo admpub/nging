@@ -458,9 +458,9 @@ func ConvertMySQLFile(sqlFile string, sqliteSQLFile string) error {
 }
 
 // ConvertMySQL 转换MySQL为SQLite
-func ConvertMySQL(sqlFile string) (string, error) {
+func ConvertMySQL(sqlContent string) (string, error) {
 	var sqlStr string
-	err := common.ParseSQL(sqlFile, true, func(s string) error {
+	err := common.ParseSQL(sqlContent, false, func(s string) error {
 		sqls, err := covertCreateTableSQL(s)
 		if err == nil {
 			sqlStr += strings.Join(sqls, "\n") + "\n"

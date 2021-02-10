@@ -24,6 +24,8 @@ import (
 	"os"
 	"strings"
 
+	syncSQLite "github.com/admpub/mysql-schema-sync/sqlite"
+	"github.com/admpub/mysql-schema-sync/sync"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/db/sqlite"
@@ -33,6 +35,7 @@ func register() {
 	config.DBCreaters[`sqlite`] = CreaterSQLite
 	config.DBConnecters[`sqlite`] = ConnectSQLite
 	config.DBInstallers[`sqlite`] = ExecSQL
+	config.DBUpgraders[`sqlite`] = UpgradeSQLite
 	config.DBEngines.Add(`sqlite`, `SQLite`)
 }
 
@@ -61,4 +64,15 @@ func CreaterSQLite(err error, c *config.Config) error {
 		}
 	}
 	return err
+}
+
+func UpgradeSQLite(schema string, syncConfig *sync.Config, cfg *config.Config) (config.DBOperators, error) {
+	syncConfig.DestDSN = cfg.DB.Database
+	syncConfig.Comparer = syncSQLite.NewCompare()
+	var err error
+	schema, err = ConvertMySQL(schema)
+	return config.DBOperators{
+		Source:      syncSQLite.NewSchemaData(schema, `source`),
+		Destination: syncSQLite.New(cfg.DB.Database, `dest`),
+	}, err
 }
