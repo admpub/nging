@@ -36,17 +36,14 @@ type Info struct {
 }
 
 func (info *Info) URL(s *Subdomains, uri string) string {
-	var generatedURL string
-	if s.Default == info.Name {
-		generatedURL = info.Prefix() + uri
-	} else {
-		generatedURL = info.Prefix() + `/` + info.Name + uri
-	}
 	if domain := echo.String(`subdomains.` + info.Name + `.url`); len(domain) > 0 {
-		return domain + generatedURL
+		return domain + info.Prefix() + uri
 	}
 	if len(info.Host) == 0 {
-		return generatedURL
+		if s.Default == info.Name {
+			return info.Prefix() + uri
+		}
+		return info.Prefix() + `/` + info.Name + uri
 	}
 	protocol := info.Protocol
 	if len(protocol) == 0 {
@@ -55,7 +52,7 @@ func (info *Info) URL(s *Subdomains, uri string) string {
 			protocol = `http`
 		}
 	}
-	return protocol + `://` + info.Host + generatedURL
+	return protocol + `://` + info.Host + info.Prefix() + uri
 }
 
 func (info *Info) URLByName(s *Subdomains, name string, args ...interface{}) string {
