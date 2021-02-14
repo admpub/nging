@@ -41,6 +41,16 @@ var configDefaults = map[string]map[string]*dbschema.NgingConfig{
 			Sort:        0,
 			Disabled:    `N`,
 		},
+		`backendURL`: {
+			Key:         `backendURL`,
+			Label:       `后台网址`,
+			Description: ``,
+			Value:       ``,
+			Group:       `base`,
+			Type:        `text`,
+			Sort:        0,
+			Disabled:    `N`,
+		},
 		`debug`: {
 			Key:         `debug`,
 			Label:       `调试模式`,

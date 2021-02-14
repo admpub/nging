@@ -24,6 +24,10 @@ func New() *Subdomains {
 	return s
 }
 
+func SetBaseURL(name string, url string) {
+	echo.Set(`subdomains.`+name+`.url`, url)
+}
+
 type Info struct {
 	Protocol string
 	Name     string
@@ -32,11 +36,17 @@ type Info struct {
 }
 
 func (info *Info) URL(s *Subdomains, uri string) string {
+	var generatedURL string
+	if s.Default == info.Name {
+		generatedURL = info.Prefix() + uri
+	} else {
+		generatedURL = info.Prefix() + `/` + info.Name + uri
+	}
+	if domain := echo.String(`subdomains.` + info.Name + `.url`); len(domain) > 0 {
+		return domain + generatedURL
+	}
 	if len(info.Host) == 0 {
-		if s.Default == info.Name {
-			return info.Prefix() + uri
-		}
-		return info.Prefix() + `/` + info.Name + uri
+		return generatedURL
 	}
 	protocol := info.Protocol
 	if len(protocol) == 0 {
@@ -45,7 +55,7 @@ func (info *Info) URL(s *Subdomains, uri string) string {
 			protocol = `http`
 		}
 	}
-	return protocol + `://` + info.Host + info.Prefix() + uri
+	return protocol + `://` + info.Host + generatedURL
 }
 
 func (info *Info) URLByName(s *Subdomains, name string, args ...interface{}) string {

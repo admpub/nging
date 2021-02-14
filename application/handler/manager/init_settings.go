@@ -4,6 +4,7 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/param"
+	"github.com/webx-top/echo/subdomains"
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/config"
@@ -111,5 +112,16 @@ func init() {
 			return nil
 		}
 		return updateStorer(cfg)
+	})
+	var updateBackendURL = func(cfg echo.H) error {
+		subdomains.SetBaseURL(`backend`, cfg.Store(`base`).String(`backendURL`))
+		return nil
+	}
+	config.OnInitSettings(updateBackendURL)
+	config.OnSetSettings(func(group string, cfg echo.H) error {
+		if group != `base` {
+			return nil
+		}
+		return updateBackendURL(cfg)
 	})
 }
