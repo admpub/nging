@@ -106,22 +106,10 @@ func init() {
 		echo.Set(storer.StorerInfoKey, settings)
 		return nil
 	}
-	config.OnInitSettings(updateStorer)
-	config.OnSetSettings(func(group string, cfg echo.H) error {
-		if group != `base` {
-			return nil
-		}
-		return updateStorer(cfg)
-	})
+	config.OnSetSettings(`base.storer`, updateStorer)
 	var updateBackendURL = func(cfg echo.H) error {
 		subdomains.SetBaseURL(`backend`, cfg.Store(`base`).String(`backendURL`))
 		return nil
 	}
-	config.OnInitSettings(updateBackendURL)
-	config.OnSetSettings(func(group string, cfg echo.H) error {
-		if group != `base` {
-			return nil
-		}
-		return updateBackendURL(cfg)
-	})
+	config.OnSetSettings(`base.backendURL`, updateBackendURL)
 }

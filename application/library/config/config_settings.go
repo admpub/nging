@@ -19,6 +19,8 @@
 package config
 
 import (
+	"strings"
+
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/subdomains"
 
@@ -94,32 +96,37 @@ func (c *Settings) SetDebug(on bool) {
 }
 
 var (
-	actGroups      = []string{`base`, `smtp`, `log`}
-	onInitSettings []func(echo.H) error
-	onSetSettings  []func(group string, globalCfg echo.H) error
+	actGroups     = []string{`base`, `smtp`, `log`}
+	onSetSettings = map[string][]func(globalCfg echo.H) error{}
 )
 
-func OnInitSettings(fn func(echo.H) error) {
-	onInitSettings = append(onInitSettings, fn)
-}
-
-func OnSetSettings(fn func(string, echo.H) error) {
-	onSetSettings = append(onSetSettings, fn)
+func OnSetSettings(groupAndKey string, fn func(echo.H) error) {
+	if _, ok := onSetSettings[groupAndKey]; !ok {
+		onSetSettings[groupAndKey] = []func(globalCfg echo.H) error{}
+	}
+	onSetSettings[groupAndKey] = append(onSetSettings[groupAndKey], fn)
 }
 
 func FireInitSettings(cfg echo.H) error {
-	for _, fn := range onInitSettings {
-		if err := fn(cfg); err != nil {
-			return err
+	for _, fnList := range onSetSettings {
+		for _, fn := range fnList {
+			if err := fn(cfg); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
 }
 
 func FireSetSettings(group string, globalCfg echo.H) error {
-	for _, fn := range onSetSettings {
-		if err := fn(group, globalCfg); err != nil {
-			return err
+	for groupAndKey, fnList := range onSetSettings {
+		if !strings.HasPrefix(group+`.`, groupAndKey) {
+			continue
+		}
+		for _, fn := range fnList {
+			if err := fn(globalCfg); err != nil {
+				return err
+			}
 		}
 	}
 	return nil

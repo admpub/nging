@@ -47,22 +47,8 @@ func init() {
 		cfg := system.NewSettings().FromStore(r)
 		return com.JSONEncode(cfg)
 	})
-	config.OnInitSettings(func(cfg echo.H) error {
+	config.OnSetSettings(`base.systemStatus`, func(cfg echo.H) error {
 		if !event.IsWeb() {
-			return nil
-		}
-		settings, ok := cfg.Store(`base`).Get(`systemStatus`).(*system.Settings)
-		if !ok || !settings.MonitorOn {
-			return nil
-		}
-		system.ListenRealTimeStatus(settings)
-		return nil
-	})
-	config.OnSetSettings(func(group string, cfg echo.H) error {
-		if !event.IsWeb() {
-			return nil
-		}
-		if group != `base` {
 			return nil
 		}
 		settings, ok := cfg.Store(`base`).Get(`systemStatus`).(*system.Settings)
