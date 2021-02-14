@@ -16,7 +16,7 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package index
+package server
 
 import (
 	"github.com/admpub/nging/application/library/system"

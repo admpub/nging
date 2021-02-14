@@ -41,6 +41,5 @@ func init() {
 		e.Get(`/routeList`, RouteList, middleware.AuthCheck)
 		e.Get(`/routeNotin`, RouteNotin, middleware.AuthCheck)
 		e.Get(`/navTree`, NavTree, middleware.AuthCheck)
-		e.Get(`/status`, Status)
 	})
 }

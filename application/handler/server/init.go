@@ -49,6 +49,7 @@ func init() {
 		g.Route(`GET,POST`, `/log`, func(c echo.Context) error {
 			return config.DefaultConfig.Log.Show(c)
 		})
+		g.Get(`/status`, Status)
 		sockjsOpts := sockjsHandler.Options{
 			Handle: CmdSendBySockJS,
 			Prefix: "/cmdSend",
