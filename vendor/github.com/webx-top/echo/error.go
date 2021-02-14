@@ -116,11 +116,26 @@ func NewHTTPError(code int, msg ...string) *HTTPError {
 type HTTPError struct {
 	Code    int
 	Message string
+	raw     error
 }
 
 // Error returns message.
 func (e *HTTPError) Error() string {
+	if e.raw != nil {
+		return e.Message + `: ` + e.raw.Error()
+	}
 	return e.Message
+}
+
+// SetRaw sets the raw error
+func (e *HTTPError) SetRaw(err error) *HTTPError {
+	e.raw = err
+	return e
+}
+
+// Raw gets the raw error
+func (e *HTTPError) Raw() error {
+	return e.raw
 }
 
 // ==========================================

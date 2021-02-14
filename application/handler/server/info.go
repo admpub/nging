@@ -93,12 +93,14 @@ func Info(ctx echo.Context) error {
 		//Load:       avgLoad,
 		Memory: &system.MemoryInformation{Virtual: virtualMem, Swap: swapMem},
 		NetIO:  netIOCounter,
+		Go:     system.Status(),
 	}
 	info.DiskUsages = make([]*disk.UsageStat, len(info.Partitions))
 	for k, v := range info.Partitions {
 		usageStat, err := disk.Usage(v.Mountpoint)
 		if err != nil {
 			log.Error(err)
+			continue
 		}
 		info.DiskUsages[k] = usageStat
 	}

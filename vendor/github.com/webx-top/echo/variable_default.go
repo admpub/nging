@@ -19,6 +19,7 @@
 package echo
 
 import (
+	stdJSON "encoding/json"
 	"encoding/xml"
 	"fmt"
 	"net/http"
@@ -69,7 +70,17 @@ var (
 				return NewHTTPError(http.StatusBadRequest, "Request body can't be nil")
 			}
 			defer body.Close()
-			return json.NewDecoder(body).Decode(i)
+			err := json.NewDecoder(body).Decode(i)
+			if err != nil {
+				if ute, ok := err.(*stdJSON.UnmarshalTypeError); ok {
+					return NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Unmarshal type error: expected=%v, got=%v, field=%v, offset=%v", ute.Type, ute.Value, ute.Field, ute.Offset)).SetRaw(err)
+				}
+				if se, ok := err.(*stdJSON.SyntaxError); ok {
+					return NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Syntax error: offset=%v, error=%v", se.Offset, se.Error())).SetRaw(err)
+				}
+				return NewHTTPError(http.StatusBadRequest, err.Error()).SetRaw(err)
+			}
+			return err
 		},
 		MIMEApplicationXML: func(i interface{}, ctx Context, filter ...FormDataFilter) error {
 			body := ctx.Request().Body()
@@ -77,7 +88,17 @@ var (
 				return NewHTTPError(http.StatusBadRequest, "Request body can't be nil")
 			}
 			defer body.Close()
-			return xml.NewDecoder(body).Decode(i)
+			err := xml.NewDecoder(body).Decode(i)
+			if err != nil {
+				if ute, ok := err.(*xml.UnsupportedTypeError); ok {
+					return NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Unsupported type error: type=%v, error=%v", ute.Type, ute.Error())).SetRaw(err)
+				}
+				if se, ok := err.(*xml.SyntaxError); ok {
+					return NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Syntax error: line=%v, error=%v", se.Line, se.Error())).SetRaw(err)
+				}
+				return NewHTTPError(http.StatusBadRequest, err.Error()).SetRaw(err)
+			}
+			return err
 		},
 		MIMEApplicationForm: func(i interface{}, ctx Context, filter ...FormDataFilter) error {
 			return NamedStructMap(ctx.Echo(), i, ctx.Request().PostForm().All(), ``, filter...)

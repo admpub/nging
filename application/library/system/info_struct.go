@@ -28,26 +28,27 @@ import (
 )
 
 type SystemInformation struct {
-	CPU        []cpu.InfoStat
-	CPUPercent []float64
-	Partitions []disk.PartitionStat
-	DiskUsages []*disk.UsageStat
-	DiskIO     map[string]disk.IOCountersStat
-	Host       *host.InfoStat
-	Load       *load.AvgStat
-	Memory     *MemoryInformation
-	NetIO      []net.IOCountersStat
+	CPU        []cpu.InfoStat                 `json:",omitempty"`
+	CPUPercent []float64                      `json:",omitempty"`
+	Partitions []disk.PartitionStat           `json:",omitempty"`
+	DiskUsages []*disk.UsageStat              `json:",omitempty"`
+	DiskIO     map[string]disk.IOCountersStat `json:",omitempty"`
+	Host       *host.InfoStat                 `json:",omitempty"`
+	Load       *load.AvgStat                  `json:",omitempty"`
+	Memory     *MemoryInformation             `json:",omitempty"`
+	NetIO      []net.IOCountersStat           `json:",omitempty"`
+	Go         *RuntimeStatus                 `json:",omitempty"`
 }
 
 type MemoryInformation struct {
-	Virtual *mem.VirtualMemoryStat
-	Swap    *mem.SwapMemoryStat
+	Virtual *mem.VirtualMemoryStat `json:",omitempty"`
+	Swap    *mem.SwapMemoryStat    `json:",omitempty"`
 }
 
 type DynamicInformation struct {
 	CPUPercent []float64
-	Load       *load.AvgStat `json:",omitempty"`
-	Memory     *MemoryInformation
+	Load       *load.AvgStat        `json:",omitempty"`
+	Memory     *MemoryInformation   `json:",omitempty"`
 	NetIO      []net.IOCountersStat `json:",omitempty"`
 }
 

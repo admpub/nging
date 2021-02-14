@@ -1,5 +1,31 @@
 (function(){
-var ws,idElem='#CPU-Usage',idNetElem='#Net-Usage',idNetPacket='#NetPacket-Usage'; 
+var ws,idElem='#CPU-Usage',idNetElem='#Net-Usage',idNetPacket='#NetPacket-Usage';
+function tooltipFormatter(event, post, item){
+  return item.series.label + ": " + item.datapoint[1].toFixed(2);
+}
+function tooltipPercentFormatter(event, post, item){
+  return item.series.label + ": " + percentFormatter(item.datapoint[1].toFixed(2),true);
+}
+function tooltipBytesFormatter(event, post, item){
+  return item.series.label + ": " + App.formatBytes(item.datapoint[1]);
+}
+function dateFormatter(v,b) {
+  var date = new Date(v);
+  if (b||date.getSeconds() % 10 == 0) {
+      var hours = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+      var minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+      var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+      return hours + ":" + minutes + ":" + seconds;
+  } 
+  return "";
+}
+function percentFormatter(v,b){
+  if (b||v % 10 == 0) return v + "%";
+  return "";
+}
+App.plotHover(idElem,tooltipPercentFormatter);
+App.plotHover(idNetElem,tooltipBytesFormatter);
+App.plotHover(idNetPacket,tooltipFormatter);
 var _chartCPU,_chartNet,_chartNetPacket,options = {
   series: {
     lines: {
@@ -35,15 +61,7 @@ var _chartCPU,_chartNet,_chartNetPacket,options = {
     mode: "time",
     tickSize: [2, "second"],
     tickFormatter: function (v, axis) {
-      var date = new Date(v);
-      if (date.getSeconds() % 10 == 0) {
-          var hours = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
-          var minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
-          var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
-
-          return hours + ":" + minutes + ":" + seconds;
-      } 
-      return "";
+      return dateFormatter(v);
     }
   },
   yaxis: {
@@ -51,8 +69,7 @@ var _chartCPU,_chartNet,_chartNetPacket,options = {
     max: 100,        
     tickSize: 10,
     tickFormatter: function (v, axis) {
-      if (v % 10 == 0) return v + "%";
-      return "";
+      return percentFormatter(v);
     }
   }
 },netOptions = {
@@ -90,15 +107,7 @@ var _chartCPU,_chartNet,_chartNetPacket,options = {
     mode: "time",
     tickSize: [2, "second"],
     tickFormatter: function (v, axis) {
-      var date = new Date(v);
-      if (date.getSeconds() % 10 == 0) {
-          var hours = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
-          var minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
-          var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
-
-          return hours + ":" + minutes + ":" + seconds;
-      } 
-      return "";
+      return dateFormatter(v);
     }
   },
   yaxis: {
@@ -141,15 +150,7 @@ var _chartCPU,_chartNet,_chartNetPacket,options = {
     mode: "time",
     tickSize: [2, "second"],
     tickFormatter: function (v, axis) {
-      var date = new Date(v);
-      if (date.getSeconds() % 10 == 0) {
-          var hours = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
-          var minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
-          var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
-
-          return hours + ":" + minutes + ":" + seconds;
-      } 
-      return "";
+      return dateFormatter(v);
     }
   }
 };

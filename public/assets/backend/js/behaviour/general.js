@@ -161,7 +161,7 @@ var App = function () {
 		});
 	}
 
-	var cachedLang = null;
+	var cachedLang = null, previousPlotPoint = null; 
 	return {
 		clientID: {},
 		i18n: {
@@ -1586,6 +1586,38 @@ var App = function () {
 				formData.push({name:fieldName,value:arrayData[i]});
 			}
 			return formData;
+		},
+		plotTooltip: function (x, y, contents) {
+			$("<div id='plot-tooltip'>" + contents + "</div>").css({
+			  position: "absolute",
+			  display: "none",
+			  top: y + 5,
+			  left: x + 5,
+			  border: "1px solid #000",
+			  padding: "5px",
+			  'color':'#fff',
+			  'border-radius':'2px',
+			  'font-size':'11px',
+			  "background-color": "#000",
+			  opacity: 0.80
+			}).appendTo("body").fadeIn(200);
+		},
+		plotHover: function(elem, formatter) {
+			$(elem).bind("plothover", function (event, pos, item) { //var str = "(" + pos.x.toFixed(2) + ", " + pos.y.toFixed(2) + ")";
+			  	if (!item) {
+			    	$("#plot-tooltip").remove();
+			    	previousPlotPoint = null;
+					return;
+			  	}
+				if (previousPlotPoint == item.dataIndex) return;
+				previousPlotPoint = item.dataIndex;
+			    $("#plot-tooltip").remove();
+				if(formatter == null) formatter = function(event, pos, item) {
+					var x = item.datapoint[0].toFixed(2), y = item.datapoint[1].toFixed(2);
+					return item.series.label + " of " + x + " = " + y;
+				}
+			    App.plotTooltip(item.pageX, item.pageY, formatter.call(this, event, pos, item));
+			}); 
 		}
 	
 	};
