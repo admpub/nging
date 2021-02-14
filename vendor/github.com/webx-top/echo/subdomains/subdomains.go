@@ -25,7 +25,7 @@ func New() *Subdomains {
 }
 
 func SetBaseURL(name string, url string) {
-	echo.Set(`subdomains.`+name+`.url`, url)
+	echo.Set(`subdomains.`+name+`.url`, strings.TrimRight(url, `/`))
 }
 
 type Info struct {
