@@ -103,6 +103,22 @@ func UpgradeDB() {
 	if DefaultConfig == nil {
 		return
 	}
+	log.Info(`Start to upgrade the database table`)
+	if DefaultConfig.DB.Type == `sqlite` {
+		// 升级前自动备份当前已安装版本数据库
+		log.Info(`Automatically backup the current database`)
+		backupName := DefaultConfig.DB.Database + `.` + strings.Replace(fmt.Sprintf(`%v`, installedSchemaVer), `.`, `_`, -1) + `.bak`
+		if !com.FileExists(backupName) {
+			err := com.Copy(DefaultConfig.DB.Database, backupName)
+			if err != nil {
+				stdLog.Panicf(`An error occurred while backing up the database "%s" to "%s": %v`, DefaultConfig.DB.Database, backupName, err.Error())
+			} else {
+				log.Info(`Backup database "%s" to "%s"`, DefaultConfig.DB.Database, backupName)
+			}
+		} else {
+			log.Info(`The database backup file "%s" already exists, skip this backup`, backupName)
+		}
+	}
 	executePreupgrade()
 	autoUpgradeDatabase()
 	installedSchemaVer = Version.DBSchema
@@ -110,6 +126,7 @@ func UpgradeDB() {
 	if err != nil {
 		log.Error(err)
 	}
+	log.Info(`Database table upgrade completed`)
 }
 
 func GetSQLInstallFiles() ([]string, error) {
@@ -158,7 +175,7 @@ func executePreupgrade() {
 	}
 	installer, ok := DBInstallers[DefaultConfig.DB.Type]
 	if !ok {
-		stdLog.Panicf(`不支持安装到%s`, DefaultConfig.DB.Type)
+		stdLog.Panicf(`Does not support installation to database: %s`, DefaultConfig.DB.Type)
 	}
 	for _, sqlFile := range preupgradeSQLFiles {
 		//sqlFile = /your/path/preupgrade.3_0.nging.sql
@@ -184,7 +201,7 @@ func executePreupgrade() {
 func autoUpgradeDatabase() {
 	sqlFiles, err := GetSQLInstallFiles()
 	if err != nil {
-		stdLog.Panicln(`尝试自动升级数据库失败！数据库安装文件不存在：config/install.sql`)
+		stdLog.Panicln(`Attempt to automatically upgrade the database failed! The database installation file does not exist: config/install.sql`)
 	}
 	var schema string
 	for _, sqlFile := range sqlFiles {
@@ -205,7 +222,7 @@ func autoUpgradeDatabase() {
 	}
 	upgrader, ok := DBUpgraders[DefaultConfig.DB.Type]
 	if !ok {
-		stdLog.Panicf(`不支持升级%s数据表`, DefaultConfig.DB.Type)
+		stdLog.Panicf(`Does not support upgrading %s data table`, DefaultConfig.DB.Type)
 	}
 	dbOperators, err := upgrader(schema, syncConfig, DefaultConfig)
 	if err != nil {
@@ -213,7 +230,7 @@ func autoUpgradeDatabase() {
 	}
 	r, err := sync.Sync(syncConfig, nil, dbOperators.Source, dbOperators.Destination)
 	if err != nil {
-		stdLog.Panicln(`尝试自动升级数据库失败！同步表结构时出错：` + err.Error())
+		stdLog.Panicln(`Attempt to automatically upgrade the database failed! Error while synchronizing table structure: ` + err.Error())
 	}
 	nowTime := time.Now().Format(`20060102150405`)
 	//写日志
