@@ -19,8 +19,10 @@
 package config
 
 import (
+	"fmt"
 	"io/ioutil"
 	stdLog "log"
+	"net/url"
 	"os"
 	"path"
 	"path/filepath"
@@ -213,6 +215,11 @@ func CreaterMySQL(err error, c *Config) error {
 
 func UpgradeMySQL(schema string, syncConfig *sync.Config, cfg *Config) (DBOperators, error) {
 	syncConfig.DestDSN = cfg.DB.User + `:` + cfg.DB.Password + `@(` + cfg.DB.Host + `)/` + cfg.DB.Database
+	t := `?`
+	for key, value := range cfg.DB.Options {
+		syncConfig.DestDSN += t + fmt.Sprintf("%s=%s", key, url.QueryEscape(value))
+		t = `&`
+	}
 	syncConfig.SQLPreprocessor = func() func(string) string {
 		charset := cfg.DB.Charset()
 		if len(charset) == 0 {
