@@ -187,29 +187,29 @@ func (f *Embedded) UpdateEmbedded(embedded bool, project string, table string, f
 	if isEmpty { // 删除关联记录
 		return f.DeleteByInstance(m)
 	}
-	var fidsString string
-	fidList := make([]string, len(fileIds))
+	var postFidsString string
+	postFidList := make([]string, len(fileIds))
 	for k, v := range fileIds {
 		s := fmt.Sprint(v)
-		fidList[k] = s
-		fidsString += s + `,`
+		postFidList[k] = s
+		postFidsString += s + `,`
 	}
-	fidsString = strings.TrimSuffix(fidsString, ",")
-	if m.FileIds == fidsString {
+	postFidsString = strings.TrimSuffix(postFidsString, ",")
+	if m.FileIds == postFidsString {
 		return nil
 	}
-	ids := strings.Split(m.FileIds, ",")
+	oldFids := strings.Split(m.FileIds, ",")
 	//新增引用
-	err = f.AddFileByIds(fidList, ids...)
+	err = f.AddFileByIds(postFidList, oldFids...)
 	if err != nil {
 		return err
 	}
 	//已删除引用
-	err = f.DeleteFileByIds(ids, fidList...)
+	err = f.DeleteFileByIds(oldFids, postFidList...)
 	if err != nil {
 		return err
 	}
-	m.FileIds = fidsString
+	m.FileIds = postFidsString
 	f.FileIds = m.FileIds // 供FileIDs()使用
 	err = f.SetField(nil, `file_ids`, m.FileIds, db.Cond{`id`: m.Id})
 	return err
@@ -257,16 +257,16 @@ func (f *Embedded) FilterNotExistsFileIDs(fids []interface{}, files []interface{
 	if len(fids) > 0 {
 		fids = f.File.GetIDByIDs(fids)
 	}
-	if len(files) > 0 {
-		ids := f.File.GetIDByViewURLs(files)
-		if len(fids) > 0 {
-			for _, id := range ids {
-				if !com.InSliceIface(id, fids) {
-					fids = append(fids, id)
-				}
-			}
-		} else {
-			fids = ids
+	if len(files) == 0 {
+		return fids
+	}
+	ids := f.File.GetIDByViewURLs(files)
+	if len(fids) == 0 {
+		return ids
+	}
+	for _, id := range ids {
+		if !com.InSliceIface(id, fids) {
+			fids = append(fids, id)
 		}
 	}
 	return fids
