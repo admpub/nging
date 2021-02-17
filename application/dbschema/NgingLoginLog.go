@@ -468,19 +468,48 @@ func (a *NgingLoginLog) Reset() *NgingLoginLog {
 	return a
 }
 
-func (a *NgingLoginLog) AsMap() param.Store {
+func (a *NgingLoginLog) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["OwnerType"] = a.OwnerType
-	r["OwnerId"] = a.OwnerId
-	r["Username"] = a.Username
-	r["Errpwd"] = a.Errpwd
-	r["IpAddress"] = a.IpAddress
-	r["IpLocation"] = a.IpLocation
-	r["UserAgent"] = a.UserAgent
-	r["Success"] = a.Success
-	r["Failmsg"] = a.Failmsg
-	r["Day"] = a.Day
-	r["Created"] = a.Created
+	if len(onlyFields) == 0 {
+		r["OwnerType"] = a.OwnerType
+		r["OwnerId"] = a.OwnerId
+		r["Username"] = a.Username
+		r["Errpwd"] = a.Errpwd
+		r["IpAddress"] = a.IpAddress
+		r["IpLocation"] = a.IpLocation
+		r["UserAgent"] = a.UserAgent
+		r["Success"] = a.Success
+		r["Failmsg"] = a.Failmsg
+		r["Day"] = a.Day
+		r["Created"] = a.Created
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "OwnerType":
+			r["OwnerType"] = a.OwnerType
+		case "OwnerId":
+			r["OwnerId"] = a.OwnerId
+		case "Username":
+			r["Username"] = a.Username
+		case "Errpwd":
+			r["Errpwd"] = a.Errpwd
+		case "IpAddress":
+			r["IpAddress"] = a.IpAddress
+		case "IpLocation":
+			r["IpLocation"] = a.IpLocation
+		case "UserAgent":
+			r["UserAgent"] = a.UserAgent
+		case "Success":
+			r["Success"] = a.Success
+		case "Failmsg":
+			r["Failmsg"] = a.Failmsg
+		case "Day":
+			r["Day"] = a.Day
+		case "Created":
+			r["Created"] = a.Created
+		}
+	}
 	return r
 }
 
@@ -559,19 +588,48 @@ func (a *NgingLoginLog) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingLoginLog) AsRow() param.Store {
+func (a *NgingLoginLog) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["owner_type"] = a.OwnerType
-	r["owner_id"] = a.OwnerId
-	r["username"] = a.Username
-	r["errpwd"] = a.Errpwd
-	r["ip_address"] = a.IpAddress
-	r["ip_location"] = a.IpLocation
-	r["user_agent"] = a.UserAgent
-	r["success"] = a.Success
-	r["failmsg"] = a.Failmsg
-	r["day"] = a.Day
-	r["created"] = a.Created
+	if len(onlyFields) == 0 {
+		r["owner_type"] = a.OwnerType
+		r["owner_id"] = a.OwnerId
+		r["username"] = a.Username
+		r["errpwd"] = a.Errpwd
+		r["ip_address"] = a.IpAddress
+		r["ip_location"] = a.IpLocation
+		r["user_agent"] = a.UserAgent
+		r["success"] = a.Success
+		r["failmsg"] = a.Failmsg
+		r["day"] = a.Day
+		r["created"] = a.Created
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "owner_type":
+			r["owner_type"] = a.OwnerType
+		case "owner_id":
+			r["owner_id"] = a.OwnerId
+		case "username":
+			r["username"] = a.Username
+		case "errpwd":
+			r["errpwd"] = a.Errpwd
+		case "ip_address":
+			r["ip_address"] = a.IpAddress
+		case "ip_location":
+			r["ip_location"] = a.IpLocation
+		case "user_agent":
+			r["user_agent"] = a.UserAgent
+		case "success":
+			r["success"] = a.Success
+		case "failmsg":
+			r["failmsg"] = a.Failmsg
+		case "day":
+			r["day"] = a.Day
+		case "created":
+			r["created"] = a.Created
+		}
+	}
 	return r
 }
 

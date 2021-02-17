@@ -439,15 +439,36 @@ func (a *NgingKv) Reset() *NgingKv {
 	return a
 }
 
-func (a *NgingKv) AsMap() param.Store {
+func (a *NgingKv) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Key"] = a.Key
-	r["Value"] = a.Value
-	r["Type"] = a.Type
-	r["Sort"] = a.Sort
-	r["Updated"] = a.Updated
-	r["ChildKeyType"] = a.ChildKeyType
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Key"] = a.Key
+		r["Value"] = a.Value
+		r["Type"] = a.Type
+		r["Sort"] = a.Sort
+		r["Updated"] = a.Updated
+		r["ChildKeyType"] = a.ChildKeyType
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Key":
+			r["Key"] = a.Key
+		case "Value":
+			r["Value"] = a.Value
+		case "Type":
+			r["Type"] = a.Type
+		case "Sort":
+			r["Sort"] = a.Sort
+		case "Updated":
+			r["Updated"] = a.Updated
+		case "ChildKeyType":
+			r["ChildKeyType"] = a.ChildKeyType
+		}
+	}
 	return r
 }
 
@@ -510,15 +531,36 @@ func (a *NgingKv) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingKv) AsRow() param.Store {
+func (a *NgingKv) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["key"] = a.Key
-	r["value"] = a.Value
-	r["type"] = a.Type
-	r["sort"] = a.Sort
-	r["updated"] = a.Updated
-	r["child_key_type"] = a.ChildKeyType
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["key"] = a.Key
+		r["value"] = a.Value
+		r["type"] = a.Type
+		r["sort"] = a.Sort
+		r["updated"] = a.Updated
+		r["child_key_type"] = a.ChildKeyType
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "key":
+			r["key"] = a.Key
+		case "value":
+			r["value"] = a.Value
+		case "type":
+			r["type"] = a.Type
+		case "sort":
+			r["sort"] = a.Sort
+		case "updated":
+			r["updated"] = a.Updated
+		case "child_key_type":
+			r["child_key_type"] = a.ChildKeyType
+		}
+	}
 	return r
 }
 

@@ -471,22 +471,57 @@ func (a *NgingCollectorHistory) Reset() *NgingCollectorHistory {
 	return a
 }
 
-func (a *NgingCollectorHistory) AsMap() param.Store {
+func (a *NgingCollectorHistory) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["ParentId"] = a.ParentId
-	r["PageId"] = a.PageId
-	r["PageParentId"] = a.PageParentId
-	r["PageRootId"] = a.PageRootId
-	r["HasChild"] = a.HasChild
-	r["Url"] = a.Url
-	r["UrlMd5"] = a.UrlMd5
-	r["Title"] = a.Title
-	r["Content"] = a.Content
-	r["RuleMd5"] = a.RuleMd5
-	r["Data"] = a.Data
-	r["Created"] = a.Created
-	r["Exported"] = a.Exported
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["ParentId"] = a.ParentId
+		r["PageId"] = a.PageId
+		r["PageParentId"] = a.PageParentId
+		r["PageRootId"] = a.PageRootId
+		r["HasChild"] = a.HasChild
+		r["Url"] = a.Url
+		r["UrlMd5"] = a.UrlMd5
+		r["Title"] = a.Title
+		r["Content"] = a.Content
+		r["RuleMd5"] = a.RuleMd5
+		r["Data"] = a.Data
+		r["Created"] = a.Created
+		r["Exported"] = a.Exported
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "ParentId":
+			r["ParentId"] = a.ParentId
+		case "PageId":
+			r["PageId"] = a.PageId
+		case "PageParentId":
+			r["PageParentId"] = a.PageParentId
+		case "PageRootId":
+			r["PageRootId"] = a.PageRootId
+		case "HasChild":
+			r["HasChild"] = a.HasChild
+		case "Url":
+			r["Url"] = a.Url
+		case "UrlMd5":
+			r["UrlMd5"] = a.UrlMd5
+		case "Title":
+			r["Title"] = a.Title
+		case "Content":
+			r["Content"] = a.Content
+		case "RuleMd5":
+			r["RuleMd5"] = a.RuleMd5
+		case "Data":
+			r["Data"] = a.Data
+		case "Created":
+			r["Created"] = a.Created
+		case "Exported":
+			r["Exported"] = a.Exported
+		}
+	}
 	return r
 }
 
@@ -577,22 +612,57 @@ func (a *NgingCollectorHistory) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingCollectorHistory) AsRow() param.Store {
+func (a *NgingCollectorHistory) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["parent_id"] = a.ParentId
-	r["page_id"] = a.PageId
-	r["page_parent_id"] = a.PageParentId
-	r["page_root_id"] = a.PageRootId
-	r["has_child"] = a.HasChild
-	r["url"] = a.Url
-	r["url_md5"] = a.UrlMd5
-	r["title"] = a.Title
-	r["content"] = a.Content
-	r["rule_md5"] = a.RuleMd5
-	r["data"] = a.Data
-	r["created"] = a.Created
-	r["exported"] = a.Exported
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["parent_id"] = a.ParentId
+		r["page_id"] = a.PageId
+		r["page_parent_id"] = a.PageParentId
+		r["page_root_id"] = a.PageRootId
+		r["has_child"] = a.HasChild
+		r["url"] = a.Url
+		r["url_md5"] = a.UrlMd5
+		r["title"] = a.Title
+		r["content"] = a.Content
+		r["rule_md5"] = a.RuleMd5
+		r["data"] = a.Data
+		r["created"] = a.Created
+		r["exported"] = a.Exported
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "parent_id":
+			r["parent_id"] = a.ParentId
+		case "page_id":
+			r["page_id"] = a.PageId
+		case "page_parent_id":
+			r["page_parent_id"] = a.PageParentId
+		case "page_root_id":
+			r["page_root_id"] = a.PageRootId
+		case "has_child":
+			r["has_child"] = a.HasChild
+		case "url":
+			r["url"] = a.Url
+		case "url_md5":
+			r["url_md5"] = a.UrlMd5
+		case "title":
+			r["title"] = a.Title
+		case "content":
+			r["content"] = a.Content
+		case "rule_md5":
+			r["rule_md5"] = a.RuleMd5
+		case "data":
+			r["data"] = a.Data
+		case "created":
+			r["created"] = a.Created
+		case "exported":
+			r["exported"] = a.Exported
+		}
+	}
 	return r
 }
 

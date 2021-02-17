@@ -470,15 +470,36 @@ func (a *NgingFileEmbedded) Reset() *NgingFileEmbedded {
 	return a
 }
 
-func (a *NgingFileEmbedded) AsMap() param.Store {
+func (a *NgingFileEmbedded) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Project"] = a.Project
-	r["TableId"] = a.TableId
-	r["TableName"] = a.TableName
-	r["FieldName"] = a.FieldName
-	r["FileIds"] = a.FileIds
-	r["Embedded"] = a.Embedded
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Project"] = a.Project
+		r["TableId"] = a.TableId
+		r["TableName"] = a.TableName
+		r["FieldName"] = a.FieldName
+		r["FileIds"] = a.FileIds
+		r["Embedded"] = a.Embedded
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Project":
+			r["Project"] = a.Project
+		case "TableId":
+			r["TableId"] = a.TableId
+		case "TableName":
+			r["TableName"] = a.TableName
+		case "FieldName":
+			r["FieldName"] = a.FieldName
+		case "FileIds":
+			r["FileIds"] = a.FileIds
+		case "Embedded":
+			r["Embedded"] = a.Embedded
+		}
+	}
 	return r
 }
 
@@ -541,15 +562,36 @@ func (a *NgingFileEmbedded) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingFileEmbedded) AsRow() param.Store {
+func (a *NgingFileEmbedded) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["project"] = a.Project
-	r["table_id"] = a.TableId
-	r["table_name"] = a.TableName
-	r["field_name"] = a.FieldName
-	r["file_ids"] = a.FileIds
-	r["embedded"] = a.Embedded
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["project"] = a.Project
+		r["table_id"] = a.TableId
+		r["table_name"] = a.TableName
+		r["field_name"] = a.FieldName
+		r["file_ids"] = a.FileIds
+		r["embedded"] = a.Embedded
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "project":
+			r["project"] = a.Project
+		case "table_id":
+			r["table_id"] = a.TableId
+		case "table_name":
+			r["table_name"] = a.TableName
+		case "field_name":
+			r["field_name"] = a.FieldName
+		case "file_ids":
+			r["file_ids"] = a.FileIds
+		case "embedded":
+			r["embedded"] = a.Embedded
+		}
+	}
 	return r
 }
 

@@ -481,18 +481,45 @@ func (a *NgingAlertRecipient) Reset() *NgingAlertRecipient {
 	return a
 }
 
-func (a *NgingAlertRecipient) AsMap() param.Store {
+func (a *NgingAlertRecipient) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Name"] = a.Name
-	r["Account"] = a.Account
-	r["Extra"] = a.Extra
-	r["Type"] = a.Type
-	r["Platform"] = a.Platform
-	r["Description"] = a.Description
-	r["Disabled"] = a.Disabled
-	r["Created"] = a.Created
-	r["Updated"] = a.Updated
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Name"] = a.Name
+		r["Account"] = a.Account
+		r["Extra"] = a.Extra
+		r["Type"] = a.Type
+		r["Platform"] = a.Platform
+		r["Description"] = a.Description
+		r["Disabled"] = a.Disabled
+		r["Created"] = a.Created
+		r["Updated"] = a.Updated
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Name":
+			r["Name"] = a.Name
+		case "Account":
+			r["Account"] = a.Account
+		case "Extra":
+			r["Extra"] = a.Extra
+		case "Type":
+			r["Type"] = a.Type
+		case "Platform":
+			r["Platform"] = a.Platform
+		case "Description":
+			r["Description"] = a.Description
+		case "Disabled":
+			r["Disabled"] = a.Disabled
+		case "Created":
+			r["Created"] = a.Created
+		case "Updated":
+			r["Updated"] = a.Updated
+		}
+	}
 	return r
 }
 
@@ -567,18 +594,45 @@ func (a *NgingAlertRecipient) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingAlertRecipient) AsRow() param.Store {
+func (a *NgingAlertRecipient) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["name"] = a.Name
-	r["account"] = a.Account
-	r["extra"] = a.Extra
-	r["type"] = a.Type
-	r["platform"] = a.Platform
-	r["description"] = a.Description
-	r["disabled"] = a.Disabled
-	r["created"] = a.Created
-	r["updated"] = a.Updated
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["name"] = a.Name
+		r["account"] = a.Account
+		r["extra"] = a.Extra
+		r["type"] = a.Type
+		r["platform"] = a.Platform
+		r["description"] = a.Description
+		r["disabled"] = a.Disabled
+		r["created"] = a.Created
+		r["updated"] = a.Updated
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "name":
+			r["name"] = a.Name
+		case "account":
+			r["account"] = a.Account
+		case "extra":
+			r["extra"] = a.Extra
+		case "type":
+			r["type"] = a.Type
+		case "platform":
+			r["platform"] = a.Platform
+		case "description":
+			r["description"] = a.Description
+		case "disabled":
+			r["disabled"] = a.Disabled
+		case "created":
+			r["created"] = a.Created
+		case "updated":
+			r["updated"] = a.Updated
+		}
+	}
 	return r
 }
 

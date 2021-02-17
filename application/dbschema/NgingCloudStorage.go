@@ -485,20 +485,51 @@ func (a *NgingCloudStorage) Reset() *NgingCloudStorage {
 	return a
 }
 
-func (a *NgingCloudStorage) AsMap() param.Store {
+func (a *NgingCloudStorage) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Name"] = a.Name
-	r["Type"] = a.Type
-	r["Key"] = a.Key
-	r["Secret"] = a.Secret
-	r["Bucket"] = a.Bucket
-	r["Endpoint"] = a.Endpoint
-	r["Region"] = a.Region
-	r["Secure"] = a.Secure
-	r["Baseurl"] = a.Baseurl
-	r["Created"] = a.Created
-	r["Updated"] = a.Updated
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Name"] = a.Name
+		r["Type"] = a.Type
+		r["Key"] = a.Key
+		r["Secret"] = a.Secret
+		r["Bucket"] = a.Bucket
+		r["Endpoint"] = a.Endpoint
+		r["Region"] = a.Region
+		r["Secure"] = a.Secure
+		r["Baseurl"] = a.Baseurl
+		r["Created"] = a.Created
+		r["Updated"] = a.Updated
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Name":
+			r["Name"] = a.Name
+		case "Type":
+			r["Type"] = a.Type
+		case "Key":
+			r["Key"] = a.Key
+		case "Secret":
+			r["Secret"] = a.Secret
+		case "Bucket":
+			r["Bucket"] = a.Bucket
+		case "Endpoint":
+			r["Endpoint"] = a.Endpoint
+		case "Region":
+			r["Region"] = a.Region
+		case "Secure":
+			r["Secure"] = a.Secure
+		case "Baseurl":
+			r["Baseurl"] = a.Baseurl
+		case "Created":
+			r["Created"] = a.Created
+		case "Updated":
+			r["Updated"] = a.Updated
+		}
+	}
 	return r
 }
 
@@ -581,20 +612,51 @@ func (a *NgingCloudStorage) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingCloudStorage) AsRow() param.Store {
+func (a *NgingCloudStorage) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["name"] = a.Name
-	r["type"] = a.Type
-	r["key"] = a.Key
-	r["secret"] = a.Secret
-	r["bucket"] = a.Bucket
-	r["endpoint"] = a.Endpoint
-	r["region"] = a.Region
-	r["secure"] = a.Secure
-	r["baseurl"] = a.Baseurl
-	r["created"] = a.Created
-	r["updated"] = a.Updated
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["name"] = a.Name
+		r["type"] = a.Type
+		r["key"] = a.Key
+		r["secret"] = a.Secret
+		r["bucket"] = a.Bucket
+		r["endpoint"] = a.Endpoint
+		r["region"] = a.Region
+		r["secure"] = a.Secure
+		r["baseurl"] = a.Baseurl
+		r["created"] = a.Created
+		r["updated"] = a.Updated
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "name":
+			r["name"] = a.Name
+		case "type":
+			r["type"] = a.Type
+		case "key":
+			r["key"] = a.Key
+		case "secret":
+			r["secret"] = a.Secret
+		case "bucket":
+			r["bucket"] = a.Bucket
+		case "endpoint":
+			r["endpoint"] = a.Endpoint
+		case "region":
+			r["region"] = a.Region
+		case "secure":
+			r["secure"] = a.Secure
+		case "baseurl":
+			r["baseurl"] = a.Baseurl
+		case "created":
+			r["created"] = a.Created
+		case "updated":
+			r["updated"] = a.Updated
+		}
+	}
 	return r
 }
 

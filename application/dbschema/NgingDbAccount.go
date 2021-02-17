@@ -500,19 +500,48 @@ func (a *NgingDbAccount) Reset() *NgingDbAccount {
 	return a
 }
 
-func (a *NgingDbAccount) AsMap() param.Store {
+func (a *NgingDbAccount) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Title"] = a.Title
-	r["Uid"] = a.Uid
-	r["Engine"] = a.Engine
-	r["Host"] = a.Host
-	r["User"] = a.User
-	r["Password"] = a.Password
-	r["Name"] = a.Name
-	r["Options"] = a.Options
-	r["Created"] = a.Created
-	r["Updated"] = a.Updated
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Title"] = a.Title
+		r["Uid"] = a.Uid
+		r["Engine"] = a.Engine
+		r["Host"] = a.Host
+		r["User"] = a.User
+		r["Password"] = a.Password
+		r["Name"] = a.Name
+		r["Options"] = a.Options
+		r["Created"] = a.Created
+		r["Updated"] = a.Updated
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Title":
+			r["Title"] = a.Title
+		case "Uid":
+			r["Uid"] = a.Uid
+		case "Engine":
+			r["Engine"] = a.Engine
+		case "Host":
+			r["Host"] = a.Host
+		case "User":
+			r["User"] = a.User
+		case "Password":
+			r["Password"] = a.Password
+		case "Name":
+			r["Name"] = a.Name
+		case "Options":
+			r["Options"] = a.Options
+		case "Created":
+			r["Created"] = a.Created
+		case "Updated":
+			r["Updated"] = a.Updated
+		}
+	}
 	return r
 }
 
@@ -591,19 +620,48 @@ func (a *NgingDbAccount) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingDbAccount) AsRow() param.Store {
+func (a *NgingDbAccount) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["title"] = a.Title
-	r["uid"] = a.Uid
-	r["engine"] = a.Engine
-	r["host"] = a.Host
-	r["user"] = a.User
-	r["password"] = a.Password
-	r["name"] = a.Name
-	r["options"] = a.Options
-	r["created"] = a.Created
-	r["updated"] = a.Updated
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["title"] = a.Title
+		r["uid"] = a.Uid
+		r["engine"] = a.Engine
+		r["host"] = a.Host
+		r["user"] = a.User
+		r["password"] = a.Password
+		r["name"] = a.Name
+		r["options"] = a.Options
+		r["created"] = a.Created
+		r["updated"] = a.Updated
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "title":
+			r["title"] = a.Title
+		case "uid":
+			r["uid"] = a.Uid
+		case "engine":
+			r["engine"] = a.Engine
+		case "host":
+			r["host"] = a.Host
+		case "user":
+			r["user"] = a.User
+		case "password":
+			r["password"] = a.Password
+		case "name":
+			r["name"] = a.Name
+		case "options":
+			r["options"] = a.Options
+		case "created":
+			r["created"] = a.Created
+		case "updated":
+			r["updated"] = a.Updated
+		}
+	}
 	return r
 }
 

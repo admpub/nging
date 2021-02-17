@@ -442,16 +442,39 @@ func (a *NgingDbSyncLog) Reset() *NgingDbSyncLog {
 	return a
 }
 
-func (a *NgingDbSyncLog) AsMap() param.Store {
+func (a *NgingDbSyncLog) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["SyncId"] = a.SyncId
-	r["Created"] = a.Created
-	r["Result"] = a.Result
-	r["ChangeTables"] = a.ChangeTables
-	r["ChangeTableNum"] = a.ChangeTableNum
-	r["Elapsed"] = a.Elapsed
-	r["Failed"] = a.Failed
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["SyncId"] = a.SyncId
+		r["Created"] = a.Created
+		r["Result"] = a.Result
+		r["ChangeTables"] = a.ChangeTables
+		r["ChangeTableNum"] = a.ChangeTableNum
+		r["Elapsed"] = a.Elapsed
+		r["Failed"] = a.Failed
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "SyncId":
+			r["SyncId"] = a.SyncId
+		case "Created":
+			r["Created"] = a.Created
+		case "Result":
+			r["Result"] = a.Result
+		case "ChangeTables":
+			r["ChangeTables"] = a.ChangeTables
+		case "ChangeTableNum":
+			r["ChangeTableNum"] = a.ChangeTableNum
+		case "Elapsed":
+			r["Elapsed"] = a.Elapsed
+		case "Failed":
+			r["Failed"] = a.Failed
+		}
+	}
 	return r
 }
 
@@ -518,16 +541,39 @@ func (a *NgingDbSyncLog) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingDbSyncLog) AsRow() param.Store {
+func (a *NgingDbSyncLog) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["sync_id"] = a.SyncId
-	r["created"] = a.Created
-	r["result"] = a.Result
-	r["change_tables"] = a.ChangeTables
-	r["change_table_num"] = a.ChangeTableNum
-	r["elapsed"] = a.Elapsed
-	r["failed"] = a.Failed
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["sync_id"] = a.SyncId
+		r["created"] = a.Created
+		r["result"] = a.Result
+		r["change_tables"] = a.ChangeTables
+		r["change_table_num"] = a.ChangeTableNum
+		r["elapsed"] = a.Elapsed
+		r["failed"] = a.Failed
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "sync_id":
+			r["sync_id"] = a.SyncId
+		case "created":
+			r["created"] = a.Created
+		case "result":
+			r["result"] = a.Result
+		case "change_tables":
+			r["change_tables"] = a.ChangeTables
+		case "change_table_num":
+			r["change_table_num"] = a.ChangeTableNum
+		case "elapsed":
+			r["elapsed"] = a.Elapsed
+		case "failed":
+			r["failed"] = a.Failed
+		}
+	}
 	return r
 }
 

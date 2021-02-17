@@ -462,17 +462,42 @@ func (a *NgingVhost) Reset() *NgingVhost {
 	return a
 }
 
-func (a *NgingVhost) AsMap() param.Store {
+func (a *NgingVhost) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Name"] = a.Name
-	r["GroupId"] = a.GroupId
-	r["Domain"] = a.Domain
-	r["Root"] = a.Root
-	r["Created"] = a.Created
-	r["Updated"] = a.Updated
-	r["Setting"] = a.Setting
-	r["Disabled"] = a.Disabled
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Name"] = a.Name
+		r["GroupId"] = a.GroupId
+		r["Domain"] = a.Domain
+		r["Root"] = a.Root
+		r["Created"] = a.Created
+		r["Updated"] = a.Updated
+		r["Setting"] = a.Setting
+		r["Disabled"] = a.Disabled
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Name":
+			r["Name"] = a.Name
+		case "GroupId":
+			r["GroupId"] = a.GroupId
+		case "Domain":
+			r["Domain"] = a.Domain
+		case "Root":
+			r["Root"] = a.Root
+		case "Created":
+			r["Created"] = a.Created
+		case "Updated":
+			r["Updated"] = a.Updated
+		case "Setting":
+			r["Setting"] = a.Setting
+		case "Disabled":
+			r["Disabled"] = a.Disabled
+		}
+	}
 	return r
 }
 
@@ -543,17 +568,42 @@ func (a *NgingVhost) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingVhost) AsRow() param.Store {
+func (a *NgingVhost) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["name"] = a.Name
-	r["group_id"] = a.GroupId
-	r["domain"] = a.Domain
-	r["root"] = a.Root
-	r["created"] = a.Created
-	r["updated"] = a.Updated
-	r["setting"] = a.Setting
-	r["disabled"] = a.Disabled
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["name"] = a.Name
+		r["group_id"] = a.GroupId
+		r["domain"] = a.Domain
+		r["root"] = a.Root
+		r["created"] = a.Created
+		r["updated"] = a.Updated
+		r["setting"] = a.Setting
+		r["disabled"] = a.Disabled
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "name":
+			r["name"] = a.Name
+		case "group_id":
+			r["group_id"] = a.GroupId
+		case "domain":
+			r["domain"] = a.Domain
+		case "root":
+			r["root"] = a.Root
+		case "created":
+			r["created"] = a.Created
+		case "updated":
+			r["updated"] = a.Updated
+		case "setting":
+			r["setting"] = a.Setting
+		case "disabled":
+			r["disabled"] = a.Disabled
+		}
+	}
 	return r
 }
 

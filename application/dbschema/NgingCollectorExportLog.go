@@ -455,14 +455,33 @@ func (a *NgingCollectorExportLog) Reset() *NgingCollectorExportLog {
 	return a
 }
 
-func (a *NgingCollectorExportLog) AsMap() param.Store {
+func (a *NgingCollectorExportLog) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["PageId"] = a.PageId
-	r["ExportId"] = a.ExportId
-	r["Result"] = a.Result
-	r["Status"] = a.Status
-	r["Created"] = a.Created
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["PageId"] = a.PageId
+		r["ExportId"] = a.ExportId
+		r["Result"] = a.Result
+		r["Status"] = a.Status
+		r["Created"] = a.Created
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "PageId":
+			r["PageId"] = a.PageId
+		case "ExportId":
+			r["ExportId"] = a.ExportId
+		case "Result":
+			r["Result"] = a.Result
+		case "Status":
+			r["Status"] = a.Status
+		case "Created":
+			r["Created"] = a.Created
+		}
+	}
 	return r
 }
 
@@ -521,14 +540,33 @@ func (a *NgingCollectorExportLog) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingCollectorExportLog) AsRow() param.Store {
+func (a *NgingCollectorExportLog) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["page_id"] = a.PageId
-	r["export_id"] = a.ExportId
-	r["result"] = a.Result
-	r["status"] = a.Status
-	r["created"] = a.Created
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["page_id"] = a.PageId
+		r["export_id"] = a.ExportId
+		r["result"] = a.Result
+		r["status"] = a.Status
+		r["created"] = a.Created
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "page_id":
+			r["page_id"] = a.PageId
+		case "export_id":
+			r["export_id"] = a.ExportId
+		case "result":
+			r["result"] = a.Result
+		case "status":
+			r["status"] = a.Status
+		case "created":
+			r["created"] = a.Created
+		}
+	}
 	return r
 }
 

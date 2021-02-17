@@ -453,21 +453,54 @@ func (a *NgingDbSync) Reset() *NgingDbSync {
 	return a
 }
 
-func (a *NgingDbSync) AsMap() param.Store {
+func (a *NgingDbSync) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Name"] = a.Name
-	r["SourceAccountId"] = a.SourceAccountId
-	r["DsnSource"] = a.DsnSource
-	r["DestinationAccountId"] = a.DestinationAccountId
-	r["DsnDestination"] = a.DsnDestination
-	r["Tables"] = a.Tables
-	r["SkipTables"] = a.SkipTables
-	r["AlterIgnore"] = a.AlterIgnore
-	r["Drop"] = a.Drop
-	r["MailTo"] = a.MailTo
-	r["Created"] = a.Created
-	r["Updated"] = a.Updated
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Name"] = a.Name
+		r["SourceAccountId"] = a.SourceAccountId
+		r["DsnSource"] = a.DsnSource
+		r["DestinationAccountId"] = a.DestinationAccountId
+		r["DsnDestination"] = a.DsnDestination
+		r["Tables"] = a.Tables
+		r["SkipTables"] = a.SkipTables
+		r["AlterIgnore"] = a.AlterIgnore
+		r["Drop"] = a.Drop
+		r["MailTo"] = a.MailTo
+		r["Created"] = a.Created
+		r["Updated"] = a.Updated
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Name":
+			r["Name"] = a.Name
+		case "SourceAccountId":
+			r["SourceAccountId"] = a.SourceAccountId
+		case "DsnSource":
+			r["DsnSource"] = a.DsnSource
+		case "DestinationAccountId":
+			r["DestinationAccountId"] = a.DestinationAccountId
+		case "DsnDestination":
+			r["DsnDestination"] = a.DsnDestination
+		case "Tables":
+			r["Tables"] = a.Tables
+		case "SkipTables":
+			r["SkipTables"] = a.SkipTables
+		case "AlterIgnore":
+			r["AlterIgnore"] = a.AlterIgnore
+		case "Drop":
+			r["Drop"] = a.Drop
+		case "MailTo":
+			r["MailTo"] = a.MailTo
+		case "Created":
+			r["Created"] = a.Created
+		case "Updated":
+			r["Updated"] = a.Updated
+		}
+	}
 	return r
 }
 
@@ -554,21 +587,54 @@ func (a *NgingDbSync) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingDbSync) AsRow() param.Store {
+func (a *NgingDbSync) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["name"] = a.Name
-	r["source_account_id"] = a.SourceAccountId
-	r["dsn_source"] = a.DsnSource
-	r["destination_account_id"] = a.DestinationAccountId
-	r["dsn_destination"] = a.DsnDestination
-	r["tables"] = a.Tables
-	r["skip_tables"] = a.SkipTables
-	r["alter_ignore"] = a.AlterIgnore
-	r["drop"] = a.Drop
-	r["mail_to"] = a.MailTo
-	r["created"] = a.Created
-	r["updated"] = a.Updated
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["name"] = a.Name
+		r["source_account_id"] = a.SourceAccountId
+		r["dsn_source"] = a.DsnSource
+		r["destination_account_id"] = a.DestinationAccountId
+		r["dsn_destination"] = a.DsnDestination
+		r["tables"] = a.Tables
+		r["skip_tables"] = a.SkipTables
+		r["alter_ignore"] = a.AlterIgnore
+		r["drop"] = a.Drop
+		r["mail_to"] = a.MailTo
+		r["created"] = a.Created
+		r["updated"] = a.Updated
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "name":
+			r["name"] = a.Name
+		case "source_account_id":
+			r["source_account_id"] = a.SourceAccountId
+		case "dsn_source":
+			r["dsn_source"] = a.DsnSource
+		case "destination_account_id":
+			r["destination_account_id"] = a.DestinationAccountId
+		case "dsn_destination":
+			r["dsn_destination"] = a.DsnDestination
+		case "tables":
+			r["tables"] = a.Tables
+		case "skip_tables":
+			r["skip_tables"] = a.SkipTables
+		case "alter_ignore":
+			r["alter_ignore"] = a.AlterIgnore
+		case "drop":
+			r["drop"] = a.Drop
+		case "mail_to":
+			r["mail_to"] = a.MailTo
+		case "created":
+			r["created"] = a.Created
+		case "updated":
+			r["updated"] = a.Updated
+		}
+	}
 	return r
 }
 

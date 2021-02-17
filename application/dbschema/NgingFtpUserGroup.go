@@ -479,17 +479,42 @@ func (a *NgingFtpUserGroup) Reset() *NgingFtpUserGroup {
 	return a
 }
 
-func (a *NgingFtpUserGroup) AsMap() param.Store {
+func (a *NgingFtpUserGroup) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Name"] = a.Name
-	r["Created"] = a.Created
-	r["Updated"] = a.Updated
-	r["Disabled"] = a.Disabled
-	r["Banned"] = a.Banned
-	r["Directory"] = a.Directory
-	r["IpWhitelist"] = a.IpWhitelist
-	r["IpBlacklist"] = a.IpBlacklist
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Name"] = a.Name
+		r["Created"] = a.Created
+		r["Updated"] = a.Updated
+		r["Disabled"] = a.Disabled
+		r["Banned"] = a.Banned
+		r["Directory"] = a.Directory
+		r["IpWhitelist"] = a.IpWhitelist
+		r["IpBlacklist"] = a.IpBlacklist
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Name":
+			r["Name"] = a.Name
+		case "Created":
+			r["Created"] = a.Created
+		case "Updated":
+			r["Updated"] = a.Updated
+		case "Disabled":
+			r["Disabled"] = a.Disabled
+		case "Banned":
+			r["Banned"] = a.Banned
+		case "Directory":
+			r["Directory"] = a.Directory
+		case "IpWhitelist":
+			r["IpWhitelist"] = a.IpWhitelist
+		case "IpBlacklist":
+			r["IpBlacklist"] = a.IpBlacklist
+		}
+	}
 	return r
 }
 
@@ -560,17 +585,42 @@ func (a *NgingFtpUserGroup) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingFtpUserGroup) AsRow() param.Store {
+func (a *NgingFtpUserGroup) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["name"] = a.Name
-	r["created"] = a.Created
-	r["updated"] = a.Updated
-	r["disabled"] = a.Disabled
-	r["banned"] = a.Banned
-	r["directory"] = a.Directory
-	r["ip_whitelist"] = a.IpWhitelist
-	r["ip_blacklist"] = a.IpBlacklist
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["name"] = a.Name
+		r["created"] = a.Created
+		r["updated"] = a.Updated
+		r["disabled"] = a.Disabled
+		r["banned"] = a.Banned
+		r["directory"] = a.Directory
+		r["ip_whitelist"] = a.IpWhitelist
+		r["ip_blacklist"] = a.IpBlacklist
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "name":
+			r["name"] = a.Name
+		case "created":
+			r["created"] = a.Created
+		case "updated":
+			r["updated"] = a.Updated
+		case "disabled":
+			r["disabled"] = a.Disabled
+		case "banned":
+			r["banned"] = a.Banned
+		case "directory":
+			r["directory"] = a.Directory
+		case "ip_whitelist":
+			r["ip_whitelist"] = a.IpWhitelist
+		case "ip_blacklist":
+			r["ip_blacklist"] = a.IpBlacklist
+		}
+	}
 	return r
 }
 

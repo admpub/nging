@@ -501,28 +501,75 @@ func (a *NgingTask) Reset() *NgingTask {
 	return a
 }
 
-func (a *NgingTask) AsMap() param.Store {
+func (a *NgingTask) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Uid"] = a.Uid
-	r["GroupId"] = a.GroupId
-	r["Name"] = a.Name
-	r["Type"] = a.Type
-	r["Description"] = a.Description
-	r["CronSpec"] = a.CronSpec
-	r["Concurrent"] = a.Concurrent
-	r["Command"] = a.Command
-	r["WorkDirectory"] = a.WorkDirectory
-	r["Env"] = a.Env
-	r["Disabled"] = a.Disabled
-	r["EnableNotify"] = a.EnableNotify
-	r["NotifyEmail"] = a.NotifyEmail
-	r["Timeout"] = a.Timeout
-	r["ExecuteTimes"] = a.ExecuteTimes
-	r["PrevTime"] = a.PrevTime
-	r["Created"] = a.Created
-	r["Updated"] = a.Updated
-	r["ClosedLog"] = a.ClosedLog
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Uid"] = a.Uid
+		r["GroupId"] = a.GroupId
+		r["Name"] = a.Name
+		r["Type"] = a.Type
+		r["Description"] = a.Description
+		r["CronSpec"] = a.CronSpec
+		r["Concurrent"] = a.Concurrent
+		r["Command"] = a.Command
+		r["WorkDirectory"] = a.WorkDirectory
+		r["Env"] = a.Env
+		r["Disabled"] = a.Disabled
+		r["EnableNotify"] = a.EnableNotify
+		r["NotifyEmail"] = a.NotifyEmail
+		r["Timeout"] = a.Timeout
+		r["ExecuteTimes"] = a.ExecuteTimes
+		r["PrevTime"] = a.PrevTime
+		r["Created"] = a.Created
+		r["Updated"] = a.Updated
+		r["ClosedLog"] = a.ClosedLog
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Uid":
+			r["Uid"] = a.Uid
+		case "GroupId":
+			r["GroupId"] = a.GroupId
+		case "Name":
+			r["Name"] = a.Name
+		case "Type":
+			r["Type"] = a.Type
+		case "Description":
+			r["Description"] = a.Description
+		case "CronSpec":
+			r["CronSpec"] = a.CronSpec
+		case "Concurrent":
+			r["Concurrent"] = a.Concurrent
+		case "Command":
+			r["Command"] = a.Command
+		case "WorkDirectory":
+			r["WorkDirectory"] = a.WorkDirectory
+		case "Env":
+			r["Env"] = a.Env
+		case "Disabled":
+			r["Disabled"] = a.Disabled
+		case "EnableNotify":
+			r["EnableNotify"] = a.EnableNotify
+		case "NotifyEmail":
+			r["NotifyEmail"] = a.NotifyEmail
+		case "Timeout":
+			r["Timeout"] = a.Timeout
+		case "ExecuteTimes":
+			r["ExecuteTimes"] = a.ExecuteTimes
+		case "PrevTime":
+			r["PrevTime"] = a.PrevTime
+		case "Created":
+			r["Created"] = a.Created
+		case "Updated":
+			r["Updated"] = a.Updated
+		case "ClosedLog":
+			r["ClosedLog"] = a.ClosedLog
+		}
+	}
 	return r
 }
 
@@ -637,28 +684,75 @@ func (a *NgingTask) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingTask) AsRow() param.Store {
+func (a *NgingTask) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["uid"] = a.Uid
-	r["group_id"] = a.GroupId
-	r["name"] = a.Name
-	r["type"] = a.Type
-	r["description"] = a.Description
-	r["cron_spec"] = a.CronSpec
-	r["concurrent"] = a.Concurrent
-	r["command"] = a.Command
-	r["work_directory"] = a.WorkDirectory
-	r["env"] = a.Env
-	r["disabled"] = a.Disabled
-	r["enable_notify"] = a.EnableNotify
-	r["notify_email"] = a.NotifyEmail
-	r["timeout"] = a.Timeout
-	r["execute_times"] = a.ExecuteTimes
-	r["prev_time"] = a.PrevTime
-	r["created"] = a.Created
-	r["updated"] = a.Updated
-	r["closed_log"] = a.ClosedLog
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["uid"] = a.Uid
+		r["group_id"] = a.GroupId
+		r["name"] = a.Name
+		r["type"] = a.Type
+		r["description"] = a.Description
+		r["cron_spec"] = a.CronSpec
+		r["concurrent"] = a.Concurrent
+		r["command"] = a.Command
+		r["work_directory"] = a.WorkDirectory
+		r["env"] = a.Env
+		r["disabled"] = a.Disabled
+		r["enable_notify"] = a.EnableNotify
+		r["notify_email"] = a.NotifyEmail
+		r["timeout"] = a.Timeout
+		r["execute_times"] = a.ExecuteTimes
+		r["prev_time"] = a.PrevTime
+		r["created"] = a.Created
+		r["updated"] = a.Updated
+		r["closed_log"] = a.ClosedLog
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "uid":
+			r["uid"] = a.Uid
+		case "group_id":
+			r["group_id"] = a.GroupId
+		case "name":
+			r["name"] = a.Name
+		case "type":
+			r["type"] = a.Type
+		case "description":
+			r["description"] = a.Description
+		case "cron_spec":
+			r["cron_spec"] = a.CronSpec
+		case "concurrent":
+			r["concurrent"] = a.Concurrent
+		case "command":
+			r["command"] = a.Command
+		case "work_directory":
+			r["work_directory"] = a.WorkDirectory
+		case "env":
+			r["env"] = a.Env
+		case "disabled":
+			r["disabled"] = a.Disabled
+		case "enable_notify":
+			r["enable_notify"] = a.EnableNotify
+		case "notify_email":
+			r["notify_email"] = a.NotifyEmail
+		case "timeout":
+			r["timeout"] = a.Timeout
+		case "execute_times":
+			r["execute_times"] = a.ExecuteTimes
+		case "prev_time":
+			r["prev_time"] = a.PrevTime
+		case "created":
+			r["created"] = a.Created
+		case "updated":
+			r["updated"] = a.Updated
+		case "closed_log":
+			r["closed_log"] = a.ClosedLog
+		}
+	}
 	return r
 }
 

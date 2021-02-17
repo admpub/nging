@@ -436,13 +436,30 @@ func (a *NgingVhostGroup) Reset() *NgingVhostGroup {
 	return a
 }
 
-func (a *NgingVhostGroup) AsMap() param.Store {
+func (a *NgingVhostGroup) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Uid"] = a.Uid
-	r["Name"] = a.Name
-	r["Description"] = a.Description
-	r["Created"] = a.Created
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Uid"] = a.Uid
+		r["Name"] = a.Name
+		r["Description"] = a.Description
+		r["Created"] = a.Created
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Uid":
+			r["Uid"] = a.Uid
+		case "Name":
+			r["Name"] = a.Name
+		case "Description":
+			r["Description"] = a.Description
+		case "Created":
+			r["Created"] = a.Created
+		}
+	}
 	return r
 }
 
@@ -497,13 +514,30 @@ func (a *NgingVhostGroup) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingVhostGroup) AsRow() param.Store {
+func (a *NgingVhostGroup) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["uid"] = a.Uid
-	r["name"] = a.Name
-	r["description"] = a.Description
-	r["created"] = a.Created
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["uid"] = a.Uid
+		r["name"] = a.Name
+		r["description"] = a.Description
+		r["created"] = a.Created
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "uid":
+			r["uid"] = a.Uid
+		case "name":
+			r["name"] = a.Name
+		case "description":
+			r["description"] = a.Description
+		case "created":
+			r["created"] = a.Created
+		}
+	}
 	return r
 }
 

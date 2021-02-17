@@ -489,31 +489,84 @@ func (a *NgingAccessLog) Reset() *NgingAccessLog {
 	return a
 }
 
-func (a *NgingAccessLog) AsMap() param.Store {
+func (a *NgingAccessLog) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["VhostId"] = a.VhostId
-	r["RemoteAddr"] = a.RemoteAddr
-	r["XRealIp"] = a.XRealIp
-	r["XForwardFor"] = a.XForwardFor
-	r["LocalAddr"] = a.LocalAddr
-	r["Elapsed"] = a.Elapsed
-	r["Host"] = a.Host
-	r["User"] = a.User
-	r["TimeLocal"] = a.TimeLocal
-	r["Minute"] = a.Minute
-	r["Method"] = a.Method
-	r["Uri"] = a.Uri
-	r["Version"] = a.Version
-	r["StatusCode"] = a.StatusCode
-	r["BodyBytes"] = a.BodyBytes
-	r["Referer"] = a.Referer
-	r["UserAgent"] = a.UserAgent
-	r["HitStatus"] = a.HitStatus
-	r["Scheme"] = a.Scheme
-	r["BrowerName"] = a.BrowerName
-	r["BrowerType"] = a.BrowerType
-	r["Created"] = a.Created
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["VhostId"] = a.VhostId
+		r["RemoteAddr"] = a.RemoteAddr
+		r["XRealIp"] = a.XRealIp
+		r["XForwardFor"] = a.XForwardFor
+		r["LocalAddr"] = a.LocalAddr
+		r["Elapsed"] = a.Elapsed
+		r["Host"] = a.Host
+		r["User"] = a.User
+		r["TimeLocal"] = a.TimeLocal
+		r["Minute"] = a.Minute
+		r["Method"] = a.Method
+		r["Uri"] = a.Uri
+		r["Version"] = a.Version
+		r["StatusCode"] = a.StatusCode
+		r["BodyBytes"] = a.BodyBytes
+		r["Referer"] = a.Referer
+		r["UserAgent"] = a.UserAgent
+		r["HitStatus"] = a.HitStatus
+		r["Scheme"] = a.Scheme
+		r["BrowerName"] = a.BrowerName
+		r["BrowerType"] = a.BrowerType
+		r["Created"] = a.Created
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "VhostId":
+			r["VhostId"] = a.VhostId
+		case "RemoteAddr":
+			r["RemoteAddr"] = a.RemoteAddr
+		case "XRealIp":
+			r["XRealIp"] = a.XRealIp
+		case "XForwardFor":
+			r["XForwardFor"] = a.XForwardFor
+		case "LocalAddr":
+			r["LocalAddr"] = a.LocalAddr
+		case "Elapsed":
+			r["Elapsed"] = a.Elapsed
+		case "Host":
+			r["Host"] = a.Host
+		case "User":
+			r["User"] = a.User
+		case "TimeLocal":
+			r["TimeLocal"] = a.TimeLocal
+		case "Minute":
+			r["Minute"] = a.Minute
+		case "Method":
+			r["Method"] = a.Method
+		case "Uri":
+			r["Uri"] = a.Uri
+		case "Version":
+			r["Version"] = a.Version
+		case "StatusCode":
+			r["StatusCode"] = a.StatusCode
+		case "BodyBytes":
+			r["BodyBytes"] = a.BodyBytes
+		case "Referer":
+			r["Referer"] = a.Referer
+		case "UserAgent":
+			r["UserAgent"] = a.UserAgent
+		case "HitStatus":
+			r["HitStatus"] = a.HitStatus
+		case "Scheme":
+			r["Scheme"] = a.Scheme
+		case "BrowerName":
+			r["BrowerName"] = a.BrowerName
+		case "BrowerType":
+			r["BrowerType"] = a.BrowerType
+		case "Created":
+			r["Created"] = a.Created
+		}
+	}
 	return r
 }
 
@@ -640,31 +693,84 @@ func (a *NgingAccessLog) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingAccessLog) AsRow() param.Store {
+func (a *NgingAccessLog) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["vhost_id"] = a.VhostId
-	r["remote_addr"] = a.RemoteAddr
-	r["x_real_ip"] = a.XRealIp
-	r["x_forward_for"] = a.XForwardFor
-	r["local_addr"] = a.LocalAddr
-	r["elapsed"] = a.Elapsed
-	r["host"] = a.Host
-	r["user"] = a.User
-	r["time_local"] = a.TimeLocal
-	r["minute"] = a.Minute
-	r["method"] = a.Method
-	r["uri"] = a.Uri
-	r["version"] = a.Version
-	r["status_code"] = a.StatusCode
-	r["body_bytes"] = a.BodyBytes
-	r["referer"] = a.Referer
-	r["user_agent"] = a.UserAgent
-	r["hit_status"] = a.HitStatus
-	r["scheme"] = a.Scheme
-	r["brower_name"] = a.BrowerName
-	r["brower_type"] = a.BrowerType
-	r["created"] = a.Created
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["vhost_id"] = a.VhostId
+		r["remote_addr"] = a.RemoteAddr
+		r["x_real_ip"] = a.XRealIp
+		r["x_forward_for"] = a.XForwardFor
+		r["local_addr"] = a.LocalAddr
+		r["elapsed"] = a.Elapsed
+		r["host"] = a.Host
+		r["user"] = a.User
+		r["time_local"] = a.TimeLocal
+		r["minute"] = a.Minute
+		r["method"] = a.Method
+		r["uri"] = a.Uri
+		r["version"] = a.Version
+		r["status_code"] = a.StatusCode
+		r["body_bytes"] = a.BodyBytes
+		r["referer"] = a.Referer
+		r["user_agent"] = a.UserAgent
+		r["hit_status"] = a.HitStatus
+		r["scheme"] = a.Scheme
+		r["brower_name"] = a.BrowerName
+		r["brower_type"] = a.BrowerType
+		r["created"] = a.Created
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "vhost_id":
+			r["vhost_id"] = a.VhostId
+		case "remote_addr":
+			r["remote_addr"] = a.RemoteAddr
+		case "x_real_ip":
+			r["x_real_ip"] = a.XRealIp
+		case "x_forward_for":
+			r["x_forward_for"] = a.XForwardFor
+		case "local_addr":
+			r["local_addr"] = a.LocalAddr
+		case "elapsed":
+			r["elapsed"] = a.Elapsed
+		case "host":
+			r["host"] = a.Host
+		case "user":
+			r["user"] = a.User
+		case "time_local":
+			r["time_local"] = a.TimeLocal
+		case "minute":
+			r["minute"] = a.Minute
+		case "method":
+			r["method"] = a.Method
+		case "uri":
+			r["uri"] = a.Uri
+		case "version":
+			r["version"] = a.Version
+		case "status_code":
+			r["status_code"] = a.StatusCode
+		case "body_bytes":
+			r["body_bytes"] = a.BodyBytes
+		case "referer":
+			r["referer"] = a.Referer
+		case "user_agent":
+			r["user_agent"] = a.UserAgent
+		case "hit_status":
+			r["hit_status"] = a.HitStatus
+		case "scheme":
+			r["scheme"] = a.Scheme
+		case "brower_name":
+			r["brower_name"] = a.BrowerName
+		case "brower_type":
+			r["brower_type"] = a.BrowerType
+		case "created":
+			r["created"] = a.Created
+		}
+	}
 	return r
 }
 

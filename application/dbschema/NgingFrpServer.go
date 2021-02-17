@@ -663,41 +663,114 @@ func (a *NgingFrpServer) Reset() *NgingFrpServer {
 	return a
 }
 
-func (a *NgingFrpServer) AsMap() param.Store {
+func (a *NgingFrpServer) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Name"] = a.Name
-	r["Disabled"] = a.Disabled
-	r["TcpMux"] = a.TcpMux
-	r["Addr"] = a.Addr
-	r["Port"] = a.Port
-	r["UdpPort"] = a.UdpPort
-	r["KcpPort"] = a.KcpPort
-	r["ProxyAddr"] = a.ProxyAddr
-	r["VhostHttpPort"] = a.VhostHttpPort
-	r["VhostHttpTimeout"] = a.VhostHttpTimeout
-	r["VhostHttpsPort"] = a.VhostHttpsPort
-	r["LogFile"] = a.LogFile
-	r["LogWay"] = a.LogWay
-	r["LogLevel"] = a.LogLevel
-	r["LogMaxDays"] = a.LogMaxDays
-	r["Token"] = a.Token
-	r["AuthTimeout"] = a.AuthTimeout
-	r["SubdomainHost"] = a.SubdomainHost
-	r["MaxPortsPerClient"] = a.MaxPortsPerClient
-	r["MaxPoolCount"] = a.MaxPoolCount
-	r["HeartBeatTimeout"] = a.HeartBeatTimeout
-	r["UserConnTimeout"] = a.UserConnTimeout
-	r["DashboardAddr"] = a.DashboardAddr
-	r["DashboardPort"] = a.DashboardPort
-	r["DashboardUser"] = a.DashboardUser
-	r["DashboardPwd"] = a.DashboardPwd
-	r["AllowPorts"] = a.AllowPorts
-	r["Extra"] = a.Extra
-	r["Uid"] = a.Uid
-	r["GroupId"] = a.GroupId
-	r["Created"] = a.Created
-	r["Updated"] = a.Updated
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Name"] = a.Name
+		r["Disabled"] = a.Disabled
+		r["TcpMux"] = a.TcpMux
+		r["Addr"] = a.Addr
+		r["Port"] = a.Port
+		r["UdpPort"] = a.UdpPort
+		r["KcpPort"] = a.KcpPort
+		r["ProxyAddr"] = a.ProxyAddr
+		r["VhostHttpPort"] = a.VhostHttpPort
+		r["VhostHttpTimeout"] = a.VhostHttpTimeout
+		r["VhostHttpsPort"] = a.VhostHttpsPort
+		r["LogFile"] = a.LogFile
+		r["LogWay"] = a.LogWay
+		r["LogLevel"] = a.LogLevel
+		r["LogMaxDays"] = a.LogMaxDays
+		r["Token"] = a.Token
+		r["AuthTimeout"] = a.AuthTimeout
+		r["SubdomainHost"] = a.SubdomainHost
+		r["MaxPortsPerClient"] = a.MaxPortsPerClient
+		r["MaxPoolCount"] = a.MaxPoolCount
+		r["HeartBeatTimeout"] = a.HeartBeatTimeout
+		r["UserConnTimeout"] = a.UserConnTimeout
+		r["DashboardAddr"] = a.DashboardAddr
+		r["DashboardPort"] = a.DashboardPort
+		r["DashboardUser"] = a.DashboardUser
+		r["DashboardPwd"] = a.DashboardPwd
+		r["AllowPorts"] = a.AllowPorts
+		r["Extra"] = a.Extra
+		r["Uid"] = a.Uid
+		r["GroupId"] = a.GroupId
+		r["Created"] = a.Created
+		r["Updated"] = a.Updated
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Name":
+			r["Name"] = a.Name
+		case "Disabled":
+			r["Disabled"] = a.Disabled
+		case "TcpMux":
+			r["TcpMux"] = a.TcpMux
+		case "Addr":
+			r["Addr"] = a.Addr
+		case "Port":
+			r["Port"] = a.Port
+		case "UdpPort":
+			r["UdpPort"] = a.UdpPort
+		case "KcpPort":
+			r["KcpPort"] = a.KcpPort
+		case "ProxyAddr":
+			r["ProxyAddr"] = a.ProxyAddr
+		case "VhostHttpPort":
+			r["VhostHttpPort"] = a.VhostHttpPort
+		case "VhostHttpTimeout":
+			r["VhostHttpTimeout"] = a.VhostHttpTimeout
+		case "VhostHttpsPort":
+			r["VhostHttpsPort"] = a.VhostHttpsPort
+		case "LogFile":
+			r["LogFile"] = a.LogFile
+		case "LogWay":
+			r["LogWay"] = a.LogWay
+		case "LogLevel":
+			r["LogLevel"] = a.LogLevel
+		case "LogMaxDays":
+			r["LogMaxDays"] = a.LogMaxDays
+		case "Token":
+			r["Token"] = a.Token
+		case "AuthTimeout":
+			r["AuthTimeout"] = a.AuthTimeout
+		case "SubdomainHost":
+			r["SubdomainHost"] = a.SubdomainHost
+		case "MaxPortsPerClient":
+			r["MaxPortsPerClient"] = a.MaxPortsPerClient
+		case "MaxPoolCount":
+			r["MaxPoolCount"] = a.MaxPoolCount
+		case "HeartBeatTimeout":
+			r["HeartBeatTimeout"] = a.HeartBeatTimeout
+		case "UserConnTimeout":
+			r["UserConnTimeout"] = a.UserConnTimeout
+		case "DashboardAddr":
+			r["DashboardAddr"] = a.DashboardAddr
+		case "DashboardPort":
+			r["DashboardPort"] = a.DashboardPort
+		case "DashboardUser":
+			r["DashboardUser"] = a.DashboardUser
+		case "DashboardPwd":
+			r["DashboardPwd"] = a.DashboardPwd
+		case "AllowPorts":
+			r["AllowPorts"] = a.AllowPorts
+		case "Extra":
+			r["Extra"] = a.Extra
+		case "Uid":
+			r["Uid"] = a.Uid
+		case "GroupId":
+			r["GroupId"] = a.GroupId
+		case "Created":
+			r["Created"] = a.Created
+		case "Updated":
+			r["Updated"] = a.Updated
+		}
+	}
 	return r
 }
 
@@ -864,41 +937,114 @@ func (a *NgingFrpServer) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingFrpServer) AsRow() param.Store {
+func (a *NgingFrpServer) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["name"] = a.Name
-	r["disabled"] = a.Disabled
-	r["tcp_mux"] = a.TcpMux
-	r["addr"] = a.Addr
-	r["port"] = a.Port
-	r["udp_port"] = a.UdpPort
-	r["kcp_port"] = a.KcpPort
-	r["proxy_addr"] = a.ProxyAddr
-	r["vhost_http_port"] = a.VhostHttpPort
-	r["vhost_http_timeout"] = a.VhostHttpTimeout
-	r["vhost_https_port"] = a.VhostHttpsPort
-	r["log_file"] = a.LogFile
-	r["log_way"] = a.LogWay
-	r["log_level"] = a.LogLevel
-	r["log_max_days"] = a.LogMaxDays
-	r["token"] = a.Token
-	r["auth_timeout"] = a.AuthTimeout
-	r["subdomain_host"] = a.SubdomainHost
-	r["max_ports_per_client"] = a.MaxPortsPerClient
-	r["max_pool_count"] = a.MaxPoolCount
-	r["heart_beat_timeout"] = a.HeartBeatTimeout
-	r["user_conn_timeout"] = a.UserConnTimeout
-	r["dashboard_addr"] = a.DashboardAddr
-	r["dashboard_port"] = a.DashboardPort
-	r["dashboard_user"] = a.DashboardUser
-	r["dashboard_pwd"] = a.DashboardPwd
-	r["allow_ports"] = a.AllowPorts
-	r["extra"] = a.Extra
-	r["uid"] = a.Uid
-	r["group_id"] = a.GroupId
-	r["created"] = a.Created
-	r["updated"] = a.Updated
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["name"] = a.Name
+		r["disabled"] = a.Disabled
+		r["tcp_mux"] = a.TcpMux
+		r["addr"] = a.Addr
+		r["port"] = a.Port
+		r["udp_port"] = a.UdpPort
+		r["kcp_port"] = a.KcpPort
+		r["proxy_addr"] = a.ProxyAddr
+		r["vhost_http_port"] = a.VhostHttpPort
+		r["vhost_http_timeout"] = a.VhostHttpTimeout
+		r["vhost_https_port"] = a.VhostHttpsPort
+		r["log_file"] = a.LogFile
+		r["log_way"] = a.LogWay
+		r["log_level"] = a.LogLevel
+		r["log_max_days"] = a.LogMaxDays
+		r["token"] = a.Token
+		r["auth_timeout"] = a.AuthTimeout
+		r["subdomain_host"] = a.SubdomainHost
+		r["max_ports_per_client"] = a.MaxPortsPerClient
+		r["max_pool_count"] = a.MaxPoolCount
+		r["heart_beat_timeout"] = a.HeartBeatTimeout
+		r["user_conn_timeout"] = a.UserConnTimeout
+		r["dashboard_addr"] = a.DashboardAddr
+		r["dashboard_port"] = a.DashboardPort
+		r["dashboard_user"] = a.DashboardUser
+		r["dashboard_pwd"] = a.DashboardPwd
+		r["allow_ports"] = a.AllowPorts
+		r["extra"] = a.Extra
+		r["uid"] = a.Uid
+		r["group_id"] = a.GroupId
+		r["created"] = a.Created
+		r["updated"] = a.Updated
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "name":
+			r["name"] = a.Name
+		case "disabled":
+			r["disabled"] = a.Disabled
+		case "tcp_mux":
+			r["tcp_mux"] = a.TcpMux
+		case "addr":
+			r["addr"] = a.Addr
+		case "port":
+			r["port"] = a.Port
+		case "udp_port":
+			r["udp_port"] = a.UdpPort
+		case "kcp_port":
+			r["kcp_port"] = a.KcpPort
+		case "proxy_addr":
+			r["proxy_addr"] = a.ProxyAddr
+		case "vhost_http_port":
+			r["vhost_http_port"] = a.VhostHttpPort
+		case "vhost_http_timeout":
+			r["vhost_http_timeout"] = a.VhostHttpTimeout
+		case "vhost_https_port":
+			r["vhost_https_port"] = a.VhostHttpsPort
+		case "log_file":
+			r["log_file"] = a.LogFile
+		case "log_way":
+			r["log_way"] = a.LogWay
+		case "log_level":
+			r["log_level"] = a.LogLevel
+		case "log_max_days":
+			r["log_max_days"] = a.LogMaxDays
+		case "token":
+			r["token"] = a.Token
+		case "auth_timeout":
+			r["auth_timeout"] = a.AuthTimeout
+		case "subdomain_host":
+			r["subdomain_host"] = a.SubdomainHost
+		case "max_ports_per_client":
+			r["max_ports_per_client"] = a.MaxPortsPerClient
+		case "max_pool_count":
+			r["max_pool_count"] = a.MaxPoolCount
+		case "heart_beat_timeout":
+			r["heart_beat_timeout"] = a.HeartBeatTimeout
+		case "user_conn_timeout":
+			r["user_conn_timeout"] = a.UserConnTimeout
+		case "dashboard_addr":
+			r["dashboard_addr"] = a.DashboardAddr
+		case "dashboard_port":
+			r["dashboard_port"] = a.DashboardPort
+		case "dashboard_user":
+			r["dashboard_user"] = a.DashboardUser
+		case "dashboard_pwd":
+			r["dashboard_pwd"] = a.DashboardPwd
+		case "allow_ports":
+			r["allow_ports"] = a.AllowPorts
+		case "extra":
+			r["extra"] = a.Extra
+		case "uid":
+			r["uid"] = a.Uid
+		case "group_id":
+			r["group_id"] = a.GroupId
+		case "created":
+			r["created"] = a.Created
+		case "updated":
+			r["updated"] = a.Updated
+		}
+	}
 	return r
 }
 

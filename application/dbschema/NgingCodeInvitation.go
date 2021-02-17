@@ -463,18 +463,45 @@ func (a *NgingCodeInvitation) Reset() *NgingCodeInvitation {
 	return a
 }
 
-func (a *NgingCodeInvitation) AsMap() param.Store {
+func (a *NgingCodeInvitation) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Uid"] = a.Uid
-	r["RecvUid"] = a.RecvUid
-	r["Code"] = a.Code
-	r["Created"] = a.Created
-	r["Used"] = a.Used
-	r["Start"] = a.Start
-	r["End"] = a.End
-	r["Disabled"] = a.Disabled
-	r["RoleIds"] = a.RoleIds
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Uid"] = a.Uid
+		r["RecvUid"] = a.RecvUid
+		r["Code"] = a.Code
+		r["Created"] = a.Created
+		r["Used"] = a.Used
+		r["Start"] = a.Start
+		r["End"] = a.End
+		r["Disabled"] = a.Disabled
+		r["RoleIds"] = a.RoleIds
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Uid":
+			r["Uid"] = a.Uid
+		case "RecvUid":
+			r["RecvUid"] = a.RecvUid
+		case "Code":
+			r["Code"] = a.Code
+		case "Created":
+			r["Created"] = a.Created
+		case "Used":
+			r["Used"] = a.Used
+		case "Start":
+			r["Start"] = a.Start
+		case "End":
+			r["End"] = a.End
+		case "Disabled":
+			r["Disabled"] = a.Disabled
+		case "RoleIds":
+			r["RoleIds"] = a.RoleIds
+		}
+	}
 	return r
 }
 
@@ -549,18 +576,45 @@ func (a *NgingCodeInvitation) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingCodeInvitation) AsRow() param.Store {
+func (a *NgingCodeInvitation) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["uid"] = a.Uid
-	r["recv_uid"] = a.RecvUid
-	r["code"] = a.Code
-	r["created"] = a.Created
-	r["used"] = a.Used
-	r["start"] = a.Start
-	r["end"] = a.End
-	r["disabled"] = a.Disabled
-	r["role_ids"] = a.RoleIds
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["uid"] = a.Uid
+		r["recv_uid"] = a.RecvUid
+		r["code"] = a.Code
+		r["created"] = a.Created
+		r["used"] = a.Used
+		r["start"] = a.Start
+		r["end"] = a.End
+		r["disabled"] = a.Disabled
+		r["role_ids"] = a.RoleIds
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "uid":
+			r["uid"] = a.Uid
+		case "recv_uid":
+			r["recv_uid"] = a.RecvUid
+		case "code":
+			r["code"] = a.Code
+		case "created":
+			r["created"] = a.Created
+		case "used":
+			r["used"] = a.Used
+		case "start":
+			r["start"] = a.Start
+		case "end":
+			r["end"] = a.End
+		case "disabled":
+			r["disabled"] = a.Disabled
+		case "role_ids":
+			r["role_ids"] = a.RoleIds
+		}
+	}
 	return r
 }
 

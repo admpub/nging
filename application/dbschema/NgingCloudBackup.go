@@ -485,20 +485,51 @@ func (a *NgingCloudBackup) Reset() *NgingCloudBackup {
 	return a
 }
 
-func (a *NgingCloudBackup) AsMap() param.Store {
+func (a *NgingCloudBackup) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Name"] = a.Name
-	r["SourcePath"] = a.SourcePath
-	r["IgnoreRule"] = a.IgnoreRule
-	r["DestStorage"] = a.DestStorage
-	r["DestPath"] = a.DestPath
-	r["Result"] = a.Result
-	r["LastExecuted"] = a.LastExecuted
-	r["Status"] = a.Status
-	r["Disabled"] = a.Disabled
-	r["Created"] = a.Created
-	r["Updated"] = a.Updated
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Name"] = a.Name
+		r["SourcePath"] = a.SourcePath
+		r["IgnoreRule"] = a.IgnoreRule
+		r["DestStorage"] = a.DestStorage
+		r["DestPath"] = a.DestPath
+		r["Result"] = a.Result
+		r["LastExecuted"] = a.LastExecuted
+		r["Status"] = a.Status
+		r["Disabled"] = a.Disabled
+		r["Created"] = a.Created
+		r["Updated"] = a.Updated
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Name":
+			r["Name"] = a.Name
+		case "SourcePath":
+			r["SourcePath"] = a.SourcePath
+		case "IgnoreRule":
+			r["IgnoreRule"] = a.IgnoreRule
+		case "DestStorage":
+			r["DestStorage"] = a.DestStorage
+		case "DestPath":
+			r["DestPath"] = a.DestPath
+		case "Result":
+			r["Result"] = a.Result
+		case "LastExecuted":
+			r["LastExecuted"] = a.LastExecuted
+		case "Status":
+			r["Status"] = a.Status
+		case "Disabled":
+			r["Disabled"] = a.Disabled
+		case "Created":
+			r["Created"] = a.Created
+		case "Updated":
+			r["Updated"] = a.Updated
+		}
+	}
 	return r
 }
 
@@ -581,20 +612,51 @@ func (a *NgingCloudBackup) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingCloudBackup) AsRow() param.Store {
+func (a *NgingCloudBackup) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["name"] = a.Name
-	r["source_path"] = a.SourcePath
-	r["ignore_rule"] = a.IgnoreRule
-	r["dest_storage"] = a.DestStorage
-	r["dest_path"] = a.DestPath
-	r["result"] = a.Result
-	r["last_executed"] = a.LastExecuted
-	r["status"] = a.Status
-	r["disabled"] = a.Disabled
-	r["created"] = a.Created
-	r["updated"] = a.Updated
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["name"] = a.Name
+		r["source_path"] = a.SourcePath
+		r["ignore_rule"] = a.IgnoreRule
+		r["dest_storage"] = a.DestStorage
+		r["dest_path"] = a.DestPath
+		r["result"] = a.Result
+		r["last_executed"] = a.LastExecuted
+		r["status"] = a.Status
+		r["disabled"] = a.Disabled
+		r["created"] = a.Created
+		r["updated"] = a.Updated
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "name":
+			r["name"] = a.Name
+		case "source_path":
+			r["source_path"] = a.SourcePath
+		case "ignore_rule":
+			r["ignore_rule"] = a.IgnoreRule
+		case "dest_storage":
+			r["dest_storage"] = a.DestStorage
+		case "dest_path":
+			r["dest_path"] = a.DestPath
+		case "result":
+			r["result"] = a.Result
+		case "last_executed":
+			r["last_executed"] = a.LastExecuted
+		case "status":
+			r["status"] = a.Status
+		case "disabled":
+			r["disabled"] = a.Disabled
+		case "created":
+			r["created"] = a.Created
+		case "updated":
+			r["updated"] = a.Updated
+		}
+	}
 	return r
 }
 

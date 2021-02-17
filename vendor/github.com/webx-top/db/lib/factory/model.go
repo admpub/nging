@@ -131,8 +131,8 @@ type Model interface {
 	Exists(mw func(db.Result) db.Result, args ...interface{}) (bool, error)
 	SetField(mw func(db.Result) db.Result, field string, value interface{}, args ...interface{}) error
 	SetFields(mw func(db.Result) db.Result, kvset map[string]interface{}, args ...interface{}) error
-	AsMap() param.Store
-	AsRow() param.Store
+	AsMap(onlyFields ...string) param.Store
+	AsRow(onlyFields ...string) param.Store
 	FromRow(row map[string]interface{})
 	Set(key interface{}, value ...interface{})
 	BatchValidate(kvset map[string]interface{}) error

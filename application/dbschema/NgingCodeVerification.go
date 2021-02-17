@@ -501,20 +501,51 @@ func (a *NgingCodeVerification) Reset() *NgingCodeVerification {
 	return a
 }
 
-func (a *NgingCodeVerification) AsMap() param.Store {
+func (a *NgingCodeVerification) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Code"] = a.Code
-	r["Created"] = a.Created
-	r["OwnerId"] = a.OwnerId
-	r["OwnerType"] = a.OwnerType
-	r["Used"] = a.Used
-	r["Purpose"] = a.Purpose
-	r["Start"] = a.Start
-	r["End"] = a.End
-	r["Disabled"] = a.Disabled
-	r["SendMethod"] = a.SendMethod
-	r["SendTo"] = a.SendTo
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Code"] = a.Code
+		r["Created"] = a.Created
+		r["OwnerId"] = a.OwnerId
+		r["OwnerType"] = a.OwnerType
+		r["Used"] = a.Used
+		r["Purpose"] = a.Purpose
+		r["Start"] = a.Start
+		r["End"] = a.End
+		r["Disabled"] = a.Disabled
+		r["SendMethod"] = a.SendMethod
+		r["SendTo"] = a.SendTo
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Code":
+			r["Code"] = a.Code
+		case "Created":
+			r["Created"] = a.Created
+		case "OwnerId":
+			r["OwnerId"] = a.OwnerId
+		case "OwnerType":
+			r["OwnerType"] = a.OwnerType
+		case "Used":
+			r["Used"] = a.Used
+		case "Purpose":
+			r["Purpose"] = a.Purpose
+		case "Start":
+			r["Start"] = a.Start
+		case "End":
+			r["End"] = a.End
+		case "Disabled":
+			r["Disabled"] = a.Disabled
+		case "SendMethod":
+			r["SendMethod"] = a.SendMethod
+		case "SendTo":
+			r["SendTo"] = a.SendTo
+		}
+	}
 	return r
 }
 
@@ -597,20 +628,51 @@ func (a *NgingCodeVerification) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingCodeVerification) AsRow() param.Store {
+func (a *NgingCodeVerification) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["code"] = a.Code
-	r["created"] = a.Created
-	r["owner_id"] = a.OwnerId
-	r["owner_type"] = a.OwnerType
-	r["used"] = a.Used
-	r["purpose"] = a.Purpose
-	r["start"] = a.Start
-	r["end"] = a.End
-	r["disabled"] = a.Disabled
-	r["send_method"] = a.SendMethod
-	r["send_to"] = a.SendTo
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["code"] = a.Code
+		r["created"] = a.Created
+		r["owner_id"] = a.OwnerId
+		r["owner_type"] = a.OwnerType
+		r["used"] = a.Used
+		r["purpose"] = a.Purpose
+		r["start"] = a.Start
+		r["end"] = a.End
+		r["disabled"] = a.Disabled
+		r["send_method"] = a.SendMethod
+		r["send_to"] = a.SendTo
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "code":
+			r["code"] = a.Code
+		case "created":
+			r["created"] = a.Created
+		case "owner_id":
+			r["owner_id"] = a.OwnerId
+		case "owner_type":
+			r["owner_type"] = a.OwnerType
+		case "used":
+			r["used"] = a.Used
+		case "purpose":
+			r["purpose"] = a.Purpose
+		case "start":
+			r["start"] = a.Start
+		case "end":
+			r["end"] = a.End
+		case "disabled":
+			r["disabled"] = a.Disabled
+		case "send_method":
+			r["send_method"] = a.SendMethod
+		case "send_to":
+			r["send_to"] = a.SendTo
+		}
+	}
 	return r
 }
 

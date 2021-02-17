@@ -514,26 +514,69 @@ func (a *NgingUser) Reset() *NgingUser {
 	return a
 }
 
-func (a *NgingUser) AsMap() param.Store {
+func (a *NgingUser) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Username"] = a.Username
-	r["Email"] = a.Email
-	r["Mobile"] = a.Mobile
-	r["Password"] = a.Password
-	r["Salt"] = a.Salt
-	r["SafePwd"] = a.SafePwd
-	r["Avatar"] = a.Avatar
-	r["Gender"] = a.Gender
-	r["LastLogin"] = a.LastLogin
-	r["LastIp"] = a.LastIp
-	r["Disabled"] = a.Disabled
-	r["Online"] = a.Online
-	r["RoleIds"] = a.RoleIds
-	r["Created"] = a.Created
-	r["Updated"] = a.Updated
-	r["FileSize"] = a.FileSize
-	r["FileNum"] = a.FileNum
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Username"] = a.Username
+		r["Email"] = a.Email
+		r["Mobile"] = a.Mobile
+		r["Password"] = a.Password
+		r["Salt"] = a.Salt
+		r["SafePwd"] = a.SafePwd
+		r["Avatar"] = a.Avatar
+		r["Gender"] = a.Gender
+		r["LastLogin"] = a.LastLogin
+		r["LastIp"] = a.LastIp
+		r["Disabled"] = a.Disabled
+		r["Online"] = a.Online
+		r["RoleIds"] = a.RoleIds
+		r["Created"] = a.Created
+		r["Updated"] = a.Updated
+		r["FileSize"] = a.FileSize
+		r["FileNum"] = a.FileNum
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Username":
+			r["Username"] = a.Username
+		case "Email":
+			r["Email"] = a.Email
+		case "Mobile":
+			r["Mobile"] = a.Mobile
+		case "Password":
+			r["Password"] = a.Password
+		case "Salt":
+			r["Salt"] = a.Salt
+		case "SafePwd":
+			r["SafePwd"] = a.SafePwd
+		case "Avatar":
+			r["Avatar"] = a.Avatar
+		case "Gender":
+			r["Gender"] = a.Gender
+		case "LastLogin":
+			r["LastLogin"] = a.LastLogin
+		case "LastIp":
+			r["LastIp"] = a.LastIp
+		case "Disabled":
+			r["Disabled"] = a.Disabled
+		case "Online":
+			r["Online"] = a.Online
+		case "RoleIds":
+			r["RoleIds"] = a.RoleIds
+		case "Created":
+			r["Created"] = a.Created
+		case "Updated":
+			r["Updated"] = a.Updated
+		case "FileSize":
+			r["FileSize"] = a.FileSize
+		case "FileNum":
+			r["FileNum"] = a.FileNum
+		}
+	}
 	return r
 }
 
@@ -640,26 +683,69 @@ func (a *NgingUser) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingUser) AsRow() param.Store {
+func (a *NgingUser) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["username"] = a.Username
-	r["email"] = a.Email
-	r["mobile"] = a.Mobile
-	r["password"] = a.Password
-	r["salt"] = a.Salt
-	r["safe_pwd"] = a.SafePwd
-	r["avatar"] = a.Avatar
-	r["gender"] = a.Gender
-	r["last_login"] = a.LastLogin
-	r["last_ip"] = a.LastIp
-	r["disabled"] = a.Disabled
-	r["online"] = a.Online
-	r["role_ids"] = a.RoleIds
-	r["created"] = a.Created
-	r["updated"] = a.Updated
-	r["file_size"] = a.FileSize
-	r["file_num"] = a.FileNum
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["username"] = a.Username
+		r["email"] = a.Email
+		r["mobile"] = a.Mobile
+		r["password"] = a.Password
+		r["salt"] = a.Salt
+		r["safe_pwd"] = a.SafePwd
+		r["avatar"] = a.Avatar
+		r["gender"] = a.Gender
+		r["last_login"] = a.LastLogin
+		r["last_ip"] = a.LastIp
+		r["disabled"] = a.Disabled
+		r["online"] = a.Online
+		r["role_ids"] = a.RoleIds
+		r["created"] = a.Created
+		r["updated"] = a.Updated
+		r["file_size"] = a.FileSize
+		r["file_num"] = a.FileNum
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "username":
+			r["username"] = a.Username
+		case "email":
+			r["email"] = a.Email
+		case "mobile":
+			r["mobile"] = a.Mobile
+		case "password":
+			r["password"] = a.Password
+		case "salt":
+			r["salt"] = a.Salt
+		case "safe_pwd":
+			r["safe_pwd"] = a.SafePwd
+		case "avatar":
+			r["avatar"] = a.Avatar
+		case "gender":
+			r["gender"] = a.Gender
+		case "last_login":
+			r["last_login"] = a.LastLogin
+		case "last_ip":
+			r["last_ip"] = a.LastIp
+		case "disabled":
+			r["disabled"] = a.Disabled
+		case "online":
+			r["online"] = a.Online
+		case "role_ids":
+			r["role_ids"] = a.RoleIds
+		case "created":
+			r["created"] = a.Created
+		case "updated":
+			r["updated"] = a.Updated
+		case "file_size":
+			r["file_size"] = a.FileSize
+		case "file_num":
+			r["file_num"] = a.FileNum
+		}
+	}
 	return r
 }
 

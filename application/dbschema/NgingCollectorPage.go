@@ -534,28 +534,75 @@ func (a *NgingCollectorPage) Reset() *NgingCollectorPage {
 	return a
 }
 
-func (a *NgingCollectorPage) AsMap() param.Store {
+func (a *NgingCollectorPage) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["ParentId"] = a.ParentId
-	r["RootId"] = a.RootId
-	r["HasChild"] = a.HasChild
-	r["Uid"] = a.Uid
-	r["GroupId"] = a.GroupId
-	r["Name"] = a.Name
-	r["Description"] = a.Description
-	r["EnterUrl"] = a.EnterUrl
-	r["Sort"] = a.Sort
-	r["Created"] = a.Created
-	r["Browser"] = a.Browser
-	r["Type"] = a.Type
-	r["ScopeRule"] = a.ScopeRule
-	r["DuplicateRule"] = a.DuplicateRule
-	r["ContentType"] = a.ContentType
-	r["Charset"] = a.Charset
-	r["Timeout"] = a.Timeout
-	r["Waits"] = a.Waits
-	r["Proxy"] = a.Proxy
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["ParentId"] = a.ParentId
+		r["RootId"] = a.RootId
+		r["HasChild"] = a.HasChild
+		r["Uid"] = a.Uid
+		r["GroupId"] = a.GroupId
+		r["Name"] = a.Name
+		r["Description"] = a.Description
+		r["EnterUrl"] = a.EnterUrl
+		r["Sort"] = a.Sort
+		r["Created"] = a.Created
+		r["Browser"] = a.Browser
+		r["Type"] = a.Type
+		r["ScopeRule"] = a.ScopeRule
+		r["DuplicateRule"] = a.DuplicateRule
+		r["ContentType"] = a.ContentType
+		r["Charset"] = a.Charset
+		r["Timeout"] = a.Timeout
+		r["Waits"] = a.Waits
+		r["Proxy"] = a.Proxy
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "ParentId":
+			r["ParentId"] = a.ParentId
+		case "RootId":
+			r["RootId"] = a.RootId
+		case "HasChild":
+			r["HasChild"] = a.HasChild
+		case "Uid":
+			r["Uid"] = a.Uid
+		case "GroupId":
+			r["GroupId"] = a.GroupId
+		case "Name":
+			r["Name"] = a.Name
+		case "Description":
+			r["Description"] = a.Description
+		case "EnterUrl":
+			r["EnterUrl"] = a.EnterUrl
+		case "Sort":
+			r["Sort"] = a.Sort
+		case "Created":
+			r["Created"] = a.Created
+		case "Browser":
+			r["Browser"] = a.Browser
+		case "Type":
+			r["Type"] = a.Type
+		case "ScopeRule":
+			r["ScopeRule"] = a.ScopeRule
+		case "DuplicateRule":
+			r["DuplicateRule"] = a.DuplicateRule
+		case "ContentType":
+			r["ContentType"] = a.ContentType
+		case "Charset":
+			r["Charset"] = a.Charset
+		case "Timeout":
+			r["Timeout"] = a.Timeout
+		case "Waits":
+			r["Waits"] = a.Waits
+		case "Proxy":
+			r["Proxy"] = a.Proxy
+		}
+	}
 	return r
 }
 
@@ -670,28 +717,75 @@ func (a *NgingCollectorPage) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingCollectorPage) AsRow() param.Store {
+func (a *NgingCollectorPage) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["parent_id"] = a.ParentId
-	r["root_id"] = a.RootId
-	r["has_child"] = a.HasChild
-	r["uid"] = a.Uid
-	r["group_id"] = a.GroupId
-	r["name"] = a.Name
-	r["description"] = a.Description
-	r["enter_url"] = a.EnterUrl
-	r["sort"] = a.Sort
-	r["created"] = a.Created
-	r["browser"] = a.Browser
-	r["type"] = a.Type
-	r["scope_rule"] = a.ScopeRule
-	r["duplicate_rule"] = a.DuplicateRule
-	r["content_type"] = a.ContentType
-	r["charset"] = a.Charset
-	r["timeout"] = a.Timeout
-	r["waits"] = a.Waits
-	r["proxy"] = a.Proxy
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["parent_id"] = a.ParentId
+		r["root_id"] = a.RootId
+		r["has_child"] = a.HasChild
+		r["uid"] = a.Uid
+		r["group_id"] = a.GroupId
+		r["name"] = a.Name
+		r["description"] = a.Description
+		r["enter_url"] = a.EnterUrl
+		r["sort"] = a.Sort
+		r["created"] = a.Created
+		r["browser"] = a.Browser
+		r["type"] = a.Type
+		r["scope_rule"] = a.ScopeRule
+		r["duplicate_rule"] = a.DuplicateRule
+		r["content_type"] = a.ContentType
+		r["charset"] = a.Charset
+		r["timeout"] = a.Timeout
+		r["waits"] = a.Waits
+		r["proxy"] = a.Proxy
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "parent_id":
+			r["parent_id"] = a.ParentId
+		case "root_id":
+			r["root_id"] = a.RootId
+		case "has_child":
+			r["has_child"] = a.HasChild
+		case "uid":
+			r["uid"] = a.Uid
+		case "group_id":
+			r["group_id"] = a.GroupId
+		case "name":
+			r["name"] = a.Name
+		case "description":
+			r["description"] = a.Description
+		case "enter_url":
+			r["enter_url"] = a.EnterUrl
+		case "sort":
+			r["sort"] = a.Sort
+		case "created":
+			r["created"] = a.Created
+		case "browser":
+			r["browser"] = a.Browser
+		case "type":
+			r["type"] = a.Type
+		case "scope_rule":
+			r["scope_rule"] = a.ScopeRule
+		case "duplicate_rule":
+			r["duplicate_rule"] = a.DuplicateRule
+		case "content_type":
+			r["content_type"] = a.ContentType
+		case "charset":
+			r["charset"] = a.Charset
+		case "timeout":
+			r["timeout"] = a.Timeout
+		case "waits":
+			r["waits"] = a.Waits
+		case "proxy":
+			r["proxy"] = a.Proxy
+		}
+	}
 	return r
 }
 

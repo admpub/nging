@@ -444,19 +444,48 @@ func (a *NgingFileThumb) Reset() *NgingFileThumb {
 	return a
 }
 
-func (a *NgingFileThumb) AsMap() param.Store {
+func (a *NgingFileThumb) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["FileId"] = a.FileId
-	r["Size"] = a.Size
-	r["Width"] = a.Width
-	r["Height"] = a.Height
-	r["Dpi"] = a.Dpi
-	r["SaveName"] = a.SaveName
-	r["SavePath"] = a.SavePath
-	r["ViewUrl"] = a.ViewUrl
-	r["UsedTimes"] = a.UsedTimes
-	r["Md5"] = a.Md5
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["FileId"] = a.FileId
+		r["Size"] = a.Size
+		r["Width"] = a.Width
+		r["Height"] = a.Height
+		r["Dpi"] = a.Dpi
+		r["SaveName"] = a.SaveName
+		r["SavePath"] = a.SavePath
+		r["ViewUrl"] = a.ViewUrl
+		r["UsedTimes"] = a.UsedTimes
+		r["Md5"] = a.Md5
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "FileId":
+			r["FileId"] = a.FileId
+		case "Size":
+			r["Size"] = a.Size
+		case "Width":
+			r["Width"] = a.Width
+		case "Height":
+			r["Height"] = a.Height
+		case "Dpi":
+			r["Dpi"] = a.Dpi
+		case "SaveName":
+			r["SaveName"] = a.SaveName
+		case "SavePath":
+			r["SavePath"] = a.SavePath
+		case "ViewUrl":
+			r["ViewUrl"] = a.ViewUrl
+		case "UsedTimes":
+			r["UsedTimes"] = a.UsedTimes
+		case "Md5":
+			r["Md5"] = a.Md5
+		}
+	}
 	return r
 }
 
@@ -535,19 +564,48 @@ func (a *NgingFileThumb) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingFileThumb) AsRow() param.Store {
+func (a *NgingFileThumb) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["file_id"] = a.FileId
-	r["size"] = a.Size
-	r["width"] = a.Width
-	r["height"] = a.Height
-	r["dpi"] = a.Dpi
-	r["save_name"] = a.SaveName
-	r["save_path"] = a.SavePath
-	r["view_url"] = a.ViewUrl
-	r["used_times"] = a.UsedTimes
-	r["md5"] = a.Md5
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["file_id"] = a.FileId
+		r["size"] = a.Size
+		r["width"] = a.Width
+		r["height"] = a.Height
+		r["dpi"] = a.Dpi
+		r["save_name"] = a.SaveName
+		r["save_path"] = a.SavePath
+		r["view_url"] = a.ViewUrl
+		r["used_times"] = a.UsedTimes
+		r["md5"] = a.Md5
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "file_id":
+			r["file_id"] = a.FileId
+		case "size":
+			r["size"] = a.Size
+		case "width":
+			r["width"] = a.Width
+		case "height":
+			r["height"] = a.Height
+		case "dpi":
+			r["dpi"] = a.Dpi
+		case "save_name":
+			r["save_name"] = a.SaveName
+		case "save_path":
+			r["save_path"] = a.SavePath
+		case "view_url":
+			r["view_url"] = a.ViewUrl
+		case "used_times":
+			r["used_times"] = a.UsedTimes
+		case "md5":
+			r["md5"] = a.Md5
+		}
+	}
 	return r
 }
 

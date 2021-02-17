@@ -483,19 +483,48 @@ func (a *NgingCommand) Reset() *NgingCommand {
 	return a
 }
 
-func (a *NgingCommand) AsMap() param.Store {
+func (a *NgingCommand) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Name"] = a.Name
-	r["Description"] = a.Description
-	r["Command"] = a.Command
-	r["WorkDirectory"] = a.WorkDirectory
-	r["Env"] = a.Env
-	r["Created"] = a.Created
-	r["Updated"] = a.Updated
-	r["Disabled"] = a.Disabled
-	r["Remote"] = a.Remote
-	r["SshAccountId"] = a.SshAccountId
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Name"] = a.Name
+		r["Description"] = a.Description
+		r["Command"] = a.Command
+		r["WorkDirectory"] = a.WorkDirectory
+		r["Env"] = a.Env
+		r["Created"] = a.Created
+		r["Updated"] = a.Updated
+		r["Disabled"] = a.Disabled
+		r["Remote"] = a.Remote
+		r["SshAccountId"] = a.SshAccountId
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Name":
+			r["Name"] = a.Name
+		case "Description":
+			r["Description"] = a.Description
+		case "Command":
+			r["Command"] = a.Command
+		case "WorkDirectory":
+			r["WorkDirectory"] = a.WorkDirectory
+		case "Env":
+			r["Env"] = a.Env
+		case "Created":
+			r["Created"] = a.Created
+		case "Updated":
+			r["Updated"] = a.Updated
+		case "Disabled":
+			r["Disabled"] = a.Disabled
+		case "Remote":
+			r["Remote"] = a.Remote
+		case "SshAccountId":
+			r["SshAccountId"] = a.SshAccountId
+		}
+	}
 	return r
 }
 
@@ -574,19 +603,48 @@ func (a *NgingCommand) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingCommand) AsRow() param.Store {
+func (a *NgingCommand) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["name"] = a.Name
-	r["description"] = a.Description
-	r["command"] = a.Command
-	r["work_directory"] = a.WorkDirectory
-	r["env"] = a.Env
-	r["created"] = a.Created
-	r["updated"] = a.Updated
-	r["disabled"] = a.Disabled
-	r["remote"] = a.Remote
-	r["ssh_account_id"] = a.SshAccountId
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["name"] = a.Name
+		r["description"] = a.Description
+		r["command"] = a.Command
+		r["work_directory"] = a.WorkDirectory
+		r["env"] = a.Env
+		r["created"] = a.Created
+		r["updated"] = a.Updated
+		r["disabled"] = a.Disabled
+		r["remote"] = a.Remote
+		r["ssh_account_id"] = a.SshAccountId
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "name":
+			r["name"] = a.Name
+		case "description":
+			r["description"] = a.Description
+		case "command":
+			r["command"] = a.Command
+		case "work_directory":
+			r["work_directory"] = a.WorkDirectory
+		case "env":
+			r["env"] = a.Env
+		case "created":
+			r["created"] = a.Created
+		case "updated":
+			r["updated"] = a.Updated
+		case "disabled":
+			r["disabled"] = a.Disabled
+		case "remote":
+			r["remote"] = a.Remote
+		case "ssh_account_id":
+			r["ssh_account_id"] = a.SshAccountId
+		}
+	}
 	return r
 }
 

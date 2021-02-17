@@ -456,14 +456,33 @@ func (a *NgingAlertTopic) Reset() *NgingAlertTopic {
 	return a
 }
 
-func (a *NgingAlertTopic) AsMap() param.Store {
+func (a *NgingAlertTopic) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Topic"] = a.Topic
-	r["RecipientId"] = a.RecipientId
-	r["Disabled"] = a.Disabled
-	r["Created"] = a.Created
-	r["Updated"] = a.Updated
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Topic"] = a.Topic
+		r["RecipientId"] = a.RecipientId
+		r["Disabled"] = a.Disabled
+		r["Created"] = a.Created
+		r["Updated"] = a.Updated
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Topic":
+			r["Topic"] = a.Topic
+		case "RecipientId":
+			r["RecipientId"] = a.RecipientId
+		case "Disabled":
+			r["Disabled"] = a.Disabled
+		case "Created":
+			r["Created"] = a.Created
+		case "Updated":
+			r["Updated"] = a.Updated
+		}
+	}
 	return r
 }
 
@@ -522,14 +541,33 @@ func (a *NgingAlertTopic) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingAlertTopic) AsRow() param.Store {
+func (a *NgingAlertTopic) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["topic"] = a.Topic
-	r["recipient_id"] = a.RecipientId
-	r["disabled"] = a.Disabled
-	r["created"] = a.Created
-	r["updated"] = a.Updated
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["topic"] = a.Topic
+		r["recipient_id"] = a.RecipientId
+		r["disabled"] = a.Disabled
+		r["created"] = a.Created
+		r["updated"] = a.Updated
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "topic":
+			r["topic"] = a.Topic
+		case "recipient_id":
+			r["recipient_id"] = a.RecipientId
+		case "disabled":
+			r["disabled"] = a.Disabled
+		case "created":
+			r["created"] = a.Created
+		case "updated":
+			r["updated"] = a.Updated
+		}
+	}
 	return r
 }
 

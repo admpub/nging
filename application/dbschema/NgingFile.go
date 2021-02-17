@@ -511,33 +511,90 @@ func (a *NgingFile) Reset() *NgingFile {
 	return a
 }
 
-func (a *NgingFile) AsMap() param.Store {
+func (a *NgingFile) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["OwnerType"] = a.OwnerType
-	r["OwnerId"] = a.OwnerId
-	r["Name"] = a.Name
-	r["SaveName"] = a.SaveName
-	r["SavePath"] = a.SavePath
-	r["ViewUrl"] = a.ViewUrl
-	r["Ext"] = a.Ext
-	r["Mime"] = a.Mime
-	r["Type"] = a.Type
-	r["Size"] = a.Size
-	r["Width"] = a.Width
-	r["Height"] = a.Height
-	r["Dpi"] = a.Dpi
-	r["Md5"] = a.Md5
-	r["StorerName"] = a.StorerName
-	r["StorerId"] = a.StorerId
-	r["Created"] = a.Created
-	r["Updated"] = a.Updated
-	r["Sort"] = a.Sort
-	r["Status"] = a.Status
-	r["CategoryId"] = a.CategoryId
-	r["Tags"] = a.Tags
-	r["Subdir"] = a.Subdir
-	r["UsedTimes"] = a.UsedTimes
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["OwnerType"] = a.OwnerType
+		r["OwnerId"] = a.OwnerId
+		r["Name"] = a.Name
+		r["SaveName"] = a.SaveName
+		r["SavePath"] = a.SavePath
+		r["ViewUrl"] = a.ViewUrl
+		r["Ext"] = a.Ext
+		r["Mime"] = a.Mime
+		r["Type"] = a.Type
+		r["Size"] = a.Size
+		r["Width"] = a.Width
+		r["Height"] = a.Height
+		r["Dpi"] = a.Dpi
+		r["Md5"] = a.Md5
+		r["StorerName"] = a.StorerName
+		r["StorerId"] = a.StorerId
+		r["Created"] = a.Created
+		r["Updated"] = a.Updated
+		r["Sort"] = a.Sort
+		r["Status"] = a.Status
+		r["CategoryId"] = a.CategoryId
+		r["Tags"] = a.Tags
+		r["Subdir"] = a.Subdir
+		r["UsedTimes"] = a.UsedTimes
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "OwnerType":
+			r["OwnerType"] = a.OwnerType
+		case "OwnerId":
+			r["OwnerId"] = a.OwnerId
+		case "Name":
+			r["Name"] = a.Name
+		case "SaveName":
+			r["SaveName"] = a.SaveName
+		case "SavePath":
+			r["SavePath"] = a.SavePath
+		case "ViewUrl":
+			r["ViewUrl"] = a.ViewUrl
+		case "Ext":
+			r["Ext"] = a.Ext
+		case "Mime":
+			r["Mime"] = a.Mime
+		case "Type":
+			r["Type"] = a.Type
+		case "Size":
+			r["Size"] = a.Size
+		case "Width":
+			r["Width"] = a.Width
+		case "Height":
+			r["Height"] = a.Height
+		case "Dpi":
+			r["Dpi"] = a.Dpi
+		case "Md5":
+			r["Md5"] = a.Md5
+		case "StorerName":
+			r["StorerName"] = a.StorerName
+		case "StorerId":
+			r["StorerId"] = a.StorerId
+		case "Created":
+			r["Created"] = a.Created
+		case "Updated":
+			r["Updated"] = a.Updated
+		case "Sort":
+			r["Sort"] = a.Sort
+		case "Status":
+			r["Status"] = a.Status
+		case "CategoryId":
+			r["CategoryId"] = a.CategoryId
+		case "Tags":
+			r["Tags"] = a.Tags
+		case "Subdir":
+			r["Subdir"] = a.Subdir
+		case "UsedTimes":
+			r["UsedTimes"] = a.UsedTimes
+		}
+	}
 	return r
 }
 
@@ -672,33 +729,90 @@ func (a *NgingFile) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingFile) AsRow() param.Store {
+func (a *NgingFile) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["owner_type"] = a.OwnerType
-	r["owner_id"] = a.OwnerId
-	r["name"] = a.Name
-	r["save_name"] = a.SaveName
-	r["save_path"] = a.SavePath
-	r["view_url"] = a.ViewUrl
-	r["ext"] = a.Ext
-	r["mime"] = a.Mime
-	r["type"] = a.Type
-	r["size"] = a.Size
-	r["width"] = a.Width
-	r["height"] = a.Height
-	r["dpi"] = a.Dpi
-	r["md5"] = a.Md5
-	r["storer_name"] = a.StorerName
-	r["storer_id"] = a.StorerId
-	r["created"] = a.Created
-	r["updated"] = a.Updated
-	r["sort"] = a.Sort
-	r["status"] = a.Status
-	r["category_id"] = a.CategoryId
-	r["tags"] = a.Tags
-	r["subdir"] = a.Subdir
-	r["used_times"] = a.UsedTimes
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["owner_type"] = a.OwnerType
+		r["owner_id"] = a.OwnerId
+		r["name"] = a.Name
+		r["save_name"] = a.SaveName
+		r["save_path"] = a.SavePath
+		r["view_url"] = a.ViewUrl
+		r["ext"] = a.Ext
+		r["mime"] = a.Mime
+		r["type"] = a.Type
+		r["size"] = a.Size
+		r["width"] = a.Width
+		r["height"] = a.Height
+		r["dpi"] = a.Dpi
+		r["md5"] = a.Md5
+		r["storer_name"] = a.StorerName
+		r["storer_id"] = a.StorerId
+		r["created"] = a.Created
+		r["updated"] = a.Updated
+		r["sort"] = a.Sort
+		r["status"] = a.Status
+		r["category_id"] = a.CategoryId
+		r["tags"] = a.Tags
+		r["subdir"] = a.Subdir
+		r["used_times"] = a.UsedTimes
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "owner_type":
+			r["owner_type"] = a.OwnerType
+		case "owner_id":
+			r["owner_id"] = a.OwnerId
+		case "name":
+			r["name"] = a.Name
+		case "save_name":
+			r["save_name"] = a.SaveName
+		case "save_path":
+			r["save_path"] = a.SavePath
+		case "view_url":
+			r["view_url"] = a.ViewUrl
+		case "ext":
+			r["ext"] = a.Ext
+		case "mime":
+			r["mime"] = a.Mime
+		case "type":
+			r["type"] = a.Type
+		case "size":
+			r["size"] = a.Size
+		case "width":
+			r["width"] = a.Width
+		case "height":
+			r["height"] = a.Height
+		case "dpi":
+			r["dpi"] = a.Dpi
+		case "md5":
+			r["md5"] = a.Md5
+		case "storer_name":
+			r["storer_name"] = a.StorerName
+		case "storer_id":
+			r["storer_id"] = a.StorerId
+		case "created":
+			r["created"] = a.Created
+		case "updated":
+			r["updated"] = a.Updated
+		case "sort":
+			r["sort"] = a.Sort
+		case "status":
+			r["status"] = a.Status
+		case "category_id":
+			r["category_id"] = a.CategoryId
+		case "tags":
+			r["tags"] = a.Tags
+		case "subdir":
+			r["subdir"] = a.Subdir
+		case "used_times":
+			r["used_times"] = a.UsedTimes
+		}
+	}
 	return r
 }
 

@@ -484,20 +484,51 @@ func (a *NgingCollectorExport) Reset() *NgingCollectorExport {
 	return a
 }
 
-func (a *NgingCollectorExport) AsMap() param.Store {
+func (a *NgingCollectorExport) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["PageRoot"] = a.PageRoot
-	r["PageId"] = a.PageId
-	r["GroupId"] = a.GroupId
-	r["Mapping"] = a.Mapping
-	r["Dest"] = a.Dest
-	r["DestType"] = a.DestType
-	r["Name"] = a.Name
-	r["Description"] = a.Description
-	r["Created"] = a.Created
-	r["Exported"] = a.Exported
-	r["Disabled"] = a.Disabled
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["PageRoot"] = a.PageRoot
+		r["PageId"] = a.PageId
+		r["GroupId"] = a.GroupId
+		r["Mapping"] = a.Mapping
+		r["Dest"] = a.Dest
+		r["DestType"] = a.DestType
+		r["Name"] = a.Name
+		r["Description"] = a.Description
+		r["Created"] = a.Created
+		r["Exported"] = a.Exported
+		r["Disabled"] = a.Disabled
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "PageRoot":
+			r["PageRoot"] = a.PageRoot
+		case "PageId":
+			r["PageId"] = a.PageId
+		case "GroupId":
+			r["GroupId"] = a.GroupId
+		case "Mapping":
+			r["Mapping"] = a.Mapping
+		case "Dest":
+			r["Dest"] = a.Dest
+		case "DestType":
+			r["DestType"] = a.DestType
+		case "Name":
+			r["Name"] = a.Name
+		case "Description":
+			r["Description"] = a.Description
+		case "Created":
+			r["Created"] = a.Created
+		case "Exported":
+			r["Exported"] = a.Exported
+		case "Disabled":
+			r["Disabled"] = a.Disabled
+		}
+	}
 	return r
 }
 
@@ -580,20 +611,51 @@ func (a *NgingCollectorExport) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingCollectorExport) AsRow() param.Store {
+func (a *NgingCollectorExport) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["page_root"] = a.PageRoot
-	r["page_id"] = a.PageId
-	r["group_id"] = a.GroupId
-	r["mapping"] = a.Mapping
-	r["dest"] = a.Dest
-	r["dest_type"] = a.DestType
-	r["name"] = a.Name
-	r["description"] = a.Description
-	r["created"] = a.Created
-	r["exported"] = a.Exported
-	r["disabled"] = a.Disabled
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["page_root"] = a.PageRoot
+		r["page_id"] = a.PageId
+		r["group_id"] = a.GroupId
+		r["mapping"] = a.Mapping
+		r["dest"] = a.Dest
+		r["dest_type"] = a.DestType
+		r["name"] = a.Name
+		r["description"] = a.Description
+		r["created"] = a.Created
+		r["exported"] = a.Exported
+		r["disabled"] = a.Disabled
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "page_root":
+			r["page_root"] = a.PageRoot
+		case "page_id":
+			r["page_id"] = a.PageId
+		case "group_id":
+			r["group_id"] = a.GroupId
+		case "mapping":
+			r["mapping"] = a.Mapping
+		case "dest":
+			r["dest"] = a.Dest
+		case "dest_type":
+			r["dest_type"] = a.DestType
+		case "name":
+			r["name"] = a.Name
+		case "description":
+			r["description"] = a.Description
+		case "created":
+			r["created"] = a.Created
+		case "exported":
+			r["exported"] = a.Exported
+		case "disabled":
+			r["disabled"] = a.Disabled
+		}
+	}
 	return r
 }
 

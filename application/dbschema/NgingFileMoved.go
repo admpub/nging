@@ -438,14 +438,33 @@ func (a *NgingFileMoved) Reset() *NgingFileMoved {
 	return a
 }
 
-func (a *NgingFileMoved) AsMap() param.Store {
+func (a *NgingFileMoved) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["FileId"] = a.FileId
-	r["From"] = a.From
-	r["To"] = a.To
-	r["ThumbId"] = a.ThumbId
-	r["Created"] = a.Created
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["FileId"] = a.FileId
+		r["From"] = a.From
+		r["To"] = a.To
+		r["ThumbId"] = a.ThumbId
+		r["Created"] = a.Created
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "FileId":
+			r["FileId"] = a.FileId
+		case "From":
+			r["From"] = a.From
+		case "To":
+			r["To"] = a.To
+		case "ThumbId":
+			r["ThumbId"] = a.ThumbId
+		case "Created":
+			r["Created"] = a.Created
+		}
+	}
 	return r
 }
 
@@ -504,14 +523,33 @@ func (a *NgingFileMoved) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingFileMoved) AsRow() param.Store {
+func (a *NgingFileMoved) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["file_id"] = a.FileId
-	r["from"] = a.From
-	r["to"] = a.To
-	r["thumb_id"] = a.ThumbId
-	r["created"] = a.Created
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["file_id"] = a.FileId
+		r["from"] = a.From
+		r["to"] = a.To
+		r["thumb_id"] = a.ThumbId
+		r["created"] = a.Created
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "file_id":
+			r["file_id"] = a.FileId
+		case "from":
+			r["from"] = a.From
+		case "to":
+			r["to"] = a.To
+		case "thumb_id":
+			r["thumb_id"] = a.ThumbId
+		case "created":
+			r["created"] = a.Created
+		}
+	}
 	return r
 }
 

@@ -438,14 +438,33 @@ func (a *NgingUserU2f) Reset() *NgingUserU2f {
 	return a
 }
 
-func (a *NgingUserU2f) AsMap() param.Store {
+func (a *NgingUserU2f) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Uid"] = a.Uid
-	r["Token"] = a.Token
-	r["Type"] = a.Type
-	r["Extra"] = a.Extra
-	r["Created"] = a.Created
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Uid"] = a.Uid
+		r["Token"] = a.Token
+		r["Type"] = a.Type
+		r["Extra"] = a.Extra
+		r["Created"] = a.Created
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Uid":
+			r["Uid"] = a.Uid
+		case "Token":
+			r["Token"] = a.Token
+		case "Type":
+			r["Type"] = a.Type
+		case "Extra":
+			r["Extra"] = a.Extra
+		case "Created":
+			r["Created"] = a.Created
+		}
+	}
 	return r
 }
 
@@ -504,14 +523,33 @@ func (a *NgingUserU2f) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingUserU2f) AsRow() param.Store {
+func (a *NgingUserU2f) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["uid"] = a.Uid
-	r["token"] = a.Token
-	r["type"] = a.Type
-	r["extra"] = a.Extra
-	r["created"] = a.Created
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["uid"] = a.Uid
+		r["token"] = a.Token
+		r["type"] = a.Type
+		r["extra"] = a.Extra
+		r["created"] = a.Created
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "uid":
+			r["uid"] = a.Uid
+		case "token":
+			r["token"] = a.Token
+		case "type":
+			r["type"] = a.Type
+		case "extra":
+			r["extra"] = a.Extra
+		case "created":
+			r["created"] = a.Created
+		}
+	}
 	return r
 }
 

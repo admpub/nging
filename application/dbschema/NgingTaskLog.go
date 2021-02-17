@@ -457,15 +457,36 @@ func (a *NgingTaskLog) Reset() *NgingTaskLog {
 	return a
 }
 
-func (a *NgingTaskLog) AsMap() param.Store {
+func (a *NgingTaskLog) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["TaskId"] = a.TaskId
-	r["Output"] = a.Output
-	r["Error"] = a.Error
-	r["Status"] = a.Status
-	r["Elapsed"] = a.Elapsed
-	r["Created"] = a.Created
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["TaskId"] = a.TaskId
+		r["Output"] = a.Output
+		r["Error"] = a.Error
+		r["Status"] = a.Status
+		r["Elapsed"] = a.Elapsed
+		r["Created"] = a.Created
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "TaskId":
+			r["TaskId"] = a.TaskId
+		case "Output":
+			r["Output"] = a.Output
+		case "Error":
+			r["Error"] = a.Error
+		case "Status":
+			r["Status"] = a.Status
+		case "Elapsed":
+			r["Elapsed"] = a.Elapsed
+		case "Created":
+			r["Created"] = a.Created
+		}
+	}
 	return r
 }
 
@@ -528,15 +549,36 @@ func (a *NgingTaskLog) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingTaskLog) AsRow() param.Store {
+func (a *NgingTaskLog) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["task_id"] = a.TaskId
-	r["output"] = a.Output
-	r["error"] = a.Error
-	r["status"] = a.Status
-	r["elapsed"] = a.Elapsed
-	r["created"] = a.Created
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["task_id"] = a.TaskId
+		r["output"] = a.Output
+		r["error"] = a.Error
+		r["status"] = a.Status
+		r["elapsed"] = a.Elapsed
+		r["created"] = a.Created
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "task_id":
+			r["task_id"] = a.TaskId
+		case "output":
+			r["output"] = a.Output
+		case "error":
+			r["error"] = a.Error
+		case "status":
+			r["status"] = a.Status
+		case "elapsed":
+			r["elapsed"] = a.Elapsed
+		case "created":
+			r["created"] = a.Created
+		}
+	}
 	return r
 }
 

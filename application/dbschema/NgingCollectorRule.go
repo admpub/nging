@@ -459,16 +459,39 @@ func (a *NgingCollectorRule) Reset() *NgingCollectorRule {
 	return a
 }
 
-func (a *NgingCollectorRule) AsMap() param.Store {
+func (a *NgingCollectorRule) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["PageId"] = a.PageId
-	r["Name"] = a.Name
-	r["Rule"] = a.Rule
-	r["Type"] = a.Type
-	r["Filter"] = a.Filter
-	r["Created"] = a.Created
-	r["Sort"] = a.Sort
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["PageId"] = a.PageId
+		r["Name"] = a.Name
+		r["Rule"] = a.Rule
+		r["Type"] = a.Type
+		r["Filter"] = a.Filter
+		r["Created"] = a.Created
+		r["Sort"] = a.Sort
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "PageId":
+			r["PageId"] = a.PageId
+		case "Name":
+			r["Name"] = a.Name
+		case "Rule":
+			r["Rule"] = a.Rule
+		case "Type":
+			r["Type"] = a.Type
+		case "Filter":
+			r["Filter"] = a.Filter
+		case "Created":
+			r["Created"] = a.Created
+		case "Sort":
+			r["Sort"] = a.Sort
+		}
+	}
 	return r
 }
 
@@ -535,16 +558,39 @@ func (a *NgingCollectorRule) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingCollectorRule) AsRow() param.Store {
+func (a *NgingCollectorRule) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["page_id"] = a.PageId
-	r["name"] = a.Name
-	r["rule"] = a.Rule
-	r["type"] = a.Type
-	r["filter"] = a.Filter
-	r["created"] = a.Created
-	r["sort"] = a.Sort
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["page_id"] = a.PageId
+		r["name"] = a.Name
+		r["rule"] = a.Rule
+		r["type"] = a.Type
+		r["filter"] = a.Filter
+		r["created"] = a.Created
+		r["sort"] = a.Sort
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "page_id":
+			r["page_id"] = a.PageId
+		case "name":
+			r["name"] = a.Name
+		case "rule":
+			r["rule"] = a.Rule
+		case "type":
+			r["type"] = a.Type
+		case "filter":
+			r["filter"] = a.Filter
+		case "created":
+			r["created"] = a.Created
+		case "sort":
+			r["sort"] = a.Sort
+		}
+	}
 	return r
 }
 

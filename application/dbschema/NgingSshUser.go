@@ -493,24 +493,63 @@ func (a *NgingSshUser) Reset() *NgingSshUser {
 	return a
 }
 
-func (a *NgingSshUser) AsMap() param.Store {
+func (a *NgingSshUser) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Uid"] = a.Uid
-	r["Host"] = a.Host
-	r["Port"] = a.Port
-	r["Charset"] = a.Charset
-	r["Username"] = a.Username
-	r["Password"] = a.Password
-	r["Name"] = a.Name
-	r["Options"] = a.Options
-	r["PrivateKey"] = a.PrivateKey
-	r["Passphrase"] = a.Passphrase
-	r["Protocol"] = a.Protocol
-	r["Description"] = a.Description
-	r["GroupId"] = a.GroupId
-	r["Created"] = a.Created
-	r["Updated"] = a.Updated
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Uid"] = a.Uid
+		r["Host"] = a.Host
+		r["Port"] = a.Port
+		r["Charset"] = a.Charset
+		r["Username"] = a.Username
+		r["Password"] = a.Password
+		r["Name"] = a.Name
+		r["Options"] = a.Options
+		r["PrivateKey"] = a.PrivateKey
+		r["Passphrase"] = a.Passphrase
+		r["Protocol"] = a.Protocol
+		r["Description"] = a.Description
+		r["GroupId"] = a.GroupId
+		r["Created"] = a.Created
+		r["Updated"] = a.Updated
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Uid":
+			r["Uid"] = a.Uid
+		case "Host":
+			r["Host"] = a.Host
+		case "Port":
+			r["Port"] = a.Port
+		case "Charset":
+			r["Charset"] = a.Charset
+		case "Username":
+			r["Username"] = a.Username
+		case "Password":
+			r["Password"] = a.Password
+		case "Name":
+			r["Name"] = a.Name
+		case "Options":
+			r["Options"] = a.Options
+		case "PrivateKey":
+			r["PrivateKey"] = a.PrivateKey
+		case "Passphrase":
+			r["Passphrase"] = a.Passphrase
+		case "Protocol":
+			r["Protocol"] = a.Protocol
+		case "Description":
+			r["Description"] = a.Description
+		case "GroupId":
+			r["GroupId"] = a.GroupId
+		case "Created":
+			r["Created"] = a.Created
+		case "Updated":
+			r["Updated"] = a.Updated
+		}
+	}
 	return r
 }
 
@@ -609,24 +648,63 @@ func (a *NgingSshUser) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingSshUser) AsRow() param.Store {
+func (a *NgingSshUser) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["uid"] = a.Uid
-	r["host"] = a.Host
-	r["port"] = a.Port
-	r["charset"] = a.Charset
-	r["username"] = a.Username
-	r["password"] = a.Password
-	r["name"] = a.Name
-	r["options"] = a.Options
-	r["private_key"] = a.PrivateKey
-	r["passphrase"] = a.Passphrase
-	r["protocol"] = a.Protocol
-	r["description"] = a.Description
-	r["group_id"] = a.GroupId
-	r["created"] = a.Created
-	r["updated"] = a.Updated
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["uid"] = a.Uid
+		r["host"] = a.Host
+		r["port"] = a.Port
+		r["charset"] = a.Charset
+		r["username"] = a.Username
+		r["password"] = a.Password
+		r["name"] = a.Name
+		r["options"] = a.Options
+		r["private_key"] = a.PrivateKey
+		r["passphrase"] = a.Passphrase
+		r["protocol"] = a.Protocol
+		r["description"] = a.Description
+		r["group_id"] = a.GroupId
+		r["created"] = a.Created
+		r["updated"] = a.Updated
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "uid":
+			r["uid"] = a.Uid
+		case "host":
+			r["host"] = a.Host
+		case "port":
+			r["port"] = a.Port
+		case "charset":
+			r["charset"] = a.Charset
+		case "username":
+			r["username"] = a.Username
+		case "password":
+			r["password"] = a.Password
+		case "name":
+			r["name"] = a.Name
+		case "options":
+			r["options"] = a.Options
+		case "private_key":
+			r["private_key"] = a.PrivateKey
+		case "passphrase":
+			r["passphrase"] = a.Passphrase
+		case "protocol":
+			r["protocol"] = a.Protocol
+		case "description":
+			r["description"] = a.Description
+		case "group_id":
+			r["group_id"] = a.GroupId
+		case "created":
+			r["created"] = a.Created
+		case "updated":
+			r["updated"] = a.Updated
+		}
+	}
 	return r
 }
 

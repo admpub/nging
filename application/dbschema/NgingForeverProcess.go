@@ -526,32 +526,87 @@ func (a *NgingForeverProcess) Reset() *NgingForeverProcess {
 	return a
 }
 
-func (a *NgingForeverProcess) AsMap() param.Store {
+func (a *NgingForeverProcess) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Uid"] = a.Uid
-	r["Name"] = a.Name
-	r["Command"] = a.Command
-	r["Workdir"] = a.Workdir
-	r["Env"] = a.Env
-	r["Args"] = a.Args
-	r["Pidfile"] = a.Pidfile
-	r["Logfile"] = a.Logfile
-	r["Errfile"] = a.Errfile
-	r["Respawn"] = a.Respawn
-	r["Delay"] = a.Delay
-	r["Ping"] = a.Ping
-	r["Pid"] = a.Pid
-	r["Status"] = a.Status
-	r["Debug"] = a.Debug
-	r["Disabled"] = a.Disabled
-	r["Created"] = a.Created
-	r["Updated"] = a.Updated
-	r["Error"] = a.Error
-	r["Lastrun"] = a.Lastrun
-	r["Description"] = a.Description
-	r["EnableNotify"] = a.EnableNotify
-	r["NotifyEmail"] = a.NotifyEmail
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Uid"] = a.Uid
+		r["Name"] = a.Name
+		r["Command"] = a.Command
+		r["Workdir"] = a.Workdir
+		r["Env"] = a.Env
+		r["Args"] = a.Args
+		r["Pidfile"] = a.Pidfile
+		r["Logfile"] = a.Logfile
+		r["Errfile"] = a.Errfile
+		r["Respawn"] = a.Respawn
+		r["Delay"] = a.Delay
+		r["Ping"] = a.Ping
+		r["Pid"] = a.Pid
+		r["Status"] = a.Status
+		r["Debug"] = a.Debug
+		r["Disabled"] = a.Disabled
+		r["Created"] = a.Created
+		r["Updated"] = a.Updated
+		r["Error"] = a.Error
+		r["Lastrun"] = a.Lastrun
+		r["Description"] = a.Description
+		r["EnableNotify"] = a.EnableNotify
+		r["NotifyEmail"] = a.NotifyEmail
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Uid":
+			r["Uid"] = a.Uid
+		case "Name":
+			r["Name"] = a.Name
+		case "Command":
+			r["Command"] = a.Command
+		case "Workdir":
+			r["Workdir"] = a.Workdir
+		case "Env":
+			r["Env"] = a.Env
+		case "Args":
+			r["Args"] = a.Args
+		case "Pidfile":
+			r["Pidfile"] = a.Pidfile
+		case "Logfile":
+			r["Logfile"] = a.Logfile
+		case "Errfile":
+			r["Errfile"] = a.Errfile
+		case "Respawn":
+			r["Respawn"] = a.Respawn
+		case "Delay":
+			r["Delay"] = a.Delay
+		case "Ping":
+			r["Ping"] = a.Ping
+		case "Pid":
+			r["Pid"] = a.Pid
+		case "Status":
+			r["Status"] = a.Status
+		case "Debug":
+			r["Debug"] = a.Debug
+		case "Disabled":
+			r["Disabled"] = a.Disabled
+		case "Created":
+			r["Created"] = a.Created
+		case "Updated":
+			r["Updated"] = a.Updated
+		case "Error":
+			r["Error"] = a.Error
+		case "Lastrun":
+			r["Lastrun"] = a.Lastrun
+		case "Description":
+			r["Description"] = a.Description
+		case "EnableNotify":
+			r["EnableNotify"] = a.EnableNotify
+		case "NotifyEmail":
+			r["NotifyEmail"] = a.NotifyEmail
+		}
+	}
 	return r
 }
 
@@ -682,32 +737,87 @@ func (a *NgingForeverProcess) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingForeverProcess) AsRow() param.Store {
+func (a *NgingForeverProcess) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["uid"] = a.Uid
-	r["name"] = a.Name
-	r["command"] = a.Command
-	r["workdir"] = a.Workdir
-	r["env"] = a.Env
-	r["args"] = a.Args
-	r["pidfile"] = a.Pidfile
-	r["logfile"] = a.Logfile
-	r["errfile"] = a.Errfile
-	r["respawn"] = a.Respawn
-	r["delay"] = a.Delay
-	r["ping"] = a.Ping
-	r["pid"] = a.Pid
-	r["status"] = a.Status
-	r["debug"] = a.Debug
-	r["disabled"] = a.Disabled
-	r["created"] = a.Created
-	r["updated"] = a.Updated
-	r["error"] = a.Error
-	r["lastrun"] = a.Lastrun
-	r["description"] = a.Description
-	r["enable_notify"] = a.EnableNotify
-	r["notify_email"] = a.NotifyEmail
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["uid"] = a.Uid
+		r["name"] = a.Name
+		r["command"] = a.Command
+		r["workdir"] = a.Workdir
+		r["env"] = a.Env
+		r["args"] = a.Args
+		r["pidfile"] = a.Pidfile
+		r["logfile"] = a.Logfile
+		r["errfile"] = a.Errfile
+		r["respawn"] = a.Respawn
+		r["delay"] = a.Delay
+		r["ping"] = a.Ping
+		r["pid"] = a.Pid
+		r["status"] = a.Status
+		r["debug"] = a.Debug
+		r["disabled"] = a.Disabled
+		r["created"] = a.Created
+		r["updated"] = a.Updated
+		r["error"] = a.Error
+		r["lastrun"] = a.Lastrun
+		r["description"] = a.Description
+		r["enable_notify"] = a.EnableNotify
+		r["notify_email"] = a.NotifyEmail
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "uid":
+			r["uid"] = a.Uid
+		case "name":
+			r["name"] = a.Name
+		case "command":
+			r["command"] = a.Command
+		case "workdir":
+			r["workdir"] = a.Workdir
+		case "env":
+			r["env"] = a.Env
+		case "args":
+			r["args"] = a.Args
+		case "pidfile":
+			r["pidfile"] = a.Pidfile
+		case "logfile":
+			r["logfile"] = a.Logfile
+		case "errfile":
+			r["errfile"] = a.Errfile
+		case "respawn":
+			r["respawn"] = a.Respawn
+		case "delay":
+			r["delay"] = a.Delay
+		case "ping":
+			r["ping"] = a.Ping
+		case "pid":
+			r["pid"] = a.Pid
+		case "status":
+			r["status"] = a.Status
+		case "debug":
+			r["debug"] = a.Debug
+		case "disabled":
+			r["disabled"] = a.Disabled
+		case "created":
+			r["created"] = a.Created
+		case "updated":
+			r["updated"] = a.Updated
+		case "error":
+			r["error"] = a.Error
+		case "lastrun":
+			r["lastrun"] = a.Lastrun
+		case "description":
+			r["description"] = a.Description
+		case "enable_notify":
+			r["enable_notify"] = a.EnableNotify
+		case "notify_email":
+			r["notify_email"] = a.NotifyEmail
+		}
+	}
 	return r
 }
 

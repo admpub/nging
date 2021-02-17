@@ -640,38 +640,105 @@ func (a *NgingFrpClient) Reset() *NgingFrpClient {
 	return a
 }
 
-func (a *NgingFrpClient) AsMap() param.Store {
+func (a *NgingFrpClient) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Name"] = a.Name
-	r["Disabled"] = a.Disabled
-	r["ServerAddr"] = a.ServerAddr
-	r["ServerPort"] = a.ServerPort
-	r["HttpProxy"] = a.HttpProxy
-	r["PoolCount"] = a.PoolCount
-	r["TcpMux"] = a.TcpMux
-	r["User"] = a.User
-	r["DnsServer"] = a.DnsServer
-	r["LoginFailExit"] = a.LoginFailExit
-	r["Protocol"] = a.Protocol
-	r["HeartbeatInterval"] = a.HeartbeatInterval
-	r["HeartbeatTimeout"] = a.HeartbeatTimeout
-	r["LogFile"] = a.LogFile
-	r["LogWay"] = a.LogWay
-	r["LogLevel"] = a.LogLevel
-	r["LogMaxDays"] = a.LogMaxDays
-	r["Token"] = a.Token
-	r["AdminAddr"] = a.AdminAddr
-	r["AdminPort"] = a.AdminPort
-	r["AdminUser"] = a.AdminUser
-	r["AdminPwd"] = a.AdminPwd
-	r["Start"] = a.Start
-	r["Extra"] = a.Extra
-	r["Uid"] = a.Uid
-	r["GroupId"] = a.GroupId
-	r["Type"] = a.Type
-	r["Created"] = a.Created
-	r["Updated"] = a.Updated
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Name"] = a.Name
+		r["Disabled"] = a.Disabled
+		r["ServerAddr"] = a.ServerAddr
+		r["ServerPort"] = a.ServerPort
+		r["HttpProxy"] = a.HttpProxy
+		r["PoolCount"] = a.PoolCount
+		r["TcpMux"] = a.TcpMux
+		r["User"] = a.User
+		r["DnsServer"] = a.DnsServer
+		r["LoginFailExit"] = a.LoginFailExit
+		r["Protocol"] = a.Protocol
+		r["HeartbeatInterval"] = a.HeartbeatInterval
+		r["HeartbeatTimeout"] = a.HeartbeatTimeout
+		r["LogFile"] = a.LogFile
+		r["LogWay"] = a.LogWay
+		r["LogLevel"] = a.LogLevel
+		r["LogMaxDays"] = a.LogMaxDays
+		r["Token"] = a.Token
+		r["AdminAddr"] = a.AdminAddr
+		r["AdminPort"] = a.AdminPort
+		r["AdminUser"] = a.AdminUser
+		r["AdminPwd"] = a.AdminPwd
+		r["Start"] = a.Start
+		r["Extra"] = a.Extra
+		r["Uid"] = a.Uid
+		r["GroupId"] = a.GroupId
+		r["Type"] = a.Type
+		r["Created"] = a.Created
+		r["Updated"] = a.Updated
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Name":
+			r["Name"] = a.Name
+		case "Disabled":
+			r["Disabled"] = a.Disabled
+		case "ServerAddr":
+			r["ServerAddr"] = a.ServerAddr
+		case "ServerPort":
+			r["ServerPort"] = a.ServerPort
+		case "HttpProxy":
+			r["HttpProxy"] = a.HttpProxy
+		case "PoolCount":
+			r["PoolCount"] = a.PoolCount
+		case "TcpMux":
+			r["TcpMux"] = a.TcpMux
+		case "User":
+			r["User"] = a.User
+		case "DnsServer":
+			r["DnsServer"] = a.DnsServer
+		case "LoginFailExit":
+			r["LoginFailExit"] = a.LoginFailExit
+		case "Protocol":
+			r["Protocol"] = a.Protocol
+		case "HeartbeatInterval":
+			r["HeartbeatInterval"] = a.HeartbeatInterval
+		case "HeartbeatTimeout":
+			r["HeartbeatTimeout"] = a.HeartbeatTimeout
+		case "LogFile":
+			r["LogFile"] = a.LogFile
+		case "LogWay":
+			r["LogWay"] = a.LogWay
+		case "LogLevel":
+			r["LogLevel"] = a.LogLevel
+		case "LogMaxDays":
+			r["LogMaxDays"] = a.LogMaxDays
+		case "Token":
+			r["Token"] = a.Token
+		case "AdminAddr":
+			r["AdminAddr"] = a.AdminAddr
+		case "AdminPort":
+			r["AdminPort"] = a.AdminPort
+		case "AdminUser":
+			r["AdminUser"] = a.AdminUser
+		case "AdminPwd":
+			r["AdminPwd"] = a.AdminPwd
+		case "Start":
+			r["Start"] = a.Start
+		case "Extra":
+			r["Extra"] = a.Extra
+		case "Uid":
+			r["Uid"] = a.Uid
+		case "GroupId":
+			r["GroupId"] = a.GroupId
+		case "Type":
+			r["Type"] = a.Type
+		case "Created":
+			r["Created"] = a.Created
+		case "Updated":
+			r["Updated"] = a.Updated
+		}
+	}
 	return r
 }
 
@@ -826,38 +893,105 @@ func (a *NgingFrpClient) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingFrpClient) AsRow() param.Store {
+func (a *NgingFrpClient) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["name"] = a.Name
-	r["disabled"] = a.Disabled
-	r["server_addr"] = a.ServerAddr
-	r["server_port"] = a.ServerPort
-	r["http_proxy"] = a.HttpProxy
-	r["pool_count"] = a.PoolCount
-	r["tcp_mux"] = a.TcpMux
-	r["user"] = a.User
-	r["dns_server"] = a.DnsServer
-	r["login_fail_exit"] = a.LoginFailExit
-	r["protocol"] = a.Protocol
-	r["heartbeat_interval"] = a.HeartbeatInterval
-	r["heartbeat_timeout"] = a.HeartbeatTimeout
-	r["log_file"] = a.LogFile
-	r["log_way"] = a.LogWay
-	r["log_level"] = a.LogLevel
-	r["log_max_days"] = a.LogMaxDays
-	r["token"] = a.Token
-	r["admin_addr"] = a.AdminAddr
-	r["admin_port"] = a.AdminPort
-	r["admin_user"] = a.AdminUser
-	r["admin_pwd"] = a.AdminPwd
-	r["start"] = a.Start
-	r["extra"] = a.Extra
-	r["uid"] = a.Uid
-	r["group_id"] = a.GroupId
-	r["type"] = a.Type
-	r["created"] = a.Created
-	r["updated"] = a.Updated
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["name"] = a.Name
+		r["disabled"] = a.Disabled
+		r["server_addr"] = a.ServerAddr
+		r["server_port"] = a.ServerPort
+		r["http_proxy"] = a.HttpProxy
+		r["pool_count"] = a.PoolCount
+		r["tcp_mux"] = a.TcpMux
+		r["user"] = a.User
+		r["dns_server"] = a.DnsServer
+		r["login_fail_exit"] = a.LoginFailExit
+		r["protocol"] = a.Protocol
+		r["heartbeat_interval"] = a.HeartbeatInterval
+		r["heartbeat_timeout"] = a.HeartbeatTimeout
+		r["log_file"] = a.LogFile
+		r["log_way"] = a.LogWay
+		r["log_level"] = a.LogLevel
+		r["log_max_days"] = a.LogMaxDays
+		r["token"] = a.Token
+		r["admin_addr"] = a.AdminAddr
+		r["admin_port"] = a.AdminPort
+		r["admin_user"] = a.AdminUser
+		r["admin_pwd"] = a.AdminPwd
+		r["start"] = a.Start
+		r["extra"] = a.Extra
+		r["uid"] = a.Uid
+		r["group_id"] = a.GroupId
+		r["type"] = a.Type
+		r["created"] = a.Created
+		r["updated"] = a.Updated
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "name":
+			r["name"] = a.Name
+		case "disabled":
+			r["disabled"] = a.Disabled
+		case "server_addr":
+			r["server_addr"] = a.ServerAddr
+		case "server_port":
+			r["server_port"] = a.ServerPort
+		case "http_proxy":
+			r["http_proxy"] = a.HttpProxy
+		case "pool_count":
+			r["pool_count"] = a.PoolCount
+		case "tcp_mux":
+			r["tcp_mux"] = a.TcpMux
+		case "user":
+			r["user"] = a.User
+		case "dns_server":
+			r["dns_server"] = a.DnsServer
+		case "login_fail_exit":
+			r["login_fail_exit"] = a.LoginFailExit
+		case "protocol":
+			r["protocol"] = a.Protocol
+		case "heartbeat_interval":
+			r["heartbeat_interval"] = a.HeartbeatInterval
+		case "heartbeat_timeout":
+			r["heartbeat_timeout"] = a.HeartbeatTimeout
+		case "log_file":
+			r["log_file"] = a.LogFile
+		case "log_way":
+			r["log_way"] = a.LogWay
+		case "log_level":
+			r["log_level"] = a.LogLevel
+		case "log_max_days":
+			r["log_max_days"] = a.LogMaxDays
+		case "token":
+			r["token"] = a.Token
+		case "admin_addr":
+			r["admin_addr"] = a.AdminAddr
+		case "admin_port":
+			r["admin_port"] = a.AdminPort
+		case "admin_user":
+			r["admin_user"] = a.AdminUser
+		case "admin_pwd":
+			r["admin_pwd"] = a.AdminPwd
+		case "start":
+			r["start"] = a.Start
+		case "extra":
+			r["extra"] = a.Extra
+		case "uid":
+			r["uid"] = a.Uid
+		case "group_id":
+			r["group_id"] = a.GroupId
+		case "type":
+			r["type"] = a.Type
+		case "created":
+			r["created"] = a.Created
+		case "updated":
+			r["updated"] = a.Updated
+		}
+	}
 	return r
 }
 

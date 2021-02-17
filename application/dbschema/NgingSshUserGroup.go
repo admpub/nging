@@ -439,14 +439,33 @@ func (a *NgingSshUserGroup) Reset() *NgingSshUserGroup {
 	return a
 }
 
-func (a *NgingSshUserGroup) AsMap() param.Store {
+func (a *NgingSshUserGroup) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Uid"] = a.Uid
-	r["Name"] = a.Name
-	r["Description"] = a.Description
-	r["Created"] = a.Created
-	r["Updated"] = a.Updated
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Uid"] = a.Uid
+		r["Name"] = a.Name
+		r["Description"] = a.Description
+		r["Created"] = a.Created
+		r["Updated"] = a.Updated
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Uid":
+			r["Uid"] = a.Uid
+		case "Name":
+			r["Name"] = a.Name
+		case "Description":
+			r["Description"] = a.Description
+		case "Created":
+			r["Created"] = a.Created
+		case "Updated":
+			r["Updated"] = a.Updated
+		}
+	}
 	return r
 }
 
@@ -505,14 +524,33 @@ func (a *NgingSshUserGroup) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingSshUserGroup) AsRow() param.Store {
+func (a *NgingSshUserGroup) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["uid"] = a.Uid
-	r["name"] = a.Name
-	r["description"] = a.Description
-	r["created"] = a.Created
-	r["updated"] = a.Updated
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["uid"] = a.Uid
+		r["name"] = a.Name
+		r["description"] = a.Description
+		r["created"] = a.Created
+		r["updated"] = a.Updated
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "uid":
+			r["uid"] = a.Uid
+		case "name":
+			r["name"] = a.Name
+		case "description":
+			r["description"] = a.Description
+		case "created":
+			r["created"] = a.Created
+		case "updated":
+			r["updated"] = a.Updated
+		}
+	}
 	return r
 }
 

@@ -524,23 +524,60 @@ func (a *NgingSendingLog) Reset() *NgingSendingLog {
 	return a
 }
 
-func (a *NgingSendingLog) AsMap() param.Store {
+func (a *NgingSendingLog) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Created"] = a.Created
-	r["SentAt"] = a.SentAt
-	r["SourceId"] = a.SourceId
-	r["SourceType"] = a.SourceType
-	r["Disabled"] = a.Disabled
-	r["Method"] = a.Method
-	r["To"] = a.To
-	r["Provider"] = a.Provider
-	r["Result"] = a.Result
-	r["Status"] = a.Status
-	r["Retries"] = a.Retries
-	r["Content"] = a.Content
-	r["Params"] = a.Params
-	r["AppointmentTime"] = a.AppointmentTime
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Created"] = a.Created
+		r["SentAt"] = a.SentAt
+		r["SourceId"] = a.SourceId
+		r["SourceType"] = a.SourceType
+		r["Disabled"] = a.Disabled
+		r["Method"] = a.Method
+		r["To"] = a.To
+		r["Provider"] = a.Provider
+		r["Result"] = a.Result
+		r["Status"] = a.Status
+		r["Retries"] = a.Retries
+		r["Content"] = a.Content
+		r["Params"] = a.Params
+		r["AppointmentTime"] = a.AppointmentTime
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Created":
+			r["Created"] = a.Created
+		case "SentAt":
+			r["SentAt"] = a.SentAt
+		case "SourceId":
+			r["SourceId"] = a.SourceId
+		case "SourceType":
+			r["SourceType"] = a.SourceType
+		case "Disabled":
+			r["Disabled"] = a.Disabled
+		case "Method":
+			r["Method"] = a.Method
+		case "To":
+			r["To"] = a.To
+		case "Provider":
+			r["Provider"] = a.Provider
+		case "Result":
+			r["Result"] = a.Result
+		case "Status":
+			r["Status"] = a.Status
+		case "Retries":
+			r["Retries"] = a.Retries
+		case "Content":
+			r["Content"] = a.Content
+		case "Params":
+			r["Params"] = a.Params
+		case "AppointmentTime":
+			r["AppointmentTime"] = a.AppointmentTime
+		}
+	}
 	return r
 }
 
@@ -635,23 +672,60 @@ func (a *NgingSendingLog) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingSendingLog) AsRow() param.Store {
+func (a *NgingSendingLog) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["created"] = a.Created
-	r["sent_at"] = a.SentAt
-	r["source_id"] = a.SourceId
-	r["source_type"] = a.SourceType
-	r["disabled"] = a.Disabled
-	r["method"] = a.Method
-	r["to"] = a.To
-	r["provider"] = a.Provider
-	r["result"] = a.Result
-	r["status"] = a.Status
-	r["retries"] = a.Retries
-	r["content"] = a.Content
-	r["params"] = a.Params
-	r["appointment_time"] = a.AppointmentTime
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["created"] = a.Created
+		r["sent_at"] = a.SentAt
+		r["source_id"] = a.SourceId
+		r["source_type"] = a.SourceType
+		r["disabled"] = a.Disabled
+		r["method"] = a.Method
+		r["to"] = a.To
+		r["provider"] = a.Provider
+		r["result"] = a.Result
+		r["status"] = a.Status
+		r["retries"] = a.Retries
+		r["content"] = a.Content
+		r["params"] = a.Params
+		r["appointment_time"] = a.AppointmentTime
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "created":
+			r["created"] = a.Created
+		case "sent_at":
+			r["sent_at"] = a.SentAt
+		case "source_id":
+			r["source_id"] = a.SourceId
+		case "source_type":
+			r["source_type"] = a.SourceType
+		case "disabled":
+			r["disabled"] = a.Disabled
+		case "method":
+			r["method"] = a.Method
+		case "to":
+			r["to"] = a.To
+		case "provider":
+			r["provider"] = a.Provider
+		case "result":
+			r["result"] = a.Result
+		case "status":
+			r["status"] = a.Status
+		case "retries":
+			r["retries"] = a.Retries
+		case "content":
+			r["content"] = a.Content
+		case "params":
+			r["params"] = a.Params
+		case "appointment_time":
+			r["appointment_time"] = a.AppointmentTime
+		}
+	}
 	return r
 }
 

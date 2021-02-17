@@ -443,16 +443,39 @@ func (a *NgingTaskGroup) Reset() *NgingTaskGroup {
 	return a
 }
 
-func (a *NgingTaskGroup) AsMap() param.Store {
+func (a *NgingTaskGroup) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Id"] = a.Id
-	r["Uid"] = a.Uid
-	r["Name"] = a.Name
-	r["Description"] = a.Description
-	r["Created"] = a.Created
-	r["Updated"] = a.Updated
-	r["CmdPrefix"] = a.CmdPrefix
-	r["CmdSuffix"] = a.CmdSuffix
+	if len(onlyFields) == 0 {
+		r["Id"] = a.Id
+		r["Uid"] = a.Uid
+		r["Name"] = a.Name
+		r["Description"] = a.Description
+		r["Created"] = a.Created
+		r["Updated"] = a.Updated
+		r["CmdPrefix"] = a.CmdPrefix
+		r["CmdSuffix"] = a.CmdSuffix
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Id":
+			r["Id"] = a.Id
+		case "Uid":
+			r["Uid"] = a.Uid
+		case "Name":
+			r["Name"] = a.Name
+		case "Description":
+			r["Description"] = a.Description
+		case "Created":
+			r["Created"] = a.Created
+		case "Updated":
+			r["Updated"] = a.Updated
+		case "CmdPrefix":
+			r["CmdPrefix"] = a.CmdPrefix
+		case "CmdSuffix":
+			r["CmdSuffix"] = a.CmdSuffix
+		}
+	}
 	return r
 }
 
@@ -519,16 +542,39 @@ func (a *NgingTaskGroup) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingTaskGroup) AsRow() param.Store {
+func (a *NgingTaskGroup) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["id"] = a.Id
-	r["uid"] = a.Uid
-	r["name"] = a.Name
-	r["description"] = a.Description
-	r["created"] = a.Created
-	r["updated"] = a.Updated
-	r["cmd_prefix"] = a.CmdPrefix
-	r["cmd_suffix"] = a.CmdSuffix
+	if len(onlyFields) == 0 {
+		r["id"] = a.Id
+		r["uid"] = a.Uid
+		r["name"] = a.Name
+		r["description"] = a.Description
+		r["created"] = a.Created
+		r["updated"] = a.Updated
+		r["cmd_prefix"] = a.CmdPrefix
+		r["cmd_suffix"] = a.CmdSuffix
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "id":
+			r["id"] = a.Id
+		case "uid":
+			r["uid"] = a.Uid
+		case "name":
+			r["name"] = a.Name
+		case "description":
+			r["description"] = a.Description
+		case "created":
+			r["created"] = a.Created
+		case "updated":
+			r["updated"] = a.Updated
+		case "cmd_prefix":
+			r["cmd_prefix"] = a.CmdPrefix
+		case "cmd_suffix":
+			r["cmd_suffix"] = a.CmdSuffix
+		}
+	}
 	return r
 }
 

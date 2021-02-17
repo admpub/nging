@@ -478,17 +478,42 @@ func (a *NgingConfig) Reset() *NgingConfig {
 	return a
 }
 
-func (a *NgingConfig) AsMap() param.Store {
+func (a *NgingConfig) AsMap(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["Key"] = a.Key
-	r["Group"] = a.Group
-	r["Label"] = a.Label
-	r["Value"] = a.Value
-	r["Description"] = a.Description
-	r["Type"] = a.Type
-	r["Sort"] = a.Sort
-	r["Disabled"] = a.Disabled
-	r["Encrypted"] = a.Encrypted
+	if len(onlyFields) == 0 {
+		r["Key"] = a.Key
+		r["Group"] = a.Group
+		r["Label"] = a.Label
+		r["Value"] = a.Value
+		r["Description"] = a.Description
+		r["Type"] = a.Type
+		r["Sort"] = a.Sort
+		r["Disabled"] = a.Disabled
+		r["Encrypted"] = a.Encrypted
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "Key":
+			r["Key"] = a.Key
+		case "Group":
+			r["Group"] = a.Group
+		case "Label":
+			r["Label"] = a.Label
+		case "Value":
+			r["Value"] = a.Value
+		case "Description":
+			r["Description"] = a.Description
+		case "Type":
+			r["Type"] = a.Type
+		case "Sort":
+			r["Sort"] = a.Sort
+		case "Disabled":
+			r["Disabled"] = a.Disabled
+		case "Encrypted":
+			r["Encrypted"] = a.Encrypted
+		}
+	}
 	return r
 }
 
@@ -559,17 +584,42 @@ func (a *NgingConfig) Set(key interface{}, value ...interface{}) {
 	}
 }
 
-func (a *NgingConfig) AsRow() param.Store {
+func (a *NgingConfig) AsRow(onlyFields ...string) param.Store {
 	r := param.Store{}
-	r["key"] = a.Key
-	r["group"] = a.Group
-	r["label"] = a.Label
-	r["value"] = a.Value
-	r["description"] = a.Description
-	r["type"] = a.Type
-	r["sort"] = a.Sort
-	r["disabled"] = a.Disabled
-	r["encrypted"] = a.Encrypted
+	if len(onlyFields) == 0 {
+		r["key"] = a.Key
+		r["group"] = a.Group
+		r["label"] = a.Label
+		r["value"] = a.Value
+		r["description"] = a.Description
+		r["type"] = a.Type
+		r["sort"] = a.Sort
+		r["disabled"] = a.Disabled
+		r["encrypted"] = a.Encrypted
+		return r
+	}
+	for _, field := range onlyFields {
+		switch field {
+		case "key":
+			r["key"] = a.Key
+		case "group":
+			r["group"] = a.Group
+		case "label":
+			r["label"] = a.Label
+		case "value":
+			r["value"] = a.Value
+		case "description":
+			r["description"] = a.Description
+		case "type":
+			r["type"] = a.Type
+		case "sort":
+			r["sort"] = a.Sort
+		case "disabled":
+			r["disabled"] = a.Disabled
+		case "encrypted":
+			r["encrypted"] = a.Encrypted
+		}
+	}
 	return r
 }
 
