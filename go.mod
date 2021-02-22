@@ -80,7 +80,7 @@ require (
 	github.com/admpub/ini v1.38.2
 	github.com/admpub/ip2region v1.2.5
 	github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
-	github.com/admpub/log v0.0.0-20191027043925-a6c03a7421a3
+	github.com/admpub/log v0.0.1
 	github.com/admpub/logcool v0.3.1
 	github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d
 	github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b
@@ -91,7 +91,6 @@ require (
 	github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48 // indirect
 	github.com/admpub/phantomjs v0.0.0-20180924162111-8a5af756140e
 	github.com/admpub/qrcode v0.0.0-20190512103923-0a2b75fa9edc
-	github.com/admpub/queueChan v0.0.0-20151001074356-79908f7a499f // indirect
 	github.com/admpub/randomize v0.0.2 // indirect
 	github.com/admpub/regexp2 v1.1.7
 	github.com/admpub/resty/v2 v2.4.1

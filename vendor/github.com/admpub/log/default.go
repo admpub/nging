@@ -2,7 +2,8 @@ package log
 
 import "io"
 
-var DefaultLog = &defaultLogger{Logger: NewWithCallDepth(5)}
+// DefaultLog 默认日志实例
+var DefaultLog = &defaultLogger{Logger: New()}
 
 type defaultLogger struct {
 	*Logger
@@ -22,6 +23,10 @@ func Async(args ...bool) *Logger {
 
 func SetTarget(targets ...Target) *Logger {
 	return DefaultLog.SetTarget(targets...)
+}
+
+func SetFormatter(formatter Formatter) *Logger {
+	return DefaultLog.SetFormatter(formatter)
 }
 
 func SetFatalAction(action Action) *Logger {

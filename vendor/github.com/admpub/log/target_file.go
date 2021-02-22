@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/admpub/queueChan"
@@ -42,6 +43,7 @@ type FileTarget struct {
 	scaned       bool
 	filePrefix   string
 	queue        queueChan.QueueChan
+	mutex        sync.Mutex
 }
 
 // NewFileTarget creates a FileTarget.
@@ -60,8 +62,10 @@ func NewFileTarget() *FileTarget {
 
 // Open prepares FileTarget for processing log messages.
 func (t *FileTarget) Open(errWriter io.Writer) (err error) {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
 	t.Filter.Init()
-	if t.FileName == `` {
+	if len(t.FileName) == 0 {
 		return errors.New("FileTarget.FileName must be set")
 	}
 	t.timeFormat = ``
@@ -82,7 +86,7 @@ func (t *FileTarget) Open(errWriter io.Writer) (err error) {
 		t.queue = queueChan.New(t.BackupCount)
 		t.queue.Dynamic()
 	}
-	t.openedFile = t.fileName()
+	t.openedFile = t.getFileName()
 	t.createDir(t.openedFile)
 	t.fd, err = os.OpenFile(t.openedFile, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0660)
 	if err != nil {
@@ -191,15 +195,15 @@ func (t *FileTarget) Close() {
 	}
 }
 
-func (t *FileTarget) fileName() string {
-	if t.timeFormat != `` {
+func (t *FileTarget) getFileName() string {
+	if len(t.timeFormat) > 0 {
 		return fmt.Sprintf(t.FileName, time.Now().Format(t.timeFormat))
 	}
 	return t.FileName
 }
 
 func (t *FileTarget) rotate(bytes int64) {
-	fileName := t.fileName()
+	fileName := t.getFileName()
 	if t.openedFile == fileName && (t.currentBytes+bytes <= t.MaxBytes || bytes > t.MaxBytes) {
 		return
 	}
@@ -237,23 +241,6 @@ func (t *FileTarget) rotate(bytes int64) {
 		}
 	}
 	t.queue.PushTS(newPath)
-	/*
-		for i := t.BackupCount; i >= 0; i-- {
-			path := fileName
-			if i > 0 {
-				path = fmt.Sprintf("%v.%v", fileName, i)
-			}
-			if _, err = os.Lstat(path); err != nil {
-				// file not exists
-				continue
-			}
-			if i == t.BackupCount {
-				os.Remove(path)
-			} else {
-				os.Rename(path, fmt.Sprintf("%v.%v", fileName, i+1))
-			}
-		}
-	*/
 	t.createDir(fileName)
 	t.fd, err = os.OpenFile(fileName, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0660)
 	if err != nil {
@@ -308,10 +295,9 @@ func DateFormatFilename(dfile string) (prefix string, dateformat string, filenam
 			} else {
 				fileName += `%v` + fileSuffix
 			}
-
 		}
 		filename = fileName
-		if filename == `` {
+		if len(filename) == 0 {
 			err = errors.New("FileTarget.FileName must be set")
 			return
 		}

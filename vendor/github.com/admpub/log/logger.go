@@ -15,8 +15,11 @@ import (
 )
 
 const (
+	// ActionNothing 无操作
 	ActionNothing Action = iota
+	// ActionPanic 触发Panic
 	ActionPanic
+	// ActionExit 退出程序
 	ActionExit
 )
 
@@ -25,7 +28,6 @@ type Logger struct {
 	*coreLogger
 	Category   string    // the category associated with this logger
 	Formatter  Formatter // message formatter
-	CallDepth  int
 	categories map[string]*Logger
 }
 
@@ -34,11 +36,6 @@ type Logger struct {
 // ErrorWriter: os.Stderr, BufferSize: 1024, MaxLevel: LevelDebug,
 // Category: app, Formatter: DefaultFormatter
 func NewLogger(args ...string) *Logger {
-	return NewWithCallDepth(DefaultCallDepth, args...)
-}
-
-// NewWithCallDepth creates a root logger.
-func NewWithCallDepth(callDepth int, args ...string) *Logger {
 	logger := &coreLogger{
 		ErrorWriter: os.Stderr,
 		BufferSize:  1024,
@@ -57,11 +54,11 @@ func NewWithCallDepth(callDepth int, args ...string) *Logger {
 		coreLogger: logger,
 		Category:   category,
 		Formatter:  NormalFormatter,
-		CallDepth:  callDepth,
 		categories: make(map[string]*Logger),
 	}
 }
 
+// New creates a new Logger
 func New(args ...string) *Logger {
 	return NewLogger(args...)
 }
@@ -91,12 +88,12 @@ func (l *Logger) clone() *Logger {
 		coreLogger: l.coreLogger,
 		Category:   l.Category,
 		categories: make(map[string]*Logger),
-		CallDepth:  l.CallDepth,
 		Formatter:  l.Formatter,
 	}
 	return logger
 }
 
+// Sync 同步日志
 func (l *Logger) Sync(args ...bool) *Logger {
 	var on bool
 	if len(args) > 0 {
@@ -110,6 +107,7 @@ func (l *Logger) sendEntry(entry *Entry) {
 	l.entries <- entry
 }
 
+// Async 异步日志
 func (l *Logger) Async(args ...bool) *Logger {
 	if len(args) < 1 {
 		l.syncMode = false
@@ -123,6 +121,7 @@ func (l *Logger) Async(args ...bool) *Logger {
 	return l
 }
 
+// SetTarget 设置日志输出Target
 func (l *Logger) SetTarget(targets ...Target) *Logger {
 	l.Close()
 	if len(targets) > 0 {
@@ -134,11 +133,13 @@ func (l *Logger) SetTarget(targets ...Target) *Logger {
 	return l
 }
 
+// SetFatalAction 设置Fatal类型日志的行为
 func (l *Logger) SetFatalAction(action Action) *Logger {
 	l.fatalAction = action
 	return l
 }
 
+// AddTarget 添加日志输出Target
 func (l *Logger) AddTarget(targets ...Target) *Logger {
 	l.Close()
 	l.Targets = append(l.Targets, targets...)
@@ -146,6 +147,7 @@ func (l *Logger) AddTarget(targets ...Target) *Logger {
 	return l
 }
 
+// SetLevel 添加日志输出等级
 func (l *Logger) SetLevel(level string) *Logger {
 	if le, ok := GetLevel(level); ok {
 		l.MaxLevel = le
@@ -153,6 +155,13 @@ func (l *Logger) SetLevel(level string) *Logger {
 	return l
 }
 
+// SetFormatter 设置日志格式化处理函数
+func (l *Logger) SetFormatter(formatter Formatter) *Logger {
+	l.Formatter = formatter
+	return l
+}
+
+// Fatalf fatal
 func (l *Logger) Fatalf(format string, a ...interface{}) {
 	l.Logf(LevelFatal, format, a...)
 }
@@ -195,6 +204,7 @@ func (l *Logger) Logf(level Leveler, format string, a ...interface{}) {
 	l.newEntry(level, message)
 }
 
+// Writer 日志输出Writer
 func (l *Logger) Writer(level Level) io.Writer {
 	return &LoggerWriter{
 		Level:  level,
@@ -202,6 +212,7 @@ func (l *Logger) Writer(level Level) io.Writer {
 	}
 }
 
+// Fatal fatal
 func (l *Logger) Fatal(a ...interface{}) {
 	l.Log(LevelFatal, a...)
 }
@@ -259,18 +270,7 @@ func (l *Logger) newEntry(level Leveler, message string) {
 		Time:     time.Now(),
 	}
 	if level == LevelFatal {
-		var (
-			stackDepth  int
-			stackFilter string
-		)
-		if cs, ok := l.CallStack[level]; ok && cs != nil {
-			stackDepth = cs.Depth
-			stackFilter = cs.Filter
-		}
-		if stackDepth < 20 {
-			stackDepth = 20
-		}
-		entry.CallStack = GetCallStack(3, stackDepth, stackFilter)
+		l.generateCallStack(entry, level, true)
 		entry.FormattedMessage = l.Formatter(l, entry)
 		l.sendEntry(entry)
 		l.wait()
@@ -282,9 +282,38 @@ func (l *Logger) newEntry(level Leveler, message string) {
 		}
 		return
 	}
-	if cs, ok := l.CallStack[level]; ok && cs != nil && cs.Depth > 0 {
-		entry.CallStack = GetCallStack(3, cs.Depth, cs.Filter)
-	}
+	l.generateCallStack(entry, level, false)
 	entry.FormattedMessage = l.Formatter(l, entry)
 	l.sendEntry(entry)
+}
+
+func (l *Logger) generateCallStack(entry *Entry, level Leveler, force bool) *Logger {
+	var (
+		stackDepth   int
+		skipStack    int
+		stackFilters = []string{DefaultStackFilter}
+	)
+	cs, ok := l.CallStack[level]
+	if ok && cs != nil {
+		if !force && cs.Depth < 1 {
+			return l
+		}
+		stackDepth = cs.Depth
+		skipStack = cs.Skip
+		if len(cs.Filters) > 0 {
+			stackFilters = append(stackFilters, cs.Filters...)
+		}
+	} else {
+		if !force {
+			return l
+		}
+	}
+	if stackDepth < 1 {
+		skipStack = DefaultSkipStack
+		stackDepth = DefaultStackDepth
+	} else if skipStack < 0 {
+		skipStack = 0
+	}
+	entry.CallStack = GetCallStack(skipStack, stackDepth, stackFilters...)
+	return l
 }

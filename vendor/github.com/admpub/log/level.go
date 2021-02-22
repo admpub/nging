@@ -17,9 +17,13 @@ const (
 )
 
 type (
-	// Level describes the level of a log message.
-	Level   int
-	Action  int
+	// Level 日志等级编号
+	Level int
+
+	// Action 日志触发行为编号
+	Action int
+
+	// Leveler 日志等级接口
 	Leveler interface {
 		fmt.Stringer
 		Int() int
@@ -38,6 +42,7 @@ var (
 		LevelFatal: "Fatal",
 	}
 
+	// LevelUppers 日志大写名称前缀
 	LevelUppers = map[string]string{
 		`Debug`: "DEBUG",
 		`Info`:  " INFO",
@@ -46,6 +51,7 @@ var (
 		`Fatal`: "FATAL",
 	}
 
+	// Levels 所有日志等级
 	Levels = map[string]Leveler{
 		"Debug": LevelDebug,
 		"Info":  LevelInfo,
@@ -53,8 +59,6 @@ var (
 		"Error": LevelError,
 		"Fatal": LevelFatal,
 	}
-
-	DefaultCallDepth = 4
 )
 
 // HTTPStatusLevelName HTTP状态码相应级别名称
@@ -71,6 +75,7 @@ func HTTPStatusLevelName(httpCode int) string {
 	return s
 }
 
+// GetLevel 获取指定名称的等级信息
 func GetLevel(level string) (Leveler, bool) {
 	level = strings.Title(level)
 	l, y := Levels[level]

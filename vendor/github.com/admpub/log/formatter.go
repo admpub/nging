@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"path/filepath"
-	"runtime"
 	"strconv"
 	"time"
 )
@@ -17,23 +16,27 @@ func DefaultFormatter(l *Logger, e *Entry) string {
 	return e.Time.Format(time.RFC3339) + "|" + e.Level.String() + "|" + e.Category + "|" + e.Message + e.CallStack
 }
 
+// NormalFormatter 标准格式
 func NormalFormatter(l *Logger, e *Entry) string {
 	return e.Time.Format(`2006-01-02 15:04:05`) + "|" + e.Level.String() + "|" + e.Category + "|" + e.Message + e.CallStack
 }
 
-func ShortFileFormatter(l *Logger, e *Entry) string {
-	callDepth := DefaultCallDepth
-	if l.CallDepth > 0 {
-		callDepth = l.CallDepth
+// ShortFileFormatter 简介文件名格式
+func ShortFileFormatter(skipStack int, filters ...string) Formatter {
+	_filters := []string{DefaultStackFilter}
+	if len(_filters) > 0 {
+		_filters = append(_filters, filters...)
 	}
-	_, file, line, ok := runtime.Caller(callDepth)
-	if !ok {
-		return e.Time.Format(`2006-01-02 15:04:05`) + "|" + e.Level.String() + "|" + e.Category + "|" + e.Message + e.CallStack
+	return func(l *Logger, e *Entry) string {
+		file, line, ok := GetCallSingleStack(skipStack, _filters...)
+		if !ok {
+			return e.Time.Format(`2006-01-02 15:04:05`) + "|" + e.Level.String() + "|" + e.Category + "|" + e.Message + e.CallStack
+		}
+		return e.Time.Format(`2006-01-02 15:04:05`) + "|" + filepath.Base(file) + ":" + strconv.Itoa(line) + "|" + e.Level.String() + "|" + e.Category + "|" + e.Message + e.CallStack
 	}
-
-	return e.Time.Format(`2006-01-02 15:04:05`) + "|" + filepath.Base(file) + ":" + strconv.Itoa(line) + "|" + e.Level.String() + "|" + e.Category + "|" + e.Message + e.CallStack
 }
 
+// JSONL json格式信息
 type JSONL struct {
 	Time      string          `bson:"time" json:"time"`
 	Level     string          `bson:"level" json:"level"`
@@ -42,6 +45,7 @@ type JSONL struct {
 	CallStack string          `bson:"callStack" json:"callStack"`
 }
 
+// JSONFormatter json格式
 func JSONFormatter(l *Logger, e *Entry) string {
 	jsonl := &JSONL{
 		Time:      e.Time.Format(`2006-01-02 15:04:05`),
