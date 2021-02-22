@@ -175,7 +175,7 @@ require (
 	github.com/webx-top/client v0.1.3
 	github.com/webx-top/codec v0.0.0-20200914105801-3782d81a0302
 	github.com/webx-top/com v0.0.7
-	github.com/webx-top/db v1.1.4
+	github.com/webx-top/db v1.1.5
 	github.com/webx-top/echo v2.7.6+incompatible
 	github.com/webx-top/image v0.0.7
 	github.com/webx-top/pagination v0.0.3
