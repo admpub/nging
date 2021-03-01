@@ -49,7 +49,7 @@ func BasicAuth(fn BasicValidateFunc, skipper ...echo.Skipper) echo.MiddlewareFun
 				}
 			}
 			c.Response().Header().Set(echo.HeaderWWWAuthenticate, basic+" realm=Restricted")
-			return echo.NewHTTPError(http.StatusUnauthorized)
+			return echo.NewHTTPError(http.StatusUnauthorized).SetRaw(echo.ErrUnauthorized)
 		})
 	}
 }

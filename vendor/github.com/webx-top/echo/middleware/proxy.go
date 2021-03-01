@@ -119,7 +119,7 @@ func proxyRaw(t *ProxyTarget, c echo.Context) http.Handler {
 
 		out, err := net.Dial("tcp", t.URL.Host)
 		if err != nil {
-			he := echo.NewHTTPError(http.StatusBadGateway, fmt.Sprintf("proxy raw, dial error=%v, url=%s", t.URL, err))
+			he := echo.NewHTTPError(http.StatusBadGateway, fmt.Sprintf("proxy raw, dial error=%v, url=%s", t.URL, err)).SetRaw(err)
 			c.Error(he)
 			return
 		}
@@ -128,7 +128,7 @@ func proxyRaw(t *ProxyTarget, c echo.Context) http.Handler {
 		// Write header
 		err = r.Write(out)
 		if err != nil {
-			he := echo.NewHTTPError(http.StatusBadGateway, fmt.Sprintf("proxy raw, request header copy error=%v, url=%s", t.URL, err))
+			he := echo.NewHTTPError(http.StatusBadGateway, fmt.Sprintf("proxy raw, request header copy error=%v, url=%s", t.URL, err)).SetRaw(err)
 			c.Error(he)
 			return
 		}

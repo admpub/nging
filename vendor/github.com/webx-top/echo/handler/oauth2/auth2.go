@@ -91,7 +91,7 @@ func (p *OAuth) Wrapper(e *echo.Echo, middlewares ...interface{}) {
 		return echo.HandlerFunc(func(ctx echo.Context) error {
 			user, err := p.completeAuthHandler(ctx)
 			if err != nil {
-				return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
+				return echo.NewHTTPError(http.StatusUnauthorized, err.Error()).SetRaw(err)
 			}
 			ctx.Set(p.Config.ContextKey, user)
 			return h.Handle(ctx)

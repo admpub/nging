@@ -45,7 +45,7 @@ for the requested provider.
 func BeginAuthHandler(ctx echo.Context) error {
 	url, err := GetAuthURL(ctx)
 	if err != nil {
-		return echo.NewHTTPError(400, err.Error())
+		return echo.NewHTTPError(400, err.Error()).SetRaw(err)
 	}
 	next := ctx.Form(`next`)
 	if len(next) > 0 {

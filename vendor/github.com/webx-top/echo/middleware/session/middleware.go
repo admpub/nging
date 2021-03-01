@@ -95,6 +95,9 @@ func Sessions(options *echo.SessionOptions, store sessions.Store) echo.Middlewar
 }
 
 func Middleware(options *echo.SessionOptions) echo.MiddlewareFuncd {
+	if options == nil {
+		options = DefaultSessionOptions()
+	}
 	store := StoreEngine(options)
 	return Sessions(options, store)
 }

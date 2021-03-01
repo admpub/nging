@@ -33,6 +33,9 @@ func hit(e *echo.Echo, t *testing.T, configs []*Config, middelwares ...Middlewar
 			ms[k] = m(buf)
 		}
 		e.Match([]string{cfg.Method}, cfg.Path, cfg.Handler(buf), ms...)
+	}
+	e.Commit()
+	for _, cfg := range configs {
 		r := testings.Request(cfg.Method, cfg.Path, e, cfg.ReqRewrite...)
 		cfg.Checker(t, r, buf)
 	}

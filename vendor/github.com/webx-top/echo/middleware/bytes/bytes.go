@@ -34,15 +34,12 @@ func New() *Bytes {
 // Format formats bytes integer to human readable string.
 // For example, 31323 bytes will return 30.59KB.
 func (*Bytes) Format(b int64) string {
-	multiple := ""
+	var multiple string
 	value := float64(b)
 
 	switch {
 	case b < KB:
 		return strconv.FormatInt(b, 10) + "B"
-	case b < MB:
-		value /= KB
-		multiple = "KB"
 	case b < MB:
 		value /= KB
 		multiple = "KB"

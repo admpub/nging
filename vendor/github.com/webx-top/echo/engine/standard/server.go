@@ -29,16 +29,22 @@ type (
 	}
 )
 
-func New(addr string) *Server {
+func New(addr string, opts ...engine.ConfigSetter) *Server {
 	c := &engine.Config{Address: addr}
+	for _, opt := range opts {
+		opt(c)
+	}
 	return NewWithConfig(c)
 }
 
-func NewWithTLS(addr, certFile, keyFile string) *Server {
+func NewWithTLS(addr, certFile, keyFile string, opts ...engine.ConfigSetter) *Server {
 	c := &engine.Config{
 		Address:     addr,
 		TLSCertFile: certFile,
 		TLSKeyFile:  keyFile,
+	}
+	for _, opt := range opts {
+		opt(c)
 	}
 	return NewWithConfig(c)
 }

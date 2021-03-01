@@ -95,7 +95,7 @@ func KeyAuthWithConfig(config KeyAuthConfig) echo.MiddlewareFuncd {
 			// Extract and verify key
 			key, err := extractor(c)
 			if err != nil {
-				return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+				return echo.NewHTTPError(http.StatusBadRequest, err.Error()).SetRaw(err)
 			}
 			valid, err := config.Validator(key, c)
 			if err != nil {

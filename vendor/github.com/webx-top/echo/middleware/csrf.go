@@ -3,6 +3,7 @@ package middleware
 import (
 	"crypto/subtle"
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -73,6 +74,10 @@ var (
 		CookieName:   "_csrf",
 		CookieMaxAge: 86400,
 	}
+	ErrCSRFTokenInvalid        = errors.New("csrf token is invalid")
+	ErrCSRFTokenIsEmpty        = errors.New("empty csrf token")
+	ErrCSRFTokenIsEmptyInForm  = fmt.Errorf("%w in form param", ErrCSRFTokenIsEmpty)
+	ErrCSRFTokenIsEmptyInQuery = fmt.Errorf("%w in query param", ErrCSRFTokenIsEmpty)
 )
 
 // CSRF returns a Cross-Site Request Forgery (CSRF) middleware.
@@ -136,10 +141,9 @@ func CSRFWithConfig(config CSRFConfig) echo.MiddlewareFuncd {
 					return err
 				}
 				if !validateCSRFToken(token, clientToken) {
-					return echo.NewHTTPError(http.StatusForbidden, "csrf token is invalid")
+					return echo.NewHTTPError(http.StatusForbidden, ErrCSRFTokenInvalid.Error()).SetRaw(ErrCSRFTokenInvalid)
 				}
 			}
-
 			// Set CSRF cookie
 			cookie := echo.NewCookie(config.CookieName, token, c.CookieOptions())
 			if len(config.CookiePath) > 0 {
@@ -177,7 +181,7 @@ func csrfTokenFromForm(param string) csrfTokenExtractor {
 	return func(c echo.Context) (string, error) {
 		token := c.Form(param)
 		if token == "" {
-			return "", errors.New("empty csrf token in form param")
+			return "", ErrCSRFTokenIsEmptyInForm
 		}
 		return token, nil
 	}
@@ -189,7 +193,7 @@ func csrfTokenFromQuery(param string) csrfTokenExtractor {
 	return func(c echo.Context) (string, error) {
 		token := c.Query(param)
 		if token == "" {
-			return "", errors.New("empty csrf token in query param")
+			return "", ErrCSRFTokenIsEmptyInQuery
 		}
 		return token, nil
 	}

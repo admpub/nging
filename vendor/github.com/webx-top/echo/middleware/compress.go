@@ -122,7 +122,7 @@ func GzipWithConfig(config *GzipConfig) echo.MiddlewareFunc {
 				i := pool.Get()
 				w, ok := i.(*gzip.Writer)
 				if !ok {
-					return echo.NewHTTPError(http.StatusInternalServerError, i.(error).Error())
+					return echo.NewHTTPError(http.StatusInternalServerError, i.(error).Error()).SetRaw(i.(error))
 				}
 				rw := resp.Writer()
 				w.Reset(rw)
