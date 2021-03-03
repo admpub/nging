@@ -161,6 +161,11 @@ func (l *Logger) SetFormatter(formatter Formatter) *Logger {
 	return l
 }
 
+// IsEnabled 是否启用了某个等级的日志输出
+func (l *Logger) IsEnabled(level Level) bool {
+	return l.MaxLevel.IsEnabled(level)
+}
+
 // Fatalf fatal
 func (l *Logger) Fatalf(format string, a ...interface{}) {
 	l.Logf(LevelFatal, format, a...)

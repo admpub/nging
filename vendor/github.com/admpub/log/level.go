@@ -26,6 +26,7 @@ type (
 	// Leveler 日志等级接口
 	Leveler interface {
 		fmt.Stringer
+		IsEnabled(level Level) bool
 		Int() int
 		Tag() string
 		Color() *color.Color
@@ -88,6 +89,11 @@ func (l Level) String() string {
 		return name
 	}
 	return "Unknown"
+}
+
+// IsEnabled 是否启用了某个等级
+func (l Level) IsEnabled(level Level) bool {
+	return l >= level
 }
 
 // Int 等级数值

@@ -41,6 +41,11 @@ func SetLevel(level string) *Logger {
 	return DefaultLog.SetLevel(level)
 }
 
+// IsEnabled 是否启用了某个等级的日志输出
+func IsEnabled(level Level) bool {
+	return DefaultLog.IsEnabled(level)
+}
+
 func Fatalf(format string, a ...interface{}) {
 	DefaultLog.Fatalf(format, a...)
 }

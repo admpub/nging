@@ -222,8 +222,8 @@ github.com/admpub/ip2region v1.2.5 h1:R8CNr//Qr/+hiNlqBes0Y+jZif154DR+LscdQTmjk+
 github.com/admpub/ip2region v1.2.5/go.mod h1:+VT4p7DvDTEbMc6OugtuwMlzV5yDSYmy8C2eoOZwIjE=
 github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8 h1:4cLleRv8VQuK/Tyy421kH/KF5t6MlU1aqEoapK17Rco=
 github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8/go.mod h1:wI4uHqEIg4MpTQ2bh92ACusqEKnj+gKYz0MpysAu2oE=
-github.com/admpub/log v0.0.1 h1:lfSoIYZ6KkWSdA14PhYo5NKjdtxW/UbPoPEzXK5Kg10=
-github.com/admpub/log v0.0.1/go.mod h1:rr6Sw/xAGWzL/Hg7FCekKd98XguStEEjcYC/DG5y/YA=
+github.com/admpub/log v0.0.2 h1:XDg8G5XIOIDBOkkeJPYnjb+snNpGgzexIzGK2cai6Zo=
+github.com/admpub/log v0.0.2/go.mod h1:rr6Sw/xAGWzL/Hg7FCekKd98XguStEEjcYC/DG5y/YA=
 github.com/admpub/logcool v0.3.1 h1:+EnvqEwSv1mpm8TLg673VjcSBhVjD2F2Bp6Aqhdld8Q=
 github.com/admpub/logcool v0.3.1/go.mod h1:G/gFEVWLaDX0flIBfXjrzYYeQraLZLJjPpT/r9w0oWo=
 github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d h1:9QaiQwHoN3e+ImMxBDSfyw2reYVEvfkJuKkKhkZYQ+0=
