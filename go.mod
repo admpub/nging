@@ -93,10 +93,10 @@ require (
 	github.com/admpub/qrcode v0.0.0-20190512103923-0a2b75fa9edc
 	github.com/admpub/randomize v0.0.2 // indirect
 	github.com/admpub/regexp2 v1.1.7
-	github.com/admpub/resty/v2 v2.4.1
-	github.com/admpub/securecookie v0.0.0-20170722041919-69560e375596
+	github.com/admpub/resty/v2 v2.5.1
+	github.com/admpub/securecookie v1.1.2
 	github.com/admpub/service v0.0.1
-	github.com/admpub/sessions v0.0.0-20201123012843-e83c830d057a // indirect
+	github.com/admpub/sessions v0.0.1 // indirect
 	github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede
 	github.com/admpub/sockjs-go v0.0.0-20170208085255-715e9716fc23
 	github.com/admpub/sonyflake v0.0.0-20160530021500-fa881fb1052b
