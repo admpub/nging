@@ -1618,6 +1618,10 @@ var App = function () {
 				}
 			    App.plotTooltip(item.pageX, item.pageY, formatter.call(this, event, pos, item));
 			}); 
+		},
+		template: function(elem,jsonData){
+            var tplId = $(elem).attr('tpl');
+            $(elem).html(template(tplId,jsonData));
 		}
 	
 	};
