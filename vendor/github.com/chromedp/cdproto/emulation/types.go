@@ -96,12 +96,13 @@ type UserAgentBrandVersion struct {
 }
 
 // UserAgentMetadata used to specify User Agent Cient Hints to emulate. See
-// https://wicg.github.io/ua-client-hints.
+// https://wicg.github.io/ua-client-hints Missing optional values will be filled
+// in by the target with what it would normally use.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Emulation#type-UserAgentMetadata
 type UserAgentMetadata struct {
-	Brands          []*UserAgentBrandVersion `json:"brands"`
-	FullVersion     string                   `json:"fullVersion"`
+	Brands          []*UserAgentBrandVersion `json:"brands,omitempty"`
+	FullVersion     string                   `json:"fullVersion,omitempty"`
 	Platform        string                   `json:"platform"`
 	PlatformVersion string                   `json:"platformVersion"`
 	Architecture    string                   `json:"architecture"`

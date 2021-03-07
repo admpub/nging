@@ -7,6 +7,7 @@ import (
 
 	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/cdproto/network"
+	"github.com/chromedp/cdproto/runtime"
 	"github.com/mailru/easyjson"
 	"github.com/mailru/easyjson/jlexer"
 	"github.com/mailru/easyjson/jwriter"
@@ -607,9 +608,10 @@ func (t *ContentSecurityPolicyViolationType) UnmarshalJSON(buf []byte) error {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-SourceCodeLocation
 type SourceCodeLocation struct {
-	URL          string `json:"url"`
-	LineNumber   int64  `json:"lineNumber"`
-	ColumnNumber int64  `json:"columnNumber"`
+	ScriptID     runtime.ScriptID `json:"scriptId,omitempty"`
+	URL          string           `json:"url"`
+	LineNumber   int64            `json:"lineNumber"`
+	ColumnNumber int64            `json:"columnNumber"`
 }
 
 // ContentSecurityPolicyIssueDetails [no description].
@@ -625,14 +627,59 @@ type ContentSecurityPolicyIssueDetails struct {
 	ViolatingNodeID                    cdp.BackendNodeID                  `json:"violatingNodeId,omitempty"`
 }
 
-// SharedArrayBufferTransferIssueDetails details for a request that has been
-// blocked with the BLOCKED_BY_RESPONSE code. Currently only used for COEP/COOP,
-// but may be extended to include some CSP errors in the future.
+// SharedArrayBufferIssueType [no description].
 //
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-SharedArrayBufferTransferIssueDetails
-type SharedArrayBufferTransferIssueDetails struct {
-	SourceCodeLocation *SourceCodeLocation `json:"sourceCodeLocation"`
-	IsWarning          bool                `json:"isWarning"`
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-SharedArrayBufferIssueType
+type SharedArrayBufferIssueType string
+
+// String returns the SharedArrayBufferIssueType as string value.
+func (t SharedArrayBufferIssueType) String() string {
+	return string(t)
+}
+
+// SharedArrayBufferIssueType values.
+const (
+	SharedArrayBufferIssueTypeTransferIssue SharedArrayBufferIssueType = "TransferIssue"
+	SharedArrayBufferIssueTypeCreationIssue SharedArrayBufferIssueType = "CreationIssue"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t SharedArrayBufferIssueType) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t SharedArrayBufferIssueType) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *SharedArrayBufferIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch SharedArrayBufferIssueType(in.String()) {
+	case SharedArrayBufferIssueTypeTransferIssue:
+		*t = SharedArrayBufferIssueTypeTransferIssue
+	case SharedArrayBufferIssueTypeCreationIssue:
+		*t = SharedArrayBufferIssueTypeCreationIssue
+
+	default:
+		in.AddError(errors.New("unknown SharedArrayBufferIssueType value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *SharedArrayBufferIssueType) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// SharedArrayBufferIssueDetails details for a issue arising from an SAB
+// being instantiated in, or transferred to a context that is not cross-origin
+// isolated.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-SharedArrayBufferIssueDetails
+type SharedArrayBufferIssueDetails struct {
+	SourceCodeLocation *SourceCodeLocation        `json:"sourceCodeLocation"`
+	IsWarning          bool                       `json:"isWarning"`
+	Type               SharedArrayBufferIssueType `json:"type"`
 }
 
 // TwaQualityEnforcementViolationType [no description].
@@ -693,6 +740,31 @@ type TrustedWebActivityIssueDetails struct {
 	Signature      string                             `json:"signature,omitempty"`   // The signature of the Trusted Web Activity client app. This field is only used when violation type is kDigitalAssetLinks.
 }
 
+// LowTextContrastIssueDetails [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-LowTextContrastIssueDetails
+type LowTextContrastIssueDetails struct {
+	ViolatingNodeID       cdp.BackendNodeID `json:"violatingNodeId"`
+	ViolatingNodeSelector string            `json:"violatingNodeSelector"`
+	ContrastRatio         float64           `json:"contrastRatio"`
+	ThresholdAA           float64           `json:"thresholdAA"`
+	ThresholdAAA          float64           `json:"thresholdAAA"`
+	FontSize              string            `json:"fontSize"`
+	FontWeight            string            `json:"fontWeight"`
+}
+
+// CorsIssueDetails details for a CORS related issue, e.g. a warning or error
+// related to CORS RFC1918 enforcement.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-CorsIssueDetails
+type CorsIssueDetails struct {
+	CorsErrorStatus        *network.CorsErrorStatus     `json:"corsErrorStatus"`
+	IsWarning              bool                         `json:"isWarning"`
+	Request                *AffectedRequest             `json:"request"`
+	ResourceIPAddressSpace network.IPAddressSpace       `json:"resourceIPAddressSpace,omitempty"`
+	ClientSecurityState    *network.ClientSecurityState `json:"clientSecurityState,omitempty"`
+}
+
 // InspectorIssueCode a unique identifier for the type of issue. Each type
 // may use one of the optional fields in InspectorIssueDetails to convey more
 // specific information about the kind of issue.
@@ -707,13 +779,15 @@ func (t InspectorIssueCode) String() string {
 
 // InspectorIssueCode values.
 const (
-	InspectorIssueCodeSameSiteCookieIssue            InspectorIssueCode = "SameSiteCookieIssue"
-	InspectorIssueCodeMixedContentIssue              InspectorIssueCode = "MixedContentIssue"
-	InspectorIssueCodeBlockedByResponseIssue         InspectorIssueCode = "BlockedByResponseIssue"
-	InspectorIssueCodeHeavyAdIssue                   InspectorIssueCode = "HeavyAdIssue"
-	InspectorIssueCodeContentSecurityPolicyIssue     InspectorIssueCode = "ContentSecurityPolicyIssue"
-	InspectorIssueCodeSharedArrayBufferTransferIssue InspectorIssueCode = "SharedArrayBufferTransferIssue"
-	InspectorIssueCodeTrustedWebActivityIssue        InspectorIssueCode = "TrustedWebActivityIssue"
+	InspectorIssueCodeSameSiteCookieIssue        InspectorIssueCode = "SameSiteCookieIssue"
+	InspectorIssueCodeMixedContentIssue          InspectorIssueCode = "MixedContentIssue"
+	InspectorIssueCodeBlockedByResponseIssue     InspectorIssueCode = "BlockedByResponseIssue"
+	InspectorIssueCodeHeavyAdIssue               InspectorIssueCode = "HeavyAdIssue"
+	InspectorIssueCodeContentSecurityPolicyIssue InspectorIssueCode = "ContentSecurityPolicyIssue"
+	InspectorIssueCodeSharedArrayBufferIssue     InspectorIssueCode = "SharedArrayBufferIssue"
+	InspectorIssueCodeTrustedWebActivityIssue    InspectorIssueCode = "TrustedWebActivityIssue"
+	InspectorIssueCodeLowTextContrastIssue       InspectorIssueCode = "LowTextContrastIssue"
+	InspectorIssueCodeCorsIssue                  InspectorIssueCode = "CorsIssue"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -739,10 +813,14 @@ func (t *InspectorIssueCode) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = InspectorIssueCodeHeavyAdIssue
 	case InspectorIssueCodeContentSecurityPolicyIssue:
 		*t = InspectorIssueCodeContentSecurityPolicyIssue
-	case InspectorIssueCodeSharedArrayBufferTransferIssue:
-		*t = InspectorIssueCodeSharedArrayBufferTransferIssue
+	case InspectorIssueCodeSharedArrayBufferIssue:
+		*t = InspectorIssueCodeSharedArrayBufferIssue
 	case InspectorIssueCodeTrustedWebActivityIssue:
 		*t = InspectorIssueCodeTrustedWebActivityIssue
+	case InspectorIssueCodeLowTextContrastIssue:
+		*t = InspectorIssueCodeLowTextContrastIssue
+	case InspectorIssueCodeCorsIssue:
+		*t = InspectorIssueCodeCorsIssue
 
 	default:
 		in.AddError(errors.New("unknown InspectorIssueCode value"))
@@ -760,13 +838,15 @@ func (t *InspectorIssueCode) UnmarshalJSON(buf []byte) error {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-InspectorIssueDetails
 type InspectorIssueDetails struct {
-	SameSiteCookieIssueDetails            *SameSiteCookieIssueDetails            `json:"sameSiteCookieIssueDetails,omitempty"`
-	MixedContentIssueDetails              *MixedContentIssueDetails              `json:"mixedContentIssueDetails,omitempty"`
-	BlockedByResponseIssueDetails         *BlockedByResponseIssueDetails         `json:"blockedByResponseIssueDetails,omitempty"`
-	HeavyAdIssueDetails                   *HeavyAdIssueDetails                   `json:"heavyAdIssueDetails,omitempty"`
-	ContentSecurityPolicyIssueDetails     *ContentSecurityPolicyIssueDetails     `json:"contentSecurityPolicyIssueDetails,omitempty"`
-	SharedArrayBufferTransferIssueDetails *SharedArrayBufferTransferIssueDetails `json:"sharedArrayBufferTransferIssueDetails,omitempty"`
-	TwaQualityEnforcementDetails          *TrustedWebActivityIssueDetails        `json:"twaQualityEnforcementDetails,omitempty"`
+	SameSiteCookieIssueDetails        *SameSiteCookieIssueDetails        `json:"sameSiteCookieIssueDetails,omitempty"`
+	MixedContentIssueDetails          *MixedContentIssueDetails          `json:"mixedContentIssueDetails,omitempty"`
+	BlockedByResponseIssueDetails     *BlockedByResponseIssueDetails     `json:"blockedByResponseIssueDetails,omitempty"`
+	HeavyAdIssueDetails               *HeavyAdIssueDetails               `json:"heavyAdIssueDetails,omitempty"`
+	ContentSecurityPolicyIssueDetails *ContentSecurityPolicyIssueDetails `json:"contentSecurityPolicyIssueDetails,omitempty"`
+	SharedArrayBufferIssueDetails     *SharedArrayBufferIssueDetails     `json:"sharedArrayBufferIssueDetails,omitempty"`
+	TwaQualityEnforcementDetails      *TrustedWebActivityIssueDetails    `json:"twaQualityEnforcementDetails,omitempty"`
+	LowTextContrastIssueDetails       *LowTextContrastIssueDetails       `json:"lowTextContrastIssueDetails,omitempty"`
+	CorsIssueDetails                  *CorsIssueDetails                  `json:"corsIssueDetails,omitempty"`
 }
 
 // InspectorIssue an inspector issue reported from the back-end.

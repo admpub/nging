@@ -434,7 +434,8 @@ func (gui *Gui) handleRenameBranch(g *gocui.Gui, v *gocui.View) error {
 
 	promptForNewName := func() error {
 		return gui.prompt(promptOpts{
-			title: gui.Tr.NewBranchNamePrompt + " " + branch.Name + ":",
+			title:          gui.Tr.NewBranchNamePrompt + " " + branch.Name + ":",
+			initialContent: branch.Name,
 			handleConfirm: func(newBranchName string) error {
 				if err := gui.GitCommand.RenameBranch(branch.Name, newBranchName); err != nil {
 					return gui.surfaceError(err)
@@ -497,7 +498,7 @@ func (gui *Gui) handleNewBranchOffCurrentItem() error {
 		title:          message,
 		initialContent: prefilledName,
 		handleConfirm: func(response string) error {
-			if err := gui.GitCommand.NewBranch(response, item.ID()); err != nil {
+			if err := gui.GitCommand.NewBranch(sanitizedBranchName(response), item.ID()); err != nil {
 				return err
 			}
 
@@ -533,7 +534,7 @@ func (gui *Gui) getBranchNames() []string {
 func (gui *Gui) findBranchNameSuggestions(input string) []*types.Suggestion {
 	branchNames := gui.getBranchNames()
 
-	matchingBranchNames := utils.FuzzySearch(input, branchNames)
+	matchingBranchNames := utils.FuzzySearch(sanitizedBranchName(input), branchNames)
 
 	suggestions := make([]*types.Suggestion, len(matchingBranchNames))
 	for i, branchName := range matchingBranchNames {
@@ -544,4 +545,10 @@ func (gui *Gui) findBranchNameSuggestions(input string) []*types.Suggestion {
 	}
 
 	return suggestions
+}
+
+// sanitizedBranchName will remove all spaces in favor of a dash "-" to meet
+// git's branch naming requirement.
+func sanitizedBranchName(input string) string {
+	return strings.Replace(input, " ", "-", -1)
 }

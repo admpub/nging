@@ -288,7 +288,7 @@ github.com/armon/go-socks5
 github.com/asaskevich/govalidator
 # github.com/atotto/clipboard v0.1.2
 github.com/atotto/clipboard
-# github.com/aws/aws-sdk-go v1.37.8
+# github.com/aws/aws-sdk-go v1.37.24
 ## explicit
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -436,7 +436,7 @@ github.com/cespare/xxhash/v2
 github.com/cheekybits/genny/generic
 # github.com/chris-ramon/douceur v0.2.0
 github.com/chris-ramon/douceur/parser
-# github.com/chromedp/cdproto v0.0.0-20210122124816-7a656c010d57
+# github.com/chromedp/cdproto v0.0.0-20210222063305-a3ac505ff0bd
 ## explicit
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
@@ -484,13 +484,15 @@ github.com/chromedp/cdproto/tethering
 github.com/chromedp/cdproto/tracing
 github.com/chromedp/cdproto/webaudio
 github.com/chromedp/cdproto/webauthn
-# github.com/chromedp/chromedp v0.6.5
+# github.com/chromedp/chromedp v0.6.6
 ## explicit
 github.com/chromedp/chromedp
 github.com/chromedp/chromedp/device
 github.com/chromedp/chromedp/kb
 # github.com/chromedp/sysutil v1.0.0
 github.com/chromedp/sysutil
+# github.com/cli/safeexec v1.0.0
+github.com/cli/safeexec
 # github.com/cloudfoundry/jibber_jabber v0.0.0-20151120183258-bcc4c8345a21
 github.com/cloudfoundry/jibber_jabber
 # github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0
@@ -641,7 +643,7 @@ github.com/golang/protobuf/ptypes/duration
 github.com/golang/protobuf/ptypes/timestamp
 # github.com/golang/snappy v0.0.1
 github.com/golang/snappy
-# github.com/gomodule/redigo v1.8.3
+# github.com/gomodule/redigo v1.8.4
 ## explicit
 github.com/gomodule/redigo/redis
 # github.com/google/uuid v1.1.2
@@ -717,9 +719,9 @@ github.com/jesseduffield/go-git/v5/utils/merkletrie/filesystem
 github.com/jesseduffield/go-git/v5/utils/merkletrie/index
 github.com/jesseduffield/go-git/v5/utils/merkletrie/internal/frame
 github.com/jesseduffield/go-git/v5/utils/merkletrie/noder
-# github.com/jesseduffield/gocui v0.3.1-0.20201010224802-8a6768078fd7
+# github.com/jesseduffield/gocui v0.3.1-0.20210208224444-2eecee85583d
 github.com/jesseduffield/gocui
-# github.com/jesseduffield/lazygit v0.24.2
+# github.com/jesseduffield/lazygit v0.25.1
 ## explicit
 github.com/jesseduffield/lazygit/pkg/app
 github.com/jesseduffield/lazygit/pkg/commands
@@ -733,6 +735,7 @@ github.com/jesseduffield/lazygit/pkg/gui/boxlayout
 github.com/jesseduffield/lazygit/pkg/gui/presentation
 github.com/jesseduffield/lazygit/pkg/gui/types
 github.com/jesseduffield/lazygit/pkg/i18n
+github.com/jesseduffield/lazygit/pkg/secureexec
 github.com/jesseduffield/lazygit/pkg/tasks
 github.com/jesseduffield/lazygit/pkg/theme
 github.com/jesseduffield/lazygit/pkg/updates
@@ -799,7 +802,7 @@ github.com/lucas-clemente/quic-go/internal/wire
 github.com/lucas-clemente/quic-go/logging
 github.com/lucas-clemente/quic-go/quictrace
 github.com/lucas-clemente/quic-go/quictrace/pb
-# github.com/mailru/easyjson v0.7.6
+# github.com/mailru/easyjson v0.7.7
 github.com/mailru/easyjson
 github.com/mailru/easyjson/buffer
 github.com/mailru/easyjson/jlexer
@@ -952,7 +955,7 @@ github.com/sahilm/fuzzy
 ## explicit
 # github.com/sergi/go-diff v1.1.0
 github.com/sergi/go-diff/diffmatchpatch
-# github.com/shirou/gopsutil v3.21.1+incompatible
+# github.com/shirou/gopsutil v3.21.2+incompatible
 ## explicit
 github.com/shirou/gopsutil/cpu
 github.com/shirou/gopsutil/disk
@@ -968,7 +971,7 @@ github.com/shirou/gopsutil/process
 ## explicit
 # github.com/sirupsen/logrus v1.6.0
 github.com/sirupsen/logrus
-# github.com/spf13/cobra v1.1.2
+# github.com/spf13/cobra v1.1.3
 ## explicit
 github.com/spf13/cobra
 # github.com/spf13/pflag v1.0.5
@@ -993,8 +996,6 @@ github.com/syndtr/goleveldb/leveldb/opt
 github.com/syndtr/goleveldb/leveldb/storage
 github.com/syndtr/goleveldb/leveldb/table
 github.com/syndtr/goleveldb/leveldb/util
-# github.com/tcnksm/go-gitconfig v0.1.2
-github.com/tcnksm/go-gitconfig
 # github.com/tdewolff/minify v2.3.6+incompatible
 ## explicit
 github.com/tdewolff/minify
@@ -1024,6 +1025,11 @@ github.com/templexxx/cpufeat
 github.com/templexxx/xor
 # github.com/tjfoc/gmsm v0.0.0-20171124023159-98aa888b79d8
 github.com/tjfoc/gmsm/sm4
+# github.com/tklauser/go-sysconf v0.3.4
+## explicit
+github.com/tklauser/go-sysconf
+# github.com/tklauser/numcpus v0.2.1
+github.com/tklauser/numcpus
 # github.com/tuotoo/qrcode v0.0.0-20190222102259-ac9c44189bf2
 ## explicit
 github.com/tuotoo/qrcode
@@ -1254,7 +1260,7 @@ golang.org/x/net/websocket
 # golang.org/x/oauth2 v0.0.0-20201203001011-0b49973bad19 => github.com/golang/oauth2 v0.0.0-20201109201403-9fd604954f58
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
-# golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c => github.com/golang/sys v0.0.0-20201119102817-f84b799fce68
+# golang.org/x/sys v0.0.0-20210220050731-9a76102bfb43 => github.com/golang/sys v0.0.0-20201119102817-f84b799fce68
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix

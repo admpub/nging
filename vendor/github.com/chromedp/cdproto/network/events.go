@@ -181,7 +181,16 @@ type EventWebTransportCreated struct {
 	Initiator   *Initiator         `json:"initiator,omitempty"` // Request initiator.
 }
 
-// EventWebTransportClosed [no description].
+// EventWebTransportConnectionEstablished fired when WebTransport handshake
+// is finished.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-webTransportConnectionEstablished
+type EventWebTransportConnectionEstablished struct {
+	TransportID RequestID          `json:"transportId"` // WebTransport identifier.
+	Timestamp   *cdp.MonotonicTime `json:"timestamp"`   // Timestamp.
+}
+
+// EventWebTransportClosed fired when WebTransport is disposed.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-webTransportClosed
 type EventWebTransportClosed struct {
@@ -211,10 +220,11 @@ type EventRequestWillBeSentExtraInfo struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-responseReceivedExtraInfo
 type EventResponseReceivedExtraInfo struct {
-	RequestID      RequestID                     `json:"requestId"`             // Request identifier. Used to match this information to another responseReceived event.
-	BlockedCookies []*BlockedSetCookieWithReason `json:"blockedCookies"`        // A list of cookies which were not stored from the response along with the corresponding reasons for blocking. The cookies here may not be valid due to syntax errors, which are represented by the invalid cookie line string instead of a proper cookie.
-	Headers        Headers                       `json:"headers"`               // Raw response headers as they were received over the wire.
-	HeadersText    string                        `json:"headersText,omitempty"` // Raw response header text as it was received over the wire. The raw text may not always be available, such as in the case of HTTP/2 or QUIC.
+	RequestID              RequestID                     `json:"requestId"`              // Request identifier. Used to match this information to another responseReceived event.
+	BlockedCookies         []*BlockedSetCookieWithReason `json:"blockedCookies"`         // A list of cookies which were not stored from the response along with the corresponding reasons for blocking. The cookies here may not be valid due to syntax errors, which are represented by the invalid cookie line string instead of a proper cookie.
+	Headers                Headers                       `json:"headers"`                // Raw response headers as they were received over the wire.
+	ResourceIPAddressSpace IPAddressSpace                `json:"resourceIPAddressSpace"` // The IP address space of the resource. The address space can only be determined once the transport established the connection, so we can't send it in requestWillBeSentExtraInfo.
+	HeadersText            string                        `json:"headersText,omitempty"`  // Raw response header text as it was received over the wire. The raw text may not always be available, such as in the case of HTTP/2 or QUIC.
 }
 
 // EventTrustTokenOperationDone fired exactly once for each Trust Token

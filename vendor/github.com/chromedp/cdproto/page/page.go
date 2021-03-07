@@ -1055,6 +1055,44 @@ func (p *SetBypassCSPParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSetBypassCSP, p, nil)
 }
 
+// GetPermissionsPolicyStateParams get Permissions Policy state on given
+// frame.
+type GetPermissionsPolicyStateParams struct {
+	FrameID cdp.FrameID `json:"frameId"`
+}
+
+// GetPermissionsPolicyState get Permissions Policy state on given frame.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#method-getPermissionsPolicyState
+//
+// parameters:
+//   frameID
+func GetPermissionsPolicyState(frameID cdp.FrameID) *GetPermissionsPolicyStateParams {
+	return &GetPermissionsPolicyStateParams{
+		FrameID: frameID,
+	}
+}
+
+// GetPermissionsPolicyStateReturns return values.
+type GetPermissionsPolicyStateReturns struct {
+	States []*PermissionsPolicyFeatureState `json:"states,omitempty"`
+}
+
+// Do executes Page.getPermissionsPolicyState against the provided context.
+//
+// returns:
+//   states
+func (p *GetPermissionsPolicyStateParams) Do(ctx context.Context) (states []*PermissionsPolicyFeatureState, err error) {
+	// execute
+	var res GetPermissionsPolicyStateReturns
+	err = cdp.Execute(ctx, CommandGetPermissionsPolicyState, p, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.States, nil
+}
+
 // SetFontFamiliesParams set generic font families.
 type SetFontFamiliesParams struct {
 	FontFamilies *FontFamilies `json:"fontFamilies"` // Specifies font families to set. If a font family is not specified, it won't be changed.
@@ -1488,6 +1526,7 @@ const (
 	CommandSearchInResource                    = "Page.searchInResource"
 	CommandSetAdBlockingEnabled                = "Page.setAdBlockingEnabled"
 	CommandSetBypassCSP                        = "Page.setBypassCSP"
+	CommandGetPermissionsPolicyState           = "Page.getPermissionsPolicyState"
 	CommandSetFontFamilies                     = "Page.setFontFamilies"
 	CommandSetFontSizes                        = "Page.setFontSizes"
 	CommandSetDocumentContent                  = "Page.setDocumentContent"

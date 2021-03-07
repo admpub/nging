@@ -646,16 +646,19 @@ func (p *SetCacheDisabledParams) Do(ctx context.Context) (err error) {
 // SetCookieParams sets a cookie with the given cookie data; may overwrite
 // equivalent cookies if they exist.
 type SetCookieParams struct {
-	Name     string              `json:"name"`               // Cookie name.
-	Value    string              `json:"value"`              // Cookie value.
-	URL      string              `json:"url,omitempty"`      // The request-URI to associate with the setting of the cookie. This value can affect the default domain and path values of the created cookie.
-	Domain   string              `json:"domain,omitempty"`   // Cookie domain.
-	Path     string              `json:"path,omitempty"`     // Cookie path.
-	Secure   bool                `json:"secure,omitempty"`   // True if cookie is secure.
-	HTTPOnly bool                `json:"httpOnly,omitempty"` // True if cookie is http-only.
-	SameSite CookieSameSite      `json:"sameSite,omitempty"` // Cookie SameSite type.
-	Expires  *cdp.TimeSinceEpoch `json:"expires,omitempty"`  // Cookie expiration date, session cookie if not set
-	Priority CookiePriority      `json:"priority,omitempty"` // Cookie Priority type.
+	Name         string              `json:"name"`                   // Cookie name.
+	Value        string              `json:"value"`                  // Cookie value.
+	URL          string              `json:"url,omitempty"`          // The request-URI to associate with the setting of the cookie. This value can affect the default domain, path, source port, and source scheme values of the created cookie.
+	Domain       string              `json:"domain,omitempty"`       // Cookie domain.
+	Path         string              `json:"path,omitempty"`         // Cookie path.
+	Secure       bool                `json:"secure,omitempty"`       // True if cookie is secure.
+	HTTPOnly     bool                `json:"httpOnly,omitempty"`     // True if cookie is http-only.
+	SameSite     CookieSameSite      `json:"sameSite,omitempty"`     // Cookie SameSite type.
+	Expires      *cdp.TimeSinceEpoch `json:"expires,omitempty"`      // Cookie expiration date, session cookie if not set
+	Priority     CookiePriority      `json:"priority,omitempty"`     // Cookie Priority type.
+	SameParty    bool                `json:"sameParty,omitempty"`    // True if cookie is SameParty.
+	SourceScheme CookieSourceScheme  `json:"sourceScheme,omitempty"` // Cookie source scheme type.
+	SourcePort   int64               `json:"sourcePort,omitempty"`   // Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port. An unspecified port value allows protocol clients to emulate legacy cookie scope for the port. This is a temporary ability and it will be removed in the future.
 }
 
 // SetCookie sets a cookie with the given cookie data; may overwrite
@@ -674,7 +677,8 @@ func SetCookie(name string, value string) *SetCookieParams {
 }
 
 // WithURL the request-URI to associate with the setting of the cookie. This
-// value can affect the default domain and path values of the created cookie.
+// value can affect the default domain, path, source port, and source scheme
+// values of the created cookie.
 func (p SetCookieParams) WithURL(url string) *SetCookieParams {
 	p.URL = url
 	return &p
@@ -719,6 +723,27 @@ func (p SetCookieParams) WithExpires(expires *cdp.TimeSinceEpoch) *SetCookiePara
 // WithPriority cookie Priority type.
 func (p SetCookieParams) WithPriority(priority CookiePriority) *SetCookieParams {
 	p.Priority = priority
+	return &p
+}
+
+// WithSameParty true if cookie is SameParty.
+func (p SetCookieParams) WithSameParty(sameParty bool) *SetCookieParams {
+	p.SameParty = sameParty
+	return &p
+}
+
+// WithSourceScheme cookie source scheme type.
+func (p SetCookieParams) WithSourceScheme(sourceScheme CookieSourceScheme) *SetCookieParams {
+	p.SourceScheme = sourceScheme
+	return &p
+}
+
+// WithSourcePort cookie source port. Valid values are {-1, [1, 65535]}, -1
+// indicates an unspecified port. An unspecified port value allows protocol
+// clients to emulate legacy cookie scope for the port. This is a temporary
+// ability and it will be removed in the future.
+func (p SetCookieParams) WithSourcePort(sourcePort int64) *SetCookieParams {
+	p.SourcePort = sourcePort
 	return &p
 }
 

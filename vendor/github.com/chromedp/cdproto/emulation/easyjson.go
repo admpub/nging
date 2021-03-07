@@ -95,12 +95,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoEmulation(out *jwriter.Writer
 	out.RawByte('{')
 	first := true
 	_ = first
-	{
+	if len(in.Brands) != 0 {
 		const prefix string = ",\"brands\":"
+		first = false
 		out.RawString(prefix[1:])
-		if in.Brands == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
-		} else {
+		{
 			out.RawByte('[')
 			for v2, v3 := range in.Brands {
 				if v2 > 0 {
@@ -115,14 +114,24 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoEmulation(out *jwriter.Writer
 			out.RawByte(']')
 		}
 	}
-	{
+	if in.FullVersion != "" {
 		const prefix string = ",\"fullVersion\":"
-		out.RawString(prefix)
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
 		out.String(string(in.FullVersion))
 	}
 	{
 		const prefix string = ",\"platform\":"
-		out.RawString(prefix)
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
 		out.String(string(in.Platform))
 	}
 	{

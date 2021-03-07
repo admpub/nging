@@ -12,6 +12,267 @@ import (
 	"github.com/mailru/easyjson/jwriter"
 )
 
+// PermissionsPolicyFeature all Permissions Policy features. This enum should
+// match the one defined in
+// renderer/core/feature_policy/feature_policy_features.json5.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-PermissionsPolicyFeature
+type PermissionsPolicyFeature string
+
+// String returns the PermissionsPolicyFeature as string value.
+func (t PermissionsPolicyFeature) String() string {
+	return string(t)
+}
+
+// PermissionsPolicyFeature values.
+const (
+	PermissionsPolicyFeatureAccelerometer               PermissionsPolicyFeature = "accelerometer"
+	PermissionsPolicyFeatureAmbientLightSensor          PermissionsPolicyFeature = "ambient-light-sensor"
+	PermissionsPolicyFeatureAutoplay                    PermissionsPolicyFeature = "autoplay"
+	PermissionsPolicyFeatureCamera                      PermissionsPolicyFeature = "camera"
+	PermissionsPolicyFeatureChDpr                       PermissionsPolicyFeature = "ch-dpr"
+	PermissionsPolicyFeatureChDeviceMemory              PermissionsPolicyFeature = "ch-device-memory"
+	PermissionsPolicyFeatureChDownlink                  PermissionsPolicyFeature = "ch-downlink"
+	PermissionsPolicyFeatureChEct                       PermissionsPolicyFeature = "ch-ect"
+	PermissionsPolicyFeatureChLang                      PermissionsPolicyFeature = "ch-lang"
+	PermissionsPolicyFeatureChRtt                       PermissionsPolicyFeature = "ch-rtt"
+	PermissionsPolicyFeatureChUa                        PermissionsPolicyFeature = "ch-ua"
+	PermissionsPolicyFeatureChUaArch                    PermissionsPolicyFeature = "ch-ua-arch"
+	PermissionsPolicyFeatureChUaPlatform                PermissionsPolicyFeature = "ch-ua-platform"
+	PermissionsPolicyFeatureChUaModel                   PermissionsPolicyFeature = "ch-ua-model"
+	PermissionsPolicyFeatureChUaMobile                  PermissionsPolicyFeature = "ch-ua-mobile"
+	PermissionsPolicyFeatureChUaFullVersion             PermissionsPolicyFeature = "ch-ua-full-version"
+	PermissionsPolicyFeatureChUaPlatformVersion         PermissionsPolicyFeature = "ch-ua-platform-version"
+	PermissionsPolicyFeatureChViewportWidth             PermissionsPolicyFeature = "ch-viewport-width"
+	PermissionsPolicyFeatureChWidth                     PermissionsPolicyFeature = "ch-width"
+	PermissionsPolicyFeatureClipboardRead               PermissionsPolicyFeature = "clipboard-read"
+	PermissionsPolicyFeatureClipboardWrite              PermissionsPolicyFeature = "clipboard-write"
+	PermissionsPolicyFeatureConversionMeasurement       PermissionsPolicyFeature = "conversion-measurement"
+	PermissionsPolicyFeatureCrossOriginIsolated         PermissionsPolicyFeature = "cross-origin-isolated"
+	PermissionsPolicyFeatureDisplayCapture              PermissionsPolicyFeature = "display-capture"
+	PermissionsPolicyFeatureDocumentDomain              PermissionsPolicyFeature = "document-domain"
+	PermissionsPolicyFeatureEncryptedMedia              PermissionsPolicyFeature = "encrypted-media"
+	PermissionsPolicyFeatureExecutionWhileOutOfViewport PermissionsPolicyFeature = "execution-while-out-of-viewport"
+	PermissionsPolicyFeatureExecutionWhileNotRendered   PermissionsPolicyFeature = "execution-while-not-rendered"
+	PermissionsPolicyFeatureFocusWithoutUserActivation  PermissionsPolicyFeature = "focus-without-user-activation"
+	PermissionsPolicyFeatureFullscreen                  PermissionsPolicyFeature = "fullscreen"
+	PermissionsPolicyFeatureFrobulate                   PermissionsPolicyFeature = "frobulate"
+	PermissionsPolicyFeatureGamepad                     PermissionsPolicyFeature = "gamepad"
+	PermissionsPolicyFeatureGeolocation                 PermissionsPolicyFeature = "geolocation"
+	PermissionsPolicyFeatureGyroscope                   PermissionsPolicyFeature = "gyroscope"
+	PermissionsPolicyFeatureHid                         PermissionsPolicyFeature = "hid"
+	PermissionsPolicyFeatureIdleDetection               PermissionsPolicyFeature = "idle-detection"
+	PermissionsPolicyFeatureInterestCohort              PermissionsPolicyFeature = "interest-cohort"
+	PermissionsPolicyFeatureMagnetometer                PermissionsPolicyFeature = "magnetometer"
+	PermissionsPolicyFeatureMicrophone                  PermissionsPolicyFeature = "microphone"
+	PermissionsPolicyFeatureMidi                        PermissionsPolicyFeature = "midi"
+	PermissionsPolicyFeatureOtpCredentials              PermissionsPolicyFeature = "otp-credentials"
+	PermissionsPolicyFeaturePayment                     PermissionsPolicyFeature = "payment"
+	PermissionsPolicyFeaturePictureInPicture            PermissionsPolicyFeature = "picture-in-picture"
+	PermissionsPolicyFeaturePublickeyCredentialsGet     PermissionsPolicyFeature = "publickey-credentials-get"
+	PermissionsPolicyFeatureScreenWakeLock              PermissionsPolicyFeature = "screen-wake-lock"
+	PermissionsPolicyFeatureSerial                      PermissionsPolicyFeature = "serial"
+	PermissionsPolicyFeatureStorageAccessAPI            PermissionsPolicyFeature = "storage-access-api"
+	PermissionsPolicyFeatureSyncXhr                     PermissionsPolicyFeature = "sync-xhr"
+	PermissionsPolicyFeatureTrustTokenRedemption        PermissionsPolicyFeature = "trust-token-redemption"
+	PermissionsPolicyFeatureUsb                         PermissionsPolicyFeature = "usb"
+	PermissionsPolicyFeatureVerticalScroll              PermissionsPolicyFeature = "vertical-scroll"
+	PermissionsPolicyFeatureWebShare                    PermissionsPolicyFeature = "web-share"
+	PermissionsPolicyFeatureXrSpatialTracking           PermissionsPolicyFeature = "xr-spatial-tracking"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t PermissionsPolicyFeature) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t PermissionsPolicyFeature) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch PermissionsPolicyFeature(in.String()) {
+	case PermissionsPolicyFeatureAccelerometer:
+		*t = PermissionsPolicyFeatureAccelerometer
+	case PermissionsPolicyFeatureAmbientLightSensor:
+		*t = PermissionsPolicyFeatureAmbientLightSensor
+	case PermissionsPolicyFeatureAutoplay:
+		*t = PermissionsPolicyFeatureAutoplay
+	case PermissionsPolicyFeatureCamera:
+		*t = PermissionsPolicyFeatureCamera
+	case PermissionsPolicyFeatureChDpr:
+		*t = PermissionsPolicyFeatureChDpr
+	case PermissionsPolicyFeatureChDeviceMemory:
+		*t = PermissionsPolicyFeatureChDeviceMemory
+	case PermissionsPolicyFeatureChDownlink:
+		*t = PermissionsPolicyFeatureChDownlink
+	case PermissionsPolicyFeatureChEct:
+		*t = PermissionsPolicyFeatureChEct
+	case PermissionsPolicyFeatureChLang:
+		*t = PermissionsPolicyFeatureChLang
+	case PermissionsPolicyFeatureChRtt:
+		*t = PermissionsPolicyFeatureChRtt
+	case PermissionsPolicyFeatureChUa:
+		*t = PermissionsPolicyFeatureChUa
+	case PermissionsPolicyFeatureChUaArch:
+		*t = PermissionsPolicyFeatureChUaArch
+	case PermissionsPolicyFeatureChUaPlatform:
+		*t = PermissionsPolicyFeatureChUaPlatform
+	case PermissionsPolicyFeatureChUaModel:
+		*t = PermissionsPolicyFeatureChUaModel
+	case PermissionsPolicyFeatureChUaMobile:
+		*t = PermissionsPolicyFeatureChUaMobile
+	case PermissionsPolicyFeatureChUaFullVersion:
+		*t = PermissionsPolicyFeatureChUaFullVersion
+	case PermissionsPolicyFeatureChUaPlatformVersion:
+		*t = PermissionsPolicyFeatureChUaPlatformVersion
+	case PermissionsPolicyFeatureChViewportWidth:
+		*t = PermissionsPolicyFeatureChViewportWidth
+	case PermissionsPolicyFeatureChWidth:
+		*t = PermissionsPolicyFeatureChWidth
+	case PermissionsPolicyFeatureClipboardRead:
+		*t = PermissionsPolicyFeatureClipboardRead
+	case PermissionsPolicyFeatureClipboardWrite:
+		*t = PermissionsPolicyFeatureClipboardWrite
+	case PermissionsPolicyFeatureConversionMeasurement:
+		*t = PermissionsPolicyFeatureConversionMeasurement
+	case PermissionsPolicyFeatureCrossOriginIsolated:
+		*t = PermissionsPolicyFeatureCrossOriginIsolated
+	case PermissionsPolicyFeatureDisplayCapture:
+		*t = PermissionsPolicyFeatureDisplayCapture
+	case PermissionsPolicyFeatureDocumentDomain:
+		*t = PermissionsPolicyFeatureDocumentDomain
+	case PermissionsPolicyFeatureEncryptedMedia:
+		*t = PermissionsPolicyFeatureEncryptedMedia
+	case PermissionsPolicyFeatureExecutionWhileOutOfViewport:
+		*t = PermissionsPolicyFeatureExecutionWhileOutOfViewport
+	case PermissionsPolicyFeatureExecutionWhileNotRendered:
+		*t = PermissionsPolicyFeatureExecutionWhileNotRendered
+	case PermissionsPolicyFeatureFocusWithoutUserActivation:
+		*t = PermissionsPolicyFeatureFocusWithoutUserActivation
+	case PermissionsPolicyFeatureFullscreen:
+		*t = PermissionsPolicyFeatureFullscreen
+	case PermissionsPolicyFeatureFrobulate:
+		*t = PermissionsPolicyFeatureFrobulate
+	case PermissionsPolicyFeatureGamepad:
+		*t = PermissionsPolicyFeatureGamepad
+	case PermissionsPolicyFeatureGeolocation:
+		*t = PermissionsPolicyFeatureGeolocation
+	case PermissionsPolicyFeatureGyroscope:
+		*t = PermissionsPolicyFeatureGyroscope
+	case PermissionsPolicyFeatureHid:
+		*t = PermissionsPolicyFeatureHid
+	case PermissionsPolicyFeatureIdleDetection:
+		*t = PermissionsPolicyFeatureIdleDetection
+	case PermissionsPolicyFeatureInterestCohort:
+		*t = PermissionsPolicyFeatureInterestCohort
+	case PermissionsPolicyFeatureMagnetometer:
+		*t = PermissionsPolicyFeatureMagnetometer
+	case PermissionsPolicyFeatureMicrophone:
+		*t = PermissionsPolicyFeatureMicrophone
+	case PermissionsPolicyFeatureMidi:
+		*t = PermissionsPolicyFeatureMidi
+	case PermissionsPolicyFeatureOtpCredentials:
+		*t = PermissionsPolicyFeatureOtpCredentials
+	case PermissionsPolicyFeaturePayment:
+		*t = PermissionsPolicyFeaturePayment
+	case PermissionsPolicyFeaturePictureInPicture:
+		*t = PermissionsPolicyFeaturePictureInPicture
+	case PermissionsPolicyFeaturePublickeyCredentialsGet:
+		*t = PermissionsPolicyFeaturePublickeyCredentialsGet
+	case PermissionsPolicyFeatureScreenWakeLock:
+		*t = PermissionsPolicyFeatureScreenWakeLock
+	case PermissionsPolicyFeatureSerial:
+		*t = PermissionsPolicyFeatureSerial
+	case PermissionsPolicyFeatureStorageAccessAPI:
+		*t = PermissionsPolicyFeatureStorageAccessAPI
+	case PermissionsPolicyFeatureSyncXhr:
+		*t = PermissionsPolicyFeatureSyncXhr
+	case PermissionsPolicyFeatureTrustTokenRedemption:
+		*t = PermissionsPolicyFeatureTrustTokenRedemption
+	case PermissionsPolicyFeatureUsb:
+		*t = PermissionsPolicyFeatureUsb
+	case PermissionsPolicyFeatureVerticalScroll:
+		*t = PermissionsPolicyFeatureVerticalScroll
+	case PermissionsPolicyFeatureWebShare:
+		*t = PermissionsPolicyFeatureWebShare
+	case PermissionsPolicyFeatureXrSpatialTracking:
+		*t = PermissionsPolicyFeatureXrSpatialTracking
+
+	default:
+		in.AddError(errors.New("unknown PermissionsPolicyFeature value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *PermissionsPolicyFeature) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// PermissionsPolicyBlockReason reason for a permissions policy feature to be
+// disabled.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-PermissionsPolicyBlockReason
+type PermissionsPolicyBlockReason string
+
+// String returns the PermissionsPolicyBlockReason as string value.
+func (t PermissionsPolicyBlockReason) String() string {
+	return string(t)
+}
+
+// PermissionsPolicyBlockReason values.
+const (
+	PermissionsPolicyBlockReasonHeader          PermissionsPolicyBlockReason = "Header"
+	PermissionsPolicyBlockReasonIframeAttribute PermissionsPolicyBlockReason = "IframeAttribute"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t PermissionsPolicyBlockReason) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t PermissionsPolicyBlockReason) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *PermissionsPolicyBlockReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch PermissionsPolicyBlockReason(in.String()) {
+	case PermissionsPolicyBlockReasonHeader:
+		*t = PermissionsPolicyBlockReasonHeader
+	case PermissionsPolicyBlockReasonIframeAttribute:
+		*t = PermissionsPolicyBlockReasonIframeAttribute
+
+	default:
+		in.AddError(errors.New("unknown PermissionsPolicyBlockReason value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *PermissionsPolicyBlockReason) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// PermissionsPolicyBlockLocator [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-PermissionsPolicyBlockLocator
+type PermissionsPolicyBlockLocator struct {
+	FrameID     cdp.FrameID                  `json:"frameId"`
+	BlockReason PermissionsPolicyBlockReason `json:"blockReason"`
+}
+
+// PermissionsPolicyFeatureState [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-PermissionsPolicyFeatureState
+type PermissionsPolicyFeatureState struct {
+	Feature PermissionsPolicyFeature       `json:"feature"`
+	Allowed bool                           `json:"allowed"`
+	Locator *PermissionsPolicyBlockLocator `json:"locator,omitempty"`
+}
+
 // FrameResource information about the Resource on the page.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-FrameResource

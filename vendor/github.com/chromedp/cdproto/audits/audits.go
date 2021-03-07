@@ -118,9 +118,27 @@ func (p *EnableParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandEnable, nil, nil)
 }
 
+// CheckContrastParams runs the contrast check for the target page. Found
+// issues are reported using Audits.issueAdded event.
+type CheckContrastParams struct{}
+
+// CheckContrast runs the contrast check for the target page. Found issues
+// are reported using Audits.issueAdded event.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#method-checkContrast
+func CheckContrast() *CheckContrastParams {
+	return &CheckContrastParams{}
+}
+
+// Do executes Audits.checkContrast against the provided context.
+func (p *CheckContrastParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandCheckContrast, nil, nil)
+}
+
 // Command names.
 const (
 	CommandGetEncodedResponse = "Audits.getEncodedResponse"
 	CommandDisable            = "Audits.disable"
 	CommandEnable             = "Audits.enable"
+	CommandCheckContrast      = "Audits.checkContrast"
 )

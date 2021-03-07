@@ -104,6 +104,7 @@ const (
 	CommandAuditsGetEncodedResponse                        = audits.CommandGetEncodedResponse
 	CommandAuditsDisable                                   = audits.CommandDisable
 	CommandAuditsEnable                                    = audits.CommandEnable
+	CommandAuditsCheckContrast                             = audits.CommandCheckContrast
 	EventAuditsIssueAdded                                  = "Audits.issueAdded"
 	CommandBackgroundServiceStartObserving                 = backgroundservice.CommandStartObserving
 	CommandBackgroundServiceStopObserving                  = backgroundservice.CommandStopObserving
@@ -445,6 +446,7 @@ const (
 	EventNetworkWebSocketHandshakeResponseReceived         = "Network.webSocketHandshakeResponseReceived"
 	EventNetworkWebSocketWillSendHandshakeRequest          = "Network.webSocketWillSendHandshakeRequest"
 	EventNetworkWebTransportCreated                        = "Network.webTransportCreated"
+	EventNetworkWebTransportConnectionEstablished          = "Network.webTransportConnectionEstablished"
 	EventNetworkWebTransportClosed                         = "Network.webTransportClosed"
 	EventNetworkRequestWillBeSentExtraInfo                 = "Network.requestWillBeSentExtraInfo"
 	EventNetworkResponseReceivedExtraInfo                  = "Network.responseReceivedExtraInfo"
@@ -504,6 +506,7 @@ const (
 	CommandPageSearchInResource                            = page.CommandSearchInResource
 	CommandPageSetAdBlockingEnabled                        = page.CommandSetAdBlockingEnabled
 	CommandPageSetBypassCSP                                = page.CommandSetBypassCSP
+	CommandPageGetPermissionsPolicyState                   = page.CommandGetPermissionsPolicyState
 	CommandPageSetFontFamilies                             = page.CommandSetFontFamilies
 	CommandPageSetFontSizes                                = page.CommandSetFontSizes
 	CommandPageSetDocumentContent                          = page.CommandSetDocumentContent
@@ -812,6 +815,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		return emptyVal, nil
 
 	case CommandAuditsEnable:
+		return emptyVal, nil
+
+	case CommandAuditsCheckContrast:
 		return emptyVal, nil
 
 	case EventAuditsIssueAdded:
@@ -1837,6 +1843,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case EventNetworkWebTransportCreated:
 		v = new(network.EventWebTransportCreated)
 
+	case EventNetworkWebTransportConnectionEstablished:
+		v = new(network.EventWebTransportConnectionEstablished)
+
 	case EventNetworkWebTransportClosed:
 		v = new(network.EventWebTransportClosed)
 
@@ -2013,6 +2022,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case CommandPageSetBypassCSP:
 		return emptyVal, nil
+
+	case CommandPageGetPermissionsPolicyState:
+		v = new(page.GetPermissionsPolicyStateReturns)
 
 	case CommandPageSetFontFamilies:
 		return emptyVal, nil

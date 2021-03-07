@@ -370,6 +370,56 @@ func (t *CookiePriority) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
+// CookieSourceScheme represents the source scheme of the origin that
+// originally set the cookie. A value of "Unset" allows protocol clients to
+// emulate legacy cookie scope for the scheme. This is a temporary ability and
+// it will be removed in the future.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-CookieSourceScheme
+type CookieSourceScheme string
+
+// String returns the CookieSourceScheme as string value.
+func (t CookieSourceScheme) String() string {
+	return string(t)
+}
+
+// CookieSourceScheme values.
+const (
+	CookieSourceSchemeUnset     CookieSourceScheme = "Unset"
+	CookieSourceSchemeNonSecure CookieSourceScheme = "NonSecure"
+	CookieSourceSchemeSecure    CookieSourceScheme = "Secure"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t CookieSourceScheme) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t CookieSourceScheme) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *CookieSourceScheme) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch CookieSourceScheme(in.String()) {
+	case CookieSourceSchemeUnset:
+		*t = CookieSourceSchemeUnset
+	case CookieSourceSchemeNonSecure:
+		*t = CookieSourceSchemeNonSecure
+	case CookieSourceSchemeSecure:
+		*t = CookieSourceSchemeSecure
+
+	default:
+		in.AddError(errors.New("unknown CookieSourceScheme value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *CookieSourceScheme) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
 // ResourceTiming timing information for the request.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-ResourceTiming
@@ -944,18 +994,20 @@ type Initiator struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-Cookie
 type Cookie struct {
-	Name      string         `json:"name"`               // Cookie name.
-	Value     string         `json:"value"`              // Cookie value.
-	Domain    string         `json:"domain"`             // Cookie domain.
-	Path      string         `json:"path"`               // Cookie path.
-	Expires   float64        `json:"expires"`            // Cookie expiration date as the number of seconds since the UNIX epoch.
-	Size      int64          `json:"size"`               // Cookie size.
-	HTTPOnly  bool           `json:"httpOnly"`           // True if cookie is http-only.
-	Secure    bool           `json:"secure"`             // True if cookie is secure.
-	Session   bool           `json:"session"`            // True in case of session cookie.
-	SameSite  CookieSameSite `json:"sameSite,omitempty"` // Cookie SameSite type.
-	Priority  CookiePriority `json:"priority"`           // Cookie Priority
-	SameParty bool           `json:"sameParty"`          // True if cookie is SameParty.
+	Name         string             `json:"name"`               // Cookie name.
+	Value        string             `json:"value"`              // Cookie value.
+	Domain       string             `json:"domain"`             // Cookie domain.
+	Path         string             `json:"path"`               // Cookie path.
+	Expires      float64            `json:"expires"`            // Cookie expiration date as the number of seconds since the UNIX epoch.
+	Size         int64              `json:"size"`               // Cookie size.
+	HTTPOnly     bool               `json:"httpOnly"`           // True if cookie is http-only.
+	Secure       bool               `json:"secure"`             // True if cookie is secure.
+	Session      bool               `json:"session"`            // True in case of session cookie.
+	SameSite     CookieSameSite     `json:"sameSite,omitempty"` // Cookie SameSite type.
+	Priority     CookiePriority     `json:"priority"`           // Cookie Priority
+	SameParty    bool               `json:"sameParty"`          // True if cookie is SameParty.
+	SourceScheme CookieSourceScheme `json:"sourceScheme"`       // Cookie source scheme type.
+	SourcePort   int64              `json:"sourcePort"`         // Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port. An unspecified port value allows protocol clients to emulate legacy cookie scope for the port. This is a temporary ability and it will be removed in the future.
 }
 
 // SetCookieBlockedReason types of reasons why a cookie may not be stored
@@ -986,6 +1038,8 @@ const (
 	SetCookieBlockedReasonSchemefulSameSiteStrict                  SetCookieBlockedReason = "SchemefulSameSiteStrict"
 	SetCookieBlockedReasonSchemefulSameSiteLax                     SetCookieBlockedReason = "SchemefulSameSiteLax"
 	SetCookieBlockedReasonSchemefulSameSiteUnspecifiedTreatedAsLax SetCookieBlockedReason = "SchemefulSameSiteUnspecifiedTreatedAsLax"
+	SetCookieBlockedReasonSamePartyFromCrossPartyContext           SetCookieBlockedReason = "SamePartyFromCrossPartyContext"
+	SetCookieBlockedReasonSamePartyConflictsWithOtherAttributes    SetCookieBlockedReason = "SamePartyConflictsWithOtherAttributes"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1031,6 +1085,10 @@ func (t *SetCookieBlockedReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = SetCookieBlockedReasonSchemefulSameSiteLax
 	case SetCookieBlockedReasonSchemefulSameSiteUnspecifiedTreatedAsLax:
 		*t = SetCookieBlockedReasonSchemefulSameSiteUnspecifiedTreatedAsLax
+	case SetCookieBlockedReasonSamePartyFromCrossPartyContext:
+		*t = SetCookieBlockedReasonSamePartyFromCrossPartyContext
+	case SetCookieBlockedReasonSamePartyConflictsWithOtherAttributes:
+		*t = SetCookieBlockedReasonSamePartyConflictsWithOtherAttributes
 
 	default:
 		in.AddError(errors.New("unknown SetCookieBlockedReason value"))
@@ -1067,6 +1125,7 @@ const (
 	CookieBlockedReasonSchemefulSameSiteStrict                  CookieBlockedReason = "SchemefulSameSiteStrict"
 	CookieBlockedReasonSchemefulSameSiteLax                     CookieBlockedReason = "SchemefulSameSiteLax"
 	CookieBlockedReasonSchemefulSameSiteUnspecifiedTreatedAsLax CookieBlockedReason = "SchemefulSameSiteUnspecifiedTreatedAsLax"
+	CookieBlockedReasonSamePartyFromCrossPartyContext           CookieBlockedReason = "SamePartyFromCrossPartyContext"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1106,6 +1165,8 @@ func (t *CookieBlockedReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = CookieBlockedReasonSchemefulSameSiteLax
 	case CookieBlockedReasonSchemefulSameSiteUnspecifiedTreatedAsLax:
 		*t = CookieBlockedReasonSchemefulSameSiteUnspecifiedTreatedAsLax
+	case CookieBlockedReasonSamePartyFromCrossPartyContext:
+		*t = CookieBlockedReasonSamePartyFromCrossPartyContext
 
 	default:
 		in.AddError(errors.New("unknown CookieBlockedReason value"))
@@ -1140,16 +1201,19 @@ type BlockedCookieWithReason struct {
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-CookieParam
 type CookieParam struct {
-	Name     string              `json:"name"`               // Cookie name.
-	Value    string              `json:"value"`              // Cookie value.
-	URL      string              `json:"url,omitempty"`      // The request-URI to associate with the setting of the cookie. This value can affect the default domain and path values of the created cookie.
-	Domain   string              `json:"domain,omitempty"`   // Cookie domain.
-	Path     string              `json:"path,omitempty"`     // Cookie path.
-	Secure   bool                `json:"secure,omitempty"`   // True if cookie is secure.
-	HTTPOnly bool                `json:"httpOnly,omitempty"` // True if cookie is http-only.
-	SameSite CookieSameSite      `json:"sameSite,omitempty"` // Cookie SameSite type.
-	Expires  *cdp.TimeSinceEpoch `json:"expires,omitempty"`  // Cookie expiration date, session cookie if not set
-	Priority CookiePriority      `json:"priority,omitempty"` // Cookie Priority.
+	Name         string              `json:"name"`                   // Cookie name.
+	Value        string              `json:"value"`                  // Cookie value.
+	URL          string              `json:"url,omitempty"`          // The request-URI to associate with the setting of the cookie. This value can affect the default domain, path, source port, and source scheme values of the created cookie.
+	Domain       string              `json:"domain,omitempty"`       // Cookie domain.
+	Path         string              `json:"path,omitempty"`         // Cookie path.
+	Secure       bool                `json:"secure,omitempty"`       // True if cookie is secure.
+	HTTPOnly     bool                `json:"httpOnly,omitempty"`     // True if cookie is http-only.
+	SameSite     CookieSameSite      `json:"sameSite,omitempty"`     // Cookie SameSite type.
+	Expires      *cdp.TimeSinceEpoch `json:"expires,omitempty"`      // Cookie expiration date, session cookie if not set
+	Priority     CookiePriority      `json:"priority,omitempty"`     // Cookie Priority.
+	SameParty    bool                `json:"sameParty,omitempty"`    // True if cookie is SameParty.
+	SourceScheme CookieSourceScheme  `json:"sourceScheme,omitempty"` // Cookie source scheme type.
+	SourcePort   int64               `json:"sourcePort,omitempty"`   // Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port. An unspecified port value allows protocol clients to emulate legacy cookie scope for the port. This is a temporary ability and it will be removed in the future.
 }
 
 // AuthChallenge authorization challenge for HTTP status code 401 or 407.
@@ -1343,6 +1407,7 @@ func (t PrivateNetworkRequestPolicy) String() string {
 const (
 	PrivateNetworkRequestPolicyAllow                          PrivateNetworkRequestPolicy = "Allow"
 	PrivateNetworkRequestPolicyBlockFromInsecureToMorePrivate PrivateNetworkRequestPolicy = "BlockFromInsecureToMorePrivate"
+	PrivateNetworkRequestPolicyWarnFromInsecureToMorePrivate  PrivateNetworkRequestPolicy = "WarnFromInsecureToMorePrivate"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1362,6 +1427,8 @@ func (t *PrivateNetworkRequestPolicy) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PrivateNetworkRequestPolicyAllow
 	case PrivateNetworkRequestPolicyBlockFromInsecureToMorePrivate:
 		*t = PrivateNetworkRequestPolicyBlockFromInsecureToMorePrivate
+	case PrivateNetworkRequestPolicyWarnFromInsecureToMorePrivate:
+		*t = PrivateNetworkRequestPolicyWarnFromInsecureToMorePrivate
 
 	default:
 		in.AddError(errors.New("unknown PrivateNetworkRequestPolicy value"))

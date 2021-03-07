@@ -375,6 +375,7 @@ const (
 	SubtypeArraybuffer       Subtype = "arraybuffer"
 	SubtypeDataview          Subtype = "dataview"
 	SubtypeWebassemblymemory Subtype = "webassemblymemory"
+	SubtypeWasmvalue         Subtype = "wasmvalue"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -426,6 +427,8 @@ func (t *Subtype) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = SubtypeDataview
 	case SubtypeWebassemblymemory:
 		*t = SubtypeWebassemblymemory
+	case SubtypeWasmvalue:
+		*t = SubtypeWasmvalue
 
 	default:
 		in.AddError(errors.New("unknown Subtype value"))
