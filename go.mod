@@ -132,6 +132,7 @@ require (
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-openapi/strfmt v0.19.11 // indirect
+	github.com/goccy/go-json v0.4.7 // indirect
 	github.com/goftp/file-driver v0.0.0-20180502053751-5d604a0fc0c9 // indirect
 	github.com/goftp/server v0.0.0-20200708154336-f64f7c2d8a42 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
@@ -173,10 +174,10 @@ require (
 	github.com/webx-top/captcha v0.0.0-20161202061115-29e9e7f30aa0
 	github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f // indirect
 	github.com/webx-top/client v0.1.3
-	github.com/webx-top/codec v0.0.0-20200914105801-3782d81a0302
-	github.com/webx-top/com v0.0.7
+	github.com/webx-top/codec v0.0.1
+	github.com/webx-top/com v0.1.1
 	github.com/webx-top/db v1.1.5
-	github.com/webx-top/echo v2.7.9+incompatible
+	github.com/webx-top/echo v2.8.2+incompatible
 	github.com/webx-top/image v0.0.7
 	github.com/webx-top/pagination v0.0.3
 	github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2 // indirect

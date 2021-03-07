@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -81,17 +82,34 @@ var (
 	}
 	// DefaultProxyHandler Proxy Handler
 	DefaultProxyHandler ProxyHandler = func(t *ProxyTarget, c echo.Context) error {
-		resp := c.Response().StdResponseWriter()
-		req := c.Request().StdRequest()
+		var key string
 		switch {
 		case c.IsWebsocket():
-			proxyRaw(t, c).ServeHTTP(resp, req)
-		case c.Header(echo.HeaderAccept) == "text/event-stream":
-			proxyHTTPWithFlushInterval(t).ServeHTTP(resp, req)
+			key = `raw`
+		case c.Header(echo.HeaderAccept) == echo.MIMEEventStream:
+			key = `sse`
 		default:
-			proxyHTTP(t, c).ServeHTTP(resp, req)
+			key = `default`
+		}
+		if h, ok := DefaultProxyHandlers[key]; ok {
+			resp := c.Response().StdResponseWriter()
+			req := c.Request().StdRequest()
+			h(t, c).ServeHTTP(resp, req)
 		}
 		return nil
+	}
+
+	// DefaultProxyHandlers default preset handlers
+	DefaultProxyHandlers = map[string]func(*ProxyTarget, echo.Context) http.Handler{
+		`raw`: func(t *ProxyTarget, c echo.Context) http.Handler {
+			return proxyRaw(t, c)
+		},
+		`sse`: func(t *ProxyTarget, c echo.Context) http.Handler {
+			return proxyHTTPWithFlushInterval(t)
+		},
+		`default`: func(t *ProxyTarget, c echo.Context) http.Handler {
+			return proxyHTTP(t, c)
+		},
 	}
 )
 
@@ -105,6 +123,73 @@ func proxyHTTPWithFlushInterval(t *ProxyTarget) http.Handler {
 // http
 func proxyHTTP(t *ProxyTarget, _ echo.Context) http.Handler {
 	return httputil.NewSingleHostReverseProxy(t.URL)
+}
+
+// ProxyHTTPCustomHandler 自定义处理(支持传递body)
+func ProxyHTTPCustomHandler(t *ProxyTarget, c echo.Context) http.Handler {
+	return newSingleHostReverseProxy(t.URL, c)
+}
+
+func newSingleHostReverseProxy(target *url.URL, c echo.Context) *httputil.ReverseProxy {
+	director := DefaultProxyHTTPDirector(target, c)
+	return &httputil.ReverseProxy{Director: director}
+}
+
+// DefaultProxyHTTPDirector default director
+var DefaultProxyHTTPDirector = func(target *url.URL, c echo.Context) func(req *http.Request) {
+	targetQuery := target.RawQuery
+	return func(req *http.Request) {
+		if req.Body == nil {
+			req.Body = c.Request().Body()
+		}
+		req.URL.Scheme = target.Scheme
+		req.URL.Host = target.Host
+		req.URL.Path, req.URL.RawPath = joinURLPath(target, req.URL)
+		if targetQuery == "" || req.URL.RawQuery == "" {
+			req.URL.RawQuery = targetQuery + req.URL.RawQuery
+		} else {
+			req.URL.RawQuery = targetQuery + "&" + req.URL.RawQuery
+		}
+		if _, ok := req.Header["User-Agent"]; !ok {
+			// explicitly disable User-Agent so it's not set to default value
+			req.Header.Set("User-Agent", "")
+		}
+	}
+}
+
+// from net/http/httputil/reverseproxy.go
+func singleJoiningSlash(a, b string) string {
+	aslash := strings.HasSuffix(a, "/")
+	bslash := strings.HasPrefix(b, "/")
+	switch {
+	case aslash && bslash:
+		return a + b[1:]
+	case !aslash && !bslash:
+		return a + "/" + b
+	}
+	return a + b
+}
+
+// from net/http/httputil/reverseproxy.go
+func joinURLPath(a, b *url.URL) (path, rawpath string) {
+	if a.RawPath == "" && b.RawPath == "" {
+		return singleJoiningSlash(a.Path, b.Path), ""
+	}
+	// Same as singleJoiningSlash, but uses EscapedPath to determine
+	// whether a slash should be added
+	apath := a.EscapedPath()
+	bpath := b.EscapedPath()
+
+	aslash := strings.HasSuffix(apath, "/")
+	bslash := strings.HasPrefix(bpath, "/")
+
+	switch {
+	case aslash && bslash:
+		return a.Path + b.Path[1:], apath + bpath[1:]
+	case !aslash && !bslash:
+		return a.Path + "/" + b.Path, apath + "/" + bpath
+	}
+	return a.Path + b.Path, apath + bpath
 }
 
 // websocket
