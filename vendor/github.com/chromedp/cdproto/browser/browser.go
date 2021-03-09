@@ -158,6 +158,36 @@ func (p *SetDownloadBehaviorParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSetDownloadBehavior, p, nil)
 }
 
+// CancelDownloadParams cancel a download if in progress.
+type CancelDownloadParams struct {
+	GUID             string               `json:"guid"`                       // Global unique identifier of the download.
+	BrowserContextID cdp.BrowserContextID `json:"browserContextId,omitempty"` // BrowserContext to perform the action in. When omitted, default browser context is used.
+}
+
+// CancelDownload cancel a download if in progress.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Browser#method-cancelDownload
+//
+// parameters:
+//   guid - Global unique identifier of the download.
+func CancelDownload(guid string) *CancelDownloadParams {
+	return &CancelDownloadParams{
+		GUID: guid,
+	}
+}
+
+// WithBrowserContextID browserContext to perform the action in. When
+// omitted, default browser context is used.
+func (p CancelDownloadParams) WithBrowserContextID(browserContextID cdp.BrowserContextID) *CancelDownloadParams {
+	p.BrowserContextID = browserContextID
+	return &p
+}
+
+// Do executes Browser.cancelDownload against the provided context.
+func (p *CancelDownloadParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandCancelDownload, p, nil)
+}
+
 // CloseParams close browser gracefully.
 type CloseParams struct{}
 
@@ -534,6 +564,7 @@ const (
 	CommandGrantPermissions      = "Browser.grantPermissions"
 	CommandResetPermissions      = "Browser.resetPermissions"
 	CommandSetDownloadBehavior   = "Browser.setDownloadBehavior"
+	CommandCancelDownload        = "Browser.cancelDownload"
 	CommandClose                 = "Browser.close"
 	CommandCrash                 = "Browser.crash"
 	CommandCrashGpuProcess       = "Browser.crashGpuProcess"

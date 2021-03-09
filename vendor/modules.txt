@@ -288,7 +288,7 @@ github.com/armon/go-socks5
 github.com/asaskevich/govalidator
 # github.com/atotto/clipboard v0.1.2
 github.com/atotto/clipboard
-# github.com/aws/aws-sdk-go v1.37.24
+# github.com/aws/aws-sdk-go v1.37.25
 ## explicit
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -436,7 +436,7 @@ github.com/cespare/xxhash/v2
 github.com/cheekybits/genny/generic
 # github.com/chris-ramon/douceur v0.2.0
 github.com/chris-ramon/douceur/parser
-# github.com/chromedp/cdproto v0.0.0-20210222063305-a3ac505ff0bd
+# github.com/chromedp/cdproto v0.0.0-20210305224431-50b9f457e822
 ## explicit
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
@@ -484,7 +484,7 @@ github.com/chromedp/cdproto/tethering
 github.com/chromedp/cdproto/tracing
 github.com/chromedp/cdproto/webaudio
 github.com/chromedp/cdproto/webauthn
-# github.com/chromedp/chromedp v0.6.6
+# github.com/chromedp/chromedp v0.6.8
 ## explicit
 github.com/chromedp/chromedp
 github.com/chromedp/chromedp/device
@@ -920,7 +920,7 @@ github.com/pires/go-proxyproto
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
-# github.com/pkg/sftp v1.12.0
+# github.com/pkg/sftp v1.13.0
 ## explicit
 github.com/pkg/sftp
 # github.com/pmezard/go-difflib v1.0.0
@@ -1183,7 +1183,7 @@ gocloud.dev/internal/gcerr
 gocloud.dev/internal/oc
 gocloud.dev/internal/openurl
 gocloud.dev/internal/retry
-# golang.org/x/crypto v0.0.0-20201208171446-5f87f3452ae9 => github.com/golang/crypto v0.0.0-20201117144127-c1f2f97bffc9
+# golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad => github.com/golang/crypto v0.0.0-20201117144127-c1f2f97bffc9
 ## explicit
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
@@ -1260,7 +1260,7 @@ golang.org/x/net/websocket
 # golang.org/x/oauth2 v0.0.0-20201203001011-0b49973bad19 => github.com/golang/oauth2 v0.0.0-20201109201403-9fd604954f58
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
-# golang.org/x/sys v0.0.0-20210220050731-9a76102bfb43 => github.com/golang/sys v0.0.0-20201119102817-f84b799fce68
+# golang.org/x/sys v0.0.0-20210305215415-5cdee2b1b5a0 => github.com/golang/sys v0.0.0-20201119102817-f84b799fce68
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix

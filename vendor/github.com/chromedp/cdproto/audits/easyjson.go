@@ -1782,6 +1782,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoAudits16(in *jlexer.Lexer, ou
 			continue
 		}
 		switch key {
+		case "reportAAA":
+			out.ReportAAA = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -1796,6 +1798,12 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoAudits16(out *jwriter.Writer,
 	out.RawByte('{')
 	first := true
 	_ = first
+	if in.ReportAAA {
+		const prefix string = ",\"reportAAA\":"
+		first = false
+		out.RawString(prefix[1:])
+		out.Bool(bool(in.ReportAAA))
+	}
 	out.RawByte('}')
 }
 

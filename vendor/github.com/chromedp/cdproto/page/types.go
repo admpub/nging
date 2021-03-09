@@ -728,6 +728,15 @@ func (t *ReferrerPolicy) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
+// CompilationCacheParams per-script compilation cache parameters for
+// Page.produceCompilationCache.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-CompilationCacheParams
+type CompilationCacheParams struct {
+	URL   string `json:"url"`             // The URL of the script to produce a compilation cache entry for.
+	Eager bool   `json:"eager,omitempty"` // A hint to the backend whether eager compilation is recommended. (the actual compilation mode used is upon backend discretion).
+}
+
 // FileChooserOpenedMode input mode.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Page#event-fileChooserOpened

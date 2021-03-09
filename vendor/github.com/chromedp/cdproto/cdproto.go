@@ -116,6 +116,7 @@ const (
 	CommandBrowserGrantPermissions                         = browser.CommandGrantPermissions
 	CommandBrowserResetPermissions                         = browser.CommandResetPermissions
 	CommandBrowserSetDownloadBehavior                      = browser.CommandSetDownloadBehavior
+	CommandBrowserCancelDownload                           = browser.CommandCancelDownload
 	CommandBrowserClose                                    = browser.CommandClose
 	CommandBrowserCrash                                    = browser.CommandCrash
 	CommandBrowserCrashGpuProcess                          = browser.CommandCrashGpuProcess
@@ -519,6 +520,7 @@ const (
 	CommandPageSetWebLifecycleState                        = page.CommandSetWebLifecycleState
 	CommandPageStopScreencast                              = page.CommandStopScreencast
 	CommandPageSetProduceCompilationCache                  = page.CommandSetProduceCompilationCache
+	CommandPageProduceCompilationCache                     = page.CommandProduceCompilationCache
 	CommandPageAddCompilationCache                         = page.CommandAddCompilationCache
 	CommandPageClearCompilationCache                       = page.CommandClearCompilationCache
 	CommandPageGenerateTestReport                          = page.CommandGenerateTestReport
@@ -851,6 +853,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		return emptyVal, nil
 
 	case CommandBrowserSetDownloadBehavior:
+		return emptyVal, nil
+
+	case CommandBrowserCancelDownload:
 		return emptyVal, nil
 
 	case CommandBrowserClose:
@@ -2060,6 +2065,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		return emptyVal, nil
 
 	case CommandPageSetProduceCompilationCache:
+		return emptyVal, nil
+
+	case CommandPageProduceCompilationCache:
 		return emptyVal, nil
 
 	case CommandPageAddCompilationCache:
