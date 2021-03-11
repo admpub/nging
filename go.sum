@@ -1274,6 +1274,7 @@ github.com/webx-top/codec v0.0.1/go.mod h1:FL2TNTorudSTop040uNCTONOlIJfl6kElJLxy
 github.com/webx-top/com v0.0.7/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/com v0.1.1 h1:zpJMOtJ2GQOHRamaj05pLceO59KtGQJmuId7gb3Z6aA=
 github.com/webx-top/com v0.1.1/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
+github.com/webx-top/com v0.1.2/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/db v1.1.5 h1:MFEyIfz9noLUfw5NujWe9Wl1LulMbkJOTaYKcFOnMEs=
 github.com/webx-top/db v1.1.5/go.mod h1:a3c7UZmv1kaNVkiCjsb1gypf41vc9g+JcsZIxK7OYmU=
 github.com/webx-top/echo v2.8.2+incompatible h1:1By7LOPqHTANxRzbbOO5AQRmzbJvxgj6mOqzaiHm0xo=
