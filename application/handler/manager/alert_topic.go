@@ -62,7 +62,7 @@ func AlertTopicAdd(ctx echo.Context) error {
 		err = ctx.MustBind(m.NgingAlertTopic)
 		recipientIds := ctx.Formx(`recipientIds`).String()
 		if len(recipientIds) > 0 {
-			recipientIds := param.StringSlice(strings.Split(recipientIds,`,`)).Uint()
+			recipientIds := param.StringSlice(strings.Split(recipientIds, `,`)).Uint()
 			for _, recipientID := range recipientIds {
 				row := *m.NgingAlertTopic
 				row.RecipientId = recipientID
@@ -133,5 +133,5 @@ func AlertTopicDelete(ctx echo.Context) error {
 		handler.SendFail(ctx, err.Error())
 	}
 	topic := ctx.Form("topic")
-	return ctx.Redirect(handler.URLFor(`/manager/alert_topic?topic=`+topic))
+	return ctx.Redirect(handler.URLFor(`/manager/alert_topic?topic=` + topic))
 }

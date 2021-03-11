@@ -113,10 +113,10 @@ func UpgradeDB() {
 			if err != nil {
 				stdLog.Panicf(`An error occurred while backing up the database "%s" to "%s": %v`, DefaultConfig.DB.Database, backupName, err.Error())
 			} else {
-				log.Info(`Backup database "%s" to "%s"`, DefaultConfig.DB.Database, backupName)
+				log.Infof(`Backup database "%s" to "%s"`, DefaultConfig.DB.Database, backupName)
 			}
 		} else {
-			log.Info(`The database backup file "%s" already exists, skip this backup`, backupName)
+			log.Infof(`The database backup file "%s" already exists, skip this backup`, backupName)
 		}
 	}
 	executePreupgrade()

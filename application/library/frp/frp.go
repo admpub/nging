@@ -34,6 +34,8 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/confl"
+	_ "github.com/admpub/frp/assets/frpc/statik"
+	_ "github.com/admpub/frp/assets/frps/statik"
 	"github.com/admpub/frp/client"
 	"github.com/admpub/frp/g"
 	"github.com/admpub/frp/models/config"
@@ -43,8 +45,6 @@ import (
 	"github.com/admpub/frp/utils/util"
 	"github.com/admpub/ini"
 	"github.com/admpub/nging/application/dbschema"
-	_ "github.com/admpub/frp/assets/frpc/statik"
-	_ "github.com/admpub/frp/assets/frps/statik"
 )
 
 func SetClientConfigFromDB(conf *dbschema.NgingFrpClient) *g.ClientCfg {

@@ -29,8 +29,8 @@ import (
 
 	"github.com/shirou/gopsutil/net"
 	"github.com/webx-top/com"
-	"github.com/webx-top/echo/param"
 	"github.com/webx-top/echo/defaults"
+	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/library/cron"
@@ -39,8 +39,9 @@ import (
 )
 
 var (
-	mutext                         sync.Mutex
-	realTimeStatus                 *RealTimeStatus
+	mutext         sync.Mutex
+	realTimeStatus *RealTimeStatus
+	// CancelRealTimeStatusCollection 取消实时状态搜集
 	CancelRealTimeStatusCollection = func() {}
 )
 
@@ -48,14 +49,17 @@ func init() {
 	alert.Topics.Add(`systemStatus`, `系统状态`)
 }
 
+// RealTimeStatusObject 实时状态
 func RealTimeStatusObject() *RealTimeStatus {
 	return realTimeStatus
 }
 
+// RealTimeStatusIsListening 是否正在监听实时状态
 func RealTimeStatusIsListening() bool {
 	return realTimeStatus != nil && realTimeStatus.status == `started`
 }
 
+// ListenRealTimeStatus 监听实时状态
 func ListenRealTimeStatus(cfg *Settings) {
 	mutext.Lock()
 	defer mutext.Unlock()
@@ -79,6 +83,7 @@ func ListenRealTimeStatus(cfg *Settings) {
 	}
 }
 
+// NewRealTimeStatus 创建实时状态数据结构
 func NewRealTimeStatus(cfg *Settings, interval time.Duration, maxSize int) *RealTimeStatus {
 	r := &RealTimeStatus{
 		max:      maxSize,
@@ -90,6 +95,7 @@ func NewRealTimeStatus(cfg *Settings, interval time.Duration, maxSize int) *Real
 	return r.SetSettings(cfg, interval, maxSize)
 }
 
+// NewNetIOTimeSeries 创建网络IO时序数据结构
 func NewNetIOTimeSeries() NetIOTimeSeries {
 	return NetIOTimeSeries{
 		lastBytesSent:   LastTimeValue{},
@@ -103,11 +109,13 @@ func NewNetIOTimeSeries() NetIOTimeSeries {
 	}
 }
 
+// LastTimeValue 上次时间的状态值
 type LastTimeValue struct {
 	Time  time.Time
 	Value float64
 }
 
+// NetIOTimeSeries 网络IO时序数据结构
 type NetIOTimeSeries struct {
 	lastBytesSent   LastTimeValue
 	lastBytesRecv   LastTimeValue
@@ -120,6 +128,7 @@ type NetIOTimeSeries struct {
 	PacketsRecv TimeSeries
 }
 
+// RealTimeStatus 实时状态数据结构
 type RealTimeStatus struct {
 	max         int
 	interval    time.Duration
@@ -132,6 +141,7 @@ type RealTimeStatus struct {
 	status      string
 }
 
+// Listen 监听
 func (r *RealTimeStatus) Listen(ctx context.Context) *RealTimeStatus {
 	r.status = `started`
 	info := &DynamicInformation{}
@@ -157,7 +167,6 @@ func (r *RealTimeStatus) Listen(ctx context.Context) *RealTimeStatus {
 			//log.Info(`Collect server status`)
 		}
 	}
-	return r
 }
 
 var emptyTime = time.Time{}
@@ -188,10 +197,10 @@ func checkAndSendAlarm(r *RealTimeStatus, value float64, typ string) {
 }
 
 type alarmContent struct {
-	title string
+	title    string
 	hostname string
 	typeName string
-	value string
+	value    string
 }
 
 func (a *alarmContent) EmailContent(params param.Store) []byte {
@@ -219,13 +228,13 @@ func (r *RealTimeStatus) sendAlarm(alarmThreshold, value float64, typ string) *R
 	hostname, _ := os.Hostname()
 	title := fmt.Sprintf(`【`+hostname+`】`+typeName+`使用率超出%v%%`, alarmThreshold)
 	ct := alarmContent{
-		title: title,
-		hostname:  hostname,
+		title:    title,
+		hostname: hostname,
 		typeName: typeName,
-		value: fmt.Sprint(value),
+		value:    fmt.Sprint(value),
 	}
 	params := param.Store{
-		`title`: title,
+		`title`:   title,
 		`content`: ct,
 	}
 	ctx := defaults.NewMockContext()

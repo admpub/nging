@@ -21,11 +21,11 @@ package tool
 import (
 	"regexp"
 
-	"github.com/webx-top/echo"
-	"github.com/webx-top/db/lib/factory/mysql"
 	"github.com/admpub/nging/application/library/fileupdater/listener"
-	"github.com/admpub/nging/application/model/file/storer"
 	"github.com/admpub/nging/application/model"
+	"github.com/admpub/nging/application/model/file/storer"
+	"github.com/webx-top/db/lib/factory/mysql"
+	"github.com/webx-top/echo"
 )
 
 var replaceURLRegex = regexp.MustCompile(`^(?s)http[s]?://(.+)/$`)
@@ -88,7 +88,7 @@ func ReplaceURL(c echo.Context) (err error) {
 			}
 		}
 
-END:
+	END:
 		data.SetData(echo.H{`total`: total})
 		if err != nil {
 			data.SetError(err)

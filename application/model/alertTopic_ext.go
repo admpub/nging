@@ -14,7 +14,7 @@ import (
 type AlertTopicExt struct {
 	*dbschema.NgingAlertTopic
 	Recipient *dbschema.NgingAlertRecipient `db:"-,relation=id:recipient_id"`
-	Extra echo.H
+	Extra     echo.H
 }
 
 func init() {

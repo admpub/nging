@@ -2,17 +2,17 @@ package storer
 
 import (
 	"path/filepath"
-	
+
 	"github.com/webx-top/echo"
 	"github.com/webx-top/image"
 )
 
 var (
-	Default = Info{Name: `local`}
+	Default                 = Info{Name: `local`}
 	DefaultWatermarkOptions = &image.WatermarkOptions{
-		Watermark:filepath.Join(echo.Wd(), `public/assets/backend/images/nging-gear.png`),
-		Type:"image",
-		On:true,
+		Watermark: filepath.Join(echo.Wd(), `public/assets/backend/images/nging-gear.png`),
+		Type:      "image",
+		On:        true,
 	}
 )
 

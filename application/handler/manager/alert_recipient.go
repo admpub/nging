@@ -24,9 +24,9 @@ import (
 
 	"github.com/admpub/nging/application/cmd/event"
 	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/registry/alert"
 	"github.com/admpub/nging/application/model"
 	modelAlert "github.com/admpub/nging/application/model/alert"
+	"github.com/admpub/nging/application/registry/alert"
 )
 
 func AlertRecipient(ctx echo.Context) error {
@@ -130,7 +130,7 @@ func AlertRecipientTest(ctx echo.Context) error {
 	}
 	user := handler.User(ctx)
 	params := echo.H{
-		`title`: ctx.T(`测试信息(%s)`, event.SoftwareName),
+		`title`:         ctx.T(`测试信息(%s)`, event.SoftwareName),
 		`email-content`: []byte(ctx.T("您好，我是%s管理员`%s`，这是我发的测试信息，请忽略😊", event.SoftwareName, user.Username)),
 	}
 	params[`markdown-content`] = params[`email-content`]

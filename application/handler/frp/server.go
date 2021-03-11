@@ -47,7 +47,7 @@ func ServerIndex(ctx echo.Context) error {
 		return r.OrderBy(`-id`)
 	}, cond.And()))
 	for k, u := range serverAndGroup {
-		serverAndGroup[k].Running= config.DefaultCLIConfig.IsRunning(`frpserver.` + fmt.Sprint(u.Id))
+		serverAndGroup[k].Running = config.DefaultCLIConfig.IsRunning(`frpserver.` + fmt.Sprint(u.Id))
 	}
 
 	mg := model.NewFrpGroup(ctx)

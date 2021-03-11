@@ -17,11 +17,10 @@ func TestUploadURL(t *testing.T) {
 	}
 	fmt.Println(urls)
 	//com.Dump(values)
-	test.True(t, strings.HasPrefix(urls, `/manager/upload/movie?refid=123&time=`))
+	test.True(t, strings.HasPrefix(urls, `/manager/upload?`))
 	token := values.Get(`token`)
 	values.Del(`token`)
 	test.Eq(t, token, Token(values))
-	test.Eq(t, token, Token(`refid`, values.Get(`refid`), `time`, values.Get(`time`)))
 }
 
 func TestUploadURL2(t *testing.T) {
@@ -32,9 +31,8 @@ func TestUploadURL2(t *testing.T) {
 	}
 	fmt.Println(urls)
 	//com.Dump(values)
-	test.True(t, strings.HasPrefix(urls, `/manager/upload/movie?refid=0&time=`))
+	test.True(t, strings.HasPrefix(urls, `/manager/upload?`))
 	token := values.Get(`token`)
 	values.Del(`token`)
 	test.Eq(t, token, Token(values))
-	test.Eq(t, token, Token(`refid`, values.Get(`refid`), `time`, values.Get(`time`)))
 }

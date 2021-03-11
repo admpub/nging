@@ -50,7 +50,7 @@ func ClientIndex(ctx echo.Context) error {
 		return r.OrderBy(`-id`)
 	}, cond.And()))
 	for k, u := range clientAndGroup {
-		clientAndGroup[k].Running=config.DefaultCLIConfig.IsRunning(`frpclient.` + fmt.Sprint(u.Id))
+		clientAndGroup[k].Running = config.DefaultCLIConfig.IsRunning(`frpclient.` + fmt.Sprint(u.Id))
 	}
 
 	mg := model.NewFrpGroup(ctx)

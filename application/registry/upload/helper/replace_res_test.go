@@ -22,9 +22,9 @@ func TestPlaceholders(t *testing.T) {
 	urlList := map[string]string{}
 	filePath := `/1232/1232/ok.jpg`
 	for k, v := range baseURLs {
-		urlList[v+filePath] = `[storage:`+k+`]`+filePath
+		urlList[v+filePath] = `[storage:` + k + `]` + filePath
 	}
-	for k, v := range urlList{
+	for k, v := range urlList {
 		test.Eq(t, k, ReplacePlaceholder(v, repl))
 	}
 }

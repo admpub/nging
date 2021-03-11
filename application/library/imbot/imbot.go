@@ -8,8 +8,8 @@ type Messager interface {
 }
 
 type Message struct {
-	Name string
-	Label string
+	Name     string
+	Label    string
 	Messager Messager
 }
 

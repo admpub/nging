@@ -23,6 +23,6 @@ import (
 	"github.com/webx-top/echo"
 )
 
-func Crypto() codec.Codec{
+func Crypto() codec.Codec {
 	return echo.Get(`DefaultConfig`).(codec.Codec)
 }

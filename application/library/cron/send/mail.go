@@ -43,9 +43,9 @@ var (
 {{.output}}
 `
 	// DefaultSMTPConfig 默认STMP配置
-	DefaultSMTPConfig     = &mail.SMTPConfig{}
+	DefaultSMTPConfig = &mail.SMTPConfig{}
 	// DefaultEmailConfig 默认Email配置
-	DefaultEmailConfig    = &EmailConfig{}
+	DefaultEmailConfig = &EmailConfig{}
 	// ErrIncorrectRecipient 收信地址不正确
 	ErrIncorrectRecipient = errors.New(`The recipient's email address is incorrect`)
 )

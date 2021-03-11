@@ -22,8 +22,8 @@ package bindata
 
 import (
 	"os"
-	"strings"
 	"path/filepath"
+	"strings"
 
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware"
@@ -34,12 +34,14 @@ import (
 	"github.com/admpub/nging/application/registry/upload/helper"
 )
 
+// StaticOptions static中间件选项
 var StaticOptions = &middleware.StaticOptions{
 	Root:     "",
 	Path:     "/public/assets/",
 	Fallback: []string{},
 }
 
+// Initialize 初始化
 func Initialize() {
 	event.Bindata = false
 	if len(StaticOptions.Root) == 0 {

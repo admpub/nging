@@ -1,21 +1,21 @@
 package alert
 
 import (
-	"github.com/webx-top/echo"
 	"github.com/admpub/nging/application/library/imbot"
 	_ "github.com/admpub/nging/application/library/imbot/dingding"
 	_ "github.com/admpub/nging/application/library/imbot/workwx"
+	"github.com/webx-top/echo"
 )
 
 var (
 	// RecipientTypes 收信类型
-	RecipientTypes     = echo.NewKVData()
+	RecipientTypes = echo.NewKVData()
 
 	// RecipientPlatforms 收信平台
 	RecipientPlatforms = echo.NewKVData()
 
 	// Topics 告警专题
-	Topics     = echo.NewKVData()
+	Topics = echo.NewKVData()
 )
 
 func init() {
