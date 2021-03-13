@@ -90,7 +90,7 @@ require (
 	github.com/admpub/null v8.0.2+incompatible
 	github.com/admpub/pester v0.0.0-20200411024648-005672a2bd48 // indirect
 	github.com/admpub/phantomjs v0.0.0-20180924162111-8a5af756140e
-	github.com/admpub/qrcode v0.0.0-20190512103923-0a2b75fa9edc
+	github.com/admpub/qrcode v0.0.2
 	github.com/admpub/randomize v0.0.2 // indirect
 	github.com/admpub/regexp2 v1.1.7
 	github.com/admpub/resty/v2 v2.5.1

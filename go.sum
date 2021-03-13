@@ -246,6 +246,10 @@ github.com/admpub/phantomjs v0.0.0-20180924162111-8a5af756140e h1:KK8cKD7RcEx88j
 github.com/admpub/phantomjs v0.0.0-20180924162111-8a5af756140e/go.mod h1:x9bPc7t0Y1KwnJxge+8WFWGvqTHEpbStkONngFXaTo4=
 github.com/admpub/qrcode v0.0.0-20190512103923-0a2b75fa9edc h1:iwLdSE+fjzCEyzTEQLyVf9tQLYz4vK8xMd+dEbB9N+w=
 github.com/admpub/qrcode v0.0.0-20190512103923-0a2b75fa9edc/go.mod h1:PHPkuXESLnLSbBufpCKy8l9GUcweFT+xbhMCzmJHTFo=
+github.com/admpub/qrcode v0.0.1 h1:pfoxNzycDwIQlr8PxINepEle2gqURXQItDBxenxlxXo=
+github.com/admpub/qrcode v0.0.1/go.mod h1:PHPkuXESLnLSbBufpCKy8l9GUcweFT+xbhMCzmJHTFo=
+github.com/admpub/qrcode v0.0.2 h1:iMbZU+02YUpR340+wfh6c8VF2lMH0R9q4St1jp7Odb8=
+github.com/admpub/qrcode v0.0.2/go.mod h1:ZhINpd2vPQhW2px6AI8Cn6qX3aS/gevxXmqCrcugjAU=
 github.com/admpub/queueChan v0.0.0-20151001074356-79908f7a499f h1:yf5gGnFUfJS+2pjdMoLoFRJ9/4wKMxIXbhmnw6qUXoc=
 github.com/admpub/queueChan v0.0.0-20151001074356-79908f7a499f/go.mod h1:r5VY9Xq16cK64L6cittCPorYmgHbrqqxrrL02q6VD7M=
 github.com/admpub/randomize v0.0.2 h1:bGVxlCqDLm7zwjXoh6bZc472bGcZdOgern30p7Gtf38=
@@ -343,6 +347,8 @@ github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 h1:DDGfHa7BWjL4Yn
 github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869/go.mod h1:Ekp36dRnpXw/yCqJaO+ZrUyxD+3VXMFFr56k5XYrpB4=
 github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc h1:biVzkmvwrH8WK8raXaxBx6fRVTlJILwEwQGL1I/ByEI=
 github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
+github.com/boombuler/barcode v1.0.1 h1:NDBbPmhS+EqABEs5Kg3n/5ZNjy73Pz7SIV+KCeqyXcs=
+github.com/boombuler/barcode v1.0.1/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
 github.com/bradfitz/go-smtpd v0.0.0-20170404230938-deb6d6237625/go.mod h1:HYsPBTaaSFSlLx/70C2HPIMNZpVV8+vt/A+FMnYP11g=
 github.com/buger/jsonparser v0.0.0-20181115193947-bf1c66bbce23/go.mod h1:bbYlZJ7hK1yFx9hf58LP0zeX7UjIGs20ufpu3evjr+s=
 github.com/caddy-plugins/caddy-expires v1.1.1 h1:KFhFB/Ek38kYM9kXH33sfMEq8ybGCEI4ca+VYBwf92c=
@@ -1266,6 +1272,7 @@ github.com/webx-top/codec v0.0.1/go.mod h1:FL2TNTorudSTop040uNCTONOlIJfl6kElJLxy
 github.com/webx-top/com v0.0.7/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/com v0.1.1 h1:zpJMOtJ2GQOHRamaj05pLceO59KtGQJmuId7gb3Z6aA=
 github.com/webx-top/com v0.1.1/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
+github.com/webx-top/com v0.1.2 h1:pAsQmYbcgoVzM/TKePP2EQET4lTmDEK5a23uwo5f4G4=
 github.com/webx-top/com v0.1.2/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
 github.com/webx-top/db v1.1.5 h1:MFEyIfz9noLUfw5NujWe9Wl1LulMbkJOTaYKcFOnMEs=
 github.com/webx-top/db v1.1.5/go.mod h1:a3c7UZmv1kaNVkiCjsb1gypf41vc9g+JcsZIxK7OYmU=

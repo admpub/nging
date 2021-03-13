@@ -37,6 +37,9 @@ var (
 	regexChinese         = regexp.MustCompile(regexChinesePattern)
 	regexContainsChinese = regexp.MustCompile(regexContainsChinesePattern)
 	regexEOL             = regexp.MustCompile(regexEOLPattern)
+	regexFloat           = regexp.MustCompile(`^[-]?[\d]+\.[\d]+$`)
+	regexInteger         = regexp.MustCompile(`^[-]?[\d]+$`)
+	regexUnsignedInteger = regexp.MustCompile(`^[\d]+$`)
 )
 
 // IsEmail validate string is an email address, if not return false
@@ -80,6 +83,21 @@ func IsSingleLineText(text string) bool {
 // IsMultiLineText validate string is a multi-line text
 func IsMultiLineText(text string) bool {
 	return regexEOL.MatchString(text)
+}
+
+// IsFloat validate string is a float number
+func IsFloat(val string) bool {
+	return regexFloat.MatchString(val)
+}
+
+// IsInteger validate string is a integer
+func IsInteger(val string) bool {
+	return regexInteger.MatchString(val)
+}
+
+// IsUnsignedInteger validate string is a unsigned-integer
+func IsUnsignedInteger(val string) bool {
+	return regexUnsignedInteger.MatchString(val)
 }
 
 // RemoveEOL remove \r and \n

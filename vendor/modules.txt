@@ -221,7 +221,7 @@ github.com/admpub/pester
 # github.com/admpub/phantomjs v0.0.0-20180924162111-8a5af756140e
 ## explicit
 github.com/admpub/phantomjs
-# github.com/admpub/qrcode v0.0.0-20190512103923-0a2b75fa9edc
+# github.com/admpub/qrcode v0.0.2
 ## explicit
 github.com/admpub/qrcode
 github.com/admpub/qrcode/decode
@@ -356,7 +356,7 @@ github.com/bitly/go-simplejson
 github.com/blang/semver
 # github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869
 ## explicit
-# github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc
+# github.com/boombuler/barcode v1.0.1
 github.com/boombuler/barcode
 github.com/boombuler/barcode/qr
 github.com/boombuler/barcode/utils
@@ -1064,7 +1064,7 @@ github.com/webx-top/client/upload/watermark
 # github.com/webx-top/codec v0.0.1
 ## explicit
 github.com/webx-top/codec
-# github.com/webx-top/com v0.1.1
+# github.com/webx-top/com v0.1.2
 ## explicit
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json
