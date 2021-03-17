@@ -4,5 +4,5 @@ ports:
   - port: 8080
     onOpen: open-preview
 tasks:
-  - init: go install github.com/webx-top/tower -o /usr/local/bin && go build ./... && go test ./...
+  - init: go get -u github.com/webx-top/tower && go build ./... && go test ./...
     command: tower
