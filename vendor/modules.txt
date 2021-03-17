@@ -1031,7 +1031,6 @@ github.com/tklauser/go-sysconf
 # github.com/tklauser/numcpus v0.2.1
 github.com/tklauser/numcpus
 # github.com/tuotoo/qrcode v0.0.0-20190222102259-ac9c44189bf2
-## explicit
 github.com/tuotoo/qrcode
 # github.com/ulikunitz/xz v0.5.7
 github.com/ulikunitz/xz
@@ -1136,8 +1135,6 @@ github.com/webx-top/tagfast
 # github.com/webx-top/validation v0.0.1
 ## explicit
 github.com/webx-top/validation
-# github.com/willf/bitset v1.1.11
-## explicit
 # github.com/xanzy/ssh-agent v0.2.1
 github.com/xanzy/ssh-agent
 # github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8

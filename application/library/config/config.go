@@ -32,12 +32,14 @@ import (
 	"github.com/admpub/confl"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/library/caddy"
+	"github.com/admpub/nging/application/library/config/extend"
 	"github.com/admpub/nging/application/library/ftp"
 	"github.com/admpub/securecookie"
 )
 
 func NewConfig() *Config {
 	c := &Config{}
+	c.InitExtend()
 	c.Settings = NewSettings(c)
 	return c
 }
@@ -68,6 +70,7 @@ type Config struct {
 		SavePath string `json:"savePath"`
 	} `json:"download"`
 	//License lib.LicenseData `json:"license,omitempty"`
+	Extend echo.H `json:"extend,omitempty"`
 
 	*Settings `json:"-"`
 
@@ -122,6 +125,14 @@ func (c *Config) connectDB() error {
 
 func (c *Config) APIKey() string {
 	return c.Settings.APIKey
+}
+
+func (c *Config) InitExtend() *Config {
+	c.Extend = echo.H{}
+	extend.Range(func(key string, recv interface{}) {
+		c.Extend[key] = recv
+	})
+	return c
 }
 
 func (c *Config) ConfigFromDB() echo.H {

@@ -170,7 +170,6 @@ require (
 	github.com/tdewolff/test v1.0.6 // indirect
 	github.com/tebeka/selenium v0.9.9
 	github.com/tklauser/go-sysconf v0.3.4 // indirect
-	github.com/tuotoo/qrcode v0.0.0-20190222102259-ac9c44189bf2 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/webx-top/captcha v0.0.0-20161202061115-29e9e7f30aa0
 	github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f // indirect
@@ -183,7 +182,6 @@ require (
 	github.com/webx-top/pagination v0.0.3
 	github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2 // indirect
 	github.com/webx-top/validation v0.0.1 // indirect
-	github.com/willf/bitset v1.1.11 // indirect
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect
 	github.com/xu42/youzan-sdk-go v0.0.3
 	gocloud.dev v0.22.0
