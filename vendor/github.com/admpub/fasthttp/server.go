@@ -1445,6 +1445,7 @@ func (s *Server) getNextProto(c net.Conn) (proto string, err error) {
 // eventually go away.
 type tcpKeepaliveListener struct {
 	*net.TCPListener
+	keepalive       bool
 	keepalivePeriod time.Duration
 }
 
@@ -1453,7 +1454,7 @@ func (ln tcpKeepaliveListener) Accept() (net.Conn, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := tc.SetKeepAlive(true); err != nil {
+	if err := tc.SetKeepAlive(ln.keepalive); err != nil {
 		tc.Close() //nolint:errcheck
 		return nil, err
 	}
@@ -1477,13 +1478,12 @@ func (s *Server) ListenAndServe(addr string) error {
 	if err != nil {
 		return err
 	}
-	if s.TCPKeepalive {
-		if tcpln, ok := ln.(*net.TCPListener); ok {
-			return s.Serve(tcpKeepaliveListener{
-				TCPListener:     tcpln,
-				keepalivePeriod: s.TCPKeepalivePeriod,
-			})
-		}
+	if tcpln, ok := ln.(*net.TCPListener); ok {
+		return s.Serve(tcpKeepaliveListener{
+			TCPListener:     tcpln,
+			keepalive:       s.TCPKeepalive,
+			keepalivePeriod: s.TCPKeepalivePeriod,
+		})
 	}
 	return s.Serve(ln)
 }
@@ -1523,13 +1523,12 @@ func (s *Server) ListenAndServeTLS(addr, certFile, keyFile string) error {
 	if err != nil {
 		return err
 	}
-	if s.TCPKeepalive {
-		if tcpln, ok := ln.(*net.TCPListener); ok {
-			return s.ServeTLS(tcpKeepaliveListener{
-				TCPListener:     tcpln,
-				keepalivePeriod: s.TCPKeepalivePeriod,
-			}, certFile, keyFile)
-		}
+	if tcpln, ok := ln.(*net.TCPListener); ok {
+		return s.ServeTLS(tcpKeepaliveListener{
+			TCPListener:     tcpln,
+			keepalive:       s.TCPKeepalive,
+			keepalivePeriod: s.TCPKeepalivePeriod,
+		}, certFile, keyFile)
 	}
 	return s.ServeTLS(ln, certFile, keyFile)
 }
@@ -1550,13 +1549,12 @@ func (s *Server) ListenAndServeTLSEmbed(addr string, certData, keyData []byte) e
 	if err != nil {
 		return err
 	}
-	if s.TCPKeepalive {
-		if tcpln, ok := ln.(*net.TCPListener); ok {
-			return s.ServeTLSEmbed(tcpKeepaliveListener{
-				TCPListener:     tcpln,
-				keepalivePeriod: s.TCPKeepalivePeriod,
-			}, certData, keyData)
-		}
+	if tcpln, ok := ln.(*net.TCPListener); ok {
+		return s.ServeTLSEmbed(tcpKeepaliveListener{
+			TCPListener:     tcpln,
+			keepalive:       s.TCPKeepalive,
+			keepalivePeriod: s.TCPKeepalivePeriod,
+		}, certData, keyData)
 	}
 	return s.ServeTLSEmbed(ln, certData, keyData)
 }
@@ -1575,7 +1573,10 @@ func (s *Server) ServeTLS(ln net.Listener, certFile, keyFile string) error {
 	if s.tlsConfig == nil {
 		return errNoCertOrKeyProvided
 	}
-	s.tlsConfig.BuildNameToCertificate()
+
+	// BuildNameToCertificate has been deprecated since 1.14.
+	// But since we also support older versions we'll keep this here.
+	s.tlsConfig.BuildNameToCertificate() //nolint:staticcheck
 
 	return s.Serve(
 		tls.NewListener(ln, s.tlsConfig),
@@ -1596,7 +1597,10 @@ func (s *Server) ServeTLSEmbed(ln net.Listener, certData, keyData []byte) error 
 	if s.tlsConfig == nil {
 		return errNoCertOrKeyProvided
 	}
-	s.tlsConfig.BuildNameToCertificate()
+
+	// BuildNameToCertificate has been deprecated since 1.14.
+	// But since we also support older versions we'll keep this here.
+	s.tlsConfig.BuildNameToCertificate() //nolint:staticcheck
 
 	return s.Serve(
 		tls.NewListener(ln, s.tlsConfig),
@@ -2164,12 +2168,9 @@ func (s *Server) serveConn(c net.Conn) (err error) {
 
 		timeoutResponse = ctx.timeoutResponse
 		if timeoutResponse != nil {
+			// Acquire a new ctx because the old one will still be in use by the timeout out handler.
 			ctx = s.acquireCtx(c)
 			timeoutResponse.CopyTo(&ctx.Response)
-			if br != nil {
-				// Close connection, since br may be attached to the old ctx via ctx.fbr.
-				ctx.SetConnectionClose()
-			}
 		}
 
 		if !ctx.IsGet() && ctx.IsHead() {

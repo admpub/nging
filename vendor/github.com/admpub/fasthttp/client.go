@@ -512,27 +512,42 @@ func (c *Client) Do(req *Request, resp *Response) error {
 	c.mLock.Unlock()
 
 	if startCleaner {
-		go c.mCleaner(m)
+		go c.mCleaner()
 	}
 
 	return hc.Do(req, resp)
 }
 
-func (c *Client) mCleaner(m map[string]*HostClient) {
+// CloseIdleConnections closes any connections which were previously
+// connected from previous requests but are now sitting idle in a
+// "keep-alive" state. It does not interrupt any connections currently
+// in use.
+func (c *Client) CloseIdleConnections() {
+	c.mLock.Lock()
+	for _, v := range c.m {
+		v.CloseIdleConnections()
+	}
+	for _, v := range c.ms {
+		v.CloseIdleConnections()
+	}
+	c.mLock.Unlock()
+}
+
+func (c *Client) mCleaner() {
 	mustStop := false
 
 	for {
 		c.mLock.Lock()
-		for k, v := range m {
+		for k, v := range c.m {
 			v.connsLock.Lock()
 			shouldRemove := v.connsCount == 0
 			v.connsLock.Unlock()
 
 			if shouldRemove {
-				delete(m, k)
+				delete(c.m, k)
 			}
 		}
-		if len(m) == 0 {
+		if len(c.m) == 0 {
 			mustStop = true
 		}
 		c.mLock.Unlock()
@@ -915,7 +930,7 @@ func doRequestFollowRedirectsBuffer(req *Request, dst []byte, url string, c clie
 	oldBody := bodyBuf.B
 	bodyBuf.B = dst
 
-	statusCode, body, err = doRequestFollowRedirects(req, resp, url, defaultMaxRedirectsCount, c)
+	statusCode, _, err = doRequestFollowRedirects(req, resp, url, defaultMaxRedirectsCount, c)
 
 	body = bodyBuf.B
 	bodyBuf.B = oldBody
@@ -1302,7 +1317,7 @@ func (c *HostClient) doNonNilReqResp(req *Request, resp *Response) (bool, error)
 		req.URI().DisablePathNormalizing = true
 	}
 
-	cc, err := c.acquireConn(req.timeout)
+	cc, err := c.acquireConn(req.timeout, req.ConnectionClose())
 	if err != nil {
 		return false, err
 	}
@@ -1429,7 +1444,7 @@ func (c *HostClient) SetMaxConns(newMaxConns int) {
 	c.connsLock.Unlock()
 }
 
-func (c *HostClient) acquireConn(reqTimeout time.Duration) (cc *clientConn, err error) {
+func (c *HostClient) acquireConn(reqTimeout time.Duration, connectionClose bool) (cc *clientConn, err error) {
 	createConn := false
 	startCleaner := false
 
@@ -1444,7 +1459,7 @@ func (c *HostClient) acquireConn(reqTimeout time.Duration) (cc *clientConn, err 
 		if c.connsCount < maxConns {
 			c.connsCount++
 			createConn = true
-			if !c.connsCleanerRun {
+			if !c.connsCleanerRun && !connectionClose {
 				startCleaner = true
 				c.connsCleanerRun = true
 			}
@@ -1542,6 +1557,24 @@ func (c *HostClient) dialConnFor(w *wantConn) {
 	if !delivered {
 		// not delivered, return idle connection
 		c.releaseConn(cc)
+	}
+}
+
+// CloseIdleConnections closes any connections which were previously
+// connected from previous requests but are now sitting idle in a
+// "keep-alive" state. It does not interrupt any connections currently
+// in use.
+func (c *HostClient) CloseIdleConnections() {
+	c.connsLock.Lock()
+	scratch := append([]*clientConn{}, c.conns...)
+	for i := range c.conns {
+		c.conns[i] = nil
+	}
+	c.conns = c.conns[:0]
+	c.connsLock.Unlock()
+
+	for _, cc := range scratch {
+		c.closeConn(cc)
 	}
 }
 
