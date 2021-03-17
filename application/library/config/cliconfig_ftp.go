@@ -26,6 +26,8 @@ import (
 	"github.com/webx-top/com"
 )
 
+//TODO: 移出去
+
 func (c *CLIConfig) FTPStopHistory() (err error) {
 	if DefaultConfig == nil {
 		return nil

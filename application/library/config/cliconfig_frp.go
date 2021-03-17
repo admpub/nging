@@ -26,7 +26,6 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/webx-top/com"
@@ -39,9 +38,11 @@ import (
 	"github.com/admpub/nging/application/library/frp"
 )
 
+//TODO: 移出去
+
 var (
 	EmptyBytes                 = []byte{}
-	ErrNoAvailibaleConfigFound = errors.New(`No available configurations found`)
+	ErrNoAvailibaleConfigFound = errors.New(`no available configurations found`)
 )
 
 //FRP Server
@@ -176,21 +177,6 @@ func (c *CLIConfig) FRPConfigFile(id uint, isServer bool) string {
 		log.Error(err)
 	}
 	return filepath.Join(configFile, fmt.Sprintf(`%d.yaml`, id))
-}
-
-func (c *CLIConfig) GenerateIDFromConfigFileName(configFile string, musts ...bool) string {
-	baseName := filepath.Base(configFile)
-	index := strings.LastIndex(baseName, `.`)
-	var id string
-	if index > 0 {
-		id = baseName[0:index]
-	}
-	if len(musts) == 0 || !musts[0] {
-		if len(id) == 0 {
-			id = time.Now().Format(`020060102150405`)
-		}
-	}
-	return id
 }
 
 func (c *CLIConfig) FRPPidFile(id string, isServer bool) string {

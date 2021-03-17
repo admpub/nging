@@ -27,6 +27,8 @@ import (
 	"github.com/webx-top/com"
 )
 
+//TODO: 移出去
+
 func (c *CLIConfig) CaddyStopHistory() (err error) {
 	if DefaultConfig == nil {
 		return nil

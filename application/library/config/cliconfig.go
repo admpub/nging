@@ -27,10 +27,12 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/cmd/event"
 	"github.com/admpub/nging/application/library/caddy"
+	"github.com/admpub/nging/application/library/config/cmder"
 	"github.com/admpub/nging/application/library/config/startup"
 	"github.com/admpub/nging/application/library/cron"
 	"github.com/admpub/nging/application/library/frp"
@@ -55,7 +57,9 @@ type CLIConfig struct {
 	Type           string //启动类型: webserver/ftpserver/manager
 	Startup        string //manager启动时同时启动的服务，可选的有webserver/ftpserver,如有多个需用半角逗号“,”隔开
 	cmds           map[string]*exec.Cmd
-	caddyCh        *com.CmdChanReader
+
+	//TODO: 移出去
+	caddyCh *com.CmdChanReader
 }
 
 func (c *CLIConfig) InitFlag(flagSet *pflag.FlagSet) {
@@ -70,6 +74,19 @@ func (c *CLIConfig) InitFlag(flagSet *pflag.FlagSet) {
 }
 
 func (c *CLIConfig) OnlyRunServer() bool {
+	cm := cmder.Get(c.Type)
+	if cm != nil {
+		startup.FireBefore(c.Type)
+		err := cm.Init()
+		if err != nil {
+			stdLog.Println(err)
+			os.Exit(1)
+		}
+		startup.FireAfter(c.Type)
+		return true
+	}
+
+	//TODO: 移出去
 	switch c.Type {
 	case `webserver`:
 		caddy.TrapSignals()
@@ -145,6 +162,17 @@ func (c *CLIConfig) RunStartup() {
 	}
 	for _, serverType := range strings.Split(c.Startup, `,`) {
 		serverType = strings.TrimSpace(serverType)
+		cm := cmder.Get(serverType)
+		if cm != nil {
+			startup.FireBefore(serverType)
+			if err := cm.Restart(); err != nil {
+				log.Error(err)
+			}
+			startup.FireAfter(serverType)
+			continue
+		}
+
+		//TODO: 移出去
 		switch serverType {
 		case `webserver`:
 			startup.FireBefore(serverType)
@@ -229,6 +257,10 @@ func (c *CLIConfig) CmdGet(typeName string) *exec.Cmd {
 	return cmd
 }
 
+func (c *CLIConfig) CmdSet(name string, cmd *exec.Cmd) {
+	c.cmds[name] = cmd
+}
+
 func (c *CLIConfig) CmdStop(typeName string) error {
 	cmd := c.CmdGet(typeName)
 	if cmd == nil {
@@ -297,24 +329,55 @@ func (c *CLIConfig) IsRunning(ct string) bool {
 
 func (c *CLIConfig) Reload(cts ...string) error {
 	for _, ct := range cts {
+		if !c.IsRunning(ct) {
+			continue
+		}
+		typeAndID := strings.SplitN(ct, ".", 2)
+		serverType := typeAndID[0]
+		cm := cmder.Get(serverType)
+		if cm != nil {
+			if len(typeAndID) == 1 {
+				cm.Reload()
+				continue
+			}
+			if rd, ok := cm.(cmder.RestartBy); ok {
+				if len(typeAndID) == 2 {
+					rd.RestartBy(typeAndID[1])
+					continue
+				}
+			}
+			cm.Reload()
+			continue
+		}
+
+		//TODO: 移出去
 		switch ct {
 		case `caddy`:
-			if c.IsRunning(`caddy`) {
-				c.CaddyReload()
-			}
+			c.CaddyReload()
 		case `ftp`:
-			if c.IsRunning(`ftp`) {
-				c.FTPRestart()
-			}
+			c.FTPRestart()
 		default:
 			for _, prefix := range []string{`frpserver.`, `frpclient.`} {
 				if strings.HasPrefix(ct, prefix) {
-					if c.IsRunning(ct) {
-						c.FRPRestartID(strings.TrimPrefix(ct, prefix))
-					}
+					c.FRPRestartID(strings.TrimPrefix(ct, prefix))
 				}
 			}
 		}
 	}
 	return nil
+}
+
+func (c *CLIConfig) GenerateIDFromConfigFileName(configFile string, musts ...bool) string {
+	baseName := filepath.Base(configFile)
+	index := strings.LastIndex(baseName, `.`)
+	var id string
+	if index > 0 {
+		id = baseName[0:index]
+	}
+	if len(musts) == 0 || !musts[0] {
+		if len(id) == 0 {
+			id = time.Now().Format(`020060102150405`)
+		}
+	}
+	return id
 }
