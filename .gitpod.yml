@@ -2,5 +2,5 @@ image:
   file: .gitpod.Dockerfile
 
 tasks:
-  - init: go get github.com/webx-top/tower && go build ./... && go test ./...
+  - init: go install github.com/webx-top/tower -o /usr/local/bin && go build ./... && go test ./...
     command: tower
