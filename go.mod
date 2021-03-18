@@ -4,33 +4,9 @@ go 1.14
 
 replace github.com/caddyserver/caddy => github.com/admpub/caddy v1.1.5
 
+replace github.com/mholt/certmagic => github.com/caddyserver/certmagic v0.8.3
+
 replace google.golang.org/protobuf => github.com/protocolbuffers/protobuf-go v1.25.0
-
-replace golang.org/x/crypto => github.com/golang/crypto v0.0.0-20201117144127-c1f2f97bffc9
-
-replace golang.org/x/image => github.com/golang/image v0.0.0-20200927104501-e162460cd6b5
-
-replace golang.org/x/net => github.com/golang/net v0.0.0-20201110031124-69a78807bb2b
-
-replace golang.org/x/oauth2 => github.com/golang/oauth2 v0.0.0-20201109201403-9fd604954f58
-
-replace golang.org/x/protobuf => github.com/golang/protobuf v1.4.3
-
-replace golang.org/x/time => github.com/golang/time v0.0.0-20200630173020-3af7569d3a1e
-
-replace golang.org/x/sync => github.com/golang/sync v0.0.0-20201020160332-67f06af15bc9
-
-replace golang.org/x/sys => github.com/golang/sys v0.0.0-20201119102817-f84b799fce68
-
-replace golang.org/x/text => github.com/golang/text v0.3.4
-
-replace golang.org/x/tools => github.com/golang/tools v0.0.0-20201121010211-780cb80bd7fb
-
-replace golang.org/x/xerrors => github.com/golang/xerrors v0.0.0-20200804184101-5ec99f83aff1
-
-replace github.com/admpub/xgo => github.com/admpub/xgo v1.14.6
-
-replace github.com/admpub/bindata/v3 => github.com/admpub/bindata/v3 v3.1.5
 
 require (
 	github.com/PuerkitoBio/goquery v1.6.0 // indirect
@@ -49,7 +25,7 @@ require (
 	github.com/admpub/email v2.3.1+incompatible
 	github.com/admpub/errors v0.8.2
 	github.com/admpub/events v0.0.0-20190913050400-383beb0843c6
-	github.com/admpub/fasthttp v0.0.0-20200705060903-f0f441048f4a // indirect
+	github.com/admpub/fasthttp v0.0.1 // indirect
 	github.com/admpub/frp v0.28.1
 	github.com/admpub/ftpserver v0.0.0-20180821023651-6b950445d653
 	github.com/admpub/gifresize v1.0.2 // indirect
@@ -144,6 +120,7 @@ require (
 	github.com/jesseduffield/lazygit v0.25.1
 	github.com/jlaffaye/ftp v0.0.0-20201112195030-9aae4d151126 // indirect
 	github.com/kardianos/service v1.2.0 // indirect
+	github.com/klauspost/compress v1.11.12 // indirect
 	github.com/markbates/goth v1.66.0 // indirect
 	github.com/mattn/go-runewidth v0.0.10
 	github.com/mholt/certmagic v0.8.3
@@ -170,7 +147,6 @@ require (
 	github.com/tdewolff/test v1.0.6 // indirect
 	github.com/tebeka/selenium v0.9.9
 	github.com/tklauser/go-sysconf v0.3.4 // indirect
-	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/webx-top/captcha v0.0.0-20161202061115-29e9e7f30aa0
 	github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f // indirect
 	github.com/webx-top/client v0.1.3
@@ -185,7 +161,11 @@ require (
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect
 	github.com/xu42/youzan-sdk-go v0.0.3
 	gocloud.dev v0.22.0
-	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
+	golang.org/x/crypto v0.0.0-20210314154223-e6e6c4f2bb5b
+	golang.org/x/net v0.0.0-20210316092652-d523dce5a7f4 // indirect
+	golang.org/x/sys v0.0.0-20210317091845-390168757d9c // indirect
+	golang.org/x/text v0.3.5 // indirect
+	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0

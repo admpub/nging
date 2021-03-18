@@ -1,0 +1,11 @@
+ports:
+  - port: 8080
+    onOpen: open-preview
+  - port: 5001-5050
+    onOpen: ignore
+tasks:
+  - init:  |
+      cd /workspace && git clone https://github.com/webx-top/tower && cd ./tower && go install
+    command: |
+      cd /workspace/nging
+      tower

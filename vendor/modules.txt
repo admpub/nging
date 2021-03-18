@@ -12,7 +12,7 @@ github.com/admpub/9t
 # github.com/admpub/archiver v1.1.4
 ## explicit
 github.com/admpub/archiver
-# github.com/admpub/bindata/v3 v3.1.5 => github.com/admpub/bindata/v3 v3.1.5
+# github.com/admpub/bindata/v3 v3.1.5
 ## explicit
 github.com/admpub/bindata/v3
 # github.com/admpub/ccs-gm v0.0.3
@@ -55,7 +55,7 @@ github.com/admpub/errors
 github.com/admpub/events
 github.com/admpub/events/dispatcher
 github.com/admpub/events/emitter
-# github.com/admpub/fasthttp v0.0.0-20200705060903-f0f441048f4a
+# github.com/admpub/fasthttp v0.0.1
 ## explicit
 github.com/admpub/fasthttp
 github.com/admpub/fasthttp/fasthttputil
@@ -278,7 +278,7 @@ github.com/admpub/web-terminal/library/utils
 # github.com/admpub/websocket v1.0.4
 ## explicit
 github.com/admpub/websocket
-# github.com/andybalholm/brotli v1.0.0
+# github.com/andybalholm/brotli v1.0.1
 github.com/andybalholm/brotli
 # github.com/andybalholm/cascadia v1.1.0
 github.com/andybalholm/cascadia
@@ -763,7 +763,8 @@ github.com/kevinburke/ssh_config
 # github.com/kisielk/errcheck v1.4.0
 github.com/kisielk/errcheck
 github.com/kisielk/errcheck/internal/errcheck
-# github.com/klauspost/compress v1.11.3
+# github.com/klauspost/compress v1.11.12
+## explicit
 github.com/klauspost/compress/flate
 github.com/klauspost/compress/fse
 github.com/klauspost/compress/gzip
@@ -859,7 +860,7 @@ github.com/mattn/go-sqlite3
 github.com/matttproud/golang_protobuf_extensions/pbutil
 # github.com/mgutz/str v1.2.0
 github.com/mgutz/str
-# github.com/mholt/certmagic v0.8.3
+# github.com/mholt/certmagic v0.8.3 => github.com/caddyserver/certmagic v0.8.3
 ## explicit
 github.com/mholt/certmagic
 # github.com/microcosm-cc/bluemonday v1.0.4
@@ -1038,7 +1039,6 @@ github.com/ulikunitz/xz/internal/hash
 github.com/ulikunitz/xz/internal/xlog
 github.com/ulikunitz/xz/lzma
 # github.com/valyala/bytebufferpool v1.0.0
-## explicit
 github.com/valyala/bytebufferpool
 # github.com/volatiletech/inflect v0.0.1
 github.com/volatiletech/inflect
@@ -1180,7 +1180,7 @@ gocloud.dev/internal/gcerr
 gocloud.dev/internal/oc
 gocloud.dev/internal/openurl
 gocloud.dev/internal/retry
-# golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad => github.com/golang/crypto v0.0.0-20201117144127-c1f2f97bffc9
+# golang.org/x/crypto v0.0.0-20210314154223-e6e6c4f2bb5b
 ## explicit
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
@@ -1215,7 +1215,7 @@ golang.org/x/crypto/ssh/knownhosts
 golang.org/x/crypto/tea
 golang.org/x/crypto/twofish
 golang.org/x/crypto/xtea
-# golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 => github.com/golang/image v0.0.0-20200927104501-e162460cd6b5
+# golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8
 golang.org/x/image/bmp
 golang.org/x/image/ccitt
 golang.org/x/image/draw
@@ -1233,7 +1233,8 @@ golang.org/x/lint
 golang.org/x/lint/golint
 # golang.org/x/mod v0.4.0
 golang.org/x/mod/semver
-# golang.org/x/net v0.0.0-20201224014010-6772e930b67b => github.com/golang/net v0.0.0-20201110031124-69a78807bb2b
+# golang.org/x/net v0.0.0-20210316092652-d523dce5a7f4
+## explicit
 golang.org/x/net/bpf
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
@@ -1254,10 +1255,11 @@ golang.org/x/net/proxy
 golang.org/x/net/publicsuffix
 golang.org/x/net/trace
 golang.org/x/net/websocket
-# golang.org/x/oauth2 v0.0.0-20201203001011-0b49973bad19 => github.com/golang/oauth2 v0.0.0-20201109201403-9fd604954f58
+# golang.org/x/oauth2 v0.0.0-20201203001011-0b49973bad19
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
-# golang.org/x/sys v0.0.0-20210305215415-5cdee2b1b5a0 => github.com/golang/sys v0.0.0-20201119102817-f84b799fce68
+# golang.org/x/sys v0.0.0-20210317091845-390168757d9c
+## explicit
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
@@ -1266,7 +1268,8 @@ golang.org/x/sys/windows/registry
 golang.org/x/sys/windows/svc
 golang.org/x/sys/windows/svc/eventlog
 golang.org/x/sys/windows/svc/mgr
-# golang.org/x/text v0.3.4 => github.com/golang/text v0.3.4
+# golang.org/x/text v0.3.5
+## explicit
 golang.org/x/text/collate
 golang.org/x/text/encoding
 golang.org/x/text/encoding/charmap
@@ -1289,9 +1292,9 @@ golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
-# golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e => github.com/golang/time v0.0.0-20200630173020-3af7569d3a1e
+# golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e
 golang.org/x/time/rate
-# golang.org/x/tools v0.0.0-20201203202102-a1a1cbeaa516 => github.com/golang/tools v0.0.0-20201121010211-780cb80bd7fb
+# golang.org/x/tools v0.0.0-20201203202102-a1a1cbeaa516
 golang.org/x/tools/go/ast/astutil
 golang.org/x/tools/go/gcexportdata
 golang.org/x/tools/go/internal/gcimporter
@@ -1304,7 +1307,7 @@ golang.org/x/tools/internal/event/label
 golang.org/x/tools/internal/gocommand
 golang.org/x/tools/internal/packagesinternal
 golang.org/x/tools/internal/typesinternal
-# golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 => github.com/golang/xerrors v0.0.0-20200804184101-5ec99f83aff1
+# golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
 # google.golang.org/appengine v1.6.7
@@ -1391,6 +1394,8 @@ google.golang.org/protobuf/runtime/protoimpl
 google.golang.org/protobuf/types/known/anypb
 google.golang.org/protobuf/types/known/durationpb
 google.golang.org/protobuf/types/known/timestamppb
+# gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c
+## explicit
 # gopkg.in/fsnotify/fsnotify.v1 v1.4.7
 ## explicit
 gopkg.in/fsnotify/fsnotify.v1
@@ -1420,17 +1425,5 @@ gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.0-20200605160147-a5ece683394c
 gopkg.in/yaml.v3
 # github.com/caddyserver/caddy => github.com/admpub/caddy v1.1.5
+# github.com/mholt/certmagic => github.com/caddyserver/certmagic v0.8.3
 # google.golang.org/protobuf => github.com/protocolbuffers/protobuf-go v1.25.0
-# golang.org/x/crypto => github.com/golang/crypto v0.0.0-20201117144127-c1f2f97bffc9
-# golang.org/x/image => github.com/golang/image v0.0.0-20200927104501-e162460cd6b5
-# golang.org/x/net => github.com/golang/net v0.0.0-20201110031124-69a78807bb2b
-# golang.org/x/oauth2 => github.com/golang/oauth2 v0.0.0-20201109201403-9fd604954f58
-# golang.org/x/protobuf => github.com/golang/protobuf v1.4.3
-# golang.org/x/time => github.com/golang/time v0.0.0-20200630173020-3af7569d3a1e
-# golang.org/x/sync => github.com/golang/sync v0.0.0-20201020160332-67f06af15bc9
-# golang.org/x/sys => github.com/golang/sys v0.0.0-20201119102817-f84b799fce68
-# golang.org/x/text => github.com/golang/text v0.3.4
-# golang.org/x/tools => github.com/golang/tools v0.0.0-20201121010211-780cb80bd7fb
-# golang.org/x/xerrors => github.com/golang/xerrors v0.0.0-20200804184101-5ec99f83aff1
-# github.com/admpub/xgo => github.com/admpub/xgo v1.14.6
-# github.com/admpub/bindata/v3 => github.com/admpub/bindata/v3 v3.1.5
