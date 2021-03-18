@@ -116,4 +116,11 @@ const (
 	HeaderXCSRFToken              = "X-CSRF-Token"
 
 	FilePathSeparator = string(filepath.Separator)
+
+	// Content Type
+	ContentTypeHTML  = "html"
+	ContentTypeJSON  = "json"
+	ContentTypeJSONP = "jsonp"
+	ContentTypeXML   = "xml"
+	ContentTypeText  = "text"
 )

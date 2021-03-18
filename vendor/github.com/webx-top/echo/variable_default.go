@@ -30,36 +30,36 @@ import (
 var (
 	DefaultAcceptFormats = map[string]string{
 		//json
-		`application/json`:       `json`,
-		`text/javascript`:        `json`,
-		`application/javascript`: `json`,
+		MIMEApplicationJSON:       ContentTypeJSON,
+		`text/javascript`:         ContentTypeJSON,
+		MIMEApplicationJavaScript: ContentTypeJSON,
 
 		//xml
-		`application/xml`: `xml`,
-		`text/xml`:        `xml`,
+		MIMEApplicationXML: ContentTypeXML,
+		`text/xml`:         ContentTypeXML,
 
 		//text
-		`text/plain`: `text`,
+		MIMETextPlain: ContentTypeText,
 
 		//html
-		`*/*`:               `html`,
-		`application/xhtml`: `html`,
-		`text/html`:         `html`,
+		`*/*`:               ContentTypeHTML,
+		`application/xhtml`: ContentTypeHTML,
+		MIMETextHTML:        ContentTypeHTML,
 
 		//default
-		`*`: `html`,
+		`*`: ContentTypeHTML,
 	}
 	DefaultFormatRenderers = map[string]func(c Context, data interface{}) error{
-		`json`: func(c Context, data interface{}) error {
+		ContentTypeJSON: func(c Context, data interface{}) error {
 			return c.JSON(c.Data())
 		},
-		`jsonp`: func(c Context, data interface{}) error {
+		ContentTypeJSONP: func(c Context, data interface{}) error {
 			return c.JSONP(c.Query(c.Echo().JSONPVarName), c.Data())
 		},
-		`xml`: func(c Context, data interface{}) error {
+		ContentTypeXML: func(c Context, data interface{}) error {
 			return c.XML(c.Data())
 		},
-		`text`: func(c Context, data interface{}) error {
+		ContentTypeText: func(c Context, data interface{}) error {
 			return c.String(fmt.Sprint(data))
 		},
 	}

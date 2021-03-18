@@ -153,7 +153,7 @@ require (
 	github.com/webx-top/codec v0.0.1
 	github.com/webx-top/com v0.1.2
 	github.com/webx-top/db v1.1.5
-	github.com/webx-top/echo v2.8.2+incompatible
+	github.com/webx-top/echo v2.8.3+incompatible
 	github.com/webx-top/image v0.0.7
 	github.com/webx-top/pagination v0.0.3
 	github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2 // indirect

@@ -123,16 +123,18 @@ func HTTPErrorHandler(opt *Options) echo.HTTPErrorHandler {
 				code = e.Code
 				title = http.StatusText(code)
 			}
-			msg = setAndGetErrorMessage(c, e.Message, title)
+			msg = e.Message
+			data.SetError(e)
 		case *echo.PanicError:
 			panicErr = e
 			msg = setAndGetErrorMessage(c, e.Error(), title)
 		case *echo.Error:
 			code = e.Code.HTTPCode()
-			data.SetError(e)
 			msg = e.Message
+			data.SetError(e)
 		default:
-			msg = setAndGetErrorMessage(c, e.Error(), title)
+			msg = e.Error()
+			data.SetError(e)
 		}
 		if c.Request().Method() == echo.HEAD {
 			c.NoContent(code)
@@ -154,7 +156,7 @@ func HTTPErrorHandler(opt *Options) echo.HTTPErrorHandler {
 				return
 			}
 		}
-		if c.Format() != `html` {
+		if c.Format() != echo.ContentTypeHTML {
 			c.SetCode(opt.DefaultHTTPErrorCode)
 			goto END
 		}
