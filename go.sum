@@ -777,6 +777,7 @@ github.com/jesseduffield/gocui v0.3.1-0.20210208224444-2eecee85583d h1:Jto9W9w8C
 github.com/jesseduffield/gocui v0.3.1-0.20210208224444-2eecee85583d/go.mod h1:2RtZznzYKt8RLRwvFiSkXjU0Ei8WwHdubgnlaYH47dw=
 github.com/jesseduffield/lazygit v0.25.1 h1:BsJrNgF3HuYNWYZ2rsV+oEHkokpzXGcV2pxomQamCtI=
 github.com/jesseduffield/lazygit v0.25.1/go.mod h1:xSBg5TEWkR1WE6mRdXq19GmI9sUoeC6kaSGsFN3Zpu4=
+github.com/jesseduffield/lazygit v0.26.1/go.mod h1:xSBg5TEWkR1WE6mRdXq19GmI9sUoeC6kaSGsFN3Zpu4=
 github.com/jesseduffield/termbox-go v0.0.0-20200823212418-a2289ed6aafe h1:qsVhCf2RFyyKIUe/+gJblbCpXMUki9rZrHuEctg6M/E=
 github.com/jesseduffield/termbox-go v0.0.0-20200823212418-a2289ed6aafe/go.mod h1:anMibpZtqNxjDbxrcDEAwSdaJ37vyUeM1f/M4uekib4=
 github.com/jesseduffield/yaml v2.1.0+incompatible h1:HWQJ1gIv2zHKbDYNp0Jwjlj24K8aqpFHnMCynY1EpmE=
