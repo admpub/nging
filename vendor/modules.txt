@@ -1129,13 +1129,9 @@ github.com/webx-top/image
 # github.com/webx-top/pagination v0.0.3
 ## explicit
 github.com/webx-top/pagination
-# github.com/webx-top/reverseproxy v0.0.2
-## explicit
 # github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2
 ## explicit
 github.com/webx-top/tagfast
-# github.com/webx-top/tower v1.1.4
-## explicit
 # github.com/webx-top/validation v0.0.1
 ## explicit
 github.com/webx-top/validation

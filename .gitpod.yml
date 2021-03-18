@@ -4,5 +4,7 @@ ports:
   - port: 5001-5050
     onOpen: ignore
 tasks:
-  - init: go get -v github.com/webx-top/tower
+  - init:  |
+      cd /workspace && git clone https://github.com/webx-top/tower && cd ./tower && go install
+      cd /workspace/nging
     command: tower

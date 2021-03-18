@@ -154,9 +154,7 @@ require (
 	github.com/webx-top/echo v2.8.2+incompatible
 	github.com/webx-top/image v0.0.7
 	github.com/webx-top/pagination v0.0.3
-	github.com/webx-top/reverseproxy v0.0.2 // indirect
 	github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2 // indirect
-	github.com/webx-top/tower v1.1.4 // indirect
 	github.com/webx-top/validation v0.0.1 // indirect
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect
 	github.com/xu42/youzan-sdk-go v0.0.3
