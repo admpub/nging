@@ -6,5 +6,6 @@ ports:
 tasks:
   - init:  |
       cd /workspace && git clone https://github.com/webx-top/tower && cd ./tower && go install
+    command: |
       cd /workspace/nging
-    command: tower
+      tower
