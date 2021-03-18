@@ -4,6 +4,8 @@ go 1.14
 
 replace github.com/caddyserver/caddy => github.com/admpub/caddy v1.1.5
 
+replace github.com/mholt/certmagic => github.com/caddyserver/certmagic v0.8.3
+
 replace google.golang.org/protobuf => github.com/protocolbuffers/protobuf-go v1.25.0
 
 require (

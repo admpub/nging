@@ -860,7 +860,7 @@ github.com/mattn/go-sqlite3
 github.com/matttproud/golang_protobuf_extensions/pbutil
 # github.com/mgutz/str v1.2.0
 github.com/mgutz/str
-# github.com/mholt/certmagic v0.8.3
+# github.com/mholt/certmagic v0.8.3 => github.com/caddyserver/certmagic v0.8.3
 ## explicit
 github.com/mholt/certmagic
 # github.com/microcosm-cc/bluemonday v1.0.4
@@ -1425,4 +1425,5 @@ gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.0-20200605160147-a5ece683394c
 gopkg.in/yaml.v3
 # github.com/caddyserver/caddy => github.com/admpub/caddy v1.1.5
+# github.com/mholt/certmagic => github.com/caddyserver/certmagic v0.8.3
 # google.golang.org/protobuf => github.com/protocolbuffers/protobuf-go v1.25.0
