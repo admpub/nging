@@ -1,8 +1,8 @@
-image:
-  file: .gitpod.Dockerfile
 ports:
   - port: 8080
     onOpen: open-preview
+  - port: 5001-5050
+    onOpen: ignore
 tasks:
   - init: go get -u github.com/webx-top/tower && go build ./... && go test ./...
     command: tower
