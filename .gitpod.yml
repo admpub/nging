@@ -4,5 +4,5 @@ ports:
   - port: 5001-5050
     onOpen: ignore
 tasks:
-  - init: go get -v -t -d ./... && go build ./... && go test ./... &&  go get -u github.com/webx-top/tower
+  - init: go get -u github.com/webx-top/tower
     command: tower
