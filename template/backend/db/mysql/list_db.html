@@ -28,11 +28,11 @@
                         {{range $k,$v := Stored.dbList}}
 						<tr>
 							<td><div class="checkbox checkbox-primary no-margin-y"><input type="checkbox" id="check-{{$k}}" name="check[]" value="{{$v}}"><label for="check-{{$k}}"></label></div></td>
-							<td><a href="{{dbMgrURL "listTable" $v}}" data-pjax="#pcont" data-keepjs="true">{{$v}}</a></td>
+							<td><a href="{{dbMgrURL "listTable" $v}}">{{$v}}</a></td>
 							<td>{{if $dbColls}}{{index $dbColls $k}}{{end}}</td>
 							<td>{{if $dbTables}}{{index $dbTables $k}}{{end}}</td>
 							<td>{{if $dbSizes}}{{index $dbSizes $k|FormatByte}}{{end}}</td>
-                            <td><a href="{{dbMgrURL "modifyDb" $v}}" class="label label-primary"><i class="fa fa-pencil" data-pjax="#pcont" data-keepjs="true"></i></a></td>
+                            <td><a href="{{dbMgrURL "modifyDb" $v}}" class="label label-primary"><i class="fa fa-pencil"></i></a></td>
 						</tr>
                         {{end}}
 					</tbody>

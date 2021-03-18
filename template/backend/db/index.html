@@ -57,7 +57,7 @@
           {{if $dbName}}
           <div class="compose no-padding no-border">
             <div class="btn-group">
-            <a href="{{dbMgrURL "runCommand" $dbName}}" class="btn btn-flat btn-xs btn-info" data-pjax="#pcont" data-keepjs="true">{{"SQL命令"|T}}</a>
+            <a href="{{dbMgrURL "runCommand" $dbName}}" class="btn btn-flat btn-xs btn-info">{{"SQL命令"|T}}</a>
             <a href="{{dbMgrURL "createTable" $dbName}}" class="btn btn-flat btn-xs btn-primary" data-pjax="#pcont" data-keepjs="true">{{"创建表"|T}}</a>
             <a href="{{dbMgrURL "modifyDb" $dbName}}" class="btn btn-flat btn-xs btn-success" data-pjax="#pcont" data-keepjs="true">{{"修改库"|T}}</a>
             <a href="{{dbMgrURL "import" $dbName}}" class="btn btn-flat btn-xs btn-warning" data-pjax="#pcont" data-keepjs="true">{{"导入"|T}}</a>
