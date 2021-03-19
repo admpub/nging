@@ -188,6 +188,9 @@
 		 * }
 		 */
 		eAjaxSuccess : undefined,
+		eAjaxMethod : undefined, // POST/GET
+		defaultWidth : 150,
+		defaultZindex : 1101,
 		/**
          * Close selected item tag callback (multiple mode)
 		 * @type function
@@ -635,7 +638,7 @@
 		var orgWidth = input.outerWidth();
 		// fix input width in hidden situation
 		if(orgWidth <= 0) orgWidth = this.elementRealSize(input, 'outerWidth');
-		if(orgWidth < 150) orgWidth = 150;
+		if(orgWidth < 150) orgWidth = p.defaultWidth || 150;
 
 		elem.combo_input = input.attr({'autocomplete':'off'}).addClass(css.input).wrap('<div>');
 		if(p.selectOnly) elem.combo_input.prop('readonly',true);
@@ -783,7 +786,7 @@
 				} else _params = _orgParams;
 				$.ajax({
 					dataType: 'json',
-                    type: 'POST',
+                    type: p.eAjaxMethod || 'POST',
 					url: p.data,
 					data: _params,
 					success: function(json) {
@@ -1320,7 +1323,7 @@
 		self.prop.xhr = $.ajax({
 			dataType: 'json',
 			url: p.data,
-			type: 'POST',
+			type: p.eAjaxMethod || 'POST',
 			data: _params,
 			success: function(returnData) {
 				if (!returnData || !$.isPlainObject(returnData)) {
@@ -1705,7 +1708,7 @@
                 var offset = el.combo_input.offset();
                 el.result_area.css({
                     top: offset.top + el.combo_input.outerHeight() + 'px',
-                    left: offset.left + 'px'
+                    left: offset.left + 'px', zIndex: p.defaultZindex
                 });
             } else {
                 if(!p.pagination){
@@ -1753,7 +1756,7 @@
                     top += dist;
                 }
                 return {
-                    top : top + 'px', left: left + 'px'
+                    top : top + 'px', left: left + 'px', zIndex: p.defaultZindex
                 };
             }
         };
