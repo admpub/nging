@@ -179,14 +179,16 @@
                 <td>{{$v.Timing.String}}</td>
                 <td>{{$v.Event.String}}</td>
                 <td>{{$v.Trigger.String}}</td>
-                <td><a href="{{dbMgrURL "trigger" Stored.dbName $table}}&name={{$v.Trigger.String}}"
-                    class="label label-primary" data-pjax="#pcont" data-keepjs="true"><i class="fa fa-pencil"></i></a>
+                <td>
+                  <a href="{{dbMgrURL "trigger" Stored.dbName $table}}&name={{$v.Trigger.String}}" class="label label-primary">
+                    <i class="fa fa-pencil"></i>
+                  </a>
                 </td>
               </tr>
               {{end}}
             </tbody>
           </table>
-          <a href="{{dbMgrURL "trigger" Stored.dbName $table}}" data-pjax="#pcont" data-keepjs="true">{{"创建触发器"|T}}</a>
+          <a href="{{dbMgrURL "trigger" Stored.dbName $table}}">{{"创建触发器"|T}}</a>
         </div>
       </div><!-- /.content -->
     </div><!-- /.block-flat -->
