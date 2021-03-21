@@ -64,5 +64,7 @@ func Settings(ctx echo.Context) error {
 	ctx.Set(`config`, config.DefaultConfig)
 	ctx.Set(`settings`, settings.Settings())
 	ctx.Set(`group`, group)
+	ctx.SetFunc(`hasConfigGroup`, settings.ConfigHasGroup)
+	ctx.SetFunc(`hasConfigKey`, settings.ConfigHasKey)
 	return ctx.Render(`/manager/settings`, ret)
 }

@@ -244,6 +244,20 @@ func GetDefaultConfigOk(group string) (map[string]*dbschema.NgingConfig, bool) {
 	return r, y
 }
 
+func ConfigHasGroup(group string) bool {
+	_, y := configDefaults[group]
+	return y
+}
+
+func ConfigHasKey(group string, key string) bool {
+	g, y := configDefaults[group]
+	if !y {
+		return false
+	}
+	_, y = g[key]
+	return y
+}
+
 func ConfigDefaultsAsStore() echo.H {
 	return configAsStore(configDefaults)
 }
