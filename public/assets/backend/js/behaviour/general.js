@@ -424,6 +424,7 @@ var App = function () {
 		},
 		markNavByURL: function (url) {
 			if (!url) url = window.location.pathname;
+			if (url == '/index') return;
 			var leftAnchor=$('#leftnav a[href="' + BACKEND_URL+url + '"]');
 			if (leftAnchor.length<1) leftAnchor=$('#leftnav a[href="' + url + '"]');
 			App.markNav(leftAnchor, 'left');
