@@ -59,7 +59,7 @@ func main() {
 	// if err:=loader.LoadPlugins();err!=nil{
 	// 	panic(err)
 	// }
-	defer log.Sync()
+	defer log.Close()
 	echo.Set(`BUILD_TIME`, BUILD_TIME)
 	echo.Set(`COMMIT`, COMMIT)
 	echo.Set(`LABEL`, LABEL)

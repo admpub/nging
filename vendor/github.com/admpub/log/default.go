@@ -90,6 +90,10 @@ func Writer(level Level) io.Writer {
 	return DefaultLog.Writer(level)
 }
 
+func Close() {
+	DefaultLog.Close()
+}
+
 func UseCommonTargets(levelName string, targetNames ...string) *Logger {
 	DefaultLog.SetLevel(levelName)
 	targets := []Target{}

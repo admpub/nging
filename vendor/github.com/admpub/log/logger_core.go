@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"io"
 	"sync"
-	"sync/atomic"
-	"time"
 )
 
 // coreLogger maintains the log messages in a channel and sends them to various targets.
@@ -14,11 +12,8 @@ type coreLogger struct {
 	lock        sync.RWMutex
 	open        bool        // whether the logger is open
 	entries     chan *Entry // log entries
-	sendN       uint32
-	procsN      uint32
-	waiting     *sync.Once
 	fatalAction Action
-	syncMode    bool // Whether the use of non-asynchronous mode （是否使用非异步模式）
+	syncMode    bool
 
 	ErrorWriter   io.Writer // the writer used to write errors caused by log targets
 	BufferSize    int       // the size of the channel storing log entries
@@ -27,26 +22,6 @@ type coreLogger struct {
 	Targets       []Target // targets for sending log messages to
 	MaxGoroutines int32    // Max Goroutine
 	AddSpace      bool     // Add a space between two arguments.
-}
-
-func (l *coreLogger) wait() {
-	l.waiting.Do(func() {
-		for {
-			sendN := atomic.LoadUint32(&l.sendN)
-			//fmt.Println(`waiting ...`, len(l.entries), sendN)
-			if sendN <= atomic.LoadUint32(&l.procsN) {
-				l.sendN = 0
-				l.procsN = 0
-				l.waiting = &sync.Once{}
-				return
-			}
-			delay := sendN
-			if delay < 500 {
-				delay = 500
-			}
-			time.Sleep(time.Duration(delay) * time.Microsecond)
-		}
-	})
 }
 
 // Open prepares the logger and the targets for logging purpose.
@@ -96,7 +71,6 @@ func (l *coreLogger) process() {
 		if entry == nil {
 			break
 		}
-		atomic.AddUint32(&l.procsN, 1)
 	}
 }
 
@@ -111,7 +85,6 @@ func (l *coreLogger) Close() {
 		return
 	}
 	l.open = false
-	l.wait()
 	// use a nil entry to signal the close of logger
 	l.entries <- nil
 	for _, target := range l.Targets {

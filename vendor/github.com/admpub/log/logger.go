@@ -9,8 +9,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"sync"
-	"sync/atomic"
 	"time"
 )
 
@@ -42,7 +40,6 @@ func NewLogger(args ...string) *Logger {
 		MaxLevel:    LevelDebug,
 		CallStack:   make(map[Leveler]*CallStack),
 		Targets:     make([]Target, 0),
-		waiting:     &sync.Once{},
 	}
 	category := `app`
 	if len(args) > 0 {
@@ -103,17 +100,21 @@ func (l *Logger) Sync(args ...bool) *Logger {
 }
 
 func (l *Logger) sendEntry(entry *Entry) {
-	atomic.AddUint32(&l.sendN, 1)
 	l.entries <- entry
 }
 
 // Async 异步日志
 func (l *Logger) Async(args ...bool) *Logger {
+	var syncMode bool
 	if len(args) < 1 {
-		l.syncMode = false
+		syncMode = false
+	} else {
+		syncMode = !args[0]
+	}
+	if l.syncMode == syncMode {
 		return l
 	}
-	l.syncMode = !args[0]
+	l.syncMode = syncMode
 	if l.open {
 		l.Close()
 		l.Open()
@@ -251,9 +252,8 @@ func (l *Logger) Debug(a ...interface{}) {
 // Log logs a message of a specified severity level.
 func (l *Logger) Log(level Leveler, a ...interface{}) {
 	l.lock.RLock()
-	defer l.lock.RUnlock()
-
 	if level.Int() > l.MaxLevel.Int() || !l.open {
+		l.lock.RUnlock()
 		return
 	}
 	var message string
@@ -263,6 +263,7 @@ func (l *Logger) Log(level Leveler, a ...interface{}) {
 	} else {
 		message = fmt.Sprint(a...)
 	}
+	l.lock.RUnlock()
 	l.newEntry(level, message)
 }
 
@@ -278,11 +279,11 @@ func (l *Logger) newEntry(level Leveler, message string) {
 		l.generateCallStack(entry, level, true)
 		entry.FormattedMessage = l.Formatter(l, entry)
 		l.sendEntry(entry)
-		l.wait()
 		switch l.fatalAction {
 		case ActionPanic:
 			panic(entry.FormattedMessage)
 		case ActionExit:
+			l.Close()
 			os.Exit(-1)
 		}
 		return

@@ -56,7 +56,7 @@ require (
 	github.com/admpub/ini v1.38.2
 	github.com/admpub/ip2region v1.2.5
 	github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
-	github.com/admpub/log v0.0.2
+	github.com/admpub/log v0.1.1
 	github.com/admpub/logcool v0.3.1
 	github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d
 	github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b

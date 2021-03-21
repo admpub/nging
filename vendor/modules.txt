@@ -185,7 +185,7 @@ github.com/admpub/ip2region/binding/golang/ip2region
 # github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
 ## explicit
 github.com/admpub/license_gen/lib
-# github.com/admpub/log v0.0.2
+# github.com/admpub/log v0.1.1
 ## explicit
 github.com/admpub/log
 # github.com/admpub/logcool v0.3.1
