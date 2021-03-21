@@ -23,6 +23,7 @@ import (
 
 	"github.com/admpub/nging/application/handler"
 	_ "github.com/admpub/nging/application/handler/manager/file"
+	"github.com/admpub/nging/application/registry/navigate"
 	"github.com/admpub/nging/application/registry/upload/helper"
 )
 
@@ -70,4 +71,5 @@ func init() {
 		g.Route(`GET,POST`, `/login_log_delete`, LoginLogDelete)
 	})
 
+	navigate.TopNavigate.Add(0, *TopNavigate...)
 }

@@ -22,7 +22,7 @@ import (
 	"github.com/admpub/nging/application/registry/navigate"
 )
 
-var topNavigate = navigate.List{
+var TopNavigate = navigate.List{
 	{
 		DisplayOnMenu: true,
 		Name:          `附件管理`,
@@ -33,8 +33,4 @@ var topNavigate = navigate.List{
 		Name:          `删除附件`,
 		Action:        `file/delete/:id`,
 	},
-}
-
-func init() {
-	navigate.TopNavigate.ChildrenBy(0).Add(-1, topNavigate...)
 }
