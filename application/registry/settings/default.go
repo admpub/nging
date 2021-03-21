@@ -234,6 +234,25 @@ func AddDefaultConfig(group string, configs map[string]*dbschema.NgingConfig) {
 	}
 }
 
+func DeleteDefaultConfig(group string, keys ...string) {
+	if strings.Contains(group, `.`) {
+		panic(`Group name is not allowed to contain ".": ` + group)
+	}
+	if _, y := configDefaults[group]; !y {
+		return
+	}
+	if len(keys) == 0 {
+		delete(configDefaults, group)
+	} else {
+		for _, key := range keys {
+			delete(configDefaults[group], key)
+		}
+		if len(configDefaults[group]) == 0 {
+			delete(configDefaults, group)
+		}
+	}
+}
+
 func GetDefaultConfig(group string) map[string]*dbschema.NgingConfig {
 	r, _ := configDefaults[group]
 	return r
