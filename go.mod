@@ -95,8 +95,8 @@ require (
 	github.com/caddy-plugins/ipfilter v1.1.4
 	github.com/caddy-plugins/nobots v0.1.1
 	github.com/caddyserver/caddy v1.1.5
-	github.com/chromedp/cdproto v0.0.0-20210305224431-50b9f457e822
-	github.com/chromedp/chromedp v0.6.8
+	github.com/chromedp/cdproto v0.0.0-20210318231247-733a37e2c059
+	github.com/chromedp/chromedp v0.6.9
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
 	github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
 	github.com/deckarep/golang-set v1.7.1 // indirect
@@ -163,7 +163,6 @@ require (
 	gocloud.dev v0.22.0
 	golang.org/x/crypto v0.0.0-20210314154223-e6e6c4f2bb5b
 	golang.org/x/net v0.0.0-20210316092652-d523dce5a7f4 // indirect
-	golang.org/x/sys v0.0.0-20210317091845-390168757d9c // indirect
 	golang.org/x/text v0.3.5 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
