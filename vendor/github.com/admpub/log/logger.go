@@ -40,6 +40,7 @@ func NewLogger(args ...string) *Logger {
 		MaxLevel:    LevelDebug,
 		CallStack:   make(map[Leveler]*CallStack),
 		Targets:     make([]Target, 0),
+		fatalAction: ActionPanic,
 	}
 	category := `app`
 	if len(args) > 0 {
