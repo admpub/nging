@@ -151,9 +151,15 @@ func (l *Logger) AddTarget(targets ...Target) *Logger {
 
 // SetLevel 添加日志输出等级
 func (l *Logger) SetLevel(level string) *Logger {
-	if le, ok := GetLevel(level); ok {
-		l.MaxLevel = le
+	if lv, ok := GetLevel(level); ok {
+		l.MaxLevel = lv
 	}
+	return l
+}
+
+// SetCallStack 设置各个等级的call stack配置
+func (l *Logger) SetCallStack(level Level, callStack *CallStack) *Logger {
+	l.coreLogger.setCallStack(level, callStack)
 	return l
 }
 

@@ -10,7 +10,7 @@ import (
 var (
 	DefaultStackDepth  = 5
 	DefaultSkipStack   = 3
-	DefaultStackFilter = `github.com/admpub/log/`
+	DefaultStackFilter = `github.com/admpub/log`
 )
 
 // CallStack 调用栈信息

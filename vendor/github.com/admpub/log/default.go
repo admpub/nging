@@ -41,6 +41,10 @@ func SetLevel(level string) *Logger {
 	return DefaultLog.SetLevel(level)
 }
 
+func SetCallStack(level Level, callStack *CallStack) *Logger {
+	return DefaultLog.SetCallStack(level, callStack)
+}
+
 // IsEnabled 是否启用了某个等级的日志输出
 func IsEnabled(level Level) bool {
 	return DefaultLog.IsEnabled(level)

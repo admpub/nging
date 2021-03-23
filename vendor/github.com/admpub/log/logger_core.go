@@ -91,3 +91,9 @@ func (l *coreLogger) Close() {
 		target.Close()
 	}
 }
+
+func (l *coreLogger) setCallStack(level Level, callStack *CallStack) {
+	l.lock.Lock()
+	l.CallStack[level] = callStack
+	l.lock.Unlock()
+}
