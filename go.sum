@@ -225,6 +225,7 @@ github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8 h1:4cLleRv8VQuK
 github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8/go.mod h1:wI4uHqEIg4MpTQ2bh92ACusqEKnj+gKYz0MpysAu2oE=
 github.com/admpub/log v0.2.0 h1:4vuA5wmk/z9x2gT3lN7OTN4NbNQ1cVb+tAu0CyykYXg=
 github.com/admpub/log v0.2.0/go.mod h1:rr6Sw/xAGWzL/Hg7FCekKd98XguStEEjcYC/DG5y/YA=
+github.com/admpub/log v0.2.1/go.mod h1:rr6Sw/xAGWzL/Hg7FCekKd98XguStEEjcYC/DG5y/YA=
 github.com/admpub/logcool v0.3.1 h1:+EnvqEwSv1mpm8TLg673VjcSBhVjD2F2Bp6Aqhdld8Q=
 github.com/admpub/logcool v0.3.1/go.mod h1:G/gFEVWLaDX0flIBfXjrzYYeQraLZLJjPpT/r9w0oWo=
 github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d h1:9QaiQwHoN3e+ImMxBDSfyw2reYVEvfkJuKkKhkZYQ+0=
