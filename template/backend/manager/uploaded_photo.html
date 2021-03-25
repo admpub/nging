@@ -96,16 +96,16 @@
   function uploadURL(currentPath) {
     return BACKEND_URL + '/manager/uploaded_file?do=upload&path=' + encodeURIComponent(currentPath);
   }
-  function initDropzone() {
-    $('#multi-upload-dropzone').dropzone({
+  function initDropzone(options) {
+    $('#multi-upload-dropzone').dropzone($.extend({},options,{
       url: uploadURL('{{Stored.path}}'),
       dictDefaultMessage: '{{"可以把文件拖到这里来进行上传哦"|T}}'
-    });
-    $('#multi-upload-zip-dropzone').dropzone({
+    }));
+    $('#multi-upload-zip-dropzone').dropzone($.extend({},options,{
       url: uploadURL('{{Stored.path}}') + '&pipe=unzip',
       dictDefaultMessage: '{{"可以把文件拖到这里来进行上传哦"|T}}<p>{{"仅支持上传zip压缩包。成功解压到当前目录后，该压缩包会被自动删除"|T}}</p>',
       acceptedFiles: 'application/zip,application/x-zip-compressed'
-    });
+    }));
   }
 $(function () {
   $('#tbody-content').off().on('refresh',function(){

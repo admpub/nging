@@ -174,24 +174,30 @@ function dropzoneResizeHeight(isZip){
   }
 }
 $(function(){
-    initDropzone();
+    initDropzone({retryChunks:true});
     dropzone=$('#multi-upload-dropzone').get(0).dropzone;
     dropzoneZIP=$('#multi-upload-zip-dropzone').length>0?$('#multi-upload-zip-dropzone').get(0).dropzone:null;
     dropzone.on('addedfiles',dropzoneResizeHeight(false));
     if(dropzoneZIP)dropzoneZIP.on('addedfiles',dropzoneResizeHeight(true));
     initCodeMirrorEditor();
 	$('#uploadBtn').off().on('click',function(event){
-		$('#multi-upload-modal').niftyModal('show',{afterClose:function(modal){
-            dropzone.removeAllFiles();
-            refreshList();
-        }});
+		$('#multi-upload-modal').niftyModal('show',{
+            closeOnClickOverlay:false,
+            afterClose:function(modal){
+                dropzone.removeAllFiles();
+                refreshList();
+            }
+        });
     });
     if($('#uploadZipBtn').length>0){
         $('#uploadZipBtn').off().on('click',function(event){
-            $('#multi-upload-zip-modal').niftyModal('show',{afterClose:function(modal){
-                if(dropzoneZIP)dropzoneZIP.removeAllFiles();
-                refreshList();
-            }});
+            $('#multi-upload-zip-modal').niftyModal('show',{
+                closeOnClickOverlay:false,
+                afterClose:function(modal){
+                    if(dropzoneZIP)dropzoneZIP.removeAllFiles();
+                    refreshList();
+                }
+            });
         });
     }
     $(window).off().on('resize',function(){

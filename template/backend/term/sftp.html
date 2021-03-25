@@ -141,11 +141,11 @@
 function uploadURL(currentPath){
     return BACKEND_URL+'/term/sftp?id={{$id}}&do=upload&path='+encodeURIComponent(currentPath);
 }
-function initDropzone() {
-    $('#multi-upload-dropzone').dropzone({
+function initDropzone(options) {
+    $('#multi-upload-dropzone').dropzone($.extend({},options,{
         url:uploadURL('{{Stored.path}}'),
         dictDefaultMessage:'{{"可以把文件拖到这里来进行上传哦"|T}}'
-    });
+    }));
 }
 </script>
 <script type="text/javascript" src="{{AssetsURL}}/js/behaviour/page/file.min.js"></script>
