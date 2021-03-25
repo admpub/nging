@@ -80,7 +80,7 @@ func WithReturnURL(ctx echo.Context, urlStr string, varNames ...string) string {
 			}
 			if len(urlCopy) > 0 {
 				p := strings.Index(urlCopy, `/`)
-				if p > 0 && len(urlCopy) > p+1 && urlCopy[p:] == returnTo {
+				if p > 0 && urlCopy[p:] == returnTo {
 					return urlStr
 				}
 			}
