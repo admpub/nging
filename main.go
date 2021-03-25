@@ -51,7 +51,6 @@ var (
 	VERSION    = `3.1.0`
 	PACKAGE    = `free`
 
-	version   string
 	schemaVer = 3.9 //数据表结构版本
 )
 
