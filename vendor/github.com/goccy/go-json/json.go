@@ -2,8 +2,9 @@ package json
 
 import (
 	"bytes"
-	"errors"
-	"strconv"
+	"encoding/json"
+
+	"github.com/goccy/go-json/internal/encoder"
 )
 
 // Marshaler is the interface implemented by types that
@@ -278,69 +279,23 @@ func UnmarshalNoEscape(data []byte, v interface{}) error {
 //	string, for JSON string literals
 //	nil, for JSON null
 //
-type Token interface{}
+type Token = json.Token
 
 // A Number represents a JSON number literal.
-type Number string
-
-// String returns the literal text of the number.
-func (n Number) String() string { return string(n) }
-
-// Float64 returns the number as a float64.
-func (n Number) Float64() (float64, error) {
-	return strconv.ParseFloat(string(n), 64)
-}
-
-// Int64 returns the number as an int64.
-func (n Number) Int64() (int64, error) {
-	return strconv.ParseInt(string(n), 10, 64)
-}
-
-func (n Number) MarshalJSON() ([]byte, error) {
-	if n == "" {
-		return []byte("0"), nil
-	}
-	if _, err := n.Float64(); err != nil {
-		return nil, err
-	}
-	return []byte(n), nil
-}
-
-func (n *Number) UnmarshalJSON(b []byte) error {
-	s := string(b)
-	if _, err := strconv.ParseFloat(s, 64); err != nil {
-		return &SyntaxError{msg: err.Error()}
-	}
-	*n = Number(s)
-	return nil
-}
+type Number = json.Number
 
 // RawMessage is a raw encoded JSON value.
 // It implements Marshaler and Unmarshaler and can
 // be used to delay JSON decoding or precompute a JSON encoding.
-type RawMessage []byte
+type RawMessage = json.RawMessage
 
-// MarshalJSON returns m as the JSON encoding of m.
-func (m RawMessage) MarshalJSON() ([]byte, error) {
-	if m == nil {
-		return []byte("null"), nil
-	}
-	return m, nil
-}
-
-// UnmarshalJSON sets *m to a copy of data.
-func (m *RawMessage) UnmarshalJSON(data []byte) error {
-	if m == nil {
-		return errors.New("json.RawMessage: UnmarshalJSON on nil pointer")
-	}
-	*m = data
-	return nil
-}
+// A Delim is a JSON array or object delimiter, one of [ ] { or }.
+type Delim = json.Delim
 
 // Compact appends to dst the JSON-encoded src with
 // insignificant space characters elided.
 func Compact(dst *bytes.Buffer, src []byte) error {
-	return compact(dst, src, false)
+	return encoder.Compact(dst, src, false)
 }
 
 // Indent appends to dst an indented form of the JSON-encoded src.
@@ -355,7 +310,7 @@ func Compact(dst *bytes.Buffer, src []byte) error {
 // For example, if src has no trailing spaces, neither will dst;
 // if src ends in a trailing newline, so will dst.
 func Indent(dst *bytes.Buffer, src []byte, prefix, indent string) error {
-	return encodeWithIndent(dst, src, prefix, indent)
+	return encoder.Indent(dst, src, prefix, indent)
 }
 
 // HTMLEscape appends to dst the JSON-encoded src with <, >, &, U+2028 and U+2029

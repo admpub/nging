@@ -60,7 +60,7 @@ github.com/admpub/events/emitter
 github.com/admpub/fasthttp
 github.com/admpub/fasthttp/fasthttputil
 github.com/admpub/fasthttp/stackless
-# github.com/admpub/frp v0.28.1
+# github.com/admpub/frp v0.0.0-00010101000000-000000000000 => ../frp
 ## explicit
 github.com/admpub/frp/assets
 github.com/admpub/frp/assets/frpc/statik
@@ -69,26 +69,36 @@ github.com/admpub/frp/client
 github.com/admpub/frp/client/event
 github.com/admpub/frp/client/health
 github.com/admpub/frp/client/proxy
-github.com/admpub/frp/g
-github.com/admpub/frp/models/config
-github.com/admpub/frp/models/consts
-github.com/admpub/frp/models/errors
-github.com/admpub/frp/models/msg
-github.com/admpub/frp/models/nathole
-github.com/admpub/frp/models/plugin
-github.com/admpub/frp/models/proto/udp
+github.com/admpub/frp/pkg/auth
+github.com/admpub/frp/pkg/config
+github.com/admpub/frp/pkg/consts
+github.com/admpub/frp/pkg/errors
+github.com/admpub/frp/pkg/metrics
+github.com/admpub/frp/pkg/metrics/aggregate
+github.com/admpub/frp/pkg/metrics/mem
+github.com/admpub/frp/pkg/metrics/prometheus
+github.com/admpub/frp/pkg/msg
+github.com/admpub/frp/pkg/nathole
+github.com/admpub/frp/pkg/plugin/client
+github.com/admpub/frp/pkg/plugin/server
+github.com/admpub/frp/pkg/proto/udp
+github.com/admpub/frp/pkg/transport
+github.com/admpub/frp/pkg/util/limit
+github.com/admpub/frp/pkg/util/log
+github.com/admpub/frp/pkg/util/metric
+github.com/admpub/frp/pkg/util/net
+github.com/admpub/frp/pkg/util/tcpmux
+github.com/admpub/frp/pkg/util/util
+github.com/admpub/frp/pkg/util/version
+github.com/admpub/frp/pkg/util/vhost
+github.com/admpub/frp/pkg/util/xlog
 github.com/admpub/frp/server
 github.com/admpub/frp/server/controller
 github.com/admpub/frp/server/group
+github.com/admpub/frp/server/metrics
 github.com/admpub/frp/server/ports
 github.com/admpub/frp/server/proxy
-github.com/admpub/frp/server/stats
-github.com/admpub/frp/utils/log
-github.com/admpub/frp/utils/metric
-github.com/admpub/frp/utils/net
-github.com/admpub/frp/utils/util
-github.com/admpub/frp/utils/version
-github.com/admpub/frp/utils/vhost
+github.com/admpub/frp/server/visitor
 # github.com/admpub/fsnotify v1.4.4
 github.com/admpub/fsnotify
 # github.com/admpub/ftpserver v0.0.0-20180821023651-6b950445d653
@@ -178,7 +188,6 @@ github.com/admpub/imageproxy/third_party/http
 github.com/admpub/imaging
 # github.com/admpub/ini v1.38.2
 ## explicit
-github.com/admpub/ini
 # github.com/admpub/ip2region v1.2.5
 ## explicit
 github.com/admpub/ip2region/binding/golang/ip2region
@@ -498,6 +507,8 @@ github.com/cloudfoundry/jibber_jabber
 # github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0
 ## explicit
 github.com/codegangsta/inject
+# github.com/coreos/go-oidc v2.2.1+incompatible
+github.com/coreos/go-oidc
 # github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
 ## explicit
 github.com/coscms/go-imgparse/imgparse
@@ -615,9 +626,15 @@ github.com/gobwas/pool/pbytes
 # github.com/gobwas/ws v1.0.4
 github.com/gobwas/ws
 github.com/gobwas/ws/wsutil
-# github.com/goccy/go-json v0.4.7
-## explicit
+# github.com/goccy/go-json v0.4.8
 github.com/goccy/go-json
+github.com/goccy/go-json/internal/encoder
+github.com/goccy/go-json/internal/encoder/vm
+github.com/goccy/go-json/internal/encoder/vm_escaped
+github.com/goccy/go-json/internal/encoder/vm_escaped_indent
+github.com/goccy/go-json/internal/encoder/vm_indent
+github.com/goccy/go-json/internal/errors
+github.com/goccy/go-json/internal/runtime
 # github.com/gofrs/uuid v3.2.0+incompatible
 github.com/gofrs/uuid
 # github.com/goftp/file-driver v0.0.0-20180502053751-5d604a0fc0c9
@@ -926,6 +943,9 @@ github.com/pkg/errors
 github.com/pkg/sftp
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
+# github.com/pquerna/cachecontrol v0.0.0-20180517163645-1555304b9b35
+github.com/pquerna/cachecontrol
+github.com/pquerna/cachecontrol/cacheobject
 # github.com/prometheus/client_golang v1.8.0
 ## explicit
 github.com/prometheus/client_golang/prometheus
@@ -1123,6 +1143,8 @@ github.com/webx-top/echo/param
 github.com/webx-top/echo/subdomains
 github.com/webx-top/echo/testing
 github.com/webx-top/echo/testing/test
+# github.com/webx-top/echo-prometheus v1.0.2
+github.com/webx-top/echo-prometheus
 # github.com/webx-top/image v0.0.7
 ## explicit
 github.com/webx-top/image
@@ -1257,6 +1279,7 @@ golang.org/x/net/trace
 golang.org/x/net/websocket
 # golang.org/x/oauth2 v0.0.0-20201203001011-0b49973bad19
 golang.org/x/oauth2
+golang.org/x/oauth2/clientcredentials
 golang.org/x/oauth2/internal
 # golang.org/x/sys v0.0.0-20210317091845-390168757d9c
 ## explicit
@@ -1399,7 +1422,7 @@ google.golang.org/protobuf/types/known/timestamppb
 # gopkg.in/fsnotify/fsnotify.v1 v1.4.7
 ## explicit
 gopkg.in/fsnotify/fsnotify.v1
-# gopkg.in/ini.v1 v1.51.1
+# gopkg.in/ini.v1 v1.62.0
 gopkg.in/ini.v1
 # gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 ## explicit
@@ -1427,3 +1450,4 @@ gopkg.in/yaml.v3
 # github.com/caddyserver/caddy => github.com/admpub/caddy v1.1.5
 # github.com/mholt/certmagic => github.com/caddyserver/certmagic v0.8.3
 # google.golang.org/protobuf => github.com/protocolbuffers/protobuf-go v1.25.0
+# github.com/admpub/frp => ../frp

@@ -24,9 +24,9 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/admpub/frp/models/config"
-	"github.com/admpub/frp/models/consts"
-	"github.com/admpub/frp/utils/util"
+	"github.com/admpub/frp/pkg/config"
+	"github.com/admpub/frp/pkg/consts"
+	"github.com/admpub/frp/pkg/util/util"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/webx-top/echo"

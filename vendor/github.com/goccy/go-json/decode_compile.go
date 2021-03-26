@@ -1,11 +1,18 @@
 package json
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strings"
 	"unicode"
 	"unsafe"
+
+	"github.com/goccy/go-json/internal/runtime"
+)
+
+var (
+	jsonNumberType = reflect.TypeOf(json.Number(""))
 )
 
 func decodeCompileToGetDecoderSlowPath(typeptr uintptr, typ *rtype) (decoder, error) {
@@ -80,7 +87,7 @@ func decodeCompile(typ *rtype, structName, fieldName string, structTypeToDecoder
 	case reflect.Uint64:
 		return decodeCompileUint64(typ, structName, fieldName)
 	case reflect.String:
-		return decodeCompileString(structName, fieldName)
+		return decodeCompileString(typ, structName, fieldName)
 	case reflect.Bool:
 		return decodeCompileBool(structName, fieldName)
 	case reflect.Float32:
@@ -203,7 +210,12 @@ func decodeCompileFloat64(structName, fieldName string) (decoder, error) {
 	}), nil
 }
 
-func decodeCompileString(structName, fieldName string) (decoder, error) {
+func decodeCompileString(typ *rtype, structName, fieldName string) (decoder, error) {
+	if typ == type2rtype(jsonNumberType) {
+		return newNumberDecoder(structName, fieldName, func(p unsafe.Pointer, v Number) {
+			*(*Number)(p) = v
+		}), nil
+	}
 	return newStringDecoder(structName, fieldName), nil
 }
 
@@ -317,16 +329,16 @@ func decodeCompileStruct(typ *rtype, structName, fieldName string, structTypeToD
 	structName = typ.Name()
 	for i := 0; i < fieldNum; i++ {
 		field := typ.Field(i)
-		if isIgnoredStructField(field) {
+		if runtime.IsIgnoredStructField(field) {
 			continue
 		}
 		isUnexportedField := unicode.IsLower([]rune(field.Name)[0])
-		tag := structTagFromField(field)
+		tag := runtime.StructTagFromField(field)
 		dec, err := decodeCompile(type2rtype(field.Type), structName, field.Name, structTypeToDecoder)
 		if err != nil {
 			return nil, err
 		}
-		if field.Anonymous && !tag.isTaggedKey {
+		if field.Anonymous && !tag.IsTaggedKey {
 			if stDec, ok := dec.(*structDecoder); ok {
 				if type2rtype(field.Type) == typ {
 					// recursive definition
@@ -404,19 +416,19 @@ func decodeCompileStruct(typ *rtype, structName, fieldName string, structTypeToD
 				}
 			}
 		} else {
-			if tag.isString {
+			if tag.IsString {
 				dec = newWrappedStringDecoder(type2rtype(field.Type), dec, structName, field.Name)
 			}
 			var key string
-			if tag.key != "" {
-				key = tag.key
+			if tag.Key != "" {
+				key = tag.Key
 			} else {
 				key = field.Name
 			}
 			fieldSet := &structFieldSet{
 				dec:         dec,
 				offset:      field.Offset,
-				isTaggedKey: tag.isTaggedKey,
+				isTaggedKey: tag.IsTaggedKey,
 				key:         key,
 				keyLen:      int64(len(key)),
 			}

@@ -15,35 +15,47 @@
 package controller
 
 import (
-	"github.com/admpub/frp/models/nathole"
+	"github.com/admpub/frp/pkg/nathole"
+	plugin "github.com/admpub/frp/pkg/plugin/server"
+	"github.com/admpub/frp/pkg/util/tcpmux"
+	"github.com/admpub/frp/pkg/util/vhost"
 	"github.com/admpub/frp/server/group"
 	"github.com/admpub/frp/server/ports"
-	"github.com/admpub/frp/utils/vhost"
+	"github.com/admpub/frp/server/visitor"
 )
 
 // All resource managers and controllers
 type ResourceController struct {
 	// Manage all visitor listeners
-	VisitorManager *VisitorManager
+	VisitorManager *visitor.Manager
 
-	// Tcp Group Controller
-	TcpGroupCtl *group.TcpGroupCtl
+	// TCP Group Controller
+	TCPGroupCtl *group.TCPGroupCtl
 
 	// HTTP Group Controller
 	HTTPGroupCtl *group.HTTPGroupController
 
-	// Manage all tcp ports
-	TcpPortManager *ports.PortManager
+	// TCP Mux Group Controller
+	TCPMuxGroupCtl *group.TCPMuxGroupCtl
 
-	// Manage all udp ports
-	UdpPortManager *ports.PortManager
+	// Manage all TCP ports
+	TCPPortManager *ports.Manager
 
-	// For http proxies, forwarding http requests
-	HttpReverseProxy *vhost.HttpReverseProxy
+	// Manage all UDP ports
+	UDPPortManager *ports.Manager
 
-	// For https proxies, route requests to different clients by hostname and other information
-	VhostHttpsMuxer *vhost.HttpsMuxer
+	// For HTTP proxies, forwarding HTTP requests
+	HTTPReverseProxy *vhost.HTTPReverseProxy
+
+	// For HTTPS proxies, route requests to different clients by hostname and other information
+	VhostHTTPSMuxer *vhost.HTTPSMuxer
 
 	// Controller for nat hole connections
-	NatHoleController *nathole.NatHoleController
+	NatHoleController *nathole.Controller
+
+	// TCPMux HTTP CONNECT multiplexer
+	TCPMuxHTTPConnectMuxer *tcpmux.HTTPConnectTCPMuxer
+
+	// All server manager plugin
+	PluginManager *plugin.Manager
 }

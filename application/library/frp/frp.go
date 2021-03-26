@@ -37,84 +37,88 @@ import (
 	_ "github.com/admpub/frp/assets/frpc/statik"
 	_ "github.com/admpub/frp/assets/frps/statik"
 	"github.com/admpub/frp/client"
-	"github.com/admpub/frp/g"
-	"github.com/admpub/frp/models/config"
-	"github.com/admpub/frp/models/consts"
+	"github.com/admpub/frp/pkg/config"
+	"github.com/admpub/frp/pkg/consts"
+	"github.com/admpub/frp/pkg/util/util"
+	"github.com/admpub/frp/pkg/util/log"
 	"github.com/admpub/frp/server"
-	"github.com/admpub/frp/utils/log"
-	"github.com/admpub/frp/utils/util"
-	"github.com/admpub/ini"
 	"github.com/admpub/nging/application/dbschema"
 )
 
-func SetClientConfigFromDB(conf *dbschema.NgingFrpClient) *g.ClientCfg {
-	g.GlbClientCfg.ServerAddr = conf.ServerAddr
-	g.GlbClientCfg.ServerPort = int(conf.ServerPort)
-	g.GlbClientCfg.User = conf.User
-	g.GlbClientCfg.Protocol = conf.Protocol
-	g.GlbClientCfg.Token = conf.Token
-	g.GlbClientCfg.LogLevel = conf.LogLevel
+var (
+	client 
+)
+
+func SetClientConfigFromDB(conf *dbschema.NgingFrpClient) *config.ClientCommonConf {
+	c := config.GetDefaultClientConf()
+	c.ServerAddr = conf.ServerAddr
+	c.ServerPort = int(conf.ServerPort)
+	c.User = conf.User
+	c.Protocol = conf.Protocol
+	c.Token = conf.Token
+	c.LogLevel = conf.LogLevel
 	if conf.LogWay == `console` {
 		conf.LogFile = `console`
 	}
-	g.GlbClientCfg.LogFile = conf.LogFile
-	g.GlbClientCfg.LogMaxDays = int64(conf.LogMaxDays)
-	g.GlbClientCfg.HttpProxy = conf.HttpProxy
-	g.GlbClientCfg.LogWay = conf.LogWay
-	g.GlbClientCfg.AdminAddr = conf.AdminAddr
-	g.GlbClientCfg.AdminPort = int(conf.AdminPort)
-	g.GlbClientCfg.AdminUser = conf.AdminUser
-	g.GlbClientCfg.AdminPwd = conf.AdminPwd
-	g.GlbClientCfg.PoolCount = int(conf.PoolCount)
-	g.GlbClientCfg.TcpMux = conf.TcpMux == `Y`
-	g.GlbClientCfg.DnsServer = conf.DnsServer
-	g.GlbClientCfg.LoginFailExit = conf.LoginFailExit == `Y`
-	g.GlbClientCfg.HeartBeatInterval = conf.HeartbeatInterval
-	g.GlbClientCfg.HeartBeatTimeout = conf.HeartbeatTimeout
+	c.LogFile = conf.LogFile
+	c.LogMaxDays = int64(conf.LogMaxDays)
+	c.HttpProxy = conf.HttpProxy
+	c.LogWay = conf.LogWay
+	c.AdminAddr = conf.AdminAddr
+	c.AdminPort = int(conf.AdminPort)
+	c.AdminUser = conf.AdminUser
+	c.AdminPwd = conf.AdminPwd
+	c.PoolCount = int(conf.PoolCount)
+	c.TcpMux = conf.TcpMux == `Y`
+	c.DnsServer = conf.DnsServer
+	c.LoginFailExit = conf.LoginFailExit == `Y`
+	c.HeartBeatInterval = conf.HeartbeatInterval
+	c.HeartBeatTimeout = conf.HeartbeatTimeout
 	conf.Start = strings.TrimSpace(conf.Start)
 	if len(conf.Start) > 0 {
 		for _, name := range strings.Split(conf.Start, `,`) {
-			g.GlbClientCfg.Start[strings.TrimSpace(name)] = struct{}{}
+			c.Start[strings.TrimSpace(name)] = struct{}{}
 		}
 	}
-	return g.GlbClientCfg
+	return &c
 }
 
-func SetServerConfigFromDB(conf *dbschema.NgingFrpServer) *g.ServerCfg {
-	g.GlbServerCfg.BindAddr = conf.Addr
-	g.GlbServerCfg.BindPort = int(conf.Port)
-	g.GlbServerCfg.BindUdpPort = int(conf.UdpPort)
-	g.GlbServerCfg.KcpBindPort = int(conf.KcpPort)
-	g.GlbServerCfg.ProxyBindAddr = conf.ProxyAddr
-	g.GlbServerCfg.VhostHttpPort = int(conf.VhostHttpPort)
-	g.GlbServerCfg.VhostHttpTimeout = int64(conf.VhostHttpTimeout)
-	if g.GlbServerCfg.VhostHttpTimeout < 1 {
-		g.GlbServerCfg.VhostHttpTimeout = 60
+func SetServerConfigFromDB(conf *dbschema.NgingFrpServer) *config.ServerCommonCfg {
+	c := config.GetDefaultServerConf()
+	c.BindAddr = conf.Addr
+	c.BindPort = int(conf.Port)
+	c.BindUdpPort = int(conf.UdpPort)
+	c.KcpBindPort = int(conf.KcpPort)
+	c.ProxyBindAddr = conf.ProxyAddr
+	c.VhostHttpPort = int(conf.VhostHttpPort)
+	c.VhostHttpTimeout = int64(conf.VhostHttpTimeout)
+	if c.VhostHttpTimeout < 1 {
+		c.VhostHttpTimeout = 60
 	}
-	g.GlbServerCfg.VhostHttpsPort = int(conf.VhostHttpsPort)
+	c.VhostHttpsPort = int(conf.VhostHttpsPort)
 
-	g.GlbServerCfg.DashboardAddr = conf.DashboardAddr
-	g.GlbServerCfg.DashboardPort = int(conf.DashboardPort)
-	g.GlbServerCfg.DashboardUser = conf.DashboardUser
-	g.GlbServerCfg.DashboardPwd = conf.DashboardPwd
+	c.DashboardAddr = conf.DashboardAddr
+	c.DashboardPort = int(conf.DashboardPort)
+	c.DashboardUser = conf.DashboardUser
+	c.DashboardPwd = conf.DashboardPwd
 	if conf.LogWay == `console` {
 		conf.LogFile = `console`
 	}
-	g.GlbServerCfg.LogFile = conf.LogFile
-	g.GlbServerCfg.LogWay = conf.LogWay
-	g.GlbServerCfg.LogLevel = conf.LogLevel
-	g.GlbServerCfg.LogMaxDays = int64(conf.LogMaxDays)
-	g.GlbServerCfg.Token = conf.Token
-	g.GlbServerCfg.SubDomainHost = conf.SubdomainHost
-	g.GlbServerCfg.MaxPortsPerClient = int64(conf.MaxPortsPerClient)
-	g.GlbServerCfg.TcpMux = conf.TcpMux == `Y`
+	c.LogFile = conf.LogFile
+	c.LogWay = conf.LogWay
+	c.LogLevel = conf.LogLevel
+	c.LogMaxDays = int64(conf.LogMaxDays)
+	c.Token = conf.Token
+	c.SubDomainHost = conf.SubdomainHost
+	c.MaxPortsPerClient = int64(conf.MaxPortsPerClient)
+	c.TcpMux = conf.TcpMux == `Y`
 
 	// e.g. 1000-2000,2001,2002,3000-4000
 	ports, _ := util.ParseRangeNumbers(conf.AllowPorts)
 	for _, port := range ports {
-		g.GlbServerCfg.AllowPorts[int(port)] = struct{}{}
+		c.AllowPorts[int(port)] = struct{}{}
 	}
-	return g.GlbServerCfg
+	return &c
 }
 
 func StartServerByConfigFile(filePath string, pidFile string) error {
@@ -130,16 +134,16 @@ func StartServerByConfigFile(filePath string, pidFile string) error {
 		if err != nil {
 			return err
 		}
-		SetServerConfigFromDB(r)
-		return StartServer(pidFile)
+		c := SetServerConfigFromDB(r)
+		return StartServer(pidFile, c)
 	case `.yaml`:
 		r := &dbschema.NgingFrpServer{}
 		err = confl.Unmarshal(b, r)
 		if err != nil {
 			return err
 		}
-		SetServerConfigFromDB(r)
-		return StartServer(pidFile)
+		c := SetServerConfigFromDB(r)
+		return StartServer(pidFile, c)
 	default:
 		content := string(b)
 		return StartServerByConfig(content, pidFile)
@@ -147,25 +151,24 @@ func StartServerByConfigFile(filePath string, pidFile string) error {
 }
 
 func StartServerByConfig(configContent string, pidFile string) error {
-	cfg, err := config.UnmarshalServerConfFromIni(&g.GlbServerCfg.ServerCommonConf, configContent)
+	cfg, err := config.UnmarshalServerConfFromIni(&c.ServerCommonConf, configContent)
 	if err != nil {
 		return err
 	}
-	g.GlbServerCfg.ServerCommonConf = *cfg
-	return StartServer(pidFile)
+	return StartServer(pidFile, cfg)
 }
 
-func StartServer(pidFile string) error {
-	err := g.GlbServerCfg.ServerCommonConf.Check()
+func StartServer(pidFile string, c *config.ServerCommonConf) error {
+	err := c.Check()
 	if err != nil {
 		return err
 	}
-	config.InitServerCfg(&g.GlbServerCfg.ServerCommonConf)
+	config.InitServerCfg(c)
 
-	log.InitLog(g.GlbServerCfg.LogWay,
-		g.GlbServerCfg.LogFile,
-		g.GlbServerCfg.LogLevel,
-		g.GlbServerCfg.LogMaxDays)
+	log.InitLog(c.LogWay,
+		c.LogFile,
+		c.LogLevel,
+		c.LogMaxDays)
 	if len(pidFile) > 0 {
 		err := com.WritePidFile(pidFile)
 		if err != nil {
@@ -189,11 +192,11 @@ func parseProxyConfig(extra echo.H) (pxyCfgs map[string]config.ProxyConf, visito
 	proxyConfs := NewProxyConfig()
 	proxyConfs.Visitor, _ = extra[`visitor`].(map[string]interface{})
 	proxyConfs.Proxy, _ = extra[`proxy`].(map[string]interface{})
-	prefix := g.GlbClientCfg.User
+	prefix := c.User
 	if len(prefix) > 0 {
 		prefix += `.`
 	}
-	startProxy := g.GlbClientCfg.Start
+	startProxy := c.Start
 	startAll := true
 	if len(startProxy) > 0 {
 		startAll = false
@@ -297,6 +300,7 @@ func StartClientByConfigFile(filePath string, pidFile string) error {
 	var (
 		pxyCfgs     map[string]config.ProxyConf
 		visitorCfgs map[string]config.VisitorConf
+		c *config.ClientCommonConf
 	)
 	ext := filepath.Ext(filePath)
 	switch strings.ToLower(ext) {
@@ -310,49 +314,60 @@ func StartClientByConfigFile(filePath string, pidFile string) error {
 		if err != nil {
 			return err
 		}
-		SetClientConfigFromDB(r.NgingFrpClient)
+		c = SetClientConfigFromDB(r.NgingFrpClient)
 		if len(r.Extra) > 0 {
 			pxyCfgs, visitorCfgs = parseProxyConfig(r.Extra)
 		}
+		filePath = ``
 	case `.yaml`:
 		r := NewClientConfig()
 		_, err := confl.DecodeFile(filePath, r)
 		if err != nil {
 			return err
 		}
-		SetClientConfigFromDB(r.NgingFrpClient)
+		c = SetClientConfigFromDB(r.NgingFrpClient)
 		if len(r.Extra) > 0 {
 			pxyCfgs, visitorCfgs = parseProxyConfig(r.Extra)
 		}
+		filePath = ``
 	default:
-		conf, err := ini.Load(filePath)
+		content, err := config.GetRenderedConfFromFile(filePath)
 		if err != nil {
-			return err
+			return fmt.Errorf("load frpc config file error: %w",err)
 		}
-		pxyCfgs, visitorCfgs, err = config.LoadAllConfFromIni(g.GlbClientCfg.User, conf, g.GlbClientCfg.Start)
+		c, err = config.UnmarshalClientConfFromIni(content)
+		if err != nil {
+			return fmt.Errorf("load frpc common section error: %w",err)
+		}
+		pxyCfgs, visitorCfgs, err = config.LoadAllProxyConfsFromIni(c.User, content, c.Start)
 		if err != nil {
 			return err
 		}
 	}
-	return StartClient(pxyCfgs, visitorCfgs, pidFile)
+	return StartClient(pxyCfgs, visitorCfgs, pidFile, c, filePath)
 }
 
 func StartClientByConfig(configContent string, pidFile string) error {
-	conf, err := ini.LoadContent(configContent)
+	c, err := config.UnmarshalClientConfFromIni(configContent)
+	if err != nil {
+		return fmt.Errorf("load frpc common section error: %w",err)
+	}
+	pxyCfgs, visitorCfgs, err := config.LoadAllProxyConfsFromIni(c.User, configContent, c.Start)
 	if err != nil {
 		return err
 	}
-	pxyCfgs, visitorCfgs, err := config.LoadAllConfFromIni(g.GlbClientCfg.User, conf, g.GlbClientCfg.Start)
-	if err != nil {
-		return err
-	}
-	return StartClient(pxyCfgs, visitorCfgs, pidFile)
+	return StartClient(pxyCfgs, visitorCfgs, pidFile, c)
 }
 
-func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]config.VisitorConf, pidFile string) (err error) {
-	log.InitLog(g.GlbClientCfg.LogWay, g.GlbClientCfg.LogFile, g.GlbClientCfg.LogLevel, g.GlbClientCfg.LogMaxDays)
-	if len(g.GlbClientCfg.DnsServer) > 0 {
-		s := g.GlbClientCfg.DnsServer
+func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]config.VisitorConf, 
+	pidFile string, c *config.ClientCommonConf, configFileArg ...string) (err error) {
+	var configFile string
+	if len(configFileArg) > 0 {
+		configFile = configFileArg[0]
+	}
+	log.InitLog(c.LogWay, c.LogFile, c.LogLevel, c.LogMaxDays)
+	if len(c.DnsServer) > 0 {
+		s := c.DnsServer
 		if !strings.Contains(s, ":") {
 			s += ":53"
 		}
@@ -372,11 +387,11 @@ func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]con
 		}
 	}
 	/*
-		echo.Dump(g.GlbClientCfg)
+		echo.Dump(c)
 		echo.Dump(pxyCfgs)
 		echo.Dump(visitorCfgs)
 	*/
-	svr, err := client.NewService(pxyCfgs, visitorCfgs)
+	svr, err := client.NewService(*c, pxyCfgs, visitorCfgs, configFile)
 	if err != nil {
 		return err
 	}
@@ -384,7 +399,7 @@ func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]con
 	err = svr.Run()
 
 	// Capture the exit signal if we use kcp.
-	if g.GlbClientCfg.Protocol == "kcp" {
+	if c.Protocol == "kcp" {
 		var kcpDoneCh = make(chan struct{})
 		go handleSignal(svr, kcpDoneCh)
 		<-kcpDoneCh

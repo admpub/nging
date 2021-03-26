@@ -2,30 +2,8 @@ package server
 
 import (
 	"github.com/admpub/frp/assets"
-	"github.com/admpub/frp/g"
 	"github.com/webx-top/echo"
 )
-
-func APIServerInfo(c echo.Context) error {
-	return ServerService.ApiServerInfo(c)
-}
-
-func APIProxyByType(c echo.Context) error {
-	return ServerService.ApiProxyByType(c)
-}
-
-func APIProxyByTypeAndName(c echo.Context) error {
-	return ServerService.ApiProxyByTypeAndName(c)
-}
-
-func APIProxyTraffic(c echo.Context) error {
-	return ServerService.ApiProxyTraffic(c)
-}
-
-// RegisterTo 为echo框架创建路由
-func RegisterTo(router echo.RouteRegister) {
-	ServerService.RegisterTo(router)
-}
 
 // RegisterTo 为echo框架创建路由
 func (svr *Service) RegisterTo(router echo.RouteRegister) {
@@ -38,7 +16,7 @@ func (svr *Service) RegisterTo(router echo.RouteRegister) {
 	router.Get("/", func(c echo.Context) error {
 		return c.Redirect("./static/")
 	})
-	cfg := &g.GlbServerCfg.ServerCommonConf
+	cfg := &svr.cfg
 	//cfg.AssetsDir = `/Users/hank/go/src/github.com/admpub/frp/assets/static`
 	err := assets.Load(cfg.AssetsDir)
 	if err != nil {

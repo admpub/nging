@@ -8,6 +8,8 @@ replace github.com/mholt/certmagic => github.com/caddyserver/certmagic v0.8.3
 
 replace google.golang.org/protobuf => github.com/protocolbuffers/protobuf-go v1.25.0
 
+replace github.com/admpub/frp => ../frp
+
 require (
 	github.com/PuerkitoBio/goquery v1.6.0 // indirect
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
@@ -26,7 +28,7 @@ require (
 	github.com/admpub/errors v0.8.2
 	github.com/admpub/events v0.0.0-20190913050400-383beb0843c6
 	github.com/admpub/fasthttp v0.0.1 // indirect
-	github.com/admpub/frp v0.28.1
+	github.com/admpub/frp v0.0.0-00010101000000-000000000000
 	github.com/admpub/ftpserver v0.0.0-20180821023651-6b950445d653
 	github.com/admpub/gifresize v1.0.2 // indirect
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
@@ -53,7 +55,7 @@ require (
 	github.com/admpub/identicon v1.0.2 // indirect
 	github.com/admpub/imageproxy v0.9.1
 	github.com/admpub/imaging v1.5.0 // indirect
-	github.com/admpub/ini v1.38.2
+	github.com/admpub/ini v1.38.2 // indirect
 	github.com/admpub/ip2region v1.2.5
 	github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
 	github.com/admpub/log v0.2.2
@@ -108,7 +110,6 @@ require (
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-openapi/strfmt v0.19.11 // indirect
-	github.com/goccy/go-json v0.4.7 // indirect
 	github.com/goftp/file-driver v0.0.0-20180502053751-5d604a0fc0c9 // indirect
 	github.com/goftp/server v0.0.0-20200708154336-f64f7c2d8a42 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect

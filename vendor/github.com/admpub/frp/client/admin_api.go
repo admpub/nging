@@ -17,15 +17,12 @@ package client
 import (
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"sort"
 	"strings"
 
 	"github.com/admpub/frp/client/proxy"
-	"github.com/admpub/frp/g"
-	"github.com/admpub/frp/models/config"
-	"github.com/admpub/frp/utils/log"
-	"github.com/admpub/ini"
+	"github.com/admpub/frp/pkg/config"
+	"github.com/admpub/frp/pkg/util/log"
 	"github.com/webx-top/echo"
 )
 
@@ -41,10 +38,10 @@ func (svr *Service) apiReload(c echo.Context) (err error) {
 	log.Info("Http request [/api/reload]")
 	defer func() {
 		log.Info("Http response [/api/reload]: code [%d]", res.Code)
-		err = c.JSON(&res)
+		err = c.String(res.Msg, res.Code)
 	}()
 
-	content, err := config.GetRenderedConfFromFile(g.GlbClientCfg.CfgFile)
+	content, err := config.GetRenderedConfFromFile(svr.cfgFile)
 	if err != nil {
 		res.Code = 400
 		res.Msg = err.Error()
@@ -52,7 +49,7 @@ func (svr *Service) apiReload(c echo.Context) (err error) {
 		return
 	}
 
-	newCommonCfg, err := config.UnmarshalClientConfFromIni(nil, content)
+	newCommonCfg, err := config.UnmarshalClientConfFromIni(content)
 	if err != nil {
 		res.Code = 400
 		res.Msg = err.Error()
@@ -60,19 +57,11 @@ func (svr *Service) apiReload(c echo.Context) (err error) {
 		return
 	}
 
-	conf, err := ini.Load(g.GlbClientCfg.CfgFile)
+	pxyCfgs, visitorCfgs, err := config.LoadAllProxyConfsFromIni(svr.cfg.User, content, newCommonCfg.Start)
 	if err != nil {
 		res.Code = 400
 		res.Msg = err.Error()
 		log.Warn("reload frpc proxy config error: %s", res.Msg)
-		return
-	}
-
-	pxyCfgs, visitorCfgs, err := config.LoadAllConfFromIni(g.GlbClientCfg.User, conf, newCommonCfg.Start)
-	if err != nil {
-		res.Code = 500
-		res.Msg = err.Error()
-		log.Error("reload frpc proxy config error: %v", err)
 		return
 	}
 
@@ -88,12 +77,13 @@ func (svr *Service) apiReload(c echo.Context) (err error) {
 }
 
 type StatusResp struct {
-	Tcp   []ProxyStatusResp `json:"tcp"`
-	Udp   []ProxyStatusResp `json:"udp"`
-	Http  []ProxyStatusResp `json:"http"`
-	Https []ProxyStatusResp `json:"https"`
-	Stcp  []ProxyStatusResp `json:"stcp"`
-	Xtcp  []ProxyStatusResp `json:"xtcp"`
+	TCP   []ProxyStatusResp `json:"tcp"`
+	UDP   []ProxyStatusResp `json:"udp"`
+	HTTP  []ProxyStatusResp `json:"http"`
+	HTTPS []ProxyStatusResp `json:"https"`
+	STCP  []ProxyStatusResp `json:"stcp"`
+	XTCP  []ProxyStatusResp `json:"xtcp"`
+	SUDP  []ProxyStatusResp `json:"sudp"`
 }
 
 type ProxyStatusResp struct {
@@ -112,53 +102,58 @@ func (a ByProxyStatusResp) Len() int           { return len(a) }
 func (a ByProxyStatusResp) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByProxyStatusResp) Less(i, j int) bool { return strings.Compare(a[i].Name, a[j].Name) < 0 }
 
-func NewProxyStatusResp(status *proxy.ProxyStatus) ProxyStatusResp {
+func NewProxyStatusResp(status *proxy.WorkingStatus, serverAddr string) ProxyStatusResp {
 	psr := ProxyStatusResp{
 		Name:   status.Name,
 		Type:   status.Type,
-		Status: status.Status,
+		Status: status.Phase,
 		Err:    status.Err,
 	}
 	switch cfg := status.Cfg.(type) {
-	case *config.TcpProxyConf:
+	case *config.TCPProxyConf:
 		if cfg.LocalPort != 0 {
-			psr.LocalAddr = fmt.Sprintf("%s:%d", cfg.LocalIp, cfg.LocalPort)
+			psr.LocalAddr = fmt.Sprintf("%s:%d", cfg.LocalIP, cfg.LocalPort)
 		}
 		psr.Plugin = cfg.Plugin
 		if status.Err != "" {
-			psr.RemoteAddr = fmt.Sprintf("%s:%d", g.GlbClientCfg.ServerAddr, cfg.RemotePort)
+			psr.RemoteAddr = fmt.Sprintf("%s:%d", serverAddr, cfg.RemotePort)
 		} else {
-			psr.RemoteAddr = g.GlbClientCfg.ServerAddr + status.RemoteAddr
+			psr.RemoteAddr = serverAddr + status.RemoteAddr
 		}
-	case *config.UdpProxyConf:
+	case *config.UDPProxyConf:
 		if cfg.LocalPort != 0 {
-			psr.LocalAddr = fmt.Sprintf("%s:%d", cfg.LocalIp, cfg.LocalPort)
+			psr.LocalAddr = fmt.Sprintf("%s:%d", cfg.LocalIP, cfg.LocalPort)
 		}
 		if status.Err != "" {
-			psr.RemoteAddr = fmt.Sprintf("%s:%d", g.GlbClientCfg.ServerAddr, cfg.RemotePort)
+			psr.RemoteAddr = fmt.Sprintf("%s:%d", serverAddr, cfg.RemotePort)
 		} else {
-			psr.RemoteAddr = g.GlbClientCfg.ServerAddr + status.RemoteAddr
+			psr.RemoteAddr = serverAddr + status.RemoteAddr
 		}
-	case *config.HttpProxyConf:
+	case *config.HTTPProxyConf:
 		if cfg.LocalPort != 0 {
-			psr.LocalAddr = fmt.Sprintf("%s:%d", cfg.LocalIp, cfg.LocalPort)
-		}
-		psr.Plugin = cfg.Plugin
-		psr.RemoteAddr = status.RemoteAddr
-	case *config.HttpsProxyConf:
-		if cfg.LocalPort != 0 {
-			psr.LocalAddr = fmt.Sprintf("%s:%d", cfg.LocalIp, cfg.LocalPort)
+			psr.LocalAddr = fmt.Sprintf("%s:%d", cfg.LocalIP, cfg.LocalPort)
 		}
 		psr.Plugin = cfg.Plugin
 		psr.RemoteAddr = status.RemoteAddr
-	case *config.StcpProxyConf:
+	case *config.HTTPSProxyConf:
 		if cfg.LocalPort != 0 {
-			psr.LocalAddr = fmt.Sprintf("%s:%d", cfg.LocalIp, cfg.LocalPort)
+			psr.LocalAddr = fmt.Sprintf("%s:%d", cfg.LocalIP, cfg.LocalPort)
 		}
 		psr.Plugin = cfg.Plugin
-	case *config.XtcpProxyConf:
+		psr.RemoteAddr = status.RemoteAddr
+	case *config.STCPProxyConf:
 		if cfg.LocalPort != 0 {
-			psr.LocalAddr = fmt.Sprintf("%s:%d", cfg.LocalIp, cfg.LocalPort)
+			psr.LocalAddr = fmt.Sprintf("%s:%d", cfg.LocalIP, cfg.LocalPort)
+		}
+		psr.Plugin = cfg.Plugin
+	case *config.XTCPProxyConf:
+		if cfg.LocalPort != 0 {
+			psr.LocalAddr = fmt.Sprintf("%s:%d", cfg.LocalIP, cfg.LocalPort)
+		}
+		psr.Plugin = cfg.Plugin
+	case *config.SUDPProxyConf:
+		if cfg.LocalPort != 0 {
+			psr.LocalAddr = fmt.Sprintf("%s:%d", cfg.LocalIP, cfg.LocalPort)
 		}
 		psr.Plugin = cfg.Plugin
 	}
@@ -170,12 +165,13 @@ func (svr *Service) apiStatus(c echo.Context) (err error) {
 	var (
 		res StatusResp
 	)
-	res.Tcp = make([]ProxyStatusResp, 0)
-	res.Udp = make([]ProxyStatusResp, 0)
-	res.Http = make([]ProxyStatusResp, 0)
-	res.Https = make([]ProxyStatusResp, 0)
-	res.Stcp = make([]ProxyStatusResp, 0)
-	res.Xtcp = make([]ProxyStatusResp, 0)
+	res.TCP = make([]ProxyStatusResp, 0)
+	res.UDP = make([]ProxyStatusResp, 0)
+	res.HTTP = make([]ProxyStatusResp, 0)
+	res.HTTPS = make([]ProxyStatusResp, 0)
+	res.STCP = make([]ProxyStatusResp, 0)
+	res.XTCP = make([]ProxyStatusResp, 0)
+	res.SUDP = make([]ProxyStatusResp, 0)
 
 	log.Info("Http request [/api/status]")
 	defer func() {
@@ -187,49 +183,49 @@ func (svr *Service) apiStatus(c echo.Context) (err error) {
 	for _, status := range ps {
 		switch status.Type {
 		case "tcp":
-			res.Tcp = append(res.Tcp, NewProxyStatusResp(status))
+			res.TCP = append(res.TCP, NewProxyStatusResp(status, svr.cfg.ServerAddr))
 		case "udp":
-			res.Udp = append(res.Udp, NewProxyStatusResp(status))
+			res.UDP = append(res.UDP, NewProxyStatusResp(status, svr.cfg.ServerAddr))
 		case "http":
-			res.Http = append(res.Http, NewProxyStatusResp(status))
+			res.HTTP = append(res.HTTP, NewProxyStatusResp(status, svr.cfg.ServerAddr))
 		case "https":
-			res.Https = append(res.Https, NewProxyStatusResp(status))
+			res.HTTPS = append(res.HTTPS, NewProxyStatusResp(status, svr.cfg.ServerAddr))
 		case "stcp":
-			res.Stcp = append(res.Stcp, NewProxyStatusResp(status))
+			res.STCP = append(res.STCP, NewProxyStatusResp(status, svr.cfg.ServerAddr))
 		case "xtcp":
-			res.Xtcp = append(res.Xtcp, NewProxyStatusResp(status))
+			res.XTCP = append(res.XTCP, NewProxyStatusResp(status, svr.cfg.ServerAddr))
+		case "sudp":
+			res.SUDP = append(res.SUDP, NewProxyStatusResp(status, svr.cfg.ServerAddr))
 		}
 	}
-	sort.Sort(ByProxyStatusResp(res.Tcp))
-	sort.Sort(ByProxyStatusResp(res.Udp))
-	sort.Sort(ByProxyStatusResp(res.Http))
-	sort.Sort(ByProxyStatusResp(res.Https))
-	sort.Sort(ByProxyStatusResp(res.Stcp))
-	sort.Sort(ByProxyStatusResp(res.Xtcp))
+	sort.Sort(ByProxyStatusResp(res.TCP))
+	sort.Sort(ByProxyStatusResp(res.UDP))
+	sort.Sort(ByProxyStatusResp(res.HTTP))
+	sort.Sort(ByProxyStatusResp(res.HTTPS))
+	sort.Sort(ByProxyStatusResp(res.STCP))
+	sort.Sort(ByProxyStatusResp(res.XTCP))
+	sort.Sort(ByProxyStatusResp(res.SUDP))
 	return
 }
 
 // GET api/config
-func (svr *Service) apiGetConfig(w http.ResponseWriter, r *http.Request) {
+func (svr *Service) apiGetConfig(c echo.Context) (err error) {
 	res := GeneralResponse{Code: 200}
 
 	log.Info("Http get request [/api/config]")
 	defer func() {
 		log.Info("Http get response [/api/config], code [%d]", res.Code)
-		w.WriteHeader(res.Code)
-		if len(res.Msg) > 0 {
-			w.Write([]byte(res.Msg))
-		}
+		err = c.String(res.Msg, res.Code)
 	}()
 
-	if g.GlbClientCfg.CfgFile == "" {
+	if svr.cfgFile == "" {
 		res.Code = 400
 		res.Msg = "frpc has no config file path"
 		log.Warn("%s", res.Msg)
 		return
 	}
 
-	content, err := config.GetRenderedConfFromFile(g.GlbClientCfg.CfgFile)
+	content, err := config.GetRenderedConfFromFile(svr.cfgFile)
 	if err != nil {
 		res.Code = 400
 		res.Msg = err.Error()
@@ -237,7 +233,7 @@ func (svr *Service) apiGetConfig(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rows := strings.Split(content, "\n")
+	rows := strings.Split(string(content), "\n")
 	newRows := make([]string, 0, len(rows))
 	for _, row := range rows {
 		row = strings.TrimSpace(row)
@@ -247,22 +243,20 @@ func (svr *Service) apiGetConfig(w http.ResponseWriter, r *http.Request) {
 		newRows = append(newRows, row)
 	}
 	res.Msg = strings.Join(newRows, "\n")
+	return
 }
 
 // PUT api/config
-func (svr *Service) apiPutConfig(w http.ResponseWriter, r *http.Request) {
+func (svr *Service) apiPutConfig(c echo.Context) (err error) {
 	res := GeneralResponse{Code: 200}
 
 	log.Info("Http put request [/api/config]")
 	defer func() {
 		log.Info("Http put response [/api/config], code [%d]", res.Code)
-		w.WriteHeader(res.Code)
-		if len(res.Msg) > 0 {
-			w.Write([]byte(res.Msg))
-		}
+		err = c.String(res.Msg, res.Code)
 	}()
 
-	if len(g.GlbClientCfg.CfgFile) == 0 {
+	if len(svr.cfgFile) == 0 {
 		res.Code = 400
 		res.Msg = "frpc has no config file path"
 		log.Warn("%s", res.Msg)
@@ -270,7 +264,7 @@ func (svr *Service) apiPutConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// get new config content
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := ioutil.ReadAll(c.Request().Body())
 	if err != nil {
 		res.Code = 400
 		res.Msg = fmt.Sprintf("read request body error: %v", err)
@@ -287,7 +281,7 @@ func (svr *Service) apiPutConfig(w http.ResponseWriter, r *http.Request) {
 
 	// get token from origin content
 	token := ""
-	b, err := ioutil.ReadFile(g.GlbClientCfg.CfgFile)
+	b, err := ioutil.ReadFile(svr.cfgFile)
 	if err != nil {
 		res.Code = 400
 		res.Msg = err.Error()
@@ -326,11 +320,12 @@ func (svr *Service) apiPutConfig(w http.ResponseWriter, r *http.Request) {
 	}
 	content = strings.Join(newRows, "\n")
 
-	err = ioutil.WriteFile(g.GlbClientCfg.CfgFile, []byte(content), 0644)
+	err = ioutil.WriteFile(svr.cfgFile, []byte(content), 0644)
 	if err != nil {
 		res.Code = 500
 		res.Msg = fmt.Sprintf("write content to frpc config file error: %v", err)
 		log.Warn("%s", res.Msg)
 		return
 	}
+	return
 }

@@ -8,12 +8,6 @@ import (
 	"unsafe"
 )
 
-type Delim rune
-
-func (d Delim) String() string {
-	return string(d)
-}
-
 type decoder interface {
 	decode([]byte, int64, int64, unsafe.Pointer) (int64, error)
 	decodeStream(*stream, int64, unsafe.Pointer) error
@@ -37,7 +31,7 @@ func unmarshal(data []byte, v interface{}) error {
 	src := make([]byte, len(data)+1) // append nul byte to the end
 	copy(src, data)
 
-	header := (*interfaceHeader)(unsafe.Pointer(&v))
+	header := (*emptyInterface)(unsafe.Pointer(&v))
 
 	if err := validateType(header.typ, uintptr(header.ptr)); err != nil {
 		return err
@@ -56,7 +50,7 @@ func unmarshalNoEscape(data []byte, v interface{}) error {
 	src := make([]byte, len(data)+1) // append nul byte to the end
 	copy(src, data)
 
-	header := (*interfaceHeader)(unsafe.Pointer(&v))
+	header := (*emptyInterface)(unsafe.Pointer(&v))
 
 	if err := validateType(header.typ, uintptr(header.ptr)); err != nil {
 		return err
@@ -129,7 +123,7 @@ func (d *Decoder) prepareForDecode() error {
 // See the documentation for Unmarshal for details about
 // the conversion of JSON into a Go value.
 func (d *Decoder) Decode(v interface{}) error {
-	header := (*interfaceHeader)(unsafe.Pointer(&v))
+	header := (*emptyInterface)(unsafe.Pointer(&v))
 	typ := header.typ
 	ptr := uintptr(header.ptr)
 	typeptr := uintptr(unsafe.Pointer(typ))

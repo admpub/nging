@@ -17,11 +17,12 @@ package server
 import (
 	"encoding/json"
 
-	"github.com/admpub/frp/g"
-	"github.com/admpub/frp/models/config"
-	"github.com/admpub/frp/models/consts"
-	"github.com/admpub/frp/utils/log"
-	"github.com/admpub/frp/utils/version"
+	"github.com/admpub/frp/pkg/config"
+	"github.com/admpub/frp/pkg/consts"
+	"github.com/admpub/frp/pkg/metrics/mem"
+	"github.com/admpub/frp/pkg/util/log"
+	"github.com/admpub/frp/pkg/util/version"
+
 	"github.com/webx-top/echo"
 )
 
@@ -30,13 +31,13 @@ type GeneralResponse struct {
 	Msg  string
 }
 
-type ServerInfoResp struct {
+type serverInfoResp struct {
 	Version           string `json:"version"`
 	BindPort          int    `json:"bind_port"`
-	BindUdpPort       int    `json:"bind_udp_port"`
-	VhostHttpPort     int    `json:"vhost_http_port"`
-	VhostHttpsPort    int    `json:"vhost_https_port"`
-	KcpBindPort       int    `json:"kcp_bind_port"`
+	BindUDPPort       int    `json:"bind_udp_port"`
+	VhostHTTPPort     int    `json:"vhost_http_port"`
+	VhostHTTPSPort    int    `json:"vhost_https_port"`
+	KCPBindPort       int    `json:"kcp_bind_port"`
 	SubdomainHost     string `json:"subdomain_host"`
 	MaxPoolCount      int64  `json:"max_pool_count"`
 	MaxPortsPerClient int64  `json:"max_ports_per_client"`
@@ -54,19 +55,18 @@ func (svr *Service) ApiServerInfo(c echo.Context) error {
 	res := GeneralResponse{Code: 200}
 
 	log.Info("Http request: [%s]", c.Request().URL().Path())
-	cfg := &g.GlbServerCfg.ServerCommonConf
-	serverStats := svr.statsCollector.GetServer()
-	svrResp := ServerInfoResp{
+	serverStats := mem.StatsCollector.GetServer()
+	svrResp := serverInfoResp{
 		Version:           version.Full(),
-		BindPort:          cfg.BindPort,
-		BindUdpPort:       cfg.BindUdpPort,
-		VhostHttpPort:     cfg.VhostHttpPort,
-		VhostHttpsPort:    cfg.VhostHttpsPort,
-		KcpBindPort:       cfg.KcpBindPort,
-		SubdomainHost:     cfg.SubDomainHost,
-		MaxPoolCount:      cfg.MaxPoolCount,
-		MaxPortsPerClient: cfg.MaxPortsPerClient,
-		HeartBeatTimeout:  cfg.HeartBeatTimeout,
+		BindPort:          svr.cfg.BindPort,
+		BindUDPPort:       svr.cfg.BindUDPPort,
+		VhostHTTPPort:     svr.cfg.VhostHTTPPort,
+		VhostHTTPSPort:    svr.cfg.VhostHTTPSPort,
+		KCPBindPort:       svr.cfg.KCPBindPort,
+		SubdomainHost:     svr.cfg.SubDomainHost,
+		MaxPoolCount:      svr.cfg.MaxPoolCount,
+		MaxPortsPerClient: svr.cfg.MaxPortsPerClient,
+		HeartBeatTimeout:  svr.cfg.HeartbeatTimeout,
 
 		TotalTrafficIn:  serverStats.TotalTrafficIn,
 		TotalTrafficOut: serverStats.TotalTrafficOut,
@@ -85,50 +85,58 @@ type BaseOutConf struct {
 	config.BaseProxyConf
 }
 
-type TcpOutConf struct {
+type TCPOutConf struct {
 	BaseOutConf
 	RemotePort int `json:"remote_port"`
 }
 
-type UdpOutConf struct {
+type TCPMuxOutConf struct {
+	BaseOutConf
+	config.DomainConf
+	Multiplexer string `json:"multiplexer"`
+}
+
+type UDPOutConf struct {
 	BaseOutConf
 	RemotePort int `json:"remote_port"`
 }
 
-type HttpOutConf struct {
+type HTTPOutConf struct {
 	BaseOutConf
 	config.DomainConf
 	Locations         []string `json:"locations"`
 	HostHeaderRewrite string   `json:"host_header_rewrite"`
 }
 
-type HttpsOutConf struct {
+type HTTPSOutConf struct {
 	BaseOutConf
 	config.DomainConf
 }
 
-type StcpOutConf struct {
+type STCPOutConf struct {
 	BaseOutConf
 }
 
-type XtcpOutConf struct {
+type XTCPOutConf struct {
 	BaseOutConf
 }
 
 func getConfByType(proxyType string) interface{} {
 	switch proxyType {
-	case consts.TcpProxy:
-		return &TcpOutConf{}
-	case consts.UdpProxy:
-		return &UdpOutConf{}
-	case consts.HttpProxy:
-		return &HttpOutConf{}
-	case consts.HttpsProxy:
-		return &HttpsOutConf{}
-	case consts.StcpProxy:
-		return &StcpOutConf{}
-	case consts.XtcpProxy:
-		return &XtcpOutConf{}
+	case consts.TCPProxy:
+		return &TCPOutConf{}
+	case consts.TCPMuxProxy:
+		return &TCPMuxOutConf{}
+	case consts.UDPProxy:
+		return &UDPOutConf{}
+	case consts.HTTPProxy:
+		return &HTTPOutConf{}
+	case consts.HTTPSProxy:
+		return &HTTPSOutConf{}
+	case consts.STCPProxy:
+		return &STCPOutConf{}
+	case consts.XTCPProxy:
+		return &XTCPOutConf{}
 	default:
 		return nil
 	}
@@ -167,7 +175,7 @@ func (svr *Service) ApiProxyByType(c echo.Context) error {
 }
 
 func (svr *Service) getProxyStatsByType(proxyType string) (proxyInfos []*ProxyStatsInfo) {
-	proxyStats := svr.statsCollector.GetProxiesByType(proxyType)
+	proxyStats := mem.StatsCollector.GetProxiesByType(proxyType)
 	proxyInfos = make([]*ProxyStatsInfo, 0, len(proxyStats))
 	for _, ps := range proxyStats {
 		proxyInfo := &ProxyStatsInfo{}
@@ -231,7 +239,7 @@ func (svr *Service) ApiProxyByTypeAndName(c echo.Context) error {
 
 func (svr *Service) getProxyStatsByTypeAndName(proxyType string, proxyName string) (proxyInfo GetProxyStatsResp, code int, msg string) {
 	proxyInfo.Name = proxyName
-	ps := svr.statsCollector.GetProxiesByTypeAndName(proxyType, proxyName)
+	ps := mem.StatsCollector.GetProxiesByTypeAndName(proxyType, proxyName)
 	if ps == nil {
 		code = 404
 		msg = "no proxy info found"
@@ -280,16 +288,15 @@ func (svr *Service) ApiProxyTraffic(c echo.Context) error {
 
 	trafficResp := GetProxyTrafficResp{}
 	trafficResp.Name = name
-	proxyTrafficInfo := svr.statsCollector.GetProxyTraffic(name)
+	proxyTrafficInfo := mem.StatsCollector.GetProxyTraffic(name)
 
 	if proxyTrafficInfo == nil {
 		res.Code = 404
 		res.Msg = "no proxy info found"
 		return c.String(res.Msg, res.Code)
-	} else {
-		trafficResp.TrafficIn = proxyTrafficInfo.TrafficIn
-		trafficResp.TrafficOut = proxyTrafficInfo.TrafficOut
 	}
+	trafficResp.TrafficIn = proxyTrafficInfo.TrafficIn
+	trafficResp.TrafficOut = proxyTrafficInfo.TrafficOut
 
 	buf, _ := json.Marshal(&trafficResp)
 	res.Msg = string(buf)
