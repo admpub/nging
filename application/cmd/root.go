@@ -27,6 +27,7 @@ import (
 
 	"github.com/mholt/certmagic"
 	"github.com/spf13/cobra"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/engine/standard"
@@ -176,8 +177,7 @@ func Execute() {
 		rootCmd.Use = os.Args[0]
 	}
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		com.ExitOnFailure(err.Error())
 	}
 }
 

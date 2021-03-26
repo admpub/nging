@@ -19,14 +19,13 @@
 package natss
 
 import (
-	"fmt"
-	"os"
 	"path/filepath"
 	"runtime"
 
 	natsd "github.com/nats-io/nats-server/server"
 	stand "github.com/nats-io/nats-streaming-server/server"
 	stores "github.com/nats-io/nats-streaming-server/stores"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
 
@@ -60,8 +59,7 @@ func Start() {
 	sOpts.EnableLogging = true
 	// This will invoke RunServerWithOpts but on Windows, may run it as a service.
 	if _, err := stand.Run(sOpts, nOpts); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		com.ExitOnFailure(err.Error())
 	}
 	runtime.Goexit()
 }
