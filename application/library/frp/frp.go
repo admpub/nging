@@ -21,6 +21,7 @@ package frp
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net"
 	"os"
@@ -39,14 +40,10 @@ import (
 	"github.com/admpub/frp/client"
 	"github.com/admpub/frp/pkg/config"
 	"github.com/admpub/frp/pkg/consts"
-	"github.com/admpub/frp/pkg/util/util"
 	"github.com/admpub/frp/pkg/util/log"
+	"github.com/admpub/frp/pkg/util/util"
 	"github.com/admpub/frp/server"
 	"github.com/admpub/nging/application/dbschema"
-)
-
-var (
-	client 
 )
 
 func SetClientConfigFromDB(conf *dbschema.NgingFrpClient) *config.ClientCommonConf {
@@ -62,40 +59,40 @@ func SetClientConfigFromDB(conf *dbschema.NgingFrpClient) *config.ClientCommonCo
 	}
 	c.LogFile = conf.LogFile
 	c.LogMaxDays = int64(conf.LogMaxDays)
-	c.HttpProxy = conf.HttpProxy
+	c.HTTPProxy = conf.HttpProxy
 	c.LogWay = conf.LogWay
 	c.AdminAddr = conf.AdminAddr
 	c.AdminPort = int(conf.AdminPort)
 	c.AdminUser = conf.AdminUser
 	c.AdminPwd = conf.AdminPwd
 	c.PoolCount = int(conf.PoolCount)
-	c.TcpMux = conf.TcpMux == `Y`
-	c.DnsServer = conf.DnsServer
+	c.TCPMux = conf.TcpMux == `Y`
+	c.DNSServer = conf.DnsServer
 	c.LoginFailExit = conf.LoginFailExit == `Y`
-	c.HeartBeatInterval = conf.HeartbeatInterval
-	c.HeartBeatTimeout = conf.HeartbeatTimeout
+	c.HeartbeatInterval = conf.HeartbeatInterval
+	c.HeartbeatTimeout = conf.HeartbeatTimeout
 	conf.Start = strings.TrimSpace(conf.Start)
 	if len(conf.Start) > 0 {
 		for _, name := range strings.Split(conf.Start, `,`) {
-			c.Start[strings.TrimSpace(name)] = struct{}{}
+			c.Start = append(c.Start, strings.TrimSpace(name))
 		}
 	}
 	return &c
 }
 
-func SetServerConfigFromDB(conf *dbschema.NgingFrpServer) *config.ServerCommonCfg {
+func SetServerConfigFromDB(conf *dbschema.NgingFrpServer) *config.ServerCommonConf {
 	c := config.GetDefaultServerConf()
 	c.BindAddr = conf.Addr
 	c.BindPort = int(conf.Port)
-	c.BindUdpPort = int(conf.UdpPort)
-	c.KcpBindPort = int(conf.KcpPort)
+	c.BindUDPPort = int(conf.UdpPort)
+	c.KCPBindPort = int(conf.KcpPort)
 	c.ProxyBindAddr = conf.ProxyAddr
-	c.VhostHttpPort = int(conf.VhostHttpPort)
-	c.VhostHttpTimeout = int64(conf.VhostHttpTimeout)
-	if c.VhostHttpTimeout < 1 {
-		c.VhostHttpTimeout = 60
+	c.VhostHTTPPort = int(conf.VhostHttpPort)
+	c.VhostHTTPTimeout = int64(conf.VhostHttpTimeout)
+	if c.VhostHTTPTimeout < 1 {
+		c.VhostHTTPTimeout = 60
 	}
-	c.VhostHttpsPort = int(conf.VhostHttpsPort)
+	c.VhostHTTPSPort = int(conf.VhostHttpsPort)
 
 	c.DashboardAddr = conf.DashboardAddr
 	c.DashboardPort = int(conf.DashboardPort)
@@ -111,7 +108,7 @@ func SetServerConfigFromDB(conf *dbschema.NgingFrpServer) *config.ServerCommonCf
 	c.Token = conf.Token
 	c.SubDomainHost = conf.SubdomainHost
 	c.MaxPortsPerClient = int64(conf.MaxPortsPerClient)
-	c.TcpMux = conf.TcpMux == `Y`
+	c.TCPMux = conf.TcpMux == `Y`
 
 	// e.g. 1000-2000,2001,2002,3000-4000
 	ports, _ := util.ParseRangeNumbers(conf.AllowPorts)
@@ -151,24 +148,22 @@ func StartServerByConfigFile(filePath string, pidFile string) error {
 }
 
 func StartServerByConfig(configContent string, pidFile string) error {
-	cfg, err := config.UnmarshalServerConfFromIni(&c.ServerCommonConf, configContent)
+	cfg, err := config.UnmarshalServerConfFromIni(configContent)
 	if err != nil {
 		return err
 	}
-	return StartServer(pidFile, cfg)
+	return StartServer(pidFile, &cfg)
 }
 
 func StartServer(pidFile string, c *config.ServerCommonConf) error {
-	err := c.Check()
+	err := c.Validate()
 	if err != nil {
 		return err
 	}
-	config.InitServerCfg(c)
-
 	log.InitLog(c.LogWay,
 		c.LogFile,
 		c.LogLevel,
-		c.LogMaxDays)
+		c.LogMaxDays, true)
 	if len(pidFile) > 0 {
 		err := com.WritePidFile(pidFile)
 		if err != nil {
@@ -176,17 +171,19 @@ func StartServer(pidFile string, c *config.ServerCommonConf) error {
 			return err
 		}
 	}
-	svr, err := server.NewService()
+	svr, err := server.NewService(*c)
 	if err != nil {
 		return err
 	}
 	log.Info("Start frps success")
-	server.ServerService = svr
 	svr.Run()
 	return err
 }
 
-func parseProxyConfig(extra echo.H) (pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]config.VisitorConf) {
+func parseProxyConfig(c *config.ClientCommonConf, extra echo.H) (
+	pxyCfgs map[string]config.ProxyConf,
+	visitorCfgs map[string]config.VisitorConf,
+) {
 	pxyCfgs = map[string]config.ProxyConf{}
 	visitorCfgs = map[string]config.VisitorConf{}
 	proxyConfs := NewProxyConfig()
@@ -202,7 +199,7 @@ func parseProxyConfig(extra echo.H) (pxyCfgs map[string]config.ProxyConf, visito
 		startAll = false
 	}
 	for key, cfg := range proxyConfs.Proxy {
-		_, shouldStart := startProxy[key]
+		shouldStart := com.InSlice(key, startProxy)
 		if !startAll && !shouldStart {
 			continue
 		}
@@ -222,7 +219,7 @@ func parseProxyConfig(extra echo.H) (pxyCfgs map[string]config.ProxyConf, visito
 		pxyCfgs[prefix+key] = recv
 	}
 	for key, cfg := range proxyConfs.Visitor {
-		_, shouldStart := startProxy[key]
+		shouldStart := com.InSlice(key, startProxy)
 		if !startAll && !shouldStart {
 			continue
 		}
@@ -247,18 +244,18 @@ func parseProxyConfig(extra echo.H) (pxyCfgs map[string]config.ProxyConf, visito
 func RecvProxyConfig(data map[string]interface{}) (recv config.ProxyConf) {
 	proxyType, _ := data[`proxy_type`].(string)
 	switch proxyType {
-	case consts.TcpProxy:
-		recv = &config.TcpProxyConf{}
-	case consts.UdpProxy:
-		recv = &config.UdpProxyConf{}
-	case consts.HttpProxy:
-		recv = &config.HttpProxyConf{}
-	case consts.HttpsProxy:
-		recv = &config.HttpsProxyConf{}
-	case consts.StcpProxy:
-		recv = &config.StcpProxyConf{}
-	case consts.XtcpProxy:
-		recv = &config.XtcpProxyConf{}
+	case consts.TCPProxy:
+		recv = &config.TCPProxyConf{}
+	case consts.UDPProxy:
+		recv = &config.UDPProxyConf{}
+	case consts.HTTPProxy:
+		recv = &config.HTTPProxyConf{}
+	case consts.HTTPSProxy:
+		recv = &config.HTTPSProxyConf{}
+	case consts.STCPProxy:
+		recv = &config.STCPProxyConf{}
+	case consts.XTCPProxy:
+		recv = &config.XTCPProxyConf{}
 	default:
 		log.Error(`[frp]Unsupported Proxy Type:`, proxyType)
 		return
@@ -277,10 +274,10 @@ func RecvProxyConfig(data map[string]interface{}) (recv config.ProxyConf) {
 func RecvVisitorConfig(data map[string]interface{}) (recv config.VisitorConf) {
 	proxyType, _ := data[`proxy_type`].(string)
 	switch proxyType {
-	case consts.StcpProxy:
-		recv = &config.StcpVisitorConf{}
-	case consts.XtcpProxy:
-		recv = &config.XtcpVisitorConf{}
+	case consts.STCPProxy:
+		recv = &config.STCPVisitorConf{}
+	case consts.XTCPProxy:
+		recv = &config.XTCPVisitorConf{}
 	default:
 		log.Error(`[frp]Unsupported Visitor Type:`, proxyType)
 		return
@@ -300,7 +297,7 @@ func StartClientByConfigFile(filePath string, pidFile string) error {
 	var (
 		pxyCfgs     map[string]config.ProxyConf
 		visitorCfgs map[string]config.VisitorConf
-		c *config.ClientCommonConf
+		c           *config.ClientCommonConf
 	)
 	ext := filepath.Ext(filePath)
 	switch strings.ToLower(ext) {
@@ -316,7 +313,7 @@ func StartClientByConfigFile(filePath string, pidFile string) error {
 		}
 		c = SetClientConfigFromDB(r.NgingFrpClient)
 		if len(r.Extra) > 0 {
-			pxyCfgs, visitorCfgs = parseProxyConfig(r.Extra)
+			pxyCfgs, visitorCfgs = parseProxyConfig(c, r.Extra)
 		}
 		filePath = ``
 	case `.yaml`:
@@ -327,18 +324,20 @@ func StartClientByConfigFile(filePath string, pidFile string) error {
 		}
 		c = SetClientConfigFromDB(r.NgingFrpClient)
 		if len(r.Extra) > 0 {
-			pxyCfgs, visitorCfgs = parseProxyConfig(r.Extra)
+			pxyCfgs, visitorCfgs = parseProxyConfig(c, r.Extra)
 		}
 		filePath = ``
 	default:
 		content, err := config.GetRenderedConfFromFile(filePath)
 		if err != nil {
-			return fmt.Errorf("load frpc config file error: %w",err)
+			return fmt.Errorf("load frpc config file error: %w", err)
 		}
-		c, err = config.UnmarshalClientConfFromIni(content)
+		var _c config.ClientCommonConf
+		_c, err = config.UnmarshalClientConfFromIni(content)
 		if err != nil {
-			return fmt.Errorf("load frpc common section error: %w",err)
+			return fmt.Errorf("load frpc common section error: %w", err)
 		}
+		c = &_c
 		pxyCfgs, visitorCfgs, err = config.LoadAllProxyConfsFromIni(c.User, content, c.Start)
 		if err != nil {
 			return err
@@ -350,24 +349,24 @@ func StartClientByConfigFile(filePath string, pidFile string) error {
 func StartClientByConfig(configContent string, pidFile string) error {
 	c, err := config.UnmarshalClientConfFromIni(configContent)
 	if err != nil {
-		return fmt.Errorf("load frpc common section error: %w",err)
+		return fmt.Errorf("load frpc common section error: %w", err)
 	}
 	pxyCfgs, visitorCfgs, err := config.LoadAllProxyConfsFromIni(c.User, configContent, c.Start)
 	if err != nil {
 		return err
 	}
-	return StartClient(pxyCfgs, visitorCfgs, pidFile, c)
+	return StartClient(pxyCfgs, visitorCfgs, pidFile, &c)
 }
 
-func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]config.VisitorConf, 
+func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]config.VisitorConf,
 	pidFile string, c *config.ClientCommonConf, configFileArg ...string) (err error) {
 	var configFile string
 	if len(configFileArg) > 0 {
 		configFile = configFileArg[0]
 	}
-	log.InitLog(c.LogWay, c.LogFile, c.LogLevel, c.LogMaxDays)
-	if len(c.DnsServer) > 0 {
-		s := c.DnsServer
+	log.InitLog(c.LogWay, c.LogFile, c.LogLevel, c.LogMaxDays, true)
+	if len(c.DNSServer) > 0 {
+		s := c.DNSServer
 		if !strings.Contains(s, ":") {
 			s += ":53"
 		}
