@@ -56,7 +56,7 @@ func Initialize() {
 		f, err := image.DefaultHTTPSystemOpen(file)
 		if err != nil {
 			if os.IsNotExist(err) {
-				if strings.HasPrefix(file, helper.DefaultUploadURLPath) || strings.HasPrefix(file, `/public/assets/`) {
+				if strings.HasPrefix(file, helper.UploadURLPath) || strings.HasPrefix(file, `/public/assets/`) {
 					return os.Open(filepath.Join(echo.Wd(), file))
 				}
 			}
