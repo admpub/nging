@@ -52,7 +52,30 @@ import (
 
 ## 安装
 
-1. 下载相应平台的安装包，解压缩到当前目录，进入目录执行名为“nging”的可执行程序(在Linux系统，执行之前请赋予nging可执行权限)。 例如在Linux64位系统，分别执行以下命令：
+1. 安装Nging
+
+    1). 自动安装方式:
+
+    ```sh
+    sudo sh -c "$(wget https://raw.githubusercontent.com/admpub/nging/master/nging-installer.sh -O -)"
+    ```
+
+    或
+
+    ```sh
+    sudo wget https://raw.githubusercontent.com/admpub/nging/master/nging-installer.sh -O ./nging-installer.sh && chmod +x ./  nging-installer.sh && ./nging-installer.sh
+    ```
+
+    nging-installer.sh 脚本支持的命令如下
+
+    命令 | 说明
+    :--- | :---
+    `./nging-installer.sh` 或 `./nging-installer.sh install` | 安装(自动下载nging并启动为系统服务)
+    `./nging-installer.sh upgrade` 或 `./nging-installer.sh up` | 升级
+    `./nging-installer.sh uninstall` 或 `./nging-installer.sh un` | 卸载
+
+    2). 手动安装方式:  
+    下载相应平台的安装包，解压缩到当前目录，进入目录执行名为“nging”的可执行程序(在Linux系统，执行之前请赋予nging可执行权限)。 例如在Linux64位系统，分别执行以下命令：
 
     ```sh
     cd ./nging_linux_amd64
@@ -60,10 +83,11 @@ import (
     ./nging
     ```
 
-2. 打开浏览器，访问网址 
-    <http://localhost:9999/setup> ，
+2. 配置Nging:  
+    打开浏览器，访问网址 <http://localhost:9999/setup> ，
     在页面中配置数据库和管理员账号信息进行安装。
-    安装成功后，使用管理员账号登录。
+
+安装成功后，使用管理员账号登录。
 
 ## 开机自动运行
 
