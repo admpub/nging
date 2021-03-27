@@ -170,6 +170,10 @@ func (s *sftpManager) Upload(ppath string,
 		_, err := chunkUpload.Upload(s.Request().StdRequest(), chunkOpts...)
 		if err != nil {
 			if !errors.Is(err, uploadClient.ErrChunkUnsupported) {
+				if errors.Is(err, uploadClient.ErrChunkUploadCompleted) ||
+					errors.Is(err, uploadClient.ErrFileUploadCompleted) {
+					return nil
+				}
 				return err
 			}
 		} else {

@@ -69,6 +69,11 @@ func (a *BaseClient) Upload(opts ...OptionsSetter) Client {
 			return a
 		}
 		if !errors.Is(a.err, ErrChunkUnsupported) { // 上传出错
+			if errors.Is(a.err, ErrChunkUploadCompleted) ||
+				errors.Is(a.err, ErrFileUploadCompleted) {
+				a.err = nil
+				return a
+			}
 			return a
 		}
 		// 不支持分片上传
@@ -145,6 +150,11 @@ func (a *BaseClient) BatchUpload(opts ...OptionsSetter) Client {
 			}
 			if !errors.Is(a.err, ErrChunkUnsupported) { // 上传出错
 				file.Close()
+				if errors.Is(a.err, ErrChunkUploadCompleted) ||
+					errors.Is(a.err, ErrFileUploadCompleted) {
+					a.err = nil
+					return a
+				}
 				return a
 			}
 			// 不支持分片上传

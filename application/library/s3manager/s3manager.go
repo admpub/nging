@@ -276,6 +276,10 @@ func (s *S3Manager) Upload(ctx echo.Context, ppath string,
 		_, err := chunkUpload.Upload(ctx.Request().StdRequest(), chunkOpts...)
 		if err != nil {
 			if !errors.Is(err, uploadClient.ErrChunkUnsupported) {
+				if errors.Is(err, uploadClient.ErrChunkUploadCompleted) ||
+					errors.Is(err, uploadClient.ErrFileUploadCompleted) {
+					return nil
+				}
 				return err
 			}
 		} else {
