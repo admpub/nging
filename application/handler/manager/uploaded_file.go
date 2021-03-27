@@ -33,6 +33,10 @@ import (
 	"github.com/admpub/nging/application/library/notice"
 	"github.com/admpub/nging/application/library/respond"
 	"github.com/admpub/nging/application/registry/upload/helper"
+
+	uploadChunk "github.com/admpub/nging/application/registry/upload/chunk"
+	uploadClient "github.com/webx-top/client/upload"
+	uploadDropzone "github.com/webx-top/client/upload/driver/dropzone"
 )
 
 // UploadedFile 本地附件文件管理
@@ -51,6 +55,7 @@ func UploadedFile(ctx echo.Context) error {
 			absPath = filepath.Join(root, filePath)
 		}
 
+		user := handler.User(ctx)
 		switch do {
 		case `edit`:
 			data := ctx.Data()
@@ -94,7 +99,14 @@ func UploadedFile(ctx echo.Context) error {
 			}
 			return ctx.Redirect(ctx.Referer())
 		case `upload`:
-			err = mgr.Upload(absPath)
+			var cu *uploadClient.ChunkUpload
+			var opts []uploadClient.ChunkInfoOpter
+			if user != nil {
+				cu := uploadChunk.ChunkUploader()
+				cu.UID = fmt.Sprintf(`user/%d`, user.Id)
+				opts = append(opts, uploadClient.OptChunkInfoMapping(uploadDropzone.MappingChunkInfo))
+			}
+			err = mgr.Upload(absPath, cu, opts...)
 			if err != nil {
 				user := handler.User(ctx)
 				if user != nil {
