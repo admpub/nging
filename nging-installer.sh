@@ -64,7 +64,7 @@ exitOnFailure() {
 
 install() {
 
-    wget "${url}$filefullname"
+    wget -c "${url}$filefullname" -O ./$filefullname
 
     unzip $filefullname -d ./$filename || exitOnFailure 
 
@@ -87,7 +87,7 @@ upgrade() {
     ./$binname service stop
     cd ../
 
-    wget "${url}$filefullname"
+    wget -c "${url}$filefullname" -O ./$filefullname
 
     unzip $filefullname -d ./$filename || exitOnFailure 
 
