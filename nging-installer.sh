@@ -1,8 +1,8 @@
 # via curl:
-# sh -c "$(curl -fsSL https://raw.githubusercontent.com/admpub/nging/master/nging-installer.sh)"
+# sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/admpub/nging/master/nging-installer.sh)"
 
 # via wget:
-# sh -c "$(wget https://raw.githubusercontent.com/admpub/nging/master/nging-installer.sh -O -)"
+# sudo sh -c "$(wget https://raw.githubusercontent.com/admpub/nging/master/nging-installer.sh -O -)"
 
 osname=`uname -s`
 arch=`uname -m`
@@ -64,7 +64,7 @@ exitOnFailure() {
 
 install() {
 
-    wget -c "${url}$filefullname" -O ./$filefullname
+    wget -c "${url}$filefullname" -O ./$filefullname || exitOnFailure
 
     unzip $filefullname -d ./$filename || exitOnFailure 
 
@@ -87,7 +87,7 @@ upgrade() {
     ./$binname service stop
     cd ../
 
-    wget -c "${url}$filefullname" -O ./$filefullname
+    wget -c "${url}$filefullname" -O ./$filefullname || exitOnFailure
 
     unzip $filefullname -d ./$filename || exitOnFailure 
 
