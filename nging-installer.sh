@@ -3,6 +3,8 @@
 
 # via wget:
 # sudo sh -c "$(wget https://raw.githubusercontent.com/admpub/nging/master/nging-installer.sh -O -)"
+# or
+# sudo wget https://raw.githubusercontent.com/admpub/nging/master/nging-installer.sh -O ./nging-installer.sh && chmod +x ./nging-installer.sh && ./nging-installer.sh
 
 osname=`uname -s`
 arch=`uname -m`
