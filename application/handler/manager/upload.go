@@ -40,7 +40,6 @@ import (
 	"github.com/admpub/nging/application/model/file/storer"
 	"github.com/admpub/nging/application/registry/upload"
 	_ "github.com/admpub/nging/application/registry/upload/client"
-	"github.com/admpub/nging/application/registry/upload/helper"
 	uploadPipe "github.com/admpub/nging/application/registry/upload/pipe"
 	uploadPrepare "github.com/admpub/nging/application/registry/upload/prepare"
 	"github.com/admpub/nging/application/registry/upload/thumb"
@@ -57,8 +56,8 @@ var (
 func ChunkUpload() uploadClient.ChunkUpload {
 	chunkUploadInitOnce.Do(func() {
 		chunkUpload = &uploadClient.ChunkUpload{
-			TempDir:      filepath.Join(os.TempDir(), `nging/chunk`),
-			SaveDir:      filepath.Join(echo.Wd(), helper.UploadDir),
+			TempDir:      filepath.Join(os.TempDir(), `nging/chunk_temp`),
+			SaveDir:      filepath.Join(os.TempDir(), `nging/chunk_merged`),
 			TempLifetime: 5 * time.Minute,
 		}
 		go chunkUpload.StartGC(2 * time.Hour)
