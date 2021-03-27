@@ -21,7 +21,10 @@ package manager
 import (
 	"fmt"
 	"io"
+	"os"
 	"path/filepath"
+	"sync"
+	"time"
 
 	uploadClient "github.com/webx-top/client/upload"
 	_ "github.com/webx-top/client/upload/driver"
@@ -32,10 +35,12 @@ import (
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/handler/manager/file"
 	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/application/library/config"
 	modelFile "github.com/admpub/nging/application/model/file"
 	"github.com/admpub/nging/application/model/file/storer"
 	"github.com/admpub/nging/application/registry/upload"
 	_ "github.com/admpub/nging/application/registry/upload/client"
+	"github.com/admpub/nging/application/registry/upload/helper"
 	uploadPipe "github.com/admpub/nging/application/registry/upload/pipe"
 	uploadPrepare "github.com/admpub/nging/application/registry/upload/prepare"
 	"github.com/admpub/nging/application/registry/upload/thumb"
@@ -45,7 +50,21 @@ var (
 	File                = file.File
 	GetWatermarkOptions = storer.GetWatermarkOptions
 	CropOptions         = modelFile.ImageOptions
+	chunkUploadInitOnce sync.Once
+	chunkUpload         *uploadClient.ChunkUpload
 )
+
+func ChunkUpload() uploadClient.ChunkUpload {
+	chunkUploadInitOnce.Do(func() {
+		chunkUpload = &uploadClient.ChunkUpload{
+			TempDir:      filepath.Join(os.TempDir(), `nging/chunk`),
+			SaveDir:      filepath.Join(echo.Wd(), helper.UploadDir),
+			TempLifetime: 5 * time.Minute,
+		}
+		go chunkUpload.StartGC(2 * time.Hour)
+	})
+	return *chunkUpload
+}
 
 // 文件上传保存路径规则：
 // 子文件夹/表行ID/文件名
@@ -104,6 +123,10 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	result := &uploadClient.Result{}
 	client := uploadClient.Get(clientName)
 	client.Init(ctx, result)
+	cu := ChunkUpload()
+	cu.UID = fmt.Sprintf(`%s/%d`, ownerType, ownerID)
+	client.SetChunkUpload(&cu)
+	client.SetUploadMaxSize(int64(config.DefaultConfig.GetMaxRequestBodySize()))
 	subdir := ctx.Form(`subdir`, `default`)
 	if !upload.Subdir.Has(subdir) {
 		err = ctx.E(`参数subdir的值无效: %s`, subdir)

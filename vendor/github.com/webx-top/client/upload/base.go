@@ -37,6 +37,8 @@ type BaseClient struct {
 	Results       Results
 	err           error
 	uploadMaxSize int64
+	chunkUpload   *ChunkUpload
+	fieldMapping  map[string]string
 }
 
 func (a *BaseClient) Init(ctx echo.Context, res *Result) {
@@ -109,6 +111,16 @@ func (a *BaseClient) GetBatchUploadResults() Results {
 
 func (a *BaseClient) SetRespData(data interface{}) Client {
 	a.RespData = data
+	return a
+}
+
+func (a *BaseClient) SetChunkUpload(cu *ChunkUpload) Client {
+	a.chunkUpload = cu
+	return a
+}
+
+func (a *BaseClient) SetFieldMapping(fm map[string]string) Client {
+	a.fieldMapping = fm
 	return a
 }
 

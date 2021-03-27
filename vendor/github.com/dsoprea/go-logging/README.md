@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/dsoprea/go-logging.svg?branch=master)](https://travis-ci.org/dsoprea/go-logging)
 [![Coverage Status](https://coveralls.io/repos/github/dsoprea/go-logging/badge.svg?branch=master)](https://coveralls.io/github/dsoprea/go-logging?branch=master)
+[![Go Report Card](https://goreportcard.com/badge/github.com/dsoprea/go-logging/v2)](https://goreportcard.com/report/github.com/dsoprea/go-logging/v2)
+[![GoDoc](https://godoc.org/github.com/dsoprea/go-logging/v2?status.svg)](https://godoc.org/github.com/dsoprea/go-logging/v2)
 
 ## Introduction
 
@@ -34,7 +36,7 @@ import (
     "context"
     "errors"
 
-    "github.com/dsoprea/go-logging"
+    "github.com/dsoprea/go-logging/v2"
 )
 
 var (
@@ -113,19 +115,19 @@ type DummyLogAdapter struct {
 }
 
 func (dla *DummyLogAdapter) Debugf(lc *LogContext, message *string) error {
-    
+
 }
 
 func (dla *DummyLogAdapter) Infof(lc *LogContext, message *string) error {
-    
+
 }
 
 func (dla *DummyLogAdapter) Warningf(lc *LogContext, message *string) error {
-    
+
 }
 
 func (dla *DummyLogAdapter) Errorf(lc *LogContext, message *string) error {
-    
+
 }
 ```
 
@@ -194,7 +196,7 @@ You provide the configuration by setting a configuration-provider. Configuration
 
 Environments such as AppEngine work best with `EnvironmentConfigurationProvider` as this is generally how configuration is exposed *by* AppEngine *to* the application. You can define this configuration directly in *that* configuration.
 
-By default, no configuration-provider is applied, the level is defaulted to INFO and the format is defaulted to "{{.Noun}}:{{if eq .ExcludeBypass true}} [BYPASS]{{end}} {{.Message}}". 
+By default, no configuration-provider is applied, the level is defaulted to INFO and the format is defaulted to "{{.Noun}}:{{if eq .ExcludeBypass true}} [BYPASS]{{end}} {{.Message}}".
 
 Again, if a configuration-provider does not provide a log-level or format, they will be defaulted (or left alone, if already set). If it does not provide an adapter-name, the adapter-name of the first registered adapter will be used.
 

@@ -174,7 +174,12 @@ function dropzoneResizeHeight(isZip){
   }
 }
 $(function(){
-    initDropzone({retryChunks:true});
+    initDropzone($.extend({
+        chunking:true,
+        parallelChunkUploads:true,
+        retryChunksLimit:5,
+        retryChunks:true
+    },window.dropzoneOptions||{}));
     dropzone=$('#multi-upload-dropzone').get(0).dropzone;
     dropzoneZIP=$('#multi-upload-zip-dropzone').length>0?$('#multi-upload-zip-dropzone').get(0).dropzone:null;
     dropzone.on('addedfiles',dropzoneResizeHeight(false));

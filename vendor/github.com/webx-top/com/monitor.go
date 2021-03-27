@@ -23,6 +23,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/admpub/fsnotify"
 )
@@ -57,6 +58,7 @@ type MonitorEvent struct {
 	Debug   bool
 	watcher *fsnotify.Watcher
 	filters []func(string) bool
+	lock    sync.RWMutex
 }
 
 func (m *MonitorEvent) AddFilter(args ...func(string) bool) *MonitorEvent {
@@ -92,6 +94,8 @@ func (m *MonitorEvent) Close() error {
 }
 
 func (m *MonitorEvent) Watcher() *fsnotify.Watcher {
+	m.lock.Lock()
+	defer m.lock.Unlock()
 	if m.watcher == nil {
 		var err error
 		m.watcher, err = fsnotify.NewWatcher()
