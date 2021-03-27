@@ -115,6 +115,7 @@
            modalAttr: 'data-modal',
            perspectiveClass: 'md-perspective',
            perspectiveSetClass: 'md-setperspective',
+           closeOnClickOverlay: true,
            afterOpen: function(modal) {
             //do your stuff
            },
@@ -184,11 +185,13 @@
             mod.addClass(config.classAddAfterOpen);
             
             //Overlay Click Event
-            overlay.off('click').on('click', function () {
-               helpers.removeModal(mod);
-               config.afterClose(mod);
-               overlay.off('click');
-            });
+            if(config.closeOnClickOverlay){
+              overlay.off('click').on('click', function () {
+                 helpers.removeModal(mod);
+                 config.afterClose(mod);
+                 overlay.off('click');
+              });
+            }
             
             //Fire after open event
             config.afterOpen(mod);

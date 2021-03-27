@@ -66,9 +66,27 @@ func WithReturnURL(ctx echo.Context, urlStr string, varNames ...string) string {
 	}
 
 	returnTo := GetReturnURL(ctx, varName)
-	if len(returnTo) == 0 {
+	if len(returnTo) == 0 || returnTo == urlStr {
 		return urlStr
 	}
+	if returnTo[0] == '/' {
+		if len(urlStr) > 8 {
+			var urlCopy string
+			switch strings.ToLower(urlStr[0:7]) {
+			case `https:/`:
+				urlCopy = urlStr[8:]
+			case `http://`:
+				urlCopy = urlStr[7:]
+			}
+			if len(urlCopy) > 0 {
+				p := strings.Index(urlCopy, `/`)
+				if p > 0 && urlCopy[p:] == returnTo {
+					return urlStr
+				}
+			}
+		}
+	}
+
 	return WithURLParams(urlStr, withVarName, returnTo)
 }
 
