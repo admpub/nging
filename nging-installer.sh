@@ -81,6 +81,29 @@ install() {
     echo "🎉 Congratulations! Installed successfully."
 }
 
+upgrade() {
+    # 停止服务
+    cd ./$filename
+    ./$binname service stop
+    cd ../
+
+    wget "${url}$filefullname"
+
+    unzip $filefullname -d ./$filename || exitOnFailure 
+
+    cp -R ./$filename/$filename/* ./$filename || exitOnFailure
+    rm -rf "./$filename/$filename"
+
+    rm $filefullname
+    chmod +x ./$filename/$binname || exitOnFailure
+    cd ./$filename
+    #./$binname
+
+    # 再次启动服务
+    ./$binname service start
+    echo "🎉 Congratulations! Successfully upgraded."
+}
+
 uninstall() {
     cd ./$filename
     ./$binname service stop || exitOnFailure
@@ -93,6 +116,15 @@ uninstall() {
 
 
 case "$1" in
+    "up")
+        upgrade
+        ;;
+    "upgrade")
+        upgrade
+        ;;
+    "un")
+        uninstall
+        ;;
     "uninstall")
         uninstall
         ;;
