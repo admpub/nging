@@ -279,6 +279,9 @@ func (s *S3Manager) Upload(ctx echo.Context, ppath string,
 				return err
 			}
 		} else {
+			if !chunkUpload.Merged() {
+				return nil
+			}
 			_fp, err := os.Open(chunkUpload.GetSavePath())
 			if err != nil {
 				return err

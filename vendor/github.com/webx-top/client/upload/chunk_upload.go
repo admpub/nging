@@ -13,6 +13,7 @@ import (
 )
 
 var (
+	ErrFileUploadCompleted  = errors.New("文件已经上传完成")
 	ErrChunkUploadCompleted = errors.New("文件分片已经上传完成")
 	ErrChunkUnsupported     = errors.New("不支持分片上传")
 )
@@ -68,6 +69,13 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 	}
 
 	c.fileOriginalName = filepath.Base(info.GetFileName())
+	if len(c.savePath) > 0 && filepath.Base(c.savePath) == c.fileOriginalName {
+		fi, err := os.Stat(c.savePath)
+		if err == nil && fi.Size() == int64(info.GetFileTotalBytes()) {
+			c.saveSize = fi.Size()
+			return 0, ErrFileUploadCompleted
+		}
+	}
 	chunkSize := int64(info.GetCurrentSize())
 
 	uid := c.GetUIDString()
@@ -118,7 +126,7 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 	total, err := uploadFile(upFile, start, file, saveStart)
 	if err == nil && total == chunkSize {
 		if c.isFinish(info, c.fileOriginalName) {
-			_, err = c.MergeAll(info.GetFileTotalChunks(), info.GetFileChunkBytes(), c.fileOriginalName, c.IsAsyncMerge())
+			err = c.MergeAll(info.GetFileTotalChunks(), info.GetFileChunkBytes(), c.fileOriginalName, c.IsAsyncMerge())
 			if err != nil {
 				log.Error(err)
 			}

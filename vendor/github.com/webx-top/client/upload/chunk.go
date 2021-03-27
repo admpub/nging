@@ -60,6 +60,11 @@ func (c *ChunkUpload) FileNameGenerator() FileNameGenerator {
 	return c.fileNameGenerator
 }
 
+func (c *ChunkUpload) SetSavePath(savePath string) *ChunkUpload {
+	c.savePath = savePath
+	return c
+}
+
 func (c *ChunkUpload) GetSavePath() string {
 	return c.savePath
 }

@@ -20,6 +20,8 @@ package filemanager
 
 import (
 	"errors"
+	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -146,7 +148,7 @@ func (f *fileManager) Upload(absPath string,
 		return
 	}
 	if !fi.IsDir() {
-		return errors.New(f.T(`路径不正确`))
+		return errors.New(f.T(`路径不正确: %s`, absPath))
 	}
 	var filePath string
 	var chunked bool // 是否支持分片
@@ -157,6 +159,9 @@ func (f *fileManager) Upload(absPath string,
 				return err
 			}
 		} else {
+			if !chunkUpload.Merged() {
+				return nil
+			}
 			chunked = true
 			filePath = chunkUpload.GetSavePath()
 		}
@@ -180,6 +185,25 @@ func (f *fileManager) Upload(absPath string,
 		}
 		return err
 	default:
+		if chunked {
+			defer os.Remove(filePath)
+			var (
+				fi *os.File
+				tf *os.File
+			)
+			fi, err = os.Open(filePath)
+			if err != nil {
+				return fmt.Errorf(`%s: %w`, filePath, err)
+			}
+			defer fi.Close()
+			newfile := filepath.Join(absPath, filepath.Base(filePath))
+			tf, err = os.Create(newfile)
+			if err != nil {
+				return fmt.Errorf(`%s: %w`, newfile, err)
+			}
+			_, err = io.Copy(tf, fi)
+			tf.Close()
+		}
 	}
 	return
 }
