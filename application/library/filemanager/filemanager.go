@@ -151,7 +151,7 @@ func (f *fileManager) Upload(absPath string,
 	var filePath string
 	var chunked bool // 是否支持分片
 	if chunkUpload != nil {
-		_, err := chunkUpload.Upload(f.Request().StdRequest())
+		_, err := chunkUpload.Upload(f.Request().StdRequest(), chunkOpts...)
 		if err != nil {
 			if !errors.Is(err, uploadClient.ErrChunkUnsupported) {
 				return err

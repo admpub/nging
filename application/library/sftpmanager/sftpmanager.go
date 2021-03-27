@@ -167,7 +167,7 @@ func (s *sftpManager) Upload(ppath string,
 	var filename string
 	var chunked bool // 是否支持分片
 	if chunkUpload != nil {
-		_, err := chunkUpload.Upload(s.Request().StdRequest())
+		_, err := chunkUpload.Upload(s.Request().StdRequest(), chunkOpts...)
 		if err != nil {
 			if !errors.Is(err, uploadClient.ErrChunkUnsupported) {
 				return err

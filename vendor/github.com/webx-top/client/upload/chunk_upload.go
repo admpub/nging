@@ -22,10 +22,10 @@ func (c *ChunkUpload) Upload(r *http.Request, opts ...ChunkInfoOpter) (int64, er
 	info := &ChunkInfo{
 		FormField: `file`,
 	}
-	info.BatchSetByURLValues(r.Form)
 	for _, opt := range opts {
 		opt(info)
 	}
+	info.CallbackBatchSet(r.FormValue)
 	if !c.IsSupported(info) {
 		return 0, ErrChunkUnsupported
 	}
@@ -67,7 +67,7 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 		return 0, err
 	}
 
-	c.fileOriginalName = info.GetFileName()
+	c.fileOriginalName = filepath.Base(info.GetFileName())
 	chunkSize := int64(info.GetCurrentSize())
 
 	uid := c.GetUIDString()

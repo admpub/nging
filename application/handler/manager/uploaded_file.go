@@ -102,8 +102,9 @@ func UploadedFile(ctx echo.Context) error {
 			var cu *uploadClient.ChunkUpload
 			var opts []uploadClient.ChunkInfoOpter
 			if user != nil {
-				cu := uploadChunk.ChunkUploader()
-				cu.UID = fmt.Sprintf(`user/%d`, user.Id)
+				_cu := uploadChunk.ChunkUploader()
+				_cu.UID = fmt.Sprintf(`user/%d`, user.Id)
+				cu = &_cu
 				opts = append(opts, uploadClient.OptChunkInfoMapping(uploadDropzone.MappingChunkInfo))
 			}
 			err = mgr.Upload(absPath, cu, opts...)
