@@ -63,7 +63,7 @@ import (
     或
 
     ```sh
-    sudo wget https://raw.githubusercontent.com/admpub/nging/master/nging-installer.sh -O ./nging-installer.sh && chmod +x ./  nging-installer.sh && ./nging-installer.sh
+    sudo wget https://raw.githubusercontent.com/admpub/nging/master/nging-installer.sh -O ./nging-installer.sh && sudo chmod +x ./  nging-installer.sh && sudo ./nging-installer.sh
     ```
 
     nging-installer.sh 脚本支持的命令如下
