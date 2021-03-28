@@ -921,7 +921,6 @@ github.com/pierrec/lz4/internal/xxh32
 # github.com/pires/go-proxyproto v0.0.0-20190111085350-4d51b51e3bfc
 github.com/pires/go-proxyproto
 # github.com/pkg/errors v0.9.1
-## explicit
 github.com/pkg/errors
 # github.com/pkg/sftp v1.13.0
 ## explicit

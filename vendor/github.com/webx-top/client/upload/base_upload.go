@@ -106,14 +106,14 @@ func (a *BaseClient) BatchUpload(opts ...OptionsSetter) Client {
 	}
 	for _, fileHdr := range files {
 		//for each fileheader, get a handle to the actual file
+		if fileHdr.Size > a.uploadMaxSize {
+			a.err = fmt.Errorf(`%w: %v`, ErrFileTooLarge, com.FormatBytes(a.uploadMaxSize))
+			return a
+		}
+
 		var file multipart.File
 		file, a.err = fileHdr.Open()
 		if a.err != nil {
-			return a
-		}
-		if fileHdr.Size > a.uploadMaxSize {
-			a.err = fmt.Errorf(`%w: %v`, ErrFileTooLarge, com.FormatBytes(a.uploadMaxSize))
-			file.Close()
 			return a
 		}
 		result := &Result{
