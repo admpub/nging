@@ -1,21 +1,15 @@
 package upload
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 
-	"github.com/admpub/errors"
 	"github.com/admpub/log"
 	"github.com/webx-top/com"
-)
-
-var (
-	ErrFileUploadCompleted  = errors.New("文件已经上传完成")
-	ErrChunkUploadCompleted = errors.New("文件分片已经上传完成")
-	ErrChunkUnsupported     = errors.New("不支持分片上传")
 )
 
 // 分片上传
@@ -117,7 +111,7 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 	// 打开之前上传文件
 	file, err := os.OpenFile(filePath, os.O_CREATE|os.O_WRONLY, os.ModePerm)
 	if err != nil {
-		return 0, fmt.Errorf("打开之前上传文件不存在: %w", err)
+		return 0, fmt.Errorf("%w: %s: %v", ErrChunkHistoryOpenFailed, filePath, err)
 	}
 
 	defer file.Close()

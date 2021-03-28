@@ -17,7 +17,7 @@ func (c *ChunkUpload) merge(chunkIndex uint64, fileChunkBytes uint64, fileName, 
 	// 打开之前上传文件
 	file, err := os.OpenFile(savePath, os.O_CREATE|os.O_WRONLY, os.ModePerm)
 	if err != nil {
-		return 0, fmt.Errorf("创建文件“%s”失败: %w (merge)", savePath, err)
+		return 0, fmt.Errorf("%w: %s: %v (merge)", ErrChunkMergeFileCreateFailed, savePath, err)
 	}
 	defer file.Close()
 	uid := c.GetUIDString()
@@ -25,11 +25,10 @@ func (c *ChunkUpload) merge(chunkIndex uint64, fileChunkBytes uint64, fileName, 
 	file.Seek(int64(fileChunkBytes*chunkIndex), 0)
 
 	chunkFilePath := filepath.Join(c.TempDir, uid, fmt.Sprintf(`%s_%d`, fileName, chunkIndex))
-	log.Debug("分片路径: ", chunkFilePath)
 
 	chunkFileObj, err := os.Open(chunkFilePath)
 	if err != nil {
-		return 0, fmt.Errorf("分片文件打开失败: %w", err)
+		return 0, fmt.Errorf("%w: %s: %v", ErrChunkFileOpenFailed, chunkFilePath, err)
 	}
 	var n int64
 	n, err = WriteTo(chunkFileObj, file)
@@ -37,15 +36,15 @@ func (c *ChunkUpload) merge(chunkIndex uint64, fileChunkBytes uint64, fileName, 
 	chunkFileObj.Close()
 
 	if err != nil {
-		return n, fmt.Errorf("分片文件合并失败: %w", err)
+		return n, fmt.Errorf("%w: %s: %v", ErrChunkFileMergeFailed, chunkFilePath, err)
 	}
 
 	// 删除文件 需要先关闭该文件
 	err = os.Remove(chunkFilePath)
 	if err != nil {
-		return n, fmt.Errorf("分片文件删除失败: %w", err)
+		return n, fmt.Errorf("%w: %s: %v", ErrChunkFileDeleteFailed, chunkFilePath, err)
 	}
-	log.Debug("分片文件复制完毕")
+	log.Debugf("分片文件合并成功: %s", chunkFilePath)
 	return n, err
 }
 
@@ -61,7 +60,7 @@ func (c *ChunkUpload) isFinish(info ChunkInfor, fileName string) bool {
 		b, err := ioutil.ReadFile(totalFile)
 		if err != nil {
 			if !os.IsNotExist(err) {
-				log.Errorf(`读取分片统计结果文件“%s”出错: %v`, totalFile, err)
+				log.Errorf(`读取分片统计结果文件出错: %s: %v`, totalFile, err)
 			}
 			return false
 		}
@@ -83,7 +82,7 @@ func (c *ChunkUpload) isFinish(info ChunkInfor, fileName string) bool {
 		fi, err := os.Stat(chunkFile)
 		if err != nil {
 			if !os.IsNotExist(err) {
-				log.Errorf(`统计分片文件“%s”尺寸错误：%v`, chunkFile, err)
+				log.Errorf(`统计分片文件尺寸错误: %s: %v`, chunkFile, err)
 			}
 			return false
 		}
@@ -127,7 +126,7 @@ func (c *ChunkUpload) MergeAll(totalChunks uint64, fileChunkBytes uint64, saveFi
 	var file *os.File
 	file, err = os.OpenFile(c.savePath, os.O_CREATE|os.O_WRONLY, os.ModePerm)
 	if err != nil {
-		err = fmt.Errorf("创建文件“%s”失败: %w (mergeAll)", c.savePath, err)
+		err = fmt.Errorf("%w: %s: %v (mergeAll)", ErrChunkMergeFileCreateFailed, c.savePath, err)
 		return
 	}
 	uid := c.GetUIDString()
@@ -154,6 +153,7 @@ func (c *ChunkUpload) MergeAll(totalChunks uint64, fileChunkBytes uint64, saveFi
 		}
 		wg.Wait()
 		c.merged = true
+		log.Debugf("分片文件合并完毕: %s", c.savePath)
 		return
 	}
 	defer file.Close()
@@ -161,7 +161,7 @@ func (c *ChunkUpload) MergeAll(totalChunks uint64, fileChunkBytes uint64, saveFi
 		chunkFilePath := filepath.Join(chunkFileDir, fmt.Sprintf(`%s_%d`, saveFileName, chunkIndex))
 		cfile, cerr := os.Open(chunkFilePath)
 		if cerr != nil {
-			err = fmt.Errorf("分片文件“%s”打开失败: %w", chunkFilePath, cerr)
+			err = fmt.Errorf("%w: %s: %v", ErrChunkFileOpenFailed, chunkFilePath, cerr)
 			return
 		}
 		var n int64
@@ -170,18 +170,19 @@ func (c *ChunkUpload) MergeAll(totalChunks uint64, fileChunkBytes uint64, saveFi
 		cfile.Close()
 
 		if err != nil {
-			err = fmt.Errorf("分片文件合并失败: %w", err)
+			err = fmt.Errorf("%w: %s: %v", ErrChunkFileMergeFailed, chunkFilePath, err)
 			return
 		}
 		c.saveSize += n
 		// 删除文件 需要先关闭该文件
 		err = os.Remove(chunkFilePath)
 		if err != nil {
-			err = fmt.Errorf("分片文件删除失败: %w", err)
+			err = fmt.Errorf("%w: %s: %v", ErrChunkFileDeleteFailed, chunkFilePath, err)
 			return
 		}
 	}
 
 	c.merged = true
+	log.Debugf("分片文件合并完毕: %s", c.savePath)
 	return
 }

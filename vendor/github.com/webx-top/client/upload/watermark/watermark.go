@@ -1,11 +1,11 @@
 package watermark
 
 import (
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
 
-	"github.com/admpub/errors"
 	rifs "github.com/admpub/go-utility/filesystem"
 
 	"github.com/webx-top/image"
@@ -14,12 +14,12 @@ import (
 func Write(rw io.ReadWriteSeeker, ext string, opt *image.WatermarkOptions) ([]byte, error) {
 	wm, err := opt.CreateInstance()
 	if err != nil {
-		return nil, errors.WithMessage(err, `NewWatermark`)
+		return nil, fmt.Errorf(`NewWatermark: %w`, err)
 	}
 	err = wm.Mark(rw, ext)
 	rw.Seek(0, os.SEEK_SET)
 	if err != nil {
-		return nil, errors.WithMessage(err, `Mark`)
+		return nil, fmt.Errorf(`Mark: %w`)
 	}
 	return ioutil.ReadAll(rw)
 }
@@ -28,7 +28,7 @@ func Write(rw io.ReadWriteSeeker, ext string, opt *image.WatermarkOptions) ([]by
 func Bytes(b []byte, ext string, opt *image.WatermarkOptions) ([]byte, error) {
 	sb, err := Bytes2readWriteSeeker(b)
 	if err != nil {
-		return nil, errors.WithMessage(err, `Bytes2readWriteSeeker`)
+		return nil, fmt.Errorf(`Bytes2readWriteSeeker: %w`, err)
 	}
 	return Write(sb, ext, opt)
 }

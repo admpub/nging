@@ -35,11 +35,11 @@ import (
 	"github.com/admpub/nging/application/library/filemanager"
 	"github.com/admpub/nging/application/library/s3manager/s3client/awsclient"
 
+	"github.com/admpub/errors"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	minio "github.com/minio/minio-go"
-	"github.com/pkg/errors"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
@@ -367,7 +367,7 @@ func (s *S3Manager) ErrIsNotExist(err error) bool {
 	if err == nil {
 		return false
 	}
-	switch v := errors.Cause(err).(type) {
+	switch v := errors.Unwrap(err).(type) {
 	case minio.ErrorResponse:
 		return v.StatusCode == http.StatusNotFound || v.Code == s3.ErrCodeNoSuchKey
 	default:

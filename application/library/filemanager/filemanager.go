@@ -21,7 +21,6 @@ package filemanager
 import (
 	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -190,23 +189,11 @@ func (f *fileManager) Upload(absPath string,
 		return err
 	default:
 		if chunked {
-			defer os.Remove(filePath)
-			var (
-				fi *os.File
-				tf *os.File
-			)
-			fi, err = os.Open(filePath)
-			if err != nil {
-				return fmt.Errorf(`%s: %w`, filePath, err)
-			}
-			defer fi.Close()
 			newfile := filepath.Join(absPath, filepath.Base(filePath))
-			tf, err = os.Create(newfile)
+			err = os.Rename(filePath, newfile)
 			if err != nil {
-				return fmt.Errorf(`%s: %w`, newfile, err)
+				return fmt.Errorf(`move %s to %s: %w`, filePath, newfile, err)
 			}
-			_, err = io.Copy(tf, fi)
-			tf.Close()
 		}
 	}
 	return

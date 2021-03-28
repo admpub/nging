@@ -118,7 +118,7 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.4
 	github.com/minio/minio-go v6.0.14+incompatible
 	github.com/oschwald/maxminddb-golang v1.7.0 // indirect
-	github.com/pkg/errors v0.9.1
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pkg/sftp v1.13.0
 	github.com/prometheus/client_golang v1.8.0 // indirect
 	github.com/russross/blackfriday v1.6.0
