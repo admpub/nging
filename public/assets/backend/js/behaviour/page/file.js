@@ -176,7 +176,7 @@ function dropzoneResizeHeight(isZip){
 $(function(){
     initDropzone($.extend({
         chunking:true,
-        //parallelChunkUploads:true,
+        parallelChunkUploads:true,
         retryChunksLimit:3,
         retryChunks:true
     },window.dropzoneOptions||{}));
