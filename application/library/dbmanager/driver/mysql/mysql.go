@@ -35,6 +35,7 @@ import (
 	"github.com/webx-top/pagination"
 
 	"github.com/admpub/errors"
+	"github.com/admpub/log"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 )
@@ -42,15 +43,15 @@ import (
 func init() {
 	driver.Register(`mysql`, &mySQL{
 		TriggerOptions: []*TriggerOption{
-			&TriggerOption{
+			{
 				Type:    `Timing`,
 				Options: []string{"BEFORE", "AFTER"},
 			},
-			&TriggerOption{
+			{
 				Type:    `Event`,
 				Options: []string{"INSERT", "UPDATE", "DELETE"},
 			},
-			&TriggerOption{
+			{
 				Type:    `Type`,
 				Options: []string{"FOR EACH ROW"},
 			},
@@ -138,6 +139,9 @@ func (m *mySQL) ProcessList() error {
 			i, e := strconv.ParseInt(pid, 10, 64)
 			if e == nil {
 				e = m.killProcess(i)
+				if e != nil {
+					log.Error(e)
+				}
 			}
 		}
 	}
@@ -206,12 +210,12 @@ func (m *mySQL) Privileges() error {
 			}
 			m.Set(`list`, privs.privileges)
 			m.Set(`groups`, []*KV{
-				&KV{`_Global_`, ``},
-				&KV{`Server_Admin`, m.T(`服务器`)},
-				&KV{`Databases`, m.T(`数据库`)},
-				&KV{`Tables`, m.T(`表`)},
-				&KV{`Columns`, m.T(`列`)},
-				&KV{`Procedures`, m.T(`子程序`)},
+				{`_Global_`, ``},
+				{`Server_Admin`, m.T(`服务器`)},
+				{`Databases`, m.T(`数据库`)},
+				{`Tables`, m.T(`表`)},
+				{`Columns`, m.T(`列`)},
+				{`Procedures`, m.T(`子程序`)},
 			})
 			_, grants, sorts, err := m.getUserGrants(oldHost, oldUser)
 			if _, ok := grants["*.*"]; ok {
@@ -274,8 +278,8 @@ func (m *mySQL) Privileges() error {
 			}
 		}
 	}
-	ret = common.Err(m.Context, err)
 	isSysUser, list, err := m.listPrivileges()
+	ret = common.Err(m.Context, err)
 	m.Set(`isSysUser`, isSysUser)
 	m.Set(`myUsername`, m.DbAuth.Username)
 	m.Set(`list`, list)
@@ -934,8 +938,8 @@ func (m *mySQL) ListTable() error {
 				m.fail(err.Error())
 				return m.returnTo(m.GenURL(`listDb`))
 			}
-			m.Set(`tableList`, tableList)
 		}
+		m.Set(`tableList`, tableList)
 		var tableStatus map[string]*TableStatus
 		tableStatus, _, err = m.getTableStatus(m.dbName, ``, true)
 		if err != nil {
@@ -1218,6 +1222,9 @@ func (m *mySQL) ListData() error {
 		values  []map[string]*sql.NullString
 	)
 	columns, values, totalRows, err = m.listData(nil, table, selectFuncs, selectCols, wheres, orderFields, descs, page, limit, totalRows, textLength)
+	if err != nil {
+		log.Error(err)
+	}
 	m.Set(`sortFields`, sortFields)
 	m.Set(`fields`, fields)
 	m.Set(`columns`, columns)
@@ -1405,6 +1412,9 @@ func (m *mySQL) CreateData() error {
 			return err
 		}
 		columns, err = rows.Columns()
+		if err != nil {
+			return err
+		}
 		size := len(columns)
 		for rows.Next() {
 			recv := make([]interface{}, size)
@@ -1720,6 +1730,9 @@ func (m *mySQL) modifyTrigger() error {
 	if m.IsPost() {
 		if len(name) > 0 {
 			err = m.dropTrigger(table, name)
+			if err != nil {
+				return err
+			}
 			if len(m.Form(`drop`)) > 0 {
 				return m.returnTo(m.GenURL(`viewTable`, m.dbName, table))
 			}
@@ -1731,6 +1744,9 @@ func (m *mySQL) modifyTrigger() error {
 		trigger.Trigger.String = m.Form(`trigger`)
 		trigger.Statement.String = m.Form(`statement`)
 		err = m.createTrigger(table, trigger)
+		if err != nil {
+			return err
+		}
 		return m.returnTo(m.GenURL(`viewTable`, m.dbName, table))
 	}
 	if len(trigger.Trigger.String) == 0 {
@@ -1752,8 +1768,7 @@ func (m *mySQL) RunCommand() error {
 		if limit <= 0 {
 			limit = 50
 		}
-		var reader *bytes.Reader
-		reader = bytes.NewReader([]byte(query))
+		reader := bytes.NewReader([]byte(query))
 		space := "(?:\\s|/\\*[\\s\\S]*?\\*/|(?:#|-- )[^\\n]*\\n?|--\\r?\\n)"
 		delimiter := ";"
 		parse := `['"`
@@ -1920,6 +1935,13 @@ func (m *mySQL) RunCommand() error {
 				}
 				dt := &DataTable{}
 				dt.Columns, dt.Values, err = m.selectTable(rows, limit)
+				if err != nil {
+					m.Logger().Error(err, query)
+					if onlyErrors {
+						return err
+					}
+					continue
+				}
 				selectData.Explain = dt
 			}
 			selects = append(selects, selectData)

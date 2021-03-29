@@ -22,7 +22,6 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"os"
 	"path/filepath"
 	"sort"
@@ -149,7 +148,7 @@ func (m *mySQL) Export() error {
 			structWriter, dataWriter interface{}
 			sqlFiles                 []string
 			async                    bool
-			bgExec                   = utils.NewGBExec(nil, echo.H{
+			bgExec                   = utils.NewGBExec(context.TODO(), echo.H{
 				`database`: m.dbName,
 				`tables`:   tables,
 				`output`:   output,
@@ -262,11 +261,11 @@ func (m *mySQL) Export() error {
 		}
 		if !async {
 			done := make(chan struct{})
-			clientGone := m.Response().StdResponseWriter().(http.CloseNotifier).CloseNotify()
+			ctx := m.Request().StdRequest().Context()
 			go func() {
 				for {
 					select {
-					case <-clientGone:
+					case <-ctx.Done():
 						bgExec.Cancel()()
 						return
 					case <-done:
