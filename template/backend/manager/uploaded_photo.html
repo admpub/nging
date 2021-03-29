@@ -7,7 +7,7 @@
 {{Super}}
 <li>{{"附件管理"|T}}</li>
 <li class="active">{{"文件管理"|T}}: {{/* Stored.Get "absPath" */}}
-  <a href="{{BackendURL}}/manager/uploaded_file?gallery=1">
+  <a href="{{URLPrefix}}?gallery=1">
     <span class="badge badge-primary">{{Stored.rootPath}}</span>
   </a>
   {{- range $k,$v := Stored.pathLinks -}}
@@ -28,7 +28,7 @@
       <div class="btn-group">
         {{Include "manager/uploaded_file_btn"}}
         {{if $path}}
-        <a title="{{"点击回到上一级"|T}}" class="btn btn-default" href="{{BackendURL}}/manager/uploaded_file?gallery=1&path={{$path}}/.." style="margin-left:10px">
+        <a title="{{"点击回到上一级"|T}}" class="btn btn-default" href="{{URLPrefix}}?gallery=1&path={{$path}}/.." style="margin-left:10px">
           <i class="fa fa-reply"></i>
           {{"返回上一级"|T}}
         </a>
@@ -53,19 +53,19 @@
           {{$fileType := FileTypeByName $v.Name}}
           {{if $v.IsDir}}
           <div class="icon">
-          <a href="{{BackendURL}}/manager/uploaded_file?gallery=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">
+          <a href="{{URLPrefix}}?gallery=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">
             <i class="fa fa-folder"></i>
           </a>
           </div>
           {{else if eq $fileType `image`}}
           <div class="img">
-            <img src="{{BackendURL}}/manager/uploaded_file?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" />
+            <img src="{{URLPrefix}}?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" />
             <div class="over">
               <div class="func">
-                <a href="{{BackendURL}}/manager/uploaded_file?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" target="_blank">
+                <a href="{{URLPrefix}}?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" target="_blank">
                   <i class="fa fa-link"></i>
                 </a>
-                <a class="image-zoom" href="{{BackendURL}}/manager/uploaded_file?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" title="{{$v.Name}}">
+                <a class="image-zoom" href="{{URLPrefix}}?inline=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}" title="{{$v.Name}}">
                   <i class="fa fa-search"></i>
                 </a>
               </div>
@@ -73,7 +73,7 @@
           </div>
           {{else}}
           <div class="icon">
-          <a href="{{BackendURL}}/manager/uploaded_file?gallery=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">
+          <a href="{{URLPrefix}}?gallery=1&path={{if $path}}{{$path}}/{{end}}{{$v.Name}}">
             <i class="fa fa-{{FileTypeIcon $fileType}}"></i>
           </a>
           </div>
@@ -94,7 +94,7 @@
 {{Include "caddy/file.script"}}
 <script>
   function uploadURL(currentPath) {
-    return BACKEND_URL + '/manager/uploaded_file?do=upload&path=' + encodeURIComponent(currentPath);
+    return '{{URLPrefix}}?do=upload&path=' + encodeURIComponent(currentPath);
   }
   function initDropzone(options) {
     $('#multi-upload-dropzone').dropzone($.extend({},options,{
