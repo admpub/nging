@@ -86,6 +86,9 @@ function fileRename(obj,file,isDir) {
     $('#file-rename-modal .modal-header h3').html((isDir ? App.i18n.MODIFY_DIRNAME : App.i18n.MODIFY_FILENAME)+': '+file);
     $('#file-rename-modal').niftyModal('show',{afterOpen:function(modal){
         $('#file-rename-input').val(file);
+        setTimeout(function(){
+            $('#file-rename-input').focus();
+        },500)
     }});
 }
 
@@ -95,7 +98,9 @@ function fileMkdir(obj) {
     $('#file-mkdir-modal .modal-header h3').html(App.i18n.CREATE_DIR);
     $('#file-mkdir-modal').niftyModal('show',{afterOpen:function(modal){
         $('#file-mkdir-input').val('');
-        $('#file-mkdir-input').focus();
+        setTimeout(function(){
+            $('#file-mkdir-input').focus();
+        },500)
     }});
 }
 
