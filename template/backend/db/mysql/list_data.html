@@ -376,7 +376,17 @@ $(function(){
            source: source,
            pk: $('#check-'+rowno).val(),
            name: field,
-           title: 'Enter '+field
+           title: 'Enter '+field,
+           ajaxOptions:{
+               dataType: 'json',
+               success: function(r){
+                    if(r.Code!=1) return App.message({text:r.Info,class_name:'danger'});
+                    return App.message({text:r.Info,class_name:'success'});
+               },
+               error: function(xhr){
+                    return App.message({text:xhr.responseText,class_name:'danger'});
+               }
+           }
         });
     });
     $('#move-table-modal .modal-body').html($('#tpl-move-table-form').html());
