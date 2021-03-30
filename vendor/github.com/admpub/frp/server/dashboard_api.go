@@ -51,7 +51,7 @@ type serverInfoResp struct {
 }
 
 // api/serverinfo
-func (svr *Service) ApiServerInfo(c echo.Context) error {
+func (svr *Service) APIServerInfo(c echo.Context) error {
 	res := GeneralResponse{Code: 200}
 
 	log.Info("Http request: [%s]", c.Request().URL().Path())
@@ -159,7 +159,7 @@ type GetProxyInfoResp struct {
 }
 
 // api/proxy/:type
-func (svr *Service) ApiProxyByType(c echo.Context) error {
+func (svr *Service) APIProxyByType(c echo.Context) error {
 	res := GeneralResponse{Code: 200}
 	proxyType := c.Param("type")
 
@@ -218,7 +218,7 @@ type GetProxyStatsResp struct {
 }
 
 // api/proxy/:type/:name
-func (svr *Service) ApiProxyByTypeAndName(c echo.Context) error {
+func (svr *Service) APIProxyByTypeAndName(c echo.Context) error {
 	res := GeneralResponse{Code: 200}
 	proxyType := c.Param("type")
 	name := c.Param("name")
@@ -281,7 +281,7 @@ type GetProxyTrafficResp struct {
 	TrafficOut []int64 `json:"traffic_out"`
 }
 
-func (svr *Service) ApiProxyTraffic(c echo.Context) error {
+func (svr *Service) APIProxyTraffic(c echo.Context) error {
 	res := GeneralResponse{Code: 200}
 	name := c.Param("name")
 	log.Info("Http request: [%s]", c.Request().URL().Path())

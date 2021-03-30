@@ -15,6 +15,7 @@
 package client
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"sort"
@@ -176,7 +177,8 @@ func (svr *Service) apiStatus(c echo.Context) (err error) {
 	log.Info("Http request [/api/status]")
 	defer func() {
 		log.Info("Http response [/api/status]")
-		err = c.JSON(&res)
+		b, _ := json.Marshal(res)
+		err = c.String(string(b))
 	}()
 
 	ps := svr.ctl.pm.GetAllProxyStatus()

@@ -8,10 +8,10 @@ import (
 // RegisterTo 为echo框架创建路由
 func (svr *Service) RegisterTo(router echo.RouteRegister) {
 	// api, see dashboard_api.go
-	router.Get("/api/serverinfo", svr.ApiServerInfo)
-	router.Get("/api/proxy/:type", svr.ApiProxyByType)
-	router.Get("/api/proxy/:type/:name", svr.ApiProxyByTypeAndName)
-	router.Get("/api/traffic/:name", svr.ApiProxyTraffic)
+	router.Get("/api/serverinfo", svr.APIServerInfo)
+	router.Get("/api/proxy/:type", svr.APIProxyByType)
+	router.Get("/api/proxy/:type/:name", svr.APIProxyByTypeAndName)
+	router.Get("/api/traffic/:name", svr.APIProxyTraffic)
 	// view
 	router.Get("/", func(c echo.Context) error {
 		return c.Redirect("./static/")
