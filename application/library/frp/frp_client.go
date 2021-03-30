@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 	"os/signal"
@@ -180,14 +179,14 @@ func StartClientByConfigFile(filePath string, pidFile string) error {
 	ext := filepath.Ext(filePath)
 	switch strings.ToLower(ext) {
 	case `.json`:
-		b, err := ioutil.ReadFile(filePath)
+		b, err := config.GetRenderedConfFromFile(filePath)
 		if err != nil {
-			return err
+			return fmt.Errorf("load frpc config file error: %w", err)
 		}
 		r := NewClientConfig()
 		err = json.Unmarshal(b, r)
 		if err != nil {
-			return err
+			return fmt.Errorf("load frpc config file unmarshal error: %w", err)
 		}
 		c = SetClientConfigFromDB(r.NgingFrpClient)
 		if len(r.Extra) > 0 {
@@ -196,9 +195,13 @@ func StartClientByConfigFile(filePath string, pidFile string) error {
 		filePath = ``
 	case `.yaml`:
 		r := NewClientConfig()
-		_, err := confl.DecodeFile(filePath, r)
+		b, err := config.GetRenderedConfFromFile(filePath)
 		if err != nil {
-			return err
+			return fmt.Errorf("load frpc config file error: %w", err)
+		}
+		_, err = confl.Decode(string(b), r)
+		if err != nil {
+			return fmt.Errorf("load frpc config file decode error: %w", err)
 		}
 		c = SetClientConfigFromDB(r.NgingFrpClient)
 		if len(r.Extra) > 0 {
