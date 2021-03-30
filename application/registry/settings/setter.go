@@ -9,6 +9,11 @@ func OptTmpl(tmpl ...string) FormSetter {
 		form.Tmpl = tmpl
 	}
 }
+func OptAddTmpl(tmpl ...string) FormSetter {
+	return func(form *SettingForm) {
+		form.Tmpl = append(form.Tmpl, tmpl...)
+	}
+}
 func OptShort(short string) FormSetter {
 	return func(form *SettingForm) {
 		form.Short = short
@@ -29,8 +34,18 @@ func OptHookPost(hookPost ...func(echo.Context) error) FormSetter {
 		form.hookPost = hookPost
 	}
 }
+func OptAddHookPost(hookPost ...func(echo.Context) error) FormSetter {
+	return func(form *SettingForm) {
+		form.hookPost = append(form.hookPost, hookPost...)
+	}
+}
 func OptHookGet(hookGet ...func(echo.Context) error) FormSetter {
 	return func(form *SettingForm) {
 		form.hookGet = hookGet
+	}
+}
+func OptAddHookGet(hookGet ...func(echo.Context) error) FormSetter {
+	return func(form *SettingForm) {
+		form.hookGet = append(form.hookGet, hookGet...)
 	}
 }
