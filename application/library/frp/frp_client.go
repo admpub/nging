@@ -194,11 +194,11 @@ func StartClientByConfigFile(filePath string, pidFile string) error {
 		}
 		filePath = ``
 	case `.yaml`:
-		r := NewClientConfig()
 		b, err := config.GetRenderedConfFromFile(filePath)
 		if err != nil {
 			return fmt.Errorf("load frpc config file error: %w", err)
 		}
+		r := NewClientConfig()
 		_, err = confl.Decode(string(b), r)
 		if err != nil {
 			return fmt.Errorf("load frpc config file decode error: %w", err)
