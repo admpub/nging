@@ -42,6 +42,12 @@ func (t *Thumb) Crop(opt *CropOptions) error {
 	if err != nil {
 		return errors.WithMessage(err, `Thumb.Crop.Transform`)
 	}
+	if len(opt.FileMD5) == 0 {
+		opt.FileMD5, err = checksum.MD5sumReader(bytes.NewReader(b))
+		if err != nil {
+			return errors.WithMessage(err, `Thumb.Crop.MD5`)
+		}
+	}
 	if opt.WatermarkOptions != nil && opt.WatermarkOptions.IsEnabled() {
 		var extension string
 		if pos := strings.LastIndex(opt.DestFile, `.`); pos > -1 {
@@ -65,12 +71,6 @@ func (t *Thumb) Crop(opt *CropOptions) error {
 	t.Height = param.AsUint(opt.Options.Height)
 	t.SaveName = path.Base(t.SavePath)
 	t.UsedTimes = 0
-	if len(opt.FileMD5) == 0 {
-		opt.FileMD5, err = checksum.MD5sumReader(opt.SrcReader)
-		if err != nil {
-			return errors.WithMessage(err, `Thumb.Crop.MD5`)
-		}
-	}
 	t.Md5 = opt.FileMD5 //原图Md5
 	return t.SetByFile(opt.File).Save()
 }
