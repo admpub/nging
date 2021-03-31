@@ -159,10 +159,9 @@ func (a *BaseClient) BatchUpload(opts ...OptionsSetter) Client {
 			}
 			// 不支持分片上传
 		}
-		err := a.saveFile(result, file, options)
+		a.err = a.saveFile(result, file, options)
 		file.Close()
-		if err != nil {
-			a.err = err
+		if a.err != nil {
 			return a
 		}
 		a.Results.Add(result)
