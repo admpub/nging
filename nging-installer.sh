@@ -15,25 +15,19 @@ case "$arch" in
     "x86_64") 
         arch="amd64"
         ;;
-    "i386") 
+    "i386"|"i686") 
         arch="386"
         ;;
-    "arm8") 
+    "aarch64_be"|"aarch64"|"armv8b"|"armv8l"|"armv8"|"arm64") 
         arch="arm64"
         ;;
-    "arm64") 
-        arch="arm64"
-        ;;
-    "arm7l") 
+    "armv7l"|"armv7") 
         arch="arm-7"
         ;;
-    "arm7") 
-        arch="arm-7"
-        ;;
-    "arm6") 
+    "armv6") 
         arch="arm-6"
         ;;
-    "arm5") 
+    "armv5") 
         arch="arm-5"
         ;;
     *)
@@ -118,16 +112,10 @@ uninstall() {
 
 
 case "$1" in
-    "up")
+    "up"|"upgrade")
         upgrade
         ;;
-    "upgrade")
-        upgrade
-        ;;
-    "un")
-        uninstall
-        ;;
-    "uninstall")
+    "un"|"uninstall")
         uninstall
         ;;
     "install")
