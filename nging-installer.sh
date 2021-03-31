@@ -27,7 +27,7 @@ case "$arch" in
     "armv6") 
         arch="arm-6"
         ;;
-    "armv5") 
+    "armv5"|"arm") 
         arch="arm-5"
         ;;
     *)
