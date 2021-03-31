@@ -84,7 +84,6 @@ func (a *BaseClient) Body() (file ReadCloserWithSize, err error) {
 		return
 	}
 	a.Data.FileSize = file.Size()
-	a.Data.Md5, err = file.Md5()
 	return
 }
 

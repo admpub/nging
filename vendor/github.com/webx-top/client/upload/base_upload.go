@@ -176,10 +176,6 @@ func (a *BaseClient) saveFile(result *Result, file multipart.File, options *Opti
 			return
 		}
 	}
-	result.Md5, err = checksum.MD5sumReader(file)
-	if err != nil {
-		return
-	}
 	var dstFile string
 	dstFile, err = options.Result.FileNameGenerator()(result.FileName)
 	if err != nil {
@@ -194,6 +190,12 @@ func (a *BaseClient) saveFile(result *Result, file multipart.File, options *Opti
 	}
 	if len(result.SavePath) > 0 {
 		return
+	}
+	if len(result.Md5) == 0 {
+		result.Md5, err = checksum.MD5sumReader(file)
+		if err != nil {
+			return
+		}
 	}
 	originalFile := file
 	file.Seek(0, 0)
