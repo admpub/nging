@@ -8,7 +8,7 @@
 
 osname=`uname -s`
 arch=`uname -m`
-version="3.0.3"
+version="3.1.0"
 url="https://img.nging.coscms.com/nging/v${version}/"
 
 case "$arch" in
