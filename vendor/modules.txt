@@ -265,7 +265,7 @@ github.com/admpub/tail/winfile
 # github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2
 ## explicit
 github.com/admpub/useragent
-# github.com/admpub/web-terminal v0.0.0-20190705124712-e503d17936e9
+# github.com/admpub/web-terminal v0.0.1
 ## explicit
 github.com/admpub/web-terminal/config
 github.com/admpub/web-terminal/handler

@@ -59,7 +59,7 @@ func KeyboardInteractivefunc(reader *bufio.Reader, writer io.Writer, account *Ac
 			if emptyInteractiveCount++; emptyInteractiveCount > 50 {
 				return nil, errors.New("interactive count is too much")
 			}
-			return []string{}, nil
+			return nil, nil
 		}
 		for _, question := range questions {
 			io.WriteString(utils.DecodeBy(charset, writer), question)
