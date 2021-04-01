@@ -49,3 +49,34 @@
 .dz-preview.dz-success:hover .dz-success-mark {
   opacity: 0;
 }
+table.sticky-thead > thead tr > th {
+  position: sticky;
+  top: 0;
+  background-color: white;
+}
+table.sticky-first-col > thead tr > th:first-child,
+table.sticky-last-col > thead tr > th:last-child,
+table thead tr > th.sticky {
+  z-index: 1;
+}
+table.sticky-first-col > thead tr > th:first-child,
+table.sticky-first-col > tbody tr > td:first-child,
+table.sticky-last-col > thead tr > th:last-child,
+table.sticky-last-col > tbody tr > td:last-child,
+table thead tr > th.sticky,
+table tbody tr > td.sticky {
+  position: sticky;
+}
+table.sticky-first-col > thead tr > th:first-child,
+table.sticky-first-col > tbody tr > td:first-child {
+    left: 0;
+    box-shadow: 5px 0px 10px rgba(136, 136, 136, 0.3);
+}
+table.sticky-last-col > thead tr > th:last-child,
+table.sticky-last-col > tbody tr > td:last-child {
+    right: 0;
+    box-shadow: -5px 0px 10px rgba(136, 136, 136, 0.3);
+}
+thead.always-top,table.sticky-thead > thead tr > th{
+  box-shadow: 0 3px 3px rgba(136, 136, 136, 0.3);
+}

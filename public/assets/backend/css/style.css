@@ -1653,18 +1653,17 @@ body.texture {
   line-height:23px;
   display:block;
   position: absolute;
-  left:2px;
+  right:8px;
   text-align:center;
   z-index: 9;
   font-size: 0.8em;
   color:#555;
-  opacity:0.3;
+  opacity:0;
   padding:0;
+  width:30px
 }
-.page-aside.email .mail-nav ul li a.fa-search:hover,
-.page-aside.app .app-nav ul li a.fa-search:hover,
-.page-aside.email .mail-nav ul li.active a.fa-search:hover,
-.page-aside.app .app-nav ul li.active a.fa-search:hover,
+.page-aside.email .mail-nav ul li:hover a.fa-search,
+.page-aside.app .app-nav ul li:hover a.fa-search,
 .page-aside.email .mail-nav ul li.active a.fa-search.listData,
 .page-aside.app .app-nav ul li.active a.fa-search.listData {
   opacity:1;
