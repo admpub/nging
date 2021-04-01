@@ -86,6 +86,9 @@ function fileRename(obj,file,isDir) {
     $('#file-rename-modal .modal-header h3').html((isDir ? App.i18n.MODIFY_DIRNAME : App.i18n.MODIFY_FILENAME)+': '+file);
     $('#file-rename-modal').niftyModal('show',{afterOpen:function(modal){
         $('#file-rename-input').val(file);
+        setTimeout(function(){
+            $('#file-rename-input').focus();
+        },500)
     }});
 }
 
@@ -95,7 +98,9 @@ function fileMkdir(obj) {
     $('#file-mkdir-modal .modal-header h3').html(App.i18n.CREATE_DIR);
     $('#file-mkdir-modal').niftyModal('show',{afterOpen:function(modal){
         $('#file-mkdir-input').val('');
-        $('#file-mkdir-input').focus();
+        setTimeout(function(){
+            $('#file-mkdir-input').focus();
+        },500)
     }});
 }
 
@@ -174,7 +179,13 @@ function dropzoneResizeHeight(isZip){
   }
 }
 $(function(){
-    initDropzone({retryChunks:true});
+    initDropzone($.extend({
+        chunking:true,
+        parallelChunkUploads:true,
+        retryChunksLimit:3,
+        retryChunks:true,
+        maxFilesize:1024 // 文件最大尺寸(MB)
+    },window.dropzoneOptions||{}));
     dropzone=$('#multi-upload-dropzone').get(0).dropzone;
     dropzoneZIP=$('#multi-upload-zip-dropzone').length>0?$('#multi-upload-zip-dropzone').get(0).dropzone:null;
     dropzone.on('addedfiles',dropzoneResizeHeight(false));

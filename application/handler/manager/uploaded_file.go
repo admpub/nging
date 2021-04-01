@@ -32,16 +32,40 @@ import (
 	"github.com/admpub/nging/application/library/filemanager"
 	"github.com/admpub/nging/application/library/notice"
 	"github.com/admpub/nging/application/library/respond"
+	"github.com/admpub/nging/application/registry/upload/chunk"
 	"github.com/admpub/nging/application/registry/upload/helper"
+
+	uploadChunk "github.com/admpub/nging/application/registry/upload/chunk"
+	uploadClient "github.com/webx-top/client/upload"
+	uploadDropzone "github.com/webx-top/client/upload/driver/dropzone"
 )
 
 // UploadedFile 本地附件文件管理
 func UploadedFile(ctx echo.Context) error {
+	uploadType := ctx.Param(`uploadType`)
+	var (
+		root      string
+		canUpload bool
+		canEdit   bool
+		canDelete bool
+	)
+	switch uploadType {
+	case `chunk`:
+		root = chunk.ChunkTempDir
+	case `merged`:
+		root = chunk.MergeSaveDir
+	case `file`:
+		canUpload = true
+		canEdit = true
+		canDelete = true
+		root = helper.UploadDir
+	default:
+		return echo.ErrNotFound
+	}
 	var err error
 	id := ctx.Formx(`id`).Uint()
 	filePath := ctx.Form(`path`)
 	do := ctx.Form(`do`)
-	root := helper.UploadDir
 	mgr := filemanager.New(root, config.DefaultConfig.Sys.EditableFileMaxBytes, ctx)
 	absPath := root
 	if err == nil && len(root) > 0 {
@@ -51,8 +75,12 @@ func UploadedFile(ctx echo.Context) error {
 			absPath = filepath.Join(root, filePath)
 		}
 
+		user := handler.User(ctx)
 		switch do {
 		case `edit`:
+			if !canEdit {
+				return echo.ErrNotFound
+			}
 			data := ctx.Data()
 			if _, ok := Editable(absPath); !ok {
 				data.SetInfo(ctx.T(`此文件不能在线编辑`), 0)
@@ -68,6 +96,9 @@ func UploadedFile(ctx echo.Context) error {
 			}
 			return ctx.JSON(data)
 		case `rename`:
+			if !canEdit {
+				return echo.ErrNotFound
+			}
 			data := ctx.Data()
 			newName := ctx.Form(`name`)
 			err = mgr.Rename(absPath, newName)
@@ -78,6 +109,9 @@ func UploadedFile(ctx echo.Context) error {
 			}
 			return ctx.JSON(data)
 		case `mkdir`:
+			if !canEdit {
+				return echo.ErrNotFound
+			}
 			data := ctx.Data()
 			newName := ctx.Form(`name`)
 			err = mgr.Mkdir(filepath.Join(absPath, newName), os.ModePerm)
@@ -88,13 +122,27 @@ func UploadedFile(ctx echo.Context) error {
 			}
 			return ctx.JSON(data)
 		case `delete`:
+			if !canDelete {
+				return echo.ErrNotFound
+			}
 			err = mgr.Remove(absPath)
 			if err != nil {
 				handler.SendFail(ctx, err.Error())
 			}
 			return ctx.Redirect(ctx.Referer())
 		case `upload`:
-			err = mgr.Upload(absPath)
+			if !canUpload || uploadType == `chunk` || uploadType == `merged` {
+				return echo.ErrNotFound
+			}
+			var cu *uploadClient.ChunkUpload
+			var opts []uploadClient.ChunkInfoOpter
+			if user != nil {
+				_cu := uploadChunk.ChunkUploader()
+				_cu.UID = fmt.Sprintf(`user/%d`, user.Id)
+				cu = &_cu
+				opts = append(opts, uploadClient.OptChunkInfoMapping(uploadDropzone.MappingChunkInfo))
+			}
+			err = mgr.Upload(absPath, cu, opts...)
 			if err != nil {
 				user := handler.User(ctx)
 				if user != nil {
@@ -124,7 +172,7 @@ func UploadedFile(ctx echo.Context) error {
 	pathSlice := strings.Split(strings.Trim(filePath, echo.FilePathSeparator), echo.FilePathSeparator)
 	pathLinks := make(echo.KVList, len(pathSlice))
 	encodedSep := filemanager.EncodedSepa
-	urlPrefix := fmt.Sprintf(`/manager/uploaded_file?id=%d`+urlParam+`&path=`, id) + encodedSep
+	urlPrefix := fmt.Sprintf(`/manager/uploaded/`+uploadType+`?id=%d`+urlParam+`&path=`, id) + encodedSep
 	for k, v := range pathSlice {
 		urlPrefix += com.URLEncode(v)
 		pathLinks[k] = &echo.KV{K: v, V: urlPrefix}
@@ -134,13 +182,25 @@ func UploadedFile(ctx echo.Context) error {
 	ctx.Set(`rootPath`, strings.TrimSuffix(root, echo.FilePathSeparator))
 	ctx.Set(`path`, filePath)
 	ctx.Set(`absPath`, absPath)
+
+	ctx.Set(`uploadType`, uploadType)
+	ctx.Set(`canUpload`, canUpload)
+	ctx.Set(`canEdit`, canEdit)
+	ctx.Set(`canDelete`, canDelete)
+
 	ctx.SetFunc(`Editable`, func(fileName string) bool {
+		if !canEdit {
+			return false
+		}
 		_, ok := Editable(fileName)
 		return ok
 	})
 	ctx.SetFunc(`Playable`, func(fileName string) string {
 		mime, _ := Playable(fileName)
 		return mime
+	})
+	ctx.SetFunc(`URLPrefix`, func() string {
+		return `/manager/uploaded/` + uploadType
 	})
 	if gallery {
 		return ctx.Render(`manager/uploaded_photo`, err)

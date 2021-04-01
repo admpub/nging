@@ -23,12 +23,12 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/admpub/frp/server"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/handler/caddy"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 )
 
 var regexNumEnd = regexp.MustCompile(`_[\d]+$`)
@@ -66,8 +66,11 @@ func init() {
 		g.Get(``, func(c echo.Context) error {
 			m := &dbschema.NgingFrpServer{}
 			err := m.Get(nil, `disabled`, `N`)
-			if err != nil && err != db.ErrNoMoreRows {
-				return err
+			if err != nil {
+				if err != db.ErrNoMoreRows {
+					return err
+				}
+				return c.NewError(code.DataNotFound, c.T(`没有找到启用的配置信息`))
 			}
 			if m.DashboardPort > 0 {
 				dashboardHost := m.DashboardAddr
@@ -76,9 +79,8 @@ func init() {
 				}
 				return c.Redirect(fmt.Sprintf(`http://%s:%d/`, dashboardHost, m.DashboardPort))
 			}
-			return c.Redirect(`./dashboard/`)
+			return c.NewError(code.Unsupported, c.T(`配置信息中未启用管理面板访问功能。如要启用，请将面板端口设为一个大于0的数值`))
 		})
-		server.RegisterTo(g)
 	})
 }
 

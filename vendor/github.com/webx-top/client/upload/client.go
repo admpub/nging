@@ -27,6 +27,11 @@ type Client interface {
 	//初始化
 	Init(echo.Context, *Result)
 	SetUploadMaxSize(maxSize int64) Client
+
+	//分片上传支持
+	SetChunkUpload(cu *ChunkUpload) Client
+	SetFieldMapping(fm map[string]string) Client
+
 	UploadMaxSize() int64
 	SetError(err error) Client
 	GetError() error

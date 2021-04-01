@@ -38,6 +38,10 @@ import (
 	"github.com/admpub/nging/application/library/sftpmanager"
 	"github.com/admpub/nging/application/model"
 	"github.com/admpub/web-terminal/library/ssh"
+
+	uploadChunk "github.com/admpub/nging/application/registry/upload/chunk"
+	uploadClient "github.com/webx-top/client/upload"
+	uploadDropzone "github.com/webx-top/client/upload/driver/dropzone"
 )
 
 func sftpConnect(m *dbschema.NgingSshUser) (*sftp.Client, error) {
@@ -108,6 +112,7 @@ func Sftp(ctx echo.Context) error {
 	} else {
 		parentPath = path.Dir(ppath)
 	}
+	user := handler.User(ctx)
 	switch do {
 	case `edit`:
 		data := ctx.Data()
@@ -189,7 +194,15 @@ func Sftp(ctx echo.Context) error {
 		}
 		return ctx.Redirect(ctx.Referer())
 	case `upload`:
-		err = mgr.Upload(ppath)
+		var cu *uploadClient.ChunkUpload
+		var opts []uploadClient.ChunkInfoOpter
+		if user != nil {
+			_cu := uploadChunk.ChunkUploader()
+			_cu.UID = fmt.Sprintf(`user/%d`, user.Id)
+			cu = &_cu
+			opts = append(opts, uploadClient.OptChunkInfoMapping(uploadDropzone.MappingChunkInfo))
+		}
+		err = mgr.Upload(ppath, cu, opts...)
 		if err != nil {
 			user := handler.User(ctx)
 			if user != nil {

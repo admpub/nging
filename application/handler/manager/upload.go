@@ -32,9 +32,12 @@ import (
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/handler/manager/file"
 	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/application/library/config"
 	modelFile "github.com/admpub/nging/application/model/file"
 	"github.com/admpub/nging/application/model/file/storer"
+
 	"github.com/admpub/nging/application/registry/upload"
+	uploadChunk "github.com/admpub/nging/application/registry/upload/chunk"
 	_ "github.com/admpub/nging/application/registry/upload/client"
 	uploadPipe "github.com/admpub/nging/application/registry/upload/pipe"
 	uploadPrepare "github.com/admpub/nging/application/registry/upload/prepare"
@@ -104,6 +107,10 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	result := &uploadClient.Result{}
 	client := uploadClient.Get(clientName)
 	client.Init(ctx, result)
+	cu := uploadChunk.ChunkUploader()
+	cu.UID = fmt.Sprintf(`%s/%d`, ownerType, ownerID)
+	client.SetChunkUpload(&cu)
+	client.SetUploadMaxSize(int64(config.DefaultConfig.GetMaxRequestBodySize()))
 	subdir := ctx.Form(`subdir`, `default`)
 	if !upload.Subdir.Has(subdir) {
 		err = ctx.E(`参数subdir的值无效: %s`, subdir)

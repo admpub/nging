@@ -95,7 +95,7 @@ func Initialize() {
 					file = strings.TrimPrefix(file, echo.Wd())
 					return StaticAssetFS.Open(file)
 				}
-				if strings.HasPrefix(file, helper.DefaultUploadURLPath) || strings.HasPrefix(file, `/public/assets/`) {
+				if strings.HasPrefix(file, helper.UploadURLPath) || strings.HasPrefix(file, `/public/assets/`) {
 					return StaticAssetFS.Open(file)
 				}
 			}

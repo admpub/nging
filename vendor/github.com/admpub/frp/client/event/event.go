@@ -3,13 +3,13 @@ package event
 import (
 	"errors"
 
-	"github.com/admpub/frp/models/msg"
+	"github.com/admpub/frp/pkg/msg"
 )
 
-type EventType int
+type Type int
 
 const (
-	EvStartProxy EventType = iota
+	EvStartProxy Type = iota
 	EvCloseProxy
 )
 
@@ -17,7 +17,7 @@ var (
 	ErrPayloadType = errors.New("error payload type")
 )
 
-type EventHandler func(evType EventType, payload interface{}) error
+type Handler func(evType Type, payload interface{}) error
 
 type StartProxyPayload struct {
 	NewProxyMsg *msg.NewProxy

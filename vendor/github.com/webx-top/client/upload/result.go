@@ -1,11 +1,10 @@
 package upload
 
 import (
+	"errors"
 	"fmt"
 	"path/filepath"
 	"time"
-
-	"github.com/admpub/errors"
 )
 
 // Results 批量上传时的结果数据记录

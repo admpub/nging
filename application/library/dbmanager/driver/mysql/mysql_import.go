@@ -18,8 +18,8 @@
 package mysql
 
 import (
+	"context"
 	"mime/multipart"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -94,7 +94,7 @@ func (m *mySQL) Import() error {
 		cfg.Db = m.dbName
 
 		imports := utils.Exec{}
-		bgExec := utils.NewGBExec(nil, echo.H{
+		bgExec := utils.NewGBExec(context.TODO(), echo.H{
 			`database`: m.dbName,
 			`sqlFiles`: sqlFiles,
 			`async`:    async,
@@ -110,11 +110,11 @@ func (m *mySQL) Import() error {
 		cacheKey := bgExec.Started.Format(`20060102150405`)
 		imports.Add(utils.OpImport, cacheKey, bgExec)
 		done := make(chan struct{})
-		clientGone := m.Response().StdResponseWriter().(http.CloseNotifier).CloseNotify()
+		ctx := m.Request().StdRequest().Context()
 		go func() {
 			for {
 				select {
-				case <-clientGone:
+				case <-ctx.Done():
 					bgExec.Cancel()()
 					return
 				case <-done:

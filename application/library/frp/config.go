@@ -24,9 +24,9 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/admpub/frp/models/config"
-	"github.com/admpub/frp/models/consts"
-	"github.com/admpub/frp/utils/util"
+	"github.com/admpub/frp/pkg/config"
+	"github.com/admpub/frp/pkg/consts"
+	"github.com/admpub/frp/pkg/util/util"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/webx-top/echo"
@@ -77,7 +77,7 @@ func ProxyConfigFromForm(prefix string, data url.Values) (visitor echo.H, proxy 
 	}
 	for proxyName, m := range extra.Map {
 		localC := config.LocalSvrConf{
-			LocalIp:      m.Value(`local_ip`),
+			LocalIP:      m.Value(`local_ip`),
 			LocalPort:    param.String(m.Value(`local_port`)).Int(),
 			Plugin:       m.Value(`plugin`),
 			PluginParams: map[string]string{},
@@ -98,28 +98,28 @@ func ProxyConfigFromForm(prefix string, data url.Values) (visitor echo.H, proxy 
 		}
 		var value interface{}
 		switch baseC.ProxyType {
-		case consts.TcpProxy:
-			recv := &config.TcpProxyConf{
+		case consts.TCPProxy:
+			recv := &config.TCPProxyConf{
 				BaseProxyConf: baseC,
 			}
-			recv.BindInfoConf.RemotePort = param.String(m.Value(`remote_port`)).Int()
+			recv.RemotePort = param.String(m.Value(`remote_port`)).Int()
 			recv.LocalSvrConf = localC
 			value = recv
-		case consts.UdpProxy:
-			recv := &config.UdpProxyConf{
+		case consts.UDPProxy:
+			recv := &config.UDPProxyConf{
 				BaseProxyConf: baseC,
 			}
-			recv.BindInfoConf.RemotePort = param.String(m.Value(`remote_port`)).Int()
+			recv.RemotePort = param.String(m.Value(`remote_port`)).Int()
 			value = recv
-		case consts.HttpProxy:
-			recv := &config.HttpProxyConf{
+		case consts.HTTPProxy:
+			recv := &config.HTTPProxyConf{
 				BaseProxyConf: baseC,
 			}
 			recv.DomainConf.CustomDomains = strings.Split(m.Value(`custom_domains`), `,`)
 			recv.DomainConf.SubDomain = m.Value(`subdomain`)
 			recv.Locations = strings.Split(m.Value(`locations`), `,`)
-			recv.HttpUser = m.Value(`http_user`)
-			recv.HttpPwd = m.Value(`http_pwd`)
+			recv.HTTPUser = m.Value(`http_user`)
+			recv.HTTPPwd = m.Value(`http_pwd`)
 			recv.HostHeaderRewrite = m.Value(`host_header_rewrite`)
 			recv.Headers = map[string]string{}
 			hd := m.Get(`header`)
@@ -138,8 +138,8 @@ func ProxyConfigFromForm(prefix string, data url.Values) (visitor echo.H, proxy 
 				}
 			}
 			value = recv
-		case consts.HttpsProxy:
-			recv := &config.HttpsProxyConf{
+		case consts.HTTPSProxy:
+			recv := &config.HTTPSProxyConf{
 				BaseProxyConf: baseC,
 			}
 			customDomains := m.Value(`custom_domains`)
@@ -148,15 +148,15 @@ func ProxyConfigFromForm(prefix string, data url.Values) (visitor echo.H, proxy 
 			}
 			recv.DomainConf.SubDomain = m.Value(`subdomain`)
 			value = recv
-		case consts.StcpProxy:
-			recv := &config.StcpProxyConf{
+		case consts.STCPProxy:
+			recv := &config.STCPProxyConf{
 				BaseProxyConf: baseC,
 			}
 			recv.Role = m.Value(`role`)
 			recv.Sk = m.Value(`sk`)
 			value = recv
-		case consts.XtcpProxy:
-			recv := &config.XtcpProxyConf{
+		case consts.XTCPProxy:
+			recv := &config.XTCPProxyConf{
 				BaseProxyConf: baseC,
 			}
 			recv.Role = m.Value(`role`)

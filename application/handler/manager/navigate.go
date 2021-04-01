@@ -180,7 +180,17 @@ var TopNavigate = &navigate.List{
 			{
 				DisplayOnMenu: true,
 				Name:          `本地附件`,
-				Action:        `uploaded_file`,
+				Action:        `uploaded/file`,
+			},
+			{
+				DisplayOnMenu: false,
+				Name:          `合并文件`,
+				Action:        `uploaded/merged`,
+			},
+			{
+				DisplayOnMenu: false,
+				Name:          `分片文件`,
+				Action:        `uploaded/chunk`,
 			},
 			{
 				DisplayOnMenu: true,

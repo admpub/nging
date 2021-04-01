@@ -19,26 +19,28 @@
 package upload
 
 import (
-	"bytes"
+	"errors"
+	"fmt"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"net/url"
 	"strings"
 
-	"github.com/admpub/checksum"
-	"github.com/admpub/errors"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
 )
 
 var (
-	ErrUndefinedFileName           = errors.New(`Undefined file name`)
-	ErrUndefinedContentDisposition = errors.New(`Not found Content-Disposition in header`)
+	ErrUndefinedFileName           = errors.New(`undefined file name`)
+	ErrUndefinedContentDisposition = errors.New(`not found Content-Disposition in header`)
 )
 
 type Sizer interface {
 	Size() int64
+}
+
+type SetBody interface {
+	SetBody(body io.Reader)
 }
 
 type SetReadCloser interface {
@@ -48,7 +50,6 @@ type SetReadCloser interface {
 type ReadCloserWithSize interface {
 	Sizer
 	io.ReadCloser
-	Md5() (string, error)
 }
 
 func WrapBodyWithSize(req engine.Request) ReadCloserWithSize {
@@ -79,19 +80,8 @@ func (w *wrapBodyWithSize) Close() error {
 	return w.Body().Close()
 }
 
-func (w *wrapBodyWithSize) Md5() (md5 string, err error) {
-	var b []byte
-	b, err = ioutil.ReadAll(w.Body())
-	if err != nil {
-		return
-	}
-	w.Body().Close()
-	defer func() {
-		w.SetBody(bytes.NewReader(b))
-		w.body = nil
-	}()
-	md5, err = checksum.MD5sumReader(bytes.NewReader(b))
-	return
+func (w *wrapBodyWithSize) SetBody(body io.Reader) {
+	w.Request.SetBody(body)
 }
 
 type wrapFileWithSize struct {
@@ -101,15 +91,6 @@ type wrapFileWithSize struct {
 
 func (w *wrapFileWithSize) Size() int64 {
 	return w.size
-}
-
-func (w *wrapFileWithSize) Md5() (md5 string, err error) {
-	md5, err = checksum.MD5sumReader(w)
-	if err != nil {
-		return
-	}
-	_, err = w.Seek(0, 0)
-	return
 }
 
 func Receive(name string, ctx echo.Context) (f ReadCloserWithSize, fileName string, err error) {
@@ -138,7 +119,7 @@ func Receive(name string, ctx echo.Context) (f ReadCloserWithSize, fileName stri
 		var file multipart.File
 		file, header, err = ctx.Request().FormFile(name)
 		if err != nil {
-			err = errors.WithMessage(err, name)
+			err = fmt.Errorf(`%s: %w`, name, err)
 			return
 		}
 		fileName = header.Filename

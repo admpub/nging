@@ -22,7 +22,6 @@ import (
 	"context"
 	"errors"
 	"io"
-	stdLog "log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -79,8 +78,7 @@ func (c *CLIConfig) OnlyRunServer() bool {
 		startup.FireBefore(c.Type)
 		err := cm.Init()
 		if err != nil {
-			stdLog.Println(err)
-			os.Exit(1)
+			com.ExitOnFailure(err.Error())
 		}
 		startup.FireAfter(c.Type)
 		return true
@@ -94,8 +92,7 @@ func (c *CLIConfig) OnlyRunServer() bool {
 		startup.FireBefore(c.Type)
 		err := DefaultConfig.Caddy.Init().Start()
 		if err != nil {
-			stdLog.Println(err)
-			os.Exit(1)
+			com.ExitOnFailure(err.Error())
 		}
 		startup.FireAfter(c.Type)
 		return true
@@ -104,8 +101,7 @@ func (c *CLIConfig) OnlyRunServer() bool {
 		startup.FireBefore(c.Type)
 		err := DefaultConfig.FTP.Init().Start()
 		if err != nil {
-			stdLog.Println(err)
-			os.Exit(1)
+			com.ExitOnFailure(err.Error())
 		}
 		startup.FireAfter(c.Type)
 		return true
@@ -114,8 +110,7 @@ func (c *CLIConfig) OnlyRunServer() bool {
 		id := c.GenerateIDFromConfigFileName(c.Confx)
 		err := frp.StartServerByConfigFile(c.Confx, c.FRPPidFile(id, true))
 		if err != nil {
-			stdLog.Println(err)
-			os.Exit(1)
+			com.ExitOnFailure(err.Error())
 		}
 		startup.FireAfter(c.Type)
 		return true
@@ -124,8 +119,7 @@ func (c *CLIConfig) OnlyRunServer() bool {
 		id := c.GenerateIDFromConfigFileName(c.Confx)
 		err := frp.StartClientByConfigFile(c.Confx, c.FRPPidFile(id, false))
 		if err != nil {
-			stdLog.Println(err)
-			os.Exit(1)
+			com.ExitOnFailure(err.Error())
 		}
 		startup.FireAfter(c.Type)
 		return true

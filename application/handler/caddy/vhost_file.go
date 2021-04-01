@@ -34,6 +34,10 @@ import (
 	"github.com/admpub/nging/application/library/notice"
 	"github.com/admpub/nging/application/library/respond"
 	"github.com/admpub/nging/application/model"
+
+	uploadChunk "github.com/admpub/nging/application/registry/upload/chunk"
+	uploadClient "github.com/webx-top/client/upload"
+	uploadDropzone "github.com/webx-top/client/upload/driver/dropzone"
 )
 
 func VhostFile(ctx echo.Context) error {
@@ -45,6 +49,7 @@ func VhostFile(ctx echo.Context) error {
 	err = m.Get(nil, db.Cond{`id`: id})
 	mgr := filemanager.New(m.Root, config.DefaultConfig.Sys.EditableFileMaxBytes, ctx)
 	absPath := m.Root
+	user := handler.User(ctx)
 	if err == nil && len(m.Root) > 0 {
 
 		if len(filePath) > 0 {
@@ -95,7 +100,15 @@ func VhostFile(ctx echo.Context) error {
 			}
 			return ctx.Redirect(ctx.Referer())
 		case `upload`:
-			err = mgr.Upload(absPath)
+			var cu *uploadClient.ChunkUpload
+			var opts []uploadClient.ChunkInfoOpter
+			if user != nil {
+				_cu := uploadChunk.ChunkUploader()
+				_cu.UID = fmt.Sprintf(`user/%d`, user.Id)
+				cu = &_cu
+				opts = append(opts, uploadClient.OptChunkInfoMapping(uploadDropzone.MappingChunkInfo))
+			}
+			err = mgr.Upload(absPath, cu, opts...)
 			if err != nil {
 				user := handler.User(ctx)
 				if user != nil {

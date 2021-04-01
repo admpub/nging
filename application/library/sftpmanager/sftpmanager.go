@@ -20,18 +20,23 @@ package sftpmanager
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 	"sort"
 	"strings"
 
 	"github.com/admpub/nging/application/library/charset"
 	"github.com/admpub/nging/application/library/filemanager"
+
 	"github.com/pkg/sftp"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+
+	uploadClient "github.com/webx-top/client/upload"
 )
 
 func New(client *sftp.Client, editableMaxSize int64, ctx echo.Context) *sftpManager {
@@ -146,25 +151,61 @@ func (s *sftpManager) Remove(ppath string) error {
 	return s.client.Remove(ppath)
 }
 
-func (s *sftpManager) Upload(ppath string) error {
+func (s *sftpManager) Upload(ppath string,
+	chunkUpload *uploadClient.ChunkUpload,
+	chunkOpts ...uploadClient.ChunkInfoOpter) error {
 	d, err := s.client.Open(ppath)
 	if err != nil {
 		return err
 	}
 	defer d.Close()
 	fi, err := d.Stat()
-	if !fi.IsDir() {
+	if err == nil && !fi.IsDir() {
 		return s.E(`路径不正确`)
 	}
-	fileSrc, fileHdr, err := s.Request().FormFile(`file`)
-	if err != nil {
-		return err
+	var fileSrc io.Reader
+	var filename string
+	var chunked bool // 是否支持分片
+	if chunkUpload != nil {
+		_, err := chunkUpload.Upload(s.Request().StdRequest(), chunkOpts...)
+		if err != nil {
+			if !errors.Is(err, uploadClient.ErrChunkUnsupported) {
+				if errors.Is(err, uploadClient.ErrChunkUploadCompleted) ||
+					errors.Is(err, uploadClient.ErrFileUploadCompleted) {
+					return nil
+				}
+				return err
+			}
+		} else {
+			if !chunkUpload.Merged() {
+				return nil
+			}
+			_fp, err := os.Open(chunkUpload.GetSavePath())
+			if err != nil {
+				return err
+			}
+			fileSrc = _fp
+			defer func() {
+				_fp.Close()
+				os.Remove(chunkUpload.GetSavePath())
+			}()
+			chunked = true
+			filename = filepath.Base(chunkUpload.GetSavePath())
+		}
 	}
-	defer fileSrc.Close()
+	if !chunked {
+		_fileSrc, _fileHdr, err := s.Request().FormFile(`file`)
+		if err != nil {
+			return err
+		}
+		fileSrc = _fileSrc
+		defer _fileSrc.Close()
 
-	// Destination
-	fileName := fileHdr.Filename
-	fileDst, err := s.client.Create(path.Join(ppath, fileName))
+		// Destination
+		filename = _fileHdr.Filename
+
+	}
+	fileDst, err := s.client.Create(path.Join(ppath, filename))
 	if err != nil {
 		return err
 	}

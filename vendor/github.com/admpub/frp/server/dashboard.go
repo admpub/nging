@@ -15,12 +15,13 @@
 package server
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/admpub/frp/assets"
-	"github.com/admpub/frp/g"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/webx-top/echo"
+	echoPrometheus "github.com/webx-top/echo-prometheus"
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/engine/standard"
 	"github.com/webx-top/echo/middleware"
@@ -31,14 +32,20 @@ var (
 	httpServerWriteTimeout = 10 * time.Second
 )
 
-func (svr *Service) RunDashboardServer(addr string, port int) (err error) {
+func (svr *Service) RunDashboardServer(address string) (err error) {
 	// url router
 	e := echo.New()
 	e.Use(middleware.Log(), middleware.Recover(), middleware.Gzip())
-	if len(g.GlbServerCfg.DashboardUser) > 0 && len(g.GlbServerCfg.DashboardPwd) > 0 {
+	if len(svr.cfg.DashboardUser) > 0 && len(svr.cfg.DashboardPwd) > 0 {
 		e.Use(middleware.BasicAuth(func(user string, passwd string) bool {
-			return user == g.GlbServerCfg.DashboardUser && passwd == g.GlbServerCfg.DashboardPwd
+			return user == svr.cfg.DashboardUser && passwd == svr.cfg.DashboardPwd
 		}))
+	}
+	// metrics
+	if svr.cfg.EnablePrometheus {
+		// Prometheus
+		e.Use(echoPrometheus.MetricsMiddleware())
+		e.Get("/metrics", echo.WrapHandler(promhttp.Handler()))
 	}
 	svr.RegisterTo(e)
 	// view
@@ -47,7 +54,7 @@ func (svr *Service) RunDashboardServer(addr string, port int) (err error) {
 		return c.File(c.Path(), fs)
 	})
 
-	address := fmt.Sprintf("%s:%d", addr, port)
+	//address := fmt.Sprintf("%s:%d", addr, port)
 	cfg := &engine.Config{
 		Address:      address,
 		ReadTimeout:  httpServerReadTimeout,

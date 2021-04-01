@@ -36,6 +36,7 @@ var FormField = `file`
 func New() uploadClient.Client {
 	client := &Dropzone{}
 	client.BaseClient = uploadClient.New(client, FormField)
+	client.BaseClient.SetFieldMapping(MappingChunkInfo)
 	return client
 }
 
@@ -58,4 +59,13 @@ func (a *Dropzone) BuildResult() uploadClient.Client {
 		a.RespData = a.ErrorString()
 	}
 	return a
+}
+
+var MappingChunkInfo = map[string]string{
+	`fileUUID`:        `dzuuid`,
+	`chunkIndex`:      `dzchunkindex`,
+	`fileTotalBytes`:  `dztotalfilesize`,
+	`fileChunkBytes`:  `dzchunksize`,
+	`fileTotalChunks`: `dztotalchunkcount`,
+	//`<unsuppored>`: `dzchunkbyteoffset`,
 }

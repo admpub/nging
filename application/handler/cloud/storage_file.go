@@ -34,6 +34,10 @@ import (
 	"github.com/admpub/nging/application/library/respond"
 	"github.com/admpub/nging/application/library/s3manager/s3client"
 	"github.com/admpub/nging/application/model"
+
+	uploadChunk "github.com/admpub/nging/application/registry/upload/chunk"
+	uploadClient "github.com/webx-top/client/upload"
+	uploadDropzone "github.com/webx-top/client/upload/driver/dropzone"
 )
 
 func StorageFile(ctx echo.Context) error {
@@ -62,6 +66,7 @@ func StorageFile(ctx echo.Context) error {
 	if len(parentPath) > 0 && parentPath != `/` {
 		parentPath += `/`
 	}
+	user := handler.User(ctx)
 	switch do {
 	case `edit`:
 		data := ctx.Data()
@@ -122,7 +127,15 @@ func StorageFile(ctx echo.Context) error {
 		}
 		return ctx.Redirect(ctx.Referer())
 	case `upload`:
-		err = mgr.Upload(ctx, ppath)
+		var cu *uploadClient.ChunkUpload
+		var opts []uploadClient.ChunkInfoOpter
+		if user != nil {
+			_cu := uploadChunk.ChunkUploader()
+			_cu.UID = fmt.Sprintf(`user/%d`, user.Id)
+			cu = &_cu
+			opts = append(opts, uploadClient.OptChunkInfoMapping(uploadDropzone.MappingChunkInfo))
+		}
+		err = mgr.Upload(ctx, ppath, cu, opts...)
 		if err != nil {
 			user := handler.User(ctx)
 			if user != nil {

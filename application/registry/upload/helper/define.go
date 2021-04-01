@@ -27,16 +27,16 @@ import (
 )
 
 const (
-	DefaultUploadURLPath = `/public/upload/`
-	DefaultUploadDir     = `./public/upload`
+	defaultUploadURLPath = `/public/upload/`
+	defaultUploadDir     = `./public/upload`
 )
 
 var (
 	// UploadURLPath 上传文件网址访问路径
-	UploadURLPath = DefaultUploadURLPath
+	UploadURLPath = defaultUploadURLPath
 
 	// UploadDir 定义上传目录（首尾必须带“/”）
-	UploadDir = DefaultUploadDir
+	UploadDir = defaultUploadDir
 
 	// AllowedUploadFileExtensions 被允许上传的文件的扩展名
 	AllowedUploadFileExtensions = []string{

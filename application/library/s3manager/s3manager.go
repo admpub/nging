@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -33,13 +34,16 @@ import (
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/filemanager"
 	"github.com/admpub/nging/application/library/s3manager/s3client/awsclient"
+
+	"github.com/admpub/errors"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	minio "github.com/minio/minio-go"
-	"github.com/pkg/errors"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+
+	uploadClient "github.com/webx-top/client/upload"
 )
 
 func New(client *minio.Client, config *dbschema.NgingCloudStorage, editableMaxSize int64) *S3Manager {
@@ -261,15 +265,53 @@ func (s *S3Manager) Clear() error {
 	return nil
 }
 
-func (s *S3Manager) Upload(ctx echo.Context, ppath string) error {
-	fileSrc, fileHdr, err := ctx.Request().FormFile(`file`)
-	if err != nil {
-		return err
+func (s *S3Manager) Upload(ctx echo.Context, ppath string,
+	chunkUpload *uploadClient.ChunkUpload,
+	chunkOpts ...uploadClient.ChunkInfoOpter) error {
+	var fileSrc io.Reader
+	var objectName string
+	var objectSize int64
+	var chunked bool // 是否支持分片
+	if chunkUpload != nil {
+		_, err := chunkUpload.Upload(ctx.Request().StdRequest(), chunkOpts...)
+		if err != nil {
+			if !errors.Is(err, uploadClient.ErrChunkUnsupported) {
+				if errors.Is(err, uploadClient.ErrChunkUploadCompleted) ||
+					errors.Is(err, uploadClient.ErrFileUploadCompleted) {
+					return nil
+				}
+				return err
+			}
+		} else {
+			if !chunkUpload.Merged() {
+				return nil
+			}
+			_fp, err := os.Open(chunkUpload.GetSavePath())
+			if err != nil {
+				return err
+			}
+			fileSrc = _fp
+			defer func() {
+				_fp.Close()
+				os.Remove(chunkUpload.GetSavePath())
+			}()
+			chunked = true
+			objectName = filepath.Base(chunkUpload.GetSavePath())
+			objectSize = chunkUpload.GetSaveSize()
+		}
 	}
-	defer fileSrc.Close()
-	objectName := path.Join(ppath, fileHdr.Filename)
+	if !chunked {
+		_fileSrc, _fileHdr, err := ctx.Request().FormFile(`file`)
+		if err != nil {
+			return err
+		}
+		defer _fileSrc.Close()
+		fileSrc = _fileSrc
+		objectName = path.Join(ppath, _fileHdr.Filename)
+		objectSize = _fileHdr.Size
+	}
 	//return s.uploadByAWS(fileSrc, objectName)
-	return s.Put(fileSrc, objectName, fileHdr.Size)
+	return s.Put(fileSrc, objectName, objectSize)
 }
 
 // Put 提交数据
@@ -325,7 +367,7 @@ func (s *S3Manager) ErrIsNotExist(err error) bool {
 	if err == nil {
 		return false
 	}
-	switch v := errors.Cause(err).(type) {
+	switch v := errors.Unwrap(err).(type) {
 	case minio.ErrorResponse:
 		return v.StatusCode == http.StatusNotFound || v.Code == s3.ErrCodeNoSuchKey
 	default:

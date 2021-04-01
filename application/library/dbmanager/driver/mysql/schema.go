@@ -65,7 +65,7 @@ type TableStatus struct {
 }
 
 func (t *TableStatus) IsView() bool {
-	return t.Engine.Valid == false
+	return !t.Engine.Valid
 }
 
 func (t *TableStatus) FKSupport(currentVersion string) bool {
@@ -114,7 +114,7 @@ func NewPrivileges() *Privileges {
 	return &Privileges{
 		Privileges: []*Privilege{},
 		privileges: map[string]map[string]string{
-			"_Global_": map[string]string{
+			"_Global_": {
 				"All privileges": "",
 			},
 		},

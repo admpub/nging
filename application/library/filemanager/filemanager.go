@@ -20,6 +20,7 @@ package filemanager
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -28,6 +29,7 @@ import (
 	"strings"
 
 	"github.com/admpub/nging/application/library/charset"
+	uploadClient "github.com/webx-top/client/upload"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
@@ -130,7 +132,9 @@ func (f *fileManager) enterPath(absPath string) (d http.File, fi os.FileInfo, er
 	return
 }
 
-func (f *fileManager) Upload(absPath string) (err error) {
+func (f *fileManager) Upload(absPath string,
+	chunkUpload *uploadClient.ChunkUpload,
+	chunkOpts ...uploadClient.ChunkInfoOpter) (err error) {
 	var (
 		d  http.File
 		fi os.FileInfo
@@ -143,16 +147,38 @@ func (f *fileManager) Upload(absPath string) (err error) {
 		return
 	}
 	if !fi.IsDir() {
-		return errors.New(f.T(`路径不正确`))
+		return errors.New(f.T(`路径不正确: %s`, absPath))
 	}
-	pipe := f.Form(`pipe`)
-	switch pipe {
-	case `unzip`:
+	var filePath string
+	var chunked bool // 是否支持分片
+	if chunkUpload != nil {
+		_, err := chunkUpload.Upload(f.Request().StdRequest(), chunkOpts...)
+		if err != nil {
+			if !errors.Is(err, uploadClient.ErrChunkUnsupported) {
+				if errors.Is(err, uploadClient.ErrChunkUploadCompleted) ||
+					errors.Is(err, uploadClient.ErrFileUploadCompleted) {
+					return nil
+				}
+				return err
+			}
+		} else {
+			if !chunkUpload.Merged() {
+				return nil
+			}
+			chunked = true
+			filePath = chunkUpload.GetSavePath()
+		}
+	}
+	if !chunked {
 		fileHdr, err := f.SaveUploadedFile(`file`, absPath)
 		if err != nil {
 			return err
 		}
-		filePath := filepath.Join(absPath, fileHdr.Filename)
+		filePath = filepath.Join(absPath, fileHdr.Filename)
+	}
+	pipe := f.Form(`pipe`)
+	switch pipe {
+	case `unzip`:
 		err = com.Unzip(filePath, absPath)
 		if err == nil {
 			err = os.Remove(filePath)
@@ -162,7 +188,13 @@ func (f *fileManager) Upload(absPath string) (err error) {
 		}
 		return err
 	default:
-		_, err = f.SaveUploadedFile(`file`, absPath)
+		if chunked {
+			newfile := filepath.Join(absPath, filepath.Base(filePath))
+			err = os.Rename(filePath, newfile)
+			if err != nil {
+				return fmt.Errorf(`move %s to %s: %w`, filePath, newfile, err)
+			}
+		}
 	}
 	return
 }

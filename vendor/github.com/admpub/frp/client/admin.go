@@ -15,12 +15,10 @@
 package client
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/admpub/frp/assets"
-	"github.com/admpub/frp/g"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
 	"github.com/webx-top/echo/engine/standard"
@@ -32,12 +30,12 @@ var (
 	httpServerWriteTimeout = 10 * time.Second
 )
 
-func (svr *Service) RunAdminServer(addr string, port int) (err error) {
+func (svr *Service) RunAdminServer(address string) (err error) {
 	e := echo.New()
 	e.Use(middleware.Log(), middleware.Recover())
-	if len(g.GlbClientCfg.AdminUser) > 0 && len(g.GlbClientCfg.AdminPwd) > 0 {
+	if len(svr.cfg.AdminUser) > 0 && len(svr.cfg.AdminPwd) > 0 {
 		e.Use(middleware.BasicAuth(func(user string, passwd string) bool {
-			return user == g.GlbClientCfg.AdminUser && passwd == g.GlbClientCfg.AdminPwd
+			return user == svr.cfg.AdminUser && passwd == svr.cfg.AdminPwd
 		}))
 	}
 	e.Get("/api/reload", svr.apiReload)
@@ -58,7 +56,7 @@ func (svr *Service) RunAdminServer(addr string, port int) (err error) {
 	e.Get("/", func(c echo.Context) error {
 		return c.Redirect("/static/")
 	})
-	address := fmt.Sprintf("%s:%d", addr, port)
+	//address := fmt.Sprintf("%s:%d", addr, port)
 	cfg := &engine.Config{
 		Address:      address,
 		ReadTimeout:  httpServerReadTimeout,

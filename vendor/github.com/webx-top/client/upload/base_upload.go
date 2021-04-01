@@ -1,8 +1,10 @@
 package upload
 
 import (
+	"errors"
 	"fmt"
 	"mime/multipart"
+	"os"
 
 	"github.com/admpub/checksum"
 	"github.com/admpub/log"
@@ -37,6 +39,44 @@ func (a *BaseClient) Upload(opts ...OptionsSetter) Client {
 		if a.err != nil {
 			return a
 		}
+		defer file.Close()
+	}
+	if a.chunkUpload != nil {
+		info := &ChunkInfo{
+			Mapping:     a.fieldMapping,
+			FileName:    options.Result.FileName,
+			CurrentSize: uint64(options.Result.FileSize),
+		}
+		info.CallbackBatchSet(func(name string) string {
+			return a.Form(name)
+		})
+		_, a.err = a.chunkUpload.ChunkUpload(info, file)
+		if a.err == nil { // 上传成功
+			if a.chunkUpload.Merged() {
+				var fp *os.File
+				fp, a.err = os.Open(a.chunkUpload.GetSavePath())
+				if a.err != nil {
+					return a
+				}
+				defer fp.Close()
+				a.err = a.saveFile(options.Result, fp, options)
+				if a.err != nil {
+					return a
+				}
+				// 上传到最终位置后删除合并后的文件
+				os.Remove(a.chunkUpload.GetSavePath())
+			}
+			return a
+		}
+		if !errors.Is(a.err, ErrChunkUnsupported) { // 上传出错
+			if errors.Is(a.err, ErrChunkUploadCompleted) ||
+				errors.Is(a.err, ErrFileUploadCompleted) {
+				a.err = nil
+				return a
+			}
+			return a
+		}
+		// 不支持分片上传
 	}
 
 	a.err = a.saveFile(options.Result, file, options)
@@ -66,27 +106,62 @@ func (a *BaseClient) BatchUpload(opts ...OptionsSetter) Client {
 	}
 	for _, fileHdr := range files {
 		//for each fileheader, get a handle to the actual file
+		if fileHdr.Size > a.uploadMaxSize {
+			a.err = fmt.Errorf(`%w: %v`, ErrFileTooLarge, com.FormatBytes(a.uploadMaxSize))
+			return a
+		}
+
 		var file multipart.File
 		file, a.err = fileHdr.Open()
 		if a.err != nil {
-			if file != nil {
-				file.Close()
-			}
-			return a
-		}
-		if fileHdr.Size > a.uploadMaxSize {
-			a.err = fmt.Errorf(`%w: %v`, ErrFileTooLarge, com.FormatBytes(a.uploadMaxSize))
-			file.Close()
 			return a
 		}
 		result := &Result{
 			FileName: fileHdr.Filename,
 			FileSize: fileHdr.Size,
 		}
-		err := a.saveFile(result, file, options)
+		if a.chunkUpload != nil {
+			info := &ChunkInfo{
+				Mapping:     a.fieldMapping,
+				FileName:    fileHdr.Filename,
+				CurrentSize: uint64(fileHdr.Size),
+			}
+			info.CallbackBatchSet(func(name string) string {
+				return a.Form(name)
+			})
+			_, a.err = a.chunkUpload.ChunkUpload(info, file)
+			if a.err == nil { // 上传成功
+				file.Close()
+				if a.chunkUpload.Merged() {
+					file, a.err = os.Open(a.chunkUpload.GetSavePath())
+					if a.err != nil {
+						return a
+					}
+					a.err = a.saveFile(result, file, options)
+					file.Close()
+					if a.err != nil {
+						return a
+					}
+					// 上传到最终位置后删除合并后的文件
+					os.Remove(a.chunkUpload.GetSavePath())
+					a.Results.Add(result)
+				}
+				continue
+			}
+			if !errors.Is(a.err, ErrChunkUnsupported) { // 上传出错
+				file.Close()
+				if errors.Is(a.err, ErrChunkUploadCompleted) ||
+					errors.Is(a.err, ErrFileUploadCompleted) {
+					a.err = nil
+					return a
+				}
+				return a
+			}
+			// 不支持分片上传
+		}
+		a.err = a.saveFile(result, file, options)
 		file.Close()
-		if err != nil {
-			a.err = err
+		if a.err != nil {
 			return a
 		}
 		a.Results.Add(result)
@@ -99,10 +174,6 @@ func (a *BaseClient) saveFile(result *Result, file multipart.File, options *Opti
 		if err = options.Checker(result); err != nil {
 			return
 		}
-	}
-	result.Md5, err = checksum.MD5sumReader(file)
-	if err != nil {
-		return
 	}
 	var dstFile string
 	dstFile, err = options.Result.FileNameGenerator()(result.FileName)
@@ -118,6 +189,12 @@ func (a *BaseClient) saveFile(result *Result, file multipart.File, options *Opti
 	}
 	if len(result.SavePath) > 0 {
 		return
+	}
+	if len(result.Md5) == 0 {
+		result.Md5, err = checksum.MD5sumReader(file)
+		if err != nil {
+			return
+		}
 	}
 	originalFile := file
 	file.Seek(0, 0)

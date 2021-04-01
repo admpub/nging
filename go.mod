@@ -6,7 +6,7 @@ replace github.com/caddyserver/caddy => github.com/admpub/caddy v1.1.5
 
 replace github.com/mholt/certmagic => github.com/caddyserver/certmagic v0.8.3
 
-replace google.golang.org/protobuf => github.com/protocolbuffers/protobuf-go v1.25.0
+replace google.golang.org/protobuf => github.com/protocolbuffers/protobuf-go v1.26.0
 
 require (
 	github.com/PuerkitoBio/goquery v1.6.0 // indirect
@@ -20,15 +20,13 @@ require (
 	github.com/admpub/confl v0.0.3
 	github.com/admpub/cr v0.0.0-20200630080251-9947244796af
 	github.com/admpub/cron v0.0.1
-	github.com/admpub/decimal v0.0.0-20180709203117-cd690d0c9e24 // indirect
 	github.com/admpub/dgoogauth v0.0.0-20170926052827-752650e076f2
 	github.com/admpub/email v2.3.1+incompatible
 	github.com/admpub/errors v0.8.2
 	github.com/admpub/events v0.0.0-20190913050400-383beb0843c6
 	github.com/admpub/fasthttp v0.0.1 // indirect
-	github.com/admpub/frp v0.28.1
+	github.com/admpub/frp v0.36.3
 	github.com/admpub/ftpserver v0.0.0-20180821023651-6b950445d653
-	github.com/admpub/gifresize v1.0.2 // indirect
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
 	github.com/admpub/go-download/v2 v2.1.6
 	github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
@@ -36,9 +34,7 @@ require (
 	github.com/admpub/go-phantomjs-fetcher v0.0.0-20180924162325-bb2ae1648e33
 	github.com/admpub/go-pretty v3.3.3+incompatible
 	github.com/admpub/go-ps v0.0.1 // indirect
-	github.com/admpub/go-reuseport v0.0.3 // indirect
 	github.com/admpub/go-sshclient v0.0.0-20200729145748-988808eb5279
-	github.com/admpub/go-utility v0.0.1 // indirect
 	github.com/admpub/godownloader v0.0.0-20191013090831-d509172649e4
 	github.com/admpub/goforever v0.1.1
 	github.com/admpub/gohls v0.0.0-20191013012052-b7505aaf3c90 // indirect
@@ -48,12 +44,8 @@ require (
 	github.com/admpub/goseaweedfs v0.1.2
 	github.com/admpub/highwayhash v0.0.0-20180501080913-85fc8a2dacad
 	github.com/admpub/httpscerts v0.0.0-20180907121630-a2990e2af45c
-	github.com/admpub/humanize v0.0.0-20190501023926-5f826e92c8ca // indirect
 	github.com/admpub/i18n v0.0.0-20190425064330-383d24a2fded // indirect
-	github.com/admpub/identicon v1.0.2 // indirect
 	github.com/admpub/imageproxy v0.9.1
-	github.com/admpub/imaging v1.5.0 // indirect
-	github.com/admpub/ini v1.38.2
 	github.com/admpub/ip2region v1.2.5
 	github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
 	github.com/admpub/log v0.2.2
@@ -76,10 +68,9 @@ require (
 	github.com/admpub/snowflake v0.0.0-20180412010544-68117e6bbede
 	github.com/admpub/sockjs-go v0.0.0-20170208085255-715e9716fc23
 	github.com/admpub/sonyflake v0.0.0-20160530021500-fa881fb1052b
-	github.com/admpub/statik v0.1.7 // indirect
 	github.com/admpub/tail v1.0.3
 	github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2
-	github.com/admpub/web-terminal v0.0.0-20190705124712-e503d17936e9
+	github.com/admpub/web-terminal v0.0.1
 	github.com/admpub/websocket v1.0.4
 	github.com/aws/aws-sdk-go v1.37.25
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
@@ -100,25 +91,22 @@ require (
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
 	github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
 	github.com/deckarep/golang-set v1.7.1 // indirect
-	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/fatedier/beego v1.7.2 // indirect
 	github.com/fatedier/golib v0.2.0 // indirect
-	github.com/fatedier/kcp-go v2.0.4-0.20190803094908-fe8645b0a904+incompatible // indirect
 	github.com/fatih/color v1.10.0
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-openapi/strfmt v0.19.11 // indirect
-	github.com/goccy/go-json v0.4.7 // indirect
 	github.com/goftp/file-driver v0.0.0-20180502053751-5d604a0fc0c9 // indirect
 	github.com/goftp/server v0.0.0-20200708154336-f64f7c2d8a42 // indirect
-	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/gomodule/redigo v1.8.4
 	github.com/grafov/m3u8 v0.11.1 // indirect
 	github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce // indirect
 	github.com/igm/sockjs-go v3.0.0+incompatible // indirect
+	github.com/imdario/mergo v0.3.11 // indirect
 	github.com/jedib0t/go-pretty v4.3.0+incompatible // indirect
-	github.com/jesseduffield/lazygit v0.25.1
 	github.com/jlaffaye/ftp v0.0.0-20201112195030-9aae4d151126 // indirect
+	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/kardianos/service v1.2.0 // indirect
 	github.com/klauspost/compress v1.11.12 // indirect
 	github.com/markbates/goth v1.66.0 // indirect
@@ -126,14 +114,10 @@ require (
 	github.com/mholt/certmagic v0.8.3
 	github.com/microcosm-cc/bluemonday v1.0.4
 	github.com/minio/minio-go v6.0.14+incompatible
-	github.com/muesli/smartcrop v0.3.0 // indirect
-	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/oschwald/maxminddb-golang v1.7.0 // indirect
-	github.com/pkg/errors v0.9.1
 	github.com/pkg/sftp v1.13.0
 	github.com/prometheus/client_golang v1.8.0 // indirect
 	github.com/russross/blackfriday v1.6.0
-	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd // indirect
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
 	github.com/shirou/gopsutil v3.21.2+incompatible
 	github.com/shivakar/metrohash v0.0.0-20160821164112-8d1c8b6bed28 // indirect
@@ -149,22 +133,17 @@ require (
 	github.com/tklauser/go-sysconf v0.3.4 // indirect
 	github.com/webx-top/captcha v0.0.0-20161202061115-29e9e7f30aa0
 	github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f // indirect
-	github.com/webx-top/client v0.1.3
+	github.com/webx-top/client v0.2.2
 	github.com/webx-top/codec v0.0.1
-	github.com/webx-top/com v0.1.2
+	github.com/webx-top/com v0.2.0
 	github.com/webx-top/db v1.1.5
 	github.com/webx-top/echo v2.8.3+incompatible
 	github.com/webx-top/image v0.0.7
 	github.com/webx-top/pagination v0.0.3
-	github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2 // indirect
-	github.com/webx-top/validation v0.0.1 // indirect
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect
 	github.com/xu42/youzan-sdk-go v0.0.3
 	gocloud.dev v0.22.0
-	golang.org/x/crypto v0.0.0-20210314154223-e6e6c4f2bb5b
-	golang.org/x/net v0.0.0-20210316092652-d523dce5a7f4 // indirect
-	golang.org/x/sys v0.0.0-20210317091845-390168757d9c // indirect
-	golang.org/x/text v0.3.5 // indirect
+	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
