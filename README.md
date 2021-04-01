@@ -58,6 +58,9 @@ import (
 
     ```sh
     sudo sh -c "$(wget https://raw.githubusercontent.com/admpub/nging/master/nging-installer.sh -O -)"
+
+    # 如果是中国境内网络，可以选择采用以下命令：
+    sudo sh -c "$(wget https://gitee.com/admpub/nging/raw/master/nging-installer.sh -O -)"
     ```
 
     或

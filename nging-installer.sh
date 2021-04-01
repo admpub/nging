@@ -8,7 +8,7 @@
 
 osname=`uname -s`
 arch=`uname -m`
-version="3.1.0"
+version="3.2.0"
 url="https://img.nging.coscms.com/nging/v${version}/"
 
 case "$arch" in
@@ -51,7 +51,7 @@ esac
 
 binname="nging"
 filename="nging_${osname}_$arch"
-filefullname="$filename.zip"
+filefullname="$filename.tar.gz"
 
 exitOnFailure() {
     echo "❌ command failed"
@@ -62,7 +62,10 @@ install() {
 
     wget -c "${url}$filefullname" -O ./$filefullname || exitOnFailure
 
-    unzip $filefullname -d ./$filename || exitOnFailure 
+    mkdir ./$filename
+
+    tar -zxvf $filefullname -C ./$filename || exitOnFailure
+    #unzip $filefullname -d ./$filename || exitOnFailure 
 
     cp -R ./$filename/$filename/* ./$filename || exitOnFailure
     rm -rf "./$filename/$filename"
@@ -85,7 +88,10 @@ upgrade() {
 
     wget -c "${url}$filefullname" -O ./$filefullname || exitOnFailure
 
-    unzip $filefullname -d ./$filename || exitOnFailure 
+    mkdir ./$filename
+    
+    tar -zxvf $filefullname -C ./$filename || exitOnFailure
+    #unzip $filefullname -d ./$filename || exitOnFailure 
 
     cp -R ./$filename/$filename/* ./$filename || exitOnFailure
     rm -rf "./$filename/$filename"

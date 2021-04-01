@@ -1,6 +1,8 @@
 export DISTPATH=${PKGPATH}/dist
-export RELEASEDIR=${DISTPATH}/${NGING_EXECUTOR}_${GOOS}_${GOARCH}
+export OSVERSIONDIR=${NGING_EXECUTOR}_${GOOS}_${GOARCH}
+export RELEASEDIR=${DISTPATH}/${OSVERSIONDIR}
 mkdir ${RELEASEDIR}
+
 xgo -go=1.16.2 -goproxy=https://goproxy.cn,direct -image=crazymax/xgo -targets=${GOOS}/${GOARCH} -dest=${RELEASEDIR} -out=${NGING_EXECUTOR} -tags="bindata sqlite${BUILDTAGS}" -ldflags="-X main.BUILD_TIME=${NGING_BUILD} -X main.COMMIT=${NGING_COMMIT} -X main.VERSION=${NGING_VERSION} -X main.LABEL=${NGING_LABEL}" ./${PKGPATH}
 
 mv ${RELEASEDIR}/${NGING_EXECUTOR}-${GOOS}-* ${RELEASEDIR}/${NGING_EXECUTOR}${NGINGEX}
@@ -17,19 +19,16 @@ cp -R ${PKGPATH}/config/install.* ${RELEASEDIR}/config/
 cp -R ${PKGPATH}/config/preupgrade.* ${RELEASEDIR}/config/
 cp -R ${PKGPATH}/config/ua.txt ${RELEASEDIR}/config/ua.txt
 
-if [ "$GOOS" = "windows" ]; then
-    cp -R ${PKGPATH}/support/sqlite3_${GOARCH}.dll ${RELEASEDIR}/
-	export archiver_extension=zip
-else
-	export archiver_extension=zip
-fi
-
 
 cp -R ${DISTPATH}/default/* ${RELEASEDIR}/
+
+export archiver_extension="tar.gz"
 
 rm -rf ${RELEASEDIR}.${archiver_extension}
 
 #${NGING_VERSION}${NGING_LABEL}
-arc archive ${RELEASEDIR}.${archiver_extension} ${RELEASEDIR}
+
+tar -zcvf ${RELEASEDIR}.${archiver_extension} -C ${DISTPATH} ${OSVERSIONDIR}
+# 解压: tar -zxvf nging_linux_amd64.tar.gz -C ./nging_linux_amd64
 
 rm -rf ${RELEASEDIR}
