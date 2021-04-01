@@ -180,6 +180,7 @@ function dropzoneResizeHeight(isZip){
 }
 $(function(){
     initDropzone($.extend({
+        timeout:600000, // 提交超时(毫秒)
         chunking:true,
         parallelChunkUploads:true,
         retryChunksLimit:3,
