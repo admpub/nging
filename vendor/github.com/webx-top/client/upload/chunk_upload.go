@@ -63,7 +63,7 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 	}
 
 	c.fileOriginalName = filepath.Base(info.GetFileName())
-	if len(c.savePath) > 0 && filepath.Base(c.savePath) == c.fileOriginalName {
+	if !c.GraduallyMerge && len(c.savePath) > 0 && filepath.Base(c.savePath) == c.fileOriginalName {
 		fi, err := os.Stat(c.savePath)
 		if err == nil && fi.Size() == int64(info.GetFileTotalBytes()) {
 			c.saveSize = fi.Size()
@@ -114,11 +114,24 @@ func (c *ChunkUpload) ChunkUpload(info ChunkInfor, upFile io.ReadSeeker) (int64,
 		return 0, fmt.Errorf("%w: %s: %v", ErrChunkHistoryOpenFailed, filePath, err)
 	}
 
-	defer file.Close()
-
 	// 将数据写入文件
 	total, err := uploadFile(upFile, start, file, saveStart)
+
+	file.Close()
+
 	if err == nil && total == chunkSize {
+		if c.GraduallyMerge {
+			err = c.Merge(info.GetChunkIndex(), info.GetFileChunkBytes(), c.fileOriginalName)
+			if err != nil {
+				log.Error(err)
+			} else {
+				if c.isFinish(info, c.fileOriginalName) {
+					c.merged = true
+					c.saveSize = int64(info.GetFileTotalBytes())
+				}
+			}
+			return total, err
+		}
 		if c.isFinish(info, c.fileOriginalName) {
 			err = c.MergeAll(info.GetFileTotalChunks(), info.GetFileChunkBytes(), c.fileOriginalName, c.IsAsyncMerge())
 			if err != nil {

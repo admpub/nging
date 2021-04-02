@@ -30,6 +30,7 @@ type ChunkUpload struct {
 	SaveDir           string
 	TempLifetime      time.Duration
 	UID               interface{} // number or string
+	GraduallyMerge    bool
 	fileNameGenerator FileNameGenerator
 	fileOriginalName  string
 	savePath          string
