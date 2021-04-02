@@ -26,16 +26,18 @@ func GetDownloadPath() string {
 	if len(savePath) > 0 {
 		return savePath
 	}
-	var homeDir string
-	usr, err := user.Current()
-	if err != nil {
-		log.Println(err)
-		homeDir = os.Getenv("HOME")
-	} else if usr != nil {
-		homeDir = usr.HomeDir
-	}
+	homeDir := os.Getenv("GO_DOWNLOADER_DOWNLOAD_PATH")
 	if len(homeDir) == 0 {
-		homeDir = filepath.Dir(os.Args[0])
+		usr, err := user.Current()
+		if err != nil {
+			log.Println(err)
+			homeDir = os.Getenv("HOME")
+		} else if usr != nil {
+			homeDir = usr.HomeDir
+		}
+		if len(homeDir) == 0 {
+			homeDir = filepath.Dir(os.Args[0])
+		}
 	}
 	st := strconv.QuoteRune(os.PathSeparator)
 	st = st[1 : len(st)-1]

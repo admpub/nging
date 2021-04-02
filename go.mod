@@ -35,7 +35,7 @@ require (
 	github.com/admpub/go-pretty v3.3.3+incompatible
 	github.com/admpub/go-ps v0.0.1 // indirect
 	github.com/admpub/go-sshclient v0.0.0-20200729145748-988808eb5279
-	github.com/admpub/godownloader v2.0.1+incompatible
+	github.com/admpub/godownloader v2.0.2+incompatible
 	github.com/admpub/goforever v0.1.1
 	github.com/admpub/gohls v0.0.0-20191013012052-b7505aaf3c90 // indirect
 	github.com/admpub/gohls-server v0.3.4 // indirect

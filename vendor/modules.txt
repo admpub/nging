@@ -132,7 +132,7 @@ github.com/admpub/go-reuseport
 github.com/admpub/go-sshclient
 # github.com/admpub/go-utility v0.0.1
 github.com/admpub/go-utility/filesystem
-# github.com/admpub/godownloader v2.0.1+incompatible
+# github.com/admpub/godownloader v2.0.2+incompatible
 ## explicit
 github.com/admpub/godownloader/httpclient
 github.com/admpub/godownloader/iotools
