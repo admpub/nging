@@ -110,7 +110,7 @@ require (
 	github.com/kardianos/service v1.2.0 // indirect
 	github.com/klauspost/compress v1.11.12 // indirect
 	github.com/markbates/goth v1.66.0 // indirect
-	github.com/mattn/go-runewidth v0.0.10
+	github.com/mattn/go-runewidth v0.0.12
 	github.com/mholt/certmagic v0.8.3
 	github.com/microcosm-cc/bluemonday v1.0.4
 	github.com/minio/minio-go v6.0.14+incompatible
