@@ -111,7 +111,7 @@ require (
 	github.com/klauspost/compress v1.11.12 // indirect
 	github.com/markbates/goth v1.66.0 // indirect
 	github.com/mattn/go-runewidth v0.0.10
-	github.com/mholt/certmagic v0.8.3
+	github.com/mholt/certmagic v0.13.0
 	github.com/microcosm-cc/bluemonday v1.0.4
 	github.com/minio/minio-go v6.0.14+incompatible
 	github.com/oschwald/maxminddb-golang v1.7.0 // indirect
