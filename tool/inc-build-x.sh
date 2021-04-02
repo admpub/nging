@@ -1,9 +1,18 @@
 export DISTPATH=${PKGPATH}/dist
 export OSVERSIONDIR=${NGING_EXECUTOR}_${GOOS}_${GOARCH}
 export RELEASEDIR=${DISTPATH}/${OSVERSIONDIR}
+export LDFLAGS="-extldflags '-static'"
 mkdir ${RELEASEDIR}
 
-xgo -go=1.16.2 -goproxy=https://goproxy.cn,direct -image=crazymax/xgo -targets=${GOOS}/${GOARCH} -dest=${RELEASEDIR} -out=${NGING_EXECUTOR} -tags="bindata sqlite${BUILDTAGS}" -ldflags='-X main.BUILD_TIME=${NGING_BUILD} -X main.COMMIT=${NGING_COMMIT} -X main.VERSION=${NGING_VERSION} -X main.LABEL=${NGING_LABEL} -extldflags "-static"' ./${PKGPATH}
+case "$GOARCH" in
+    "arm"|"arm64"|"arm-7"|"arm-6"|"arm-5")
+        export LDFLAGS="-extldflags '-static'"
+        ;;
+    *)
+        export LDFLAGS=""
+esac
+
+xgo -go=1.16.2 -goproxy=https://goproxy.cn,direct -image=crazymax/xgo -targets=${GOOS}/${GOARCH} -dest=${RELEASEDIR} -out=${NGING_EXECUTOR} -tags="bindata sqlite${BUILDTAGS}" -ldflags="-X main.BUILD_TIME=${NGING_BUILD} -X main.COMMIT=${NGING_COMMIT} -X main.VERSION=${NGING_VERSION} -X main.LABEL=${NGING_LABEL} ${LDFLAGS}" ./${PKGPATH}
 
 mv ${RELEASEDIR}/${NGING_EXECUTOR}-${GOOS}-* ${RELEASEDIR}/${NGING_EXECUTOR}${NGINGEX}
 mkdir ${RELEASEDIR}/data

@@ -12,4 +12,7 @@ export GOOS=linux
 export GOARM=7
 export GOARCH=arm
 
+# export LDFLAGS="-extldflags '-static'"
+# export CGO_ENABLED=1
+
 source ${PWD}/inc-build.sh
