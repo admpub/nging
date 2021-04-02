@@ -192,8 +192,8 @@ github.com/admpub/go-sshclient v0.0.0-20200729145748-988808eb5279 h1:TDwsxJi9YJF
 github.com/admpub/go-sshclient v0.0.0-20200729145748-988808eb5279/go.mod h1:lZj56U0Nv7WHcRSGpdpFnD64m2rm0Ji7oOpe74ahSJY=
 github.com/admpub/go-utility v0.0.1 h1:/nja86vknCoMYJtMCm8nV+vuBiOf5PU45I5w7XAJUEU=
 github.com/admpub/go-utility v0.0.1/go.mod h1:QZ/OrlUkHyD7Hg8Jj/iPkT6RZuMfYUOp0S4NsaQzRnA=
-github.com/admpub/godownloader v0.0.0-20191013090831-d509172649e4 h1:gWdb2wdsmSf8Wd2l9NQt+PZquhIK4ScwFSZmfi+xoD0=
-github.com/admpub/godownloader v0.0.0-20191013090831-d509172649e4/go.mod h1:ftgrnKg7ptai8E/oJeMA6PqJWR7KkVGU8TgKs0rdhtY=
+github.com/admpub/godownloader v2.0.1+incompatible h1:gJMWAt9t6EVfU49s6TnHk+i1Lk1oIxr5OZuGTLrq+X8=
+github.com/admpub/godownloader v2.0.1+incompatible/go.mod h1:ftgrnKg7ptai8E/oJeMA6PqJWR7KkVGU8TgKs0rdhtY=
 github.com/admpub/goforever v0.1.1 h1:kIEWABV4h/NHGrpkRvvNqj34LMDbcZ1grZok8Q41QZU=
 github.com/admpub/goforever v0.1.1/go.mod h1:TOAs26M89nElKNzgVQmBzDKLPvN4tsQPTsKhfbuqtd0=
 github.com/admpub/gohls v0.0.0-20191013012052-b7505aaf3c90 h1:8KTebuoVURwxE7TPMVom2JORYQxICLwHf4eKq4dqHbk=
@@ -1215,8 +1215,6 @@ github.com/webx-top/captcha v0.0.0-20161202061115-29e9e7f30aa0 h1:KkrDcd2yO7QHeJ
 github.com/webx-top/captcha v0.0.0-20161202061115-29e9e7f30aa0/go.mod h1:DLtQXR6uR8UMcKb7dB5eYgsDHG0WPI74rM/B/JFGxfE=
 github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f h1:FHA8iky9Pf3/NaiPqTA01lc64qI4N7Lahu2Il9awanA=
 github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f/go.mod h1:TystOP1FUbkPySDV9I1I3Cy6MiFwSCiTthc/wP7uZ0Q=
-github.com/webx-top/client v0.2.2 h1:gDc4oZp0VRyhu6yrxJUV/HnT5XEsr1CjDLv9BIy+RkQ=
-github.com/webx-top/client v0.2.2/go.mod h1:IyrZU/N/2Uc5PPBuwiVujM1xoE/mdAilCsjWq4c3I4E=
 github.com/webx-top/client v0.2.3 h1:q1WoZE8QZnuYbEOD1uH6dLIAzOLx6IhVmEvPYzjEyCA=
 github.com/webx-top/client v0.2.3/go.mod h1:IyrZU/N/2Uc5PPBuwiVujM1xoE/mdAilCsjWq4c3I4E=
 github.com/webx-top/codec v0.0.1 h1:PAG8NhLHrDQDcSUPTsXQgdN+F9DL0S3uHq20wNd2Hu0=

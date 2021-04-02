@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/user"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -25,10 +26,20 @@ func GetDownloadPath() string {
 	if len(savePath) > 0 {
 		return savePath
 	}
-	usr, _ := user.Current()
+	var homeDir string
+	usr, err := user.Current()
+	if err != nil {
+		log.Println(err)
+		homeDir = os.Getenv("HOME")
+	} else if usr != nil {
+		homeDir = usr.HomeDir
+	}
+	if len(homeDir) == 0 {
+		homeDir = filepath.Dir(os.Args[0])
+	}
 	st := strconv.QuoteRune(os.PathSeparator)
 	st = st[1 : len(st)-1]
-	sv := usr.HomeDir + st + "Downloads" + st + "GoDownloader" + st
+	sv := homeDir + st + "Downloads" + st + "GoDownloader" + st
 	fi, err := os.Stat(sv)
 	if err != nil || !fi.IsDir() {
 		os.MkdirAll(sv, 0755)
