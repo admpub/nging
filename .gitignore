@@ -53,6 +53,7 @@ debug.log
 /data/cache/*
 nohup.out
 /public/upload/*
+!/public/upload/.gitkeep
 .DS_Store
 node_modules
 package-lock.json

@@ -28,40 +28,6 @@ all() {
     windows_amd64
 }
 
-build() {
-    case "$1" in
-        "linux_amd64")
-            linux_amd64
-            ;;
-        "linux_arm5")
-            linux_arm5
-            ;;
-        "linux_arm6")
-            linux_arm6
-            ;;
-        "linux_arm7")
-            linux_arm7
-            ;;
-        "linux_arm64")
-            linux_arm64
-            ;;
-        "linux_386")
-            linux_386
-            ;;
-        "darwin_amd64")
-            darwin_amd64
-            ;;
-        "windows_386")
-            windows_386
-            ;;
-        "windows_amd64")
-            windows_amd64
-            ;;
-        *)
-            all
-    esac
-}
-
 linux_amd64() {
     export NGINGEX=
     export GOOS=linux
@@ -134,4 +100,35 @@ windows_amd64() {
 }
 
 reset
-build
+
+case "$1" in
+    "linux_amd64")
+        linux_amd64
+        ;;
+    "linux_arm5")
+        linux_arm5
+        ;;
+    "linux_arm6")
+        linux_arm6
+        ;;
+    "linux_arm7")
+        linux_arm7
+        ;;
+    "linux_arm64")
+        linux_arm64
+        ;;
+    "linux_386")
+        linux_386
+        ;;
+    "darwin_amd64")
+        darwin_amd64
+        ;;
+    "windows_386")
+        windows_386
+        ;;
+    "windows_amd64")
+        windows_amd64
+        ;;
+    *)
+        all
+esac

@@ -31,6 +31,10 @@ cp -R ${PKGPATH}/config/ua.txt ${RELEASEDIR}/config/ua.txt
 
 cp -R ${DISTPATH}/default/* ${RELEASEDIR}/
 
+mkdir ${RELEASEDIR}/public
+mkdir ${RELEASEDIR}/public/upload
+cp -R ${PKGPATH}/public/upload/.gitkeep ${RELEASEDIR}/public/upload/.gitkeep
+
 export archiver_extension="tar.gz"
 
 rm -rf ${RELEASEDIR}.${archiver_extension}
