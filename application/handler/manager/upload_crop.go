@@ -113,7 +113,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	var thumbSize *thumb.Size
 	if !unlimitResize { // 是否检查尺寸
 		// 获取缩略图尺寸
-		thumbSize = thumb.Registry.Get(thumbWidth, thumbHeight)
+		thumbSize = thumb.Registry.Get(subdir).Get(thumbWidth, thumbHeight)
 		if thumbSize == nil {
 			return ctx.E(`不支持裁剪图片尺寸: %vx%v`, thumbWidth, thumbHeight)
 		}

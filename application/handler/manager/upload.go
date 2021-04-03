@@ -159,7 +159,7 @@ func UploadByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 			ctx.Commit()
 			return nil
 		}
-		thumbSizes := thumb.Registry.AutoCrop()
+		thumbSizes := thumb.Registry.Get(subdir).AutoCrop()
 		if len(thumbSizes) > 0 {
 			thumbM := modelFile.NewThumb(ctx)
 			thumbM.CPAFrom(fileM.NgingFile)
