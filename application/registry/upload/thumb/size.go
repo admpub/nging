@@ -10,7 +10,7 @@ import (
 var DefaultSize = Size{
 	Width:   200,
 	Height:  200,
-	Quality: 90,
+	Quality: 100,
 }
 
 func AsSizes(ts ...Size) Sizes {

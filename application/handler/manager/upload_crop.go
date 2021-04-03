@@ -171,7 +171,7 @@ func CropByOwner(ctx echo.Context, ownerType string, ownerID uint64) error {
 	if thumbSize != nil {
 		opt.Width = thumbSize.Width
 		opt.Height = thumbSize.Height
-		if thumbSize.Quality > 0 {
+		if thumbSize.Quality > 0 && thumbSize.Quality <= 100 {
 			opt.Quality = thumbSize.Quality
 		}
 	}
