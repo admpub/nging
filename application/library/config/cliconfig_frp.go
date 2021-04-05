@@ -26,9 +26,11 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/webx-top/com"
+	"github.com/webx-top/com/encoding/json"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
@@ -153,7 +155,11 @@ func (c *CLIConfig) rebuildFRPConfigFile(data interface{}, must bool, configFile
 		}
 	}
 	var b []byte
-	b, err = confl.Marshal(m)
+	if strings.HasSuffix(configFile, `.json`) {
+		b, err = json.MarshalIndent(m, ``, `  `)
+	} else {
+		b, err = confl.Marshal(m)
+	}
 	if err != nil {
 		log.Error(err.Error())
 		return
@@ -166,6 +172,8 @@ func (c *CLIConfig) rebuildFRPConfigFile(data interface{}, must bool, configFile
 	return
 }
 
+const FRPConfigExtension = `.json` //`.yaml`
+
 func (c *CLIConfig) FRPConfigFile(id uint, isServer bool) string {
 	configFile := `server`
 	if !isServer {
@@ -176,7 +184,7 @@ func (c *CLIConfig) FRPConfigFile(id uint, isServer bool) string {
 	if err != nil {
 		log.Error(err)
 	}
-	return filepath.Join(configFile, fmt.Sprintf(`%d.yaml`, id))
+	return filepath.Join(configFile, fmt.Sprintf(`%d`, id)+FRPConfigExtension)
 }
 
 func (c *CLIConfig) FRPPidFile(id string, isServer bool) string {
@@ -222,7 +230,12 @@ func (c *CLIConfig) FRPSaveConfigFile(data interface{}) (err error) {
 	default:
 		return fmt.Errorf(`unsupport save config: %T`, v)
 	}
-	b, err := confl.Marshal(data)
+	var b []byte
+	if strings.HasSuffix(configFile, `.json`) {
+		b, err = json.MarshalIndent(data, ``, `  `)
+	} else {
+		b, err = confl.Marshal(data)
+	}
 	if err != nil {
 		return err
 	}

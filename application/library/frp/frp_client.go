@@ -119,7 +119,7 @@ func parseProxyConfig(c *config.ClientCommonConf, extra echo.H) (
 }
 
 func RecvProxyConfig(data map[string]interface{}) (recv config.ProxyConf) {
-	proxyType, _ := data[`proxy_type`].(string)
+	proxyType, _ := data[`type`].(string)
 	switch proxyType {
 	case consts.TCPProxy:
 		recv = &config.TCPProxyConf{}
@@ -149,7 +149,7 @@ func RecvProxyConfig(data map[string]interface{}) (recv config.ProxyConf) {
 }
 
 func RecvVisitorConfig(data map[string]interface{}) (recv config.VisitorConf) {
-	proxyType, _ := data[`proxy_type`].(string)
+	proxyType, _ := data[`type`].(string)
 	switch proxyType {
 	case consts.STCPProxy:
 		recv = &config.STCPVisitorConf{}

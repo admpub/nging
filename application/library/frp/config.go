@@ -82,14 +82,18 @@ func ProxyConfigFromForm(prefix string, data url.Values) (visitor echo.H, proxy 
 			Plugin:       m.Value(`plugin`),
 			PluginParams: map[string]string{},
 		}
+		healthCheckC := config.HealthCheckConf{}
+		bandwidthC := config.BandwidthQuantity{}
 		baseC := config.BaseProxyConf{
-			ProxyName:      prefix + proxyName,
-			ProxyType:      m.Value(`protocol`),
-			UseEncryption:  param.String(m.Value(`use_encryption`)).Bool(),
-			UseCompression: param.String(m.Value(`use_compression`)).Bool(),
-			Group:          m.Value(`group`),
-			GroupKey:       m.Value(`group_key`),
-			LocalSvrConf:   localC,
+			ProxyName:       prefix + proxyName,
+			ProxyType:       m.Value(`protocol`),
+			UseEncryption:   param.String(m.Value(`use_encryption`)).Bool(),
+			UseCompression:  param.String(m.Value(`use_compression`)).Bool(),
+			Group:           m.Value(`group`),
+			GroupKey:        m.Value(`group_key`),
+			BandwidthLimit:  bandwidthC,
+			LocalSvrConf:    localC,
+			HealthCheckConf: healthCheckC,
 		}
 		if pluginParams := m.Get(`plugin_params`); pluginParams != nil {
 			for kk, vv := range pluginParams.Map {
