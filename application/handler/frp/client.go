@@ -215,12 +215,12 @@ func copyClientExtra2Form(ctx echo.Context, cfg *dbschema.NgingFrpClient) (err e
 	}
 	sections := []*Section{}
 	for section := range mapx.Map {
+		if cfg.Type == section {
+			continue
+		}
 		s := &Section{
 			Section: section,
 			Addon:   regexNumEnd.ReplaceAllString(section, ``),
-		}
-		if cfg.Type == s.Addon {
-			continue
 		}
 		sections = append(sections, s)
 	}
