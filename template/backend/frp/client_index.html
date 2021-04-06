@@ -133,12 +133,12 @@ $(function(){
 		var isRe=$(this).attr('id')=='ctrl-client-restart',me=$(this);
 		$.get($(this).data('url'),{},function(r){
 			if(r.Code==1){
-				window.setTimeout(function(r){
-					window.location.reload();
-				},1000);
+				$.get(window.location.href,{_pjax:true},function(r){
+					$('#pcont .cl-mcont').html(r)
+				},'html');
 			}
 			var title=me.text().replace(/^[\s]+|[\s]+$/g,'');
-			App.message({title:title,text:r.Info,time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
+			App.message({title:title,text:'<div style="max-height:'+$(window).height()+'px;overflow-y: auto">'+App.text2html(r.Info)+'</div>',time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
 		},'json');
 	});
 	App.bindSwitch('input.switch-disabled','click','frp/client_edit');

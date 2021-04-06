@@ -19,6 +19,8 @@
 package frp
 
 import (
+	"bytes"
+
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/webx-top/echo"
@@ -34,13 +36,14 @@ func ServerRestart(ctx echo.Context) error {
 		data.SetError(err)
 		return ctx.JSON(data)
 	}
-	if err := config.DefaultCLIConfig.FRPStart(); err != nil {
+	buf := bytes.NewBuffer(nil)
+	if err := config.DefaultCLIConfig.FRPStart(buf, buf); err != nil {
 		data.SetError(err)
 		return ctx.JSON(data)
 	}
 	msg := ctx.T(`已经重启FRP服务端`)
 	log.Info(msg)
-	data.SetInfo(msg, 1)
+	data.SetInfo(msg+":\n"+buf.String(), 1)
 	return ctx.JSON(data)
 }
 

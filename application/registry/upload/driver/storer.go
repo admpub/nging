@@ -88,7 +88,7 @@ var DefaultConstructor Constructor
 
 // Register 存储引擎注册
 func Register(engine string, constructor Constructor) {
-	log.Info(color.CyanString(`storer.register:`), engine)
+	log.Debug(color.CyanString(`storer.register:`), engine)
 	storers[engine] = constructor
 }
 
