@@ -26,6 +26,7 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/model/base"
 )
 
@@ -33,8 +34,6 @@ type FtpUserAndGroup struct {
 	*dbschema.NgingFtpUser
 	Group *dbschema.NgingFtpUserGroup `db:"-,relation=id:group_id|gtZero"`
 }
-
-var DefaultSalt = ``
 
 func NewFtpUser(ctx echo.Context) *FtpUser {
 	return &FtpUser{
@@ -53,9 +52,10 @@ func (f *FtpUser) Exists(username string) (bool, error) {
 }
 
 func (f *FtpUser) CheckPasswd(username string, password string) (bool, error) {
+	salt := common.CookieConfig().BlockKey
 	exists, err := f.NgingFtpUser.Exists(nil, db.Cond{
 		`username`: username,
-		`password`: com.MakePassword(password, DefaultSalt),
+		`password`: com.MakePassword(password, salt),
 	})
 	if err != nil {
 		return exists, err

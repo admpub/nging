@@ -26,6 +26,7 @@ import (
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
+	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/model"
 )
 
@@ -69,7 +70,7 @@ func AccountAdd(ctx echo.Context) error {
 		}
 
 		if err == nil {
-			m.Password = com.MakePassword(m.Password, model.DefaultSalt)
+			m.Password = com.MakePassword(m.Password, common.CookieConfig().BlockKey)
 			_, err = m.Add()
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))
@@ -120,7 +121,7 @@ func AccountEdit(ctx echo.Context) error {
 						//忽略密码为空的情况
 						return ``, v
 					}
-					v[0] = com.MakePassword(v[0], model.DefaultSalt)
+					v[0] = com.MakePassword(v[0], common.CookieConfig().BlockKey)
 				case `created`, `username`: //禁止修改创建时间和用户名
 					return ``, v
 				}

@@ -241,6 +241,7 @@ func StartClientByConfig(configContent string, pidFile string) error {
 
 func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]config.VisitorConf,
 	pidFile string, c *config.ClientCommonConf, configFileArg ...string) (err error) {
+	once.Do(onceInit)
 	var configFile string
 	if len(configFileArg) > 0 {
 		configFile = configFileArg[0]

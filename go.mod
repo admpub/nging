@@ -92,7 +92,7 @@ require (
 	github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/fatedier/beego v1.7.2 // indirect
-	github.com/fatedier/golib v0.2.0 // indirect
+	github.com/fatedier/golib v0.2.0
 	github.com/fatih/color v1.10.0
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
 	github.com/go-ole/go-ole v1.2.4 // indirect

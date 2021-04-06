@@ -33,6 +33,10 @@ import (
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/library/caddy"
 	"github.com/admpub/nging/application/library/config/extend"
+	"github.com/admpub/nging/application/library/config/subconfig/scookie"
+	"github.com/admpub/nging/application/library/config/subconfig/scron"
+	"github.com/admpub/nging/application/library/config/subconfig/sdb"
+	"github.com/admpub/nging/application/library/config/subconfig/ssystem"
 	"github.com/admpub/nging/application/library/ftp"
 	"github.com/admpub/securecookie"
 )
@@ -45,23 +49,13 @@ func NewConfig() *Config {
 }
 
 type Config struct {
-	DB DB `json:"db"`
+	DB sdb.DB `json:"db"`
 
-	Sys System `json:"sys"`
+	Sys ssystem.System `json:"sys"`
 
-	Cron struct {
-		PoolSize int    `json:"poolSize"`
-		Template string `json:"template"` //发信模板
-	} `json:"cron"`
+	Cron scron.Cron `json:"cron"`
 
-	Cookie struct {
-		Domain   string `json:"domain"`
-		MaxAge   int    `json:"maxAge"`
-		Path     string `json:"path"`
-		HttpOnly bool   `json:"httpOnly"`
-		HashKey  string `json:"hashKey"`
-		BlockKey string `json:"blockKey"`
-	} `json:"cookie"`
+	Cookie scookie.Config `json:"cookie"`
 
 	Caddy    caddy.Config    `json:"caddy"`
 	FTP      ftp.Config      `json:"ftp"`
@@ -125,6 +119,10 @@ func (c *Config) connectDB() error {
 
 func (c *Config) APIKey() string {
 	return c.Settings.APIKey
+}
+
+func (c *Config) CookieConfig() scookie.Config {
+	return c.Cookie
 }
 
 func (c *Config) InitExtend() *Config {

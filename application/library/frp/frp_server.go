@@ -24,11 +24,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/admpub/nging/application/dbschema"
-
+	"github.com/admpub/confl"
 	"github.com/webx-top/com"
 
-	"github.com/admpub/confl"
+	"github.com/admpub/nging/application/dbschema"
 
 	_ "github.com/admpub/frp/assets/frpc/statik"
 	_ "github.com/admpub/frp/assets/frps/statik"
@@ -114,6 +113,7 @@ func StartServerByConfig(configContent string, pidFile string) error {
 }
 
 func StartServer(pidFile string, c *config.ServerCommonConf) error {
+	once.Do(onceInit)
 	err := c.Validate()
 	if err != nil {
 		return err
