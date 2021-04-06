@@ -18,7 +18,7 @@
             <input type="text" class="form-control" name="{{Key . "local_port"}}" value="{{Val . "local_port"}}" required="required">
           </div><!-- /.input-group -->
           <div class="help-block">
-              {{"内网地址是供FRP服务端访问的地址"|T}}
+            {{Include "frp/client/form/_local_ip_tips"}}
           </div>
       </div>
 </div>
@@ -105,7 +105,7 @@
     {{end}}
 {{end}}
             <tr>
-                <td colspan="3" class="text-center primary-emphasis" style="cursor:pointer" onclick="addKVs(this,'{{Key . "header"}}[k]','{{Key . "header"}}[v]');"><i class="fa fa-plus"></i></td>
+                <td colspan="3" class="text-center primary-emphasis" style="cursor:pointer" onclick="addKVs(this,'{{Key . `header`}}[k]','{{Key . `header`}}[v]');"><i class="fa fa-plus"></i></td>
             </tr>
         </tbody>
   </table>

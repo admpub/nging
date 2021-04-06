@@ -26,6 +26,7 @@ import (
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/handler/caddy"
+	"github.com/admpub/nging/application/library/common"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
@@ -113,4 +114,6 @@ func setAddonFunc(ctx echo.Context) {
 		return ctx.FormValues(formKey(key, keys...))
 	})
 	ctx.SetFunc(`Key`, formKey)
+	ipv4, _ := common.GetLocalIP()
+	ctx.Set(`localIP`, ipv4)
 }
