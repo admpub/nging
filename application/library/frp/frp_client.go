@@ -276,9 +276,9 @@ func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]con
 	if err != nil {
 		return err
 	}
-	kcpDoneCh := make(chan struct{})
 
 	if c.Protocol == "kcp" {
+		kcpDoneCh = make(chan struct{})
 		// Capture the exit signal if we use kcp.
 		go handleSignal(svr, kcpDoneCh)
 	}
