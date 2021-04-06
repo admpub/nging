@@ -19,10 +19,9 @@
 package frp
 
 import (
-	"bytes"
-
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/nging/application/library/writer"
 	"github.com/webx-top/echo"
 )
 
@@ -36,8 +35,10 @@ func ServerRestart(ctx echo.Context) error {
 		data.SetError(err)
 		return ctx.JSON(data)
 	}
-	buf := bytes.NewBuffer(nil)
-	if err := config.DefaultCLIConfig.FRPStart(buf, buf); err != nil {
+	buf := writer.NewShadow()
+	wOut := writer.NewOut(buf)
+	wErr := writer.NewErr(buf)
+	if err := config.DefaultCLIConfig.FRPStart(wOut, wErr); err != nil {
 		data.SetError(err)
 		return ctx.JSON(data)
 	}
