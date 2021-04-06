@@ -49,14 +49,10 @@ func NewConfig() *Config {
 }
 
 type Config struct {
-	DB sdb.DB `json:"db"`
-
-	Sys ssystem.System `json:"sys"`
-
-	Cron scron.Cron `json:"cron"`
-
-	Cookie scookie.Config `json:"cookie"`
-
+	DB       sdb.DB          `json:"db"`
+	Sys      ssystem.System  `json:"sys"`
+	Cron     scron.Cron      `json:"cron"`
+	Cookie   scookie.Config  `json:"cookie"`
 	Caddy    caddy.Config    `json:"caddy"`
 	FTP      ftp.Config      `json:"ftp"`
 	Language language.Config `json:"language"`
@@ -64,8 +60,7 @@ type Config struct {
 		SavePath string `json:"savePath"`
 	} `json:"download"`
 	//License lib.LicenseData `json:"license,omitempty"`
-	Extend echo.H `json:"extend,omitempty"`
-
+	Extend    echo.H `json:"extend,omitempty"`
 	*Settings `json:"-"`
 
 	connectedDB bool
