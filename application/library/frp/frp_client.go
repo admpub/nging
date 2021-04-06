@@ -276,13 +276,15 @@ func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]con
 	if err != nil {
 		return err
 	}
+	kcpDoneCh := make(chan struct{})
+
+	if c.Protocol == "kcp" {
+		// Capture the exit signal if we use kcp.
+		go handleSignal(svr, kcpDoneCh)
+	}
 
 	err = svr.Run()
-
-	// Capture the exit signal if we use kcp.
 	if c.Protocol == "kcp" {
-		var kcpDoneCh = make(chan struct{})
-		go handleSignal(svr, kcpDoneCh)
 		<-kcpDoneCh
 	}
 	return
