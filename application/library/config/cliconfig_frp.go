@@ -272,9 +272,9 @@ func (c *CLIConfig) FRPStart(writer ...io.Writer) (err error) {
 		return
 	}
 	for _, row := range md.Objects() {
-		err = c.FRPStartID(row.Id, writer...)
+		err := c.FRPStartID(row.Id, writer...)
 		if err != nil {
-			return
+			log.Error(err)
 		}
 	}
 	return nil

@@ -44,7 +44,11 @@ func ServerRestart(ctx echo.Context) error {
 	}
 	msg := ctx.T(`已经重启FRP服务端`)
 	log.Info(msg)
-	data.SetInfo(msg+":\n"+buf.String(), 1)
+	startResult := cleanStartResult.ReplaceAllString(buf.String(), `$1 `)
+	if len(startResult) > 0 {
+		msg += ":\n" + startResult
+	}
+	data.SetInfo(msg, 1)
 	return ctx.JSON(data)
 }
 

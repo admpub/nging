@@ -19,11 +19,16 @@
 package frp
 
 import (
+	"regexp"
+
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/writer"
 	"github.com/webx-top/echo"
 )
+
+// 清理信息： 2021/04/07 09:12:44 [W] [control.go:178] [1f3620ccf4f07b44]
+var cleanStartResult = regexp.MustCompile(`[\d]+/[\d]+/[\d]+ [\d]+:[\d]+:[\d]+ (\[[A-Z]\]) \[[\w-]+\.go:[\d]+\] \[[0-9a-z]+\] `)
 
 func ClientRestart(ctx echo.Context) error {
 	data := ctx.Data()
@@ -44,7 +49,11 @@ func ClientRestart(ctx echo.Context) error {
 	}
 	msg := ctx.T(`已经重启FRP客户端`)
 	log.Info(msg)
-	data.SetInfo(msg+":\n"+buf.String(), 1)
+	startResult := cleanStartResult.ReplaceAllString(buf.String(), `$1 `)
+	if len(startResult) > 0 {
+		msg += ":\n" + startResult
+	}
+	data.SetInfo(msg, 1)
 	return ctx.JSON(data)
 }
 

@@ -137,8 +137,20 @@ $(function(){
 					$('#pcont .cl-mcont').html(r)
 				},'html');
 			}
-			var title=me.text().replace(/^[\s]+|[\s]+$/g,'');
-			App.message({title:title,text:'<div style="max-height:'+$(window).height()+'px;overflow-y: auto">'+App.text2html(r.Info)+'</div>',time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
+			var title=App.trimSpace(me.text());
+			var lines=String(r.Info).split("\n");
+			var newLines=[];
+			for(var i=0;i<lines.length; i++){
+				var v = lines[i];
+				switch(v.substring(0,4)){
+					case '[I] ': newLines.push(v.substring(4)); break;
+					case '[W] ': newLines.push('<span style="color:yellow;font-weight:bold">'+v.substring(4)+'</span>'); break;
+					case '[E] ': newLines.push('<span class="bg-danger" style="color:red;font-weight:bold">'+v.substring(4)+'</span>'); break;
+					default: newLines.push(v); break;
+				}
+			}
+			r.Info = newLines.join("\n");
+			App.message({title:title,text:'<div style="max-height:'+$(window).height()+'px;overflow-y: auto">'+App.text2html(r.Info, true)+'</div>',time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
 		},'json');
 	});
 	App.bindSwitch('input.switch-disabled','click','frp/client_edit');

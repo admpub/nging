@@ -766,13 +766,21 @@ var App = function () {
 				return true;
 			}, BACKEND_URL + '/user/notice');
 		},
-		text2html: function (text) {
-			return String(text).replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br />').replace(/  /g, '&nbsp; ').replace(/\t/g, '&nbsp; &nbsp; ');
+		text2html: function (text, noescape) {
+			text = String(text);
+			if(!noescape) text = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+			return App.textNl2br(text);
 		},
 		ifTextNl2br: function (text) {
 			text = String(text);
 			if (/<[^>]+>/.test(text)) return text;
+			return App.textNl2br(text);
+		},
+		textNl2br: function (text) {
 			return text.replace(/\n/g, '<br />').replace(/  /g, '&nbsp; ').replace(/\t/g, '&nbsp; &nbsp; ');
+		},
+		trimSpace: function (text) {
+			return String(text).replace(/^[\s]+|[\s]+$/g,'');
 		},
 		checkedAll: function (ctrl, target) {
 			return $(target).not(':disabled').prop('checked', $(ctrl).prop('checked'));
