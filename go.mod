@@ -31,6 +31,7 @@ require (
 	github.com/admpub/go-download/v2 v2.1.6
 	github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
 	github.com/admpub/go-isatty v0.0.9
+	github.com/admpub/go-password v0.1.3
 	github.com/admpub/go-phantomjs-fetcher v0.0.0-20180924162325-bb2ae1648e33
 	github.com/admpub/go-pretty v3.3.3+incompatible
 	github.com/admpub/go-ps v0.0.1 // indirect

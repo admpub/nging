@@ -180,6 +180,8 @@ github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c h1:oYhSKy3uos97Kb
 github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c/go.mod h1:8ktBleP5BjBPkfOSrOUkzdZeaFi+TfDwN+R+4ENatbs=
 github.com/admpub/go-isatty v0.0.9 h1:zn0gdvcFLBRdFdInpe1dQZwVHIQUA9wLKuErs47ajj4=
 github.com/admpub/go-isatty v0.0.9/go.mod h1:lMpmWRvtUN97WUtw7LruNiuoGTyUfvoP07xUkGPBTCE=
+github.com/admpub/go-password v0.1.3 h1:FkQWmfZL/Jl6miew350Rf4xFqjzflJdPKA+IMSBYpdo=
+github.com/admpub/go-password v0.1.3/go.mod h1:VPttVuLjF7Gu1njq/hk6aOaFCrZhtzCAy4B7IeAYLYI=
 github.com/admpub/go-phantomjs-fetcher v0.0.0-20180924162325-bb2ae1648e33 h1:PGZiFtTWQLPlxkk3fzennX4c0uctexWENORhhfnaSLU=
 github.com/admpub/go-phantomjs-fetcher v0.0.0-20180924162325-bb2ae1648e33/go.mod h1:Erk1yHuYCSUZU8fj/OgY6+gzmSwIGHDlLf2hz3zwLPw=
 github.com/admpub/go-pretty v3.3.3+incompatible h1:gf3GejBmyNOYlZN5rawizcSXqyjPhNL32rVdNpetDeI=

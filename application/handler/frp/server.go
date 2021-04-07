@@ -21,6 +21,8 @@ package frp
 import (
 	"fmt"
 
+	"github.com/admpub/go-password/password"
+
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
@@ -102,6 +104,10 @@ func ServerAdd(ctx echo.Context) error {
 				})
 				ctx.Request().Form().Set(`id`, `0`)
 			}
+		}
+		if len(ctx.Form(`token`)) == 0 {
+			defaultToken, _ := password.Generate(32, 10, 10, false, false)
+			ctx.Request().Form().Set(`token`, defaultToken)
 		}
 	}
 	mg := model.NewFrpGroup(ctx)
