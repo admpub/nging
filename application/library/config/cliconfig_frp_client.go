@@ -24,6 +24,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/admpub/log"
@@ -113,15 +114,23 @@ func (c *CLIConfig) FRPClientRestart(writer ...io.Writer) error {
 }
 
 func (c *CLIConfig) FRPClientRestartID(id string, writer ...io.Writer) error {
-	err := c.CmdStop("frpclient." + id)
+	err := c.FRPClientStopID(id)
 	if err != nil {
 		return err
 	}
-	pidPath := c.FRPPidFile(id, true)
-	err = com.CloseProcessFromPidFile(pidPath)
-	if err != nil {
-		log.Error(err.Error() + `: ` + pidPath)
-	}
 	idv, _ := strconv.ParseUint(id, 10, 32)
 	return c.FRPClientStartID(uint(idv), writer...)
+}
+
+func (c *CLIConfig) FRPClientStopID(id string) error {
+	err := c.CmdStop("frpclient." + id)
+	if err != nil && !strings.Contains(err.Error(), `finished`) {
+		return err
+	}
+	pidPath := c.FRPPidFile(id, false)
+	err = com.CloseProcessFromPidFile(pidPath)
+	if err != nil && !strings.Contains(err.Error(), `finished`) {
+		log.Error(err.Error() + `: ` + pidPath)
+	}
+	return nil
 }

@@ -81,7 +81,14 @@ func ServerAdd(ctx echo.Context) error {
 				err = config.DefaultCLIConfig.FRPSaveConfigFile(m.NgingFrpServer)
 			}
 			if err == nil {
-				handler.SendOk(ctx, ctx.T(`操作成功`))
+				if m.Disabled == `N` {
+					err = config.DefaultCLIConfig.FRPStartID(m.NgingFrpServer.Id)
+				}
+				if err != nil {
+					handler.SendOk(ctx, ctx.T(`保存成功。但启动失败: %v`, err.Error()))
+				} else {
+					handler.SendOk(ctx, ctx.T(`操作成功`))
+				}
 				return ctx.Redirect(handler.URLFor(`/frp/server_index`))
 			}
 		}
@@ -131,7 +138,19 @@ func ServerEdit(ctx echo.Context) error {
 				err = config.DefaultCLIConfig.FRPSaveConfigFile(m.NgingFrpServer)
 			}
 			if err == nil {
-				handler.SendOk(ctx, ctx.T(`操作成功`))
+				var opType string
+				if m.Disabled == `N` {
+					err = config.DefaultCLIConfig.FRPRestartID(fmt.Sprintf(`%d`, m.Id))
+					opType = ctx.T(`启动失败`)
+				} else {
+					err = config.DefaultCLIConfig.FRPStopID(fmt.Sprintf(`%d`, m.Id))
+					opType = ctx.T(`关闭失败`)
+				}
+				if err != nil {
+					handler.SendOk(ctx, ctx.T(`保存成功。但%s: %v`, opType, err.Error()))
+				} else {
+					handler.SendOk(ctx, ctx.T(`操作成功`))
+				}
 				return ctx.Redirect(handler.URLFor(`/frp/server_index`))
 			}
 		}
@@ -150,7 +169,23 @@ func ServerEdit(ctx echo.Context) error {
 				data.SetError(err)
 				return ctx.JSON(data)
 			}
-			data.SetInfo(ctx.T(`状态已经更改成功，请重启服务端令其生效`))
+			var opType, status string
+			if m.Disabled == `N` {
+				err = config.DefaultCLIConfig.FRPRestartID(fmt.Sprintf(`%d`, m.Id))
+				opType = ctx.T(`启动失败`)
+				status = `started`
+			} else {
+				err = config.DefaultCLIConfig.FRPStopID(fmt.Sprintf(`%d`, m.Id))
+				opType = ctx.T(`关闭失败`)
+				status = `stopped`
+			}
+			if err != nil {
+				data.SetData(echo.H{`status`: `failed`})
+				data.SetInfo(ctx.T(`状态已经更改成功。但%s: %v`, opType, err.Error()))
+			} else {
+				data.SetData(echo.H{`status`: status})
+				data.SetInfo(ctx.T(`状态已经更改成功`))
+			}
 			return ctx.JSON(data)
 		}
 	}

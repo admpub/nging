@@ -27,15 +27,15 @@
 				</div>
 				<button data-url="{{BackendURL}}/frp/server_stop" id="ctrl-server-stop" class="btn btn-warning btn-flat pull-right">
 					<i class="fa fa-power-off"></i>
-					{{"关闭服务端"|T}}
+					{{"关闭全部服务端"|T}}
 				</button>
 				<button data-url="{{BackendURL}}/frp/server_restart" id="ctrl-server-restart" class="btn btn-{{if Stored.isRunning}}info{{else}}success{{end}} pull-right">
 					{{if Stored.isRunning}}
 					<i class="fa fa-refresh"></i>
-					{{"重启服务端"|T}}
+					{{"重启全部服务端"|T}}
 					{{else}}
 					<i class="fa fa-play"></i>
-					{{"启动服务端"|T}}
+					{{"启动全部服务端"|T}}
 					{{end}}
 				</button>
 				<a href="{{BackendURL}}/frp/server_add" class="btn btn-default pull-right">
@@ -88,7 +88,7 @@
 									<input type="checkbox" id="checkbox-disabled-{{$k}}" value="N" class="switch-disabled" data-id="{{$v.Id}}" data-disabled="{{$v.Disabled}}"{{if eq $v.Disabled "N"}} checked="checked"{{end}} /> <label for="checkbox-disabled-{{$k}}">{{"启用"|T}}</label>
 								</div>
 								</td>
-								<td>
+								<td id="frp-server-status-{{$v.Id}}">
 									{{if $v.Running}}
 									<span class="status-run fa fa-play text-success"> {{"运行中"|T}}</span>
 									{{else}}
@@ -158,7 +158,13 @@ $(function(){
 			App.message({title:title,text:'<div style="max-height:'+$(window).height()+'px;overflow-y: auto">'+App.text2html(r.Info, true)+'</div>',time:5000,sticky:false,class_name:r.Code==1?'success':'error'});
 		},'json');
 	});
-	App.bindSwitch('input.switch-disabled','click','frp/server_edit');
+	App.bindSwitch('input.switch-disabled','click','frp/server_edit',null,function(r){
+		var id = $(this).data('id');
+		switch(r.Data.status){
+			case 'started': $('#frp-server-status-'+id).html('<span class="status-run fa fa-play text-success"> {{"运行中"|T}}</span>');break;
+			case 'stopped': $('#frp-server-status-'+id).html('<span class="status-run fa fa-stop text-danger"> {{"已停止"|T}}</span>');break;
+		}
+	});
 });
 </script>
 {{/Block}}

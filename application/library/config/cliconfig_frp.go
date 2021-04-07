@@ -293,15 +293,23 @@ func (c *CLIConfig) FRPRestart(writer ...io.Writer) error {
 }
 
 func (c *CLIConfig) FRPRestartID(id string, writer ...io.Writer) error {
-	err := c.CmdStop("frpserver." + id)
+	err := c.FRPStopID(id)
 	if err != nil {
+		return err
+	}
+	idv, _ := strconv.ParseUint(id, 10, 32)
+	return c.FRPStartID(uint(idv), writer...)
+}
+
+func (c *CLIConfig) FRPStopID(id string) error {
+	err := c.CmdStop("frpserver." + id)
+	if err != nil && !strings.Contains(err.Error(), `finished`) {
 		return err
 	}
 	pidPath := c.FRPPidFile(id, true)
 	err = com.CloseProcessFromPidFile(pidPath)
-	if err != nil {
+	if err != nil && !strings.Contains(err.Error(), `finished`) {
 		log.Error(err.Error() + `: ` + pidPath)
 	}
-	idv, _ := strconv.ParseUint(id, 10, 32)
-	return c.FRPStartID(uint(idv), writer...)
+	return nil
 }

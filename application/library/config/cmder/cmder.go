@@ -16,3 +16,11 @@ type Cmder interface {
 type RestartBy interface {
 	RestartBy(id string, writer ...io.Writer) error
 }
+
+type StopBy interface {
+	StopBy(id string) error
+}
+
+type StartBy interface {
+	StartBy(id string, writer ...io.Writer) error
+}
