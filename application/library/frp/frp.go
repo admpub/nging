@@ -2,6 +2,7 @@ package frp
 
 import (
 	"math/rand"
+	"os"
 	"sync"
 	"time"
 
@@ -14,6 +15,9 @@ var (
 )
 
 func onceInit() {
-	crypto.DefaultSalt = `frp`
+	crypto.DefaultSalt = os.Getenv(`FRP_CRYPTO_SALT`)
+	if len(crypto.DefaultSalt) == 0 {
+		crypto.DefaultSalt = `frp`
+	}
 	rand.Seed(time.Now().UnixNano())
 }
