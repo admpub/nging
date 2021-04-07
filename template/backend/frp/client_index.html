@@ -133,8 +133,8 @@ $(function(){
 		var isRe=$(this).attr('id')=='ctrl-client-restart',me=$(this);
 		$.get($(this).data('url'),{},function(r){
 			if(r.Code==1){
-				$.get(window.location.href,{_pjax:true},function(r){
-					$('#pcont .cl-mcont').html(r)
+				$.get(window.location.href,{_pjax:'#pcont'},function(r){
+					$('#pcont').html(r)
 				},'html');
 			}
 			var title=App.trimSpace(me.text());
