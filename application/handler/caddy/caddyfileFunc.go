@@ -20,6 +20,7 @@ package caddy
 
 import (
 	"net/url"
+	"strings"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -118,4 +119,82 @@ func SetCaddyfileFunc(ctx echo.Context, v url.Values) {
 		values, _ := v[key]
 		return param.StringSlice(values)
 	})
+	ctx.SetFunc(`GetWebdavUser`, func() []*WebdavUser {
+		return parseWebdavUserForm(v)
+	})
+	ctx.SetFunc(`GetWebdavGlobal`, func() []*WebdavPerm {
+		return parseWebdavGlobalForm(v)
+	})
+}
+
+type WebdavPerm struct {
+	Perm     string
+	Resource string
+}
+
+func (w *WebdavPerm) String() string {
+	if strings.Contains(w.Resource, `*`) {
+		return w.Perm + `_r    ` + strings.Replace(w.Resource, `*`, `(.*)`, -1)
+	}
+	return w.Perm + `      ` + w.Resource
+}
+
+type WebdavUser struct {
+	User     string
+	Password string
+	Perms    []*WebdavPerm
+}
+
+func parseWebdavUserForm(v url.Values) []*WebdavUser {
+	indexes, _ := v[`webdav_user_index`]
+	users, _ := v[`webdav_user`]
+	passwords, _ := v[`webdav_pass`]
+	var list []*WebdavUser
+	for key, index := range indexes {
+		if key >= len(users) || key >= len(passwords) {
+			continue
+		}
+		u := &WebdavUser{
+			User:     users[key],
+			Password: passwords[key],
+		}
+		if len(u.User) == 0 {
+			continue
+		}
+		perms, _ := v[`webdav_perms[user][`+index+`]`]
+		resources, _ := v[`webdav_resources[user][`+index+`]`]
+		for pkey, resource := range resources {
+			if pkey >= len(perms) || len(resource) == 0 {
+				continue
+			}
+			p := &WebdavPerm{Perm: perms[pkey], Resource: resource}
+			if p.Perm == `1` {
+				p.Perm = `allow`
+			} else {
+				p.Perm = `block`
+			}
+			u.Perms = append(u.Perms, p)
+		}
+		list = append(list, u)
+	}
+	return list
+}
+
+func parseWebdavGlobalForm(v url.Values) []*WebdavPerm {
+	var list []*WebdavPerm
+	perms, _ := v[`webdav_perms[global]`]
+	resources, _ := v[`webdav_resources[global]`]
+	for pkey, resource := range resources {
+		if pkey >= len(perms) || len(resource) == 0 {
+			continue
+		}
+		p := &WebdavPerm{Perm: perms[pkey], Resource: resource}
+		if p.Perm == `1` {
+			p.Perm = `allow`
+		} else {
+			p.Perm = `block`
+		}
+		list = append(list, p)
+	}
+	return list
 }

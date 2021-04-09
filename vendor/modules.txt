@@ -385,6 +385,9 @@ github.com/caddy-plugins/ipfilter
 # github.com/caddy-plugins/nobots v0.1.1
 ## explicit
 github.com/caddy-plugins/nobots
+# github.com/caddy-plugins/webdav v1.1.1
+## explicit
+github.com/caddy-plugins/webdav
 # github.com/caddyserver/caddy v1.1.5 => github.com/admpub/caddy v1.1.5
 ## explicit
 github.com/caddyserver/caddy
@@ -632,6 +635,8 @@ github.com/gorilla/websocket
 github.com/grafov/m3u8
 # github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79
 github.com/gregjones/httpcache
+# github.com/hacdias/webdav/v3 v3.0.0
+github.com/hacdias/webdav/v3/lib
 # github.com/hashicorp/go-syslog v1.0.0
 github.com/hashicorp/go-syslog
 # github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce
@@ -1073,6 +1078,7 @@ gocloud.dev/internal/retry
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
 golang.org/x/crypto/argon2
+golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blake2b
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/cast5
@@ -1113,7 +1119,7 @@ golang.org/x/lint
 golang.org/x/lint/golint
 # golang.org/x/mod v0.4.0
 golang.org/x/mod/semver
-# golang.org/x/net v0.0.0-20210326060303-6b1517762897
+# golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4
 golang.org/x/net/bpf
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
@@ -1133,12 +1139,14 @@ golang.org/x/net/ipv6
 golang.org/x/net/proxy
 golang.org/x/net/publicsuffix
 golang.org/x/net/trace
+golang.org/x/net/webdav
+golang.org/x/net/webdav/internal/xml
 golang.org/x/net/websocket
 # golang.org/x/oauth2 v0.0.0-20201203001011-0b49973bad19
 golang.org/x/oauth2
 golang.org/x/oauth2/clientcredentials
 golang.org/x/oauth2/internal
-# golang.org/x/sys v0.0.0-20210324051608-47abb6519492
+# golang.org/x/sys v0.0.0-20210330210617-4fbd30eecc44
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix

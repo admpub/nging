@@ -457,6 +457,21 @@ redir [code] {
                 </div>
               </div>
               <div class="form-group">
+                <label class="col-sm-2 control-label">{{"WebDAV"|T}}</label>
+                <div class="col-sm-8">
+                  {{$v := Form "webdav"}}
+                  <div class="radio radio-primary radio-inline"> 
+                    <input type="radio" value="1" id="webdav-enable" name="webdav" data-slide-settings="show"{{if eq $v "1"}} checked{{end}}><label for="webdav-enable">{{"启用"|T}}</label> 
+                  </div>
+                  <div class="radio radio-danger radio-inline"> 
+                    <input type="radio" value="0" id="webdav-disable" name="webdav" data-slide-settings="hide"{{if or (eq $v "0") (eq $v "")}} checked{{end}}><label for="webdav-disable">{{"禁用"|T}}</label> 
+                  </div>
+                  <div class="fieldset bg-fc hide" id="webdav-settings">
+                    {{if eq $v "1"}}{{Include "caddy/addon/form/webdav"}}{{end}}
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
                 <label class="col-sm-2 control-label">{{"备注"|T}}</label>
                 <div class="col-sm-8">
                   <textarea class="form-control" name="remark">{{Form "remark"}}</textarea>

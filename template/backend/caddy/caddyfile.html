@@ -236,4 +236,28 @@
     }
     {{end}}
     {{end}}
+
+
+    {{if eq ($v.Get "webdav") "1"}}
+    {{$webdavRoot := $v.Get "webdav_root"|AddSlashes|ToHTML}}
+    {{$webdavURL := $v.Get "webdav_url"|AddSlashes|ToHTML}}
+    {{$webdavUsers := GetWebdavUser}}
+    {{range $key,$val := $webdavUsers}}
+    basicauth "{{$webdavURL}}" "{{$val.User|AddSlashes|ToHTML}}" "{{$val.Password|AddSlashes|ToHTML}}"
+    {{end}}
+    webdav "{{$webdavURL}}" {
+        scope       "{{$webdavRoot}}"
+        modify      {{if eq ($v.Get "webdav_modify") "1"}}true{{else}}false{{end}}
+        {{range $k,$perm := GetWebdavGlobal}}
+        {{$perm.String|ToHTML}}
+        {{end}}
+
+        {{range $key,$val := $webdavUsers}}
+        {{$val.User}}:
+        {{range $k,$perm := $val.Perms}}
+        {{$perm.String|ToHTML}}
+        {{end}}
+        {{end}}
+    }
+    {{end}}
 }
