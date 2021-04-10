@@ -68,6 +68,9 @@ func (g *Group) Apply(e echo.RouteRegister, rootGroup string) {
 		for _, namer := range g.Namers {
 			group = namer(group)
 		}
+		if len(group) > 0 && !strings.HasPrefix(group, `/`) {
+			panic(`Routing group name must start with "/". Your name is passed: ` + group)
+		}
 		grp := e.Group(group)
 		if group != rootGroup { // 组名为空时，为顶层组
 			grp.Use(groupDefaultMiddlewares...)
