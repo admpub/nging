@@ -48,6 +48,8 @@ debug.log
 /data/nging.pem
 /data/nging.pem.pub
 /data/sm2/*
+/data/ftpdir/*
+!/data/ftpdir/README.md
 /data/logs/*.txt
 /application/library/collector/chrome/*.png
 /data/cache/*
