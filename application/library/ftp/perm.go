@@ -19,9 +19,7 @@
 package ftp
 
 import (
-	"os"
-
-	ftpserver "github.com/admpub/ftpserver"
+	ftpserver "goftp.io/server/v2"
 )
 
 func NewPerm(owner, group string) *Perm {
@@ -32,8 +30,4 @@ func NewPerm(owner, group string) *Perm {
 
 type Perm struct {
 	*ftpserver.SimplePerm
-}
-
-func (s *Perm) GetMode(string) (os.FileMode, error) {
-	return 0, nil
 }

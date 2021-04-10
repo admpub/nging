@@ -26,7 +26,6 @@ require (
 	github.com/admpub/events v0.0.0-20190913050400-383beb0843c6
 	github.com/admpub/fasthttp v0.0.1 // indirect
 	github.com/admpub/frp v0.36.3
-	github.com/admpub/ftpserver v0.0.1
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
 	github.com/admpub/go-download/v2 v2.1.6
 	github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
@@ -99,15 +98,12 @@ require (
 	github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d // indirect
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-openapi/strfmt v0.19.11 // indirect
-	github.com/goftp/file-driver v0.0.0-20180502053751-5d604a0fc0c9 // indirect
-	github.com/goftp/server v0.0.0-20200708154336-f64f7c2d8a42 // indirect
 	github.com/gomodule/redigo v1.8.4
 	github.com/grafov/m3u8 v0.11.1 // indirect
 	github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce // indirect
 	github.com/igm/sockjs-go v3.0.0+incompatible // indirect
 	github.com/imdario/mergo v0.3.11 // indirect
 	github.com/jedib0t/go-pretty v4.3.0+incompatible // indirect
-	github.com/jlaffaye/ftp v0.0.0-20201112195030-9aae4d151126 // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/kardianos/service v1.2.0 // indirect
 	github.com/klauspost/compress v1.11.12 // indirect
