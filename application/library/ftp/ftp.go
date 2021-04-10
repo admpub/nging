@@ -25,8 +25,9 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
-	ftpserver "github.com/admpub/ftpserver"
 	"github.com/admpub/log"
+	"github.com/admpub/nging/application/model"
+	ftpserver "goftp.io/server/v2"
 )
 
 var (
@@ -34,13 +35,12 @@ var (
 		PidFile:      `ftp.pid`,
 		DBType:       `mysql`,
 		FTPStoreType: `file`,
-		ServerOpts: ftpserver.ServerOpts{
-			Name:           `TinyFTP`,
-			PassivePorts:   `6001-7000`,
-			Port:           25,
-			PublicIp:       `127.0.0.1`,
-			WelcomeMessage: `Welcome to the TinyFTP`,
-		},
+		// ftpserver.Options
+		Name:           `TinyFTP`,
+		PassivePorts:   `6001-7000`,
+		Port:           25,
+		PublicIP:       `127.0.0.1`,
+		WelcomeMessage: `Welcome to the TinyFTP`,
 	}
 	DefaultPidFile = `ftp.pid`
 )
@@ -53,20 +53,20 @@ func Fixed(c *Config) {
 	}
 	pidFile = filepath.Join(pidFile, DefaultPidFile)
 	c.PidFile = pidFile
-	if c.ServerOpts.Name == `` {
-		c.ServerOpts.Name = DefaultConfig.ServerOpts.Name
+	if c.Name == `` {
+		c.Name = DefaultConfig.Name
 	}
-	if c.ServerOpts.PassivePorts == `` {
-		c.ServerOpts.PassivePorts = DefaultConfig.ServerOpts.PassivePorts
+	if c.PassivePorts == `` {
+		c.PassivePorts = DefaultConfig.PassivePorts
 	}
-	if c.ServerOpts.Port == 0 {
-		c.ServerOpts.Port = DefaultConfig.ServerOpts.Port
+	if c.Port == 0 {
+		c.Port = DefaultConfig.Port
 	}
-	if c.ServerOpts.PublicIp == `` {
-		c.ServerOpts.PublicIp = DefaultConfig.ServerOpts.PublicIp
+	if c.PublicIP == `` {
+		c.PublicIP = DefaultConfig.PublicIP
 	}
-	if c.ServerOpts.WelcomeMessage == `` {
-		c.ServerOpts.WelcomeMessage = DefaultConfig.ServerOpts.WelcomeMessage
+	if c.WelcomeMessage == `` {
+		c.WelcomeMessage = DefaultConfig.WelcomeMessage
 	}
 	if c.DBType == `` {
 		c.DBType = DefaultConfig.DBType
@@ -77,15 +77,57 @@ func Fixed(c *Config) {
 }
 
 type Config struct {
-	perm         ftpserver.Perm
 	PidFile      string            `json:"-"`
 	DBType       string            `json:"dbType"`
 	FTPStoreType string            `json:"ftpStoreType"`
 	FTPOptions   map[string]string `json:"ftpOptions"`
-	ftpserver.ServerOpts
+
+	// Server Name, Default is Go Ftp Server
+	Name string `json:"name"`
+
+	// The hostname that the FTP server should listen on. Optional, defaults to
+	// "::", which means all hostnames on ipv4 and ipv6.
+	Hostname string `json:"hostName"`
+
+	// Public IP of the server
+	PublicIP string `json:"publicIP"`
+
+	// Passive ports
+	PassivePorts string `json:"passivePorts"`
+
+	// The port that the FTP should listen on. Optional, defaults to 3000. In
+	// a production environment you will probably want to change this to 21.
+	Port int `json:"port"`
+
+	// use tls, default is false
+	TLS bool `json:"tls"`
+
+	// if tls used, cert file is required
+	CertFile string `json:"certFile"`
+
+	// if tls used, key file is required
+	KeyFile string `json:"keyFile"`
+
+	// If ture TLS is used in RFC4217 mode
+	ExplicitFTPS bool `json:"explicitFTPS"`
+
+	WelcomeMessage string `json:"welcomeMessage"`
+
+	options ftpserver.Options
 }
 
 func (c *Config) Init() *Config {
+	c.options.Name = c.Name
+	c.options.Hostname = c.Hostname
+	c.options.PublicIP = c.PublicIP
+	c.options.PassivePorts = c.PassivePorts
+	c.options.Port = c.Port
+	c.options.TLS = c.TLS
+	c.options.CertFile = c.CertFile
+	c.options.KeyFile = c.KeyFile
+	c.options.ExplicitFTPS = c.ExplicitFTPS
+	c.options.WelcomeMessage = c.WelcomeMessage
+
 	c.SetPermByType(c.DBType, `root`, `root`)
 	c.SetAuthByType(c.DBType)
 	c.SetStoreByType(c.FTPStoreType, c.FTPOptions)
@@ -102,10 +144,10 @@ func (c *Config) SetPermByType(storeType string, owner string, group string) *Co
 
 func (c *Config) SetPerm(perm ftpserver.Perm, owner string, group string) *Config {
 	if perm != nil {
-		c.perm = perm
+		c.options.Perm = perm
 		return c
 	}
-	c.perm = NewPerm(owner, group)
+	c.options.Perm = NewPerm(owner, group)
 	return c
 }
 
@@ -118,28 +160,29 @@ func (c *Config) SetAuthByType(storeType string) *Config {
 }
 
 func (c *Config) SetAuth(auth ftpserver.Auth) *Config {
-	c.ServerOpts.Auth = auth
+	c.options.Auth = auth
 	return c
 }
 
 func (c *Config) SetStoreByType(storeType string, options ...map[string]string) *Config {
 	switch storeType {
 	case "file":
-		factory := &FileDriverFactory{c.perm}
-		c.SetStore(factory)
+		driver := &FileDriver{user: model.NewFtpUser(nil), Perm: c.options.Perm}
+		c.SetDriver(driver)
 	default:
 		log.Fatal("Unsupported FTP storage type: " + storeType)
 	}
 	return c
 }
 
-func (c *Config) SetStore(store ftpserver.DriverFactory) *Config {
-	c.ServerOpts.Factory = store
+func (c *Config) SetDriver(driver ftpserver.Driver) *Config {
+	c.options.Driver = driver
 	return c
 }
 
 func (c *Config) SetPort(port int) *Config {
-	c.ServerOpts.Port = port
+	c.Port = port
+	c.options.Port = port
 	return c
 }
 
@@ -151,9 +194,13 @@ func (c *Config) Start() error {
 			log.Error(err.Error())
 		}
 	}
-	ftpServer := ftpserver.NewServer(&c.ServerOpts)
+	ftpServer, err := ftpserver.NewServer(&c.options)
+	if err != nil {
+		log.Fatal("Error starting server:", err)
+		return err
+	}
 	log.Info("Start FTP Server")
-	err := ftpServer.ListenAndServe()
+	err = ftpServer.ListenAndServe()
 	if err != nil {
 		if len(c.PidFile) > 0 {
 			os.Remove(c.PidFile)

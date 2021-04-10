@@ -58,10 +58,18 @@ func (conn *Conn) PublicIp() string {
 }
 
 func (conn *Conn) passiveListenIP() string {
+	var listenIP string
 	if len(conn.PublicIp()) > 0 {
-		return conn.PublicIp()
+		listenIP = conn.PublicIp()
+	} else {
+		listenIP = conn.conn.LocalAddr().(*net.TCPAddr).IP.String()
 	}
-	return conn.conn.LocalAddr().String()
+
+	lastIdx := strings.LastIndex(listenIP, ":")
+	if lastIdx <= 0 {
+		return listenIP
+	}
+	return listenIP[:lastIdx]
 }
 
 func (conn *Conn) PassivePort() int {
@@ -108,7 +116,7 @@ func (conn *Conn) Serve() {
 		line, err := conn.controlReader.ReadString('\n')
 		if err != nil {
 			if err != io.EOF {
-				conn.logger.Print(conn.sessionID, fmt.Sprintln("read error:", err))
+				conn.logger.Print(conn.sessionID, fmt.Sprint("read error:", err))
 			}
 
 			break

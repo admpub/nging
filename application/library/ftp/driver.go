@@ -26,12 +26,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	ftpserver "github.com/admpub/ftpserver"
 	"github.com/admpub/nging/application/model"
+	ftpserver "goftp.io/server/v2"
 )
 
 type FileDriver struct {
-	conn *ftpserver.Conn
 	user *model.FtpUser
 	ftpserver.Perm
 }
@@ -56,8 +55,8 @@ func (f *FileInfo) Group() string {
 	return f.group
 }
 
-func (driver *FileDriver) realPath(path string) (string, error) {
-	user := driver.conn.LoginUser()
+func (driver *FileDriver) realPath(ftpCtx *ftpserver.Context, path string) (string, error) {
+	user := ftpCtx.Sess.LoginUser()
 	rootPath, err := driver.user.RootPath(user)
 	if err != nil {
 		return ``, err
@@ -66,12 +65,8 @@ func (driver *FileDriver) realPath(path string) (string, error) {
 	return filepath.Join(append([]string{rootPath}, paths...)...), nil
 }
 
-func (driver *FileDriver) Init(conn *ftpserver.Conn) {
-	driver.conn = conn
-}
-
-func (driver *FileDriver) ChangeDir(path string) error {
-	rPath, err := driver.realPath(path)
+func (driver *FileDriver) ChangeDir(ftpCtx *ftpserver.Context, path string) error {
+	rPath, err := driver.realPath(ftpCtx, path)
 	if err != nil {
 		return err
 	}
@@ -85,8 +80,8 @@ func (driver *FileDriver) ChangeDir(path string) error {
 	return errors.New("Not a directory")
 }
 
-func (driver *FileDriver) Stat(path string) (ftpserver.FileInfo, error) {
-	basepath, err := driver.realPath(path)
+func (driver *FileDriver) Stat(ftpCtx *ftpserver.Context, path string) (os.FileInfo, error) {
+	basepath, err := driver.realPath(ftpCtx, path)
 	if err != nil {
 		return nil, err
 	}
@@ -94,60 +89,23 @@ func (driver *FileDriver) Stat(path string) (ftpserver.FileInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	f, err := os.Lstat(rPath)
-	if err != nil {
-		return nil, err
-	}
-	mode, err := driver.Perm.GetMode(path)
-	if err != nil {
-		return nil, err
-	}
-	if mode == 0 {
-		mode = f.Mode()
-	}
-	if f.IsDir() {
-		mode |= os.ModeDir
-	}
-	owner, err := driver.Perm.GetOwner(path)
-	if err != nil {
-		return nil, err
-	}
-	group, err := driver.Perm.GetGroup(path)
-	if err != nil {
-		return nil, err
-	}
-	return &FileInfo{f, mode, owner, group}, nil
+	return os.Lstat(rPath)
 }
 
-func (driver *FileDriver) ListDir(path string, callback func(ftpserver.FileInfo) error) error {
-	basepath, err := driver.realPath(path)
+func (driver *FileDriver) ListDir(ftpCtx *ftpserver.Context, path string, callback func(os.FileInfo) error) error {
+	basepath, err := driver.realPath(ftpCtx, path)
 	if err != nil {
 		return err
 	}
 	filepath.Walk(basepath, func(f string, info os.FileInfo, err error) error {
 		rPath, _ := filepath.Rel(basepath, f)
 		if rPath == info.Name() {
-			mode, err := driver.Perm.GetMode(rPath)
+			err = callback(info)
 			if err != nil {
 				return err
-			}
-			if mode == 0 {
-				mode = info.Mode()
 			}
 			if info.IsDir() {
-				mode |= os.ModeDir
-			}
-			owner, err := driver.Perm.GetOwner(rPath)
-			if err != nil {
-				return err
-			}
-			group, err := driver.Perm.GetGroup(rPath)
-			if err != nil {
-				return err
-			}
-			err = callback(&FileInfo{info, mode, owner, group})
-			if err != nil {
-				return err
+				return filepath.SkipDir
 			}
 		}
 		return nil
@@ -156,8 +114,8 @@ func (driver *FileDriver) ListDir(path string, callback func(ftpserver.FileInfo)
 	return nil
 }
 
-func (driver *FileDriver) DeleteDir(path string) error {
-	rPath, err := driver.realPath(path)
+func (driver *FileDriver) DeleteDir(ftpCtx *ftpserver.Context, path string) error {
+	rPath, err := driver.realPath(ftpCtx, path)
 	if err != nil {
 		return err
 	}
@@ -171,8 +129,8 @@ func (driver *FileDriver) DeleteDir(path string) error {
 	return errors.New("Not a directory")
 }
 
-func (driver *FileDriver) DeleteFile(path string) error {
-	rPath, err := driver.realPath(path)
+func (driver *FileDriver) DeleteFile(ftpCtx *ftpserver.Context, path string) error {
+	rPath, err := driver.realPath(ftpCtx, path)
 	if err != nil {
 		return err
 	}
@@ -186,28 +144,28 @@ func (driver *FileDriver) DeleteFile(path string) error {
 	return errors.New("Not a file")
 }
 
-func (driver *FileDriver) Rename(fromPath string, toPath string) error {
-	oldPath, err := driver.realPath(fromPath)
+func (driver *FileDriver) Rename(ftpCtx *ftpserver.Context, fromPath string, toPath string) error {
+	oldPath, err := driver.realPath(ftpCtx, fromPath)
 	if err != nil {
 		return err
 	}
-	newPath, err := driver.realPath(toPath)
+	newPath, err := driver.realPath(ftpCtx, toPath)
 	if err != nil {
 		return err
 	}
 	return os.Rename(oldPath, newPath)
 }
 
-func (driver *FileDriver) MakeDir(path string) error {
-	rPath, err := driver.realPath(path)
+func (driver *FileDriver) MakeDir(ftpCtx *ftpserver.Context, path string) error {
+	rPath, err := driver.realPath(ftpCtx, path)
 	if err != nil {
 		return err
 	}
 	return os.Mkdir(rPath, os.ModePerm)
 }
 
-func (driver *FileDriver) GetFile(path string, offset int64) (int64, io.ReadCloser, error) {
-	rPath, err := driver.realPath(path)
+func (driver *FileDriver) GetFile(ftpCtx *ftpserver.Context, path string, offset int64) (int64, io.ReadCloser, error) {
+	rPath, err := driver.realPath(ftpCtx, path)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -226,8 +184,8 @@ func (driver *FileDriver) GetFile(path string, offset int64) (int64, io.ReadClos
 	return info.Size(), f, nil
 }
 
-func (driver *FileDriver) PutFile(destPath string, data io.Reader, appendData bool) (int64, error) {
-	rPath, err := driver.realPath(destPath)
+func (driver *FileDriver) PutFile(ftpCtx *ftpserver.Context, destPath string, data io.Reader, offset int64) (int64, error) {
+	rPath, err := driver.realPath(ftpCtx, destPath)
 	if err != nil {
 		return 0, err
 	}
@@ -246,11 +204,11 @@ func (driver *FileDriver) PutFile(destPath string, data io.Reader, appendData bo
 		}
 	}
 
-	if appendData && !isExist {
-		appendData = false
+	if offset > -1 && !isExist {
+		offset = -1
 	}
 
-	if !appendData {
+	if offset == -1 {
 		if isExist {
 			err = os.Remove(rPath)
 			if err != nil {
@@ -275,7 +233,15 @@ func (driver *FileDriver) PutFile(destPath string, data io.Reader, appendData bo
 	}
 	defer of.Close()
 
-	_, err = of.Seek(0, os.SEEK_END)
+	info, err := of.Stat()
+	if err != nil {
+		return 0, err
+	}
+	if offset > info.Size() {
+		return 0, fmt.Errorf("offset %d is beyond file size %d", offset, info.Size())
+	}
+
+	_, err = of.Seek(offset, os.SEEK_END)
 	if err != nil {
 		return 0, err
 	}
@@ -286,12 +252,4 @@ func (driver *FileDriver) PutFile(destPath string, data io.Reader, appendData bo
 	}
 
 	return bytes, nil
-}
-
-type FileDriverFactory struct {
-	ftpserver.Perm
-}
-
-func (factory *FileDriverFactory) NewDriver() (ftpserver.Driver, error) {
-	return &FileDriver{nil, model.NewFtpUser(nil), factory.Perm}, nil
 }

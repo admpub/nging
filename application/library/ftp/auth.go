@@ -18,7 +18,10 @@
 
 package ftp
 
-import "github.com/admpub/nging/application/model"
+import (
+	"github.com/admpub/nging/application/model"
+	ftpserver "goftp.io/server/v2"
+)
 
 func NewAuth() *Auth {
 	return &Auth{
@@ -28,4 +31,8 @@ func NewAuth() *Auth {
 
 type Auth struct {
 	*model.FtpUser
+}
+
+func (a *Auth) CheckPasswd(ftpCtx *ftpserver.Context, username string, password string) (bool, error) {
+	return a.FtpUser.CheckPasswd(username, password)
 }

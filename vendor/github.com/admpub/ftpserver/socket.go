@@ -8,9 +8,13 @@ import (
 	"crypto/tls"
 	"io"
 	"net"
+	"os"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
+	"syscall"
+	"time"
 )
 
 // DataSocket describes a data socket is used to send non-control data between the client and
@@ -99,23 +103,56 @@ type ftpPassiveSocket struct {
 	ingress   chan []byte
 	egress    chan []byte
 	logger    Logger
-	lock      sync.Mutex
+	lock      sync.Mutex // protects conn and err
 	err       error
 	tlsConfig *tls.Config
 }
 
-func newPassiveSocket(host string, port int, logger Logger, sessionID string, tlsConfig *tls.Config) (DataSocket, error) {
+// Detect if an error is "bind: address already in use"
+//
+// Originally from https://stackoverflow.com/a/52152912/164234
+func isErrorAddressAlreadyInUse(err error) bool {
+	errOpError, ok := err.(*net.OpError)
+	if !ok {
+		return false
+	}
+	errSyscallError, ok := errOpError.Err.(*os.SyscallError)
+	if !ok {
+		return false
+	}
+	errErrno, ok := errSyscallError.Err.(syscall.Errno)
+	if !ok {
+		return false
+	}
+	if errErrno == syscall.EADDRINUSE {
+		return true
+	}
+	const WSAEADDRINUSE = 10048
+	if runtime.GOOS == "windows" && errErrno == WSAEADDRINUSE {
+		return true
+	}
+	return false
+}
+
+func newPassiveSocket(host string, port func() int, logger Logger, sessionID string, tlsConfig *tls.Config) (DataSocket, error) {
 	socket := new(ftpPassiveSocket)
 	socket.ingress = make(chan []byte)
 	socket.egress = make(chan []byte)
 	socket.logger = logger
 	socket.host = host
-	socket.port = port
 	socket.tlsConfig = tlsConfig
-	if err := socket.GoListenAndServe(sessionID); err != nil {
-		return nil, err
+	const retries = 10
+	var err error
+	for i := 1; i <= retries; i++ {
+		socket.port = port()
+		err = socket.GoListenAndServe(sessionID)
+		if err != nil && socket.port != 0 && isErrorAddressAlreadyInUse(err) {
+			// choose a different port on error already in use
+			continue
+		}
+		break
 	}
-	return socket, nil
+	return socket, err
 }
 
 func (socket *ftpPassiveSocket) Host() string {
@@ -127,15 +164,19 @@ func (socket *ftpPassiveSocket) Port() int {
 }
 
 func (socket *ftpPassiveSocket) Read(p []byte) (n int, err error) {
-	if err := socket.waitForOpenSocket(); err != nil {
-		return 0, err
+	socket.lock.Lock()
+	defer socket.lock.Unlock()
+	if socket.err != nil {
+		return 0, socket.err
 	}
 	return socket.conn.Read(p)
 }
 
 func (socket *ftpPassiveSocket) ReadFrom(r io.Reader) (int64, error) {
-	if err := socket.waitForOpenSocket(); err != nil {
-		return 0, err
+	socket.lock.Lock()
+	defer socket.lock.Unlock()
+	if socket.err != nil {
+		return 0, socket.err
 	}
 
 	// For normal TCPConn, this will use sendfile syscall; if not,
@@ -144,13 +185,17 @@ func (socket *ftpPassiveSocket) ReadFrom(r io.Reader) (int64, error) {
 }
 
 func (socket *ftpPassiveSocket) Write(p []byte) (n int, err error) {
-	if err := socket.waitForOpenSocket(); err != nil {
-		return 0, err
+	socket.lock.Lock()
+	defer socket.lock.Unlock()
+	if socket.err != nil {
+		return 0, socket.err
 	}
 	return socket.conn.Write(p)
 }
 
 func (socket *ftpPassiveSocket) Close() error {
+	socket.lock.Lock()
+	defer socket.lock.Unlock()
 	if socket.conn != nil {
 		return socket.conn.Close()
 	}
@@ -164,13 +209,23 @@ func (socket *ftpPassiveSocket) GoListenAndServe(sessionID string) (err error) {
 		return
 	}
 
-	var listener net.Listener
-	listener, err = net.ListenTCP("tcp", laddr)
+	var tcplistener *net.TCPListener
+	tcplistener, err = net.ListenTCP("tcp", laddr)
 	if err != nil {
 		socket.logger.Print(sessionID, err)
 		return
 	}
 
+	// The timeout, for a remote client to establish connection
+	// with a PASV style data connection.
+	const acceptTimeout = 60 * time.Second
+	err = tcplistener.SetDeadline(time.Now().Add(acceptTimeout))
+	if err != nil {
+		socket.logger.Print(sessionID, err)
+		return
+	}
+
+	var listener net.Listener = tcplistener
 	add := listener.Addr()
 	parts := strings.Split(add.String(), ":")
 	port, err := strconv.Atoi(parts[len(parts)-1])
@@ -184,8 +239,8 @@ func (socket *ftpPassiveSocket) GoListenAndServe(sessionID string) (err error) {
 		listener = tls.NewListener(listener, socket.tlsConfig)
 	}
 
+	socket.lock.Lock()
 	go func() {
-		socket.lock.Lock()
 		defer socket.lock.Unlock()
 
 		conn, err := listener.Accept()
@@ -195,15 +250,7 @@ func (socket *ftpPassiveSocket) GoListenAndServe(sessionID string) (err error) {
 		}
 		socket.err = nil
 		socket.conn = conn
+		_ = listener.Close()
 	}()
 	return nil
-}
-
-func (socket *ftpPassiveSocket) waitForOpenSocket() error {
-	socket.lock.Lock()
-	defer socket.lock.Unlock()
-	if socket.conn != nil {
-		return nil
-	}
-	return socket.err
 }

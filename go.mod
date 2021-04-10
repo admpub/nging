@@ -26,7 +26,7 @@ require (
 	github.com/admpub/events v0.0.0-20190913050400-383beb0843c6
 	github.com/admpub/fasthttp v0.0.1 // indirect
 	github.com/admpub/frp v0.36.3
-	github.com/admpub/ftpserver v0.0.0-20180821023651-6b950445d653
+	github.com/admpub/ftpserver v0.0.1
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
 	github.com/admpub/go-download/v2 v2.1.6
 	github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
@@ -145,6 +145,7 @@ require (
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect
 	github.com/xu42/youzan-sdk-go v0.0.3
 	gocloud.dev v0.22.0
+	goftp.io/server/v2 v2.0.0
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect

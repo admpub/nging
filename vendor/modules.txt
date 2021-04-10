@@ -98,7 +98,7 @@ github.com/admpub/frp/server/proxy
 github.com/admpub/frp/server/visitor
 # github.com/admpub/fsnotify v1.4.4
 github.com/admpub/fsnotify
-# github.com/admpub/ftpserver v0.0.0-20180821023651-6b950445d653
+# github.com/admpub/ftpserver v0.0.1
 ## explicit
 github.com/admpub/ftpserver
 # github.com/admpub/gifresize v1.0.2
@@ -778,7 +778,7 @@ github.com/minio/minio-go/pkg/encrypt
 github.com/minio/minio-go/pkg/s3signer
 github.com/minio/minio-go/pkg/s3utils
 github.com/minio/minio-go/pkg/set
-# github.com/minio/minio-go/v6 v6.0.38
+# github.com/minio/minio-go/v6 v6.0.46
 github.com/minio/minio-go/v6
 github.com/minio/minio-go/v6/pkg/credentials
 github.com/minio/minio-go/v6/pkg/encrypt
@@ -1073,6 +1073,10 @@ gocloud.dev/internal/gcerr
 gocloud.dev/internal/oc
 gocloud.dev/internal/openurl
 gocloud.dev/internal/retry
+# goftp.io/server/v2 v2.0.0
+## explicit
+goftp.io/server/v2
+goftp.io/server/v2/ratelimit
 # golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
 ## explicit
 golang.org/x/crypto/acme

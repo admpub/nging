@@ -9,6 +9,7 @@ import (
 	"context"
 	"crypto/tls"
 	"errors"
+	"fmt"
 	"net"
 	"strconv"
 )
@@ -73,6 +74,7 @@ type Server struct {
 	tlsConfig *tls.Config
 	ctx       context.Context
 	cancel    context.CancelFunc
+	feats     string
 }
 
 // ErrServerClosed is returned by ListenAndServe() or Serve() when a shutdown
@@ -171,6 +173,7 @@ func (server *Server) newConn(tcpConn net.Conn, driver Driver) *Conn {
 	c.sessionID = newSessionID()
 	c.logger = server.logger
 	c.tlsConfig = server.tlsConfig
+
 	driver.Init(c)
 	return c
 }
@@ -201,12 +204,15 @@ func simpleTLSConfig(certFile, keyFile string) (*tls.Config, error) {
 func (server *Server) ListenAndServe() error {
 	var listener net.Listener
 	var err error
+	var curFeats = featCmds
 
 	if server.ServerOpts.TLS {
 		server.tlsConfig, err = simpleTLSConfig(server.CertFile, server.KeyFile)
 		if err != nil {
 			return err
 		}
+
+		curFeats += " AUTH TLS\n PBSZ\n PROT\n"
 
 		if server.ServerOpts.ExplicitFTPS {
 			listener, err = net.Listen("tcp", server.listenTo)
@@ -219,6 +225,7 @@ func (server *Server) ListenAndServe() error {
 	if err != nil {
 		return err
 	}
+	server.feats = fmt.Sprintf(feats, curFeats)
 
 	sessionID := ""
 	server.logger.Printf(sessionID, "%s listening on %d", server.Name, server.Port)

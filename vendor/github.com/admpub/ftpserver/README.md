@@ -1,5 +1,7 @@
 # server
 
+**Moved to https://gitea.com/goftp/server**
+
 [![CircleCI](https://circleci.com/gh/goftp/server.svg?style=shield)](https://circleci.com/gh/goftp/server)
 [![](https://goreportcard.com/badge/github.com/goftp/server)](https://goreportcard.com/report/github.com/goftp/server)
 [![codecov](https://codecov.io/gh/goftp/server/branch/master/graph/badge.svg)](https://codecov.io/gh/goftp/server)
@@ -18,25 +20,31 @@ Full documentation for the package is available on [godoc](http://godoc.org/gith
 
 ## Usage
 
-To boot a FTP server you will need to provide a driver that speaks to your
-persistence layer - the required driver contract is listed below.
+To boot a FTP server you will need to provide a driver that speaks to
+your persistence layer - the required driver contract is in [the
+documentation](http://godoc.org/github.com/goftp/server).
 
-There is a sample in-memory driver available as a demo. You can build it with
-this command:
+Look at the [file driver](https://github.com/goftp/file-driver) to see
+an example of how to build a backend.
 
-    go install github.com/goftp/ftpd
+There is a [sample ftp server](/exampleftpd) as a demo. You can build it with this
+command:
+
+    go install github.com/goftp/server/exampleftpd
 
 Then run it if you have add $GOPATH to your $PATH:
 
-    ftpd
+    exampleftpd -root /tmp
 
 And finally, connect to the server with any FTP client and the following
 details:
 
     host: 127.0.0.1
     port: 2121
-    username: test
-    password: 1234
+    username: admin
+    password: 123456
+
+This uses the file driver mentioned above to serve files.
 
 ## Contributors
 
