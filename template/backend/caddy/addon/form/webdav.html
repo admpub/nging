@@ -229,7 +229,9 @@ function addWebdavUserRes(a,userIndex){
 }
 function addWebdavUser(a){
     var tmpl=$('#webdavTmplAddUserPerm').html();
-    var nextIdx=parseInt($('input[name="webdav_user_index"]:last').val()||-1)+1;
+    var nextIdx=0;
+    var last=$('input[name="webdav_user_index"]:last').val();
+    if(last) nextIdx=parseInt(last)+1;
     tmpl=tmpl.replace(/\{=userIndex=\}/g,nextIdx);
     $(a).before(tmpl);
 }
