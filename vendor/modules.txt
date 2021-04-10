@@ -275,6 +275,8 @@ github.com/admpub/web-terminal/handler
 github.com/admpub/web-terminal/library/ssh
 github.com/admpub/web-terminal/library/telnet
 github.com/admpub/web-terminal/library/utils
+# github.com/admpub/webdav/v4 v4.0.2
+github.com/admpub/webdav/v4/lib
 # github.com/admpub/websocket v1.0.4
 ## explicit
 github.com/admpub/websocket
@@ -385,7 +387,7 @@ github.com/caddy-plugins/ipfilter
 # github.com/caddy-plugins/nobots v0.1.1
 ## explicit
 github.com/caddy-plugins/nobots
-# github.com/caddy-plugins/webdav v1.1.1
+# github.com/caddy-plugins/webdav v1.2.1
 ## explicit
 github.com/caddy-plugins/webdav
 # github.com/caddyserver/caddy v1.1.5 => github.com/admpub/caddy v1.1.5
@@ -635,8 +637,6 @@ github.com/gorilla/websocket
 github.com/grafov/m3u8
 # github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79
 github.com/gregjones/httpcache
-# github.com/hacdias/webdav/v3 v3.0.0
-github.com/hacdias/webdav/v3/lib
 # github.com/hashicorp/go-syslog v1.0.0
 github.com/hashicorp/go-syslog
 # github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce
@@ -789,7 +789,7 @@ github.com/minio/minio-go/v6/pkg/set
 github.com/minio/sha256-simd
 # github.com/mitchellh/go-homedir v1.1.0
 github.com/mitchellh/go-homedir
-# github.com/mitchellh/mapstructure v1.4.0
+# github.com/mitchellh/mapstructure v1.4.1
 github.com/mitchellh/mapstructure
 # github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd
 github.com/modern-go/concurrent
@@ -1146,7 +1146,7 @@ golang.org/x/net/websocket
 golang.org/x/oauth2
 golang.org/x/oauth2/clientcredentials
 golang.org/x/oauth2/internal
-# golang.org/x/sys v0.0.0-20210330210617-4fbd30eecc44
+# golang.org/x/sys v0.0.0-20210403161142-5e06dd20ab57
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
@@ -1155,7 +1155,7 @@ golang.org/x/sys/windows/registry
 golang.org/x/sys/windows/svc
 golang.org/x/sys/windows/svc/eventlog
 golang.org/x/sys/windows/svc/mgr
-# golang.org/x/text v0.3.5
+# golang.org/x/text v0.3.6
 golang.org/x/text/collate
 golang.org/x/text/encoding
 golang.org/x/text/encoding/charmap

@@ -20,9 +20,10 @@ type CorsCfg struct {
 // Config is the configuration of a WebDAV instance.
 type Config struct {
 	*User
-	Auth  bool
-	Cors  CorsCfg
-	Users map[string]*User
+	Auth    bool
+	NoSniff bool
+	Cors    CorsCfg
+	Users   map[string]*User
 }
 
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
@@ -102,22 +103,15 @@ func (c *Config) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Checks for user permissions relatively to this PATH.
-	if !u.Allowed(r.URL.Path) {
+	noModification := r.Method == "GET" || r.Method == "HEAD" ||
+		r.Method == "OPTIONS" || r.Method == "PROPFIND"
+	if !u.Allowed(r.URL.Path, noModification) {
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 
 	if r.Method == "HEAD" {
 		w = newResponseWriterNoBody(w)
-	}
-
-	// If this request modified the files and the user doesn't have permission
-	// to do so, return forbidden.
-	if (r.Method == "PUT" || r.Method == "POST" || r.Method == "MKCOL" ||
-		r.Method == "DELETE" || r.Method == "COPY" || r.Method == "MOVE") &&
-		!u.Modify {
-		w.WriteHeader(http.StatusForbidden)
-		return
 	}
 
 	// Excerpt from RFC4918, section 9.4:
@@ -127,8 +121,8 @@ func (c *Config) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//		the collection, or something else altogether.
 	//
 	// Get, when applied to collection, will return the same as PROPFIND method.
-	if r.Method == "GET" {
-		info, err := u.Handler.FileSystem.Stat(context.TODO(), r.URL.Path)
+	if r.Method == "GET" && strings.HasPrefix(r.URL.Path, u.Handler.Prefix) {
+		info, err := u.Handler.FileSystem.Stat(context.TODO(), strings.TrimPrefix(r.URL.Path, u.Handler.Prefix))
 		if err == nil && info.IsDir() {
 			r.Method = "PROPFIND"
 

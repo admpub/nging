@@ -8,9 +8,9 @@ import (
 
 	wd "golang.org/x/net/webdav"
 
+	"github.com/admpub/webdav/v4/lib"
 	"github.com/caddyserver/caddy"
 	"github.com/caddyserver/caddy/caddyhttp/httpserver"
-	"github.com/hacdias/webdav/v3/lib"
 )
 
 func init() {
@@ -117,8 +117,9 @@ func parse(c *caddy.Controller) ([]*config, error) {
 				}
 
 				rule := &lib.Rule{
-					Allow: ruleType == "allow" || ruleType == "allow_r",
-					Regex: ruleType == "allow_r" || ruleType == "block_r",
+					Allow:  ruleType == "allow" || ruleType == "allow_r",
+					Modify: u.Modify,
+					Regex:  ruleType == "allow_r" || ruleType == "block_r",
 				}
 
 				if rule.Regex {
@@ -131,6 +132,14 @@ func parse(c *caddy.Controller) ([]*config, error) {
 					rule.Path = c.Val()
 				}
 
+				if c.NextArg() {
+					switch c.Val() {
+					case `+w`:
+						rule.Modify = true
+					case `-w`:
+						rule.Modify = false
+					}
+				}
 				u.Rules = append(u.Rules, rule)
 			case "modify":
 				if !c.NextArg() {

@@ -86,7 +86,7 @@ require (
 	github.com/caddy-plugins/cors v0.0.0-20190704155148-3c98079f1197
 	github.com/caddy-plugins/ipfilter v1.1.4
 	github.com/caddy-plugins/nobots v0.1.1
-	github.com/caddy-plugins/webdav v1.1.1
+	github.com/caddy-plugins/webdav v1.2.1
 	github.com/caddyserver/caddy v1.1.5
 	github.com/chromedp/cdproto v0.0.0-20210323015217-0942afbea50e
 	github.com/chromedp/chromedp v0.6.10

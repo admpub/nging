@@ -254,6 +254,12 @@
 
         {{range $key,$val := $webdavUsers}}
         {{$val.User}}:
+        {{if $val.Root}}
+        scope       "{{$val.Root|AddSlashes|ToHTML}}"
+        {{end}}
+        {{if $val.Writeable.Valid}}
+        modify       {{$val.Writeable.Bool}}
+        {{end}}
         {{range $k,$perm := $val.Perms}}
         {{$perm.String|ToHTML}}
         {{end}}
