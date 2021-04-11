@@ -23,7 +23,9 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
+	"time"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
@@ -67,16 +69,7 @@ func ClientAdd(ctx echo.Context) error {
 	var err error
 	m := model.NewFrpClient(ctx)
 	if ctx.IsPost() {
-		name := ctx.Form(`name`)
-		if len(name) == 0 {
-			err = ctx.E(`名称不能为空`)
-		} else if y, e := m.Exists(name); e != nil {
-			err = e
-		} else if y {
-			err = ctx.E(`名称已经存在`)
-		} else {
-			err = ctx.MustBind(m.NgingFrpClient)
-		}
+		err = ctx.MustBind(m.NgingFrpClient)
 		if err == nil {
 			m.NgingFrpClient.Extra, err = form2ExtraStr(ctx)
 		}
@@ -109,6 +102,10 @@ func ClientAdd(ctx echo.Context) error {
 				ctx.Request().Form().Set(`id`, `0`)
 			}
 		}
+		if len(ctx.Form(`logFile`)) == 0 {
+			logRandName := time.Now().Local().Format(`20060102`) + `-` + com.RandomAlphanumeric(8)
+			ctx.Request().Form().Set(`logFile`, `./data/logs/frp/client.`+logRandName+`.log`)
+		}
 	}
 	mg := model.NewFrpGroup(ctx)
 	_, e := mg.List(nil, nil, 1, -1)
@@ -127,16 +124,7 @@ func ClientEdit(ctx echo.Context) error {
 	m := model.NewFrpClient(ctx)
 	err = m.Get(nil, db.Cond{`id`: id})
 	if ctx.IsPost() {
-		name := ctx.Form(`name`)
-		if len(name) == 0 {
-			err = ctx.E(`名称不能为空`)
-		} else if y, e := m.Exists(name, id); e != nil {
-			err = e
-		} else if y {
-			err = ctx.E(`名称已经存在`)
-		} else {
-			err = ctx.MustBind(m.NgingFrpClient, echo.ExcludeFieldName(`created`))
-		}
+		err = ctx.MustBind(m.NgingFrpClient, echo.ExcludeFieldName(`created`))
 		if err == nil {
 			m.NgingFrpClient.Extra, err = form2ExtraStr(ctx)
 		}

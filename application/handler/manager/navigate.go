@@ -231,6 +231,12 @@ var TopNavigate = &navigate.List{
 				Name:          `附件网址替换`,
 				Action:        `replaceurl`,
 			},
+			{
+				DisplayOnMenu: true,
+				Name:          `生成密码`,
+				Action:        `gen_password`,
+				Target:        `ajax`,
+			},
 		},
 	},
 }

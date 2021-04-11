@@ -19,6 +19,7 @@
 package common
 
 import (
+	"github.com/admpub/go-password/password"
 	"github.com/webx-top/codec"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -81,4 +82,8 @@ func GenSecret(sizes ...uint) string {
 		size = 32
 	}
 	return com.RandomAlphanumeric(size)
+}
+
+func GenPassword() (string, error) {
+	return password.Generate(32, 10, 10, false, false)
 }

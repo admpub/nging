@@ -21,6 +21,7 @@ package model
 import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
@@ -50,4 +51,38 @@ func (f *FrpServer) Exists(name string, excludeIds ...uint) (bool, error) {
 		cond[`id`] = db.NotEq(excludeIds[0])
 	}
 	return f.NgingFrpServer.Exists(nil, cond)
+}
+
+func (f *FrpServer) check() error {
+	if len(f.Name) == 0 {
+		return f.NewError(code.InvalidParameter, f.T(`名称不能为空`)).SetZone(`name`)
+	}
+	var exists bool
+	var err error
+	if f.Id > 0 {
+		exists, err = f.Exists(f.Name, f.Id)
+	} else {
+		exists, err = f.Exists(f.Name)
+	}
+	if err != nil {
+		return err
+	}
+	if exists {
+		return f.NewError(code.DataAlreadyExists, f.T(`名称已经存在`)).SetZone(`name`)
+	}
+	return err
+}
+
+func (f *FrpServer) Add() (pk interface{}, err error) {
+	if err := f.check(); err != nil {
+		return nil, err
+	}
+	return f.NgingFrpServer.Add()
+}
+
+func (f *FrpServer) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+	if err := f.check(); err != nil {
+		return err
+	}
+	return f.NgingFrpServer.Edit(mw, args...)
 }

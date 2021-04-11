@@ -20,7 +20,9 @@ package server
 
 import (
 	"fmt"
+	"time"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
@@ -57,16 +59,7 @@ func DaemonAdd(ctx echo.Context) error {
 	var err error
 	m := model.NewForeverProcess(ctx)
 	if ctx.IsPost() {
-		name := ctx.Form(`name`)
-		if len(name) == 0 {
-			err = ctx.E(`名称不能为空`)
-		} else if y, e := m.Exists(name); e != nil {
-			err = e
-		} else if y {
-			err = ctx.E(`名称已经存在`)
-		} else {
-			err = ctx.MustBind(m.NgingForeverProcess)
-		}
+		err = ctx.MustBind(m.NgingForeverProcess)
 		if err == nil {
 			m.Uid = user.Id
 			_, err = m.Add()
@@ -91,6 +84,13 @@ func DaemonAdd(ctx echo.Context) error {
 				ctx.Request().Form().Set(`id`, `0`)
 			}
 		}
+		logRandName := time.Now().Local().Format(`20060102`) + `-` + com.RandomAlphanumeric(8)
+		if len(ctx.Form(`logfile`)) == 0 {
+			ctx.Request().Form().Set(`logfile`, `./data/logs/forever/`+logRandName+`.info.log`)
+		}
+		if len(ctx.Form(`errfile`)) == 0 {
+			ctx.Request().Form().Set(`errfile`, `./data/logs/forever/`+logRandName+`.err.log`)
+		}
 	}
 	ctx.Set(`activeURL`, `/server/daemon_index`)
 	return ctx.Render(`server/daemon_edit`, err)
@@ -104,16 +104,7 @@ func DaemonEdit(ctx echo.Context) error {
 	disabled := m.Disabled
 	oldName := m.Name
 	if ctx.IsPost() {
-		name := ctx.Form(`name`)
-		if len(name) == 0 {
-			err = ctx.E(`名称不能为空`)
-		} else if y, e := m.Exists2(name, id); e != nil {
-			err = e
-		} else if y {
-			err = ctx.E(`名称已经存在`)
-		} else {
-			err = ctx.MustBind(m.NgingForeverProcess, echo.ExcludeFieldName(`created`, `uid`, `lastrun`))
-		}
+		err = ctx.MustBind(m.NgingForeverProcess, echo.ExcludeFieldName(`created`, `uid`, `lastrun`))
 		if err == nil {
 			m.Id = id
 			err = m.Edit(nil, db.Cond{`id`: id})

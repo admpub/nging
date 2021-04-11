@@ -547,7 +547,10 @@ var App = function () {
 						return App.message({ title: title, text: r.Info, type: r.Code == 1 ? 'success' : 'error', time: 5000, sticky: false });
 					}
 					App.message({ title: title, text: r, time: 5000, sticky: false });
-				}, accept);
+				}, accept).error(function (xhr, status, info) {
+					App.loading('hide');
+					App.message({ title: title, text: xhr.responseText, type: 'error', time: 5000, sticky: false });
+				});
 			});
 		},
 		attachPjax: function (elem, callbacks, timeout) {

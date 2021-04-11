@@ -22,6 +22,7 @@ import (
 
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
@@ -43,12 +44,38 @@ func (u *ForeverProcess) Exists(name string) (bool, error) {
 	return u.NgingForeverProcess.Exists(nil, db.Cond{`name`: name})
 }
 
+func (u *ForeverProcess) check() error {
+	if len(u.Name) == 0 {
+		return u.NewError(code.InvalidParameter, u.T(`名称不能为空`)).SetZone(`name`)
+	}
+	var exists bool
+	var err error
+	if u.Id > 0 {
+		exists, err = u.Exists2(u.Name, u.Id)
+	} else {
+		exists, err = u.Exists(u.Name)
+	}
+	if err != nil {
+		return err
+	}
+	if exists {
+		return u.NewError(code.DataAlreadyExists, u.T(`名称已经存在`)).SetZone(`name`)
+	}
+	return err
+}
+
 func (u *ForeverProcess) Add() (pk interface{}, err error) {
+	if err := u.check(); err != nil {
+		return nil, err
+	}
 	u.Status = `idle`
 	return u.NgingForeverProcess.Add()
 }
 
 func (u *ForeverProcess) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+	if err := u.check(); err != nil {
+		return err
+	}
 	return u.NgingForeverProcess.Edit(mw, args...)
 }
 

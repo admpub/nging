@@ -19,8 +19,10 @@
 package tool
 
 import (
+	"net/http"
 	"time"
 
+	"github.com/admpub/nging/application/library/common"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
@@ -87,4 +89,12 @@ func Timestamp(c echo.Context) (err error) {
 	c.Set(`timeCST`, time.Now().In(time.FixedZone(`CST`, 8*3600)))
 	c.Set(`timeLocal`, time.Now().Local())
 	return c.Render(`/tool/timestamp`, nil)
+}
+
+func GenPassword(ctx echo.Context) error {
+	pwd, err := common.GenPassword()
+	if err != nil {
+		return ctx.String(err.Error(), http.StatusInternalServerError)
+	}
+	return ctx.HTML(`<pre>` + pwd + `</pre>`)
 }

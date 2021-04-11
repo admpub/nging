@@ -20,9 +20,9 @@ package frp
 
 import (
 	"fmt"
+	"time"
 
-	"github.com/admpub/go-password/password"
-
+	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 
@@ -66,17 +66,7 @@ func ServerAdd(ctx echo.Context) error {
 	var err error
 	m := model.NewFrpServer(ctx)
 	if ctx.IsPost() {
-		name := ctx.Form(`name`)
-		if len(name) == 0 {
-			err = ctx.E(`名称不能为空`)
-		} else if y, e := m.Exists(name); e != nil {
-			err = e
-		} else if y {
-			err = ctx.E(`名称已经存在`)
-		} else {
-			err = ctx.MustBind(m.NgingFrpServer)
-		}
-
+		err = ctx.MustBind(m.NgingFrpServer)
 		if err == nil {
 			_, err = m.Add()
 			if err == nil {
@@ -106,8 +96,12 @@ func ServerAdd(ctx echo.Context) error {
 			}
 		}
 		if len(ctx.Form(`token`)) == 0 {
-			defaultToken, _ := password.Generate(32, 10, 10, false, false)
+			defaultToken, _ := common.GenPassword()
 			ctx.Request().Form().Set(`token`, defaultToken)
+		}
+		if len(ctx.Form(`logFile`)) == 0 {
+			logRandName := time.Now().Local().Format(`20060102`) + `-` + com.RandomAlphanumeric(8)
+			ctx.Request().Form().Set(`logFile`, `./data/logs/frp/server.`+logRandName+`.log`)
 		}
 	}
 	mg := model.NewFrpGroup(ctx)
@@ -126,17 +120,7 @@ func ServerEdit(ctx echo.Context) error {
 	m := model.NewFrpServer(ctx)
 	err = m.Get(nil, db.Cond{`id`: id})
 	if ctx.IsPost() {
-		name := ctx.Form(`name`)
-		if len(name) == 0 {
-			err = ctx.E(`名称不能为空`)
-		} else if y, e := m.Exists(name, id); e != nil {
-			err = e
-		} else if y {
-			err = ctx.E(`名称已经存在`)
-		} else {
-			err = ctx.MustBind(m.NgingFrpServer, echo.ExcludeFieldName(`created`))
-		}
-
+		err = ctx.MustBind(m.NgingFrpServer, echo.ExcludeFieldName(`created`))
 		if err == nil {
 			m.Id = id
 			err = m.Edit(nil, db.Cond{`id`: id})

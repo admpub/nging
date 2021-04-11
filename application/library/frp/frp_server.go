@@ -21,6 +21,7 @@ package frp
 import (
 	"encoding/json"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -55,11 +56,15 @@ func SetServerConfigFromDB(conf *dbschema.NgingFrpServer) *config.ServerCommonCo
 	c.DashboardPort = int(conf.DashboardPort)
 	c.DashboardUser = conf.DashboardUser
 	c.DashboardPwd = conf.DashboardPwd
-	if conf.LogWay == `console` {
-		conf.LogFile = `console`
-	}
 	c.LogFile = conf.LogFile
 	c.LogWay = conf.LogWay
+	if c.LogWay == `console` {
+		c.LogFile = `console`
+	} else if len(c.LogFile) == 0 {
+		c.LogFile = `console`
+	} else {
+		os.MkdirAll(filepath.Dir(c.LogFile), os.ModePerm)
+	}
 	c.LogLevel = conf.LogLevel
 	c.LogMaxDays = int64(conf.LogMaxDays)
 	c.Token = conf.Token
