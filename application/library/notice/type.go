@@ -13,6 +13,10 @@ type (
 	CustomWithWriter func(wOut io.Writer, wErr io.Writer) Noticer
 )
 
+func (noticer Noticer) WithProgress(progresses ...*Progress) *NoticeAndProgress {
+	return NewWithProgress(noticer, progresses...)
+}
+
 var (
 	// DefaultNoticer 默认noticer
 	// statusCode > 0 为成功；否则为失败

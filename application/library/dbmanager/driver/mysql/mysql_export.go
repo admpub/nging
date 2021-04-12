@@ -197,6 +197,11 @@ func (m *mySQL) Export() error {
 		}
 		cfg := *m.DbAuth
 		cfg.Db = m.dbName
+		coll, err := m.getCollation(m.dbName, nil)
+		if err != nil {
+			return err
+		}
+		cfg.Charset = strings.SplitN(coll, `_`, 2)[0]
 
 		clientID := m.Form(`clientID`)
 		user := handler.User(m.Context)

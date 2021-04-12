@@ -2,6 +2,7 @@ package notice
 
 import (
 	"context"
+	"sync/atomic"
 	"time"
 )
 
@@ -62,6 +63,78 @@ func NewControlWithContext(ctx context.Context, timeout time.Duration) IsExited 
 	defaultCtrl := &Control{}
 	defaultCtrl.ListenContextAndTimeout(ctx, timeout)
 	return defaultCtrl
+}
+
+func NewWithProgress(noticer Noticer, progresses ...*Progress) *NoticeAndProgress {
+	var progress *Progress
+	if len(progresses) > 0 {
+		progress = progresses[0]
+	}
+	if progress == nil {
+		progress = NewProgress()
+	}
+	return &NoticeAndProgress{
+		send: noticer,
+		prog: progress,
+	}
+}
+
+type NProgressor interface {
+	Send(message interface{}, statusCode int) error
+	Success(message interface{}) error
+	Failure(message interface{}) error
+	Add(n int64) NProgressor
+	Done(n int64) NProgressor
+	AutoComplete(on bool) NProgressor
+	Complete() NProgressor
+}
+
+type NoticeAndProgress struct {
+	send         Noticer
+	prog         *Progress
+	autoComplete bool
+}
+
+// - Noticer -
+
+func (a *NoticeAndProgress) Send(message interface{}, statusCode int) error {
+	return a.send(message, statusCode, a.prog)
+}
+
+func (a *NoticeAndProgress) Success(message interface{}) error {
+	return a.send(message, 1, a.prog)
+}
+
+func (a *NoticeAndProgress) Failure(message interface{}) error {
+	return a.send(message, 0, a.prog)
+}
+
+// - Progress -
+
+func (a *NoticeAndProgress) Add(n int64) NProgressor {
+	if a.prog.Finish > 0 {
+		atomic.StoreInt64(&a.prog.Finish, 0)
+	}
+	atomic.AddInt64(&a.prog.Total, n)
+	return a
+}
+
+func (a *NoticeAndProgress) Done(n int64) NProgressor {
+	atomic.AddInt64(&a.prog.Finish, n)
+	if a.autoComplete && a.prog.Finish == a.prog.Total {
+		a.prog.Complete = true
+	}
+	return a
+}
+
+func (a *NoticeAndProgress) AutoComplete(on bool) NProgressor {
+	a.autoComplete = on
+	return a
+}
+
+func (a *NoticeAndProgress) Complete() NProgressor {
+	a.prog.Complete = true
+	return a
 }
 
 func NewNoticer(ctx context.Context, config *HTTPNoticerConfig) Noticer {

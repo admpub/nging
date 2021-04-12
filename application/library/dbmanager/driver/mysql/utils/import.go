@@ -29,33 +29,36 @@ import (
 	"time"
 
 	"github.com/admpub/archiver"
-	loga "github.com/admpub/log"
+	"github.com/admpub/log"
+	"github.com/admpub/nging/application/library/common"
 	writerPkg "github.com/admpub/nging/application/library/cron/writer"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/admpub/nging/application/library/notice"
+	"github.com/fatih/color"
 	"github.com/webx-top/com"
 )
 
 // Import 导入SQL文件
-func Import(ctx context.Context, noticer notice.Noticer, cfg *driver.DbAuth, cacheDir string, files []string, asyncs ...bool) error {
+func Import(ctx context.Context, noticer *notice.NoticeAndProgress, cfg *driver.DbAuth, cacheDir string, files []string) error {
 	if len(files) == 0 {
 		return nil
 	}
-	if noticer == nil {
-		noticer = notice.DefaultNoticer
+	importorPath, err := common.LookPath(Importor, MySQLBinPaths...)
+	if err != nil {
+		return err
+	}
+	if len(importorPath) == 0 {
+		importorPath = Importor
 	}
 	names := make([]string, len(files))
 	for i, file := range files {
 		names[i] = filepath.Base(file)
 	}
-	noticer(`开始导入: `+strings.Join(names, ", "), 1)
+	noticer.Success(`开始导入: ` + strings.Join(names, ", "))
 	var (
-		port, host string
-		async      = true
+		port string
+		host string
 	)
-	if len(asyncs) > 0 {
-		async = asyncs[0]
-	}
 	if p := strings.LastIndex(cfg.Host, `:`); p > 0 {
 		host = cfg.Host[0:p]
 		port = cfg.Host[p+1:]
@@ -74,20 +77,26 @@ func Import(ctx context.Context, noticer notice.Noticer, cfg *driver.DbAuth, cac
 		"-e",
 		``,
 	}
-	sqls := `SET FOREIGN_KEY_CHECKS=0;SET UNIQUE_CHECKS=0;source %s;SET FOREIGN_KEY_CHECKS=1;SET UNIQUE_CHECKS=1;`
-	var delDirs []string
-	sqlFiles := []string{}
-	defer func() {
-		for _, delDir := range delDirs {
-			os.RemoveAll(delDir)
-		}
-		for _, sqlFile := range sqlFiles {
-			if !com.FileExists(sqlFile) {
-				continue
+	if !com.InSlice(cfg.Charset, Charsets) {
+		return errors.New(`字符集charset值无效`)
+	}
+	sqls := `SET NAMES ` + cfg.Charset + `;SET FOREIGN_KEY_CHECKS=0;SET UNIQUE_CHECKS=0;source %s;SET FOREIGN_KEY_CHECKS=1;SET UNIQUE_CHECKS=1;`
+	var (
+		delDirs  []string
+		sqlFiles []string
+		onFilish = func() {
+			for _, delDir := range delDirs {
+				os.RemoveAll(delDir)
 			}
-			os.Remove(sqlFile)
+			for _, sqlFile := range sqlFiles {
+				if !com.FileExists(sqlFile) {
+					continue
+				}
+				os.Remove(sqlFile)
+			}
 		}
-	}()
+	)
+	defer onFilish()
 	nowTime := com.String(time.Now().Unix())
 	dataFiles := []string{}
 	for index, sqlFile := range files {
@@ -100,17 +109,20 @@ func Import(ctx context.Context, noticer notice.Noticer, cfg *driver.DbAuth, cac
 			}
 		case `.zip`:
 			dir := filepath.Join(cacheDir, fmt.Sprintf("upload-"+nowTime+"-%d", index))
-			err := archiver.Unarchive(sqlFile, dir)
+			err := os.MkdirAll(dir, os.ModePerm)
 			if err != nil {
-				loga.Error(err)
+				return err
+			}
+			err = archiver.Unarchive(sqlFile, dir)
+			if err != nil {
+				log.Error(err)
 				continue
 			}
 			delDirs = append(delDirs, dir)
 			err = os.Remove(sqlFile)
 			if err != nil {
-				loga.Error(err)
+				log.Error(err)
 			}
-			ifiles := []string{}
 			err = filepath.Walk(dir, func(fpath string, info os.FileInfo, err error) error {
 				if err != nil || info.IsDir() {
 					return err
@@ -122,33 +134,41 @@ func Import(ctx context.Context, noticer notice.Noticer, cfg *driver.DbAuth, cac
 					sqlFiles = append(sqlFiles, fpath)
 					return nil
 				}
-				ifiles = append(ifiles, fpath)
+				dataFiles = append(dataFiles, fpath)
 				return nil
 			})
-			sqlFiles = append(sqlFiles, ifiles...)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	sqlFiles = append(sqlFiles, dataFiles...)
-	rec := writerPkg.New(1000)
+	lastIndex := len(args) - 1
+	noticer.Add(int64(len(sqlFiles)))
 	for _, sqlFile := range sqlFiles {
 		if len(sqlFile) == 0 {
 			continue
 		}
 		sqlFile = filepath.ToSlash(sqlFile)
-		lastIndex := len(args) - 1
+		args := args[:]
 		args[lastIndex] = fmt.Sprintf(sqls, sqlFile)
-		//log.Println(`mysql`, strings.Join(args, ` `))
-		cmd := exec.CommandContext(ctx, "mysql", args...)
+		//log.Println(importorPath, strings.Join(args, ` `))
+		//log.Debug(args[lastIndex])
+		cmd := exec.CommandContext(ctx, importorPath, args...)
+		rec := writerPkg.New(1000)
 		cmd.Stderr = rec
 		if err := cmd.Start(); err != nil {
-			return fmt.Errorf(`Failed to import: %v`, err)
+			return fmt.Errorf(`failed to import: %v`, err)
 		}
-		if !async { //非异步，需阻塞
-			if err := cmd.Wait(); err != nil {
-				return errors.New(err.Error() + `: ` + rec.String())
-			}
+		if err := cmd.Wait(); err != nil {
+			noticer.Done(1)
+			noticer.Failure(`[FAILURE] ` + err.Error() + `: ` + rec.String() + `: ` + filepath.Base(sqlFile))
+			log.Debug(color.RedString(`[FAILURE]`), ` `, err.Error(), `: `+rec.String()+`: `, args[lastIndex])
+		} else {
+			noticer.Done(1)
+			noticer.Success(`[SUCCESS] ` + filepath.Base(sqlFile))
+			log.Debug(color.GreenString(`[SUCCESS]`), ` `, args[lastIndex])
 		}
 	}
-	noticer(`结束导入`, 1)
 	return nil
 }

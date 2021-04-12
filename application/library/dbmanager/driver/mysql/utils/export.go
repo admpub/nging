@@ -33,6 +33,7 @@ import (
 	"github.com/webx-top/db"
 
 	"github.com/admpub/errors"
+	"github.com/admpub/nging/application/library/common"
 	writerPkg "github.com/admpub/nging/application/library/cron/writer"
 	"github.com/admpub/nging/application/library/dbmanager/driver"
 	"github.com/admpub/nging/application/library/notice"
@@ -61,6 +62,13 @@ func Export(ctx context.Context, noticer notice.Noticer, cfg *driver.DbAuth, tab
 	}
 	if noticer == nil {
 		noticer = notice.DefaultNoticer
+	}
+	exportorPath, err := common.LookPath(Exportor, MySQLBinPaths...)
+	if err != nil {
+		return err
+	}
+	if len(exportorPath) == 0 {
+		exportorPath = Exportor
 	}
 	noticer(`开始备份: `+strings.Join(tables, ","), 1)
 	var (
@@ -122,8 +130,8 @@ func Export(ctx context.Context, noticer notice.Noticer, cfg *driver.DbAuth, tab
 		if index > 0 {
 			args[typeOptIndex] = `-t` //导出数据
 		}
-		//log.Println(`mysqldump`, strings.Join(args, ` `))
-		cmd := exec.CommandContext(ctx, "mysqldump", args...)
+		//log.Println(exportorPath, strings.Join(args, ` `))
+		cmd := exec.CommandContext(ctx, exportorPath, args...)
 		cmd.Stderr = rec
 		var (
 			w        io.Writer
@@ -137,11 +145,11 @@ func Export(ctx context.Context, noticer notice.Noticer, cfg *driver.DbAuth, tab
 			dir := filepath.Dir(v)
 			err = os.MkdirAll(dir, os.ModePerm)
 			if err != nil {
-				return fmt.Errorf(`Failed to backup: %v`, err)
+				return fmt.Errorf(`failed to backup: %v`, err)
 			}
 			w, err = os.Create(v)
 			if err != nil {
-				return fmt.Errorf(`Failed to backup: %v`, err)
+				return fmt.Errorf(`failed to backup: %v`, err)
 			}
 			onFinish = func() error {
 				if index > 0 {
@@ -158,15 +166,15 @@ func Export(ctx context.Context, noticer notice.Noticer, cfg *driver.DbAuth, tab
 		stdout, err := cmd.StdoutPipe()
 		if err != nil {
 			clean(w, stdout)
-			return fmt.Errorf(`Failed to backup: %v`, err)
+			return fmt.Errorf(`failed to backup: %v`, err)
 		}
 		if err := cmd.Start(); err != nil {
 			clean(w, stdout)
-			return fmt.Errorf(`Failed to backup: %v`, err)
+			return fmt.Errorf(`failed to backup: %v`, err)
 		}
 		if _, err := io.Copy(w, stdout); err != nil {
 			clean(w, stdout)
-			return fmt.Errorf(`Failed to backup: %v`, err)
+			return fmt.Errorf(`failed to backup: %v`, err)
 		}
 		if err := cmd.Wait(); err != nil {
 			clean(w, stdout)

@@ -19,11 +19,17 @@
 package common
 
 import (
-	stdErr "errors"
+	"errors"
 	"fmt"
 	"net"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"regexp"
+	"strings"
 
 	"github.com/webx-top/captcha"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	stdCode "github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/middleware/tplfunc"
@@ -41,7 +47,7 @@ func Err(ctx echo.Context, err error) (ret interface{}) {
 		flash := ctx.Flash()
 		if flash != nil {
 			if errMsg, ok := flash.(string); ok {
-				ret = stdErr.New(errMsg)
+				ret = errors.New(errMsg)
 			} else {
 				ret = flash
 			}
@@ -172,4 +178,35 @@ func GetLocalIP() (ipv4 string, err error) {
 		}
 	}
 	return
+}
+
+var notWordRegexp = regexp.MustCompile(`[^\w]+`)
+
+// LookPath 获取二进制可执行文件路径
+func LookPath(bin string, otherPaths ...string) (string, error) {
+	envVarName := `NGING_` + notWordRegexp.ReplaceAllString(strings.ToUpper(bin), `_`) + `_PATH`
+	envVarValue := os.Getenv(envVarName)
+	if len(envVarValue) > 0 {
+		if com.IsFile(envVarValue) {
+			return envVarValue, nil
+		}
+		envVarValue = filepath.Join(envVarValue, bin)
+		if com.IsFile(envVarValue) {
+			return envVarValue, nil
+		}
+	}
+	findPath, err := exec.LookPath(bin)
+	if err == nil {
+		return findPath, err
+	}
+	if !errors.Is(err, exec.ErrNotFound) {
+		return findPath, err
+	}
+	for _, binPath := range otherPaths {
+		binPath = filepath.Join(binPath, bin)
+		if com.IsFile(binPath) {
+			return binPath, nil
+		}
+	}
+	return findPath, err
 }

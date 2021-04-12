@@ -91,8 +91,12 @@ func (m *mySQL) Login() error {
 		Password: m.DbAuth.Password,
 		Host:     m.DbAuth.Host,
 		Database: m.DbAuth.Db,
+		Options:  map[string]string{},
 	}
 	common.ParseMysqlConnectionURL(&settings)
+	if len(m.DbAuth.Charset) > 0 {
+		settings.Options["charset"] = m.DbAuth.Charset
+	}
 	var dbNameIsEmpty bool
 	if len(settings.Database) == 0 {
 		dbNameIsEmpty = true

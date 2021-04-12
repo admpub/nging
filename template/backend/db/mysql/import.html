@@ -17,6 +17,10 @@
           </div>
           <div class="content">
               <form action="{{URI}}" class="dropzone" id="my-awesome-dropzone" accept="application/zip,application/x-zip-compressed"></form>
+              <table>
+                  <tbody id="import-progress">
+                  </tbody>
+              </table>
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
     </div>
@@ -26,11 +30,70 @@
 {{Block "footer"}}
 {{Super}}
 <script type="text/javascript" src="{{AssetsURL}}/js/dropzone/dropzone.min.js"></script>
-<script>
+<script type="text/template" id="tr-progressbar">
+<tr class="tr-progressbar">
+	<td colspan="12" style="padding:0">
+		<div class="progress-description"></div>
+		<div class="progress progress-striped" style="border-radius:0;background-color:#555">
+			<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+			<span class="sr-only">0%</span>
+			</div>
+		</div>
+	</td>
+</tr>
+</script>
+<script type="text/template" id="tr-error">
+<div class="alert alert-danger alert-white rounded">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <div class="icon"><i class="fa fa-times-circle"></i></div>
+    <strong>Error!</strong> <pre></pre>
+ </div>
+</script>
+<script type="text/javascript">
+function recv_notice_databaseImport(m){
+	var percent=m.progress?m.progress.percent.toFixed(2)*1:0;
+    if(m.status>0){
+        console.info('['+percent+'/100] '+m.content);
+    }else{
+        console.error('['+percent+'/100] '+m.content);
+    }
+	if(!m.progress) return;
+	var el='import-progress';
+	var box=$('#'+el);
+    var id=m.id;
+	if(box.length<1) return;
+	var pb=box.find('#tr-progressbar-'+id);
+	if(pb.length<1){
+		var pb=$($('#tr-progressbar').html());
+        pb.attr('id','tr-progressbar-'+id);
+        if(box.children('tr:first').length>0){
+		    box.children('tr:first').before(pb);
+        }else{
+		    box.html(pb);
+        }
+	}
+    if(m.status==0){
+        var e=$($('#tr-error').html());
+        e.find('pre').html(m.content);
+        pb.after(e);
+    }
+	var bar=pb.children('td').children('.progress').children('.progress-bar');
+	bar.css('width',percent+'%').attr('aria-valuenow',percent);
+	//bar.children('.sr-only').html('['+percent+'%] '+m.content);
+	pb.find('.progress-description').text(' ['+percent+'%] '+m.content);
+	if(percent>=100&&m.progress.complete){
+        pb.html('<tr><td>'+m.content+'</td></tr>');
+		App.message({title:App.i18n.SYS_INFO,text:m.content,
+		time:5000,sticky:false,class_name:'success'});
+	}
+}
 $(function(){
 
     $('#my-awesome-dropzone').dropzone({
-        url:'{{URI}}&clientID='+App.clientID['notify'],
+        url:'{{URI}}',
+        params: function(files){
+            return {clientID:App.clientID['notify'],id:files[0].upload.uuid};
+        },
         dictDefaultMessage:'{{"可以把sql文件拖到这里来进行上传哦"|T}}<p>{{"支持上传zip压缩包，系统会自动执行sql文件"|T}}<br />{{T "文件名如果包含单词%v则会被优先执行" `<code>struct</code>`|ToHTML}}</p>'
     });
 

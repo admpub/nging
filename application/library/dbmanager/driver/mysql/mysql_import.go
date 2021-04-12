@@ -58,20 +58,25 @@ func (m *mySQL) Import() error {
 			m.fail(m.T(`请选择数据库`))
 			return m.returnTo(m.GenURL(`listDb`))
 		}
+		noticeID := m.Form(`id`)
 		clientID := m.Form(`clientID`)
+		noticeMode := m.Form(`mode`, `element`)
 		user := handler.User(m.Context)
-		var noticer notice.Noticer
+		var noticer *notice.NoticeAndProgress
+		prog := notice.NewProgress()
 		if user != nil && len(clientID) > 0 {
 			noticerConfig := &notice.HTTPNoticerConfig{
 				User:     user.Username,
 				Type:     `databaseImport`,
 				ClientID: clientID,
+				ID:       noticeID,
+				Mode:     noticeMode,
 			}
-			noticer = noticerConfig.Noticer(m)
+			noticer = noticerConfig.Noticer(m).WithProgress(prog)
 		} else {
-			noticer = notice.DefaultNoticer
+			noticer = notice.DefaultNoticer.WithProgress(prog)
 		}
-		async := m.Formx(`async`).Bool()
+		async := m.Formx(`async`, `true`).Bool()
 		var sqlFiles []string
 		saveDir := TempDir(`import`)
 		err = m.SaveUploadedFiles(`file`, func(fdr *multipart.FileHeader) (string, error) {
@@ -89,9 +94,14 @@ func (m *mySQL) Import() error {
 		if err != nil {
 			return responseDropzone(err, m.Context)
 		}
-		noticer(m.T(`文件上传成功`), 1)
+		noticer.Success(m.T(`文件上传成功`))
 		cfg := *m.DbAuth
 		cfg.Db = m.dbName
+		coll, err := m.getCollation(m.dbName, nil)
+		if err != nil {
+			return err
+		}
+		cfg.Charset = strings.SplitN(coll, `_`, 2)[0]
 
 		imports := utils.Exec{}
 		bgExec := utils.NewGBExec(context.TODO(), echo.H{
@@ -109,26 +119,51 @@ func (m *mySQL) Import() error {
 		}
 		cacheKey := bgExec.Started.Format(`20060102150405`)
 		imports.Add(utils.OpImport, cacheKey, bgExec)
-		done := make(chan struct{})
-		ctx := m.Request().StdRequest().Context()
-		go func() {
-			for {
-				select {
-				case <-ctx.Done():
-					bgExec.Cancel()()
-					return
-				case <-done:
-					return
+		if async {
+			go func() {
+				t := time.NewTicker(24 * time.Hour)
+				defer t.Stop()
+				for {
+					select {
+					case <-t.C:
+						bgExec.Cancel()()
+						return
+					default:
+						err := utils.Import(bgExec.Context(), noticer, &cfg, TempDir(`import`), sqlFiles)
+						if err != nil {
+							noticer.Failure(m.T(`导入失败`) + `: ` + err.Error())
+							noticer.Complete().Failure(m.T(`导入结束 :(`))
+						} else {
+							noticer.Complete().Success(m.T(`导入结束 :)`))
+						}
+						imports.Cancel(cacheKey)
+						return
+					}
 				}
+			}()
+			noticer.Success(m.T(`正在后台导入，请稍候...`))
+		} else {
+			done := make(chan struct{})
+			ctx := m.Request().StdRequest().Context()
+			go func() {
+				for {
+					select {
+					case <-ctx.Done():
+						bgExec.Cancel()()
+						return
+					case <-done:
+						return
+					}
+				}
+			}()
+			err = utils.Import(bgExec.Context(), noticer, &cfg, TempDir(`import`), sqlFiles)
+			if err != nil {
+				noticer.Failure(m.T(`导入失败`) + `: ` + err.Error())
 			}
-		}()
-		err = utils.Import(bgExec.Context(), noticer, &cfg, TempDir(`import`), sqlFiles, async)
-		if err != nil {
-			noticer(m.T(`导入失败`)+`: `+err.Error(), 0)
+			imports.Cancel(cacheKey)
+			done <- struct{}{}
+			close(done)
 		}
-		imports.Cancel(cacheKey)
-		done <- struct{}{}
-
 		return responseDropzone(err, m.Context)
 	}
 

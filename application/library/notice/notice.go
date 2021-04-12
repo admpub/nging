@@ -108,6 +108,9 @@ func (p *Progress) SetControl(control IsExited) *Progress {
 func (p *Progress) CalcPercent() *Progress {
 	if p.Total > 0 {
 		p.Percent = (float64(p.Finish) / float64(p.Total)) * 100
+		if p.Percent < 0 {
+			p.Percent = 0
+		}
 	} else if p.Total == 0 {
 		p.Percent = 100
 	} else {
