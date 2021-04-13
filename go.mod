@@ -72,7 +72,7 @@ require (
 	github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2
 	github.com/admpub/web-terminal v0.0.1
 	github.com/admpub/websocket v1.0.4
-	github.com/aws/aws-sdk-go v1.38.11
+	github.com/aws/aws-sdk-go v1.38.18
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
@@ -110,7 +110,7 @@ require (
 	github.com/markbates/goth v1.66.0 // indirect
 	github.com/mattn/go-runewidth v0.0.12
 	github.com/mholt/certmagic v0.8.3
-	github.com/microcosm-cc/bluemonday v1.0.5
+	github.com/microcosm-cc/bluemonday v1.0.7
 	github.com/minio/minio-go v6.0.14+incompatible
 	github.com/oschwald/maxminddb-golang v1.7.0 // indirect
 	github.com/pkg/sftp v1.13.0
