@@ -31,7 +31,7 @@ func TestUpdateEmbedded(t *testing.T) {
 	config.DefaultConfig.SetDebug(true)
 	config.DefaultConfig.ConnectedDB()
 	e := echo.New()
-	e.Use(mw.Tansaction())
+	e.Use(mw.Transaction())
 	req, resp := myTesting.NewRequestAndResponse(`GET`, `/`)
 	ctx := e.NewContext(req, resp)
 	ctx.SetTransaction(factory.NewParam())

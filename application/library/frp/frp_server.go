@@ -33,6 +33,7 @@ import (
 	_ "github.com/admpub/frp/assets/frpc/statik"
 	_ "github.com/admpub/frp/assets/frps/statik"
 	"github.com/admpub/frp/pkg/config"
+	plugin "github.com/admpub/frp/pkg/plugin/server"
 	frpLog "github.com/admpub/frp/pkg/util/log"
 	"github.com/admpub/frp/pkg/util/util"
 	"github.com/admpub/frp/server"
@@ -56,6 +57,11 @@ func SetServerConfigFromDB(conf *dbschema.NgingFrpServer) *config.ServerCommonCo
 	c.DashboardPort = int(conf.DashboardPort)
 	c.DashboardUser = conf.DashboardUser
 	c.DashboardPwd = conf.DashboardPwd
+
+	// TODO:
+	//c.EnablePrometheus = false
+	//c.AssetsDir = ``
+
 	c.LogFile = conf.LogFile
 	c.LogWay = conf.LogWay
 	if c.LogWay == `console` {
@@ -67,8 +73,25 @@ func SetServerConfigFromDB(conf *dbschema.NgingFrpServer) *config.ServerCommonCo
 	}
 	c.LogLevel = conf.LogLevel
 	c.LogMaxDays = int64(conf.LogMaxDays)
+	c.DisableLogColor = true
+	c.DetailedErrorsToClient = true
+	c.Custom404Page = ``
 	c.Token = conf.Token
+
+	// TODO:
+	// c.AuthenticationMethod = `token`
+	// c.AuthenticateHeartBeats = false
+	// c.AuthenticateNewWorkConns = false
+	// c.OidcIssuer = ""
+	// c.OidcAudience = ""
+	// c.OidcSkipExpiryCheck = false
+	// c.OidcSkipIssuerCheck = false
+
 	c.SubDomainHost = conf.SubdomainHost
+	c.MaxPoolCount = int64(conf.MaxPoolCount)
+	if c.MaxPoolCount < 1 {
+		c.MaxPoolCount = 5
+	}
 	c.MaxPortsPerClient = int64(conf.MaxPortsPerClient)
 	c.TCPMux = conf.TcpMux == `Y`
 
@@ -77,6 +100,25 @@ func SetServerConfigFromDB(conf *dbschema.NgingFrpServer) *config.ServerCommonCo
 	for _, port := range ports {
 		c.AllowPorts[int(port)] = struct{}{}
 	}
+
+	// TODO:
+	// c.TLSOnly = conf.TlsOnly
+	// c.TLSCertFile = conf.TlsCertFile
+	// c.TLSKeyFile = conf.TlsKeyFile
+	// c.TLSTrustedCaFile = conf.TlsTrustedCaFile
+
+	c.HeartbeatTimeout = int64(conf.HeartBeatTimeout)
+	if c.HeartbeatTimeout < 1 {
+		c.HeartbeatTimeout = 90
+	}
+	c.UserConnTimeout = int64(conf.UserConnTimeout)
+	if c.UserConnTimeout < 1 {
+		c.UserConnTimeout = 10
+	}
+	if c.HTTPPlugins == nil {
+		c.HTTPPlugins = map[string]plugin.HTTPPluginOptions{}
+	}
+	c.UDPPacketSize = 1500
 	return &c
 }
 

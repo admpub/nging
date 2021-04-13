@@ -96,5 +96,9 @@ func GenPassword(ctx echo.Context) error {
 	if err != nil {
 		return ctx.String(err.Error(), http.StatusInternalServerError)
 	}
-	return ctx.HTML(`<pre>` + pwd + `</pre>`)
+	switch ctx.Format() {
+	case echo.ContentTypeHTML, echo.ContentTypeXML:
+		pwd = com.HTMLEncode(pwd)
+	}
+	return ctx.String(pwd)
 }

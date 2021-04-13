@@ -24,13 +24,13 @@ import (
 
 var TopNavigate = navigate.List{
 	{
-		DisplayOnMenu: true,
-		Name:          `附件管理`,
-		Action:        `file/list`,
+		Display: true,
+		Name:    `附件管理`,
+		Action:  `file/list`,
 	},
 	{
-		DisplayOnMenu: false,
-		Name:          `删除附件`,
-		Action:        `file/delete/:id`,
+		Display: false,
+		Name:    `删除附件`,
+		Action:  `file/delete/:id`,
 	},
 }

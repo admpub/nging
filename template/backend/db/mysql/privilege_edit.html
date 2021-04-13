@@ -100,7 +100,7 @@ MySQL grant 权限，分别可以作用在多个层次上
                                 <strong>*.*</strong>
                                 {{else}}
                                 {{$grant := getScope $object}}
-                                <div class="input-group no-margin-bottom">
+                                <div class="input-group">
                                 <span class="input-group-addon">{{"作用范围"|T}}</span>
                                 <select id="select-priv-type-{{$k}}" name="scopes[]" data-col="{{$k}}" class="select-priv-type form-control">
                                     <option value=""{{if eq $grant.Scope ""}} selected{{end}}>{{"无"|T}}</option>
@@ -113,7 +113,7 @@ MySQL grant 权限，分别可以作用在多个层次上
                                     <option value="proxy"{{if eq $grant.Scope "proxy"}} selected{{end}}>{{"代理"|T}}</option>
                                 </select>
                                 </div>
-                                <div class="input-group no-margin-bottom onselect-priv-type" id="onselect-priv-type-{{$k}}">
+                                <div class="input-group onselect-priv-type" id="onselect-priv-type-{{$k}}">
                                 <span class="input-group-addon proxy-user" title="{{"用户名@主机"|T}}">{{"用户"|T}}</span>
                                 <input data-original="{{if eq $grant.Scope "proxy"}}{{$object}}{{end}}" type='hidden' id="objects-{{$k}}" class="form-control proxy-user" name='objects[]' value='{{$object}}'>
                                 <span class="input-group-addon database-name">{{"库名"|T}}</span>
@@ -124,7 +124,7 @@ MySQL grant 权限，分别可以作用在多个层次上
                                 <input id='input-column-{{$k}}' name="columns[]" data-col="{{$k}}" class="form-control column-name" value='{{$grant.Columns}}' pattern='^[a-zA-Z0-9_]+(,[a-zA-Z0-9_]+)*$' title="{{"列名仅支持输入字母、数字、下划线，多列请用半角逗号隔开"|T}}">
                                 </div>
                                 <!-- 
-                                <div class="input-group no-margin-bottom">
+                                <div class="input-group">
                                 <input name='objects[]' class="form-control" value='{{$object}}' size='10' autocapitalize='off'>
                                 <a href="javascript:;" onclick="$('#grant-tips').toggleClass('hidden');" class="input-group-addon"><i class="fa fa-question-circle"></i></a>
                                 </div>

@@ -20,17 +20,20 @@ package navigate
 
 import (
 	"path"
+
+	"github.com/webx-top/echo"
 )
 
 //Item 操作
 type Item struct {
-	DisplayOnMenu bool   `json:",omitempty" xml:",omitempty"` //是否在菜单三显示
-	Name          string `json:",omitempty" xml:",omitempty"` //名称
-	Action        string `json:",omitempty" xml:",omitempty"` //操作(一般为网址)
-	Icon          string `json:",omitempty" xml:",omitempty"` //图标
-	Target        string `json:",omitempty" xml:",omitempty"` //打开方式
-	Unlimited     bool   `json:",omitempty" xml:",omitempty"` //是否不限制权限
-	Children      *List  `json:",omitempty" xml:",omitempty"`
+	Display    bool        `json:",omitempty" xml:",omitempty"` //是否在菜单上显示
+	Name       string      `json:",omitempty" xml:",omitempty"` //名称
+	Action     string      `json:",omitempty" xml:",omitempty"` //操作(一般为网址)
+	Icon       string      `json:",omitempty" xml:",omitempty"` //图标
+	Target     string      `json:",omitempty" xml:",omitempty"` //打开方式
+	Unlimited  bool        `json:",omitempty" xml:",omitempty"` //是否不限制权限
+	Attributes echo.KVList `json:",omitempty" xml:",omitempty"` //HTML标签a属性
+	Children   *List       `json:",omitempty" xml:",omitempty"` //子菜单
 }
 
 func (a *Item) FullPath(parentPath string) string {

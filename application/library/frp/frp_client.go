@@ -27,9 +27,28 @@ func SetClientConfigFromDB(conf *dbschema.NgingFrpClient) *config.ClientCommonCo
 	c := config.GetDefaultClientConf()
 	c.ServerAddr = conf.ServerAddr
 	c.ServerPort = int(conf.ServerPort)
-	c.User = conf.User
 	c.Protocol = conf.Protocol
+	c.User = conf.User
 	c.Token = conf.Token
+
+	// TODO:
+	// c.AuthenticationMethod = `token`
+	// c.AuthenticateHeartBeats = false
+	// c.AuthenticateNewWorkConns = false
+	// c.OidcClientID = ""
+	// c.OidcClientSecret = ""
+	// c.OidcAudience = ""
+	// c.OidcTokenEndpointURL = ""
+	// c.AssetsDir = ``
+	// TODO:
+	// c.TLSEnable = conf.TlsEnable
+	// c.TLSCertFile = conf.TlsCertFile
+	// c.TLSKeyFile = conf.TlsKeyFile
+	// c.TLSTrustedCaFile = conf.TlsTrustedCaFile
+	// c.TLSServerName = conf.TlsServerName
+
+	c.DisableLogColor = true
+
 	c.LogLevel = conf.LogLevel
 	c.LogFile = conf.LogFile
 	c.LogMaxDays = int64(conf.LogMaxDays)
@@ -58,6 +77,10 @@ func SetClientConfigFromDB(conf *dbschema.NgingFrpClient) *config.ClientCommonCo
 			c.Start = append(c.Start, strings.TrimSpace(name))
 		}
 	}
+	if c.Metas == nil {
+		c.Metas = map[string]string{}
+	}
+	c.UDPPacketSize = 1500
 	return &c
 }
 
@@ -137,6 +160,8 @@ func RecvProxyConfig(data map[string]interface{}) (recv config.ProxyConf) {
 		recv = &config.STCPProxyConf{}
 	case consts.XTCPProxy:
 		recv = &config.XTCPProxyConf{}
+	case consts.SUDPProxy:
+		recv = &config.SUDPProxyConf{}
 	default:
 		log.Errorf(`[frp]Unsupported Proxy Type: %v`, proxyType)
 		return

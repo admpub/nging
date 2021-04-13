@@ -42,7 +42,7 @@
             {{$dbList := Stored.Get "dbList"}}
             {{$dbName := Stored.Get "dbName"}}
             {{if $dbList}}
-            <div class="input-group no-margin-bottom">
+            <div class="input-group">
               <span class="input-group-addon">{{"数据库"|T}}</span>
               <select name="db" class="form-control" id="dbmanager-db-list">
                 <option value="">{{if $dbName}}{{"<其它库>"|}}{{else}}{{"<未选择>"|}}{{end}}</option><!-- 对于有很多库的情况下如果总是全部列出来会很慢，所以改为只列出选中的数据库，没选中任何库的时候才全部列出 -->

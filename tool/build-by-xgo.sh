@@ -14,6 +14,15 @@ reset() {
     export TMPDIR=
     export NGINGEX=
     export BUILDTAGS=
+    export MINIFYFLAG=
+}
+
+open_minify(){
+    export MINIFYFLAG="-s -w"
+}
+
+close_minify(){
+    export MINIFYFLAG=""
 }
 
 all() {
@@ -101,6 +110,14 @@ windows_amd64() {
 
 reset
 
+case "$2" in
+    "min"|"m")
+    open_minify
+    ;;
+    *)
+    close_minify
+esac
+
 case "$1" in
     "linux_amd64")
         linux_amd64
@@ -128,6 +145,10 @@ case "$1" in
         ;;
     "windows_amd64")
         windows_amd64
+        ;;
+    "min"|"m")
+        open_minify
+        all
         ;;
     *)
         all

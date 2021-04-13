@@ -166,6 +166,13 @@ func ProxyConfigFromForm(prefix string, data url.Values) (visitor echo.H, proxy 
 			recv.Role = m.Value(`role`)
 			recv.Sk = m.Value(`sk`)
 			value = recv
+		case consts.SUDPProxy:
+			recv := &config.SUDPProxyConf{
+				BaseProxyConf: baseC,
+			}
+			recv.Role = m.Value(`role`)
+			recv.Sk = m.Value(`sk`)
+			value = recv
 		default:
 			log.Errorf(`[frp]"%s" is unsupported`, baseC.ProxyType)
 			continue

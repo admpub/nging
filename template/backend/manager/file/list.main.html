@@ -17,19 +17,19 @@
 				{{end}}
 			<div class="row no-margin">
 				<div class="form-group col-sm-3 no-margin xs-margin-top no-padding">
-				<div class="input-group no-margin-bottom">
+				<div class="input-group">
 					<span class="input-group-addon">{{"文件名称"|T}}</span>
 					<input type="text" id="saveName" class="form-control" name="saveName" value="{{Form `saveName`}}">
 				</div>
 				</div>
 				<div class="form-group col-sm-3 no-margin xs-margin-top no-padding">
-				<div class="input-group no-margin-bottom">
+				<div class="input-group">
 					<span class="input-group-addon">{{"上传时间"|T}}</span>
 					<input type="text" id="timerange" class="form-control" name="timerange" value="{{Form `timerange`}}">
 				</div>
 				</div>
 				<div class="form-group col-sm-2 no-margin xs-margin-top no-padding">
-				<div class="input-group no-margin-bottom">
+				<div class="input-group">
 					<span class="input-group-addon no-padding no-border"><select name="ownerType" class="form-control" id="ownerType" onchange="ownerTypeChange(this)" style="width:100px">
 						<option value="">-{{"用户类型"|T}}-</option>
 						{{- $ownerType := Form "ownerType" -}}
@@ -41,7 +41,7 @@
 				</div>
 				{{- if not $dialog -}}
 				<div class="form-group col-sm-2 no-margin xs-margin-top no-padding">
-				<div class="input-group no-margin-bottom">
+				<div class="input-group">
 					<span class="input-group-addon">{{"文件类型"|T}}</span>
 					<select name="type" class="form-control" id="type">
 						<option value="">-{{"不限"|T}}-</option>
@@ -54,7 +54,7 @@
 				</div>
 				{{- end -}}
 				<div class="form-group col-sm-2 no-margin xs-margin-top no-padding">
-				<div class="input-group no-margin-bottom">
+				<div class="input-group">
 					<span class="input-group-addon">{{"使用状态"|T}}</span>
 					<select name="used" class="form-control" id="used">
 						<option value="">-{{"不限"|T}}-</option>

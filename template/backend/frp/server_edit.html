@@ -21,7 +21,7 @@
         <form class="form-horizontal group-border-dashed" method="POST" action="">
           <div class="form-group">
             <label class="col-sm-2 control-label">{{"状态"|T}}</label>
-            <div class="col-sm-8">
+            <div class="col-sm-9">
               {{$v := Form "disabled"}}
               <div class="radio radio-primary radio-inline"> 
                 <input type="radio" value="N" id="disabled-N" name="disabled"{{if or (eq $v "N") (eq $v "")}} checked{{end}}><label for="disabled-N">{{"启用"|T}}</label> 
@@ -32,8 +32,12 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-2 control-label">{{"配置组"|T}}</label>
-            <div class="col-sm-8">
+            <label class="col-sm-2 control-label">{{"名称"|T}}</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control" name="name" value="{{Form "name"}}">
+            </div>
+            <label class="col-sm-1 control-label">{{"配置组"|T}}</label>
+            <div class="col-sm-4">
               {{$v := Form "groupId"}}
               <select class="form-control" name="groupId">
                 <option value="">{{"<无>"|T}}</option>
@@ -44,14 +48,8 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-2 control-label">{{"名称"|T}}</label>
-            <div class="col-sm-8">
-              <input type="text" class="form-control" name="name" value="{{Form "name"}}" autocomplete="off">
-            </div>
-          </div>
-          <div class="form-group">
             <label class="col-sm-2 control-label">{{"监听地址"|T}}</label>
-            <div class="col-sm-8">
+            <div class="col-sm-9">
               <div class="input-group">
                 <div class="input-group-addon">{{"主机"|T}}</div>
                 <input type="text" class="form-control" name="addr" value="{{Form "addr" "0.0.0.0"}}">
@@ -60,7 +58,7 @@
           </div>
           <div class="form-group">
             <label class="col-sm-2 control-label">{{"监听端口"|T}}</label>
-            <div class="col-sm-8">
+            <div class="col-sm-9">
               <div class="input-group">
                 <div class="input-group-addon">{{"TCP端口"|T}}</div>
                 <input type="text" class="form-control" name="port" value="{{Form "port" "7000"}}">
@@ -77,14 +75,14 @@
           </div>
           <div class="form-group">
             <label class="col-sm-2 control-label">{{"代理地址"|T}}</label>
-            <div class="col-sm-8">
+            <div class="col-sm-9">
               <input type="text" class="form-control" name="proxyAddr" value="{{Form "proxyAddr"}}">
               <div class="help-block">{{"指定要代理侦听的地址，可以与“监听地址”相同"|T}}</div>
             </div>
           </div>
           <div class="form-group">
             <label class="col-sm-2 control-label">{{"虚拟主机"|T}}</label>
-            <div class="col-sm-8">
+            <div class="col-sm-9">
               <div class="input-group">
                 <div class="input-group-addon">{{"HTTP端口"|T}}</div>
                 <input type="text" class="form-control" name="vhostHttpPort" value="{{Form "vhostHttpPort"}}">
@@ -101,8 +99,8 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-2 control-label">{{"日志输出方式"|T}}</label>
-            <div class="col-sm-8">
+            <label class="col-sm-2 control-label">{{"日志输出"|T}}</label>
+            <div class="col-sm-4">
               {{$v := Form "logWay"}}
               <div class="radio radio-primary radio-inline"> 
                 <input type="radio" value="console" id="disabled-console" name="logWay"{{if or (eq $v "console") (eq $v "")}} checked{{end}}><label for="disabled-console">{{"输出到控制台"|T}}</label> 
@@ -111,25 +109,8 @@
                 <input type="radio" value="file" id="logWay-file" name="logWay"{{if eq $v "file"}} checked{{end}}><label for="logWay-file">{{"输出到文件"|T}}</label> 
               </div>
             </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">{{"日志文件"|T}}</label>
-            <div class="col-sm-8">
-                <input type="text" class="form-control typeahead" data-provide="typeahead" id="logFile" name="logFile" value="{{Form "logFile"}}">
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">{{"日志保留天数"|T}}</label>
-            <div class="col-sm-8">
-              <div class="input-group">
-                <input type="text" class="form-control" id="logMaxDays" name="logMaxDays" value="{{Form "logMaxDays" "3"}}">
-                <div class="input-group-addon">{{"天"|T}}</div>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">{{"日志记录级别"|T}}</label>
-            <div class="col-sm-8">
+            <label class="col-sm-1 control-label">{{"记录级别"|T}}</label>
+            <div class="col-sm-4">
               {{$v := Form "logLevel"}}
               <div class="radio radio-info radio-inline"> 
                 <input type="radio" value="info" id="logLevel-info" name="logLevel"{{if or (eq $v "info") (eq $v "")}} checked{{end}}><label for="logLevel-info">info</label> 
@@ -149,16 +130,36 @@
             </div>
           </div>
           <div class="form-group">
+            <label class="col-sm-2 control-label">{{"日志文件"|T}}</label>
+            <div class="col-sm-4">
+              <input type="text" class="form-control typeahead" data-provide="typeahead" id="logFile" name="logFile" value="{{Form "logFile"}}">
+            </div>
+            <label class="col-sm-1 control-label">{{"保留"|T}}</label>
+            <div class="col-sm-4">
+              <div class="input-group">
+                <input type="text" class="form-control" id="logMaxDays" name="logMaxDays" value="{{Form "logMaxDays" "3"}}">
+                <div class="input-group-addon">{{"天"|T}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
             <label class="col-sm-2 control-label">{{"令牌"|T}}</label>
-            <div class="col-sm-8">
+            <div class="col-sm-4">
                 <input type="text" class="form-control" id="token" name="token" value="{{Form "token"}}" placeholder="">
                 <div class="help-block">
                   {{"安全验证口令"|T}}
                 </div>
             </div>
+            <label class="col-sm-1 control-label">{{"根域名"|T}}</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="subdomainHost" name="subdomainHost" value="{{Form "subdomainHost"}}" placeholder="coscms.com">
+                <div class="help-block">
+                  {{"指定子域名所需的根域名。例如：coscms.com"|T}}
+                </div>
+            </div>
           </div>
           <!-- <div class="form-group">
-            <label class="col-sm-2 control-label">{{"认证超时时长"|T}}</label>
+            <label class="col-sm-1 control-label">{{"认证超时时长"|T}}</label>
             <div class="col-sm-8">
               <div class="input-group">
                 <input type="text" class="form-control" id="authTimeout" name="authTimeout" value="{{Form "authTimeout" "900"}}">
@@ -167,32 +168,12 @@
             </div>
           </div> -->
           <div class="form-group">
-            <label class="col-sm-2 control-label">{{"根域名"|T}}</label>
-            <div class="col-sm-8">
-                <input type="text" class="form-control" id="subdomainHost" name="subdomainHost" value="{{Form "subdomainHost"}}" placeholder="coscms.com">
-                <div class="help-block">
-                  {{"指定子域名所需的根域名。例如：coscms.com"|T}}
-                </div>
-            </div>
-          </div>
-          <div class="form-group">
             <label class="col-sm-2 control-label">{{"连接池容量"|T}}</label>
-            <div class="col-sm-8">
+            <div class="col-sm-4">
                 <input type="text" class="form-control" id="maxPoolCount" name="maxPoolCount" value="{{Form "maxPoolCount" "5"}}">
             </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">{{"心跳超时"|T}}</label>
-            <div class="col-sm-8">
-              <div class="input-group">
-                <input type="text" class="form-control" id="heartBeatTimeout" name="heartBeatTimeout" value="{{Form "heartBeatTimeout"}}">
-                <div class="input-group-addon">{{"秒"|T}}</div>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">{{"连接超时"|T}}</label>
-            <div class="col-sm-8">
+            <label class="col-sm-1 control-label">{{"连接超时"|T}}</label>
+            <div class="col-sm-4">
               <div class="input-group">
                 <input type="text" class="form-control" id="userConnTimeout" name="userConnTimeout" value="{{Form "userConnTimeout"}}">
                 <div class="input-group-addon">{{"秒"|T}}</div>
@@ -200,22 +181,28 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-2 control-label">{{"端口数量限制"|T}}</label>
-            <div class="col-sm-8">
+            <label class="col-sm-2 control-label">{{"端口数量"|T}}</label>
+            <div class="col-sm-4">
                 <input type="text" class="form-control" id="maxPortsPerClient" name="maxPortsPerClient" value="{{Form "maxPortsPerClient"}}">
                 <div class="help-block">{{"每个客户端最多可用的端口数量"|T}}</div>
             </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">{{"可用端口"|T}}</label>
-            <div class="col-sm-8">
+            <label class="col-sm-1 control-label">{{"可用端口"|T}}</label>
+            <div class="col-sm-4">
                 <input type="text" class="form-control" id="allowPorts" name="allowPorts" value="{{Form "allowPorts"}}">
                 <div class="help-block">{{"多个端口用“,”隔开，同时支持用“-”来指定范围。例如：8001,8002,8005-8010"|T}}</div>
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-2 control-label">{{"MUX"|T}}</label>
-            <div class="col-sm-8">
+            <label class="col-sm-2 control-label">{{"心跳超时"|T}}</label>
+            <div class="col-sm-4">
+              <div class="input-group">
+                <input type="text" class="form-control" id="heartBeatTimeout" name="heartBeatTimeout" value="{{Form "heartBeatTimeout"}}">
+                <div class="input-group-addon">{{"秒"|T}}</div>
+              </div>
+              <div class="help-block">{{"默认90。一般不需要设置"|T}}</div>
+            </div>
+            <label class="col-sm-1 control-label">{{"MUX"|T}}</label>
+            <div class="col-sm-4">
               {{$v := Form "tcpMux"}}
               <div class="radio radio-primary radio-inline"> 
                 <input type="radio" value="Y" id="tcpMux-Y" name="tcpMux"{{if or (eq $v "Y") (eq $v "")}} checked{{end}}><label for="tcpMux-Y">{{"启用"|T}}</label> 
@@ -228,7 +215,7 @@
           </div>
           <div class="form-group">
               <label class="col-sm-2 control-label">{{"管理地址"|T}}</label>
-              <div class="col-sm-8">
+              <div class="col-sm-9">
                   <div class="input-group">
                     <div class="input-group-addon">{{"主机"|T}}</div>
                     <input type="text" class="form-control" id="dashboardAddr" name="dashboardAddr" value="{{Form "dashboardAddr" "0.0.0.0"}}">
@@ -242,7 +229,7 @@
             </div>
           <div class="form-group">
               <label class="col-sm-2 control-label">{{"管理账号"|T}}</label>
-              <div class="col-sm-8">
+              <div class="col-sm-9">
                   <div class="input-group">
                     <div class="input-group-addon">{{"账号"|T}}</div>
                     <input type="text" class="form-control" id="dashboardUser" name="dashboardUser" value="{{Form "dashboardUser" "admin"}}">

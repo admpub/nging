@@ -166,7 +166,7 @@ func init() {
 		e.Use(middleware.Validate(echo.NewValidation))
 
 		// 事物支持
-		e.Use(ngingMW.Tansaction())
+		e.Use(ngingMW.Transaction())
 		// 注册模板引擎
 		renderOptions := &render.Config{
 			TmplDir: TemplateDir,

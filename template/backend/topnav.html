@@ -50,7 +50,7 @@
           
           {{- $topNavigate := Navigate "top" -}}
           {{- range $key, $nav := $topNavigate -}}
-          {{- if and $nav $nav.DisplayOnMenu -}}
+          {{- if and $nav $nav.Display -}}
           <li class="dropdown">
             {{- if $nav.Children -}}
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -59,9 +59,9 @@
             </a>
             <ul class="dropdown-menu from-top">
               {{- range $k, $c := $nav.Children -}}
-              {{- if and $c $c.DisplayOnMenu -}}
+              {{- if and $c $c.Display -}}
               <li>
-                <a{{if eq $c.Target "ajax"}} href="javascript:;" data-ajax-url="{{BackendURL}}/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{else}} href="{{BackendURL}}/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if ne $c.Target "redirect"}} data-pjax="#main-container" data-keepjs="true" data-marknav="top"{{end}}{{end}}>
+                <a{{if eq $c.Target "ajax"}} href="javascript:;" data-ajax-url="{{BackendURL}}/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{else}} href="{{BackendURL}}/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if ne $c.Target "redirect"}} data-pjax="#main-container" data-keepjs="true" data-marknav="top"{{end}}{{end}}{{range $ai,$av:=$c.Attributes}} {{$av.K|ToHTMLAttr}}="{{$av.V}}"{{end}}>
                 {{- if eq $c.Icon "plus" -}}
                 <span class="label label-primary pull-right">+</span>
                 {{- end -}}
@@ -72,7 +72,7 @@
               {{- end -}}
             </ul>
             {{- else -}}
-            <a{{if eq $nav.Target "ajax"}} href="javascript:;" data-ajax-url="{{BackendURL}}/{{$nav.Action}}"{{else}} href="{{BackendURL}}/{{$nav.Action}}"{{if ne $nav.Target "redirect"}} data-pjax="#main-container" data-keepjs="true" data-marknav="true"{{end}}{{end}}>
+            <a{{if eq $nav.Target "ajax"}} href="javascript:;" data-ajax-url="{{BackendURL}}/{{$nav.Action}}"{{else}} href="{{BackendURL}}/{{$nav.Action}}"{{if ne $nav.Target "redirect"}} data-pjax="#main-container" data-keepjs="true" data-marknav="true"{{end}}{{end}}{{range $ai,$av:=$nav.Attributes}} {{$av.K|ToHTMLAttr}}="{{$av.V}}"{{end}}>
                 <i class="fa fa-{{$nav.Icon|Default "gear"}}"></i>
                 {{$nav.Name}} <b class="caret"></b>
               </a>

@@ -1,6 +1,6 @@
 {{Strip}}
               {{- range $key, $nav := . -}}
-              {{- if and $nav $nav.DisplayOnMenu -}}
+              {{- if and $nav $nav.Display -}}
               <li>
                 <a href="javascript:;">
                   <i class="fa fa-{{$nav.Icon}} nav-icon"></i>
@@ -8,9 +8,9 @@
                 </a>
                 <ul class="sub-menu from-left">
                   {{- range $k, $c := $nav.Children -}}
-                  {{- if $c.DisplayOnMenu -}}
+                  {{- if $c.Display -}}
                   <li>
-                    <a{{if eq $c.Target "ajax"}} href="javascript:;" data-ajax-url="{{BackendURL}}/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{else}} href="{{BackendURL}}/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if $c.Target}} target="{{$c.Target}}"{{else}} data-pjax="#main-container" data-keepjs="true" data-marknav="left"{{end}}{{end}}>
+                    <a{{if eq $c.Target "ajax"}} href="javascript:;" data-ajax-url="{{BackendURL}}/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{else}} href="{{BackendURL}}/{{$nav.Action}}{{if $c.Action}}/{{$c.Action}}{{end}}"{{if $c.Target}} target="{{$c.Target}}"{{else}} data-pjax="#main-container" data-keepjs="true" data-marknav="left"{{end}}{{end}}{{range $ai,$av:=$c.Attributes}} {{$av.K|ToHTMLAttr}}="{{$av.V}}"{{end}}>
                       {{- if eq $c.Icon "plus"}}
                       <span class="label label-primary pull-right">+</span>
                       {{- else if eq $c.Target "_blank"}}
