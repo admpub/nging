@@ -285,7 +285,7 @@ github.com/andybalholm/cascadia
 github.com/armon/go-socks5
 # github.com/asaskevich/govalidator v0.0.0-20200907205600-7a23bdc65eef
 github.com/asaskevich/govalidator
-# github.com/aws/aws-sdk-go v1.38.11
+# github.com/aws/aws-sdk-go v1.38.18
 ## explicit
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
@@ -342,6 +342,7 @@ github.com/aws/aws-sdk-go/service/sts/stsiface
 ## explicit
 # github.com/aymerick/douceur v0.2.0
 github.com/aymerick/douceur/css
+github.com/aymerick/douceur/parser
 # github.com/beorn7/perks v1.0.1
 github.com/beorn7/perks/quantile
 # github.com/bitly/go-simplejson v0.5.0
@@ -432,8 +433,6 @@ github.com/cenkalti/backoff/v4
 github.com/cespare/xxhash/v2
 # github.com/cheekybits/genny v1.0.0
 github.com/cheekybits/genny/generic
-# github.com/chris-ramon/douceur v0.2.0
-github.com/chris-ramon/douceur/parser
 # github.com/chromedp/cdproto v0.0.0-20210323015217-0942afbea50e
 ## explicit
 github.com/chromedp/cdproto
@@ -756,7 +755,7 @@ github.com/matttproud/golang_protobuf_extensions/pbutil
 # github.com/mholt/certmagic v0.8.3 => github.com/caddyserver/certmagic v0.8.3
 ## explicit
 github.com/mholt/certmagic
-# github.com/microcosm-cc/bluemonday v1.0.5
+# github.com/microcosm-cc/bluemonday v1.0.7
 ## explicit
 github.com/microcosm-cc/bluemonday
 # github.com/miekg/dns v1.1.27
