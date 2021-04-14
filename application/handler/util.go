@@ -100,7 +100,7 @@ func User(ctx echo.Context) *dbschema.NgingUser {
 	if ok && user != nil {
 		return user
 	}
-	user, ok = ctx.Get(`user`).(*dbschema.NgingUser)
+	user, ok = ctx.Session().Get(`user`).(*dbschema.NgingUser)
 	if ok {
 		ctx.Internal().Set(`user`, user)
 	}
