@@ -33,6 +33,28 @@ var LeftNavigate = &navigate.Item{
 			Name:    `删除服务端配置`,
 			Action:  `server_delete`,
 		},
+
+		{
+			Display: true,
+			Name:    `账号管理`,
+			Action:  `account`,
+		},
+		{
+			Display: false,
+			Name:    `添加FRP账号`,
+			Action:  `account_add`,
+		},
+		{
+			Display: false,
+			Name:    `修改FRP账号`,
+			Action:  `account_edit`,
+		},
+		{
+			Display: false,
+			Name:    `删除FRP账号`,
+			Action:  `account_delete`,
+		},
+
 		{
 			Display: true,
 			Name:    `客户端配置`,

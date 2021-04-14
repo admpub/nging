@@ -19,7 +19,7 @@ var (
 func GetOk() (*Info, bool) {
 	storerConfig, ok := echo.Get(StorerInfoKey).(*Info)
 	if !ok {
-		storerConfig, ok = echo.GetStore(`NgingConfig`).Store(`base`).Get(`storer`).(*Info)
+		storerConfig, ok = echo.GetStore(`NgingConfig`).GetStore(`base`).Get(`storer`).(*Info)
 	}
 	return storerConfig, ok
 }
@@ -33,7 +33,7 @@ func Get() Info {
 }
 
 func GetWatermarkOptions() *image.WatermarkOptions {
-	options, ok := echo.GetStore(`NgingConfig`).Store(`base`).Get(`watermark`).(*image.WatermarkOptions)
+	options, ok := echo.GetStore(`NgingConfig`).GetStore(`base`).Get(`watermark`).(*image.WatermarkOptions)
 	if ok {
 		return options
 	}

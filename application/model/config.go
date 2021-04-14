@@ -122,7 +122,7 @@ func (f *Config) ListAllMapByGroup() (echo.H, error) {
 		if _, _y := cfg[v.Group]; !_y {
 			cfg[v.Group] = echo.H{}
 		}
-		cfg.Store(v.Group).Set(v.Key, v)
+		cfg.GetStore(v.Group).Set(v.Key, v)
 	}
 	return cfg, err
 }

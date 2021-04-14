@@ -92,7 +92,7 @@ func ErrorPageFunc(c echo.Context) error {
 		return configs
 	})
 	var siteURI *url.URL
-	siteURL := configs.Store(`base`).String(`siteURL`)
+	siteURL := configs.GetStore(`base`).String(`siteURL`)
 	if len(siteURL) > 0 {
 		siteURI, _ = url.Parse(siteURL)
 	}

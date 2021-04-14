@@ -8,7 +8,10 @@ import (
 	"strings"
 )
 
-var defaultRoute = &Route{}
+var (
+	defaultRoute = &Route{}
+	emptyMeta    = H{}
+)
 
 type (
 	Router struct {
@@ -17,11 +20,6 @@ type (
 		routes []*Route
 		nroute map[string][]int
 		echo   *Echo
-	}
-
-	meta struct {
-		name string
-		meta H
 	}
 
 	Route struct {
@@ -90,6 +88,94 @@ func (r *Route) SetName(name string) IRouter {
 
 func (r *Route) IsZero() bool {
 	return r.Handler == nil
+}
+
+func (r *Route) Bool(name string, defaults ...interface{}) bool {
+	if r.Meta == nil {
+		return false
+	}
+	return r.Meta.Bool(name, defaults...)
+}
+
+func (r *Route) String(name string, defaults ...interface{}) string {
+	if r.Meta == nil {
+		return ``
+	}
+	return r.Meta.String(name, defaults...)
+}
+
+func (r *Route) Float64(name string, defaults ...interface{}) float64 {
+	if r.Meta == nil {
+		return 0
+	}
+	return r.Meta.Float64(name, defaults...)
+}
+
+func (r *Route) Float32(name string, defaults ...interface{}) float32 {
+	if r.Meta == nil {
+		return 0
+	}
+	return r.Meta.Float32(name, defaults...)
+}
+
+func (r *Route) Uint64(name string, defaults ...interface{}) uint64 {
+	if r.Meta == nil {
+		return 0
+	}
+	return r.Meta.Uint64(name, defaults...)
+}
+
+func (r *Route) Uint32(name string, defaults ...interface{}) uint32 {
+	if r.Meta == nil {
+		return 0
+	}
+	return r.Meta.Uint32(name, defaults...)
+}
+
+func (r *Route) Uint(name string, defaults ...interface{}) uint {
+	if r.Meta == nil {
+		return 0
+	}
+	return r.Meta.Uint(name, defaults...)
+}
+
+func (r *Route) Int64(name string, defaults ...interface{}) int64 {
+	if r.Meta == nil {
+		return 0
+	}
+	return r.Meta.Int64(name, defaults...)
+}
+
+func (r *Route) Int32(name string, defaults ...interface{}) int32 {
+	if r.Meta == nil {
+		return 0
+	}
+	return r.Meta.Int32(name, defaults...)
+}
+
+func (r *Route) Int(name string, defaults ...interface{}) int {
+	if r.Meta == nil {
+		return 0
+	}
+	return r.Meta.Int(name, defaults...)
+}
+
+func (r *Route) Get(name string, defaults ...interface{}) interface{} {
+	if r.Meta == nil {
+		return nil
+	}
+	return r.Meta.Get(name, defaults...)
+}
+
+func (r *Route) GetStore(names ...string) H {
+	if r.Meta == nil {
+		return emptyMeta
+	}
+	res := r.Meta
+	for _, name := range names {
+		res = res.GetStore(name)
+	}
+	return res
 }
 
 func (r *Route) MakeURI(params ...interface{}) (uri string) {

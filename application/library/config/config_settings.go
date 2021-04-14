@@ -41,12 +41,12 @@ func Setting(group ...string) echo.H {
 	if sz <= 0 {
 		return st
 	}
-	cfg := st.Store(group[0])
+	cfg := st.GetStore(group[0])
 	if sz == 1 {
 		return cfg
 	}
 	for _, key := range group[1:] {
-		cfg = cfg.Store(key)
+		cfg = cfg.GetStore(key)
 	}
 	return cfg
 }
@@ -70,9 +70,9 @@ type Settings struct {
 
 func (c *Settings) SetBy(r echo.H, defaults echo.H) *Settings {
 	if !r.Has(`base`) && defaults != nil {
-		r.Set(`base`, defaults.Store(`base`))
+		r.Set(`base`, defaults.GetStore(`base`))
 	}
-	c.Base = r.Store(`base`)
+	c.Base = r.GetStore(`base`)
 	c.APIKey = c.Base.String(`apiKey`)
 	c.Debug = c.Base.Bool(`debug`)
 	c.MaxRequestBodySize = c.Base.Int(`maxRequestBodySize`)

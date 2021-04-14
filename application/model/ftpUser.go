@@ -24,6 +24,7 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/common"
@@ -47,16 +48,21 @@ type FtpUser struct {
 	*base.Base
 }
 
-func (f *FtpUser) Exists(username string) (bool, error) {
-	return f.NgingFtpUser.Exists(nil, db.Cond{`username`: username})
+func (f *FtpUser) Exists(username string, excludeIDs ...uint) (bool, error) {
+	cond := db.NewCompounds()
+	cond.AddKV("username", username)
+	if len(excludeIDs) > 0 {
+		cond.AddKV("id", db.NotEq(excludeIDs[0]))
+	}
+	return f.NgingFtpUser.Exists(nil, cond.And())
 }
 
 func (f *FtpUser) CheckPasswd(username string, password string) (bool, error) {
 	salt := common.CookieConfig().BlockKey
-	exists, err := f.NgingFtpUser.Exists(nil, db.Cond{
-		`username`: username,
-		`password`: com.MakePassword(password, salt),
-	})
+	exists, err := f.NgingFtpUser.Exists(nil, db.And(
+		db.Cond{`username`: username},
+		db.Cond{`password`: com.MakePassword(password, salt)},
+	))
 	if err != nil {
 		return exists, err
 	}
@@ -70,8 +76,9 @@ func (f *FtpUser) CheckPasswd(username string, password string) (bool, error) {
 }
 
 var (
-	ErrNoneFtpDirectory = errors.New(`No accessible directory`)
-	ErrBannedFtpUser    = errors.New(`The current account has been disabled`)
+	ErrNoneDirectory      = errors.New(`No accessible directory`)
+	ErrBannedUser         = errors.New(`The current account has been disabled`)
+	ErrIPAddressIsBlocked = errors.New(`IP is blocked`)
 )
 
 func (f *FtpUser) RootPath(username string) (basePath string, err error) {
@@ -86,13 +93,13 @@ func (f *FtpUser) RootPath(username string) (basePath string, err error) {
 			return
 		}
 		if m.NgingFtpUserGroup.Banned == `Y` {
-			err = ErrBannedFtpUser
+			err = ErrBannedUser
 			return
 		}
 		basePath = m.NgingFtpUserGroup.Directory
 	}
 	if f.NgingFtpUser.Banned == `Y` {
-		err = ErrBannedFtpUser
+		err = ErrBannedUser
 		return
 	}
 	if len(f.NgingFtpUser.Directory) > 0 {
@@ -100,7 +107,57 @@ func (f *FtpUser) RootPath(username string) (basePath string, err error) {
 		return
 	}
 	if len(basePath) < 1 {
-		err = ErrNoneFtpDirectory
+		err = ErrNoneDirectory
 	}
 	return
+}
+
+func (f *FtpUser) check() error {
+	if len(f.Username) == 0 {
+		return f.NewError(code.InvalidParameter, f.T(`用户名不能为空`)).SetZone(`username`)
+	}
+	var exists bool
+	var err error
+	if f.Id > 0 {
+		exists, err = f.Exists(f.Username, f.Id)
+	} else {
+		exists, err = f.Exists(f.Username)
+	}
+	if err != nil {
+		return err
+	}
+	if exists {
+		return f.NewError(code.DataAlreadyExists, f.T(`用户名已经存在`)).SetZone(`username`)
+	}
+	return err
+}
+
+func (f *FtpUser) Add() (pk interface{}, err error) {
+	if err := f.check(); err != nil {
+		return nil, err
+	}
+	salt := common.CookieConfig().BlockKey
+	f.Password = com.MakePassword(f.Password, salt)
+	return f.NgingFtpUser.Add()
+}
+
+func (f *FtpUser) Edit(mw func(db.Result) db.Result, args ...interface{}) error {
+	if err := f.check(); err != nil {
+		return err
+	}
+	old := &dbschema.NgingFtpUser{}
+	old.SetContext(f.Base.Context)
+	err := old.Get(func(r db.Result) db.Result {
+		return r.Select(`password`)
+	}, `id`, f.Id)
+	if err != nil {
+		return err
+	}
+	if len(f.Password) == 0 {
+		f.Password = old.Password
+	} else {
+		salt := common.CookieConfig().BlockKey
+		f.Password = com.MakePassword(f.Password, salt)
+	}
+	return f.NgingFtpUser.Edit(mw, args...)
 }

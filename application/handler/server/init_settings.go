@@ -51,7 +51,7 @@ func init() {
 		if !event.IsWeb() {
 			return nil
 		}
-		settings, ok := cfg.Store(`base`).Get(`systemStatus`).(*system.Settings)
+		settings, ok := cfg.GetStore(`base`).Get(`systemStatus`).(*system.Settings)
 		if !ok || !settings.MonitorOn {
 			system.CancelRealTimeStatusCollection()
 			return nil

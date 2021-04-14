@@ -123,6 +123,7 @@ type NgingFrpServer struct {
 	DashboardPwd      string `db:"dashboard_pwd" bson:"dashboard_pwd" comment:"" json:"dashboard_pwd" xml:"dashboard_pwd"`
 	AllowPorts        string `db:"allow_ports" bson:"allow_ports" comment:"" json:"allow_ports" xml:"allow_ports"`
 	Extra             string `db:"extra" bson:"extra" comment:"" json:"extra" xml:"extra"`
+	Plugins           string `db:"plugins" bson:"plugins" comment:"启用插件(半角逗号分隔)" json:"plugins" xml:"plugins"`
 	Uid               uint   `db:"uid" bson:"uid" comment:"" json:"uid" xml:"uid"`
 	GroupId           uint   `db:"group_id" bson:"group_id" comment:"" json:"group_id" xml:"group_id"`
 	Created           uint   `db:"created" bson:"created" comment:"" json:"created" xml:"created"`
@@ -656,6 +657,7 @@ func (a *NgingFrpServer) Reset() *NgingFrpServer {
 	a.DashboardPwd = ``
 	a.AllowPorts = ``
 	a.Extra = ``
+	a.Plugins = ``
 	a.Uid = 0
 	a.GroupId = 0
 	a.Created = 0
@@ -695,6 +697,7 @@ func (a *NgingFrpServer) AsMap(onlyFields ...string) param.Store {
 		r["DashboardPwd"] = a.DashboardPwd
 		r["AllowPorts"] = a.AllowPorts
 		r["Extra"] = a.Extra
+		r["Plugins"] = a.Plugins
 		r["Uid"] = a.Uid
 		r["GroupId"] = a.GroupId
 		r["Created"] = a.Created
@@ -761,6 +764,8 @@ func (a *NgingFrpServer) AsMap(onlyFields ...string) param.Store {
 			r["AllowPorts"] = a.AllowPorts
 		case "Extra":
 			r["Extra"] = a.Extra
+		case "Plugins":
+			r["Plugins"] = a.Plugins
 		case "Uid":
 			r["Uid"] = a.Uid
 		case "GroupId":
@@ -835,6 +840,8 @@ func (a *NgingFrpServer) FromRow(row map[string]interface{}) {
 			a.AllowPorts = param.AsString(value)
 		case "extra":
 			a.Extra = param.AsString(value)
+		case "plugins":
+			a.Plugins = param.AsString(value)
 		case "uid":
 			a.Uid = param.AsUint(value)
 		case "group_id":
@@ -925,6 +932,8 @@ func (a *NgingFrpServer) Set(key interface{}, value ...interface{}) {
 			a.AllowPorts = param.AsString(vv)
 		case "Extra":
 			a.Extra = param.AsString(vv)
+		case "Plugins":
+			a.Plugins = param.AsString(vv)
 		case "Uid":
 			a.Uid = param.AsUint(vv)
 		case "GroupId":
@@ -969,6 +978,7 @@ func (a *NgingFrpServer) AsRow(onlyFields ...string) param.Store {
 		r["dashboard_pwd"] = a.DashboardPwd
 		r["allow_ports"] = a.AllowPorts
 		r["extra"] = a.Extra
+		r["plugins"] = a.Plugins
 		r["uid"] = a.Uid
 		r["group_id"] = a.GroupId
 		r["created"] = a.Created
@@ -1035,6 +1045,8 @@ func (a *NgingFrpServer) AsRow(onlyFields ...string) param.Store {
 			r["allow_ports"] = a.AllowPorts
 		case "extra":
 			r["extra"] = a.Extra
+		case "plugins":
+			r["plugins"] = a.Plugins
 		case "uid":
 			r["uid"] = a.Uid
 		case "group_id":

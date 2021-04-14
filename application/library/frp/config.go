@@ -53,6 +53,28 @@ func Table2Config(cc *dbschema.NgingFrpClient) (hash echo.H, err error) {
 	return
 }
 
+func ParseMetas(metas string) map[string]string {
+	r := map[string]string{}
+	metas = strings.TrimSpace(metas)
+	for _, meta := range strings.Split(metas, "\n") {
+		meta = strings.TrimSpace(meta)
+		if len(meta) == 0 {
+			continue
+		}
+		vs := strings.SplitN(meta, "=", 2)
+		if len(vs) != 2 {
+			continue
+		}
+		vs[0] = strings.TrimSpace(vs[0])
+		vs[1] = strings.TrimSpace(vs[1])
+		if len(vs[0]) == 0 || len(vs[1]) == 0 {
+			continue
+		}
+		r[vs[0]] = vs[1]
+	}
+	return r
+}
+
 func ProxyConfigFromForm(prefix string, data url.Values) (visitor echo.H, proxy echo.H, err error) {
 	visitor = echo.H{}
 	proxy = echo.H{}
@@ -82,23 +104,38 @@ func ProxyConfigFromForm(prefix string, data url.Values) (visitor echo.H, proxy 
 			Plugin:       m.Value(`plugin`),
 			PluginParams: map[string]string{},
 		}
-		healthCheckC := config.HealthCheckConf{}
-		bandwidthC := config.BandwidthQuantity{}
+		//TODO:
+		healthCheckC := config.HealthCheckConf{
+			HealthCheckType:      ``, // tcp/http 留空表示禁用
+			HealthCheckTimeoutS:  3,
+			HealthCheckMaxFailed: 1,
+			HealthCheckIntervalS: 10,
+			HealthCheckURL:       ``, // for http
+			HealthCheckAddr:      ``, // for tcp
+		}
+		//TODO:
+		bandwidthC, _ := config.NewBandwidthQuantity(m.Value(`bandwidth_quantity`)) // unit: KB/MB
 		baseC := config.BaseProxyConf{
-			ProxyName:       prefix + proxyName,
-			ProxyType:       m.Value(`protocol`),
-			UseEncryption:   param.String(m.Value(`use_encryption`)).Bool(),
-			UseCompression:  param.String(m.Value(`use_compression`)).Bool(),
-			Group:           m.Value(`group`),
-			GroupKey:        m.Value(`group_key`),
-			BandwidthLimit:  bandwidthC,
-			LocalSvrConf:    localC,
-			HealthCheckConf: healthCheckC,
+			ProxyName:            prefix + proxyName,
+			ProxyType:            m.Value(`protocol`),
+			UseEncryption:        param.String(m.Value(`use_encryption`)).Bool(),
+			UseCompression:       param.String(m.Value(`use_compression`)).Bool(),
+			Group:                m.Value(`group`),
+			GroupKey:             m.Value(`group_key`),
+			ProxyProtocolVersion: ``,
+			BandwidthLimit:       bandwidthC,
+			Metas:                map[string]string{},
+			LocalSvrConf:         localC,
+			HealthCheckConf:      healthCheckC,
 		}
 		if pluginParams := m.Get(`plugin_params`); pluginParams != nil {
 			for kk, vv := range pluginParams.Map {
-				localC.PluginParams[kk] = vv.Value()
+				baseC.LocalSvrConf.PluginParams[kk] = vv.Value()
 			}
+		}
+		metas := m.Value(`metas`)
+		if len(metas) > 0 {
+			baseC.Metas = ParseMetas(metas)
 		}
 		var value interface{}
 		switch baseC.ProxyType {
@@ -107,7 +144,6 @@ func ProxyConfigFromForm(prefix string, data url.Values) (visitor echo.H, proxy 
 				BaseProxyConf: baseC,
 			}
 			recv.RemotePort = param.String(m.Value(`remote_port`)).Int()
-			recv.LocalSvrConf = localC
 			value = recv
 		case consts.UDPProxy:
 			recv := &config.UDPProxyConf{

@@ -55,9 +55,9 @@ func (c *Log) Show(ctx echo.Context) error {
 
 func (c *Log) SetBy(r echo.H, defaults echo.H) *Log {
 	if !r.Has(`log`) && defaults != nil {
-		r.Set(`log`, defaults.Store(`log`))
+		r.Set(`log`, defaults.GetStore(`log`))
 	}
-	loge := r.Store(`log`)
+	loge := r.GetStore(`log`)
 	c.Colorable = loge.Bool(`colorable`)
 	c.SaveFile = loge.String(`saveFile`)
 	switch t := loge.Get(`targets`).(type) {

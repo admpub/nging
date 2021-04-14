@@ -47,66 +47,78 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 			c.Data().SetError(c.E(`请先获取本系统授权`))
 			return c.Redirect(handler.URLFor(`/license`))
 		}
-
-		if user := handler.User(c); user != nil {
-			if jump, ok := c.Session().Get(`auth2ndURL`).(string); ok && len(jump) > 0 {
-				c.Data().SetError(c.E(`请先进行第二步验证`))
-				return c.Redirect(jump)
-			}
-			var (
-				rpath = c.Path()
-				ppath string
-			)
-			//println(`--------------------->>>`, rpath)
-			if len(handler.BackendPrefix) > 0 {
-				rpath = strings.TrimPrefix(rpath, handler.BackendPrefix)
-			}
-			if user.Id == 1 || strings.HasPrefix(rpath, `/user/`) {
-				c.SetFunc(`CheckPerm`, func(route string) error {
-					return nil
-				})
-				return h.Handle(c)
-			}
-			permission, ok := c.Internal().Get(`permission`).(*model.RolePermission)
-			if !ok {
-				return common.ErrUserNoPerm
-			}
-			if checker, ok := perm.SpecialAuths[rpath]; ok {
-				var err error
-				var ret bool
-				err, ppath, ret = checker(h, c, rpath, user, permission)
-				if ret {
-					return err
-				}
-				if err != nil {
-					return err
-				}
-			} else {
-				ppath = rpath
-				if len(ppath) >= 13 {
-					switch ppath[0:13] {
-					case `/term/client/`:
-						ppath = `/term/client`
-					default:
-						if strings.HasPrefix(rpath, `/frp/dashboard/`) {
-							ppath = `/frp/dashboard`
-						}
-					}
-				}
-			}
+		user := handler.User(c)
+		if user == nil {
+			c.Data().SetError(c.E(`请先登录`))
+			return c.Redirect(handler.URLFor(`/login`))
+		}
+		if jump, ok := c.Session().Get(`auth2ndURL`).(string); ok && len(jump) > 0 {
+			c.Data().SetError(c.E(`请先进行第二步验证`))
+			return c.Redirect(jump)
+		}
+		var (
+			rpath = c.Path()
+			upath = c.Request().URL().Path()
+			ppath string
+		)
+		//println(`--------------------->>>`, rpath)
+		if len(handler.BackendPrefix) > 0 {
+			rpath = strings.TrimPrefix(rpath, handler.BackendPrefix)
+		}
+		//echo.Dump(c.Route().Meta)
+		if user.Id == 1 || strings.HasPrefix(rpath, `/user/`) {
 			c.SetFunc(`CheckPerm`, func(route string) error {
-				if user.Id == 1 {
-					return nil
-				}
-				if !permission.Check(route) {
-					return common.ErrUserNoPerm
-				}
 				return nil
 			})
 			return h.Handle(c)
 		}
-		c.Data().SetError(c.E(`请先登录`))
-		return c.Redirect(handler.URLFor(`/login`))
+		permission, ok := c.Internal().Get(`permission`).(*model.RolePermission)
+		if !ok {
+			return common.ErrUserNoPerm
+		}
+		c.SetFunc(`CheckPerm`, func(route string) error {
+			if user.Id == 1 {
+				return nil
+			}
+			if !permission.Check(route) {
+				return common.ErrUserNoPerm
+			}
+			return nil
+		})
+		// if c.Route().String(`permission`) == `public` {
+		// 	return h.Handle(c)
+		// }
+		checker, ok := perm.SpecialAuths[rpath]
+		if !ok {
+			checker, ok = perm.SpecialAuths[upath]
+		}
+		if ok {
+			var (
+				ret bool
+				err error
+			)
+			if ppath, ret, err = checker(h, c, user, permission); ret {
+				return err
+			} else if err != nil {
+				return err
+			}
+		} else {
+			ppath = rpath
+			if len(ppath) >= 13 {
+				switch ppath[0:13] {
+				case `/term/client/`:
+					ppath = `/term/client`
+				default:
+					if strings.HasPrefix(rpath, `/frp/dashboard/`) {
+						ppath = `/frp/dashboard`
+					}
+				}
+			}
+		}
+		if !permission.Check(ppath) {
+			return common.ErrUserNoPerm
+		}
+		return h.Handle(c)
 	}
 }
 

@@ -9,6 +9,9 @@
 </li>
 <li class="active">{{if HasSuffix URL.Path "_add"}}{{"添加"|T}}{{else}}{{"修改"|T}}{{end}}</li>
 {{/Block}} 
+{{Block "head"}}
+<link rel="stylesheet" type="text/css" href="{{AssetsURL}}/js/jquery.select2/select2.css" />
+{{/Block}}
 {{Block "main"}} 
 {{$addingMode:=HasSuffix URL.Path "_add"}}
 <div class="row">
@@ -238,7 +241,18 @@
                   </div><!-- /.input-group -->
               </div>
             </div>
-
+          
+          
+            <div class="form-group">
+              <label class="col-sm-2 control-label">{{"插件"|T}}</label>
+              <div class="col-sm-9">
+                <select id="select2plugins" name="plugins" multiple="multiple">
+                  {{range $k, $v := Stored.pluginList}}
+                  <option value="{{$v.Name}}"{{if isChecked $v.Name}} selected="selected"{{end}}>{{$v.Title}}</option>
+                  {{end}}
+                </select>
+              </div>
+            </div>
 
           <div class="form-group form-submit-group">
             <div class="col-sm-9 col-sm-offset-2">
@@ -257,9 +271,11 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
+<script src="{{AssetsURL}}/js/jquery.select2/select2.min.js" type="text/javascript"></script>
 <script>
 $(function(){
 App.searchFS('#logFile',20);
+$('#select2plugins').select2({width:'100%'});
 });
 </script>
 {{/Block}}

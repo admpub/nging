@@ -21,7 +21,7 @@ func (f *FieldInfo) FormInput(value interface{}, options echo.H) template.HTML {
 	makeMode := options.Bool(`maker`)
 	switch f.DataType {
 	case `enum`:
-		labels := options.Store(`optionLabels`)
+		labels := options.GetStore(`optionLabels`)
 		if len(val) == 0 && len(f.DefaultValue) > 0 {
 			val = f.DefaultValue
 		}
@@ -58,7 +58,7 @@ func (f *FieldInfo) FormInput(value interface{}, options echo.H) template.HTML {
 			input += DefaultHTMLTmpl.ToInput(`radio`, data) + "\n"
 		}
 	case `set`:
-		labels := options.Store(`optionLabels`)
+		labels := options.GetStore(`optionLabels`)
 		if len(val) == 0 && len(f.DefaultValue) > 0 {
 			val = f.DefaultValue
 		}
@@ -217,7 +217,7 @@ func (f *FieldInfo) FormInput(value interface{}, options echo.H) template.HTML {
 			data.DeepMerge(options)
 			input = DefaultHTMLTmpl.ToInput(`text`, data) + "\n"
 		case `bool`:
-			labels := options.Store(`optionLabels`)
+			labels := options.GetStore(`optionLabels`)
 			if len(val) == 0 && len(f.DefaultValue) > 0 {
 				val = f.DefaultValue
 			}

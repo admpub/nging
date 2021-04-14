@@ -345,7 +345,7 @@ func ConfigAsStore(groups ...string) echo.H {
 		if _, y := r[row.Group]; !y {
 			r[row.Group] = echo.H{row.Key: value}
 		} else {
-			r.Store(row.Group).Set(row.Key, value)
+			r.GetStore(row.Group).Set(row.Key, value)
 		}
 	}
 	return r

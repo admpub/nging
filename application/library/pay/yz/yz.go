@@ -157,8 +157,8 @@ func (y *YouZan) HandleNotify(ctx echo.Context) (echo.Store, error) {
 	}
 	result.DeepMerge(response.Result)
 	var uid, qrID string
-	orderInfo := result.Store(`full_order_info`)
-	buyerInfo := orderInfo.Store(`buyer_info`)
+	orderInfo := result.GetStore(`full_order_info`)
+	buyerInfo := orderInfo.GetStore(`buyer_info`)
 	buyerID := buyerInfo.Int64(`buyer_id`)
 	if buyerID <= 0 {
 		buyerID = buyerInfo.Int64(`fans_id`)

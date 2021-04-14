@@ -97,7 +97,7 @@ func init() {
 		return com.JSONEncode(cfg)
 	})
 	var updateStorer = func(cfg echo.H) error {
-		settings, ok := cfg.Store(`base`).Get(`storer`).(*storer.Info)
+		settings, ok := cfg.GetStore(`base`).Get(`storer`).(*storer.Info)
 		if !ok || settings == nil {
 			settings = &defaultStorer
 		} else {
@@ -108,7 +108,7 @@ func init() {
 	}
 	config.OnSetSettings(`base.storer`, updateStorer)
 	var updateBackendURL = func(cfg echo.H) error {
-		subdomains.SetBaseURL(`backend`, cfg.Store(`base`).String(`backendURL`))
+		subdomains.SetBaseURL(`backend`, cfg.GetStore(`base`).String(`backendURL`))
 		return nil
 	}
 	config.OnSetSettings(`base.backendURL`, updateBackendURL)

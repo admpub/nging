@@ -28,19 +28,17 @@ import (
 type AuthChecker func(
 	h echo.Handler,
 	c echo.Context,
-	rpath string,
 	user *dbschema.NgingUser,
 	permission *model.RolePermission,
-) (err error, ppath string, returning bool)
+) (ppath string, returning bool, err error)
 
 var SpecialAuths = map[string]AuthChecker{
 	`/server/cmdSend/*`: func(
 		h echo.Handler,
 		c echo.Context,
-		rpath string,
 		user *dbschema.NgingUser,
 		permission *model.RolePermission,
-	) (err error, ppath string, returning bool) {
+	) (ppath string, returning bool, err error) {
 		returning = true
 		c.SetFunc(`CheckPerm`, func(id string) error {
 			if user.Id == 1 {
@@ -66,20 +64,18 @@ var SpecialAuths = map[string]AuthChecker{
 	`server/dynamic`: func(
 		h echo.Handler,
 		c echo.Context,
-		rpath string,
 		user *dbschema.NgingUser,
 		permission *model.RolePermission,
-	) (err error, ppath string, returning bool) {
+	) (ppath string, returning bool, err error) {
 		ppath = `server/sysinfo`
 		return
 	},
 	`/server/cmd`: func(
 		h echo.Handler,
 		c echo.Context,
-		rpath string,
 		user *dbschema.NgingUser,
 		permission *model.RolePermission,
-	) (err error, ppath string, returning bool) {
+	) (ppath string, returning bool, err error) {
 		id := c.Form(`id`)
 		if len(id) > 0 {
 			returning = true
@@ -100,10 +96,9 @@ var SpecialAuths = map[string]AuthChecker{
 	`/manager/crop`: func(
 		h echo.Handler,
 		c echo.Context,
-		rpath string,
 		user *dbschema.NgingUser,
 		permission *model.RolePermission,
-	) (err error, ppath string, returning bool) {
+	) (ppath string, returning bool, err error) {
 		ppath = `/manager/upload/:type`
 		return
 	},

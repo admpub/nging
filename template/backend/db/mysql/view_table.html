@@ -81,6 +81,7 @@
               <tr>
                 <th><strong>{{"类型"|T}}</strong></th>
                 <th><strong>{{"列"|T}}</strong></th>
+                <th><strong>{{"名称"|T}}</strong></th>
               </tr>
             </thead>
             <tbody class="no-border-x" id="tbody-content">
@@ -97,6 +98,7 @@
                   {{if $desc}} DESC{{end}}
                   {{end}}
                 </td>
+                <td>{{$v.Name}}</td>
               </tr>
               {{end}}
             </tbody>

@@ -134,10 +134,10 @@ require (
 	github.com/webx-top/client v0.2.3
 	github.com/webx-top/codec v0.0.1
 	github.com/webx-top/com v0.2.0
-	github.com/webx-top/db v1.1.5
-	github.com/webx-top/echo v2.8.3+incompatible
+	github.com/webx-top/db v1.1.6
+	github.com/webx-top/echo v2.9.0+incompatible
 	github.com/webx-top/image v0.0.7
-	github.com/webx-top/pagination v0.0.3
+	github.com/webx-top/pagination v0.1.0
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect
 	github.com/xu42/youzan-sdk-go v0.0.3
 	gocloud.dev v0.22.0

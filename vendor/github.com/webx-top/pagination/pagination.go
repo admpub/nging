@@ -455,7 +455,7 @@ func (p *Pagination) SetOptions(m echo.H) *Pagination {
 		p.nextPosition = m.String(`next`)
 	}
 	p.urlLayout = m.String(`urlLayout`)
-	p.data = m.Store(`data`)
+	p.data = m.GetStore(`data`)
 	return p
 }
 

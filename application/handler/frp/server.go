@@ -20,16 +20,20 @@ package frp
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/formfilter"
+	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/nging/application/library/frp"
 	"github.com/admpub/nging/application/model"
 )
 
@@ -40,9 +44,17 @@ func ServerIndex(ctx echo.Context) error {
 	if groupId > 0 {
 		cond.AddKV(`group_id`, groupId)
 	}
-	q := ctx.Formx(`q`).String()
-	if len(q) > 0 {
-		cond.AddKV(`name`, db.Like(`%`+q+`%`))
+	searchValue := ctx.Formx(`searchValue`).String()
+	if len(searchValue) > 0 {
+		cond.AddKV(`id`, searchValue)
+	} else {
+		q := ctx.Formx(`q`).String()
+		if len(q) == 0 {
+			q = ctx.Formx(`name`).String()
+		}
+		if len(q) > 0 {
+			cond.AddKV(`name`, db.Like(`%`+q+`%`))
+		}
 	}
 	var serverAndGroup []*model.FrpServerAndGroup
 	_, err := handler.PagingWithLister(ctx, handler.NewLister(m, &serverAndGroup, func(r db.Result) db.Result {
@@ -62,11 +74,18 @@ func ServerIndex(ctx echo.Context) error {
 	return ctx.Render(`frp/server_index`, handler.Err(ctx, err))
 }
 
+func serverFormFilter(opts ...formfilter.Options) echo.FormDataFilter {
+	opts = append(opts,
+		formfilter.JoinValues(`Plugins`),
+	)
+	return formfilter.Build(opts...)
+}
+
 func ServerAdd(ctx echo.Context) error {
 	var err error
 	m := model.NewFrpServer(ctx)
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.NgingFrpServer)
+		err = ctx.MustBind(m.NgingFrpServer, serverFormFilter())
 		if err == nil {
 			_, err = m.Add()
 			if err == nil {
@@ -110,6 +129,10 @@ func ServerAdd(ctx echo.Context) error {
 		err = e
 	}
 	ctx.Set(`groupList`, mg.Objects())
+	ctx.Set(`pluginList`, frp.ServerPluginSlice())
+	ctx.SetFunc(`isChecked`, func(name string) bool {
+		return false
+	})
 	ctx.Set(`activeURL`, `/frp/server_index`)
 	return ctx.Render(`frp/server_edit`, err)
 }
@@ -120,9 +143,13 @@ func ServerEdit(ctx echo.Context) error {
 	m := model.NewFrpServer(ctx)
 	err = m.Get(nil, db.Cond{`id`: id})
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.NgingFrpServer, echo.ExcludeFieldName(`created`))
+		err = ctx.MustBind(m.NgingFrpServer, serverFormFilter(formfilter.Exclude(`created`)))
 		if err == nil {
 			m.Id = id
+			// 强制设置, select2 在没有选中任何值的情况下不会提交此字段，所以需要手动检查和设置
+			if len(ctx.FormValues(`plugins`)) == 0 {
+				m.Plugins = ``
+			}
 			err = m.Edit(nil, db.Cond{`id`: id})
 			if err == nil {
 				err = config.DefaultCLIConfig.FRPSaveConfigFile(m.NgingFrpServer)
@@ -191,7 +218,20 @@ func ServerEdit(ctx echo.Context) error {
 		err = e
 	}
 	ctx.Set(`groupList`, mg.Objects())
+	ctx.Set(`pluginList`, frp.ServerPluginSlice())
 	ctx.Set(`activeURL`, `/frp/server_index`)
+	var plugins []string
+	if len(m.Plugins) > 0 {
+		plugins = param.StringSlice(strings.Split(m.Plugins, `,`)).Filter().String()
+	}
+	ctx.SetFunc(`isChecked`, func(name string) bool {
+		for _, rid := range plugins {
+			if rid == name {
+				return true
+			}
+		}
+		return false
+	})
 	return ctx.Render(`frp/server_edit`, err)
 }
 

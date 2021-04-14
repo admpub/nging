@@ -60,6 +60,6 @@ func (c *Config) FromStore(name string, v echo.Store) *Config {
 	c.Name = name
 	c.Key = v.String(`key`)
 	c.Secret = v.String(`secret`)
-	c.Extra = v.Store(`extra`)
+	c.Extra = v.GetStore(`extra`)
 	return c
 }

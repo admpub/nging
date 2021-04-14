@@ -77,8 +77,8 @@ func SetClientConfigFromDB(conf *dbschema.NgingFrpClient) *config.ClientCommonCo
 			c.Start = append(c.Start, strings.TrimSpace(name))
 		}
 	}
-	if c.Metas == nil {
-		c.Metas = map[string]string{}
+	if len(conf.Metas) > 0 {
+		c.Metas = ParseMetas(conf.Metas)
 	}
 	c.UDPPacketSize = 1500
 	return &c
@@ -275,7 +275,7 @@ func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]con
 	if len(configFileArg) > 0 {
 		configFile = configFileArg[0]
 	}
-	frpLog.InitLog(c.LogWay, c.LogFile, c.LogLevel, c.LogMaxDays, true)
+	frpLog.InitLog(c.LogWay, c.LogFile, c.LogLevel, c.LogMaxDays, c.DisableLogColor)
 	if len(c.DNSServer) > 0 {
 		s := c.DNSServer
 		if !strings.Contains(s, ":") {

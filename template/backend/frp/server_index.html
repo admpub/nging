@@ -50,7 +50,7 @@
 					<table class="table no-border hover">
 						<thead class="no-border">
 							<tr>
-								<th style="width:55px">
+								<th style="width:50px">
 									<strong>ID</strong>
 								</th>
 								<th style="width:80px;"><strong>{{"启用状态"|T}}</strong></th>
@@ -61,14 +61,17 @@
 								<th>
 									<strong>{{"监听地址"|T}}</strong>
 								</th>
-								<th>
+								<th style="width:80px">
 									<strong>{{"虚拟主机"|T}}</strong>
 								</th>
-								<th>
+								<th style="width:70px">
 									<strong>{{"日志输出"|T}}</strong>
 								</th>
-								<th style="width:15%;">
+								<th style="width:70px">
 									<strong>{{"配置组"|T}}</strong>
+								</th>
+								<th>
+									<strong>{{"插件"|T}}</strong>
 								</th>
 								<th style="width:130px">
 									<strong>{{"编辑时间"|T}}</strong>
@@ -110,6 +113,7 @@
 								</td>
 								<td>{{$v.LogWay}}</td>
 								<td>{{if $v.Group}}{{$v.Group.Name}}{{else}}{{"无"|T}}{{end}}</td>
+								<td>{{$v.Plugins}}</td>
 								<td>{{if gt $v.Updated 0}}{{(Date $v.Updated).Format "2006-01-02 15:04:05"}}{{else}}{{(Date $v.Created).Format "2006-01-02 15:04:05"}}{{end}}</td>
 								<td>
 									<a href="javascript:;" data-url="{{BackendURL}}/frp/server_log?id={{$v.Id}}" title="{{"日志"|T}}" data-toggle="tooltip" onclick="App.logShow(this,true);">{{"日志"|T}}</a>

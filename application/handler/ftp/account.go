@@ -18,15 +18,13 @@
 package ftp
 
 import (
-	"strings"
-
-	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
+	"github.com/webx-top/echo/formfilter"
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/model"
 )
 
@@ -54,23 +52,14 @@ func AccountAdd(ctx echo.Context) error {
 	var err error
 	m := model.NewFtpUser(ctx)
 	if ctx.IsPost() {
-		username := ctx.Form(`username`)
 		if ctx.Form(`confirmPassword`) != ctx.Form(`password`) {
-			err = ctx.E(`两次输入的密码之间不匹配，请输入一样的密码，以确认自己没有输入错误`)
+			err = ctx.E(`两次输入密码不匹配，请输入一样的密码，以便确认自己没有输入错误`)
 		} else if len(ctx.Form(`password`)) < 6 {
 			err = ctx.E(`密码不能少于6个字符`)
-		} else if len(username) == 0 {
-			err = ctx.E(`账户名不能为空`)
-		} else if y, e := m.Exists(username); e != nil {
-			err = e
-		} else if y {
-			err = ctx.E(`账户名已经存在`)
 		} else {
 			err = ctx.MustBind(m.NgingFtpUser)
 		}
-
 		if err == nil {
-			m.Password = com.MakePassword(m.Password, common.CookieConfig().BlockKey)
 			_, err = m.Add()
 			if err == nil {
 				handler.SendOk(ctx, ctx.T(`操作成功`))
@@ -106,29 +95,22 @@ func AccountEdit(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
 	m := model.NewFtpUser(ctx)
 	err = m.Get(nil, db.Cond{`id`: id})
+	if err != nil {
+		if err == db.ErrNoMoreRows {
+			err = ctx.NewError(code.DataNotFound, ctx.T(`数据不存在`))
+		}
+		return err
+	}
 	if ctx.IsPost() {
 		password := ctx.Form(`password`)
 		length := len(password)
 		if ctx.Form(`confirmPassword`) != password {
-			err = ctx.E(`两次输入的密码之间不匹配，请输入一样的密码，以确认自己没有输入错误`)
+			err = ctx.E(`两次输入密码不匹配，请输入一样的密码，以便确认自己没有输入错误`)
 		} else if length > 0 && length < 6 {
 			err = ctx.E(`密码不能少于6个字符`)
 		} else {
-			err = ctx.MustBind(m.NgingFtpUser, func(k string, v []string) (string, []string) {
-				switch strings.ToLower(k) {
-				case `password`:
-					if len(v) < 1 || v[0] == `` {
-						//忽略密码为空的情况
-						return ``, v
-					}
-					v[0] = com.MakePassword(v[0], common.CookieConfig().BlockKey)
-				case `created`, `username`: //禁止修改创建时间和用户名
-					return ``, v
-				}
-				return k, v
-			})
+			err = ctx.MustBind(m.NgingFtpUser, formfilter.Build(formfilter.Exclude(`created`)))
 		}
-
 		if err == nil {
 			m.Id = id
 			err = m.Edit(nil, db.Cond{`id`: id})
@@ -137,7 +119,7 @@ func AccountEdit(ctx echo.Context) error {
 				return ctx.Redirect(handler.URLFor(`/ftp/account`))
 			}
 		}
-	} else if err == nil {
+	} else {
 		echo.StructToForm(ctx, m.NgingFtpUser, ``, func(topName, fieldName string) string {
 			if topName == `` && fieldName == `Password` {
 				return ``

@@ -118,6 +118,7 @@ type NgingFrpClient struct {
 	AdminUser         string `db:"admin_user" bson:"admin_user" comment:"" json:"admin_user" xml:"admin_user"`
 	AdminPwd          string `db:"admin_pwd" bson:"admin_pwd" comment:"" json:"admin_pwd" xml:"admin_pwd"`
 	Start             string `db:"start" bson:"start" comment:"要启动的代理节点名称，留空代表全部，多个用半角逗号隔开" json:"start" xml:"start"`
+	Metas             string `db:"metas" bson:"metas" comment:"meta值" json:"metas" xml:"metas"`
 	Extra             string `db:"extra" bson:"extra" comment:"" json:"extra" xml:"extra"`
 	Uid               uint   `db:"uid" bson:"uid" comment:"" json:"uid" xml:"uid"`
 	GroupId           uint   `db:"group_id" bson:"group_id" comment:"" json:"group_id" xml:"group_id"`
@@ -631,6 +632,7 @@ func (a *NgingFrpClient) Reset() *NgingFrpClient {
 	a.AdminUser = ``
 	a.AdminPwd = ``
 	a.Start = ``
+	a.Metas = ``
 	a.Extra = ``
 	a.Uid = 0
 	a.GroupId = 0
@@ -667,6 +669,7 @@ func (a *NgingFrpClient) AsMap(onlyFields ...string) param.Store {
 		r["AdminUser"] = a.AdminUser
 		r["AdminPwd"] = a.AdminPwd
 		r["Start"] = a.Start
+		r["Metas"] = a.Metas
 		r["Extra"] = a.Extra
 		r["Uid"] = a.Uid
 		r["GroupId"] = a.GroupId
@@ -725,6 +728,8 @@ func (a *NgingFrpClient) AsMap(onlyFields ...string) param.Store {
 			r["AdminPwd"] = a.AdminPwd
 		case "Start":
 			r["Start"] = a.Start
+		case "Metas":
+			r["Metas"] = a.Metas
 		case "Extra":
 			r["Extra"] = a.Extra
 		case "Uid":
@@ -793,6 +798,8 @@ func (a *NgingFrpClient) FromRow(row map[string]interface{}) {
 			a.AdminPwd = param.AsString(value)
 		case "start":
 			a.Start = param.AsString(value)
+		case "metas":
+			a.Metas = param.AsString(value)
 		case "extra":
 			a.Extra = param.AsString(value)
 		case "uid":
@@ -877,6 +884,8 @@ func (a *NgingFrpClient) Set(key interface{}, value ...interface{}) {
 			a.AdminPwd = param.AsString(vv)
 		case "Start":
 			a.Start = param.AsString(vv)
+		case "Metas":
+			a.Metas = param.AsString(vv)
 		case "Extra":
 			a.Extra = param.AsString(vv)
 		case "Uid":
@@ -920,6 +929,7 @@ func (a *NgingFrpClient) AsRow(onlyFields ...string) param.Store {
 		r["admin_user"] = a.AdminUser
 		r["admin_pwd"] = a.AdminPwd
 		r["start"] = a.Start
+		r["metas"] = a.Metas
 		r["extra"] = a.Extra
 		r["uid"] = a.Uid
 		r["group_id"] = a.GroupId
@@ -978,6 +988,8 @@ func (a *NgingFrpClient) AsRow(onlyFields ...string) param.Store {
 			r["admin_pwd"] = a.AdminPwd
 		case "start":
 			r["start"] = a.Start
+		case "metas":
+			r["metas"] = a.Metas
 		case "extra":
 			r["extra"] = a.Extra
 		case "uid":

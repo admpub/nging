@@ -51,7 +51,7 @@ var (
 	VERSION    = `3.3.1`
 	PACKAGE    = `free`
 
-	schemaVer = 3.9 //数据表结构版本
+	schemaVer = 4.001 //数据表结构版本
 )
 
 func main() {

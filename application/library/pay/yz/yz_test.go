@@ -42,6 +42,6 @@ func TestCreateQROrder(t *testing.T) {
 		"a":"b",
 		"c":{"d":1,"e":"test"}
 	}`), &r)
-	v := r.Store("c").Int64("d")
+	v := r.GetStore("c").Int64("d")
 	echo.Dump(v)
 }

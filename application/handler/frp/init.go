@@ -23,13 +23,16 @@ import (
 	"net/http"
 	"regexp"
 
+	"github.com/webx-top/db"
+	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
+
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/handler/caddy"
 	"github.com/admpub/nging/application/library/common"
-	"github.com/webx-top/db"
-	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/code"
+
+	_ "github.com/admpub/nging/application/handler/frp/plugins/multiuser"
 )
 
 var regexNumEnd = regexp.MustCompile(`_[\d]+$`)
@@ -42,11 +45,17 @@ type Section struct {
 func init() {
 	handler.RegisterToGroup(`/frp`, func(g echo.RouteRegister) {
 		e := handler.Echo()
-		g.Route(`GET`, `/server_index`, ServerIndex)
+		g.Route(`GET,POST`, `/server_index`, ServerIndex)
 		g.Route(`GET,POST`, `/server_add`, ServerAdd)
 		g.Route(`GET,POST`, `/server_edit`, ServerEdit)
 		g.Route(`GET,POST`, `/server_delete`, ServerDelete)
 		g.Route(`GET,POST`, `/server_log`, ServerLog)
+
+		g.Route(`GET`, `/account`, AccountIndex)
+		g.Route(`GET,POST`, `/account_add`, AccountAdd)
+		g.Route(`GET,POST`, `/account_edit`, AccountEdit)
+		g.Route(`GET,POST`, `/account_delete`, AccountDelete)
+
 		g.Route(`GET`, `/client_index`, ClientIndex)
 		g.Route(`GET,POST`, `/client_add`, ClientAdd)
 		g.Route(`GET,POST`, `/client_edit`, ClientEdit)

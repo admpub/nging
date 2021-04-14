@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.19, for osx10.14 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.23, for osx10.16 (x86_64)
 --
 -- Host: localhost    Database: nging
 -- ------------------------------------------------------
--- Server version	8.0.19
+-- Server version	8.0.23
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -622,6 +622,7 @@ CREATE TABLE `nging_frp_client` (
   `admin_user` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
   `admin_pwd` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
   `start` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '要启动的代理节点名称，留空代表全部，多个用半角逗号隔开',
+  `metas` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'meta值',
   `extra` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `uid` int unsigned NOT NULL DEFAULT '0',
   `group_id` int unsigned NOT NULL DEFAULT '0',
@@ -688,12 +689,42 @@ CREATE TABLE `nging_frp_server` (
   `dashboard_pwd` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'admin',
   `allow_ports` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
   `extra` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `plugins` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '启用插件(半角逗号分隔)',
   `uid` int unsigned NOT NULL DEFAULT '0',
   `group_id` int unsigned NOT NULL DEFAULT '0',
   `created` int unsigned NOT NULL DEFAULT '0',
   `updated` int unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='FRP服务器设置';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `nging_frp_user`
+--
+
+DROP TABLE IF EXISTS `nging_frp_user`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `nging_frp_user` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `server_id` int unsigned NOT NULL DEFAULT '0' COMMENT '服务ID',
+  `customer_id` bigint unsigned NOT NULL DEFAULT '0' COMMENT '客户ID',
+  `uid` int unsigned NOT NULL DEFAULT '0' COMMENT '管理员ID',
+  `username` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户名',
+  `password` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '密码',
+  `banned` enum('Y','N') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'N' COMMENT '是否禁止连接',
+  `bandwidth` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '带宽(MB/KB) ',
+  `traffic_used` bigint unsigned NOT NULL DEFAULT '0' COMMENT '已用流量',
+  `traffic_total` bigint unsigned NOT NULL DEFAULT '0' COMMENT '流量总量',
+  `ip_whitelist` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'IP白名单(一行一个) ',
+  `ip_blacklist` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'IP黑名单(一行一个) ',
+  `start` int unsigned NOT NULL COMMENT '生效时间',
+  `end` int unsigned NOT NULL DEFAULT '0' COMMENT '过期时间',
+  `created` int unsigned NOT NULL COMMENT '创建时间',
+  `updated` int unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`server_id`,`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='网络用户';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1053,4 +1084,4 @@ CREATE TABLE `nging_vhost_group` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-02-17 16:54:48
+-- Dump completed on 2021-04-14 18:53:47

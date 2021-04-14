@@ -24,3 +24,5 @@ _testmain.go
 *.prof
 /*.log
 .vscode
+go.sum
+go.mod

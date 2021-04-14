@@ -97,9 +97,13 @@ func (e *Error) ErrorCode() int {
 	return e.Code.Int()
 }
 
-func (e *Error) Cause() error { return e.cause }
+func (e *Error) Cause() error {
+	return e.cause
+}
 
-func (e *Error) Unwrap() error { return e.cause }
+func (e *Error) Unwrap() error {
+	return e.cause
+}
 
 // ==========================================
 // HTTPError
@@ -135,6 +139,10 @@ func (e *HTTPError) SetRaw(err error) *HTTPError {
 
 // Raw gets the raw error
 func (e *HTTPError) Raw() error {
+	return e.raw
+}
+
+func (e *HTTPError) Unwrap() error {
 	return e.raw
 }
 

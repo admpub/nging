@@ -126,7 +126,7 @@ type Result interface {
 	Paginate(pageSize uint) Result
 
 	// Page makes the result set return results only from the page identified by
-	// pageNumber. Page numbering starts from 0.
+	// pageNumber. Page numbering starts from 1.
 	//
 	// Example:
 	//
@@ -164,7 +164,7 @@ type Result interface {
 
 	// PrevPage returns the previous results page according to the cursor. It
 	// expects a cursorValue, which is the value the cursor column had on the
-	// fist item of the current result set (upper bound).
+	// first item of the current result set (upper bound).
 	//
 	// Example:
 	//

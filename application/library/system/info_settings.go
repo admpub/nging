@@ -43,7 +43,7 @@ type Settings struct {
 func (s *Settings) FromStore(h echo.H) *Settings {
 	s.MonitorOn = h.Bool(`MonitorOn`)
 	s.AlarmOn = h.Bool(`AlarmOn`)
-	v := h.Store(`AlarmThreshold`)
+	v := h.GetStore(`AlarmThreshold`)
 	s.AlarmThreshold.CPU = v.Float64(`CPU`)
 	s.AlarmThreshold.Memory = v.Float64(`Memory`)
 	s.ReportEmail = strings.TrimSpace(h.String(`ReportEmail`))

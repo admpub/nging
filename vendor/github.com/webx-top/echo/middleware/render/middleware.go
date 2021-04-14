@@ -112,7 +112,7 @@ func HTTPErrorHandler(opt *Options) echo.HTTPErrorHandler {
 		if c.Response().Committed() {
 			return
 		}
-		code := DefaultOptions.DefaultHTTPErrorCode
+		code := opt.DefaultHTTPErrorCode
 		var panicErr *echo.PanicError
 		data := c.Data().Reset()
 		title := http.StatusText(code)

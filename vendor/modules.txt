@@ -953,7 +953,7 @@ github.com/webx-top/codec
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json
 github.com/webx-top/com/httpClientOptions
-# github.com/webx-top/db v1.1.5
+# github.com/webx-top/db v1.1.6
 ## explicit
 github.com/webx-top/db
 github.com/webx-top/db/internal/cache
@@ -971,7 +971,7 @@ github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mongo
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.8.3+incompatible
+# github.com/webx-top/echo v2.9.0+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
@@ -1013,7 +1013,7 @@ github.com/webx-top/echo-prometheus
 # github.com/webx-top/image v0.0.7
 ## explicit
 github.com/webx-top/image
-# github.com/webx-top/pagination v0.0.3
+# github.com/webx-top/pagination v0.1.0
 ## explicit
 github.com/webx-top/pagination
 # github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2
