@@ -19,18 +19,17 @@
 package middleware
 
 import (
-	"fmt"
 	"html/template"
 	"net/url"
-	"strconv"
 	"time"
 
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware/tplfunc"
+	"github.com/webx-top/echo/param"
 	"github.com/webx-top/echo/subdomains"
 
-	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/codec"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
@@ -172,30 +171,15 @@ func BackendFuncMap() echo.MiddlewareFunc {
 		return echo.HandlerFunc(func(c echo.Context) error {
 
 			//用户相关函数
-			user, _ := c.Session().Get(`user`).(*dbschema.NgingUser)
-			roleM := model.NewUserRole(c)
-			var roleList []*dbschema.NgingUserRole
+			user := handler.User(c)
 			if user != nil {
 				c.Set(`user`, user)
 				c.SetFunc(`Username`, func() string { return user.Username })
-				roleList = roleM.ListByUser(user)
-				c.Set(`roleList`, roleList)
+				c.Set(`roleList`, handler.RoleList(c))
 			}
-			permission := model.NewPermission().Init(roleList)
-			c.Internal().Set(`permission`, permission)
-			var projectIdent string
-			getProjectIdent := func() string {
-				if len(projectIdent) == 0 {
-					projectIdent = navigate.ProjectIdent(c.Path())
-					if len(projectIdent) == 0 {
-						if proj := navigate.ProjectFirst(true); proj != nil {
-							projectIdent = proj.Ident
-						}
-					}
-				}
-				return projectIdent
-			}
-			c.SetFunc(`ProjectIdent`, getProjectIdent)
+			c.SetFunc(`ProjectIdent`, func() string {
+				return GetProjectIdent(c)
+			})
 			c.SetFunc(`TopButtons`, func() dashboard.TopButtons {
 				buttons := dashboard.TopButtonAll(c)
 				buttons.Ready(c)
@@ -212,36 +196,79 @@ func BackendFuncMap() echo.MiddlewareFunc {
 				return footers
 			})
 			c.SetFunc(`Navigate`, func(side string) navigate.List {
-				switch side {
-				case `top`:
-					if user != nil && user.Id == 1 {
-						if navigate.TopNavigate == nil {
-							return navigate.EmptyList
-						}
-						return *navigate.TopNavigate
-					}
-					return permission.FilterNavigate(navigate.TopNavigate)
-				case `left`:
-					fallthrough
-				default:
-					var leftNav *navigate.List
-					ident := getProjectIdent()
-					if len(ident) > 0 {
-						if proj := navigate.ProjectGet(ident); proj != nil {
-							leftNav = proj.NavList
-						}
-					}
-					if user != nil && user.Id == 1 {
-						if leftNav == nil {
-							return navigate.EmptyList
-						}
-						return *leftNav
-					}
-					return permission.FilterNavigate(leftNav)
-				}
+				return GetNavigate(c, side)
 			})
 			return h.Handle(c)
 		})
+	}
+}
+
+func GetPermission(c echo.Context) *model.RolePermission {
+	permission, ok := c.Internal().Get(`permission`).(*model.RolePermission)
+	if ok || permission == nil {
+		permission = model.NewPermission().Init(handler.RoleList(c))
+		c.Internal().Set(`permission`, permission)
+	}
+	return permission
+}
+
+func GetProjectIdent(c echo.Context) string {
+	projectIdent := c.Internal().String(`projectIdent`)
+	if len(projectIdent) == 0 {
+		projectIdent = navigate.ProjectIdent(c.Path())
+		if len(projectIdent) == 0 {
+			if proj := navigate.ProjectFirst(true); proj != nil {
+				projectIdent = proj.Ident
+			}
+		}
+		c.Internal().Set(`projectIdent`, projectIdent)
+	}
+	return projectIdent
+}
+
+func GetNavigate(c echo.Context, side string) navigate.List {
+	switch side {
+	case `top`:
+		navList, ok := c.Internal().Get(`navigate.top`).(navigate.List)
+		if ok {
+			return navList
+		}
+		user := handler.User(c)
+		if user != nil && user.Id == 1 {
+			if navigate.TopNavigate == nil {
+				return navigate.EmptyList
+			}
+			return *navigate.TopNavigate
+		}
+		permission := GetPermission(c)
+		navList = permission.FilterNavigate(navigate.TopNavigate)
+		c.Internal().Set(`navigate.top`, navList)
+		return navList
+	case `left`:
+		fallthrough
+	default:
+		navList, ok := c.Internal().Get(`navigate.left`).(navigate.List)
+		if ok {
+			return navList
+		}
+		user := handler.User(c)
+		var leftNav *navigate.List
+		ident := GetProjectIdent(c)
+		if len(ident) > 0 {
+			if proj := navigate.ProjectGet(ident); proj != nil {
+				leftNav = proj.NavList
+			}
+		}
+		if user != nil && user.Id == 1 {
+			if leftNav == nil {
+				return navigate.EmptyList
+			}
+			return *leftNav
+		}
+		permission := GetPermission(c)
+		navList = permission.FilterNavigate(leftNav)
+		c.Internal().Set(`navigate.left`, navList)
+		return navList
 	}
 }
 
@@ -268,12 +295,6 @@ func hasString(slice []string, str string) bool {
 }
 
 func date(timestamp interface{}) time.Time {
-	if v, y := timestamp.(int64); y {
-		return time.Unix(v, 0)
-	}
-	if v, y := timestamp.(uint); y {
-		return time.Unix(int64(v), 0)
-	}
-	v, _ := strconv.ParseInt(fmt.Sprint(timestamp), 10, 64)
+	v := param.AsInt64(timestamp)
 	return time.Unix(v, 0)
 }

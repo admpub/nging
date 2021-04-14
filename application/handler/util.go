@@ -46,6 +46,9 @@ var (
 	SendErr              = common.SendErr
 	SendFail             = common.SendFail
 	SendOk               = common.SendOk
+	GetRoleList          = func(echo.Context) []*dbschema.NgingUserRole {
+		return nil
+	}
 )
 var (
 	WebSocketLogger = log.GetLogger(`websocket`)
@@ -93,12 +96,26 @@ func init() {
 }
 
 func User(ctx echo.Context) *dbschema.NgingUser {
-	user, _ := ctx.Get(`user`).(*dbschema.NgingUser)
+	user, ok := ctx.Internal().Get(`user`).(*dbschema.NgingUser)
+	if ok && user != nil {
+		return user
+	}
+	user, ok = ctx.Get(`user`).(*dbschema.NgingUser)
+	if ok {
+		ctx.Internal().Set(`user`, user)
+	}
 	return user
 }
 
 func RoleList(ctx echo.Context) []*dbschema.NgingUserRole {
-	roleList, _ := ctx.Get(`roleList`).([]*dbschema.NgingUserRole)
+	roleList, ok := ctx.Internal().Get(`roleList`).([]*dbschema.NgingUserRole)
+	if ok {
+		return roleList
+	}
+	roleList = GetRoleList(ctx)
+	if len(roleList) > 0 {
+		ctx.Internal().Set(`roleList`, roleList)
+	}
 	return roleList
 }
 

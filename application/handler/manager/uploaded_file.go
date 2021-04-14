@@ -42,7 +42,19 @@ import (
 
 // UploadedFile 本地附件文件管理
 func UploadedFile(ctx echo.Context) error {
-	uploadType := ctx.Param(`uploadType`)
+	return Uploaded(ctx, `file`)
+}
+
+func UploadedChunk(ctx echo.Context) error {
+	return Uploaded(ctx, `chunk`)
+}
+
+func UploadedMerged(ctx echo.Context) error {
+	return Uploaded(ctx, `merged`)
+}
+
+// Uploaded 本地附件文件管理
+func Uploaded(ctx echo.Context, uploadType string) error {
 	var (
 		root      string
 		canUpload bool

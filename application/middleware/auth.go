@@ -72,10 +72,7 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 			})
 			return h.Handle(c)
 		}
-		permission, ok := c.Internal().Get(`permission`).(*model.RolePermission)
-		if !ok {
-			return common.ErrUserNoPerm
-		}
+		permission := GetPermission(c)
 		c.SetFunc(`CheckPerm`, func(route string) error {
 			if user.Id == 1 {
 				return nil

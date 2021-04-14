@@ -50,7 +50,9 @@ func init() {
 		g.Route(`GET,POST`, `/settings`, Settings)
 		g.Route(`POST`, `/upload`, Upload) //文件上传
 		g.Route(`GET,POST`, `/crop`, Crop) //裁剪图片
-		g.Route(`GET,POST`, `/uploaded/:uploadType`, UploadedFile)
+		g.Route(`GET,POST`, `/uploaded/file`, UploadedFile)
+		g.Route(`GET,POST`, `/uploaded/chunk`, UploadedChunk)
+		g.Route(`GET,POST`, `/uploaded/merged`, UploadedMerged)
 
 		g.Route(`GET,POST`, `/alert_topic`, AlertTopic)
 		g.Route(`GET,POST`, `/alert_topic_add`, AlertTopicAdd)
