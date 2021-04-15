@@ -15,7 +15,6 @@ import (
 	"github.com/admpub/confl"
 	"github.com/admpub/frp/client"
 	"github.com/admpub/frp/pkg/config"
-	"github.com/admpub/frp/pkg/consts"
 	frpLog "github.com/admpub/frp/pkg/util/log"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/dbschema"
@@ -147,22 +146,8 @@ func parseProxyConfig(c *config.ClientCommonConf, extra echo.H) (
 
 func RecvProxyConfig(data map[string]interface{}) (recv config.ProxyConf) {
 	proxyType, _ := data[`type`].(string)
-	switch proxyType {
-	case consts.TCPProxy:
-		recv = &config.TCPProxyConf{}
-	case consts.UDPProxy:
-		recv = &config.UDPProxyConf{}
-	case consts.HTTPProxy:
-		recv = &config.HTTPProxyConf{}
-	case consts.HTTPSProxy:
-		recv = &config.HTTPSProxyConf{}
-	case consts.STCPProxy:
-		recv = &config.STCPProxyConf{}
-	case consts.XTCPProxy:
-		recv = &config.XTCPProxyConf{}
-	case consts.SUDPProxy:
-		recv = &config.SUDPProxyConf{}
-	default:
+	recv = config.DefaultProxyConf(proxyType)
+	if recv == nil {
 		log.Errorf(`[frp]Unsupported Proxy Type: %v`, proxyType)
 		return
 	}
@@ -179,12 +164,8 @@ func RecvProxyConfig(data map[string]interface{}) (recv config.ProxyConf) {
 
 func RecvVisitorConfig(data map[string]interface{}) (recv config.VisitorConf) {
 	proxyType, _ := data[`type`].(string)
-	switch proxyType {
-	case consts.STCPProxy:
-		recv = &config.STCPVisitorConf{}
-	case consts.XTCPProxy:
-		recv = &config.XTCPVisitorConf{}
-	default:
+	recv = config.DefaultVisitorConf(proxyType)
+	if recv == nil {
 		frpLog.Error(`[frp]Unsupported Visitor Type:`, proxyType)
 		return
 	}

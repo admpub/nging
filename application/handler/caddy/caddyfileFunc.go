@@ -19,6 +19,7 @@
 package caddy
 
 import (
+	"html/template"
 	"net/url"
 
 	"github.com/webx-top/com"
@@ -57,7 +58,7 @@ func addonAttr(ctx echo.Context, v url.Values) {
 		}
 		return item + `   ` + v
 	})
-	ctx.SetFunc(`Iterator`, func(addon string, item string, prefix string, withQuotes ...bool) string {
+	ctx.SetFunc(`Iterator`, func(addon string, item string, prefix string, withQuotes ...bool) interface{} {
 		if len(addon) > 0 {
 			addon += `_`
 		}
@@ -75,13 +76,16 @@ func addonAttr(ctx echo.Context, v url.Values) {
 			r += t + prefix + v
 			t = "\n"
 		}
+		if withQuote {
+			return template.HTML(r)
+		}
 		return r
 	})
 }
 
 func iteratorKV(ctx echo.Context, v url.Values) {
-	ctx.SetFunc(`IteratorKV`, func(addon string, item string, prefix string, withQuotes ...bool) string {
-		if len(addon) > 0 {
+	ctx.SetFunc(`IteratorKV`, func(addon string, item string, prefix string, withQuotes ...bool) interface{} {
+		if len(addon) > 0 && len(item) > 0 {
 			addon += `_`
 		}
 		k := addon + item + `_k`
@@ -105,6 +109,9 @@ func iteratorKV(ctx echo.Context, v url.Values) {
 				r += t + prefix + k + `   ` + v
 				t = "\n"
 			}
+		}
+		if withQuote {
+			return template.HTML(r)
 		}
 		return r
 	})

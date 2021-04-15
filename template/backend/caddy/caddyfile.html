@@ -86,7 +86,7 @@
         {{end}}
         {{AddonAttr "prometheus" "path" "/metrics"}}
         {{AddonAttr "prometheus" "hostname"}}
-        {{IteratorKV "header" "label" "        label    "}}
+        {{IteratorKV "header" "label" "        label    " true}}
     }
     {{end}}
 
@@ -111,7 +111,7 @@
 
     {{if $v.Get "header_path"}}
     header {{$v.Get "header_path"}} {
-        {{IteratorKV "header" "" "        "}}
+        {{IteratorKV "header" "" "        " true}}
     }
     {{end}}
 
@@ -155,8 +155,8 @@
         {{AddonAttr "proxy" "health_check"}}
         {{AddonAttr "proxy" "health_check_interval"}}
         {{AddonAttr "proxy" "health_check_timeout"}}
-        {{IteratorKV "proxy" "header_upstream" "        header_upstream    "}}
-        {{IteratorKV "proxy" "header_downstream" "        header_downstream    "}}
+        {{IteratorKV "proxy" "header_upstream" "        header_upstream    " true}}
+        {{IteratorKV "proxy" "header_downstream" "        header_downstream    " true}}
         {{AddonAttr "proxy" "keepalive"}}
         {{AddonAttr "proxy" "without"}}
         {{AddonAttr "proxy" "except"}}

@@ -33,6 +33,7 @@ import (
 	"github.com/webx-top/echo/param"
 )
 
+// Table2Config 数据库表中的数据转为frp配置文件数据格式
 func Table2Config(cc *dbschema.NgingFrpClient) (hash echo.H, err error) {
 	if len(cc.Extra) == 0 {
 		return
@@ -75,6 +76,7 @@ func ParseMetas(metas string) map[string]string {
 	return r
 }
 
+// ProxyConfigFromForm 将表单数据转为frpc代理参数
 func ProxyConfigFromForm(prefix string, data url.Values) (visitor echo.H, proxy echo.H, err error) {
 	visitor = echo.H{}
 	proxy = echo.H{}
@@ -103,6 +105,9 @@ func ProxyConfigFromForm(prefix string, data url.Values) (visitor echo.H, proxy 
 			LocalPort:    param.String(m.Value(`local_port`)).Int(),
 			Plugin:       m.Value(`plugin`),
 			PluginParams: map[string]string{},
+		}
+		if len(localC.LocalIP) == 0 {
+			localC.LocalIP = `127.0.0.1`
 		}
 		//TODO:
 		healthCheckC := config.HealthCheckConf{
@@ -144,6 +149,14 @@ func ProxyConfigFromForm(prefix string, data url.Values) (visitor echo.H, proxy 
 				BaseProxyConf: baseC,
 			}
 			recv.RemotePort = param.String(m.Value(`remote_port`)).Int()
+			value = recv
+		case consts.TCPMuxProxy: //TODO:
+			recv := &config.TCPMuxProxyConf{
+				BaseProxyConf: baseC,
+			}
+			recv.DomainConf.CustomDomains = strings.Split(m.Value(`custom_domains`), `,`)
+			recv.DomainConf.SubDomain = m.Value(`subdomain`)
+			recv.Multiplexer = m.Value(`multiplexer`)
 			value = recv
 		case consts.UDPProxy:
 			recv := &config.UDPProxyConf{
