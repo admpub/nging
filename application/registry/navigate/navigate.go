@@ -20,7 +20,6 @@ package navigate
 
 import (
 	"path"
-	"strings"
 
 	"github.com/webx-top/echo"
 )
@@ -150,24 +149,4 @@ func (a *List) ChildrenBy(index int) *List {
 		return nil
 	}
 	return ls.Children
-}
-
-func (a *List) FindByPath(path string) *Item {
-	if a == nil {
-		return nil
-	}
-	path = strings.TrimPrefix(path, "/")
-	arr := strings.SplitN(path, "/", 2)
-	for _, item := range *a {
-		if item.Action == arr[0] {
-			if len(arr) == 1 {
-				return item
-			}
-			if item.Children == nil {
-				return nil
-			}
-			return item.Children.FindByPath(arr[1])
-		}
-	}
-	return nil
 }
