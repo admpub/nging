@@ -122,8 +122,8 @@ func SetServerConfigFromDB(conf *dbschema.NgingFrpServer) *config.ServerCommonCo
 	conf.Plugins = strings.TrimSpace(conf.Plugins)
 	if len(conf.Plugins) > 0 {
 		plugins := strings.Split(conf.Plugins, ",")
-		for name, plugin := range serverPlugins {
-			if com.InSlice(name, plugins) && plugin != nil && plugin.getter != nil {
+		for _, name := range plugins {
+			if plugin, ok := serverPlugins[name]; ok && plugin != nil && plugin.getter != nil {
 				c.HTTPPlugins[name] = plugin.getter(&c)
 			}
 		}
