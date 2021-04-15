@@ -301,7 +301,7 @@ func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]con
 }
 
 func handleSignal(svr *client.Service, kcpDoneCh chan struct{}) {
-	ch := make(chan os.Signal)
+	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 	<-ch
 	svr.Close()
