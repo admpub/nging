@@ -68,9 +68,9 @@
                     <div class="form-group">
                       <label class="col-sm-2 control-label">{{"日志输出"|T}}</label>
                       <div class="col-sm-4">
-                        {{$v := Form "logWay"}}
+                        {{$v := Form "logWay" "file"}}
                         <div class="radio radio-primary radio-inline"> 
-                          <input type="radio" value="console" id="disabled-console" name="logWay"{{if or (eq $v "console") (eq $v "")}} checked{{end}}><label for="disabled-console">{{"输出到控制台"|T}}</label> 
+                          <input type="radio" value="console" id="disabled-console" name="logWay"{{if eq $v "console"}} checked{{end}}><label for="disabled-console">{{"输出到控制台"|T}}</label> 
                         </div>
                         <div class="radio radio-primary radio-inline"> 
                           <input type="radio" value="file" id="logWay-file" name="logWay"{{if eq $v "file"}} checked{{end}}><label for="logWay-file">{{"输出到文件"|T}}</label> 

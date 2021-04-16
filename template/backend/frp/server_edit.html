@@ -104,9 +104,9 @@
           <div class="form-group">
             <label class="col-sm-2 control-label">{{"日志输出"|T}}</label>
             <div class="col-sm-4">
-              {{$v := Form "logWay"}}
+              {{$v := Form "logWay" "file"}}
               <div class="radio radio-primary radio-inline"> 
-                <input type="radio" value="console" id="disabled-console" name="logWay"{{if or (eq $v "console") (eq $v "")}} checked{{end}}><label for="disabled-console">{{"输出到控制台"|T}}</label> 
+                <input type="radio" value="console" id="disabled-console" name="logWay"{{if eq $v "console"}} checked{{end}}><label for="disabled-console">{{"输出到控制台"|T}}</label> 
               </div>
               <div class="radio radio-primary radio-inline"> 
                 <input type="radio" value="file" id="logWay-file" name="logWay"{{if eq $v "file"}} checked{{end}}><label for="logWay-file">{{"输出到文件"|T}}</label> 
@@ -174,20 +174,22 @@
             <label class="col-sm-2 control-label">{{"连接池容量"|T}}</label>
             <div class="col-sm-4">
                 <input type="text" class="form-control" id="maxPoolCount" name="maxPoolCount" value="{{Form "maxPoolCount" "5"}}">
+                <div class="help-block">{{"不填则默认为5"|T}}</div>
             </div>
             <label class="col-sm-1 control-label">{{"连接超时"|T}}</label>
             <div class="col-sm-4">
               <div class="input-group">
-                <input type="text" class="form-control" id="userConnTimeout" name="userConnTimeout" value="{{Form "userConnTimeout"}}">
+                <input type="text" class="form-control" id="userConnTimeout" name="userConnTimeout" value="{{Form "userConnTimeout" "10"}}">
                 <div class="input-group-addon">{{"秒"|T}}</div>
               </div>
+              <div class="help-block">{{"不填则默认为10秒"|T}}</div>
             </div>
           </div>
           <div class="form-group">
             <label class="col-sm-2 control-label">{{"端口数量"|T}}</label>
             <div class="col-sm-4">
                 <input type="text" class="form-control" id="maxPortsPerClient" name="maxPortsPerClient" value="{{Form "maxPortsPerClient"}}">
-                <div class="help-block">{{"每个客户端最多可用的端口数量"|T}}</div>
+                <div class="help-block">{{"每个客户端最多可用的端口数量，默认为0代表不限制"|T}}</div>
             </div>
             <label class="col-sm-1 control-label">{{"可用端口"|T}}</label>
             <div class="col-sm-4">

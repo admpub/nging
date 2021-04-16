@@ -9,6 +9,14 @@
 				<div class="col-md-12">
 					<div class="block-flat">
 						<div class="header">
+							<div class="alert alert-warning">
+								<i class="fa fa-lightbulb-o text-warning"></i>
+								1. {{"此处账号用于服务端的“多用户登录”插件"|T}}
+								&nbsp;
+								{{- if not Config.base.backendURL -}}
+								2. {{ToHTML (T "发现您还没有设置%s后台网址%s，可能无法正常使用“多用户登录”插件" `<a href="/manager/settings?focusName=base[backendURL][value]" target="_blank">` `</a>`)}}
+								{{- end -}}
+							</div>
 							<a href="{{BackendURL}}/frp/account_add" class="btn btn-success pull-right">
 								<i class="fa fa-plus"></i>
 								{{"添加FRP账号"|T}}

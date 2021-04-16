@@ -28,6 +28,7 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/formfilter"
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
@@ -65,11 +66,16 @@ func ClientIndex(ctx echo.Context) error {
 	return ctx.Render(`frp/client_index`, handler.Err(ctx, err))
 }
 
+func clientFormFilter(opts ...formfilter.Options) echo.FormDataFilter {
+	opts = append(opts, formfilter.Exclude(`extra`))
+	return formfilter.Build(opts...)
+}
+
 func ClientAdd(ctx echo.Context) error {
 	var err error
 	m := model.NewFrpClient(ctx)
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.NgingFrpClient)
+		err = ctx.MustBind(m.NgingFrpClient, clientFormFilter())
 		if err == nil {
 			m.NgingFrpClient.Extra, err = form2ExtraStr(ctx)
 		}
@@ -124,7 +130,7 @@ func ClientEdit(ctx echo.Context) error {
 	m := model.NewFrpClient(ctx)
 	err = m.Get(nil, db.Cond{`id`: id})
 	if ctx.IsPost() {
-		err = ctx.MustBind(m.NgingFrpClient, echo.ExcludeFieldName(`created`))
+		err = ctx.MustBind(m.NgingFrpClient, clientFormFilter(formfilter.Exclude(`created`)))
 		if err == nil {
 			m.NgingFrpClient.Extra, err = form2ExtraStr(ctx)
 		}

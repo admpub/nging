@@ -30,7 +30,6 @@ import (
 
 	"github.com/admpub/nging/application/dbschema"
 
-	_ "github.com/admpub/frp/assets/frpc/statik"
 	_ "github.com/admpub/frp/assets/frps/statik"
 	"github.com/admpub/frp/pkg/config"
 	plugin "github.com/admpub/frp/pkg/plugin/server"
@@ -92,7 +91,7 @@ func SetServerConfigFromDB(conf *dbschema.NgingFrpServer) *config.ServerCommonCo
 	if c.MaxPoolCount < 1 {
 		c.MaxPoolCount = 5
 	}
-	c.MaxPortsPerClient = int64(conf.MaxPortsPerClient)
+	c.MaxPortsPerClient = conf.MaxPortsPerClient
 	c.TCPMux = conf.TcpMux == `Y`
 
 	// e.g. 1000-2000,2001,2002,3000-4000

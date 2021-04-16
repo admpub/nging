@@ -13,13 +13,16 @@ import (
 	"time"
 
 	"github.com/admpub/confl"
+	"github.com/admpub/log"
+	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/dbschema"
+
+	_ "github.com/admpub/frp/assets/frpc/statik"
 	"github.com/admpub/frp/client"
 	"github.com/admpub/frp/pkg/config"
 	frpLog "github.com/admpub/frp/pkg/util/log"
-	"github.com/admpub/log"
-	"github.com/admpub/nging/application/dbschema"
-	"github.com/webx-top/com"
-	"github.com/webx-top/echo"
 )
 
 func SetClientConfigFromDB(conf *dbschema.NgingFrpClient) *config.ClientCommonConf {

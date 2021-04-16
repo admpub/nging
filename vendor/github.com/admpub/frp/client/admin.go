@@ -32,7 +32,7 @@ var (
 
 func (svr *Service) RunAdminServer(address string) (err error) {
 	e := echo.New()
-	e.Use(middleware.Log(), middleware.Recover())
+	e.Use(middleware.Log(), middleware.Recover(), middleware.Gzip())
 	if len(svr.cfg.AdminUser) > 0 && len(svr.cfg.AdminPwd) > 0 {
 		e.Use(middleware.BasicAuth(func(user string, passwd string) bool {
 			return user == svr.cfg.AdminUser && passwd == svr.cfg.AdminPwd
@@ -44,6 +44,10 @@ func (svr *Service) RunAdminServer(address string) (err error) {
 	e.Put("/api/config", svr.apiPutConfig)
 
 	// view
+	err = assets.Load(svr.cfg.AssetsDir, `client`)
+	if err != nil {
+		panic(err)
+	}
 	fs := assets.FS(`client`)
 	e.Get("/favicon.ico", http.FileServer(fs))
 	e.Get("/static*", func(c echo.Context) error {

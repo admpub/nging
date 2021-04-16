@@ -73,6 +73,7 @@
 <script src="{{AssetsURL}}/js/loader/loader.min.js?t={{BuildTime}}"></script>
 <script src="{{AssetsURL}}/js/editor/editor.min.js?t={{BuildTime}}"></script>
 <script type="text/javascript">
+var focusInputName = '{{Form `focusName`}}';
 $(function(){
   App.editor.xheditors('#pcont .html-editor');
   App.editor.tinymces('#pcont .html-editor-tinymce');
@@ -90,6 +91,7 @@ $(function(){
     name=name.replace(/\.$/g,'');
     return '{'+'{Config.'+name+'}'+'}';
   }
+  if(focusInputName&&focusInputName.indexOf('"')==-1) $('[name="'+focusInputName+'"]').focus();
   $('#pcont .cl-mcont form [name*="[value]"]').each(function(){
     if($(this).parent('.input-group').length>0){
       var e = $(this).parent('.input-group');
