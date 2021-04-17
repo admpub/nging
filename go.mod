@@ -120,6 +120,7 @@ require (
 	github.com/shirou/gopsutil v3.21.3+incompatible
 	github.com/shivakar/metrohash v0.0.0-20160821164112-8d1c8b6bed28 // indirect
 	github.com/shivakar/xxhash v0.0.0-20160821164220-5ea66fb45566 // indirect
+	github.com/smallnest/rpcx v1.6.2
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.7.0
@@ -143,6 +144,7 @@ require (
 	gocloud.dev v0.22.0
 	goftp.io/server/v2 v2.0.0
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
+	google.golang.org/grpc/examples v0.0.0-20210415220803-1a870aec2ff9 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
