@@ -72,6 +72,9 @@ func RouteNotin(ctx echo.Context) error {
 		if com.InSlice(urlPath, UnlimitedURLs) {
 			continue
 		}
+		if route.String(`permission`) == `public` {
+			continue
+		}
 		if strings.HasPrefix(urlPath, `/term/client/`) {
 			continue
 		}

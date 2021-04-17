@@ -47,6 +47,10 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 			c.Data().SetError(c.E(`请先获取本系统授权`))
 			return c.Redirect(handler.URLFor(`/license`))
 		}
+		handlerPermission := c.Route().String(`permission`)
+		if handlerPermission == `guest` {
+			return h.Handle(c)
+		}
 		user := handler.User(c)
 		if user == nil {
 			c.Data().SetError(c.E(`请先登录`))
@@ -82,9 +86,9 @@ func AuthCheck(h echo.Handler) echo.HandlerFunc {
 			}
 			return nil
 		})
-		// if c.Route().String(`permission`) == `public` {
-		// 	return h.Handle(c)
-		// }
+		if handlerPermission == `public` {
+			return h.Handle(c)
+		}
 		checker, ok := perm.SpecialAuths[rpath]
 		if !ok {
 			checker, ok = perm.SpecialAuths[upath]

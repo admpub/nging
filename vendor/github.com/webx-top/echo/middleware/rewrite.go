@@ -39,12 +39,20 @@ func (c *RewriteConfig) Init() *RewriteConfig {
 	return c
 }
 
+var queryParamRegex = regexp.MustCompile(`/:[^/]+`)
+
+func QueryParamToRegexpRule(query string) string {
+	query = strings.Replace(query, "*", "(\\S*)", -1)
+	query = queryParamRegex.ReplaceAllString(query, "/([^/]+)")
+	return query
+}
+
 // Set rule
 func (c *RewriteConfig) Set(urlPath, newPath string) *RewriteConfig {
 	re, ok := c.addresses[urlPath]
 	if ok {
 		delete(c.rulesRegex, re)
-		r := strings.Replace(urlPath, "*", "(\\S*)", -1)
+		r := QueryParamToRegexpRule(urlPath)
 		re = regexp.MustCompile(r)
 		c.rulesRegex[re] = newPath
 		c.addresses[urlPath] = re
@@ -66,7 +74,7 @@ func (c *RewriteConfig) Delete(urlPath string) *RewriteConfig {
 
 // Add rule
 func (c *RewriteConfig) Add(urlPath, newPath string) *RewriteConfig {
-	r := strings.Replace(urlPath, "*", "(\\S*)", -1)
+	r := QueryParamToRegexpRule(urlPath)
 	re := regexp.MustCompile(r)
 	c.rulesRegex[re] = newPath
 	c.addresses[urlPath] = re
