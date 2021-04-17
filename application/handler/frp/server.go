@@ -26,6 +26,7 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/formfilter"
 	"github.com/webx-top/echo/param"
 
@@ -84,9 +85,11 @@ func serverFormFilter(opts ...formfilter.Options) echo.FormDataFilter {
 func ServerAdd(ctx echo.Context) error {
 	var err error
 	m := model.NewFrpServer(ctx)
+	user := handler.User(ctx)
 	if ctx.IsPost() {
 		err = ctx.MustBind(m.NgingFrpServer, serverFormFilter())
 		if err == nil {
+			m.Uid = user.Id
 			_, err = m.Add()
 			if err == nil {
 				err = config.DefaultCLIConfig.FRPSaveConfigFile(m.NgingFrpServer)
@@ -142,6 +145,12 @@ func ServerEdit(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
 	m := model.NewFrpServer(ctx)
 	err = m.Get(nil, db.Cond{`id`: id})
+	if err != nil {
+		if err == db.ErrNoMoreRows {
+			err = ctx.NewError(code.DataNotFound, ctx.T(`数据不存在`))
+		}
+		return err
+	}
 	if ctx.IsPost() {
 		err = ctx.MustBind(m.NgingFrpServer, serverFormFilter(formfilter.Exclude(`created`)))
 		if err == nil {

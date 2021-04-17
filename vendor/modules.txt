@@ -57,7 +57,7 @@ github.com/admpub/events/emitter
 github.com/admpub/fasthttp
 github.com/admpub/fasthttp/fasthttputil
 github.com/admpub/fasthttp/stackless
-# github.com/admpub/frp v0.36.3
+# github.com/admpub/frp v0.36.4
 ## explicit
 github.com/admpub/frp/assets
 github.com/admpub/frp/assets/frpc/statik

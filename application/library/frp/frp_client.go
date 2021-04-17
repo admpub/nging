@@ -18,6 +18,7 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/library/rpc"
 
 	_ "github.com/admpub/frp/assets/frpc/statik"
 	"github.com/admpub/frp/client"
@@ -252,6 +253,15 @@ func StartClientByConfig(configContent string, pidFile string) error {
 	return StartClient(pxyCfgs, visitorCfgs, pidFile, &c)
 }
 
+var (
+	clientService     *client.Service
+	ClientRPCServices = []func(*client.Service) interface{}{}
+)
+
+func RegisterClientRPCService(r func(*client.Service) interface{}) {
+	ClientRPCServices = append(ClientRPCServices, r)
+}
+
 func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]config.VisitorConf,
 	pidFile string, c *config.ClientCommonConf, configFileArg ...string) (err error) {
 	once.Do(onceInit)
@@ -285,18 +295,36 @@ func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]con
 		echo.Dump(pxyCfgs)
 		echo.Dump(visitorCfgs)
 	*/
-	svr, err := client.NewService(*c, pxyCfgs, visitorCfgs, configFile)
+	port := c.AdminPort
+	if port > 0 && len(ClientRPCServices) > 0 {
+		c.AdminPort = 0
+	}
+	if clientService != nil {
+		clientService.Close()
+	}
+	clientService, err = client.NewService(*c, pxyCfgs, visitorCfgs, configFile)
 	if err != nil {
 		return err
+	}
+	defer clientService.Close()
+	if port > 0 && len(ClientRPCServices) > 0 {
+		address := fmt.Sprintf(`%s:%d`, c.AdminAddr, port)
+		rpcServer := rpc.NewServer(address, c.AdminPwd, nil)
+		defer rpcServer.Close()
+		for _, gen := range ClientRPCServices {
+			rpcServer.Register(gen(clientService))
+		}
+		frpLog.Info(`[frpc] rpc server started: %s`, address)
+		go frpLog.Error(`[frpc] rpc server exited: %v`, rpcServer.Start())
 	}
 
 	if c.Protocol == "kcp" {
 		kcpDoneCh = make(chan struct{})
 		// Capture the exit signal if we use kcp.
-		go handleSignal(svr, kcpDoneCh)
+		go handleSignal(clientService, kcpDoneCh)
 	}
 
-	err = svr.Run()
+	err = clientService.Run()
 	if c.Protocol == "kcp" {
 		<-kcpDoneCh
 	}

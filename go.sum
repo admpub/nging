@@ -164,8 +164,8 @@ github.com/admpub/events v0.0.0-20190913050400-383beb0843c6 h1:d/ovtzWpfY1NueaZT
 github.com/admpub/events v0.0.0-20190913050400-383beb0843c6/go.mod h1:WH16fETVlGhPtG7VzNQtZNXVVbuAMe9qqznAJaEm0IU=
 github.com/admpub/fasthttp v0.0.1 h1:bQ3KJllF03XrvLBXTMS5y05Kynv0YsxH577Mbxn/Qss=
 github.com/admpub/fasthttp v0.0.1/go.mod h1:Es7aFBJpJqagXumOj/1rPJEQ4LELDaLOd10Xd9vjV14=
-github.com/admpub/frp v0.36.3 h1:dwLJeBqTRIBwpz34+WUIH5rbwU3PttmDUZ/eKUTYaYQ=
-github.com/admpub/frp v0.36.3/go.mod h1:fDANiHarN3gBkRvjmr3XIQt00ax0apRjxEIZqQeq7vU=
+github.com/admpub/frp v0.36.4 h1:OsUrh+88eA/U5SLBo+71DUd1OOjJa1OLYRub35lKKhE=
+github.com/admpub/frp v0.36.4/go.mod h1:fDANiHarN3gBkRvjmr3XIQt00ax0apRjxEIZqQeq7vU=
 github.com/admpub/fsnotify v1.4.2/go.mod h1:5Wmi4WKIKJ18yBkjmxy2w7JUGzMEW6Tj7oqvLlFxHyc=
 github.com/admpub/fsnotify v1.4.4 h1:LhmWQAC3la+JtwlVZ42uRSahOU0lccSOZV7/hB4gqCA=
 github.com/admpub/fsnotify v1.4.4/go.mod h1:IE7rjoj2vwr4cYUYQFUeBV1KgldTeXTQy7TwOe0Zwlk=

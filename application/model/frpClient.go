@@ -19,12 +19,17 @@
 package model
 
 import (
+	"context"
+	"fmt"
+
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/model/base"
+
+	"github.com/admpub/nging/application/library/rpc"
 )
 
 type FrpClientAndGroup struct {
@@ -85,4 +90,19 @@ func (f *FrpClient) Edit(mw func(db.Result) db.Result, args ...interface{}) erro
 		return err
 	}
 	return f.NgingFrpClient.Edit(mw, args...)
+}
+
+func (f *FrpClient) CallRPC(ctx context.Context, serviceMethod string, args interface{}, reply interface{}) error {
+	if f.AdminPort > 0 {
+		address := fmt.Sprintf(`%s:%d`, f.AdminAddr, f.AdminPort)
+		rpcClient := rpc.NewClient(address, f.AdminPwd, nil)
+		if args == nil {
+			args = &rpc.Empty{}
+		}
+		if reply == nil {
+			reply = &rpc.Empty{}
+		}
+		return rpcClient.Call(ctx, `ClientRPCService`, serviceMethod, args, reply)
+	}
+	return rpc.ErrRPCServerDisabled
 }

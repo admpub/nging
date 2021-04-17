@@ -19,11 +19,16 @@
 package frp
 
 import (
+	"context"
 	"regexp"
 
+	"github.com/admpub/frp/client"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/nging/application/library/rpc"
 	"github.com/admpub/nging/application/library/writer"
+	"github.com/admpub/nging/application/model"
+	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 )
 
@@ -54,7 +59,36 @@ func ClientRestart(ctx echo.Context) error {
 		msg += ":\n" + startResult
 	}
 	data.SetInfo(msg, 1)
+
+	//serverTestRPC(ctx)
+
 	return ctx.JSON(data)
+}
+
+func clientTestRPC(ctx echo.Context) {
+	m := model.NewFrpClient(ctx)
+	err := m.Get(nil, db.Cond{`disabled`: `N`})
+	if err != nil {
+		panic(err)
+	}
+	err = m.CallRPC(context.Background(), `Status`, &rpc.Empty{}, &client.StatusResp{})
+	if err != nil {
+		log.Error(err)
+	}
+}
+
+func serverTestRPC(ctx echo.Context) {
+	m := model.NewFrpServer(ctx)
+	err := m.Get(nil, db.Cond{`disabled`: `N`})
+	if err != nil {
+		panic(err)
+	}
+	res := &echo.H{}
+	err = m.CallRPC(context.Background(), `ServerInfo`, &rpc.Empty{}, res)
+	if err != nil {
+		log.Error(err)
+	}
+	echo.Dump(res)
 }
 
 func ClientStop(ctx echo.Context) error {

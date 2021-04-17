@@ -33,6 +33,7 @@ import (
 	"github.com/admpub/nging/application/library/common"
 
 	_ "github.com/admpub/nging/application/handler/frp/plugins/multiuser"
+	//_ "github.com/admpub/nging/application/library/frp/rpcservice"
 )
 
 var regexNumEnd = regexp.MustCompile(`_[\d]+$`)

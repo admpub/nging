@@ -20,6 +20,7 @@ package frp
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -29,6 +30,7 @@ import (
 	"github.com/webx-top/com"
 
 	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/library/rpc"
 
 	_ "github.com/admpub/frp/assets/frps/statik"
 	"github.com/admpub/frp/pkg/config"
@@ -167,6 +169,15 @@ func StartServerByConfig(configContent string, pidFile string) error {
 	return StartServer(pidFile, &cfg)
 }
 
+var (
+	serverService     *server.Service
+	ServerRPCServices = []func(*server.Service) interface{}{}
+)
+
+func RegisterServerRPCService(r func(*server.Service) interface{}) {
+	ServerRPCServices = append(ServerRPCServices, r)
+}
+
 func StartServer(pidFile string, c *config.ServerCommonConf) error {
 	once.Do(onceInit)
 	err := c.Validate()
@@ -181,11 +192,26 @@ func StartServer(pidFile string, c *config.ServerCommonConf) error {
 			return err
 		}
 	}
-	svr, err := server.NewService(*c)
+	port := c.DashboardPort
+	if port > 0 && len(ServerRPCServices) > 0 {
+		c.DashboardPort = 0
+	}
+	serverService, err = server.NewService(*c)
 	if err != nil {
 		return err
 	}
+	// defer svr.Close() 无此方法
+	if port > 0 && len(ServerRPCServices) > 0 {
+		address := fmt.Sprintf(`%s:%d`, c.DashboardAddr, port)
+		rpcServer := rpc.NewServer(address, c.DashboardPwd, nil)
+		defer rpcServer.Close()
+		for _, gen := range ServerRPCServices {
+			rpcServer.Register(gen(serverService))
+		}
+		frpLog.Info(`[frps] rpc server started: %s`, address)
+		go frpLog.Error(`[frps] rpc server exited: %v`, rpcServer.Start())
+	}
 	frpLog.Info("Start frps success")
-	svr.Run()
+	serverService.Run()
 	return err
 }
