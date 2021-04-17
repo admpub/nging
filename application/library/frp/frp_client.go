@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/admpub/confl"
-	"github.com/admpub/log"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
@@ -120,7 +119,7 @@ func parseProxyConfig(c *config.ClientCommonConf, extra echo.H) (
 		}
 		err := recv.CheckForCli()
 		if err != nil {
-			frpLog.Error(`[frp]parseProxyConfig:`, err)
+			frpLog.Error(`[frp]parseProxyConfig: %v`, err.Error())
 			continue
 		}
 		pxyCfgs[prefix+key] = recv
@@ -140,7 +139,7 @@ func parseProxyConfig(c *config.ClientCommonConf, extra echo.H) (
 		}
 		err := recv.Check()
 		if err != nil {
-			frpLog.Error(`[frp]parseProxyConfig:`, err)
+			frpLog.Error(`[frp]parseProxyConfig: %v`, err.Error())
 			continue
 		}
 		visitorCfgs[prefix+key] = recv
@@ -152,7 +151,7 @@ func RecvProxyConfig(data map[string]interface{}) (recv config.ProxyConf) {
 	proxyType, _ := data[`type`].(string)
 	recv = config.DefaultProxyConf(proxyType)
 	if recv == nil {
-		log.Errorf(`[frp]Unsupported Proxy Type: %v`, proxyType)
+		frpLog.Error(`[frp]Unsupported Proxy Type: %v`, proxyType)
 		return
 	}
 	b, err := json.Marshal(data)
@@ -160,7 +159,7 @@ func RecvProxyConfig(data map[string]interface{}) (recv config.ProxyConf) {
 		err = json.Unmarshal(b, recv)
 	}
 	if err != nil {
-		frpLog.Error(`[frp]RecvProxyConfig:`, err)
+		frpLog.Error(`[frp]RecvProxyConfig: %v`, err.Error())
 		return
 	}
 	return
@@ -170,7 +169,7 @@ func RecvVisitorConfig(data map[string]interface{}) (recv config.VisitorConf) {
 	proxyType, _ := data[`type`].(string)
 	recv = config.DefaultVisitorConf(proxyType)
 	if recv == nil {
-		frpLog.Error(`[frp]Unsupported Visitor Type:`, proxyType)
+		frpLog.Error(`[frp]Unsupported Visitor Type: %v`, proxyType)
 		return
 	}
 	b, err := json.Marshal(data)
@@ -178,7 +177,7 @@ func RecvVisitorConfig(data map[string]interface{}) (recv config.VisitorConf) {
 		err = json.Unmarshal(b, recv)
 	}
 	if err != nil {
-		frpLog.Error(`[frp]RecvVisitorConfig:`, err)
+		frpLog.Error(`[frp]RecvVisitorConfig: %v`, err.Error())
 		return
 	}
 	return
