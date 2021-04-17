@@ -1,5 +1,7 @@
 package semaphore
 
+import ()
+
 type Semaphore struct {
 	bufSize int
 	channel chan int8

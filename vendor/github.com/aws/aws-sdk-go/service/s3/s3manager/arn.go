@@ -2,7 +2,6 @@ package s3manager
 
 import (
 	"fmt"
-
 	"github.com/aws/aws-sdk-go/aws/arn"
 )
 

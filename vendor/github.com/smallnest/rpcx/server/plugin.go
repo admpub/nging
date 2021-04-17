@@ -39,7 +39,7 @@ type PluginContainer interface {
 }
 
 // Plugin is the server plugin interface.
-type Plugin interface{}
+type Plugin interface {}
 
 type (
 	// RegisterPlugin is .

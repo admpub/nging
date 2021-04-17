@@ -5,6 +5,8 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/hashicorp/go-immutable-radix"
 )
 
 // Config is used to configure metrics settings

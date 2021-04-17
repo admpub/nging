@@ -50,8 +50,8 @@ var directives = map[byte]appender{
 }
 
 type combiningAppend struct {
-	list           appenderList
-	prev           appender
+	list appenderList
+	prev appender
 	prevCanCombine bool
 }
 
