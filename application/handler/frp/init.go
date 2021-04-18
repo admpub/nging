@@ -26,7 +26,6 @@ import (
 	"github.com/admpub/nging/application/initialize/backend"
 
 	_ "github.com/admpub/nging/application/handler/frp/plugins/multiuser"
-	//_ "github.com/admpub/nging/application/library/frp/rpcservice"
 )
 
 func init() {

@@ -9,6 +9,7 @@ import (
 
 	"github.com/admpub/frp/pkg/config"
 	plugin "github.com/admpub/frp/pkg/plugin/server"
+	"github.com/admpub/nging/application/library/hook"
 	"github.com/fatedier/golib/crypto"
 )
 
@@ -29,6 +30,8 @@ var (
 	kcpDoneCh chan struct{}
 	// 全局插件
 	serverPlugins = map[string]*Plugin{}
+
+	Hook = hook.New()
 )
 
 func onceInit() {

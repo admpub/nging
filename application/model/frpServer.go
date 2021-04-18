@@ -19,15 +19,11 @@
 package model
 
 import (
-	"context"
-	"fmt"
-
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
 
 	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/rpc"
 	"github.com/admpub/nging/application/model/base"
 )
 
@@ -89,19 +85,4 @@ func (f *FrpServer) Edit(mw func(db.Result) db.Result, args ...interface{}) erro
 		return err
 	}
 	return f.NgingFrpServer.Edit(mw, args...)
-}
-
-func (f *FrpServer) CallRPC(ctx context.Context, serviceMethod string, args interface{}, reply interface{}) error {
-	if f.DashboardPort > 0 {
-		address := fmt.Sprintf(`%s:%d`, f.DashboardAddr, f.DashboardPort)
-		rpcClient := rpc.NewClient(address, f.DashboardPwd, nil)
-		if args == nil {
-			args = &rpc.Empty{}
-		}
-		if reply == nil {
-			reply = &rpc.Empty{}
-		}
-		return rpcClient.Call(ctx, `ServerRPCService`, serviceMethod, args, reply)
-	}
-	return rpc.ErrRPCServerDisabled
 }

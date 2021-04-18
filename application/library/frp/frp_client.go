@@ -17,7 +17,6 @@ import (
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/dbschema"
-	"github.com/admpub/nging/application/library/rpc"
 
 	_ "github.com/admpub/frp/assets/frpc/statik"
 	"github.com/admpub/frp/client"
@@ -252,14 +251,7 @@ func StartClientByConfig(configContent string, pidFile string) error {
 	return StartClient(pxyCfgs, visitorCfgs, pidFile, &c)
 }
 
-var (
-	clientService     *client.Service
-	ClientRPCServices = []func(*client.Service) interface{}{}
-)
-
-func RegisterClientRPCService(r func(*client.Service) interface{}) {
-	ClientRPCServices = append(ClientRPCServices, r)
-}
+var clientService *client.Service
 
 func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]config.VisitorConf,
 	pidFile string, c *config.ClientCommonConf, configFileArg ...string) (err error) {
@@ -294,10 +286,12 @@ func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]con
 		echo.Dump(pxyCfgs)
 		echo.Dump(visitorCfgs)
 	*/
-	port := c.AdminPort
-	if port > 0 && len(ClientRPCServices) > 0 {
-		c.AdminPort = 0
+
+	hookData := echo.H{`clientConfig`: c}
+	if err := Hook.Fire(`service.client.start.before`, hookData); err != nil {
+		return err
 	}
+
 	if clientService != nil {
 		clientService.Close()
 	}
@@ -306,15 +300,10 @@ func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]con
 		return err
 	}
 	defer clientService.Close()
-	if port > 0 && len(ClientRPCServices) > 0 {
-		address := fmt.Sprintf(`%s:%d`, c.AdminAddr, port)
-		rpcServer := rpc.NewServer(address, c.AdminPwd, nil)
-		defer rpcServer.Close()
-		for _, gen := range ClientRPCServices {
-			rpcServer.Register(gen(clientService))
-		}
-		frpLog.Info(`[frpc] rpc server started: %s`, address)
-		go frpLog.Error(`[frpc] rpc server exited: %v`, rpcServer.Start())
+
+	hookData[`clientService`] = clientService
+	if err := Hook.Fire(`service.client.start.after`, hookData); err != nil {
+		return err
 	}
 
 	if c.Protocol == "kcp" {
