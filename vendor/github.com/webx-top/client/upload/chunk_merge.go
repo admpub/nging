@@ -172,6 +172,7 @@ func (c *ChunkUpload) MergeAll(totalChunks uint64, fileChunkBytes uint64, saveFi
 		for chunkIndex := uint64(0); chunkIndex < totalChunks; chunkIndex++ {
 			wg.Add(1)
 			go func(chunkIndex uint64) {
+				defer wg.Done()
 				file, err := os.OpenFile(c.savePath, os.O_CREATE|os.O_WRONLY, os.ModePerm)
 				if err != nil {
 					log.Errorf("%v: %s: %v (mergeAll)", ErrChunkMergeFileCreateFailed, c.savePath, err)
@@ -185,7 +186,6 @@ func (c *ChunkUpload) MergeAll(totalChunks uint64, fileChunkBytes uint64, saveFi
 					c.saveSize += n
 					mu.Unlock()
 				}
-				wg.Done()
 			}(chunkIndex)
 		}
 		wg.Wait()
@@ -202,7 +202,7 @@ func (c *ChunkUpload) MergeAll(totalChunks uint64, fileChunkBytes uint64, saveFi
 			return
 		}
 		var n int64
-		_, err = WriteTo(cfile, file)
+		n, err = WriteTo(cfile, file)
 
 		cfile.Close()
 

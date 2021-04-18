@@ -130,6 +130,7 @@ func (t OpType) IsMultipleOpField() bool {
 }
 
 type OpcodeSet struct {
+	Type       *runtime.Type
 	Code       *Opcode
 	CodeLength int
 }
@@ -559,7 +560,15 @@ func AppendIndent(ctx *RuntimeContext, b []byte, indent int) []byte {
 func IsNilForMarshaler(v interface{}) bool {
 	rv := reflect.ValueOf(v)
 	switch rv.Kind() {
-	case reflect.Interface, reflect.Map, reflect.Ptr:
+	case reflect.Bool:
+		return !rv.Bool()
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return rv.Int() == 0
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		return rv.Uint() == 0
+	case reflect.Float32, reflect.Float64:
+		return math.Float64bits(rv.Float()) == 0
+	case reflect.Interface, reflect.Map, reflect.Ptr, reflect.Func:
 		return rv.IsNil()
 	case reflect.Slice:
 		return rv.IsNil() || rv.Len() == 0

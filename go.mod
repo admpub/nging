@@ -132,7 +132,7 @@ require (
 	github.com/tklauser/go-sysconf v0.3.4 // indirect
 	github.com/webx-top/captcha v0.0.0-20161202061115-29e9e7f30aa0
 	github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f // indirect
-	github.com/webx-top/client v0.2.3
+	github.com/webx-top/client v0.2.4
 	github.com/webx-top/codec v0.0.1
 	github.com/webx-top/com v0.2.0
 	github.com/webx-top/db v1.1.6
@@ -143,7 +143,7 @@ require (
 	github.com/xu42/youzan-sdk-go v0.0.3
 	gocloud.dev v0.22.0
 	goftp.io/server/v2 v2.0.0
-	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
+	golang.org/x/crypto v0.0.0-20210415154028-4f45737414dc
 	google.golang.org/grpc/examples v0.0.0-20210415220803-1a870aec2ff9 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect

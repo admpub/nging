@@ -624,10 +624,11 @@ github.com/gobwas/pool/pbytes
 # github.com/gobwas/ws v1.0.4
 github.com/gobwas/ws
 github.com/gobwas/ws/wsutil
-# github.com/goccy/go-json v0.4.8
+# github.com/goccy/go-json v0.4.12
 github.com/goccy/go-json
 github.com/goccy/go-json/internal/encoder
 github.com/goccy/go-json/internal/encoder/vm
+github.com/goccy/go-json/internal/encoder/vm_debug
 github.com/goccy/go-json/internal/encoder/vm_escaped
 github.com/goccy/go-json/internal/encoder/vm_escaped_indent
 github.com/goccy/go-json/internal/encoder/vm_indent
@@ -1068,7 +1069,7 @@ github.com/webx-top/captcha
 # github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f
 ## explicit
 github.com/webx-top/chardet
-# github.com/webx-top/client v0.2.3
+# github.com/webx-top/client v0.2.4
 ## explicit
 github.com/webx-top/client/upload
 github.com/webx-top/client/upload/driver
@@ -1227,7 +1228,7 @@ gocloud.dev/internal/retry
 ## explicit
 goftp.io/server/v2
 goftp.io/server/v2/ratelimit
-# golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
+# golang.org/x/crypto v0.0.0-20210415154028-4f45737414dc
 ## explicit
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
@@ -1273,7 +1274,7 @@ golang.org/x/lint
 golang.org/x/lint/golint
 # golang.org/x/mod v0.4.0
 golang.org/x/mod/semver
-# golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4
+# golang.org/x/net v0.0.0-20210415231046-e915ea6b2b7d
 golang.org/x/net/bpf
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
@@ -1303,7 +1304,7 @@ golang.org/x/oauth2/clientcredentials
 golang.org/x/oauth2/internal
 # golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20210403161142-5e06dd20ab57
+# golang.org/x/sys v0.0.0-20210415045647-66c3f260301c
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix

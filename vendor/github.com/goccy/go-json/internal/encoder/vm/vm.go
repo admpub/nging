@@ -3,7 +3,6 @@ package vm
 import (
 	"fmt"
 	"math"
-	"reflect"
 	"sort"
 	"unsafe"
 
@@ -11,9 +10,9 @@ import (
 	"github.com/goccy/go-json/internal/runtime"
 
 	// HACK: compile order
-	// `vm`, `vm_escaped`, `vm_indent`, `vm_escaped_indent` packages uses a lot of memory to compile,
+	// `vm`, `vm_escaped`, `vm_indent`, `vm_escaped_indent`, `vm_debug` packages uses a lot of memory to compile,
 	// so forcibly make dependencies and avoid compiling in concurrent.
-	// dependency order: vm => vm_escaped => vm_indent => vm_escaped_indent
+	// dependency order: vm => vm_escaped => vm_indent => vm_escaped_indent => vm_debug
 	_ "github.com/goccy/go-json/internal/encoder/vm_escaped"
 )
 
@@ -271,7 +270,7 @@ func Run(ctx *encoder.RuntimeContext, b []byte, codeSet *encoder.OpcodeSet, opt 
 				code = code.Next
 				break
 			}
-			if code.Type.Kind() == reflect.Ptr && code.Indirect {
+			if code.IsNilableType && code.Indirect {
 				p = ptrToPtr(p)
 			}
 			bb, err := appendMarshalJSON(code, b, ptrToInterface(code, p), false)
@@ -298,7 +297,7 @@ func Run(ctx *encoder.RuntimeContext, b []byte, codeSet *encoder.OpcodeSet, opt 
 				code = code.Next
 				break
 			}
-			if code.Type.Kind() == reflect.Ptr && code.Indirect {
+			if code.IsNilableType && code.Indirect {
 				p = ptrToPtr(p)
 			}
 			bb, err := appendMarshalText(code, b, ptrToInterface(code, p), false)
@@ -2452,7 +2451,7 @@ func Run(ctx *encoder.RuntimeContext, b []byte, codeSet *encoder.OpcodeSet, opt 
 			}
 			p += code.Offset
 			slice := ptrToSlice(p)
-			if slice.Data == nil {
+			if slice.Len == 0 {
 				code = code.NextField
 			} else {
 				b = append(b, code.Key...)
@@ -2711,7 +2710,7 @@ func Run(ctx *encoder.RuntimeContext, b []byte, codeSet *encoder.OpcodeSet, opt 
 				b = append(b, '{')
 			}
 			b = append(b, code.Key...)
-			if code.Type.Kind() == reflect.Ptr {
+			if code.IsNilableType {
 				if code.Indirect || code.Op == encoder.OpStructPtrHeadMarshalJSON {
 					p = ptrToPtr(p + code.Offset)
 				}
@@ -2755,7 +2754,7 @@ func Run(ctx *encoder.RuntimeContext, b []byte, codeSet *encoder.OpcodeSet, opt 
 				b = append(b, '{')
 			}
 			b = append(b, code.Key...)
-			if code.Type.Kind() == reflect.Ptr {
+			if code.IsNilableType {
 				if code.Indirect || code.Op == encoder.OpStructPtrHeadStringTagMarshalJSON {
 					p = ptrToPtr(p + code.Offset)
 				}
@@ -2798,7 +2797,7 @@ func Run(ctx *encoder.RuntimeContext, b []byte, codeSet *encoder.OpcodeSet, opt 
 			if !code.AnonymousHead {
 				b = append(b, '{')
 			}
-			if code.Type.Kind() == reflect.Ptr {
+			if code.IsNilableType {
 				if code.Indirect || code.Op == encoder.OpStructPtrHeadOmitEmptyMarshalJSON {
 					p = ptrToPtr(p + code.Offset)
 				}
@@ -2924,7 +2923,7 @@ func Run(ctx *encoder.RuntimeContext, b []byte, codeSet *encoder.OpcodeSet, opt 
 				b = append(b, '{')
 			}
 			b = append(b, code.Key...)
-			if code.Type.Kind() == reflect.Ptr {
+			if code.IsNilableType {
 				if code.Indirect || code.Op == encoder.OpStructPtrHeadMarshalText {
 					p = ptrToPtr(p + code.Offset)
 				}
@@ -2968,7 +2967,7 @@ func Run(ctx *encoder.RuntimeContext, b []byte, codeSet *encoder.OpcodeSet, opt 
 				b = append(b, '{')
 			}
 			b = append(b, code.Key...)
-			if code.Type.Kind() == reflect.Ptr {
+			if code.IsNilableType {
 				if code.Indirect || code.Op == encoder.OpStructPtrHeadStringTagMarshalText {
 					p = ptrToPtr(p + code.Offset)
 				}
@@ -3011,7 +3010,7 @@ func Run(ctx *encoder.RuntimeContext, b []byte, codeSet *encoder.OpcodeSet, opt 
 			if !code.AnonymousHead {
 				b = append(b, '{')
 			}
-			if code.Type.Kind() == reflect.Ptr {
+			if code.IsNilableType {
 				if code.Indirect || code.Op == encoder.OpStructPtrHeadOmitEmptyMarshalText {
 					p = ptrToPtr(p + code.Offset)
 				}
@@ -3623,7 +3622,7 @@ func Run(ctx *encoder.RuntimeContext, b []byte, codeSet *encoder.OpcodeSet, opt 
 			p := load(ctxptr, code.HeadIdx)
 			b = append(b, code.Key...)
 			p += code.Offset
-			if code.Type.Kind() == reflect.Ptr {
+			if code.IsNilableType {
 				p = ptrToPtr(p)
 			}
 			if p == 0 && code.Nilcheck {
@@ -3640,15 +3639,20 @@ func Run(ctx *encoder.RuntimeContext, b []byte, codeSet *encoder.OpcodeSet, opt 
 		case encoder.OpStructFieldOmitEmptyMarshalJSON:
 			p := load(ctxptr, code.HeadIdx)
 			p += code.Offset
-			if code.Type.Kind() == reflect.Ptr {
+			if code.IsNilableType {
 				p = ptrToPtr(p)
 			}
 			if p == 0 && code.Nilcheck {
 				code = code.NextField
 				break
 			}
+			iface := ptrToInterface(code, p)
+			if code.Nilcheck && encoder.IsNilForMarshaler(iface) {
+				code = code.NextField
+				break
+			}
 			b = append(b, code.Key...)
-			bb, err := appendMarshalJSON(code, b, ptrToInterface(code, p), false)
+			bb, err := appendMarshalJSON(code, b, iface, false)
 			if err != nil {
 				return nil, err
 			}
@@ -3685,7 +3689,7 @@ func Run(ctx *encoder.RuntimeContext, b []byte, codeSet *encoder.OpcodeSet, opt 
 			p := load(ctxptr, code.HeadIdx)
 			b = append(b, code.Key...)
 			p += code.Offset
-			if code.Type.Kind() == reflect.Ptr {
+			if code.IsNilableType {
 				p = ptrToPtr(p)
 			}
 			if p == 0 && code.Nilcheck {
@@ -3702,7 +3706,7 @@ func Run(ctx *encoder.RuntimeContext, b []byte, codeSet *encoder.OpcodeSet, opt 
 		case encoder.OpStructFieldOmitEmptyMarshalText:
 			p := load(ctxptr, code.HeadIdx)
 			p += code.Offset
-			if code.Type.Kind() == reflect.Ptr {
+			if code.IsNilableType {
 				p = ptrToPtr(p)
 			}
 			if p == 0 && code.Nilcheck {
@@ -3781,7 +3785,7 @@ func Run(ctx *encoder.RuntimeContext, b []byte, codeSet *encoder.OpcodeSet, opt 
 			p := load(ctxptr, code.HeadIdx)
 			p += code.Offset
 			slice := ptrToSlice(p)
-			if slice.Data == nil {
+			if slice.Len == 0 {
 				code = code.NextField
 			} else {
 				b = append(b, code.Key...)

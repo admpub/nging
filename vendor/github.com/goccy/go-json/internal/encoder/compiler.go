@@ -65,6 +65,7 @@ func compileToGetCodeSetSlowPath(typeptr uintptr) (*OpcodeSet, error) {
 	code = copyOpcode(code)
 	codeLength := code.TotalLength()
 	codeSet := &OpcodeSet{
+		Type:       copiedType,
 		Code:       code,
 		CodeLength: codeLength,
 	}
@@ -106,12 +107,24 @@ func compileHead(ctx *compileContext) (*Opcode, error) {
 				return compileBytes(ctx)
 			}
 		}
-		return compileSlice(ctx)
+		code, err := compileSlice(ctx)
+		if err != nil {
+			return nil, err
+		}
+		optimizeStructEnd(code)
+		linkRecursiveCode(code)
+		return code, nil
 	case reflect.Map:
 		if isPtr {
 			return compilePtr(ctx.withType(runtime.PtrTo(typ)))
 		}
-		return compileMap(ctx.withType(typ))
+		code, err := compileMap(ctx.withType(typ))
+		if err != nil {
+			return nil, err
+		}
+		optimizeStructEnd(code)
+		linkRecursiveCode(code)
+		return code, nil
 	case reflect.Struct:
 		code, err := compileStruct(ctx.withType(typ), isPtr)
 		if err != nil {
@@ -242,10 +255,11 @@ func linkRecursiveCode(c *Opcode) {
 
 			lastCode.Idx = beforeLastCode.Idx + uintptrSize
 			lastCode.ElemIdx = lastCode.Idx + uintptrSize
+			lastCode.Length = lastCode.Idx + 2*uintptrSize
 
-			// extend length to alloc slot for elemIdx
-			totalLength := uintptr(code.TotalLength() + 1)
-			nextTotalLength := uintptr(c.TotalLength() + 1)
+			// extend length to alloc slot for elemIdx + length
+			totalLength := uintptr(code.TotalLength() + 2)
+			nextTotalLength := uintptr(c.TotalLength() + 2)
 
 			c.End.Next.Op = OpRecursiveEnd
 
@@ -506,6 +520,7 @@ func compileMarshalJSON(ctx *compileContext) (*Opcode, error) {
 	if !typ.Implements(marshalJSONType) && runtime.PtrTo(typ).Implements(marshalJSONType) {
 		code.AddrForMarshaler = true
 	}
+	code.IsNilableType = isNilableType(typ)
 	ctx.incIndex()
 	return code, nil
 }
@@ -516,6 +531,7 @@ func compileMarshalText(ctx *compileContext) (*Opcode, error) {
 	if !typ.Implements(marshalTextType) && runtime.PtrTo(typ).Implements(marshalTextType) {
 		code.AddrForMarshaler = true
 	}
+	code.IsNilableType = isNilableType(typ)
 	ctx.incIndex()
 	return code, nil
 }
@@ -1274,11 +1290,9 @@ func isNilableType(typ *runtime.Type) bool {
 	switch typ.Kind() {
 	case reflect.Ptr:
 		return true
-	case reflect.Interface:
-		return true
-	case reflect.Slice:
-		return true
 	case reflect.Map:
+		return true
+	case reflect.Func:
 		return true
 	default:
 		return false
@@ -1398,7 +1412,15 @@ func compileStruct(ctx *compileContext, isPtr bool) (*Opcode, error) {
 				valueCode.Indirect = indirect
 			}
 		} else {
-			valueCode.Indirect = indirect
+			if indirect {
+				// if parent is indirect type, set child indirect property to true
+				valueCode.Indirect = indirect
+			} else {
+				// if parent is not indirect type and child have only one field, set child indirect property to false
+				if i == 0 && valueCode.NextField != nil && valueCode.NextField.Op == OpStructEnd {
+					valueCode.Indirect = indirect
+				}
+			}
 		}
 		key := fmt.Sprintf(`"%s":`, tag.Key)
 		escapedKey := fmt.Sprintf(`%s:`, string(AppendEscapedString([]byte{}, tag.Key)))
@@ -1417,7 +1439,8 @@ func compileStruct(ctx *compileContext, isPtr bool) (*Opcode, error) {
 			Indirect:         indirect,
 			Nilcheck:         nilcheck,
 			AddrForMarshaler: addrForMarshaler,
-			IsNextOpPtrType:  strings.Contains(valueCode.Op.String(), "Ptr"),
+			IsNextOpPtrType:  strings.Contains(valueCode.Op.String(), "Ptr") || valueCode.Op == OpInterface,
+			IsNilableType:    isNilableType,
 		}
 		if fieldIdx == 0 {
 			fieldCode.HeadIdx = fieldCode.Idx
