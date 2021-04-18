@@ -60,10 +60,12 @@ var (
 	// 后台路由注册函数
 	//=============================
 
-	Echo         = route.Echo
-	Apply        = route.Apply
-	SetRootGroup = route.SetRootGroup
-	Register     = func(fn func(echo.RouteRegister)) {
+	Echo          = route.Echo
+	Apply         = route.Apply
+	SetRootGroup  = route.SetRootGroup
+	PublicHandler = route.PublicHandler
+	GuestHandler  = route.GuestHandler
+	Register      = func(fn func(echo.RouteRegister)) {
 		route.RegisterToGroup(`@`, fn)
 	}
 	// Use “@”符号代表后台网址前缀

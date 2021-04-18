@@ -101,7 +101,7 @@ var LeftNavigate = &navigate.Item{
 			Action:  `group_delete`,
 		},
 		{
-			Display: true,
+			Display: false,
 			Name:    `统计图表`,
 			Action:  `dashboard`,
 			Target:  `_blank`,

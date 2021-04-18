@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/admpub/confl"
-	"github.com/admpub/log"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
@@ -119,7 +118,7 @@ func parseProxyConfig(c *config.ClientCommonConf, extra echo.H) (
 		}
 		err := recv.CheckForCli()
 		if err != nil {
-			frpLog.Error(`[frp]parseProxyConfig:`, err)
+			frpLog.Error(`[frp]parseProxyConfig: %v`, err.Error())
 			continue
 		}
 		pxyCfgs[prefix+key] = recv
@@ -139,7 +138,7 @@ func parseProxyConfig(c *config.ClientCommonConf, extra echo.H) (
 		}
 		err := recv.Check()
 		if err != nil {
-			frpLog.Error(`[frp]parseProxyConfig:`, err)
+			frpLog.Error(`[frp]parseProxyConfig: %v`, err.Error())
 			continue
 		}
 		visitorCfgs[prefix+key] = recv
@@ -151,7 +150,7 @@ func RecvProxyConfig(data map[string]interface{}) (recv config.ProxyConf) {
 	proxyType, _ := data[`type`].(string)
 	recv = config.DefaultProxyConf(proxyType)
 	if recv == nil {
-		log.Errorf(`[frp]Unsupported Proxy Type: %v`, proxyType)
+		frpLog.Error(`[frp]Unsupported Proxy Type: %v`, proxyType)
 		return
 	}
 	b, err := json.Marshal(data)
@@ -159,7 +158,7 @@ func RecvProxyConfig(data map[string]interface{}) (recv config.ProxyConf) {
 		err = json.Unmarshal(b, recv)
 	}
 	if err != nil {
-		frpLog.Error(`[frp]RecvProxyConfig:`, err)
+		frpLog.Error(`[frp]RecvProxyConfig: %v`, err.Error())
 		return
 	}
 	return
@@ -169,7 +168,7 @@ func RecvVisitorConfig(data map[string]interface{}) (recv config.VisitorConf) {
 	proxyType, _ := data[`type`].(string)
 	recv = config.DefaultVisitorConf(proxyType)
 	if recv == nil {
-		frpLog.Error(`[frp]Unsupported Visitor Type:`, proxyType)
+		frpLog.Error(`[frp]Unsupported Visitor Type: %v`, proxyType)
 		return
 	}
 	b, err := json.Marshal(data)
@@ -177,7 +176,7 @@ func RecvVisitorConfig(data map[string]interface{}) (recv config.VisitorConf) {
 		err = json.Unmarshal(b, recv)
 	}
 	if err != nil {
-		frpLog.Error(`[frp]RecvVisitorConfig:`, err)
+		frpLog.Error(`[frp]RecvVisitorConfig: %v`, err.Error())
 		return
 	}
 	return
@@ -252,6 +251,8 @@ func StartClientByConfig(configContent string, pidFile string) error {
 	return StartClient(pxyCfgs, visitorCfgs, pidFile, &c)
 }
 
+var clientService *client.Service
+
 func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]config.VisitorConf,
 	pidFile string, c *config.ClientCommonConf, configFileArg ...string) (err error) {
 	once.Do(onceInit)
@@ -285,18 +286,33 @@ func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]con
 		echo.Dump(pxyCfgs)
 		echo.Dump(visitorCfgs)
 	*/
-	svr, err := client.NewService(*c, pxyCfgs, visitorCfgs, configFile)
+
+	hookData := echo.H{`clientConfig`: c}
+	if err := Hook.Fire(`service.client.start.before`, hookData); err != nil {
+		return err
+	}
+
+	if clientService != nil {
+		clientService.Close()
+	}
+	clientService, err = client.NewService(*c, pxyCfgs, visitorCfgs, configFile)
 	if err != nil {
+		return err
+	}
+	defer clientService.Close()
+
+	hookData[`clientService`] = clientService
+	if err := Hook.Fire(`service.client.start.after`, hookData); err != nil {
 		return err
 	}
 
 	if c.Protocol == "kcp" {
 		kcpDoneCh = make(chan struct{})
 		// Capture the exit signal if we use kcp.
-		go handleSignal(svr, kcpDoneCh)
+		go handleSignal(clientService, kcpDoneCh)
 	}
 
-	err = svr.Run()
+	err = clientService.Run()
 	if c.Protocol == "kcp" {
 		<-kcpDoneCh
 	}

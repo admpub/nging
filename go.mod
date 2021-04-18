@@ -25,7 +25,7 @@ require (
 	github.com/admpub/errors v0.8.2
 	github.com/admpub/events v0.0.0-20190913050400-383beb0843c6
 	github.com/admpub/fasthttp v0.0.1 // indirect
-	github.com/admpub/frp v0.36.3
+	github.com/admpub/frp v0.36.4
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
 	github.com/admpub/go-download/v2 v2.1.6
 	github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
@@ -120,6 +120,7 @@ require (
 	github.com/shirou/gopsutil v3.21.3+incompatible
 	github.com/shivakar/metrohash v0.0.0-20160821164112-8d1c8b6bed28 // indirect
 	github.com/shivakar/xxhash v0.0.0-20160821164220-5ea66fb45566 // indirect
+	github.com/smallnest/rpcx v1.6.2
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.7.0
@@ -135,7 +136,7 @@ require (
 	github.com/webx-top/codec v0.0.1
 	github.com/webx-top/com v0.2.0
 	github.com/webx-top/db v1.1.6
-	github.com/webx-top/echo v2.9.0+incompatible
+	github.com/webx-top/echo v2.9.2+incompatible
 	github.com/webx-top/image v0.0.7
 	github.com/webx-top/pagination v0.1.0
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect
@@ -143,6 +144,7 @@ require (
 	gocloud.dev v0.22.0
 	goftp.io/server/v2 v2.0.0
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
+	google.golang.org/grpc/examples v0.0.0-20210415220803-1a870aec2ff9 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect

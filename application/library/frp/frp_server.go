@@ -27,6 +27,7 @@ import (
 
 	"github.com/admpub/confl"
 	"github.com/webx-top/com"
+	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/dbschema"
 
@@ -167,6 +168,8 @@ func StartServerByConfig(configContent string, pidFile string) error {
 	return StartServer(pidFile, &cfg)
 }
 
+var serverService *server.Service
+
 func StartServer(pidFile string, c *config.ServerCommonConf) error {
 	once.Do(onceInit)
 	err := c.Validate()
@@ -181,11 +184,24 @@ func StartServer(pidFile string, c *config.ServerCommonConf) error {
 			return err
 		}
 	}
-	svr, err := server.NewService(*c)
+
+	hookData := echo.H{`serverConfig`: c}
+	if err := Hook.Fire(`service.server.start.before`, hookData); err != nil {
+		return err
+	}
+
+	serverService, err = server.NewService(*c)
 	if err != nil {
 		return err
 	}
+	// defer svr.Close() 无此方法
+
+	hookData[`serverService`] = serverService
+	if err := Hook.Fire(`service.server.start.after`, hookData); err != nil {
+		return err
+	}
+
 	frpLog.Info("Start frps success")
-	svr.Run()
+	serverService.Run()
 	return err
 }

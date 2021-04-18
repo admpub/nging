@@ -28,6 +28,7 @@ import (
 	"github.com/webx-top/com"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/formfilter"
 
 	"github.com/admpub/nging/application/dbschema"
@@ -74,12 +75,14 @@ func clientFormFilter(opts ...formfilter.Options) echo.FormDataFilter {
 func ClientAdd(ctx echo.Context) error {
 	var err error
 	m := model.NewFrpClient(ctx)
+	user := handler.User(ctx)
 	if ctx.IsPost() {
 		err = ctx.MustBind(m.NgingFrpClient, clientFormFilter())
 		if err == nil {
 			m.NgingFrpClient.Extra, err = form2ExtraStr(ctx)
 		}
 		if err == nil {
+			m.Uid = user.Id
 			_, err = m.Add()
 			if err == nil {
 				err = config.DefaultCLIConfig.FRPSaveConfigFile(m.NgingFrpClient)
@@ -129,6 +132,12 @@ func ClientEdit(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
 	m := model.NewFrpClient(ctx)
 	err = m.Get(nil, db.Cond{`id`: id})
+	if err != nil {
+		if err == db.ErrNoMoreRows {
+			err = ctx.NewError(code.DataNotFound, ctx.T(`数据不存在`))
+		}
+		return err
+	}
 	if ctx.IsPost() {
 		err = ctx.MustBind(m.NgingFrpClient, clientFormFilter(formfilter.Exclude(`created`)))
 		if err == nil {

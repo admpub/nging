@@ -80,7 +80,7 @@
 									<strong>{{"编辑时间"|T}}</strong>
 								</th>
 								<th style="width:50px"><strong>{{"日志"|T}}</strong></th>
-								<th style="width:105px" class="text-center">
+								<th style="width:130px" class="text-center">
 									<strong>{{"操作"|T}}</strong>
 								</th>
 							</tr>
@@ -109,7 +109,8 @@
 								<td>
 									<a href="javascript:;" data-url="{{BackendURL}}/frp/client_log?id={{$v.Id}}" title="{{"日志"|T}}" data-toggle="tooltip" onclick="App.logShow(this,true);">{{"日志"|T}}</a>
 								</td>
-								<td class="text-center">
+								<td class="text-right">
+									<a id="frp-client-chart-{{$v.Id}}" class="label label-info{{if not $v.Running}} hidden{{end}}" href="{{BackendURL}}/frp/dashboard/client/{{$v.Id}}" target="_blank" title="{{"统计"|T}}" data-toggle="tooltip"><i class="fa fa-bar-chart-o"></i></a>
 									<a class="label label-default" href="{{BackendURL}}/frp/client_add?copyId={{$v.Id}}" title="{{"复制"|T}}" data-toggle="tooltip"><i class="fa fa-copy"></i></a>
 									<a class="label label-success" href="{{BackendURL}}/frp/client_edit?id={{$v.Id}}" title="{{"编辑"|T}}" data-toggle="tooltip"><i class="fa fa-pencil"></i></a>
 									<a class="label label-danger" href="{{BackendURL}}/frp/client_delete?id={{$v.Id}}" onclick="return confirm('{{"真的要删除吗？"|T}}');" title="{{"删除"|T}}" data-toggle="tooltip"><i class="fa fa-times"></i></a>
@@ -156,8 +157,14 @@ $(function(){
 	App.bindSwitch('input.switch-disabled','click','frp/client_edit',null,function(r){
 		var id = $(this).data('id');
 		switch(r.Data.status){
-			case 'started': $('#frp-client-status-'+id).html('<span class="status-run fa fa-play text-success"> {{"运行中"|T}}</span>');break;
-			case 'stopped': $('#frp-client-status-'+id).html('<span class="status-run fa fa-stop text-danger"> {{"已停止"|T}}</span>');break;
+			case 'started': 
+				$('#frp-client-status-'+id).html('<span class="status-run fa fa-play text-success"> {{"运行中"|T}}</span>');
+				$('#frp-client-chart-'+id).removeClass('hidden');
+				break;
+			case 'stopped': 
+				$('#frp-client-status-'+id).html('<span class="status-run fa fa-stop text-danger"> {{"已停止"|T}}</span>');
+				$('#frp-client-chart-'+id).addClass('hidden');
+				break;
 		}
 	});
 });

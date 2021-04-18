@@ -44,18 +44,26 @@ type (
 		Meta          echo.Store
 	}
 
+	ProxyTargeter interface {
+		GetName() string
+		GetURL(echo.Context) *url.URL
+		GetFlushInterval() time.Duration
+		SetFlushInterval(time.Duration)
+		GetMeta() echo.Store
+	}
+
 	// ProxyBalancer defines an interface to implement a load balancing technique.
 	ProxyBalancer interface {
-		AddTarget(*ProxyTarget) bool
+		AddTarget(ProxyTargeter) bool
 		RemoveTarget(string) bool
-		Next(echo.Context) *ProxyTarget
+		Next(echo.Context) ProxyTargeter
 	}
 
 	// ProxyHandler defines an interface to implement a proxy handler.
-	ProxyHandler func(t *ProxyTarget, c echo.Context) error
+	ProxyHandler func(t ProxyTargeter, c echo.Context) error
 
 	commonBalancer struct {
-		targets []*ProxyTarget
+		targets []ProxyTargeter
 		mutex   sync.RWMutex
 	}
 
@@ -72,7 +80,28 @@ type (
 	}
 )
 
+func (t *ProxyTarget) GetName() string {
+	return t.Name
+}
+
+func (t *ProxyTarget) GetURL(echo.Context) *url.URL {
+	return t.URL
+}
+
+func (t *ProxyTarget) GetFlushInterval() time.Duration {
+	return t.FlushInterval
+}
+
+func (t *ProxyTarget) SetFlushInterval(interval time.Duration) {
+	t.FlushInterval = interval
+}
+
+func (t *ProxyTarget) GetMeta() echo.Store {
+	return t.Meta
+}
+
 var (
+	_ ProxyTargeter = &ProxyTarget{}
 	// DefaultProxyConfig is the default Proxy middleware config.
 	DefaultProxyConfig = ProxyConfig{
 		Skipper:    echo.DefaultSkipper,
@@ -81,7 +110,7 @@ var (
 		ContextKey: "target",
 	}
 	// DefaultProxyHandler Proxy Handler
-	DefaultProxyHandler ProxyHandler = func(t *ProxyTarget, c echo.Context) error {
+	DefaultProxyHandler ProxyHandler = func(t ProxyTargeter, c echo.Context) error {
 		var key string
 		switch {
 		case c.IsWebsocket():
@@ -100,34 +129,34 @@ var (
 	}
 
 	// DefaultProxyHandlers default preset handlers
-	DefaultProxyHandlers = map[string]func(*ProxyTarget, echo.Context) http.Handler{
-		`raw`: func(t *ProxyTarget, c echo.Context) http.Handler {
+	DefaultProxyHandlers = map[string]func(ProxyTargeter, echo.Context) http.Handler{
+		`raw`: func(t ProxyTargeter, c echo.Context) http.Handler {
 			return proxyRaw(t, c)
 		},
-		`sse`: func(t *ProxyTarget, c echo.Context) http.Handler {
-			return proxyHTTPWithFlushInterval(t)
+		`sse`: func(t ProxyTargeter, c echo.Context) http.Handler {
+			return proxyHTTPWithFlushInterval(t, c)
 		},
-		`default`: func(t *ProxyTarget, c echo.Context) http.Handler {
+		`default`: func(t ProxyTargeter, c echo.Context) http.Handler {
 			return proxyHTTP(t, c)
 		},
 	}
 )
 
 // Server-Sent Events
-func proxyHTTPWithFlushInterval(t *ProxyTarget) http.Handler {
-	proxy := httputil.NewSingleHostReverseProxy(t.URL)
-	proxy.FlushInterval = t.FlushInterval
+func proxyHTTPWithFlushInterval(t ProxyTargeter, c echo.Context) http.Handler {
+	proxy := httputil.NewSingleHostReverseProxy(t.GetURL(c))
+	proxy.FlushInterval = t.GetFlushInterval()
 	return proxy
 }
 
 // http
-func proxyHTTP(t *ProxyTarget, _ echo.Context) http.Handler {
-	return httputil.NewSingleHostReverseProxy(t.URL)
+func proxyHTTP(t ProxyTargeter, c echo.Context) http.Handler {
+	return httputil.NewSingleHostReverseProxy(t.GetURL(c))
 }
 
 // ProxyHTTPCustomHandler 自定义处理(支持传递body)
-func ProxyHTTPCustomHandler(t *ProxyTarget, c echo.Context) http.Handler {
-	return newSingleHostReverseProxy(t.URL, c)
+func ProxyHTTPCustomHandler(t ProxyTargeter, c echo.Context) http.Handler {
+	return newSingleHostReverseProxy(t.GetURL(c), c)
 }
 
 func newSingleHostReverseProxy(target *url.URL, c echo.Context) *httputil.ReverseProxy {
@@ -193,18 +222,18 @@ func joinURLPath(a, b *url.URL) (path, rawpath string) {
 }
 
 // websocket
-func proxyRaw(t *ProxyTarget, c echo.Context) http.Handler {
+func proxyRaw(t ProxyTargeter, c echo.Context) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		in, _, err := w.(http.Hijacker).Hijack()
 		if err != nil {
-			c.Error(fmt.Errorf("proxy raw, hijack error=%v, url=%s", t.URL, err))
+			c.Error(fmt.Errorf("proxy raw, hijack error=%v, url=%s", t.GetURL(c), err))
 			return
 		}
 		defer in.Close()
 
-		out, err := net.Dial("tcp", t.URL.Host)
+		out, err := net.Dial("tcp", t.GetURL(c).Host)
 		if err != nil {
-			he := echo.NewHTTPError(http.StatusBadGateway, fmt.Sprintf("proxy raw, dial error=%v, url=%s", t.URL, err)).SetRaw(err)
+			he := echo.NewHTTPError(http.StatusBadGateway, fmt.Sprintf("proxy raw, dial error=%v, url=%s", t.GetURL(c), err)).SetRaw(err)
 			c.Error(he)
 			return
 		}
@@ -213,7 +242,7 @@ func proxyRaw(t *ProxyTarget, c echo.Context) http.Handler {
 		// Write header
 		err = r.Write(out)
 		if err != nil {
-			he := echo.NewHTTPError(http.StatusBadGateway, fmt.Sprintf("proxy raw, request header copy error=%v, url=%s", t.URL, err)).SetRaw(err)
+			he := echo.NewHTTPError(http.StatusBadGateway, fmt.Sprintf("proxy raw, request header copy error=%v, url=%s", t.GetURL(c), err)).SetRaw(err)
 			c.Error(he)
 			return
 		}
@@ -228,37 +257,37 @@ func proxyRaw(t *ProxyTarget, c echo.Context) http.Handler {
 		go cp(in, out)
 		err = <-errCh
 		if err != nil && err != io.EOF {
-			c.Logger().Errorf("proxy raw, copy body error=%v, url=%s", t.URL, err)
+			c.Logger().Errorf("proxy raw, copy body error=%v, url=%s", t.GetURL(c), err)
 		}
 	})
 }
 
 // NewRandomBalancer returns a random proxy balancer.
-func NewRandomBalancer(targets []*ProxyTarget) ProxyBalancer {
+func NewRandomBalancer(targets []ProxyTargeter) ProxyBalancer {
 	b := &randomBalancer{commonBalancer: new(commonBalancer)}
 	b.targets = targets
 	return b
 }
 
 // NewRoundRobinBalancer returns a round-robin proxy balancer.
-func NewRoundRobinBalancer(targets []*ProxyTarget) ProxyBalancer {
+func NewRoundRobinBalancer(targets []ProxyTargeter) ProxyBalancer {
 	b := &roundRobinBalancer{commonBalancer: new(commonBalancer)}
 	b.targets = targets
 	return b
 }
 
 // AddTarget adds an upstream target to the list.
-func (b *commonBalancer) AddTarget(target *ProxyTarget) bool {
+func (b *commonBalancer) AddTarget(target ProxyTargeter) bool {
 	for _, t := range b.targets {
-		if t.Name == target.Name {
+		if t.GetName() == target.GetName() {
 			return false
 		}
 	}
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
 
-	if target.FlushInterval <= 0 {
-		target.FlushInterval = 100 * time.Millisecond
+	if target.GetFlushInterval() <= 0 {
+		target.SetFlushInterval(100 * time.Millisecond)
 	}
 
 	b.targets = append(b.targets, target)
@@ -270,7 +299,7 @@ func (b *commonBalancer) RemoveTarget(name string) bool {
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
 	for i, t := range b.targets {
-		if t.Name == name {
+		if t.GetName() == name {
 			b.targets = append(b.targets[:i], b.targets[i+1:]...)
 			return true
 		}
@@ -279,7 +308,7 @@ func (b *commonBalancer) RemoveTarget(name string) bool {
 }
 
 // Next randomly returns an upstream target.
-func (b *randomBalancer) Next(c echo.Context) *ProxyTarget {
+func (b *randomBalancer) Next(c echo.Context) ProxyTargeter {
 	if b.random == nil {
 		b.random = rand.New(rand.NewSource(int64(time.Now().Nanosecond())))
 	}
@@ -289,7 +318,7 @@ func (b *randomBalancer) Next(c echo.Context) *ProxyTarget {
 }
 
 // Next returns an upstream target using round-robin technique.
-func (b *roundRobinBalancer) Next(c echo.Context) *ProxyTarget {
+func (b *roundRobinBalancer) Next(c echo.Context) ProxyTargeter {
 	b.i = b.i % uint32(len(b.targets))
 	t := b.targets[b.i]
 	atomic.AddUint32(&b.i, 1)

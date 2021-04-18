@@ -65,11 +65,19 @@ var UnlimitedURLs = []string{
 	`/donation/:type`,
 }
 
+var HandlerPermissions = []string{
+	`guest`,  // 游客可浏览
+	`public`, // 任意登录用户可浏览
+}
+
 func RouteNotin(ctx echo.Context) error {
 	var unuse []string
 	for _, route := range handler.Echo().Routes() {
 		urlPath := route.Path
 		if com.InSlice(urlPath, UnlimitedURLs) {
+			continue
+		}
+		if com.InSlice(route.String(`permission`), HandlerPermissions) {
 			continue
 		}
 		if strings.HasPrefix(urlPath, `/term/client/`) {

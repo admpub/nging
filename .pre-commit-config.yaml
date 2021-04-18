@@ -4,10 +4,10 @@ repos:
 - repo: git@github.com:go-coscms/pre-commit-golang
   rev: v0.3.6
   hooks:
-    - id: go-fmt
+  #  - id: go-fmt
   #  - id: go-vet
   #  - id: go-lint
-    - id: go-imports
+  #  - id: go-imports
   #  - id: go-cyclo
   #    args: [-over=15]
   #  - id: validate-toml
@@ -16,5 +16,5 @@ repos:
   #  - id: golangci-lint
   #  - id: go-critic
   #  - id: go-unit-tests
-    - id: go-build
+  #  - id: go-build
     - id: go-mod-tidy

@@ -2,6 +2,7 @@ package vhost
 
 import (
 	"errors"
+	"fmt"
 	"sort"
 	"strings"
 	"sync"
@@ -34,7 +35,7 @@ func (r *Routers) Add(domain, location string, payload interface{}) error {
 	defer r.mutex.Unlock()
 
 	if _, exist := r.exist(domain, location); exist {
-		return ErrRouterConfigConflict
+		return fmt.Errorf(`%w (domain: %s location: %s)`, ErrRouterConfigConflict, domain, location)
 	}
 
 	vrs, found := r.RouterByDomain[domain]

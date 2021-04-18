@@ -54,6 +54,9 @@ func ClientRestart(ctx echo.Context) error {
 		msg += ":\n" + startResult
 	}
 	data.SetInfo(msg, 1)
+
+	//serverTestRPC(ctx)
+
 	return ctx.JSON(data)
 }
 

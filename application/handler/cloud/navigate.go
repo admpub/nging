@@ -55,5 +55,15 @@ var LeftNavigate = &navigate.Item{
 			Name:    `删除备份配置`,
 			Action:  `backup_delete`,
 		},
+		{
+			Display: false,
+			Name:    `启动备份任务`,
+			Action:  `backup_start`,
+		},
+		{
+			Display: false,
+			Name:    `停止备份任务`,
+			Action:  `backup_stop`,
+		},
 	},
 }

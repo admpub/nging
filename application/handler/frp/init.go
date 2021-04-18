@@ -19,28 +19,14 @@
 package frp
 
 import (
-	"fmt"
-	"net/http"
-	"regexp"
-
-	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/code"
 
-	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/handler"
-	"github.com/admpub/nging/application/handler/caddy"
-	"github.com/admpub/nging/application/library/common"
+	"github.com/admpub/nging/application/handler/frp/proxy"
+	"github.com/admpub/nging/application/initialize/backend"
 
 	_ "github.com/admpub/nging/application/handler/frp/plugins/multiuser"
 )
-
-var regexNumEnd = regexp.MustCompile(`_[\d]+$`)
-
-type Section struct {
-	Section string
-	Addon   string
-}
 
 func init() {
 	handler.RegisterToGroup(`/frp`, func(g echo.RouteRegister) {
@@ -73,56 +59,13 @@ func init() {
 		g.Route(`GET`, `/addon_form`, e.MetaHandler(echo.H{`name`: `FRP客户端配置表单`}, AddonForm))
 	})
 	handler.RegisterToGroup(`/frp/dashboard`, func(g echo.RouteRegister) {
-		g.Get(``, func(c echo.Context) error {
-			m := &dbschema.NgingFrpServer{}
-			err := m.Get(nil, `disabled`, `N`)
-			if err != nil {
-				if err != db.ErrNoMoreRows {
-					return err
-				}
-				return c.NewError(code.DataNotFound, c.T(`没有找到启用的配置信息`))
-			}
-			if m.DashboardPort > 0 {
-				dashboardHost := m.DashboardAddr
-				if m.DashboardAddr == `0.0.0.0` || len(m.DashboardAddr) == 0 {
-					dashboardHost = `127.0.0.1`
-				}
-				return c.Redirect(fmt.Sprintf(`http://%s:%d/`, dashboardHost, m.DashboardPort))
-			}
-			return c.NewError(code.Unsupported, c.T(`配置信息中未启用管理面板访问功能。如要启用，请将面板端口设为一个大于0的数值`))
-		})
-	})
-}
+		g.Get(`/server/:id`, ServerDashboard)
+		g.Get(`/client/:id`, ClientDashboard)
 
-func AddonForm(ctx echo.Context) error {
-	addon := ctx.Query(`addon`)
-	if len(addon) == 0 {
-		return echo.NewHTTPError(http.StatusBadRequest, ctx.T("参数 addon 的值不能为空"))
-	}
-	if !caddy.ValidAddonName(addon) {
-		return echo.NewHTTPError(http.StatusBadRequest, ctx.T("参数 addon 的值包含非法字符"))
-	}
-	section := ctx.Query(`section`, addon)
-	setAddonFunc(ctx)
-	return ctx.Render(`frp/client/form/`+addon, section)
-}
-
-func setAddonFunc(ctx echo.Context) {
-	prefix := `extra`
-	formKey := func(key string, keys ...string) string {
-		key = prefix + `[` + key + `]`
-		for _, k := range keys {
-			key += `[` + k + `]`
-		}
-		return key
-	}
-	ctx.SetFunc(`Val`, func(key string, keys ...string) string {
-		return ctx.Form(formKey(key, keys...))
+		// - 代理方案 -
+		backend.SkippedGzipPaths[`/frp/dashboard/server/:id/*`] = true
+		backend.SkippedGzipPaths[`/frp/dashboard/client/:id/*`] = true
+		g.Route(`GET,POST`, `/server/:id/*`, echo.NotFoundHandler, proxy.ProxyServer, proxy.Proxy())
+		g.Route(`GET,POST`, `/client/:id/*`, echo.NotFoundHandler, proxy.ProxyClient, proxy.Proxy())
 	})
-	ctx.SetFunc(`Vals`, func(key string, keys ...string) []string {
-		return ctx.FormValues(formKey(key, keys...))
-	})
-	ctx.SetFunc(`Key`, formKey)
-	ipv4, _ := common.GetLocalIP()
-	ctx.Set(`localIP`, ipv4)
 }

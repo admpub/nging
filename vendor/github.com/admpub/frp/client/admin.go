@@ -38,10 +38,10 @@ func (svr *Service) RunAdminServer(address string) (err error) {
 			return user == svr.cfg.AdminUser && passwd == svr.cfg.AdminPwd
 		}))
 	}
-	e.Get("/api/reload", svr.apiReload)
-	e.Get("/api/status", svr.apiStatus)
-	e.Get("/api/config", svr.apiGetConfig)
-	e.Put("/api/config", svr.apiPutConfig)
+	e.Get("/api/reload", svr.APIReload)
+	e.Get("/api/status", svr.APIStatus)
+	e.Get("/api/config", svr.APIGetConfig)
+	e.Put("/api/config", svr.APIPutConfig)
 
 	// view
 	err = assets.Load(svr.cfg.AssetsDir, `client`)

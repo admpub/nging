@@ -34,7 +34,7 @@ type GeneralResponse struct {
 
 // GET api/reload
 
-func (svr *Service) apiReload(c echo.Context) (err error) {
+func (svr *Service) APIReload(c echo.Context) (err error) {
 	res := GeneralResponse{Code: 200}
 	log.Info("Http request [/api/reload]")
 	defer func() {
@@ -162,7 +162,7 @@ func NewProxyStatusResp(status *proxy.WorkingStatus, serverAddr string) ProxySta
 }
 
 // api/status
-func (svr *Service) apiStatus(c echo.Context) (err error) {
+func (svr *Service) APIStatus(c echo.Context) (err error) {
 	var (
 		res StatusResp
 	)
@@ -211,7 +211,7 @@ func (svr *Service) apiStatus(c echo.Context) (err error) {
 }
 
 // GET api/config
-func (svr *Service) apiGetConfig(c echo.Context) (err error) {
+func (svr *Service) APIGetConfig(c echo.Context) (err error) {
 	res := GeneralResponse{Code: 200}
 
 	log.Info("Http get request [/api/config]")
@@ -249,7 +249,7 @@ func (svr *Service) apiGetConfig(c echo.Context) (err error) {
 }
 
 // PUT api/config
-func (svr *Service) apiPutConfig(c echo.Context) (err error) {
+func (svr *Service) APIPutConfig(c echo.Context) (err error) {
 	res := GeneralResponse{Code: 200}
 
 	log.Info("Http put request [/api/config]")
