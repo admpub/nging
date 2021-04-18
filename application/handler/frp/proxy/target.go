@@ -19,6 +19,6 @@ func (t *Target) GetURL(c echo.Context) *url.URL {
 	address := c.Internal().String(`frp.admin.address`)
 	u := *t.ProxyTarget.URL
 	u.Host = address
-	echo.Dump(u)
+	//echo.Dump(u)
 	return &u
 }
