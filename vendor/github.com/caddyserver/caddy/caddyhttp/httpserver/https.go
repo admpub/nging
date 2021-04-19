@@ -47,7 +47,9 @@ func activateHTTPS(cctx caddy.Context) error {
 		}
 		err := c.TLS.Manager.ObtainCert(c.TLS.Hostname, operatorPresent)
 		if err != nil {
-			return err
+			//return err
+			fmt.Println(err.Error())
+			c.TLS.Managed = false
 		}
 	}
 

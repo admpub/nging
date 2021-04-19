@@ -137,6 +137,8 @@ github.com/admpub/bindata/v3 v3.1.5 h1:DxZ4/fwpIcIk27/C14f/B9g6AfWKlly+2iHWwMid4
 github.com/admpub/bindata/v3 v3.1.5/go.mod h1:jOA1tbH70YGa+Q880SMhOxpBf7Yea6O0KWLvAqBITc8=
 github.com/admpub/caddy v1.1.5 h1:4TeKa2u4sxu1F+XaRVN5eDOzNNbujhm2qv7upcdBYTc=
 github.com/admpub/caddy v1.1.5/go.mod h1:7hYREXQdqjNDp2YZqDQNy33gLM9hzxACg2oOs/G9OzE=
+github.com/admpub/caddy v1.1.6 h1:jchAkRjdAAgSWVnnd8C1AXJsiQX17L6T/oZDYlVarUQ=
+github.com/admpub/caddy v1.1.6/go.mod h1:7hYREXQdqjNDp2YZqDQNy33gLM9hzxACg2oOs/G9OzE=
 github.com/admpub/ccs-gm v0.0.3 h1:xu2eYd6Uq2J7mmXQuXMaA6Sjni+unY263r/QnjpuwWU=
 github.com/admpub/ccs-gm v0.0.3/go.mod h1:UujZpz48T1ZrZvJ89D41LpsFwYomWMdm+IiYFxlmo74=
 github.com/admpub/checksum v1.0.1 h1:TWVyWYIY7O4ofdSfCcvp9sJXKlCEFUG2B3YE7kGD4g0=
