@@ -16,6 +16,7 @@ package httpserver
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"net/http"
 	"strconv"
@@ -48,7 +49,7 @@ func activateHTTPS(cctx caddy.Context) error {
 		err := c.TLS.Manager.ObtainCert(c.TLS.Hostname, operatorPresent)
 		if err != nil {
 			//return err
-			fmt.Println(err.Error())
+			log.Printf("[WARNING] %s: %s", c.Addr.String(), err.Error())
 			c.TLS.Managed = false
 		}
 	}

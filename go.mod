@@ -2,7 +2,7 @@ module github.com/admpub/nging
 
 go 1.14
 
-replace github.com/caddyserver/caddy => github.com/admpub/caddy v1.1.6
+replace github.com/caddyserver/caddy => github.com/admpub/caddy v1.1.7
 
 replace github.com/mholt/certmagic => github.com/caddyserver/certmagic v0.8.3
 
