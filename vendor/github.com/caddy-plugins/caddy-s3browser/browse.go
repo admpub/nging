@@ -5,8 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"strings"
 	"net/http"
+	"path"
+	"strings"
 
 	"github.com/caddyserver/caddy/caddyhttp/httpserver"
 	"github.com/minio/minio-go/v6"
@@ -22,12 +23,21 @@ type Browse struct {
 
 func (b Browse) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 
-	path := r.URL.Path
-	if path == "" {
-		path = "/"
+	upath := r.URL.Path
+	if len(upath) == 0 {
+		upath = "/"
 	}
-	if _, ok := b.Fs[path]; !ok {
-		return b.Next.ServeHTTP(w, r)
+	if _, ok := b.Fs[upath]; !ok {
+		if !strings.HasSuffix(upath, `/`) { // 访问的是文件
+			if len(b.Config.CDNURL) > 0 { // 如果指定了CDN的网址，则跳转到CDN网址
+				endpoint := path.Join(b.Config.CDNURL, upath)
+				http.Redirect(w, r, endpoint, http.StatusFound)
+				return http.StatusFound, nil
+			}
+			return b.Next.ServeHTTP(w, r)
+		}
+		// 访问未登记的目录返回 not found
+		return http.StatusNotFound, nil
 	}
 	switch r.Method {
 	case http.MethodGet, http.MethodHead:
@@ -43,12 +53,12 @@ func (b Browse) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	acceptHeader := strings.ToLower(strings.Join(r.Header["Accept"], ","))
 	switch {
 	case strings.Contains(acceptHeader, "application/json"):
-		if buf, err = b.formatAsJSON(b.Fs[path]); err != nil {
+		if buf, err = b.formatAsJSON(b.Fs[upath]); err != nil {
 			return http.StatusInternalServerError, err
 		}
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	default:
-		if buf, err = b.formatAsHTML(b.Fs[path]); err != nil {
+		if buf, err = b.formatAsHTML(b.Fs[upath]); err != nil {
 			if b.Config.Debug {
 				fmt.Println(err)
 			}
@@ -62,7 +72,7 @@ func (b Browse) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 }
 
 func (b Browse) formatAsJSON(listing Directory) (*bytes.Buffer, error) {
-	data := TmplData{CDNURL: b.Config.CDNURL,Directory:listing}
+	data := TmplData{CDNURL: b.Config.CDNURL, Directory: listing}
 	marsh, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
@@ -75,7 +85,7 @@ func (b Browse) formatAsJSON(listing Directory) (*bytes.Buffer, error) {
 
 func (b Browse) formatAsHTML(listing Directory) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
-	data := TmplData{CDNURL: b.Config.CDNURL,Directory:listing}
+	data := TmplData{CDNURL: b.Config.CDNURL, Directory: listing}
 	err := b.Template.Execute(buf, data)
 	return buf, err
 }

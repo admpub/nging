@@ -1,6 +1,7 @@
 package s3browser
 
 import (
+	"html/template"
 	"path/filepath"
 	"strings"
 	"time"
@@ -17,6 +18,7 @@ type Directory struct {
 	Path    string
 	Folders []Folder
 	Files   []File
+	README  string
 }
 
 type Folder struct {
@@ -42,6 +44,7 @@ type Config struct {
 	Refresh  string
 	Debug    bool
 	CSSCDN   string
+	prefixes []string
 }
 
 type Node struct {
@@ -63,6 +66,11 @@ func (f File) HumanModTime(format string) string {
 func (d Directory) ReadableName() string {
 	return cleanUp(d.Path)
 }
+
+func (d Directory) RenderREADME() template.HTML {
+	return template.HTML(d.README)
+}
+
 func (f Folder) ReadableName() string {
 	return cleanUp(f.Name)
 }
