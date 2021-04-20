@@ -57,8 +57,11 @@ var DefaultTemplate = func(c Config) string {
 				padding-left: 15px;
 				padding-right: 15px;
 			}
-			.panel > h1 {
+			.readme-doc > h1 {
 				margin-top: 0;
+			}
+			.readme-doc img{
+				max-width: 100%;
 			}
 			th .glyphicon {
 				font-size: 15px;
@@ -176,7 +179,7 @@ var DefaultTemplate = func(c Config) string {
 				</table>
 			</div>
 			{{- if .README -}}
-			<div class="panel panel-default phl pvl">
+			<div class="panel panel-default phl pvl readme-doc">
 			{{- .RenderREADME -}}
 			</div>
 			{{- end -}}
