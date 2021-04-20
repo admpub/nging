@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"path"
 	"strings"
 
 	"github.com/caddyserver/caddy/caddyhttp/httpserver"
@@ -23,14 +22,14 @@ type Browse struct {
 
 func (b Browse) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 
-	upath := r.URL.Path
-	if len(upath) == 0 {
-		upath = "/"
+	path := r.URL.Path
+	if len(path) == 0 {
+		path = "/"
 	}
-	if _, ok := b.Fs[upath]; !ok {
-		if !strings.HasSuffix(upath, `/`) { // 访问的是文件
+	if _, ok := b.Fs[path]; !ok {
+		if !strings.HasSuffix(path, `/`) { // 访问的是文件
 			if len(b.Config.CDNURL) > 0 { // 如果指定了CDN的网址，则跳转到CDN网址
-				endpoint := path.Join(b.Config.CDNURL, upath)
+				endpoint := b.Config.CDNURL + path
 				http.Redirect(w, r, endpoint, http.StatusFound)
 				return http.StatusFound, nil
 			}
@@ -53,12 +52,12 @@ func (b Browse) ServeHTTP(w http.ResponseWriter, r *http.Request) (int, error) {
 	acceptHeader := strings.ToLower(strings.Join(r.Header["Accept"], ","))
 	switch {
 	case strings.Contains(acceptHeader, "application/json"):
-		if buf, err = b.formatAsJSON(b.Fs[upath]); err != nil {
+		if buf, err = b.formatAsJSON(b.Fs[path]); err != nil {
 			return http.StatusInternalServerError, err
 		}
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	default:
-		if buf, err = b.formatAsHTML(b.Fs[upath]); err != nil {
+		if buf, err = b.formatAsHTML(b.Fs[path]); err != nil {
 			if b.Config.Debug {
 				fmt.Println(err)
 			}
