@@ -60,6 +60,7 @@ require (
 	github.com/admpub/phantomjs v0.0.0-20180924162111-8a5af756140e
 	github.com/admpub/qrcode v0.0.2
 	github.com/admpub/randomize v0.0.2 // indirect
+	github.com/admpub/realip v0.0.0-20210421084339-374cf5df122d // indirect
 	github.com/admpub/regexp2 v1.1.7
 	github.com/admpub/resty/v2 v2.5.1
 	github.com/admpub/securecookie v1.1.2
@@ -136,11 +137,10 @@ require (
 	github.com/webx-top/codec v0.0.1
 	github.com/webx-top/com v0.2.0
 	github.com/webx-top/db v1.1.6
-	github.com/webx-top/echo v2.9.3+incompatible
+	github.com/webx-top/echo v2.9.4+incompatible
 	github.com/webx-top/image v0.0.7
 	github.com/webx-top/pagination v0.1.0
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect
-	github.com/xu42/youzan-sdk-go v0.0.3
 	gocloud.dev v0.22.0
 	goftp.io/server/v2 v2.0.0
 	golang.org/x/crypto v0.0.0-20210415154028-4f45737414dc

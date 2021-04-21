@@ -228,6 +228,9 @@ github.com/admpub/queueChan
 # github.com/admpub/randomize v0.0.2
 ## explicit
 github.com/admpub/randomize
+# github.com/admpub/realip v0.0.0-20210421084339-374cf5df122d
+## explicit
+github.com/admpub/realip
 # github.com/admpub/regexp2 v1.1.7
 ## explicit
 github.com/admpub/regexp2
@@ -1105,7 +1108,7 @@ github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mongo
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.9.3+incompatible
+# github.com/webx-top/echo v2.9.4+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
@@ -1160,12 +1163,6 @@ github.com/xi2/xz
 github.com/xtaci/kcp-go
 # github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37
 ## explicit
-# github.com/xu42/youzan-sdk-go v0.0.3
-## explicit
-github.com/xu42/youzan-sdk-go
-github.com/xu42/youzan-sdk-go/api
-github.com/xu42/youzan-sdk-go/auth
-github.com/xu42/youzan-sdk-go/util
 # go.mongodb.org/mongo-driver v1.4.3
 go.mongodb.org/mongo-driver/bson
 go.mongodb.org/mongo-driver/bson/bsoncodec

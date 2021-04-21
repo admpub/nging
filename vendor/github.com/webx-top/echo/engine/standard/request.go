@@ -4,10 +4,9 @@ import (
 	"io"
 	"io/ioutil"
 	"mime/multipart"
-	"net"
 	"net/http"
-	"strings"
 
+	"github.com/admpub/realip"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/engine"
 )
@@ -67,15 +66,8 @@ func (r *Request) RealIP() string {
 	if len(r.realIP) > 0 {
 		return r.realIP
 	}
-	r.realIP = r.RemoteAddress()
-	if ip := r.header.Get(echo.HeaderXForwardedFor); len(ip) > 0 {
-		ip = strings.TrimSpace(strings.SplitN(ip, ",", 2)[0])
-		r.realIP = ip
-	} else if ip := r.header.Get(echo.HeaderXRealIP); len(ip) > 0 {
-		r.realIP = ip
-	} else {
-		r.realIP, _, _ = net.SplitHostPort(r.realIP)
-	}
+
+	r.realIP = realip.XRealIP(r.header.Get(echo.HeaderXRealIP), r.header.Get(echo.HeaderXForwardedFor), r.RemoteAddress())
 	return r.realIP
 }
 
