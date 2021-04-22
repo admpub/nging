@@ -41,6 +41,8 @@ import (
 	_ "github.com/admpub/nging/application"
 	_ "github.com/admpub/nging/application/initialize/manager"
 	_ "github.com/admpub/nging/application/library/sqlite"
+
+	"github.com/admpub/nging/application/version"
 )
 
 var (
@@ -51,7 +53,7 @@ var (
 	VERSION    = `3.4.2`
 	PACKAGE    = `free`
 
-	schemaVer = 4.001 //数据表结构版本
+	schemaVer = version.DBSCHEMA_VER //数据表结构版本
 )
 
 func main() {
