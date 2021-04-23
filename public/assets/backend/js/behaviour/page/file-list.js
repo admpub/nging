@@ -89,7 +89,7 @@ $(function(){
 			loadList(url,{partial:1});
 		});
 		App.tableSorting('#table-container');
-		App.float('#tbody-content img.previewable', null, null, '8-6');
+		App.float('#tbody-content img.previewable', null, null, 'right');
 	}
 	initUploadButton();
 	initTable();

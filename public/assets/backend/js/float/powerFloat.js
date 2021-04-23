@@ -436,6 +436,10 @@
 						dir = "bottom";
 						break;
 					}
+					case "top": case "right": case "left": case "bottom": {
+						dir = a;
+						break;
+					}
 				}
 				return dir;
 			};

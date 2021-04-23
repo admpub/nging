@@ -1474,22 +1474,47 @@ var App = function () {
 				}
 			}, 50);
 		},
+		floatAtoi: function(p, defaults){
+			var mp = {
+				'bottom':'7',
+				'right':'6',
+				'top':'5',
+				'left':'8',
+				'leftBottom':'4',
+				'rightBottom':'3',
+				'leftTop':'1',
+				'rightTop':'2',
+			};
+			if(typeof mp[p] !== 'undefined') return mp[p];
+			return defaults;
+		},
 		float: function (elem, mode, attr, position, options) {
 			if (!mode) mode = 'ajax';
 			if (!attr) attr = mode=='remind'?'rel':'src';
-			if (!position) position = '5-7';//两个数字分别代表trigger(浮动层)-target(来源对象)，（各个数字的编号从矩形框的左上角开始，沿着顺时针开始旋转来进行编号，然后再从上中部开始沿着顺时针开始编号进行。也就是1、2、3、4分别代表左上角、右上角、右下角、左下角；5、6、7、8分别代表上中、右中、下中、左中）
+			if (!position) position = '5-7';//两个数字分别代表trigger(触发对象)-target(浮动层)，（各个数字的编号从矩形框的左上角开始，沿着顺时针开始旋转来进行编号，然后再从上中部开始沿着顺时针开始编号进行。也就是1、2、3、4分别代表左上角、右上角、右下角、左下角；5、6、7、8分别代表上中、右中、下中、左中）
 			else {
-				switch (position) {
-					case 'bottom':position='5-7';break;
-					case 'right':position='8-6';break;
-					case 'top':position='7-5';break;
-					case 'left':position='6-8';break;
-					case 'left-bottom':position='2-4';break;
-					case 'right-bottom':position='1-3';break;
-					case 'left-top':position='3-1';break;
-					case 'right-top':position='4-2';break;
+				var arr = String(position).split('-');
+				var val = [];
+				for (var i = 0; i < arr.length && i < 2; i++) {
+					var p = arr[i];
+					val.push(App.floatAtoi(p, p));
 				}
+				if (arr.length==1) {
+					switch (arr[0]) {
+						case 'bottom':val.push(App.floatAtoi('top'));break;
+						case 'right':val.push(App.floatAtoi('left'));break;
+						case 'top':val.push(App.floatAtoi('bottom'));break;
+						case 'left':val.push(App.floatAtoi('right'));break;
+						case 'leftBottom':val.push(App.floatAtoi('rightBottom'));break;
+						case 'rightBottom':val.push(App.floatAtoi('leftBottom'));break;
+						case 'leftTop':val.push(App.floatAtoi('rightTop'));break;
+						case 'rightTop':val.push(App.floatAtoi('leftTop'));break;
+						default:val.push(p);break;
+					}
+				}
+				position = val.join('-');
 			}
+			console.log(position);
 			var defaults = { 'targetMode': mode, 'targetAttr': attr, 'position': position };
 			$(elem).powerFloat($.extend(defaults,options||{}));
 		},
