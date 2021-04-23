@@ -56,7 +56,7 @@ var (
 		PidFile:                 `./caddy.pid`,
 	}
 	DefaultVersion = `2.0.0`
-	EnableReload   = false
+	EnableReload   = true
 )
 
 func TrapSignals() {

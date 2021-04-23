@@ -22,8 +22,10 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/mholt/certmagic"
@@ -146,14 +148,9 @@ If you have already purchased a license, please place the ` + license.FileName()
 	echo.Fire(`beforeRun`, -1)
 
 	serverEngine := standard.NewWithConfig(c)
+	go handleSignal(serverEngine)
 	subdomains.Default.Run(serverEngine)
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
-	defer func() {
-		config.DefaultCLIConfig.Close()
-		cancel()
-	}()
-	return serverEngine.Shutdown(ctx)
+	return nil
 }
 
 func initCertMagic(c *engine.Config) error {
@@ -198,4 +195,36 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
+}
+
+func handleSignal(eng engine.Engine) {
+	shutdown := make(chan os.Signal, 1)
+	// ctrl+c信号os.Interrupt
+	// pkill信号syscall.SIGTERM
+	signal.Notify(
+		shutdown,
+		os.Interrupt,
+		syscall.SIGTERM,
+	)
+	for i := 0; true; i++ {
+		<-shutdown
+		if i > 0 {
+			err := eng.Stop()
+			if err != nil {
+				log.Error(err.Error())
+			}
+			os.Exit(2)
+		}
+		log.Warn("SIGINT: Shutting down")
+		go func() {
+			config.DefaultCLIConfig.Close()
+			err := eng.Shutdown(context.Background())
+			var exitedCode int
+			if err != nil {
+				log.Error(err.Error())
+				exitedCode = 4
+			}
+			os.Exit(exitedCode)
+		}()
+	}
 }
