@@ -204,6 +204,7 @@ function cropImage(uploadURL,thumbsnailInput,originalInput,subdir,width,height){
             var thumb = r.Data.thumb;
             $(options.previewElem).attr("src", thumb+'?_='+Math.random());
             $(options.thumbsnailInput).val(thumb);
+            $(options.originalInput).val(fileList[0]);
             actions.children('.avatar-resize').data('token',r.Data.token).show();
             return;
           }
