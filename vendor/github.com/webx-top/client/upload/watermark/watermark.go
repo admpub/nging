@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"os"
 
 	rifs "github.com/admpub/go-utility/filesystem"
 
@@ -17,9 +16,9 @@ func Write(rw io.ReadWriteSeeker, ext string, opt *image.WatermarkOptions) ([]by
 		return nil, fmt.Errorf(`NewWatermark: %w`, err)
 	}
 	err = wm.Mark(rw, ext)
-	rw.Seek(0, os.SEEK_SET)
+	rw.Seek(0, io.SeekStart)
 	if err != nil {
-		return nil, fmt.Errorf(`Mark: %w`)
+		return nil, fmt.Errorf(`Mark: %w`, err)
 	}
 	return ioutil.ReadAll(rw)
 }
@@ -39,7 +38,7 @@ func Bytes2readWriteSeeker(b []byte) (io.ReadWriteSeeker, error) {
 	if err != nil {
 		return sb, err
 	}
-	sb.Seek(0, os.SEEK_SET)
+	sb.Seek(0, io.SeekStart)
 	return sb, err
 }
 

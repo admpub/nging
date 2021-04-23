@@ -1356,6 +1356,8 @@ github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f h1:FHA8iky9Pf3/Na
 github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f/go.mod h1:TystOP1FUbkPySDV9I1I3Cy6MiFwSCiTthc/wP7uZ0Q=
 github.com/webx-top/client v0.2.4 h1:8F/j7o1Jf9I1nWbZCtCWGXsGdr7eq3Uyx4TSJudm0x8=
 github.com/webx-top/client v0.2.4/go.mod h1:kRFzROtRMRhmOm4RUb2zEQ6xaA/Qx9xAlIZjYUhhTeU=
+github.com/webx-top/client v0.2.5 h1:zV61oRCIdAMfz3ra1+35BaA5GD/y9QUVAQtjvW+bxak=
+github.com/webx-top/client v0.2.5/go.mod h1:kRFzROtRMRhmOm4RUb2zEQ6xaA/Qx9xAlIZjYUhhTeU=
 github.com/webx-top/codec v0.0.1 h1:PAG8NhLHrDQDcSUPTsXQgdN+F9DL0S3uHq20wNd2Hu0=
 github.com/webx-top/codec v0.0.1/go.mod h1:FL2TNTorudSTop040uNCTONOlIJfl6kElJLxyoHHs/g=
 github.com/webx-top/com v0.0.0-20200702040344-4905fac65565/go.mod h1:DDfATzu1w5+vD5XmG3YRTfLjaIqZWi/yeJ7HQEGsM2Q=
