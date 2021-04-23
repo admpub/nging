@@ -56,7 +56,7 @@ var (
 		PidFile:                 `./caddy.pid`,
 	}
 	DefaultVersion = `2.0.0`
-	EnableReload   = true
+	EnableReload   = false
 )
 
 func TrapSignals() {
@@ -186,7 +186,11 @@ func (c *Config) watchingSignal() {
 				if debug {
 					msgbox.Info(`Caddy`, `reading ==> `+now())
 				}
-				input, _ := in.ReadString(com.LF)
+				input, err := in.ReadString(com.LF)
+				if err != nil && err != io.EOF {
+					log.Println(`watchingSignal:`, err.Error())
+					return
+				}
 				if input == com.StrLF || input == com.StrCRLF {
 					if debug {
 						msgbox.Info(`Caddy`, `restart ==> `+now())
@@ -244,6 +248,7 @@ func (c *Config) Init() *Config {
 	caddy.RegisterCaddyfileLoader("flag", caddy.LoaderFunc(c.confLoader))
 	caddy.SetDefaultCaddyfileLoader("default", caddy.LoaderFunc(c.defaultLoader))
 
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	// Set up process log before anything bad happens
 	switch c.LogFile {
 	case "stdout":

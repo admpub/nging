@@ -265,6 +265,10 @@ func (c *CLIConfig) CmdStop(typeName string) error {
 
 func (c *CLIConfig) CmdSendSignal(typeName string, sig os.Signal) error {
 	cmd := c.CmdGet(typeName)
+	return c.SendSignal(cmd, sig)
+}
+
+func (c *CLIConfig) SendSignal(cmd *exec.Cmd, sig os.Signal) error {
 	if cmd == nil {
 		return nil
 	}
@@ -374,4 +378,14 @@ func (c *CLIConfig) GenerateIDFromConfigFileName(configFile string, musts ...boo
 		}
 	}
 	return id
+}
+
+func (c *CLIConfig) Close() error {
+	for _, cmd := range c.cmds {
+		err := c.Kill(cmd)
+		if err != nil {
+			log.Error(err)
+		}
+	}
+	return nil
 }

@@ -39,7 +39,8 @@ func (c *CLIConfig) CaddyStopHistory() (err error) {
 func (c *CLIConfig) CaddyStart(writer ...io.Writer) (err error) {
 	err = c.CaddyStopHistory()
 	if err != nil {
-		log.Error(err.Error())
+		log.Warn(err.Error())
+		err = nil
 	}
 	params := []string{os.Args[0], `--config`, c.Conf, `--type`, `webserver`}
 	if caddy.EnableReload {
@@ -48,7 +49,7 @@ func (c *CLIConfig) CaddyStart(writer ...io.Writer) (err error) {
 	} else {
 		c.cmds["caddy"] = com.RunCmdWithWriter(params, writer...)
 	}
-	return nil
+	return
 }
 
 func (c *CLIConfig) CaddyStop() error {
@@ -62,18 +63,18 @@ func (c *CLIConfig) CaddyStop() error {
 }
 
 func (c *CLIConfig) CaddyReload() error {
+	//return c.CmdSendSignal("caddy", os.Interrupt)
 	if c.caddyCh == nil || com.IsWindows { //windows不支持重载，需要重启
 		return c.CaddyRestart()
 	}
 	c.caddyCh.Send(com.BreakLine)
 	return nil
-	//c.CmdSendSignal("caddy", os.Interrupt)
 }
 
 func (c *CLIConfig) CaddyRestart(writer ...io.Writer) error {
 	err := c.CaddyStop()
 	if err != nil {
-		log.Error(err)
+		log.Warn(err)
 	}
 	return c.CaddyStart(writer...)
 }

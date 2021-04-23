@@ -19,6 +19,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -143,8 +144,16 @@ If you have already purchased a license, please place the ` + license.FileName()
 	}
 	subdomains.Default.SetDebug(config.DefaultConfig.Debug)
 	echo.Fire(`beforeRun`, -1)
-	subdomains.Default.Run(standard.NewWithConfig(c))
-	return c.Listener.Close()
+
+	serverEngine := standard.NewWithConfig(c)
+	subdomains.Default.Run(serverEngine)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
+	defer func() {
+		config.DefaultCLIConfig.Close()
+		cancel()
+	}()
+	return serverEngine.Shutdown(ctx)
 }
 
 func initCertMagic(c *engine.Config) error {
