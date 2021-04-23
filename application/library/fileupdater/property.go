@@ -10,7 +10,7 @@ import (
 	"github.com/webx-top/echo/middleware/tplfunc"
 )
 
-type ValueFunc func(string, string) interface{}
+type ValueFunc func(fieldName string, fieldValue string) interface{}
 type FieldValue map[string]ValueFunc
 
 func FieldValueWith(field string, value ValueFunc) FieldValue {
@@ -46,12 +46,10 @@ func GenUpdater(m factory.Model, cond db.Compound, otherFieldAndValues ...FieldV
 	return func(field string, content string) error {
 		m.EventOFF()
 		set := echo.H{field: content}
-		if otherFieldAndValue != nil {
-			for fieldName, valueFunc := range otherFieldAndValue {
-				value := valueFunc(field, content)
-				if value != nil {
-					set[fieldName] = value
-				}
+		for fieldName, valueFunc := range otherFieldAndValue {
+			value := valueFunc(field, content)
+			if value != nil {
+				set[fieldName] = value
 			}
 		}
 		err := m.SetFields(nil, set, cond)

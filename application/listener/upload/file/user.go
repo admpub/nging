@@ -35,9 +35,13 @@ func init() {
 	// - user 表事件
 	listener.New(func(m factory.Model) (tableID string, content string, property *listener.Property) {
 		fm := m.(*dbschema.NgingUser)
-		tableID = fmt.Sprint(fm.Id)
-		content = fm.Avatar
-		property = listener.NewPropertyWith(fm, db.Cond{`id`: fm.Id})
+		tableID = fmt.Sprint(fm.Id) //! 表中数据的行ID
+		content = fm.Avatar         //! 这里使用保存原始图片网址的字段
+		property = listener.NewPropertyWith(
+			fm,
+			db.Cond{`id`: fm.Id}, //! 更新行内保存原始图片网址的字段(这里为avatar字段)的条件
+			//! ... 指定更新行数据时，需要额外更新的字段及其值的生成方式
+		)
 		return
 	}, false).SetTable(`nging_user`, `avatar`).ListenDefault()
 
