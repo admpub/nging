@@ -4792,6 +4792,9 @@ button::-moz-focus-inner {
 .modal-content .modal-header {
   border-bottom: 0;
 }
+.md-content .modal-header + .modal-body {
+  max-height:calc(100vh - 70px - 80px);
+}
 .colored-header .modal-header {
   padding: 20px;
   border-bottom: 1px solid #1080de !important;
