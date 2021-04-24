@@ -7,9 +7,9 @@
 		<table class="table table-bordered">
             <thead class="no-border">
 				<tr>
-					<th>{{"属性名"|T}}</th>
+					<th width="80px">{{"属性名"|T}}</th>
 					<th>{{"属性值"|T}}</th>
-					<th>{{"属性名"|T}}</th>
+					<th width="80px">{{"属性名"|T}}</th>
 					<th>{{"属性值"|T}}</th>
 				</tr>
 			</thead>
@@ -42,25 +42,29 @@
 					<td>
 						{{"CPU型号"|T}}
 					</td>
-                    <td colspan="3">
+                    <td>
 						{{range $k,$v:=.CPU}}
 						<span class="badge badge-primary">{{$v.ModelName}}</span>
 						{{if gt $v.Cores 1}}
-						<strong title="{{T "%d核" $v.Cores}}">&times; {{$v.Cores}}</strong>
+						<strong data-toggle="tooltip" data-placement="left" data-container="body" title="{{T "%d核" $v.Cores}}">&times; {{$v.Cores}}</strong>
 						{{end}}
 						{{if $v.PhysicalID}}
-						<span title="{{"物理ID"|T}}">({{$v.PhysicalID}})</span>
+						<span data-toggle="tooltip" data-placement="left" data-container="body" title="{{"物理ID"|T}}">({{$v.PhysicalID}})</span>
 						{{end}}
 						<br />
 						{{end}}
 					</td>
+					<td>
+						{{"CPU负载"|T}}
+					</td>
+                    <td id="cpu-per-percent" class="clickable" data-toggle="tooltip" data-placement="left" data-container="body" title="{{`点击看进度条`|T}}"></td>
 				</tr>
-				<tr>
+				<tr class="cpu-per-percent-detail hidden">
                     <td colspan="4" class="text-center default-emphasis text-bold">
 						{{"CPU负载"|T}}
 					</td>
 				</tr>
-				<tr>
+				<tr class="cpu-per-percent-detail hidden">
                     <td colspan="4" class="no-padding">
 						<table class="table table-striped no-margin-bottom">
 						<thead>

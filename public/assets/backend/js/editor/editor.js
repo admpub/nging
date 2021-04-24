@@ -34,6 +34,7 @@ App.loader.libs.jqueryui = ['#jquery.ui/jquery-ui.custom.min.js','#jquery.ui/jqu
 App.loader.libs.dropzone = ['#jquery.ui/css/dropzone.min.css','#dropzone/dropzone.min.js'];
 App.loader.libs.loadingOverlay = ['#loadingoverlay/loadingoverlay.min.js'];
 App.loader.libs.dateRangePicker = ['#daterangepicker/daterangepicker.min.css','#daterangepicker/moment.min.js','#daterangepicker/jquery.daterangepicker.min.js','#behaviour/page/datetime.min.js'];
+App.loader.libs.magnificPopup = ['#magnific-popup/magnific-popup.min.css','#magnific-popup/jquery.magnific-popup.min.js'];
 window.UEDITOR_HOME_URL = ASSETS_URL + '/js/editor/ueditor/';
 
 App.editor = {
@@ -976,4 +977,22 @@ App.editor.dropzone = function (elem,options,onSuccss,onError,onRemove) {
 App.editor.dateRangePicker = function(rangeElem, options){
 	App.loader.defined(typeof (App.daterangepicker), 'dateRangePicker');
 	return App.daterangepicker(rangeElem, options)
+};
+App.editor.popup = function(elem,options){
+	App.loader.defined(typeof ($.fn.magnificPopup), 'magnificPopup');
+	if(elem == null) elem = '.image-zoom';
+	var defaults = {
+        type: 'image',
+        mainClass: 'mfp-with-zoom', // this class is for CSS animation below
+        zoom: {
+          enabled: true, // By default it's false, so don't forget to enable it
+          duration: 300, // duration of the effect, in milliseconds
+          easing: 'ease-in-out', // CSS transition easing function
+          opener: function(openerElement) {
+            var parent = $(openerElement);
+            return parent;
+          }
+        }
+    };
+	$(elem).magnificPopup($.extend(defaults, options||{}));
 };

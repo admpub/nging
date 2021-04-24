@@ -80,7 +80,7 @@ func Info(ctx echo.Context) error {
 	if err != nil {
 		log.Error(err)
 	}
-	cpuPercent, err := cpu.Percent(0, false)
+	cpuPercent, err := cpu.Percent(0, true)
 	if err != nil {
 		log.Error(err)
 	}

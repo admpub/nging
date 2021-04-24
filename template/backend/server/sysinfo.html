@@ -6,7 +6,7 @@
 {{/Block}}
 {{Block "main"}}{{Strip}}
 <style>
-.progress{background-color:#888;}
+.progress{background-color:#888;}.jqstooltip{height:auto !important;width:auto !important;}
 </style>
 <!-- {{/* Include "server/chart/chart" */}} -->
 <div class="row">
@@ -20,5 +20,21 @@
 </div>
 {{/Strip}}{{/Block}}
 {{Block "footer"}}
+<script type="text/javascript" src="{{AssetsURL}}/js/jquery.sparkline/jquery.sparkline.min.js"></script>
+<script>
+$(function(){
+	var cpuPercents = {{.CPUPercent|JSONEncode|ToJS}};
+	var container = $('#cpu-per-percent');
+	container.sparkline(cpuPercents, {
+		type: 'bar', //barWidth: (container.width()/cpuPercents.length).toFixed(0)+'px',
+		barWidth: '10px',
+		height: container.height()+'px',
+		numberFormatter: function(n){return n.toFixed(2)+'%';},
+		colorMap: $.range_map({'0:80': 'green', '80:90': 'orange', '90:': 'red'})
+	}).on('click', function(){
+		$('.cpu-per-percent-detail').toggleClass('hidden');
+	});
+})
+</script>
 <!-- {{/* Include "server/chart/chart.js" */}} -->
 {{/Block}}
