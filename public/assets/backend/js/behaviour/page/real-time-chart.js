@@ -268,10 +268,20 @@ function connectWS(onopen){
 	};
 }
 function tick(){
-    connectWS(function(){
-      ws.send("ping");
-    });
-    if($(idElem).length<1)clear();
+  var boxW = $(idElem).width();
+  //console.log(boxW)
+  connectWS(function(){
+    var ping = "ping";
+    if(boxW<=360){
+      ping += ":20";
+    }else if(boxW<=500){
+      ping += ":30";
+    }else if(boxW<=845){
+      ping += ":40";
+    }
+    ws.send(ping);
+  });
+  if($(idElem).length<1)clear();
 }
 function clear(){
   if(typeof(window._interval)!='undefined' && window._interval){

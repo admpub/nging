@@ -1514,7 +1514,7 @@ var App = function () {
 				}
 				position = val.join('-');
 			}
-			console.log(position);
+			//console.log(position);
 			var defaults = { 'targetMode': mode, 'targetAttr': attr, 'position': position };
 			$(elem).powerFloat($.extend(defaults,options||{}));
 		},

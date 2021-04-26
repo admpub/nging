@@ -50,8 +50,47 @@ func init() {
 }
 
 // RealTimeStatusObject 实时状态
-func RealTimeStatusObject() *RealTimeStatus {
-	return realTimeStatus
+func RealTimeStatusObject(n ...int) *RealTimeStatus {
+	if len(n) == 0 || n[0] <= 0 {
+		return realTimeStatus
+	}
+	r := &RealTimeStatus{
+		CPU: TimeSeries{},
+		Mem: TimeSeries{},
+		Net: NewNetIOTimeSeries(),
+	}
+	max := n[0]
+	if max < len(realTimeStatus.CPU) {
+		r.CPU = realTimeStatus.CPU[len(realTimeStatus.CPU)-max:]
+	} else {
+		r.CPU = realTimeStatus.CPU
+	}
+	if max < len(realTimeStatus.Mem) {
+		r.Mem = realTimeStatus.Mem[len(realTimeStatus.Mem)-max:]
+	} else {
+		r.Mem = realTimeStatus.Mem
+	}
+	if max < len(realTimeStatus.Net.BytesSent) {
+		r.Net.BytesSent = realTimeStatus.Net.BytesSent[len(realTimeStatus.Net.BytesSent)-max:]
+	} else {
+		r.Net.BytesSent = realTimeStatus.Net.BytesSent
+	}
+	if max < len(realTimeStatus.Net.BytesRecv) {
+		r.Net.BytesRecv = realTimeStatus.Net.BytesRecv[len(realTimeStatus.Net.BytesRecv)-max:]
+	} else {
+		r.Net.BytesRecv = realTimeStatus.Net.BytesRecv
+	}
+	if max < len(realTimeStatus.Net.PacketsSent) {
+		r.Net.PacketsSent = realTimeStatus.Net.PacketsSent[len(realTimeStatus.Net.PacketsSent)-max:]
+	} else {
+		r.Net.PacketsSent = realTimeStatus.Net.PacketsSent
+	}
+	if max < len(realTimeStatus.Net.PacketsRecv) {
+		r.Net.PacketsRecv = realTimeStatus.Net.PacketsRecv[len(realTimeStatus.Net.PacketsRecv)-max:]
+	} else {
+		r.Net.PacketsRecv = realTimeStatus.Net.PacketsRecv
+	}
+	return r
 }
 
 // RealTimeStatusIsListening 是否正在监听实时状态
@@ -135,10 +174,11 @@ type RealTimeStatus struct {
 	CPU         TimeSeries
 	Mem         TimeSeries
 	Net         NetIOTimeSeries
-	Settings    *Settings
+	settings    *Settings
 	reportEmail []string
 	reportTime  time.Time
 	status      string
+	lock        sync.RWMutex
 }
 
 // Listen 监听
@@ -172,21 +212,21 @@ func (r *RealTimeStatus) Listen(ctx context.Context) *RealTimeStatus {
 var emptyTime = time.Time{}
 
 func checkAndSendAlarm(r *RealTimeStatus, value float64, typ string) {
-	if r == nil || r.Settings == nil {
+	if r == nil || r.settings == nil {
 		return
 	}
-	if !r.Settings.AlarmOn {
+	if !r.settings.AlarmOn {
 		return
 	}
 	switch typ {
 	case `CPU`:
-		if r.Settings.AlarmThreshold.CPU > 0 && r.Settings.AlarmThreshold.CPU < value {
-			r.sendAlarm(r.Settings.AlarmThreshold.CPU, value, typ)
+		if r.settings.AlarmThreshold.CPU > 0 && r.settings.AlarmThreshold.CPU < value {
+			r.sendAlarm(r.settings.AlarmThreshold.CPU, value, typ)
 			return
 		}
 	case `Mem`:
-		if r.Settings.AlarmThreshold.Memory > 0 && r.Settings.AlarmThreshold.Memory < value {
-			r.sendAlarm(r.Settings.AlarmThreshold.Memory, value, typ)
+		if r.settings.AlarmThreshold.Memory > 0 && r.settings.AlarmThreshold.Memory < value {
+			r.sendAlarm(r.settings.AlarmThreshold.Memory, value, typ)
 			return
 		}
 	}
@@ -256,7 +296,7 @@ func (r *RealTimeStatus) sendAlarm(alarmThreshold, value float64, typ string) *R
 }
 
 func (r *RealTimeStatus) SetSettings(c *Settings, interval time.Duration, max int) *RealTimeStatus {
-	r.Settings = c
+	r.settings = c
 	var reportEmail []string
 	if c != nil {
 		if len(c.ReportEmail) > 0 {
@@ -279,12 +319,14 @@ func (r *RealTimeStatus) CPUAdd(y float64) *RealTimeStatus {
 	if r.max <= 0 {
 		return r
 	}
+	r.lock.Lock()
 	checkAndSendAlarm(r, y, `CPU`)
 	l := len(r.CPU)
 	if l >= r.max {
 		r.CPU = r.CPU[1+l-r.max:]
 	}
 	r.CPU = append(r.CPU, NewXY(y))
+	r.lock.Unlock()
 	return r
 }
 
@@ -292,12 +334,14 @@ func (r *RealTimeStatus) MemAdd(y float64) *RealTimeStatus {
 	if r.max <= 0 {
 		return r
 	}
+	r.lock.Lock()
 	checkAndSendAlarm(r, y, `Mem`)
 	l := len(r.Mem)
 	if l >= r.max {
 		r.Mem = r.Mem[1+l-r.max:]
 	}
 	r.Mem = append(r.Mem, NewXY(y))
+	r.lock.Unlock()
 	return r
 }
 
@@ -305,6 +349,7 @@ func (r *RealTimeStatus) NetAdd(stat net.IOCountersStat) *RealTimeStatus {
 	if r.max <= 0 {
 		return r
 	}
+	r.lock.Lock()
 	now := time.Now()
 	l := len(r.Net.BytesRecv)
 	if l >= r.max {
@@ -366,6 +411,7 @@ func (r *RealTimeStatus) NetAdd(stat net.IOCountersStat) *RealTimeStatus {
 	r.Net.PacketsSent = append(r.Net.PacketsSent, NewXY(speed))
 	r.Net.lastPacketsSent.Time = now
 	r.Net.lastPacketsSent.Value = n
+	r.lock.Unlock()
 	return r
 }
 

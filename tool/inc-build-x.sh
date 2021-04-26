@@ -12,7 +12,7 @@ case "$GOARCH" in
         export LDFLAGS=""
 esac
 
-xgo -go=1.16.2 -goproxy=https://goproxy.cn,direct -image=crazymax/xgo -targets=${GOOS}/${GOARCH} -dest=${RELEASEDIR} -out=${NGING_EXECUTOR} -tags="bindata sqlite${BUILDTAGS}" -ldflags="-X main.BUILD_TIME=${NGING_BUILD} -X main.COMMIT=${NGING_COMMIT} -X main.VERSION=${NGING_VERSION} -X main.LABEL=${NGING_LABEL} ${MINIFYFLAG} ${LDFLAGS}" ./${PKGPATH}
+xgo -go=1.16.3 -goproxy=https://goproxy.cn,direct -image=crazymax/xgo:1.16.3 -targets=${GOOS}/${GOARCH} -dest=${RELEASEDIR} -out=${NGING_EXECUTOR} -tags="bindata sqlite${BUILDTAGS}" -ldflags="-X main.BUILD_TIME=${NGING_BUILD} -X main.COMMIT=${NGING_COMMIT} -X main.VERSION=${NGING_VERSION} -X main.LABEL=${NGING_LABEL} ${MINIFYFLAG} ${LDFLAGS}" ./${PKGPATH}
 
 mv ${RELEASEDIR}/${NGING_EXECUTOR}-${GOOS}-* ${RELEASEDIR}/${NGING_EXECUTOR}${NGINGEX}
 mkdir ${RELEASEDIR}/data

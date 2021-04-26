@@ -19,8 +19,12 @@
 package server
 
 import (
+	"bytes"
+	"strings"
+
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/param"
 
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/system"
@@ -52,9 +56,14 @@ func InfoBySockJS(c sockjs.Session) error {
 			if err != nil {
 				return err
 			}
+			info := strings.SplitN(message, `:`, 2)
 			switch message {
 			case `ping`: // Net/Memory/CPU
-				send <- system.RealTimeStatusObject()
+				var n int
+				if len(info) > 1 {
+					n = param.AsInt(info[1])
+				}
+				send <- system.RealTimeStatusObject(n)
 			case `pingAll`:
 				info := &system.DynamicInformation{}
 				send <- info.Init()
@@ -88,9 +97,14 @@ func InfoByWebsocket(c *websocket.Conn, ctx echo.Context) error {
 			if err != nil {
 				return err
 			}
-			switch com.Bytes2str(message) {
+			info := bytes.SplitN(message, []byte(`:`), 2)
+			switch com.Bytes2str(info[0]) {
 			case `ping`: // Net/Memory/CPU
-				send <- system.RealTimeStatusObject()
+				var n int
+				if len(info) > 1 {
+					n = param.AsInt(string(info[1]))
+				}
+				send <- system.RealTimeStatusObject(n)
 			case `pingAll`:
 				info := &system.DynamicInformation{}
 				send <- info.Init()
