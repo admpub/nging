@@ -29,9 +29,10 @@ tower-app-*
 /installed.lock
 /installed2.lock
 /dist/config
+/dist/nging*
 /dist/ftp.pid
-/dist/nging_*
 /dist/data
+/dist/localtest/*/
 /bindata_assetfs.go
 /config/vhosts/
 /vendor/github.com/webx-top/echo/handler/oauth2/example/*.db
@@ -59,6 +60,6 @@ nohup.out
 .DS_Store
 node_modules
 package-lock.json
-/dist/localtest/*/
 /nging_*
+/nging-*
 /*.bak
