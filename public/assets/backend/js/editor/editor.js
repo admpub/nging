@@ -6,6 +6,12 @@ App.loader.libs.editormdPreview = [
 	'#editor/markdown/css/editormd.preview.min.css',
 	'#editor/markdown/editormd.min.js'
 ];
+App.loader.libs.codemirror = [
+	'#editor/markdown/lib/codemirror/codemirror.min.css',
+	'#editor/markdown/lib/codemirror/theme/night.css',
+	'#editor/markdown/lib/codemirror/codemirror.min.js', 
+	'#editor/markdown/lib/codemirror/addon/mode/loadmode.js'
+];
 App.loader.libs.editormd = ['#editor/markdown/css/editormd.min.css', '#editor/markdown/css/editormd.preview.min.css', '#editor/markdown/editormd.min.js'];
 App.loader.libs.flowChart = ['#editor/markdown/lib/flowchart.min.js', '#editor/markdown/lib/jquery.flowchart.min.js'];
 App.loader.libs.sequenceDiagram = ['#editor/markdown/lib/sequence-diagram.min.js'];
@@ -36,7 +42,6 @@ App.loader.libs.loadingOverlay = ['#loadingoverlay/loadingoverlay.min.js'];
 App.loader.libs.dateRangePicker = ['#daterangepicker/daterangepicker.min.css','#daterangepicker/moment.min.js','#daterangepicker/jquery.daterangepicker.min.js','#behaviour/page/datetime.min.js'];
 App.loader.libs.magnificPopup = ['#magnific-popup/magnific-popup.min.css','#magnific-popup/jquery.magnific-popup.min.js'];
 window.UEDITOR_HOME_URL = ASSETS_URL + '/js/editor/ueditor/';
-
 App.editor = {
 	browsingFileURL: App.loader.siteURL + (typeof (window.IS_BACKEND) !== 'undefined' && window.IS_BACKEND ? '' : '/user/file') + '/finder'
 };
@@ -939,6 +944,43 @@ App.editor.fileInput = function (elem) {
 				App.message({ text: App.t('上传成功'), type: 'success' });
 			});
 		});
+	});
+};
+App.editor.codemirror = function (elem,options,loadMode) {
+	if($(elem).length<1) return null;
+	var init = function(){
+		if($(elem).data('codemirror'))return;
+		var defaults = {
+			lineNumbers: true,
+			lineWrapping: true,
+			mode: "text/x-csrc",
+		};
+		var option = $.extend(defaults, options || {});
+		var editor = CodeMirror.fromTextArea($(elem)[0], option);
+		//editor.setSize('auto', 'auto');
+		if(!loadMode){
+			switch(option.mode){
+				case "text/x-csrc": loadMode = "clike";break;
+				case "text/css": loadMode = "css";break;
+				case "text/x-mysql": loadMode = "sql";break;
+				case "text/x-mssql": loadMode = "sql";break;
+				case "text/x-markdown": loadMode = "markdown";break;
+				default: if(typeof(CodeMirror.modeInfo)!=='undefined'){
+					for(var i = 0; i < CodeMirror.modeInfo.length; i++){
+						var v = CodeMirror.modeInfo[i];
+						if(v.mime == option.mode || v.mode == option.mode){
+							loadMode = v.mode;
+							break;
+						}
+					}
+				}
+			}
+		}
+		if(loadMode) CodeMirror.autoLoadMode(editor, loadMode);
+		$(elem).data('codemirror',editor);
+	};
+	App.loader.defined(typeof (CodeMirror), 'codemirror', init, function(){
+		CodeMirror.modeURL = ASSETS_URL+"/js/editor/markdown/lib/codemirror/mode/%N/%N.js";
 	});
 };
 App.editor.dropzone = function (elem,options,onSuccss,onError,onRemove) {

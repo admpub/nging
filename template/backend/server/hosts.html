@@ -5,11 +5,6 @@
 <li class="active">{{Stored.title}}</li>
 {{/Block}}
 {{Block "head"}}
-<!-- codemirror -->
-<link rel="stylesheet" href="{{AssetsURL}}/js/editor/markdown/lib/codemirror/codemirror.min.css">
-<link rel="stylesheet" href="{{AssetsURL}}/js/editor/markdown/lib/codemirror/theme/night.css">
-<script src="{{AssetsURL}}/js/editor/markdown/lib/codemirror/codemirror.min.js"></script>
-<script src="{{AssetsURL}}/js/editor/markdown/lib/codemirror/addon/mode/loadmode.js"></script>
 <style>
 .CodeMirror {
     border: 1px solid #ccc;
@@ -52,19 +47,9 @@
 </div>
 {{/Block}}
 {{Block "footer"}}
+<script src="{{AssetsURL}}/js/loader/loader.min.js"></script>
+<script src="{{AssetsURL}}/js/editor/editor.min.js"></script>
 <script type="text/javascript">
-var editor;
-CodeMirror.modeURL = "{{AssetsURL}}/js/editor/markdown/lib/codemirror/mode/%N/%N.js";
-function initCodeMirrorEditor() {
-    //if(editor)return;
-    editor = CodeMirror.fromTextArea($("#hosts")[0], {
-        lineNumbers: true
-    });
-    editor.setOption('lineWrapping', true);
-    //editor.setSize('auto', 'auto');
-    editor.setOption("mode", "text/x-cmake");
-    CodeMirror.autoLoadMode(editor, "cmake");
-}
 $(function(){
     $('#hosts-form').off().on('submit',function(e){
         e.preventDefault();
@@ -72,7 +57,7 @@ $(function(){
             App.message({title: App.i18n.SYS_INFO, text: r.Info, class_name: r.Code==1?"success":"danger"});
         },'json');
     });
-    initCodeMirrorEditor();
+    App.editor.codemirror("#hosts");
 });
 </script>
 {{/Block}}

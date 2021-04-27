@@ -21,7 +21,7 @@
 			return Loader.getValue(key, data);
 		});
 	};
-    Loader.include = function(file,location,once) {
+    Loader.include = function(file,location,once,successCallback,failureCallback) {
         if (location == null) location = "head";
         if (once == null) once = true;
         if (location == "head" && typeof(Loader.data["include"]) == "undefined") {
@@ -46,6 +46,19 @@
         }
         $.ajaxSetup({cache: true});
         var files = typeof(file) == "string" ? [file] : file;
+        var loaded = {success:0,failure:0,total:files.length};
+        if(successCallback||failureCallback){
+            var timer = setInterval(function(){
+                //console.log(loaded)
+                if (loaded.success+loaded.failure < files.length) return;
+                clearInterval(timer);
+                if (loaded.success >= files.length) {
+                    successCallback && successCallback();
+                } else {
+                    failureCallback && failureCallback();
+                }
+            }, 200);
+        }
         for (var i = 0; i < files.length; i++) {
             var name = files[i].replace(/^\s|\s$/g, ""),
                 att = name.split('.');
@@ -55,35 +68,69 @@
             var attr = isCSS ? ' type="text/css" rel="stylesheet"' : ' type="text/javascript"';
             attr += ' charset="utf-8" ';
             var link = (isCSS ? "href" : "src") + "='" + name + "'";
-            if (once && $(tag + "[" + link + "]").length > 0) continue;
+            if (once && $(tag + "[" + link + "]").length > 0) {
+                loaded.success++;
+                continue;
+            }
             var ej = $("<" + tag + attr + link + "></" + tag + ">");
+            var script = ej[0];
+            if (script.readyState) {  // IE
+                script.onreadystatechange = function() {
+                    if (script.readyState === 'loaded' || script.readyState === 'complete') {
+                        script.onreadystatechange = null;
+                        loaded.success++;
+                    }
+                };
+            } else {  // Other Browsers
+                script.onload = function() {
+                    loaded.success++;
+                };
+            }
             if (location == "head") {
                 if (typeof(Loader.data.include.after[tag]) != 'undefined') {
                     Loader.data.include.after[tag].after(ej);
+                    loaded.success++;
                     continue;
                 } 
                 if (typeof(Loader.data.include.before[tag]) != 'undefined') {
                     Loader.data.include.before[tag].before(ej);
+                    loaded.success++;
                     continue;
                 }
             }
             try{
                 $(location).append(ej);
+                loaded.success++;
             }catch(err){
+                loaded.failure++;
                 console.error(err.message);
                 console.log(name);
             }
         }
         $.ajaxSetup({cache: false});
     };
-    Loader.defined = function(vType, key, callback, onloadCallback) {
+    Loader.defined = function(vType, key, callback, onloadCallback, failureCallback) {
         if (vType != 'undefined' || key == null) {
             if (key != null && callback != null) return callback();
             return;
         }
         if (typeof(key) == 'string' && typeof(Loader.libs[key]) != 'undefined') key = Loader.libs[key];
-        Loader.includes(key, true, onloadCallback);
-        if (callback != null) return callback();
+        var successCallback = onloadCallback;
+        if (callback != null) {
+            if ($.isPlainObject(callback)) {
+                if (typeof callback['success'] != "undefined") successCallback = callback['success'];
+                if (typeof callback['error'] != "undefined") failureCallback = callback['error'];
+                else if (typeof callback['failure'] != "undefined") failureCallback = callback['failure'];
+            } else if (onloadCallback != null) {
+                successCallback = function() { 
+                    onloadCallback();
+                    callback();
+                };
+            } else {
+                successCallback = callback;
+            }
+        }
+        Loader.includes(key, true, successCallback, failureCallback);
     };
     Loader.fullURL = function(file) {
         var url=Loader.staticURL;
@@ -93,11 +140,11 @@
         }
         return url+file;
     };
-    Loader.includes = function(js,once,onloadCallback) {
+    Loader.includes = function(js,once,onloadCallback,failureCallback) {
         if (!js) return;
         switch (typeof(js)) {
         case 'string':
-            Loader.include(Loader.fullURL(js),null,once);
+            Loader.include(Loader.fullURL(js),null,once,onloadCallback,failureCallback);
             break;
         default:
             if (typeof(js.length) == 'undefined') return;
@@ -105,9 +152,8 @@
             for (var i = 0; i < js.length; i++) {
                 jss.push(Loader.fullURL(js[i]));
             }
-            Loader.include(jss,null,once);
+            Loader.include(jss,null,once,onloadCallback,failureCallback);
         }
-        if (onloadCallback != null) onloadCallback();
     };
     App.loader=Loader;
 })(App);
