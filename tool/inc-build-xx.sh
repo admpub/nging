@@ -24,8 +24,10 @@ pack(){
     export RELEASEDIR="${DISTPATH}/${nging_filename}"
     mkdir ${RELEASEDIR}
     export nging_extension="${1##*.}"
-    if [ "$nging_extension" != "" && "$nging_extension" != "$1" ]; then
+    if [ "$nging_extension" != "" ] && [ "$nging_extension" != "$1" ]; then
         export nging_extension=".${nging_extension}"
+    else
+        export nging_extension=""
     fi
     mv "${RELEASE_TEMPDIR}/$1" "${RELEASEDIR}/${NGING_EXECUTOR}${nging_extension}"
     mkdir ${RELEASEDIR}/data
