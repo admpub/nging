@@ -15,6 +15,7 @@ if [ "$2" != "" ] && [ "$2" != "-" ]; then
 fi
 
 url="https://img.nging.coscms.com/nging/v${version}/"
+savedir="nging"
 
 case "$arch" in
     "x86_64") 
@@ -29,7 +30,11 @@ case "$arch" in
     "armv7") 
         arch="arm-7"
         ;;
-    "armv7l"|"armv6") 
+    "armv7l") 
+        arch="arm-6"
+        savedir="nging_linux_arm-7" # 兼容旧版
+        ;;
+    "armv6") 
         arch="arm-6"
         ;;
     "armv5"|"arm") 
@@ -56,7 +61,6 @@ esac
 
 binname="nging"
 filename="nging_${osname}_$arch"
-savedir="nging_${osname}_$arch"
 filefullname="$filename.tar.gz"
 
 exitOnFailure() {
