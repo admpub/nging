@@ -26,7 +26,7 @@ func ServerDashboard(ctx echo.Context) error {
 	if m.DashboardPort > 0 {
 		dashboardHost := m.DashboardAddr
 		if m.DashboardAddr == `0.0.0.0` || len(m.DashboardAddr) == 0 {
-			dashboardHost = `127.0.0.1`
+			dashboardHost = ctx.Domain()
 		}
 		return ctx.Redirect(fmt.Sprintf(`http://%s:%d/`, dashboardHost, m.DashboardPort))
 	}
@@ -50,7 +50,7 @@ func ClientDashboard(ctx echo.Context) error {
 	if m.AdminPort > 0 {
 		dashboardHost := m.AdminAddr
 		if m.AdminAddr == `0.0.0.0` || len(m.AdminAddr) == 0 {
-			dashboardHost = `127.0.0.1`
+			dashboardHost = ctx.Domain()
 		}
 		return ctx.Redirect(fmt.Sprintf(`http://%s:%d/`, dashboardHost, m.AdminPort))
 	}
