@@ -1,6 +1,11 @@
 package main
 
-import "os"
+import (
+	"os"
+	"regexp"
+
+	"github.com/webx-top/com"
+)
 
 var targetNames = map[string]string{
 	`linux_386`:     `linux/386`,
@@ -14,28 +19,59 @@ var targetNames = map[string]string{
 	`windows_amd64`: `windows/amd64`,
 }
 
+var armRegexp = regexp.MustCompile(`/arm`)
+
 func main() {
 	var targets []string
+	var armTargets []string
+	addTarget := func(target string, notNames ...bool) {
+		if len(notNames) == 0 || !notNames[0] {
+			target = getTarget(target)
+			if len(target) == 0 {
+				return
+			}
+		}
+		if armRegexp.MatchString(target) {
+			armTargets = append(armTargets, target)
+		} else {
+			targets = append(targets, target)
+		}
+	}
 	var minify bool
 	switch len(os.Args) {
 	case 3:
-		minify = os.Args[2] == `m` || os.Args[2] == `min`
-		if t, y := targetNames[os.Args[1]]; y {
-			targets = append(targets, t)
-		}
+		minify = isMinified(os.Args[2])
+		addTarget(os.Args[1])
 	case 2:
-		if os.Args[1] == `m` || os.Args[1] == `min` {
+		if isMinified(os.Args[1]) {
 			minify = true
 		} else {
-			if t, y := targetNames[os.Args[1]]; y {
-				targets = append(targets, t)
-			}
+			addTarget(os.Args[1])
 		}
 	case 1:
 		for _, t := range targetNames {
-			targets = append(targets, t)
+			addTarget(t, true)
 		}
+	default:
+		com.ExitOnFailure(`参数错误`)
 	}
 	_ = minify
 	_ = targets
+	_ = armTargets
+}
+
+func getTarget(target string) string {
+	if t, y := targetNames[target]; y {
+		return t
+	}
+	for _, t := range targetNames {
+		if t == target {
+			return t
+		}
+	}
+	return ``
+}
+
+func isMinified(arg string) bool {
+	return arg == `m` || arg == `min`
 }
