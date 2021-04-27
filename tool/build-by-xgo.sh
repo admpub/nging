@@ -134,6 +134,12 @@ case "$1" in
     "linux_arm64")
         linux_arm64
         ;;
+    "linux_arm*")
+        linux_arm5
+        linux_arm6
+        linux_arm7
+        linux_arm64
+        ;;
     "linux_386")
         linux_386
         ;;

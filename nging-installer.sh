@@ -10,7 +10,7 @@ osname=`uname -s`
 arch=`uname -m`
 version="3.4.2"
 
-if [ "$2" != "" ]; then
+if [ "$2" != "" ] && [ "$2" != "-" ]; then
     version="$2"
 fi
 
@@ -26,10 +26,10 @@ case "$arch" in
     "aarch64_be"|"aarch64"|"armv8b"|"armv8l"|"armv8"|"arm64") 
         arch="arm64"
         ;;
-    "armv7l"|"armv7") 
+    "armv7") 
         arch="arm-7"
         ;;
-    "armv6") 
+    "armv7l"|"armv6") 
         arch="arm-6"
         ;;
     "armv5"|"arm") 
@@ -56,6 +56,7 @@ esac
 
 binname="nging"
 filename="nging_${osname}_$arch"
+savedir="nging_${osname}_$arch"
 filefullname="$filename.tar.gz"
 
 exitOnFailure() {
@@ -67,17 +68,17 @@ install() {
 
     wget -c "${url}$filefullname" -O ./$filefullname || exitOnFailure
 
-    mkdir ./$filename
+    mkdir ./$savedir
 
-    tar -zxvf $filefullname -C ./$filename || exitOnFailure
+    tar -zxvf $filefullname -C ./$savedir || exitOnFailure
     #unzip $filefullname -d ./$filename || exitOnFailure 
 
-    cp -R ./$filename/$filename/* ./$filename || exitOnFailure
-    rm -rf "./$filename/$filename"
+    cp -R ./$savedir/$filename/* ./$savedir || exitOnFailure
+    rm -rf "./$savedir/$filename"
 
     rm $filefullname
-    chmod +x ./$filename/$binname || exitOnFailure
-    cd ./$filename
+    chmod +x ./$savedir/$binname || exitOnFailure
+    cd ./$savedir
     #./$binname
 
     ./$binname service install || exitOnFailure
@@ -87,23 +88,23 @@ install() {
 
 upgrade() {
     # 停止服务
-    cd ./$filename
+    cd ./$savedir
     ./$binname service stop
     cd ../
 
     wget -c "${url}$filefullname" -O ./$filefullname || exitOnFailure
 
-    mkdir ./$filename
+    mkdir ./$savedir
     
-    tar -zxvf $filefullname -C ./$filename || exitOnFailure
+    tar -zxvf $filefullname -C ./$savedir || exitOnFailure
     #unzip $filefullname -d ./$filename || exitOnFailure 
 
-    cp -R ./$filename/$filename/* ./$filename || exitOnFailure
-    rm -rf "./$filename/$filename"
+    cp -R ./$savedir/$filename/* ./$savedir || exitOnFailure
+    rm -rf "./$savedir/$filename"
 
     rm $filefullname
-    chmod +x ./$filename/$binname || exitOnFailure
-    cd ./$filename
+    chmod +x ./$savedir/$binname || exitOnFailure
+    cd ./$savedir
     #./$binname
 
     # 再次启动服务
@@ -112,15 +113,18 @@ upgrade() {
 }
 
 uninstall() {
-    cd ./$filename
+    cd ./$savedir
     ./$binname service stop || exitOnFailure
     ./$binname service uninstall || exitOnFailure
     echo "🎉 Congratulations! Successfully uninstalled."
     cd ../
-    rm -r ./$filename || exitOnFailure
+    rm -r ./$savedir || exitOnFailure
     echo "🎉 Congratulations! File deleted successfully."
 }
 
+if [ "$3" != "" ]; then
+    savedir="$3"
+fi
 
 case "$1" in
     "up"|"upgrade")
