@@ -86,7 +86,7 @@ type Job struct {
 	taskLog    *dbschema.NgingTaskLog // 结果日志
 	runner     Runner                 // 执行函数
 	system     bool                   // 是否是系统内部功能
-	status     int64                  // 任务状态，大于0表示正在执行中
+	status     int32                  // 任务状态，大于0表示正在执行中
 	concurrent bool                   // 同一个任务是否允许并行执行
 }
 
@@ -196,8 +196,8 @@ func NewCommandJob(ctx context.Context, id uint, name string, command string, di
 	return job
 }
 
-func (j *Job) Status() int64 {
-	return atomic.LoadInt64(&j.status)
+func (j *Job) Status() int32 {
+	return atomic.LoadInt32(&j.status)
 }
 
 func (j *Job) Name() string {
@@ -296,7 +296,7 @@ func (j *Job) Run() {
 	}()
 
 	if !j.concurrent {
-		if atomic.LoadInt64(&j.status) > 0 {
+		if atomic.LoadInt32(&j.status) > 0 {
 			taskLog.Output = fmt.Sprintf("任务[ %d. %s ]上一次执行尚未结束，本次被忽略。", j.id, j.name)
 			return
 		}
@@ -314,9 +314,9 @@ func (j *Job) Run() {
 
 	log.Debugf("开始执行任务: %d", j.id)
 
-	atomic.StoreInt64(&j.status, atomic.LoadInt64(&j.status)+1)
+	atomic.StoreInt32(&j.status, atomic.LoadInt32(&j.status)+1)
 	defer func() {
-		atomic.StoreInt64(&j.status, atomic.LoadInt64(&j.status)-1)
+		atomic.StoreInt32(&j.status, atomic.LoadInt32(&j.status)-1)
 	}()
 
 	timeout := time.Duration(time.Hour * 24)
@@ -325,7 +325,7 @@ func (j *Job) Run() {
 	}
 
 	cmdOut, cmdErr, err, isTimeout = j.runner(timeout)
-	elapsed := time.Now().Sub(t).Milliseconds()
+	elapsed := time.Since(t).Milliseconds()
 	taskLog.Elapsed = uint(elapsed)
 	if isTimeout {
 		taskLog.Status = `timeout`
