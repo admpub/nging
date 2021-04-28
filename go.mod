@@ -89,7 +89,7 @@ require (
 	github.com/caddy-plugins/webdav v1.2.1
 	github.com/caddyserver/caddy v1.1.5
 	github.com/chromedp/cdproto v0.0.0-20210323015217-0942afbea50e
-	github.com/chromedp/chromedp v0.6.10
+	github.com/chromedp/chromedp v0.6.11
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
 	github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
 	github.com/deckarep/golang-set v1.7.1 // indirect
