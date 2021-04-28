@@ -19,12 +19,15 @@
 package backend
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/webx-top/com"
+	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/code"
 	"github.com/webx-top/echo/handler/pprof"
 	"github.com/webx-top/echo/middleware"
 	"github.com/webx-top/echo/middleware/language"
@@ -63,6 +66,14 @@ var (
 			}
 			return skipped
 		}
+	}
+	ErrorProcessors = []render.ErrorProcessor{
+		func(ctx echo.Context, err error) (processed bool, newErr error) {
+			if errors.Is(err, db.ErrNoMoreRows) {
+				return true, echo.NewError(ctx.T(`数据不存在`), code.DataNotFound)
+			}
+			return false, err
+		},
 	}
 	DefaultLocalHostNames = []string{
 		`127.0.0.1`, `localhost`,
@@ -177,6 +188,7 @@ func init() {
 			DefaultHTTPErrorCode: http.StatusOK,
 			Reload:               true,
 			ErrorPages:           config.DefaultConfig.Sys.ErrorPages,
+			ErrorProcessors:      ErrorProcessors,
 		}
 		if ParseStrings != nil {
 			for key, val := range ParseStrings {

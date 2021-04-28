@@ -20,6 +20,7 @@ type Config struct {
 	ParseStrings         map[string]string
 	ParseStringFuncs     map[string]func() string
 	ErrorPages           map[int]string
+	ErrorProcessors      []ErrorProcessor
 	DefaultHTTPErrorCode int
 	StaticOptions        *middleware.StaticOptions
 	Debug                bool
@@ -125,6 +126,7 @@ func (t *Config) SetFuncSetter(set ...echo.HandlerFunc) *Config {
 func (t *Config) HTTPErrorHandler() echo.HTTPErrorHandler {
 	opt := &Options{
 		ErrorPages:           t.ErrorPages,
+		ErrorProcessors:      t.ErrorProcessors,
 		DefaultHTTPErrorCode: t.DefaultHTTPErrorCode,
 	}
 	opt.SetFuncSetter(t.errorPageFuncSetter...)
