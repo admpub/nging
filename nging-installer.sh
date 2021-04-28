@@ -103,6 +103,8 @@ upgrade() {
     tar -zxvf $filefullname -C ./$savedir || exitOnFailure
     #unzip $filefullname -d ./$filename || exitOnFailure 
 
+    sleep 5s && pkill `pwd`/$savedir/$binname
+
     cp -R ./$savedir/$filename/* ./$savedir || exitOnFailure
     rm -rf "./$savedir/$filename"
 
@@ -120,6 +122,9 @@ uninstall() {
     cd ./$savedir
     ./$binname service stop || exitOnFailure
     ./$binname service uninstall || exitOnFailure
+    
+    sleep 5s && pkill `pwd`/$savedir/$binname
+
     echo "🎉 Congratulations! Successfully uninstalled."
     cd ../
     rm -r ./$savedir || exitOnFailure
