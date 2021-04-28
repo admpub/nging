@@ -122,11 +122,11 @@ uninstall() {
     cd ./$savedir
     ./$binname service stop || exitOnFailure
     ./$binname service uninstall || exitOnFailure
-    
+
+    cd ../
     sleep 5s && pkill `pwd`/$savedir/$binname
 
     echo "🎉 Congratulations! Successfully uninstalled."
-    cd ../
     rm -r ./$savedir || exitOnFailure
     echo "🎉 Congratulations! File deleted successfully."
 }
