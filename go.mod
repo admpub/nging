@@ -46,7 +46,7 @@ require (
 	github.com/admpub/httpscerts v0.0.0-20180907121630-a2990e2af45c
 	github.com/admpub/i18n v0.0.0-20190425064330-383d24a2fded // indirect
 	github.com/admpub/imageproxy v0.9.1
-	github.com/admpub/ip2region v1.2.5
+	github.com/admpub/ip2region v1.2.6
 	github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
 	github.com/admpub/log v0.2.2
 	github.com/admpub/logcool v0.3.1

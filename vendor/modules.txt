@@ -177,7 +177,7 @@ github.com/admpub/imageproxy
 github.com/admpub/imageproxy/third_party/http
 # github.com/admpub/imaging v1.5.0
 github.com/admpub/imaging
-# github.com/admpub/ip2region v1.2.5
+# github.com/admpub/ip2region v1.2.6
 ## explicit
 github.com/admpub/ip2region/binding/golang/ip2region
 # github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8

@@ -50,23 +50,23 @@ func Stringify(info ip2region.IpInfo) string {
 		formats []string
 		args    []interface{}
 	)
-	if info.Country != `` && info.Country != `0` {
+	if len(info.Country) > 0 && info.Country != `0` {
 		formats = append(formats, `"国家":%q`)
 		args = append(args, info.Country)
 	}
-	if info.Region != `` && info.Region != `0` {
+	if len(info.Region) > 0 && info.Region != `0` {
 		formats = append(formats, `"地区":%q`)
 		args = append(args, info.Region)
 	}
-	if info.Province != `` && info.Province != `0` {
+	if len(info.Province) > 0 && info.Province != `0` {
 		formats = append(formats, `"省份":%q`)
 		args = append(args, info.Province)
 	}
-	if info.City != `` && info.City != `0` {
+	if len(info.City) > 0 && info.City != `0` {
 		formats = append(formats, `"城市":%q`)
 		args = append(args, info.City)
 	}
-	if info.ISP != `` && info.ISP != `0` {
+	if len(info.ISP) > 0 && info.ISP != `0` {
 		formats = append(formats, `"线路":%q`)
 		args = append(args, info.ISP)
 	}

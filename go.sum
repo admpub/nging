@@ -224,6 +224,8 @@ github.com/admpub/imaging v1.5.0/go.mod h1:FlzRHjZkY7ZscAyUZwn+Rea9AnyHdG5IigQDH
 github.com/admpub/ini v1.38.2/go.mod h1:u/q+5wpokfDPIHK0Y/IbGWpaZ7m3MysmwxNzRWkBiuU=
 github.com/admpub/ip2region v1.2.5 h1:R8CNr//Qr/+hiNlqBes0Y+jZif154DR+LscdQTmjk+U=
 github.com/admpub/ip2region v1.2.5/go.mod h1:+VT4p7DvDTEbMc6OugtuwMlzV5yDSYmy8C2eoOZwIjE=
+github.com/admpub/ip2region v1.2.6 h1:Q+cOvaawlutPxA3bWM9Oh6CC4bamf7Zfr4IJpV1dcEM=
+github.com/admpub/ip2region v1.2.6/go.mod h1:+VT4p7DvDTEbMc6OugtuwMlzV5yDSYmy8C2eoOZwIjE=
 github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8 h1:4cLleRv8VQuK/Tyy421kH/KF5t6MlU1aqEoapK17Rco=
 github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8/go.mod h1:wI4uHqEIg4MpTQ2bh92ACusqEKnj+gKYz0MpysAu2oE=
 github.com/admpub/log v0.0.0-20191027043925-a6c03a7421a3/go.mod h1:9q/FVF4zGIc/+4OaMT031thniAviDPhJjDFypGa04Fk=
