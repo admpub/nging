@@ -27,7 +27,7 @@ var (
 	NotFoundPagePath = ""
 )
 
-const (
+var (
 	NotFound = `<!DOCTYPE html>
 <html>
 <head>
