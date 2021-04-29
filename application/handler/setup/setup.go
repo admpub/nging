@@ -112,13 +112,13 @@ func install(ctx echo.Context, sqlFile string, isFile bool, charset string, inst
 func Setup(ctx echo.Context) error {
 	var err error
 	lockFile := filepath.Join(echo.Wd(), `installed.lock`)
-	if info, err := os.Stat(lockFile); err == nil && info.IsDir() == false {
-		err = ctx.NewError(stdCode.RepeatOperation, `已经安装过了。如要重新安装，请先删除%s`, lockFile)
+	if info, err := os.Stat(lockFile); err == nil && !info.IsDir() {
+		err = ctx.NewError(stdCode.RepeatOperation, ctx.T(`已经安装过了。如要重新安装，请先删除%s`, filepath.Base(lockFile)))
 		return err
 	}
 	sqlFiles, err := config.GetSQLInstallFiles()
 	if err != nil {
-		err = ctx.NewError(stdCode.DataNotFound, `找不到文件%s，无法安装`, `config/install.sql`)
+		err = ctx.NewError(stdCode.DataNotFound, ctx.T(`找不到文件%s，无法安装`, `config/install.sql`))
 		return err
 	}
 	insertSQLFiles := config.GetSQLInsertFiles()
@@ -158,7 +158,7 @@ func Setup(ctx echo.Context) error {
 			config.DefaultConfig.DB.User = ``
 			config.DefaultConfig.DB.Password = ``
 			config.DefaultConfig.DB.Host = ``
-			if strings.HasSuffix(config.DefaultConfig.DB.Database, `.db`) == false {
+			if !strings.HasSuffix(config.DefaultConfig.DB.Database, `.db`) {
 				config.DefaultConfig.DB.Database += `.db`
 			}
 		} else {
@@ -179,7 +179,7 @@ func Setup(ctx echo.Context) error {
 		//创建数据库数据
 		installer, ok := config.DBInstallers[config.DefaultConfig.DB.Type]
 		if !ok {
-			err = ctx.NewError(stdCode.Unsupported, `不支持安装到%s`, config.DefaultConfig.DB.Type)
+			err = ctx.NewError(stdCode.Unsupported, ctx.T(`不支持安装到%s`, config.DefaultConfig.DB.Type))
 			return err
 		}
 
@@ -187,23 +187,23 @@ func Setup(ctx echo.Context) error {
 		adminPass := ctx.Form(`adminPass`)
 		adminEmail := ctx.Form(`adminEmail`)
 		if len(adminUser) == 0 {
-			err = ctx.NewError(stdCode.InvalidParameter, `管理员用户名不能为空`)
+			err = ctx.NewError(stdCode.InvalidParameter, ctx.T(`管理员用户名不能为空`))
 			return err
 		}
 		if !com.IsUsername(adminUser) {
-			err = ctx.NewError(stdCode.InvalidParameter, `管理员名不能包含特殊字符(只能由字母、数字、下划线和汉字组成)`)
+			err = ctx.NewError(stdCode.InvalidParameter, ctx.T(`管理员名不能包含特殊字符(只能由字母、数字、下划线和汉字组成)`))
 			return err
 		}
 		if len(adminPass) < 8 {
-			err = ctx.NewError(stdCode.InvalidParameter, `管理员密码不能少于8个字符`)
+			err = ctx.NewError(stdCode.InvalidParameter, ctx.T(`管理员密码不能少于8个字符`))
 			return err
 		}
 		if len(adminEmail) == 0 {
-			err = ctx.NewError(stdCode.InvalidParameter, `管理员邮箱不能为空`)
+			err = ctx.NewError(stdCode.InvalidParameter, ctx.T(`管理员邮箱不能为空`))
 			return err
 		}
 		if !ctx.Validate(`adminEmail`, adminEmail, `email`).Ok() {
-			err = ctx.NewError(stdCode.InvalidParameter, `管理员邮箱格式不正确`)
+			err = ctx.NewError(stdCode.InvalidParameter, ctx.T(`管理员邮箱格式不正确`))
 			return err
 		}
 		data := ctx.Data()

@@ -29,8 +29,11 @@ import (
 
 // License 获取商业授权
 func License(c echo.Context) error {
-	machineID, _ := license.MachineID()
-	err := license.Check(machineID, c)
+	machineID, err := license.MachineID()
+	if err != nil {
+		return err
+	}
+	err = license.Check(machineID, c)
 	/*
 		if err != nil {
 			err = license.Generate(nil)
