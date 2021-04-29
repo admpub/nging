@@ -30,11 +30,36 @@ import (
 
 	"github.com/webx-top/captcha"
 	"github.com/webx-top/com"
+	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	stdCode "github.com/webx-top/echo/code"
+	"github.com/webx-top/echo/middleware/render"
 	"github.com/webx-top/echo/middleware/tplfunc"
 	"github.com/webx-top/echo/subdomains"
 )
+
+var ErrorProcessors = []render.ErrorProcessor{
+	func(ctx echo.Context, err error) (processed bool, newErr error) {
+		if errors.Is(err, db.ErrNoMoreRows) {
+			return true, echo.NewError(ctx.T(`数据不存在`), stdCode.DataNotFound)
+		}
+		return false, err
+	},
+}
+
+func ProcessError(ctx echo.Context, err error) error {
+	for _, processor := range ErrorProcessors {
+		if processor == nil {
+			continue
+		}
+		var processed bool
+		processed, err = processor(ctx, err)
+		if processed {
+			break
+		}
+	}
+	return err
+}
 
 // Ok 操作成功
 func Ok(v string) Successor {
@@ -53,7 +78,7 @@ func Err(ctx echo.Context, err error) (ret interface{}) {
 			}
 		}
 	} else {
-		ret = err
+		ret = ProcessError(ctx, err)
 	}
 	return
 }
@@ -78,6 +103,7 @@ func SendFail(ctx echo.Context, msg string) {
 
 // SendErr 记录错误信息 (SendFail的别名)
 func SendErr(ctx echo.Context, err error) {
+	err = ProcessError(ctx, err)
 	SendFail(ctx, err.Error())
 }
 
