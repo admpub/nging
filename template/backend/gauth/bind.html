@@ -13,14 +13,14 @@
             <h3>{{"绑定两步验证"|T}}</h3>
           </div>
           <div class="content">
-              {{if Stored.binded}}
+              {{- if Stored.binded -}}
               
 <div class="alert alert-info alert-white rounded">
 	<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 	<div class="icon"><i class="fa fa-info"></i></div>
     {{T "您已经绑定成功。"}}
 </div>
-              {{else}}
+              {{- else -}}
               <form class="form-horizontal group-border-dashed" method="POST">
               <div class="form-group">
                 <label class="col-sm-2 control-label">{{"下载APP"|T}}</label>
@@ -70,7 +70,7 @@
 				</div>
 			    </div>
             </form>
-            {{end}}
+            {{- end -}}
           </div><!-- /.content -->
         </div><!-- /.block-flat -->
     </div>
