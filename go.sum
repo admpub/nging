@@ -1356,6 +1356,8 @@ github.com/vultr/govultr v0.1.4/go.mod h1:9H008Uxr/C4vFNGLqKx232C206GL0PBHzOP080
 github.com/vultr/govultr v0.4.2/go.mod h1:TUuUizMOFc7z+PNMssb6iGjKjQfpw5arIaOLfocVudQ=
 github.com/webx-top/captcha v0.0.0-20161202061115-29e9e7f30aa0 h1:KkrDcd2yO7QHeJVlucYM8giDoDBvXkD849M9v0alBm4=
 github.com/webx-top/captcha v0.0.0-20161202061115-29e9e7f30aa0/go.mod h1:DLtQXR6uR8UMcKb7dB5eYgsDHG0WPI74rM/B/JFGxfE=
+github.com/webx-top/captcha v0.0.1 h1:vdik4uyFByNfTm2Tst9SkL4rgOaTIyaHZ4sWwamincY=
+github.com/webx-top/captcha v0.0.1/go.mod h1:kGMilOqpVTyNiO8pdztdBQJ4Wv836pf7/6kxfANPasY=
 github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f h1:FHA8iky9Pf3/NaiPqTA01lc64qI4N7Lahu2Il9awanA=
 github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f/go.mod h1:TystOP1FUbkPySDV9I1I3Cy6MiFwSCiTthc/wP7uZ0Q=
 github.com/webx-top/client v0.2.4 h1:8F/j7o1Jf9I1nWbZCtCWGXsGdr7eq3Uyx4TSJudm0x8=
@@ -1381,6 +1383,8 @@ github.com/webx-top/echo v2.9.6+incompatible h1:E7dTyY3P1dLUj/D9izyCoFKrY+5DlZxE
 github.com/webx-top/echo v2.9.6+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.9.7+incompatible h1:4m2YekTYsRIFLvfImhcvhoKgbo9dn9k3ATf7J2H8tzo=
 github.com/webx-top/echo v2.9.7+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
+github.com/webx-top/echo v2.9.8+incompatible h1:d+UAQGX9VEoqhPRN1A6qZHz0jAN6QNdGivKRk52+MsE=
+github.com/webx-top/echo v2.9.8+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo-prometheus v1.0.2 h1:IPivTWPSo3XFkx/adlzjscFtDbULt/DRq8zpm9HdWXQ=
 github.com/webx-top/echo-prometheus v1.0.2/go.mod h1:Y3xeyGLtpAjZmV/Ui8fqRf9gymwdSQagJ21RekXUZaw=
 github.com/webx-top/image v0.0.7 h1:G56i+UXVZ8DzP2ZkH1bm4/d9Tcik1Q6BUDPKpQ55gKI=

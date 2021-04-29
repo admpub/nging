@@ -20,10 +20,10 @@ package index
 
 import (
 	"github.com/webx-top/echo"
-	"github.com/webx-top/echo/middleware/tplfunc"
 
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/codec"
+	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/license"
 	"github.com/admpub/nging/application/middleware"
@@ -69,8 +69,8 @@ func Login(ctx echo.Context) error {
 	}
 	var err error
 	if ctx.IsPost() {
-		if !tplfunc.CaptchaVerify(ctx.Form(`code`), ctx.Form) {
-			err = ctx.E(`验证码不正确`)
+		if data := common.VerifyCaptcha(ctx, `backend`, `code`); data.GetCode() == stdCode.CaptchaError {
+			err = common.ErrCaptcha
 		} else {
 			err = middleware.Auth(ctx, true)
 			if err == nil {

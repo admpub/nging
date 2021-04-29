@@ -33,6 +33,7 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	stdCode "github.com/webx-top/echo/code"
+	hdlCaptcha "github.com/webx-top/echo/handler/captcha"
 	"github.com/webx-top/echo/middleware/render"
 	"github.com/webx-top/echo/middleware/tplfunc"
 	"github.com/webx-top/echo/subdomains"
@@ -107,42 +108,73 @@ func SendErr(ctx echo.Context, err error) {
 	SendFail(ctx, err.Error())
 }
 
+func GenCaptchaError(ctx echo.Context, hostAlias string, captchaName string, id string, args ...string) echo.Data {
+	data := ctx.Data()
+	data.SetZone(captchaName)
+	data.SetData(CaptchaInfo(hostAlias, captchaName, id, args...))
+	data.SetError(ErrCaptcha)
+	return data
+}
+
 // VerifyCaptcha 验证码验证
 func VerifyCaptcha(ctx echo.Context, hostAlias string, captchaName string, args ...string) echo.Data {
-	data := ctx.Data()
 	idGet := ctx.Form
+	idSet := func(id string) {
+		ctx.Request().Form().Set(`captchaId`, id)
+	}
 	if len(args) > 0 {
 		idGet = func(_ string, defaults ...string) string {
 			return ctx.Form(args[0], defaults...)
 		}
+		idSet = func(id string) {
+			ctx.Request().Form().Set(args[0], id)
+		}
 	}
 	code := ctx.Form(captchaName)
-	var err error
+	id := idGet("captchaId")
+	if len(id) == 0 {
+		return GenCaptchaError(ctx, hostAlias, captchaName, id, args...)
+	}
+	exists := captcha.Exists(id)
 	if len(code) == 0 {
-		err = ctx.E(`请输入验证码`)
-	} else if !tplfunc.CaptchaVerify(code, idGet) {
-		err = ctx.E(`验证码不正确`)
+		return GenCaptchaError(ctx, hostAlias, captchaName, ``, args...)
 	}
-	if err != nil {
-		data.SetZone(captchaName)
-		data.SetData(CaptchaInfo(hostAlias, captchaName, args...))
-		data.SetError(ErrCaptcha)
+	if !exists && len(hdlCaptcha.DefaultOptions.CookieName) > 0 {
+		id = ctx.GetCookie(hdlCaptcha.DefaultOptions.CookieName)
+		if len(id) > 0 {
+			if exists = captcha.Exists(id); exists {
+				idSet(id)
+			}
+		}
 	}
-	return data
+	if !exists && len(hdlCaptcha.DefaultOptions.HeaderName) > 0 {
+		id = ctx.Header(hdlCaptcha.DefaultOptions.HeaderName)
+		if len(id) > 0 {
+			if exists = captcha.Exists(id); exists {
+				idSet(id)
+			}
+		}
+	}
+	if !exists || !tplfunc.CaptchaVerify(code, idGet) {
+		return GenCaptchaError(ctx, hostAlias, captchaName, ``, args...)
+	}
+	return ctx.Data()
 }
 
 // VerifyAndSetCaptcha 验证码验证并设置新验证码信息
 func VerifyAndSetCaptcha(ctx echo.Context, hostAlias string, captchaName string, args ...string) echo.Data {
 	data := VerifyCaptcha(ctx, hostAlias, captchaName, args...)
 	if data.GetCode() != stdCode.CaptchaError {
-		data.SetData(CaptchaInfo(hostAlias, captchaName, args...))
+		data.SetData(CaptchaInfo(hostAlias, captchaName, ``, args...))
 	}
 	return data
 }
 
 // CaptchaInfo 新验证码信息
-func CaptchaInfo(hostAlias string, captchaName string, args ...string) echo.H {
-	captchaID := captcha.New()
+func CaptchaInfo(hostAlias string, captchaName string, captchaID string, args ...string) echo.H {
+	if len(captchaID) == 0 {
+		captchaID = captcha.New()
+	}
 	captchaIdent := `captchaId`
 	if len(args) > 0 {
 		captchaIdent = args[0]

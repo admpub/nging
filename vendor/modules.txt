@@ -1066,7 +1066,7 @@ github.com/vmihailenco/tagparser/v2/internal/parser
 github.com/volatiletech/inflect
 # github.com/volatiletech/strmangle v0.0.1
 github.com/volatiletech/strmangle
-# github.com/webx-top/captcha v0.0.0-20161202061115-29e9e7f30aa0
+# github.com/webx-top/captcha v0.0.1
 ## explicit
 github.com/webx-top/captcha
 # github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f
@@ -1108,7 +1108,7 @@ github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mongo
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.9.7+incompatible
+# github.com/webx-top/echo v2.9.8+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code

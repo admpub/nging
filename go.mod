@@ -131,13 +131,13 @@ require (
 	github.com/tdewolff/test v1.0.6 // indirect
 	github.com/tebeka/selenium v0.9.9
 	github.com/tklauser/go-sysconf v0.3.4 // indirect
-	github.com/webx-top/captcha v0.0.0-20161202061115-29e9e7f30aa0
+	github.com/webx-top/captcha v0.0.1
 	github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f // indirect
 	github.com/webx-top/client v0.2.5
 	github.com/webx-top/codec v0.0.1
 	github.com/webx-top/com v0.2.0
 	github.com/webx-top/db v1.1.6
-	github.com/webx-top/echo v2.9.7+incompatible
+	github.com/webx-top/echo v2.9.8+incompatible
 	github.com/webx-top/image v0.0.7
 	github.com/webx-top/pagination v0.1.0
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect

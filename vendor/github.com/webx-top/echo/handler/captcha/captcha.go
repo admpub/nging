@@ -31,6 +31,8 @@ var DefaultOptions = &Options{
 	EnableAudio:    true,
 	EnableDownload: true,
 	AudioLangs:     []string{`zh`, `ru`, `en`},
+	CookieName:     `captchaId`,
+	HeaderName:     `X-Captcha-ID`,
 }
 
 type Options struct {
@@ -39,6 +41,8 @@ type Options struct {
 	EnableDownload bool
 	AudioLangs     []string
 	Prefix         string
+	CookieName     string
+	HeaderName     string
 }
 
 func (o Options) Wrapper(e echo.RouteRegister) {
@@ -61,6 +65,12 @@ func Captcha(opts ...*Options) func(echo.Context) error {
 	if o == nil {
 		o = DefaultOptions
 	}
+	if len(o.CookieName) == 0 {
+		o.CookieName = DefaultOptions.CookieName
+	}
+	if len(o.HeaderName) == 0 {
+		o.HeaderName = DefaultOptions.HeaderName
+	}
 	return func(ctx echo.Context) (err error) {
 		var id, ext string
 		param := ctx.P(0)
@@ -71,11 +81,36 @@ func Captcha(opts ...*Options) func(echo.Context) error {
 		if len(ext) == 0 || len(id) == 0 {
 			return echo.ErrNotFound
 		}
-		if len(ctx.Query("reload")) > 0 {
-			captcha.Reload(id)
+		ids := []string{id}
+		if len(o.CookieName) > 0 {
+			ids = append(ids, ctx.GetCookie(o.CookieName))
+		}
+		if len(o.HeaderName) > 0 {
+			ids = append(ids, ctx.Header(o.HeaderName))
 		}
 		w := ctx.Response()
 		header := w.Header()
+		if len(ctx.Query("reload")) > 0 {
+			var ok bool
+			for _, id := range ids {
+				if captcha.Reload(id) {
+					ok = true
+					ids = []string{id}
+					break
+				}
+			}
+			if !ok {
+				if len(o.CookieName) > 0 {
+					id = captcha.New()
+					ids = []string{id}
+					ctx.SetCookie(o.CookieName, id)
+				} else if len(o.HeaderName) > 0 {
+					id = captcha.New()
+					ids = []string{id}
+					header.Set(o.HeaderName, id)
+				}
+			}
+		}
 		download := o.EnableDownload && len(ctx.Query("download")) > 0
 		b := bytes.NewBufferString(``)
 		switch ext {
@@ -83,12 +118,26 @@ func Captcha(opts ...*Options) func(echo.Context) error {
 			if !o.EnableImage {
 				return echo.ErrNotFound
 			}
+			for _, id := range ids {
+				if len(id) == 0 {
+					continue
+				}
+				err = captcha.WriteImage(b, id, captcha.StdWidth, captcha.StdHeight)
+				if err == nil || err != captcha.ErrNotFound {
+					break
+				}
+			}
+			if err != nil {
+				if err == captcha.ErrNotFound {
+					return echo.ErrNotFound
+				}
+				return
+			}
 			if download {
 				header.Set(echo.HeaderContentType, "application/octet-stream")
 			} else {
 				header.Set(echo.HeaderContentType, "image/png")
 			}
-			err = captcha.WriteImage(b, id, captcha.StdWidth, captcha.StdHeight)
 		case ".wav":
 			if !o.EnableAudio {
 				return echo.ErrNotFound
@@ -105,22 +154,34 @@ func Captcha(opts ...*Options) func(echo.Context) error {
 				lang = o.AudioLangs[0]
 			}
 			var au *captcha.Audio
-			au, err = captcha.GetAudio(id, lang)
+			for _, id := range ids {
+				if len(id) == 0 {
+					continue
+				}
+				au, err = captcha.GetAudio(id, lang)
+				if err == nil || err != captcha.ErrNotFound {
+					break
+				}
+			}
 			if err != nil {
+				if err == captcha.ErrNotFound {
+					return echo.ErrNotFound
+				}
 				return
+			}
+			length := strconv.Itoa(au.EncodedLen())
+			_, err = au.WriteTo(b)
+			if err != nil {
+				return err
 			}
 			if download {
 				header.Set(echo.HeaderContentType, "application/octet-stream")
 			} else {
 				header.Set(echo.HeaderContentType, "audio/x-wav")
 			}
-			header.Set("Content-Length", strconv.Itoa(au.EncodedLen()))
-			_, err = au.WriteTo(b)
+			header.Set("Content-Length", length)
 		default:
 			return nil
-		}
-		if err != nil {
-			return
 		}
 		return ctx.Blob(b.Bytes())
 	}

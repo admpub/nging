@@ -126,13 +126,13 @@ func WriteAudio(w io.Writer, id string, lang string) error {
 	return err
 }
 
-func GetAudio(id string, lang string) (*Audio,error) {
+func GetAudio(id string, lang string) (*Audio, error) {
 	d := globalStore.Get(id, false)
 	if d == nil {
-		return nil,ErrNotFound
+		return nil, ErrNotFound
 	}
 	a := NewAudio(d, lang)
-	return a,nil
+	return a, nil
 }
 
 // Verify returns true if the given digits are the ones that were used to
@@ -171,4 +171,8 @@ func VerifyString(id string, digits string) bool {
 		}
 	}
 	return Verify(id, ns)
+}
+
+func Exists(id string) bool {
+	return globalStore.Exists(id)
 }
