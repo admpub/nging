@@ -113,7 +113,11 @@ func ErrorPageFunc(c echo.Context) error {
 		return common.WithReturnURL(c, urlStr, varNames...)
 	})
 	c.SetFunc(`WithURLParams`, common.WithURLParams)
-	c.SetFunc(`MakeMap`, common.MakeMap)
+	c.SetFunc(`CaptchaForm`, func(args ...interface{}) template.HTML {
+		options := tplfunc.MakeMap(args)
+		options.Set("captchaId", common.GetHistoryOrNewCaptchaId(c))
+		return tplfunc.CaptchaFormWithURLPrefix(c.Echo().Prefix(), options)
+	})
 	return nil
 }
 

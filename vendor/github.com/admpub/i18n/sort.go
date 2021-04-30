@@ -15,7 +15,6 @@ import (
 type i18nSorter struct {
 	toBeSorted             []interface{}
 	getComparisonValueFunc func(interface{}) string
-	lessThanFunc           func(i, j int) bool
 	collator               *collate.Collator
 }
 

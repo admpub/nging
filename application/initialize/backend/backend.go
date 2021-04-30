@@ -161,7 +161,8 @@ func init() {
 		e.Use(session.Middleware(config.SessionOptions))
 		// 启用多语言支持
 		config.DefaultConfig.Language.SetFSFunc(event.LangFSFunc)
-		e.Use(language.New(&config.DefaultConfig.Language).Middleware())
+		i18n := language.New(&config.DefaultConfig.Language)
+		e.Use(i18n.Middleware())
 
 		// 启用Validation
 		e.Use(middleware.Validate(echo.NewValidation))
@@ -199,6 +200,7 @@ func init() {
 			return nil
 		})
 		e.Get(`/favicon.ico`, event.FaviconHandler)
+		i18n.Handler(e,`App.i18n`)
 		if event.Develop {
 			pprof.Wrap(e)
 		}

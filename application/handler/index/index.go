@@ -19,6 +19,8 @@
 package index
 
 import (
+	"fmt"
+
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/handler"
@@ -71,6 +73,8 @@ func Login(ctx echo.Context) error {
 	if ctx.IsPost() {
 		if data := common.VerifyCaptcha(ctx, `backend`, `code`); data.GetCode() == stdCode.CaptchaError {
 			err = common.ErrCaptcha
+		} else if data.GetCode() != stdCode.Success {
+			err = fmt.Errorf("%v", data.GetInfo())
 		} else {
 			err = middleware.Auth(ctx, true)
 			if err == nil {

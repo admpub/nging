@@ -136,9 +136,9 @@ func (t *Translator) parseFormat(pattern string, includeDecimalDigits bool) *num
 
 		pat := patterns[0]
 
-		if strings.Index(pat, "%") != -1 {
+		if strings.Contains(pat, "%") {
 			format.multiplier = 100
-		} else if strings.Index(pat, "‰") != -1 {
+		} else if strings.Contains(pat, "‰") {
 			format.multiplier = 1000
 		} else {
 			format.multiplier = 1
@@ -247,7 +247,7 @@ func (t *Translator) formatNumber(format *numberFormat, number float64) string {
 	}
 
 	// append/prepend negative/positive prefix/suffix
-	formatted := ""
+	var formatted string
 	if negative {
 		formatted = format.negativePrefix + integer + decimal + format.negativeSuffix
 	} else {

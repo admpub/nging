@@ -36,6 +36,7 @@ import (
 
 	"github.com/webx-top/captcha"
 	"github.com/webx-top/com"
+	"github.com/webx-top/echo/param"
 )
 
 func New() (r template.FuncMap) {
@@ -194,6 +195,7 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 var (
 	HashSalt          = time.Now().Format(time.RFC3339)
 	HashClipPositions = []uint{1, 3, 8, 9}
+	NumberFormat      = com.NumberFormat
 )
 
 func Hash(text, salt string, positions ...uint) string {
@@ -383,7 +385,10 @@ func CaptchaFormWithURLPrefix(urlPrefix string, args ...interface{}) template.HT
 	msg := "页面验证码已经失效，必须重新请求当前页面。确定要刷新本页面吗？"
 	onErr := "if(this.src.indexOf('?reload=')!=-1 && confirm('%s')) window.location.reload();"
 	format := `<img id="%[2]sImage" src="` + urlPrefix + `/captcha/%[1]s.png" alt="Captcha image" onclick="this.src=this.src.split('?')[0]+'?reload='+Math.random();" onerror="%[3]s" style="cursor:pointer" /><input type="hidden" name="captchaId" id="%[2]sId" value="%[1]s" />`
-	var customOnErr bool
+	var (
+		customOnErr bool
+		cid         string
+	)
 	switch len(args) {
 	case 3:
 		switch v := args[2].(type) {
@@ -409,9 +414,34 @@ func CaptchaFormWithURLPrefix(urlPrefix string, args ...interface{}) template.HT
 			format = string(v)
 		case string:
 			id = v
+		case param.Store:
+			cid = v.String(`captchaId`)
+			if v.Has(`onErr`) {
+				onErr = v.String(`onErr`)
+			}
+			if v.Has(`format`) {
+				format = v.String(`format`)
+			}
+			if v.Has(`id`) {
+				id = v.String(`id`)
+			}
+		case map[string]interface{}:
+			h := param.Store(v)
+			cid = h.String(`captchaId`)
+			if h.Has(`onErr`) {
+				onErr = h.String(`onErr`)
+			}
+			if h.Has(`format`) {
+				format = h.String(`format`)
+			}
+			if h.Has(`id`) {
+				id = h.String(`id`)
+			}
 		}
 	}
-	cid := captcha.New()
+	if len(cid) == 0 {
+		cid = captcha.New()
+	}
 	if !customOnErr {
 		onErr = fmt.Sprintf(onErr, msg)
 	}
@@ -422,10 +452,7 @@ func CaptchaFormWithURLPrefix(urlPrefix string, args ...interface{}) template.HT
 func CaptchaVerify(captchaSolution string, idGet func(string, ...string) string) bool {
 	//id := r.FormValue("captchaId")
 	id := idGet("captchaId")
-	if !captcha.VerifyString(id, captchaSolution) {
-		return false
-	}
-	return true
+	return captcha.VerifyString(id, captchaSolution)
 }
 
 //Nl2br 将换行符替换为<br />
@@ -886,4 +913,22 @@ func NumberTrim(number interface{}, precision int, separator ...string) string {
 	return com.NumberTrim(s, precision, separator...)
 }
 
-var NumberFormat = com.NumberFormat
+func MakeMap(values ...interface{}) param.Store {
+	h := param.Store{}
+	if len(values) == 0 {
+		return h
+	}
+	var k string
+	for i, j := 0, len(values); i < j; i++ {
+		if i%2 == 0 {
+			k = fmt.Sprint(values[i])
+			continue
+		}
+		h.Set(k, values[i])
+		k = ``
+	}
+	if len(k) > 0 {
+		h.Set(k, nil)
+	}
+	return h
+}

@@ -28,38 +28,11 @@ type TranslatorFactory struct {
 	getFileSystem func(file string) http.FileSystem
 }
 
-// Translator is a struct which contains all the rules and messages necessary
-// to do internationalization for a specific locale. Most functionality in this
-// package is accessed through a Translator instance.
-type Translator struct {
-	messages map[string]string
-	locale   string
-	rules    *TranslatorRules
-	fallback *Translator
-}
-
-// translatorError implements the error interface for use in this package. it
-// keeps an optional reference to a Translator instance, which it uses to
-// include which locale the error occurs with in the error message returned by
-// the Error() method
-type translatorError struct {
-	translator *Translator
-	message    string
-}
-
 var pathSeparator string
 
 func init() {
 	p := path.Join("a", "b")
 	pathSeparator = p[1 : len(p)-1]
-}
-
-// Error satisfies the error interface requirements
-func (e translatorError) Error() string {
-	if e.translator != nil {
-		return "translator error (locale: " + e.translator.locale + ") - " + e.message
-	}
-	return "translator error - " + e.message
 }
 
 // NewTranslatorFactory returns a TranslatorFactory instance with the specified
@@ -138,7 +111,7 @@ func NewTranslatorFactory(rulesPaths []string, messagesPaths []string, fallbackL
 		if !foundRules {
 			file, err = fs.Open(fallbackLocale + ".yaml")
 			if err == nil {
-				if fi, err := file.Stat(); err == nil && fi.IsDir() == false {
+				if fi, err := file.Stat(); err == nil && !fi.IsDir() {
 					foundRules = true
 				}
 				file.Close()
@@ -172,7 +145,7 @@ func NewTranslatorFactory(rulesPaths []string, messagesPaths []string, fallbackL
 		if !foundMessages {
 			file, err = fs.Open(fallbackLocale + ".yaml")
 			if err == nil {
-				if fi, err := file.Stat(); err == nil && fi.IsDir() == false {
+				if fi, err := file.Stat(); err == nil && !fi.IsDir() {
 					foundMessages = true
 				}
 				file.Close()
@@ -216,9 +189,7 @@ func NewTranslatorFactory(rulesPaths []string, messagesPaths []string, fallbackL
 	if fallbackLocale != "" {
 		var errs []error
 		f.fallback, errs = f.GetTranslator(fallbackLocale)
-		for _, err := range errs {
-			errors = append(errors, err)
-		}
+		errors = append(errors, errs...)
 	}
 
 	return
@@ -239,9 +210,7 @@ func (f *TranslatorFactory) GetTranslator(localeCode string) (t *Translator, err
 	if !exists {
 		errors = append(errors, translatorError{message: "could not find rules and messages for locale " + localeCode})
 	}
-	for _, e := range errs {
-		errors = append(errors, e)
-	}
+	errors = append(errors, errs...)
 
 	rules := new(TranslatorRules)
 	files := []string{}
@@ -277,14 +246,10 @@ func (f *TranslatorFactory) GetTranslator(localeCode string) (t *Translator, err
 	}
 
 	errs = rules.load(files, f.getFileSystem)
-	for _, err := range errs {
-		errors = append(errors, err)
-	}
+	errors = append(errors, errs...)
 
 	messages, errs := loadMessages(localeCode, f.messagesPaths, f.getFileSystem)
-	for _, err := range errs {
-		errors = append(errors, err)
-	}
+	errors = append(errors, errs...)
 
 	t = new(Translator)
 	t.locale = localeCode
@@ -379,94 +344,6 @@ func (f *TranslatorFactory) LocaleExists(localeCode string) (exists bool, errs [
 			}
 			file.Close()
 		}
-	}
-
-	return
-}
-
-// Translate returns the translated message, performang any substitutions
-// requested in the substitutions map. If neither this translator nor its
-// fallback translator (or the fallback's fallback and so on) have a translation
-// for the requested key, and empty string and an error will be returned.
-func (t *Translator) Translate(key string, substitutions map[string]string) (translation string, errors []error) {
-	if _, ok := t.messages[key]; !ok {
-		if t.fallback != nil && t.fallback != t {
-			return t.fallback.Translate(key, substitutions)
-		}
-
-		errors = append(errors, translatorError{translator: t, message: "key not found: " + key})
-		return
-	}
-
-	translation, errors = t.substitute(t.messages[key], substitutions)
-	return
-}
-
-// Pluralize returns the translation for a message containing a plural. The
-// plural form used is based on the number float64 and the number displayed in
-// the translated string is the numberStr string. If neither this translator nor
-// its fallback translator (or the fallback's fallback and so on) have a
-// translation for the requested key, and empty string and an error will be
-// returned.
-func (t *Translator) Pluralize(key string, number float64, numberStr string) (translation string, errors []error) {
-
-	// TODO: errors are returned when there isn't a substitution - but it is
-	// valid to not have a substitution in cases where there's only one number
-	// for a single plural form. In these cases, no error should be returned.
-
-	if _, ok := t.messages[key]; !ok {
-		if t.fallback != nil && t.fallback != t {
-			return t.fallback.Pluralize(key, number, numberStr)
-		}
-
-		errors = append(errors, translatorError{translator: t, message: "key not found: " + key})
-		return
-	}
-
-	form := (t.rules.PluralRuleFunc)(number)
-
-	parts := strings.Split(t.messages[key], "|")
-
-	if form > len(parts)-1 {
-		errors = append(errors, translatorError{translator: t, message: "too few plural variations: " + key})
-		form = len(parts) - 1
-	}
-
-	var errs []error
-	translation, errs = t.substitute(parts[form], map[string]string{"n": numberStr})
-	for _, err := range errs {
-		errors = append(errors, err)
-	}
-	return
-}
-
-// Rules Translate returns the translated message, performang any substitutions
-// requested in the substitutions map. If neither this translator nor its
-// fallback translator (or the fallback's fallback and so on) have a translation
-// for the requested key, and empty string and an error will be returned.
-func (t *Translator) Rules() TranslatorRules {
-
-	rules := *t.rules
-
-	return rules
-}
-
-// Direction returns the text directionality of the locale's writing system
-func (t *Translator) Direction() (direction string) {
-	return t.rules.Direction
-}
-
-// substitute returns a string copy of the input str string will all keys in the
-// substitutions map replaced with their value.
-func (t *Translator) substitute(str string, substitutions map[string]string) (substituted string, errors []error) {
-
-	substituted = str
-
-	for find, replace := range substitutions {
-		if strings.Index(str, "{"+find+"}") == -1 {
-			errors = append(errors, translatorError{translator: t, message: "substitution not found: " + str + ", " + replace})
-		}
-		substituted = strings.Replace(substituted, "{"+find+"}", replace, -1)
 	}
 
 	return

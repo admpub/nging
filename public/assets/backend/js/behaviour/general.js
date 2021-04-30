@@ -497,20 +497,21 @@ var App = function () {
 				case 'primary':
 				case 'clean':
 				case 'info':
-					if (options.title) options.title = '<i class="fa fa-info-circle"></i> ' + options.title; break;
+					if (options.title) options.title = '<i class="fa fa-info-circle"></i> ' + App.t(options.title); break;
 
 				case 'error':
 					options.class_name = 'danger';
 				case 'danger':
-					if (options.title) options.title = '<i class="fa fa-comment-o"></i> ' + options.title; break;
+					if (options.title) options.title = '<i class="fa fa-comment-o"></i> ' + App.t(options.title); break;
 
 				case 'warning':
-					if (options.title) options.title = '<i class="fa fa-warning"></i> ' + options.title; break;
+					if (options.title) options.title = '<i class="fa fa-warning"></i> ' + App.t(options.title); break;
 
 				case 'success':
-					if (options.title) options.title = '<i class="fa fa-check"></i> ' + options.title; break;
+					if (options.title) options.title = '<i class="fa fa-check"></i> ' + App.t(options.title); break;
 			}
 			if (sticky != null) options.sticky = sticky;
+			if (options.text) options.text = App.t(options.text);
 			var number = $.gritter.add(options);
 			//$.gritter.remove(number);
 			//$.gritter.removeAll({before_close:function(wrap){},after_close:function(){}});
@@ -1659,8 +1660,15 @@ var App = function () {
 		template: function(elem,jsonData){
             var tplId = $(elem).attr('tpl');
             $(elem).html(template(tplId,jsonData));
+		},
+		captchaUpdate: function($form, resp){
+			if(resp.Code == -9 && resp.Data && typeof(resp.Data.captchaIdent) !== 'undefined') {
+				var idElem = $form.find('input#'+resp.Data.captchaIdent);
+				idElem.val(resp.Data.captchaID);
+				idElem.siblings('img').attr('src',resp.Data.captchaURL);
+				if(resp.Data.captchaName) $form.find('input[name="'+resp.Data.captchaName+'"]').focus();
+			}
 		}
-	
 	};
 
 }();

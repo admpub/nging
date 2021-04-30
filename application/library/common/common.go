@@ -20,7 +20,6 @@ package common
 
 import (
 	"errors"
-	"fmt"
 	"net"
 	"os"
 	"os/exec"
@@ -28,39 +27,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/webx-top/captcha"
 	"github.com/webx-top/com"
-	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
-	stdCode "github.com/webx-top/echo/code"
-	hdlCaptcha "github.com/webx-top/echo/handler/captcha"
-	"github.com/webx-top/echo/middleware/render"
-	"github.com/webx-top/echo/middleware/tplfunc"
-	"github.com/webx-top/echo/subdomains"
 )
-
-var ErrorProcessors = []render.ErrorProcessor{
-	func(ctx echo.Context, err error) (processed bool, newErr error) {
-		if errors.Is(err, db.ErrNoMoreRows) {
-			return true, echo.NewError(ctx.T(`数据不存在`), stdCode.DataNotFound)
-		}
-		return false, err
-	},
-}
-
-func ProcessError(ctx echo.Context, err error) error {
-	for _, processor := range ErrorProcessors {
-		if processor == nil {
-			continue
-		}
-		var processed bool
-		processed, err = processor(ctx, err)
-		if processed {
-			break
-		}
-	}
-	return err
-}
 
 // Ok 操作成功
 func Ok(v string) Successor {
@@ -108,107 +77,8 @@ func SendErr(ctx echo.Context, err error) {
 	SendFail(ctx, err.Error())
 }
 
-func GenCaptchaError(ctx echo.Context, hostAlias string, captchaName string, id string, args ...string) echo.Data {
-	data := ctx.Data()
-	data.SetZone(captchaName)
-	data.SetData(CaptchaInfo(hostAlias, captchaName, id, args...))
-	data.SetError(ErrCaptcha)
-	return data
-}
-
-// VerifyCaptcha 验证码验证
-func VerifyCaptcha(ctx echo.Context, hostAlias string, captchaName string, args ...string) echo.Data {
-	idGet := ctx.Form
-	idSet := func(id string) {
-		ctx.Request().Form().Set(`captchaId`, id)
-	}
-	if len(args) > 0 {
-		idGet = func(_ string, defaults ...string) string {
-			return ctx.Form(args[0], defaults...)
-		}
-		idSet = func(id string) {
-			ctx.Request().Form().Set(args[0], id)
-		}
-	}
-	code := ctx.Form(captchaName)
-	id := idGet("captchaId")
-	if len(id) == 0 {
-		return GenCaptchaError(ctx, hostAlias, captchaName, id, args...)
-	}
-	exists := captcha.Exists(id)
-	if len(code) == 0 {
-		return GenCaptchaError(ctx, hostAlias, captchaName, ``, args...)
-	}
-	if !exists && len(hdlCaptcha.DefaultOptions.CookieName) > 0 {
-		id = ctx.GetCookie(hdlCaptcha.DefaultOptions.CookieName)
-		if len(id) > 0 {
-			if exists = captcha.Exists(id); exists {
-				idSet(id)
-			}
-		}
-	}
-	if !exists && len(hdlCaptcha.DefaultOptions.HeaderName) > 0 {
-		id = ctx.Header(hdlCaptcha.DefaultOptions.HeaderName)
-		if len(id) > 0 {
-			if exists = captcha.Exists(id); exists {
-				idSet(id)
-			}
-		}
-	}
-	if !exists || !tplfunc.CaptchaVerify(code, idGet) {
-		return GenCaptchaError(ctx, hostAlias, captchaName, ``, args...)
-	}
-	return ctx.Data()
-}
-
-// VerifyAndSetCaptcha 验证码验证并设置新验证码信息
-func VerifyAndSetCaptcha(ctx echo.Context, hostAlias string, captchaName string, args ...string) echo.Data {
-	data := VerifyCaptcha(ctx, hostAlias, captchaName, args...)
-	if data.GetCode() != stdCode.CaptchaError {
-		data.SetData(CaptchaInfo(hostAlias, captchaName, ``, args...))
-	}
-	return data
-}
-
-// CaptchaInfo 新验证码信息
-func CaptchaInfo(hostAlias string, captchaName string, captchaID string, args ...string) echo.H {
-	if len(captchaID) == 0 {
-		captchaID = captcha.New()
-	}
-	captchaIdent := `captchaId`
-	if len(args) > 0 {
-		captchaIdent = args[0]
-	}
-	return echo.H{
-		`captchaName`:  captchaName,
-		`captchaIdent`: captchaIdent,
-		`captchaID`:    captchaID,
-		`captchaURL`:   subdomains.Default.URL(`/captcha/`+captchaID+`.png`, hostAlias),
-	}
-}
-
 type ConfigFromDB interface {
 	ConfigFromDB() echo.H
-}
-
-func MakeMap(values ...interface{}) echo.H {
-	h := echo.H{}
-	if len(values) == 0 {
-		return h
-	}
-	var k string
-	for i, j := 0, len(values); i < j; i++ {
-		if i%2 == 0 {
-			k = fmt.Sprint(values[i])
-			continue
-		}
-		h.Set(k, values[i])
-		k = ``
-	}
-	if len(k) > 0 {
-		h.Set(k, nil)
-	}
-	return h
 }
 
 // GetLocalIP 获取本机网卡IP

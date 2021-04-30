@@ -121,6 +121,7 @@ function submitEncryptedData(formElem, onSubmitting, onSubmitted) {
                     App.message({ title: App.i18n.SYS_INFO, text: r.Info ? r.Info : App.i18n.SUCCESS, class_name: 'success' });
                 }
             } else {
+                App.captchaUpdate($(formElem), r);
                 App.message({ title: App.i18n.SYS_INFO, text: r.Info ? r.Info : App.i18n.FAILURE, class_name: 'danger' });
             }
         }, 'json');

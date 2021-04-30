@@ -37,7 +37,7 @@ type I18n struct {
 
 func NewI18n(c *Config) *I18n {
 	f, errs := i18n.NewTranslatorFactory(c.RulesPath, c.MessagesPath, c.Fallback, c.FSFunc())
-	if errs != nil && len(errs) > 0 {
+	if len(errs) > 0 {
 		var errMsg string
 		for idx, err := range errs {
 			if idx > 0 {
@@ -54,7 +54,7 @@ func NewI18n(c *Config) *I18n {
 		Translators:       make(map[string]*i18n.Translator),
 		config:            c,
 	}
-	defaultInstance.Get(c.Default)
+	defaultInstance.GetAndCache(c.Default)
 
 	return defaultInstance
 }
@@ -84,18 +84,18 @@ func (a *I18n) Monitor() *I18n {
 	return a
 }
 
-func (a *I18n) Get(langCode string) *i18n.Translator {
+func (a *I18n) GetAndCache(langCode string) *i18n.Translator {
 	var (
 		t    *i18n.Translator
 		errs []error
 	)
 	t, errs = a.TranslatorFactory.GetTranslator(langCode)
-	if errs != nil && len(errs) > 0 {
+	if len(errs) > 0 {
 		if a.config.Default != langCode {
 			t, errs = a.TranslatorFactory.GetTranslator(a.config.Default)
 		}
 	}
-	if errs != nil && len(errs) > 0 {
+	if len(errs) > 0 {
 		var errMsg string
 		for idx, err := range errs {
 			if idx > 0 {
@@ -122,11 +122,16 @@ func (a *I18n) Reload(langCode string) {
 	}
 }
 
-func (a *I18n) Translate(langCode, key string, args map[string]string) string {
+func (a *I18n) Get(langCode string) *i18n.Translator {
 	t, ok := a.Translators[langCode]
 	if !ok {
-		t = a.Get(langCode)
+		t = a.GetAndCache(langCode)
 	}
+	return t
+}
+
+func (a *I18n) Translate(langCode, key string, args map[string]string) string {
+	t := a.Get(langCode)
 	translation, err := t.Translate(key, args)
 	if err != nil {
 		return key

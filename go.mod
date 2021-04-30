@@ -44,7 +44,7 @@ require (
 	github.com/admpub/goseaweedfs v0.1.2
 	github.com/admpub/highwayhash v0.0.0-20180501080913-85fc8a2dacad
 	github.com/admpub/httpscerts v0.0.0-20180907121630-a2990e2af45c
-	github.com/admpub/i18n v0.0.0-20190425064330-383d24a2fded // indirect
+	github.com/admpub/i18n v0.0.2 // indirect
 	github.com/admpub/imageproxy v0.9.1
 	github.com/admpub/ip2region v1.2.6
 	github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
@@ -137,7 +137,7 @@ require (
 	github.com/webx-top/codec v0.0.1
 	github.com/webx-top/com v0.2.0
 	github.com/webx-top/db v1.1.6
-	github.com/webx-top/echo v2.9.8+incompatible
+	github.com/webx-top/echo v2.10.4+incompatible
 	github.com/webx-top/image v0.0.7
 	github.com/webx-top/pagination v0.1.0
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect

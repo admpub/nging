@@ -26,13 +26,19 @@ import (
 	"github.com/webx-top/echo"
 )
 
+type IDGenerator func(echo.Context, *Options) (string, error)
+
 var DefaultOptions = &Options{
 	EnableImage:    true,
 	EnableAudio:    true,
 	EnableDownload: true,
 	AudioLangs:     []string{`zh`, `ru`, `en`},
+	Prefix:         `/captcha`,
 	CookieName:     `captchaId`,
-	HeaderName:     `X-Captcha-ID`,
+	HeaderName:     `X-Captcha-Id`,
+	IDGenerator: func(_ echo.Context, _ *Options) (string, error) {
+		return captcha.New(), nil
+	},
 }
 
 type Options struct {
@@ -43,17 +49,17 @@ type Options struct {
 	Prefix         string
 	CookieName     string
 	HeaderName     string
+	IDGenerator    IDGenerator
 }
 
 func (o Options) Wrapper(e echo.RouteRegister) {
 	if o.AudioLangs == nil || len(o.AudioLangs) == 0 {
-		o.AudioLangs = []string{`zh`, `ru`, `en`}
+		o.AudioLangs = DefaultOptions.AudioLangs
 	}
 	if len(o.Prefix) == 0 {
-		o.Prefix = `/captcha`
-	} else {
-		o.Prefix = strings.TrimRight(o.Prefix, "/")
+		o.Prefix = DefaultOptions.Prefix
 	}
+	o.Prefix = strings.TrimRight(o.Prefix, "/")
 	e.Get(o.Prefix+"/*", Captcha(&o))
 }
 
@@ -71,6 +77,9 @@ func Captcha(opts ...*Options) func(echo.Context) error {
 	if len(o.HeaderName) == 0 {
 		o.HeaderName = DefaultOptions.HeaderName
 	}
+	if o.IDGenerator == nil {
+		o.IDGenerator = DefaultOptions.IDGenerator
+	}
 	return func(ctx echo.Context) (err error) {
 		var id, ext string
 		param := ctx.P(0)
@@ -81,38 +90,53 @@ func Captcha(opts ...*Options) func(echo.Context) error {
 		if len(ext) == 0 || len(id) == 0 {
 			return echo.ErrNotFound
 		}
-		ids := []string{id}
-		if len(o.CookieName) > 0 {
-			ids = append(ids, ctx.GetCookie(o.CookieName))
-		}
-		if len(o.HeaderName) > 0 {
-			ids = append(ids, ctx.Header(o.HeaderName))
-		}
 		w := ctx.Response()
 		header := w.Header()
-		if len(ctx.Query("reload")) > 0 {
+		ids := []string{id}
+		var hasCookieValue, hasHeaderValue bool
+		if len(o.CookieName) > 0 {
+			idByCookie := ctx.GetCookie(o.CookieName)
+			if len(idByCookie) > 0 {
+				ids = append(ids, idByCookie)
+				hasCookieValue = true
+			}
+		}
+		if len(o.HeaderName) > 0 {
+			idByHeader := ctx.Header(o.HeaderName)
+			if len(idByHeader) > 0 {
+				ids = append(ids, idByHeader)
+				hasHeaderValue = true
+			}
+		}
+		if ctx.Queryx("reload").Bool() {
 			var ok bool
 			for _, id := range ids {
+				if len(id) == 0 {
+					continue
+				}
 				if captcha.Reload(id) {
 					ok = true
 					ids = []string{id}
 					break
 				}
 			}
-			if !ok {
-				if len(o.CookieName) > 0 {
-					id = captcha.New()
-					ids = []string{id}
+			if !ok && (hasCookieValue || hasHeaderValue) { // 旧的已经全部失效了，自动申请新ID
+				id, err = o.IDGenerator(ctx, o)
+				if err != nil {
+					header.Add(`X-Captcha-ID-Error`, `generator: `+err.Error())
+					return err
+				}
+				ids = []string{id}
+				if hasCookieValue {
 					ctx.SetCookie(o.CookieName, id)
-				} else if len(o.HeaderName) > 0 {
-					id = captcha.New()
-					ids = []string{id}
+				}
+				if hasHeaderValue {
 					header.Set(o.HeaderName, id)
 				}
 			}
 		}
-		download := o.EnableDownload && len(ctx.Query("download")) > 0
-		b := bytes.NewBufferString(``)
+		download := o.EnableDownload && ctx.Queryx("download").Bool()
+		b := bytes.NewBuffer(nil)
 		switch ext {
 		case ".png":
 			if !o.EnableImage {

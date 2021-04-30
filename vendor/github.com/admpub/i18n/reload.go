@@ -1,7 +1,6 @@
 package i18n
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -13,9 +12,7 @@ func (f *TranslatorFactory) Reload(localeCode string) (t *Translator, errors []e
 	if !exists {
 		errors = append(errors, translatorError{message: "could not find rules and messages for locale " + localeCode})
 	}
-	for _, e := range errs {
-		errors = append(errors, e)
-	}
+	errors = append(errors, errs...)
 
 	rules := new(TranslatorRules)
 	files := []string{}
@@ -51,15 +48,10 @@ func (f *TranslatorFactory) Reload(localeCode string) (t *Translator, errors []e
 	}
 
 	errs = rules.load(files, f.getFileSystem)
-	for _, err := range errs {
-		errors = append(errors, err)
-	}
+	errors = append(errors, errs...)
 
 	messages, errs := loadMessages(localeCode, f.messagesPaths, f.getFileSystem)
-	for _, err := range errs {
-		fmt.Println(err)
-		errors = append(errors, err)
-	}
+	errors = append(errors, errs...)
 
 	t = new(Translator)
 	t.locale = localeCode

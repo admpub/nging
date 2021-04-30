@@ -1567,3 +1567,14 @@ targetId无效 : "targetId无效"
 默认首页文件，多个之间用半角空格隔开，如不填写，默认为： : "默认首页文件，多个之间用半角空格隔开，如不填写，默认为："
 显示更多回复 : "Show more comments"
 Pipes  : "Pipes"
+SYS_INFO : 'System Information'
+UPLOAD_ERR : 'Upload Error'
+PLEASE_SELECT_FOR_OPERATE : 'Please select the item you want to operate'
+PLEASE_SELECT_FOR_REMOVE : 'Please select the item you want to delete'
+CONFIRM_REMOVE : 'Are you sure you want to delete them?'
+SELECTED_ITEMS : 'You have selected %d items'
+SUCCESS : 'The operation was successful'
+FAILURE : 'Operation failed'
+UPLOADING : 'File uploading, please wait...'
+UPLOAD_SUCCEED : 'Upload successfully'
+BUTTON_UPLOAD : 'Upload'
