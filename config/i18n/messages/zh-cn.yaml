@@ -67,12 +67,13 @@ Pipes : "扩展"
 "Captcha is incorrect" : "验证码错误"
 SYS_INFO : "系统信息"
 UPLOAD_ERR : '上传出错'
-PLEASE_SELECT_FOR_OPERATE : '请选择您要操作的项'
-PLEASE_SELECT_FOR_REMOVE : '请选择您想要删除的项'
+PLEASE_SELECT_FOR_OPERATE : '请选择要操作的项'
+PLEASE_SELECT_FOR_REMOVE : '请选择要删除的项'
 CONFIRM_REMOVE : '确定要删除吗？'
 SELECTED_ITEMS : '已选择 %d 项'
 SUCCESS : '操作成功'
 FAILURE : '操作失败'
 UPLOADING : '文件上传中，请稍候...'
+PLEASE_SELECT : '请选择'
 UPLOAD_SUCCEED : '上传成功'
-BUTTON_UPLOAD : '上传' 
+BUTTON_UPLOAD : '上传附件'
