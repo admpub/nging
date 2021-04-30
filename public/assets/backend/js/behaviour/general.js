@@ -1663,6 +1663,7 @@ var App = function () {
 		},
 		captchaUpdate: function($form, resp){
 			if(resp.Code == -9 && resp.Data && typeof(resp.Data.captchaIdent) !== 'undefined') {
+				if(false == ($form instanceof jQuery)) $form=$($form);
 				var idElem = $form.find('input#'+resp.Data.captchaIdent);
 				idElem.val(resp.Data.captchaID);
 				idElem.siblings('img').attr('src',resp.Data.captchaURL);
