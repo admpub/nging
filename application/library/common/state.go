@@ -27,6 +27,10 @@ func IsCaptchaErrCode(code stdCode.Code) bool {
 	return code == stdCode.CaptchaError
 }
 
+func IsFailureCode(code stdCode.Code) bool {
+	return code != stdCode.Success
+}
+
 // IsCaptchaError 用户验证码错误
 func IsCaptchaError(err error) bool {
 	return err == ErrCaptcha
