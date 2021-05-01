@@ -49,12 +49,14 @@ const (
 
 	// - 用户状态
 
-	CaptchaError    Code = -9 //验证码错误
-	BalanceNoEnough Code = -5 //余额不足
-	UserDisabled    Code = -4 //用户被禁用
-	UserNotFound    Code = -3 //用户未找到
-	NonPrivileged   Code = -2 //无权限
-	Unauthenticated Code = -1 //未登录
+	CaptchaCodeRequired Code = -11 // captcha code 不能为空
+	CaptchaIdMissing    Code = -10 // 缺少captchaId
+	CaptchaError        Code = -9  //验证码错误
+	BalanceNoEnough     Code = -5  //余额不足
+	UserDisabled        Code = -4  //用户被禁用
+	UserNotFound        Code = -3  //用户未找到
+	NonPrivileged       Code = -2  //无权限
+	Unauthenticated     Code = -1  //未登录
 
 	// - 通用
 
@@ -100,12 +102,14 @@ var CodeDict = CodeMap{
 
 	// - 用户状态
 
-	CaptchaError:    {"CaptchaError", http.StatusOK},
-	BalanceNoEnough: {"BalanceNoEnough", http.StatusOK},
-	UserDisabled:    {"UserDisabled", http.StatusOK},
-	UserNotFound:    {"UserNotFound", http.StatusOK},
-	NonPrivileged:   {"NonPrivileged", http.StatusOK},
-	Unauthenticated: {"Unauthenticated", http.StatusOK},
+	CaptchaCodeRequired: {"CaptchaCodeRequired", http.StatusOK},
+	CaptchaIdMissing:    {"CaptchaIdMissing", http.StatusOK},
+	CaptchaError:        {"CaptchaError", http.StatusOK},
+	BalanceNoEnough:     {"BalanceNoEnough", http.StatusOK},
+	UserDisabled:        {"UserDisabled", http.StatusOK},
+	UserNotFound:        {"UserNotFound", http.StatusOK},
+	NonPrivileged:       {"NonPrivileged", http.StatusOK},
+	Unauthenticated:     {"Unauthenticated", http.StatusOK},
 
 	// - 通用
 
@@ -142,6 +146,9 @@ func (s CodeMap) Set(code Code, text string, httpCodes ...int) CodeMap {
 	httpCode := http.StatusOK
 	if len(httpCodes) > 0 {
 		httpCode = httpCodes[0]
+		if httpCode <= 0 {
+			httpCode = http.StatusOK
+		}
 	}
 	s[code] = TextHTTPCode{Text: text, HTTPCode: httpCode}
 	return s
@@ -149,4 +156,12 @@ func (s CodeMap) Set(code Code, text string, httpCodes ...int) CodeMap {
 
 func (s CodeMap) GetByInt(code int) TextHTTPCode {
 	return s.Get(Code(code))
+}
+
+func Register(code Code, text string, httpCodes ...int) {
+	CodeDict.Set(code, text, httpCodes...)
+}
+
+func Get(code Code) TextHTTPCode {
+	return CodeDict.Get(code)
 }

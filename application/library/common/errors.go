@@ -46,8 +46,8 @@ var (
 	ErrBalanceNoEnough = echo.NewError(`Balance is not enough`, code.BalanceNoEnough)
 	//ErrCaptcha 验证码错误
 	ErrCaptcha = echo.NewError(`Captcha is incorrect`, code.CaptchaError)
-	//ErrCaptcha 验证码错误
-	ErrCaptchaIdMissing = echo.NewError(`Missing captchaId`, code.InvalidParameter).SetZone(`captchaId`)
+	//ErrCaptchaIdMissing 缺少captchaId
+	ErrCaptchaIdMissing = echo.NewError(`Missing captchaId`, code.CaptchaIdMissing).SetZone(`captchaId`)
 	//ErrInvalidAppID App ID 无效
 	ErrInvalidAppID = echo.NewError(`Invalid app id`, code.InvalidAppID)
 	//ErrInvalidSign 无效签名
