@@ -221,6 +221,24 @@ type FlexNodeHighlightConfig struct {
 	NodeID                       cdp.NodeID                    `json:"nodeId"`                       // Identifier of the node to highlight.
 }
 
+// ScrollSnapContainerHighlightConfig [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Overlay#type-ScrollSnapContainerHighlightConfig
+type ScrollSnapContainerHighlightConfig struct {
+	SnapportBorder     *LineStyle `json:"snapportBorder,omitempty"`     // The style of the snapport border (default: transparent)
+	SnapAreaBorder     *LineStyle `json:"snapAreaBorder,omitempty"`     // The style of the snap area border (default: transparent)
+	ScrollMarginColor  *cdp.RGBA  `json:"scrollMarginColor,omitempty"`  // The margin highlight fill color (default: transparent).
+	ScrollPaddingColor *cdp.RGBA  `json:"scrollPaddingColor,omitempty"` // The padding highlight fill color (default: transparent).
+}
+
+// ScrollSnapHighlightConfig [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Overlay#type-ScrollSnapHighlightConfig
+type ScrollSnapHighlightConfig struct {
+	ScrollSnapContainerHighlightConfig *ScrollSnapContainerHighlightConfig `json:"scrollSnapContainerHighlightConfig"` // A descriptor for the highlight appearance of scroll snap containers.
+	NodeID                             cdp.NodeID                          `json:"nodeId"`                             // Identifier of the node to highlight.
+}
+
 // HingeConfig configuration for dual screen hinge.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Overlay#type-HingeConfig

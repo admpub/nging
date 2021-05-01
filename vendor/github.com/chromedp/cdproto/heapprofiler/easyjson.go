@@ -41,6 +41,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoHeapprofiler(in *jlexer.Lexer
 			out.ReportProgress = bool(in.Bool())
 		case "treatGlobalObjectsAsRoots":
 			out.TreatGlobalObjectsAsRoots = bool(in.Bool())
+		case "captureNumericValue":
+			out.CaptureNumericValue = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -70,6 +72,16 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoHeapprofiler(out *jwriter.Wri
 			out.RawString(prefix)
 		}
 		out.Bool(bool(in.TreatGlobalObjectsAsRoots))
+	}
+	if in.CaptureNumericValue {
+		const prefix string = ",\"captureNumericValue\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Bool(bool(in.CaptureNumericValue))
 	}
 	out.RawByte('}')
 }
@@ -120,6 +132,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoHeapprofiler1(in *jlexer.Lexe
 			out.ReportProgress = bool(in.Bool())
 		case "treatGlobalObjectsAsRoots":
 			out.TreatGlobalObjectsAsRoots = bool(in.Bool())
+		case "captureNumericValue":
+			out.CaptureNumericValue = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -149,6 +163,16 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoHeapprofiler1(out *jwriter.Wr
 			out.RawString(prefix)
 		}
 		out.Bool(bool(in.TreatGlobalObjectsAsRoots))
+	}
+	if in.CaptureNumericValue {
+		const prefix string = ",\"captureNumericValue\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.Bool(bool(in.CaptureNumericValue))
 	}
 	out.RawByte('}')
 }

@@ -761,8 +761,69 @@ type CorsIssueDetails struct {
 	CorsErrorStatus        *network.CorsErrorStatus     `json:"corsErrorStatus"`
 	IsWarning              bool                         `json:"isWarning"`
 	Request                *AffectedRequest             `json:"request"`
+	InitiatorOrigin        string                       `json:"initiatorOrigin,omitempty"`
 	ResourceIPAddressSpace network.IPAddressSpace       `json:"resourceIPAddressSpace,omitempty"`
 	ClientSecurityState    *network.ClientSecurityState `json:"clientSecurityState,omitempty"`
+}
+
+// AttributionReportingIssueType [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-AttributionReportingIssueType
+type AttributionReportingIssueType string
+
+// String returns the AttributionReportingIssueType as string value.
+func (t AttributionReportingIssueType) String() string {
+	return string(t)
+}
+
+// AttributionReportingIssueType values.
+const (
+	AttributionReportingIssueTypePermissionPolicyDisabled             AttributionReportingIssueType = "PermissionPolicyDisabled"
+	AttributionReportingIssueTypeInvalidAttributionData               AttributionReportingIssueType = "InvalidAttributionData"
+	AttributionReportingIssueTypeAttributionSourceUntrustworthyOrigin AttributionReportingIssueType = "AttributionSourceUntrustworthyOrigin"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t AttributionReportingIssueType) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t AttributionReportingIssueType) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *AttributionReportingIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch AttributionReportingIssueType(in.String()) {
+	case AttributionReportingIssueTypePermissionPolicyDisabled:
+		*t = AttributionReportingIssueTypePermissionPolicyDisabled
+	case AttributionReportingIssueTypeInvalidAttributionData:
+		*t = AttributionReportingIssueTypeInvalidAttributionData
+	case AttributionReportingIssueTypeAttributionSourceUntrustworthyOrigin:
+		*t = AttributionReportingIssueTypeAttributionSourceUntrustworthyOrigin
+
+	default:
+		in.AddError(errors.New("unknown AttributionReportingIssueType value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *AttributionReportingIssueType) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
+// AttributionReportingIssueDetails details for issues around "Attribution
+// Reporting API" usage. Explainer:
+// https://github.com/WICG/conversion-measurement-api.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-AttributionReportingIssueDetails
+type AttributionReportingIssueDetails struct {
+	ViolationType    AttributionReportingIssueType `json:"violationType"`
+	Frame            *AffectedFrame                `json:"frame,omitempty"`
+	Request          *AffectedRequest              `json:"request,omitempty"`
+	ViolatingNodeID  cdp.BackendNodeID             `json:"violatingNodeId,omitempty"`
+	InvalidParameter string                        `json:"invalidParameter,omitempty"`
 }
 
 // InspectorIssueCode a unique identifier for the type of issue. Each type
@@ -788,6 +849,7 @@ const (
 	InspectorIssueCodeTrustedWebActivityIssue    InspectorIssueCode = "TrustedWebActivityIssue"
 	InspectorIssueCodeLowTextContrastIssue       InspectorIssueCode = "LowTextContrastIssue"
 	InspectorIssueCodeCorsIssue                  InspectorIssueCode = "CorsIssue"
+	InspectorIssueCodeAttributionReportingIssue  InspectorIssueCode = "AttributionReportingIssue"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -821,6 +883,8 @@ func (t *InspectorIssueCode) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = InspectorIssueCodeLowTextContrastIssue
 	case InspectorIssueCodeCorsIssue:
 		*t = InspectorIssueCodeCorsIssue
+	case InspectorIssueCodeAttributionReportingIssue:
+		*t = InspectorIssueCodeAttributionReportingIssue
 
 	default:
 		in.AddError(errors.New("unknown InspectorIssueCode value"))
@@ -847,6 +911,7 @@ type InspectorIssueDetails struct {
 	TwaQualityEnforcementDetails      *TrustedWebActivityIssueDetails    `json:"twaQualityEnforcementDetails,omitempty"`
 	LowTextContrastIssueDetails       *LowTextContrastIssueDetails       `json:"lowTextContrastIssueDetails,omitempty"`
 	CorsIssueDetails                  *CorsIssueDetails                  `json:"corsIssueDetails,omitempty"`
+	AttributionReportingIssueDetails  *AttributionReportingIssueDetails  `json:"attributionReportingIssueDetails,omitempty"`
 }
 
 // InspectorIssue an inspector issue reported from the back-end.

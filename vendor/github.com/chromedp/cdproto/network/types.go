@@ -623,7 +623,6 @@ const (
 	BlockedReasonInspector                                         BlockedReason = "inspector"
 	BlockedReasonSubresourceFilter                                 BlockedReason = "subresource-filter"
 	BlockedReasonContentType                                       BlockedReason = "content-type"
-	BlockedReasonCollapsedByClient                                 BlockedReason = "collapsed-by-client"
 	BlockedReasonCoepFrameResourceNeedsCoepHeader                  BlockedReason = "coep-frame-resource-needs-coep-header"
 	BlockedReasonCoopSandboxedIframeCannotNavigateToCoopPage       BlockedReason = "coop-sandboxed-iframe-cannot-navigate-to-coop-page"
 	BlockedReasonCorpNotSameOrigin                                 BlockedReason = "corp-not-same-origin"
@@ -658,8 +657,6 @@ func (t *BlockedReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = BlockedReasonSubresourceFilter
 	case BlockedReasonContentType:
 		*t = BlockedReasonContentType
-	case BlockedReasonCollapsedByClient:
-		*t = BlockedReasonCollapsedByClient
 	case BlockedReasonCoepFrameResourceNeedsCoepHeader:
 		*t = BlockedReasonCoepFrameResourceNeedsCoepHeader
 	case BlockedReasonCoopSandboxedIframeCannotNavigateToCoopPage:
@@ -1393,6 +1390,53 @@ type SignedExchangeInfo struct {
 	Errors          []*SignedExchangeError `json:"errors,omitempty"`          // Errors occurred while handling the signed exchagne.
 }
 
+// ContentEncoding list of content encodings supported by the backend.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-ContentEncoding
+type ContentEncoding string
+
+// String returns the ContentEncoding as string value.
+func (t ContentEncoding) String() string {
+	return string(t)
+}
+
+// ContentEncoding values.
+const (
+	ContentEncodingDeflate ContentEncoding = "deflate"
+	ContentEncodingGzip    ContentEncoding = "gzip"
+	ContentEncodingBr      ContentEncoding = "br"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t ContentEncoding) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t ContentEncoding) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *ContentEncoding) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch ContentEncoding(in.String()) {
+	case ContentEncodingDeflate:
+		*t = ContentEncodingDeflate
+	case ContentEncodingGzip:
+		*t = ContentEncodingGzip
+	case ContentEncodingBr:
+		*t = ContentEncodingBr
+
+	default:
+		in.AddError(errors.New("unknown ContentEncoding value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *ContentEncoding) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
 // PrivateNetworkRequestPolicy [no description].
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-PrivateNetworkRequestPolicy
@@ -1571,8 +1615,9 @@ func (t CrossOriginEmbedderPolicyValue) String() string {
 
 // CrossOriginEmbedderPolicyValue values.
 const (
-	CrossOriginEmbedderPolicyValueNone        CrossOriginEmbedderPolicyValue = "None"
-	CrossOriginEmbedderPolicyValueRequireCorp CrossOriginEmbedderPolicyValue = "RequireCorp"
+	CrossOriginEmbedderPolicyValueNone                 CrossOriginEmbedderPolicyValue = "None"
+	CrossOriginEmbedderPolicyValueCorsOrCredentialless CrossOriginEmbedderPolicyValue = "CorsOrCredentialless"
+	CrossOriginEmbedderPolicyValueRequireCorp          CrossOriginEmbedderPolicyValue = "RequireCorp"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -1590,6 +1635,8 @@ func (t *CrossOriginEmbedderPolicyValue) UnmarshalEasyJSON(in *jlexer.Lexer) {
 	switch CrossOriginEmbedderPolicyValue(in.String()) {
 	case CrossOriginEmbedderPolicyValueNone:
 		*t = CrossOriginEmbedderPolicyValueNone
+	case CrossOriginEmbedderPolicyValueCorsOrCredentialless:
+		*t = CrossOriginEmbedderPolicyValueCorsOrCredentialless
 	case CrossOriginEmbedderPolicyValueRequireCorp:
 		*t = CrossOriginEmbedderPolicyValueRequireCorp
 

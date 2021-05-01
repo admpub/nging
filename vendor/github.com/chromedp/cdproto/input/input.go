@@ -12,6 +12,45 @@ import (
 	"github.com/chromedp/cdproto/cdp"
 )
 
+// DispatchDragEventParams dispatches a drag event into the page.
+type DispatchDragEventParams struct {
+	Type      DispatchDragEventType `json:"type"` // Type of the drag event.
+	X         float64               `json:"x"`    // X coordinate of the event relative to the main frame's viewport in CSS pixels.
+	Y         float64               `json:"y"`    // Y coordinate of the event relative to the main frame's viewport in CSS pixels. 0 refers to the top of the viewport and Y increases as it proceeds towards the bottom of the viewport.
+	Data      *DragData             `json:"data"`
+	Modifiers Modifier              `json:"modifiers"` // Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
+}
+
+// DispatchDragEvent dispatches a drag event into the page.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#method-dispatchDragEvent
+//
+// parameters:
+//   type - Type of the drag event.
+//   x - X coordinate of the event relative to the main frame's viewport in CSS pixels.
+//   y - Y coordinate of the event relative to the main frame's viewport in CSS pixels. 0 refers to the top of the viewport and Y increases as it proceeds towards the bottom of the viewport.
+//   data
+func DispatchDragEvent(typeVal DispatchDragEventType, x float64, y float64, data *DragData) *DispatchDragEventParams {
+	return &DispatchDragEventParams{
+		Type: typeVal,
+		X:    x,
+		Y:    y,
+		Data: data,
+	}
+}
+
+// WithModifiers bit field representing pressed modifier keys. Alt=1, Ctrl=2,
+// Meta/Command=4, Shift=8 (default: 0).
+func (p DispatchDragEventParams) WithModifiers(modifiers Modifier) *DispatchDragEventParams {
+	p.Modifiers = modifiers
+	return &p
+}
+
+// Do executes Input.dispatchDragEvent against the provided context.
+func (p *DispatchDragEventParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandDispatchDragEvent, p, nil)
+}
+
 // DispatchKeyEventParams dispatches a key event to the page.
 type DispatchKeyEventParams struct {
 	Type                  KeyType         `json:"type"`                            // Type of the key event.
@@ -432,6 +471,32 @@ func (p *SetIgnoreInputEventsParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSetIgnoreInputEvents, p, nil)
 }
 
+// SetInterceptDragsParams prevents default drag and drop behavior and
+// instead emits Input.dragIntercepted events. Drag and drop behavior can be
+// directly controlled via Input.dispatchDragEvent.
+type SetInterceptDragsParams struct {
+	Enabled bool `json:"enabled"`
+}
+
+// SetInterceptDrags prevents default drag and drop behavior and instead
+// emits Input.dragIntercepted events. Drag and drop behavior can be directly
+// controlled via Input.dispatchDragEvent.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#method-setInterceptDrags
+//
+// parameters:
+//   enabled
+func SetInterceptDrags(enabled bool) *SetInterceptDragsParams {
+	return &SetInterceptDragsParams{
+		Enabled: enabled,
+	}
+}
+
+// Do executes Input.setInterceptDrags against the provided context.
+func (p *SetInterceptDragsParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetInterceptDrags, p, nil)
+}
+
 // SynthesizePinchGestureParams synthesizes a pinch gesture over a time
 // period by issuing appropriate touch events.
 type SynthesizePinchGestureParams struct {
@@ -635,12 +700,14 @@ func (p *SynthesizeTapGestureParams) Do(ctx context.Context) (err error) {
 
 // Command names.
 const (
+	CommandDispatchDragEvent          = "Input.dispatchDragEvent"
 	CommandDispatchKeyEvent           = "Input.dispatchKeyEvent"
 	CommandInsertText                 = "Input.insertText"
 	CommandDispatchMouseEvent         = "Input.dispatchMouseEvent"
 	CommandDispatchTouchEvent         = "Input.dispatchTouchEvent"
 	CommandEmulateTouchFromMouseEvent = "Input.emulateTouchFromMouseEvent"
 	CommandSetIgnoreInputEvents       = "Input.setIgnoreInputEvents"
+	CommandSetInterceptDrags          = "Input.setInterceptDrags"
 	CommandSynthesizePinchGesture     = "Input.synthesizePinchGesture"
 	CommandSynthesizeScrollGesture    = "Input.synthesizeScrollGesture"
 	CommandSynthesizeTapGesture       = "Input.synthesizeTapGesture"

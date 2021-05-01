@@ -19,6 +19,47 @@ import (
 	"github.com/chromedp/cdproto/io"
 )
 
+// SetAcceptedEncodingsParams sets a list of content encodings that will be
+// accepted. Empty list means no encoding is accepted.
+type SetAcceptedEncodingsParams struct {
+	Encodings []ContentEncoding `json:"encodings"` // List of accepted content encodings.
+}
+
+// SetAcceptedEncodings sets a list of content encodings that will be
+// accepted. Empty list means no encoding is accepted.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#method-setAcceptedEncodings
+//
+// parameters:
+//   encodings - List of accepted content encodings.
+func SetAcceptedEncodings(encodings []ContentEncoding) *SetAcceptedEncodingsParams {
+	return &SetAcceptedEncodingsParams{
+		Encodings: encodings,
+	}
+}
+
+// Do executes Network.setAcceptedEncodings against the provided context.
+func (p *SetAcceptedEncodingsParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetAcceptedEncodings, p, nil)
+}
+
+// ClearAcceptedEncodingsOverrideParams clears accepted encodings set by
+// setAcceptedEncodings.
+type ClearAcceptedEncodingsOverrideParams struct{}
+
+// ClearAcceptedEncodingsOverride clears accepted encodings set by
+// setAcceptedEncodings.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#method-clearAcceptedEncodingsOverride
+func ClearAcceptedEncodingsOverride() *ClearAcceptedEncodingsOverrideParams {
+	return &ClearAcceptedEncodingsOverrideParams{}
+}
+
+// Do executes Network.clearAcceptedEncodingsOverride against the provided context.
+func (p *ClearAcceptedEncodingsOverrideParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandClearAcceptedEncodingsOverride, nil, nil)
+}
+
 // ClearBrowserCacheParams clears browser cache.
 type ClearBrowserCacheParams struct{}
 
@@ -935,6 +976,8 @@ func (p *LoadNetworkResourceParams) Do(ctx context.Context) (resource *LoadNetwo
 
 // Command names.
 const (
+	CommandSetAcceptedEncodings                    = "Network.setAcceptedEncodings"
+	CommandClearAcceptedEncodingsOverride          = "Network.clearAcceptedEncodingsOverride"
 	CommandClearBrowserCache                       = "Network.clearBrowserCache"
 	CommandClearBrowserCookies                     = "Network.clearBrowserCookies"
 	CommandDeleteCookies                           = "Network.deleteCookies"

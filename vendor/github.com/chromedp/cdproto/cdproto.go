@@ -129,6 +129,8 @@ const (
 	CommandBrowserSetWindowBounds                          = browser.CommandSetWindowBounds
 	CommandBrowserSetDockTile                              = browser.CommandSetDockTile
 	CommandBrowserExecuteBrowserCommand                    = browser.CommandExecuteBrowserCommand
+	EventBrowserDownloadWillBegin                          = "Browser.downloadWillBegin"
+	EventBrowserDownloadProgress                           = "Browser.downloadProgress"
 	CommandCSSAddRule                                      = css.CommandAddRule
 	CommandCSSCollectClassNames                            = css.CommandCollectClassNames
 	CommandCSSCreateStyleSheet                             = css.CommandCreateStyleSheet
@@ -357,15 +359,18 @@ const (
 	CommandIndexedDBGetMetadata                            = indexeddb.CommandGetMetadata
 	CommandIndexedDBRequestDatabase                        = indexeddb.CommandRequestDatabase
 	CommandIndexedDBRequestDatabaseNames                   = indexeddb.CommandRequestDatabaseNames
+	CommandInputDispatchDragEvent                          = input.CommandDispatchDragEvent
 	CommandInputDispatchKeyEvent                           = input.CommandDispatchKeyEvent
 	CommandInputInsertText                                 = input.CommandInsertText
 	CommandInputDispatchMouseEvent                         = input.CommandDispatchMouseEvent
 	CommandInputDispatchTouchEvent                         = input.CommandDispatchTouchEvent
 	CommandInputEmulateTouchFromMouseEvent                 = input.CommandEmulateTouchFromMouseEvent
 	CommandInputSetIgnoreInputEvents                       = input.CommandSetIgnoreInputEvents
+	CommandInputSetInterceptDrags                          = input.CommandSetInterceptDrags
 	CommandInputSynthesizePinchGesture                     = input.CommandSynthesizePinchGesture
 	CommandInputSynthesizeScrollGesture                    = input.CommandSynthesizeScrollGesture
 	CommandInputSynthesizeTapGesture                       = input.CommandSynthesizeTapGesture
+	EventInputDragIntercepted                              = "Input.dragIntercepted"
 	CommandInspectorDisable                                = inspector.CommandDisable
 	CommandInspectorEnable                                 = inspector.CommandEnable
 	EventInspectorDetached                                 = "Inspector.detached"
@@ -405,6 +410,8 @@ const (
 	CommandMemoryGetAllTimeSamplingProfile                 = memory.CommandGetAllTimeSamplingProfile
 	CommandMemoryGetBrowserSamplingProfile                 = memory.CommandGetBrowserSamplingProfile
 	CommandMemoryGetSamplingProfile                        = memory.CommandGetSamplingProfile
+	CommandNetworkSetAcceptedEncodings                     = network.CommandSetAcceptedEncodings
+	CommandNetworkClearAcceptedEncodingsOverride           = network.CommandClearAcceptedEncodingsOverride
 	CommandNetworkClearBrowserCache                        = network.CommandClearBrowserCache
 	CommandNetworkClearBrowserCookies                      = network.CommandClearBrowserCookies
 	CommandNetworkDeleteCookies                            = network.CommandDeleteCookies
@@ -470,6 +477,7 @@ const (
 	CommandOverlaySetShowFPSCounter                        = overlay.CommandSetShowFPSCounter
 	CommandOverlaySetShowGridOverlays                      = overlay.CommandSetShowGridOverlays
 	CommandOverlaySetShowFlexOverlays                      = overlay.CommandSetShowFlexOverlays
+	CommandOverlaySetShowScrollSnapOverlays                = overlay.CommandSetShowScrollSnapOverlays
 	CommandOverlaySetShowPaintRects                        = overlay.CommandSetShowPaintRects
 	CommandOverlaySetShowLayoutShiftRegions                = overlay.CommandSetShowLayoutShiftRegions
 	CommandOverlaySetShowScrollBottleneckRects             = overlay.CommandSetShowScrollBottleneckRects
@@ -536,13 +544,12 @@ const (
 	EventPageFrameRequestedNavigation                      = "Page.frameRequestedNavigation"
 	EventPageFrameStartedLoading                           = "Page.frameStartedLoading"
 	EventPageFrameStoppedLoading                           = "Page.frameStoppedLoading"
-	EventPageDownloadWillBegin                             = "Page.downloadWillBegin"
-	EventPageDownloadProgress                              = "Page.downloadProgress"
 	EventPageInterstitialHidden                            = "Page.interstitialHidden"
 	EventPageInterstitialShown                             = "Page.interstitialShown"
 	EventPageJavascriptDialogClosed                        = "Page.javascriptDialogClosed"
 	EventPageJavascriptDialogOpening                       = "Page.javascriptDialogOpening"
 	EventPageLifecycleEvent                                = "Page.lifecycleEvent"
+	EventPageBackForwardCacheNotUsed                       = "Page.backForwardCacheNotUsed"
 	EventPageLoadEventFired                                = "Page.loadEventFired"
 	EventPageNavigatedWithinDocument                       = "Page.navigatedWithinDocument"
 	EventPageScreencastFrame                               = "Page.screencastFrame"
@@ -637,6 +644,7 @@ const (
 	CommandStorageUntrackCacheStorageForOrigin             = storage.CommandUntrackCacheStorageForOrigin
 	CommandStorageUntrackIndexedDBForOrigin                = storage.CommandUntrackIndexedDBForOrigin
 	CommandStorageGetTrustTokens                           = storage.CommandGetTrustTokens
+	CommandStorageClearTrustTokens                         = storage.CommandClearTrustTokens
 	EventStorageCacheStorageContentUpdated                 = "Storage.cacheStorageContentUpdated"
 	EventStorageCacheStorageListUpdated                    = "Storage.cacheStorageListUpdated"
 	EventStorageIndexedDBContentUpdated                    = "Storage.indexedDBContentUpdated"
@@ -893,6 +901,12 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case CommandBrowserExecuteBrowserCommand:
 		return emptyVal, nil
+
+	case EventBrowserDownloadWillBegin:
+		v = new(browser.EventDownloadWillBegin)
+
+	case EventBrowserDownloadProgress:
+		v = new(browser.EventDownloadProgress)
 
 	case CommandCSSAddRule:
 		v = new(css.AddRuleReturns)
@@ -1578,6 +1592,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandIndexedDBRequestDatabaseNames:
 		v = new(indexeddb.RequestDatabaseNamesReturns)
 
+	case CommandInputDispatchDragEvent:
+		return emptyVal, nil
+
 	case CommandInputDispatchKeyEvent:
 		return emptyVal, nil
 
@@ -1596,6 +1613,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case CommandInputSetIgnoreInputEvents:
 		return emptyVal, nil
 
+	case CommandInputSetInterceptDrags:
+		return emptyVal, nil
+
 	case CommandInputSynthesizePinchGesture:
 		return emptyVal, nil
 
@@ -1604,6 +1624,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case CommandInputSynthesizeTapGesture:
 		return emptyVal, nil
+
+	case EventInputDragIntercepted:
+		v = new(input.EventDragIntercepted)
 
 	case CommandInspectorDisable:
 		return emptyVal, nil
@@ -1721,6 +1744,12 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case CommandMemoryGetSamplingProfile:
 		v = new(memory.GetSamplingProfileReturns)
+
+	case CommandNetworkSetAcceptedEncodings:
+		return emptyVal, nil
+
+	case CommandNetworkClearAcceptedEncodingsOverride:
+		return emptyVal, nil
 
 	case CommandNetworkClearBrowserCache:
 		return emptyVal, nil
@@ -1915,6 +1944,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 		return emptyVal, nil
 
 	case CommandOverlaySetShowFlexOverlays:
+		return emptyVal, nil
+
+	case CommandOverlaySetShowScrollSnapOverlays:
 		return emptyVal, nil
 
 	case CommandOverlaySetShowPaintRects:
@@ -2115,12 +2147,6 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 	case EventPageFrameStoppedLoading:
 		v = new(page.EventFrameStoppedLoading)
 
-	case EventPageDownloadWillBegin:
-		v = new(page.EventDownloadWillBegin)
-
-	case EventPageDownloadProgress:
-		v = new(page.EventDownloadProgress)
-
 	case EventPageInterstitialHidden:
 		v = new(page.EventInterstitialHidden)
 
@@ -2135,6 +2161,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case EventPageLifecycleEvent:
 		v = new(page.EventLifecycleEvent)
+
+	case EventPageBackForwardCacheNotUsed:
+		v = new(page.EventBackForwardCacheNotUsed)
 
 	case EventPageLoadEventFired:
 		v = new(page.EventLoadEventFired)
@@ -2417,6 +2446,9 @@ func UnmarshalMessage(msg *Message) (interface{}, error) {
 
 	case CommandStorageGetTrustTokens:
 		v = new(storage.GetTrustTokensReturns)
+
+	case CommandStorageClearTrustTokens:
+		v = new(storage.ClearTrustTokensReturns)
 
 	case EventStorageCacheStorageContentUpdated:
 		v = new(storage.EventCacheStorageContentUpdated)

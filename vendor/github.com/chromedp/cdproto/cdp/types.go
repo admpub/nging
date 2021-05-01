@@ -327,7 +327,6 @@ type Node struct {
 	ShadowRoots      []*Node        `json:"shadowRoots,omitempty"`      // Shadow root list for given element host.
 	TemplateContent  *Node          `json:"templateContent,omitempty"`  // Content document fragment for template elements.
 	PseudoElements   []*Node        `json:"pseudoElements,omitempty"`   // Pseudo elements associated with this node.
-	ImportedDocument *Node          `json:"importedDocument,omitempty"` // Import document for the HTMLImport links.
 	DistributedNodes []*BackendNode `json:"distributedNodes,omitempty"` // Distributed nodes for given insertion point.
 	IsSVG            bool           `json:"isSVG,omitempty"`            // Whether the node is SVG.
 	Parent           *Node          `json:"-"`                          // Parent node.

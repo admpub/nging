@@ -311,6 +311,53 @@ type Histogram struct {
 	Buckets []*Bucket `json:"buckets"` // Buckets.
 }
 
+// DownloadProgressState download status.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Browser#event-downloadProgress
+type DownloadProgressState string
+
+// String returns the DownloadProgressState as string value.
+func (t DownloadProgressState) String() string {
+	return string(t)
+}
+
+// DownloadProgressState values.
+const (
+	DownloadProgressStateInProgress DownloadProgressState = "inProgress"
+	DownloadProgressStateCompleted  DownloadProgressState = "completed"
+	DownloadProgressStateCanceled   DownloadProgressState = "canceled"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t DownloadProgressState) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t DownloadProgressState) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *DownloadProgressState) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch DownloadProgressState(in.String()) {
+	case DownloadProgressStateInProgress:
+		*t = DownloadProgressStateInProgress
+	case DownloadProgressStateCompleted:
+		*t = DownloadProgressStateCompleted
+	case DownloadProgressStateCanceled:
+		*t = DownloadProgressStateCanceled
+
+	default:
+		in.AddError(errors.New("unknown DownloadProgressState value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *DownloadProgressState) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
 // SetDownloadBehaviorBehavior whether to allow all or deny all download
 // requests, or use default Chrome behavior if available (otherwise deny).
 // |allowAndName| allows download and names files according to their dowmload

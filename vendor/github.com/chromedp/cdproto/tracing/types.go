@@ -169,6 +169,57 @@ func (t *MemoryDumpLevelOfDetail) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
+// Backend backend type to use for tracing. chrome uses the Chrome-integrated
+// tracing service and is supported on all platforms. system is only supported
+// on Chrome OS and uses the Perfetto system tracing service. auto chooses
+// system when the perfettoConfig provided to Tracing.start specifies at least
+// one non-Chrome data source; otherwise uses chrome.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Tracing#type-TracingBackend
+type Backend string
+
+// String returns the Backend as string value.
+func (t Backend) String() string {
+	return string(t)
+}
+
+// Backend values.
+const (
+	BackendAuto   Backend = "auto"
+	BackendChrome Backend = "chrome"
+	BackendSystem Backend = "system"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t Backend) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t Backend) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *Backend) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch Backend(in.String()) {
+	case BackendAuto:
+		*t = BackendAuto
+	case BackendChrome:
+		*t = BackendChrome
+	case BackendSystem:
+		*t = BackendSystem
+
+	default:
+		in.AddError(errors.New("unknown Backend value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *Backend) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
 // RecordMode controls how the trace buffer stores data.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Tracing#type-TraceConfig

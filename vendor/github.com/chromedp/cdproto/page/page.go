@@ -431,26 +431,32 @@ func GetLayoutMetrics() *GetLayoutMetricsParams {
 
 // GetLayoutMetricsReturns return values.
 type GetLayoutMetricsReturns struct {
-	LayoutViewport *LayoutViewport `json:"layoutViewport,omitempty"` // Metrics relating to the layout viewport.
-	VisualViewport *VisualViewport `json:"visualViewport,omitempty"` // Metrics relating to the visual viewport.
-	ContentSize    *dom.Rect       `json:"contentSize,omitempty"`    // Size of scrollable area.
+	LayoutViewport    *LayoutViewport `json:"layoutViewport"`    // Deprecated metrics relating to the layout viewport. Can be in DP or in CSS pixels depending on the enable-use-zoom-for-dsf flag. Use cssLayoutViewport instead.
+	VisualViewport    *VisualViewport `json:"visualViewport"`    // Deprecated metrics relating to the visual viewport. Can be in DP or in CSS pixels depending on the enable-use-zoom-for-dsf flag. Use cssVisualViewport instead.
+	ContentSize       *dom.Rect       `json:"contentSize"`       // Deprecated size of scrollable area. Can be in DP or in CSS pixels depending on the enable-use-zoom-for-dsf flag. Use cssContentSize instead.
+	CSSLayoutViewport *LayoutViewport `json:"cssLayoutViewport"` // Metrics relating to the layout viewport in CSS pixels.
+	CSSVisualViewport *VisualViewport `json:"cssVisualViewport"` // Metrics relating to the visual viewport in CSS pixels.
+	CSSContentSize    *dom.Rect       `json:"cssContentSize"`    // Size of scrollable area in CSS pixels.
 }
 
 // Do executes Page.getLayoutMetrics against the provided context.
 //
 // returns:
-//   layoutViewport - Metrics relating to the layout viewport.
-//   visualViewport - Metrics relating to the visual viewport.
-//   contentSize - Size of scrollable area.
-func (p *GetLayoutMetricsParams) Do(ctx context.Context) (layoutViewport *LayoutViewport, visualViewport *VisualViewport, contentSize *dom.Rect, err error) {
+//   layoutViewport - Deprecated metrics relating to the layout viewport. Can be in DP or in CSS pixels depending on the enable-use-zoom-for-dsf flag. Use cssLayoutViewport instead.
+//   visualViewport - Deprecated metrics relating to the visual viewport. Can be in DP or in CSS pixels depending on the enable-use-zoom-for-dsf flag. Use cssVisualViewport instead.
+//   contentSize - Deprecated size of scrollable area. Can be in DP or in CSS pixels depending on the enable-use-zoom-for-dsf flag. Use cssContentSize instead.
+//   cssLayoutViewport - Metrics relating to the layout viewport in CSS pixels.
+//   cssVisualViewport - Metrics relating to the visual viewport in CSS pixels.
+//   cssContentSize - Size of scrollable area in CSS pixels.
+func (p *GetLayoutMetricsParams) Do(ctx context.Context) (layoutViewport *LayoutViewport, visualViewport *VisualViewport, contentSize *dom.Rect, cssLayoutViewport *LayoutViewport, cssVisualViewport *VisualViewport, cssContentSize *dom.Rect, err error) {
 	// execute
 	var res GetLayoutMetricsReturns
 	err = cdp.Execute(ctx, CommandGetLayoutMetrics, nil, &res)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, err
 	}
 
-	return res.LayoutViewport, res.VisualViewport, res.ContentSize, nil
+	return res.LayoutViewport, res.VisualViewport, res.ContentSize, res.CSSLayoutViewport, res.CSSVisualViewport, res.CSSContentSize, nil
 }
 
 // GetNavigationHistoryParams returns navigation history for the current

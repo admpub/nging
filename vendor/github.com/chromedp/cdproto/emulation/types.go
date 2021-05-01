@@ -123,6 +123,7 @@ func (t DisabledImageType) String() string {
 // DisabledImageType values.
 const (
 	DisabledImageTypeAvif DisabledImageType = "avif"
+	DisabledImageTypeJxl  DisabledImageType = "jxl"
 	DisabledImageTypeWebp DisabledImageType = "webp"
 )
 
@@ -141,6 +142,8 @@ func (t *DisabledImageType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 	switch DisabledImageType(in.String()) {
 	case DisabledImageTypeAvif:
 		*t = DisabledImageTypeAvif
+	case DisabledImageTypeJxl:
+		*t = DisabledImageTypeJxl
 	case DisabledImageTypeWebp:
 		*t = DisabledImageTypeWebp
 

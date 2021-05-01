@@ -600,6 +600,28 @@ func (p *SetShowFlexOverlaysParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandSetShowFlexOverlays, p, nil)
 }
 
+// SetShowScrollSnapOverlaysParams [no description].
+type SetShowScrollSnapOverlaysParams struct {
+	ScrollSnapHighlightConfigs []*ScrollSnapHighlightConfig `json:"scrollSnapHighlightConfigs"` // An array of node identifiers and descriptors for the highlight appearance.
+}
+
+// SetShowScrollSnapOverlays [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Overlay#method-setShowScrollSnapOverlays
+//
+// parameters:
+//   scrollSnapHighlightConfigs - An array of node identifiers and descriptors for the highlight appearance.
+func SetShowScrollSnapOverlays(scrollSnapHighlightConfigs []*ScrollSnapHighlightConfig) *SetShowScrollSnapOverlaysParams {
+	return &SetShowScrollSnapOverlaysParams{
+		ScrollSnapHighlightConfigs: scrollSnapHighlightConfigs,
+	}
+}
+
+// Do executes Overlay.setShowScrollSnapOverlays against the provided context.
+func (p *SetShowScrollSnapOverlaysParams) Do(ctx context.Context) (err error) {
+	return cdp.Execute(ctx, CommandSetShowScrollSnapOverlays, p, nil)
+}
+
 // SetShowPaintRectsParams requests that backend shows paint rectangles.
 type SetShowPaintRectsParams struct {
 	Result bool `json:"result"` // True for showing paint rectangles
@@ -786,6 +808,7 @@ const (
 	CommandSetShowFPSCounter                    = "Overlay.setShowFPSCounter"
 	CommandSetShowGridOverlays                  = "Overlay.setShowGridOverlays"
 	CommandSetShowFlexOverlays                  = "Overlay.setShowFlexOverlays"
+	CommandSetShowScrollSnapOverlays            = "Overlay.setShowScrollSnapOverlays"
 	CommandSetShowPaintRects                    = "Overlay.setShowPaintRects"
 	CommandSetShowLayoutShiftRegions            = "Overlay.setShowLayoutShiftRegions"
 	CommandSetShowScrollBottleneckRects         = "Overlay.setShowScrollBottleneckRects"

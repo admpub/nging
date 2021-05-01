@@ -171,6 +171,7 @@ type VirtualAuthenticatorOptions struct {
 	HasResidentKey              bool                   `json:"hasResidentKey,omitempty"`              // Defaults to false.
 	HasUserVerification         bool                   `json:"hasUserVerification,omitempty"`         // Defaults to false.
 	HasLargeBlob                bool                   `json:"hasLargeBlob,omitempty"`                // If set to true, the authenticator will support the largeBlob extension. https://w3c.github.io/webauthn#largeBlob Defaults to false.
+	HasCredBlob                 bool                   `json:"hasCredBlob,omitempty"`                 // If set to true, the authenticator will support the credBlob extension. https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension Defaults to false.
 	AutomaticPresenceSimulation bool                   `json:"automaticPresenceSimulation,omitempty"` // If set to true, tests of user presence will succeed immediately. Otherwise, they will not be resolved. Defaults to true.
 	IsUserVerified              bool                   `json:"isUserVerified,omitempty"`              // Sets whether User Verification succeeds or fails for an authenticator. Defaults to false.
 }

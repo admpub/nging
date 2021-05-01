@@ -297,16 +297,6 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoCdp1(in *jlexer.Lexer, out *N
 				}
 				in.Delim(']')
 			}
-		case "importedDocument":
-			if in.IsNull() {
-				in.Skip()
-				out.ImportedDocument = nil
-			} else {
-				if out.ImportedDocument == nil {
-					out.ImportedDocument = new(Node)
-				}
-				(*out.ImportedDocument).UnmarshalEasyJSON(in)
-			}
 		case "distributedNodes":
 			if in.IsNull() {
 				in.Skip()
@@ -526,11 +516,6 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoCdp1(out *jwriter.Writer, in 
 			}
 			out.RawByte(']')
 		}
-	}
-	if in.ImportedDocument != nil {
-		const prefix string = ",\"importedDocument\":"
-		out.RawString(prefix)
-		(*in.ImportedDocument).MarshalEasyJSON(out)
 	}
 	if len(in.DistributedNodes) != 0 {
 		const prefix string = ",\"distributedNodes\":"

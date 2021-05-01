@@ -125,6 +125,7 @@ type SetDownloadBehaviorParams struct {
 	Behavior         SetDownloadBehaviorBehavior `json:"behavior"`                   // Whether to allow all or deny all download requests, or use default Chrome behavior if available (otherwise deny). |allowAndName| allows download and names files according to their dowmload guids.
 	BrowserContextID cdp.BrowserContextID        `json:"browserContextId,omitempty"` // BrowserContext to set download behavior. When omitted, default browser context is used.
 	DownloadPath     string                      `json:"downloadPath,omitempty"`     // The default path to save downloaded files to. This is required if behavior is set to 'allow' or 'allowAndName'.
+	EventsEnabled    bool                        `json:"eventsEnabled,omitempty"`    // Whether to emit download events (defaults to false).
 }
 
 // SetDownloadBehavior set the behavior when downloading a file.
@@ -150,6 +151,12 @@ func (p SetDownloadBehaviorParams) WithBrowserContextID(browserContextID cdp.Bro
 // required if behavior is set to 'allow' or 'allowAndName'.
 func (p SetDownloadBehaviorParams) WithDownloadPath(downloadPath string) *SetDownloadBehaviorParams {
 	p.DownloadPath = downloadPath
+	return &p
+}
+
+// WithEventsEnabled whether to emit download events (defaults to false).
+func (p SetDownloadBehaviorParams) WithEventsEnabled(eventsEnabled bool) *SetDownloadBehaviorParams {
+	p.EventsEnabled = eventsEnabled
 	return &p
 }
 

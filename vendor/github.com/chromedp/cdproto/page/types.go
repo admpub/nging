@@ -737,6 +737,50 @@ type CompilationCacheParams struct {
 	Eager bool   `json:"eager,omitempty"` // A hint to the backend whether eager compilation is recommended. (the actual compilation mode used is upon backend discretion).
 }
 
+// NavigationType the type of a frameNavigated event.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-NavigationType
+type NavigationType string
+
+// String returns the NavigationType as string value.
+func (t NavigationType) String() string {
+	return string(t)
+}
+
+// NavigationType values.
+const (
+	NavigationTypeNavigation              NavigationType = "Navigation"
+	NavigationTypeBackForwardCacheRestore NavigationType = "BackForwardCacheRestore"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t NavigationType) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t NavigationType) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *NavigationType) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch NavigationType(in.String()) {
+	case NavigationTypeNavigation:
+		*t = NavigationTypeNavigation
+	case NavigationTypeBackForwardCacheRestore:
+		*t = NavigationTypeBackForwardCacheRestore
+
+	default:
+		in.AddError(errors.New("unknown NavigationType value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *NavigationType) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
+
 // FileChooserOpenedMode input mode.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Page#event-fileChooserOpened
@@ -822,53 +866,6 @@ func (t *FrameDetachedReason) UnmarshalEasyJSON(in *jlexer.Lexer) {
 
 // UnmarshalJSON satisfies json.Unmarshaler.
 func (t *FrameDetachedReason) UnmarshalJSON(buf []byte) error {
-	return easyjson.Unmarshal(buf, t)
-}
-
-// DownloadProgressState download status.
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Page#event-downloadProgress
-type DownloadProgressState string
-
-// String returns the DownloadProgressState as string value.
-func (t DownloadProgressState) String() string {
-	return string(t)
-}
-
-// DownloadProgressState values.
-const (
-	DownloadProgressStateInProgress DownloadProgressState = "inProgress"
-	DownloadProgressStateCompleted  DownloadProgressState = "completed"
-	DownloadProgressStateCanceled   DownloadProgressState = "canceled"
-)
-
-// MarshalEasyJSON satisfies easyjson.Marshaler.
-func (t DownloadProgressState) MarshalEasyJSON(out *jwriter.Writer) {
-	out.String(string(t))
-}
-
-// MarshalJSON satisfies json.Marshaler.
-func (t DownloadProgressState) MarshalJSON() ([]byte, error) {
-	return easyjson.Marshal(t)
-}
-
-// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
-func (t *DownloadProgressState) UnmarshalEasyJSON(in *jlexer.Lexer) {
-	switch DownloadProgressState(in.String()) {
-	case DownloadProgressStateInProgress:
-		*t = DownloadProgressStateInProgress
-	case DownloadProgressStateCompleted:
-		*t = DownloadProgressStateCompleted
-	case DownloadProgressStateCanceled:
-		*t = DownloadProgressStateCanceled
-
-	default:
-		in.AddError(errors.New("unknown DownloadProgressState value"))
-	}
-}
-
-// UnmarshalJSON satisfies json.Unmarshaler.
-func (t *DownloadProgressState) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 

@@ -306,6 +306,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoTracing1(in *jlexer.Lexer, ou
 			}
 		case "perfettoConfig":
 			out.PerfettoConfig = string(in.String())
+		case "tracingBackend":
+			(out.TracingBackend).UnmarshalEasyJSON(in)
 		default:
 			in.SkipRecursive()
 		}
@@ -375,6 +377,16 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoTracing1(out *jwriter.Writer,
 			out.RawString(prefix)
 		}
 		out.String(string(in.PerfettoConfig))
+	}
+	if in.TracingBackend != "" {
+		const prefix string = ",\"tracingBackend\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		(in.TracingBackend).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
 }

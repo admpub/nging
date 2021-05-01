@@ -166,6 +166,24 @@ func (t *TimeSinceEpoch) UnmarshalJSON(buf []byte) error {
 	return easyjson.Unmarshal(buf, t)
 }
 
+// DragDataItem [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#type-DragDataItem
+type DragDataItem struct {
+	MimeType string `json:"mimeType"`          // Mime type of the dragged data.
+	Data     string `json:"data"`              // Depending of the value of mimeType, it contains the dragged link, text, HTML markup or any other data.
+	Title    string `json:"title,omitempty"`   // Title associated with a link. Only valid when mimeType == "text/uri-list".
+	BaseURL  string `json:"baseURL,omitempty"` // Stores the base URL for the contained markup. Only valid when mimeType == "text/html".
+}
+
+// DragData [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#type-DragData
+type DragData struct {
+	Items              []*DragDataItem `json:"items"`
+	DragOperationsMask int64           `json:"dragOperationsMask"` // Bit field representing allowed drag operations. Copy = 1, Link = 2, Move = 16
+}
+
 // Modifier input key modifier type.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Input#method-dispatchKeyEvent
@@ -239,6 +257,56 @@ func (t *Modifier) UnmarshalJSON(buf []byte) error {
 
 // ModifierCommand is an alias for ModifierMeta.
 const ModifierCommand Modifier = ModifierMeta
+
+// DispatchDragEventType type of the drag event.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Input#method-dispatchDragEvent
+type DispatchDragEventType string
+
+// String returns the DispatchDragEventType as string value.
+func (t DispatchDragEventType) String() string {
+	return string(t)
+}
+
+// DispatchDragEventType values.
+const (
+	DragEnter  DispatchDragEventType = "dragEnter"
+	DragOver   DispatchDragEventType = "dragOver"
+	Drop       DispatchDragEventType = "drop"
+	DragCancel DispatchDragEventType = "dragCancel"
+)
+
+// MarshalEasyJSON satisfies easyjson.Marshaler.
+func (t DispatchDragEventType) MarshalEasyJSON(out *jwriter.Writer) {
+	out.String(string(t))
+}
+
+// MarshalJSON satisfies json.Marshaler.
+func (t DispatchDragEventType) MarshalJSON() ([]byte, error) {
+	return easyjson.Marshal(t)
+}
+
+// UnmarshalEasyJSON satisfies easyjson.Unmarshaler.
+func (t *DispatchDragEventType) UnmarshalEasyJSON(in *jlexer.Lexer) {
+	switch DispatchDragEventType(in.String()) {
+	case DragEnter:
+		*t = DragEnter
+	case DragOver:
+		*t = DragOver
+	case Drop:
+		*t = Drop
+	case DragCancel:
+		*t = DragCancel
+
+	default:
+		in.AddError(errors.New("unknown DispatchDragEventType value"))
+	}
+}
+
+// UnmarshalJSON satisfies json.Unmarshaler.
+func (t *DispatchDragEventType) UnmarshalJSON(buf []byte) error {
+	return easyjson.Unmarshal(buf, t)
+}
 
 // KeyType type of the key event.
 //
