@@ -24,11 +24,11 @@ import (
 
 // IsCaptchaErrCode 是否验证码错误码
 func IsCaptchaErrCode(code stdCode.Code) bool {
-	return code == stdCode.CaptchaError
+	return code.Is(stdCode.CaptchaError)
 }
 
 func IsFailureCode(code stdCode.Code) bool {
-	return code != stdCode.Success
+	return code.Fail()
 }
 
 // IsCaptchaError 用户验证码错误
