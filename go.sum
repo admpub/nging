@@ -1370,6 +1370,8 @@ github.com/webx-top/echo v2.8.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9Xc
 github.com/webx-top/echo v2.9.3+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo v2.10.6+incompatible h1:Nr5lf+MhFTCLZAeWAMLBe1zxsHKp2L8lRmpR3eMJeB4=
 github.com/webx-top/echo v2.10.6+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
+github.com/webx-top/echo v2.10.7+incompatible h1:Qol3yUir0qq/8POz1nAPZECXiQwIl01KJkl722xYQw4=
+github.com/webx-top/echo v2.10.7+incompatible/go.mod h1:ufVP//GwP1suggBSQW7l8G9XcKxZM+FIfCMElLAQqF8=
 github.com/webx-top/echo-prometheus v1.0.2 h1:IPivTWPSo3XFkx/adlzjscFtDbULt/DRq8zpm9HdWXQ=
 github.com/webx-top/echo-prometheus v1.0.2/go.mod h1:Y3xeyGLtpAjZmV/Ui8fqRf9gymwdSQagJ21RekXUZaw=
 github.com/webx-top/image v0.0.7 h1:G56i+UXVZ8DzP2ZkH1bm4/d9Tcik1Q6BUDPKpQ55gKI=

@@ -125,7 +125,7 @@ func HTTPErrorHandler(opt *Options) echo.HTTPErrorHandler {
 		if c.Response().Committed() {
 			return
 		}
-		code := opt.DefaultHTTPErrorCode
+		code := http.StatusInternalServerError
 		data := c.Data().Reset()
 		title := http.StatusText(code)
 		var (

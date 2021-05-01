@@ -169,6 +169,7 @@ var TplFuncMap template.FuncMap = template.FuncMap{
 	// ======================
 	// map & slice
 	// ======================
+	"MakeMap":        MakeMap,
 	"InSlice":        com.InSlice,
 	"InSlicex":       com.InSliceIface,
 	"Set":            Set,
