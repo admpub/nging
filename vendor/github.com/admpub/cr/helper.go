@@ -19,7 +19,7 @@ func fullScreenshot(urlStr string, quality int64, res *[]byte) cdp.Tasks {
 		cdp.Navigate(urlStr),
 		cdp.ActionFunc(func(ctx context.Context) error {
 			// get layout metrics
-			_, _, contentSize, err := page.GetLayoutMetrics().Do(ctx)
+			_, _, _, _, _, contentSize, err := page.GetLayoutMetrics().Do(ctx)
 			if err != nil {
 				return err
 			}

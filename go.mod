@@ -100,7 +100,6 @@ require (
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/go-openapi/strfmt v0.19.11 // indirect
 	github.com/gomodule/redigo v1.8.4
-	github.com/google/godepq v0.0.0-20190501212251-2c635fd1e5fe // indirect
 	github.com/grafov/m3u8 v0.11.1 // indirect
 	github.com/hashicorp/yamux v0.0.0-20200609203250-aecfd211c9ce // indirect
 	github.com/igm/sockjs-go v3.0.0+incompatible // indirect

@@ -674,8 +674,6 @@ github.com/google/go-replayers/grpcreplay v1.0.0 h1:B5kVOzJ1hBgnevTgIWhSTatQ3608
 github.com/google/go-replayers/grpcreplay v1.0.0/go.mod h1:8Ig2Idjpr6gifRd6pNVggX6TC1Zw6Jx74AKp7QNH2QE=
 github.com/google/go-replayers/httpreplay v0.1.2 h1:HCfx+dQzwN9XbGTHF8qJ+67WN8glL9FTWV5rraCJ/jU=
 github.com/google/go-replayers/httpreplay v0.1.2/go.mod h1:YKZViNhiGgqdBlUbI2MwGpq4pXxNmhJLPHQ7cv2b5no=
-github.com/google/godepq v0.0.0-20190501212251-2c635fd1e5fe h1:oM7KqgjebYzvUbkEV1RykjS1avNcMHr2KQ/xNp/f08A=
-github.com/google/godepq v0.0.0-20190501212251-2c635fd1e5fe/go.mod h1:7q6tf7wb7ul+peZbG0W5SXqsiEvkXnmPMpl0HuASnt8=
 github.com/google/gofuzz v1.0.0/go.mod h1:dBl0BpW6vV/+mYPU4Po3pmUjxk6FQPldtuIdl/M65Eg=
 github.com/google/gofuzz v1.1.0/go.mod h1:dBl0BpW6vV/+mYPU4Po3pmUjxk6FQPldtuIdl/M65Eg=
 github.com/google/martian v2.1.0+incompatible/go.mod h1:9I4somxYTbIHy5NJKHRl3wXiIaQGbYVAs8BPL6v8lEs=
