@@ -18,7 +18,7 @@ require (
 	github.com/admpub/checksum v1.0.1
 	github.com/admpub/color v1.7.0
 	github.com/admpub/confl v0.0.3
-	github.com/admpub/cr v0.0.0-20200630080251-9947244796af
+	github.com/admpub/cr v0.0.1
 	github.com/admpub/cron v0.0.1
 	github.com/admpub/dgoogauth v0.0.0-20170926052827-752650e076f2
 	github.com/admpub/email v2.3.1+incompatible

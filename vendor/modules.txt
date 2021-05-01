@@ -30,7 +30,7 @@ github.com/admpub/color
 github.com/admpub/confl
 # github.com/admpub/copier v0.0.1
 github.com/admpub/copier
-# github.com/admpub/cr v0.0.0-20200630080251-9947244796af
+# github.com/admpub/cr v0.0.1
 ## explicit
 github.com/admpub/cr
 # github.com/admpub/cron v0.0.1
