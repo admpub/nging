@@ -86,10 +86,6 @@ updates:
   - dependency-name: github.com/admpub/log
     versions:
     - 0.2.1
-  - dependency-name: github.com/jesseduffield/lazygit
-    versions:
-    - 0.25.1
-    - 0.26.1
   - dependency-name: github.com/webx-top/pagination
     versions:
     - 0.0.2
