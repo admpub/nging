@@ -177,6 +177,7 @@ func Auth(c echo.Context, saveSession bool) error {
 		m.NgingUser.SetFields(nil, map[string]interface{}{
 			`last_login`: m.NgingUser.LastLogin,
 			`last_ip`:    m.NgingUser.LastIp,
+			`session_id`: c.Session().ID(),
 		}, `id`, m.NgingUser.Id)
 
 		loginLogM.OwnerId = uint64(m.Id)

@@ -108,6 +108,11 @@ var TopNavigate = &navigate.List{
 				Name:    `删除用户`,
 				Action:  `user_delete`,
 			},
+			{
+				Display: false,
+				Name:    `踢下线`,
+				Action:  `user_kick`,
+			},
 			//角色管理
 			{
 				Display: true,

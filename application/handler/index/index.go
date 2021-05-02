@@ -123,6 +123,7 @@ func Register(ctx echo.Context) error {
 		}
 		c.UseInvitationCode(c.Invitation, m.NgingUser.Id)
 		m.SetSession()
+		m.SetField(nil, `session_id`, ctx.Session().ID(), `id`, m.NgingUser.Id)
 		returnTo := ctx.Query(`return_to`)
 		if len(returnTo) == 0 {
 			returnTo = handler.URLFor(`/index`)

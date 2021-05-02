@@ -101,6 +101,7 @@ type NgingUser struct {
 	Password  string `db:"password" bson:"password" comment:"密码" json:"password" xml:"password"`
 	Salt      string `db:"salt" bson:"salt" comment:"盐值" json:"salt" xml:"salt"`
 	SafePwd   string `db:"safe_pwd" bson:"safe_pwd" comment:"安全密码" json:"safe_pwd" xml:"safe_pwd"`
+	SessionId string `db:"session_id" bson:"session_id" comment:"session id" json:"session_id" xml:"session_id"`
 	Avatar    string `db:"avatar" bson:"avatar" comment:"头像" json:"avatar" xml:"avatar"`
 	Gender    string `db:"gender" bson:"gender" comment:"性别(male-男;female-女;secret-保密)" json:"gender" xml:"gender"`
 	LastLogin uint   `db:"last_login" bson:"last_login" comment:"最后登录时间" json:"last_login" xml:"last_login"`
@@ -500,6 +501,7 @@ func (a *NgingUser) Reset() *NgingUser {
 	a.Password = ``
 	a.Salt = ``
 	a.SafePwd = ``
+	a.SessionId = ``
 	a.Avatar = ``
 	a.Gender = ``
 	a.LastLogin = 0
@@ -524,6 +526,7 @@ func (a *NgingUser) AsMap(onlyFields ...string) param.Store {
 		r["Password"] = a.Password
 		r["Salt"] = a.Salt
 		r["SafePwd"] = a.SafePwd
+		r["SessionId"] = a.SessionId
 		r["Avatar"] = a.Avatar
 		r["Gender"] = a.Gender
 		r["LastLogin"] = a.LastLogin
@@ -553,6 +556,8 @@ func (a *NgingUser) AsMap(onlyFields ...string) param.Store {
 			r["Salt"] = a.Salt
 		case "SafePwd":
 			r["SafePwd"] = a.SafePwd
+		case "SessionId":
+			r["SessionId"] = a.SessionId
 		case "Avatar":
 			r["Avatar"] = a.Avatar
 		case "Gender":
@@ -597,6 +602,8 @@ func (a *NgingUser) FromRow(row map[string]interface{}) {
 			a.Salt = param.AsString(value)
 		case "safe_pwd":
 			a.SafePwd = param.AsString(value)
+		case "session_id":
+			a.SessionId = param.AsString(value)
 		case "avatar":
 			a.Avatar = param.AsString(value)
 		case "gender":
@@ -657,6 +664,8 @@ func (a *NgingUser) Set(key interface{}, value ...interface{}) {
 			a.Salt = param.AsString(vv)
 		case "SafePwd":
 			a.SafePwd = param.AsString(vv)
+		case "SessionId":
+			a.SessionId = param.AsString(vv)
 		case "Avatar":
 			a.Avatar = param.AsString(vv)
 		case "Gender":
@@ -693,6 +702,7 @@ func (a *NgingUser) AsRow(onlyFields ...string) param.Store {
 		r["password"] = a.Password
 		r["salt"] = a.Salt
 		r["safe_pwd"] = a.SafePwd
+		r["session_id"] = a.SessionId
 		r["avatar"] = a.Avatar
 		r["gender"] = a.Gender
 		r["last_login"] = a.LastLogin
@@ -722,6 +732,8 @@ func (a *NgingUser) AsRow(onlyFields ...string) param.Store {
 			r["salt"] = a.Salt
 		case "safe_pwd":
 			r["safe_pwd"] = a.SafePwd
+		case "session_id":
+			r["session_id"] = a.SessionId
 		case "avatar":
 			r["avatar"] = a.Avatar
 		case "gender":

@@ -220,6 +220,7 @@ func (u *User) ClearPasswordData(users ...*dbschema.NgingUser) dbschema.NgingUse
 	user.Password = ``
 	user.Salt = ``
 	user.SafePwd = ``
+	user.SessionId = ``
 	return user
 }
 

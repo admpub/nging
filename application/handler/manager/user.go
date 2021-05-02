@@ -29,6 +29,7 @@ import (
 
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/codec"
+	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/model"
 )
 
@@ -205,6 +206,39 @@ func UserDelete(ctx echo.Context) error {
 		handler.SendOk(ctx, ctx.T(`操作成功`))
 	} else {
 		handler.SendFail(ctx, err.Error())
+	}
+
+	return ctx.Redirect(handler.URLFor(`/manager/user`))
+}
+
+// UserKick 踢🦶用户下线
+func UserKick(ctx echo.Context) error {
+	id := ctx.Formx(`id`).Uint()
+	user := handler.User(ctx)
+	if user == nil {
+		return common.ErrUserNotLoggedIn
+	}
+	if id == user.Id {
+		return ctx.E(`不能踢自己`)
+	}
+	m := model.NewUser(ctx)
+	err := m.Get(func(r db.Result) db.Result {
+		return r.Select(`session_id`)
+	}, db.Cond{`id`: id})
+	if err != nil {
+		return err
+	}
+	if len(m.SessionId) == 0 {
+		handler.SendFail(ctx, ctx.T(`此用户没有session id记录`))
+	} else {
+		err = ctx.Session().SetID(m.SessionId)
+		if err == nil {
+			ctx.Session().Delete(`customer`)
+			m.SetField(nil, `session_id`, ``, `id`, id)
+			handler.SendOk(ctx, ctx.T(`操作成功`))
+		} else {
+			handler.SendFail(ctx, err.Error())
+		}
 	}
 
 	return ctx.Redirect(handler.URLFor(`/manager/user`))

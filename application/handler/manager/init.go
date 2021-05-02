@@ -37,6 +37,7 @@ func init() {
 		g.Route(`GET,POST`, `/user_add`, UserAdd)
 		g.Route(`GET,POST`, `/user_edit`, UserEdit)
 		g.Route(`GET,POST`, `/user_delete`, UserDelete)
+		g.Route(`GET,POST`, `/user_kick`, UserKick)
 		g.Route(`GET,POST`, `/role_add`, RoleAdd)
 		g.Route(`GET,POST`, `/role_edit`, RoleEdit)
 		g.Route(`GET,POST`, `/role_delete`, RoleDelete)
