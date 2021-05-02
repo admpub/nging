@@ -6,16 +6,20 @@
 package engine
 
 import (
+	"errors"
 	"fmt"
 	"log"
 
 	"github.com/admpub/sessions"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
 
 const (
 	errorFormat = "[sessions] ERROR! %s\n"
 )
+
+var ErrInvalidSessionID = errors.New("invalid session ID")
 
 type Session struct {
 	name    string
@@ -73,14 +77,19 @@ func (s *Session) Flashes(vars ...string) []interface{} {
 	return flashes
 }
 
-func (s *Session) SetID(id string) echo.Sessioner {
+func (s *Session) SetID(id string) error {
 	if s.Session().ID == id {
-		return s
+		return nil
+	}
+	if !com.StrIsAlphaNumeric(id) {
+		return ErrInvalidSessionID
 	}
 	s.Session().ID = id
-	s.Session().Reload(s.context)
+	if err := s.Session().Reload(s.context); err != nil {
+		return err
+	}
 	s.setWritten()
-	return s
+	return nil
 }
 
 func (s *Session) ID() string {
