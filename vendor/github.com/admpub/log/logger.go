@@ -41,6 +41,7 @@ func NewLogger(args ...string) *Logger {
 		CallStack:   make(map[Leveler]*CallStack),
 		Targets:     make([]Target, 0),
 		fatalAction: ActionPanic,
+		pid:         os.Getpid(),
 	}
 	category := `app`
 	if len(args) > 0 {

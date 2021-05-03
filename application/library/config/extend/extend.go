@@ -1,6 +1,17 @@
 package extend
 
+import (
+	"github.com/admpub/nging/application/library/hook"
+	"github.com/webx-top/echo"
+)
+
 type Initer func() interface{}
+
+var Hook = hook.New()
+
+type Reloader interface {
+	Reload() error
+}
 
 var extendIniters = map[string]Initer{}
 
@@ -20,7 +31,10 @@ func Get(name string) Initer {
 }
 
 func Unregister(name string) {
-	if _, ok := extendIniters[name]; ok {
+	if initer, ok := extendIniters[name]; ok {
+		if err := Hook.Fire(`unregister`, echo.H{`name`: name, `initer`: initer}); err != nil {
+			panic(err)
+		}
 		delete(extendIniters, name)
 	}
 }

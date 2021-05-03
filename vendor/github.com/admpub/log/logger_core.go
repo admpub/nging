@@ -15,13 +15,13 @@ type coreLogger struct {
 	fatalAction Action
 	syncMode    bool
 
-	ErrorWriter   io.Writer // the writer used to write errors caused by log targets
-	BufferSize    int       // the size of the channel storing log entries
-	CallStack     map[Leveler]*CallStack
-	MaxLevel      Leveler  // the maximum level of messages to be logged
-	Targets       []Target // targets for sending log messages to
-	MaxGoroutines int32    // Max Goroutine
-	AddSpace      bool     // Add a space between two arguments.
+	ErrorWriter io.Writer // the writer used to write errors caused by log targets
+	BufferSize  int       // the size of the channel storing log entries
+	CallStack   map[Leveler]*CallStack
+	MaxLevel    Leveler  // the maximum level of messages to be logged
+	Targets     []Target // targets for sending log messages to
+	AddSpace    bool     // Add a space between two arguments.
+	pid         int
 }
 
 // Open prepares the logger and the targets for logging purpose.
@@ -96,4 +96,8 @@ func (l *coreLogger) setCallStack(level Level, callStack *CallStack) {
 	l.lock.Lock()
 	l.CallStack[level] = callStack
 	l.lock.Unlock()
+}
+
+func (l *coreLogger) Pid() int {
+	return l.pid
 }

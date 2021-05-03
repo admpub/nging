@@ -41,7 +41,7 @@ import (
 )
 
 func NewCLIConfig() *CLIConfig {
-	return &CLIConfig{cmds: map[string]*exec.Cmd{}}
+	return &CLIConfig{cmds: map[string]*exec.Cmd{}, pid: os.Getpid()}
 }
 
 var DefaultStartup = `webserver,task,daemon,ftpserver,frpserver,frpclient`
@@ -56,6 +56,7 @@ type CLIConfig struct {
 	Type           string //启动类型: webserver/ftpserver/manager
 	Startup        string //manager启动时同时启动的服务，可选的有webserver/ftpserver,如有多个需用半角逗号“,”隔开
 	cmds           map[string]*exec.Cmd
+	pid            int
 
 	//TODO: 移出去
 	caddyCh *com.CmdChanReader
@@ -325,7 +326,11 @@ func (c *CLIConfig) IsRunning(ct string) bool {
 	return CmdIsRunning(cmd)
 }
 
-func (c *CLIConfig) Reload(cts ...string) error {
+type ReloadByConfig interface {
+	ReloadByConfig(cfg *Config, args ...string) error
+}
+
+func (c *CLIConfig) Reload(cfg *Config, cts ...string) error {
 	for _, ct := range cts {
 		if !c.IsRunning(ct) {
 			continue
@@ -334,6 +339,14 @@ func (c *CLIConfig) Reload(cts ...string) error {
 		serverType := typeAndID[0]
 		cm := cmder.Get(serverType)
 		if cm != nil {
+			if rd, ok := cm.(ReloadByConfig); ok {
+				if len(typeAndID) == 2 {
+					rd.ReloadByConfig(cfg, typeAndID[1])
+					continue
+				}
+				rd.ReloadByConfig(cfg)
+				continue
+			}
 			if len(typeAndID) == 1 {
 				cm.Reload()
 				continue
@@ -388,4 +401,8 @@ func (c *CLIConfig) Close() error {
 		}
 	}
 	return nil
+}
+
+func (c *CLIConfig) Pid() int {
+	return c.pid
 }

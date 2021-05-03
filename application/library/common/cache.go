@@ -22,6 +22,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/webx-top/echo"
 )
@@ -41,6 +42,16 @@ func WriteCache(dir string, name string, content []byte) (err error) {
 func ReadCache(dir string, name string) (content []byte, err error) {
 	savePath := filepath.Join(echo.Wd(), `data`, `cache`, dir, name)
 	return ioutil.ReadFile(savePath)
+}
+
+// ModTimeCache 缓存文件修改时间
+func ModTimeCache(dir string, name string) (time.Time, error) {
+	savePath := filepath.Join(echo.Wd(), `data`, `cache`, dir, name)
+	info, err := os.Stat(savePath)
+	if err != nil {
+		return time.Time{}, err
+	}
+	return info.ModTime(), err
 }
 
 // RemoveCache 删除缓存文件

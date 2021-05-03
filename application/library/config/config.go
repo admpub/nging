@@ -19,11 +19,13 @@
 package config
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
 
+	"github.com/fatih/color"
 	"github.com/webx-top/codec"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
@@ -122,10 +124,20 @@ func (c *Config) CookieConfig() scookie.Config {
 
 func (c *Config) InitExtend() *Config {
 	c.Extend = echo.H{}
-	extend.Range(func(key string, recv interface{}) {
-		c.Extend[key] = recv
-	})
+	extend.Range(c.registerExtend)
 	return c
+}
+
+func (c *Config) registerExtend(key string, recv interface{}) {
+	fmt.Printf(color.YellowString(`[Register Extend Config]`)+` `+color.MagentaString(`P%d`, DefaultCLIConfig.Pid())+` %s: %T`+"\n", key, recv)
+	c.Extend[key] = recv
+}
+
+func (c *Config) unregisterExtend(key string) {
+	if recv, ok := c.Extend[key]; ok {
+		fmt.Printf(color.YellowString(`[Unregister Extend Config]`)+` `+color.MagentaString(`P%d`, DefaultCLIConfig.Pid())+` %s: %T`+"\n", key, recv)
+		delete(c.Extend, key)
+	}
 }
 
 func (c *Config) ConfigFromDB() echo.H {
@@ -188,14 +200,34 @@ func (c *Config) GenerateRandomKey() string {
 
 func (c *Config) Reload(newConfig *Config) error {
 	engines := []string{}
+	for name, value := range newConfig.Extend {
+		extConfig := c.Extend.Get(name)
+		if !reflect.DeepEqual(value, extConfig) {
+			if rd, ok := extConfig.(ReloadByConfig); ok {
+				if err := rd.ReloadByConfig(newConfig); err != nil {
+					log.Error(err)
+				}
+				continue
+			}
+			if rd, ok := extConfig.(extend.Reloader); ok {
+				if err := rd.Reload(); err != nil {
+					log.Error(err)
+				}
+				continue
+			}
+			engines = append(engines, name)
+		}
+	}
+
+	//TODO: 移出去
 	if !reflect.DeepEqual(newConfig.Caddy, c.Caddy) {
 		engines = append(engines, `caddy`)
 	}
 	if !reflect.DeepEqual(newConfig.FTP, c.FTP) {
 		engines = append(engines, `ftp`)
 	}
-	DefaultCLIConfig.Reload(engines...)
-	return nil
+
+	return DefaultCLIConfig.Reload(newConfig, engines...)
 }
 
 func (c *Config) AsDefault() {

@@ -229,6 +229,8 @@ github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8/go.mod h1:wI4uH
 github.com/admpub/log v0.0.0-20191027043925-a6c03a7421a3/go.mod h1:9q/FVF4zGIc/+4OaMT031thniAviDPhJjDFypGa04Fk=
 github.com/admpub/log v0.2.2 h1:TYusgY0fzk0hRtJ1M7XGATvA53t+wL4jQ1oW5YrJEs8=
 github.com/admpub/log v0.2.2/go.mod h1:rr6Sw/xAGWzL/Hg7FCekKd98XguStEEjcYC/DG5y/YA=
+github.com/admpub/log v0.3.0 h1:z7DdJ+8BkzTj0sSGopijDTD14KkiRdbxc4af8XesC24=
+github.com/admpub/log v0.3.0/go.mod h1:Du6IDZZbjjgnSDbDSCHhDfjMe8kyBseOaiRCE4qjxus=
 github.com/admpub/logcool v0.3.1 h1:+EnvqEwSv1mpm8TLg673VjcSBhVjD2F2Bp6Aqhdld8Q=
 github.com/admpub/logcool v0.3.1/go.mod h1:G/gFEVWLaDX0flIBfXjrzYYeQraLZLJjPpT/r9w0oWo=
 github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d h1:9QaiQwHoN3e+ImMxBDSfyw2reYVEvfkJuKkKhkZYQ+0=
@@ -1689,6 +1691,8 @@ golang.org/x/sys v0.0.0-20210403161142-5e06dd20ab57/go.mod h1:h1NjWce9XRLGQEsW7w
 golang.org/x/sys v0.0.0-20210415045647-66c3f260301c/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20210426230700-d19ff857e887 h1:dXfMednGJh/SUUFjTLsWJz3P+TQt9qnR11GgeI3vWKs=
 golang.org/x/sys v0.0.0-20210426230700-d19ff857e887/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
+golang.org/x/sys v0.0.0-20210503080704-8803ae5d1324 h1:pAwJxDByZctfPwzlNGrDN2BQLsdPb9NkhoTJtUkAO28=
+golang.org/x/sys v0.0.0-20210503080704-8803ae5d1324/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/term v0.0.0-20201117132131-f5c789dd3221/go.mod h1:Nr5EML6q2oocZ2LXRh80K7BxOlk5/8JxuGnuhpl+muw=
 golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1 h1:v+OssWQX+hTHEmOBgwxdZxK4zHq3yOs8F9J7mk0PY8E=
 golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=

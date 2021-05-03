@@ -30,10 +30,11 @@ import (
 
 	"github.com/admpub/license_gen/lib"
 	"github.com/admpub/log"
-	"github.com/admpub/resty/v2"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/library/restclient"
 )
 
 var (
@@ -330,7 +331,7 @@ func URLValues(machineID string, ctx echo.Context) url.Values {
 // Download 从官方服务器重新下载许可证
 func Download(machineID string, ctx echo.Context) error {
 	operation := `获取授权证书失败：%v`
-	client := resty.New().SetTimeout(DefaultTimeout).R()
+	client := restclient.Resty()
 	client.SetHeader("Accept", "application/json")
 	officialResp := &OfficialResp{}
 	client.SetResult(officialResp)

@@ -21,11 +21,13 @@ package tool
 import (
 	"github.com/webx-top/echo"
 
+	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/ip2region"
 )
 
 func IP2Region(c echo.Context) error {
 	ip := c.Form(`ip`)
+	var lanIP string
 	if len(ip) > 0 {
 		info, err := ip2region.IPInfo(ip)
 		if err != nil {
@@ -33,7 +35,22 @@ func IP2Region(c echo.Context) error {
 		}
 		c.Data().SetData(info)
 	} else {
-		c.Request().Form().Set(`ip`, c.RealIP())
+		ip = c.RealIP()
+		if ip == `127.0.0.1` {
+			if lanIP, _ = common.GetLocalIP(); len(lanIP) > 0 {
+				ip = lanIP
+			}
+		}
+		c.Request().Form().Set(`ip`, ip)
+	}
+	if !c.IsPost() {
+		if len(lanIP) == 0 {
+			lanIP, _ = common.GetLocalIP()
+		}
+		c.Set(`lanIP`, lanIP)
+		wan, _ := ip2region.GetWANIP()
+		c.Set(`wanIP`, wan.IPv4)
+		c.Set(`wanQueryTime`, wan.QueryTime)
 	}
 	return c.Render(`/tool/ip`, nil)
 }

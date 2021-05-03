@@ -142,6 +142,9 @@ func InitConfig() (*Config, error) {
 func ParseConfig() error {
 	if false {
 		b, err := confl.Marshal(DefaultConfig)
+		if err != nil {
+			return err
+		}
 		err = ioutil.WriteFile(DefaultCLIConfig.Conf, b, os.ModePerm)
 		if err != nil {
 			return err

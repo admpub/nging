@@ -31,6 +31,7 @@ import (
 	"github.com/admpub/goforever"
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/dbschema"
+	"github.com/admpub/nging/application/library/config/extend"
 	"github.com/admpub/nging/application/library/cron"
 )
 
@@ -42,6 +43,13 @@ var (
 func init() {
 	Daemon.Name = `nging`
 	Daemon.Debug = true
+	extend.Hook.On(`unregister`, func(data echo.H) error {
+		if DefaultConfig == nil {
+			return nil
+		}
+		DefaultConfig.unregisterExtend(data.String(`name`))
+		return nil
+	})
 }
 
 func DaemonCommonHook(p *goforever.Process) {

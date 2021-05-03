@@ -24,14 +24,15 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/admpub/errors"
 	"github.com/admpub/license_gen/lib"
-	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/resty/v2"
+
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
+
+	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/nging/application/library/restclient"
 )
 
 var (
@@ -73,11 +74,8 @@ func (v *ValidResult) Validate() error {
 	return nil
 }
 
-// DefaultTimeout 默认超时时间
-var DefaultTimeout = 10 * time.Second
-
 func validateFromOfficial(machineID string, ctx echo.Context) error {
-	client := resty.New().SetTimeout(DefaultTimeout).R()
+	client := restclient.Resty()
 	client.SetHeader("Accept", "application/json")
 	result := NewValidResp()
 	client.SetResult(result)
@@ -113,7 +111,7 @@ type VersionResp struct {
 }
 
 func latestVersion() error {
-	client := resty.New().SetTimeout(DefaultTimeout).R()
+	client := restclient.Resty()
 	client.SetHeader("Accept", "application/json")
 	result := &VersionResp{}
 	client.SetResult(result)

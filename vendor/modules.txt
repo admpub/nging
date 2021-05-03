@@ -183,7 +183,7 @@ github.com/admpub/ip2region/binding/golang/ip2region
 # github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
 ## explicit
 github.com/admpub/license_gen/lib
-# github.com/admpub/log v0.2.2
+# github.com/admpub/log v0.3.0
 ## explicit
 github.com/admpub/log
 # github.com/admpub/logcool v0.3.1
@@ -1301,7 +1301,7 @@ golang.org/x/oauth2/clientcredentials
 golang.org/x/oauth2/internal
 # golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20210426230700-d19ff857e887
+# golang.org/x/sys v0.0.0-20210503080704-8803ae5d1324
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix

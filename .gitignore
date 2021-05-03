@@ -53,6 +53,7 @@ debug.log
 !/data/ftpdir/README.md
 /data/logs/*.txt
 /application/library/collector/chrome/*.png
+/application/library/ip2region/data
 /data/cache/*
 nohup.out
 /public/upload/*

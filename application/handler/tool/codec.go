@@ -84,10 +84,12 @@ func Timestamp(c echo.Context) (err error) {
 		}
 		c.Data().SetData(res)
 	}
-	c.Set(`title`, c.T(`时间戳`))
-	c.Set(`timeUTC`, time.Now().UTC())
-	c.Set(`timeCST`, time.Now().In(time.FixedZone(`CST`, 8*3600)))
-	c.Set(`timeLocal`, time.Now().Local())
+	if !c.IsPost() {
+		c.Set(`title`, c.T(`时间戳`))
+		c.Set(`timeUTC`, time.Now().UTC())
+		c.Set(`timeCST`, time.Now().In(time.FixedZone(`CST`, 8*3600)))
+		c.Set(`timeLocal`, time.Now().Local())
+	}
 	return c.Render(`/tool/timestamp`, nil)
 }
 
