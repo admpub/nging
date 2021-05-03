@@ -5,6 +5,7 @@ import (
 	"mime"
 	"os"
 	"path"
+	"path/filepath"
 
 	"golang.org/x/net/webdav"
 )
@@ -26,6 +27,7 @@ func (w NoSniffFileInfo) ContentType(ctx context.Context) (contentType string, e
 
 type WebDavDir struct {
 	webdav.Dir
+	User    *User
 	NoSniff bool
 }
 
@@ -38,6 +40,12 @@ func (d WebDavDir) Stat(ctx context.Context, name string) (os.FileInfo, error) {
 	info, err := d.Dir.Stat(ctx, name)
 	if err != nil {
 		return nil, err
+	}
+
+	if name != `/` && d.User != nil {
+		if !d.User.Allowed(name, true) {
+			return nil, filepath.SkipDir
+		}
 	}
 
 	return NoSniffFileInfo{info}, nil
@@ -54,10 +62,12 @@ func (d WebDavDir) OpenFile(ctx context.Context, name string, flag int, perm os.
 		return nil, err
 	}
 
-	return WebDavFile{File: file}, nil
+	return WebDavFile{dir: name, user: d.User, File: file}, nil
 }
 
 type WebDavFile struct {
+	dir  string
+	user *User
 	webdav.File
 }
 
@@ -76,8 +86,17 @@ func (f WebDavFile) Readdir(count int) (fis []os.FileInfo, err error) {
 		return nil, err
 	}
 
-	for i := range fis {
-		fis[i] = NoSniffFileInfo{fis[i]}
+	for i, fi := range fis {
+		if f.user != nil {
+			fpath := f.dir + fi.Name()
+			if fi.IsDir() {
+				fpath += `/`
+			}
+			if !f.user.Allowed(fpath, true) {
+				continue
+			}
+		}
+		fis[i] = NoSniffFileInfo{fi}
 	}
 	return fis, nil
 }
