@@ -31,7 +31,7 @@ func (u User) Allowed(url string, noModification bool) bool {
 	var rule *Rule
 	i := len(u.Rules) - 1
 
-	has := strings.HasPrefix(url, `/`)
+	has := strings.HasSuffix(url, `/`)
 
 	for i >= 0 {
 		rule = u.Rules[i]

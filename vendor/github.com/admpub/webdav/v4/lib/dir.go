@@ -89,9 +89,6 @@ func (f WebDavFile) Readdir(count int) (fis []os.FileInfo, err error) {
 	for i, fi := range fis {
 		if f.user != nil {
 			fpath := f.dir + fi.Name()
-			if fi.IsDir() {
-				fpath += `/`
-			}
 			if !f.user.Allowed(fpath, true) {
 				continue
 			}
