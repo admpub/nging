@@ -32,7 +32,7 @@ func (c *Config) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	requestOrigin := r.Header.Get("Origin")
 
 	// Add CORS headers before any operation so even on a 401 unauthorized status, CORS will work.
-	if c.Cors.Enabled && requestOrigin != "" {
+	if c.Cors.Enabled && len(requestOrigin) > 0 {
 		headers := w.Header()
 
 		allowedHeaders := strings.Join(c.Cors.AllowedHeaders, ", ")
@@ -62,7 +62,7 @@ func (c *Config) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if r.Method == "OPTIONS" && c.Cors.Enabled && requestOrigin != "" {
+	if r.Method == "OPTIONS" && c.Cors.Enabled && len(requestOrigin) > 0 {
 		return
 	}
 
@@ -73,19 +73,19 @@ func (c *Config) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		// Gets the correct user for this request.
 		username, password, ok := r.BasicAuth()
 		if !ok {
-			http.Error(w, "Not authorized", 401)
+			http.Error(w, "Not authorized", http.StatusUnauthorized)
 			return
 		}
 
 		user, ok := c.Users[username]
 		if !ok {
-			http.Error(w, "Not authorized", 401)
+			http.Error(w, "Not authorized", http.StatusUnauthorized)
 			return
 		}
 
 		if !checkPassword(user.Password, password) {
 			log.Println("Wrong Password for user", username)
-			http.Error(w, "Not authorized", 401)
+			http.Error(w, "Not authorized", http.StatusUnauthorized)
 			return
 		}
 
@@ -126,7 +126,7 @@ func (c *Config) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if err == nil && info.IsDir() {
 			r.Method = "PROPFIND"
 
-			if r.Header.Get("Depth") == "" {
+			if len(r.Header.Get("Depth")) == 0 {
 				r.Header.Add("Depth", "1")
 			}
 		}
