@@ -71,7 +71,7 @@ func addonAttr(ctx echo.Context, v url.Values) {
 		}
 		for _, v := range values {
 			if withQuote {
-				v = `"` + com.AddSlashes(v, '"') + `"`
+				v = `"` + com.AddCSlashes(v, '"') + `"`
 			}
 			r += t + prefix + v
 			t = "\n"
@@ -104,7 +104,7 @@ func iteratorKV(ctx echo.Context, v url.Values) {
 			if i < l {
 				v := values[i]
 				if withQuote {
-					v = `"` + com.AddSlashes(v, '"') + `"`
+					v = `"` + com.AddCSlashes(v, '"') + `"`
 				}
 				r += t + prefix + k + `   ` + v
 				t = "\n"
@@ -121,7 +121,7 @@ func SetCaddyfileFunc(ctx echo.Context, v url.Values) {
 	addonAttr(ctx, v)
 	iteratorKV(ctx, v)
 	ctx.SetFunc(`AddSlashes`, func(v string) string {
-		return com.AddSlashes(v, '"')
+		return com.AddCSlashes(v, '"')
 	})
 	ctx.SetFunc(`GetSlice`, func(key string) param.StringSlice {
 		values, _ := v[key]

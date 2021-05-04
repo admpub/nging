@@ -3,6 +3,8 @@ package webdav
 import (
 	"database/sql"
 	"strings"
+
+	"github.com/webx-top/com"
 )
 
 type WebdavPerm struct {
@@ -27,9 +29,11 @@ func (w *WebdavPerm) String() string {
 	}
 	var perm string
 	if strings.Contains(w.Resource, `*`) {
-		perm = readable + `_r    ` + strings.Replace(w.Resource, `*`, `(.*)`, -1)
+		perm = readable + `_r    "` + com.AddCSlashes(strings.Replace(w.Resource, `*`, `(.*)`, -1), '"') + `"`
+	} else if strings.Contains(w.Resource, `|`) {
+		perm = readable + `_r    "` + com.AddCSlashes(w.Resource, '"') + `"`
 	} else {
-		perm = readable + `      ` + w.Resource
+		perm = readable + `      "` + com.AddCSlashes(w.Resource, '"') + `"`
 	}
 	if len(writable) > 0 {
 		perm += `      ` + writable
