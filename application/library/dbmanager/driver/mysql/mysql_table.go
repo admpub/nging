@@ -399,9 +399,14 @@ func (m *mySQL) tablePartitions(table string) (*Partition, error) {
 		return ret, fmt.Errorf(`%v: %v`, sqlStr, err)
 	}
 	defer rows.Close()
+	cols, err := rows.Columns()
+	if err != nil {
+		return nil, err
+	}
+	n := len(cols)
 	for rows.Next() {
 		var k, v sql.NullString
-		err = rows.Scan(&k, &v)
+		err = safeScan(rows, n, &k, &v)
 		if err != nil {
 			return ret, fmt.Errorf(`%v: %v`, sqlStr, err)
 		}
@@ -424,10 +429,15 @@ func (m *mySQL) tableFields(table string) (map[string]*Field, []string, error) {
 	}
 	ret := map[string]*Field{}
 	sorts := []string{}
+	cols, err := rows.Columns()
+	if err != nil {
+		return nil, nil, err
+	}
+	n := len(cols)
 	defer rows.Close()
 	for rows.Next() {
 		v := &FieldInfo{}
-		err := rows.Scan(&v.Field, &v.Type, &v.Collation, &v.Null, &v.Key, &v.Default, &v.Extra, &v.Privileges, &v.Comment)
+		err := safeScan(rows, n, &v.Field, &v.Type, &v.Collation, &v.Null, &v.Key, &v.Default, &v.Extra, &v.Privileges, &v.Comment)
 		if err != nil {
 			return nil, nil, fmt.Errorf(`%v: %v`, sqlStr, err)
 		}
@@ -501,19 +511,13 @@ func (m *mySQL) tableIndexes(table string) (map[string]*Indexes, []string, error
 	if err != nil {
 		return ret, sorts, fmt.Errorf(`%v: %v`, sqlStr, err)
 	}
+	n := len(cols)
 	for rows.Next() {
 		v := &IndexInfo{}
-		recvs := []interface{}{
-			&v.Table, &v.Non_unique, &v.Key_name, &v.Seq_in_index,
+		err := safeScan(rows, n, &v.Table, &v.Non_unique, &v.Key_name, &v.Seq_in_index,
 			&v.Column_name, &v.Collation, &v.Cardinality, &v.Sub_part,
 			&v.Packed, &v.Null, &v.Index_type, &v.Comment, &v.Index_comment,
-			&v.Visible, &v.Expression,
-		}
-		if len(recvs) <= len(cols) {
-			err = rows.Scan(recvs...)
-		} else {
-			err = rows.Scan(recvs[0:len(cols)]...)
-		}
+			&v.Visible, &v.Expression)
 		if err != nil {
 			return ret, sorts, fmt.Errorf(`%v: %v`, sqlStr, err)
 		}
@@ -850,9 +854,14 @@ func (m *mySQL) tableTriggers(table string) (map[string]*Trigger, []string, erro
 		return r, s, fmt.Errorf(`%v: %v`, sqlStr, err)
 	}
 	defer rows.Close()
+	cols, err := rows.Columns()
+	if err != nil {
+		return r, s, fmt.Errorf(`%v: %v`, sqlStr, err)
+	}
+	n := len(cols)
 	for rows.Next() {
 		v := &Trigger{}
-		err = rows.Scan(&v.Trigger, &v.Event, &v.Table, &v.Statement, &v.Timing, &v.Created, &v.Sql_mode, &v.Definer, &v.Character_set_client, &v.Collation_connection, &v.Database_collation)
+		err = safeScan(rows, n, &v.Trigger, &v.Event, &v.Table, &v.Statement, &v.Timing, &v.Created, &v.Sql_mode, &v.Definer, &v.Character_set_client, &v.Collation_connection, &v.Database_collation)
 		if err != nil {
 			return r, s, fmt.Errorf(`%v: %v`, sqlStr, err)
 		}

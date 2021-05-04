@@ -502,3 +502,10 @@ func dumpCSV(isHeader bool, fields map[string]*Field, cols []string, row map[str
 func friendlyURL(v string) string {
 	return reFriendlyName.ReplaceAllString(v, `-`)
 }
+
+func safeScan(rows *sql.Rows, colNum int, recv ...interface{}) error {
+	if len(recv) <= colNum {
+		return rows.Scan(recv...)
+	}
+	return rows.Scan(recv[0:colNum]...)
+}

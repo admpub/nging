@@ -43,9 +43,14 @@ func (m *mySQL) showPrivileges() (*Privileges, error) {
 		return r, err
 	}
 	defer rows.Close()
+	cols, err := rows.Columns()
+	if err != nil {
+		return nil, err
+	}
+	n := len(cols)
 	for rows.Next() {
 		v := &Privilege{}
-		err = rows.Scan(&v.Privilege, &v.Context, &v.Comment)
+		err = safeScan(rows, n, &v.Privilege, &v.Context, &v.Comment)
 		if err != nil {
 			break
 		}

@@ -72,14 +72,7 @@ func (m *mySQL) processList() ([]*ProcessList, error) {
 	n := len(cols)
 	for rows.Next() {
 		v := &ProcessList{}
-		values := []interface{}{
-			&v.Id, &v.User, &v.Host, &v.Db, &v.Command, &v.Time, &v.State, &v.Info, &v.Progress,
-		}
-		if n == 9 {
-			err = rows.Scan(values...)
-		} else {
-			err = rows.Scan(values[0:n]...)
-		}
+		err = safeScan(rows, n, &v.Id, &v.User, &v.Host, &v.Db, &v.Command, &v.Time, &v.State, &v.Info, &v.Progress)
 		if err != nil {
 			err = fmt.Errorf(`%v: %v`, sqlStr, err)
 			break
@@ -101,10 +94,15 @@ func (m *mySQL) getCharsets() (map[string]CharsetData, error) {
 		return nil, fmt.Errorf(`%v: %v`, sqlStr, err)
 	}
 	defer rows.Close()
+	cols, err := rows.Columns()
+	if err != nil {
+		return nil, err
+	}
+	n := len(cols)
 	ret := map[string]CharsetData{}
 	for rows.Next() {
 		var v CharsetData
-		err = rows.Scan(&v.Charset, &v.Description, &v.DefaultCollation, &v.Maxlen)
+		err = safeScan(rows, n, &v.Charset, &v.Description, &v.DefaultCollation, &v.Maxlen)
 		if err != nil {
 			return nil, fmt.Errorf(`%v: %v`, sqlStr, err)
 		}
@@ -128,12 +126,7 @@ func (m *mySQL) getCollations() (*Collations, error) {
 	ret := NewCollations()
 	for rows.Next() {
 		var v Collation
-		recvs := []interface{}{&v.Collation, &v.Charset, &v.Id, &v.Default, &v.Compiled, &v.Sortlen, &v.PadAttribute}
-		if len(recvs) <= len(cols) {
-			err = rows.Scan(recvs...)
-		} else {
-			err = rows.Scan(recvs[0:len(cols)]...)
-		}
+		err = safeScan(rows, len(cols), &v.Collation, &v.Charset, &v.Id, &v.Default, &v.Compiled, &v.Sortlen, &v.PadAttribute)
 		if err != nil {
 			return nil, fmt.Errorf(`%v: %v`, sqlStr, err)
 		}
@@ -199,9 +192,14 @@ func (m *mySQL) getTableStatus(dbName string, tableName string, fast bool) (map[
 		return ret, sorts, err
 	}
 	defer rows.Close()
+	cols, err := rows.Columns()
+	if err != nil {
+		return ret, sorts, err
+	}
+	n := len(cols)
 	for rows.Next() {
 		v := &TableStatus{}
-		err := rows.Scan(&v.Name, &v.Engine, &v.Version, &v.Row_format, &v.Rows, &v.Avg_row_length, &v.Data_length, &v.Max_data_length, &v.Index_length, &v.Data_free, &v.Auto_increment, &v.Create_time, &v.Update_time, &v.Check_time, &v.Collation, &v.Checksum, &v.Create_options, &v.Comment)
+		err := safeScan(rows, n, &v.Name, &v.Engine, &v.Version, &v.Row_format, &v.Rows, &v.Avg_row_length, &v.Data_length, &v.Max_data_length, &v.Index_length, &v.Data_free, &v.Auto_increment, &v.Create_time, &v.Update_time, &v.Check_time, &v.Collation, &v.Checksum, &v.Create_options, &v.Comment)
 		if err != nil {
 			return ret, sorts, fmt.Errorf(`%v: %v`, sqlStr, err)
 		}
@@ -224,10 +222,15 @@ func (m *mySQL) getEngines() ([]*SupportedEngine, error) {
 		return nil, err
 	}
 	defer rows.Close()
+	cols, err := rows.Columns()
+	if err != nil {
+		return nil, err
+	}
+	n := len(cols)
 	ret := []*SupportedEngine{}
 	for rows.Next() {
 		v := &SupportedEngine{}
-		err := rows.Scan(&v.Engine, &v.Support, &v.Comment, &v.Transactions, &v.XA, &v.Savepoints)
+		err := safeScan(rows, n, &v.Engine, &v.Support, &v.Comment, &v.Transactions, &v.XA, &v.Savepoints)
 		if err != nil {
 			return nil, fmt.Errorf(`%v: %v`, sqlStr, err)
 		}
