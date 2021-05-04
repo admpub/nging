@@ -62,12 +62,11 @@ func (d WebDavDir) OpenFile(ctx context.Context, name string, flag int, perm os.
 		return nil, err
 	}
 
-	return WebDavFile{dir: name, user: d.User, File: file}, nil
+	return WebDavFile{dir: name, File: file}, nil
 }
 
 type WebDavFile struct {
-	dir  string
-	user *User
+	dir string
 	webdav.File
 }
 
@@ -87,12 +86,6 @@ func (f WebDavFile) Readdir(count int) (fis []os.FileInfo, err error) {
 	}
 
 	for i, fi := range fis {
-		if f.user != nil {
-			fpath := f.dir + fi.Name()
-			if !f.user.Allowed(fpath, true) {
-				continue
-			}
-		}
 		fis[i] = NoSniffFileInfo{fi}
 	}
 	return fis, nil

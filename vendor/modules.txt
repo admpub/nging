@@ -275,7 +275,7 @@ github.com/admpub/web-terminal/handler
 github.com/admpub/web-terminal/library/ssh
 github.com/admpub/web-terminal/library/telnet
 github.com/admpub/web-terminal/library/utils
-# github.com/admpub/webdav/v4 v4.0.5
+# github.com/admpub/webdav/v4 v4.1.0
 github.com/admpub/webdav/v4/lib
 # github.com/admpub/websocket v1.0.4
 ## explicit
@@ -406,7 +406,7 @@ github.com/caddy-plugins/ipfilter
 # github.com/caddy-plugins/nobots v0.1.1
 ## explicit
 github.com/caddy-plugins/nobots
-# github.com/caddy-plugins/webdav v1.2.4
+# github.com/caddy-plugins/webdav v1.2.5
 ## explicit
 github.com/caddy-plugins/webdav
 # github.com/caddyserver/caddy v1.1.5 => github.com/admpub/caddy v1.1.7
