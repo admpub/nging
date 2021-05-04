@@ -275,7 +275,7 @@ github.com/admpub/web-terminal/handler
 github.com/admpub/web-terminal/library/ssh
 github.com/admpub/web-terminal/library/telnet
 github.com/admpub/web-terminal/library/utils
-# github.com/admpub/webdav/v4 v4.0.2
+# github.com/admpub/webdav/v4 v4.1.1
 github.com/admpub/webdav/v4/lib
 # github.com/admpub/websocket v1.0.4
 ## explicit
@@ -406,7 +406,7 @@ github.com/caddy-plugins/ipfilter
 # github.com/caddy-plugins/nobots v0.1.1
 ## explicit
 github.com/caddy-plugins/nobots
-# github.com/caddy-plugins/webdav v1.2.1
+# github.com/caddy-plugins/webdav v1.2.6
 ## explicit
 github.com/caddy-plugins/webdav
 # github.com/caddyserver/caddy v1.1.5 => github.com/admpub/caddy v1.1.7
@@ -1225,7 +1225,7 @@ gocloud.dev/internal/retry
 ## explicit
 goftp.io/server/v2
 goftp.io/server/v2/ratelimit
-# golang.org/x/crypto v0.0.0-20210415154028-4f45737414dc
+# golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b
 ## explicit
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
@@ -1271,7 +1271,7 @@ golang.org/x/lint
 golang.org/x/lint/golint
 # golang.org/x/mod v0.4.0
 golang.org/x/mod/semver
-# golang.org/x/net v0.0.0-20210415231046-e915ea6b2b7d
+# golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420
 golang.org/x/net/bpf
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
@@ -1301,7 +1301,7 @@ golang.org/x/oauth2/clientcredentials
 golang.org/x/oauth2/internal
 # golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20210426230700-d19ff857e887
+# golang.org/x/sys v0.0.0-20210503080704-8803ae5d1324
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix

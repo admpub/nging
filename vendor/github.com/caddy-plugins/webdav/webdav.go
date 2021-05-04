@@ -67,8 +67,9 @@ func parse(c *caddy.Controller) ([]*config, error) {
 		conf := &config{
 			baseURL: "/",
 			Config: &lib.Config{
-				Auth:  false, // Must use basicauth directive for this.
-				Users: map[string]*lib.User{},
+				Auth:    false, // Must use basicauth directive for this.
+				NoSniff: true,
+				Users:   map[string]*lib.User{},
 				User: &lib.User{
 					Scope:  ".",
 					Rules:  []*lib.Rule{},
@@ -166,8 +167,12 @@ func parse(c *caddy.Controller) ([]*config, error) {
 				val = strings.TrimSuffix(val, ":")
 
 				u.Handler = &wd.Handler{
-					Prefix:     conf.baseURL,
-					FileSystem: wd.Dir(u.Scope),
+					Prefix: conf.baseURL,
+					FileSystem: lib.WebDavDir{
+						Dir:     wd.Dir(u.Scope),
+						User:    u,
+						NoSniff: conf.NoSniff,
+					},
 					LockSystem: wd.NewMemLS(),
 				}
 
@@ -183,8 +188,12 @@ func parse(c *caddy.Controller) ([]*config, error) {
 		}
 
 		u.Handler = &wd.Handler{
-			Prefix:     conf.baseURL,
-			FileSystem: wd.Dir(u.Scope),
+			Prefix: conf.baseURL,
+			FileSystem: lib.WebDavDir{
+				Dir:     wd.Dir(u.Scope),
+				User:    u,
+				NoSniff: conf.NoSniff,
+			},
 			LockSystem: wd.NewMemLS(),
 		}
 

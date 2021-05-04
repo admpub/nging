@@ -5,6 +5,7 @@ import (
 	"mime"
 	"os"
 	"path"
+	"path/filepath"
 
 	"golang.org/x/net/webdav"
 )
@@ -14,18 +15,20 @@ type NoSniffFileInfo struct {
 	os.FileInfo
 }
 
+const MIMEDefault = "application/octet-stream"
+
 func (w NoSniffFileInfo) ContentType(ctx context.Context) (contentType string, err error) {
-	if mimeType := mime.TypeByExtension(path.Ext(w.FileInfo.Name())); mimeType != "" {
+	if mimeType := mime.TypeByExtension(path.Ext(w.FileInfo.Name())); len(mimeType) > 0 {
 		// We can figure out the mime from the extension.
 		return mimeType, nil
-	} else {
-		// We can't figure out the mime type without sniffing, call it an octet stream.
-		return "application/octet-stream", nil
 	}
+	// We can't figure out the mime type without sniffing, call it an octet stream.
+	return MIMEDefault, nil
 }
 
 type WebDavDir struct {
 	webdav.Dir
+	User    *User
 	NoSniff bool
 }
 
@@ -38,6 +41,12 @@ func (d WebDavDir) Stat(ctx context.Context, name string) (os.FileInfo, error) {
 	info, err := d.Dir.Stat(ctx, name)
 	if err != nil {
 		return nil, err
+	}
+
+	if name != `/` && d.User != nil {
+		if !d.User.Allowed(name, true) {
+			return nil, filepath.SkipDir
+		}
 	}
 
 	return NoSniffFileInfo{info}, nil
@@ -76,8 +85,8 @@ func (f WebDavFile) Readdir(count int) (fis []os.FileInfo, err error) {
 		return nil, err
 	}
 
-	for i := range fis {
-		fis[i] = NoSniffFileInfo{fis[i]}
+	for i, fi := range fis {
+		fis[i] = NoSniffFileInfo{fi}
 	}
 	return fis, nil
 }
