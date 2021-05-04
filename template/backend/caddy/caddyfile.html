@@ -140,8 +140,12 @@
         {{AddonAttr "fastcgi" "split"}}
         {{AddonAttr "fastcgi" "index"}}
         {{IteratorKV "fastcgi" "env" "        env    "}}
+        {{AddonAttr "fastcgi" "root"}}
         {{AddonAttr "fastcgi" "except"}}
-        {{AddonAttr "fastcgi" "pool"}}
+        {{AddonAttr "fastcgi" "upstream"}}
+        {{AddonAttr "fastcgi" "connect_timeout"}}
+        {{AddonAttr "fastcgi" "read_timeout"}}
+        {{AddonAttr "fastcgi" "send_timeout"}}
     }
     {{end}}
     
