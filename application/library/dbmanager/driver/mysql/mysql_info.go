@@ -199,7 +199,10 @@ func (m *mySQL) getTableStatus(dbName string, tableName string, fast bool) (map[
 	n := len(cols)
 	for rows.Next() {
 		v := &TableStatus{}
-		err := safeScan(rows, n, &v.Name, &v.Engine, &v.Version, &v.Row_format, &v.Rows, &v.Avg_row_length, &v.Data_length, &v.Max_data_length, &v.Index_length, &v.Data_free, &v.Auto_increment, &v.Create_time, &v.Update_time, &v.Check_time, &v.Collation, &v.Checksum, &v.Create_options, &v.Comment)
+		err := safeScan(rows, n,
+			&v.Name, &v.Engine, &v.Version, &v.Row_format, &v.Rows, &v.Avg_row_length, &v.Data_length, &v.Max_data_length, &v.Index_length,
+			&v.Data_free, &v.Auto_increment, &v.Create_time, &v.Update_time, &v.Check_time, &v.Collation, &v.Checksum, &v.Create_options,
+			&v.Comment, &v.Max_index_length, &v.Temporary)
 		if err != nil {
 			return ret, sorts, fmt.Errorf(`%v: %v`, sqlStr, err)
 		}

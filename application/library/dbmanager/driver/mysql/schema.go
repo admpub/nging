@@ -44,24 +44,26 @@ type ProcessList struct {
 }
 
 type TableStatus struct {
-	Name            sql.NullString
-	Engine          sql.NullString
-	Version         sql.NullString
-	Row_format      sql.NullString
-	Rows            sql.NullInt64
-	Avg_row_length  sql.NullInt64
-	Data_length     sql.NullInt64
-	Max_data_length sql.NullInt64
-	Index_length    sql.NullInt64
-	Data_free       sql.NullInt64
-	Auto_increment  sql.NullInt64
-	Create_time     sql.NullString
-	Update_time     sql.NullString
-	Check_time      sql.NullString
-	Collation       sql.NullString
-	Checksum        sql.NullString
-	Create_options  sql.NullString
-	Comment         sql.NullString
+	Name             sql.NullString
+	Engine           sql.NullString
+	Version          sql.NullString
+	Row_format       sql.NullString
+	Rows             sql.NullInt64
+	Avg_row_length   sql.NullInt64
+	Data_length      sql.NullInt64
+	Max_data_length  sql.NullInt64
+	Index_length     sql.NullInt64
+	Data_free        sql.NullInt64
+	Auto_increment   sql.NullInt64
+	Create_time      sql.NullString
+	Update_time      sql.NullString
+	Check_time       sql.NullString
+	Collation        sql.NullString
+	Checksum         sql.NullString
+	Create_options   sql.NullString
+	Comment          sql.NullString
+	Max_index_length sql.NullInt64
+	Temporary        sql.NullString // Y
 }
 
 func (t *TableStatus) IsView() bool {
