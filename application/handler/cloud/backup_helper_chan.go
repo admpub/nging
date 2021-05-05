@@ -29,19 +29,19 @@ type PutFile struct {
 func (mf *PutFile) Do() error {
 	fp, err := os.Open(mf.FilePath)
 	if err != nil {
-		log.Error(mf.FilePath + `: ` + err.Error())
+		log.Error(`Open ` + mf.FilePath + `: ` + err.Error())
 		return err
 	}
 	defer fp.Close()
 	fi, err := fp.Stat()
 	if err != nil {
-		log.Error(mf.FilePath + `: ` + err.Error())
+		log.Error(`Stat ` + mf.FilePath + `: ` + err.Error())
 		return err
 	}
 	if flock.IsCompleted(fp, fi, time.Now()) {
 		err = mf.Manager.Put(fp, mf.ObjectName, fi.Size())
 		if err != nil {
-			log.Error(mf.FilePath + `: s3manager.Put: ` + err.Error())
+			log.Error(`s3manager.Put ` + mf.FilePath + `: ` + err.Error())
 		}
 	}
 	return err
