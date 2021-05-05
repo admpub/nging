@@ -38,6 +38,9 @@ func IsCompleted(file *os.File, fi os.FileInfo, start time.Time) bool {
 			time.Sleep(waitTime) //半秒后再循环一次
 		} else { //否则：只能等于 不会小于，等于有两种情况，一种是数据写完了，一种是外部程序阻塞了，导致文件大小一直为0
 			if fi.Size() != 0 { //被填充完成则立即输出日志
+				if i > 120 { //每隔1分钟输出一次日志 (i为120时：120*500/1000=60秒)
+					log.Info("文件: " + fi.Name() + " 填充完毕")
+				}
 				return true
 			}
 			//等待外部程序开始写 只等60秒 120*500/1000=60秒
