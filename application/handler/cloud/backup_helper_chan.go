@@ -41,7 +41,7 @@ func (mf *PutFile) Do() error {
 	if flock.IsCompleted(fp, fi, time.Now()) {
 		err = mf.Manager.Put(fp, mf.ObjectName, fi.Size())
 		if err != nil {
-			log.Error(mf.FilePath + `: ` + err.Error())
+			log.Error(mf.FilePath + `: s3manager.Put: ` + err.Error())
 		}
 	}
 	return err
