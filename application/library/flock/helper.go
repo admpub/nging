@@ -13,21 +13,18 @@ import (
 // @param start 需要传入 System.currentTimeMillis()，用于兼容遍历的情况
 // @return true：已写完 false:外部程序阻塞或者文件不存在
 // 翻译自：https://blog.csdn.net/northernice/article/details/115986671
-func IsCompleted(file *os.File, fi os.FileInfo, start time.Time) bool {
+func IsCompleted(file *os.File, start time.Time) bool {
 	var (
 		fileLength int64
 		i          int
-		err        error
 		waitTime   = 500 * time.Microsecond
 	)
-	if fi == nil {
-		fi, err = file.Stat()
+	for {
+		fi, err := file.Stat()
 		if err != nil {
 			log.Error(err)
 			return false
 		}
-	}
-	for {
 		//文件在外部一直在填充数据，每次进入循环体时，文件大小都会改变，一直到不改变时，说明文件数据填充完毕 或者文件大小一直都是0(外部程序阻塞)
 		//判断文件大小是否有改变
 		if fi.Size() > fileLength { //有改变说明还未写完
@@ -38,9 +35,6 @@ func IsCompleted(file *os.File, fi os.FileInfo, start time.Time) bool {
 			time.Sleep(waitTime) //半秒后再循环一次
 		} else { //否则：只能等于 不会小于，等于有两种情况，一种是数据写完了，一种是外部程序阻塞了，导致文件大小一直为0
 			if fi.Size() != 0 { //被填充完成则立即输出日志
-				if i > 120 { //每隔1分钟输出一次日志 (i为120时：120*500/1000=60秒)
-					log.Info("文件: " + fi.Name() + " 填充完毕")
-				}
 				return true
 			}
 			//等待外部程序开始写 只等60秒 120*500/1000=60秒

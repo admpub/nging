@@ -33,15 +33,17 @@ func (mf *PutFile) Do() error {
 		return err
 	}
 	defer fp.Close()
-	fi, err := fp.Stat()
-	if err != nil {
-		log.Error(`Stat ` + mf.FilePath + `: ` + err.Error())
-		return err
-	}
-	if flock.IsCompleted(fp, fi, time.Now()) {
+	if flock.IsCompleted(fp, time.Now()) {
+		fi, err := fp.Stat()
+		if err != nil {
+			log.Error(`Stat ` + mf.FilePath + `: ` + err.Error())
+			return err
+		}
 		err = mf.Manager.Put(fp, mf.ObjectName, fi.Size())
 		if err != nil {
 			log.Error(`s3manager.Put ` + mf.FilePath + `: ` + err.Error())
+		} else {
+			log.Info(`s3manager.Put ` + mf.FilePath + `: success`)
 		}
 	}
 	return err
