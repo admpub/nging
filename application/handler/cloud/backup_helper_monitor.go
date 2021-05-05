@@ -27,7 +27,6 @@ import (
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
-	"github.com/admpub/nging/application/library/flock"
 	"github.com/admpub/nging/application/library/msgbox"
 	"github.com/admpub/nging/application/library/s3manager/s3client"
 	"github.com/admpub/nging/application/model"
@@ -65,18 +64,13 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 			log.Error(file + `: ` + err.Error())
 			return
 		}
-		defer fp.Close()
-		if err = flock.LockBlock(fp); err != nil {
-			log.Error(file + `: ` + err.Error())
-			return
-		}
-		defer flock.Unlock(fp)
 		fi, err := fp.Stat()
 		if err != nil {
 			log.Error(file + `: ` + err.Error())
 			return
 		}
 		if fi.IsDir() {
+			fp.Close()
 			err = filepath.Walk(file, func(ppath string, info os.FileInfo, werr error) error {
 				if werr != nil {
 					return werr
@@ -85,22 +79,21 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 					return nil
 				}
 				objectName := path.Join(recv.DestPath, strings.TrimPrefix(ppath, sourcePath))
-				fp, err := os.Open(ppath)
-				if err != nil {
-					log.Error(ppath + `: ` + err.Error())
-					return err
+				FileChan() <- &PutFile{
+					Manager:    mgr,
+					ObjectName: objectName,
+					FilePath:   ppath,
 				}
-				defer fp.Close()
-				if err = flock.LockBlock(fp); err != nil {
-					log.Error(ppath + `: ` + err.Error())
-					return err
-				}
-				defer flock.Unlock(fp)
-				return mgr.Put(fp, objectName, info.Size())
+				return nil
 			})
 		} else {
+			fp.Close()
 			objectName := path.Join(recv.DestPath, strings.TrimPrefix(file, sourcePath))
-			err = mgr.Put(fp, objectName, fi.Size())
+			FileChan() <- &PutFile{
+				Manager:    mgr,
+				ObjectName: objectName,
+				FilePath:   file,
+			}
 		}
 		if err != nil {
 			log.Error(err)
@@ -130,20 +123,21 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 			log.Error(file + `: ` + err.Error())
 			return
 		}
-		defer fp.Close()
-		if err = flock.LockBlock(fp); err != nil {
-			log.Error(file + `: ` + err.Error())
-			return
-		}
-		defer flock.Unlock(fp)
 		fi, err := fp.Stat()
 		if err != nil {
 			log.Error(file + `: ` + err.Error())
+			fp.Close()
 			return
 		}
-		err = mgr.Put(fp, objectName, fi.Size())
-		if err != nil {
-			log.Error(file + `: ` + err.Error())
+		if fi.IsDir() {
+			fp.Close()
+			return
+		}
+		fp.Close()
+		FileChan() <- &PutFile{
+			Manager:    mgr,
+			ObjectName: objectName,
+			FilePath:   file,
 		}
 	}
 	monitor.Rename = func(file string) {

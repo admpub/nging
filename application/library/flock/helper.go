@@ -1,57 +1,60 @@
-// +build !windows
-
-/*
-   Nging is a toolbox for webmasters
-   Copyright (C) 2021-present Wenhui Shen <swh@admpub.com>
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Affero General Public License as published
-   by the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Affero General Public License for more details.
-
-   You should have received a copy of the GNU Affero General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
 package flock
 
 import (
 	"os"
-	"syscall"
+	"time"
+
+	"github.com/admpub/log"
 )
 
-// LockEx 独占锁(独占读和写)，非阻塞模式，获取失败直接返回错误
-func LockEx(f *os.File) error {
-	return syscall.Flock(int(f.Fd()), syscall.LOCK_EX|syscall.LOCK_NB)
-}
+// IsCompleted 等待文件有数据且已写完
+// 费时操作 放在子线程中执行
+// @param file  文件
+// @param start 需要传入 System.currentTimeMillis()，用于兼容遍历的情况
+// @return true：已写完 false:外部程序阻塞或者文件不存在
+// 翻译自：https://blog.csdn.net/northernice/article/details/115986671
+func IsCompleted(file *os.File, fi os.FileInfo, start time.Time) bool {
+	var (
+		fileLength int64
+		i          int
+		err        error
+		waitTime   = 500 * time.Microsecond
+	)
+	if fi == nil {
+		fi, err = file.Stat()
+		if err != nil {
+			log.Error(err)
+			return false
+		}
+	}
+	for {
+		//文件在外部一直在填充数据，每次进入循环体时，文件大小都会改变，一直到不改变时，说明文件数据填充完毕 或者文件大小一直都是0(外部程序阻塞)
+		//判断文件大小是否有改变
+		if fi.Size() > fileLength { //有改变说明还未写完
+			fileLength = fi.Size()
+			if i%120 == 0 { //每隔1分钟输出一次日志 (i为120时：120*500/1000=60秒)
+				log.Info("文件: " + fi.Name() + " 正在被填充，请稍候...")
+			}
+			time.Sleep(waitTime) //半秒后再循环一次
+		} else { //否则：只能等于 不会小于，等于有两种情况，一种是数据写完了，一种是外部程序阻塞了，导致文件大小一直为0
+			if fi.Size() != 0 { //被填充完成则立即输出日志
+				return true
+			}
+			//等待外部程序开始写 只等60秒 120*500/1000=60秒
 
-// LockExBlock 独占锁，阻塞模式，获取不到时阻塞等待直至成功
-func LockExBlock(f *os.File) error {
-	return syscall.Flock(int(f.Fd()), syscall.LOCK_EX)
-}
+			//每隔1分钟输出一次日志 (i为120时：120*500/1000=60秒)
+			if i%120 == 0 {
+				log.Info("文件: " + fi.Name() + " 大小为0，正在等待外部程序填充，已等待：" + time.Since(start).String())
+			}
 
-// Lock 共享锁(支持多读)，非阻塞模式，获取失败直接返回错误
-func Lock(f *os.File) error {
-	return syscall.Flock(int(f.Fd()), syscall.LOCK_SH|syscall.LOCK_NB)
-}
+			//如果一直(i为120时：120*500/1000=60秒)等于0，说明外部程序阻塞了
+			if i == 3600 { //120为1分钟 3600为30分钟
+				log.Info("文件: " + fi.Name() + " 大小在：" + time.Since(start).String() + " 内始终为0，说明：在 程序监测时间内 入库进程依旧在进行，程序监测时间结束") //入库未完成或发生阻塞
+				return false
+			}
 
-// LockBlock 共享锁，阻塞模式，获取不到时阻塞等待直至成功
-func LockBlock(f *os.File) error {
-	return syscall.Flock(int(f.Fd()), syscall.LOCK_SH)
-}
-
-// Unlock 解锁
-func Unlock(f *os.File) error {
-	return syscall.Flock(int(f.Fd()), syscall.LOCK_UN)
-}
-
-// UnlockAndClose 解锁并关闭文件
-func UnlockAndClose(f *os.File) error {
-	defer f.Close()
-	return syscall.Flock(int(f.Fd()), syscall.LOCK_UN)
+			time.Sleep(waitTime)
+		}
+		i++
+	}
 }

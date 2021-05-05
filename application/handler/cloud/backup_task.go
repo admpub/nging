@@ -8,10 +8,7 @@ import (
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/code"
-	"github.com/webx-top/echo/param"
 )
-
-var backupTasks = param.NewMap()
 
 func BackupStart(ctx echo.Context) error {
 	id := ctx.Formx(`id`).Uint()
