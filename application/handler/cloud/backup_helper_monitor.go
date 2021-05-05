@@ -1,3 +1,21 @@
+/*
+   Nging is a toolbox for webmasters
+   Copyright (C) 2021-present Wenhui Shen <swh@admpub.com>
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published
+   by the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
+
+   You should have received a copy of the GNU Affero General Public License
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 package cloud
 
 import (
@@ -9,6 +27,7 @@ import (
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/nging/application/library/flock"
 	"github.com/admpub/nging/application/library/msgbox"
 	"github.com/admpub/nging/application/library/s3manager/s3client"
 	"github.com/admpub/nging/application/model"
@@ -43,27 +62,40 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 		}
 		fp, err := os.Open(file)
 		if err != nil {
-			log.Error(err)
+			log.Error(file + `: ` + err.Error())
 			return
 		}
 		defer fp.Close()
+		if err = flock.LockBlock(fp); err != nil {
+			log.Error(file + `: ` + err.Error())
+			return
+		}
+		defer flock.Unlock(fp)
 		fi, err := fp.Stat()
 		if err != nil {
-			log.Error(err)
+			log.Error(file + `: ` + err.Error())
 			return
 		}
 		if fi.IsDir() {
-			err = filepath.Walk(file, func(ppath string, info os.FileInfo, err error) error {
+			err = filepath.Walk(file, func(ppath string, info os.FileInfo, werr error) error {
+				if werr != nil {
+					return werr
+				}
 				if info.IsDir() || !filter(ppath) {
 					return nil
 				}
 				objectName := path.Join(recv.DestPath, strings.TrimPrefix(ppath, sourcePath))
 				fp, err := os.Open(ppath)
 				if err != nil {
-					log.Error(err)
+					log.Error(ppath + `: ` + err.Error())
 					return err
 				}
 				defer fp.Close()
+				if err = flock.LockBlock(fp); err != nil {
+					log.Error(ppath + `: ` + err.Error())
+					return err
+				}
+				defer flock.Unlock(fp)
 				return mgr.Put(fp, objectName, info.Size())
 			})
 		} else {
@@ -81,11 +113,11 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 		objectName := path.Join(recv.DestPath, strings.TrimPrefix(file, sourcePath))
 		err = mgr.RemoveDir(objectName)
 		if err != nil {
-			log.Error(err)
+			log.Error(file + `: ` + err.Error())
 		}
 		err = mgr.Remove(objectName)
 		if err != nil {
-			log.Error(err)
+			log.Error(file + `: ` + err.Error())
 		}
 	}
 	monitor.Modify = func(file string) {
@@ -95,18 +127,23 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 		objectName := path.Join(recv.DestPath, strings.TrimPrefix(file, sourcePath))
 		fp, err := os.Open(file)
 		if err != nil {
-			log.Error(err)
+			log.Error(file + `: ` + err.Error())
 			return
 		}
 		defer fp.Close()
+		if err = flock.LockBlock(fp); err != nil {
+			log.Error(file + `: ` + err.Error())
+			return
+		}
+		defer flock.Unlock(fp)
 		fi, err := fp.Stat()
 		if err != nil {
-			log.Error(err)
+			log.Error(file + `: ` + err.Error())
 			return
 		}
 		err = mgr.Put(fp, objectName, fi.Size())
 		if err != nil {
-			log.Error(err)
+			log.Error(file + `: ` + err.Error())
 		}
 	}
 	monitor.Rename = func(file string) {
@@ -116,11 +153,11 @@ func monitorBackupStart(recv *model.CloudBackupExt) error {
 		objectName := path.Join(recv.DestPath, strings.TrimPrefix(file, sourcePath))
 		err = mgr.RemoveDir(objectName)
 		if err != nil {
-			log.Error(err)
+			log.Error(file + `: ` + err.Error())
 		}
 		err = mgr.Remove(objectName)
 		if err != nil {
-			log.Error(err)
+			log.Error(file + `: ` + err.Error())
 		}
 	}
 	msgbox.Success(`Cloud-Backup`, `Watch Dir: `+recv.SourcePath)
