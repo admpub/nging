@@ -4960,12 +4960,12 @@ button::-moz-focus-inner {
 .treeview ul li {
   border-bottom: 0px solid #E5E5E5;
 }
-.treeview ul li a {
+.treeview li a {
   padding-top: 5px;
   padding-bottom: 5px;
   color: #555;
 }
-.treeview ul li a:hover,.treeview ul li.current a {
+.treeview li a:hover,.treeview li.current a {
   background: #F9F9F9;
 }
 .treeview label i {
