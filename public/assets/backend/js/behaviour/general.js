@@ -1677,6 +1677,7 @@ var App = function () {
 			var defaults = {
 				expandFirst: false,
 				ajax: null,
+				onclick: null,
 			};
 			options = $.extend(defaults, options||{});
 			if(!elem) elem = '.treeview';
@@ -1703,6 +1704,7 @@ var App = function () {
 			};
 			$(elem).on('click','label.tree-toggler',function () {
 				var that = this;
+				if($.isFunction(options.onclick)) options.onclick.apply(that, arguments);
 				if($(that).data('loaded')||!options.ajax) return expand.apply(that);
 				$(that).data('loaded',true);
 				var ajaxOptions = options.ajax;
