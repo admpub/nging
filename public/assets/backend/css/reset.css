@@ -80,3 +80,9 @@ table.sticky-last-col > tbody tr > td:last-child {
 thead.always-top,table.sticky-thead > thead tr > th{
   box-shadow: 0 3px 3px rgba(136, 136, 136, 0.3);
 }
+.text-xs-70{font-size:0.7em !important}
+.text-xs-75{font-size:0.75em !important}
+.text-xs-80{font-size:0.8em !important}
+.text-xs-85{font-size:0.85em !important}
+.text-xs-90{font-size:0.9em !important}
+.text-xs-95{font-size:0.95em !important}
