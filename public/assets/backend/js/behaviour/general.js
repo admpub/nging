@@ -1701,7 +1701,7 @@ var App = function () {
 				  $(window).trigger('resize');
 				});
 			};
-			$(elem+' label.tree-toggler').click(function () {
+			$(elem).on('click','label.tree-toggler',function () {
 				var that = this;
 				if(options.ajax){
 					var ajaxOptions = options.ajax;
