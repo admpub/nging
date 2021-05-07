@@ -1676,14 +1676,21 @@ var App = function () {
 		treeToggle: function (elem, expandFirst) {
 			if(!elem) elem = '.treeview';
 			$(elem+' label.tree-toggler').click(function () {
-				var icon = $(this).children(".fa");
+				var icon = $(this).children(".fa"), tree;
+				if(icon.length > 0){
+					tree = $(this).next('ul.tree');
+				} else if($(this).hasClass('fa')){
+					icon = $(this);
+					tree = $(this).parent().next('ul.tree');
+				} else {
+					return;
+				}
 				if(icon.hasClass("fa-folder-o")){
 				  icon.removeClass("fa-folder-o").addClass("fa-folder-open-o");
 				}else{
 				  icon.removeClass("fa-folder-open-o").addClass("fa-folder-o");
 				}
-		
-				$(this).parent().children('ul.tree').toggle(300,function(){
+				tree.toggle(300,function(){
 				  $(this).parent().toggleClass("open");
 				  $(".tree .nscroller").nanoScroller({ preventPageScrolling: true });
 				  $(window).trigger('resize');
