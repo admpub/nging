@@ -1703,20 +1703,18 @@ var App = function () {
 			};
 			$(elem).on('click','label.tree-toggler',function () {
 				var that = this;
-				if(options.ajax){
-					var ajaxOptions = options.ajax;
-					if($.isFunction(options.ajax)){
-						ajaxOptions = options.ajax.apply(that, arguments);
-					}
-					if($.isFunction(ajaxOptions.data)){
-						ajaxOptions.data = ajaxOptions.data.apply(that, arguments);
-					}
-					$.ajax(ajaxOptions).done(function(){
-						expand.apply(that,arguments);
-					});
-					return;
+				if($(that).data('loaded')||!options.ajax) return expand.apply(that);
+				$(that).data('loaded',true);
+				var ajaxOptions = options.ajax;
+				if($.isFunction(options.ajax)){
+					ajaxOptions = options.ajax.apply(that, arguments);
 				}
-				expand.apply(that);
+				if($.isFunction(ajaxOptions.data)){
+					ajaxOptions.data = ajaxOptions.data.apply(that, arguments);
+				}
+				$.ajax(ajaxOptions).done(function(){
+					expand.apply(that,arguments);
+				});
 			})
 			if(options.expandFirst) $(elem+' label.tree-toggler:first').trigger('click');
 		}
