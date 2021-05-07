@@ -1672,6 +1672,24 @@ var App = function () {
 		},
 		captchaHasError: function(code) {
 			return code >= -11 && code <= -9;
+		},
+		treeToggle: function (elem, expandFirst) {
+			if(!elem) elem = '.treeview';
+			$(elem+' label.tree-toggler').click(function () {
+				var icon = $(this).children(".fa");
+				if(icon.hasClass("fa-folder-o")){
+				  icon.removeClass("fa-folder-o").addClass("fa-folder-open-o");
+				}else{
+				  icon.removeClass("fa-folder-open-o").addClass("fa-folder-o");
+				}
+		
+				$(this).parent().children('ul.tree').toggle(300,function(){
+				  $(this).parent().toggleClass("open");
+				  $(".tree .nscroller").nanoScroller({ preventPageScrolling: true });
+				  $(window).trigger('resize');
+				});
+			})
+			if(expandFirst) $(elem+' label.tree-toggler:first').trigger('click');
 		}
 	};
 
