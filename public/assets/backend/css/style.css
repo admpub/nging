@@ -1674,6 +1674,10 @@ body.texture {
   padding: 8px 13px 4px;
   border-bottom: 1px solid #E5E5E5;
 }
+.page-aside.app .header-md{padding-top:5px;padding-bottom:5px}
+.page-aside.app .header-md > .navbar-toggle{margin-top:0;margin-bottom:0;padding:0;line-height:1em}
+.page-aside.app .header-md > .page-title{font-size:18px;margin:0}
+.page-aside.app .header-md + ul{font-size:13px}
 /*inbox*/
 .mail-inbox .head,
 .main-app .head {
