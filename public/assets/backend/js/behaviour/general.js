@@ -1673,9 +1673,14 @@ var App = function () {
 		captchaHasError: function(code) {
 			return code >= -11 && code <= -9;
 		},
-		treeToggle: function (elem, expandFirst) {
+		treeToggle: function (elem, options) {
+			var defaults = {
+				expandFirst: false,
+				ajax: null,
+			};
+			options = $.extend(defaults, options||{});
 			if(!elem) elem = '.treeview';
-			$(elem+' label.tree-toggler').click(function () {
+			var expand = function(){
 				var icon = $(this).children(".fa"), tree;
 				if(icon.length > 0){
 					tree = $(this).next('ul.tree');
@@ -1695,8 +1700,25 @@ var App = function () {
 				  $(".tree .nscroller").nanoScroller({ preventPageScrolling: true });
 				  $(window).trigger('resize');
 				});
+			};
+			$(elem+' label.tree-toggler').click(function () {
+				var that = this;
+				if(options.ajax){
+					var ajaxOptions = options.ajax;
+					if($.isFunction(options.ajax)){
+						ajaxOptions = options.ajax.apply(that, arguments);
+					}
+					if($.isFunction(ajaxOptions.data)){
+						ajaxOptions.data = ajaxOptions.data.apply(that, arguments);
+					}
+					$.ajax(ajaxOptions).done(function(){
+						expand.apply(that,arguments);
+					});
+					return;
+				}
+				expand.apply(that);
 			})
-			if(expandFirst) $(elem+' label.tree-toggler:first').trigger('click');
+			if(options.expandFirst) $(elem+' label.tree-toggler:first').trigger('click');
 		}
 	};
 
