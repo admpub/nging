@@ -955,7 +955,7 @@ github.com/rwcarlsen/goexif/tiff
 ## explicit
 # github.com/samuel/go-zookeeper v0.0.0-20200724154423-2164a8ac840e
 github.com/samuel/go-zookeeper/zk
-# github.com/shirou/gopsutil v3.21.3+incompatible
+# github.com/shirou/gopsutil v3.21.4+incompatible
 ## explicit
 github.com/shirou/gopsutil/cpu
 github.com/shirou/gopsutil/disk
