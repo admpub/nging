@@ -4995,8 +4995,11 @@ button::-moz-focus-inner {
 .treeview ul li ul li ul li a {
   padding-left: 72px;
 }
-.treeview ul li ul li ul li a {
+.treeview ul li ul li ul li ul li a {
   padding-left: 90px;
+}
+.treeview ul li .fa+a{
+  padding-left: 0 !important;
 }
 .treeview .tree-toggler {
   cursor: pointer;

@@ -1702,7 +1702,7 @@ var App = function () {
 				  $(window).trigger('resize');
 				});
 			};
-			$(elem).on('click','label.tree-toggler',function () {
+			$(elem).on('click','.tree-toggler',function () {
 				var that = this;
 				if($.isFunction(options.onclick)) options.onclick.apply(that, arguments);
 				if($(that).data('loaded')||!options.ajax) return expand.apply(that);
