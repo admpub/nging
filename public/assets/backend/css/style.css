@@ -648,15 +648,29 @@ body.modal-open,
   display: table-cell;
   border-right: 1px solid #E9E9E9;
 }
+.page-aside > div {
+  width: 280px;
+}
 .page-aside.sm-width{
   width: 230px;
   min-width: 230px;
 }
-.page-aside > div {
-  width: 280px;
-}
 .page-aside.sm-width > div {
   width: 230px;
+}
+.page-aside.xsm-width{
+  width: 200px;
+  min-width: 200px;
+}
+.page-aside.xsm-width > div {
+  width: 200px;
+}
+.page-aside.xs-width{
+  width: 150px;
+  min-width: 150px;
+}
+.page-aside.xs-width > div {
+  width: 150px;
 }
 .page-aside div.fixed {
   position: fixed;
