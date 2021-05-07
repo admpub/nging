@@ -4965,10 +4965,12 @@ button::-moz-focus-inner {
   padding-bottom: 5px;
   color: #555;
 }
-.treeview li a:hover,.treeview li.current a {
+.treeview li a:hover,.treeview li.current a,
+.treeview li.current > label {
   background: #F9F9F9;
 }
-.treeview label i {
+.treeview label > i,
+.treeview li > i {
   font-size: 14px;
   text-align: center;
   width: 24px;
