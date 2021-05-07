@@ -282,8 +282,6 @@ github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2 h1:Q8XKLvKZfb5zfD
 github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2/go.mod h1:DpE271XS+vS6C+HwvHXRd5v5kXaXi3zpNhWCPsmLT8w=
 github.com/admpub/web-terminal v0.0.1 h1:wQOkX7bZwhMkCtS3+FCFTeXDyagCN+71P8+3q7H0xqQ=
 github.com/admpub/web-terminal v0.0.1/go.mod h1:SpJflbA/NkKUPCXMd60Xudqen5URGK//lUSEYxhnddc=
-github.com/admpub/webdav/v4 v4.1.0 h1:9dIw/YnYZh+8Hz17KFdNYZwgiOJq82IKVvuUn4pMoT0=
-github.com/admpub/webdav/v4 v4.1.0/go.mod h1:TfiDfeTU8h6z7V+L7A/6eJaQBu08S9cbDR6hFdioRgI=
 github.com/admpub/webdav/v4 v4.1.1 h1:oR2f0y6MDoZUdI29P7XqK032PDgq9iqRe4PwWKnC4fg=
 github.com/admpub/webdav/v4 v4.1.1/go.mod h1:TfiDfeTU8h6z7V+L7A/6eJaQBu08S9cbDR6hFdioRgI=
 github.com/admpub/websocket v1.0.4 h1:OWBoXpczBzFGx8ukD71OWcc2G0O+Y5aO+NAMJMeMTHI=
@@ -376,8 +374,6 @@ github.com/caddy-plugins/ipfilter v1.1.4 h1:IpZHAEEaBx+jeDR9rUnE1GhlBwveXKbA7M8z
 github.com/caddy-plugins/ipfilter v1.1.4/go.mod h1:mJDjmApKMSU0/rs+RAV6gEk9SPI1GQuI5y2XUP/auqs=
 github.com/caddy-plugins/nobots v0.1.1 h1:NvhwMov/2JcxXJhKF4YtUDFAJJtikE3koCLdPxLy/pc=
 github.com/caddy-plugins/nobots v0.1.1/go.mod h1:5bb8aRivVts1WOCdrobZr+Nt9hR1B0tHOcmdkP7Elps=
-github.com/caddy-plugins/webdav v1.2.5 h1:1SL5qCzhdFiYMOBmW+eaBX1urMArewiwL2rmb0vCTzg=
-github.com/caddy-plugins/webdav v1.2.5/go.mod h1:OaSAZA6oV79F62S2FuWQJLGcEjqrWROvS/0AXMz0ORI=
 github.com/caddy-plugins/webdav v1.2.6 h1:IcSun4TjxOulz621LMoinr/o/obK0TsiWHP8c6HZKhk=
 github.com/caddy-plugins/webdav v1.2.6/go.mod h1:vgA99i9ddwhgnEO93/a7Rg23wabZiU8aLRLxI10vWjs=
 github.com/caddyserver/certmagic v0.8.3 h1:Z/F1yFMicXeGBSu/CQI3LNg0ysRZXf6XWpM48ksf978=

@@ -831,7 +831,7 @@ github.com/mattn/go-runewidth
 github.com/mattn/go-sqlite3
 # github.com/matttproud/golang_protobuf_extensions v1.0.1
 github.com/matttproud/golang_protobuf_extensions/pbutil
-# github.com/mholt/certmagic v0.8.3 => github.com/caddyserver/certmagic v0.8.3
+# github.com/mholt/certmagic v0.11.2 => github.com/caddyserver/certmagic v0.8.3
 ## explicit
 github.com/mholt/certmagic
 # github.com/microcosm-cc/bluemonday v1.0.7
