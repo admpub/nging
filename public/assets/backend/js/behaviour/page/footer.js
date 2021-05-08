@@ -27,6 +27,15 @@ $(function(){
 			App.initLeftNav();
 			App.initLeftNavAjax(window.activeURL,'#leftnav');
 			active();
+
+			if($(".cl-toggle").is(':visible')){ // small device
+				$('#leftnav').find('a[data-marknav="left"]').on('click',function(){
+					if(!$('#leftnav').is(':visible')) $(".cl-toggle").trigger('click');
+				});
+				$('.navbar-header > .navbar-toggle').trigger('click');
+				if(!$('#leftnav').is(':visible')) $(".cl-toggle").trigger('click');
+			}
+
 		},'json');
 	});
 });

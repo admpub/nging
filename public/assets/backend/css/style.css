@@ -160,7 +160,7 @@ pre {
 .back-to-top:focus {
   color: #FFF;
 }
-.wd-100p{width:100% !important;}
+.wd-100p{width:100% !important;float: none !important;}
 .w-5,.wd-5{width:10px !important;}
 .w-10,.wd-10{width:10px !important;}
 .w-15,.wd-15{width:10px !important;}
@@ -685,7 +685,6 @@ body.modal-open,
     width: 100%;
     display: block;
     height: auto;
-    min-height: 50px;
     position: relative;
   }
   .page-aside div.fixed,
@@ -716,8 +715,11 @@ body.modal-open,
 .cl-mcont .radio > label{
   line-height:17px !important;
 }
-#cl-wrapper {
+.navbar-fixed-top + #cl-wrapper {
   padding-top: 50px;
+}
+#head-nav.navbar{
+  margin-bottom:0
 }
 /*Vertical Navigation*/
 .cl-sidebar {
@@ -1592,6 +1594,7 @@ body.texture {
   padding: 0;
 }
 .page-aside.app .responsive-nav{display: block;}
+.no-float{float: none !important;}
 .page-aside.email .navbar-toggle,
 .page-aside.app .navbar-toggle {
   background: rgba(0, 0, 0, 0.015);
@@ -5493,6 +5496,7 @@ ul.timeline > li > .date {
   }
   #head-nav .navbar-nav {
     padding: 0 10px;
+    background-color: #2494f2;
   }
   .navbar-header {
     padding: 0 10px;
