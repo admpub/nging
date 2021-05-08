@@ -681,7 +681,7 @@ body.modal-open,
 }
 .sp_results > li{width:100%}
 @media (max-width: 767px) {
-  .page-aside, .page-aside.sm-width {
+  .page-aside, .page-aside.sm-width, .page-aside.xsm-width, .page-aside.xs-width {
     width: 100%;
     display: block;
     height: auto;
