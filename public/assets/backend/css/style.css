@@ -501,13 +501,8 @@ pre {
 }
 .navbar-default .navbar-nav > .open > a,
 .navbar-default .navbar-nav > .open > a:hover,
+.navbar-default .navbar-nav > .open > a:focus,
 .navbar-nav > .open > a:focus {
-  background-color: #36A3FF;
-  color: #FFF;
-}
-.navbar-default .navbar-nav > .open > a,
-.navbar-default .navbar-nav > .open > a:hover,
-.navbar-default .navbar-nav > .open > a:focus {
   background-color: #36A3FF;
   color: #FFF;
 }
@@ -5395,15 +5390,17 @@ ul.timeline > li > .date {
     margin: 0;
   }
   /*dropdown menu*/
-  .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a,
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus,
+  .navbar-default .navbar-nav .open .dropdown-menu > .active > a, 
+  .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus, 
+  .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover,
+  .navbar-nav .dropdown-header {
     color: #FFF;
   }
   .navbar-default .navbar-nav .dropdown-submenu > a:after {
     border-width: 0;
-  }
-  .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
-  .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
-    color: #FFF;
   }
   .navbar-nav .dropdown-menu > li > a:hover,
   .navbar-nav .dropdown-menu > li > a:focus,
@@ -5414,9 +5411,6 @@ ul.timeline > li > .date {
     display: block;
     padding-left: 20px;
   }
-  .navbar-nav .dropdown-header {
-    color: #FFF;
-  }
   .navbar-nav .col-menu-2 > li > ul > li a {
     color: #FFF;
     padding-left: 45px;
@@ -5424,14 +5418,6 @@ ul.timeline > li > .date {
   .navbar-nav .col-menu-3 > li > ul > li a {
     color: #FFF;
     padding-left: 45px;
-  }
-  
-  .navbar-default .navbar-nav > .active > a,
-  .navbar-default .navbar-nav > .active > a:hover,
-  .navbar-nav > .active > a:focus,
-  .navbar-nav > .active > a:active {
-    background: transparent !important;
-    color: #FFF !important;
   }
   .navbar-default .navbar-nav > li > a,
   .navbar-default .navbar-nav > li > a:hover,

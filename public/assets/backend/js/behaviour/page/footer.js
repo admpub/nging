@@ -15,6 +15,10 @@ $(function(){
 				li.addClass('active');
 			}
 			li.siblings('li.active').removeClass('active');
+			if($(".cl-toggle").is(':visible')){ // small device
+				$('.navbar-header > .navbar-toggle').trigger('click');
+				if(!$('#leftnav').is(':visible')) $(".cl-toggle").trigger('click');
+			}
 		};
 		if(ident==$('#topnav').attr('data-project')) return active();
 		$('#topnav').attr('data-project',ident);
@@ -27,15 +31,15 @@ $(function(){
 			App.initLeftNav();
 			App.initLeftNavAjax(window.activeURL,'#leftnav');
 			active();
-
-			if($(".cl-toggle").is(':visible')){ // small device
-				$('#leftnav').find('a[data-marknav="left"]').on('click',function(){
-					if(!$('#leftnav').is(':visible')) $(".cl-toggle").trigger('click');
-				});
-				$('.navbar-header > .navbar-toggle').trigger('click');
-				if(!$('#leftnav').is(':visible')) $(".cl-toggle").trigger('click');
-			}
-
 		},'json');
+	});
+	$('#leftnav').on('click','a[data-marknav="left"]',function(){
+		if($(".cl-toggle").is(':visible')) $(".cl-toggle").trigger('click');
+	});
+	$('#topnav').on('click','a[data-marknav="top"]',function(){
+		if($(".cl-toggle").is(':visible')) {
+			//$('.navbar-header > .navbar-toggle').trigger('click');
+			if($('#leftnav').is(':visible')) $(".cl-toggle").trigger('click');
+		}
 	});
 });
