@@ -4940,11 +4940,7 @@ button::-moz-focus-inner {
 .nano > .pane > .slider {
   width: 100%;
 }
-/* .jqstooltip {
-  padding: 3px 10px 5px 5px;
-  min-height: 25px;
-  min-width: 30px;
-} */
+.jqstooltip{height:auto !important;width:auto !important;}
 .tree .content {
   padding: 0 !important;
 }
@@ -4979,7 +4975,8 @@ button::-moz-focus-inner {
   padding-bottom: 5px;
   color: #555;
 }
-.treeview li a:hover,.treeview li.current a,
+.treeview li > a:hover,
+.treeview li.current > a,
 .treeview li.current > label {
   background: #F9F9F9;
 }
