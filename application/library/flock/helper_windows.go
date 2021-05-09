@@ -20,6 +20,8 @@
 
 package flock
 
+import "os"
+
 func LockEx(f *os.File) error {
 	return nil
 }

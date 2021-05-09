@@ -1,30 +1,30 @@
 {{Strip}}
-{{$pjax := Form "_pjax"}}
+{{- $pjax := Form "_pjax" -}}
 {{if $pjax}}<title>{{Block "title"}}Start{{/Block}} - {{Version}}</title>
-	{{if eq $pjax "#main-container"}}
+	{{- if eq $pjax "#main-container" -}}
 		{{Block "head"}}{{/Block}}
 		{{Block "headEnd"}}{{/Block}}
 		{{Block "bodyNav"}}{{/Block}}
 		<div class="container-fluid" id="pcont">
-			{{if hasAnyBlock "name" "breadcrumb"}}
+			{{- if hasAnyBlock "name" "breadcrumb" -}}
 			<div class="page-head">
-				<h2>{{Block "name"}}{{/Block}}</h2>
+				{{if hasAnyBlock "name"}}<h2>{{Block "name"}}{{/Block}}</h2>{{end}}
 				<ol class="breadcrumb">
 				  {{Block "breadcrumb"}}
 				  <li><a href="{{BackendURL}}/index" data-pjax="#main-container" data-keepjs="true">Home</a></li>
 				  {{/Block}}
 				</ol>
 			</div>
-			{{end}}
+			{{- end -}}
 		    <div class="cl-mcont">{{Block "main"}}{{/Block}}</div>
 		</div><!-- #pcont -->
 		{{Block "footer"}}{{/Block}}
-	{{else if eq $pjax "#pcont"}}
+	{{- else if eq $pjax "#pcont" -}}
 		{{Block "head"}}{{/Block}}
 		{{Block "headEnd"}}{{/Block}}
-		{{if hasAnyBlock "name" "breadcrumb"}}
+		{{- if hasAnyBlock "name" "breadcrumb" -}}
 		<div class="page-head">
-			<h2>{{Block "name"}}{{/Block}}</h2>
+			{{if hasAnyBlock "name"}}<h2>{{Block "name"}}{{/Block}}</h2>{{end}}
 			<ol class="breadcrumb">
 			  {{Block "breadcrumb"}}
 			  <li><a href="{{BackendURL}}/index" data-pjax="#main-container" data-keepjs="true">Home</a></li>
@@ -32,16 +32,16 @@
 			  {{/Block}}
 			</ol>
 		</div>
-		{{end}}
+		{{- end -}}
 		<div class="cl-mcont">{{Block "main"}}{{/Block}}</div>
 		{{Block "footer"}}{{/Block}}
-	{{else}}
+	{{- else -}}
 		{{Block "head"}}{{/Block}}
 		{{Block "headEnd"}}{{/Block}}
 		{{Block "main"}}{{/Block}}
 		{{Block "footer"}}{{/Block}}
-	{{end}}
-{{else}}
+	{{- end -}}
+{{- else -}}
 <!DOCTYPE html>
 <html lang="{{Lang}}">
 <head>
@@ -85,7 +85,7 @@
 		<div class="container-fluid" id="pcont">
 			{{if hasAnyBlock "name" "breadcrumb"}}
 			<div class="page-head">
-				<h2>{{Block "name"}}{{/Block}}</h2>
+				{{if hasAnyBlock "name"}}<h2>{{Block "name"}}{{/Block}}</h2>{{end}}
 				<ol class="breadcrumb">
 				  {{Block "breadcrumb"}}
 				  <li><a href="{{BackendURL}}/index" data-pjax="#main-container" data-keepjs="true">Home</a></li>
@@ -99,10 +99,8 @@
 		</div><!-- #main-container -->
 		</div><!-- .cl-right -->
 	</div><!-- #cl-wrapper -->
-
-<!-- <script src="{{AssetsURL}}/js/require.min.js?t={{BuildTime}}"></script>
-<script src="{{AssetsURL}}/js/main.js?t={{BuildTime}}"></script> -->
-
+{{/*<!-- <script src="{{AssetsURL}}/js/require.min.js?t={{BuildTime}}"></script>
+<script src="{{AssetsURL}}/js/main.js?t={{BuildTime}}"></script> -->*/}}
 <script src="{{AssetsURL}}/js/jquery.js?t={{BuildTime}}"></script>
 <script src="{{AssetsURL}}/js/compatible.min.js?t={{BuildTime}}" type="text/javascript"></script>
 <script src="{{AssetsURL}}/js/modernizr.js?t={{BuildTime}}" type="text/javascript"></script>
@@ -133,5 +131,5 @@
 <script type="text/javascript" async src="{{TrackerURL}}"></script>
 </body>
 </html>
-{{end}}
+{{- end -}}
 {{/Strip}}

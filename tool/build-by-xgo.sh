@@ -146,6 +146,10 @@ case "$1" in
     "darwin_amd64")
         darwin_amd64
         ;;
+    "windows*")
+        windows_386
+        windows_amd64
+        ;;
     "windows_386")
         windows_386
         ;;
@@ -156,6 +160,11 @@ case "$1" in
         open_minify
         all
         ;;
-    *)
+    "")
         all
+        ;;
+    *)
+        echo "Unknown option $1"
+        exit 1
+        ;;
 esac

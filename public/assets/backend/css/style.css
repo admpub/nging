@@ -160,7 +160,7 @@ pre {
 .back-to-top:focus {
   color: #FFF;
 }
-.wd-100p{width:100% !important;}
+.wd-100p{width:100% !important;float: none !important;}
 .w-5,.wd-5{width:10px !important;}
 .w-10,.wd-10{width:10px !important;}
 .w-15,.wd-15{width:10px !important;}
@@ -501,13 +501,8 @@ pre {
 }
 .navbar-default .navbar-nav > .open > a,
 .navbar-default .navbar-nav > .open > a:hover,
+.navbar-default .navbar-nav > .open > a:focus,
 .navbar-nav > .open > a:focus {
-  background-color: #36A3FF;
-  color: #FFF;
-}
-.navbar-default .navbar-nav > .open > a,
-.navbar-default .navbar-nav > .open > a:hover,
-.navbar-default .navbar-nav > .open > a:focus {
   background-color: #36A3FF;
   color: #FFF;
 }
@@ -681,11 +676,10 @@ body.modal-open,
 }
 .sp_results > li{width:100%}
 @media (max-width: 767px) {
-  .page-aside, .page-aside.sm-width {
+  .page-aside, .page-aside.sm-width, .page-aside.xsm-width, .page-aside.xs-width {
     width: 100%;
     display: block;
     height: auto;
-    min-height: 50px;
     position: relative;
   }
   .page-aside div.fixed,
@@ -716,8 +710,11 @@ body.modal-open,
 .cl-mcont .radio > label{
   line-height:17px !important;
 }
-#cl-wrapper {
+.navbar-fixed-top + #cl-wrapper {
   padding-top: 50px;
+}
+#head-nav.navbar{
+  margin-bottom:0
 }
 /*Vertical Navigation*/
 .cl-sidebar {
@@ -1592,6 +1589,7 @@ body.texture {
   padding: 0;
 }
 .page-aside.app .responsive-nav{display: block;}
+.no-float{float: none !important;}
 .page-aside.email .navbar-toggle,
 .page-aside.app .navbar-toggle {
   background: rgba(0, 0, 0, 0.015);
@@ -5392,15 +5390,17 @@ ul.timeline > li > .date {
     margin: 0;
   }
   /*dropdown menu*/
-  .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a,
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus,
+  .navbar-default .navbar-nav .open .dropdown-menu > .active > a, 
+  .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus, 
+  .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover,
+  .navbar-nav .dropdown-header {
     color: #FFF;
   }
   .navbar-default .navbar-nav .dropdown-submenu > a:after {
     border-width: 0;
-  }
-  .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
-  .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
-    color: #FFF;
   }
   .navbar-nav .dropdown-menu > li > a:hover,
   .navbar-nav .dropdown-menu > li > a:focus,
@@ -5411,9 +5411,6 @@ ul.timeline > li > .date {
     display: block;
     padding-left: 20px;
   }
-  .navbar-nav .dropdown-header {
-    color: #FFF;
-  }
   .navbar-nav .col-menu-2 > li > ul > li a {
     color: #FFF;
     padding-left: 45px;
@@ -5421,14 +5418,6 @@ ul.timeline > li > .date {
   .navbar-nav .col-menu-3 > li > ul > li a {
     color: #FFF;
     padding-left: 45px;
-  }
-  
-  .navbar-default .navbar-nav > .active > a,
-  .navbar-default .navbar-nav > .active > a:hover,
-  .navbar-nav > .active > a:focus,
-  .navbar-nav > .active > a:active {
-    background: transparent !important;
-    color: #FFF !important;
   }
   .navbar-default .navbar-nav > li > a,
   .navbar-default .navbar-nav > li > a:hover,
@@ -5493,6 +5482,7 @@ ul.timeline > li > .date {
   }
   #head-nav .navbar-nav {
     padding: 0 10px;
+    background-color: #2494f2;
   }
   .navbar-header {
     padding: 0 10px;
