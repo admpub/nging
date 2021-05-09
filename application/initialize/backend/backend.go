@@ -33,6 +33,8 @@ import (
 	"github.com/webx-top/echo/middleware/session"
 	"github.com/webx-top/echo/subdomains"
 
+	"github.com/arl/statsviz"
+
 	"github.com/admpub/log"
 	"github.com/admpub/nging/application/cmd/event"
 	"github.com/admpub/nging/application/handler"
@@ -200,9 +202,15 @@ func init() {
 			return nil
 		})
 		e.Get(`/favicon.ico`, event.FaviconHandler)
-		i18n.Handler(e,`App.i18n`)
+		i18n.Handler(e, `App.i18n`)
 		if event.Develop {
 			pprof.Wrap(e)
+			mux := http.NewServeMux()
+			_ = statsviz.Register(mux)
+			// Use echo WrapHandler to wrap statsviz ServeMux as echo HandleFunc
+			e.Get("/debug/statsviz/", echo.WrapHandler(mux))
+			// Serve static content for statsviz UI
+			e.Get("/debug/statsviz/*", echo.WrapHandler(mux))
 		}
 		Initialize()
 	})
