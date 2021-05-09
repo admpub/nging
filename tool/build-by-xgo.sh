@@ -156,6 +156,11 @@ case "$1" in
         open_minify
         all
         ;;
-    *)
+    "")
         all
+        ;;
+    *)
+        echo "Unknown option $1"
+        exit 1
+        ;;
 esac
