@@ -146,6 +146,10 @@ case "$1" in
     "darwin_amd64")
         darwin_amd64
         ;;
+    "windows*")
+        windows_386
+        windows_amd64
+        ;;
     "windows_386")
         windows_386
         ;;
