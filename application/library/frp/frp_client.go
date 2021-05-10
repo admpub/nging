@@ -312,7 +312,10 @@ func StartClient(pxyCfgs map[string]config.ProxyConf, visitorCfgs map[string]con
 		go handleSignal(clientService, kcpDoneCh)
 	}
 
-	err = clientService.Run()
+	if err = clientService.Run(); err != nil {
+		return
+	}
+
 	if c.Protocol == "kcp" {
 		<-kcpDoneCh
 	}
