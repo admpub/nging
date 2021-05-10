@@ -298,6 +298,9 @@ github.com/andybalholm/brotli
 github.com/andybalholm/cascadia
 # github.com/apache/thrift v0.14.0
 github.com/apache/thrift/lib/go/thrift
+# github.com/arl/statsviz v0.4.0
+## explicit
+github.com/arl/statsviz
 # github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da
 github.com/armon/go-metrics
 # github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5
