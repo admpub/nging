@@ -31,6 +31,10 @@ func Initialize() (err error) {
 	return
 }
 
+func IsInitialized() bool {
+	return region != nil
+}
+
 func IPInfo(ip string) (info ip2region.IpInfo, err error) {
 	if len(ip) == 0 {
 		return
