@@ -162,14 +162,14 @@ var _chartCPU,_chartNet,_chartNetPacket,_chartTemp,options = {
     lines: {
       show: true,
       lineWidth: 2, 
-      // fill: true,
-      // fillColor: {
-      //   colors: [{
-      //     opacity: 0.25
-      //   }, {
-      //     opacity: 0.25
-      //   }]
-      // } 
+      fill: true,
+      fillColor: {
+        colors: [{
+          opacity: 0.25
+        }, {
+          opacity: 0.25
+        }]
+      } 
     },
     points: {
       show: false
@@ -274,7 +274,6 @@ function getTempData(info) {
       label:k,
     })
   }
-  tempOptions.legend.noColumns=r.length;
   return r;
 }
 function updateTemp(data) {
@@ -285,13 +284,15 @@ function updateTemp(data) {
 }
 function chartTemp(info) {
   var data=getTempData(info);
-  if(tempOptions.legend.noColumns>0){
+  if(data.length>0){
     _chartTemp=$(idTempElem).data('plot');
     if(!_chartTemp) return initTempData(data);
     updateTemp(data);
   }
 }
 function initTempData(data){
+  tempOptions.legend.noColumns=data.length;
+  tempOptions.series.lines.fill=tempOptions.legend.noColumns<=3;
   $(idTempElem+'-Box').removeClass('hidden');
   _chartTemp = $.plot($(idTempElem), data, tempOptions);
   $(idTempElem).data('plot',_chartTemp);
