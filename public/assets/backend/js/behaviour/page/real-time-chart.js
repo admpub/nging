@@ -1,5 +1,5 @@
 (function(){
-var ws,idElem='#CPU-Usage',idNetElem='#Net-Usage',idNetPacket='#NetPacket-Usage';
+var ws,idElem='#CPU-Usage',idNetElem='#Net-Usage',idNetPacket='#NetPacket-Usage',idTempElem='#Temp-Stat';
 function tooltipFormatter(event, post, item){
   return item.series.label + ": " + item.datapoint[1].toFixed(2);
 }
@@ -8,6 +8,9 @@ function tooltipPercentFormatter(event, post, item){
 }
 function tooltipBytesFormatter(event, post, item){
   return item.series.label + ": " + App.formatBytes(item.datapoint[1]);
+}
+function tooltipTempFormatter(event, post, item){
+  return item.series.label + ": " + item.datapoint[1] + "℃";
 }
 function dateFormatter(v,b) {
   var date = new Date(v);
@@ -26,7 +29,8 @@ function percentFormatter(v,b){
 App.plotHover(idElem,tooltipPercentFormatter);
 App.plotHover(idNetElem,tooltipBytesFormatter);
 App.plotHover(idNetPacket,tooltipFormatter);
-var _chartCPU,_chartNet,_chartNetPacket,options = {
+App.plotHover(idTempElem,tooltipTempFormatter);
+var _chartCPU,_chartNet,_chartNetPacket,_chartTemp,options = {
   series: {
     lines: {
       show: true,
@@ -153,6 +157,51 @@ var _chartCPU,_chartNet,_chartNetPacket,options = {
       return dateFormatter(v);
     }
   }
+},tempOptions={
+  series: {
+    lines: {
+      show: true,
+      lineWidth: 2, 
+      // fill: true,
+      // fillColor: {
+      //   colors: [{
+      //     opacity: 0.25
+      //   }, {
+      //     opacity: 0.25
+      //   }]
+      // } 
+    },
+    points: {
+      show: false
+    },
+    shadowSize: 2
+  },
+  legend:{
+    show: true,
+    noColumns: 8,
+    container:$('#Temp-Legend')[0],
+  },
+  grid: {
+    labelMargin: 10,
+    axisMargin: 500,
+    hoverable: true,
+    clickable: true,
+    tickColor: "rgba(0,0,0,0.15)",
+    borderWidth: 0
+  },
+  colors: ["#B450B2", "#4A8CF7", "#52e136"],
+  xaxis: {
+    mode: "time",
+    tickSize: [2, "second"],
+    tickFormatter: function (v, axis) {
+      return dateFormatter(v);
+    }
+  },
+  yaxis: {
+    tickFormatter: function (v, axis) {
+      return v+'℃';
+    }
+  }
 };
 
 // === Net ====
@@ -203,7 +252,7 @@ function updateNetPacket(data) {
   _chartNetPacket.draw();
 }
 function chartNetPacket(info) {
-  data=getNetPacketData(info)
+  var data=getNetPacketData(info)
   _chartNetPacket=$(idNetPacket).data('plot');
   if(!_chartNetPacket) return initNetPacketData(data);
   updateNetPacket(data);
@@ -211,6 +260,36 @@ function chartNetPacket(info) {
 function initNetPacketData(data){
   _chartNetPacket = $.plot($(idNetPacket), data, netPacketOptions);
   $(idNetPacket).data('plot',_chartNetPacket);
+}
+
+// === Temp ===
+function getTempData(info) {
+  var r = [];
+  for(var k in info.Temp){
+    r.push({
+      data:info.Temp[k],
+      //color: '#0f0',
+      label:k,
+    })
+  }
+  tempOptions.legend.noColumns=r.length;
+  return r;
+}
+function updateTemp(data) {
+  _chartTemp.setData(data);
+  // Since the axes don't change, we don't need to call plot.setupGrid()
+  _chartTemp.setupGrid();
+  _chartTemp.draw();
+}
+function chartTemp(info) {
+  var data=getTempData(info)
+  _chartTemp=$(idTempElem).data('plot');
+  if(!_chartTemp) return initTempData(data);
+  updateTemp(data);
+}
+function initTempData(data){
+  _chartTemp = $.plot($(idTempElem), data, tempOptions);
+  $(idTempElem).data('plot',_chartTemp);
 }
 
 // === CPU ====
@@ -232,7 +311,7 @@ function update(data) {
   _chartCPU.draw();
 }
 function chartCPU(info) {
-  data=getData(info)
+  var data=getData(info)
   _chartCPU=$(idElem).data('plot');
   if(!_chartCPU) return initData(data);
   update(data);
@@ -241,7 +320,6 @@ function initData(data){
   _chartCPU = $.plot($(idElem), data, options);
   $(idElem).data('plot',_chartCPU);
 }
-
 function connectWS(onopen){
 	if (ws) {
 		if(onopen!=null)onopen();
@@ -265,6 +343,7 @@ function connectWS(onopen){
     chartCPU(info);
     chartNet(info);
     chartNetPacket(info);
+    chartTemp(info);
 	};
 }
 function tick(){
@@ -288,9 +367,20 @@ function clear(){
     clearInterval(window._interval);
   }
 }
+function resize(){
+  if($('#Temp-Legend').length>0){
+    if($(window).width()>767){
+      $('#Temp-Legend').css('width',$(window).width()-$('.cl-sidebar').width()-90);
+    }else{
+      $('#Temp-Legend').css('width','100%');
+    }
+  }
+}
 $(function(){
   clear();
   tick();
   window._interval=window.setInterval(tick,2000);
+  resize();
+  $(window).on('resize', resize);
 });
 })();

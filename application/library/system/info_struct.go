@@ -37,6 +37,7 @@ type SystemInformation struct {
 	Load       *load.AvgStat                  `json:",omitempty"`
 	Memory     *MemoryInformation             `json:",omitempty"`
 	NetIO      []net.IOCountersStat           `json:",omitempty"`
+	Temp       []host.TemperatureStat         `json:",omitempty"`
 	Go         *RuntimeStatus                 `json:",omitempty"`
 }
 
@@ -47,13 +48,15 @@ type MemoryInformation struct {
 
 type DynamicInformation struct {
 	CPUPercent []float64
-	Load       *load.AvgStat        `json:",omitempty"`
-	Memory     *MemoryInformation   `json:",omitempty"`
-	NetIO      []net.IOCountersStat `json:",omitempty"`
+	Load       *load.AvgStat          `json:",omitempty"`
+	Memory     *MemoryInformation     `json:",omitempty"`
+	NetIO      []net.IOCountersStat   `json:",omitempty"`
+	Temp       []host.TemperatureStat `json:",omitempty"`
 }
 
 func (d *DynamicInformation) Init() *DynamicInformation {
 	d.NetMemoryCPU()
+	d.TemperatureStat()
 	d.Load, _ = load.Avg()
 	return d
 }
@@ -61,6 +64,11 @@ func (d *DynamicInformation) Init() *DynamicInformation {
 func (d *DynamicInformation) NetMemoryCPU() *DynamicInformation {
 	d.MemoryAndCPU()
 	d.NetIO, _ = net.IOCounters(false)
+	return d
+}
+
+func (d *DynamicInformation) TemperatureStat() *DynamicInformation {
+	d.Temp, _ = SensorsTemperatures()
 	return d
 }
 

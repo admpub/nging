@@ -38,10 +38,16 @@
                 <input type="number" class="form-control" name="base[systemStatus][value][AlarmThreshold][Memory]" value="{{$config.systemStatus.ValueObject.AlarmThreshold.Memory}}" placeholder="" min="0" step="0.01">
                 <span class="input-group-addon">%</span>
                 </span>
+                <span class="input-group">
+                <span class="input-group-addon">{{`温度`|T}}</span>
+                <input type="number" class="form-control" name="base[systemStatus][value][AlarmThreshold][Temp]" value="{{$config.systemStatus.ValueObject.AlarmThreshold.Temp}}" placeholder="" min="0" step="0.01">
+                <span class="input-group-addon">℃</span>
+                </span>
+                <div class="help-block">{{`值为0时代表禁用`|T}}</div>
             </div>
             <label class="col-sm-2 control-label">{{"告警邮箱"|T}}</label>
             <div class="col-sm-4">
-                <textarea class="form-control" name="base[systemStatus][value][ReportEmail]">{{$config.systemStatus.ValueObject.ReportEmail}}</textarea>
+                <textarea class="form-control" name="base[systemStatus][value][ReportEmail]" rows="4">{{$config.systemStatus.ValueObject.ReportEmail}}</textarea>
                 <div class="help-block">{{`如有多个邮箱，请一行一个`|T}}</div>
             </div>
         </div>

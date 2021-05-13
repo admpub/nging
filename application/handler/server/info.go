@@ -104,6 +104,8 @@ func Info(ctx echo.Context) error {
 		}
 		info.DiskUsages[k] = usageStat
 	}
+
+	info.Temp, _ = system.SensorsTemperatures()
 	ctx.Data().SetData(info, 1)
 	return ctx.Render(`server/sysinfo`, nil)
 }

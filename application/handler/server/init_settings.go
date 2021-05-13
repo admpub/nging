@@ -17,7 +17,7 @@ var configDefaults = map[string]map[string]*dbschema.NgingConfig{
 			Key:         `systemStatus`,
 			Label:       `系统状态`,
 			Description: ``,
-			Value:       `{"MonitorOn":true,"AlarmOn":false,"AlarmThreshold":{"Memory":90,"CPU":10},"ReportEmail":""}`,
+			Value:       `{"MonitorOn":true,"AlarmOn":false,"AlarmThreshold":{"Memory":90,"CPU":10,"Temp":100},"ReportEmail":""}`,
 			Group:       `base`,
 			Type:        `json`,
 			Sort:        30,

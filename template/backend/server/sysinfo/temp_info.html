@@ -1,0 +1,33 @@
+{{Strip}}
+<div class="block-flat">
+	<div class="header">
+		<h3>{{"温度"|T}}</h3>
+	</div>
+	<div class="content">
+        <div class="table-responsive">
+		<table class="table table-bordered">
+            <thead class="no-border">
+				<tr>
+					<th style="width:200px">{{"设备"|T}}</th>
+					<th style="width:50px" class="text-center">{{"温度"|T}}</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+                {{range $k,$v:=.Temp}}
+				<tr>
+                    <td>{{$v.SensorKey}}</td>
+					<td class="text-right">{{$v.Temperature}}℃</td>
+                    <td>
+						<div class="progress progress-striped active">
+							<div class="progress-bar progress-bar-{{if le $v.Temperature 55.0}}success{{else if gt $v.Temperature 80.0}}danger{{else}}warning{{end}}" style="width:{{$v.Temperature}}%">{{$v.Temperature}}℃</div>
+						</div>
+                    </td>
+				</tr>
+				{{end}}
+			</tbody>
+		</table>
+		</div>
+	</div>
+</div>
+{{/Strip}}

@@ -1,7 +1,10 @@
 {{Strip}}
 {{- if Stored.systemRealtimeStatusIsListening -}}
 <style>
-.flot-block .legend table{width:auto !important;}
+.flot-block .legend table,
+.flot-legend-container > table{width:auto !important;border-top:1px solid #ccc}
+.flot-block .legend table td.legendLabel,
+.flot-legend-container > table td.legendLabel{border-left:0 !important;padding-left:0 !important}
 </style>
 <div class="row flot-block no-margin-top">
 	<div class="col-md-12">
@@ -11,6 +14,20 @@
 			</div>
 			<div class="content">
 				<div id="CPU-Usage" style="height: 300px; padding: 0px; position: relative;"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row flot-block no-margin-top">
+	<div class="col-md-12">
+		<div class="block-flat">
+			<div class="header">
+				<h3>{{"实时温度"|T}}</h3>
+			</div>
+			<div class="content">
+				<div id="Temp-Stat" style="height: 300px; padding: 0px; position: relative;"></div>
+				<div id="Temp-Legend" class="flot-legend-container table-responsive"></div>
 			</div>
 		</div>
 	</div>

@@ -31,6 +31,7 @@ func NewSettings() *Settings {
 type AlarmThreshold struct {
 	Memory float64
 	CPU    float64
+	Temp   float64
 }
 
 type Settings struct {
@@ -46,6 +47,7 @@ func (s *Settings) FromStore(h echo.H) *Settings {
 	v := h.GetStore(`AlarmThreshold`)
 	s.AlarmThreshold.CPU = v.Float64(`CPU`)
 	s.AlarmThreshold.Memory = v.Float64(`Memory`)
+	s.AlarmThreshold.Temp = v.Float64(`Temp`)
 	s.ReportEmail = strings.TrimSpace(h.String(`ReportEmail`))
 	return s
 }

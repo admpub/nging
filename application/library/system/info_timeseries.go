@@ -27,6 +27,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/net"
 	"github.com/webx-top/com"
 	"github.com/webx-top/echo/defaults"
@@ -55,9 +56,10 @@ func RealTimeStatusObject(n ...int) *RealTimeStatus {
 		return realTimeStatus
 	}
 	r := &RealTimeStatus{
-		CPU: TimeSeries{},
-		Mem: TimeSeries{},
-		Net: NewNetIOTimeSeries(),
+		CPU:  TimeSeries{},
+		Mem:  TimeSeries{},
+		Net:  NewNetIOTimeSeries(),
+		Temp: map[string]TimeSeries{},
 	}
 	max := n[0]
 	if max < len(realTimeStatus.CPU) {
@@ -89,6 +91,13 @@ func RealTimeStatusObject(n ...int) *RealTimeStatus {
 		r.Net.PacketsRecv = realTimeStatus.Net.PacketsRecv[len(realTimeStatus.Net.PacketsRecv)-max:]
 	} else {
 		r.Net.PacketsRecv = realTimeStatus.Net.PacketsRecv
+	}
+	for key, value := range realTimeStatus.Temp {
+		if max < len(value) {
+			r.Temp[key] = value[len(value)-max:]
+		} else {
+			r.Temp[key] = value
+		}
 	}
 	return r
 }
@@ -125,11 +134,13 @@ func ListenRealTimeStatus(cfg *Settings) {
 // NewRealTimeStatus 创建实时状态数据结构
 func NewRealTimeStatus(cfg *Settings, interval time.Duration, maxSize int) *RealTimeStatus {
 	r := &RealTimeStatus{
-		max:      maxSize,
-		interval: interval,
-		CPU:      TimeSeries{},
-		Mem:      TimeSeries{},
-		Net:      NewNetIOTimeSeries(),
+		max:        maxSize,
+		interval:   interval,
+		CPU:        TimeSeries{},
+		Mem:        TimeSeries{},
+		Net:        NewNetIOTimeSeries(),
+		Temp:       map[string]TimeSeries{},
+		reportTime: map[string]time.Time{},
 	}
 	return r.SetSettings(cfg, interval, maxSize)
 }
@@ -174,9 +185,10 @@ type RealTimeStatus struct {
 	CPU         TimeSeries
 	Mem         TimeSeries
 	Net         NetIOTimeSeries
+	Temp        map[string]TimeSeries
 	settings    *Settings
 	reportEmail []string
-	reportTime  time.Time
+	reportTime  map[string]time.Time
 	status      string
 	lock        sync.RWMutex
 }
@@ -204,6 +216,10 @@ func (r *RealTimeStatus) Listen(ctx context.Context) *RealTimeStatus {
 			if len(info.NetIO) > 0 {
 				r.NetAdd(info.NetIO[0])
 			}
+			info.TemperatureStat()
+			if len(info.Temp) > 0 {
+				r.TempAdd(info.Temp)
+			}
 			//log.Info(`Collect server status`)
 		}
 	}
@@ -211,7 +227,7 @@ func (r *RealTimeStatus) Listen(ctx context.Context) *RealTimeStatus {
 
 var emptyTime = time.Time{}
 
-func checkAndSendAlarm(r *RealTimeStatus, value float64, typ string) {
+func checkAndSendAlarm(r *RealTimeStatus, value float64, typ string, subType ...string) {
 	if r == nil || r.settings == nil {
 		return
 	}
@@ -224,15 +240,16 @@ func checkAndSendAlarm(r *RealTimeStatus, value float64, typ string) {
 			r.sendAlarm(r.settings.AlarmThreshold.CPU, value, typ)
 			return
 		}
+	case `Temp`:
+		if r.settings.AlarmThreshold.Temp > 0 && r.settings.AlarmThreshold.Temp < value {
+			r.sendAlarm(r.settings.AlarmThreshold.Temp, value, typ, subType...)
+			return
+		}
 	case `Mem`:
 		if r.settings.AlarmThreshold.Memory > 0 && r.settings.AlarmThreshold.Memory < value {
 			r.sendAlarm(r.settings.AlarmThreshold.Memory, value, typ)
 			return
 		}
-	}
-	if !r.reportTime.IsZero() {
-		r.reportTime = emptyTime
-		return
 	}
 }
 
@@ -240,38 +257,76 @@ type alarmContent struct {
 	title    string
 	hostname string
 	typeName string
+	statType string
+	subType  string
 	value    string
 }
 
+func (a *alarmContent) genEmailContent() string {
+	var content string
+	if a.statType == `Temp` {
+		content = a.subType + a.typeName + `: ` + a.value + `摄氏度`
+	} else {
+		content = a.typeName + `使用率: ` + a.value + `%`
+	}
+	return content
+}
+
+func (a *alarmContent) genMarkdownContent() string {
+	var content string
+	if a.statType == `Temp` {
+		content = `**` + a.subType + a.typeName + `**: ` + a.value + `摄氏度`
+	} else {
+		content = `**` + a.typeName + `使用率**: ` + a.value + `%`
+	}
+	return content
+}
+
 func (a *alarmContent) EmailContent(params param.Store) []byte {
-	return com.Str2bytes(`<h1>` + a.title + `</h1><p>主机名: ` + a.hostname + `<br />` + a.typeName + `使用率: ` + a.value + `%<br />时间: ` + time.Now().Format(time.RFC3339) + `<br /></p>`)
+	return com.Str2bytes(`<h1>` + a.title + `</h1><p>主机名: ` + a.hostname + `<br />` + a.genEmailContent() + `<br />时间: ` + time.Now().Format(time.RFC3339) + `<br /></p>`)
 }
 
 func (a *alarmContent) MarkdownContent(params param.Store) []byte {
-	return com.Str2bytes(`### ` + a.title + "\n" + `**主机名**: ` + a.hostname + "\n**" + a.typeName + `使用率**: ` + a.value + `%` + "\n" + `**时间**: ` + time.Now().Format(time.RFC3339) + "\n")
+	return com.Str2bytes(`### ` + a.title + "\n" + `**主机名**: ` + a.hostname + "\n" + a.genMarkdownContent() + "\n" + `**时间**: ` + time.Now().Format(time.RFC3339) + "\n")
 }
 
-func (r *RealTimeStatus) sendAlarm(alarmThreshold, value float64, typ string) *RealTimeStatus {
+func (r *RealTimeStatus) sendAlarm(alarmThreshold, value float64, typ string, subType ...string) *RealTimeStatus {
 	now := time.Now()
-	if r.reportTime.IsZero() || now.Sub(r.reportTime) < time.Minute*5 { // 连续5分钟达到阀值时发邮件告警
+	var reportTime time.Time
+	if r.reportTime != nil {
+		reportTime, _ = r.reportTime[typ]
+	}
+	if !reportTime.IsZero() && now.Sub(reportTime) < time.Minute*5 { // 连续5分钟达到阀值时发邮件告警
 		return nil
 	}
-	var typeName string
+	var typeName, title string
+	hostname, _ := os.Hostname()
 	switch typ {
 	case `CPU`:
 		typeName = `CPU`
+		title = fmt.Sprintf(`【`+hostname+`】`+typeName+`使用率超出%v%%`, alarmThreshold)
+	case `Temp`:
+		if len(subType) < 1 {
+			return nil
+		}
+		typeName = `温度`
+		title = fmt.Sprintf(`【`+hostname+`】`+subType[0]+typeName+`超过%v摄氏度`, alarmThreshold)
 	case `Mem`:
 		typeName = `内存`
+		title = fmt.Sprintf(`【`+hostname+`】`+typeName+`使用率超出%v%%`, alarmThreshold)
 	default:
 		return nil
 	}
-	hostname, _ := os.Hostname()
-	title := fmt.Sprintf(`【`+hostname+`】`+typeName+`使用率超出%v%%`, alarmThreshold)
 	ct := alarmContent{
 		title:    title,
 		hostname: hostname,
 		typeName: typeName,
+		statType: typ,
+		subType:  ``,
 		value:    fmt.Sprint(value),
+	}
+	if len(subType) > 0 {
+		ct.subType = subType[0]
 	}
 	params := param.Store{
 		`title`:   title,
@@ -291,7 +346,13 @@ func (r *RealTimeStatus) sendAlarm(alarmThreshold, value float64, typ string) *R
 	if err != nil {
 		log.Error(err)
 	}
-	r.reportTime = now
+	if r.reportTime == nil {
+		r.reportTime = map[string]time.Time{
+			typ: now,
+		}
+	} else {
+		r.reportTime[typ] = now
+	}
 	return r
 }
 
@@ -326,6 +387,32 @@ func (r *RealTimeStatus) CPUAdd(y float64) *RealTimeStatus {
 		r.CPU = r.CPU[1+l-r.max:]
 	}
 	r.CPU = append(r.CPU, NewXY(y))
+	r.lock.Unlock()
+	return r
+}
+
+func (r *RealTimeStatus) TempAdd(ts []host.TemperatureStat) *RealTimeStatus {
+	if r.max <= 0 {
+		return r
+	}
+	r.lock.Lock()
+	if r.Temp == nil {
+		r.Temp = map[string]TimeSeries{}
+	}
+	for _, temp := range ts {
+		checkAndSendAlarm(r, temp.Temperature, `Temp`, temp.SensorKey)
+		_temp, ok := r.Temp[temp.SensorKey]
+		if !ok {
+			r.Temp[temp.SensorKey] = []XY{NewXY(temp.Temperature)}
+			continue
+		}
+		l := len(_temp)
+		if l >= r.max {
+			_temp = _temp[1+l-r.max:]
+		}
+		_temp = append(_temp, NewXY(temp.Temperature))
+		r.Temp[temp.SensorKey] = _temp
+	}
 	r.lock.Unlock()
 	return r
 }
