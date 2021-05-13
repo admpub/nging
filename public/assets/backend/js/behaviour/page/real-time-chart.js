@@ -285,10 +285,11 @@ function updateTemp(data) {
 }
 function chartTemp(info) {
   var data=getTempData(info);
-  if(tempOptions.legend.noColumns<=0) return;
-  _chartTemp=$(idTempElem).data('plot');
-  if(!_chartTemp) return initTempData(data);
-  updateTemp(data);
+  if(tempOptions.legend.noColumns>0){
+    _chartTemp=$(idTempElem).data('plot');
+    if(!_chartTemp) return initTempData(data);
+    updateTemp(data);
+  }
 }
 function initTempData(data){
   $(idTempElem+'-Box').removeClass('hidden');
@@ -376,7 +377,7 @@ function resize(){
   if($('#Temp-Legend').length>0){
     if($(window).width()>767){
       var w = $(window).width()-$('.cl-sidebar').width()-100;
-      if(w<200) w = 200;
+      if(w<200){w = 200;}
       $('#Temp-Legend').css('width',w);
     }else{
       $('#Temp-Legend').css('width','100%');
