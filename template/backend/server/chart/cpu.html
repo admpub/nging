@@ -1,12 +1,12 @@
 {{Strip}}
 {{- if Stored.systemRealtimeStatusIsListening -}}
-<style>
+<style type="text/css">
 .flot-block .legend table,
 .flot-legend-container > table{width:auto !important;border-top:1px solid #ccc}
 .flot-block .legend table td.legendLabel,
 .flot-legend-container > table td.legendLabel{border-left:0 !important;padding-left:0 !important}
 </style>
-<div class="row flot-block no-margin-top">
+<div class="row flot-block no-margin-top hidden" id="CPU-Usage-Box">
 	<div class="col-md-12">
 		<div class="block-flat">
 			<div class="header">
@@ -19,7 +19,7 @@
 	</div>
 </div>
 
-<div class="row flot-block no-margin-top">
+<div class="row flot-block no-margin-top hidden" id="Temp-Stat-Box">
 	<div class="col-md-12">
 		<div class="block-flat">
 			<div class="header">
@@ -33,7 +33,7 @@
 	</div>
 </div>
 
-<div class="row flot-block no-margin-top">
+<div class="row flot-block no-margin-top hidden" id="Net-Usage-Box">
 	<div class="col-md-12">
 		<div class="block-flat">
 			<div class="header">
@@ -46,7 +46,7 @@
 	</div>
 </div>
 
-<div class="row flot-block no-margin-top">
+<div class="row flot-block no-margin-top hidden" id="NetPacket-Usage-Box">
 	<div class="col-md-12">
 		<div class="block-flat">
 			<div class="header">
