@@ -292,12 +292,22 @@ func (a *alarmContent) MarkdownContent(params param.Store) []byte {
 
 func (r *RealTimeStatus) sendAlarm(alarmThreshold, value float64, typ string, subType ...string) *RealTimeStatus {
 	now := time.Now()
-	var reportTime time.Time
+	var (
+		reportTime time.Time
+		ok         bool
+	)
 	if r.reportTime != nil {
-		reportTime, _ = r.reportTime[typ]
+		reportTime, ok = r.reportTime[typ]
 	}
-	if !reportTime.IsZero() && now.Sub(reportTime) < time.Minute*5 { // 连续5分钟达到阀值时发邮件告警
+	if ok && !reportTime.IsZero() && now.Sub(reportTime) < time.Minute*5 { // 连续5分钟达到阀值时发邮件告警
 		return nil
+	}
+	if r.reportTime == nil {
+		r.reportTime = map[string]time.Time{
+			typ: now,
+		}
+	} else {
+		r.reportTime[typ] = now
 	}
 	var typeName, title string
 	hostname, _ := os.Hostname()
@@ -333,7 +343,9 @@ func (r *RealTimeStatus) sendAlarm(alarmThreshold, value float64, typ string, su
 		`content`: ct,
 	}
 	ctx := defaults.NewMockContext()
-	alert.SendTopic(ctx, `systemStatus`, params)
+	if err := alert.SendTopic(ctx, `systemStatus`, params); err != nil {
+		log.Warn(`alert.SendTopic: `, err)
+	}
 	if len(r.reportEmail) == 0 {
 		return r
 	}
@@ -345,13 +357,6 @@ func (r *RealTimeStatus) sendAlarm(alarmThreshold, value float64, typ string, su
 	err := cron.SendMail(r.reportEmail[0], `administrator`, title, content, cc...)
 	if err != nil {
 		log.Error(err)
-	}
-	if r.reportTime == nil {
-		r.reportTime = map[string]time.Time{
-			typ: now,
-		}
-	} else {
-		r.reportTime[typ] = now
 	}
 	return r
 }
