@@ -327,6 +327,28 @@ function initData(data){
   _chartCPU = $.plot($(idElem), data, options);
   $(idElem).data('plot',_chartCPU);
 }
+function refresh(){
+  if(_chartCPU){
+    _chartCPU.resize();
+    _chartCPU.setupGrid();
+    _chartCPU.draw();
+  }
+  if(_chartTemp){
+    _chartTemp.resize();
+    _chartTemp.setupGrid();
+    _chartTemp.draw();
+  }
+  if(_chartNetPacket){
+    _chartNetPacket.resize();
+    _chartNetPacket.setupGrid();
+    _chartNetPacket.draw();
+  }
+  if(_chartNet){
+    _chartNet.resize();
+    _chartNet.setupGrid();
+    _chartNet.draw();
+  }
+}
 function connectWS(onopen){
 	if (ws) {
 		if(onopen!=null)onopen();
@@ -358,7 +380,9 @@ function tick(){
   //console.log(boxW)
   connectWS(function(){
     var ping = "ping";
-    if(boxW<=360){
+    if(boxW<=260){
+      ping += ":10";
+    }else if(boxW<=360){
       ping += ":20";
     }else if(boxW<=500){
       ping += ":30";
@@ -372,16 +396,21 @@ function tick(){
 function clear(){
   if(typeof(window._interval)!='undefined' && window._interval){
     clearInterval(window._interval);
+    window._interval=null;
   }
 }
+var historyWidth = null;
 function resize(){
   if($('#Temp-Legend').length>0){
-    if($(window).width()>767){
-      var w = $(window).width()-$('.cl-sidebar').width()-100;
-      if(w<200){w = 200;}
-      $('#Temp-Legend').css('width',w);
-    }else{
-      $('#Temp-Legend').css('width','100%');
+    var winW = $(window).width(), sidebarW = $('.cl-sidebar').width(), leftSidebar = Math.abs(winW-sidebarW)>=10;
+    var w = winW-(leftSidebar?sidebarW:0)-85;
+    if(w<200){w = 200;}
+    if(historyWidth==null||historyWidth!=w){
+      historyWidth=w;
+      $('#Temp-Legend').css('width',leftSidebar?w:'100%');
+      var doubleW = (w!='100%'?w:winW)*2;
+      $('canvas.flot-base,canvas.flot-overlay').css('width',w).attr('width',doubleW);
+      refresh();
     }
   }
 }
