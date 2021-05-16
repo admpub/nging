@@ -56,8 +56,10 @@
             version = 'v3.3';  // v3.3.1, v3.3.2
         } else if (/4\.0\.\d+/.test($.fn.modal.Constructor.VERSION)) {
             version = 'v4.0';
-        }else if (/4\.1\.\d+/.test($.fn.modal.Constructor.VERSION)) {
+        } else if (/4\.1\.\d+/.test($.fn.modal.Constructor.VERSION)) {
             version = 'v4.1';
+        } else if (/4\.\d\.\d+/.test($.fn.modal.Constructor.VERSION)) {
+            version = 'v4.x';
         } else {
             version = 'v3.3.4';
         }
@@ -149,6 +151,7 @@
     BootstrapDialogModal.METHODS_TO_OVERRIDE['v3.3.4'] = $.extend({}, BootstrapDialogModal.METHODS_TO_OVERRIDE['v3.3']);
     BootstrapDialogModal.METHODS_TO_OVERRIDE['v4.0'] = $.extend({}, BootstrapDialogModal.METHODS_TO_OVERRIDE['v3.3']);
     BootstrapDialogModal.METHODS_TO_OVERRIDE['v4.1'] = $.extend({}, BootstrapDialogModal.METHODS_TO_OVERRIDE['v3.3']);
+    BootstrapDialogModal.METHODS_TO_OVERRIDE['v4.x'] = $.extend({}, BootstrapDialogModal.METHODS_TO_OVERRIDE['v3.3']);
 
     BootstrapDialogModal.prototype = {
         constructor: BootstrapDialogModal,
@@ -382,17 +385,8 @@
             return this.getModal().get(0);
         }
     };
-    BootstrapDialog.METHODS_TO_OVERRIDE['v4.1'] = {
-        getModalBackdrop: function ($modal) {
-            return $($modal.data('bs.modal')._backdrop);
-        },
-        handleModalBackdropEvent: BootstrapDialog.METHODS_TO_OVERRIDE['v3.1']['handleModalBackdropEvent'],
-        updateZIndex: BootstrapDialog.METHODS_TO_OVERRIDE['v3.1']['updateZIndex'],
-        open: BootstrapDialog.METHODS_TO_OVERRIDE['v3.1']['open'],
-        getModalForBootstrapDialogModal : function () {
-            return this.getModal().get(0);
-        }
-    };
+    BootstrapDialog.METHODS_TO_OVERRIDE['v4.1'] = BootstrapDialog.METHODS_TO_OVERRIDE['v4.0'];
+    BootstrapDialog.METHODS_TO_OVERRIDE['v4.x'] = BootstrapDialog.METHODS_TO_OVERRIDE['v4.1'];
     BootstrapDialog.prototype = {
         constructor: BootstrapDialog,
         initOptions: function (options) {
