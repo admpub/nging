@@ -192,7 +192,7 @@ App.editor.markdown = function (editorElement, uploadUrl, options) {
 		containerId = 'webx-md-' + App.utils.unixtime();
 		container.attr('id', containerId);
 	};
-	var path = BACKEND_URL + '/public/assets/backend/js/editor/markdown/';
+	var path = ASSETS_URL + '/js/editor/markdown/';
 	var defaults = {
 		width: "100%",
 		height: container.height(),
@@ -285,7 +285,7 @@ App.editor.xheditors = function (editorElement, uploadUrl, options) {
 App.editor.xheditor = function (editorElement, uploadUrl, settings) {
 	App.loader.defined(typeof ($.fn.xheditor), 'xheditor');
 	if (!uploadUrl) uploadUrl = $(editorElement).attr('action');
-	var editor, editorRoot = BACKEND_URL + '/public/assets/backend/js/editor/xheditor/';
+	var editor, editorRoot = ASSETS_URL + '/js/editor/xheditor/';
 	if (!uploadUrl) { editor = $(editorElement).xheditor({ 'editorRoot': editorRoot }); } else {
 		if (uploadUrl.indexOf('?') >= 0) {
 			uploadUrl += '&';

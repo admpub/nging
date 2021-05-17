@@ -1719,6 +1719,12 @@ var App = function () {
 				});
 			})
 			if(options.expandFirst) $(elem+' label.tree-toggler:first').trigger('click');
+		},
+		currentURL: function(){
+  			if(typeof(window.IS_BACKEND)!='undefined' && window.IS_BACKEND){
+    			return BACKEND_URL;
+  			}
+  			return FRONTEND_URL;
 		}
 	};
 
