@@ -19,7 +19,7 @@ App.loader.libs.xheditor = ['#editor/xheditor/xheditor.min.js', '#editor/xhedito
 App.loader.libs.ueditor = ['#editor/ueditor/ueditor.config.js', '#editor/ueditor/ueditor.all.min.js'];
 //App.loader.libs.summernote = ['#editor/summernote/summernote.css', '#editor/summernote/summernote.min.js', '#editor/summernote/lang/summernote-' + App.langTag() + '.min.js'];
 //App.loader.libs.summernote_bs4 = ['#editor/summernote/summernote-bs4.css', '#editor/summernote/summernote-bs4.min.js', '#editor/summernote/lang/summernote-' + App.langTag() + '.min.js'];
-App.loader.libs.tinymce = ['#editor/tinymce/tinymce.min.js', '#editor/tinymce/jquery.tinymce.min.js', '#editor/tinymce/langs/' + App.langTag('_') + '.js'];
+App.loader.libs.tinymce = ['#editor/tinymce/custom.css', '#editor/tinymce/tinymce.min.js', '#editor/tinymce/jquery.tinymce.min.js', '#editor/tinymce/langs/' + App.langTag('_') + '.js'];
 App.loader.libs.dialog = ['#dialog/bootstrap-dialog.min.css', '#dialog/bootstrap-dialog.min.js'];
 App.loader.libs.markdownit = ['#markdown/it/markdown-it.min.js', '#markdown/it/plugins/emoji/markdown-it-emoji.min.js'];
 App.loader.libs.codehighlight = ['#markdown/it/plugins/highlight/loader/prettify.js', '#markdown/it/plugins/highlight/loader/run_prettify.js?skin=sons-of-obsidian'];
@@ -565,8 +565,7 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 		}
 	};
 	var imagesUploadHandler = function (blobInfo, success, failure) {
-		var xhr, formData;
-		xhr = new XMLHttpRequest();
+		var xhr = new XMLHttpRequest(), formData = new FormData();
 		xhr.withCredentials = false;
 		xhr.open('POST', uploadUrl);
 		xhr.onload = function () {
@@ -574,7 +573,6 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 				failure('HTTP Error: ' + xhr.status);
 				return;
 			}
-
 			var json = JSON.parse(xhr.responseText);
 			//{"Code":1,"Info":"","Data":{"Url":"a.jpg","Id":"1"}}
 			if (!json || typeof json.Code == 'undefined') {
@@ -585,11 +583,8 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 				failure(json.Info);
 				return;
 			}
-
 			success(json.Data.Url);
 		};
-
-		formData = new FormData();
 		formData.append('filedata', blobInfo.blob(), blobInfo.filename());
 		xhr.send(formData);
 	};
@@ -614,7 +609,26 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 		autosave_retention: "2m",
 		image_advtab: true,
 		templates: [
-			{ title: 'New Table', description: 'creates a new table', content: '<div class="mceTmpl"><table width="98%%" border="0" cellspacing="0" cellpadding="0"><tr><th scope="col"> </th><th scope="col"> </th></tr><tr><td> </td><td> </td></tr></table></div>' }
+			{ 
+				title: 'New Table', 
+				description: 'creates a new table', 
+				content: '<div class="mceTmpl">\
+			<table width="98%" border="0" cellspacing="0" cellpadding="0" class="table table-bordered table-striped">\
+			<thead>\
+				<tr>\
+					<th scope="col"> </th>\
+					<th scope="col"> </th>\
+				</tr>\
+			</thead>\
+			<tbody>\
+				<tr>\
+					<td> </td>\
+					<td> </td>\
+				</tr>\
+			</tbody>\
+			</table>\
+			</div>'
+			}
 		],
 		image_caption: true,
 		relative_urls: false,
@@ -627,7 +641,6 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 			var toTimeHtml = function (date) {
 				return '<time datetime="' + date.toString() + '">' + date.toLocaleString() + '</time>';
 			};
-
 			editor.ui.registry.addButton('customDateButton', {
 				icon: 'insert-time',
 				tooltip: 'Insert Current Date',
@@ -640,8 +653,6 @@ App.editor.tinymce = function (elem, uploadUrl, options, useSimpleToolbar) {
 						buttonApi.setDisabled(eventApi.element.nodeName.toLowerCase() === 'time');
 					};
 					editor.on('NodeChange', editorEventCallback);
-
-					/* onSetup should always return the unbind handlers */
 					return function (buttonApi) {
 						editor.off('NodeChange', editorEventCallback);
 					};

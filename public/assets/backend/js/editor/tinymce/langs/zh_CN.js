@@ -415,5 +415,12 @@ tinymce.addI18n('zh_CN',{
 "Whole words": "\u5168\u5b57\u5339\u914d",
 "Spellcheck": "\u62fc\u5199\u68c0\u67e5",
 "Caption": "\u6807\u9898",
-"Insert template": "\u63d2\u5165\u6a21\u677f"
+"Insert template": "\u63d2\u5165\u6a21\u677f",
+"Alternative description": "替代说明",
+"Line height": "行高",
+"Copy column": "复制列",
+"Cut column": "剪切列",
+"Paste column before": "粘贴列到前面",
+"Paste column after": "粘贴列到后面",
+"Insert current date": "插入当前日期",
 });
