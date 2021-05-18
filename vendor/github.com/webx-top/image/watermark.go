@@ -1,13 +1,13 @@
 package image
 
 import (
+	"fmt"
 	"image"
 	"image/draw"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
 	"io"
-	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -48,14 +48,15 @@ type Watermark struct {
 	padding int         // 水印留的边白
 	pos     Pos         // 水印的位置
 	retry   int
+	debug   bool
 }
 
-func NewWatermarkData(f multipart.File) *WatermarkData {
-	return &WatermarkData{File: f, Time: time.Now()}
+func NewWatermarkData(f []byte) *WatermarkData {
+	return &WatermarkData{Data: f, Time: time.Now()}
 }
 
 type WatermarkData struct {
-	File multipart.File
+	Data []byte
 	Time time.Time
 }
 
@@ -138,14 +139,14 @@ func (w *Watermark) IsAllowExt(ext string) bool {
 }
 
 // MarkFile 给指定的文件打上水印
-func (w *Watermark) MarkFile(path string) error {
+func (w *Watermark) MarkFile(path string, dest ...string) error {
 	file, err := os.OpenFile(path, os.O_RDWR, os.ModePerm)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
-	return w.Mark(file, filepath.Ext(path))
+	return w.Mark(file, filepath.Ext(path), dest...)
 }
 
 func GetContentTypeByContent(buffer []byte) string {
@@ -184,7 +185,7 @@ func IsFormatError(err error) bool {
 }
 
 // Mark 将水印写入src中，由ext确定当前图片的类型。
-func (w *Watermark) Mark(src io.ReadWriteSeeker, ext string) error {
+func (w *Watermark) Mark(src io.ReadWriteSeeker, ext string, dest ...string) error {
 	ext = strings.ToLower(ext)
 	var srcImg image.Image
 	var err error
@@ -223,6 +224,9 @@ func (w *Watermark) Mark(src io.ReadWriteSeeker, ext string) error {
 	srcw := srcImg.Bounds().Dx()
 	srch := srcImg.Bounds().Dy()
 	if srcw/w.image.Bounds().Dx() < 3 || srch/w.image.Bounds().Dy() < 3 {
+		if w.debug {
+			fmt.Println(`[skip] image is too small: `, fmt.Sprintf("(watermark:%dx%d\t=>\tsrc-image:%dx%d)", w.image.Bounds().Dx(), w.image.Bounds().Dy(), srcw, srch))
+		}
 		return err
 	}
 	switch w.pos {
@@ -251,12 +255,21 @@ func (w *Watermark) Mark(src io.ReadWriteSeeker, ext string) error {
 	}
 
 	dstImg := image.NewNRGBA64(srcImg.Bounds())
-	draw.Draw(dstImg, dstImg.Bounds(), srcImg, image.ZP, draw.Src)
+	draw.Draw(dstImg, dstImg.Bounds(), srcImg, image.Point{}, draw.Src)
 	draw.Draw(dstImg, dstImg.Bounds(), w.image, point, draw.Over)
-
-	_, err = src.Seek(0, 0)
-	if err != nil {
-		return err
+	if len(dest) > 0 && len(dest[0]) > 0 {
+		var file *os.File
+		file, err = os.Create(dest[0])
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+		src = file
+	} else {
+		_, err = src.Seek(0, 0)
+		if err != nil {
+			return err
+		}
 	}
 	switch ext {
 	case ".jpg", ".jpeg":

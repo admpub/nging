@@ -1150,7 +1150,7 @@ github.com/webx-top/echo/testing
 github.com/webx-top/echo/testing/test
 # github.com/webx-top/echo-prometheus v1.0.2
 github.com/webx-top/echo-prometheus
-# github.com/webx-top/image v0.0.7
+# github.com/webx-top/image v0.0.8
 ## explicit
 github.com/webx-top/image
 # github.com/webx-top/pagination v0.1.0

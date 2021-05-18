@@ -139,7 +139,7 @@ require (
 	github.com/webx-top/com v0.2.0
 	github.com/webx-top/db v1.2.0
 	github.com/webx-top/echo v2.12.0+incompatible
-	github.com/webx-top/image v0.0.7
+	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.0
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect
 	gocloud.dev v0.22.0
