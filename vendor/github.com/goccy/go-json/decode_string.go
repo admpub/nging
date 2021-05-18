@@ -91,6 +91,48 @@ func unicodeToRune(code []byte) rune {
 	return r
 }
 
+func decodeUnicodeRune(s *stream) (rune, int64, error) {
+	const defaultOffset = 5
+	const surrogateOffset = 11
+
+	if s.cursor+defaultOffset >= s.length {
+		if !s.read() {
+			return rune(0), 0, errInvalidCharacter(s.char(), "escaped string", s.totalOffset())
+		}
+	}
+
+	r := unicodeToRune(s.buf[s.cursor+1 : s.cursor+defaultOffset])
+	if utf16.IsSurrogate(r) {
+		if s.cursor+surrogateOffset >= s.length {
+			s.read()
+		}
+		if s.cursor+surrogateOffset >= s.length || s.buf[s.cursor+defaultOffset] != '\\' || s.buf[s.cursor+defaultOffset+1] != 'u' {
+			return unicode.ReplacementChar, defaultOffset, nil
+		}
+		r2 := unicodeToRune(s.buf[s.cursor+defaultOffset+2 : s.cursor+surrogateOffset])
+		if r := utf16.DecodeRune(r, r2); r != unicode.ReplacementChar {
+			return r, surrogateOffset, nil
+		}
+	}
+	return r, defaultOffset, nil
+}
+
+func decodeUnicode(s *stream) error {
+	const backSlashAndULen = 2 // length of \u
+
+	r, offset, err := decodeUnicodeRune(s)
+	if err != nil {
+		return err
+	}
+	unicode := []byte(string(r))
+	unicodeLen := int64(len(unicode))
+	s.buf = append(append(s.buf[:s.cursor-1], unicode...), s.buf[s.cursor+offset:]...)
+	unicodeOrgLen := offset - 1
+	s.length = s.length - (backSlashAndULen + (unicodeOrgLen - unicodeLen))
+	s.cursor = s.cursor - backSlashAndULen + unicodeLen
+	return nil
+}
+
 func decodeEscapeString(s *stream) error {
 	s.cursor++
 RETRY:
@@ -112,37 +154,7 @@ RETRY:
 	case 't':
 		s.buf[s.cursor] = '\t'
 	case 'u':
-		if s.cursor+5 >= s.length {
-			if !s.read() {
-				return errInvalidCharacter(s.char(), "escaped string", s.totalOffset())
-			}
-		}
-		r := unicodeToRune(s.buf[s.cursor+1 : s.cursor+5])
-		if utf16.IsSurrogate(r) {
-			if s.cursor+11 >= s.length || s.buf[s.cursor+5] != '\\' || s.buf[s.cursor+6] != 'u' {
-				r = unicode.ReplacementChar
-				unicode := []byte(string(r))
-				s.buf = append(append(s.buf[:s.cursor-1], unicode...), s.buf[s.cursor+5:]...)
-				s.cursor = s.cursor - 2 + int64(len(unicode))
-				return nil
-			}
-			r2 := unicodeToRune(s.buf[s.cursor+7 : s.cursor+11])
-			if r := utf16.DecodeRune(r, r2); r != unicode.ReplacementChar {
-				// valid surrogate pair
-				unicode := []byte(string(r))
-				s.buf = append(append(s.buf[:s.cursor-1], unicode...), s.buf[s.cursor+11:]...)
-				s.cursor = s.cursor - 2 + int64(len(unicode))
-			} else {
-				unicode := []byte(string(r))
-				s.buf = append(append(s.buf[:s.cursor-1], unicode...), s.buf[s.cursor+5:]...)
-				s.cursor = s.cursor - 2 + int64(len(unicode))
-			}
-		} else {
-			unicode := []byte(string(r))
-			s.buf = append(append(s.buf[:s.cursor-1], unicode...), s.buf[s.cursor+5:]...)
-			s.cursor = s.cursor - 2 + int64(len(unicode))
-		}
-		return nil
+		return decodeUnicode(s)
 	case nul:
 		if !s.read() {
 			return errInvalidCharacter(s.char(), "escaped string", s.totalOffset())
@@ -152,6 +164,7 @@ RETRY:
 		return errUnexpectedEndOfJSON("string", s.totalOffset())
 	}
 	s.buf = append(s.buf[:s.cursor-1], s.buf[s.cursor:]...)
+	s.length--
 	s.cursor--
 	return nil
 }
@@ -200,6 +213,7 @@ func stringBytes(s *stream) ([]byte, error) {
 			s.buf = append(append(append([]byte{}, s.buf[:cursor]...), runeErrBytes...), s.buf[cursor+1:]...)
 			_, _, p = s.stat()
 			cursor += runeErrBytesLen
+			s.length += runeErrBytesLen
 			continue
 		case nul:
 			s.cursor = cursor
@@ -225,34 +239,13 @@ func stringBytes(s *stream) ([]byte, error) {
 				_, _, p = s.stat()
 			}
 			cursor += int64(len(b))
+			s.length += int64(len(b))
 			continue
 		}
 		cursor++
 	}
 ERROR:
 	return nil, errUnexpectedEndOfJSON("string", s.totalOffset())
-}
-
-func nullBytes(s *stream) error {
-	if s.cursor+3 >= s.length {
-		if !s.read() {
-			return errInvalidCharacter(s.char(), "null", s.totalOffset())
-		}
-	}
-	s.cursor++
-	if s.char() != 'u' {
-		return errInvalidCharacter(s.char(), "null", s.totalOffset())
-	}
-	s.cursor++
-	if s.char() != 'l' {
-		return errInvalidCharacter(s.char(), "null", s.totalOffset())
-	}
-	s.cursor++
-	if s.char() != 'l' {
-		return errInvalidCharacter(s.char(), "null", s.totalOffset())
-	}
-	s.cursor++
-	return nil
 }
 
 func (d *stringDecoder) decodeStreamByte(s *stream) ([]byte, error) {

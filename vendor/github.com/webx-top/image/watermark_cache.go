@@ -2,7 +2,6 @@ package image
 
 import (
 	"io/ioutil"
-	"mime/multipart"
 	"sync"
 
 	"github.com/admpub/errors"
@@ -47,7 +46,7 @@ func ClearCachedWatermarkFileData() {
 		cachedWatermarkFileData.Delete(key)
 		return true
 	})
-	cachedWatermarkFileIndex = cachedWatermarkFileIndex[0:0]
+	cachedWatermarkFileIndex = []string{}
 }
 
 func StoreCachedWatermarkFileData(key string, value interface{}) {
@@ -67,19 +66,19 @@ func GetRemoteWatermarkFileData(fileURL string) (FileReader, error) {
 	value, ok := LoadCachedWatermarkFileData(fileURL)
 	if ok {
 		if f, y := value.(*WatermarkData); y {
-			return f.File, nil
+			return Bytes2file(f.Data), nil
 		}
 	}
-	file, err := ReadRemoteWatermarkFile(fileURL)
+	b, err := ReadRemoteWatermarkFile(fileURL)
 	if err != nil {
-		return file, err
+		return nil, err
 	}
-	StoreCachedWatermarkFileData(fileURL, NewWatermarkData(file))
-	return file, err
+	StoreCachedWatermarkFileData(fileURL, NewWatermarkData(b))
+	return Bytes2file(b), err
 }
 
 // ReadRemoteWatermarkFile 读取远程水印图片文件
-func ReadRemoteWatermarkFile(fileURL string) (multipart.File, error) {
+func ReadRemoteWatermarkFile(fileURL string) ([]byte, error) {
 	file, err := godl.Open(fileURL, DefaultWatermarkFileDownloadOptions)
 	if err != nil {
 		return nil, errors.WithMessage(err, fileURL)
@@ -89,5 +88,5 @@ func ReadRemoteWatermarkFile(fileURL string) (multipart.File, error) {
 	if err != nil {
 		return nil, errors.WithMessage(err, fileURL)
 	}
-	return Bytes2file(b), err
+	return b, err
 }

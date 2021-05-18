@@ -13,14 +13,9 @@ Fast JSON encoder/decoder compatible with encoding/json for Go
 ```
 * version ( expected release date )
 
-* v0.4.x
+* v0.5.0
  |
- | implement all features that exist in encoding/json and fix bugs and stabilize.
- |
- v
-* v0.5.0 ( 2021/04 Mid )
- |
- | refactor all sources for maintainability
+ | refactor all sources for maintainability and improve performance
  |
  v
 * v0.6.0 ( 2021/05 Mid )
@@ -34,7 +29,6 @@ Fast JSON encoder/decoder compatible with encoding/json for Go
 We are accepting requests for features that will be implemented between v0.6.0 and v.1.0.0.
 If you have the API you need, please submit your issue [here](https://github.com/goccy/go-json/issues).
 For example, I'm thinking of supporting `context.Context` of `json.Marshaler` and decoding using JSON Path.
-
 
 # Installation
 
@@ -461,7 +455,7 @@ You can think of this as a Bitmap with a height of `256` and a width of the maxi
 In other words, it can be represented by the following type .
 
 ```go
-[maxFieldKeyLength][256]int8`
+[maxFieldKeyLength][256]int8
 ```
 
 When decoding a field character, check whether the corresponding character exists by referring to the pre-built bitmap like the following.
@@ -509,6 +503,10 @@ Regarding the story of go-json, there are the following articles in Japanese onl
 
 - https://speakerdeck.com/goccy/zui-su-falsejsonraiburariwoqiu-mete
 - https://engineering.mercari.com/blog/entry/1599563768-081104c850/
+
+# Looking for Sponsors
+
+I'm looking for sponsors this library. This library is being developed as a personal project in my spare time. If you want a quick response or problem resolution when using this library in your project, please register as a [sponsor](https://github.com/sponsors/goccy). I will cooperate as much as possible. Of course, this library is developed as an MIT license, so you can use it freely for free.
 
 # License
 

@@ -23,7 +23,7 @@ require (
 	github.com/admpub/dgoogauth v0.0.0-20170926052827-752650e076f2
 	github.com/admpub/email v2.3.1+incompatible
 	github.com/admpub/errors v0.8.2
-	github.com/admpub/events v0.0.0-20190913050400-383beb0843c6
+	github.com/admpub/events v1.2.0
 	github.com/admpub/fasthttp v0.0.1 // indirect
 	github.com/admpub/frp v0.36.6
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
@@ -60,7 +60,6 @@ require (
 	github.com/admpub/phantomjs v0.0.0-20180924162111-8a5af756140e
 	github.com/admpub/qrcode v0.0.2
 	github.com/admpub/randomize v0.0.2 // indirect
-	github.com/admpub/realip v0.0.0-20210421084339-374cf5df122d // indirect
 	github.com/admpub/regexp2 v1.1.7
 	github.com/admpub/resty/v2 v2.5.1
 	github.com/admpub/securecookie v1.1.2
@@ -134,17 +133,17 @@ require (
 	github.com/tklauser/go-sysconf v0.3.4 // indirect
 	github.com/webx-top/captcha v0.0.1
 	github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f // indirect
-	github.com/webx-top/client v0.2.5
+	github.com/webx-top/client v0.2.6
 	github.com/webx-top/codec v0.0.1
 	github.com/webx-top/com v0.2.0
 	github.com/webx-top/db v1.2.0
 	github.com/webx-top/echo v2.12.0+incompatible
-	github.com/webx-top/image v0.0.7
+	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.0
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect
 	gocloud.dev v0.22.0
 	goftp.io/server/v2 v2.0.0
-	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b
+	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
 	google.golang.org/grpc/examples v0.0.0-20210415220803-1a870aec2ff9 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect

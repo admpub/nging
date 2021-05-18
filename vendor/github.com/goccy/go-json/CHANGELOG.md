@@ -1,3 +1,44 @@
+# v0.5.0 - 2021/5/9
+
+### Supports using omitempty and string tags at the same time ( #216 )
+
+### Fix decoder
+
+* Fix stream decoder for unicode char ( #215 )
+* Fix decoding of slice element ( #219 )
+* Fix calculating of buffer length for stream decoder ( #220 )
+
+### Refactor
+
+* replace skipWhiteSpace goto by loop ( #212 )
+
+# v0.4.14 - 2021/5/4
+
+### Benchmark
+
+* Add valyala/fastjson to benchmark ( #193 )
+* Add benchmark task for CI ( #211 )
+
+### Fix decoder
+
+* Fix decoding of slice with unmarshal json type ( #198 )
+* Fix decoding of null value for interface type that does not implement Unmarshaler ( #205 )
+* Fix decoding of null value to []byte by json.Unmarshal ( #206 )
+* Fix decoding of backslash char at the end of string ( #207 )
+* Fix stream decoder for null/true/false value ( #208 )
+* Fix stream decoder for slow reader ( #211 )
+
+### Performance
+
+* If cap of slice is enough, reuse slice data for compatibility with encoding/json ( #200 )
+
+# v0.4.13 - 2021/4/20
+
+### Fix json.Compact and json.Indent
+
+* Support validation the input buffer for json.Compact and json.Indent ( #189 )
+* Optimize json.Compact and json.Indent ( improve memory footprint ) ( #190 )
+
 # v0.4.12 - 2021/4/15
 
 ### Fix encoder

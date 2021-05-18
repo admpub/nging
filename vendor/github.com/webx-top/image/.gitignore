@@ -12,3 +12,5 @@
 *.out
 go.mod
 go.sum
+src_marked*
+src.jpeg.webp
