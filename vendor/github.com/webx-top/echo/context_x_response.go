@@ -192,7 +192,9 @@ func (c *xContext) File(file string, fs ...http.FileSystem) (err error) {
 		return ErrNotFound
 	}
 	defer func() {
-		f.Close()
+		if f != nil {
+			f.Close()
+		}
 	}()
 	fi, err := f.Stat()
 	if err != nil {
