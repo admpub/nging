@@ -25,10 +25,12 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/middleware"
 	"github.com/webx-top/image"
 
+	"github.com/admpub/log"
 	"github.com/admpub/nging/application/cmd/event"
 	"github.com/admpub/nging/application/initialize/backend"
 	"github.com/admpub/nging/application/registry/upload/helper"
@@ -48,6 +50,9 @@ func Initialize() {
 		StaticOptions.Root = backend.AssetsDir
 	}
 	event.StaticMW = middleware.Static(StaticOptions)
+	if !com.FileExists(event.FaviconPath) {
+		log.Error(`not found favicon file: ` + event.FaviconPath)
+	}
 	event.FaviconHandler = func(c echo.Context) error {
 		return c.File(event.FaviconPath)
 	}
