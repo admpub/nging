@@ -66,6 +66,17 @@ func main() {
 }
 ```
 
+### Gzip middleware
+
+A middleware skipper can be passed to avoid gzip `/metrics` URL:
+
+```go
+e.Use(middleware.GzipWithConfig(middleware.GzipConfig{
+  Skipper: func(c echo.Context) bool {
+    return c.Path() == "/metrics"
+  },
+}))
+```
 
 ## Example output for metric route
 

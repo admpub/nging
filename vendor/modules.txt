@@ -57,7 +57,7 @@ github.com/admpub/events/emitter
 github.com/admpub/fasthttp
 github.com/admpub/fasthttp/fasthttputil
 github.com/admpub/fasthttp/stackless
-# github.com/admpub/frp v0.36.6
+# github.com/admpub/frp v0.36.7
 ## explicit
 github.com/admpub/frp/assets
 github.com/admpub/frp/assets/frpc/statik
@@ -641,7 +641,7 @@ github.com/goccy/go-json/internal/errors
 github.com/goccy/go-json/internal/runtime
 # github.com/gofrs/uuid v3.2.0+incompatible
 github.com/gofrs/uuid
-# github.com/gogo/protobuf v1.3.1
+# github.com/gogo/protobuf v1.3.2
 github.com/gogo/protobuf/proto
 # github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 github.com/golang/freetype
@@ -651,7 +651,7 @@ github.com/golang/freetype/truetype
 github.com/golang/glog
 # github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e
 github.com/golang/groupcache/lru
-# github.com/golang/protobuf v1.5.0
+# github.com/golang/protobuf v1.5.2
 github.com/golang/protobuf/proto
 github.com/golang/protobuf/ptypes
 github.com/golang/protobuf/ptypes/any
@@ -731,9 +731,9 @@ github.com/kardianos/osext
 ## explicit
 # github.com/kavu/go_reuseport v1.5.0
 github.com/kavu/go_reuseport
-# github.com/kisielk/errcheck v1.4.0
+# github.com/kisielk/errcheck v1.5.0
 github.com/kisielk/errcheck
-github.com/kisielk/errcheck/internal/errcheck
+github.com/kisielk/errcheck/errcheck
 # github.com/klauspost/compress v1.11.12
 ## explicit
 github.com/klauspost/compress/flate
@@ -920,18 +920,17 @@ github.com/pmezard/go-difflib/difflib
 # github.com/pquerna/cachecontrol v0.0.0-20180517163645-1555304b9b35
 github.com/pquerna/cachecontrol
 github.com/pquerna/cachecontrol/cacheobject
-# github.com/prometheus/client_golang v1.8.0
-## explicit
+# github.com/prometheus/client_golang v1.10.0
 github.com/prometheus/client_golang/prometheus
 github.com/prometheus/client_golang/prometheus/internal
 github.com/prometheus/client_golang/prometheus/promhttp
 # github.com/prometheus/client_model v0.2.0
 github.com/prometheus/client_model/go
-# github.com/prometheus/common v0.14.0
+# github.com/prometheus/common v0.20.0
 github.com/prometheus/common/expfmt
 github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg
 github.com/prometheus/common/model
-# github.com/prometheus/procfs v0.2.0
+# github.com/prometheus/procfs v0.6.0
 github.com/prometheus/procfs
 github.com/prometheus/procfs/internal/fs
 github.com/prometheus/procfs/internal/util
@@ -1147,7 +1146,7 @@ github.com/webx-top/echo/param
 github.com/webx-top/echo/subdomains
 github.com/webx-top/echo/testing
 github.com/webx-top/echo/testing/test
-# github.com/webx-top/echo-prometheus v1.0.2
+# github.com/webx-top/echo-prometheus v1.0.3
 github.com/webx-top/echo-prometheus
 # github.com/webx-top/image v0.0.8
 ## explicit
@@ -1298,11 +1297,11 @@ golang.org/x/net/trace
 golang.org/x/net/webdav
 golang.org/x/net/webdav/internal/xml
 golang.org/x/net/websocket
-# golang.org/x/oauth2 v0.0.0-20201203001011-0b49973bad19
+# golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c
 golang.org/x/oauth2
 golang.org/x/oauth2/clientcredentials
 golang.org/x/oauth2/internal
-# golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9
+# golang.org/x/sync v0.0.0-20201207232520-09787c993a3a
 golang.org/x/sync/singleflight
 # golang.org/x/sys v0.0.0-20210514084401-e8d321eab015
 golang.org/x/sys/cpu
@@ -1336,9 +1335,9 @@ golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
-# golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e
+# golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba
 golang.org/x/time/rate
-# golang.org/x/tools v0.0.0-20201203202102-a1a1cbeaa516
+# golang.org/x/tools v0.0.0-20210106214847-113979e3529a
 golang.org/x/tools/go/ast/astutil
 golang.org/x/tools/go/gcexportdata
 golang.org/x/tools/go/internal/gcimporter
@@ -1410,7 +1409,7 @@ google.golang.org/grpc/status
 google.golang.org/grpc/tap
 # google.golang.org/grpc/examples v0.0.0-20210415220803-1a870aec2ff9
 ## explicit
-# google.golang.org/protobuf v1.26.0-rc.1 => github.com/protocolbuffers/protobuf-go v1.26.0
+# google.golang.org/protobuf v1.26.0 => github.com/protocolbuffers/protobuf-go v1.26.0
 google.golang.org/protobuf/encoding/prototext
 google.golang.org/protobuf/encoding/protowire
 google.golang.org/protobuf/internal/descfmt
@@ -1459,7 +1458,6 @@ gopkg.in/mgo.v2/internal/scram
 ## explicit
 gopkg.in/natefinch/lumberjack.v2
 # gopkg.in/square/go-jose.v2 v2.5.1
-## explicit
 gopkg.in/square/go-jose.v2
 gopkg.in/square/go-jose.v2/cipher
 gopkg.in/square/go-jose.v2/json

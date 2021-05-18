@@ -25,7 +25,7 @@ require (
 	github.com/admpub/errors v0.8.2
 	github.com/admpub/events v1.2.0
 	github.com/admpub/fasthttp v0.0.1 // indirect
-	github.com/admpub/frp v0.36.6
+	github.com/admpub/frp v0.36.7
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
 	github.com/admpub/go-download/v2 v2.1.6
 	github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
@@ -115,7 +115,6 @@ require (
 	github.com/minio/minio-go v6.0.14+incompatible
 	github.com/oschwald/maxminddb-golang v1.7.0 // indirect
 	github.com/pkg/sftp v1.13.0
-	github.com/prometheus/client_golang v1.8.0 // indirect
 	github.com/russross/blackfriday v1.6.0
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
 	github.com/shirou/gopsutil v3.21.4+incompatible
@@ -149,5 +148,4 @@ require (
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
-	gopkg.in/square/go-jose.v2 v2.5.1 // indirect
 )
