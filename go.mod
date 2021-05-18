@@ -138,7 +138,7 @@ require (
 	github.com/webx-top/codec v0.0.1
 	github.com/webx-top/com v0.2.0
 	github.com/webx-top/db v1.2.0
-	github.com/webx-top/echo v2.12.0+incompatible
+	github.com/webx-top/echo v2.12.2+incompatible
 	github.com/webx-top/image v0.0.7
 	github.com/webx-top/pagination v0.1.0
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect
