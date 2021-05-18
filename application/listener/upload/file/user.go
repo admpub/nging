@@ -64,6 +64,7 @@ func getConfigEventAttrs(confM *dbschema.NgingConfig) *listener.Property {
 	case `html`, `json`:
 		property.SetEmbedded(true)
 	case `image`, `video`, `audio`, `file`:
+		property.SetEmbedded(false)
 	case `list`:
 		property.SetSeperator(`,`)
 	default:
