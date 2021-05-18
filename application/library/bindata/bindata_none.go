@@ -48,9 +48,8 @@ func Initialize() {
 		StaticOptions.Root = backend.AssetsDir
 	}
 	event.StaticMW = middleware.Static(StaticOptions)
-	faviconPath := filepath.Join(echo.Wd(), event.FaviconPath)
 	event.FaviconHandler = func(c echo.Context) error {
-		return c.File(faviconPath)
+		return c.File(event.FaviconPath)
 	}
 	image.WatermarkOpen = func(file string) (image.FileReader, error) {
 		f, err := image.DefaultHTTPSystemOpen(file)

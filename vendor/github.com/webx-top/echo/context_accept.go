@@ -1,41 +1,38 @@
 package echo
 
 import (
+	"strconv"
 	"strings"
-
-	"github.com/webx-top/echo/param"
 )
 
-var (
+const (
 	acceptFlagComma      = ','
 	acceptFlagSemicolon  = ';'
 	acceptFlagSlash      = '/'
 	acceptFlagPlus       = '+'
 	acceptFlagDot        = '.'
 	acceptFlagWhitespace = ' '
-	acceptFlagEqual      = '='
 )
 
 func NewAccepts(accept string) *Accepts {
-	a := &Accepts{Raw: accept}
-	return a
+	return &Accepts{Raw: accept}
 }
 
 type Accepts struct {
-	Raw    string
-	Type   []*Accept
-	Params param.StringMap
+	Raw     string
+	Accepts []*AcceptQuality
 }
 
 func (a *Accepts) Simple(n int) *Accepts {
 	accept := strings.SplitN(a.Raw, `;`, 2)[0]
 	accepts := strings.SplitN(accept, `,`, n)
-	a.Type = make([]*Accept, len(accepts))
+	t := &AcceptQuality{Quality: 1, Type: make([]*Accept, len(accepts))}
+	a.Accepts = []*AcceptQuality{t}
 	for k, r := range accepts {
 		c := NewAccept()
 		c.Raw = strings.TrimSpace(r)
 		c.Mime = c.Raw
-		a.Type[k] = c
+		t.Type[k] = c
 	}
 	return a
 }
@@ -44,13 +41,16 @@ func (a *Accepts) Advance() *Accepts {
 	var (
 		r        []rune
 		c        = NewAccept()
+		types    []*Accept
 		isVendor bool
 		subtype  []rune
 		rootype  []rune
+		quality  []rune
 		stared   bool
+		foundSem bool
 	)
 	cleanUp := func() {
-		if c == nil {
+		if c == nil || len(c.Type) == 0 || len(r) == 0 {
 			return
 		}
 		c.Subtype = append(c.Subtype, string(subtype))
@@ -58,17 +58,44 @@ func (a *Accepts) Advance() *Accepts {
 		c.Raw = string(rootype)
 		isVendor = false
 		stared = false
-		a.Type = append(a.Type, c)
+		types = append(types, c)
 		c = NewAccept()
 		r = []rune{}
 		subtype = []rune{}
 		rootype = []rune{}
+		if len(quality) > 0 {
+			quality = []rune{}
+		}
+	}
+	combine := func() {
+		if len(types) == 0 {
+			return
+		}
+		var q float64
+		if len(quality) > 0 {
+			q, _ = strconv.ParseFloat(strings.TrimPrefix(string(quality), `q=`), 32)
+		}
+		a.Accepts = append(a.Accepts, &AcceptQuality{
+			Quality: float32(q),
+			Type:    types[:],
+		})
+		types = []*Accept{}
 	}
 	//application/vnd.example.v2+json
 	//application/json, text/javascript, */*; q=0.01
+	//text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
 	for _, v := range a.Raw {
 		if v == acceptFlagWhitespace {
 			continue
+		}
+		if foundSem {
+			if v != acceptFlagComma {
+				quality = append(quality, v)
+				continue
+			}
+			combine()
+			quality = []rune{}
+			foundSem = false
 		}
 		if v == acceptFlagSlash { // /
 			c.Type = string(r)
@@ -111,8 +138,8 @@ func (a *Accepts) Advance() *Accepts {
 		}
 		if v == acceptFlagSemicolon { // ;
 			cleanUp()
-			c = nil
-			break
+			foundSem = true
+			continue
 		}
 		r = append(r, v)
 		if stared {
@@ -121,7 +148,13 @@ func (a *Accepts) Advance() *Accepts {
 		rootype = append(rootype, v)
 	}
 	cleanUp()
+	combine()
 	return a
+}
+
+type AcceptQuality struct {
+	Quality float32 // maximum quality: 1
+	Type    []*Accept
 }
 
 type Accept struct {
