@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/admpub/securecookie"
 	"github.com/webx-top/echo"
@@ -154,7 +155,7 @@ var fileMutex sync.RWMutex
 //
 // See NewCookieStore() for a description of the other parameters.
 func NewFilesystemStore(path string, keyPairs ...[]byte) *FilesystemStore {
-	if path == "" {
+	if len(path) == 0 {
 		path = os.TempDir()
 	}
 	fs := &FilesystemStore{
@@ -306,4 +307,26 @@ func (s *FilesystemStore) load(ctx echo.Context, session *Session) error {
 		return err
 	}
 	return nil
+}
+
+func (s *FilesystemStore) DeleteExpired(maxAge float64) error {
+	if maxAge <= 0 {
+		return nil
+	}
+	err := filepath.Walk(s.path, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			return err
+		}
+		if !strings.HasPrefix(info.Name(), `session_`) {
+			return err
+		}
+		if time.Since(info.ModTime()).Seconds() > maxAge {
+			err = os.Remove(path)
+		}
+		return err
+	})
+	return err
 }

@@ -2,8 +2,10 @@ package file
 
 import (
 	"os"
+	"sync"
 
 	"github.com/admpub/sessions"
+	"github.com/webx-top/echo"
 	ss "github.com/webx-top/echo/middleware/session/engine"
 )
 
@@ -47,9 +49,51 @@ func NewFilesystemStore(path string, keyPairs ...[]byte) sessions.Store {
 			}
 		}
 	}
-	return &filesystemStore{sessions.NewFilesystemStore(path, keyPairs...)}
+	s := &filesystemStore{
+		FilesystemStore: sessions.NewFilesystemStore(path, keyPairs...),
+	}
+	return s
 }
 
 type filesystemStore struct {
 	*sessions.FilesystemStore
+	quiteC chan<- struct{}
+	doneC  <-chan struct{}
+	once   sync.Once
+}
+
+func (m *filesystemStore) Get(ctx echo.Context, name string) (*sessions.Session, error) {
+	return m.FilesystemStore.Get(ctx, name)
+}
+
+func (m *filesystemStore) New(ctx echo.Context, name string) (*sessions.Session, error) {
+	m.Init()
+	return m.FilesystemStore.New(ctx, name)
+}
+
+func (m *filesystemStore) Reload(ctx echo.Context, session *sessions.Session) error {
+	m.Init()
+	return m.FilesystemStore.Reload(ctx, session)
+}
+
+func (m *filesystemStore) Save(ctx echo.Context, session *sessions.Session) error {
+	m.Init()
+	return m.FilesystemStore.Save(ctx, session)
+}
+
+func (m *filesystemStore) Close() (err error) {
+	// Invoke a reaper which checks and removes expired sessions periodically.
+	if m.quiteC != nil && m.doneC != nil {
+		m.StopCleanup(m.quiteC, m.doneC)
+	}
+	return
+}
+
+func (m *filesystemStore) Init() {
+	m.once.Do(m.init)
+}
+
+func (m *filesystemStore) init() {
+	m.Close()
+	m.quiteC, m.doneC = m.Cleanup(0, 0)
 }
