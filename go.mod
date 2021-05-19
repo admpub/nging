@@ -25,7 +25,7 @@ require (
 	github.com/admpub/errors v0.8.2
 	github.com/admpub/events v1.2.0
 	github.com/admpub/fasthttp v0.0.1 // indirect
-	github.com/admpub/frp v0.36.7
+	github.com/admpub/frp v0.36.8
 	github.com/admpub/go-bindata-assetfs v0.0.0-20170428090253-36eaa4c19588
 	github.com/admpub/go-download/v2 v2.1.6
 	github.com/admpub/go-figure v0.0.0-20180619031829-18b2b544842c
@@ -132,7 +132,7 @@ require (
 	github.com/tklauser/go-sysconf v0.3.4 // indirect
 	github.com/webx-top/captcha v0.0.1
 	github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f // indirect
-	github.com/webx-top/client v0.2.6
+	github.com/webx-top/client v0.2.7
 	github.com/webx-top/codec v0.0.1
 	github.com/webx-top/com v0.2.0
 	github.com/webx-top/db v1.2.0

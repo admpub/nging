@@ -36,7 +36,7 @@ github.com/admpub/cr
 # github.com/admpub/cron v0.0.1
 ## explicit
 github.com/admpub/cron
-# github.com/admpub/decimal v0.0.0-20180709203117-cd690d0c9e24
+# github.com/admpub/decimal v0.0.2
 github.com/admpub/decimal
 # github.com/admpub/dgoogauth v0.0.0-20170926052827-752650e076f2
 ## explicit
@@ -57,7 +57,7 @@ github.com/admpub/events/emitter
 github.com/admpub/fasthttp
 github.com/admpub/fasthttp/fasthttputil
 github.com/admpub/fasthttp/stackless
-# github.com/admpub/frp v0.36.7
+# github.com/admpub/frp v0.36.8
 ## explicit
 github.com/admpub/frp/assets
 github.com/admpub/frp/assets/frpc/statik
@@ -1073,7 +1073,7 @@ github.com/webx-top/captcha
 # github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f
 ## explicit
 github.com/webx-top/chardet
-# github.com/webx-top/client v0.2.6
+# github.com/webx-top/client v0.2.7
 ## explicit
 github.com/webx-top/client/upload
 github.com/webx-top/client/upload/driver
