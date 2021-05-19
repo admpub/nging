@@ -231,9 +231,8 @@ func UserKick(ctx echo.Context) error {
 	if len(m.SessionId) == 0 {
 		handler.SendFail(ctx, ctx.T(`此用户没有 session id 记录`))
 	} else {
-		err = ctx.Session().SetID(m.SessionId)
+		err = ctx.Session().RemoveID(m.SessionId)
 		if err == nil {
-			ctx.Session().Delete(`user`)
 			m.SetField(nil, `session_id`, ``, `id`, id)
 			handler.SendOk(ctx, ctx.T(`操作成功`))
 		} else {

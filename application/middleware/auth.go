@@ -174,11 +174,19 @@ func Auth(c echo.Context, saveSession bool) error {
 		}
 		m.NgingUser.LastLogin = uint(time.Now().Unix())
 		m.NgingUser.LastIp = c.RealIP()
-		m.NgingUser.SetFields(nil, map[string]interface{}{
+		set := echo.H{
 			`last_login`: m.NgingUser.LastLogin,
 			`last_ip`:    m.NgingUser.LastIp,
-			`session_id`: c.Session().ID(),
-		}, `id`, m.NgingUser.Id)
+		}
+		if len(m.NgingUser.SessionId) > 0 {
+			if m.NgingUser.SessionId != c.Session().ID() {
+				c.Session().RemoveID(m.NgingUser.SessionId)
+				set.Set(`session_id`, c.Session().ID())
+			}
+		} else {
+			set.Set(`session_id`, c.Session().ID())
+		}
+		m.NgingUser.SetFields(nil, set, `id`, m.NgingUser.Id)
 
 		loginLogM.OwnerId = uint64(m.Id)
 		loginLogM.Success = `Y`
