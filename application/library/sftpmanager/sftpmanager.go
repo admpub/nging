@@ -244,6 +244,8 @@ func (s *sftpManager) List(ppath string, sortBy ...string) (err error, exit bool
 		default:
 			sort.Sort(filemanager.SortByFileType(dirs))
 		}
+	} else {
+		sort.Sort(filemanager.SortByFileType(dirs))
 	}
 	if s.Format() == "json" {
 		dirList, fileList := s.ListTransfer(dirs)
