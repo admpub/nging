@@ -191,10 +191,17 @@ func (c *xContext) File(file string, fs ...http.FileSystem) (err error) {
 	if err != nil {
 		return ErrNotFound
 	}
-	defer f.Close()
-
-	fi, _ := f.Stat()
+	defer func() {
+		if f != nil {
+			f.Close()
+		}
+	}()
+	fi, err := f.Stat()
+	if err != nil {
+		return err
+	}
 	if fi.IsDir() {
+		f.Close()
 		file = filepath.Join(file, "index.html")
 		if customFS {
 			f, err = fs[0].Open(file)
@@ -204,7 +211,10 @@ func (c *xContext) File(file string, fs ...http.FileSystem) (err error) {
 		if err != nil {
 			return ErrNotFound
 		}
-		fi, _ = f.Stat()
+		fi, err = f.Stat()
+		if err != nil {
+			return err
+		}
 	}
 	return c.ServeContent(f, fi.Name(), fi.ModTime())
 }

@@ -51,6 +51,37 @@ func (p StringSlice) Unique() StringSlice {
 	return result
 }
 
+func (p StringSlice) Split(sep string, limit ...int) StringSlice {
+	result := StringSlice{}
+	for _, s := range p {
+		if len(s) == 0 {
+			continue
+		}
+		var sl []string
+		if len(limit) > 0 {
+			sl = strings.SplitN(s, sep, limit[0])
+		} else {
+			sl = strings.Split(s, sep)
+		}
+		result = append(result, sl...)
+	}
+	return result
+}
+
+func (p StringSlice) SplitAny(sep string, limit ...int) StringSlice {
+	result := StringSlice{}
+	for _, s := range p {
+		var sl []string
+		if len(limit) > 0 {
+			sl = strings.SplitN(s, sep, limit[0])
+		} else {
+			sl = strings.Split(s, sep)
+		}
+		result = append(result, sl...)
+	}
+	return result
+}
+
 func defaultStringFilterFunc(s *string) bool {
 	if s == nil {
 		return false

@@ -42,6 +42,10 @@ func (p StringMap) Split(key string, sep string, limit ...int) StringSlice {
 	return p[key].Split(sep, limit...)
 }
 
+func (p StringMap) SplitAny(key string, sep string, limit ...int) StringSlice {
+	return p[key].SplitAny(sep, limit...)
+}
+
 func (p StringMap) Interface(key string) interface{} {
 	return p[key].Interface()
 }

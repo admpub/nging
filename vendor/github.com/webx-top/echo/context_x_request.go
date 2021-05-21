@@ -284,9 +284,11 @@ func (c *xContext) ResolveFormat() string {
 	}
 
 	info := c.Accept()
-	for _, accept := range info.Type {
-		if format, ok := c.echo.acceptFormats[accept.Mime]; ok {
-			return format
+	for _, accepts := range info.Accepts {
+		for _, accept := range accepts.Type {
+			if format, ok := c.echo.acceptFormats[accept.Mime]; ok {
+				return format
+			}
 		}
 	}
 	if format, ok := c.echo.acceptFormats[`*`]; ok {
