@@ -563,7 +563,7 @@ github.com/fatedier/golib/net/mux
 github.com/fatedier/golib/pool
 # github.com/fatedier/kcp-go v2.0.4-0.20190803094908-fe8645b0a904+incompatible
 github.com/fatedier/kcp-go
-# github.com/fatih/color v1.10.0
+# github.com/fatih/color v1.11.0
 ## explicit
 github.com/fatih/color
 # github.com/fd/go-shellwords v0.0.0-20130603174837-6a119423524d
