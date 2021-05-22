@@ -19,10 +19,10 @@
 {{/Block}}
 
 {{Block "main"}}
-{{$id := Form "id"}}
-{{$path := Stored.Get "path"}}
-{{$parentPath := Stored.Get "parentPath"}}
-{{$pathPrefix := Stored.Get "pathPrefix"}}
+{{- $id := Form "id" -}}
+{{- $path := Stored.Get "path" -}}
+{{- $parentPath := Stored.Get "parentPath" -}}
+{{- $pathPrefix := Stored.Get "pathPrefix" -}}
 <div class="row">
 	<div class="col-md-12">
 		<div class="block-flat">
@@ -67,14 +67,19 @@
 							<td></td>
 							<td></td>
 						</tr>
-                        {{range $k,$v := Stored.dirs}}
-                        {{$mode := $v.Mode.String}}
+                        {{- range $k,$v := Stored.dirs -}}
+                        {{- $mode := $v.Mode.String -}}
 						<tr item='{{$v.Name}}'>
 							<td>
-                                {{if $v.IsDir}}
-                                <i class="fa fa-folder-o"></i>
-                                {{else}}
-                                {{$fileType := FileTypeByName $v.Name}}
+                                {{- if $v.IsDir -}}
+                                <i class="fa fa-folder"></i>
+                                {{- else if HasPrefix $mode "L" -}}
+                                <span class="fa-stack" style="font-size:0.5em">
+                                    <i class="fa fa-file-o fa-stack-2x"></i>
+                                    <i class="fa fa-link fa-stack-1x"></i>
+                                </span>
+                                {{- else -}}
+                                {{- $fileType := FileTypeByName $v.Name -}}
                                 <i class="fa fa-{{FileTypeIcon $fileType}}"></i>
                                 {{if eq $fileType `image`}}
                                 <a class="pull-right" href="{{BackendURL}}/term/sftp?id={{$id}}&inline=1&path={{$pathPrefix}}{{$v.Name}}" target="_blank"><img src="{{BackendURL}}/term/sftp?id={{$id}}&inline=1&path={{$pathPrefix}}{{$v.Name}}" style="max-width:100px;max-height:30px;" class="previewable" /></a>
@@ -88,13 +93,13 @@
                             </td>
 							<td>{{$v.ModTime.Format "2006-01-02 15:04:05"}}</td>
 							<td>
-                                {{if $v.IsDir}}
+                                {{- if $v.IsDir -}}
                                 {{"文件夹"|T}}
-                                {{else if HasPrefix $mode "L"}}
+                                {{- else if HasPrefix $mode "L" -}}
                                 {{"链接"|T}}
-                                {{else}}
+                                {{- else -}}
                                 {{"文件"|T}}
-                                {{end}}
+                                {{- end -}}
                             </td>
 							<td>{{if $v.IsDir}}-{{else}}{{$v.Size|FormatByte}}{{end}}</td>
 							<td>{{$mode}}</td>
@@ -102,30 +107,30 @@
                                 <a title="{{"删除"|T}}" class="label label-danger" href="{{BackendURL}}/term/sftp?id={{$id}}&do=delete&path={{$pathPrefix}}{{$v.Name}}" onclick="return confirm('{{T "真的要删除“%v”吗？" $v.Name}}');" data-toggle="tooltip">
                                 <i class="fa fa-times"></i>
                                 </a>
-                                {{if not $v.IsDir}}
+                                {{- if not $v.IsDir -}}
                                 &nbsp;
                                 <a title="{{"下载"|T}}" class="label label-info" href="{{BackendURL}}/term/sftp?id={{$id}}&path={{$pathPrefix}}{{$v.Name}}" data-toggle="tooltip">
                                 <i class="fa fa-cloud-download"></i>
                                 </a>
-                                {{end}}
-                                {{if not $v.IsDir}}
-                                {{if Editable $v.Name}}
+                                {{- end -}}
+                                {{- if not $v.IsDir -}}
+                                {{- if Editable $v.Name -}}
                                 &nbsp;
                                 <a title="{{"编辑"|T}}" class="label label-success" href="javascript:;" data-url="{{BackendURL}}/term/sftp?id={{$id}}&do=edit&path={{$pathPrefix}}{{$v.Name}}" onclick="fileEdit(this,'{{$v.Name}}')" data-toggle="tooltip">
                                 <i class="fa fa-pencil"></i>
                                 </a>
-                                {{end}}
-                                {{$mediaMime:=Playable $v.Name}}
-                                {{if $mediaMime}}
+                                {{- end -}}
+                                {{- $mediaMime:=Playable $v.Name -}}
+                                {{- if $mediaMime -}}
                                 &nbsp;
                                 <a title="{{"播放"|T}}" class="label label-primary" href="javascript:;" playable data-mime="{{$mediaMime}}" data-name="{{$v.Name}}" data-url="{{BackendURL}}/term/sftp?id={{$id}}&path={{$pathPrefix}}{{$v.Name}}" onclick="filePlay(this)" data-toggle="tooltip">
                                 <i class="fa fa-play"></i>
                                 </a>
-                                {{end}}
-                                {{end}}
+                                {{- end -}}
+                                {{- end -}}
                             </td>
 						</tr>
-                        {{end}}
+                        {{- end -}}
 					</tbody>
 				</table>		
 				</div>

@@ -68,21 +68,27 @@
 							<td></td>
 							<td></td>
 						</tr>
-                        {{range $k,$v := Stored.dirs}}
-                        {{$mode := $v.Mode.String}}
+                        {{- range $k,$v := Stored.dirs -}}
+                        {{- $mode := $v.Mode.String -}}
 						<tr item='{{$v.Name}}'>
 							<td>
-                                {{if $v.IsDir}}
-                                <i class="fa fa-folder-o"></i>
+                                {{- if $v.IsDir -}}
+                                <i class="fa fa-folder"></i>
                                 <a href="{{BackendURL}}/cloud/storage_file?id={{$id}}&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}">{{$v.Name}}</a>
-                                {{else}}
+                                {{- else if HasPrefix $mode "L" -}}
+                                <span class="fa-stack" style="font-size:0.5em">
+                                    <i class="fa fa-file-o fa-stack-2x"></i>
+                                    <i class="fa fa-link fa-stack-1x"></i>
+                                </span>
+                                <a href="{{BackendURL}}/cloud/storage_file?id={{$id}}&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}">{{$v.Name}}</a>
+                                {{- else -}}
                                 {{$fileType := FileTypeByName $v.Name}}
                                 <i class="fa fa-{{FileTypeIcon $fileType}}"></i>
                                 {{if eq $fileType `image`}}
                                 <a class="pull-right" href="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=download&inline=1&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" target="_blank"><img src="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=download&inline=1&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" style="max-width:100px;max-height:30px;" class="previewable" /></a>
                                 {{end}}
                                 <a href="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=download&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}">{{$v.Name}}</a>
-                                {{end}}
+                                {{- end -}}
                                 &nbsp;
                                 <a href="javascript:;" title="{{"重命名"|T}}" data-url="{{BackendURL}}/cloud/storage_file?id={{$id}}&do=rename&path={{$pathPrefix}}{{$v.Name}}&engine={{$engine}}" onclick="fileRename(this,'{{$pathPrefix}}{{$v.Name}}',{{if $v.IsDir}}true{{else}}false{{end}})" data-toggle="tooltip">
                                 <i class="fa fa-pencil"></i>
@@ -90,13 +96,13 @@
                             </td>
 							<td>{{if $v.ModTime.IsZero}}&mdash;{{else}}{{$v.ModTime.Format "2006-01-02 15:04:05"}}{{end}}</td>
 							<td>
-                                {{if $v.IsDir}}
+                                {{- if $v.IsDir -}}
                                 {{"文件夹"|T}}
-                                {{else if HasPrefix $mode "L"}}
+                                {{- else if HasPrefix $mode "L" -}}
                                 {{"链接"|T}}
-                                {{else}}
+                                {{- else -}}
                                 {{"文件"|T}}
-                                {{end}}
+                                {{- end -}}
                             </td>
 							<td>{{if $v.IsDir}}&mdash;{{else}}{{$v.Size|FormatByte}}{{end}}</td>
 							<td>{{$mode}}</td>
