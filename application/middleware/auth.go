@@ -179,12 +179,12 @@ func Auth(c echo.Context, saveSession bool) error {
 			`last_ip`:    m.NgingUser.LastIp,
 		}
 		if len(m.NgingUser.SessionId) > 0 {
-			if m.NgingUser.SessionId != c.Session().ID() {
+			if m.NgingUser.SessionId != c.Session().MustID() {
 				c.Session().RemoveID(m.NgingUser.SessionId)
-				set.Set(`session_id`, c.Session().ID())
+				set.Set(`session_id`, c.Session().MustID())
 			}
 		} else {
-			set.Set(`session_id`, c.Session().ID())
+			set.Set(`session_id`, c.Session().MustID())
 		}
 		m.NgingUser.SetFields(nil, set, `id`, m.NgingUser.Id)
 
