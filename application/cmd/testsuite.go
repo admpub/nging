@@ -19,6 +19,9 @@
 package cmd
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/admpub/nging/application/library/config"
 
 	"github.com/spf13/cobra"
@@ -33,8 +36,9 @@ var testSuiteCmd = &cobra.Command{
 }
 
 var (
-	testSuiteName *string
-	testSuites    = map[string]func(cmd *cobra.Command, args []string) error{}
+	testSuiteName  *string
+	testSuites     = map[string]func(cmd *cobra.Command, args []string) error{}
+	errNoTestSuite = errors.New(`no test suite`)
 )
 
 func TestSuiteRegister(name string, fn func(cmd *cobra.Command, args []string) error) {
@@ -49,7 +53,7 @@ func testSuiteRunE(cmd *cobra.Command, args []string) error {
 	if fn, ok := testSuites[*testSuiteName]; ok {
 		return fn(cmd, args)
 	}
-	return nil
+	return fmt.Errorf(`%w: %s`, errNotExistTestSuite, *testSuiteName)
 }
 
 func init() {
