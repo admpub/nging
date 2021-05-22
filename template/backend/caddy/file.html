@@ -52,7 +52,7 @@
 							<th style="width:130px"><strong>{{"修改日期"|T}}</strong></th>
 							<th style="width:80px"><strong>{{"类型"|T}}</strong></th>
 							<th style="width:80px"><strong>{{"大小"|T}}</strong></th>
-							<th style="width:60px"><strong>{{"权限"|T}}</strong></th>
+							<th style="width:85px"><strong>{{"权限"|T}}</strong></th>
 							<th style="width:80px" class="text-center"><strong>{{"操作"|T}}</strong></th>
 						</tr>
 					</thead>
@@ -76,7 +76,7 @@
                                 {{- if $v.IsDir -}}
                                 <i class="fa fa-folder"></i>
                                 {{- else if HasPrefix $mode "L" -}}
-                                <span class="fa-stack" style="font-size:0.5em">
+                                <span class="fa-stack">
                                     <i class="fa fa-file-o fa-stack-2x"></i>
                                     <i class="fa fa-link fa-stack-1x"></i>
                                 </span>
