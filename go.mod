@@ -135,8 +135,8 @@ require (
 	github.com/webx-top/client v0.2.7
 	github.com/webx-top/codec v0.0.1
 	github.com/webx-top/com v0.2.0
-	github.com/webx-top/db v1.3.0
-	github.com/webx-top/echo v2.13.1+incompatible
+	github.com/webx-top/db v1.3.2
+	github.com/webx-top/echo v2.13.3+incompatible
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.0
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect
@@ -146,6 +146,5 @@ require (
 	google.golang.org/grpc/examples v0.0.0-20210415220803-1a870aec2ff9 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect
-	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )

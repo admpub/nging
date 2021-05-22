@@ -27,7 +27,7 @@ func init() {
 	if typeAddr == nil {
 		typeAddr = &runtime.TypeAddr{}
 	}
-	cachedOpcodeSets = make([]*OpcodeSet, typeAddr.AddrRange)
+	cachedOpcodeSets = make([]*OpcodeSet, typeAddr.AddrRange>>typeAddr.AddrShift)
 }
 
 func loadOpcodeMap() map[uintptr]*OpcodeSet {
@@ -1050,7 +1050,6 @@ func compiledCode(ctx *compileContext) *Opcode {
 }
 
 func structHeader(ctx *compileContext, fieldCode *Opcode, valueCode *Opcode, tag *runtime.StructTag) *Opcode {
-	fieldCode.Indent--
 	op := optimizeStructHeader(valueCode, tag)
 	fieldCode.Op = op
 	fieldCode.Mask = valueCode.Mask
@@ -1451,7 +1450,6 @@ func compileStruct(ctx *compileContext, isPtr bool) (*Opcode, error) {
 		}
 		fieldIdx++
 	}
-	ctx = ctx.decIndent()
 
 	structEndCode := &Opcode{
 		Op:     OpStructEnd,
@@ -1459,6 +1457,8 @@ func compileStruct(ctx *compileContext, isPtr bool) (*Opcode, error) {
 		Indent: ctx.indent,
 		Next:   newEndOp(ctx),
 	}
+
+	ctx = ctx.decIndent()
 
 	// no struct field
 	if head == nil {

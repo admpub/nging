@@ -8,7 +8,7 @@ Forked from upper/db
 2. 支持ForceIndex查询
 3. 支持关联查询（感谢gosql提供灵感，[查看用法](https://github.com/webx-top/db/blob/master/_tools/test/relation/main.go)）
 4. 新增[lib/factory](https://github.com/webx-top/db/tree/master/lib/factory)包
-5. 增加MySQL表结构体生成工具（安装命令：`go install github.com/webx-top/db/_tools/generator`，使用命令`generator -h`查看用法）
+5. 增加MySQL表结构体生成工具（安装命令：`go install github.com/webx-top/db/cmd/dbgenerator`，使用命令`dbgenerator -h`查看用法）
 6. 其它改进
 
 [原始文档](http://www.admpub.com:8080/upper-db-manual/en/)

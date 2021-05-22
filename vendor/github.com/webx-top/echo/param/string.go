@@ -47,6 +47,14 @@ func (p String) Split(sep string, limit ...int) StringSlice {
 	return strings.Split(s, sep)
 }
 
+func (p String) SplitAny(sep string, limit ...int) StringSlice {
+	s := p.String()
+	if len(limit) > 0 {
+		return strings.SplitN(s, sep, limit[0])
+	}
+	return strings.Split(s, sep)
+}
+
 func (p String) Trim() String {
 	return String(strings.TrimSpace(string(p)))
 }

@@ -615,7 +615,7 @@ github.com/go-redis/redis/v8/internal/pool
 github.com/go-redis/redis/v8/internal/proto
 github.com/go-redis/redis/v8/internal/rand
 github.com/go-redis/redis/v8/internal/util
-# github.com/go-sql-driver/mysql v1.5.0
+# github.com/go-sql-driver/mysql v1.6.0
 github.com/go-sql-driver/mysql
 # github.com/go-stack/stack v1.8.0
 github.com/go-stack/stack
@@ -629,11 +629,10 @@ github.com/gobwas/pool/pbytes
 # github.com/gobwas/ws v1.1.0-rc.5
 github.com/gobwas/ws
 github.com/gobwas/ws/wsutil
-# github.com/goccy/go-json v0.5.0
+# github.com/goccy/go-json v0.5.1
 github.com/goccy/go-json
 github.com/goccy/go-json/internal/encoder
 github.com/goccy/go-json/internal/encoder/vm
-github.com/goccy/go-json/internal/encoder/vm_debug
 github.com/goccy/go-json/internal/encoder/vm_escaped
 github.com/goccy/go-json/internal/encoder/vm_escaped_indent
 github.com/goccy/go-json/internal/encoder/vm_indent
@@ -657,7 +656,7 @@ github.com/golang/protobuf/ptypes
 github.com/golang/protobuf/ptypes/any
 github.com/golang/protobuf/ptypes/duration
 github.com/golang/protobuf/ptypes/timestamp
-# github.com/golang/snappy v0.0.2
+# github.com/golang/snappy v0.0.3
 github.com/golang/snappy
 # github.com/gomodule/redigo v1.8.4
 ## explicit
@@ -829,7 +828,7 @@ github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.12
 ## explicit
 github.com/mattn/go-runewidth
-# github.com/mattn/go-sqlite3 v1.14.6
+# github.com/mattn/go-sqlite3 v1.14.7
 github.com/mattn/go-sqlite3
 # github.com/matttproud/golang_protobuf_extensions v1.0.1
 github.com/matttproud/golang_protobuf_extensions/pbutil
@@ -1091,7 +1090,7 @@ github.com/webx-top/codec
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json
 github.com/webx-top/com/httpClientOptions
-# github.com/webx-top/db v1.3.0
+# github.com/webx-top/db v1.3.2
 ## explicit
 github.com/webx-top/db
 github.com/webx-top/db/internal/cache
@@ -1109,7 +1108,7 @@ github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mongo
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.13.1+incompatible
+# github.com/webx-top/echo v2.13.3+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
@@ -1273,7 +1272,7 @@ golang.org/x/lint
 golang.org/x/lint/golint
 # golang.org/x/mod v0.4.0
 golang.org/x/mod/semver
-# golang.org/x/net v0.0.0-20210510120150-4163338589ed
+# golang.org/x/net v0.0.0-20210521195947-fe42d452be8f
 golang.org/x/net/bpf
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
@@ -1303,7 +1302,7 @@ golang.org/x/oauth2/clientcredentials
 golang.org/x/oauth2/internal
 # golang.org/x/sync v0.0.0-20201207232520-09787c993a3a
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20210514084401-e8d321eab015
+# golang.org/x/sys v0.0.0-20210521203332-0cec03c779c1
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
@@ -1448,7 +1447,6 @@ gopkg.in/fsnotify/fsnotify.v1
 # gopkg.in/ini.v1 v1.62.0
 gopkg.in/ini.v1
 # gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
-## explicit
 gopkg.in/mgo.v2
 gopkg.in/mgo.v2/bson
 gopkg.in/mgo.v2/internal/json

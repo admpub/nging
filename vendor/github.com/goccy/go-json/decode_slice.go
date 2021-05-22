@@ -49,9 +49,20 @@ func newSliceDecoder(dec decoder, elemType *rtype, size uintptr, structName, fie
 	}
 }
 
-func (d *sliceDecoder) newSlice() *sliceHeader {
+func (d *sliceDecoder) newSlice(src *sliceHeader) *sliceHeader {
 	slice := d.arrayPool.Get().(*sliceHeader)
-	slice.len = 0
+	if src.len > 0 {
+		// copy original elem
+		if slice.cap < src.cap {
+			data := newArray(d.elemType, src.cap)
+			slice = &sliceHeader{data: data, len: src.len, cap: src.cap}
+		} else {
+			slice.len = src.len
+		}
+		copySlice(d.elemType, *slice, *src)
+	} else {
+		slice.len = 0
+	}
 	return slice
 }
 
@@ -109,7 +120,8 @@ func (d *sliceDecoder) decodeStream(s *stream, depth int64, p unsafe.Pointer) er
 				return nil
 			}
 			idx := 0
-			slice := d.newSlice()
+			slice := d.newSlice((*sliceHeader)(p))
+			srcLen := slice.len
 			capacity := slice.cap
 			data := slice.data
 			for {
@@ -121,12 +133,17 @@ func (d *sliceDecoder) decodeStream(s *stream, depth int64, p unsafe.Pointer) er
 					copySlice(d.elemType, dst, src)
 				}
 				ep := unsafe.Pointer(uintptr(data) + uintptr(idx)*d.size)
-				if d.isElemPointerType {
-					**(**unsafe.Pointer)(unsafe.Pointer(&ep)) = nil // initialize elem pointer
-				} else {
-					// assign new element to the slice
-					typedmemmove(d.elemType, ep, unsafe_New(d.elemType))
+
+				// if srcLen is greater than idx, keep the original reference
+				if srcLen <= idx {
+					if d.isElemPointerType {
+						**(**unsafe.Pointer)(unsafe.Pointer(&ep)) = nil // initialize elem pointer
+					} else {
+						// assign new element to the slice
+						typedmemmove(d.elemType, ep, unsafe_New(d.elemType))
+					}
 				}
+
 				if err := d.valueDecoder.decodeStream(s, depth, ep); err != nil {
 					return err
 				}
@@ -186,24 +203,14 @@ func (d *sliceDecoder) decode(buf []byte, cursor, depth int64, p unsafe.Pointer)
 		return 0, errExceededMaxDepth(buf[cursor], cursor)
 	}
 
-	buflen := int64(len(buf))
-	for ; cursor < buflen; cursor++ {
+	for {
 		switch buf[cursor] {
 		case ' ', '\n', '\t', '\r':
+			cursor++
 			continue
 		case 'n':
-			buflen := int64(len(buf))
-			if cursor+3 >= buflen {
-				return 0, errUnexpectedEndOfJSON("null", cursor)
-			}
-			if buf[cursor+1] != 'u' {
-				return 0, errInvalidCharacter(buf[cursor+1], "null", cursor)
-			}
-			if buf[cursor+2] != 'l' {
-				return 0, errInvalidCharacter(buf[cursor+2], "null", cursor)
-			}
-			if buf[cursor+3] != 'l' {
-				return 0, errInvalidCharacter(buf[cursor+3], "null", cursor)
+			if err := validateNull(buf, cursor); err != nil {
+				return 0, err
 			}
 			cursor += 4
 			*(*unsafe.Pointer)(p) = nil
@@ -222,7 +229,8 @@ func (d *sliceDecoder) decode(buf []byte, cursor, depth int64, p unsafe.Pointer)
 				return cursor, nil
 			}
 			idx := 0
-			slice := d.newSlice()
+			slice := d.newSlice((*sliceHeader)(p))
+			srcLen := slice.len
 			capacity := slice.cap
 			data := slice.data
 			for {
@@ -234,11 +242,14 @@ func (d *sliceDecoder) decode(buf []byte, cursor, depth int64, p unsafe.Pointer)
 					copySlice(d.elemType, dst, src)
 				}
 				ep := unsafe.Pointer(uintptr(data) + uintptr(idx)*d.size)
-				if d.isElemPointerType {
-					**(**unsafe.Pointer)(unsafe.Pointer(&ep)) = nil // initialize elem pointer
-				} else {
-					// assign new element to the slice
-					typedmemmove(d.elemType, ep, unsafe_New(d.elemType))
+				// if srcLen is greater than idx, keep the original reference
+				if srcLen <= idx {
+					if d.isElemPointerType {
+						**(**unsafe.Pointer)(unsafe.Pointer(&ep)) = nil // initialize elem pointer
+					} else {
+						// assign new element to the slice
+						typedmemmove(d.elemType, ep, unsafe_New(d.elemType))
+					}
 				}
 				c, err := d.valueDecoder.decode(buf, cursor, depth, ep)
 				if err != nil {
@@ -274,9 +285,7 @@ func (d *sliceDecoder) decode(buf []byte, cursor, depth int64, p unsafe.Pointer)
 		case '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 			return 0, d.errNumber(cursor)
 		default:
-			goto ERROR
+			return 0, errUnexpectedEndOfJSON("slice", cursor)
 		}
 	}
-ERROR:
-	return 0, errUnexpectedEndOfJSON("slice", cursor)
 }
