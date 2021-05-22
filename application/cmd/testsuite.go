@@ -53,7 +53,7 @@ func testSuiteRunE(cmd *cobra.Command, args []string) error {
 	if fn, ok := testSuites[*testSuiteName]; ok {
 		return fn(cmd, args)
 	}
-	return fmt.Errorf(`%w: %s`, errNotExistTestSuite, *testSuiteName)
+	return fmt.Errorf(`%w: %s`, errNoTestSuite, *testSuiteName)
 }
 
 func init() {
