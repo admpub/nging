@@ -25,17 +25,17 @@ func (m ModelInstancers) Register(instancers map[string]*ModelInstancer) {
 	}
 }
 
-type TableNamers map[string]func(obj interface{}) string
+type TableNamers map[string]func(Model) string
 
 // Register 注册表名称生成器(表名不带前缀)
-func (t TableNamers) Register(namers map[string]func(obj interface{}) string) {
+func (t TableNamers) Register(namers map[string]func(Model) string) {
 	for table, namer := range namers {
 		t[table] = namer
 	}
 }
 
 // Get 获取表名称生成器(表名不带前缀)
-func (t TableNamers) Get(table string) func(obj interface{}) string {
+func (t TableNamers) Get(table string) func(Model) string {
 	if namer, ok := t[table]; ok {
 		return namer
 	}

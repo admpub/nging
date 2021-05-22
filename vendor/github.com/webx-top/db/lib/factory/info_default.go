@@ -5,8 +5,8 @@ const DefaultDBKey = `default`
 
 var (
 	// DefaultTableNamer default
-	DefaultTableNamer = func(table string) func(obj interface{}) string {
-		return func(obj interface{}) string {
+	DefaultTableNamer = func(table string) func(Model) string {
+		return func(_ Model) string {
 			return table
 		}
 	}
@@ -15,12 +15,12 @@ var (
 )
 
 // TableNamerRegister 注册表名称生成器(表名不带前缀)
-func TableNamerRegister(namers map[string]func(obj interface{}) string) {
+func TableNamerRegister(namers map[string]func(Model) string) {
 	DBIGet().TableNamers.Register(namers)
 }
 
 // TableNamerGet 获取表名称生成器(表名不带前缀)
-func TableNamerGet(table string) func(obj interface{}) string {
+func TableNamerGet(table string) func(Model) string {
 	return DBIGet().TableNamers.Get(table)
 }
 

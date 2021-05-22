@@ -143,12 +143,12 @@ func (a *NgingCollectorExport) SetConnID(connID int) factory.Model {
 	return a
 }
 
-func (a *NgingCollectorExport) SetNamer(namer func(string) string) factory.Model {
+func (a *NgingCollectorExport) SetNamer(namer func(factory.Model) string) factory.Model {
 	a.base.SetNamer(namer)
 	return a
 }
 
-func (a *NgingCollectorExport) Namer() func(string) string {
+func (a *NgingCollectorExport) Namer() func(factory.Model) string {
 	return a.base.Namer()
 }
 
@@ -207,7 +207,7 @@ func (a *NgingCollectorExport) Struct_() string {
 
 func (a *NgingCollectorExport) Name_() string {
 	if a.base.Namer() != nil {
-		return WithPrefix(a.base.Namer()(a.Short_()))
+		return WithPrefix(a.base.Namer()(a))
 	}
 	return WithPrefix(factory.TableNamerGet(a.Short_())(a))
 }

@@ -42,7 +42,7 @@ func NewDBI() *DBI {
 		Fields:      map[string]map[string]*FieldInfo{},
 		Columns:     map[string][]string{},
 		Models:      ModelInstancers{},
-		TableNamers: map[string]func(obj interface{}) string{},
+		TableNamers: map[string]func(Model) string{},
 		Events:      NewEvents(),
 	}
 }

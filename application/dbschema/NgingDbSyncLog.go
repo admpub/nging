@@ -139,12 +139,12 @@ func (a *NgingDbSyncLog) SetConnID(connID int) factory.Model {
 	return a
 }
 
-func (a *NgingDbSyncLog) SetNamer(namer func(string) string) factory.Model {
+func (a *NgingDbSyncLog) SetNamer(namer func(factory.Model) string) factory.Model {
 	a.base.SetNamer(namer)
 	return a
 }
 
-func (a *NgingDbSyncLog) Namer() func(string) string {
+func (a *NgingDbSyncLog) Namer() func(factory.Model) string {
 	return a.base.Namer()
 }
 
@@ -203,7 +203,7 @@ func (a *NgingDbSyncLog) Struct_() string {
 
 func (a *NgingDbSyncLog) Name_() string {
 	if a.base.Namer() != nil {
-		return WithPrefix(a.base.Namer()(a.Short_()))
+		return WithPrefix(a.base.Namer()(a))
 	}
 	return WithPrefix(factory.TableNamerGet(a.Short_())(a))
 }

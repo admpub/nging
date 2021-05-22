@@ -143,12 +143,12 @@ func (a *NgingCodeVerification) SetConnID(connID int) factory.Model {
 	return a
 }
 
-func (a *NgingCodeVerification) SetNamer(namer func(string) string) factory.Model {
+func (a *NgingCodeVerification) SetNamer(namer func(factory.Model) string) factory.Model {
 	a.base.SetNamer(namer)
 	return a
 }
 
-func (a *NgingCodeVerification) Namer() func(string) string {
+func (a *NgingCodeVerification) Namer() func(factory.Model) string {
 	return a.base.Namer()
 }
 
@@ -207,7 +207,7 @@ func (a *NgingCodeVerification) Struct_() string {
 
 func (a *NgingCodeVerification) Name_() string {
 	if a.base.Namer() != nil {
-		return WithPrefix(a.base.Namer()(a.Short_()))
+		return WithPrefix(a.base.Namer()(a))
 	}
 	return WithPrefix(factory.TableNamerGet(a.Short_())(a))
 }

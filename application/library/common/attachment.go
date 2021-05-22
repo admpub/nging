@@ -20,7 +20,6 @@ package common
 
 import (
 	"fmt"
-	"math"
 	"os"
 	"path"
 	"path/filepath"
@@ -78,7 +77,7 @@ func ValidFileOwnerID(id string) error {
 
 // DirSharding 文件夹分组(暂不使用)
 func DirSharding(id uint64) uint64 {
-	return uint64(math.Ceil(float64(id) / DirShardingNum))
+	return IDSharding(id, DirShardingNum)
 }
 
 // RemoveUploadedFile 删除被上传的文件

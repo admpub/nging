@@ -151,12 +151,12 @@ func (a *NgingCollectorPage) SetConnID(connID int) factory.Model {
 	return a
 }
 
-func (a *NgingCollectorPage) SetNamer(namer func(string) string) factory.Model {
+func (a *NgingCollectorPage) SetNamer(namer func(factory.Model) string) factory.Model {
 	a.base.SetNamer(namer)
 	return a
 }
 
-func (a *NgingCollectorPage) Namer() func(string) string {
+func (a *NgingCollectorPage) Namer() func(factory.Model) string {
 	return a.base.Namer()
 }
 
@@ -215,7 +215,7 @@ func (a *NgingCollectorPage) Struct_() string {
 
 func (a *NgingCollectorPage) Name_() string {
 	if a.base.Namer() != nil {
-		return WithPrefix(a.base.Namer()(a.Short_()))
+		return WithPrefix(a.base.Namer()(a))
 	}
 	return WithPrefix(factory.TableNamerGet(a.Short_())(a))
 }

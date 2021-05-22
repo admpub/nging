@@ -155,12 +155,12 @@ func (a *NgingForeverProcess) SetConnID(connID int) factory.Model {
 	return a
 }
 
-func (a *NgingForeverProcess) SetNamer(namer func(string) string) factory.Model {
+func (a *NgingForeverProcess) SetNamer(namer func(factory.Model) string) factory.Model {
 	a.base.SetNamer(namer)
 	return a
 }
 
-func (a *NgingForeverProcess) Namer() func(string) string {
+func (a *NgingForeverProcess) Namer() func(factory.Model) string {
 	return a.base.Namer()
 }
 
@@ -219,7 +219,7 @@ func (a *NgingForeverProcess) Struct_() string {
 
 func (a *NgingForeverProcess) Name_() string {
 	if a.base.Namer() != nil {
-		return WithPrefix(a.base.Namer()(a.Short_()))
+		return WithPrefix(a.base.Namer()(a))
 	}
 	return WithPrefix(factory.TableNamerGet(a.Short_())(a))
 }

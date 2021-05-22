@@ -9,7 +9,7 @@ import (
 type Base struct {
 	param    *Param
 	trans    *Transaction
-	namer    func(string) string
+	namer    func(Model) string
 	connID   int
 	context  echo.Context
 	eventOff bool
@@ -23,84 +23,84 @@ type ModelSetter interface {
 	SetModel(Model)
 }
 
-func (this *Base) EventOFF(off ...bool) *Base {
+func (b *Base) EventOFF(off ...bool) *Base {
 	if len(off) == 0 {
-		this.eventOff = true
+		b.eventOff = true
 	} else {
-		this.eventOff = off[0]
+		b.eventOff = off[0]
 	}
-	return this
+	return b
 }
 
-func (this *Base) Eventable() bool {
-	return !this.eventOff
+func (b *Base) Eventable() bool {
+	return !b.eventOff
 }
 
-func (this *Base) EventON(on ...bool) *Base {
+func (b *Base) EventON(on ...bool) *Base {
 	if len(on) == 0 {
-		this.eventOff = false
+		b.eventOff = false
 	} else {
-		this.eventOff = !on[0]
+		b.eventOff = !on[0]
 	}
-	return this
+	return b
 }
 
-func (this *Base) SetParam(param *Param) *Base {
-	this.param = param
-	return this
+func (b *Base) SetParam(param *Param) *Base {
+	b.param = param
+	return b
 }
 
-func (this *Base) Param() *Param {
-	return this.param
+func (b *Base) Param() *Param {
+	return b.param
 }
 
-func (this *Base) Trans() *Transaction {
-	return this.trans
+func (b *Base) Trans() *Transaction {
+	return b.trans
 }
 
-func (this *Base) Use(trans *Transaction) {
-	this.trans = trans
+func (b *Base) Use(trans *Transaction) {
+	b.trans = trans
 }
 
-func (this *Base) SetContext(ctx echo.Context) *Base {
-	this.context = ctx
+func (b *Base) SetContext(ctx echo.Context) *Base {
+	b.context = ctx
 	if ctx == nil {
-		return this
+		return b
 	}
 	if setter, ok := ctx.(ModelBaseSetter); ok {
-		setter.SetModelBase(this)
+		setter.SetModelBase(b)
 	}
 	switch t := ctx.Transaction().(type) {
 	case *echo.BaseTransaction:
 		if tr, ok := t.Transaction.(*Param); ok {
-			this.trans = tr.T()
+			b.trans = tr.T()
 		}
 	case *Param:
-		this.trans = t.T()
+		b.trans = t.T()
 	}
-	return this
+	return b
 }
 
-func (this *Base) Context() echo.Context {
-	return this.context
+func (b *Base) Context() echo.Context {
+	return b.context
 }
 
-func (this *Base) SetConnID(connID int) *Base {
-	this.connID = connID
-	return this
+func (b *Base) SetConnID(connID int) *Base {
+	b.connID = connID
+	return b
 }
 
-func (this *Base) ConnID() int {
-	return this.connID
+func (b *Base) ConnID() int {
+	return b.connID
 }
 
-func (this *Base) SetNamer(namer func(string) string) *Base {
-	this.namer = namer
-	return this
+func (b *Base) SetNamer(namer func(Model) string) *Base {
+	b.namer = namer
+	return b
 }
 
-func (this *Base) Namer() func(string) string {
-	return this.namer
+func (b *Base) Namer() func(Model) string {
+	return b.namer
 }
 
 type Model interface {
@@ -108,8 +108,8 @@ type Model interface {
 	Use(trans *Transaction) Model
 	SetContext(ctx echo.Context) Model
 	Context() echo.Context
-	SetNamer(func(string) string) Model
-	Namer() func(string) string
+	SetNamer(func(Model) string) Model
+	Namer() func(Model) string
 	CPAFrom(source Model) Model //CopyAttrFrom
 	Name_() string
 	Short_() string

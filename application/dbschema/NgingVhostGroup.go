@@ -136,12 +136,12 @@ func (a *NgingVhostGroup) SetConnID(connID int) factory.Model {
 	return a
 }
 
-func (a *NgingVhostGroup) SetNamer(namer func(string) string) factory.Model {
+func (a *NgingVhostGroup) SetNamer(namer func(factory.Model) string) factory.Model {
 	a.base.SetNamer(namer)
 	return a
 }
 
-func (a *NgingVhostGroup) Namer() func(string) string {
+func (a *NgingVhostGroup) Namer() func(factory.Model) string {
 	return a.base.Namer()
 }
 
@@ -200,7 +200,7 @@ func (a *NgingVhostGroup) Struct_() string {
 
 func (a *NgingVhostGroup) Name_() string {
 	if a.base.Namer() != nil {
-		return WithPrefix(a.base.Namer()(a.Short_()))
+		return WithPrefix(a.base.Namer()(a))
 	}
 	return WithPrefix(factory.TableNamerGet(a.Short_())(a))
 }
