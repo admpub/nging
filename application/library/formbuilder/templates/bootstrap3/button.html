@@ -1,0 +1,4 @@
+{{define "main"}}<button type="{{.type}}" name="{{.name}}" class='btn btn-lg{{ if .classes }}{{range .classes}} {{.}}{{end}}{{end}}{{if eq .type "submit"}} btn-primary{{end}}'{{if .id}} id="{{.id}}"{{end}}{{if .params}}{{range $k, $v := .params}} {{$k}}="{{$v}}"{{end}}{{end}}{{if .css}} style="{{range $k, $v := .css}}{{$k}}: {{$v}}; {{end}}"{{end}}{{range $k,$v := .tags}} {{$k}}{{end}}>
+<i class="{{if eq .type "submit"}}fa fa-check{{else if eq .type "reset"}}fa fa-undo{{end}}"></i>
+{{.text}}
+</button>{{end}}

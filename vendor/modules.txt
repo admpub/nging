@@ -520,6 +520,13 @@ github.com/chromedp/sysutil
 github.com/codegangsta/inject
 # github.com/coreos/go-oidc v2.2.1+incompatible
 github.com/coreos/go-oidc
+# github.com/coscms/forms v1.4.3
+## explicit
+github.com/coscms/forms
+github.com/coscms/forms/common
+github.com/coscms/forms/config
+github.com/coscms/forms/fields
+github.com/coscms/forms/widgets
 # github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
 ## explicit
 github.com/coscms/go-imgparse/imgparse
@@ -1090,7 +1097,7 @@ github.com/webx-top/codec
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json
 github.com/webx-top/com/httpClientOptions
-# github.com/webx-top/db v1.3.2
+# github.com/webx-top/db v1.3.6
 ## explicit
 github.com/webx-top/db
 github.com/webx-top/db/internal/cache
@@ -1108,7 +1115,7 @@ github.com/webx-top/db/lib/sqlbuilder
 github.com/webx-top/db/mongo
 github.com/webx-top/db/mysql
 github.com/webx-top/db/sqlite
-# github.com/webx-top/echo v2.13.3+incompatible
+# github.com/webx-top/echo v2.13.7+incompatible
 ## explicit
 github.com/webx-top/echo
 github.com/webx-top/echo/code
@@ -1156,6 +1163,7 @@ github.com/webx-top/pagination
 # github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2
 github.com/webx-top/tagfast
 # github.com/webx-top/validation v0.0.1
+## explicit
 github.com/webx-top/validation
 # github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8
 github.com/xi2/xz

@@ -5,7 +5,6 @@ go 1.16
 require (
 	github.com/ClickHouse/clickhouse-go v1.4.5
 	github.com/admpub/confl v0.0.3
-	github.com/admpub/copier v0.0.1 // indirect
 	github.com/admpub/decimal v0.0.2 // indirect
 	github.com/admpub/errors v0.8.2
 	github.com/admpub/events v1.2.0 // indirect
@@ -27,7 +26,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/webx-top/captcha v0.0.1 // indirect
 	github.com/webx-top/com v0.2.0
-	github.com/webx-top/echo v2.13.3+incompatible
+	github.com/webx-top/echo v2.13.7+incompatible
 	github.com/webx-top/pagination v0.1.0
 	github.com/webx-top/tagfast v0.0.0-20161020041435-9a2065ce3dd2
 	github.com/webx-top/validation v0.0.1 // indirect

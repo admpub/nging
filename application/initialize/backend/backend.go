@@ -40,6 +40,7 @@ import (
 	"github.com/admpub/nging/application/handler"
 	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/nging/application/library/formbuilder"
 	ngingMW "github.com/admpub/nging/application/middleware"
 )
 
@@ -195,10 +196,18 @@ func init() {
 		renderOptions.AddFuncSetter(BackendURLFunc)
 		renderOptions.AddFuncSetter(ngingMW.ErrorPageFunc)
 		renderOptions.ApplyTo(e, event.BackendTmplMgr)
+		renderOptions.Renderer().MonitorEvent(func(file string) {
+			if strings.HasSuffix(file, `.form.json`) {
+				if formbuilder.DelCachedConfig(file) {
+					log.Debug(`delete: cache form config: `, file)
+				}
+			}
+		})
 		//RendererDo(renderOptions.Renderer())
 		echo.On(`clearCache`, func(_ echo.H) error {
 			log.Debug(`clear: Backend Template Object Cache`)
 			renderOptions.Renderer().ClearCache()
+			formbuilder.ClearCache()
 			return nil
 		})
 		e.Get(`/favicon.ico`, event.FaviconHandler)

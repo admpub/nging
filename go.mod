@@ -1,6 +1,6 @@
 module github.com/admpub/nging
 
-go 1.14
+go 1.16
 
 replace github.com/caddyserver/caddy => github.com/admpub/caddy v1.1.7
 
@@ -91,6 +91,7 @@ require (
 	github.com/chromedp/cdproto v0.0.0-20210429002609-5ec2b0624aec
 	github.com/chromedp/chromedp v0.7.1
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
+	github.com/coscms/forms v1.4.3
 	github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/fatedier/beego v1.7.2 // indirect
@@ -135,10 +136,11 @@ require (
 	github.com/webx-top/client v0.2.7
 	github.com/webx-top/codec v0.0.1
 	github.com/webx-top/com v0.2.0
-	github.com/webx-top/db v1.3.2
-	github.com/webx-top/echo v2.13.3+incompatible
+	github.com/webx-top/db v1.3.6
+	github.com/webx-top/echo v2.13.7+incompatible
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.0
+	github.com/webx-top/validation v0.0.1
 	github.com/xtaci/lossyconn v0.0.0-20200209145036-adba10fffc37 // indirect
 	gocloud.dev v0.22.0
 	goftp.io/server/v2 v2.0.0
