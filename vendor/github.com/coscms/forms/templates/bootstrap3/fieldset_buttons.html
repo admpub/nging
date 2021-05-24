@@ -1,8 +1,0 @@
-<div class="clearfix form-actions">
-	<div class="col-md-offset-2 col-md-10{{if .classes }}{{range $k,$v := .classes}} {{$k}}{{end}}{{end}}"{{ if .tags}}{{range $k,$v := .tags}} {{$k}}{{end}}{{end}}>
-		{{- range .fields -}}
-		{{.Render}}
-		&nbsp; &nbsp; &nbsp;
-		{{- end -}}
-	</div>
-</div>

@@ -1,8 +1,0 @@
-{{- define "main" -}}
-<div class="form-group">
-{{- if .label -}}
-<label{{ if .labelClasses }} class="{{range .labelClasses}} {{.}}{{end}}"{{end}}{{if .id}} for="{{.id}}"{{end}}>{{.label}}</label>
-{{- end -}}
-<p name="{{.name}}" class="form-control-static{{ if .classes }}{{range .classes}} {{.}}{{end}}{{end}}"{{if .id}} id="{{.id}}"{{end}}{{if .params}}{{range $k, $v := .params}} {{$k}}="{{$v}}"{{end}}{{end}}{{if .css}} style="{{range $k, $v := .css}}{{$k}}: {{$v}}; {{end}}"{{end}}{{range $k,$v := .tags}} {{$k}}{{end}}>{{.text}}</p>
-</div>
-{{- end -}}

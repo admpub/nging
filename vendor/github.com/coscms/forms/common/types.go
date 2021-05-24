@@ -46,13 +46,37 @@ var (
 	LabelFn = func(s string) string {
 		return s
 	}
-	FileSystem fs.FS
+	FileSystem FileSystems
 
 	//private
 	cachedTemplate = make(map[string]*template.Template)
 	cachedConfig   = make(map[string]*config.Config)
 	lock           = new(sync.RWMutex)
 )
+
+type FileSystems []fs.FS
+
+func (f FileSystems) Open(name string) (file fs.File, err error) {
+	for _, i := range f {
+		file, err = i.Open(name)
+		if err == nil {
+			return
+		}
+	}
+	return
+}
+
+func (f FileSystems) Size() int {
+	return len(f)
+}
+
+func (f FileSystems) IsEmpty() bool {
+	return f.Size() == 0
+}
+
+func (f *FileSystems) Register(fileSystem fs.FS) {
+	*f = append(*f, fileSystem)
+}
 
 const (
 	PACKAGE_NAME = "github.com/coscms/forms"
@@ -101,7 +125,7 @@ func TmplDir(style string) (tmplDir string) {
 
 // CreateUrl creates the complete url of the desired widget template
 func CreateUrl(widget string) string {
-	if FileSystem != nil {
+	if !FileSystem.IsEmpty() {
 		fp, err := FileSystem.Open(widget)
 		if err == nil {
 			defer fp.Close()
@@ -112,7 +136,7 @@ func CreateUrl(widget string) string {
 		}
 	}
 	if !TmplExists(widget) {
-		return filepath.Join(os.Getenv("GOPATH"), "src", PACKAGE_NAME, widget)
+		return filepath.Join(os.Getenv("GOPATH"), "src", PACKAGE_NAME, `defaults`, widget)
 	}
 	return widget
 }
@@ -201,7 +225,7 @@ func ParseTmpl(data interface{},
 				return err.Error()
 			}
 		}
-		if FileSystem != nil {
+		if !FileSystem.IsEmpty() {
 			tpl, err = c.ParseFS(FileSystem, tpls...)
 		} else {
 			tpl, err = c.ParseFiles(tpls...)

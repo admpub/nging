@@ -1,3 +1,0 @@
-<fieldset{{if .classes }} class="{{range $k,$v := .classes}} {{$k}}{{end}}"{{end}}{{ if .tags}}{{range $k,$v := .tags}} {{$k}}{{end}}{{end}}>
-	{{range .fields}}{{ .Render }}{{end}}
-</fieldset>

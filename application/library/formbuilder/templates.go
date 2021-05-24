@@ -10,5 +10,5 @@ import (
 var templateFS embed.FS
 
 func init() {
-	common.FileSystem = templateFS
+	common.FileSystem.Register(templateFS)
 }

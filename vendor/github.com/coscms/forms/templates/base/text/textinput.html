@@ -1,6 +1,0 @@
-{{- define "main" -}}
-{{- if .label -}}
-<label{{ if .labelClasses }} class="{{range .labelClasses}} {{.}}{{end}}"{{end}}{{if .id}} for="{{.id}}"{{end}}>{{.label}}</label>
-{{- end -}}
-<input type="text" name="{{.name}}"{{ if .classes }} class="{{range .classes}} {{.}}{{end}}"{{end}}{{if .id}} id="{{.id}}"{{end}}{{if .params}}{{range $k, $v := .params}} {{$k}}="{{$v}}"{{end}}{{end}}{{if .css}} style="{{range $k, $v := .css}}{{$k}}: {{$v}}; {{end}}"{{end}}{{range $k,$v := .tags}} {{$k}}{{end}}{{ if .value}} value="{{.value}}"{{end}}>
-{{- end -}}

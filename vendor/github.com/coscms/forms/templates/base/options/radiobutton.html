@@ -1,9 +1,0 @@
-{{- define "main" -}}
-{{- $p := . -}}
-{{- range $k, $v := .choices -}}
-{{- range $v -}}
-<label{{ if $p.labelClasses }} class="{{range $p.labelClasses}} {{.}}{{end}}"{{end}} for="{{.Id}}">{{.Val}}</label>
-<input type="radio" name="{{$p.name}}"{{ if $p.classes }} class="{{range $p.classes}} {{.}}{{end}}"{{end}} value="{{.Id}}"{{if $p.params}}{{range $k2, $v2 := $p.params}} {{$k2}}="{{$v2}}"{{end}}{{end}}{{if $p.css}} style="{{range $k2, $v2 := .css}}{{$k2}}: {{$v2}}; {{end}}"{{end}}{{if .Checked}} checked="checked"{{end}}>
-{{- end -}}
-{{- end -}}
-{{- end -}}

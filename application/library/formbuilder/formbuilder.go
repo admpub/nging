@@ -81,9 +81,9 @@ func New(c echo.Context, m interface{}, jsonFile string, ingoreFields ...string)
 		form.AddBeforeRender(setNextURLField)
 	}
 	wrap := forms.NewForms(form)
+	c.Set(`forms`, wrap)
 	// 手动调用:
 	// wrap.ParseFromConfig()
-	c.Set(`forms`, wrap)
 	return wrap
 }
 
@@ -130,6 +130,8 @@ func NewModel(c echo.Context, m interface{}, cfg *config.Config, validFields ...
 	form.AddClass("form-horizontal").SetParam("role", "form")
 	wrap := forms.NewForms(form)
 	c.Set(`forms`, wrap)
+	// 手动调用:
+	// wrap.ParseFromConfig()
 	return wrap
 }
 

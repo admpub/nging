@@ -33,7 +33,7 @@ func TplFuncs() template.FuncMap {
 }
 
 func ParseFiles(files ...string) (*template.Template, error) {
-	if FileSystem != nil {
+	if !FileSystem.IsEmpty() {
 		return ParseFS(FileSystem, files...)
 	}
 	name := filepath.Base(files[0])
