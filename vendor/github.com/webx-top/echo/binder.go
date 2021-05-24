@@ -704,7 +704,7 @@ func SetFormValue(f engine.URLValuer, fName string, index int, value interface{}
 }
 
 //FlatStructToForm 映射struct到form
-func FlatStructToForm(ctx Context, m interface{}, topName string, fieldNameFormatter FieldNameFormatter, formatters ...param.StringerMap) {
+func FlatStructToForm(ctx Context, m interface{}, fieldNameFormatter FieldNameFormatter, formatters ...param.StringerMap) {
 	StructToForm(ctx, m, ``, fieldNameFormatter, formatters...)
 }
 
