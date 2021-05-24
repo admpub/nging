@@ -37,6 +37,8 @@ type Driver interface {
 	//获取模板根路径
 	TmplDir() string
 	SetTmplPathFixer(func(echo.Context, string) string)
+	TmplPath(echo.Context, string) string
+
 	Debug() bool
 	SetDebug(bool)
 	SetLogger(logger.Logger)
@@ -79,41 +81,23 @@ func (n *NopRenderer) Render(w io.Writer, name string, data interface{}, c echo.
 	return nil
 }
 
-func (n *NopRenderer) Manager() Manager {
-	return n.mgr
-}
-
-func (n *NopRenderer) Debug() bool { return false }
-
-func (n *NopRenderer) SetDebug(_ bool) {}
-
-func (n *NopRenderer) Init() {}
-
-func (n *NopRenderer) TmplDir() string { return `` }
-
+func (n *NopRenderer) Manager() Manager                                     { return n.mgr }
+func (n *NopRenderer) Debug() bool                                          { return false }
+func (n *NopRenderer) SetDebug(_ bool)                                      {}
+func (n *NopRenderer) Init()                                                {}
+func (n *NopRenderer) TmplDir() string                                      { return `` }
 func (n *NopRenderer) SetTmplPathFixer(_ func(echo.Context, string) string) {}
-
-func (n *NopRenderer) SetLogger(_ logger.Logger) {}
-
-func (n *NopRenderer) Logger() logger.Logger { return nil }
-
-func (n *NopRenderer) SetContentProcessor(fn func([]byte) []byte) {}
-
-func (n *NopRenderer) SetManager(mgr Manager) {
-	n.mgr = mgr
-}
-
-func (n *NopRenderer) SetFuncMap(_ func() map[string]interface{}) {}
-
+func (n *NopRenderer) TmplPath(_ echo.Context, _ string) string             { return `` }
+func (n *NopRenderer) SetLogger(_ logger.Logger)                            {}
+func (n *NopRenderer) Logger() logger.Logger                                { return nil }
+func (n *NopRenderer) SetContentProcessor(fn func([]byte) []byte)           {}
+func (n *NopRenderer) SetManager(mgr Manager)                               { n.mgr = mgr }
+func (n *NopRenderer) SetFuncMap(_ func() map[string]interface{})           {}
 func (n *NopRenderer) Fetch(_ string, _ interface{}, _ echo.Context) string { return `` }
-
-func (n *NopRenderer) RawContent(_ string) ([]byte, error) { return nil, nil }
-
-func (n *NopRenderer) MonitorEvent(_ func(string)) {}
-
-func (n *NopRenderer) ClearCache() {}
-
-func (n *NopRenderer) Close() {}
+func (n *NopRenderer) RawContent(_ string) ([]byte, error)                  { return nil, nil }
+func (n *NopRenderer) MonitorEvent(_ func(string))                          {}
+func (n *NopRenderer) ClearCache()                                          {}
+func (n *NopRenderer) Close()                                               {}
 
 var (
 	FE       = []byte(`$1 $2`)

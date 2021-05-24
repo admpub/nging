@@ -76,6 +76,23 @@ func (d *DBI) TableComment(structName string) string {
 	return ``
 }
 
+func (d *DBI) NewModel(structName string, connID ...int) Model {
+	mi, ok := d.Models[structName]
+	if !ok {
+		return nil
+	}
+	var _connID int
+	if len(connID) > 0 {
+		_connID = connID[0]
+	}
+	return mi.Make(_connID)
+}
+
+func (d *DBI) ModelInfo(structName string) *ModelInstancer {
+	mi, _ := d.Models[structName]
+	return mi
+}
+
 type Short interface {
 	Short_() string
 }

@@ -40,6 +40,7 @@ type Manager interface {
 	SetLogger(logger.Logger)
 	ClearCache()
 	GetTemplate(string) ([]byte, error)
+	SetTemplate(string, []byte) error
 }
 
 var _ Manager = &BaseManager{}
@@ -64,3 +65,4 @@ func (b *BaseManager) ChangeWatchDir(oldDir string, newDir string) (err error)  
 func (b *BaseManager) SetLogger(logger.Logger)                                            {}
 func (b *BaseManager) ClearCache()                                                        {}
 func (b *BaseManager) GetTemplate(string) ([]byte, error)                                 { return nil, nil }
+func (b *BaseManager) SetTemplate(string, []byte) error                                   { return nil }
