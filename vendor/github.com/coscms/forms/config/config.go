@@ -52,10 +52,8 @@ func (c *Config) hasNameInElements(name string, elements []*Element) bool {
 		if elem.Type == `langset` {
 			continue
 		}
-		if elem.Elements != nil {
-			if c.hasNameInElements(name, elem.Elements) {
-				return true
-			}
+		if c.hasNameInElements(name, elem.Elements) {
+			return true
 		}
 	}
 	return false

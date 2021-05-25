@@ -461,7 +461,8 @@ func (form *Form) unWindStructure(m interface{}, baseName string) ([]interface{}
 				f = nil
 			default:
 				if t.Field(i).Type.Kind() == reflect.Struct ||
-					(t.Field(i).Type.Kind() == reflect.Ptr && t.Field(i).Type.Elem().Kind() == reflect.Struct) {
+					(t.Field(i).Type.Kind() == reflect.Ptr &&
+						t.Field(i).Type.Elem().Kind() == reflect.Struct) {
 					fl, fs := form.unWindStructure(v.Field(i).Interface(), fName)
 					if len(fs) > 0 {
 						if len(fieldSort) == 0 {
@@ -579,10 +580,8 @@ func (f *Form) Data() map[string]interface{} {
 }
 
 func (f *Form) runBefore() {
-	if f.beforeRender != nil {
-		for _, fn := range f.beforeRender {
-			fn()
-		}
+	for _, fn := range f.beforeRender {
+		fn()
 	}
 }
 
@@ -613,16 +612,13 @@ func (f *Form) String() string {
 // Elements adds the provided elements to the form.
 func (f *Form) Elements(elems ...conf.FormElement) {
 	for _, e := range elems {
-		t := reflect.TypeOf(e)
-		if t.Implements(reflect.TypeOf((*fields.FieldInterface)(nil)).Elem()) {
-			f.addField(e.(fields.FieldInterface))
-			continue
-		}
-		switch reflect.ValueOf(e).Type().String() {
-		case "*forms.FieldSetType":
-			f.addFieldSet(e.(*FieldSetType))
-		case "*forms.LangSetType":
-			f.addLangSet(e.(*LangSetType))
+		switch v := e.(type) {
+		case fields.FieldInterface:
+			f.addField(v)
+		case *FieldSetType:
+			f.addFieldSet(v)
+		case *LangSetType:
+			f.addLangSet(v)
 		}
 	}
 }
@@ -731,15 +727,14 @@ func (f *Form) Field(name string) fields.FieldInterface {
 	if !ok {
 		return &fields.Field{}
 	}
-	t := reflect.TypeOf(f.FieldList[ind])
-	switch {
-	case t.Implements(reflect.TypeOf((*fields.FieldInterface)(nil)).Elem()):
-		return f.FieldList[ind].(fields.FieldInterface)
-	case t.Implements(reflect.TypeOf((*FieldSetType)(nil)).Elem()):
+	switch v := f.FieldList[ind].(type) {
+	case fields.FieldInterface:
+		return v
+	case *FieldSetType:
 		if v, ok := f.ContainerMap[name]; ok {
 			return f.FieldSet(v).Field(name)
 		}
-	case t.Implements(reflect.TypeOf((*LangSetType)(nil)).Elem()):
+	case *LangSetType:
 		if v, ok := f.ContainerMap[name]; ok {
 			return f.LangSet(v).Field(name)
 		}
@@ -761,9 +756,9 @@ func (f *Form) LangSet(name string) *LangSetType {
 	if !ok {
 		return &LangSetType{}
 	}
-	switch reflect.ValueOf(f.FieldList[ind]).Type().String() {
-	case "*forms.LangSetType":
-		return f.FieldList[ind].(*LangSetType)
+	switch v := f.FieldList[ind].(type) {
+	case *LangSetType:
+		return v
 	default:
 		return &LangSetType{}
 	}
@@ -779,9 +774,9 @@ func (f *Form) FieldSet(name string) *FieldSetType {
 	if !ok {
 		return &FieldSetType{}
 	}
-	switch reflect.ValueOf(f.FieldList[ind]).Type().String() {
-	case "*forms.FieldSetType":
-		return f.FieldList[ind].(*FieldSetType)
+	switch v := f.FieldList[ind].(type) {
+	case *FieldSetType:
+		return v
 	default:
 		return &FieldSetType{}
 	}

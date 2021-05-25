@@ -21,7 +21,6 @@ package forms
 import (
 	"bytes"
 	"html/template"
-	"reflect"
 	"strconv"
 	"strings"
 
@@ -166,10 +165,9 @@ func (f *FieldSetType) SortAll(sortList ...string) *FieldSetType {
 // Elements adds the provided elements to the fieldset.
 func (f *FieldSetType) Elements(elems ...conf.FormElement) *FieldSetType {
 	for _, e := range elems {
-		t := reflect.TypeOf(e)
-		switch {
-		case t.Implements(reflect.TypeOf((*fields.FieldInterface)(nil)).Elem()):
-			f.addField(e.(fields.FieldInterface))
+		switch v := e.(type) {
+		case fields.FieldInterface:
+			f.addField(v)
 		}
 	}
 	return f

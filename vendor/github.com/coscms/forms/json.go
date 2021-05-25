@@ -156,12 +156,10 @@ func (form *Form) Filter(values url.Values) (url.Values, *validation.ValidationE
 	for _, ele := range form.config.Elements {
 		switch ele.Type {
 		case `langset`, `fieldset`:
-			if ele.Elements != nil {
-				for _, e := range ele.Elements {
-					r, err = form.FilterByElement(values, r, e)
-					if err != nil {
-						return r, err
-					}
+			for _, e := range ele.Elements {
+				r, err = form.FilterByElement(values, r, e)
+				if err != nil {
+					return r, err
 				}
 			}
 		default:
@@ -199,11 +197,9 @@ func (form *Form) ValidElements(elements []*conf.Element, t reflect.Type, v refl
 		case `langset`:
 			//form.ValidElements(ele.Elements, t, v)
 		case `fieldset`:
-			if ele.Elements != nil {
-				for _, e := range ele.Elements {
-					if !form.IsIgnored(e.Name) {
-						form.validElement(e, t, v)
-					}
+			for _, e := range ele.Elements {
+				if !form.IsIgnored(e.Name) {
+					form.validElement(e, t, v)
 				}
 			}
 		default:
@@ -215,11 +211,9 @@ func (form *Form) ValidElements(elements []*conf.Element, t reflect.Type, v refl
 }
 
 func (form *Form) IsIgnored(fieldName string) bool {
-	if form.IngoreValid != nil {
-		for _, name := range form.IngoreValid {
-			if fieldName == name {
-				return true
-			}
+	for _, name := range form.IngoreValid {
+		if fieldName == name {
+			return true
 		}
 	}
 	return false
@@ -245,17 +239,15 @@ func (form *Form) ParseFromConfig(insertErrors ...bool) *Form {
 	if len(insertErrors) < 1 || insertErrors[0] {
 		form.InsertErrors()
 	}
-	if r.Attributes != nil {
-		for _, attr := range r.Attributes {
-			var k, v string
-			switch len(attr) {
-			case 2:
-				v = attr[1]
-				fallthrough
-			case 1:
-				k = attr[0]
-				form.SetParam(k, v)
-			}
+	for _, attr := range r.Attributes {
+		var k, v string
+		switch len(attr) {
+		case 2:
+			v = attr[1]
+			fallthrough
+		case 1:
+			k = attr[0]
+			form.SetParam(k, v)
 		}
 	}
 	if len(r.ID) > 0 {
@@ -294,12 +286,10 @@ func (form *Form) ParseElements(es ElementSetter, elements []*conf.Element, lang
 			es.Elements(f)
 		case `fieldset`:
 			elems := []fields.FieldInterface{}
-			if ele.Elements != nil {
-				for _, e := range ele.Elements {
-					elem := form.parseElement(e, t, v)
-					if elem != nil {
-						elems = append(elems, elem)
-					}
+			for _, e := range ele.Elements {
+				elem := form.parseElement(e, t, v)
+				if elem != nil {
+					elems = append(elems, elem)
 				}
 			}
 			f := form.NewFieldSet(ele.Name, form.labelFn(ele.Label), elems...)

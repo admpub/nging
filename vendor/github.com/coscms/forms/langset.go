@@ -19,7 +19,6 @@ package forms
 
 import (
 	"bytes"
-	"reflect"
 	"strconv"
 	"strings"
 
@@ -182,12 +181,11 @@ func (f *LangSetType) SortAll(sortList ...string) *LangSetType {
 // Elements adds the provided elements to the langset.
 func (f *LangSetType) Elements(elems ...conf.FormElement) {
 	for _, e := range elems {
-		t := reflect.TypeOf(e)
-		switch {
-		case t.Implements(reflect.TypeOf((*fields.FieldInterface)(nil)).Elem()):
-			f.addField(e.(fields.FieldInterface))
-		case reflect.ValueOf(e).Type().String() == "*forms.FieldSetType":
-			f.addFieldSet(e.(*FieldSetType))
+		switch v := e.(type) {
+		case fields.FieldInterface:
+			f.addField(v)
+		case *FieldSetType:
+			f.addFieldSet(v)
 		}
 	}
 }
@@ -284,11 +282,10 @@ func (f *LangSetType) Field(name string) fields.FieldInterface {
 	if !ok {
 		return &fields.Field{}
 	}
-	t := reflect.TypeOf(field)
-	switch {
-	case t.Implements(reflect.TypeOf((*fields.FieldInterface)(nil)).Elem()):
-		return field.(fields.FieldInterface)
-	case t.Implements(reflect.TypeOf((*FieldSetType)(nil)).Elem()):
+	switch v := field.(type) {
+	case fields.FieldInterface:
+		return v
+	case *FieldSetType:
 		if v, ok := f.ContainerMap[name]; ok {
 			r := strings.SplitN(name, `:`, 2)
 			switch len(r) {
@@ -306,10 +303,15 @@ func (f *LangSetType) Field(name string) fields.FieldInterface {
 // param format: "language:name"
 func (f *LangSetType) FieldSet(name string) *FieldSetType {
 	field, ok := f.FieldMap[name]
-	if !ok || reflect.ValueOf(field).Type().String() != "*forms.FieldSetType" {
+	if !ok {
 		return &FieldSetType{}
 	}
-	return field.(*FieldSetType)
+	switch v := field.(type) {
+	case *FieldSetType:
+		return v
+	default:
+		return &FieldSetType{}
+	}
 }
 
 // NewFieldSet creates and returns a new FieldSetType with the given name and list of fields.
