@@ -52,6 +52,9 @@ func NumberFieldFromInstance(val reflect.Value, t reflect.Type, fieldNo int, nam
 	if v := common.TagVal(t, fieldNo, "form_max"); v != "" {
 		ret.SetParam("max", v)
 	}
+	if v := common.TagVal(t, fieldNo, "form_step"); v != "" {
+		ret.SetParam("step", v)
+	}
 	ret.SetValue(defaultValue(val, t, fieldNo, useFieldValue))
 	return ret
 }

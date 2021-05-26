@@ -482,8 +482,11 @@ func (form *Form) unWindStructure(m interface{}, baseName string) ([]interface{}
 			label := common.TagVal(t, i, "form_label")
 			if len(label) == 0 {
 				label = strings.Title(t.Field(i).Name)
+			} else if label != `-` {
+				label = form.labelFn(label)
+			} else {
+				label = ``
 			}
-			label = form.labelFn(label)
 			f.SetLabel(label)
 
 			params := common.TagVal(t, i, "form_params")
@@ -503,8 +506,8 @@ func (form *Form) unWindStructure(m interface{}, baseName string) ([]interface{}
 			if len(valid) > 0 {
 				form.validTagFn(valid, f)
 			}
-			fieldsetLabel := common.TagVal(t, i, "form_fieldset")
-			fieldsort := common.TagVal(t, i, "form_sort")
+			fieldsetLabel := common.TagVal(t, i, "form_fieldset") // label;name or name
+			fieldsort := common.TagVal(t, i, "form_sort")         // 1 ( or other number ) or "last"
 			if len(fieldsetLabel) > 0 {
 				fieldsets := strings.SplitN(fieldsetLabel, ";", 2)
 				var fieldsetName string
