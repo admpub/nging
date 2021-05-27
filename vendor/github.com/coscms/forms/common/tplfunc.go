@@ -24,12 +24,10 @@ import (
 	"io/fs"
 	"io/ioutil"
 	"path/filepath"
-
-	"github.com/webx-top/echo/middleware/tplfunc"
 )
 
-func TplFuncs() template.FuncMap {
-	return tplfunc.TplFuncMap
+var TplFuncs = func() template.FuncMap {
+	return template.FuncMap{}
 }
 
 func ParseFiles(files ...string) (*template.Template, error) {

@@ -424,6 +424,8 @@ github.com/coreos/pkg v0.0.0-20160727233714-3ac0863d7acf/go.mod h1:E3G3o1h8I7cfc
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/coscms/forms v1.4.6 h1:/X3urlub1VFLn6ZA2jcfA4aY3bpt2qlKIVy/gCbZkUc=
 github.com/coscms/forms v1.4.6/go.mod h1:HW7DrzshigtrR15JRv+w8dtSgSD3Bl0tQLPotCRETEI=
+github.com/coscms/forms v1.5.0 h1:stBO20AaxcLq49pO/7fw+ASzQzCpMF3Ka/oliqg6bpg=
+github.com/coscms/forms v1.5.0/go.mod h1:tJcs7OQdWVBI+R5HhlC+24Bsyns7Rm5lVmcojTTnGu8=
 github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856 h1:P8+R76nNN/kIx12ptxkfbwhhiuDVwf5hLA6qVZSfe5M=
 github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856/go.mod h1:hMGWSVn9gPkG9ERZdzfh1DIP5Yvued94t9cgVzErOC0=
 github.com/cpu/goacmedns v0.0.1/go.mod h1:sesf/pNnCYwUevQEQfEwY0Y3DydlQWSGZbaMElOWxok=
