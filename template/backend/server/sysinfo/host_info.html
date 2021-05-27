@@ -61,16 +61,18 @@
 				<tr>
 					<td class="text-right">{{"CPU型号"|T}}</td>
                     <td>
-						{{range $k,$v:=.CPU}}
+						{{- range $k, $v := .CPU -}}
 						<span class="badge badge-primary">{{$v.ModelName}}</span>
-						{{if gt $v.Cores 1}}
+						{{- if gt $v.Cores 1 -}}
+						&nbsp;
 						<strong data-toggle="tooltip" data-placement="left" data-container="body" title="{{T "%d核" $v.Cores}}">&times; {{$v.Cores}}</strong>
-						{{end}}
-						{{if $v.PhysicalID}}
+						{{- end -}}
+						{{- if $v.PhysicalID -}}
+						&nbsp;
 						<span data-toggle="tooltip" data-placement="left" data-container="body" title="{{"物理ID"|T}}">({{$v.PhysicalID}})</span>
-						{{end}}
+						{{- end -}}
 						<br />
-						{{end}}
+						{{- end -}}
 					</td>
 					<td class="text-right">{{"CPU负载"|T}}</td>
                     <td id="cpu-per-percent" class="clickable" data-toggle="tooltip" data-placement="left" data-container="body" title="{{`点击看进度条`|T}}"></td>
@@ -90,7 +92,7 @@
 							</tr>
 						</thead>
 						<tbody>
-						{{range $k, $v := .CPUPercent}}
+						{{- range $k, $v := .CPUPercent -}}
 							<tr>
 								<td>{{$k}}</td>
 								<td>
@@ -99,7 +101,7 @@
 								</div>
 								</td>
 							</tr>
-						{{end}}
+						{{- end -}}
 						</tbody>
 						</table>
 					</td>
