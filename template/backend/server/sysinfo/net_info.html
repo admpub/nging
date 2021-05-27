@@ -8,9 +8,9 @@
             <thead class="no-border">
 				<tr>
 					<th width="50">{{"编号"|T}}</th>
-					<th>{{"属性名"|T}}</th>
+					<th width="100" class="text-right">{{"属性名"|T}}</th>
 					<th>{{"属性值"|T}}</th>
-					<th>{{"属性名"|T}}</th>
+					<th width="100" class="text-right">{{"属性名"|T}}</th>
 					<th>{{"属性值"|T}}</th>
 				</tr>
 			</thead>
@@ -18,15 +18,15 @@
                 {{range $k,$v:=.NetIO}}
 				<tr>
 					<td rowspan="2" class="text-center">{{$k}}</td>
-					<td>{{"发送数据量"|T}}</td>
+					<td class="text-right">{{"发送数据量"|T}}</td>
                     <td>{{$v.BytesSent|FormatByte}}</td>
-					<td>{{"接收数据量"|T}}</td>
+					<td class="text-right">{{"接收数据量"|T}}</td>
 					<td>{{$v.BytesRecv|FormatByte}}</td>
 				</tr>
 				<tr>
-					<td>{{"发送包数量"|T}}</td>
+					<td class="text-right">{{"发送包数量"|T}}</td>
                     <td>{{$v.PacketsSent}}</td>
-					<td>{{"接收包数量"|T}}</td>
+					<td class="text-right">{{"接收包数量"|T}}</td>
 					<td>{{$v.PacketsRecv}}</td>
 				</tr>
                 {{end}}
