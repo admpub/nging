@@ -63,6 +63,12 @@ func (t *Transform) Destination() string {
 	return t.Key
 }
 
+func (t *Transform) Set(key string, fn func(value interface{}, row Store) interface{}) *Transform {
+	t.SetKey(key)
+	t.SetFunc(fn)
+	return t
+}
+
 func (t *Transform) SetKey(key string) *Transform {
 	t.Key = key
 	return t

@@ -18,3 +18,7 @@ type CookieConfigGetter interface {
 func CookieConfig() scookie.Config {
 	return echo.Get(`DefaultConfig`).(CookieConfigGetter).CookieConfig()
 }
+
+func Setting(group ...string) echo.H {
+	return echo.GetStoreByKeys(`NgingConfig`, group...)
+}

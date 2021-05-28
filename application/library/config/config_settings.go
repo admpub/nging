@@ -25,31 +25,12 @@ import (
 	"github.com/webx-top/echo/subdomains"
 
 	"github.com/admpub/log"
+	"github.com/admpub/nging/application/library/common"
 	"github.com/admpub/nging/application/library/notice"
 	"github.com/admpub/nging/application/registry/settings"
 )
 
-func Setting(group ...string) echo.H {
-	st, ok := echo.Get(`NgingConfig`).(echo.H)
-	if !ok {
-		if st == nil {
-			st = echo.H{}
-		}
-		return st
-	}
-	sz := len(group)
-	if sz <= 0 {
-		return st
-	}
-	cfg := st.GetStore(group[0])
-	if sz == 1 {
-		return cfg
-	}
-	for _, key := range group[1:] {
-		cfg = cfg.GetStore(key)
-	}
-	return cfg
-}
+var Setting = common.Setting
 
 func NewSettings(config *Config) *Settings {
 	c := &Settings{
