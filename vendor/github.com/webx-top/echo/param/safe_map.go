@@ -134,6 +134,10 @@ func (s *SafeMap) Uint64(key interface{}, defaults ...interface{}) uint64 {
 	return AsUint64(s.Get(key, defaults...))
 }
 
+func (s *SafeMap) GetStore(key interface{}, defaults ...interface{}) Store {
+	return AsStore(s.Get(key, defaults...))
+}
+
 func (s *SafeMap) Timestamp(key interface{}, defaults ...interface{}) time.Time {
 	return AsTimestamp(s.Get(key, defaults...))
 }

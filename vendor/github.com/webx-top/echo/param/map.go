@@ -150,6 +150,21 @@ func (s Store) GetStore(key string, defaults ...interface{}) Store {
 	return AsStore(s.Get(key, defaults...))
 }
 
+func (s Store) GetStoreByKeys(keys ...string) Store {
+	sz := len(keys)
+	if sz == 0 {
+		return s
+	}
+	r := s.GetStore(keys[0])
+	if sz == 1 {
+		return r
+	}
+	for _, key := range keys[1:] {
+		r = r.GetStore(key)
+	}
+	return r
+}
+
 func (s Store) Delete(keys ...string) Store {
 	for _, key := range keys {
 		if _, y := s[key]; y {

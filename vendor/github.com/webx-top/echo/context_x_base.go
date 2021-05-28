@@ -217,6 +217,13 @@ func (c *xContext) Funcs() map[string]interface{} {
 	return c.funcs
 }
 
+func (c *xContext) Renderer() Renderer {
+	if c.renderer != nil {
+		return c.renderer
+	}
+	return c.echo.renderer
+}
+
 func (c *xContext) Fetch(name string, data interface{}) (b []byte, err error) {
 	if c.renderer == nil {
 		if c.echo.renderer == nil {

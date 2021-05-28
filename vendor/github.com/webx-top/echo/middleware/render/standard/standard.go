@@ -220,7 +220,7 @@ func (self *Standard) SetTmplPathFixer(fn func(echo.Context, string) string) {
 	self.tmplPathFixer = fn
 }
 
-func (self *Standard) TemplatePath(c echo.Context, p string) string {
+func (self *Standard) TmplPath(c echo.Context, p string) string {
 	if self.tmplPathFixer != nil {
 		return self.tmplPathFixer(c, p)
 	}
@@ -276,7 +276,7 @@ func (self *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Temp
 	funcs := c.Funcs()
 	tmplOriginalName := tmplName
 	tmplName = tmplName + self.Ext
-	tmplName = self.TemplatePath(c, tmplName)
+	tmplName = self.TmplPath(c, tmplName)
 	cachedKey := tmplName
 	var funcMap htmlTpl.FuncMap
 	if self.getFuncs != nil {
@@ -327,7 +327,7 @@ func (self *Standard) parse(c echo.Context, tmplName string) (tmpl *htmlTpl.Temp
 		self.ParseBlock(c, content, subcs, extcs)
 		extFile := m[0][1] + self.Ext
 		passObject := m[0][2]
-		extFile = self.TemplatePath(c, extFile)
+		extFile = self.TmplPath(c, extFile)
 		b, err = self.RawContent(extFile)
 		if err != nil {
 			tmpl, _ = t.Parse(err.Error())
@@ -514,7 +514,7 @@ func (self *Standard) ContainsSubTpl(c echo.Context, content string, subcs map[s
 		tmplFile := v[1]
 		passObject := v[2]
 		tmplFile += self.Ext
-		tmplFile = self.TemplatePath(c, tmplFile)
+		tmplFile = self.TmplPath(c, tmplFile)
 		if _, ok := subcs[tmplFile]; !ok {
 			// if v, ok := self.CachedRelation[tmplFile]; ok && v.Tpl[1] != nil {
 			// 	subcs[tmplFile] = ""

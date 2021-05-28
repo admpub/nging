@@ -95,6 +95,17 @@ func Get(key interface{}, defaults ...interface{}) interface{} {
 	return globalVars.Get(key, defaults...)
 }
 
+func GetStoreByKeys(key interface{}, keys ...string) H {
+	st, ok := Get(key).(H)
+	if !ok {
+		if st == nil {
+			st = H{}
+		}
+		return st
+	}
+	return st.GetStoreByKeys(keys...)
+}
+
 func GetOk(key interface{}) (interface{}, bool) {
 	return globalVars.GetOk(key)
 }
