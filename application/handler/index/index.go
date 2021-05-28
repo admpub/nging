@@ -147,13 +147,13 @@ var (
 
 func init() {
 	donationAccountTypes.AddItem(&echo.KV{
-		K: `alipay`, V: `支付宝付款`, X: echo.H{`qrimg`: `alipay.jpg`},
+		K: `alipay`, V: `支付宝付款`, H: echo.H{`qrimg`: `alipay.jpg`},
 	})
 	donationAccountTypes.AddItem(&echo.KV{
-		K: `wechat`, V: `微信支付`, X: echo.H{`qrimg`: `wechat.png`},
+		K: `wechat`, V: `微信支付`, H: echo.H{`qrimg`: `wechat.png`},
 	})
 	donationAccountTypes.AddItem(&echo.KV{
-		K: `btcoin`, V: `比特币支付`, X: echo.H{`qrimg`: `btcoin.jpeg`},
+		K: `btcoin`, V: `比特币支付`, H: echo.H{`qrimg`: `btcoin.jpeg`},
 	})
 }
 
