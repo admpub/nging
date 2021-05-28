@@ -39,7 +39,7 @@ type LangSetType struct {
 	OrigName     string
 	Tmpl         string
 	Params       map[string]interface{}
-	Tags         map[string]struct{}
+	Tags         common.HTMLAttrValues
 	AppendData   map[string]interface{}
 	SetAlone     bool
 	FormStyle    string
@@ -148,7 +148,7 @@ func LangSet(name string, style string, languages ...*conf.Language) *LangSetTyp
 		OrigName:     name,
 		Tmpl:         "langset",
 		Params:       map[string]interface{}{},
-		Tags:         map[string]struct{}{},
+		Tags:         common.HTMLAttrValues{},
 		AppendData:   map[string]interface{}{},
 		FormStyle:    style,
 	}
@@ -392,13 +392,13 @@ func (f *LangSetType) DeleteParam(k string) *LangSetType {
 
 // AddTag adds a no-value parameter (e.g.: "disabled", "checked") to the langset.
 func (f *LangSetType) AddTag(tag string) *LangSetType {
-	f.Tags[tag] = struct{}{}
+	f.Tags.Add(tag)
 	return f
 }
 
 // RemoveTag removes a tag from the langset, if it was present.
 func (f *LangSetType) RemoveTag(tag string) *LangSetType {
-	delete(f.Tags, tag)
+	f.Tags.Remove(tag)
 	return f
 }
 

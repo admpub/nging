@@ -607,7 +607,7 @@ func (form *Form) ToConfig() *conf.Config {
 			}
 			var temp string
 			var join string
-			for c := range f.Class {
+			for _, c := range f.Class {
 				temp += join + c
 				join = ` `
 			}
@@ -616,7 +616,7 @@ func (form *Form) ToConfig() *conf.Config {
 				temp = ``
 				join = ``
 			}
-			for c := range f.Tags {
+			for _, c := range f.Tags {
 				element.Attributes = append(element.Attributes, []string{c})
 			}
 			for _, ff := range f.FieldList {

@@ -26,7 +26,7 @@ import (
 	"strings"
 
 	"github.com/coscms/forms/common"
-	. "github.com/coscms/forms/config"
+	"github.com/coscms/forms/config"
 	"github.com/coscms/forms/widgets"
 )
 
@@ -37,13 +37,13 @@ type Field struct {
 	Widget     widgets.WidgetInterface // Public Widget field for widget customization
 	CurrName   string
 	OrigName   string
-	Class      []string
+	Class      common.HTMLAttrValues
 	ID         string
 	Params     map[string]interface{}
 	CSS        map[string]string
 	Label      string
-	LabelClass []string
-	Tag        map[string]struct{}
+	LabelClass common.HTMLAttrValues
+	Tag        common.HTMLAttrValues
 	Value      string
 	Helptext   string
 	Errors     []string
@@ -96,9 +96,9 @@ type FieldInterface interface {
 	String() string
 	SetLang(lang string)
 	Lang() string
-	Clone() FormElement
+	Clone() config.FormElement
 
-	Element() *Element
+	Element() *config.Element
 }
 
 // FieldWithType creates an empty field of the given type and identified by name.
@@ -108,13 +108,13 @@ func FieldWithType(name, t string) *Field {
 		Widget:     nil,
 		CurrName:   name,
 		OrigName:   name,
-		Class:      []string{},
+		Class:      common.HTMLAttrValues{},
 		ID:         "",
 		Params:     map[string]interface{}{},
 		CSS:        map[string]string{},
 		Label:      "",
-		LabelClass: []string{},
-		Tag:        map[string]struct{}{},
+		LabelClass: common.HTMLAttrValues{},
+		Tag:        common.HTMLAttrValues{},
 		Value:      "",
 		Helptext:   "",
 		Errors:     []string{},
@@ -148,7 +148,7 @@ func (f *Field) OriginalName() string {
 	return f.OrigName
 }
 
-func (f *Field) Clone() FormElement {
+func (f *Field) Clone() config.FormElement {
 	fc := *f
 	return &fc
 }
@@ -227,23 +227,13 @@ func (f *Field) String() string {
 
 // AddClass adds a class to the field.
 func (f *Field) AddClass(class string) FieldInterface {
-	f.Class = append(f.Class, class)
+	f.Class.Add(class)
 	return f
 }
 
 // RemoveClass removes a class from the field, if it was present.
 func (f *Field) RemoveClass(class string) FieldInterface {
-	ind := -1
-	for i, v := range f.Class {
-		if v == class {
-			ind = i
-			break
-		}
-	}
-
-	if ind != -1 {
-		f.Class = append(f.Class[:ind], f.Class[ind+1:]...)
-	}
+	f.Class.Remove(class)
 	return f
 }
 
@@ -261,23 +251,13 @@ func (f *Field) SetLabel(label string) FieldInterface {
 
 // AddLabelClass allows to define custom classes for the label.
 func (f *Field) AddLabelClass(class string) FieldInterface {
-	f.LabelClass = append(f.LabelClass, class)
+	f.LabelClass.Add(class)
 	return f
 }
 
 // RemoveLabelClass removes the given class from the field label.
 func (f *Field) RemoveLabelClass(class string) FieldInterface {
-	ind := -1
-	for i, v := range f.LabelClass {
-		if v == class {
-			ind = i
-			break
-		}
-	}
-
-	if ind != -1 {
-		f.LabelClass = append(f.LabelClass[:ind], f.LabelClass[ind+1:]...)
-	}
+	f.LabelClass.Remove(class)
 	return f
 }
 
@@ -324,13 +304,13 @@ func (f *Field) Enabled() FieldInterface {
 
 // AddTag adds a no-value parameter (e.g.: checked, disabled) to the field.
 func (f *Field) AddTag(tag string) FieldInterface {
-	f.Tag[tag] = struct{}{}
+	f.Tag.Add(tag)
 	return f
 }
 
 // RemoveTag removes a no-value parameter from the field.
 func (f *Field) RemoveTag(tag string) FieldInterface {
-	delete(f.Tag, tag)
+	f.Tag.Remove(tag)
 	return f
 }
 
@@ -608,8 +588,8 @@ func (f *Field) SetText(text string) FieldInterface {
 	return f
 }
 
-func (f *Field) Element() *Element {
-	elem := &Element{
+func (f *Field) Element() *config.Element {
+	elem := &config.Element{
 		ID:         f.ID,
 		Type:       f.Type,
 		Name:       f.CurrName,
@@ -619,8 +599,8 @@ func (f *Field) Element() *Element {
 		Template:   f.Tmpl,
 		Valid:      ``,
 		Attributes: make([][]string, 0),
-		Choices:    make([]*Choice, 0),
-		Elements:   make([]*Element, 0),
+		Choices:    make([]*config.Choice, 0),
+		Elements:   make([]*config.Element, 0),
 		Format:     f.Format,
 	}
 	var (
@@ -636,7 +616,7 @@ func (f *Field) Element() *Element {
 		temp = ``
 		join = ``
 	}
-	for c := range f.Tag {
+	for _, c := range f.Tag {
 		elem.Attributes = append(elem.Attributes, []string{c})
 	}
 	for c, v := range f.Params {
@@ -654,7 +634,7 @@ func (f *Field) Element() *Element {
 	if choices, ok := f.Choices.(map[string][]InputChoice); ok {
 		for k, items := range choices {
 			for _, v := range items {
-				elem.Choices = append(elem.Choices, &Choice{
+				elem.Choices = append(elem.Choices, &config.Choice{
 					Group:   k,
 					Option:  []string{v.ID, v.Val},
 					Checked: v.Checked,
@@ -663,7 +643,7 @@ func (f *Field) Element() *Element {
 		}
 	} else if choices, ok := f.Choices.([]InputChoice); ok {
 		for _, v := range choices {
-			elem.Choices = append(elem.Choices, &Choice{
+			elem.Choices = append(elem.Choices, &config.Choice{
 				Group:   ``,
 				Option:  []string{v.ID, v.Val},
 				Checked: v.Checked,

@@ -35,8 +35,8 @@ type FieldSetType struct {
 	OrigName   string
 	CurrName   string
 	Label      string
-	Class      map[string]struct{}
-	Tags       map[string]struct{}
+	Class      common.HTMLAttrValues
+	Tags       common.HTMLAttrValues
 	FieldList  []fields.FieldInterface
 	FieldMap   map[string]int
 	AppendData map[string]interface{}
@@ -129,8 +129,8 @@ func FieldSet(name string, label string, style string, elems ...fields.FieldInte
 		CurrName:   name,
 		OrigName:   name,
 		Label:      label,
-		Class:      map[string]struct{}{},
-		Tags:       map[string]struct{}{},
+		Class:      common.HTMLAttrValues{},
+		Tags:       common.HTMLAttrValues{},
 		FieldList:  elems,
 		FieldMap:   map[string]int{},
 		AppendData: map[string]interface{}{},
@@ -250,25 +250,25 @@ func (f *FieldSetType) Name() string {
 
 // AddClass saves the provided class for the fieldset.
 func (f *FieldSetType) AddClass(class string) *FieldSetType {
-	f.Class[class] = struct{}{}
+	f.Class.Add(class)
 	return f
 }
 
 // RemoveClass removes the provided class from the fieldset, if it was present. Nothing is done if it was not originally present.
 func (f *FieldSetType) RemoveClass(class string) *FieldSetType {
-	delete(f.Class, class)
+	f.Class.Remove(class)
 	return f
 }
 
 // AddTag adds a no-value parameter (e.g.: "disabled", "checked") to the fieldset.
 func (f *FieldSetType) AddTag(tag string) *FieldSetType {
-	f.Tags[tag] = struct{}{}
+	f.Tags.Add(tag)
 	return f
 }
 
 // RemoveTag removes a tag from the fieldset, if it was present.
 func (f *FieldSetType) RemoveTag(tag string) *FieldSetType {
-	delete(f.Tags, tag)
+	f.Tags.Remove(tag)
 	return f
 }
 

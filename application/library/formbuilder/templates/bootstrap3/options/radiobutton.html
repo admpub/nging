@@ -1,11 +1,11 @@
 {{ define "main"}}{{ $p := . }}
 <div class="form-group">
-{{if .label}}<label class="col-sm-2 control-label{{ if $p.labelClasses }}{{range $p.labelClasses}} {{.}}{{end}}{{end}}">{{.label}}</label>{{end}}
+{{if .label}}<label class="col-sm-2 control-label{{ if $p.labelClasses }} {{$p.labelClasses}}{{end}}">{{.label}}</label>{{end}}
 <div class="col-sm-{{if eq .container "fieldset"}}10{{else}}8{{end}}">
 
 {{ range .choices }}
-<label class="control-label{{ if $p.labelClasses }} {{range $p.labelClasses}} {{.}}{{end}}{{end}}">
-	<input type="radio" name="{{$p.name}}" class="ace{{if $p.classes}}{{range $p.classes}} {{.}}{{end}}{{end}}" value="{{.Id}}"{{if $p.params}}{{range $k2, $v2 := $p.params}} {{$k2}}="{{$v2}}"{{end}}{{end}}{{if $p.css}} style="{{range $k2, $v2 := .css}}{{$k2}}: {{$v2}}; {{end}}"{{end}}{{if .Checked}} checked="checked"{{end}}{{range $k2,$v2 := $p.tags}} {{$k2}}{{end}}>
+<label class="control-label{{ if $p.labelClasses }} {{$p.labelClasses}}{{end}}">
+	<input type="radio" name="{{$p.name}}" class="ace{{if $p.classes}}{{range $p.classes}} {{.}}{{end}}{{end}}" value="{{.Id}}"{{if $p.params}}{{range $k2, $v2 := $p.params}} {{$k2}}="{{$v2}}"{{end}}{{end}}{{if $p.css}} style="{{range $k2, $v2 := .css}}{{$k2}}: {{$v2}}; {{end}}"{{end}}{{if .Checked}} checked="checked"{{end}}{{range $p.tags}} {{.}}{{end}}>
 	<span class="lbl">{{.Val}}</span>
 </label>
 &nbsp; &nbsp;

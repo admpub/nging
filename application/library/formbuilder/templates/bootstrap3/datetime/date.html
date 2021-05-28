@@ -1,8 +1,8 @@
-{{ define "main"}}{{if eq .type "hidden"}}<input type="{{.type}}" name="{{.name}}" class="form-control{{ if .classes }} {{range .classes}}{{.}} {{end}}{{end}}"{{if .id}} id="{{.id}}"{{end}}{{if .params}}{{range $k, $v := .params}} {{$k}}="{{$v}}"{{end}}{{end}}{{if .css}} style="{{range $k, $v := .css}}{{$k}}: {{$v}}; {{end}}"{{end}}{{range $k,$v := .tags}} {{$k}}{{end}}{{ if .value}} value="{{.value}}"{{end}}>
+{{ define "main"}}{{if eq .type "hidden"}}<input type="{{.type}}" name="{{.name}}" class="form-control{{ if .classes }} {{.classes}}{{end}}"{{if .id}} id="{{.id}}"{{end}}{{if .params}}{{range $k, $v := .params}} {{$k}}="{{$v}}"{{end}}{{end}}{{if .css}} style="{{range $k, $v := .css}}{{$k}}: {{$v}}; {{end}}"{{end}}{{range .tags}} {{.}}{{end}}{{ if .value}} value="{{.value}}"{{end}}>
 {{else}}<div class="form-group{{if .errors}} has-error{{end}}">
-{{ if .label }}<label class="col-sm-2 control-label{{ if .labelClasses }}{{range .labelClasses}} {{.}}{{end}}{{end}}"{{if .id}} for="{{.id}}"{{end}}>{{.label}}</label>{{end}}
+{{ if .label }}<label class="col-sm-2 control-label{{ if .labelClasses }} {{.labelClasses}}{{end}}"{{if .id}} for="{{.id}}"{{end}}>{{.label}}</label>{{end}}
 <div class="col-sm-{{if eq .type "fieldset"}}10{{else}}8{{end}}">
-<input type="{{.type}}" name="{{.name}}" class="form-control{{ if .classes }} {{range .classes}}{{.}} {{end}}{{end}}"{{if .id}} id="{{.id}}"{{end}}{{if .params}}{{range $k, $v := .params}} {{$k}}="{{$v}}"{{end}}{{end}}{{if .css}} style="{{range $k, $v := .css}}{{$k}}: {{$v}}; {{end}}"{{end}}{{range $k,$v := .tags}} {{$k}}{{end}}{{if and .value (ne .value "0001-01-01")}} value="{{.value}}"{{end}}>
+<input type="{{.type}}" name="{{.name}}" class="form-control{{ if .classes }} {{.classes}}{{end}}"{{if .id}} id="{{.id}}"{{end}}{{if .params}}{{range $k, $v := .params}} {{$k}}="{{$v}}"{{end}}{{end}}{{if .css}} style="{{range $k, $v := .css}}{{$k}}: {{$v}}; {{end}}"{{end}}{{range .tags}} {{.}}{{end}}{{if and .value (ne .value "0001-01-01")}} value="{{.value}}"{{end}}>
 {{if or .helptext .errors }}<div class="help-block">{{if .helptext}}{{ .helptext | ToHTML }}{{end}}
 {{if .errors}}<ul>{{ range .errors }}<li>{{.}}</li>{{end}}</ul>{{end}}</div>{{end}}
 </div>

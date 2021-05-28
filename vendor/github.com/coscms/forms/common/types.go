@@ -54,7 +54,10 @@ var (
 	lock           = new(sync.RWMutex)
 )
 
-type FileSystems []fs.FS
+type (
+	FileSystems    []fs.FS
+	HTMLAttrValues []string
+)
 
 func (f FileSystems) Open(name string) (file fs.File, err error) {
 	for _, i := range f {
@@ -76,6 +79,36 @@ func (f FileSystems) IsEmpty() bool {
 
 func (f *FileSystems) Register(fileSystem fs.FS) {
 	*f = append(*f, fileSystem)
+}
+
+func (s HTMLAttrValues) String() string {
+	return strings.Join([]string(s), ` `)
+}
+
+func (s HTMLAttrValues) IsEmpty() bool {
+	return len(s) == 0
+}
+
+func (s HTMLAttrValues) Size() int {
+	return len(s)
+}
+
+func (s *HTMLAttrValues) Add(value string) {
+	(*s) = append((*s), value)
+}
+
+func (s *HTMLAttrValues) Remove(value string) {
+	ind := -1
+	for i, v := range *s {
+		if v == value {
+			ind = i
+			break
+		}
+	}
+
+	if ind != -1 {
+		*s = append((*s)[:ind], (*s)[ind+1:]...)
+	}
 }
 
 const (

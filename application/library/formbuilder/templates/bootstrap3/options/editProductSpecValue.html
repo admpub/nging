@@ -1,7 +1,7 @@
 {{define "main"}}{{$p := .}}
 <div class="form-group product-spec">
 {{if .label}}
-<div class="col-sm-2{{ if $p.labelClasses }}{{range $p.labelClasses}} {{.}}{{end}}{{end}}">
+<div class="col-sm-2{{ if $p.labelClasses }} {{$p.labelClasses}}{{end}}">
     <input type="text" name="spec[name][]" data-spec-id="{{$p.specId}}" class="form-control text-right" value="{{.label}}" onchange="changeProductSpecName(this);"{{if $p.params}}{{range $k2, $v2 := $p.params}} {{$k2}}="{{$v2}}"{{end}}{{end}}>
     <input type="hidden" name="spec[id][]" value="{{$p.specId}}">
 </div>
