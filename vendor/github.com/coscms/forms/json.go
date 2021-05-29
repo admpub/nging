@@ -270,7 +270,7 @@ func (form *Form) ParseElements(es ElementSetter, elements []*conf.Element, lang
 				ele.Languages = langs
 			}
 			f := form.NewLangSet(ele.Name, ele.Languages)
-			if ele.Template != `` {
+			if len(ele.Template) > 0 {
 				f.SetTmpl(ele.Template)
 			}
 			f.SetData("container", "langset")
@@ -314,7 +314,7 @@ func (form *Form) parseElement(ele *conf.Element, typ reflect.Type, val reflect.
 	value := val
 	if form.Model != nil && !form.IsOmit(ele.Name) {
 		parts := strings.Split(ele.Name, `.`)
-		isvad := true
+		isValid := true
 		for _, field := range parts {
 			field = strings.Title(field)
 			if value.Kind() == reflect.Ptr {
@@ -325,18 +325,18 @@ func (form *Form) parseElement(ele *conf.Element, typ reflect.Type, val reflect.
 			}
 			value = value.FieldByName(field)
 			if !value.IsValid() {
-				isvad = false
+				isValid = false
 				break
 			}
 		}
-		if isvad {
+		if isValid {
 			sv = fmt.Sprintf("%v", value.Interface())
 		}
 	}
 	switch ele.Type {
 	case comm.DATE:
 		dateFormat := fields.DATE_FORMAT
-		if ele.Format != `` {
+		if len(ele.Format) > 0 {
 			dateFormat = ele.Format
 		} else if structField, ok := typ.FieldByName(strings.Title(ele.Name)); ok {
 			if format := tagfast.Value(typ, structField, `form_format`); len(format) > 0 {
@@ -354,7 +354,7 @@ func (form *Form) parseElement(ele *conf.Element, typ reflect.Type, val reflect.
 
 	case comm.DATETIME:
 		dateFormat := fields.DATETIME_FORMAT
-		if ele.Format != `` {
+		if len(ele.Format) > 0 {
 			dateFormat = ele.Format
 		} else if structField, ok := typ.FieldByName(strings.Title(ele.Name)); ok {
 			if format := tagfast.Value(typ, structField, `form_format`); len(format) > 0 {
@@ -372,7 +372,7 @@ func (form *Form) parseElement(ele *conf.Element, typ reflect.Type, val reflect.
 
 	case comm.DATETIME_LOCAL:
 		dateFormat := fields.DATETIME_FORMAT
-		if ele.Format != `` {
+		if len(ele.Format) > 0 {
 			dateFormat = ele.Format
 		} else if structField, ok := typ.FieldByName(strings.Title(ele.Name)); ok {
 			if format := tagfast.Value(typ, structField, `form_format`); len(format) > 0 {
@@ -390,7 +390,7 @@ func (form *Form) parseElement(ele *conf.Element, typ reflect.Type, val reflect.
 
 	case comm.TIME:
 		dateFormat := fields.TIME_FORMAT
-		if ele.Format != `` {
+		if len(ele.Format) > 0 {
 			dateFormat = ele.Format
 		} else if structField, ok := typ.FieldByName(strings.Title(ele.Name)); ok {
 			if format := tagfast.Value(typ, structField, `form_format`); len(format) > 0 {
@@ -547,7 +547,7 @@ func (form *Form) validElement(ele *conf.Element, typ reflect.Type, val reflect.
 	}
 	parts := strings.Split(ele.Name, `.`)
 	value := val
-	isvad := true
+	isValid := true
 	for _, field := range parts {
 		field = strings.Title(field)
 		if value.Kind() == reflect.Ptr {
@@ -558,15 +558,15 @@ func (form *Form) validElement(ele *conf.Element, typ reflect.Type, val reflect.
 		}
 		value = value.FieldByName(field)
 		if !value.IsValid() {
-			isvad = false
+			isValid = false
 			break
 		}
 	}
-	if isvad {
+	if isValid {
 		sv := fmt.Sprintf("%v", value.Interface())
-		isvad = form.valid.ValidField(ele.Name, sv, ele.Valid)
+		isValid = form.valid.ValidField(ele.Name, sv, ele.Valid)
 	}
-	return isvad
+	return isValid
 }
 
 func (form *Form) ToJSONBlob(args ...*conf.Config) (r []byte, err error) {
