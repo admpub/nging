@@ -20,6 +20,7 @@ package common
 
 import (
 	"bytes"
+	"errors"
 	"html/template"
 	"io/fs"
 	"os"
@@ -62,7 +63,7 @@ type (
 func (f FileSystems) Open(name string) (file fs.File, err error) {
 	for _, i := range f {
 		file, err = i.Open(name)
-		if err == nil || !os.IsNotExist(err) {
+		if err == nil || !errors.Is(err, fs.ErrNotExist) {
 			return
 		}
 	}
