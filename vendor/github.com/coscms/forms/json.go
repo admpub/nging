@@ -259,6 +259,9 @@ func (form *Form) ParseFromConfig(insertErrors ...bool) *Form {
 		}
 		form.AddButton(r.BtnsTemplate, r.Buttons...)
 	}
+	for key, val := range r.Data {
+		form.SetData(key, val)
+	}
 	return form
 }
 
@@ -274,6 +277,9 @@ func (form *Form) ParseElements(es ElementSetter, elements []*conf.Element, lang
 				f.SetTmpl(ele.Template)
 			}
 			f.SetData("container", "langset")
+			for key, val := range ele.Data {
+				f.SetData(key, val)
+			}
 			form.ParseElements(f, ele.Elements, ele.Languages, t, v, ``)
 			for _, v := range ele.Attributes {
 				switch len(v) {
@@ -297,6 +303,9 @@ func (form *Form) ParseElements(es ElementSetter, elements []*conf.Element, lang
 				f.SetTmpl(ele.Template)
 			}
 			f.SetData("container", "fieldset")
+			for key, val := range ele.Data {
+				f.SetData(key, val)
+			}
 			f.SetLang(lang)
 			es.Elements(f)
 		default:
@@ -521,7 +530,8 @@ func (form *Form) parseElement(ele *conf.Element, typ reflect.Type, val reflect.
 		} else {
 			f.SetValue(sv)
 		}
-
+	default:
+		return nil
 	}
 	for _, v := range ele.Attributes {
 		switch len(v) {
@@ -537,6 +547,9 @@ func (form *Form) parseElement(ele *conf.Element, typ reflect.Type, val reflect.
 	f.SetID(ele.ID)
 	if len(ele.Valid) > 0 {
 		form.validTagFn(ele.Valid, f)
+	}
+	for key, val := range ele.Data {
+		f.SetData(key, val)
 	}
 	return f
 }

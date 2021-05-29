@@ -561,6 +561,9 @@ func (f *Field) Element() *config.Element {
 		Elements:   make([]*config.Element, 0),
 		Format:     f.Format,
 	}
+	if f.AppendData != nil && len(f.AppendData) > 0 {
+		elem.Data = f.AppendData
+	}
 	var (
 		temp string
 		join string
