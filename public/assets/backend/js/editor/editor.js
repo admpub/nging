@@ -829,7 +829,10 @@ App.editor.selectPage = function(elem,options,loaded){
 	if(options!=null){
 		if(typeof(options.listKey)!='undefined') listKey = options.listKey;
 		if(typeof(options.pagingKey)!='undefined') pagingKey = options.pagingKey;
+	}else{
+		options = $(elem).data() || {};
 	}
+	if(typeof(options.url)!='undefined') options.data = options.url;
 	var defaults={
     	showField: 'name',
     	keyField: 'id',
