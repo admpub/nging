@@ -2,6 +2,7 @@ package formbuilder
 
 import (
 	"errors"
+	"fmt"
 	"os"
 
 	ncommon "github.com/admpub/nging/application/library/common"
@@ -43,23 +44,26 @@ func New(c echo.Context, m interface{}, jsonFile string, options ...Option) (*fo
 	}
 	b, err := renderer.RawContent(jsonFile)
 	if err != nil {
-		if os.IsNotExist(err) && renderer.Manager() != nil {
-			form.SetModel(m)
-			cfg = form.ToConfig()
-			var jsonb []byte
-			jsonb, err = form.ToJSONBlob(cfg)
-			if err == nil {
-				err = renderer.Manager().SetTemplate(jsonFile, jsonb)
-				if err == nil {
-					c.Logger().Infof(c.T(`生成表单配置文件“%v”成功。`), jsonFile)
-				}
-			}
+		if !os.IsNotExist(err) || renderer.Manager() == nil {
+			return nil, fmt.Errorf(`read file %s: %w`, jsonFile, err)
 		}
+		form.SetModel(m)
+		cfg = form.ToConfig()
+		var jsonb []byte
+		jsonb, err = form.ToJSONBlob(cfg)
+		if err != nil {
+			return nil, fmt.Errorf(`[form.ToJSONBlob] %s: %w`, jsonFile, err)
+		}
+		err = renderer.Manager().SetTemplate(jsonFile, jsonb)
+		if err != nil {
+			return nil, fmt.Errorf(`%s: %w`, jsonFile, err)
+		}
+		c.Logger().Infof(c.T(`生成表单配置文件“%v”成功。`), jsonFile)
 	} else {
 		cfg, err = forms.Unmarshal(b, jsonFile)
-	}
-	if err != nil {
-		return nil, err
+		if err != nil {
+			return nil, fmt.Errorf(`[forms.Unmarshal] %s: %w`, jsonFile, err)
+		}
 	}
 	if cfg == nil {
 		cfg = form.NewConfig()
