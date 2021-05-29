@@ -1,4 +1,4 @@
-{{- define "main" -}}
+{{- define "generic" -}}
 {{- if eq .type "hidden" -}}
     <input type="{{.type}}" name="{{.name}}" class="form-control{{ if .classes }} {{.classes}}{{end}}"{{if .id}} id="{{.id}}"{{end}}{{if .params}}{{range $k, $v := .params}} {{$k}}="{{$v}}"{{end}}{{end}}{{if .css}} style="{{range $k, $v := .css}}{{$k}}: {{$v}}; {{end}}"{{end}}{{range .tags}} {{.}}{{end}}{{ if .value}} value="{{.value}}"{{end}}>
 {{- else -}}
