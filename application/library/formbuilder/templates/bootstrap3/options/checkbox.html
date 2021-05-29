@@ -7,7 +7,7 @@
 	<div class="col-sm-{{if eq .container "fieldset"}}10{{else}}8{{end}}">
 		{{- range .choices -}}
 		<label class="control-label{{ if $p.labelClasses }} {{$p.labelClasses}}{{end}}">
-			<input type="checkbox" name="{{$p.name}}" class="webx{{if $p.classes}} {{$p.classes}}{{end}}" value="{{.ID}}"{{if $p.params}}{{range $k2, $v2 := $p.params}} {{$k2}}="{{$v2}}"{{end}}{{end}}{{if $p.css}} style="{{range $k2, $v2 := .css}}{{$k2}}: {{$v2}}; {{end}}"{{end}}{{if .Checked}} checked="checked"{{end}}{{range $p.tags}} {{.}}{{end}}>
+			<input type="checkbox" name="{{$p.name}}" class="webx{{if $p.classes}} {{$p.classes}}{{end}}" value="{{.ID}}"{{if $p.params}}{{range $k2, $v2 := $p.params}} {{$k2}}="{{$v2}}"{{end}}{{end}}{{if $p.css}} style="{{range $k2, $v2 := .css}}{{$k2}}: {{$v2}}; {{end}}"{{end}}{{if .Checked}} checked="checked"{{end}}{{range $p.tags}} {{.}}{{end}} data-parsley-errors-container="#parsley-error-{{$p.name}}">
 			<span class="lbl">{{.Val}}</span>
 		</label>
 		&nbsp; &nbsp;
@@ -24,6 +24,7 @@
 			{{- end -}}
 		</div>
 		{{- end -}}
+		<div id='parsley-error-{{$p.name}}'></div>
 	</div>
 </div>
 {{- end -}}
