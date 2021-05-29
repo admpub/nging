@@ -205,7 +205,7 @@ func AddChoiceByKV(field fields.FieldInterface, kvData *echo.KVData, checkedKeys
 	for _, kv := range kvData.Slice() {
 		var checked bool
 		if kv.H != nil {
-			checked = kv.H.Bool(`checked`)
+			checked = kv.H.Bool(`checked`) || kv.H.Bool(`selected`)
 		}
 		if len(checkedKeys) > 0 {
 			checked = com.InSlice(kv.K, checkedKeys)
