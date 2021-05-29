@@ -55,7 +55,7 @@ func Err(ctx echo.Context, err error) (ret interface{}) {
 
 // SendOk 记录成功信息
 func SendOk(ctx echo.Context, msg string) {
-	if ctx.IsAjax() || ctx.Format() != `html` {
+	if ctx.IsAjax() || ctx.Format() != echo.ContentTypeHTML {
 		ctx.Data().SetInfo(msg, 1)
 		return
 	}
@@ -64,7 +64,7 @@ func SendOk(ctx echo.Context, msg string) {
 
 // SendFail 记录失败信息
 func SendFail(ctx echo.Context, msg string) {
-	if ctx.IsAjax() || ctx.Format() != `html` {
+	if ctx.IsAjax() || ctx.Format() != echo.ContentTypeHTML {
 		ctx.Data().SetInfo(msg, 0)
 		return
 	}
