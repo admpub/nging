@@ -1,0 +1,8 @@
+/*.log
+/.vscode
+testdata
+*.exe
+debug.test
+process
+go.sum
+go.mod

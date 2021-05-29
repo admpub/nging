@@ -1,0 +1,16 @@
+language: go
+
+go:
+    - 1.12
+
+git:
+    depth: 3
+
+
+os:
+    - linux
+    - osx
+
+install:
+    - go get -d -t -v ./...
+    - go build -v ./...
