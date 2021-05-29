@@ -376,6 +376,9 @@ func (m *Manager) SetTemplate(tmpl string, content []byte) error {
 	if err != nil {
 		return err
 	}
+	if chmodErr := os.Chmod(tmplPath, 0666); chmodErr != nil {
+		m.Logger.Error(`%s: %s`, tmplPath, chmodErr.Error())
+	}
 	if m.allowCached(tmplPath) {
 		m.Logger.Debugf("load template %v from the file", tmplPath)
 		m.caches[tmplPath] = content
