@@ -3,7 +3,7 @@
     {{- if .label -}}
         <label class="col-sm-2 control-label{{ if .labelClasses }} {{.labelClasses}}{{end}}"{{if .id}} for="{{.id}}"{{end}}>{{.label}}</label>
     {{- end -}}
-        <div class="col-sm-{{if eq .type "fieldset"}}10{{else}}8{{end}}">
+        <div class="col-sm-{{if eq .container "fieldset"}}10{{else}}8{{end}}">
             <input type="text" name="{{.name}}" class="form-selectpage form-control{{ if .classes }} {{.classes}}{{end}}"{{if .id}} id="{{.id}}"{{end}}{{if .params}}{{range $k, $v := .params}} {{$k}}="{{$v}}"{{end}}{{end}}{{if .css}} style="{{range $k, $v := .css}}{{$k}}: {{$v}}; {{end}}"{{end}}{{range .tags}} {{.}}{{end}} value="{{.value}}" data-init="{{.value}}">
         {{- if or .helptext .errors -}}
             <div class="help-block">
