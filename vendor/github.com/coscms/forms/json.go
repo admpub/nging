@@ -195,6 +195,7 @@ func (form *Form) ValidElements(elements []*conf.Element, t reflect.Type, v refl
 	for _, ele := range elements {
 		switch ele.Type {
 		case `langset`:
+			//TODO
 			//form.ValidElements(ele.Elements, t, v)
 		case `fieldset`:
 			for _, e := range ele.Elements {

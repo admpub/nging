@@ -18,9 +18,15 @@ import (
 
 // New 表单
 //@param m: dbschema
-func New(c echo.Context, m interface{}, jsonFile string, ingoreFields ...string) *forms.Forms {
+func New(c echo.Context, m interface{}, jsonFile string, options ...Option) *forms.Forms {
 	form := forms.New()
 	form.Style = common.BOOTSTRAP
+	for _, option := range options {
+		if option == nil {
+			continue
+		}
+		option(c, form)
+	}
 	form.SetLabelFunc(func(txt string) string {
 		return c.T(txt)
 	})
@@ -56,9 +62,12 @@ func New(c echo.Context, m interface{}, jsonFile string, ingoreFields ...string)
 	}
 	form.Init(cfg, m)
 	if c.IsPost() {
-		err = c.MustBind(m, formfilter.Build(formfilter.Include(cfg.GetNames()...)))
+		opts := []formfilter.Options{formfilter.Include(cfg.GetNames()...)}
+		if customs, ok := c.Internal().Get(`formfilter.Options`).([]formfilter.Options); ok {
+			opts = append(opts, customs...)
+		}
+		err = c.MustBind(m, formfilter.Build(opts...))
 		if err == nil {
-			form.CloseValid(ingoreFields...)
 			form.ValidFromConfig()
 			valid := form.Validate()
 			if valid.HasError() {
@@ -101,8 +110,14 @@ func New(c echo.Context, m interface{}, jsonFile string, ingoreFields ...string)
 
 // NewModel 表单
 //@param m: dbschema
-func NewModel(c echo.Context, m interface{}, cfg *config.Config, validFields ...string) *forms.Forms {
+func NewModel(c echo.Context, m interface{}, cfg *config.Config, options ...Option) *forms.Forms {
 	form := forms.New()
+	for _, option := range options {
+		if option == nil {
+			continue
+		}
+		option(c, form)
+	}
 	form.SetLabelFunc(func(txt string) string {
 		return c.T(txt)
 	})
@@ -111,8 +126,13 @@ func NewModel(c echo.Context, m interface{}, cfg *config.Config, validFields ...
 	}
 	form.Init(cfg, m)
 	if c.IsPost() {
-		err := c.MustBind(m, formfilter.Build(formfilter.Include(cfg.GetNames()...)))
+		opts := []formfilter.Options{formfilter.Include(cfg.GetNames()...)}
+		if customs, ok := c.Internal().Get(`formfilter.Options`).([]formfilter.Options); ok {
+			opts = append(opts, customs...)
+		}
+		err := c.MustBind(m, formfilter.Build(opts...))
 		if err == nil {
+			validFields, _ := c.Internal().Get(`formbuilder.validFields`).([]string)
 			err = form.Valid(validFields...)
 		}
 		if err != nil {
