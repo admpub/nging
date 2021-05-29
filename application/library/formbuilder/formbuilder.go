@@ -1,6 +1,7 @@
 package formbuilder
 
 import (
+	"errors"
 	"os"
 
 	ncommon "github.com/admpub/nging/application/library/common"
@@ -16,6 +17,8 @@ import (
 	"github.com/webx-top/echo/middleware/render/driver"
 	"github.com/webx-top/validation"
 )
+
+var ErrJSONConfigFileNameInvalid = errors.New("*.form.json name invalid")
 
 // New 表单
 //@param m: dbschema
@@ -36,7 +39,7 @@ func New(c echo.Context, m interface{}, jsonFile string, options ...Option) (*fo
 	jsonFile += `.form.json`
 	jsonFile = renderer.TmplPath(c, jsonFile)
 	if len(jsonFile) == 0 {
-		return nil
+		return nil, ErrJSONConfigFileNameInvalid
 	}
 	b, err := renderer.RawContent(jsonFile)
 	if err != nil {
