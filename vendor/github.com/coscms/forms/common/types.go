@@ -23,6 +23,7 @@ import (
 	"errors"
 	"html/template"
 	"io/fs"
+	"log"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -161,7 +162,12 @@ func TmplDir(style string) (tmplDir string) {
 func CreateUrl(widget string) string {
 	if !FileSystem.IsEmpty() {
 		fp, err := FileSystem.Open(widget)
-		if err == nil {
+		if err != nil {
+			if !errors.Is(err, fs.ErrNotExist) {
+				log.Println(err.Error())
+				return widget
+			}
+		} else {
 			defer fp.Close()
 			fi, err := fp.Stat()
 			if err == nil && !fi.IsDir() {

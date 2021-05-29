@@ -299,7 +299,7 @@ func (form *Form) ParseElements(es ElementSetter, elements []*conf.Element, lang
 				}
 			}
 			f := form.NewFieldSet(ele.Name, form.labelFn(ele.Label), elems...)
-			if ele.Template != `` {
+			if len(ele.Template) > 0 {
 				f.SetTmpl(ele.Template)
 			}
 			f.SetData("container", "fieldset")
