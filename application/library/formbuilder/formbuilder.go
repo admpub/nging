@@ -10,6 +10,7 @@ import (
 	"github.com/coscms/forms/config"
 	"github.com/coscms/forms/fields"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 	"github.com/webx-top/echo/formfilter"
 	"github.com/webx-top/echo/middleware/render/driver"
@@ -198,4 +199,18 @@ func ClearCache() {
 
 func DelCachedConfig(file string) bool {
 	return common.DelCachedConfig(file)
+}
+
+func AddChoiceByKV(field fields.FieldInterface, kvData *echo.KVData, checkedKeys ...string) fields.FieldInterface {
+	for _, kv := range kvData.Slice() {
+		var checked bool
+		if kv.H != nil {
+			checked = kv.H.Bool(`checked`)
+		}
+		if len(checkedKeys) > 0 {
+			checked = com.InSlice(kv.K, checkedKeys)
+		}
+		field.AddChoice(kv.K, kv.V, checked)
+	}
+	return field
 }
