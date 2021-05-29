@@ -481,6 +481,7 @@ func (f *Field) AddChoice(key, value interface{}, checked ...bool) FieldInterfac
 				Val:     fmt.Sprint(value),
 				Checked: _checked,
 			})
+			f.Choices = v
 		}
 
 	case common.RADIO, common.CHECKBOX:
@@ -499,6 +500,7 @@ func (f *Field) AddChoice(key, value interface{}, checked ...bool) FieldInterfac
 				Val:     fmt.Sprint(value),
 				Checked: _checked,
 			})
+			f.Choices = v
 		}
 	}
 	return f
