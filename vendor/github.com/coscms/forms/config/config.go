@@ -73,30 +73,3 @@ func (c *Config) hasName(name string, elements []*Element, languages []*Language
 func (c *Config) GetNames() []string {
 	return getNames(c.Elements, c.Languages)
 }
-
-type Element struct {
-	ID         string      `json:"id"`
-	Type       string      `json:"type"`
-	Name       string      `json:"name"`
-	Label      string      `json:"label"`
-	Value      string      `json:"value"`
-	HelpText   string      `json:"helpText"`
-	Template   string      `json:"template"`
-	Valid      string      `json:"valid"`
-	Attributes [][]string  `json:"attributes"`
-	Choices    []*Choice   `json:"choices"`
-	Elements   []*Element  `json:"elements"`
-	Format     string      `json:"format"`
-	Languages  []*Language `json:"languages"`
-}
-
-func (e *Element) Clone() *Element {
-	r := *e
-	return &r
-}
-
-type Choice struct {
-	Group   string   `json:"group"`
-	Option  []string `json:"option"` //["value","text"]
-	Checked bool     `json:"checked"`
-}

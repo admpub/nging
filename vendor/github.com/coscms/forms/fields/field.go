@@ -57,50 +57,6 @@ type Field struct {
 	data       map[string]interface{}
 }
 
-// FieldInterface defines the interface an object must implement to be used in a form. Every method returns a FieldInterface object
-// to allow methods chaining.
-type FieldInterface interface {
-	Name() string
-	OriginalName() string
-	SetName(string)
-	Render() template.HTML
-	AddClass(class string) FieldInterface
-	RemoveClass(class string) FieldInterface
-	AddTag(class string) FieldInterface
-	RemoveTag(class string) FieldInterface
-	SetID(id string) FieldInterface
-	SetParam(key string, value interface{}) FieldInterface
-	DeleteParam(key string) FieldInterface
-	AddCSS(key, value string) FieldInterface
-	RemoveCSS(key string) FieldInterface
-	SetStyle(style string) FieldInterface
-	SetLabel(label string) FieldInterface
-	AddLabelClass(class string) FieldInterface
-	RemoveLabelClass(class string) FieldInterface
-	SetValue(value string) FieldInterface
-	Disabled() FieldInterface
-	Enabled() FieldInterface
-	SetTmpl(tmpl string, style ...string) FieldInterface
-	SetHelptext(text string) FieldInterface
-	AddError(err string) FieldInterface
-	MultipleChoice() FieldInterface
-	SingleChoice() FieldInterface
-	AddSelected(opt ...string) FieldInterface
-	SetSelected(opt ...string) FieldInterface
-	RemoveSelected(opt string) FieldInterface
-	AddChoice(key, value interface{}, checked ...bool) FieldInterface
-	SetChoices(choices interface{}, saveIndex ...bool) FieldInterface
-	SetText(text string) FieldInterface
-	SetData(key string, value interface{})
-	Data() map[string]interface{}
-	String() string
-	SetLang(lang string)
-	Lang() string
-	Clone() config.FormElement
-
-	Element() *config.Element
-}
-
 // FieldWithType creates an empty field of the given type and identified by name.
 func FieldWithType(name, t string) *Field {
 	return &Field{
@@ -613,7 +569,7 @@ func (f *Field) Element() *config.Element {
 		temp += join + c
 		join = ` `
 	}
-	if temp != `` {
+	if len(temp) > 0 {
 		elem.Attributes = append(elem.Attributes, []string{`class`, temp})
 		temp = ``
 		join = ``
@@ -628,12 +584,13 @@ func (f *Field) Element() *config.Element {
 		temp += join + c
 		join = `;`
 	}
-	if temp != `` {
+	if len(temp) > 0 {
 		elem.Attributes = append(elem.Attributes, []string{`style`, temp})
 		temp = ``
 		join = ``
 	}
-	if choices, ok := f.Choices.(map[string][]InputChoice); ok {
+	switch choices := f.Choices.(type) {
+	case map[string][]InputChoice:
 		for k, items := range choices {
 			for _, v := range items {
 				elem.Choices = append(elem.Choices, &config.Choice{
@@ -643,7 +600,7 @@ func (f *Field) Element() *config.Element {
 				})
 			}
 		}
-	} else if choices, ok := f.Choices.([]InputChoice); ok {
+	case []InputChoice:
 		for _, v := range choices {
 			elem.Choices = append(elem.Choices, &config.Choice{
 				Group:   ``,

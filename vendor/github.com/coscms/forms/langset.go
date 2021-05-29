@@ -415,7 +415,6 @@ func (f *LangSetType) Enable() *LangSetType {
 }
 
 func (f *LangSetType) sortFields(index, oldIndex, endIdx, size int) {
-
 	var newFields []*conf.Language
 	oldFields := make([]*conf.Language, size)
 	copy(oldFields, f.Languages)
