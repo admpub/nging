@@ -19,6 +19,7 @@ import (
 //@param m: dbschema
 func New(c echo.Context, m interface{}, jsonFile string, ingoreFields ...string) *forms.Forms {
 	form := forms.New()
+	form.Style = common.BOOTSTRAP
 	form.SetLabelFunc(func(txt string) string {
 		return c.T(txt)
 	})

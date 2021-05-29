@@ -64,7 +64,7 @@ func New() *Form {
 		FieldMap:              make(map[string]int),
 		ContainerMap:          make(map[string]string),
 		Style:                 common.BASE,
-		Class:                 []string{},
+		Class:                 common.HTMLAttrValues{},
 		ID:                    "",
 		Params:                map[string]string{},
 		CSS:                   map[string]string{},
@@ -95,7 +95,7 @@ type Form struct {
 	ContainerMap          map[string]string
 	Style                 string
 	template              *template.Template
-	Class                 []string
+	Class                 common.HTMLAttrValues
 	ID                    string
 	Params                map[string]string
 	CSS                   map[string]string
@@ -667,23 +667,13 @@ func (f *Form) RemoveElement(name string) *Form {
 
 // AddClass associates the provided class to the Form.
 func (f *Form) AddClass(class string) *Form {
-	f.Class = append(f.Class, class)
+	f.Class.Add(class)
 	return f
 }
 
 // RemoveClass removes the given class (if present) from the Form.
 func (f *Form) RemoveClass(class string) *Form {
-	ind := -1
-	for i, v := range f.Class {
-		if v == class {
-			ind = i
-			break
-		}
-	}
-
-	if ind != -1 {
-		f.Class = append(f.Class[:ind], f.Class[ind+1:]...)
-	}
+	f.Class.Remove(class)
 	return f
 }
 
