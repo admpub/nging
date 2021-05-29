@@ -11,6 +11,7 @@ import (
 	"github.com/coscms/forms/fields"
 
 	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/formfilter"
 	"github.com/webx-top/echo/middleware/render/driver"
 	"github.com/webx-top/validation"
 )
@@ -55,11 +56,21 @@ func New(c echo.Context, m interface{}, jsonFile string, ingoreFields ...string)
 	}
 	form.Init(cfg, m)
 	if c.IsPost() {
-		form.CloseValid(ingoreFields...)
-		form.ValidFromConfig()
-		valid := form.Validate()
-		if valid.HasError() {
-			c.Data().SetInfo(valid.Errors[0].Message, 0).SetZone(valid.Errors[0].Field)
+		err = c.MustBind(m, formfilter.Build(formfilter.Include(cfg.GetNames()...)))
+		if err == nil {
+			form.CloseValid(ingoreFields...)
+			form.ValidFromConfig()
+			valid := form.Validate()
+			if valid.HasError() {
+				err = valid.Errors[0]
+			}
+		}
+		if err != nil {
+			if vErr, ok := err.(*validation.ValidationError); ok {
+				c.Data().SetInfo(vErr.Message, 0).SetZone(vErr.Field)
+			} else {
+				c.Data().SetError(err)
+			}
 		}
 	}
 	setNextURLField := func() {
@@ -100,7 +111,10 @@ func NewModel(c echo.Context, m interface{}, cfg *config.Config, validFields ...
 	}
 	form.Init(cfg, m)
 	if c.IsPost() {
-		err := form.Valid(validFields...)
+		err := c.MustBind(m, formfilter.Build(formfilter.Include(cfg.GetNames()...)))
+		if err == nil {
+			err = form.Valid(validFields...)
+		}
 		if err != nil {
 			if vErr, ok := err.(*validation.ValidationError); ok {
 				c.Data().SetInfo(vErr.Message, 0).SetZone(vErr.Field)
