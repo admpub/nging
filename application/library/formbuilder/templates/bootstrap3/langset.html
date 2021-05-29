@@ -1,27 +1,27 @@
-{{$langset:=.}}
+{{- $langset := . -}}
 <div class="form-group">
-<div{{if $langset.params}}{{range $k,$v := $langset.params}} {{$k}}="{{$v}}"{{end}}{{end}}{{range $langset.tags}} {{.}}{{end}}>
+	<div{{if $langset.params}}{{range $k,$v := $langset.params}} {{$k}}="{{$v}}"{{end}}{{end}}{{range $langset.tags}} {{.}}{{end}}>
+		<div class="col-md-12 tabbable langset">
+  			<ul class="nav nav-tabs">
+      		{{- range $k,$v := .langs -}}
+				<li{{if eq $k 0}} class="active"{{end}}>
+					<a href="#langset_{{$langset.name}}_{{$v.Id}}" data-toggle="tab" aria-expanded="{{if eq $k 0}}true{{else}}false{{end}}">
+            			<i class="green ace-icon fa fa-home bigger-120"></i>
+            			{{$v.Label}}
+          			</a>
+				</li>
+      		{{- end -}}
+			</ul>
 
-<div class="col-md-12 tabbable langset">
-  <ul class="nav nav-tabs">
-      {{range $k,$v:=.langs}}
-			<li{{if eq $k 0}} class="active"{{end}}>
-				<a href="#langset_{{$langset.name}}_{{$v.Id}}" data-toggle="tab" aria-expanded="{{if eq $k 0}}true{{else}}false{{end}}">
-            		<i class="green ace-icon fa fa-home bigger-120"></i>
-            		{{$v.Label}}
-          		</a>
-			</li>
-      {{end}}
-	</ul>
-
-	<div class="tab-content">
-      {{range $k,$v:=.langs}}
-			<div class="tab-pane fade{{if eq $k 0}} active in{{end}}" id="langset_{{$langset.name}}_{{$v.Id}}">
-				{{range $v.Fields}}{{ .Render }}{{end}}
+			<div class="tab-content">
+      		{{- range $k,$v := .langs -}}
+				<div class="tab-pane fade{{if eq $k 0}} active in{{end}}" id="langset_{{$langset.name}}_{{$v.Id}}">
+					{{- range $v.Fields -}}
+					{{ .Render }}
+					{{- end -}}
+				</div>
+      		{{- end -}}
 			</div>
-      {{end}}
+		</div>
 	</div>
-</div>
-
-</div>
 </div>

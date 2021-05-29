@@ -55,7 +55,7 @@ func BaseWidget(style, inputType, tmplName string) *Widget {
 	if !ok {
 		var (
 			fpath = common.TmplDir(style) + "/" + style + "/"
-			urls  = []string{common.CreateUrl(fpath + "generic.tmpl")}
+			urls  = []string{common.CreateUrl(fpath + "generic.html")}
 			tpath = widgetTmpl(inputType, tmplName)
 			err   error
 		)
