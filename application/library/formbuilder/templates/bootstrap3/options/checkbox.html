@@ -1,7 +1,7 @@
 {{- define "main" -}}
 {{- $p := . -}}
 <div class="form-group">
-	{{- if .label- }}
+	{{- if .label -}}
 	<label class="col-sm-2 control-label{{ if $p.labelClasses }} {{$p.labelClasses}}{{end}}">{{.label}}</label>
 	{{- end -}}
 	<div class="col-sm-{{if eq .container "fieldset"}}10{{else}}8{{end}}">
