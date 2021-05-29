@@ -175,6 +175,7 @@ func (f *FieldSetType) Elements(elems ...conf.FormElement) *FieldSetType {
 
 func (f *FieldSetType) addField(field fields.FieldInterface) *FieldSetType {
 	field.SetStyle(f.FormStyle)
+	field.SetData(`container`, `fieldset`)
 	f.FieldList = append(f.FieldList, field)
 	f.FieldMap[field.OriginalName()] = len(f.FieldList) - 1
 	return f
