@@ -19,7 +19,7 @@ import (
 
 // New 表单
 //@param m: dbschema
-func New(c echo.Context, m interface{}, jsonFile string, options ...Option) *forms.Forms {
+func New(c echo.Context, m interface{}, jsonFile string, options ...Option) (*forms.Forms, error) {
 	form := forms.New()
 	form.Style = common.BOOTSTRAP
 	for _, option := range options {
@@ -56,7 +56,7 @@ func New(c echo.Context, m interface{}, jsonFile string, options ...Option) *for
 		cfg, err = forms.Unmarshal(b, jsonFile)
 	}
 	if err != nil {
-		c.Logger().Error(err)
+		return nil, err
 	}
 	if cfg == nil {
 		cfg = form.NewConfig()
@@ -106,7 +106,7 @@ func New(c echo.Context, m interface{}, jsonFile string, options ...Option) *for
 	c.Set(`forms`, wrap)
 	// 手动调用:
 	// wrap.ParseFromConfig()
-	return wrap
+	return wrap, nil
 }
 
 // NewModel 表单
