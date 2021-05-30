@@ -15,7 +15,7 @@
 		{{- if or .helptext .errors }}
 		<div class="help-block">
 			{{- if .helptext }}{{ .helptext | ToHTML }}{{ end }}
-			{{- if .errors -}}
+			{{- if .errors }}
 			<ul>
 				{{- range .errors }}
 				<li>{{.}}</li>
