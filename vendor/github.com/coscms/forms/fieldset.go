@@ -35,6 +35,8 @@ type FieldSetType struct {
 	OrigName   string
 	CurrName   string
 	Label      string
+	LabelCols  int
+	FieldCols  int
 	Class      common.HTMLAttrValues
 	Tags       common.HTMLAttrValues
 	FieldList  []fields.FieldInterface
@@ -47,6 +49,14 @@ type FieldSetType struct {
 
 func (f *FieldSetType) SetData(key string, value interface{}) {
 	f.AppendData[key] = value
+}
+
+func (f *FieldSetType) SetLabelCols(cols int) {
+	f.LabelCols = cols
+}
+
+func (f *FieldSetType) SetFieldCols(cols int) {
+	f.FieldCols = cols
 }
 
 func (f *FieldSetType) SetName(name string) {
@@ -65,6 +75,8 @@ func (f *FieldSetType) Data() map[string]interface{} {
 		"container": "fieldset",
 		"name":      f.CurrName,
 		"label":     f.Label,
+		"labelCols": f.LabelCols,
+		"fieldCols": f.FieldCols,
 		"fields":    f.FieldList,
 		"classes":   f.Class,
 		"tags":      f.Tags,

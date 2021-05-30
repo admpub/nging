@@ -42,6 +42,8 @@ type Field struct {
 	Params     map[string]interface{}
 	CSS        map[string]string
 	Label      string
+	LabelCols  int
+	FieldCols  int
 	LabelClass common.HTMLAttrValues
 	Tag        common.HTMLAttrValues
 	Value      string
@@ -128,6 +130,14 @@ func (f *Field) SetData(key string, value interface{}) {
 	f.AppendData[key] = value
 }
 
+func (f *Field) SetLabelCols(cols int) {
+	f.LabelCols = cols
+}
+
+func (f *Field) SetFieldCols(cols int) {
+	f.FieldCols = cols
+}
+
 // Name returns the name of the field.
 func (f *Field) Name() string {
 	return strings.TrimSuffix(f.CurrName, "[]")
@@ -149,6 +159,8 @@ func (f *Field) Data() map[string]interface{} {
 		"css":          f.CSS,
 		"type":         f.Type,
 		"label":        f.Label,
+		"labelCols":    f.LabelCols,
+		"fieldCols":    f.FieldCols,
 		"labelClasses": f.LabelClass,
 		"tags":         f.Tag,
 		"value":        f.Value,
@@ -552,6 +564,8 @@ func (f *Field) Element() *config.Element {
 		Type:       f.Type,
 		Name:       f.CurrName,
 		Label:      f.Label,
+		LabelCols:  f.LabelCols,
+		FieldCols:  f.FieldCols,
 		Value:      f.Value,
 		HelpText:   f.Helptext,
 		Template:   f.Tmpl,

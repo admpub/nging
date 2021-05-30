@@ -279,8 +279,6 @@ github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2 h1:Q8XKLvKZfb5zfD
 github.com/admpub/useragent v0.0.0-20190806155403-63e85649b0f2/go.mod h1:DpE271XS+vS6C+HwvHXRd5v5kXaXi3zpNhWCPsmLT8w=
 github.com/admpub/web-terminal v0.0.1 h1:wQOkX7bZwhMkCtS3+FCFTeXDyagCN+71P8+3q7H0xqQ=
 github.com/admpub/web-terminal v0.0.1/go.mod h1:SpJflbA/NkKUPCXMd60Xudqen5URGK//lUSEYxhnddc=
-github.com/admpub/webdav/v4 v4.1.1 h1:oR2f0y6MDoZUdI29P7XqK032PDgq9iqRe4PwWKnC4fg=
-github.com/admpub/webdav/v4 v4.1.1/go.mod h1:TfiDfeTU8h6z7V+L7A/6eJaQBu08S9cbDR6hFdioRgI=
 github.com/admpub/webdav/v4 v4.1.2 h1:s2uNHbAkjFGm9QmoKNHRC1Lhi2HjzSINxvmDikWW2Iw=
 github.com/admpub/webdav/v4 v4.1.2/go.mod h1:9WgKBv2pdSa5Nmw8lBM5s/Zt9U1I47jIx6Vqg3gvQBc=
 github.com/admpub/websocket v1.0.4 h1:OWBoXpczBzFGx8ukD71OWcc2G0O+Y5aO+NAMJMeMTHI=
@@ -376,8 +374,6 @@ github.com/caddy-plugins/ipfilter v1.1.4 h1:IpZHAEEaBx+jeDR9rUnE1GhlBwveXKbA7M8z
 github.com/caddy-plugins/ipfilter v1.1.4/go.mod h1:mJDjmApKMSU0/rs+RAV6gEk9SPI1GQuI5y2XUP/auqs=
 github.com/caddy-plugins/nobots v0.1.1 h1:NvhwMov/2JcxXJhKF4YtUDFAJJtikE3koCLdPxLy/pc=
 github.com/caddy-plugins/nobots v0.1.1/go.mod h1:5bb8aRivVts1WOCdrobZr+Nt9hR1B0tHOcmdkP7Elps=
-github.com/caddy-plugins/webdav v1.2.6 h1:IcSun4TjxOulz621LMoinr/o/obK0TsiWHP8c6HZKhk=
-github.com/caddy-plugins/webdav v1.2.6/go.mod h1:vgA99i9ddwhgnEO93/a7Rg23wabZiU8aLRLxI10vWjs=
 github.com/caddy-plugins/webdav v1.2.7 h1:B+HTBpsqxg6JrR1Ir7Fvbeji3jMMi8agIHHIGobp3jQ=
 github.com/caddy-plugins/webdav v1.2.7/go.mod h1:XKPFRyb8GHY1YPYVsQSBgGbSnjd/8amB7okbbEjKBwY=
 github.com/caddyserver/certmagic v0.8.3 h1:Z/F1yFMicXeGBSu/CQI3LNg0ysRZXf6XWpM48ksf978=
@@ -431,12 +427,8 @@ github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7
 github.com/coreos/go-systemd/v22 v22.3.1/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/coreos/pkg v0.0.0-20160727233714-3ac0863d7acf/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
-github.com/coscms/forms v1.6.11 h1:/9H7Zd51njYew96NDCeTSJ0h+nsmxUszvTFav4n4iFc=
-github.com/coscms/forms v1.6.11/go.mod h1:tJcs7OQdWVBI+R5HhlC+24Bsyns7Rm5lVmcojTTnGu8=
-github.com/coscms/forms v1.6.12 h1:VaIOwiUe1w1JYg0s3bqBLh+STHBhOUP61cnEi7MNrZQ=
-github.com/coscms/forms v1.6.12/go.mod h1:tJcs7OQdWVBI+R5HhlC+24Bsyns7Rm5lVmcojTTnGu8=
-github.com/coscms/forms v1.6.13 h1:6+/OPCRAxJOHN3kutcg0rHv9LESn8QYk9JvxUDGY99o=
-github.com/coscms/forms v1.6.13/go.mod h1:tJcs7OQdWVBI+R5HhlC+24Bsyns7Rm5lVmcojTTnGu8=
+github.com/coscms/forms v1.7.1 h1:OS6Jg9TkgDpzU+hVkQdh++17IdmrLZBscYi3/rRcyms=
+github.com/coscms/forms v1.7.1/go.mod h1:tJcs7OQdWVBI+R5HhlC+24Bsyns7Rm5lVmcojTTnGu8=
 github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856 h1:P8+R76nNN/kIx12ptxkfbwhhiuDVwf5hLA6qVZSfe5M=
 github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856/go.mod h1:hMGWSVn9gPkG9ERZdzfh1DIP5Yvued94t9cgVzErOC0=
 github.com/cpu/goacmedns v0.0.1/go.mod h1:sesf/pNnCYwUevQEQfEwY0Y3DydlQWSGZbaMElOWxok=
@@ -1134,7 +1126,6 @@ github.com/patrickmn/go-cache v2.1.0+incompatible/go.mod h1:3Qf8kWWT7OJRJbdiICTK
 github.com/pborman/uuid v1.2.0/go.mod h1:X/NO0urCmaxf9VXbdlT7C2Yzkj2IKimNn4k+gtPdI/k=
 github.com/pelletier/go-toml v1.2.0/go.mod h1:5z9KED0ma1S8pY6P1sdut58dfprrGBbd/94hg7ilaic=
 github.com/pelletier/go-toml v1.7.0/go.mod h1:vwGMzjaWMwyfHwgIBhI2YUM4fB6nL6lVAvS1LBMMhTE=
-github.com/pelletier/go-toml v1.9.0/go.mod h1:u1nR/EPcESfeI/szUZKdtJ0xRNbUoANCkoOuaOx1Y+c=
 github.com/pelletier/go-toml v1.9.1/go.mod h1:u1nR/EPcESfeI/szUZKdtJ0xRNbUoANCkoOuaOx1Y+c=
 github.com/performancecopilot/speed v3.0.0+incompatible/go.mod h1:/CLtqpZ5gBg1M9iaPbIdPPGyKcA8hKdoy6hAWba7Yac=
 github.com/peterbourgon/g2s v0.0.0-20140925154142-ec76db4c1ac1 h1:5Dl+ADmsGerAqHwWzyLqkNaUBQ+48DQwfDCaW1gHAQM=
@@ -1510,7 +1501,6 @@ golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0/go.mod h1:LzIPMQfyMNhhGPh
 golang.org/x/crypto v0.0.0-20201012173705-84dcc777aaee/go.mod h1:LzIPMQfyMNhhGPhUkYOs5KpL4U8rLKemX1yGLhDgUto=
 golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad/go.mod h1:jdWPYTVW3xRLrWPugEBEK3UY2ZEsg3UU495nc5E+M+I=
 golang.org/x/crypto v0.0.0-20210415154028-4f45737414dc/go.mod h1:T9bdIzuCu7OtxOm1hfPfRQxPLYneinmdGuTeoZ9dtd4=
-golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b/go.mod h1:T9bdIzuCu7OtxOm1hfPfRQxPLYneinmdGuTeoZ9dtd4=
 golang.org/x/crypto v0.0.0-20210506145944-38f3c27a63bf/go.mod h1:P+XmwS30IXTQdn5tA2iutPOUgjI07+tq3H3K9MVA1s8=
 golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a h1:kr2P4QFmQr29mSLA43kwrOcgcReGTfbE9N577tCTuBc=
 golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a/go.mod h1:P+XmwS30IXTQdn5tA2iutPOUgjI07+tq3H3K9MVA1s8=
@@ -1624,7 +1614,6 @@ golang.org/x/net v0.0.0-20210420210106-798c2154c571/go.mod h1:72T/g9IO56b78aLF+1
 golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
 golang.org/x/net v0.0.0-20210505214959-0714010a04ed/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
 golang.org/x/net v0.0.0-20210510120150-4163338589ed/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
-golang.org/x/net v0.0.0-20210521195947-fe42d452be8f h1:Si4U+UcgJzya9kpiEUJKQvjr512OLli+gL4poHrz93U=
 golang.org/x/net v0.0.0-20210521195947-fe42d452be8f/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
 golang.org/x/net v0.0.0-20210525063256-abc453219eb5 h1:wjuX4b5yYQnEQHzd+CBcrcC6OVR2J1CN6mUy0oSxIPo=
 golang.org/x/net v0.0.0-20210525063256-abc453219eb5/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
@@ -1751,7 +1740,6 @@ golang.org/x/sys v0.0.0-20210426230700-d19ff857e887/go.mod h1:h1NjWce9XRLGQEsW7w
 golang.org/x/sys v0.0.0-20210503080704-8803ae5d1324/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20210503173754-0981d6026fa6/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20210514084401-e8d321eab015/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
-golang.org/x/sys v0.0.0-20210521203332-0cec03c779c1 h1:lCnv+lfrU9FRPGf8NeRuWAAPjNnema5WtBinMgs1fD8=
 golang.org/x/sys v0.0.0-20210521203332-0cec03c779c1/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20210525143221-35b2ab0089ea h1:+WiDlPBBaO+h9vPNZi8uJ3k4BkKQB7Iow3aqwHVA5hI=
 golang.org/x/sys v0.0.0-20210525143221-35b2ab0089ea/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=

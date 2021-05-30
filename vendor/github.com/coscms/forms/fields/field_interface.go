@@ -12,6 +12,8 @@ type FieldInterface interface {
 	Name() string
 	OriginalName() string
 	SetName(string)
+	SetLabelCols(cols int)
+	SetFieldCols(cols int)
 	Render() template.HTML
 	AddClass(class string) FieldInterface
 	RemoveClass(class string) FieldInterface

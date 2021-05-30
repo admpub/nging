@@ -306,6 +306,8 @@ func (form *Form) ParseElements(es ElementSetter, elements []*conf.Element, lang
 			for key, val := range ele.Data {
 				f.SetData(key, val)
 			}
+			f.SetLabelCols(ele.LabelCols)
+			f.SetFieldCols(ele.FieldCols)
 			f.SetLang(lang)
 			es.Elements(f)
 		default:
@@ -551,6 +553,8 @@ func (form *Form) parseElement(ele *conf.Element, typ reflect.Type, val reflect.
 	for key, val := range ele.Data {
 		f.SetData(key, val)
 	}
+	f.SetLabelCols(ele.LabelCols)
+	f.SetFieldCols(ele.FieldCols)
 	return f
 }
 
