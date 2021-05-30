@@ -35,6 +35,7 @@ type MgrCached struct {
 
 var managers = param.NewMap()
 
+// webdav / id 1 {}
 func FSGenerator(scope string, options map[string]string) webdav.FileSystem {
 	typ, ok := options[`arg1`]
 	if !ok {
