@@ -2,13 +2,16 @@ package caddy_webdav
 
 import (
 	"fmt"
+	"time"
 
 	plugin "github.com/caddy-plugins/webdav"
 	"github.com/webx-top/db"
 	"github.com/webx-top/echo/defaults"
+	"github.com/webx-top/echo/param"
 	"golang.org/x/net/webdav"
 
 	"github.com/admpub/nging/application/library/config"
+	"github.com/admpub/nging/application/library/s3manager"
 	"github.com/admpub/nging/application/library/s3manager/s3client"
 	"github.com/admpub/nging/application/library/s3manager/s3webdav"
 	"github.com/admpub/nging/application/model"
@@ -17,6 +20,13 @@ import (
 func init() {
 	plugin.FSGenerator = plugin.LazyloadFS(FSGenerator)
 }
+
+type MgrCached struct {
+	T time.Time
+	M *s3manager.S3Manager
+}
+
+var managers = param.NewMap()
 
 func FSGenerator(scope string, options map[string]string) webdav.FileSystem {
 	typ, ok := options[`arg1`]
@@ -30,6 +40,19 @@ func FSGenerator(scope string, options map[string]string) webdav.FileSystem {
 	if !ok {
 		return webdav.Dir(scope)
 	}
+	cached := managers.Get(id)
+	mgr, ok := cached.(*MgrCached)
+	if !ok || time.Since(mgr.T).Seconds() > 3600 {
+		var err error
+		mgr, err = genCache(id)
+		if err != nil {
+			panic(err)
+		}
+	}
+	return s3webdav.New(mgr.M, scope, false, ``)
+}
+
+func genCache(id string) (*MgrCached, error) {
 	ctx := defaults.NewMockContext()
 	m := model.NewCloudStorage(ctx)
 	err := m.Get(nil, `id`, id)
@@ -37,11 +60,13 @@ func FSGenerator(scope string, options map[string]string) webdav.FileSystem {
 		if err == db.ErrNoMoreRows {
 			err = fmt.Errorf(`cannot find the cloud storage account record with ID "%v". `+"\n"+`找不到ID为"%v"的云存储账号记录。`, id, id)
 		}
-		panic(err)
+		return nil, err
 	}
 	mgr, err := s3client.New(m.NgingCloudStorage, config.DefaultConfig.Sys.EditableFileMaxBytes)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	return s3webdav.New(mgr, false, ``)
+	c := &MgrCached{T: time.Now(), M: mgr}
+	managers.Set(id, c)
+	return c, nil
 }
