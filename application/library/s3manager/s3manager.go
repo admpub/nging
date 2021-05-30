@@ -20,6 +20,7 @@ package s3manager
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -123,7 +124,9 @@ func (s *S3Manager) Mkbucket(bucketName string, regions ...string) error {
 
 func (s *S3Manager) Mkdir(ppath, newName string) error {
 	objectName := strings.TrimPrefix(ppath, `/`)
-	objectName = path.Join(objectName, newName)
+	if len(newName) > 0 {
+		objectName = path.Join(objectName, newName)
+	}
 	if !strings.HasSuffix(objectName, `/`) {
 		objectName += `/`
 	}
@@ -225,6 +228,17 @@ func (s *S3Manager) Remove(ppath string) error {
 	return s.client.RemoveObject(s.bucketName, objectName)
 }
 
+func (s *S3Manager) RemoveWithContext(ctx context.Context, ppath string) error {
+	if len(ppath) == 0 {
+		return errors.New("path invalid")
+	}
+	if strings.HasSuffix(ppath, `/`) {
+		return s.RemoveDirWithContext(ctx, ppath)
+	}
+	objectName := strings.TrimPrefix(ppath, `/`)
+	return s.client.RemoveObject(s.bucketName, objectName)
+}
+
 func (s *S3Manager) RemoveDir(ppath string) error {
 	objectName := strings.TrimPrefix(ppath, `/`)
 	if !strings.HasSuffix(objectName, `/`) {
@@ -246,6 +260,38 @@ func (s *S3Manager) RemoveDir(ppath string) error {
 		err := s.client.RemoveObject(s.bucketName, object.Key)
 		if err != nil {
 			return err
+		}
+	}
+
+	return s.client.RemoveObject(s.bucketName, objectName)
+}
+
+func (s *S3Manager) RemoveDirWithContext(ctx context.Context, ppath string) error {
+	objectName := strings.TrimPrefix(ppath, `/`)
+	if !strings.HasSuffix(objectName, `/`) {
+		objectName += `/`
+	}
+	if objectName == `/` {
+		return s.Clear()
+	}
+	doneCh := make(chan struct{})
+	defer close(doneCh)
+	objectCh := s.client.ListObjectsV2(s.bucketName, objectName, true, doneCh)
+	select {
+	case <-ctx.Done():
+		return errors.New(`Forced exit`)
+	default:
+		for object := range objectCh {
+			if object.Err != nil {
+				continue
+			}
+			if len(object.Key) == 0 {
+				continue
+			}
+			err := s.client.RemoveObject(s.bucketName, object.Key)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
@@ -316,16 +362,35 @@ func (s *S3Manager) Upload(ctx echo.Context, ppath string,
 
 // Put 提交数据
 func (s *S3Manager) Put(reader io.Reader, objectName string, size int64) (err error) {
+	_, err = s.PutObject(reader, objectName, size)
+	return
+}
+
+func (s *S3Manager) PutObject(reader io.Reader, objectName string, size int64) (int64, error) {
 	opts := minio.PutObjectOptions{ContentType: "application/octet-stream"}
 	objectName = strings.TrimPrefix(objectName, `/`)
-	_, err = s.client.PutObject(s.bucketName, objectName, reader, size, opts)
-	return
+	return s.client.PutObject(s.bucketName, objectName, reader, size, opts)
+}
+
+func (s *S3Manager) FPutObject(filePath string, objectName string) (int64, error) {
+	opts := minio.PutObjectOptions{ContentType: "application/octet-stream"}
+	objectName = strings.TrimPrefix(objectName, `/`)
+	return s.client.FPutObject(s.bucketName, objectName, filePath, opts)
 }
 
 // Get 获取数据
 func (s *S3Manager) Get(ppath string) (*minio.Object, error) {
 	objectName := strings.TrimPrefix(ppath, `/`)
 	f, err := s.client.GetObject(s.bucketName, objectName, minio.GetObjectOptions{})
+	if err != nil {
+		return f, errors.WithMessage(err, objectName)
+	}
+	return f, err
+}
+
+func (s *S3Manager) GetWithContext(ctx context.Context, ppath string) (*minio.Object, error) {
+	objectName := strings.TrimPrefix(ppath, `/`)
+	f, err := s.client.GetObjectWithContext(ctx, s.bucketName, objectName, minio.GetObjectOptions{})
 	if err != nil {
 		return f, errors.WithMessage(err, objectName)
 	}
@@ -378,6 +443,9 @@ func (s *S3Manager) ErrIsNotExist(err error) bool {
 		if strings.Contains(rawErr.Error(), ` key does not exist`) {
 			return true
 		}
+		if rawErr, ok := err.(minio.ErrorResponse); ok {
+			return rawErr.StatusCode == http.StatusNotFound || rawErr.Code == s3.ErrCodeNoSuchKey
+		}
 	}
 	return false
 }
@@ -393,7 +461,7 @@ func (s *S3Manager) Download(ctx echo.Context, ppath string) error {
 	return ctx.Attachment(f, fileName, inline)
 }
 
-func (s *S3Manager) listByMinio(ctx echo.Context, objectPrefix string) (err error, dirs []os.FileInfo) {
+func (s *S3Manager) listByMinio(objectPrefix string) (dirs []os.FileInfo, err error) {
 	doneCh := make(chan struct{})
 	defer close(doneCh)
 	objectCh := s.client.ListObjectsV2(s.bucketName, objectPrefix, false, doneCh)
@@ -430,7 +498,7 @@ func (s *S3Manager) uploadByAWS(reader io.Reader, objectName string) error {
 	return err
 }
 
-func (s *S3Manager) listByAWS(ctx echo.Context, objectPrefix string) (err error, dirs []os.FileInfo) {
+func (s *S3Manager) listByAWS(ctx echo.Context, objectPrefix string) (dirs []os.FileInfo, err error) {
 	var s3client *s3.S3
 	s3client, err = awsclient.Connect(s.config)
 	if err != nil {
@@ -496,7 +564,7 @@ func (s *S3Manager) listByAWS(ctx echo.Context, objectPrefix string) (err error,
 	return
 }
 
-func (s *S3Manager) List(ctx echo.Context, ppath string, sortBy ...string) (err error, exit bool, dirs []os.FileInfo) {
+func (s *S3Manager) List(ctx echo.Context, ppath string, sortBy ...string) (dirs []os.FileInfo, exit bool, err error) {
 	objectPrefix := strings.TrimPrefix(ppath, `/`)
 	words := len(objectPrefix)
 	var forceDir bool
@@ -512,15 +580,15 @@ func (s *S3Manager) List(ctx echo.Context, ppath string, sortBy ...string) (err 
 	engine := ctx.Form(`engine`, `aws`)
 	switch engine {
 	case `aws`:
-		err, dirs = s.listByAWS(ctx, objectPrefix)
+		dirs, err = s.listByAWS(ctx, objectPrefix)
 	default:
-		err, dirs = s.listByMinio(ctx, objectPrefix)
+		dirs, err = s.listByMinio(objectPrefix)
 	}
 	if err != nil {
 		return
 	}
 	if !forceDir && len(dirs) == 0 {
-		return s.Download(ctx, ppath), true, nil
+		return nil, true, s.Download(ctx, ppath)
 	}
 	if len(sortBy) > 0 {
 		switch sortBy[0] {
@@ -546,7 +614,7 @@ func (s *S3Manager) List(ctx echo.Context, ppath string, sortBy ...string) (err 
 			`dirList`:  dirList,
 			`fileList`: fileList,
 		})
-		return ctx.JSON(data), true, nil
+		return nil, true, ctx.JSON(data)
 	}
 	return
 }

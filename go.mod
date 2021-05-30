@@ -86,7 +86,7 @@ require (
 	github.com/caddy-plugins/cors v0.0.0-20190704155148-3c98079f1197
 	github.com/caddy-plugins/ipfilter v1.1.4
 	github.com/caddy-plugins/nobots v0.1.1
-	github.com/caddy-plugins/webdav v1.2.6
+	github.com/caddy-plugins/webdav v1.2.7
 	github.com/caddyserver/caddy v1.1.5
 	github.com/chromedp/cdproto v0.0.0-20210429002609-5ec2b0624aec
 	github.com/chromedp/chromedp v0.7.1
@@ -144,6 +144,7 @@ require (
 	gocloud.dev v0.23.0
 	goftp.io/server/v2 v2.0.0
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
+	golang.org/x/net v0.0.0-20210525063256-abc453219eb5
 	google.golang.org/grpc/examples v0.0.0-20210415220803-1a870aec2ff9 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/fsnotify/fsnotify.v1 v1.4.7 // indirect

@@ -149,7 +149,7 @@ func StorageFile(ctx echo.Context) error {
 	default:
 		var dirs []os.FileInfo
 		var exit bool
-		err, exit, dirs = mgr.List(ctx, ppath)
+		dirs, exit, err = mgr.List(ctx, ppath)
 		if exit {
 			return err
 		}

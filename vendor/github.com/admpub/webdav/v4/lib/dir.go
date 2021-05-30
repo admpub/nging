@@ -26,6 +26,8 @@ func (w NoSniffFileInfo) ContentType(ctx context.Context) (contentType string, e
 	return MIMEDefault, nil
 }
 
+var _ webdav.FileSystem = WebDavDir{}
+
 type WebDavDir struct {
 	webdav.Dir
 	User    *User

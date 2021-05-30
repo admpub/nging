@@ -20,6 +20,30 @@ func init() {
 	})
 }
 
+func DirFS(u *lib.User, conf *lib.Config, options map[string]string) wd.FileSystem {
+	return lib.WebDavDir{
+		Dir:     wd.Dir(u.Scope),
+		User:    u,
+		NoSniff: conf.NoSniff,
+	}
+}
+
+func LazyloadFS(fs lib.FSGenerator) func(u *lib.User, conf *lib.Config, options map[string]string) wd.FileSystem {
+	return func(u *lib.User, conf *lib.Config, options map[string]string) wd.FileSystem {
+		return lib.WebDavFS{
+			FS: lib.FS{
+				Scope:   u.Scope,
+				FS:      fs,
+				Options: options,
+			},
+			User:    u,
+			NoSniff: conf.NoSniff,
+		}
+	}
+}
+
+var FSGenerator = DirFS
+
 // WebDav is the middleware that contains the configuration for each instance.
 type WebDav struct {
 	Next    httpserver.Handler
@@ -29,6 +53,7 @@ type WebDav struct {
 type config struct {
 	*lib.Config
 	baseURL string
+	options map[string]string
 }
 
 // ServeHTTP determines if the request is for this plugin, and if all prerequisites are met.
@@ -66,6 +91,7 @@ func parse(c *caddy.Controller) ([]*config, error) {
 	for c.Next() {
 		conf := &config{
 			baseURL: "/",
+			options: map[string]string{},
 			Config: &lib.Config{
 				Auth:    false, // Must use basicauth directive for this.
 				NoSniff: true,
@@ -85,7 +111,10 @@ func parse(c *caddy.Controller) ([]*config, error) {
 		}
 
 		if len(args) > 1 {
-			return nil, c.ArgErr()
+			for i, v := range args[1:] {
+				k := `arg` + strconv.Itoa(i)
+				conf.options[k] = v
+			}
 		}
 
 		conf.baseURL = strings.TrimSuffix(conf.baseURL, "/")
@@ -167,12 +196,8 @@ func parse(c *caddy.Controller) ([]*config, error) {
 				val = strings.TrimSuffix(val, ":")
 
 				u.Handler = &wd.Handler{
-					Prefix: conf.baseURL,
-					FileSystem: lib.WebDavDir{
-						Dir:     wd.Dir(u.Scope),
-						User:    u,
-						NoSniff: conf.NoSniff,
-					},
+					Prefix:     conf.baseURL,
+					FileSystem: FSGenerator(u, conf.Config, conf.options),
 					LockSystem: wd.NewMemLS(),
 				}
 
@@ -188,12 +213,8 @@ func parse(c *caddy.Controller) ([]*config, error) {
 		}
 
 		u.Handler = &wd.Handler{
-			Prefix: conf.baseURL,
-			FileSystem: lib.WebDavDir{
-				Dir:     wd.Dir(u.Scope),
-				User:    u,
-				NoSniff: conf.NoSniff,
-			},
+			Prefix:     conf.baseURL,
+			FileSystem: FSGenerator(u, conf.Config, conf.options),
 			LockSystem: wd.NewMemLS(),
 		}
 
