@@ -91,14 +91,10 @@ func New(c echo.Context, m interface{}, jsonFile string, options ...Option) (*fo
 		}
 	}
 	setNextURLField := func() {
-		if len(cfg.Action) == 0 {
-			form.SetParam(`action`, c.Request().URI())
-		}
 		nextURL := c.Form(ncommon.DefaultReturnToURLVarName)
-		if len(nextURL) == 0 {
-			nextURL = c.Referer()
+		if len(nextURL) > 0 {
+			form.Elements(fields.HiddenField(ncommon.DefaultReturnToURLVarName).SetValue(nextURL))
 		}
-		form.Elements(fields.HiddenField(ncommon.DefaultReturnToURLVarName).SetValue(nextURL))
 	}
 	csrfToken, ok := c.Get(`csrf`).(string)
 	if ok {
@@ -152,14 +148,10 @@ func NewModel(c echo.Context, m interface{}, cfg *config.Config, options ...Opti
 		}
 	}
 	setNextURLField := func() {
-		if len(cfg.Action) == 0 {
-			form.SetParam(`action`, c.Request().URI())
-		}
 		nextURL := c.Form(ncommon.DefaultReturnToURLVarName)
-		if len(nextURL) == 0 {
-			nextURL = c.Referer()
+		if len(nextURL) > 0 {
+			form.Elements(fields.HiddenField(ncommon.DefaultReturnToURLVarName).SetValue(nextURL))
 		}
-		form.Elements(fields.HiddenField(ncommon.DefaultReturnToURLVarName).SetValue(nextURL))
 	}
 	csrfToken, ok := c.Get(`csrf`).(string)
 	if ok {
