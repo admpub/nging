@@ -1,5 +1,5 @@
 {{- $langset := . }}
-{{ if not .hasFormGroup }}<div class="form-group">{{ end }}
+{{- if not .hasFormGroup }}<div class="form-group">{{ end }}
 	<div{{if $langset.params}}{{range $k,$v := $langset.params}} {{$k}}="{{$v}}"{{end}}{{end}}{{range $langset.tags}} {{.}}{{end}}>
 		<div class="col-md-12 tabbable langset">
   			<ul class="nav nav-tabs">
@@ -24,4 +24,4 @@
 			</div>
 		</div>
 	</div>
-{{ if not .hasFormGroup }}</div>{{ end }}
+{{- if not .hasFormGroup }}</div>{{ end }}

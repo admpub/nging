@@ -2,7 +2,7 @@
 {{- if eq .type "hidden" }}
     <input type="{{.type}}" name="{{.name}}" class="form-control{{ if .classes }} {{.classes}}{{end}}"{{if .id}} id="{{.id}}"{{end}}{{if .params}}{{range $k, $v := .params}} {{$k}}="{{$v}}"{{end}}{{end}}{{if .css}} style="{{range $k, $v := .css}}{{$k}}: {{$v}}; {{end}}"{{end}}{{range .tags}} {{.}}{{end}}{{ if .value}} value="{{.value}}"{{end}}>
 {{- else }}
-    {{ if not .hasFormGroup }}<div class="form-group{{if .errors}} has-error{{end}}">{{ end }}
+    {{- if not .hasFormGroup }}<div class="form-group{{if .errors}} has-error{{end}}">{{ end }}
     {{- if .label }}
         <label class="col-sm-{{if gt .labelCols 0}}{{.labelCols}}{{else}}2{{end}} control-label{{ if .labelClasses }} {{.labelClasses}}{{end}}"{{if .id}} for="{{.id}}"{{end}}>{{.label}}</label>
     {{- end }}
@@ -21,6 +21,6 @@
             </div>
         {{- end }}
         </div>
-    {{ if not .hasFormGroup }}</div>{{ end }}
+    {{- if not .hasFormGroup }}</div>{{ end }}
 {{- end }}
 {{- end }}

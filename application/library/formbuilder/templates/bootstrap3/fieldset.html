@@ -1,4 +1,4 @@
-{{ if not .hasFormGroup }}<div class="form-group">{{ end }}
+{{- if not .hasFormGroup }}<div class="form-group">{{ end }}
 	<label class="col-sm-{{if gt .labelCols 0}}{{.labelCols}}{{else}}2{{end}} control-label">{{.label}}</label>
 	<div class="col-sm-8{{if .classes }} {{.classes}}{{end}}"{{range .tags}} {{.}}{{end}}>
 		<div class="fieldset bg-fc">
@@ -7,4 +7,4 @@
 			{{- end }}
 		</div>
 	</div>
-{{ if not .hasFormGroup }}</div>{{ end }}
+{{- if not .hasFormGroup }}</div>{{ end }}

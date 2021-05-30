@@ -1,6 +1,6 @@
 {{- define "main" }}
 {{- $p := . }}
-{{ if not .hasFormGroup }}<div class="form-group">{{ end }}
+{{- if not .hasFormGroup }}<div class="form-group">{{ end }}
 	{{- if .label }}
 	<label class="col-sm-{{if gt .labelCols 0}}{{.labelCols}}{{else}}2{{end}} control-label{{ if $p.labelClasses }} {{$p.labelClasses}}{{end}}">{{.label}}</label>
 	{{- end }}
@@ -26,5 +26,5 @@
 		{{- end }}
 		<div id='parsley-error-{{$p.name}}'></div>
 	</div>
-{{ if not .hasFormGroup }}</div>{{ end }}
+{{- if not .hasFormGroup }}</div>{{ end }}
 {{- end }}
