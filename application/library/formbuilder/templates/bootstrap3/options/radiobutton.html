@@ -1,30 +1,30 @@
-{{- define "main" -}}
-{{- $p := . -}}
+{{- define "main" }}
+{{- $p := . }}
 <div class="form-group">
-	{{- if .label -}}
+	{{- if .label }}
 	<label class="col-sm-2 control-label{{ if $p.labelClasses }} {{$p.labelClasses}}{{end}}">{{.label}}</label>
-	{{- end -}}
+	{{- end }}
 	<div class="col-sm-{{if eq .container "fieldset"}}10{{else}}8{{end}}">
-		{{- range .choices -}}
+		{{- range .choices }}
 		<label class="control-label{{ if $p.labelClasses }} {{$p.labelClasses}}{{end}}">
 			<input type="radio" name="{{$p.name}}" class="webx{{if $p.classes}} {{$p.classes}}{{end}}" value="{{.ID}}"{{if $p.params}}{{range $k2, $v2 := $p.params}} {{$k2}}="{{$v2}}"{{end}}{{end}}{{if $p.css}} style="{{range $k2, $v2 := .css}}{{$k2}}: {{$v2}}; {{end}}"{{end}}{{if .Checked}} checked="checked"{{end}}{{range $p.tags}} {{.}}{{end}} data-parsley-errors-container="#parsley-error-{{$p.name}}">
 			<span class="lbl">{{.Val}}</span>
 		</label>
 		&nbsp; &nbsp;
-		{{- end -}}
-		{{- if or .helptext .errors -}}
+		{{- end }}
+		{{- if or .helptext .errors }}
 		<div class="help-block">
-			{{- if .helptext}}{{ .helptext | ToHTML }}{{end -}}
+			{{- if .helptext }}{{ .helptext | ToHTML }}{{ end }}
 			{{- if .errors -}}
 			<ul>
-				{{- range .errors -}}
+				{{- range .errors }}
 				<li>{{.}}</li>
-				{{- end -}}
+				{{- end }}
 			</ul>
-			{{- end -}}
+			{{- end }}
 		</div>
-		{{- end -}}
+		{{- end }}
 		<div id='parsley-error-{{$p.name}}'></div>
 	</div>
 </div>
-{{- end -}}
+{{- end }}

@@ -1,9 +1,9 @@
 <div class="form-group">
-	{{- $size := len .fields -}}
-	{{- $cols := Math `div` 12 $size -}}
-	{{- range $k, $v := .fields -}}
+	{{- $size := len .fields }}
+	{{- $cols := Math `div` 12 $size }}
+	{{- range $k, $v := .fields }}
 	<div class="col-sm-{{$cols}}">
-	{{.Render}}
+	{{ .Render }}
 	</div>
-	{{- end -}}
+	{{- end }}
 </div>

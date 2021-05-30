@@ -2,9 +2,9 @@
 	<label class="col-sm-2 control-label">{{.label}}</label>
 	<div class="col-sm-8{{if .classes }} {{.classes}}{{end}}"{{range .tags}} {{.}}{{end}}>
 		<div class="fieldset bg-fc">
-			{{- range .fields -}}
-			{{.Render}}
-			{{- end -}}
+			{{- range .fields }}
+			{{- .Render }}
+			{{- end }}
 		</div>
 	</div>
 </div>
