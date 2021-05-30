@@ -6,10 +6,12 @@ import (
 
 	plugin "github.com/caddy-plugins/webdav"
 	"github.com/webx-top/db"
+	"github.com/webx-top/db/lib/factory"
 	"github.com/webx-top/echo/defaults"
 	"github.com/webx-top/echo/param"
 	"golang.org/x/net/webdav"
 
+	"github.com/admpub/nging/application/dbschema"
 	"github.com/admpub/nging/application/library/config"
 	"github.com/admpub/nging/application/library/s3manager"
 	"github.com/admpub/nging/application/library/s3manager/s3client"
@@ -19,6 +21,11 @@ import (
 
 func init() {
 	plugin.FSGenerator = plugin.LazyloadFS(FSGenerator)
+	dbschema.DBI.On(`w+`, func(model factory.Model, editColumns ...string) error {
+		m := model.(*dbschema.NgingCloudStorage)
+		managers.Delete(param.AsString(m.Id))
+		return nil
+	}, dbschema.WithPrefix(`nging_cloud_storage`))
 }
 
 type MgrCached struct {
