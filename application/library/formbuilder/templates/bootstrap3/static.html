@@ -6,5 +6,5 @@
     <div class="col-sm-8">
         <p name="{{.name}}" class="form-control-static{{if .classes}} {{.classes}}{{end}}"{{if .id}} id="{{.id}}"{{end}}{{if .params}}{{range $k, $v := .params}} {{$k}}="{{$v}}"{{end}}{{end}}{{if .css}} style="{{range $k, $v := .css}}{{$k}}:{{$v}};{{end}}"{{end}}{{range .tags}} {{.}}{{end}}>{{.text}}</p>
     </div>
-{{- if not .hasFormGroup }}</div>{{ end }}
+{{ if not .hasFormGroup }}</div>{{ end }}
 {{- end }}
