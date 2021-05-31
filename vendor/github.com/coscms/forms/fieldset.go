@@ -31,19 +31,19 @@ import (
 
 // FieldSetType is a collection of fields grouped within a form.
 type FieldSetType struct {
-	Tmpl       string
-	OrigName   string
-	CurrName   string
-	Label      string
-	LabelCols  int
-	FieldCols  int
-	Class      common.HTMLAttrValues
-	Tags       common.HTMLAttrValues
-	FieldList  []fields.FieldInterface
-	FieldMap   map[string]int
-	AppendData map[string]interface{}
-	FormStyle  string
-	Language   string
+	OrigName   string                  `json:"origName" xml:"origName"`
+	CurrName   string                  `json:"currName" xml:"currName"`
+	Label      string                  `json:"label" xml:"label"`
+	LabelCols  int                     `json:"labelCols" xml:"labelCols"`
+	FieldCols  int                     `json:"fieldCols" xml:"fieldCols"`
+	Classes    common.HTMLAttrValues   `json:"classes" xml:"classes"`
+	Tags       common.HTMLAttrValues   `json:"tags" xml:"tags"`
+	FieldList  []fields.FieldInterface `json:"fieldList" xml:"fieldList"`
+	AppendData map[string]interface{}  `json:"appendData,omitempty" xml:"appendData,omitempty"`
+	FormStyle  string                  `json:"formStyle" xml:"formStyle"`
+	Language   string                  `json:"language,omitempty" xml:"language,omitempty"`
+	Template   string                  `json:"template" xml:"template"`
+	fieldMap   map[string]int
 	data       map[string]interface{}
 }
 
@@ -78,7 +78,7 @@ func (f *FieldSetType) Data() map[string]interface{} {
 		"labelCols": f.LabelCols,
 		"fieldCols": f.FieldCols,
 		"fields":    f.FieldList,
-		"classes":   f.Class,
+		"classes":   f.Classes,
 		"tags":      f.Tags,
 	}
 	for k, v := range f.AppendData {
@@ -89,7 +89,7 @@ func (f *FieldSetType) Data() map[string]interface{} {
 
 func (f *FieldSetType) render() string {
 	buf := bytes.NewBuffer(nil)
-	tpf := common.TmplDir(f.FormStyle) + "/" + f.FormStyle + "/" + f.Tmpl + ".html"
+	tpf := common.TmplDir(f.FormStyle) + "/" + f.FormStyle + "/" + f.Template + ".html"
 	var err error
 	tpl, ok := common.CachedTemplate(tpf)
 	if !ok {
@@ -128,8 +128,8 @@ func (f *FieldSetType) Clone() config.FormElement {
 	return &fc
 }
 
-func (f *FieldSetType) SetTmpl(tmpl string) *FieldSetType {
-	f.Tmpl = tmpl
+func (f *FieldSetType) SetTemplate(tmpl string) *FieldSetType {
+	f.Template = tmpl
 	return f
 }
 
@@ -137,19 +137,19 @@ func (f *FieldSetType) SetTmpl(tmpl string) *FieldSetType {
 // Every method for FieldSetType objects returns the object itself, so that call can be chained.
 func FieldSet(name string, label string, style string, elems ...fields.FieldInterface) *FieldSetType {
 	ret := &FieldSetType{
-		Tmpl:       "fieldset",
+		Template:   "fieldset",
 		CurrName:   name,
 		OrigName:   name,
 		Label:      label,
-		Class:      common.HTMLAttrValues{},
+		Classes:    common.HTMLAttrValues{},
 		Tags:       common.HTMLAttrValues{},
 		FieldList:  elems,
-		FieldMap:   map[string]int{},
+		fieldMap:   map[string]int{},
 		AppendData: map[string]interface{}{},
 		FormStyle:  style,
 	}
 	for i, elem := range elems {
-		ret.FieldMap[elem.OriginalName()] = i
+		ret.fieldMap[elem.OriginalName()] = i
 	}
 	return ret
 }
@@ -166,9 +166,9 @@ func (f *FieldSetType) SortAll(sortList ...string) *FieldSetType {
 		sortSlice = sortList
 	}
 	for k, fieldName := range sortSlice {
-		if oldIndex, ok := f.FieldMap[fieldName]; ok {
+		if oldIndex, ok := f.fieldMap[fieldName]; ok {
 			f.FieldList[k] = elem[oldIndex]
-			f.FieldMap[fieldName] = k
+			f.fieldMap[fieldName] = k
 		}
 	}
 	return f
@@ -189,7 +189,7 @@ func (f *FieldSetType) addField(field fields.FieldInterface) *FieldSetType {
 	field.SetStyle(f.FormStyle)
 	field.SetData(`container`, `fieldset`)
 	f.FieldList = append(f.FieldList, field)
-	f.FieldMap[field.OriginalName()] = len(f.FieldList) - 1
+	f.fieldMap[field.OriginalName()] = len(f.FieldList) - 1
 	return f
 }
 
@@ -221,7 +221,7 @@ func (f *FieldSetType) Sort(sortList ...string) *FieldSetType {
 
 			}
 		}
-		if oldIndex, ok := f.FieldMap[fieldName]; ok {
+		if oldIndex, ok := f.fieldMap[fieldName]; ok {
 			if oldIndex != index && size > index {
 				f.sortFields(index, oldIndex, endIdx, size)
 			}
@@ -237,7 +237,7 @@ func (f *FieldSetType) Sort2Last(fieldsName ...string) *FieldSetType {
 	index := endIdx
 	for n := len(fieldsName) - 1; n >= 0; n-- {
 		fieldName := fieldsName[n]
-		if oldIndex, ok := f.FieldMap[fieldName]; ok {
+		if oldIndex, ok := f.fieldMap[fieldName]; ok {
 			if oldIndex != index && index >= 0 {
 				f.sortFields(index, oldIndex, endIdx, size)
 			}
@@ -249,7 +249,7 @@ func (f *FieldSetType) Sort2Last(fieldsName ...string) *FieldSetType {
 
 // Field returns the field identified by name. It returns an empty field if it is missing.
 func (f *FieldSetType) Field(name string) fields.FieldInterface {
-	ind, ok := f.FieldMap[name]
+	ind, ok := f.fieldMap[name]
 	if !ok {
 		return &fields.Field{}
 	}
@@ -263,13 +263,13 @@ func (f *FieldSetType) Name() string {
 
 // AddClass saves the provided class for the fieldset.
 func (f *FieldSetType) AddClass(class string) *FieldSetType {
-	f.Class.Add(class)
+	f.Classes.Add(class)
 	return f
 }
 
 // RemoveClass removes the provided class from the fieldset, if it was present. Nothing is done if it was not originally present.
 func (f *FieldSetType) RemoveClass(class string) *FieldSetType {
-	f.Class.Remove(class)
+	f.Classes.Remove(class)
 	return f
 }
 
@@ -331,7 +331,7 @@ func (f *FieldSetType) sortFields(index, oldIndex, endIdx, size int) {
 		max = oldIndex
 	}
 	for i := min; i <= max; i++ {
-		f.FieldMap[newFields[i].OriginalName()] = i
+		f.fieldMap[newFields[i].OriginalName()] = i
 	}
 	f.FieldList = newFields
 }

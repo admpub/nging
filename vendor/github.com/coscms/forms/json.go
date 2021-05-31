@@ -211,7 +211,7 @@ func (form *Form) ValidElements(elements []*config.Element, t reflect.Type, v re
 }
 
 func (form *Form) IsIgnored(fieldName string) bool {
-	for _, name := range form.IngoreValid {
+	for _, name := range form.ignoreValid {
 		if fieldName == name {
 			return true
 		}
@@ -220,10 +220,10 @@ func (form *Form) IsIgnored(fieldName string) bool {
 }
 
 func (form *Form) CloseValid(fieldName ...string) *Form {
-	if form.IngoreValid == nil {
-		form.IngoreValid = []string{}
+	if form.ignoreValid == nil {
+		form.ignoreValid = []string{}
 	}
-	form.IngoreValid = append(form.IngoreValid, fieldName...)
+	form.ignoreValid = append(form.ignoreValid, fieldName...)
 	return form
 }
 
@@ -274,7 +274,7 @@ func (form *Form) ParseElements(es ElementSetter, elements []*config.Element, la
 			}
 			f := form.NewLangSet(ele.Name, ele.Languages)
 			if len(ele.Template) > 0 {
-				f.SetTmpl(ele.Template)
+				f.SetTemplate(ele.Template)
 			}
 			f.SetData("container", "langset")
 			for key, val := range ele.Data {
@@ -300,7 +300,7 @@ func (form *Form) ParseElements(es ElementSetter, elements []*config.Element, la
 			}
 			f := form.NewFieldSet(ele.Name, form.labelFn(ele.Label), elems...)
 			if len(ele.Template) > 0 {
-				f.SetTmpl(ele.Template)
+				f.SetTemplate(ele.Template)
 			}
 			f.SetData("container", "fieldset")
 			for key, val := range ele.Data {
@@ -545,7 +545,7 @@ func (form *Form) parseElement(ele *config.Element, typ reflect.Type, val reflec
 	}
 	f.SetHelptext(form.labelFn(ele.HelpText))
 	f.SetLabel(form.labelFn(ele.Label))
-	f.SetTmpl(ele.Template)
+	f.SetTemplate(ele.Template)
 	f.SetID(ele.ID)
 	if len(ele.Valid) > 0 {
 		form.validTagFn(ele.Valid, f)
@@ -624,7 +624,7 @@ func (form *Form) ToConfig() *config.Config {
 			}
 			var temp string
 			var join string
-			for _, c := range f.Class {
+			for _, c := range f.Classes {
 				temp += join + c
 				join = ` `
 			}
