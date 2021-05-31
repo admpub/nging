@@ -28,6 +28,10 @@ import (
 	"github.com/coscms/forms/common"
 )
 
+func New(t *template.Template) *Widget {
+	return &Widget{template: t}
+}
+
 // Widget Simple widget object that gets executed at render time.
 type Widget struct {
 	template *template.Template
@@ -55,11 +59,11 @@ func BaseWidget(style, inputType, tmplName string) *Widget {
 	if !ok {
 		var (
 			fpath = common.TmplDir(style) + "/" + style + "/"
-			urls  = []string{common.CreateUrl(fpath + "generic.html")}
+			urls  = []string{common.LookupPath(fpath + "generic.html")}
 			tpath = widgetTmpl(inputType, tmplName)
 			err   error
 		)
-		urls = append(urls, common.CreateUrl(fpath+tpath+".html"))
+		urls = append(urls, common.LookupPath(fpath+tpath+".html"))
 		tmpl, err = common.ParseFiles(urls...)
 		if err != nil {
 			panic(err)
@@ -68,7 +72,7 @@ func BaseWidget(style, inputType, tmplName string) *Widget {
 	} else {
 		tmpl.Funcs(common.TplFuncs())
 	}
-	return &Widget{tmpl}
+	return New(tmpl)
 }
 
 func widgetTmpl(inputType, tmpl string) (tpath string) {

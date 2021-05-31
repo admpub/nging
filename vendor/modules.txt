@@ -520,7 +520,7 @@ github.com/chromedp/sysutil
 github.com/codegangsta/inject
 # github.com/coreos/go-oidc v2.2.1+incompatible
 github.com/coreos/go-oidc
-# github.com/coscms/forms v1.7.1
+# github.com/coscms/forms v1.7.2
 ## explicit
 github.com/coscms/forms
 github.com/coscms/forms/common

@@ -25,16 +25,16 @@ import (
 	"html/template"
 
 	"github.com/coscms/forms/common"
-	conf "github.com/coscms/forms/config"
+	"github.com/coscms/forms/config"
 	"github.com/coscms/forms/fields"
 )
 
 // LangSetType is a collection of fields grouped within a form.
 type LangSetType struct {
-	Languages    []*conf.Language
-	LangMap      map[string]int              //{"zh-CN":1}
-	FieldMap     map[string]conf.FormElement //{"zh-CN:title":0x344555}
-	ContainerMap map[string]string           //{"name":"fieldset's name"}
+	Languages    []*config.Language
+	LangMap      map[string]int                //{"zh-CN":1}
+	FieldMap     map[string]config.FormElement //{"zh-CN:title":0x344555}
+	ContainerMap map[string]string             //{"name":"fieldset's name"}
 	CurrName     string
 	OrigName     string
 	Tmpl         string
@@ -61,17 +61,17 @@ func (f *LangSetType) Lang() string {
 	return ``
 }
 
-func (f *LangSetType) Clone() conf.FormElement {
+func (f *LangSetType) Clone() config.FormElement {
 	fc := *f
 	return &fc
 }
 
-func (f *LangSetType) AddLanguage(language *conf.Language) {
+func (f *LangSetType) AddLanguage(language *config.Language) {
 	f.LangMap[language.ID] = len(f.Languages)
 	f.Languages = append(f.Languages, language)
 }
 
-func (f *LangSetType) Language(lang string) *conf.Language {
+func (f *LangSetType) Language(lang string) *config.Language {
 	if ind, ok := f.LangMap[lang]; ok {
 		return f.Languages[ind]
 	}
@@ -109,7 +109,7 @@ func (f *LangSetType) render() string {
 	var err error
 	tpl, ok := common.CachedTemplate(tpf)
 	if !ok {
-		tpl, err = common.ParseFiles(common.CreateUrl(tpf))
+		tpl, err = common.ParseFiles(common.LookupPath(tpf))
 		if err != nil {
 			return err.Error()
 		}
@@ -138,12 +138,12 @@ func (f *LangSetType) SetTmpl(tmpl string) *LangSetType {
 
 // FieldSet creates and returns a new FieldSetType with the given name and list of fields.
 // Every method for FieldSetType objects returns the object itself, so that call can be chained.
-func LangSet(name string, style string, languages ...*conf.Language) *LangSetType {
+func LangSet(name string, style string, languages ...*config.Language) *LangSetType {
 	ret := &LangSetType{
 		Languages:    languages,
 		LangMap:      map[string]int{},
 		ContainerMap: make(map[string]string),
-		FieldMap:     make(map[string]conf.FormElement),
+		FieldMap:     make(map[string]config.FormElement),
 		CurrName:     name,
 		OrigName:     name,
 		Tmpl:         "langset",
@@ -162,7 +162,7 @@ func LangSet(name string, style string, languages ...*conf.Language) *LangSetTyp
 func (f *LangSetType) SortAll(sortList ...string) *LangSetType {
 	elem := f.Languages
 	size := len(elem)
-	f.Languages = make([]*conf.Language, size)
+	f.Languages = make([]*config.Language, size)
 	var sortSlice []string
 	if len(sortList) == 1 {
 		sortSlice = strings.Split(sortList[0], ",")
@@ -179,7 +179,7 @@ func (f *LangSetType) SortAll(sortList ...string) *LangSetType {
 }
 
 // Elements adds the provided elements to the langset.
-func (f *LangSetType) Elements(elems ...conf.FormElement) {
+func (f *LangSetType) Elements(elems ...config.FormElement) {
 	for _, e := range elems {
 		switch v := e.(type) {
 		case fields.FieldInterface:
@@ -415,8 +415,8 @@ func (f *LangSetType) Enable() *LangSetType {
 }
 
 func (f *LangSetType) sortFields(index, oldIndex, endIdx, size int) {
-	var newFields []*conf.Language
-	oldFields := make([]*conf.Language, size)
+	var newFields []*config.Language
+	oldFields := make([]*config.Language, size)
 	copy(oldFields, f.Languages)
 	var min, max int
 	if index > oldIndex {

@@ -158,8 +158,8 @@ func TmplDir(style string) (tmplDir string) {
 	return
 }
 
-// CreateUrl creates the complete url of the desired widget template
-func CreateUrl(widget string) string {
+// LookupPath creates the complete path of the desired widget template
+func LookupPath(widget string) string {
 	if !FileSystem.IsEmpty() {
 		fp, err := FileSystem.Open(widget)
 		if err != nil {
