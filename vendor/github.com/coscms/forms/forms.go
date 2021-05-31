@@ -33,7 +33,7 @@ import (
 	"strings"
 
 	"github.com/coscms/forms/common"
-	conf "github.com/coscms/forms/config"
+	"github.com/coscms/forms/config"
 	"github.com/coscms/forms/fields"
 	"github.com/webx-top/validation"
 )
@@ -44,7 +44,7 @@ const (
 	GET  = "GET"
 )
 
-func NewWithConfig(c *conf.Config, args ...interface{}) *Form {
+func NewWithConfig(c *config.Config, args ...interface{}) *Form {
 	form := New()
 	form.Init(c, args...)
 	return form
@@ -60,7 +60,7 @@ func NewWithConfigFile(m interface{}, configJSONFile string) *Form {
 
 func New() *Form {
 	return &Form{
-		FieldList:             []conf.FormElement{},
+		FieldList:             []config.FormElement{},
 		FieldMap:              make(map[string]int),
 		ContainerMap:          make(map[string]string),
 		Style:                 common.BASE,
@@ -77,7 +77,7 @@ func New() *Form {
 	}
 }
 
-func NewFromModel(m interface{}, c *conf.Config) *Form {
+func NewFromModel(m interface{}, c *config.Config) *Form {
 	form := NewWithConfig(c, m)
 	form.SetModel(m)
 	form.ParseModel(m)
@@ -90,7 +90,7 @@ type Form struct {
 	Model       interface{}
 	IngoreValid []string
 
-	FieldList             []conf.FormElement
+	FieldList             []config.FormElement
 	FieldMap              map[string]int
 	ContainerMap          map[string]string
 	Style                 string
@@ -104,7 +104,7 @@ type Form struct {
 	valid                 *validation.Validation
 	labelFn               func(string) string
 	validTagFn            func(string, fields.FieldInterface)
-	config                *conf.Config
+	config                *config.Config
 	beforeRender          []func()
 	debug                 bool
 	OmitOrMustFieldsValue map[string]bool //true:omit; false:must
@@ -192,9 +192,9 @@ func (f *Form) ValidTagFunc() func(string, fields.FieldInterface) {
 	return f.validTagFn
 }
 
-func (f *Form) Init(c *conf.Config, model ...interface{}) *Form {
+func (f *Form) Init(c *config.Config, model ...interface{}) *Form {
 	if c == nil {
-		c = &conf.Config{}
+		c = &config.Config{}
 	}
 	f.config = c
 	if len(c.Theme) == 0 {
@@ -209,7 +209,7 @@ func (f *Form) Init(c *conf.Config, model ...interface{}) *Form {
 	tmpl, ok := common.CachedTemplate(tpf)
 	if !ok {
 		var err error
-		tmpl, err = common.ParseFiles(common.CreateUrl(c.Template))
+		tmpl, err = common.ParseFiles(common.LookupPath(c.Template))
 		if err != nil {
 			log.Println(err)
 		}
@@ -304,7 +304,7 @@ func (f *Form) ParseModel(model ...interface{}) *Form {
 	}
 	flist, fsort := f.unWindStructure(m, ``)
 	for _, v := range flist {
-		f.Elements(v.(conf.FormElement))
+		f.Elements(v.(config.FormElement))
 	}
 	if len(fsort) > 0 {
 		f.Sort(fsort)
@@ -613,7 +613,7 @@ func (f *Form) String() string {
 }
 
 // Elements adds the provided elements to the form.
-func (f *Form) Elements(elems ...conf.FormElement) {
+func (f *Form) Elements(elems ...config.FormElement) {
 	for _, e := range elems {
 		switch v := e.(type) {
 		case fields.FieldInterface:
@@ -739,7 +739,7 @@ func (f *Form) Field(name string) fields.FieldInterface {
 }
 
 // Fields returns all field
-func (f *Form) Fields() []conf.FormElement {
+func (f *Form) Fields() []config.FormElement {
 	return f.FieldList
 }
 
@@ -757,7 +757,7 @@ func (f *Form) LangSet(name string) *LangSetType {
 	}
 }
 
-func (f *Form) NewLangSet(name string, langs []*conf.Language) *LangSetType {
+func (f *Form) NewLangSet(name string, langs []*config.Language) *LangSetType {
 	return LangSet(name, f.Style, langs...)
 }
 
@@ -785,7 +785,7 @@ func (f *Form) NewFieldSet(name string, label string, elems ...fields.FieldInter
 func (f *Form) SortAll(sortList ...string) *Form {
 	elem := f.FieldList
 	size := len(elem)
-	f.FieldList = make([]conf.FormElement, size)
+	f.FieldList = make([]config.FormElement, size)
 	var sortSlice []string
 	if len(sortList) == 1 {
 		sortSlice = strings.Split(sortList[0], ",")
@@ -857,8 +857,8 @@ func (f *Form) Sort2Last(fieldsName ...string) *Form {
 
 func (f *Form) sortFields(index, oldIndex, endIdx, size int) {
 
-	var newFields []conf.FormElement
-	oldFields := make([]conf.FormElement, size)
+	var newFields []config.FormElement
+	oldFields := make([]config.FormElement, size)
 	copy(oldFields, f.FieldList)
 	var min, max int
 	if index > oldIndex {

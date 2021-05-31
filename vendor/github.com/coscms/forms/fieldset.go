@@ -25,7 +25,7 @@ import (
 	"strings"
 
 	"github.com/coscms/forms/common"
-	conf "github.com/coscms/forms/config"
+	"github.com/coscms/forms/config"
 	"github.com/coscms/forms/fields"
 )
 
@@ -93,7 +93,7 @@ func (f *FieldSetType) render() string {
 	var err error
 	tpl, ok := common.CachedTemplate(tpf)
 	if !ok {
-		tpl, err = common.ParseFiles(common.CreateUrl(tpf))
+		tpl, err = common.ParseFiles(common.LookupPath(tpf))
 		if err != nil {
 			return err.Error()
 		}
@@ -123,7 +123,7 @@ func (f *FieldSetType) Lang() string {
 	return f.Language
 }
 
-func (f *FieldSetType) Clone() conf.FormElement {
+func (f *FieldSetType) Clone() config.FormElement {
 	fc := *f
 	return &fc
 }
@@ -175,7 +175,7 @@ func (f *FieldSetType) SortAll(sortList ...string) *FieldSetType {
 }
 
 // Elements adds the provided elements to the fieldset.
-func (f *FieldSetType) Elements(elems ...conf.FormElement) *FieldSetType {
+func (f *FieldSetType) Elements(elems ...config.FormElement) *FieldSetType {
 	for _, e := range elems {
 		switch v := e.(type) {
 		case fields.FieldInterface:
