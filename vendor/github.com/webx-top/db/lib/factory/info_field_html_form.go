@@ -55,7 +55,7 @@ func (f *FieldInfo) FormInput(value interface{}, options echo.H) template.HTML {
 				data[`label`] = template.HTML("{{`" + label + "`|T}}")
 			}
 			data.DeepMerge(options)
-			input += DefaultHTMLTmpl.ToInput(`radio`, data) + "\n"
+			input += GetHTMLTmpl(options).ToInput(`radio`, data) + "\n"
 		}
 	case `set`:
 		labels := options.GetStore(`optionLabels`)
@@ -102,7 +102,7 @@ func (f *FieldInfo) FormInput(value interface{}, options echo.H) template.HTML {
 				data[`label`] = template.HTML("{{`" + label + "`|T}}")
 			}
 			data.DeepMerge(options)
-			input += DefaultHTMLTmpl.ToInput(`checkbox`, data) + "\n"
+			input += GetHTMLTmpl(options).ToInput(`checkbox`, data) + "\n"
 		}
 	case `date`:
 		attrs := f.HTMLAttrBuilder(required)
@@ -124,7 +124,7 @@ func (f *FieldInfo) FormInput(value interface{}, options echo.H) template.HTML {
 			data[`value`] = template.HTML("{{Form `" + name + "`}}")
 		}
 		data.DeepMerge(options)
-		input = DefaultHTMLTmpl.ToInput(`text`, data) + "\n"
+		input = GetHTMLTmpl(options).ToInput(`text`, data) + "\n"
 	case `time`:
 		attrs := f.HTMLAttrBuilder(required)
 		if isInteger(f.GoName) {
@@ -145,7 +145,7 @@ func (f *FieldInfo) FormInput(value interface{}, options echo.H) template.HTML {
 			data[`value`] = template.HTML("{{Form `" + name + "`}}")
 		}
 		data.DeepMerge(options)
-		input = DefaultHTMLTmpl.ToInput(`text`, data) + "\n"
+		input = GetHTMLTmpl(options).ToInput(`text`, data) + "\n"
 	case `datetime`:
 		attrs := f.HTMLAttrBuilder(required)
 		val := fmt.Sprint(value)
@@ -167,7 +167,7 @@ func (f *FieldInfo) FormInput(value interface{}, options echo.H) template.HTML {
 			data[`value`] = template.HTML("{{Form `" + name + "`}}")
 		}
 		data.DeepMerge(options)
-		input = DefaultHTMLTmpl.ToInput(`text`, data) + "\n"
+		input = GetHTMLTmpl(options).ToInput(`text`, data) + "\n"
 	case `text`, `longtext`, `tinytext`, `mediumtext`:
 		attrs := f.HTMLAttrBuilder(required)
 		data := echo.H{
@@ -180,7 +180,7 @@ func (f *FieldInfo) FormInput(value interface{}, options echo.H) template.HTML {
 			data[`value`] = template.HTML("{{Form `" + name + "`}}")
 		}
 		data.DeepMerge(options)
-		input = DefaultHTMLTmpl.ToInput(`textarea`, data) + "\n"
+		input = GetHTMLTmpl(options).ToInput(`textarea`, data) + "\n"
 	default:
 		attrs := f.HTMLAttrBuilder(required)
 		switch f.GoType {
@@ -197,7 +197,7 @@ func (f *FieldInfo) FormInput(value interface{}, options echo.H) template.HTML {
 			}
 			attrs.Add(`step`, `1`)
 			data.DeepMerge(options)
-			input = DefaultHTMLTmpl.ToInput(`text`, data) + "\n"
+			input = GetHTMLTmpl(options).ToInput(`text`, data) + "\n"
 		case `float64`, `float32`:
 			if f.Precision > 0 {
 				attrs.Add(`step`, fmt.Sprintf(`0.%0*d`, f.Precision, 1))
@@ -215,7 +215,7 @@ func (f *FieldInfo) FormInput(value interface{}, options echo.H) template.HTML {
 				data[`value`] = template.HTML("{{Form `" + name + "`}}")
 			}
 			data.DeepMerge(options)
-			input = DefaultHTMLTmpl.ToInput(`text`, data) + "\n"
+			input = GetHTMLTmpl(options).ToInput(`text`, data) + "\n"
 		case `bool`:
 			labels := options.GetStore(`optionLabels`)
 			if len(val) == 0 && len(f.DefaultValue) > 0 {
@@ -251,7 +251,7 @@ func (f *FieldInfo) FormInput(value interface{}, options echo.H) template.HTML {
 					data[`label`] = template.HTML("{{`" + label + "`|T}}")
 				}
 				data.DeepMerge(options)
-				input += DefaultHTMLTmpl.ToInput(`radio`, data) + "\n"
+				input += GetHTMLTmpl(options).ToInput(`radio`, data) + "\n"
 			}
 		case `[]byte`:
 			data := echo.H{
@@ -265,7 +265,7 @@ func (f *FieldInfo) FormInput(value interface{}, options echo.H) template.HTML {
 				data[`value`] = template.HTML("{{Form `" + name + "`}}")
 			}
 			data.DeepMerge(options)
-			input = DefaultHTMLTmpl.ToInput(`text`, data) + "\n"
+			input = GetHTMLTmpl(options).ToInput(`text`, data) + "\n"
 		case `string`:
 			fallthrough
 		default:
@@ -280,7 +280,7 @@ func (f *FieldInfo) FormInput(value interface{}, options echo.H) template.HTML {
 				data[`value`] = template.HTML("{{Form `" + name + "`}}")
 			}
 			data.DeepMerge(options)
-			input = DefaultHTMLTmpl.ToInput(`text`, data) + "\n"
+			input = GetHTMLTmpl(options).ToInput(`text`, data) + "\n"
 		}
 	}
 	return template.HTML(input)
@@ -310,7 +310,7 @@ func (f *FieldInfo) FormGroup(value interface{}, options echo.H, inputAndLabelCo
 	var star string
 	required := options.Bool(`required`)
 	if required {
-		star = DefaultHTMLTmpl.Required
+		star = GetHTMLTmpl(options).Required
 	}
 	data := echo.H{
 		`labelCols`:   labelCols,
@@ -323,5 +323,5 @@ func (f *FieldInfo) FormGroup(value interface{}, options echo.H, inputAndLabelCo
 		data[`label`] = template.HTML("{{`" + f.Comment + "`|T}}")
 	}
 	data.DeepMerge(options)
-	return template.HTML(DefaultHTMLTmpl.ToGroup(data))
+	return template.HTML(GetHTMLTmpl(options).ToGroup(data))
 }

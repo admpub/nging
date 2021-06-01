@@ -112,11 +112,25 @@ func NewBrowser(ctx context.Context, urlstr string, opts ...BrowserOption) (*Bro
 	urlstr = forceIP(urlstr)
 	b.conn, err = DialContext(dialCtx, urlstr, WithConnDebugf(b.dbgf))
 	if err != nil {
-		return nil, fmt.Errorf("could not dial %q: %v", urlstr, err)
+		return nil, fmt.Errorf("could not dial %q: %w", urlstr, err)
 	}
 
 	go b.run(ctx)
 	return b, nil
+}
+
+// Process returns the process object of the browser.
+//
+// It could be nil when the browser is allocated with RemoteAllocator.
+// It could be useful for a monitoring system to collect process metrics of the browser process.
+// (see https://pkg.go.dev/github.com/prometheus/client_golang/prometheus#NewProcessCollector for an example)
+//
+// Example:
+//     if process := chromedp.FromContext(ctx).Browser.Process(); process != nil {
+//         fmt.Printf("Browser PID: %v", process.Pid)
+//     }
+func (b *Browser) Process() *os.Process {
+	return b.process
 }
 
 func (b *Browser) newExecutorForTarget(ctx context.Context, targetID target.ID, sessionID target.SessionID) (*Target, error) {

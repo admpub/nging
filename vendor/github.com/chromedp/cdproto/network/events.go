@@ -241,3 +241,44 @@ type EventTrustTokenOperationDone struct {
 	IssuerOrigin     string                        `json:"issuerOrigin,omitempty"`     // Origin of the issuer in case of a "Issuance" or "Redemption" operation.
 	IssuedTokenCount int64                         `json:"issuedTokenCount,omitempty"` // The number of obtained Trust Tokens on a successful "Issuance" operation.
 }
+
+// EventSubresourceWebBundleMetadataReceived fired once when parsing the .wbn
+// file has succeeded. The event contains the information about the web bundle
+// contents.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-subresourceWebBundleMetadataReceived
+type EventSubresourceWebBundleMetadataReceived struct {
+	RequestID RequestID `json:"requestId"` // Request identifier. Used to match this information to another event.
+	Urls      []string  `json:"urls"`      // A list of URLs of resources in the subresource Web Bundle.
+}
+
+// EventSubresourceWebBundleMetadataError fired once when parsing the .wbn
+// file has failed.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-subresourceWebBundleMetadataError
+type EventSubresourceWebBundleMetadataError struct {
+	RequestID    RequestID `json:"requestId"`    // Request identifier. Used to match this information to another event.
+	ErrorMessage string    `json:"errorMessage"` // Error message
+}
+
+// EventSubresourceWebBundleInnerResponseParsed fired when handling requests
+// for resources within a .wbn file. Note: this will only be fired for resources
+// that are requested by the webpage.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-subresourceWebBundleInnerResponseParsed
+type EventSubresourceWebBundleInnerResponseParsed struct {
+	InnerRequestID  RequestID `json:"innerRequestId"`            // Request identifier of the subresource request
+	InnerRequestURL string    `json:"innerRequestURL"`           // URL of the subresource resource.
+	BundleRequestID RequestID `json:"bundleRequestId,omitempty"` // Bundle request identifier. Used to match this information to another event. This made be absent in case when the instrumentation was enabled only after webbundle was parsed.
+}
+
+// EventSubresourceWebBundleInnerResponseError fired when request for
+// resources within a .wbn file failed.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Network#event-subresourceWebBundleInnerResponseError
+type EventSubresourceWebBundleInnerResponseError struct {
+	InnerRequestID  RequestID `json:"innerRequestId"`            // Request identifier of the subresource request
+	InnerRequestURL string    `json:"innerRequestURL"`           // URL of the subresource resource.
+	ErrorMessage    string    `json:"errorMessage"`              // Error message
+	BundleRequestID RequestID `json:"bundleRequestId,omitempty"` // Bundle request identifier. Used to match this information to another event. This made be absent in case when the instrumentation was enabled only after webbundle was parsed.
+}

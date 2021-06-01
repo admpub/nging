@@ -14,7 +14,7 @@ import (
 
 // PermissionsPolicyFeature all Permissions Policy features. This enum should
 // match the one defined in
-// renderer/core/feature_policy/feature_policy_features.json5.
+// third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5.
 //
 // See: https://chromedevtools.github.io/devtools-protocol/tot/Page#type-PermissionsPolicyFeature
 type PermissionsPolicyFeature string
@@ -28,6 +28,7 @@ func (t PermissionsPolicyFeature) String() string {
 const (
 	PermissionsPolicyFeatureAccelerometer               PermissionsPolicyFeature = "accelerometer"
 	PermissionsPolicyFeatureAmbientLightSensor          PermissionsPolicyFeature = "ambient-light-sensor"
+	PermissionsPolicyFeatureAttributionReporting        PermissionsPolicyFeature = "attribution-reporting"
 	PermissionsPolicyFeatureAutoplay                    PermissionsPolicyFeature = "autoplay"
 	PermissionsPolicyFeatureCamera                      PermissionsPolicyFeature = "camera"
 	PermissionsPolicyFeatureChDpr                       PermissionsPolicyFeature = "ch-dpr"
@@ -35,6 +36,7 @@ const (
 	PermissionsPolicyFeatureChDownlink                  PermissionsPolicyFeature = "ch-downlink"
 	PermissionsPolicyFeatureChEct                       PermissionsPolicyFeature = "ch-ect"
 	PermissionsPolicyFeatureChLang                      PermissionsPolicyFeature = "ch-lang"
+	PermissionsPolicyFeatureChPrefersColorScheme        PermissionsPolicyFeature = "ch-prefers-color-scheme"
 	PermissionsPolicyFeatureChRtt                       PermissionsPolicyFeature = "ch-rtt"
 	PermissionsPolicyFeatureChUa                        PermissionsPolicyFeature = "ch-ua"
 	PermissionsPolicyFeatureChUaArch                    PermissionsPolicyFeature = "ch-ua-arch"
@@ -47,8 +49,8 @@ const (
 	PermissionsPolicyFeatureChWidth                     PermissionsPolicyFeature = "ch-width"
 	PermissionsPolicyFeatureClipboardRead               PermissionsPolicyFeature = "clipboard-read"
 	PermissionsPolicyFeatureClipboardWrite              PermissionsPolicyFeature = "clipboard-write"
-	PermissionsPolicyFeatureConversionMeasurement       PermissionsPolicyFeature = "conversion-measurement"
 	PermissionsPolicyFeatureCrossOriginIsolated         PermissionsPolicyFeature = "cross-origin-isolated"
+	PermissionsPolicyFeatureDirectSockets               PermissionsPolicyFeature = "direct-sockets"
 	PermissionsPolicyFeatureDisplayCapture              PermissionsPolicyFeature = "display-capture"
 	PermissionsPolicyFeatureDocumentDomain              PermissionsPolicyFeature = "document-domain"
 	PermissionsPolicyFeatureEncryptedMedia              PermissionsPolicyFeature = "encrypted-media"
@@ -72,12 +74,14 @@ const (
 	PermissionsPolicyFeaturePublickeyCredentialsGet     PermissionsPolicyFeature = "publickey-credentials-get"
 	PermissionsPolicyFeatureScreenWakeLock              PermissionsPolicyFeature = "screen-wake-lock"
 	PermissionsPolicyFeatureSerial                      PermissionsPolicyFeature = "serial"
+	PermissionsPolicyFeatureSharedAutofill              PermissionsPolicyFeature = "shared-autofill"
 	PermissionsPolicyFeatureStorageAccessAPI            PermissionsPolicyFeature = "storage-access-api"
 	PermissionsPolicyFeatureSyncXhr                     PermissionsPolicyFeature = "sync-xhr"
 	PermissionsPolicyFeatureTrustTokenRedemption        PermissionsPolicyFeature = "trust-token-redemption"
 	PermissionsPolicyFeatureUsb                         PermissionsPolicyFeature = "usb"
 	PermissionsPolicyFeatureVerticalScroll              PermissionsPolicyFeature = "vertical-scroll"
 	PermissionsPolicyFeatureWebShare                    PermissionsPolicyFeature = "web-share"
+	PermissionsPolicyFeatureWindowPlacement             PermissionsPolicyFeature = "window-placement"
 	PermissionsPolicyFeatureXrSpatialTracking           PermissionsPolicyFeature = "xr-spatial-tracking"
 )
 
@@ -98,6 +102,8 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureAccelerometer
 	case PermissionsPolicyFeatureAmbientLightSensor:
 		*t = PermissionsPolicyFeatureAmbientLightSensor
+	case PermissionsPolicyFeatureAttributionReporting:
+		*t = PermissionsPolicyFeatureAttributionReporting
 	case PermissionsPolicyFeatureAutoplay:
 		*t = PermissionsPolicyFeatureAutoplay
 	case PermissionsPolicyFeatureCamera:
@@ -112,6 +118,8 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureChEct
 	case PermissionsPolicyFeatureChLang:
 		*t = PermissionsPolicyFeatureChLang
+	case PermissionsPolicyFeatureChPrefersColorScheme:
+		*t = PermissionsPolicyFeatureChPrefersColorScheme
 	case PermissionsPolicyFeatureChRtt:
 		*t = PermissionsPolicyFeatureChRtt
 	case PermissionsPolicyFeatureChUa:
@@ -136,10 +144,10 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureClipboardRead
 	case PermissionsPolicyFeatureClipboardWrite:
 		*t = PermissionsPolicyFeatureClipboardWrite
-	case PermissionsPolicyFeatureConversionMeasurement:
-		*t = PermissionsPolicyFeatureConversionMeasurement
 	case PermissionsPolicyFeatureCrossOriginIsolated:
 		*t = PermissionsPolicyFeatureCrossOriginIsolated
+	case PermissionsPolicyFeatureDirectSockets:
+		*t = PermissionsPolicyFeatureDirectSockets
 	case PermissionsPolicyFeatureDisplayCapture:
 		*t = PermissionsPolicyFeatureDisplayCapture
 	case PermissionsPolicyFeatureDocumentDomain:
@@ -186,6 +194,8 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureScreenWakeLock
 	case PermissionsPolicyFeatureSerial:
 		*t = PermissionsPolicyFeatureSerial
+	case PermissionsPolicyFeatureSharedAutofill:
+		*t = PermissionsPolicyFeatureSharedAutofill
 	case PermissionsPolicyFeatureStorageAccessAPI:
 		*t = PermissionsPolicyFeatureStorageAccessAPI
 	case PermissionsPolicyFeatureSyncXhr:
@@ -198,6 +208,8 @@ func (t *PermissionsPolicyFeature) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = PermissionsPolicyFeatureVerticalScroll
 	case PermissionsPolicyFeatureWebShare:
 		*t = PermissionsPolicyFeatureWebShare
+	case PermissionsPolicyFeatureWindowPlacement:
+		*t = PermissionsPolicyFeatureWindowPlacement
 	case PermissionsPolicyFeatureXrSpatialTracking:
 		*t = PermissionsPolicyFeatureXrSpatialTracking
 

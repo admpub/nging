@@ -1371,12 +1371,12 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoInput12(out *jwriter.Writer, 
 		out.RawString(prefix)
 		out.Int64(int64(in.Twist))
 	}
-	if in.DeltaX != 0 {
+	{
 		const prefix string = ",\"deltaX\":"
 		out.RawString(prefix)
 		out.Float64(float64(in.DeltaX))
 	}
-	if in.DeltaY != 0 {
+	{
 		const prefix string = ",\"deltaY\":"
 		out.RawString(prefix)
 		out.Float64(float64(in.DeltaY))

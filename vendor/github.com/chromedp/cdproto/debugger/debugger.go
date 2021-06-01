@@ -378,47 +378,6 @@ func (p *RemoveBreakpointParams) Do(ctx context.Context) (err error) {
 	return cdp.Execute(ctx, CommandRemoveBreakpoint, p, nil)
 }
 
-// RestartFrameParams restarts particular call frame from the beginning.
-type RestartFrameParams struct {
-	CallFrameID CallFrameID `json:"callFrameId"` // Call frame identifier to evaluate on.
-}
-
-// RestartFrame restarts particular call frame from the beginning.
-//
-// See: https://chromedevtools.github.io/devtools-protocol/tot/Debugger#method-restartFrame
-//
-// parameters:
-//   callFrameID - Call frame identifier to evaluate on.
-func RestartFrame(callFrameID CallFrameID) *RestartFrameParams {
-	return &RestartFrameParams{
-		CallFrameID: callFrameID,
-	}
-}
-
-// RestartFrameReturns return values.
-type RestartFrameReturns struct {
-	CallFrames        []*CallFrame          `json:"callFrames,omitempty"`        // New stack trace.
-	AsyncStackTrace   *runtime.StackTrace   `json:"asyncStackTrace,omitempty"`   // Async stack trace, if any.
-	AsyncStackTraceID *runtime.StackTraceID `json:"asyncStackTraceId,omitempty"` // Async stack trace, if any.
-}
-
-// Do executes Debugger.restartFrame against the provided context.
-//
-// returns:
-//   callFrames - New stack trace.
-//   asyncStackTrace - Async stack trace, if any.
-//   asyncStackTraceID - Async stack trace, if any.
-func (p *RestartFrameParams) Do(ctx context.Context) (callFrames []*CallFrame, asyncStackTrace *runtime.StackTrace, asyncStackTraceID *runtime.StackTraceID, err error) {
-	// execute
-	var res RestartFrameReturns
-	err = cdp.Execute(ctx, CommandRestartFrame, p, &res)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
-	return res.CallFrames, res.AsyncStackTrace, res.AsyncStackTraceID, nil
-}
-
 // ResumeParams resumes JavaScript execution.
 type ResumeParams struct {
 	TerminateOnResume bool `json:"terminateOnResume,omitempty"` // Set to true to terminate execution upon resuming execution. In contrast to Runtime.terminateExecution, this will allows to execute further JavaScript (i.e. via evaluation) until execution of the paused code is actually resumed, at which point termination is triggered. If execution is currently not paused, this parameter has no effect.
@@ -1078,7 +1037,6 @@ const (
 	CommandGetStackTrace                = "Debugger.getStackTrace"
 	CommandPause                        = "Debugger.pause"
 	CommandRemoveBreakpoint             = "Debugger.removeBreakpoint"
-	CommandRestartFrame                 = "Debugger.restartFrame"
 	CommandResume                       = "Debugger.resume"
 	CommandSearchInContent              = "Debugger.searchInContent"
 	CommandSetAsyncCallStackDepth       = "Debugger.setAsyncCallStackDepth"

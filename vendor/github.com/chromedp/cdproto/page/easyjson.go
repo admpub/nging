@@ -8141,6 +8141,8 @@ func easyjsonC5a4559bDecodeGithubComChromedpCdprotoPage98(in *jlexer.Lexer, out 
 			out.Source = string(in.String())
 		case "worldName":
 			out.WorldName = string(in.String())
+		case "includeCommandLineAPI":
+			out.IncludeCommandLineAPI = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -8164,6 +8166,11 @@ func easyjsonC5a4559bEncodeGithubComChromedpCdprotoPage98(out *jwriter.Writer, i
 		const prefix string = ",\"worldName\":"
 		out.RawString(prefix)
 		out.String(string(in.WorldName))
+	}
+	if in.IncludeCommandLineAPI {
+		const prefix string = ",\"includeCommandLineAPI\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.IncludeCommandLineAPI))
 	}
 	out.RawByte('}')
 }

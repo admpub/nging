@@ -30,7 +30,7 @@ github.com/admpub/color
 github.com/admpub/confl
 # github.com/admpub/copier v0.0.1
 github.com/admpub/copier
-# github.com/admpub/cr v0.0.1
+# github.com/admpub/cr v0.0.2
 ## explicit
 github.com/admpub/cr
 # github.com/admpub/cron v0.0.1
@@ -183,7 +183,7 @@ github.com/admpub/ip2region/binding/golang/ip2region
 # github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
 ## explicit
 github.com/admpub/license_gen/lib
-# github.com/admpub/log v0.3.0
+# github.com/admpub/log v0.3.1
 ## explicit
 github.com/admpub/log
 # github.com/admpub/logcool v0.3.1
@@ -460,7 +460,7 @@ github.com/cenkalti/backoff/v4
 github.com/cespare/xxhash/v2
 # github.com/cheekybits/genny v1.0.0
 github.com/cheekybits/genny/generic
-# github.com/chromedp/cdproto v0.0.0-20210429002609-5ec2b0624aec
+# github.com/chromedp/cdproto v0.0.0-20210526005521-9e51b9051fd0
 ## explicit
 github.com/chromedp/cdproto
 github.com/chromedp/cdproto/accessibility
@@ -508,7 +508,7 @@ github.com/chromedp/cdproto/tethering
 github.com/chromedp/cdproto/tracing
 github.com/chromedp/cdproto/webaudio
 github.com/chromedp/cdproto/webauthn
-# github.com/chromedp/chromedp v0.7.1
+# github.com/chromedp/chromedp v0.7.3
 ## explicit
 github.com/chromedp/chromedp
 github.com/chromedp/chromedp/device
@@ -828,7 +828,7 @@ github.com/maruel/rs
 github.com/maruel/rs/internal/gf256
 # github.com/mattn/go-colorable v0.1.8
 github.com/mattn/go-colorable
-# github.com/mattn/go-isatty v0.0.12
+# github.com/mattn/go-isatty v0.0.13
 github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.13
 ## explicit
@@ -1095,7 +1095,7 @@ github.com/webx-top/codec
 github.com/webx-top/com
 github.com/webx-top/com/encoding/json
 github.com/webx-top/com/httpClientOptions
-# github.com/webx-top/db v1.3.6
+# github.com/webx-top/db v1.3.7
 ## explicit
 github.com/webx-top/db
 github.com/webx-top/db/internal/cache
@@ -1309,7 +1309,7 @@ golang.org/x/oauth2/clientcredentials
 golang.org/x/oauth2/internal
 # golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 golang.org/x/sync/singleflight
-# golang.org/x/sys v0.0.0-20210525143221-35b2ab0089ea
+# golang.org/x/sys v0.0.0-20210531225629-47163c9f4e4f
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
 golang.org/x/sys/internal/unsafeheader
