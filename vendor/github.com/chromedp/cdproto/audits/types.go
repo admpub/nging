@@ -761,6 +761,7 @@ type CorsIssueDetails struct {
 	CorsErrorStatus        *network.CorsErrorStatus     `json:"corsErrorStatus"`
 	IsWarning              bool                         `json:"isWarning"`
 	Request                *AffectedRequest             `json:"request"`
+	Location               *SourceCodeLocation          `json:"location,omitempty"`
 	InitiatorOrigin        string                       `json:"initiatorOrigin,omitempty"`
 	ResourceIPAddressSpace network.IPAddressSpace       `json:"resourceIPAddressSpace,omitempty"`
 	ClientSecurityState    *network.ClientSecurityState `json:"clientSecurityState,omitempty"`
@@ -779,8 +780,10 @@ func (t AttributionReportingIssueType) String() string {
 // AttributionReportingIssueType values.
 const (
 	AttributionReportingIssueTypePermissionPolicyDisabled             AttributionReportingIssueType = "PermissionPolicyDisabled"
+	AttributionReportingIssueTypeInvalidAttributionSourceEventID      AttributionReportingIssueType = "InvalidAttributionSourceEventId"
 	AttributionReportingIssueTypeInvalidAttributionData               AttributionReportingIssueType = "InvalidAttributionData"
 	AttributionReportingIssueTypeAttributionSourceUntrustworthyOrigin AttributionReportingIssueType = "AttributionSourceUntrustworthyOrigin"
+	AttributionReportingIssueTypeAttributionUntrustworthyOrigin       AttributionReportingIssueType = "AttributionUntrustworthyOrigin"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -798,10 +801,14 @@ func (t *AttributionReportingIssueType) UnmarshalEasyJSON(in *jlexer.Lexer) {
 	switch AttributionReportingIssueType(in.String()) {
 	case AttributionReportingIssueTypePermissionPolicyDisabled:
 		*t = AttributionReportingIssueTypePermissionPolicyDisabled
+	case AttributionReportingIssueTypeInvalidAttributionSourceEventID:
+		*t = AttributionReportingIssueTypeInvalidAttributionSourceEventID
 	case AttributionReportingIssueTypeInvalidAttributionData:
 		*t = AttributionReportingIssueTypeInvalidAttributionData
 	case AttributionReportingIssueTypeAttributionSourceUntrustworthyOrigin:
 		*t = AttributionReportingIssueTypeAttributionSourceUntrustworthyOrigin
+	case AttributionReportingIssueTypeAttributionUntrustworthyOrigin:
+		*t = AttributionReportingIssueTypeAttributionUntrustworthyOrigin
 
 	default:
 		in.AddError(errors.New("unknown AttributionReportingIssueType value"))
@@ -824,6 +831,26 @@ type AttributionReportingIssueDetails struct {
 	Request          *AffectedRequest              `json:"request,omitempty"`
 	ViolatingNodeID  cdp.BackendNodeID             `json:"violatingNodeId,omitempty"`
 	InvalidParameter string                        `json:"invalidParameter,omitempty"`
+}
+
+// QuirksModeIssueDetails details for issues about documents in Quirks Mode
+// or Limited Quirks Mode that affects page layouting.
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-QuirksModeIssueDetails
+type QuirksModeIssueDetails struct {
+	IsLimitedQuirksMode bool              `json:"isLimitedQuirksMode"` // If false, it means the document's mode is "quirks" instead of "limited-quirks".
+	DocumentNodeID      cdp.BackendNodeID `json:"documentNodeId"`
+	URL                 string            `json:"url"`
+	FrameID             cdp.FrameID       `json:"frameId"`
+	LoaderID            cdp.LoaderID      `json:"loaderId"`
+}
+
+// NavigatorUserAgentIssueDetails [no description].
+//
+// See: https://chromedevtools.github.io/devtools-protocol/tot/Audits#type-NavigatorUserAgentIssueDetails
+type NavigatorUserAgentIssueDetails struct {
+	URL      string              `json:"url"`
+	Location *SourceCodeLocation `json:"location,omitempty"`
 }
 
 // InspectorIssueCode a unique identifier for the type of issue. Each type
@@ -850,6 +877,8 @@ const (
 	InspectorIssueCodeLowTextContrastIssue       InspectorIssueCode = "LowTextContrastIssue"
 	InspectorIssueCodeCorsIssue                  InspectorIssueCode = "CorsIssue"
 	InspectorIssueCodeAttributionReportingIssue  InspectorIssueCode = "AttributionReportingIssue"
+	InspectorIssueCodeQuirksModeIssue            InspectorIssueCode = "QuirksModeIssue"
+	InspectorIssueCodeNavigatorUserAgentIssue    InspectorIssueCode = "NavigatorUserAgentIssue"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -885,6 +914,10 @@ func (t *InspectorIssueCode) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = InspectorIssueCodeCorsIssue
 	case InspectorIssueCodeAttributionReportingIssue:
 		*t = InspectorIssueCodeAttributionReportingIssue
+	case InspectorIssueCodeQuirksModeIssue:
+		*t = InspectorIssueCodeQuirksModeIssue
+	case InspectorIssueCodeNavigatorUserAgentIssue:
+		*t = InspectorIssueCodeNavigatorUserAgentIssue
 
 	default:
 		in.AddError(errors.New("unknown InspectorIssueCode value"))
@@ -912,6 +945,8 @@ type InspectorIssueDetails struct {
 	LowTextContrastIssueDetails       *LowTextContrastIssueDetails       `json:"lowTextContrastIssueDetails,omitempty"`
 	CorsIssueDetails                  *CorsIssueDetails                  `json:"corsIssueDetails,omitempty"`
 	AttributionReportingIssueDetails  *AttributionReportingIssueDetails  `json:"attributionReportingIssueDetails,omitempty"`
+	QuirksModeIssueDetails            *QuirksModeIssueDetails            `json:"quirksModeIssueDetails,omitempty"`
+	NavigatorUserAgentIssueDetails    *NavigatorUserAgentIssueDetails    `json:"navigatorUserAgentIssueDetails,omitempty"`
 }
 
 // InspectorIssue an inspector issue reported from the back-end.

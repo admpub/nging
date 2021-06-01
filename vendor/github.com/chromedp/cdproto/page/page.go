@@ -23,8 +23,9 @@ import (
 // AddScriptToEvaluateOnNewDocumentParams evaluates given script in every
 // frame upon creation (before loading frame's scripts).
 type AddScriptToEvaluateOnNewDocumentParams struct {
-	Source    string `json:"source"`
-	WorldName string `json:"worldName,omitempty"` // If specified, creates an isolated world with the given name and evaluates given script in it. This world name will be used as the ExecutionContextDescription::name when the corresponding event is emitted.
+	Source                string `json:"source"`
+	WorldName             string `json:"worldName,omitempty"`             // If specified, creates an isolated world with the given name and evaluates given script in it. This world name will be used as the ExecutionContextDescription::name when the corresponding event is emitted.
+	IncludeCommandLineAPI bool   `json:"includeCommandLineAPI,omitempty"` // Specifies whether command line API should be available to the script, defaults to false.
 }
 
 // AddScriptToEvaluateOnNewDocument evaluates given script in every frame
@@ -45,6 +46,13 @@ func AddScriptToEvaluateOnNewDocument(source string) *AddScriptToEvaluateOnNewDo
 // ExecutionContextDescription::name when the corresponding event is emitted.
 func (p AddScriptToEvaluateOnNewDocumentParams) WithWorldName(worldName string) *AddScriptToEvaluateOnNewDocumentParams {
 	p.WorldName = worldName
+	return &p
+}
+
+// WithIncludeCommandLineAPI specifies whether command line API should be
+// available to the script, defaults to false.
+func (p AddScriptToEvaluateOnNewDocumentParams) WithIncludeCommandLineAPI(includeCommandLineAPI bool) *AddScriptToEvaluateOnNewDocumentParams {
+	p.IncludeCommandLineAPI = includeCommandLineAPI
 	return &p
 }
 

@@ -715,6 +715,7 @@ const (
 	CorsErrorHeaderDisallowedByPreflightResponse  CorsError = "HeaderDisallowedByPreflightResponse"
 	CorsErrorRedirectContainsCredentials          CorsError = "RedirectContainsCredentials"
 	CorsErrorInsecurePrivateNetwork               CorsError = "InsecurePrivateNetwork"
+	CorsErrorNoCorsRedirectModeNotFollow          CorsError = "NoCorsRedirectModeNotFollow"
 )
 
 // MarshalEasyJSON satisfies easyjson.Marshaler.
@@ -780,6 +781,8 @@ func (t *CorsError) UnmarshalEasyJSON(in *jlexer.Lexer) {
 		*t = CorsErrorRedirectContainsCredentials
 	case CorsErrorInsecurePrivateNetwork:
 		*t = CorsErrorInsecurePrivateNetwork
+	case CorsErrorNoCorsRedirectModeNotFollow:
+		*t = CorsErrorNoCorsRedirectModeNotFollow
 
 	default:
 		in.AddError(errors.New("unknown CorsError value"))

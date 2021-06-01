@@ -18,7 +18,7 @@ require (
 	github.com/admpub/checksum v1.0.1
 	github.com/admpub/color v1.7.0
 	github.com/admpub/confl v0.0.3
-	github.com/admpub/cr v0.0.1
+	github.com/admpub/cr v0.0.2
 	github.com/admpub/cron v0.0.1
 	github.com/admpub/dgoogauth v0.0.0-20170926052827-752650e076f2
 	github.com/admpub/email v2.3.1+incompatible
@@ -48,7 +48,7 @@ require (
 	github.com/admpub/imageproxy v0.9.1
 	github.com/admpub/ip2region v1.2.6
 	github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
-	github.com/admpub/log v0.3.0
+	github.com/admpub/log v0.3.1
 	github.com/admpub/logcool v0.3.1
 	github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d
 	github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b
@@ -88,8 +88,8 @@ require (
 	github.com/caddy-plugins/nobots v0.1.1
 	github.com/caddy-plugins/webdav v1.2.7
 	github.com/caddyserver/caddy v1.1.5
-	github.com/chromedp/cdproto v0.0.0-20210429002609-5ec2b0624aec
-	github.com/chromedp/chromedp v0.7.1
+	github.com/chromedp/cdproto v0.0.0-20210526005521-9e51b9051fd0
+	github.com/chromedp/chromedp v0.7.3
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
 	github.com/coscms/forms v1.7.1
 	github.com/coscms/go-imgparse v0.0.0-20150925144422-3e3a099f7856
