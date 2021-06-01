@@ -1,15 +1,15 @@
 package formbuilder
 
 func newPostError(err error) *postError {
-	return &postError{error: err}
+	return &postError{err: err}
 }
 
 type postError struct {
-	error
+	err error
 }
 
 func (e *postError) Unwrap() error {
-	return e.error
+	return e.err
 }
 
 func ErrPostFailed(err error) bool {
