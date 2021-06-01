@@ -32,7 +32,7 @@ func (f *FieldInfo) ListCol(index int, value interface{}, options echo.H) templa
 				`checked`:   checked,
 			}
 			data.DeepMerge(options)
-			input = DefaultHTMLTmpl.ToListCol(`switch`, data)
+			input = GetHTMLTmpl(options).ToListCol(`switch`, data)
 			return template.HTML(input)
 		}
 		fallthrough

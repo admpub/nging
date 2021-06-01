@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"html/template"
 	"sync"
+
+	"github.com/webx-top/echo"
 )
 
 var DefaultHTMLTmpl = &HTMLTmpl{
@@ -27,6 +29,10 @@ var DefaultHTMLTmpl = &HTMLTmpl{
 			<input id="checkbox-{{.field}}-{{.index}}" class="styled switch-{{.field}}" type="checkbox" data-name="{{.label}}" data-{{.field}}="{{.value}}"{{if eq .checked}} checked="checked"{{end}} value="{{.openValue}}" /><label for="checkbox-{{.field}}-{{.index}}">&nbsp;</label>
 		</div>`,
 	},
+}
+
+var GetHTMLTmpl = func(options echo.H) *HTMLTmpl {
+	return DefaultHTMLTmpl
 }
 
 type HTMLAttrs []*HTMLAttr

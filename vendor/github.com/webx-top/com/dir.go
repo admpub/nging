@@ -138,3 +138,14 @@ func CopyDir(srcPath, destPath string, filters ...func(filePath string) bool) er
 	}
 	return nil
 }
+
+func MkdirAll(dir string, mode os.FileMode) error {
+	if IsDir(dir) {
+		return nil
+	}
+	err := os.MkdirAll(dir, mode)
+	if err == nil {
+		err = os.Chmod(dir, mode)
+	}
+	return err
+}

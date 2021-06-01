@@ -48,7 +48,7 @@ require (
 	github.com/admpub/imageproxy v0.9.1
 	github.com/admpub/ip2region v1.2.6
 	github.com/admpub/license_gen v0.0.0-20201028104329-fe31fcc255a8
-	github.com/admpub/log v0.3.0
+	github.com/admpub/log v0.3.1
 	github.com/admpub/logcool v0.3.1
 	github.com/admpub/mahonia v0.0.0-20151019004008-c528b747d92d
 	github.com/admpub/mail v0.0.0-20170408110349-d63147b0317b
@@ -134,8 +134,8 @@ require (
 	github.com/webx-top/chardet v0.0.0-20180930194453-2f90d95f7b7f // indirect
 	github.com/webx-top/client v0.2.7
 	github.com/webx-top/codec v0.0.1
-	github.com/webx-top/com v0.2.0
-	github.com/webx-top/db v1.3.6
+	github.com/webx-top/com v0.2.1
+	github.com/webx-top/db v1.3.7
 	github.com/webx-top/echo v2.13.9+incompatible
 	github.com/webx-top/image v0.0.8
 	github.com/webx-top/pagination v0.1.0

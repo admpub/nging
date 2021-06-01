@@ -37,6 +37,6 @@ func RemoveXSS(v string) (r string) {
 	//过滤属性值
 	r = removeXSSForAttrValue.ReplaceAllString(r, `${1}k_$2${3}k_$4$5`)
 
-	//fmt.Println("Execute the fiter: RemoveXSS.")
+	//fmt.Println("Execute the filter: RemoveXSS.")
 	return
 }

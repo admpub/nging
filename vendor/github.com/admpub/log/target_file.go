@@ -242,7 +242,7 @@ func (t *FileTarget) rotate(bytes int64) {
 	}
 	t.queue.PushTS(newPath)
 	t.createDir(fileName)
-	t.fd, err = os.OpenFile(fileName, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0660)
+	t.fd, err = os.OpenFile(fileName, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
 	if err != nil {
 		t.fd = nil
 		fmt.Fprintf(t.errWriter, "FileTarget was unable to create a log file: %v\n", err)
@@ -257,6 +257,7 @@ func (t *FileTarget) createDir(fileName string) {
 		if err != nil {
 			fmt.Fprintf(t.errWriter, "%v\n", err)
 		}
+		os.Chmod(fdir, os.ModePerm)
 	}
 }
 
