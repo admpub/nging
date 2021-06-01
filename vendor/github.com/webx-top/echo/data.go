@@ -129,6 +129,10 @@ func (d *RawData) GetData() interface{} {
 	return d.Data
 }
 
+type ErrUnwrap interface {
+	Unwrap() error
+}
+
 //SetError 设置错误
 func (d *RawData) SetError(err error, args ...int) Data {
 	if err == nil {
@@ -141,6 +145,8 @@ func (d *RawData) SetError(err error, args ...int) Data {
 		if v != d {
 			d.copyFrom(v)
 		}
+	case ErrUnwrap:
+		d.SetError(v.Unwrap())
 	default:
 		d.SetCode(pkgCode.Failure.Int())
 		d.Info = err.Error()
