@@ -24,13 +24,14 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
 
 // WriteCache 写缓存文件
 func WriteCache(dir string, name string, content []byte) (err error) {
 	savePath := filepath.Join(echo.Wd(), `data`, `cache`, dir)
-	err = os.MkdirAll(savePath, os.ModePerm)
+	err = com.MkdirAll(savePath, os.ModePerm)
 	if err != nil {
 		return
 	}

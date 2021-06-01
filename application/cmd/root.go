@@ -157,7 +157,7 @@ func initCertMagic(c *engine.Config) error {
 	fileStorage := &certmagic.FileStorage{
 		Path: filepath.Join(echo.Wd(), `data`, `cache`, `certmagic`),
 	}
-	if err := os.MkdirAll(fileStorage.Path, 0777); err != nil {
+	if err := com.MkdirAll(fileStorage.Path, os.ModePerm); err != nil {
 		return err
 	}
 	if event.Develop { // use the staging endpoint while we're developing

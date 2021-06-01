@@ -143,7 +143,7 @@ func Export(ctx context.Context, noticer notice.Noticer, cfg *driver.DbAuth, tab
 			w = v
 		case string:
 			dir := filepath.Dir(v)
-			err = os.MkdirAll(dir, os.ModePerm)
+			err = com.MkdirAll(dir, os.ModePerm)
 			if err != nil {
 				return fmt.Errorf(`failed to backup: %v`, err)
 			}

@@ -86,7 +86,7 @@ func getPidFiles() []string {
 
 func NewProgram(cfg *Config) *program {
 	pidFile := filepath.Join(com.SelfDir(), `data/pid`)
-	err := os.MkdirAll(pidFile, os.ModePerm)
+	err := com.MkdirAll(pidFile, os.ModePerm)
 	if err != nil {
 		log.Println(err)
 	}

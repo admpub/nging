@@ -27,6 +27,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/registry/upload"
@@ -105,7 +106,7 @@ func (f *Filesystem) SendFile(ctx echo.Context, file string) error {
 func (f *Filesystem) Put(dstFile string, src io.Reader, size int64) (savePath string, viewURL string, err error) {
 	savePath = f.FileDir(dstFile)
 	saveDir := filepath.Dir(savePath)
-	err = os.MkdirAll(saveDir, os.ModePerm)
+	err = com.MkdirAll(saveDir, os.ModePerm)
 	if err != nil {
 		return
 	}
@@ -210,7 +211,7 @@ func (f *Filesystem) DeleteDir(dstDir string) error {
 // Move 移动文件
 func (f *Filesystem) Move(src, dst string) error {
 	sdir := filepath.Dir(dst)
-	if err := os.MkdirAll(sdir, os.ModePerm); err != nil {
+	if err := com.MkdirAll(sdir, os.ModePerm); err != nil {
 		return err
 	}
 	return os.Rename(src, dst)

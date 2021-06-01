@@ -79,7 +79,9 @@ func fullBackupStart(recv *model.CloudBackupExt) error {
 		return err
 	}
 	cacheDir := filepath.Join(echo.Wd(), `data/cache/backup-db`)
-	os.MkdirAll(cacheDir, 0777)
+	if err := com.MkdirAll(cacheDir, os.ModePerm); err != nil {
+		return err
+	}
 	cacheFile := filepath.Join(cacheDir, idKey)
 	mgr, err := s3client.New(recv.Storage, config.DefaultConfig.Sys.EditableFileMaxBytes)
 	if err != nil {

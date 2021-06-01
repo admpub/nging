@@ -97,6 +97,9 @@ func Replace(c echo.Context) (err error) {
 				if err != nil {
 					if os.IsNotExist(err) {
 						err = os.MkdirAll(repDef.SaveAs, os.ModePerm)
+						if err == nil {
+							err = os.Chmod(repDef.SaveAs, os.ModePerm)
+						}
 						if err != nil {
 							return err
 						}

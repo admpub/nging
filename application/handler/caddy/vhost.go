@@ -178,7 +178,7 @@ func getSaveDir() (saveFile string, err error) {
 	if err != nil {
 		return
 	}
-	err = os.MkdirAll(saveFile, os.ModePerm)
+	err = com.MkdirAll(saveFile, os.ModePerm)
 	return
 }
 

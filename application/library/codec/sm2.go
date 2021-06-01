@@ -56,10 +56,13 @@ func SaveKey(privateKey *sm2.PrivateKey, keyFile string, pwds ...[]byte) error {
 	if err != nil {
 		return fmt.Errorf(`PrivateKeyToPEM: %w`, err)
 	}
-	os.MkdirAll(filepath.Dir(keyFile), os.ModePerm)
+	if err := com.MkdirAll(filepath.Dir(keyFile), os.ModePerm); err != nil {
+		return err
+	}
 	if err = ioutil.WriteFile(keyFile, b, os.ModePerm); err != nil {
 		return fmt.Errorf(`WriteFile `+keyFile+`: %w`, err)
 	}
+	os.Chmod(keyFile, os.ModePerm)
 	// 保存公钥
 	b, err = PublicKeyToPEM(&privateKey.PublicKey, pwd)
 	if err != nil {
@@ -69,6 +72,7 @@ func SaveKey(privateKey *sm2.PrivateKey, keyFile string, pwds ...[]byte) error {
 	if err = ioutil.WriteFile(keyFile, b, os.ModePerm); err != nil {
 		return fmt.Errorf(`WriteFile `+keyFile+`: %w`, err)
 	}
+	os.Chmod(keyFile, os.ModePerm)
 	return nil
 }
 

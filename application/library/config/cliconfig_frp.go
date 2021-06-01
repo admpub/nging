@@ -180,7 +180,7 @@ func (c *CLIConfig) FRPConfigFile(id uint, isServer bool) string {
 		configFile = `client`
 	}
 	configFile = filepath.Join(echo.Wd(), `config`, `frp`, configFile)
-	err := os.MkdirAll(configFile, os.ModePerm)
+	err := com.MkdirAll(configFile, os.ModePerm)
 	if err != nil {
 		log.Error(err)
 	}
@@ -193,7 +193,7 @@ func (c *CLIConfig) FRPPidFile(id string, isServer bool) string {
 		pidFile = `client`
 	}
 	pidFile = filepath.Join(echo.Wd(), `data/pid/frp`, pidFile)
-	err := os.MkdirAll(pidFile, os.ModePerm)
+	err := com.MkdirAll(pidFile, os.ModePerm)
 	if err != nil {
 		log.Error(err)
 	}

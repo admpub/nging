@@ -47,7 +47,7 @@ var (
 
 func Fixed(c *Config) {
 	pidFile := filepath.Join(echo.Wd(), `data/pid/ftp`)
-	err := os.MkdirAll(pidFile, os.ModePerm)
+	err := com.MkdirAll(pidFile, os.ModePerm)
 	if err != nil {
 		log.Error(err)
 	}

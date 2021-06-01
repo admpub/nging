@@ -69,7 +69,7 @@ func SetServerConfigFromDB(conf *dbschema.NgingFrpServer) *config.ServerCommonCo
 	} else if len(c.LogFile) == 0 {
 		c.LogFile = `console`
 	} else {
-		os.MkdirAll(filepath.Dir(c.LogFile), os.ModePerm)
+		com.MkdirAll(filepath.Dir(c.LogFile), os.ModePerm)
 	}
 	c.LogLevel = conf.LogLevel
 	c.LogMaxDays = int64(conf.LogMaxDays)

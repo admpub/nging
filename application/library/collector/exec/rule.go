@@ -302,7 +302,7 @@ func (c *Rule) Collect(parentID uint64,
 			}
 			saveTo := filepath.Join(echo.Wd(), newPath)
 			saveDir := filepath.Dir(saveTo)
-			err = os.MkdirAll(saveDir, 0777)
+			err = com.MkdirAll(saveDir, os.ModePerm)
 			if err != nil {
 				return newPath, err
 			}

@@ -77,7 +77,7 @@ func Fixed(c *Config) {
 		c.CPU = DefaultConfig.CPU
 	}
 	pidFile := filepath.Join(echo.Wd(), `data/pid`)
-	err := os.MkdirAll(pidFile, os.ModePerm)
+	err := com.MkdirAll(pidFile, os.ModePerm)
 	if err != nil {
 		log.Println(err)
 	}
@@ -85,13 +85,13 @@ func Fixed(c *Config) {
 	c.PidFile = pidFile
 	if len(c.LogFile) == 0 {
 		logFile := filepath.Join(echo.Wd(), `data/logs`)
-		err := os.MkdirAll(logFile, os.ModePerm)
+		err := com.MkdirAll(logFile, os.ModePerm)
 		if err != nil {
 			log.Println(err)
 		}
 		c.LogFile = filepath.Join(logFile, `caddy.log`)
 	} else {
-		err := os.MkdirAll(filepath.Dir(c.LogFile), os.ModePerm)
+		err := com.MkdirAll(filepath.Dir(c.LogFile), os.ModePerm)
 		if err != nil {
 			log.Println(err)
 		}

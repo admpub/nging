@@ -45,7 +45,7 @@ var SQLTempDir = os.TempDir
 
 func TempDir(op string) string {
 	dir := filepath.Join(SQLTempDir(), `dbmanager/cache`, op)
-	err := os.MkdirAll(dir, os.ModePerm)
+	err := com.MkdirAll(dir, os.ModePerm)
 	if err != nil {
 		loga.Error(err)
 	}

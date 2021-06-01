@@ -60,7 +60,7 @@ func SetClientConfigFromDB(conf *dbschema.NgingFrpClient) *config.ClientCommonCo
 	} else if len(c.LogFile) == 0 {
 		c.LogFile = `console`
 	} else {
-		os.MkdirAll(filepath.Dir(c.LogFile), os.ModePerm)
+		com.MkdirAll(filepath.Dir(c.LogFile), os.ModePerm)
 	}
 	c.AdminAddr = conf.AdminAddr
 	c.AdminPort = int(conf.AdminPort)

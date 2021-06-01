@@ -136,7 +136,7 @@ func latestVersion() error {
 				if len(result.Data.DownloadUrl) > 0 {
 					//TODO: download
 					saveTo := filepath.Join(echo.Wd(), `data/cache/nging-new-version`)
-					err = os.MkdirAll(saveTo, 0777)
+					err = com.MkdirAll(saveTo, os.ModePerm)
 					if err != nil {
 						return err
 					}

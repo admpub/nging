@@ -27,6 +27,7 @@ import (
 
 	"github.com/admpub/confl"
 	"github.com/admpub/log"
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 )
 
@@ -42,7 +43,7 @@ var (
 		return ioutil.ReadFile(file)
 	}
 	WriteConfigFile = func(file string, b []byte) error {
-		err := os.MkdirAll(filepath.Dir(file), os.ModePerm)
+		err := com.MkdirAll(filepath.Dir(file), os.ModePerm)
 		if err != nil {
 			return err
 		}

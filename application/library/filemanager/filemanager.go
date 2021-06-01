@@ -106,7 +106,7 @@ func (f *fileManager) Remove(absPath string) error {
 }
 
 func (f *fileManager) Mkdir(absPath string, mode os.FileMode) error {
-	return os.MkdirAll(absPath, mode)
+	return com.MkdirAll(absPath, mode)
 }
 
 func (f *fileManager) Rename(absPath string, newName string) (err error) {

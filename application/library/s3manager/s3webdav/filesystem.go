@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/admpub/nging/application/library/s3manager"
+	"github.com/webx-top/com"
 	"golang.org/x/net/webdav"
 )
 
@@ -35,11 +36,7 @@ type FileSystem struct {
 
 func defaultUploadTempDir() string {
 	uploadTmpPath := filepath.Join(os.TempDir(), `s3webdav`)
-	_, err := os.Stat(uploadTmpPath)
-	if err != nil && !os.IsNotExist(err) {
-		os.MkdirAll(uploadTmpPath, os.ModePerm)
-		os.Chmod(uploadTmpPath, os.ModePerm)
-	}
+	com.MkdirAll(uploadTmpPath, os.ModePerm)
 	return uploadTmpPath
 }
 

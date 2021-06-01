@@ -109,7 +109,7 @@ func Import(ctx context.Context, noticer *notice.NoticeAndProgress, cfg *driver.
 			}
 		case `.zip`:
 			dir := filepath.Join(cacheDir, fmt.Sprintf("upload-"+nowTime+"-%d", index))
-			err := os.MkdirAll(dir, os.ModePerm)
+			err := com.MkdirAll(dir, os.ModePerm)
 			if err != nil {
 				return err
 			}

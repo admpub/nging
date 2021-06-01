@@ -26,6 +26,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/webx-top/com"
 	"github.com/webx-top/echo"
 
 	"github.com/admpub/nging/application/dbschema"
@@ -114,14 +115,14 @@ func init() {
 		termConfig.Default.APPRoot = handler.BackendPrefix + `/client/`
 		termConfig.Default.Debug = config.DefaultConfig.Debug
 		logDir := filepath.Join(echo.Wd(), `data/logs`)
-		err := os.MkdirAll(logDir, os.ModePerm)
+		err := com.MkdirAll(logDir, os.ModePerm)
 		if err != nil {
 			log.Println(err)
 		}
 		termConfig.Default.LogDir = filepath.Join(logDir, `term`)
 		termConfig.Default.ResourceDir = `public/xterm`
 		termConfig.Default.MIBSDir = filepath.Join(echo.Wd(), `data/mibs`)
-		err = os.MkdirAll(termConfig.Default.MIBSDir, os.ModePerm)
+		err = com.MkdirAll(termConfig.Default.MIBSDir, os.ModePerm)
 		if err != nil {
 			log.Println(err)
 		}

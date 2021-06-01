@@ -73,7 +73,7 @@ func FetchFont(_cssFile string, _outputDir string, _debug bool) error {
 		fmt.Println(string(body))
 	}
 	matches := regexFontFile.FindAllStringSubmatch(string(body), -1)
-	err = os.MkdirAll(_outputDir, os.ModePerm)
+	err = com.MkdirAll(_outputDir, os.ModePerm)
 	if err != nil {
 		return err
 	}

@@ -132,7 +132,7 @@ func MoveUploadedFileToOwnerDirCommon(ctx echo.Context, src string, typ string, 
 		return newPath, err
 	}
 	sdir := filepath.Join(helper.UploadDir, typ, idv)
-	os.MkdirAll(sdir, os.ModePerm)
+	com.MkdirAll(sdir, os.ModePerm)
 	// 迁移目的地
 	ownedFile := sdir + echo.FilePathSeparator + name
 	if isAvatar {

@@ -38,7 +38,7 @@ func Run(options *Options, action string) error {
 		conf.Args = os.Args[3:]
 	}
 	logDir := filepath.Join(com.SelfDir(), `data`, `logs`)
-	err := os.MkdirAll(logDir, os.ModePerm)
+	err := com.MkdirAll(logDir, os.ModePerm)
 	if err != nil {
 		return err
 	}
