@@ -8,6 +8,10 @@ type postError struct {
 	err error
 }
 
+func (e *postError) Error() string {
+	return e.err.Error()
+}
+
 func (e *postError) Unwrap() error {
 	return e.err
 }
