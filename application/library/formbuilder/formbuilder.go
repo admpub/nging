@@ -19,7 +19,10 @@ import (
 	"github.com/webx-top/validation"
 )
 
-var ErrJSONConfigFileNameInvalid = errors.New("*.form.json name invalid")
+var (
+	ErrJSONConfigFileNameInvalid = errors.New("*.form.json name invalid")
+	ErrPostModelFailed           = errors.New("post model failed")
+)
 
 // New 表单
 //@param m: dbschema
@@ -88,6 +91,7 @@ func New(c echo.Context, m interface{}, jsonFile string, options ...Option) (*fo
 			} else {
 				c.Data().SetError(err)
 			}
+			err = ErrPostModelFailed
 		}
 	}
 	setNextURLField := func() {
@@ -109,12 +113,12 @@ func New(c echo.Context, m interface{}, jsonFile string, options ...Option) (*fo
 	c.Set(`forms`, wrap)
 	// 手动调用:
 	// wrap.ParseFromConfig()
-	return wrap, nil
+	return wrap, err
 }
 
 // NewModel 表单
 //@param m: dbschema
-func NewModel(c echo.Context, m interface{}, cfg *config.Config, options ...Option) *forms.Forms {
+func NewModel(c echo.Context, m interface{}, cfg *config.Config, options ...Option) (*forms.Forms, error) {
 	form := forms.New()
 	for _, option := range options {
 		if option == nil {
@@ -128,13 +132,14 @@ func NewModel(c echo.Context, m interface{}, cfg *config.Config, options ...Opti
 	if cfg == nil {
 		cfg = form.NewConfig()
 	}
+	var err error
 	form.Init(cfg, m)
 	if c.IsPost() {
 		opts := []formfilter.Options{formfilter.Include(cfg.GetNames()...)}
 		if customs, ok := c.Internal().Get(`formfilter.Options`).([]formfilter.Options); ok {
 			opts = append(opts, customs...)
 		}
-		err := c.MustBind(m, formfilter.Build(opts...))
+		err = c.MustBind(m, formfilter.Build(opts...))
 		if err == nil {
 			validFields, _ := c.Internal().Get(`formbuilder.validFields`).([]string)
 			err = form.Valid(validFields...)
@@ -145,6 +150,7 @@ func NewModel(c echo.Context, m interface{}, cfg *config.Config, options ...Opti
 			} else {
 				c.Data().SetError(err)
 			}
+			err = ErrPostModelFailed
 		}
 	}
 	setNextURLField := func() {
@@ -167,7 +173,7 @@ func NewModel(c echo.Context, m interface{}, cfg *config.Config, options ...Opti
 	c.Set(`forms`, wrap)
 	// 手动调用:
 	// wrap.ParseFromConfig()
-	return wrap
+	return wrap, err
 }
 
 // NewConfig 表单配置
