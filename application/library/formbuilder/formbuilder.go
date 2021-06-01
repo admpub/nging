@@ -21,7 +21,6 @@ import (
 
 var (
 	ErrJSONConfigFileNameInvalid = errors.New("*.form.json name invalid")
-	ErrPostModelFailed           = errors.New("post model failed")
 )
 
 // New 表单
@@ -87,11 +86,12 @@ func New(c echo.Context, m interface{}, jsonFile string, options ...Option) (*fo
 		}
 		if err != nil {
 			if vErr, ok := err.(*validation.ValidationError); ok {
+				err = newPostError(vErr)
 				c.Data().SetInfo(vErr.Message, 0).SetZone(vErr.Field)
 			} else {
+				err = newPostError(err)
 				c.Data().SetError(err)
 			}
-			err = ErrPostModelFailed
 		}
 	}
 	setNextURLField := func() {
@@ -146,11 +146,12 @@ func NewModel(c echo.Context, m interface{}, cfg *config.Config, options ...Opti
 		}
 		if err != nil {
 			if vErr, ok := err.(*validation.ValidationError); ok {
+				err = newPostError(vErr)
 				c.Data().SetInfo(vErr.Message, 0).SetZone(vErr.Field)
 			} else {
+				err = newPostError(err)
 				c.Data().SetError(err)
 			}
-			err = ErrPostModelFailed
 		}
 	}
 	setNextURLField := func() {
